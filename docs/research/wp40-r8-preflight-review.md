@@ -1,9 +1,11 @@
 # WP40 R8 Preflight Review
 
 **Status:** The corrected G2 pilot and the one final frozen-byte PUC/LuaJIT
-micro-KAT pair pass. The narrower owner-top calculation correction and exact
-10+32 G3 execution envelope both have focused independent acceptance. Exact
-G3 candidate `4ca1c6564382c1e4ab726fd60a38c3b4461dba05` is ready to run.
+micro-KAT pair pass. Exact G3 candidate
+`4ca1c6564382c1e4ab726fd60a38c3b4461dba05` generated nearly the full corpus
+without a mapgen error but correctly failed at its exact two-hour boundary.
+The user-approved four-worker sharding and three-hour safety correction awaits
+focused independent review before the replacement G3 run.
 
 ## Scope and independence
 
@@ -477,6 +479,38 @@ rows remain in the 15-point GUI route. It independently reproduced the roughly
 117-minute point estimates and confirmed the exact 7200-second host/7201-second
 liquid boundary. G2, production bytes, probe, native corpus and the final
 interpreter pair remain valid. Exact `4ca1c65...` is accepted for G3.
+
+## Combined G3 timeout and approved sharding correction
+
+The reviewed combined pair reached its mechanical two-hour stop with 39/42
+forward requests and 40/42 finalized reverse requests; a complete 41st reverse
+request also survived in the partial stream. Every finalized emerge reported
+one generated plus 124 in-memory actions and zero errored/cancelled actions.
+The required snapshots, native aggregate, controlled shutdown and pair
+comparison were not produced, so the attempt is retained as a budget failure,
+not accepted by proximity. Exact hashes and scope are recorded in
+`wp40-r8-pilot.md` Attempt 10.
+
+The user approved two complete pair shards rather than another corpus
+reduction: one has all ten feature cases, the other has all 32 native rows.
+The contiguous native event grid and all stratum/ore census slices therefore
+remain coupled. Each shard retains exact forward/reverse comparison; a new
+deterministic aggregate requires 42 unique IDs and identical candidate,
+checkout, engine and production manifests across all four fresh worlds. The
+explicit residual risk is feature-to-native cross-shard mutation; R7's
+accepted offline order evidence and owner-bounded production writes constrain
+it.
+
+The final launcher fixes four concurrent engine workers on ports 32001--32004,
+one emerge thread each and idle CPU/I/O priority. Observed timings project the
+native pair at 101--106 minutes and the feature pair at 24--26 minutes. At the
+user's direction, two hours is now an operational target rather than a kill
+point: the replacement uses a 10,770-second probe timeout, 10,800-second host
+safety stop and 10,801-second periodic-liquid boundary. Flatpak
+`--die-with-parent` also closes the timeout teardown race exposed by Attempt
+10. Production Lua and the probe are unchanged, so the frozen final
+PUC/LuaJIT pair remains valid; the non-trivial harness/contract correction
+still requires focused independent acceptance of its exact commit.
 
 ## Calibration so far
 

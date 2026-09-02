@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Minimal real-engine R8 smoke runner. It deliberately owns only two fresh
-# worlds and a small externally supplied mapchunk corpus.
+# Minimal real-engine R8 smoke worker. It deliberately owns only one
+# forward/reverse pair. The final G3 coordinator runs one feature pair and one
+# native pair concurrently; pilot mode retains the historical combined pair.
 command -v rg >/dev/null 2>&1 || {
 	echo "WP40 R8: ripgrep (rg) is required" >&2
 	exit 2
@@ -26,27 +27,66 @@ if [[ "$mode" != "pilot" && "$mode" != "final" ]]; then
 	echo "WP40 R8: WP40_R8_MODE must be pilot or final" >&2
 	exit 2
 fi
-min_cases=10
-max_cases=15
-default_corpus="$script_dir/smoke-corpus.tsv"
+shard="${WP40_R8_SHARD:-}"
 if [[ "$mode" == "pilot" ]]; then
-	min_cases=2
-	max_cases=3
-	default_corpus="$script_dir/pilot-corpus.tsv"
+	[[ -z "$shard" ]] && shard=combined
+	if [[ "$shard" != "combined" ]]; then
+		echo "WP40 R8: pilot mode requires WP40_R8_SHARD=combined" >&2
+		exit 2
+	fi
+else
+	if [[ "$shard" != "feature" && "$shard" != "native" ]]; then
+		echo "WP40 R8: final workers require WP40_R8_SHARD=feature or native" >&2
+		exit 2
+	fi
 fi
+
+case "$shard" in
+	combined)
+		min_cases=2
+		max_cases=3
+		default_corpus="$script_dir/pilot-corpus.tsv"
+		expected_native_rows=1
+		;;
+	feature)
+		min_cases=10
+		max_cases=10
+		default_corpus="$script_dir/smoke-corpus.tsv"
+		expected_native_rows=0
+		;;
+	native)
+		min_cases=0
+		max_cases=0
+		default_corpus="$script_dir/empty-feature-corpus.tsv"
+		expected_native_rows=32
+		;;
+esac
 corpus="${1:-${WP40_R8_CORPUS:-$default_corpus}}"
 if [[ "$corpus" != /* ]]; then corpus="$repo/$corpus"; fi
 [[ -f "$corpus" ]] || { echo "WP40 R8: corpus not found: $corpus" >&2; exit 2; }
-native_corpus="${WP40_R8_NATIVE_CORPUS:-}"
-if [[ -z "$native_corpus" ]]; then
-	native_default="$script_dir/native-witness-corpus.tsv"
-	if [[ "$mode" == "pilot" ]]; then
-		native_default="$script_dir/native-pilot-corpus.tsv"
-	fi
-	if [[ -f "$native_default" ]]; then native_corpus="$native_default"; fi
+feature_row_count="$(awk 'NF && $1 !~ /^#/ {count++} END {print count + 0}' \
+	"$corpus")"
+if (( feature_row_count < min_cases || feature_row_count > max_cases )); then
+	echo "WP40 R8: feature corpus row count differs from selected shard" >&2
+	exit 2
 fi
-if [[ "$mode" == "final" && -z "$native_corpus" ]]; then
-	echo "WP40 R8: final mode requires WP40_R8_NATIVE_CORPUS" >&2
+
+native_corpus=""
+if [[ "$shard" != "feature" ]]; then
+	native_corpus="${WP40_R8_NATIVE_CORPUS:-}"
+	if [[ -z "$native_corpus" ]]; then
+		native_default="$script_dir/native-witness-corpus.tsv"
+		if [[ "$mode" == "pilot" ]]; then
+			native_default="$script_dir/native-pilot-corpus.tsv"
+		fi
+		if [[ -f "$native_default" ]]; then native_corpus="$native_default"; fi
+	fi
+elif [[ -n "${WP40_R8_NATIVE_CORPUS:-}" ]]; then
+	echo "WP40 R8: feature shard forbids a native corpus" >&2
+	exit 2
+fi
+if [[ "$expected_native_rows" != "0" && -z "$native_corpus" ]]; then
+	echo "WP40 R8: selected shard requires a native witness corpus" >&2
 	exit 2
 fi
 if [[ -n "$native_corpus" ]]; then
@@ -56,12 +96,13 @@ if [[ -n "$native_corpus" ]]; then
 		exit 2
 	}
 fi
-native_row_count="$(awk 'NF && $1 !~ /^#/ {count++} END {print count + 0}' \
-	"$native_corpus")"
-expected_native_rows=32
-if [[ "$mode" == "pilot" ]]; then expected_native_rows=1; fi
+native_row_count=0
+if [[ -n "$native_corpus" ]]; then
+	native_row_count="$(awk 'NF && $1 !~ /^#/ {count++} END {print count + 0}' \
+		"$native_corpus")"
+fi
 if [[ "$native_row_count" != "$expected_native_rows" ]]; then
-	echo "WP40 R8: native corpus row count differs from frozen mode" >&2
+	echo "WP40 R8: native corpus row count differs from selected shard" >&2
 	exit 2
 fi
 
@@ -86,8 +127,8 @@ if [[ ${#timeout_seconds} -gt 5 ]] || (( timeout_seconds > 86400 )); then
 	echo "WP40 R8: WP40_R8_TIMEOUT must not exceed 86400 seconds" >&2
 	exit 2
 fi
-if [[ "$mode" == "final" && "$timeout_seconds" != "7170" ]]; then
-	echo "WP40 R8: final mode requires WP40_R8_TIMEOUT=7170" >&2
+if [[ "$mode" == "final" && "$timeout_seconds" != "10770" ]]; then
+	echo "WP40 R8: final mode requires WP40_R8_TIMEOUT=10770" >&2
 	exit 2
 fi
 liquid_update_seconds=$((timeout_seconds + 31))
@@ -100,12 +141,33 @@ if [[ "$mode" == "final" && "$parallel_orders" != "1" ]]; then
 	echo "WP40 R8: final mode requires WP40_R8_PARALLEL=1" >&2
 	exit 2
 fi
+port_base="${WP40_R8_PORT_BASE:-32001}"
+[[ "$port_base" =~ ^[1-9][0-9]*$ ]] || {
+	echo "WP40 R8: WP40_R8_PORT_BASE must be a positive integer" >&2
+	exit 2
+}
+if (( port_base < 1024 || port_base > 65534 )); then
+	echo "WP40 R8: WP40_R8_PORT_BASE must leave two usable ports" >&2
+	exit 2
+fi
+if [[ "$mode" == "final" && "$shard" == "feature" && "$port_base" != "32001" ]]; then
+	echo "WP40 R8: final feature shard requires port base 32001" >&2
+	exit 2
+fi
+if [[ "$mode" == "final" && "$shard" == "native" && "$port_base" != "32003" ]]; then
+	echo "WP40 R8: final native shard requires port base 32003" >&2
+	exit 2
+fi
 
 for relative_path in tools/wp40/r8/run.sh tools/wp40/r8/probe/init.lua \
 		tools/wp40/r8/probe/mod.conf tools/wp40/r8/seed-candidates.tsv \
 		tools/wp40/r8/pilot-corpus.tsv tools/wp40/r8/smoke-corpus.tsv \
+		tools/wp40/r8/empty-feature-corpus.tsv \
 		tools/wp40/r8/native-pilot-corpus.tsv \
-		tools/wp40/r8/native-witness-corpus.tsv; do
+		tools/wp40/r8/native-witness-corpus.tsv \
+		tools/wp40/r8/sharded_validate.jq \
+		tools/wp40/r8/test_sharded_validate.sh \
+		tools/wp40/r8/run_sharded.sh; do
 	if ! git -C "$repo" cat-file -e "$checkout_sha:$relative_path"; then
 		echo "WP40 R8: selected commit lacks $relative_path" >&2
 		exit 2
@@ -150,8 +212,9 @@ if [[ -n "$native_corpus" ]]; then
 fi
 candidate_table_digest="$(sha256sum "$candidate_table" | awk '{print $1}')"
 capture_id="$({
-	printf '%s\n' "grug_wp40_r8_headless_smoke_v2" "$checkout_sha" \
-		"$mode" "$parallel_orders" "$seed" "$offline_r7_manifest" \
+	printf '%s\n' "grug_wp40_r8_headless_smoke_v3" "$checkout_sha" \
+		"$mode" "$shard" "$parallel_orders" "$port_base" "$seed" \
+		"$offline_r7_manifest" \
 		"$timeout_seconds" \
 		"$runner_digest" "$corpus_digest" "$native_corpus_digest" \
 		"$candidate_table_digest" \
@@ -250,7 +313,7 @@ run_order() {
 	local events_path="$output_dir/events.jsonl.partial"
 	local host_timeout_seconds=$((timeout_seconds + 30))
 	local native_required=false
-	if [[ "$mode" == "final" ]]; then native_required=true; fi
+	if [[ "$shard" == "native" ]]; then native_required=true; fi
 	mkdir -p "$game_dir" "$world_dir" "$xdg_data" "$xdg_config" "$xdg_cache"
 	git -C "$repo" archive "$checkout_sha" | tar -x -C "$game_dir"
 	mkdir -p "$game_dir/mods/grug_wp40_r8_probe"
@@ -265,8 +328,8 @@ player_backend = sqlite3
 auth_backend = sqlite3
 mod_storage_backend = sqlite3
 EOF
-	local port=32001
-	if [[ "$order" == "reverse" ]]; then port=32002; fi
+	local port="$port_base"
+	if [[ "$order" == "reverse" ]]; then port=$((port_base + 1)); fi
 	cat >"$config" <<EOF
 mg_name = v7
 fixed_map_seed = $seed
@@ -310,7 +373,7 @@ EOF
 	set +e
 	setsid /usr/bin/time -v -o "$time_log" timeout --foreground \
 		--kill-after=10 "$host_timeout_seconds" chrt --idle 0 ionice -c3 \
-		flatpak run \
+		flatpak run --die-with-parent \
 		--command=luanti --filesystem="$run_root" \
 		--filesystem="$output_dir" \
 		--env="XDG_DATA_HOME=$xdg_data" \
@@ -392,7 +455,7 @@ if [[ "$final_flatpak_digest" != "$initial_flatpak_digest" ]]; then
 	exit 1
 fi
 
-jq -n --arg expected_seed "$seed" \
+jq -n --arg expected_seed "$seed" --arg shard "$shard" \
 	--arg expected_seed_sha256 "$seed_sha256" \
 	--arg expected_liquid_update "$liquid_update_seconds" \
 	--slurpfile forward "$result_dir/forward/events.jsonl" \
@@ -423,7 +486,7 @@ jq -n --arg expected_seed "$seed" \
 	($reverse | shutdown) as $rs |
 	($forward | emerge) as $fe |
 	($reverse | emerge) as $re |
-	{schema: "grug_wp40_r8_order_comparison_v1",
+	{schema: "grug_wp40_r8_order_comparison_v2", shard: $shard,
 	 forward_cases: $f, reverse_cases: $r,
 	 forward_native_census: $fn, reverse_native_census: $rn,
 	 equal: ($f == $r),
@@ -482,6 +545,10 @@ jq -n --arg expected_seed "$seed" \
 		$fc[0].native_gate.ok == true),
 	 reverse_native_gate: (($rc | length) == 1 and
 		$rc[0].native_gate.ok == true),
+	 forward_native_required: (($fc | length) == 1 and
+		$fc[0].native_gate.required == ($shard == "native")),
+	 reverse_native_required: (($rc | length) == 1 and
+		$rc[0].native_gate.required == ($shard == "native")),
 	 forward_clean_shutdown: (($fs | length) == 1 and $fs[0].clean == true),
 	 reverse_clean_shutdown: (($rs | length) == 1 and $rs[0].clean == true),
 	 forward_emerge_errors: ($forward | errors | add // 0),
@@ -492,6 +559,7 @@ if ! jq -e '(.equal and .semantic_ok and .native_census_equal and
 	.native_gate_equal and
 	.start_seed_equal and
 	.forward_native_gate and .reverse_native_gate and
+	.forward_native_required and .reverse_native_required and
 	.start_engine_equal and
 	.request_orders_reversed and
 	.forward_start and .reverse_start and
@@ -514,7 +582,8 @@ reverse_elapsed="$(jq -s '[.[] | select(.event == "complete") | .elapsed_us][0] 
 forward_rss="$(jq -s '[.[] | select(.process.rss_peak_bytes != null) | .process.rss_peak_bytes] | max // null' "$result_dir/forward/events.jsonl")"
 reverse_rss="$(jq -s '[.[] | select(.process.rss_peak_bytes != null) | .process.rss_peak_bytes] | max // null' "$result_dir/reverse/events.jsonl")"
 jq -n --arg capture_id "$capture_id" --arg checkout_sha "$checkout_sha" \
-	--arg mode "$mode" --arg seed "$seed" --arg corpus_digest "$corpus_digest" \
+	--arg mode "$mode" --arg shard "$shard" --arg seed "$seed" \
+	--arg corpus_digest "$corpus_digest" \
 	--arg native_corpus_digest "$native_corpus_digest" \
 	--arg seed_sha256 "$seed_sha256" \
 	--arg parallel_orders "$parallel_orders" \
@@ -525,15 +594,16 @@ jq -n --arg capture_id "$capture_id" --arg checkout_sha "$checkout_sha" \
 	--arg final_engine_digest "$final_flatpak_digest" \
 	--arg timeout "$timeout_seconds" \
 	--arg liquid_update "$liquid_update_seconds" \
+	--arg port_base "$port_base" \
 	--argjson forward_start "$forward_start" \
 	--argjson reverse_start "$reverse_start" \
 	--argjson forward_elapsed "$forward_elapsed" \
 	--argjson reverse_elapsed "$reverse_elapsed" \
 	--argjson forward_rss "$forward_rss" \
 	--argjson reverse_rss "$reverse_rss" \
-	'{schema: "grug_wp40_r8_headless_smoke_v2",
-	 status: ($mode + "_smoke_complete"),
-	 capture_id: $capture_id, mode: $mode,
+	'{schema: "grug_wp40_r8_headless_smoke_v3",
+	 status: ($mode + "_" + $shard + "_smoke_complete"),
+	 capture_id: $capture_id, mode: $mode, shard: $shard,
 	 parallel_orders: ($parallel_orders == "1"),
 	 snapshot: {checkout_sha: $checkout_sha, source: "git archive",
 		game_snapshot_isolation: "fresh archive under per-order LUANTI_USER_PATH"},
@@ -546,6 +616,9 @@ jq -n --arg capture_id "$capture_id" --arg checkout_sha "$checkout_sha" \
 			"offline mocked-engine provenance; actual runtime manifest is in startup"},
 	 settings: {mg_name: "v7", chunksize: 5, water_level: 1,
 		num_emerge_threads: 1, liquid_update_seconds: ($liquid_update | tonumber),
+		probe_timeout_seconds: ($timeout | tonumber),
+		host_timeout_seconds: (($timeout | tonumber) + 30),
+		port_base: ($port_base | tonumber),
 		liquid_capture_boundary: "mapgen plus immediate finishBlockMake; periodic server liquid transforms deferred beyond the host timeout",
 		seed_decimal_string: $seed,
 		seed_string_sha256: $seed_sha256},
@@ -572,7 +645,7 @@ jq -n --arg capture_id "$capture_id" --arg checkout_sha "$checkout_sha" \
 		peak_rss: "GNU time launcher plus probe /proc VmHWM",
 		lights: "one digest over the engine packed light-data array"},
 	 limitations: [
-		"This is a focused smoke runner, not an exhaustive seed, capacity or visual gate.",
+		"This is one shard pair of a focused smoke runner, not an exhaustive seed, capacity or visual gate.",
 		"The one-writer signal is the production status plus a read-only probe callback count; it is not a second writer audit.",
 		"Order equality covers the deterministic post-mapgen state before periodic wall-clock liquid simulation.",
 		"No historical T2/PCC/F1/F2 claim is reproduced."

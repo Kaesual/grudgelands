@@ -1,19 +1,21 @@
 # WP40 R8 headless runner preflight
 
-Status: scaffold and exact 10+32 final execution envelope reviewed; corrected
-G2 real-engine pilot accepted. The runner remains a narrow release smoke, not
-a replacement for the offline R7 evidence, R2/R6 capacity and supply evidence,
-or the later visual gates.
+Status: corrected G2 real-engine pilot accepted; the first combined 10+32 G3
+pair failed only at its exact two-hour timeout. The user approved the sharded
+four-worker correction and a three-hour safety boundary; its exact bytes await
+focused independent review. The runner remains a narrow release smoke, not a
+replacement for offline R7 evidence, R2/R6 capacity and supply evidence, or
+the later visual gates.
 
 ## Contract
 
-`tools/wp40/r8/run.sh [CORPUS.tsv]` defaults to the committed 10-row
-`tools/wp40/r8/smoke-corpus.tsv`. `WP40_R8_MODE=pilot` instead defaults to the
-committed three-row `pilot-corpus.tsv`. Final mode unions its feature corpus
-with the fixed 32-row `native-witness-corpus.tsv`; pilot mode uses its exact
-one-row prefix. Both modes run the same forward/reverse machinery. The runner
-can accept another reviewed tab-separated feature corpus with
-10--15 unique rows in final mode or 2--3 in pilot mode, in this form:
+`tools/wp40/r8/run_sharded.sh` is the sole normal final-G3 entry point. It
+starts `run.sh` twice as an internal pair worker: the `feature` worker consumes
+the exact committed 10-row `smoke-corpus.tsv` with no native rows, and the
+`native` worker consumes the zero-row `empty-feature-corpus.tsv` plus the exact
+32-row `native-witness-corpus.tsv`. Each worker owns one forward/reverse pair,
+so four fresh worlds run concurrently. `WP40_R8_MODE=pilot` retains the
+historical combined three-feature plus one-native-row pair. Corpus rows use:
 
 ```text
 id<TAB>x<TAB>surface-or-y<TAB>z
@@ -46,11 +48,10 @@ where live `.partial` logs and probe events survive an interruption, and
 keeps the installed Luanti world and the user's normal XDG paths out of the
 run.
 
-Orders are sequential by default. After the pilot establishes memory
-headroom, `WP40_R8_PARALLEL=1` runs the two isolated orders concurrently. That
-choice is part of the immutable capture identity and still counts as exactly
-two Lua engine processes under the workstation-wide cap. Engine launches use
-`chrt --idle 0` and `ionice -c3` in either mode.
+Pilot orders are sequential by default. The final coordinator fixes both pair
+workers to parallel order execution, distinct port ranges 32001--32002 and
+32003--32004, and exactly four Lua engine processes under the workstation-wide
+seven-process cap. Engine launches use `chrt --idle 0` and `ionice -c3`.
 
 After every requested mapchunk has emerged, the probe reads all central 80³
 feature mapchunks in one common ID order and records content-ID, param2 and
@@ -71,7 +72,7 @@ Startup events record engine/version, seed, mapgen settings, Lua runtime and
 the live `grug_mapgen.wp40` status. The status' `production_enabled` and
 `writer_count` fields are the one-writer indicators available without adding a
 production writer or a second mapgen authority. A read-only probe callback
-requests native cave/dungeon generation notifications. Final mode requires
+requests native cave/dungeon generation notifications. The native shard requires
 matched random-walk-cave begin/end counts, inspected nearby cave air, at least
 one inspected surviving dungeon room, all five retained strata and the native
 gravel blob. The fixed grid does not grow after an unlucky result. Raw
@@ -105,11 +106,13 @@ the final `register_on_shutdown` event remain separate immutable outputs.
    exactly one emerge thread must all be realized. A missing `start`, a probe
    `timeout`, cancelled/errored emerge action, nonzero process exit, error-log
    match or unclean shutdown blocks interpretation.
-5. Inspect `comparison.json` and require equal central content/param2/light
-   feature rows, content-only native census rows and canonical native-event
-   evidence in both orders. Keep both order directories and
-   `checksums.sha256` together; do not combine them into a historical T2
-   artifact or call this result exhaustive.
+5. Inspect each shard's `comparison.json`, then the coordinator's aggregate
+   `comparison.json`. Require equal central content/param2/light feature rows,
+   content-only native census rows, canonical native-event evidence in both
+   native orders, 42 unique IDs across the two shards, and one identical
+   checkout/seed/engine/runtime manifest across all four worlds. Keep the
+   master `checksums.sha256` and both child captures together; do not combine
+   them into a historical T2 artifact or call this result exhaustive.
 
 ## Open bindings and deliberate limits
 
@@ -128,10 +131,10 @@ the final `register_on_shutdown` event remain separate immutable outputs.
 - GNU `time` measures the Flatpak launcher; engine process RSS is separately
   captured from `/proc/self/status` by the trusted disposable probe. Neither
   measurement is a cold-cache or 100-player capacity claim.
-- Every engine launch owns a new process group. The host trap terminates that
-  group before deleting its disposable world, while live engine logs and probe
-  events remain as `.partial` files in the exact capture directory if a run is
-  interrupted.
+- Every engine launch owns a new process group and passes Flatpak
+  `--die-with-parent`. The host trap terminates wrappers before deleting each
+  disposable world, while live engine logs and probe events remain as
+  `.partial` files in the exact capture directory if a run is interrupted.
 - After all emerge requests finish, the runner reads each complete central
   80³ array in canonical ID order.
   It intentionally does not hash database metadata, timestamps, entities or
@@ -147,12 +150,13 @@ The normal invocations are:
 ```sh
 WP40_R8_MODE=pilot WP40_R8_TIMEOUT=900 WP40_R8_PARALLEL=0 \
   WP40_CHECKOUT_SHA=<frozen-commit> tools/wp40/r8/run.sh
-WP40_R8_MODE=final WP40_R8_TIMEOUT=7170 WP40_R8_PARALLEL=1 \
-  WP40_CHECKOUT_SHA=<frozen-commit> tools/wp40/r8/run.sh
+WP40_R8_TIMEOUT=10770 WP40_CHECKOUT_SHA=<frozen-commit> \
+  tools/wp40/r8/run_sharded.sh
 ```
 
-Final mode rejects every other timeout or order-parallelism value. Its existing
-host margin makes `7170 + 30 = 7200` seconds the exact two-hour process-pair
-hard stop, while `liquid_update = 7170 + 31 = 7201` remains one second later.
-Pilot mode retains its independently reviewed 900-second per-order budget and
-may still be run sequentially.
+Final workers reject every other timeout, shard, port or order-parallelism
+value. The approximately two-hour runtime is an operational target, not a
+near-completion kill point: `10770 + 30 = 10800` seconds is the three-hour
+hung-process safety stop, while `liquid_update = 10770 + 31 = 10801` remains
+one second later. Pilot mode retains its independently reviewed 900-second
+per-order budget and may still be run sequentially.

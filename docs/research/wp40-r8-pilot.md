@@ -1,14 +1,16 @@
 # WP40 R8 real-engine pilot record
 
-**Status:** nine attempts retained. Attempts 1--4 stopped during
+**Status:** ten attempts retained. Attempts 1--4 stopped during
 production construction; Attempt 5 exposed and corrected the fresh-engine
 read-only halo; Attempt 6 measured and removed redundant native pilot rows.
 Attempt 7 completed both schedules cleanly and isolated a real surface-light
 defect plus wall-clock liquid aging in the comparison harness. Attempt 8
 confirmed the liquid correction and reduced the remaining surface defect to a
 fresh vertical `CONTENT_IGNORE` halo above the owner. Attempt 9 confirms the
-narrower lighting correction, complete order equality and every G2 gate. The
-next engine gate is the complete G3 corpus.
+narrower lighting correction, complete order equality and every G2 gate.
+Attempt 10 generated nearly the whole complete corpus without a mapgen error
+but correctly failed at the fixed two-hour G3 boundary. The approved
+replacement G3 uses two complete forward/reverse shard pairs and four workers.
 
 ## Attempt 1 -- diagnostic failure
 
@@ -441,3 +443,64 @@ previously confirmed `param2` digest
 `8b94d3fc51180c3a1f27611b28e8825fdf0522ba20962b2fd5c4e6731f443c4f`.
 The pilot therefore accepts the owner-top and periodic-liquid corrections and
 closes G2. It does not claim the complete G3 feature/native corpus.
+
+## Attempt 10 -- complete-pair timeout
+
+- Date: 2026-09-02
+- Candidate: `4ca1c6564382c1e4ab726fd60a38c3b4461dba05`
+- Review before execution: the exact 10+32 corpus and two-hour enforcement had
+  focused independent **ACCEPT, 0 Critical / 0 High / 0 Medium / 0 Low**
+- Mode: final, Seed `0`, two concurrent engines; each requested the full ten
+  feature plus 32 native rows in forward or exact reverse order
+- Capture ID:
+  `5ff10a91da1d2b6944377902ed4ee7b89027995f9a42051244ba94548a48f502`
+- Result: **FAIL (budget)**; both engine wrappers exited 124 at exactly
+  2:00:00, so no completion, controlled-shutdown or order-comparison claim is
+  accepted
+- Forward: 39/42 complete; all ten features, the 25-cell native grid and the
+  first four stratum slices completed; event-stream SHA-256
+  `0ff3021e2667ff8d8a3862766955316ba30ba5e2ee0c036ca1308b1bff434139`
+- Reverse: 40/42 finalized plus `goldmead_inland_housing` completely written
+  to the retained partial stream; the full native corpus, native grid and
+  eight feature rows completed; finalized/partial event SHA-256
+  `f55bfac2fe562e7b0415933ed6b0fb2300a2499cff1cbf332f858825564cd549`
+  and
+  `1f3a32983b03836b03f7a13e0180230207a73dbf53f820fc33dade391612f143`
+- Forward console/server/time SHA-256:
+  `8b3b92da2f27cda7cb15f183a1203b801e180b226fd754037cc13ee4e929baf1`,
+  `f09f2d058b5bb0d39d688c4dfd1d9c75113ac85ed476a2e1c2e37d0966e020c5`,
+  `e7803a636d1bffc1292f39b70913eda5aa5795f0852abade8dfa017f9f3fa52b`
+- Reverse console/server/time SHA-256:
+  `cdb90e312fbc1040ada68efc4815ef4cf9bb339efc2dbb2cb06b1b6e676fb157`,
+  `a5964c8b81050dcf44fbe71178500aaa2c1551775a2f41ec46fc9595d3876149`,
+  `6cecdecfa067c3c627eb5926a4a3078c69ed96cc96450cb3304bbd01b28ccb35`
+
+Every finalized emerge returned one generated plus 124 in-memory actions and
+no cancelled or errored action. The timeout wrapper ended before the probe
+could snapshot and emit the native/event aggregate, so the partial run cannot
+establish any final semantic or native gate even though its completed requests
+are useful timing evidence. The disposable worlds were removed; all unique
+logs and partial events remain in the permanent ignored result directory named
+above, whose total retained size is 119,213 bytes.
+
+The server-log errors were emitted only after the hard timeout: the old Flatpak
+wrapper could outlive the observed command long enough to attempt database
+writes while scratch cleanup removed its world. They do not describe an emerge
+failure, but they expose a harness teardown defect. The replacement worker uses
+Flatpak's `--die-with-parent` boundary before scratch cleanup; clean successful
+shutdown remains mandatory.
+
+The approved release approximation retains every input row but divides the
+real-engine order proof into two coherent pairs: ten feature rows and all 32
+native rows. The native pair deliberately keeps the contiguous 25-cell event
+grid together with all seven adjacent stratum/ore census slices. Four engines
+run concurrently on distinct ports with one emerge thread each, and a final
+deterministic receipt requires the two pairs to cover 42 unique IDs plus one
+identical checkout, Seed `0`, engine and production manifest. Within-shard
+later-request mutation remains covered; feature-to-native cross-shard mutation
+is the explicitly accepted residual risk. Observed timings project the native
+pair at approximately 101--106 minutes and the feature pair at 24--26 minutes,
+below the two-hour operational target. Per the user's post-timeout direction,
+that target no longer kills a nearly complete run: the replacement uses a
+10,770-second probe timeout, a three-hour host safety stop and a 10,801-second
+periodic-liquid boundary.

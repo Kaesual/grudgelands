@@ -4,8 +4,11 @@
 order equality, direct surface sunlight, stable liquid bytes and clean
 shutdown. The owner-top correction has green static/fixture evidence and
 focused independent acceptance. The one final frozen-byte PUC/LuaJIT pair also
-passes byte-identically. The exact 10+32 parallel G3 corpus/budget has focused
-independent acceptance and is the next engine gate.
+passes byte-identically. The first exact 10+32 G3 attempt reached 39/42 and
+40/42 completed requests without a generation error, then correctly failed at
+the fixed two-hour timeout. The user approved the narrow four-worker sharding
+correction below; its exact harness and evidence boundary require focused
+independent acceptance before the replacement G3 run.
 
 **Baseline:** `ac3ff3f17c0119b80c90f73db944a937d9159a2b` (the reviewed R7
 production cutover merged to `main`).
@@ -21,8 +24,8 @@ R8 answers five release questions:
 
 1. Does the exact game start a fresh production-settings v7 world without a
    manifest, loader, callback or content-registration failure?
-2. Does a bounded high-risk mapchunk corpus remain byte-stable when requested
-   in two materially different orders with one emerge thread?
+2. Does each of two bounded high-risk mapchunk shards remain byte-stable when
+   requested in two materially different orders with one emerge thread?
 3. Do representative native caves, dungeons, strata, ores, liquids and light
    coexist with authored terrain and content?
 4. Are measured generation time and peak RSS operationally usable on the
@@ -85,16 +88,19 @@ seed string and its checksum are durable R8 evidence.
 
 ## 4. Minimal isolated engine smoke
 
-R8 implements a small release harness, not a general mapgen framework. It must:
+R8 implements a small release harness, not a general mapgen framework. Each
+final shard worker owns one forward/reverse pair; the final coordinator starts
+the two pairs together and combines them deterministically. The harness must:
 
 - export an exact committed candidate using `git archive` into a disposable
   game tree;
-- use a new disposable `LUANTI_USER_PATH` and fresh world for every schedule;
+- use a new disposable `LUANTI_USER_PATH` and fresh world for every shard and
+  schedule;
 - never run against or write the shared installed Grudgelands game or any
   persistent user world;
 - bind the exact game commit, engine identity, full seed string, mapgen
-  settings, corpus bytes and probe bytes before generation, then require the
-  two fresh worlds to report one identical actual runtime manifest (the R7
+  settings, corpus bytes and probe bytes before generation, then require all
+  four fresh worlds to report one identical actual runtime manifest (the R7
   mocked-engine manifest remains provenance, not a false content-ID equality);
 - resolve every caller-supplied Git revision once to one full 40-hex commit ID,
   archive only that immutable ID, and verify the Flatpak deployment identity
@@ -112,10 +118,12 @@ R8 implements a small release harness, not a general mapgen framework. It must:
   digests, excluding database timestamps and unrelated metadata;
 - capture startup and shutdown events, errors, mapgen callback/writer counts,
   wall time and process peak RSS;
-- use separate immutable output paths and refuse to overwrite a completed
+- use separate immutable output paths and refuse to overwrite any existing
   capture; and
 - retain live partial logs and probe events directly in the capture directory,
-  and terminate each isolated engine process group on interruption; and
+  terminate each isolated engine process group on interruption, and use
+  Flatpak's die-with-parent boundary so a timed-out wrapper cannot outlive its
+  scratch world; and
 - shut down through a test-only probe after all requested regions settle or
   fail through a bounded timeout.
 
@@ -179,11 +187,26 @@ witness from accidentally accepting or rejecting another seed.
 
 ### 4.2 Order comparison
 
-The required schedules are one risk-prioritized order and its exact reverse.
-This is sufficient for R8's release approximation because R7 already accepted
-owner-slice, forward/reverse finalizer and offline operation-order evidence.
-Additional random, vertical or sparse-fill schedules are diagnostic only and
-need a concrete discrepancy before becoming blocking work.
+The first final attempt proved that one 42-request world per order cannot finish
+inside the fixed two-hour host boundary. The approved replacement has two
+semantically coherent shards: the complete ten-row feature corpus, and the
+complete 32-row native corpus containing the 25-cell event grid plus all seven
+stratum/ore census slices. Each shard still runs one declared order and its
+exact reverse in fresh worlds. All four worlds start together, use distinct
+ports and retain one emerge thread each. A deterministic aggregate requires
+the two shard pairs to cover exactly 42 unique IDs, one identical candidate,
+engine and production manifest, and every per-pair equality, semantic,
+native, completion and shutdown gate.
+
+This knowingly does not test whether a later request in the feature shard
+mutates a far-away native-shard chunk or vice versa. It preserves all
+within-feature and within-native later-request mutation checks, including the
+complete contiguous native grid and its adjacent census slices. That residual
+cross-shard risk is accepted for the first release because R7 already accepted
+owner-slice, forward/reverse finalizer and offline operation-order evidence,
+and the production writer owns only its current emerge area. Additional
+random, vertical or sparse-fill schedules are diagnostic only and need a
+concrete discrepancy before becoming blocking work.
 
 Content and `param2` differences are blocking. The comparison snapshots all
 cases only after the complete schedule, so a later request can still expose an
@@ -299,9 +322,10 @@ runtime correction therefore keeps only the first native cell in G2. The
 complete 32-row G3 native corpus, its event gate and its census slices remain
 unchanged.
 
-The complete two-schedule smoke proceeds only when the pilot projects:
+The complete smoke proceeds only when the pilot projects:
 
-- no more than two hours total wall time on the designated workstation;
+- no more than approximately two hours total wall time on the designated
+  workstation as an operational target, not a narrowly enforced kill point;
 - no memory pressure, OOM, uncontrolled swap growth or host instability; and
 - enough headroom for at most two concurrent engine processes.
 
@@ -335,31 +359,38 @@ physical memory and each engine retains one emerge thread and idle priority.
 This exact data-only reduction requires focused review before G3; it does not
 invalidate the accepted G2 pilot or frozen production-byte interpreter pair.
 
-The reproducible 42-request point estimate separates probe work from fixed
-launch/finalization overhead instead of multiplying the complete four-request
-wall time. Forward projects as `662.351833 / 4 * 42 + (749.78 - 662.351833)`
-seconds, about 117:22; reverse projects as
-`661.244269 / 4 * 42 + (744.78 - 661.244269)` seconds, about 117:07. G3 fixes
-`WP40_R8_TIMEOUT=7170` and parallel execution; the runner's existing 30-second
-host margin therefore caps the pair at exactly 120 minutes, and its periodic
-liquid interval becomes 7201 seconds. Final mode rejects any different timeout
-or sequential-order setting. The narrow two-to-three-minute projection margin
-is not itself an acceptance claim: contention that reaches the hard stop is a
-retained failed result and cannot be waived.
+The original reproducible point estimate underestimated the non-linear cost of
+the deep native slices. The first 42-request pair reached the fixed 7,200-second
+host stop with only three forward and at most two reverse requests outstanding;
+it is retained as failed evidence and is not waived. The observed replacement
+projection keeps the full native 32-row pair together at approximately
+101--106 minutes, while the ten-row feature pair takes approximately 24--26
+minutes. Starting both pairs together therefore projects below 110 minutes.
+The conservative four-worker projection from observed per-engine peaks remains
+below approximately 15.5 GB in aggregate on the 58-GiB workstation. Every
+engine retains idle priority and one emerge thread. The two-hour projection is
+not another near-completion kill point: the reviewed safety boundary is a
+`10770`-second probe timeout, 10,800-second host timeout and 10,801-second
+periodic-liquid boundary. This gives the projected native pair approximately
+70 minutes of margin while retaining a bounded hung-process stop. Final worker
+mode rejects any other timeout, sequential-order setting, shard identity or
+port partition.
 
 ### G3 -- final automated smoke
 
-Run the complete corpus in both frozen orders on separate fresh worlds. The
-gate requires:
+Run the complete feature shard and complete native shard as two concurrent
+forward/reverse pairs on four separate fresh worlds. The deterministic
+aggregate must prove exact 42-ID union coverage. The gate requires:
 
 - clean startup and controlled shutdown;
-- one identical actual production manifest across both worlds and the selected
-  seed;
+- one identical actual production manifest across all four worlds and the
+  selected seed;
 - no Lua error, assertion, manifest refusal, unknown-node failure or engine
   crash;
 - one active WP40 generated callback/writer path;
-- byte-identical post-mapgen content, `param2` and light digests before the
-  first periodic wall-clock liquid update;
+- byte-identical post-mapgen feature content, `param2` and light digests within
+  the feature pair, plus byte-identical content-only native census digests
+  within the native pair, before the first periodic wall-clock liquid update;
 - a complete readable node census with no `ignore`, direct sunlight in
   authored surface air,
   the source-bound capital marker envelope, usable channel-water envelope and
@@ -371,10 +402,11 @@ gate requires:
   identical across request orders; and
 - durable wall-time and peak-RSS output.
 
-Generation timing and RSS are release outputs. Within the two-hour/no-host-
-pressure envelope they are advisory unless the user observes release-blocking
-stalls in G4; R8 records them instead of inventing an unmeasured historical
-regression threshold between incompatible map products.
+Generation timing and RSS are release outputs. The approximately two-hour
+target and no-host-pressure envelope are advisory unless the user observes
+release-blocking stalls in G4; R8 records an overrun instead of destroying a
+nearly complete, otherwise healthy run. Only the three-hour hung-process
+safety stop is mechanically fatal.
 
 ### G4 -- user GUI acceptance
 
@@ -413,9 +445,10 @@ Before contract freeze, three lanes may proceed with non-overlapping ownership:
 
 After integration, correctness is sequential: freeze, independent contract
 review, pilot, final smoke, fix-or-freeze, independent final review and GUI
-handoff. The two final disposable engine schedules may run concurrently only
-after the pilot proves memory headroom. They count against the workstation-wide
-seven-Lua-process cap; R8 intentionally plans at most two.
+handoff. The four final disposable engine schedules may run concurrently only
+after the pilot and failed full attempt prove memory headroom. They count
+against the workstation-wide seven-Lua-process cap; R8 intentionally plans
+exactly four during G3.
 
 The independent final reviewer does not rerun the engine or PUC evidence. The
 reviewer inspects immutable receipts, logs, hashes, exact candidate bytes and
@@ -425,9 +458,9 @@ the full checklist in `docs/process/wp-workflow.md`.
 
 - A tools/docs-only correction reruns only affected harness fixtures or
   receipts; it does not regenerate R6/R7 production evidence.
-- A corpus or native-grid correction after a runtime observation retains the
-  failed record and receives review; the grid may not expand automatically
-  until a random event appears.
+- A corpus, native-grid or shard-boundary correction after a runtime
+  observation retains the failed record and receives review; the grid may not
+  expand or be selectively reduced until a random event appears.
 - A production Lua correction runs the mandatory static gates and replaces
   R8's one final compact PUC 5.1/LuaJIT micro-KAT pair on frozen bytes.
 - A change to writer order, ownership, planner/content semantics, seed hashing
@@ -445,8 +478,8 @@ R8 retains in `docs/research/` at least:
 - the frozen R8 contract and reviewed preflight;
 - selected-seed and corpus/itinerary records;
 - one pilot receipt;
-- the final run manifest, order-comparison receipt, runtime/RSS summary and
-  concise engine log evidence;
+- the final sharded manifest, both order-comparison receipts, deterministic
+  aggregate receipt, runtime/RSS summary and concise engine log evidence;
 - the user's GUI and fallback-runtime result; and
 - the independent R8 completion review with model calibration fields.
 
@@ -472,8 +505,8 @@ Stop and escalate rather than expanding the suite when:
   without modifying the engine or production writer;
 - the two-order result differs;
 - native preservation or one-writer evidence contradicts R7's accepted model;
-- the pilot projects beyond the fixed wall/memory envelope after removing only
-  redundant cases; or
+- the sharded run projects beyond the three-hour safety or physical-memory
+  envelope after removing only redundant execution coupling; or
 - a fix would alter frozen geometry, planner/content semantics or a previous
   accepted artifact identity.
 
