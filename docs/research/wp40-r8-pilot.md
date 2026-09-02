@@ -41,3 +41,28 @@ The runner correction also writes probe events through the test-only trusted
 environment into the exact durable capture directory. Its interrupt trap
 stops and waits for parallel wrappers, then repeats the process-group sweep so
 a late-published engine group cannot survive scratch-world cleanup.
+
+## Attempt 2 -- diagnostic failure
+
+- Date: 2026-09-02
+- Candidate: `2cbe52748eaaa8bba1efbae83b2700bc1231c480`
+- Mode: sequential, Seed `0`, forward order first
+- Capture ID:
+  `7171368d88152980ec26399c05f6abea51bb1577969852744a2644b679cc01f9`
+- Result: stopped before mapchunk generation; reverse order not started
+- Process result: exit 1 after 0.56 seconds; launcher peak RSS 19,004 KiB;
+  these startup-only numbers are not a G2 projection
+- Failure: the effective global and mapgen settings both returned the exact
+  string `1`, but the R7 validator required the real `core.settings` object to
+  have Lua type `table`; Luanti exposes its Settings object as `userdata`
+- Forward console-log SHA-256:
+  `9d145f2feef3e2cf79095642a9d33b6f4e626bc94d88e36ee71f0627d5bec47e`
+- Forward server-log SHA-256:
+  `8ce021e9c289037aa7ab42482dde60a5010e3e3296e4c4bf8de10999015319ed`
+
+An isolated pre-loader diagnostic confirmed
+`core.settings:get("num_emerge_threads") == "1"` and
+`core.get_mapgen_setting("num_emerge_threads") == "1"`. The correction admits
+the engine's userdata Settings object as well as the test seam's table, while
+still requiring a callable `get` method and the exact string value `1`. The
+final micro-KAT now models this boundary with a userdata proxy.

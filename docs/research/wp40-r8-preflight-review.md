@@ -135,11 +135,22 @@ and waiting for both wrapper processes, cleanup now performs a second engine-
 group termination pass before removing scratch worlds. Both fixes are harness-
 only and require focused re-review before execution.
 
+Exact follow-up commit `2cbe52748eaaa8bba1efbae83b2700bc1231c480`
+received **ACCEPT for a fresh sequential pilot: 0 Critical / 0 High / 0 Medium
+/ 0 Low** from another fresh independent context. The rerun then found a
+second pre-generation production compatibility issue: real `core.settings`
+has Lua type `userdata`, although its effective `num_emerge_threads` value and
+the mapgen readback were both the required string `1`. The runtime validator
+had accepted only the table-shaped fixture seam. The narrow correction admits
+table or userdata, still requires the exact `get` method/value, and models the
+real boundary in the final micro-KAT fixture. It requires another focused
+review before the next pilot.
+
 ## Calibration so far
 
 - Implementing/coordinating model: GPT-5.6 Sol with two bounded parallel
   implementation lanes.
 - Reviewing model: fresh independent GPT-5.6 Sol.
 - Initial findings: 1 Critical / 2 High / 3 Medium / 0 Low.
-- Review-fix rounds started: 3.
+- Review-fix rounds started: 4.
 - Observed elapsed wall time: pending package completion.

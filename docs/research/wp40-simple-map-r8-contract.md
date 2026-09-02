@@ -229,6 +229,12 @@ is diagnostic evidence only. Its narrow compatibility correction does not
 change any NoiseParams value or world-writing semantics; a fresh reviewed
 commit must receive the complete pilot.
 
+The next reviewed attempt also stopped before generation: the effective
+`num_emerge_threads` value was the required string `1`, but the validator
+mistook Luanti's userdata Settings object for a bad value because its fixture
+had been table-shaped. The corrected type boundary remains value-strict and is
+covered by a userdata proxy in the final micro-KAT.
+
 If the projection misses a bound, reduce redundant cases or serialize the two
 schedules and re-review that exact reduction. Do not weaken risk-class
 coverage or silently raise the wall-time bound.

@@ -67,8 +67,11 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			dungeons = true, light = true, ores = true})
 		flag_set("mgv7_spflags", {mountains = true, ridges = true,
 			caverns = true, nofloatlands = true})
-		if type(core_api.settings) ~= "table" or
-				type(core_api.settings.get) ~= "function" or
+		local settings_kind = type(core_api.settings)
+		if settings_kind ~= "table" and settings_kind ~= "userdata" then
+			fail("global settings object differs")
+		end
+		if type(core_api.settings.get) ~= "function" or
 				core_api.settings:get("num_emerge_threads") ~= "1" then
 			fail("num_emerge_threads must be explicit integer 1")
 		end

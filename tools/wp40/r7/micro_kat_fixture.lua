@@ -246,15 +246,18 @@ return function(repo)
 		mg_flags = "biomes,caves,decorations,dungeons,light,ores",
 		mgv7_spflags = "mountains,ridges,caverns,nofloatlands", seed = "0",
 	}
-	local runtime_core = {settings = {}}
+	local runtime_settings_proxy = newproxy(true)
+	local runtime_core = {settings = runtime_settings_proxy}
 	function runtime_core.sha256(bytes, raw)
 		local digest = raw_sha256(bytes)
 		return raw and digest or hex_sha256(bytes)
 	end
 	function runtime_core.get_mapgen_setting(name) return runtime_settings[name] end
-	function runtime_core.settings.get(_, name)
-		return name == "num_emerge_threads" and "1" or nil
-	end
+	getmetatable(runtime_settings_proxy).__index = {
+		get = function(_, name)
+			return name == "num_emerge_threads" and "1" or nil
+		end,
+	}
 	local runtime_catalog = {}
 	function runtime_catalog.cultural_registrations() return {} end
 	function runtime_catalog.manifest()
