@@ -419,9 +419,10 @@ This closes G2 and authorizes final-byte freeze plus the complete G3 corpus.
 
 ## Frozen-byte interpreter gate
 
-No production or executable harness byte changed after the accepted G2
-candidate. The one required final compact PUC 5.1/LuaJIT micro-KAT pair ran on
-that frozen input set and produced byte-identical canonical output. Its
+No production Lua, probe byte or final-micro input changed between the
+accepted G2 candidate and this interpreter pair. The one required final
+compact PUC 5.1/LuaJIT micro-KAT pair ran on that frozen input set and produced
+byte-identical canonical output. Its
 [versioned evidence directory](wp40-r8-final-micro-evidence/) contains the
 receipt, canonical output and both interpreter logs.
 
@@ -442,6 +443,16 @@ second semantic suite. The enclosing R8 evidence directory and input hashes
 bind this replacement pair to the corrected frozen bytes. No additional PUC
 runtime is authorized or required absent a concrete interpreter-specific
 finding.
+
+After this pair, the G2 timing projection reduced only the final feature
+corpus and corrected the final-only launcher validation. Commit
+`b7ab41ddfaf40995ad7d8e20147ac33ba9e7ac7c` makes final mode require parallel
+orders and `WP40_R8_TIMEOUT=7170`, yielding the contractual 7200-second host
+hard stop and 7201-second periodic-liquid boundary. Neither the corpus nor the
+R8 runner is among the 100 final-micro inputs, and the probe and production Lua
+remain unchanged. The later launcher change therefore does not retroactively
+alter the accepted G2 capture or invalidate the frozen PUC/LuaJIT pair; it is
+part of the separately reviewed G3 execution envelope.
 
 ## Calibration so far
 
