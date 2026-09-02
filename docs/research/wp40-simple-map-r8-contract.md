@@ -1,7 +1,7 @@
 # WP40 simple-map R8 release and runtime contract
 
-**Status:** Draft for parallel R8 preflight. The runner and seed/visual lanes
-must be integrated and independently reviewed before this contract is frozen.
+**Status:** Integrated R8 candidate under focused correction review after the
+first real-engine pilot found a pre-generation NoiseParams readback mismatch.
 
 **Baseline:** `ac3ff3f17c0119b80c90f73db944a937d9159a2b` (the reviewed R7
 production cutover merged to `main`).
@@ -106,6 +106,8 @@ R8 implements a small release harness, not a general mapgen framework. It must:
   wall time and process peak RSS;
 - use separate immutable output paths and refuse to overwrite a completed
   capture; and
+- retain live partial logs and probe events directly in the capture directory,
+  and terminate each isolated engine process group on interruption; and
 - shut down through a test-only probe after all requested regions settle or
   fail through a bounded timeout.
 
@@ -157,8 +159,9 @@ require all production stratum families and the retained registered native
 gravel-blob node in their aggregate census. This is bounded release evidence, not a search
 whose radius grows until it passes.
 
-Feature witnesses are position-bound. The capital and channel checks use
-source-derived envelopes and meaningful minimum counts; the Seed-0 resource
+Feature witnesses are position-bound. The capital uses its exact accepted
+anchor root; each channel uses a fixed 8 by 8 water-level envelope wholly
+inside its immutable polygon and requires at least 56 water-source nodes. The Seed-0 resource
 check reads the exact accepted root voxel, not merely another same-named node
 somewhere in its mapchunk. Seed `0` is therefore the only initially automated
 release candidate. Seeds `1` and `42` remain bounded GUI alternatives, but
@@ -218,6 +221,13 @@ The complete two-schedule smoke proceeds only when the pilot projects:
 - no more than two hours total wall time on the designated workstation;
 - no memory pressure, OOM, uncontrolled swap growth or host instability; and
 - enough headroom for at most two concurrent engine processes.
+
+The first attempt on 2026-09-02 stopped before generation because real Luanti
+returns a builtin-vector metatable on NoiseParams `spread`, while the R7
+readback validator admitted only a metatable-free table. That failed attempt
+is diagnostic evidence only. Its narrow compatibility correction does not
+change any NoiseParams value or world-writing semantics; a fresh reviewed
+commit must receive the complete pilot.
 
 If the projection misses a bound, reduce redundant cases or serialize the two
 schedules and re-review that exact reduction. Do not weaken risk-class

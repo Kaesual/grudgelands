@@ -7,7 +7,8 @@ command -v rg >/dev/null 2>&1 || {
 	echo "WP40 R8: ripgrep (rg) is required" >&2
 	exit 2
 }
-for command_name in awk cat chrt find flatpak git ionice jq sha256sum tar timeout xargs; do
+for command_name in awk cat chrt find flatpak git ionice jq setsid sha256sum \
+	tar timeout xargs; do
 	if ! command -v "$command_name" >/dev/null 2>&1; then
 		echo "WP40 R8: missing command $command_name" >&2
 		exit 2
@@ -71,8 +72,8 @@ if [[ ! "$checkout_sha" =~ ^[0-9a-f]{40}$ ]]; then
 	exit 2
 fi
 seed="${WP40_SEED:-0}"
-[[ "$seed" =~ ^-?[0-9]+$ ]] || {
-	echo "WP40 R8: WP40_SEED must be a decimal integer string" >&2
+[[ "$seed" =~ ^(0|[1-9][0-9]*)$ ]] || {
+	echo "WP40 R8: WP40_SEED must be a canonical nonnegative decimal string" >&2
 	exit 2
 }
 seed_sha256="$(printf '%s' "$seed" | sha256sum | awk '{print $1}')"
@@ -104,9 +105,9 @@ done
 
 candidate_table="$script_dir/seed-candidates.tsv"
 offline_r7_manifest="$(awk -F '\t' -v seed="$seed" \
-	'NR > 1 && $2 == seed {print $7}' "$candidate_table")"
+	'NR > 1 && ("x" $2) == ("x" seed) {print $7}' "$candidate_table")"
 promotion_status="$(awk -F '\t' -v seed="$seed" \
-	'NR > 1 && $2 == seed {print $14}' "$candidate_table")"
+	'NR > 1 && ("x" $2) == ("x" seed) {print $14}' "$candidate_table")"
 if [[ ! "$offline_r7_manifest" =~ ^[0-9a-f]{64}$ ]]; then
 	echo "WP40 R8: seed is not one of the frozen candidates: $seed" >&2
 	exit 2
@@ -177,9 +178,26 @@ identity_digest() {
 	} | sha256sum | awk '{print $1}'
 }
 capture_root="$(mktemp -d -p /tmp grudgelands-wp40-r8.XXXXXXXX)"
+runner_pid="$BASHPID"
 forward_pid=""
 reverse_pid=""
+terminate_engine_group() {
+	local order="$1"
+	local pgid_file="$result_dir/$order/engine-pgid"
+	local pgid=""
+	if [[ -f "$pgid_file" ]]; then read -r pgid <"$pgid_file" || true; fi
+	if [[ "$pgid" =~ ^[1-9][0-9]*$ ]]; then
+		kill -- "-$pgid" 2>/dev/null || true
+		for _ in 1 2 3 4 5; do
+			if ! kill -0 -- "-$pgid" 2>/dev/null; then return; fi
+			sleep 0.1
+		done
+		kill -KILL -- "-$pgid" 2>/dev/null || true
+	fi
+}
 cleanup() {
+	terminate_engine_group forward
+	terminate_engine_group reverse
 	if [[ -n "$forward_pid" ]]; then
 		kill "$forward_pid" 2>/dev/null || true
 		wait "$forward_pid" 2>/dev/null || true
@@ -192,9 +210,13 @@ cleanup() {
 		rm -rf -- "$capture_root"
 	fi
 }
+trap 'exit 130' HUP INT TERM
 trap cleanup EXIT
 
 run_order() {
+	if [[ "$BASHPID" != "$runner_pid" ]]; then
+		trap - EXIT HUP INT TERM
+	fi
 	local order="$1"
 	local run_root="$capture_root/$order"
 	local user_path="$run_root/user"
@@ -205,8 +227,10 @@ run_order() {
 	local xdg_cache="$run_root/xdg/cache"
 	local config="$run_root/luanti.conf"
 	local output_dir="$result_dir/$order"
-	local server_log="$run_root/server.log"
-	local console_log="$run_root/console.log"
+	local server_log="$output_dir/server.log.partial"
+	local console_log="$output_dir/console.log.partial"
+	local time_log="$output_dir/time.txt.partial"
+	local events_path="$output_dir/events.jsonl.partial"
 	local host_timeout_seconds=$((timeout_seconds + 30))
 	local native_required=false
 	if [[ "$mode" == "final" ]]; then native_required=true; fi
@@ -250,7 +274,7 @@ creative_mode = false
 secure.enable_security = true
 deprecated_lua_api_handling = error
 debug_log_level = action
-grug_wp40_r8_output = $world_dir/events.jsonl
+grug_wp40_r8_output = $events_path
 grug_wp40_r8_corpus = $world_dir/corpus.tsv
 grug_wp40_r8_native_corpus = ${native_corpus:+$world_dir/native-witness-corpus.tsv}
 grug_wp40_r8_native_required = $native_required
@@ -263,11 +287,14 @@ secure.trusted_mods = grug_wp40_r8_probe
 EOF
 	cp "$result_dir/corpus.tsv" "$world_dir/corpus.tsv"
 	if [[ -n "$native_corpus" ]]; then cp "$result_dir/native-witness-corpus.tsv" "$world_dir/native-witness-corpus.tsv"; fi
+	cp "$config" "$output_dir/luanti.conf"
+	cp "$world_dir/world.mt" "$output_dir/world.mt"
 	set +e
-	/usr/bin/time -v -o "$run_root/time.txt" timeout --foreground \
+	setsid /usr/bin/time -v -o "$time_log" timeout --foreground \
 		--kill-after=10 "$host_timeout_seconds" chrt --idle 0 ionice -c3 \
 		flatpak run \
 		--command=luanti --filesystem="$run_root" \
+		--filesystem="$output_dir" \
 		--env="XDG_DATA_HOME=$xdg_data" \
 		--env="XDG_CONFIG_HOME=$xdg_config" \
 		--env="XDG_CACHE_HOME=$xdg_cache" \
@@ -275,18 +302,21 @@ EOF
 		org.luanti.luanti --server --gameid grudgelands \
 		--world "$world_dir" --config "$config" \
 		--logfile "$server_log" --log-timestamp none --color never \
-		>"$console_log" 2>&1
+		>"$console_log" 2>&1 &
+	local engine_pgid=$!
+	printf '%s\n' "$engine_pgid" >"$output_dir/engine-pgid"
+	wait "$engine_pgid"
 	local status=$?
+	mv "$output_dir/engine-pgid" "$output_dir/engine-pgid.finished"
 	set -e
 	printf '%s\n' "$status" >"$output_dir/exit-status"
-	for file in server.log console.log time.txt luanti.conf; do
-		if [[ -f "$run_root/$file" ]]; then cp "$run_root/$file" "$output_dir/$file"; fi
+	for file in server.log console.log time.txt; do
+		if [[ -f "$output_dir/$file.partial" ]]; then
+			mv "$output_dir/$file.partial" "$output_dir/$file"
+		fi
 	done
-	if [[ -f "$world_dir/events.jsonl" ]]; then
-		cp "$world_dir/events.jsonl" "$output_dir/events.jsonl"
-	fi
-	if [[ -f "$world_dir/world.mt" ]]; then
-		cp "$world_dir/world.mt" "$output_dir/world.mt"
+	if [[ -f "$events_path" ]]; then
+		mv "$events_path" "$output_dir/events.jsonl"
 	fi
 	if [[ -f "$output_dir/server.log" && -f "$output_dir/console.log" ]]; then
 		set +e
@@ -351,7 +381,7 @@ jq -n --arg expected_seed "$seed" \
 	def cases: map(select(.event == "case")) | sort_by(.id) |
 		map({id, mapchunk, central_min, central_max, content_sha256,
 			param2_sha256, light_sha256, central_voxels, node_counts,
-			light_stats, semantic_checks, semantic_ok});
+			light_stats, semantic_checks, semantic_evidence, semantic_ok});
 	def native_census: map(select(.event == "native_census")) | sort_by(.id) |
 		map({id, mapchunk, central_min, central_max, content_sha256,
 			central_voxels, node_counts, native_census, semantic_checks,

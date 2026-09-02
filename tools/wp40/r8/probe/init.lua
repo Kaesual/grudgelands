@@ -166,12 +166,14 @@ for i = 1, #native_rows do
 	end
 	combined_ids[native.id] = true
 	combined_keys[native.key] = true
-	native_scope_keys[native.key] = true
-	native_scope_bounds[native.key] = {
-		minp = native.origin,
-		maxp = {x = native.origin.x + 79, y = native.origin.y + 79,
-			z = native.origin.z + 79},
-	}
+	if native.native_role == "owner" then
+		native_scope_keys[native.key] = true
+		native_scope_bounds[native.key] = {
+			minp = native.origin,
+			maxp = {x = native.origin.x + 79, y = native.origin.y + 79,
+				z = native.origin.z + 79},
+		}
+	end
 	request_cases[#request_cases + 1] = native
 end
 if order_name == "reverse" then
@@ -289,6 +291,20 @@ local function count_node(rows, expected_name)
 	return 0
 end
 
+local function count_content_box(values, area, minp, maxp, expected_cid)
+	local count = 0
+	for z = minp.z, maxp.z do
+		for y = minp.y, maxp.y do
+			for x = minp.x, maxp.x do
+				if values[area:index(x, y, z)] == expected_cid then
+					count = count + 1
+				end
+			end
+		end
+	end
+	return count
+end
+
 local function sort_native_events(events)
 	table.sort(events, function(a, b)
 		if a.kind ~= b.kind then return a.kind < b.kind end
@@ -398,15 +414,24 @@ local function snapshot_case(case)
 			light_stats.day_max > 0,
 		exact_source_witness = true,
 	}
+	local semantic_evidence = {}
 	if case.id == "human_capital" then
 		-- Source-bound anchor_008 root: accepted H=36, activation root y=37.
 		local node = core.get_node({x = 0, y = 37, z = -1500}).name
 		semantic_checks.exact_source_witness = node == "grug_nodes:guard_banner"
 	elseif case.id == "wyrmglass_channel" or case.id == "stormscale_channel" then
-		-- Source-bound channel center at z=0; exact water-level voxel y=1.
+		-- A fixed 8x8 water-level envelope stays well inside both immutable
+		-- channel polygons and inside this central mapchunk.
 		local x = case.id == "wyrmglass_channel" and -2675 or 2675
-		local node = core.get_node({x = x, y = 1, z = 0}).name
-		semantic_checks.exact_source_witness = node == "default:water_source"
+		local witness_min = {x = x - 7, y = 1, z = -3}
+		local witness_max = {x = x, y = 1, z = 4}
+		local minimum = 56
+		local water_count = count_content_box(content, area, witness_min,
+			witness_max, core.get_content_id("default:water_source"))
+		semantic_evidence.channel_water = {minp = witness_min,
+			maxp = witness_max, water_source_count = water_count,
+			minimum = minimum, sampled_voxels = 64}
+		semantic_checks.exact_source_witness = water_count >= minimum
 	elseif case.id == "deep_cross_border_resource" then
 		-- Accepted deep cross-border ruby witness, retained as one exact voxel.
 		local node = core.get_node({x = -1691, y = -842, z = 191}).name
@@ -433,6 +458,7 @@ local function snapshot_case(case)
 		node_counts = node_counts,
 		light_stats = light_stats,
 		semantic_checks = semantic_checks,
+		semantic_evidence = semantic_evidence,
 		semantic_ok = semantic_ok,
 		central_voxels = 80 * 80 * 80,
 		process = process_metrics(),

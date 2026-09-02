@@ -610,8 +610,11 @@ return function(repo)
 	end
 
 	-- Exercise the production native module, including all six setters/readbacks
-	-- and the closed six-row ore allowlist, with a plain-Lua engine seam.
+	-- and the closed six-row ore allowlist, with the engine's vector-shaped
+	-- NoiseParams spread readback.
 	local saved_core = rawget(_G, "core")
+	local saved_vector = rawget(_G, "vector")
+	local engine_vector_metatable = {}
 	local native_state = {setters = {}, readbacks = {}, ores = {}}
 	local native_core = {registered_nodes = {}, registered_ores = {}}
 	for _, name in ipairs({"default:stone", "default:gravel",
@@ -638,7 +641,9 @@ return function(repo)
 		}
 	end
 	function native_core.get_mapgen_setting_noiseparams(name)
-		return copy(native_state.readbacks[name])
+		local value = copy(native_state.readbacks[name])
+		setmetatable(value.spread, engine_vector_metatable)
+		return value
 	end
 	function native_core.register_ore(definition)
 		native_state.ores[#native_state.ores + 1] = definition
@@ -646,11 +651,13 @@ return function(repo)
 		return #native_state.ores
 	end
 	rawset(_G, "core", native_core)
+	rawset(_G, "vector", {metatable = engine_vector_metatable})
 	local native = dofile(wp40 .. "/r7_native.lua")
 	local native_token = native.apply_and_validate_main()
 	local native_identities = native.identities()
 	local native_handles = native.register_ores(native_token)
 	rawset(_G, "core", saved_core)
+	rawset(_G, "vector", saved_vector)
 	check(#native_state.setters == 6 and #native_handles == 6 and
 		#native_state.ores == 6, "native six/six population differs")
 	check(hex_sha256(native_token.noise_bytes) == native_identities.noise_digest,

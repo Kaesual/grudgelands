@@ -40,8 +40,9 @@ identity also binds
 the Flatpak identity, runner/probe bytes, candidate table and both corpora. A
 caller revision is resolved once to one full 40-hex commit before either
 archive. The before/after Flatpak deployment and version bytes must match, as
-must both engines' in-process identity. It gives
-the Flatpak only the per-order temporary root and
+must both engines' in-process identity. It gives the Flatpak only the per-order
+temporary root and that order's exact immutable capture-output directory,
+where live `.partial` logs and probe events survive an interruption, and
 keeps the installed Luanti world and the user's normal XDG paths out of the
 run.
 
@@ -55,7 +56,8 @@ After every requested mapchunk has emerged, the probe reads all central 80³
 feature mapchunks in one common ID order and records content-ID, param2 and
 packed-light SHA-256 digests plus the central/emerged bounds. It also retains a canonical
 node-name census and day/night-nibble extrema/counts, rejects `ignore`, requires
-daylight in surface slices, and checks the exact Highcourt banner, channel-water
+daylight in surface slices, and checks the exact Highcourt banner, a fixed
+8 by 8 channel-water envelope with a 56-source minimum,
 and Seed-0 ruby-root expectations. Seven additional deep slices receive a
 content-only hash and canonical census. The 25 event-grid chunks are emerged
 but not snapshotted, keeping the native-event gate cheap. Emerge action counts
@@ -95,7 +97,7 @@ the final `register_on_shutdown` event remain separate immutable outputs.
    Seeds 1 and 42 remain GUI alternatives until each has a reviewed witness.
 3. Verify the host prerequisites: `flatpak`, the installed
    `org.luanti.luanti` app, `git`, `jq`, `rg`, `sha256sum`, `tar`, `timeout`,
-   `chrt`, `ionice`, and GNU `/usr/bin/time`. The first real run must preserve the raw Flatpak
+   `chrt`, `ionice`, `setsid`, and GNU `/usr/bin/time`. The first real run must preserve the raw Flatpak
    version and server logs. Record the actual engine version; the pinned
    source reference is not evidence that the installed runtime matches it.
 4. Review the generated config and manifest after the run: v7, chunksize 5,
@@ -126,6 +128,10 @@ the final `register_on_shutdown` event remain separate immutable outputs.
 - GNU `time` measures the Flatpak launcher; engine process RSS is separately
   captured from `/proc/self/status` by the trusted disposable probe. Neither
   measurement is a cold-cache or 100-player capacity claim.
+- Every engine launch owns a new process group. The host trap terminates that
+  group before deleting its disposable world, while live engine logs and probe
+  events remain as `.partial` files in the exact capture directory if a run is
+  interrupted.
 - After all emerge requests finish, the runner reads each complete central
   80³ array in canonical ID order.
   It intentionally does not hash database metadata, timestamps, entities or
