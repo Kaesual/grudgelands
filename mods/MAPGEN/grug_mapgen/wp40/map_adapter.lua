@@ -1396,9 +1396,15 @@ local function adapter_factory(allocator_factory)
 				set_call_box(box_min_x, box_min_y, box_min_z,
 					box_max_x, box_max_y, box_max_z)
 				-- v7 lights its temporary geometry before this adapter replaces it.
-				-- Above water level that old overtop shadow is no longer authoritative;
-				-- the engine must derive sunlight from the rewritten column itself.
+				-- Above water level neither that old overtop shadow nor a fresh ignore
+				-- halo is authoritative.  Start the sunlight scan no higher than the
+				-- completely authored owner while retaining the larger spread/restore box.
 				local propagate_shadow = box_max_y <= manifest.water_level
+				local calc_max_y = box_max_y
+				if not propagate_shadow and calc_max_y > maxp.y then
+					calc_max_y = maxp.y
+				end
+				call_max.y = calc_max_y
 				vm_call3(vm_calc_lighting, K.M_VM_CALC_LIGHTING, vm, call_min,
 					call_max, propagate_shadow)
 				local returned_final_light = vm_call1(vm_get_light_data,

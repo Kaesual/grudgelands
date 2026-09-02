@@ -2586,10 +2586,16 @@ local function settlement_factory()
 					box_min_x, box_min_y, box_min_z
 				light_call_max.x, light_call_max.y, light_call_max.z =
 					box_max_x, box_max_y, box_max_z
-				-- The fixed R7 runtime authenticates water_level=1. Above it, v7's
-				-- already-lit but subsequently replaced overtop geometry must not
-				-- retain shadow authority over the final authored surface.
+				-- The fixed R7 runtime authenticates water_level=1. Above it, neither
+				-- v7's replaced overtop geometry nor a fresh ignore halo may retain
+				-- shadow authority.  Scan no higher than the authored owner while the
+				-- larger zero/spread/restore box remains unchanged.
 				local propagate_shadow = box_max_y <= 1
+				local calc_max_y = box_max_y
+				if not propagate_shadow and calc_max_y > max_y then
+					calc_max_y = max_y
+				end
+				light_call_max.y = calc_max_y
 				ok = pcall(vm.calc_lighting, vm, light_call_min, light_call_max,
 					propagate_shadow)
 				if not ok then fail("fail_vm_contract", "calc_lighting failed") end

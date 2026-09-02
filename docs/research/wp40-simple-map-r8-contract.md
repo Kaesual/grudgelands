@@ -1,9 +1,9 @@
 # WP40 simple-map R8 release and runtime contract
 
-**Status:** The one-row G2 pilot completed both schedules and exposed a real
-surface-sunlight defect plus wall-clock liquid aging in the comparison harness.
-Their narrow corrections have green static/fixture verification and focused
-independent acceptance. A new sequential pilot is the next gate.
+**Status:** A corrected one-row G2 pilot completed both schedules, confirmed
+order-stable liquid bytes and isolated the remaining surface-light defect to a
+fresh vertical `CONTENT_IGNORE` halo. The narrower owner-top lighting
+correction has green static and fixture verification and awaits focused review.
 
 **Baseline:** `ac3ff3f17c0119b80c90f73db944a937d9159a2b` (the reviewed R7
 production cutover merged to `main`).
@@ -231,9 +231,13 @@ adapter and the consolidated R6/R7 writer:
 
 - when the bounded light box ends above the authenticated `water_level = 1`,
   call `calc_lighting` with `propagate_shadow = false`;
+- on that false path only, cap the `calc_lighting` maximum y at the fully
+  authored owner maximum so a fresh vertical `CONTENT_IGNORE` halo cannot stop
+  the sunlight scan before it reaches owner content;
 - at or below water level, retain `propagate_shadow = true`;
-- keep the existing light box, explicit seed derivation, owner-only light
-  commit and complete halo restoration unchanged; and
+- keep the existing enlarged zero/spread/restore light box, explicit seed
+  derivation, owner-only light commit and complete halo restoration unchanged;
+  only the calculation-call maximum is narrower; and
 - require a surface witness to contain authored air with packed light exactly
   `15` (`day = 15`, `night = 0`), rather than accepting arbitrary emitted
   light such as the capital's day/night-6 guard banner.
@@ -242,6 +246,14 @@ This delegates the surface sky boundary to Luanti without inventing an
 analytic sky predicate. Opaque nodes inside the light box still stop sunlight;
 deep sealed regions retain shadow propagation. No content, `param2`, feature
 placement, seed or persistent halo byte changes ownership under this rule.
+
+The production-shaped integration oracle preserves two distinct comparisons.
+Stage A still requires exact current successor/direct equality for content,
+`param2` and light. Stage B compares the current normalized Direct-83 result
+with the frozen accepted-R6 result exactly for content and `param2`, but not
+for the historical light bytes that this R8 rule deliberately supersedes.
+Dedicated current lighting fixtures cover the capped surface scan, retained
+deep scan, in-owner opaque blocker and byte-exact ignored-halo restoration.
 
 ## 5. Gate sequence and run budget
 

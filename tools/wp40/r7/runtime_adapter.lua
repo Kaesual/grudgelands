@@ -2749,8 +2749,11 @@ local function full_vm_integration(repo, runtime_fixture, successor, direct_scan
 		accepted_loaded, direct_capture, accepted_capture)
 	normalize_direct_snapshot(runtime_fixture, binding, direct_scan, accepted_scan,
 		accepted_loaded, direct_snapshot)
-	compare_vm_arrays(direct_snapshot, accepted_snapshot,
-		"Stage-B normalized Direct-83/accepted-R6 VM")
+	-- R8 deliberately supersedes only the historical R6 light bytes at the
+	-- fresh surface/ignore-halo boundary.  Stage B retains exact accepted-R6
+	-- material parity; Stage A still compares current successor/direct light.
+	compare_vm_material_arrays(direct_snapshot, accepted_snapshot,
+		"Stage-B normalized Direct-83/accepted-R6 material VM")
 	local successor_run_count, direct_run_count, accepted_run_count =
 		successor_capture.run_count, direct_capture.run_count, accepted_capture.run_count
 	local capture_proof = {

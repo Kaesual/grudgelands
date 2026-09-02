@@ -1751,6 +1751,13 @@ return function(common)
 			local box_max_y=math.min(target_y+15,maxp.y+15)
 			local box_min_z,box_max_z=-15,15
 			local seed_y=box_max_y+1
+			local propagate_shadow=box_max_y<=1
+			local calc_max_y=box_max_y
+			if not propagate_shadow and calc_max_y>maxp.y then
+				calc_max_y=maxp.y
+			end
+			local blocked_probe_y=target_y
+			local ignore_halo_regression=calc_max_y<box_max_y
 			local overrides={{x=0,y=target_y,z=0,
 				cid=opcode==ordinary_water and row[6] or 0,
 				param2=opcode==ordinary_water and ROLE_ID.ORDINARY_WATER_SOURCE or
@@ -1770,10 +1777,22 @@ return function(common)
 					overrides[#overrides+1]={x=4,y=yy,z=0,cid=0,param2=0,light=0}
 					overrides[#overrides+1]={x=6,y=yy,z=0,cid=0,param2=0,light=0}
 				end
+				overrides[#overrides+1]={x=4,y=calc_max_y+1,z=0,
+					cid=14,param2=0,light=0}
 				-- Discarding stale overtop shadow must not discard real opaque
 				-- blockers that are part of the recalculated light box.
-				overrides[#overrides+1]={x=6,y=box_max_y,z=0,
+				blocked_probe_y=calc_max_y-2
+				overrides[#overrides+1]={x=6,y=blocked_probe_y+1,z=0,
 					cid=14,param2=0,light=0}
+				if ignore_halo_regression then
+					for yy=box_min_y,calc_max_y do
+						overrides[#overrides+1]={x=8,y=yy,z=0,cid=0,param2=0,light=0}
+					end
+					for yy=calc_max_y+1,box_max_y do
+						overrides[#overrides+1]={x=8,y=yy,z=0,
+							cid=65535,param2=0,light=173}
+					end
+				end
 			end
 			if plan==nil or plan_min_y~=row[2] or plan_max_y~=row[3] then
 				plan,generation=plan_at(loaded,minp,maxp)
@@ -1816,9 +1835,9 @@ return function(common)
 				integer_ascii(box_min_y,"calc min y")..","..
 				integer_ascii(box_min_z,"calc min z")..","..
 				integer_ascii(box_max_x,"calc max x")..","..
-				integer_ascii(box_max_y,"calc max y")..","..
+				integer_ascii(calc_max_y,"calc max y")..","..
 				integer_ascii(box_max_z,"calc max z")..","..
-				tostring(box_max_y<=1)
+				tostring(propagate_shadow)
 			trace[#trace+1]="get_light_data"
 			trace[#trace+1]="set_light_data"
 			if row[9]:sub(-1)=="q" then trace[#trace+1]="update_liquids" end
@@ -1838,9 +1857,19 @@ return function(common)
 					fail("stale v7 overtop sunlight authority differs")
 				end
 				local blocked_cid,_,blocked_light=snapshot_cell(snapshot,minp,maxp,
-					6,target_y,0)
+					6,blocked_probe_y,0)
 				if blocked_cid~=0 or blocked_light==15 then
 					fail("opaque in-box direct-sunlight blocker differs")
+				end
+				if ignore_halo_regression then
+					local halo_owner_cid,_,halo_owner_light=snapshot_cell(snapshot,
+						minp,maxp,8,target_y,0)
+					local halo_cid,_,halo_light=snapshot_cell(snapshot,minp,maxp,
+						8,calc_max_y+1,0)
+					if halo_owner_cid~=0 or halo_owner_light~=15 or
+							halo_cid~=65535 or halo_light~=173 then
+						fail("surface calc cap or ignore-halo restoration differs")
+					end
 				end
 			end
 			if outcome~=row[9] or cid~=(opcode==ordinary_water and
@@ -4703,17 +4732,22 @@ return function(common)
 					end
 				end
 			end
+			local propagate_shadow=light_max.y<=1
+			local calc_max_y=light_max.y
+			if not propagate_shadow and calc_max_y>maxp.y then
+				calc_max_y=maxp.y
+			end
+			local calc_seed_y=calc_max_y+1
 			for z=light_min.z,light_max.z do for x=light_min.x,light_max.x do
-				local overtop=index_of(x,seed_y,z)
+				local overtop=index_of(x,calc_seed_y,z)
 				local overtop_cid=final_cid(overtop)
 				local overtop_light=light_values[overtop]
 				if overtop_light==nil then overtop_light=original_light(overtop) end
-				local propagate_shadow=light_max.y<=1
-				local seeded=overtop_cid==65535 and 1<light_max.y or
+				local seeded=overtop_cid==65535 and 1<calc_max_y or
 					(overtop_cid~=65535 and
 						(not propagate_shadow or overtop_light%16==15))
 				if seeded then
-					for y=light_max.y,light_min.y,-1 do
+					for y=calc_max_y,light_min.y,-1 do
 						local offset=index_of(x,y,z)
 						local _,_,_,_,_,_,_,sunlight=owner_content_properties(
 							final_cid(offset),final_p2(offset))
@@ -4759,7 +4793,8 @@ return function(common)
 				spread(x,y-1,z,incoming) spread(x,y+1,z,incoming)
 				spread(x,y,z-1,incoming) spread(x,y,z+1,incoming)
 			end
-			trace[#trace+1]=box_text("calc_lighting:",light_min,light_max,","..
+			local calc_max={x=light_max.x,y=calc_max_y,z=light_max.z}
+			trace[#trace+1]=box_text("calc_lighting:",light_min,calc_max,","..
 				tostring(light_max.y<=1))
 			trace[#trace+1]="get_light_data"
 			trace[#trace+1]="set_light_data"

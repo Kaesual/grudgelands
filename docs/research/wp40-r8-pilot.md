@@ -1,10 +1,12 @@
 # WP40 R8 real-engine pilot record
 
-**Status:** seven diagnostic attempts retained. Attempts 1--4 stopped during
+**Status:** eight diagnostic attempts retained. Attempts 1--4 stopped during
 production construction; Attempt 5 exposed and corrected the fresh-engine
 read-only halo; Attempt 6 measured and removed redundant native pilot rows.
 Attempt 7 completed both schedules cleanly and isolated a real surface-light
-defect plus wall-clock liquid aging in the comparison harness. Narrow fixes,
+defect plus wall-clock liquid aging in the comparison harness. Attempt 8
+confirmed the liquid correction and reduced the remaining surface defect to a
+fresh vertical `CONTENT_IGNORE` halo above the owner. A narrower lighting fix,
 green static/fixture verification and focused independent acceptance precede
 the next pilot.
 
@@ -343,3 +345,55 @@ timeout. Immediate `finishBlockMake` liquid processing remains active and all
 cases are still snapshotted only after the full schedule, preserving the gate
 against later requests changing earlier chunks. A fresh reviewed pilot must
 confirm both corrections; Attempt 7 itself carries no G2 acceptance claim.
+
+## Attempt 8 -- liquid correction confirmed, surface ignore halo isolated
+
+- Date: 2026-09-02
+- Candidate: `2c08f756c899bcc90a60f441c2d05c68b5f7aae4`
+- Review before execution: **ACCEPT, 0 Critical / 0 High / 0 Medium / 0 Low**
+- Mode: sequential, Seed `0`, forward order first; three feature requests plus
+  the reviewed one-row native prefix per order
+- Capture ID:
+  `f50e4f967d9347b649d1cc1cc28e3acbf37a15474fcdafdc80aa020755f1f57f`
+- Process result: both engines exited 0, both controlled shutdown records are
+  clean, both error logs are empty and all eight requests completed without an
+  errored or cancelled action
+- Forward: 12:36.28 wall, 678,632,254 probe microseconds and
+  3,894,722,560-byte in-process peak RSS
+- Reverse: 12:13.76 wall, 643,291,844 probe microseconds and
+  3,932,262,400-byte in-process peak RSS
+- Comparison SHA-256:
+  `5aebe5ddeba1a85ee5de15fb7fc207d582e45fffba2baab3e477f95fce5bb10f`
+- Forward console/server/events/time SHA-256:
+  `1c8c0deb55eaa69a9fecfcdf06695af6068134ef4e5241a912643e83a64e60db`,
+  `502d3094609bf5511664a887b76c37b50dbf3a48973c3b5c4f5b535173deeab6`,
+  `732bd27bc2186014d495b5d88930c29875308e41fe1ebf8ab2434ca8439980f6`,
+  `0bd0aa199c67cc9b86a9bc9bdef2c0bfe433f88483118466a5e580efb7179f39`
+- Reverse console/server/events/time SHA-256:
+  `100124d9d0317c62e372f0a987a2bf16df9602d08ef950b9f74d00ad79f92fdb`,
+  `195f6660aa866ed852330ae9f2d699addb5eea18fcde3170b71f9afcea4c1e9b`,
+  `cd42c784fd3de33ea0148dec727cfc78fb202006bc36747a8972a4cb8d2b3d8d`,
+  `f72106892d8e48dfb2e783e85a03d764d480543fbeaffdac5a1513a270b2e254`
+
+Every order, startup, native, completion and clean-shutdown gate passes, and
+the complete snapshots are byte-identical across the reversed schedules. In
+particular, the deep case now has the same raw `param2` digest in both orders:
+`8b94d3fc51180c3a1f27611b28e8825fdf0522ba20962b2fd5c4e6731f443c4f`.
+This confirms the periodic-liquid deferral without weakening final-schedule
+comparison or immediate mapgen liquid processing.
+
+The sole failed semantic gate remains surface sunlight. The capital contains
+no direct-sun air and reaches only emitted day/night light 6/6; Wyrmglass has
+zero direct-sun air and zero light throughout. A fresh independent source lens
+found the remaining boundary: `propagate_shadow = false` skips the old
+overtop-shadow test, but `calc_lighting` still starts at the enlarged light-box
+top. On a fresh mapchunk that top is vertical `CONTENT_IGNORE`, whose node
+definition does not propagate sunlight, so the scan stops before reaching the
+fully authored owner.
+
+The next correction retains the existing enlarged zero/spread/restore box but,
+for the surface-only false path, caps only the `calc_lighting` top at the owner
+maximum. Deep boxes keep their original maximum and true propagation. Fixtures
+must distinguish the two call boxes, retain an in-owner opaque blocker and
+prove every ignored halo byte is restored. Attempt 8 itself carries no G2
+acceptance claim.

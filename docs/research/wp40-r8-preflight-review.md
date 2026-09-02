@@ -1,11 +1,10 @@
 # WP40 R8 Preflight Review
 
-**Status:** Attempt 7 completed both schedules and isolated the surface-light
-writer defect plus wall-clock liquid aging described below. The first exact
-correction candidate was rejected 0 Critical / 0 High / 1 Medium / 1 Low; both
-findings were fixed, and exact candidate
-`2c08f756c899bcc90a60f441c2d05c68b5f7aae4` received focused independent
-acceptance. The next gate is a new sequential pilot.
+**Status:** Attempt 8 confirmed reversed-order liquid equality and isolated the
+remaining surface-light defect to a fresh vertical `CONTENT_IGNORE` halo above
+the owner. The narrower owner-top calculation correction has green static and
+fixture verification and now awaits focused independent review before a new
+pilot.
 
 ## Scope and independence
 
@@ -333,6 +332,56 @@ later additions are bounded to 86,430 and 86,431. Default pilot values remain
 host timeout 930 and periodic-liquid interval 931. Only validation and review
 status changed, so the earlier accepted light, halo, full-schedule snapshot,
 immediate-liquid and strict-comparison conclusions remain intact.
+
+## Attempt-8 result and vertical-ignore correction
+
+Attempt 8 ran exact accepted candidate
+`2c08f756c899bcc90a60f441c2d05c68b5f7aae4` through both sequential orders.
+All eight requests completed, both engines exited zero and shut down cleanly,
+and the full snapshot comparison returned `equal = true`. The formerly
+different deep `param2` bytes now have the same digest in both orders, directly
+confirming the periodic-liquid correction. Only the two surface direct-sun
+semantic witnesses remain false.
+
+A fresh independent GPT-5.6 Sol source lens traced that result to the vertical
+fresh halo. The false propagation flag bypasses only the old overtop-shadow
+check; the engine then starts scanning at the supplied calculation maximum.
+The enlarged light box can end in `CONTENT_IGNORE`, which does not propagate
+sunlight, so the scan terminates before reaching authored owner nodes.
+
+The narrower candidate keeps the enlarged zero/spread/restore box and caps
+only the surface `calc_lighting` maximum y at the owner maximum. Deep boxes
+retain their old maximum and true propagation. The independent fixture records
+separate set/calc maxima, demonstrates direct sun below a fresh ignore halo,
+keeps a real opaque in-owner blocker dark and requires the ignored halo's
+content, `param2` and light bytes to be restored exactly.
+
+The corrected candidate passes the PUC Lua 5.1 parser, R7 unit/static gates
+and all source sweeps. The updated static source-set SHA-256 is
+`436382004e6c88a728641c334b24b6570fcd57404b261cf2a1c012bccdae64c0`.
+An intermediate LuaJIT micro-KAT passes with internal output digest
+`3e2e21bf640498652abc1a68dce6c2957b520406e6b415e6f708cf22af706482`
+and output-file SHA-256
+`3e4e7e3a7914b6c5c9cf2348c3ff8f7626989f14e82f43b38d55bc90fe95bcb6`.
+This remains development evidence, not the final frozen PUC/LuaJIT pair.
+
+An isolated exact-R5 snapshot with the candidate adapter and validator also
+passes its LuaJIT quick suite: input-manifest
+`8673e347e9a2a89f8af83f508a6fd03d01a592315927d13c34c512dab13da8f9`,
+matrix shard
+`23b694b3aee264628c80278ec01bffff1f42de5154633cd2110432a3538a09a1`
+and native-heightmap shard
+`165d573a16af69d12ad514d93a374d741a7b316115f770ddc796ec2c6e4245f5`.
+The complete production-shaped integration KAT passes and produces bytes
+identical to the durable R8 projection receipt, SHA-256
+`1fc22c764be500726f6f777b0eabd7a03a2434e23895aad6132c7c7e1ca78010`.
+
+R8 deliberately supersedes the historical R6 surface light bytes. Therefore
+the production-shaped Stage-B comparison remains exact for frozen R6 material
+bytes, while current Stage A remains exact for content, `param2` and light and
+the dedicated R8 fixtures own the changed lighting boundary. This narrowly
+scoped oracle change is part of the focused review boundary; it must not be
+accepted if it removes any current-light comparison.
 
 ## Calibration so far
 
