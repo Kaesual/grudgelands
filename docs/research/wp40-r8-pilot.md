@@ -1,9 +1,11 @@
 # WP40 R8 real-engine pilot record
 
-**Status:** two diagnostic attempts stopped before generation. The second
-correction exposed three further engine-vector boundary mismatches during
-pre-pilot review; a fresh pilot on the corrected and reviewed candidate is
-pending.
+**Status:** four diagnostic attempts stopped before generation. Each exposed
+one real-engine integration boundary that the mocked R7 evidence could not
+exercise. Attempt 4 proved that contested outposts were being validated and
+typed through political territory instead of their authenticated race-bound
+garrison. The narrow correction and regressions are pending final review and a
+fresh sequential pilot.
 
 ## Attempt 1 -- diagnostic failure
 
@@ -131,3 +133,48 @@ differs from the accepted R7 integration receipt in exactly that manifest row;
 all content, anchor, 512,000 private-tuple, run, replay, multi-y and case rows
 are byte-identical. The R8 receipt SHA-256 is
 `1fc22c764be500726f6f777b0eabd7a03a2434e23895aad6132c7c7e1ca78010`.
+
+The projection correction was committed as
+`e81663a1b643653d39dadb4e04b23a59cd496d4a` and received a fresh independent
+**ACCEPT: 0 Critical / 0 High / 0 Medium / 0 Low** before Attempt 4.
+
+## Attempt 4 -- diagnostic failure
+
+- Date: 2026-09-02
+- Candidate: `e81663a1b643653d39dadb4e04b23a59cd496d4a`
+- Mode: sequential, Seed `0`, forward order first
+- Capture ID:
+  `f4e7b1a88ed12dd0d50bbb4f4271252f39ca02f68b8197497711e711b74f67f4`
+- Result: stopped during production construction before mapchunk generation;
+  reverse order not started
+- Process result: exit 1 after 1:31.10; launcher peak RSS 19,140 KiB; these
+  initialization-only values are not a G2 projection
+- Failure: `grug_core.prepare_zone_authority` rejected outpost row 3 because
+  the validator required its coordinate to return the outpost's garrison
+  faction from `faction_at`
+- Forward console-log SHA-256:
+  `58f92fe7f01b07e1763af03e829c21dc192bf8e8559e4a3d0039cd913e33f268`
+- Forward server-log SHA-256:
+  `0eef30a63987f0dfffe125440568479823ddf5adbba61a8c281a2a0eb93830ed`
+
+The frozen row is not misplaced. It is the first of ten ordinary outposts in
+level-31--40 contested zones. Those zones deliberately have no political
+`faction`, while their `race_region` still assigns an Accord or Throng
+garrison through the authenticated consumer payload. A production-session
+diagnostic resolved all 24 stable anchors and confirmed that the ten frontier
+rows return nil from `faction_at`; all still resolve to their exact source zone
+and race region.
+
+The correction replaces the invalid territorial assertion with an exact
+`race_region_at` assertion. The existing hard-coded race-to-faction table
+continues to authenticate every payload faction. The consumer KAT now models
+both an Accord and a Throng contested outpost with nil territorial faction.
+The same review found a downstream manifestation in guard-banner typing: a
+contested Throng outpost would otherwise fall back to Accord. Banner typing
+now prefers an authenticated `outpost_at` faction and uses `faction_at` only
+for non-outpost banners; the final micro fixture covers both paths.
+
+This changes production Lua but no anchor, placement, zone, resource or writer
+semantics. Static gates, an exact focused review, a fresh pilot and exactly one
+replacement final PUC 5.1/LuaJIT micro-KAT pair on the eventual frozen bytes
+remain required.

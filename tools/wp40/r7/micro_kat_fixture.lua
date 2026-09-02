@@ -397,6 +397,16 @@ return function(repo)
 	function mob_core.get_objects_inside_radius() return {} end
 	function mob_core.find_nodes_in_area() return {} end
 	function mob_core.find_node_near() return nil end
+	local banner_meta_values = {}
+	local banner_meta = {}
+	function banner_meta:get_int(key) return banner_meta_values[key] or 0 end
+	function banner_meta:get_string(key) return banner_meta_values[key] or "" end
+	function banner_meta:set_int(key, value) banner_meta_values[key] = value end
+	function banner_meta:set_string(key, value) banner_meta_values[key] = value end
+	local banner_timer = {is_started = function() return false end,
+		start = function() end}
+	function mob_core.get_meta() return banner_meta end
+	function mob_core.get_node_timer() return banner_timer end
 	function mob_core.add_particlespawner() end
 	function mob_core.sound_play() end
 	function mob_core.pos_to_string() return "(0,0,0)" end
@@ -417,10 +427,14 @@ return function(repo)
 			zone_authority_installed = function() return true end,
 			get_player_faction = function() return "accord" end,
 			get_race_perk = function() return nil end,
+			outpost_at = function(pos)
+				return pos.outpost_faction and {faction = pos.outpost_faction} or nil
+			end,
 			rare_route = function()
 				return {{x = 0, z = 0}, {x = 1, z = 1}, {x = 2, z = 2}}
 			end,
-		}, grug_factions = {get_object_faction = function() return nil end},
+		}, grug_zones = {faction_at = function(pos) return pos.territory end},
+		grug_factions = {get_object_faction = function() return nil end},
 		grug_xp = {get_level = function() return 1 end, add_xp = function() end},
 		vector = {new = function(x, y, z) return {x = x, y = y, z = z} end,
 			distance = function() return 0 end},
@@ -446,6 +460,14 @@ return function(repo)
 			"function" and
 		type(mob_core.registered_nodes["grug_nodes:camp_fire"].on_timer) == "function",
 		"camp-fire ownership/behaviour seam differs")
+	local banner = mob_core.registered_nodes["grug_nodes:guard_banner"]
+	banner.on_construct({outpost_faction = "throng"})
+	check(banner_meta_values._grug_camp_type == "guard_throng",
+		"contested outpost banner faction differs")
+	for key in pairs(banner_meta_values) do banner_meta_values[key] = nil end
+	banner.on_construct({territory = "accord"})
+	check(banner_meta_values._grug_camp_type == "guard_accord",
+		"non-outpost banner territory fallback differs")
 	local mob_projection = {}
 	for index = 1, #mob_defs do
 		local value = mob_defs[index]
@@ -1197,11 +1219,11 @@ return function(repo)
 	local factions = {dwarf = "accord", human = "accord", elf = "accord",
 		undead = "throng", orc = "throng", troll = "throng"}
 	local anchors, position_anchor = {}, {}
-	local function add_anchor(numeric_id, zone_id, slot_id, faction)
+	local function add_anchor(numeric_id, zone_id, slot_id, faction, race)
 		local anchor = {id = string.format("anchor_%03d", numeric_id),
 			numeric_id = numeric_id, zone_id = zone_id, slot_id = slot_id,
 			x = numeric_id * 100, y = 20, z = numeric_id * -100,
-			_faction = faction}
+			_faction = faction, _race = race}
 		anchors[zone_id .. "\0" .. slot_id] = anchor
 		position_anchor[anchor.x .. "/" .. anchor.z] = anchor
 		return {zone_id = zone_id, slot_id = slot_id}
@@ -1211,9 +1233,9 @@ return function(repo)
 	for index = 1, #race_ids do
 		local race = race_ids[index]
 		payload.races[index] = {race_id = race, faction_id = factions[race],
-			start = add_anchor(index, race .. "_start", "start", factions[race]),
+			start = add_anchor(index, race .. "_start", "start", factions[race], race),
 			capital = add_anchor(index + 6, race .. "_capital", "capital",
-				factions[race])}
+				factions[race], race)}
 	end
 	local outpost_index = 0
 	for race_index = 1, #race_ids do
@@ -1224,7 +1246,8 @@ return function(repo)
 				faction_id = factions[race],
 				anchor = add_anchor(24 + outpost_index,
 					race .. "_outpost_" .. local_index,
-					"outpost_" .. local_index, factions[race])}
+					"outpost_" .. local_index,
+					local_index <= 2 and factions[race] or nil, race)}
 		end
 	end
 	local consumer_source = common.read_file(wp40 .. "/r7_consumer_payload.lua")
@@ -1238,7 +1261,7 @@ return function(repo)
 	for index = 1, #rare_ids do
 		payload.rare_routes[index] = {id = rare_ids[index],
 			anchor = add_anchor(90 + index, "rare_zone_" .. index,
-				"rare_" .. rare_ids[index], "accord"),
+				"rare_" .. rare_ids[index], "accord", nil),
 			patrol_offsets = {{x = -48, z = -24}, {x = 16, z = 40},
 				{x = 56, z = -16}}}
 	end
@@ -1283,8 +1306,11 @@ return function(repo)
 			"zone biome_at signature differs")
 		return "grug_meadows"
 	end
-	function session.race_region_at() return "human" end
-	function session.faction_at(pos) return pos._faction or "accord" end
+	function session.race_region_at(x, z)
+		local anchor = position_anchor[x .. "/" .. z]
+		return anchor and anchor._race or "human"
+	end
+	function session.faction_at(pos) return pos._faction end
 	function session.territory_rule_at() return "shared_editable" end
 	function session.pvp_rule_at() return "contested" end
 	function session.surface_mob_level_at() return 7 end

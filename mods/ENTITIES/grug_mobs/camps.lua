@@ -42,9 +42,10 @@
 --     VoxelManip, which fires no node callbacks at all — so the timer of a
 --     generated banner is started by the LBM at the bottom (which for that
 --     reason must run at EVERY load, see there) instead of by on_construct;
---   * the camp type is not chosen by the placer but by the TERRITORY the
---     banner stands in (grug_zones.faction_at), so a post can never fly the
---     wrong faction's colours;
+--   * an authenticated outpost anchor supplies its race-bound garrison
+--     faction; other banners use the faction territory they stand in. This is
+--     necessary because frontier outposts deliberately stand on contested
+--     land, where grug_zones.faction_at returns nil;
 --   * a guard camp with `patrol = true` designates ONE of its guards as the
 --     ambient patrol of world.md §4 (see assign_patrol below);
 --   * a post refills one slot per 180-360 s instead of the camp's 120-300 s.
@@ -599,16 +600,20 @@ core.override_item(CAMP_FIRE_NODE, {
 -- (core.override_item; grug_mobs declares grug_nodes in mod.conf, so the node
 -- is registered by the time this file runs).
 
--- Which watch stands here: the TERRITORY decides, never the placer
--- (world.md §0/§4 — a post cannot fly the wrong faction's colours).
+-- Which watch stands here: an authenticated outpost decides first, otherwise
+-- the TERRITORY decides; never the placer (world.md §0/§4 — a post cannot fly
+-- the wrong faction's colours). Frontier outposts deliberately live in
+-- contested zones, so their race-bound payload is the only faction authority
+-- there and grug_zones.faction_at correctly returns nil.
 -- Assigns the forward-declared local at the top of the file (camp_cfg uses it
 -- as the meta-less fallback); NOT a global.
 function banner_camp_type(pos)
-	local territory = grug_zones.faction_at(pos)
+	local outpost = grug_core.outpost_at(pos)
+	local territory = outpost and outpost.faction or
+		grug_zones.faction_at(pos)
 	if territory ~= "accord" and territory ~= "throng" then
-		-- Only reachable for a banner placed by hand in the ocean/strait: the
-		-- outpost anchors are all well inside a continent rectangle. Not an
-		-- error worth refusing over, but worth saying out loud.
+		-- Only reachable for a non-outpost banner placed outside faction-owned
+		-- territory. Not an error worth refusing over, but worth saying out loud.
 		core.log("warning", "[grug_mobs] guard banner at " ..
 			core.pos_to_string(pos) .. " stands outside both continents" ..
 			" (territory '" .. tostring(territory) ..
@@ -730,8 +735,9 @@ function grug_mobs.place_camp(pos, type_id)
 			tostring(type_id) .. "'")
 		return false
 	end
-	-- TERRITORY IS AUTHORITATIVE for a guard post (world.md §0/§4: "a post can
-	-- never fly the wrong faction's colours"). banner_camp_type already
+	-- THE AUTHENTICATED OUTPOST OR TERRITORY IS AUTHORITATIVE for a guard post
+	-- (world.md §0/§4: "a post can never fly the wrong faction's colours").
+	-- banner_camp_type already
 	-- enforces that for every OTHER placement path — on_construct and the
 	-- mapgen LBM both go through it — but place_camp used to overwrite the
 	-- result with the caller's type_id afterwards, so one
@@ -795,9 +801,10 @@ grug_mobs.register_camp_type("mirefolk", {
 -- "guaranteed minimum" outpost is a picket, not a garrison — the numbers can
 -- grow with WP13's real structures) spread over the 7x7 pad and its
 -- surroundings (radius 15, the pad plus a little patrol ground). Both types
--- patrol; which of the two a banner uses follows from the territory
--- (banner_camp_type above), so the posts of one continent are all the same
--- type and the mob level still varies with the ring via guard_level_at.
+-- patrol; which of the two a banner uses follows from the authenticated
+-- outpost first and faction territory otherwise (banner_camp_type above), so
+-- the race's frontier posts keep their faction on contested land and the mob
+-- level still varies with the ring via guard_level_at.
 -- Their refill slot runs slower than a camp's (GUARD_RESPAWN_MIN/MAX,
 -- 180-360 s — THE tunable of this file, see there): clearing a post should
 -- buy a while of open road.
