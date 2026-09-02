@@ -31,7 +31,7 @@ if order_name ~= "forward" and order_name ~= "reverse" then
 end
 
 local function write_event(event)
-	local file = assert(io.open(output_path, "ab"))
+	local file = assert(insecure.io.open(output_path, "ab"))
 	assert(file:write(core.write_json(event, false), "\n"))
 	assert(file:close())
 end

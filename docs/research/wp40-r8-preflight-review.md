@@ -3,8 +3,8 @@
 **Status:** initial review rejected exact candidate
 `aa1188be9f1b217d8607d984f0ff359d441bff2f`; its focused correction at
 `a1dc04b89d6e54945fb3507bf92967c4d6c0a86c` was accepted for the sequential
-pilot. A second correction is pending focused review before a fresh pilot and
-the final smoke.
+pilot. The first real-engine finding and subsequent review findings are fixed;
+one final focused re-review is pending before a fresh pilot.
 
 ## Scope and independence
 
@@ -117,11 +117,29 @@ Its retained forward `console.log` and `server.log` SHA-256 values are
 `c785edab6bdf4247b7729b5803bfd9f128ddee95c08609d3f480bab954a8b2bb`.
 No event, digest, timing, RSS or shutdown acceptance claim is derived from it.
 
+## Focused review of the real-engine correction
+
+A new independent GPT-5.6 Sol context reviewed exact commit
+`972b139f8fd5056870fb0f21c71af660a190f186` read-only and returned **REJECT:
+0 Critical / 1 High / 1 Medium / 0 Low**. It accepted the production
+NoiseParams fix, its two fixtures, the narrowed native-event scope, channel
+envelope and canonical-seed gate. It also confirmed that R6/R7 semantic
+evidence remains valid and only the replacement final micro-KAT pair is
+required.
+
+The High finding was that live events now target the durable result directory
+but `write_event` still used Mod Security's restricted global `io.open`; the
+correction uses the already-acquired trusted `insecure.io.open`. The Medium
+finding was a late-PGID publication race in parallel cleanup; after stopping
+and waiting for both wrapper processes, cleanup now performs a second engine-
+group termination pass before removing scratch worlds. Both fixes are harness-
+only and require focused re-review before execution.
+
 ## Calibration so far
 
 - Implementing/coordinating model: GPT-5.6 Sol with two bounded parallel
   implementation lanes.
 - Reviewing model: fresh independent GPT-5.6 Sol.
 - Initial findings: 1 Critical / 2 High / 3 Medium / 0 Low.
-- Review-fix rounds started: 2.
+- Review-fix rounds started: 3.
 - Observed elapsed wall time: pending package completion.

@@ -36,3 +36,8 @@ noise value, seed, native registration or writer behavior. Because production
 Lua changed, final frozen bytes require a replacement compact PUC 5.1/LuaJIT
 micro-KAT pair. The complete sequential pilot must then run from a new exact
 reviewed commit and will receive its own immutable capture ID.
+
+The runner correction also writes probe events through the test-only trusted
+environment into the exact durable capture directory. Its interrupt trap
+stops and waits for parallel wrappers, then repeats the process-group sweep so
+a late-published engine group cannot survive scratch-world cleanup.

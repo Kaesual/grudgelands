@@ -206,6 +206,10 @@ cleanup() {
 		kill "$reverse_pid" 2>/dev/null || true
 		wait "$reverse_pid" 2>/dev/null || true
 	fi
+	# A wrapper can publish its detached engine PGID between the first check
+	# above and its termination. Recheck only after no wrapper can launch one.
+	terminate_engine_group forward
+	terminate_engine_group reverse
 	if [[ "$capture_root" == /tmp/grudgelands-wp40-r8.* ]]; then
 		rm -rf -- "$capture_root"
 	fi
