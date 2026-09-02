@@ -177,7 +177,21 @@ return function(repo, seed_identity, content_only)
 		local axis_z = maxp.z - minp.z + 33
 		local volume = axis_x * axis_y * axis_z
 		local data, param2, light = {}, {}, {}
-		for index = 1, volume do data[index], param2[index], light[index] = 0, 0, 0 end
+		for index = 1, volume do
+			data[index], param2[index], light[index] =
+				built.content.production.ignore_cid, 0, 0
+		end
+		local emerged_min = {x = minp.x - 16, y = minp.y - 16,
+			z = minp.z - 16}
+		for z = minp.z, maxp.z do
+			for y = minp.y, maxp.y do
+				for x = minp.x, maxp.x do
+					local index = (z - emerged_min.z) * axis_x * axis_y +
+						(y - emerged_min.y) * axis_x + (x - emerged_min.x) + 1
+					data[index] = 0
+				end
+			end
+		end
 		return offline.vm_module.new({minp = minp, maxp = maxp,
 			data = data, param2 = param2, light = light, heightmap = heightmap,
 			content_contract = built.content.production, water_level = 1,

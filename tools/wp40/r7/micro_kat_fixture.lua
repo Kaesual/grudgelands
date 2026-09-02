@@ -134,7 +134,7 @@ return function(repo)
 		previous = relative
 	end
 	assert(changed_file:close())
-	check(changed_count == 70, "changed production Lua population differs")
+	check(changed_count == 71, "changed production Lua population differs")
 	row("source/changed_production_lua_count", changed_count)
 	row("source/changed_production_lua_sha256",
 		hex_sha256(table.concat(changed_rows)))
@@ -1407,6 +1407,9 @@ return function(repo)
 		successor_config, empty_anchor_config).new(successor_dependencies)
 
 	local settlement_hash = dofile(wp40 .. "/r6_hash.lua")(raw_sha256)
+	local map_adapter_factory = dofile(wp40 .. "/map_adapter.lua")
+	check(type(map_adapter_factory) == "function",
+		"R5 map-adapter factory did not load")
 	local settlement_factory = dofile(wp40 .. "/r6_settlement.lua")
 	local micro_allocator = {}
 	function micro_allocator.new_array() return {} end
@@ -1485,7 +1488,19 @@ return function(repo)
 		return result
 	end
 	local function owner_vm()
-		local data = fixed_array(volume, air_cid)
+		local data = fixed_array(volume, content_set.production.ignore_cid)
+		local emerged_min = {x = owner_min.x - 16, y = owner_min.y - 16,
+			z = owner_min.z - 16}
+		for z = owner_min.z, owner_max.z do
+			for y = owner_min.y, owner_max.y do
+				for x = owner_min.x, owner_max.x do
+					local index = ((z - emerged_min.z) * axis * axis) +
+						((y - emerged_min.y) * axis) +
+						(x - emerged_min.x) + 1
+					data[index] = air_cid
+				end
+			end
+		end
 		return vm_module.new({minp = owner_min, maxp = owner_max,
 			data = data, param2 = fixed_array(volume, 0),
 			light = fixed_array(volume, 15), heightmap = fixed_array(6400, -31007),
@@ -1526,6 +1541,25 @@ return function(repo)
 	check(p9g_run_count == 1,
 		"P9G did not precede the one shared run derivation")
 	local first_calls = observer.metrics()
+	local first_snapshot = observer.snapshot()
+	for z = first_snapshot.emin.z, first_snapshot.emax.z do
+		for y = first_snapshot.emin.y, first_snapshot.emax.y do
+			for x = first_snapshot.emin.x, first_snapshot.emax.x do
+				if x < owner_min.x or x > owner_max.x or
+						y < owner_min.y or y > owner_max.y or
+						z < owner_min.z or z > owner_max.z then
+					local index = ((z - first_snapshot.emin.z) * axis * axis) +
+						((y - first_snapshot.emin.y) * axis) +
+						(x - first_snapshot.emin.x) + 1
+					check(first_snapshot.data[index] ==
+						content_set.production.ignore_cid and
+						first_snapshot.param2[index] == 0 and
+						first_snapshot.light[index] == 15,
+						"read-only halo bytes were not preserved")
+				end
+			end
+		end
+	end
 	local light_seed_runs = settlement_fixture.last_light_seed_runs()
 	check(first_calls.vm_get_data_calls == 1 and
 		first_calls.vm_get_param2_calls == 1 and
@@ -1567,6 +1601,7 @@ return function(repo)
 		writer_metrics.replay_count, successor_metrics.p9g.settle_calls,
 		successor_metrics.p9g.replay_calls}, "/"))
 	row("production/emerged_vector_normalized", "true")
+	row("production/readonly_halo_ignore_preserved", "true")
 
 	local missing = {}
 	for index = 1, #changed_order do

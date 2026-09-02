@@ -1,11 +1,11 @@
 # WP40 R8 real-engine pilot record
 
-**Status:** four diagnostic attempts stopped before generation. Each exposed
-one real-engine integration boundary that the mocked R7 evidence could not
-exercise. Attempt 4 proved that contested outposts were being validated and
-typed through political territory instead of their authenticated race-bound
-garrison. The narrow correction and regressions are pending final review and a
-fresh sequential pilot.
+**Status:** five diagnostic attempts retained. Attempts 1--4 stopped during
+production construction; Attempt 5 crossed startup, manifest, authority and
+the first real production mapgen callback. It exposed one fresh-engine
+read-only-halo assumption absent from the offline R5--R7 fixtures. A narrow
+two-adapter correction and strengthened fixtures are under validation before
+focused review and a fresh sequential pilot.
 
 ## Attempt 1 -- diagnostic failure
 
@@ -178,3 +178,70 @@ This changes production Lua but no anchor, placement, zone, resource or writer
 semantics. Static gates, an exact focused review, a fresh pilot and exactly one
 replacement final PUC 5.1/LuaJIT micro-KAT pair on the eventual frozen bytes
 remain required.
+
+The correction was committed as
+`f2599f8af974e66705981139c3b270c92e341643`. A fresh independent GPT-5.6 Sol
+review accepted it for the next sequential pilot with **0 Critical / 0 High /
+0 Medium / 1 Low**. The Low finding concerned stale territory-only wording in
+guard-post comments and one diagnostic; the logic and regression coverage were
+accepted. That wording is folded into the next production correction rather
+than causing an otherwise byte-only rerun.
+
+## Attempt 5 -- first generated-mapchunk failure
+
+- Date: 2026-09-02
+- Candidate: `f2599f8af974e66705981139c3b270c92e341643`
+- Mode: sequential, Seed `0`, forward order first
+- Capture ID:
+  `0866a31a63cb5b54c602b9e7b5c1483bf05191a9496147c72abb9dc6cdeb86ae`
+- Result: startup, production manifest and authority passed; the first
+  production mapchunk entered the R7 writer and failed during lighting;
+  reverse order was not started
+- First request: `human_capital`, mapchunk `-32,-32,-1552`
+- Emerge result: 1 errored action and 124 cancelled actions after
+  83,989,724 microseconds
+- Process result: exit 1 after 2:49.73; no swap; the probe recorded an engine
+  RSS peak of 3,027,841,024 bytes
+- Failure: `fail_content_ignore: required light context is ignore`
+- Forward console-log SHA-256:
+  `9c41106ee20dd3c8a2d6c2c3152b3769af8a15410864154733dbf089f11604e4`
+- Forward server-log SHA-256:
+  `2fde9aa9b95d8d6bff5dec3d67881c3e7b7d4e6aef7e19a51d639a1fe535423b`
+- Forward event-stream SHA-256:
+  `a2c84f5de0e89ba0a7481d9bed1bd8c57cce68132eb816661fc1b7d1f9340791`
+- Forward GNU-time log SHA-256:
+  `c9cccebe1b5e3bea9e3079b2c724058b11109d24c9102edd7259202d7fdc2fe6`
+
+The launcher's 19,264 KiB peak is not the engine RSS because Flatpak starts the
+engine as a descendant. The in-process probe values above are authoritative.
+No order equality, corpus-content, native-event, timing projection or clean
+shutdown claim is accepted from this attempt.
+
+Pinned Luanti source and an independent hard-lens show that this is not an
+emerge-request sizing defect. A fresh border MapBlock starts as
+`CONTENT_IGNORE`; v7 fills the central mapchunk while the 16-node VoxelManip
+border remains read-only lighting context. Native `spreadLight` skips ignore.
+The runner correctly requested one 80 cubed mapchunk, and the first of its 125
+MapBlocks caused the containing chunk to be generated, explaining the one
+error and 124 cancellations.
+
+The minimal correction admits ignore only outside the owner in both the pure
+R5 adapter and the consolidated R6/R7 writer. Central owner ignore remains a
+hard failure. The fresh-halo fixtures require every halo content, `param2` and
+light byte to remain unchanged, while existing materialized-neighbor cases
+continue to cover committed halo input. A fresh independent review and a new
+sequential pilot are mandatory before any G2 claim.
+
+The strengthened intermediate LuaJIT micro-KAT passed with internal digest
+`44439bde61d18061ec6d25aeaec5042b97b34566e31310ee6d704762d4859762`
+and output-file SHA-256
+`76de43efdf5c84029d49dc43e69a5cf851a447e3eba2b4f939266542f1825c5a`.
+The production-shaped full owner-VM integration also passed. Its receipt is
+byte-identical to the already-retained projection integration receipt, SHA-256
+`1fc22c764be500726f6f777b0eabd7a03a2434e23895aad6132c7c7e1ca78010`.
+Thus the fresh-halo fixture changes no accepted central content, `param2`,
+light, run, ledger, replay or manifest evidence. The prefreeze source audit
+passed with input-set SHA-256
+`5e940893f8b83cdecd716c4e6b30eb01f85d97e02c8ef412d7af462d2d3d3988`.
+The final PUC 5.1/LuaJIT pair remains deliberately deferred until successful
+real-engine G2/G3 execution freezes the eventual production bytes.

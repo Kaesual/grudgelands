@@ -2503,10 +2503,15 @@ local function settlement_factory()
 				for index = 1, volume do
 					integer(original_light[index], "VM light", 0, 255, "fail_vm_contract")
 				end
+				-- Fresh border MapBlocks may remain CONTENT_IGNORE until a later
+				-- emerge. They are read-only context; only the owner must be complete.
 				for z = box_min_z, box_max_z do
 					for y = box_min_y, box_max_y do
 						for x = box_min_x, box_max_x do
-							if final_data[index_at(x, y, z)] == contract.ignore_cid then
+							if final_data[index_at(x, y, z)] == contract.ignore_cid and
+									x >= min_x and x <= max_x and
+									y >= min_y and y <= max_y and
+									z >= min_z and z <= max_z then
 								fail("fail_content_ignore", "required light context is ignore")
 							end
 						end

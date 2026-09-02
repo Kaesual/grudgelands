@@ -1,7 +1,7 @@
 # WP40 simple-map R8 release and runtime contract
 
-**Status:** Integrated R8 candidate under focused correction review after the
-first real-engine pilot found a pre-generation NoiseParams readback mismatch.
+**Status:** The fresh-engine read-only-halo correction is fixture-validated and
+awaits focused independent review before a new sequential pilot.
 
 **Baseline:** `ac3ff3f17c0119b80c90f73db944a937d9159a2b` (the reviewed R7
 production cutover merged to `main`).
@@ -181,6 +181,31 @@ Content and `param2` differences are blocking. A light-bank difference is
 blocking unless the harness first demonstrates convergence under one fixed,
 reviewed settling procedure and the post-settle digests then match. A failure
 is not waived by taking the more attractive schedule.
+
+### 4.3 Fresh-engine read-only halo
+
+The first real mapgen callback established an engine boundary that the R5--R7
+offline VoxelManip fixtures did not model. Luanti materializes the central
+80-node mapchunk but a newly allocated 16-node border may remain
+`CONTENT_IGNORE`. That border is read-only context for native lighting; it is
+not evidence that the central owner is incomplete.
+
+R8 therefore narrowly supersedes the inherited R5/R6 non-seed lighting-context
+rule for production execution:
+
+- `CONTENT_IGNORE` inside the central owner remains a fail-closed error;
+- `CONTENT_IGNORE` outside the owner in the read-only emerge halo is admitted;
+- existing non-ignore neighbor content remains valid light context;
+- neither adapter converts halo `ignore` to air or another content ID; and
+- content, `param2` and light bytes outside the owner are restored unchanged
+  after the transaction.
+
+The pure R5 adapter and consolidated R6/R7 writer apply the same rule. Their
+fixtures must cover an all-ignore fresh halo, retain the central-ignore
+rejection and keep the already-accepted materialized-neighbor order cases.
+This is an engine-shape compatibility correction, not a geometry, placement,
+seed, content-policy or ownership change. The historical byte-bound R5 and R6
+contracts remain unchanged as records of their original acceptance.
 
 ## 5. Gate sequence and run budget
 

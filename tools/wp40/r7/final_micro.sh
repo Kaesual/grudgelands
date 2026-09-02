@@ -65,7 +65,7 @@ write_input_rows "$input_rows"
 input_set_sha="$(sha256sum "$input_rows" | awk '{print $1}')"
 changed_roster_sha="$(sha256sum "$changed_roster" | awk '{print $1}')"
 executed_population="$(wc -l <"$changed_roster" | tr -d '[:space:]')"
-[[ "$executed_population" -eq 70 ]] || {
+[[ "$executed_population" -eq 71 ]] || {
 	echo "WP40 R7 final micro: changed production population differs" >&2
 	exit 1
 }

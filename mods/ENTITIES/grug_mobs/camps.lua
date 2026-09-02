@@ -204,12 +204,12 @@ end
 
 -- The two anchor nodes, by name. BANNER_NODE is needed as a value (not only
 -- as a camp-type field) because place_camp has to recognise a guard post and
--- let the TERRITORY pick its type — see there.
+-- let authenticated outpost/territory authority pick its type — see there.
 local BANNER_NODE = "grug_nodes:guard_banner"
 local CAMP_FIRE_NODE = "grug_nodes:camp_fire"
 
 -- Forward declaration: camp_cfg (a helper, far above the guard-post section)
--- needs the territory rule to type a banner whose meta went missing. The
+-- needs the authority rule to type a banner whose meta went missing. The
 -- definition lives with the rest of the guard-post code further down.
 local banner_camp_type
 
@@ -751,8 +751,8 @@ function grug_mobs.place_camp(pos, type_id)
 		if effective ~= type_id then
 			core.log("warning", "[grug_mobs] place_camp at " ..
 				core.pos_to_string(pos) .. ": requested '" .. type_id ..
-				"' but the territory says '" .. effective ..
-				"' — territory wins")
+				"' but authenticated outpost/territory authority selects '" ..
+				effective .. "' — authority wins")
 		end
 	end
 	-- set_node fires on_construct, which writes the default type and arms the

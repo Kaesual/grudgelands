@@ -2118,6 +2118,53 @@ return function(common)
 			loaded.adapter:apply(required_vm,minp,maxp,plan,generation,
 				"offline_fixture")
 		end,"required lighting context ignore")
+		local halo_plan,halo_generation=plan_at(loaded,minp,maxp)
+		rewrite_plan(halo_plan,halo_generation,
+			{{column=(0-minp.z)*80+1,y_min=y,y_max=y,
+				opcode=OPCODE_ID.FOUNDATION_FILL}})
+		local emin,emax,ex,ey,_,volume=emerged_geometry(minp,maxp)
+		local halo_data=dense_fill(volume,65535)
+		local halo_param2=dense_fill(volume,11)
+		local halo_light=dense_fill(volume,3)
+		for z=minp.z,maxp.z do for yy=minp.y,maxp.y do for x=minp.x,maxp.x do
+			local offset=emerged_index(minp,maxp,x,yy,z)
+			halo_data[offset],halo_param2[offset],halo_light[offset]=1,7,15
+		end end end
+		halo_data[emerged_index(minp,maxp,minp.x,y,0)]=0
+		local halo_spec={minp=minp,maxp=maxp,data=halo_data,param2=halo_param2,
+			light=halo_light,content_contract=loaded.fixture_content,water_level=1,
+			ignore_cid=65535,verify_inactive_tail=false}
+		local halo_vm,halo_context,halo_observer
+		if loaded.fixture_trace_token then
+			halo_vm,halo_context,halo_observer=loaded.vm_module.new(halo_spec,
+				loaded.fixture_trace_token)
+			if not rawequal(halo_context,loaded.fixture_context) then
+				fail("fresh-halo paired VM context identity differs")
+			end
+		else
+			halo_spec.heightmap=dense_fill(6400,HEIGHTMAP_SENTINEL)
+			halo_vm,halo_context,halo_observer=loaded.vm_module.new(halo_spec)
+		end
+		local halo_outcome=loaded.adapter:apply(halo_vm,minp,maxp,halo_plan,
+			halo_generation,"offline_fixture")
+		if not halo_outcome:match("^applied_") then
+			fail("fresh read-only halo did not commit")
+		end
+		local halo_snapshot=halo_observer.snapshot()
+		for z=emin.z,emax.z do for yy=emin.y,emax.y do for x=emin.x,emax.x do
+			local offset=emerged_index(minp,maxp,x,yy,z)
+			if x<minp.x or x>maxp.x or yy<minp.y or yy>maxp.y or
+					z<minp.z or z>maxp.z then
+				if halo_snapshot.data[offset]~=65535 or
+						halo_snapshot.param2[offset]~=11 or
+						halo_snapshot.light[offset]~=3 then
+					fail("fresh read-only halo bytes changed")
+				end
+			elseif halo_snapshot.data[offset]==65535 then
+				fail("fresh-halo owner retained CONTENT_IGNORE")
+			end
+		end end end
+		plan,generation=plan_at(loaded,minp,maxp)
 		rewrite_plan(plan,generation,{{column=(0-minp.z)*80+(0-minp.x)+1,
 			y_min=y,y_max=y,opcode=OPCODE_ID.FOUNDATION_SURFACE}})
 		local unneeded={x=minp.x-16,y=minp.y-16,z=minp.z-16,
@@ -2149,9 +2196,10 @@ return function(common)
 			fail("conditional CONTENT_IGNORE target touched VM")
 		end
 		local rows={"required_context\tfail_content_ignore\n",
+			"required_halo\t"..halo_outcome.."\tunchanged\n",
 			"unneeded_halo\t"..safe_outcome.."\tunchanged\n",
 			"target\trole2_y30927\tfail_target\tempty_trace\n"}
-		return canonical_rows(raw_sha256,rows),3,3
+		return canonical_rows(raw_sha256,rows),4,4
 	end
 
 	local function native_position_oracle(loaded,raw_sha256,include_veto)
@@ -6760,8 +6808,8 @@ return function(common)
 		if initial_planner_metrics.planner_construction_count~=1 or
 				final_planner_metrics.planner_construction_count~=1 or
 				planner_calls<1 or planner_calls>64 or vm_transactions<1 or
-				vm_transactions>apply_attempts or apply_attempts~=60 or
-				vm_fixtures~=48 or vm_fixtures>48 then
+				vm_transactions>apply_attempts or apply_attempts~=61 or
+				vm_fixtures~=49 or vm_fixtures>49 then
 			fail("micro planner/VM compactness bound differs")
 		end
 		rows[#rows+1]=common.canonical_row("budget",

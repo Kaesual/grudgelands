@@ -1,10 +1,11 @@
 # WP40 R8 Preflight Review
 
-**Status:** initial review rejected exact candidate
-`aa1188be9f1b217d8607d984f0ff359d441bff2f`; its focused correction at
-`a1dc04b89d6e54945fb3507bf92967c4d6c0a86c` was accepted for the sequential
-pilot. Two real-engine attempts then found pre-generation boundary mismatches.
-The latest correction is under focused review before a fresh pilot.
+**Status:** the initial contract/scaffold rejection and successive focused
+corrections are retained below. Exact candidate
+`f2599f8af974e66705981139c3b270c92e341643` was accepted for a sequential
+pilot; that pilot reached the first generated mapchunk and exposed a systematic
+fresh-engine halo blocker. Its narrow correction is under fixture validation
+before a focused independent review.
 
 ## Scope and independence
 
@@ -193,11 +194,52 @@ accepted receipt only in the manifest SHA-256 row; every placement/content/VM
 evidence row is byte-identical. This is direct evidence that the correction
 changes the authenticated projection envelope, not generated semantics.
 
+## Contested-outpost correction and review
+
+The next construction attempt proved that ten frontier outposts legitimately
+stand in contested zones with no political `faction_at` result. The source race
+region and authenticated race-to-garrison mapping remain defined. Exact commit
+`f2599f8af974e66705981139c3b270c92e341643` therefore validates outposts
+against `race_region_at`, and guard banners prefer the authenticated outpost
+faction before falling back to surrounding territory for non-outpost banners.
+
+A fresh independent GPT-5.6 Sol review returned **ACCEPT for a sequential
+pilot: 0 Critical / 0 High / 0 Medium / 1 Low**. It accepted the production
+logic and contested Accord/Throng regressions. The Low finding was stale
+territory-only wording in comments and one warning message.
+
+## Fresh-engine halo hard-lens
+
+The pilot of `f2599f8...` passed construction and entered the first production
+mapgen callback, then failed because both inherited lighting transactions
+required the expanded read-only halo to contain no `CONTENT_IGNORE`. A new
+independent GPT-5.6 Sol context classified the systematic fresh-surface blocker
+as **1 Critical** and the unrepresentative offline-fixture/evidence gap as
+**1 High**, with no Medium or Low findings.
+
+Pinned engine code confirms that fresh border MapBlocks begin as ignore, v7
+materializes only the central mapchunk in x/z, and native light spreading skips
+ignore. The reviewer rejected a runner-size workaround and required the same
+narrow correction in `map_adapter.lua` and `r6_settlement.lua`: owner ignore
+still fails; read-only halo ignore is accepted and all halo content, `param2`
+and light bytes are preserved. Required regression evidence covers the pure R5
+adapter, consolidated production writer, central rejection and existing
+materialized-neighbor cases. A fresh sequential real-engine pilot follows only
+after static gates and focused review of an exact commit.
+
+The strengthened LuaJIT micro-KAT and prefreeze source audit pass. The complete
+production-shaped R5/R6/R7 owner-VM integration also passes, and its canonical
+receipt remains byte-identical to the retained R8 projection receipt
+(`1fc22c764be500726f6f777b0eabd7a03a2434e23895aad6132c7c7e1ca78010`).
+This directly constrains the correction to the fresh read-only halo rather than
+accepted owner geometry or settlement semantics. An exact-SHA focused review
+is the remaining prerequisite for the next pilot.
+
 ## Calibration so far
 
 - Implementing/coordinating model: GPT-5.6 Sol with two bounded parallel
   implementation lanes.
 - Reviewing model: fresh independent GPT-5.6 Sol.
 - Initial findings: 1 Critical / 2 High / 3 Medium / 0 Low.
-- Review-fix rounds started: 6.
+- Review-fix rounds started: 7.
 - Observed elapsed wall time: pending package completion.

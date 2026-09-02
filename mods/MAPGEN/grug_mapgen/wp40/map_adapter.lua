@@ -1261,11 +1261,16 @@ local function adapter_factory(allocator_factory)
 					return final_cid, final_p2, sunlight
 				end
 
+				-- Fresh border MapBlocks may remain CONTENT_IGNORE until a later
+				-- emerge. They are read-only context; only the owner must be complete.
 				for z = box_min_z, box_max_z do
 					for y = box_min_y, box_max_y do
 						for x = box_min_x, box_max_x do
 							local final_cid = precommit_light_state(x, y, z)
-							if final_cid == ignore_cid then
+							if final_cid == ignore_cid and
+									x >= minp.x and x <= maxp.x and
+									y >= minp.y and y <= maxp.y and
+									z >= minp.z and z <= maxp.z then
 								fail("fail_content_ignore", "required light context is ignore")
 							end
 						end

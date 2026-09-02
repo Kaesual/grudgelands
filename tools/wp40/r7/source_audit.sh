@@ -38,7 +38,7 @@ derived_changed="${partial}.changed-lua"
 	git -C "$repo" diff --name-only --diff-filter=AM d6002a2 -- mods
 	git -C "$repo" ls-files --others --exclude-standard -- mods
 } | sort -u | rg '[.]lua$' >"$derived_changed"
-[[ "$(awk 'END {print NR + 0}' "$derived_changed")" -eq 70 ]] || {
+[[ "$(awk 'END {print NR + 0}' "$derived_changed")" -eq 71 ]] || {
 	echo "WP40 R7 source audit: baseline-derived changed Lua population differs" >&2
 	exit 1
 }
@@ -354,7 +354,7 @@ done
 micro_roster="$repo/tools/wp40/r7/micro_inputs.txt"
 changed_lua_roster="$repo/tools/wp40/r7/changed_production_lua.txt"
 changed_lua_sha="$(sha256sum "$changed_lua_roster" | awk '{print $1}')"
-[[ "$(micro_field executed_module_population)" == 70 &&
+[[ "$(micro_field executed_module_population)" == 71 &&
 	"$(micro_field executed_module_roster_sha256)" == "$changed_lua_sha" &&
 	"$(micro_field canonical_output_filename)" == wp40-r7-micro-kat-output.tsv &&
 	"$(micro_field luajit_log_filename)" == wp40-r7-micro-kat-luajit.log &&
@@ -394,7 +394,7 @@ expected_puc_log="WP40 R7 final micro PASS interpreter=puc51 output_sha256=$micr
 executed_rows="${partial}.executed-modules"
 awk -F '\t' '$1 == "executed_module" && NF == 2 {print $2}' "$micro_output" \
 	| sort >"$executed_rows"
-[[ "$(awk -F '\t' '$1 == "source/executed_module_count" && $2 == "70" {
+[[ "$(awk -F '\t' '$1 == "source/executed_module_count" && $2 == "71" {
 	count++} END {print count + 0}' "$micro_output")" -eq 1 &&
 	"$(awk -F '\t' -v sha="$changed_lua_sha" \
 	'$1 == "source/executed_module_roster_sha256" && $2 == sha {count++}
@@ -406,7 +406,7 @@ awk -F '\t' '$1 == "executed_module" && NF == 2 {print $2}' "$micro_output" \
 rm -f -- "$executed_rows"
 mapfile -t micro_inputs < <(printf '%s\n' "$(cat "$micro_roster")" \
 	"$(cat "$changed_lua_roster")" | awk 'NF' | sort -u)
-[[ "${#micro_inputs[@]}" -gt 70 ]] || {
+[[ "${#micro_inputs[@]}" -gt 71 ]] || {
 	echo "WP40 R7 source audit: micro-KAT input roster differs" >&2
 	exit 1
 }
@@ -554,7 +554,7 @@ rm -f -- "$input_hashes"
 	printf 'count\tvm_set_param2_data\t1\n'
 	printf 'count\tvm_update_liquids\t1\n'
 	printf 'count\tmapgen_default_settings\t8\n'
-	printf 'count\tchanged_production_lua\t70\n'
+	printf 'count\tchanged_production_lua\t71\n'
 	printf 'count\tdeleted_legacy_lua\t7\n'
 	printf 'count\tmod_dependency_nodes\t%s\n' "$dependency_node_count"
 	printf 'count\tmod_dependency_edges\t%s\n' "$dependency_edge_count"

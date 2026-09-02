@@ -1885,6 +1885,26 @@ local function snapshot_index(snapshot, x, y, z)
 		(y - snapshot.emin.y) * axis_x + (x - snapshot.emin.x) + 1
 end
 
+local function validate_fresh_readonly_halo(snapshot, minp, maxp, ignore_cid,
+		label)
+	for z = snapshot.emin.z, snapshot.emax.z do
+		for y = snapshot.emin.y, snapshot.emax.y do
+			for x = snapshot.emin.x, snapshot.emax.x do
+				local index = snapshot_index(snapshot, x, y, z)
+				if x < minp.x or x > maxp.x or y < minp.y or y > maxp.y or
+						z < minp.z or z > maxp.z then
+					if snapshot.data[index] ~= ignore_cid or
+							snapshot.param2[index] ~= 0 or snapshot.light[index] ~= 0 then
+						fail(label .. " changed fresh read-only halo bytes")
+					end
+				elseif snapshot.data[index] == ignore_cid then
+					fail(label .. " retained CONTENT_IGNORE inside the owner")
+				end
+			end
+		end
+	end
+end
+
 local function actual_run_bytes(values, count, drop_opcode, normalize)
 	dense(values, "actual settlement run values")
 	integer(count, 0, MAX_SAFE, "actual settlement run count")
@@ -2600,6 +2620,9 @@ local function full_vm_integration(repo, runtime_fixture, successor, direct_scan
 		successor_capture = runtime_fixture.built.settlement_fixture.take_private_capture()
 		successor_snapshot = observer.snapshot()
 		validate_vm_commit(successor_result, successor_snapshot, "R7 production writer")
+		validate_fresh_readonly_halo(successor_snapshot, minp, maxp,
+			runtime_fixture.built.content.production.ignore_cid,
+			"R7 production writer")
 	end
 	validate_private_capture(repo, successor_capture, minp, maxp, true,
 		"R7 production writer")
@@ -2623,6 +2646,9 @@ local function full_vm_integration(repo, runtime_fixture, successor, direct_scan
 		direct_capture = runtime_fixture.built.direct_fixture.take_private_capture()
 		direct_snapshot = observer.snapshot()
 		validate_vm_commit(direct_result, direct_snapshot, "independent Direct-83 writer")
+		validate_fresh_readonly_halo(direct_snapshot, minp, maxp,
+			runtime_fixture.built.content.production.ignore_cid,
+			"independent Direct-83 writer")
 	end
 	validate_private_capture(repo, direct_capture, minp, maxp, false,
 		"independent Direct-83 writer")
@@ -2683,7 +2709,23 @@ local function full_vm_integration(repo, runtime_fixture, successor, direct_scan
 		local volume = (maxp.x - minp.x + 33) * (maxp.y - minp.y + 33) *
 			(maxp.z - minp.z + 33)
 		local data, param2, light = {}, {}, {}
-		for index = 1, volume do data[index], param2[index], light[index] = 0, 0, 0 end
+		for index = 1, volume do
+			data[index], param2[index], light[index] =
+				accepted_loaded.content_contract.ignore_cid, 0, 0
+		end
+		local axis_x = maxp.x - minp.x + 33
+		local axis_y = maxp.y - minp.y + 33
+		local emerged_min = {x = minp.x - 16, y = minp.y - 16,
+			z = minp.z - 16}
+		for z = minp.z, maxp.z do
+			for y = minp.y, maxp.y do
+				for x = minp.x, maxp.x do
+					local index = (z - emerged_min.z) * axis_x * axis_y +
+						(y - emerged_min.y) * axis_x + (x - emerged_min.x) + 1
+					data[index] = 0
+				end
+			end
+		end
 		local vm, _, observer = offline.vm_module.new({minp = minp, maxp = maxp,
 			data = data, param2 = param2, light = light, heightmap = owner_heightmap,
 			content_contract = accepted_loaded.content_contract, water_level = 1,
@@ -2696,6 +2738,8 @@ local function full_vm_integration(repo, runtime_fixture, successor, direct_scan
 		accepted_capture = accepted_loaded.settlement_fixture.take_private_capture()
 		accepted_snapshot = observer.snapshot()
 		validate_vm_commit(accepted_result, accepted_snapshot, "accepted R6 writer")
+		validate_fresh_readonly_halo(accepted_snapshot, minp, maxp,
+			accepted_loaded.content_contract.ignore_cid, "accepted R6 writer")
 	end
 	validate_private_capture(repo, accepted_capture, minp, maxp, false,
 		"accepted R6 writer")
