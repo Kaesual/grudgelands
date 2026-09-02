@@ -241,6 +241,14 @@ records any witnessed events, but does not require a random placement to occur
 inside that smaller prefix. Record elapsed time and peak RSS before authorizing
 the complete pair and deciding whether its two worlds may run concurrently.
 
+The first post-halo-correction attempt completed every feature case and two of
+five adjacent native-prefix cells without an engine or mapgen error, then hit
+the fixed per-order timeout. Those adjacent native cells exercise the same
+notification plumbing and carry no pilot event requirement. The reviewed
+runtime correction therefore keeps only the first native cell in G2. The
+complete 32-row G3 native corpus, its event gate and its census slices remain
+unchanged.
+
 The complete two-schedule smoke proceeds only when the pilot projects:
 
 - no more than two hours total wall time on the designated workstation;

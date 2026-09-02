@@ -235,6 +235,16 @@ This directly constrains the correction to the fresh read-only halo rather than
 accepted owner geometry or settlement semantics. An exact-SHA focused review
 is the remaining prerequisite for the next pilot.
 
+Exact follow-up `ded5a30eba299e1367980c5e07f3c6222c7f0376` resolved both
+non-blocking wording findings and received **ACCEPT: 0 Critical / 0 High / 0
+Medium / 0 Low** for the sequential pilot. The pilot then completed all three
+feature requests and two same-depth adjacent native-grid requests without a
+Lua or mapgen error, but the forward schedule reached the fixed timeout before
+the remaining three redundant native-prefix cells. A one-row native pilot
+still exercises the identical notification path; the full 32-row G3 corpus is
+unchanged. This measured G2-only reduction requires focused independent review
+before rerun.
+
 ## Calibration so far
 
 - Implementing/coordinating model: GPT-5.6 Sol with two bounded parallel

@@ -71,8 +71,9 @@ they do not predict what the first GUI world will look like.
 
 The feature smoke corpus remains exactly 15 rows in
 `tools/wp40/r8/smoke-corpus.tsv`. Native preservation is kept in the separate
-four-column `tools/wp40/r8/native-witness-corpus.tsv`, with the five-row
-`native-pilot-corpus.tsv` being its declared prefix. These files are
+four-column `tools/wp40/r8/native-witness-corpus.tsv`, with
+`native-pilot-corpus.tsv` as its one-row declared prefix after the measured
+pilot timeout. These files are
 inputs, not evidence that a particular row already contains a dungeon or cave.
 
 Rows `native_owner_y240_r00_c00` through `native_owner_y240_r04_c04` form a
@@ -81,9 +82,10 @@ fixed 5 by 5 mapchunk grid. With `chunksize=5`, their requested x/z positions
 `-192,-112,-32,48,128`; requested `y=-240` resolves to central origin
 `-272`. Thus this is the upper dungeon-eligible owner slice, central
 `[-272,-193]` and full emerged `[-288,-177]`, with unique mapchunk IDs
-and no growing search radius. The five rows in `native-pilot-corpus.tsv`
-are exactly `native_owner_y240_r00_c00` through `...c04`; the pilot
-checks plumbing only and never turns a missing notification into a pass.
+and no growing search radius. The one row in `native-pilot-corpus.tsv` is
+exactly `native_owner_y240_r00_c00`; the pilot checks plumbing only and never
+turns a missing notification into a pass. The removed four adjacent pilot
+rows remain in the unchanged final grid and added no distinct pilot gate.
 
 The fixed supplemental rows are `native_stratum_slate` (`y=-240`),
 `native_stratum_basalt` (`-400`), `native_stratum_granite` (`-600`),

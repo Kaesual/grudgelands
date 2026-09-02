@@ -1,11 +1,10 @@
 # WP40 R8 real-engine pilot record
 
-**Status:** five diagnostic attempts retained. Attempts 1--4 stopped during
-production construction; Attempt 5 crossed startup, manifest, authority and
-the first real production mapgen callback. It exposed one fresh-engine
-read-only-halo assumption absent from the offline R5--R7 fixtures. A narrow
-two-adapter correction and strengthened fixtures are under validation before
-focused review and a fresh sequential pilot.
+**Status:** six diagnostic attempts retained. Attempts 1--4 stopped during
+production construction; Attempt 5 exposed and corrected the fresh-engine
+read-only halo. Attempt 6 generated five real mapchunks without a Lua or
+mapgen error, then hit the fixed forward timeout. Its measured one-row native
+pilot reduction awaits focused review before a fresh sequential pilot.
 
 ## Attempt 1 -- diagnostic failure
 
@@ -245,3 +244,40 @@ passed with input-set SHA-256
 `98fad808c48a32fcb87d06b2b8680dc2a0c7393ab59eeb34e9d94f607b9148ca`.
 The final PUC 5.1/LuaJIT pair remains deliberately deferred until successful
 real-engine G2/G3 execution freezes the eventual production bytes.
+
+## Attempt 6 -- measured pilot timeout
+
+- Date: 2026-09-02
+- Candidate: `ded5a30eba299e1367980c5e07f3c6222c7f0376`
+- Review before execution: **ACCEPT, 0 Critical / 0 High / 0 Medium / 0 Low**
+- Mode: sequential, Seed `0`, forward order first
+- Capture ID:
+  `5872815007eb278af3f976041e8166ebb72ca4e75e1f36e70d833e1313981f09`
+- Result: five of eight forward requests generated successfully; fixed host
+  timeout then stopped the sixth request; reverse order was not started
+- Process result: exit 124 after exactly 15:30.00; no swap; the probe recorded
+  an engine RSS peak of 3,837,706,240 bytes
+- Completed emerge times: capital 189,426,057 us; channel 25,654,300 us;
+  exact deep resource 255,431,811 us; native grid cells 176,599,864 us and
+  162,147,782 us
+- Forward console-log SHA-256:
+  `1c80c1866e335526c9078ee721ca6d35c9ce6969a78c62b9d5889b9ee04be9c6`
+- Forward server-log SHA-256:
+  `4e7ff2b94fd6db6e9ec8fabc1c796142ddfa88dea0518e4b6a8d58e22ce9a30b`
+- Forward event-stream SHA-256:
+  `b577bf5e01ba5606430c24537966ff9507d76af192e05d2d1a5faa98e58cc7c8`
+- Forward GNU-time log SHA-256:
+  `5adc59c8a1426bde57af0d13c3a037ffd1ace417bccf8db1afce541ea3c28c0e`
+
+This is a run-budget finding, not a content or writer failure. The three
+feature classes and two native rows all returned one generated MapBlock plus
+124 in-memory actions; no request errored or was cancelled. There is no clean
+shutdown, reverse-order or G2 acceptance claim from the timed-out capture.
+
+The native pilot had five adjacent cells at the same y band, all exercising
+the same notification plumbing and none carrying a pilot cave/dungeon event
+requirement. Keeping only its first declared cell retains every distinct G2
+risk class. From the observed timings, startup plus the three features and one
+native cell project to roughly 12--13 minutes per order, below the unchanged
+15-minute engine timeout plus 30-second host margin. The full 32-row G3 native
+corpus and its blocking event/census requirements are not reduced.

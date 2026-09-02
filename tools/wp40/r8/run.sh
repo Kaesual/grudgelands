@@ -59,7 +59,7 @@ fi
 native_row_count="$(awk 'NF && $1 !~ /^#/ {count++} END {print count + 0}' \
 	"$native_corpus")"
 expected_native_rows=32
-if [[ "$mode" == "pilot" ]]; then expected_native_rows=5; fi
+if [[ "$mode" == "pilot" ]]; then expected_native_rows=1; fi
 if [[ "$native_row_count" != "$expected_native_rows" ]]; then
 	echo "WP40 R8: native corpus row count differs from frozen mode" >&2
 	exit 2

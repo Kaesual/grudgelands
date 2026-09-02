@@ -1,9 +1,8 @@
 # WP40 R8 headless runner preflight
 
-Status: scaffold prepared; no Luanti, Flatpak, LuaJIT or PUC runtime was run
-while preparing this file. The runner is intentionally a narrow release
-smoke, not a replacement for the offline R7 evidence, R2/R6 capacity and
-supply evidence, or the later visual gates.
+Status: scaffold reviewed and exercised by diagnostic real-engine pilots. The
+runner remains a narrow release smoke, not a replacement for the offline R7
+evidence, R2/R6 capacity and supply evidence, or the later visual gates.
 
 ## Contract
 
@@ -11,7 +10,7 @@ supply evidence, or the later visual gates.
 `tools/wp40/r8/smoke-corpus.tsv`. `WP40_R8_MODE=pilot` instead defaults to the
 committed three-row `pilot-corpus.tsv`. Final mode unions its feature corpus
 with the fixed 32-row `native-witness-corpus.tsv`; pilot mode uses its exact
-five-row prefix. Both modes run the same forward/reverse machinery. The runner
+one-row prefix. Both modes run the same forward/reverse machinery. The runner
 can accept another reviewed tab-separated feature corpus with
 10--15 unique rows in final mode or 2--3 in pilot mode, in this form:
 
