@@ -15,7 +15,13 @@ the exact committed 10-row `smoke-corpus.tsv` with no native rows, and the
 `native` worker consumes the zero-row `empty-feature-corpus.tsv` plus the exact
 32-row `native-witness-corpus.tsv`. Each worker owns one forward/reverse pair,
 so four fresh worlds run concurrently. `WP40_R8_MODE=pilot` retains the
-historical combined three-feature plus one-native-row pair. Corpus rows use:
+historical combined three-feature plus one-native-row pair.
+
+The coordinator immediately re-executes itself from an exact commit-derived
+input tree, persists that tree below the immutable capture and runs both child
+workers plus the final JQ validator from the persisted copy. A live worktree
+edit during the multi-hour run therefore cannot change the accepted bytes.
+Corpus rows use:
 
 ```text
 id<TAB>x<TAB>surface-or-y<TAB>z
@@ -37,12 +43,12 @@ already exists. It accepts only a seed in the frozen candidate table and binds
 the corresponding R7 offline-manifest SHA-256 as provenance. R7's accepted
 manifest was mocked-engine evidence and includes content identities, so the
 real engine's manifest is recorded rather than falsely required to equal it;
-the two fresh worlds must report the same actual runtime manifest. The capture
+the four fresh worlds must report the same actual runtime manifest. The capture
 identity also binds
 the Flatpak identity, runner/probe bytes, candidate table and both corpora. A
-caller revision is resolved once to one full 40-hex commit before either
+caller revision is resolved once to one full 40-hex commit before any
 archive. The before/after Flatpak deployment and version bytes must match, as
-must both engines' in-process identity. It gives the Flatpak only the per-order
+must all four engines' in-process identity. It gives the Flatpak only the per-order
 temporary root and that order's exact immutable capture-output directory,
 where live `.partial` logs and probe events survive an interruption, and
 keeps the installed Luanti world and the user's normal XDG paths out of the
@@ -110,9 +116,11 @@ the final `register_on_shutdown` event remain separate immutable outputs.
    `comparison.json`. Require equal central content/param2/light feature rows,
    content-only native census rows, canonical native-event evidence in both
    native orders, 42 unique IDs across the two shards, and one identical
-   checkout/seed/engine/runtime manifest across all four worlds. Keep the
-   master `checksums.sha256` and both child captures together; do not combine
-   them into a historical T2 artifact or call this result exhaustive.
+   exact frozen-corpus ID set, checkout, seed, host/in-process engine identity,
+   Lua runtime and production manifest across all four worlds. All four
+   positive elapsed/RSS values are mandatory. Keep the master
+   `checksums.sha256` and both child captures together; do not combine them
+   into a historical T2 artifact or call this result exhaustive.
 
 ## Open bindings and deliberate limits
 

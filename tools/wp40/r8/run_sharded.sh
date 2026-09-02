@@ -6,15 +6,16 @@ set -euo pipefail
 # two orders. The four isolated engines run concurrently; this script then
 # validates and combines both pair receipts deterministically.
 
-for command_name in awk cat flatpak git jq sha256sum sort tail xargs; do
+for command_name in awk cat flatpak git jq mktemp sha256sum sort tail tar xargs; do
 	if ! command -v "$command_name" >/dev/null 2>&1; then
 		echo "WP40 R8 sharded: missing command $command_name" >&2
 		exit 2
 	fi
 done
 
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-repo="$(cd "$script_dir/../../.." && pwd)"
+invoked_script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_input="${WP40_R8_SOURCE_REPO:-$(cd "$invoked_script_dir/../../.." && pwd)}"
+repo="$(cd "$repo_input" && pwd)"
 checkout_input="${WP40_CHECKOUT_SHA:-HEAD}"
 checkout_sha="$(git -C "$repo" rev-parse --verify "${checkout_input}^{commit}")"
 if [[ ! "$checkout_sha" =~ ^[0-9a-f]{40}$ ]]; then
@@ -38,8 +39,10 @@ required_paths=(
 	tools/wp40/r8/probe/init.lua
 	tools/wp40/r8/probe/mod.conf
 	tools/wp40/r8/seed-candidates.tsv
+	tools/wp40/r8/pilot-corpus.tsv
 	tools/wp40/r8/smoke-corpus.tsv
 	tools/wp40/r8/empty-feature-corpus.tsv
+	tools/wp40/r8/native-pilot-corpus.tsv
 	tools/wp40/r8/native-witness-corpus.tsv
 	tools/wp40/r8/sharded_validate.jq
 	tools/wp40/r8/test_sharded_validate.sh
@@ -55,6 +58,44 @@ for relative_path in "${required_paths[@]}"; do
 	fi
 done
 
+# Re-execute from an exact commit-derived tree before creating any evidence.
+# This prevents an editor from changing a later-read shell/JQ/corpus byte while
+# a multi-hour capture is in flight. The inner process copies the same tree
+# into the immutable result before starting its workers.
+frozen_root="${WP40_R8_FROZEN_ROOT:-}"
+if [[ -z "$frozen_root" ]]; then
+	frozen_root="$(mktemp -d -p /tmp grudgelands-wp40-r8-input.XXXXXXXX)"
+	if ! git -C "$repo" archive "$checkout_sha" -- "${required_paths[@]}" |
+			tar -x -C "$frozen_root"; then
+		rm -rf -- "$frozen_root"
+		exit 2
+	fi
+	exec env WP40_R8_FROZEN_ROOT="$frozen_root" \
+		WP40_R8_SOURCE_REPO="$repo" WP40_CHECKOUT_SHA="$checkout_sha" \
+		bash "$frozen_root/tools/wp40/r8/run_sharded.sh"
+fi
+frozen_root="$(cd "$frozen_root" && pwd)"
+cleanup_frozen_root() {
+	if [[ "$frozen_root" == /tmp/grudgelands-wp40-r8-input.* ]]; then
+		rm -rf -- "$frozen_root"
+	fi
+}
+trap cleanup_frozen_root EXIT
+script_dir="$frozen_root/tools/wp40/r8"
+for relative_path in "${required_paths[@]}"; do
+	expected_blob="$(git -C "$repo" rev-parse "$checkout_sha:$relative_path")"
+	actual_blob="$(git -C "$repo" hash-object "$frozen_root/$relative_path")"
+	if [[ "$actual_blob" != "$expected_blob" ]]; then
+		echo "WP40 R8 sharded: frozen $relative_path differs from selected commit" >&2
+		exit 2
+	fi
+done
+if [[ ! -x "$script_dir/run_sharded.sh" || ! -x "$script_dir/run.sh" ||
+		! -x "$script_dir/test_sharded_validate.sh" ]]; then
+	echo "WP40 R8 sharded: committed runner/test modes must be executable" >&2
+	exit 2
+fi
+
 feature_rows="$(awk 'NF && $1 !~ /^#/ {count++} END {print count + 0}' \
 	"$script_dir/smoke-corpus.tsv")"
 empty_rows="$(awk 'NF && $1 !~ /^#/ {count++} END {print count + 0}' \
@@ -63,6 +104,15 @@ native_rows="$(awk 'NF && $1 !~ /^#/ {count++} END {print count + 0}' \
 	"$script_dir/native-witness-corpus.tsv")"
 if [[ "$feature_rows" != "10" || "$empty_rows" != "0" || "$native_rows" != "32" ]]; then
 	echo "WP40 R8 sharded: frozen shard row counts differ from 10+0+32" >&2
+	exit 2
+fi
+expected_request_ids="$({
+	awk 'NF && $1 !~ /^#/ {print $1}' "$script_dir/smoke-corpus.tsv"
+	awk 'NF && $1 !~ /^#/ {print $1}' "$script_dir/native-witness-corpus.tsv"
+} | jq -Rsc 'split("\n") | map(select(length > 0)) | sort')"
+if ! jq -en --argjson ids "$expected_request_ids" \
+	'$ids | length == 42 and (unique | length) == 42' >/dev/null; then
+	echo "WP40 R8 sharded: frozen corpora do not contain 42 unique IDs" >&2
 	exit 2
 fi
 feature_corpus_digest="$(sha256sum "$script_dir/smoke-corpus.tsv" | awk '{print $1}')"
@@ -78,7 +128,7 @@ engine_digest="$({
 } | sha256sum | awk '{print $1}')"
 input_digest="$({
 	for relative_path in "${required_paths[@]}"; do
-		sha256sum "$repo/$relative_path" | awk '{print $1}'
+		sha256sum "$frozen_root/$relative_path" | awk '{print $1}'
 	done
 } | sha256sum | awk '{print $1}')"
 capture_id="$({
@@ -95,9 +145,14 @@ if [[ -e "$result_dir" ]]; then
 	exit 2
 fi
 mkdir "$result_dir" "$result_dir/inputs" "$result_dir/shards"
-for relative_path in "${required_paths[@]}"; do
-	cp "$repo/$relative_path" "$result_dir/inputs/$(basename "$relative_path")"
-done
+(
+	cd "$frozen_root"
+	tar -cf - "${required_paths[@]}"
+) | (
+	cd "$result_dir/inputs"
+	tar -xf -
+)
+evidence_root="$result_dir/inputs"
 printf '%s\n' "$flatpak_info_text" >"$result_dir/flatpak-before-deployment.txt"
 printf '%s\n' "$flatpak_version_text" >"$result_dir/flatpak-before-version.txt"
 
@@ -113,6 +168,7 @@ stop_child() {
 cleanup() {
 	stop_child "$feature_pid"
 	stop_child "$native_pid"
+	cleanup_frozen_root
 }
 trap 'exit 130' HUP INT TERM
 trap cleanup EXIT
@@ -120,20 +176,22 @@ trap cleanup EXIT
 env WP40_R8_MODE=final WP40_R8_SHARD=feature \
 	WP40_R8_TIMEOUT="$timeout_seconds" WP40_R8_PARALLEL=1 \
 	WP40_R8_PORT_BASE=32001 WP40_CHECKOUT_SHA="$checkout_sha" \
+	WP40_R8_FROZEN_ROOT="$evidence_root" WP40_R8_SOURCE_REPO="$repo" \
 	WP40_SEED="$seed" WP40_R8_RESULTS_ROOT="$result_dir/shards" \
-	WP40_R8_CORPUS="$script_dir/smoke-corpus.tsv" \
+	WP40_R8_CORPUS="$evidence_root/tools/wp40/r8/smoke-corpus.tsv" \
 	WP40_R8_NATIVE_CORPUS= \
-	bash "$script_dir/run.sh" \
+	bash "$evidence_root/tools/wp40/r8/run.sh" \
 	>"$result_dir/feature-runner.stdout.partial" \
 	2>"$result_dir/feature-runner.stderr.partial" &
 feature_pid=$!
 env WP40_R8_MODE=final WP40_R8_SHARD=native \
 	WP40_R8_TIMEOUT="$timeout_seconds" WP40_R8_PARALLEL=1 \
 	WP40_R8_PORT_BASE=32003 WP40_CHECKOUT_SHA="$checkout_sha" \
+	WP40_R8_FROZEN_ROOT="$evidence_root" WP40_R8_SOURCE_REPO="$repo" \
 	WP40_SEED="$seed" WP40_R8_RESULTS_ROOT="$result_dir/shards" \
-	WP40_R8_CORPUS="$script_dir/empty-feature-corpus.tsv" \
-	WP40_R8_NATIVE_CORPUS="$script_dir/native-witness-corpus.tsv" \
-	bash "$script_dir/run.sh" \
+	WP40_R8_CORPUS="$evidence_root/tools/wp40/r8/empty-feature-corpus.tsv" \
+	WP40_R8_NATIVE_CORPUS="$evidence_root/tools/wp40/r8/native-witness-corpus.tsv" \
+	bash "$evidence_root/tools/wp40/r8/run.sh" \
 	>"$result_dir/native-runner.stdout.partial" \
 	2>"$result_dir/native-runner.stderr.partial" &
 native_pid=$!
@@ -189,11 +247,13 @@ jq -n --arg checkout_sha "$checkout_sha" --arg seed "$seed" \
 	--arg feature_corpus_digest "$feature_corpus_digest" \
 	--arg empty_corpus_digest "$empty_corpus_digest" \
 	--arg native_corpus_digest "$native_corpus_digest" \
+	--argjson expected_request_ids "$expected_request_ids" \
 	--slurpfile feature_manifest "$feature_dir/manifest.json" \
 	--slurpfile feature_comparison "$feature_dir/comparison.json" \
 	--slurpfile native_manifest "$native_dir/manifest.json" \
 	--slurpfile native_comparison "$native_dir/comparison.json" \
-	-f "$script_dir/sharded_validate.jq" >"$result_dir/comparison.json"
+	-f "$evidence_root/tools/wp40/r8/sharded_validate.jq" \
+	>"$result_dir/comparison.json"
 
 if ! jq -e '.all_ok == true' "$result_dir/comparison.json" >/dev/null; then
 	echo "WP40 R8 sharded: deterministic aggregate comparison failed" >&2
@@ -254,5 +314,6 @@ checksums_tmp="$result_dir/checksums.sha256.partial"
 ) >"$checksums_tmp"
 mv "$checksums_tmp" "$result_dir/checksums.sha256"
 
+cleanup_frozen_root
 trap - EXIT HUP INT TERM
 echo "$result_dir"

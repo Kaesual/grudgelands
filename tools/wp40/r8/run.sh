@@ -21,7 +21,10 @@ if [[ ! -x /usr/bin/time ]]; then
 fi
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-repo="$(cd "$script_dir/../../.." && pwd)"
+repo_input="${WP40_R8_SOURCE_REPO:-$(cd "$script_dir/../../.." && pwd)}"
+repo="$(cd "$repo_input" && pwd)"
+input_root="${WP40_R8_FROZEN_ROOT:-$repo}"
+input_root="$(cd "$input_root" && pwd)"
 mode="${WP40_R8_MODE:-final}"
 if [[ "$mode" != "pilot" && "$mode" != "final" ]]; then
 	echo "WP40 R8: WP40_R8_MODE must be pilot or final" >&2
@@ -172,8 +175,14 @@ for relative_path in tools/wp40/r8/run.sh tools/wp40/r8/probe/init.lua \
 		echo "WP40 R8: selected commit lacks $relative_path" >&2
 		exit 2
 	fi
-	if ! git -C "$repo" diff --quiet "$checkout_sha" -- "$relative_path"; then
-		echo "WP40 R8: $relative_path differs from selected commit" >&2
+	if [[ ! -f "$input_root/$relative_path" ]]; then
+		echo "WP40 R8: input tree lacks $relative_path" >&2
+		exit 2
+	fi
+	expected_blob="$(git -C "$repo" rev-parse "$checkout_sha:$relative_path")"
+	actual_blob="$(git -C "$repo" hash-object "$input_root/$relative_path")"
+	if [[ "$actual_blob" != "$expected_blob" ]]; then
+		echo "WP40 R8: input $relative_path differs from selected commit" >&2
 		exit 2
 	fi
 done
@@ -399,7 +408,8 @@ EOF
 	if [[ -f "$events_path" ]]; then
 		mv "$events_path" "$output_dir/events.jsonl"
 	fi
-	if [[ -f "$output_dir/server.log" && -f "$output_dir/console.log" ]]; then
+	if [[ -f "$output_dir/server.log" && -f "$output_dir/console.log" &&
+			-s "$output_dir/time.txt" ]]; then
 		set +e
 		rg -n -i '(^|[^[:alpha:]])(ERROR|LuaError|FATAL|assertion failed|stack traceback|segmentation fault|SIGABRT)([^[:alpha:]]|$)' \
 			"$output_dir/server.log" "$output_dir/console.log" \
@@ -411,7 +421,7 @@ EOF
 			return 1
 		fi
 	else
-		echo "WP40 R8: $order did not retain both engine logs" >&2
+		echo "WP40 R8: $order did not retain engine logs and timing" >&2
 		return 1
 	fi
 	if [[ $status -ne 0 ]]; then
@@ -581,6 +591,15 @@ forward_elapsed="$(jq -s '[.[] | select(.event == "complete") | .elapsed_us][0] 
 reverse_elapsed="$(jq -s '[.[] | select(.event == "complete") | .elapsed_us][0] // null' "$result_dir/reverse/events.jsonl")"
 forward_rss="$(jq -s '[.[] | select(.process.rss_peak_bytes != null) | .process.rss_peak_bytes] | max // null' "$result_dir/forward/events.jsonl")"
 reverse_rss="$(jq -s '[.[] | select(.process.rss_peak_bytes != null) | .process.rss_peak_bytes] | max // null' "$result_dir/reverse/events.jsonl")"
+if ! jq -en --argjson forward_elapsed "$forward_elapsed" \
+		--argjson reverse_elapsed "$reverse_elapsed" \
+		--argjson forward_rss "$forward_rss" \
+		--argjson reverse_rss "$reverse_rss" '
+	[$forward_elapsed, $reverse_elapsed, $forward_rss, $reverse_rss] |
+	all(.[]; type == "number" and . > 0)' >/dev/null; then
+	echo "WP40 R8: positive elapsed/RSS telemetry is required" >&2
+	exit 1
+fi
 jq -n --arg capture_id "$capture_id" --arg checkout_sha "$checkout_sha" \
 	--arg mode "$mode" --arg shard "$shard" --arg seed "$seed" \
 	--arg corpus_digest "$corpus_digest" \

@@ -47,6 +47,8 @@ def pair_ok:
 			($reverse_union | length) == 42 and
 			($reverse_union | unique | length) == 42 and
 			($forward_union | sort) == ($reverse_union | sort)),
+		exact_corpus_ids: (($forward_union | sort) == $expected_request_ids and
+			($reverse_union | sort) == $expected_request_ids),
 		snapshot_identity: ($fm.snapshot.checkout_sha == $checkout_sha and
 			$nm.snapshot.checkout_sha == $checkout_sha),
 		seed_identity: ($fm.settings.seed_decimal_string == $seed and
@@ -58,12 +60,23 @@ def pair_ok:
 			  $nm.input_identity.engine_sha256_before,
 			  $nm.input_identity.engine_sha256_after,
 			  $engine_digest] | unique | length) == 1),
+		in_process_runtime_identity: ([
+			$fm.startup.forward | {engine, lua_runtime},
+			$fm.startup.reverse | {engine, lua_runtime},
+			$nm.startup.forward | {engine, lua_runtime},
+			$nm.startup.reverse | {engine, lua_runtime}
+		] | all(.[]; (.engine | type) == "object" and
+			(.engine.project | type) == "string" and .engine.project != "" and
+			(.engine.string | type) == "string" and .engine.string != "" and
+			(.lua_runtime | type) == "string" and .lua_runtime != "") and
+			(unique | length) == 1),
 		runtime_manifest_identity: ([
 			$fm.startup.forward.production.manifest_sha256,
 			$fm.startup.reverse.production.manifest_sha256,
 			$nm.startup.forward.production.manifest_sha256,
 			$nm.startup.reverse.production.manifest_sha256
-		] | unique | length) == 1,
+		] | all(.[]; type == "string" and test("^[0-9a-f]{64}$")) and
+			(unique | length) == 1),
 		offline_r7_identity: ($fm.input_identity.offline_r7_manifest_sha256 ==
 			$nm.input_identity.offline_r7_manifest_sha256),
 		time_boundaries: ($fm.settings.probe_timeout_seconds == 10770 and
@@ -73,10 +86,21 @@ def pair_ok:
 			$fm.settings.liquid_update_seconds == 10801 and
 			$nm.settings.liquid_update_seconds == 10801),
 		port_partition: ($fm.settings.port_base == 32001 and
-			$nm.settings.port_base == 32003)
+			$nm.settings.port_base == 32003),
+		telemetry: ([
+			$fm.measured.forward_probe_elapsed_us,
+			$fm.measured.reverse_probe_elapsed_us,
+			$fm.measured.forward_engine_peak_rss_bytes,
+			$fm.measured.reverse_engine_peak_rss_bytes,
+			$nm.measured.forward_probe_elapsed_us,
+			$nm.measured.reverse_probe_elapsed_us,
+			$nm.measured.forward_engine_peak_rss_bytes,
+			$nm.measured.reverse_engine_peak_rss_bytes
+		] | all(.[]; type == "number" and . > 0))
 	},
 	feature_capture_id: $fm.capture_id,
 	native_capture_id: $nm.capture_id,
+	expected_request_ids: $expected_request_ids,
 	forward_request_ids: ($forward_union | sort),
 	reverse_request_ids: ($reverse_union | sort),
 	limitation: "No real-engine comparison covers mutation between the feature and native shards; R7 offline order evidence and owner-bounded writes cover that residual risk."

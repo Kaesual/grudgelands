@@ -94,6 +94,9 @@ the two pairs together and combines them deterministically. The harness must:
 
 - export an exact committed candidate using `git archive` into a disposable
   game tree;
+- re-execute the final coordinator from a commit-derived input tree, persist
+  that tree in the capture and execute both child workers and the final JQ
+  validator from it rather than rereading live worktree bytes;
 - use a new disposable `LUANTI_USER_PATH` and fresh world for every shard and
   schedule;
 - never run against or write the shared installed Grudgelands game or any
@@ -385,6 +388,8 @@ aggregate must prove exact 42-ID union coverage. The gate requires:
 - clean startup and controlled shutdown;
 - one identical actual production manifest across all four worlds and the
   selected seed;
+- one identical non-empty in-process engine/Lua-runtime identity across all
+  four startup events;
 - no Lua error, assertion, manifest refusal, unknown-node failure or engine
   crash;
 - one active WP40 generated callback/writer path;
@@ -397,10 +402,12 @@ aggregate must prove exact 42-ID union coverage. The gate requires:
   exact accepted Seed-0 ruby root present;
 - all five registered native strata and at least one retained native
   gravel-blob node in the aggregate deep-slice census;
+- exact equality between the aggregate 42 request IDs and the IDs in the two
+  frozen committed corpora;
 - at least one native dungeon event and a matched native random-walk-cave event
   pair from the fixed native-witness grid, with the canonical native evidence
   identical across request orders; and
-- durable wall-time and peak-RSS output.
+- durable, positive wall-time and peak-RSS output from all four worlds.
 
 Generation timing and RSS are release outputs. The approximately two-hour
 target and no-host-pressure envelope are advisory unless the user observes

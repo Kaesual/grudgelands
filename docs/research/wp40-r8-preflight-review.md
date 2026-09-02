@@ -512,6 +512,18 @@ safety stop and 10,801-second periodic-liquid boundary. Flatpak
 PUC/LuaJIT pair remains valid; the non-trivial harness/contract correction
 still requires focused independent acceptance of its exact commit.
 
+The first exact sharding candidate `04b9de6f7b8a761cae0f53db629c46aa49201512`
+received independent **REJECT, 0 Critical / 2 High / 3 Medium / 0 Low** before
+execution. The High findings were a non-executable documented coordinator and
+post-run use of the live worktree JQ validator instead of the captured bytes.
+The Medium findings were missing cross-shard in-process engine/Lua identity,
+missing equality to the exact committed corpus IDs and non-gated timing/RSS
+telemetry. The correction makes the new scripts executable, re-executes from
+and persists one commit-derived input tree, uses that tree for both workers and
+aggregation, and adds fail-closed fixture cases for every missing identity or
+telemetry gate. It remains tools/docs-only and needs focused re-review before
+G3.
+
 ## Calibration so far
 
 - Implementing/coordinating model: GPT-5.6 Sol with two bounded parallel
