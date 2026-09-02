@@ -6,8 +6,9 @@ built as a standalone Lua game rather than a mod pack.
 
 > **Status: in development.** The world, mobs, three classes, combat,
 > equipment, XP and the first money/vendor economy are playable. The final
-> named-zone map, quests, professions, open-world housing and geographic PvP
-> are specified but not built. See [Current State](#current-state).
+> named-zone map is implemented and awaiting release/runtime gates; quests,
+> professions, open-world housing and geographic PvP are not built. See
+> [Current State](#current-state).
 
 ## The story
 
@@ -190,28 +191,28 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
 
-*Last updated: 2026-08-31. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-09-02. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
 
-**Shipped (16 of 45 work packages):** WP0–WP4, WP6, WP7, WP15, WP18,
-WP19, WP25, WP35, WP36, WP38, WP39 and WP43 provide the playable foundation,
-42 mobs, three classes, equipment/bags, XP, threat, money/vendors, the
-canonical six-tier material/depth/harvest contract and current-ray
-combat/projectiles. WP16 is a canceled tombstone and is not shipped.
-WP43 supersedes WP25's running legacy while preserving saved-world migration.
+**Shipped (17 of 45 work packages):** WP0–WP4, WP6, WP7, WP15, WP18,
+WP19, WP25, WP33, WP35, WP36, WP38, WP39 and WP43 provide the playable
+foundation, 42 mobs, three classes, equipment/bags, XP, threat, money/vendors,
+the canonical six-tier material/depth/harvest contract, gathering sources and
+current-ray combat/projectiles. WP16 is a canceled tombstone and is not
+shipped. WP43 supersedes WP25's running legacy while preserving saved-world
+migration.
 
 **Not in the game yet:** quests, professions/recipes, talent trees, parties,
 recovery, offhand items, affixes, durability, final structures, travel/map,
-Claim Stone housing, mounts and bosses remain unbuilt. The 38-zone surface,
-geographic PvP transaction, bounded war-front life and rebased economy are
-also pending. The playable-boat contract, several mount details, deep-content
+Claim Stone housing, mounts and bosses remain unbuilt. The 38-zone surface is
+implemented but awaits R8's real-world/visual/runtime gates; geographic PvP,
+bounded war-front life and the rebased economy are also pending. The
+playable-boat contract, several mount details, deep-content
 questions and PvP-death XP rule remain explicitly open in
 [the boat TODO](TODO-design-boats.md),
 [the crafting/mount TODO](TODO-design-crafting-rework.md),
 [the depth TODO](TODO-design-depth.md) and
-[the PvP-death TODO](TODO-design-pvp-death.md), respectively. WP40 R6's
-surface/resource choices and implementation are accepted but deliberately
-disabled, so they are not visible in the game yet.
+[the PvP-death TODO](TODO-design-pvp-death.md), respectively.
 
 **In progress:** WP40, the named-zone map foundation, has been under
 implementation since 2026-08-13 on branch `wp40-named-zone-world-foundation`.
@@ -228,31 +229,31 @@ payload were independently accepted on 2026-08-27. The pure typed R5 Planner,
 consolidated Adapter and canonical exhaustive artifact were independently
 accepted on 2026-08-29. R6's frozen surface/resource catalogs, private
 cultural-slot API, complete 32-seed evidence fleet and canonical artifact were
-independently accepted on 2026-08-31. R0-R6 remain deliberately disabled: no
-accepted path registers the production callback or materializes a Luanti
-world. R7's native/cutover contract and WP33 decisions D1-D6 are now ratified;
-their registrations, P9G successor and consumer cutover are next before the
-writer activates.
+independently accepted on 2026-08-31. R7's single production writer, consumer
+cutover, WP33 gathering payload, P9G successor and functional-anchor suffix
+were independently accepted on 2026-09-02. Its release-oriented evidence is a
+32-seed stratified main sample plus a separate seven-seed frontier-access lane,
+not an exhaustive spatial claim.
 The current [engineering contract](docs/research/wp40-engineering-brief.md)
 and [R0–R8 plan](docs/research/wp40-simple-map-rebase-plan.md) preserve the 38
 zones, routes, housing, policy and supply goals with a much smaller algorithm.
 The accepted R2 artifact owns fixed-layout and once-per-layout capacity
 evidence; the accepted R6 artifact owns 32-seed content/supply/access
-evidence. Production mapchunk performance and runtime evidence remain R8
-gates.
+evidence. R8 now owns the first real fresh Luanti world, visual quality,
+production mapchunk performance and runtime evidence.
 
 **Ready to start next:** WP26 and WP44 are the newly unblocked material and
 economy roots. WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind shipped
 dependencies; WP34 is not next because it still waits for map, structures and
 economy.
 
-**Caveats:** the running WP18/WP36 world still uses rectangular continents,
-radial difficulty and mandatory water separation until WP40. WP7 still runs
-its old price curve and 25% buy-back until WP44. WP43 passed its headless and
-independent-review gates but has not received a GUI/runtime pass; validate
-mapgen in a fresh world and migration in a backed-up WP25 world. WP39 still
-needs its recorded GUI combat test, while WP25, WP35 and WP36 retain their
-historical not-runtime-tested labels; WP40 will also be fresh-world-only.
+**Caveats:** existing WP18/WP36 worlds retain already-generated rectangular
+continents and are not WP40 migration targets; R8 must use a fresh v7 world.
+WP7 still runs its old price curve and 25% buy-back until WP44. WP43 passed its
+headless and independent-review gates but has not received a GUI/runtime pass;
+validate migration only in a backed-up WP25 world. WP39 still needs its
+recorded GUI combat test, while WP25, WP35 and WP36 retain their historical
+not-runtime-tested labels; WP40 remains fresh-world-only.
 
 ## Running it
 

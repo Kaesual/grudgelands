@@ -136,10 +136,12 @@ the goal-level view.
   and canonical artifact were independently accepted 2026-08-29. R6's frozen
   surface/resource catalogs, private cultural-slot API, complete 32-seed
   evidence and canonical artifact were independently accepted 2026-08-31.
-  R0-R6 remain disabled. R7's native/cutover contract and WP33 decisions
-  D1-D6 were ratified 2026-08-31; their registrations, P9G successor and
-  consumer cutover are next before the writer activates. R8 retains the final
-  release/runtime gates.
+  R7's single production writer, existing-consumer cutover, WP33 gathering
+  payload, P9G successor and functional-anchor suffix were independently
+  accepted 2026-09-02 at `68f6cec`; its bounded evidence is explicitly a
+  32-seed stratified main sample plus a seven-seed frontier-access lane, not
+  exhaustive spatial coverage. R8 is the remaining final release/runtime
+  stage and owns the first real fresh Luanti world.
   Current technical contract:
   [wp40-engineering-brief.md](docs/research/wp40-engineering-brief.md); current
   R0-R8 sequence:
@@ -167,8 +169,8 @@ the goal-level view.
   genuine affix/recipe/content questions are decided.
 - [ ] WP13: final starts, capitals, settlements, camps, kings/guards and both
   all-six-gem apex camps on WP40 geometry and WP43 materials.
-- [ ] WP33: gathering plants, signature woods and cultural sources on final
-  zone/race-region ownership.
+- [x] WP33: gathering plants, signature woods and cultural sources on final
+  zone/race-region ownership; accepted with WP40 R7 on 2026-09-02.
 - [ ] WP34: deep spawn pressure, corrected depth-level curve, camp-only
   renewable resources, deep lava and final Abyssal/G1/G2 density. It follows
   map, materials, structures and economy; it is not an independent next WP.

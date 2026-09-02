@@ -1,9 +1,10 @@
 # WP40 Simple Named-Zone World — Engineering Contract
 
 Status: **current WP40 engineering authority; fixed-layout V1e R2 remains the
-live horizontal authority. The pure R3 vertical implementation and canonical
-artifact and the complete still-disabled R4 geography/policy payload were
-independently accepted 2026-08-27; R5 is next.**
+live horizontal authority. R3-R6 are accepted foundations and R7's atomic
+production cutover was independently accepted 2026-09-02 at `68f6cec`. R8 is
+next and owns the first real Luanti world, visual, runtime and performance
+gates.**
 
 This contract implements the product rules in
 [world_zones.md](../design/world_zones.md). The independently reviewed

@@ -1,6 +1,7 @@
 # WP40 R7 Implementation Contract
 
-Status: **ratified and implementation-ready; production writer still disabled**
+Status: **accepted 2026-09-02 at `68f6cec`; production writer active in code;
+real-world, visual and performance acceptance remains R8**
 
 Decision date: 2026-08-31 (Europe/Berlin)  
 Reviewed technical source: `acf16c156416ad47df70c8ff3278211fcbd3978c`
@@ -13,6 +14,9 @@ field-level rules remain in:
 - `wp40-r7-native-contract-candidate.md`, the native/input/cutover contract;
 - `wp40-r7-cutover-preflight.md`, the writer and consumer inventory; and
 - `wp33-r7-contract-candidate-review.md`, the clean independent review record.
+
+The completed implementation and its bounded evidence are accepted in
+[`wp40-simple-map-r7-review.md`](wp40-simple-map-r7-review.md).
 
 The authoritative player-visible rules are folded into
 `docs/design/biomes_mobs.md` Section 2.2,

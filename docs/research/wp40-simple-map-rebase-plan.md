@@ -1,12 +1,12 @@
 # WP40 Simple Map Rebase Plan
 
-**Status:** D1-D7 and R0-R6 are accepted. Fixed-layout V1e R2 remains the live
-horizontal authority; R3-R6 remain the accepted still-disabled vertical,
-geography/policy, planner/adapter and surface/resource evidence milestones.
-R6 was independently accepted on 2026-08-31 at `fb577ea`; V1d remains
-historical evidence at `d337160`. R7 is next; its native/cutover contract and
-WP33 decisions D1--D6 were ratified on 2026-08-31, while the writer stays
-disabled until their registrations and evidence are implemented and accepted.
+**Status:** D1-D7 and R0-R7 are accepted. Fixed-layout V1e R2 remains the live
+horizontal authority; R3-R6 remain the accepted vertical, geography/policy,
+planner/adapter and surface/resource evidence milestones. R7 was independently
+accepted on 2026-09-02 at `68f6cec`: the single production writer, consumer
+cutover, WP33 gathering payload, P9G successor and functional-anchor suffix are
+active in code. V1d remains historical evidence at `d337160`. R8 is next and
+owns the first real fresh Luanti world, visual, runtime and performance gates.
 
 **Ruling date:** 2026-08-25
 
@@ -968,7 +968,7 @@ LuaJIT/PUC 5.1 micro-KAT are recorded in the
 writes no world; acceptance therefore advances the sequence to R7 without
 activating a second mapgen path.
 
-### R7 — atomic production cutover and consumer migration
+### R7 — atomic production cutover and consumer migration (accepted)
 
 The ratified execution contract is
 [`wp40-r7-implementation-contract.md`](wp40-r7-implementation-contract.md).
@@ -983,10 +983,20 @@ In one reviewed cutover gate:
   `open_sea_at`;
 - preserve `grug_core.surface_level_at(x, z)` as terrain-height semantics while
   redirecting it to `grug_zones.terrain_height_at`;
-- move spawn, protection, mobs, Kraken, rares, gathering, map, mounts, housing
-  and travel to the stable results; and
+- migrate every existing spawn, protection, mob, Kraken, rare and gathering
+  consumer and publish the stable map/mount/housing/travel APIs for their
+  future WPs; and
 - prove no loader/callback/settings path can activate both mapgen writers and
   the R0 consumer matrix has no uncovered live call site.
+
+R7 was independently accepted on 2026-09-02. Its
+[review](wp40-simple-map-r7-review.md),
+[promotion manifest](wp40-r7-promotion-manifest.tsv) and
+[run receipt](wp40-r7-run-receipt.tsv) bind the final implementation and the
+user-approved pragmatic evidence scope: a 32-seed, 4,096-owner stratified main
+sample plus a separate seven-seed, 3,206-owner frontier-access lane. This is
+layered offline release evidence, not exhaustive spatial coverage and not a
+real-world, visual or performance claim.
 
 ### R8 — release evidence and rollout
 
