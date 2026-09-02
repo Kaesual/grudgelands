@@ -3,8 +3,9 @@
 **Status:** Attempt 8 confirmed reversed-order liquid equality and isolated the
 remaining surface-light defect to a fresh vertical `CONTENT_IGNORE` halo above
 the owner. The narrower owner-top calculation correction has green static and
-fixture verification and now awaits focused independent review before a new
-pilot.
+fixture verification and exact commit
+`050ae36bed447c873f7df1ef43f04e73517d89bf` received focused independent
+acceptance. The next gate is a fresh sequential pilot.
 
 ## Scope and independence
 
@@ -382,6 +383,23 @@ bytes, while current Stage A remains exact for content, `param2` and light and
 the dedicated R8 fixtures own the changed lighting boundary. This narrowly
 scoped oracle change is part of the focused review boundary; it must not be
 accepted if it removes any current-light comparison.
+
+## Owner-top correction review
+
+A fresh independent GPT-5.6 Sol context reviewed exact commit
+`050ae36bed447c873f7df1ef43f04e73517d89bf` read-only and returned **ACCEPT:
+0 Critical / 0 High / 0 Medium / 0 Low**. It confirmed against pinned Luanti
+5.17 source that the surface calculation now begins at authored owner content,
+while the full-VM light spread, enlarged set box, deep path and byte-exact halo
+restoration remain unchanged.
+
+The reviewer also accepted the Stage-B historical-light supersession as
+narrow: current Stage A still compares all content, `param2` and light bytes;
+Stage B retains exact material, private-tuple and run comparison with frozen
+R6; and the independent current-light fixtures cover the changed engine
+boundary. It found no Lua 5.1, global, performance, documentation or release
+gate regression. The exact commit is accepted for the next fresh engine pilot;
+the pilot and eventual frozen PUC/LuaJIT micro-KAT pair remain open gates.
 
 ## Calibration so far
 

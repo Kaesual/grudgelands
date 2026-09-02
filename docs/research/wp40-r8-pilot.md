@@ -7,8 +7,8 @@ Attempt 7 completed both schedules cleanly and isolated a real surface-light
 defect plus wall-clock liquid aging in the comparison harness. Attempt 8
 confirmed the liquid correction and reduced the remaining surface defect to a
 fresh vertical `CONTENT_IGNORE` halo above the owner. A narrower lighting fix,
-green static/fixture verification and focused independent acceptance precede
-the next pilot.
+green static/fixture verification and focused independent acceptance are
+complete; a fresh sequential pilot is next.
 
 ## Attempt 1 -- diagnostic failure
 

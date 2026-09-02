@@ -3,7 +3,8 @@
 **Status:** A corrected one-row G2 pilot completed both schedules, confirmed
 order-stable liquid bytes and isolated the remaining surface-light defect to a
 fresh vertical `CONTENT_IGNORE` halo. The narrower owner-top lighting
-correction has green static and fixture verification and awaits focused review.
+correction has green static/fixture verification and focused independent
+acceptance. A fresh sequential pilot is the next gate.
 
 **Baseline:** `ac3ff3f17c0119b80c90f73db944a937d9159a2b` (the reviewed R7
 production cutover merged to `main`).
