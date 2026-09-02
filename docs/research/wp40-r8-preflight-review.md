@@ -171,11 +171,33 @@ the accepted R6/R7 semantic evidence remains valid. Static R7 gates and an
 intermediate LuaJIT micro-KAT pass; the replacement final PUC/LuaJIT pair is
 deferred until the corrected bytes pass focused review.
 
+Exact correction commit `bc6386080cb14edbc34211e5108801fa2441f3df`
+received **ACCEPT for a fresh sequential pilot: 0 Critical / 0 High / 0 Medium
+/ 0 Low**. The ensuing engine attempt crossed all three corrected vector
+boundaries and then stopped at the frozen source-projection manifest.
+
+The retained capture and a separate diagnostic proved that only the WP43
+projection digest differed. Production's `wp43_handoff.project()` includes the
+complete validated registry surface, while `tools/wp40/r7/runtime_fixture.lua`
+had substituted R6's smaller placement-only projection. All placement-consumed
+subgraphs and the other five source-projection components retained their exact
+accepted digests. The correction makes R7 tooling execute the production
+handoff, checks its `6/23/15/12/2/6/6/6/2` population in the final micro
+fixture and updates the closed manifest to the independently reproduced real
+projection digest. This model-drift correction requires focused review before
+another pilot.
+
+A targeted LuaJIT owner-VM integration rerun passed. Its durable
+[receipt](wp40-r8-projection-integration-receipt.tsv) differs from R7's
+accepted receipt only in the manifest SHA-256 row; every placement/content/VM
+evidence row is byte-identical. This is direct evidence that the correction
+changes the authenticated projection envelope, not generated semantics.
+
 ## Calibration so far
 
 - Implementing/coordinating model: GPT-5.6 Sol with two bounded parallel
   implementation lanes.
 - Reviewing model: fresh independent GPT-5.6 Sol.
 - Initial findings: 1 Critical / 2 High / 3 Medium / 0 Low.
-- Review-fix rounds started: 5.
+- Review-fix rounds started: 6.
 - Observed elapsed wall time: pending package completion.

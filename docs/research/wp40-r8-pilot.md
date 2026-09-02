@@ -88,7 +88,46 @@ three-field shape and passes plain tables into the planner/template seams.
 The VM halo readback retains its exact coordinate, integer and bounds checks.
 The production values and placement policy are unchanged.
 
-No third engine attempt has been started. Static R7 gates and an intermediate
-LuaJIT micro-KAT pass with all three real vector shapes represented; the
-frozen final PUC 5.1/LuaJIT pair remains pending until the candidate is
-reviewed and committed.
+Static R7 gates and an intermediate LuaJIT micro-KAT passed with all three
+real vector shapes represented. Exact correction commit
+`bc6386080cb14edbc34211e5108801fa2441f3df` then received independent
+**ACCEPT: 0 Critical / 0 High / 0 Medium / 0 Low** for a fresh pilot.
+
+## Attempt 3 -- diagnostic failure
+
+- Date: 2026-09-02
+- Candidate: `bc6386080cb14edbc34211e5108801fa2441f3df`
+- Mode: sequential, Seed `0`, forward order first
+- Capture ID:
+  `3724a8afb09bbe8b0b28304379345d44c563d84ff2ffecf0071e80daa1860007`
+- Result: stopped during production construction before mapchunk generation;
+  reverse order not started
+- Process result: exit 1 after 1:27.93; launcher peak RSS 19,040 KiB; these
+  initialization-only values are not a G2 projection
+- Failure: the production WP43 handoff's complete registry projection did not
+  match the smaller historical R7 offline-fixture projection bound into the
+  manifest
+- Forward console-log SHA-256:
+  `9a9a9583d91cfbdb4dbb48579465ca3ae20d02f294d1ced31cfe971e6a63dd22`
+- Forward server-log SHA-256:
+  `e364a8e9d2d866232d24d8f79c5cc09c626c68bb423c3b33e9ffc0b778352218`
+
+An isolated diagnostic exposed every component digest. R6 catalog, accepted
+content, decoded templates, cultural registrations and consumer payload all
+matched their frozen values. Only WP43 differed: production hashes the full
+`6/23/15/12/2/6/6/6/2` projection population, yielding
+`c8088a4b6802c0fc1a74d8826e3df0bb49b64f9ab4c6e93bcbd66aa2a16b9895`;
+the R7 fixture hashed only the placement-consumed subset. The correction makes
+R7 tooling construct the actual production handoff and binds the resulting
+aggregate source projection
+`8f1eef2702c631451ee987b3eb4a267d117fcc3ce1d97947d4b6936e0ea3502b`.
+It changes no registry value or placement consumer. A focused review, then the
+replacement final PUC 5.1/LuaJIT pair and a fresh pilot remain pending.
+
+The targeted LuaJIT owner-VM integration KAT passed with manifest
+`9ff0e78818e842c578ecacbf9d5be4426ca72f6c3230f6184b0e8b23f69f369d`.
+Its durable [R8 projection receipt](wp40-r8-projection-integration-receipt.tsv)
+differs from the accepted R7 integration receipt in exactly that manifest row;
+all content, anchor, 512,000 private-tuple, run, replay, multi-y and case rows
+are byte-identical. The R8 receipt SHA-256 is
+`1fc22c764be500726f6f777b0eabd7a03a2434e23895aad6132c7c7e1ca78010`.

@@ -765,15 +765,28 @@ return function(repo)
 	check(semantic_fixture.target_count == 103,
 		"semantic target population differs")
 
+	local material_core = {registered_nodes = {}}
+	function material_core.get_modpath() return nil end
+	function material_core.register_on_leaveplayer() end
+	function material_core.node_dig() return false end
+	function material_core.handle_node_drops() end
 	local material_environment = setmetatable({grug_materials = {},
-		core = {get_modpath = function() return nil end}}, {__index = _G})
-	local material_chunk = assert(loadfile(repo ..
-		"/mods/ITEMS/grug_materials/registry.lua"))
-	setfenv(material_chunk, material_environment)
-	material_chunk()
-	local projection = {schema = "grug_wp43_projection_v1",
-		tiers = copy(material_environment.grug_materials.TIERS),
-		resources = copy(material_environment.grug_materials.RESOURCES)}
+		core = material_core}, {__index = _G})
+	for _, filename in ipairs({"registry.lua", "mining.lua"}) do
+		local material_chunk = assert(loadfile(repo ..
+			"/mods/ITEMS/grug_materials/" .. filename))
+		setfenv(material_chunk, material_environment)
+		material_chunk()
+	end
+	local projection = dofile(repo ..
+		"/mods/MAPGEN/grug_mapgen/wp43_handoff.lua").project(
+		material_environment.grug_materials)
+	check(#projection.tiers == 6 and #projection.natural_ground_nodes == 23 and
+		#projection.resources == 15 and #projection.processed_materials == 12 and
+		#projection.gem_grades == 2 and #projection.cultural_materials == 6 and
+		#projection.signature_woods == 6 and #projection.race_regions == 6 and
+		#projection.density.deep_bands == 2,
+		"complete production WP43 projection population differs")
 
 	local cid_by_name, name_by_cid, definitions = {}, {}, {}
 	local next_cid = 100
@@ -819,6 +832,9 @@ return function(repo)
 	local canonical = dofile(wp40 .. "/canonical.lua")
 	local manifest_module = dofile(wp40 .. "/r7_manifest.lua")(
 		canonical, raw_sha256)
+	check(manifest_module.graph_digest_for_evidence(projection) ==
+		"c8088a4b6802c0fc1a74d8826e3df0bb49b64f9ab4c6e93bcbd66aa2a16b9895",
+		"complete production WP43 projection digest differs")
 	local r6_manifest = dofile(wp40 .. "/r7_r6_manifest.lua")()
 	local r5_manifest_module = dofile(wp40 .. "/mapgen_manifest.lua")
 	local r5_values = r5_manifest_module.validate(r6_manifest.r5_manifest_values)
@@ -862,7 +878,7 @@ return function(repo)
 		r6_template_inputs_sha256 =
 			"807ddf131db405974f365c4e08aa124eeba6cac61fa1655e455794507f858a55",
 		wp43_projection_sha256 =
-			"5ef7343ff7d01346a1af5825a494ccdbd165c51ece8d09137ad8c9e1539f1633",
+			"c8088a4b6802c0fc1a74d8826e3df0bb49b64f9ab4c6e93bcbd66aa2a16b9895",
 		noise_schema = native_identities.noise_schema,
 		noise_sha256 = native_identities.noise_digest,
 		native_schema = native_identities.native_schema,
@@ -894,7 +910,7 @@ return function(repo)
 		p9g_opcode = 35, p9g_class = 10, p9g_policy = 11,
 		p9g_order = p9g_delta.order, p9g_overwrite = false,
 		source_projection_sha256 =
-			"eca4015a075b8aa5cace19cdc57cb06370481fa8c30185bf1f88f72e3b5e1571",
+			"8f1eef2702c631451ee987b3eb4a267d117fcc3ce1d97947d4b6936e0ea3502b",
 		production_enabled = true,
 	}
 	local manifest_field_order = {
