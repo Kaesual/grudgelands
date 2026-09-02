@@ -4,8 +4,9 @@
 micro-KAT pair pass. Exact G3 candidate
 `4ca1c6564382c1e4ab726fd60a38c3b4461dba05` generated nearly the full corpus
 without a mapgen error but correctly failed at its exact two-hour boundary.
-The user-approved four-worker sharding and three-hour safety correction awaits
-focused independent review before the replacement G3 run.
+The user-approved four-worker sharding and three-hour safety correction has
+focused independent acceptance at exact candidate
+`d20bcf58b751be256e3b96fe14df4b5dc901e6eb`; the replacement G3 may run.
 
 ## Scope and independence
 
@@ -521,8 +522,18 @@ missing equality to the exact committed corpus IDs and non-gated timing/RSS
 telemetry. The correction makes the new scripts executable, re-executes from
 and persists one commit-derived input tree, uses that tree for both workers and
 aggregation, and adds fail-closed fixture cases for every missing identity or
-telemetry gate. It remains tools/docs-only and needs focused re-review before
-G3.
+telemetry gate. It remained tools/docs-only and therefore received focused
+re-review before G3.
+
+Focused re-review of exact correction
+`d20bcf58b751be256e3b96fe14df4b5dc901e6eb` returned **ACCEPT, 0 Critical / 0
+High / 0 Medium / 0 Low**. It confirmed closure of all five findings, the real
+start-event engine-object shape, bootstrap/source-repository resolution,
+captured evidence paths, cleanup order and schemas. Bash syntax, ShellCheck,
+the executable-mode/archive checks and the full fail-closed aggregate fixture
+passed. The reviewer explicitly accepted this commit for G3 and confirmed
+that unchanged production Lua/probe bytes do not require another final
+PUC/LuaJIT pair.
 
 ## Calibration so far
 
