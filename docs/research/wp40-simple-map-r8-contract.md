@@ -334,6 +334,18 @@ physical memory and each engine retains one emerge thread and idle priority.
 This exact data-only reduction requires focused review before G3; it does not
 invalidate the accepted G2 pilot or frozen production-byte interpreter pair.
 
+The reproducible 42-request point estimate separates probe work from fixed
+launch/finalization overhead instead of multiplying the complete four-request
+wall time. Forward projects as `662.351833 / 4 * 42 + (749.78 - 662.351833)`
+seconds, about 117:22; reverse projects as
+`661.244269 / 4 * 42 + (744.78 - 661.244269)` seconds, about 117:07. G3 fixes
+`WP40_R8_TIMEOUT=7170` and parallel execution; the runner's existing 30-second
+host margin therefore caps the pair at exactly 120 minutes, and its periodic
+liquid interval becomes 7201 seconds. Final mode rejects any different timeout
+or sequential-order setting. The narrow two-to-three-minute projection margin
+is not itself an acceptance claim: contention that reaches the hard stop is a
+retained failed result and cannot be waived.
+
 ### G3 -- final automated smoke
 
 Run the complete corpus in both frozen orders on separate fresh worlds. The

@@ -144,6 +144,14 @@ the final `register_on_shutdown` event remain separate immutable outputs.
 The normal invocations are:
 
 ```sh
-WP40_R8_MODE=pilot WP40_CHECKOUT_SHA=<frozen-commit> tools/wp40/r8/run.sh
-WP40_R8_PARALLEL=1 WP40_CHECKOUT_SHA=<frozen-commit> tools/wp40/r8/run.sh
+WP40_R8_MODE=pilot WP40_R8_TIMEOUT=900 WP40_R8_PARALLEL=0 \
+  WP40_CHECKOUT_SHA=<frozen-commit> tools/wp40/r8/run.sh
+WP40_R8_MODE=final WP40_R8_TIMEOUT=7170 WP40_R8_PARALLEL=1 \
+  WP40_CHECKOUT_SHA=<frozen-commit> tools/wp40/r8/run.sh
 ```
+
+Final mode rejects every other timeout or order-parallelism value. Its existing
+host margin makes `7170 + 30 = 7200` seconds the exact two-hour process-pair
+hard stop, while `liquid_update = 7170 + 31 = 7201` remains one second later.
+Pilot mode retains its independently reviewed 900-second per-order budget and
+may still be run sequentially.
