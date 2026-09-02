@@ -1,0 +1,315 @@
+# WP40 simple-map R8 release and runtime contract
+
+**Status:** Draft for parallel R8 preflight. The runner and seed/visual lanes
+must be integrated and independently reviewed before this contract is frozen.
+
+**Baseline:** `ac3ff3f17c0119b80c90f73db944a937d9159a2b` (the reviewed R7
+production cutover merged to `main`).
+
+## 1. Purpose and release boundary
+
+R8 is the final WP40 milestone. It does not redesign the accepted map or repeat
+R6/R7's seed fleets. It supplies the smallest real-engine and user-visible
+evidence needed to decide whether the already-active R7 writer is suitable for
+the first persistent fresh v7 world.
+
+R8 answers five release questions:
+
+1. Does the exact game start a fresh production-settings v7 world without a
+   manifest, loader, callback or content-registration failure?
+2. Does a bounded high-risk mapchunk corpus remain byte-stable when requested
+   in two materially different orders with one emerge thread?
+3. Do representative native caves, dungeons, strata, ores, liquids and light
+   coexist with authored terrain and content?
+4. Are measured generation time and peak RSS operationally usable on the
+   designated workstation?
+5. Does the selected seed look and play acceptably in the user's GUI at the
+   important world features?
+
+The acceptance model is deliberately pragmatic. It is not an exhaustive proof
+over the world, all seeds, all mapchunk orders or all sparse decorations. A
+rare cosmetic defect that does not make a route, start, capital, channel,
+resource family or major region unusable may be recorded as post-release work.
+
+## 2. Frozen inputs and authority
+
+R8 consumes, without rewriting:
+
+- the accepted R7 implementation and evidence recorded in
+  `wp40-simple-map-r7-review.md`;
+- the R7 promotion manifest SHA-256
+  `1ec84c2b361f166eae4a6d836cf7c93bf4218e429c39e1532bf67ab2311ed9e4`;
+- the accepted R7 artifact SHA-256
+  `73221f55ce9541180cf40909ac6dea5466ac530725f4c70d9c172a24f2e71c4f`;
+- the accepted R6 content, supply and access evidence;
+- the V1e fixed horizontal layout, R3 vertical model, R4 geography/policy,
+  R5 planner/adapter and R6 surface/resource contracts; and
+- the production defaults in `game.conf` and `minetest.conf`, including v7,
+  `chunksize = 5`, `water_level = 1` and `num_emerge_threads = 1`.
+
+The frozen R7 implementation contract and historically byte-bound WP40
+engineering brief are evidence inputs. R8 must not edit their status headers
+or other bytes merely to report current status. Current status belongs in this
+contract, the R8 completion review, BACKLOG, ROADMAP and README.
+
+No R6 or R7 population is rerun unless a production change invalidates its
+specific input identity. A tools-only R8 harness change does not invalidate
+accepted production evidence.
+
+R2's once-per-layout housing capacity and R6's 32-seed content, supply and
+access evidence remain the capacity/supply authorities. R8 samples their real
+engine realization and does not create another population merely to repeat
+those accepted claims.
+
+## 3. Seed decision
+
+Lane C derives three visual candidates exclusively from the accepted 32-seed
+corpus and records the limits of the ranking. The fixed horizontal geometry is
+identical; the choice concerns seed-dependent height detail, logical biome and
+content/resource realization.
+
+The candidates are not silently promoted. The first candidate is the default
+GUI release candidate. It becomes the production seed only after:
+
+- the final automated smoke uses that exact full seed string; and
+- the user accepts its fresh GUI world.
+
+If the first candidate is visually rejected, R8 may try the second and then
+the third without changing geometry or acceptance criteria. Rejection is not
+permission to search an unbounded seed population. The final selected full
+seed string and its checksum are durable R8 evidence.
+
+## 4. Minimal isolated engine smoke
+
+R8 implements a small release harness, not a general mapgen framework. It must:
+
+- export an exact committed candidate using `git archive` into a disposable
+  game tree;
+- use a new disposable `LUANTI_USER_PATH` and fresh world for every schedule;
+- never run against or write the shared installed Grudgelands game or any
+  persistent user world;
+- bind the exact game commit, engine identity, full seed string, mapgen
+  settings, corpus bytes and probe bytes before generation, then require the
+  two fresh worlds to report one identical actual runtime manifest (the R7
+  mocked-engine manifest remains provenance, not a false content-ID equality);
+- use production v7 settings and exactly one emerge thread;
+- request one corpus mapchunk at a time, wait for its complete emerge callback,
+  and then request the next row, using the same externally declared corpus in a
+  risk-prioritized order and exact reverse order;
+- retain central-mapblock content, `param2` and both-light-bank canonical
+  digests, excluding database timestamps and unrelated metadata;
+- capture startup and shutdown events, errors, mapgen callback/writer counts,
+  wall time and process peak RSS;
+- use separate immutable output paths and refuse to overwrite a completed
+  capture; and
+- shut down through a test-only probe after all requested regions settle or
+  fail through a bounded timeout.
+
+The probe is test-only and is added only to the exported disposable game. It
+must not add a production callback, command, persistent field or debug path.
+The harness may reuse the isolation and receipt patterns from
+`capture_t0_baseline.sh`, but historical T0/T2 labels and acceptance claims do
+not carry forward.
+
+### 4.1 Bounded corpus
+
+The final corpus contains approximately 10--15 mapchunks and is frozen in a
+reviewed TSV before the engine pilot. Its exact rows come from Lane C and must
+cover the following risk classes without pretending to sample every zone:
+
+- deep native-only/no-op;
+- ordinary inland surface;
+- a zone or faction boundary;
+- a coast/shelf/deep-ocean transition;
+- the north or south Battlegrounds boundary;
+- a capital/start blend envelope;
+- a road plus river/lake or crossing;
+- a representative authored structure or functional-anchor slice;
+- a dragon island/channel approach;
+- a dense surface-content/resource case; and
+- a vertical/deep stratum, cave, dungeon or resource witness.
+
+The executable four-column corpus stays deliberately parser-small; its
+companion `smoke-corpus-provenance.tsv` records stable provenance, purpose and
+expected observation, while `visual-itinerary.tsv` records the GUI route and
+depth. Coordinates are derived from accepted map sources or artifacts, never
+discovered by changing production geometry after seeing a runtime result. A
+deep automated case need not become a user teleport destination.
+
+### 4.2 Order comparison
+
+The required schedules are one risk-prioritized order and its exact reverse.
+This is sufficient for R8's release approximation because R7 already accepted
+owner-slice, forward/reverse finalizer and offline operation-order evidence.
+Additional random, vertical or sparse-fill schedules are diagnostic only and
+need a concrete discrepancy before becoming blocking work.
+
+Content and `param2` differences are blocking. A light-bank difference is
+blocking unless the harness first demonstrates convergence under one fixed,
+reviewed settling procedure and the post-settle digests then match. A failure
+is not waived by taking the more attractive schedule.
+
+## 5. Gate sequence and run budget
+
+### G0 -- contract and source preflight
+
+- freeze the exact contract, seed-candidate roster, corpus and GUI itinerary;
+- independently review their scope, source provenance and non-overclaim;
+- verify the baseline, R7 manifest and production-settings identities; and
+- prove the harness cannot address the shared installed game or a non-scratch
+  world.
+
+### G1 -- static and fixture checks
+
+Every changed Lua file passes `tools/bin/luac51 -p`. Changed mod Lua, if any,
+also passes `SETGLOBAL` inspection and the five repository sweeps. Lua under
+`tools/` receives the do-not-write searches explicitly because the repository
+sweeps do not cover it. Intermediate executable fixture checks use LuaJIT.
+
+If R8 changes no production Lua, R7's accepted final production micro-KAT pair
+remains the evidence for those unchanged bytes and is not rerun ceremonially.
+The new test-only Lua still receives the parser/source gates and executes in
+the real engine smoke. If R8 changes production Lua, the corrected frozen
+production bytes receive exactly one replacement compact PUC 5.1/LuaJIT pair
+with byte-identical canonical output, as required by the repository strategy.
+
+### G2 -- resource pilot
+
+Run the same two-order machinery sequentially over the frozen three-case pilot
+prefix containing capital, channel-water and deep-resource cases. Record
+elapsed time and peak RSS before authorizing the complete pair and deciding
+whether its two worlds may run concurrently.
+
+The complete two-schedule smoke proceeds only when the pilot projects:
+
+- no more than two hours total wall time on the designated workstation;
+- no memory pressure, OOM, uncontrolled swap growth or host instability; and
+- enough headroom for at most two concurrent engine processes.
+
+If the projection misses a bound, reduce redundant cases or serialize the two
+schedules and re-review that exact reduction. Do not weaken risk-class
+coverage or silently raise the wall-time bound.
+
+### G3 -- final automated smoke
+
+Run the complete corpus in both frozen orders on separate fresh worlds. The
+gate requires:
+
+- clean startup and controlled shutdown;
+- one identical actual production manifest across both worlds and the selected
+  seed;
+- no Lua error, assertion, manifest refusal, unknown-node failure or engine
+  crash;
+- one active WP40 generated callback/writer path;
+- byte-identical post-settle content, `param2` and light digests;
+- a complete readable node census with no `ignore`, nonzero surface daylight,
+  the capital marker, channel water and exact accepted ruby witness present;
+  native cave/dungeon/stratum/ore observations remain recorded rather than
+  requiring a random dungeon in the bounded corpus; and
+- durable wall-time and peak-RSS output.
+
+Generation timing and RSS are release outputs. Within the two-hour/no-host-
+pressure envelope they are advisory unless the user observes release-blocking
+stalls in G4; R8 records them instead of inventing an unmeasured historical
+regression threshold between incompatible map products.
+
+### G4 -- user GUI acceptance
+
+The user opens a fresh world with the same selected seed and production
+settings and follows the reviewed 10--15-point itinerary. Blocking results are:
+
+- an unsafe or missing start/capital;
+- a missing or unusable major route, coast, Battlegrounds connection, dragon
+  channel or island;
+- widespread voids, floating terrain, liquid walls, black lighting, unknown
+  nodes or repeated generation errors;
+- visibly unusable generation stalls or memory behavior; or
+- runtime classification/protection behavior contradicting the inspected
+  point's decided zone.
+
+Minor dressing gaps, sparse patches, isolated ugly transitions and comparable
+cosmetic defects are recorded as non-blocking follow-up unless they obstruct a
+listed feature. The user's observation and `debug.txt` excerpt/result are
+retained in the R8 completion record; screenshots are optional unless needed
+to diagnose a finding.
+
+### G5 -- real fallback engine
+
+The real bundled/fallback Lua 5.1 Luanti run remains a separate user runtime
+gate. Standalone PUC/LuaJIT equality does not replace engine `builtin/`,
+sandbox or `core.*` behavior. The fallback run reuses the selected seed and a
+small start/capital smoke, not the complete two-order performance corpus.
+
+## 6. Parallelism and sequencing
+
+Before contract freeze, three lanes may proceed with non-overlapping ownership:
+
+- Lane A owns this contract, integration and acceptance judgment;
+- Lane B owns the minimal runner/probe scaffold and runner preflight; and
+- Lane C owns the seed candidates, corpus coordinates and GUI itinerary.
+
+After integration, correctness is sequential: freeze, independent contract
+review, pilot, final smoke, fix-or-freeze, independent final review and GUI
+handoff. The two final disposable engine schedules may run concurrently only
+after the pilot proves memory headroom. They count against the workstation-wide
+seven-Lua-process cap; R8 intentionally plans at most two.
+
+The independent final reviewer does not rerun the engine or PUC evidence. The
+reviewer inspects immutable receipts, logs, hashes, exact candidate bytes and
+the full checklist in `docs/process/wp-workflow.md`.
+
+## 7. Change and rerun rules
+
+- A tools/docs-only correction reruns only affected harness fixtures or
+  receipts; it does not regenerate R6/R7 production evidence.
+- A production Lua correction runs the mandatory static gates and replaces
+  R8's one final compact PUC 5.1/LuaJIT micro-KAT pair on frozen bytes.
+- A change to writer order, ownership, planner/content semantics, seed hashing
+  or accepted map inputs invalidates the affected R6/R7 evidence and stops R8
+  for an explicit scope ruling.
+- A runtime-only fixture/probe must never be copied into the production game.
+- No finding is repaired by changing the selected corpus after observing the
+  failure. A justified corpus correction keeps the failed record and receives
+  independent review before rerun.
+
+## 8. Durable outputs and completion
+
+R8 retains in `docs/research/` at least:
+
+- the frozen R8 contract and reviewed preflight;
+- selected-seed and corpus/itinerary records;
+- one pilot receipt;
+- the final run manifest, order-comparison receipt, runtime/RSS summary and
+  concise engine log evidence;
+- the user's GUI and fallback-runtime result; and
+- the independent R8 completion review with model calibration fields.
+
+Bulk disposable worlds, engine databases and redundant raw scratch files stay
+outside Git. Every retained result is hash-bound to the exact candidate and
+its generating inputs. Before shutdown or cleanup, the coordinator verifies
+that no unique acceptance evidence remains only in `/tmp`.
+
+R8 completion updates BACKLOG, ROADMAP and README in the same commit, marks
+WP40 shipped without rewriting earlier milestone records, receives an
+independent clean review, merges through a merge commit and synchronizes the
+accepted `main` game. The completion message includes the concise ongoing
+runtime checklist and states that future geometry/seed/mapgen-setting changes
+are fresh-world format changes.
+
+## 9. Stop conditions
+
+Stop and escalate rather than expanding the suite when:
+
+- the selected production seed or a player-visible release rule requires a
+  new design decision;
+- the minimal runner cannot obtain stable central content/param2/light data
+  without modifying the engine or production writer;
+- the two-order result differs;
+- native preservation or one-writer evidence contradicts R7's accepted model;
+- the pilot projects beyond the fixed wall/memory envelope after removing only
+  redundant cases; or
+- a fix would alter frozen geometry, planner/content semantics or a previous
+  accepted artifact identity.
+
+The default response to a non-blocking cosmetic observation is a concise bug
+record, not a new exhaustive evidence chain.
