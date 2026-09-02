@@ -1,0 +1,1691 @@
+schema	grug_wp40_census_histograms_v1
+scan_schema	grug_wp40_census_scan_v4
+column	hist	name	key	bucket	count
+hist	attachment_chebyshev_distance	perimeter_attachment:elandor:land_001	0	4116
+hist	attachment_chebyshev_distance	perimeter_attachment:elandor:land_007	0	4116
+hist	attachment_chebyshev_distance	perimeter_attachment:elandor:land_031	0	4116
+hist	attachment_chebyshev_distance	perimeter_attachment:elandor:land_034	0	4116
+hist	attachment_chebyshev_distance	perimeter_attachment:kragmar:land_010	0	4116
+hist	attachment_chebyshev_distance	perimeter_attachment:kragmar:land_016	1	4116
+hist	attachment_chebyshev_distance	perimeter_attachment:kragmar:land_037	0	4116
+hist	attachment_chebyshev_distance	perimeter_attachment:kragmar:land_040	0	4116
+hist	bay_fill_count	bay_elandor_east	0	4077
+hist	bay_fill_count	bay_elandor_east	1	39
+hist	bay_fill_count	bay_elandor_west	0	3667
+hist	bay_fill_count	bay_elandor_west	1	444
+hist	bay_fill_count	bay_elandor_west	2	5
+hist	bay_fill_count	bay_kragmar_east	0	4025
+hist	bay_fill_count	bay_kragmar_east	1	88
+hist	bay_fill_count	bay_kragmar_east	2	3
+hist	bay_fill_count	bay_kragmar_west	0	3714
+hist	bay_fill_count	bay_kragmar_west	1	373
+hist	bay_fill_count	bay_kragmar_west	2	28
+hist	bay_fill_count	bay_kragmar_west	3	1
+hist	edge_interval_count	land_001	1	4116
+hist	edge_interval_count	land_002	1	4116
+hist	edge_interval_count	land_003	1	4116
+hist	edge_interval_count	land_004	1	4019
+hist	edge_interval_count	land_004	2	97
+hist	edge_interval_count	land_005	1	4116
+hist	edge_interval_count	land_006	1	4116
+hist	edge_interval_count	land_007	1	3887
+hist	edge_interval_count	land_007	2	216
+hist	edge_interval_count	land_007	3	12
+hist	edge_interval_count	land_007	4	1
+hist	edge_interval_count	land_008	1	4116
+hist	edge_interval_count	land_009	1	4116
+hist	edge_interval_count	land_010	1	4057
+hist	edge_interval_count	land_010	2	58
+hist	edge_interval_count	land_010	3	1
+hist	edge_interval_count	land_011	1	4116
+hist	edge_interval_count	land_012	1	4116
+hist	edge_interval_count	land_013	1	3994
+hist	edge_interval_count	land_013	2	122
+hist	edge_interval_count	land_014	1	4116
+hist	edge_interval_count	land_015	1	4116
+hist	edge_interval_count	land_016	1	4116
+hist	edge_interval_count	land_017	1	4116
+hist	edge_interval_count	land_018	1	4116
+hist	edge_interval_count	land_019	1	4116
+hist	edge_interval_count	land_020	1	4116
+hist	edge_interval_count	land_021	1	4116
+hist	edge_interval_count	land_022	1	4116
+hist	edge_interval_count	land_023	1	4116
+hist	edge_interval_count	land_024	1	4116
+hist	edge_interval_count	land_025	1	4116
+hist	edge_interval_count	land_026	1	4116
+hist	edge_interval_count	land_027	1	4116
+hist	edge_interval_count	land_028	1	4116
+hist	edge_interval_count	land_029	1	4116
+hist	edge_interval_count	land_030	1	4116
+hist	edge_interval_count	land_031	1	4116
+hist	edge_interval_count	land_032	1	4116
+hist	edge_interval_count	land_033	1	4116
+hist	edge_interval_count	land_034	1	4116
+hist	edge_interval_count	land_035	1	4116
+hist	edge_interval_count	land_036	1	4116
+hist	edge_interval_count	land_037	1	4116
+hist	edge_interval_count	land_038	1	4116
+hist	edge_interval_count	land_039	1	4116
+hist	edge_interval_count	land_040	1	4116
+hist	edge_interval_count	land_041	1	4116
+hist	edge_interval_count	land_042	1	4116
+hist	edge_interval_count	land_043	1	4116
+hist	edge_interval_count	land_044	1	4116
+hist	edge_interval_count	land_045	1	4116
+hist	edge_interval_count	land_046	1	4116
+hist	edge_interval_count	land_047	1	4116
+hist	edge_interval_count	land_048	1	4116
+hist	edge_interval_count	land_049	1	4116
+hist	edge_interval_count	land_050	1	4116
+hist	edge_interval_count	land_051	1	4116
+hist	edge_interval_count	land_052	1	4116
+hist	edge_interval_count	land_053	1	4116
+hist	edge_interval_count	land_054	1	4116
+hist	edge_interval_count	land_055	1	4116
+hist	edge_interval_count	land_056	1	4116
+hist	edge_interval_count	land_057	1	4116
+hist	edge_interval_count	land_058	1	4116
+hist	edge_interval_count	land_059	1	4116
+hist	edge_interval_count	land_060	1	4116
+hist	edge_interval_count	land_061	1	4116
+hist	junction_pair_pass_rate	relief_junction:-1050:-2250	fail	0
+hist	junction_pair_pass_rate	relief_junction:-1050:-2250	pass	4116
+hist	junction_pair_pass_rate	relief_junction:-1400:-1100	fail	0
+hist	junction_pair_pass_rate	relief_junction:-1400:-1100	pass	24696
+hist	junction_pair_pass_rate	relief_junction:-1400:-1900	fail	0
+hist	junction_pair_pass_rate	relief_junction:-1400:-1900	pass	4116
+hist	junction_pair_pass_rate	relief_junction:-1400:1100	fail	0
+hist	junction_pair_pass_rate	relief_junction:-1400:1100	pass	24696
+hist	junction_pair_pass_rate	relief_junction:-1400:1900	fail	0
+hist	junction_pair_pass_rate	relief_junction:-1400:1900	pass	4116
+hist	junction_pair_pass_rate	relief_junction:-1500:-250	fail	0
+hist	junction_pair_pass_rate	relief_junction:-1500:-250	pass	12348
+hist	junction_pair_pass_rate	relief_junction:-1500:250	fail	0
+hist	junction_pair_pass_rate	relief_junction:-1500:250	pass	12348
+hist	junction_pair_pass_rate	relief_junction:-2200:-1100	fail	0
+hist	junction_pair_pass_rate	relief_junction:-2200:-1100	pass	12348
+hist	junction_pair_pass_rate	relief_junction:-2200:-1900	fail	0
+hist	junction_pair_pass_rate	relief_junction:-2200:-1900	pass	12348
+hist	junction_pair_pass_rate	relief_junction:-2200:1100	fail	0
+hist	junction_pair_pass_rate	relief_junction:-2200:1100	pass	12348
+hist	junction_pair_pass_rate	relief_junction:-2200:1900	fail	0
+hist	junction_pair_pass_rate	relief_junction:-2200:1900	pass	12348
+hist	junction_pair_pass_rate	relief_junction:-400:-1100	fail	0
+hist	junction_pair_pass_rate	relief_junction:-400:-1100	pass	12348
+hist	junction_pair_pass_rate	relief_junction:-400:-1900	fail	0
+hist	junction_pair_pass_rate	relief_junction:-400:-1900	pass	4116
+hist	junction_pair_pass_rate	relief_junction:-400:1100	fail	0
+hist	junction_pair_pass_rate	relief_junction:-400:1100	pass	12348
+hist	junction_pair_pass_rate	relief_junction:-400:1900	fail	0
+hist	junction_pair_pass_rate	relief_junction:-400:1900	pass	4116
+hist	junction_pair_pass_rate	relief_junction:-750:-250	fail	0
+hist	junction_pair_pass_rate	relief_junction:-750:-250	pass	12348
+hist	junction_pair_pass_rate	relief_junction:-750:250	fail	0
+hist	junction_pair_pass_rate	relief_junction:-750:250	pass	12348
+hist	junction_pair_pass_rate	relief_junction:-970:2260	fail	0
+hist	junction_pair_pass_rate	relief_junction:-970:2260	pass	4116
+hist	junction_pair_pass_rate	relief_junction:0:-250	fail	0
+hist	junction_pair_pass_rate	relief_junction:0:-250	pass	12348
+hist	junction_pair_pass_rate	relief_junction:0:250	fail	0
+hist	junction_pair_pass_rate	relief_junction:0:250	pass	12348
+hist	junction_pair_pass_rate	relief_junction:1020:2250	fail	0
+hist	junction_pair_pass_rate	relief_junction:1020:2250	pass	4116
+hist	junction_pair_pass_rate	relief_junction:1400:-1100	fail	0
+hist	junction_pair_pass_rate	relief_junction:1400:-1100	pass	12348
+hist	junction_pair_pass_rate	relief_junction:1400:-1900	fail	0
+hist	junction_pair_pass_rate	relief_junction:1400:-1900	pass	4116
+hist	junction_pair_pass_rate	relief_junction:1400:1100	fail	0
+hist	junction_pair_pass_rate	relief_junction:1400:1100	pass	12348
+hist	junction_pair_pass_rate	relief_junction:1400:1900	fail	0
+hist	junction_pair_pass_rate	relief_junction:1400:1900	pass	4116
+hist	junction_pair_pass_rate	relief_junction:1500:-250	fail	0
+hist	junction_pair_pass_rate	relief_junction:1500:-250	pass	12348
+hist	junction_pair_pass_rate	relief_junction:1500:250	fail	0
+hist	junction_pair_pass_rate	relief_junction:1500:250	pass	12348
+hist	junction_pair_pass_rate	relief_junction:2200:-1100	fail	0
+hist	junction_pair_pass_rate	relief_junction:2200:-1100	pass	12348
+hist	junction_pair_pass_rate	relief_junction:2200:-1900	fail	0
+hist	junction_pair_pass_rate	relief_junction:2200:-1900	pass	12348
+hist	junction_pair_pass_rate	relief_junction:2200:1100	fail	0
+hist	junction_pair_pass_rate	relief_junction:2200:1100	pass	12348
+hist	junction_pair_pass_rate	relief_junction:2200:1900	fail	0
+hist	junction_pair_pass_rate	relief_junction:2200:1900	pass	12348
+hist	junction_pair_pass_rate	relief_junction:400:-1100	fail	0
+hist	junction_pair_pass_rate	relief_junction:400:-1100	pass	24696
+hist	junction_pair_pass_rate	relief_junction:400:-1900	fail	0
+hist	junction_pair_pass_rate	relief_junction:400:-1900	pass	4116
+hist	junction_pair_pass_rate	relief_junction:400:1100	fail	0
+hist	junction_pair_pass_rate	relief_junction:400:1100	pass	24696
+hist	junction_pair_pass_rate	relief_junction:400:1900	fail	0
+hist	junction_pair_pass_rate	relief_junction:400:1900	pass	4116
+hist	junction_pair_pass_rate	relief_junction:750:-250	fail	0
+hist	junction_pair_pass_rate	relief_junction:750:-250	pass	12348
+hist	junction_pair_pass_rate	relief_junction:750:250	fail	0
+hist	junction_pair_pass_rate	relief_junction:750:250	pass	12348
+hist	junction_pair_pass_rate	relief_junction:950:-2250	fail	0
+hist	junction_pair_pass_rate	relief_junction:950:-2250	pass	4116
+hist	scan2_edge_tuple_complete	land_001	tuples=1 complete=1 duplicate=0	4112
+hist	scan2_edge_tuple_complete	land_001	tuples=2 complete=2 duplicate=0	4
+hist	scan2_edge_tuple_complete	land_004	tuples=1 complete=1 duplicate=0	3716
+hist	scan2_edge_tuple_complete	land_004	tuples=2 complete=1 duplicate=0	68
+hist	scan2_edge_tuple_complete	land_004	tuples=2 complete=2 duplicate=0	67
+hist	scan2_edge_tuple_complete	land_004	tuples=3 complete=1 duplicate=0	84
+hist	scan2_edge_tuple_complete	land_004	tuples=3 complete=2 duplicate=0	138
+hist	scan2_edge_tuple_complete	land_004	tuples=4 complete=2 duplicate=0	43
+hist	scan2_edge_tuple_complete	land_007	tuples=1 complete=1 duplicate=0	3744
+hist	scan2_edge_tuple_complete	land_007	tuples=2 complete=1 duplicate=0	51
+hist	scan2_edge_tuple_complete	land_007	tuples=2 complete=2 duplicate=0	238
+hist	scan2_edge_tuple_complete	land_007	tuples=3 complete=2 duplicate=0	63
+hist	scan2_edge_tuple_complete	land_007	tuples=4 complete=2 duplicate=0	17
+hist	scan2_edge_tuple_complete	land_007	tuples=4 complete=3 duplicate=0	1
+hist	scan2_edge_tuple_complete	land_007	tuples=6 complete=2 duplicate=0	1
+hist	scan2_edge_tuple_complete	land_007	tuples=6 complete=3 duplicate=0	1
+hist	scan2_edge_tuple_complete	land_010	tuples=1 complete=1 duplicate=0	3455
+hist	scan2_edge_tuple_complete	land_010	tuples=2 complete=1 duplicate=0	515
+hist	scan2_edge_tuple_complete	land_010	tuples=2 complete=2 duplicate=0	48
+hist	scan2_edge_tuple_complete	land_010	tuples=3 complete=1 duplicate=0	91
+hist	scan2_edge_tuple_complete	land_010	tuples=3 complete=2 duplicate=0	2
+hist	scan2_edge_tuple_complete	land_010	tuples=4 complete=1 duplicate=0	3
+hist	scan2_edge_tuple_complete	land_010	tuples=4 complete=2 duplicate=0	2
+hist	scan2_edge_tuple_complete	land_013	tuples=1 complete=1 duplicate=0	2767
+hist	scan2_edge_tuple_complete	land_013	tuples=2 complete=1 duplicate=0	1175
+hist	scan2_edge_tuple_complete	land_013	tuples=2 complete=2 duplicate=0	72
+hist	scan2_edge_tuple_complete	land_013	tuples=3 complete=1 duplicate=0	51
+hist	scan2_edge_tuple_complete	land_013	tuples=3 complete=2 duplicate=0	22
+hist	scan2_edge_tuple_complete	land_013	tuples=3 complete=3 duplicate=0	21
+hist	scan2_edge_tuple_complete	land_013	tuples=4 complete=1 duplicate=0	4
+hist	scan2_edge_tuple_complete	land_013	tuples=4 complete=2 duplicate=0	2
+hist	scan2_edge_tuple_complete	land_013	tuples=4 complete=4 duplicate=0	2
+hist	scan2_edge_tuple_complete	land_016	tuples=1 complete=1 duplicate=0	4103
+hist	scan2_edge_tuple_complete	land_016	tuples=2 complete=2 duplicate=0	13
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_001:to	direct=1 elbow=0	4112
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_001:to	direct=2 elbow=0	4
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_004:from	direct=0 elbow=1	23
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_004:from	direct=1 elbow=0	3693
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_004:from	direct=2 elbow=0	135
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_004:from	direct=3 elbow=0	222
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_004:from	direct=4 elbow=0	43
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_004:to	direct=1 elbow=0	4116
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_007:from	direct=0 elbow=1	250
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_007:from	direct=1 elbow=0	3494
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_007:from	direct=2 elbow=0	289
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_007:from	direct=3 elbow=0	63
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_007:from	direct=4 elbow=0	18
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_007:from	direct=6 elbow=0	2
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_010:to	direct=0 elbow=1	390
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_010:to	direct=1 elbow=0	3065
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_010:to	direct=1 elbow=1	15
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_010:to	direct=2 elbow=0	548
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_010:to	direct=2 elbow=1	1
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_010:to	direct=3 elbow=0	92
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_010:to	direct=4 elbow=0	5
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_013:from	direct=1 elbow=0	4116
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_013:to	direct=0 elbow=1	34
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_013:to	direct=1 elbow=0	2733
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_013:to	direct=1 elbow=1	2
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_013:to	direct=2 elbow=0	1245
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_013:to	direct=3 elbow=0	94
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_013:to	direct=4 elbow=0	8
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_016:from	direct=0 elbow=1	34
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_016:from	direct=1 elbow=0	4069
+hist	scan2_endpoint_direct_elbow	bay_edge_transition:land_016:from	direct=2 elbow=0	13
+hist	scan2_endpoint_joint	bay_edge_transition:land_001:to	eligible=1496 success=1 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_001:to	eligible=1497 success=1 complete=1	47
+hist	scan2_endpoint_joint	bay_edge_transition:land_001:to	eligible=1498 success=1 complete=1	88
+hist	scan2_endpoint_joint	bay_edge_transition:land_001:to	eligible=1499 success=1 complete=1	171
+hist	scan2_endpoint_joint	bay_edge_transition:land_001:to	eligible=1500 success=1 complete=1	291
+hist	scan2_endpoint_joint	bay_edge_transition:land_001:to	eligible=1501 success=1 complete=1	433
+hist	scan2_endpoint_joint	bay_edge_transition:land_001:to	eligible=1502 success=1 complete=1	563
+hist	scan2_endpoint_joint	bay_edge_transition:land_001:to	eligible=1502 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_001:to	eligible=1503 success=1 complete=1	588
+hist	scan2_endpoint_joint	bay_edge_transition:land_001:to	eligible=1503 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_001:to	eligible=1504 success=1 complete=1	596
+hist	scan2_endpoint_joint	bay_edge_transition:land_001:to	eligible=1505 success=1 complete=1	502
+hist	scan2_endpoint_joint	bay_edge_transition:land_001:to	eligible=1506 success=1 complete=1	367
+hist	scan2_endpoint_joint	bay_edge_transition:land_001:to	eligible=1507 success=1 complete=1	201
+hist	scan2_endpoint_joint	bay_edge_transition:land_001:to	eligible=1508 success=1 complete=1	148
+hist	scan2_endpoint_joint	bay_edge_transition:land_001:to	eligible=1508 success=2 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_001:to	eligible=1509 success=1 complete=1	72
+hist	scan2_endpoint_joint	bay_edge_transition:land_001:to	eligible=1510 success=1 complete=1	23
+hist	scan2_endpoint_joint	bay_edge_transition:land_001:to	eligible=1511 success=1 complete=1	15
+hist	scan2_endpoint_joint	bay_edge_transition:land_001:to	eligible=1513 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_001:to	eligible=1514 success=1 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_001:to	eligible=1516 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1571 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1572 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1573 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1574 success=1 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1575 success=1 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1576 success=1 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1577 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1578 success=1 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1579 success=1 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1580 success=1 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1581 success=1 complete=1	8
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1582 success=1 complete=1	8
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1583 success=1 complete=1	15
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1584 success=1 complete=1	14
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1585 success=1 complete=1	27
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1585 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1586 success=1 complete=1	35
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1587 success=1 complete=1	48
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1588 success=1 complete=1	72
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1589 success=1 complete=1	92
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1590 success=1 complete=1	121
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1590 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1591 success=1 complete=1	130
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1591 success=2 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1591 success=2 complete=2	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1592 success=1 complete=1	137
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1592 success=2 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1592 success=2 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1593 success=1 complete=1	165
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1593 success=2 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1593 success=2 complete=2	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1594 success=1 complete=1	180
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1594 success=2 complete=1	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1594 success=2 complete=2	10
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1594 success=3 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1595 success=1 complete=1	183
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1595 success=2 complete=1	12
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1595 success=2 complete=2	7
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1595 success=3 complete=1	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1596 success=1 complete=1	204
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1596 success=2 complete=1	7
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1596 success=2 complete=2	10
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1596 success=3 complete=1	11
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1596 success=3 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1596 success=4 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1597 success=1 complete=1	219
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1597 success=2 complete=1	8
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1597 success=2 complete=2	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1597 success=3 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1597 success=3 complete=2	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1597 success=4 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1598 success=1 complete=1	301
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1598 success=2 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1598 success=2 complete=2	10
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1598 success=3 complete=1	13
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1598 success=3 complete=2	27
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1598 success=4 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1599 success=1 complete=1	329
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1599 success=2 complete=1	7
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1599 success=2 complete=2	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1599 success=3 complete=1	11
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1599 success=3 complete=2	20
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1599 success=4 complete=2	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1600 success=1 complete=1	328
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1600 success=2 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1600 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1600 success=3 complete=1	14
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1600 success=3 complete=2	14
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1600 success=4 complete=2	9
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1601 success=1 complete=1	289
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1601 success=2 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1601 success=2 complete=2	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1601 success=3 complete=1	7
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1601 success=3 complete=2	17
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1601 success=4 complete=2	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1602 success=1 complete=1	263
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1602 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1602 success=3 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1602 success=3 complete=2	22
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1602 success=4 complete=2	9
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1603 success=1 complete=1	201
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1603 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1603 success=2 complete=2	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1603 success=3 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1603 success=3 complete=2	8
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1603 success=4 complete=2	7
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1604 success=1 complete=1	127
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1604 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1604 success=2 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1604 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1604 success=3 complete=2	12
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1604 success=4 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1605 success=1 complete=1	89
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1605 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1605 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1605 success=3 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1605 success=3 complete=2	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1605 success=4 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1606 success=1 complete=1	38
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1606 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1606 success=3 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1607 success=1 complete=1	32
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1607 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1607 success=3 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1608 success=1 complete=1	17
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1609 success=1 complete=1	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1609 success=3 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1610 success=1 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1611 success=1 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1612 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1612 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1614 success=1 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1614 success=3 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1615 success=3 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:from	eligible=1620 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1571 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1572 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1573 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1574 success=1 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1575 success=1 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1576 success=1 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1577 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1578 success=1 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1579 success=1 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1580 success=1 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1581 success=1 complete=1	8
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1582 success=1 complete=1	8
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1583 success=1 complete=1	15
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1584 success=1 complete=1	14
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1585 success=1 complete=1	27
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1585 success=1 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1586 success=1 complete=1	35
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1587 success=1 complete=1	48
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1588 success=1 complete=1	72
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1589 success=1 complete=1	92
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1590 success=1 complete=1	122
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1591 success=1 complete=1	132
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1591 success=1 complete=2	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1592 success=1 complete=1	142
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1592 success=1 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1593 success=1 complete=1	168
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1593 success=1 complete=2	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1594 success=1 complete=1	189
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1594 success=1 complete=2	10
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1595 success=1 complete=1	201
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1595 success=1 complete=2	7
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1596 success=1 complete=1	222
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1596 success=1 complete=2	13
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1597 success=1 complete=1	232
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1597 success=1 complete=2	12
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1598 success=1 complete=1	318
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1598 success=1 complete=2	39
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1599 success=1 complete=1	347
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1599 success=1 complete=2	28
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1600 success=1 complete=1	346
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1600 success=1 complete=2	24
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1601 success=1 complete=1	300
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1601 success=1 complete=2	26
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1602 success=1 complete=1	267
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1602 success=1 complete=2	31
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1603 success=1 complete=1	206
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1603 success=1 complete=2	18
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1604 success=1 complete=1	129
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1604 success=1 complete=2	15
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1605 success=1 complete=1	94
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1605 success=1 complete=2	7
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1606 success=1 complete=1	39
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1606 success=1 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1607 success=1 complete=1	33
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1607 success=1 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1608 success=1 complete=1	17
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1609 success=1 complete=1	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1609 success=1 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1610 success=1 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1611 success=1 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1612 success=1 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1614 success=1 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1614 success=1 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1615 success=1 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_004:to	eligible=1620 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1551 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1554 success=1 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1555 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1556 success=1 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1557 success=1 complete=1	7
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1558 success=1 complete=1	11
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1559 success=1 complete=1	8
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1560 success=1 complete=1	12
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1561 success=1 complete=1	14
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1562 success=1 complete=1	17
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1563 success=1 complete=1	19
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1564 success=1 complete=1	21
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1565 success=1 complete=1	18
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1566 success=1 complete=1	26
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1567 success=1 complete=1	30
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1568 success=1 complete=1	30
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1569 success=1 complete=1	27
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1570 success=1 complete=1	25
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1571 success=1 complete=1	30
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1572 success=1 complete=1	39
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1572 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1573 success=1 complete=1	50
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1573 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1574 success=1 complete=1	42
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1574 success=3 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1575 success=1 complete=1	39
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1575 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1575 success=4 complete=2	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1576 success=1 complete=1	38
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1576 success=2 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1576 success=3 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1576 success=4 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1577 success=1 complete=1	34
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1577 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1577 success=2 complete=2	8
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1577 success=3 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1578 success=1 complete=1	32
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1578 success=2 complete=2	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1578 success=3 complete=2	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1578 success=4 complete=2	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1579 success=1 complete=1	27
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1579 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1579 success=3 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1579 success=4 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1580 success=1 complete=1	25
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1580 success=2 complete=2	10
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1580 success=3 complete=2	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1580 success=4 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1581 success=1 complete=1	49
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1581 success=2 complete=2	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1581 success=3 complete=2	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1581 success=6 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1582 success=1 complete=1	59
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1582 success=2 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1582 success=2 complete=2	7
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1582 success=3 complete=2	8
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1582 success=4 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1583 success=1 complete=1	82
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1583 success=2 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1583 success=2 complete=2	9
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1583 success=3 complete=2	15
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1584 success=1 complete=1	89
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1584 success=2 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1584 success=2 complete=2	13
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1584 success=3 complete=2	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1584 success=4 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1585 success=1 complete=1	121
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1585 success=2 complete=1	10
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1585 success=2 complete=2	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1585 success=3 complete=2	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1585 success=4 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1586 success=1 complete=1	102
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1586 success=2 complete=1	9
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1586 success=2 complete=2	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1586 success=3 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1586 success=4 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1587 success=1 complete=1	133
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1587 success=2 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1587 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1587 success=3 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1587 success=4 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1587 success=6 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1588 success=1 complete=1	132
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1588 success=2 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1588 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1588 success=3 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1589 success=1 complete=1	130
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1589 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1589 success=2 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1590 success=1 complete=1	148
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1590 success=2 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1590 success=2 complete=2	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1591 success=1 complete=1	126
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1591 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1592 success=1 complete=1	162
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1592 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1592 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1593 success=1 complete=1	133
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1594 success=1 complete=1	115
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1594 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1594 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1595 success=1 complete=1	134
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1596 success=1 complete=1	134
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1597 success=1 complete=1	162
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1597 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1598 success=1 complete=1	153
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1599 success=1 complete=1	173
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1599 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1600 success=1 complete=1	129
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1601 success=1 complete=1	121
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1601 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1602 success=1 complete=1	104
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1603 success=1 complete=1	89
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1603 success=2 complete=2	7
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1604 success=1 complete=1	80
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1604 success=2 complete=2	14
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1605 success=1 complete=1	95
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1605 success=2 complete=2	33
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1606 success=1 complete=1	45
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1606 success=2 complete=2	34
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1607 success=1 complete=1	43
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1607 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1607 success=2 complete=2	27
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1608 success=1 complete=1	27
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1608 success=2 complete=2	20
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1609 success=1 complete=1	18
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1609 success=2 complete=2	13
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1610 success=1 complete=1	14
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1610 success=2 complete=2	10
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1611 success=1 complete=1	7
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1611 success=2 complete=2	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1612 success=1 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1612 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1613 success=1 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1614 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1615 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1615 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_007:from	eligible=1616 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1524 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1526 success=1 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1527 success=1 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1528 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1528 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1529 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1530 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1530 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1530 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1531 success=1 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1531 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1532 success=1 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1532 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1533 success=1 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1534 success=1 complete=1	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1535 success=1 complete=1	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1536 success=1 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1537 success=1 complete=1	7
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1537 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1538 success=1 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1538 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1539 success=1 complete=1	11
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1540 success=1 complete=1	9
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1540 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1541 success=1 complete=1	14
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1541 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1542 success=1 complete=1	16
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1542 success=3 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1543 success=1 complete=1	13
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1543 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1544 success=1 complete=1	10
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1544 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1544 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1544 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1545 success=1 complete=1	10
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1545 success=2 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1546 success=1 complete=1	13
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1546 success=2 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1546 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1546 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1547 success=1 complete=1	22
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1547 success=2 complete=1	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1547 success=2 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1547 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1548 success=1 complete=1	14
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1548 success=2 complete=1	10
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1548 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1549 success=1 complete=1	28
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1549 success=2 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1549 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1550 success=1 complete=1	20
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1550 success=2 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1550 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1551 success=1 complete=1	21
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1551 success=2 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1551 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1552 success=1 complete=1	17
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1552 success=2 complete=1	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1552 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1553 success=1 complete=1	21
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1553 success=2 complete=1	10
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1553 success=2 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1553 success=3 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1554 success=1 complete=1	23
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1554 success=2 complete=1	8
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1554 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1555 success=1 complete=1	32
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1555 success=2 complete=1	7
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1555 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1556 success=1 complete=1	20
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1556 success=2 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1557 success=1 complete=1	35
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1557 success=2 complete=1	7
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1558 success=1 complete=1	45
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1558 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1559 success=1 complete=1	36
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1559 success=2 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1560 success=1 complete=1	44
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1561 success=1 complete=1	53
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1561 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1562 success=1 complete=1	40
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1562 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1562 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1563 success=1 complete=1	38
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1563 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1563 success=3 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1563 success=4 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1564 success=1 complete=1	39
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1564 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1564 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1564 success=3 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1565 success=1 complete=1	43
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1565 success=2 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1565 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1566 success=1 complete=1	52
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1566 success=2 complete=1	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1566 success=3 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1566 success=3 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1567 success=1 complete=1	53
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1567 success=2 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1567 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1567 success=3 complete=1	7
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1568 success=1 complete=1	42
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1568 success=2 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1568 success=2 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1568 success=3 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1569 success=1 complete=1	40
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1569 success=2 complete=1	8
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1570 success=1 complete=1	49
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1570 success=2 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1570 success=3 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1571 success=1 complete=1	34
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1571 success=2 complete=1	13
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1571 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1571 success=3 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1571 success=4 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1572 success=1 complete=1	29
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1572 success=2 complete=1	16
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1572 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1572 success=3 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1573 success=1 complete=1	44
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1573 success=2 complete=1	17
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1573 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1573 success=3 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1573 success=4 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1574 success=1 complete=1	57
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1574 success=2 complete=1	18
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1574 success=3 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1575 success=1 complete=1	47
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1575 success=2 complete=1	15
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1575 success=3 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1575 success=4 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1576 success=1 complete=1	48
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1576 success=2 complete=1	11
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1576 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1577 success=1 complete=1	47
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1577 success=2 complete=1	7
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1577 success=2 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1578 success=1 complete=1	46
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1578 success=2 complete=1	10
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1578 success=2 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1578 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1579 success=1 complete=1	70
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1579 success=2 complete=1	12
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1579 success=2 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1579 success=3 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1580 success=1 complete=1	54
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1580 success=2 complete=1	13
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1580 success=2 complete=2	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1580 success=3 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1580 success=3 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1581 success=1 complete=1	52
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1581 success=2 complete=1	9
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1581 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1581 success=3 complete=1	7
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1582 success=1 complete=1	65
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1582 success=2 complete=1	7
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1582 success=3 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1583 success=1 complete=1	49
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1583 success=2 complete=1	7
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1583 success=3 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1584 success=1 complete=1	69
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1584 success=2 complete=1	8
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1584 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1584 success=3 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1585 success=1 complete=1	64
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1585 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1585 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1585 success=3 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1586 success=1 complete=1	66
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1586 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1586 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1587 success=1 complete=1	61
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1587 success=2 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1587 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1588 success=1 complete=1	73
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1588 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1588 success=2 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1589 success=1 complete=1	67
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1589 success=2 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1590 success=1 complete=1	60
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1590 success=2 complete=1	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1591 success=1 complete=1	73
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1591 success=2 complete=1	9
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1592 success=1 complete=1	57
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1592 success=2 complete=1	16
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1593 success=1 complete=1	53
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1593 success=2 complete=1	10
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1594 success=1 complete=1	55
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1594 success=2 complete=1	13
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1595 success=1 complete=1	76
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1595 success=2 complete=1	13
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1595 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1596 success=1 complete=1	44
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1596 success=2 complete=1	15
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1597 success=1 complete=1	51
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1597 success=2 complete=1	16
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1598 success=1 complete=1	43
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1598 success=2 complete=1	23
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1599 success=1 complete=1	44
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1599 success=2 complete=1	17
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1600 success=1 complete=1	61
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1600 success=2 complete=1	19
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1601 success=1 complete=1	72
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1601 success=2 complete=1	16
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1602 success=1 complete=1	81
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1602 success=2 complete=1	11
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1603 success=1 complete=1	82
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1603 success=2 complete=1	19
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1603 success=2 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1604 success=1 complete=1	83
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1604 success=2 complete=1	8
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1604 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1605 success=1 complete=1	70
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1605 success=2 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1606 success=1 complete=1	73
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1606 success=2 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1606 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1607 success=1 complete=1	61
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1607 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1607 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1608 success=1 complete=1	47
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1608 success=2 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1608 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1609 success=1 complete=1	66
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1609 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1609 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1610 success=1 complete=1	48
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1610 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1611 success=1 complete=1	42
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1611 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1612 success=1 complete=1	32
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1613 success=1 complete=1	29
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1614 success=1 complete=1	14
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1614 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1615 success=1 complete=1	11
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1616 success=1 complete=1	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1617 success=1 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1617 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1618 success=1 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1619 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1620 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_010:to	eligible=1626 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1549 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1552 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1555 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1557 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1558 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1560 success=1 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1561 success=1 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1562 success=1 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1563 success=1 complete=1	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1564 success=1 complete=1	8
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1564 success=1 complete=2	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1565 success=1 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1566 success=1 complete=1	12
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1567 success=1 complete=1	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1568 success=1 complete=1	12
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1568 success=1 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1569 success=1 complete=1	14
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1569 success=1 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1570 success=1 complete=1	9
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1571 success=1 complete=1	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1571 success=1 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1572 success=1 complete=1	14
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1572 success=1 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1573 success=1 complete=1	15
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1574 success=1 complete=1	14
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1575 success=1 complete=1	20
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1576 success=1 complete=1	12
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1577 success=1 complete=1	21
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1578 success=1 complete=1	13
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1579 success=1 complete=1	24
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1580 success=1 complete=1	19
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1581 success=1 complete=1	23
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1582 success=1 complete=1	27
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1583 success=1 complete=1	41
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1584 success=1 complete=1	39
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1585 success=1 complete=1	45
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1586 success=1 complete=1	40
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1587 success=1 complete=1	48
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1588 success=1 complete=1	39
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1589 success=1 complete=1	31
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1590 success=1 complete=1	30
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1591 success=1 complete=1	33
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1592 success=1 complete=1	45
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1593 success=1 complete=1	46
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1594 success=1 complete=1	28
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1594 success=1 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1595 success=1 complete=1	42
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1596 success=1 complete=1	48
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1596 success=1 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1597 success=1 complete=1	44
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1598 success=1 complete=1	63
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1599 success=1 complete=1	57
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1600 success=1 complete=1	58
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1600 success=1 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1601 success=1 complete=1	52
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1601 success=1 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1602 success=1 complete=1	60
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1602 success=1 complete=2	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1603 success=1 complete=1	52
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1603 success=1 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1604 success=1 complete=1	61
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1605 success=1 complete=1	58
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1605 success=1 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1606 success=1 complete=1	49
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1607 success=1 complete=1	47
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1608 success=1 complete=1	56
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1608 success=1 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1609 success=1 complete=1	58
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1609 success=1 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1610 success=1 complete=1	54
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1611 success=1 complete=1	58
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1611 success=1 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1611 success=1 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1612 success=1 complete=1	54
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1612 success=1 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1613 success=1 complete=1	62
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1613 success=1 complete=2	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1614 success=1 complete=1	73
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1614 success=1 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1614 success=1 complete=4	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1615 success=1 complete=1	64
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1615 success=1 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1616 success=1 complete=1	63
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1617 success=1 complete=1	58
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1617 success=1 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1618 success=1 complete=1	80
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1618 success=1 complete=2	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1619 success=1 complete=1	62
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1619 success=1 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1620 success=1 complete=1	64
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1620 success=1 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1620 success=1 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1621 success=1 complete=1	68
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1621 success=1 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1621 success=1 complete=3	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1622 success=1 complete=1	67
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1622 success=1 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1622 success=1 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1623 success=1 complete=1	73
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1624 success=1 complete=1	53
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1624 success=1 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1625 success=1 complete=1	54
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1625 success=1 complete=3	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1626 success=1 complete=1	54
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1627 success=1 complete=1	72
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1628 success=1 complete=1	79
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1629 success=1 complete=1	63
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1630 success=1 complete=1	67
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1630 success=1 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1630 success=1 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1631 success=1 complete=1	62
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1631 success=1 complete=2	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1631 success=1 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1632 success=1 complete=1	64
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1632 success=1 complete=2	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1632 success=1 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1633 success=1 complete=1	84
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1633 success=1 complete=2	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1633 success=1 complete=3	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1634 success=1 complete=1	68
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1634 success=1 complete=2	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1634 success=1 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1635 success=1 complete=1	75
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1635 success=1 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1636 success=1 complete=1	56
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1636 success=1 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1636 success=1 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1637 success=1 complete=1	66
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1638 success=1 complete=1	50
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1638 success=1 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1638 success=1 complete=3	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1639 success=1 complete=1	39
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1639 success=1 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1639 success=1 complete=4	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1640 success=1 complete=1	38
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1640 success=1 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1641 success=1 complete=1	32
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1641 success=1 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1642 success=1 complete=1	45
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1642 success=1 complete=2	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1643 success=1 complete=1	44
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1643 success=1 complete=2	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1644 success=1 complete=1	47
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1644 success=1 complete=2	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1644 success=1 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1645 success=1 complete=1	40
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1645 success=1 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1646 success=1 complete=1	36
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1646 success=1 complete=2	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1647 success=1 complete=1	50
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1647 success=1 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1648 success=1 complete=1	49
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1649 success=1 complete=1	28
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1649 success=1 complete=2	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1650 success=1 complete=1	39
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1650 success=1 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1651 success=1 complete=1	24
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1651 success=1 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1652 success=1 complete=1	16
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1653 success=1 complete=1	13
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1654 success=1 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1655 success=1 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1656 success=1 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1657 success=1 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1657 success=1 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1658 success=1 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1659 success=1 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1660 success=1 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:from	eligible=1663 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1549 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1552 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1555 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1557 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1558 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1560 success=1 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1560 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1561 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1561 success=2 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1562 success=1 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1562 success=2 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1562 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1563 success=1 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1563 success=2 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1564 success=1 complete=1	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1564 success=2 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1564 success=2 complete=2	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1565 success=1 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1566 success=1 complete=1	11
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1566 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1567 success=1 complete=1	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1568 success=1 complete=1	10
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1568 success=2 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1568 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1569 success=1 complete=1	12
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1569 success=2 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1569 success=2 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1570 success=1 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1570 success=2 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1571 success=1 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1571 success=2 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1571 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1572 success=1 complete=1	9
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1572 success=2 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1572 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1573 success=1 complete=1	10
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1573 success=2 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1573 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1574 success=1 complete=1	9
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1574 success=2 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1575 success=1 complete=1	12
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1575 success=2 complete=1	8
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1576 success=1 complete=1	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1576 success=2 complete=1	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1577 success=1 complete=1	11
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1577 success=2 complete=1	10
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1578 success=1 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1578 success=2 complete=1	9
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1579 success=1 complete=1	10
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1579 success=2 complete=1	14
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1580 success=1 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1580 success=2 complete=1	16
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1581 success=1 complete=1	10
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1581 success=2 complete=1	13
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1582 success=1 complete=1	14
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1582 success=2 complete=1	13
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1583 success=1 complete=1	29
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1583 success=2 complete=1	11
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1583 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1584 success=1 complete=1	29
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1584 success=2 complete=1	10
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1585 success=1 complete=1	32
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1585 success=2 complete=1	12
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1585 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1586 success=1 complete=1	33
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1586 success=2 complete=1	7
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1587 success=1 complete=1	31
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1587 success=2 complete=1	15
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1587 success=3 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1588 success=1 complete=1	26
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1588 success=2 complete=1	12
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1588 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1589 success=1 complete=1	22
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1589 success=2 complete=1	8
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1589 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1590 success=1 complete=1	12
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1590 success=2 complete=1	18
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1591 success=1 complete=1	15
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1591 success=2 complete=1	18
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1592 success=1 complete=1	23
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1592 success=2 complete=1	22
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1593 success=1 complete=1	22
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1593 success=2 complete=1	24
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1594 success=1 complete=1	13
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1594 success=2 complete=1	13
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1594 success=3 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1594 success=3 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1595 success=1 complete=1	22
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1595 success=2 complete=1	18
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1595 success=3 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1596 success=1 complete=1	30
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1596 success=2 complete=1	16
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1596 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1596 success=3 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1596 success=4 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1597 success=1 complete=1	24
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1597 success=2 complete=1	18
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1597 success=3 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1598 success=1 complete=1	31
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1598 success=2 complete=1	26
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1598 success=3 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1598 success=4 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1599 success=1 complete=1	35
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1599 success=2 complete=1	19
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1599 success=3 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1600 success=1 complete=1	30
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1600 success=2 complete=1	25
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1600 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1600 success=3 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1600 success=3 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1601 success=1 complete=1	38
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1601 success=2 complete=1	14
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1601 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1601 success=3 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1602 success=1 complete=1	39
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1602 success=2 complete=1	21
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1602 success=3 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1602 success=4 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1603 success=1 complete=1	34
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1603 success=2 complete=1	18
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1603 success=3 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1604 success=1 complete=1	32
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1604 success=2 complete=1	29
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1605 success=1 complete=1	29
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1605 success=2 complete=1	29
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1605 success=3 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1606 success=1 complete=1	22
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1606 success=2 complete=1	26
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1606 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1607 success=1 complete=1	30
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1607 success=2 complete=1	17
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1608 success=1 complete=1	32
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1608 success=2 complete=1	24
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1608 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1609 success=1 complete=1	35
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1609 success=2 complete=1	22
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1609 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1609 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1610 success=1 complete=1	37
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1610 success=2 complete=1	15
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1610 success=3 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1611 success=1 complete=1	47
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1611 success=2 complete=1	11
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1611 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1611 success=3 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1612 success=1 complete=1	35
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1612 success=2 complete=1	17
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1612 success=3 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1612 success=3 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1613 success=1 complete=1	42
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1613 success=2 complete=1	17
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1613 success=3 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1613 success=3 complete=2	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1613 success=4 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1614 success=1 complete=1	55
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1614 success=2 complete=1	18
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1614 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1614 success=4 complete=4	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1615 success=1 complete=1	54
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1615 success=2 complete=1	9
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1615 success=3 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1615 success=4 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1616 success=1 complete=1	45
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1616 success=2 complete=1	15
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1616 success=3 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1617 success=1 complete=1	46
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1617 success=2 complete=1	11
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1617 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1617 success=3 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1618 success=1 complete=1	53
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1618 success=2 complete=1	25
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1618 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1618 success=3 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1618 success=3 complete=2	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1619 success=1 complete=1	47
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1619 success=2 complete=1	13
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1619 success=3 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1619 success=3 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1620 success=1 complete=1	38
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1620 success=2 complete=1	25
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1620 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1620 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1620 success=3 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1621 success=1 complete=1	43
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1621 success=2 complete=1	25
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1621 success=3 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1621 success=3 complete=3	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1622 success=1 complete=1	40
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1622 success=2 complete=1	27
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1622 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1622 success=3 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1623 success=1 complete=1	43
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1623 success=2 complete=1	30
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1624 success=1 complete=1	31
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1624 success=2 complete=1	22
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1624 success=3 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1625 success=1 complete=1	37
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1625 success=2 complete=1	17
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1625 success=3 complete=3	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1626 success=1 complete=1	42
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1626 success=2 complete=1	12
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1627 success=1 complete=1	56
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1627 success=2 complete=1	16
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1628 success=1 complete=1	65
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1628 success=2 complete=1	10
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1628 success=3 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1629 success=1 complete=1	53
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1629 success=2 complete=1	9
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1629 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1630 success=1 complete=1	53
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1630 success=2 complete=1	14
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1630 success=2 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1630 success=3 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1631 success=1 complete=1	54
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1631 success=2 complete=1	7
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1631 success=2 complete=2	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1631 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1631 success=3 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1632 success=1 complete=1	56
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1632 success=2 complete=1	8
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1632 success=2 complete=2	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1632 success=3 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1633 success=1 complete=1	70
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1633 success=2 complete=1	13
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1633 success=2 complete=2	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1633 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1633 success=3 complete=3	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1634 success=1 complete=1	56
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1634 success=2 complete=1	12
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1634 success=2 complete=2	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1634 success=3 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1635 success=1 complete=1	66
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1635 success=2 complete=1	9
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1635 success=2 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1636 success=1 complete=1	39
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1636 success=2 complete=1	17
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1636 success=2 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1636 success=3 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1637 success=1 complete=1	48
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1637 success=2 complete=1	18
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1638 success=1 complete=1	37
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1638 success=2 complete=1	13
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1638 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1638 success=3 complete=3	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1639 success=1 complete=1	25
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1639 success=2 complete=1	14
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1639 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1639 success=4 complete=4	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1640 success=1 complete=1	26
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1640 success=2 complete=1	12
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1640 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1641 success=1 complete=1	22
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1641 success=2 complete=1	9
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1641 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1641 success=3 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1642 success=1 complete=1	33
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1642 success=2 complete=1	12
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1642 success=2 complete=2	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1643 success=1 complete=1	35
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1643 success=2 complete=1	9
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1643 success=2 complete=2	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1644 success=1 complete=1	40
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1644 success=2 complete=1	7
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1644 success=2 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1644 success=3 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1644 success=3 complete=3	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1645 success=1 complete=1	38
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1645 success=2 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1645 success=2 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1646 success=1 complete=1	29
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1646 success=2 complete=1	7
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1646 success=2 complete=2	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1647 success=1 complete=1	44
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1647 success=2 complete=1	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1647 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1648 success=1 complete=1	43
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1648 success=2 complete=1	6
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1649 success=1 complete=1	27
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1649 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1649 success=2 complete=2	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1650 success=1 complete=1	37
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1650 success=2 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1650 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1651 success=1 complete=1	21
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1651 success=2 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1651 success=2 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1652 success=1 complete=1	15
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1652 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1653 success=1 complete=1	11
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1653 success=2 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1654 success=1 complete=1	4
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1654 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1655 success=1 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1655 success=2 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1656 success=1 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1657 success=1 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1657 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1658 success=1 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1659 success=1 complete=1	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1659 success=2 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1660 success=1 complete=1	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_013:to	eligible=1663 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1541 success=1 complete=1	8
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1542 success=1 complete=1	85
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1543 success=1 complete=1	202
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1544 success=1 complete=1	299
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1545 success=1 complete=1	370
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1545 success=2 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1546 success=1 complete=1	433
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1546 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1547 success=1 complete=1	473
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1547 success=2 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1548 success=1 complete=1	477
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1548 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1549 success=1 complete=1	517
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1549 success=2 complete=2	3
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1550 success=1 complete=1	432
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1550 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1551 success=1 complete=1	344
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1551 success=2 complete=2	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1552 success=1 complete=1	206
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1552 success=2 complete=2	2
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1553 success=1 complete=1	144
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1554 success=1 complete=1	57
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1555 success=1 complete=1	37
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1556 success=1 complete=1	12
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1557 success=1 complete=1	5
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1558 success=1 complete=1	1
+hist	scan2_endpoint_joint	bay_edge_transition:land_016:from	eligible=1559 success=1 complete=1	1
+hist	scan3_aperture_mode	bay_mouth_aperture:elandor_east:after	diagonal_shoulder	152
+hist	scan3_aperture_mode	bay_mouth_aperture:elandor_east:after	direct	3964
+hist	scan3_aperture_mode	bay_mouth_aperture:elandor_east:before	diagonal_shoulder	251
+hist	scan3_aperture_mode	bay_mouth_aperture:elandor_east:before	direct	3865
+hist	scan3_aperture_mode	bay_mouth_aperture:elandor_west:after	diagonal_shoulder	97
+hist	scan3_aperture_mode	bay_mouth_aperture:elandor_west:after	direct	4019
+hist	scan3_aperture_mode	bay_mouth_aperture:elandor_west:before	direct	4116
+hist	scan3_aperture_mode	bay_mouth_aperture:kragmar_east:after	direct	4116
+hist	scan3_aperture_mode	bay_mouth_aperture:kragmar_east:before	diagonal_shoulder	28
+hist	scan3_aperture_mode	bay_mouth_aperture:kragmar_east:before	direct	4088
+hist	scan3_aperture_mode	bay_mouth_aperture:kragmar_west:after	diagonal_shoulder	16
+hist	scan3_aperture_mode	bay_mouth_aperture:kragmar_west:after	direct	4100
+hist	scan3_aperture_mode	bay_mouth_aperture:kragmar_west:before	diagonal_shoulder	121
+hist	scan3_aperture_mode	bay_mouth_aperture:kragmar_west:before	direct	3995
+hist	scan3_bank_branch_steps	bay_bank:elandor_east:lorindor	0	4116
+hist	scan3_bank_branch_steps	bay_bank:elandor_west:whitebridge	0	4116
+hist	scan3_bank_branch_steps	bay_bank:kragmar_east:whispering	0	4116
+hist	scan3_bank_branch_steps	bay_bank:kragmar_west:speargrass	0	4116
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	34	2
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	35	2
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	36	3
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	37	7
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	38	5
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	39	11
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	40	15
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	41	13
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	42	18
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	43	13
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	44	15
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	45	29
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	46	23
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	47	38
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	48	37
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	49	30
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	50	42
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	51	48
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	52	48
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	53	56
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	54	60
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	55	49
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	56	60
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	57	75
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	58	70
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	59	86
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	60	77
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	61	72
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	62	85
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	63	92
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	64	105
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	65	105
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	66	95
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	67	92
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	68	85
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	69	112
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	70	98
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	71	115
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	72	128
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	73	107
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	74	107
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	75	111
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	76	122
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	77	109
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	78	115
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	79	121
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_east	80	1208
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	34	1
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	35	4
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	36	5
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	37	10
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	38	14
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	39	13
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	40	22
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	41	18
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	42	14
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	43	21
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	44	17
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	45	33
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	46	35
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	47	26
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	48	46
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	49	47
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	50	59
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	51	48
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	52	63
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	53	59
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	54	75
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	55	76
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	56	69
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	57	71
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	58	57
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	59	89
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	60	92
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	61	97
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	62	95
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	63	102
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	64	107
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	65	119
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	66	98
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	67	92
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	68	85
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	69	88
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	70	104
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	71	97
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	72	115
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	73	92
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	74	91
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	75	97
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	76	87
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	77	103
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	78	78
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	79	128
+hist	scan3_bay_bank_column_bound_nodes	bay_elandor_west	80	1157
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	34	1
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	35	2
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	37	4
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	38	6
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	39	6
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	40	3
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	41	15
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	42	21
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	43	19
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	44	25
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	45	26
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	46	41
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	47	41
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	48	40
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	49	36
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	50	69
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	51	54
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	52	61
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	53	78
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	54	76
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	55	62
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	56	72
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	57	99
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	58	93
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	59	106
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	60	77
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	61	94
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	62	109
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	63	111
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	64	103
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	65	127
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	66	117
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	67	95
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	68	95
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	69	106
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	70	87
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	71	106
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	72	92
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	73	103
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	74	85
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	75	99
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	76	83
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	77	108
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	78	94
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	79	112
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_east	80	1057
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	36	8
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	37	10
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	38	9
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	39	12
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	40	14
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	41	10
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	42	18
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	43	20
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	44	26
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	45	21
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	46	34
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	47	24
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	48	28
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	49	52
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	50	52
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	51	52
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	52	50
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	53	56
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	54	59
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	55	72
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	56	63
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	57	74
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	58	89
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	59	87
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	60	80
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	61	89
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	62	83
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	63	79
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	64	89
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	65	113
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	66	99
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	67	103
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	68	104
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	69	111
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	70	102
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	71	100
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	72	125
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	73	92
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	74	101
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	75	81
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	76	97
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	77	95
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	78	101
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	79	109
+hist	scan3_bay_bank_column_bound_nodes	bay_kragmar_west	80	1223
+hist	scan3_bay_bank_width_class	bay_elandor_east	bay_bank_width_positive	4116
+hist	scan3_bay_bank_width_class	bay_elandor_west	bay_bank_width_positive	4116
+hist	scan3_bay_bank_width_class	bay_kragmar_east	bay_bank_width_positive	4116
+hist	scan3_bay_bank_width_class	bay_kragmar_west	bay_bank_width_positive	4116
+hist	scan3_bay_bank_width_nodes	bay_elandor_east	62	3
+hist	scan3_bay_bank_width_nodes	bay_elandor_east	63	3
+hist	scan3_bay_bank_width_nodes	bay_elandor_east	64	3
+hist	scan3_bay_bank_width_nodes	bay_elandor_east	65	7
+hist	scan3_bay_bank_width_nodes	bay_elandor_east	66	7
+hist	scan3_bay_bank_width_nodes	bay_elandor_east	67	18
+hist	scan3_bay_bank_width_nodes	bay_elandor_east	68	16
+hist	scan3_bay_bank_width_nodes	bay_elandor_east	69	16
+hist	scan3_bay_bank_width_nodes	bay_elandor_east	70	13
+hist	scan3_bay_bank_width_nodes	bay_elandor_east	71	18
+hist	scan3_bay_bank_width_nodes	bay_elandor_east	72	24
+hist	scan3_bay_bank_width_nodes	bay_elandor_east	73	34
+hist	scan3_bay_bank_width_nodes	bay_elandor_east	74	28
+hist	scan3_bay_bank_width_nodes	bay_elandor_east	75	49
+hist	scan3_bay_bank_width_nodes	bay_elandor_east	76	27
+hist	scan3_bay_bank_width_nodes	bay_elandor_east	77	50
+hist	scan3_bay_bank_width_nodes	bay_elandor_east	78	42
+hist	scan3_bay_bank_width_nodes	bay_elandor_east	79	53
+hist	scan3_bay_bank_width_nodes	bay_elandor_east	80	3705
+hist	scan3_bay_bank_width_nodes	bay_elandor_west	64	3
+hist	scan3_bay_bank_width_nodes	bay_elandor_west	65	7
+hist	scan3_bay_bank_width_nodes	bay_elandor_west	66	10
+hist	scan3_bay_bank_width_nodes	bay_elandor_west	67	11
+hist	scan3_bay_bank_width_nodes	bay_elandor_west	68	17
+hist	scan3_bay_bank_width_nodes	bay_elandor_west	69	14
+hist	scan3_bay_bank_width_nodes	bay_elandor_west	70	19
+hist	scan3_bay_bank_width_nodes	bay_elandor_west	71	19
+hist	scan3_bay_bank_width_nodes	bay_elandor_west	72	20
+hist	scan3_bay_bank_width_nodes	bay_elandor_west	73	18
+hist	scan3_bay_bank_width_nodes	bay_elandor_west	74	29
+hist	scan3_bay_bank_width_nodes	bay_elandor_west	75	25
+hist	scan3_bay_bank_width_nodes	bay_elandor_west	76	39
+hist	scan3_bay_bank_width_nodes	bay_elandor_west	77	42
+hist	scan3_bay_bank_width_nodes	bay_elandor_west	78	45
+hist	scan3_bay_bank_width_nodes	bay_elandor_west	79	39
+hist	scan3_bay_bank_width_nodes	bay_elandor_west	80	3759
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	56	1
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	57	2
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	58	2
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	59	2
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	60	2
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	61	1
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	62	5
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	63	10
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	64	10
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	65	10
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	66	11
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	67	20
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	68	7
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	69	21
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	70	21
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	71	28
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	72	31
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	73	31
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	74	51
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	75	48
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	76	36
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	77	49
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	78	50
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	79	69
+hist	scan3_bay_bank_width_nodes	bay_kragmar_east	80	3598
+hist	scan3_bay_bank_width_nodes	bay_kragmar_west	65	1
+hist	scan3_bay_bank_width_nodes	bay_kragmar_west	66	5
+hist	scan3_bay_bank_width_nodes	bay_kragmar_west	67	17
+hist	scan3_bay_bank_width_nodes	bay_kragmar_west	68	8
+hist	scan3_bay_bank_width_nodes	bay_kragmar_west	69	11
+hist	scan3_bay_bank_width_nodes	bay_kragmar_west	70	13
+hist	scan3_bay_bank_width_nodes	bay_kragmar_west	71	14
+hist	scan3_bay_bank_width_nodes	bay_kragmar_west	72	22
+hist	scan3_bay_bank_width_nodes	bay_kragmar_west	73	22
+hist	scan3_bay_bank_width_nodes	bay_kragmar_west	74	20
+hist	scan3_bay_bank_width_nodes	bay_kragmar_west	75	25
+hist	scan3_bay_bank_width_nodes	bay_kragmar_west	76	25
+hist	scan3_bay_bank_width_nodes	bay_kragmar_west	77	30
+hist	scan3_bay_bank_width_nodes	bay_kragmar_west	78	65
+hist	scan3_bay_bank_width_nodes	bay_kragmar_west	79	38
+hist	scan3_bay_bank_width_nodes	bay_kragmar_west	80	3800
+hist	scan3_selection_class	bay_bank:elandor_east:lorindor	single_admitted_untested	4116
+hist	scan3_selection_class	bay_bank:elandor_west:whitebridge	single_admitted_untested	4116
+hist	scan3_selection_class	bay_bank:kragmar_east:whispering	single_admitted_untested	4116
+hist	scan3_selection_class	bay_bank:kragmar_west:speargrass	single_admitted_untested	4116
+hist	scan3_step_class	bay_bank:elandor_east:lorindor:east	admitted	4116
+hist	scan3_step_class	bay_bank:elandor_east:lorindor:east	noncandidate	4116
+hist	scan3_step_class	bay_bank:elandor_east:lorindor:north	noncandidate	4116
+hist	scan3_step_class	bay_bank:elandor_east:lorindor:northeast	admitted	4116
+hist	scan3_step_class	bay_bank:elandor_east:lorindor:northeast	noncandidate	4116
+hist	scan3_step_class	bay_bank:elandor_east:lorindor:northwest	noncandidate	4116
+hist	scan3_step_class	bay_bank:elandor_east:lorindor:northwest	previous	4116
+hist	scan3_step_class	bay_bank:elandor_east:lorindor:south	noncandidate	4116
+hist	scan3_step_class	bay_bank:elandor_east:lorindor:southeast	admitted	4116
+hist	scan3_step_class	bay_bank:elandor_east:lorindor:southeast	noncandidate	4116
+hist	scan3_step_class	bay_bank:elandor_east:lorindor:southwest	noncandidate	4116
+hist	scan3_step_class	bay_bank:elandor_east:lorindor:southwest	previous	4116
+hist	scan3_step_class	bay_bank:elandor_east:lorindor:southwest	water_side	4116
+hist	scan3_step_class	bay_bank:elandor_east:lorindor:west	noncandidate	4116
+hist	scan3_step_class	bay_bank:elandor_east:lorindor:west	previous	4116
+hist	scan3_step_class	bay_bank:elandor_west:whitebridge:east	admitted	4116
+hist	scan3_step_class	bay_bank:elandor_west:whitebridge:east	noncandidate	4116
+hist	scan3_step_class	bay_bank:elandor_west:whitebridge:north	noncandidate	4116
+hist	scan3_step_class	bay_bank:elandor_west:whitebridge:northeast	admitted	4116
+hist	scan3_step_class	bay_bank:elandor_west:whitebridge:northeast	noncandidate	4116
+hist	scan3_step_class	bay_bank:elandor_west:whitebridge:northwest	noncandidate	4116
+hist	scan3_step_class	bay_bank:elandor_west:whitebridge:northwest	previous	4116
+hist	scan3_step_class	bay_bank:elandor_west:whitebridge:south	noncandidate	4116
+hist	scan3_step_class	bay_bank:elandor_west:whitebridge:southeast	admitted	4116
+hist	scan3_step_class	bay_bank:elandor_west:whitebridge:southeast	noncandidate	4116
+hist	scan3_step_class	bay_bank:elandor_west:whitebridge:southwest	noncandidate	4116
+hist	scan3_step_class	bay_bank:elandor_west:whitebridge:southwest	previous	4116
+hist	scan3_step_class	bay_bank:elandor_west:whitebridge:southwest	water_side	4116
+hist	scan3_step_class	bay_bank:elandor_west:whitebridge:west	noncandidate	4116
+hist	scan3_step_class	bay_bank:elandor_west:whitebridge:west	previous	4116
+hist	scan3_step_class	bay_bank:kragmar_east:whispering:east	previous	4116
+hist	scan3_step_class	bay_bank:kragmar_east:whispering:north	noncandidate	4116
+hist	scan3_step_class	bay_bank:kragmar_east:whispering:northeast	noncandidate	4116
+hist	scan3_step_class	bay_bank:kragmar_east:whispering:northeast	water_side	4116
+hist	scan3_step_class	bay_bank:kragmar_east:whispering:northwest	noncandidate	4116
+hist	scan3_step_class	bay_bank:kragmar_east:whispering:south	noncandidate	4116
+hist	scan3_step_class	bay_bank:kragmar_east:whispering:southeast	noncandidate	4116
+hist	scan3_step_class	bay_bank:kragmar_east:whispering:southwest	noncandidate	4116
+hist	scan3_step_class	bay_bank:kragmar_east:whispering:west	admitted	4116
+hist	scan3_step_class	bay_bank:kragmar_west:speargrass:east	noncandidate	4116
+hist	scan3_step_class	bay_bank:kragmar_west:speargrass:east	previous	4116
+hist	scan3_step_class	bay_bank:kragmar_west:speargrass:north	noncandidate	4116
+hist	scan3_step_class	bay_bank:kragmar_west:speargrass:northeast	noncandidate	4116
+hist	scan3_step_class	bay_bank:kragmar_west:speargrass:northeast	previous	4116
+hist	scan3_step_class	bay_bank:kragmar_west:speargrass:northeast	water_side	4116
+hist	scan3_step_class	bay_bank:kragmar_west:speargrass:northwest	admitted	4116
+hist	scan3_step_class	bay_bank:kragmar_west:speargrass:northwest	noncandidate	4116
+hist	scan3_step_class	bay_bank:kragmar_west:speargrass:south	noncandidate	4116
+hist	scan3_step_class	bay_bank:kragmar_west:speargrass:southeast	noncandidate	4116
+hist	scan3_step_class	bay_bank:kragmar_west:speargrass:southeast	previous	4116
+hist	scan3_step_class	bay_bank:kragmar_west:speargrass:southwest	admitted	4116
+hist	scan3_step_class	bay_bank:kragmar_west:speargrass:southwest	noncandidate	4116
+hist	scan3_step_class	bay_bank:kragmar_west:speargrass:west	admitted	4116
+hist	scan3_step_class	bay_bank:kragmar_west:speargrass:west	noncandidate	4116
+hist	scan3_wing_chebyshev_k_j	bay_wing:elandor_east:left	4	4116
+hist	scan3_wing_chebyshev_k_j	bay_wing:elandor_east:right	3	4116
+hist	scan3_wing_chebyshev_k_j	bay_wing:elandor_west:left	3	4116
+hist	scan3_wing_chebyshev_k_j	bay_wing:elandor_west:right	4	4116
+hist	scan3_wing_chebyshev_k_j	bay_wing:kragmar_east:left	4	4116
+hist	scan3_wing_chebyshev_k_j	bay_wing:kragmar_east:right	4	4116
+hist	scan3_wing_chebyshev_k_j	bay_wing:kragmar_west:left	2	4116
+hist	scan3_wing_chebyshev_k_j	bay_wing:kragmar_west:right	4	4116
+hist	scan3_wing_exclusion	bay_wing:elandor_east:left:wedge_nonwing_water	17	4116
+hist	scan3_wing_exclusion	bay_wing:elandor_east:right:wedge_nonwing_water	3	4116
+hist	scan3_wing_exclusion	bay_wing:elandor_west:left:wedge_nonwing_water	3	4116
+hist	scan3_wing_exclusion	bay_wing:elandor_west:right:wedge_nonwing_water	17	4116
+hist	scan3_wing_exclusion	bay_wing:kragmar_east:left:wedge_nonwing_water	17	4116
+hist	scan3_wing_exclusion	bay_wing:kragmar_east:right:wedge_nonwing_water	17	4116
+hist	scan3_wing_exclusion	bay_wing:kragmar_west:left:wedge_nonwing_water	1	4116
+hist	scan3_wing_exclusion	bay_wing:kragmar_west:right:wedge_nonwing_water	17	4116
+hist	scan3_wing_selected_rank	bay_wing:elandor_east:left	raw=2 structural=2	4116
+hist	scan3_wing_selected_rank	bay_wing:elandor_east:right	raw=1 structural=1	4116
+hist	scan3_wing_selected_rank	bay_wing:elandor_west:left	raw=1 structural=1	4116
+hist	scan3_wing_selected_rank	bay_wing:elandor_west:right	raw=10 structural=10	4116
+hist	scan3_wing_selected_rank	bay_wing:kragmar_east:left	raw=9 structural=9	4116
+hist	scan3_wing_selected_rank	bay_wing:kragmar_east:right	raw=17 structural=17	4116
+hist	scan3_wing_selected_rank	bay_wing:kragmar_west:left	raw=2 structural=2	4116
+hist	scan3_wing_selected_rank	bay_wing:kragmar_west:right	raw=17 structural=17	4116
+hist	scan3_wing_wedge_valid_count	bay_wing:elandor_east:left	1	4116
+hist	scan3_wing_wedge_valid_count	bay_wing:elandor_east:right	1	4116
+hist	scan3_wing_wedge_valid_count	bay_wing:elandor_west:left	1	4116
+hist	scan3_wing_wedge_valid_count	bay_wing:elandor_west:right	1	4116
+hist	scan3_wing_wedge_valid_count	bay_wing:kragmar_east:left	1	4116
+hist	scan3_wing_wedge_valid_count	bay_wing:kragmar_east:right	1	4116
+hist	scan3_wing_wedge_valid_count	bay_wing:kragmar_west:left	1	4116
+hist	scan3_wing_wedge_valid_count	bay_wing:kragmar_west:right	1	4116
+universal	chebyshev_k_j_above_four	0	section 6.4 refuted-frozen-universal event; occupancy is a finding
+universal	wedge_radius_above_five	0	dominated by the Chebyshev guard: R = 1 + max Chebyshev(K,J) <= 5 identically, so this zero is expected and not evidence of coverage
+universal	bay_bank_width_not_positive	0	section 6.4 `w = 0` event, including the unbounded class where every sampled station stayed positive and the exact per-column bound could not rule out a collapse between them
+summary	histograms=18

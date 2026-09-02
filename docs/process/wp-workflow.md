@@ -3,68 +3,110 @@
 Decided 2026-08-06. How a work package (WP) gets implemented
 autonomously. AGENTS.md links here; this file is the detailed contract.
 
-## Roles (revised 2026-08-06: the orchestrator orchestrates only)
+## Roles (revised 2026-08-22)
 
-The orchestrator may be Fable (cheaper) or Opus (stronger judgment on
-contested findings) — the role is the same either way; pick per WP.
+All model selection follows the sole project-wide authority,
+[agent-model-policy.md](agent-model-policy.md). A WP, research note, or package
+contract must not invent a local model priority.
 
-- **The orchestrator is architect and judge — it does NOT implement.**
-  It reads the specs, writes the implementation plan (task
-  decomposition, ordering, interfaces — mandatory for large WPs like
-  mapgen reworks), authors a tight **per-task brief** for every
-  implementation subagent (spec sections, files to touch, engine
-  contracts/gotchas to respect from luanti-lua.md + the checklist
-  below, acceptance criteria), reads every returned diff, decides
-  contested review findings, and does the final integration pass
-  before merge. Exception: trivial glue/one-line fixes where
-  delegation overhead exceeds doing it.
-- **Opus subagents implement everything** from those briefs — features,
-  fixes, assets, doc updates, searches.
-- **Opus review agents = mandatory quality gate** (see below). The
-  reviewer is always a DIFFERENT agent than the implementer.
+- **The coordinator is architect, tracker, and integration judge.** Its model
+  is selected under [agent-model-policy.md](agent-model-policy.md). It
+  maintains the task graph, writes implementation plans (mandatory for large
+  WPs) and tight per-task briefs, tracks dependencies and worktree ownership,
+  reads every returned diff and its evidence, decides accepted findings, and
+  performs final integration.
+- **Implementation and review models follow the model policy.** Select them
+  under [agent-model-policy.md](agent-model-policy.md); this process document
+  does not restate its routing table.
+- **Independent strong-agent review is the mandatory quality gate.** The
+  policy defines the trigger, independence, and model route; the checklist
+  below defines the technical review.
+
+Historically the coordinator was required to orchestrate only. The current
+rule preserves independent review while allowing the coordinator to implement
+when the model policy makes that coherent and a separate handoff would add cost
+without adding independence. The coordinator never self-approves a non-trivial
+change.
+
+Older project documents may use *orchestrator* as a synonym for *coordinator*.
+That vocabulary does not create a separate role or model-routing rule.
+
+Every implementation brief identifies the authoritative spec sections, files
+to touch, frozen interfaces, engine contracts and gotchas from
+`luanti-lua.md` plus the checklist below, acceptance criteria, non-goals, test
+budget, and stop conditions.
 
 ## Flow per WP
 
 1. **Preflight**: read AGENTS.md, BACKLOG.md (the WP row IS the
-   acceptance contract — if it is vague, sharpen it first and commit
-   that), the spec docs it references, and check for blocking
-   `TODO-design-*.md`. A WP with an unresolved design blocker is not
-   started.
+   acceptance contract), the spec docs it references, and check for blocking
+   `TODO-design-*.md`. If the row is vague, draft the sharpened wording before
+   implementation, land it on the WP branch created in step 2, and cover it in
+   the step-5 review. A WP with an unresolved design blocker is not started.
 2. **Branch**: `wp<NN>-<slug>` off current `main` (e.g. `wp18-continents`).
-3. **Implement** on the branch — via Opus subagents working from the
-   orchestrator's briefs (roles above); the orchestrator reviews each
-   returned diff before building on it. Project conventions (AGENTS.md),
+3. **Implement** on the branch with the model selected by
+   [agent-model-policy.md](agent-model-policy.md), working from the
+   coordinator's brief; the coordinator reviews each returned diff before
+   building on it. Project conventions (AGENTS.md),
    syntax check per changed file with **`tools/bin/luac51 -p`** (the
    engine's own bundled 5.1.5 — build once via `tools/build_lua51.sh`;
    `luajit` is a superset and green-lights `goto`, see "Verifying a
-   change" in `docs/research/luanti-lua.md`) — commits in coherent
-   steps. Do NOT run `tools/sync_to_luanti.sh` from a branch unless the
+   change" in `docs/research/luanti-lua.md`). Use LuaJIT for exhaustive
+   development loops where the harness supports it; this changes test cost,
+   never the accepted language. Commit in coherent steps. Do NOT run
+   `tools/sync_to_luanti.sh` from a branch unless the
    user asked to runtime-test that branch — the sync overwrites the
    shared Luanti install.
 4. **Self-check** before review: run the five grep sweeps from
    "Verifying a change" in `docs/research/luanti-lua.md` (they cover the
    do-not-write list; plain-Lua-5.1 fallback is a HARD requirement),
-   AGENTS performance rules
-   (globalstep throttling, inventory churn, 100-player target).
-5. **Mandatory code review**: at least **one full Opus code review of
-   the WP diff** using the checklist below. **Run review/research
-   subagents SYNCHRONOUSLY** (`run_in_background: false`) — pilot
-   lesson from WP19: background-subagent results can route to the main
-   session instead of the orchestrator, which then stalls waiting for
-   a notification that never arrives. Larger WPs: split lenses
-   across 2–3 Opus agents (correctness / Lua+perf / design-adherence)
-   and adversarially verify High findings. Findings are fixed on the
-   branch; High/Critical fixes get a focused re-review.
+   inspect `SETGLOBAL` for every changed mod file, and use LuaJIT for
+   intermediate executable checks. Run no PUC runtime at an intermediate
+   milestone. On frozen final bytes, run one compact
+   PUC-5.1 micro-KAT process and the same fixture once under LuaJIT, requiring
+   byte-identical canonical parity. WP40 R1-R4 retain their historical
+   targeted-PUC evidence; R5-R8 use this single-final-micro-KAT rule.
+   Fixed-layout, seed and full VM populations run only under LuaJIT. The retired
+   exact-T2 full-`W`/PCC/F1/F2 suites are historical and do not run on the
+   simple schema. Schedule independent interpreter runs under the workstation-
+   wide parallel-execution cap in AGENTS.md; historical wider runs are
+   evidence, not current execution authorization. Also check the AGENTS
+   performance rules (globalstep throttling, inventory churn, 100-player
+   target).
+5. **Mandatory code review**: under **Independent review** in
+   [agent-model-policy.md](agent-model-policy.md), run at least one full
+   independent strong-agent review of the WP diff using the checklist below.
+   **Run in-session review/research subagents synchronously**
+   (`run_in_background: false`) — the WP19 pilot showed that background
+   subagent results can route to the main session instead of the coordinator,
+   which then stalls waiting for a notification that never arrives. An
+   external Claude CLI review is different: run and monitor it non-blockingly
+   under [claude-cli-review.md](claude-cli-review.md), which owns its process,
+   JSONL stream and result parsing. Larger WPs: split lenses
+   across 2–3 independent strong agents (correctness / Lua+perf /
+   design-adherence) and adversarially verify High findings. Findings are
+   fixed on the branch; High/Critical fixes get a focused re-review. A
+   reviewer does not duplicate the final PUC micro-KAT: inspect immutable
+   artifacts, logs, interpreter evidence and hashes. Missing evidence, changed
+   final Lua bytes or a concrete interpreter-specific finding blocks the
+   milestone and requires one regenerated final micro-KAT pair (one PUC and
+   one LuaJIT run) on the corrected bytes; it never authorizes an intermediate
+   PUC suite, seed fleet or exhaustive PUC population.
 6. **Docs**: BACKLOG row → ✅ with summary; ROADMAP checkboxes; new
-   insights → AGENTS.md or docs/; design-doc deltas folded in.
+   insights → AGENTS.md or docs/; design-doc deltas folded in. The durable
+   completion record also carries the model and review calibration fields
+   required by **Calibration and policy maintenance** in
+   [agent-model-policy.md](agent-model-policy.md).
 7. **Merge to main** after the review is clean (merge commit, no
    squash — keep the step history). Then sync to Luanti.
 8. **Completion summary to the user** always includes a **runtime test
    plan**: the 5-minute checklist of what to click/verify in-game
    (agents cannot run the Flatpak GUI — the user is the runtime
    tester). Regressions found there become fix commits on main.
+   A real fallback-engine run is a separate runtime gate and is never inferred
+   from standalone LuaJIT/PUC equality.
 
-## Code review checklist (for the Opus reviewers)
+## Code review checklist (for independent reviewers)
 
 Point reviewers at this section verbatim.
 

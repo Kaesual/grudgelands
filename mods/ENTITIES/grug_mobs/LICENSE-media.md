@@ -252,8 +252,8 @@ The `_item_` files are the inventory images of the shared mob materials
 registered in `items.lua` (`docs/design/biomes_mobs.md` §6 base-material
 map); `grug_mobs_arrow.png` and `grug_mobs_rock.png` are the projectile
 sprites of `grug_mobs:arrow_entity` (skeleton archer) and
-`grug_mobs:rock_entity` (stone/mesa golem); `grug_mobs_camp_fire.png` is the
-node tile of `grug_mobs:camp_fire` (`camps.lua`).
+`grug_mobs:rock_entity` (stone/mesa golem); `grug_mobs_camp_fire.png` is served
+from this media directory for the lower-layer node `grug_nodes:camp_fire`.
 
 | File | Author | License | How it was made |
 |------|--------|---------|-----------------|
@@ -282,7 +282,7 @@ node tile of `grug_mobs:camp_fire` (`camps.lua`).
 | `grug_mobs_arrow.png` | Grudgelands project | CC0 1.0 | generator, art `ARROW_PROJECTILE`, projectile sprite |
 | `grug_mobs_rock.png` | Grudgelands project | CC0 1.0 | generator, art `ROCK_PROJECTILE`, grey-boulder projectile sprite (WP6/T6, golem "hurls rocks"); **not** derived from `default_cobble.png` or any other vendored tile |
 | `grug_mobs_item_raw_fish.png` | Grudgelands project | CC0 1.0 | generator, art `FISH`, blue-grey palette (WP6/T7, Mirefolk drop `grug_mobs:raw_fish`) |
-| `grug_mobs_camp_fire.png` | Grudgelands project | CC0 1.0 | generator, art `CAMP_FIRE`, ash/stone/ember palette — top-down fire pit, fully opaque (a node tile must not have holes); node tile of `grug_mobs:camp_fire` (WP6/T7 camp anchor), **not** derived from `default_fire*` or any other vendored tile |
+| `grug_mobs_camp_fire.png` | Grudgelands project | CC0 1.0 | generator, art `CAMP_FIRE`, ash/stone/ember palette — top-down fire pit, fully opaque (a node tile must not have holes); served game-wide for `grug_nodes:camp_fire` (WP6/T7 camp anchor), **not** derived from `default_fire*` or any other vendored tile |
 | `grug_mobs_item_stolen_purse.png` | Grudgelands project | CC0 1.0 | generator, art `STOLEN_PURSE`, drawstring coin pouch in a leather-brown palette (WP7, bandit trash drop `grug_mobs:stolen_purse` — items_crafting.md §8.1) |
 | `grug_mobs_item_war_trophy.png` | Grudgelands project | CC0 1.0 | generator, art `WAR_TROPHY`, torn crimson pennant on a snapped pole (WP7, faction-guard PvP drop `grug_mobs:war_trophy` — items_crafting.md §5.6) |
 

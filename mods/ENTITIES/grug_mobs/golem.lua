@@ -28,15 +28,17 @@ grug_mobs.register_simple_arrow("grug_mobs:rock_entity", {
 	lifetime = 4,
 })
 
--- Continent gate. Unlike every T5 family, the golem pair cannot be split by
--- its spawn nodes alone: §4 lists `default:stone` for both halves and bare
+-- Race-region side gate. Unlike every T5 family, the golem pair cannot be
+-- split by its spawn nodes alone: §4 lists `default:stone` for both halves and
 -- rock exists on both continents, so a node-only split would let Stone Golems
--- spawn in the badlands and Mesa Golems in the crags. _grug_spawn_check is
--- registered per mob NAME (init.lua) and ANDed with the zone gate, which is
--- exactly the granularity needed here.
-local function on_continent(territory)
+-- spawn in the badlands and Mesa Golems in the crags. Contested zones have no
+-- political faction, so the stable cultural race region supplies the side.
+-- _grug_spawn_check is registered per mob NAME (init.lua) and ANDed with the
+-- named-zone palette gate, which is exactly the granularity needed here.
+
+local function in_faction_region(faction_id)
 	return function(pos)
-		return grug_core.territory_at(pos) == territory
+		return grug_mobs.race_region_spawn_allows(faction_id, pos)
 	end
 end
 
@@ -47,13 +49,9 @@ local function golem_def(description, texture)
 		-- Elite by design (§3.1). Everything the tier implies is engine-owned
 		-- (levels.lua): do NOT add armor/hp/damage here.
 		_grug_tier = "elite",
-		-- "outer, coast" is the surface half of the §4 row; "underground" is
-		-- declared here (and not only in the row below) because
-		-- _grug_spawn_zones is registered per mob NAME in init.lua — without
-		-- it, T7's cave row would be rejected by spawn_abm_check. Same
-		-- forward declaration spider.lua makes. Cave rows/tuning stay
-		-- T7/T10's business.
-		_grug_spawn_zones = {"outer", "coast", "underground"},
+		-- Surface habitat is the common named palette plus the node whitelist.
+		-- The cave row has its own max-height and stone/stratum whitelist, so no
+		-- retired ring category is recreated here.
 
 		reach = 2,
 		attack_type = "dogshoot",
@@ -162,7 +160,7 @@ end
 --
 
 local stone_golem = golem_def("Stone Golem", "grug_mobs_stone_golem.png")
-stone_golem._grug_spawn_check = on_continent("accord")
+stone_golem._grug_spawn_check = in_faction_region("accord")
 grug_mobs.register_mob("grug_mobs:stone_golem", stone_golem)
 
 -- §4 row "Stone/Mesa Golem (elite) | gravel, stone, mesa_clay | 30 | 9000 |
@@ -212,7 +210,7 @@ mobs:spawn({
 --
 
 local mesa_golem = golem_def("Mesa Golem", "grug_mobs_mesa_golem.png")
-mesa_golem._grug_spawn_check = on_continent("throng")
+mesa_golem._grug_spawn_check = in_faction_region("throng")
 grug_mobs.register_mob("grug_mobs:mesa_golem", mesa_golem)
 
 mobs:spawn({
@@ -236,9 +234,9 @@ mobs:spawn({
 -- TWO rows, one per golem, because the mesa/stone split by TERRITORY holds
 -- underground too: caves under the Accord belong to the Stone Golem, caves
 -- under the Throng to the Mesa Golem. That needs no new code — the per-name
--- _grug_spawn_check installed above (on_continent) is ANDed with the zone
+-- _grug_spawn_check installed above (in_faction_region) is ANDed with the zone
 -- gate by mobs:spawn_abm_check (init.lua) for every row of that mob, so both
--- rows below are already continent-gated. grug_core.territory_at works on
+-- rows below are already side-gated by grug_zones.race_region_at.
 -- x/z only, so it answers the same underground as it does on the surface.
 --
 -- The elite tier travels with the def, so a cave golem is an elite golem —

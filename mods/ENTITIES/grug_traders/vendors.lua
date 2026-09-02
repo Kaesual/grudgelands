@@ -289,16 +289,8 @@ end
 --
 -- Placement
 --
--- Deterministic and WITHOUT any mapgen change: a mapgen edit would force a
--- fresh world, and existing test worlds must get vendors too. Two slots per
--- race capital, derived from grug_core.capitals — one general vendor and one
--- race vendor, ten nodes apart.
---
--- The offsets stay inside the 25x25 spawn platform (grug_core.CAMP_HALF = 12)
--- and clear of both fixed features on it: the platform CENTRE, which is the
--- player spawn/respawn point (grug_core.get_spawn_pos), and the guard banner
--- in the +x/+z corner at (CAMP_HALF - 1, CAMP_HALF - 1) = (+11, +11)
--- (grug_mapgen/structures.lua CAMP_BANNER_OFFSET).
+-- Two slots per race capital. R7's stable capital anchor is the only origin;
+-- there is no retired platform state, discovery or height fallback.
 --
 local SLOT_OFFSETS = {
 	general = {x = -5, z = 3},
@@ -307,22 +299,29 @@ local SLOT_OFFSETS = {
 
 local slots = {}
 for _, race_id in ipairs(race_ids) do
-	local capital = grug_core.capitals[race_id]
-	if capital then
-		slots[#slots + 1] = {
-			entity = "grug_traders:vendor_general_" .. capital.faction,
-			race = race_id,
-			x = capital.x + SLOT_OFFSETS.general.x,
-			z = capital.z + SLOT_OFFSETS.general.z,
-		}
-		slots[#slots + 1] = {
-			entity = "grug_traders:vendor_race_" .. race_id,
-			race = race_id,
-			x = capital.x + SLOT_OFFSETS.race.x,
-			z = capital.z + SLOT_OFFSETS.race.z,
-		}
+	local race = grug_classes.registered_races[race_id]
+	if not race then error("grug_traders: race registry differs: " .. race_id, 0) end
+	local capital = grug_core.capital_anchor(race.faction, race_id)
+	if type(capital) ~= "table" or type(capital.x) ~= "number" or
+			type(capital.y) ~= "number" or type(capital.z) ~= "number" then
+		error("grug_traders: capital authority differs: " .. race_id, 0)
 	end
+	slots[#slots + 1] = {
+		entity = "grug_traders:vendor_general_" .. race.faction,
+		race = race_id,
+		x = capital.x + SLOT_OFFSETS.general.x,
+		y = capital.y + 1,
+		z = capital.z + SLOT_OFFSETS.general.z,
+	}
+	slots[#slots + 1] = {
+		entity = "grug_traders:vendor_race_" .. race_id,
+		race = race_id,
+		x = capital.x + SLOT_OFFSETS.race.x,
+		y = capital.y + 1,
+		z = capital.z + SLOT_OFFSETS.race.z,
+	}
 end
+if #slots ~= 12 then error("grug_traders: capital slot population differs", 0) end
 
 local CHECK_INTERVAL = 5 -- s (AGENTS.md performance rule: dtime accumulator)
 -- Only slots a player could actually see are checked — and the number is
@@ -404,17 +403,8 @@ core.register_globalstep(function(dtime)
 	end
 	for i = 1, #slots do
 		local slot = slots[i]
-		-- The horizontal player filter runs FIRST: it needs no y, and it keeps
-		-- a capital nobody has ever visited from running its platform lookup
-		-- (a mod-storage/spawn-level resolve) 12 times every 5 s.
-		if player_near(positions, slot.x, nil, slot.z) then
-			-- nil = the capital platform has not been resolved yet (the chunks
-			-- were never generated). Skip the slot this round rather than guess
-			-- a y — grug_core persists the value the moment mapgen decides it.
-			local ground_y = grug_core.get_camp_platform_y(slot.race)
-			local y = ground_y and (ground_y + 1)
-			if y and player_near(positions, slot.x, y, slot.z) then
-				local pos = {x = slot.x, y = y, z = slot.z}
+		if player_near(positions, slot.x, slot.y, slot.z) then
+				local pos = {x = slot.x, y = slot.y, z = slot.z}
 				local node = core.get_node_or_nil(pos)
 				local ndef = node and core.registered_nodes[node.name]
 				-- node == nil: block not loaded, nothing to decide yet.
@@ -435,7 +425,6 @@ core.register_globalstep(function(dtime)
 							" placed at " .. core.pos_to_string(pos))
 					end
 				end
-			end
 		end
 	end
 end)

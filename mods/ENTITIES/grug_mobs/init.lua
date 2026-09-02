@@ -1,5 +1,9 @@
 grug_mobs = {}
 
+if not grug_core.zone_authority_installed() then
+	error("[grug_mobs] validated R7 zone authority was not installed")
+end
+
 -- Mod-wide persistence (AGENTS.md: fetch at load time). Currently only the
 -- named-rare spawner writes here (rares.lua).
 grug_mobs.storage = core.get_mod_storage()
@@ -31,19 +35,18 @@ end
 --                          where the level field has no value
 --   def._grug_max_level   — level cap (default: the source cap, 60/70)
 --   def._grug_fixed_level — hand-set level, bypasses the field and the cap
---   def._grug_level_source — "mob" (default, grug_core.mob_level_at) or
---                          "guard" (grug_core.guard_level_at)
+--   def._grug_level_source — "mob" (default, grug_zones.mob_level_at) or
+--                          "guard" (grug_zones.guard_level_at)
 --   def._grug_tier        — "normal" (default) | "elite" | "rare"
 --   def._grug_faction     — faction id; the mob never attacks its own faction
 --                          and is readable via grug_factions.get_object_faction
---   def._grug_spawn_zones — list of zone names (grug_core.zone_at: core,
---                          inner, outer, coast, war_coast, strait, ocean,
---                          underground) the mob may spawn in; nil = anywhere
---                          (WP6 replaces this with full level-tier gating)
+--   def._grug_spawn_domains — list of direct stable-query domains from
+--                          spawn_policy.lua; nil = no additional domain gate
 --   def._grug_spawn_check — function(pos) -> true if the mob may spawn there;
 --                          for gates the zone vocabulary cannot express (the
 --                          Kraken's open sea is a sub-area of zone "ocean").
---                          nil = no extra check. Zones and check are ANDed.
+--                          nil = no extra check. Policy, domains and check
+--                          are ANDed.
 --   def._grug_leash_range — per-def leash radius in nodes: how far this mob
 --                          may be DRAGGED from the point where the current
 --                          chase began (default grug_mobs.LEASH_RANGE = 40);
@@ -55,7 +58,14 @@ end
 --                          (GRUG PATCH in mobs/api.lua do_states)
 --
 
-local spawn_zones = {} -- mob name -> set of allowed zone names
+-- R7 cutover: ordinary surface habitat is the intersection of the existing
+-- node whitelist and spawn_policy.lua's closed named-zone mob palette.
+-- Historical ring names in per-family calibration comments describe the
+-- retired WP18/WP36 population only; they are not runtime gates.
+-- `_grug_spawn_domains` permits direct contested/depth policy only, never a
+-- reconstructed surface-level bucket.
+
+local spawn_domains = {} -- mob name -> set of allowed stable domains
 local spawn_checks = {} -- mob name -> function(pos) -> allowed?
 
 -- Every mob registered through the wrapper below (entity name -> true).
@@ -111,11 +121,14 @@ function grug_mobs.accepted_player_punch(self, hitter, damage, applied, fraction
 end
 
 -- mobs_redo's global hook for additional spawn checks (an empty stub
--- upstream; returning true BLOCKS the spawn). A mob with neither zones nor
--- a check spawns wherever its mobs:spawn() row allows.
+-- upstream; returning true BLOCKS the spawn). The closed common policy runs
+-- first; a per-mob domain and check may then narrow it further.
 function mobs:spawn_abm_check(pos, node, name)
-	local zones = spawn_zones[name]
-	if zones and not zones[grug_core.zone_at(pos)] then
+	if not grug_mobs.spawn_policy_allows(name, pos) then
+		return true
+	end
+	local domains = spawn_domains[name]
+	if domains and not grug_mobs.spawn_domains_allow(domains, pos) then
 		return true
 	end
 	local check = spawn_checks[name]
@@ -324,12 +337,9 @@ function grug_mobs.register_mob(name, def)
 	-- as targets at night unless they provoked the mob (undead passive).
 	local night_truce = def._grug_night_truce_perk
 
-	if def._grug_spawn_zones then
-		local set = {}
-		for _, zone in ipairs(def._grug_spawn_zones) do
-			set[zone] = true
-		end
-		spawn_zones[name] = set
+	if def._grug_spawn_domains then
+		spawn_domains[name] = grug_mobs.compile_spawn_domains(
+			def._grug_spawn_domains, name)
 	end
 	if def._grug_spawn_check then
 		spawn_checks[name] = def._grug_spawn_check
@@ -498,6 +508,7 @@ function grug_mobs.register_mob(name, def)
 end
 
 local modpath = core.get_modpath(core.get_current_modname())
+dofile(modpath .. "/spawn_policy.lua")
 dofile(modpath .. "/levels.lua")
 dofile(modpath .. "/aggro.lua")
 dofile(modpath .. "/verbs.lua")

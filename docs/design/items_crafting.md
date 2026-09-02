@@ -1194,10 +1194,15 @@ culture.
 | Undead | Gravesalt | grave lights, urns, wards, markers | salt crust/crystal seam |
 
 - Each culture has an ordinary home-region surface source sufficient for its
-  architecture, quests and trade, plus a higher-yield source in its contested
-  level-31+ zones or deep race-region column. The concentrated source requires
-  T4 harvesting; an ordinary surface source retains its natural axe/shovel/
-  hand-gathering behavior.
+  architecture, quests and trade, plus a concentrated surface source in
+  exactly the one race-frontier zone listed for it in `world_zones.md` §11.
+  No Battlegrounds zone receives that concentrated rate. The concentrated
+  source requires T4 harvesting; an ordinary surface source retains its
+  natural axe/shovel/hand-gathering behavior.
+- Ordinary opportunity density is exactly 1/4096 eligible logical-biome
+  columns; the concentrated zone uses 1/1024. Both forms drop exactly one
+  material per node: concentration is the fourfold opportunity density, never
+  a second per-node yield multiplier.
 - A material is not forced into every cultural object: Gravewood furniture
   need not consume Gravesalt. Moonresin uses a cool silver-blue/pearlescent
   palette; Spirit Resin uses warm amber or toxic green.
@@ -1209,6 +1214,25 @@ culture.
 - Signature woods remain universal `group:wood` inputs. Their distinct value
   is cultural builds, furniture and optional recipes, never mandatory tool
   progression.
+
+The concentrated harvesting families are exact:
+
+| Material | Required family at T4+ | Ordinary source behavior |
+|---|---|---|
+| Sunwax | axe | hand |
+| Runeslate | pick | hand |
+| Moonresin | axe | axe |
+| Red Ochre | shovel | shovel |
+| Spirit Resin | axe | axe |
+| Gravesalt | pick | shovel |
+
+`grug_materials` is the sole tool-family tier authority. Its public resolver
+`tool_tier_for_stack(stack, family)` accepts exactly `pick`, `axe` or `shovel`
+and reads the matching integer group `grug_pick_tier`, `grug_axe_tier` or
+`grug_shovel_tier` in 1..6. WP29 supplies those groups on the final tool
+catalog. Missing/malformed authority, the wrong family or a tier below four
+fails closed without removing the node, wearing the tool or granting a drop;
+WP33 creates no temporary T4 tool or duplicate tier taxonomy.
 
 ### 4.2 Cultural finishing
 
@@ -1422,7 +1446,7 @@ becoming a side door around the depth gate of §3.0.4.
 | Peaceful starts 1–10 | equivalent T1 access on both faction sides | T1, source windows per §5.1 | no PvP objective |
 | Peaceful home zones 11–20 | equivalent T2 access | T2, source windows per §5.1 | first named rares; no contested zone |
 | Peaceful heartland 21–30 | equivalent T3 access | T3, source windows per §5.1 | preparation for the central frontier |
-| Contested approaches 31–40 | equivalent T4 access plus practical foreign-G2 routes | T4, improved windows on qualifying elites | all six race approaches and the Holy Grounds entry are contested |
+| Contested approaches 31–40 | equivalent T4 access plus practical foreign-G2 routes | T4, improved windows on qualifying elites | all six race approaches and the Battlegrounds entry are contested |
 | Front 41–50 | equivalent T5 access | T5, improved windows on qualifying elites | war-front objectives and quest hooks; no free supply crates |
 | High front 51–59 / endpoints 60 | equivalent T6 access | T6, improved windows; elites common | two contested dragons and all-six-gem apex camps |
 | Depth axis | six cosmetic strata behind the position-based limits of §3.0.4; Iron is reachable in T1, mined Coal by T2, Silver by T3, Emberglass and G2 by T4, Abyssal Crystal by T5; race-region columns select G1/G2/cultural species and deep T6 adds bounded density | cave mobs as per surface tier | **no gear-drop layer of its own**, at any depth (below) |

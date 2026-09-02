@@ -13,6 +13,22 @@ projects: **[docs/research/](docs/research/)**.
 - Chat with the user is in **German**; code identifiers and code comments
   are in English.
 
+## Anthropic repository sharing authorization
+
+- **Standing user authorization, decided 2026-08-30:** every file in this
+  repository, including its read-only reference submodules and prepared WP
+  snapshots, may be transmitted to Anthropic when an authorized Claude Opus or
+  Claude Fable task needs it. No separate confirmation is required for the
+  repository-content transfer itself.
+- Keep each transmitted snapshot bounded to the reviewed or delegated package.
+  This standing authorization does not permit unrelated publication,
+  repository writes by a read-only reviewer or any other external side effect.
+- Model/task authorization remains separate: Opus and Fable routing still
+  follows `docs/process/agent-model-policy.md`. In particular, each new Fable
+  review or delegated task still needs the task-specific approval required by
+  that policy; the standing rule above only removes repeated data-sharing
+  confirmation.
+
 ## Documentation layers
 
 All project state lives in the repo, not in the chat history. Three layers,
@@ -51,22 +67,25 @@ current state). It is **derived, never authoritative**:
    Offload large explorations to subagents, keep the main context lean.
 3. **WPs run autonomously on their own branch** (`wp<NN>-<slug>`) per
    the workflow contract in
-   **[docs/process/wp-workflow.md](docs/process/wp-workflow.md)**:
-   the orchestrator (Fable or Opus) ONLY orchestrates (plan, per-task
-   briefs, diff reads, final integration gate — no implementing); Opus
-   subagents build everything, and **at least one full Opus code review
-   per WP is mandatory** (different agent than the implementer;
-   checklist in the workflow doc, incl. the
-   `docs/research/luanti-lua.md` rules). Merge to main only after a
-   clean review; every completion message ends with a runtime test plan
-   for the user.
+   **[docs/process/wp-workflow.md](docs/process/wp-workflow.md)**. Model
+   routing for every project area is governed solely by
+   **[docs/process/agent-model-policy.md](docs/process/agent-model-policy.md)**.
+   Its **Independent review** trigger and independence rules are binding;
+   every required review uses the checklist and the
+   `docs/research/luanti-lua.md` rules in the workflow document. Merge to main
+   only after a clean review; every completion message ends with a runtime test
+   plan for the user.
+   Claude CLI review execution details (sandbox, streaming and monitoring):
+   **[docs/process/claude-cli-review.md](docs/process/claude-cli-review.md)**.
 4. **WP completion**: Lua syntax check with `tools/bin/luac51 -p` (plain
    5.1 — build once via `tools/build_lua51.sh`; **not** `luajit`, which
    accepts syntax the engine's fallback build rejects),
    `tools/sync_to_luanti.sh` (from main, after merge), commit, update
    BACKLOG status + ROADMAP checkboxes + the README "Current State"
-   section (see "Documentation layers"). Anything future sessions need
-   to know goes into AGENTS.md/docs — not just the chat.
+   section (see "Documentation layers"). The durable completion record for an
+   independently reviewed package also carries the calibration fields required
+   by `agent-model-policy.md`. Anything future sessions need to know goes into
+   AGENTS.md/docs — not just the chat.
 5. **Runtime tests are done by the user** (Flatpak Luanti, GUI); diagnose
    errors via `~/.var/app/org.luanti.luanti/.minetest/debug.txt`.
 
@@ -125,6 +144,50 @@ current state). It is **derived, never authoritative**:
     compare positions with `vector.equals`, never `==`.
   - Backported from 5.4 (engine-injected, both builds):
     `string.pack`/`unpack`/`packsize`.
+- **Interpreter/test layers are binding:** on every Lua change run
+  `tools/bin/luac51 -p`, the `SETGLOBAL` check and all five sweeps in
+  `docs/research/luanti-lua.md`. Two things about those sweeps are easy to
+  get wrong. They are scoped to `mods/*/grug_*`, so Lua under `tools/`
+  is **not** covered by them and needs the check run explicitly. And the
+  harness scripts that run them require **ripgrep** (`dnf install ripgrep`):
+  until 2026-08-15 a missing `rg` made nine of them report success without
+  running, because exit status 127 inside an `if` condition reads exactly
+  like "no match found". Use LuaJIT for development and exhaustive runs
+  where supported. Do not run PUC runtime at intermediate milestones. On
+  frozen final bytes, run one compact PUC-5.1 micro-KAT process
+  and the same fixture once under LuaJIT, requiring a byte-identical canonical
+  digest. WP40 R1-R4 retain their historical targeted-PUC evidence; R5-R8 use
+  this single-final-micro-KAT rule. Fixed-layout, seed and full VM populations
+  run only under LuaJIT. A relevant final-byte change replaces the final
+  micro-KAT pair (one PUC and one LuaJIT run); any additional PUC runtime needs
+  a concrete interpreter-specific finding or identified uncovered plain-5.1
+  risk. **Parallel execution is preferred:** at most seven independent LuaJIT
+  or PUC 5.1 processes may run concurrently on the workstation, counted
+  across all agents, work packages and execution lanes. Their inputs remain
+  immutable for the duration, each process writes to its own scratch/output
+  path, and a deterministic final step canonically orders, combines and checks
+  every result. Concurrent worker fleets use idle scheduling priority
+  (`chrt --idle 0` and `ionice -c3`). Do not serialize independent seeds or
+  partitions merely for convenience; do not parallelize jobs that share
+  mutable output or whose correctness depends on execution order. Historical
+  records of eight-worker WP40 measurements describe how that evidence was
+  obtained; they do not authorize an eighth process now. A rerun obeys the
+  current seven-process cap and records the changed width before comparing
+  timing evidence. The retired exact-T2 full-W/PCC/F1/F2 suites remain
+  historical evidence and are not executed against the simple schema.
+  Reviewers verify immutable artifacts, logs and hashes plus the final PUC
+  micro-KAT evidence instead of duplicating it. The real
+  fallback-engine runtime test is still a separate user-run gate.
+  **Planning agents:** if you write a brief, work package, contract or cost
+  projection that schedules Lua execution, read the "Interpreter and test
+  strategy" section of docs/research/luanti-lua.md and the parallel-execution
+  rule above **before** writing it.
+  Interpreter selection is a planning-time decision, not an implementation
+  detail: LuaJIT owns development and exhaustive runs; PUC 5.1 owns the parser,
+  static gates and one bounded final runtime micro-KAT compared by digest. A
+  plan that schedules an intermediate PUC suite, PUC seed fleet or exhaustive
+  PUC population without a concrete plain-5.1 interpreter finding is a planning
+  defect.
 - Engine version of the reference checkout: **Luanti 5.17.0-dev** (git
   checkout after 5.16). That pin is the *engine* version of a read-only
   source reference — **the language version is decoupled and stays Lua
@@ -370,9 +433,12 @@ Details + line numbers in [docs/research/](docs/research/).
   - **Level/tier engine contract** (`grug_mobs/levels.lua`): a mob def
     NEVER hand-sets `hp_min`/`hp_max`/`damage`/XP/`armor` — they are
     derived from `grug_core.mob_level_at`/`guard_level_at` plus the tier
-    multipliers on the first active tick. `_grug_fixed_level` is the one
-    documented exception (Kraken L100). Everything else (speeds,
-    view_range, drops, visuals) stays def-owned.
+    multipliers on the first active tick. `_grug_fixed_level` is the sole
+    explicit fixed-entity mechanism: it bypasses positional/role fields only
+    for deliberately designed fixed entities. Its current implemented use is
+    the Kraken L100; future WP13 uses the same mechanism for the still-
+    unimplemented king L65. There is no second king-specific level path.
+    Everything else (speeds, view_range, drops, visuals) stays def-owned.
     **Four tiers since WP36**: `critter` (added for the small animals —
     fixed L1, 1 HP, 10 XP, no fall damage, never promotable; the second
     documented exception to "stats derived") plus `normal`/`elite`/`rare`,

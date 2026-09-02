@@ -34,13 +34,13 @@ drop-in implementation.
 - Four level-11–20 zones provide guaranteed coastal alternatives:
   Copperfell Foothills and Mournfen on the west coasts, and Starbough Vale and
   Raincall Basin on the east coasts.
-- Each guaranteed coastal housing strip is continuous, dry and gently
-  buildable. After final coastline variation and all static exclusions, it
-  retains at least 600 continuous nodes of shoreline frontage and 300 nodes of
-  buildable inland depth.
-- A guaranteed strip may curve and taper with the natural coast. The frontage
-  and depth are audit minima, not visible rectangles and not Claim-Stone
-  quotas.
+- Each guaranteed coastal housing strip is one fixed vertical capsule: a
+  straight middle section with rounded ends, at least 600 continuous nodes of
+  shoreline frontage and at least 300 nodes of buildable inland depth. The
+  entire mutable capsule is dry, owned by its named housing zone and free of
+  every static exclusion after final coastline variation.
+- The capsule may taper at its rounded ends. Frontage and depth are audit
+  minima, not a visible rectangle and not a Claim-Stone quota.
 - Every possible 101×101 reservation wholly inside a guaranteed core has at
   most 12 nodes of generated natural-ground height variation and contains no
   forced cliff, ravine, river or lake. Trees, structures and later player
@@ -48,6 +48,10 @@ drop-in implementation.
 - A complete 101×101 reservation may meet the final shoreline but may not
   contain any coastal-shelf column. Protected underwater claims and private
   harbors do not exist.
+- Each of the ten housing masks must admit at least one constructive complete
+  reservation in the fixed-layout packing audit. No higher per-mask quota is
+  promised; the administrator-facing faction limit is chosen below measured
+  faction-wide capacity.
 - Permanent player-owned protection exists only inside an active Claim Stone
   volume. Building elsewhere follows the ordinary faction, zone and contested
   terrain rules and is not private property.
@@ -590,8 +594,8 @@ players in its shallow protection volume:
 - essential service and quest-giver platforms;
 - small functional NPC spawn/return anchors;
 - renewable mining sockets and other bounded renewable-resource mechanisms;
+- the six 128-node capital-ingress corridors (`world_zones.md` §12);
 - critical bridges or gates with no adequate alternate route;
-- the Holy Grounds from the surface through y = −700.
 
 - Every land-side hard-protected footprint extends upward without limit and
   downward through y = −700 inclusive.
@@ -612,6 +616,9 @@ but its authored envelope can never be privatized:
   functional anchors;
 - ruins, tents, fences, decorative fortifications and battlefield dressing;
 - terrain surrounding quest and NPC platforms.
+- ordinary Battlegrounds terrain, roads, galleries and battlefield
+  fortifications outside explicit hard-protected functional or ingress
+  envelopes.
 
 - Destruction of this layer persists; it is not structurally regenerated.
 - A reproducible gameplay loop attaches to a small protected functional
@@ -623,6 +630,8 @@ but its authored envelope can never be privatized:
 
 Ordinary terrain inside the positive housing mask is freely reshapeable and
 may receive a Claim Stone when its complete future reservation passes §6.
+Battlegrounds terrain is mutable but remains outside every positive housing
+mask and therefore cannot receive a Claim Stone.
 
 ## 8. Runtime and persistence contract
 
@@ -693,23 +702,25 @@ per-stone radii up to 50 or the project's 100-player target.
 
 - The authored mainland frame is x = −2,600..+2,600 and
   z = −3,000..+3,000. It bounds mainland authoring, not the generated world.
-- The Holy Grounds is x = −2,500..+2,500 and z = −250..+250. Its authored
-  internal x edges are −1,500, 0 and +1,500 with bounded shared-edge
-  variation. It is hard-protected through y = −700; universal contested depth
-  resumes at y = −701.
+- The Battlegrounds is x = −2,500..+2,500 and z = −250..+250. Its four-zone
+  internal ownership follows the fixed Battlegrounds hubs and integer power
+  rule in `world_zones.md` §§7.1/7.3. Both factions may edit ordinary terrain
+  at every y, but the whole macro region remains claim-ineligible. Only
+  explicit bounded hard-protection volumes apply there.
 - Dragon-island centres are (−3,150, 0) and (+3,150, 0), each inside a fixed
   600×700 envelope. Their channels retain at least 200 ocean nodes, 48-node
   flight-warning bands on both shores and at least 104 hard no-flight nodes.
   The channel columns are immutable at every depth.
-- A continent's analytic planned footprint contains dry land and every
-  authored bay, lake, river and zone-water mask. Those water masks remain
-  zone-classified and claim-ineligible even if filled.
-- The 80-node editable shelf begins only outside the planned footprint's final
-  perimeter; deep ocean after it is immutable at every depth. Dragon-channel
-  masks override the shelf.
-- The four lateral perimeter arcs between `|z| = 1900` and `|z| = 2500` remain
-  inside `|x| = 2580..2600`. Coast and zone-boundary variation are jointly
-  damped there to preserve each 600-by-300 coastal housing core.
+- Authored lakes, rivers, zone-water masks and the landward parts of bays
+  remain zone-classified and claim-ineligible even if filled or drained. The
+  four declared outer bay-mouth caps are ownerless deep ocean and likewise
+  claim-ineligible.
+- The editable nominal shelf is exactly
+  `expanded_land_at(80) and not land_at`; deep ocean beyond it is immutable at
+  every depth. Dragon-channel masks override the shelf.
+- The Copperfell, Starbough, Mournfen and Raincall coastal-core records each
+  reference their corresponding fixed 600-by-300 landmark geometry. They do
+  not depend on a materialized perimeter or zone boundary.
 - Kragmar capital centres are (−1,800, +1,500), (0, +1,500) and
   (+1,800, +1,500). Elandor capital centres are (−1,800, −1,500),
   (0, −1,500) and (+1,800, −1,500). Surface y is terrain-derived.
@@ -733,16 +744,20 @@ per-stone radii up to 50 or the project's 100-player target.
 - The per-faction live-Stone defaults are selected below measured physical
   capacity. They bound permanent occupancy and create a soft availability
   incentive without directly balancing active PvP population.
-- The capacity audit covers at least 32 representative seeds and uses final
-  housing polygons, real exclusion masks and simulated free-placement
-  sequences. Gross area alone is not a capacity result.
-- The audit may not enlarge the fixed mainland frame to satisfy a quota.
-- For each guaranteed coastal core, every audited seed proves at least 600
-  continuous shoreline nodes and 300 usable inland nodes after coastline
-  variation and static exclusions.
-- The audit slides the complete 101×101 reservation over every guaranteed core
-  and proves no more than 12 nodes of natural-ground relief and no forced
-  cliff, ravine, river, lake or coastal-shelf intersection.
+- The two-dimensional capacity audit runs once per accepted fixed layout and
+  uses final housing-centre masks, real exclusion masks and the canonical
+  portfolio of lattice, greedy, row-major/reverse, edge-biased and 16
+  hash-order placement sequences. Gross area alone is not a capacity result.
+  Varying-seed height/content conformance is a separate audit and never
+  recomputes the horizontal mask or packing portfolio.
+- The fixed-layout capacity audit may not enlarge the fixed mainland frame to
+  satisfy a quota.
+- For each guaranteed coastal core, the fixed layout proves at least 600
+  continuous shoreline nodes and 300 usable inland nodes after static
+  exclusions.
+- The varying-seed height/content audit slides the complete 101×101 reservation
+  over every guaranteed core and proves no more than 12 nodes of natural-ground
+  relief and no forced cliff, ravine, river, lake or coastal-shelf intersection.
 - Coastal geometry minima do not replace the packing simulation.
 - Revised T4, T5 and T6 reliable net-income measurements convert the fixed
   30-minute, 90-minute, 3-hour, 5-hour and 10-hour targets into ledger copper

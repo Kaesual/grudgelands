@@ -6,8 +6,9 @@ built as a standalone Lua game rather than a mod pack.
 
 > **Status: in development.** The world, mobs, three classes, combat,
 > equipment, XP and the first money/vendor economy are playable. The final
-> named-zone map, quests, professions, open-world housing and geographic PvP
-> are specified but not built. See [Current State](#current-state).
+> named-zone map is implemented and awaiting release/runtime gates; quests,
+> professions, open-world housing and geographic PvP are not built. See
+> [Current State](#current-state).
 
 ## The story
 
@@ -22,7 +23,7 @@ equivalent campaign in parallel and competition.
 A new character chooses faction, race and class, wakes in one of six outer
 starting settlements and travels through stable named regions toward a
 central capital and the contested faction front. Local beasts, bandits and
-corrupted sites give way to dangerous frontier warfare, the Holy Grounds and
+corrupted sites give way to dangerous frontier warfare, the Battlegrounds and
 two offshore level-60 dragon islands.
 
 At level 20, a passive Housing Steward introduces the open-world Claim Stone
@@ -44,12 +45,14 @@ focused `TODO-*.md` files until resolved.
 
 [World design](docs/design/world.md) and the
 [38-zone catalog](docs/design/world_zones.md) define two independently shaped
-faction continents joined by the continuous four-zone Holy Grounds. Each zone
+faction continents joined by the continuous four-zone Battlegrounds. Each zone
 has a stable id, level range, race region, political terrain rule, PvP state,
-biome palette and fixed neighbors. Six outer level-1–10 starts lead through
-home and heartland zones to six central capitals; every level-1–30 zone is
-peaceful and every ordinary level-31–60 frontier, Holy-Grounds and dragon
-zone is contested.
+biome palette, fixed hub and authored route neighbors. One fixed 2D layout
+uses small land/water shapes, nearest-hub ownership and reliable independent
+routes; seed variation begins with terrain, biome detail and content. Six
+outer level-1–10 starts lead through home and heartland zones to six central
+capitals; every level-1–30 zone is peaceful and every ordinary level-31–60
+frontier, Battlegrounds and dragon zone is contested.
 
 PvP state is one central transaction, not a combat-path exception. A valid
 hostile action tags its initiator before resolution; safe→safe and
@@ -65,6 +68,8 @@ are hard-protected; roads, villages, outpost/camp shells and battlefield
 dressing remain mutable but claim-excluded. Planned mainland water stays part
 of its zone, an editable 80-node shelf follows the outer coast, deep ocean is
 immutable, and full-column dragon channels keep the offshore islands boat-only.
+Natural resources exist under land and zone-owned planned water; the six-race
+supply gate compares all-resource deposit opportunities by exact host volume.
 The still-open playable-boat behavior is isolated in
 [TODO-design-boats.md](TODO-design-boats.md).
 
@@ -114,6 +119,12 @@ Alchemist. Characters freely choose two; Cooking and First Aid are universal.
 Goldsmith owns Quartz, the six regional gems, Rough-to-Cut processing,
 Settings, both trinket slots and the exact natural-gem yield bonus. Mining,
 smelting and universal base-item crafting remain open to everyone.
+
+The gathering contract closes twelve one-cell herb, spice and food sources,
+eight reused tree/food sources and six cultural sources. Healing herbs fail
+closed to Alchemist authorization; ordinary plants drop one item, while
+concentrated cultural sources differ by opportunity density and require their
+ratified T4 pick, axe or shovel family.
 
 ### Economy
 
@@ -169,7 +180,7 @@ asymmetric.
 unlocks at levels 15/30/45/60: land mounts move at 6/8 nodes per second and
 flyers at 7/10, with price targets of 15 minutes/45 minutes/2 hours/5 hours of
 reliable net income. A permanent owner-bound item summons one ephemeral
-entity; incoming damage dismounts. Holy Grounds allow flight, enemy territory
+entity; incoming damage dismounts. Battlegrounds allow flight, enemy territory
 allows land mounts only, and an exact 48-node warning precedes forced flight
 dismount over exterior ocean columns. Asset selection, mount attackability,
 mounting in combat, underground flight, ceiling/drift, swimmer exhaustion,
@@ -180,41 +191,69 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
 
-*Last updated: 2026-08-12. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-09-02. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
 
-**Shipped (16 of 45 work packages):** WP0–WP4, WP6, WP7, WP15, WP18,
-WP19, WP25, WP35, WP36, WP38, WP39 and WP43 provide the playable foundation,
-42 mobs, three classes, equipment/bags, XP, threat, money/vendors, the
-canonical six-tier material/depth/harvest contract and current-ray
-combat/projectiles. WP16 is a canceled tombstone and is not shipped.
-WP43 supersedes WP25's running legacy while preserving saved-world migration.
+**Shipped (17 of 45 work packages):** WP0–WP4, WP6, WP7, WP15, WP18,
+WP19, WP25, WP33, WP35, WP36, WP38, WP39 and WP43 provide the playable
+foundation, 42 mobs, three classes, equipment/bags, XP, threat, money/vendors,
+the canonical six-tier material/depth/harvest contract, gathering sources and
+current-ray combat/projectiles. WP16 is a canceled tombstone and is not
+shipped. WP43 supersedes WP25's running legacy while preserving saved-world
+migration.
 
 **Not in the game yet:** quests, professions/recipes, talent trees, parties,
 recovery, offhand items, affixes, durability, final structures, travel/map,
-Claim Stone housing, mounts and bosses remain unbuilt. The 38-zone surface,
-geographic PvP transaction, bounded war-front life and rebased economy are
-also pending. The playable-boat contract, several mount details, deep-content
+Claim Stone housing, mounts and bosses remain unbuilt. The 38-zone surface is
+implemented but awaits R8's real-world/visual/runtime gates; geographic PvP,
+bounded war-front life and the rebased economy are also pending. The
+playable-boat contract, several mount details, deep-content
 questions and PvP-death XP rule remain explicitly open in
 [the boat TODO](TODO-design-boats.md),
 [the crafting/mount TODO](TODO-design-crafting-rework.md),
 [the depth TODO](TODO-design-depth.md) and
 [the PvP-death TODO](TODO-design-pvp-death.md), respectively.
 
-**Ready to start next:** WP26, WP40 and WP44 are the newly unblocked
-material/map/economy roots. WP40 still requires its independently reviewed
-six-part engineering brief plus fixed seed/capacity/performance evidence before
-code begins. WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind shipped
+**In progress:** WP40, the named-zone map foundation, has been under
+implementation since 2026-08-13 on branch `wp40-named-zone-world-foundation`.
+The 2026-08-25 simple-map rebase deliberately retired its unfinished exact
+partition/topology path. R0, R1, V1b, V1c and V1d are accepted history;
+fixed-layout V1e R2 was independently and visually accepted on 2026-08-27.
+Its current SVG has stronger single-warp border meanders, pinned curved routes,
+tapered bays with deep-ocean mouth caps, coherent visible water and six
+protected capital ingress corridors. Exhaustive V1e R2 validation freezes all
+100 anchors, the 74 actual POI spurs, housing capacity and three exact
+contact-face waterfalls without moving their reaches. The pure R3 vertical
+implementation and canonical artifact and the complete R4 geography/policy
+payload were independently accepted on 2026-08-27. The pure typed R5 Planner,
+consolidated Adapter and canonical exhaustive artifact were independently
+accepted on 2026-08-29. R6's frozen surface/resource catalogs, private
+cultural-slot API, complete 32-seed evidence fleet and canonical artifact were
+independently accepted on 2026-08-31. R7's single production writer, consumer
+cutover, WP33 gathering payload, P9G successor and functional-anchor suffix
+were independently accepted on 2026-09-02. Its release-oriented evidence is a
+32-seed stratified main sample plus a separate seven-seed frontier-access lane,
+not an exhaustive spatial claim.
+The current [engineering contract](docs/research/wp40-engineering-brief.md)
+and [R0–R8 plan](docs/research/wp40-simple-map-rebase-plan.md) preserve the 38
+zones, routes, housing, policy and supply goals with a much smaller algorithm.
+The accepted R2 artifact owns fixed-layout and once-per-layout capacity
+evidence; the accepted R6 artifact owns 32-seed content/supply/access
+evidence. R8 now owns the first real fresh Luanti world, visual quality,
+production mapchunk performance and runtime evidence.
+
+**Ready to start next:** WP26 and WP44 are the newly unblocked material and
+economy roots. WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind shipped
 dependencies; WP34 is not next because it still waits for map, structures and
 economy.
 
-**Caveats:** the running WP18/WP36 world still uses rectangular continents,
-radial difficulty and mandatory water separation until WP40. WP7 still runs
-its old price curve and 25% buy-back until WP44. WP43 passed its headless and
-independent-review gates but has not received a GUI/runtime pass; validate
-mapgen in a fresh world and migration in a backed-up WP25 world. WP39 still
-needs its recorded GUI combat test, while WP25, WP35 and WP36 retain their
-historical not-runtime-tested labels; WP40 will also be fresh-world-only.
+**Caveats:** existing WP18/WP36 worlds retain already-generated rectangular
+continents and are not WP40 migration targets; R8 must use a fresh v7 world.
+WP7 still runs its old price curve and 25% buy-back until WP44. WP43 passed its
+headless and independent-review gates but has not received a GUI/runtime pass;
+validate migration only in a backed-up WP25 world. WP39 still needs its
+recorded GUI combat test, while WP25, WP35 and WP36 retain their historical
+not-runtime-tested labels; WP40 remains fresh-world-only.
 
 ## Running it
 
@@ -249,7 +288,7 @@ licensing and stable `file:line` citations. See
 | [docs/design/](docs/design/) | Decided game design — the living specification. |
 | `TODO-*.md` | Open design questions awaiting a decision. |
 | [docs/research/](docs/research/) | Engine/API briefings, reference studies and asset research. |
-| [docs/process/](docs/process/) | Autonomous work-package workflow. |
+| [docs/process/](docs/process/) | Autonomous work-package workflow, the project-wide agent model policy, and the Claude CLI review procedure. |
 | [ROADMAP.md](ROADMAP.md) · [BACKLOG.md](BACKLOG.md) | Goal-level plan and implementation packages/status. |
 | [AGENTS.md](AGENTS.md) | Project conventions and Luanti/Lua contracts. |
 | [VENDOR.md](VENDOR.md) | Vendored third-party code, commits, licenses and patch inventory. |

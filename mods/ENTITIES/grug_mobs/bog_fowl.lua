@@ -16,7 +16,7 @@ local fowl = {
 	type = "animal",
 	passive = true,
 	runaway = true,
-	-- No _grug_spawn_zones: `grug_nodes:mud` is the swamp signature top and
+	-- No _grug_spawn_domains: `grug_nodes:mud` is the swamp signature top and
 	-- nothing else, so the node whitelist alone confines this mob to the
 	-- swamp — in whichever ring a swamp pocket happens to land (§4's "role is
 	-- not ring"; the swamp reaches core, inner, outer, coast and war_coast).

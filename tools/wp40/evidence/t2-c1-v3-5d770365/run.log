@@ -1,0 +1,457 @@
+WP40 T2 C1 v3 authority commit=5d770365ed884b02c822b7183b4a7ad64ba611ff tree=52ec4f388d39775d5dc68c1e5a244cdf310d4524 dag=52e2d45938ef42ced13849f3c30662ef02491c96be8170f1258ecdc20aefcc3e interpreter=/home/jan/projects/grudgelands/tools/bin/lua51
+WP40 T2 E0 v3 conformance foundation passed artifact=5b5241b35ea036ea08c7128b4900fa578dbe134b28b5cf8a99767290e155e027 manifest=c8f6185287e4471b0aac2d71c2cceb62114ece566bdbb2ad9e69c5a1c79e0f77 pool=19fc28d1e1ecb2a18c7bb208d21c448cce12bc7d s1=10a790a6436a740efc83e98afe3c374ac4b3520bb425de3d2bd0ac76622db37c execution_dag=f8f995d6a3b9a999918a8c21dc6837d66c56e5796ed34157cd507b984a000134 recorded_closure=66 rescore_count=20 winners=2192,1713,1047,3438
+WP40 T2 C1 v3 rescore wave active=16 completed=0/20 candidates=0 511 512 1023 1024 1047 1535 1536 1713 2047 2048 2192 2559 2560 3071 3072
+WP40 T2 C1 v3 rescore live active=16 completed=0/20 wall_seconds=0 candidates= 0000 0511 0512 1023 1024 1047 1535 1536 1713 2047 2048 2192 2559 2560 3071 3072
+WP40 T2 C1 v3 rescore live active=16 completed=0/20 wall_seconds=15 candidates= 0000 0511 0512 1023 1024 1047 1535 1536 1713 2047 2048 2192 2559 2560 3071 3072
+WP40 T2 C1 v3 rescore live active=16 completed=0/20 wall_seconds=30 candidates= 0000 0511 0512 1023 1024 1047 1535 1536 1713 2047 2048 2192 2559 2560 3071 3072
+WP40 T2 C1 v3 rescore live active=16 completed=0/20 wall_seconds=45 candidates= 0000 0511 0512 1023 1024 1047 1535 1536 1713 2047 2048 2192 2559 2560 3071 3072
+WP40 T2 C1 v3 rescore live active=16 completed=0/20 wall_seconds=60 candidates= 0000 0511 0512 1023 1024 1047 1535 1536 1713 2047 2048 2192 2559 2560 3071 3072
+WP40 T2 C1 v3 rescore live active=16 completed=0/20 wall_seconds=75 candidates= 0000 0511 0512 1023 1024 1047 1535 1536 1713 2047 2048 2192 2559 2560 3071 3072
+WP40 T2 C1 v3 PUC rescore start candidate=0000 role=endpoint
+WP40 T2 C1 v3 PUC rescore passed candidate=0000 row_sha256=a1cf557c4d18e6f6c0559a85a9cd59ab7dbbbf5bd3281bce615f0e91fd7c8890 wall_seconds=76
+WP40 T2 C1 v3 retained rescore verified identity=0 sha256=319a0d2bb70884f0d9a5e9835e4ece739ecceb7796b6d4dc3f8957c5d68126aa
+WP40 T2 C1 v3 rescore progress candidate=0000 completed=1/20 wall_seconds=94 eta_seconds=1786
+WP40 T2 C1 v3 PUC rescore start candidate=0511 role=endpoint
+WP40 T2 C1 v3 PUC rescore passed candidate=0511 row_sha256=fe44b5788f0cb1f04a9a3bdd70b2a5ff160cdb666d6f711c912afad06a1e46fa wall_seconds=76
+WP40 T2 C1 v3 retained rescore verified identity=511 sha256=513ba10116c32a5f7fa673f39ac1e8e58095064d7e11db359bdd72274934b646
+WP40 T2 C1 v3 rescore progress candidate=0511 completed=2/20 wall_seconds=98 eta_seconds=882
+WP40 T2 C1 v3 PUC rescore start candidate=0512 role=endpoint
+WP40 T2 C1 v3 PUC rescore passed candidate=0512 row_sha256=41fb84a563d32b54e4251434e9a0c17f7c28e44463e6ddd135464ff47cf8f0fc wall_seconds=73
+WP40 T2 C1 v3 retained rescore verified identity=512 sha256=fdb45b947ec31457c7d77b564f2b9d848f42df2495bcb9572ad1bd33f0fb1962
+WP40 T2 C1 v3 rescore progress candidate=0512 completed=3/20 wall_seconds=102 eta_seconds=578
+WP40 T2 C1 v3 PUC rescore start candidate=1023 role=endpoint
+WP40 T2 C1 v3 PUC rescore passed candidate=1023 row_sha256=41e8bea01280648978e79e15cfb430e6e1870150953fbb26c7164804b46c9d92 wall_seconds=74
+WP40 T2 C1 v3 retained rescore verified identity=1023 sha256=942e731552925e93cb17c9f44d76dadf2d6a60ee14ea7d6204f462414736a9cb
+WP40 T2 C1 v3 rescore progress candidate=1023 completed=4/20 wall_seconds=106 eta_seconds=424
+WP40 T2 C1 v3 PUC rescore start candidate=1024 role=endpoint
+WP40 T2 C1 v3 PUC rescore passed candidate=1024 row_sha256=52f93aa5cd8ad0aa8c0a02f60b914f6edbfbadc513f333a2bab7bbae9b92ef1d wall_seconds=75
+WP40 T2 C1 v3 retained rescore verified identity=1024 sha256=36f74eb61d3418c8724a5e3512994fd97e9a4ac8926126f2d372749a30218fef
+WP40 T2 C1 v3 rescore progress candidate=1024 completed=5/20 wall_seconds=110 eta_seconds=330
+WP40 T2 C1 v3 PUC rescore start candidate=1047 role=winner
+WP40 T2 C1 v3 PUC rescore passed candidate=1047 row_sha256=7bf1965f7ae9e1408cfeeacd81aa352e11d8d12859b4967b583aed89d2bc423b wall_seconds=75
+WP40 T2 C1 v3 retained rescore verified identity=1047 sha256=7e287e7dabf8879496a696b3b3997c702bd2bc018af8b32d4ae6678e70fccad5
+WP40 T2 C1 v3 rescore progress candidate=1047 completed=6/20 wall_seconds=114 eta_seconds=266
+WP40 T2 C1 v3 PUC rescore start candidate=1535 role=endpoint
+WP40 T2 C1 v3 PUC rescore passed candidate=1535 row_sha256=4de1c384d1c8ceb22f511113ae7b1bb61cee9b62f029801a6c4882a71bc99cc4 wall_seconds=75
+WP40 T2 C1 v3 retained rescore verified identity=1535 sha256=30a2233899ef09409b24142f5c701fed7f1c024aa6fce7ff19825a50d7d1a618
+WP40 T2 C1 v3 rescore progress candidate=1535 completed=7/20 wall_seconds=118 eta_seconds=219
+WP40 T2 C1 v3 PUC rescore start candidate=1536 role=endpoint
+WP40 T2 C1 v3 PUC rescore passed candidate=1536 row_sha256=0269ccb8c01b2ab4ccf1645cda942568a45265a78e8864011b75ccea2c0fc67d wall_seconds=74
+WP40 T2 C1 v3 retained rescore verified identity=1536 sha256=c10a385be47d169030f971afd8876af826e140bc6a62f768c44723843bb87c0c
+WP40 T2 C1 v3 rescore progress candidate=1536 completed=8/20 wall_seconds=122 eta_seconds=183
+WP40 T2 C1 v3 PUC rescore start candidate=1713 role=winner
+WP40 T2 C1 v3 PUC rescore passed candidate=1713 row_sha256=9cdeef0c55a98b1d55ed76467b85378ed0370fe35e41643982ccfd1b3a1b947e wall_seconds=73
+WP40 T2 C1 v3 retained rescore verified identity=1713 sha256=40f0ef61d42d114120b749566194b1f3cf8d7d9ae422ab8a929afd5d50578362
+WP40 T2 C1 v3 rescore progress candidate=1713 completed=9/20 wall_seconds=126 eta_seconds=154
+WP40 T2 C1 v3 PUC rescore start candidate=2047 role=endpoint
+WP40 T2 C1 v3 PUC rescore passed candidate=2047 row_sha256=6aca029b7d19c539cc215eebe4527e11c85c9993c8750130486b2b82d444a9a4 wall_seconds=74
+WP40 T2 C1 v3 retained rescore verified identity=2047 sha256=26e66de7669958df2fe213a278a795f7712658dfa51c705c34f09a05251920fe
+WP40 T2 C1 v3 rescore progress candidate=2047 completed=10/20 wall_seconds=130 eta_seconds=130
+WP40 T2 C1 v3 PUC rescore start candidate=2048 role=endpoint
+WP40 T2 C1 v3 PUC rescore passed candidate=2048 row_sha256=756a21e9eb77a540fb670dc67c5d3084374061171628f550c8b132e554724b48 wall_seconds=76
+WP40 T2 C1 v3 retained rescore verified identity=2048 sha256=6097b84175d3a776bdced83099b7613f3a500fc1eec16b12115898a5581b42db
+WP40 T2 C1 v3 rescore progress candidate=2048 completed=11/20 wall_seconds=134 eta_seconds=109
+WP40 T2 C1 v3 PUC rescore start candidate=2192 role=winner
+WP40 T2 C1 v3 PUC rescore passed candidate=2192 row_sha256=1595c140950feb7287cab8ce14062df017ab9880243f33ab12b02d11877ab40d wall_seconds=73
+WP40 T2 C1 v3 retained rescore verified identity=2192 sha256=7acee488a7d0bd84abc661125bb4fd343e86e36547f4e1a4c3f7795ecd57f4a0
+WP40 T2 C1 v3 rescore progress candidate=2192 completed=12/20 wall_seconds=138 eta_seconds=92
+WP40 T2 C1 v3 PUC rescore start candidate=2559 role=endpoint
+WP40 T2 C1 v3 PUC rescore passed candidate=2559 row_sha256=2524cd36bab210e37d3f6069ab1ca9573ef1b4e69d70b65384dd2e0ffd45fbe8 wall_seconds=74
+WP40 T2 C1 v3 retained rescore verified identity=2559 sha256=f4f0d45bc2c636c52e8f1defbb8d4b708bd978ec194afcffec925518a59d267c
+WP40 T2 C1 v3 rescore progress candidate=2559 completed=13/20 wall_seconds=142 eta_seconds=76
+WP40 T2 C1 v3 PUC rescore start candidate=2560 role=endpoint
+WP40 T2 C1 v3 PUC rescore passed candidate=2560 row_sha256=42ae052158bf4334814341129c32bcba25c7f9910d91848a96bfa1d9f3fda263 wall_seconds=73
+WP40 T2 C1 v3 retained rescore verified identity=2560 sha256=c6683daa9a65903cae1c958a143c7cb88fe2f294f2a1f0dc387c70818c25b9b1
+WP40 T2 C1 v3 rescore progress candidate=2560 completed=14/20 wall_seconds=146 eta_seconds=62
+WP40 T2 C1 v3 PUC rescore start candidate=3071 role=endpoint
+WP40 T2 C1 v3 PUC rescore passed candidate=3071 row_sha256=a63b4d04640a4ae9b182c4a3c03ea0c5d9d3709a64102b81592e475ffc7c6907 wall_seconds=72
+WP40 T2 C1 v3 retained rescore verified identity=3071 sha256=f8e752120255095e929b277c553d364f8820372107d3055dc32ef99c98ff9f74
+WP40 T2 C1 v3 rescore progress candidate=3071 completed=15/20 wall_seconds=150 eta_seconds=50
+WP40 T2 C1 v3 PUC rescore start candidate=3072 role=endpoint
+WP40 T2 C1 v3 PUC rescore passed candidate=3072 row_sha256=e46dfe6b43dedffff6ab1d5981297cc31587f755f193e3e496cfea091661e98e wall_seconds=73
+WP40 T2 C1 v3 retained rescore verified identity=3072 sha256=19f1f1ad8c9caa4979e9fee7ff0c73477113afa096d4f504192cb221a43aa60a
+WP40 T2 C1 v3 rescore progress candidate=3072 completed=16/20 wall_seconds=154 eta_seconds=38
+WP40 T2 C1 v3 rescore wave active=4 completed=16/20 candidates=3438 3583 3584 4095
+WP40 T2 C1 v3 rescore live active=4 completed=16/20 wall_seconds=154 candidates= 3438 3583 3584 4095
+WP40 T2 C1 v3 rescore live active=4 completed=16/20 wall_seconds=169 candidates= 3438 3583 3584 4095
+WP40 T2 C1 v3 rescore live active=4 completed=16/20 wall_seconds=184 candidates= 3438 3583 3584 4095
+WP40 T2 C1 v3 PUC rescore start candidate=3438 role=winner
+WP40 T2 C1 v3 PUC rescore passed candidate=3438 row_sha256=11f3f857d4c8fde8c07d2d5174b18ecf7de90ed9565a2bdc3c1db299e4e2c907 wall_seconds=39
+WP40 T2 C1 v3 retained rescore verified identity=3438 sha256=346b4885b471fca26cf9573c37a7373a98d6c15b0421799440eaee512f210441
+WP40 T2 C1 v3 rescore progress candidate=3438 completed=17/20 wall_seconds=203 eta_seconds=35
+WP40 T2 C1 v3 PUC rescore start candidate=3583 role=endpoint
+WP40 T2 C1 v3 PUC rescore passed candidate=3583 row_sha256=2829283e6a5319c1791810a546a2aaa6f240c501e225a4b23f9cc8544af8f3e7 wall_seconds=40
+WP40 T2 C1 v3 retained rescore verified identity=3583 sha256=675dddde558b3f9f4e71960c954eb5dbacee36d9dc054c4850c13340a189fbed
+WP40 T2 C1 v3 rescore progress candidate=3583 completed=18/20 wall_seconds=207 eta_seconds=23
+WP40 T2 C1 v3 PUC rescore start candidate=3584 role=endpoint
+WP40 T2 C1 v3 PUC rescore passed candidate=3584 row_sha256=d68abcc552e4de8ac1ae7c1ca72a1112b3b236138a94d6c6f8e1e95ff32fb37b wall_seconds=38
+WP40 T2 C1 v3 retained rescore verified identity=3584 sha256=3ae61602a8f15acfbbeb9c24d5b61d97a20055992f408b77f69d8f5f0d9e4215
+WP40 T2 C1 v3 rescore progress candidate=3584 completed=19/20 wall_seconds=211 eta_seconds=11
+WP40 T2 C1 v3 PUC rescore start candidate=4095 role=endpoint
+WP40 T2 C1 v3 PUC rescore passed candidate=4095 row_sha256=d06f19b95c489ba8c30ff108ed280d0d26cb8fb927828de6782236af9c1cd1a1 wall_seconds=39
+WP40 T2 C1 v3 retained rescore verified identity=4095 sha256=d9bcfa6de6ead00d126f72ab5b06baf004e9147c91f106d665af0429f2338627
+WP40 T2 C1 v3 rescore progress candidate=4095 completed=20/20 wall_seconds=215 eta_seconds=0
+WP40 T2 C1 v3 retained rescore verified identity=0 sha256=319a0d2bb70884f0d9a5e9835e4ece739ecceb7796b6d4dc3f8957c5d68126aa
+WP40 T2 C1 v3 retained rescore verified identity=511 sha256=513ba10116c32a5f7fa673f39ac1e8e58095064d7e11db359bdd72274934b646
+WP40 T2 C1 v3 retained rescore verified identity=512 sha256=fdb45b947ec31457c7d77b564f2b9d848f42df2495bcb9572ad1bd33f0fb1962
+WP40 T2 C1 v3 retained rescore verified identity=1023 sha256=942e731552925e93cb17c9f44d76dadf2d6a60ee14ea7d6204f462414736a9cb
+WP40 T2 C1 v3 retained rescore verified identity=1024 sha256=36f74eb61d3418c8724a5e3512994fd97e9a4ac8926126f2d372749a30218fef
+WP40 T2 C1 v3 retained rescore verified identity=1047 sha256=7e287e7dabf8879496a696b3b3997c702bd2bc018af8b32d4ae6678e70fccad5
+WP40 T2 C1 v3 retained rescore verified identity=1535 sha256=30a2233899ef09409b24142f5c701fed7f1c024aa6fce7ff19825a50d7d1a618
+WP40 T2 C1 v3 retained rescore verified identity=1536 sha256=c10a385be47d169030f971afd8876af826e140bc6a62f768c44723843bb87c0c
+WP40 T2 C1 v3 retained rescore verified identity=1713 sha256=40f0ef61d42d114120b749566194b1f3cf8d7d9ae422ab8a929afd5d50578362
+WP40 T2 C1 v3 retained rescore verified identity=2047 sha256=26e66de7669958df2fe213a278a795f7712658dfa51c705c34f09a05251920fe
+WP40 T2 C1 v3 retained rescore verified identity=2048 sha256=6097b84175d3a776bdced83099b7613f3a500fc1eec16b12115898a5581b42db
+WP40 T2 C1 v3 retained rescore verified identity=2192 sha256=7acee488a7d0bd84abc661125bb4fd343e86e36547f4e1a4c3f7795ecd57f4a0
+WP40 T2 C1 v3 retained rescore verified identity=2559 sha256=f4f0d45bc2c636c52e8f1defbb8d4b708bd978ec194afcffec925518a59d267c
+WP40 T2 C1 v3 retained rescore verified identity=2560 sha256=c6683daa9a65903cae1c958a143c7cb88fe2f294f2a1f0dc387c70818c25b9b1
+WP40 T2 C1 v3 retained rescore verified identity=3071 sha256=f8e752120255095e929b277c553d364f8820372107d3055dc32ef99c98ff9f74
+WP40 T2 C1 v3 retained rescore verified identity=3072 sha256=19f1f1ad8c9caa4979e9fee7ff0c73477113afa096d4f504192cb221a43aa60a
+WP40 T2 C1 v3 retained rescore verified identity=3438 sha256=346b4885b471fca26cf9573c37a7373a98d6c15b0421799440eaee512f210441
+WP40 T2 C1 v3 retained rescore verified identity=3583 sha256=675dddde558b3f9f4e71960c954eb5dbacee36d9dc054c4850c13340a189fbed
+WP40 T2 C1 v3 retained rescore verified identity=3584 sha256=3ae61602a8f15acfbbeb9c24d5b61d97a20055992f408b77f69d8f5f0d9e4215
+WP40 T2 C1 v3 retained rescore verified identity=4095 sha256=d9bcfa6de6ead00d126f72ab5b06baf004e9147c91f106d665af0429f2338627
+WP40 T2 C1 v3 hard rescore barrier passed completed=20/20
+WP40 T2 C1 v3 selected phase active=4 completed=0/4 slots=28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=0 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=30 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=60 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=90 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=120 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=150 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=180 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=210 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=240 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=270 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=300 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=330 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=360 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=390 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=420 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=450 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=480 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=510 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=540 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=570 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=600 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=630 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=660 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=690 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=720 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=750 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=780 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=810 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=840 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=870 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=900 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=930 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=960 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=990 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1020 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1050 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1080 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1110 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1140 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1170 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1200 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1230 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1260 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1290 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1320 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1350 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1380 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1410 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1440 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1470 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1500 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1530 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1560 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1590 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1620 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1650 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1680 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1710 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1740 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1770 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1800 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1830 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1860 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1890 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1920 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1950 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=1980 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2010 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2040 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2070 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2100 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2130 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2160 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2190 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2220 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2250 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2280 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2310 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2340 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2370 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2400 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2430 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2460 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2490 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2520 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2550 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2580 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2610 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2640 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2670 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2700 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2730 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2760 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2790 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2820 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2850 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2880 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2910 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2940 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=2970 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3000 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3030 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3060 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3090 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3120 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3150 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3180 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3210 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3240 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3270 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3300 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3330 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3360 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3390 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3420 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3450 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3480 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3510 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3540 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3570 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3600 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3630 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3660 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3690 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3720 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3750 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3780 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3810 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3840 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3870 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3900 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3930 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3960 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=3990 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4020 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4050 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4080 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4110 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4140 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4170 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4200 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4230 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4260 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4290 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4320 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4350 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4380 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4410 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4440 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4470 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4500 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4530 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4560 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4590 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4620 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4650 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4680 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4710 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4740 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4770 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4800 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4830 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4860 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4890 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4920 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4950 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=4980 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=5010 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=5040 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=5070 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=5100 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=5130 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=5160 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=5190 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=5220 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=5250 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=5280 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=5310 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=5340 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=4 completed=0/4 wall_seconds=5370 slots= 28 29 30 31
+WP40 T2 C1 v3 selected live active=3 completed=0/4 wall_seconds=5400 slots= 28 29 31
+WP40 T2 C1 v3 selected live active=1 completed=0/4 wall_seconds=5430 slots= 31
+WP40 T2 C1 v3 selected live active=1 completed=0/4 wall_seconds=5460 slots= 31
+WP40 T2 C1 v3 selected start slot=28 candidate=2192 decimal=5270046902118333881
+WP43 material progression integration tests passed
+WP40 T2 C2 edge inventory seed=0 sha256=fa5300149651fc78868b734e102b821b141fefbe214bad875b4d192006a3b221 intervals=61 ordinary/transition=55/6
+WP40 T2 R16 max-u64 transitions direct/elbow=7/1 land_010:to E/W/T=-1140:2241/-1139:2242/-1140:2242
+WP40 T2 C2 edge inventory seed=18446744073709551615 sha256=7c1d1462cee0d2188562e94300b524da80ee9454f940c21f92a04c132960ce36 intervals=61 ordinary/transition=55/6
+WP40 T2 H55 perimeter_elandor_mainland record-wide ceiling legacy/new=3/3
+WP40 T2 H55 perimeter_kragmar_mainland record-wide ceiling legacy/new=3/3
+WP40 T2 M56 all-22 independent Coast SHA256 0309cd3f2d26705feeb1978ee6ca1903addd7f627bbff12ed816f0960d50e2ac
+WP40 T2 H15 raw notches seed=0 bay_elandor_west=0
+WP40 T2 H15 raw notches seed=0 bay_elandor_east=0
+WP40 T2 H15 raw notches seed=0 bay_kragmar_west=0
+WP40 T2 H15 raw notches seed=0 bay_kragmar_east=0
+WP40 T2 H15 simulated seed=0 cells=0 g/o/r/m=0/0/0/0 Bank_drift=0 trace=ok
+WP40 T2 partition focused Seed0 whole-footprint passed: columns=30312952 Base=1920460 (459233/462528/471670/527029) planned=2153330 dry=28159622 g=0/o=0/r=0/m=0 perimeter AP/attachment/dry=2774/8/27185 schedule_intervals=275706
+WP40 T2 H15 raw notches seed=18446744073709551615 bay_elandor_west=1 [-775:-2349>-774:-2349]
+WP40 T2 H15 raw notches seed=18446744073709551615 bay_elandor_east=1 [887:-2036>886:-2036]
+WP40 T2 H15 raw notches seed=18446744073709551615 bay_kragmar_west=1 [-1121:2220>-1122:2220]
+WP40 T2 H15 raw notches seed=18446744073709551615 bay_kragmar_east=0
+WP40 T2 H15 simulated seed=18446744073709551615 cells=3 g/o/r/m=0/0/0/0 Bank_drift=0 trace=ok
+WP40 T2 max_u64 whole-footprint passed: columns=30315586 Base=1909746 planned=2144056 dry=28171530 g=0/o=0/r=0/m=0 schedule_intervals=275706
+WP40 T2 H15 raw notches seed=5270046902118333881 bay_elandor_west=0
+WP40 T2 H15 raw notches seed=5270046902118333881 bay_elandor_east=0
+WP40 T2 H15 raw notches seed=5270046902118333881 bay_kragmar_west=0
+WP40 T2 H15 raw notches seed=5270046902118333881 bay_kragmar_east=0
+WP40 T2 H15 simulated seed=5270046902118333881 cells=0 g/o/r/m=0/0/0/0 Bank_drift=0 trace=ok
+WP40 T2 selected whole-footprint passed: columns=30330553 Base=1891851 planned=2127520 dry=28203033 g=0/o=0/r=0/m=0 schedule_intervals=275706
+WP40 T2 C2 historical pre-R18 provisional slot=28 promotion=false seed=5270046902118333881 edge_inventory_sha256=ba34ebf8dd599cc343d5f434904120dd93d03e43a911dee3b8b75d1940d9323a transitions=8/0 Whole=0/0/0/0
+WP40 T2 partition slice tests passed
+WP40 T2 C1 v3 selected passed slot=28 candidate=2192 compiled_sha256=06cfb4a027ff21fdca53165b15307e55769316210222cdb9579efc209165bd6a columns=30330553 g/o/r/m=0/0/0/0 wall_seconds=5423
+WP40 T2 C1 v3 retained selected verified identity=28 sha256=c0b224906e8cf5192828fadcbcd27ad2fb399aef725ed1f180faddd0e640343b
+WP40 T2 C1 v3 selected progress slot=28 completed=1/4 wall_seconds=5495
+WP40 T2 C1 v3 selected start slot=29 candidate=1713 decimal=16178445837170081103
+WP43 material progression integration tests passed
+WP40 T2 C2 edge inventory seed=0 sha256=fa5300149651fc78868b734e102b821b141fefbe214bad875b4d192006a3b221 intervals=61 ordinary/transition=55/6
+WP40 T2 R16 max-u64 transitions direct/elbow=7/1 land_010:to E/W/T=-1140:2241/-1139:2242/-1140:2242
+WP40 T2 C2 edge inventory seed=18446744073709551615 sha256=7c1d1462cee0d2188562e94300b524da80ee9454f940c21f92a04c132960ce36 intervals=61 ordinary/transition=55/6
+WP40 T2 H55 perimeter_elandor_mainland record-wide ceiling legacy/new=3/3
+WP40 T2 H55 perimeter_kragmar_mainland record-wide ceiling legacy/new=3/3
+WP40 T2 M56 all-22 independent Coast SHA256 0309cd3f2d26705feeb1978ee6ca1903addd7f627bbff12ed816f0960d50e2ac
+WP40 T2 H15 raw notches seed=0 bay_elandor_west=0
+WP40 T2 H15 raw notches seed=0 bay_elandor_east=0
+WP40 T2 H15 raw notches seed=0 bay_kragmar_west=0
+WP40 T2 H15 raw notches seed=0 bay_kragmar_east=0
+WP40 T2 H15 simulated seed=0 cells=0 g/o/r/m=0/0/0/0 Bank_drift=0 trace=ok
+WP40 T2 partition focused Seed0 whole-footprint passed: columns=30312952 Base=1920460 (459233/462528/471670/527029) planned=2153330 dry=28159622 g=0/o=0/r=0/m=0 perimeter AP/attachment/dry=2774/8/27185 schedule_intervals=275706
+WP40 T2 H15 raw notches seed=18446744073709551615 bay_elandor_west=1 [-775:-2349>-774:-2349]
+WP40 T2 H15 raw notches seed=18446744073709551615 bay_elandor_east=1 [887:-2036>886:-2036]
+WP40 T2 H15 raw notches seed=18446744073709551615 bay_kragmar_west=1 [-1121:2220>-1122:2220]
+WP40 T2 H15 raw notches seed=18446744073709551615 bay_kragmar_east=0
+WP40 T2 H15 simulated seed=18446744073709551615 cells=3 g/o/r/m=0/0/0/0 Bank_drift=0 trace=ok
+WP40 T2 max_u64 whole-footprint passed: columns=30315586 Base=1909746 planned=2144056 dry=28171530 g=0/o=0/r=0/m=0 schedule_intervals=275706
+WP40 T2 C2 historical pre-R18 provisional Slot29 upstream land_010 C=3 controls=1941:c61d4cd4d0152e04b4f3afe4b061ff454ef04f2a5574524da4295b2e49a9c9c9 scalars=1941:490f92c00a018ed2e953d52a9f0fc86ad06b5f127f208781ebcc3e568ac5ff6d R7_to=-971:2260/-970:2260 promotion=false
+WP40 T2 C2 R19 joint complete/key/total_retreat/max_retreat/elbows land_001=1/0/0/0/0 land_004=1/0/0/0/0 land_007=1/0/0/0/0 land_010=1/0/1/1/0 land_013=1/0/0/0/0 land_016=1/0/0/0/0
+WP40 T2 C2 Slot29 R19 land_010:to mode=direct retreat=1 complete=1 key=0 terminal=-1135:2242 previous=-1136:2242 stations=1601 edge=f823d2abac877c13aa03484cb2941c784b16cbc2c15798bc087596caba7a8e70/d914e97cde5ee07c8a45c6fa7bafa5422aa7877429b4c04656433da60e030dc1 Stillgrave=794:f50970d89d04bf992bfb15f898621157e602abf624b09c6dff49fb09bf8d2317/b98009b596c8ed73450523c8a52df9aecfc97a11f32b4babf8377fbd7555617a Mournfen=456:457ec6b155f092589972e01d21e6d2c13181a39e26a3eb700fa1e0f4c2071384/7229bcfa7ae0a3aa6f1c6027678abd71168eaba596a0e2971ffc411b85dffff4 old_E=-1134:2242 edge_owner=0 bank_owner=1:bay_bank:kragmar_west:mournfen
+WP40 T2 H15 raw notches seed=16178445837170081103 bay_elandor_west=0
+WP40 T2 H15 raw notches seed=16178445837170081103 bay_elandor_east=0
+WP40 T2 H15 raw notches seed=16178445837170081103 bay_kragmar_west=0
+WP40 T2 H15 raw notches seed=16178445837170081103 bay_kragmar_east=0
+WP40 T2 H15 simulated seed=16178445837170081103 cells=0 g/o/r/m=0/0/0/0 Bank_drift=0 trace=ok
+WP40 T2 selected whole-footprint passed: columns=30303110 Base=1902864 planned=2135396 dry=28167714 g=0/o=0/r=0/m=0 schedule_intervals=275706
+WP40 T2 C2 historical pre-R18 provisional slot=29 promotion=false seed=16178445837170081103 edge_inventory_sha256=88957d554cb4d5b05af8fc59705cafa57bd180dcda8cc057d63487ae790a3450 transitions=8/0 Whole=0/0/0/0
+WP40 T2 partition slice tests passed
+WP40 T2 C1 v3 selected passed slot=29 candidate=1713 compiled_sha256=3358adf655f454e6d8641f146af6fa0c509a4e2f61d1d41195622048c0909f52 columns=30303110 g/o/r/m=0/0/0/0 wall_seconds=5419
+WP40 T2 C1 v3 retained selected verified identity=29 sha256=7194941c77743efde5d859d7f2b99862bd7699cf731d0cb53ad53c44752e3dc4
+WP40 T2 C1 v3 selected progress slot=29 completed=2/4 wall_seconds=5499
+WP40 T2 C1 v3 selected start slot=30 candidate=1047 decimal=15219119262482319357
+WP43 material progression integration tests passed
+WP40 T2 C2 edge inventory seed=0 sha256=fa5300149651fc78868b734e102b821b141fefbe214bad875b4d192006a3b221 intervals=61 ordinary/transition=55/6
+WP40 T2 R16 max-u64 transitions direct/elbow=7/1 land_010:to E/W/T=-1140:2241/-1139:2242/-1140:2242
+WP40 T2 C2 edge inventory seed=18446744073709551615 sha256=7c1d1462cee0d2188562e94300b524da80ee9454f940c21f92a04c132960ce36 intervals=61 ordinary/transition=55/6
+WP40 T2 H55 perimeter_elandor_mainland record-wide ceiling legacy/new=3/3
+WP40 T2 H55 perimeter_kragmar_mainland record-wide ceiling legacy/new=3/3
+WP40 T2 M56 all-22 independent Coast SHA256 0309cd3f2d26705feeb1978ee6ca1903addd7f627bbff12ed816f0960d50e2ac
+WP40 T2 H15 raw notches seed=0 bay_elandor_west=0
+WP40 T2 H15 raw notches seed=0 bay_elandor_east=0
+WP40 T2 H15 raw notches seed=0 bay_kragmar_west=0
+WP40 T2 H15 raw notches seed=0 bay_kragmar_east=0
+WP40 T2 H15 simulated seed=0 cells=0 g/o/r/m=0/0/0/0 Bank_drift=0 trace=ok
+WP40 T2 partition focused Seed0 whole-footprint passed: columns=30312952 Base=1920460 (459233/462528/471670/527029) planned=2153330 dry=28159622 g=0/o=0/r=0/m=0 perimeter AP/attachment/dry=2774/8/27185 schedule_intervals=275706
+WP40 T2 H15 raw notches seed=18446744073709551615 bay_elandor_west=1 [-775:-2349>-774:-2349]
+WP40 T2 H15 raw notches seed=18446744073709551615 bay_elandor_east=1 [887:-2036>886:-2036]
+WP40 T2 H15 raw notches seed=18446744073709551615 bay_kragmar_west=1 [-1121:2220>-1122:2220]
+WP40 T2 H15 raw notches seed=18446744073709551615 bay_kragmar_east=0
+WP40 T2 H15 simulated seed=18446744073709551615 cells=3 g/o/r/m=0/0/0/0 Bank_drift=0 trace=ok
+WP40 T2 max_u64 whole-footprint passed: columns=30315586 Base=1909746 planned=2144056 dry=28171530 g=0/o=0/r=0/m=0 schedule_intervals=275706
+WP40 T2 H15 raw notches seed=15219119262482319357 bay_elandor_west=0
+WP40 T2 H15 raw notches seed=15219119262482319357 bay_elandor_east=0
+WP40 T2 H15 raw notches seed=15219119262482319357 bay_kragmar_west=0
+WP40 T2 H15 raw notches seed=15219119262482319357 bay_kragmar_east=0
+WP40 T2 H15 simulated seed=15219119262482319357 cells=0 g/o/r/m=0/0/0/0 Bank_drift=0 trace=ok
+WP40 T2 selected whole-footprint passed: columns=30316314 Base=1876288 planned=2112499 dry=28203815 g=0/o=0/r=0/m=0 schedule_intervals=275706
+WP40 T2 C2 Slot30 controls/scalars sha256=49866585cf4e209057b9681d0150704328656856114679f3afb6264b548dd996/a1437c0d9584068211b8f0772da8f7d4cf6bb6237d51ea7d82a69d59577fba3b banks=Starbough517/Silverleaf731 excluded_owner=StarboughBank1/StarboughFace1
+WP40 T2 C2 historical pre-R18 provisional slot=30 promotion=false seed=15219119262482319357 edge_inventory_sha256=2a7f0b232a34e4d2cddd12c2d904a13a1e9f4a4a7d2610b0c8c46ba35cc48534 transitions=8/0 Whole=0/0/0/0
+WP40 T2 partition slice tests passed
+WP40 T2 C1 v3 selected passed slot=30 candidate=1047 compiled_sha256=e1f813c7b3e991aaea196ad314dd71723b7215e0efb32d546e5df70afef01f7b columns=30316314 g/o/r/m=0/0/0/0 wall_seconds=5390
+WP40 T2 C1 v3 retained selected verified identity=30 sha256=d8f5b0a9dfdb6173398433ce8c2667a4a01b649dd5de45f640c6281b2ea2fae3
+WP40 T2 C1 v3 selected progress slot=30 completed=3/4 wall_seconds=5503
+WP40 T2 C1 v3 selected start slot=31 candidate=3438 decimal=17842018860885445630
+WP43 material progression integration tests passed
+WP40 T2 C2 edge inventory seed=0 sha256=fa5300149651fc78868b734e102b821b141fefbe214bad875b4d192006a3b221 intervals=61 ordinary/transition=55/6
+WP40 T2 R16 max-u64 transitions direct/elbow=7/1 land_010:to E/W/T=-1140:2241/-1139:2242/-1140:2242
+WP40 T2 C2 edge inventory seed=18446744073709551615 sha256=7c1d1462cee0d2188562e94300b524da80ee9454f940c21f92a04c132960ce36 intervals=61 ordinary/transition=55/6
+WP40 T2 H55 perimeter_elandor_mainland record-wide ceiling legacy/new=3/3
+WP40 T2 H55 perimeter_kragmar_mainland record-wide ceiling legacy/new=3/3
+WP40 T2 M56 all-22 independent Coast SHA256 0309cd3f2d26705feeb1978ee6ca1903addd7f627bbff12ed816f0960d50e2ac
+WP40 T2 H15 raw notches seed=0 bay_elandor_west=0
+WP40 T2 H15 raw notches seed=0 bay_elandor_east=0
+WP40 T2 H15 raw notches seed=0 bay_kragmar_west=0
+WP40 T2 H15 raw notches seed=0 bay_kragmar_east=0
+WP40 T2 H15 simulated seed=0 cells=0 g/o/r/m=0/0/0/0 Bank_drift=0 trace=ok
+WP40 T2 partition focused Seed0 whole-footprint passed: columns=30312952 Base=1920460 (459233/462528/471670/527029) planned=2153330 dry=28159622 g=0/o=0/r=0/m=0 perimeter AP/attachment/dry=2774/8/27185 schedule_intervals=275706
+WP40 T2 H15 raw notches seed=18446744073709551615 bay_elandor_west=1 [-775:-2349>-774:-2349]
+WP40 T2 H15 raw notches seed=18446744073709551615 bay_elandor_east=1 [887:-2036>886:-2036]
+WP40 T2 H15 raw notches seed=18446744073709551615 bay_kragmar_west=1 [-1121:2220>-1122:2220]
+WP40 T2 H15 raw notches seed=18446744073709551615 bay_kragmar_east=0
+WP40 T2 H15 simulated seed=18446744073709551615 cells=3 g/o/r/m=0/0/0/0 Bank_drift=0 trace=ok
+WP40 T2 max_u64 whole-footprint passed: columns=30315586 Base=1909746 planned=2144056 dry=28171530 g=0/o=0/r=0/m=0 schedule_intervals=275706
+WP40 T2 H15 raw notches seed=17842018860885445630 bay_elandor_west=0
+WP40 T2 H15 raw notches seed=17842018860885445630 bay_elandor_east=0
+WP40 T2 H15 raw notches seed=17842018860885445630 bay_kragmar_west=0
+WP40 T2 H15 raw notches seed=17842018860885445630 bay_kragmar_east=0
+WP40 T2 H15 simulated seed=17842018860885445630 cells=0 g/o/r/m=0/0/0/0 Bank_drift=0 trace=ok
+WP40 T2 selected whole-footprint passed: columns=30321053 Base=1942369 planned=2176140 dry=28144913 g=0/o=0/r=0/m=0 schedule_intervals=275706
+WP40 T2 C2 historical pre-R18 provisional slot=31 promotion=false seed=17842018860885445630 edge_inventory_sha256=3c0afea45c77690a94c677e9b827ed95dbd5ab6695d4a22eb30d4e986cad59b2 transitions=8/0 Whole=0/0/0/0
+WP40 T2 partition slice tests passed
+WP40 T2 C1 v3 selected passed slot=31 candidate=3438 compiled_sha256=83e260255daa26d1c7928e891a406015c4438f3e292d37e22f4452421f4e5261 columns=30321053 g/o/r/m=0/0/0/0 wall_seconds=5473
+WP40 T2 C1 v3 retained selected verified identity=31 sha256=1678e531a6a7b4f17e994059d836a7a7c14710fd7ecf128d7cf7b24a99ba9e53
+WP40 T2 C1 v3 selected progress slot=31 completed=4/4 wall_seconds=5507
+WP40 T2 C1 v3 retained selected verified identity=28 sha256=c0b224906e8cf5192828fadcbcd27ad2fb399aef725ed1f180faddd0e640343b
+WP40 T2 C1 v3 retained selected verified identity=29 sha256=7194941c77743efde5d859d7f2b99862bd7699cf731d0cb53ad53c44752e3dc4
+WP40 T2 C1 v3 retained selected verified identity=30 sha256=d8f5b0a9dfdb6173398433ce8c2667a4a01b649dd5de45f640c6281b2ea2fae3
+WP40 T2 C1 v3 retained selected verified identity=31 sha256=1678e531a6a7b4f17e994059d836a7a7c14710fd7ecf128d7cf7b24a99ba9e53
+WP40 T2 C1 v3 hard selected barrier passed completed=4/4
+WP40 T2 C1 v3 retained rescore verified identity=0 sha256=319a0d2bb70884f0d9a5e9835e4ece739ecceb7796b6d4dc3f8957c5d68126aa
+WP40 T2 C1 v3 retained rescore verified identity=511 sha256=513ba10116c32a5f7fa673f39ac1e8e58095064d7e11db359bdd72274934b646
+WP40 T2 C1 v3 retained rescore verified identity=512 sha256=fdb45b947ec31457c7d77b564f2b9d848f42df2495bcb9572ad1bd33f0fb1962
+WP40 T2 C1 v3 retained rescore verified identity=1023 sha256=942e731552925e93cb17c9f44d76dadf2d6a60ee14ea7d6204f462414736a9cb
+WP40 T2 C1 v3 retained rescore verified identity=1024 sha256=36f74eb61d3418c8724a5e3512994fd97e9a4ac8926126f2d372749a30218fef
+WP40 T2 C1 v3 retained rescore verified identity=1047 sha256=7e287e7dabf8879496a696b3b3997c702bd2bc018af8b32d4ae6678e70fccad5
+WP40 T2 C1 v3 retained rescore verified identity=1535 sha256=30a2233899ef09409b24142f5c701fed7f1c024aa6fce7ff19825a50d7d1a618
+WP40 T2 C1 v3 retained rescore verified identity=1536 sha256=c10a385be47d169030f971afd8876af826e140bc6a62f768c44723843bb87c0c
+WP40 T2 C1 v3 retained rescore verified identity=1713 sha256=40f0ef61d42d114120b749566194b1f3cf8d7d9ae422ab8a929afd5d50578362
+WP40 T2 C1 v3 retained rescore verified identity=2047 sha256=26e66de7669958df2fe213a278a795f7712658dfa51c705c34f09a05251920fe
+WP40 T2 C1 v3 retained rescore verified identity=2048 sha256=6097b84175d3a776bdced83099b7613f3a500fc1eec16b12115898a5581b42db
+WP40 T2 C1 v3 retained rescore verified identity=2192 sha256=7acee488a7d0bd84abc661125bb4fd343e86e36547f4e1a4c3f7795ecd57f4a0
+WP40 T2 C1 v3 retained rescore verified identity=2559 sha256=f4f0d45bc2c636c52e8f1defbb8d4b708bd978ec194afcffec925518a59d267c
+WP40 T2 C1 v3 retained rescore verified identity=2560 sha256=c6683daa9a65903cae1c958a143c7cb88fe2f294f2a1f0dc387c70818c25b9b1
+WP40 T2 C1 v3 retained rescore verified identity=3071 sha256=f8e752120255095e929b277c553d364f8820372107d3055dc32ef99c98ff9f74
+WP40 T2 C1 v3 retained rescore verified identity=3072 sha256=19f1f1ad8c9caa4979e9fee7ff0c73477113afa096d4f504192cb221a43aa60a
+WP40 T2 C1 v3 retained rescore verified identity=3438 sha256=346b4885b471fca26cf9573c37a7373a98d6c15b0421799440eaee512f210441
+WP40 T2 C1 v3 retained rescore verified identity=3583 sha256=675dddde558b3f9f4e71960c954eb5dbacee36d9dc054c4850c13340a189fbed
+WP40 T2 C1 v3 retained rescore verified identity=3584 sha256=3ae61602a8f15acfbbeb9c24d5b61d97a20055992f408b77f69d8f5f0d9e4215
+WP40 T2 C1 v3 retained rescore verified identity=4095 sha256=d9bcfa6de6ead00d126f72ab5b06baf004e9147c91f106d665af0429f2338627
+WP40 T2 C1 v3 retained selected verified identity=28 sha256=c0b224906e8cf5192828fadcbcd27ad2fb399aef725ed1f180faddd0e640343b
+WP40 T2 C1 v3 retained selected verified identity=29 sha256=7194941c77743efde5d859d7f2b99862bd7699cf731d0cb53ad53c44752e3dc4
+WP40 T2 C1 v3 retained selected verified identity=30 sha256=d8f5b0a9dfdb6173398433ce8c2667a4a01b649dd5de45f640c6281b2ea2fae3
+WP40 T2 C1 v3 retained selected verified identity=31 sha256=1678e531a6a7b4f17e994059d836a7a7c14710fd7ecf128d7cf7b24a99ba9e53
+WP40 T2 C1 v3 final conformance SHA-256 7ac6b7f9678b53ffa64b6614b7a2926625e1cce53775101a2fd1ae37704fac20 rescore=20 selected=4 stage2=pending_seed_corpus_promotion
+WP40 T2 C1 v3 conformance complete rescore=20/20 selected=4/4 stage2=pending_seed_corpus_promotion

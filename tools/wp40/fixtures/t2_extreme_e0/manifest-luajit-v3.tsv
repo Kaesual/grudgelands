@@ -1,0 +1,26 @@
+grug_wp40_extreme_shard_manifest_v3
+measurement_scope	R7_SCALAR_MEASUREMENT_ONLY
+stage2_status	pending_selected_four
+s1_authority_sha256	10a790a6436a740efc83e98afe3c374ac4b3520bb425de3d2bd0ac76622db37c
+s1_source_projection_sha256	83b1b16a8afd11af654b5dd3e1d9921006848a0903e7b0c01ab39b27edddd652
+authority_dag_sha256	069cce2d637d30538131defbbba0a64bb9cc65f22c71a00fd287183d2518e20a
+authority_commit	19fc28d1e1ecb2a18c7bb208d21c448cce12bc7d
+authority_tree	bca04056315412b9f19f20bbe554b0693f658c17
+interpreter_id	luajit
+interpreter_launcher	/usr/bin/luajit
+interpreter_path	/usr/bin/luajit-2.1.1767980792
+interpreter_version	LuaJIT 2.1.1767980792 -- Copyright (C) 2005-2026 Mike Pall. https://luajit.org/
+interpreter_sha256	4fd1f5075a6cb15c933f5abaf7ad4b203c8926ab27261c334b41c9bc5e40a1a6
+scorer_schema	grug_wp40_extreme_selector_e0_v1
+merge_interpreter_id	puc_lua51
+merge_interpreter_path	/home/jan/projects/grudgelands/tools/bin/lua51
+merge_interpreter_version	Lua 5.1.5  Copyright (C) 1994-2012 Lua.org, PUC-Rio
+merge_interpreter_sha256	a1a427f38260513b64158630bc2b7d2fccfa31b48129efbfbcc60e02e4960a4f
+shard	0	511	tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-0000-0511.tsv	cd71ecd83db7448eaf2108093682db5b73578102a612e61872e47a0ed574181b
+shard	512	1023	tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-0512-1023.tsv	5f902365a8ae112d88ae8dd4e97247ea96d75f2ac3529a58bba5234c77617c1d
+shard	1024	1535	tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-1024-1535.tsv	82728869c999ceb0ff7a891e3002ccdf68347e75a84aae37fdb7b4d5ed90465c
+shard	1536	2047	tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-1536-2047.tsv	fcc4e3b9bcafbd9b8306f26b25c8bca73478025362e91cbb6159f9258ee27749
+shard	2048	2559	tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-2048-2559.tsv	72fe4813113d06f7cc105e3033c2a7abb7f131d290d0f6abc9c34969f1a57cf6
+shard	2560	3071	tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-2560-3071.tsv	795b852e39a76468f6a04c5cf9804196bc4586501489f026e3d842e9bd23c3bc
+shard	3072	3583	tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-3072-3583.tsv	e967aa3663f1a5569b84806026cee8ca4b7d5817686fe0a667672b701efa269f
+shard	3584	4095	tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-3584-4095.tsv	7a50a4cdb1f3ec5a169ec872ae5aaec0704b908f6b038476e8bf58473fa492db

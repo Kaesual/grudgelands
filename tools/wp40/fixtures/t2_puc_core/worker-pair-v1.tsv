@@ -1,0 +1,1489 @@
+schema	grug_wp40_census_scan_v6
+vocabulary	tools/wp40/fixtures/t2_extreme_e0/vocabulary.lua
+prefilter	land_001	scanned	transition_obligation
+prefilter	land_002	scanned	envelope_reaches_bay_surface
+prefilter	land_003	discharged	envelope_disjoint_from_water_surfaces
+prefilter	land_004	scanned	transition_obligation
+prefilter	land_005	scanned	envelope_reaches_bay_surface
+prefilter	land_006	discharged	envelope_disjoint_from_water_surfaces
+prefilter	land_007	scanned	transition_obligation
+prefilter	land_008	scanned	envelope_reaches_bay_surface
+prefilter	land_009	discharged	envelope_disjoint_from_water_surfaces
+prefilter	land_010	scanned	transition_obligation
+prefilter	land_011	scanned	envelope_reaches_bay_surface
+prefilter	land_012	discharged	envelope_disjoint_from_water_surfaces
+prefilter	land_013	scanned	transition_obligation
+prefilter	land_014	scanned	envelope_reaches_bay_surface
+prefilter	land_015	discharged	envelope_disjoint_from_water_surfaces
+prefilter	land_016	scanned	transition_obligation
+prefilter	land_017	scanned	envelope_reaches_bay_surface
+prefilter	land_018	discharged	envelope_disjoint_from_water_surfaces
+prefilter	land_019	discharged	envelope_disjoint_from_water_surfaces
+prefilter	land_020	scanned	envelope_reaches_bay_surface
+prefilter	land_021	scanned	envelope_reaches_bay_surface
+prefilter	land_022	scanned	envelope_reaches_bay_surface
+prefilter	land_023	scanned	envelope_reaches_bay_surface
+prefilter	land_024	discharged	envelope_disjoint_from_water_surfaces
+prefilter	land_025	discharged	envelope_disjoint_from_water_surfaces
+prefilter	land_026	scanned	envelope_reaches_bay_surface
+prefilter	land_027	scanned	envelope_reaches_bay_surface
+prefilter	land_028	scanned	envelope_reaches_bay_surface
+prefilter	land_029	scanned	envelope_reaches_bay_surface
+prefilter	land_030	discharged	envelope_disjoint_from_water_surfaces
+prefilter	land_031	scanned	attachment_obligation
+prefilter	land_032	discharged	envelope_disjoint_from_water_surfaces
+prefilter	land_033	discharged	envelope_disjoint_from_water_surfaces
+prefilter	land_034	scanned	attachment_obligation
+prefilter	land_035	scanned	envelope_reaches_coast_margin
+prefilter	land_036	scanned	envelope_reaches_coast_margin
+prefilter	land_037	scanned	attachment_obligation
+prefilter	land_038	discharged	envelope_disjoint_from_water_surfaces
+prefilter	land_039	discharged	envelope_disjoint_from_water_surfaces
+prefilter	land_040	scanned	attachment_obligation
+prefilter	land_041	scanned	envelope_reaches_coast_margin
+prefilter	land_042	scanned	envelope_reaches_coast_margin
+prefilter	land_043	scanned	envelope_reaches_coast_margin
+prefilter	land_044	scanned	envelope_reaches_coast_margin
+prefilter	land_045	scanned	envelope_reaches_coast_margin
+prefilter	land_046	scanned	envelope_reaches_coast_margin
+prefilter	land_047	scanned	envelope_reaches_coast_margin
+prefilter	land_048	scanned	envelope_reaches_coast_margin
+prefilter	land_049	scanned	envelope_reaches_coast_margin
+prefilter	land_050	scanned	envelope_reaches_coast_margin
+prefilter	land_051	scanned	envelope_reaches_coast_margin
+prefilter	land_052	scanned	envelope_reaches_coast_margin
+prefilter	land_053	scanned	envelope_reaches_coast_margin
+prefilter	land_054	scanned	envelope_reaches_coast_margin
+prefilter	land_055	scanned	envelope_reaches_coast_margin
+prefilter	land_056	scanned	envelope_reaches_coast_margin
+prefilter	land_057	scanned	envelope_reaches_coast_margin
+prefilter	land_058	scanned	envelope_reaches_coast_margin
+prefilter	land_059	scanned	envelope_reaches_coast_margin
+prefilter	land_060	scanned	envelope_reaches_coast_margin
+prefilter	land_061	scanned	envelope_reaches_coast_margin
+seed_begin	2147483648
+edge	2147483648	land_001	transition_attachment	transition_interval_select	1	1	0	188	1693	1860	3	196608
+edge	2147483648	land_002	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	489144
+edge	2147483648	land_003	ordinary	ordinary_interval_select	1	-	0	1	801	801	32	999804
+edge	2147483648	land_004	transition	transition_interval_select	1	1	0	203	1797	2004	3	196608
+edge	2147483648	land_005	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	475702
+edge	2147483648	land_006	ordinary	ordinary_interval_select	1	-	0	1	801	801	32	689511
+edge	2147483648	land_007	transition_attachment	transition_interval_select	1	1	0	174	1759	1947	3	196608
+edge	2147483648	land_008	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1993897
+edge	2147483648	land_009	ordinary	ordinary_interval_select	1	-	0	1	801	801	32	273893
+edge	2147483648	land_010	transition_attachment	transition_interval_select	1	1	0	180	1793	1950	3	196608
+edge	2147483648	land_011	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1741449
+edge	2147483648	land_012	ordinary	ordinary_interval_select	1	-	0	1	801	801	32	1216915
+edge	2147483648	land_013	transition	transition_interval_select	1	1	0	215	1815	1995	3	196608
+edge	2147483648	land_014	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1596318
+edge	2147483648	land_015	ordinary	ordinary_interval_select	1	-	0	1	801	801	32	1319714
+edge	2147483648	land_016	transition_attachment	transition_interval_select	1	1	0	175	1721	1905	3	196608
+edge	2147483648	land_017	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1348761
+edge	2147483648	land_018	ordinary	ordinary_interval_select	1	-	0	1	801	801	32	695290
+edge	2147483648	land_019	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1223531
+edge	2147483648	land_020	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	835209
+edge	2147483648	land_021	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	2658831
+edge	2147483648	land_022	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1372976
+edge	2147483648	land_023	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	935334
+edge	2147483648	land_024	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1247721
+edge	2147483648	land_025	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	2192207
+edge	2147483648	land_026	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1340310
+edge	2147483648	land_027	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1553330
+edge	2147483648	land_028	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1851585
+edge	2147483648	land_029	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1471419
+edge	2147483648	land_030	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	943453
+edge	2147483648	land_031	ordinary_attachment	ordinary_interval_select	1	-	0	103	401	401	32	603
+edge	2147483648	land_032	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	32	678225
+edge	2147483648	land_033	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	32	141152
+edge	2147483648	land_034	ordinary_attachment	ordinary_interval_select	1	-	0	1	298	401	32	521
+edge	2147483648	land_035	ordinary	ordinary_interval_select	1	-	0	1	1153	1153	3	196608
+edge	2147483648	land_036	ordinary	ordinary_interval_select	1	-	0	1	1153	1153	3	196608
+edge	2147483648	land_037	ordinary_attachment	ordinary_interval_select	1	-	0	112	401	401	32	96
+edge	2147483648	land_038	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	32	964401
+edge	2147483648	land_039	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	32	774878
+edge	2147483648	land_040	ordinary_attachment	ordinary_interval_select	1	-	0	1	309	401	32	798
+edge	2147483648	land_041	ordinary	ordinary_interval_select	1	-	0	1	1154	1154	3	196608
+edge	2147483648	land_042	ordinary	ordinary_interval_select	1	-	0	1	1156	1156	3	196608
+edge	2147483648	land_043	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	0	0
+edge	2147483648	land_044	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+edge	2147483648	land_045	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+edge	2147483648	land_046	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+edge	2147483648	land_047	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+edge	2147483648	land_048	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	0	0
+edge	2147483648	land_049	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	0	0
+edge	2147483648	land_050	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+edge	2147483648	land_051	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+edge	2147483648	land_052	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+edge	2147483648	land_053	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+edge	2147483648	land_054	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	0	0
+edge	2147483648	land_055	ordinary	ordinary_interval_select	1	-	0	1	501	501	64	425396
+edge	2147483648	land_056	ordinary	ordinary_interval_select	1	-	0	1	501	501	64	0
+edge	2147483648	land_057	ordinary	ordinary_interval_select	1	-	0	1	501	501	64	312564
+edge	2147483648	land_058	ordinary	ordinary_interval_select	1	-	0	1	401	401	0	0
+edge	2147483648	land_059	ordinary	ordinary_interval_select	1	-	0	1	401	401	0	0
+edge	2147483648	land_060	ordinary	ordinary_interval_select	1	-	0	1	401	401	0	0
+edge	2147483648	land_061	ordinary	ordinary_interval_select	1	-	0	1	401	401	0	0
+perimeter	2147483648	perimeter_elandor_mainland	14955	2	131072
+perimeter	2147483648	perimeter_kragmar_mainland	15003	3	196608
+perimeter	2147483648	perimeter_holy_grounds	11000	0	0
+aperture	2147483648	bay_mouth_aperture:elandor_west	before	-1340	-2921	0	0	-1339	-2921	0	0	-1341	-2920	0	0
+aperture	2147483648	bay_mouth_aperture:elandor_west	after	-605	-2916	0	0	-606	-2916	0	0	-604	-2915	0	0
+aperture	2147483648	bay_mouth_aperture:elandor_east	before	570	-2927	20872	0	571	-2927	25430	0	569	-2928	17320	0
+aperture	2147483648	bay_mouth_aperture:elandor_east	after	1228	-2928	0	0	1227	-2928	0	0	1229	-2928	0	0
+aperture	2147483648	bay_mouth_aperture:kragmar_west	before	-1406	2939	0	0	-1405	2939	0	0	-1407	2939	0	0
+aperture	2147483648	bay_mouth_aperture:kragmar_west	after	-760	2933	-196608	3	-761	2933	-196608	3	-759	2933	-196608	3
+aperture	2147483648	bay_mouth_aperture:kragmar_east	before	450	2921	0	0	451	2921	0	0	449	2921	0	0
+aperture	2147483648	bay_mouth_aperture:kragmar_east	after	1189	2928	0	0	1188	2928	0	0	1190	2928	0	0
+attachment	2147483648	perimeter_attachment:elandor:land_031	land_031	from	attachment_equality_select	0	1	-2498	-1100	-2498	-1100	1404
+attachment	2147483648	perimeter_attachment:elandor:land_001	land_001	from	attachment_equality_select	0	1	-2515	-2670	-2515	-2670	14784
+attachment	2147483648	perimeter_attachment:elandor:land_007	land_007	to	attachment_equality_select	0	1	2512	-2663	2512	-2663	9672
+attachment	2147483648	perimeter_attachment:elandor:land_034	land_034	to	attachment_equality_select	0	1	2497	-1100	2497	-1100	8106
+attachment	2147483648	perimeter_attachment:kragmar:land_037	land_037	from	attachment_equality_select	0	1	-2489	1100	-2489	1100	14207
+attachment	2147483648	perimeter_attachment:kragmar:land_010	land_010	from	attachment_equality_select	0	1	-2521	2665	-2521	2665	774
+attachment	2147483648	perimeter_attachment:kragmar:land_016	land_016	to	attachment_adjacent_select	1	1	2517	2678	2517	2679	5914
+attachment	2147483648	perimeter_attachment:kragmar:land_040	land_040	to	attachment_equality_select	0	1	2508	1100	2508	1100	7502
+junction	2147483648	relief_junction:-1050:-2250	1	1	0	2
+junction	2147483648	relief_junction:950:-2250	1	1	0	2
+junction	2147483648	relief_junction:-2200:-1900	3	3	0	1
+junction	2147483648	relief_junction:-1400:-1900	1	1	0	1
+junction	2147483648	relief_junction:-400:-1900	1	1	0	1
+junction	2147483648	relief_junction:400:-1900	1	1	0	1
+junction	2147483648	relief_junction:1400:-1900	1	1	0	1
+junction	2147483648	relief_junction:2200:-1900	3	3	0	1
+junction	2147483648	relief_junction:-2200:-1100	3	3	0	1
+junction	2147483648	relief_junction:-1400:-1100	6	6	0	1
+junction	2147483648	relief_junction:-400:-1100	3	3	0	1
+junction	2147483648	relief_junction:400:-1100	6	6	0	1
+junction	2147483648	relief_junction:1400:-1100	3	3	0	1
+junction	2147483648	relief_junction:2200:-1100	3	3	0	1
+junction	2147483648	relief_junction:-1500:-250	3	3	0	1
+junction	2147483648	relief_junction:-750:-250	3	3	0	1
+junction	2147483648	relief_junction:0:-250	3	3	0	1
+junction	2147483648	relief_junction:750:-250	3	3	0	1
+junction	2147483648	relief_junction:1500:-250	3	3	0	1
+junction	2147483648	relief_junction:-1500:250	3	3	0	1
+junction	2147483648	relief_junction:-750:250	3	3	0	1
+junction	2147483648	relief_junction:0:250	3	3	0	1
+junction	2147483648	relief_junction:750:250	3	3	0	1
+junction	2147483648	relief_junction:1500:250	3	3	0	1
+junction	2147483648	relief_junction:-2200:1100	3	3	0	1
+junction	2147483648	relief_junction:-1400:1100	6	6	0	1
+junction	2147483648	relief_junction:-400:1100	3	3	0	1
+junction	2147483648	relief_junction:400:1100	6	6	0	1
+junction	2147483648	relief_junction:1400:1100	3	3	0	1
+junction	2147483648	relief_junction:2200:1100	3	3	0	1
+junction	2147483648	relief_junction:-2200:1900	3	3	0	1
+junction	2147483648	relief_junction:-1400:1900	1	1	0	1
+junction	2147483648	relief_junction:-400:1900	1	1	0	1
+junction	2147483648	relief_junction:400:1900	1	1	0	1
+junction	2147483648	relief_junction:1400:1900	1	1	0	1
+junction	2147483648	relief_junction:2200:1900	3	3	0	1
+junction	2147483648	relief_junction:1020:2250	1	1	0	2
+junction	2147483648	relief_junction:-970:2260	1	1	0	2
+bay	2147483648	bay_elandor_west	1	-1103:-2032
+bay	2147483648	bay_elandor_east	0	-
+bay	2147483648	bay_kragmar_west	0	-
+bay	2147483648	bay_kragmar_east	0	-
+scan2_endpoint	2147483648	bay_edge_transition:land_001:to	land_001	to	scan2_counting_evaluated	false	188	1693	1505	1	1	0	1693:direct
+scan2_endpoint	2147483648	bay_edge_transition:land_004:from	land_004	from	scan2_counting_evaluated	false	203	1797	1594	1	1	0	203:direct
+scan2_endpoint	2147483648	bay_edge_transition:land_004:to	land_004	to	scan2_counting_evaluated	false	203	1797	1594	1	1	0	1797:direct
+scan2_endpoint	2147483648	bay_edge_transition:land_007:from	land_007	from	scan2_counting_evaluated	true	174	1759	1585	2	2	0	174:direct,177:direct
+scan2_endpoint	2147483648	bay_edge_transition:land_010:to	land_010	to	scan2_counting_evaluated	false	180	1793	1613	1	1	0	1793:direct
+scan2_endpoint	2147483648	bay_edge_transition:land_013:from	land_013	from	scan2_counting_evaluated	false	215	1815	1600	1	1	0	215:direct
+scan2_endpoint	2147483648	bay_edge_transition:land_013:to	land_013	to	scan2_counting_evaluated	false	215	1815	1600	1	1	0	1815:direct
+scan2_endpoint	2147483648	bay_edge_transition:land_016:from	land_016	from	scan2_counting_evaluated	true	175	1721	1546	1	0	1	175:diagonal_elbow
+scan2_edge	2147483648	land_001	scan2_exactly_one_complete_select	false	1	1	0	1	1506	agrees
+scan2_edge	2147483648	land_004	scan2_exactly_one_complete_select	false	1	1	0	1	1595	agrees
+scan2_edge	2147483648	land_007	scan2_multi_complete_select	true	2	2	0	1	1586	agrees
+scan2_edge	2147483648	land_010	scan2_exactly_one_complete_select	false	1	1	0	1	1614	agrees
+scan2_edge	2147483648	land_013	scan2_exactly_one_complete_select	false	1	1	0	1	1601	agrees
+scan2_edge	2147483648	land_016	scan2_exactly_one_complete_select	true	1	1	0	1	1549	agrees
+scan2_tuple	2147483648	land_001	1	scan2_tuple_complete	-	-	-	-	1693	direct	-1217:-2230	-1218:-2230	1506	a4b6368a02c7990fb7d354d1ad2ecfaed84707bcaeeb6b67ddf52dd6cc25eaaa	-
+scan2_tuple	2147483648	land_004	1	scan2_tuple_complete	203	direct	-848:-2237	-847:-2237	1797	direct	743:-2243	742:-2243	1595	a9d2605030109e680c20aa4e18cab24b8f54e24dc6a1d5fd9f057ef30eff5d10	-
+scan2_tuple	2147483648	land_007	1	scan2_tuple_complete	174	direct	1123:-2239	1124:-2239	-	-	-	-	1586	8ae3b0d7bbfbb86058e3de8a30406e8f67fffc377d28365ca71cb6f1d001d172	-
+scan2_tuple	2147483648	land_007	2	scan2_tuple_complete	177	direct	1126:-2239	1127:-2239	-	-	-	-	1583	f84c191d2d42ae7972a7351eabbaf2e45bafab5b244842596a5adb0e5c52a752	-
+scan2_tuple	2147483648	land_010	1	scan2_tuple_complete	-	-	-	-	1793	direct	-1125:2243	-1126:2243	1614	e93b2a26d12ddf1bf862c337a4d7a67320972d82b582823e9851659c0448bc01	-
+scan2_tuple	2147483648	land_013	1	scan2_tuple_complete	215	direct	-757:2246	-756:2246	1815	direct	840:2242	839:2242	1601	018e9c730350454c1c061a5ba483e21cd73aeb29eb906042a6b6900fa6abe013	-
+scan2_tuple	2147483648	land_016	1	scan2_tuple_complete	175	diagonal_elbow	1192:2226	1193:2226	-	-	-	-	1549	7f006ef6e17762163ad5d53a9daa07b186eb10bad497e0af6dfa886c9e2970f2	-
+scan3_aperture	2147483648	bay_mouth_aperture:elandor_west	before	aperture_direct_select	direct	-1340:-2921	-	-	-	-	bay_bank:elandor_west:hearthpine	1	-	-
+scan3_aperture	2147483648	bay_mouth_aperture:elandor_west	after	aperture_direct_select	direct	-605:-2916	-	-	-	-	bay_bank:elandor_west:dawnmere	2	-	-
+scan3_aperture	2147483648	bay_mouth_aperture:elandor_east	before	aperture_direct_select	direct	570:-2927	-	-	-	-	bay_bank:elandor_east:dawnmere	1	-	-
+scan3_aperture	2147483648	bay_mouth_aperture:elandor_east	after	aperture_direct_select	direct	1228:-2928	-	-	-	-	bay_bank:elandor_east:silverleaf	2	-	-
+scan3_aperture	2147483648	bay_mouth_aperture:kragmar_west	before	aperture_direct_select	direct	-1406:2939	-	-	-	-	bay_bank:kragmar_west:stillgrave	2	-	-
+scan3_aperture	2147483648	bay_mouth_aperture:kragmar_west	after	aperture_direct_select	direct	-760:2933	-	-	-	-	bay_bank:kragmar_west:sunscar	1	-	-
+scan3_aperture	2147483648	bay_mouth_aperture:kragmar_east	before	aperture_direct_select	direct	450:2921	-	-	-	-	bay_bank:kragmar_east:sunscar	2	-	-
+scan3_aperture	2147483648	bay_mouth_aperture:kragmar_east	after	aperture_direct_select	direct	1189:2928	-	-	-	-	bay_bank:kragmar_east:kapok	1	-	-
+scan3_wing	2147483648	bay_wing:elandor_west:left	bay_elandor_west	wing_wedge_valid_select	413	295	-1397:-1900	-1398:-1901	3	2	4	1	4	3	4	433	4	4	1	1	1	0	0	0	0	0	0	3	-
+scan3_wing	2147483648	bay_wing:elandor_west:right	bay_elandor_west	wing_wedge_valid_select	487	586	-403:-1901	-404:-1900	3	4	2	9	4	5	5	590	18	18	1	10	10	0	0	0	0	0	0	17	-
+scan3_wing	2147483648	bay_wing:elandor_east:left	bay_elandor_east	wing_wedge_valid_select	628	497	404:-1900	403:-1901	4	3	9	2	5	4	5	628	18	18	1	2	2	0	0	0	0	0	0	17	-
+scan3_wing	2147483648	bay_wing:elandor_east:right	bay_elandor_east	wing_wedge_valid_select	304	365	1398:-1901	1397:-1900	2	3	1	4	3	4	4	392	4	4	1	1	1	0	0	0	0	0	0	3	-
+scan3_wing	2147483648	bay_wing:kragmar_west:left	bay_kragmar_west	wing_wedge_valid_select	268	332	-1399:1901	-1398:1900	1	2	1	2	2	3	3	359	2	2	1	2	2	0	0	0	0	0	0	1	-
+scan3_wing	2147483648	bay_wing:kragmar_west:right	bay_kragmar_west	wing_wedge_valid_select	668	540	-404:1900	-403:1901	4	3	9	2	5	4	5	671	18	18	1	17	17	0	0	0	0	0	0	17	-
+scan3_wing	2147483648	bay_wing:kragmar_east:left	bay_kragmar_east	wing_wedge_valid_select	424	507	403:1901	404:1900	3	4	2	9	4	5	5	508	18	18	1	9	9	0	0	0	0	0	0	17	-
+scan3_wing	2147483648	bay_wing:kragmar_east:right	bay_kragmar_east	wing_wedge_valid_select	507	332	1396:1900	1397:1901	4	3	9	2	5	4	5	508	18	18	1	17	17	0	0	0	0	0	0	17	-
+scan3_bank	2147483648	bay_bank:elandor_west:whitebridge	bay_elandor_west	bank_trace_complete_select	993	1001	0	0	0	0	-
+scan3_bank	2147483648	bay_bank:elandor_east:lorindor	bay_elandor_east	bank_trace_complete_select	993	1001	0	0	0	0	-
+scan3_bank	2147483648	bay_bank:kragmar_west:speargrass	bay_kragmar_west	bank_trace_complete_select	994	1001	0	0	0	0	-
+scan3_bank	2147483648	bay_bank:kragmar_east:whispering	bay_kragmar_east	bank_trace_complete_select	992	1001	0	0	0	0	-
+scan3_width	2147483648	bay_elandor_west	bay_bank_width_positive	943	7488000	93600	80	3	301	-980	-2000	0	8063400	93600	86	1	0	26	80
+scan3_width	2147483648	bay_elandor_east	bay_bank_width_positive	933	7528000	94100	80	3	291	1020	-1990	0	8015900	94100	85	-1	-11	9	69
+scan3_width	2147483648	bay_kragmar_west	bay_bank_width_positive	923	7880000	98500	80	3	291	-1060	2010	0	8307300	98500	84	-1	-35	7	52
+scan3_width	2147483648	bay_kragmar_east	bay_bank_width_positive	1023	11048000	138100	80	3	341	900	1980	0	11620800	138100	84	1	-39	37	80
+scan3_step	2147483648	bay_bank:elandor_east:lorindor	east	admitted	971
+scan3_step	2147483648	bay_bank:elandor_east:lorindor	east	noncandidate	22
+scan3_step	2147483648	bay_bank:elandor_east:lorindor	north	noncandidate	993
+scan3_step	2147483648	bay_bank:elandor_east:lorindor	northeast	admitted	11
+scan3_step	2147483648	bay_bank:elandor_east:lorindor	northeast	noncandidate	982
+scan3_step	2147483648	bay_bank:elandor_east:lorindor	northwest	noncandidate	982
+scan3_step	2147483648	bay_bank:elandor_east:lorindor	northwest	previous	11
+scan3_step	2147483648	bay_bank:elandor_east:lorindor	south	noncandidate	993
+scan3_step	2147483648	bay_bank:elandor_east:lorindor	southeast	admitted	11
+scan3_step	2147483648	bay_bank:elandor_east:lorindor	southeast	noncandidate	982
+scan3_step	2147483648	bay_bank:elandor_east:lorindor	southwest	noncandidate	981
+scan3_step	2147483648	bay_bank:elandor_east:lorindor	southwest	previous	11
+scan3_step	2147483648	bay_bank:elandor_east:lorindor	southwest	water_side	1
+scan3_step	2147483648	bay_bank:elandor_east:lorindor	west	noncandidate	22
+scan3_step	2147483648	bay_bank:elandor_east:lorindor	west	previous	971
+scan3_step	2147483648	bay_bank:elandor_west:whitebridge	east	admitted	953
+scan3_step	2147483648	bay_bank:elandor_west:whitebridge	east	noncandidate	40
+scan3_step	2147483648	bay_bank:elandor_west:whitebridge	north	noncandidate	993
+scan3_step	2147483648	bay_bank:elandor_west:whitebridge	northeast	admitted	20
+scan3_step	2147483648	bay_bank:elandor_west:whitebridge	northeast	noncandidate	973
+scan3_step	2147483648	bay_bank:elandor_west:whitebridge	northwest	noncandidate	973
+scan3_step	2147483648	bay_bank:elandor_west:whitebridge	northwest	previous	20
+scan3_step	2147483648	bay_bank:elandor_west:whitebridge	south	noncandidate	993
+scan3_step	2147483648	bay_bank:elandor_west:whitebridge	southeast	admitted	20
+scan3_step	2147483648	bay_bank:elandor_west:whitebridge	southeast	noncandidate	973
+scan3_step	2147483648	bay_bank:elandor_west:whitebridge	southwest	noncandidate	972
+scan3_step	2147483648	bay_bank:elandor_west:whitebridge	southwest	previous	20
+scan3_step	2147483648	bay_bank:elandor_west:whitebridge	southwest	water_side	1
+scan3_step	2147483648	bay_bank:elandor_west:whitebridge	west	noncandidate	40
+scan3_step	2147483648	bay_bank:elandor_west:whitebridge	west	previous	953
+scan3_step	2147483648	bay_bank:kragmar_east:whispering	east	previous	992
+scan3_step	2147483648	bay_bank:kragmar_east:whispering	north	noncandidate	992
+scan3_step	2147483648	bay_bank:kragmar_east:whispering	northeast	noncandidate	991
+scan3_step	2147483648	bay_bank:kragmar_east:whispering	northeast	water_side	1
+scan3_step	2147483648	bay_bank:kragmar_east:whispering	northwest	noncandidate	992
+scan3_step	2147483648	bay_bank:kragmar_east:whispering	south	noncandidate	992
+scan3_step	2147483648	bay_bank:kragmar_east:whispering	southeast	noncandidate	992
+scan3_step	2147483648	bay_bank:kragmar_east:whispering	southwest	noncandidate	992
+scan3_step	2147483648	bay_bank:kragmar_east:whispering	west	admitted	992
+scan3_step	2147483648	bay_bank:kragmar_west:speargrass	east	noncandidate	60
+scan3_step	2147483648	bay_bank:kragmar_west:speargrass	east	previous	934
+scan3_step	2147483648	bay_bank:kragmar_west:speargrass	north	noncandidate	994
+scan3_step	2147483648	bay_bank:kragmar_west:speargrass	northeast	noncandidate	963
+scan3_step	2147483648	bay_bank:kragmar_west:speargrass	northeast	previous	30
+scan3_step	2147483648	bay_bank:kragmar_west:speargrass	northeast	water_side	1
+scan3_step	2147483648	bay_bank:kragmar_west:speargrass	northwest	admitted	30
+scan3_step	2147483648	bay_bank:kragmar_west:speargrass	northwest	noncandidate	964
+scan3_step	2147483648	bay_bank:kragmar_west:speargrass	south	noncandidate	994
+scan3_step	2147483648	bay_bank:kragmar_west:speargrass	southeast	noncandidate	964
+scan3_step	2147483648	bay_bank:kragmar_west:speargrass	southeast	previous	30
+scan3_step	2147483648	bay_bank:kragmar_west:speargrass	southwest	admitted	30
+scan3_step	2147483648	bay_bank:kragmar_west:speargrass	southwest	noncandidate	964
+scan3_step	2147483648	bay_bank:kragmar_west:speargrass	west	admitted	934
+scan3_step	2147483648	bay_bank:kragmar_west:speargrass	west	noncandidate	60
+scan3_selection	2147483648	bay_bank:elandor_west:whitebridge	single_admitted_untested	993	1	0	0
+scan3_selection	2147483648	bay_bank:elandor_east:lorindor	single_admitted_untested	993	1	0	0
+scan3_selection	2147483648	bay_bank:kragmar_west:speargrass	single_admitted_untested	994	1	0	0
+scan3_selection	2147483648	bay_bank:kragmar_east:whispering	single_admitted_untested	992	1	0	0
+scan3b_bank	2147483648	bay_bank:elandor_west:hearthpine	bay_elandor_west	bank_trace_complete_select	land_001	to	aperture	direct	737	738	648	648	16	16	-
+scan3b_bank	2147483648	bay_bank:elandor_west:copperfell	bay_elandor_west	bank_trace_complete_select	land_001	to	wing	positive	503	506	479	479	6	6	-
+scan3b_bank	2147483648	bay_bank:elandor_west:goldmead	bay_elandor_west	bank_trace_complete_select	land_004	from	wing	negative	676	680	187	187	6	6	-
+scan3b_bank	2147483648	bay_bank:elandor_west:dawnmere	bay_elandor_west	bank_trace_complete_select	land_004	from	aperture	direct	710	711	616	616	6	6	-
+scan3b_bank	2147483648	bay_bank:elandor_east:dawnmere	bay_elandor_east	bank_trace_complete_select	land_004	to	aperture	direct	704	705	518	518	5	5	-
+scan3b_bank	2147483648	bay_bank:elandor_east:goldmead	bay_elandor_east	bank_trace_complete_select	land_004	to	wing	positive	715	719	538	538	3	3	-
+scan3b_bank	2147483648	bay_bank:elandor_east:starbough	bay_elandor_east	bank_trace_complete_select	land_007	from	wing	negative	507	510	205	205	2	2	-
+scan3b_bank	2147483648	bay_bank:elandor_east:silverleaf	bay_elandor_east	bank_trace_complete_select	land_007	from	aperture	direct	709	710	212	212	2	2	-
+scan3b_bank	2147483648	bay_bank:kragmar_west:stillgrave	bay_kragmar_west	bank_trace_complete_select	land_010	to	aperture	direct	782	783	770	770	3	3	-
+scan3b_bank	2147483648	bay_bank:kragmar_west:mournfen	bay_kragmar_west	bank_trace_complete_select	land_010	to	wing	negative	466	468	192	192	9	9	-
+scan3b_bank	2147483648	bay_bank:kragmar_west:redtusk	bay_kragmar_west	bank_trace_complete_select	land_013	from	wing	positive	766	770	0	0	0	0	-
+scan3b_bank	2147483648	bay_bank:kragmar_west:sunscar	bay_kragmar_west	bank_trace_complete_select	land_013	from	aperture	direct	744	745	522	522	10	10	-
+scan3b_bank	2147483648	bay_bank:kragmar_east:sunscar	bay_kragmar_east	bank_trace_complete_select	land_013	to	aperture	direct	856	857	852	852	13	13	-
+scan3b_bank	2147483648	bay_bank:kragmar_east:redtusk	bay_kragmar_east	bank_trace_complete_select	land_013	to	wing	negative	640	644	218	218	8	8	-
+scan3b_bank	2147483648	bay_bank:kragmar_east:raincall	bay_kragmar_east	bank_trace_complete_select	land_016	from	wing	positive	554	558	543	543	5	5	-
+scan3b_bank	2147483648	bay_bank:kragmar_east:kapok	bay_kragmar_east	bank_trace_complete_select	land_016	from	aperture	direct	788	789	646	646	6	6	-
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	east	admitted	10
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	east	noncandidate	689
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	east	previous	4
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	east	seen_column	1
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	north	admitted	375
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	north	noncandidate	329
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	northeast	admitted	241
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	northeast	noncandidate	462
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	northeast	previous	1
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	northwest	admitted	76
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	northwest	noncandidate	626
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	northwest	previous	2
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	south	noncandidate	330
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	south	previous	374
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	southeast	admitted	2
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	southeast	noncandidate	626
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	southeast	previous	73
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	southeast	seen_column	3
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	southwest	admitted	1
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	southwest	noncandidate	461
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	southwest	previous	240
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	southwest	seen_column	2
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	west	admitted	4
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	west	noncandidate	689
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	west	previous	10
+scan3b_step	2147483648	bay_bank:elandor_east:dawnmere	west	water_side	1
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	east	admitted	14
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	east	noncandidate	343
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	east	previous	358
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	north	admitted	62
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	north	noncandidate	653
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	northeast	admitted	144
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	northeast	noncandidate	571
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	northwest	admitted	140
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	northwest	noncandidate	574
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	northwest	previous	1
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	south	noncandidate	652
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	south	previous	61
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	south	seen_column	1
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	south	water_side	1
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	southeast	admitted	1
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	southeast	noncandidate	574
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	southeast	previous	138
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	southeast	seen_column	1
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	southeast	x_cross	1
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	southwest	noncandidate	570
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	southwest	previous	143
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	southwest	seen_column	1
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	southwest	x_cross	1
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	west	admitted	358
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	west	noncandidate	342
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	west	previous	14
+scan3b_step	2147483648	bay_bank:elandor_east:goldmead	west	seen_column	1
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	east	admitted	10
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	east	noncandidate	695
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	east	previous	3
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	east	seen_column	1
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	north	noncandidate	329
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	north	previous	380
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	northeast	admitted	1
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	northeast	noncandidate	600
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	northeast	previous	106
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	northeast	seen_column	1
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	northeast	x_cross	1
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	northwest	admitted	3
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	northwest	noncandidate	499
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	northwest	previous	206
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	northwest	water_side	1
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	south	admitted	380
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	south	noncandidate	329
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	southeast	admitted	206
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	southeast	noncandidate	500
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	southeast	previous	3
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	southwest	admitted	108
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	southwest	noncandidate	600
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	southwest	previous	1
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	west	admitted	3
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	west	noncandidate	696
+scan3b_step	2147483648	bay_bank:elandor_east:silverleaf	west	previous	10
+scan3b_step	2147483648	bay_bank:elandor_east:starbough	east	admitted	5
+scan3b_step	2147483648	bay_bank:elandor_east:starbough	east	noncandidate	339
+scan3b_step	2147483648	bay_bank:elandor_east:starbough	east	previous	163
+scan3b_step	2147483648	bay_bank:elandor_east:starbough	north	noncandidate	357
+scan3b_step	2147483648	bay_bank:elandor_east:starbough	north	previous	150
+scan3b_step	2147483648	bay_bank:elandor_east:starbough	northeast	admitted	1
+scan3b_step	2147483648	bay_bank:elandor_east:starbough	northeast	noncandidate	351
+scan3b_step	2147483648	bay_bank:elandor_east:starbough	northeast	previous	154
+scan3b_step	2147483648	bay_bank:elandor_east:starbough	northeast	seen_column	1
+scan3b_step	2147483648	bay_bank:elandor_east:starbough	northwest	noncandidate	471
+scan3b_step	2147483648	bay_bank:elandor_east:starbough	northwest	previous	34
+scan3b_step	2147483648	bay_bank:elandor_east:starbough	northwest	seen_column	1
+scan3b_step	2147483648	bay_bank:elandor_east:starbough	northwest	water_side	1
+scan3b_step	2147483648	bay_bank:elandor_east:starbough	south	admitted	150
+scan3b_step	2147483648	bay_bank:elandor_east:starbough	south	noncandidate	357
+scan3b_step	2147483648	bay_bank:elandor_east:starbough	southeast	admitted	36
+scan3b_step	2147483648	bay_bank:elandor_east:starbough	southeast	noncandidate	471
+scan3b_step	2147483648	bay_bank:elandor_east:starbough	southwest	admitted	155
+scan3b_step	2147483648	bay_bank:elandor_east:starbough	southwest	noncandidate	351
+scan3b_step	2147483648	bay_bank:elandor_east:starbough	southwest	previous	1
+scan3b_step	2147483648	bay_bank:elandor_east:starbough	west	admitted	162
+scan3b_step	2147483648	bay_bank:elandor_east:starbough	west	noncandidate	340
+scan3b_step	2147483648	bay_bank:elandor_east:starbough	west	previous	5
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	east	admitted	8
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	east	noncandidate	330
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	east	previous	165
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	north	admitted	80
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	north	noncandidate	421
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	north	water_side	2
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	northeast	admitted	117
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	northeast	noncandidate	386
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	northwest	admitted	138
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	northwest	noncandidate	363
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	northwest	previous	1
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	northwest	water_side	1
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	south	noncandidate	421
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	south	previous	78
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	south	seen_column	4
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	southeast	admitted	1
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	southeast	noncandidate	362
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	southeast	previous	137
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	southeast	seen_column	1
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	southeast	x_cross	2
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	southwest	noncandidate	384
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	southwest	previous	114
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	southwest	seen_column	3
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	southwest	water_side	1
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	southwest	x_cross	1
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	west	admitted	165
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	west	noncandidate	329
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	west	previous	8
+scan3b_step	2147483648	bay_bank:elandor_west:copperfell	west	seen_column	1
+scan3b_step	2147483648	bay_bank:elandor_west:dawnmere	east	admitted	20
+scan3b_step	2147483648	bay_bank:elandor_west:dawnmere	east	noncandidate	688
+scan3b_step	2147483648	bay_bank:elandor_west:dawnmere	east	previous	2
+scan3b_step	2147483648	bay_bank:elandor_west:dawnmere	north	noncandidate	277
+scan3b_step	2147483648	bay_bank:elandor_west:dawnmere	north	previous	432
+scan3b_step	2147483648	bay_bank:elandor_west:dawnmere	north	water_side	1
+scan3b_step	2147483648	bay_bank:elandor_west:dawnmere	northeast	admitted	5
+scan3b_step	2147483648	bay_bank:elandor_west:dawnmere	northeast	noncandidate	688
+scan3b_step	2147483648	bay_bank:elandor_west:dawnmere	northeast	previous	16
+scan3b_step	2147483648	bay_bank:elandor_west:dawnmere	northeast	seen_column	1
+scan3b_step	2147483648	bay_bank:elandor_west:dawnmere	northwest	noncandidate	470
+scan3b_step	2147483648	bay_bank:elandor_west:dawnmere	northwest	previous	235
+scan3b_step	2147483648	bay_bank:elandor_west:dawnmere	northwest	seen_column	5
+scan3b_step	2147483648	bay_bank:elandor_west:dawnmere	south	admitted	433
+scan3b_step	2147483648	bay_bank:elandor_west:dawnmere	south	noncandidate	277
+scan3b_step	2147483648	bay_bank:elandor_west:dawnmere	southeast	admitted	240
+scan3b_step	2147483648	bay_bank:elandor_west:dawnmere	southeast	noncandidate	470
+scan3b_step	2147483648	bay_bank:elandor_west:dawnmere	southwest	admitted	17
+scan3b_step	2147483648	bay_bank:elandor_west:dawnmere	southwest	noncandidate	688
+scan3b_step	2147483648	bay_bank:elandor_west:dawnmere	southwest	previous	5
+scan3b_step	2147483648	bay_bank:elandor_west:dawnmere	west	admitted	1
+scan3b_step	2147483648	bay_bank:elandor_west:dawnmere	west	noncandidate	689
+scan3b_step	2147483648	bay_bank:elandor_west:dawnmere	west	previous	20
+scan3b_step	2147483648	bay_bank:elandor_west:goldmead	east	admitted	8
+scan3b_step	2147483648	bay_bank:elandor_west:goldmead	east	noncandidate	335
+scan3b_step	2147483648	bay_bank:elandor_west:goldmead	east	previous	333
+scan3b_step	2147483648	bay_bank:elandor_west:goldmead	north	noncandidate	531
+scan3b_step	2147483648	bay_bank:elandor_west:goldmead	north	previous	144
+scan3b_step	2147483648	bay_bank:elandor_west:goldmead	north	seen_column	1
+scan3b_step	2147483648	bay_bank:elandor_west:goldmead	northeast	noncandidate	520
+scan3b_step	2147483648	bay_bank:elandor_west:goldmead	northeast	previous	156
+scan3b_step	2147483648	bay_bank:elandor_west:goldmead	northwest	noncandidate	634
+scan3b_step	2147483648	bay_bank:elandor_west:goldmead	northwest	previous	35
+scan3b_step	2147483648	bay_bank:elandor_west:goldmead	northwest	seen_column	6
+scan3b_step	2147483648	bay_bank:elandor_west:goldmead	northwest	water_side	1
+scan3b_step	2147483648	bay_bank:elandor_west:goldmead	south	admitted	145
+scan3b_step	2147483648	bay_bank:elandor_west:goldmead	south	noncandidate	530
+scan3b_step	2147483648	bay_bank:elandor_west:goldmead	south	water_side	1
+scan3b_step	2147483648	bay_bank:elandor_west:goldmead	southeast	admitted	41
+scan3b_step	2147483648	bay_bank:elandor_west:goldmead	southeast	noncandidate	635
+scan3b_step	2147483648	bay_bank:elandor_west:goldmead	southwest	admitted	156
+scan3b_step	2147483648	bay_bank:elandor_west:goldmead	southwest	noncandidate	520
+scan3b_step	2147483648	bay_bank:elandor_west:goldmead	west	admitted	332
+scan3b_step	2147483648	bay_bank:elandor_west:goldmead	west	noncandidate	336
+scan3b_step	2147483648	bay_bank:elandor_west:goldmead	west	previous	8
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	east	admitted	23
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	east	noncandidate	700
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	east	previous	12
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	east	seen_column	2
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	north	admitted	452
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	north	noncandidate	285
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	northeast	admitted	187
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	northeast	noncandidate	548
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	northeast	previous	2
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	northwest	admitted	74
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	northwest	noncandidate	657
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	northwest	previous	6
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	south	noncandidate	285
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	south	previous	450
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	south	seen_column	2
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	southeast	admitted	5
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	southeast	noncandidate	656
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	southeast	previous	68
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	southeast	seen_column	6
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	southeast	x_cross	2
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	southwest	admitted	2
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	southwest	noncandidate	546
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	southwest	previous	179
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	southwest	seen_column	7
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	southwest	x_cross	3
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	west	admitted	12
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	west	noncandidate	700
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	west	previous	20
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	west	seen_column	3
+scan3b_step	2147483648	bay_bank:elandor_west:hearthpine	west	water_side	2
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	east	admitted	18
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	east	noncandidate	749
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	east	previous	20
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	east	water_side	1
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	north	admitted	2
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	north	noncandidate	497
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	north	previous	289
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	northeast	admitted	19
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	northeast	noncandidate	547
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	northeast	previous	222
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	northwest	admitted	5
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	northwest	noncandidate	564
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	northwest	previous	215
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	northwest	seen_column	4
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	south	admitted	289
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	south	noncandidate	497
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	south	previous	2
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	southeast	admitted	219
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	southeast	noncandidate	564
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	southeast	previous	5
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	southwest	admitted	223
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	southwest	noncandidate	545
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	southwest	previous	18
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	southwest	seen_column	1
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	southwest	x_cross	1
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	west	admitted	19
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	west	noncandidate	750
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	west	previous	17
+scan3b_step	2147483648	bay_bank:kragmar_east:kapok	west	seen_column	2
+scan3b_step	2147483648	bay_bank:kragmar_east:raincall	east	admitted	229
+scan3b_step	2147483648	bay_bank:kragmar_east:raincall	east	noncandidate	324
+scan3b_step	2147483648	bay_bank:kragmar_east:raincall	east	previous	1
+scan3b_step	2147483648	bay_bank:kragmar_east:raincall	north	noncandidate	491
+scan3b_step	2147483648	bay_bank:kragmar_east:raincall	north	previous	59
+scan3b_step	2147483648	bay_bank:kragmar_east:raincall	north	seen_column	4
+scan3b_step	2147483648	bay_bank:kragmar_east:raincall	northeast	noncandidate	408
+scan3b_step	2147483648	bay_bank:kragmar_east:raincall	northeast	previous	145
+scan3b_step	2147483648	bay_bank:kragmar_east:raincall	northeast	water_side	1
+scan3b_step	2147483648	bay_bank:kragmar_east:raincall	northwest	noncandidate	428
+scan3b_step	2147483648	bay_bank:kragmar_east:raincall	northwest	previous	120
+scan3b_step	2147483648	bay_bank:kragmar_east:raincall	northwest	seen_column	2
+scan3b_step	2147483648	bay_bank:kragmar_east:raincall	northwest	x_cross	4
+scan3b_step	2147483648	bay_bank:kragmar_east:raincall	south	admitted	63
+scan3b_step	2147483648	bay_bank:kragmar_east:raincall	south	noncandidate	491
+scan3b_step	2147483648	bay_bank:kragmar_east:raincall	southeast	admitted	123
+scan3b_step	2147483648	bay_bank:kragmar_east:raincall	southeast	noncandidate	431
+scan3b_step	2147483648	bay_bank:kragmar_east:raincall	southwest	admitted	145
+scan3b_step	2147483648	bay_bank:kragmar_east:raincall	southwest	noncandidate	409
+scan3b_step	2147483648	bay_bank:kragmar_east:raincall	west	noncandidate	325
+scan3b_step	2147483648	bay_bank:kragmar_east:raincall	west	previous	229
+scan3b_step	2147483648	bay_bank:kragmar_east:redtusk	east	admitted	287
+scan3b_step	2147483648	bay_bank:kragmar_east:redtusk	east	noncandidate	341
+scan3b_step	2147483648	bay_bank:kragmar_east:redtusk	east	previous	12
+scan3b_step	2147483648	bay_bank:kragmar_east:redtusk	north	admitted	147
+scan3b_step	2147483648	bay_bank:kragmar_east:redtusk	north	noncandidate	493
+scan3b_step	2147483648	bay_bank:kragmar_east:redtusk	northeast	admitted	181
+scan3b_step	2147483648	bay_bank:kragmar_east:redtusk	northeast	noncandidate	459
+scan3b_step	2147483648	bay_bank:kragmar_east:redtusk	northwest	admitted	21
+scan3b_step	2147483648	bay_bank:kragmar_east:redtusk	northwest	noncandidate	619
+scan3b_step	2147483648	bay_bank:kragmar_east:redtusk	south	noncandidate	494
+scan3b_step	2147483648	bay_bank:kragmar_east:redtusk	south	previous	146
+scan3b_step	2147483648	bay_bank:kragmar_east:redtusk	southeast	noncandidate	618
+scan3b_step	2147483648	bay_bank:kragmar_east:redtusk	southeast	previous	16
+scan3b_step	2147483648	bay_bank:kragmar_east:redtusk	southeast	seen_column	5
+scan3b_step	2147483648	bay_bank:kragmar_east:redtusk	southeast	water_side	1
+scan3b_step	2147483648	bay_bank:kragmar_east:redtusk	southwest	noncandidate	459
+scan3b_step	2147483648	bay_bank:kragmar_east:redtusk	southwest	previous	178
+scan3b_step	2147483648	bay_bank:kragmar_east:redtusk	southwest	seen_column	3
+scan3b_step	2147483648	bay_bank:kragmar_east:redtusk	west	admitted	12
+scan3b_step	2147483648	bay_bank:kragmar_east:redtusk	west	noncandidate	340
+scan3b_step	2147483648	bay_bank:kragmar_east:redtusk	west	previous	288
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	east	admitted	4
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	east	noncandidate	680
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	east	previous	172
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	north	admitted	387
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	north	noncandidate	469
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	northeast	admitted	41
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	northeast	noncandidate	815
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	northwest	admitted	265
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	northwest	noncandidate	590
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	northwest	previous	1
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	south	noncandidate	469
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	south	previous	383
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	south	seen_column	3
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	south	water_side	1
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	southeast	admitted	1
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	southeast	noncandidate	587
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	southeast	previous	259
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	southeast	seen_column	6
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	southeast	x_cross	3
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	southwest	noncandidate	814
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	southwest	previous	37
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	southwest	seen_column	4
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	southwest	x_cross	1
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	west	admitted	172
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	west	noncandidate	679
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	west	previous	4
+scan3b_step	2147483648	bay_bank:kragmar_east:sunscar	west	seen_column	1
+scan3b_step	2147483648	bay_bank:kragmar_west:mournfen	east	admitted	121
+scan3b_step	2147483648	bay_bank:kragmar_west:mournfen	east	noncandidate	342
+scan3b_step	2147483648	bay_bank:kragmar_west:mournfen	east	previous	3
+scan3b_step	2147483648	bay_bank:kragmar_west:mournfen	north	admitted	120
+scan3b_step	2147483648	bay_bank:kragmar_west:mournfen	north	noncandidate	344
+scan3b_step	2147483648	bay_bank:kragmar_west:mournfen	north	water_side	2
+scan3b_step	2147483648	bay_bank:kragmar_west:mournfen	northeast	admitted	198
+scan3b_step	2147483648	bay_bank:kragmar_west:mournfen	northeast	noncandidate	268
+scan3b_step	2147483648	bay_bank:kragmar_west:mournfen	northwest	admitted	33
+scan3b_step	2147483648	bay_bank:kragmar_west:mournfen	northwest	noncandidate	433
+scan3b_step	2147483648	bay_bank:kragmar_west:mournfen	south	noncandidate	344
+scan3b_step	2147483648	bay_bank:kragmar_west:mournfen	south	previous	120
+scan3b_step	2147483648	bay_bank:kragmar_west:mournfen	south	seen_column	2
+scan3b_step	2147483648	bay_bank:kragmar_west:mournfen	southeast	noncandidate	433
+scan3b_step	2147483648	bay_bank:kragmar_west:mournfen	southeast	previous	32
+scan3b_step	2147483648	bay_bank:kragmar_west:mournfen	southeast	water_side	1
+scan3b_step	2147483648	bay_bank:kragmar_west:mournfen	southwest	noncandidate	267
+scan3b_step	2147483648	bay_bank:kragmar_west:mournfen	southwest	previous	190
+scan3b_step	2147483648	bay_bank:kragmar_west:mournfen	southwest	seen_column	9
+scan3b_step	2147483648	bay_bank:kragmar_west:mournfen	west	admitted	3
+scan3b_step	2147483648	bay_bank:kragmar_west:mournfen	west	noncandidate	342
+scan3b_step	2147483648	bay_bank:kragmar_west:mournfen	west	previous	121
+scan3b_step	2147483648	bay_bank:kragmar_west:redtusk	east	admitted	381
+scan3b_step	2147483648	bay_bank:kragmar_west:redtusk	east	noncandidate	344
+scan3b_step	2147483648	bay_bank:kragmar_west:redtusk	east	previous	41
+scan3b_step	2147483648	bay_bank:kragmar_west:redtusk	north	noncandidate	729
+scan3b_step	2147483648	bay_bank:kragmar_west:redtusk	north	previous	36
+scan3b_step	2147483648	bay_bank:kragmar_west:redtusk	north	water_side	1
+scan3b_step	2147483648	bay_bank:kragmar_west:redtusk	northeast	noncandidate	618
+scan3b_step	2147483648	bay_bank:kragmar_west:redtusk	northeast	previous	148
+scan3b_step	2147483648	bay_bank:kragmar_west:redtusk	northwest	noncandidate	606
+scan3b_step	2147483648	bay_bank:kragmar_west:redtusk	northwest	previous	160
+scan3b_step	2147483648	bay_bank:kragmar_west:redtusk	south	admitted	36
+scan3b_step	2147483648	bay_bank:kragmar_west:redtusk	south	noncandidate	730
+scan3b_step	2147483648	bay_bank:kragmar_west:redtusk	southeast	admitted	161
+scan3b_step	2147483648	bay_bank:kragmar_west:redtusk	southeast	noncandidate	605
+scan3b_step	2147483648	bay_bank:kragmar_west:redtusk	southwest	admitted	148
+scan3b_step	2147483648	bay_bank:kragmar_west:redtusk	southwest	noncandidate	618
+scan3b_step	2147483648	bay_bank:kragmar_west:redtusk	west	admitted	40
+scan3b_step	2147483648	bay_bank:kragmar_west:redtusk	west	noncandidate	345
+scan3b_step	2147483648	bay_bank:kragmar_west:redtusk	west	previous	381
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	east	admitted	3
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	east	noncandidate	702
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	east	previous	77
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	north	admitted	358
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	north	noncandidate	424
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	northeast	admitted	71
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	northeast	noncandidate	708
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	northeast	previous	3
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	northwest	admitted	273
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	northwest	noncandidate	509
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	south	noncandidate	425
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	south	previous	356
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	south	seen_column	1
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	southeast	noncandidate	507
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	southeast	previous	273
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	southeast	water_side	1
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	southeast	x_cross	1
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	southwest	admitted	3
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	southwest	noncandidate	708
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	southwest	previous	69
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	southwest	seen_column	2
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	west	admitted	77
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	west	noncandidate	701
+scan3b_step	2147483648	bay_bank:kragmar_west:stillgrave	west	previous	4
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	east	admitted	15
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	east	noncandidate	713
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	east	previous	15
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	east	water_side	1
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	north	noncandidate	356
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	north	previous	388
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	northeast	admitted	14
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	northeast	noncandidate	564
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	northeast	previous	162
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	northeast	seen_column	4
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	northwest	noncandidate	588
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	northwest	previous	150
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	northwest	seen_column	6
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	south	admitted	389
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	south	noncandidate	355
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	southeast	admitted	156
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	southeast	noncandidate	588
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	southwest	admitted	166
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	southwest	noncandidate	564
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	southwest	previous	14
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	west	admitted	14
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	west	noncandidate	714
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	west	previous	15
+scan3b_step	2147483648	bay_bank:kragmar_west:sunscar	west	seen_column	1
+scan3b_selection	2147483648	bay_bank:elandor_west:hearthpine	single_admitted_untested	721	1	0	0
+scan3b_selection	2147483648	bay_bank:elandor_west:hearthpine	branch_first_reachable	16	3	16	0
+scan3b_selection	2147483648	bay_bank:elandor_west:copperfell	single_admitted_untested	497	1	0	0
+scan3b_selection	2147483648	bay_bank:elandor_west:copperfell	branch_first_reachable	6	2	6	0
+scan3b_selection	2147483648	bay_bank:elandor_west:goldmead	single_admitted_untested	670	1	0	0
+scan3b_selection	2147483648	bay_bank:elandor_west:goldmead	branch_first_reachable	6	2	6	0
+scan3b_selection	2147483648	bay_bank:elandor_west:dawnmere	single_admitted_untested	704	1	0	0
+scan3b_selection	2147483648	bay_bank:elandor_west:dawnmere	branch_first_reachable	6	2	6	0
+scan3b_selection	2147483648	bay_bank:elandor_east:dawnmere	single_admitted_untested	699	1	0	0
+scan3b_selection	2147483648	bay_bank:elandor_east:dawnmere	branch_first_reachable	5	2	5	0
+scan3b_selection	2147483648	bay_bank:elandor_east:goldmead	single_admitted_untested	712	1	0	0
+scan3b_selection	2147483648	bay_bank:elandor_east:goldmead	branch_first_reachable	3	3	3	0
+scan3b_selection	2147483648	bay_bank:elandor_east:starbough	single_admitted_untested	505	1	0	0
+scan3b_selection	2147483648	bay_bank:elandor_east:starbough	branch_first_reachable	2	2	2	0
+scan3b_selection	2147483648	bay_bank:elandor_east:silverleaf	single_admitted_untested	707	1	0	0
+scan3b_selection	2147483648	bay_bank:elandor_east:silverleaf	branch_first_reachable	2	2	2	0
+scan3b_selection	2147483648	bay_bank:kragmar_west:stillgrave	single_admitted_untested	779	1	0	0
+scan3b_selection	2147483648	bay_bank:kragmar_west:stillgrave	branch_first_reachable	3	2	3	0
+scan3b_selection	2147483648	bay_bank:kragmar_west:mournfen	single_admitted_untested	457	1	0	0
+scan3b_selection	2147483648	bay_bank:kragmar_west:mournfen	branch_first_reachable	9	2	9	0
+scan3b_selection	2147483648	bay_bank:kragmar_west:redtusk	single_admitted_untested	766	1	0	0
+scan3b_selection	2147483648	bay_bank:kragmar_west:sunscar	single_admitted_untested	734	1	0	0
+scan3b_selection	2147483648	bay_bank:kragmar_west:sunscar	branch_first_reachable	10	2	10	0
+scan3b_selection	2147483648	bay_bank:kragmar_east:sunscar	single_admitted_untested	843	1	0	0
+scan3b_selection	2147483648	bay_bank:kragmar_east:sunscar	branch_first_reachable	13	3	13	0
+scan3b_selection	2147483648	bay_bank:kragmar_east:redtusk	single_admitted_untested	632	1	0	0
+scan3b_selection	2147483648	bay_bank:kragmar_east:redtusk	branch_first_reachable	8	2	8	0
+scan3b_selection	2147483648	bay_bank:kragmar_east:raincall	single_admitted_untested	549	1	0	0
+scan3b_selection	2147483648	bay_bank:kragmar_east:raincall	branch_first_reachable	5	3	5	0
+scan3b_selection	2147483648	bay_bank:kragmar_east:kapok	single_admitted_untested	782	1	0	0
+scan3b_selection	2147483648	bay_bank:kragmar_east:kapok	branch_first_reachable	6	2	6	0
+scan4_membership	2147483648	member	seed_set	a7f4ab910ddc6a1ace360a3a26e0adfaf14b9f5b74c50bb3b9b93ebf6231a79d
+scan4_face	2147483648	zone_face:elandor_hearthpine_vale	face_simple_select	3467	-
+scan4_face	2147483648	zone_face:elandor_copperfell_foothills	face_simple_select	3983	-
+scan4_face	2147483648	zone_face:elandor_dur_brannoc	face_simple_select	3201	-
+scan4_face	2147483648	zone_face:elandor_frostbarrow_shelf	face_simple_select	2302	-
+scan4_face	2147483648	zone_face:elandor_stormvault_heights	face_simple_select	4851	-
+scan4_face	2147483648	zone_face:elandor_dawnmere_fields	face_simple_select	4185	-
+scan4_face	2147483648	zone_face:elandor_goldmead_vale	face_simple_select	3792	-
+scan4_face	2147483648	zone_face:elandor_highcourt	face_simple_select	3201	-
+scan4_face	2147483648	zone_face:elandor_whitebridge_shire	face_simple_select	3601	-
+scan4_face	2147483648	zone_face:elandor_ashenward_march	face_simple_select	5605	-
+scan4_face	2147483648	zone_face:elandor_silverleaf_glades	face_appendix_select	3614	appendix_stations=1 pinch_stations=0
+scan4_face	2147483648	zone_face:elandor_starbough_vale	face_simple_select	4060	-
+scan4_face	2147483648	zone_face:elandor_lethariel	face_simple_select	3201	-
+scan4_face	2147483648	zone_face:elandor_lorindor	face_simple_select	3601	-
+scan4_face	2147483648	zone_face:elandor_moonfall_wood	face_simple_select	2299	-
+scan4_face	2147483648	zone_face:elandor_glassroot_wilds	face_simple_select	5852	-
+scan4_face	2147483648	zone_face:kragmar_stillgrave_hollow	face_simple_select	3558	-
+scan4_face	2147483648	zone_face:kragmar_mournfen	face_simple_select	4049	-
+scan4_face	2147483648	zone_face:kragmar_nhal_veyr	face_simple_select	3201	-
+scan4_face	2147483648	zone_face:kragmar_ossuary_reach	face_simple_select	2292	-
+scan4_face	2147483648	zone_face:kragmar_blackwind_rise	face_simple_select	4846	-
+scan4_face	2147483648	zone_face:kragmar_sunscar_flats	face_simple_select	4413	-
+scan4_face	2147483648	zone_face:kragmar_redtusk_savanna	face_simple_select	3813	-
+scan4_face	2147483648	zone_face:kragmar_gor_drazhak	face_simple_select	3201	-
+scan4_face	2147483648	zone_face:kragmar_speargrass_reach	face_simple_select	3601	-
+scan4_face	2147483648	zone_face:kragmar_bannerbreak_mesa	face_simple_select	5609	-
+scan4_face	2147483648	zone_face:kragmar_kapok_cradle	face_simple_select	3715	-
+scan4_face	2147483648	zone_face:kragmar_raincall_basin	face_simple_select	4088	-
+scan4_face	2147483648	zone_face:kragmar_kezamba	face_simple_select	3201	-
+scan4_face	2147483648	zone_face:kragmar_whispering_reedlands	face_simple_select	3601	-
+scan4_face	2147483648	zone_face:kragmar_totemwater_reach	face_simple_select	2315	-
+scan4_face	2147483648	zone_face:kragmar_thunderroot_wilds	face_simple_select	5866	-
+scan4_face	2147483648	zone_face:front_wyrmglass_crown	face_simple_select	1761	-
+scan4_face	2147483648	zone_face:front_gravesalt_escarpment	face_simple_select	3001	-
+scan4_face	2147483648	zone_face:front_broken_causeway	face_simple_select	4001	-
+scan4_face	2147483648	zone_face:front_shattered_line	face_simple_select	4001	-
+scan4_face	2147483648	zone_face:front_skyglass_canopy	face_simple_select	3001	-
+scan4_face	2147483648	zone_face:front_stormscale_summit	face_simple_select	1881	-
+scan4_whole	2147483648	whole_evaluated	-	30314339	2146228	28168111	0	0	0	0
+scan4_whole_interval	2147483648	footprint	whole_declared_seam_select	51546	51546	z=-2670:x=-2515..-2515
+scan4_whole_interval	2147483648	footprint	whole_single_owner_select	70753	30262793	z=-2960:x=-1805..-1805
+seed_end	2147483648
+seed_begin	16178445837170081103
+edge	16178445837170081103	land_001	transition_attachment	transition_interval_select	1	1	0	186	1691	1858	3	196608
+edge	16178445837170081103	land_002	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	456145
+edge	16178445837170081103	land_003	ordinary	ordinary_interval_select	1	-	0	1	801	801	32	1131216
+edge	16178445837170081103	land_004	transition	transition_interval_select	1	1	0	200	1800	2007	3	196608
+edge	16178445837170081103	land_005	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1397176
+edge	16178445837170081103	land_006	ordinary	ordinary_interval_select	1	-	0	1	801	801	32	366731
+edge	16178445837170081103	land_007	transition_attachment	transition_interval_select	1	1	0	151	1759	1948	3	196608
+edge	16178445837170081103	land_008	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	479073
+edge	16178445837170081103	land_009	ordinary	ordinary_interval_select	1	-	0	1	801	801	32	1275771
+edge	16178445837170081103	land_010	transition_attachment	transition_interval_select	1	1	0	180	1781	1945	3	196608
+edge	16178445837170081103	land_011	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1405025
+edge	16178445837170081103	land_012	ordinary	ordinary_interval_select	1	-	0	1	801	801	32	951665
+edge	16178445837170081103	land_013	transition	transition_interval_select	1	1	0	214	1840	1994	3	196608
+edge	16178445837170081103	land_014	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	901362
+edge	16178445837170081103	land_015	ordinary	ordinary_interval_select	1	-	0	1	801	801	32	807787
+edge	16178445837170081103	land_016	transition_attachment	transition_interval_select	1	1	0	177	1723	1906	3	196608
+edge	16178445837170081103	land_017	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	3012160
+edge	16178445837170081103	land_018	ordinary	ordinary_interval_select	1	-	0	1	801	801	32	1330602
+edge	16178445837170081103	land_019	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1623358
+edge	16178445837170081103	land_020	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	2414372
+edge	16178445837170081103	land_021	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	268301
+edge	16178445837170081103	land_022	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1408489
+edge	16178445837170081103	land_023	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1310313
+edge	16178445837170081103	land_024	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	797316
+edge	16178445837170081103	land_025	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	2960935
+edge	16178445837170081103	land_026	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	609701
+edge	16178445837170081103	land_027	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	748539
+edge	16178445837170081103	land_028	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	2129546
+edge	16178445837170081103	land_029	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1300290
+edge	16178445837170081103	land_030	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1115371
+edge	16178445837170081103	land_031	ordinary_attachment	ordinary_interval_select	1	-	0	103	401	401	32	1146
+edge	16178445837170081103	land_032	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	32	607904
+edge	16178445837170081103	land_033	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	32	242247
+edge	16178445837170081103	land_034	ordinary_attachment	ordinary_interval_select	1	-	0	1	298	401	32	630
+edge	16178445837170081103	land_035	ordinary	ordinary_interval_select	1	-	0	1	1154	1154	3	196608
+edge	16178445837170081103	land_036	ordinary	ordinary_interval_select	1	-	0	1	1156	1156	3	196608
+edge	16178445837170081103	land_037	ordinary_attachment	ordinary_interval_select	1	-	0	112	401	401	32	1
+edge	16178445837170081103	land_038	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	32	277066
+edge	16178445837170081103	land_039	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	32	346452
+edge	16178445837170081103	land_040	ordinary_attachment	ordinary_interval_select	1	-	0	1	309	401	32	518
+edge	16178445837170081103	land_041	ordinary	ordinary_interval_select	1	-	0	1	1157	1157	3	196608
+edge	16178445837170081103	land_042	ordinary	ordinary_interval_select	1	-	0	1	1153	1153	3	196608
+edge	16178445837170081103	land_043	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	0	0
+edge	16178445837170081103	land_044	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+edge	16178445837170081103	land_045	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+edge	16178445837170081103	land_046	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+edge	16178445837170081103	land_047	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+edge	16178445837170081103	land_048	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	0	0
+edge	16178445837170081103	land_049	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	0	0
+edge	16178445837170081103	land_050	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+edge	16178445837170081103	land_051	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+edge	16178445837170081103	land_052	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+edge	16178445837170081103	land_053	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+edge	16178445837170081103	land_054	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	0	0
+edge	16178445837170081103	land_055	ordinary	ordinary_interval_select	1	-	0	1	501	501	64	555366
+edge	16178445837170081103	land_056	ordinary	ordinary_interval_select	1	-	0	1	501	501	64	0
+edge	16178445837170081103	land_057	ordinary	ordinary_interval_select	1	-	0	1	501	501	64	570023
+edge	16178445837170081103	land_058	ordinary	ordinary_interval_select	1	-	0	1	401	401	0	0
+edge	16178445837170081103	land_059	ordinary	ordinary_interval_select	1	-	0	1	401	401	0	0
+edge	16178445837170081103	land_060	ordinary	ordinary_interval_select	1	-	0	1	401	401	0	0
+edge	16178445837170081103	land_061	ordinary	ordinary_interval_select	1	-	0	1	401	401	0	0
+perimeter	16178445837170081103	perimeter_elandor_mainland	14959	3	196608
+perimeter	16178445837170081103	perimeter_kragmar_mainland	14989	3	196608
+perimeter	16178445837170081103	perimeter_holy_grounds	11000	0	0
+aperture	16178445837170081103	bay_mouth_aperture:elandor_west	before	-1340	-2921	0	0	-1339	-2921	0	0	-1341	-2920	0	0
+aperture	16178445837170081103	bay_mouth_aperture:elandor_west	after	-628	-2917	-23829	0	-629	-2917	-29896	0	-627	-2917	-18802	0
+aperture	16178445837170081103	bay_mouth_aperture:elandor_east	before	570	-2927	-32822	0	571	-2926	-47166	1	569	-2928	-27413	0
+aperture	16178445837170081103	bay_mouth_aperture:elandor_east	after	1244	-2928	0	0	1243	-2928	0	0	1245	-2928	0	0
+aperture	16178445837170081103	bay_mouth_aperture:kragmar_west	before	-1386	2938	0	0	-1385	2938	0	0	-1387	2939	0	0
+aperture	16178445837170081103	bay_mouth_aperture:kragmar_west	after	-760	2933	-196608	3	-761	2933	-196608	3	-759	2933	-196608	3
+aperture	16178445837170081103	bay_mouth_aperture:kragmar_east	before	495	2926	0	0	496	2926	0	0	494	2926	0	0
+aperture	16178445837170081103	bay_mouth_aperture:kragmar_east	after	1189	2928	0	0	1188	2928	0	0	1190	2928	0	0
+attachment	16178445837170081103	perimeter_attachment:elandor:land_031	land_031	from	attachment_equality_select	0	1	-2498	-1100	-2498	-1100	1403
+attachment	16178445837170081103	perimeter_attachment:elandor:land_001	land_001	from	attachment_equality_select	0	1	-2515	-2670	-2515	-2670	14788
+attachment	16178445837170081103	perimeter_attachment:elandor:land_007	land_007	to	attachment_equality_select	0	1	2512	-2663	2512	-2663	9672
+attachment	16178445837170081103	perimeter_attachment:elandor:land_034	land_034	to	attachment_equality_select	0	1	2497	-1100	2497	-1100	8103
+attachment	16178445837170081103	perimeter_attachment:kragmar:land_037	land_037	from	attachment_equality_select	0	1	-2489	1100	-2489	1100	14194
+attachment	16178445837170081103	perimeter_attachment:kragmar:land_010	land_010	from	attachment_equality_select	0	1	-2521	2665	-2521	2665	772
+attachment	16178445837170081103	perimeter_attachment:kragmar:land_016	land_016	to	attachment_adjacent_select	1	1	2517	2678	2517	2679	5906
+attachment	16178445837170081103	perimeter_attachment:kragmar:land_040	land_040	to	attachment_equality_select	0	1	2508	1100	2508	1100	7492
+junction	16178445837170081103	relief_junction:-1050:-2250	1	1	0	2
+junction	16178445837170081103	relief_junction:950:-2250	1	1	0	2
+junction	16178445837170081103	relief_junction:-2200:-1900	3	3	0	1
+junction	16178445837170081103	relief_junction:-1400:-1900	1	1	0	1
+junction	16178445837170081103	relief_junction:-400:-1900	1	1	0	1
+junction	16178445837170081103	relief_junction:400:-1900	1	1	0	1
+junction	16178445837170081103	relief_junction:1400:-1900	1	1	0	1
+junction	16178445837170081103	relief_junction:2200:-1900	3	3	0	1
+junction	16178445837170081103	relief_junction:-2200:-1100	3	3	0	1
+junction	16178445837170081103	relief_junction:-1400:-1100	6	6	0	1
+junction	16178445837170081103	relief_junction:-400:-1100	3	3	0	1
+junction	16178445837170081103	relief_junction:400:-1100	6	6	0	1
+junction	16178445837170081103	relief_junction:1400:-1100	3	3	0	1
+junction	16178445837170081103	relief_junction:2200:-1100	3	3	0	1
+junction	16178445837170081103	relief_junction:-1500:-250	3	3	0	1
+junction	16178445837170081103	relief_junction:-750:-250	3	3	0	1
+junction	16178445837170081103	relief_junction:0:-250	3	3	0	1
+junction	16178445837170081103	relief_junction:750:-250	3	3	0	1
+junction	16178445837170081103	relief_junction:1500:-250	3	3	0	1
+junction	16178445837170081103	relief_junction:-1500:250	3	3	0	1
+junction	16178445837170081103	relief_junction:-750:250	3	3	0	1
+junction	16178445837170081103	relief_junction:0:250	3	3	0	1
+junction	16178445837170081103	relief_junction:750:250	3	3	0	1
+junction	16178445837170081103	relief_junction:1500:250	3	3	0	1
+junction	16178445837170081103	relief_junction:-2200:1100	3	3	0	1
+junction	16178445837170081103	relief_junction:-1400:1100	6	6	0	1
+junction	16178445837170081103	relief_junction:-400:1100	3	3	0	1
+junction	16178445837170081103	relief_junction:400:1100	6	6	0	1
+junction	16178445837170081103	relief_junction:1400:1100	3	3	0	1
+junction	16178445837170081103	relief_junction:2200:1100	3	3	0	1
+junction	16178445837170081103	relief_junction:-2200:1900	3	3	0	1
+junction	16178445837170081103	relief_junction:-1400:1900	1	1	0	1
+junction	16178445837170081103	relief_junction:-400:1900	1	1	0	1
+junction	16178445837170081103	relief_junction:400:1900	1	1	0	1
+junction	16178445837170081103	relief_junction:1400:1900	1	1	0	1
+junction	16178445837170081103	relief_junction:2200:1900	3	3	0	1
+junction	16178445837170081103	relief_junction:1020:2250	1	1	0	2
+junction	16178445837170081103	relief_junction:-970:2260	1	1	0	2
+bay	16178445837170081103	bay_elandor_west	0	-
+bay	16178445837170081103	bay_elandor_east	0	-
+bay	16178445837170081103	bay_kragmar_west	0	-
+bay	16178445837170081103	bay_kragmar_east	0	-
+scan2_endpoint	16178445837170081103	bay_edge_transition:land_001:to	land_001	to	scan2_counting_evaluated	false	186	1691	1505	1	1	0	1691:direct
+scan2_endpoint	16178445837170081103	bay_edge_transition:land_004:from	land_004	from	scan2_counting_evaluated	false	200	1800	1600	1	1	0	200:direct
+scan2_endpoint	16178445837170081103	bay_edge_transition:land_004:to	land_004	to	scan2_counting_evaluated	false	200	1800	1600	1	1	0	1800:direct
+scan2_endpoint	16178445837170081103	bay_edge_transition:land_007:from	land_007	from	scan2_counting_evaluated	false	151	1759	1608	1	1	0	151:direct
+scan2_endpoint	16178445837170081103	bay_edge_transition:land_010:to	land_010	to	scan2_counting_evaluated	true	180	1781	1601	2	2	0	1780:direct,1781:direct
+scan2_endpoint	16178445837170081103	bay_edge_transition:land_013:from	land_013	from	scan2_counting_evaluated	false	214	1840	1626	1	1	0	214:direct
+scan2_endpoint	16178445837170081103	bay_edge_transition:land_013:to	land_013	to	scan2_counting_evaluated	false	214	1840	1626	1	1	0	1840:direct
+scan2_endpoint	16178445837170081103	bay_edge_transition:land_016:from	land_016	from	scan2_counting_evaluated	false	177	1723	1546	1	1	0	177:direct
+scan2_edge	16178445837170081103	land_001	scan2_exactly_one_complete_select	false	1	1	0	1	1506	agrees
+scan2_edge	16178445837170081103	land_004	scan2_exactly_one_complete_select	false	1	1	0	1	1601	agrees
+scan2_edge	16178445837170081103	land_007	scan2_exactly_one_complete_select	false	1	1	0	1	1609	agrees
+scan2_edge	16178445837170081103	land_010	scan2_exactly_one_complete_select	true	2	1	0	1	1601	agrees
+scan2_edge	16178445837170081103	land_013	scan2_exactly_one_complete_select	false	1	1	0	1	1627	agrees
+scan2_edge	16178445837170081103	land_016	scan2_exactly_one_complete_select	false	1	1	0	1	1548	agrees
+scan2_tuple	16178445837170081103	land_001	1	scan2_tuple_complete	-	-	-	-	1691	direct	-1217:-2230	-1218:-2230	1506	f62c5ac584e4b3cb2ad29375f20c8b6d2d2a838291f1a80322ea767a5e380ef5	-
+scan2_tuple	16178445837170081103	land_004	1	scan2_tuple_complete	200	direct	-852:-2237	-851:-2237	1800	direct	743:-2243	742:-2243	1601	e4932253e97f8a2076f2e798792526605ddbe965c42c356815890d8b43fa2e51	-
+scan2_tuple	16178445837170081103	land_007	1	scan2_tuple_complete	151	direct	1100:-2235	1101:-2235	-	-	-	-	1609	87c3e93cb21f8b2d82a8b65c3c7a3bfdff5f70566cbb0465242880a76c4f7b5e	-
+scan2_tuple	16178445837170081103	land_010	1	scan2_tuple_complete	-	-	-	-	1780	direct	-1135:2242	-1136:2242	1601	191ab2547b6599749910722c33e885ad81de7d7449e5cae9e417ac3127e1f254	-
+scan2_tuple	16178445837170081103	land_010	2	scan2_tuple_bank_incomplete	-	-	-	-	1781	direct	-1134:2242	-1135:2242	1602	e3a40d6f195cba3a699970ad4620d896d64bbd15d2a7f623f4670093d0465963	bay_bank:kragmar_west:stillgrave: WP40 geometry partition: bay_bank:kragmar_west:stillgrave cannot reach its target previous/current/target=-1135:2242/-1134:2242/-1386:2938 terminal_modes=direct/direct terminal_details=[land:E=-1134:2242,P=-1134:2242;aperture:D=-1386:2938,A=-1387:2939] successors= reachable= neighbors=[-1133:2242:candidate=false:right=false:footprint=1:dry=false:envelope=true:state=false:column=false:diagonal=true:raw=bay_kragmar_west:final=bay_kragmar_west;-1133:2241:candidate=true:right=false:footprint=1:dry=true:envelope=true:state=false:column=false:diagonal=true:raw=:final=;-1134:2241:candidate=false:right=false:footprint=1:dry=true:envelope=true:state=false:column=false:diagonal=true:raw=:final=;-1135:2241:candidate=false:right=true:footprint=1:dry=true:envelope=true:state=false:column=false:diagonal=true:raw=:final=;-1135:2242:candidate=true:right=true:footprint=1:dry=true:envelope=true:state=false:column=false:diagonal=true:raw=:final=;-1135:2243:candidate=false:right=true:footprint=1:dry=false:envelope=true:state=false:column=false:diagonal=true:raw=bay_kragmar_west:final=bay_kragmar_west;-1134:2243:candidate=false:right=true:footprint=1:dry=false:envelope=true:state=false:column=false:diagonal=true:raw=bay_kragmar_west:final=bay_kragmar_west;-1133:2243:candidate=false:right=true:footprint=1:dry=false:envelope=true:state=false:column=false:diagonal=true:raw=bay_kragmar_west:final=bay_kragmar_west] steps=0
+scan2_tuple	16178445837170081103	land_013	1	scan2_tuple_complete	214	direct	-757:2246	-756:2246	1840	direct	866:2238	865:2238	1627	a98ae1d4d8ef4e7065b07172904e723bffa32450e6725a1d42a9aa7fa40a24e9	-
+scan2_tuple	16178445837170081103	land_016	1	scan2_tuple_complete	177	direct	1196:2232	1197:2232	-	-	-	-	1548	e9e91b9fd58b2a76c1d84df8f49bfdc2229063708451e7a340d8af1cd977d4d2	-
+scan3_aperture	16178445837170081103	bay_mouth_aperture:elandor_west	before	aperture_direct_select	direct	-1340:-2921	-	-	-	-	bay_bank:elandor_west:hearthpine	1	-	-
+scan3_aperture	16178445837170081103	bay_mouth_aperture:elandor_west	after	aperture_direct_select	direct	-628:-2917	-	-	-	-	bay_bank:elandor_west:dawnmere	2	-	-
+scan3_aperture	16178445837170081103	bay_mouth_aperture:elandor_east	before	aperture_tail_select	diagonal_shoulder	570:-2927	570:-2926	571:-2926	2	true	bay_bank:elandor_east:dawnmere	1	-	-
+scan3_aperture	16178445837170081103	bay_mouth_aperture:elandor_east	after	aperture_direct_select	direct	1244:-2928	-	-	-	-	bay_bank:elandor_east:silverleaf	2	-	-
+scan3_aperture	16178445837170081103	bay_mouth_aperture:kragmar_west	before	aperture_direct_select	direct	-1386:2938	-	-	-	-	bay_bank:kragmar_west:stillgrave	2	-	-
+scan3_aperture	16178445837170081103	bay_mouth_aperture:kragmar_west	after	aperture_direct_select	direct	-760:2933	-	-	-	-	bay_bank:kragmar_west:sunscar	1	-	-
+scan3_aperture	16178445837170081103	bay_mouth_aperture:kragmar_east	before	aperture_direct_select	direct	495:2926	-	-	-	-	bay_bank:kragmar_east:sunscar	2	-	-
+scan3_aperture	16178445837170081103	bay_mouth_aperture:kragmar_east	after	aperture_direct_select	direct	1189:2928	-	-	-	-	bay_bank:kragmar_east:kapok	1	-	-
+scan3_wing	16178445837170081103	bay_wing:elandor_west:left	bay_elandor_west	wing_wedge_valid_select	413	292	-1397:-1900	-1398:-1901	3	2	4	1	4	3	4	433	4	4	1	1	1	0	0	0	0	0	0	3	-
+scan3_wing	16178445837170081103	bay_wing:elandor_west:right	bay_elandor_west	wing_wedge_valid_select	485	586	-403:-1901	-404:-1900	3	4	2	9	4	5	5	590	18	18	1	10	10	0	0	0	0	0	0	17	-
+scan3_wing	16178445837170081103	bay_wing:elandor_east:left	bay_elandor_east	wing_wedge_valid_select	628	469	404:-1900	403:-1901	4	3	9	2	5	4	5	628	18	18	1	2	2	0	0	0	0	0	0	17	-
+scan3_wing	16178445837170081103	bay_wing:elandor_east:right	bay_elandor_east	wing_wedge_valid_select	301	365	1398:-1901	1397:-1900	2	3	1	4	3	4	4	392	4	4	1	1	1	0	0	0	0	0	0	3	-
+scan3_wing	16178445837170081103	bay_wing:kragmar_west:left	bay_kragmar_west	wing_wedge_valid_select	267	332	-1399:1901	-1398:1900	1	2	1	2	2	3	3	359	2	2	1	2	2	0	0	0	0	0	0	1	-
+scan3_wing	16178445837170081103	bay_wing:kragmar_west:right	bay_kragmar_west	wing_wedge_valid_select	668	512	-404:1900	-403:1901	4	3	9	2	5	4	5	671	18	18	1	17	17	0	0	0	0	0	0	17	-
+scan3_wing	16178445837170081103	bay_wing:kragmar_east:left	bay_kragmar_east	wing_wedge_valid_select	427	507	403:1901	404:1900	3	4	2	9	4	5	5	508	18	18	1	9	9	0	0	0	0	0	0	17	-
+scan3_wing	16178445837170081103	bay_wing:kragmar_east:right	bay_kragmar_east	wing_wedge_valid_select	507	344	1396:1900	1397:1901	4	3	9	2	5	4	5	508	18	18	1	17	17	0	0	0	0	0	0	17	-
+scan3_bank	16178445837170081103	bay_bank:elandor_west:whitebridge	bay_elandor_west	bank_trace_complete_select	993	1001	0	0	0	0	-
+scan3_bank	16178445837170081103	bay_bank:elandor_east:lorindor	bay_elandor_east	bank_trace_complete_select	993	1001	0	0	0	0	-
+scan3_bank	16178445837170081103	bay_bank:kragmar_west:speargrass	bay_kragmar_west	bank_trace_complete_select	994	1001	0	0	0	0	-
+scan3_bank	16178445837170081103	bay_bank:kragmar_east:whispering	bay_kragmar_east	bank_trace_complete_select	992	1001	0	0	0	0	-
+scan3_width	16178445837170081103	bay_elandor_west	bay_bank_width_positive	943	7488000	93600	80	3	301	-980	-2000	0	7990800	93600	85	1	-12	31	80
+scan3_width	16178445837170081103	bay_elandor_east	bay_bank_width_positive	933	7528000	94100	80	3	291	1020	-1990	0	8107100	94100	86	1	-39	19	74
+scan3_width	16178445837170081103	bay_kragmar_west	bay_bank_width_positive	923	7880000	98500	80	3	291	-1060	2010	0	8722100	98500	88	1	-20	29	60
+scan3_width	16178445837170081103	bay_kragmar_east	bay_bank_width_positive	1023	11048000	138100	80	3	341	900	1980	0	11770200	138100	85	1	-30	26	60
+scan3_step	16178445837170081103	bay_bank:elandor_east:lorindor	east	admitted	971
+scan3_step	16178445837170081103	bay_bank:elandor_east:lorindor	east	noncandidate	22
+scan3_step	16178445837170081103	bay_bank:elandor_east:lorindor	north	noncandidate	993
+scan3_step	16178445837170081103	bay_bank:elandor_east:lorindor	northeast	admitted	11
+scan3_step	16178445837170081103	bay_bank:elandor_east:lorindor	northeast	noncandidate	982
+scan3_step	16178445837170081103	bay_bank:elandor_east:lorindor	northwest	noncandidate	982
+scan3_step	16178445837170081103	bay_bank:elandor_east:lorindor	northwest	previous	11
+scan3_step	16178445837170081103	bay_bank:elandor_east:lorindor	south	noncandidate	993
+scan3_step	16178445837170081103	bay_bank:elandor_east:lorindor	southeast	admitted	11
+scan3_step	16178445837170081103	bay_bank:elandor_east:lorindor	southeast	noncandidate	982
+scan3_step	16178445837170081103	bay_bank:elandor_east:lorindor	southwest	noncandidate	981
+scan3_step	16178445837170081103	bay_bank:elandor_east:lorindor	southwest	previous	11
+scan3_step	16178445837170081103	bay_bank:elandor_east:lorindor	southwest	water_side	1
+scan3_step	16178445837170081103	bay_bank:elandor_east:lorindor	west	noncandidate	22
+scan3_step	16178445837170081103	bay_bank:elandor_east:lorindor	west	previous	971
+scan3_step	16178445837170081103	bay_bank:elandor_west:whitebridge	east	admitted	953
+scan3_step	16178445837170081103	bay_bank:elandor_west:whitebridge	east	noncandidate	40
+scan3_step	16178445837170081103	bay_bank:elandor_west:whitebridge	north	noncandidate	993
+scan3_step	16178445837170081103	bay_bank:elandor_west:whitebridge	northeast	admitted	20
+scan3_step	16178445837170081103	bay_bank:elandor_west:whitebridge	northeast	noncandidate	973
+scan3_step	16178445837170081103	bay_bank:elandor_west:whitebridge	northwest	noncandidate	973
+scan3_step	16178445837170081103	bay_bank:elandor_west:whitebridge	northwest	previous	20
+scan3_step	16178445837170081103	bay_bank:elandor_west:whitebridge	south	noncandidate	993
+scan3_step	16178445837170081103	bay_bank:elandor_west:whitebridge	southeast	admitted	20
+scan3_step	16178445837170081103	bay_bank:elandor_west:whitebridge	southeast	noncandidate	973
+scan3_step	16178445837170081103	bay_bank:elandor_west:whitebridge	southwest	noncandidate	972
+scan3_step	16178445837170081103	bay_bank:elandor_west:whitebridge	southwest	previous	20
+scan3_step	16178445837170081103	bay_bank:elandor_west:whitebridge	southwest	water_side	1
+scan3_step	16178445837170081103	bay_bank:elandor_west:whitebridge	west	noncandidate	40
+scan3_step	16178445837170081103	bay_bank:elandor_west:whitebridge	west	previous	953
+scan3_step	16178445837170081103	bay_bank:kragmar_east:whispering	east	previous	992
+scan3_step	16178445837170081103	bay_bank:kragmar_east:whispering	north	noncandidate	992
+scan3_step	16178445837170081103	bay_bank:kragmar_east:whispering	northeast	noncandidate	991
+scan3_step	16178445837170081103	bay_bank:kragmar_east:whispering	northeast	water_side	1
+scan3_step	16178445837170081103	bay_bank:kragmar_east:whispering	northwest	noncandidate	992
+scan3_step	16178445837170081103	bay_bank:kragmar_east:whispering	south	noncandidate	992
+scan3_step	16178445837170081103	bay_bank:kragmar_east:whispering	southeast	noncandidate	992
+scan3_step	16178445837170081103	bay_bank:kragmar_east:whispering	southwest	noncandidate	992
+scan3_step	16178445837170081103	bay_bank:kragmar_east:whispering	west	admitted	992
+scan3_step	16178445837170081103	bay_bank:kragmar_west:speargrass	east	noncandidate	60
+scan3_step	16178445837170081103	bay_bank:kragmar_west:speargrass	east	previous	934
+scan3_step	16178445837170081103	bay_bank:kragmar_west:speargrass	north	noncandidate	994
+scan3_step	16178445837170081103	bay_bank:kragmar_west:speargrass	northeast	noncandidate	963
+scan3_step	16178445837170081103	bay_bank:kragmar_west:speargrass	northeast	previous	30
+scan3_step	16178445837170081103	bay_bank:kragmar_west:speargrass	northeast	water_side	1
+scan3_step	16178445837170081103	bay_bank:kragmar_west:speargrass	northwest	admitted	30
+scan3_step	16178445837170081103	bay_bank:kragmar_west:speargrass	northwest	noncandidate	964
+scan3_step	16178445837170081103	bay_bank:kragmar_west:speargrass	south	noncandidate	994
+scan3_step	16178445837170081103	bay_bank:kragmar_west:speargrass	southeast	noncandidate	964
+scan3_step	16178445837170081103	bay_bank:kragmar_west:speargrass	southeast	previous	30
+scan3_step	16178445837170081103	bay_bank:kragmar_west:speargrass	southwest	admitted	30
+scan3_step	16178445837170081103	bay_bank:kragmar_west:speargrass	southwest	noncandidate	964
+scan3_step	16178445837170081103	bay_bank:kragmar_west:speargrass	west	admitted	934
+scan3_step	16178445837170081103	bay_bank:kragmar_west:speargrass	west	noncandidate	60
+scan3_selection	16178445837170081103	bay_bank:elandor_west:whitebridge	single_admitted_untested	993	1	0	0
+scan3_selection	16178445837170081103	bay_bank:elandor_east:lorindor	single_admitted_untested	993	1	0	0
+scan3_selection	16178445837170081103	bay_bank:kragmar_west:speargrass	single_admitted_untested	994	1	0	0
+scan3_selection	16178445837170081103	bay_bank:kragmar_east:whispering	single_admitted_untested	992	1	0	0
+scan3b_bank	16178445837170081103	bay_bank:elandor_west:hearthpine	bay_elandor_west	bank_trace_complete_select	land_001	to	aperture	direct	700	701	529	529	7	7	-
+scan3b_bank	16178445837170081103	bay_bank:elandor_west:copperfell	bay_elandor_west	bank_trace_complete_select	land_001	to	wing	positive	503	506	326	326	5	5	-
+scan3b_bank	16178445837170081103	bay_bank:elandor_west:goldmead	bay_elandor_west	bank_trace_complete_select	land_004	from	wing	negative	678	682	195	195	8	8	-
+scan3b_bank	16178445837170081103	bay_bank:elandor_west:dawnmere	bay_elandor_west	bank_trace_complete_select	land_004	from	aperture	direct	699	700	699	699	3	3	-
+scan3b_bank	16178445837170081103	bay_bank:elandor_east:dawnmere	bay_elandor_east	bank_trace_complete_select	land_004	to	aperture	diagonal_shoulder	759	761	563	563	11	11	-
+scan3b_bank	16178445837170081103	bay_bank:elandor_east:goldmead	bay_elandor_east	bank_trace_complete_select	land_004	to	wing	positive	684	688	509	509	2	2	-
+scan3b_bank	16178445837170081103	bay_bank:elandor_east:starbough	bay_elandor_east	bank_trace_complete_select	land_007	from	wing	negative	500	503	67	67	2	2	-
+scan3b_bank	16178445837170081103	bay_bank:elandor_east:silverleaf	bay_elandor_east	bank_trace_complete_select	land_007	from	aperture	direct	762	763	745	745	6	6	-
+scan3b_bank	16178445837170081103	bay_bank:kragmar_west:stillgrave	bay_kragmar_west	bank_trace_complete_select	land_010	to	aperture	direct	793	794	142	142	4	4	-
+scan3b_bank	16178445837170081103	bay_bank:kragmar_west:mournfen	bay_kragmar_west	bank_trace_complete_select	land_010	to	wing	negative	454	456	78	78	3	3	-
+scan3b_bank	16178445837170081103	bay_bank:kragmar_west:redtusk	bay_kragmar_west	bank_trace_complete_select	land_013	from	wing	positive	728	732	0	0	0	0	-
+scan3b_bank	16178445837170081103	bay_bank:kragmar_west:sunscar	bay_kragmar_west	bank_trace_complete_select	land_013	from	aperture	direct	722	723	583	583	4	4	-
+scan3b_bank	16178445837170081103	bay_bank:kragmar_east:sunscar	bay_kragmar_east	bank_trace_complete_select	land_013	to	aperture	direct	870	871	861	861	13	13	-
+scan3b_bank	16178445837170081103	bay_bank:kragmar_east:redtusk	bay_kragmar_east	bank_trace_complete_select	land_013	to	wing	negative	653	657	228	228	12	12	-
+scan3b_bank	16178445837170081103	bay_bank:kragmar_east:raincall	bay_kragmar_east	bank_trace_complete_select	land_016	from	wing	positive	585	589	503	503	11	11	-
+scan3b_bank	16178445837170081103	bay_bank:kragmar_east:kapok	bay_kragmar_east	bank_trace_complete_select	land_016	from	aperture	direct	762	763	576	576	3	3	-
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	east	admitted	25
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	east	noncandidate	713
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	east	previous	20
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	east	seen_column	1
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	north	admitted	374
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	north	noncandidate	385
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	northeast	admitted	248
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	northeast	noncandidate	504
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	northeast	previous	7
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	northwest	admitted	87
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	northwest	noncandidate	663
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	northwest	previous	9
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	south	noncandidate	385
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	south	previous	372
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	south	seen_column	2
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	southeast	admitted	9
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	southeast	noncandidate	661
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	southeast	previous	80
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	southeast	seen_column	7
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	southeast	x_cross	2
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	southwest	admitted	7
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	southwest	noncandidate	503
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	southwest	previous	247
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	southwest	seen_column	1
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	southwest	x_cross	1
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	west	admitted	20
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	west	noncandidate	713
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	west	previous	24
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	west	seen_column	1
+scan3b_step	16178445837170081103	bay_bank:elandor_east:dawnmere	west	water_side	1
+scan3b_step	16178445837170081103	bay_bank:elandor_east:goldmead	east	admitted	3
+scan3b_step	16178445837170081103	bay_bank:elandor_east:goldmead	east	noncandidate	342
+scan3b_step	16178445837170081103	bay_bank:elandor_east:goldmead	east	previous	339
+scan3b_step	16178445837170081103	bay_bank:elandor_east:goldmead	north	admitted	70
+scan3b_step	16178445837170081103	bay_bank:elandor_east:goldmead	north	noncandidate	614
+scan3b_step	16178445837170081103	bay_bank:elandor_east:goldmead	northeast	admitted	135
+scan3b_step	16178445837170081103	bay_bank:elandor_east:goldmead	northeast	noncandidate	549
+scan3b_step	16178445837170081103	bay_bank:elandor_east:goldmead	northwest	admitted	140
+scan3b_step	16178445837170081103	bay_bank:elandor_east:goldmead	northwest	noncandidate	544
+scan3b_step	16178445837170081103	bay_bank:elandor_east:goldmead	south	noncandidate	613
+scan3b_step	16178445837170081103	bay_bank:elandor_east:goldmead	south	previous	68
+scan3b_step	16178445837170081103	bay_bank:elandor_east:goldmead	south	seen_column	2
+scan3b_step	16178445837170081103	bay_bank:elandor_east:goldmead	south	water_side	1
+scan3b_step	16178445837170081103	bay_bank:elandor_east:goldmead	southeast	noncandidate	543
+scan3b_step	16178445837170081103	bay_bank:elandor_east:goldmead	southeast	previous	138
+scan3b_step	16178445837170081103	bay_bank:elandor_east:goldmead	southeast	seen_column	1
+scan3b_step	16178445837170081103	bay_bank:elandor_east:goldmead	southeast	x_cross	2
+scan3b_step	16178445837170081103	bay_bank:elandor_east:goldmead	southwest	noncandidate	549
+scan3b_step	16178445837170081103	bay_bank:elandor_east:goldmead	southwest	previous	135
+scan3b_step	16178445837170081103	bay_bank:elandor_east:goldmead	west	admitted	339
+scan3b_step	16178445837170081103	bay_bank:elandor_east:goldmead	west	noncandidate	341
+scan3b_step	16178445837170081103	bay_bank:elandor_east:goldmead	west	previous	4
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	east	admitted	45
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	east	noncandidate	704
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	east	previous	13
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	north	noncandidate	396
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	north	previous	363
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	north	seen_column	3
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	northeast	noncandidate	649
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	northeast	previous	109
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	northeast	seen_column	3
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	northeast	water_side	1
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	northwest	admitted	6
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	northwest	noncandidate	527
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	northwest	previous	226
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	northwest	seen_column	2
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	northwest	x_cross	1
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	south	admitted	365
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	south	noncandidate	395
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	south	water_side	2
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	southeast	admitted	228
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	southeast	noncandidate	528
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	southeast	previous	6
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	southwest	admitted	112
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	southwest	noncandidate	650
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	west	admitted	12
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	west	noncandidate	705
+scan3b_step	16178445837170081103	bay_bank:elandor_east:silverleaf	west	previous	45
+scan3b_step	16178445837170081103	bay_bank:elandor_east:starbough	east	admitted	1
+scan3b_step	16178445837170081103	bay_bank:elandor_east:starbough	east	noncandidate	335
+scan3b_step	16178445837170081103	bay_bank:elandor_east:starbough	east	previous	164
+scan3b_step	16178445837170081103	bay_bank:elandor_east:starbough	north	noncandidate	348
+scan3b_step	16178445837170081103	bay_bank:elandor_east:starbough	north	previous	152
+scan3b_step	16178445837170081103	bay_bank:elandor_east:starbough	northeast	noncandidate	340
+scan3b_step	16178445837170081103	bay_bank:elandor_east:starbough	northeast	previous	158
+scan3b_step	16178445837170081103	bay_bank:elandor_east:starbough	northeast	seen_column	2
+scan3b_step	16178445837170081103	bay_bank:elandor_east:starbough	northwest	admitted	1
+scan3b_step	16178445837170081103	bay_bank:elandor_east:starbough	northwest	noncandidate	474
+scan3b_step	16178445837170081103	bay_bank:elandor_east:starbough	northwest	previous	24
+scan3b_step	16178445837170081103	bay_bank:elandor_east:starbough	northwest	water_side	1
+scan3b_step	16178445837170081103	bay_bank:elandor_east:starbough	south	admitted	152
+scan3b_step	16178445837170081103	bay_bank:elandor_east:starbough	south	noncandidate	348
+scan3b_step	16178445837170081103	bay_bank:elandor_east:starbough	southeast	admitted	24
+scan3b_step	16178445837170081103	bay_bank:elandor_east:starbough	southeast	noncandidate	475
+scan3b_step	16178445837170081103	bay_bank:elandor_east:starbough	southeast	previous	1
+scan3b_step	16178445837170081103	bay_bank:elandor_east:starbough	southwest	admitted	161
+scan3b_step	16178445837170081103	bay_bank:elandor_east:starbough	southwest	noncandidate	339
+scan3b_step	16178445837170081103	bay_bank:elandor_east:starbough	west	admitted	163
+scan3b_step	16178445837170081103	bay_bank:elandor_east:starbough	west	noncandidate	336
+scan3b_step	16178445837170081103	bay_bank:elandor_east:starbough	west	previous	1
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	east	admitted	9
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	east	noncandidate	332
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	east	previous	162
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	north	admitted	83
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	north	noncandidate	420
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	northeast	admitted	113
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	northeast	noncandidate	390
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	northwest	admitted	139
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	northwest	noncandidate	362
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	northwest	previous	2
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	south	noncandidate	420
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	south	previous	82
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	south	seen_column	1
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	southeast	admitted	2
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	southeast	noncandidate	362
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	southeast	previous	138
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	southeast	x_cross	1
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	southwest	noncandidate	388
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	southwest	previous	110
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	southwest	seen_column	3
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	southwest	water_side	1
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	southwest	x_cross	1
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	west	admitted	162
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	west	noncandidate	331
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	west	previous	9
+scan3b_step	16178445837170081103	bay_bank:elandor_west:copperfell	west	seen_column	1
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	east	admitted	14
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	east	noncandidate	680
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	east	previous	4
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	east	water_side	1
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	north	noncandidate	261
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	north	previous	436
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	north	seen_column	1
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	north	water_side	1
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	northeast	admitted	1
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	northeast	noncandidate	680
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	northeast	previous	16
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	northeast	seen_column	2
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	northwest	noncandidate	470
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	northwest	previous	228
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	northwest	seen_column	1
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	south	admitted	437
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	south	noncandidate	261
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	south	water_side	1
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	southeast	admitted	229
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	southeast	noncandidate	470
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	southwest	admitted	18
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	southwest	noncandidate	680
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	southwest	previous	1
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	west	admitted	3
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	west	noncandidate	681
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	west	previous	14
+scan3b_step	16178445837170081103	bay_bank:elandor_west:dawnmere	west	seen_column	1
+scan3b_step	16178445837170081103	bay_bank:elandor_west:goldmead	east	admitted	11
+scan3b_step	16178445837170081103	bay_bank:elandor_west:goldmead	east	noncandidate	335
+scan3b_step	16178445837170081103	bay_bank:elandor_west:goldmead	east	previous	332
+scan3b_step	16178445837170081103	bay_bank:elandor_west:goldmead	north	noncandidate	540
+scan3b_step	16178445837170081103	bay_bank:elandor_west:goldmead	north	previous	138
+scan3b_step	16178445837170081103	bay_bank:elandor_west:goldmead	northeast	noncandidate	514
+scan3b_step	16178445837170081103	bay_bank:elandor_west:goldmead	northeast	previous	163
+scan3b_step	16178445837170081103	bay_bank:elandor_west:goldmead	northeast	seen_column	1
+scan3b_step	16178445837170081103	bay_bank:elandor_west:goldmead	northwest	noncandidate	636
+scan3b_step	16178445837170081103	bay_bank:elandor_west:goldmead	northwest	previous	34
+scan3b_step	16178445837170081103	bay_bank:elandor_west:goldmead	northwest	seen_column	7
+scan3b_step	16178445837170081103	bay_bank:elandor_west:goldmead	northwest	water_side	1
+scan3b_step	16178445837170081103	bay_bank:elandor_west:goldmead	south	admitted	139
+scan3b_step	16178445837170081103	bay_bank:elandor_west:goldmead	south	noncandidate	539
+scan3b_step	16178445837170081103	bay_bank:elandor_west:goldmead	southeast	admitted	41
+scan3b_step	16178445837170081103	bay_bank:elandor_west:goldmead	southeast	noncandidate	637
+scan3b_step	16178445837170081103	bay_bank:elandor_west:goldmead	southwest	admitted	164
+scan3b_step	16178445837170081103	bay_bank:elandor_west:goldmead	southwest	noncandidate	514
+scan3b_step	16178445837170081103	bay_bank:elandor_west:goldmead	west	admitted	331
+scan3b_step	16178445837170081103	bay_bank:elandor_west:goldmead	west	noncandidate	336
+scan3b_step	16178445837170081103	bay_bank:elandor_west:goldmead	west	previous	11
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	east	admitted	5
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	east	noncandidate	692
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	east	previous	2
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	east	seen_column	1
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	north	admitted	461
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	north	noncandidate	239
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	northeast	admitted	181
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	northeast	noncandidate	518
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	northeast	previous	1
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	northwest	admitted	57
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	northwest	noncandidate	642
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	northwest	previous	1
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	south	noncandidate	239
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	south	previous	461
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	southeast	noncandidate	643
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	southeast	previous	55
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	southeast	seen_column	2
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	southwest	admitted	1
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	southwest	noncandidate	519
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	southwest	previous	175
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	southwest	seen_column	5
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	west	admitted	2
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	west	noncandidate	692
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	west	previous	5
+scan3b_step	16178445837170081103	bay_bank:elandor_west:hearthpine	west	water_side	1
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	east	admitted	6
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	east	noncandidate	733
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	east	previous	22
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	east	water_side	1
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	north	admitted	1
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	north	noncandidate	457
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	north	previous	304
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	northeast	admitted	11
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	northeast	noncandidate	555
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	northeast	previous	195
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	northeast	seen_column	1
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	northwest	admitted	8
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	northwest	noncandidate	537
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	northwest	previous	216
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	northwest	seen_column	1
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	south	admitted	304
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	south	noncandidate	457
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	south	previous	1
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	southeast	admitted	217
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	southeast	noncandidate	537
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	southeast	previous	8
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	southwest	admitted	197
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	southwest	noncandidate	553
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	southwest	previous	11
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	southwest	x_cross	1
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	west	admitted	21
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	west	noncandidate	734
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	west	previous	5
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:kapok	west	seen_column	2
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:raincall	east	admitted	242
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:raincall	east	noncandidate	330
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:raincall	east	previous	13
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:raincall	north	noncandidate	535
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:raincall	north	previous	44
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:raincall	north	seen_column	6
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:raincall	northeast	noncandidate	425
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:raincall	northeast	previous	158
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:raincall	northeast	seen_column	1
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:raincall	northeast	water_side	1
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:raincall	northwest	noncandidate	446
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:raincall	northwest	previous	128
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:raincall	northwest	seen_column	5
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:raincall	northwest	x_cross	6
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:raincall	south	admitted	50
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:raincall	south	noncandidate	535
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:raincall	southeast	admitted	134
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:raincall	southeast	noncandidate	451
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:raincall	southwest	admitted	159
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:raincall	southwest	noncandidate	426
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:raincall	west	admitted	12
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:raincall	west	noncandidate	331
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:raincall	west	previous	242
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	east	admitted	300
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	east	noncandidate	345
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	east	previous	8
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	north	admitted	150
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	north	noncandidate	503
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	northeast	admitted	189
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	northeast	noncandidate	464
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	northwest	admitted	15
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	northwest	noncandidate	633
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	northwest	previous	5
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	south	noncandidate	504
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	south	previous	147
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	south	seen_column	2
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	southeast	admitted	5
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	southeast	noncandidate	630
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	southeast	previous	13
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	southeast	seen_column	2
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	southeast	water_side	1
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	southeast	x_cross	2
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	southwest	noncandidate	462
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	southwest	previous	181
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	southwest	seen_column	8
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	southwest	x_cross	2
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	west	admitted	8
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	west	noncandidate	344
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	west	previous	299
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:redtusk	west	seen_column	2
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	east	admitted	13
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	east	noncandidate	735
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	east	previous	122
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	north	admitted	386
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	north	noncandidate	483
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	north	previous	1
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	northeast	admitted	48
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	northeast	noncandidate	803
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	northeast	previous	18
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	northeast	seen_column	1
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	northwest	admitted	290
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	northwest	noncandidate	574
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	northwest	previous	6
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	south	admitted	1
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	south	noncandidate	483
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	south	previous	385
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	south	water_side	1
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	southeast	admitted	6
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	southeast	noncandidate	574
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	southeast	previous	287
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	southeast	seen_column	3
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	southwest	admitted	19
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	southwest	noncandidate	800
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	southwest	previous	40
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	southwest	seen_column	8
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	southwest	x_cross	3
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	west	admitted	122
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	west	noncandidate	734
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	west	previous	11
+scan3b_step	16178445837170081103	bay_bank:kragmar_east:sunscar	west	seen_column	3
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:mournfen	east	admitted	112
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:mournfen	east	noncandidate	342
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:mournfen	north	admitted	134
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:mournfen	north	noncandidate	320
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:mournfen	northeast	admitted	183
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:mournfen	northeast	noncandidate	271
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:mournfen	northwest	admitted	27
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:mournfen	northwest	noncandidate	427
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:mournfen	south	noncandidate	320
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:mournfen	south	previous	134
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:mournfen	southeast	noncandidate	426
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:mournfen	southeast	previous	27
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:mournfen	southeast	water_side	1
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:mournfen	southwest	noncandidate	270
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:mournfen	southwest	previous	181
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:mournfen	southwest	seen_column	3
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:mournfen	west	admitted	1
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:mournfen	west	noncandidate	341
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:mournfen	west	previous	112
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:redtusk	east	admitted	361
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:redtusk	east	noncandidate	344
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:redtusk	east	previous	23
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:redtusk	north	noncandidate	679
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:redtusk	north	previous	48
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:redtusk	north	water_side	1
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:redtusk	northeast	noncandidate	587
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:redtusk	northeast	previous	141
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:redtusk	northwest	noncandidate	573
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:redtusk	northwest	previous	155
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:redtusk	south	admitted	48
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:redtusk	south	noncandidate	680
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:redtusk	southeast	admitted	156
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:redtusk	southeast	noncandidate	572
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:redtusk	southwest	admitted	141
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:redtusk	southwest	noncandidate	587
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:redtusk	west	admitted	22
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:redtusk	west	noncandidate	345
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:redtusk	west	previous	361
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	east	admitted	7
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	east	noncandidate	730
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	east	previous	55
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	east	water_side	1
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	north	admitted	362
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	north	noncandidate	431
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	northeast	admitted	86
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	northeast	noncandidate	690
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	northeast	previous	17
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	northwest	admitted	269
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	northwest	noncandidate	523
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	northwest	previous	1
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	south	noncandidate	432
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	south	previous	361
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	southeast	admitted	1
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	southeast	noncandidate	523
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	southeast	previous	269
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	southwest	admitted	17
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	southwest	noncandidate	689
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	southwest	previous	83
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	southwest	seen_column	3
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	southwest	x_cross	1
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	west	admitted	55
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	west	noncandidate	730
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	west	previous	7
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:stillgrave	west	seen_column	1
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	east	admitted	7
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	east	noncandidate	694
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	east	previous	17
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	east	water_side	4
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	north	noncandidate	332
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	north	previous	388
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	north	seen_column	2
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	northeast	admitted	6
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	northeast	noncandidate	565
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	northeast	previous	149
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	northeast	seen_column	2
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	northwest	noncandidate	565
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	northwest	previous	155
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	northwest	seen_column	2
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	south	admitted	389
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	south	noncandidate	331
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	south	water_side	2
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	southeast	admitted	157
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	southeast	noncandidate	565
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	southwest	admitted	151
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	southwest	noncandidate	565
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	southwest	previous	6
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	west	admitted	16
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	west	noncandidate	695
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	west	previous	7
+scan3b_step	16178445837170081103	bay_bank:kragmar_west:sunscar	west	seen_column	4
+scan3b_selection	16178445837170081103	bay_bank:elandor_west:hearthpine	single_admitted_untested	693	1	0	0
+scan3b_selection	16178445837170081103	bay_bank:elandor_west:hearthpine	branch_first_reachable	7	2	7	0
+scan3b_selection	16178445837170081103	bay_bank:elandor_west:copperfell	single_admitted_untested	498	1	0	0
+scan3b_selection	16178445837170081103	bay_bank:elandor_west:copperfell	branch_first_reachable	5	2	5	0
+scan3b_selection	16178445837170081103	bay_bank:elandor_west:goldmead	single_admitted_untested	670	1	0	0
+scan3b_selection	16178445837170081103	bay_bank:elandor_west:goldmead	branch_first_reachable	8	2	8	0
+scan3b_selection	16178445837170081103	bay_bank:elandor_west:dawnmere	single_admitted_untested	696	1	0	0
+scan3b_selection	16178445837170081103	bay_bank:elandor_west:dawnmere	branch_first_reachable	3	2	3	0
+scan3b_selection	16178445837170081103	bay_bank:elandor_east:dawnmere	single_admitted_untested	748	1	0	0
+scan3b_selection	16178445837170081103	bay_bank:elandor_east:dawnmere	branch_first_reachable	11	2	11	0
+scan3b_selection	16178445837170081103	bay_bank:elandor_east:goldmead	single_admitted_untested	682	1	0	0
+scan3b_selection	16178445837170081103	bay_bank:elandor_east:goldmead	branch_first_reachable	2	3	2	0
+scan3b_selection	16178445837170081103	bay_bank:elandor_east:starbough	single_admitted_untested	498	1	0	0
+scan3b_selection	16178445837170081103	bay_bank:elandor_east:starbough	branch_first_reachable	2	2	2	0
+scan3b_selection	16178445837170081103	bay_bank:elandor_east:silverleaf	single_admitted_untested	756	1	0	0
+scan3b_selection	16178445837170081103	bay_bank:elandor_east:silverleaf	branch_first_reachable	6	2	6	0
+scan3b_selection	16178445837170081103	bay_bank:kragmar_west:stillgrave	single_admitted_untested	789	1	0	0
+scan3b_selection	16178445837170081103	bay_bank:kragmar_west:stillgrave	branch_first_reachable	4	2	4	0
+scan3b_selection	16178445837170081103	bay_bank:kragmar_west:mournfen	single_admitted_untested	451	1	0	0
+scan3b_selection	16178445837170081103	bay_bank:kragmar_west:mournfen	branch_first_reachable	3	2	3	0
+scan3b_selection	16178445837170081103	bay_bank:kragmar_west:redtusk	single_admitted_untested	728	1	0	0
+scan3b_selection	16178445837170081103	bay_bank:kragmar_west:sunscar	single_admitted_untested	718	1	0	0
+scan3b_selection	16178445837170081103	bay_bank:kragmar_west:sunscar	branch_first_reachable	4	2	4	0
+scan3b_selection	16178445837170081103	bay_bank:kragmar_east:sunscar	single_admitted_untested	857	1	0	0
+scan3b_selection	16178445837170081103	bay_bank:kragmar_east:sunscar	branch_first_reachable	13	3	13	0
+scan3b_selection	16178445837170081103	bay_bank:kragmar_east:redtusk	single_admitted_untested	641	1	0	0
+scan3b_selection	16178445837170081103	bay_bank:kragmar_east:redtusk	branch_first_reachable	12	3	12	0
+scan3b_selection	16178445837170081103	bay_bank:kragmar_east:raincall	single_admitted_untested	574	1	0	0
+scan3b_selection	16178445837170081103	bay_bank:kragmar_east:raincall	branch_first_reachable	11	3	11	0
+scan3b_selection	16178445837170081103	bay_bank:kragmar_east:kapok	single_admitted_untested	759	1	0	0
+scan3b_selection	16178445837170081103	bay_bank:kragmar_east:kapok	branch_first_reachable	3	2	3	0
+scan3b_attribution	16178445837170081103	land_010	to	bay_bank:kragmar_west:stillgrave	aperture	direct	1
+scan4_membership	16178445837170081103	member	seed_set	a7f4ab910ddc6a1ace360a3a26e0adfaf14b9f5b74c50bb3b9b93ebf6231a79d
+scan4_face	16178445837170081103	zone_face:elandor_hearthpine_vale	face_simple_select	3430	-
+scan4_face	16178445837170081103	zone_face:elandor_copperfell_foothills	face_simple_select	3984	-
+scan4_face	16178445837170081103	zone_face:elandor_dur_brannoc	face_simple_select	3201	-
+scan4_face	16178445837170081103	zone_face:elandor_frostbarrow_shelf	face_simple_select	2300	-
+scan4_face	16178445837170081103	zone_face:elandor_stormvault_heights	face_simple_select	4852	-
+scan4_face	16178445837170081103	zone_face:elandor_dawnmere_fields	face_simple_select	4260	-
+scan4_face	16178445837170081103	zone_face:elandor_goldmead_vale	face_simple_select	3769	-
+scan4_face	16178445837170081103	zone_face:elandor_highcourt	face_simple_select	3201	-
+scan4_face	16178445837170081103	zone_face:elandor_whitebridge_shire	face_simple_select	3601	-
+scan4_face	16178445837170081103	zone_face:elandor_ashenward_march	face_simple_select	5609	-
+scan4_face	16178445837170081103	zone_face:elandor_silverleaf_glades	face_simple_select	3676	-
+scan4_face	16178445837170081103	zone_face:elandor_starbough_vale	face_simple_select	4079	-
+scan4_face	16178445837170081103	zone_face:elandor_lethariel	face_simple_select	3201	-
+scan4_face	16178445837170081103	zone_face:elandor_lorindor	face_simple_select	3601	-
+scan4_face	16178445837170081103	zone_face:elandor_moonfall_wood	face_simple_select	2299	-
+scan4_face	16178445837170081103	zone_face:elandor_glassroot_wilds	face_simple_select	5853	-
+scan4_face	16178445837170081103	zone_face:kragmar_stillgrave_hollow	face_simple_select	3576	-
+scan4_face	16178445837170081103	zone_face:kragmar_mournfen	face_simple_select	4022	-
+scan4_face	16178445837170081103	zone_face:kragmar_nhal_veyr	face_simple_select	3201	-
+scan4_face	16178445837170081103	zone_face:kragmar_ossuary_reach	face_simple_select	2291	-
+scan4_face	16178445837170081103	zone_face:kragmar_blackwind_rise	face_simple_select	4847	-
+scan4_face	16178445837170081103	zone_face:kragmar_sunscar_flats	face_simple_select	4476	-
+scan4_face	16178445837170081103	zone_face:kragmar_redtusk_savanna	face_simple_select	3814	-
+scan4_face	16178445837170081103	zone_face:kragmar_gor_drazhak	face_simple_select	3201	-
+scan4_face	16178445837170081103	zone_face:kragmar_speargrass_reach	face_simple_select	3601	-
+scan4_face	16178445837170081103	zone_face:kragmar_bannerbreak_mesa	face_simple_select	5609	-
+scan4_face	16178445837170081103	zone_face:kragmar_kapok_cradle	face_simple_select	3683	-
+scan4_face	16178445837170081103	zone_face:kragmar_raincall_basin	face_simple_select	4120	-
+scan4_face	16178445837170081103	zone_face:kragmar_kezamba	face_simple_select	3201	-
+scan4_face	16178445837170081103	zone_face:kragmar_whispering_reedlands	face_simple_select	3601	-
+scan4_face	16178445837170081103	zone_face:kragmar_totemwater_reach	face_simple_select	2311	-
+scan4_face	16178445837170081103	zone_face:kragmar_thunderroot_wilds	face_simple_select	5862	-
+scan4_face	16178445837170081103	zone_face:front_wyrmglass_crown	face_simple_select	1762	-
+scan4_face	16178445837170081103	zone_face:front_gravesalt_escarpment	face_simple_select	3001	-
+scan4_face	16178445837170081103	zone_face:front_broken_causeway	face_simple_select	4001	-
+scan4_face	16178445837170081103	zone_face:front_shattered_line	face_simple_select	4001	-
+scan4_face	16178445837170081103	zone_face:front_skyglass_canopy	face_simple_select	3001	-
+scan4_face	16178445837170081103	zone_face:front_stormscale_summit	face_simple_select	1883	-
+scan4_whole	16178445837170081103	whole_evaluated	-	30303110	2135396	28167714	0	0	0	0
+scan4_whole_interval	16178445837170081103	footprint	whole_declared_seam_select	51591	51591	z=-2670:x=-2515..-2515
+scan4_whole_interval	16178445837170081103	footprint	whole_single_owner_select	70927	30251519	z=-2960:x=-1805..-1805
+scan4_fragment	16178445837170081103	land_010	1781	fragment_owned_once_select	-1134	2242	0	1	1	false
+seed_end	16178445837170081103
+digest	sha256=047d6fefbe937512efda38fd5b8d245e7ac2399e546e215387d3eac54d4666c8

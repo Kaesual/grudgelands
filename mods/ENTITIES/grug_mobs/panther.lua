@@ -19,7 +19,6 @@
 local panther = {
 	description = "Panther",
 	type = "monster",
-	_grug_spawn_zones = {"outer", "coast"},
 	-- HP/damage/XP/armor: engine-owned (levels.lua). Outer ring plus the
 	-- jungle coasts means L38-60, the heaviest normal jungle mob.
 

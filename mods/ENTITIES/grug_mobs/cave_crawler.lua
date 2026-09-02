@@ -17,7 +17,7 @@ local crawler = {
 	type = "animal",
 	passive = true,
 	runaway = true,
-	_grug_spawn_zones = {"underground"},
+	_grug_spawn_domains = {"underground"},
 	-- THE critter tier (levels.lua, biomes_mobs.md §3.0): level 1, 1 HP,
 	-- 10 XP flat, no fall damage, never elite or rare, never telegraphs.
 	-- HP/damage/XP/armor and fall_damage are engine-owned. Down here the

@@ -6,6 +6,12 @@ tools/biomecheck/biomes.csv
 # Compiled by tools/build_lua51.sh from the vendored engine source; a binary
 # is machine-specific, so it is built per checkout and never committed.
 tools/bin/
+# WP40 benchmark scratch output. Reviewed release captures are copied to
+# tools/wp40/evidence/ by an explicit evidence run.
+tools/wp40/results/
 # Workspace state of the Kilo VSCode extension (exists on one dev machine
 # only); anchored to the repo root, it is never project content.
 /.kilo/
+# Workspace state of Claude Code; local worktrees and cached instructions are
+# machine-local and must never become project authority.
+/.claude/

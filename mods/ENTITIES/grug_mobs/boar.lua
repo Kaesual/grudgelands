@@ -4,7 +4,6 @@
 local boar = {
 	description = "Boar",
 	type = "monster",
-	_grug_spawn_zones = {"core", "inner"},
 	-- HP/damage/XP and armor come from the level engine (levels.lua):
 	-- core/inner ring means level 1-10, i.e. 20-65 HP, 2-6 damage.
 
@@ -91,11 +90,10 @@ grug_mobs.stalker(boar, {min_dist = 4, max_dist = 10, cooldown = 8,
 
 grug_mobs.register_mob("grug_mobs:boar", boar)
 
--- Spawns on the signature top nodes of the SETTLED biomes (biomes.lua,
--- docs/design/biomes_mobs.md §4: the whitelist IS the biome gating), so
--- every low-level area of both continents has day mobs. The zone gating
--- above keeps boars in the core and inner ring, out of the higher-level
--- outer ring and coasts.
+-- Spawns on the accepted R7 signature tops of the SETTLED logical biomes
+-- (docs/design/biomes_mobs.md §4: the whitelist is the habitat gate), so
+-- every low-level area of both continents has day mobs. The named-zone gate
+-- above keeps boars in the intended low-level zones.
 --
 -- FOUR tops, not six: the blight (Plague Boar) and the jungle edge (Jungle
 -- Boar) belong to the tint variants in boar_variants.lua now. §4 budgets one
@@ -116,8 +114,8 @@ grug_mobs.register_mob("grug_mobs:boar", boar)
 -- The fix is on the mob side (the zones are a radial field, the biomes are
 -- boxes — no cuboid edit can align them): the base Boar is the core/inner
 -- DAY filler and therefore carries the wild land tops as well. Its
--- _grug_spawn_zones = {core, inner} confines that to exactly the rings that
--- were dead; the outer/coast rosters of those biomes are untouched.
+-- R7 intersects the accepted node/biome whitelist with the owning named
+-- zone's explicit mob palette; the retired surface-ring gate is not recreated.
 -- rabbit.lua (critter), zombie.lua (night) and carrion_crow.lua /
 -- skeleton_raider.lua (war coast) carry the same filler for their slot.
 --

@@ -37,7 +37,6 @@ local crocodile = {
 	type = "monster",
 	-- §4 row zones: "outer". The swamp is a low-terrain pocket biome of the
 	-- outer ring (§1.2 row 13).
-	_grug_spawn_zones = {"outer"},
 	-- HP/damage/XP/armor: engine-owned (levels.lua). The swamp sits in the
 	-- outer ring, so the field gives L25-45 (§1.2 "25-45").
 
@@ -115,8 +114,8 @@ grug_mobs.register_mob("grug_mobs:crocodile", crocodile)
 --     ABM on every ocean node in the world, which is exactly the candidate-
 --     set explosion §4's performance note tells us to avoid.
 -- The behaviour the design wants is delivered anyway: `floats` (above) lets
--- the croc swim, and grug_swamp's own pools (grug_mapgen decorations.lua,
--- reed pools on mud) sit inside the mud patch it spawns on.
+-- the croc swim, while R7's named-zone terrain authors the swamp water/mud
+-- habitat and P9 adds its reeds on mud.
 --
 -- "any light" = no min_light/max_light and no day_toggle: 24 h (§3.1).
 mobs:spawn({

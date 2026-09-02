@@ -13,7 +13,7 @@ the goal-level view.
 
 - **Two distinct faction continents.** The Accord holds southern Elandor and
   the Throng northern Kragmar. Their independently authored three-lobed
-  silhouettes meet along the continuous four-zone Holy Grounds; ocean
+  silhouettes meet along the continuous four-zone Battlegrounds; ocean
   separates the rest of the coast. The stable 38-zone graph fixes names,
   neighbors, level ranges, race regions, PvP rules, biome palettes and POI
   budgets while seeds vary bounded borders and local terrain.
@@ -23,7 +23,7 @@ the goal-level view.
   ambient hostile mobs. Kings and royal guards are killable high-end
   combatants; essential service NPCs are separate and invulnerable.
 - **Progression moves toward conflict.** All level-1–30 surface zones are
-  peaceful. Every ordinary level-31–60 frontier, Holy-Grounds or dragon-island
+  peaceful. Every ordinary level-31–60 frontier, Battlegrounds or dragon-island
   zone is contested. At y = −701 and below, every non-ocean land column is
   contested independently of its surface zone.
 - **PvP uses one exact transaction.** A safe player who initiates a valid
@@ -34,8 +34,9 @@ the goal-level view.
   casts, AoE, projectiles and support all use the same seam.
 - **Controlled destructibility keeps the world playable.** Peaceful home
   terrain is editable by its faction; peaceful enemy land is not. Ordinary
-  contested land is editable by both sides. The shallow Holy Grounds, deep
-  ocean and full dragon channels are immutable. Roads, village/outpost/camp
+  contested land, including the Battlegrounds at every depth, is editable by
+  both sides. Deep ocean and full dragon channels are immutable. Roads,
+  village/outpost/camp
   shells and battlefield dressing are mutable but claim-excluded; only
   bounded functional anchors, complete civic cores and irreplaceable route
   pieces are hard-protected.
@@ -78,7 +79,7 @@ the goal-level view.
 - **Travel is earned.** Visit-unlocked waypoints connect authored hubs. A Home
   Stone channels to the active bound claim only. Universal riding unlocks at
   levels 15/30/45/60 with land speeds 6/8 and flight speeds 7/10 nodes per
-  second; damage dismounts. Holy Grounds permit flight, enemy territory allows
+  second; damage dismounts. Battlegrounds permit flight, enemy territory allows
   land mounts only, and every exterior-ocean column forbids flight.
 - **Story remains light and environmental.** The Accord–Throng war is old; an
   ancient demonic threat reaches upward through the Nether. Both factions face
@@ -118,12 +119,37 @@ the goal-level view.
   and the six-tier alloy chain against WP43's shipped canonical registry.
 - [ ] **WP40 — Named-zone world foundation:** replace the WP18 surface with
   the 38-zone hybrid-v7 target using WP43's shipped resource/race-region
-  contract. Before any code change, author and independently review the
-  six-part engineering brief required by
-  [docs/research/mapgen-control.md](docs/research/mapgen-control.md). Record
-  the fixed 32-seed geometry/topology/route/housing/supply audit, capacity
-  simulation and reproducible WP18/WP36-relative performance measurements.
-  These are implementation gates, not open game-design questions.
+  contract. **In progress since 2026-08-13; simple-map rebase accepted
+  2026-08-25; R0, R1, V1b, V1c and V1d accepted 2026-08-25; fixed-layout
+  V1e R2 independently and visually accepted 2026-08-27 as the sole live R2
+  authority, with V1d retained as history at `d337160`.** R0
+  replaced the unfinished exact-T2 partition/topology path; R1 now provides
+  one fixed pure 2D model and canonical SVG; V1d adds stronger single-warp
+  border meanders, pinned curved routes, tapered bays with ownerless
+  deep-ocean mouth caps, coherent visible water and six hard-protected capital
+  ingress corridors; V1e freezes all 100 anchors and 74 actual POI spurs and
+  closes three contact-face waterfalls. The V1e visual gate, exhaustive R2
+  layout freeze, route/water/core validation and housing-capacity evidence are
+  independently accepted. The pure R3 vertical implementation and canonical
+  artifact and the complete still-disabled R4 geography/policy payload were
+  independently accepted 2026-08-27. The pure typed R5 planner/adapter payload
+  and canonical artifact were independently accepted 2026-08-29. R6's frozen
+  surface/resource catalogs, private cultural-slot API, complete 32-seed
+  evidence and canonical artifact were independently accepted 2026-08-31.
+  R7's single production writer, existing-consumer cutover, WP33 gathering
+  payload, P9G successor and functional-anchor suffix were independently
+  accepted 2026-09-02 at `68f6cec`; its bounded evidence is explicitly a
+  32-seed stratified main sample plus a seven-seed frontier-access lane, not
+  exhaustive spatial coverage. R8 is the remaining final release/runtime
+  stage and owns the first real fresh Luanti world.
+  Current technical contract:
+  [wp40-engineering-brief.md](docs/research/wp40-engineering-brief.md); current
+  R0-R8 sequence:
+  [wp40-simple-map-rebase-plan.md](docs/research/wp40-simple-map-rebase-plan.md).
+  The accepted R2 artifact owns fixed-layout route/housing validation and
+  once-per-layout capacity; the accepted R6 artifact owns the 32-seed
+  content/supply/access evidence. Production mapchunk performance and runtime
+  evidence remain R8 gates.
 - [ ] **WP44 — Economy Rebase:** migrate the Common-price axis, 5% buy-back
   and Income Ledger against the final material ids; calibrate exact Claim
   Stone and mount costs.
@@ -143,8 +169,8 @@ the goal-level view.
   genuine affix/recipe/content questions are decided.
 - [ ] WP13: final starts, capitals, settlements, camps, kings/guards and both
   all-six-gem apex camps on WP40 geometry and WP43 materials.
-- [ ] WP33: gathering plants, signature woods and cultural sources on final
-  zone/race-region ownership.
+- [x] WP33: gathering plants, signature woods and cultural sources on final
+  zone/race-region ownership; accepted with WP40 R7 on 2026-09-02.
 - [ ] WP34: deep spawn pressure, corrected depth-level curve, camp-only
   renewable resources, deep lava and final Abyssal/G1/G2 density. It follows
   map, materials, structures and economy; it is not an independent next WP.
@@ -190,7 +216,8 @@ the goal-level view.
   sources.
 - A social-organization system, shared organization bank/chat or
   organization-owned land.
-- Battlegrounds/arenas and permanent war-front capture in the current scope.
+- Instanced PvP battlegrounds/arenas and permanent war-front capture in the
+  current scope.
 - A separate Enchanter profession; each profession enchants the families it
   owns.
 - Taming mounts; riding is a permanent purchase and summons an ephemeral

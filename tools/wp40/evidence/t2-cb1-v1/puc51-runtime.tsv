@@ -1,0 +1,6 @@
+stage	top_level_cases	artifact_rows	cpu_seconds
+roster	65	65	0.026
+profile	285	570	0.399
+island	40	40	8.261
+route_reach	65	25	0.431
+hydrology	25	44	0.004

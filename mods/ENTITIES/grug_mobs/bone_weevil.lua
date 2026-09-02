@@ -30,7 +30,7 @@ local weevil = {
 	type = "animal",
 	passive = true,
 	runaway = true,
-	-- No _grug_spawn_zones: both of its node whitelists below are single-
+	-- No _grug_spawn_domains: both of its node whitelists below are single-
 	-- continent Throng band tops (bone forest, blight), so the NODE does all
 	-- of the gating and the ring is irrelevant — this critter belongs to the
 	-- creepy biomes wherever a patch of them lands (§4's "role is not ring").

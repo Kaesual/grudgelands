@@ -1,0 +1,49 @@
+schema	grug_wp40_census_manifest_v3
+scan_schema	grug_wp40_census_scan_v6
+vocabulary	tools/wp40/fixtures/t2_extreme_e0/vocabulary.lua
+seed_set	full_w
+seed_count	4123
+census_commit	4d21477c8f9eeb7242aa0130c138519ab41b02eb
+census_tree	6d7db2dcad011c90a2b1fc60637310cdfb3ed02d
+module_digest	8f65c182ca88d1fecd6504920c921b111b6ac8da1a39718e51db00b0bbf6eb3b
+worker_interpreter_id	luajit
+worker_interpreter_path	/usr/bin/luajit-2.1.1767980792
+worker_interpreter_version	LuaJIT 2.1.1767980792 -- Copyright (C) 2005-2026 Mike Pall. https://luajit.org/
+w_digest	fc6c2c194374bdf321897283513649c558378d39052c5e0b4ede73b40b4bc6d9
+w_total	4123
+w_derivation	corpus_fixed=27 pool_candidates=4096 candidates=tools/wp40/fixtures/t2_extreme_e0/candidates-luajit-v3.tsv duplicates=0 order=ascending canonical unsigned-64 decimal
+merge_interpreter_id	puc_lua51
+merge_interpreter_version	Lua 5.1
+cost_projection	WP40 T2 census cost projection wall_seconds=36884 workers=8 per_seed_seconds=71.48 completions=516 shards=8 observed_wall_seconds=36884 verdict=advisory
+classification_stance	the scanners classify by the decided U1 and U2 readings (plan section 5) even though the catalog strings follow only with the collected correction: the census is R15-style structural search, not a policy edit
+retention_stance	section 6.3: no per-seed intermediate is committed; the flagged seed set is an artifact and is exempt, and every finding carries its site, its witness row and the decision the policy currently reaches
+divergence_test	pairs_order_probe_unsorted=true synthetic_invariance=passed synthetic_digest=d9439cd755883c15c5b65ced3071eb384e309d98335f1f39e859363e8bda562a measured_invariance=not_run_above_free_budget
+findings	occupied_rejected=12 events=0 refuted_universals=0 stage_reject_seeds=0 vacuous_branches=84 no_branch_matched=0
+detached_shoulder_admission	bay_mouth_aperture:elandor_east:after seed=343674299183575008 station=1227:-2928
+detached_shoulder_admission	bay_mouth_aperture:elandor_east:after seed=2466379686918096853 station=1270:-2929
+detached_shoulder_admission	bay_mouth_aperture:elandor_east:after seed=6071911433535184866 station=1227:-2928
+detached_shoulder_admission	bay_mouth_aperture:elandor_east:after seed=6692092492332211284 station=1270:-2929
+detached_shoulder_admission	bay_mouth_aperture:elandor_east:after seed=7403557699456021182 station=1227:-2928
+detached_shoulder_admission	bay_mouth_aperture:elandor_east:after seed=7851242355115945264 station=1227:-2928
+detached_shoulder_admission	bay_mouth_aperture:elandor_east:after seed=15976616440543533625 station=1227:-2928
+scan4_seed_set	union_seeds=3076 sites_covered=153 of 153 sites_open=0
+supersedes	the v2 artifact set (grug_wp40_census_manifest_v2) for every downstream consumer; the v1/v2 artifacts and the v4/v5 shards stay untouched as the prior records
+consumed_scan4_membership	seed_set=tools/wp40/fixtures/t2_census/census-scan4-seed-set-v2.tsv sha256=a7f4ab910ddc6a1ace360a3a26e0adfaf14b9f5b74c50bb3b9b93ebf6231a79d manifest=tools/wp40/fixtures/t2_census/census-manifest-v2.tsv sha256=27aa7e7b8c09621e0acb8181bb7cb2ced73b4dcbd8e025e34673be035b73e7f2 union=3061
+scan4_ruling	contracts 9.2 ruled 2026-08-19: branch A -- detached_shoulder_admission enters the flag vocabulary and the union returns to 3,061
+scan4_coverage	members=3076 of consumed_union=3061
+inherited_tier	identical_to_baseline baseline_sha256=77ce2cb727f6c0cfffd5e9af0eb8cb44678e1bdd56138f21a58268c6937f7e9c
+top_up	1	census-topup-v6.tsv	59e7ad8c680bb17c5ef973e7d0baf3ae1a34c4a76c7914016d8b16de045a7b4e	15
+shard	0	515	tools/wp40/results/t2_census/census-scan-v6-0000-0515.tsv	6770edae20730be8e9f2388e34e5ea26e3ef55ef3ab0965034835fe37a9bcba5	516
+shard	516	1031	tools/wp40/results/t2_census/census-scan-v6-0516-1031.tsv	f326ea1f9e82f546c58870c534be8112561a92dabc27a38e0f18e0eb2bc2a9bc	516
+shard	1032	1547	tools/wp40/results/t2_census/census-scan-v6-1032-1547.tsv	0e7d4ddc6b0abe994f99c741eb65419895f125f8464520a34f74a82a0b7f19b2	516
+shard	1548	2062	tools/wp40/results/t2_census/census-scan-v6-1548-2062.tsv	35d0df0c0dcb11e873f8fb8fcf4e698f6edd09008b59a831152b48aa40010d5e	515
+shard	2063	2577	tools/wp40/results/t2_census/census-scan-v6-2063-2577.tsv	b196b7a4704ef520141fb9e9ef59ff6b2081d1a9afc49a677ccc57a6c0f13dfa	515
+shard	2578	3092	tools/wp40/results/t2_census/census-scan-v6-2578-3092.tsv	8b9a1f7b1d1169f6e00d281d4558ef53b3bf55efd618d11e795a04756e878f50	515
+shard	3093	3607	tools/wp40/results/t2_census/census-scan-v6-3093-3607.tsv	bb4058a329e1c3d903016bdf96b9773546b3e517c4f77caf869b5ade40611252	515
+shard	3608	4122	tools/wp40/results/t2_census/census-scan-v6-3608-4122.tsv	3e67b5e96004188fdea4bbe366d7fbddf236e89b98ae97b90074c026d9077b0e	515
+artifact	census-occupied-classes-v3.tsv	a5928e17b90db29e9f01385fe80ddd801d53501503251a8db0bad7d860a05ca6
+artifact	census-vacuous-branches-v3.tsv	0fa8b29503ee5e3ad073a926dc669ec208b7e69b270e5d422422d43ce06195bd
+artifact	census-scan4-seed-set-v3.tsv	ded508d275ecf15b8ac974821950103f80db8fe9774cb1e343bbf6fe9805d109
+artifact	census-prefilter-discharge-v3.tsv	0f3931bc723e66766b4b16471f3f0ae5d1b3aebcb4fe460125c25fe07381328b
+artifact	census-histograms-v3.tsv	216283515043ea44c22f4f247dac7373f87efe14028010d171e8ef07b3094aa5
+artifacts_digest	2433d6f6fcff4fae3fe49b5012c585cfd4de758aa2ab1202f59202dceb15c127

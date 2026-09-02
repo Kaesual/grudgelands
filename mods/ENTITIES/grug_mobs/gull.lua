@@ -10,26 +10,18 @@
 -- fear_height/do_jump are inert). `pathfinding` stays unset — core.find_path
 -- returns a WALKING path, which is not how this mob moves.
 --
--- WHERE THE BEACHES REALLY ARE (§1.5): the ocean mask carves the coastline
--- 0..150 nodes INSIDE the continent rectangle, so the strait-facing shore
--- sits at |z| ~100..250 — i.e. in zone `war_coast`, not in `strait`. That is
--- why the §4 zone list has all three of strait/war_coast/coast and not just
--- "the beach".
+-- R7 authority: the surface policy authenticates logical biome `grug_beach`
+-- directly. The sand node remains the narrower physical habitat, so inland
+-- sand or foreign sand cannot enable the bird by itself.
 
 local gull = {
 	description = "Gull",
 	type = "animal",
 	passive = true,
 	runaway = true,
-	-- §4 row zones: strait, war_coast, coast (see the header note) — plus
-	-- `outer`, added with the dead-cell fix. grug_beach is registered ONCE
-	-- for the whole world at y 1..4 (§1.3), so `default:sand` is not only the
-	-- shoreline: every inland lake shore and river bank inside the outer ring
-	-- is a beach cell too, and it had no mob at all. The core/inner half of
-	-- that hole is covered by the Boar/Rabbit filler (boar.lua), which is
-	-- zoned core+inner; `outer` is the piece nothing else reaches, and a
-	-- sand-only critter at aoc 2 is the cheapest thing that can fill it.
-	_grug_spawn_zones = {"strait", "war_coast", "coast", "outer"},
+	-- The universal beach/strait roster is independent of the named-zone mob
+	-- families. Every logical `grug_beach` cell may host this sand-only
+	-- critter, including inland lake and river shores authored as that biome.
 	-- THE critter tier (levels.lua, biomes_mobs.md §3.0): level 1, 1 HP,
 	-- 10 XP flat, no fall damage, never elite or rare, never telegraphs.
 	-- This is also what settles the old level question in this file: the
@@ -89,7 +81,8 @@ local gull = {
 
 grug_mobs.register_mob("grug_mobs:gull", gull)
 
--- §4 row "Gull | sand | 20 | 2500 | 2 | min 10 | strait, war_coast, coast".
+-- The historical §4 row supplied these spawn numbers; R7 replaces its radial
+-- zone list with the exact logical-biome authority described above.
 mobs:spawn({
 	name = "grug_mobs:gull",
 	nodes = {"default:sand"}, -- grug_beach (and the ocean-mask beach band)

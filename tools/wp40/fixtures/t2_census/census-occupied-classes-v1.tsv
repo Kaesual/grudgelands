@@ -1,0 +1,453 @@
+schema	grug_wp40_census_occupied_classes_v1
+scan_schema	grug_wp40_census_scan_v4
+seed_set	full_w
+seeds	4123
+column	occupied	family	site	branch	verdict	universal	seed_count	row_count	witness_seed
+column	derived	family	site	branch	verdict	seed_count	row_count	witness_seed
+column	witness	family	site	branch	witness_row (verbatim, from field 5)
+column	no_branch_matched	family	site	branch	seed	reason	row (verbatim, from field 7)
+occupied	attachment	perimeter_attachment:elandor:land_001	attachment_equality_select	DECIDED	-	4116	4116	0
+occupied	attachment	perimeter_attachment:elandor:land_007	attachment_equality_select	DECIDED	-	4116	4116	0
+occupied	attachment	perimeter_attachment:elandor:land_031	attachment_equality_select	DECIDED	-	4116	4116	0
+occupied	attachment	perimeter_attachment:elandor:land_034	attachment_equality_select	DECIDED	-	4116	4116	0
+occupied	attachment	perimeter_attachment:kragmar:land_010	attachment_equality_select	DECIDED	-	4116	4116	0
+occupied	attachment	perimeter_attachment:kragmar:land_016	attachment_adjacent_select	DECIDED	-	4116	4116	0
+occupied	attachment	perimeter_attachment:kragmar:land_037	attachment_equality_select	DECIDED	-	4116	4116	0
+occupied	attachment	perimeter_attachment:kragmar:land_040	attachment_equality_select	DECIDED	-	4116	4116	0
+occupied	edge	land_001	transition_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_002	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_003	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_004	transition_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_005	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_006	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_007	transition_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_008	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_009	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_010	transition_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_011	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_012	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_013	transition_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_014	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_015	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_016	transition_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_017	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_018	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_019	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_020	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_021	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_022	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_023	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_024	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_025	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_026	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_027	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_028	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_029	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_030	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_031	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_032	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_033	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_034	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_035	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_036	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_037	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_038	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_039	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_040	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_041	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_042	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_043	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_044	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_045	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_046	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_047	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_048	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_049	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_050	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_051	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_052	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_053	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_054	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_055	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_056	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_057	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_058	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_059	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_060	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	edge	land_061	ordinary_interval_select	DECIDED	-	4116	4116	0
+occupied	scan2_edge	land_001	scan2_exactly_one_complete_select	DECIDED	-	4112	4112	0
+occupied	scan2_edge	land_001	scan2_multi_complete_reject	REJECTED	-	4	4	5774294428586859171
+occupied	scan2_edge	land_004	scan2_exactly_one_complete_select	DECIDED	-	3868	3868	0
+occupied	scan2_edge	land_004	scan2_multi_complete_reject	REJECTED	-	248	248	1013
+occupied	scan2_edge	land_007	scan2_exactly_one_complete_select	DECIDED	-	3795	3795	0
+occupied	scan2_edge	land_007	scan2_multi_complete_reject	REJECTED	-	321	321	2147483648
+occupied	scan2_edge	land_010	scan2_exactly_one_complete_select	DECIDED	-	4064	4064	0
+occupied	scan2_edge	land_010	scan2_multi_complete_reject	REJECTED	-	52	52	172991200114431608
+occupied	scan2_edge	land_013	scan2_exactly_one_complete_select	DECIDED	-	3997	3997	0
+occupied	scan2_edge	land_013	scan2_multi_complete_reject	REJECTED	-	119	119	97665215198973151
+occupied	scan2_edge	land_016	scan2_exactly_one_complete_select	DECIDED	-	4103	4103	0
+occupied	scan2_edge	land_016	scan2_multi_complete_reject	REJECTED	-	13	13	1914891444072834567
+occupied	scan2_endpoint	bay_edge_transition:land_001:to	scan2_counting_evaluated	DECIDED	-	4116	4116	0
+occupied	scan2_endpoint	bay_edge_transition:land_004:from	scan2_counting_evaluated	DECIDED	-	4116	4116	0
+occupied	scan2_endpoint	bay_edge_transition:land_004:to	scan2_counting_evaluated	DECIDED	-	4116	4116	0
+occupied	scan2_endpoint	bay_edge_transition:land_007:from	scan2_counting_evaluated	DECIDED	-	4116	4116	0
+occupied	scan2_endpoint	bay_edge_transition:land_010:to	scan2_counting_evaluated	DECIDED	-	4116	4116	0
+occupied	scan2_endpoint	bay_edge_transition:land_013:from	scan2_counting_evaluated	DECIDED	-	4116	4116	0
+occupied	scan2_endpoint	bay_edge_transition:land_013:to	scan2_counting_evaluated	DECIDED	-	4116	4116	0
+occupied	scan2_endpoint	bay_edge_transition:land_016:from	scan2_counting_evaluated	DECIDED	-	4116	4116	0
+occupied	scan2_tuple	land_001	scan2_tuple_complete	DECIDED	-	4116	4120	0
+occupied	scan2_tuple	land_004	scan2_tuple_bank_incomplete	DECIDED	-	333	460	1013
+occupied	scan2_tuple	land_004	scan2_tuple_complete	DECIDED	-	4116	4364	0
+occupied	scan2_tuple	land_007	scan2_tuple_bank_incomplete	DECIDED	-	134	156	20260812
+occupied	scan2_tuple	land_007	scan2_tuple_complete	DECIDED	-	4116	4439	0
+occupied	scan2_tuple	land_010	scan2_tuple_bank_incomplete	DECIDED	-	613	712	42
+occupied	scan2_tuple	land_010	scan2_tuple_complete	DECIDED	-	4116	4168	0
+occupied	scan2_tuple	land_013	scan2_tuple_bank_incomplete	DECIDED	-	1252	1313	1
+occupied	scan2_tuple	land_013	scan2_tuple_complete	DECIDED	-	4116	4260	0
+occupied	scan2_tuple	land_013	scan2_tuple_probe_invalid	DECIDED	-	2	2	2033178143952062430
+occupied	scan2_tuple	land_016	scan2_tuple_complete	DECIDED	-	4116	4129	0
+occupied	scan3_aperture	bay_mouth_aperture:elandor_east:after	aperture_direct_select	DECIDED	-	3964	3964	0
+occupied	scan3_aperture	bay_mouth_aperture:elandor_east:after	aperture_tail_select	DECIDED	-	152	152	99518926280741974
+occupied	scan3_aperture	bay_mouth_aperture:elandor_east:before	aperture_direct_select	DECIDED	-	3865	3865	0
+occupied	scan3_aperture	bay_mouth_aperture:elandor_east:before	aperture_tail_select	DECIDED	-	251	251	9007199254740992
+occupied	scan3_aperture	bay_mouth_aperture:elandor_west:after	aperture_direct_select	DECIDED	-	4019	4019	0
+occupied	scan3_aperture	bay_mouth_aperture:elandor_west:after	aperture_tail_select	DECIDED	-	97	97	93829429882032160
+occupied	scan3_aperture	bay_mouth_aperture:elandor_west:before	aperture_direct_select	DECIDED	-	4116	4116	0
+occupied	scan3_aperture	bay_mouth_aperture:kragmar_east:after	aperture_direct_select	DECIDED	-	4116	4116	0
+occupied	scan3_aperture	bay_mouth_aperture:kragmar_east:before	aperture_direct_select	DECIDED	-	4088	4088	0
+occupied	scan3_aperture	bay_mouth_aperture:kragmar_east:before	aperture_tail_select	DECIDED	-	28	28	809764572455612617
+occupied	scan3_aperture	bay_mouth_aperture:kragmar_west:after	aperture_direct_select	DECIDED	-	4100	4100	0
+occupied	scan3_aperture	bay_mouth_aperture:kragmar_west:after	aperture_tail_select	DECIDED	-	16	16	391145333752252878
+occupied	scan3_aperture	bay_mouth_aperture:kragmar_west:before	aperture_direct_select	DECIDED	-	3995	3995	0
+occupied	scan3_aperture	bay_mouth_aperture:kragmar_west:before	aperture_tail_select	DECIDED	-	121	121	1
+occupied	scan3_bank	bay_bank:elandor_east:lorindor	bank_trace_complete_select	DECIDED	-	4116	4116	0
+occupied	scan3_bank	bay_bank:elandor_west:whitebridge	bank_trace_complete_select	DECIDED	-	4116	4116	0
+occupied	scan3_bank	bay_bank:kragmar_east:whispering	bank_trace_complete_select	DECIDED	-	4116	4116	0
+occupied	scan3_bank	bay_bank:kragmar_west:speargrass	bank_trace_complete_select	DECIDED	-	4116	4116	0
+occupied	scan3_selection	bay_bank:elandor_east:lorindor	single_admitted_untested	DECIDED	-	4116	4116	0
+occupied	scan3_selection	bay_bank:elandor_west:whitebridge	single_admitted_untested	DECIDED	-	4116	4116	0
+occupied	scan3_selection	bay_bank:kragmar_east:whispering	single_admitted_untested	DECIDED	-	4116	4116	0
+occupied	scan3_selection	bay_bank:kragmar_west:speargrass	single_admitted_untested	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_east:lorindor:east	admitted	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_east:lorindor:east	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_east:lorindor:north	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_east:lorindor:northeast	admitted	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_east:lorindor:northeast	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_east:lorindor:northwest	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_east:lorindor:northwest	previous	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_east:lorindor:south	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_east:lorindor:southeast	admitted	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_east:lorindor:southeast	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_east:lorindor:southwest	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_east:lorindor:southwest	previous	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_east:lorindor:southwest	water_side	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_east:lorindor:west	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_east:lorindor:west	previous	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_west:whitebridge:east	admitted	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_west:whitebridge:east	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_west:whitebridge:north	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_west:whitebridge:northeast	admitted	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_west:whitebridge:northeast	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_west:whitebridge:northwest	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_west:whitebridge:northwest	previous	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_west:whitebridge:south	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_west:whitebridge:southeast	admitted	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_west:whitebridge:southeast	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_west:whitebridge:southwest	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_west:whitebridge:southwest	previous	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_west:whitebridge:southwest	water_side	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_west:whitebridge:west	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:elandor_west:whitebridge:west	previous	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_east:whispering:east	previous	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_east:whispering:north	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_east:whispering:northeast	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_east:whispering:northeast	water_side	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_east:whispering:northwest	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_east:whispering:south	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_east:whispering:southeast	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_east:whispering:southwest	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_east:whispering:west	admitted	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_west:speargrass:east	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_west:speargrass:east	previous	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_west:speargrass:north	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_west:speargrass:northeast	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_west:speargrass:northeast	previous	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_west:speargrass:northeast	water_side	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_west:speargrass:northwest	admitted	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_west:speargrass:northwest	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_west:speargrass:south	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_west:speargrass:southeast	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_west:speargrass:southeast	previous	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_west:speargrass:southwest	admitted	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_west:speargrass:southwest	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_west:speargrass:west	admitted	DECIDED	-	4116	4116	0
+occupied	scan3_step	bay_bank:kragmar_west:speargrass:west	noncandidate	DECIDED	-	4116	4116	0
+occupied	scan3_width	bay_elandor_east	bay_bank_width_positive	DECIDED	-	4116	4116	0
+occupied	scan3_width	bay_elandor_west	bay_bank_width_positive	DECIDED	-	4116	4116	0
+occupied	scan3_width	bay_kragmar_east	bay_bank_width_positive	DECIDED	-	4116	4116	0
+occupied	scan3_width	bay_kragmar_west	bay_bank_width_positive	DECIDED	-	4116	4116	0
+occupied	scan3_wing	bay_wing:elandor_east:left	wing_wedge_valid_select	DECIDED	-	4116	4116	0
+occupied	scan3_wing	bay_wing:elandor_east:right	wing_wedge_valid_select	DECIDED	-	4116	4116	0
+occupied	scan3_wing	bay_wing:elandor_west:left	wing_wedge_valid_select	DECIDED	-	4116	4116	0
+occupied	scan3_wing	bay_wing:elandor_west:right	wing_wedge_valid_select	DECIDED	-	4116	4116	0
+occupied	scan3_wing	bay_wing:kragmar_east:left	wing_wedge_valid_select	DECIDED	-	4116	4116	0
+occupied	scan3_wing	bay_wing:kragmar_east:right	wing_wedge_valid_select	DECIDED	-	4116	4116	0
+occupied	scan3_wing	bay_wing:kragmar_west:left	wing_wedge_valid_select	DECIDED	-	4116	4116	0
+occupied	scan3_wing	bay_wing:kragmar_west:right	wing_wedge_valid_select	DECIDED	-	4116	4116	0
+occupied	stage_reject	bay_mouth_aperture:elandor_east	aperture_second_run_reject	REJECTED	-	7	7	343674299183575008
+occupied	wing_exclusion	bay_wing:elandor_east:left	wedge_nonwing_water	DECIDED	-	4116	4116	0
+occupied	wing_exclusion	bay_wing:elandor_east:right	wedge_nonwing_water	DECIDED	-	4116	4116	0
+occupied	wing_exclusion	bay_wing:elandor_west:left	wedge_nonwing_water	DECIDED	-	4116	4116	0
+occupied	wing_exclusion	bay_wing:elandor_west:right	wedge_nonwing_water	DECIDED	-	4116	4116	0
+occupied	wing_exclusion	bay_wing:kragmar_east:left	wedge_nonwing_water	DECIDED	-	4116	4116	0
+occupied	wing_exclusion	bay_wing:kragmar_east:right	wedge_nonwing_water	DECIDED	-	4116	4116	0
+occupied	wing_exclusion	bay_wing:kragmar_west:left	wedge_nonwing_water	DECIDED	-	4116	4116	0
+occupied	wing_exclusion	bay_wing:kragmar_west:right	wedge_nonwing_water	DECIDED	-	4116	4116	0
+derived	edge	land_004	edge_singleton_interval	DECIDED	18	18	119744741302411290
+derived	edge	land_007	edge_singleton_interval	DECIDED	91	91	541094636599085349
+derived	edge	land_010	edge_singleton_interval	DECIDED	46	46	144922724049349722
+derived	edge	land_013	edge_singleton_interval	DECIDED	82	82	54130174289791198
+derived	junction	relief_junction:-1050:-2250	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:-1400:-1100	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:-1400:-1900	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:-1400:1100	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:-1400:1900	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:-1500:-250	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:-1500:250	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:-2200:-1100	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:-2200:-1900	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:-2200:1100	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:-2200:1900	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:-400:-1100	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:-400:-1900	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:-400:1100	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:-400:1900	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:-750:-250	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:-750:250	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:-970:2260	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:0:-250	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:0:250	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:1020:2250	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:1400:-1100	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:1400:-1900	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:1400:1100	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:1400:1900	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:1500:-250	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:1500:250	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:2200:-1100	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:2200:-1900	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:2200:1100	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:2200:1900	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:400:-1100	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:400:-1900	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:400:1100	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:400:1900	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:750:-250	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:750:250	junction_pair_pass	DECIDED	4116	4116	0
+derived	junction	relief_junction:950:-2250	junction_pair_pass	DECIDED	4116	4116	0
+derived	scan2_endpoint	bay_edge_transition:land_001:to	scan2_incidence_not_eligible	DECIDED	4116	4116	0
+derived	scan2_endpoint	bay_edge_transition:land_004:from	scan2_incidence_not_eligible	DECIDED	4116	4116	0
+derived	scan2_endpoint	bay_edge_transition:land_004:to	scan2_incidence_not_eligible	DECIDED	4116	4116	0
+derived	scan2_endpoint	bay_edge_transition:land_007:from	scan2_incidence_not_eligible	DECIDED	4116	4116	0
+derived	scan2_endpoint	bay_edge_transition:land_010:to	scan2_incidence_not_eligible	DECIDED	4116	4116	0
+derived	scan2_endpoint	bay_edge_transition:land_013:from	scan2_incidence_not_eligible	DECIDED	4116	4116	0
+derived	scan2_endpoint	bay_edge_transition:land_013:to	scan2_incidence_not_eligible	DECIDED	4116	4116	0
+derived	scan2_endpoint	bay_edge_transition:land_016:from	scan2_incidence_not_eligible	DECIDED	4116	4116	0
+witness	attachment	perimeter_attachment:elandor:land_001	attachment_equality_select	attachment	0	perimeter_attachment:elandor:land_001	land_001	from	attachment_equality_select	0	1	-2515	-2670	-2515	-2670	14791
+witness	attachment	perimeter_attachment:elandor:land_007	attachment_equality_select	attachment	0	perimeter_attachment:elandor:land_007	land_007	to	attachment_equality_select	0	1	2512	-2663	2512	-2663	9680
+witness	attachment	perimeter_attachment:elandor:land_031	attachment_equality_select	attachment	0	perimeter_attachment:elandor:land_031	land_031	from	attachment_equality_select	0	1	-2498	-1100	-2498	-1100	1405
+witness	attachment	perimeter_attachment:elandor:land_034	attachment_equality_select	attachment	0	perimeter_attachment:elandor:land_034	land_034	to	attachment_equality_select	0	1	2497	-1100	2497	-1100	8107
+witness	attachment	perimeter_attachment:kragmar:land_010	attachment_equality_select	attachment	0	perimeter_attachment:kragmar:land_010	land_010	from	attachment_equality_select	0	1	-2521	2665	-2521	2665	776
+witness	attachment	perimeter_attachment:kragmar:land_016	attachment_adjacent_select	attachment	0	perimeter_attachment:kragmar:land_016	land_016	to	attachment_adjacent_select	1	1	2517	2678	2517	2679	5914
+witness	attachment	perimeter_attachment:kragmar:land_037	attachment_equality_select	attachment	0	perimeter_attachment:kragmar:land_037	land_037	from	attachment_equality_select	0	1	-2489	1100	-2489	1100	14202
+witness	attachment	perimeter_attachment:kragmar:land_040	attachment_equality_select	attachment	0	perimeter_attachment:kragmar:land_040	land_040	to	attachment_equality_select	0	1	2508	1100	2508	1100	7499
+witness	edge	land_001	transition_interval_select	edge	0	land_001	transition_attachment	transition_interval_select	1	1	0	186	1689	1857	3	196608
+witness	edge	land_002	ordinary_interval_select	edge	0	land_002	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	2110392
+witness	edge	land_003	ordinary_interval_select	edge	0	land_003	ordinary	ordinary_interval_select	1	-	0	1	801	801	32	156115
+witness	edge	land_004	transition_interval_select	edge	0	land_004	transition	transition_interval_select	1	1	0	198	1799	2006	3	196608
+witness	edge	land_005	ordinary_interval_select	edge	0	land_005	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	750806
+witness	edge	land_006	ordinary_interval_select	edge	0	land_006	ordinary	ordinary_interval_select	1	-	0	1	801	801	32	423962
+witness	edge	land_007	transition_interval_select	edge	0	land_007	transition_attachment	transition_interval_select	1	1	0	157	1755	1943	3	196608
+witness	edge	land_008	ordinary_interval_select	edge	0	land_008	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	689456
+witness	edge	land_009	ordinary_interval_select	edge	0	land_009	ordinary	ordinary_interval_select	1	-	0	1	801	801	32	1442760
+witness	edge	land_010	transition_interval_select	edge	0	land_010	transition_attachment	transition_interval_select	1	1	0	181	1784	1945	3	196608
+witness	edge	land_011	ordinary_interval_select	edge	0	land_011	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	2138145
+witness	edge	land_012	ordinary_interval_select	edge	0	land_012	ordinary	ordinary_interval_select	1	-	0	1	801	801	32	1549287
+witness	edge	land_013	transition_interval_select	edge	0	land_013	transition	transition_interval_select	1	1	0	215	1812	1995	3	196608
+witness	edge	land_014	ordinary_interval_select	edge	0	land_014	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1502338
+witness	edge	land_015	ordinary_interval_select	edge	0	land_015	ordinary	ordinary_interval_select	1	-	0	1	801	801	32	584732
+witness	edge	land_016	transition_interval_select	edge	0	land_016	transition_attachment	transition_interval_select	1	1	0	178	1725	1908	3	196608
+witness	edge	land_017	ordinary_interval_select	edge	0	land_017	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1220627
+witness	edge	land_018	ordinary_interval_select	edge	0	land_018	ordinary	ordinary_interval_select	1	-	0	1	801	801	32	1114784
+witness	edge	land_019	ordinary_interval_select	edge	0	land_019	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1816827
+witness	edge	land_020	ordinary_interval_select	edge	0	land_020	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	782730
+witness	edge	land_021	ordinary_interval_select	edge	0	land_021	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1998752
+witness	edge	land_022	ordinary_interval_select	edge	0	land_022	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	2445921
+witness	edge	land_023	ordinary_interval_select	edge	0	land_023	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	2552911
+witness	edge	land_024	ordinary_interval_select	edge	0	land_024	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1695476
+witness	edge	land_025	ordinary_interval_select	edge	0	land_025	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	2720101
+witness	edge	land_026	ordinary_interval_select	edge	0	land_026	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	892225
+witness	edge	land_027	ordinary_interval_select	edge	0	land_027	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1614985
+witness	edge	land_028	ordinary_interval_select	edge	0	land_028	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	716881
+witness	edge	land_029	ordinary_interval_select	edge	0	land_029	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	2750772
+witness	edge	land_030	ordinary_interval_select	edge	0	land_030	ordinary	ordinary_interval_select	1	-	0	1	801	801	64	1789073
+witness	edge	land_031	ordinary_interval_select	edge	0	land_031	ordinary_attachment	ordinary_interval_select	1	-	0	103	401	401	32	38
+witness	edge	land_032	ordinary_interval_select	edge	0	land_032	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	32	338050
+witness	edge	land_033	ordinary_interval_select	edge	0	land_033	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	32	675776
+witness	edge	land_034	ordinary_interval_select	edge	0	land_034	ordinary_attachment	ordinary_interval_select	1	-	0	1	298	401	32	37
+witness	edge	land_035	ordinary_interval_select	edge	0	land_035	ordinary	ordinary_interval_select	1	-	0	1	1153	1153	3	196608
+witness	edge	land_036	ordinary_interval_select	edge	0	land_036	ordinary	ordinary_interval_select	1	-	0	1	1154	1154	3	196608
+witness	edge	land_037	ordinary_interval_select	edge	0	land_037	ordinary_attachment	ordinary_interval_select	1	-	0	112	401	401	32	358
+witness	edge	land_038	ordinary_interval_select	edge	0	land_038	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	32	556617
+witness	edge	land_039	ordinary_interval_select	edge	0	land_039	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	32	298223
+witness	edge	land_040	ordinary_interval_select	edge	0	land_040	ordinary_attachment	ordinary_interval_select	1	-	0	1	309	401	32	343
+witness	edge	land_041	ordinary_interval_select	edge	0	land_041	ordinary	ordinary_interval_select	1	-	0	1	1155	1155	3	196608
+witness	edge	land_042	ordinary_interval_select	edge	0	land_042	ordinary	ordinary_interval_select	1	-	0	1	1159	1159	3	196608
+witness	edge	land_043	ordinary_interval_select	edge	0	land_043	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	0	0
+witness	edge	land_044	ordinary_interval_select	edge	0	land_044	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+witness	edge	land_045	ordinary_interval_select	edge	0	land_045	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+witness	edge	land_046	ordinary_interval_select	edge	0	land_046	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+witness	edge	land_047	ordinary_interval_select	edge	0	land_047	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+witness	edge	land_048	ordinary_interval_select	edge	0	land_048	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	0	0
+witness	edge	land_049	ordinary_interval_select	edge	0	land_049	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	0	0
+witness	edge	land_050	ordinary_interval_select	edge	0	land_050	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+witness	edge	land_051	ordinary_interval_select	edge	0	land_051	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+witness	edge	land_052	ordinary_interval_select	edge	0	land_052	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+witness	edge	land_053	ordinary_interval_select	edge	0	land_053	ordinary	ordinary_interval_select	1	-	0	1	751	751	0	0
+witness	edge	land_054	ordinary_interval_select	edge	0	land_054	ordinary	ordinary_interval_select	1	-	0	1	1001	1001	0	0
+witness	edge	land_055	ordinary_interval_select	edge	0	land_055	ordinary	ordinary_interval_select	1	-	0	1	501	501	64	104156
+witness	edge	land_056	ordinary_interval_select	edge	0	land_056	ordinary	ordinary_interval_select	1	-	0	1	501	501	64	0
+witness	edge	land_057	ordinary_interval_select	edge	0	land_057	ordinary	ordinary_interval_select	1	-	0	1	501	501	64	570585
+witness	edge	land_058	ordinary_interval_select	edge	0	land_058	ordinary	ordinary_interval_select	1	-	0	1	401	401	0	0
+witness	edge	land_059	ordinary_interval_select	edge	0	land_059	ordinary	ordinary_interval_select	1	-	0	1	401	401	0	0
+witness	edge	land_060	ordinary_interval_select	edge	0	land_060	ordinary	ordinary_interval_select	1	-	0	1	401	401	0	0
+witness	edge	land_061	ordinary_interval_select	edge	0	land_061	ordinary	ordinary_interval_select	1	-	0	1	401	401	0	0
+witness	scan2_edge	land_001	scan2_exactly_one_complete_select	scan2_edge	0	land_001	scan2_exactly_one_complete_select	false	1	1	0	1	1504
+witness	scan2_edge	land_001	scan2_multi_complete_reject	scan2_edge	5774294428586859171	land_001	scan2_multi_complete_reject	true	2	2	0	-	-
+witness	scan2_edge	land_004	scan2_exactly_one_complete_select	scan2_edge	0	land_004	scan2_exactly_one_complete_select	false	1	1	0	1	1602
+witness	scan2_edge	land_004	scan2_multi_complete_reject	scan2_edge	1013	land_004	scan2_multi_complete_reject	true	3	2	0	-	-
+witness	scan2_edge	land_007	scan2_exactly_one_complete_select	scan2_edge	0	land_007	scan2_exactly_one_complete_select	false	1	1	0	1	1599
+witness	scan2_edge	land_007	scan2_multi_complete_reject	scan2_edge	2147483648	land_007	scan2_multi_complete_reject	true	2	2	0	-	-
+witness	scan2_edge	land_010	scan2_exactly_one_complete_select	scan2_edge	0	land_010	scan2_exactly_one_complete_select	false	1	1	0	1	1604
+witness	scan2_edge	land_010	scan2_multi_complete_reject	scan2_edge	172991200114431608	land_010	scan2_multi_complete_reject	true	2	2	0	-	-
+witness	scan2_edge	land_013	scan2_exactly_one_complete_select	scan2_edge	0	land_013	scan2_exactly_one_complete_select	false	1	1	0	1	1598
+witness	scan2_edge	land_013	scan2_multi_complete_reject	scan2_edge	97665215198973151	land_013	scan2_multi_complete_reject	true	3	2	0	-	-
+witness	scan2_edge	land_016	scan2_exactly_one_complete_select	scan2_edge	0	land_016	scan2_exactly_one_complete_select	false	1	1	0	1	1549
+witness	scan2_edge	land_016	scan2_multi_complete_reject	scan2_edge	1914891444072834567	land_016	scan2_multi_complete_reject	true	2	2	0	-	-
+witness	scan2_endpoint	bay_edge_transition:land_001:to	scan2_counting_evaluated	scan2_endpoint	0	bay_edge_transition:land_001:to	land_001	to	scan2_counting_evaluated	false	186	1689	1503	1	1	0	1689:direct
+witness	scan2_endpoint	bay_edge_transition:land_004:from	scan2_counting_evaluated	scan2_endpoint	0	bay_edge_transition:land_004:from	land_004	from	scan2_counting_evaluated	false	198	1799	1601	1	1	0	198:direct
+witness	scan2_endpoint	bay_edge_transition:land_004:to	scan2_counting_evaluated	scan2_endpoint	0	bay_edge_transition:land_004:to	land_004	to	scan2_counting_evaluated	false	198	1799	1601	1	1	0	1799:direct
+witness	scan2_endpoint	bay_edge_transition:land_007:from	scan2_counting_evaluated	scan2_endpoint	0	bay_edge_transition:land_007:from	land_007	from	scan2_counting_evaluated	false	157	1755	1598	1	1	0	157:direct
+witness	scan2_endpoint	bay_edge_transition:land_010:to	scan2_counting_evaluated	scan2_endpoint	0	bay_edge_transition:land_010:to	land_010	to	scan2_counting_evaluated	false	181	1784	1603	1	1	0	1784:direct
+witness	scan2_endpoint	bay_edge_transition:land_013:from	scan2_counting_evaluated	scan2_endpoint	0	bay_edge_transition:land_013:from	land_013	from	scan2_counting_evaluated	false	215	1812	1597	1	1	0	215:direct
+witness	scan2_endpoint	bay_edge_transition:land_013:to	scan2_counting_evaluated	scan2_endpoint	0	bay_edge_transition:land_013:to	land_013	to	scan2_counting_evaluated	false	215	1812	1597	1	1	0	1812:direct
+witness	scan2_endpoint	bay_edge_transition:land_016:from	scan2_counting_evaluated	scan2_endpoint	0	bay_edge_transition:land_016:from	land_016	from	scan2_counting_evaluated	false	178	1725	1547	1	1	0	178:direct
+witness	scan2_tuple	land_001	scan2_tuple_complete	scan2_tuple	0	land_001	1	scan2_tuple_complete	-	-	-	-	1689	direct	-1217:-2230	-1218:-2230	1504	7694c3f6b83bcd1ab883224dd9184860a7dcdb07b2e4fea07e1cdf482f844d4d	-
+witness	scan2_tuple	land_004	scan2_tuple_bank_incomplete	scan2_tuple	1013	land_004	2	scan2_tuple_bank_incomplete	200	direct	-851:-2237	-850:-2237	1798	direct	743:-2243	742:-2243	1599	54e2ee935d6ac71b855f2d3f84c8a2a56d5dd8703c975f00d8d65cc5e827ff28	bay_bank:elandor_west:dawnmere: WP40 geometry partition: bay_bank:elandor_west:dawnmere cannot reach its target previous/current/target=-850:-2237/-851:-2237/-601:-2915 terminal_modes=direct/direct terminal_details=[land:E=-851:-2237,P=-851:-2237;aperture:D=-601:-2915,A=-600:-2915] successors= reachable= neighbors=[-850:-2237:candidate=true:right=true:footprint=1:dry=true:envelope=true:state=false:column=false:diagonal=true:raw=:final=;-850:-2238:candidate=false:right=true:footprint=1:dry=false:envelope=true:state=false:column=false:diagonal=true:raw=bay_elandor_west:final=bay_elandor_west;-851:-2238:candidate=false:right=false:footprint=1:dry=false:envelope=true:state=false:column=false:diagonal=true:raw=bay_elandor_west:final=bay_elandor_west;-852:-2238:candidate=true:right=false:footprint=1:dry=true:envelope=true:state=false:column=false:diagonal=true:raw=:final=;-852:-2237:candidate=false:right=false:footprint=1:dry=true:envelope=true:state=false:column=false:diagonal=true:raw=:final=;-852:-2236:candidate=false:right=false:footprint=1:dry=true:envelope=true:state=false:column=false:diagonal=true:raw=:final=;-851:-2236:candidate=false:right=false:footprint=1:dry=true:envelope=true:state=false:column=false:diagonal=true:raw=:final=;-850:-2236:candidate=false:right=true:footprint=1:dry=true:envelope=true:state=false:column=false:diagonal=true:raw=:final=] steps=0
+witness	scan2_tuple	land_004	scan2_tuple_complete	scan2_tuple	0	land_004	1	scan2_tuple_complete	198	direct	-853:-2237	-852:-2237	1799	direct	743:-2243	742:-2243	1602	6cc477c0e713fc01917f48eaa940d163325062185067549e6965cadb6c79f216	-
+witness	scan2_tuple	land_007	scan2_tuple_bank_incomplete	scan2_tuple	20260812	land_007	1	scan2_tuple_bank_incomplete	171	direct	1120:-2239	1121:-2239	-	-	-	-	1587	a31c7880cbd1d607c8165976b9c581436ef1c56be715daa5b73745cce2dbb065	bay_bank:elandor_east:silverleaf: WP40 geometry partition: bay_bank:elandor_east:silverleaf cannot reach its target previous/current/target=1121:-2239/1120:-2239/1239:-2928 terminal_modes=direct/direct terminal_details=[land:E=1120:-2239,P=1120:-2239;aperture:D=1239:-2928,A=1240:-2928] successors= reachable= neighbors=[1121:-2239:candidate=true:right=true:footprint=1:dry=true:envelope=true:state=false:column=false:diagonal=true:raw=:final=;1121:-2240:candidate=false:right=true:footprint=1:dry=false:envelope=true:state=false:column=false:diagonal=true:raw=bay_elandor_east:final=bay_elandor_east;1120:-2240:candidate=false:right=false:footprint=1:dry=false:envelope=true:state=false:column=false:diagonal=true:raw=bay_elandor_east:final=bay_elandor_east;1119:-2240:candidate=false:right=false:footprint=1:dry=false:envelope=true:state=false:column=false:diagonal=true:raw=bay_elandor_east:final=bay_elandor_east;1119:-2239:candidate=true:right=false:footprint=1:dry=true:envelope=true:state=false:column=false:diagonal=true:raw=:final=;1119:-2238:candidate=true:right=false:footprint=1:dry=true:envelope=true:state=false:column=false:diagonal=true:raw=:final=;1120:-2238:candidate=false:right=false:footprint=1:dry=true:envelope=true:state=false:column=false:diagonal=true:raw=:final=;1121:-2238:candidate=false:right=true:footprint=1:dry=true:envelope=true:state=false:column=false:diagonal=true:raw=:final=] steps=0
+witness	scan2_tuple	land_007	scan2_tuple_complete	scan2_tuple	0	land_007	1	scan2_tuple_complete	157	direct	1106:-2234	1107:-2234	-	-	-	-	1599	6bdec1dfd19e1225ed7f2f912f4c6776eabbabf2556ceac329b99b44cd5ec1c9	-
+witness	scan2_tuple	land_010	scan2_tuple_bank_incomplete	scan2_tuple	42	land_010	2	scan2_tuple_bank_incomplete	-	-	-	-	1781	direct	-1134:2242	-1135:2242	1602	f2cd5becc5daead957cd08ffa288eaead2760fefd44037c866f78f77de950498	bay_bank:kragmar_west:stillgrave: WP40 geometry partition: bay_bank:kragmar_west:stillgrave cannot reach its target previous/current/target=-1135:2242/-1134:2242/-1375:2938 terminal_modes=direct/direct terminal_details=[land:E=-1134:2242,P=-1134:2242;aperture:D=-1375:2938,A=-1376:2938] successors= reachable= neighbors=[-1133:2242:candidate=false:right=false:footprint=1:dry=false:envelope=true:state=false:column=false:diagonal=true:raw=bay_kragmar_west:final=bay_kragmar_west;-1133:2241:candidate=true:right=false:footprint=1:dry=true:envelope=true:state=false:column=false:diagonal=true:raw=:final=;-1134:2241:candidate=false:right=false:footprint=1:dry=true:envelope=true:state=false:column=false:diagonal=true:raw=:final=;-1135:2241:candidate=false:right=true:footprint=1:dry=true:envelope=true:state=false:column=false:diagonal=true:raw=:final=;-1135:2242:candidate=true:right=true:footprint=1:dry=true:envelope=true:state=false:column=false:diagonal=true:raw=:final=;-1135:2243:candidate=false:right=true:footprint=1:dry=false:envelope=true:state=false:column=false:diagonal=true:raw=bay_kragmar_west:final=bay_kragmar_west;-1134:2243:candidate=false:right=true:footprint=1:dry=false:envelope=true:state=false:column=false:diagonal=true:raw=bay_kragmar_west:final=bay_kragmar_west;-1133:2243:candidate=false:right=true:footprint=1:dry=false:envelope=true:state=false:column=false:diagonal=true:raw=bay_kragmar_west:final=bay_kragmar_west] steps=0
+witness	scan2_tuple	land_010	scan2_tuple_complete	scan2_tuple	0	land_010	1	scan2_tuple_complete	-	-	-	-	1784	direct	-1131:2236	-1132:2236	1604	b90626437d062bdc3eff4153ce0fa4f2fab7971ab4d4715a085b5a16cd411ebc	-
+witness	scan2_tuple	land_013	scan2_tuple_bank_incomplete	scan2_tuple	1	land_013	2	scan2_tuple_bank_incomplete	214	direct	-757:2246	-756:2246	1810	direct	836:2238	835:2238	1597	b05d93e9e5b08f1cc3ba555d19c435cc29ff065ba6f09bef5a1953a62ea7b502	bay_bank:kragmar_east:sunscar: WP40 geometry partition: bay_bank:kragmar_east:sunscar cannot reach its target previous/current/target=835:2238/836:2238/506:2927 terminal_modes=direct/direct terminal_details=[land:E=836:2238,P=836:2238;aperture:D=506:2927,A=505:2927] successors= reachable= neighbors=[837:2238:candidate=false:right=false:footprint=1:dry=false:envelope=true:state=false:column=false:diagonal=true:raw=bay_kragmar_east:final=bay_kragmar_east;837:2237:candidate=true:right=false:footprint=1:dry=true:envelope=true:state=false:column=false:diagonal=true:raw=:final=;836:2237:candidate=false:right=false:footprint=1:dry=true:envelope=true:state=false:column=false:diagonal=true:raw=:final=;835:2237:candidate=false:right=true:footprint=1:dry=true:envelope=true:state=false:column=false:diagonal=true:raw=:final=;835:2238:candidate=true:right=true:footprint=1:dry=true:envelope=true:state=false:column=false:diagonal=true:raw=:final=;835:2239:candidate=false:right=true:footprint=1:dry=false:envelope=true:state=false:column=false:diagonal=true:raw=bay_kragmar_east:final=bay_kragmar_east;836:2239:candidate=false:right=true:footprint=1:dry=false:envelope=true:state=false:column=false:diagonal=true:raw=bay_kragmar_east:final=bay_kragmar_east;837:2239:candidate=false:right=true:footprint=1:dry=false:envelope=true:state=false:column=false:diagonal=true:raw=bay_kragmar_east:final=bay_kragmar_east] steps=0
+witness	scan2_tuple	land_013	scan2_tuple_complete	scan2_tuple	0	land_013	1	scan2_tuple_complete	215	direct	-757:2246	-756:2246	1812	direct	837:2236	836:2236	1598	09df865524973f631af5fefa4b078a569f3034fa43ecc45153fc4fc092bc33f6	-
+witness	scan2_tuple	land_013	scan2_tuple_probe_invalid	scan2_tuple	2033178143952062430	land_013	2	scan2_tuple_probe_invalid	214	direct	-757:2246	-	1796	diagonal_elbow	823:2241	-	-	e8d29076a769c8bb0167d0da53f3e058591594ed391391d1e9460b729bf02176	WP40 boundary raster: land_013 final raster repeats station 823:2241 at 1582/1584
+witness	scan2_tuple	land_016	scan2_tuple_complete	scan2_tuple	0	land_016	1	scan2_tuple_complete	178	direct	1196:2232	1197:2232	-	-	-	-	1549	3db305c9cfa901850b668e32ff132987f9f1d21274cfb264ca9f75c4e192e324	-
+witness	scan3_aperture	bay_mouth_aperture:elandor_east:after	aperture_direct_select	scan3_aperture	0	bay_mouth_aperture:elandor_east	after	aperture_direct_select	direct	1225:-2928	-	-	-	-	bay_bank:elandor_east:silverleaf	2	-
+witness	scan3_aperture	bay_mouth_aperture:elandor_east:after	aperture_tail_select	scan3_aperture	99518926280741974	bay_mouth_aperture:elandor_east	after	aperture_tail_select	diagonal_shoulder	1215:-2928	1215:-2927	1214:-2927	2	true	bay_bank:elandor_east:silverleaf	2	-
+witness	scan3_aperture	bay_mouth_aperture:elandor_east:before	aperture_direct_select	scan3_aperture	0	bay_mouth_aperture:elandor_east	before	aperture_direct_select	direct	570:-2926	-	-	-	-	bay_bank:elandor_east:dawnmere	1	-
+witness	scan3_aperture	bay_mouth_aperture:elandor_east:before	aperture_tail_select	scan3_aperture	9007199254740992	bay_mouth_aperture:elandor_east	before	aperture_tail_select	diagonal_shoulder	570:-2927	570:-2926	571:-2926	2	true	bay_bank:elandor_east:dawnmere	1	-
+witness	scan3_aperture	bay_mouth_aperture:elandor_west:after	aperture_direct_select	scan3_aperture	0	bay_mouth_aperture:elandor_west	after	aperture_direct_select	direct	-626:-2916	-	-	-	-	bay_bank:elandor_west:dawnmere	2	-
+witness	scan3_aperture	bay_mouth_aperture:elandor_west:after	aperture_tail_select	scan3_aperture	93829429882032160	bay_mouth_aperture:elandor_west	after	aperture_tail_select	diagonal_shoulder	-625:-2917	-625:-2916	-626:-2916	2	true	bay_bank:elandor_west:dawnmere	2	-
+witness	scan3_aperture	bay_mouth_aperture:elandor_west:before	aperture_direct_select	scan3_aperture	0	bay_mouth_aperture:elandor_west	before	aperture_direct_select	direct	-1340:-2921	-	-	-	-	bay_bank:elandor_west:hearthpine	1	-
+witness	scan3_aperture	bay_mouth_aperture:kragmar_east:after	aperture_direct_select	scan3_aperture	0	bay_mouth_aperture:kragmar_east	after	aperture_direct_select	direct	1189:2928	-	-	-	-	bay_bank:kragmar_east:kapok	1	-
+witness	scan3_aperture	bay_mouth_aperture:kragmar_east:before	aperture_direct_select	scan3_aperture	0	bay_mouth_aperture:kragmar_east	before	aperture_direct_select	direct	438:2920	-	-	-	-	bay_bank:kragmar_east:sunscar	2	-
+witness	scan3_aperture	bay_mouth_aperture:kragmar_east:before	aperture_tail_select	scan3_aperture	809764572455612617	bay_mouth_aperture:kragmar_east	before	aperture_tail_select	diagonal_shoulder	435:2921	435:2920	436:2920	2	true	bay_bank:kragmar_east:sunscar	2	-
+witness	scan3_aperture	bay_mouth_aperture:kragmar_west:after	aperture_direct_select	scan3_aperture	0	bay_mouth_aperture:kragmar_west	after	aperture_direct_select	direct	-760:2939	-	-	-	-	bay_bank:kragmar_west:sunscar	1	-
+witness	scan3_aperture	bay_mouth_aperture:kragmar_west:after	aperture_tail_select	scan3_aperture	391145333752252878	bay_mouth_aperture:kragmar_west	after	aperture_tail_select	diagonal_shoulder	-760:2937	-760:2936	-761:2936	2	true	bay_bank:kragmar_west:sunscar	1	-
+witness	scan3_aperture	bay_mouth_aperture:kragmar_west:before	aperture_direct_select	scan3_aperture	0	bay_mouth_aperture:kragmar_west	before	aperture_direct_select	direct	-1415:2939	-	-	-	-	bay_bank:kragmar_west:stillgrave	2	-
+witness	scan3_aperture	bay_mouth_aperture:kragmar_west:before	aperture_tail_select	scan3_aperture	1	bay_mouth_aperture:kragmar_west	before	aperture_tail_select	diagonal_shoulder	-1387:2939	-1387:2938	-1386:2938	2	true	bay_bank:kragmar_west:stillgrave	2	-
+witness	scan3_bank	bay_bank:elandor_east:lorindor	bank_trace_complete_select	scan3_bank	0	bay_bank:elandor_east:lorindor	bay_elandor_east	bank_trace_complete_select	993	1001	0	0	0	0	-
+witness	scan3_bank	bay_bank:elandor_west:whitebridge	bank_trace_complete_select	scan3_bank	0	bay_bank:elandor_west:whitebridge	bay_elandor_west	bank_trace_complete_select	993	1001	0	0	0	0	-
+witness	scan3_bank	bay_bank:kragmar_east:whispering	bank_trace_complete_select	scan3_bank	0	bay_bank:kragmar_east:whispering	bay_kragmar_east	bank_trace_complete_select	992	1001	0	0	0	0	-
+witness	scan3_bank	bay_bank:kragmar_west:speargrass	bank_trace_complete_select	scan3_bank	0	bay_bank:kragmar_west:speargrass	bay_kragmar_west	bank_trace_complete_select	994	1001	0	0	0	0	-
+witness	scan3_selection	bay_bank:elandor_east:lorindor	single_admitted_untested	scan3_selection	0	bay_bank:elandor_east:lorindor	single_admitted_untested	993	1	0	0
+witness	scan3_selection	bay_bank:elandor_west:whitebridge	single_admitted_untested	scan3_selection	0	bay_bank:elandor_west:whitebridge	single_admitted_untested	993	1	0	0
+witness	scan3_selection	bay_bank:kragmar_east:whispering	single_admitted_untested	scan3_selection	0	bay_bank:kragmar_east:whispering	single_admitted_untested	992	1	0	0
+witness	scan3_selection	bay_bank:kragmar_west:speargrass	single_admitted_untested	scan3_selection	0	bay_bank:kragmar_west:speargrass	single_admitted_untested	994	1	0	0
+witness	scan3_step	bay_bank:elandor_east:lorindor:east	admitted	scan3_step	0	bay_bank:elandor_east:lorindor	east	admitted	971
+witness	scan3_step	bay_bank:elandor_east:lorindor:east	noncandidate	scan3_step	0	bay_bank:elandor_east:lorindor	east	noncandidate	22
+witness	scan3_step	bay_bank:elandor_east:lorindor:north	noncandidate	scan3_step	0	bay_bank:elandor_east:lorindor	north	noncandidate	993
+witness	scan3_step	bay_bank:elandor_east:lorindor:northeast	admitted	scan3_step	0	bay_bank:elandor_east:lorindor	northeast	admitted	11
+witness	scan3_step	bay_bank:elandor_east:lorindor:northeast	noncandidate	scan3_step	0	bay_bank:elandor_east:lorindor	northeast	noncandidate	982
+witness	scan3_step	bay_bank:elandor_east:lorindor:northwest	noncandidate	scan3_step	0	bay_bank:elandor_east:lorindor	northwest	noncandidate	982
+witness	scan3_step	bay_bank:elandor_east:lorindor:northwest	previous	scan3_step	0	bay_bank:elandor_east:lorindor	northwest	previous	11
+witness	scan3_step	bay_bank:elandor_east:lorindor:south	noncandidate	scan3_step	0	bay_bank:elandor_east:lorindor	south	noncandidate	993
+witness	scan3_step	bay_bank:elandor_east:lorindor:southeast	admitted	scan3_step	0	bay_bank:elandor_east:lorindor	southeast	admitted	11
+witness	scan3_step	bay_bank:elandor_east:lorindor:southeast	noncandidate	scan3_step	0	bay_bank:elandor_east:lorindor	southeast	noncandidate	982
+witness	scan3_step	bay_bank:elandor_east:lorindor:southwest	noncandidate	scan3_step	0	bay_bank:elandor_east:lorindor	southwest	noncandidate	981
+witness	scan3_step	bay_bank:elandor_east:lorindor:southwest	previous	scan3_step	0	bay_bank:elandor_east:lorindor	southwest	previous	11
+witness	scan3_step	bay_bank:elandor_east:lorindor:southwest	water_side	scan3_step	0	bay_bank:elandor_east:lorindor	southwest	water_side	1
+witness	scan3_step	bay_bank:elandor_east:lorindor:west	noncandidate	scan3_step	0	bay_bank:elandor_east:lorindor	west	noncandidate	22
+witness	scan3_step	bay_bank:elandor_east:lorindor:west	previous	scan3_step	0	bay_bank:elandor_east:lorindor	west	previous	971
+witness	scan3_step	bay_bank:elandor_west:whitebridge:east	admitted	scan3_step	0	bay_bank:elandor_west:whitebridge	east	admitted	953
+witness	scan3_step	bay_bank:elandor_west:whitebridge:east	noncandidate	scan3_step	0	bay_bank:elandor_west:whitebridge	east	noncandidate	40
+witness	scan3_step	bay_bank:elandor_west:whitebridge:north	noncandidate	scan3_step	0	bay_bank:elandor_west:whitebridge	north	noncandidate	993
+witness	scan3_step	bay_bank:elandor_west:whitebridge:northeast	admitted	scan3_step	0	bay_bank:elandor_west:whitebridge	northeast	admitted	20
+witness	scan3_step	bay_bank:elandor_west:whitebridge:northeast	noncandidate	scan3_step	0	bay_bank:elandor_west:whitebridge	northeast	noncandidate	973
+witness	scan3_step	bay_bank:elandor_west:whitebridge:northwest	noncandidate	scan3_step	0	bay_bank:elandor_west:whitebridge	northwest	noncandidate	973
+witness	scan3_step	bay_bank:elandor_west:whitebridge:northwest	previous	scan3_step	0	bay_bank:elandor_west:whitebridge	northwest	previous	20
+witness	scan3_step	bay_bank:elandor_west:whitebridge:south	noncandidate	scan3_step	0	bay_bank:elandor_west:whitebridge	south	noncandidate	993
+witness	scan3_step	bay_bank:elandor_west:whitebridge:southeast	admitted	scan3_step	0	bay_bank:elandor_west:whitebridge	southeast	admitted	20
+witness	scan3_step	bay_bank:elandor_west:whitebridge:southeast	noncandidate	scan3_step	0	bay_bank:elandor_west:whitebridge	southeast	noncandidate	973
+witness	scan3_step	bay_bank:elandor_west:whitebridge:southwest	noncandidate	scan3_step	0	bay_bank:elandor_west:whitebridge	southwest	noncandidate	972
+witness	scan3_step	bay_bank:elandor_west:whitebridge:southwest	previous	scan3_step	0	bay_bank:elandor_west:whitebridge	southwest	previous	20
+witness	scan3_step	bay_bank:elandor_west:whitebridge:southwest	water_side	scan3_step	0	bay_bank:elandor_west:whitebridge	southwest	water_side	1
+witness	scan3_step	bay_bank:elandor_west:whitebridge:west	noncandidate	scan3_step	0	bay_bank:elandor_west:whitebridge	west	noncandidate	40
+witness	scan3_step	bay_bank:elandor_west:whitebridge:west	previous	scan3_step	0	bay_bank:elandor_west:whitebridge	west	previous	953
+witness	scan3_step	bay_bank:kragmar_east:whispering:east	previous	scan3_step	0	bay_bank:kragmar_east:whispering	east	previous	992
+witness	scan3_step	bay_bank:kragmar_east:whispering:north	noncandidate	scan3_step	0	bay_bank:kragmar_east:whispering	north	noncandidate	992
+witness	scan3_step	bay_bank:kragmar_east:whispering:northeast	noncandidate	scan3_step	0	bay_bank:kragmar_east:whispering	northeast	noncandidate	991
+witness	scan3_step	bay_bank:kragmar_east:whispering:northeast	water_side	scan3_step	0	bay_bank:kragmar_east:whispering	northeast	water_side	1
+witness	scan3_step	bay_bank:kragmar_east:whispering:northwest	noncandidate	scan3_step	0	bay_bank:kragmar_east:whispering	northwest	noncandidate	992
+witness	scan3_step	bay_bank:kragmar_east:whispering:south	noncandidate	scan3_step	0	bay_bank:kragmar_east:whispering	south	noncandidate	992
+witness	scan3_step	bay_bank:kragmar_east:whispering:southeast	noncandidate	scan3_step	0	bay_bank:kragmar_east:whispering	southeast	noncandidate	992
+witness	scan3_step	bay_bank:kragmar_east:whispering:southwest	noncandidate	scan3_step	0	bay_bank:kragmar_east:whispering	southwest	noncandidate	992
+witness	scan3_step	bay_bank:kragmar_east:whispering:west	admitted	scan3_step	0	bay_bank:kragmar_east:whispering	west	admitted	992
+witness	scan3_step	bay_bank:kragmar_west:speargrass:east	noncandidate	scan3_step	0	bay_bank:kragmar_west:speargrass	east	noncandidate	60
+witness	scan3_step	bay_bank:kragmar_west:speargrass:east	previous	scan3_step	0	bay_bank:kragmar_west:speargrass	east	previous	934
+witness	scan3_step	bay_bank:kragmar_west:speargrass:north	noncandidate	scan3_step	0	bay_bank:kragmar_west:speargrass	north	noncandidate	994
+witness	scan3_step	bay_bank:kragmar_west:speargrass:northeast	noncandidate	scan3_step	0	bay_bank:kragmar_west:speargrass	northeast	noncandidate	963
+witness	scan3_step	bay_bank:kragmar_west:speargrass:northeast	previous	scan3_step	0	bay_bank:kragmar_west:speargrass	northeast	previous	30
+witness	scan3_step	bay_bank:kragmar_west:speargrass:northeast	water_side	scan3_step	0	bay_bank:kragmar_west:speargrass	northeast	water_side	1
+witness	scan3_step	bay_bank:kragmar_west:speargrass:northwest	admitted	scan3_step	0	bay_bank:kragmar_west:speargrass	northwest	admitted	30
+witness	scan3_step	bay_bank:kragmar_west:speargrass:northwest	noncandidate	scan3_step	0	bay_bank:kragmar_west:speargrass	northwest	noncandidate	964
+witness	scan3_step	bay_bank:kragmar_west:speargrass:south	noncandidate	scan3_step	0	bay_bank:kragmar_west:speargrass	south	noncandidate	994
+witness	scan3_step	bay_bank:kragmar_west:speargrass:southeast	noncandidate	scan3_step	0	bay_bank:kragmar_west:speargrass	southeast	noncandidate	964
+witness	scan3_step	bay_bank:kragmar_west:speargrass:southeast	previous	scan3_step	0	bay_bank:kragmar_west:speargrass	southeast	previous	30
+witness	scan3_step	bay_bank:kragmar_west:speargrass:southwest	admitted	scan3_step	0	bay_bank:kragmar_west:speargrass	southwest	admitted	30
+witness	scan3_step	bay_bank:kragmar_west:speargrass:southwest	noncandidate	scan3_step	0	bay_bank:kragmar_west:speargrass	southwest	noncandidate	964
+witness	scan3_step	bay_bank:kragmar_west:speargrass:west	admitted	scan3_step	0	bay_bank:kragmar_west:speargrass	west	admitted	934
+witness	scan3_step	bay_bank:kragmar_west:speargrass:west	noncandidate	scan3_step	0	bay_bank:kragmar_west:speargrass	west	noncandidate	60
+witness	scan3_width	bay_elandor_east	bay_bank_width_positive	scan3_width	0	bay_elandor_east	bay_bank_width_positive	933	7528000	94100	80	3	291	1020	-1990	0	8039100	94100	85	1	-11	24	76
+witness	scan3_width	bay_elandor_west	bay_bank_width_positive	scan3_width	0	bay_elandor_west	bay_bank_width_positive	943	7488000	93600	80	3	301	-980	-2000	0	8424000	93600	90	-1	-20	6	69
+witness	scan3_width	bay_kragmar_east	bay_bank_width_positive	scan3_width	0	bay_kragmar_east	bay_bank_width_positive	1023	11048000	138100	80	3	341	900	1980	0	11814300	138100	85	1	0	33	80
+witness	scan3_width	bay_kragmar_west	bay_bank_width_positive	scan3_width	0	bay_kragmar_west	bay_bank_width_positive	923	7880000	98500	80	3	291	-1060	2010	0	8645100	98500	87	1	-23	16	66
+witness	scan3_wing	bay_wing:elandor_east:left	wing_wedge_valid_select	scan3_wing	0	bay_wing:elandor_east:left	bay_elandor_east	wing_wedge_valid_select	628	463	404:-1900	403:-1901	4	3	9	2	5	4	5	628	18	18	1	2	2	0	0	0	0	0	0	17	-
+witness	scan3_wing	bay_wing:elandor_east:right	wing_wedge_valid_select	scan3_wing	0	bay_wing:elandor_east:right	bay_elandor_east	wing_wedge_valid_select	300	365	1398:-1901	1397:-1900	2	3	1	4	3	4	4	392	4	4	1	1	1	0	0	0	0	0	0	3	-
+witness	scan3_wing	bay_wing:elandor_west:left	wing_wedge_valid_select	scan3_wing	0	bay_wing:elandor_west:left	bay_elandor_west	wing_wedge_valid_select	413	310	-1397:-1900	-1398:-1901	3	2	4	1	4	3	4	433	4	4	1	1	1	0	0	0	0	0	0	3	-
+witness	scan3_wing	bay_wing:elandor_west:right	wing_wedge_valid_select	scan3_wing	0	bay_wing:elandor_west:right	bay_elandor_west	wing_wedge_valid_select	494	586	-403:-1901	-404:-1900	3	4	2	9	4	5	5	590	18	18	1	10	10	0	0	0	0	0	0	17	-
+witness	scan3_wing	bay_wing:kragmar_east:left	wing_wedge_valid_select	scan3_wing	0	bay_wing:kragmar_east:left	bay_kragmar_east	wing_wedge_valid_select	427	507	403:1901	404:1900	3	4	2	9	4	5	5	508	18	18	1	9	9	0	0	0	0	0	0	17	-
+witness	scan3_wing	bay_wing:kragmar_east:right	wing_wedge_valid_select	scan3_wing	0	bay_wing:kragmar_east:right	bay_kragmar_east	wing_wedge_valid_select	507	348	1396:1900	1397:1901	4	3	9	2	5	4	5	508	18	18	1	17	17	0	0	0	0	0	0	17	-
+witness	scan3_wing	bay_wing:kragmar_west:left	wing_wedge_valid_select	scan3_wing	0	bay_wing:kragmar_west:left	bay_kragmar_west	wing_wedge_valid_select	266	332	-1399:1901	-1398:1900	1	2	1	2	2	3	3	359	2	2	1	2	2	0	0	0	0	0	0	1	-
+witness	scan3_wing	bay_wing:kragmar_west:right	wing_wedge_valid_select	scan3_wing	0	bay_wing:kragmar_west:right	bay_kragmar_west	wing_wedge_valid_select	668	508	-404:1900	-403:1901	4	3	9	2	5	4	5	671	18	18	1	17	17	0	0	0	0	0	0	17	-
+witness	stage_reject	bay_mouth_aperture:elandor_east	aperture_second_run_reject	stage_reject	343674299183575008	bay_mouth_aperture:elandor_east	aperture_second_run_reject	WP40 geometry partition: bay_mouth_aperture:elandor_east has a wrapping or second aperture run
+witness	wing_exclusion	bay_wing:elandor_east:left	wedge_nonwing_water	scan3_wing	0	bay_wing:elandor_east:left	bay_elandor_east	wing_wedge_valid_select	628	463	404:-1900	403:-1901	4	3	9	2	5	4	5	628	18	18	1	2	2	0	0	0	0	0	0	17	-
+witness	wing_exclusion	bay_wing:elandor_east:right	wedge_nonwing_water	scan3_wing	0	bay_wing:elandor_east:right	bay_elandor_east	wing_wedge_valid_select	300	365	1398:-1901	1397:-1900	2	3	1	4	3	4	4	392	4	4	1	1	1	0	0	0	0	0	0	3	-
+witness	wing_exclusion	bay_wing:elandor_west:left	wedge_nonwing_water	scan3_wing	0	bay_wing:elandor_west:left	bay_elandor_west	wing_wedge_valid_select	413	310	-1397:-1900	-1398:-1901	3	2	4	1	4	3	4	433	4	4	1	1	1	0	0	0	0	0	0	3	-
+witness	wing_exclusion	bay_wing:elandor_west:right	wedge_nonwing_water	scan3_wing	0	bay_wing:elandor_west:right	bay_elandor_west	wing_wedge_valid_select	494	586	-403:-1901	-404:-1900	3	4	2	9	4	5	5	590	18	18	1	10	10	0	0	0	0	0	0	17	-
+witness	wing_exclusion	bay_wing:kragmar_east:left	wedge_nonwing_water	scan3_wing	0	bay_wing:kragmar_east:left	bay_kragmar_east	wing_wedge_valid_select	427	507	403:1901	404:1900	3	4	2	9	4	5	5	508	18	18	1	9	9	0	0	0	0	0	0	17	-
+witness	wing_exclusion	bay_wing:kragmar_east:right	wedge_nonwing_water	scan3_wing	0	bay_wing:kragmar_east:right	bay_kragmar_east	wing_wedge_valid_select	507	348	1396:1900	1397:1901	4	3	9	2	5	4	5	508	18	18	1	17	17	0	0	0	0	0	0	17	-
+witness	wing_exclusion	bay_wing:kragmar_west:left	wedge_nonwing_water	scan3_wing	0	bay_wing:kragmar_west:left	bay_kragmar_west	wing_wedge_valid_select	266	332	-1399:1901	-1398:1900	1	2	1	2	2	3	3	359	2	2	1	2	2	0	0	0	0	0	0	1	-
+witness	wing_exclusion	bay_wing:kragmar_west:right	wedge_nonwing_water	scan3_wing	0	bay_wing:kragmar_west:right	bay_kragmar_west	wing_wedge_valid_select	668	508	-404:1900	-403:1901	4	3	9	2	5	4	5	671	18	18	1	17	17	0	0	0	0	0	0	17	-
+summary	occupied=197	findings=7	events=0	refuted_universals=0	stage_reject_seeds=7	no_branch_matched=0

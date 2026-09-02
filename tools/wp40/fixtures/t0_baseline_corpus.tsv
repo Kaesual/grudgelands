@@ -1,0 +1,12 @@
+# id	x	y	z
+# T0-only legacy WP18/WP36 substrate corpus. T2 must freeze the final
+# geometry-derived Chapter 6 micro-corpus and 100-requester trace before T9
+# replays the preserved baseline. These rows are never target geography.
+deep_noop	0	-2040	900
+ordinary_inland	0	8	1300
+legacy_band_boundary	350	8	900
+coast_ramp	1450	8	900
+shelf_transition	1540	-8	900
+open_ocean	2100	-8	900
+strait	0	-8	0
+human_capital	0	8	-900

@@ -56,7 +56,7 @@ local MAX_LEVEL = 60
 grug_mobs.MAX_LEVEL = MAX_LEVEL
 
 -- Hard ceilings per level source. The mob field is the 1..60 progression
--- axis; grug_core.guard_level_at is documented 20..70 (world.md §1: the
+-- axis; grug_zones.guard_level_at is documented 20..70 (world.md §1: the
 -- capital watch is 60+), so capping guards at 60 would silently delete the
 -- elite city watch. `_grug_fixed_level` bypasses both (Kraken = 100).
 local LEVEL_CAP = {mob = MAX_LEVEL, guard = 70}
@@ -409,9 +409,9 @@ local function resolve_level(self, cfg, tier)
 	local level
 	if pos then
 		if cfg.source == "guard" then
-			level = grug_core.guard_level_at(pos)
+			level = grug_zones.guard_level_at(pos)
 		else
-			level = grug_core.mob_level_at(pos)
+			level = grug_zones.mob_level_at(pos)
 		end
 	end
 	-- The field has no value here (open water surface, ocean for guards):

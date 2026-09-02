@@ -1,0 +1,28 @@
+schema	grug_wp40_puc_policy_authority_inventory_v1
+query_scope	AGENTS.md BACKLOG.md README.md docs tools; exclude reference_projects and retained fixture payloads
+query_terms	PUC|lua51|luac51|lua5.1|LuaJIT|WP40_LUA_BIN|T2-final|T9-final|full-W|re-census|divergence|byte-identical|digest-identical|fallback|dual-runtime|benchmark|pairs()|interpreter
+edit	AGENTS.md	project interpreter policy
+edit	docs/process/wp-workflow.md	self-check and review policy
+edit	docs/research/luanti-lua.md	interpreter/test-layer authority
+edit	docs/research/wp40-t2-contracts.md	later normative Section 14.7 memo
+edit	docs/research/wp40-t2-plan.md	current status, cost anchors and divergence wording
+edit	docs/research/wp40-acceleration-and-delivery-plan.md	Phase-0B status and fold scope
+edit	docs/research/wp40-puc-final-gate-inventory.md	accepted disposition and measured corrections
+edit	docs/research/wp40-t2-handover.md	historical-table supersession pointer
+edit	docs/research/wp40-t5-0-engine-probe-contract.md	withdraw unretained ratio; preserve engine-specific budget rule
+edit	tools/wp40/README.md	executable PCC/F1/F2 instructions and measurements
+edit	tools/wp40/run_t2_partition.sh	mechanical F1 final-gate comment
+edit	tools/wp40/fixtures/t2_extreme_e0/README.md	completed F2 selector scope and timings
+edit	tools/wp40/t2_source_audit.sh	LuaJIT-full plus targeted PUC parity
+edit	tools/wp40/run_t2_puc_core.sh	bounded PCC runner
+edit	tools/wp40/run_t2_census.sh	seven-seed merge evidence retention/progress
+edit	tools/wp40/run_t2_correction_kat.sh	exact stdout/exit discipline and negative proof
+edit	tools/wp40/run_t2_compiler_optional_load.sh	exact output/exit discipline across runtime/locale arms
+no_edit	docs/research/wp40-engineering-brief.md	dual-runtime engine gates remain separate and unchanged
+no_edit	docs/research/mapgen-control.md	dual-runtime engine benchmark origin remains unchanged
+no_edit	BACKLOG.md	no standalone-interpreter policy
+no_edit	docs/design/world.md	no standalone-interpreter policy
+no_edit	docs/design/world_zones.md	no standalone-interpreter policy; dungeon decision is Phase 0A
+no_edit	tools/wp40/t5_probe/run_t5_probe.sh	targeted offline parity and engine probe semantics already agree
+no_edit	docs/research/wp40-t2-degeneracy-completeness.md	historical topology wording only
+precedence	docs/research/wp40-t2-contracts.md Sections 6-13	historical milestone wording preserved; Section 14.7 wins

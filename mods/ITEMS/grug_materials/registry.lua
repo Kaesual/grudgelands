@@ -325,10 +325,10 @@ grug_materials.DENSITY = {
 	},
 }
 
--- This is the pre-WP40 scatter roster. Its geometry remains in grug_mapgen;
+-- This is the shipped R4 respawn roster. WP40 R7 owns natural geometry;
 -- this list exists so runtime consumers do not maintain a second ore-name
--- inventory. Garnet/Diamond keep their current global placement until WP40
--- replaces it with race-region columns.
+-- inventory. The name is retained for compatibility until WP34 revises the
+-- respawn policy; it no longer describes an engine scatter registration.
 grug_materials.CURRENT_SCATTER_RESOURCES = {
 	"coal", "tin", "copper", "iron", "gold", "emberglass", "diamond",
 	"quartz", "silver", "garnet",

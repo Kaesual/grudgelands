@@ -1,0 +1,79 @@
+WP40 T2 WARCOAST-SOURCE-1 focused review-fix evidence record
+THIS IS A CURATED RECORD, NOT A VERBATIM STDOUT TRANSCRIPT.
+Command lines identify real invocations. Observation lines summarize their
+accepted assertions and retained digests without claiming literal stdout.
+
+baseline 506876f9ec8ab51140aeac3822f5bfc2674578e5
+baseline_tree f138031582b8a77a8211bb15398727d0f7ac1b0d
+runtime_measurement_head 9b444061fbb77aaf6d8a5bffdb4fc8e61d0146ec
+runtime_measurement_tree b4ce77a5ddb15026f7079ddb30e9e490293ad4d4
+tested_fix2_head 7589efabf49401e960cbc5bd37df20bd5fe77f6b
+tested_fix2_tree be2073fd8212d6879d3da343563f14b0ce06c467
+
+INITIAL REVIEW independent Claude Opus/xhigh: CHANGES_REQUESTED
+initial findings 0 Critical / 2 High / 3 Medium / 4 Low
+FIRST FOCUSED RE-REVIEW independent Claude Opus/xhigh: CHANGES_REQUESTED
+first focused re-review findings 0 Critical / 0 High / 1 new Medium / 3 new Low
+fix rounds 2 user-authorized
+second focused re-review pending
+
+MEASUREMENT PROVENANCE
+The runtime observations below were made against the exact executable and
+fixture bytes committed at runtime_measurement_head. Fix-2 changes exactly five
+Markdown paths from that head and zero Lua, shell, TSV, fixture or Source paths.
+No runtime result is attributed to the prose-only Fix-2 commit, and no expensive
+runner was repeated merely to remeasure byte-identical executable inputs.
+
+COMMAND WP40_T2_ONLY=warcoast_source_contract tools/wp40/run_t2_source_fast.sh
+OBSERVED LuaJIT green: two masks x 68,381 columns; two old masks x 11,542
+strict-exterior channel columns removed; boundary south/north 73/96 + 74/96;
+four nodes inland 96/96 + 96/96; inner clearance 840 - 64 = 776.
+
+COMMAND targeted vendored-PUC warcoast_source_contract phase
+OBSERVED PUC green and canonical output byte-identical to the LuaJIT arm.
+
+COMMAND WP40_T2_ONLY=source_corruption_kats tools/wp40/run_t2_source_fast.sh
+OBSERVED LuaJIT green, including exact two-entry/width-96 approach failures.
+
+COMMAND targeted vendored-PUC source_corruption_kats phase
+OBSERVED PUC green and accepted the same fail-closed mutation set.
+
+COMMAND tools/wp40/t2_source_audit.sh . --static-only
+OBSERVED Source static audit green.
+
+COMMAND WP40_LUA_BIN=/usr/bin/luajit tools/wp40/run_t2_s1_authority.sh
+OBSERVED projection 83b1b16a8afd11af654b5dd3e1d9921006848a0903e7b0c01ab39b27edddd652;
+authority 10a790a6436a740efc83e98afe3c374ac4b3520bb425de3d2bd0ac76622db37c;
+six lock blobs and 921 digest operations.
+
+COMMAND tools/wp40/run_t2_fields.sh
+OBSERVED shared 129d04476118a140eaebeff4aa0ce6b6c07af78e5539ff85fb43061e9ed0c932;
+full 94e4ac100fdb047b4a4a3cebcf88a355fe9f62586697b910dcc20f765badb00a;
+LuaJIT samples 292, PUC samples 17.
+
+COMMAND tools/wp40/run_t2_authored.sh
+OBSERVED LuaJIT full and PUC KAT green; canonical D-1 family/shell digests:
+3f41fb8f109f3edd4d0991632658b018c25686e664cc039406112ceb5740a5ed
+70c5d4885ec2eed77267e82d9adcbf618a4eb095b5286cc46726687e9436b94f
+b8d5b653946a27e254d602b533c511c129472b300992a33f48dcaa36bd65f038
+012817385d86ece1141969f829d6a9a1b4252e89b07c18489fb6218740ee5213
+
+CURATED STATIC FIX-2 VERIFICATION
+STATIC Fix-2 head/tree resolve to the exact values recorded above.
+STATIC diff runtime_measurement_head..tested_fix2_head contains exactly five
+Markdown paths and zero executable, Source, fixture or evidence paths.
+STATIC Source checksum is e244c25fdfec1736a905c9fd55115fbad1fb1bc070e3978336d7cf089b465963.
+STATIC PCC source-v1.txt SHA-256 and its exact manifest row are
+664c92edb2357ab998831086cdf98b8251fbcbc8166cf18d957edd3911928ac8.
+STATIC D-1 and max-u64 fixtures contain only the expected Source prerequisite
+rebind; their retained semantic digests remain the values above.
+STATIC six S1 lock blobs are byte-identical between baseline and Fix-2.
+STATIC the accepted C1 artifact manifest verifies 25/25 retained files; live
+recorded-evidence reuse remains fail-closed because two closure inputs moved.
+STATIC the five-sweep citation is tools/wp40/t2_source_audit.sh:372-402.
+STATIC git diff --check and evidence checksum verification are green.
+
+NOT RUN IN FIX-2
+No Source runtime, C1, F1, F2, full-W, Extreme population or other broad suite
+was launched. The separately authorized full 20+4 PUC C1-v3 reacceptance debt
+remains pending exactly as recorded in Section 14.11.

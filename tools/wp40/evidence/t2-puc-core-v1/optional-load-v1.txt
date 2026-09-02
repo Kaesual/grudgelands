@@ -1,0 +1,16 @@
+t2-compiler-optional-load v1
+case1-absent instantiate=ok geometry-unavailable=true
+case2-present-valid adopted=true seed=42 bindings=true vocabulary=true canonicalize=true
+case3-syntax-error raised=true names-file=true absent-claimed=false
+case4-runtime-error raised=true message-verbatim=true absent-claimed=false
+case5a-localized-enoent-no-errno instantiate=ok geometry-unavailable=true
+case5b-localized-enoent-errno2 instantiate=ok geometry-unavailable=true
+case5c-localized-eacces-errno13 raised=true carries-message=true absent-claimed=false
+case5d-static-no-prose-match searches=0 forbidden-hits=0
+case6-invalid-contract raised=true message-unchanged=true
+case7a-production-eacces-NO-errno raised=true carries-message=true absent-claimed=false listing-calls=1 listing-wants-files=true
+case7b-production-enoent-NO-errno-unlisted instantiate=ok listing-calls=1 geometry-unavailable=true
+case7c-same-message-listed raised=true carries-message=true absent-claimed=false decided-by=listing
+case7d-production-present-openable adopted=true seed=42 bindings=true listing-calls=0
+WP40 T2 compiler optional-load tests passed
+WP40 T2 compiler optional-load: LuaJIT/PUC byte-identical under LC_ALL=C and LC_ALL=de_DE.utf8

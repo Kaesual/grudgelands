@@ -1,0 +1,15 @@
+7636b52c19ca7d9b6520c2b975f9dca39c5b0f65526ad5a8c32d0320e2733f40  ./luajit/case-ids.txt
+94e4ac100fdb047b4a4a3cebcf88a355fe9f62586697b910dcc20f765badb00a  ./luajit/full-results.bin
+7fc194ee5746cf5b7253ba3c91cb30cd3f39730788e7cc779f54b44e6d99047d  ./luajit/full-results.tsv
+89768cb3d4a87cf98c00b607dd09018807da6d8b1a6d5d8afca181f74c748a06  ./luajit/metrics.tsv
+ded610615b48d5912447b9d2741f6a56bfcbb2332c21ad6818eb61dc7a14890f  ./luajit/run.log
+129d04476118a140eaebeff4aa0ce6b6c07af78e5539ff85fb43061e9ed0c932  ./luajit/shared-kats.bin
+9b8832dfff2103836f636c74973a19d15ced96f9b12144b4f48559f17416f633  ./luajit/wall-time.tsv
+5f0744496d1a9efbc293db00ddaf488e98879e1be6eef4a2a3b47baa46ffa33a  ./manifest.tsv
+a978d564adb9c72b51f183e7b2c9c1418cfedef404177d22d0ee540bee1eca3b  ./puc51/case-ids.txt
+a1f26e70f8968f94fca9ed7b0d2771313d415830eb07f191cd0ae7fde924a816  ./puc51/metrics.tsv
+1ed70eb05b11e0e67bd5b054a39c594133b199e97663de38cefce6827375bd1e  ./puc51/run.log
+129d04476118a140eaebeff4aa0ce6b6c07af78e5539ff85fb43061e9ed0c932  ./puc51/shared-kats.bin
+129d04476118a140eaebeff4aa0ce6b6c07af78e5539ff85fb43061e9ed0c932  ./puc51/targeted-results.bin
+5e3cdcbf5404caab02322945242134742afd1c277b39894e4beb2b0d1b0e3e91  ./puc51/targeted-results.tsv
+7fcb6645b4616a2ae445cf14cfce852b96339f6dca0e8be2ce930776ee287541  ./puc51/wall-time.tsv

@@ -19,9 +19,9 @@ local raider = {
 	-- skeleton_archer.lua no _grug_spawn_check is needed: that family lives
 	-- in the outer ring AND on the war coast and therefore needs a per-ROW
 	-- rule; this one is war-coast-only.
-	_grug_spawn_zones = {"war_coast"},
+	_grug_spawn_domains = {"contested"},
 	-- HP/damage/XP/armor: engine-owned (levels.lua). The war-coast cap of
-	-- grug_core.mob_level_at keeps this family at 20-30 — which is also why
+	-- grug_zones.mob_level_at keeps this family at 20-30 — which is also why
 	-- the two Captain Bonerattle rares (rares.lua) are ~L28.
 
 	reach = 2,
@@ -117,8 +117,8 @@ mobs:spawn({
 	-- ALL land tops plus sand — the night counterpart of the Carrion Crow's
 	-- list, and for the same reason (read that file's note): the war coast
 	-- carries whatever the local band's voronoi produces, wild patches
-	-- included, and this family is war_coast-exclusive so the wider list
-	-- cannot reach any other cell.
+	-- included. The common named-zone `war` palette plus the contested-domain
+	-- check keeps the wider list out of every other named zone.
 	nodes = {
 		"default:dirt_with_grass", -- grug_meadows
 		"default:dirt_with_coniferous_litter", -- grug_pine_hills
@@ -133,7 +133,7 @@ mobs:spawn({
 		"default:gravel", -- grug_crags
 		"default:snowblock", -- grug_crags_snowy
 		"grug_nodes:mud", -- grug_swamp
-		"default:sand", -- the war-coast beach band (§1.5)
+		"default:sand", -- beach cells inside explicit war zones
 	},
 	max_light = 5,
 	day_toggle = false,

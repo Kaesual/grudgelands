@@ -1,0 +1,10 @@
+WP40 T2 merge KAT phase=worker seeds=7
+census seed 0 done 1/7 wall=42s cpu=41.4s
+census seed 2147483648 done 2/7 wall=48s cpu=47.5s
+census seed 343674299183575008 done 3/7 wall=52s cpu=51.5s
+census seed 1959553668008863006 done 4/7 wall=44s cpu=44.5s
+census seed 15219119262482319357 done 5/7 wall=42s cpu=41.8s
+census seed 16178445837170081103 done 6/7 wall=45s cpu=44.4s
+census seed 18446744073709551615 done 7/7 wall=73s cpu=72.8s
+WP40 T2 merge KAT phase=dual-runtime-merge
+WP40 T2 merge KAT phase=complete

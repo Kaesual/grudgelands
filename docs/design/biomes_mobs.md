@@ -1,7 +1,8 @@
 # Biomes & Mobs — Catalog
 
 **Content catalog and current implementation contract** (authored 2026-08-06,
-WP6 outcomes folded in 2026-08-07/08). Sections 2–7 remain the source for
+WP6 outcomes folded in 2026-08-07/08; WP40 R6 surface projection added
+2026-08-29). Sections 2–7 remain the source for
 biome properties, mobs, gathering, woods and materials. The old ring geometry
 in §1 and the `core/inner/outer/coast/war_coast` spawn cells in §4 describe the
 shipped WP18/WP36 map only: `world_zones.md` superseded that surface placement
@@ -411,8 +412,9 @@ Notes:
 - The single shared `grug_ocean` above replaces the per-biome
   sand-bottom `_ocean` siblings of the WP2 mapgen (decided with WP18 —
   one ocean is simpler and the only way to cover the open sea).
-- **Target coastal habitat**: the exact 80-node exterior shelf around each
-  planned mainland or dragon-island footprint carries coral, kelp, fish and
+- **Target coastal habitat**: the nominal band where
+  `expanded_land_at(80) and not land_at` holds around authored positive
+  mainland or dragon-island shapes carries coral, kelp, fish and
   harmless-to-low-level shore wildlife, distinct from immutable deep ocean.
   Planned bays/lakes/rivers remain zone water and receive their logical-biome
   dressing instead. Shore Crab and Reef Lurker remain deferred for want of a
@@ -702,8 +704,101 @@ farming system are one later package.
 | grug_jungle_edge | jungle_tree.mts (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[spice T1]` | |
 | grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025); papyrus lives in the adjacent swamp/shore band (v7 has no water above sea level, so the jungle cuboids at y ≥ 4 cannot host waterside papyrus) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]`; wild melon `[food]` | same flora, roster and target ground: `grug_nodes:dirt_with_canopy_litter`. The shipped WP36 fringe still uses rainforest litter only until WP40 replaces the legacy biome registrations. Existing decorations name both nodes during that migration |
 | grug_swamp | papyrus_on_dirt, dead bush; willow-ish gravewood retint optional | reeds, waterlilies; marshbloom `[spice T2]`; mushrooms `[food found-only]` | shallow water pools (mud floor) |
-| grug_beach | — | shells (deco); stormkelp on coast-zone beaches only `[spice T3]`; rock salt crust on coast-zone beaches `[food found-only]` | |
+| grug_beach | — | shells (deco); rock salt crust on coast-zone beaches `[food found-only]` | Stormkelp uses the cross-biome dry-shore predicate below, not a beach-only row. |
 | war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided); decoration set ships with WP13's schematic pass |
+
+### 2.1 WP40 surface and deterministic decoration projection
+
+The following table is the binding WP40 surface projection. It promotes the
+normalized preflight table's WP18 migration-baseline top/filler values and
+depths into target parameters, including its target-confirmed canopy-litter
+correction for both deep-jungle logical IDs. Shore and bed spans remain owned
+by the accepted R3/R5 vertical operations; the table chooses their material
+only.
+`grug_crags_snowy` alone adds `default:snow` as dust on an exposed dry top.
+Planned hydrology uses `default:river_water_source`; all other authored water
+uses `default:water_source`. A logical biome not in this complete table is a
+contract error rather than a fallback to an engine biome.
+
+| Logical biome | Top / depth | Filler / depth | Shore and bed | Deterministic R6 decorations (`fill_numerator/fill_denominator`) |
+|---|---|---|---|---|
+| `grug_meadows` | `default:dirt_with_grass` / 1 | `default:dirt` / 3 | `default:sand` | apple tree `3/2000`; bush `1/250`; each grass 1–5 `3/50` |
+| `grug_pine_hills` | `default:dirt_with_coniferous_litter` / 1 | `default:dirt` / 3 | `default:gravel` | pine tree `1/250`; small pine `1/500`; pine bush `3/500`; blueberry bush `1/1000`; each fern 1–3 `1/50` |
+| `grug_crags` | `default:gravel` / 1 | `default:gravel` / 2 | `default:gravel` | snowy pine `1/500`, only at `surface_y >= 60` |
+| `grug_crags_snowy` | `default:snowblock` / 1 | `default:gravel` / 2 | `default:gravel` | none |
+| `grug_elf_forest` | `grug_nodes:dirt_with_silver_litter` / 1 | `default:dirt` / 3 | `default:sand` | silverwood via replaced aspen tree `1/200`; apple tree `1/500`; each grass 1–3 `1/50` |
+| `grug_deep_forest` | `grug_nodes:dirt_with_forest_litter` / 1 | `default:dirt` / 3 | `default:sand` | apple tree `3/250`; aspen tree `1/125`; fallen apple log `1/1000`; each fern 1–3 `1/50` |
+| `grug_swamp` | `grug_nodes:mud` / 1 | `grug_nodes:mud` / 2 | `grug_nodes:mud` | papyrus `1/50`, only at `surface_y = 1..4`, replacing template `default:dirt` with `grug_nodes:mud`; dry shrub `1/250` |
+| `grug_savanna` | `default:dry_dirt_with_dry_grass` / 1 | `default:dry_dirt` / 3 | `default:sand` | acacia tree `1/500`; acacia bush `1/250`; dry shrub `1/250`; each dry grass 1–5 `3/50` |
+| `grug_badlands` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125` |
+| `grug_badlands_east` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125` |
+| `grug_blight` | `grug_nodes:blight_dirt` / 1 | `default:dirt` / 3 | `default:gravel` | gravewood `3/2000`; dry shrub `3/200`; bone pile `1/500` |
+| `grug_bone_forest` | `grug_nodes:dirt_with_bone_litter` / 1 | `default:dirt` / 3 | `default:gravel` | gravewood `3/200`; bone pile `1/250` |
+| `grug_jungle_edge` | `default:dirt_with_rainforest_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/125`; junglegrass `1/25` |
+| `grug_deep_jungle` | `grug_nodes:dirt_with_canopy_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/50`; emergent jungle tree `1/200`; junglegrass `1/20` |
+| `grug_jungle_fringe` | `grug_nodes:dirt_with_canopy_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/50`; emergent jungle tree `1/200`; junglegrass `1/20` |
+| `grug_beach` | `default:sand` / 1 | `default:sand` / 2 | `default:sand` | none |
+
+Every decoration root requires `surface_y >= 1`. Template schematics are
+centred in x/z and rotate by a domain-separated choice among 0/90/180/270
+degrees. The blueberry bush and fallen apple log use y offset +1; the log is
+centred only in x and replaces its unavailable brown mushroom with `air`. The
+emergent jungle tree uses y offset −4, is limited to `surface_y <= 32`, and all
+other template offsets are zero. Silverwood applies the accepted aspen-node
+replacement. Every dry shrub has exact `param2 = 4`; each gravewood trunk has
+hash-selected height 2–4. Simple variant ranges above mean one independently
+settled entry per named variant at the displayed fill.
+
+Candidate cells are globally anchored 16-column squares. Exact rational fills,
+full-seed domain-separated hashes, canonical candidate rank, quarter-turn
+rotation and the largest rotated-footprint neighbor halo replace engine
+randomness and the legacy emergent-tree `sidelen = 80`. Cultural reservations
+settle first, followed by emergent/other large templates, ordinary trees,
+simple multi-node trunks and ground cover. Wrong hosts, exclusions, clearance
+or collisions reject without movement, retry or fallback placement.
+
+R6 emits no placeholder for meadow flowers, Elf white flowers, Pine Hills
+boulders, Blight grey-grass tufts or optional Swamp willow/gravewood retint.
+It also does not add herbs, spices, crops, found-only foods, battlefield
+dressing or any other optional decoration; their owning packages remain
+unchanged.
+
+### 2.2 WP33 gathering-source contract (decided 2026-08-31)
+
+WP33 adds exactly twelve one-cell natural sources through WP40's `P9G` tail.
+P9G runs after R6 P9 in the same private buffers and single VoxelManip commit.
+It never overwrites, moves, retries or refills a rejected root. Every accepted
+source is a low hand-gathered node and drops exactly one stable raw item; the
+three healing herbs first pass the fail-closed Alchemist authorization below.
+The exact named-zone and host rosters are `world_zones.md` Section 11; density
+is over eligible root columns, not all map columns.
+
+| Source | Exact opportunity density | Classification | Farmable in WP32 |
+|---|---:|---|---|
+| Potato | 1/256 | universal food | yes |
+| Corn | 1/256 | universal food | yes |
+| Sunleaf | 1/384 | universal spice T1 | yes |
+| Mushroom | 1/384 | universal found-only food | no |
+| Gravemoss | 1/512 | healing herb T1 | no |
+| Marshbloom | 1/512 | universal spice T2 | yes |
+| Melon | 1/512 | universal food | yes |
+| Dragonweed | 1/768 | healing herb T2 | no |
+| Crimson Lotus | 1/1024 | healing herb T3 | no |
+| Stormkelp | 1/1024 | universal spice T3 | yes |
+| Wild Cocoa | 1/1024 | universal found-only food | no |
+| Rock Salt | 1/1024 | universal found-only food | no |
+
+The complete gathering population is closed at **26 identities**: these twelve
+new P9G sources, eight existing R6 sources (Apple, Blueberries, Oak, Mountain
+Pine, Silverwood, Spikethorn Acacia, Kapok and Gravewood), and the six R6
+cultural slots in `items_crafting.md` Section 4.1. A reused tree or bush is not
+placed a second time.
+
+`grug_gathering` owns exactly one registration seam for healing herbs. Before
+WP10 provides it, all three herbs are visible but cannot be removed or yield an
+item. Later only `grug_jobs` may register the authorizer and read profession or
+recipe-book state. Missing, throwing or malformed authorization fails closed;
+spices, foods and cultural sources never call this seam.
 
 **Healing herbs** (Alchemist only, never farmable; both continents reach
 every tier — see §6): **gravemoss T1** (pine hills, blight),
@@ -721,8 +816,10 @@ jungle's 3.13 % on the Throng side (§1.3).
 **Spices** (gathered by everyone, used by both the Alchemist and
 Cooking — which costs no main slot — and farmable once farming ships):
 **sunleaf T1** (meadows, savanna, elf forest, jungle edge),
-**marshbloom T2** (swamp), **stormkelp T3** (coast-zone beaches). All
-three sit on grass, mud or sand — cultivable ground.
+**marshbloom T2** (swamp), **stormkelp T3** (the exact cardinal dry-shore
+predicate in `world_zones.md` §11). Sunleaf and Marshbloom sit on workable
+grass/mud; Stormkelp's natural source may use any accepted P7 dry support in
+its four named high/endpoint zones and does not require `grug_beach` or sand.
 
 **Cooking supply, checked against the cooking tiers** (cooking keeps its
 own recipe book with T1–T6 groups, `items_crafting.md`; the tiers tie to
@@ -733,7 +830,7 @@ the region an ingredient comes from):
   plus meat and fish from anywhere.
 - **T6 needs ingredients from level 50+ ground, and the coast/outer
   rows do carry them**: **wild cocoa** in deep jungle / jungle fringe
-  (38–60), **stormkelp** and **rock salt** on the coast-zone beaches
+  (38–60), **stormkelp** on high/endpoint dry shores and **rock salt** on beaches
   (45–60), and the meat of the outer/coast families (bear, jungle ape,
   panther, crocodile), whose level comes from `mob_level_at` and is
   45–60 out there. Every one of them exists on both continents (§6), so

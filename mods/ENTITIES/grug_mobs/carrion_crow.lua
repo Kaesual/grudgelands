@@ -34,9 +34,9 @@ local crow = {
 	-- tops". Unlike skeleton_archer.lua no _grug_spawn_check is needed: that
 	-- family also spawns in the outer ring and therefore needs a per-ROW
 	-- rule, while every row of this file is war-coast-only.
-	_grug_spawn_zones = {"war_coast"},
+	_grug_spawn_domains = {"contested"},
 	-- Level: engine-owned (levels.lua); the war-coast cap of
-	-- grug_core.mob_level_at keeps it at 20-30.
+	-- grug_zones.mob_level_at keeps it at 20-30.
 
 	-- Flier (gull.lua header). fall_damage stays at mobs_redo's default: prey
 	-- is not a critter, and a flier's falling() bails out before the fall
@@ -119,8 +119,9 @@ mobs:spawn({
 	-- (§1.4). §4's "settled tops, blight_dirt" left grug_deep_forest,
 	-- grug_bone_forest, grug_crags(+snowy), grug_badlands and grug_swamp
 	-- war-coast strips without ANY daytime mob. This family is war_coast-
-	-- exclusive by _grug_spawn_zones, so a wider node list cannot leak into
-	-- another cell — the zone does all of the gating either way.
+	-- exclusive by the common named-zone `war` palette; the additional
+	-- contested-domain check authenticates the PvP status. The wider node list
+	-- therefore cannot leak into another named zone.
 	nodes = {
 		"default:dirt_with_grass", -- grug_meadows
 		"default:dirt_with_coniferous_litter", -- grug_pine_hills
@@ -135,8 +136,8 @@ mobs:spawn({
 		"default:gravel", -- grug_crags
 		"default:snowblock", -- grug_crags_snowy
 		"grug_nodes:mud", -- grug_swamp
-		-- No `default:sand`: the war-coast beach is the Gull's day slot
-		-- (gull.lua, zones strait/war_coast/coast) and already covered.
+		-- No `default:sand`: every authenticated grug_beach cell is the Gull's
+		-- day slot and is already covered.
 	},
 	min_light = 10,
 	interval = 20,

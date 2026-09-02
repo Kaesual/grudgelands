@@ -1,16 +1,16 @@
 # World Design
 
 Decided spec (2026-08-05/06; continent redesign 2026-08-06; named-zone
-redesign 2026-08-10). Implementation: WP2/WP18 are the currently shipped
-map, WP6 supplies guards/outposts, WP40 replaces the surface geography with
-the named-zone map, and WP13 then supplies structures and villages. The
-binding macro-map and PvP rules are in `world_zones.md`.
+redesign 2026-08-10; R6 camp quantity 2026-08-29). Implementation: WP2/WP18
+are the currently shipped map, WP6 supplies guards/outposts, WP40 replaces the
+surface geography with the named-zone map, and WP13 then supplies structures
+and villages. The binding macro-map and PvP rules are in `world_zones.md`.
 
 ## 0. Canonical names
 
-Decided 2026-08-06 (rename from the placeholder faction names). These
-names are canonical for docs, code and content — do not reintroduce the
-old ones.
+Decided 2026-08-06 (rename from the placeholder faction names;
+Battlegrounds macro-region name 2026-08-27). These names are canonical for
+docs, code and content — do not reintroduce the old ones.
 
 | Thing | Display name | Internal id |
 |-------|--------------|-------------|
@@ -18,10 +18,15 @@ old ones.
 | Northern faction | **The Throng** | `throng` |
 | Southern continent (Accord homeland) | **Elandor** | `elandor` * |
 | Northern continent (Throng homeland) | **Kragmar** | `kragmar` * |
+| Shared macro region | **Battlegrounds** | `holy_grounds` ** |
 
 \* The two continent ids are **reserved, not yet used in code**: today a
 continent is only the sign of z (`grug_core.territory_at`). Use them if
 and when a continent ever becomes a first-class id.
+
+\** `holy_grounds` is an accepted compatibility id for geometry, policy and
+artifacts. It is not a player-facing name and does not imply blanket terrain
+protection.
 
 - In running prose the factions take the article: *the Accord*, *the
   Throng*; the full form "The Accord" is for titles and UI labels.
@@ -41,7 +46,7 @@ and when a continent ever becomes a first-class id.
 ## 1. Geography: two continents and named zones
 
 **Kragmar remains north and Elandor remains south.** They are distinct faction
-continents joined along the continuous four-zone Holy Grounds land band. The
+continents joined along the continuous four-zone Battlegrounds land band. The
 Wyrmglass Crown and Stormscale Summit are separate offshore dragon islands
 beyond its western and eastern ends and have no land-neighbor edges. Ocean
 separates the remaining coast. The old mandatory open-water strait, three-loop
@@ -55,18 +60,19 @@ different shapes and zone identities. Full contract: `world_zones.md` §1.
 
 Each mainland has a memorable three-lobed progression silhouette. Three outer
 cultural peninsulas hold the start/home spines and are separated by two long
-bays; they join at a continuous west/east capital-and-heartland belt, then
-broaden into a closed three-sector frontier at the Holy Grounds. Elandor and
-Kragmar share that topology but use independent base polylines and noise, never
-mirrored coast geometry. The bays stop before the capital belt and may not
+bays; they join at a continuous capital-and-heartland belt, then broaden into
+a three-sector frontier at the Battlegrounds. Elandor and Kragmar share that
+high-level composition but use separately authored simple land primitives
+under the single shared layout-bound warp, never mirrored coast geometry. The
+bays stay outside the capital envelopes and coastal housing cores and may not
 create or remove zone neighbors.
 
-The capital/heartland belt uses base z = -1900..-1100 in Elandor and
-+1100..+1900 in Kragmar; the frontier then occupies the land through z = -250
-or +250 respectively. Exact seven-cell x intervals and the separator control
-vertices are binding in `world_zones.md` §7. They leave every fixed capital's
-704×704 terrain blend inside its own zone and quickly rebalance the three
-frontier sectors before their paired Holy-Grounds contacts.
+The fixed hubs, simple macro-land primitives and integer power ownership in
+`world_zones.md` §7 are the sole horizontal authority. Each 512×512 capital
+envelope is guaranteed to its capital zone; its wider 704×704 terrain blend
+may cross a zone boundary and is not an ownership constraint. The authored
+route graph, not separator vertices or a geometric dual, defines gameplay
+neighbors toward the Battlegrounds.
 
 ### Difficulty layout: outer starts to high-level front
 
@@ -78,13 +84,13 @@ faction front:
 | Outer race starting zones | 1–10 | safe spawn settlements, one per race |
 | Home zones | 11–20 | safe early questing; roads toward the capitals |
 | Central heartland | 21–30 | safe capital approaches and middle progression |
-| Frontier and Holy Grounds | 31–40 / 41–50 / 51–59 | contested war infrastructure and dangerous wildlife |
+| Frontier and Battlegrounds | 31–40 / 41–50 / 51–59 | contested war infrastructure and dangerous wildlife |
 | Offshore dragon islands | 60 | contested apex mining and world-boss destinations |
 | Capital city zones | no hostile ambient enemies | safe hubs; level-60 guards and important NPCs |
 
 No level-1–30 zone is contested. Automatic PvP begins in every level-31–40
 frontier zone and remains forced through all higher ordinary zones. The four
-Holy Grounds zones provide the continuous mainland faction contact; both
+Battlegrounds zones provide the continuous mainland faction contact; both
 level-60 dragon zones are offshore islands without land-neighbor edges.
 Named zones and an authored within-zone gradient replace radial distance as
 the surface input to `mob_level_at`. The depth floor remains unchanged and
@@ -103,7 +109,7 @@ The road toward the outer side reaches a level-10–20 neighbor, lateral roads
 along the capital axis reach medium-level heartland, and the road toward the
 faction front reaches high-level territory. These safe progression spines and
 both west/east capital axes are primary roads. Cross-links and all twelve
-frontier/Holy-Grounds contacts are secondary roads; across the front they form
+frontier/Battlegrounds contacts are secondary roads; across the front they form
 six distributed north/south crossings rendered as damaged military routes,
 not one intact arterial road. Capital defense is the one fixed guard rule: its
 guards and important NPCs are level 60.
@@ -125,8 +131,9 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   active housing claim or a bounded hard-protected world-content volume.
   Hard-protected content is limited to complete capitals/gates/aprons,
   starting/respawn cores, essential service/quest/waypoint/graveyard platforms,
-  small functional NPC and renewable-resource anchors, and a bridge or gate
-  for which no adequate alternate route exists. Ordinary roads, villages,
+  small functional NPC and renewable-resource anchors, the six 128-node
+  capital-ingress corridors (`world_zones.md` §12), and a bridge or gate for
+  which no adequate alternate route exists. Ordinary roads, villages,
   outpost/camp shells, ruins, tents, fences and battlefield dressing are
   generated once, remain claim-excluded and may be changed under their zone's
   terrain rule.
@@ -143,33 +150,35 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     for ordinary roads and structures; those envelopes never become mutation
     protection. Terrain-derived placement heights are immutable mapgen output,
     but no first generated chunk owns the decision. The running pre-WP40
-    placeholder generator may skip an anchor whose candidate terrain is
-    flooded or too steep; this is legacy behavior, not the target contract.
-    WP40/WP13 must select a deterministic reserved fallback candidate inside
-    the owning envelope or fail that seed's generation audit. A mandatory
-    graph/POI anchor may never disappear silently.
+    placeholder generator may skip an anchor whose terrain is flooded or too
+    steep; this is legacy behavior, not the target contract. WP40 must grade
+    every fixed reserved anchor position inside its owning envelope or fail
+    that seed's generation audit; WP13 may not invent a replacement position.
+    A mandatory graph/POI anchor may never disappear silently.
 - **R2 — Peaceful enemy territory**: in level-1–30 land, an enemy faction may
   not dig or place any node, including torches and ladders. Items remain
   usable. At y = -701 and below the universal contested deep rule overrides
   land-side faction ownership.
-- **R2b — Contested land and Holy Grounds**: every ordinary level-31–60
+- **R2b — Contested land and Battlegrounds**: every ordinary level-31–60
   frontier or dragon-island zone has no construction owner; both factions may
   dig and place subject to tools and explicit protected envelopes. The four
-  Holy Grounds zones are immutable from the surface through y = -700; ordinary
-  contested depth resumes at y = -701. Dragon channels remain immutable at
-  every y. A cultural `race_region` never grants terrain rights
-  (`world_zones.md` §§8.3/11).
+  Battlegrounds zones follow the same shared edit rule at every y, remain
+  claim-excluded and retain their separate flight classification. Dragon
+  channels remain immutable at every y. A cultural `race_region` never grants
+  terrain rights (`world_zones.md` §§8.3/11).
 - **R3 — Water columns**: classification is analytic in x/z and does not
-  change when players fill or drain nodes. Every authored bay, lake, river,
-  marsh channel, cenote or other water mask inside a
-  `planned_mainland_footprint` remains part of its named zone and can never be
-  deep ocean. The editable 80-node `coastal_shelf` starts only outside the
-  final analytic footprint perimeter and inherits the adjacent perimeter
-  zone's faction/PvP terrain rights; `deep_ocean` beyond that band is immutable
-  at every y. Dragon-channel masks override the shelf and make their complete
-  columns immutable from world bottom to top. Every exterior-ocean class
-  remains non-flyable, while planned zone water inherits its zone's flight
-  rule. Housing uses dry mainland claims and has no island exception.
+  change when players fill or drain nodes. Every authored lake, river, marsh
+  channel, cenote and the landward part of each bay mask remains planned water
+  in its named zone. The four declared outer bay-mouth caps instead become
+  ownerless `deep_ocean` at warped z = -3000 on Elandor and z = +3000 on
+  Kragmar. The editable nominal `coastal_shelf` is exactly
+  `expanded_land_at(80) and not land_at` and inherits the nearest eligible
+  mainland hub's faction/PvP terrain rights; `deep_ocean` beyond that band and
+  in those four mouth caps is immutable at every y. Dragon-channel masks
+  override the shelf and make their complete columns immutable from world
+  bottom to top. Every exterior-ocean class remains non-flyable, while planned
+  zone water inherits its zone's flight rule. Housing uses dry mainland claims
+  and has no island exception.
 - **R4 — Nothing regrows** (decided 2026-08-08): ores and resources do
   **not** respawn. A mined-out vein is gone, everywhere, for good. The
   world does not run dry because **depth supplies without bound** (R6,
@@ -182,10 +191,12 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   walls, tents, fences and dressing remain mutable and claim-excluded. In the
   MVP that exception is **exactly one structure kind: the mining camps** of
   §4.
-  - **10–15 renewable resource nodes per camp**, in the **tier of the
-    camp's own region** (§2 R6 / `items_crafting.md` §3.0.1) — so a camp
-    is where a player gets T3 stock without a −400 expedition, and the
-    camp's garrison is the price.
+  - **Exactly 12 renewable regional-tier metal sockets per ordinary camp**, in
+    the **tier of the camp's own region** (§2 R6 / `items_crafting.md` §3.0.1)
+    — so a camp is where a player gets T3 stock without a −400 expedition,
+    and the camp's garrison is the price. `world_zones.md` §11 gates this fixed
+    count as exact six-race ordinary-camp equality, separately from sampled
+    natural-resource density.
     - The two level-60 apex camps at the dragon endpoints are the fixed
       exception to the single regional-tier content rule: each has exactly
       **12 nodes, two each of Citrine, Garnet, Jade, Diamond, Sapphire and
@@ -261,21 +272,34 @@ Implementation: one central `core.is_protected` override in `grug_core`
 Water type is an authored x/z classification, not a test of the node currently
 occupying a position (`world_zones.md` §7):
 
-- **Planned zone water:** bays, lakes, rivers, marsh channels, cenotes and
-  other authored water inside a continent's `planned_mainland_footprint` remain
-  part of their named zone. All use the same `default:water_source` as every
-  other generated surface water body; the owning logical biome or an explicit
-  landmark changes only bed, shore, depth and decorations. They inherit the
-  zone's terrain, PvP and flight rules and can never become deep ocean. Their
-  authored masks remain claim-ineligible even if players later fill or drain
-  them.
-- **Coastal shelf:** the first 80 nodes outside the final analytic perimeter of
-  a planned mainland or island footprint. This is editable under the adjacent
-  perimeter zone's terrain policy and reserved for later coral, kelp, fish,
+- **Planned zone water:** the landward parts of bays, lakes, rivers, marsh
+  channels, cenotes and other authored water inside a named zone remain part
+  of their named zone. Wet named WP40 hydrology reaches use non-renewable,
+  range-two `default:river_water_source` / `default:river_water_flowing`;
+  oceans, bays and other non-hydrology surface-water classes use
+  `default:water_source`. The owning logical biome or an explicit landmark
+  changes bed, shore, depth and decorations within that material rule. Named
+  waterfall contact faces leave one source-node-deep receiver opening in the
+  lower bed so native falling liquid enters the pool instead of spreading
+  across its surface; WP40 does not author falling-liquid columns. Planned
+  water inherits the zone's terrain, PvP and flight rules and can never become
+  deep ocean. Its authored masks remain claim-ineligible even if players later
+  fill or drain them. The four explicitly declared outer bay-mouth caps are
+  excluded from this class and use the deep-ocean rule below.
+- **Coastal shelf:** the nominal exterior band where
+  `expanded_land_at(80) and not land_at` holds around authored positive
+  mainland or island shapes. This is editable under the nearest eligible
+  mainland hub's zone terrain policy and reserved for later coral, kelp, fish,
   coastal materials and shore wildlife. It is never housing-claim ground.
-- **Deep ocean:** every ordinary ocean column beyond the shelf, immutable at
-  every y. This remains the deliberately deadly open sea patrolled by the
-  level-100 Kraken Guard (no drops or XP). Playable-boat ownership,
+  As exterior water it has no authored surface or guard level. Ordinary
+  `mob_level_at` is nil at normalized y >= 0; harmless/fixed shore wildlife is
+  independently levelled. Below normalized y = 0, shelf caves use the standard
+  capped/rounded depth level alone.
+- **Deep ocean:** every ordinary ocean column beyond the shelf plus the four
+  declared outer bay-mouth caps, immutable at every y. This remains the
+  deliberately deadly open sea patrolled by the level-100 Kraken Guard (no
+  drops or XP). It has no ordinary surface, guard or mob-level result: the
+  Kraken is a hand-set fixed entity outside those resolvers. Playable-boat ownership,
   acquisition, speed, damage, destruction and return/respawn behavior are not
   defined by this world-geometry rule (`TODO-design-boats.md`).
 - **Dragon channels:** separate full-column immutable masks between the
@@ -283,9 +307,10 @@ occupying a position (`world_zones.md` §7):
   not inherit the deep-ocean Kraken/boat-destruction rule. Their warning and
   hard-flight bands come from the same 2D distance field. Each channel carries
   two distinct 96-node-wide approaches centred at z = -125 and z = +125,
-  joining its Holy Grounds endpoint to two inward-shore island beaches. Both
+  joining its Battlegrounds endpoint to two inward-shore island beaches. Both
   are usable by both factions; their north/south orientation only equalizes
-  travel from Kragmar and Elandor.
+  travel from Kragmar and Elandor. They have no ordinary surface, guard or mob-
+  level result.
 The compatibility `open_sea_at` predicate must become true only for
 `deep_ocean`; it is false for planned zone water, shelf and dragon channel. The
 shipped WP18 rectangle/strait lookup remains running-code history only and is
@@ -294,8 +319,8 @@ replaced by WP40.
 ## 2c. PvP geography and player tag
 
 Peaceful and contested status belongs to the named surface zone. No level
-1–30 surface zone is contested; every ordinary level-31–60 frontier, Holy
-Grounds and dragon-island zone is contested. Independently of the surface
+1–30 surface zone is contested; every ordinary level-31–60 frontier,
+Battlegrounds and dragon-island zone is contested. Independently of the surface
 zone, every non-ocean land position at **y = −701 and below** is contested.
 Entering a contested zone automatically applies the player's PvP tag; an
 untagged player in a peaceful zone cannot receive unprovoked enemy-player
@@ -413,8 +438,8 @@ zones. They enforce authored routes and make the zone's strategic role visible:
   and anyone permitted by the zone rule who fights past the garrison may mine
   it. Under R4 a **mining camp is the only place in
   the world where anything regrows at all**, precisely because its
-  small functional anchor and renewable sockets are indestructible: 10–15
-  renewable nodes in the region's own material tier on a 2–4 h respawn
+  small functional anchor and renewable sockets are indestructible: exactly
+  12 renewable regional-tier metal sockets on a 2–4 h respawn
   (numbers and rationale in §2 R4). Its ordinary walls, tents and dressing
   remain mutable under the local terrain policy.
   That is what makes such a camp a travel destination and a conflict
@@ -423,9 +448,18 @@ zones. They enforce authored routes and make the zone's strategic role visible:
   section has so far named them only as a *role* an outpost can carry;
   authoring them (schematic, garrison, protection footprint) belongs to
   the world-structures package.
-- Guard level normally follows the local named zone and the post's role;
-  capital guards are the fixed exception at level 60. A guard at level ≥ 60
-  is automatically an elite (scale/tint/telegraph, `combat_stats.md` §3).
+- The T3 positional guard base is `nil` in every exterior class, including
+  editable shelf, where no guard post may exist. It is exactly level 60 inside
+  a capital's exact 512×512 build envelope plus 10-node hard-protection apron
+  only at normalized y >= -700.
+  At y <= -701 and everywhere else on non-exterior columns it is
+  `min(70, max(20, surface_level_at(pos)))`. WP13 may later raise that non-nil
+  generic base outside the shallow capital hard volume, capped at 70, but may
+  never lower it; exterior nil remains nil. Ordinary and royal capital guards
+  inside the shallow hard volume remain exactly 60. The fixed level-65 king is
+  separate from both resolvers.
+  A guard at level ≥ 60 is automatically an elite (scale/tint/telegraph,
+  `combat_stats.md` §3).
 - Each named zone reserves its required outposts, road patrol legs and special
   camps explicitly. The old fixed minimum of 24 ring outposts is not a target
   budget; the complete zone catalog must replace it with equivalent faction
@@ -499,10 +533,10 @@ kites into terrain, sidesteps pathfinding exploits), telegraphed attacks
 **distinct skill set** so it threatens in its own way.
 
 - The old stage-one rule **one dragon per continent is retired**. The world
-  gets two offshore overworld dragons, one beyond each Holy Grounds endpoint,
+  gets two offshore overworld dragons, one beyond each Battlegrounds endpoint,
   implemented through one encounter chassis with two regional variants.
 - Every overworld dragon occupies a separate **offshore island** beyond one
-  ocean endpoint of the Holy Grounds. An immutable full-column channel removes
+  ocean endpoint of the Battlegrounds. An immutable full-column channel removes
   land, bridge and tunnel access; both factions receive equivalent authored
   boat routes through separate 96-node northern and southern approaches. Each
   island is a contested level-60 mountain zone with strong level-60 creatures,
@@ -617,10 +651,12 @@ administration system do not exist in the target design.
   Claims are dry-land housing only: no protected underwater claims or private
   harbors.
 - Copperfell Foothills, Mournfen, Starbough Vale and Raincall Basin each retain
-  a continuous gentle coastal housing core with at least 600 shoreline nodes,
-  300 nodes of buildable inland depth and at most 12 nodes of natural-ground
-  relief in every wholly contained 101×101 reservation. Elsewhere there is no
-  general runtime slope test.
+  a continuous gentle vertical-capsule coastal housing core with at least 600
+  shoreline nodes, at least 300 nodes of buildable inland depth and at most 12
+  nodes of natural-ground relief in every wholly contained 101×101
+  reservation. The complete mutable capsule is dry, zone-owned and
+  static-exclusion-free; it is not a visible rectangular coast. Elsewhere
+  there is no general runtime slope test.
 
 ### 5.2 Ownership, ACL and active-world behavior
 
@@ -696,9 +732,10 @@ administration system do not exist in the target design.
   numbers and one canonical live location invalidate stale ItemStacks without
   cloning or reviving protection; spatial indexes are rebuilt from mod storage.
 - Each faction has an administrator-configurable live-Stone limit. Its safe
-  default is selected below the measured capacity of the real exclusion masks
-  over 32 representative seeds, never inferred from gross zone area or an
-  arbitrary population quota.
+  default is selected below the once-per-layout canonical packing capacity of
+  the real fixed exclusion masks, never inferred from gross zone area or an
+  arbitrary population quota. Varying-seed height/content conformance remains
+  a separate audit.
 - Issuance is first come, first served, with no wait list or reservation. The
   integer `grug_housing_inactivity_days` setting ranges 0..3650 and defaults to
   0 (disabled). With decay enabled and a full legal pool, an issuance request
@@ -884,8 +921,11 @@ budget; WP13 then turns the reserved slots into real structures.
 Life measures (cheap on a voxel budget): named NPCs with one-liner barks,
 visible patrols, light/smoke details and a quest board per village. Ordinary
 guards fight monsters and eligible enemy players; only dedicated war-front
-units fight opposing faction NPCs. NPC and guard levels match the named zone
-except for the fixed level-60 capital defense.
+units fight opposing faction NPCs. NPC levels follow their named zone/role.
+Guard levels use the positional base above, with exact level-60 capital
+defense in the shallow capital hard volume; a later authored post role may only
+raise the generic base outside that volume within its cap. Kings retain their
+separate fixed level 65.
 
 **Drop rule (anti-litter, decided 2026-08-06)**: mobs and NPCs drop
 loot ONLY when a player was involved — details in combat_stats.md §3

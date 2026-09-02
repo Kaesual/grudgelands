@@ -17,10 +17,10 @@
 -- (CC BY-SA 3.0) -- see LICENSE-media.md for attribution and the exact
 -- ImageMagick operations.
 --
--- WP18 registers the nodes only. The mapgen DECORATIONS keep using
--- default's .mts files and substitute our nodes via `replacements` at
--- placement time (grug_mapgen, T4); the hand-built great_silverwood.mts
--- treehouse schematic is WP13.
+-- WP18 registers the nodes only. R7 P9 uses default's .mts files and
+-- substitutes our nodes via `replacements` inside the single mapgen
+-- transaction; the hand-built great_silverwood.mts treehouse schematic is
+-- WP13.
 
 grug_trees = {}
 
@@ -38,17 +38,17 @@ end
 -- Growth
 --
 
--- Node replacements for the aspen schematics. grug_mapgen's silverwood
--- decoration needs the same table, so it lives on the mod table.
+-- Node replacements for the aspen schematics. R7 P9's silverwood template
+-- resolver needs the same table, so it lives on the mod table.
 grug_trees.silverwood_replacements = {
 	["default:aspen_tree"] = "grug_trees:silverwood_tree",
 	["default:aspen_leaves"] = "grug_trees:silverwood_leaves",
 }
 
 -- Silverwood grows default's aspen schematic with the aspen nodes swapped
--- for ours -- exactly what the decorations do as well.
+-- for ours -- exactly what R7 P9 template placement does as well.
 --
--- LANDMINE (same one as in grug_mapgen/decorations.lua): Luanti caches
+-- LANDMINE (first found in the retired engine-decoration path): Luanti caches
 -- file-loaded schematics BY FULL PATH, so place_schematic(pos, "<path>",
 -- rot, replacements) only applies those replacements on the FIRST load of
 -- that path; every later call reuses the cached object and its replacements.

@@ -1,0 +1,35 @@
+schema	grug_wp40_census_manifest_v3
+scan_schema	grug_wp40_census_scan_v6
+vocabulary	tools/wp40/fixtures/t2_extreme_e0/vocabulary.lua
+seed_set	explicit
+seed_count	7
+census_commit	-
+census_tree	-
+module_digest	-
+worker_interpreter_id	-
+worker_interpreter_path	-
+worker_interpreter_version	-
+seed_set_derivation	an explicit worker record set; free worker output carries no shard header, so this artifact states no commit, tree or interpreter and is not a measurement of W
+seeds	0,2147483648,343674299183575008,1959553668008863006,15219119262482319357,16178445837170081103,18446744073709551615
+merge_interpreter_id	luajit
+merge_interpreter_version	Lua 5.1 (LuaJIT)
+cost_projection	not recorded by this merge; the launcher's first-completion projection is the section 6.5 gate and is printed by the run
+classification_stance	the scanners classify by the decided U1 and U2 readings (plan section 5) even though the catalog strings follow only with the collected correction: the census is R15-style structural search, not a policy edit
+retention_stance	section 6.3: no per-seed intermediate is committed; the flagged seed set is an artifact and is exempt, and every finding carries its site, its witness row and the decision the policy currently reaches
+divergence_test	pairs_order_probe_unsorted=true synthetic_invariance=passed synthetic_digest=4b4bd3f64990c45da4e503846ccce5bf504cc1af7a0ef211e442916660a7f6ec measured_invariance=passed
+findings	occupied_rejected=0 events=0 refuted_universals=0 stage_reject_seeds=0 vacuous_branches=92 no_branch_matched=0
+detached_shoulder_admission	bay_mouth_aperture:elandor_east:after seed=343674299183575008 station=1227:-2928
+scan4_seed_set	union_seeds=33 sites_covered=153 of 153 sites_open=0
+supersedes	the v2 artifact set (grug_wp40_census_manifest_v2) for every downstream consumer; the v1/v2 artifacts and the v4/v5 shards stay untouched as the prior records
+consumed_scan4_membership	seed_set=tools/wp40/fixtures/t2_census/census-scan4-seed-set-v2.tsv sha256=a7f4ab910ddc6a1ace360a3a26e0adfaf14b9f5b74c50bb3b9b93ebf6231a79d manifest=tools/wp40/fixtures/t2_census/census-manifest-v2.tsv sha256=27aa7e7b8c09621e0acb8181bb7cb2ced73b4dcbd8e025e34673be035b73e7f2 union=3061
+scan4_ruling	contracts 9.2 ruled 2026-08-19: branch A -- detached_shoulder_admission enters the flag vocabulary and the union returns to 3,061
+scan4_coverage	members=7 of consumed_union=3061
+inherited_tier	not_compared_explicit_records
+top_up	none
+records	1	census-kat.tsv	e6170d6117b4d1632535c4e1a1a3d6ec83598c68ca0888ccb04e9bc570d9cdda	7
+artifact	census-occupied-classes-v3.tsv	9c94d327241e53d74ca3bb3f1e314ad6ffbada91ace6e71207d9d232340ea05d
+artifact	census-vacuous-branches-v3.tsv	cacf9514b80deaada710a06e11190c4f887879d641f28223728d8561a45607b0
+artifact	census-scan4-seed-set-v3.tsv	c4bc6af76cd379694c7e16d4d331d1bc3b9834574d9d0d51b825751924a36626
+artifact	census-prefilter-discharge-v3.tsv	8a8929e7ed50dd0e90ad6c0e53eddaf534ac8a262fbd30c01f265fd50aa3b6e2
+artifact	census-histograms-v3.tsv	246f184bfb25882128eadde84f77c0f61076e6da47c86837213e7aec5b4ff96a
+artifacts_digest	fcc5ad01d4366af1269bbbe98415aad2bd596fb82f33625a15b5b4957236b795
