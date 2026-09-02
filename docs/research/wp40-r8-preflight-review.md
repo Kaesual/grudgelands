@@ -1,10 +1,9 @@
 # WP40 R8 Preflight Review
 
 **Status:** The corrected G2 pilot and the one final frozen-byte PUC/LuaJIT
-micro-KAT pair pass. The narrower owner-top calculation correction has green
-static and fixture verification, and exact commit
-`050ae36bed447c873f7df1ef43f04e73517d89bf` received focused independent
-acceptance. The complete G3 corpus is next.
+micro-KAT pair pass. The narrower owner-top calculation correction and exact
+10+32 G3 execution envelope both have focused independent acceptance. Exact
+G3 candidate `4ca1c6564382c1e4ab726fd60a38c3b4461dba05` is ready to run.
 
 ## Scope and independence
 
@@ -453,6 +452,31 @@ R8 runner is among the 100 final-micro inputs, and the probe and production Lua
 remain unchanged. The later launcher change therefore does not retroactively
 alter the accepted G2 capture or invalidate the frozen PUC/LuaJIT pair; it is
 part of the separately reviewed G3 execution envelope.
+
+## G3 corpus and budget review
+
+The accepted G2 work projects the original 15+32 request set slightly beyond
+the contractual two-hour wall envelope. Exact commit
+`2ac965dc257747349796e6f5a3728d3500d70819` reduced only the feature corpus to
+the already permitted 10-row lower bound. A fresh independent GPT-5.6 Sol
+review rejected it **0 Critical / 1 High / 0 Medium / 0 Low** because the
+normal final invocation still inherited the 900-second pilot default and final
+mode did not enforce the two-hour ceiling.
+
+Commit `b7ab41ddfaf40995ad7d8e20147ac33ba9e7ac7c` fixed that finding by requiring
+`WP40_R8_TIMEOUT=7170` and parallel orders in final mode. The focused re-review
+confirmed the High was closed but returned **0 Critical / 0 High / 1 Medium /
+0 Low** for the stale frozen-byte wording corrected above. A second focused
+review of exact follow-up `4ca1c6564382c1e4ab726fd60a38c3b4461dba05`
+returned **ACCEPT: 0 Critical / 0 High / 0 Medium / 0 Low**.
+
+The final reviewer verified the one-to-one 10-row provenance, unique combined
+mapchunks, unchanged three-row G2 prefix, all three hard position witnesses,
+all 32 native rows and every contracted risk class. The five removed engine
+rows remain in the 15-point GUI route. It independently reproduced the roughly
+117-minute point estimates and confirmed the exact 7200-second host/7201-second
+liquid boundary. G2, production bytes, probe, native corpus and the final
+interpreter pair remain valid. Exact `4ca1c65...` is accepted for G3.
 
 ## Calibration so far
 

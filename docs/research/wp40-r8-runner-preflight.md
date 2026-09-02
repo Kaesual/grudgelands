@@ -1,8 +1,9 @@
 # WP40 R8 headless runner preflight
 
-Status: scaffold reviewed and exercised by diagnostic real-engine pilots. The
-runner remains a narrow release smoke, not a replacement for the offline R7
-evidence, R2/R6 capacity and supply evidence, or the later visual gates.
+Status: scaffold and exact 10+32 final execution envelope reviewed; corrected
+G2 real-engine pilot accepted. The runner remains a narrow release smoke, not
+a replacement for the offline R7 evidence, R2/R6 capacity and supply evidence,
+or the later visual gates.
 
 ## Contract
 
