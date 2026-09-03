@@ -92,5 +92,13 @@ independent reports: 0 Critical / 3 High (one duplicated concern) / 3 Medium
 (one duplicated concern) / 1 evidence Low plus three optional code Lows. Fix
 rounds before final re-review: two. Observed elapsed wall time: unknown.
 
-The final focused-review verdict is recorded below after it inspects the
-immutable candidate and evidence commit.
+## Final focused re-review
+
+The same independent fresh Sol context performed a narrow read-only review of
+corrected freeze `cb7467e` and evidence commit `9ac385b`. It verified both
+explicit constructor branches, both missing-runtime negative tests, all
+111 input hashes, the exact 15-module execution roster, distinct interpreter
+binaries with zero exits and byte-identical output, unchanged post-freeze
+production/harness inputs, and the static/integration bindings.
+
+Final findings: **0 Critical / 0 High / 0 Medium / 0 Low. Verdict: ACCEPT.**

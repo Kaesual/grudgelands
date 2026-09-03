@@ -1,8 +1,8 @@
 # WP40 R8 production mapgen performance hardening
 
-**Status:** the first focused re-review found one Medium selector fallback;
-the explicit fail-closed correction and replacement interpreter pair are
-complete on `wp40-r8-mapgen-performance`. Final focused re-review remains.
+**Status:** accepted on `wp40-r8-mapgen-performance`; the explicit fail-closed
+correction, replacement interpreter pair and final focused review are complete.
+Merge and the user's fresh-world runtime check remain.
 
 **Baseline:** `7e9284ffcd71b445efcdfde7cee39534bbf8ef35`.
 
