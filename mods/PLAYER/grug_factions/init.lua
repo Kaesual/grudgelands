@@ -7,6 +7,7 @@ end
 local META_FACTION = "grug_factions:faction"
 local META_KIT = "grug_factions:kit_given"
 local FORMNAME = "grug_factions:select"
+local REOPEN_DELAY = 0.1
 
 -- Starter kit per faction; granted exactly once.
 local starter_kits = {
@@ -125,37 +126,69 @@ function grug_factions.set_faction(player, id)
 	return true
 end
 
--- Teleports (async, after emerge) to the stable starting-settlement anchor of
--- the player's own race. There is deliberately no faction-seat fallback: the
--- faction choice precedes the race choice, and the race selection callback
--- calls this function again once that authoritative identity exists.
-function grug_factions.teleport_to_spawn(player)
+-- Loads the stable starting-settlement area without moving the player.
+-- callback(player, spawn, failure) receives a current ObjectRef and position
+-- on success; spawn is nil and failure is a short diagnostic on an emerge
+-- failure or an identity change. If the player left, the callback is omitted.
+--
+-- Character creation uses this split phase so its remaining UI can cover the
+-- asynchronous map load. Ordinary respawns keep using teleport_to_spawn below.
+function grug_factions.prepare_spawn(player, callback)
 	local id = grug_factions.get_faction(player)
 	if not id then
 		return false
 	end
 	local name = player:get_player_name()
-	local spawn = grug_core.start_position(id, grug_core.get_player_race(name))
+	local race = grug_core.get_player_race(name)
+	local spawn = grug_core.start_position(id, race)
 	if not spawn then
 		return false
 	end
+	local emerge_failed = false
 	core.emerge_area(
 		vector.offset(spawn, -16, -24, -16),
 		vector.offset(spawn, 16, 80, 16),
-		function(_, _, remaining)
+		function(_, action, remaining)
+			if action == core.EMERGE_CANCELLED or
+					action == core.EMERGE_ERRORED then
+				emerge_failed = true
+			end
 			if remaining > 0 then
 				return
 			end
 			local p = core.get_player_by_name(name)
-			if p then
-				local race = grug_core.get_player_race(name)
-				local current = grug_core.start_position(id, race)
-				if current then
-					p:set_pos(current)
-				end
+			if not p or not callback then
+				return
+			end
+			if emerge_failed then
+				callback(p, nil, "emerge_failed")
+				return
+			end
+			local current_id = grug_factions.get_faction(p)
+			local current_race = grug_core.get_player_race(name)
+			if current_id ~= id or current_race ~= race then
+				callback(p, nil, "identity_changed")
+				return
+			end
+			local current = grug_core.start_position(current_id, current_race)
+			if current then
+				callback(p, current)
+			else
+				callback(p, nil, "spawn_missing")
 			end
 		end)
 	return true
+end
+
+-- Teleports (async, after emerge) to the stable starting-settlement anchor of
+-- the player's own race. There is deliberately no faction-seat fallback: the
+-- faction choice precedes the race choice.
+function grug_factions.teleport_to_spawn(player)
+	return grug_factions.prepare_spawn(player, function(p, spawn)
+		if spawn then
+			p:set_pos(spawn)
+		end
+	end)
 end
 
 --
@@ -166,6 +199,8 @@ local function selection_formspec()
 	return table.concat({
 		"formspec_version[4]",
 		"size[8.6,4.6]",
+		"no_prepend[]",
+		"bgcolor[#080808FF;both;#000000FF]",
 		"label[0.5,0.7;", core.formspec_escape("Choose your faction!"), "]",
 		"label[0.5,1.3;", core.formspec_escape("This decision is final."), "]",
 		"style[choose_accord;bgcolor=", grug_core.factions.accord.color, "]",
@@ -197,7 +232,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	if not chosen then
 		-- Closed without choosing: show again (choosing is mandatory).
 		local name = player:get_player_name()
-		core.after(1, function()
+		core.after(REOPEN_DELAY, function()
 			local p = core.get_player_by_name(name)
 			if p and not grug_factions.get_faction(p) then
 				show_selection(p)
@@ -207,7 +242,6 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	end
 
 	grug_factions.set_faction(player, chosen)
-	grug_factions.teleport_to_spawn(player)
 	core.close_formspec(player:get_player_name(), FORMNAME)
 	local def = grug_core.factions[chosen]
 	core.chat_send_player(player:get_player_name(),
@@ -225,7 +259,7 @@ core.register_on_joinplayer(function(player)
 	local def = grug_factions.get_faction_def(player)
 	if not def then
 		local name = player:get_player_name()
-		core.after(1, function()
+		core.after(0, function()
 			local p = core.get_player_by_name(name)
 			if p and not grug_factions.get_faction(p) then
 				show_selection(p)
