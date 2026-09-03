@@ -4,6 +4,8 @@
 
 **Superseded candidate:** `f30b3ccac542364d0a78d399d200362a80989da1`
 
+**Corrected frozen candidate:** `cb7467e4294faece8d0823f6d769dddfc51972b7`
+
 ## Initial independent reviews
 
 A read-only Claude Fable hard lens reviewed implementation commit `24374e7`.
@@ -32,8 +34,9 @@ authority construction, anchors or Lua 5.1 syntax.
   probability digests, `r6_planner.lua.new_runtime`, the fail-closed R5/R6
   runtime constructor selection and one accepted ledger-free P9G write.
 - The first PUC 5.1/LuaJIT pair is retained under
-  `wp40-r8-performance-final-micro-evidence/` as a superseded audit trail. A
-  replacement pair is required after the corrected selector bytes are frozen.
+  `wp40-r8-performance-final-micro-evidence/` as a superseded audit trail. The
+  corrected replacement under `replacement/` is byte-identical across the two
+  interpreters and binds the final frozen bytes.
 - Column values are now computed before cache insertion or eviction, and the
   R6 live planner selector fails closed when `new_runtime` is absent.
 - The cache bound is 65,536 entries with hit/miss/eviction metrics. The warm
@@ -75,10 +78,10 @@ calling the ordinary constructor.
 - Forward/reverse six-case canonical digest:
   `d058a5bcd517348c67eb83b9957422d2c3e43cdbf000dcb4981ee6ca668a5dd4`,
   unchanged from baseline.
-- Final PUC/LuaJIT canonical-output SHA-256:
-  `660a89a975980460b734f2ded1cc7e4e3e6004668f77dfb512d30297b03ad17e`,
+- Replacement final PUC/LuaJIT canonical-output SHA-256:
+  `a7c8be813d0bcf54038b8d19a6149c53a8ab185de98f983555aa3db6b452b7de`,
   byte-identical; receipt SHA-256
-  `e05ca37802485dc5431193bcab39822a55dd62858924ffcfd34ed71b02ae3013`.
+  `d3d9de965c52ddb5e437bbd499923e44b688e64dfad8b2237a4d863b988a7d61`.
 
 ## Calibration record
 

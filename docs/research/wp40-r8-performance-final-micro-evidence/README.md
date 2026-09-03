@@ -9,6 +9,10 @@ fail-open constructor-selector fallback. The artifacts remain as an immutable
 audit trail but are not the accepted final pair. The corrected replacement
 pair is retained in the `replacement/` child directory.
 
+The corrected accepted pair is bound to freeze commit
+`cb7467e4294faece8d0823f6d769dddfc51972b7`; its receipt SHA-256 is
+`d3d9de965c52ddb5e437bbd499923e44b688e64dfad8b2237a4d863b988a7d61`.
+
 The one authorized final invocation was:
 
 ```text
