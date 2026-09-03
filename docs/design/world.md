@@ -130,13 +130,19 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
 - **R1 — Own faction territory**: digging and building is allowed except in an
   active housing claim or a bounded hard-protected world-content volume.
   Hard-protected content is limited to complete capitals/gates/aprons,
-  starting/respawn cores, essential service/quest/waypoint/graveyard platforms,
+  complete starting settlements (decided 2026-08-13: the full 128×128 build
+  envelope plus a 10-node apron — the same envelope-plus-apron rule as a
+  capital; spawn, waypoint, graveyard and service platforms all lie inside
+  it), essential service/quest/waypoint/graveyard platforms,
   small functional NPC and renewable-resource anchors, the six 128-node
   capital-ingress corridors (`world_zones.md` §12), and a bridge or gate for
   which no adequate alternate route exists. Ordinary roads, villages,
   outpost/camp shells, ruins, tents, fences and battlefield dressing are
   generated once, remain claim-excluded and may be changed under their zone's
-  terrain rule.
+  terrain rule. A start settlement needs no runtime pit or flood detection:
+  by construction of `world_zones.md` §7's 600×500 dry start core (no planned
+  water, forced cliff or ravine; gentle start grading only), an enclosed or
+  flooded start cannot generate.
   - **Shape of a hard-protected world volume**: its authored x/z footprint is
     exact and protection runs upward without limit and downward through
     y = -700 inclusive. At y = -701 and below, the universal contested deep
@@ -144,6 +150,17 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     only the functional/core structure plus its explicitly authored apron; a
     structure type does not gain a blanket ten-node surround merely from its
     name.
+  - **Indirect mutation fails closed** (decided 2026-08-13): hard-protected
+    volumes are guarded against indirect mutation exactly like active claims
+    (`housing.md` §6.4). Explosions, fire, liquid flow — including downhill
+    flow originating outside the footprint — falling nodes, terrain-changing
+    mobs, machines and scripted effects cannot alter protected state; inside
+    hard-protected world content no player permission exists, so every such
+    path is suppressed or the affected nodes are restored. The central
+    mutation predicate and spatial indexes are shared with the claim system
+    (`housing.md` §8). There is no rollback system: protected volumes need
+    none, and destruction of the mutable layer deliberately persists
+    (`housing.md` §7.2).
   - **World-content registry**: every hard-protected non-capital anchor
     registers a stable id and final x/z extent rather than hard-coding a zone.
     The registry separately stores mutable claim-exclusion/grading envelopes
@@ -299,18 +316,48 @@ occupying a position (`world_zones.md` §7):
   declared outer bay-mouth caps, immutable at every y. This remains the
   deliberately deadly open sea patrolled by the level-100 Kraken Guard (no
   drops or XP). It has no ordinary surface, guard or mob-level result: the
-  Kraken is a hand-set fixed entity outside those resolvers. Playable-boat ownership,
-  acquisition, speed, damage, destruction and return/respawn behavior are not
-  defined by this world-geometry rule (`TODO-design-boats.md`).
+  Kraken is a hand-set fixed entity outside those resolvers. Boat acquisition,
+  ownership, movement, damage and decay are decided in [boats.md](boats.md);
+  what this world-geometry rule owns is the pursuit contract below.
 - **Dragon channels:** separate full-column immutable masks between the
-  mainland and the two offshore islands. They are required boat routes and do
-  not inherit the deep-ocean Kraken/boat-destruction rule. Their warning and
+  mainland and the two offshore islands. They are required boat routes and
+  carry no Kraken Guard at all. Their warning and
   hard-flight bands come from the same 2D distance field. Each channel carries
   two distinct 96-node-wide approaches centred at z = -125 and z = +125,
   joining its Battlegrounds endpoint to two inward-shore island beaches. Both
   are usable by both factions; their north/south orientation only equalizes
   travel from Kragmar and Elandor. They have no ordinary surface, guard or mob-
   level result.
+
+**Kraken Guard pursuit** (decided 2026-08-13) — the deep sea is dangerous
+because of what the guard does, not because water damages a boat:
+
+- The Kraken Guard **spawns only in `deep_ocean`**. Neither the coastal shelf,
+  nor planned zone water, nor a dragon channel ever spawns one.
+- **In deep ocean it never gives up.** While the guard itself stands in a
+  deep-ocean column, three §3/§4 rules are suspended: the 40-metre drag leash,
+  the 45-metre chase give-up and the 25-metre soft de-aggro that would drop it
+  to walking speed. A player who stays on the open sea is caught; the guard is
+  faster than the fastest boat, so this is not a race.
+- **Everywhere else it behaves like an ordinary land mob.** In shelf water, in
+  planned zone water and inside a dragon channel all three of those rules
+  apply again, together with the rest of the §4 model — threat reset, the
+  accelerated untouchable run home to its post and the teleport backstop. Full
+  hunting speed is a deep-ocean privilege, not a property of the mob.
+- **The switch is evaluated at the guard's own current position and takes
+  effect immediately**, and a guard that has begun to evade never reverses
+  that decision until it is home. Crossing the boundary is not itself a reset:
+  a pursuit dragged in from open water ends as soon as its **ordinary**
+  allowance is spent. A guard already pulled more than 40 metres from where
+  that chase began therefore leashes on its first tick under ordinary rules,
+  while one that crossed early keeps whatever remains of the 40-metre drag and
+  the 15-second contact window. That residual is deliberate — it is what keeps
+  a guard at the shelf edge dangerous instead of farmable from safe water —
+  and it is bounded by the same 40 metres, so a single chase can never be
+  walked across the whole 80-node shelf.
+- A dragon channel is safe passage for that reason alone; no separate
+  channel exception is needed.
+
 The compatibility `open_sea_at` predicate must become true only for
 `deep_ocean`; it is false for planned zone water, shelf and dragon channel. The
 shipped WP18 rectangle/strait lookup remains running-code history only and is
@@ -814,6 +861,13 @@ administration system do not exist in the target design.
   persisted wall-clock timestamp. Failure or interruption consumes no cooldown.
 - `/unstuck` (suicide command) remains the last resort for hard stuck
   states.
+
+**Boats** are the third travel mode next to walking/riding and the waypoint
+network, and the only access to both dragon islands. Their complete contract —
+always-craftable base boat, the shipwright's level-30 improved boat, one
+player per boat, eject on damage and the 24-hour decay of an unused boat —
+lives in [boats.md](boats.md); the water they move through is classified in
+§2b above. Boats never teleport and are not part of the waypoint network.
 
 ## 7. Races
 

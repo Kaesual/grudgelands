@@ -702,7 +702,7 @@ farming system are one later package.
 | grug_blight | gravewood (custom dead tree, no leaves) sparse | grey grass tufts, bone piles (deco); gravemoss `[herb T1]` | fireflies/wisp particles optional |
 | grug_bone_forest | gravewood dense (fill 0.015), bone piles | mushrooms `[food found-only]`; dragonweed `[herb T2]` | shares deep-forest drop tables (§3.2) |
 | grug_jungle_edge | jungle_tree.mts (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[spice T1]` | |
-| grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025); papyrus lives in the adjacent swamp/shore band (v7 has no water above sea level, so the jungle cuboids at y ≥ 4 cannot host waterside papyrus) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]`; wild melon `[food]` | same flora, roster and target ground: `grug_nodes:dirt_with_canopy_litter`. The shipped WP36 fringe still uses rainforest litter only until WP40 replaces the legacy biome registrations. Existing decorations name both nodes during that migration |
+| grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025); papyrus lives in the adjacent swamp/shore band (v7 has no water above sea level, so the jungle cuboids at y ≥ 4 cannot host waterside papyrus) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]` — **level-51–60 zones only** (§2 tightening 2026-08-13); wild melon `[food]` | same flora, roster and target ground: `grug_nodes:dirt_with_canopy_litter`. The shipped WP36 fringe still uses rainforest litter only until WP40 replaces the legacy biome registrations. Existing decorations name both nodes during that migration |
 | grug_swamp | papyrus_on_dirt, dead bush; willow-ish gravewood retint optional | reeds, waterlilies; marshbloom `[spice T2]`; mushrooms `[food found-only]` | shallow water pools (mud floor) |
 | grug_beach | — | shells (deco); rock salt crust on coast-zone beaches `[food found-only]` | Stormkelp uses the cross-biome dry-shore predicate below, not a beach-only row. |
 | war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided); decoration set ships with WP13's schematic pass |
@@ -829,12 +829,17 @@ the region an ingredient comes from):
   potato, corn, apples, berries, melon, mushrooms, sunleaf, marshbloom,
   plus meat and fish from anywhere.
 - **T6 needs ingredients from level 50+ ground, and the coast/outer
-  rows do carry them**: **wild cocoa** in deep jungle / jungle fringe
-  (38–60), **stormkelp** on high/endpoint dry shores and **rock salt** on beaches
+  rows do carry them**: **wild cocoa places only in the level-51–60
+  jungle-palette zones** (tightened 2026-08-13 so the T6 gate claim is
+  literally true — today exactly The Skyglass Canopy on the shared
+  contested front, both factions on foot, plus Stormscale Summit as the
+  island bonus; the WP40 authored surface pass owns the zone binding),
+  **stormkelp** and **rock salt** on the coast-zone beaches
   (45–60), and the meat of the outer/coast families (bear, jungle ape,
   panther, crocodile), whose level comes from `mob_level_at` and is
-  45–60 out there. Every one of them exists on both continents (§6), so
-  neither faction is cut off from the top of the cooking ladder.
+  45–60 out there. Every one of them is reachable by both factions
+  (§6) — every level-41+ zone is contested and shared — so neither
+  faction is cut off from the top of the cooking ladder.
 - **Deliberately found-only** (never a crop): mushrooms, wild cocoa,
   rock salt. That keeps the top of the cooking ladder a reason to
   travel, and it keeps a tier unlock ("find cocoa in the jungle") usable
@@ -1051,6 +1056,38 @@ Faction NPC outposts/guards are WP6, not part of this catalog.
 one exception, it is a deterrent not content): mobs_mc_squid at
 visual_size ×6, verb: drags under (pulls target down, heavy melee),
 spawns only in open sea beyond the coastal ocean. No drops.
+
+Three fields carry the boat contract of `boats.md`. All three target values
+were **decided by the design owner on 2026-08-13**; two of them replace what
+the mob ships with and the third confirms it unchanged. The anchors quoted
+below are the rationale for each choice, not the authority for it:
+
+- **`run_velocity` 8.8** (shipped: 5). The improved boat does 8 nodes/s
+  (`boats.md` §5), so the guard keeps exactly the 1.1× margin that
+  `combat_stats.md` §3's speed pillar gives an ordinary mob over a walking
+  player (4.4 against 4.0). It is the one documented exception to that
+  section's 3.4–4.6 speed band.
+- **`view_range` 40** (shipped: 20) — the same 40 m that is already the
+  threat-validity and leash radius of `combat_stats.md` §4, so the guard
+  notices a boat before the boat is past it. Large, deliberately not unfair.
+- **`reach` 4 is unchanged.** It is already double the roster's 2 because the
+  model is ×6 and mobs_redo measures centre to centre
+  (`mods/ENTITIES/mobs/api.lua:238-245`); the reason a fleeing target used to
+  be nearly unhittable was the attack cadence, not the reach, and that is
+  fixed once for every mob in `combat_stats.md` §4.
+
+The guard's pursuit rules — relentless in deep ocean, ordinary §4 leash and
+evade everywhere else, never spawning in a dragon channel — are owned by
+`world.md` §2b. They **replace** all three blanket exceptions the mob ships
+today — `_grug_no_leash`, its own 200-node coastal `LEASH_SLACK` and
+`_grug_soft_deaggro = false` (`mods/ENTITIES/grug_mobs/kraken.lua:10`, `:37`,
+`:38`) — with the position-dependent state: the same suspensions inside a
+deep-ocean column, ordinary behaviour outside it. The shipped comment at
+`:32-36` states the reason those exceptions are global today, and that reason
+survives exactly where it is true, on the open sea. Its
+`_grug_spawn_check` already is `grug_core.open_sea_at` (`kraken.lua:31`),
+which `world.md` §2b narrows to `deep_ocean`, so deep-ocean-only spawning
+needs no separate mechanism.
 
 **Caves (depth axis, WP6 note):** reuse Zombie, Giant Spider, Stone
 Golem with `underground` zone gating; levels come from the depth term
@@ -1467,18 +1504,19 @@ Regional geology follows the owning `race_region` column at every depth:
 | Leather `[leather]` | 10–45 | wolves, stags | hyenas, jungle lynxes, blightfang wolves, zebras, panthers* (*fringe gives A access too) |
 | Heavy leather `[leather]` | 25–60 | bears, elder bears, rams | plaguehide bears, jungle apes |
 | Scaled hide `[leather]` | 25–60 | crocodiles (swamp), serpents (fringe) | crocodiles, serpents |
+| Sleek pelt (Leatherworker T5/T6 input) | 38–60 | panthers (jungle fringe) | panthers (deep jungle) |
 | Linen **scrap** (trash tier, sells; not the cloth) | 1–30 | zombies, skeletons | same |
 | Linen cloth | 10–30 | home-zone **bandit camps**, mirefolk | same |
 | Heavy cloth | 25–45 | frontier bandit camps, war-front raiders | same |
-| Spider silk (Tailor T3) | 25–60 | deep-forest/fringe spiders | bone-forest/jungle spiders |
+| Spider silk (Tailor T3+ — silkweave, silk and stormweave bolts) | 25–60 | deep-forest/fringe spiders | bone-forest/jungle spiders |
 | Food plants (everyone, farmable later) | all | potatoes/corn (meadows), berries (hills, elf forest), apples, melon (fringe), meat/fish everywhere | corn (savanna), melon (jungle), berries via forest patches, meat/fish |
-| Food plants, **found-only** (everyone, never farmable) | 25–60 | mushrooms (deep forest/swamp), wild cocoa (jungle fringe), rock salt (coast beaches) | mushrooms (bone forest/swamp), wild cocoa (deep jungle), rock salt (coast beaches) |
+| Food plants, **found-only** (everyone, never farmable) | 25–60 (wild cocoa 51–60) | mushrooms (deep forest/swamp), wild cocoa (The Skyglass Canopy — shared contested front, §2), rock salt (coast beaches) | mushrooms (bone forest/swamp), wild cocoa (The Skyglass Canopy — shared contested front; Stormscale Summit — offshore island bonus, §2), rock salt (coast beaches) |
 | Healing herbs T1 (Alchemist) | 10–25 | gravemoss (pine hills) | gravemoss (blight) |
 | Healing herbs T2 | 25–45 | dragonweed (crags, deep forest) | dragonweed (badlands, bone forest) |
 | Healing herbs T3 | 45–60 | crimson lotus (jungle fringe — the east flank strip x 1251..1500, which the fringe only got on 2026-08-08, §1.3) | crimson lotus (deep jungle) |
 | Spices T1 (everyone gathers; Alchemist + Cooking use) | 10–25 | sunleaf (meadows, elf forest) | sunleaf (savanna, jungle edge) |
 | Spices T2 | 25–45 | marshbloom (swamp) | marshbloom (swamp) |
-| Spices T3 | 45–60 | stormkelp (coast) | stormkelp (coast) |
+| Spices T3 (stormkelp also weaves the Tailor's T6 stormweave bolt, `items_crafting.md` §3.5) | 45–60 | stormkelp (coast) | stormkelp (coast) |
 | Alchemy reagents (mob) | 25–60 | venom gland/sac, slime gel, bear claw | identical (shared tables) |
 | Woods | all | oak, pine, silverwood (+jungle at fringe) | acacia, kapok, gravewood — all `group:wood` |
 | Universal ores/progression crystals | depth axis | own-side continental underground + applicable generic drops | same base density |

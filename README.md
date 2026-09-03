@@ -63,15 +63,16 @@ y = −701 and below, non-ocean land is contested regardless of the peaceful
 surface above.
 
 Destructibility distinguishes actual anchors from scenery. Complete civic
-cores, small functional NPC/resource anchors and irreplaceable route pieces
-are hard-protected; roads, villages, outpost/camp shells and battlefield
-dressing remain mutable but claim-excluded. Planned mainland water stays part
+cores — capitals and starting settlements as whole build envelopes with
+10-node aprons — small functional NPC/resource anchors and irreplaceable
+route pieces are hard-protected and fail closed against indirect mutation;
+roads, villages, outpost/camp shells and battlefield dressing remain mutable
+but claim-excluded. Planned mainland water stays part
 of its zone, an editable 80-node shelf follows the outer coast, deep ocean is
 immutable, and full-column dragon channels keep the offshore islands boat-only.
 Natural resources exist under land and zone-owned planned water; the six-race
 supply gate compares all-resource deposit opportunities by exact host volume.
-The still-open playable-boat behavior is isolated in
-[TODO-design-boats.md](TODO-design-boats.md).
+Playable-boat behavior is decided in [boats.md](docs/design/boats.md).
 
 [Open-world housing](docs/design/housing.md) uses Claim Stones in exactly ten
 peaceful level-11–30 zones. Four tiers protect cube radii 20/30/40/50, while
@@ -162,9 +163,8 @@ cooldown.
 played hours, with one talent point every three levels and active capstones.
 Death returns a player to their race's starting settlement with inventory
 intact; the decided PvE penalty removes 25% of current-level XP progress
-without de-leveling. The separate treatment of authoritatively attributed PvP
-deaths remains in [TODO-design-pvp-death.md](TODO-design-pvp-death.md) before
-WP9; no target-design document assumes an answer.
+without de-leveling, while a death authoritatively attributed to an eligible
+hostile player by the PvP transaction costs no XP.
 
 ### Biomes, mobs and mounts
 
@@ -182,16 +182,28 @@ flyers at 7/10, with price targets of 15 minutes/45 minutes/2 hours/5 hours of
 reliable net income. A permanent owner-bound item summons one ephemeral
 entity; incoming damage dismounts. Battlegrounds allow flight, enemy territory
 allows land mounts only, and an exact 48-node warning precedes forced flight
-dismount over exterior ocean columns. Asset selection, mount attackability,
-mounting in combat, underground flight, ceiling/drift, swimmer exhaustion,
-variants and trainer presentation remain open in
-[TODO-design-crafting-rework.md](TODO-design-crafting-rework.md).
+dismount over exterior ocean columns. Riding is taught by the capital job
+trainers. Asset selection, mount attackability, mounting in combat,
+underground flight, ceiling/drift, swimmer exhaustion and variants remain
+open in [TODO-design-crafting-rework.md](TODO-design-crafting-rework.md).
+
+[Boats](docs/design/boats.md) are specified but not built, and they are
+deliberately not an earned unlock: the base boat is five wood on any
+character's first day, moving at the player's own 4 nodes per second. A
+shipwright on each continent teaches the improved boat once from level 30 —
+paid in exactly one boat's worth of materials, rewarded with that boat — and
+it matches the 8 nodes per second of the land mount unlocked at the same
+level. One player per boat, never a mob; an empty boat may be picked up by
+anyone and disappears after 24 unused hours; any hit ejects the rider while
+the boat itself is indestructible. The open sea stays lethal through the
+Kraken Guard rather than through boat damage, and the dragon channels carry
+none.
 
 Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
 
-*Last updated: 2026-09-02. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-09-03. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
 
 **Shipped (17 of 45 work packages):** WP0–WP4, WP6, WP7, WP15, WP18,
@@ -207,12 +219,11 @@ recovery, offhand items, affixes, durability, final structures, travel/map,
 Claim Stone housing, mounts and bosses remain unbuilt. The 38-zone surface is
 implemented but awaits R8's real-world/visual/runtime gates; geographic PvP,
 bounded war-front life and the rebased economy are also pending. The
-playable-boat contract, several mount details, deep-content
-questions and PvP-death XP rule remain explicitly open in
-[the boat TODO](TODO-design-boats.md),
-[the crafting/mount TODO](TODO-design-crafting-rework.md),
-[the depth TODO](TODO-design-depth.md) and
-[the PvP-death TODO](TODO-design-pvp-death.md), respectively.
+remaining mount details and deep-content questions stay explicitly open in
+[the crafting/mount TODO](TODO-design-crafting-rework.md) and
+[the depth TODO](TODO-design-depth.md); the playable-boat contract is decided
+in [boats.md](docs/design/boats.md), and confirmed PvP deaths cost no XP under
+[progression.md](docs/design/progression.md).
 
 **In progress:** WP40, the named-zone map foundation, has been under
 implementation since 2026-08-13 on branch `wp40-named-zone-world-foundation`.
@@ -242,10 +253,10 @@ evidence; the accepted R6 artifact owns 32-seed content/supply/access
 evidence. R8 now owns the first real fresh Luanti world, visual quality,
 production mapchunk performance and runtime evidence.
 
-**Ready to start next:** WP26 and WP44 are the newly unblocked material and
-economy roots. WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind shipped
-dependencies; WP34 is not next because it still waits for map, structures and
-economy.
+**Ready to start next:** WP5, WP26 and WP44 are the newly unblocked loot,
+material and economy roots. WP37, WP11, WP14, WP20, WP21 and WP8 are also
+ready behind shipped dependencies; WP5 and WP26 each carry an executable task
+card. WP34 is not next because it still waits for map, structures and economy.
 
 **Caveats:** existing WP18/WP36 worlds retain already-generated rectangular
 continents and are not WP40 migration targets; R8 must use a fresh v7 world.

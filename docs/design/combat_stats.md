@@ -74,9 +74,11 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   - **Rounding: the reduced damage rounds up**, so armor alone can never
     turn a landed hit into 0 — however much of it a tank stacks, the hit
     still costs at least 1 HP.
-- **Every equippable item carries a level requirement** (`grug_req_level`
-  = its ilvl; equipping below it is blocked — items_crafting.md §6.1;
-  **enforced from WP5**, WP7's vendor gear carries the ilvl only);
+- **Every equippable item that has an item level carries a level
+  requirement** (`grug_req_level` = its ilvl; equipping below it is
+  blocked — items_crafting.md §6.1, which also exempts the equippables that
+  have no ilvl at all; **enforced from WP5**, WP7's vendor gear carries the
+  ilvl only);
   weapon base damage ≈ 4 + 0.35×level (level-60 weapon ≈ 25; itemization
   details → items/crafting design).
 
@@ -301,7 +303,10 @@ Normal tier at level L:
   name and the one engine trap).
 - **Speed**: aggressive mobs `run_velocity` **4.4** (player: 4.0) —
   evading must never be trivially easy; harmless critters 3.4; heartland
-  hunters 4.6, partly with ranged attacks (`dogshoot`).
+  hunters 4.6, partly with ranged attacks (`dogshoot`). The deep-sea Kraken
+  Guard at **8.8** is the one documented exception: it holds the same 1.1×
+  margin over the 8 nodes/s improved boat (`boats.md` §5,
+  `biomes_mobs.md` §3).
 - Pacing property: ~**20 same-level mob kills per level** (XP=10L vs.
   quadratic level curve); quests supply the rest.
 - **Gray kills award no XP**: a mob at level ≤ killer level − 10 gives 0
@@ -453,6 +458,30 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   neither the 25 m soft de-aggro nor the 40 m leash could ever fire). The
   45 m sits deliberately above the leash so the LEASH is what ends a
   chase, with a little hysteresis.
+- **Catching up must be enough to hit** (decided 2026-08-13): a mob that has
+  closed to within its `reach` lands its attacks on a target fleeing at full
+  speed. The **attack cadence therefore runs during the chase**, not only
+  while the target is inside reach; the only condition an attack still
+  carries is being in reach at the moment the cadence is due. Fleeing costs
+  HP — it is not a free escape from a fight already lost.
+  *Rationale, because the defect is invisible on paper*: vendored mobs_redo
+  zeroes the mob's velocity as soon as the target is inside `reach`
+  (`mods/ENTITIES/mobs/api.lua:2493`) while `punch_timer` accumulates **only
+  in that same branch** (`:2495-2497`; default interval 1 s at `:3768`). A
+  receding target leaves reach after one server step, so the timer gains one
+  step while the mob loses the ground the target covered in it. Worked at the
+  **dedicated-server default** `dedicated_server_step = 0.09`
+  (`reference_projects/luanti/src/defaultsettings.cpp:498`; the setting is
+  configurable and a singleplayer session does not use it, so this is the
+  shape of the defect rather than a measurement): the timer gains 0.09 s while
+  the mob loses ~0.36 m that it needs ~0.9 s to re-close at its
+  0.4 nodes/s margin — roughly **one landed hit per ten seconds** instead of
+  one per second. Raising `reach` cannot repair this (a stopped mob always
+  leaves its own radius, whatever the radius) and would silently widen the
+  elite/rare telegraph cone, which is `reach + 1.5` (§3), and make
+  `dogshoot` mobs switch to melee earlier. The fix is one vendored api.lua
+  patch; because it changes every mob's feel, the WP that ships it owes a
+  runtime test.
 
 Group trinity: a good group = **tank + healer + 1–2 damage dealers**;
 class kits must support this (Warrior: threat/taunt tools, Priest:
@@ -463,31 +492,44 @@ design (`group_attack` stays on).
 
 - Natural regen: **0.5% max HP/s out of combat, 0 in combat** — in-combat
   healing is the healer's/potion's job.
-- **Food — raw restores, cooked restores AND buffs** (decided
-  2026-08-08; `items_crafting.md` §3.7 carries the cooking side and the
-  two must not drift apart). Both work only **while resting** — standing
-  still, interrupted by damage or by movement:
-  - **Raw / plain food: regeneration only, no buff.** **4 % max HP/s**
-    → full in ~25 s. The solo "detour", unchanged.
-  - **Cooked food: a restore *and* a buff.** The restore uses this same
-    resting channel at **twice the rate, 8 % max HP/s**, and a dish
-    carries the percentage of max HP one serving delivers (worked
-    example: potatoes with boar steak, 30 % of max HP plus a Strength
-    buff). Cooking buys **speed of rest**, never an instant heal — the
-    instant slot belongs to the potion below, which is the only thing
-    in the game that restores health in combat. The buff is Well Fed
-    (`items_crafting.md` §3.7).
+- **Food — raw restores, cooked restores AND buffs** (structure decided
+  2026-08-08, delivery revised 2026-08-13 with E21; `items_crafting.md`
+  §3.7 carries the cooking side and the two must not drift apart). A
+  food restore is a **buff**: it tolerates movement, is **canceled by
+  entering combat** (PvE or PvP, the shared `in_combat` window — the
+  remaining restore is lost), and eating **in** combat is refused
+  (message, nothing consumed):
+  - **Raw / plain food: regeneration only, no buff.** **4 % max HP/s
+    for up to 25 s** → full if uninterrupted. The solo "detour",
+    unchanged in rate.
+  - **Cooked food: a restore *and* a buff.** The serving's authored
+    percentage of max HP is delivered at **8 % max HP/s** (worked
+    example: potatoes with boar steak — the T1 Hearty Stew — 20 % of
+    max HP plus Well Fed I; the six-group table in `items_crafting.md`
+    §3.7 tops out at 40 %). Cooking buys **out-of-combat speed**, never
+    an instant heal — the instant slot belongs to the potion below,
+    which is the only thing in the game that restores health in combat.
+    Well Fed itself persists into combat; only the restore dies.
   - **One food buff at a time; the most recently eaten food wins** and
     replaces the running one. It still stacks with one elixir
     (`items_crafting.md` §3.6/§10 P3).
 - **Healing potion**: instant **30% max HP, 60 s cooldown** (Alchemist
-  craft; weak 15% variant sold by vendors). Deliberately the same order
-  of magnitude as a cooked dish: the potion is paid for in cooldown and
-  works mid-fight, the dish is paid for in ~4 s of standing still and
-  dies to one hit.
+  craft; weak 15% variant sold by vendors). The potion holds the
+  in-combat monopoly and is paid for in cooldown; a dish may restore
+  more in total, but only out of combat and over seconds, and it dies
+  the moment a fight starts.
 - Mana regen: 2%/s out of combat, 0.5%/s in combat.
 - Food/potions are **percent-based** — level-agnostic, no consumable item
-  treadmill in the MVP.
+  treadmill in the MVP. Reaffirmed 2026-08-13: Max HP = 20 + 2×(level−1)
+  + Str spans 30 at level 1 to 325 on a level-60 Warrior from base
+  attributes alone (§1's 10/10/10 base and +4 points per level), so one
+  absolute-value consumable could never serve both ends of the curve;
+  the knob against HP-stacked builds in PvP is
+  §6.3-of-`items_crafting.md`'s bounded +HP affix ranges, not the
+  consumable system.
+- Every timed effect on the player is shown through the **buff/debuff
+  icon framework** (`inventory_equipment.md` §5, decided 2026-08-13):
+  green-framed buffs, red-framed debuffs, largest-unit countdown.
 
 ## 6. Mob nameplates & con colors
 
@@ -543,7 +585,9 @@ design (`group_attack` stays on).
 - **The mechanism of the two-handed rule** (decided 2026-08-08, shipped
   with WP35 — the weapon slot is the first place it can be enforced):
   items declare a hand count in `_grug_hands` (**greataxe 2, staff 2,
-  sword/dagger 1**, the twelve vendored `default:` swords and axes 1, no
+  sword/dagger 1**, the vendored `default:` swords and axes 1 — twelve when
+  WP35 wrote this, **eight since WP25/WP43 deleted the mese and diamond tool
+  tiers** (`grug_gear/init.lua`'s `VENDORED_WEAPONS` is the live list) —, no
   field = one-handed), and the weapon/offhand `allow_put` refuses any pair
   whose **two occupied hands add up to more than two**, in both
   directions, with a chat message that names the trade. Numbers, the

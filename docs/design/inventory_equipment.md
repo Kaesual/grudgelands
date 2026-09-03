@@ -68,9 +68,11 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     first-visible-object server ray; nodes and other objects stop that ray.
   - **Eligible is whatever carries the item group `grug_equip_weapon`**:
     all four `grug_gear` weapon families (sword, dagger, greataxe, staff)
-    and the twelve vendored `default:` swords and axes (that list shrinks
-    by construction as WP28/WP29 fold those items into the material
-    ladder). Mining tools stay mining tools — **picks and shovels are not
+    and the vendored `default:` swords and axes — twelve when this was
+    written, **eight today**, because WP25/WP43 deleted the mese and diamond
+    tool tiers; `grug_gear/init.lua`'s `VENDORED_WEAPONS` is the live list,
+    and it shrinks to nothing by construction as WP28/WP29 fold those items
+    into the material ladder. Mining tools stay mining tools — **picks and shovels are not
     eligible**.
   - **No class gate.** Weapon families are class *flavor*, not a power
     ladder (`items_crafting.md` §8.2), so a Mage may equip a greataxe and
@@ -86,7 +88,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   (decided 2026-08-08): every weapon declares `_grug_hands` —
   **greataxe 2, staff 2, sword 1, dagger 1** (the caster 1H family of
   `items_crafting.md` §3.2 is one-handed too when WP30 registers it), and
-  the twelve vendored
+  the eight vendored
   `default:` swords and axes **1** (a `default:` axe is a hatchet, not the
   Greataxe: 4 fleshy at a 1.0 s interval against the same tier's sword at 6
   and 0.8 s, i.e. strictly worse in combat, and it is the woodcutting tool
@@ -165,7 +167,12 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     group are unaffected.
   - Each character class has a **maximum rank** and may wear its own
     rank **and everything below**: **Warrior 3, Mage 1, Priest 1**. A
-    character without a class counts as cloth (rank 1).
+    character without a class counts as cloth (rank 1). This
+    below-inclusive rule is load-bearing since 2026-08-13: leather
+    (rank 2) ships as the **Warrior's light avoidance set**
+    (`items_crafting.md` §3.8) — a Warrior chooses between metal's
+    mitigation pool and leather's avoidance pool, not between wearing
+    and not wearing.
   - Enforced in the **same group-filtered `allow_put`** as the rest of
     the slot rules, with a throttled chat refusal (the allow callback
     fires repeatedly while a stack is dragged).
@@ -227,3 +234,32 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   inside a valid open-world housing claim under
   [housing.md](housing.md) §6.5. Claim ACL access never grants a recipe,
   profession tier or material the character has not unlocked.
+
+## 5. Buff/debuff icons (decided 2026-08-13)
+
+Every timed effect on the player — Well Fed, food restores, elixirs,
+Rested XP, king-participation effects, res sickness, later debuffs — is
+visible in two places. The framework is generic: an effect registers an
+icon, a category (buff/debuff) and an expiry, nothing per-consumer.
+
+- **Game screen**: one small icon row, unobtrusive but individually
+  recognizable. Implemented as HUD `image` elements plus one centered
+  text element per icon carrying the remaining duration. **Only the
+  largest unit is shown**: above 48 h as days ("4d"), then hours ("4h"),
+  under one hour minutes ("58m"), under one minute seconds ("45s").
+  Text writes only when the displayed string changes — at most once per
+  second inside an icon's final minute, far rarer above it (the
+  shared-ticker rule; no new globalstep). The HUD has no hover,
+  so the screen row carries no description.
+- **Character page**: the same effects as a formspec `image[]` row with
+  `tooltip[]` hover — icon, effect name, one-line description and the
+  same largest-unit remaining duration.
+- **Buffs carry a green frame, debuffs a red frame** — one shared
+  overlay texture per category composited over the effect icon
+  (`^`-modifier), never one framed asset per effect.
+- Specialized HUD elements keep their own decided displays: WP41's PvP
+  tag icon/countdown and the target frame are not migrated into this
+  row.
+- Ships with **WP10**, the first WP that grants real player buffs; the
+  registry lives centrally so later WPs (rested XP, PvP debuffs,
+  king effects) enroll instead of inventing parallel displays.

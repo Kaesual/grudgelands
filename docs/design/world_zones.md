@@ -1059,9 +1059,14 @@ one-cell settlement checks are unchanged.
   Crown from each of the opposing faction's three kings in the same daily raid
   circuit.
 - Each starting settlement has a 128×128 build envelope, a blend ring out to
-  256×256, protected spawn/waypoint/graveyard and a guaranteed road to the
-  home zone. The first mandatory road beat reaches the race capital at level
-  10 and unlocks its waypoint and civic-service introduction.
+  256×256 and a guaranteed road to the home zone. Its hard-protected POI is
+  the **complete build envelope plus a 10-node apron** — the same
+  envelope-plus-apron rule as a capital (decided 2026-08-13) — so spawn,
+  waypoint, graveyard and every service platform lie inside one protected
+  footprint; `world.md` §2 R1 owns the protection semantics. Terrain beyond
+  the apron, including the rest of the blend ring, remains ordinary editable
+  home terrain. The first mandatory road beat reaches the race capital at
+  level 10 and unlocks its waypoint and civic-service introduction.
 
 ## 13. Mapgen and public zone contract
 
@@ -1291,6 +1296,12 @@ tag anybody.
   tagged before the same table is evaluated. Contested ground includes every
   non-ocean land position at y = −701 and below, regardless of the surface
   zone's peaceful status.
+- Deep-ocean and immutable dragon-channel columns — the geography class that
+  is neither peaceful nor contested — use the same four-row table above and
+  never force the tag (decided 2026-08-13). Only contested ground forces it;
+  the contested islands and shores force it on arrival as usual, so a boat
+  approach is not a forced-PvP corridor while voluntary flagging still works
+  everywhere.
 - A hostile action against an enemy capital/outpost guard, war-front unit or
   protected faction combat object tags the player before PvE/NPC damage is
   resolved. Ordinary hostile creatures do not affect PvP state.
