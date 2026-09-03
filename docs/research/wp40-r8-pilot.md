@@ -614,3 +614,64 @@ clean execution and the corrected cave gates. Dungeon generation was enabled,
 but no Dungeon was observed in the bounded grid; preservation is therefore
 not claimed. The GUI itinerary and real fallback-engine runtime remain
 separate user gates.
+
+## Attempt 12 -- GUI cold-start incident and bounded live construction
+
+The first GUI start after G3 exposed a release-blocking performance defect,
+not a geometry failure. The server initially spent roughly one minute at high
+CPU before joining, sent no visible blocks, and then generated further
+mapchunks on minute-scale intervals. The retained GUI log shows a first
+`initialEmerge` at 09:49:15, the next at 09:50:33, repeated full-map-send
+restarts, and a long shutdown wait for the emerge thread. No Lua exception was
+reported.
+
+Profiling found two independent sources. Every live mapgen environment built
+the complete offline R3--R7 canonical evidence and exhaustive validation
+state, even though the callback needs only deterministic query closures. The
+R6 settlement writer also recomputed a horizontal planner tuple for nearly
+every resource candidate and then repeated the entire settlement transaction
+as a read-only replay on every production chunk. Those proofs remain valid
+offline gates, but executing them for each server and emerge environment was
+not part of the released map semantics.
+
+Candidate `37a16d08edf1000174eb278b6944fcaf4f1479db` adds an explicit live
+constructor through height, zones, R5, R6 and the R7 runtime. It retains all
+query state while omitting construction-only evidence arrays, digests and
+exhaustive scans. The runtime settlement constructor keeps the same frozen
+planner values, caches its horizontal exclusion once per column, and omits
+only the already-proven second replay. Evidence and capture constructors are
+unchanged and still execute every original proof.
+
+The isolated full 80-cubed production transaction now measures 9.459 CPU
+seconds: 4.948 constructor, 1.548 planner and 2.867 writer. Its complete
+content, `param2` and light-byte capture is byte-identical to the pre-fix
+transaction, SHA-256
+`f282bde9adc10c732ed543696e8cc13eff879121ffd6086ffe2e8eecb4958439`.
+The pre-fix comparison required 159.21 wall seconds and 1,554,376 KiB peak RSS;
+the current comparison required 11.44 wall seconds and 812,776 KiB while a
+second independent measurement ran concurrently. The complete 61-case R7
+integration KAT passes on the current source with unchanged production
+manifest
+`9ff0e78818e842c578ecacbf9d5be4426ca72f6c3230f6184b0e8b23f69f369d`;
+it took 428.89 seconds and retained its deep, replay and projection cases.
+
+The real Luanti 5.17 LuaJIT pilot of the exact candidate completed three
+feature chunks plus one native witness in forward and reverse order. Probe
+time was 44.560 seconds forward and 46.003 seconds reverse; the engine wrappers
+finished in 50.62 and 52.13 seconds. Peak in-process RSS was 1,723,908,096 and
+1,682,083,840 bytes. Both orders had zero emerge errors, clean shutdown,
+identical runtime manifest, byte-identical snapshots and all semantic/native
+gates true. Permanent capture
+`444d8f2f1e32d14d1304e650ffe25205d61e5083596dc32a3d4f9487ad18f560`
+lives under `tools/wp40/results/r8/`; its comparison, manifest and checksum-set
+SHA-256 values are respectively
+`aa4e32dec1e3049fe48eff6b3ba205baae7339bb255ba45ae55dced9a08edc89`,
+`c6a9484a4f80350b8de5e3597cb94d4cd0321c1616ef28eb6eb9008d5e21694c`
+and `1f0f645ea325b31c97acf5dda7ece2ab65e533b9e6e81cc776a512bf1fd9000b`.
+
+The mandatory static PUC parser, `SETGLOBAL`, five grep sweeps, R7 unit gates
+and updated 74-file prefreeze source audit pass. An intermediate LuaJIT micro
+KAT also executes all 74 production modules and passes with internal digest
+`c0d21f03cf272f7c657304c955c389b1e5cbc0ee4241992cdeebf7ff1a6abcd6`.
+The independent review and one replacement final PUC/LuaJIT pair remain open
+until the correction bytes are frozen after review.
