@@ -607,7 +607,24 @@ that immutable Git blob. The caller-supplied frozen path is no longer an
 interpretation or retention source after bootstrap validation. Every Dungeon
 event now requires string `node`/`below` fields and a boolean
 `preserved_room`; a mixed valid-plus-malformed adversarial fixture must fail.
-A new exact candidate requires focused independent re-review before execution.
+Exact candidate `6aaed57cb75c740ff40a201c3c62dfa7b9e80a35` received focused
+independent **ACCEPT, 0 Critical / 0 High / 0 Medium / 0 Low**. The reviewer
+repeated the frozen-path mutation and mixed-Dungeon attacks, ran the static
+fixture, evaluated the real capture in a private clone and verified concurrent
+exclusive publication.
+
+The accepted bytes produced recovery ID
+`acbe351ed34e4cd2c5c84bbc83f14dfd1e6d4b431ccb23b7c559bc4ae5f626de`.
+Its comparison is `all_ok=true`; all result checksums pass; and the original
+83-file capture retains tree SHA-256
+`a6e401b3e5987653e738f8ddb1c89b8a4cfd23c10ef15b8d05ade0946085141e`.
+The tracked compact receipt is
+`docs/research/wp40-r8-g3-recovery-receipt.tsv`. No engine, build, PUC or
+LuaJIT process was part of recovery. A subsequent read-only audit of the
+published artifact returned **ACCEPT, 0 Critical / 0 High / 0 Medium / 0 Low**
+after verifying all 89 master-checksum entries, all 83 source-checksum entries
+and reproducing the recovery ID. G3 is closed; GUI and real fallback-engine
+runtime acceptance remain separate R8 gates.
 
 ## Calibration so far
 

@@ -178,13 +178,14 @@ neither is represented by the offline R6/R7 artifact hashes.
   repair pass should be introduced during the visual pass.
 - The future runner must emerge the feature corpus union the native-witness
   grid in declared and exact-reverse order, while keeping native Gennotify and
-  node-census evidence separate from the 10 feature digests. The accepted G2
-  run covers the unchanged three-row pilot prefix; the final 10-plus-32 corpus
-  remains an open G3 gate.
+  node-census evidence separate from the 10 feature digests. The final
+  10-plus-32 G3 corpus passed through the independently reviewed recovery
+  receipt `docs/research/wp40-r8-g3-recovery-receipt.tsv`; its original native
+  oracle failure remains preserved rather than rewritten.
 - This preflight did not run Luanti, Flatpak, a seed fleet, a build, or a new
   validation gate, by design.
-- A candidate winner still needs the native Gennotify/strata/ore gate and fresh
-  GUI/runtime evidence. Seed `0` alone is eligible for the first automated
+- Seed `0` has passed the native Gennotify/strata/ore gate and still needs fresh
+  GUI/runtime evidence. It alone is eligible for the first automated
   promotion; Seeds `1` and `42` additionally require their own accepted
   resource witness, corpus update and review. If all three GUI passes are
   acceptable, selection is a product choice; record that judgement rather

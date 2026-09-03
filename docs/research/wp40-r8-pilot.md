@@ -10,9 +10,10 @@ fresh vertical `CONTENT_IGNORE` halo above the owner. Attempt 9 confirms the
 narrower lighting correction, complete order equality and every G2 gate.
 Attempt 10 generated nearly the whole complete corpus without a mapgen error
 but correctly failed at the fixed two-hour G3 boundary. Attempt 11 completed
-the replacement two-pair/four-worker G3 and retained all raw evidence; its
-original native oracle failed closed and is pending the separately reviewed
-`recovery_v1` evaluation.
+the replacement two-pair/four-worker G3 and retained all raw evidence. Its
+original native oracle failed closed; independently reviewed `recovery_v1`
+evaluation now accepts the corrected hard evidence without rewriting that
+original failure.
 
 ## Attempt 1 -- diagnostic failure
 
@@ -507,7 +508,7 @@ that target no longer kills a nearly complete run: the replacement uses a
 10,770-second probe timeout, a three-hour host safety stop and a 10,801-second
 periodic-liquid boundary.
 
-## Attempt 11 -- completed sharded G3, native oracle failure
+## Attempt 11 -- completed sharded G3, original oracle failure and recovered PASS
 
 - Date: 2026-09-03
 - Candidate: `d20bcf58b751be256e3b96fe14df4b5dc901e6eb`
@@ -579,3 +580,37 @@ the actual validator still came from a mutable caller-supplied path, and
 Dungeon event fields were not fully type-checked. Both additional findings
 are corrected before the next focused re-review. No recovery receipt from
 either rejected candidate is accepted.
+
+Exact recovery candidate
+`6aaed57cb75c740ff40a201c3c62dfa7b9e80a35` then received focused
+independent **ACCEPT, 0 Critical / 0 High / 0 Medium / 0 Low**. The accepted
+bytes produced immutable recovery ID
+`acbe351ed34e4cd2c5c84bbc83f14dfd1e6d4b431ccb23b7c559bc4ae5f626de`
+with `all_ok=true` and Dungeon status `not_observed`. All 91 result files pass
+the recovery checksum set; the complete result occupies 600,327 bytes and
+retains a private copy of all 83 source files. The original source capture
+still reproduces tree SHA-256
+`a6e401b3e5987653e738f8ddb1c89b8a4cfd23c10ef15b8d05ade0946085141e`.
+
+Durable output identities:
+
+- recovery-input SHA-256:
+  `5419b720154f24b09e70973d1d4502044f8100160b82ad3431bc206e9808c925`
+- comparison SHA-256:
+  `5ee8346469884902c391a6cf80156235845d311c9891f959a1398f968197a639`
+- manifest SHA-256:
+  `b726d2a07c275d55dfbf4956eb9af1ee91c141b055d5a03a01730771dc5b8e90`
+- full result checksum-set SHA-256:
+  `915ef57cfe2b72542a7a1791405b934b20c1092c093085951ac13437886d09fb`
+- source checksum inventory/tree SHA-256:
+  `a6e401b3e5987653e738f8ddb1c89b8a4cfd23c10ef15b8d05ade0946085141e`
+- byte-identical tracked recovery receipt:
+  `docs/research/wp40-r8-g3-recovery-receipt.tsv`, SHA-256
+  `f34b411a300deb8e0d112240f082d68cfaad4a9428e8258341b09789de266605`
+
+This closes G3 under the approved pragmatic policy. It proves exact order
+equality for the ten feature snapshots and seven native census snapshots,
+clean execution and the corrected cave gates. Dungeon generation was enabled,
+but no Dungeon was observed in the bounded grid; preservation is therefore
+not claimed. The GUI itinerary and real fallback-engine runtime remain
+separate user gates.

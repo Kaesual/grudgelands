@@ -3,10 +3,10 @@
 Status: corrected G2 real-engine pilot accepted; the first combined 10+32 G3
 pair failed only at its exact two-hour timeout. The independently reviewed
 four-worker replacement completed without timeout but failed closed under its
-original native-event policy. Its immutable raw evidence is eligible for the
-separately reviewed `recovery_v1` evaluation below. The runner remains a narrow
-release smoke, not a replacement for offline R7 evidence, R2/R6 capacity and
-supply evidence, or the later visual gates.
+original native-event policy. Its immutable raw evidence has now passed the
+separately reviewed `recovery_v1` evaluation below. G3 is closed. The runner
+remains a narrow release smoke, not a replacement for offline R7 evidence,
+R2/R6 capacity and supply evidence, or the later visual gates.
 
 ## Contract
 
