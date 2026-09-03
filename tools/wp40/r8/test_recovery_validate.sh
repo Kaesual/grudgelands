@@ -268,6 +268,28 @@ jq -e '.all_ok == true and
 	<<<"$observed" >/dev/null
 
 jq 'if .event == "complete" then
+	.native_gate.events += [{kind:"dungeon", position:{x:1,y:-200,z:1},
+		source_mapchunk:"0,-272,0", inside_source:true,
+		preserved_room:false}] |
+	.native_gate.event_counts.dungeon = 2
+	else . end' "$scratch/native-forward-observed.jsonl" \
+	>"$scratch/native-forward-incomplete-dungeon.jsonl"
+jq 'if .event == "complete" then
+	.native_gate.events += [{kind:"dungeon", position:{x:1,y:-200,z:1},
+		source_mapchunk:"0,-272,0", inside_source:true, node:1,
+		below:false, preserved_room:false}] |
+	.native_gate.event_counts.dungeon = 2
+	else . end' "$scratch/native-reverse-observed.jsonl" \
+	>"$scratch/native-reverse-invalid-dungeon.jsonl"
+invalid_dungeon="$(validate "$scratch/feature-forward.jsonl" \
+	"$scratch/feature-reverse.jsonl" \
+	"$scratch/native-forward-incomplete-dungeon.jsonl" \
+	"$scratch/native-reverse-invalid-dungeon.jsonl" \
+	"$host_telemetry" "$file_checks")"
+jq -e '.all_ok == false and .checks.native_gate_internal == false' \
+	<<<"$invalid_dungeon" >/dev/null
+
+jq 'if .event == "complete" then
 	.native_gate.events[-1].below = "default:stone" |
 	.native_gate.events[-1].preserved_room = false |
 	.native_gate.dungeon_preserved_room_count = 0 |

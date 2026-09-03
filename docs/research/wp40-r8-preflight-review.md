@@ -593,7 +593,21 @@ uses GNU `mv -T --no-clobber` and requires the temporary source directory to
 have disappeared, closing both pre-existence and concurrent-writer cases. The
 expanded negative fixture covers wrong feature/census IDs, incomplete Cave-End
 events, asymmetric and unpreserved dungeons and exclusive-publish behavior.
-A focused independent re-review is required before execution.
+Exact correction `7ecc208678c79108bb520c468efd0dcc3d4dbbc6` received focused
+independent **REJECT, 0 Critical / 1 High / 1 Medium / 0 Low** before
+execution. It closed both earlier High findings and all three earlier Medium
+findings, but the review demonstrated that a caller-supplied frozen validator
+could change after its initial blob check and before `jq -f` used that path.
+It also found that a malformed Dungeon event could omit or mistype `node` and
+`below` while another valid event supplied the required preserved witness.
+
+The next correction derives the recovery-input digest and retained input tree
+directly from the selected Git commit and streams the validator into `jq` from
+that immutable Git blob. The caller-supplied frozen path is no longer an
+interpretation or retention source after bootstrap validation. Every Dungeon
+event now requires string `node`/`below` fields and a boolean
+`preserved_room`; a mixed valid-plus-malformed adversarial fixture must fail.
+A new exact candidate requires focused independent re-review before execution.
 
 ## Calibration so far
 

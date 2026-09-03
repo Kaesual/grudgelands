@@ -140,6 +140,9 @@ def native_gate_internal_ok($gate):
 			(.inside_source == true and .nearby_air_count > 0)) and
 	all($gate.events[] | select(.kind == "dungeon");
 		(.inside_source | type) == "boolean" and
+		(.node | type) == "string" and
+		(.below | type) == "string" and
+		(.preserved_room | type) == "boolean" and
 		.preserved_room == (.inside_source == true and .node == "air" and
 			(.below == "default:cobble" or .below == "default:mossycobble"))) and
 	$gate.event_counts == recomputed_event_counts($gate) and

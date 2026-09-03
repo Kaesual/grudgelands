@@ -432,7 +432,8 @@ file_checks="$(jq -n '{source_tree_sha256: true, source_file_count: true,
 
 recovery_input_sha256="$({
 	for relative_path in "${recovery_paths[@]}"; do
-		sha256sum "$frozen_root/$relative_path" | awk '{print $1}'
+		git -C "$repo" cat-file blob "$recovery_sha:$relative_path" |
+			sha256sum | awk '{print $1}'
 	done
 } | sha256sum | awk '{print $1}')"
 recovery_id="$({
@@ -447,20 +448,36 @@ if [[ -e "$result_dir" ]]; then
 fi
 result_tmp="$(mktemp -d "$results_root/.recovery.XXXXXXXX")"
 mkdir "$result_tmp/inputs"
-(
-	cd "$frozen_root"
-	tar -cf - "${recovery_paths[@]}"
-) | (
+git -C "$repo" archive "$recovery_sha" -- "${recovery_paths[@]}" | (
 	cd "$result_tmp/inputs"
 	tar -xf -
 )
+for relative_path in "${recovery_paths[@]}"; do
+	expected_blob="$(git -C "$repo" rev-parse "$recovery_sha:$relative_path")"
+	actual_blob="$(git -C "$repo" hash-object \
+		"$result_tmp/inputs/$relative_path")"
+	expected_mode="$(git -C "$repo" ls-tree "$recovery_sha" -- \
+		"$relative_path" | awk '{print $1}')"
+	actual_permissions="$(stat -c '%a' "$result_tmp/inputs/$relative_path")"
+	actual_mode=100644
+	if [[ "$actual_permissions" == "755" ]]; then actual_mode=100755; fi
+	if [[ "$actual_blob" != "$expected_blob" ||
+			"$actual_mode" != "$expected_mode" ||
+			( "$actual_permissions" != "644" &&
+				"$actual_permissions" != "755" ) ]]; then
+		echo "WP40 R8 recovery: retained $relative_path blob/mode differs from selected commit" >&2
+		exit 2
+	fi
+done
 mv "$source_capture" "$result_tmp/source-capture"
 source_capture="$result_tmp/source-capture"
 feature_dir="$source_capture/shards/$feature_capture_id"
 native_dir="$source_capture/shards/$native_capture_id"
 cp "$source_checksums" "$result_tmp/source-checksums.sha256"
 
-jq -n --arg source_capture_id "$source_capture_id" \
+git -C "$repo" cat-file blob \
+	"$recovery_sha:tools/wp40/r8/recovery_validate.jq" | jq -n \
+	--arg source_capture_id "$source_capture_id" \
 	--arg source_tree_sha256 "$source_tree_sha256" \
 	--arg checkout_sha "$source_checkout_sha" \
 	--arg feature_capture_id "$feature_capture_id" \
@@ -482,7 +499,7 @@ jq -n --arg source_capture_id "$source_capture_id" \
 	--slurpfile feature_reverse "$feature_dir/reverse/events.jsonl" \
 	--slurpfile native_forward "$native_dir/forward/events.jsonl" \
 	--slurpfile native_reverse "$native_dir/reverse/events.jsonl" \
-	-f "$script_dir/recovery_validate.jq" \
+	-f /dev/stdin \
 	>"$result_tmp/comparison.json"
 if ! jq -e '.all_ok == true and .policy.dungeon_status == "not_observed"' \
 		"$result_tmp/comparison.json" >/dev/null; then

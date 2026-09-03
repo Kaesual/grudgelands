@@ -147,6 +147,10 @@ blob and mode against `d20bcf5...`, verifies the feature child checksum set and
 four independently recorded raw-event hashes, and checks all four
 contemporaneous child before/after Flatpak identities. It then recomputes the
 complete semantic comparison from the raw JSONL streams under `recovery_v1`.
+The recovery-input digest, retained recovery-input tree and the validator
+stream actually interpreted by `jq` all come directly from that selected
+commit's immutable Git objects; a bootstrap frozen path is not reused for
+interpretation or retention.
 No current Flatpak query, engine process, build, Lua runtime or world mutation
 is part of recovery.
 

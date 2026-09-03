@@ -572,6 +572,10 @@ The first recovery implementation commit
 `ab75003086a0560e49b5619f78374333e4f2ce96` was not executed after its
 independent review returned **REJECT, 0 Critical / 2 High / 3 Medium / 0 Low**.
 Its source-read and publication races plus three fail-closed validation gaps
-are recorded in `wp40-r8-preflight-review.md`; all five are corrected before
-the required focused re-review. No recovery receipt from the rejected bytes is
-accepted.
+are recorded in `wp40-r8-preflight-review.md`. The first correction
+`7ecc208678c79108bb520c468efd0dcc3d4dbbc6` was likewise not executed after
+focused review returned **REJECT, 0 Critical / 1 High / 1 Medium / 0 Low**:
+the actual validator still came from a mutable caller-supplied path, and
+Dungeon event fields were not fully type-checked. Both additional findings
+are corrected before the next focused re-review. No recovery receipt from
+either rejected candidate is accepted.
