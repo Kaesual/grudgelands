@@ -680,8 +680,25 @@ precomputed destination hash before reporting publication success. It rejects
 all non-ignored untracked files before starting, then permits only its exact
 private stage prefix while separately requiring unchanged HEAD, index,
 worktree and finalizer bytes. The cleanup trap is installed before either
-temporary directory is created. Focused re-review of these shell-hardening
-changes and the one final frozen-byte LuaJIT/PUC pair remain open.
+temporary directory is created. Focused read-only re-review of exact commit
+`f07abf1aecd9830163c36533ecbce16a09c0b58c` returned **ACCEPT, 0 Critical / 0
+High / 0 Medium / 0 Low**. It confirmed all three shell findings closed and
+found no new workflow or evidence regression.
+
+The accepted finalizer then completed the one authorized frozen-byte pair.
+The 108-input receipt records all 74 changed production modules, and LuaJIT
+and PUC 5.1 produced byte-identical canonical output with internal digest
+`99f4f21e4417cf5ca42e5cfc0b4a3f0f542c6dedf5d3c07e18688b61514cf82a`.
+The atomically published final-audit SHA-256 is
+`79044fd1d7ff9ee5d4327136dfac587c3aa9314ef22f8c89e06919e410cd3ce8`;
+the micro receipt SHA-256 is
+`40c3280c903afcdde760790b1e6bd4f452dd0fd3784566d235917ce1a2a5a588`.
+An independent read-only audit of the published result returned **ACCEPT, 0
+Critical / 0 High / 0 Medium / 0 Low** after reproducing every artifact hash,
+the 108-input set, the exact 74-module execution roster, both interpreter
+bindings, the accepted candidate/production/integration identities, all 33
+pilot checksums and the absence of finalization scratch or partial files. The
+cold-start correction evidence record is closed.
 
 ## Calibration so far
 

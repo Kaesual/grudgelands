@@ -678,5 +678,12 @@ The mandatory static PUC parser, `SETGLOBAL`, five grep sweeps, R7 unit gates
 and updated 74-file prefreeze source audit pass. An intermediate LuaJIT micro
 KAT also executes all 74 production modules and passes with internal digest
 `99f4f21e4417cf5ca42e5cfc0b4a3f0f542c6dedf5d3c07e18688b61514cf82a`.
-The independent review and one replacement final PUC/LuaJIT pair remain open
-until the correction bytes are frozen after review.
+Focused independent review accepted the frozen finalizer commit
+`f07abf1aecd9830163c36533ecbce16a09c0b58c` with 0 Critical / 0 High / 0
+Medium / 0 Low. The one replacement PUC/LuaJIT pair then produced
+byte-identical canonical output for all 108 inputs and all 74 changed
+production modules. Its final-audit and micro-receipt SHA-256 values are
+`79044fd1d7ff9ee5d4327136dfac587c3aa9314ef22f8c89e06919e410cd3ce8`
+and `40c3280c903afcdde760790b1e6bd4f452dd0fd3784566d235917ce1a2a5a588`.
+An independent read-only audit reproduced every final binding and accepted the
+published result with 0 Critical / 0 High / 0 Medium / 0 Low findings.
