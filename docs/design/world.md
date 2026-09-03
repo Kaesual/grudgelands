@@ -842,6 +842,17 @@ territory.
   through the safe early-level roads.
 - Race choice at character creation (after faction, before class), stored
   in player meta. Visuals (skins) can come later.
+- Until faction, race and class are all complete, the player is held in
+  **character-creation stasis**: movement, jumping and gravity are frozen,
+  current velocity is cancelled and engine immortality prevents damage and
+  drowning. The mandatory faction → race → class forms use an opaque dark
+  backdrop; no physical lobby or generated holding room exists. Choosing a
+  race starts an asynchronous emerge of that race's start behind the remaining
+  UI. The first class choice stays transient until that emerge succeeds, then
+  the player is positioned exactly once, the class is persisted and the
+  pre-stasis physics/immortality state is restored. Disconnects reconstruct
+  stasis from the still-incomplete identity, stale callbacks cannot release a
+  later session, and emerge failure stays safe with an explicit retry.
 - MVP perks (revised 2026-08-06 — a perk must be FELT from level 1, a
   vendor discount is invisible for the first ten hours): **one visible
   passive per race** + the vendor discount as a bonus. Passives
