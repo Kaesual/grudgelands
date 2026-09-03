@@ -97,9 +97,9 @@ end
 
 local faction_chosen_callbacks = {}
 
--- func(player, faction_id) — called after the player picked a faction in
--- the selection dialog (NOT on admin /faction sets). grug_classes chains
--- the race/class creation steps here.
+-- func(player, faction_id) — called after every successful faction set,
+-- including the selection dialog and the admin command. grug_classes chains
+-- the race/class creation steps and invalidates any in-flight spawn load here.
 function grug_factions.register_on_faction_chosen(func)
 	table.insert(faction_chosen_callbacks, func)
 end
@@ -122,6 +122,9 @@ function grug_factions.set_faction(player, id)
 		for _, item in ipairs(starter_kits[id] or {}) do
 			inv:add_item("main", item)
 		end
+	end
+	for _, func in ipairs(faction_chosen_callbacks) do
+		func(player, id)
 	end
 	return true
 end
@@ -246,9 +249,6 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	local def = grug_core.factions[chosen]
 	core.chat_send_player(player:get_player_name(),
 		core.colorize(def.color, "Welcome to the " .. def.name .. "!"))
-	for _, func in ipairs(faction_chosen_callbacks) do
-		func(player, chosen)
-	end
 	return true
 end)
 
@@ -270,6 +270,10 @@ end)
 
 -- Always respawn at the own race's stable starting settlement.
 core.register_on_respawnplayer(function(player)
+	if grug_core.player_in_creation_stasis and
+			grug_core.player_in_creation_stasis(player:get_player_name()) then
+		return true
+	end
 	local id = grug_factions.get_faction(player)
 	if not id then
 		return
@@ -319,7 +323,6 @@ core.register_chatcommand("faction", {
 			if not grug_factions.set_faction(target, faction_id) then
 				return false, "Unknown faction: " .. faction_id
 			end
-			grug_factions.teleport_to_spawn(target)
 			return true, target_name .. " now belongs to the " .. faction_id .. " faction."
 		end
 

@@ -7,6 +7,7 @@ local RACE_FORM = "grug_classes:race"
 local CLASS_FORM = "grug_classes:class"
 local LOADING_FORM = "grug_classes:loading"
 local REOPEN_DELAY = 0.1
+local STASIS_CHECK_INTERVAL = 0.1
 local DARK_BACKGROUND = "no_prepend[]" ..
 	"bgcolor[#080808FF;both;#000000FF]"
 
@@ -35,12 +36,25 @@ end
 
 local function stop_velocity(player)
 	local velocity = player:get_velocity()
-	if velocity then
+	if velocity and (velocity.x ~= 0 or velocity.y ~= 0 or velocity.z ~= 0) then
 		player:add_velocity({
 			x = -velocity.x,
 			y = -velocity.y,
 			z = -velocity.z,
 		})
+	end
+end
+
+local function reassert_player_lock(player)
+	local physics = player:get_physics_override() or {}
+	if physics.speed ~= 0 or physics.jump ~= 0 or physics.gravity ~= 0 then
+		player:set_physics_override({speed = 0, jump = 0, gravity = 0})
+	end
+	stop_velocity(player)
+	local armor = copy_table(player:get_armor_groups())
+	if armor.immortal ~= 1 then
+		armor.immortal = 1
+		player:set_armor_groups(armor)
 	end
 end
 
@@ -63,13 +77,7 @@ local function lock_player(player)
 		}
 		creation_sessions[name] = session
 	end
-	player:set_physics_override({speed = 0, jump = 0, gravity = 0})
-	stop_velocity(player)
-	local armor = copy_table(player:get_armor_groups())
-	if armor.immortal ~= 1 then
-		armor.immortal = 1
-		player:set_armor_groups(armor)
-	end
+	reassert_player_lock(player)
 	return session
 end
 
@@ -165,6 +173,13 @@ local function identity_key(player)
 	return faction .. ":" .. race
 end
 
+-- Read by grug_factions' earlier-registered respawn callback. A dead,
+-- incomplete player stays in the one creation transaction instead of taking
+-- an eager respawn teleport before the destination is emerged.
+function grug_core.player_in_creation_stasis(name)
+	return creation_sessions[name] ~= nil
+end
+
 start_spawn_load = function(player)
 	local session = creation_sessions[player:get_player_name()]
 	local key = identity_key(player)
@@ -223,8 +238,21 @@ finish_if_ready = function(player)
 		return false
 	end
 	local class_id = grug_classes.get_class(player) or session.pending_class_id
-	if not grug_factions.get_faction(player) or
-			not grug_classes.get_race(player) or not class_id then
+	local key = identity_key(player)
+	if not key or not class_id then
+		return false
+	end
+	if session.spawn_key ~= key then
+		-- An admin may change race/faction after a prefetch completed. Retire the
+		-- cached position and its callback generation before loading the new one.
+		session.load_generation = (session.load_generation or 0) + 1
+		session.spawn_key = nil
+		session.spawn_ready = false
+		session.spawn_pos = nil
+		session.load_failed = nil
+		session.loading = false
+		start_spawn_load(player)
+		show_loading(player, session.load_failed ~= nil)
 		return false
 	end
 	if not session.spawn_ready then
@@ -249,6 +277,10 @@ finish_if_ready = function(player)
 		show_loading(player, true)
 		return false
 	end
+	if player:get_hp() <= 0 then
+		player:set_hp(grug_classes.get_max_hp(player),
+			{type = "set_hp", from = "mod"})
+	end
 	if not release_player(player, session) then
 		return false
 	end
@@ -260,7 +292,12 @@ end
 
 -- Shows the next missing creation step, if any.
 continue_creation = function(player)
-	local session = lock_player(player)
+	local session = creation_sessions[player:get_player_name()]
+	if session then
+		reassert_player_lock(player)
+	else
+		session = lock_player(player)
+	end
 	if not session then
 		return
 	end
@@ -278,6 +315,24 @@ continue_creation = function(player)
 		show_class_selection(player)
 	end
 end
+
+-- Status effects and future mods may write physics after the join callbacks.
+-- Reassert only active stasis sessions, compare before writing, and throttle
+-- the pass so ordinary players pay only the cheap interval/table check.
+local stasis_check_elapsed = 0
+core.register_globalstep(function(dtime)
+	stasis_check_elapsed = stasis_check_elapsed + dtime
+	if stasis_check_elapsed < STASIS_CHECK_INTERVAL then
+		return
+	end
+	stasis_check_elapsed = stasis_check_elapsed % STASIS_CHECK_INTERVAL
+	for name in pairs(creation_sessions) do
+		local player = core.get_player_by_name(name)
+		if player then
+			reassert_player_lock(player)
+		end
+	end
+end)
 
 -- Re-open on the next visible beat unless the step completed meanwhile.
 local function reopen_later(player)
@@ -425,8 +480,17 @@ local function register_set_command(cmd, setter, getter_def, is_id)
 				if not core.check_player_privs(name, {server = true}) then
 					return false, "You need the 'server' privilege for this."
 				end
-				if not setter(target, id) then
+				local session = creation_sessions[target_name]
+				if cmd == "class" and session and
+						not grug_classes.get_class(target) and is_id(id) then
+					-- Keep an admin-picked first class transient too. Persisting it
+					-- before the prepared teleport would reopen the reconnect hole.
+					session.pending_class_id = id
+					finish_if_ready(target)
+				elseif not setter(target, id) then
 					return false, "Invalid " .. cmd .. ": " .. id
+				else
+					continue_creation(target)
 				end
 				return true, target_name .. "'s " .. cmd .. " is now " .. id .. "."
 			end

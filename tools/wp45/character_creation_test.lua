@@ -8,12 +8,14 @@ local callbacks = {
 	leaveplayer = {},
 	receive_fields = {},
 	respawnplayer = {},
+	globalstep = {},
 }
 local after_queue = {}
 local emerge_requests = {}
 local online = {}
 local chats = {}
 local class_sets = 0
+local chatcommands = {}
 
 local function assert_equal(actual, expected, context)
 	if actual ~= expected then
@@ -50,7 +52,7 @@ core = {
 	log = function() end,
 	check_player_privs = function() return true end,
 	get_player_by_name = function(name) return online[name] end,
-	register_chatcommand = function() end,
+	register_chatcommand = function(name, def) chatcommands[name] = def end,
 	register_on_punchplayer = function() end,
 	register_on_newplayer = function(fn)
 		callbacks.newplayer[#callbacks.newplayer + 1] = fn
@@ -66,6 +68,9 @@ core = {
 	end,
 	register_on_respawnplayer = function(fn)
 		callbacks.respawnplayer[#callbacks.respawnplayer + 1] = fn
+	end,
+	register_globalstep = function(fn)
+		callbacks.globalstep[#callbacks.globalstep + 1] = fn
 	end,
 	after = function(_, fn)
 		after_queue[#after_queue + 1] = fn
@@ -133,6 +138,7 @@ local function new_player(name, meta, options)
 			speed = 1.25, jump = 0.9, gravity = 0.8, speed_climb = 1.5,
 		}),
 		armor = copy_table(options.armor or {fleshy = 100, custom = 7}),
+		hp = options.hp == nil and 20 or options.hp,
 		teleports = 0,
 		items = {},
 	}
@@ -161,7 +167,11 @@ local function new_player(name, meta, options)
 		self.pos = copy_table(value)
 		self.teleports = self.teleports + 1
 	end
-	function player:get_hp() return 20 end
+	function player:get_hp() return self.hp end
+	function player:set_hp(value, reason)
+		self.hp = value
+		self.hp_reason = reason
+	end
 	return player
 end
 
@@ -197,9 +207,24 @@ local function receive(player, formname, fields)
 		player.formname = nil
 		player.formspec = nil
 	end
-	for index = 1, #callbacks.receive_fields do
-		callbacks.receive_fields[index](player, formname, fields)
+	for index = #callbacks.receive_fields, 1, -1 do
+		if callbacks.receive_fields[index](player, formname, fields) then
+			return
+		end
 	end
+end
+
+local function run_globalsteps(dtime)
+	for index = 1, #callbacks.globalstep do
+		callbacks.globalstep[index](dtime)
+	end
+end
+
+local function respawn(player)
+	for index = #callbacks.respawnplayer, 1, -1 do
+		if callbacks.respawnplayer[index](player) then return true end
+	end
+	return false
 end
 
 local function finish_emerge(request, actions)
@@ -257,7 +282,7 @@ end
 function grug_classes.get_attributes()
 	return {str = 10, int = 10, dex = 10}
 end
-function grug_classes.get_max_hp() return 20 end
+function grug_classes.get_max_hp() return 30 end
 function grug_classes.get_max_mana() return 20 end
 function grug_classes.get_melee_bonus() return 0 end
 function grug_classes.get_spell_power_bonus() return 0 end
@@ -305,6 +330,13 @@ assert_equal(fresh.physics.speed, 1, "later join reset is observable")
 run_after()
 assert_locked(fresh, "fresh join")
 assert_dark_form(fresh, "grug_factions:select", "faction")
+
+-- A status-effect writer may run after join and after its punch is rejected
+-- by immortality. The throttled guard restores the complete lock.
+fresh:set_physics_override({speed = 0.6, jump = 0.4, gravity = 1.5})
+fresh.velocity = {x = 1, y = -2, z = 0.5}
+run_globalsteps(0.1)
+assert_locked(fresh, "runtime physics writer")
 
 receive(fresh, "grug_factions:select", {quit = true})
 assert_equal(fresh.formname, nil, "closed faction form")
@@ -362,6 +394,50 @@ receive(prefetched, "grug_classes:class", {choose_mage = true})
 assert_equal(prefetched.teleports, 1, "prefetched immediate teleport")
 assert_equal(prefetched.formname, nil, "prefetched form closes")
 
+-- A ready cache belongs to the exact faction/race identity. An admin race
+-- change retires it and class completion waits for the replacement emerge.
+local changed = new_player("changed")
+join(changed, true)
+run_after()
+receive(changed, "grug_factions:select", {choose_accord = true})
+receive(changed, "grug_classes:race", {choose_human = true})
+finish_emerge(emerge_requests[#emerge_requests], {core.EMERGE_FROM_MEMORY})
+local changed_requests = #emerge_requests
+local changed_ok = chatcommands.race.func("admin", "changed dwarf")
+assert(changed_ok, "admin race change")
+assert_equal(#emerge_requests, changed_requests + 1,
+	"identity change starts replacement emerge")
+receive(changed, "grug_classes:class", {choose_warrior = true})
+assert_equal(changed.teleports, 0, "stale ready spawn not committed")
+finish_emerge(emerge_requests[#emerge_requests], {core.EMERGE_FROM_DISK})
+assert_equal(changed.pos.x, -550, "changed race spawn x")
+assert_equal(changed.teleports, 1, "changed identity final teleport")
+
+-- The faction admin path joins the coordinator instead of launching an
+-- independent early teleport. Re-setting the same faction neither re-emerges
+-- nor moves the classless player.
+local administered = new_player("administered")
+join(administered, true)
+run_after()
+receive(administered, "grug_factions:select", {choose_accord = true})
+receive(administered, "grug_classes:race", {choose_human = true})
+local administered_request = emerge_requests[#emerge_requests]
+local administered_requests = #emerge_requests
+local faction_ok = chatcommands.faction.func("admin", "administered accord")
+assert(faction_ok, "admin faction set")
+assert_equal(#emerge_requests, administered_requests,
+	"admin faction reuses coordinator load")
+assert_equal(administered.teleports, 0, "admin faction no early teleport")
+local class_ok = chatcommands.class.func("admin", "administered priest")
+assert(class_ok, "admin class set")
+assert_equal(grug_classes.get_class(administered), nil,
+	"admin first class remains transient")
+assert_dark_form(administered, "grug_classes:loading", "admin class loading")
+finish_emerge(administered_request, {core.EMERGE_GENERATED})
+assert_equal(administered.teleports, 1, "admin faction one final teleport")
+assert_equal(grug_classes.get_class(administered), "priest",
+	"admin class commits after emerge")
+
 -- Any failed block fails closed. The explicit retry gets a new request and a
 -- successful second attempt performs the same single commit.
 local retrying = new_player("retrying")
@@ -415,6 +491,26 @@ assert_locked(rejoined, "after stale callback")
 finish_emerge(current_request, {core.EMERGE_FROM_DISK})
 assert_equal(rejoined.teleports, 1, "current session teleport")
 assert_equal(grug_classes.get_class(rejoined), "priest", "current class commit")
+
+-- A persisted dead, incomplete character cannot take the eager respawn path;
+-- completion revives it at the emerged start instead of leaving it dead behind
+-- the replaced builtin death form.
+local dead_meta = new_meta()
+dead_meta:set_string("grug_factions:faction", "accord")
+dead_meta:set_string("grug_classes:race", "human")
+local dead = new_player("dead", dead_meta, {hp = 0})
+join(dead, false)
+run_after()
+assert_locked(dead, "dead incomplete")
+local dead_request = emerge_requests[#emerge_requests]
+local dead_teleports = dead.teleports
+assert(respawn(dead), "creation owns dead respawn")
+assert_equal(dead.teleports, dead_teleports, "dead respawn no eager teleport")
+receive(dead, "grug_classes:class", {choose_mage = true})
+finish_emerge(dead_request, {core.EMERGE_FROM_MEMORY})
+assert_equal(dead.teleports, dead_teleports + 1, "dead final teleport")
+assert_equal(dead.hp, 30, "dead character revived at full class HP")
+assert_equal(dead.hp_reason.type, "set_hp", "dead revive reason")
 
 -- A complete returning character is never locked, emerged or repositioned.
 local complete_meta = new_meta()
