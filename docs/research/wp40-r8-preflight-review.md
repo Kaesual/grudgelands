@@ -651,8 +651,24 @@ apply/replay and P9G settle/replay calls. The 224 KiB two-order pilot capture
 is copied unchanged into the tracked evidence tree and verifies against all
 33 original checksums. The pilot record now distinguishes required combined-
 pilot gates from its optional native witness diagnostics and counts all twelve
-attempts. Focused independent re-review and the one final frozen-byte
-LuaJIT/PUC pair remain open.
+attempts. Focused independent re-review of exact correction
+`7c72638299c8f338f8fe8dc19be9b5e134eaa18d` returned **REJECT, 0 Critical /
+1 High / 0 Medium / 0 Low**. It confirmed all five findings closed and found
+no production, settlement or Lua 5.1 regression, but found that the new
+replacement directory was not connected to a final audit: the inherited R7
+freeze correctly remains bound to its already-published historical evidence
+and integration binding.
+
+The narrow workflow correction adds a distinct R8 cold-start finalizer. It
+requires a clean committed tree and the exact unchanged production bytes from
+`269038e3c437f0014fc4fcace748e474541c6112`, runs the complete static gates,
+captures identical pre/post source audits, stages the one final interpreter
+pair without publication, validates its 108-input/74-module receipt, and
+binds the accepted integration receipt plus all 33 tracked engine-pilot
+checksums. Only after every check passes does it atomically publish the whole
+result directory without overwrite. The historical R7 evidence and workflow
+remain unchanged. Focused re-review of this finalizer and the one final
+frozen-byte LuaJIT/PUC pair remain open.
 
 ## Calibration so far
 
