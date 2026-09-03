@@ -493,7 +493,7 @@ local function adapter_factory(allocator_factory)
 	end
 	local allocator_factory_new = allocator_factory.new
 	local function new(manifest, content_contract, mapgen_context, allocator,
-			construction_identity)
+			construction_identity, trusted_classify)
 		require_manifest(manifest)
 		exact_raw_fields(content_contract, K.CONTENT_FIELDS, "content contract",
 			"fail_status")
@@ -502,6 +502,9 @@ local function adapter_factory(allocator_factory)
 				type(content_contract.classify) ~= "function" or
 				type(content_contract.metrics) ~= "function" then
 			fail("fail_status", "content contract API differs")
+		end
+		if trusted_classify ~= nil and type(trusted_classify) ~= "function" then
+			fail("fail_status", "trusted classifier seam differs")
 		end
 		safe_integer(content_contract.ignore_cid, "ignore CID", 0, K.MAX_SAFE,
 			"fail_status")
@@ -571,7 +574,8 @@ local function adapter_factory(allocator_factory)
 		local river_family = content_contract.river_water_family_id
 		local ignore_cid = content_contract.ignore_cid
 		local resolve_content = content_contract.resolve
-		local classify_content = content_contract.classify
+		local classify_content = trusted_classify or content_contract.classify
+		local trusted_classification = trusted_classify ~= nil
 		local get_heightmap = mapgen_context.get_heightmap
 
 		local function compatible_liquid(family_id, liquid_kind)
@@ -580,6 +584,7 @@ local function adapter_factory(allocator_factory)
 		end
 
 		local function classify(cid, p2, failure_code)
+			if trusted_classification then return classify_content(cid, p2) end
 			local ok, class_id, family_id, liquid_kind, liquid_level, floodable,
 				paramtype_light, light_propagates, sunlight_propagates, light_source =
 				pcall(classify_content, cid, p2)

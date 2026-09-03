@@ -60,10 +60,13 @@ local function planner_factory()
 		return result
 	end
 
-	local function new(dependencies, evidence_only)
-		if evidence_only ~= nil and evidence_only ~= true then
-			fail("fail_source", "evidence-only construction flag differs")
+	local function new(dependencies, construction_mode)
+		if construction_mode ~= nil and construction_mode ~= true and
+				construction_mode ~= "runtime" then
+			fail("fail_source", "private construction mode differs")
 		end
+		local evidence_only = construction_mode == true
+		local runtime_mode = construction_mode == "runtime"
 		exact_fields(dependencies, {
 			full_seed_string = true, planner_source = true, r5_planner = true,
 			horizontal = true, content = true, templates = true, hash = true,
@@ -153,11 +156,16 @@ local function planner_factory()
 			for b = 1, #cultural[index].biomes do set[cultural[index].biomes[b]] = true end
 			cultural_biome[index] = set
 		end
-		local decoration_biome = {}
+		local decoration_biome, decoration_height_rule = {}, {}
 		for index = 1, #decorations do
 			local set = {}
 			for b = 1, #decorations[index].biomes do set[decorations[index].biomes[b]] = true end
 			decoration_biome[index] = set
+			local rule = decorations[index].rule
+			decoration_height_rule[index] =
+				rule:find("surface_y_at_least_60", 1, true) and 1 or
+				(rule:find("surface_y_at_most_32", 1, true) and 2 or
+					(rule:find("surface_y_1_to_4", 1, true) and 3 or 0))
 		end
 		local profile_depth, hydrology_depth, lower_hydrology = {}, {}, {}
 		for index = 1, #(source.hydrology_profiles or {}) do
@@ -177,7 +185,8 @@ local function planner_factory()
 		local halo_z = math.ceil(math.max(0, max_footprint_z - 1) / 16)
 		if halo_x > 2 or halo_z > 2 then fail("fail_bound", "candidate halo differs") end
 
-		local candidate_capacity = evidence_only and 16384 or MAX_CANDIDATES
+		local candidate_capacity = (evidence_only or runtime_mode) and 16384 or
+			MAX_CANDIDATES
 		local column_values = retained_array("r6_planner_column_values",
 			evidence_only and 1 or MAX_COLUMNS * COLUMN_STRIDE, false)
 		local candidate_cell_values = retained_array("r6_planner_candidate_cells",
@@ -472,15 +481,16 @@ local function planner_factory()
 			end
 			for catalog = 1, #decorations do
 				local row = decorations[catalog]
+				local height_rule = decoration_height_rule[catalog]
 				local eligible = 0
 				for column = 1, column_count do
 					local terrain_y = scratch.terrain_y[column]
 					local special_ok = true
-					if row.rule:find("surface_y_at_least_60", 1, true) then
+					if height_rule == 1 then
 						special_ok = terrain_y >= 60
-					elseif row.rule:find("surface_y_at_most_32", 1, true) then
+					elseif height_rule == 2 then
 						special_ok = terrain_y <= 32
-					elseif row.rule:find("surface_y_1_to_4", 1, true) then
+					elseif height_rule == 3 then
 						special_ok = terrain_y >= 1 and terrain_y <= 4
 					end
 					if terrain_y >= 1 and special_ok and
@@ -703,7 +713,8 @@ local function planner_factory()
 	end
 
 	return {new = function(dependencies) return new(dependencies, nil) end,
-		new_evidence = function(dependencies) return new(dependencies, true) end}
+		new_evidence = function(dependencies) return new(dependencies, true) end,
+		new_runtime = function(dependencies) return new(dependencies, "runtime") end}
 end
 
 return planner_factory()

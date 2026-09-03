@@ -125,7 +125,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		raw_sha256 = raw_sha256, hash_factory = hash_factory,
 		content_factory = r6_content_factory, templates_factory = r6_templates_factory,
 		planner_factory = r6_planner_factory, settlement_factory = r6_settlement_factory})
-	if type(r6_module.new_runtime) ~= "function" then
+	if type(r6_module.new_runtime) ~= "function" or
+			type(r6_module.new_authority) ~= "function" then
 		fail("R6 runtime constructor differs")
 	end
 	local r7_manifest_module = r7_manifest_factory(canonical, raw_sha256)
@@ -133,10 +134,17 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	local template_source = template_source_factory(core_api, schematic_directory)
 
 	local module = {}
-	function module.build(native_identities, expected_manifest_sha256, evidence_mode)
+	local function build(native_identities, expected_manifest_sha256, evidence_mode,
+			authority_only)
 		if evidence_mode ~= nil and evidence_mode ~= true and
 				evidence_mode ~= "horizontal" then
 			fail("evidence mode differs")
+		end
+		if authority_only ~= nil and authority_only ~= true then
+			fail("authority mode differs")
+		end
+		if authority_only and evidence_mode ~= nil then
+			fail("authority/evidence modes overlap")
 		end
 		local full_seed = validate_live_scalars()
 		local content_set = r7_content_factory(core_api, projection, raw_sha256)
@@ -158,43 +166,61 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 				heightmap_external_table_allocations = heightmap_fetches,
 				metrics_result_table_allocations = 1}
 		end
-		local p9g_successor = r7_p9g_factory(catalog, content_set.p9g, raw_sha256)
-		local anchor_successor = r7_anchor_activation_factory(
-			r7_anchor_roster_factory, content_set.anchors)
-		local successor = r7_successor_factory(p9g_successor, anchor_successor)
+		local successor
+		if not authority_only then
+			local p9g_successor = r7_p9g_factory(catalog, content_set.p9g, raw_sha256)
+			local anchor_successor = r7_anchor_activation_factory(
+				r7_anchor_roster_factory, content_set.anchors)
+			successor = r7_successor_factory(p9g_successor, anchor_successor)
+		end
 		local authored_source = dofile(wp40_directory .. "/source/catalog.lua")
 		local consumer_payload = consumer_payload_factory(source,
 			authored_source, sha256_hex)
 		authored_source = nil
-		local constructor
-		if evidence_mode == "horizontal" then constructor = r6_module.new_evidence
-		elseif evidence_mode == true then constructor = r6_module.new_capture
-		-- Offline evidence keeps the exhaustive constructors. The live callback
-		-- builds only the query/writer state needed to generate actual mapblocks.
-		else constructor = r6_module.new_runtime end
-		local session, writer, zones_session, settlement_fixture, r6_identity =
-			constructor(full_seed, 1,
-			r6_manifest, content_set.production, mapgen_context, projection,
-			template_source, cultural, successor)
-		if type(session) ~= "table" or type(writer) ~= "table" or
-				type(zones_session) ~= "table" then
-			fail("production session assembly differs")
-		end
-		if type(r6_identity) ~= "table" or
-				r6_identity.schema ~= "grug_wp40_r6_private_identity_v1" or
-				type(r6_identity.planner_source) ~= "table" or
-				type(r6_identity.planner_source.column_values_at) ~= "function" then
-			fail("R6 private identity differs")
-		end
-		if type(r6_identity.successor_tail) ~= "table" or
-				type(r6_identity.successor_tail.anchor_roster) ~= "function" then
-			fail("R7 anchor successor identity differs")
-		end
-		local anchor_roster = r6_identity.successor_tail:anchor_roster()
-		local independent_roster = r7_anchor_roster_factory(source, zones_session,
-			r6_identity.planner_source, raw_sha256)
-		if anchor_roster.sha256 ~= independent_roster.sha256 then
-			fail("R7 anchor roster reconstruction differs")
+		local constructor, session, writer, zones_session, settlement_fixture,
+			r6_identity, anchor_roster
+		if authority_only then
+			zones_session, r6_identity = r6_module.new_authority(full_seed, 1,
+				r6_manifest, content_set.production, mapgen_context, projection,
+				template_source, cultural)
+			if type(zones_session) ~= "table" or type(r6_identity) ~= "table" or
+					r6_identity.schema ~= "grug_wp40_r6_authority_identity_v1" or
+					type(r6_identity.planner_source) ~= "table" or
+					type(r6_identity.planner_source.column_values_at) ~= "function" then
+				fail("R6 authority identity differs")
+			end
+			anchor_roster = r7_anchor_roster_factory(source, zones_session,
+				r6_identity.planner_source, raw_sha256)
+		else
+			if evidence_mode == "horizontal" then constructor = r6_module.new_evidence
+			elseif evidence_mode == true then constructor = r6_module.new_capture
+			-- Offline evidence keeps the exhaustive constructors. The live callback
+			-- builds only the query/writer state needed to generate actual mapblocks.
+			else constructor = r6_module.new_runtime end
+			session, writer, zones_session, settlement_fixture, r6_identity =
+				constructor(full_seed, 1,
+				r6_manifest, content_set.production, mapgen_context, projection,
+				template_source, cultural, successor)
+			if type(session) ~= "table" or type(writer) ~= "table" or
+					type(zones_session) ~= "table" then
+				fail("production session assembly differs")
+			end
+			if type(r6_identity) ~= "table" or
+					r6_identity.schema ~= "grug_wp40_r6_private_identity_v1" or
+					type(r6_identity.planner_source) ~= "table" or
+					type(r6_identity.planner_source.column_values_at) ~= "function" then
+				fail("R6 private identity differs")
+			end
+			if type(r6_identity.successor_tail) ~= "table" or
+					type(r6_identity.successor_tail.anchor_roster) ~= "function" then
+				fail("R7 anchor successor identity differs")
+			end
+			anchor_roster = r6_identity.successor_tail:anchor_roster()
+			local independent_roster = r7_anchor_roster_factory(source, zones_session,
+				r6_identity.planner_source, raw_sha256)
+			if anchor_roster.sha256 ~= independent_roster.sha256 then
+				fail("R7 anchor roster reconstruction differs")
+			end
 		end
 		local public_zones_session = r7_zone_overlay_factory(zones_session, anchor_roster)
 		local manifest = r7_manifest_module.new({full_seed = full_seed,
@@ -219,6 +245,13 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			decoded_templates = r6_identity.template_records,
 			consumer_payload = consumer_payload})
 		r7_manifest_module.validate(manifest, expected_manifest_sha256)
+		if authority_only then
+			return {schema = "grug_wp40_r7_authority_runtime_v1",
+				full_seed = full_seed, manifest = manifest,
+				zones_session = public_zones_session, content = content_set,
+				anchor_roster = anchor_roster, consumer_payload = consumer_payload,
+				mapgen_context = mapgen_context}
+		end
 		local direct_session, direct_fixture, direct_identity
 		if evidence_mode == true then
 			local ignored_writer, ignored_zones
@@ -290,6 +323,13 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			settlement_fixture = settlement_fixture,
 			direct_session = direct_session, direct_fixture = direct_fixture,
 			evidence = evidence}
+	end
+
+	function module.build(...)
+		return build(...)
+	end
+	function module.build_authority(native_identities, expected_manifest_sha256)
+		return build(native_identities, expected_manifest_sha256, nil, true)
 	end
 
 	return module

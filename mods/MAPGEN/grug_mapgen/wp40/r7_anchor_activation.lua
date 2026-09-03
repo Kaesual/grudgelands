@@ -22,6 +22,11 @@ return function(roster_factory, anchor_content)
 		local roster = roster_factory(dependencies.source, dependencies.zones_session,
 			dependencies.planner_source, dependencies.raw_sha256)
 		local production = dependencies.content.content_contract()
+		if dependencies.runtime_mode ~= nil and
+				type(dependencies.runtime_mode) ~= "boolean" then
+			fail("runtime mode differs")
+		end
+		local emit_ledger = not dependencies.runtime_mode
 		local air_cid, air_kind, air_param2 = production.r5.resolve(1, 0, 0)
 		if air_kind ~= 0 or air_param2 ~= 0 or air_cid == production.ignore_cid then
 			fail("air authority differs")
@@ -54,7 +59,9 @@ return function(roster_factory, anchor_content)
 				fail("settlement plan binding differs")
 			end
 			local ledger = {schema = "grug_wp40_r7_anchor_ledger_v1",
-				roster_sha256 = roster.sha256, operations = {}, written = 0}
+				roster_sha256 = roster.sha256, written = 0}
+			if emit_ledger then ledger.operations = {} end
+			local written = 0
 			if active then
 				for index = 1, #roster.rows do
 					local row = roster.rows[index]
@@ -105,24 +112,26 @@ return function(roster_factory, anchor_content)
 						local cid, _, _, param2 = anchor_content.resolve_anchor(row.content_ref, 0)
 						context.write_anchor(row.x, root_y, row.z, cid, param2,
 							row.content_ref, row.numeric_id)
-						ledger.operations[#ledger.operations + 1] = {id = row.id,
-							numeric_id = row.numeric_id, family = row.family,
-							content_ref = row.content_ref, x = row.x, y = root_y, z = row.z,
-							support_y = row.y, support_cid = support_cid,
-							support_param2 = support_param2,
-							support_occupancy = support_occupancy,
-							support_opcode = support_opcode,
-							support_feature = support_feature,
-							support_interface = support_interface,
-							support_aux = support_aux, prior_cid = prior_cid,
-							prior_param2 = prior_param2, prior_occupancy = prior_occupancy,
-							prior_opcode = prior_opcode, prior_feature = prior_feature,
-							prior_interface = prior_interface, prior_aux = prior_aux,
-							final_cid = cid, final_param2 = param2, final_occupancy = -2,
-							final_opcode = 36, final_feature = row.numeric_id,
-							final_interface = 0,
-							final_aux = (95 + row.content_ref - 1) * 256 + param2}
-						ledger.written = ledger.written + 1
+						if emit_ledger then
+							ledger.operations[#ledger.operations + 1] = {id = row.id,
+								numeric_id = row.numeric_id, family = row.family,
+								content_ref = row.content_ref, x = row.x, y = root_y, z = row.z,
+								support_y = row.y, support_cid = support_cid,
+								support_param2 = support_param2,
+								support_occupancy = support_occupancy,
+								support_opcode = support_opcode,
+								support_feature = support_feature,
+								support_interface = support_interface,
+								support_aux = support_aux, prior_cid = prior_cid,
+								prior_param2 = prior_param2, prior_occupancy = prior_occupancy,
+								prior_opcode = prior_opcode, prior_feature = prior_feature,
+								prior_interface = prior_interface, prior_aux = prior_aux,
+								final_cid = cid, final_param2 = param2, final_occupancy = -2,
+								final_opcode = 36, final_feature = row.numeric_id,
+								final_interface = 0,
+								final_aux = (95 + row.content_ref - 1) * 256 + param2}
+						end
+						written = written + 1
 					end
 				end
 			end
@@ -130,8 +139,9 @@ return function(roster_factory, anchor_content)
 				metrics.replay_calls = metrics.replay_calls + 1
 			else
 				metrics.settle_calls = metrics.settle_calls + 1
-				metrics.written = metrics.written + ledger.written
+				metrics.written = metrics.written + written
 			end
+			ledger.written = written
 			return ledger
 		end
 		function tail.metrics(self)

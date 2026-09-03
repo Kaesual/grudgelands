@@ -309,12 +309,14 @@ local function settlement_factory()
 		if type(full_seed) ~= "string" or full_seed == "" or
 				type(r5_adapter) ~= "table" or type(r5_adapter.apply) ~= "function" or
 				type(content) ~= "table" or type(templates) ~= "table" or
-				type(hash) ~= "table" or type(horizontal) ~= "table" or
+				type(hash) ~= "table" or type(hash.digest_count) ~= "function" or
+				type(horizontal) ~= "table" or
 				type(planner_source) ~= "table" or type(source) ~= "table" or
 				(successor_tail ~= nil and (type(successor_tail) ~= "table" or
 					type(successor_tail.settle) ~= "function")) then
 			fail("fail_settlement", "construction seams differ")
 		end
+		local digest_fields = {}
 		exact_fields(allocator, {new_array = true, new_map = true, grow = true,
 			map_put = true, seal_construction = true, enter_hotpath = true,
 			leave_hotpath = true, metrics = true}, "settlement counting allocator",
@@ -531,7 +533,7 @@ local function settlement_factory()
 			transaction_state.private_capture = {armed = false, value = false}
 		end
 		local run_values = retained_array("r6_settlement_run_values",
-			evidence_only and 1 or MAX_RUNS * RUN_STRIDE, 0)
+			(evidence_only or runtime_mode) and 1 or MAX_RUNS * RUN_STRIDE, 0)
 		local census_occupancy = retained_array("r6_settlement_census_occupancy", 4096, 0)
 		local census_column_allowed = retained_array(
 			"r6_settlement_census_column_allowed", 256, false)
@@ -550,6 +552,9 @@ local function settlement_factory()
 		local last_ledger, last_run_count, last_light_seed_runs = false, 0, 0
 
 		local function classify(cid, param2, code)
+			if runtime_mode then
+				return contract.classify_runtime(cid, param2)
+			end
 			local ok, class_id, family_id, liquid_kind, liquid_level, floodable,
 				paramtype_light, light_propagates, sunlight_propagates, light_source =
 				pcall(contract.classify, cid, param2)
@@ -860,6 +865,7 @@ local function settlement_factory()
 			end
 			return nil
 		end
+		local helpers
 
 		-- Production-owned canonical horizontal evidence fixture.  It shares the
 		-- exact catalog, exclusion, hash, template and accepted-P7 authorities of
@@ -1037,10 +1043,11 @@ local function settlement_factory()
 						local interface_ref = 0
 						if row.kind == "template" then
 							interface_ref = feature_ref
-							local rotation_digest = hash.digest("decoration_rotation_v1",
-								full_seed, {row.id, candidate.x, candidate.y, candidate.z})
+							local rotation_digest = helpers.digest4(
+								"decoration_rotation_v1",
+								row.id, candidate.x, candidate.y, candidate.z)
 							local rotation = math.floor(string.byte(rotation_digest, 1) / 64)
-							local template = templates.rotation(row.id, rotation)
+							local template = helpers.template_rotation(row.id, rotation)
 							min_fx, max_fx, min_fy, max_fy, min_fz, max_fz = template.min_x,
 								template.max_x, template.min_y, template.max_y,
 								template.min_z, template.max_z
@@ -1069,8 +1076,9 @@ local function settlement_factory()
 						else
 							local height = 1
 							if row.settlement_class == 3 then
-								local digest = hash.digest("decoration_simple_height_v1",
-									full_seed, {row.id, candidate.x, candidate.y, candidate.z})
+								local digest = helpers.digest4(
+									"decoration_simple_height_v1",
+									row.id, candidate.x, candidate.y, candidate.z)
 								height = 2 + string.byte(digest, 1) % 3
 							end
 							max_fy = height - 1
@@ -1347,17 +1355,18 @@ local function settlement_factory()
 									eligible = eligible + 1
 									local coordinate = coordinate_scratch[eligible]
 									coordinate.x, coordinate.y, coordinate.z = x, y, z
-									coordinate.digest = hash.digest("resource_root_rank_v1",
-										full_seed, {resource.key, cell_x, cell_y, cell_z,
-											host_name, tier, band, x, y, z})
+									coordinate.digest = helpers.digest10(
+										"resource_root_rank_v1",
+										resource.key, cell_x, cell_y, cell_z, host_name, tier,
+										band, x, y, z)
 								end
 							end
 						end
 					end
 				end
-				local remainder_digest = hash.digest("resource_budget_remainder_v1",
-					full_seed, {resource.key, cell_x, cell_y, cell_z, host_name,
-						tier, band})
+				local remainder_digest = helpers.digest7(
+					"resource_budget_remainder_v1",
+					resource.key, cell_x, cell_y, cell_z, host_name, tier, band)
 				local budget, numerator, budget_denominator, base_budget, remainder =
 					0, 0, denominator and denominator * multiplier_denominator or 1, 0, 0
 				if denominator then
@@ -1416,17 +1425,16 @@ local function settlement_factory()
 												duplicate = true break
 											end
 										end
-									if not duplicate then
-										if frontier_count >= #frontier_scratch then
-											fail("fail_bound", "resource frontier bound exceeded")
-										end
-										frontier_count = frontier_count + 1
+										if not duplicate then
+											if frontier_count >= #frontier_scratch then
+												fail("fail_bound", "resource frontier bound exceeded")
+											end
+											frontier_count = frontier_count + 1
 											local frontier = frontier_scratch[frontier_count]
 											frontier.x, frontier.y, frontier.z = x, y, z
-											frontier.digest = hash.digest(
-												"resource_frontier_rank_v1", full_seed,
-												{resource.key, cell_x, cell_y, cell_z,
-													host_name, tier, band, vein, x, y, z})
+											frontier.digest = helpers.digest11(
+												"resource_frontier_rank_v1", resource.key, cell_x,
+												cell_y, cell_z, host_name, tier, band, vein, x, y, z)
 										end
 									end
 								end
@@ -1475,10 +1483,11 @@ local function settlement_factory()
 			return nil
 		end
 		local function metric_rejection(ledger, subsystem, catalog_id, reason)
+			if not ledger then return end
 			local key = subsystem .. "\0" .. catalog_id .. "\0" .. reason
 			ledger.rejections[key] = (ledger.rejections[key] or 0) + 1
 		end
-		local helpers = {equal_graph = equal_graph,
+		helpers = {equal_graph = equal_graph,
 			primary_reason = primary_reason, exclusion_reason = exclusion_reason,
 			in_hard_ingress = in_hard_ingress,
 			housing_excluded_at = housing_excluded_at,
@@ -1486,7 +1495,36 @@ local function settlement_factory()
 			analytic_p7_support_ref = analytic_p7_support_ref,
 			regional_allowed = regional_allowed, coordinate_less = coordinate_less,
 			run_class_policy = run_class_policy,
-			capture_private_buffers = capture_private_buffers}
+			capture_private_buffers = capture_private_buffers,
+			template_rotation = runtime_mode and (templates.rotation_runtime or
+				templates.rotation) or
+				templates.rotation}
+		function helpers.digest4(domain, a, b, c, d)
+			digest_fields[1], digest_fields[2], digest_fields[3], digest_fields[4] =
+				a, b, c, d
+			return hash.digest_count(domain, full_seed, digest_fields, 4)
+		end
+		function helpers.digest7(domain, a, b, c, d, e, f, g)
+			digest_fields[1], digest_fields[2], digest_fields[3], digest_fields[4] =
+				a, b, c, d
+			digest_fields[5], digest_fields[6], digest_fields[7] = e, f, g
+			return hash.digest_count(domain, full_seed, digest_fields, 7)
+		end
+		function helpers.digest10(domain, a, b, c, d, e, f, g, h, i, j)
+			digest_fields[1], digest_fields[2], digest_fields[3], digest_fields[4] =
+				a, b, c, d
+			digest_fields[5], digest_fields[6], digest_fields[7] = e, f, g
+			digest_fields[8], digest_fields[9], digest_fields[10] = h, i, j
+			return hash.digest_count(domain, full_seed, digest_fields, 10)
+		end
+		function helpers.digest11(domain, a, b, c, d, e, f, g, h, i, j, k)
+			digest_fields[1], digest_fields[2], digest_fields[3], digest_fields[4] =
+				a, b, c, d
+			digest_fields[5], digest_fields[6], digest_fields[7] = e, f, g
+			digest_fields[8], digest_fields[9], digest_fields[10], digest_fields[11] =
+				h, i, j, k
+			return hash.digest_count(domain, full_seed, digest_fields, 11)
+		end
 
 		local function apply_impl(vm, minp, maxp, plan, plan_generation, call_mode)
 			local resource_excluded_column = transaction_state.resource_excluded_column
@@ -1617,8 +1655,9 @@ local function settlement_factory()
 				fail("fail_settlement", "nested R5 result differs")
 			end
 
-			local ledger = {rejections = {}, resources = {}, cultural = {},
-				decorations = {}, successor_runs = 0}
+			local ledger = not transaction_state.runtime_mode and
+				{rejections = {}, resources = {}, cultural = {}, decorations = {},
+					successor_runs = 0} or false
 			local accepted_cultural = {}
 			local x_count = max_x - min_x + 1
 			local function column_index(x, z)
@@ -1746,14 +1785,19 @@ local function settlement_factory()
 							"fixed_or_protected", "route_or_water", "content_ignore",
 							"wrong_support", "cultural_collision"})
 						local rate = denominator == 1024 and "concentrated" or "ordinary"
-						local aggregate = ledger.cultural[row.key .. "\0" .. rate] or
-							{accepted = 0, reserved = 0}
-						ledger.cultural[row.key .. "\0" .. rate] = aggregate
+						local aggregate
+						if ledger then
+							aggregate = ledger.cultural[row.key .. "\0" .. rate] or
+								{accepted = 0, reserved = 0}
+							ledger.cultural[row.key .. "\0" .. rate] = aggregate
+						end
 						if reason then
 							metric_rejection(ledger, "cultural", row.key, reason)
 						else
-							aggregate.accepted = aggregate.accepted + 1
-							aggregate.reserved = aggregate.reserved + 225
+							if aggregate then
+								aggregate.accepted = aggregate.accepted + 1
+								aggregate.reserved = aggregate.reserved + 225
+							end
 							for z = root_z - 2, root_z + 2 do
 								for y = root_y - 1, root_y + 7 do
 									for x = root_x - 2, root_x + 2 do
@@ -1831,10 +1875,9 @@ local function settlement_factory()
 													eligible = eligible + 1
 													local coordinate = coordinate_scratch[eligible]
 													coordinate.x, coordinate.y, coordinate.z = x, y, z
-													coordinate.digest = hash.digest(
-														"resource_root_rank_v1", full_seed,
-														{resource.key, cell_x, cell_y, cell_z,
-															host_name, tier, band, x, y, z})
+													coordinate.digest = helpers.digest10(
+														"resource_root_rank_v1", resource.key, cell_x,
+														cell_y, cell_z, host_name, tier, band, x, y, z)
 												end
 											end
 										end
@@ -1842,10 +1885,9 @@ local function settlement_factory()
 								end
 								if eligible > 0 then
 									local denominator = resource.denominators[tier]
-									local remainder_digest = hash.digest(
-										"resource_budget_remainder_v1", full_seed,
-										{resource.key, cell_x, cell_y, cell_z, host_name,
-											tier, band})
+									local remainder_digest = helpers.digest7(
+										"resource_budget_remainder_v1", resource.key, cell_x,
+										cell_y, cell_z, host_name, tier, band)
 									local budget, numerator, budget_denominator, base_budget,
 										remainder = hash.budget(eligible, 1, denominator,
 										multiplier_numerator, multiplier_denominator,
@@ -1892,11 +1934,11 @@ local function settlement_factory()
 													for face = 1, 6 do
 														local x, y, z = node.x + FACE_X[face],
 															node.y + FACE_Y[face], node.z + FACE_Z[face]
-												if x >= math.max(min_x, cell_x * 16) and
-														x <= math.min(max_x, cell_x * 16 + 15) and
-														y >= segment_y and y <= segment_end and
-														z >= math.max(min_z, cell_z * 16) and
-														z <= math.min(max_z, cell_z * 16 + 15) and
+														if x >= math.max(min_x, cell_x * 16) and
+																x <= math.min(max_x, cell_x * 16 + 15) and
+																y >= segment_y and y <= segment_end and
+																z >= math.max(min_z, cell_z * 16) and
+																z <= math.min(max_z, cell_z * 16 + 15) and
 																host_eligible(resource, x, y, z, tier, host_cid) and
 																occupancy[index_at(x, y, z)] == 0 then
 															local duplicate = false
@@ -1906,24 +1948,25 @@ local function settlement_factory()
 																	duplicate = true break
 																end
 															end
-														if not duplicate then
-															if frontier_count >= #frontier_scratch then
-																fail("fail_bound", "resource frontier bound exceeded")
-															end
-															frontier_count = frontier_count + 1
+															if not duplicate then
+																if frontier_count >= #frontier_scratch then
+																	fail("fail_bound",
+																		"resource frontier bound exceeded")
+																end
+																frontier_count = frontier_count + 1
 																local frontier = frontier_scratch[frontier_count]
 																frontier.x, frontier.y, frontier.z = x, y, z
-																frontier.digest = hash.digest(
-																	"resource_frontier_rank_v1", full_seed,
-																	{resource.key, cell_x, cell_y, cell_z,
-																		host_name, tier, band, vein, x, y, z})
+																frontier.digest = helpers.digest11(
+																	"resource_frontier_rank_v1", resource.key,
+																	cell_x, cell_y, cell_z, host_name, tier, band,
+																	vein, x, y, z)
 															end
 														end
 													end
 												end
 												if frontier_count == 0 then break end
-											sort_prefix(frontier_scratch, frontier_count,
-												helpers.coordinate_less)
+												sort_prefix(frontier_scratch, frontier_count,
+													helpers.coordinate_less)
 												local next_node = frontier_scratch[1]
 												vein_nodes[#vein_nodes + 1] = {x = next_node.x,
 													y = next_node.y, z = next_node.z}
@@ -1942,14 +1985,17 @@ local function settlement_factory()
 											end
 										end
 									end
-									local key = table.concat({resource.key, cell_x, cell_y,
-										cell_z, host_name, tier, band}, "\0")
-									ledger.resources[key] = {eligible = eligible, numerator = numerator,
-										denominator = budget_denominator, base = base_budget,
-										remainder = remainder, remainder_digest = hash.hex(remainder_digest),
-										budget = budget, planned = planned, accepted = accepted,
-										collisions = collisions, shortfall = shortfall,
-										target_nodes = budget, placed_nodes = placed}
+									if ledger then
+										local key = table.concat({resource.key, cell_x, cell_y,
+											cell_z, host_name, tier, band}, "\0")
+										ledger.resources[key] = {eligible = eligible, numerator = numerator,
+											denominator = budget_denominator, base = base_budget,
+											remainder = remainder,
+											remainder_digest = hash.hex(remainder_digest),
+											budget = budget, planned = planned, accepted = accepted,
+											collisions = collisions, shortfall = shortfall,
+											target_nodes = budget, placed_nodes = placed}
+									end
 								end
 								segment_y = segment_end + 1
 							end
@@ -2029,10 +2075,11 @@ local function settlement_factory()
 							local cells, min_fx, max_fx, min_fy, max_fy, min_fz, max_fz = {}, 0, 0, 0, 0, 0, 0
 							local template_ref = 0
 							if row.kind == "template" then
-								local rotation_digest = hash.digest("decoration_rotation_v1",
-									full_seed, {row.id, root_x, root_y, root_z})
+								local rotation_digest = helpers.digest4(
+									"decoration_rotation_v1",
+									row.id, root_x, root_y, root_z)
 								local rotation = math.floor(string.byte(rotation_digest, 1) / 64)
-								local template = templates.rotation(row.id, rotation)
+								local template = helpers.template_rotation(row.id, rotation)
 								template_ref = stable_state.decoration[catalog]
 								min_fx, max_fx, min_fy, max_fy, min_fz, max_fz = template.min_x,
 									template.max_x, template.min_y, template.max_y,
@@ -2061,8 +2108,9 @@ local function settlement_factory()
 							else
 								local height = 1
 								if row.settlement_class == 3 then
-									local digest = hash.digest("decoration_simple_height_v1",
-										full_seed, {row.id, root_x, root_y, root_z})
+									local digest = helpers.digest4(
+										"decoration_simple_height_v1",
+										row.id, root_x, root_y, root_z)
 									height = 2 + (string.byte(digest, 1) % 3)
 								end
 								max_fy = height - 1
@@ -2138,28 +2186,35 @@ local function settlement_factory()
 								"wrong_host", "insufficient_clearance", "cultural_collision",
 								"resource_collision", "decoration_collision",
 								"forbidden_old_class"})
-							local aggregate = ledger.decorations[row.id] or
-								{accepted = 0, emitted = 0, reserved = 0}
-							ledger.decorations[row.id] = aggregate
+							local aggregate
+							if ledger then
+								aggregate = ledger.decorations[row.id] or
+									{accepted = 0, emitted = 0, reserved = 0}
+								ledger.decorations[row.id] = aggregate
+							end
 							if reason then metric_rejection(ledger, "decoration", row.id, reason)
 							else
-								aggregate.accepted = aggregate.accepted + 1
+								if aggregate then aggregate.accepted = aggregate.accepted + 1 end
 								for z = root_z + min_fz, root_z + max_fz do
 									for y = root_y + min_fy, root_y + max_fy do
 										for x = root_x + min_fx, root_x + max_fx do
 											occupancy[index_at(x, y, z)] = -1
-											aggregate.reserved = aggregate.reserved + 1
+											if aggregate then
+												aggregate.reserved = aggregate.reserved + 1
+											end
 										end
 									end
 								end
 								for part = 1, #cells do
 									local cell_record = cells[part]
 									if cell_record.include then
-									write_intent(root_x + cell_record.x, root_y + cell_record.y,
-										root_z + cell_record.z, cell_record.content_ref,
-										cell_record.param2, 12, stable_state.decoration[catalog],
-										template_ref, 8, -1)
-										aggregate.emitted = aggregate.emitted + 1
+										write_intent(root_x + cell_record.x,
+											root_y + cell_record.y, root_z + cell_record.z,
+											cell_record.content_ref, cell_record.param2, 12,
+											stable_state.decoration[catalog], template_ref, 8, -1)
+										if aggregate then
+											aggregate.emitted = aggregate.emitted + 1
+										end
 									end
 								end
 							end
@@ -2263,112 +2318,119 @@ local function settlement_factory()
 				end
 				local successor_ledger = transaction_state.successor_tail:settle(successor_context)
 				if type(successor_ledger) ~= "table" or
-						successor_ledger.schema ~= "grug_wp40_r7_successor_ledger_v1" or
-						type(successor_ledger.p9g) ~= "table" or
-						type(successor_ledger.anchors) ~= "table" then
+						successor_ledger.schema ~= "grug_wp40_r7_successor_ledger_v1" then
 					fail("fail_ledger", "R7 successor ledger differs")
 				end
-				ledger.p9g, ledger.anchors = successor_ledger.p9g, successor_ledger.anchors
+				if ledger then
+					if type(successor_ledger.p9g) ~= "table" or
+							type(successor_ledger.anchors) ~= "table" then
+						fail("fail_ledger", "R7 successor detail differs")
+					end
+					ledger.p9g, ledger.anchors = successor_ledger.p9g, successor_ledger.anchors
+				end
 			end
 
-			-- Canonical run derivation.  The second pass compares every scalar
-			-- against the first pass's retained run buffer instead of overwriting it;
-			-- exact run parity also proves the reconstructed data/param2 bytes.
-			local replaying = call_mode == "replay_fixture"
-			local expected_run_count = replaying and last_ledger and
-				last_ledger.successor_runs or nil
-			local run_count = 0
-			local function emit_run(y_min, y_max, opcode, feature, interface, aux)
-				run_count = run_count + 1
-				if run_count > MAX_RUNS then
-					fail("fail_bound", "successor run bound exceeded")
-				end
-				local base = (run_count - 1) * RUN_STRIDE
-				local class_id, policy = helpers.run_class_policy(opcode)
-				if replaying then
-					if run_values[base + 1] ~= y_min or run_values[base + 2] ~= y_max or
-							run_values[base + 3] ~= class_id or
-							run_values[base + 4] ~= opcode or run_values[base + 5] ~= 17 or
-							run_values[base + 6] ~= policy or
-							run_values[base + 7] ~= feature or
-							run_values[base + 8] ~= interface or
-							run_values[base + 9] ~= aux then
-						fail("fail_ledger", "second settlement run bytes differ")
+			-- Canonical runs and their checksums are an evidence product. The live
+			-- writer has already materialized the same intent bytes and commits them
+			-- directly; no runtime consumer reads the encoded proof.
+			if not transaction_state.runtime_mode then
+				-- Canonical run derivation.  The second pass compares every scalar
+				-- against the first pass's retained run buffer instead of overwriting it;
+				-- exact run parity also proves the reconstructed data/param2 bytes.
+				local replaying = call_mode == "replay_fixture"
+				local expected_run_count = replaying and last_ledger and
+					last_ledger.successor_runs or nil
+				local run_count = 0
+				local function emit_run(y_min, y_max, opcode, feature, interface, aux)
+					run_count = run_count + 1
+					if run_count > MAX_RUNS then
+						fail("fail_bound", "successor run bound exceeded")
 					end
-				else
-					run_values[base + 1], run_values[base + 2] = y_min, y_max
-					run_values[base + 3], run_values[base + 4] = class_id, opcode
-					run_values[base + 5], run_values[base + 6] = 17, policy
-					run_values[base + 7], run_values[base + 8], run_values[base + 9] =
-						feature, interface, aux
+					local base = (run_count - 1) * RUN_STRIDE
+					local class_id, policy = helpers.run_class_policy(opcode)
+					if replaying then
+						if run_values[base + 1] ~= y_min or run_values[base + 2] ~= y_max or
+								run_values[base + 3] ~= class_id or
+								run_values[base + 4] ~= opcode or run_values[base + 5] ~= 17 or
+								run_values[base + 6] ~= policy or
+								run_values[base + 7] ~= feature or
+								run_values[base + 8] ~= interface or
+								run_values[base + 9] ~= aux then
+							fail("fail_ledger", "second settlement run bytes differ")
+						end
+					else
+						run_values[base + 1], run_values[base + 2] = y_min, y_max
+						run_values[base + 3], run_values[base + 4] = class_id, opcode
+						run_values[base + 5], run_values[base + 6] = 17, policy
+						run_values[base + 7], run_values[base + 8], run_values[base + 9] =
+							feature, interface, aux
+					end
 				end
-			end
-			for z = min_z, max_z do
-				for x = min_x, max_x do
-					local start_y, previous_y, previous_opcode, previous_feature,
-						previous_interface, previous_aux
-					for y = min_y, max_y do
-						local index = index_at(x, y, z)
-						local opcode = intent_opcode[index]
-						local feature, interface, aux = intent_feature[index],
-							intent_interface[index], intent_aux[index]
-						local continues = start_y ~= nil and previous_y == y - 1 and
-							opcode ~= 0 and opcode == previous_opcode and
-							feature == previous_feature and interface == previous_interface and
-							aux == previous_aux
-						if start_y ~= nil and not continues then
+				for z = min_z, max_z do
+					for x = min_x, max_x do
+						local start_y, previous_y, previous_opcode, previous_feature,
+							previous_interface, previous_aux
+						for y = min_y, max_y do
+							local index = index_at(x, y, z)
+							local opcode = intent_opcode[index]
+							local feature, interface, aux = intent_feature[index],
+								intent_interface[index], intent_aux[index]
+							local continues = start_y ~= nil and previous_y == y - 1 and
+								opcode ~= 0 and opcode == previous_opcode and
+								feature == previous_feature and interface == previous_interface and
+								aux == previous_aux
+							if start_y ~= nil and not continues then
+								emit_run(start_y, previous_y, previous_opcode, previous_feature,
+									previous_interface, previous_aux)
+								start_y = nil
+							end
+							if opcode ~= 0 then
+								if start_y == nil then start_y = y end
+								previous_y, previous_opcode = y, opcode
+								previous_feature, previous_interface, previous_aux =
+									feature, interface, aux
+							end
+						end
+						if start_y ~= nil then
 							emit_run(start_y, previous_y, previous_opcode, previous_feature,
 								previous_interface, previous_aux)
-							start_y = nil
-						end
-						if opcode ~= 0 then
-							if start_y == nil then start_y = y end
-							previous_y, previous_opcode = y, opcode
-							previous_feature, previous_interface, previous_aux =
-								feature, interface, aux
 						end
 					end
-					if start_y ~= nil then
-						emit_run(start_y, previous_y, previous_opcode, previous_feature,
-							previous_interface, previous_aux)
+				end
+				if replaying and expected_run_count ~= run_count then
+					fail("fail_ledger", "second settlement run count differs")
+				end
+				ledger.successor_runs = run_count
+				local checksum_a, checksum_b = 1, 7
+				for index = 1, run_count * RUN_STRIDE do
+					local value = run_values[index]
+					checksum_a = (checksum_a * 131 + (value + 31012)) % 6700417
+					checksum_b = (checksum_b * 257 + (value + 31012)) % 15485863
+				end
+				ledger.run_checksum_a, ledger.run_checksum_b = checksum_a, checksum_b
+				if not replaying and run_count > metrics_state.peak_successor_runs then
+					metrics_state.peak_successor_runs = run_count
+				end
+				local capture_state = transaction_state.private_capture
+				if capture_state and not replaying then
+					if not capture_state.armed or capture_state.value then
+						fail("fail_ledger", "private capture was not armed exactly once")
 					end
+					capture_state.armed = false
+					capture_state.value = helpers.capture_private_buffers(hash, {
+						min_x = min_x, min_y = min_y, min_z = min_z,
+						max_x = max_x, max_y = max_y, max_z = max_z,
+					}, index_at, {data = final_data, param2 = final_param2,
+						occupancy = occupancy, opcode = intent_opcode,
+						feature = intent_feature, interface = intent_interface,
+						aux = intent_aux}, run_values, run_count, checksum_a, checksum_b,
+						transaction_state.successor_tail and ledger or false)
 				end
-			end
-			if replaying and expected_run_count ~= run_count then
-				fail("fail_ledger", "second settlement run count differs")
-			end
-			ledger.successor_runs = run_count
-			local checksum_a, checksum_b = 1, 7
-			for index = 1, run_count * RUN_STRIDE do
-				local value = run_values[index]
-				checksum_a = (checksum_a * 131 + (value + 31012)) % 6700417
-				checksum_b = (checksum_b * 257 + (value + 31012)) % 15485863
-			end
-			ledger.run_checksum_a, ledger.run_checksum_b = checksum_a, checksum_b
-			if not replaying and run_count > metrics_state.peak_successor_runs then
-				metrics_state.peak_successor_runs = run_count
-			end
-			local capture_state = transaction_state.private_capture
-			if capture_state and not replaying then
-				if not capture_state.armed or capture_state.value then
-					fail("fail_ledger", "private capture was not armed exactly once")
-				end
-				capture_state.armed = false
-				capture_state.value = helpers.capture_private_buffers(hash, {
-					min_x = min_x, min_y = min_y, min_z = min_z,
-					max_x = max_x, max_y = max_y, max_z = max_z,
-				}, index_at, {data = final_data, param2 = final_param2,
-					occupancy = occupancy, opcode = intent_opcode,
-					feature = intent_feature, interface = intent_interface,
-					aux = intent_aux}, run_values, run_count, checksum_a, checksum_b,
-					transaction_state.successor_tail and ledger or false)
-			end
-			last_ledger = ledger
-			last_run_count = run_count
-			if replaying then return "replay_ready" end
-			-- Capture/evidence constructors retain the exact second-pass proof. Live
-			-- mapgen consumes those frozen bytes and must not settle every chunk twice.
-			if not transaction_state.runtime_mode then
+				last_ledger = ledger
+				last_run_count = run_count
+				if replaying then return "replay_ready" end
+				-- Capture/evidence constructors retain the exact second-pass proof. The
+				-- enclosing runtime gate keeps this replay out of live mapgen.
 				local first_ledger = copy_map(ledger)
 				local replay_vm = {}
 				function replay_vm.get_emerged_area() return emerged_min, emerged_max end

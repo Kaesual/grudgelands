@@ -32,7 +32,7 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 	local native_token = native.apply_and_validate_main()
 	local runtime = dofile(wp40 .. "/r7_runtime.lua")(core_api, wp40,
 		default_path .. "/schematics", projection, catalog)
-	local built = runtime.build(native.identities())
+	local built = runtime.build_authority(native.identities())
 	local publish_authority = core_owner.prepare_zone_authority(
 		built.zones_session, built.consumer_payload)
 	if type(publish_authority) ~= "function" then

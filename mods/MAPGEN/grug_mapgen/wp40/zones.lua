@@ -1329,10 +1329,15 @@ return function(dependencies)
 			planner_source = {
 				schema = "grug_wp40_r5_planner_source_v1",
 			}
+			local column_cache_limit = 16384
+			local column_cache_by_x = runtime_mode and {} or nil
+			local column_cache_slot_x = runtime_mode and {} or nil
+			local column_cache_slot_z = runtime_mode and {} or nil
+			local column_cache_rows = runtime_mode and {} or nil
+			local column_cache_count = 0
+			local column_cache_next_slot = 1
 
-			function planner_source.column_values_at(x, z)
-				local outside
-				x, z, outside = normalize_xz(x, z, "planner column query")
+			local function compute_column_values_at(x, z, outside)
 				local water_class, _, zone_numeric_id, _,
 					classified_hydrology_id = classification_values(x, z, outside)
 				local zone = zone_numeric_id and zone_by_numeric[zone_numeric_id] or nil
@@ -1429,6 +1434,58 @@ return function(dependencies)
 					functional_feature_id, functional_interface_id, transition_kind,
 					transition_interface_id, transition_upper_y, transition_lower_y,
 					transition_progress_q, transition_face_mask, hard_foundation
+			end
+
+			function planner_source.column_values_at(x, z)
+				local outside
+				x, z, outside = normalize_xz(x, z, "planner column query")
+				if not runtime_mode then
+					return compute_column_values_at(x, z, outside)
+				end
+
+				local bucket = column_cache_by_x[x]
+				local row = bucket and bucket[z] or nil
+				if row then return unpack(row, 1, 20) end
+
+				local slot
+				if column_cache_count < column_cache_limit then
+					column_cache_count = column_cache_count + 1
+					slot = column_cache_count
+					row = {}
+					column_cache_rows[slot] = row
+				else
+					slot = column_cache_next_slot
+					column_cache_next_slot = column_cache_next_slot + 1
+					if column_cache_next_slot > column_cache_limit then
+						column_cache_next_slot = 1
+					end
+					local old_x = column_cache_slot_x[slot]
+					local old_z = column_cache_slot_z[slot]
+					local old_bucket = column_cache_by_x[old_x]
+					if not old_bucket or old_bucket[old_z] ~= column_cache_rows[slot] then
+						fail("planner runtime column cache differs")
+					end
+					old_bucket[old_z] = nil
+					old_bucket._count = old_bucket._count - 1
+					if old_bucket._count == 0 then column_cache_by_x[old_x] = nil end
+					row = column_cache_rows[slot]
+				end
+
+				row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8],
+					row[9], row[10], row[11], row[12], row[13], row[14], row[15],
+					row[16], row[17], row[18], row[19], row[20] =
+					compute_column_values_at(x, z, outside)
+				bucket = column_cache_by_x[x]
+				if not bucket then
+					bucket = {_count = 0}
+					column_cache_by_x[x] = bucket
+				end
+				if bucket[z] ~= nil then fail("planner runtime column cache collision") end
+				bucket[z] = row
+				bucket._count = bucket._count + 1
+				column_cache_slot_x[slot] = x
+				column_cache_slot_z[slot] = z
+				return unpack(row, 1, 20)
 			end
 
 			function planner_source.hydrology_metric_values_at(x, z)

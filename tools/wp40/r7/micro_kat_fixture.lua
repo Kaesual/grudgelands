@@ -207,7 +207,8 @@ return function(repo)
 	-- sequence.  Its heavyweight collaborators are closed stubs here; the real
 	-- writer/successor transaction below exercises the material data path.
 	do
-	local runtime_calls = {constructor = 0, runtime_constructor = 0, manifest_new = 0,
+	local runtime_calls = {constructor = 0, runtime_constructor = 0,
+		authority_constructor = 0, manifest_new = 0,
 		manifest_validate = 0, content = 0, payload = 0}
 	local runtime_session, runtime_writer, runtime_zones = {}, {}, {}
 	local runtime_roster = {schema = "grug_wp40_r7_anchor_roster_v1",
@@ -217,6 +218,9 @@ return function(repo)
 	local runtime_identity = {schema = "grug_wp40_r6_private_identity_v1",
 		template_records = {}, planner_fixture = {}, planner_source = {
 			column_values_at = function() end}, successor_tail = runtime_successor_tail}
+	local runtime_authority_identity = {
+		schema = "grug_wp40_r6_authority_identity_v1", template_records = {},
+		planner_source = {column_values_at = function() end}}
 	local runtime_fixture_stub = {scan_horizontal_owner = function()
 		return {schema = "micro_scan"}
 	end}
@@ -229,8 +233,13 @@ return function(repo)
 		runtime_calls.runtime_constructor = runtime_calls.runtime_constructor + 1
 		return runtime_constructor()
 	end
+	local function runtime_authority_constructor()
+		runtime_calls.authority_constructor = runtime_calls.authority_constructor + 1
+		return runtime_zones, runtime_authority_identity
+	end
 	local runtime_r6_module = {new = runtime_constructor,
 		new_runtime = runtime_live_constructor,
+		new_authority = runtime_authority_constructor,
 		new_capture = runtime_constructor, new_evidence = runtime_constructor}
 	local runtime_content_set = {
 		production = {schema = "grug_wp40_r7_production_r6_content_v1"},
@@ -340,17 +349,24 @@ return function(repo)
 		runtime_live.zones_session == runtime_zones and
 		runtime_live.evidence == nil and runtime_calls.runtime_constructor == 1,
 		"bounded live runtime construction differs")
+	local runtime_authority = runtime_module.build_authority({schema = "micro_native"})
+	check(runtime_authority.schema == "grug_wp40_r7_authority_runtime_v1" and
+		runtime_authority.session == nil and runtime_authority.writer == nil and
+		runtime_authority.zones_session == runtime_zones and
+		runtime_calls.authority_constructor == 1,
+		"bounded authority runtime construction differs")
 	local runtime_built = runtime_module.build({schema = "micro_native"}, nil, true)
 	check(runtime_built.session == runtime_session and
 		runtime_built.writer == runtime_writer and
 		runtime_built.zones_session == runtime_zones and
 		type(runtime_built.evidence) == "table" and
-		runtime_calls.constructor == 3 and runtime_calls.content == 2 and
-		runtime_calls.payload == 2 and runtime_calls.manifest_new == 2 and
-		runtime_calls.manifest_validate == 2,
+		runtime_calls.constructor == 3 and runtime_calls.content == 3 and
+		runtime_calls.payload == 3 and runtime_calls.manifest_new == 3 and
+		runtime_calls.manifest_validate == 3,
 		"bounded r7_runtime assembly control flow differs")
 	row("runtime/bounded_build", table.concat({runtime_calls.constructor,
-		runtime_calls.runtime_constructor, runtime_calls.content,
+		runtime_calls.runtime_constructor, runtime_calls.authority_constructor,
+		runtime_calls.content,
 		runtime_calls.payload, runtime_calls.manifest_new,
 		runtime_calls.manifest_validate}, "/"))
 	end
@@ -1756,23 +1772,11 @@ return function(repo)
 	local ledger = settlement_fixture.last_ledger()
 	local run_values, run_count = settlement_fixture.run_values()
 	check(type(applied) == "string" and applied:match("^applied_[cplq]+$") and
-		type(ledger) == "table" and type(ledger.p9g) == "table" and
-		ledger.p9g.accepted == 0 and run_count >= 2,
+		ledger == nil and type(run_values) == "table" and #run_values == 0 and
+		run_count == 0,
 		"shared R6/P9G transaction differs " .. table.concat({tostring(applied),
-			tostring(ledger and ledger.p9g and ledger.p9g.accepted),
+			tostring(ledger),
 			tostring(run_count)}, "/"))
-	local resource_run_count = 0
-	for run = 1, run_count do
-		local base = (run - 1) * 9
-		if run_values[base + 4] == 24 then
-			resource_run_count = resource_run_count + 1
-			check(run_values[base + 3] == 8 and run_values[base + 6] == 2 and
-				run_values[base + 1] <= -701 and -701 <= run_values[base + 2],
-				"resource shared-run class/policy/root binding differs")
-		end
-	end
-	check(resource_run_count == 1,
-		"runtime resource did not produce one shared run")
 	local first_calls = observer.metrics()
 	local first_snapshot = observer.snapshot()
 	local function snapshot_index(snapshot, x, y, z)
@@ -1823,11 +1827,6 @@ return function(repo)
 			tostring(first_calls.vm_calc_lighting_calls),
 			tostring(first_calls.vm_set_light_data_calls),
 			tostring(first_calls.vm_update_liquids_calls)}, "/"))
-	local run_fields = {}
-	for index = 1, run_count * 9 do
-		run_fields[index] = string.format("%.0f", run_values[index])
-	end
-
 	-- A second fresh transaction must reproduce the first bytes without the
 	-- offline read-only replay that live construction intentionally omits.
 	local second_vm, _, second_observer = owner_vm()
@@ -1852,7 +1851,7 @@ return function(repo)
 		return true
 	end
 	check(second_applied == applied and second_run_count == run_count and
-		graph(second_ledger) == graph(ledger) and
+		second_ledger == ledger and
 		equal_array(second_run_values, run_values) and
 		equal_array(second_snapshot.data, first_snapshot.data) and
 		equal_array(second_snapshot.param2, first_snapshot.param2) and
@@ -1865,8 +1864,7 @@ return function(repo)
 		successor_metrics.schema == "grug_wp40_r7_successor_metrics_v1",
 		"shared writer metrics differ")
 	row("production/owner_transaction", applied .. "/" .. tostring(run_count))
-	row("production/owner_run_sha256", hex_sha256(table.concat(run_fields, "\t")))
-	row("production/owner_ledger_sha256", hex_sha256(graph(ledger)))
+	row("production/runtime_proof_material", "omitted/0/0")
 	row("production/commit_calls", table.concat({first_calls.vm_set_data_calls,
 		first_calls.vm_set_param2_calls, first_calls.vm_set_light_data_calls,
 		first_calls.vm_update_liquids_calls}, "/"))

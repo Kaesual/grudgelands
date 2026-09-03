@@ -12,7 +12,8 @@ return function(p9g_config, anchor_config)
 			hash = dependencies.hash, planner_source = dependencies.planner_source,
 			horizontal = dependencies.horizontal, content = dependencies.content,
 			source = dependencies.source, zones_session = dependencies.zones_session,
-			construction_identity = dependencies.construction_identity})
+			construction_identity = dependencies.construction_identity,
+			runtime_mode = dependencies.runtime_mode})
 		local anchors = anchor_config.new(dependencies)
 		local tail = {}
 		function tail.plan_slice(self, minp, maxp, plan, generation)
