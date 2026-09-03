@@ -1,0 +1,78 @@
+# WP40 R8 mapgen performance review
+
+**Baseline:** `7e9284ffcd71b445efcdfde7cee39534bbf8ef35`
+
+**Frozen candidate:** `f30b3ccac542364d0a78d399d200362a80989da1`
+
+## Initial independent reviews
+
+A read-only Claude Fable hard lens reviewed implementation commit `24374e7`.
+It accepted the code with no Critical or High correctness defect but blocked
+merge on missing final evidence. Its evidence findings were one High (the
+final PUC/LuaJIT pair was absent), two Medium (the final roster omitted
+`r6_planner.lua` and `r6_templates.lua`; the runtime P9G accepted branch was
+not exercised), and one Low (the exact baseline wrapper bytes were not
+retained, limiting timing reproducibility). It also reported three optional
+Low code observations: cache mutation preceded a potentially failing compute,
+the trusted classifier duplicated its defensive body, and the R6 runtime
+planner selector could fall back to the full constructor.
+
+A fresh read-only GPT-5.6 Sol review independently rejected `24374e7` on the
+same material gaps: two High findings for the absent final pair and incomplete
+roster, and one Medium finding for the uncovered runtime P9G acceptance path.
+It found no additional issue in cache eviction, classification, scratch reuse,
+authority construction, anchors or Lua 5.1 syntax.
+
+## Fix disposition
+
+- `tools/wp40/r8/performance_changed_production_lua.txt` now derives exactly
+  from the baseline diff and names all 15 changed production Lua modules.
+  The performance micro-KAT binds 111 inputs and executes all 15 modules.
+- The bounded fixture directly exercises `r6_templates.lua` runtime aliasing,
+  probability digests, `r6_planner.lua.new_runtime`, the fail-closed R5/R6
+  runtime constructor selection and one accepted ledger-free P9G write.
+- The sole final PUC 5.1/LuaJIT pair is retained under
+  `wp40-r8-performance-final-micro-evidence/`. Both outputs are byte-identical.
+- Column values are now computed before cache insertion or eviction, and the
+  R6 live planner selector fails closed when `new_runtime` is absent.
+- The cache bound is 65,536 entries with hit/miss/eviction metrics. The warm
+  vertical-pair measurement recorded zero misses and an 88--89% plan-time
+  reduction for about 13--15 MB additional populated LuaJIT heap.
+- The result record explicitly limits the old baseline timing to advisory use
+  because the exact baseline wrapper bytes were not retained. No peak-RSS
+  improvement is claimed from that comparison.
+
+The duplicated trusted classifier is unchanged: removing it safely would
+broaden the already successful tranche and its registered-CID construction
+cross-check preserves the current trust boundary. The review's larger cold
+tuple, shadow-light and packed-buffer candidates remain deferred by the
+stop-before-rewrite decision.
+
+## Verification available to final review
+
+- Plain Lua 5.1 parser, `SETGLOBAL` inspection and all five textual sweeps:
+  pass; durable static receipt SHA-256
+  `e5b0646ddaef3d80ee97e7aff4f9e4adc238072d223abd99343c369540065612`.
+- R7 unit KATs: pass.
+- The complete 61-case LuaJIT integration receipt is byte-identical to the
+  retained R8 receipt, SHA-256
+  `1fc22c764be500726f6f777b0eabd7a03a2434e23895aad6132c7c7e1ca78010`.
+- Forward/reverse six-case canonical digest:
+  `d058a5bcd517348c67eb83b9957422d2c3e43cdbf000dcb4981ee6ca668a5dd4`,
+  unchanged from baseline.
+- Final PUC/LuaJIT canonical-output SHA-256:
+  `660a89a975980460b734f2ded1cc7e4e3e6004668f77dfb512d30297b03ad17e`,
+  byte-identical; receipt SHA-256
+  `e05ca37802485dc5431193bcab39822a55dd62858924ffcfd34ed71b02ae3013`.
+
+## Calibration record
+
+Classification: non-trivial performance-sensitive mapgen refactor.
+Implementing model: GPT-5.6 Sol. Reviewing models: Claude Fable and an
+independent fresh GPT-5.6 Sol context. Initial review totals across the two
+independent reports: 0 Critical / 3 High (one duplicated concern) / 3 Medium
+(one duplicated concern) / 1 evidence Low plus three optional code Lows. Fix
+rounds before final re-review: one. Observed elapsed wall time: unknown.
+
+The final focused-review verdict is recorded below after it inspects the
+immutable candidate and evidence commit.

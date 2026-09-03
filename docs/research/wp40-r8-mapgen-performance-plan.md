@@ -1,7 +1,7 @@
 # WP40 R8 production mapgen performance hardening
 
-**Status:** implementation and focused review fixes are locally verified on
-`wp40-r8-mapgen-performance`; frozen-byte parity and focused re-review remain.
+**Status:** implementation, review fixes and frozen-byte interpreter parity are
+complete on `wp40-r8-mapgen-performance`; focused re-review remains.
 
 **Baseline:** `7e9284ffcd71b445efcdfde7cee39534bbf8ef35`.
 
