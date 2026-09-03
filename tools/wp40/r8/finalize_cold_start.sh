@@ -22,14 +22,14 @@ for command_name in awk bash cmp cp dirname git ln mkdir mktemp mv ps rm sha256s
 		exit 1
 	}
 done
-[[ -x "$source_audit" && -x "$final_micro" && -x "$r7_run" && -f "$integration" &&
+[[ -f "$source_audit" && -f "$final_micro" && -f "$r7_run" && -f "$integration" &&
 	-f "$pilot/checksums.sha256" && -d "$durable_parent" &&
 	! -e "$durable" ]] || {
 	echo "WP40 R8 cold-start finalization: input or durable boundary differs" >&2
 	exit 1
 }
-[[ -z "$(git -C "$repo" status --porcelain --untracked-files=no)" ]] || {
-	echo "WP40 R8 cold-start finalization: tracked worktree is not clean" >&2
+[[ -z "$(git -C "$repo" status --porcelain --untracked-files=all)" ]] || {
+	echo "WP40 R8 cold-start finalization: worktree is not clean" >&2
 	exit 1
 }
 
@@ -61,8 +61,8 @@ pilot_checksums_sha="$(sha256sum "$pilot/checksums.sha256" | awk '{print $1}')"
 	exit 1
 }
 
-stage="$(mktemp -d "$durable_parent/.cold-start-final.partial.XXXXXXXX")"
-scratch="$(mktemp -d /tmp/grudgelands-wp40-r8-final.XXXXXXXX)"
+stage=""
+scratch=""
 cleanup() {
 	local status=$?
 	case "$stage" in
@@ -74,6 +74,8 @@ cleanup() {
 	return "$status"
 }
 trap cleanup EXIT
+stage="$(mktemp -d "$durable_parent/.cold-start-final.partial.XXXXXXXX")"
+scratch="$(mktemp -d /tmp/grudgelands-wp40-r8-final.XXXXXXXX)"
 
 prefreeze="$scratch/source-audit-prefreeze.tsv"
 postfreeze="$scratch/source-audit-postfreeze.tsv"
@@ -86,9 +88,14 @@ cmp -s "$prefreeze" "$postfreeze" || {
 	echo "WP40 R8 cold-start finalization: source inputs changed during final pair" >&2
 	exit 1
 }
+stage_relative="${stage#"$repo/"}/"
+unexpected_untracked="$scratch/unexpected-untracked.txt"
+git -C "$repo" ls-files --others --exclude-standard |
+	awk -v own="$stage_relative" 'index($0, own) != 1 {print}' >"$unexpected_untracked"
 [[ "$candidate_commit" == "$(git -C "$repo" rev-parse HEAD)" &&
 	"$self_sha" == "$(sha256sum "$script_dir/finalize_cold_start.sh" | awk '{print $1}')" &&
-	-z "$(git -C "$repo" status --porcelain --untracked-files=no)" ]] || {
+	! -s "$unexpected_untracked" ]] &&
+	git -C "$repo" diff --quiet && git -C "$repo" diff --cached --quiet || {
 	echo "WP40 R8 cold-start finalization: commit or tracked bytes changed" >&2
 	exit 1
 }
@@ -156,7 +163,17 @@ input_set_sha="$(micro_value input_set_sha256)"
 	printf 'gate\tfinal_micro_validated\ttrue\n'
 } >"$stage/final-audit.tsv"
 
+audit_sha="$(sha256sum "$stage/final-audit.tsv" | awk '{print $1}')"
 mv -T --no-clobber "$stage" "$durable"
+[[ ! -e "$stage" && -f "$durable/final-audit.tsv" &&
+	"$(sha256sum "$durable/final-audit.tsv" | awk '{print $1}')" == "$audit_sha" &&
+	"$(sha256sum "$durable/receipt.tsv" | awk '{print $1}')" == "$micro_sha" &&
+	"$(sha256sum "$durable/wp40-r7-micro-kat-output.tsv" | awk '{print $1}')" == "$output_sha" &&
+	"$(sha256sum "$durable/source-audit-prefreeze.tsv" | awk '{print $1}')" == "$source_audit_sha" &&
+	"$(sha256sum "$durable/static-gates.log" | awk '{print $1}')" == "$static_sha" ]] || {
+	echo "WP40 R8 cold-start finalization: exclusive publication differs" >&2
+	exit 1
+}
 stage=""
 printf 'WP40 R8 cold-start finalization PASS audit_sha256=%s micro_sha256=%s\n' \
-	"$(sha256sum "$durable/final-audit.tsv" | awk '{print $1}')" "$micro_sha"
+	"$audit_sha" "$micro_sha"

@@ -667,8 +667,21 @@ pair without publication, validates its 108-input/74-module receipt, and
 binds the accepted integration receipt plus all 33 tracked engine-pilot
 checksums. Only after every check passes does it atomically publish the whole
 result directory without overwrite. The historical R7 evidence and workflow
-remain unchanged. Focused re-review of this finalizer and the one final
-frozen-byte LuaJIT/PUC pair remain open.
+remain unchanged. Focused review of exact finalizer
+`0149aef4598904e79cd8cf989cdb2cdb20e45859` returned **REJECT, 0 Critical / 1
+High / 1 Medium / 1 Low**. The High finding was GNU `mv --no-clobber` returning
+success when it skipped a concurrently appearing target. The Medium finding
+was that non-ignored untracked inputs could escape the claimed commit binding,
+and the Low finding was a cleanup trap installed after the first temporary
+directory was created.
+
+The final correction verifies disappearance of the staged source and every
+precomputed destination hash before reporting publication success. It rejects
+all non-ignored untracked files before starting, then permits only its exact
+private stage prefix while separately requiring unchanged HEAD, index,
+worktree and finalizer bytes. The cleanup trap is installed before either
+temporary directory is created. Focused re-review of these shell-hardening
+changes and the one final frozen-byte LuaJIT/PUC pair remain open.
 
 ## Calibration so far
 
