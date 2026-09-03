@@ -46,10 +46,10 @@ velocity and immortality. Every faction set notifies the coordinator; the
 admin path no longer starts an independent teleport. Every final commit checks
 the exact faction/race identity, invalidates stale generations and emerges the
 replacement destination. Admin race/class changes join the same transaction,
-and a first admin-picked class remains transient. Creation stasis owns the
-respawn callback, and a dead incomplete player is revived at full class HP
-only after final positioning and class commit. This completion documentation
-closes the Low finding.
+and a first admin-picked class remains transient. Creation stasis suppresses
+the respawn callback's eager repositioning; if an incomplete player is still
+dead at completion, the final positioning and class commit are followed by a
+full-class-HP revival. This completion documentation closes the Low finding.
 
 The focused review verified every technical fix, found no regression and
 returned **CLEAN: 0 Critical / 0 High / 0 Medium / 0 Low** for code, with only
