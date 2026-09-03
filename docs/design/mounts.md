@@ -8,8 +8,8 @@ design.
 
 Neighbouring rules: the named-zone faction front `world_zones.md`, travel plus
 ocean/dragon-island integration in `world.md`, the complete open-world Claim
-Stone contract in `housing.md`, playable-boat behavior tracked in
-`TODO-design-boats.md`, the four mastery names in `items_crafting.md` §2.1,
+Stone contract in `housing.md`, the playable-boat contract in
+`boats.md`, the four mastery names in `items_crafting.md` §2.1,
 universal skills `professions.md` §1, the mob speed pillar
 `combat_stats.md` §3 and the chase/leash model `combat_stats.md` §4.
 
@@ -19,10 +19,17 @@ universal skills `professions.md` §1, the mob speed pillar
   **First Aid** (`professions.md` §1) it is universal — every character
   can learn it, and the two main profession slots stay free for the six
   crafting professions.
-- Riding is learned **from a trainer in a race capital**, in four steps at
-  character levels 15, 30, 45 and 60. A learned step is **player state,
-  permanent and per character**, and it hands over the owner-bound mount item
-  of that step.
+- Riding is learned **from the job trainer in every race capital**, in four
+  steps at character levels 15, 30, 45 and 60 (D20 decided 2026-08-13:
+  riding is a role on the existing job trainer, exactly like Cooking and
+  First Aid — no dedicated stable master and no Quartermaster involvement in
+  the MVP). A learned step is **player state, permanent and per character**,
+  and it hands over the owner-bound mount item of that step.
+- WP13 reserves only a **cosmetic stable/hitching-post dressing slot** near
+  the job trainer's court in the Market/Professions capital quadrant. It is
+  ordinary mutable, claim-excluded dressing, never a functional anchor; a
+  later dedicated stable master (Phase 2+, e.g. with D19 variants) can attach
+  there without moving NPCs or roads.
 - **Mounts are not a reward and not a drop** — they are bought (§2), and
   buying them is the point (§2 is a gold sink).
 
@@ -152,6 +159,16 @@ arbitrary fixed-price wall.
 - The dismount uses the **same detach path** as every other one (§3), so
   the rider is set down on a free neighbouring node rather than inside
   the mount's model.
+- **Implementation note (engine fact, recorded 2026-08-13):** mobs_redo
+  punches *what the player is attached to* —
+  `local target = self.attack:get_attach() or self.attack`
+  (`mods/ENTITIES/mobs/api.lua:2525-2526`) — so a mob's melee swing lands on
+  the mount entity and the rider loses no HP from it. That swallowed swing is
+  what has to trigger the dismount; damage aimed at the player directly (our
+  own PvP pipeline, projectiles, drowning, environment) reaches the rider
+  normally. The rule above therefore needs **two** hooks, the mount entity's
+  `on_punch` and the central HP-change hook in `grug_core` — the same seam
+  pair `boats.md` §6 uses for the identical rule on water.
 
 **Why this rule exists: it is what keeps the speed pillar intact.**
 `combat_stats.md` §3 gives aggressive mobs `run_velocity` **4.4** against

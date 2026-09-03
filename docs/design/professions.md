@@ -27,6 +27,10 @@ the material ladder is its §3.0, the per-profession catalogs are
     makes all three true at once.
   - **First Aid keeps no book**: all recipes at once, materials are the
     only gate.
+  - **Riding is likewise universal** and is taught and sold by the same job
+    trainers in four steps at levels 15/30/45/60 (`mounts.md` §1, D20 decided
+    2026-08-13). It costs no main profession slot and adds no separate
+    trainer NPC.
 - **Gathering split**: food-grade plants (potatoes, berries, cooking
   ingredients) are gatherable by EVERYONE; **alchemy herbs
   ("dragonweed") require the Alchemist main profession** — for everyone
@@ -45,9 +49,9 @@ Two free main professions per player, unchanged. The roster is organised
 | Profession | Material chain T1–T6 | Owns exclusively |
 |---|---|---|
 | **Blacksmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Metal armor (4 slots), 1H weapons, daggers, 2H weapons, **shields** |
-| **Leatherworker** | light → cured → heavy → scaled leather | Leather armor (4 slots), later **quivers** |
-| **Tailor** | linen → woven → heavy → silkweave | Cloth armor (4 slots), **bags**, **spell tome** (offhand) |
-| **Woodcarver** | wood incl. silverwood/gravewood; **buys metal fittings from the Blacksmith** | Staves, wands, scepters, orbs — later bows |
+| **Leatherworker** | light → cured → heavy → scaled → sleek → nightscale leather | Leather armor (4 slots — the Warrior's light set since the 2026-08-13 C10 decision, `items_crafting.md` §3.8), later **quivers** |
+| **Tailor** | patch → woven → heavy → silkweave → silk → stormweave bolts | Cloth armor (4 slots), **bags**, **spell tome** (offhand) |
+| **Woodcarver** | any `group:wood`, graded Seasoned → Polished → Hardened → Inlaid → Lacquered → Heartwood (race woods are cultural skins); **buys metal fittings from the Blacksmith** | Staves, wands, scepters, orbs — later bows |
 | **Goldsmith** | Gold + Quartz + the six regional G1/G2 gems | **Both trinket slots**, Rough → Cut gem refinement, Settings, jewelry components, and the 10%/20% natural-gem yield roll |
 | **Alchemist** | healing herbs + spices | Potions, elixirs, apothecary gear — **gathers its own herbs** |
 
@@ -140,8 +144,14 @@ Added 2026-08-07, the same pattern in the other direction: **the
 Woodcarver buys metal fittings from the Blacksmith.** Every caster weapon
 from T2 up needs a Blacksmith-made fitting of its own tier
 (`items_crafting.md` §3.6a) — the §3.2 family is literally called
-"metal-shod staff". A profession that cannot finish its own top item
-alone is the mechanism this section exists for; it is now used twice.
+"metal-shod staff".
+
+Added 2026-08-13 with the A1 signature table, the third relationship:
+**the Woodcarver buys weapon grips from the Leatherworker** — the
+Leatherworker's Apprentice signature component, 2 leather of the item's
+tier (`items_crafting.md` §2.1/§3.4). A profession that cannot finish
+its own top item alone is the mechanism this section exists for; it is
+now used three times.
 
 ## 4. Vendor floor rule
 

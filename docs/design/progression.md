@@ -41,17 +41,27 @@ Levels must keep delivering *decisions and buttons*, not just stats:
 
 ## 3. Death rules (MVP — deliberately simple)
 
-Decided 2026-08-06; refinements (graveyards at outposts, res sickness,
-Priest resurrection) come later with WP6/WP19:
+Decided 2026-08-06; PvP exemption decided 2026-08-13; refinements
+(graveyards at outposts, res sickness, Priest resurrection) come later with
+WP6/WP19:
 
-The respawn and inventory rules apply to every death. The XP penalty specified
-here applies only to PvE deaths.
+The respawn and inventory rules apply to every death; the XP consequence
+depends on the death's attribution.
 
 - Death = **respawn at the own race's safe outer starting settlement** with
   **full inventory**
   (no corpse run, no item loss, no durability-on-death mechanic).
 - **PvE XP loss: 25% of the progress within the current level, permanent**
   (never de-levels; the PvE target preserves `grug_xp`'s shipped amount).
+- **Confirmed PvP deaths cost no XP.** A death whose final HP-lowering
+  committed transaction is attributed by the single PvP authority
+  (`grug_pvp.classify_death`, WP41) to an eligible hostile player applies
+  no XP loss. Every other death — PvE, environment, unclassified — keeps
+  the 25% rule. Standing in contested ground or carrying the PvP tag never
+  grants the exemption, and a death whose final commit is environmental
+  (fall or lava after PvP damage) is unclassified and keeps the loss. The
+  attribution seam belongs to WP41; the exemption is applied centrally in
+  the XP death path (WP9 wiring), never by individual combat paths.
 - The *distance* back is the real penalty: dying far from the spawn
   costs travel time — which scales naturally with how deep you pushed.
 ## 4. Quest structure & level gates

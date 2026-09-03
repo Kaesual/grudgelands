@@ -302,8 +302,9 @@ It is not a canonical state and is not synonymous with `dormant`.
   consumes one slot.
 - Voluntary relocation never risks losing its faction slot between recovery
   and placement.
-- The exact per-faction limits are selected below demonstrated 32-seed physical
-  capacity under §10, not from gross zone area.
+- The exact per-faction limits are selected below demonstrated fixed-layout
+  physical capacity under §10, not from gross zone area. Varying-seed
+  height/content conformance is separate evidence.
 
 ### 5.2 Inactivity and on-demand decay
 
@@ -555,6 +556,10 @@ Protection and claim eligibility are independent systems.
 - Protection governs world state, not combat. Mobs and hostile effects may
   enter and damage eligible players inside claims but cannot alter claimed
   terrain.
+- Hard-protected world content shares this fail-closed model and the central
+  mutation predicate (decided 2026-08-13; `world.md` §2 R1). Inside such a
+  volume no player permission exists, so every indirect path is suppressed or
+  restored.
 
 ### 6.5 Build palette and private functional content
 
@@ -589,7 +594,9 @@ The following bounded content remains reproducible and cannot be changed by
 players in its shallow protection volume:
 
 - full race capitals, their gates and narrow aprons;
-- starting and respawn cores;
+- complete starting settlements: the full 128×128 build envelope plus its
+  10-node apron (decided 2026-08-13 — the same envelope-plus-apron rule as a
+  capital), containing spawn, waypoint, graveyard and service platforms;
 - waypoints and graveyards;
 - essential service and quest-giver platforms;
 - small functional NPC spawn/return anchors;

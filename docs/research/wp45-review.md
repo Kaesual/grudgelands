@@ -80,6 +80,16 @@ Final frozen-file SHA-256 values:
 - `959369f0d396e7c71fe49452a517de11e40a38751bb7b88fe5d99d94369ed531`
   — `tools/wp45/run.sh`
 
-No map population, fresh-world, GUI or in-game runtime test was performed.
-WP45 changes no mapgen bytes and requires only the short user runtime pass
-recorded at handoff.
+At the independent-review gate, no map population, fresh-world, GUI or in-game
+runtime test had been performed. WP45 changes no mapgen bytes and therefore
+required only the short user runtime pass recorded at handoff.
+
+## Runtime acceptance
+
+The user completed the short Flatpak Luanti runtime pass on 2026-09-03 after
+the reviewed build was synced locally. Both an existing character and a new
+character completed their expected flows, and inspection of `debug.txt` found
+no relevant Lua error or fatal engine error. No map population or fresh-world
+run was required because WP45 changes no mapgen bytes. The executed GUI scope
+did not disconnect an incomplete character in the middle of creation; that
+reconnect path remains covered by the headless callback harness only.
