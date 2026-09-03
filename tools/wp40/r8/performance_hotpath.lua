@@ -96,21 +96,7 @@ local function delta(after, before, field)
 	return (after[field] or 0) - (before[field] or 0)
 end
 
-local construct_started = clock()
-local fixture = dofile(repo .. "/tools/wp40/r7/runtime_fixture.lua")(
-	repo, "0", "production")
-local construct_seconds = clock() - construct_started
-collectgarbage("collect")
-
-io.write("schema\tgrug_wp40_r8_performance_hotpath_v1\n")
-io.write("order\t", order, "\n")
-io.write(string.format("construction_cpu_seconds\t%.6f\n", construct_seconds))
-io.write("case\tminp\tplan_cpu_seconds\twriter_cpu_seconds\tclassify_calls\t",
-	"modified_voxels\tp9g_accepted\tdigest\n")
-
-local digest_rows = {}
-for case_index = 1, #cases do
-	local case = cases[case_index]
+local function prepare_case(fixture, case)
 	local sample_y = case.y
 	if sample_y == "surface" then
 		sample_y = fixture.built.zones_session.terrain_height_at(case.x, case.z) + 1
@@ -126,6 +112,25 @@ for case_index = 1, #cases do
 		end
 	end
 	fixture.set_heightmap(heightmap)
+	return minp, maxp
+end
+
+local construct_started = clock()
+local fixture = dofile(repo .. "/tools/wp40/r7/runtime_fixture.lua")(
+	repo, "0", "production")
+local construct_seconds = clock() - construct_started
+collectgarbage("collect")
+
+io.write("schema\tgrug_wp40_r8_performance_hotpath_v1\n")
+io.write("order\t", order, "\n")
+io.write(string.format("construction_cpu_seconds\t%.6f\n", construct_seconds))
+io.write("case\tminp\tplan_cpu_seconds\twriter_cpu_seconds\tclassify_calls\t",
+	"modified_voxels\tp9g_accepted\tdigest\n")
+
+local digest_rows = {}
+for case_index = 1, #cases do
+	local case = cases[case_index]
+	local minp, maxp = prepare_case(fixture, case)
 	local vm, _, observer = fixture.new_vm(minp, maxp)
 	local before = fixture.built.session.metrics()
 	local plan_started = clock()
@@ -145,9 +150,44 @@ for case_index = 1, #cases do
 		delta(after.content, before.content, "classify_calls"),
 		delta(after.settlement, before.settlement, "modified_voxels"),
 		delta(after.p9g or {}, before.p9g or {}, "accepted"), digest))
+	io.write(string.format("cache\t%s\thits\t%d\tmisses\t%d\tevictions\t%d\n",
+		case.id,
+		delta(after.planner, before.planner, "runtime_column_cache_hits"),
+		delta(after.planner, before.planner, "runtime_column_cache_misses"),
+		delta(after.planner, before.planner, "runtime_column_cache_evictions")))
 	vm, observer, snapshot, plan, generation = nil, nil, nil, nil, nil
 	collectgarbage("collect")
 end
+
+-- A surface owner followed immediately by its high vertical sibling isolates
+-- the bounded cache's intended live reuse without changing the canonical
+-- six-case byte digest above.
+local warm_surface = {x = 0, y = "surface", z = -1500}
+local warm_high = {x = 0, y = 240, z = -1500}
+local warm_minp, warm_maxp = prepare_case(fixture, warm_surface)
+local before_warmup = fixture.built.session.metrics()
+local warmup_started = clock()
+fixture.built.session.plan_slice(warm_minp, warm_maxp)
+local warmup_seconds = clock() - warmup_started
+local after_warmup = fixture.built.session.metrics()
+local high_minp, high_maxp = prepare_case(fixture, warm_high)
+local high_started = clock()
+fixture.built.session.plan_slice(high_minp, high_maxp)
+local high_seconds = clock() - high_started
+local after_high = fixture.built.session.metrics()
+io.write(string.format(
+	"warm_cache\thuman_capital_to_high_slice\twarmup_cpu_seconds\t%.6f\t" ..
+	"warm_cpu_seconds\t%.6f\twarmup_hits\t%d\twarmup_misses\t%d\t" ..
+	"warm_hits\t%d\twarm_misses\t%d\tentries\t%d\tlimit\t%d\n",
+	warmup_seconds, high_seconds,
+	delta(after_warmup.planner, before_warmup.planner,
+		"runtime_column_cache_hits"),
+	delta(after_warmup.planner, before_warmup.planner,
+		"runtime_column_cache_misses"),
+	delta(after_high.planner, after_warmup.planner, "runtime_column_cache_hits"),
+	delta(after_high.planner, after_warmup.planner, "runtime_column_cache_misses"),
+	after_high.planner.runtime_column_cache_entries,
+	after_high.planner.runtime_column_cache_limit))
 
 table.sort(digest_rows)
 io.write("canonical_digest\t", common.hex(raw_sha256(table.concat(digest_rows))), "\n")

@@ -342,8 +342,7 @@ return function(dependencies)
 		end
 		local planner_constructor = evidence_only and
 			dependencies.planner_factory.new_evidence or
-			(runtime_mode and (dependencies.planner_factory.new_runtime or
-				dependencies.planner_factory.new) or
+			(runtime_mode and dependencies.planner_factory.new_runtime or
 				dependencies.planner_factory.new)
 		if type(planner_constructor) ~= "function" then
 			fail("fail_status", "R6 planner construction mode is absent")

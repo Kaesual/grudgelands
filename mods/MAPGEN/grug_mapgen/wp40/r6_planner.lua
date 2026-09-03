@@ -658,6 +658,7 @@ local function planner_factory()
 		function planner.metrics(self)
 			if not rawequal(self, planner) then fail("fail_source", "planner receiver differs") end
 			local allocation = allocator:metrics()
+			local source_metrics = planner_source.metrics()
 			return {
 				retained_buffer_growth_events = allocation.hotpath_table_allocations,
 				allocator_sealed = allocation.construction_sealed,
@@ -667,6 +668,17 @@ local function planner_factory()
 				peak_column_value_cells = metrics.peak_column_value_cells,
 				peak_candidate_value_cells = metrics.peak_candidate_value_cells,
 				candidate_halo_x_cells = halo_x, candidate_halo_z_cells = halo_z,
+				candidate_scratch_capacity = candidate_capacity,
+				runtime_column_cache_limit =
+					source_metrics.runtime_column_cache_limit or 0,
+				runtime_column_cache_entries =
+					source_metrics.runtime_column_cache_entries or 0,
+				runtime_column_cache_hits =
+					source_metrics.runtime_column_cache_hits or 0,
+				runtime_column_cache_misses =
+					source_metrics.runtime_column_cache_misses or 0,
+				runtime_column_cache_evictions =
+					source_metrics.runtime_column_cache_evictions or 0,
 			}
 		end
 

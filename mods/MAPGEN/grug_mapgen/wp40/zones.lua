@@ -1329,13 +1329,15 @@ return function(dependencies)
 			planner_source = {
 				schema = "grug_wp40_r5_planner_source_v1",
 			}
-			local column_cache_limit = 16384
+			local column_cache_limit = 65536
 			local column_cache_by_x = runtime_mode and {} or nil
 			local column_cache_slot_x = runtime_mode and {} or nil
 			local column_cache_slot_z = runtime_mode and {} or nil
 			local column_cache_rows = runtime_mode and {} or nil
 			local column_cache_count = 0
 			local column_cache_next_slot = 1
+			local column_cache_hits, column_cache_misses,
+				column_cache_evictions = 0, 0, 0
 
 			local function compute_column_values_at(x, z, outside)
 				local water_class, _, zone_numeric_id, _,
@@ -1445,7 +1447,16 @@ return function(dependencies)
 
 				local bucket = column_cache_by_x[x]
 				local row = bucket and bucket[z] or nil
-				if row then return unpack(row, 1, 20) end
+				if row then
+					column_cache_hits = column_cache_hits + 1
+					return unpack(row, 1, 20)
+				end
+				column_cache_misses = column_cache_misses + 1
+				local value_1, value_2, value_3, value_4, value_5,
+					value_6, value_7, value_8, value_9, value_10,
+					value_11, value_12, value_13, value_14, value_15,
+					value_16, value_17, value_18, value_19, value_20 =
+						compute_column_values_at(x, z, outside)
 
 				local slot
 				if column_cache_count < column_cache_limit then
@@ -1454,6 +1465,7 @@ return function(dependencies)
 					row = {}
 					column_cache_rows[slot] = row
 				else
+					column_cache_evictions = column_cache_evictions + 1
 					slot = column_cache_next_slot
 					column_cache_next_slot = column_cache_next_slot + 1
 					if column_cache_next_slot > column_cache_limit then
@@ -1471,10 +1483,14 @@ return function(dependencies)
 					row = column_cache_rows[slot]
 				end
 
-				row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8],
-					row[9], row[10], row[11], row[12], row[13], row[14], row[15],
-					row[16], row[17], row[18], row[19], row[20] =
-					compute_column_values_at(x, z, outside)
+				row[1], row[2], row[3], row[4], row[5] =
+					value_1, value_2, value_3, value_4, value_5
+				row[6], row[7], row[8], row[9], row[10] =
+					value_6, value_7, value_8, value_9, value_10
+				row[11], row[12], row[13], row[14], row[15] =
+					value_11, value_12, value_13, value_14, value_15
+				row[16], row[17], row[18], row[19], row[20] =
+					value_16, value_17, value_18, value_19, value_20
 				bucket = column_cache_by_x[x]
 				if not bucket then
 					bucket = {_count = 0}
@@ -1524,6 +1540,12 @@ return function(dependencies)
 						height_metrics.query_lattice_constructions,
 					query_feature_list_constructions = 0,
 					query_unindexed_catalog_scans = 0,
+					runtime_column_cache_limit = runtime_mode and
+						column_cache_limit or 0,
+					runtime_column_cache_entries = column_cache_count,
+					runtime_column_cache_hits = column_cache_hits,
+					runtime_column_cache_misses = column_cache_misses,
+					runtime_column_cache_evictions = column_cache_evictions,
 				}
 			end
 			planner_source_count = planner_source_count + 1

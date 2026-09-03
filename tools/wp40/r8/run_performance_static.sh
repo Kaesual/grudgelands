@@ -19,31 +19,23 @@ done
 
 mapfile -t production_lua < <(cd "$repo" &&
 	rg --files mods | rg '/grug_[^/]+/.*[.]lua$' | sort)
-mapfile -t tool_lua < <(cd "$repo" &&
-	rg --files tools/wp40/r8 |
-		rg '^tools/wp40/r8/(construction|performance)_hotpath[.]lua$' | sort)
-[[ "${#production_lua[@]}" -gt 0 && "${#tool_lua[@]}" -eq 2 ]] || {
+tool_lua=(
+	tools/wp40/r7/micro_kat.lua
+	tools/wp40/r7/micro_kat_fixture.lua
+	tools/wp40/r8/construction_hotpath.lua
+	tools/wp40/r8/performance_hotpath.lua
+	tools/wp40/r8/performance_micro_kat_cli.lua
+)
+[[ "${#production_lua[@]}" -gt 0 && "${#tool_lua[@]}" -eq 5 ]] || {
 	echo "WP40 R8 performance static gates: Lua population differs" >&2
 	exit 1
 }
 
-changed_production=(
-	mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua
-	mods/MAPGEN/grug_mapgen/wp40/r5.lua
-	mods/MAPGEN/grug_mapgen/wp40/r6.lua
-	mods/MAPGEN/grug_mapgen/wp40/r6_content.lua
-	mods/MAPGEN/grug_mapgen/wp40/r6_hash.lua
-	mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua
-	mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
-	mods/MAPGEN/grug_mapgen/wp40/r6_templates.lua
-	mods/MAPGEN/grug_mapgen/wp40/r7_anchor_activation.lua
-	mods/MAPGEN/grug_mapgen/wp40/r7_content.lua
-	mods/MAPGEN/grug_mapgen/wp40/r7_loader.lua
-	mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua
-	mods/MAPGEN/grug_mapgen/wp40/r7_runtime.lua
-	mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua
-	mods/MAPGEN/grug_mapgen/wp40/zones.lua
-)
+mapfile -t changed_production <"$repo/tools/wp40/r8/performance_changed_production_lua.txt"
+[[ "${#changed_production[@]}" -eq 15 ]] || {
+	echo "WP40 R8 performance static gates: changed population differs" >&2
+	exit 1
+}
 
 all_lua=("${production_lua[@]}" "${tool_lua[@]}")
 all_paths=()

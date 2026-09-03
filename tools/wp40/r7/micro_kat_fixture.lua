@@ -1,13 +1,23 @@
 -- Compact production-seam fixture for the final R7 LuaJIT/PUC parity gate.
 -- It deliberately parses no MTS file and uses no LuaJIT-only facility.
 
-return function(repo)
+return function(repo, changed_roster_relative, expected_changed_count)
 	local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 	local raw_sha256 = common.new_sha256()
 	local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
 	local rows = {}
 	local changed_order, changed_set, executed = {}, {}, {}
 	local saved_dofile = dofile
+	changed_roster_relative = changed_roster_relative or
+		"tools/wp40/r7/changed_production_lua.txt"
+	expected_changed_count = expected_changed_count or 74
+	if type(changed_roster_relative) ~= "string" or
+		changed_roster_relative:sub(1, 1) == "/" or
+		changed_roster_relative:find("..", 1, true) or
+		type(expected_changed_count) ~= "number" or
+		expected_changed_count % 1 ~= 0 or expected_changed_count < 1 then
+		error("WP40 R7 micro KAT: changed roster configuration differs", 0)
+	end
 
 	local function fail(message)
 		error("WP40 R7 micro KAT: " .. message, 0)
@@ -118,8 +128,7 @@ return function(repo)
 	-- dofile loads.  Compilation alone is deliberately not execution evidence.
 	rawset(_G, "dofile", tracking_dofile)
 
-	local changed_file = assert(io.open(repo ..
-		"/tools/wp40/r7/changed_production_lua.txt", "rb"))
+	local changed_file = assert(io.open(repo .. "/" .. changed_roster_relative, "rb"))
 	local changed_count, changed_rows, previous = 0, {}, nil
 	for relative in changed_file:lines() do
 		check(relative ~= "" and (not previous or less_bytes(previous, relative)),
@@ -134,7 +143,8 @@ return function(repo)
 		previous = relative
 	end
 	assert(changed_file:close())
-	check(changed_count == 74, "changed production Lua population differs")
+	check(changed_count == expected_changed_count,
+		"changed production Lua population differs")
 	row("source/changed_production_lua_count", changed_count)
 	row("source/changed_production_lua_sha256",
 		hex_sha256(table.concat(changed_rows)))
@@ -1189,6 +1199,34 @@ return function(repo)
 	check(accepted_reason == "accepted" and rejected_reason == "fixed_or_protected",
 		"accepted/rejected P9G probes differ")
 	row("p9g/root_pair", accepted_reason .. "/" .. rejected_reason)
+	local runtime_successor_dependencies = {}
+	for key, value in pairs(successor_dependencies) do
+		runtime_successor_dependencies[key] = value
+	end
+	runtime_successor_dependencies.runtime_mode = true
+	local runtime_p9g = successor_config.new(runtime_successor_dependencies)
+	runtime_p9g:plan_slice(minp, maxp, plan, 1)
+	local runtime_context = new_context("production", nil)
+	local runtime_ledger = runtime_p9g:settle(runtime_context)
+	local runtime_cid, runtime_param2, runtime_occupancy, runtime_opcode =
+		runtime_context.settled_at(0, 6, 0)
+	local expected_runtime_cid, _, _, expected_runtime_param2 =
+		content_set.p9g.resolve_p9g(1, 0)
+	local runtime_ledger_fields = 0
+	for key in pairs(runtime_ledger) do
+		check(key == "schema" or key == "accepted",
+			"runtime P9G emitted proof ledger field")
+		runtime_ledger_fields = runtime_ledger_fields + 1
+	end
+	local runtime_p9g_metrics = runtime_p9g:metrics()
+	check(runtime_ledger.schema == "grug_wp40_r7_p9g_ledger_v1" and
+		runtime_ledger.accepted == 1 and runtime_ledger_fields == 2 and
+		runtime_cid == expected_runtime_cid and
+		runtime_param2 == expected_runtime_param2 and runtime_occupancy == -2 and
+		runtime_opcode == 35 and runtime_p9g_metrics.accepted == 1,
+		"ledger-free runtime P9G acceptance differs")
+	row("p9g/runtime_accepted_no_ledger", table.concat({runtime_ledger.accepted,
+		runtime_cid, runtime_param2, runtime_occupancy, runtime_opcode}, "/"))
 
 	-- Bind both R6 projection receipts through the production evidence contract.
 	local evidence_contract = dofile(repo .. "/tools/wp40/r7/contract.lua")
@@ -1526,11 +1564,114 @@ return function(repo)
 	function micro_allocator.seal_construction() end
 	function micro_allocator.enter_hotpath() end
 	function micro_allocator.leave_hotpath() end
-	function micro_allocator.metrics()
-		return {hotpath_table_allocations = 0, construction_sealed = true}
-	end
+		function micro_allocator.metrics()
+			return {hotpath_table_allocations = 0, construction_sealed = true}
+		end
 
-	-- Prove that the real R5 and R6 factories select only their live
+		-- Exercise the performance tranche's two newly changed R6 factories under
+		-- both final interpreters when the caller's changed roster owns them. This
+		-- keeps the frozen historical R7 roster/input contract backward-compatible.
+		-- The fixtures stay synthetic and bounded; the LuaJIT integration receipt
+		-- owns production MTS and full-owner coverage.
+		local planner_changed = changed_set[
+			"mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua"] == true
+		local templates_changed = changed_set[
+			"mods/MAPGEN/grug_mapgen/wp40/r6_templates.lua"] == true
+		check(planner_changed == templates_changed,
+			"performance R6 factory roster is incomplete")
+		if planner_changed then
+			local template_content = {}
+			function template_content.decorations()
+				return {{id = "micro_template", kind = "template",
+					asset_or_node = "micro_template.mts",
+					rule = "center_xz surface_y_at_least_60", settlement_class = 2}}
+			end
+			function template_content.param2_kind() return "none" end
+			function template_content.content_ref() return nil end
+			function template_content.content_contract()
+				return {content_kind_masks = {}, ignore_cid = 65535,
+					resolve_r6 = function() return 0, 1 end}
+			end
+			local template_source = {}
+			function template_source.read(filename)
+				check(filename == "micro_template.mts", "micro template filename differs")
+				return {size = {x = 1, y = 1, z = 1},
+					yslice_prob = {{ypos = 0, prob = 126}},
+					data = {{name = "air", prob = 126, param2 = 0,
+						force_place = false}}}
+			end
+			local templates_module = dofile(wp40 .. "/r6_templates.lua")(
+				settlement_hash, template_content, template_source)
+			local runtime_rotation = templates_module.rotation_runtime(
+				"micro_template", 1)
+			local copied_rotation = templates_module.rotation("micro_template", 1)
+			check(type(runtime_rotation) == "table" and
+				rawequal(runtime_rotation, templates_module.rotation_runtime(
+					"micro_template", 1)) and
+				not rawequal(runtime_rotation, copied_rotation),
+				"runtime template alias/copy boundary differs")
+			copied_rotation.cells[1].param2 = 1
+			check(runtime_rotation.cells[1].param2 == 0,
+				"evidence template copy mutated runtime authority")
+			local slice_fields = {"micro_template", 0, 0, 0, 1, "slice", 0}
+			local node_fields = {"micro_template", 0, 0, 0, 1, "node", 0, 0, 0}
+			local slice_expected = string.byte(settlement_hash.digest(
+				"template_probability_v1", "0", slice_fields), 1) < 126
+			local node_expected = string.byte(settlement_hash.digest(
+				"template_probability_v1", "0", node_fields), 1) < 126
+			check(templates_module.probability_include("0", "micro_template",
+				0, 0, 0, 1, "slice", 0, 0, 0, 126) == slice_expected and
+				templates_module.probability_include("0", "micro_template",
+					0, 0, 0, 1, "node", 0, 0, 0, 126) == node_expected,
+				"template digest scratch differs")
+
+			local planner_source_micro = {
+				schema = "grug_wp40_r5_planner_source_v1",
+				column_values_at = function() return "land", nil end,
+				metrics = function()
+					return {runtime_column_cache_limit = 65536,
+						runtime_column_cache_entries = 0,
+						runtime_column_cache_hits = 0,
+						runtime_column_cache_misses = 0,
+						runtime_column_cache_evictions = 0}
+				end,
+			}
+			local planner_content = {
+				surfaces = function() return {{id = "micro_biome"}} end,
+				resources = function() return {} end,
+				cultural = function() return {} end,
+				decorations = function()
+					return {{id = "micro_decoration", biomes = {"micro_biome"},
+						rule = "surface_y_at_least_60"}}
+				end,
+			}
+			local planner_module = dofile(wp40 .. "/r6_planner.lua")
+			local planner, planner_fixture = planner_module.new_runtime({
+					full_seed_string = "0",
+					planner_source = planner_source_micro,
+					r5_planner = {plan_slice = function() end},
+					horizontal = {static_exclusion_values_at = function() return nil end},
+					content = planner_content,
+					templates = {maximum_footprint = function() return 1, 1, 1 end},
+					hash = {less_bytes = less_bytes},
+					source = {zones = {}, race_regions = {}, hydrology_profiles = {},
+						hydrology = {}, hydrology_interfaces = {}},
+					construction_identity = {value = {}},
+					counting_allocator = micro_allocator})
+			local planner_metrics = planner:metrics()
+			local refs = planner_fixture.stable_refs()
+			check(planner_metrics.candidate_scratch_capacity == 16384 and
+				planner_metrics.runtime_column_cache_limit == 65536 and
+				#refs == 2 and refs[1] == "micro_biome" and
+				refs[2] == "micro_decoration",
+				"runtime planner capacity or decoration precompute differs")
+			row("runtime/r6_template_planner", table.concat({
+				tostring(slice_expected), tostring(node_expected),
+				planner_metrics.candidate_scratch_capacity,
+				planner_metrics.runtime_column_cache_limit}, "/"))
+		end
+
+		-- Prove that the real R5 and R6 factories select only their live
 	-- collaborators.  Their collaborators are deliberately bounded stubs here;
 	-- the authentic zones runtime above and settlement transaction below cover
 	-- the expensive concrete implementations.
@@ -1603,9 +1744,9 @@ return function(repo)
 				end,
 			}
 		end
-		local r6_planner, r6_planner_fixture = {}, {
-			stable_refs = function() return {"human"} end,
-		}
+			local r6_planner, r6_planner_fixture = {}, {
+				stable_refs = function() return {"human"} end,
+			}
 		local r6_settlement, r6_settlement_fixture = {}, {}
 		local r6_settlement_factory = {
 			new = function()
@@ -1635,9 +1776,11 @@ return function(repo)
 			templates_factory = function()
 				return {records = function() return {} end}
 			end,
-			planner_factory = {new = function()
-				return r6_planner, r6_planner_fixture
-			end},
+				planner_factory = {new = function()
+					return r6_planner, r6_planner_fixture
+				end, new_runtime = function()
+					return r6_planner, r6_planner_fixture
+				end},
 			settlement_factory = r6_settlement_factory,
 		})
 		local _, _, selected_r6_zones, selected_r6_settlement =

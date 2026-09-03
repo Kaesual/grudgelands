@@ -1,7 +1,7 @@
 # WP40 R8 production mapgen performance hardening
 
-**Status:** candidate implemented and locally verified; independent review is
-pending on `wp40-r8-mapgen-performance`.
+**Status:** implementation and focused review fixes are locally verified on
+`wp40-r8-mapgen-performance`; frozen-byte parity and focused re-review remain.
 
 **Baseline:** `7e9284ffcd71b445efcdfde7cee39534bbf8ef35`.
 
@@ -152,21 +152,33 @@ output comparison differs.
 
 ## 6. Candidate result and stop decision
 
-The final pre-review LuaJIT measurement preserves every per-case content,
+The final post-fix LuaJIT measurement preserves every per-case content,
 `param2` and light digest and the order-independent canonical digest
 `d058a5bcd517348c67eb83b9957422d2c3e43cdbf000dcb4981ee6ca668a5dd4`.
-The six-case planning-plus-writer CPU total fell from 18.137 to 3.097 seconds
-forward and from 17.646 to 2.874 seconds in reverse order: 5.86x and 6.14x
+The six-case planning-plus-writer CPU total fell from 18.137 to 2.991 seconds
+forward and from 17.646 to 3.049 seconds in reverse order: 6.06x and 5.79x
 speed-ups. End-to-end process wall time, including construction, VM fixture
-work and output hashing, fell from about 23.75 to 8 seconds.
+work and output hashing, remained below nine seconds in both orders.
+
+The review-recommended cache bound of 65,536 entries retains a complete
+recent horizontal neighborhood. A surface plan followed by its high vertical
+sibling recorded 121,744 cache hits and zero misses in each phase; the warm
+high-slice plan took 0.031--0.034 seconds instead of the corpus's 0.278--0.282
+seconds. The larger bound added approximately 13--15 MB to the fully populated
+LuaJIT heap, a bounded trade for an 88--89% vertical-repeat planning reduction.
 
 The main-state authority constructor and full emerge constructor publish the
 same production manifest and anchor-roster hashes. In isolated construction
-measurements, authority-only retained heap was 24,368,066 bytes versus
-321,454,210 bytes for the full writer, a 92.4% reduction for the main-state
+measurements, authority-only retained heap was 23,133,578 bytes versus
+323,775,130 bytes for the full writer, a 92.9% reduction for the main-state
 mapgen allocation. The full 61-case integration receipt is byte-identical to
 the already tracked R8 projection receipt, and the dedicated Lua 5.1 static
 gate passes.
+
+The baseline timings remain advisory: their production commit and recorded
+runner hash are bound, but the exact baseline wrapper bytes were not retained.
+Peak RSS is therefore reported as a diagnostic only; retained Lua heap and the
+isolated construction comparison are the accepted memory evidence.
 
 This materially exceeds the P4 stop target. The riskier R5/R6 shadow-buffer
 sharing, owner-sized intent indexing and packed intent representation are
