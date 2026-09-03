@@ -1,0 +1,41 @@
+WP40 R7 evidence contract KAT PASS catalog=0ceca26640c4d4ebff98d7df1f0211d4f44c7accb9072aee5a020ad4bce63e7e populations=12/8/6 rejection_reasons=11
+WP40 R7 native inputs KAT PASS noise=5a1183a0db4dcbf7c2fce382e907660bfd26e53325d370f62a2d9e78c04d8738 native=d1fe4ac1c7cbe5525af65bde48cc4309870c01e4d474785f2cf0cda3d2639480 setters=6 reads=24 ores=6
+wp33_gathering_kat_v1
+manifest_sha256	d03533037c5a38cf62b85963a59b19efe9f48f770b5b6f3885f20f7b17f0af53
+population	12/8/6
+cultural_digests	6
+registered_nodes	18
+harvest_cases	pass
+R7_CONSUMER_KAT_V1	PASS
+WP40 R7 anchor activation KAT PASS roots=42 protected_columns=36
+WP40 R7 source audit PASS source_set_sha256=33c90d9e0abf36b4d02a4d43bc6a3443761bf70d2b4c89bf601fd119ecb3a240
+schema	grug_wp40_r7_source_audit_prefreeze_v1
+phase	prefreeze
+gate	closed_noise_setters	true
+gate	closed_native_allowlist	true
+gate	one_loader_callback	true
+gate	zero_legacy_paths	true
+gate	zero_wp33_writer	true
+gate	one_shared_transaction	true
+gate	exact_game_mapgen_defaults	true
+gate	acyclic_mod_dependencies	true
+gate	final_micro_kat_parity	not_frozen
+count	noise_setters	6
+count	register_biome	0
+count	register_ore	6
+count	register_decoration	0
+count	register_mapgen_script	1
+count	register_on_generated	1
+count	vm_set_data	1
+count	vm_set_param2_data	1
+count	vm_update_liquids	1
+count	mapgen_default_settings	8
+count	changed_production_lua	74
+count	deleted_legacy_lua	7
+count	mod_dependency_nodes	22
+count	mod_dependency_edges	68
+micro_kat_output_sha256	not_frozen
+input_file_population	900
+code_input_file_population	900
+code_input_set_sha256	33c90d9e0abf36b4d02a4d43bc6a3443761bf70d2b4c89bf601fd119ecb3a240
+input_set_sha256	33c90d9e0abf36b4d02a4d43bc6a3443761bf70d2b4c89bf601fd119ecb3a240

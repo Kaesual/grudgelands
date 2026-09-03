@@ -5,6 +5,27 @@ local IPC_KEY = "grug_mapgen:r7_runtime_v1"
 local function fail(message)
 	error("WP40 R7 emerge: " .. message, 0)
 end
+local function plain_engine_position(value, label)
+	if type(value) ~= "table" then fail(label .. " differs") end
+	local metatable = getmetatable(value)
+	if metatable ~= nil and (type(vector) ~= "table" or
+			metatable ~= vector.metatable) then
+		fail(label .. " metatable differs")
+	end
+	local count = 0
+	for key in pairs(value) do
+		if key ~= "x" and key ~= "y" and key ~= "z" then
+			fail(label .. " field differs")
+		end
+		count = count + 1
+	end
+	if count ~= 3 or rawget(value, "x") == nil or rawget(value, "y") == nil or
+			rawget(value, "z") == nil then
+		fail(label .. " fields differ")
+	end
+	return {x = rawget(value, "x"), y = rawget(value, "y"),
+		z = rawget(value, "z")}
+end
 local function exact_payload(value)
 	if type(value) ~= "table" or getmetatable(value) ~= nil then
 		fail("IPC payload differs")
@@ -41,6 +62,8 @@ local built = runtime.build(native.identities(), payload.manifest_sha256)
 if built.full_seed ~= payload.full_seed then fail("main/emerge seed differs") end
 
 core.register_on_generated(function(vmanip, minp, maxp, blockseed)
+	minp = plain_engine_position(minp, "generated minp")
+	maxp = plain_engine_position(maxp, "generated maxp")
 	local plan, generation = built.session.plan_slice(minp, maxp)
 	local result = built.writer.apply(vmanip, minp, maxp, plan, generation)
 	if type(result) ~= "string" then fail("writer result differs") end

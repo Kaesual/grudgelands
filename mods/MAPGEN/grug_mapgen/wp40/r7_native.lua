@@ -140,6 +140,15 @@ local function exact_plain_table(value, keys, label, expected_metatable)
 	return value
 end
 
+local function exact_readback_spread(value, label)
+	local metatable = getmetatable(value)
+	if metatable ~= nil and (type(vector) ~= "table" or
+			metatable ~= vector.metatable) then
+		fail(label .. " has an unexpected metatable")
+	end
+	return exact_plain_table(value, SPREAD_KEYS, label, metatable)
+end
+
 local function dense_single_string(value, expected, label)
 	if type(value) ~= "table" then fail(label .. " is not a table") end
 	if getmetatable(value) ~= nil then fail(label .. " has a metatable") end
@@ -293,7 +302,10 @@ end
 local function validate_noise_table(value, spec)
 	local label = "noise readback " .. spec.name
 	exact_plain_table(value, TABLE_KEYS, label)
-	exact_plain_table(value.spread, SPREAD_KEYS, label .. " spread")
+	-- Luanti pushes NoiseParams spread through push_v3f, so current engines
+	-- return the builtin vector metatable. Older fixtures/plain tables remain
+	-- valid, but an unrelated metatable is still rejected.
+	exact_readback_spread(value.spread, label .. " spread")
 	local numeric = {
 		"offset", "scale", "persist", "persistence", "lacunarity",
 		"seed", "octaves",

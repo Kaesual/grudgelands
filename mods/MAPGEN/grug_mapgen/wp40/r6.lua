@@ -299,7 +299,13 @@ return function(dependencies)
 			normalized_registrations[index] = checked
 		end
 
-		local zones_session, planner_source, r5_planner, r5_adapter = r5_module.new(
+		local runtime_mode = construction_mode == "runtime"
+		local r5_constructor = runtime_mode and r5_module.new_runtime or
+			r5_module.new
+		if type(r5_constructor) ~= "function" then
+			fail("fail_status", "R5 runtime constructor is absent")
+		end
+		local zones_session, planner_source, r5_planner, r5_adapter = r5_constructor(
 			full_seed_string, configured_water_level,
 			content_module.r5_manifest_values(), content_contract.r5, mapgen_context)
 		local horizontal_module = dependencies.horizontal_factory({
@@ -316,7 +322,8 @@ return function(dependencies)
 			"grug_wp40_r6_settlement_allocator_v1")
 		local evidence_only = construction_mode == "horizontal"
 		local capture_enabled = construction_mode == "capture"
-		if construction_mode ~= nil and not evidence_only and not capture_enabled then
+		if construction_mode ~= nil and not evidence_only and not capture_enabled and
+				not runtime_mode then
 			fail("fail_status", "private construction mode differs")
 		end
 		local planner_constructor = evidence_only and
@@ -366,6 +373,8 @@ return function(dependencies)
 			settlement_constructor = dependencies.settlement_factory.new_evidence
 		elseif capture_enabled then
 			settlement_constructor = dependencies.settlement_factory.new_capture
+		elseif runtime_mode then
+			settlement_constructor = dependencies.settlement_factory.new_runtime
 		else
 			settlement_constructor = dependencies.settlement_factory.new
 		end
@@ -436,6 +445,9 @@ return function(dependencies)
 	end
 	function module.new(...)
 		return new_impl(nil, ...)
+	end
+	function module.new_runtime(...)
+		return new_impl("runtime", ...)
 	end
 	function module.new_evidence(...)
 		return new_impl("horizontal", ...)

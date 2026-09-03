@@ -48,10 +48,28 @@ local function settlement_factory()
 	end
 
 	local function position(value, label)
-		exact_fields(value, {x = true, y = true, z = true}, label, "fail_bounds")
-		return integer(value.x, label .. " x", -30912, 30927),
-			integer(value.y, label .. " y", -30912, 30927),
-			integer(value.z, label .. " z", -30912, 30927)
+		if type(value) ~= "table" then
+			fail("fail_bounds", label .. " is not a table")
+		end
+		local metatable = getmetatable(value)
+		if metatable ~= nil and (type(vector) ~= "table" or
+				metatable ~= vector.metatable) then
+			fail("fail_bounds", label .. " has an unexpected metatable")
+		end
+		local count = 0
+		for key in pairs(value) do
+			if key ~= "x" and key ~= "y" and key ~= "z" then
+				fail("fail_bounds", label .. " has an unexpected field")
+			end
+			count = count + 1
+		end
+		if count ~= 3 or rawget(value, "x") == nil or
+				rawget(value, "y") == nil or rawget(value, "z") == nil then
+			fail("fail_bounds", label .. " fields differ")
+		end
+		return integer(rawget(value, "x"), label .. " x", -30912, 30927),
+			integer(rawget(value, "y"), label .. " y", -30912, 30927),
+			integer(rawget(value, "z"), label .. " z", -30912, 30927)
 	end
 
 	local function copy_map(value, active)
@@ -255,14 +273,18 @@ local function settlement_factory()
 		end
 	end
 
-	local function new(dependencies, evidence_only, capture_enabled)
+	local function new(dependencies, evidence_only, capture_enabled, runtime_mode)
 		if evidence_only ~= nil and evidence_only ~= true then
 			fail("fail_settlement", "evidence-only construction flag differs")
 		end
 		if capture_enabled ~= nil and capture_enabled ~= true then
 			fail("fail_settlement", "capture construction flag differs")
 		end
-		if evidence_only and capture_enabled then
+		if runtime_mode ~= nil and runtime_mode ~= true then
+			fail("fail_settlement", "runtime construction flag differs")
+		end
+		if (evidence_only and capture_enabled) or
+				(runtime_mode and (evidence_only or capture_enabled)) then
 			fail("fail_settlement", "evidence construction modes overlap")
 		end
 		exact_fields(dependencies, {
@@ -501,6 +523,9 @@ local function settlement_factory()
 			seed_z = light_seed_z, light_zero = light_zero, light_full = light_full,
 			call_min = call_min, call_max = call_max,
 			successor_tail = successor_tail,
+			runtime_mode = runtime_mode == true,
+			resource_excluded_column = retained_array(
+				"r6_settlement_resource_excluded_column", 6400, false),
 		}
 		if capture_enabled then
 			transaction_state.private_capture = {armed = false, value = false}
@@ -1449,39 +1474,22 @@ local function settlement_factory()
 			end
 			return nil
 		end
-		local function resource_volume_excluded(plan, column, x, y, z)
-			if y >= -700 then
-				local reason = exclusion_reason(x, z)
-				if reason == "fixed_or_protected" or
-						(reason == "route_or_water" and in_hard_ingress(x, z)) then
-					return true
-				end
-			end
-			local rbase = run_at(plan, column, y)
-			if rbase then
-				local priority = plan.r5_plan.run_values[rbase + 3]
-				if priority == 2 or priority == 3 or priority == 4 or priority == 6 then
-					return true
-				end
-			end
-			return false
-		end
-
 		local function metric_rejection(ledger, subsystem, catalog_id, reason)
 			local key = subsystem .. "\0" .. catalog_id .. "\0" .. reason
 			ledger.rejections[key] = (ledger.rejections[key] or 0) + 1
 		end
 		local helpers = {equal_graph = equal_graph,
 			primary_reason = primary_reason, exclusion_reason = exclusion_reason,
+			in_hard_ingress = in_hard_ingress,
 			housing_excluded_at = housing_excluded_at,
 			analytic_p7_material_ref = analytic_p7_material_ref,
 			analytic_p7_support_ref = analytic_p7_support_ref,
 			regional_allowed = regional_allowed, coordinate_less = coordinate_less,
-			resource_volume_excluded = resource_volume_excluded,
 			run_class_policy = run_class_policy,
 			capture_private_buffers = capture_private_buffers}
 
 		local function apply_impl(vm, minp, maxp, plan, plan_generation, call_mode)
+			local resource_excluded_column = transaction_state.resource_excluded_column
 			if call_mode ~= "fixture" and call_mode ~= "production" and
 					call_mode ~= "replay_fixture" then
 				fail("fail_status", "R6 is disabled")
@@ -1537,6 +1545,8 @@ local function settlement_factory()
 			end
 			local ok_area, emerged_min, emerged_max = pcall(vm.get_emerged_area, vm)
 			if not ok_area then fail("fail_vm_contract", "get_emerged_area failed") end
+			-- Luanti pushes get_emerged_area results as builtin vectors. Normalize
+			-- that exact engine representation before the plain R6 boundary.
 			local eminx, eminy, eminz = position(emerged_min, "emerged min")
 			local emaxx, emaxy, emaxz = position(emerged_max, "emerged max")
 			if eminx ~= min_x - 16 or eminy ~= min_y - 16 or eminz ~= min_z - 16 or
@@ -1630,6 +1640,9 @@ local function settlement_factory()
 			end
 
 			-- P7: exact R5 P5 predecessor refinement.
+			-- These horizontal decisions are invariant for the complete column and
+			-- the planner has already frozen water/race values in its retained plan.
+			-- Resolve the remaining exclusion once rather than once per resource node.
 			for z = min_z, max_z do
 				for x = min_x, max_x do
 					local column = column_index(x, z)
@@ -1755,15 +1768,33 @@ local function settlement_factory()
 				end
 			end
 
+			for z = min_z, max_z do
+				for x = min_x, max_x do
+					local column = column_index(x, z)
+					local reason = helpers.exclusion_reason(x, z)
+					resource_excluded_column[column] = reason == "fixed_or_protected" or
+						(reason == "route_or_water" and helpers.in_hard_ingress(x, z))
+				end
+			end
 			local function host_eligible(resource, x, y, z, tier, host_cid)
-				local water_class, _, _, _, race = planner_source.column_values_at(x, z)
-				if (water_class ~= "land" and water_class ~= "planned_water") or
+				local column = column_index(x, z)
+				local base = (column - 1) * COLUMN_STRIDE
+				local water_class = plan.column_values[base + 1]
+				local race_ref = plan.column_values[base + 4]
+				local race = race_ref ~= 0 and plan.stable_refs[race_ref] or nil
+				if (water_class ~= 1 and water_class ~= 2) or
 						not helpers.regional_allowed(resource, race) then return false end
 				local denominator = resource.denominators[tier]
 				if not denominator then return false end
 				local index = index_at(x, y, z)
-				return not helpers.resource_volume_excluded(plan, column_index(x, z),
-					x, y, z) and original_data[index] == host_cid and
+				local rbase = run_at(plan, column, y)
+				local priority = rbase and plan.r5_plan.run_values[rbase + 3]
+				local predecessor_excluded = priority == 2 or priority == 3 or
+					priority == 4 or priority == 6
+				local horizontally_excluded = y >= -700 and
+					resource_excluded_column[column]
+				return not horizontally_excluded and not predecessor_excluded and
+					original_data[index] == host_cid and
 					((intent_opcode[index] == 0 and
 						final_data[index] == original_data[index]) or
 						intent_opcode[index] == 24) and occupancy[index] ~= 1
@@ -2335,47 +2366,53 @@ local function settlement_factory()
 			last_ledger = ledger
 			last_run_count = run_count
 			if replaying then return "replay_ready" end
-			local first_ledger = copy_map(ledger)
-			local replay_vm = {}
-			function replay_vm.get_emerged_area() return emerged_min, emerged_max end
-			function replay_vm.get_data(_, buffer)
-				for index = 1, volume do buffer[index] = original_data[index] end
-				return buffer
-			end
-			function replay_vm.get_param2_data(_, buffer)
-				for index = 1, volume do buffer[index] = original_param2[index] end
-				return buffer
-			end
-			function replay_vm.get_light_data(_, buffer)
-				if not light_loaded then
-					fail("fail_ledger", "second replay requested new immutable light input")
+			-- Capture/evidence constructors retain the exact second-pass proof. Live
+			-- mapgen consumes those frozen bytes and must not settle every chunk twice.
+			if not transaction_state.runtime_mode then
+				local first_ledger = copy_map(ledger)
+				local replay_vm = {}
+				function replay_vm.get_emerged_area() return emerged_min, emerged_max end
+				function replay_vm.get_data(_, buffer)
+					for index = 1, volume do buffer[index] = original_data[index] end
+					return buffer
 				end
-				for index = 1, volume do buffer[index] = original_light[index] end
-				return buffer
+				function replay_vm.get_param2_data(_, buffer)
+					for index = 1, volume do buffer[index] = original_param2[index] end
+					return buffer
+				end
+				function replay_vm.get_light_data(_, buffer)
+					if not light_loaded then
+						fail("fail_ledger", "second replay requested new immutable light input")
+					end
+					for index = 1, volume do buffer[index] = original_light[index] end
+					return buffer
+				end
+				function replay_vm.set_data()
+					fail("fail_ledger", "replay attempted data setter")
+				end
+				function replay_vm.set_param2_data()
+					fail("fail_ledger", "replay attempted param2 setter")
+				end
+				function replay_vm.set_lighting()
+					fail("fail_ledger", "replay attempted lighting setter")
+				end
+				function replay_vm.calc_lighting()
+					fail("fail_ledger", "replay attempted lighting calculation")
+				end
+				function replay_vm.set_light_data()
+					fail("fail_ledger", "replay attempted light setter")
+				end
+				function replay_vm.update_liquids()
+					fail("fail_ledger", "replay attempted liquid update")
+				end
+				local replay_result = apply_impl(replay_vm, minp, maxp, plan,
+					plan_generation, "replay_fixture")
+				if replay_result ~= "replay_ready" or not last_ledger or
+						not helpers.equal_graph(first_ledger, last_ledger) then
+					fail("fail_ledger", "second read-only settlement replay differs")
+				end
+				metrics_state.replay_count = metrics_state.replay_count + 1
 			end
-			function replay_vm.set_data() fail("fail_ledger", "replay attempted data setter") end
-			function replay_vm.set_param2_data()
-				fail("fail_ledger", "replay attempted param2 setter")
-			end
-			function replay_vm.set_lighting()
-				fail("fail_ledger", "replay attempted lighting setter")
-			end
-			function replay_vm.calc_lighting()
-				fail("fail_ledger", "replay attempted lighting calculation")
-			end
-			function replay_vm.set_light_data()
-				fail("fail_ledger", "replay attempted light setter")
-			end
-			function replay_vm.update_liquids()
-				fail("fail_ledger", "replay attempted liquid update")
-			end
-			local replay_result = apply_impl(replay_vm, minp, maxp, plan, plan_generation,
-				"replay_fixture")
-			if replay_result ~= "replay_ready" or not last_ledger or
-					not helpers.equal_graph(first_ledger, last_ledger) then
-				fail("fail_ledger", "second read-only settlement replay differs")
-			end
-			metrics_state.replay_count = metrics_state.replay_count + 1
 
 			local content_changed, param2_changed, light_changed, liquid_changed =
 				false, false, false, false
@@ -2483,10 +2520,15 @@ local function settlement_factory()
 				for index = 1, volume do
 					integer(original_light[index], "VM light", 0, 255, "fail_vm_contract")
 				end
+				-- Fresh border MapBlocks may remain CONTENT_IGNORE until a later
+				-- emerge. They are read-only context; only the owner must be complete.
 				for z = box_min_z, box_max_z do
 					for y = box_min_y, box_max_y do
 						for x = box_min_x, box_max_x do
-							if final_data[index_at(x, y, z)] == contract.ignore_cid then
+							if final_data[index_at(x, y, z)] == contract.ignore_cid and
+									x >= min_x and x <= max_x and
+									y >= min_y and y <= max_y and
+									z >= min_z and z <= max_z then
 								fail("fail_content_ignore", "required light context is ignore")
 							end
 						end
@@ -2561,7 +2603,18 @@ local function settlement_factory()
 					box_min_x, box_min_y, box_min_z
 				light_call_max.x, light_call_max.y, light_call_max.z =
 					box_max_x, box_max_y, box_max_z
-				ok = pcall(vm.calc_lighting, vm, light_call_min, light_call_max, true)
+				-- The fixed R7 runtime authenticates water_level=1. Above it, neither
+				-- v7's replaced overtop geometry nor a fresh ignore halo may retain
+				-- shadow authority.  Scan no higher than the authored owner while the
+				-- larger zero/spread/restore box remains unchanged.
+				local propagate_shadow = box_max_y <= 1
+				local calc_max_y = box_max_y
+				if not propagate_shadow and calc_max_y > max_y then
+					calc_max_y = max_y
+				end
+				light_call_max.y = calc_max_y
+				ok = pcall(vm.calc_lighting, vm, light_call_min, light_call_max,
+					propagate_shadow)
 				if not ok then fail("fail_vm_contract", "calc_lighting failed") end
 				local returned
 				ok, returned = pcall(vm.get_light_data, vm, transaction_state.final_light)
@@ -2674,9 +2727,10 @@ local function settlement_factory()
 		return settlement, fixture
 	end
 
-	return {new = function(dependencies) return new(dependencies, nil, nil) end,
-		new_evidence = function(dependencies) return new(dependencies, true, nil) end,
-		new_capture = function(dependencies) return new(dependencies, nil, true) end}
+	return {new = function(dependencies) return new(dependencies, nil, nil, nil) end,
+		new_runtime = function(dependencies) return new(dependencies, nil, nil, true) end,
+		new_evidence = function(dependencies) return new(dependencies, true, nil, nil) end,
+		new_capture = function(dependencies) return new(dependencies, nil, true, nil) end}
 end
 
 return settlement_factory()

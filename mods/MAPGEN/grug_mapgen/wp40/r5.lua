@@ -474,15 +474,22 @@ return function(dependencies)
 		}
 	end
 
-	function module.new(full_seed_string, configured_water_level,
+	local function new_impl(runtime_mode, full_seed_string, configured_water_level,
 			manifest_values, content_contract, mapgen_context)
 		if content_contract == nil then fail("content contract missing") end
 		if mapgen_context == nil then fail("mapgen context missing") end
 		local manifest = manifest_validate(manifest_values)
 		local planner_allocator = allocator_new(PLANNER_ALLOCATOR_DOMAIN)
 		local adapter_allocator = allocator_new(ADAPTER_ALLOCATOR_DOMAIN)
-		local session, planner_source = zones_module.new_with_planner_source(
-			full_seed_string, configured_water_level)
+		local zones_constructor = zones_module.new_with_planner_source
+		if runtime_mode then
+			zones_constructor = zones_module.new_with_planner_source_runtime
+			if type(zones_constructor) ~= "function" then
+				fail("runtime zones constructor missing")
+			end
+		end
+		local session, planner_source = zones_constructor(full_seed_string,
+			configured_water_level)
 		local relational_lookup = build_relational_lookup(planner_allocator)
 		local plan_identity = planner_allocator:new_map("plan_identity", 0)
 		local planner = planner_module.new(planner_source, manifest,
@@ -492,6 +499,18 @@ return function(dependencies)
 		planner_allocator:seal_construction()
 		adapter_allocator:seal_construction()
 		return session, planner_source, planner, adapter
+	end
+
+	function module.new(full_seed_string, configured_water_level,
+			manifest_values, content_contract, mapgen_context)
+		return new_impl(false, full_seed_string, configured_water_level,
+			manifest_values, content_contract, mapgen_context)
+	end
+
+	function module.new_runtime(full_seed_string, configured_water_level,
+			manifest_values, content_contract, mapgen_context)
+		return new_impl(true, full_seed_string, configured_water_level,
+			manifest_values, content_contract, mapgen_context)
 	end
 
 	return module

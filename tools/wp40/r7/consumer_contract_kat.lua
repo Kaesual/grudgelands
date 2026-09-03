@@ -138,7 +138,7 @@ payload = dofile(root ..
 local anchors, zone_at_point, faction_at_point = {}, {}, {}
 local biome_at_point, race_region_at_point = {}, {}
 local anchor_ordinal = 0
-local function add_anchor(anchor_ref, faction_id, numeric_id)
+local function add_anchor(anchor_ref, faction_id, numeric_id, race_id)
 	local key = anchor_ref.zone_id .. "\0" .. anchor_ref.slot_id
 	if anchors[key] then return end
 	anchor_ordinal = anchor_ordinal + 1
@@ -149,6 +149,7 @@ local function add_anchor(anchor_ref, faction_id, numeric_id)
 		x = x, y = 20, z = z}
 	zone_at_point[x .. "," .. z] = anchor_ref.zone_id
 	faction_at_point[x .. "," .. z] = faction_id
+	race_region_at_point[x .. "," .. z] = race_id
 end
 local race_source_ids = {
 	dwarf = {1, 7}, human = {2, 8}, elf = {3, 9},
@@ -156,18 +157,29 @@ local race_source_ids = {
 }
 for i = 1, #payload.races do
 	local row = payload.races[i]
-	add_anchor(row.start, row.faction_id, race_source_ids[row.race_id][1])
-	add_anchor(row.capital, row.faction_id, race_source_ids[row.race_id][2])
+	add_anchor(row.start, row.faction_id, race_source_ids[row.race_id][1],
+		row.race_id)
+	add_anchor(row.capital, row.faction_id, race_source_ids[row.race_id][2],
+		row.race_id)
 end
+local contested_outpost_zones = {
+	elandor_stormvault_heights = true, elandor_ashenward_march = true,
+	elandor_glassroot_wilds = true, kragmar_blackwind_rise = true,
+	kragmar_bannerbreak_mesa = true, kragmar_thunderroot_wilds = true,
+}
 for i = 1, #payload.outposts do
 	local row = payload.outposts[i]
-	add_anchor(row.anchor, row.faction_id, i + 24)
+	local coordinate_faction = row.faction_id
+	if contested_outpost_zones[row.anchor.zone_id] then
+		coordinate_faction = nil
+	end
+	add_anchor(row.anchor, coordinate_faction, i + 24, row.race_id)
 end
 for i = 1, #payload.rare_routes do
 	local row = payload.rare_routes[i]
 	local faction = row.anchor.zone_id:match("^elandor_") and "accord" or
 		(row.anchor.zone_id:match("^kragmar_") and "throng" or nil)
-	add_anchor(row.anchor, faction, i + 90)
+	add_anchor(row.anchor, faction, i + 90, nil)
 end
 
 local session = {}
@@ -261,6 +273,13 @@ check(grug_core.start_position("throng", "dwarf") == nil,
 local first_outpost = anchors["elandor_copperfell_foothills\0outpost_1"]
 local outpost = grug_core.outpost_at(first_outpost)
 check(outpost and outpost.race == "dwarf", "stable outpost lookup differs")
+local contested_dwarf = anchors["elandor_stormvault_heights\0outpost_1"]
+local contested_undead = anchors["kragmar_blackwind_rise\0outpost_1"]
+check(session.faction_at(contested_dwarf) == nil and
+	session.faction_at(contested_undead) == nil and
+	grug_core.outpost_at(contested_dwarf).faction == "accord" and
+	grug_core.outpost_at(contested_undead).faction == "throng",
+	"contested outpost garrison authority differs")
 local patrol_target_slots = {2, 3, 4, 3}
 for i = 1, #payload.outposts do
 	local source_row = payload.outposts[i]

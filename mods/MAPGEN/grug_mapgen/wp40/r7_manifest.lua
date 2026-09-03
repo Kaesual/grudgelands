@@ -9,7 +9,7 @@ return function(canonical, raw_sha256)
 	local ACCEPTED_R5_ARTIFACT_SHA256 =
 		"0ffd8cd5c0133645c330703b8e4ea581a21fe6e5891ddcd987236b26a7d07ca0"
 	local SOURCE_PROJECTION_SHA256 =
-		"eca4015a075b8aa5cace19cdc57cb06370481fa8c30185bf1f88f72e3b5e1571"
+		"8f1eef2702c631451ee987b3eb4a267d117fcc3ce1d97947d4b6936e0ea3502b"
 	local FIELD_ORDER = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -273,7 +273,7 @@ return function(canonical, raw_sha256)
 			frozen.decoded_templates ~=
 				"807ddf131db405974f365c4e08aa124eeba6cac61fa1655e455794507f858a55" or
 			frozen.wp43_projection ~=
-				"5ef7343ff7d01346a1af5825a494ccdbd165c51ece8d09137ad8c9e1539f1633" or
+				"c8088a4b6802c0fc1a74d8826e3df0bb49b64f9ab4c6e93bcbd66aa2a16b9895" or
 			frozen.cultural ~=
 				"263b9bf0a470295b62791f85effd59eee9090c82d5f4d050e4f97ba88bb79fb6" or
 			frozen.consumer_payload ~=

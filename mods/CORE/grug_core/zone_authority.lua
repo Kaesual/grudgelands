@@ -224,7 +224,8 @@ local function validate_outposts(session, rows)
 		local anchor = require_anchor(session, row.anchor,
 			row.anchor.slot_id, i + 24, "outpost row " .. i)
 		if not row.anchor.slot_id:match("^outpost_%d+$") or
-				session.faction_at(anchor) ~= row.faction_id or by_id[anchor.id] then
+				session.race_region_at(anchor.x, anchor.z) ~= row.race_id or
+				by_id[anchor.id] then
 			fail("outpost anchor differs at row " .. i)
 		end
 		local record = {

@@ -1,0 +1,12 @@
+[MOD] Mobs Redo loaded
+ACTION[Main]: [grug_gear] 6 bracket catalogs: 24 weapons + 48 armor pieces
+ACTION[Main]: [grug_materials] registry audit passed: 6 tiers, 15 resources, 12 processed forms, 6 race regions
+ACTION[Main]: [grug_traders] drop audit: 1 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit); their items are audited from the hardcoded FUNCTION_DROPS list
+ _                   _   _ 
+| |_   _  __ _ _ __ | |_(_)
+| | | | |/ _` | '_ \| __| |
+| | |_| | (_| | | | | |_| |
+|_|\__,_|\__,_|_| |_|\__|_|  ___ 5.17.0
+ACTION[Main]: World at [/tmp/grudgelands-wp40-r8.cKMsDuyQ/forward/world]
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32001.
+ACTION[Main]: Server: Shutting down

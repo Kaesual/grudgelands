@@ -1,0 +1,3 @@
+# Empty feature shard. The final sharded G3 runner pairs this with the complete
+# native-witness-corpus.tsv; feature coverage lives in smoke-corpus.tsv.
+# schema: id	x	surface-or-y	z

@@ -6,6 +6,28 @@ return function(core_api, schematic_directory)
 			type(schematic_directory) ~= "string" or schematic_directory == "" then
 		error("WP40 R7 template source: construction seam differs", 0)
 	end
+	local function normalize_size(value)
+		if type(value) ~= "table" then
+			error("WP40 R7 template source: engine size differs", 0)
+		end
+		local metatable = getmetatable(value)
+		if metatable ~= nil and (type(vector) ~= "table" or
+				metatable ~= vector.metatable) then
+			error("WP40 R7 template source: engine size metatable differs", 0)
+		end
+		local count = 0
+		for key in pairs(value) do
+			if key ~= "x" and key ~= "y" and key ~= "z" then
+				error("WP40 R7 template source: engine size field differs", 0)
+			end
+			count = count + 1
+		end
+		if count ~= 3 or rawget(value, "x") == nil or
+				rawget(value, "y") == nil or rawget(value, "z") == nil then
+			error("WP40 R7 template source: engine size fields differ", 0)
+		end
+		return {x = value.x, y = value.y, z = value.z}
+	end
 	local source = {}
 	function source.read(filename)
 		if type(filename) ~= "string" or filename == "" or
@@ -18,6 +40,9 @@ return function(core_api, schematic_directory)
 		if type(value) ~= "table" or type(value.data) ~= "table" then
 			error("WP40 R7 template source: engine read failed", 0)
 		end
+		-- read_schematic pushes size through push_v3s16 in current Luanti, so
+		-- normalize its builtin vector to the plain R6 template boundary.
+		value.size = normalize_size(value.size)
 		for index = 1, #value.data do
 			local cell = value.data[index]
 			if type(cell) ~= "table" then

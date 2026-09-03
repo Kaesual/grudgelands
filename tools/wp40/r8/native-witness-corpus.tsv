@@ -1,0 +1,44 @@
+# Fixed native-preservation corpus; four columns are id, x, y, z.
+# The first 25 rows are a 5x5 grid of central chunks at requested y=-240.
+# chunksize=5 gives central y origin -272 and full emerged y [-288,-177].
+# Grid central x/z origins are -192,-112,-32,48,128; requested positions
+# are each origin + 40, so every id names one unique mapchunk.
+# The grid is a bounded Gennotify search scope, not a pre-accepted dungeon or
+# random-walk-cave witness. The gate requires real cave_begin/cave_end (or
+# large-cave) and dungeon notifications from this grid; no absence inference.
+# The following fixed slices cover the five registered production strata, and
+# the final two rows are aggregate native-ore census slices. Their presence is
+# checked by node census, not invented from source names.
+# schema: id	x	y	z
+native_owner_y240_r00_c00	-152	-240	-152
+native_owner_y240_r00_c01	-72	-240	-152
+native_owner_y240_r00_c02	8	-240	-152
+native_owner_y240_r00_c03	88	-240	-152
+native_owner_y240_r00_c04	168	-240	-152
+native_owner_y240_r01_c00	-152	-240	-72
+native_owner_y240_r01_c01	-72	-240	-72
+native_owner_y240_r01_c02	8	-240	-72
+native_owner_y240_r01_c03	88	-240	-72
+native_owner_y240_r01_c04	168	-240	-72
+native_owner_y240_r02_c00	-152	-240	8
+native_owner_y240_r02_c01	-72	-240	8
+native_owner_y240_r02_c02	8	-240	8
+native_owner_y240_r02_c03	88	-240	8
+native_owner_y240_r02_c04	168	-240	8
+native_owner_y240_r03_c00	-152	-240	88
+native_owner_y240_r03_c01	-72	-240	88
+native_owner_y240_r03_c02	8	-240	88
+native_owner_y240_r03_c03	88	-240	88
+native_owner_y240_r03_c04	168	-240	88
+native_owner_y240_r04_c00	-152	-240	168
+native_owner_y240_r04_c01	-72	-240	168
+native_owner_y240_r04_c02	8	-240	168
+native_owner_y240_r04_c03	88	-240	168
+native_owner_y240_r04_c04	168	-240	168
+native_stratum_slate	248	-240	8
+native_stratum_basalt	248	-400	8
+native_stratum_granite	248	-600	8
+native_stratum_emberrock	248	-800	8
+native_stratum_abyssal	248	-1500	8
+native_ore_census_upper	328	-240	8
+native_ore_census_deep	328	-1500	8

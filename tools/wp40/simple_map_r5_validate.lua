@@ -1751,6 +1751,13 @@ return function(common)
 			local box_max_y=math.min(target_y+15,maxp.y+15)
 			local box_min_z,box_max_z=-15,15
 			local seed_y=box_max_y+1
+			local propagate_shadow=box_max_y<=1
+			local calc_max_y=box_max_y
+			if not propagate_shadow and calc_max_y>maxp.y then
+				calc_max_y=maxp.y
+			end
+			local blocked_probe_y=target_y
+			local ignore_halo_regression=calc_max_y<box_max_y
 			local overrides={{x=0,y=target_y,z=0,
 				cid=opcode==ordinary_water and row[6] or 0,
 				param2=opcode==ordinary_water and ROLE_ID.ORDINARY_WATER_SOURCE or
@@ -1763,6 +1770,29 @@ return function(common)
 				end
 				overrides[#overrides+1]={x=2,y=seed_y,z=0,
 					cid=65535,param2=0,light=15}
+				-- A second open column has a non-ignore, dark overtop inherited
+				-- from the replaced v7 geometry. Above water it must not retain
+				-- shadow authority; at the water-level boundary it still does.
+				for yy=box_min_y,box_max_y do
+					overrides[#overrides+1]={x=4,y=yy,z=0,cid=0,param2=0,light=0}
+					overrides[#overrides+1]={x=6,y=yy,z=0,cid=0,param2=0,light=0}
+				end
+				overrides[#overrides+1]={x=4,y=calc_max_y+1,z=0,
+					cid=14,param2=0,light=0}
+				-- Discarding stale overtop shadow must not discard real opaque
+				-- blockers that are part of the recalculated light box.
+				blocked_probe_y=calc_max_y-2
+				overrides[#overrides+1]={x=6,y=blocked_probe_y+1,z=0,
+					cid=14,param2=0,light=0}
+				if ignore_halo_regression then
+					for yy=box_min_y,calc_max_y do
+						overrides[#overrides+1]={x=8,y=yy,z=0,cid=0,param2=0,light=0}
+					end
+					for yy=calc_max_y+1,box_max_y do
+						overrides[#overrides+1]={x=8,y=yy,z=0,
+							cid=65535,param2=0,light=173}
+					end
+				end
 			end
 			if plan==nil or plan_min_y~=row[2] or plan_max_y~=row[3] then
 				plan,generation=plan_at(loaded,minp,maxp)
@@ -1805,8 +1835,9 @@ return function(common)
 				integer_ascii(box_min_y,"calc min y")..","..
 				integer_ascii(box_min_z,"calc min z")..","..
 				integer_ascii(box_max_x,"calc max x")..","..
-				integer_ascii(box_max_y,"calc max y")..","..
-				integer_ascii(box_max_z,"calc max z")..",true"
+				integer_ascii(calc_max_y,"calc max y")..","..
+				integer_ascii(box_max_z,"calc max z")..","..
+				tostring(propagate_shadow)
 			trace[#trace+1]="get_light_data"
 			trace[#trace+1]="set_light_data"
 			if row[9]:sub(-1)=="q" then trace[#trace+1]="update_liquids" end
@@ -1818,6 +1849,27 @@ return function(common)
 				probe_cid,_,probe_light=snapshot_cell(snapshot,minp,maxp,2,target_y,0)
 				if probe_cid~=0 or probe_light~=row[11] then
 					fail("ignore-overtop light boundary differs")
+				end
+				local stale_cid,_,stale_light=snapshot_cell(snapshot,minp,maxp,
+					4,target_y,0)
+				local expected_stale_light=box_max_y>1 and 15 or 0
+				if stale_cid~=0 or stale_light~=expected_stale_light then
+					fail("stale v7 overtop sunlight authority differs")
+				end
+				local blocked_cid,_,blocked_light=snapshot_cell(snapshot,minp,maxp,
+					6,blocked_probe_y,0)
+				if blocked_cid~=0 or blocked_light==15 then
+					fail("opaque in-box direct-sunlight blocker differs")
+				end
+				if ignore_halo_regression then
+					local halo_owner_cid,_,halo_owner_light=snapshot_cell(snapshot,
+						minp,maxp,8,target_y,0)
+					local halo_cid,_,halo_light=snapshot_cell(snapshot,minp,maxp,
+						8,calc_max_y+1,0)
+					if halo_owner_cid~=0 or halo_owner_light~=15 or
+							halo_cid~=65535 or halo_light~=173 then
+						fail("surface calc cap or ignore-halo restoration differs")
+					end
 				end
 			end
 			if outcome~=row[9] or cid~=(opcode==ordinary_water and
@@ -1904,7 +1956,7 @@ return function(common)
 		end
 		-- One high light-dirty target fixes light_max.y=17 and seed_y=18.
 		-- Three otherwise-open columns then distinguish an explicit transparent
-		-- seed, an opaque canopy non-seed and the engine-owned ignore-overtop seed.
+		-- seed, a real opaque in-box blocker and the engine-owned ignore-overtop seed.
 		local light_target_x,light_target_z=28,24
 		specs[#specs+1]={column=(light_target_z-minp.z)*80+
 			(light_target_x-minp.x)+1,y_min=2,y_max=2,
@@ -1922,6 +1974,10 @@ return function(common)
 			overrides[#overrides+1]={x=row[1],y=18,z=light_seed_z,
 				cid=row[2],param2=0,light=row[3]}
 		end
+		-- The surface pass ignores the inherited non-ignore overtop, but a node
+		-- inside the recalculated box remains authoritative and blocks sunlight.
+		overrides[#overrides+1]={x=0,y=17,z=light_seed_z,
+			cid=14,param2=0,light=0}
 		table.sort(specs,function(left,right) return left.column<right.column end)
 		local outcome,snapshot,delta,plan,generation,vm,observer=
 			apply_specs(loaded,minp,maxp,specs,1,0,15,overrides,true)
@@ -2118,6 +2174,53 @@ return function(common)
 			loaded.adapter:apply(required_vm,minp,maxp,plan,generation,
 				"offline_fixture")
 		end,"required lighting context ignore")
+		local halo_plan,halo_generation=plan_at(loaded,minp,maxp)
+		rewrite_plan(halo_plan,halo_generation,
+			{{column=(0-minp.z)*80+1,y_min=y,y_max=y,
+				opcode=OPCODE_ID.FOUNDATION_FILL}})
+		local emin,emax,ex,ey,_,volume=emerged_geometry(minp,maxp)
+		local halo_data=dense_fill(volume,65535)
+		local halo_param2=dense_fill(volume,11)
+		local halo_light=dense_fill(volume,3)
+		for z=minp.z,maxp.z do for yy=minp.y,maxp.y do for x=minp.x,maxp.x do
+			local offset=emerged_index(minp,maxp,x,yy,z)
+			halo_data[offset],halo_param2[offset],halo_light[offset]=1,7,15
+		end end end
+		halo_data[emerged_index(minp,maxp,minp.x,y,0)]=0
+		local halo_spec={minp=minp,maxp=maxp,data=halo_data,param2=halo_param2,
+			light=halo_light,content_contract=loaded.fixture_content,water_level=1,
+			ignore_cid=65535,verify_inactive_tail=false}
+		local halo_vm,halo_context,halo_observer
+		if loaded.fixture_trace_token then
+			halo_vm,halo_context,halo_observer=loaded.vm_module.new(halo_spec,
+				loaded.fixture_trace_token)
+			if not rawequal(halo_context,loaded.fixture_context) then
+				fail("fresh-halo paired VM context identity differs")
+			end
+		else
+			halo_spec.heightmap=dense_fill(6400,HEIGHTMAP_SENTINEL)
+			halo_vm,halo_context,halo_observer=loaded.vm_module.new(halo_spec)
+		end
+		local halo_outcome=loaded.adapter:apply(halo_vm,minp,maxp,halo_plan,
+			halo_generation,"offline_fixture")
+		if not halo_outcome:match("^applied_") then
+			fail("fresh read-only halo did not commit")
+		end
+		local halo_snapshot=halo_observer.snapshot()
+		for z=emin.z,emax.z do for yy=emin.y,emax.y do for x=emin.x,emax.x do
+			local offset=emerged_index(minp,maxp,x,yy,z)
+			if x<minp.x or x>maxp.x or yy<minp.y or yy>maxp.y or
+					z<minp.z or z>maxp.z then
+				if halo_snapshot.data[offset]~=65535 or
+						halo_snapshot.param2[offset]~=11 or
+						halo_snapshot.light[offset]~=3 then
+					fail("fresh read-only halo bytes changed")
+				end
+			elseif halo_snapshot.data[offset]==65535 then
+				fail("fresh-halo owner retained CONTENT_IGNORE")
+			end
+		end end end
+		plan,generation=plan_at(loaded,minp,maxp)
 		rewrite_plan(plan,generation,{{column=(0-minp.z)*80+(0-minp.x)+1,
 			y_min=y,y_max=y,opcode=OPCODE_ID.FOUNDATION_SURFACE}})
 		local unneeded={x=minp.x-16,y=minp.y-16,z=minp.z-16,
@@ -2149,9 +2252,10 @@ return function(common)
 			fail("conditional CONTENT_IGNORE target touched VM")
 		end
 		local rows={"required_context\tfail_content_ignore\n",
+			"required_halo\t"..halo_outcome.."\tunchanged\n",
 			"unneeded_halo\t"..safe_outcome.."\tunchanged\n",
 			"target\trole2_y30927\tfail_target\tempty_trace\n"}
-		return canonical_rows(raw_sha256,rows),3,3
+		return canonical_rows(raw_sha256,rows),4,4
 	end
 
 	local function native_position_oracle(loaded,raw_sha256,include_veto)
@@ -4628,15 +4732,22 @@ return function(common)
 					end
 				end
 			end
+			local propagate_shadow=light_max.y<=1
+			local calc_max_y=light_max.y
+			if not propagate_shadow and calc_max_y>maxp.y then
+				calc_max_y=maxp.y
+			end
+			local calc_seed_y=calc_max_y+1
 			for z=light_min.z,light_max.z do for x=light_min.x,light_max.x do
-				local overtop=index_of(x,seed_y,z)
+				local overtop=index_of(x,calc_seed_y,z)
 				local overtop_cid=final_cid(overtop)
 				local overtop_light=light_values[overtop]
 				if overtop_light==nil then overtop_light=original_light(overtop) end
-				local seeded=overtop_cid==65535 and 1<light_max.y or
-					(overtop_cid~=65535 and overtop_light%16==15)
+				local seeded=overtop_cid==65535 and 1<calc_max_y or
+					(overtop_cid~=65535 and
+						(not propagate_shadow or overtop_light%16==15))
 				if seeded then
-					for y=light_max.y,light_min.y,-1 do
+					for y=calc_max_y,light_min.y,-1 do
 						local offset=index_of(x,y,z)
 						local _,_,_,_,_,_,_,sunlight=owner_content_properties(
 							final_cid(offset),final_p2(offset))
@@ -4682,7 +4793,9 @@ return function(common)
 				spread(x,y-1,z,incoming) spread(x,y+1,z,incoming)
 				spread(x,y,z-1,incoming) spread(x,y,z+1,incoming)
 			end
-			trace[#trace+1]=box_text("calc_lighting:",light_min,light_max,",true")
+			local calc_max={x=light_max.x,y=calc_max_y,z=light_max.z}
+			trace[#trace+1]=box_text("calc_lighting:",light_min,calc_max,","..
+				tostring(light_max.y<=1))
 			trace[#trace+1]="get_light_data"
 			trace[#trace+1]="set_light_data"
 		end
@@ -6760,8 +6873,8 @@ return function(common)
 		if initial_planner_metrics.planner_construction_count~=1 or
 				final_planner_metrics.planner_construction_count~=1 or
 				planner_calls<1 or planner_calls>64 or vm_transactions<1 or
-				vm_transactions>apply_attempts or apply_attempts~=60 or
-				vm_fixtures~=48 or vm_fixtures>48 then
+				vm_transactions>apply_attempts or apply_attempts~=61 or
+				vm_fixtures~=49 or vm_fixtures>49 then
 			fail("micro planner/VM compactness bound differs")
 		end
 		rows[#rows+1]=common.canonical_row("budget",
@@ -6770,7 +6883,7 @@ return function(common)
 			integer_ascii(vm_transactions,"VM transactions"),
 			integer_ascii(apply_attempts,"apply attempts"),
 			integer_ascii(vm_fixtures,"VM fixtures"),"one_r5_construction",
-			"planner_calls_le_64","apply_attempts_le_64","vm_fixtures_le_48")
+			"planner_calls_le_64","apply_attempts_le_64","vm_fixtures_le_49")
 
 		-- Every family is linked to a constructed receipt above.  Witness IDs are
 		-- deliberately shared so this complete semantic KAT remains compact.

@@ -8,7 +8,27 @@ return function(repo, seed_identity, content_only)
 	local offline = dofile(repo .. "/tools/wp40/r6/offline.lua")(repo)
 	local accepted = offline.new_static()
 	local catalog = dofile(repo .. "/mods/ITEMS/grug_gathering/catalog.lua")
-	local projection = offline.fixtures.projection()
+	local function production_projection()
+		local material_core = {registered_nodes = {}}
+		function material_core.get_modpath() return nil end
+		function material_core.register_on_leaveplayer() end
+		function material_core.node_dig() return false end
+		function material_core.handle_node_drops() end
+		local environment = setmetatable({grug_materials = {}, core = material_core},
+			{__index = _G})
+		for _, filename in ipairs({"registry.lua", "mining.lua"}) do
+			local chunk = assert(loadfile(repo ..
+				"/mods/ITEMS/grug_materials/" .. filename))
+			setfenv(chunk, environment)
+			chunk()
+		end
+		return dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp43_handoff.lua").project(
+			environment.grug_materials)
+	end
+	-- R7 evidence must construct the same complete projection as the live
+	-- loader. The historical R6 fixture intentionally contains only the subset
+	-- consumed by R6 placement and is not a production-loader substitute.
+	local projection = production_projection()
 	local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
 	local catalog_manifest = catalog.manifest()
 	local p9g_rows = catalog.p9g_sources()
@@ -157,7 +177,21 @@ return function(repo, seed_identity, content_only)
 		local axis_z = maxp.z - minp.z + 33
 		local volume = axis_x * axis_y * axis_z
 		local data, param2, light = {}, {}, {}
-		for index = 1, volume do data[index], param2[index], light[index] = 0, 0, 0 end
+		for index = 1, volume do
+			data[index], param2[index], light[index] =
+				built.content.production.ignore_cid, 0, 0
+		end
+		local emerged_min = {x = minp.x - 16, y = minp.y - 16,
+			z = minp.z - 16}
+		for z = minp.z, maxp.z do
+			for y = minp.y, maxp.y do
+				for x = minp.x, maxp.x do
+					local index = (z - emerged_min.z) * axis_x * axis_y +
+						(y - emerged_min.y) * axis_x + (x - emerged_min.x) + 1
+					data[index] = 0
+				end
+			end
+		end
 		return offline.vm_module.new({minp = minp, maxp = maxp,
 			data = data, param2 = param2, light = light, heightmap = heightmap,
 			content_contract = built.content.production, water_level = 1,

@@ -1,0 +1,165 @@
+{
+  "schema": "grug_wp40_r8_headless_smoke_v3",
+  "status": "pilot_combined_smoke_complete",
+  "capture_id": "444d8f2f1e32d14d1304e650ffe25205d61e5083596dc32a3d4f9487ad18f560",
+  "mode": "pilot",
+  "shard": "combined",
+  "parallel_orders": false,
+  "snapshot": {
+    "checkout_sha": "37a16d08edf1000174eb278b6944fcaf4f1479db",
+    "source": "git archive",
+    "game_snapshot_isolation": "fresh archive under per-order LUANTI_USER_PATH"
+  },
+  "input_identity": {
+    "runner_sha256": "7e6655e6c07bac752acfb4f1e813d9a37f081dead89e9709c400b0559b3bf159",
+    "candidate_table_sha256": "76df83da4f4994534a0f48798ca91a5f709c02bd0a640d565c3f93d7a2ee64c3",
+    "engine_sha256_before": "0af19653d76b10921d1ed9bfa8de7e9c821a2caf403f768d72d0ca39fd47f05b",
+    "engine_sha256_after": "0af19653d76b10921d1ed9bfa8de7e9c821a2caf403f768d72d0ca39fd47f05b",
+    "offline_r7_manifest_sha256": "72511fd4b73f824856d41ab921a83a19a82ea9867d2ea203d4c6d6b1eafea6a1",
+    "runtime_manifest_note": "offline mocked-engine provenance; actual runtime manifest is in startup"
+  },
+  "settings": {
+    "mg_name": "v7",
+    "chunksize": 5,
+    "water_level": 1,
+    "num_emerge_threads": 1,
+    "liquid_update_seconds": 931,
+    "probe_timeout_seconds": 900,
+    "host_timeout_seconds": 930,
+    "port_base": 32001,
+    "liquid_capture_boundary": "mapgen plus immediate finishBlockMake; periodic server liquid transforms deferred beyond the host timeout",
+    "seed_decimal_string": "0",
+    "seed_string_sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9"
+  },
+  "corpus": {
+    "path": "corpus.tsv",
+    "digest": "fbf12fb2c88c4d590d8d13b4fa50a9bf3925f27cfb1b267c2b25d34a93f4c1cc",
+    "rows": 3,
+    "schema": "id\\tx\\t(surface|y)\\tz",
+    "coordinates": "each row is canonicalized to one 80-node mapchunk"
+  },
+  "native_corpus": {
+    "path": "native-witness-corpus.tsv",
+    "digest": "26e8b1cb9b22a3baa49de1fe6854b58d5e8179ec5f2d0f9f40b3d123b5dc19c3",
+    "rows": 1,
+    "schema": "id\\tx\\ty\\tz",
+    "coordinates": "fixed event grid plus seven content-census slices"
+  },
+  "orders": [
+    "forward",
+    "reverse"
+  ],
+  "startup": {
+    "forward": {
+      "chunksize": "5",
+      "engine": {
+        "project": "Luanti",
+        "string": "5.17.0"
+      },
+      "event": "start",
+      "feature_case_count": 3,
+      "liquid_update": "931",
+      "loaded_at_us": 140179627197,
+      "lua_runtime": "LuaJIT 2.1.1784272936",
+      "mapgen": "v7",
+      "mapgen_flags": "caves, dungeons, light, decorations, biomes, ores",
+      "native_corpus_count": 1,
+      "num_emerge_threads": "1",
+      "order": "forward",
+      "process": {
+        "cpu_seconds": 4.7700550000000002,
+        "lua_bytes": 523866735,
+        "rss_bytes": 687681536,
+        "rss_peak_bytes": 687681536,
+        "virtual_bytes": 863051776
+      },
+      "production": {
+        "enabled": true,
+        "full_seed": "0",
+        "manifest_sha256": "dd201f3693954be7807cc52ea5840486a357ae57ba62b565ff11e0bab5d58989",
+        "production_enabled": true,
+        "schema": "grug_wp40_r7_loader_status_v1",
+        "writer_count": 1
+      },
+      "request_count": 4,
+      "request_order": [
+        "human_capital",
+        "wyrmglass_channel",
+        "deep_cross_border_resource",
+        "native_owner_y240_r00_c00"
+      ],
+      "seed": "0",
+      "seed_sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "water_level": "1"
+    },
+    "reverse": {
+      "chunksize": "5",
+      "engine": {
+        "project": "Luanti",
+        "string": "5.17.0"
+      },
+      "event": "start",
+      "feature_case_count": 3,
+      "liquid_update": "931",
+      "loaded_at_us": 140230281862,
+      "lua_runtime": "LuaJIT 2.1.1784272936",
+      "mapgen": "v7",
+      "mapgen_flags": "caves, dungeons, light, decorations, biomes, ores",
+      "native_corpus_count": 1,
+      "num_emerge_threads": "1",
+      "order": "reverse",
+      "process": {
+        "cpu_seconds": 4.7612819999999996,
+        "lua_bytes": 523381527,
+        "rss_bytes": 630075392,
+        "rss_peak_bytes": 630075392,
+        "virtual_bytes": 805195776
+      },
+      "production": {
+        "enabled": true,
+        "full_seed": "0",
+        "manifest_sha256": "dd201f3693954be7807cc52ea5840486a357ae57ba62b565ff11e0bab5d58989",
+        "production_enabled": true,
+        "schema": "grug_wp40_r7_loader_status_v1",
+        "writer_count": 1
+      },
+      "request_count": 4,
+      "request_order": [
+        "native_owner_y240_r00_c00",
+        "deep_cross_border_resource",
+        "wyrmglass_channel",
+        "human_capital"
+      ],
+      "seed": "0",
+      "seed_sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "water_level": "1"
+    }
+  },
+  "measured": {
+    "forward_probe_elapsed_us": 44560484,
+    "reverse_probe_elapsed_us": 46002800,
+    "forward_engine_peak_rss_bytes": 1723908096,
+    "reverse_engine_peak_rss_bytes": 1682083840
+  },
+  "outputs": {
+    "comparison": "comparison.json",
+    "per_order": "{forward,reverse}/{events.jsonl,server.log,console.log,time.txt,luanti.conf,world.mt,errors.log,exit-status}",
+    "flatpak": [
+      "flatpak-info.txt",
+      "flatpak-version.txt",
+      "flatpak-before-pair-*",
+      "flatpak-after-pair-*"
+    ]
+  },
+  "telemetry": {
+    "walltime": "GNU time -v raw file plus probe elapsed_us",
+    "peak_rss": "GNU time launcher plus probe /proc VmHWM",
+    "lights": "one digest over the engine packed light-data array"
+  },
+  "limitations": [
+    "This is one shard pair of a focused smoke runner, not an exhaustive seed, capacity or visual gate.",
+    "The one-writer signal is the production status plus a read-only probe callback count; it is not a second writer audit.",
+    "Order equality covers the deterministic post-mapgen state before periodic wall-clock liquid simulation.",
+    "No historical T2/PCC/F1/F2 claim is reproduced."
+  ]
+}

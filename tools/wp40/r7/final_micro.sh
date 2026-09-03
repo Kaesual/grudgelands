@@ -44,7 +44,7 @@ cleanup() {
 trap cleanup EXIT
 
 mapfile -t inputs < <(cat "$roster" "$changed_roster" | awk 'NF' | sort -u)
-[[ "${#inputs[@]}" -gt 65 ]] || {
+[[ "${#inputs[@]}" -eq 108 ]] || {
 	echo "WP40 R7 final micro: input population is incomplete" >&2
 	exit 1
 }
@@ -65,7 +65,7 @@ write_input_rows "$input_rows"
 input_set_sha="$(sha256sum "$input_rows" | awk '{print $1}')"
 changed_roster_sha="$(sha256sum "$changed_roster" | awk '{print $1}')"
 executed_population="$(wc -l <"$changed_roster" | tr -d '[:space:]')"
-[[ "$executed_population" -eq 70 ]] || {
+[[ "$executed_population" -eq 74 ]] || {
 	echo "WP40 R7 final micro: changed production population differs" >&2
 	exit 1
 }

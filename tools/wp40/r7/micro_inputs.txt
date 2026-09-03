@@ -23,6 +23,8 @@ mods/ITEMS/grug_nodes/init.lua
 mods/ITEMS/grug_nodes/ore_respawn.lua
 mods/ITEMS/grug_trees/init.lua
 mods/MAPGEN/grug_mapgen/wp40/canonical.lua
+mods/MAPGEN/grug_mapgen/wp40/deterministic.lua
+mods/MAPGEN/grug_mapgen/wp40/index128.lua
 mods/MAPGEN/grug_mapgen/wp40/mapgen_manifest.lua
 mods/MAPGEN/grug_mapgen/wp40/r6_hash.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_anchor_activation.lua
@@ -35,6 +37,10 @@ mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_zone_overlay.lua
+mods/MAPGEN/grug_mapgen/wp40/schemas.lua
+mods/MAPGEN/grug_mapgen/wp40/simple_map.lua
+mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua
+mods/MAPGEN/grug_mapgen/wp43_handoff.lua
 reference_projects/luanti/builtin/game/item.lua
 reference_projects/luanti/builtin/game/register.lua
 tools/wp40/r6/common.lua

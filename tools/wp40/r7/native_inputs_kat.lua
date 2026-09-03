@@ -35,7 +35,7 @@ local function copy(value)
 	if type(value) ~= "table" then return value end
 	local result = {}
 	for key, child in pairs(value) do result[copy(key)] = copy(child) end
-	return result
+	return setmetatable(result, getmetatable(value))
 end
 
 local function expect_failure(callback, fragment)
@@ -64,6 +64,10 @@ local REQUIRED_NODES = {
 	"grug_materials:abyssal_rock",
 }
 
+local engine_vector_metatable = {}
+local saved_vector = rawget(_G, "vector")
+rawset(_G, "vector", {metatable = engine_vector_metatable})
+
 local function normalized_noise(definition)
 	return {
 		offset = binary32(definition.offset),
@@ -74,11 +78,11 @@ local function normalized_noise(definition)
 		seed = definition.seed,
 		octaves = definition.octaves,
 		flags = definition.flags or "defaults",
-		spread = {
+		spread = setmetatable({
 			x = binary32(definition.spread.x),
 			y = binary32(definition.spread.y),
 			z = binary32(definition.spread.z),
-		},
+		}, engine_vector_metatable),
 	}
 end
 
@@ -253,7 +257,7 @@ end, "missing field persistence")
 readback_failure(function(name, value)
 	if name == NOISE_NAMES[4] then setmetatable(value.spread, {}) end
 	return value
-end, "spread has a metatable")
+end, "spread has an unexpected metatable")
 
 readback_failure(function(name, value)
 	if name == NOISE_NAMES[5] then value.flags = "defaults" end
@@ -280,5 +284,6 @@ assert(#duplicate_state.ores == 0,
 	"duplicate-identity gate partially registered ores")
 
 rawset(_G, "core", saved_core)
+rawset(_G, "vector", saved_vector)
 print("WP40 R7 native inputs KAT PASS noise=" .. identities.noise_digest ..
 	" native=" .. identities.native_digest .. " setters=6 reads=24 ores=6")
