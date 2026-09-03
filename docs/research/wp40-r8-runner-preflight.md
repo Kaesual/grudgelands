@@ -151,12 +151,17 @@ No current Flatpak query, engine process, build, Lua runtime or world mutation
 is part of recovery.
 
 The new output is a separate immutable recovery directory with a source-tree
-checksum inventory, comparison, manifest, compact receipt, captured recovery
-inputs and its own checksum set. The original worker status (`feature=0`,
-`native=1`) and missing original receipts are explicit required inputs. Any
-source mutation, `.partial` file, missing log, nonzero engine/time status,
-error scan, incomplete emerge/shutdown population, identity drift, semantic
-snapshot mismatch or failed corrected native gate remains blocking.
+checksum inventory, a complete private copy of the 83-file source capture,
+comparison, manifest, compact receipt, captured recovery inputs and its own
+checksum set. The validator hashes and evaluates only that private copy, then
+rechecks the live source before exclusive publication. The original worker
+status (`feature=0`, `native=1`) and missing original receipts are explicit
+required inputs. A source mutation affecting the snapshot or detected during
+recovery, `.partial` file, missing log, nonzero engine/time status, error scan,
+incomplete emerge/shutdown population, identity drift, semantic snapshot
+mismatch or failed corrected native gate remains blocking. Publication uses a
+same-filesystem no-clobber rename plus source-disappearance check; a competing
+or pre-existing result never becomes a nested unchecksummed directory.
 
 ## Open bindings and deliberate limits
 

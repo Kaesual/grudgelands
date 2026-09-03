@@ -153,11 +153,13 @@ jq -n --argjson feature_ids "$feature_ids" '{
 	settings: {mg_name: "v7", chunksize: 5, water_level: 1,
 		num_emerge_threads: 1, liquid_update_seconds: 10801,
 		probe_timeout_seconds: 10770, host_timeout_seconds: 10800,
-		port_base: 32001, seed_decimal_string: "0"},
+		port_base: 32001, seed_decimal_string: "0",
+		seed_string_sha256:
+			"5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9"},
 	corpus: {digest:
 		"ac0809fe2cb527df8c74ac26b0dbc0eef0910bb81fb4a6125fbd23df922b490a",
 		rows: 10},
-	native_corpus: {rows: 0},
+	native_corpus: {rows: 0, digest: ""},
 	input_identity: {engine_sha256_before:
 		"0af19653d76b10921d1ed9bfa8de7e9c821a2caf403f768d72d0ca39fd47f05b",
 		engine_sha256_after:
@@ -300,6 +302,39 @@ changed_snapshot="$(validate "$scratch/feature-forward.jsonl" \
 jq -e '.all_ok == false and .checks.feature_snapshots_equal == false' \
 	<<<"$changed_snapshot" >/dev/null
 
+for direction in forward reverse; do
+	jq 'if .event == "case" and .id == "feature-0" then
+		.id = "foreign-feature" else . end' "$scratch/feature-$direction.jsonl" \
+		>"$scratch/feature-$direction-wrong-id.jsonl"
+done
+wrong_feature_id="$(validate "$scratch/feature-forward-wrong-id.jsonl" \
+	"$scratch/feature-reverse-wrong-id.jsonl" "$scratch/native-forward.jsonl" \
+	"$scratch/native-reverse.jsonl" "$host_telemetry" "$file_checks")"
+jq -e '.all_ok == false and .checks.feature_snapshots_equal == false' \
+	<<<"$wrong_feature_id" >/dev/null
+
+for direction in forward reverse; do
+	jq 'if .event == "native_census" and .id == "native-25" then
+		.id = "foreign-census" else . end' "$scratch/native-$direction.jsonl" \
+		>"$scratch/native-$direction-wrong-census-id.jsonl"
+done
+wrong_census_id="$(validate "$scratch/feature-forward.jsonl" \
+	"$scratch/feature-reverse.jsonl" "$scratch/native-forward-wrong-census-id.jsonl" \
+	"$scratch/native-reverse-wrong-census-id.jsonl" "$host_telemetry" "$file_checks")"
+jq -e '.all_ok == false and .checks.native_census_equal == false' \
+	<<<"$wrong_census_id" >/dev/null
+
+jq 'if .event == "complete" then
+	.native_gate.events |= map(if .kind == "large_cave_end" then
+		del(.position, .source_mapchunk, .inside_source) else . end)
+	else . end' "$scratch/native-forward.jsonl" \
+	>"$scratch/native-forward-incomplete-end.jsonl"
+incomplete_end="$(validate "$scratch/feature-forward.jsonl" \
+	"$scratch/feature-reverse.jsonl" "$scratch/native-forward-incomplete-end.jsonl" \
+	"$scratch/native-reverse.jsonl" "$host_telemetry" "$file_checks")"
+jq -e '.all_ok == false and .checks.native_gate_internal == false' \
+	<<<"$incomplete_end" >/dev/null
+
 jq 'if .event == "start" then .lua_runtime = "PUC Lua 5.1" else . end' \
 	"$scratch/native-reverse.jsonl" >"$scratch/native-reverse-runtime.jsonl"
 changed_runtime="$(validate "$scratch/feature-forward.jsonl" \
@@ -321,5 +356,18 @@ file_result="$(validate "$scratch/feature-forward.jsonl" \
 	"$scratch/native-reverse.jsonl" "$host_telemetry" "$bad_files")"
 jq -e '.all_ok == false and .checks.file_identity == false' \
 	<<<"$file_result" >/dev/null
+
+publish_root="$scratch/publish"
+mkdir "$publish_root" "$publish_root/first" "$publish_root/second"
+touch "$publish_root/first/first-marker" "$publish_root/second/second-marker"
+mv -T --no-clobber "$publish_root/first" "$publish_root/final"
+mv -T --no-clobber "$publish_root/second" "$publish_root/final"
+if [[ ! -f "$publish_root/final/first-marker" ||
+		! -f "$publish_root/second/second-marker" ||
+		-e "$publish_root/final/second" ||
+		-e "$publish_root/final/second-marker" ]]; then
+	echo "WP40 R8 recovery exclusive publish fixture failed" >&2
+	exit 1
+fi
 
 echo "WP40 R8 recovery validator fixture: PASS"

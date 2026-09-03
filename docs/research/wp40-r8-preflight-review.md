@@ -572,6 +572,29 @@ The recovery reuses the complete retained engine evidence and runs no engine,
 build, PUC or LuaJIT process. Production and probe bytes are unchanged, so the
 accepted final interpreter pair remains valid.
 
+The first exact recovery candidate
+`ab75003086a0560e49b5619f78374333e4f2ce96` received independent **REJECT,
+0 Critical / 2 High / 3 Medium / 0 Low** before execution. The High findings
+were a hash-to-use race caused by evaluating the live source paths after
+hashing them, and a non-exclusive plain-`mv` publication race that allowed a
+second result directory to be nested outside the first result's checksum set.
+The Medium findings were missing exact ID binding for the ten feature and
+seven census records, incomplete structural validation of Cave-End events and
+recursive deletion of a caller-supplied frozen-root path.
+
+The correction privately snapshots the complete 83-file source capture,
+validates and evaluates only that copy, retains it inside the recovery result
+and rehashes the live source before publication. It binds feature and census
+records to their exact expected ID subsets, requires numeric positions,
+canonical source-mapchunk keys and boolean source-containment fields for every
+native event, and leaves every externally supplied frozen root untouched. The
+outer process alone deletes a root that it created itself. Publication now
+uses GNU `mv -T --no-clobber` and requires the temporary source directory to
+have disappeared, closing both pre-existence and concurrent-writer cases. The
+expanded negative fixture covers wrong feature/census IDs, incomplete Cave-End
+events, asymmetric and unpreserved dungeons and exclusive-publish behavior.
+A focused independent re-review is required before execution.
+
 ## Calibration so far
 
 - Implementing/coordinating model: GPT-5.6 Sol with two bounded parallel

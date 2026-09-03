@@ -53,24 +53,42 @@ done
 # Re-execute from the reviewed commit-derived bytes. The source capture is not
 # read until this transition is complete.
 frozen_root="${WP40_R8_RECOVERY_FROZEN_ROOT:-}"
+owned_frozen_root=""
+cleanup_outer_frozen_root() {
+	if [[ -n "$owned_frozen_root" &&
+			"$owned_frozen_root" == /tmp/grudgelands-wp40-r8-recovery-input.* ]]; then
+		rm -rf -- "$owned_frozen_root"
+	fi
+}
 if [[ -z "$frozen_root" ]]; then
 	frozen_root="$(mktemp -d -p /tmp grudgelands-wp40-r8-recovery-input.XXXXXXXX)"
+	owned_frozen_root="$frozen_root"
+	trap 'exit 130' HUP INT TERM
+	trap cleanup_outer_frozen_root EXIT
 	if ! git -C "$repo" archive "$recovery_sha" -- "${recovery_paths[@]}" |
 			tar -x -C "$frozen_root"; then
-		rm -rf -- "$frozen_root"
 		exit 2
 	fi
-	exec env WP40_R8_RECOVERY_FROZEN_ROOT="$frozen_root" \
+	inner_status=0
+	env WP40_R8_RECOVERY_FROZEN_ROOT="$frozen_root" \
 		WP40_R8_SOURCE_REPO="$repo" WP40_R8_RECOVERY_SHA="$recovery_sha" \
-		bash "$frozen_root/tools/wp40/r8/recover_sharded_g3.sh"
+		bash "$frozen_root/tools/wp40/r8/recover_sharded_g3.sh" || inner_status=$?
+	exit "$inner_status"
 fi
 frozen_root="$(cd "$frozen_root" && pwd)"
 script_dir="$frozen_root/tools/wp40/r8"
 for relative_path in "${recovery_paths[@]}"; do
 	expected_blob="$(git -C "$repo" rev-parse "$recovery_sha:$relative_path")"
 	actual_blob="$(git -C "$repo" hash-object "$frozen_root/$relative_path")"
-	if [[ "$actual_blob" != "$expected_blob" ]]; then
-		echo "WP40 R8 recovery: frozen $relative_path differs from selected commit" >&2
+	expected_mode="$(git -C "$repo" ls-tree "$recovery_sha" -- \
+		"$relative_path" | awk '{print $1}')"
+	actual_permissions="$(stat -c '%a' "$frozen_root/$relative_path")"
+	actual_mode=100644
+	if [[ "$actual_permissions" == "755" ]]; then actual_mode=100755; fi
+	if [[ "$actual_blob" != "$expected_blob" ||
+			"$actual_mode" != "$expected_mode" ||
+			( "$actual_permissions" != "644" && "$actual_permissions" != "755" ) ]]; then
+		echo "WP40 R8 recovery: frozen $relative_path blob/mode differs from selected commit" >&2
 		exit 2
 	fi
 done
@@ -80,15 +98,15 @@ if [[ ! -x "$script_dir/recover_sharded_g3.sh" ||
 	exit 2
 fi
 
-source_capture="$repo/tools/wp40/results/r8/$source_capture_id"
-feature_dir="$source_capture/shards/$feature_capture_id"
-native_dir="$source_capture/shards/$native_capture_id"
-if [[ ! -d "$feature_dir" || ! -d "$native_dir" ]]; then
+source_capture_live="$repo/tools/wp40/results/r8/$source_capture_id"
+feature_dir_live="$source_capture_live/shards/$feature_capture_id"
+native_dir_live="$source_capture_live/shards/$native_capture_id"
+if [[ ! -d "$feature_dir_live" || ! -d "$native_dir_live" ]]; then
 	echo "WP40 R8 recovery: exact source capture is unavailable" >&2
 	exit 2
 fi
 canonical_source_capture="$repo/tools/wp40/results/r8/$source_capture_id"
-if [[ "$(readlink -f "$source_capture")" != "$canonical_source_capture" ]]; then
+if [[ "$(readlink -f "$source_capture_live")" != "$canonical_source_capture" ]]; then
 	echo "WP40 R8 recovery: source capture path is not canonical" >&2
 	exit 2
 fi
@@ -103,11 +121,25 @@ cleanup() {
 	if [[ "$scratch" == /tmp/grudgelands-wp40-r8-recovery.* ]]; then
 		rm -rf -- "$scratch"
 	fi
-	if [[ "$frozen_root" == /tmp/grudgelands-wp40-r8-recovery-input.* ]]; then
-		rm -rf -- "$frozen_root"
-	fi
 }
-trap cleanup EXIT HUP INT TERM
+trap 'exit 130' HUP INT TERM
+trap cleanup EXIT
+
+# Take one private snapshot before validating or interpreting any evidence.
+# Every later read uses this snapshot, and the complete snapshot is retained in
+# the recovery result. A source mutation during the copy changes its tree hash
+# and fails before evaluation.
+source_capture="$scratch/source-capture"
+mkdir "$source_capture"
+(
+	cd "$source_capture_live"
+	tar -cf - .
+) | (
+	cd "$source_capture"
+	tar -xf -
+)
+feature_dir="$source_capture/shards/$feature_capture_id"
+native_dir="$source_capture/shards/$native_capture_id"
 
 source_checksums="$scratch/source-checksums.sha256"
 (
@@ -116,11 +148,12 @@ source_checksums="$scratch/source-checksums.sha256"
 ) >"$source_checksums"
 actual_source_tree_sha256="$(sha256sum "$source_checksums" | awk '{print $1}')"
 if [[ "$actual_source_tree_sha256" != "$source_tree_sha256" ]]; then
-	echo "WP40 R8 recovery: source capture tree hash changed" >&2
+	echo "WP40 R8 recovery: private source snapshot tree hash changed" >&2
 	exit 1
 fi
 if [[ "$(find "$source_capture" -type f | wc -l)" != "83" ]] ||
 		find "$source_capture" -type l -print -quit | rg -q . ||
+		find "$source_capture" ! -type f ! -type d -print -quit | rg -q . ||
 		find "$source_capture" -type f -name '*.partial' -print -quit | rg -q .; then
 	echo "WP40 R8 recovery: source capture shape changed" >&2
 	exit 1
@@ -339,6 +372,7 @@ for shard in feature native; do
 				"$(setting_value "$config" chunksize)" != "5" ||
 				"$(setting_value "$config" water_level)" != "1" ||
 				"$(setting_value "$config" mg_flags)" != "caves,dungeons,light,decorations,biomes,ores" ||
+				"$(setting_value "$config" mgv7_spflags)" != "mountains,ridges,caverns,nofloatlands" ||
 				"$(setting_value "$config" mgv7_dungeon_ymin)" != "-31000" ||
 				"$(setting_value "$config" mgv7_dungeon_ymax)" != "-193" ||
 				"$(setting_value "$config" num_emerge_threads)" != "1" ||
@@ -420,6 +454,10 @@ mkdir "$result_tmp/inputs"
 	cd "$result_tmp/inputs"
 	tar -xf -
 )
+mv "$source_capture" "$result_tmp/source-capture"
+source_capture="$result_tmp/source-capture"
+feature_dir="$source_capture/shards/$feature_capture_id"
+native_dir="$source_capture/shards/$native_capture_id"
 cp "$source_checksums" "$result_tmp/source-checksums.sha256"
 
 jq -n --arg source_capture_id "$source_capture_id" \
@@ -472,7 +510,8 @@ jq -n --arg recovery_id "$recovery_id" --arg recovery_sha "$recovery_sha" \
 		schema: "grug_wp40_r8_sharded_g3_recovery_v1",
 		status: "final_sharded_smoke_recovered_complete",
 		recovery_id: $recovery_id,
-		recovery_snapshot: {checkout_sha: $recovery_sha, source: "git archive",
+		recovery_snapshot: {checkout_sha: $recovery_sha,
+			source: "validated frozen commit tree",
 			input_set_sha256: $recovery_input_sha256},
 		source: {capture_id: $source_capture_id,
 			tree_sha256: $source_tree_sha256,
@@ -481,7 +520,8 @@ jq -n --arg recovery_id "$recovery_id" --arg recovery_sha "$recovery_sha" \
 			feature_capture_id: $feature_capture_id,
 			native_capture_id: $native_capture_id,
 			original_status: "failed_closed_before_aggregate",
-			original_capture_modified: false,
+			modified_by_recovery: false,
+			retained_snapshot: "source-capture/",
 			source_file_count: 83},
 		identity: {engine_sha256: $engine_sha256,
 			runtime_manifest_sha256: $runtime_manifest_sha256,
@@ -528,7 +568,32 @@ jq -nr --arg recovery_id "$recovery_id" \
 	find . -type f ! -name checksums.sha256 -print0 | sort -z |
 		xargs -0 sha256sum
 ) >"$result_tmp/checksums.sha256"
-mv "$result_tmp" "$result_dir"
+
+# Recheck the live source once after evaluation. The accepted bytes remain the
+# private retained snapshot either way, but a concurrent source mutation is an
+# explicit execution failure rather than an undisclosed divergence.
+final_live_checksums="$scratch/final-live-source-checksums.sha256"
+(
+	cd "$source_capture_live"
+	find . -type f -print0 | sort -z | xargs -0 sha256sum
+) >"$final_live_checksums"
+final_live_sha256="$(sha256sum "$final_live_checksums" | awk '{print $1}')"
+if [[ "$final_live_sha256" != "$source_tree_sha256" ]]; then
+	echo "WP40 R8 recovery: live source capture changed during recovery" >&2
+	exit 1
+fi
+
+# GNU mv's no-clobber mode can report success while deliberately leaving the
+# source in place. Test source disappearance as the exclusive-publish proof;
+# never allow a second temp directory to be nested into an existing result.
+if ! mv -T --no-clobber "$result_tmp" "$result_dir"; then
+	echo "WP40 R8 recovery: exclusive result publication failed" >&2
+	exit 2
+fi
+if [[ -e "$result_tmp" ]]; then
+	echo "WP40 R8 recovery: immutable result already exists" >&2
+	exit 2
+fi
 result_tmp=""
 
 cleanup

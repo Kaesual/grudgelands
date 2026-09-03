@@ -567,3 +567,11 @@ The original capture stays a formal failure and is never modified. A separate
 hash-bound recovery receipt may be created only by independently reviewed
 validator bytes. That evaluation starts no engine and makes no dungeon
 preservation claim.
+
+The first recovery implementation commit
+`ab75003086a0560e49b5619f78374333e4f2ce96` was not executed after its
+independent review returned **REJECT, 0 Critical / 2 High / 3 Medium / 0 Low**.
+Its source-read and publication races plus three fail-closed validation gaps
+are recorded in `wp40-r8-preflight-review.md`; all five are corrected before
+the required focused re-review. No recovery receipt from the rejected bytes is
+accepted.

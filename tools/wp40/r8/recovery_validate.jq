@@ -124,6 +124,14 @@ def native_gate_internal_ok($gate):
 		.kind == "cave_begin" or .kind == "cave_end" or
 		.kind == "large_cave_begin" or .kind == "large_cave_end" or
 		.kind == "dungeon") and
+	all($gate.events[];
+		(.position | type) == "object" and
+		(.position.x | type) == "number" and
+		(.position.y | type) == "number" and
+		(.position.z | type) == "number" and
+		(.source_mapchunk | type) == "string" and
+		(.source_mapchunk | test("^-?[0-9]+,-?[0-9]+,-?[0-9]+$")) and
+		(.inside_source | type) == "boolean") and
 	all($gate.events[] |
 		select(.kind == "cave_begin" or .kind == "large_cave_begin");
 		(.inside_source | type) == "boolean" and
@@ -314,9 +322,13 @@ def original_pair_ok($comparison):
 			(selected($native_forward; "native_census") | length) == 7 and
 			(selected($native_reverse; "native_census") | length) == 7),
 		feature_snapshots_equal: ($ffc == $frc and ($ffc | length) == 10 and
+			([$ffc[].id] | sort) == ($feature_ids | sort) and
+			([$frc[].id] | sort) == ($feature_ids | sort) and
 			all($ffc[]; .semantic_ok == true) and
 			all($frc[]; .semantic_ok == true)),
 		native_census_equal: ($nfn == $nrn and ($nfn | length) == 7 and
+			([$nfn[].id] | sort) == (($native_ids[25:32]) | sort) and
+			([$nrn[].id] | sort) == (($native_ids[25:32]) | sort) and
 			all($nfn[]; .semantic_ok == true) and
 			all($nrn[]; .semantic_ok == true)),
 		feature_native_gate: (feature_native_gate_ok($feature_forward) and
@@ -361,8 +373,11 @@ def original_pair_ok($comparison):
 			$fm.settings.host_timeout_seconds == 10800 and
 			$fm.settings.port_base == 32001 and
 			$fm.settings.seed_decimal_string == "0" and
+			$fm.settings.seed_string_sha256 ==
+				"5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9" and
 			$fm.corpus.digest == $feature_corpus_sha256 and
 			$fm.corpus.rows == 10 and $fm.native_corpus.rows == 0 and
+			$fm.native_corpus.digest == "" and
 			$fm.input_identity.engine_sha256_before == $engine_sha256 and
 			$fm.input_identity.engine_sha256_after == $engine_sha256 and
 			$fm.input_identity.offline_r7_manifest_sha256 ==
