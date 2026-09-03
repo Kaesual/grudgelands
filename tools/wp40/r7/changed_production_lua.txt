@@ -50,7 +50,9 @@ mods/ITEMS/grug_nodes/init.lua
 mods/ITEMS/grug_nodes/ore_respawn.lua
 mods/ITEMS/grug_trees/init.lua
 mods/MAPGEN/grug_mapgen/init.lua
+mods/MAPGEN/grug_mapgen/wp40/height.lua
 mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua
+mods/MAPGEN/grug_mapgen/wp40/r5.lua
 mods/MAPGEN/grug_mapgen/wp40/r6.lua
 mods/MAPGEN/grug_mapgen/wp40/r6_content.lua
 mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
@@ -68,4 +70,5 @@ mods/MAPGEN/grug_mapgen/wp40/r7_runtime.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_template_source.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_zone_overlay.lua
+mods/MAPGEN/grug_mapgen/wp40/zones.lua
 mods/PLAYER/grug_factions/init.lua

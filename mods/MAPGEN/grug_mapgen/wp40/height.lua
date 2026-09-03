@@ -277,7 +277,13 @@ return function(dependencies)
 	local module = {}
 	local bound_seed_string
 
-	local function construct(full_seed_string, diagnose_final_axis)
+	local function construct(full_seed_string, diagnose_final_axis, runtime_mode)
+		if runtime_mode ~= nil and runtime_mode ~= true then
+			fail("runtime construction mode differs")
+		end
+		if runtime_mode and diagnose_final_axis then
+			fail("runtime construction cannot diagnose final axes")
+		end
 		deterministic.validate_seed(full_seed_string)
 		if bound_seed_string and bound_seed_string ~= full_seed_string then
 			fail("one height factory cannot reuse its horizontal session for a " ..
@@ -361,8 +367,10 @@ return function(dependencies)
 					for ix = min_ix, max_ix do
 						local value = lattice_corner(root, ix, iz, octave_index)
 						row[ix] = value
-						rows[#rows + 1] = canonical.array({signed(ix), signed(iz),
-							signed(value)})
+						if not runtime_mode then
+							rows[#rows + 1] = canonical.array({signed(ix), signed(iz),
+								signed(value)})
+						end
 						if not observed_min or value < observed_min then
 							observed_min, min_x, min_z = value, ix, iz
 						end
@@ -371,7 +379,7 @@ return function(dependencies)
 						end
 					end
 				end
-				local digest = counted_digest(rows)
+				local digest = not runtime_mode and counted_digest(rows) or nil
 				local octave = {period = period,
 					amplitude_numerator = source_octave.amplitude.numerator,
 					amplitude_denominator = source_octave.amplitude.denominator,
@@ -383,9 +391,11 @@ return function(dependencies)
 					observed_min_ix = min_x, observed_min_iz = min_z,
 					observed_max = observed_max, observed_max_ix = max_x,
 					observed_max_iz = max_z}
-				octave_evidence[#octave_evidence + 1] = evidence
-				octave_digest_rows[#octave_digest_rows + 1] = canonical.array({
-					text(profile.id), signed(octave_index), text(digest)})
+				if not runtime_mode then
+					octave_evidence[#octave_evidence + 1] = evidence
+					octave_digest_rows[#octave_digest_rows + 1] = canonical.array({
+						text(profile.id), signed(octave_index), text(digest)})
+				end
 			end
 		end
 
@@ -455,12 +465,16 @@ return function(dependencies)
 					stats.maximum_count = stats.maximum_count + 1
 				end
 				row[ix] = height
-				base_rows[#base_rows + 1] = canonical.array({signed(ix), signed(iz),
-					signed(height), text(profile.id)})
+				if not runtime_mode then
+					base_rows[#base_rows + 1] = canonical.array({signed(ix), signed(iz),
+						signed(height), text(profile.id)})
+				end
 			end
 		end
-		local base_lattice_digest = counted_digest(base_rows)
-		local octave_lattice_digest = counted_digest(octave_digest_rows)
+		local base_lattice_digest = not runtime_mode and
+			counted_digest(base_rows) or nil
+		local octave_lattice_digest = not runtime_mode and
+			counted_digest(octave_digest_rows) or nil
 
 		local function base_height_at(x, z)
 			local ix, iz = floor_div(x, BASE_CELL), floor_div(z, BASE_CELL)
@@ -1508,8 +1522,10 @@ return function(dependencies)
 					local _, state = lattice_corner(root, ix, iz, 1)
 					local value = math.floor(state * 13 / P) - 6
 					values_row[ix] = value
-					rows[#rows + 1] = canonical.array({signed(ix), signed(iz),
-						signed(value)})
+					if not runtime_mode then
+						rows[#rows + 1] = canonical.array({signed(ix), signed(iz),
+							signed(value)})
+					end
 				end
 			end
 			local core = {numeric_id = core_index, id = row.id, row = row,
@@ -1524,13 +1540,15 @@ return function(dependencies)
 				landmark.center.x + landmark.radius_x + BASE_CELL,
 				landmark.center.z - landmark.radius_z - BASE_CELL,
 				landmark.center.z + landmark.radius_z + BASE_CELL)
-			coastal_evidence[core_index] = {numeric_id = core_index, id = row.id,
-				zone_numeric_id = row.zone_numeric_id, root = root,
-				target_y = core.target_y, theoretical_min_y = core.target_y - 6,
-				theoretical_max_y = core.target_y + 6,
-				lattice_digest = counted_digest(rows), relief_max = row.relief_max,
-				center_x = landmark.center.x, center_z = landmark.center.z,
-				radius_x = landmark.radius_x, radius_z = landmark.radius_z}
+			if not runtime_mode then
+				coastal_evidence[core_index] = {numeric_id = core_index, id = row.id,
+					zone_numeric_id = row.zone_numeric_id, root = root,
+					target_y = core.target_y, theoretical_min_y = core.target_y - 6,
+					theoretical_max_y = core.target_y + 6,
+					lattice_digest = counted_digest(rows), relief_max = row.relief_max,
+					center_x = landmark.center.x, center_z = landmark.center.z,
+					radius_x = landmark.radius_x, radius_z = landmark.radius_z}
+			end
 		end
 
 		local function coastal_weight(core, x, z)
@@ -1962,67 +1980,69 @@ return function(dependencies)
 			ford_approach_summary_evidence, named_operation_evidence,
 			derived_water_evidence, landing_evidence,
 			visible_surface_classification_digest
-		local function build_public_session()
-		local anchor_records, anchor_evidence = {}, {}
-		local spur_id_by_anchor = {}
-		for index = 1, #source.poi_spurs do
-			spur_id_by_anchor[source.poi_spurs[index].anchor_id] =
-				source.poi_spurs[index].id
-		end
-		for anchor_index = 1, #fittings do
-			local fitting = fittings[anchor_index]
-			local anchor = fitting.anchor
-			local observed_max_cut, observed_max_fill = 0, 0
-			local cut_x, cut_z, fill_x, fill_z
-			local fitting_columns, collar_columns = 0, 0
-			local platform_columns = 0
-			local owner_escape_columns = 0
-			local platform_witness_x, platform_witness_z
-			local profile = fitting.profile
-			local envelope_half = profile.blend_width / 2
-			local fitting_half = profile.fitting_width / 2
-			for z = fitting.center.z - envelope_half,
-					fitting.center.z + envelope_half - 1 do
-				for x = fitting.center.x - envelope_half,
-						fitting.center.x + envelope_half - 1 do
-					local water_class, _, owner = classified_values(x, z)
-					local outside = half_open_square_excess(x, z,
-						fitting.center, profile.fitting_width)
-					if owner == fitting.zone_numeric_id then
-						if outside == 0 then fitting_columns = fitting_columns + 1
-						elseif outside < envelope_half - fitting_half then
-							collar_columns = collar_columns + 1 end
-					else
-						local _, _, functional_feature_id =
-							final_functional_values_at(x, z)
-						if functional_feature_id == fitting.id then
-							owner_escape_columns = owner_escape_columns + 1
-						end
-					end
-					if not fitting.is_capital and outside == 0 and
-							owner == fitting.zone_numeric_id and
-							water_class == "planned_water" then
-						local platform_kind, _, platform_feature_id =
-							final_functional_values_at(x, z)
-						if platform_kind == "anchor_platform" and
-								platform_feature_id == fitting.id then
-							platform_columns = platform_columns + 1
-							if not platform_witness_x then
-								platform_witness_x, platform_witness_z = x, z
+		local function build_public_session(runtime_construction)
+			local anchor_records, anchor_evidence = {}, {}
+			local spur_id_by_anchor = {}
+			for index = 1, #source.poi_spurs do
+				spur_id_by_anchor[source.poi_spurs[index].anchor_id] =
+					source.poi_spurs[index].id
+			end
+			for anchor_index = 1, #fittings do
+				local fitting = fittings[anchor_index]
+				local anchor = fitting.anchor
+				local observed_max_cut, observed_max_fill = 0, 0
+				local cut_x, cut_z, fill_x, fill_z
+				local fitting_columns, collar_columns = 0, 0
+				local platform_columns = 0
+				local owner_escape_columns = 0
+				local platform_witness_x, platform_witness_z
+				local profile = fitting.profile
+				local envelope_half = profile.blend_width / 2
+				local fitting_half = profile.fitting_width / 2
+			if not runtime_construction then
+				for z = fitting.center.z - envelope_half,
+						fitting.center.z + envelope_half - 1 do
+					for x = fitting.center.x - envelope_half,
+							fitting.center.x + envelope_half - 1 do
+						local water_class, _, owner = classified_values(x, z)
+						local outside = half_open_square_excess(x, z,
+							fitting.center, profile.fitting_width)
+						if owner == fitting.zone_numeric_id then
+							if outside == 0 then fitting_columns = fitting_columns + 1
+							elseif outside < envelope_half - fitting_half then
+								collar_columns = collar_columns + 1 end
+						else
+							local _, _, functional_feature_id =
+								final_functional_values_at(x, z)
+							if functional_feature_id == fitting.id then
+								owner_escape_columns = owner_escape_columns + 1
 							end
 						end
-					end
-					if water_class == "land" and owner == fitting.zone_numeric_id and
-							outside < envelope_half - fitting_half then
-						local natural = natural_height_at(x, z)
-						local weight = qweight(outside, envelope_half - fitting_half)
-						local value = qlerp_integer(natural, fitting.reference_y, weight)
-						local cut, fill = natural - value, value - natural
-						if cut_x == nil or cut > observed_max_cut then
-							observed_max_cut, cut_x, cut_z = cut, x, z
+						if not fitting.is_capital and outside == 0 and
+								owner == fitting.zone_numeric_id and
+								water_class == "planned_water" then
+							local platform_kind, _, platform_feature_id =
+								final_functional_values_at(x, z)
+							if platform_kind == "anchor_platform" and
+									platform_feature_id == fitting.id then
+								platform_columns = platform_columns + 1
+								if not platform_witness_x then
+									platform_witness_x, platform_witness_z = x, z
+								end
+							end
 						end
-						if fill_x == nil or fill > observed_max_fill then
-							observed_max_fill, fill_x, fill_z = fill, x, z
+						if water_class == "land" and owner == fitting.zone_numeric_id and
+								outside < envelope_half - fitting_half then
+							local natural = natural_height_at(x, z)
+							local weight = qweight(outside, envelope_half - fitting_half)
+							local value = qlerp_integer(natural, fitting.reference_y, weight)
+							local cut, fill = natural - value, value - natural
+							if cut_x == nil or cut > observed_max_cut then
+								observed_max_cut, cut_x, cut_z = cut, x, z
+							end
+							if fill_x == nil or fill > observed_max_fill then
+								observed_max_fill, fill_x, fill_z = fill, x, z
+							end
 						end
 					end
 				end
@@ -2045,61 +2065,108 @@ return function(dependencies)
 				path_kind = spur_id_by_anchor[anchor.id],
 				functional_feature_id = feature_id}
 			anchor_records[anchor_index] = record
-			anchor_evidence[anchor_index] = deep_copy(record)
-			anchor_evidence[anchor_index].reference_y = fitting.reference_y
-			anchor_evidence[anchor_index].reference_rule = fitting.reference_rule
-			anchor_evidence[anchor_index].profile_midpoint_y =
-				zone_midpoint_y[anchor.zone_numeric_id]
-			anchor_evidence[anchor_index].fitting_width = profile.fitting_width
-			anchor_evidence[anchor_index].blend_width = profile.blend_width
-			anchor_evidence[anchor_index].collar_width =
-				(profile.blend_width - profile.fitting_width) / 2
-			anchor_evidence[anchor_index].fitting_columns = fitting_columns
-			anchor_evidence[anchor_index].collar_columns = collar_columns
-			anchor_evidence[anchor_index].owner_escape_columns = owner_escape_columns
-			anchor_evidence[anchor_index].observed_max_cut = observed_max_cut
-			anchor_evidence[anchor_index].observed_max_cut_witness_x = cut_x
-			anchor_evidence[anchor_index].observed_max_cut_witness_z = cut_z
-			anchor_evidence[anchor_index].observed_max_fill = observed_max_fill
-			anchor_evidence[anchor_index].observed_max_fill_witness_x = fill_x
-			anchor_evidence[anchor_index].observed_max_fill_witness_z = fill_z
-			anchor_evidence[anchor_index].rejected = false
-			anchor_evidence[anchor_index].reselected = false
-			anchor_evidence[anchor_index].platform_columns = platform_columns
-			anchor_evidence[anchor_index].civic_water_columns =
-				fitting.civic_water_count
-			anchor_evidence[anchor_index].civic_max_clearance_y =
-				fitting.civic_max_clearance_y
-			anchor_evidence[anchor_index].civic_max_clearance_witness_x =
-				fitting.civic_witness_x
-			anchor_evidence[anchor_index].civic_max_clearance_witness_z =
-				fitting.civic_witness_z
-			anchor_evidence[anchor_index].platform_witness_x = platform_witness_x
-			anchor_evidence[anchor_index].platform_witness_z = platform_witness_z
-		end
+			if not runtime_construction then
+				anchor_evidence[anchor_index] = deep_copy(record)
+				anchor_evidence[anchor_index].reference_y = fitting.reference_y
+				anchor_evidence[anchor_index].reference_rule = fitting.reference_rule
+				anchor_evidence[anchor_index].profile_midpoint_y =
+					zone_midpoint_y[anchor.zone_numeric_id]
+				anchor_evidence[anchor_index].fitting_width = profile.fitting_width
+				anchor_evidence[anchor_index].blend_width = profile.blend_width
+				anchor_evidence[anchor_index].collar_width =
+					(profile.blend_width - profile.fitting_width) / 2
+				anchor_evidence[anchor_index].fitting_columns = fitting_columns
+				anchor_evidence[anchor_index].collar_columns = collar_columns
+				anchor_evidence[anchor_index].owner_escape_columns = owner_escape_columns
+				anchor_evidence[anchor_index].observed_max_cut = observed_max_cut
+				anchor_evidence[anchor_index].observed_max_cut_witness_x = cut_x
+				anchor_evidence[anchor_index].observed_max_cut_witness_z = cut_z
+				anchor_evidence[anchor_index].observed_max_fill = observed_max_fill
+				anchor_evidence[anchor_index].observed_max_fill_witness_x = fill_x
+				anchor_evidence[anchor_index].observed_max_fill_witness_z = fill_z
+				anchor_evidence[anchor_index].rejected = false
+				anchor_evidence[anchor_index].reselected = false
+				anchor_evidence[anchor_index].platform_columns = platform_columns
+				anchor_evidence[anchor_index].civic_water_columns =
+					fitting.civic_water_count
+				anchor_evidence[anchor_index].civic_max_clearance_y =
+					fitting.civic_max_clearance_y
+				anchor_evidence[anchor_index].civic_max_clearance_witness_x =
+					fitting.civic_witness_x
+				anchor_evidence[anchor_index].civic_max_clearance_witness_z =
+					fitting.civic_witness_z
+				anchor_evidence[anchor_index].platform_witness_x = platform_witness_x
+				anchor_evidence[anchor_index].platform_witness_z = platform_witness_z
+			end
+			end
 
-		local hard_records, hard_evidence = {}, {}
-		for hard_index = 1, #source.hard_protection do
-			local source_hard = source.hard_protection[hard_index]
-			local record = deep_copy(source_hard)
-			local recipe
-			for recipe_index = 1, #source.hard_protection_recipes do
-				if source.hard_protection_recipes[recipe_index].id == record.recipe_id then
-					recipe = source.hard_protection_recipes[recipe_index] break
+			local hard_records, hard_evidence = {}, {}
+			for hard_index = 1, #source.hard_protection do
+				local source_hard = source.hard_protection[hard_index]
+				local record = deep_copy(source_hard)
+				local recipe
+				for recipe_index = 1, #source.hard_protection_recipes do
+					if source.hard_protection_recipes[recipe_index].id == record.recipe_id then
+						recipe = source.hard_protection_recipes[recipe_index] break
+					end
+				end
+				if not recipe then fail("hard-protection recipe missing") end
+				record.y_min = recipe.y_min
+				record.upward_unbounded = recipe.upward_unbounded
+				record.y_policy_id = recipe.y_policy_id
+				if record.center then
+					local _, surface_y = final_functional_values_at(record.center.x,
+						record.center.z)
+					record.surface_y = surface_y or final_terrain_height_at(record.center.x,
+						record.center.z)
+				else record.surface_y = nil end
+				hard_records[hard_index] = record
+				if not runtime_construction then
+					hard_evidence[hard_index] = deep_copy(record)
 				end
 			end
-			if not recipe then fail("hard-protection recipe missing") end
-			record.y_min = recipe.y_min
-			record.upward_unbounded = recipe.upward_unbounded
-			record.y_policy_id = recipe.y_policy_id
-			if record.center then
-				local _, surface_y = final_functional_values_at(record.center.x,
-					record.center.z)
-				record.surface_y = surface_y or final_terrain_height_at(record.center.x,
-					record.center.z)
-			else record.surface_y = nil end
-			hard_records[hard_index] = record
-			hard_evidence[hard_index] = deep_copy(record)
+
+		if runtime_construction then
+			local metrics = {relief_profile_count = #profiles,
+				octave_lattice_count = #octave_evidence,
+				base_lattice_vertex_count = #base_rows,
+				graded_path_count = #paths,
+				contact_face_waterfall_count = #contact_face_records}
+			local session = {}
+			function session.terrain_height_at(x, z)
+				return final_terrain_height_at(x, z)
+			end
+			function session.water_surface_at(x, z)
+				return final_water_surface_at(x, z)
+			end
+			function session.functional_surface_values_at(x, z)
+				return final_functional_values_at(x, z)
+			end
+			function session.hydrology_transition_values_at(x, z)
+				coordinate(x, "transition query x") coordinate(z, "transition query z")
+				if x < bounds.min_x or x > bounds.max_x or z < bounds.min_z or
+						z > bounds.max_z then return nil, nil, nil, nil, nil, nil end
+				local transition, progress, face_mask = transition_values_at(x, z)
+				if not transition then return nil, nil, nil, nil, nil, nil end
+				return transition.kind, transition.id, transition.upper_y,
+					transition.lower_y, progress, face_mask
+			end
+			function session.selected_anchor_3d_by_id(anchor_id)
+				if type(anchor_id) ~= "string" then return nil end
+				local anchor = anchor_by_id[anchor_id]
+				return anchor and deep_copy(anchor_records[anchor.numeric_id]) or nil
+			end
+			function session.hard_protection_volumes()
+				return deep_copy(hard_records)
+			end
+			function session.metrics()
+				local result = deep_copy(metrics)
+				result.construction_sha256_calls = construction_sha_calls
+				result.query_sha256_calls = query_sha_calls
+				result.query_lattice_constructions = query_lattice_constructions
+				return result
+			end
+			return session
 		end
 
 		local operation_evidence, tunnel_evidence = {}, {}
@@ -2577,8 +2644,10 @@ return function(dependencies)
 						if interior_min == nil or h < interior_min then
 							interior_min, interior_x, interior_z = h, x, z
 						end
-						tunnel_rows[#tunnel_rows + 1] = canonical.array({
-							signed(x), signed(z), signed(run_index), signed(h)})
+						if not runtime_mode then
+							tunnel_rows[#tunnel_rows + 1] = canonical.array({
+								signed(x), signed(z), signed(run_index), signed(h)})
+						end
 					end)
 				if named_overlap_columns ~= 0 or tunnel_overlap_columns ~= 0 then
 					fail("tunnel footprint overlaps another operation")
@@ -2615,7 +2684,8 @@ return function(dependencies)
 					overburden_witness_z = interior_z,
 					named_overlap_columns = named_overlap_columns,
 					tunnel_overlap_columns = tunnel_overlap_columns,
-					classification_digest = counted_digest(tunnel_rows)}
+					classification_digest = not runtime_mode and
+						counted_digest(tunnel_rows) or nil}
 				path.operations[#path.operations + 1] = operation
 				tunnel_operations[#tunnel_operations + 1] = operation
 				water_operations[#water_operations + 1] = operation
@@ -2804,225 +2874,232 @@ return function(dependencies)
 				if path.y[run_index] ~= pin.y then
 					fail("route envelope changed exact pin at " .. path.id)
 				end
-				route_exact_pin_evidence[#route_exact_pin_evidence + 1] = {
-					path_id = path.id, run = run_index, pin_kind = pin.pin_kind,
-					source_id = pin.source_id, y = pin.y,
-					baseline_y = path.baseline[run_index], final_y = path.y[run_index]}
-			end
-			local baseline_rows, final_rows, pin_rows, lower_rows = {}, {}, {}, {}
-			local baseline_min, baseline_max, final_min, final_max, maximum_step
-			local lower_run_count, lower_column_count, raised_run_count = 0, 0, 0
-			for run_index = 1, #path.axis do
-				local point = path.axis[run_index]
-				local base_y, final_y = path.baseline[run_index], path.y[run_index]
-				baseline_min = baseline_min and math.min(baseline_min, base_y) or base_y
-				baseline_max = baseline_max and math.max(baseline_max, base_y) or base_y
-				final_min = final_min and math.min(final_min, final_y) or final_y
-				final_max = final_max and math.max(final_max, final_y) or final_y
-				baseline_rows[#baseline_rows + 1] = canonical.array({signed(run_index),
-					signed(point.x), signed(point.z), signed(base_y)})
-				final_rows[#final_rows + 1] = canonical.array({signed(run_index),
-					signed(final_y)})
-				if run_index > 1 then
-					local step = math.abs(final_y - path.y[run_index - 1])
-					maximum_step = math.max(maximum_step or 0, step)
-					if step > 1 then fail("final route step exceeds one at " .. path.id) end
-				end
-				if path.lower[run_index] then
-					lower_run_count = lower_run_count + 1
-					lower_column_count = lower_column_count + path.lower_columns[run_index]
-					local witness = path.lower_witness[run_index]
-					local row = {path_id = path.id, run = run_index,
-						column_count = path.lower_columns[run_index],
-						lower_y = path.lower[run_index], witness_x = witness.x,
-						witness_z = witness.z, bound_kind = witness.kind,
-						interface_id = witness.interface_id}
-					route_lower_bound_evidence[#route_lower_bound_evidence + 1] = row
-					lower_rows[#lower_rows + 1] = canonical.array({signed(run_index),
-						signed(row.column_count), signed(row.lower_y), signed(row.witness_x),
-						signed(row.witness_z), text(row.bound_kind), text(row.interface_id)})
-				end
-				if final_y > base_y then
-					raised_run_count = raised_run_count + 1
-					local support = path.support[run_index]
-					if not support then fail("raised route run has no lower-bound support") end
-					route_raise_evidence[#route_raise_evidence + 1] = {
-						path_id = path.id, run = run_index, baseline_y = base_y,
-						final_y = final_y, support_run = support.run,
-						support_lower_y = support.lower_y, support_x = support.x,
-						support_z = support.z, support_kind = support.kind,
-						support_id = support.interface_id}
-				end
-				local active = path.ford_cap_by_run[run_index]
-				if active then ford_approach_evidence[#ford_approach_evidence + 1] =
-					deep_copy(active) end
-			end
-			for pin_index = 1, #pin_indices do
-				local run_index = pin_indices[pin_index]
-				local pin = path.pins[run_index]
-				pin_rows[#pin_rows + 1] = canonical.array({signed(run_index),
-					text(pin.pin_kind), text(pin.source_id), signed(pin.y)})
-			end
-
-			local classification_rows = {}
-			local derived_by_run = {}
-			visit_path_surface(path, 1, #path.axis, function(x, z, run_index)
-				local water_class, _, owner, bay_id, hydrology_id =
-					classified_values(x, z)
-				local kind, interface_id = "land_grade", nil
-				if water_class == "planned_water" and
-						(owner == path.owner_a or owner == path.owner_b) then
-					local operation = named_operation_column_at(path, x, z, run_index)
-					if operation then kind, interface_id = operation.kind,
-						operation.interface_id
-					else
-						local datum = clearance_datum_at(x, z, water_class, bay_id,
-							hydrology_id)
-						local ford = ford_cap_at(path, hydrology_id, run_index, datum + 1)
-						if ford then kind, interface_id = "ford", ford.interface_id
-						elseif path.y[run_index] == datum + 1 then kind = "causeway"
-						else kind = "bridge_deck" end
-						local winning_segment = nearest_path_segment_at(x, z,
-							"surface", nil)
-						local visible_derived = not ford and winning_segment and
-							winning_segment.path == path and
-							winning_named_operation_at(x, z) == nil
-						if visible_derived then
-							local row = derived_by_run[run_index]
-							if not row then row = {path_id = path.id, run = run_index,
-								causeway_columns = 0, bridge_columns = 0, rows = {}}
-								derived_by_run[run_index] = row end
-							if kind == "causeway" then
-								row.causeway_columns = row.causeway_columns + 1
-								if lexicographically_before(x, z, row.causeway_witness_x,
-										row.causeway_witness_z) then
-									row.causeway_witness_x, row.causeway_witness_z = x, z
-								end
-							else
-								row.bridge_columns = row.bridge_columns + 1
-								if lexicographically_before(x, z, row.bridge_witness_x,
-										row.bridge_witness_z) then
-									row.bridge_witness_x, row.bridge_witness_z = x, z
-								end
-							end
-							row.rows[#row.rows + 1] = canonical.array({signed(x), signed(z),
-								signed(run_index), text(kind), signed(path.y[run_index])})
-						end
-					end
-				end
-				local encoded = canonical.array({text(path.id), signed(x), signed(z),
-					signed(run_index), text(kind), signed(path.y[run_index]),
-					text(interface_id)})
-				classification_rows[#classification_rows + 1] = encoded
-				complete_classification_rows[#complete_classification_rows + 1] = encoded
-			end)
-			for run_index = 1, #path.axis do
-				local row = derived_by_run[run_index]
-				if row then
-					row.classification_digest = counted_digest(row.rows)
-					row.rows = nil
-					derived_water_evidence[#derived_water_evidence + 1] = row
+				if not runtime_mode then
+					route_exact_pin_evidence[#route_exact_pin_evidence + 1] = {
+						path_id = path.id, run = run_index, pin_kind = pin.pin_kind,
+						source_id = pin.source_id, y = pin.y,
+						baseline_y = path.baseline[run_index],
+						final_y = path.y[run_index]}
 				end
 			end
-			local classification_digest = counted_digest(classification_rows)
-			route_evidence[path_index] = {numeric_id = path_index, id = path.id,
-				kind = path.kind, node_count = #path.axis,
-				baseline_min_y = baseline_min, baseline_max_y = baseline_max,
-				final_min_y = final_min, final_max_y = final_max,
-				maximum_step = maximum_step or 0, exact_pin_count = #pin_indices,
-				water_lower_bound_run_count = lower_run_count,
-				water_lower_bound_column_count = lower_column_count,
-				raised_run_count = raised_run_count,
-				support_witness_count = raised_run_count,
-				baseline_digest = counted_digest(baseline_rows),
-				final_grade_digest = counted_digest(final_rows),
-				exact_pin_digest = counted_digest(pin_rows),
-				lower_bound_digest = counted_digest(lower_rows),
-				classification_digest = classification_digest}
-		end
-
-		for operation_index = 1, #named_water_operations do
-			local operation = named_water_operations[operation_index]
-			local count, minimum, maximum, witness_x, witness_z = 0
-			local rows = {}
-			visit_path_surface(operation.path, operation.first_run,
-				operation.last_run, function(x, z, run_index)
-					if named_operation_column_at(operation.path, x, z, run_index) ==
-							operation then
-						local surface_y = operation.path.y[run_index]
-						count = count + 1
-						minimum = minimum and math.min(minimum, surface_y) or surface_y
-						maximum = maximum and math.max(maximum, surface_y) or surface_y
-						local identity_wins = true
-						for other_index = 1, #named_water_operations do
-							local other = named_water_operations[other_index]
-							if other ~= operation and
-									other.interface_id < operation.interface_id then
-								local other_run = path_surface_run_at(other.path, x, z)
-								if other_run and named_operation_column_at(other.path,
-										x, z, other_run) == other then
-									identity_wins = false
-									break
-								end
-							end
-						end
-						if identity_wins and
-								lexicographically_before(x, z, witness_x, witness_z) then
-							witness_x, witness_z = x, z
-						end
-						rows[#rows + 1] = canonical.array({signed(x), signed(z),
-							signed(run_index), signed(surface_y)})
-					end
-				end)
-			if count == 0 then fail("named operation has empty 2D footprint") end
-			if not witness_x then fail("named operation has no final identity witness") end
-			named_operation_evidence[operation_index] = {
-				interface_id = operation.interface_id, path_id = operation.path.id,
-				kind = operation.kind, footprint_columns = count,
-				min_surface_y = minimum, max_surface_y = maximum,
-				first_witness_x = witness_x, first_witness_z = witness_z,
-				classification_digest = counted_digest(rows)}
-		end
-		visible_surface_classification_digest =
-			counted_digest(complete_classification_rows)
-
-		for path_index = 1, #paths do
-			local path = paths[path_index]
-			for ford_index = 1, #path.fords do
-				local ford = path.fords[ford_index]
-				local count, first_run, last_run = 0
+			if not runtime_mode then
+				local baseline_rows, final_rows, pin_rows, lower_rows = {}, {}, {}, {}
+				local baseline_min, baseline_max, final_min, final_max, maximum_step
+				local lower_run_count, lower_column_count, raised_run_count = 0, 0, 0
 				for run_index = 1, #path.axis do
+					local point = path.axis[run_index]
+					local base_y, final_y = path.baseline[run_index], path.y[run_index]
+					baseline_min = baseline_min and math.min(baseline_min, base_y) or base_y
+					baseline_max = baseline_max and math.max(baseline_max, base_y) or base_y
+					final_min = final_min and math.min(final_min, final_y) or final_y
+					final_max = final_max and math.max(final_max, final_y) or final_y
+					baseline_rows[#baseline_rows + 1] = canonical.array({signed(run_index),
+						signed(point.x), signed(point.z), signed(base_y)})
+					final_rows[#final_rows + 1] = canonical.array({signed(run_index),
+						signed(final_y)})
+					if run_index > 1 then
+						local step = math.abs(final_y - path.y[run_index - 1])
+						maximum_step = math.max(maximum_step or 0, step)
+						if step > 1 then fail("final route step exceeds one at " .. path.id) end
+					end
+					if path.lower[run_index] then
+						lower_run_count = lower_run_count + 1
+						lower_column_count = lower_column_count + path.lower_columns[run_index]
+						local witness = path.lower_witness[run_index]
+						local row = {path_id = path.id, run = run_index,
+							column_count = path.lower_columns[run_index],
+							lower_y = path.lower[run_index], witness_x = witness.x,
+							witness_z = witness.z, bound_kind = witness.kind,
+							interface_id = witness.interface_id}
+						route_lower_bound_evidence[#route_lower_bound_evidence + 1] = row
+						lower_rows[#lower_rows + 1] = canonical.array({signed(run_index),
+							signed(row.column_count), signed(row.lower_y), signed(row.witness_x),
+							signed(row.witness_z), text(row.bound_kind), text(row.interface_id)})
+					end
+					if final_y > base_y then
+						raised_run_count = raised_run_count + 1
+						local support = path.support[run_index]
+						if not support then fail("raised route run has no lower-bound support") end
+						route_raise_evidence[#route_raise_evidence + 1] = {
+							path_id = path.id, run = run_index, baseline_y = base_y,
+							final_y = final_y, support_run = support.run,
+							support_lower_y = support.lower_y, support_x = support.x,
+							support_z = support.z, support_kind = support.kind,
+							support_id = support.interface_id}
+					end
 					local active = path.ford_cap_by_run[run_index]
-					if active and active.interface_id == ford.interface_id then
-						count = count + 1
-						first_run = first_run and math.min(first_run, run_index) or run_index
-						last_run = last_run and math.max(last_run, run_index) or run_index
-					end
+					if active then ford_approach_evidence[#ford_approach_evidence + 1] =
+						deep_copy(active) end
 				end
-				local resume_before_run, resume_after_run
-				if first_run then
-					for run_index = first_run - 1, 1, -1 do
-						local witness = path.lower_witness[run_index]
-						if witness and witness.kind == "ordinary_water" then
-							resume_before_run = run_index
-							break
+				for pin_index = 1, #pin_indices do
+					local run_index = pin_indices[pin_index]
+					local pin = path.pins[run_index]
+					pin_rows[#pin_rows + 1] = canonical.array({signed(run_index),
+						text(pin.pin_kind), text(pin.source_id), signed(pin.y)})
+				end
+
+				local classification_rows = {}
+				local derived_by_run = {}
+				visit_path_surface(path, 1, #path.axis, function(x, z, run_index)
+					local water_class, _, owner, bay_id, hydrology_id =
+						classified_values(x, z)
+					local kind, interface_id = "land_grade", nil
+					if water_class == "planned_water" and
+							(owner == path.owner_a or owner == path.owner_b) then
+						local operation = named_operation_column_at(path, x, z, run_index)
+						if operation then kind, interface_id = operation.kind,
+							operation.interface_id
+						else
+							local datum = clearance_datum_at(x, z, water_class, bay_id,
+								hydrology_id)
+							local ford = ford_cap_at(path, hydrology_id, run_index, datum + 1)
+							if ford then kind, interface_id = "ford", ford.interface_id
+							elseif path.y[run_index] == datum + 1 then kind = "causeway"
+							else kind = "bridge_deck" end
+							local winning_segment = nearest_path_segment_at(x, z,
+								"surface", nil)
+							local visible_derived = not ford and winning_segment and
+								winning_segment.path == path and
+								winning_named_operation_at(x, z) == nil
+							if visible_derived then
+								local row = derived_by_run[run_index]
+								if not row then row = {path_id = path.id, run = run_index,
+									causeway_columns = 0, bridge_columns = 0, rows = {}}
+									derived_by_run[run_index] = row end
+								if kind == "causeway" then
+									row.causeway_columns = row.causeway_columns + 1
+									if lexicographically_before(x, z, row.causeway_witness_x,
+											row.causeway_witness_z) then
+										row.causeway_witness_x, row.causeway_witness_z = x, z
+									end
+								else
+									row.bridge_columns = row.bridge_columns + 1
+									if lexicographically_before(x, z, row.bridge_witness_x,
+											row.bridge_witness_z) then
+										row.bridge_witness_x, row.bridge_witness_z = x, z
+									end
+								end
+								row.rows[#row.rows + 1] = canonical.array({signed(x), signed(z),
+									signed(run_index), text(kind), signed(path.y[run_index])})
+							end
 						end
 					end
-					for run_index = last_run + 1, #path.axis do
-						local witness = path.lower_witness[run_index]
-						if witness and witness.kind == "ordinary_water" then
-							resume_after_run = run_index
-							break
-						end
+					local encoded = canonical.array({text(path.id), signed(x), signed(z),
+						signed(run_index), text(kind), signed(path.y[run_index]),
+						text(interface_id)})
+					classification_rows[#classification_rows + 1] = encoded
+					complete_classification_rows[#complete_classification_rows + 1] = encoded
+				end)
+				for run_index = 1, #path.axis do
+					local row = derived_by_run[run_index]
+					if row then
+						row.classification_digest = counted_digest(row.rows)
+						row.rows = nil
+						derived_water_evidence[#derived_water_evidence + 1] = row
 					end
 				end
-				ford_approach_summary_evidence[#ford_approach_summary_evidence + 1] = {
-					interface_id = ford.interface_id, path_id = path.id,
-					ford_run = ford.ford_run, ford_pin_y = ford.ford_pin_y,
-					capped_run_count = count, first_run = first_run, last_run = last_run,
-					resume_before_run = resume_before_run,
-					resume_after_run = resume_after_run}
+				local classification_digest = counted_digest(classification_rows)
+				route_evidence[path_index] = {numeric_id = path_index, id = path.id,
+					kind = path.kind, node_count = #path.axis,
+					baseline_min_y = baseline_min, baseline_max_y = baseline_max,
+					final_min_y = final_min, final_max_y = final_max,
+					maximum_step = maximum_step or 0, exact_pin_count = #pin_indices,
+					water_lower_bound_run_count = lower_run_count,
+					water_lower_bound_column_count = lower_column_count,
+					raised_run_count = raised_run_count,
+					support_witness_count = raised_run_count,
+					baseline_digest = counted_digest(baseline_rows),
+					final_grade_digest = counted_digest(final_rows),
+					exact_pin_digest = counted_digest(pin_rows),
+					lower_bound_digest = counted_digest(lower_rows),
+					classification_digest = classification_digest}
 			end
+		end
+
+		if not runtime_mode then
+			for operation_index = 1, #named_water_operations do
+				local operation = named_water_operations[operation_index]
+				local count, minimum, maximum, witness_x, witness_z = 0
+				local rows = {}
+				visit_path_surface(operation.path, operation.first_run,
+					operation.last_run, function(x, z, run_index)
+						if named_operation_column_at(operation.path, x, z, run_index) ==
+								operation then
+							local surface_y = operation.path.y[run_index]
+							count = count + 1
+							minimum = minimum and math.min(minimum, surface_y) or surface_y
+							maximum = maximum and math.max(maximum, surface_y) or surface_y
+							local identity_wins = true
+							for other_index = 1, #named_water_operations do
+								local other = named_water_operations[other_index]
+								if other ~= operation and
+										other.interface_id < operation.interface_id then
+									local other_run = path_surface_run_at(other.path, x, z)
+									if other_run and named_operation_column_at(other.path,
+											x, z, other_run) == other then
+										identity_wins = false
+										break
+									end
+								end
+							end
+							if identity_wins and
+									lexicographically_before(x, z, witness_x, witness_z) then
+								witness_x, witness_z = x, z
+							end
+							rows[#rows + 1] = canonical.array({signed(x), signed(z),
+								signed(run_index), signed(surface_y)})
+						end
+					end)
+				if count == 0 then fail("named operation has empty 2D footprint") end
+				if not witness_x then fail("named operation has no final identity witness") end
+				named_operation_evidence[operation_index] = {
+					interface_id = operation.interface_id, path_id = operation.path.id,
+					kind = operation.kind, footprint_columns = count,
+					min_surface_y = minimum, max_surface_y = maximum,
+					first_witness_x = witness_x, first_witness_z = witness_z,
+					classification_digest = counted_digest(rows)}
+			end
+			visible_surface_classification_digest =
+				counted_digest(complete_classification_rows)
+
+			for path_index = 1, #paths do
+				local path = paths[path_index]
+				for ford_index = 1, #path.fords do
+					local ford = path.fords[ford_index]
+					local count, first_run, last_run = 0
+					for run_index = 1, #path.axis do
+						local active = path.ford_cap_by_run[run_index]
+						if active and active.interface_id == ford.interface_id then
+							count = count + 1
+							first_run = first_run and math.min(first_run, run_index) or run_index
+							last_run = last_run and math.max(last_run, run_index) or run_index
+						end
+					end
+					local resume_before_run, resume_after_run
+					if first_run then
+						for run_index = first_run - 1, 1, -1 do
+							local witness = path.lower_witness[run_index]
+							if witness and witness.kind == "ordinary_water" then
+								resume_before_run = run_index
+								break
+							end
+						end
+						for run_index = last_run + 1, #path.axis do
+							local witness = path.lower_witness[run_index]
+							if witness and witness.kind == "ordinary_water" then
+								resume_after_run = run_index
+								break
+							end
+						end
+					end
+					ford_approach_summary_evidence[#ford_approach_summary_evidence + 1] = {
+						interface_id = ford.interface_id, path_id = path.id,
+						ford_run = ford.ford_run, ford_pin_y = ford.ford_pin_y,
+						capped_run_count = count, first_run = first_run, last_run = last_run,
+						resume_before_run = resume_before_run,
+						resume_after_run = resume_after_run}
+					end
+				end
 		end
 
 		local function landing_member(landing, x, z)
@@ -3049,47 +3126,49 @@ return function(dependencies)
 		end
 
 		landing_evidence = {}
-		for landing_index = 1, #landing_grades do
-			local landing = landing_grades[landing_index]
-			local min_x, max_x, min_z, max_z
-			for point_index = 1, #landing.centreline do
-				local point = landing.centreline[point_index]
-				min_x = min_x and math.min(min_x, point.x) or point.x
-				max_x = max_x and math.max(max_x, point.x) or point.x
-				min_z = min_z and math.min(min_z, point.z) or point.z
-				max_z = max_z and math.max(max_z, point.z) or point.z
-			end
-			local land_columns, graded_columns, water_unchanged, mainland_unchanged =
-				0, 0, 0, 0
-			local witness_x, witness_z, rows = nil, nil, {}
-			for z = min_z - landing.width, max_z + landing.width do
-				for x = min_x - landing.width, max_x + landing.width do
-					if landing_member(landing, x, z) then
-						local water_class, _, owner = classified_values(x, z)
-						local result = "unchanged"
-						if water_class == "land" and owner == landing.zone_numeric_id then
-							land_columns, graded_columns = land_columns + 1,
-								graded_columns + 1
-							result = "landing_grade"
-							if lexicographically_before(x, z, witness_x, witness_z) then
-								witness_x, witness_z = x, z
-							end
-						elseif water_class ~= "land" then
-							water_unchanged = water_unchanged + 1
-						else mainland_unchanged = mainland_unchanged + 1 end
-						rows[#rows + 1] = canonical.array({signed(x), signed(z),
-							text(water_class), signed(owner or 0), text(result)})
+		if not runtime_mode then
+			for landing_index = 1, #landing_grades do
+				local landing = landing_grades[landing_index]
+				local min_x, max_x, min_z, max_z
+				for point_index = 1, #landing.centreline do
+					local point = landing.centreline[point_index]
+					min_x = min_x and math.min(min_x, point.x) or point.x
+					max_x = max_x and math.max(max_x, point.x) or point.x
+					min_z = min_z and math.min(min_z, point.z) or point.z
+					max_z = max_z and math.max(max_z, point.z) or point.z
+				end
+				local land_columns, graded_columns, water_unchanged, mainland_unchanged =
+					0, 0, 0, 0
+				local witness_x, witness_z, rows = nil, nil, {}
+				for z = min_z - landing.width, max_z + landing.width do
+					for x = min_x - landing.width, max_x + landing.width do
+						if landing_member(landing, x, z) then
+							local water_class, _, owner = classified_values(x, z)
+							local result = "unchanged"
+							if water_class == "land" and owner == landing.zone_numeric_id then
+								land_columns, graded_columns = land_columns + 1,
+									graded_columns + 1
+								result = "landing_grade"
+								if lexicographically_before(x, z, witness_x, witness_z) then
+									witness_x, witness_z = x, z
+								end
+							elseif water_class ~= "land" then
+								water_unchanged = water_unchanged + 1
+							else mainland_unchanged = mainland_unchanged + 1 end
+							rows[#rows + 1] = canonical.array({signed(x), signed(z),
+								text(water_class), signed(owner or 0), text(result)})
+						end
 					end
 				end
+				landing_evidence[landing_index] = {id = landing.id,
+					boat_path_id = landing.boat_path_id, route_id = landing.route_id,
+					surface_y = landing.surface_y, corridor_land_columns = land_columns,
+					graded_columns = graded_columns,
+					water_columns_unchanged = water_unchanged,
+					mainland_columns_unchanged = mainland_unchanged,
+					witness_x = witness_x, witness_z = witness_z,
+						classification_digest = counted_digest(rows)}
 			end
-			landing_evidence[landing_index] = {id = landing.id,
-				boat_path_id = landing.boat_path_id, route_id = landing.route_id,
-				surface_y = landing.surface_y, corridor_land_columns = land_columns,
-				graded_columns = graded_columns,
-				water_columns_unchanged = water_unchanged,
-				mainland_columns_unchanged = mainland_unchanged,
-				witness_x = witness_x, witness_z = witness_z,
-				classification_digest = counted_digest(rows)}
 		end
 
 		local operation_grid = {}
@@ -3435,20 +3514,28 @@ return function(dependencies)
 			return violations
 		end
 
-		local final_axis_violations = scan_final_axes(diagnose_final_axis)
+		local final_axis_violations = runtime_mode and {} or
+			scan_final_axes(diagnose_final_axis)
 		if diagnose_final_axis then return nil, final_axis_violations end
-		local public_session = build_public_session()
+		local public_session = build_public_session(runtime_mode)
 		construction_complete = true
 		return public_session, final_axis_violations
 	end
 
 	function module.new(full_seed_string)
-		local session = construct(full_seed_string, false)
+		local session = construct(full_seed_string, false, nil)
+		return session
+	end
+
+	function module.new_runtime(full_seed_string)
+		-- Live mapgen needs the same query closures, but none of the construction-
+		-- time ledgers and canonical digests already frozen by R3-R7 evidence.
+		local session = construct(full_seed_string, false, true)
 		return session
 	end
 
 	function module.diagnose_final_axis_violations(full_seed_string)
-		local _, violations = construct(full_seed_string, true)
+		local _, violations = construct(full_seed_string, true, nil)
 		return deep_copy(violations)
 	end
 

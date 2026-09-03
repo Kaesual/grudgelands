@@ -38,7 +38,7 @@ derived_changed="${partial}.changed-lua"
 	git -C "$repo" diff --name-only --diff-filter=AM d6002a2 -- mods
 	git -C "$repo" ls-files --others --exclude-standard -- mods
 } | sort -u | rg '[.]lua$' >"$derived_changed"
-[[ "$(awk 'END {print NR + 0}' "$derived_changed")" -eq 71 ]] || {
+[[ "$(awk 'END {print NR + 0}' "$derived_changed")" -eq 74 ]] || {
 	echo "WP40 R7 source audit: baseline-derived changed Lua population differs" >&2
 	exit 1
 }
@@ -354,7 +354,7 @@ done
 micro_roster="$repo/tools/wp40/r7/micro_inputs.txt"
 changed_lua_roster="$repo/tools/wp40/r7/changed_production_lua.txt"
 changed_lua_sha="$(sha256sum "$changed_lua_roster" | awk '{print $1}')"
-[[ "$(micro_field executed_module_population)" == 71 &&
+[[ "$(micro_field executed_module_population)" == 74 &&
 	"$(micro_field executed_module_roster_sha256)" == "$changed_lua_sha" &&
 	"$(micro_field canonical_output_filename)" == wp40-r7-micro-kat-output.tsv &&
 	"$(micro_field luajit_log_filename)" == wp40-r7-micro-kat-luajit.log &&
@@ -554,7 +554,7 @@ rm -f -- "$input_hashes"
 	printf 'count\tvm_set_param2_data\t1\n'
 	printf 'count\tvm_update_liquids\t1\n'
 	printf 'count\tmapgen_default_settings\t8\n'
-	printf 'count\tchanged_production_lua\t71\n'
+	printf 'count\tchanged_production_lua\t74\n'
 	printf 'count\tdeleted_legacy_lua\t7\n'
 	printf 'count\tmod_dependency_nodes\t%s\n' "$dependency_node_count"
 	printf 'count\tmod_dependency_edges\t%s\n' "$dependency_edge_count"

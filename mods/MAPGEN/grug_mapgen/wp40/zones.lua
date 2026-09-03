@@ -227,7 +227,10 @@ return function(dependencies)
 	}
 
 	local function construct(full_seed_string, configured_water_level,
-			planner_source_requested)
+			planner_source_requested, runtime_mode)
+		if runtime_mode ~= nil and runtime_mode ~= true then
+			fail("runtime construction mode differs")
+		end
 		if configured_water_level ~= WATER_LEVEL then
 			fail("configured water level differs from exact integer 1")
 		end
@@ -283,10 +286,13 @@ return function(dependencies)
 			horizontal_session = horizontal,
 		})
 		if type(height_module) ~= "table" or
-				type(height_module.new) ~= "function" then
+				type(height_module.new) ~= "function" or
+				(runtime_mode and type(height_module.new_runtime) ~= "function") then
 			fail("height module seam differs")
 		end
-		local height = height_module.new(full_seed_string)
+		local height_constructor = runtime_mode and height_module.new_runtime or
+			height_module.new
+		local height = height_constructor(full_seed_string)
 		if type(height) ~= "table" or
 				type(height.terrain_height_at) ~= "function" or
 				type(height.water_surface_at) ~= "function" or
@@ -294,7 +300,8 @@ return function(dependencies)
 				type(height.hydrology_transition_values_at) ~= "function" or
 				type(height.selected_anchor_3d_by_id) ~= "function" or
 				type(height.hard_protection_volumes) ~= "function" or
-				type(height.canonical_kat_digest) ~= "function" or
+				(not runtime_mode and
+				type(height.canonical_kat_digest) ~= "function") or
 				type(height.metrics) ~= "function" then
 			fail("height session seam differs")
 		end
@@ -839,23 +846,26 @@ return function(dependencies)
 		end
 
 		local hard_membership_counts = {}
-		for hard_row_index = 1, #hard_rows do
-			local row = hard_rows[hard_row_index]
-			local count = 0
-			for z = row.bbox.min_z, row.bbox.max_z - 1 do
-				for x = row.bbox.min_x, row.bbox.max_x - 1 do
-					if hard_horizontal_member(row, x, z) then
-						count = count + 1
-						local water_class, _, owner =
-							horizontal.classification_values_at(x, z)
-						if not OWNER_CLASSES[water_class] or not zone_by_numeric[owner] then
-							fail("hard footprint overlaps immutable/ownerless water")
+		if not runtime_mode then
+			for hard_row_index = 1, #hard_rows do
+				local row = hard_rows[hard_row_index]
+				local count = 0
+				for z = row.bbox.min_z, row.bbox.max_z - 1 do
+					for x = row.bbox.min_x, row.bbox.max_x - 1 do
+						if hard_horizontal_member(row, x, z) then
+							count = count + 1
+							local water_class, _, owner =
+								horizontal.classification_values_at(x, z)
+							if not OWNER_CLASSES[water_class] or
+									not zone_by_numeric[owner] then
+								fail("hard footprint overlaps immutable/ownerless water")
+							end
 						end
 					end
 				end
+				if count == 0 then fail("hard footprint is empty") end
+				hard_membership_counts[hard_row_index] = count
 			end
-			if count == 0 then fail("hard footprint is empty") end
-			hard_membership_counts[hard_row_index] = count
 		end
 
 		local route_index_metrics = index128.sparse_metrics(route_index)
@@ -1173,107 +1183,109 @@ return function(dependencies)
 		end
 		session.compatibility = compatibility
 
-		local horizontal_kat_digest = horizontal.canonical_kat_digest()
-		local height_kat_digest = height.canonical_kat_digest()
-		local evidence_hard = {}
-		for hard_row_index = 1, #hard_rows do
-			evidence_hard[hard_row_index] = deep_copy(hard_rows[hard_row_index].record)
-			evidence_hard[hard_row_index].membership_columns =
-				hard_membership_counts[hard_row_index]
-			evidence_hard[hard_row_index].bbox =
-				deep_copy(hard_rows[hard_row_index].bbox)
-		end
-		local artifact_evidence = {
-			schema = ZONES_SCHEMA,
-			sparse_schema = SPARSE_SCHEMA,
-			layout_id = source.layout_id,
-			layout_revision_id = source.layout_revision_id,
-			full_seed = full_seed_string,
-			water_level = WATER_LEVEL,
-			bounds = {min_x = MIN_X, max_x = MAX_X,
-				min_z = MIN_Z, max_z = MAX_Z},
-			zone_records = deep_copy(zone_records),
-			neighbor_edges = deep_copy(neighbor_edges),
-			boat_paths = deep_copy(travel_records),
-			anchors = deep_copy(anchor_records),
-			hard_protection = evidence_hard,
-			logical_biome = {
-				cell_size = cell_size,
-				min_cell_x = min_cell_x,
-				max_cell_x = max_cell_x,
-				min_cell_z = min_cell_z,
-				max_cell_z = max_cell_z,
-				site_count = logical_site_count,
-				digest = logical_site_digest,
-			},
-			path_population = {features = #path_rows, segments = #route_segments},
-			hydrology_population = {features = #source.hydrology,
-				segments = #hydrology_segments},
-			route_index = deep_copy(route_index_metrics),
-			hydrology_index = deep_copy(hydrology_index_metrics),
-			hard_index = deep_copy(hard_index_metrics),
-			horizontal_canonical_kat_digest = horizontal_kat_digest,
-			height_canonical_kat_digest = height_kat_digest,
-			height_relief_lattice_digest = height.relief_lattice_digest(),
-		}
+		if not runtime_mode then
+			local horizontal_kat_digest = horizontal.canonical_kat_digest()
+			local height_kat_digest = height.canonical_kat_digest()
+			local evidence_hard = {}
+			for hard_row_index = 1, #hard_rows do
+				evidence_hard[hard_row_index] = deep_copy(hard_rows[hard_row_index].record)
+				evidence_hard[hard_row_index].membership_columns =
+					hard_membership_counts[hard_row_index]
+				evidence_hard[hard_row_index].bbox =
+					deep_copy(hard_rows[hard_row_index].bbox)
+			end
+			local artifact_evidence = {
+				schema = ZONES_SCHEMA,
+				sparse_schema = SPARSE_SCHEMA,
+				layout_id = source.layout_id,
+				layout_revision_id = source.layout_revision_id,
+				full_seed = full_seed_string,
+				water_level = WATER_LEVEL,
+				bounds = {min_x = MIN_X, max_x = MAX_X,
+					min_z = MIN_Z, max_z = MAX_Z},
+				zone_records = deep_copy(zone_records),
+				neighbor_edges = deep_copy(neighbor_edges),
+				boat_paths = deep_copy(travel_records),
+				anchors = deep_copy(anchor_records),
+				hard_protection = evidence_hard,
+				logical_biome = {
+					cell_size = cell_size,
+					min_cell_x = min_cell_x,
+					max_cell_x = max_cell_x,
+					min_cell_z = min_cell_z,
+					max_cell_z = max_cell_z,
+					site_count = logical_site_count,
+					digest = logical_site_digest,
+				},
+				path_population = {features = #path_rows, segments = #route_segments},
+				hydrology_population = {features = #source.hydrology,
+					segments = #hydrology_segments},
+				route_index = deep_copy(route_index_metrics),
+				hydrology_index = deep_copy(hydrology_index_metrics),
+				hard_index = deep_copy(hard_index_metrics),
+				horizontal_canonical_kat_digest = horizontal_kat_digest,
+				height_canonical_kat_digest = height_kat_digest,
+				height_relief_lattice_digest = height.relief_lattice_digest(),
+			}
 
-		local function kat_text(value)
-			return canonical.text(value or "")
-		end
-		local function kat_signed(value)
-			return canonical.signed(value or 0)
-		end
-		local kat_rows = {
-			canonical.array({kat_text("identity"), kat_text(ZONES_SCHEMA),
-				kat_text(SPARSE_SCHEMA), kat_text(source.layout_id),
-				kat_text(source.layout_revision_id), kat_text(full_seed_string),
-				kat_signed(WATER_LEVEL), kat_text(horizontal_kat_digest),
-				kat_text(height_kat_digest), kat_text(logical_site_digest)}),
-			canonical.array({kat_text("counts"), kat_signed(#zone_records),
-				kat_signed(#neighbor_edges), kat_signed(#travel_records),
-				kat_signed(#anchor_records), kat_signed(#hard_rows),
-				kat_signed(#path_rows), kat_signed(#route_segments),
-				kat_signed(#source.hydrology), kat_signed(#hydrology_segments),
-				kat_signed(logical_site_count)}),
-		}
-		for zone_index = 1, #zone_records do
-			local row = zone_records[zone_index]
-			kat_rows[#kat_rows + 1] = canonical.array({kat_text("zone"),
-				kat_signed(zone_index), kat_text(row.id), kat_text(row.display_name),
-				kat_text(row.macro_region), kat_text(row.race_region),
-				kat_text(row.faction), kat_text(row.territory_rule),
-				kat_text(row.pvp_rule), kat_signed(row.level_min),
-				kat_signed(row.level_max), kat_text(row.primary_relief_id),
-				kat_signed(row.difficulty_target), kat_signed(row.hub.x),
-				kat_signed(row.hub.z)})
-		end
-		for _, point in ipairs({
-			{0, 0, 0}, {-1800, -1500, -700}, {1800, 1500, -701},
-			{-3740, -3340, -1000}, {3740, 3340, 1},
-		}) do
-			local x, z, y = point[1], point[2], point[3]
-			kat_rows[#kat_rows + 1] = canonical.array({kat_text("sample"),
-				kat_signed(x), kat_signed(y), kat_signed(z),
-				kat_text(session.id_at(x, z)), kat_text(session.biome_at(x, z)),
-				kat_text(session.water_class_at(x, z)),
-				kat_text(session.territory_rule_at({x = x, y = y, z = z})),
-				kat_text(session.pvp_rule_at({x = x, y = y, z = z})),
-				kat_signed(session.surface_mob_level_at(x, z)),
-				kat_signed(session.mob_level_at({x = x, y = y, z = z})),
-				kat_signed(session.guard_level_at({x = x, y = y, z = z})),
-				kat_signed(session.terrain_height_at(x, z))})
-		end
-		local canonical_kat = canonical.encode(canonical.array(kat_rows))
-		local canonical_kat_digest = canonical.hex(counted_sha(canonical_kat))
+			local function kat_text(value)
+				return canonical.text(value or "")
+			end
+			local function kat_signed(value)
+				return canonical.signed(value or 0)
+			end
+			local kat_rows = {
+				canonical.array({kat_text("identity"), kat_text(ZONES_SCHEMA),
+					kat_text(SPARSE_SCHEMA), kat_text(source.layout_id),
+					kat_text(source.layout_revision_id), kat_text(full_seed_string),
+					kat_signed(WATER_LEVEL), kat_text(horizontal_kat_digest),
+					kat_text(height_kat_digest), kat_text(logical_site_digest)}),
+				canonical.array({kat_text("counts"), kat_signed(#zone_records),
+					kat_signed(#neighbor_edges), kat_signed(#travel_records),
+					kat_signed(#anchor_records), kat_signed(#hard_rows),
+					kat_signed(#path_rows), kat_signed(#route_segments),
+					kat_signed(#source.hydrology), kat_signed(#hydrology_segments),
+					kat_signed(logical_site_count)}),
+			}
+			for zone_index = 1, #zone_records do
+				local row = zone_records[zone_index]
+				kat_rows[#kat_rows + 1] = canonical.array({kat_text("zone"),
+					kat_signed(zone_index), kat_text(row.id), kat_text(row.display_name),
+					kat_text(row.macro_region), kat_text(row.race_region),
+					kat_text(row.faction), kat_text(row.territory_rule),
+					kat_text(row.pvp_rule), kat_signed(row.level_min),
+					kat_signed(row.level_max), kat_text(row.primary_relief_id),
+					kat_signed(row.difficulty_target), kat_signed(row.hub.x),
+					kat_signed(row.hub.z)})
+			end
+			for _, point in ipairs({
+				{0, 0, 0}, {-1800, -1500, -700}, {1800, 1500, -701},
+				{-3740, -3340, -1000}, {3740, 3340, 1},
+			}) do
+				local x, z, y = point[1], point[2], point[3]
+				kat_rows[#kat_rows + 1] = canonical.array({kat_text("sample"),
+					kat_signed(x), kat_signed(y), kat_signed(z),
+					kat_text(session.id_at(x, z)), kat_text(session.biome_at(x, z)),
+					kat_text(session.water_class_at(x, z)),
+					kat_text(session.territory_rule_at({x = x, y = y, z = z})),
+					kat_text(session.pvp_rule_at({x = x, y = y, z = z})),
+					kat_signed(session.surface_mob_level_at(x, z)),
+					kat_signed(session.mob_level_at({x = x, y = y, z = z})),
+					kat_signed(session.guard_level_at({x = x, y = y, z = z})),
+					kat_signed(session.terrain_height_at(x, z))})
+			end
+			local canonical_kat = canonical.encode(canonical.array(kat_rows))
+			local canonical_kat_digest = canonical.hex(counted_sha(canonical_kat))
 
-		function session.canonical_kat()
-			return canonical_kat
-		end
-		function session.canonical_kat_digest()
-			return canonical_kat_digest
-		end
-		function session.artifact_evidence()
-			return deep_copy(artifact_evidence)
+			function session.canonical_kat()
+				return canonical_kat
+			end
+			function session.canonical_kat_digest()
+				return canonical_kat_digest
+			end
+			function session.artifact_evidence()
+				return deep_copy(artifact_evidence)
+			end
 		end
 		function session.metrics()
 			local height_metrics = height.metrics()
@@ -1465,13 +1477,25 @@ return function(dependencies)
 	end
 
 	function module.new(full_seed_string, configured_water_level)
-		local session = construct(full_seed_string, configured_water_level, false)
+		local session = construct(full_seed_string, configured_water_level, false,
+			nil)
+		return session
+	end
+
+	function module.new_runtime(full_seed_string, configured_water_level)
+		local session = construct(full_seed_string, configured_water_level, false,
+			true)
 		return session
 	end
 
 	function module.new_with_planner_source(full_seed_string,
 			configured_water_level)
-		return construct(full_seed_string, configured_water_level, true)
+		return construct(full_seed_string, configured_water_level, true, nil)
+	end
+
+	function module.new_with_planner_source_runtime(full_seed_string,
+			configured_water_level)
+		return construct(full_seed_string, configured_water_level, true, true)
 	end
 
 	return module

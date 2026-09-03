@@ -134,19 +134,27 @@ return function(repo)
 		previous = relative
 	end
 	assert(changed_file:close())
-	check(changed_count == 71, "changed production Lua population differs")
+	check(changed_count == 74, "changed production Lua population differs")
 	row("source/changed_production_lua_count", changed_count)
 	row("source/changed_production_lua_sha256",
 		hex_sha256(table.concat(changed_rows)))
 
 	row("schema", "grug_wp40_r7_micro_kat_v1")
 
+	-- These three factories became production changes in R8's cold-start fix.
+	-- Their heavyweight constructors belong to the full integration KAT, while
+	-- the compact fallback pair still executes their exact top-level bytes.
+	check(type(dofile(wp40 .. "/height.lua")) == "function" and
+		type(dofile(wp40 .. "/r5.lua")) == "function" and
+		type(dofile(wp40 .. "/zones.lua")) == "function",
+		"R8 runtime factory modules did not load")
+
 	-- Drive the real r7_runtime factory and build control flow through exact
 	-- live-setting validation and the complete assembly/manifest/evidence-mode
 	-- sequence.  Its heavyweight collaborators are closed stubs here; the real
 	-- writer/successor transaction below exercises the material data path.
 	do
-	local runtime_calls = {constructor = 0, manifest_new = 0,
+	local runtime_calls = {constructor = 0, runtime_constructor = 0, manifest_new = 0,
 		manifest_validate = 0, content = 0, payload = 0}
 	local runtime_session, runtime_writer, runtime_zones = {}, {}, {}
 	local runtime_roster = {schema = "grug_wp40_r7_anchor_roster_v1",
@@ -164,7 +172,12 @@ return function(repo)
 		return runtime_session, runtime_writer, runtime_zones,
 			runtime_fixture_stub, runtime_identity
 	end
+	local function runtime_live_constructor()
+		runtime_calls.runtime_constructor = runtime_calls.runtime_constructor + 1
+		return runtime_constructor()
+	end
 	local runtime_r6_module = {new = runtime_constructor,
+		new_runtime = runtime_live_constructor,
 		new_capture = runtime_constructor, new_evidence = runtime_constructor}
 	local runtime_content_set = {
 		production = {schema = "grug_wp40_r7_production_r6_content_v1"},
@@ -268,17 +281,24 @@ return function(repo)
 	expect_failure(function()
 		runtime_module.build({}, nil, "invalid")
 	end, "evidence mode differs")
+	local runtime_live = runtime_module.build({schema = "micro_native"})
+	check(runtime_live.session == runtime_session and
+		runtime_live.writer == runtime_writer and
+		runtime_live.zones_session == runtime_zones and
+		runtime_live.evidence == nil and runtime_calls.runtime_constructor == 1,
+		"bounded live runtime construction differs")
 	local runtime_built = runtime_module.build({schema = "micro_native"}, nil, true)
 	check(runtime_built.session == runtime_session and
 		runtime_built.writer == runtime_writer and
 		runtime_built.zones_session == runtime_zones and
 		type(runtime_built.evidence) == "table" and
-		runtime_calls.constructor == 2 and runtime_calls.content == 1 and
-		runtime_calls.payload == 1 and runtime_calls.manifest_new == 1 and
-		runtime_calls.manifest_validate == 1,
+		runtime_calls.constructor == 3 and runtime_calls.content == 2 and
+		runtime_calls.payload == 2 and runtime_calls.manifest_new == 2 and
+		runtime_calls.manifest_validate == 2,
 		"bounded r7_runtime assembly control flow differs")
 	row("runtime/bounded_build", table.concat({runtime_calls.constructor,
-		runtime_calls.content, runtime_calls.payload, runtime_calls.manifest_new,
+		runtime_calls.runtime_constructor, runtime_calls.content,
+		runtime_calls.payload, runtime_calls.manifest_new,
 		runtime_calls.manifest_validate}, "/"))
 	end
 
@@ -1411,6 +1431,8 @@ return function(repo)
 	check(type(map_adapter_factory) == "function",
 		"R5 map-adapter factory did not load")
 	local settlement_factory = dofile(wp40 .. "/r6_settlement.lua")
+	check(type(settlement_factory.new_runtime) == "function",
+		"R6 runtime settlement constructor did not load")
 	local micro_allocator = {}
 	function micro_allocator.new_array() return {} end
 	function micro_allocator.new_map() return {} end

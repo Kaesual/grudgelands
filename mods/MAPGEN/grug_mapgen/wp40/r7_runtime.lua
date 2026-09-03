@@ -125,6 +125,9 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		raw_sha256 = raw_sha256, hash_factory = hash_factory,
 		content_factory = r6_content_factory, templates_factory = r6_templates_factory,
 		planner_factory = r6_planner_factory, settlement_factory = r6_settlement_factory})
+	if type(r6_module.new_runtime) ~= "function" then
+		fail("R6 runtime constructor differs")
+	end
 	local r7_manifest_module = r7_manifest_factory(canonical, raw_sha256)
 	local r6_manifest = r7_r6_manifest()
 	local template_source = template_source_factory(core_api, schematic_directory)
@@ -166,7 +169,9 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		local constructor
 		if evidence_mode == "horizontal" then constructor = r6_module.new_evidence
 		elseif evidence_mode == true then constructor = r6_module.new_capture
-		else constructor = r6_module.new end
+		-- Offline evidence keeps the exhaustive constructors. The live callback
+		-- builds only the query/writer state needed to generate actual mapblocks.
+		else constructor = r6_module.new_runtime end
 		local session, writer, zones_session, settlement_fixture, r6_identity =
 			constructor(full_seed, 1,
 			r6_manifest, content_set.production, mapgen_context, projection,
