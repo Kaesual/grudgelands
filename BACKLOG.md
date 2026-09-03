@@ -65,6 +65,7 @@ window. Rules:
 | WP42 | Bounded war-front life: implement `world_zones.md` §16's sixteen clash anchors across eight activity zones, one matched four-vs-four clash per zone, deterministic 8–14-minute windows, activation/withdrawal caps, no catch-up/refill, exact targeting and player-involvement loot, with no capture or persistent border changes. Anchor to the final Battlegrounds/offshore-front map; WP13 owns surrounding structure art | open; design-ready, behind map and PvP | WP13, WP40, WP41 |
 | WP43 | **Material Progression Retrofit:** replace the shipped WP25 legacy material contract without rewriting its Completion Record. Migrate Emberstone/Mese to Emberglass, Grudgesteel to Abyssal Steel and every old item/node/texture/API reference to the final namespaces; preserve useful six-stratum mapgen while replacing `maxlevel`/`leveldiff` access with exact natural pick-depth checks and a separate minimum resource-harvest tier. Publish the six-tier material registry, G1/G2 and cultural-material ids, race-region/depth placement data, migration aliases where safe, fresh-world/migration diagnostics and explicit six-pick test helpers. No retrofit result is considered shipped until this WP completes | ✅ shipped 2026-08-12 (`a8c80f9`, `429300e`, `fdb95ca`, `212ad54`, `4089410`, `72b4632`, `a903603`, `dc19023`): canonical six-tier depth/material registry; 15 natural resources, 12 processed concepts and complete G1/G2/cultural/wood/race-region/density data; Emberglass/Abyssal Steel namespaces and one-hop saved-world aliases; explicit generated-ground taxonomy; protection-first depth/harvest transaction with ×4/×6/×8/×10 no-settlement shatter; canonical storage derivatives; zero `level`/groupcap-`maxlevel` runtime authority; startup diagnostics and real Lua 5.1 integration/source audits. Independent Full Review found 2 High, 5 Medium and 1 Low; the focused re-review found one Medium residue. All findings were fixed and the final review was clean; headless gates pass; **NOT runtime tested yet** | WP25 ✅ |
 | WP44 | **Economy Rebase:** migrate the shipped WP7 legacy economy without rewriting its Completion Record. Implement the fixed Common-weapon axis 25c/65c/1s60c/4s/10s/25s and derived slot tables, ceiling-rounded 5% buy-back, revised material/gem/Gold/Abyssal/trophy values and the 50%-of-Common cultural-master service fees. Add a reproducible Income Ledger that measures reliable tier-appropriate net solo income after repairs/consumables and excludes rare jackpots, world bosses and player trade; use it to calibrate Claim Stone upgrade/additional-stone costs and the four mount targets (15m/45m/2h/5h) with the published rounding rules. Keep money ledger-only and rerun every anti-profit-loop/trader-substitution audit | open; design-ready against WP43's shipped final material ids; supplementary non-authoritative preflight: [wp44-income-ledger-preflight.md](docs/research/wp44-income-ledger-preflight.md) | WP7 ✅, WP43 |
+| WP45 | **Safe character-creation stasis:** while faction, race or class is missing, immediately freeze the player and make them engine-immortal, present faction → race → class on an opaque dark backdrop, and prepare the selected race start asynchronously behind the remaining UI. Teleport exactly once and restore the player's prior physics/armor state only after both character creation and the emerge succeed; reconnects reconstruct the transient state, stale callbacks cannot release a later session, and failed emerges remain safely retryable. Do not add a physical lobby, mapgen content, persistent creation flags or a fresh-world requirement | ✅ shipped 2026-09-03 (`8a51a39`, `737f1e7`): immediate and throttled compare-before-write stasis; opaque mandatory forms; split prepare/commit spawn loading; transient first-class choice; exact faction/race cache binding; coordinated admin changes; dead-incomplete recovery; retry and reconnect safety. The compact real-code callback harness covers normal/prefetched/failed/retried/stale/admin/dead/competing-physics paths; final PUC 5.1 and LuaJIT digests are byte-identical. Independent [GPT-5.6 Sol review](docs/research/wp45-review.md) found 0 Critical / 1 High / 3 Medium / 1 Low; one fix round closed all findings and the focused re-review was clean. Classification: non-trivial; implementing model: Codex GPT-5; reviewing model: GPT-5.6 Sol; fix rounds: 1; observed elapsed wall time: `unknown`. No map population run and **NOT runtime tested yet** | WP3 ✅ |
 
 **WP38 held-soft-target correction (2026-08-10; runtime tested).** The
 preceding native-input correction was runtime-tested by the user and exposed a
@@ -174,11 +175,11 @@ refusal and mana spend on a miss. Disable `/combatdebug` and confirm the log is
 silent. Include one hostile-player pass for dodge/absorb/PvP refusal and one
 short high-rate Fireball burst to expose projectile cleanup/performance.
 
-### Readiness (updated 2026-09-02)
+### Readiness (updated 2026-09-03)
 
-The backlog contains **45 stable work-package numbers, WP0–WP44**. Exactly
-**17 are shipped**: WP0–WP4, WP6, WP7, WP15, WP18, WP19, WP25, WP33,
-WP35, WP36, WP38, WP39 and WP43. WP16 is a canceled tombstone and is not shipped. Every
+The backlog contains **46 stable work-package numbers, WP0–WP45**. Exactly
+**18 are shipped**: WP0–WP4, WP6, WP7, WP15, WP18, WP19, WP25, WP33,
+WP35, WP36, WP38, WP39, WP43 and WP45. WP16 is a canceled tombstone and is not shipped. Every
 other row is open; design-ready means its game-design contract is fixed, not
 that its implementation dependencies or engineering gates are complete.
 
@@ -246,8 +247,9 @@ one-way migration data.
 **Outstanding shipped runtime caveat:** WP39's GUI combat test remains
 outstanding exactly as recorded above. WP43 passed its headless and independent
 review gates but still needs a fresh-world GUI/runtime pass and a migration pass
-in a backed-up WP25 world. WP25, WP35 and WP36 retain their historical
-not-runtime-tested labels.
+in a backed-up WP25 world. WP45 passed its headless callback and independent
+review gates but still needs the short in-game creation/reconnect pass. WP25,
+WP35 and WP36 retain their historical not-runtime-tested labels.
 
 Notes from the decided world design (`docs/design/world.md`):
 - Race choice at character creation: ✅ shipped with WP3 (race dialog
@@ -257,6 +259,11 @@ Notes from the decided world design (`docs/design/world.md`):
   and the allied cultural-master service; WP5 owns the per-stack finish/effect
   seam. Character culture controls which finish a player crafter may apply,
   not a race-exclusive profession or parallel top-robe recipe.
+- Safe pre-character arrival: ✅ shipped with WP45. Incomplete characters stay
+  frozen and engine-immortal behind an opaque creation UI while their selected
+  race start emerges; class persistence, the one final teleport and state
+  restoration occur together only after success. No physical lobby or fresh
+  world is involved.
 - Final build/dig rules land with WP40/WP13: every ordinary level-31–60 land
   zone is contested/editable by both factions. Roads and ordinary camp shells,
   tents, fences and dressing remain mutable but claim-excluded; only bounded

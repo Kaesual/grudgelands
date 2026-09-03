@@ -112,6 +112,8 @@ the goal-level view.
   namespaces, exact natural depth, separate harvest tier, complete
   G1/G2/cultural/race-region data, migration diagnostics and the
   protection-first mining transaction.
+- [x] WP45: safe character-creation stasis, opaque faction/race/class flow and
+  race-start preloading with one final teleport after successful emergence.
 
 ### Next prerequisite roots
 

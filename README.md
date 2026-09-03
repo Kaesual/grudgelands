@@ -191,16 +191,17 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
 
-*Last updated: 2026-09-02. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-09-03. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
 
-**Shipped (17 of 45 work packages):** WP0–WP4, WP6, WP7, WP15, WP18,
-WP19, WP25, WP33, WP35, WP36, WP38, WP39 and WP43 provide the playable
+**Shipped (18 of 46 work packages):** WP0–WP4, WP6, WP7, WP15, WP18,
+WP19, WP25, WP33, WP35, WP36, WP38, WP39, WP43 and WP45 provide the playable
 foundation, 42 mobs, three classes, equipment/bags, XP, threat, money/vendors,
 the canonical six-tier material/depth/harvest contract, gathering sources and
-current-ray combat/projectiles. WP16 is a canceled tombstone and is not
-shipped. WP43 supersedes WP25's running legacy while preserving saved-world
-migration.
+current-ray combat/projectiles. New characters now remain frozen and immortal
+behind the faction/race/class UI until their race start is loaded, then arrive
+with one final teleport. WP16 is a canceled tombstone and is not shipped. WP43
+supersedes WP25's running legacy while preserving saved-world migration.
 
 **Not in the game yet:** quests, professions/recipes, talent trees, parties,
 recovery, offhand items, affixes, durability, final structures, travel/map,
@@ -252,8 +253,10 @@ continents and are not WP40 migration targets; R8 must use a fresh v7 world.
 WP7 still runs its old price curve and 25% buy-back until WP44. WP43 passed its
 headless and independent-review gates but has not received a GUI/runtime pass;
 validate migration only in a backed-up WP25 world. WP39 still needs its
-recorded GUI combat test, while WP25, WP35 and WP36 retain their historical
-not-runtime-tested labels; WP40 remains fresh-world-only.
+recorded GUI combat test, and WP45's headless creation-flow review still needs
+the short in-game first-character/reconnect pass at handoff. WP25, WP35 and WP36
+retain their historical not-runtime-tested labels; WP40 remains
+fresh-world-only.
 
 ## Running it
 
