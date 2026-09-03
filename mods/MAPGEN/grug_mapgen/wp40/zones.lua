@@ -1329,10 +1329,17 @@ return function(dependencies)
 			planner_source = {
 				schema = "grug_wp40_r5_planner_source_v1",
 			}
+			local column_cache_limit = 65536
+			local column_cache_by_x = runtime_mode and {} or nil
+			local column_cache_slot_x = runtime_mode and {} or nil
+			local column_cache_slot_z = runtime_mode and {} or nil
+			local column_cache_rows = runtime_mode and {} or nil
+			local column_cache_count = 0
+			local column_cache_next_slot = 1
+			local column_cache_hits, column_cache_misses,
+				column_cache_evictions = 0, 0, 0
 
-			function planner_source.column_values_at(x, z)
-				local outside
-				x, z, outside = normalize_xz(x, z, "planner column query")
+			local function compute_column_values_at(x, z, outside)
 				local water_class, _, zone_numeric_id, _,
 					classified_hydrology_id = classification_values(x, z, outside)
 				local zone = zone_numeric_id and zone_by_numeric[zone_numeric_id] or nil
@@ -1431,6 +1438,72 @@ return function(dependencies)
 					transition_progress_q, transition_face_mask, hard_foundation
 			end
 
+			function planner_source.column_values_at(x, z)
+				local outside
+				x, z, outside = normalize_xz(x, z, "planner column query")
+				if not runtime_mode then
+					return compute_column_values_at(x, z, outside)
+				end
+
+				local bucket = column_cache_by_x[x]
+				local row = bucket and bucket[z] or nil
+				if row then
+					column_cache_hits = column_cache_hits + 1
+					return unpack(row, 1, 20)
+				end
+				column_cache_misses = column_cache_misses + 1
+				local value_1, value_2, value_3, value_4, value_5,
+					value_6, value_7, value_8, value_9, value_10,
+					value_11, value_12, value_13, value_14, value_15,
+					value_16, value_17, value_18, value_19, value_20 =
+						compute_column_values_at(x, z, outside)
+
+				local slot
+				if column_cache_count < column_cache_limit then
+					column_cache_count = column_cache_count + 1
+					slot = column_cache_count
+					row = {}
+					column_cache_rows[slot] = row
+				else
+					column_cache_evictions = column_cache_evictions + 1
+					slot = column_cache_next_slot
+					column_cache_next_slot = column_cache_next_slot + 1
+					if column_cache_next_slot > column_cache_limit then
+						column_cache_next_slot = 1
+					end
+					local old_x = column_cache_slot_x[slot]
+					local old_z = column_cache_slot_z[slot]
+					local old_bucket = column_cache_by_x[old_x]
+					if not old_bucket or old_bucket[old_z] ~= column_cache_rows[slot] then
+						fail("planner runtime column cache differs")
+					end
+					old_bucket[old_z] = nil
+					old_bucket._count = old_bucket._count - 1
+					if old_bucket._count == 0 then column_cache_by_x[old_x] = nil end
+					row = column_cache_rows[slot]
+				end
+
+				row[1], row[2], row[3], row[4], row[5] =
+					value_1, value_2, value_3, value_4, value_5
+				row[6], row[7], row[8], row[9], row[10] =
+					value_6, value_7, value_8, value_9, value_10
+				row[11], row[12], row[13], row[14], row[15] =
+					value_11, value_12, value_13, value_14, value_15
+				row[16], row[17], row[18], row[19], row[20] =
+					value_16, value_17, value_18, value_19, value_20
+				bucket = column_cache_by_x[x]
+				if not bucket then
+					bucket = {_count = 0}
+					column_cache_by_x[x] = bucket
+				end
+				if bucket[z] ~= nil then fail("planner runtime column cache collision") end
+				bucket[z] = row
+				bucket._count = bucket._count + 1
+				column_cache_slot_x[slot] = x
+				column_cache_slot_z[slot] = z
+				return unpack(row, 1, 20)
+			end
+
 			function planner_source.hydrology_metric_values_at(x, z)
 				local outside
 				x, z, outside = normalize_xz(x, z, "planner hydrology metric query")
@@ -1467,6 +1540,12 @@ return function(dependencies)
 						height_metrics.query_lattice_constructions,
 					query_feature_list_constructions = 0,
 					query_unindexed_catalog_scans = 0,
+					runtime_column_cache_limit = runtime_mode and
+						column_cache_limit or 0,
+					runtime_column_cache_entries = column_cache_count,
+					runtime_column_cache_hits = column_cache_hits,
+					runtime_column_cache_misses = column_cache_misses,
+					runtime_column_cache_evictions = column_cache_evictions,
 				}
 			end
 			planner_source_count = planner_source_count + 1

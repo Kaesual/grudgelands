@@ -80,6 +80,7 @@ return function(hash, content, template_source)
 	end
 
 	if type(hash) ~= "table" or type(hash.digest) ~= "function" or
+			type(hash.digest_count) ~= "function" or
 			type(hash.sha256_bytes) ~= "function" or type(hash.frame) ~= "function" or
 			type(content) ~= "table" or type(content.decorations) ~= "function" or
 			type(content.param2_kind) ~= "function" or
@@ -321,22 +322,30 @@ return function(hash, content, template_source)
 		end
 	end
 
+	local probability_fields = {}
 	local function probability_include(full_seed, definition_id, root_x, root_y,
 			root_z, rotation, trial_kind, x, y, z, probability)
 		integer(probability, "template probability", 0, 254)
 		if probability == 0 then return false end
 		if probability == 254 then return true end
-		local fields = {definition_id, root_x, root_y, root_z, rotation, trial_kind}
+		probability_fields[1], probability_fields[2], probability_fields[3] =
+			definition_id, root_x, root_y
+		probability_fields[4], probability_fields[5], probability_fields[6] =
+			root_z, rotation, trial_kind
+		local count
 		if trial_kind == "slice" then
-			fields[7] = integer(y, "template slice y", 0, 63)
+			probability_fields[7] = integer(y, "template slice y", 0, 63)
+			count = 7
 		elseif trial_kind == "node" then
-			fields[7] = integer(x, "template node x", 0, 15)
-			fields[8] = integer(y, "template node y", 0, 63)
-			fields[9] = integer(z, "template node z", 0, 15)
+			probability_fields[7] = integer(x, "template node x", 0, 15)
+			probability_fields[8] = integer(y, "template node y", 0, 63)
+			probability_fields[9] = integer(z, "template node z", 0, 15)
+			count = 9
 		else
 			fail("template probability trial kind differs")
 		end
-		local digest = hash.digest("template_probability_v1", full_seed, fields)
+		local digest = hash.digest_count("template_probability_v1", full_seed,
+			probability_fields, count)
 		return string.byte(digest, 1) < probability
 	end
 
@@ -347,6 +356,11 @@ return function(hash, content, template_source)
 		integer(rotation, "rotation index", 0, 3)
 		local record = by_id[definition_id]
 		return record and copy(record.rotations[rotation + 1]) or nil
+	end
+	function module.rotation_runtime(definition_id, rotation)
+		integer(rotation, "rotation index", 0, 3)
+		local record = by_id[definition_id]
+		return record and record.rotations[rotation + 1] or nil
 	end
 	function module.maximum_footprint()
 		return maximum_x, maximum_y, maximum_z

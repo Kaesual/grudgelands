@@ -298,16 +298,34 @@ return function(dependencies)
 			end
 			normalized_registrations[index] = checked
 		end
+		if construction_mode == "authority" then
+			if type(r5_module.new_source_runtime) ~= "function" then
+				fail("fail_status", "R5 source-only runtime constructor is absent")
+			end
+			local zones_session, planner_source = r5_module.new_source_runtime(
+				full_seed_string, configured_water_level,
+				content_module.r5_manifest_values())
+			return zones_session, {
+				schema = "grug_wp40_r6_authority_identity_v1",
+				template_records = templates_module.records(),
+				planner_source = planner_source,
+			}
+		end
 
 		local runtime_mode = construction_mode == "runtime"
-		local r5_constructor = runtime_mode and r5_module.new_runtime or
-			r5_module.new
+		local r5_constructor
+		if runtime_mode then
+			r5_constructor = r5_module.new_runtime
+		else
+			r5_constructor = r5_module.new
+		end
 		if type(r5_constructor) ~= "function" then
 			fail("fail_status", "R5 runtime constructor is absent")
 		end
 		local zones_session, planner_source, r5_planner, r5_adapter = r5_constructor(
 			full_seed_string, configured_water_level,
-			content_module.r5_manifest_values(), content_contract.r5, mapgen_context)
+			content_module.r5_manifest_values(), content_contract.r5, mapgen_context,
+			runtime_mode and content_contract.classify_runtime or nil)
 		local horizontal_module = dependencies.horizontal_factory({
 			source = dependencies.source, schemas = dependencies.schemas,
 			canonical = dependencies.canonical,
@@ -326,8 +344,17 @@ return function(dependencies)
 				not runtime_mode then
 			fail("fail_status", "private construction mode differs")
 		end
-		local planner_constructor = evidence_only and
-			dependencies.planner_factory.new_evidence or dependencies.planner_factory.new
+		local planner_constructor
+		if evidence_only then
+			planner_constructor = dependencies.planner_factory.new_evidence
+		elseif runtime_mode then
+			planner_constructor = dependencies.planner_factory.new_runtime
+		else
+			planner_constructor = dependencies.planner_factory.new
+		end
+		if type(planner_constructor) ~= "function" then
+			fail("fail_status", "R6 planner construction mode is absent")
+		end
 		local planner, planner_fixture = planner_constructor({
 			full_seed_string = full_seed_string, planner_source = planner_source,
 			r5_planner = r5_planner, horizontal = horizontal,
@@ -350,6 +377,7 @@ return function(dependencies)
 				zones_session = zones_session,
 				content = content_module, source = dependencies.source,
 				construction_identity = identity_holder,
+				runtime_mode = runtime_mode == true,
 			})
 			if type(successor_tail) ~= "table" or
 					type(successor_tail.plan_slice) ~= "function" or
@@ -448,6 +476,9 @@ return function(dependencies)
 	end
 	function module.new_runtime(...)
 		return new_impl("runtime", ...)
+	end
+	function module.new_authority(...)
+		return new_impl("authority", ...)
 	end
 	function module.new_evidence(...)
 		return new_impl("horizontal", ...)

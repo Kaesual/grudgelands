@@ -1,0 +1,15 @@
+mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua
+mods/MAPGEN/grug_mapgen/wp40/r5.lua
+mods/MAPGEN/grug_mapgen/wp40/r6.lua
+mods/MAPGEN/grug_mapgen/wp40/r6_content.lua
+mods/MAPGEN/grug_mapgen/wp40/r6_hash.lua
+mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua
+mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+mods/MAPGEN/grug_mapgen/wp40/r6_templates.lua
+mods/MAPGEN/grug_mapgen/wp40/r7_anchor_activation.lua
+mods/MAPGEN/grug_mapgen/wp40/r7_content.lua
+mods/MAPGEN/grug_mapgen/wp40/r7_loader.lua
+mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua
+mods/MAPGEN/grug_mapgen/wp40/r7_runtime.lua
+mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua
+mods/MAPGEN/grug_mapgen/wp40/zones.lua

@@ -77,27 +77,36 @@ return function(raw_sha256)
 		return integer_ascii(#bytes) .. ":" .. bytes
 	end
 
-	local function raw_digest(domain, full_seed_string, fields)
+	local digest_parts = {}
+	local function raw_digest_count(domain, full_seed_string, fields, count,
+			require_dense)
 		if type(raw_sha256) ~= "function" then fail("raw SHA-256 seam missing") end
 		if not DOMAIN_SET[domain] then fail("unlisted domain " .. tostring(domain)) end
 		if type(full_seed_string) ~= "string" then fail("full seed is not bytes") end
 		if type(fields) ~= "table" then fail("field array missing") end
-		local count = #fields
+		safe_integer(count, "field count", 0, 32)
 		for index = 1, count do
 			if fields[index] == nil then fail("field array has a hole") end
 		end
-		for key in pairs(fields) do
-			if type(key) ~= "number" or key % 1 ~= 0 or key < 1 or key > count then
-				fail("field array is not dense")
+		if require_dense then
+			for key in pairs(fields) do
+				if type(key) ~= "number" or key % 1 ~= 0 or key < 1 or key > count then
+					fail("field array is not dense")
+				end
 			end
 		end
-		local parts = {frame(PREFIX), frame(domain), frame(full_seed_string)}
-		for index = 1, count do parts[#parts + 1] = frame(fields[index]) end
-		local digest = raw_sha256(table.concat(parts))
+		digest_parts[1], digest_parts[2], digest_parts[3] =
+			frame(PREFIX), frame(domain), frame(full_seed_string)
+		for index = 1, count do digest_parts[index + 3] = frame(fields[index]) end
+		local digest = raw_sha256(table.concat(digest_parts, "", 1, count + 3))
 		if type(digest) ~= "string" or #digest ~= 32 then
 			fail("raw SHA-256 result is not 32 bytes")
 		end
 		return digest
+	end
+
+	local function raw_digest(domain, full_seed_string, fields)
+		return raw_digest_count(domain, full_seed_string, fields, #fields, true)
 	end
 
 	local function hex(bytes)
@@ -167,6 +176,9 @@ return function(raw_sha256)
 	function module.frame(value) return frame(value) end
 	function module.digest(domain, full_seed_string, fields)
 		return raw_digest(domain, full_seed_string, fields)
+	end
+	function module.digest_count(domain, full_seed_string, fields, count)
+		return raw_digest_count(domain, full_seed_string, fields, count, false)
 	end
 	function module.digest_hex(domain, full_seed_string, fields)
 		return hex(raw_digest(domain, full_seed_string, fields))

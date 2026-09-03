@@ -7,13 +7,18 @@ receipt="${2:?durable receipt path required}"
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 lua_jit="${WP40_LUA_BIN:-/usr/bin/luajit}"
 lua_puc="${WP40_PUC51_BIN:-$repo/tools/bin/lua51}"
-roster="$script_dir/micro_inputs.txt"
-changed_roster="$script_dir/changed_production_lua.txt"
-cli="$script_dir/micro_kat_cli.lua"
+roster="${WP40_MICRO_ROSTER:-$script_dir/micro_inputs.txt}"
+changed_roster="${WP40_MICRO_CHANGED_ROSTER:-$script_dir/changed_production_lua.txt}"
+cli="${WP40_MICRO_CLI:-$script_dir/micro_kat_cli.lua}"
+expected_input_population="${WP40_MICRO_INPUT_POPULATION:-108}"
+expected_changed_population="${WP40_MICRO_CHANGED_POPULATION:-74}"
+artifact_stem="${WP40_MICRO_ARTIFACT_STEM:-wp40-r7}"
+receipt_schema="${WP40_MICRO_RECEIPT_SCHEMA:-grug_wp40_r7_micro_kat_receipt_v1}"
+pass_label="${WP40_MICRO_PASS_LABEL:-WP40 R7 final micro}"
 durable_dir="$(dirname -- "$receipt")"
-canonical_output="$durable_dir/wp40-r7-micro-kat-output.tsv"
-luajit_log="$durable_dir/wp40-r7-micro-kat-luajit.log"
-puc51_log="$durable_dir/wp40-r7-micro-kat-puc51.log"
+canonical_output="$durable_dir/$artifact_stem-micro-kat-output.tsv"
+luajit_log="$durable_dir/$artifact_stem-micro-kat-luajit.log"
+puc51_log="$durable_dir/$artifact_stem-micro-kat-puc51.log"
 
 [[ -x "$lua_jit" && -x "$lua_puc" && -f "$roster" &&
 	-f "$changed_roster" && -f "$cli" && -d "$durable_dir" &&
@@ -44,7 +49,7 @@ cleanup() {
 trap cleanup EXIT
 
 mapfile -t inputs < <(cat "$roster" "$changed_roster" | awk 'NF' | sort -u)
-[[ "${#inputs[@]}" -eq 108 ]] || {
+[[ "${#inputs[@]}" -eq "$expected_input_population" ]] || {
 	echo "WP40 R7 final micro: input population is incomplete" >&2
 	exit 1
 }
@@ -65,7 +70,7 @@ write_input_rows "$input_rows"
 input_set_sha="$(sha256sum "$input_rows" | awk '{print $1}')"
 changed_roster_sha="$(sha256sum "$changed_roster" | awk '{print $1}')"
 executed_population="$(wc -l <"$changed_roster" | tr -d '[:space:]')"
-[[ "$executed_population" -eq 74 ]] || {
+[[ "$executed_population" -eq "$expected_changed_population" ]] || {
 	echo "WP40 R7 final micro: changed production population differs" >&2
 	exit 1
 }
@@ -109,9 +114,9 @@ internal_sha="$(awk -F '\t' '$1 == "output_sha256" && NF == 2 {
 	echo "WP40 R7 final micro: canonical internal digest row differs" >&2
 	exit 1
 }
-printf 'WP40 R7 final micro PASS interpreter=luajit output_sha256=%s\n' \
+printf '%s PASS interpreter=luajit output_sha256=%s\n' "$pass_label" \
 	"$internal_sha" >"$scratch/expected-luajit.log"
-printf 'WP40 R7 final micro PASS interpreter=puc51 output_sha256=%s\n' \
+printf '%s PASS interpreter=puc51 output_sha256=%s\n' "$pass_label" \
 	"$internal_sha" >"$scratch/expected-puc51.log"
 cmp -s "$scratch/expected-luajit.log" "$scratch/luajit.log" &&
 	cmp -s "$scratch/expected-puc51.log" "$scratch/puc51.log" || {
@@ -140,7 +145,7 @@ puc51_log_sha="$(sha256sum "$scratch/puc51.log" | awk '{print $1}')"
 puc51_log_bytes="$(wc -c <"$scratch/puc51.log" | tr -d '[:space:]')"
 partial="$(mktemp "$durable_dir/.wp40-r7-micro-receipt.partial.XXXXXXXX")"
 {
-	printf 'schema\tgrug_wp40_r7_micro_kat_receipt_v1\n'
+	printf 'schema\t%s\n' "$receipt_schema"
 	printf 'input_set_sha256\t%s\n' "$input_set_sha"
 	printf 'input_population\t%s\n' "${#inputs[@]}"
 	printf 'executed_module_population\t%s\n' "$executed_population"
@@ -149,14 +154,14 @@ partial="$(mktemp "$durable_dir/.wp40-r7-micro-receipt.partial.XXXXXXXX")"
 	printf 'puc51_binary_sha256\t%s\n' "$puc51_binary_sha"
 	printf 'luajit_output_sha256\t%s\n' "$output_sha"
 	printf 'puc51_output_sha256\t%s\n' "$output_sha"
-	printf 'canonical_output_filename\twp40-r7-micro-kat-output.tsv\n'
+	printf 'canonical_output_filename\t%s-micro-kat-output.tsv\n' "$artifact_stem"
 	printf 'canonical_output_sha256\t%s\n' "$output_sha"
 	printf 'canonical_output_bytes\t%s\n' "$output_bytes"
-	printf 'luajit_log_filename\twp40-r7-micro-kat-luajit.log\n'
+	printf 'luajit_log_filename\t%s-micro-kat-luajit.log\n' "$artifact_stem"
 	printf 'luajit_log_sha256\t%s\n' "$luajit_log_sha"
 	printf 'luajit_log_bytes\t%s\n' "$luajit_log_bytes"
 	printf 'luajit_exit_status\t0\n'
-	printf 'puc51_log_filename\twp40-r7-micro-kat-puc51.log\n'
+	printf 'puc51_log_filename\t%s-micro-kat-puc51.log\n' "$artifact_stem"
 	printf 'puc51_log_sha256\t%s\n' "$puc51_log_sha"
 	printf 'puc51_log_bytes\t%s\n' "$puc51_log_bytes"
 	printf 'puc51_exit_status\t0\n'
@@ -183,5 +188,5 @@ ln -- "$partial" "$receipt" || {
 	exit 1
 }
 rm -f -- "$partial"
-printf 'WP40 R7 final micro PASS receipt_sha256=%s output_sha256=%s\n' \
+printf '%s PASS receipt_sha256=%s output_sha256=%s\n' "$pass_label" \
 	"$(sha256sum "$receipt" | awk '{print $1}')" "$output_sha"

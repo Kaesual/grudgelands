@@ -175,8 +175,10 @@ return function(manifest_values, content_contract, wp43_projection)
 		for key in pairs(value) do
 			if not fields[key] then fail(prefix, label .. " has unexpected field " .. tostring(key)) end
 		end
-		for key in pairs(fields) do
-			if value[key] == nil then fail(prefix, label .. " is missing " .. key) end
+		for key, requirement in pairs(fields) do
+			if requirement ~= "optional" and value[key] == nil then
+				fail(prefix, label .. " is missing " .. key)
+			end
 		end
 		return value
 	end
@@ -413,7 +415,8 @@ return function(manifest_values, content_contract, wp43_projection)
 	exact_fields(content_contract, {schema = true, r5 = true, ignore_cid = true,
 		ordinary_water_family_id = true, river_water_family_id = true,
 		content_names = true, content_cids = true, content_kind_masks = true,
-		resolve_r6 = true, classify = true, metrics = true}, "content contract",
+		resolve_r6 = true, classify = true, classify_runtime = "optional",
+		metrics = true}, "content contract",
 		"fail_content_manifest")
 	if (content_contract.schema ~= "grug_wp40_r6_content_contract_v1" and
 			content_contract.schema ~= "grug_wp40_r7_production_r6_content_v1") or
@@ -421,6 +424,10 @@ return function(manifest_values, content_contract, wp43_projection)
 			content_contract.r5.schema ~= "grug_wp40_r5_content_contract_v1" or
 			type(content_contract.resolve_r6) ~= "function" or
 			type(content_contract.classify) ~= "function" or
+			(content_contract.classify_runtime ~= nil and
+				type(content_contract.classify_runtime) ~= "function") or
+			(content_contract.schema == "grug_wp40_r7_production_r6_content_v1" and
+				type(content_contract.classify_runtime) ~= "function") or
 			type(content_contract.metrics) ~= "function" or
 			content_contract.ignore_cid ~= content_contract.r5.ignore_cid or
 			content_contract.ordinary_water_family_id ~=
@@ -483,6 +490,21 @@ return function(manifest_values, content_contract, wp43_projection)
 			end
 			if field <= 9 and classified[field] ~= r5_classified[field] then
 				fail("fail_content_manifest", "outer/R5 classifier prefix differs")
+			end
+		end
+		if content_contract.classify_runtime ~= nil then
+			local runtime_first = {content_contract.classify_runtime(
+				content_contract.content_cids[index], 0)}
+			local runtime_second = {content_contract.classify_runtime(
+				content_contract.content_cids[index], 0)}
+			if #runtime_first ~= 10 or #runtime_second ~= 10 then
+				fail("fail_content_manifest", "runtime classifier arity differs")
+			end
+			for field = 1, 10 do
+				if runtime_first[field] ~= classified[field] or
+						runtime_second[field] ~= classified[field] then
+					fail("fail_content_manifest", "runtime classifier differs")
+				end
 			end
 		end
 		param2_kind_by_ref[index] = classified[10]

@@ -37,8 +37,10 @@ return function(catalog, p9g_content, raw_sha256)
 		for key in pairs(value) do
 			if not allowed[key] then fail(label .. " has unexpected field " .. tostring(key)) end
 		end
-		for key in pairs(allowed) do
-			if value[key] == nil then fail(label .. " is missing " .. key) end
+		for key, requirement in pairs(allowed) do
+			if requirement ~= "optional" and value[key] == nil then
+				fail(label .. " is missing " .. key)
+			end
 		end
 		return value
 	end
@@ -197,11 +199,17 @@ return function(catalog, p9g_content, raw_sha256)
 	function config.new(dependencies)
 		exact_fields(dependencies, {full_seed_string = true, hash = true,
 			planner_source = true, horizontal = true, content = true, source = true,
-			zones_session = true, construction_identity = true},
+			zones_session = true, construction_identity = true,
+			runtime_mode = "optional"},
 			"successor dependencies")
 		local full_seed = dependencies.full_seed_string
 		local hash = dependencies.hash
 		local production = dependencies.content.content_contract()
+		if dependencies.runtime_mode ~= nil and
+				type(dependencies.runtime_mode) ~= "boolean" then
+			fail("runtime mode differs")
+		end
+		local emit_ledger = not dependencies.runtime_mode
 		if type(full_seed) ~= "string" or full_seed == "" or type(hash) ~= "table" or
 				type(hash.budget) ~= "function" or
 				type(dependencies.zones_session) ~= "table" or
@@ -413,11 +421,13 @@ return function(catalog, p9g_content, raw_sha256)
 					context.call_mode ~= "evidence_fixture") then
 				fail("settlement plan binding differs")
 			end
-			local ledger = {schema = "grug_wp40_r7_p9g_ledger_v1", groups = {},
-				populations = {}, operations = {},
-				rejections = {}, accepted = 0, planned = 0, eligible = 0,
-				manifest_sha256 = manifest.sha256}
-			for index = 1, #REASONS do ledger.rejections[REASONS[index]] = 0 end
+			local ledger = {schema = "grug_wp40_r7_p9g_ledger_v1", accepted = 0}
+			if emit_ledger then
+				ledger.groups, ledger.populations, ledger.operations = {}, {}, {}
+				ledger.rejections, ledger.planned, ledger.eligible = {}, 0, 0
+				ledger.manifest_sha256 = manifest.sha256
+				for index = 1, #REASONS do ledger.rejections[REASONS[index]] = 0 end
+			end
 			local population_by_key = {}
 			local function population(catalog_index, x, z)
 				local source_id, zone_id, biome, faction, bracket =
@@ -463,8 +473,10 @@ return function(catalog, p9g_content, raw_sha256)
 										eligible = eligible + 1
 										if context.inside_owner(x, surface_y + 1, z) then
 											routed_eligible = routed_eligible + 1
-											local population_row = population(catalog_index, x, z)
-											population_row.eligible = population_row.eligible + 1
+											if emit_ledger then
+												local population_row = population(catalog_index, x, z)
+												population_row.eligible = population_row.eligible + 1
+											end
 										end
 										local ranked = rank_scratch[eligible]
 										ranked.x, ranked.y, ranked.z = x, surface_y + 1, z
@@ -484,14 +496,17 @@ return function(catalog, p9g_content, raw_sha256)
 						local budget = hash.budget(eligible, row.fill_numerator,
 							row.fill_denominator, 1, 1, remainder)
 						sort_prefix(rank_scratch, eligible)
-						local group = {source_id = row.id, cell_x = cell_x,
-							cell_z = cell_z, eligible = routed_eligible, budget = 0,
-							accepted = 0, rejections = {}}
-						for reason_index = 1, #REASONS do
-							group.rejections[REASONS[reason_index]] = 0
+						local group
+						if emit_ledger then
+							group = {source_id = row.id, cell_x = cell_x,
+								cell_z = cell_z, eligible = routed_eligible, budget = 0,
+								accepted = 0, rejections = {}}
+							for reason_index = 1, #REASONS do
+								group.rejections[REASONS[reason_index]] = 0
+							end
+							ledger.groups[#ledger.groups + 1] = group
+							ledger.eligible = ledger.eligible + routed_eligible
 						end
-						ledger.groups[#ledger.groups + 1] = group
-						ledger.eligible = ledger.eligible + routed_eligible
 						for chosen = 1, budget do
 							local ranked = rank_scratch[chosen]
 							-- The fixed 2-D budget prefix is shared by every vertical
@@ -507,67 +522,76 @@ return function(catalog, p9g_content, raw_sha256)
 									catalog_index, ranked.x, ranked.y, ranked.z
 								candidate.cell_x, candidate.cell_z, candidate.digest =
 									cell_x, cell_z, ranked.digest
-								local population_row = population(catalog_index,
-									candidate.x, candidate.z)
-								group.budget = group.budget + 1
-								ledger.planned = ledger.planned + 1
-								population_row.budget = population_row.budget + 1
+								local population_row
+								if emit_ledger then
+									population_row = population(catalog_index,
+										candidate.x, candidate.z)
+									group.budget = group.budget + 1
+									ledger.planned = ledger.planned + 1
+									population_row.budget = population_row.budget + 1
+								end
 								local reason, decision = settlement_decision(context,
 									catalog_index, candidate.x, candidate.y, candidate.z)
 								if reason then
 									if not REASON_SET[reason] then fail("unknown rejection reason") end
-									ledger.rejections[reason] = ledger.rejections[reason] + 1
-									group.rejections[reason] = group.rejections[reason] + 1
-									population_row.rejections[reason] =
-										population_row.rejections[reason] + 1
+									if emit_ledger then
+										ledger.rejections[reason] = ledger.rejections[reason] + 1
+										group.rejections[reason] = group.rejections[reason] + 1
+										population_row.rejections[reason] =
+											population_row.rejections[reason] + 1
+									end
 								else
 									local cid, _, _, param2 =
 										p9g_content.resolve_p9g(catalog_index, 0)
 									context.write_p9g(candidate.x, candidate.y, candidate.z, cid,
 										param2, catalog_index, catalog_index)
-									group.accepted = group.accepted + 1
 									ledger.accepted = ledger.accepted + 1
-									population_row.accepted = population_row.accepted + 1
+									if emit_ledger then
+										group.accepted = group.accepted + 1
+										population_row.accepted = population_row.accepted + 1
+									end
 								end
-								local final_cid, final_param2, final_occupancy, final_opcode,
-									final_feature, final_interface, final_aux = -1, -1, -3, -1,
-									-1, -1, -1
-								if context.inside_owner(candidate.x, candidate.y, candidate.z) then
-									final_cid, final_param2, final_occupancy, final_opcode,
-										final_feature, final_interface, final_aux =
-											context.settled_at(candidate.x, candidate.y, candidate.z)
+								if emit_ledger then
+									local final_cid, final_param2, final_occupancy, final_opcode,
+										final_feature, final_interface, final_aux = -1, -1, -3, -1,
+										-1, -1, -1
+									if context.inside_owner(candidate.x, candidate.y, candidate.z) then
+										final_cid, final_param2, final_occupancy, final_opcode,
+											final_feature, final_interface, final_aux =
+												context.settled_at(candidate.x, candidate.y, candidate.z)
+									end
+									local _, zone_id, biome, faction, bracket =
+										population_values(context, catalog_index, candidate.x, candidate.z)
+									ledger.operations[#ledger.operations + 1] = {
+										source_id = row.id, cell_x = candidate.cell_x,
+										cell_z = candidate.cell_z, root_x = candidate.x,
+										root_y = candidate.y, root_z = candidate.z,
+										zone_id = zone_id, biome = biome, faction = faction,
+										bracket = bracket, candidate_sha256 = hex(candidate.digest),
+										original_cid = decision.original_cid,
+										original_param2 = decision.original_param2,
+										prior_cid = decision.prior_cid,
+										prior_param2 = decision.prior_param2,
+										prior_occupancy = decision.prior_occupancy,
+										prior_opcode = decision.prior_opcode,
+										prior_feature = decision.prior_feature,
+										prior_interface = decision.prior_interface,
+										prior_aux = decision.prior_aux,
+										support_mode = decision.support_mode,
+										support_cid = decision.support_cid,
+										support_param2 = decision.support_param2,
+										support_occupancy = decision.support_occupancy,
+										support_opcode = decision.support_opcode,
+										support_feature = decision.support_feature,
+										support_interface = decision.support_interface,
+										support_aux = decision.support_aux,
+										final_cid = final_cid, final_param2 = final_param2,
+										final_occupancy = final_occupancy, final_opcode = final_opcode,
+										final_feature = final_feature,
+										final_interface = final_interface, final_aux = final_aux,
+										accepted = reason == nil, reason = reason or "accepted",
+									}
 								end
-								local _, zone_id, biome, faction, bracket =
-									population_values(context, catalog_index, candidate.x, candidate.z)
-								ledger.operations[#ledger.operations + 1] = {
-									source_id = row.id, cell_x = candidate.cell_x,
-									cell_z = candidate.cell_z, root_x = candidate.x,
-									root_y = candidate.y, root_z = candidate.z,
-									zone_id = zone_id, biome = biome, faction = faction,
-									bracket = bracket, candidate_sha256 = hex(candidate.digest),
-									original_cid = decision.original_cid,
-									original_param2 = decision.original_param2,
-									prior_cid = decision.prior_cid,
-									prior_param2 = decision.prior_param2,
-									prior_occupancy = decision.prior_occupancy,
-									prior_opcode = decision.prior_opcode,
-									prior_feature = decision.prior_feature,
-									prior_interface = decision.prior_interface,
-									prior_aux = decision.prior_aux,
-									support_mode = decision.support_mode,
-									support_cid = decision.support_cid,
-									support_param2 = decision.support_param2,
-									support_occupancy = decision.support_occupancy,
-									support_opcode = decision.support_opcode,
-									support_feature = decision.support_feature,
-									support_interface = decision.support_interface,
-									support_aux = decision.support_aux,
-									final_cid = final_cid, final_param2 = final_param2,
-									final_occupancy = final_occupancy, final_opcode = final_opcode,
-									final_feature = final_feature,
-									final_interface = final_interface, final_aux = final_aux,
-									accepted = reason == nil, reason = reason or "accepted",
-								}
 							end
 						end
 					end
@@ -576,19 +600,21 @@ return function(catalog, p9g_content, raw_sha256)
 			if candidate_count > metrics.peak_candidates then
 				metrics.peak_candidates = candidate_count
 			end
-			table.sort(ledger.populations, function(left, right)
-				local a = left.source_id .. "\0" .. left.zone_id .. "\0" .. left.biome ..
-					"\0" .. left.faction .. "\0" .. left.bracket
-				local b = right.source_id .. "\0" .. right.zone_id .. "\0" .. right.biome ..
-					"\0" .. right.faction .. "\0" .. right.bracket
-				return less_bytes(a, b)
-			end)
-			table.sort(ledger.operations, function(left, right)
-				if left.root_z ~= right.root_z then return left.root_z < right.root_z end
-				if left.root_x ~= right.root_x then return left.root_x < right.root_x end
-				if left.root_y ~= right.root_y then return left.root_y < right.root_y end
-				return less_bytes(left.source_id, right.source_id)
-			end)
+			if emit_ledger then
+				table.sort(ledger.populations, function(left, right)
+					local a = left.source_id .. "\0" .. left.zone_id .. "\0" .. left.biome ..
+						"\0" .. left.faction .. "\0" .. left.bracket
+					local b = right.source_id .. "\0" .. right.zone_id .. "\0" .. right.biome ..
+						"\0" .. right.faction .. "\0" .. right.bracket
+					return less_bytes(a, b)
+				end)
+				table.sort(ledger.operations, function(left, right)
+					if left.root_z ~= right.root_z then return left.root_z < right.root_z end
+					if left.root_x ~= right.root_x then return left.root_x < right.root_x end
+					if left.root_y ~= right.root_y then return left.root_y < right.root_y end
+					return less_bytes(left.source_id, right.source_id)
+				end)
+			end
 			if context.call_mode == "replay_fixture" then
 				metrics.replay_calls = metrics.replay_calls + 1
 			else
