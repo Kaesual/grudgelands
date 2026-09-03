@@ -1,6 +1,6 @@
 # WP40 R8 real-engine pilot record
 
-**Status:** eleven attempts retained. Attempts 1--4 stopped during
+**Status:** twelve attempts retained. Attempts 1--4 stopped during
 production construction; Attempt 5 exposed and corrected the fresh-engine
 read-only halo; Attempt 6 measured and removed redundant native pilot rows.
 Attempt 7 completed both schedules cleanly and isolated a real surface-light
@@ -13,7 +13,9 @@ but correctly failed at the fixed two-hour G3 boundary. Attempt 11 completed
 the replacement two-pair/four-worker G3 and retained all raw evidence. Its
 original native oracle failed closed; independently reviewed `recovery_v1`
 evaluation now accepts the corrected hard evidence without rewriting that
-original failure.
+original failure. Attempt 12 reproduces the GUI cold-start defect, bounds live
+construction and retains its successful two-order engine evidence in the
+tracked evidence tree.
 
 ## Attempt 1 -- diagnostic failure
 
@@ -660,11 +662,14 @@ feature chunks plus one native witness in forward and reverse order. Probe
 time was 44.560 seconds forward and 46.003 seconds reverse; the engine wrappers
 finished in 50.62 and 52.13 seconds. Peak in-process RSS was 1,723,908,096 and
 1,682,083,840 bytes. Both orders had zero emerge errors, clean shutdown,
-identical runtime manifest, byte-identical snapshots and all semantic/native
-gates true. Permanent capture
-`444d8f2f1e32d14d1304e650ffe25205d61e5083596dc32a3d4f9487ad18f560`
-lives under `tools/wp40/results/r8/`; its comparison, manifest and checksum-set
-SHA-256 values are respectively
+identical runtime manifest, byte-identical snapshots and all required
+combined-pilot semantic and order gates true. The native witness rows are
+retained diagnostics in this reduced pilot; native evidence was optional in
+this comparison and is not claimed as the final native gate. The
+[permanent tracked capture](../../tools/wp40/evidence/wp40-r8-cold-start-444d8f2f1e32d14d1304e650ffe25205d61e5083596dc32a3d4f9487ad18f560/manifest.json)
+has capture ID
+`444d8f2f1e32d14d1304e650ffe25205d61e5083596dc32a3d4f9487ad18f560`;
+its comparison, manifest and checksum-set SHA-256 values are respectively
 `aa4e32dec1e3049fe48eff6b3ba205baae7339bb255ba45ae55dced9a08edc89`,
 `c6a9484a4f80350b8de5e3597cb94d4cd0321c1616ef28eb6eb9008d5e21694c`
 and `1f0f645ea325b31c97acf5dda7ece2ab65e533b9e6e81cc776a512bf1fd9000b`.
@@ -672,6 +677,6 @@ and `1f0f645ea325b31c97acf5dda7ece2ab65e533b9e6e81cc776a512bf1fd9000b`.
 The mandatory static PUC parser, `SETGLOBAL`, five grep sweeps, R7 unit gates
 and updated 74-file prefreeze source audit pass. An intermediate LuaJIT micro
 KAT also executes all 74 production modules and passes with internal digest
-`c0d21f03cf272f7c657304c955c389b1e5cbc0ee4241992cdeebf7ff1a6abcd6`.
+`99f4f21e4417cf5ca42e5cfc0b4a3f0f542c6dedf5d3c07e18688b61514cf82a`.
 The independent review and one replacement final PUC/LuaJIT pair remain open
 until the correction bytes are frozen after review.

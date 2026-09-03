@@ -44,7 +44,7 @@ cleanup() {
 trap cleanup EXIT
 
 mapfile -t inputs < <(cat "$roster" "$changed_roster" | awk 'NF' | sort -u)
-[[ "${#inputs[@]}" -gt 65 ]] || {
+[[ "${#inputs[@]}" -eq 108 ]] || {
 	echo "WP40 R7 final micro: input population is incomplete" >&2
 	exit 1
 }

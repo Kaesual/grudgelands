@@ -1,0 +1,20 @@
+
+Luanti - Blockbasierte Mehrspieler-Spieleplattform
+
+            ID: org.luanti.luanti
+           Ref: app/org.luanti.luanti/x86_64/stable
+          Arch: x86_64
+        Branch: stable
+       Version: 5.17.0
+       License: LGPL-2.1+ AND CC-BY-SA-3.0 AND MIT AND Apache-2.0
+        Origin: flathub
+    Collection: org.flathub.Stable
+  Installation: system
+Installed Size: 28.2 MB
+       Runtime: org.freedesktop.Platform/x86_64/25.08
+           Sdk: org.freedesktop.Sdk/x86_64/25.08
+
+        Commit: 9f375a374f44b5a3b54a085e2d99fa0bbb346420dd031736b90f21aa71a8cd22
+        Parent: c630e38acfcc196d101eda97d6d45956baba64653afbfadcba73b0437be8b465
+       Subject: luanti: Update luanti.git to 5.17.0 (aaa99efaecde)
+          Date: 2026-08-21 23:07:57 +0000

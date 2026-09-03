@@ -1,0 +1,503 @@
+{
+  "schema": "grug_wp40_r8_order_comparison_v2",
+  "shard": "combined",
+  "forward_cases": [
+    {
+      "id": "deep_cross_border_resource",
+      "mapchunk": "-1712,-912,128",
+      "central_min": {
+        "x": -1712,
+        "y": -912,
+        "z": 128
+      },
+      "central_max": {
+        "x": -1633,
+        "y": -833,
+        "z": 207
+      },
+      "content_sha256": "9fb12da2a60dad5c740a4beecd8f5b33eb873fb19e07b7136dc82f4ffd526d33",
+      "param2_sha256": "8b94d3fc51180c3a1f27611b28e8825fdf0522ba20962b2fd5c4e6731f443c4f",
+      "light_sha256": "c6c02f63a4bc36ac935a0e6b956fd513086622d075570021df8e7205e8730dbb",
+      "central_voxels": 512000,
+      "node_counts": [
+        {
+          "count": 10903,
+          "name": "air"
+        },
+        {
+          "count": 1168,
+          "name": "default:cobble"
+        },
+        {
+          "count": 8410,
+          "name": "default:gravel"
+        },
+        {
+          "count": 724,
+          "name": "default:lava_flowing"
+        },
+        {
+          "count": 503,
+          "name": "default:lava_source"
+        },
+        {
+          "count": 3829,
+          "name": "default:stone_with_coal"
+        },
+        {
+          "count": 1917,
+          "name": "default:stone_with_copper"
+        },
+        {
+          "count": 477,
+          "name": "default:stone_with_gold"
+        },
+        {
+          "count": 3832,
+          "name": "default:stone_with_iron"
+        },
+        {
+          "count": 1263,
+          "name": "default:stone_with_tin"
+        },
+        {
+          "count": 150,
+          "name": "default:water_flowing"
+        },
+        {
+          "count": 96,
+          "name": "default:water_source"
+        },
+        {
+          "count": 241,
+          "name": "grug_materials:abyssal_crystal_ore"
+        },
+        {
+          "count": 475615,
+          "name": "grug_materials:emberrock"
+        },
+        {
+          "count": 162,
+          "name": "grug_materials:stone_with_citrine"
+        },
+        {
+          "count": 236,
+          "name": "grug_materials:stone_with_emberglass"
+        },
+        {
+          "count": 1914,
+          "name": "grug_materials:stone_with_quartz"
+        },
+        {
+          "count": 80,
+          "name": "grug_materials:stone_with_ruby"
+        },
+        {
+          "count": 480,
+          "name": "grug_materials:stone_with_silver"
+        }
+      ],
+      "light_stats": {
+        "day_max": 13,
+        "day_min": 0,
+        "day_zero": 507978,
+        "night_max": 13,
+        "night_min": 0,
+        "night_zero": 507978
+      },
+      "semantic_checks": {
+        "complete_node_census": true,
+        "exact_source_witness": true,
+        "no_ignore": true,
+        "surface_has_direct_sun": true
+      },
+      "semantic_evidence": {
+        "direct_sun_air_count": 0
+      },
+      "semantic_ok": true
+    },
+    {
+      "id": "human_capital",
+      "mapchunk": "-32,-32,-1552",
+      "central_min": {
+        "x": -32,
+        "y": -32,
+        "z": -1552
+      },
+      "central_max": {
+        "x": 47,
+        "y": 47,
+        "z": -1473
+      },
+      "content_sha256": "dc204cd8dd2f154275e1d051031950b42985ee91cbfa4995c9995697e5cd57f0",
+      "param2_sha256": "2d4da04b861bb9dbe77c871415931785a18138d6db035f1bbcd0cf8277c6fc23",
+      "light_sha256": "9e5c907fb45a6de6951b4296c5682357ef89be8e425443594e2af5c6a8545ebc",
+      "central_voxels": 512000,
+      "node_counts": [
+        {
+          "count": 71061,
+          "name": "air"
+        },
+        {
+          "count": 7024,
+          "name": "default:gravel"
+        },
+        {
+          "count": 433914,
+          "name": "default:stone"
+        },
+        {
+          "count": 1,
+          "name": "grug_nodes:guard_banner"
+        }
+      ],
+      "light_stats": {
+        "day_max": 15,
+        "day_min": 0,
+        "day_zero": 440938,
+        "night_max": 6,
+        "night_min": 0,
+        "night_zero": 511854
+      },
+      "semantic_checks": {
+        "complete_node_census": true,
+        "exact_source_witness": true,
+        "no_ignore": true,
+        "surface_has_direct_sun": true
+      },
+      "semantic_evidence": {
+        "direct_sun_air_count": 70916
+      },
+      "semantic_ok": true
+    },
+    {
+      "id": "wyrmglass_channel",
+      "mapchunk": "-2752,-32,-32",
+      "central_min": {
+        "x": -2752,
+        "y": -32,
+        "z": -32
+      },
+      "central_max": {
+        "x": -2673,
+        "y": 47,
+        "z": 47
+      },
+      "content_sha256": "06af9c56d7f283f9b59f698351319f2d85709205b49517b4685023dbe50a891e",
+      "param2_sha256": "2d4da04b861bb9dbe77c871415931785a18138d6db035f1bbcd0cf8277c6fc23",
+      "light_sha256": "288c90e68a7f1901d1f5326c795d8cec6bba3e7ccc9504012a24a3eb1028a814",
+      "central_voxels": 512000,
+      "node_counts": [
+        {
+          "count": 297741,
+          "name": "air"
+        },
+        {
+          "count": 573,
+          "name": "default:gravel"
+        },
+        {
+          "count": 60086,
+          "name": "default:stone"
+        },
+        {
+          "count": 153600,
+          "name": "default:water_source"
+        }
+      ],
+      "light_stats": {
+        "day_max": 15,
+        "day_min": 0,
+        "day_zero": 128000,
+        "night_max": 0,
+        "night_min": 0,
+        "night_zero": 512000
+      },
+      "semantic_checks": {
+        "complete_node_census": true,
+        "exact_source_witness": true,
+        "no_ignore": true,
+        "surface_has_direct_sun": true
+      },
+      "semantic_evidence": {
+        "channel_water": {
+          "maxp": {
+            "x": -2675,
+            "y": 1,
+            "z": 4
+          },
+          "minimum": 56,
+          "minp": {
+            "x": -2682,
+            "y": 1,
+            "z": -3
+          },
+          "sampled_voxels": 64,
+          "water_source_count": 64
+        },
+        "direct_sun_air_count": 294400
+      },
+      "semantic_ok": true
+    }
+  ],
+  "reverse_cases": [
+    {
+      "id": "deep_cross_border_resource",
+      "mapchunk": "-1712,-912,128",
+      "central_min": {
+        "x": -1712,
+        "y": -912,
+        "z": 128
+      },
+      "central_max": {
+        "x": -1633,
+        "y": -833,
+        "z": 207
+      },
+      "content_sha256": "9fb12da2a60dad5c740a4beecd8f5b33eb873fb19e07b7136dc82f4ffd526d33",
+      "param2_sha256": "8b94d3fc51180c3a1f27611b28e8825fdf0522ba20962b2fd5c4e6731f443c4f",
+      "light_sha256": "c6c02f63a4bc36ac935a0e6b956fd513086622d075570021df8e7205e8730dbb",
+      "central_voxels": 512000,
+      "node_counts": [
+        {
+          "count": 10903,
+          "name": "air"
+        },
+        {
+          "count": 1168,
+          "name": "default:cobble"
+        },
+        {
+          "count": 8410,
+          "name": "default:gravel"
+        },
+        {
+          "count": 724,
+          "name": "default:lava_flowing"
+        },
+        {
+          "count": 503,
+          "name": "default:lava_source"
+        },
+        {
+          "count": 3829,
+          "name": "default:stone_with_coal"
+        },
+        {
+          "count": 1917,
+          "name": "default:stone_with_copper"
+        },
+        {
+          "count": 477,
+          "name": "default:stone_with_gold"
+        },
+        {
+          "count": 3832,
+          "name": "default:stone_with_iron"
+        },
+        {
+          "count": 1263,
+          "name": "default:stone_with_tin"
+        },
+        {
+          "count": 150,
+          "name": "default:water_flowing"
+        },
+        {
+          "count": 96,
+          "name": "default:water_source"
+        },
+        {
+          "count": 241,
+          "name": "grug_materials:abyssal_crystal_ore"
+        },
+        {
+          "count": 475615,
+          "name": "grug_materials:emberrock"
+        },
+        {
+          "count": 162,
+          "name": "grug_materials:stone_with_citrine"
+        },
+        {
+          "count": 236,
+          "name": "grug_materials:stone_with_emberglass"
+        },
+        {
+          "count": 1914,
+          "name": "grug_materials:stone_with_quartz"
+        },
+        {
+          "count": 80,
+          "name": "grug_materials:stone_with_ruby"
+        },
+        {
+          "count": 480,
+          "name": "grug_materials:stone_with_silver"
+        }
+      ],
+      "light_stats": {
+        "day_max": 13,
+        "day_min": 0,
+        "day_zero": 507978,
+        "night_max": 13,
+        "night_min": 0,
+        "night_zero": 507978
+      },
+      "semantic_checks": {
+        "complete_node_census": true,
+        "exact_source_witness": true,
+        "no_ignore": true,
+        "surface_has_direct_sun": true
+      },
+      "semantic_evidence": {
+        "direct_sun_air_count": 0
+      },
+      "semantic_ok": true
+    },
+    {
+      "id": "human_capital",
+      "mapchunk": "-32,-32,-1552",
+      "central_min": {
+        "x": -32,
+        "y": -32,
+        "z": -1552
+      },
+      "central_max": {
+        "x": 47,
+        "y": 47,
+        "z": -1473
+      },
+      "content_sha256": "dc204cd8dd2f154275e1d051031950b42985ee91cbfa4995c9995697e5cd57f0",
+      "param2_sha256": "2d4da04b861bb9dbe77c871415931785a18138d6db035f1bbcd0cf8277c6fc23",
+      "light_sha256": "9e5c907fb45a6de6951b4296c5682357ef89be8e425443594e2af5c6a8545ebc",
+      "central_voxels": 512000,
+      "node_counts": [
+        {
+          "count": 71061,
+          "name": "air"
+        },
+        {
+          "count": 7024,
+          "name": "default:gravel"
+        },
+        {
+          "count": 433914,
+          "name": "default:stone"
+        },
+        {
+          "count": 1,
+          "name": "grug_nodes:guard_banner"
+        }
+      ],
+      "light_stats": {
+        "day_max": 15,
+        "day_min": 0,
+        "day_zero": 440938,
+        "night_max": 6,
+        "night_min": 0,
+        "night_zero": 511854
+      },
+      "semantic_checks": {
+        "complete_node_census": true,
+        "exact_source_witness": true,
+        "no_ignore": true,
+        "surface_has_direct_sun": true
+      },
+      "semantic_evidence": {
+        "direct_sun_air_count": 70916
+      },
+      "semantic_ok": true
+    },
+    {
+      "id": "wyrmglass_channel",
+      "mapchunk": "-2752,-32,-32",
+      "central_min": {
+        "x": -2752,
+        "y": -32,
+        "z": -32
+      },
+      "central_max": {
+        "x": -2673,
+        "y": 47,
+        "z": 47
+      },
+      "content_sha256": "06af9c56d7f283f9b59f698351319f2d85709205b49517b4685023dbe50a891e",
+      "param2_sha256": "2d4da04b861bb9dbe77c871415931785a18138d6db035f1bbcd0cf8277c6fc23",
+      "light_sha256": "288c90e68a7f1901d1f5326c795d8cec6bba3e7ccc9504012a24a3eb1028a814",
+      "central_voxels": 512000,
+      "node_counts": [
+        {
+          "count": 297741,
+          "name": "air"
+        },
+        {
+          "count": 573,
+          "name": "default:gravel"
+        },
+        {
+          "count": 60086,
+          "name": "default:stone"
+        },
+        {
+          "count": 153600,
+          "name": "default:water_source"
+        }
+      ],
+      "light_stats": {
+        "day_max": 15,
+        "day_min": 0,
+        "day_zero": 128000,
+        "night_max": 0,
+        "night_min": 0,
+        "night_zero": 512000
+      },
+      "semantic_checks": {
+        "complete_node_census": true,
+        "exact_source_witness": true,
+        "no_ignore": true,
+        "surface_has_direct_sun": true
+      },
+      "semantic_evidence": {
+        "channel_water": {
+          "maxp": {
+            "x": -2675,
+            "y": 1,
+            "z": 4
+          },
+          "minimum": 56,
+          "minp": {
+            "x": -2682,
+            "y": 1,
+            "z": -3
+          },
+          "sampled_voxels": 64,
+          "water_source_count": 64
+        },
+        "direct_sun_air_count": 294400
+      },
+      "semantic_ok": true
+    }
+  ],
+  "forward_native_census": [],
+  "reverse_native_census": [],
+  "equal": true,
+  "semantic_ok": true,
+  "native_census_equal": true,
+  "native_gate_equal": true,
+  "start_engine_equal": true,
+  "start_seed_equal": true,
+  "request_orders_reversed": true,
+  "forward_start": true,
+  "reverse_start": true,
+  "forward_complete": true,
+  "reverse_complete": true,
+  "forward_native_gate": true,
+  "reverse_native_gate": true,
+  "forward_native_required": true,
+  "reverse_native_required": true,
+  "forward_clean_shutdown": true,
+  "reverse_clean_shutdown": true,
+  "forward_emerge_errors": 0,
+  "reverse_emerge_errors": 0
+}

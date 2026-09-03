@@ -394,7 +394,7 @@ expected_puc_log="WP40 R7 final micro PASS interpreter=puc51 output_sha256=$micr
 executed_rows="${partial}.executed-modules"
 awk -F '\t' '$1 == "executed_module" && NF == 2 {print $2}' "$micro_output" \
 	| sort >"$executed_rows"
-[[ "$(awk -F '\t' '$1 == "source/executed_module_count" && $2 == "71" {
+[[ "$(awk -F '\t' '$1 == "source/executed_module_count" && $2 == "74" {
 	count++} END {print count + 0}' "$micro_output")" -eq 1 &&
 	"$(awk -F '\t' -v sha="$changed_lua_sha" \
 	'$1 == "source/executed_module_roster_sha256" && $2 == sha {count++}
@@ -406,7 +406,7 @@ awk -F '\t' '$1 == "executed_module" && NF == 2 {print $2}' "$micro_output" \
 rm -f -- "$executed_rows"
 mapfile -t micro_inputs < <(printf '%s\n' "$(cat "$micro_roster")" \
 	"$(cat "$changed_lua_roster")" | awk 'NF' | sort -u)
-[[ "${#micro_inputs[@]}" -gt 71 ]] || {
+[[ "${#micro_inputs[@]}" -eq 108 ]] || {
 	echo "WP40 R7 source audit: micro-KAT input roster differs" >&2
 	exit 1
 }

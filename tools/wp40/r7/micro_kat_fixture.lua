@@ -141,13 +141,66 @@ return function(repo)
 
 	row("schema", "grug_wp40_r7_micro_kat_v1")
 
-	-- These three factories became production changes in R8's cold-start fix.
-	-- Their heavyweight constructors belong to the full integration KAT, while
-	-- the compact fallback pair still executes their exact top-level bytes.
-	check(type(dofile(wp40 .. "/height.lua")) == "function" and
-		type(dofile(wp40 .. "/r5.lua")) == "function" and
-		type(dofile(wp40 .. "/zones.lua")) == "function",
-		"R8 runtime factory modules did not load")
+	-- Execute the authentic bounded R3/R4 live construction under both final
+	-- interpreters.  Unlike the exhaustive evidence constructors, this is the
+	-- exact path used by a live emerge environment.
+	do
+		local runtime_source = dofile(wp40 .. "/source/simple_map.lua")
+		local runtime_schemas = dofile(wp40 .. "/schemas.lua")
+		local runtime_canonical = dofile(wp40 .. "/canonical.lua")
+		local runtime_deterministic = dofile(wp40 .. "/deterministic.lua")
+		local runtime_index = dofile(wp40 .. "/index128.lua")
+		local runtime_horizontal_factory = dofile(wp40 .. "/simple_map.lua")
+		local runtime_height_factory = dofile(wp40 .. "/height.lua")
+		local runtime_zones_factory = dofile(wp40 .. "/zones.lua")
+		local runtime_zones_module = runtime_zones_factory({
+			source = runtime_source, schemas = runtime_schemas,
+			canonical = runtime_canonical,
+			deterministic = runtime_deterministic, index128 = runtime_index,
+			horizontal_factory = runtime_horizontal_factory,
+			height_factory = runtime_height_factory, raw_sha256 = raw_sha256,
+		})
+		local live_zones, live_planner =
+			runtime_zones_module.new_with_planner_source_runtime("0", 1)
+		check(type(live_zones) == "table" and type(live_planner) == "table" and
+			type(live_zones.canonical_kat_digest) == "nil",
+			"R8 bounded zones runtime construction differs")
+
+		local samples = {
+			{0, -1500, "land", "elandor_highcourt", "grug_meadows", "human", 36,
+				"hard_protected", "contested_land"},
+			{-900, -1100, "planned_water", "elandor_whitebridge_shire",
+				"grug_deep_forest", "human", 16, "accord_home", "contested_land"},
+			{-2675, 0, "immutable_dragon_channel", false, false, false, -23,
+				"immutable", "immutable"},
+		}
+		local sample_rows = {}
+		for index = 1, #samples do
+			local expected = samples[index]
+			local x, z = expected[1], expected[2]
+			local water_class, _, zone_id, biome_id, race_id, terrain_y =
+				live_planner.column_values_at(x, z)
+			check(water_class == expected[3] and
+				(zone_id or false) == expected[4] and
+				(biome_id or false) == expected[5] and
+				(race_id or false) == expected[6] and terrain_y == expected[7] and
+				live_zones.territory_rule_at({x = x, y = -700, z = z}) == expected[8] and
+				live_zones.territory_rule_at({x = x, y = -701, z = z}) == expected[9],
+				"R8 bounded runtime sample differs at " .. tostring(index))
+			sample_rows[index] = graph({x, z, water_class, zone_id or false,
+				biome_id or false, race_id or false, terrain_y, expected[8], expected[9]})
+		end
+		local capital = live_zones.anchor("elandor_highcourt", "capital")
+		check(capital and capital.id == "anchor_008" and capital.numeric_id == 8 and
+			capital.x == 0 and capital.y == 36 and capital.z == -1500,
+			"R8 bounded runtime anchor differs")
+		row("runtime/zones_sample_sha256", hex_sha256(table.concat(sample_rows)))
+		row("runtime/zones_anchor", table.concat({capital.id, capital.numeric_id,
+			capital.x, capital.y, capital.z}, "/"))
+	end
+	collectgarbage("collect")
+	check(type(dofile(wp40 .. "/r5.lua")) == "function",
+		"R8 R5 runtime factory module did not load")
 
 	-- Drive the real r7_runtime factory and build control flow through exact
 	-- live-setting validation and the complete assembly/manifest/evidence-mode
@@ -1401,17 +1454,29 @@ return function(repo)
 	-- bounded: exhaustive 512k-buffer/runtime authenticity belongs to the
 	-- LuaJIT integration receipt, while this transaction is small enough for the
 	-- one final fallback-interpreter process.
+	local function run_runtime_transaction()
 	function content_wrapper.surfaces()
 		return {{id = corn_biome, top = support_name, filler = support_name,
 			shore = support_name, bed = support_name, dust = support_name,
 			filler_depth = 1, top_ref = support_ref, filler_ref = support_ref,
 			shore_ref = support_ref, bed_ref = support_ref, dust_ref = 0}}
 	end
-	function content_wrapper.resources() return {} end
+	local resource_name = "grug_materials:stone_with_citrine"
+	local resource_ref = check(production_ref[resource_name],
+		"micro regional resource ref is absent")
+	local resource_cid = content_set.production.content_cids[resource_ref]
+	function content_wrapper.resources()
+		return {{key = "citrine", scope = "regional_g1", first_tier = 1,
+			denominators = {1}, max_nodes_per_vein = 1,
+			deep_1500_1999_numerator = 5, deep_1500_1999_denominator = 4,
+			deep_2000_floor_numerator = 3, deep_2000_floor_denominator = 2,
+			content_ref = resource_ref}}
+	end
 	function content_wrapper.cultural() return {} end
 	function content_wrapper.decorations() return {} end
 	function content_wrapper.wp43_projection()
-		return {tiers = {{y_min = -31000, node = support_name}}, race_regions = {}}
+		return {tiers = {{y_min = -31000, node = support_name}},
+			race_regions = {{race = "human", g1 = "citrine", g2 = "diamond"}}}
 	end
 	function content_wrapper.content_ref(name) return production_ref[name] end
 	function content_wrapper.param2_kind() return "none" end
@@ -1448,49 +1513,185 @@ return function(repo)
 	function micro_allocator.metrics()
 		return {hotpath_table_allocations = 0, construction_sealed = true}
 	end
+
+	-- Prove that the real R5 and R6 factories select only their live
+	-- collaborators.  Their collaborators are deliberately bounded stubs here;
+	-- the authentic zones runtime above and settlement transaction below cover
+	-- the expensive concrete implementations.
+	do
+		local selector_calls = {zones_new = 0, zones_runtime = 0,
+			r5_new = 0, r5_runtime = 0, settlement_new = 0,
+			settlement_runtime = 0}
+		local selector_source = dofile(wp40 .. "/source/simple_map.lua")
+		local selector_schemas = dofile(wp40 .. "/schemas.lua")
+		local selector_zones_session, selector_planner_source = {}, {}
+		local selector_zones_factory = function()
+			return {
+				new = function() selector_calls.zones_new = selector_calls.zones_new + 1 end,
+				new_with_planner_source = function()
+					selector_calls.zones_new = selector_calls.zones_new + 1
+					return selector_zones_session, selector_planner_source
+				end,
+				new_with_planner_source_runtime = function()
+					selector_calls.zones_runtime = selector_calls.zones_runtime + 1
+					return selector_zones_session, selector_planner_source
+				end,
+			}
+		end
+		local selector_r5_planner, selector_r5_adapter = {}, {}
+		local selector_r5_planner_factory = function()
+			return {new = function() return selector_r5_planner end}
+		end
+		local selector_r5_adapter_factory = function()
+			return {new = function() return selector_r5_adapter end}
+		end
+		local selector_manifest = {
+			validate = function(values) return values end,
+			canonical_bytes = function() return "micro" end,
+		}
+		local selector_allocator_factory = {
+			new = function() return micro_allocator end,
+		}
+		local real_r5_module = dofile(wp40 .. "/r5.lua")({
+			zones_factory = selector_zones_factory,
+			planner_factory = selector_r5_planner_factory,
+			adapter_factory = selector_r5_adapter_factory,
+			manifest_module = selector_manifest,
+			allocator_factory = selector_allocator_factory,
+			source = selector_source, schemas = selector_schemas,
+			canonical = {}, deterministic = {}, index128 = {},
+			horizontal_factory = function() end,
+			height_factory = function() end, raw_sha256 = raw_sha256,
+		})
+		local r5_zones, r5_planner_source, r5_planner, r5_adapter =
+			real_r5_module.new_runtime("0", 1, {}, {}, {})
+		check(r5_zones == selector_zones_session and
+			r5_planner_source == selector_planner_source and
+			r5_planner == selector_r5_planner and r5_adapter == selector_r5_adapter and
+			selector_calls.zones_new == 0 and selector_calls.zones_runtime == 1,
+			"R8 R5 runtime selector differs")
+
+		local r6_zones, r6_planner_source = {}, {}
+		local r6_r5_planner, r6_r5_adapter = {}, {}
+		local r6_r5_factory = function()
+			return {
+				new = function()
+					selector_calls.r5_new = selector_calls.r5_new + 1
+					return r6_zones, r6_planner_source,
+						r6_r5_planner, r6_r5_adapter
+				end,
+				new_runtime = function()
+					selector_calls.r5_runtime = selector_calls.r5_runtime + 1
+					return r6_zones, r6_planner_source,
+						r6_r5_planner, r6_r5_adapter
+				end,
+			}
+		end
+		local r6_planner, r6_planner_fixture = {}, {
+			stable_refs = function() return {"human"} end,
+		}
+		local r6_settlement, r6_settlement_fixture = {}, {}
+		local r6_settlement_factory = {
+			new = function()
+				selector_calls.settlement_new = selector_calls.settlement_new + 1
+				return r6_settlement, r6_settlement_fixture
+			end,
+			new_runtime = function()
+				selector_calls.settlement_runtime =
+					selector_calls.settlement_runtime + 1
+				return r6_settlement, r6_settlement_fixture
+			end,
+		}
+		local real_r6_module = dofile(wp40 .. "/r6.lua")({
+			r5_factory = r6_r5_factory, zones_factory = function() end,
+			r5_planner_factory = function() end,
+			r5_adapter_factory = function() end, manifest_module = {},
+			allocator_factory = selector_allocator_factory,
+			source = {}, schemas = {}, canonical = {}, deterministic = {},
+			index128 = {}, horizontal_factory = function()
+				return {new = function() return {} end}
+			end,
+			height_factory = function() end, raw_sha256 = raw_sha256,
+			hash_factory = function() return {} end,
+			content_factory = function()
+				return {r5_manifest_values = function() return {} end}
+			end,
+			templates_factory = function()
+				return {records = function() return {} end}
+			end,
+			planner_factory = {new = function()
+				return r6_planner, r6_planner_fixture
+			end},
+			settlement_factory = r6_settlement_factory,
+		})
+		local _, _, selected_r6_zones, selected_r6_settlement =
+			real_r6_module.new_runtime("0", 1, {}, {r5 = {}}, {}, {}, {}, {})
+		check(selected_r6_zones == r6_zones and
+			selected_r6_settlement == r6_settlement_fixture and
+			selector_calls.r5_new == 0 and selector_calls.r5_runtime == 1 and
+			selector_calls.settlement_new == 0 and
+			selector_calls.settlement_runtime == 1,
+			"R8 R6 runtime selector differs")
+		row("runtime/r5_r6_selectors", "zones/1/r5/1/settlement/1")
+	end
 	local construction_identity = {value = {schema = "micro_identity"}}
 	local r5_adapter = {}
 	function r5_adapter.apply()
 		return "micro_r5_projection"
 	end
 	local settlement_horizontal = {}
-	function settlement_horizontal.static_exclusion_values_at() return nil end
+	function settlement_horizontal.static_exclusion_values_at(x, z)
+		if x == 1 and z == 0 then return 1, "micro_resource_exclusion" end
+		return nil
+	end
 	function settlement_horizontal.housing_mask_id_at() return nil end
 	local planner_source = {}
 	function planner_source.column_values_at(x, z)
 		if x == 0 and z == 0 then
-			return "land", 1, corn_zone, corn_biome, "human", 5
+			return "land", 1, corn_zone, corn_biome, "human", -701
+		elseif x == 1 and z == 0 then
+			-- Deliberately disagree with the frozen plan below.  Resource
+			-- eligibility must use retained numeric water/race values.
+			return "deep_ocean", nil, nil, nil, "orc", -701
 		end
-		return "land", 1, "micro_no_zone", corn_biome, "human", 0
+		return "land", 1, "micro_no_zone", corn_biome, "human", -701
 	end
 	local source_anchor = {id = "micro_apex", position = {x = 10000, z = 10000}}
-	local source = {claim_exclusions = {}, routes = {}, hard_protection = {},
+	local source = {claim_exclusions = {{id = "micro_resource_exclusion",
+		recipe_id = "hard_start_core_v1"}}, routes = {}, hard_protection = {},
 		anchors = {source_anchor}, apex_sockets = {}, hydrology_profiles = {},
 		hydrology = {}, hydrology_interfaces = {}}
 	for index = 1, 24 do
 		source.apex_sockets[index] = {id = "micro_socket_" .. index,
 			anchor_id = source_anchor.id, offset = {x = index, z = 0}}
 	end
-	local settlement, settlement_fixture = settlement_factory.new({
+	local settlement, settlement_fixture = settlement_factory.new_runtime({
 		full_seed_string = "0", r5_adapter = r5_adapter, content = content_wrapper,
 		templates = {}, hash = settlement_hash, horizontal = settlement_horizontal,
 		planner_source = planner_source, construction_identity = construction_identity,
 		cultural_registrations = {}, source = source, successor_tail = successor,
 		counting_allocator = micro_allocator})
 
-	local owner_min, owner_max = {x = -32, y = 0, z = -32},
-		{x = 47, y = 79, z = 47}
+	local owner_min, owner_max = {x = -32, y = -752, z = -32},
+		{x = 47, y = -673, z = 47}
 	local full_column_values = {}
 	for index = 1, 6400 * 12 do full_column_values[index] = 0 end
 	local full_active_column = ((0 - owner_min.z) * 80 + (0 - owner_min.x)) + 1
+	local resource_column = ((0 - owner_min.z) * 80 + (1 - owner_min.x)) + 1
 	local column_base = (full_active_column - 1) * 12
-	full_column_values[column_base + 5] = 5
+	full_column_values[column_base + 1] = 1
+	full_column_values[column_base + 4] = 2
+	full_column_values[column_base + 5] = -701
 	full_column_values[column_base + 7] = 1
 	full_column_values[column_base + 8] = support_ref
+	local resource_column_base = (resource_column - 1) * 12
+	full_column_values[resource_column_base + 1] = 1
+	full_column_values[resource_column_base + 4] = 2
+	full_column_values[resource_column_base + 5] = -701
 	local column_start = {}
 	for index = 1, full_active_column do column_start[index] = 1 end
 	for index = full_active_column + 1, 6401 do column_start[index] = 2 end
-	local r5_run_values = {5, 5, 7, 28, 0, 0, 0, 0, 0}
+	local r5_run_values = {-701, -701, 7, 28, 0, 0, 0, 0, 0}
 	local full_plan = {schema = "grug_wp40_r6_refinement_plan_v1",
 		construction_identity = construction_identity.value, generation = 1,
 		valid = true, min_x = owner_min.x, min_y = owner_min.y,
@@ -1499,7 +1700,8 @@ return function(repo)
 			run_values = r5_run_values}, r5_generation = 1,
 		column_values = full_column_values, column_count = 6400,
 		candidate_cell_values = {}, candidate_cell_count = 0,
-		candidate_values = {}, candidate_count = 0, stable_refs = {}}
+		candidate_values = {}, candidate_count = 0,
+		stable_refs = {"citrine", "human"}}
 	successor:plan_slice(owner_min, owner_max, full_plan, 1)
 
 	local vm_module = dofile(repo .. "/tools/wp40/simple_map_r5_vm.lua")
@@ -1525,6 +1727,12 @@ return function(repo)
 				end
 			end
 		end
+		local function index_at(x, y, z)
+			return ((z - emerged_min.z) * axis * axis) +
+				((y - emerged_min.y) * axis) + (x - emerged_min.x) + 1
+		end
+		data[index_at(1, -701, 0)] = support_cid
+		data[index_at(1, -700, 0)] = support_cid
 		return vm_module.new({minp = owner_min, maxp = owner_max,
 			data = data, param2 = fixed_array(volume, 0),
 			light = light, heightmap = fixed_array(6400, -31007),
@@ -1549,37 +1757,39 @@ return function(repo)
 	local run_values, run_count = settlement_fixture.run_values()
 	check(type(applied) == "string" and applied:match("^applied_[cplq]+$") and
 		type(ledger) == "table" and type(ledger.p9g) == "table" and
-		ledger.p9g.accepted == 1 and run_count >= 2,
-		"shared R6/P9G transaction differs")
-	local accepted_root_y, p9g_run_count = ledger.p9g.operations[1].root_y, 0
+		ledger.p9g.accepted == 0 and run_count >= 2,
+		"shared R6/P9G transaction differs " .. table.concat({tostring(applied),
+			tostring(ledger and ledger.p9g and ledger.p9g.accepted),
+			tostring(run_count)}, "/"))
+	local resource_run_count = 0
 	for run = 1, run_count do
 		local base = (run - 1) * 9
-		if run_values[base + 4] == 35 then
-			p9g_run_count = p9g_run_count + 1
-			check(run_values[base + 3] == 10 and run_values[base + 6] == 11 and
-				run_values[base + 1] <= accepted_root_y and
-				accepted_root_y <= run_values[base + 2],
-				"P9G shared-run class/policy/root binding differs")
+		if run_values[base + 4] == 24 then
+			resource_run_count = resource_run_count + 1
+			check(run_values[base + 3] == 8 and run_values[base + 6] == 2 and
+				run_values[base + 1] <= -701 and -701 <= run_values[base + 2],
+				"resource shared-run class/policy/root binding differs")
 		end
 	end
-	check(p9g_run_count == 1,
-		"P9G did not precede the one shared run derivation")
+	check(resource_run_count == 1,
+		"runtime resource did not produce one shared run")
 	local first_calls = observer.metrics()
 	local first_snapshot = observer.snapshot()
-	local direct_sun_air_count = 0
+	local function snapshot_index(snapshot, x, y, z)
+		return ((z - snapshot.emin.z) * axis * axis) +
+			((y - snapshot.emin.y) * axis) + (x - snapshot.emin.x) + 1
+	end
+	check(first_snapshot.data[snapshot_index(first_snapshot, 1, -701, 0)] ==
+			resource_cid and
+		first_snapshot.data[snapshot_index(first_snapshot, 1, -700, 0)] ==
+			support_cid,
+		"runtime resource plan cache or y=-700 exclusion boundary differs")
 	for z = first_snapshot.emin.z, first_snapshot.emax.z do
 		for y = first_snapshot.emin.y, first_snapshot.emax.y do
 			for x = first_snapshot.emin.x, first_snapshot.emax.x do
 				local index = ((z - first_snapshot.emin.z) * axis * axis) +
 					((y - first_snapshot.emin.y) * axis) +
 					(x - first_snapshot.emin.x) + 1
-				if x >= owner_min.x and x <= owner_max.x and
-						y >= owner_min.y and y <= owner_max.y and
-						z >= owner_min.z and z <= owner_max.z and
-						first_snapshot.data[index] == air_cid and
-						first_snapshot.light[index] == 15 then
-					direct_sun_air_count = direct_sun_air_count + 1
-				end
 				if x < owner_min.x or x > owner_max.x or
 						y < owner_min.y or y > owner_max.y or
 						z < owner_min.z or z > owner_max.z then
@@ -1592,8 +1802,6 @@ return function(repo)
 			end
 		end
 	end
-	check(direct_sun_air_count > 0,
-		"surface transaction did not produce direct sunlight in authored air")
 	local light_seed_runs = settlement_fixture.last_light_seed_runs()
 	check(first_calls.vm_get_data_calls == 1 and
 		first_calls.vm_get_param2_calls == 1 and
@@ -1619,10 +1827,41 @@ return function(repo)
 	for index = 1, run_count * 9 do
 		run_fields[index] = string.format("%.0f", run_values[index])
 	end
+
+	-- A second fresh transaction must reproduce the first bytes without the
+	-- offline read-only replay that live construction intentionally omits.
+	local second_vm, _, second_observer = owner_vm()
+	local second_plain_get_emerged_area = second_vm.get_emerged_area
+	function second_vm.get_emerged_area(self)
+		local emerged_min, emerged_max = second_plain_get_emerged_area(self)
+		return setmetatable(emerged_min, transaction_vector_metatable),
+			setmetatable(emerged_max, transaction_vector_metatable)
+	end
+	rawset(_G, "vector", {metatable = transaction_vector_metatable})
+	local second_applied = settlement:apply(second_vm, owner_min, owner_max,
+		full_plan, 1, "fixture")
+	rawset(_G, "vector", saved_transaction_vector)
+	local second_ledger = settlement_fixture.last_ledger()
+	local second_run_values, second_run_count = settlement_fixture.run_values()
+	local second_snapshot = second_observer.snapshot()
+	local function equal_array(left, right)
+		if #left ~= #right then return false end
+		for index = 1, #left do
+			if left[index] ~= right[index] then return false end
+		end
+		return true
+	end
+	check(second_applied == applied and second_run_count == run_count and
+		graph(second_ledger) == graph(ledger) and
+		equal_array(second_run_values, run_values) and
+		equal_array(second_snapshot.data, first_snapshot.data) and
+		equal_array(second_snapshot.param2, first_snapshot.param2) and
+		equal_array(second_snapshot.light, first_snapshot.light),
+		"repeated runtime settlement transaction differs")
 	local writer_metrics, successor_metrics = settlement:metrics(), successor:metrics()
-	check(writer_metrics.apply_calls == 1 and writer_metrics.replay_count == 1 and
-		successor_metrics.p9g.settle_calls == 1 and
-		successor_metrics.p9g.replay_calls == 1 and
+	check(writer_metrics.apply_calls == 2 and writer_metrics.replay_count == 0 and
+		successor_metrics.p9g.settle_calls == 2 and
+		successor_metrics.p9g.replay_calls == 0 and
 		successor_metrics.schema == "grug_wp40_r7_successor_metrics_v1",
 		"shared writer metrics differ")
 	row("production/owner_transaction", applied .. "/" .. tostring(run_count))
@@ -1636,6 +1875,8 @@ return function(repo)
 		successor_metrics.p9g.replay_calls}, "/"))
 	row("production/emerged_vector_normalized", "true")
 	row("production/readonly_halo_ignore_preserved", "true")
+	end
+	run_runtime_transaction()
 
 	local missing = {}
 	for index = 1, #changed_order do

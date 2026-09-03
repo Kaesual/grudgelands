@@ -626,11 +626,39 @@ after verifying all 89 master-checksum entries, all 83 source-checksum entries
 and reproducing the recovery ID. G3 is closed; GUI and real fallback-engine
 runtime acceptance remain separate R8 gates.
 
+## GUI cold-start correction review
+
+The first read-only hard-lens review of exact correction
+`269038e3c437f0014fc4fcace748e474541c6112` returned **REJECT, 0 Critical / 2
+High / 2 Medium / 1 Low**. It found no defect in the production runtime
+implementation or its geometry semantics. The two High findings were instead
+in the replacement interpreter proof: `source_audit.sh` still required the
+historical 71-module result despite the current 74-module roster, and the
+micro-KAT loaded but did not construct the authentic Height/Zones live path or
+exercise the frozen resource tuple, depth boundary and runtime replay skip.
+The Medium findings were that the successful engine capture remained ignored
+and that the pilot record overstated optional native diagnostics as a required
+native gate. The Low finding was the stale attempt count in that record.
+
+The correction derives all population checks from the current 74-module
+contract, executes the authentic bounded Height/Zones runtime constructor,
+and drives the real R5/R6 live selectors. Its real runtime settlement fixture
+uses a retained numeric land/human tuple against a deliberately conflicting
+live planner answer, checks a regional resource below `y=-700`, checks the
+same horizontally excluded host at `y=-700`, repeats the transaction on a
+fresh VM with byte-identical output, and requires metrics `2/0/2/0` for writer
+apply/replay and P9G settle/replay calls. The 224 KiB two-order pilot capture
+is copied unchanged into the tracked evidence tree and verifies against all
+33 original checksums. The pilot record now distinguishes required combined-
+pilot gates from its optional native witness diagnostics and counts all twelve
+attempts. Focused independent re-review and the one final frozen-byte
+LuaJIT/PUC pair remain open.
+
 ## Calibration so far
 
 - Implementing/coordinating model: GPT-5.6 Sol with two bounded parallel
   implementation lanes.
 - Reviewing model: fresh independent GPT-5.6 Sol.
 - Initial findings: 1 Critical / 2 High / 3 Medium / 0 Low.
-- Review-fix rounds started: 7.
+- Review-fix rounds started: 8.
 - Observed elapsed wall time: pending package completion.
