@@ -1730,23 +1730,24 @@ return function(repo, changed_roster_relative, expected_changed_count)
 
 		local r6_zones, r6_planner_source = {}, {}
 		local r6_r5_planner, r6_r5_adapter = {}, {}
+		local r6_r5_module = {
+			new = function()
+				selector_calls.r5_new = selector_calls.r5_new + 1
+				return r6_zones, r6_planner_source,
+					r6_r5_planner, r6_r5_adapter
+			end,
+			new_runtime = function()
+				selector_calls.r5_runtime = selector_calls.r5_runtime + 1
+				return r6_zones, r6_planner_source,
+					r6_r5_planner, r6_r5_adapter
+			end,
+		}
 		local r6_r5_factory = function()
-			return {
-				new = function()
-					selector_calls.r5_new = selector_calls.r5_new + 1
-					return r6_zones, r6_planner_source,
-						r6_r5_planner, r6_r5_adapter
-				end,
-				new_runtime = function()
-					selector_calls.r5_runtime = selector_calls.r5_runtime + 1
-					return r6_zones, r6_planner_source,
-						r6_r5_planner, r6_r5_adapter
-				end,
-			}
+			return r6_r5_module
 		end
-			local r6_planner, r6_planner_fixture = {}, {
-				stable_refs = function() return {"human"} end,
-			}
+		local r6_planner, r6_planner_fixture = {}, {
+			stable_refs = function() return {"human"} end,
+		}
 		local r6_settlement, r6_settlement_fixture = {}, {}
 		local r6_settlement_factory = {
 			new = function()
@@ -1759,6 +1760,11 @@ return function(repo, changed_roster_relative, expected_changed_count)
 				return r6_settlement, r6_settlement_fixture
 			end,
 		}
+		local r6_planner_factory = {new = function()
+			return r6_planner, r6_planner_fixture
+		end, new_runtime = function()
+			return r6_planner, r6_planner_fixture
+		end}
 		local real_r6_module = dofile(wp40 .. "/r6.lua")({
 			r5_factory = r6_r5_factory, zones_factory = function() end,
 			r5_planner_factory = function() end,
@@ -1776,11 +1782,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			templates_factory = function()
 				return {records = function() return {} end}
 			end,
-				planner_factory = {new = function()
-					return r6_planner, r6_planner_fixture
-				end, new_runtime = function()
-					return r6_planner, r6_planner_fixture
-				end},
+			planner_factory = r6_planner_factory,
 			settlement_factory = r6_settlement_factory,
 		})
 		local _, _, selected_r6_zones, selected_r6_settlement =
@@ -1791,7 +1793,20 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			selector_calls.settlement_new == 0 and
 			selector_calls.settlement_runtime == 1,
 			"R8 R6 runtime selector differs")
-		row("runtime/r5_r6_selectors", "zones/1/r5/1/settlement/1")
+		local planner_runtime_constructor = r6_planner_factory.new_runtime
+		r6_planner_factory.new_runtime = nil
+		expect_failure(function()
+			real_r6_module.new_runtime("0", 1, {}, {r5 = {}}, {}, {}, {}, {})
+		end, "R6 planner construction mode is absent")
+		r6_planner_factory.new_runtime = planner_runtime_constructor
+		local r5_runtime_constructor = r6_r5_module.new_runtime
+		r6_r5_module.new_runtime = nil
+		expect_failure(function()
+			real_r6_module.new_runtime("0", 1, {}, {r5 = {}}, {}, {}, {}, {})
+		end, "R5 runtime constructor is absent")
+		r6_r5_module.new_runtime = r5_runtime_constructor
+		row("runtime/r5_r6_selectors",
+			"zones/1/r5/1/settlement/1/missing_fail_closed")
 	end
 	local construction_identity = {value = {schema = "micro_identity"}}
 	local r5_adapter = {}

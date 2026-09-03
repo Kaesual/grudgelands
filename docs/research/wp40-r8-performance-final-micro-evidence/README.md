@@ -1,8 +1,13 @@
 # WP40 R8 performance final micro-KAT evidence
 
-This directory is the durable final-interpreter evidence for the mapgen
-performance tranche frozen at commit
+The root-level artifacts in this directory are the durable first
+final-interpreter pair for the mapgen performance tranche frozen at commit
 `f30b3ccac542364d0a78d399d200362a80989da1`.
+
+That candidate was superseded after focused review found a Medium-severity
+fail-open constructor-selector fallback. The artifacts remain as an immutable
+audit trail but are not the accepted final pair. The corrected replacement
+pair is retained in the `replacement/` child directory.
 
 The one authorized final invocation was:
 

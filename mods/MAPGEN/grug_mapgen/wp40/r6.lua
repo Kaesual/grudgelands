@@ -313,8 +313,12 @@ return function(dependencies)
 		end
 
 		local runtime_mode = construction_mode == "runtime"
-		local r5_constructor = runtime_mode and r5_module.new_runtime or
-			r5_module.new
+		local r5_constructor
+		if runtime_mode then
+			r5_constructor = r5_module.new_runtime
+		else
+			r5_constructor = r5_module.new
+		end
 		if type(r5_constructor) ~= "function" then
 			fail("fail_status", "R5 runtime constructor is absent")
 		end
@@ -340,10 +344,14 @@ return function(dependencies)
 				not runtime_mode then
 			fail("fail_status", "private construction mode differs")
 		end
-		local planner_constructor = evidence_only and
-			dependencies.planner_factory.new_evidence or
-			(runtime_mode and dependencies.planner_factory.new_runtime or
-				dependencies.planner_factory.new)
+		local planner_constructor
+		if evidence_only then
+			planner_constructor = dependencies.planner_factory.new_evidence
+		elseif runtime_mode then
+			planner_constructor = dependencies.planner_factory.new_runtime
+		else
+			planner_constructor = dependencies.planner_factory.new
+		end
 		if type(planner_constructor) ~= "function" then
 			fail("fail_status", "R6 planner construction mode is absent")
 		end

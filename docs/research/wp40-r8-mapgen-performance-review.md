@@ -2,7 +2,7 @@
 
 **Baseline:** `7e9284ffcd71b445efcdfde7cee39534bbf8ef35`
 
-**Frozen candidate:** `f30b3ccac542364d0a78d399d200362a80989da1`
+**Superseded candidate:** `f30b3ccac542364d0a78d399d200362a80989da1`
 
 ## Initial independent reviews
 
@@ -31,8 +31,9 @@ authority construction, anchors or Lua 5.1 syntax.
 - The bounded fixture directly exercises `r6_templates.lua` runtime aliasing,
   probability digests, `r6_planner.lua.new_runtime`, the fail-closed R5/R6
   runtime constructor selection and one accepted ledger-free P9G write.
-- The sole final PUC 5.1/LuaJIT pair is retained under
-  `wp40-r8-performance-final-micro-evidence/`. Both outputs are byte-identical.
+- The first PUC 5.1/LuaJIT pair is retained under
+  `wp40-r8-performance-final-micro-evidence/` as a superseded audit trail. A
+  replacement pair is required after the corrected selector bytes are frozen.
 - Column values are now computed before cache insertion or eviction, and the
   R6 live planner selector fails closed when `new_runtime` is absent.
 - The cache bound is 65,536 entries with hit/miss/eviction metrics. The warm
@@ -48,11 +49,25 @@ cross-check preserves the current trust boundary. The review's larger cold
 tuple, shadow-light and packed-buffer candidates remain deferred by the
 stop-before-rewrite decision.
 
+## First focused re-review
+
+The independent Sol reviewer verified that all three original evidence gaps
+were closed and that all referenced hashes matched. It nevertheless rejected
+evidence commit `9f87750` with 0 Critical / 0 High / 1 Medium / 0 Low: Lua's
+`a and b or c` selection still fell back to the ordinary R5 or planner
+constructor when a runtime constructor was absent, contradicting the intended
+fail-closed boundary.
+
+The second fix round replaces both selections with explicit `if/else`
+branches. The micro fixture removes each runtime constructor in turn and
+requires the exact fail-closed error, so the regression test cannot pass by
+calling the ordinary constructor.
+
 ## Verification available to final review
 
 - Plain Lua 5.1 parser, `SETGLOBAL` inspection and all five textual sweeps:
   pass; durable static receipt SHA-256
-  `e5b0646ddaef3d80ee97e7aff4f9e4adc238072d223abd99343c369540065612`.
+  `b7fe12eae1709660276cd88d24028aaf043dedd4a71a98331f04311b5aa27318`.
 - R7 unit KATs: pass.
 - The complete 61-case LuaJIT integration receipt is byte-identical to the
   retained R8 receipt, SHA-256
@@ -72,7 +87,7 @@ Implementing model: GPT-5.6 Sol. Reviewing models: Claude Fable and an
 independent fresh GPT-5.6 Sol context. Initial review totals across the two
 independent reports: 0 Critical / 3 High (one duplicated concern) / 3 Medium
 (one duplicated concern) / 1 evidence Low plus three optional code Lows. Fix
-rounds before final re-review: one. Observed elapsed wall time: unknown.
+rounds before final re-review: two. Observed elapsed wall time: unknown.
 
 The final focused-review verdict is recorded below after it inspects the
 immutable candidate and evidence commit.
