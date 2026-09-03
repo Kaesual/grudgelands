@@ -1,6 +1,6 @@
 # WP40 R8 real-engine pilot record
 
-**Status:** ten attempts retained. Attempts 1--4 stopped during
+**Status:** eleven attempts retained. Attempts 1--4 stopped during
 production construction; Attempt 5 exposed and corrected the fresh-engine
 read-only halo; Attempt 6 measured and removed redundant native pilot rows.
 Attempt 7 completed both schedules cleanly and isolated a real surface-light
@@ -9,8 +9,10 @@ confirmed the liquid correction and reduced the remaining surface defect to a
 fresh vertical `CONTENT_IGNORE` halo above the owner. Attempt 9 confirms the
 narrower lighting correction, complete order equality and every G2 gate.
 Attempt 10 generated nearly the whole complete corpus without a mapgen error
-but correctly failed at the fixed two-hour G3 boundary. The approved
-replacement G3 uses two complete forward/reverse shard pairs and four workers.
+but correctly failed at the fixed two-hour G3 boundary. Attempt 11 completed
+the replacement two-pair/four-worker G3 and retained all raw evidence; its
+original native oracle failed closed and is pending the separately reviewed
+`recovery_v1` evaluation.
 
 ## Attempt 1 -- diagnostic failure
 
@@ -504,3 +506,64 @@ below the two-hour operational target. Per the user's post-timeout direction,
 that target no longer kills a nearly complete run: the replacement uses a
 10,770-second probe timeout, a three-hour host safety stop and a 10,801-second
 periodic-liquid boundary.
+
+## Attempt 11 -- completed sharded G3, native oracle failure
+
+- Date: 2026-09-03
+- Candidate: `d20bcf58b751be256e3b96fe14df4b5dc901e6eb`
+- Review before execution: focused independent **ACCEPT, 0 Critical / 0 High /
+  0 Medium / 0 Low**
+- Mode: final, Seed `0`, four concurrent engines; ten feature requests and 32
+  native requests each ran in forward and exact reverse order
+- Master capture ID:
+  `47be3ce009a333423b161b17e53bd4e24645f07ca0910314b1f249aa63b9b9ae`
+- Source-tree SHA-256:
+  `a6e401b3e5987653e738f8ddb1c89b8a4cfd23c10ef15b8d05ade0946085141e`
+- Input-set SHA-256:
+  `709db8acaac4f743a53faaa3b724bc2c5d8ce6e878ceebf26d5578a2d4ea5c9d`
+- Feature child:
+  `b3e0f10ecb7744691ab4575a5ed20611aaa4463f0f50f0ab50a494c31323f6d5`,
+  **PASS**
+- Native child:
+  `7650bf849dffa490fba252c7f30fd5eccad999e11e6b68f22318fe8626a123e6`,
+  **FAIL under the original native oracle**
+- Master worker status: feature `0`, native `1`; the native and master
+  manifests/checksums were correctly withheld
+
+All four engine processes exited zero with exactly one start, complete and
+clean shutdown event, zero emerge errors and empty targeted error scans. The
+feature pair finished in 24:56.97 and 26:31.56 host walltime. The native pair
+finished in 2:05:14 and 1:42:11; the slowest process retained approximately 55
+minutes of margin to the three-hour host stop. All four contemporaneous child
+before/after identities and the master before identity equal
+`0af19653d76b10921d1ed9bfa8de7e9c821a2caf403f768d72d0ca39fd47f05b`.
+
+The ten feature snapshots are byte-identical across order for content,
+`param2`, lighting and semantic summaries. The seven native content-census
+slices are also identical. Both native orders recorded 25
+`large_cave_begin`, 25 `large_cave_end`, 16 preserved cave-air witnesses, all
+five nonzero retained strata and a native-ore total of 49,734. They recorded no
+dungeon notification. Two cave-air counts and one diagnostic
+`large_cave_end` position differ, so the original exact native-event equality
+is genuinely false even though its hard normalized totals match.
+
+Raw event SHA-256 values:
+
+- feature forward:
+  `2afb6a8c4d55e73554c4c81159f934a105003d8c7df4db3b9a422e6a5f05c5d8`
+- feature reverse:
+  `43b639bb31efc63a5edf7fde917f765db3baae4c4047542e6daba90dc32dad70`
+- native forward:
+  `7786ccb94ce63ced6e369c4d88909f74f083885ce0996d2b7897406e13f41e94`
+- native reverse:
+  `55397d11b0112551597c30f88ef361e07cdbc9ae688c36657cba2bbbc92a7363`
+
+The user approved `recovery_v1` on 2026-09-03. It treats cave positions and
+local air counts as diagnostic while retaining per-order paired-event and
+preserved-air gates plus equality of normalized totals. Dungeon status is
+`not_observed` and non-blocking only for zero notifications in both orders;
+one-sided observation or any observed-but-unpreserved pair remains blocking.
+The original capture stays a formal failure and is never modified. A separate
+hash-bound recovery receipt may be created only by independently reviewed
+validator bytes. That evaluation starts no engine and makes no dungeon
+preservation claim.

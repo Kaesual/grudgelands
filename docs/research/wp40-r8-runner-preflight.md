@@ -1,11 +1,12 @@
 # WP40 R8 headless runner preflight
 
 Status: corrected G2 real-engine pilot accepted; the first combined 10+32 G3
-pair failed only at its exact two-hour timeout. The user approved the sharded
-four-worker correction and a three-hour safety boundary; its exact bytes await
-focused independent review. The runner remains a narrow release smoke, not a
-replacement for offline R7 evidence, R2/R6 capacity and supply evidence, or
-the later visual gates.
+pair failed only at its exact two-hour timeout. The independently reviewed
+four-worker replacement completed without timeout but failed closed under its
+original native-event policy. Its immutable raw evidence is eligible for the
+separately reviewed `recovery_v1` evaluation below. The runner remains a narrow
+release smoke, not a replacement for offline R7 evidence, R2/R6 capacity and
+supply evidence, or the later visual gates.
 
 ## Contract
 
@@ -78,11 +79,17 @@ Startup events record engine/version, seed, mapgen settings, Lua runtime and
 the live `grug_mapgen.wp40` status. The status' `production_enabled` and
 `writer_count` fields are the one-writer indicators available without adding a
 production writer or a second mapgen authority. A read-only probe callback
-requests native cave/dungeon generation notifications. The native shard requires
-matched random-walk-cave begin/end counts, inspected nearby cave air, at least
-one inspected surviving dungeon room, all five retained strata and the native
-gravel blob. The fixed grid does not grow after an unlucky result. Raw
-server/console logs, a
+requests native cave/dungeon generation notifications. Under the approved
+`recovery_v1` policy, the native shard requires complete random-walk-cave
+begin/end pairs and inspected nearby cave air in each order, equal normalized
+event counts/witness totals, all five retained strata and the native gravel
+blob. Cave notification positions and local air counts are diagnostic because
+they can vary with request order even when the inspected content is equal.
+Dungeon evidence has three states: no notification in either order is
+`not_observed` and non-blocking; a notification in only one order is blocking;
+notifications in both orders require at least one inspected surviving room in
+each. The fixed grid does not grow after an unlucky result, and a
+`not_observed` receipt must not claim dungeon preservation. Raw server/console logs, a
 targeted error scan, GNU `time -v` walltime/RSS output, probe `/proc` RSS and
 the final `register_on_shutdown` event remain separate immutable outputs.
 
@@ -112,15 +119,44 @@ the final `register_on_shutdown` event remain separate immutable outputs.
    exactly one emerge thread must all be realized. A missing `start`, a probe
    `timeout`, cancelled/errored emerge action, nonzero process exit, error-log
    match or unclean shutdown blocks interpretation.
-5. Inspect each shard's `comparison.json`, then the coordinator's aggregate
-   `comparison.json`. Require equal central content/param2/light feature rows,
-   content-only native census rows, canonical native-event evidence in both
-   native orders, 42 unique IDs across the two shards, and one identical
+5. Inspect each shard's `comparison.json`, then the coordinator's aggregate or
+   recovery `comparison.json`. Require equal central content/param2/light
+   feature rows, content-only native census rows, the normalized native-event
+   gates above in both native orders, 42 unique IDs across the two shards, and one identical
    exact frozen-corpus ID set, checkout, seed, host/in-process engine identity,
    Lua runtime and production manifest across all four worlds. All four
    positive elapsed/RSS values are mandatory. Keep the master
    `checksums.sha256` and both child captures together; do not combine them
    into a historical T2 artifact or call this result exhaustive.
+
+## Failed-closed G3 recovery
+
+The completed sharded capture
+`47be3ce009a333423b161b17e53bd4e24645f07ca0910314b1f249aa63b9b9ae`
+remains immutable and formally failed under the policy embedded in candidate
+`d20bcf58b751be256e3b96fe14df4b5dc901e6eb`. Recovery does not edit its
+`comparison.json`, invent a missing native child manifest or manufacture the
+top-level receipts that the coordinator correctly withheld.
+
+`tools/wp40/r8/recover_sharded_g3.sh` is the sole recovery entry point. It
+re-executes from an explicitly selected reviewed commit, binds the source to
+its 83-file tree SHA-256
+`a6e401b3e5987653e738f8ddb1c89b8a4cfd23c10ef15b8d05ade0946085141e`,
+reproduces the master and both child capture IDs, verifies every original input
+blob and mode against `d20bcf5...`, verifies the feature child checksum set and
+four independently recorded raw-event hashes, and checks all four
+contemporaneous child before/after Flatpak identities. It then recomputes the
+complete semantic comparison from the raw JSONL streams under `recovery_v1`.
+No current Flatpak query, engine process, build, Lua runtime or world mutation
+is part of recovery.
+
+The new output is a separate immutable recovery directory with a source-tree
+checksum inventory, comparison, manifest, compact receipt, captured recovery
+inputs and its own checksum set. The original worker status (`feature=0`,
+`native=1`) and missing original receipts are explicit required inputs. Any
+source mutation, `.partial` file, missing log, nonzero engine/time status,
+error scan, incomplete emerge/shutdown population, identity drift, semantic
+snapshot mismatch or failed corrected native gate remains blocking.
 
 ## Open bindings and deliberate limits
 

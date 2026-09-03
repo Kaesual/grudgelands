@@ -106,11 +106,16 @@ either single coordinate.
 
 The real-engine generated callback must search this bounded grid for
 `cave_begin`/`cave_end`, `large_cave_begin`/`large_cave_end` and
-`dungeon` notifications. The release gate requires a real dungeon
-notification and a complete random-walk-cave notification pair from the grid,
-plus all five stratum families and at least one registered native-ore node in
-the aggregate census. It must not infer a cave from a v7 noise intersection or
-from the absence of a notification. The dungeon envelope is source-derived
+`dungeon` notifications. The release gate requires complete random-walk-cave
+notification pairs with a preserved air witness in each order, plus all five
+stratum families and at least one registered native-ore node in the aggregate
+census. Cave positions and local air counts are diagnostic; normalized event
+counts and witness totals remain equality checks. Dungeon has a three-state
+gate: zero notifications in both orders is the non-blocking `not_observed`
+state, a one-sided notification blocks, and notifications in both orders need
+an inspected preserved room in each. It must not infer a cave from a v7 noise
+intersection or infer dungeon preservation from the absence of a notification.
+The dungeon envelope is source-derived
 from `docs/research/wp40-simple-map-r5-contract.md:2012-2019`; the
 notification and node-count results still require the fresh engine run.
 

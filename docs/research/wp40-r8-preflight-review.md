@@ -535,6 +535,43 @@ passed. The reviewer explicitly accepted this commit for G3 and confirmed
 that unchanged production Lua/probe bytes do not require another final
 PUC/LuaJIT pair.
 
+## Completed sharded G3 and approved recovery policy
+
+Exact candidate `d20bcf58b751be256e3b96fe14df4b5dc901e6eb` completed all
+four fresh worlds without a timeout. The feature child passed. The native
+child completed 32/32 requests in both orders, exited zero, retained clean
+shutdowns and zero emerge errors, but correctly withheld its manifest and
+checksums because the original native gate failed. The master therefore also
+withheld its aggregate receipts. Capture details and hashes are recorded as
+Attempt 11 in `wp40-r8-pilot.md`.
+
+The failure exposed two oracle problems rather than a demonstrated production
+map defect. First, the frozen 25-cell grid observed no dungeon notification in
+either order; absence from a bounded stochastic search cannot prove that the
+writer destroyed a dungeon. Second, exact equality of the complete diagnostic
+Gennotify payload rejected two different nearby-air counts and one different
+`large_cave_end` position even though both orders had 25/25 begin/end events,
+16 preserved air witnesses, equal normalized totals, equal retained strata and
+ore census, and equal inspected feature/census content.
+
+The user approved the following narrow correction on 2026-09-03:
+
+- cave event positions and local air counts are diagnostic; each order must
+  still have complete begin/end pairs and at least one preserved air witness,
+  and this capture's normalized counts and witness totals must match;
+- zero dungeon notifications in both orders is `not_observed` and
+  non-blocking; a one-sided notification blocks; notifications in both orders
+  require at least one inspected preserved room in each; and
+- a recovered result must say that dungeon generation was enabled but not
+  observed. It must not claim that dungeon preservation was proven.
+
+The original capture remains a formal failure and is never rewritten. A new
+hash-bound `recovery_v1` validator and negative fixture require independent
+review on an exact commit before they may produce a separate recovery receipt.
+The recovery reuses the complete retained engine evidence and runs no engine,
+build, PUC or LuaJIT process. Production and probe bytes are unchanged, so the
+accepted final interpreter pair remains valid.
+
 ## Calibration so far
 
 - Implementing/coordinating model: GPT-5.6 Sol with two bounded parallel
