@@ -731,6 +731,10 @@ local function planner_factory(allocator_factory)
 			return result
 		end
 
+		-- A bank query visits only the owner plus a two-column perimeter. Cache
+		-- its validated wet scalars for this plan, including dry results. The
+		-- first field is ordinal + 1; zero means not evaluated this transaction.
+		local wet_values = new_full_array("planner_wet_neighbor_values", 84 * 84 * 4)
 		local column_start = new_full_array("planner_column_start", MAX_COLUMNS + 1)
 		local run_values = new_full_array("planner_run_values", MAX_RUN_CELLS)
 		local candidate_values = new_full_array("planner_candidate_values",
@@ -991,7 +995,7 @@ local function planner_factory(allocator_factory)
 				transition_progress_q, transition_face_mask, hard_foundation
 		end
 
-		local function named_wet_values(x, z)
+		local function compute_named_wet_values(x, z)
 			local _, _, _, _, _, _, water_y, classified_id, classified_depth,
 				_, _, _, _, transition_kind, transition_id, _, transition_lower_y,
 				_, transition_face_mask = tuple_at(x, z)
@@ -1018,6 +1022,23 @@ local function planner_factory(allocator_factory)
 					relation_ordinal
 			end
 			return 0, nil, nil, 0
+		end
+
+		local function named_wet_values(x, z)
+			local local_x, local_z = x - plan.min_x + 2, z - plan.min_z + 2
+			if local_x < 0 or local_x >= 84 or local_z < 0 or local_z >= 84 then
+				fail("fail_bound", "wet neighbor escaped plan halo")
+			end
+			local base = (local_z * 84 + local_x) * 4
+			if wet_values[base + 1] ~= 0 then
+				return wet_values[base + 1] - 1, wet_values[base + 2],
+					wet_values[base + 3], wet_values[base + 4]
+			end
+			local ordinal, water_y, bed_y, relation = compute_named_wet_values(x, z)
+			wet_values[base + 2], wet_values[base + 3], wet_values[base + 4] =
+				water_y, bed_y, relation
+			wet_values[base + 1] = ordinal + 1
+			return ordinal, water_y, bed_y, relation
 		end
 
 		local function relation_contains(relation_ordinal, hydro_ordinal)
@@ -1536,6 +1557,7 @@ local function planner_factory(allocator_factory)
 			plan.run_count = 0
 			build_run_count = 0
 			current_min_y, current_max_y = min_y, max_y
+			for index = 1, 84 * 84 * 4, 4 do wet_values[index] = 0 end
 			local column_index = 0
 			for z = min_z, max_z do
 				for x = min_x, max_x do

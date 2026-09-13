@@ -273,6 +273,9 @@ replaces per-host root hashing with demand-driven deterministic selection.
 The local comparison reduces total generation-callback time by 53.7% across
 ten tested chunks (23.4% for the nine surface chunks); exact ore positions
 change, while budgets and planned vein counts remain unchanged.
+The [planner follow-up](docs/research/wp40-planner-throughput.md) reduces those
+callbacks by another 8.8% in a three-run-per-variant local comparison, with
+identical tested terrain and ore output.
 Fresh-terrain visual acceptance remains open.
 
 **Ready to start next:** WP5, WP26 and WP44 are the newly unblocked loot,

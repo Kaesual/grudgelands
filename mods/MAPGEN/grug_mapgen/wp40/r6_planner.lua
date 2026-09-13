@@ -253,8 +253,10 @@ local function planner_factory()
 
 		local function column_tuple(x, z)
 			local water_class, zone_numeric, zone_id, biome, race, terrain_y,
-				water_y, classified_hydrology_id, _, functional_kind, functional_y,
-				_, _, transition_kind, _, _, _, _, transition_face_mask =
+				water_y, classified_hydrology_id, classified_depth, functional_kind,
+				functional_y,
+				_, _, transition_kind, transition_id, _, transition_lower_y, _,
+				transition_face_mask =
 					planner_source.column_values_at(x, z)
 			if not WATER_CLASS_ID[water_class] or
 					((zone_numeric == nil) ~= (zone_id == nil)) or
@@ -289,20 +291,38 @@ local function planner_factory()
 			if cave_low ~= nil and cave_low <= terrain_y and terrain_y <= cave_high then
 				p7_support = false
 			end
+			local wet_surface, wet_bed, depth
+			if transition_kind == "waterfall" and transition_face_mask ~= nil then
+				wet_surface = transition_lower_y
+				depth = hydrology_depth[lower_hydrology[transition_id]]
+			elseif water_y ~= nil and classified_hydrology_id ~= nil and
+					transition_kind ~= "waterfall" then
+				wet_surface, depth = water_y, classified_depth
+			end
+			if wet_surface and depth and depth > 0 then
+				wet_bed = wet_surface - depth
+			else
+				wet_surface = nil
+			end
 			return water_class, zone_numeric, zone_id, biome, race, terrain_y,
 				water_y, surface_kind, surface, support_name,
-				horizontal.static_exclusion_values_at(x, z) ~= nil, p7_support
+				horizontal.static_exclusion_values_at(x, z) ~= nil, p7_support,
+				wet_surface, wet_bed
 		end
 
 		local function load_cell(cell_x, cell_z)
 			local count = 0
 			local start_x, start_z = cell_x * 16, cell_z * 16
+			for halo_index = 1, 400 do
+				scratch.wet_bed[halo_index], scratch.wet_surface[halo_index] = false, false
+			end
 			for z = start_z, start_z + 15 do
 				for x = start_x, start_x + 15 do
 					if x >= -3740 and x <= 3740 and z >= -3340 and z <= 3340 then
 						count = count + 1
 						local water_class, zone_numeric, zone_id, biome, race, terrain_y,
-							water_y, surface_kind, _, support_name, excluded, p7_support =
+							water_y, surface_kind, _, support_name, excluded, p7_support,
+							wet_surface, wet_bed =
 								column_tuple(x, z)
 						scratch.x[count], scratch.z[count] = x, z
 						scratch.water_class[count] = water_class
@@ -313,6 +333,10 @@ local function planner_factory()
 						scratch.excluded[count], scratch.surface_kind[count] = excluded, surface_kind
 						scratch.support_name[count], scratch.p7_support[count] = support_name,
 							p7_support
+						local halo_index = (z - start_z + 2) * 20 +
+							(x - start_x + 2) + 1
+						scratch.wet_surface[halo_index] = wet_surface or false
+						scratch.wet_bed[halo_index] = wet_bed or false
 					end
 				end
 			end
@@ -323,23 +347,26 @@ local function planner_factory()
 				for local_x = 0, 19 do
 					local halo_index = local_z * 20 + local_x + 1
 					local x, z = start_x + local_x - 2, start_z + local_z - 2
-					scratch.wet_bed[halo_index], scratch.wet_surface[halo_index] =
-						false, false
-					local _, _, _, _, _, _, water_y, classified_id,
-						classified_depth, _, _, _, _, transition_kind,
-						transition_id, _, transition_lower_y, _, transition_face_mask =
-							planner_source.column_values_at(x, z)
-					local wet_surface, depth
-					if transition_kind == "waterfall" and transition_face_mask ~= nil then
-						wet_surface = transition_lower_y
-						depth = hydrology_depth[lower_hydrology[transition_id]]
-					elseif water_y ~= nil and classified_id ~= nil and
-							transition_kind ~= "waterfall" then
-						wet_surface, depth = water_y, classified_depth
-					end
-					if wet_surface and depth and depth > 0 then
-						scratch.wet_surface[halo_index] = wet_surface
-						scratch.wet_bed[halo_index] = wet_surface - depth
+					local central = local_x >= 2 and local_x <= 17 and
+						local_z >= 2 and local_z <= 17 and
+						x >= -3740 and x <= 3740 and z >= -3340 and z <= 3340
+					if not central then
+						local _, _, _, _, _, _, water_y, classified_id,
+							classified_depth, _, _, _, _, transition_kind,
+							transition_id, _, transition_lower_y, _, transition_face_mask =
+								planner_source.column_values_at(x, z)
+						local wet_surface, depth
+						if transition_kind == "waterfall" and transition_face_mask ~= nil then
+							wet_surface = transition_lower_y
+							depth = hydrology_depth[lower_hydrology[transition_id]]
+						elseif water_y ~= nil and classified_id ~= nil and
+								transition_kind ~= "waterfall" then
+							wet_surface, depth = water_y, classified_depth
+						end
+						if wet_surface and depth and depth > 0 then
+							scratch.wet_surface[halo_index] = wet_surface
+							scratch.wet_bed[halo_index] = wet_surface - depth
+						end
 					end
 				end
 			end
