@@ -11,6 +11,7 @@ local module = factory({
 	canonical = {},
 	deterministic = deterministic,
 	raw_sha256 = function() return string.rep("\0", 32) end,
+	coupled_grade = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/coupled_grade.lua")(),
 	horizontal_session = {},
 })
 io.write(module.quality_geometry_micro_kat())

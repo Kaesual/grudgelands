@@ -1,0 +1,5 @@
+schema	grug_wp40_gravewood_writer_v1
+templates	2	class=1
+rotations	8	mandatory_wood=pass
+writer	applied_cl	optional_leaves=18	nonoverwrite=pass
+digest	ec55f014e48c91a148e26714d12a5ad95b602c88cb6ec2c605819acb4624de89

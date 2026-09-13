@@ -235,7 +235,7 @@ core.register_node("grug_trees:gravewood_wood", {
 core.register_node("grug_trees:gravewood_leaves", {
 	description = "Gravewood Dead Leaves",
 	drawtype = "allfaces_optional",
-	-- Existing CC BY-SA leaf texture; the engine modifier removes green tint.
+	-- Existing CC BY-SA leaf texture; the engine modifier tints the foliage toward grey.
 	tiles = {"default_leaves.png^[colorize:#858585:210"},
 	paramtype = "light",
 	is_ground_content = false,

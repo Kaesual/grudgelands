@@ -3513,8 +3513,9 @@ return function(dependencies)
 				path = operation.path
 				run_index = path_surface_run_at(path, x, z)
 			else
-				local segment
-				segment, _, _, run_index = nearest_path_segment_at(x, z, "surface", nil)
+				local segment, _, _, nearest_run =
+					nearest_path_segment_at(x, z, "surface", nil)
+				run_index = nearest_run
 				path = segment and segment.path or nil
 			end
 			return path, run_index

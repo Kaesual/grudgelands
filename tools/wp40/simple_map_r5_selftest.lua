@@ -239,6 +239,7 @@ local dependencies = {
 	deterministic = deterministic,
 	index128 = index128,
 	horizontal_factory = horizontal_factory,
+	coupled_grade = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/coupled_grade.lua")(),
 	height_factory = height_factory,
 	raw_sha256 = raw_sha256,
 }
@@ -276,6 +277,7 @@ local zones_module = zones_factory({
 	deterministic = deterministic,
 	index128 = index128,
 	horizontal_factory = horizontal_factory,
+	coupled_grade = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/coupled_grade.lua")(),
 	height_factory = height_factory,
 	raw_sha256 = raw_sha256,
 })

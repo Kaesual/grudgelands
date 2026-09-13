@@ -44,6 +44,7 @@ return function(repo, expanded)
 	local other = content.new_surface_selector("13191094842853985815", flat)
 	local rocky = content.new_surface_selector(seed, steep)
 	local samples, counts, rows = {}, {}, {}
+	local wet_beds, shore_materials = {}, {}
 	local extent, step = expanded and 128 or 32, expanded and 2 or 8
 	local differences, slope_changes = 0, 0
 	for _, base in ipairs(content.surfaces()) do
@@ -68,6 +69,16 @@ return function(repo, expanded)
 				end
 				local wet = select(base.id, x, z, 31, 30)
 				assert(wet.top == base.top and wet.filler_depth == base.filler_depth)
+				assert(wet.bed_ref == content.content_ref(wet.bed))
+				wet_beds[wet.bed] = true
+				local deep = select(base.id, x, z, 54, 30)
+				assert(deep.bed == base.bed and deep.bed_ref == base.bed_ref,
+					"deep ocean/channel bed material changed")
+				if base.id == "grug_beach" then
+					shore_materials[row.shore] = true
+					assert(row.shore_ref == content.content_ref(row.shore))
+				end
+				rows[#rows + 1] = "wet/" .. key .. "\t" .. wet.bed .. "\n"
 			end
 		end
 		local count = 0
@@ -85,12 +96,19 @@ return function(repo, expanded)
 			"surface depends on query order")
 	end
 	assert(differences > 0 and slope_changes > 0)
+	assert(wet_beds["default:sand"] and wet_beds["default:gravel"] and
+		wet_beds["default:stone"] and wet_beds["grug_nodes:mud"],
+		"wet bed palette lacks required variation")
+	if expanded then
+		assert(shore_materials["default:sand"] and shore_materials["default:gravel"],
+			"beach shore lacks material variation")
+	end
 	assert(select(nil, 0, 0, nil, 30) == nil)
 	for _, x in ipairs({-3740, 3740}) do
 		assert(select("grug_pine_hills", x, 3340, nil, 30))
 	end
 	table.sort(rows)
-	return "schema\tgrug_wp40_quality_surface_v2\n" .. table.concat(counts) ..
+	return "schema\tgrug_wp40_quality_surface_v3\n" .. table.concat(counts) ..
 		"samples\t" .. #samples .. "\nseed_differences\t" .. differences ..
 		"\nslope_changes\t" .. slope_changes .. "\noutput_sha256\t" ..
 		common.hex(common.new_sha256()(table.concat(rows))) .. "\n", content

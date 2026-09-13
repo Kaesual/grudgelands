@@ -49,6 +49,7 @@ mods/ITEMS/grug_materials/registry.lua
 mods/ITEMS/grug_nodes/init.lua
 mods/ITEMS/grug_trees/init.lua
 mods/MAPGEN/grug_mapgen/init.lua
+mods/MAPGEN/grug_mapgen/wp40/coupled_grade.lua
 mods/MAPGEN/grug_mapgen/wp40/height.lua
 mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua
 mods/MAPGEN/grug_mapgen/wp40/r5.lua

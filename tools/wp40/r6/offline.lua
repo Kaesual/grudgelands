@@ -33,6 +33,7 @@ return function(repo)
 		manifest_module = manifest_module, allocator_factory = allocator_factory,
 		source = source, schemas = schemas, canonical = canonical,
 		deterministic = deterministic, index128 = index128,
+		coupled_grade = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/coupled_grade.lua")(),
 		horizontal_factory = horizontal_factory, height_factory = height_factory,
 		raw_sha256 = raw_sha256})
 	local r6_module = r6_factory({r5_factory = r5_factory,
@@ -40,6 +41,7 @@ return function(repo)
 		r5_adapter_factory = r5_adapter_factory, manifest_module = manifest_module,
 		allocator_factory = allocator_factory, source = source, schemas = schemas,
 		canonical = canonical, deterministic = deterministic, index128 = index128,
+		coupled_grade = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/coupled_grade.lua")(),
 		horizontal_factory = horizontal_factory, height_factory = height_factory,
 		raw_sha256 = raw_sha256, hash_factory = hash_factory,
 		content_factory = content_factory, templates_factory = templates_factory,
@@ -156,6 +158,7 @@ return function(repo)
 		local templates = templates_factory(hash, content, fixtures.template_source())
 		local zones_module = zones_factory({source = source, schemas = schemas,
 			canonical = canonical, deterministic = deterministic, index128 = index128,
+			coupled_grade = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/coupled_grade.lua")(),
 			horizontal_factory = horizontal_factory, height_factory = height_factory,
 			raw_sha256 = raw_sha256})
 		local _, planner_source = zones_module.new_with_planner_source(seed, 1)

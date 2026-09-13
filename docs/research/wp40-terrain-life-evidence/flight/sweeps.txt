@@ -1,0 +1,1 @@
+mods/ENTITIES/grug_mobs/init.lua:40:--   def._grug_tier        — "normal" (default) | "elite" | "rare"

@@ -497,6 +497,7 @@ local validator_sha256 = digest(read_file(repo .. "/" .. validator_relative_path
 local height_factory = dofile(repo .. "/" .. height_relative_path)
 local height_module = height_factory({source = source, canonical = canonical,
 	deterministic = deterministic, raw_sha256 = raw_sha256,
+	coupled_grade = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/coupled_grade.lua")(),
 	horizontal_session = horizontal})
 if type(height_module.validate_source) == "function" then
 	assert(height_module.validate_source(), "height source validation failed")

@@ -10,7 +10,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local saved_dofile = dofile
 	changed_roster_relative = changed_roster_relative or
 		"tools/wp40/r7/changed_production_lua.txt"
-	expected_changed_count = expected_changed_count or 73
+	expected_changed_count = expected_changed_count or 74
 	if type(changed_roster_relative) ~= "string" or
 		changed_roster_relative:sub(1, 1) == "/" or
 		changed_roster_relative:find("..", 1, true) or
@@ -168,6 +168,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			canonical = runtime_canonical,
 			deterministic = runtime_deterministic, index128 = runtime_index,
 			horizontal_factory = runtime_horizontal_factory,
+			coupled_grade = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/coupled_grade.lua")(),
 			height_factory = runtime_height_factory, raw_sha256 = raw_sha256,
 		})
 		local live_zones, live_planner =
@@ -357,6 +358,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local runtime_r6_manifest = {schema = "micro_r6_manifest",
 		r5_manifest_values = {}}
 	local function runtime_stub_dofile(path)
+		if path:match("/coupled_grade%.lua$") then return dofile(path) end
 		if path:match("/source/catalog%.lua$") then return {} end
 		if path:match("/source/simple_map%.lua$") then return {} end
 		if path:match("/r6%.lua$") then
@@ -1807,6 +1809,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			source = selector_source, schemas = selector_schemas,
 			canonical = {}, deterministic = {}, index128 = {},
 			horizontal_factory = function() end,
+			coupled_grade = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/coupled_grade.lua")(),
 			height_factory = function() end, raw_sha256 = raw_sha256,
 		})
 		local r5_zones, r5_planner_source, r5_planner, r5_adapter =
@@ -1863,6 +1866,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			index128 = {}, horizontal_factory = function()
 				return {new = function() return {} end}
 			end,
+			coupled_grade = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/coupled_grade.lua")(),
 			height_factory = function() end, raw_sha256 = raw_sha256,
 			hash_factory = function() return {} end,
 			content_factory = function()

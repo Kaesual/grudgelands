@@ -1,0 +1,9 @@
+seed	0
+capital	anchor_007	146	capital_natural_core_feasible	129	-1822,-1540	161	-1796,-1513	0	33
+capital	anchor_008	44	capital_natural_core_feasible	31	-3,-1547	57	18,-1456	0	24
+capital	anchor_009	42	capital_natural_core_feasible	36	1800,-1478	47	1752,-1545	0	30
+capital	anchor_010	96	capital_natural_core_feasible	80	-1756,1460	109	-1848,1501	0	22
+capital	anchor_011	114	capital_natural_core_feasible	96	46,1452	125	47,1528	0	20
+capital	anchor_012	57	capital_natural_core_minimax_route_min	66	1839,1493	38	1804,1452	19	41
+road_probe	13	14
+quality_geometry_fixture	ok

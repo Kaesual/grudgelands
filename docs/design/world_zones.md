@@ -511,6 +511,12 @@ WP40 replaces it with the complete catalog and contracts below.
   water, ford/tunnel pins and adjacent grade; all incident endpoint results
   must exactly equal their shared junction target. The height output schema
   is v4; existing relief random domains retain their fixed v2 tag.
+- Intersecting route profiles share a construction-time grade solve. Every
+  consecutive digital route-axis sample constrains its actual visible surface
+  owner, including constant tunnel floors. The final composed axis retains
+  a maximum one-node step while exact pins and water clearance remain fixed.
+  This travel guarantee does not constrain roadside banks. Derived bridge
+  decks and route records use the solved heights.
 - Sparse hillside entrances use 192-node cells, a one-quarter candidate gate,
   radius 2 and length 32. A mouth at y >= 16 needs an uphill rise >= 6; the
   axis descends one node every four steps, and its final 16 sections retain

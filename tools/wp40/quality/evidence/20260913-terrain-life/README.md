@@ -4,8 +4,8 @@ Candidate: WP40 terrain/POI/inland-water polish based on `291faff`.
 
 `terrain_life_fixture.lua` was run under idle-scheduled LuaJIT for seed `0` and
 the reported visual-test seed `4655649881628627392`. The `before-*` files use
-production files exported from `291faff`, with only the unrelated historical
-final-axis failure bypassed so the same instrumentation could complete;
+production files exported from `291faff`, with matching fitting-ownership measurement instrumentation and the historical
+final-axis failure bypassed so that instrumentation could complete;
 `after-*` use commit `d7207a4`. Every row comes from full instrumented `.new`
 construction and the same 45,426 x/z queries. It is distinct from live
 `.new_runtime` startup. Timings are process CPU seconds from one local run and
@@ -33,3 +33,6 @@ repository sweeps are owned by the coordinator on the integrated bytes. The R7
 micro-KAT expectation now covers the changed terrain sample plus functional
 crossing and water-transition tuples. The coordinator owns the one final
 PUC/LuaJIT micro-KAT pair on the integrated final bytes.
+
+Exact baseline patches, input hashes and integration equivalence are recorded
+in [PROVENANCE.md](PROVENANCE.md).

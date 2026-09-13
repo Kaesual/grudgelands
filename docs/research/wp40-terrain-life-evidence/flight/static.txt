@@ -1,0 +1,4 @@
+SETGLOBAL init
+	2	[1]	SETGLOBAL	0 -1	; grug_mobs
+SETGLOBAL flight
+SETGLOBAL fixture
