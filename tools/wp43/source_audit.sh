@@ -46,6 +46,7 @@ fi
 mining="$repo/mods/ITEMS/grug_materials/mining.lua"
 migration="$repo/mods/ITEMS/grug_materials/migration.lua"
 derivatives="$repo/mods/ITEMS/grug_materials/derivatives.lua"
+ore_compat="$repo/mods/ITEMS/grug_nodes/ore_respawn.lua"
 
 if rg -n 'is_ground_content[[:space:]]*==[[:space:]]*true' "$mining"; then
 	echo "WP43 source audit: unsafe nodedef-default natural classifier remains" >&2
@@ -67,6 +68,19 @@ fi
 
 if rg -n 'register_craft' "$derivatives"; then
 	echo "WP43 source audit: canonical derivatives pulled WP26 recipes forward" >&2
+	exit 1
+fi
+
+for contract in 'register_lbm' 'remove_node' 'not_in_creative_inventory'; do
+	if ! rg -q "$contract" "$ore_compat"; then
+		echo "WP43 source audit: depleted-vein compatibility missing $contract" >&2
+		exit 1
+	fi
+done
+
+if rg -n '(register_on_dignode|get_node_timer|CURRENT_SCATTER_RESOURCES|resource_node|stratum_node_for|core[.]set_node|grug_materials)' \
+		"$ore_compat"; then
+	echo "WP43 source audit: retired global natural-ore regeneration remains" >&2
 	exit 1
 fi
 

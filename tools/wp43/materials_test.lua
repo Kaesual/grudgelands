@@ -78,6 +78,7 @@ local function reset_counts()
 		particles = 0,
 		wear_added = 0,
 		set_nodes = 0,
+		remove_nodes = 0,
 		timers = 0,
 		harvest = 0,
 		goldsmith = 0,
@@ -256,6 +257,7 @@ core = {
 	registered_nodes = {},
 	registered_aliases = {},
 	registered_ores = {},
+	registered_lbms = {},
 	LIGHT_MAX = 14,
 	nodedef_default = {
 		is_ground_content = true,
@@ -447,6 +449,10 @@ function core.register_on_leaveplayer(callback)
 	callbacks.leaveplayer[#callbacks.leaveplayer + 1] = callback
 end
 
+function core.register_lbm(definition)
+	core.registered_lbms[#core.registered_lbms + 1] = definition
+end
+
 function core.log(level, message)
 	logs[#logs + 1] = level .. ":" .. message
 end
@@ -487,6 +493,15 @@ end
 function core.set_node(pos, node)
 	world[pos_key(pos)] = {name = node.name, param1 = node.param1, param2 = node.param2}
 	counts.set_nodes = counts.set_nodes + 1
+end
+
+function core.remove_node(pos)
+	local key = pos_key(pos)
+	world[key] = {name = "air"}
+	metas[key] = nil
+	timers[key] = nil
+	counts.remove_nodes = counts.remove_nodes + 1
+	return true
 end
 
 function core.get_meta(pos)
@@ -622,9 +637,15 @@ dofile(repo .. "/mods/ITEMS/grug_materials/init.lua")
 -- mapgen ore loader: its native allowlist and private content resolver are
 -- audited below as source, because loading the complete atomic R7 cutover is
 -- outside this focused material-owner harness.
+local dignode_count_before_nodes = #callbacks.dignode
+local lbm_count_before_nodes = #core.registered_lbms
 current_modname = "grug_nodes"
 dofile(repo .. "/mods/ITEMS/grug_nodes/init.lua")
 current_modname = "grug_materials"
+assert_equal(#callbacks.dignode, dignode_count_before_nodes,
+	"natural-ore regeneration dig hooks")
+assert_equal(#core.registered_lbms, lbm_count_before_nodes + 1,
+	"legacy depleted LBM registration")
 
 -- Hidden harness picks exercise pure profiles without registering WP29 gear.
 for tier = 1, 6 do
@@ -818,10 +839,12 @@ assert_equal(counts.harvest, 1, "sufficient settlement")
 assert_equal(counts.goldsmith, 1, "sufficient Goldsmith seam")
 assert_equal(counts.xp, 1, "sufficient XP seam")
 assert_equal(counts.quest, 1, "sufficient quest seam")
+assert_equal(core.get_node(pos).name, "air", "successful natural ore stays mined")
+assert_equal(counts.timers, 0, "successful natural ore starts no timer")
 
 -- Shattering still runs the genuine dignode consumer. Observe the public
--- shatter context from inside that callback, then verify the renewable node
--- becomes a timed depleted vein without drops or settlement.
+-- shatter context from inside that callback, then verify that the destroyed
+-- natural ore remains air without drops, settlement or a regeneration timer.
 local saw_shatter_in_dignode = false
 core.register_on_dignode(function(callback_pos, oldnode, callback_digger)
 	if oldnode.name == "grug_materials:stone_with_emberglass" then
@@ -857,12 +880,11 @@ assert_equal(counts.particles, 1, "shatter particles")
 assert_contains(counts.last_particles.texture, "#777777:180",
 	"shatter particle texture")
 assert_equal(saw_shatter_in_dignode, true, "dignode shatter context")
-assert_equal(core.get_node(pos).name, "grug_nodes:depleted_vein",
-	"renewable depleted transition")
-assert_equal(core.get_meta(pos):get_string("grug_ore"),
-		"grug_materials:stone_with_emberglass", "renewable ore meta")
-assert_equal(counts.timers, 1, "renewable timer")
-assert(timers[pos_key(pos)] >= 900 and timers[pos_key(pos)] <= 1800)
+assert_equal(core.get_node(pos).name, "air", "shattered natural ore stays mined")
+assert_equal(core.get_meta(pos):get_string("grug_ore"), "",
+	"shatter creates no legacy ore meta")
+assert_equal(counts.timers, 0, "shatter starts no timer")
+assert_equal(timers[pos_key(pos)], nil, "shatter has no node timer")
 assert_equal(grug_materials.is_shattering(digger, pos), false,
 	"shatter context cleanup")
 
@@ -882,6 +904,89 @@ for shortfall, multiplier in pairs({[1] = 4, [2] = 6, [3] = 8, [4] = 10}) do
 	assert_equal(decision.shortfall, shortfall, "shortfall " .. shortfall)
 	assert_equal(decision.multiplier, multiplier, "multiplier " .. shortfall)
 end
+
+-- Every natural resource remains removed after both a successful harvest and,
+-- where a lower valid pick exists, the shatter path. This includes resources
+-- outside the retired scatter roster.
+assert_equal(#grug_materials.RESOURCES, 15, "natural resource fixture count")
+local shatter_resource_cases = 0
+for index, resource in ipairs(grug_materials.RESOURCES) do
+	local probe = {x = 100 + index, y = -50, z = 100}
+	set_world_node(probe, resource.natural_node)
+	reset_counts()
+	now_us = now_us + 1500000
+	local exact_pick = make_digger(ItemStack(
+		"wp43_test:pick_" .. resource.harvest_tier))
+	assert_equal(core.node_dig(probe, core.get_node(probe), exact_pick), true,
+		"resource harvest " .. resource.key)
+	assert_equal(core.get_node(probe).name, "air",
+		"resource remains mined " .. resource.key)
+	assert_equal(counts.timers, 0, "resource timer " .. resource.key)
+	assert_equal(timers[pos_key(probe)], nil, "resource timer state " .. resource.key)
+	if resource.harvest_tier > 1 then
+		shatter_resource_cases = shatter_resource_cases + 1
+		set_world_node(probe, resource.natural_node)
+		reset_counts()
+		now_us = now_us + 1500000
+		local low_pick = make_digger(ItemStack("wp43_test:pick_1"))
+		local decision = grug_materials.mining_decision(
+			probe, core.get_node(probe), low_pick)
+		assert_equal(decision.shatter, true, "resource shatter " .. resource.key)
+		assert_equal(core.node_dig(probe, core.get_node(probe), low_pick), true,
+			"resource shatter transaction " .. resource.key)
+		assert_equal(core.get_node(probe).name, "air",
+			"shattered resource remains mined " .. resource.key)
+		assert_equal(counts.timers, 0, "shattered resource timer " .. resource.key)
+		assert_equal(timers[pos_key(probe)], nil,
+			"shattered resource timer state " .. resource.key)
+	end
+end
+assert_equal(shatter_resource_cases, 10, "natural resource shatter fixture count")
+
+-- Saved worlds may carry any old metadata or an already elapsed timer. The
+-- compatibility node always disappears, and stale/repeated callbacks cannot
+-- remove a replacement node.
+local depleted_name = "grug_nodes:depleted_vein"
+local depleted_def = core.registered_nodes[depleted_name]
+assert_equal(depleted_def.drop, "", "legacy depleted drop")
+assert_equal(depleted_def.groups.not_in_creative_inventory, 1,
+	"legacy depleted creative visibility")
+local depleted_lbm = core.registered_lbms[lbm_count_before_nodes + 1]
+assert_equal(depleted_lbm.name, "grug_nodes:remove_legacy_depleted_vein",
+	"legacy depleted LBM identity")
+assert_equal(depleted_lbm.nodenames[1], depleted_name,
+	"legacy depleted LBM node")
+assert_equal(depleted_lbm.run_at_every_load, false,
+	"legacy depleted LBM persistence")
+for index, old_meta in ipairs({"default:stone_with_gold", "unknown:ore", ""}) do
+	local probe = {x = 150 + index, y = -50, z = 150}
+	set_world_node(probe, depleted_name)
+	core.get_meta(probe):set_string("grug_ore", old_meta)
+	timers[pos_key(probe)] = 1
+	reset_counts()
+	assert_equal(depleted_def.on_timer(probe), false, "legacy timer return")
+	assert_equal(core.get_node(probe).name, "air", "legacy timer cleanup")
+	assert_equal(counts.remove_nodes, 1, "legacy timer remove count")
+	assert_equal(timers[pos_key(probe)], nil, "legacy timer cleared")
+	assert_equal(depleted_def.on_timer(probe), false, "repeated legacy timer return")
+	assert_equal(counts.remove_nodes, 1, "repeated legacy timer harmless")
+end
+local migration_pos = {x = 160, y = -50, z = 160}
+set_world_node(migration_pos, depleted_name)
+core.get_meta(migration_pos):set_string("grug_ore", "unknown:ore")
+reset_counts()
+depleted_lbm.action(migration_pos, {name = depleted_name})
+assert_equal(core.get_node(migration_pos).name, "air", "legacy LBM cleanup")
+assert_equal(counts.remove_nodes, 1, "legacy LBM remove count")
+depleted_lbm.action(migration_pos, {name = depleted_name})
+assert_equal(counts.remove_nodes, 1, "repeated legacy LBM harmless")
+set_world_node(migration_pos, "default:stone")
+reset_counts()
+depleted_def.on_timer(migration_pos)
+depleted_lbm.action(migration_pos, {name = depleted_name})
+assert_equal(core.get_node(migration_pos).name, "default:stone",
+	"stale legacy callbacks preserve replacement")
+assert_equal(counts.remove_nodes, 0, "stale legacy callbacks remove nothing")
 
 -- Engine nodedef defaults do not define natural taxonomy: a sapling inherits
 -- is_ground_content=true but remains hand-diggable, while generated dirt and
@@ -1148,11 +1253,18 @@ for _, node in ipairs({"grug_materials:slate", "grug_materials:basalt",
 		"R7 native stratum " .. node)
 end
 local respawn_source = read_file("mods/ITEMS/grug_nodes/ore_respawn.lua")
-assert_contains(respawn_source, "grug_materials.CURRENT_SCATTER_RESOURCES",
-	"respawn roster API")
-assert_contains(respawn_source, "grug_materials.resource_node", "respawn resource API")
-assert_contains(respawn_source, "grug_materials.canonical_name", "respawn migration API")
-assert_contains(respawn_source, "grug_materials.stratum_node_for", "respawn stratum API")
+assert_contains(respawn_source, "core.register_lbm", "legacy depleted LBM")
+assert_contains(respawn_source, "core.remove_node", "legacy depleted removal")
+assert_equal(respawn_source:find("register_on_dignode", 1, true), nil,
+	"retired natural-ore dig hook")
+assert_equal(respawn_source:find("get_node_timer", 1, true), nil,
+	"retired natural-ore timer start")
+assert_equal(respawn_source:find("CURRENT_SCATTER_RESOURCES", 1, true), nil,
+	"retired natural-ore respawn roster")
+assert_equal(respawn_source:find("core.set_node", 1, true), nil,
+	"legacy placeholder restores a node")
+assert_equal(respawn_source:find("grug_materials", 1, true), nil,
+	"legacy placeholder depends on natural-resource identities")
 
 local production_files = {
 	"mods/ITEMS/grug_materials/init.lua",

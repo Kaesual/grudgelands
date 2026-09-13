@@ -226,6 +226,5 @@ core.register_node("grug_nodes:bone_pile", {
 -- Sub-files
 --
 
--- R4 ore respawn (WP6/T9): the "Depleted Vein" placeholder node plus the
--- single register_on_dignode hook that grows mined ore back.
+-- Saved-world compatibility for the retired depleted-vein placeholder.
 dofile(core.get_modpath(core.get_current_modname()) .. "/ore_respawn.lua")
