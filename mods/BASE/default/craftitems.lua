@@ -56,11 +56,7 @@ local function book_on_use(itemstack, user)
 	local title, text, owner = "", "", player_name
 	local page, page_max, lines, string = 1, 1, {}, ""
 
-	-- Backwards compatibility
-	local old_data = minetest.deserialize(itemstack:get_meta():get_string(""))
-	if old_data then
-		meta:from_table({ fields = old_data })
-	end
+	-- GRUG PATCH: books use only the current ItemStack metadata format.
 
 	local data = meta:to_table().fields
 

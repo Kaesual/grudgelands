@@ -131,7 +131,7 @@ core.register_craft({
 	}
 })
 
-core.register_alias("mobs:magic_lasso", "mobs:lasso")
+-- GRUG PATCH: no historical item-name aliases during first-release development.
 
 -- net
 

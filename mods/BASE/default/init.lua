@@ -76,8 +76,7 @@ dofile(default_path.."/craftitems.lua")
 dofile(default_path.."/crafting.lua")
 dofile(default_path.."/mapgen.lua")
 dofile(default_path.."/chat.lua")
-dofile(default_path.."/aliases.lua")
-dofile(default_path.."/legacy.lua")
+-- GRUG PATCH: first-release worlds need no historical aliases or API shims.
 
 -- Smoke test that is run via ./util/test/run.sh
 if minetest.settings:get_bool("minetest_game_smoke_test") then

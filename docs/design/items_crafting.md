@@ -442,9 +442,9 @@ universal pick.
   are separate systems (`economy.md` §1).
 - Diamond is a regional G2 gem, never a tool material. The Mese and Diamond
   tool tiers remain retired.
-- **Emberglass** is a real `grug_materials` item/node family. Old Mese and
-  Emberstone aliases may exist only as an explicit one-time migration path;
-  they are not parallel usable materials or player-facing names.
+- **Emberglass** is a real `grug_materials` item/node family. Fresh-server
+  development uses its canonical names directly, with no old Mese or
+  Emberstone migration aliases or parallel player-facing materials.
 - **Abyssal Steel** is the ordinary craftable T6 metal. **Grudgeforged** is an
   optional final masterwork state applied to a qualifying equipment stack by
   consuming a named-rare trophy or Fallen Crown. No trophy enters an Abyssal
@@ -577,9 +577,9 @@ from `grug_gear`. Consequences, all binding:
   items**, and they are **material-named** — Bronze Sword, Iron
   Chestplate, Steel Greaves — never bracket-named. The 72 items WP7
   shipped under the adjectives *Crude / Plain / Tempered / Reinforced /
-  Superior / Grand* merge into that one ladder. That shipped naming is a
-  migration source for the **rename plus
-  merge with the tool ladder — planned work, not a defect**; the
+  Superior / Grand* merge into that one ladder. The **rename plus merge with
+  the tool ladder is planned work, not a defect**; no old-stack migration is
+  implemented during fresh-server development. The
   generator, the six bracket catalogs, the prices and the ilvl anchors of
   §3.8/§8.2 are untouched by it.
 - **Everyone can craft the base items of every material tier** — tools,
@@ -1792,7 +1792,7 @@ Item meta carries `grug_quality` (1 Common / 2 Uncommon / 3 Rare / 4
 Unique-reserved), one serialized ordinary-affix table (`grug_ench`),
 `grug_upgrades` (0–2, §7), `grug_req_level`, and separate structured
 masterwork, cultural-finish and PvP-special state where applicable. These
-channels never overwrite one another. Exact migration keys are implementation
+channels never overwrite one another. Exact storage keys are implementation
 owned; one idempotent description/stat regeneration path reads them all.
 
 **`grug_req_level` scope** (sharpened 2026-08-07; **enforced from WP5** —

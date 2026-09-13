@@ -44,7 +44,7 @@ grug_mobs.register_mob("grug_mobs:kraken", {
 	-- (falling() bails out for flying mobs) but keeps the def honest.
 	fly = true,
 	fly_in = "default:water_source",
-	floats = 1,
+	floats = true,
 	jump = false,
 	-- Inert (falling() bails out for fliers) and NOT a switch: 0 is truthy in
 	-- Lua, so on a walking mob this line would do nothing — see eagle.lua.
