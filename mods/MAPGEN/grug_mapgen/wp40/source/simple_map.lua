@@ -17,6 +17,7 @@ local source = {
 	schema = "grug_wp40_simple_map_source_v2",
 	layout_id = "wp40-simple-map-v1d",
 	layout_revision_id = "wp40-simple-map-v1e",
+	height_revision_id = "wp40-height-quality-v2",
 	extent = {min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200},
 	warp = {cell = 256, maximum = 60,
 		hash_domain = "fixed_visual_warp_v1"},
@@ -187,9 +188,12 @@ source.channels = {
 }
 
 source.route_profiles = {
-	primary = {surface_width=7,corridor_width=16},
-	secondary = {surface_width=5,corridor_width=12},
-	trail = {surface_width=3,corridor_width=8},
+	primary = {surface_width=7,corridor_width=16,
+		grade_preference="natural_surface_mean_v1"},
+	secondary = {surface_width=5,corridor_width=12,
+		grade_preference="natural_surface_mean_v1"},
+	trail = {surface_width=3,corridor_width=8,
+		grade_preference="natural_surface_mean_v1"},
 }
 source.route_curve = {
 	id="bounded_pinned_curve_v1",points_per_leg=3,minimum_points_per_route=7,
@@ -514,26 +518,32 @@ end
 
 source.relief_profiles = {
 	{id="wetland_delta",min_above_water=2,max_above_water=24,
+		detail_amplitude=2,
 		noise_domain="relief_wetland_delta",octaves={
 			{period=512,amplitude=fraction(3,5)},
 			{period=256,amplitude=fraction(2,5)}}},
 	{id="lowland",min_above_water=8,max_above_water=56,
+		detail_amplitude=4,
 		noise_domain="relief_lowland",octaves={
 			{period=768,amplitude=fraction(2,3)},
 			{period=256,amplitude=fraction(1,3)}}},
 	{id="rolling_hills",min_above_water=24,max_above_water=96,
+		detail_amplitude=6,
 		noise_domain="relief_rolling_hills",octaves={
 			{period=768,amplitude=fraction(3,5)},
 			{period=384,amplitude=fraction(2,5)}}},
 	{id="plateau",min_above_water=56,max_above_water=144,
+		detail_amplitude=7,
 		noise_domain="relief_plateau",octaves={
 			{period=1024,amplitude=fraction(3,4)},
 			{period=384,amplitude=fraction(1,4)}}},
 	{id="highland",min_above_water=96,max_above_water=224,
+		detail_amplitude=9,
 		noise_domain="relief_highland",octaves={
 			{period=1024,amplitude=fraction(2,3)},
 			{period=512,amplitude=fraction(1,3)}}},
 	{id="mountain",min_above_water=160,max_above_water=360,
+		detail_amplitude=12,
 		noise_domain="relief_mountain",octaves={
 			{period=1280,amplitude=fraction(3,5)},
 			{period=640,amplitude=fraction(3,10)},
@@ -566,12 +576,12 @@ source.logical_biome_selector = {
 
 source.anchor_profiles = {
 	{id="start",shape="flat",fitting_width=128,blend_width=256,max_cut=8,max_fill=8,force_native_dungeon=false},
-	{id="capital_dwarf",shape="granite_terrace",fitting_width=512,blend_width=704,max_cut=24,max_fill=16,force_native_dungeon=false},
-	{id="capital_human",shape="river_plateau",fitting_width=512,blend_width=704,max_cut=24,max_fill=16,force_native_dungeon=false},
-	{id="capital_elf",shape="terraced_grove",fitting_width=512,blend_width=704,max_cut=24,max_fill=16,force_native_dungeon=false},
-	{id="capital_undead",shape="raised_necropolis",fitting_width=512,blend_width=704,max_cut=24,max_fill=16,force_native_dungeon=false},
-	{id="capital_orc",shape="mesa_shelf",fitting_width=512,blend_width=704,max_cut=24,max_fill=16,force_native_dungeon=false},
-	{id="capital_troll",shape="cenote_terrace",fitting_width=512,blend_width=704,max_cut=24,max_fill=16,force_native_dungeon=false},
+	{id="capital_dwarf",shape="granite_terrace",fitting_width=512,blend_width=704,civic_width=96,terrace_step=4,max_cut=24,max_fill=16,force_native_dungeon=false},
+	{id="capital_human",shape="river_plateau",fitting_width=512,blend_width=704,civic_width=96,terrace_step=2,max_cut=24,max_fill=16,force_native_dungeon=false},
+	{id="capital_elf",shape="terraced_grove",fitting_width=512,blend_width=704,civic_width=96,terrace_step=3,max_cut=24,max_fill=16,force_native_dungeon=false},
+	{id="capital_undead",shape="raised_necropolis",fitting_width=512,blend_width=704,civic_width=96,terrace_step=3,max_cut=24,max_fill=16,force_native_dungeon=false},
+	{id="capital_orc",shape="mesa_shelf",fitting_width=512,blend_width=704,civic_width=96,terrace_step=4,max_cut=24,max_fill=16,force_native_dungeon=false},
+	{id="capital_troll",shape="cenote_terrace",fitting_width=512,blend_width=704,civic_width=96,terrace_step=3,max_cut=24,max_fill=16,force_native_dungeon=false},
 	{id="village",shape="gentle_grade",fitting_width=96,blend_width=160,max_cut=8,max_fill=6,force_native_dungeon=false},
 	{id="outpost",shape="gentle_grade",fitting_width=64,blend_width=112,max_cut=8,max_fill=6,force_native_dungeon=false},
 	{id="bandit_home",shape="gentle_grade",fitting_width=64,blend_width=112,max_cut=8,max_fill=6,force_native_dungeon=false},

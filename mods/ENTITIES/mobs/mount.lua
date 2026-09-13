@@ -334,8 +334,9 @@ function mobs.drive(entity, moving_anim, stand_anim, can_fly, dtime)
 end
 
 -- fly mob in facing direction (by D00Med, edited by TenPlus1)
+-- GRUG PATCH: the unused legacy shoots/arrow arguments are removed.
 
-function mobs.fly(entity, dtime, speed, shoots, arrow, moving_anim, stand_anim)
+function mobs.fly(entity, dtime, speed, moving_anim, stand_anim)
 
 	local ctrl = entity.driver:get_player_control() ; if not ctrl then return end
 	local velo = entity.object:get_velocity() ; if not velo then return end
@@ -368,37 +369,7 @@ function mobs.fly(entity, dtime, speed, shoots, arrow, moving_anim, stand_anim)
 
 			entity.do_mount_action(entity, dtime)
 
-		-- old arrow method for compatibility
-		elseif shoots and arrow then
-
-			entity.arrow_shoot_timer = entity.arrow_shoot_timer or 0
-
-			-- 1 second timer between shots
-			if (os.time() - entity.arrow_shoot_timer) >= 1 then
-
-				local pos = entity.object:get_pos()
-				local obj = core.add_entity({
-					x = pos.x + 0 + dir.x * 2.5,
-					y = pos.y + 1.5 + dir.y,
-					z = pos.z + 0 + dir.z * 2.5}, arrow)
-
-				local ent = obj:get_luaentity()
-
-				if ent then
-
-					ent.switch = 1 -- for mob specific arrows
-					ent.owner_id = tostring(entity.object) -- so arrows dont hurt mob
-
-					local vec = {x = dir.x * 12, y = dir.y * 12, z = dir.z * 12}
-
-					yaw = entity.driver:get_look_horizontal()
-
-					obj:set_yaw(yaw + pi / 2)
-					obj:set_velocity(vec)
-				end
-
-				entity.arrow_shoot_timer = os.time()
-			end
+		-- GRUG PATCH: only the current do_mount_action callback is supported.
 		end
 	end
 

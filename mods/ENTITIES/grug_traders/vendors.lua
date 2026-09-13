@@ -192,7 +192,7 @@ local function vendor_def(vendor, texture)
 		run_velocity = 0,
 		jump_height = 0,
 		fear_height = 0,
-		floats = 1,
+		floats = true,
 		pushable = false,
 		knock_back = false,
 		view_range = 4, -- it only ever needs to notice that you are there

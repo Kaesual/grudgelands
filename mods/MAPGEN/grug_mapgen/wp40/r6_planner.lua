@@ -88,6 +88,7 @@ local function planner_factory()
 		if type(planner_source) ~= "table" or
 				planner_source.schema ~= "grug_wp40_r5_planner_source_v1" or
 				type(planner_source.column_values_at) ~= "function" or
+				type(planner_source.surface_cave_run_at) ~= "function" or
 				type(r5_planner) ~= "table" or type(r5_planner.plan_slice) ~= "function" or
 				type(horizontal) ~= "table" or
 				type(horizontal.static_exclusion_values_at) ~= "function" or
@@ -114,6 +115,7 @@ local function planner_factory()
 		end
 
 		local surfaces = content.surfaces()
+		local select_surface = content.new_surface_selector(full_seed, planner_source)
 		local resources = content.resources()
 		local cultural = content.cultural()
 		local decorations = content.decorations()
@@ -262,7 +264,7 @@ local function planner_factory()
 			end
 			local wet = water_y ~= nil and water_y > terrain_y
 			local surface_kind = wet and 3 or (biome == "grug_beach" and 2 or 1)
-			local surface = surface_by_id[biome]
+			local surface = select_surface(biome, x, z, water_y, terrain_y)
 			local support_name = surface and (surface_kind == 1 and surface.top or
 				(surface_kind == 2 and surface.shore or surface.bed)) or false
 			-- These are the P2-P4 surface winners exposed as exact R5 planner-source
@@ -281,6 +283,10 @@ local function planner_factory()
 			if (classified_hydrology_id ~= nil and water_y ~= nil and
 					transition_kind ~= "waterfall") or
 					(transition_kind == "waterfall" and transition_face_mask ~= nil) then
+				p7_support = false
+			end
+			local cave_low, cave_high = planner_source.surface_cave_run_at(x, z)
+			if cave_low ~= nil and cave_low <= terrain_y and terrain_y <= cave_high then
 				p7_support = false
 			end
 			return water_class, zone_numeric, zone_id, biome, race, terrain_y,

@@ -61,6 +61,7 @@ return function(repo, settlement_path)
 	local content = {}
 	function content.content_contract() return contract end
 	function content.surfaces() return {surface} end
+	function content.new_surface_selector() return function() return surface end end
 	function content.resources() return {} end
 	function content.cultural() return {} end
 	function content.decorations() return decorations end
@@ -146,6 +147,7 @@ return function(repo, settlement_path)
 		return "land", 1, "tree_slice_zone", surface.id, "none", 4,
 			nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, false
 	end
+	function planner_source.surface_cave_run_at() return nil end
 	local horizontal = {}
 	function horizontal.static_exclusion_values_at() return nil end
 	function horizontal.housing_mask_id_at() return nil end

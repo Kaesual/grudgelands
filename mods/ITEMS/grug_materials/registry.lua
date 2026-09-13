@@ -325,72 +325,15 @@ grug_materials.DENSITY = {
 	},
 }
 
--- This is the shipped R4 respawn roster. WP40 R7 owns natural geometry;
--- this list exists so runtime consumers do not maintain a second ore-name
--- inventory. The name is retained for compatibility until WP34 revises the
--- respawn policy; it no longer describes an engine scatter registration.
+-- This is the shipped resource roster. WP40 R7 owns natural geometry; this
+-- list exists so runtime consumers do not maintain a second ore-name inventory.
 grug_materials.CURRENT_SCATTER_RESOURCES = {
 	"coal", "tin", "copper", "iron", "gold", "emberglass", "diamond",
 	"quartz", "silver", "garnet",
 }
 
--- Saved node/ItemStack migration. Sources are never player-facing parallel
--- items. Targets are concrete registrations, not aliases, so the graph is
--- one-way and one hop.
-grug_materials.LEGACY_ALIASES = {
-	["mese"] = "grug_materials:emberglass_block",
-	["MesePick"] = "default:pick_steel",
-	["default:mese_block"] = "grug_materials:emberglass_block",
-	["default:stone_with_mese"] = "grug_materials:stone_with_emberglass",
-	["default:mese_crystal"] = "grug_materials:emberglass",
-	["default:mese_crystal_fragment"] = "grug_materials:emberglass_shard",
-	["default:mese"] = "grug_materials:emberglass_block",
-	["default:meselamp"] = "grug_materials:emberglass_lamp",
-	["default:mese_post_light"] = "grug_materials:emberglass_post_light",
-	["default:mese_post_light_acacia_wood"] =
-		"grug_materials:emberglass_post_light_acacia_wood",
-	["default:mese_post_light_junglewood"] =
-		"grug_materials:emberglass_post_light_junglewood",
-	["default:mese_post_light_pine_wood"] =
-		"grug_materials:emberglass_post_light_pine_wood",
-	["default:mese_post_light_aspen_wood"] =
-		"grug_materials:emberglass_post_light_aspen_wood",
-	["default:stone_with_diamond"] = "grug_materials:stone_with_diamond",
-	["default:diamond"] = "grug_materials:rough_diamond",
-	["default:diamondblock"] = "grug_materials:diamond_block",
-	["steel_ingot"] = "grug_materials:iron_bar",
-	["steelblock"] = "grug_materials:iron_block",
-	["default:copper_ingot"] = "grug_materials:copper_bar",
-	["default:copperblock"] = "grug_materials:copper_block",
-	["default:tin_ingot"] = "grug_materials:tin_bar",
-	["default:tinblock"] = "grug_materials:tin_block",
-	["default:bronze_ingot"] = "grug_materials:bronze_bar",
-	["default:bronzeblock"] = "grug_materials:bronze_block",
-	["default:steel_ingot"] = "grug_materials:iron_bar",
-	["default:steelblock"] = "grug_materials:iron_block",
-	["default:gold_ingot"] = "grug_materials:gold_bar",
-	["default:goldblock"] = "grug_materials:gold_block",
-	["default:pick_mese"] = "default:pick_steel",
-	["default:shovel_mese"] = "default:shovel_steel",
-	["default:axe_mese"] = "default:axe_steel",
-	["default:sword_mese"] = "default:sword_steel",
-	["default:pick_diamond"] = "default:pick_steel",
-	["default:shovel_diamond"] = "default:shovel_steel",
-	["default:axe_diamond"] = "default:axe_steel",
-	["default:sword_diamond"] = "default:sword_steel",
-	["grug_materials:stone_with_emberstone"] =
-		"grug_materials:stone_with_emberglass",
-	["grug_materials:emberstone"] = "grug_materials:emberglass",
-	["grug_materials:emberstone_crystal"] = "grug_materials:emberglass",
-	["grug_materials:emberstone_shard"] = "grug_materials:emberglass_shard",
-	["grug_materials:emberstone_block"] = "grug_materials:emberglass_block",
-	["grug_materials:quartz_crystal"] = "grug_materials:quartz",
-	["grug_materials:garnet_crystal"] = "grug_materials:rough_garnet",
-}
-
--- Existing non-material objects whose recipes consumed default's historical
--- "Steel" ingot. That item now migrates to the canonical Iron Bar, so the
--- visible object names must migrate with it instead of claiming to be Steel.
+-- Canonical registrations cloned from the vendored node shapes before the
+-- source registrations are removed by content_curation.lua.
 grug_materials.STORAGE_DERIVATIVES = {
 	{source = "default:sign_wall_steel",
 		target = "grug_materials:iron_sign_wall", description = "Iron Sign"},
@@ -400,44 +343,35 @@ grug_materials.STORAGE_DERIVATIVES = {
 
 if core.get_modpath("stairs") then
 	local derivative_materials = {
-		{legacy = "steelblock", canonical = "iron_block", name = "Iron"},
-		{legacy = "tinblock", canonical = "tin_block", name = "Tin"},
-		{legacy = "copperblock", canonical = "copper_block", name = "Copper"},
-		{legacy = "bronzeblock", canonical = "bronze_block", name = "Bronze"},
-		{legacy = "goldblock", canonical = "gold_block", name = "Gold"},
+		{source = "steelblock", target = "iron_block", name = "Iron"},
+		{source = "tinblock", target = "tin_block", name = "Tin"},
+		{source = "copperblock", target = "copper_block", name = "Copper"},
+		{source = "bronzeblock", target = "bronze_block", name = "Bronze"},
+		{source = "goldblock", target = "gold_block", name = "Gold"},
 	}
 	local derivative_shapes = {
-		{legacy = "stair_", canonical = "stair_", label = "Block Stair"},
-		{legacy = "stair_inner_", canonical = "stair_inner_",
+		{source = "stair_", target = "stair_", label = "Block Stair"},
+		{source = "stair_inner_", target = "stair_inner_",
 			label = "Inner Block Stair"},
-		{legacy = "stair_outer_", canonical = "stair_outer_",
+		{source = "stair_outer_", target = "stair_outer_",
 			label = "Outer Block Stair"},
-		{legacy = "slab_", canonical = "slab_", label = "Block Slab"},
+		{source = "slab_", target = "slab_", label = "Block Slab"},
 	}
 	for _, material in ipairs(derivative_materials) do
 		for _, shape in ipairs(derivative_shapes) do
 			grug_materials.STORAGE_DERIVATIVES[
 				#grug_materials.STORAGE_DERIVATIVES + 1] = {
-				source = "stairs:" .. shape.legacy .. material.legacy,
-				target = "grug_materials:" .. shape.canonical .. material.canonical,
+				source = "stairs:" .. shape.source .. material.source,
+				target = "grug_materials:" .. shape.target .. material.target,
 				description = material.name .. " " .. shape.label,
 			}
 		end
 	end
 end
 
-for _, derivative in ipairs(grug_materials.STORAGE_DERIVATIVES) do
-	grug_materials.LEGACY_ALIASES[derivative.source] = derivative.target
-end
-
--- No Grudgesteel runtime id ever shipped. Publishing the forbidden stems
--- prevents WP40/WP29 from accidentally creating migration sources as new
--- content while keeping the actual alias table target-resolvable today.
+-- These stems are outside the current material vocabulary. Publishing them
+-- prevents mapgen and gear code from introducing conflicting runtime ids.
 grug_materials.FORBIDDEN_RUNTIME_STEMS = {"emberstone", "grudgesteel"}
-
-function grug_materials.canonical_name(item_name)
-	return grug_materials.LEGACY_ALIASES[item_name] or item_name
-end
 
 local function registry_error(message)
 	error("grug_materials registry: " .. message)
@@ -554,17 +488,12 @@ local function validate_registry()
 			registry_error("unknown current scatter resource " .. key)
 		end
 	end
-	for source, target in pairs(grug_materials.LEGACY_ALIASES) do
-		if source == target or grug_materials.LEGACY_ALIASES[target] then
-			registry_error("alias must be a one-hop edge: " .. source .. " -> " .. target)
-		end
-	end
 	local derivative_sources, derivative_targets = {}, {}
 	for _, derivative in ipairs(grug_materials.STORAGE_DERIVATIVES) do
 		if derivative_sources[derivative.source] or
 				derivative_targets[derivative.target] or
-				derivative.target:match("^grug_materials:") == nil or
-				grug_materials.LEGACY_ALIASES[derivative.source] ~= derivative.target then
+				derivative.source == derivative.target or
+				derivative.target:match("^grug_materials:") == nil then
 			registry_error("invalid storage derivative " .. derivative.source)
 		end
 		derivative_sources[derivative.source] = true

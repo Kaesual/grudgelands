@@ -108,7 +108,13 @@ bash "$script_dir/patch_snapshot.sh" "$game_dir"
 if [[ "$stages" == "1" ]]; then
 	bash "$script_dir/patch_settlement_stages.sh" "$game_dir"
 fi
+cases_file="${WP40_PROFILE_CASES:-$script_dir/probe/cases.lua}"
+[[ "$cases_file" = /* && -f "$cases_file" && -r "$cases_file" ]] || {
+	echo "WP40 profile: cases must be an absolute readable Lua file" >&2
+	exit 2
+}
 cp -a "$script_dir/probe" "$game_dir/mods/grug_wp40_profile_probe"
+cp -- "$cases_file" "$game_dir/mods/grug_wp40_profile_probe/cases.lua"
 
 (
 	cd "$game_dir"
@@ -117,7 +123,7 @@ cp -a "$script_dir/probe" "$game_dir/mods/grug_wp40_profile_probe"
 sha256sum "$result_dir/snapshot-files.sha256" >"$result_dir/snapshot.digest"
 sha256sum "$script_dir/run.sh" "$script_dir/patch_snapshot.sh" \
 	"$script_dir/instrument-mapgen.patch" "$script_dir/probe/init.lua" \
-	"$script_dir/probe/cases.lua" "$script_dir/probe/mod.conf" \
+	"$cases_file" "$script_dir/probe/mod.conf" \
 	"$script_dir/summarize_callbacks.awk" "$script_dir/patch_settlement_stages.sh" \
 	"$script_dir/instrument-settlement-stages.patch" \
 	>"$result_dir/harness.sha256"
@@ -135,6 +141,7 @@ EOF
 	printf 'processors\t%s\n' "$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo unknown)"
 	awk '/^MemTotal:/ {print "memory_kib\t" $2}' /proc/meminfo 2>/dev/null || true
 	printf 'seed\t%s\n' "$seed"
+	printf 'cases_file\t%s\n' "$cases_file"
 	printf 'port_base\t%s\n' "$port_base"
 	printf 'phase_timeout_seconds\t%s\n' "$phase_timeout"
 	printf 'dedicated_binary\t%s\n' "$dedicated"

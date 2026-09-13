@@ -208,7 +208,12 @@ that its implementation dependencies or engineering gates are complete.
    corrects omitted tree slices and profiles the real engine on Rehearsal.
    Resource ranking now reuses canonical hash prefixes and consumes an exact
    ordered root prefix; full owner/persistence parity accompanies the timing
-   evidence. Fresh-terrain visual acceptance and the remaining R8 gates stay open.
+   evidence. The subsequent [terrain-quality and fresh-server cleanup](docs/research/wp40-mapgen-quality.md)
+   adds terrain-following roads, adaptive capital terraces, fine relief,
+   material patches and protected hillside cave cuts. Natural ore remains
+   removed after mining; all development-era world/item migrations are removed
+   under the standing fresh-server mode in AGENTS.md. Fresh-terrain visual
+   acceptance and the remaining R8 gates stay open.
 2. **WP37 — surface-density multiplier.** Its only dependency, WP6, shipped.
 3. **WP11 — skill trees**, **WP14 — offhand/carried light**, **WP20 — party**,
    **WP21 — recovery/rest**, and **WP8 — quest framework**. Their listed

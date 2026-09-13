@@ -1,0 +1,280 @@
+
+
+-------------
+  Separator
+-------------
+
+INFO[Main]: Message locale is now set to: C.UTF-8;C;C;C;C;C
+INFO[Main]: Using commanded gameid [grudgelands]
+INFO[Main]: Starting Prometheus metrics on 127.0.0.1:30000
+INFO[Main]: Server created for gameid "grudgelands"
+INFO[Main]: - world:  /tmp/grudgelands-wp40-profile-run.72rvP1e3/world
+INFO[Main]: - game:   /tmp/grudgelands-wp40-profile-run.72rvP1e3/user/games/grudgelands
+INFO[Main]: Initializing world at /tmp/grudgelands-wp40-profile-run.72rvP1e3/world
+INFO[Main]: ObjDefManager: added biome: name="default" index=0 uid=2
+INFO[Main]: BanManager: loading from /tmp/grudgelands-wp40-profile-run.72rvP1e3/world/ipban.txt
+WARNING[Main]: /!\ You are using the old mod storage files backend. This backend is deprecated and may be removed in a future release /!\
+WARNING[Main]: Switching to SQLite3 is advised, please read https://docs.luanti.org/for-server-hosts/database-backends.
+INFO[Main]: Creating map database with backend "sqlite3"
+INFO[Main]: MapDatabaseSQLite3: split column format = yes
+INFO[Main]: ServerMap: Metadata loaded from /tmp/grudgelands-wp40-profile-run.72rvP1e3/world
+INFO[Main]: Server: Initializing Lua
+INFO[Main]: SCRIPTAPI: Initialized game modules
+INFO[Main]: Server: Loading mods: sfinv creative player_api default stairs mobs grug_trees grug_materials grug_nodes grug_gear grug_core grug_xp grug_money grug_gathering grug_mapgen grug_wp40_profile_probe grug_factions grug_projectiles grug_mobs grug_classes grug_in
+INFO[Main]: ventory grug_traders grug_abilities 
+INFO[Main]: Mod "sfinv" loaded after 0 ms
+INFO[Main]: Server creating detached inventory "trash"
+INFO[Main]: Mod "creative" loaded after 0 ms
+INFO[Main]: Mod "player_api" loaded after 1 ms
+INFO[Main]: Mod "default" loaded after 6 ms
+INFO[Main]: Mod "stairs" loaded after 8 ms
+INFO[Main]: Mod "mobs" loaded after 2 ms
+INFO[Main]: ObjDefManager: added schematic: name="" index=0 uid=6
+INFO[Main]: Mod "grug_trees" loaded after 0 ms
+INFO[Main]: Removed item default:pick_diamond while attempting to force add an alias
+INFO[Main]: Removed item default:steelblock while attempting to force add an alias
+INFO[Main]: Removed item default:mese_crystal while attempting to force add an alias
+INFO[Main]: Removed item default:copperblock while attempting to force add an alias
+INFO[Main]: Removed item default:sword_mese while attempting to force add an alias
+INFO[Main]: Removed item stairs:stair_inner_steelblock while attempting to force add an alias
+INFO[Main]: Removed item default:shovel_mese while attempting to force add an alias
+INFO[Main]: Removed item default:tinblock while attempting to force add an alias
+INFO[Main]: Removed item default:copper_ingot while attempting to force add an alias
+INFO[Main]: Removed item default:bronzeblock while attempting to force add an alias
+INFO[Main]: Removed item default:bronze_ingot while attempting to force add an alias
+INFO[Main]: Removed item stairs:stair_outer_tinblock while attempting to force add an alias
+INFO[Main]: Removed item default:stone_with_mese while attempting to force add an alias
+INFO[Main]: Removed item stairs:slab_steelblock while attempting to force add an alias
+INFO[Main]: Removed item stairs:slab_tinblock while attempting to force add an alias
+INFO[Main]: Removed item default:gold_ingot while attempting to force add an alias
+INFO[Main]: Removed item stairs:stair_tinblock while attempting to force add an alias
+INFO[Main]: Removed item stairs:stair_copperblock while attempting to force add an alias
+INFO[Main]: Removed item default:sign_wall_steel while attempting to force add an alias
+INFO[Main]: Removed item default:goldblock while attempting to force add an alias
+INFO[Main]: Removed item default:meselamp while attempting to force add an alias
+INFO[Main]: Removed item stairs:stair_inner_copperblock while attempting to force add an alias
+INFO[Main]: Removed item default:axe_mese while attempting to force add an alias
+INFO[Main]: Removed item default:diamond while attempting to force add an alias
+INFO[Main]: Removed item default:diamondblock while attempting to force add an alias
+INFO[Main]: Removed item default:mese_post_light_pine_wood while attempting to force add an alias
+INFO[Main]: Removed item stairs:slab_copperblock while attempting to force add an alias
+INFO[Main]: Removed item stairs:stair_bronzeblock while attempting to force add an alias
+INFO[Main]: Removed item default:tin_ingot while attempting to force add an alias
+INFO[Main]: Removed item stairs:stair_inner_bronzeblock while attempting to force add an alias
+INFO[Main]: Removed item stairs:stair_outer_bronzeblock while attempting to force add an alias
+INFO[Main]: Removed item mese while attempting to force add an alias
+INFO[Main]: Removed item stairs:slab_bronzeblock while attempting to force add an alias
+INFO[Main]: Removed item stairs:stair_goldblock while attempting to force add an alias
+INFO[Main]: Removed item stairs:stair_inner_goldblock while attempting to force add an alias
+INFO[Main]: Removed item MesePick while attempting to force add an alias
+INFO[Main]: Removed item stairs:stair_outer_goldblock while attempting to force add an alias
+INFO[Main]: Removed item stairs:slab_goldblock while attempting to force add an alias
+INFO[Main]: Removed item steel_ingot while attempting to force add an alias
+INFO[Main]: Removed item default:mese_block while attempting to force add an alias
+INFO[Main]: Removed item default:mese_post_light while attempting to force add an alias
+INFO[Main]: Removed item default:mese_crystal_fragment while attempting to force add an alias
+INFO[Main]: Removed item default:pick_mese while attempting to force add an alias
+INFO[Main]: Removed item default:mese_post_light_acacia_wood while attempting to force add an alias
+INFO[Main]: Removed item default:shovel_diamond while attempting to force add an alias
+INFO[Main]: Removed item default:axe_diamond while attempting to force add an alias
+INFO[Main]: Removed item default:steel_ingot while attempting to force add an alias
+INFO[Main]: Removed item default:sword_diamond while attempting to force add an alias
+INFO[Main]: Removed item default:mese_post_light_aspen_wood while attempting to force add an alias
+INFO[Main]: Removed item default:mese_post_light_junglewood while attempting to force add an alias
+INFO[Main]: Removed item default:stone_with_diamond while attempting to force add an alias
+INFO[Main]: Removed item default:mese while attempting to force add an alias
+INFO[Main]: Removed item stairs:stair_steelblock while attempting to force add an alias
+INFO[Main]: Removed item stairs:stair_outer_steelblock while attempting to force add an alias
+INFO[Main]: Removed item default:ladder_steel while attempting to force add an alias
+INFO[Main]: Removed item stairs:stair_inner_tinblock while attempting to force add an alias
+INFO[Main]: Removed item stairs:stair_outer_copperblock while attempting to force add an alias
+INFO[Main]: Mod "grug_materials" loaded after 3 ms
+INFO[Main]: Mod "grug_nodes" loaded after 1 ms
+ACTION[Main]: [grug_gear] 6 bracket catalogs: 24 weapons + 48 armor pieces
+INFO[Main]: Mod "grug_gear" loaded after 0 ms
+INFO[Main]: Mod "grug_core" loaded after 1 ms
+INFO[Main]: Mod "grug_xp" loaded after 0 ms
+INFO[Main]: Mod "grug_money" loaded after 0 ms
+INFO[Main]: Mod "grug_gathering" loaded after 3 ms
+INFO[Main]: ObjDefManager: added ore: name="grug_mapgen:native_gravel_blob_v1" index=0 uid=16
+INFO[Main]: ObjDefManager: added ore: name="grug_mapgen:native_stratum_iron_v1" index=1 uid=120
+INFO[Main]: ObjDefManager: added ore: name="grug_mapgen:native_stratum_steel_v1" index=2 uid=125
+INFO[Main]: ObjDefManager: added ore: name="grug_mapgen:native_stratum_silversteel_v1" index=3 uid=89
+INFO[Main]: ObjDefManager: added ore: name="grug_mapgen:native_stratum_embersteel_v1" index=4 uid=48
+INFO[Main]: ObjDefManager: added ore: name="grug_mapgen:native_stratum_abyssal_steel_v1" index=5 uid=115
+INFO[Main]: Mod "grug_mapgen" loaded after 3457 ms
+INFO[Main]: Mod "grug_wp40_profile_probe" loaded after 1 ms
+INFO[Main]: Mod "grug_factions" loaded after 0 ms
+INFO[Main]: Mod "grug_projectiles" loaded after 0 ms
+INFO[Main]: Mod "grug_mobs" loaded after 4 ms
+INFO[Main]: Mod "grug_classes" loaded after 0 ms
+INFO[Main]: Mod "grug_inventory" loaded after 0 ms
+INFO[Main]: Mod "grug_traders" loaded after 1 ms
+INFO[Main]: Mod "grug_abilities" loaded after 1 ms
+ACTION[Main]: [grug_materials] registry audit passed: 6 tiers, 15 resources, 12 processed forms, 6 race regions
+ACTION[Main]: GRUG_WP40_PROFILE_PROBE phase=disk event=start engine=5.17.0 lua=LuaJIT_2.1.1787165859 seed=0 cases=10 manifest=dd201f3693954be7807cc52ea5840486a357ae57ba62b565ff11e0bab5d58989 full_digest=true
+ACTION[Main]: [grug_traders] drop audit: 1 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit); their items are audited from the hardcoded FUNCTION_DROPS list
+INFO[Main]: All mods loaded after 3491 ms
+INFO[Main]: Server: Calculating media file checksums
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: ignoring unsupported file extension: "character.blend"
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: 672 media files collected
+INFO[Main]: EmergeManager: initializing for mapgen=v7 and chunksize=(5,5,5)
+INFO[Main]: EmergeManager: using 1 thread(s)
+INFO[Main]: SCRIPTAPI: Initializing async engine
+INFO[Main]: AsyncEngine: using at most 2 threads with automatic scaling
+INFO[Main]: Initializing asynchronous environment (game)
+INFO[Main]: ServerEnvironment: 52 ABMs are registered
+INFO[Main]: ServerEnvironment: Loading environment metadata from file
+INFO[Main]: LBMManager: 2 unique times in lookup table
+INFO[Main]: Starting server thread...
+ACTION[Main]: World at [/tmp/grudgelands-wp40-profile-run.72rvP1e3/world]
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32161.
+INFO[Emerge-0]: Initialized emerge Lua environment
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x     0.05
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x     0.05
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server: map timer and unload [ms] _______________    1x        1
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x      0.1
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] 
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=pine_hearthpine_center mapchunk=-1872,-32,-2592 elapsed_us=4533964 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=pine_hearthpine_east mapchunk=-1792,-32,-2592 elapsed_us=4000 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=pine_hearthpine_south mapchunk=-1872,-32,-2512 elapsed_us=3942 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=human_capital mapchunk=-32,-32,-1552 elapsed_us=4386 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=elandor_front mapchunk=-32,48,-272 elapsed_us=3926 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=broken_causeway mapchunk=-752,-32,-32 elapsed_us=4318 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=whitebridge mapchunk=-432,-32,-1552 elapsed_us=5046 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=wyrmglass_channel mapchunk=-2752,-32,-32 elapsed_us=4130 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=wyrmglass_island mapchunk=-3312,208,-112 elapsed_us=3615 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=deep_cross_border mapchunk=-1712,-912,128 elapsed_us=5426 generated=0 disk=125 memory=0 cancelled=0 errored=0
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Emerge-0: processed [#] _________________________    1x     1250
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] _____    1x        7
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] ____    1x        1
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x     0.15
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] __________________________   20x     0.05
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]:   ServerMap: deSer block [us] _____________________ 1250x   20.035
+INFO[Main]:   ServerMap: load block [us] ______________________ 1250x   28.424
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=complete requested=10 completed=10 callbacks=0 generated=0 disk=1250 memory=0 cancelled=0 errored=0 samples=370 digest=52227df5b48d18b88ee6dae78b4e3bec30957b83493f6ce338352202ae7eaa88 full_digest=cf1d61f5cfd6355988bccd93a5c98ea8dbb8379a456fc3efe7872903c5e6466d full_vocabulary_digest=16cbc10919a72a14a8f99115c4d4d8e94b609cc0203c489f90d1036af9c2b325 full_voxels=5120000 measured_elapsed_us=5040121 diagnostic_us=389714
+INFO[Server]: *** Server shutting down in 0s.
+INFO[Server]: Server: Maximum lag peaked at 0.390034 (steplen=0.05)
+INFO[Main]: Dedicated server quitting
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Emerge-0: processed [#] 
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________    2x      195
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x      390
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] __________________________    2x      195
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]:   ServerMap: deSer block [us] 
+INFO[Main]:   ServerMap: load block [us] 
+ACTION[Main]: Server: Shutting down
+INFO[Main]: Server: Stopping and waiting for threads
+INFO[Main]: Server: Threads stopped
+INFO[Main]: Server: Executing shutdown hooks
+INFO[Main]: Server: Saving players
+INFO[Main]: Server: Kicking players
+INFO[Main]: Server: Saving environment metadata
+INFO[Main]: AsyncEngine: Waiting for 1 threads
+INFO[Main]: ServerMap: Saved map to /tmp/grudgelands-wp40-profile-run.72rvP1e3/world
+INFO[Main]: BanManager: saving to /tmp/grudgelands-wp40-profile-run.72rvP1e3/world/ipban.txt

@@ -1,0 +1,7 @@
+site	version	min_y	max_y	max_sample_grade	p95_sample_grade
+dwarf_start	before	-7	165	36.500	0.750
+dwarf_start	after	-7	196	22.000	0.750
+dwarf_capital	before	17	175	24.000	1.000
+dwarf_capital	after	17	198	23.250	1.000
+road	before	8	188	17.750	2.500
+road	after	9	108	11.250	0.250

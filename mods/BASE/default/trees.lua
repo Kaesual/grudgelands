@@ -599,13 +599,4 @@ register_sapling_growth("acacia_bush_sapling", default.grow_acacia_bush)
 register_sapling_growth("pine_bush_sapling", default.grow_pine_bush)
 register_sapling_growth("emergent_jungle_sapling", default.grow_new_emergent_jungle_tree)
 
--- Backwards compatibility for saplings that used to use ABMs; does not need to include newer saplings.
-minetest.register_lbm({
-	name = "default:convert_saplings_to_node_timer",
-	nodenames = {"default:sapling", "default:junglesapling",
-			"default:pine_sapling", "default:acacia_sapling",
-			"default:aspen_sapling"},
-	action = function(pos)
-		minetest.get_node_timer(pos):start(math.random(300, 1500))
-	end
-})
+-- GRUG PATCH: no ABM-era sapling timer migration.

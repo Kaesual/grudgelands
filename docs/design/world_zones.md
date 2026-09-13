@@ -459,6 +459,35 @@ WP40 replaces it with the complete catalog and contracts below.
 
 ### 7.6 Height, relief and visual structure
 
+- **Height refinement (2026-09-13):** the existing broad 64-node lattice
+  uses linear Q16 bilinear interpolation. Two shared detail fields at periods
+  64 and 32 combine with weights 2/3 and 1/3. Per-profile amplitudes are
+  wetland 2, lowland 4, rolling hills 6, plateau 7, highland 9 and mountain 12
+  nodes, blended by the four broad owner vertices. Every field uses the full
+  decimal seed string. No previous-height-schema fallback is installed.
+- Routes prefer the mean pre-path terrain across their full land surface.
+  Forward reachable intervals and reverse clamping preserve exact pins,
+  water clearance and the existing maximum one-node rise per adjacent run
+  (45 degrees for one-node horizontal steps). The solver does not promise a
+  universal cut/fill bound at fixed hubs and crossings.
+- Sparse hillside entrances use 192-node cells, a one-quarter candidate gate,
+  radius 2 and length 32. A mouth at y >= 16 needs an uphill rise >= 6; the
+  axis descends one node every four steps, and its final 16 sections retain
+  roof thickness >= 3. The complete tube plus a two-node halo must be dry,
+  ordinary land in one zone, outside water, transitions, functional surfaces,
+  foundations, exclusions and housing. P5 cuts the tube with priority 5;
+  prospective and actual P7 support cannot re-cap it. A closed end is valid;
+  connection to native underground caves is not guaranteed.
+- **Fresh-world surface refinement (2026-09-13):** logical biome ownership
+  stays unchanged. Dry surfaces receive coherent 32-node material patches
+  and 64-node variations in filler depth (1–4 nodes), using existing soil,
+  grass, gravel and stone. Wet surfaces, beaches and swamps retain their
+  declared substrate. Crags and badlands mix only their base, gravel and
+  stone; savanna retains dry soil, and blight/bone forest receive no green
+  grass patches. Rocky patches expose stone on steep final terrain. The
+  planner, writer and prospective vegetation support share the same seeded
+  selector. The original R6 surface table is the base palette, not a promise
+  that every column in a biome has the same material.
 - The project owns one globally queryable integer surface-height field
   `H(full_seed_string, x, z)`, exposed as `terrain_height_at`. It combines
   bounded broad/detail lattices, the zone relief profiles, authored landmarks
@@ -501,9 +530,10 @@ WP40 replaces it with the complete catalog and contracts below.
   wins over start, capital and guaranteed coastal-core fitting; those grades
   retain their stated priority everywhere outside that surface, and exact
   start/capital hub pins equal the fitting reference height.
-- Landmarks have stable ids, one declared owner and bounded masks. Owner
-  clipping prevents a landmark from modifying another zone but never silently
-  satisfies its route, housing, anchor or grading obligations.
+- Landmarks have stable ids, one declared owner and bounded masks. Their
+  vertical influence uses bilinear owner affinity over the adjacent 64-node
+  lattice cell; logical zone ownership, policy and all horizontal masks stay
+  exact. Feathering never satisfies route, housing, anchor or grading obligations.
 - The map promises no target journey duration. Reliable route placement,
   visible terrain structure and available travel methods determine travel
   time. Strategic separators are physical terrain or explicit water, never
@@ -983,6 +1013,16 @@ one-cell settlement checks are unchanged.
   guaranteed capital-zone ownership; the larger visual blend may cross a zone
   edge. Capital lookup uses the zone's single surface difficulty target.
   Hostile ambient spawning is disabled and level-60 guards remain explicit.
+- Capital grading flattens only the dry capital-owned 96×96 civic core.
+  The target reference interval for natural height N is [N-24, N+16],
+  intersected over core columns with water lower bounds. A feasible interval
+  clamps the natural centre; an infeasible interval uses its rounded midpoint.
+  Existing station floors remain lower bounds. Any resulting cut/fill excess
+  is explicitly reported rather than hidden or used to move the fixed core.
+  Outside the core, terrain terraces use steps dwarf/orc 4, human 2 and
+  elf/undead/troll 3. The next 32 nodes blend to these terraces; the outer
+  96-node collar returns to incoming terrain. The 512×512 envelope remains
+  buildable/protected space, not one mandatory flat slab.
 - A fixed 96×96 civic core contains the king's hall, waypoint and principal
   service court. Four fixed 32-node-wide road gates leave north/east/south/
   west. The road itself is authored by WP13 inside that reserved corridor.

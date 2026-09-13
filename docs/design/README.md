@@ -3,6 +3,11 @@
 The **decided** game design — the living specification. Rules here (see
 also AGENTS.md "Documentation layers"):
 
+The project is in **fresh-server development mode** (2026-09-13): there are no
+earlier servers, worlds or player formats to support. Older migration wording
+does not authorize compatibility code. Only the user's explicit release-mode
+announcement changes this rule; see [AGENTS.md](../../AGENTS.md#fresh-server-development-mode).
+
 - Only settled decisions: rules, numbers, formulas, lists. No open
   questions, no option discussions — those live in `TODO-<topic>.md` files
   in the repo root until decided, then get folded in here.

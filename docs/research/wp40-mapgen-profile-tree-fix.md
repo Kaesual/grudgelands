@@ -233,3 +233,30 @@ User runtime test after integration: generate a new pine forest, inspect
 continuous trunks and natural canopy height, explore fresh terrain, reconnect
 into that same area, then return to it while nearby new terrain is requested.
 Already generated broken trees remain saved; use new terrain for the fix check.
+
+## Local user feedback after integration — 2026-09-13
+
+The user tested a fresh local world with the locally synchronized game and GUI
+client, rather than the website or Rehearsal server. Pine trunks are now
+continuous. Fresh generation feels somewhat faster but still substantially
+slower than v7; this is subjective feedback, not a new timing measurement.
+
+Reproduction world: `aweqw`, saved world seed `13191094842853985814`, native
+mapgen `v7`, chunksize `5` (read from its local `map_meta.txt`). The first two
+terrain screenshots were taken in the dwarf starting area; the third road
+screenshot was approximately near a teleport to `(1000, 100, 1000)`, according
+to the user's recollection. Exact camera positions are not known. Preserve
+the seed as a decimal string, not a rounded Lua double.
+
+Outstanding visual feedback: broad flat areas and smooth repetitive height
+transitions, severe mountain/valley cuts, roads producing steep cuts or
+embankments, little material variation within biomes, and missing visible cave
+mouths. The user supplied a fresh VoxeLibre screenshot as a reference for
+combined geometry and material variety. These remain open quality issues;
+the successful tree test does not accept the overall terrain appearance.
+
+The user also reported natural ores becoming depleted placeholders after
+mining. `world.md` R4 already forbids natural resource regeneration; the active
+legacy `grug_nodes/ore_respawn.lua` dig hook contradicts that decision. The
+separate protected mining-camp socket exception remains as specified. No ore
+behavior or terrain code was changed while recording this feedback.

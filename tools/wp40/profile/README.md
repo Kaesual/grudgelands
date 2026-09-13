@@ -125,3 +125,27 @@ tools/bin/luac51 -l -p tools/wp40/profile/probe/init.lua | rg SETGLOBAL
 ```
 
 The expected global-write result is exactly the probe's single mod table.
+
+The v2 small sample digest uses explicit `outside_owner` sentinels whenever a
+sample lies outside its requested 80-cube owner. Cold generation can populate
+transient neighbouring halos which a disk-only request does not load; these
+are not valid persistence comparisons. The full owner digest remains the
+unchanged stronger comparison. Optional `expected_nodes` on diagnostic corpus
+rows assert exact node names after all requests, before shutdown, without
+requesting any additional generation; the dedicated quality cave corpus uses
+this to check the entire tube after P7/P8/P9 settlement.
+
+Select the checked-in ten-owner cave integration corpus with an absolute path:
+
+```sh
+WP40_PROFILE_CASES="$PWD/tools/wp40/quality/cave_engine_cases.lua" \
+WP40_PROFILE_SEED=0 WP40_PROFILE_FULL_DIGEST=1 \
+WP40_PROFILE_DEDICATED=1 \
+  bash tools/wp40/profile/run.sh /usr/local/bin/luantiserver
+```
+
+The selected file is copied into the disposable probe, included in both the
+harness and snapshot SHA-256 manifests, and named in `environment.tsv`.
+The cave corpus requires seed 0 and proves 416 air voxels in a tube crossing
+two owners during both cold generation and disk-only reload. It is a separate
+correctness corpus, not the default timing comparison.

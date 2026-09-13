@@ -110,9 +110,8 @@ return function(repo, catalog, expected_names)
 			if not definition then error("missing override target " .. name, 0) end
 			for key, value in pairs(fields) do rawset(definition, key, value) end
 		end
-		function api.register_alias_force(source, target)
-			api.registered_aliases[source] = target
-			api.registered_items[source], api.registered_nodes[source] = nil, nil
+		function api.unregister_item(name)
+			api.registered_items[name], api.registered_nodes[name] = nil, nil
 		end
 		function api.get_current_modname() return current_modname end
 		function api.get_modpath(name)

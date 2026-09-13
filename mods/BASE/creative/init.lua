@@ -38,10 +38,7 @@ function minetest.is_creative_enabled(name)
 		old_is_creative_enabled(name)
 end
 
--- For backwards compatibility:
-function creative.is_enabled_for(name)
-	return minetest.is_creative_enabled(name)
-end
+-- GRUG PATCH: callers use the current core.is_creative_enabled API directly.
 
 dofile(minetest.get_modpath("creative") .. "/inventory.lua")
 

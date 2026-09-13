@@ -26,9 +26,7 @@ mobs = {
 }
 mobs.fallback_node = mobs.node_dirt
 
--- load compatibility check function
-
-dofile(core.get_modpath("mobs") .. "/compatibility.lua")
+-- GRUG PATCH: current mob definitions need no deprecated API/settings shims.
 
 -- localize common functions
 
@@ -178,7 +176,7 @@ mobs.mob_class = {
 	_cmi_is_mob = true
 }
 
-local mob_class = mobs.mob_class -- compatibility
+local mob_class = mobs.mob_class -- shared class used by current mob extensions
 local mob_class_meta = {__index = mob_class}
 
 -- return True if mob limit reached
@@ -640,10 +638,7 @@ function mob_class:update_tag(newname)
 	local old_nametag = prop.nametag
 	local old_nametag_color = self.nametag_col
 
-	-- backwards compatibility
-	if self.nametag and self.nametag ~= "" then
-		newname = self.nametag ; self.nametag = nil
-	end
+	-- GRUG PATCH: current staticdata stores the name in _nametag only.
 
 	if newname or (self._nametag and self._nametag ~= "") then
 
@@ -3345,10 +3340,7 @@ function mob_class:mob_activate(staticdata, def, dtime)
 
 	if not self.base_texture then -- select random texture
 
-		-- compatiblity with old simple mobs textures
-		if def.textures and type(def.textures[1]) == "string" then
-			def.textures = {def.textures}
-		end
+		-- GRUG PATCH: all current definitions provide nested texture variants.
 
 		-- backup to base settings
 		self.base_texture = def.textures and def.textures[random(#def.textures)]
@@ -3681,7 +3673,7 @@ function mobs:register_mob(name, def)
 		jump_height = def.jump_height,
 		jump_chance = def.jump_chance,
 		can_leap = def.can_leap,
-		drawtype = def.drawtype, -- DEPRECATED, use rotate
+		-- GRUG PATCH: current definitions use rotate, never legacy drawtype.
 		rotate = rad(def.rotate or 0), -- 0=front 90=side 180=back 270=side2
 		lifetimer = def.lifetimer,
 		hp_min = max(1, (def.hp_min or 5) * difficulty),
@@ -3751,7 +3743,8 @@ function mobs:register_mob(name, def)
 		dogshoot_count2_max = def.dogshoot_count2_max or def.dogshoot_count_max,
 		group_attack = def.group_attack,
 		group_helper = def.group_helper,
-		attack_monsters = def.attacks_monsters or def.attack_monsters,
+		-- GRUG PATCH: current definitions use only the singular attack_monsters.
+		attack_monsters = def.attack_monsters,
 		attack_animals = def.attack_animals,
 		attack_players = def.attack_players,
 		attack_npcs = def.attack_npcs,
@@ -3794,8 +3787,7 @@ function mobs:register_mob(name, def)
 
 	}, mob_class_meta))
 
-	local self = core.registered_entities[name]
-	mobs.compatibility_check(self) -- older setting check for compatibility
+	-- GRUG PATCH: floats is boolean in every current game definition.
 end
 
 -- return <number of mobs of same type in area>, <player found>
@@ -4801,33 +4793,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	end
 end)
 
--- compatibility function for old mobs entities to new mobs_redo modpack
-
-function mobs:alias_mob(old_name, new_name)
-
-	-- check old_name entity doesnt already exist
-	if core.registered_entities[old_name] then return end
-
-	core.register_alias(old_name, new_name) -- spawn egg
-
-	core.register_entity(":" .. old_name, { -- entity
-
-		initial_properties = {physical = false, static_save = false},
-
-		on_activate = function(self, staticdata)
-
-			if core.registered_entities[new_name] then
-				core.add_entity(self.object:get_pos(), new_name, staticdata)
-			end
-
-			remove_mob(self)
-		end,
-
-		get_staticdata = function(self)
-			return core.serialize(clean_staticdata(self))
-		end
-	})
-end
+-- GRUG PATCH: no alias entities for previous mob namespaces.
 
 -- admin command to remove untamed mobs around players
 

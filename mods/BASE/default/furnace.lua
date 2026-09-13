@@ -369,7 +369,7 @@ core.register_node("default:furnace", apply_logger({
 	},
 	paramtype2 = "facedir",
 	groups = {cracky=2},
-	legacy_facedir_simple = true,
+	-- GRUG PATCH: no pre-release mapblock-format conversion flags.
 	is_ground_content = false,
 	sounds = default.node_sound_stone_defaults(),
 
@@ -433,7 +433,7 @@ core.register_node("default:furnace_active", apply_logger({
 	light_source = 8,
 	drop = "default:furnace",
 	groups = {cracky=2, not_in_creative_inventory=1},
-	legacy_facedir_simple = true,
+	-- GRUG PATCH: no pre-release mapblock-format conversion flags.
 	is_ground_content = false,
 	sounds = default.node_sound_stone_defaults(),
 	on_timer = furnace_node_timer,

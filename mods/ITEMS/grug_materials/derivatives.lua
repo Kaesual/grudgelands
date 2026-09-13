@@ -1,6 +1,6 @@
--- Canonical registrations for reachable derivatives of migrated storage
--- materials. Existing recipes keep working through one-way aliases, but this
--- file intentionally adds no recipe: WP26 owns material processing/storage.
+-- Canonical registrations cloned from vendored storage-material node shapes.
+-- This file intentionally adds no recipe: WP26 owns material processing and
+-- storage recipes.
 
 local function register_derivative(derivative)
 	local source = core.registered_nodes[derivative.source]

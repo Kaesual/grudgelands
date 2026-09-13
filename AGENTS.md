@@ -13,6 +13,24 @@ projects: **[docs/research/](docs/research/)**.
 - Chat with the user is in **German**; code identifiers and code comments
   are in English.
 
+## Fresh-server development mode
+
+- **Standing user instruction, decided 2026-09-13:** the first release is
+  still under development. Assume the server and world are **always fresh**.
+  There are no old servers, worlds or player records to migrate.
+- Do not add backward-compatibility branches, saved-world/data migrations,
+  legacy-name aliases, old-format readers, compatibility placeholders or
+  cleanup LBMs/timers for earlier development versions. Remove existing code
+  whose sole purpose is supporting or cleaning up those earlier versions.
+- Current-version persistence (saving/reloading the same world, reconnects,
+  inventories and normal entity activation) remains required. Current engine
+  APIs, Lua 5.1 support and integrations with currently shipped dependencies
+  are not old-world migration mechanisms.
+- This instruction supersedes older migration/legacy-support requirements in
+  project documents. Do not infer a release transition from a commit, merge,
+  deployment or WP completion: **only the user's explicit announcement changes
+  this mode**.
+
 ## Anthropic repository sharing authorization
 
 - **Standing user authorization, decided 2026-08-30:** every file in this
@@ -252,7 +270,7 @@ current state). It is **derived, never authoritative**:
 - Performance rules (distilled from VoxeLibre):
   - **Always** throttle `register_globalstep` with a dtime accumulator.
   - Node timers for machines/workstations (forge, alchemy).
-  - LBMs for one-shot load fixes/migrations.
+  - LBMs for required current-version activation only; no old-world migrations in fresh-server mode.
   - ABMs only for ambient random events, throttled via `chance`/`interval`,
     `catch_up = false` where possible.
   - In hot loops use `core.get_node_raw`/content IDs + VoxelManip instead
@@ -479,7 +497,7 @@ Details + line numbers in [docs/research/](docs/research/).
   - **`aoc` is per entity NAME**, counted in a 128-node sphere — two
     rows of one name share a budget, per-biome tints do not. Spawn
     calibration reference: **`docs/research/wp6_spawn_budget.md`**.
-  - **32 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** — the
+  - **39 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** — the
     inventory and rationale live in VENDOR.md; re-apply them on any
     mobs_redo update. WP35's 21st: the `set_wielded_item` write-back at
     the end of the wear block runs only when wear/toolranks changed the stack

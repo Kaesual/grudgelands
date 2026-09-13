@@ -226,14 +226,4 @@ minetest.register_globalstep(function(...)
 	player_api.globalstep(...)
 end)
 
-for _, api_function in pairs({"get_animation", "set_animation", "set_model", "set_textures"}) do
-	local original_function = player_api[api_function]
-	player_api[api_function] = function(player, ...)
-		if not players[player:get_player_name()] then
-			-- HACK for keeping backwards compatibility
-			minetest.log("warning", api_function .. " called on offline player")
-			return
-		end
-		return original_function(player, ...)
-	end
-end
+-- GRUG PATCH: current callers use initialized online players; no legacy wrappers.

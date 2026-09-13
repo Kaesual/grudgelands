@@ -137,6 +137,13 @@ return function(repo)
 	local content = {}
 	function content.content_contract() return contract end
 	function content.surfaces() return clone(surfaces) end
+	function content.new_surface_selector()
+		return function(id)
+			for index = 1, #surfaces do
+				if surfaces[index].id == id then return surfaces[index] end
+			end
+		end
+	end
 	function content.resources() return clone(kat_resources) end
 	function content.cultural() return clone(cultural) end
 	function content.decorations() return clone(decorations) end
@@ -273,6 +280,7 @@ return function(repo)
 			nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
 			fake_source.hard_route_probe == "hard" and x == 0 and z == 0
 	end
+	function fake_source.surface_cave_run_at() return nil end
 	local horizontal = {}
 	function horizontal.static_exclusion_values_at(x, z)
 		if fake_source.hard_route_probe and x == 0 and z == 0 then

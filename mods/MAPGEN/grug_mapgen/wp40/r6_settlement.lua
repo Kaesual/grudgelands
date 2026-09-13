@@ -339,7 +339,9 @@ local function settlement_factory()
 				type(hash) ~= "table" or type(hash.digest_count) ~= "function" or
 				(runtime_mode and type(hash.prepare_digest3) ~= "function") or
 				type(horizontal) ~= "table" or
-				type(planner_source) ~= "table" or type(source) ~= "table" or
+				type(planner_source) ~= "table" or
+				type(planner_source.surface_cave_run_at) ~= "function" or
+				type(source) ~= "table" or
 				(successor_tail ~= nil and (type(successor_tail) ~= "table" or
 					type(successor_tail.settle) ~= "function")) then
 			fail("fail_settlement", "construction seams differ")
@@ -372,6 +374,7 @@ local function settlement_factory()
 			fail("fail_content_manifest", "prospective water targets differ")
 		end
 		local surfaces = content.surfaces()
+		local select_surface = content.new_surface_selector(full_seed, planner_source)
 		local resources = content.resources()
 		local cultural = content.cultural()
 		local decorations = content.decorations()
@@ -682,9 +685,11 @@ local function settlement_factory()
 				functional_kind, functional_y, _, _, transition_kind, transition_id,
 				_, transition_lower_y, _, transition_face_mask =
 					planner_source.column_values_at(x, z)
-			local surface = surface_by_id[biome]
+			local surface = select_surface(biome, x, z, water_y, terrain_y)
 			if not zone_id or not surface or y < terrain_y - surface.filler_depth or
 					y > terrain_y or y < -37 then return nil end
+			local cave_low, cave_high = planner_source.surface_cave_run_at(x, z)
+			if cave_low ~= nil and cave_low <= y and y <= cave_high then return nil end
 			if functional_kind == "anchor_platform" or
 					functional_kind == "land_grade" or functional_kind == "causeway" or
 					(functional_kind == "ford" and y == terrain_y) or
@@ -790,7 +795,9 @@ local function settlement_factory()
 					within(terrain_y + 1, water_y) then
 				offer(6, classified_id and 13 or 10, 7)
 			end
-			if within(-37, terrain_y - 1) or y == terrain_y then offer(5, 14, 6)
+			local cave_low, cave_high = planner_source.surface_cave_run_at(x, z)
+			if within(cave_low, cave_high) then offer(5, 1, 1)
+			elseif within(-37, terrain_y - 1) or y == terrain_y then offer(5, 14, 6)
 			elseif y > surface_cap then offer(5, 1, 1) end
 			if not winner_role then winner_priority, winner_role, winner_policy = 5, 1, 1 end
 
@@ -1032,7 +1039,7 @@ local function settlement_factory()
 			local function prospective(x, y, z)
 				local _, _, _, biome, _, terrain_y, water_y =
 					planner_source.column_values_at(x, z)
-				local surface = surface_by_id[biome]
+				local surface = select_surface(biome, x, z, water_y, terrain_y)
 				if not surface then return CLASS_UNKNOWN, 0, false, 0, 0 end
 				local p7_ref = analytic_p7_material_ref(x, y, z)
 				if p7_ref then
@@ -1571,7 +1578,7 @@ local function settlement_factory()
 		end
 
 		local function apply_impl(vm, minp, maxp, plan, plan_generation, call_mode)
-			local resource_excluded_column = transaction_state.resource_excluded_column
+			local resource_column_state = transaction_state.resource_excluded_column
 			if call_mode ~= "fixture" and call_mode ~= "production" and
 					call_mode ~= "replay_fixture" then
 				fail("fail_status", "R6 is disabled")
@@ -1860,28 +1867,25 @@ local function settlement_factory()
 				for x = min_x, max_x do
 					local column = column_index(x, z)
 					local reason = helpers.exclusion_reason(x, z)
-					resource_excluded_column[column] = reason == "fixed_or_protected" or
+					local excluded = reason == "fixed_or_protected" or
 						(reason == "route_or_water" and helpers.in_hard_ingress(x, z))
+					-- Bit 2 is the immutable shallow exclusion. Bit 1 is filled for
+					-- each resource below from immutable water/race column values.
+					resource_column_state[column] = excluded and 2 or 0
 				end
 			end
-			local function host_eligible(resource, x, y, z, tier, host_cid)
+			local function host_eligible(x, y, z, host_cid)
 				local column = column_index(x, z)
-				local base = (column - 1) * COLUMN_STRIDE
-				local water_class = plan.column_values[base + 1]
-				local race_ref = plan.column_values[base + 4]
-				local race = race_ref ~= 0 and plan.stable_refs[race_ref] or nil
-				if (water_class ~= 1 and water_class ~= 2) or
-						not helpers.regional_allowed(resource, race) then return false end
-				local denominator = resource.denominators[tier]
-				if not denominator then return false end
+				local column_state = resource_column_state[column]
+				if column_state % 2 == 0 or (y >= -700 and column_state >= 2) then
+					return false
+				end
 				local index = index_at(x, y, z)
 				local rbase = run_at(plan, column, y)
 				local priority = rbase and plan.r5_plan.run_values[rbase + 3]
 				local predecessor_excluded = priority == 2 or priority == 3 or
 					priority == 4 or priority == 6
-				local horizontally_excluded = y >= -700 and
-					resource_excluded_column[column]
-				return not horizontally_excluded and not predecessor_excluded and
+				return not predecessor_excluded and
 					original_data[index] == host_cid and
 					((intent_opcode[index] == 0 and
 						final_data[index] == original_data[index]) or
@@ -1889,6 +1893,32 @@ local function settlement_factory()
 			end
 			for resource_index = 1, #resources do
 				local resource = resources[resource_index]
+				-- Water class and regional assignment are immutable for a complete
+				-- column and resource. Keep occupancy and VM-backed predicates live.
+				local active_tier = false
+				for y = min_y, max_y do
+					local tier = tier_at(y)
+					if resource.denominators[tier] then
+						active_tier = true
+						break
+					end
+				end
+				if active_tier then
+					for z = min_z, max_z do
+						for x = min_x, max_x do
+							local column = column_index(x, z)
+							local base = (column - 1) * COLUMN_STRIDE
+							local water_class = plan.column_values[base + 1]
+							local race_ref = plan.column_values[base + 4]
+							local race = race_ref ~= 0 and plan.stable_refs[race_ref] or nil
+							local allowed = (water_class == 1 or water_class == 2) and
+								helpers.regional_allowed(resource, race)
+							resource_column_state[column] =
+								resource_column_state[column] >= 2 and
+								(allowed and 3 or 2) or (allowed and 1 or 0)
+						end
+					end
+				end
 				for cell_z = math.floor(min_z / 16), math.floor(max_z / 16) do
 					for cell_x = math.floor(min_x / 16), math.floor(max_x / 16) do
 						for cell_y = math.floor(min_y / 16), math.floor(max_y / 16) do
@@ -1910,27 +1940,15 @@ local function settlement_factory()
 								local host_cid = host_ref and contract.content_cids[host_ref]
 								local eligible = 0
 								if host_cid and resource.denominators[tier] then
-									local root_digest
-									if transaction_state.runtime_mode then
-										root_digest = helpers.prepare_resource_digest(
-											resource.key, cell_x, cell_y, cell_z, host_name, tier, band)
-									end
 									for z = math.max(min_z, cell_z * 16),
 											math.min(max_z, cell_z * 16 + 15) do
 										for y = segment_y, segment_end do
 											for x = math.max(min_x, cell_x * 16),
 													math.min(max_x, cell_x * 16 + 15) do
-												if host_eligible(resource, x, y, z, tier, host_cid) then
+												if host_eligible(x, y, z, host_cid) then
 													eligible = eligible + 1
 													local coordinate = coordinate_scratch[eligible]
 													coordinate.x, coordinate.y, coordinate.z = x, y, z
-													if root_digest then
-														coordinate.digest = root_digest(x, y, z)
-													else
-														coordinate.digest = helpers.digest10(
-															"resource_root_rank_v1", resource.key, cell_x,
-															cell_y, cell_z, host_name, tier, band, x, y, z)
-													end
 												end
 											end
 										end
@@ -1945,12 +1963,31 @@ local function settlement_factory()
 										remainder = hash.budget(eligible, 1, denominator,
 										multiplier_numerator, multiplier_denominator,
 										remainder_digest)
-									if transaction_state.runtime_mode then
-										if budget > 0 then
-											helpers.heap_prefix(coordinate_scratch, eligible, helpers.coordinate_less)
+									if budget > 0 then
+										local root_digest
+										if transaction_state.runtime_mode then
+											root_digest = helpers.prepare_resource_digest(resource.key,
+												cell_x, cell_y, cell_z, host_name, tier, band)
 										end
-									else
-										sort_prefix(coordinate_scratch, eligible, helpers.coordinate_less)
+										for rank = 1, eligible do
+											local coordinate = coordinate_scratch[rank]
+											if root_digest then
+												coordinate.digest = root_digest(coordinate.x,
+													coordinate.y, coordinate.z)
+											else
+												coordinate.digest = helpers.digest10(
+													"resource_root_rank_v1", resource.key, cell_x,
+													cell_y, cell_z, host_name, tier, band, coordinate.x,
+													coordinate.y, coordinate.z)
+											end
+										end
+										if transaction_state.runtime_mode then
+											helpers.heap_prefix(coordinate_scratch, eligible,
+												helpers.coordinate_less)
+										else
+											sort_prefix(coordinate_scratch, eligible,
+												helpers.coordinate_less)
+										end
 									end
 									local planned = budget == 0 and 0 or
 										math.floor((budget + resource.max_nodes_per_vein - 1) /
@@ -2004,7 +2041,7 @@ local function settlement_factory()
 																y >= segment_y and y <= segment_end and
 																z >= math.max(min_z, cell_z * 16) and
 																z <= math.min(max_z, cell_z * 16 + 15) and
-																host_eligible(resource, x, y, z, tier, host_cid) and
+																host_eligible(x, y, z, host_cid) and
 																occupancy[index_at(x, y, z)] == 0 then
 															local duplicate = false
 															for f = 1, frontier_count do

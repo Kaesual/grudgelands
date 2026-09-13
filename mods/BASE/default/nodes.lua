@@ -261,7 +261,7 @@ minetest.register_node("default:stone", {
 	tiles = {"default_stone.png"},
 	groups = {cracky = 3, stone = 1},
 	drop = "default:cobble",
-	legacy_mineral = true,
+	-- GRUG PATCH: no pre-release mapblock-format conversion flags.
 	sounds = default.node_sound_stone_defaults(),
 })
 
@@ -306,7 +306,7 @@ minetest.register_node("default:desert_stone", {
 	tiles = {"default_desert_stone.png"},
 	groups = {cracky = 3, stone = 1},
 	drop = "default:desert_cobble",
-	legacy_mineral = true,
+	-- GRUG PATCH: no pre-release mapblock-format conversion flags.
 	sounds = default.node_sound_stone_defaults(),
 })
 
@@ -2596,7 +2596,7 @@ local function register_sign(material, desc, def)
 			wall_side   = {-0.5, -0.3125, -0.4375, -0.4375, 0.3125, 0.4375},
 		},
 		groups = def.groups,
-		legacy_wallmounted = true,
+		-- GRUG PATCH: no pre-release mapblock-format conversion flags.
 		sounds = def.sounds,
 
 		on_construct = function(pos)
@@ -2663,7 +2663,7 @@ minetest.register_node("default:ladder_wood", {
 		--wall_side = = <default>
 	},
 	groups = {choppy = 2, oddly_breakable_by_hand = 3, flammable = 2},
-	legacy_wallmounted = true,
+	-- GRUG PATCH: no pre-release mapblock-format conversion flags.
 	sounds = default.node_sound_wood_defaults(),
 })
 

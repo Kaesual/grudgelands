@@ -955,7 +955,6 @@ External Functions
 
 These are a list of utility functions that can be called from 3rd party mods.
 
-mobs:alias_mob(old_name, new_name) -- only use if existing mob name has changed
 mobs:is_invisible(self, player_name)
 mobs:is_dangerous(self, nodename)
 mobs:yaw_to_pos(self, target, rotation_steps)

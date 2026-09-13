@@ -154,10 +154,8 @@ local PUBLIC_SYMBOL_TYPES = {
 	is_shattering = "function",
 	node_dig_wrapper = "function",
 	CURRENT_SCATTER_RESOURCES = "table",
-	LEGACY_ALIASES = "table",
 	STORAGE_DERIVATIVES = "table",
 	FORBIDDEN_RUNTIME_STEMS = "table",
-	canonical_name = "function",
 }
 
 function handoff.validate_symbols(materials)
@@ -369,11 +367,6 @@ function handoff.validate_target_names(materials, projection)
 			if value:find(stem:lower(), 1, true) then
 				fail("forbidden runtime stem in target projection: " .. stem)
 			end
-		end
-	end
-	for _, value in ipairs(values) do
-		if materials.LEGACY_ALIASES[value] then
-			fail("migration-source id in target projection: " .. value)
 		end
 	end
 	return true

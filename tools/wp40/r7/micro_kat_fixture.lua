@@ -10,7 +10,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local saved_dofile = dofile
 	changed_roster_relative = changed_roster_relative or
 		"tools/wp40/r7/changed_production_lua.txt"
-	expected_changed_count = expected_changed_count or 74
+	expected_changed_count = expected_changed_count or 73
 	if type(changed_roster_relative) ~= "string" or
 		changed_roster_relative:sub(1, 1) == "/" or
 		changed_roster_relative:find("..", 1, true) or
@@ -177,7 +177,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			"R8 bounded zones runtime construction differs")
 
 		local samples = {
-			{0, -1500, "land", "elandor_highcourt", "grug_meadows", "human", 36,
+			{0, -1500, "land", "elandor_highcourt", "grug_meadows", "human", 50,
 				"hard_protected", "contested_land"},
 			{-900, -1100, "planned_water", "elandor_whitebridge_shire",
 				"grug_deep_forest", "human", 16, "accord_home", "contested_land"},
@@ -202,7 +202,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		end
 		local capital = live_zones.anchor("elandor_highcourt", "capital")
 		check(capital and capital.id == "anchor_008" and capital.numeric_id == 8 and
-			capital.x == 0 and capital.y == 36 and capital.z == -1500,
+			capital.x == 0 and capital.y == 50 and capital.z == -1500,
 			"R8 bounded runtime anchor differs")
 		row("runtime/zones_sample_sha256", hex_sha256(table.concat(sample_rows)))
 		row("runtime/zones_anchor", table.concat({capital.id, capital.numeric_id,
@@ -553,8 +553,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	execute_in_environment("mods/ENTITIES/grug_mobs/init.lua", mob_environment)
 	check(#mob_defs >= 35 and #spawn_rows >= 25 and #arrow_rows >= 2,
 		"mob definition/spawn registration projection differs")
-	check(mob_core.registered_aliases["grug_mobs:camp_fire"] ==
-		"grug_nodes:camp_fire" and
+	check(mob_core.registered_aliases["grug_mobs:camp_fire"] == nil and
 		type(mob_core.registered_nodes["grug_nodes:camp_fire"].on_construct) ==
 			"function" and
 		type(mob_core.registered_nodes["grug_nodes:camp_fire"].on_timer) == "function",
@@ -1515,6 +1514,10 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			filler_depth = 1, top_ref = support_ref, filler_ref = support_ref,
 			shore_ref = support_ref, bed_ref = support_ref, dust_ref = 0}}
 	end
+	function content_wrapper.new_surface_selector()
+		local surface = content_wrapper.surfaces()[1]
+		return function() return surface end
+	end
 	local resource_name = "grug_materials:stone_with_citrine"
 	local resource_ref = check(production_ref[resource_name],
 		"micro regional resource ref is absent")
@@ -1628,6 +1631,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			local planner_source_micro = {
 				schema = "grug_wp40_r5_planner_source_v1",
 				column_values_at = function() return "land", nil end,
+				surface_cave_run_at = function() return nil end,
 				metrics = function()
 					return {runtime_column_cache_limit = 65536,
 						runtime_column_cache_entries = 0,
@@ -1638,6 +1642,9 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			}
 			local planner_content = {
 				surfaces = function() return {{id = "micro_biome"}} end,
+				new_surface_selector = function()
+					return function() return nil end
+				end,
 				resources = function() return {} end,
 				cultural = function() return {} end,
 				decorations = function()
@@ -1830,6 +1837,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		end
 		return "land", 1, "micro_no_zone", corn_biome, "human", -701
 	end
+	function planner_source.surface_cave_run_at() return nil end
 	local source_anchor = {id = "micro_apex", position = {x = 10000, z = 10000}}
 	local source = {claim_exclusions = {{id = "micro_resource_exclusion",
 		recipe_id = "hard_start_core_v1"}}, routes = {}, hard_protection = {},
