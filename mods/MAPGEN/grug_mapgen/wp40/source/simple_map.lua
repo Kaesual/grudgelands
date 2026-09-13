@@ -17,7 +17,7 @@ local source = {
 	schema = "grug_wp40_simple_map_source_v2",
 	layout_id = "wp40-simple-map-v1d",
 	layout_revision_id = "wp40-simple-map-v1e",
-	height_revision_id = "wp40-height-quality-v2",
+	height_revision_id = "wp40-height-quality-v3",
 	extent = {min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200},
 	warp = {cell = 256, maximum = 60,
 		hash_domain = "fixed_visual_warp_v1"},

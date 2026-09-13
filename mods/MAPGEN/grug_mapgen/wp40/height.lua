@@ -22,7 +22,8 @@ return function(dependencies)
 	local WATER_LEVEL = 1
 	local GRADE_MIN = -30912
 	local GRADE_MAX = 30927
-	local HEIGHT_SCHEMA = "grug_wp40_simple_map_height_v2"
+	local HEIGHT_SCHEMA = "grug_wp40_simple_map_height_v3"
+	local HEIGHT_RANDOM_SCHEMA = "grug_wp40_simple_map_height_v2"
 	local BASE_CELL = 64
 	local FEATURE_CELL = 128
 	local CONTACT_FACE_SCOPE = "orthogonal_reach_contact_face_v1"
@@ -113,6 +114,23 @@ return function(dependencies)
 		if value < minimum then return minimum end
 		if value > maximum then return maximum end
 		return value
+	end
+
+	local function feasible_preferred(preferred, lower, upper)
+		if lower > upper then return nil end
+		return clamp(preferred, lower, upper)
+	end
+
+	local function tighten_grade_edge(a_lower, a_upper, b_lower, b_upper,
+			distance)
+		local next_a_lower = math.max(a_lower, b_lower - distance)
+		local next_a_upper = math.min(a_upper, b_upper + distance)
+		local next_b_lower = math.max(b_lower, next_a_lower - distance)
+		local next_b_upper = math.min(b_upper, next_a_upper + distance)
+		if next_a_lower > next_a_upper or next_b_lower > next_b_upper then
+			return nil
+		end
+		return next_a_lower, next_a_upper, next_b_lower, next_b_upper
 	end
 
 	local function qweight(outside, width)
@@ -348,7 +366,7 @@ return function(dependencies)
 		if source.schema ~= "grug_wp40_simple_map_source_v2" or
 				source.layout_id ~= "wp40-simple-map-v1d" or
 				source.layout_revision_id ~= "wp40-simple-map-v1e" or
-				source.height_revision_id ~= "wp40-height-quality-v2" then
+				source.height_revision_id ~= "wp40-height-quality-v3" then
 			fail("source schema/layout identity differs from V1e R2")
 		end
 		if #source.relief_profiles ~= 6 or #source.landmarks ~= 70 or
@@ -402,7 +420,7 @@ return function(dependencies)
 				fail("duplicate relief profile " .. source_profile.id)
 			end
 			local root_input = "GRUGWP40HEIGHT" .. string.char(0) ..
-				canonical.encode(text(HEIGHT_SCHEMA)) ..
+				canonical.encode(text(HEIGHT_RANDOM_SCHEMA)) ..
 				canonical.encode(text(full_seed_string)) ..
 				canonical.encode(text(source_profile.noise_domain))
 			local root = digest_first_word(counted_sha(root_input)) % P
@@ -472,7 +490,7 @@ return function(dependencies)
 		-- local relief is interpolated once instead of being baked into and then
 		-- smootherstepped through that lattice a second time.
 		local detail_root_input = "GRUGWP40HEIGHT" .. string.char(0) ..
-			canonical.encode(text(HEIGHT_SCHEMA)) ..
+			canonical.encode(text(HEIGHT_RANDOM_SCHEMA)) ..
 			canonical.encode(text(full_seed_string)) ..
 			canonical.encode(text("relief_detail_after_64_v1"))
 		local detail_root = digest_first_word(counted_sha(detail_root_input)) % P
@@ -1746,7 +1764,7 @@ return function(dependencies)
 			local half_axis = landmark.radius_z - radius
 			local domain = "coastal-core-gentle-v1:" .. row.id
 			local root_input = "GRUGWP40HEIGHT" .. string.char(0) ..
-				canonical.encode(text(HEIGHT_SCHEMA)) ..
+				canonical.encode(text(HEIGHT_RANDOM_SCHEMA)) ..
 				canonical.encode(text(full_seed_string)) ..
 				canonical.encode(text(domain))
 			local root = digest_first_word(counted_sha(root_input)) % P
@@ -1896,7 +1914,76 @@ return function(dependencies)
 			return incoming
 		end
 
-		local route_station_target, station_evidence = {}, {}
+		-- Every path that meets at the same free junction must inherit one
+		-- terrain-derived target.  Keeping this registry coordinate-keyed also
+		-- covers island junctions, which do not have route-station records.
+		local junction_by_coordinate, junction_records = {}, {}
+		local function junction_target(owner, point, fixed_y, constraint_kind,
+				constraint_id, feasible_lower, feasible_upper)
+			local key = point.x .. ":" .. point.z
+			local water_class, _, classified_owner, bay_id, hydrology_id =
+				classified_values(point.x, point.z)
+			if classified_owner ~= owner then
+				fail("junction owner differs at " .. key)
+			end
+			local natural_y = scalar_before_paths(point.x, point.z)
+			local target, kind = fixed_y, constraint_kind
+			if target == nil then
+				if water_class == "land" then
+					target, kind = natural_y, "free_terrain"
+				elseif water_class == "planned_water" then
+					local datum = clearance_datum_at(point.x, point.z, water_class,
+						bay_id, hydrology_id)
+					if datum == nil then fail("junction water has no clearance datum") end
+					target, kind = math.max(zone_station_y[owner], datum + 1),
+						"water_clearance"
+				else
+					fail("junction enters unsupported water at " .. key)
+				end
+			end
+			local old = junction_by_coordinate[key]
+			if old then
+				if old.owner ~= owner or old.target_y ~= target then
+					fail("conflicting shared junction target at " .. key)
+				end
+				return target, old
+			end
+			local record = {id = "junction:" .. key, x = point.x, z = point.z,
+				owner = owner, target_y = target, natural_y = natural_y,
+				previous_target_y = zone_station_y[owner],
+				water_class = water_class, constraint_kind = kind,
+				constraint_id = constraint_id, feasible_lower_y = feasible_lower,
+				feasible_upper_y = feasible_upper, uses = {}}
+			junction_by_coordinate[key] = record
+			junction_records[#junction_records + 1] = record
+			return target, record
+		end
+
+		-- A free station may also terminate fixed-building spurs.  Derive the
+		-- station interval reachable from every such hard endpoint before
+		-- choosing the terrain-preferred junction height.
+		local station_lower, station_upper = {}, {}
+		for zone_index = 1, #source.zones do
+			station_lower[zone_index], station_upper[zone_index] = GRADE_MIN, GRADE_MAX
+		end
+		for spur_index = 1, #source.poi_spurs do
+			local spur = source.poi_spurs[spur_index]
+			local anchor = anchor_by_id[spur.anchor_id]
+			local fitting = fittings[anchor.numeric_id]
+			local axis = raster_polyline(spur.centreline)
+			local distance = #axis - 1
+			local owner = anchor.zone_numeric_id
+			station_lower[owner] = math.max(station_lower[owner],
+				fitting.reference_y - distance)
+			station_upper[owner] = math.min(station_upper[owner],
+				fitting.reference_y + distance)
+			if station_lower[owner] > station_upper[owner] then
+				fail("fixed-building station interval is infeasible at " ..
+					source.zones[owner].id)
+			end
+		end
+
+		local route_station_target, route_station_junction, station_evidence = {}, {}, {}
 		for zone_index = 1, #source.zones do
 			local zone = source.zones[zone_index]
 			local primary = profile_by_id[zone.primary_relief_id]
@@ -1905,10 +1992,15 @@ return function(dependencies)
 			local hub_water = water_class == "planned_water"
 			local clearance_y
 			local capital = capital_by_zone[zone_index]
-			local target = zone_station_y[zone_index]
+			local start = start_by_zone[zone_index]
+			local target, constraint_kind, constraint_id
 			if capital then
 				if hub_water then fail("capital hub is planned water") end
-				target = capital.reference_y
+				target, constraint_kind, constraint_id = capital.reference_y,
+					"capital_fitting", capital.id
+			elseif start then
+				target, constraint_kind, constraint_id = start.reference_y,
+					"start_fitting", start.id
 			elseif hub_water then
 				clearance_y = clearance_datum_at(zone.hub.x, zone.hub.z,
 					water_class, bay_id, hydrology_id)
@@ -1916,10 +2008,20 @@ return function(dependencies)
 					fail("planned-water route station has no clearance datum at " ..
 						zone.id)
 				end
-				target = math.max(target, clearance_y + 1)
+				target, constraint_kind = math.max(zone_station_y[zone_index],
+					clearance_y + 1), "water_clearance"
 			elseif water_class ~= "land" then
 				fail("route station enters unsupported water at " .. zone.id)
 			end
+			if target == nil then
+				target = feasible_preferred(
+					scalar_before_paths(zone.hub.x, zone.hub.z),
+					station_lower[zone_index], station_upper[zone_index])
+				constraint_kind, constraint_id = "free_terrain_feasible", zone.id
+			end
+			target, route_station_junction[zone_index] = junction_target(zone_index,
+				zone.hub, target, constraint_kind, constraint_id,
+				station_lower[zone_index], station_upper[zone_index])
 			route_station_target[zone_index] = target
 			station_evidence[zone_index] = {id = source.route_stations[zone_index].id,
 				zone_id = zone.id,
@@ -1962,6 +2064,9 @@ return function(dependencies)
 			path.pins[run_index] = old or {y = y, pin_kind = pin_kind,
 				source_id = source_id}
 		end
+		local function note_junction_use(record, path, run_index)
+			record.uses[#record.uses + 1] = {path_id = path.id, run = run_index}
+		end
 
 		for route_index = 1, #source.routes do
 			local route = source.routes[route_index]
@@ -1971,8 +2076,10 @@ return function(dependencies)
 			path.source_route = route
 			add_pin(path, 1, route_station_target[route.zone_a], "endpoint_a",
 				source.zones[route.zone_a].id)
+			note_junction_use(route_station_junction[route.zone_a], path, 1)
 			add_pin(path, #path.axis, route_station_target[route.zone_b],
 				"endpoint_b", source.zones[route.zone_b].id)
+			note_junction_use(route_station_junction[route.zone_b], path, #path.axis)
 		end
 
 		local trail_template = {bandit_home = true, bandit_frontier = true,
@@ -1994,6 +2101,8 @@ return function(dependencies)
 			add_pin(path, 1, fitting.reference_y, "anchor_endpoint", anchor.id)
 			add_pin(path, #path.axis, route_station_target[anchor.zone_numeric_id],
 				"station_endpoint", source.zones[anchor.zone_numeric_id].id)
+			note_junction_use(route_station_junction[anchor.zone_numeric_id], path,
+				#path.axis)
 		end
 
 		local fixed_fitting_by_coordinate = {}
@@ -2017,15 +2126,68 @@ return function(dependencies)
 			end
 			landing_by_coordinate[key] = landing
 		end
+		local island_node_by_coordinate, island_edges = {}, {}
+		local function island_node(point)
+			local key = point.x .. ":" .. point.z
+			local node = island_node_by_coordinate[key]
+			if node then return node end
+			local landing = landing_by_coordinate[key]
+			local fitting = fixed_fitting_by_coordinate[key]
+			local fixed_y
+			if landing then fixed_y = WATER_LEVEL + 1
+			elseif fitting then fixed_y = fitting.reference_y end
+			node = {point = point, lower = fixed_y or GRADE_MIN,
+				upper = fixed_y or GRADE_MAX, fixed_y = fixed_y}
+			island_node_by_coordinate[key] = node
+			return node
+		end
+		for route_index = 1, #source.island_routes do
+			local route = source.island_routes[route_index]
+			local first = island_node(route.centreline[1])
+			local last = island_node(route.centreline[#route.centreline])
+			local axis = raster_polyline(route.centreline)
+			island_edges[#island_edges + 1] = {a = first, b = last,
+				distance = #axis - 1, id = route.id}
+		end
+		local changed = true
+		while changed do
+			changed = false
+			for edge_index = 1, #island_edges do
+				local edge = island_edges[edge_index]
+				local a_lower, a_upper, b_lower, b_upper = tighten_grade_edge(
+					edge.a.lower, edge.a.upper, edge.b.lower, edge.b.upper,
+					edge.distance)
+				if not a_lower then
+					fail("fixed island junction graph is infeasible at " .. edge.id)
+				end
+				if a_lower ~= edge.a.lower or a_upper ~= edge.a.upper or
+						b_lower ~= edge.b.lower or b_upper ~= edge.b.upper then
+					edge.a.lower, edge.a.upper = a_lower, a_upper
+					edge.b.lower, edge.b.upper = b_lower, b_upper
+					changed = true
+				end
+			end
+		end
 		local function island_endpoint_target(owner, point)
 			local key = point.x .. ":" .. point.z
 			local landing = landing_by_coordinate[key]
-			if landing then return WATER_LEVEL + 1, "landing_endpoint", landing.id end
+			if landing then
+				local y, record = junction_target(owner, point, WATER_LEVEL + 1,
+					"landing_endpoint", landing.id)
+				return y, "landing_endpoint", landing.id, record
+			end
 			local fitting = fixed_fitting_by_coordinate[key]
 			if fitting then
-				return fitting.reference_y, "island_anchor_endpoint", fitting.id
+				local y, record = junction_target(owner, point, fitting.reference_y,
+					"island_anchor_endpoint", fitting.id)
+				return y, "island_anchor_endpoint", fitting.id, record
 			end
-			return zone_station_y[owner], "island_junction", source.zones[owner].id
+			local node = island_node_by_coordinate[key]
+			local preferred = scalar_before_paths(point.x, point.z)
+			local y, record = junction_target(owner, point,
+				feasible_preferred(preferred, node.lower, node.upper),
+				"free_terrain_feasible", nil, node.lower, node.upper)
+			return y, "island_junction", source.zones[owner].id, record
 		end
 		local function island_endpoint_owner(point)
 			local key = point.x .. ":" .. point.z
@@ -2055,10 +2217,14 @@ return function(dependencies)
 			local path = make_path(route.id, "island_route", 3,
 				route.centreline, 5, 12, owner, owner)
 			path.source_island_route = route
-			local first_y, first_kind, first_id = island_endpoint_target(owner, first)
-			local last_y, last_kind, last_id = island_endpoint_target(owner, last)
+			local first_y, first_kind, first_id, first_junction =
+				island_endpoint_target(owner, first)
+			local last_y, last_kind, last_id, last_junction =
+				island_endpoint_target(owner, last)
 			add_pin(path, 1, first_y, first_kind, first_id)
+			note_junction_use(first_junction, path, 1)
 			add_pin(path, #path.axis, last_y, last_kind, last_id)
+			note_junction_use(last_junction, path, #path.axis)
 		end
 
 		-- Record route runs through each fixed 96-node civic core.  Their land
@@ -2461,6 +2627,9 @@ return function(dependencies)
 			function session.quality_geometry_records()
 				return deep_copy(capital_quality_records)
 			end
+			function session.quality_junction_records()
+				return deep_copy(fittings.junctions)
+			end
 			function session.metrics()
 				local result = deep_copy(metrics)
 				result.construction_sha256_calls = construction_sha_calls
@@ -2809,6 +2978,10 @@ return function(dependencies)
 
 		function session.quality_geometry_records()
 			return deep_copy(capital_quality_records)
+		end
+
+		function session.quality_junction_records()
+			return deep_copy(fittings.junctions)
 		end
 
 		function session.relief_lattice_digest()
@@ -3887,6 +4060,22 @@ return function(dependencies)
 		local final_axis_violations = runtime_mode and {} or
 			scan_final_axes(diagnose_final_axis)
 		if diagnose_final_axis then return nil, final_axis_violations end
+		for record_index = 1, #junction_records do
+			local record = junction_records[record_index]
+			record.maximum_natural_deviation = math.abs(record.target_y -
+				record.natural_y)
+			for use_index = 1, #record.uses do
+				local use = record.uses[use_index]
+				local path = path_by_id[use.path_id]
+				use.final_y = path.y[use.run]
+				if use.final_y ~= record.target_y then
+					fail("connected path endpoint differs at " .. record.id)
+				end
+			end
+		end
+		-- Reuse an aggregate already captured by both public session
+		-- constructors; height.lua sits at Lua 5.1's upvalue ceiling.
+		fittings.junctions = junction_records
 		local public_session = build_public_session(runtime_mode)
 		construction_complete = true
 		return public_session, final_axis_violations
@@ -3933,6 +4122,26 @@ return function(dependencies)
 		local grade = assert(backtrack_preferred_grade({5, 20, 20, 5},
 			{5, 4, 3, 5}, {5, 6, 7, 5}))
 		rows[#rows + 1] = table.concat({"grade", unpack(grade)}, "\t")
+		return table.concat(rows, "\n") .. "\n"
+	end
+
+	function module.junction_micro_kat()
+		local rows = {HEIGHT_SCHEMA}
+		for _, case in ipairs({
+			{40, 10, 50}, {4, 10, 50}, {70, 10, 50},
+		}) do
+			rows[#rows + 1] = table.concat({"preferred",
+				feasible_preferred(unpack(case))}, "\t")
+		end
+		for _, case in ipairs({
+			{0, 100, 40, 40, 12},
+			{10, 10, 40, 40, 12},
+			{-20, 20, -5, 15, 4},
+		}) do
+			local a, b, c, d = tighten_grade_edge(unpack(case))
+			rows[#rows + 1] = table.concat({"edge", a or "infeasible",
+				b or "", c or "", d or ""}, "\t")
+		end
 		return table.concat(rows, "\n") .. "\n"
 	end
 
