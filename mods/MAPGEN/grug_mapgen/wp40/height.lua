@@ -22,7 +22,7 @@ return function(dependencies)
 	local WATER_LEVEL = 1
 	local GRADE_MIN = -30912
 	local GRADE_MAX = 30927
-	local HEIGHT_SCHEMA = "grug_wp40_simple_map_height_v3"
+	local HEIGHT_SCHEMA = "grug_wp40_simple_map_height_v4"
 	local HEIGHT_RANDOM_SCHEMA = "grug_wp40_simple_map_height_v2"
 	local BASE_CELL = 64
 	local FEATURE_CELL = 128
@@ -142,6 +142,12 @@ return function(dependencies)
 
 	local function qlerp_integer(a, b, weight_q)
 		return round_ratio(a * Q + (b - a) * weight_q, Q)
+	end
+
+	local function lower_median(values)
+		if #values == 0 then return nil end
+		table.sort(values)
+		return values[math.floor((#values + 1) / 2)]
 	end
 
 	local function capital_reference_value(center_natural, feasible_lower,
@@ -366,7 +372,7 @@ return function(dependencies)
 		if source.schema ~= "grug_wp40_simple_map_source_v2" or
 				source.layout_id ~= "wp40-simple-map-v1d" or
 				source.layout_revision_id ~= "wp40-simple-map-v1e" or
-				source.height_revision_id ~= "wp40-height-quality-v3" then
+				source.height_revision_id ~= "wp40-height-quality-v4" then
 			fail("source schema/layout identity differs from V1e R2")
 		end
 		if #source.relief_profiles ~= 6 or #source.landmarks ~= 70 or
@@ -517,8 +523,7 @@ return function(dependencies)
 				end
 			end
 			detail_octaves[detail_index] = {period = detail_period,
-				values = values, numerator = detail_index == 1 and 2 or 1,
-				denominator = 3,
+				values = values, numerator = 1, denominator = 2,
 				digest = not runtime_mode and counted_digest(rows) or nil}
 			if not runtime_mode then
 				octave_digest_rows[#octave_digest_rows + 1] = canonical.array({
@@ -668,6 +673,26 @@ return function(dependencies)
 			return round_ratio(total_q * amplitude_q, Q * Q), total_q
 		end
 
+		local function varied_depth(base_depth, x, z)
+			if base_depth <= 1 then return base_depth end
+			local _, detail_q = detail_height_and_q_at(x, z)
+			local minimum, maximum
+			if base_depth == 2 then minimum, maximum = 1, 3
+			elseif base_depth == 4 then minimum, maximum = 2, 6
+			elseif base_depth == 8 then minimum, maximum = 5, 11
+			elseif base_depth == 12 then minimum, maximum = 8, 15
+			else return base_depth end
+			local span = maximum - minimum + 1
+			local bucket = math.floor((detail_q + Q) * span / (2 * Q + 1))
+			return minimum + clamp(bucket, 0, span - 1)
+		end
+
+		local function bay_depth_at(x, z)
+			local _, detail_q = detail_height_and_q_at(x, z)
+			return 6 + clamp(math.floor((detail_q + Q) * 5 /
+				(2 * Q + 1)), 0, 4)
+		end
+
 		local function owner_affinity_q_at(owner_numeric_id, x, z)
 			local ix, iz = floor_div(x, BASE_CELL), floor_div(z, BASE_CELL)
 			local tx = deterministic.qfrom_ratio(x - ix * BASE_CELL, BASE_CELL)
@@ -745,10 +770,10 @@ return function(dependencies)
 			else
 				fail("unknown landmark primitive " .. tostring(record.primitive))
 			end
-			if signed_distance_q <= 0 then return Q end
+			if signed_distance_q <= 0 then return round_ratio(3 * Q, 4) end
 			if signed_distance_q >= record.collar * Q then return 0 end
-			return Q - deterministic.smootherstep(deterministic.qdiv(
-				signed_distance_q, record.collar * Q))
+			return round_ratio(3 * (Q - deterministic.smootherstep(
+				deterministic.qdiv(signed_distance_q, record.collar * Q))), 4)
 		end
 
 		-- The optional id reports the actual composition branch for construction
@@ -873,7 +898,7 @@ return function(dependencies)
 				if not reach or reach.profile.depth <= 0 then
 					fail("classified wet hydrology reference differs")
 				end
-				return reach.water_y - reach.profile.depth
+				return reach.water_y - varied_depth(reach.profile.depth, x, z)
 			end
 			if water_class == "land" then
 				local segment, numerator, denominator = nearest_hydrology_segment(
@@ -1567,6 +1592,14 @@ return function(dependencies)
 					(profile.civic_width ~= nil or profile.terrace_step ~= nil) then
 				fail("non-capital profile carries capital terrain fields")
 			end
+			if anchor_index > 12 and (type(profile.building_core_width) ~= "number" or
+					profile.building_core_width % 2 ~= 0 or
+					profile.building_core_width < 2 or
+					profile.building_core_width > profile.fitting_width) then
+				fail("ordinary anchor building core differs")
+			elseif anchor_index <= 12 and profile.building_core_width ~= nil then
+				fail("start/capital profile carries ordinary building core")
+			end
 			local half = profile.fitting_width / 2
 			local land_count, water_count, civic_water_count = 0, 0, 0
 			local platform_witness_x, platform_witness_z
@@ -1641,15 +1674,54 @@ return function(dependencies)
 				fitting.civic_upper_witness_x = upper_x
 				fitting.civic_upper_witness_z = upper_z
 			else
-				fitting.reference_y = zone_midpoint_y[anchor.zone_numeric_id]
-				fitting.reference_rule = center_class == "planned_water" and
-					"profile_midpoint_water_raise" or "profile_midpoint"
-				if center_class == "planned_water" then
-					local datum = clearance_datum_at(selected.x, selected.z,
-						center_class, center_bay, center_hydrology)
-					if datum == nil then fail("anchor centre water has no clearance datum") end
-					fitting.reference_y = math.max(fitting.reference_y, datum + 1)
+				local core_half = profile.building_core_width / 2
+				local natural_values = {}
+				local feasible_lower, feasible_upper, water_lower
+				for z = selected.z - core_half, selected.z + core_half - 1 do
+					for x = selected.x - core_half, selected.x + core_half - 1 do
+						local water_class, _, owner, bay_id, hydrology_id =
+							classified_values(x, z)
+						if owner == anchor.zone_numeric_id and water_class == "land" then
+							local natural = natural_height_at(x, z)
+							natural_values[#natural_values + 1] = natural
+							feasible_lower = math.max(feasible_lower or -math.huge,
+								natural - profile.max_cut)
+							feasible_upper = math.min(feasible_upper or math.huge,
+								natural + profile.max_fill)
+						elseif owner == anchor.zone_numeric_id and
+								water_class == "planned_water" then
+							local datum = clearance_datum_at(x, z, water_class,
+								bay_id, hydrology_id)
+							if datum == nil then fail("anchor core water has no clearance datum") end
+							water_lower = math.max(water_lower or -math.huge, datum + 1)
+						end
+					end
 				end
+				local preferred = lower_median(natural_values) or
+					zone_midpoint_y[anchor.zone_numeric_id]
+				if feasible_lower ~= nil and feasible_upper ~= nil and
+						feasible_lower <= feasible_upper then
+					fitting.reference_y = clamp(preferred, feasible_lower, feasible_upper)
+					fitting.reference_rule = "ordinary_natural_core_feasible"
+					fitting.core_limit_excess = 0
+				elseif feasible_lower ~= nil and feasible_upper ~= nil then
+					fitting.reference_y = round_ratio(feasible_lower + feasible_upper, 2)
+					fitting.reference_rule = "ordinary_natural_core_minimax"
+					fitting.core_limit_excess = math.max(feasible_lower - fitting.reference_y,
+						fitting.reference_y - feasible_upper)
+				else
+					fitting.reference_y = preferred
+					fitting.reference_rule = "ordinary_water_core"
+					fitting.core_limit_excess = 0
+				end
+				if water_lower ~= nil then
+					fitting.reference_y = math.max(fitting.reference_y, water_lower)
+				end
+				fitting.core_preferred_y = preferred
+				fitting.core_feasible_lower_y = feasible_lower
+				fitting.core_feasible_upper_y = feasible_upper
+				fitting.core_water_lower_y = water_lower
+				fitting.core_dry_columns = #natural_values
 			end
 			for z = selected.z - half, selected.z + half - 1 do
 				for x = selected.x - half, selected.x + half - 1 do
@@ -1714,20 +1786,22 @@ return function(dependencies)
 					local profile = fitting.profile
 					if water_class == "planned_water" and not fitting.is_capital and
 							in_half_open_square(x, z, fitting.center,
-								profile.fitting_width) then
+								profile.building_core_width) then
 						local _, _, _, bay_id, hydrology_id = classified_values(x, z)
 						local datum = clearance_datum_at(x, z, water_class,
 							bay_id, hydrology_id)
 						if datum == nil then fail("anchor platform water has no clearance datum") end
 						return math.max(fitting.reference_y, datum + 1), fitting, true, Q
 					elseif not platform_only and water_class == "land" then
-						local fitting_half = profile.fitting_width / 2
 						local envelope_half = profile.blend_width / 2
+						local grade_width = fitting.numeric_id <= 12 and
+							profile.fitting_width or profile.building_core_width
+						local grade_half = grade_width / 2
 						local outside = half_open_square_excess(x, z,
-							fitting.center, profile.fitting_width)
-						if outside < envelope_half - fitting_half then
+							fitting.center, grade_width)
+						if outside < envelope_half - grade_half then
 							local weight = qweight(math.max(0, outside),
-								envelope_half - fitting_half)
+								envelope_half - grade_half)
 							if weight > 0 then
 								if fitting.is_capital then
 									local step = profile.terrace_step
@@ -1868,6 +1942,12 @@ return function(dependencies)
 					else low = middle + 1 end
 				end
 				local depth = 1 + math.floor(7 * (low - 1) / 79)
+				if low > 4 then
+					local _, detail_q = detail_height_and_q_at(x, z)
+					if detail_q > Q / 3 then depth = depth + 1
+					elseif detail_q < -Q / 3 then depth = depth - 1 end
+					depth = clamp(depth, 1, 8)
+				end
 				return WATER_LEVEL - depth
 		elseif water_class == "deep_ocean" or
 				water_class == "immutable_dragon_channel" then
@@ -1887,7 +1967,7 @@ return function(dependencies)
 			local exterior = exterior_bed_at(x, z, water_class)
 			if exterior then return exterior end
 			if water_class == "planned_water" and bay_id then
-				return WATER_LEVEL - 8
+				return WATER_LEVEL - bay_depth_at(x, z)
 			end
 			local natural = natural_height_at(x, z)
 			return hydrology_scalar_at(x, z, natural, water_class, owner,
@@ -2429,7 +2509,9 @@ return function(dependencies)
 				local platform_witness_x, platform_witness_z
 				local profile = fitting.profile
 				local envelope_half = profile.blend_width / 2
-				local fitting_half = profile.fitting_width / 2
+				local grade_width = fitting.numeric_id > 12 and
+					profile.building_core_width or profile.fitting_width
+				local grade_half = grade_width / 2
 			if not runtime_construction then
 				for z = fitting.center.z - envelope_half,
 						fitting.center.z + envelope_half - 1 do
@@ -2437,10 +2519,10 @@ return function(dependencies)
 							fitting.center.x + envelope_half - 1 do
 						local water_class, _, owner = classified_values(x, z)
 						local outside = half_open_square_excess(x, z,
-							fitting.center, profile.fitting_width)
+							fitting.center, grade_width)
 						if owner == fitting.zone_numeric_id then
 							if outside == 0 then fitting_columns = fitting_columns + 1
-							elseif outside < envelope_half - fitting_half then
+							elseif outside < envelope_half - grade_half then
 								collar_columns = collar_columns + 1 end
 						else
 							local _, _, functional_feature_id =
@@ -2463,7 +2545,7 @@ return function(dependencies)
 							end
 						end
 						if water_class == "land" and owner == fitting.zone_numeric_id and
-								outside < envelope_half - fitting_half then
+								outside < envelope_half - grade_half then
 							local natural = natural_height_at(x, z)
 							local value = final_terrain_height_at(x, z)
 							local cut, fill = natural - value, value - natural
@@ -2515,6 +2597,8 @@ return function(dependencies)
 				anchor_evidence[anchor_index].profile_midpoint_y =
 					zone_midpoint_y[anchor.zone_numeric_id]
 				anchor_evidence[anchor_index].fitting_width = profile.fitting_width
+				anchor_evidence[anchor_index].building_core_width =
+					profile.building_core_width
 				anchor_evidence[anchor_index].blend_width = profile.blend_width
 				anchor_evidence[anchor_index].collar_width =
 					(profile.blend_width - profile.fitting_width) / 2
@@ -2552,6 +2636,18 @@ return function(dependencies)
 					fitting.civic_route_min_y
 				anchor_evidence[anchor_index].civic_dry_columns =
 					fitting.civic_dry_columns
+				anchor_evidence[anchor_index].core_preferred_y =
+					fitting.core_preferred_y
+				anchor_evidence[anchor_index].core_feasible_lower_y =
+					fitting.core_feasible_lower_y
+				anchor_evidence[anchor_index].core_feasible_upper_y =
+					fitting.core_feasible_upper_y
+				anchor_evidence[anchor_index].core_water_lower_y =
+					fitting.core_water_lower_y
+				anchor_evidence[anchor_index].core_limit_excess =
+					fitting.core_limit_excess
+				anchor_evidence[anchor_index].core_dry_columns =
+					fitting.core_dry_columns
 				anchor_evidence[anchor_index].civic_lower_witness_x =
 					fitting.civic_lower_witness_x
 				anchor_evidence[anchor_index].civic_lower_witness_z =
@@ -2843,7 +2939,7 @@ return function(dependencies)
 			landmarks = landmark_evidence,
 			stations = station_evidence,
 			anchors = anchor_evidence,
-			source_cut_fill_limits_consumed = false,
+			source_cut_fill_limits_consumed = true,
 			capital_cut_fill_limits_consumed = true,
 			hard_protection = hard_evidence,
 			routes = route_evidence,
@@ -3933,6 +4029,7 @@ return function(dependencies)
 			return pregrade_water_surface_at(x, z, water_class, bay_id,
 				hydrology_id)
 		end
+
 
 		-- This is the sole final-axis scan. Normal construction fails on its first
 		-- violation; the read-only diagnosis mode records the same composed query

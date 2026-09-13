@@ -1591,6 +1591,13 @@ local function zones_factory(dependencies)
 						end
 					end
 				end
+				-- Ordinary wet columns publish the actual authored bed depth. Named
+				-- transitions and raised functional crossings retain the fixed profile
+				-- depth consumed by their seal and clearance contracts.
+				if classified_hydrology_id ~= nil and transition_kind == nil and
+						water_y ~= nil and water_y > terrain_y then
+					classified_profile_depth = water_y - terrain_y
+				end
 				local hard_foundation = hard_row_at(x, terrain_y, z) ~= nil
 				return water_class, zone_numeric_id, zone_id, logical_biome_id,
 					race_region_id, terrain_y, water_y, classified_hydrology_id,
