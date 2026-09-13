@@ -102,6 +102,25 @@ grug_mobs.flight_nudge_tick(replaced, 0.75)
 check(replaced.object.velocity.y == 1.25 and replaced.temp.grug_flight_bias == nil,
 	"authoritative attack Y was overwritten")
 
+nodes = {}
+ground(0)
+local moved = mob(object(0, 8, {x = 0, y = 0, z = 0}))
+grug_mobs.flight_nudge_tick(moved, 0.75)
+check(moved.temp.grug_flight_clearance ~= nil, "terrain cache was not primed")
+moved.state = "attack"
+grug_mobs.flight_nudge_tick(moved, 0.05)
+check(moved.temp.grug_flight_clearance == nil
+	and moved.temp.grug_flight_probe_left == nil,
+	"steering owner retained stale terrain cache")
+moved.object.pos.x = 10
+moved.state = "walk"
+nodes["10:7:0"] = false
+local writes_before_release = moved.object.writes
+grug_mobs.flight_nudge_tick(moved, 0.05)
+check(moved.object.writes == writes_before_release
+	and moved.temp.grug_flight_clearance == nil,
+	"release over unknown column reused stale terrain")
+
 local rooted = mob(object(0, 8, {x = 0, y = 0, z = 0}))
 rooted._grug_root_left = 1
 grug_mobs.flight_nudge_tick(rooted, 0.75)

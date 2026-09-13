@@ -38,6 +38,9 @@ evade, or a Grudgelands root. It does not acquire or replace a target.
 - Inside the band or without a valid probe, the additive bias tends toward
   zero. When another steering owner becomes active, a still-recognizable bias
   is removed immediately; an externally replaced Y velocity is preserved.
+  Purposeful steering also invalidates the ground cache, because it may carry
+  the mob to another column. Free flight schedules a new staggered probe from
+  the current position before applying any new ground-relative bias.
 - Bias acceleration is limited to 0.8 nodes/second squared. Position is never
   teleported. The controller subtracts its previous additive bias from the
   current velocity before adding the next bias, preserving native horizontal

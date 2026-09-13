@@ -76,6 +76,11 @@ function grug_mobs.flight_nudge_tick(self, dtime)
 		end
 		temp.grug_flight_bias = nil
 		temp.grug_flight_applied_y = nil
+		-- Purposeful steering can cross several columns. Never reuse clearance
+		-- measured before it began; the next free-flight tick schedules a probe
+		-- from the current position.
+		temp.grug_flight_clearance = nil
+		temp.grug_flight_probe_left = nil
 		return
 	end
 
