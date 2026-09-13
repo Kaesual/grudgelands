@@ -1,0 +1,11 @@
+Lua 5.1	PUC
+/home/jan/projects/grudgelands/tools/bin/lua51: WP40 R6 tool: LuaJIT FFI is required to parse pinned MTS files
+stack traceback:
+	[C]: in function 'error'
+	...me/jan/projects/grudgelands/tools/wp40/r6/common.lua:6: in function 'fail'
+	...me/jan/projects/grudgelands/tools/wp40/r6/common.lua:122: in function 'read_mts'
+	.../jan/projects/grudgelands/tools/wp40/r6/fixtures.lua:200: in function 'read_template'
+	.../jan/projects/grudgelands/tools/wp40/r6/fixtures.lua:222: in function <.../jan/projects/grudgelands/tools/wp40/r6/fixtures.lua:3>
+	...s/grudgelands/tools/wp40/quality/surface_fixture.lua:4: in function <...s/grudgelands/tools/wp40/quality/surface_fixture.lua:2>
+	...jects/grudgelands/tools/wp40/quality/final_micro.lua:15: in main chunk
+	[C]: ?

@@ -1,0 +1,30 @@
+mods/BASE/creative/init.lua 6	[6]	SETGLOBAL	1 -3	; creative
+mods/BASE/default/init.lua 6	[10]	SETGLOBAL	1 -3	; default
+mods/BASE/player_api/api.lua 2	[1]	SETGLOBAL	0 -1	; player_api
+mods/BASE/stairs/init.lua 2	[9]	SETGLOBAL	0 -1	; stairs
+mods/ENTITIES/grug_mobs/init.lua 2	[1]	SETGLOBAL	0 -1	; grug_mobs
+mods/ENTITIES/mobs/api.lua 72	[26]	SETGLOBAL	8 -3	; mobs
+mods/ITEMS/grug_gear/init.lua 2	[33]	SETGLOBAL	0 -1	; grug_gear
+mods/ITEMS/grug_materials/init.lua 2	[3]	SETGLOBAL	0 -1	; grug_materials
+SWEEP 1
+
+SWEEP 2
+
+SWEEP 3
+
+SWEEP 4
+mods/ENTITIES/grug_mobs/crocodile.lua:105:-- §4 row "Crocodile | mud, water at mud | 20 | 1800 | 3 | any | outer".
+mods/ENTITIES/grug_mobs/init.lua:40:--   def._grug_tier        — "normal" (default) | "elite" | "rare"
+tools/wp40/resource_rank/fixture.lua:224:			"\ntrace=", table.concat(snapshot.trace, "|"), "\n"})
+mods/ENTITIES/grug_mobs/camps.lua:3:-- (docs/design/world.md §4a "NPC binding & respawn slots";
+
+SWEEP 5
+tools/wp40/quality_geometry_fixture.lua:25:	local ok, why, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_conformance_v3_authority.lua:252:			local status, reason, code = os.execute("git -C " .. repo .. " show " ..
+tools/wp40/t2_extreme_conformance_v3_authority.lua:280:		local status, reason, code = os.execute("git -C " .. repo ..
+tools/wp40/t2_extreme_conformance_v3_authority.lua:343:		local status, reason, code = os.execute("git -C " .. repo ..
+tools/wp40/t2_extreme_conformance_v3_authority.lua:359:		local status, reason, code = os.execute("git -C " .. repo ..
+tools/wp40/t2_extreme_conformance_authority.lua:110:			local status, reason, code = os.execute("git -C " .. repo .. " show " ..
+tools/wp40/t2_extreme_conformance_authority.lua:137:		local status, reason, code = os.execute("git -C " .. repo ..
+
+Parsed changed Lua: 55

@@ -1,0 +1,12 @@
+ACTION[Main]: GRUG_WP40_PROFILE_PROBE phase=disk event=start engine=5.17.0 lua=LuaJIT_2.1.1787165859 seed=0 cases=10 manifest=0325bbe77cc609d289f88248c5f2277cce00da8b0980e066d36e777c8c326553 full_digest=true
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=cave_west mapchunk=1568,48,-2032 elapsed_us=7780457 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=cave_east mapchunk=1648,48,-2032 elapsed_us=4293 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=pine_hearthpine_south mapchunk=-1872,-32,-2512 elapsed_us=4046 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=human_capital mapchunk=-32,48,-1552 elapsed_us=3405 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=elandor_front mapchunk=-32,48,-272 elapsed_us=4081 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=broken_causeway mapchunk=-752,-32,-32 elapsed_us=5421 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=whitebridge mapchunk=-432,-32,-1552 elapsed_us=6705 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=wyrmglass_channel mapchunk=-2752,-32,-32 elapsed_us=5422 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=wyrmglass_island mapchunk=-3312,208,-112 elapsed_us=3840 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=deep_cross_border mapchunk=-1712,-912,128 elapsed_us=5579 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=complete requested=10 completed=10 callbacks=0 generated=0 disk=1250 memory=0 cancelled=0 errored=0 samples=370 expected_nodes=416 digest=cf5b7add9a740cddaba68dbc8392a1a789098b5e6a198effe59ed48bb631d804 full_digest=3760eaedffd6c1408eb2ad06ca559210fe5639c24d7ecfbf226bd764681168a5 full_vocabulary_digest=d9f3d0d804c4f140263a175cf0d839c523e7fac16c7ecd5701cbaee9d954660c full_voxels=5120000 measured_elapsed_us=8300806 diagnostic_us=482332

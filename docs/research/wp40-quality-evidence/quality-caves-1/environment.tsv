@@ -1,0 +1,13 @@
+kernel	Linux 7.0.0-31-generic x86_64 GNU/Linux
+processors	4
+memory_kib	7602204
+seed	0
+cases_file	/tmp/grug-quality-final-harness/tools/wp40/quality/cave_engine_cases.lua
+port_base	32160
+phase_timeout_seconds	900
+dedicated_binary	1
+settlement_stages	0
+full_digest	1
+source_game	/tmp/grudgelands-wp40-profile-run.8eVvmIQx/archive
+source_archive	/tmp/grug-quality-final-game.tar
+luanti_user_path	/tmp/grudgelands-wp40-profile-run.8eVvmIQx/user
