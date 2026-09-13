@@ -1,6 +1,8 @@
 # WP13: first Hearthpine settlement increment
 
-Status: implementation in progress, 2026-09-13. Non-trivial package.
+Status: first increment independently reviewed and ready for native GUI
+playtest, 2026-09-13.
+Non-trivial package. WP13 as a whole remains in progress.
 
 ## Authority and scope
 
@@ -73,6 +75,58 @@ architectural choices inside the selected style need no new user decision.
 
 ## Delivery and calibration
 
-Pending implementation and independent review. Record final commits, evidence,
-implementing/reviewing models, Critical/High findings, fix rounds and observed
-elapsed wall time here before merge. WP13 remains in progress after delivery.
+Candidate `f9cf215` (base `66f2068`) contains the blueprint, two architectural
+corrections, R7 integration and acceptance fixtures. The production code was
+implemented by GPT-5.6 Sol in two bounded worktrees; the coordinator authored
+scope, acceptance tests and integration documentation. A fresh independent GPT-5.6 Sol reviewer returned **CLEAN / ACCEPT**, with
+0 Critical / 0 High / 0 Medium / 0 Low findings and zero review fix rounds.
+The Opus route returned HTTP403 `oauth_org_not_allowed` before reviewing any
+code; no Opus verdict is claimed. Calibration: implementation GPT-5.6 Sol,
+review GPT-5.6 Sol; elapsed wall time `unknown`. WP13 remains in progress
+after delivery. The full review record is included with the evidence.
+
+Evidence: [tools/wp13/evidence/20260913-hearthpine/](../../tools/wp13/evidence/20260913-hearthpine/).
+
+- The pure blueprint has 30,593 unique cells, including explicit clearance,
+  14 palette entries and 13 supported torches. Five interior destinations,
+  including the lookout, pass the conservative walking/one-node stepping
+  reachability check; the north route has five clear columns across its width.
+- The clipped successor fixture partitions all 30,593 cells exactly once into
+  eight owner cubes with both horizontal and vertical boundaries. It also
+  verifies an unrelated owner writes nothing. Blueprint identity:
+  `e3994155b1e2049bacce3c0bf9007f21b04125f38be5218f6f3d5b2d49072daa`.
+- Luanti 5.17 with LuaJIT generated two independent fresh ten-owner corpora
+  for seed `531802985935182545`, in forward/reverse order. Each was loaded
+  again from disk with **zero generation callbacks**. All authored names and
+  param2 values match; nighttime lighting is positive at every torch and
+  interior destination. This seed places the start surface at y = 9.
+- One explicit test-only administrative edit replaces an arrival-space air
+  cell with glass after the cold run and must survive disk reload. That cell
+  is excluded from the comparison digest, with its changed value checked
+  separately. The other 30,592 cells have the same digest in all four runs:
+  `a71d6c71523e6e9ba1d375355da89fdf42af245d270b583b15428cc40d8a2049`.
+- Engine queries check all six start aprons at their half-open corner edges
+  (-74/+73 inside, -75/+74 outside) and the -700/-701 depth precedence.
+- Twenty changed Lua files pass the plain-5.1 parser and have no SETGLOBAL
+  instructions. The five source sweeps contain only existing comment/string
+  matches. Final frozen micro-KAT: one PUC5.1 and one LuaJIT process, 268 rows
+  each, byte-identical SHA-256
+  `393e3feaf56afa85b40815b3cea4ca982031b391f30cb3d7fce92df48dd41197`.
+  The separate LuaJIT production manifest constructor also passes.
+
+The schematic preview uses symbolic colours, not engine textures. GUI
+appearance, movement feel and the decision to extend this style remain the
+user's focused playtest. These bounded checks do not discharge WP40's broader
+first-public-release resource/order/runtime obligations.
+
+## User runtime test
+
+After reviewed merge and sync, create a fresh world and choose a dwarf.
+For the tested seed `531802985935182545`, the arrival position is
+`(-1800, 10, -2550)`; other seeds retain x/z and fit their own y. Walk through
+the workshop, both houses, workyard and the lookout stairs; follow the main
+street out through the guardpost. Inspect the interiors at night, leave and
+reload the world, and report appearance or collision issues. Ordinary players
+should not be able to dig the settlement or its ten-node apron; an admin with
+`protection_bypass` is intentionally exempt. This increment has decorative
+furniture and guard architecture, without new NPC or workstation services.
