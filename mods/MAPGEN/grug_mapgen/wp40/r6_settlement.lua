@@ -337,7 +337,7 @@ local function settlement_factory()
 				type(r5_adapter) ~= "table" or type(r5_adapter.apply) ~= "function" or
 				type(content) ~= "table" or type(templates) ~= "table" or
 				type(hash) ~= "table" or type(hash.digest_count) ~= "function" or
-				(runtime_mode and type(hash.prepare_digest3) ~= "function") or
+				type(hash.prepare_root_draw) ~= "function" or
 				type(horizontal) ~= "table" or
 				type(planner_source) ~= "table" or
 				type(planner_source.surface_cave_run_at) ~= "function" or
@@ -557,6 +557,10 @@ local function settlement_factory()
 			call_min = call_min, call_max = call_max,
 			successor_tail = successor_tail,
 			runtime_mode = runtime_mode == true,
+			-- Runtime eligibility is cached by compact owner index, without halo.
+			-- Evidence mode keeps the uncached predicate as a differential oracle.
+			resource_host_base = runtime_mode and retained_array(
+				"r6_settlement_resource_host_base", evidence_only and 1 or 80 * 80 * 80, 0),
 			resource_excluded_column = retained_array(
 				"r6_settlement_resource_excluded_column", 6400, false),
 		}
@@ -1405,10 +1409,7 @@ local function settlement_factory()
 									eligible = eligible + 1
 									local coordinate = coordinate_scratch[eligible]
 									coordinate.x, coordinate.y, coordinate.z = x, y, z
-									coordinate.digest = helpers.digest10(
-										"resource_root_rank_v1",
-										resource.key, cell_x, cell_y, cell_z, host_name, tier,
-										band, x, y, z)
+
 								end
 							end
 						end
@@ -1424,7 +1425,8 @@ local function settlement_factory()
 						hash.budget(eligible, 1, denominator, multiplier_numerator,
 							multiplier_denominator, remainder_digest)
 				end
-				sort_prefix(coordinate_scratch, eligible, coordinate_less)
+				local root_draw = budget > 0 and helpers.prepare_root_draw(resource.key,
+					cell_x, cell_y, cell_z, host_name, tier, band)
 				local planned = budget == 0 and 0 or math.floor((budget +
 					resource.max_nodes_per_vein - 1) / resource.max_nodes_per_vein)
 				local small = planned == 0 and 0 or math.floor(budget / planned)
@@ -1435,7 +1437,11 @@ local function settlement_factory()
 					local target = small + (vein <= large_count and 1 or 0)
 					local root
 					while next_root_rank <= eligible do
-						local coordinate = coordinate_scratch[next_root_rank]
+						local remaining = eligible - next_root_rank + 1
+						local selected = root_draw(remaining)
+						local coordinate = coordinate_scratch[selected]
+						coordinate_scratch[selected], coordinate_scratch[remaining] =
+							coordinate_scratch[remaining], coordinate
 						next_root_rank = next_root_rank + 1
 						local claim = census_occupancy[local_index(coordinate.x,
 							coordinate.y, coordinate.z)]
@@ -1562,11 +1568,11 @@ local function settlement_factory()
 			digest_fields[5], digest_fields[6], digest_fields[7] = e, f, g
 			return hash.digest_count(domain, full_seed, digest_fields, 7)
 		end
-		function helpers.prepare_resource_digest(a, b, c, d, e, f, g)
+		function helpers.prepare_root_draw(a, b, c, d, e, f, g)
 			digest_fields[1], digest_fields[2], digest_fields[3], digest_fields[4] =
 				a, b, c, d
 			digest_fields[5], digest_fields[6], digest_fields[7] = e, f, g
-			return hash.prepare_digest3("resource_root_rank_v1", full_seed,
+			return hash.prepare_root_draw(full_seed,
 				digest_fields, 7)
 		end
 		function helpers.digest10(domain, a, b, c, d, e, f, g, h, i, j)
@@ -1587,6 +1593,7 @@ local function settlement_factory()
 
 		local function apply_impl(vm, minp, maxp, plan, plan_generation, call_mode)
 			local resource_column_state = transaction_state.resource_excluded_column
+			local resource_host_base = transaction_state.resource_host_base
 			if call_mode ~= "fixture" and call_mode ~= "production" and
 					call_mode ~= "replay_fixture" then
 				fail("fail_status", "R6 is disabled")
@@ -1882,6 +1889,17 @@ local function settlement_factory()
 					resource_column_state[column] = excluded and 2 or 0
 				end
 			end
+			-- With no predecessor runs, the live predicate is already cheap;
+			-- avoid cache traffic in ordinary deep chunks.
+			if plan.r5_plan.column_start[plan.column_count + 1] == 1 then
+				resource_host_base = false
+			end
+			local owner_columns = (max_x - min_x + 1) * (max_z - min_z + 1)
+			if resource_host_base then
+				for index = 1, owner_columns * (max_y - min_y + 1) do
+					resource_host_base[index] = 0
+				end
+			end
 			local function host_eligible(x, y, z, host_cid)
 				local column = column_index(x, z)
 				local column_state = resource_column_state[column]
@@ -1889,20 +1907,30 @@ local function settlement_factory()
 					return false
 				end
 				local index = index_at(x, y, z)
+				if original_data[index] ~= host_cid then return false end
+				local cache_index = (y - min_y) * owner_columns + column
+				if resource_host_base and resource_host_base[cache_index] ~= 0 then
+					return resource_host_base[cache_index] == 1
+				end
 				local rbase = run_at(plan, column, y)
 				local priority = rbase and plan.r5_plan.run_values[rbase + 3]
 				local predecessor_excluded = priority == 2 or priority == 3 or
 					priority == 4 or priority == 6
-				return not predecessor_excluded and
-					original_data[index] == host_cid and
+				local eligible = not predecessor_excluded and
 					((intent_opcode[index] == 0 and
 						final_data[index] == original_data[index]) or
 						intent_opcode[index] == 24) and occupancy[index] ~= 1
+				-- P8 only creates resource claims (occupancy >= 2, opcode 24),
+				-- which preserve this predicate. Cultural claims and R5 runs are
+				-- fixed before P8. Root/frontier occupancy checks remain live.
+				if resource_host_base then resource_host_base[cache_index] = eligible and 1 or 2 end
+				return eligible
 			end
 			for resource_index = 1, #resources do
 				local resource = resources[resource_index]
 				-- Water class and regional assignment are immutable for a complete
-				-- column and resource. Keep occupancy and VM-backed predicates live.
+				-- column and resource. Claims remain live outside base eligibility.
+				local allowed_columns = 0
 				local active_tier = false
 				for y = min_y, max_y do
 					local tier = tier_at(y)
@@ -1921,193 +1949,170 @@ local function settlement_factory()
 							local race = race_ref ~= 0 and plan.stable_refs[race_ref] or nil
 							local allowed = (water_class == 1 or water_class == 2) and
 								helpers.regional_allowed(resource, race)
+							if allowed then allowed_columns = allowed_columns + 1 end
 							resource_column_state[column] =
 								resource_column_state[column] >= 2 and
 								(allowed and 3 or 2) or (allowed and 1 or 0)
 						end
 					end
 				end
-				for cell_z = math.floor(min_z / 16), math.floor(max_z / 16) do
-					for cell_x = math.floor(min_x / 16), math.floor(max_x / 16) do
-						for cell_y = math.floor(min_y / 16), math.floor(max_y / 16) do
-							local first_y = math.max(min_y, cell_y * 16)
-							local last_y = math.min(max_y, cell_y * 16 + 15)
-							local segment_y = first_y
-							while segment_y <= last_y do
-								local tier, host_name = tier_at(segment_y)
-								local band, multiplier_numerator,
-									multiplier_denominator = deep_band(segment_y)
-								local segment_end = segment_y
-								while segment_end < last_y do
-									local ntier = tier_at(segment_end + 1)
-									local nband = deep_band(segment_end + 1)
-									if ntier ~= tier or nband ~= band then break end
-									segment_end = segment_end + 1
-								end
-								local host_ref = content.content_ref(host_name)
-								local host_cid = host_ref and contract.content_cids[host_ref]
-								local eligible = 0
-								if host_cid and resource.denominators[tier] then
-									for z = math.max(min_z, cell_z * 16),
-											math.min(max_z, cell_z * 16 + 15) do
-										for y = segment_y, segment_end do
-											for x = math.max(min_x, cell_x * 16),
-													math.min(max_x, cell_x * 16 + 15) do
-												if host_eligible(x, y, z, host_cid) then
-													eligible = eligible + 1
-													local coordinate = coordinate_scratch[eligible]
-													coordinate.x, coordinate.y, coordinate.z = x, y, z
-												end
-											end
-										end
+				if allowed_columns > 0 then
+					for cell_z = math.floor(min_z / 16), math.floor(max_z / 16) do
+						for cell_x = math.floor(min_x / 16), math.floor(max_x / 16) do
+							for cell_y = math.floor(min_y / 16), math.floor(max_y / 16) do
+								local first_y = math.max(min_y, cell_y * 16)
+								local last_y = math.min(max_y, cell_y * 16 + 15)
+								local segment_y = first_y
+								while segment_y <= last_y do
+									local tier, host_name = tier_at(segment_y)
+									local band, multiplier_numerator,
+										multiplier_denominator = deep_band(segment_y)
+									local segment_end = segment_y
+									while segment_end < last_y do
+										local ntier = tier_at(segment_end + 1)
+										local nband = deep_band(segment_end + 1)
+										if ntier ~= tier or nband ~= band then break end
+										segment_end = segment_end + 1
 									end
-								end
-								if eligible > 0 then
-									local denominator = resource.denominators[tier]
-									local remainder_digest = helpers.digest7(
-										"resource_budget_remainder_v1", resource.key, cell_x,
-										cell_y, cell_z, host_name, tier, band)
-									local budget, numerator, budget_denominator, base_budget,
-										remainder = hash.budget(eligible, 1, denominator,
-										multiplier_numerator, multiplier_denominator,
-										remainder_digest)
-									if budget > 0 then
-										local root_digest
-										if transaction_state.runtime_mode then
-											root_digest = helpers.prepare_resource_digest(resource.key,
-												cell_x, cell_y, cell_z, host_name, tier, band)
-										end
-										for rank = 1, eligible do
-											local coordinate = coordinate_scratch[rank]
-											if root_digest then
-												coordinate.digest = root_digest(coordinate.x,
-													coordinate.y, coordinate.z)
-											else
-												coordinate.digest = helpers.digest10(
-													"resource_root_rank_v1", resource.key, cell_x,
-													cell_y, cell_z, host_name, tier, band, coordinate.x,
-													coordinate.y, coordinate.z)
-											end
-										end
-										if transaction_state.runtime_mode then
-											helpers.heap_prefix(coordinate_scratch, eligible,
-												helpers.coordinate_less)
-										else
-											sort_prefix(coordinate_scratch, eligible,
-												helpers.coordinate_less)
-										end
-									end
-									local planned = budget == 0 and 0 or
-										math.floor((budget + resource.max_nodes_per_vein - 1) /
-											resource.max_nodes_per_vein)
-									local small = planned == 0 and 0 or math.floor(budget / planned)
-									local large_count = budget - small * planned
-									local placed, accepted, shortfall, collisions = 0, 0, 0, 0
-									local next_root_rank = 1
-									for vein = 1, planned do
-										local target = small + (vein <= large_count and 1 or 0)
-										local root
-										while next_root_rank <= eligible do
-											local coordinate
-											if transaction_state.runtime_mode then
-												coordinate = helpers.pop_min(coordinate_scratch,
-													eligible - next_root_rank + 1, helpers.coordinate_less)
-											else
-												coordinate = coordinate_scratch[next_root_rank]
-											end
-											next_root_rank = next_root_rank + 1
-											local claim = occupancy[index_at(coordinate.x,
-												coordinate.y, coordinate.z)]
-											if claim == 0 then root = coordinate break end
-											if claim ~= resource_index + 1 then
-												collisions = collisions + 1
-											end
-										end
-										if not root then
-											metric_rejection(ledger, "resource", resource.key,
-												"rejected_no_root")
-											shortfall = shortfall + target
-										else
-											accepted = accepted + 1
-											local vein_nodes = {{x = root.x, y = root.y, z = root.z}}
-											local root_index = index_at(root.x, root.y, root.z)
-											occupancy[root_index] = resource_index + 1
-											write_intent(root.x, root.y, root.z,
-												resource.content_ref, 0, 24,
-												stable_state.resource[resource_index], 0, 4,
-												resource_index + 1)
-											placed = placed + 1
-											while #vein_nodes < target do
-												local frontier_count = 0
-												for node_index = 1, #vein_nodes do
-													local node = vein_nodes[node_index]
-													for face = 1, 6 do
-														local x, y, z = node.x + FACE_X[face],
-															node.y + FACE_Y[face], node.z + FACE_Z[face]
-														if x >= math.max(min_x, cell_x * 16) and
-																x <= math.min(max_x, cell_x * 16 + 15) and
-																y >= segment_y and y <= segment_end and
-																z >= math.max(min_z, cell_z * 16) and
-																z <= math.min(max_z, cell_z * 16 + 15) and
-																host_eligible(x, y, z, host_cid) and
-																occupancy[index_at(x, y, z)] == 0 then
-															local duplicate = false
-															for f = 1, frontier_count do
-																local old = frontier_scratch[f]
-																if old.x == x and old.y == y and old.z == z then
-																	duplicate = true break
-																end
-															end
-															if not duplicate then
-																if frontier_count >= #frontier_scratch then
-																	fail("fail_bound",
-																		"resource frontier bound exceeded")
-																end
-																frontier_count = frontier_count + 1
-																local frontier = frontier_scratch[frontier_count]
-																frontier.x, frontier.y, frontier.z = x, y, z
-																frontier.digest = helpers.digest11(
-																	"resource_frontier_rank_v1", resource.key,
-																	cell_x, cell_y, cell_z, host_name, tier, band,
-																	vein, x, y, z)
-															end
-														end
+									local host_ref = content.content_ref(host_name)
+									local host_cid = host_ref and contract.content_cids[host_ref]
+									local eligible = 0
+									if host_cid and resource.denominators[tier] then
+										for z = math.max(min_z, cell_z * 16),
+												math.min(max_z, cell_z * 16 + 15) do
+											for y = segment_y, segment_end do
+												for x = math.max(min_x, cell_x * 16),
+														math.min(max_x, cell_x * 16 + 15) do
+													if host_eligible(x, y, z, host_cid) then
+														eligible = eligible + 1
+														local coordinate = coordinate_scratch[eligible]
+														coordinate.x, coordinate.y, coordinate.z = x, y, z
 													end
 												end
-												if frontier_count == 0 then break end
-												sort_prefix(frontier_scratch, frontier_count,
-													helpers.coordinate_less)
-												local next_node = frontier_scratch[1]
-												vein_nodes[#vein_nodes + 1] = {x = next_node.x,
-													y = next_node.y, z = next_node.z}
-												occupancy[index_at(next_node.x, next_node.y,
-													next_node.z)] = resource_index + 1
-												write_intent(next_node.x, next_node.y, next_node.z,
+											end
+										end
+									end
+									if eligible > 0 then
+										local denominator = resource.denominators[tier]
+										local remainder_digest = helpers.digest7(
+											"resource_budget_remainder_v1", resource.key, cell_x,
+											cell_y, cell_z, host_name, tier, band)
+										local budget, numerator, budget_denominator, base_budget,
+											remainder = hash.budget(eligible, 1, denominator,
+											multiplier_numerator, multiplier_denominator,
+											remainder_digest)
+										local root_draw = budget > 0 and helpers.prepare_root_draw(
+											resource.key, cell_x, cell_y, cell_z, host_name, tier, band)
+										local planned = budget == 0 and 0 or
+											math.floor((budget + resource.max_nodes_per_vein - 1) /
+												resource.max_nodes_per_vein)
+										local small = planned == 0 and 0 or math.floor(budget / planned)
+										local large_count = budget - small * planned
+										local placed, accepted, shortfall, collisions = 0, 0, 0, 0
+										local next_root_rank = 1
+										for vein = 1, planned do
+											local target = small + (vein <= large_count and 1 or 0)
+											local root
+											while next_root_rank <= eligible do
+												local remaining = eligible - next_root_rank + 1
+												local selected = root_draw(remaining)
+												local coordinate = coordinate_scratch[selected]
+												coordinate_scratch[selected], coordinate_scratch[remaining] =
+													coordinate_scratch[remaining], coordinate
+												next_root_rank = next_root_rank + 1
+												local claim = occupancy[index_at(coordinate.x,
+													coordinate.y, coordinate.z)]
+												if claim == 0 then root = coordinate break end
+												if claim ~= resource_index + 1 then
+													collisions = collisions + 1
+												end
+											end
+											if not root then
+												metric_rejection(ledger, "resource", resource.key,
+													"rejected_no_root")
+												shortfall = shortfall + target
+											else
+												accepted = accepted + 1
+												local vein_nodes = {{x = root.x, y = root.y, z = root.z}}
+												local root_index = index_at(root.x, root.y, root.z)
+												occupancy[root_index] = resource_index + 1
+												write_intent(root.x, root.y, root.z,
 													resource.content_ref, 0, 24,
 													stable_state.resource[resource_index], 0, 4,
 													resource_index + 1)
 												placed = placed + 1
-											end
-											if #vein_nodes < target then
-												shortfall = shortfall + target - #vein_nodes
-												metric_rejection(ledger, "resource", resource.key,
-													"short_frontier")
+												while #vein_nodes < target do
+													local frontier_count = 0
+													for node_index = 1, #vein_nodes do
+														local node = vein_nodes[node_index]
+														for face = 1, 6 do
+															local x, y, z = node.x + FACE_X[face],
+																node.y + FACE_Y[face], node.z + FACE_Z[face]
+															if x >= math.max(min_x, cell_x * 16) and
+																	x <= math.min(max_x, cell_x * 16 + 15) and
+																	y >= segment_y and y <= segment_end and
+																	z >= math.max(min_z, cell_z * 16) and
+																	z <= math.min(max_z, cell_z * 16 + 15) and
+																	host_eligible(x, y, z, host_cid) and
+																	occupancy[index_at(x, y, z)] == 0 then
+																local duplicate = false
+																for f = 1, frontier_count do
+																	local old = frontier_scratch[f]
+																	if old.x == x and old.y == y and old.z == z then
+																		duplicate = true break
+																	end
+																end
+																if not duplicate then
+																	if frontier_count >= #frontier_scratch then
+																		fail("fail_bound",
+																			"resource frontier bound exceeded")
+																	end
+																	frontier_count = frontier_count + 1
+																	local frontier = frontier_scratch[frontier_count]
+																	frontier.x, frontier.y, frontier.z = x, y, z
+																	frontier.digest = helpers.digest11(
+																		"resource_frontier_rank_v1", resource.key,
+																		cell_x, cell_y, cell_z, host_name, tier, band,
+																		vein, x, y, z)
+																end
+															end
+														end
+													end
+													if frontier_count == 0 then break end
+													sort_prefix(frontier_scratch, frontier_count,
+														helpers.coordinate_less)
+													local next_node = frontier_scratch[1]
+													vein_nodes[#vein_nodes + 1] = {x = next_node.x,
+														y = next_node.y, z = next_node.z}
+													occupancy[index_at(next_node.x, next_node.y,
+														next_node.z)] = resource_index + 1
+													write_intent(next_node.x, next_node.y, next_node.z,
+														resource.content_ref, 0, 24,
+														stable_state.resource[resource_index], 0, 4,
+														resource_index + 1)
+													placed = placed + 1
+												end
+												if #vein_nodes < target then
+													shortfall = shortfall + target - #vein_nodes
+													metric_rejection(ledger, "resource", resource.key,
+														"short_frontier")
+												end
 											end
 										end
+										if ledger then
+											local key = table.concat({resource.key, cell_x, cell_y,
+												cell_z, host_name, tier, band}, "\0")
+											ledger.resources[key] = {eligible = eligible, numerator = numerator,
+												denominator = budget_denominator, base = base_budget,
+												remainder = remainder,
+												remainder_digest = hash.hex(remainder_digest),
+												budget = budget, planned = planned, accepted = accepted,
+												collisions = collisions, shortfall = shortfall,
+												target_nodes = budget, placed_nodes = placed}
+										end
 									end
-									if ledger then
-										local key = table.concat({resource.key, cell_x, cell_y,
-											cell_z, host_name, tier, band}, "\0")
-										ledger.resources[key] = {eligible = eligible, numerator = numerator,
-											denominator = budget_denominator, base = base_budget,
-											remainder = remainder,
-											remainder_digest = hash.hex(remainder_digest),
-											budget = budget, planned = planned, accepted = accepted,
-											collisions = collisions, shortfall = shortfall,
-											target_nodes = budget, placed_nodes = placed}
-									end
+									segment_y = segment_end + 1
 								end
-								segment_y = segment_end + 1
 							end
 						end
 					end

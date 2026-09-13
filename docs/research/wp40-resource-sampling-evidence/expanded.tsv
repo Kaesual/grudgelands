@@ -1,0 +1,27 @@
+schema	grug_wp40_resource_sampling_fixture_v1
+known	423,2149,26,10,1,1
+prefix_sha256	a127dca374d593fa5ecf01362887734e1c84b3e9cb83cd3cb0caf2dd24709891
+rejection	ok
+exhaustion	4096
+bounds	ok
+writer_fields	7
+smoke	16384	64	212	285	diagnostic_not_distribution_proof
+resource_sampling_fixture	ok
+schema	grug_wp40_resource_rank_diff_v1
+mode	expanded
+status	applied_c
+cases	H0/H1/H4096/B0/normal/budget_conservation/claims/inactive/region_empty/reuse/no_r5
+h4096	4096/1
+b0	2048/0/0
+own_claim	4/0
+short_frontier	3/1
+exhausted	1/4/4
+raw_calls	129
+old_root_calls	0
+shuffle_calls	8
+census	4096/1/1
+census_sha256	05ee0e3f9b746288dfba9922fce0f35c6050446f4f2ecfbd9407e6ec28bfe126
+raw_framing_sha256	a89e604cdff85ae9eb6721151439572e0a7ccaf2ae12cc3670ed29bfa3265179
+vm_canonical_sha256	6810f209f21965719418cc6e7b10d794cb040b0b9377033a6226746fd419b43e
+reused_vm_sha256	d370a9e5137454c84ea0f95fc4bec683cba009e7c24603c6f42847682d35c195
+digest	8dc0192a30dcdab2a5f11bceb3481cb8ea798f736c0aae1bc464a7e45f9762a0

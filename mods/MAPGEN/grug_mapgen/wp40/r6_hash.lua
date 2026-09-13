@@ -16,6 +16,7 @@ return function(raw_sha256)
 		"resource_budget_remainder_v1",
 		"resource_frontier_rank_v1",
 		"resource_root_rank_v1",
+		"resource_root_shuffle_v1",
 		"template_probability_v1",
 	}
 	local DOMAIN_SET = {}
@@ -217,6 +218,28 @@ return function(raw_sha256)
 				fail("raw SHA-256 result is not 32 bytes")
 			end
 			return digest
+		end
+	end
+	-- Prototype: a cell-local draw stream for lazy Fisher-Yates root selection.
+	-- Park-Miller arithmetic stays exact in both Lua 5.1 number implementations:
+	-- (2147483646 * 16807) < 2^46. Rejection avoids additional draw-modulo bias.
+	function module.prepare_root_draw(full_seed_string, fields, count)
+		local digest = raw_digest_count("resource_root_shuffle_v1", full_seed_string,
+			fields, count, false)
+		local state = 0
+		for index = 1, 4 do state = state * 256 + string.byte(digest, index) end
+		-- The 32-bit reduction gives the first four states one extra preimage;
+		-- this prototype uses a reproducible PRNG, not a uniform cryptographic stream.
+		state = state % 2147483646 + 1
+		return function(remaining)
+			bound_integer(remaining, "remaining root population", 1, 4096)
+			local limit = math.floor(2147483646 / remaining) * remaining
+			local value
+			repeat
+				state = (state * 16807) % 2147483647
+				value = state - 1
+			until value < limit
+			return value % remaining + 1
 		end
 	end
 	function module.digest_hex(domain, full_seed_string, fields)

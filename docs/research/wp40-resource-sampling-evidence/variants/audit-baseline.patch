@@ -1,0 +1,14 @@
+--- a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
++++ b/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+@@ -2095,6 +2095,11 @@
+ 											end
+ 										end
+ 									end
++									if call_mode == "production" then
++										core.log("action", table.concat({"GRUG_RESOURCE_AUDIT", resource.key,
++											cell_x, cell_y, cell_z, tier, band, eligible, budget, planned,
++											accepted, collisions, shortfall, placed}, "\t"))
++									end
+ 									if ledger then
+ 										local key = table.concat({resource.key, cell_x, cell_y,
+ 											cell_z, host_name, tier, band}, "\0")
