@@ -217,6 +217,12 @@ current state). It is **derived, never authoritative**:
   silent). Full map: "Where the real code lives" in
   docs/research/luanti-lua.md.
 - **Use the `core.*` namespace** — `minetest.*` is only a deprecated alias.
+- **Mapgen integration boundaries:** changes to the R7 content projection or
+  planner column tuple must exercise the actual `r7_manifest.new` and
+  `planner.plan_slice` consumers. A self-built receipt passed to `validate`,
+  or a source-tuple-only fixture, does not prove those boundaries work. The
+  quality final runner keeps real MTS/roster construction under LuaJIT and
+  the small planner regression in the portable final micro-KAT.
 - **All game logic runs server-side.** Mods run on the server only;
   definitions/media are transferred to clients automatically. SSCSM
   (server-sent client-side mods) is still a stub in the engine — do not use.

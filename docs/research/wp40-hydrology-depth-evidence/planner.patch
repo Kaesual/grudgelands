@@ -1,0 +1,57 @@
+diff --git a/mods/MAPGEN/grug_mapgen/wp40/planner.lua b/mods/MAPGEN/grug_mapgen/wp40/planner.lua
+index b322049..c1bb524 100644
+--- a/mods/MAPGEN/grug_mapgen/wp40/planner.lua
++++ b/mods/MAPGEN/grug_mapgen/wp40/planner.lua
+@@ -828,9 +828,8 @@ local function planner_factory(allocator_factory)
+ 			local packed = relational_lookup[id]
+ 			if packed == nil then fail("fail_source", label .. " ID is unknown") end
+ 			local ordinal = math.floor(packed / LOOKUP_BASE) % LOOKUP_BASE
+-			if ordinal == 0 or hydro_value(ordinal, 3) ~= depth then
+-				fail("fail_source", label .. " profile depth differs")
+-			end
++			if ordinal == 0 then fail("fail_source", label .. " profile is unknown") end
++			safe_integer(depth, label .. " depth", 0, MAX_SAFE, "fail_source")
+ 			return ordinal
+ 		end
+ 
+@@ -893,6 +892,25 @@ local function planner_factory(allocator_factory)
+ 			end
+ 			local hydro_ordinal = hydrology_ordinal(classified_hydrology_id,
+ 				classified_depth, "classified hydrology")
++			if hydro_ordinal > 0 then
++				local nominal = hydro_value(hydro_ordinal, 3)
++				local minimum, maximum = nominal, nominal
++				-- Only ordinary wet columns publish a variable bed depth. All
++				-- engineered crossings, transitions and dry profiles stay exact.
++				if functional_kind == nil and transition_kind == nil and
++						water_y ~= nil and water_y > terrain_y then
++					if nominal == 2 then minimum, maximum = 1, 3
++					elseif nominal == 4 then minimum, maximum = 2, 6
++					elseif nominal == 8 then minimum, maximum = 5, 11
++					elseif nominal == 12 then minimum, maximum = 8, 15 end
++					if classified_depth ~= water_y - terrain_y then
++						fail("fail_source", "classified hydrology bed depth differs")
++					end
++				end
++				if classified_depth < minimum or classified_depth > maximum then
++					fail("fail_source", "classified hydrology profile depth differs")
++				end
++			end
+ 			if functional_kind == nil then
+ 				if functional_y ~= nil or functional_feature_id ~= nil or
+ 						functional_interface_id ~= nil then
+@@ -1138,12 +1156,12 @@ local function planner_factory(allocator_factory)
+ 					transition_kind ~= "waterfall" then
+ 				local hydro_ordinal = hydrology_ordinal(classified_id,
+ 					classified_depth, "current wet hydrology")
+-				local depth = validate_wet_profile(hydro_ordinal)
++				validate_wet_profile(hydro_ordinal)
+ 				local relation_ordinal = 0
+ 				if transition_kind == "rapid" then
+ 					relation_ordinal = transition_relation(transition_id, "rapid")
+ 				end
+-				return hydro_ordinal, water_y, water_y - depth, relation_ordinal
++				return hydro_ordinal, water_y, water_y - classified_depth, relation_ordinal
+ 			end
+ 			return 0, nil, nil, 0
+ 		end

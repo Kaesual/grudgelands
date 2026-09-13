@@ -219,7 +219,8 @@ that its implementation dependencies or engineering gates are complete.
    adds bent Gravewood with sparse grey foliage, terrain-fitted ordinary POI
    building cores, balanced relief, varied shallow-water beds and a gentle
    near-ground tendency for air fliers. The [startup manifest repair](docs/research/wp40-startup-manifest-fix.md)
-   updates the content binding and adds a real-constructor regression plus actual-engine startup/emerge checks. Fresh-terrain visual acceptance and
+   updates the content binding and adds a real-constructor regression plus actual-engine startup/emerge checks.
+   The [hydrology fix](docs/research/wp40-hydrology-depth-fix.md) closes the subsequent variable-depth planner crash and keeps seals on the actual bed. Fresh-terrain visual acceptance and
    the remaining R8 gates stay open.
 2. **WP37 — surface-density multiplier.** Its only dependency, WP6, shipped.
 3. **WP11 — skill trees**, **WP14 — offhand/carried light**, **WP20 — party**,
