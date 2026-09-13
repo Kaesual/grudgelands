@@ -14,7 +14,7 @@ done
 mkdir -p "$output"
 # Bind all shipped files and current tools; reference checkouts remain read-only.
 (cd "$repo" && {
-	rg --files mods tools/wp40 tools/wp43
+	rg --files mods tools/wp40 tools/wp43 tools/wp13
 	printf '%s\n' game.conf minetest.conf tools/check_fresh_server.py
 	printf '%s\n' tools/gen_mob_item_textures.py
 	printf '%s\n' reference_projects/luanti/src/client/content_mapblock.cpp
