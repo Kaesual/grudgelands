@@ -1,12 +1,12 @@
 seed	4655649881628627392
 ordinary_anchors	88
-ordinary_worst_sum	1852
-ordinary_worst	249
-ordinary_minimax	13
-construction_seconds	135.293344
-query_count	721701
-query_seconds	6.029372
-water	planned_water	68612	1	15
-water	coastal_shelf	23688	1	8
-water	deep_ocean	220012	24	24
-water	immutable_dragon_channel	7640	24	24
+ordinary_worst_sum	1335
+ordinary_worst	111
+ordinary_minimax	5
+construction_seconds	172.089835
+query_count	45426
+query_seconds	0.530514
+water	planned_water	4303	1	15
+water	coastal_shelf	1496	1	8
+water	deep_ocean	14067	24	24
+water	immutable_dragon_channel	458	24	24
