@@ -15,8 +15,19 @@ return function(repo, expanded)
 	local owner_max = {x = 47, y = -673, z = 47}
 	local axis, volume = 112, 112 * 112 * 112
 	local raw_inputs = {}
+	local root_calls, b0_root_calls = 0, 0
+	local function frame(value) return tostring(#value) .. ":" .. value end
+	local root_prefix = frame("grug_wp40_r6_hash_v1") ..
+		frame("resource_root_rank_v1") .. frame("rank-fixture")
+	local b0_root_prefix = root_prefix .. frame("B0")
 	local function fake_raw_sha256(bytes)
 		raw_inputs[#raw_inputs + 1] = bytes
+		if bytes:sub(1, #root_prefix) == root_prefix then
+			root_calls = root_calls + 1
+			if bytes:sub(1, #b0_root_prefix) == b0_root_prefix then
+				b0_root_calls = b0_root_calls + 1
+			end
+		end
 		return string.rep(string.char(255), 32)
 	end
 	local hash = hash_factory(fake_raw_sha256)
@@ -90,6 +101,7 @@ return function(repo, expanded)
 	function content.cultural() return {} end
 	function content.decorations() return {} end
 	function content.content_ref(name) return refs[name] end
+	function content.new_surface_selector() return function() return surface end end
 	function content.wp43_projection()
 		local tiers = {}
 		for index = 1, 6 do tiers[index] = {y_min = tier_min[index], node = names[index]} end
@@ -172,6 +184,11 @@ return function(repo, expanded)
 		host(5, -15, -750, -30); host(5, -14, -750, -30) -- connected pair
 		host(5, -10, -750, -30); host(5, -5, -750, -30) -- short frontier
 		if expanded then
+			-- A large zero-budget population exposes accidental root hashing
+			-- and sorting without changing any settlement decision.
+			for z = 16, 31 do for y = -736, -729 do for x = 16, 31 do
+				host(4, x, y, z)
+			end end end
 			for z = 32, 39 do for x = 32, 39 do host(5, x, -745, z) end end
 		end
 		return vm_module.new({minp = owner_min, maxp = owner_max, data = data,
@@ -211,7 +228,7 @@ return function(repo, expanded)
 		cultural_registrations = {}, source = source,
 		planner_stable_refs = stable_refs, counting_allocator = allocator}
 	local function run(runtime)
-		raw_inputs = {}
+		raw_inputs, root_calls, b0_root_calls = {}, 0, 0
 		local settlement, fixture
 		if runtime then
 			settlement, fixture = settlement_factory.new_runtime(dependencies)
@@ -223,7 +240,8 @@ return function(repo, expanded)
 		local ledger = runtime and false or fixture.last_ledger()
 		local snapshot = observer.snapshot()
 		local result = {status = status, canonical = canonical_snapshot(snapshot),
-			raw = raw_trace(), raw_count = #raw_inputs, ledger = ledger}
+			raw = raw_trace(), raw_count = #raw_inputs, root_calls = root_calls,
+			b0_root_calls = b0_root_calls, ledger = ledger}
 		settlement, fixture, vm, observer, snapshot = nil, nil, nil, nil, nil
 		collectgarbage("collect")
 		return result
@@ -238,6 +256,10 @@ return function(repo, expanded)
 	check(ordinary.raw_count == runtime.raw_count * 2 and
 		ordinary.raw == runtime.raw .. runtime.raw,
 		"prepared hash framing or digest population differs")
+	check(ordinary.root_calls == runtime.root_calls * 2 and runtime.root_calls > 4096,
+		"positive-budget root digest population differs")
+	check(ordinary.b0_root_calls == 0 and runtime.b0_root_calls == 0,
+		"zero-budget group computed a root rank digest")
 
 	local function ledger_row(resource, cell_x, cell_y, cell_z, tier)
 		local key = table.concat({resource, cell_x, cell_y, cell_z,
@@ -252,7 +274,8 @@ return function(repo, expanded)
 	check(h4096.eligible == 4096 and h4096.budget == 1 and
 		h4096.placed_nodes == 1, "H4096 result differs")
 	local b0 = check(ledger_row("B0", 1, -46, 1, 4), "B0 ledger absent")
-	check(b0.eligible == 1 and b0.budget == 0 and b0.planned == 0,
+	check(b0.eligible == (expanded and 2048 or 1) and b0.budget == 0 and
+		b0.planned == 0,
 		"B0 result differs")
 	for key in pairs(ordinary.ledger.resources) do
 		check(key:sub(1, 3) ~= "H0\0", "H0 unexpectedly has eligible hosts")
@@ -282,11 +305,14 @@ return function(repo, expanded)
 		"status\t" .. ordinary.status,
 		"cases\tH0/H1/H4096/B0/normal/equal/own_claim/short_frontier/exhausted",
 		"h4096\t" .. h4096.eligible .. "/" .. h4096.budget,
+		"b0\t" .. b0.eligible .. "/" .. b0.budget .. "/" ..
+			runtime.b0_root_calls,
 		"own_claim\t" .. own.placed_nodes .. "/" .. own.collisions,
 		"short_frontier\t" .. short.placed_nodes .. "/" .. short.shortfall,
 		"exhausted\t" .. exhausted.accepted .. "/" .. exhausted.collisions ..
 			"/" .. exhausted.shortfall,
 		"raw_calls\t" .. runtime.raw_count,
+		"root_calls\t" .. runtime.root_calls,
 		"raw_framing_sha256\t" .. raw_sha,
 		"vm_canonical_sha256\t" .. canonical_sha}
 	local bytes = table.concat(rows, "\n") .. "\n"

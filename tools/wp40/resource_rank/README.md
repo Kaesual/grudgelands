@@ -10,7 +10,8 @@ root population and a short frontier.
 
 `run.sh` defaults to the compact, plain-Lua-5.1-compatible fixture used by the
 final interpreter comparison. `run.sh expanded` adds a larger connected host
-population and is a LuaJIT development check.
+population and a 2048-host zero-budget group, and is a LuaJIT development
+check.
 
 `primitives.lua` compares exact full/prepared hash input bytes across all hash
 domains, canonical boundary values, invalid inputs, prefix mutation/interleaving,
