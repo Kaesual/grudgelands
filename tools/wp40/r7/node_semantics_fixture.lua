@@ -139,7 +139,17 @@ return function(repo, catalog, expected_names)
 		function api.item_eat() return function() end end
 		function api.get_mapgen_setting() return "1" end
 		function api.register_schematic() return {} end
-		function api.read_schematic() return {} end
+		function api.read_schematic(path)
+			-- Registration needs dimensions only; voxel expansion is tested separately.
+			local file = assert(io.open(path, "rb"))
+			local header = assert(file:read(12)); assert(file:close())
+			assert(header:sub(1, 4) == "MTSM")
+			local function u16(offset)
+				local a, b = header:byte(offset, offset + 1)
+				return a * 256 + b
+			end
+			return {size = {x = u16(7), y = u16(9), z = u16(11)}}
+		end
 		function api.place_schematic() end
 		function api.get_node() return {name = "air"} end
 		function api.set_node() end

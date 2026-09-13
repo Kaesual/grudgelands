@@ -131,7 +131,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	end
 	local r7_manifest_module = r7_manifest_factory(canonical, raw_sha256)
 	local r6_manifest = r7_r6_manifest()
-	local template_source = template_source_factory(core_api, schematic_directory)
+	local template_source = template_source_factory(core_api, schematic_directory,
+		wp40_directory .. "/../../../ITEMS/grug_trees/schematics")
 
 	local module = {}
 	local function build(native_identities, expected_manifest_sha256, evidence_mode,

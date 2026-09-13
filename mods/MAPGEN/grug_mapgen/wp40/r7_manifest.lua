@@ -283,14 +283,14 @@ return function(canonical, raw_sha256)
 		end
 		local p9g_delta = {
 			schema = "grug_wp40_r7_p9g_delta_v1", opcode = 35,
-			class = 10, policy = 11, successor_ref_min = 84,
-			successor_ref_max = 95, order = "after_r6_p9_before_run_derivation",
+			class = 10, policy = 11, successor_ref_min = 85,
+			successor_ref_max = 96, order = "after_r6_p9_before_run_derivation",
 			overwrite = false, catalog_sha256 = gathering.sha256,
 		}
 		local anchor_delta = {
 			schema = "grug_wp40_r7_anchor_delta_v1", opcode = 36,
-			class = 12, policy = 12, successor_ref_min = 96,
-			successor_ref_max = 97, order = "after_p9g_before_run_derivation",
+			class = 12, policy = 12, successor_ref_min = 97,
+			successor_ref_max = 98, order = "after_p9g_before_run_derivation",
 			overwrite = false, roster_sha256 = inputs.anchor_roster_sha256,
 			root = "anchor_y_plus_one",
 			support = "settled_predecessor_support_v1",

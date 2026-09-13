@@ -863,7 +863,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	for name, mask in accepted_block:gmatch('{"([^"]+)", (%d+)}') do
 		accepted_rows[#accepted_rows + 1] = {name, assert(tonumber(mask))}
 	end
-	check(#accepted_rows == 77, "accepted-content population differs")
+	check(#accepted_rows == 78, "accepted-content population differs")
 	local cultural_rows, p9g_rows = catalog.cultural_sources(), catalog.p9g_sources()
 	local semantic_names = {"air", "ignore", "default:water_source",
 		"default:water_flowing", "default:river_water_source",
@@ -882,7 +882,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local semantic_fixture = dofile(repo ..
 		"/tools/wp40/r7/node_semantics_fixture.lua")(
 		repo, catalog, semantic_names)
-	check(semantic_fixture.target_count == 103,
+	check(semantic_fixture.target_count == 104,
 		"semantic target population differs")
 
 	local material_core = {registered_nodes = {}}
@@ -938,8 +938,8 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local content_set = dofile(wp40 .. "/r7_content.lua")(
 		content_core, projection, raw_sha256)
 	check(content_set.production_semantic_digest ==
-		"3e7d2eddded546e39e74656ab03d27dab606ff30867c948808277b724cff4ee2",
-		"production semantic identity differs")
+		"e23aea3c8bca6ffb28622a10e019324ad09930d5fed618c98da3d94e32f5bd76",
+		"production semantic identity differs: " .. content_set.production_semantic_digest)
 	check(content_set.p9g_semantic_digest ==
 		"450c35e94af32721768d3771454db89dbdb43099660b2118c178a3ca6b438d49",
 		"P9G semantic identity differs")
@@ -966,14 +966,14 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		cultural_digests[index] = cultural_registrations[index].digest
 	end
 	local p9g_delta = {schema = "grug_wp40_r7_p9g_delta_v1", opcode = 35,
-		class = 10, policy = 11, successor_ref_min = 84,
-		successor_ref_max = 95, order = "after_r6_p9_before_run_derivation",
+		class = 10, policy = 11, successor_ref_min = 85,
+		successor_ref_max = 96, order = "after_r6_p9_before_run_derivation",
 		overwrite = false, catalog_sha256 = gathering_manifest.sha256}
 	local p9g_delta_digest = manifest_module.graph_digest_for_evidence(p9g_delta)
 	local anchor_roster_sha256 = string.rep("8", 64)
 	local anchor_delta = {schema = "grug_wp40_r7_anchor_delta_v1", opcode = 36,
-		class = 12, policy = 12, successor_ref_min = 96,
-		successor_ref_max = 97, order = "after_p9g_before_run_derivation",
+		class = 12, policy = 12, successor_ref_min = 97,
+		successor_ref_max = 98, order = "after_p9g_before_run_derivation",
 		overwrite = false, roster_sha256 = anchor_roster_sha256,
 		root = "anchor_y_plus_one", support = "settled_predecessor_support_v1",
 		capital_count = 6, outpost_count = 24, bandit_count = 12,
@@ -1284,9 +1284,9 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		check(accepted_by_name[name] ~= nil,
 			"Stage-B normalization introduced a foreign name")
 	end
-	check(#accepted_content_rows == 77 and normalized_population == 77 and
+	check(#accepted_content_rows == 78 and normalized_population == 78 and
 		substitution_count == 6,
-		"Stage-B 83-to-77 name projection differs")
+		"Stage-B 84-to-78 name projection differs")
 	local normalized, accepted = {}, {}
 	for index = 1, #cultural_registrations do
 		local registration = cultural_registrations[index]
@@ -1304,7 +1304,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		seed_identity = "micro-seed-0",
 		production_r6_content_sha256 = content_set.production_digest,
 		accepted_r6_projection_sha256 = accepted_digest,
-		name_map_population = 83, cultural_name_map_population = 6,
+		name_map_population = 84, cultural_name_map_population = 6,
 		cultural_substitution_count = substitution_count,
 		inherited_cultural_access_count = 12,
 		normalized_artifact_sha256 = normalized_digest,

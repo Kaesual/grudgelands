@@ -5,6 +5,8 @@ io.stderr:write(_VERSION, "\t", jit_info and jit_info.version or "PUC", "\n")
 io.write("schema\tgrug_wp40_quality_final_micro_v1\n")
 for _, relative in ipairs({
 	"tools/wp40/tree_slices/fixture.lua",
+	"tools/wp40/quality/gravewood_fixture.lua",
+	"tools/wp40/quality/flight_fixture.lua",
 	"tools/wp40/resource_rank/primitives.lua",
 	"tools/wp40/resource_rank/fixture.lua",
 	"tools/wp40/quality/surface_fixture.lua",

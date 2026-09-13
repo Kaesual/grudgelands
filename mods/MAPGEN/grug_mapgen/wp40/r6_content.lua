@@ -50,6 +50,8 @@ return function(manifest_values, content_contract, wp43_projection)
 		"mods/ITEMS/grug_materials/registry.lua",
 		"mods/ITEMS/grug_nodes/init.lua",
 		"mods/ITEMS/grug_trees/init.lua",
+		"mods/ITEMS/grug_trees/schematics/grug_gravewood_small.mts",
+		"mods/ITEMS/grug_trees/schematics/grug_gravewood_tall.mts",
 		"mods/MAPGEN/grug_mapgen/wp43_handoff.lua",
 		"reference_projects/luanti/doc/lua_api.md",
 		"reference_projects/luanti/src/mapgen/mg_schematic.cpp",

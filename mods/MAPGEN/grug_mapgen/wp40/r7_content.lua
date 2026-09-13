@@ -1,5 +1,5 @@
--- Closed R7 production content resolvers. The accepted 77-row R6 evidence
--- namespace remains separate from the 83-row production-R6 namespace and the
+-- Closed R7 production content resolvers. The accepted 78-row R6 evidence
+-- namespace remains separate from the 84-row production-R6 namespace and the
 -- twelve-row P9G suffix.
 
 return function(core_api, projection, raw_sha256)
@@ -82,6 +82,7 @@ return function(core_api, projection, raw_sha256)
 		{"grug_nodes:dirt_with_silver_litter", 1},
 		{"grug_nodes:mesa_clay", 1},
 		{"grug_nodes:mud", 9},
+		{"grug_trees:gravewood_leaves", 8},
 		{"grug_trees:gravewood_tree", 8},
 		{"grug_trees:silverwood_leaves", 8},
 		{"grug_trees:silverwood_tree", 8},
@@ -170,7 +171,7 @@ return function(core_api, projection, raw_sha256)
 		rows[#rows + 1] = {CULTURAL_NAMES[index], 16}
 	end
 	table.sort(rows, function(left, right) return less_bytes(left[1], right[1]) end)
-	if #ACCEPTED_R6_ROWS ~= 77 or #rows ~= 83 or #P9G_NAMES ~= 12 then
+	if #ACCEPTED_R6_ROWS ~= 78 or #rows ~= 84 or #P9G_NAMES ~= 12 then
 		fail("closed population differs")
 	end
 

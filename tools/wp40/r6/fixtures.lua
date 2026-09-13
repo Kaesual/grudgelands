@@ -30,7 +30,9 @@ return function(repo, common, raw_sha256)
 		"mods/BASE/default/schematics/small_pine_tree.mts",
 		"mods/BASE/default/schematics/snowy_pine_tree_from_sapling.mts",
 		"mods/ITEMS/grug_materials/registry.lua", "mods/ITEMS/grug_nodes/init.lua",
-		"mods/ITEMS/grug_trees/init.lua", "mods/MAPGEN/grug_mapgen/wp43_handoff.lua",
+		"mods/ITEMS/grug_trees/init.lua", "mods/ITEMS/grug_trees/schematics/grug_gravewood_small.mts",
+		"mods/ITEMS/grug_trees/schematics/grug_gravewood_tall.mts",
+		"mods/MAPGEN/grug_mapgen/wp43_handoff.lua",
 		"reference_projects/luanti/doc/lua_api.md",
 		"reference_projects/luanti/src/mapgen/mg_schematic.cpp",
 		"reference_projects/luanti/src/mapgen/mg_schematic.h",
@@ -197,8 +199,9 @@ return function(repo, common, raw_sha256)
 	local mts_cache = {}
 	local function read_template(filename)
 		if not mts_cache[filename] then
-			mts_cache[filename] = common.read_mts(repo ..
-				"/mods/BASE/default/schematics/" .. filename)
+			local directory = filename:match("^grug_gravewood_") and
+				"/mods/ITEMS/grug_trees/schematics/" or "/mods/BASE/default/schematics/"
+			mts_cache[filename] = common.read_mts(repo .. directory .. filename)
 		end
 		return mts_cache[filename]
 	end
