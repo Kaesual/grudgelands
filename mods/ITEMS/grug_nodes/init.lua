@@ -128,10 +128,18 @@ core.register_node("grug_nodes:mesa_clay", {
 core.register_node("grug_nodes:guard_banner", {
 	description = "Guard Banner",
 	drawtype = "nodebox",
-	tiles = {"grug_nodes_guard_banner.png"},
-	-- The tile is only opaque where a box actually samples it (nodebox faces
-	-- read the region of the tile their box covers); "clip" keeps the unused
-	-- rest transparent instead of black.
+	-- Nodebox UVs mirror X on the back face. Mirror that tile too so both
+	-- cloth faces sample the painted right-hand part of the atlas. Horizontal
+	-- faces use an opaque pole pixel: their Z-based UVs cross unused atlas rows.
+	tiles = {
+		"grug_nodes_guard_banner.png^[sheet:16x16:7,8",
+		"grug_nodes_guard_banner.png^[sheet:16x16:7,8",
+		"grug_nodes_guard_banner.png",
+		"grug_nodes_guard_banner.png",
+		"grug_nodes_guard_banner.png^[transformFX",
+		"grug_nodes_guard_banner.png",
+	},
+	-- Keep unused atlas regions transparent instead of black.
 	use_texture_alpha = "clip",
 	paramtype = "light",
 	sunlight_propagates = true,

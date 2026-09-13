@@ -233,6 +233,9 @@ that its implementation dependencies or engineering gates are complete.
    reuses wet-neighbor results within each plan and cell. Three alternating
    real-engine runs per variant reduce ten-owner callback time by 8.8% median
    against the adopted sampler, preserving all tested node/param2/light bytes.
+   The [water/road/banner follow-up](docs/research/wp40-water-road-polish.md)
+   keeps civic and road cuts above adjacent named water, preserves authored
+   fords, favors lower hillside road placement and corrects banner back-face UVs.
 2. **WP37 — surface-density multiplier.** Its only dependency, WP6, shipped.
 3. **WP11 — skill trees**, **WP14 — offhand/carried light**, **WP20 — party**,
    **WP21 — recovery/rest**, and **WP8 — quest framework**. Their listed

@@ -1,0 +1,7 @@
+PASS: original banner fails opacity regression
+luajit: tools/wp40/quality/banner_fixture.lua:61: transparent banner face 1
+stack traceback:
+	[C]: in function 'assert'
+	tools/wp40/quality/banner_fixture.lua:61: in function <tools/wp40/quality/banner_fixture.lua:2>
+	(command line):1: in main chunk
+	[C]: at 0x564ea086fb00
