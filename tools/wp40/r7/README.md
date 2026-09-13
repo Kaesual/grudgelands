@@ -6,7 +6,8 @@ map generation or duplicate any production placement rule.
 ## Layers
 
 - `contract.lua` validates the closed `12/8/6` gathering population and the
-  normalized integration, Stage-A, Stage-B and pilot receipt schemas.
+  normalized integration, Stage-A, Stage-B and pilot receipt schemas. The
+  current Stage-B name map contains 84 entries, including six cultural names.
 - `native_inputs_kat.lua` is the engine-free KAT for the six NoiseParams and
   six native ore records. `run.sh` accepts exactly one canonical PASS record
   from it.

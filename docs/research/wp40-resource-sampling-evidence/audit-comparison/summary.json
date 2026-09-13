@@ -1,0 +1,56 @@
+{
+  "owners": 50,
+  "seeds": 3,
+  "field_groups": 54131,
+  "resource_types": [
+    "abyssal_crystal",
+    "citrine",
+    "coal",
+    "copper",
+    "diamond",
+    "emberglass",
+    "garnet",
+    "gold",
+    "iron",
+    "jade",
+    "quartz",
+    "ruby",
+    "sapphire",
+    "silver",
+    "tin"
+  ],
+  "tiers": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6"
+  ],
+  "bands": [
+    "deep_1500_1999",
+    "deep_2000_floor",
+    "ordinary"
+  ],
+  "normalized_content_param2_light_equal": true,
+  "vm_ore_count_matches_placed": true,
+  "budget_eligible_planned_equal": true,
+  "baseline": {
+    "eligible": 183538302,
+    "budget": 592523,
+    "planned": 100417,
+    "accepted": 100417,
+    "collisions": 1408,
+    "shortfall": 14,
+    "placed": 592509
+  },
+  "sampler": {
+    "eligible": 183538302,
+    "budget": 592523,
+    "planned": 100417,
+    "accepted": 100417,
+    "collisions": 1386,
+    "shortfall": 6,
+    "placed": 592517
+  }
+}

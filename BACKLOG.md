@@ -206,9 +206,9 @@ that its implementation dependencies or engineering gates are complete.
    runtime measurements remain mandatory R8 outputs.
    The 2026-09-13 [tree/performance follow-up](docs/research/wp40-mapgen-profile-tree-fix.md)
    corrects omitted tree slices and profiles the real engine on Rehearsal.
-   Resource ranking now reuses canonical hash prefixes and consumes an exact
-   ordered root prefix; full owner/persistence parity accompanies the timing
-   evidence. The subsequent [terrain-quality and fresh-server cleanup](docs/research/wp40-mapgen-quality.md)
+   That historical resource-ranking optimization reused canonical hash prefixes
+   and consumed an exact ordered root prefix; full owner/persistence parity
+   accompanies the timing evidence. The subsequent [terrain-quality and fresh-server cleanup](docs/research/wp40-mapgen-quality.md)
    adds terrain-following roads, adaptive capital terraces, fine relief,
    material patches and protected hillside cave cuts. Natural ore remains
    removed after mining; all development-era world/item migrations are removed
@@ -222,6 +222,13 @@ that its implementation dependencies or engineering gates are complete.
    updates the content binding and adds a real-constructor regression plus actual-engine startup/emerge checks.
    The [hydrology fix](docs/research/wp40-hydrology-depth-fix.md) closes the subsequent variable-depth planner crash and keeps seals on the actual bed. Fresh-terrain visual acceptance and
    the remaining R8 gates stay open.
+   The [resource-sampler adoption](docs/research/wp40-resource-sampling-integration.md)
+   replaces per-host root hashing with deterministic demand-driven selection in
+   both writer and census; current integration checks use that algorithm. The
+   measured 50-owner comparison preserves budgets and planned veins, with eight
+   additional placed blocks out of roughly 592,500. Historical R6/R7 supply
+   artifacts are not a recertification of the sampler; the remaining R8 supply,
+   visual and fallback-engine gates stay open.
 2. **WP37 — surface-density multiplier.** Its only dependency, WP6, shipped.
 3. **WP11 — skill trees**, **WP14 — offhand/carried light**, **WP20 — party**,
    **WP21 — recovery/rest**, and **WP8 — quest framework**. Their listed

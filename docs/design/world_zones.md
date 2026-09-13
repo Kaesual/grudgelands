@@ -946,6 +946,26 @@ asks for it.
   `immutable_dragon_channel` admit no natural resource. Eligibility still
   requires the exact WP43 stratum host at y; water, bed material, routes,
   dungeons, foreign nodes and protected content are not hosts.
+- **Natural-resource root sampling (2026-09-13):** each resource/16-node
+  cell/host/tier/deep-band group keeps its eligible-host count, density budget
+  and balanced capped vein targets. Enumerate eligible hosts in ascending
+  z/y/x order. For a positive budget, seed one local draw stream with the full
+  world-seed string and the seven group fields in the canonical
+  `resource_root_shuffle_v1` SHA-256 frame. Take the first four digest bytes
+  as a big-endian integer; initial state is `value % 2147483646 + 1`. Each
+  draw advances `state = state * 16807 % 2147483647`; reject `state - 1` at
+  or above `floor(2147483646 / remaining) * remaining`, then select
+  `(state - 1) % remaining + 1`. Swap that candidate with the active tail and
+  shrink the prefix. Claimed candidates consume a draw; no candidate repeats.
+  Zero-budget groups seed no stream. Resource precedence, exclusion rules,
+  frontier hashing and shortfall accounting remain unchanged; the VM writer
+  and resource census use the same selection. Natural ore stays finite.
+  Specific positions and growth-dependent shortfalls may change relative to
+  the former per-host hash ranking. This reproducible 31-bit stream is not a
+  cryptographic or perfectly uniform permutation: initial states 1–4 have
+  three 32-bit preimages, all others two. Historical supply/access artifacts
+  retain their original algorithm identity; the sampler's measured comparison
+  does not replace the full release supply/access gate.
 - The six-race **strict 5%-over-lowest natural-resource-parity ledger** counts
   every natural resource eligible in the race-region column: all universal
   resources plus that region's assigned G1 and G2. Placed natural nodes remain

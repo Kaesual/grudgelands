@@ -1,0 +1,5 @@
+variant	population	callback_sum_median_us	min_us	max_us
+baseline	all	13922602	13888684	15594864
+baseline	surface	7427417	7112234	8030166
+sampler	all	6446941	6353306	6780492
+sampler	surface	5692416	5606081	6090336

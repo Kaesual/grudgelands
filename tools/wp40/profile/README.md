@@ -91,9 +91,10 @@ digest and must produce zero mapgen callbacks. The default sample detects gross
 output or persistence drift without paying the full diagnostic cost.
 
 Set `WP40_PROFILE_STAGES=1` to apply the optional disposable R6 stage patch.
-Its `GRUG_WP40_PROFILE_STAGE` records report coarse phase boundaries, the P8
-root-digest call count, and aggregate runtime heap-build calls and elapsed
-time. Counter, clock, and logging instructions can change LuaJIT traces, so
+Its `GRUG_WP40_PROFILE_STAGE` records report coarse phase boundaries, including
+eligibility setup and P8 resources. The adopted sampler has no root heap or
+per-host root digest; historical stage counters describe the earlier algorithm.
+Clock and logging instructions can change LuaJIT traces, so
 these records support coarse attribution only. Leave stage instrumentation
 disabled for primary before/after callback timings.
 

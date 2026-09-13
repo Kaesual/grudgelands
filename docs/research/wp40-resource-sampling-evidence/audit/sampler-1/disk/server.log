@@ -1,0 +1,471 @@
+
+
+-------------
+  Separator
+-------------
+
+INFO[Main]: Gettext: domainname="luanti" path="/app/share/locale"
+INFO[Main]: Message locale is now set to: C
+INFO[Main]: Using commanded gameid [grudgelands]
+INFO[Main]: Server created for gameid "grudgelands"
+INFO[Main]: - world:  /tmp/grudgelands-wp40-profile-run.XBWcdF3B/world
+INFO[Main]: - game:   /tmp/grudgelands-wp40-profile-run.XBWcdF3B/user/games/grudgelands
+INFO[Main]: Initializing world at /tmp/grudgelands-wp40-profile-run.XBWcdF3B/world
+INFO[Main]: ObjDefManager: added biome: name="default" index=0 uid=92
+INFO[Main]: BanManager: loading from /tmp/grudgelands-wp40-profile-run.XBWcdF3B/world/ipban.txt
+WARNING[Main]: /!\ You are using the old mod storage files backend. This backend is deprecated and may be removed in a future release /!\
+WARNING[Main]: Switching to SQLite3 is advised, please read https://docs.luanti.org/for-server-hosts/database-backends.
+INFO[Main]: Creating map database with backend "sqlite3"
+INFO[Main]: MapDatabaseSQLite3: split column format = yes
+INFO[Main]: ServerMap: Metadata loaded from /tmp/grudgelands-wp40-profile-run.XBWcdF3B/world
+INFO[Main]: Server: Initializing Lua
+INFO[Main]: SCRIPTAPI: Initialized game modules
+INFO[Main]: Server: Loading mods: sfinv creative player_api default stairs mobs grug_trees grug_materials grug_nodes grug_gear grug_core grug_xp grug_money grug_gathering grug_mapgen grug_wp40_profile_probe grug_factions grug_projectiles grug_mobs grug_classes grug_in
+INFO[Main]: ventory grug_traders grug_abilities 
+INFO[Main]: Mod "sfinv" loaded after 0 ms
+INFO[Main]: Server creating detached inventory "trash"
+INFO[Main]: Mod "creative" loaded after 0 ms
+INFO[Main]: Mod "player_api" loaded after 0 ms
+INFO[Main]: Mod "default" loaded after 5 ms
+INFO[Main]: Mod "stairs" loaded after 5 ms
+INFO[Main]: Mod "mobs" loaded after 2 ms
+INFO[Main]: ObjDefManager: added schematic: name="" index=0 uid=43
+INFO[Main]: ObjDefManager: added schematic: name="" index=1 uid=88
+INFO[Main]: ObjDefManager: added schematic: name="" index=2 uid=116
+INFO[Main]: Mod "grug_trees" loaded after 0 ms
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copper_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tin_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronze_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steel_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:gold_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:goldblock'])
+WARNING[Main]: No craft recipe known for output 'default:stone_with_mese'
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal_fragment'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:meselamp'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_acacia_wood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_junglewood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_pine_wood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_aspen_wood'])
+WARNING[Main]: No craft recipe known for output 'default:stone_with_diamond'
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamondblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sign_wall_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:ladder_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_goldblock'])
+INFO[Main]: Mod "grug_materials" loaded after 4 ms
+INFO[Main]: Mod "grug_nodes" loaded after 0 ms
+ACTION[Main]: [grug_gear] 6 bracket catalogs: 24 weapons + 48 armor pieces
+INFO[Main]: Mod "grug_gear" loaded after 1 ms
+INFO[Main]: Mod "grug_core" loaded after 1 ms
+INFO[Main]: Mod "grug_xp" loaded after 0 ms
+INFO[Main]: Mod "grug_money" loaded after 0 ms
+INFO[Main]: Mod "grug_gathering" loaded after 2 ms
+INFO[Main]: ObjDefManager: added ore: name="grug_mapgen:native_gravel_blob_v1" index=0 uid=30
+INFO[Main]: ObjDefManager: added ore: name="grug_mapgen:native_stratum_iron_v1" index=1 uid=13
+INFO[Main]: ObjDefManager: added ore: name="grug_mapgen:native_stratum_steel_v1" index=2 uid=110
+INFO[Main]: ObjDefManager: added ore: name="grug_mapgen:native_stratum_silversteel_v1" index=3 uid=27
+INFO[Main]: ObjDefManager: added ore: name="grug_mapgen:native_stratum_embersteel_v1" index=4 uid=100
+INFO[Main]: ObjDefManager: added ore: name="grug_mapgen:native_stratum_abyssal_steel_v1" index=5 uid=21
+INFO[Main]: Mod "grug_mapgen" loaded after 7135 ms
+INFO[Main]: Mod "grug_wp40_profile_probe" loaded after 0 ms
+INFO[Main]: Mod "grug_factions" loaded after 0 ms
+INFO[Main]: Mod "grug_projectiles" loaded after 0 ms
+INFO[Main]: Mod "grug_mobs" loaded after 3 ms
+INFO[Main]: Mod "grug_classes" loaded after 0 ms
+INFO[Main]: Mod "grug_inventory" loaded after 0 ms
+INFO[Main]: Mod "grug_traders" loaded after 1 ms
+INFO[Main]: Mod "grug_abilities" loaded after 1 ms
+ACTION[Main]: [grug_materials] registry audit passed: 6 tiers, 15 resources, 12 processed forms, 6 race regions
+ACTION[Main]: GRUG_WP40_PROFILE_PROBE phase=disk event=start engine=5.17.0 lua=LuaJIT_2.1.1784272936 seed=4074524248646631899 cases=10 manifest=7296cd02edf7e7eeb73d537790f1e3ddbc2fd02424590a717c28b44b14fab625 full_digest=true
+ACTION[Main]: [grug_traders] drop audit: 1 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit); their items are audited from the hardcoded FUNCTION_DROPS list
+INFO[Main]: All mods loaded after 7161 ms
+INFO[Main]: Server: Calculating media file checksums
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: ignoring unsupported file extension: "character.blend"
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: 671 media files collected
+INFO[Main]: EmergeManager: initializing for mapgen=v7 and chunksize=(5,5,5)
+INFO[Main]: EmergeManager: using 1 thread(s)
+INFO[Main]: SCRIPTAPI: Initializing async engine
+INFO[Main]: AsyncEngine: using at most 14 threads with automatic scaling
+INFO[Main]: Initializing asynchronous environment (game)
+INFO[Main]: ServerEnvironment: 52 ABMs are registered
+INFO[Main]: ServerEnvironment: Loading environment metadata from file
+INFO[Main]: LBMManager: 1 unique times in lookup table
+INFO[Main]: Starting server thread...
+ACTION[Main]: World at [/tmp/grudgelands-wp40-profile-run.XBWcdF3B/world]
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32663.
+INFO[Emerge-0]: Initialized emerge Lua environment
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x     0.05
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] 
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] 
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] 
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] 
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x     0.05
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] __________________________   20x     0.05
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] __________________    1x        1
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x     0.05
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=west_t1_t2 mapchunk=-1712,-112,128 elapsed_us=7912203 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=west_t2 mapchunk=-1712,-192,128 elapsed_us=3424 generated=0 disk=125 memory=0 cancelled=0 errored=0
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Emerge-0: processed [#] _________________________    1x      250
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x     0.05
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] __________________________   20x     0.05
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]:   ServerMap: deSer block [us] _____________________  250x   13.164
+INFO[Main]:   ServerMap: load block [us] ______________________  250x     22.4
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=west_t3 mapchunk=-1712,-432,128 elapsed_us=3392 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=west_t4 mapchunk=-1712,-672,128 elapsed_us=3719 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=west_t5 mapchunk=-1712,-912,128 elapsed_us=3636 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=west_t5_t6 mapchunk=-1712,-1072,128 elapsed_us=2624 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=west_deep_1500 mapchunk=-1712,-1552,128 elapsed_us=3503 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=west_deep_2000 mapchunk=-1712,-2032,128 elapsed_us=3298 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=east_t4 mapchunk=1648,-672,128 elapsed_us=3044 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=east_deep_2000 mapchunk=1648,-2032,128 elapsed_us=3146 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t1_t2 resource=citrine nodes=8
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t1_t2 resource=coal nodes=3860
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t1_t2 resource=copper nodes=1939
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t1_t2 resource=gold nodes=72
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t1_t2 resource=iron nodes=3868
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t1_t2 resource=quartz nodes=1941
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t1_t2 resource=tin nodes=1281
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=normalized_owner case=west_t1_t2 normalized=d5946aaaf0dbbf9de6595db5f0d09994f3cfd88196ebc47f46e78cad39d832cb param2=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t2 resource=citrine nodes=40
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t2 resource=coal nodes=3815
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t2 resource=copper nodes=1911
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t2 resource=gold nodes=478
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t2 resource=iron nodes=3818
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t2 resource=quartz nodes=1903
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t2 resource=tin nodes=1271
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=normalized_owner case=west_t2 normalized=4e2123cde70bb7bb40f68dd9c98fab78f014aac89368b81de26a300428c114e3 param2=7faee8087b2f7d554935618e85e55ce2ad8b194b61c1c4455e39158ab45cc0b3 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t3 resource=citrine nodes=84
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t3 resource=coal nodes=3855
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t3 resource=copper nodes=1929
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t3 resource=gold nodes=486
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t3 resource=iron nodes=3856
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t3 resource=quartz nodes=1931
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t3 resource=silver nodes=482
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t3 resource=tin nodes=1276
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=normalized_owner case=west_t3 normalized=aa1aed92efe000ac603470ecc6a5c2f899e4c1ffbcdadfbe901c41b063e8a150 param2=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t4 resource=citrine nodes=157
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t4 resource=coal nodes=3717
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t4 resource=copper nodes=1867
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t4 resource=emberglass nodes=231
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t4 resource=gold nodes=463
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t4 resource=iron nodes=3735
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t4 resource=quartz nodes=1865
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t4 resource=ruby nodes=28
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t4 resource=silver nodes=465
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t4 resource=tin nodes=1238
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=normalized_owner case=west_t4 normalized=a9469d5de2e7edf34366dfda37c1d151709320b39e8ea625a16f4b30afb36fb0 param2=c86f3d32ceea34fcb5666359be5aafde9f9e98e8269cf8b66fffb2ecaaeafde7 light=ec7f63ac3969b2e6a049b92c9de4bb96cfc45eb4b664c13d92af39de20394d59
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t5 resource=abyssal_crystal nodes=245
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t5 resource=citrine nodes=175
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t5 resource=coal nodes=3890
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t5 resource=copper nodes=1945
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t5 resource=emberglass nodes=242
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t5 resource=gold nodes=484
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t5 resource=iron nodes=3900
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t5 resource=quartz nodes=1954
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t5 resource=ruby nodes=84
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t5 resource=silver nodes=487
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t5 resource=tin nodes=1296
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=normalized_owner case=west_t5 normalized=04ffbf15043f3d57b71c4eb0ff04e81201956070b0e37cfa18d632fbea300f0a param2=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t5_t6 resource=abyssal_crystal nodes=72
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t5_t6 resource=citrine nodes=55
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t5_t6 resource=coal nodes=1161
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t5_t6 resource=copper nodes=576
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t5_t6 resource=emberglass nodes=70
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t5_t6 resource=gold nodes=145
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t5_t6 resource=iron nodes=1160
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t5_t6 resource=quartz nodes=582
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t5_t6 resource=ruby nodes=47
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t5_t6 resource=silver nodes=150
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_t5_t6 resource=tin nodes=384
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=normalized_owner case=west_t5_t6 normalized=8ff5ea1c1a2559aa1d566d0e674bd84afc51e1b2ad718a72e0f9fd81d0bbeca6 param2=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Emerge-0: processed [#] _________________________    1x     1000
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] _____    1x        3
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] 
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]:   ServerMap: deSer block [us] _____________________ 1000x    13.83
+INFO[Main]:   ServerMap: load block [us] ______________________ 1000x   21.653
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_deep_1500 resource=abyssal_crystal nodes=206
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_deep_1500 resource=citrine nodes=136
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_deep_1500 resource=coal nodes=3334
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_deep_1500 resource=copper nodes=1667
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_deep_1500 resource=emberglass nodes=212
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_deep_1500 resource=gold nodes=417
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_deep_1500 resource=iron nodes=3347
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_deep_1500 resource=quartz nodes=1676
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_deep_1500 resource=ruby nodes=151
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_deep_1500 resource=silver nodes=420
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_deep_1500 resource=tin nodes=1110
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=normalized_owner case=west_deep_1500 normalized=64df841c7143bd4fe559c831ed99a4b3534d15a89ee1f6890bd6c251bdaf0495 param2=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_deep_2000 resource=abyssal_crystal nodes=306
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_deep_2000 resource=citrine nodes=212
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_deep_2000 resource=coal nodes=4895
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_deep_2000 resource=copper nodes=2442
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_deep_2000 resource=emberglass nodes=305
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_deep_2000 resource=gold nodes=610
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_deep_2000 resource=iron nodes=4902
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_deep_2000 resource=quartz nodes=2444
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_deep_2000 resource=ruby nodes=218
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_deep_2000 resource=silver nodes=612
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=west_deep_2000 resource=tin nodes=1637
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=normalized_owner case=west_deep_2000 normalized=cf60de81828e292c0a350730ebaf4c47ea2d1dd89c2d008b75f92e4e284669a0 param2=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=east_t4 resource=coal nodes=3851
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=east_t4 resource=copper nodes=1929
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=east_t4 resource=emberglass nodes=234
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=east_t4 resource=gold nodes=481
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=east_t4 resource=iron nodes=3856
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=east_t4 resource=jade nodes=157
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=east_t4 resource=quartz nodes=1928
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=east_t4 resource=sapphire nodes=42
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=east_t4 resource=silver nodes=478
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=east_t4 resource=tin nodes=1280
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=normalized_owner case=east_t4 normalized=42b8d7f7923b4e0ba29f2deb015dbf5746107efe293561d9e25a98ef04532a4c param2=60569ccf3908a2d6d0e32c91e359980c4a87e0d97a3f600a27e426a278f3ed09 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=east_deep_2000 resource=abyssal_crystal nodes=325
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=east_deep_2000 resource=coal nodes=5177
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=east_deep_2000 resource=copper nodes=2583
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=east_deep_2000 resource=emberglass nodes=323
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=east_deep_2000 resource=gold nodes=644
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=east_deep_2000 resource=iron nodes=5172
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=east_deep_2000 resource=jade nodes=226
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=east_deep_2000 resource=quartz nodes=2592
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=east_deep_2000 resource=sapphire nodes=222
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=east_deep_2000 resource=silver nodes=654
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=east_deep_2000 resource=tin nodes=1721
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=normalized_owner case=east_deep_2000 normalized=88a65b7f76319c6f31b63faf0163253c1ee0fa95970376b222f79514814f6d9a param2=03a6e31a767178b20e0cda6b1e2992cd1c7e2d89dd0ad39d9739e3354e28db79 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=complete requested=10 completed=10 callbacks=0 generated=0 disk=1250 memory=0 cancelled=0 errored=0 samples=370 expected_nodes=0 digest=270d728a934ea369de5910e26eb7c0f61cc79d894a6d6c70a78390f8a82868f3 full_digest=1a40359f77147ae16de41f281903561eec3afe649f2f98e9e9ffda17c837ed3b full_vocabulary_digest=b91b8197fb574561aa33c8cc7c56d3e935d9d4842f99019afc713a8bc5f56c22 full_voxels=5120000 measured_elapsed_us=8432447 diagnostic_us=967658
+INFO[Server]: *** Server shutting down in 0s.
+INFO[Server]: Server: Maximum lag peaked at 0.967885 (steplen=0.05)
+INFO[Main]: Dedicated server quitting
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Emerge-0: processed [#] 
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________    2x      484
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x      968
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] __________________________    2x      484
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]:   ServerMap: deSer block [us] 
+INFO[Main]:   ServerMap: load block [us] 
+ACTION[Main]: Server: Shutting down
+INFO[Main]: Server: Stopping and waiting for threads
+INFO[Main]: Server: Threads stopped
+INFO[Main]: Server: Executing shutdown hooks
+INFO[Main]: Server: Saving players
+INFO[Main]: Server: Kicking players
+INFO[Main]: Server: Saving environment metadata
+INFO[Main]: AsyncEngine: Waiting for 1 threads
+INFO[Main]: ServerMap: Saved map to /tmp/grudgelands-wp40-profile-run.XBWcdF3B/world
+INFO[Main]: BanManager: saving to /tmp/grudgelands-wp40-profile-run.XBWcdF3B/world/ipban.txt

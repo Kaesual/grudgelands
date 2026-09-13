@@ -1,0 +1,129 @@
+ACTION[Main]: GRUG_WP40_PROFILE_PROBE phase=cold event=start engine=5.17.0 lua=LuaJIT_2.1.1784272936 seed=4655649881628627392 cases=10 manifest=a011803334a83390f153b5269d8cc3a8042a0c0317c4a3b7b9d2372f4a875b16 full_digest=true
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=1 minp=-1712,-112,128 maxp=-1633,-33,207 blockseed=3406627417 plan_us=402564 writer_us=258501 total_us=661065 columns=6400 candidate_cells=49 candidates=191 r5_runs=6400 result=applied_c vm_get_emerged_area_calls=1 vm_get_emerged_area_us=3 vm_get_data_calls=1 vm_get_data_us=4092 vm_get_param2_data_calls=1 vm_get_param2_data_us=4099 vm_get_light_data_calls=0 vm_get_light_data_us=0 vm_set_data_calls=1 vm_set_data_us=7237 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=0 vm_set_lighting_us=0 vm_calc_lighting_calls=0 vm_calc_lighting_us=0 vm_set_light_data_calls=0 vm_set_light_data_us=0 vm_update_liquids_calls=0 vm_update_liquids_us=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=west_t1_t2 mapchunk=-1712,-112,128 elapsed_us=8200883 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=2 minp=-1712,-192,128 maxp=-1633,-113,207 blockseed=1168184201 plan_us=96401 writer_us=275693 total_us=372094 columns=6400 candidate_cells=49 candidates=191 r5_runs=0 result=applied_c vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4118 vm_get_param2_data_calls=1 vm_get_param2_data_us=3923 vm_get_light_data_calls=0 vm_get_light_data_us=0 vm_set_data_calls=1 vm_set_data_us=7306 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=0 vm_set_lighting_us=0 vm_calc_lighting_calls=0 vm_calc_lighting_us=0 vm_set_light_data_calls=0 vm_set_light_data_us=0 vm_update_liquids_calls=0 vm_update_liquids_us=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=west_t2 mapchunk=-1712,-192,128 elapsed_us=397784 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=3 minp=-1712,-432,128 maxp=-1633,-353,207 blockseed=304767785 plan_us=97599 writer_us=321334 total_us=418933 columns=6400 candidate_cells=49 candidates=191 r5_runs=0 result=applied_c vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4086 vm_get_param2_data_calls=1 vm_get_param2_data_us=4078 vm_get_light_data_calls=0 vm_get_light_data_us=0 vm_set_data_calls=1 vm_set_data_us=7207 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=0 vm_set_lighting_us=0 vm_calc_lighting_calls=0 vm_calc_lighting_us=0 vm_set_light_data_calls=0 vm_set_light_data_us=0 vm_update_liquids_calls=0 vm_update_liquids_us=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=west_t3 mapchunk=-1712,-432,128 elapsed_us=455562 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=4 minp=-1712,-672,128 maxp=-1633,-593,207 blockseed=1950631985 plan_us=93067 writer_us=294126 total_us=387193 columns=6400 candidate_cells=49 candidates=191 r5_runs=0 result=applied_c vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4083 vm_get_param2_data_calls=1 vm_get_param2_data_us=4069 vm_get_light_data_calls=0 vm_get_light_data_us=0 vm_set_data_calls=1 vm_set_data_us=7203 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=0 vm_set_lighting_us=0 vm_calc_lighting_calls=0 vm_calc_lighting_us=0 vm_set_light_data_calls=0 vm_set_light_data_us=0 vm_update_liquids_calls=0 vm_update_liquids_us=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=west_t4 mapchunk=-1712,-672,128 elapsed_us=417831 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=5 minp=-1712,-912,128 maxp=-1633,-833,207 blockseed=2718265233 plan_us=94853 writer_us=371515 total_us=466368 columns=6400 candidate_cells=49 candidates=191 r5_runs=0 result=applied_c vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4125 vm_get_param2_data_calls=1 vm_get_param2_data_us=4103 vm_get_light_data_calls=0 vm_get_light_data_us=0 vm_set_data_calls=1 vm_set_data_us=7255 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=0 vm_set_lighting_us=0 vm_calc_lighting_calls=0 vm_calc_lighting_us=0 vm_set_light_data_calls=0 vm_set_light_data_us=0 vm_update_liquids_calls=0 vm_update_liquids_us=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=west_t5 mapchunk=-1712,-912,128 elapsed_us=497172 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=6 minp=-1712,-1072,128 maxp=-1633,-993,207 blockseed=2189605001 plan_us=94151 writer_us=367867 total_us=462018 columns=6400 candidate_cells=49 candidates=191 r5_runs=0 result=applied_c vm_get_emerged_area_calls=1 vm_get_emerged_area_us=1 vm_get_data_calls=1 vm_get_data_us=4083 vm_get_param2_data_calls=1 vm_get_param2_data_us=4077 vm_get_light_data_calls=0 vm_get_light_data_us=0 vm_set_data_calls=1 vm_set_data_us=7219 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=0 vm_set_lighting_us=0 vm_calc_lighting_calls=0 vm_calc_lighting_us=0 vm_set_light_data_calls=0 vm_set_light_data_us=0 vm_update_liquids_calls=0 vm_update_liquids_us=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=west_t5_t6 mapchunk=-1712,-1072,128 elapsed_us=494165 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=7 minp=-1712,-1552,128 maxp=-1633,-1473,207 blockseed=3011475441 plan_us=95624 writer_us=387062 total_us=482686 columns=6400 candidate_cells=49 candidates=191 r5_runs=0 result=applied_c vm_get_emerged_area_calls=1 vm_get_emerged_area_us=1 vm_get_data_calls=1 vm_get_data_us=4069 vm_get_param2_data_calls=1 vm_get_param2_data_us=4068 vm_get_light_data_calls=0 vm_get_light_data_us=0 vm_set_data_calls=1 vm_set_data_us=7240 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=0 vm_set_lighting_us=0 vm_calc_lighting_calls=0 vm_calc_lighting_us=0 vm_set_light_data_calls=0 vm_set_light_data_us=0 vm_update_liquids_calls=0 vm_update_liquids_us=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=west_deep_1500 mapchunk=-1712,-1552,128 elapsed_us=515793 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=8 minp=-1712,-2032,128 maxp=-1633,-1953,207 blockseed=2764471545 plan_us=96670 writer_us=508584 total_us=605254 columns=6400 candidate_cells=49 candidates=191 r5_runs=0 result=applied_c vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4064 vm_get_param2_data_calls=1 vm_get_param2_data_us=4061 vm_get_light_data_calls=0 vm_get_light_data_us=0 vm_set_data_calls=1 vm_set_data_us=7209 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=0 vm_set_lighting_us=0 vm_calc_lighting_calls=0 vm_calc_lighting_us=0 vm_set_light_data_calls=0 vm_set_light_data_us=0 vm_update_liquids_calls=0 vm_update_liquids_us=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=west_deep_2000 mapchunk=-1712,-2032,128 elapsed_us=637062 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=9 minp=1648,-672,128 maxp=1727,-593,207 blockseed=718331905 plan_us=330680 writer_us=286753 total_us=617433 columns=6400 candidate_cells=49 candidates=802 r5_runs=0 result=applied_c vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4081 vm_get_param2_data_calls=1 vm_get_param2_data_us=3939 vm_get_light_data_calls=0 vm_get_light_data_us=0 vm_set_data_calls=1 vm_set_data_us=7358 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=0 vm_set_lighting_us=0 vm_calc_lighting_calls=0 vm_calc_lighting_us=0 vm_set_light_data_calls=0 vm_set_light_data_us=0 vm_update_liquids_calls=0 vm_update_liquids_us=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=east_t4 mapchunk=1648,-672,128 elapsed_us=650362 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=10 minp=1648,-2032,128 maxp=1727,-1953,207 blockseed=3922207177 plan_us=105099 writer_us=298845 total_us=403944 columns=6400 candidate_cells=49 candidates=802 r5_runs=0 result=applied_c vm_get_emerged_area_calls=1 vm_get_emerged_area_us=10 vm_get_data_calls=1 vm_get_data_us=4077 vm_get_param2_data_calls=1 vm_get_param2_data_us=3891 vm_get_light_data_calls=0 vm_get_light_data_us=0 vm_set_data_calls=1 vm_set_data_us=7243 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=0 vm_set_lighting_us=0 vm_calc_lighting_calls=0 vm_calc_lighting_us=0 vm_set_light_data_calls=0 vm_set_light_data_us=0 vm_update_liquids_calls=0 vm_update_liquids_us=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=east_deep_2000 mapchunk=1648,-2032,128 elapsed_us=437861 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t1_t2 resource=citrine nodes=5
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t1_t2 resource=coal nodes=3873
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t1_t2 resource=copper nodes=1939
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t1_t2 resource=gold nodes=72
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t1_t2 resource=iron nodes=3874
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t1_t2 resource=quartz nodes=1929
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t1_t2 resource=tin nodes=1303
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=normalized_owner case=west_t1_t2 normalized=1990bf25ac653bbce6c482d63617f6c58039d0b8f5fbddb6b42035683220a4f2 param2=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t2 resource=citrine nodes=31
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t2 resource=coal nodes=3906
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t2 resource=copper nodes=1951
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t2 resource=gold nodes=493
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t2 resource=iron nodes=3900
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t2 resource=quartz nodes=1957
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t2 resource=tin nodes=1294
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=normalized_owner case=west_t2 normalized=b78d6212e393033aed18cda357e55e48105b37368cd4bc3c4b8147f9758fc8cf param2=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t3 resource=citrine nodes=99
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t3 resource=coal nodes=3805
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t3 resource=copper nodes=1908
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t3 resource=gold nodes=475
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t3 resource=iron nodes=3808
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t3 resource=quartz nodes=1905
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t3 resource=silver nodes=479
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t3 resource=tin nodes=1263
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=normalized_owner case=west_t3 normalized=43844f8765f0bed7f4be4596237fb7f7121702bc8fdf2e78c13bc2f61f347edd param2=f8cba42f50f7a8ebb43c4287a37b7c84bfd56e4b8a7d6cbbbc0b19c57e63f918 light=4d5aa9aaafe6e54a4a8d3764e2668d334121f898492a0bd85dfddb55aad2fe54
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t4 resource=citrine nodes=161
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t4 resource=coal nodes=3862
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t4 resource=copper nodes=1934
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t4 resource=emberglass nodes=242
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t4 resource=gold nodes=482
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t4 resource=iron nodes=3860
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t4 resource=quartz nodes=1925
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t4 resource=ruby nodes=39
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t4 resource=silver nodes=486
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t4 resource=tin nodes=1287
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=normalized_owner case=west_t4 normalized=aa3d569f03a81a92096d9fead8f330c60fe74867a1c78b1fad4753416ca49130 param2=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t5 resource=abyssal_crystal nodes=231
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t5 resource=citrine nodes=161
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t5 resource=coal nodes=3772
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t5 resource=copper nodes=1886
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t5 resource=emberglass nodes=239
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t5 resource=gold nodes=475
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t5 resource=iron nodes=3771
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t5 resource=quartz nodes=1881
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t5 resource=ruby nodes=79
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t5 resource=silver nodes=471
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t5 resource=tin nodes=1260
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=normalized_owner case=west_t5 normalized=be190d186944fa94633b793ad4f9754550df8b7a68ff979e3bf4a5c78fd776e2 param2=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t5_t6 resource=abyssal_crystal nodes=233
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t5_t6 resource=citrine nodes=151
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t5_t6 resource=coal nodes=3776
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t5_t6 resource=copper nodes=1894
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t5_t6 resource=emberglass nodes=228
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t5_t6 resource=gold nodes=474
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t5_t6 resource=iron nodes=3783
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t5_t6 resource=quartz nodes=1889
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t5_t6 resource=ruby nodes=154
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t5_t6 resource=silver nodes=469
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_t5_t6 resource=tin nodes=1263
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=normalized_owner case=west_t5_t6 normalized=a3d25d03f544165738e963569e40748903a10bbb08cccfb9b641113d28de8070 param2=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_deep_1500 resource=abyssal_crystal nodes=270
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_deep_1500 resource=citrine nodes=183
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_deep_1500 resource=coal nodes=4330
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_deep_1500 resource=copper nodes=2162
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_deep_1500 resource=emberglass nodes=276
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_deep_1500 resource=gold nodes=541
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_deep_1500 resource=iron nodes=4342
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_deep_1500 resource=quartz nodes=2173
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_deep_1500 resource=ruby nodes=186
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_deep_1500 resource=silver nodes=543
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_deep_1500 resource=tin nodes=1437
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=normalized_owner case=west_deep_1500 normalized=a8d49ea4749a0f441c70a83e11837fa9e04acbd90ef1ad7a38ecd466032e8b46 param2=b543d84047e3f3f0b9bdd7051a48f1a254e86b928c2ecf042bd496f9126e4deb light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_deep_2000 resource=abyssal_crystal nodes=306
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_deep_2000 resource=citrine nodes=221
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_deep_2000 resource=coal nodes=4942
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_deep_2000 resource=copper nodes=2467
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_deep_2000 resource=emberglass nodes=309
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_deep_2000 resource=gold nodes=622
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_deep_2000 resource=iron nodes=4947
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_deep_2000 resource=quartz nodes=2467
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_deep_2000 resource=ruby nodes=207
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_deep_2000 resource=silver nodes=627
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=west_deep_2000 resource=tin nodes=1649
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=normalized_owner case=west_deep_2000 normalized=e0734f7d8e3a6bcb91911fa4e51b75a38662465f131b87f9a8240490295065a8 param2=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=east_t4 resource=coal nodes=3700
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=east_t4 resource=copper nodes=1847
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=east_t4 resource=emberglass nodes=225
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=east_t4 resource=gold nodes=461
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=east_t4 resource=iron nodes=3692
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=east_t4 resource=jade nodes=153
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=east_t4 resource=quartz nodes=1849
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=east_t4 resource=sapphire nodes=34
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=east_t4 resource=silver nodes=461
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=east_t4 resource=tin nodes=1239
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=normalized_owner case=east_t4 normalized=f3e0c0fb7d0dc2cd526369da24b4231c14589d015b3ce2ef26add2c0b1285c7b param2=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=east_deep_2000 resource=abyssal_crystal nodes=213
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=east_deep_2000 resource=coal nodes=3238
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=east_deep_2000 resource=copper nodes=1617
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=east_deep_2000 resource=emberglass nodes=210
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=east_deep_2000 resource=gold nodes=405
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=east_deep_2000 resource=iron nodes=3235
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=east_deep_2000 resource=jade nodes=134
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=east_deep_2000 resource=quartz nodes=1611
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=east_deep_2000 resource=sapphire nodes=133
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=east_deep_2000 resource=silver nodes=397
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=ore_count case=east_deep_2000 resource=tin nodes=1078
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=normalized_owner case=east_deep_2000 normalized=61a7f472f601720203e1c06a45b9eede07251cc3d41e551c3c4b0315f8ca6909 param2=1f007266f5022a5f2c17d88ebbf182bd97b083c56294eb1e352f7fb6af71c446 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=complete requested=10 completed=10 callbacks=10 generated=10 disk=0 memory=1240 cancelled=0 errored=0 samples=370 expected_nodes=0 digest=c9184d86d173141018eb2b25d569f7919e15e86eee01c1cd2b361818e9f94a20 full_digest=6b06fea9670b0674a37f7fa7279dc6460433450d08386a97113c2ec5f71e13a9 full_vocabulary_digest=b91b8197fb574561aa33c8cc7c56d3e935d9d4842f99019afc713a8bc5f56c22 full_voxels=5120000 measured_elapsed_us=12890098 diagnostic_us=1103570

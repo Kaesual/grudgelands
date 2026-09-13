@@ -1,0 +1,201 @@
+WARNING[Main]: /!\ You are using the old mod storage files backend. This backend is deprecated and may be removed in a future release /!\
+WARNING[Main]: Switching to SQLite3 is advised, please read https://docs.luanti.org/for-server-hosts/database-backends.
+[MOD] Mobs Redo loaded
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copper_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tin_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronze_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steel_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:gold_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:goldblock'])
+WARNING[Main]: No craft recipe known for output 'default:stone_with_mese'
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal_fragment'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:meselamp'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_acacia_wood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_junglewood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_pine_wood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_aspen_wood'])
+WARNING[Main]: No craft recipe known for output 'default:stone_with_diamond'
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamondblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sign_wall_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:ladder_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_goldblock'])
+ACTION[Main]: [grug_gear] 6 bracket catalogs: 24 weapons + 48 armor pieces
+ACTION[Main]: [grug_materials] registry audit passed: 6 tiers, 15 resources, 12 processed forms, 6 race regions
+ACTION[Main]: GRUG_WP40_PROFILE_PROBE phase=disk event=start engine=5.17.0 lua=LuaJIT_2.1.1784272936 seed=0 cases=10 manifest=1def39eb4797c00c7b134a8c493e1bd819c08840d0f5a4010cabda62d28f439a full_digest=true
+ACTION[Main]: [grug_traders] drop audit: 1 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit); their items are audited from the hardcoded FUNCTION_DROPS list
+ _                   _   _ 
+| |_   _  __ _ _ __ | |_(_)
+| | | | |/ _` | '_ \| __| |
+| | |_| | (_| | | | | |_| |
+|_|\__,_|\__,_|_| |_|\__|_|  ___ 5.17.0
+ACTION[Main]: World at [/tmp/grudgelands-wp40-profile-run.ybzsTu37/world]
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32701.
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=human_t5 mapchunk=-32,-912,-1552 elapsed_us=7734227 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=human_t6 mapchunk=-32,-1152,-1552 elapsed_us=3246 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=human_deep_1500 mapchunk=-32,-1552,-1552 elapsed_us=3141 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=human_deep_2000 mapchunk=-32,-2112,-1552 elapsed_us=2948 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=human_east_t5 mapchunk=48,-912,-1552 elapsed_us=3064 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=dwarf_t5 mapchunk=-1872,-912,-2592 elapsed_us=3182 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=dwarf_t6 mapchunk=-1872,-1152,-2592 elapsed_us=3394 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=dwarf_deep_1500 mapchunk=-1872,-1552,-2592 elapsed_us=3091 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=dwarf_deep_2000 mapchunk=-1872,-2112,-2592 elapsed_us=3150 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=dwarf_east_t5 mapchunk=-1792,-912,-2592 elapsed_us=3172 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_t5 resource=abyssal_crystal nodes=176
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_t5 resource=citrine nodes=112
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_t5 resource=coal nodes=2795
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_t5 resource=copper nodes=1392
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_t5 resource=diamond nodes=55
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_t5 resource=emberglass nodes=175
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_t5 resource=gold nodes=346
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_t5 resource=iron nodes=2791
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_t5 resource=quartz nodes=1397
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_t5 resource=silver nodes=352
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_t5 resource=tin nodes=932
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=normalized_owner case=human_t5 normalized=2c75eb33fe2934b0238ce3d81a152507cb57558aa44832895204b7c7bdcf6905 param2=0b04103133fea7ed1820e1c5ac28e6fbf070c808b63a8f3a73d2f86ac4a8e7bb light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_t6 resource=abyssal_crystal nodes=237
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_t6 resource=citrine nodes=171
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_t6 resource=coal nodes=3815
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_t6 resource=copper nodes=1909
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_t6 resource=diamond nodes=155
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_t6 resource=emberglass nodes=243
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_t6 resource=gold nodes=473
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_t6 resource=iron nodes=3812
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_t6 resource=quartz nodes=1907
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_t6 resource=silver nodes=481
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_t6 resource=tin nodes=1279
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=normalized_owner case=human_t6 normalized=cb4b7b135d1ce6f92b190ecc52eee2a4bd8fbaa92099dec4a93c5fa4b2c223ca param2=d05beae3934727c371c2a6d7aa0c5eb6992b43a95777e722706a477ef34fb5ff light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_deep_1500 resource=abyssal_crystal nodes=228
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_deep_1500 resource=citrine nodes=155
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_deep_1500 resource=coal nodes=3694
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_deep_1500 resource=copper nodes=1851
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_deep_1500 resource=diamond nodes=166
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_deep_1500 resource=emberglass nodes=236
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_deep_1500 resource=gold nodes=466
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_deep_1500 resource=iron nodes=3705
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_deep_1500 resource=quartz nodes=1852
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_deep_1500 resource=silver nodes=465
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_deep_1500 resource=tin nodes=1243
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=normalized_owner case=human_deep_1500 normalized=a2a62d0fee082ef958aef7142a0266802d05aeb20afc0cee6a597896dc6c5a81 param2=8bf11e8317319e42a8e763ba5e2243302783f570b9c3de5d45ac7a117a60c220 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_deep_2000 resource=abyssal_crystal nodes=251
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_deep_2000 resource=citrine nodes=169
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_deep_2000 resource=coal nodes=4024
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_deep_2000 resource=copper nodes=2012
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_deep_2000 resource=diamond nodes=170
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_deep_2000 resource=emberglass nodes=257
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_deep_2000 resource=gold nodes=500
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_deep_2000 resource=iron nodes=4024
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_deep_2000 resource=quartz nodes=2011
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_deep_2000 resource=silver nodes=505
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_deep_2000 resource=tin nodes=1345
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=normalized_owner case=human_deep_2000 normalized=9037f222ae9e1c2dc221b8d919a3cbb05b24a571a8145f8ac49ff6d9b4357cfd param2=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_east_t5 resource=abyssal_crystal nodes=242
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_east_t5 resource=citrine nodes=167
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_east_t5 resource=coal nodes=3850
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_east_t5 resource=copper nodes=1924
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_east_t5 resource=diamond nodes=78
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_east_t5 resource=emberglass nodes=241
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_east_t5 resource=gold nodes=478
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_east_t5 resource=iron nodes=3854
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_east_t5 resource=quartz nodes=1928
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_east_t5 resource=silver nodes=486
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=human_east_t5 resource=tin nodes=1295
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=normalized_owner case=human_east_t5 normalized=6532388cc52a257574aa4a7b221bdfddd24b4d40a033e833b9809181a4b078da param2=2b04c6ff7bf6ebb69164d19739d373ea79c34356531bbb0743f3127a1cc4ed38 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_t5 resource=abyssal_crystal nodes=183
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_t5 resource=coal nodes=2977
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_t5 resource=copper nodes=1491
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_t5 resource=emberglass nodes=186
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_t5 resource=garnet nodes=123
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_t5 resource=gold nodes=376
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_t5 resource=iron nodes=2977
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_t5 resource=quartz nodes=1489
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_t5 resource=sapphire nodes=62
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_t5 resource=silver nodes=370
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_t5 resource=tin nodes=991
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=normalized_owner case=dwarf_t5 normalized=b68baa77917306277644b1eb667fec37c449788be3271b7c28d1851b45f71579 param2=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_t6 resource=abyssal_crystal nodes=183
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_t6 resource=coal nodes=2919
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_t6 resource=copper nodes=1461
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_t6 resource=emberglass nodes=189
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_t6 resource=garnet nodes=123
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_t6 resource=gold nodes=368
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_t6 resource=iron nodes=2916
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_t6 resource=quartz nodes=1462
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_t6 resource=sapphire nodes=123
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_t6 resource=silver nodes=373
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_t6 resource=tin nodes=967
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=normalized_owner case=dwarf_t6 normalized=fb507a68e5c1a42a929a1c3fe998963f87709537c5f4a6e82e8e949c2ab90afb param2=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_deep_1500 resource=abyssal_crystal nodes=294
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_deep_1500 resource=coal nodes=4580
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_deep_1500 resource=copper nodes=2279
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_deep_1500 resource=emberglass nodes=288
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_deep_1500 resource=garnet nodes=190
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_deep_1500 resource=gold nodes=573
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_deep_1500 resource=iron nodes=4570
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_deep_1500 resource=quartz nodes=2287
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_deep_1500 resource=sapphire nodes=204
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_deep_1500 resource=silver nodes=572
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_deep_1500 resource=tin nodes=1510
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=normalized_owner case=dwarf_deep_1500 normalized=bb992b73630f24f22dfd23c18c946d4ab0f2f46d2a6d00992ac95a10622a32c8 param2=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_deep_2000 resource=abyssal_crystal nodes=354
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_deep_2000 resource=coal nodes=5598
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_deep_2000 resource=copper nodes=2805
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_deep_2000 resource=emberglass nodes=352
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_deep_2000 resource=garnet nodes=237
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_deep_2000 resource=gold nodes=707
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_deep_2000 resource=iron nodes=5606
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_deep_2000 resource=quartz nodes=2797
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_deep_2000 resource=sapphire nodes=242
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_deep_2000 resource=silver nodes=702
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_deep_2000 resource=tin nodes=1870
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=normalized_owner case=dwarf_deep_2000 normalized=2821d16aa07ede3ee67429fafed46ad5a5b564086887541c6d37ce041a256cf9 param2=2b3c93b2f73bb36724c74d8a437272789ad9916f4fa6613496d84a1e22ae6ae5 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_east_t5 resource=abyssal_crystal nodes=197
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_east_t5 resource=coal nodes=3157
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_east_t5 resource=copper nodes=1576
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_east_t5 resource=emberglass nodes=191
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_east_t5 resource=garnet nodes=133
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_east_t5 resource=gold nodes=390
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_east_t5 resource=iron nodes=3149
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_east_t5 resource=quartz nodes=1574
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_east_t5 resource=sapphire nodes=72
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_east_t5 resource=silver nodes=391
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=ore_count case=dwarf_east_t5 resource=tin nodes=1051
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=normalized_owner case=dwarf_east_t5 normalized=cce707d356f6aeca631ecd2ea4d0c485adeb58b79ae3ba7c9081538f2fedbe36 param2=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918 light=a3e59e9470b32c661d8e641ab11759a5667037f4d3d8256be466615875d4f918
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=complete requested=10 completed=10 callbacks=0 generated=0 disk=1250 memory=0 cancelled=0 errored=0 samples=370 expected_nodes=0 digest=a7309f64fc672e2e2395f20439cdceca3ec69f649badebb31c27dc79435c70c8 full_digest=ef54b2cdf3e6df2f1081e936f1659c6bd057f7624a17878d75ffd27c990a0b9c full_vocabulary_digest=b91b8197fb574561aa33c8cc7c56d3e935d9d4842f99019afc713a8bc5f56c22 full_voxels=5120000 measured_elapsed_us=8226300 diagnostic_us=708847
+ACTION[Main]: Server: Shutting down

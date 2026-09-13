@@ -47,6 +47,17 @@ projects: **[docs/research/](docs/research/)**.
   that policy; the standing rule above only removes repeated data-sharing
   confirmation.
 
+## Current resource-root authority
+
+- The user adopted demand-driven resource-root sampling on 2026-09-13.
+  `docs/design/world_zones.md` §11 is the current root-selection rule in both
+  the VM writer and resource census. The per-host root SHA ranking in the
+  frozen R6 contract/artifacts is historical evidence; it is not a current
+  output oracle. Do not restore it or add a compatibility path.
+- Current resource integration checks live in `tools/wp40/resource_sampling/`
+  and run through `tools/wp40/quality/final_micro.lua`. Historical 32-seed
+  supply/access evidence has not been regenerated for the adopted sampler.
+
 ## Documentation layers
 
 All project state lives in the repo, not in the chat history. Three layers,

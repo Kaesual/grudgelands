@@ -1,0 +1,13 @@
+kernel	Linux 7.2.4-200.fc44.x86_64 x86_64 GNU/Linux
+processors	16
+memory_kib	61352420
+seed	4655649881628627392
+cases_file	/tmp/grug-sampling-depth-cases.lua
+port_base	32664
+phase_timeout_seconds	900
+dedicated_binary	0
+settlement_stages	0
+full_digest	1
+source_game	/tmp/grug-sampling-audit-baseline-game
+source_archive	
+luanti_user_path	/tmp/grudgelands-wp40-profile-run.3hEhjiWj/user
