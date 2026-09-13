@@ -216,7 +216,7 @@ return function(catalog, p9g_content, raw_sha256)
 				type(dependencies.zones_session.surface_mob_level_at) ~= "function" or
 				type(production) ~= "table" or
 				production.schema ~= "grug_wp40_r7_production_r6_content_v1" or
-				#production.content_names ~= 83 then
+				#production.content_names ~= 84 then
 			fail("successor production identity differs")
 		end
 		local air_cid, air_kind, air_param2 = production.r5.resolve(1, 0, 0)

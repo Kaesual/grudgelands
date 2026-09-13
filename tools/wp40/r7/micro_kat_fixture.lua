@@ -10,7 +10,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local saved_dofile = dofile
 	changed_roster_relative = changed_roster_relative or
 		"tools/wp40/r7/changed_production_lua.txt"
-	expected_changed_count = expected_changed_count or 73
+	expected_changed_count = expected_changed_count or 74
 	if type(changed_roster_relative) ~= "string" or
 		changed_roster_relative:sub(1, 1) == "/" or
 		changed_roster_relative:find("..", 1, true) or
@@ -168,6 +168,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			canonical = runtime_canonical,
 			deterministic = runtime_deterministic, index128 = runtime_index,
 			horizontal_factory = runtime_horizontal_factory,
+			coupled_grade = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/coupled_grade.lua")(),
 			height_factory = runtime_height_factory, raw_sha256 = raw_sha256,
 		})
 		local live_zones, live_planner =
@@ -177,7 +178,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			"R8 bounded zones runtime construction differs")
 
 		local samples = {
-			{0, -1500, "land", "elandor_highcourt", "grug_meadows", "human", 50,
+			{0, -1500, "land", "elandor_highcourt", "grug_meadows", "human", 44,
 				"hard_protected", "contested_land"},
 			{-900, -1100, "planned_water", "elandor_whitebridge_shire",
 				"grug_deep_forest", "human", 16, "accord_home", "contested_land"},
@@ -202,11 +203,93 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		end
 		local capital = live_zones.anchor("elandor_highcourt", "capital")
 		check(capital and capital.id == "anchor_008" and capital.numeric_id == 8 and
-			capital.x == 0 and capital.y == 50 and capital.z == -1500,
+			capital.x == 0 and capital.y == 44 and capital.z == -1500,
 			"R8 bounded runtime anchor differs")
 		row("runtime/zones_sample_sha256", hex_sha256(table.concat(sample_rows)))
 		row("runtime/zones_anchor", table.concat({capital.id, capital.numeric_id,
 			capital.x, capital.y, capital.z}, "/"))
+
+		local hydrology_by_id, profile_depth = {}, {}
+		for index = 1, #runtime_source.hydrology_profiles do
+			local profile = runtime_source.hydrology_profiles[index]
+			profile_depth[profile.id] = profile.depth
+		end
+		for index = 1, #runtime_source.hydrology do
+			local reach = runtime_source.hydrology[index]
+			hydrology_by_id[reach.id] = reach
+		end
+		local functional_kind = {bridge = "bridge_deck", ford = "ford",
+			causeway = "causeway"}
+		local crossing_rows = {}
+		for index = 1, #runtime_source.hydrology_interfaces do
+			local interface = runtime_source.hydrology_interfaces[index]
+			if interface.route_interface_id then
+				local witness
+				for z = interface.position.z - 96, interface.position.z + 96 do
+					for x = interface.position.x - 96, interface.position.x + 96 do
+						local tuple = {live_planner.column_values_at(x, z)}
+						if tuple[13] == interface.route_interface_id then
+							witness = {x = x, z = z, tuple = tuple}
+							break
+						end
+					end
+					if witness then break end
+				end
+				check(witness ~= nil, "R8 functional water interface has no witness " ..
+					interface.id)
+				local reach = hydrology_by_id[interface.hydrology_id]
+				check(reach and witness.tuple[8] == interface.hydrology_id and
+					witness.tuple[9] == profile_depth[reach.profile_id] and
+					witness.tuple[10] == functional_kind[interface.kind] and
+					witness.tuple[14] == nil,
+					"R8 functional water depth/transition differs " .. interface.id)
+				crossing_rows[#crossing_rows + 1] = graph({interface.id, witness.x,
+					witness.z, witness.tuple[8], witness.tuple[9], witness.tuple[10],
+					witness.tuple[13]})
+			end
+		end
+		check(#crossing_rows == 7, "R8 functional water interface count differs")
+		row("runtime/water_crossing_sha256",
+			hex_sha256(table.concat(crossing_rows)))
+
+		local transition_rows = {}
+		for _, interface_id in ipairs({"raincall_upper_rapid",
+				"raincall_upper_fall", "raincall_middle_rapid",
+				"raincall_lower_fall"}) do
+			local interface
+			for index = 1, #runtime_source.hydrology_interfaces do
+				if runtime_source.hydrology_interfaces[index].id == interface_id then
+					interface = runtime_source.hydrology_interfaces[index]
+					break
+				end
+			end
+			local tuple = {live_planner.column_values_at(interface.position.x,
+				interface.position.z)}
+			check(tuple[14] == interface.kind and tuple[15] == interface.id and
+				tuple[16] == 1 + interface.upper_level_offset and
+				tuple[17] == 1 + interface.lower_level_offset and tuple[19] == nil,
+				"R8 cardinal hydrology transition differs " .. interface.id)
+			transition_rows[#transition_rows + 1] = graph({interface.id, tuple[8],
+				tuple[9], tuple[14], tuple[15], tuple[16], tuple[17], tuple[18]})
+		end
+		local contact_witnesses = {
+			{"highcourt_goldmead_fall", -106, -1757, 4},
+			{"gravesalt_broken_fall", -1712, 21, 8},
+			{"raincall_reedmaze_fall", 2069, 1864, 1},
+		}
+		for index = 1, #contact_witnesses do
+			local witness = contact_witnesses[index]
+			local tuple = {live_planner.column_values_at(witness[2], witness[3])}
+			check(tuple[9] == witness[4] and tuple[14] == "waterfall" and
+				tuple[15] == witness[1] and tuple[18] == nil and
+				type(tuple[19]) == "number" and tuple[19] >= 1 and tuple[19] <= 15,
+				"R8 contact-face hydrology transition differs " .. witness[1])
+			transition_rows[#transition_rows + 1] = graph({witness[1], witness[2],
+				witness[3], tuple[8], tuple[9], tuple[14], tuple[15], tuple[19]})
+		end
+		check(#transition_rows == 7, "R8 hydrology transition witness count differs")
+		row("runtime/water_transition_sha256",
+			hex_sha256(table.concat(transition_rows)))
 	end
 	collectgarbage("collect")
 	check(type(dofile(wp40 .. "/r5.lua")) == "function",
@@ -275,6 +358,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local runtime_r6_manifest = {schema = "micro_r6_manifest",
 		r5_manifest_values = {}}
 	local function runtime_stub_dofile(path)
+		if path:match("/coupled_grade%.lua$") then return dofile(path) end
 		if path:match("/source/catalog%.lua$") then return {} end
 		if path:match("/source/simple_map%.lua$") then return {} end
 		if path:match("/r6%.lua$") then
@@ -863,7 +947,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	for name, mask in accepted_block:gmatch('{"([^"]+)", (%d+)}') do
 		accepted_rows[#accepted_rows + 1] = {name, assert(tonumber(mask))}
 	end
-	check(#accepted_rows == 77, "accepted-content population differs")
+	check(#accepted_rows == 78, "accepted-content population differs")
 	local cultural_rows, p9g_rows = catalog.cultural_sources(), catalog.p9g_sources()
 	local semantic_names = {"air", "ignore", "default:water_source",
 		"default:water_flowing", "default:river_water_source",
@@ -882,7 +966,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local semantic_fixture = dofile(repo ..
 		"/tools/wp40/r7/node_semantics_fixture.lua")(
 		repo, catalog, semantic_names)
-	check(semantic_fixture.target_count == 103,
+	check(semantic_fixture.target_count == 104,
 		"semantic target population differs")
 
 	local material_core = {registered_nodes = {}}
@@ -938,8 +1022,8 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local content_set = dofile(wp40 .. "/r7_content.lua")(
 		content_core, projection, raw_sha256)
 	check(content_set.production_semantic_digest ==
-		"3e7d2eddded546e39e74656ab03d27dab606ff30867c948808277b724cff4ee2",
-		"production semantic identity differs")
+		"e23aea3c8bca6ffb28622a10e019324ad09930d5fed618c98da3d94e32f5bd76",
+		"production semantic identity differs: " .. content_set.production_semantic_digest)
 	check(content_set.p9g_semantic_digest ==
 		"450c35e94af32721768d3771454db89dbdb43099660b2118c178a3ca6b438d49",
 		"P9G semantic identity differs")
@@ -966,14 +1050,14 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		cultural_digests[index] = cultural_registrations[index].digest
 	end
 	local p9g_delta = {schema = "grug_wp40_r7_p9g_delta_v1", opcode = 35,
-		class = 10, policy = 11, successor_ref_min = 84,
-		successor_ref_max = 95, order = "after_r6_p9_before_run_derivation",
+		class = 10, policy = 11, successor_ref_min = 85,
+		successor_ref_max = 96, order = "after_r6_p9_before_run_derivation",
 		overwrite = false, catalog_sha256 = gathering_manifest.sha256}
 	local p9g_delta_digest = manifest_module.graph_digest_for_evidence(p9g_delta)
 	local anchor_roster_sha256 = string.rep("8", 64)
 	local anchor_delta = {schema = "grug_wp40_r7_anchor_delta_v1", opcode = 36,
-		class = 12, policy = 12, successor_ref_min = 96,
-		successor_ref_max = 97, order = "after_p9g_before_run_derivation",
+		class = 12, policy = 12, successor_ref_min = 97,
+		successor_ref_max = 98, order = "after_p9g_before_run_derivation",
 		overwrite = false, roster_sha256 = anchor_roster_sha256,
 		root = "anchor_y_plus_one", support = "settled_predecessor_support_v1",
 		capital_count = 6, outpost_count = 24, bandit_count = 12,
@@ -1284,9 +1368,9 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		check(accepted_by_name[name] ~= nil,
 			"Stage-B normalization introduced a foreign name")
 	end
-	check(#accepted_content_rows == 77 and normalized_population == 77 and
+	check(#accepted_content_rows == 78 and normalized_population == 78 and
 		substitution_count == 6,
-		"Stage-B 83-to-77 name projection differs")
+		"Stage-B 84-to-78 name projection differs")
 	local normalized, accepted = {}, {}
 	for index = 1, #cultural_registrations do
 		local registration = cultural_registrations[index]
@@ -1304,7 +1388,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		seed_identity = "micro-seed-0",
 		production_r6_content_sha256 = content_set.production_digest,
 		accepted_r6_projection_sha256 = accepted_digest,
-		name_map_population = 83, cultural_name_map_population = 6,
+		name_map_population = 84, cultural_name_map_population = 6,
 		cultural_substitution_count = substitution_count,
 		inherited_cultural_access_count = 12,
 		normalized_artifact_sha256 = normalized_digest,
@@ -1725,6 +1809,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			source = selector_source, schemas = selector_schemas,
 			canonical = {}, deterministic = {}, index128 = {},
 			horizontal_factory = function() end,
+			coupled_grade = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/coupled_grade.lua")(),
 			height_factory = function() end, raw_sha256 = raw_sha256,
 		})
 		local r5_zones, r5_planner_source, r5_planner, r5_adapter =
@@ -1781,6 +1866,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			index128 = {}, horizontal_factory = function()
 				return {new = function() return {} end}
 			end,
+			coupled_grade = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/coupled_grade.lua")(),
 			height_factory = function() end, raw_sha256 = raw_sha256,
 			hash_factory = function() return {} end,
 			content_factory = function()

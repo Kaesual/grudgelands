@@ -82,6 +82,7 @@ return function(repo, scratch, injected_raw_sha256)
 			canonical = canonical,
 			deterministic = deterministic,
 			raw_sha256 = raw_sha256,
+			coupled_grade = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/coupled_grade.lua")(),
 			horizontal_session = horizontal_session,
 		})
 		if type(height_module.validate_source) == "function" then

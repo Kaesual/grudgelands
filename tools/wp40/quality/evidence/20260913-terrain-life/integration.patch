@@ -1,0 +1,29 @@
+diff --git a/mods/MAPGEN/grug_mapgen/wp40/height.lua b/mods/MAPGEN/grug_mapgen/wp40/height.lua
+index 36ff2ab..f73bde9 100644
+--- a/mods/MAPGEN/grug_mapgen/wp40/height.lua
++++ b/mods/MAPGEN/grug_mapgen/wp40/height.lua
+@@ -3513,8 +3513,9 @@ return function(dependencies)
+ 				path = operation.path
+ 				run_index = path_surface_run_at(path, x, z)
+ 			else
+-				local segment
+-				segment, _, _, run_index = nearest_path_segment_at(x, z, "surface", nil)
++				local segment, _, _, nearest_run =
++					nearest_path_segment_at(x, z, "surface", nil)
++				run_index = nearest_run
+ 				path = segment and segment.path or nil
+ 			end
+ 			return path, run_index
+diff --git a/mods/MAPGEN/grug_mapgen/wp40/r6_content.lua b/mods/MAPGEN/grug_mapgen/wp40/r6_content.lua
+index c5ab876..3b48edc 100644
+--- a/mods/MAPGEN/grug_mapgen/wp40/r6_content.lua
++++ b/mods/MAPGEN/grug_mapgen/wp40/r6_content.lua
+@@ -50,6 +50,8 @@ return function(manifest_values, content_contract, wp43_projection)
+ 		"mods/ITEMS/grug_materials/registry.lua",
+ 		"mods/ITEMS/grug_nodes/init.lua",
+ 		"mods/ITEMS/grug_trees/init.lua",
++		"mods/ITEMS/grug_trees/schematics/grug_gravewood_small.mts",
++		"mods/ITEMS/grug_trees/schematics/grug_gravewood_tall.mts",
+ 		"mods/MAPGEN/grug_mapgen/wp43_handoff.lua",
+ 		"reference_projects/luanti/doc/lua_api.md",
+ 		"reference_projects/luanti/src/mapgen/mg_schematic.cpp",

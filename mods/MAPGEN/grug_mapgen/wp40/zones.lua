@@ -172,6 +172,7 @@ local function zones_factory(dependencies)
 		index128 = true,
 		horizontal_factory = true,
 		height_factory = true,
+		coupled_grade = true,
 		raw_sha256 = true,
 	}
 	for key in pairs(dependencies) do
@@ -192,6 +193,7 @@ local function zones_factory(dependencies)
 	local index128 = dependencies.index128
 	local horizontal_factory = dependencies.horizontal_factory
 	local height_factory = dependencies.height_factory
+	local coupled_grade = dependencies.coupled_grade
 	local injected_raw_sha256 = dependencies.raw_sha256
 	local MAX_SAFE = 9007199254740991
 	local WATER_LEVEL = 1
@@ -446,6 +448,7 @@ local function zones_factory(dependencies)
 			deterministic = deterministic,
 			raw_sha256 = counted_sha,
 			horizontal_session = horizontal,
+			coupled_grade = coupled_grade,
 		})
 		if type(height_module) ~= "table" or
 				type(height_module.new) ~= "function" or
@@ -1590,6 +1593,14 @@ local function zones_factory(dependencies)
 							fail("planner transition progress differs")
 						end
 					end
+				end
+				-- Ordinary wet columns publish the actual authored bed depth. Named
+				-- transitions and raised functional crossings retain the fixed profile
+				-- depth consumed by their seal and clearance contracts.
+				if classified_hydrology_id ~= nil and transition_kind == nil and
+						functional_kind == nil and
+						water_y ~= nil and water_y > terrain_y then
+					classified_profile_depth = water_y - terrain_y
 				end
 				local hard_foundation = hard_row_at(x, terrain_y, z) ~= nil
 				return water_class, zone_numeric_id, zone_id, logical_biome_id,

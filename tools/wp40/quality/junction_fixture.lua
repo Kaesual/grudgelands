@@ -17,6 +17,7 @@ return function(repo)
 		local horizontal = horizontal_module.new(seed)
 		local height = dofile(directory .. "/height.lua")({
 			source = source, canonical = canonical, deterministic = deterministic,
+			coupled_grade = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/coupled_grade.lua")(),
 			raw_sha256 = raw_sha256, horizontal_session = horizontal,
 		}).new_runtime(seed)
 		local records = height.quality_junction_records()

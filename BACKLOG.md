@@ -215,8 +215,11 @@ that its implementation dependencies or engineering gates are complete.
    under the standing fresh-server mode in AGENTS.md. The subsequent
    [biome-cover and junction follow-up](docs/research/wp40-biome-cover-junctions.md)
    couples fertile variants with biome vegetation and fits free road nodes
-   to their surrounding terrain. Fresh-terrain visual acceptance and the
-   remaining R8 gates stay open.
+   to their surrounding terrain. The [terrain-life follow-up](docs/research/wp40-terrain-life-polish.md)
+   adds bent Gravewood with sparse grey foliage, terrain-fitted ordinary POI
+   building cores, balanced relief, varied shallow-water beds and a gentle
+   near-ground tendency for air fliers. Fresh-terrain visual acceptance and
+   the remaining R8 gates stay open.
 2. **WP37 — surface-density multiplier.** Its only dependency, WP6, shipped.
 3. **WP11 — skill trees**, **WP14 — offhand/carried light**, **WP20 — party**,
    **WP21 — recovery/rest**, and **WP8 — quest framework**. Their listed

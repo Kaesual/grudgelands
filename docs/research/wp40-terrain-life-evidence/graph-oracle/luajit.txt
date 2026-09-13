@@ -1,0 +1,7 @@
+schema	grug_wp40_coupled_grade_oracle_v1
+cases	294
+nodes	1040
+edges	867
+digest	2013808385
+scale	768	line,fan
+coupled_grade_oracle	ok

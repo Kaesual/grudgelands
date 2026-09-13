@@ -482,6 +482,7 @@ return function(repo, scratch, injected_raw_sha256, frozen_input_manifest)
 			canonical = canonical, deterministic = deterministic,
 			index128 = index128,
 			horizontal_factory = dofile(directory .. "/simple_map.lua"),
+			coupled_grade = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/coupled_grade.lua")(),
 			height_factory = dofile(directory .. "/height.lua"),
 			raw_sha256 = raw_sha256})
 		recorded_allocators = {}
@@ -503,6 +504,7 @@ return function(repo, scratch, injected_raw_sha256, frozen_input_manifest)
 			source = source, schemas = schemas, canonical = canonical,
 			deterministic = deterministic, index128 = index128,
 			horizontal_factory = dofile(directory .. "/simple_map.lua"),
+			coupled_grade = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/coupled_grade.lua")(),
 			height_factory = dofile(directory .. "/height.lua"),
 			raw_sha256 = raw_sha256,
 		})

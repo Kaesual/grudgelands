@@ -6,8 +6,8 @@
 --   * Silverwood (Elf)    -- pale silver bark, pale sage leaves. Shape is
 --                            default's aspen, so it can reuse default's
 --                            aspen schematic with node `replacements`.
---   * Gravewood (Undead)  -- blackened, BARE dead trunk (no leaves at all,
---                            that bareness is the identity).
+--   * Gravewood (Undead)  -- blackened, knotted dead branches with a few
+--                            scattered grey leaf remnants.
 --
 -- Both woods are in `group:wood`, so every base recipe accepts them
 -- (biomes_mobs.md §5/§6); the race woods only matter for looks and for the
@@ -17,10 +17,9 @@
 -- (CC BY-SA 3.0) -- see LICENSE-media.md for attribution and the exact
 -- ImageMagick operations.
 --
--- WP18 registers the nodes only. R7 P9 uses default's .mts files and
--- substitutes our nodes via `replacements` inside the single mapgen
--- transaction; the hand-built great_silverwood.mts treehouse schematic is
--- WP13.
+-- R7 P9 resolves Silverwood through default's aspen plus replacements and
+-- Gravewood through this mod's original .mts assets in the single mapgen
+-- transaction. The great_silverwood.mts treehouse remains WP13.
 
 grug_trees = {}
 
@@ -74,51 +73,38 @@ function grug_trees.grow_silverwood(pos)
 		SILVERWOOD_SCHEMATIC, "0", nil, false)
 end
 
-local GRAVEWOOD_TRUNK = "grug_trees:gravewood_tree"
-
--- Branch offsets, hoisted: the grower picks one or two of these per tree.
-local GRAVEWOOD_BRANCH_DIRS = {
-	{x = 1, z = 0}, {x = -1, z = 0}, {x = 0, z = 1}, {x = 0, z = -1},
-}
-
-local function is_free(pos)
-	local node = core.get_node(pos)
-	if node.name == "ignore" then
-		return false
-	end
-	local def = core.registered_nodes[node.name]
-	return def ~= nil and def.buildable_to == true
+local gravewood_schematics = {}
+for _, filename in ipairs({"grug_gravewood_small.mts", "grug_gravewood_tall.mts"}) do
+	local schematic = core.read_schematic(core.get_modpath("grug_trees") ..
+		"/schematics/" .. filename, {})
+	local handle = schematic and core.register_schematic(schematic)
+	if not handle then error("grug_trees: cannot register " .. filename) end
+	gravewood_schematics[#gravewood_schematics + 1] = {handle = handle,
+		height = schematic.size.y}
 end
 
--- Gravewood is too small and too irregular to be worth a schematic: a bare
--- trunk of 3-5 nodes plus one or two stubby branches, built in Lua.
+-- Saplings and mapgen consume the same face-connected, bent dead-tree assets.
 function grug_trees.grow_gravewood(pos)
-	local height = math.random(3, 5)
-	-- The sapling node itself becomes the base of the trunk.
-	core.set_node(pos, {name = GRAVEWOOD_TRUNK})
-	local top = pos.y
-	local i = 1
-	while i < height do
-		local p = {x = pos.x, y = pos.y + i, z = pos.z}
-		if not is_free(p) then
-			break
-		end
-		core.set_node(p, {name = GRAVEWOOD_TRUNK})
-		top = p.y
-		i = i + 1
-	end
-
-	for _ = 1, math.random(1, 2) do
-		local d = GRAVEWOOD_BRANCH_DIRS[math.random(#GRAVEWOOD_BRANCH_DIRS)]
-		local p = {
-			x = pos.x + d.x,
-			y = top - math.random(0, 1),
-			z = pos.z + d.z,
-		}
-		if p.y > pos.y and is_free(p) then
-			core.set_node(p, {name = GRAVEWOOD_TRUNK})
+	local schematic = gravewood_schematics[math.random(#gravewood_schematics)]
+	-- Check the complete rotation-invariant volume before removing the sapling:
+	-- partially obstructed placement must not leave disconnected branch tips.
+	for z = pos.z - 3, pos.z + 3 do
+		for y = pos.y, pos.y + schematic.height - 1 do
+			for x = pos.x - 3, pos.x + 3 do
+				if x ~= pos.x or y ~= pos.y or z ~= pos.z then
+					local node = core.get_node({x = x, y = y, z = z})
+					local def = core.registered_nodes[node.name]
+					if node.name == "ignore" or not def or not def.buildable_to then
+						default.on_grow_failed(pos)
+						return
+					end
+				end
+			end
 		end
 	end
+	core.remove_node(pos)
+	core.place_schematic({x = pos.x - 3, y = pos.y, z = pos.z - 3},
+		schematic.handle, tostring(math.random(0, 3) * 90), nil, false)
 end
 
 default.register_sapling_growth("grug_trees:silverwood_sapling", {
@@ -220,7 +206,7 @@ default.register_leafdecay({
 })
 
 --
--- Gravewood (Undead) -- no leaves on purpose
+-- Gravewood (Undead) -- mostly bare branches, sparse grey leaf remnants
 --
 
 core.register_node("grug_trees:gravewood_tree", {
@@ -246,6 +232,25 @@ core.register_node("grug_trees:gravewood_wood", {
 	sounds = default.node_sound_wood_defaults(),
 })
 
+core.register_node("grug_trees:gravewood_leaves", {
+	description = "Gravewood Dead Leaves",
+	drawtype = "allfaces_optional",
+	-- Existing CC BY-SA leaf texture; the engine modifier tints the foliage toward grey.
+	tiles = {"default_leaves.png^[colorize:#858585:210"},
+	paramtype = "light",
+	is_ground_content = false,
+	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1},
+	drop = "",
+	sounds = default.node_sound_leaves_defaults(),
+	after_place_node = after_place_leaves,
+})
+
+default.register_leafdecay({
+	trunks = {"grug_trees:gravewood_tree"},
+	leaves = {"grug_trees:gravewood_leaves"},
+	radius = 3,
+})
+
 core.register_node("grug_trees:gravewood_sapling", {
 	description = "Gravewood Tree Sapling",
 	drawtype = "plantlike",
@@ -269,11 +274,11 @@ core.register_node("grug_trees:gravewood_sapling", {
 	end,
 
 	on_place = function(itemstack, placer, pointed_thing)
-		-- Max 5 trunk nodes plus branches one node to the side.
+		-- Both grown silhouettes fit this shared rotation-invariant envelope.
 		itemstack = default.sapling_on_place(itemstack, placer, pointed_thing,
 			"grug_trees:gravewood_sapling",
-			{x = -1, y = 1, z = -1},
-			{x = 1, y = 6, z = 1},
+			{x = -3, y = 0, z = -3},
+			{x = 3, y = 8, z = 3},
 			2)
 
 		return itemstack

@@ -1,0 +1,3 @@
+schema	grug_wp40_flight_nudge_v1
+cases	high,low,canyon,unknown,water,attack,root,nonair,lifecycle,probe
+result	pass

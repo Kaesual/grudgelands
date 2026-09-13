@@ -5,6 +5,10 @@ io.stderr:write(_VERSION, "\t", jit_info and jit_info.version or "PUC", "\n")
 io.write("schema\tgrug_wp40_quality_final_micro_v1\n")
 for _, relative in ipairs({
 	"tools/wp40/tree_slices/fixture.lua",
+	"tools/wp40/quality/gravewood_fixture.lua",
+	"tools/wp40/quality/gravewood_writer_fixture.lua",
+	"tools/wp40/quality/flight_fixture.lua",
+	"tools/wp40/quality/coupled_grade_oracle.lua",
 	"tools/wp40/resource_rank/primitives.lua",
 	"tools/wp40/resource_rank/fixture.lua",
 	"tools/wp40/quality/surface_fixture.lua",
@@ -17,5 +21,6 @@ for _, relative in ipairs({
 	io.write((dofile(repo .. "/" .. relative)(repo)))
 	collectgarbage("collect")
 end
+dofile(repo .. "/tools/wp40/r7/anchor_activation_kat.lua")
 assert(loadfile(repo .. "/tools/wp40/quality_geometry_micro_kat.lua"))(repo)
 io.write(dofile(repo .. "/tools/wp40/r7/micro_kat.lua")(repo))

@@ -108,6 +108,7 @@ return function(repo, scratch, injected_raw_sha256)
 			deterministic = deterministic,
 			index128 = index128,
 			horizontal_factory = horizontal_factory,
+			coupled_grade = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/coupled_grade.lua")(),
 			height_factory = height_factory,
 			raw_sha256 = raw_sha256,
 		})
@@ -233,6 +234,7 @@ return function(repo, scratch, injected_raw_sha256)
 				canonical = oracle_canonical,
 				deterministic = oracle_deterministic,
 				raw_sha256 = raw_sha256,
+				coupled_grade = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/coupled_grade.lua")(),
 				horizontal_session = horizontal,
 			})
 			assert(type(height_module) == "table" and

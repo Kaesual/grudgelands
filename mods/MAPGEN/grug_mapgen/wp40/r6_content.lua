@@ -50,6 +50,8 @@ return function(manifest_values, content_contract, wp43_projection)
 		"mods/ITEMS/grug_materials/registry.lua",
 		"mods/ITEMS/grug_nodes/init.lua",
 		"mods/ITEMS/grug_trees/init.lua",
+		"mods/ITEMS/grug_trees/schematics/grug_gravewood_small.mts",
+		"mods/ITEMS/grug_trees/schematics/grug_gravewood_tall.mts",
 		"mods/MAPGEN/grug_mapgen/wp43_handoff.lua",
 		"reference_projects/luanti/doc/lua_api.md",
 		"reference_projects/luanti/src/mapgen/mg_schematic.cpp",
@@ -607,6 +609,7 @@ return function(manifest_values, content_contract, wp43_projection)
 			phase = (phase * 131 + string.byte(full_seed, index)) % 65521
 		end
 		local variants = {}
+		local wet_variants, beach_shores = {}, {}
 		for id, base in pairs(surface_by_id) do
 			local palette = fertile_palettes[id] or {base.top, base.top, base.top}
 			local names = {palette[1], palette[2], "default:gravel", "default:stone", palette[3]}
@@ -627,6 +630,27 @@ return function(manifest_values, content_contract, wp43_projection)
 				end
 			end
 			variants[id] = rows
+			wet_variants[id] = {}
+			local wet_names
+			if id == "grug_swamp" then
+				wet_names = {base.bed, base.bed, "default:gravel", "default:stone"}
+			else
+				wet_names = {base.bed, "default:sand", "default:gravel", "default:stone"}
+			end
+			for wet_index = 1, #wet_names do
+				local wet = deep_copy(base)
+				wet.bed = wet_names[wet_index]
+				wet.bed_ref = require_role(wet.bed, 1, p7_classes, "varied water bed")
+				wet_variants[id][wet_index] = wet
+			end
+		end
+		for shore_index, shore_name in ipairs({"default:sand", "default:sand",
+				"default:sand", "default:gravel"}) do
+			local shore = deep_copy(surface_by_id.grug_beach)
+			shore.shore = shore_name
+			shore.shore_ref = require_role(shore.shore, 1, p7_classes,
+				"varied beach shore")
+			beach_shores[shore_index] = shore
 		end
 		-- Integer lattice mixing is scenery noise, not a resource rank. Every
 		-- product stays below 2^53; fixed-point interpolation is identical in
@@ -652,10 +676,20 @@ return function(manifest_values, content_contract, wp43_projection)
 		end
 		return function(id, x, z, water_y, terrain_y)
 			local base = surface_by_id[id]
-			if not base or id == "grug_beach" or id == "grug_swamp" or
-					(water_y ~= nil and water_y > terrain_y) then return base end
+			if not base then return nil end
 			local detail = noise(x, z, 8, 29712151)
 			local patch = math.floor((3 * noise(x, z, 32, 19349663) + detail) / 4)
+			if water_y ~= nil and water_y > terrain_y then
+				local water_depth = water_y - terrain_y
+				if water_depth >= 20 then return base end
+				local bed_index = 1 + math.min(3, math.floor(patch / 256))
+				return wet_variants[id][bed_index]
+			elseif id == "grug_beach" then
+				local shore_index = 1 + math.min(3, math.floor(patch / 256))
+				return beach_shores[shore_index]
+			elseif id == "grug_swamp" then
+				return base
+			end
 			local depth = 1 + math.min(3, math.floor(noise(x, z, 64, 83492791) / 256))
 			local kind = 1
 			if patch > 880 then kind = 4

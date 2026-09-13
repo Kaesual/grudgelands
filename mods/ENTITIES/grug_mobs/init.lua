@@ -413,6 +413,7 @@ function grug_mobs.register_mob(name, def)
 		return pf == nil or pf == faction
 	end
 
+	grug_mobs.install_flight_nudge(def)
 	local old_do_custom = def.do_custom
 	def.do_custom = function(self, dtime, moveresult)
 		-- First-tick level/stat assignment + per-activation nametag hook.
@@ -509,6 +510,7 @@ local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/spawn_policy.lua")
 dofile(modpath .. "/levels.lua")
 dofile(modpath .. "/aggro.lua")
+dofile(modpath .. "/flight.lua")
 dofile(modpath .. "/verbs.lua")
 dofile(modpath .. "/telegraph.lua")
 dofile(modpath .. "/patrol.lua")

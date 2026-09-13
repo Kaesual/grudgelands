@@ -1,0 +1,62 @@
+# WP40 flying-mob near-ground nudge
+
+## Scope and engine seam
+
+This package changes only Grudgelands mobs registered through
+`grug_mobs.register_mob` whose live mobs_redo fields say `fly = true` and
+`fly_in = "air"`. Water fliers such as the Kraken and every ground mob are
+outside the mechanism.
+
+mobs_redo calls `do_custom` before `do_states` on each entity step. Its
+`dogfight` attack branch already tracks the target vertically when the target
+is outside reach. It compares the floored mob origin with the floored target
+origin plus one node, then commands `+walk_velocity` or `-walk_velocity` while
+the next node is valid flight medium. Collision boxes enter the later punch
+line-of-sight calculation; they do not determine this vertical command. The
+eagle/vulture box begins 0.01 nodes below its origin, so the existing origin
+rule does drive it down to a grounded player rather than preserving a hidden
+high-altitude offset. The nudge
+therefore runs from the existing Grudgelands `do_custom` wrapper and yields
+whenever mobs_redo owns purposeful steering: attack, runaway, following,
+evade, or a Grudgelands root. It does not acquire or replace a target.
+
+## Frozen tuning contract
+
+- Probe period: 0.75 seconds, with the first probe staggered over 16 phases by
+  the entity's initial integer position.
+- Probe depth: at most 12 integer node positions directly below the entity's
+  collision-box bottom. A walkable registered node or liquid surface is the
+  lower boundary. An unknown, unloaded, or `ignore` node ends the probe with
+  an unknown result. Twelve known open nodes are a valid lower bound of at
+  least 12 nodes clearance and request the same gentle descent as known high
+  ground; this lets a bird cross a ravine without hovering there forever.
+- Comfortable clearance: 2 to 4 nodes between the ground-node top and the
+  live collision-box bottom. This puts ordinary birds within practical melee
+  reach without pinning them to one altitude.
+- Above 4 nodes: additive vertical bias tends toward -0.65 nodes/second.
+- Below 2 nodes: additive vertical bias tends toward +0.55 nodes/second.
+- Inside the band or without a valid probe, the additive bias tends toward
+  zero. When another steering owner becomes active, a still-recognizable bias
+  is removed immediately; an externally replaced Y velocity is preserved.
+  Purposeful steering also invalidates the ground cache, because it may carry
+  the mob to another column. Free flight schedules a new staggered probe from
+  the current position before applying any new ground-relative bias.
+- Bias acceleration is limited to 0.8 nodes/second squared. Position is never
+  teleported. The controller subtracts its previous additive bias from the
+  current velocity before adding the next bias, preserving native horizontal
+  and vertical steering. If mobs_redo replaces vertical velocity between
+  ticks, that value becomes the new baseline and the obsolete bias is
+  discarded. Crossing a ravine retains only the bounded, acceleration-limited
+  downward tendency; it never commands a velocity based on the distant floor.
+
+All controller state lives under mobs_redo's transient `self.temp` table. A
+reload starts with no cached ground and zero owned bias; there is no persisted
+format and no migration path.
+
+## Verification boundary
+
+`tools/wp40/quality/flight_fixture.lua` loads the production controller with a
+stub ObjectRef and covers high hover, low-ground avoidance, a sudden canyon,
+unknown/unloaded nodes, attack ownership, non-air mobs, roots, and fresh
+lifecycle state. It emits one canonical line suitable for WP40's final compact
+PUC/LuaJIT digest pair; development execution remains LuaJIT-only.

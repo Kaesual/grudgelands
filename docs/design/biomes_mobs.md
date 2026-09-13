@@ -699,7 +699,7 @@ farming system are one later package.
 | grug_crags | snowy_pine above y 60, else bare | gravel/stone tops, snow above y 80; dragonweed `[herb T2]`, frost lichen deco | band-specific nature biome (Dwarf area only) |
 | grug_savanna | acacia_tree.mts sparse (0.002), dry shrubs | dry grass 1–5; wild corn patches `[food]`; sunleaf `[spice T1]` | waterhole ponds (deco) |
 | grug_badlands (+ `_east`) | large_cactus, dead shrub | mesa clay banding (stratum deco optional); dragonweed `[herb T2]` | Orc back country **plus the Troll east wing** since WP36 (§1.3) — the mirror of the deep forest's east wing, not a band-specific biome any more |
-| grug_blight | gravewood (custom dead tree, no leaves) sparse | grey grass tufts, bone piles (deco); gravemoss `[herb T1]` | fireflies/wisp particles optional |
+| grug_blight | gravewood (knotted dead branches, sparse grey leaf remnants) sparse | grey grass tufts, bone piles (deco); gravemoss `[herb T1]` | fireflies/wisp particles optional |
 | grug_bone_forest | gravewood dense (fill 0.015), bone piles | mushrooms `[food found-only]`; dragonweed `[herb T2]` | shares deep-forest drop tables (§3.2) |
 | grug_jungle_edge | jungle_tree.mts (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[spice T1]` | |
 | grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025); papyrus lives in the adjacent swamp/shore band (v7 has no water above sea level, so the jungle cuboids at y ≥ 4 cannot host waterside papyrus) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]` — **level-51–60 zones only** (§2 tightening 2026-08-13); wild melon `[food]` | same flora, roster and target ground: `grug_nodes:dirt_with_canopy_litter`. The shipped WP36 fringe still uses rainforest litter only until WP40 replaces the legacy biome registrations. Existing decorations name both nodes during that migration |
@@ -745,8 +745,13 @@ degrees. The blueberry bush and fallen apple log use y offset +1; the log is
 centred only in x and replaces its unavailable brown mushroom with `air`. The
 emergent jungle tree uses y offset −4, is limited to `surface_y <= 32`, and all
 other template offsets are zero. Silverwood applies the accepted aspen-node
-replacement. Every dry shrub has exact `param2 = 4`; each gravewood trunk has
-hash-selected height 2–4. Simple variant ranges above mean one independently
+replacement. Every dry shrub has exact `param2 = 4`. Gravewood uses original
+7×7×7 (Blight) and 7×9×7 (Bone Forest) schematics with 17/23 face-connected
+wood cells and only 5/8 optional dead-leaf cells (MTS probability value 96 each; mapgen inclusion 3/8).
+Every wood cell and vertical slice is mandatory, preserving connected branches.
+Leaves have a grey tint, decay within radius 3 of wood, and drop nothing.
+Saplings choose either size and a quarter-turn rotation, using these same assets;
+obstructed or unloaded growth volumes retry without removing the sapling. Simple variant ranges above mean one independently
 settled entry per named variant at the displayed fill.
 
 Candidate cells are globally anchored 16-column squares. Exact rational fills,
@@ -1006,6 +1011,18 @@ its own: it is the dust-tinted variant of the settled Rabbit/Hare row
 above (dry grass, blight, rainforest litter) and shares that row's
 numbers and drops. The badlands therefore carry no critter — Hyena,
 Vulture and Mesa Golem only.
+
+Air fliers have a gentle near-ground tendency outside attack, runaway,
+following, evade and root steering. A staggered 0.75-second probe checks at
+most 12 nodes below the collision-box bottom, treating solid ground and liquid
+surfaces as boundaries. The comfort band is 2–4 nodes; the additive vertical
+bias tends toward −0.65 nodes/s above it and +0.55 below it, limited to
+0.8 nodes/s². Twelve loaded air nodes request the same gentle descent, so a
+ravine crossing loses height gradually. Unknown/unloaded ground yields no new
+ground-relative bias. Purposeful steering removes only an identifiable owned
+bias and clears the terrain cache; existing combat targeting owns pursuit.
+Water fliers and ground mobs are excluded.
+
 
 **Savanna extras (grug_savanna inner, L10–25):** Hyena (above, from
 L10); Zebra — grazes (**passive prey**, §3.0, exactly like the Stag it
@@ -1447,10 +1464,10 @@ accept any; race woods matter for looks + settlement schematics).
 | Elf | Silverwood | aspen_tree.mts node-substituted (**new** silverwood variant) + **new** great_silverwood.mts (treehouse base, §1.4) | grug_trees:silverwood_{tree,wood,leaves,sapling} — pale bark/leaf retint of aspen | silverwood planks, grug_nodes:marble (white stone retint; sold by dwarven vendors — trade hook) | elf forest only (the deep forest grows real aspen, §2) |
 | Orc | Spikethorn Acacia | BASE acacia_tree.mts | default acacia | acacia planks, grug_nodes:adobe (dry-dirt+straw craft), bone block | savanna, badlands edge |
 | Troll | Kapok | BASE jungle_tree.mts + emergent | default junglewood | jungle planks, mossycobble, grug_nodes:carved_totem (deco) | jungle edge, deep jungle |
-| Undead | Gravewood | **new** dead-tree .mts (bare twisted trunk, no leaves; build in-world, save via schematic tool) | grug_trees:gravewood_{tree,wood,sapling} — blackened apple-log retint | gravewood planks, grug_nodes:cursed_cobble (mossycobble retint), bone block | blight, bone forest, swamp variant |
+| Undead | Gravewood | two original dead-tree .mts files (bent, forked wood with scattered grey dead leaves) | grug_trees:gravewood_{tree,wood,leaves,sapling} — blackened apple-log retint | gravewood planks, grug_nodes:cursed_cobble (mossycobble retint), bone block | blight, bone forest, swamp variant |
 
 Missing assets summary: silverwood + gravewood textures (retints),
-great_silverwood.mts + gravewood .mts schematics (hand-built), adobe/
+great_silverwood.mts treehouse schematic (WP13; the ordinary Gravewood schematics are shipped), adobe/
 marble/carved_granite/thatch/bone block/cursed_cobble/carved_totem
 node textures (retints). All 2D retints of MTG media (CC BY-SA 3.0) —
 license-clean, keep attribution.

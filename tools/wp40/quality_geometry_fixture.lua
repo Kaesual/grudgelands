@@ -50,7 +50,9 @@ local horizontal_module = dofile(directory .. "/simple_map.lua")({
 })
 assert(horizontal_module.validate_source())
 
-local seeds = {"0", "13191094842853985814"}
+local seeds = {}
+for index = 3, #arg do seeds[#seeds + 1] = arg[index] end
+if #seeds == 0 then seeds = {"0", "13191094842853985814"} end
 local capital_ids = {
 	"anchor_007", "anchor_008", "anchor_009",
 	"anchor_010", "anchor_011", "anchor_012",
@@ -69,8 +71,9 @@ for seed_index = 1, #seeds do
 		deterministic = deterministic,
 		raw_sha256 = raw_sha256,
 		horizontal_session = horizontal,
+		coupled_grade = dofile(directory .. "/coupled_grade.lua")(),
 	})
-	local height = height_module.new_runtime(seed)
+	local height = height_module.new_runtime_checked(seed)
 	local quality = height.quality_geometry_records()
 	assert(#quality == 6)
 	io.write("seed\t", seed, "\n")

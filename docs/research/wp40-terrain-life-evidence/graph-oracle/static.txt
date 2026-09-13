@@ -1,0 +1,3 @@
+parse ok
+SETGLOBAL inspected
+five sweeps inspected

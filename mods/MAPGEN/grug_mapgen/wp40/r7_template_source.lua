@@ -1,7 +1,7 @@
 -- Engine-backed, read-only schematic source for the production R6 template
 -- expander. Luanti owns MTS decoding in both main and mapgen environments.
 
-return function(core_api, schematic_directory)
+return function(core_api, schematic_directory, gravewood_directory)
 	if type(core_api) ~= "table" or type(core_api.read_schematic) ~= "function" or
 			type(schematic_directory) ~= "string" or schematic_directory == "" then
 		error("WP40 R7 template source: construction seam differs", 0)
@@ -35,7 +35,14 @@ return function(core_api, schematic_directory)
 				not filename:match("^[a-z0-9_]+%.mts$") then
 			error("WP40 R7 template source: schematic name differs", 0)
 		end
-		local value = core_api.read_schematic(schematic_directory .. "/" .. filename,
+		local directory = schematic_directory
+		if filename == "grug_gravewood_small.mts" or filename == "grug_gravewood_tall.mts" then
+			if type(gravewood_directory) ~= "string" or gravewood_directory == "" then
+				error("WP40 R7 template source: gravewood directory missing", 0)
+			end
+			directory = gravewood_directory
+		end
+		local value = core_api.read_schematic(directory .. "/" .. filename,
 			{write_yslice_prob = "all"})
 		if type(value) ~= "table" or type(value.data) ~= "table" then
 			error("WP40 R7 template source: engine read failed", 0)
