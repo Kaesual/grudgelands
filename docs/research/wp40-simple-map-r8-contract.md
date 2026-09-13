@@ -1,14 +1,47 @@
 # WP40 simple-map R8 release and runtime contract
 
-**Status:** The corrected one-row G2 pilot passes both schedules with exact
-order equality, direct surface sunlight, stable liquid bytes and clean
-shutdown. The owner-top correction has green static/fixture evidence and
-focused independent acceptance. The one final frozen-byte PUC/LuaJIT pair also
-passes byte-identically. The first exact 10+32 G3 attempt reached 39/42 and
-40/42 completed requests without a generation error, then correctly failed at
-the fixed two-hour timeout. The user approved the narrow four-worker sharding
-correction below; its exact harness and evidence boundary require focused
-independent acceptance before the replacement G3 run.
+**Current status — 2026-09-13:** WP40 is accepted as a completed development
+work package after the user's native and browser-local Lua-5.1 acceptance and
+explicit approval of the development/public-release separation. The
+[completion record](wp40-completion.md) owns the current candidate, observations,
+evidence limits and final review. The slower browser startup/map generation is
+user-accepted; a visible browser build ID was unavailable and is not fabricated.
+
+## Current acceptance boundary
+
+This amendment supersedes the coupling between development-WP completion and
+first-public-server promotion in Sections 1, 3, 5 and 8 below. WP40's implemented
+world foundation and first correction round are accepted for subsequent WPs.
+This is not a public release or a transition out of fresh-server development.
+The original source-bound gates and failed/successful captures remain historical
+facts; neither old G3 nor per-host-root R6/R7 artifacts certify current output.
+
+The following are **deferred first-public-release obligations, still open**:
+
+- select/freeze the intended public seed, game, engine and mapgen settings;
+- rebase resource supply and regional access evidence onto the adopted sampler
+  and that candidate, preserving the historical algorithm identity of old fleets;
+- execute the reviewed current-candidate feature/native and generation-order
+  checks with runtime/RSS and exact input/corpus bindings, explicitly reporting
+  absent native events (historical G3 did not prove dungeon preservation); and
+- confirm native and actual fallback-engine startup/generation/restart for the
+  release candidate, reusing unchanged evidence only where justified.
+
+Owner: the project coordinator preparing the first public release. Trigger:
+release-candidate selection/freeze, before user release approval. Tracking:
+[BACKLOG first-public-release gates](../../BACKLOG.md#first-public-release-gates)
+and [ROADMAP](../../ROADMAP.md#before-the-first-public-release). A reviewed
+current-authority run plan must replace obsolete exact-root/corpus assumptions
+before executing that work; this amendment does not claim those gates passed,
+remove Lua-5.1 support or authorize historical algorithms to return.
+
+The development GUI fixture `531802985935182545` is accepted without silently
+changing any permanent public-server seed or game setting. The browser-local
+result is user acceptance with stated provenance limits, not an independently
+hash-bound browser binary receipt. Documentation-only closure reuses existing
+final production checks; it does not schedule another unchanged Lua population.
+The remainder of this document preserves the original R8 contract and its
+intermediate amendments as the history underlying the open release obligations.
 
 **Baseline:** `ac3ff3f17c0119b80c90f73db944a937d9159a2b` (the reviewed R7
 production cutover merged to `main`).
