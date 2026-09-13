@@ -35,32 +35,17 @@ local factory = dofile(wp40 .. "height.lua")({source = source,
 	horizontal_session = horizontal})
 
 local clock = os.clock()
-local height = factory.new_runtime(seed)
+local height = factory.new(seed)
 local construction_seconds = os.clock() - clock
+local evidence = height.artifact_evidence()
 local absolute, worst, minimax, ordinary = 0, 0, 0, 0
-for index = 13, #source.anchors do
-	local row = assert(height.selected_anchor_3d_by_id(source.anchors[index].id))
-	local profile
-	for profile_index = 1, #source.anchor_profiles do
-		if source.anchor_profiles[profile_index].id == row.template_id then
-			profile = source.anchor_profiles[profile_index]
-			break
-		end
-	end
-	local half = profile.fitting_width / 2
-	local local_worst = 0
-	for offset = -half, half - 1, 4 do
-		for _, point in ipairs({{row.x + offset, row.z - half},
-				{row.x + offset, row.z + half - 1},
-				{row.x - half, row.z + offset},
-				{row.x + half - 1, row.z + offset}}) do
-			local_worst = math.max(local_worst,
-				math.abs(row.y - height.terrain_height_at(point[1], point[2])))
-		end
-	end
+for index = 13, #evidence.anchors do
+	local row = evidence.anchors[index]
+	local local_worst = math.max(row.observed_max_cut, row.observed_max_fill)
 	ordinary = ordinary + 1
 	absolute = absolute + local_worst
 	worst = math.max(worst, local_worst)
+	if row.reference_rule == "ordinary_natural_core_minimax" then minimax = minimax + 1 end
 end
 local classes, depth_min, depth_max, varied = {}, {}, {}, {}
 local samples = 0

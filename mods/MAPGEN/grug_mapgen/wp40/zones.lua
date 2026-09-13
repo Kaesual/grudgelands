@@ -1595,6 +1595,7 @@ local function zones_factory(dependencies)
 				-- transitions and raised functional crossings retain the fixed profile
 				-- depth consumed by their seal and clearance contracts.
 				if classified_hydrology_id ~= nil and transition_kind == nil and
+						functional_kind == nil and
 						water_y ~= nil and water_y > terrain_y then
 					classified_profile_depth = water_y - terrain_y
 				end

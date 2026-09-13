@@ -1697,8 +1697,10 @@ return function(dependencies)
 						end
 					end
 				end
-				local preferred = lower_median(natural_values) or
-					zone_midpoint_y[anchor.zone_numeric_id]
+				local preferred = lower_median(natural_values) or water_lower
+				if preferred == nil then
+					fail("ordinary anchor core has no owner-valid columns")
+				end
 				if feasible_lower ~= nil and feasible_upper ~= nil and
 						feasible_lower <= feasible_upper then
 					fitting.reference_y = clamp(preferred, feasible_lower, feasible_upper)
@@ -2502,6 +2504,8 @@ return function(dependencies)
 				local fitting = fittings[anchor_index]
 				local anchor = fitting.anchor
 				local observed_max_cut, observed_max_fill = 0, 0
+				local core_max_cut, core_max_fill = 0, 0
+				local collar_max_cut, collar_max_fill = 0, 0
 				local cut_x, cut_z, fill_x, fill_z
 				local fitting_columns, collar_columns = 0, 0
 				local platform_columns = 0
@@ -2518,6 +2522,8 @@ return function(dependencies)
 					for x = fitting.center.x - envelope_half,
 							fitting.center.x + envelope_half - 1 do
 						local water_class, _, owner = classified_values(x, z)
+						local _, _, functional_feature_id =
+							final_functional_values_at(x, z)
 						local outside = half_open_square_excess(x, z,
 							fitting.center, grade_width)
 						if owner == fitting.zone_numeric_id then
@@ -2525,8 +2531,6 @@ return function(dependencies)
 							elseif outside < envelope_half - grade_half then
 								collar_columns = collar_columns + 1 end
 						else
-							local _, _, functional_feature_id =
-								final_functional_values_at(x, z)
 							if functional_feature_id == fitting.id then
 								owner_escape_columns = owner_escape_columns + 1
 							end
@@ -2544,11 +2548,19 @@ return function(dependencies)
 								end
 							end
 						end
-						if water_class == "land" and owner == fitting.zone_numeric_id and
+						if functional_feature_id == fitting.id and
+								water_class == "land" and owner == fitting.zone_numeric_id and
 								outside < envelope_half - grade_half then
 							local natural = natural_height_at(x, z)
 							local value = final_terrain_height_at(x, z)
 							local cut, fill = natural - value, value - natural
+							if outside == 0 then
+								core_max_cut = math.max(core_max_cut, cut)
+								core_max_fill = math.max(core_max_fill, fill)
+							else
+								collar_max_cut = math.max(collar_max_cut, cut)
+								collar_max_fill = math.max(collar_max_fill, fill)
+							end
 							if cut_x == nil or cut > observed_max_cut then
 								observed_max_cut, cut_x, cut_z = cut, x, z
 							end
@@ -2611,6 +2623,10 @@ return function(dependencies)
 				anchor_evidence[anchor_index].observed_max_fill = observed_max_fill
 				anchor_evidence[anchor_index].observed_max_fill_witness_x = fill_x
 				anchor_evidence[anchor_index].observed_max_fill_witness_z = fill_z
+				anchor_evidence[anchor_index].core_max_cut = core_max_cut
+				anchor_evidence[anchor_index].core_max_fill = core_max_fill
+				anchor_evidence[anchor_index].collar_max_cut = collar_max_cut
+				anchor_evidence[anchor_index].collar_max_fill = collar_max_fill
 				anchor_evidence[anchor_index].rejected = false
 				anchor_evidence[anchor_index].reselected = false
 				anchor_evidence[anchor_index].platform_columns = platform_columns

@@ -449,6 +449,17 @@ WP40 replaces it with the complete catalog and contracts below.
   `frozen_layout` records with their approved former candidate indices. No
   world seed selects or moves a 2D anchor. Height grading must fit each frozen
   position and may not reject, move or reselect it.
+- Starts retain their fixed station height and capitals retain their existing
+  96-node civic core and terrace contract. Every other anchor flattens only a
+  compact building core: village and either bandit profile 24; outpost,
+  mirefolk and clash 16; mine 20; dragon and apex mine 32; rare route 12 nodes. Dry
+  core columns contribute natural heights; the lower median is clamped into
+  the common `[natural-max_cut, natural+max_fill]` interval. If that interval
+  is empty, its deterministic minimax midpoint wins. Planned-water columns add
+  a final water-surface-plus-one lower bound. One smootherstep collar from the
+  building-core edge to the existing blend edge returns to natural terrain.
+  The larger fitting width remains structure metadata; it is not a promise to
+  flatten a future city or whole camp.
 - Housing is available only in the ten zones listed by `world.md` section 5.
   A true housing-centre mask means the complete 101 by 101 future reservation
   passes every static exclusion. The 100 actual anchor envelopes and 74

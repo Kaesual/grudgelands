@@ -30,11 +30,12 @@ existing fitting and blend envelope:
 
 | Profile | Building core |
 | --- | ---: |
-| village | 40 |
-| outpost, bandit, mirefolk, clash | 28 |
-| mine | 32 |
-| dragon, apex mine | 48 |
-| rare route | 16 |
+| village | 24 |
+| outpost, mirefolk, clash | 16 |
+| bandit | 24 |
+| mine | 20 |
+| dragon, apex mine | 32 |
+| rare route | 12 |
 
 For each ordinary POI, construction scans the owner-valid columns of that
 building core. Dry columns contribute their natural height. Planned-water
