@@ -114,6 +114,7 @@ local function planner_factory()
 		end
 
 		local surfaces = content.surfaces()
+		local select_surface = content.new_surface_selector(full_seed, planner_source)
 		local resources = content.resources()
 		local cultural = content.cultural()
 		local decorations = content.decorations()
@@ -262,7 +263,7 @@ local function planner_factory()
 			end
 			local wet = water_y ~= nil and water_y > terrain_y
 			local surface_kind = wet and 3 or (biome == "grug_beach" and 2 or 1)
-			local surface = surface_by_id[biome]
+			local surface = select_surface(biome, x, z, water_y, terrain_y)
 			local support_name = surface and (surface_kind == 1 and surface.top or
 				(surface_kind == 2 and surface.shore or surface.bed)) or false
 			-- These are the P2-P4 surface winners exposed as exact R5 planner-source

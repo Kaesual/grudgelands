@@ -61,6 +61,7 @@ return function(repo, settlement_path)
 	local content = {}
 	function content.content_contract() return contract end
 	function content.surfaces() return {surface} end
+	function content.new_surface_selector() return function() return surface end end
 	function content.resources() return {} end
 	function content.cultural() return {} end
 	function content.decorations() return decorations end

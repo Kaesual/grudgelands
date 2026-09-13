@@ -557,6 +557,88 @@ return function(manifest_values, content_contract, wp43_projection)
 	function module.cultural() return deep_copy(cultural) end
 	function module.decorations() return deep_copy(decorations) end
 	function module.surface(id) return deep_copy(surface_by_id[id]) end
+	-- Fresh-world quality revision: coherent patches refine the base catalog.
+	-- Rows are built once and shared read-only by planner and settlement callers.
+	function module.new_surface_selector(full_seed, planner_source)
+		local phase = 0
+		for index = 1, #full_seed do
+			phase = (phase * 131 + string.byte(full_seed, index)) % 65521
+		end
+		local variants = {}
+		for id, base in pairs(surface_by_id) do
+			local dry = id == "grug_savanna"
+			local names = {base.top, dry and "default:dry_dirt" or "default:dirt",
+				"default:gravel", "default:stone", "default:dirt_with_grass"}
+			local rows = {}
+			for kind = 1, #names do
+				rows[kind] = {}
+				for depth = 1, 4 do
+					local row = deep_copy(base)
+					row.top = names[kind]
+					row.top_ref = require_role(row.top, 1, p7_classes, "patch top")
+					row.filler_depth = depth
+					if kind == 3 or kind == 4 then
+						row.filler = row.top
+						row.filler_ref = row.top_ref
+						row.dust, row.dust_ref = "-", 0
+					end
+					rows[kind][depth] = row
+				end
+			end
+			variants[id] = rows
+		end
+		-- Integer lattice mixing is scenery noise, not a resource rank. Every
+		-- product stays below 2^53; fixed-point interpolation is identical in
+		-- LuaJIT and PUC 5.1 and adds no SHA work or per-query table allocation.
+		local function lattice(x, z, salt)
+			local value = (x * 374761 + z * 668265 + phase * 69069 + salt) % 16777213
+			value = (value * value) % 16777213
+			return math.floor(((value * 48271) % 16777213) * 1024 / 16777213)
+		end
+		local function weight(offset, period)
+			local t = math.floor(offset * 1024 / period)
+			return math.floor(t * t * (3072 - 2 * t) / 1048576)
+		end
+		local function lerp(a, b, t)
+			return a + math.floor((b - a) * t / 1024)
+		end
+		local function noise(x, z, period, salt)
+			local ix, iz = math.floor(x / period), math.floor(z / period)
+			local tx, tz = weight(x - ix * period, period),
+				weight(z - iz * period, period)
+			return lerp(lerp(lattice(ix, iz, salt), lattice(ix + 1, iz, salt), tx),
+				lerp(lattice(ix, iz + 1, salt), lattice(ix + 1, iz + 1, salt), tx), tz)
+		end
+		return function(id, x, z, water_y, terrain_y)
+			local base = surface_by_id[id]
+			if not base or id == "grug_beach" or id == "grug_swamp" or
+					(water_y ~= nil and water_y > terrain_y) then return base end
+			local patch = noise(x, z, 32, 19349663)
+			local depth = 1 + math.min(3, math.floor(noise(x, z, 64, 83492791) / 256))
+			local kind = 1
+			if id == "grug_crags" or id == "grug_crags_snowy" or
+					id == "grug_badlands" or id == "grug_badlands_east" then
+				if patch > 650 then kind = 4 elseif patch < 300 then kind = 3 end
+			elseif patch > 790 then kind = 4
+			elseif patch > 690 then kind = 3
+			elseif patch < 240 then kind = 2
+			elseif patch < 360 and id ~= "grug_savanna" and
+					id ~= "grug_blight" and id ~= "grug_bone_forest" then kind = 5 end
+			-- Sample actual final relief only in the rocky part of the patch field.
+			-- This keeps slope evaluation bounded while breaking up steep faces.
+			if patch > 600 and kind ~= 4 and x >= -3736 and x <= 3736 and
+					z >= -3336 and z <= 3336 then
+				local _, _, _, _, _, west = planner_source.column_values_at(x - 4, z)
+				local _, _, _, _, _, east = planner_source.column_values_at(x + 4, z)
+				local _, _, _, _, _, north = planner_source.column_values_at(x, z - 4)
+				local _, _, _, _, _, south = planner_source.column_values_at(x, z + 4)
+				if math.max(math.abs(east - west), math.abs(south - north)) >= 6 then
+					kind = 4
+				end
+			end
+			return variants[id][kind][depth]
+		end
+	end
 	function module.resource(key) return deep_copy(resource_by_key[key]) end
 	function module.cultural_for_race(race) return deep_copy(cultural_by_race[race]) end
 	function module.cultural_for_key(key) return deep_copy(cultural_by_key[key]) end

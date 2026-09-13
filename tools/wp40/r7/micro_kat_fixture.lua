@@ -1638,6 +1638,9 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			}
 			local planner_content = {
 				surfaces = function() return {{id = "micro_biome"}} end,
+				new_surface_selector = function()
+					return function() return nil end
+				end,
 				resources = function() return {} end,
 				cultural = function() return {} end,
 				decorations = function()

@@ -372,6 +372,7 @@ local function settlement_factory()
 			fail("fail_content_manifest", "prospective water targets differ")
 		end
 		local surfaces = content.surfaces()
+		local select_surface = content.new_surface_selector(full_seed, planner_source)
 		local resources = content.resources()
 		local cultural = content.cultural()
 		local decorations = content.decorations()
@@ -682,7 +683,7 @@ local function settlement_factory()
 				functional_kind, functional_y, _, _, transition_kind, transition_id,
 				_, transition_lower_y, _, transition_face_mask =
 					planner_source.column_values_at(x, z)
-			local surface = surface_by_id[biome]
+			local surface = select_surface(biome, x, z, water_y, terrain_y)
 			if not zone_id or not surface or y < terrain_y - surface.filler_depth or
 					y > terrain_y or y < -37 then return nil end
 			if functional_kind == "anchor_platform" or
@@ -1032,7 +1033,7 @@ local function settlement_factory()
 			local function prospective(x, y, z)
 				local _, _, _, biome, _, terrain_y, water_y =
 					planner_source.column_values_at(x, z)
-				local surface = surface_by_id[biome]
+				local surface = select_surface(biome, x, z, water_y, terrain_y)
 				if not surface then return CLASS_UNKNOWN, 0, false, 0, 0 end
 				local p7_ref = analytic_p7_material_ref(x, y, z)
 				if p7_ref then

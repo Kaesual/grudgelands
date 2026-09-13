@@ -459,6 +459,16 @@ WP40 replaces it with the complete catalog and contracts below.
 
 ### 7.6 Height, relief and visual structure
 
+- **Fresh-world surface refinement (2026-09-13):** logical biome ownership
+  stays unchanged. Dry surfaces receive coherent 32-node material patches
+  and 64-node variations in filler depth (1–4 nodes), using existing soil,
+  grass, gravel and stone. Wet surfaces, beaches and swamps retain their
+  declared substrate. Crags and badlands mix only their base, gravel and
+  stone; savanna retains dry soil, and blight/bone forest receive no green
+  grass patches. Rocky patches expose stone on steep final terrain. The
+  planner, writer and prospective vegetation support share the same seeded
+  selector. The original R6 surface table is the base palette, not a promise
+  that every column in a biome has the same material.
 - The project owns one globally queryable integer surface-height field
   `H(full_seed_string, x, z)`, exposed as `terrain_height_at`. It combines
   bounded broad/detail lattices, the zone relief profiles, authored landmarks
