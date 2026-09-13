@@ -270,7 +270,7 @@ current state). It is **derived, never authoritative**:
 - Performance rules (distilled from VoxeLibre):
   - **Always** throttle `register_globalstep` with a dtime accumulator.
   - Node timers for machines/workstations (forge, alchemy).
-  - LBMs for one-shot load fixes/migrations.
+  - LBMs for required current-version activation only; no old-world migrations in fresh-server mode.
   - ABMs only for ambient random events, throttled via `chance`/`interval`,
     `catch_up = false` where possible.
   - In hot loops use `core.get_node_raw`/content IDs + VoxelManip instead

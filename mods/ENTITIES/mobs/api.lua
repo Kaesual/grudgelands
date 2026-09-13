@@ -3786,7 +3786,6 @@ function mobs:register_mob(name, def)
 
 	}, mob_class_meta))
 
-	local self = core.registered_entities[name]
 	-- GRUG PATCH: floats is boolean in every current game definition.
 end
 
