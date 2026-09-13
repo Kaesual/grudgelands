@@ -1,0 +1,6 @@
+22a8b7875c9b73c6db75b076886f6554bf9fa2d449c80963121163768c642dff  /tmp/grug-mapgen-profile-20260913/tools/wp40/profile/run.sh
+9ca5e7a638a759974b2f87dc042750002cb6b92cf7e2fc555109bbbc168bdd57  /tmp/grug-mapgen-profile-20260913/tools/wp40/profile/patch_snapshot.sh
+0ba88e60faccb0920ee4afaa46cdccfc651e4e57c084997b8801f94301860279  /tmp/grug-mapgen-profile-20260913/tools/wp40/profile/instrument-mapgen.patch
+23df8643d53da8776450f933207bd0e811de7145195cc637c463b8c7283b06da  /tmp/grug-mapgen-profile-20260913/tools/wp40/profile/probe/init.lua
+71c7c1eacff01a943d1d396c0ebac499b649c30d4b81a4f099ffad88618e6b62  /tmp/grug-mapgen-profile-20260913/tools/wp40/profile/probe/cases.lua
+2b12ec9f4cee943e5854180c37a1404d822e5d8fb02b982c3533f27a52f39ba2  /tmp/grug-mapgen-profile-20260913/tools/wp40/profile/probe/mod.conf

@@ -1,0 +1,10 @@
+source_sha256	d1152b5be6156e0e513ba0d69520860984d3bae8aa7ba0da9895e1b88abdb53c
+expected_exit_nonzero	1
+luajit: tree-slice fixture: evidence source coordinates or slice call count differ
+stack traceback:
+	[C]: in function 'error'
+	tools/wp40/tree_slices/fixture.lua:5: in function 'check'
+	tools/wp40/tree_slices/fixture.lua:252: in function 'take_calls'
+	tools/wp40/tree_slices/fixture.lua:257: in function <tools/wp40/tree_slices/fixture.lua:3>
+	(command line):1: in main chunk
+	[C]: at 0x5617df7c6b00

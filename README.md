@@ -203,7 +203,7 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
 
-*Last updated: 2026-09-03. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-09-13. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
 
 **Shipped (18 of 46 work packages):** WP0–WP4, WP6, WP7, WP15, WP18,
@@ -254,6 +254,11 @@ The accepted R2 artifact owns fixed-layout and once-per-layout capacity
 evidence; the accepted R6 artifact owns 32-seed content/supply/access
 evidence. R8 now owns the first real fresh Luanti world, visual quality,
 production mapchunk performance and runtime evidence.
+The [2026-09-13 follow-up](docs/research/wp40-mapgen-profile-tree-fix.md)
+fixes gaps caused by omitted tree slices and reduces resource-generation work,
+with real-engine profiling and complete tested-chunk/persistence parity.
+Fresh-terrain visual acceptance remains open; existing malformed trees retain
+their saved blocks.
 
 **Ready to start next:** WP5, WP26 and WP44 are the newly unblocked loot,
 material and economy roots. WP37, WP11, WP14, WP20, WP21 and WP8 are also

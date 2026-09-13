@@ -1,2 +1,6 @@
 tools/wp40/dungeon_probe/evidence/*/raw.log -whitespace
 tools/wp40/evidence/t5-probe-*/run-*/raw.log -whitespace
+# Preserve native profiler output and literal unified-diff context bytes.
+tools/wp40/profile/evidence/20260913/**/*.log -whitespace
+tools/wp40/profile/evidence/20260913/variants/*.patch -whitespace
+tools/wp40/profile/instrument-*.patch -whitespace
