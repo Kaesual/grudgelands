@@ -1,0 +1,11 @@
+schema	grug_wp40_r5_wet_cache_fixture_v1
+mixed_bytes	1713
+dry_bytes	1628
+mixed_digest	14637360
+dry_digest	9167105
+bound_digest	2402327
+mixed_calls	265
+dry_calls	325
+repeat_calls	265
+recovery_calls	265
+bound_calls	83200

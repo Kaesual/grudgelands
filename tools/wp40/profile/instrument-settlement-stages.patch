@@ -109,3 +109,76 @@
  			metrics_state.apply_calls = metrics_state.apply_calls + 1
  			local c, p, l, q = content_changed, param2_changed, light_changed,
  				liquid_changed
+--- a/mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua
++++ b/mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua
+@@ -443,8 +443,12 @@
+ 			return count
+ 		end
+ 
++		local profile_load_us, profile_cultural_us, profile_decor_us = 0, 0, 0
+ 		local function build_cell(cell_x, cell_z, capture_groups)
++			local profile_before = core.get_us_time()
+ 			local column_count = load_cell(cell_x, cell_z)
++			profile_load_us = profile_load_us + core.get_us_time() - profile_before
++			profile_before = core.get_us_time()
+ 			local cultural_count, decoration_count = 0, 0
+ 			local group_count = 0
+ 			local coverage_count = 0
+@@ -512,6 +516,8 @@
+ 					end
+ 				end
+ 			end
++			profile_cultural_us = profile_cultural_us + core.get_us_time() - profile_before
++			profile_before = core.get_us_time()
+ 			for catalog = 1, #decorations do
+ 				local row = decorations[catalog]
+ 				local height_rule = decoration_height_rule[catalog]
+@@ -581,6 +587,7 @@
+ 				return hash.less_bytes(decorations[left.catalog].id,
+ 					decorations[right.catalog].id)
+ 			end)
++			profile_decor_us = profile_decor_us + core.get_us_time() - profile_before
+ 			return cultural_count, decoration_count, group_count, coverage_count,
+ 				column_count
+ 		end
+@@ -601,9 +608,20 @@
+ 		end
+ 
+ 		local function plan_slice_core(min_x, min_y, min_z, max_x, max_y, max_z)
++			local profile_started = core.get_us_time()
++			local profile_previous = profile_started
++			local function profile_mark(name)
++				local now = core.get_us_time()
++				core.log("action", table.concat({"GRUG_WP40_PROFILE_PLAN",
++					"stage=" .. name, "elapsed_us=" .. (now - profile_previous),
++					"total_us=" .. (now - profile_started),
++					"minp=" .. min_x .. "," .. min_y .. "," .. min_z}, " "))
++				profile_previous = core.get_us_time()
++			end
+ 			plan.valid = false
+ 			local r5_plan, r5_generation = r5_planner:plan_slice(
+ 				{x = min_x, y = min_y, z = min_z}, {x = max_x, y = max_y, z = max_z})
++			profile_mark("nested_r5")
+ 			plan.generation = plan.generation + 1
+ 			plan.min_x, plan.min_y, plan.min_z = min_x, min_y, min_z
+ 			plan.max_x, plan.max_y, plan.max_z = max_x, max_y, max_z
+@@ -637,6 +655,8 @@
+ 					column_values[base + 12] = surface and surface.dust_ref or 0
+ 				end
+ 			end
++			profile_mark("columns")
++			profile_load_us, profile_cultural_us, profile_decor_us = 0, 0, 0
+ 			local first_cell_x = floor_div(min_x, 16) - halo_x
+ 			local last_cell_x = floor_div(max_x, 16) + halo_x
+ 			local first_cell_z = floor_div(min_z, 16) - halo_z
+@@ -662,6 +682,10 @@
+ 					candidate_cell_values[cell_base + 4] = candidate_count + 1
+ 				end
+ 			end
++			profile_mark("candidates")
++			core.log("action", "GRUG_WP40_PROFILE_CANDIDATE load_us=" .. profile_load_us ..
++				" cultural_us=" .. profile_cultural_us .. " decoration_us=" .. profile_decor_us ..
++				" minp=" .. min_x .. "," .. min_y .. "," .. min_z)
+ 			plan.column_count, plan.candidate_cell_count, plan.candidate_count =
+ 				column_count, cell_count, candidate_count
+ 			metrics.plan_buffer_reuse_calls = metrics.plan_buffer_reuse_calls + 1

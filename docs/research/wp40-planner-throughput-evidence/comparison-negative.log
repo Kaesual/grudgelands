@@ -1,0 +1,6 @@
+PASS: six copies of baseline rejected: production diff differs
+Traceback (most recent call last):
+  File "/home/jan/projects/grudgelands/tools/wp40/planner_throughput/compare.py", line 55, in <module>
+    assert differences == set(changed_paths), (path, 'production diff differs')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: (PosixPath('/tmp/grug-planner-negative-comparison/optimized-1'), 'production diff differs')

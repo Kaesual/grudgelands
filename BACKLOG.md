@@ -229,6 +229,10 @@ that its implementation dependencies or engineering gates are complete.
    additional placed blocks out of roughly 592,500. Historical R6/R7 supply
    artifacts are not a recertification of the sampler; the remaining R8 supply,
    visual and fallback-engine gates stay open.
+   The [planner-throughput follow-up](docs/research/wp40-planner-throughput.md)
+   reuses wet-neighbor results within each plan and cell. Three alternating
+   real-engine runs per variant reduce ten-owner callback time by 8.8% median
+   against the adopted sampler, preserving all tested node/param2/light bytes.
 2. **WP37 — surface-density multiplier.** Its only dependency, WP6, shipped.
 3. **WP11 — skill trees**, **WP14 — offhand/carried light**, **WP20 — party**,
    **WP21 — recovery/rest**, and **WP8 — quest framework**. Their listed
