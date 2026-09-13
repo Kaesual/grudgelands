@@ -82,10 +82,10 @@ return function()
 		put(x, y, z, TORCH_WALL, param2)
 	end
 
-	local function path_light(x, z, param2)
+	local function path_light(x, z)
 		put(x, 1, z, STONEBRICK)
 		put(x, 2, z, STONEBRICK)
-		wall_torch(x, 3, z, param2)
+		put(x, 3, z, TORCH, 1)
 	end
 
 	-- Fit a coherent piece of pine-vale ground beneath the whole authored
@@ -251,7 +251,7 @@ return function()
 	fill(28, 4, 3, 33, 4, 8, STONE_SLAB)
 	table_at(25, 1, 5, false)
 	fill(22, 1, 9, 24, 1, 9, PINE_SLAB)
-	wall_torch(30, 4, 9, 2)
+	wall_torch(30, 4, 11, 4)
 	wall_torch(21, 3, 3, 3)
 	wall_torch(27, 3, 11, 4)
 
@@ -322,8 +322,8 @@ return function()
 	for _, x in ipairs({-3, 3}) do
 		fill(x, 1, 54, x, 4, 56, PINE_LOG)
 	end
-	wall_torch(-3, 4, 53, 3)
-	wall_torch(3, 4, 53, 2)
+	wall_torch(-3, 4, 53, 4)
+	wall_torch(3, 4, 53, 4)
 	put(-9, 5, 55, GLASS)
 	put(9, 5, 55, GLASS)
 
@@ -353,8 +353,8 @@ return function()
 	table_at(-48, 1, -15, false)
 	fill(-52, 1, -11, -49, 1, -11, PINE_SLAB)
 	fill(-40, 1, -19, -38, 1, -14, PINE_SLAB)
-	wall_torch(-42, 4, -12, 4)
-	wall_torch(-40, 3, -15, 2)
+	wall_torch(-42, 4, -12, 2)
+	wall_torch(-40, 3, -15, 3)
 
 	-- East home: rotated ninety degrees, with its broad gable and porch facing
 	-- south toward the arrival branch.
@@ -383,7 +383,7 @@ return function()
 	fill(51, 1, 3, 53, 1, 3, PINE_SLAB)
 	fill(44, 1, 9, 51, 1, 9, PINE_SLAB)
 	wall_torch(43, 4, 6, 4)
-	wall_torch(48, 3, 8, 4)
+	wall_torch(50, 3, 6, 4)
 
 	-- Lagerhouse: a broad, low store hall with two aisles, stacked timber and
 	-- an open loading porch. It conveys use without functional storage nodes.
@@ -417,7 +417,7 @@ return function()
 	fill(23, 1, 23, 30, 1, 23, PINE_SLAB)
 	wall_torch(19, 4, 33, 3)
 	wall_torch(35, 4, 33, 2)
-	wall_torch(26, 3, 24, 3)
+	wall_torch(24, 3, 24, 4)
 
 	-- Community hall: the largest social room, turned east-west and furnished
 	-- with two long tables and perimeter benches.
@@ -438,7 +438,7 @@ return function()
 		fill(-59, 9 + rise, 39 + rise, -38, 9 + rise, 58 - rise,
 			PINE_WOOD)
 	end
-	for _, x in ipairs({-58, -52, -45, -39}) do
+	for _, x in ipairs({-58, -52, -48, -39}) do
 		timber_post(x, 40, 8)
 		timber_post(x, 57, 8)
 	end
@@ -452,14 +452,14 @@ return function()
 	fill(-49, 1, 38, -42, 1, 38, PINE_SLAB)
 	wall_torch(-57, 5, 48, 3)
 	wall_torch(-40, 5, 48, 2)
-	wall_torch(-45, 3, 39, 3)
+	wall_torch(-48, 3, 39, 4)
 
 	-- Low roadside lights, benches and material stacks make the routes usable
 	-- and occupied after dark without enclosing the vale.
-	for _, p in ipairs({{-6, 7, 3}, {6, 7, 2}, {-6, 20, 3}, {6, 20, 2},
-		{-6, 35, 3}, {6, 35, 2}, {-6, 46, 3}, {6, 46, 2},
-		{-17, 9, 3}, {17, 5, 2}, {-43, 25, 3}, {15, 32, 2}}) do
-		path_light(p[1], p[2], p[3])
+	for _, p in ipairs({{-6, 7}, {6, 7}, {-6, 20}, {6, 20},
+		{-6, 35}, {6, 35}, {-6, 46}, {6, 46},
+		{-17, 9}, {17, 5}, {-43, 25}, {15, 32}}) do
+		path_light(p[1], p[2])
 	end
 	fill(10, 1, 10, 14, 1, 10, PINE_SLAB)
 	fill(-14, 1, 15, -10, 1, 15, PINE_SLAB)
@@ -477,6 +477,7 @@ return function()
 		fill(p[1] - 1, 6, p[2] - 1, p[1] + 1, 7, p[2] + 1,
 			PINE_NEEDLES)
 		put(p[1], 8, p[2], PINE_NEEDLES)
+		fill(p[1], 1, p[2], p[1], 6, p[2], PINE_LOG)
 	end
 	for _, p in ipairs({{-57, -17}, {-36, -15}, {-15, -35}, {16, -35},
 		{34, 18}, {48, 16}, {-31, 42}, {-18, 45}}) do
@@ -575,7 +576,7 @@ return function()
 				{x = -29, y = 4, z = 0},
 				{x = -28, y = 3, z = 8},
 				{x = -22, y = 3, z = 8},
-				{x = 30, y = 4, z = 9},
+				{x = 30, y = 4, z = 11},
 				{x = 21, y = 3, z = 3},
 				{x = 27, y = 3, z = 11},
 				{x = -34, y = 5, z = 25},
@@ -585,13 +586,13 @@ return function()
 				{x = -42, y = 4, z = -12},
 				{x = -40, y = 3, z = -15},
 				{x = 43, y = 4, z = 6},
-				{x = 48, y = 3, z = 8},
+				{x = 50, y = 3, z = 6},
 				{x = 19, y = 4, z = 33},
 				{x = 35, y = 4, z = 33},
-				{x = 26, y = 3, z = 24},
+				{x = 24, y = 3, z = 24},
 				{x = -57, y = 5, z = 48},
 				{x = -40, y = 5, z = 48},
-				{x = -45, y = 3, z = 39},
+				{x = -48, y = 3, z = 39},
 				{x = -6, y = 3, z = 7},
 				{x = 6, y = 3, z = 7},
 				{x = -6, y = 3, z = 20},
