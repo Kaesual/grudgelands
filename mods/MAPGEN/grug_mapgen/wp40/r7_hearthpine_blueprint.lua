@@ -164,7 +164,7 @@ return function()
 		timber_post(p[1], p[2], 6)
 	end
 	clear(-26, 1, 9, -24, 4, 9)
-	put(-29, 4, 2, GLASS)
+	put(-30, 4, 2, GLASS)
 	put(-20, 4, 2, GLASS)
 	fill(-31, 6, -5, -19, 6, 10, PINE_WOOD)
 	for rise = 0, 4 do
@@ -175,9 +175,9 @@ return function()
 	fill(-28, 1, 11, -22, 1, 11, PINE_SLAB)
 	fill(-28, 1, 10, -28, 3, 10, FENCE)
 	fill(-22, 1, 10, -22, 3, 10, FENCE)
-	table_at(-25, 2, 3, true)
-	fill(-29, 2, 6, -27, 2, 6, PINE_SLAB)
-	wall_torch(-29, 4, -1, 3)
+	table_at(-25, 1, 3, true)
+	fill(-29, 1, 6, -27, 1, 6, PINE_SLAB)
+	wall_torch(-29, 4, 0, 3)
 
 	-- East home: a wider cross-gabled mason's cottage with a stone bay.
 	clear(18, 1, -5, 34, 12, 15)
@@ -203,8 +203,8 @@ return function()
 	fill(28, 1, 3, 33, 3, 8, STONE_BLOCK)
 	clear(29, 2, 4, 32, 3, 7)
 	fill(28, 4, 3, 33, 4, 8, STONE_SLAB)
-	table_at(25, 2, 5, false)
-	fill(22, 2, 9, 24, 2, 9, PINE_SLAB)
+	table_at(25, 1, 5, false)
+	fill(22, 1, 9, 24, 1, 9, PINE_SLAB)
 	wall_torch(30, 4, 9, 2)
 
 	-- Open workyard: paved cutting floor, heavy corner posts, asymmetric
@@ -224,6 +224,8 @@ return function()
 	end
 	fill(-31, 1, 27, -24, 1, 29, STONE_BLOCK)
 	fill(-30, 2, 28, -25, 2, 28, STONE_SLAB)
+	fill(-35, 5, 24, -35, 5, 28, PINE_LOG)
+	fill(-19, 5, 27, -19, 5, 29, PINE_LOG)
 	wall_torch(-34, 5, 25, 3)
 	wall_torch(-20, 5, 28, 2)
 
@@ -246,6 +248,8 @@ return function()
 				PINE_WOOD)
 		end
 	end
+	-- Side access links the west turret directly to the public gate passage.
+	clear(-4, 1, 54, -3, 3, 56)
 	-- A compact stair in the west turret makes its lookout roof playable.
 	-- Two-wide treads preserve a human-sized route and conservative geometry
 	-- checks may treat each stair node as a full solid block.
@@ -253,8 +257,9 @@ return function()
 		fill(-8, 1 + step, 58 - step, -7, 1 + step, 58 - step,
 			STONE_STAIR, 2)
 	end
-	clear(-8, 7, 53, -7, 9, 53)
+	clear(-8, 7, 53, -7, 10, 55)
 	clear(-8, 8, 52, -7, 10, 52)
+	clear(-9, 8, 53, -9, 10, 55)
 	-- Timber bridge and braces span the entrance without blocking it.
 	fill(-3, 5, 55, 3, 6, 55, PINE_LOG)
 	fill(-3, 7, 54, 3, 7, 56, PINE_WOOD)
@@ -263,10 +268,10 @@ return function()
 	for _, x in ipairs({-3, 3}) do
 		fill(x, 1, 54, x, 4, 56, PINE_LOG)
 	end
-	wall_torch(-4, 4, 53, 3)
-	wall_torch(4, 4, 53, 2)
-	put(-7, 6, 55, GLASS)
-	put(7, 6, 55, GLASS)
+	wall_torch(-3, 4, 53, 3)
+	wall_torch(3, 4, 53, 2)
+	put(-9, 5, 55, GLASS)
+	put(9, 5, 55, GLASS)
 
 	local cells = {}
 	for _, cell in pairs(written) do
@@ -330,18 +335,18 @@ return function()
 				{id = "west_home", x = -25, y = 1, z = 7},
 				{id = "east_home", x = 22, y = 1, z = 5},
 				{id = "workyard", x = -27, y = 1, z = 26},
-				{id = "gatewatch_roof", x = -9, y = 9, z = 55},
+				{id = "gatewatch_roof", x = -9, y = 8, z = 55},
 			},
 			lights = {
 				{x = -9, y = 5, z = -17},
 				{x = 9, y = 5, z = -17},
 				{x = 0, y = 1, z = -14},
-				{x = -29, y = 4, z = -1},
+				{x = -29, y = 4, z = 0},
 				{x = 30, y = 4, z = 9},
 				{x = -34, y = 5, z = 25},
 				{x = -20, y = 5, z = 28},
-				{x = -4, y = 4, z = 53},
-				{x = 4, y = 4, z = 53},
+				{x = -3, y = 4, z = 53},
+				{x = 3, y = 4, z = 53},
 			},
 		},
 	}
