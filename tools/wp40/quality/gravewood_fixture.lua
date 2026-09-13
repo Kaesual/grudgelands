@@ -243,11 +243,12 @@ return function(repo, verify_compressed, production_repo)
 		end
 	end
 
-	return table.concat({
+	local bytes = table.concat({
 		"schema\tgrug_wp40_gravewood_fixture_v1",
 		"small\t7x7x7\twood=17\tleaves=5\twood_prob=254\tleaf_prob=96\tsha256=" .. decoded[1].sha256,
 		"tall\t7x9x7\twood=23\tleaves=8\twood_prob=254\tleaf_prob=96\tsha256=" .. decoded[2].sha256,
 		"rotations\t4\tconnected=pass\tpreflight=pass",
 		"growth\tshared_assets=pass\ttemplate_route=pass\tleaves_no_drop=pass",
 	}, "\n") .. "\n"
+	return bytes, schematics
 end

@@ -1,6 +1,6 @@
 -- Bounded Gravewood integration through production R6 templates and writer.
 
-return function(repo, production_repo)
+return function(repo, production_repo, verify_compressed)
 	production_repo = production_repo or repo
 	local function check(value, message)
 		if not value then error("gravewood writer fixture: " .. message, 0) end
@@ -14,124 +14,85 @@ return function(repo, production_repo)
 	local settlement_factory = dofile(wp40 .. "/r6_settlement.lua")
 	local vm_module = dofile(repo .. "/tools/wp40/simple_map_r5_vm.lua")
 	local decoded = dofile(repo .. "/tools/wp40/quality/gravewood_decoded.lua")
-	-- Verify the post-insertion production catalog and actual compressed assets
-	-- through the same R6 template constructor before using the reduced writer
-	-- harness below.
-	local fixtures = dofile(production_repo .. "/tools/wp40/r6/fixtures.lua")(
-		production_repo, common, raw_sha256)
-	local actual_content = dofile(wp40 .. "/r6_content.lua")(
-		fixtures.r6_manifest(), fixtures.new_content_contract(), fixtures.projection())
+	local _, portable = dofile(repo .. "/tools/wp40/quality/gravewood_fixture.lua")(
+		repo, verify_compressed, production_repo)
+	-- surface_fixture builds the actual production catalog with a header-only
+	-- MTS reader, so this catalog seam remains executable without zlib FFI.
+	local _, actual_content = dofile(production_repo ..
+		"/tools/wp40/quality/surface_fixture.lua")(production_repo)
 	local actual_by_id = {}
 	for _, definition in ipairs(actual_content.decorations()) do
 		actual_by_id[definition.id] = definition
 	end
-	local actual_source = dofile(wp40 .. "/r7_template_source.lua")(
-		{read_schematic = common.read_mts},
+	local definitions = {check(actual_by_id["blight_gravewood"],
+		"production small row missing"),
+		check(actual_by_id["bone_forest_gravewood"], "production tall row missing")}
+	local reader
+	if verify_compressed then
+		reader = common.read_mts
+	else
+		reader = function(path)
+			return check(portable[path:match("([^/]+)$")], "portable schematic missing")
+		end
+	end
+	local template_source = dofile(wp40 .. "/r7_template_source.lua")(
+		{read_schematic = reader},
 		production_repo .. "/mods/BASE/default/schematics",
 		production_repo .. "/mods/ITEMS/grug_trees/schematics")
-	local actual_templates = templates_factory(hash, actual_content, actual_source)
-	for _, id in ipairs({"blight_gravewood", "bone_forest_gravewood"}) do
-		local definition = check(actual_by_id[id], "production catalog row missing")
-		check(definition.kind == "template" and definition.settlement_class == 1,
-			"production Gravewood row is not class-1 template")
-		for rotation = 0, 3 do
-			local shape = actual_templates.rotation(id, rotation)
-			check(shape.size_x == 7 and shape.size_z == 7,
-				"actual R6 template footprint differs")
-		end
-	end
-	local names = {"test:soil", "grug_trees:gravewood_tree",
-		"grug_trees:gravewood_leaves"}
-	local cids, refs = {100, 101, 102}, {}
-	for index = 1, #names do refs[names[index]] = index end
-	local contract = {schema = "grug_wp40_r6_content_contract_v1",
-		ignore_cid = 65535, ordinary_water_family_id = 1,
-		river_water_family_id = 2, content_names = names, content_cids = cids,
-		content_kind_masks = {9, 8, 8}, r5 = {}}
-	function contract.r5.resolve(role, _, auxiliary)
-		check(auxiliary == 0, "R5 auxiliary differs")
-		if role == 1 then return 0, 0, 0, nil end
-		if role == 10 or role == 13 then return 10, 2, 0, nil end
-		return cids[1], 1, 0, nil
-	end
-	function contract.resolve_r6(content_ref, param2)
-		return cids[content_ref], 1, 1, param2, contract.content_kind_masks[content_ref]
-	end
-	local function classify(cid)
-		if cid == 0 then return 1, 0, 0, 0, true, true, true, true, 0 end
-		if cid == 10 then return 4, 1, 1, 0, false, true, true, true, 0 end
-		if cid == 65535 then return 3, 0, 0, 0, false, false, false, false, 0 end
-		if cid == cids[1] then return 7, 0, 0, 0, false, false, false, false, 0 end
-		if cid == cids[2] or cid == cids[3] then
-			return 6, 0, 0, 0, false, false, false, false, 0
-		end
-		return 9, 0, 0, 0, false, false, false, false, 0
-	end
-	contract.classify, contract.classify_runtime = classify, classify
-	local surface = {id = "gravewood_fixture", top = names[1], filler = names[1],
-		filler_depth = 1, shore = names[1], bed = names[1], dust = names[1],
-		top_ref = 1, filler_ref = 1, shore_ref = 1, bed_ref = 1, dust_ref = 0}
-	local definitions = {
-		{id = "blight_gravewood", biomes = {surface.id}, kind = "template",
-			asset_or_node = decoded[1].filename, host = names[1], numerator = 1,
-			denominator = 1, rule = "center_xz;quarter_turn_rotation",
-			settlement_class = 1},
-		{id = "bone_forest_gravewood", biomes = {surface.id}, kind = "template",
-			asset_or_node = decoded[2].filename, host = names[1], numerator = 1,
-			denominator = 1, rule = "center_xz;quarter_turn_rotation",
-			settlement_class = 1},
-	}
+	local contract = actual_content.content_contract()
+	contract.classify_runtime = contract.classify_runtime or contract.classify
+	local surface = {id = "gravewood_fixture", top = definitions[1].host,
+		filler = definitions[1].host, filler_depth = 1, shore = definitions[1].host,
+		bed = definitions[1].host, dust = definitions[1].host,
+		top_ref = actual_content.content_ref(definitions[1].host),
+		filler_ref = actual_content.content_ref(definitions[1].host),
+		shore_ref = actual_content.content_ref(definitions[1].host),
+		bed_ref = actual_content.content_ref(definitions[1].host), dust_ref = 0}
+	local surface2 = {id = "gravewood_fixture_bone", top = definitions[2].host,
+		filler = definitions[2].host, filler_depth = 1, shore = definitions[2].host,
+		bed = definitions[2].host, dust = definitions[2].host,
+		top_ref = actual_content.content_ref(definitions[2].host),
+		filler_ref = actual_content.content_ref(definitions[2].host),
+		shore_ref = actual_content.content_ref(definitions[2].host),
+		bed_ref = actual_content.content_ref(definitions[2].host), dust_ref = 0}
 	local content = {}
 	function content.content_contract() return contract end
-	function content.surfaces() return {surface} end
-	function content.new_surface_selector() return function() return surface end end
+	function content.surfaces() return {surface, surface2} end
+	function content.new_surface_selector()
+		return function(id) return id == surface2.id and surface2 or surface end
+	end
 	function content.resources() return {} end
 	function content.cultural() return {} end
 	function content.decorations() return definitions end
 	function content.decoration_cover() return 1 end
-	function content.content_ref(name) return refs[name] end
-	function content.param2_kind() return "none" end
+	function content.content_ref(name) return actual_content.content_ref(name) end
+	function content.param2_kind(...) return actual_content.param2_kind(...) end
 	function content.wp43_projection()
 		local tiers = {}
-		for index = 1, 6 do tiers[index] = {y_min = -index * 100, node = names[1]} end
+		for index = 1, 6 do tiers[index] = {y_min = -index * 100,
+			node = definitions[1].host} end
 		return {tiers = tiers, race_regions = {}}
 	end
-	local function schematic(definition)
-		local size, cells = definition.size, {}
-		for index = 1, size.x * size.y * size.z do
-			cells[index] = {name = "air", prob = 0, param2 = 0, force_place = false}
-		end
-		local function put(list, name, probability)
-			for _, pos in ipairs(list) do
-				local index = (pos[3] + 3) * size.x * size.y + pos[2] * size.x +
-					(pos[1] + 3) + 1
-				cells[index] = {name = name, prob = probability, param2 = 0,
-					force_place = false}
-			end
-		end
-		put(definition.wood, names[2], 254)
-		put(definition.leaves, names[3], 96)
-		local slices = {}
-		for y = 0, size.y - 1 do slices[y + 1] = {ypos = y, prob = 254} end
-		return {size = size, yslice_prob = slices, data = cells}
-	end
-	local sources = {[decoded[1].filename] = schematic(decoded[1]),
-		[decoded[2].filename] = schematic(decoded[2])}
-	local template_source = {read = function(filename)
-		return check(sources[filename], "unexpected template source")
-	end}
 	local templates = templates_factory(hash, content, template_source)
 	for _, definition in ipairs(definitions) do
-		check(definition.settlement_class == 1, "Gravewood is not large-template class")
+		check(definition.kind == "template" and definition.settlement_class == 1,
+			"production Gravewood row is not class-1 template")
 		for rotation = 0, 3 do
 			local shape = templates.rotation(definition.id, rotation)
 			check(shape.size_x == 7 and shape.size_z == 7,
-				"rotated footprint differs")
+				"actual R6 template footprint differs")
 		end
 	end
+	local names = {definitions[1].host, "grug_trees:gravewood_tree",
+		"grug_trees:gravewood_leaves"}
+	local cids = {
+		contract.content_cids[content.content_ref(definitions[1].host)],
+		contract.content_cids[content.content_ref(names[2])],
+		contract.content_cids[content.content_ref(names[3])],
+	}
 
-	local planner_source = {column_values_at = function()
-		return "land", 1, "fixture", surface.id, "none", 4,
+	local planner_source = {column_values_at = function(_, z)
+		return "land", 1, "fixture", z > 0 and surface2.id or surface.id, "none", 4,
 			nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, false
 	end, surface_cave_run_at = function() return nil end}
 	local horizontal = {static_exclusion_values_at = function() return nil end,
@@ -155,9 +116,9 @@ return function(repo, production_repo)
 	for catalog = 1, 2 do
 		for rotation = 0, 3 do
 			local found
-			local base_x, base_z = -26 + rotation * 17, catalog == 1 and -16 or 17
+			local base_x, base_z = -27 + rotation * 18, catalog == 1 and -16 or 34
 			for z = base_z, base_z + 8 do
-				for x = base_x, base_x + 12 do
+				for x = base_x, base_x + 5 do
 					local actual = math.floor(string.byte(hash.digest(
 						"decoration_rotation_v1", "0",
 						{definitions[catalog].id, x, 5, z}), 1) / 64)
@@ -177,7 +138,8 @@ return function(repo, production_repo)
 		for _, root in ipairs(roots) do
 			local index = (root.z - minp.z) * ex * ey + (4 - minp.y) * ex +
 				(root.x - minp.x) + 1
-			data[index] = cids[1]
+			local host_ref = content.content_ref(definitions[root.catalog].host)
+			data[index] = contract.content_cids[host_ref]
 		end
 		shadow:set_data(data)
 		return "gravewood_r5_ready"
@@ -185,7 +147,7 @@ return function(repo, production_repo)
 	local stable_refs = {definitions[1].id, definitions[2].id}
 	table.sort(stable_refs, hash.less_bytes)
 	local identity = {value = {}}
-	local settlement = settlement_factory.new_runtime({full_seed_string = "0",
+	local settlement, settlement_fixture = settlement_factory.new({full_seed_string = "0",
 		r5_adapter = r5_adapter, content = content, templates = templates, hash = hash,
 		horizontal = horizontal, planner_source = planner_source,
 		construction_identity = identity, cultural_registrations = {}, source = source,
@@ -205,12 +167,21 @@ return function(repo, production_repo)
 	for index, root in ipairs(roots) do
 		local column = (root.z - minp.z) * 80 + (root.x - minp.x) + 1
 		local cb = (column - 1) * 12
-		column_values[cb + 5], column_values[cb + 7], column_values[cb + 8] = 4, 1, 1
+		local host_ref = content.content_ref(definitions[root.catalog].host)
+		column_values[cb + 5], column_values[cb + 7], column_values[cb + 8] =
+			4, 1, host_ref
 		local base = (index - 1) * 14
 		candidate_values[base + 1], candidate_values[base + 2] = 2, root.catalog
 		candidate_values[base + 3], candidate_values[base + 4] = 1, root.x
 		candidate_values[base + 5], candidate_values[base + 6] = root.y, root.z
 		for field = 7, 14 do candidate_values[base + field] = 0 end
+	end
+	local candidate_cells = {}
+	for index, root in ipairs(roots) do
+		local base = (index - 1) * 4
+		candidate_cells[base + 1] = math.floor(root.x / 16)
+		candidate_cells[base + 2] = math.floor(root.z / 16)
+		candidate_cells[base + 3], candidate_cells[base + 4] = index, index + 1
 	end
 	local plan = {schema = "grug_wp40_r6_refinement_plan_v1",
 		construction_identity = identity.value, generation = 1, valid = true,
@@ -218,19 +189,57 @@ return function(repo, production_repo)
 		max_x = maxp.x, max_y = maxp.y, max_z = maxp.z,
 		r5_plan = {column_start = column_start, run_values = run_values},
 		r5_generation = 1, column_values = column_values, column_count = 6400,
-		candidate_cell_values = {-2, -2, 1, #roots + 1}, candidate_cell_count = 1,
+		candidate_cell_values = candidate_cells, candidate_cell_count = #roots,
 		candidate_values = candidate_values, candidate_count = #roots,
 		stable_refs = stable_refs}
 	local function filled(count, value)
 		local result = {}; for index = 1, count do result[index] = value end; return result
 	end
 	local volume = 112 * 64 * 112
+	local blocked
+	do
+		local root, definition = roots[1], definitions[roots[1].catalog]
+		local shape = templates.rotation_runtime(definition.id, root.rotation)
+		for z = 1, shape.size_z do for y = 1, shape.size_y do
+			for x = 1, shape.size_x do
+				local cell = shape.cells[(z - 1) * shape.size_x * shape.size_y +
+					(y - 1) * shape.size_x + x]
+				if not blocked and cell.name == names[3] and
+						templates.probability_include("0", definition.id, root.x, root.y,
+							root.z, root.rotation, "node", x - 1, y - 1, z - 1,
+							cell.probability) then
+					blocked = {x = root.x + shape.min_x + x - 1,
+						y = root.y + shape.min_y + y - 1,
+						z = root.z + shape.min_z + z - 1}
+				end
+			end
+		end end
+	end
+	check(blocked, "included leaf witness missing")
+	local emerged_min = {x = minp.x - 16, y = minp.y - 16, z = minp.z - 16}
+	local blocked_index = (blocked.z - emerged_min.z) * 112 * 64 +
+		(blocked.y - emerged_min.y) * 112 + (blocked.x - emerged_min.x) + 1
+	local blocked_cid = contract.content_cids[content.content_ref(definitions[1].host)]
 	local vm, _, observer = vm_module.new({minp = minp, maxp = maxp,
 		data = filled(volume, 0), param2 = filled(volume, 0), light = filled(volume, 0),
 		heightmap = filled(6400, -31007), content_contract = contract, water_level = 1,
 		ignore_cid = contract.ignore_cid, verify_inactive_tail = false})
 	local result = settlement:apply(vm, minp, maxp, plan, 1, "fixture")
 	check(result:match("^applied_[cplq]+$") ~= nil, "settlement result differs")
+	local ledger = settlement_fixture.last_ledger()
+	for _, definition in ipairs(definitions) do
+		local aggregate = ledger.decorations[definition.id]
+		local rejection_rows = {}
+		for key_value, count in pairs(ledger.rejections) do
+			if key_value:find(definition.id, 1, true) then
+				rejection_rows[#rejection_rows + 1] = common.hex(key_value) .. "=" .. count
+			end
+		end
+		check(aggregate and aggregate.accepted == 4,
+			"rotation candidates not all accepted: " .. definition.id .. "/" ..
+			tostring(aggregate and aggregate.accepted) .. "/" ..
+			table.concat(rejection_rows, ","))
+	end
 	local snapshot = observer.snapshot()
 	local ex, ey = snapshot.emax.x - snapshot.emin.x + 1,
 		snapshot.emax.y - snapshot.emin.y + 1
@@ -251,7 +260,10 @@ return function(repo, production_repo)
 					root.y + shape.min_y + y - 1, root.z + shape.min_z + z - 1
 				if cell.name == names[2] then
 					check(cell.probability == 254 and cid_at(wx, wy, wz) == cids[2],
-						"mandatory wood was not written")
+						"mandatory wood was not written: " .. definition.id .. "/" ..
+						root.rotation .. "/" .. wx .. "/" .. wy .. "/" .. wz ..
+						" actual=" .. tostring(cid_at(wx, wy, wz)) ..
+						" expected=" .. tostring(cids[2]))
 					written_wood[wx .. ":" .. wy .. ":" .. wz] = true
 				elseif cell.name == names[3] then
 					local included = templates.probability_include("0", definition.id,
@@ -283,9 +295,34 @@ return function(repo, production_repo)
 			check(reached[position], "written wood disconnected")
 		end
 	end
+	-- A separate one-candidate transaction proves the writer's conservative
+	-- preflight rejects an occupied destination and preserves its old content.
+	local blocked_data = filled(volume, 0)
+	blocked_data[blocked_index] = blocked_cid
+	local blocked_vm, _, blocked_observer = vm_module.new({minp = minp, maxp = maxp,
+		data = blocked_data, param2 = filled(volume, 0), light = filled(volume, 0),
+		heightmap = filled(6400, -31007), content_contract = contract, water_level = 1,
+		ignore_cid = contract.ignore_cid, verify_inactive_tail = false})
+	local blocked_values = {}
+	for index = 1, 14 do blocked_values[index] = candidate_values[index] end
+	local blocked_root = roots[1]
+	local blocked_plan = {schema = plan.schema,
+		construction_identity = plan.construction_identity, generation = plan.generation,
+		valid = true, min_x = plan.min_x, min_y = plan.min_y, min_z = plan.min_z,
+		max_x = plan.max_x, max_y = plan.max_y, max_z = plan.max_z,
+		r5_plan = plan.r5_plan, r5_generation = plan.r5_generation,
+		column_values = plan.column_values, column_count = plan.column_count,
+		candidate_cell_values = {math.floor(blocked_root.x / 16),
+			math.floor(blocked_root.z / 16), 1, 2}, candidate_cell_count = 1,
+		candidate_values = blocked_values, candidate_count = 1,
+		stable_refs = plan.stable_refs}
+	settlement:apply(blocked_vm, minp, maxp, blocked_plan, 1, "fixture")
+	check(blocked_observer.snapshot().data[blocked_index] == blocked_cid,
+		"occupied destination was overwritten")
 	local rows = {"schema\tgrug_wp40_gravewood_writer_v1",
 		"templates\t2\tclass=1", "rotations\t8\tmandatory_wood=pass",
-		"writer\t" .. result .. "\toptional_leaves=" .. leaf_written}
+		"writer\t" .. result .. "\toptional_leaves=" .. leaf_written ..
+			"\tnonoverwrite=pass"}
 	local bytes = table.concat(rows, "\n") .. "\n"
 	return bytes .. "digest\t" .. common.hex(raw_sha256(bytes)) .. "\n"
 end
