@@ -32,7 +32,8 @@ local horizontal = dofile(wp40 .. "simple_map.lua")({source = source,
 	deterministic = deterministic, raw_sha256 = raw_sha256}).new(seed)
 local factory = dofile(wp40 .. "height.lua")({source = source,
 	canonical = canonical, deterministic = deterministic, raw_sha256 = raw_sha256,
-	horizontal_session = horizontal})
+	horizontal_session = horizontal,
+	coupled_grade = dofile(wp40 .. "coupled_grade.lua")()})
 
 local clock = os.clock()
 local height = factory.new(seed)

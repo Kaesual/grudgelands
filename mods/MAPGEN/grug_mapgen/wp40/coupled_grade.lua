@@ -36,7 +36,8 @@ return function()
 		local result, heap = {}, {}
 		local function better(a, b)
 			if a.value ~= b.value then
-				return maximize and a.value > b.value or a.value < b.value
+				if maximize then return a.value > b.value end
+				return a.value < b.value
 			end
 			return a.node < b.node
 		end
@@ -86,5 +87,72 @@ return function()
 		return result, lo, up
 	end
 
-	return {solve = solve}
+	local function solve_paths(paths, grade_min, grade_max, visible_owner)
+		local node_path, node_run, node_by_path = {}, {}, {}
+		local lower, upper, preferred, edges, edge_keys = {}, {}, {}, {}, {}
+		local fixed_nodes = {}
+		local function add_edge(a, b)
+			if not a or not b or a == b then return end
+			if b < a then a, b = b, a end
+			local key = tostring(a) .. ":" .. tostring(b)
+			if not edge_keys[key] then
+				edge_keys[key] = true
+				edges[#edges + 1] = {a, b}
+			end
+		end
+		for path_index = 1, #paths do
+			local path = paths[path_index]
+			node_by_path[path.id] = {}
+			for run = 1, #path.axis do
+				local node = #node_path + 1
+				node_path[node], node_run[node] = path, run
+				node_by_path[path.id][run] = node
+				local pin = path.pins[run]
+				lower[node] = pin and pin.y or path.lower[run] or grade_min
+				upper[node] = pin and pin.y or grade_max
+				preferred[node] = path.y[run]
+				if run > 1 then add_edge(node - 1, node) end
+			end
+		end
+		for path_index = 1, #paths do
+			local previous
+			for run = 1, #paths[path_index].axis do
+				local point = paths[path_index].axis[run]
+				local owner, owner_run, fixed_id, fixed_y =
+					visible_owner(point.x, point.z)
+				local node = owner and owner_run and
+					node_by_path[owner.id][owner_run] or nil
+				if fixed_id then
+					node = fixed_nodes[fixed_id]
+					if node and lower[node] ~= fixed_y then
+						error("WP40 coupled grade fixed authority differs at " ..
+							tostring(fixed_id), 0)
+					end
+					if not node then
+						node = #node_path + 1
+						fixed_nodes[fixed_id], node_path[node], node_run[node] =
+							node, {id = fixed_id}, 0
+						lower[node], upper[node], preferred[node] = fixed_y, fixed_y, fixed_y
+					end
+				end
+				if not node then
+					error("WP40 coupled grade visible owner missing at " ..
+						paths[path_index].id .. " run " .. tostring(run) .. " x/z " ..
+						tostring(point.x) .. "/" .. tostring(point.z), 0)
+				end
+				add_edge(previous, node)
+				previous = node
+			end
+		end
+		local result, failed_node, failed_lower, failed_upper =
+			solve(lower, upper, preferred, edges)
+		if not result then return nil, node_path[failed_node],
+			node_run[failed_node], failed_lower, failed_upper end
+		for node = 1, #result do
+			if node_run[node] ~= 0 then node_path[node].y[node_run[node]] = result[node] end
+		end
+		return true
+	end
+
+	return {solve = solve, solve_paths = solve_paths}
 end

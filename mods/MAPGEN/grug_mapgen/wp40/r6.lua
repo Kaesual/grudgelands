@@ -7,6 +7,7 @@ return function(dependencies)
 		r5_adapter_factory = true, manifest_module = true, allocator_factory = true,
 		source = true, schemas = true, canonical = true, deterministic = true,
 		index128 = true, horizontal_factory = true, height_factory = true,
+		coupled_grade = true,
 		raw_sha256 = true, hash_factory = true, content_factory = true,
 		templates_factory = true, planner_factory = true, settlement_factory = true,
 	}
@@ -232,6 +233,7 @@ return function(dependencies)
 		index128 = dependencies.index128,
 		horizontal_factory = dependencies.horizontal_factory,
 		height_factory = dependencies.height_factory,
+		coupled_grade = dependencies.coupled_grade,
 		raw_sha256 = dependencies.raw_sha256,
 	})
 

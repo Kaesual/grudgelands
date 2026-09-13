@@ -42,6 +42,7 @@ return function(directory)
 		local index128 = dofile(directory .. "/index128.lua")
 		local horizontal_factory = dofile(directory .. "/simple_map.lua")
 		local height_factory = dofile(directory .. "/height.lua")
+		local coupled_grade = dofile(directory .. "/coupled_grade.lua")()
 		local zones_factory = dofile(directory .. "/zones.lua")
 		local zones_module = zones_factory({
 			source = source,
@@ -51,6 +52,7 @@ return function(directory)
 			index128 = index128,
 			horizontal_factory = horizontal_factory,
 			height_factory = height_factory,
+			coupled_grade = coupled_grade,
 			raw_sha256 = raw_sha256,
 		})
 		if type(zones_module) ~= "table" or type(zones_module.new) ~= "function" then

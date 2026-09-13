@@ -15,6 +15,8 @@ return function(dependencies)
 		"WP40 simple-map height SHA-256 dependency missing")
 	local horizontal = assert(dependencies.horizontal_session,
 		"WP40 simple-map horizontal session missing")
+	local coupled_grade = assert(dependencies.coupled_grade,
+		"WP40 coupled grade dependency missing")
 	local Q = 65536
 	local P = 2147483647
 	local B = 32768
@@ -356,7 +358,8 @@ return function(dependencies)
 	local module = {}
 	local bound_seed_string
 
-	local function construct(full_seed_string, diagnose_final_axis, runtime_mode)
+	local function construct(full_seed_string, diagnose_final_axis, runtime_mode,
+			scan_runtime_axis)
 		if runtime_mode ~= nil and runtime_mode ~= true then
 			fail("runtime construction mode differs")
 		end
@@ -3486,6 +3489,46 @@ return function(dependencies)
 					" run " .. tostring(failed_run) .. " lower " ..
 					tostring(failed_lower) .. " upper " .. tostring(failed_upper))
 			end
+		end
+
+		local function visible_path_at(x, z)
+			local operation = winning_named_operation_at(x, z)
+			local path, run_index
+			if not operation then
+				for index = 1, #tunnel_operations do
+					local tunnel = tunnel_operations[index]
+					local segment, _, _, tunnel_run = nearest_path_segment_at(x, z,
+						"surface", tunnel.path)
+					if segment and tunnel_run >= tunnel.first_run and
+							tunnel_run <= tunnel.last_run then
+						operation = tunnel
+						break
+					end
+				end
+			end
+			if operation then
+				if operation.kind == "tunnel_floor" then
+					return nil, nil, operation.interface_id, operation.surface_y
+				end
+				path = operation.path
+				run_index = path_surface_run_at(path, x, z)
+			else
+				local segment
+				segment, _, _, run_index = nearest_path_segment_at(x, z, "surface", nil)
+				path = segment and segment.path or nil
+			end
+			return path, run_index
+		end
+		local solved, failed_path, failed_run, failed_lower, failed_upper =
+			coupled_grade.solve_paths(paths, GRADE_MIN, GRADE_MAX, visible_path_at)
+		if not solved then
+			local path, run = failed_path, failed_run
+			fail("coupled route grade is infeasible at " .. path.id .. " run " ..
+				tostring(run) .. " lower " .. tostring(failed_lower) .. " upper " ..
+				tostring(failed_upper))
+		end
+		for path_index = 1, #paths do
+			local path = paths[path_index]
 
 			local pin_indices = ordered_pin_indices(path)
 			for pin_index = 1, #pin_indices do
@@ -4170,7 +4213,7 @@ return function(dependencies)
 			return violations
 		end
 
-		local final_axis_violations = runtime_mode and {} or
+		local final_axis_violations = runtime_mode and not scan_runtime_axis and {} or
 			scan_final_axes(diagnose_final_axis)
 		if diagnose_final_axis then return nil, final_axis_violations end
 		for record_index = 1, #junction_records do
@@ -4204,6 +4247,10 @@ return function(dependencies)
 		-- time ledgers and canonical digests already frozen by R3-R7 evidence.
 		local session = construct(full_seed_string, false, true)
 		return session
+	end
+
+	function module.new_runtime_checked(full_seed_string)
+		return construct(full_seed_string, false, true, true)
 	end
 
 	function module.diagnose_final_axis_violations(full_seed_string)
