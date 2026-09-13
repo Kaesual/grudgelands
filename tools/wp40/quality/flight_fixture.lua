@@ -2,14 +2,17 @@
 
 return function(repo)
 repo = assert(repo, "repository root required")
-grug_mobs = {}
 
 local nodes = {}
 local probe_calls = 0
-core = {
+local environment = {math = math}
+setmetatable(environment, {__index = _G})
+environment.grug_mobs = {}
+environment.core = {
 	registered_nodes = {
 		air = {walkable = false},
 		stone = {walkable = true},
+		water = {walkable = false, groups = {liquid = 3}},
 	},
 	get_node_or_nil = function(pos)
 		probe_calls = probe_calls + 1
@@ -18,8 +21,11 @@ core = {
 		return {name = value or "air"}
 	end,
 }
+local grug_mobs = environment.grug_mobs
 
-dofile(repo .. "/mods/ENTITIES/grug_mobs/flight.lua")
+local production = assert(loadfile(repo .. "/mods/ENTITIES/grug_mobs/flight.lua"))
+setfenv(production, environment)
+production()
 
 local function check(value, message)
 	if not value then error("flight fixture: " .. message, 0) end
@@ -72,17 +78,29 @@ check(near(canyon.temp.grug_flight_bias, -0.6), "initial descent bias differs")
 nodes = {}
 canyon.object.pos.y = 9
 grug_mobs.flight_nudge_tick(canyon, 0.75)
-check(canyon.temp.grug_flight_bias == 0 and near(canyon.object.velocity.y, 0),
-	"canyon edge retained a forced drop")
+check(near(canyon.temp.grug_flight_bias, -0.65)
+	and near(canyon.object.velocity.y, -0.65),
+	"loaded canyon did not retain bounded gentle descent")
 
 ground(0)
-local attack = mob(object(0, 8, {x = 0, y = 1.25, z = 0}))
+local attack = mob(object(0, 8, {x = 0, y = 0.4, z = 0}))
+wrapped.do_custom(attack, 0.75, true) -- acquisition happens after do_custom
+check(near(attack.object.velocity.y, -0.2), "pre-acquisition nudge differs")
 attack.state = "attack"
-attack.temp.grug_flight_bias = -0.6
-attack.temp.grug_flight_applied_y = -0.6
-grug_mobs.flight_nudge_tick(attack, 0.75)
-check(attack.object.velocity.y == 1.25 and attack.temp.grug_flight_bias == nil,
-	"attack steering was overwritten")
+-- In-reach mobs_redo movement preserves Y; the next custom tick must remove
+-- the controller's own -0.6 while leaving the native +0.4 baseline intact.
+grug_mobs.flight_nudge_tick(attack, 0.05)
+check(near(attack.object.velocity.y, 0.4)
+	and attack.temp.grug_flight_bias == nil,
+	"same-step attack acquisition retained flight bias")
+
+local replaced = mob(object(0, 8, {x = 0, y = 1.25, z = 0}))
+replaced.state = "attack"
+replaced.temp.grug_flight_bias = -0.6
+replaced.temp.grug_flight_applied_y = -0.6
+grug_mobs.flight_nudge_tick(replaced, 0.75)
+check(replaced.object.velocity.y == 1.25 and replaced.temp.grug_flight_bias == nil,
+	"authoritative attack Y was overwritten")
 
 local rooted = mob(object(0, 8, {x = 0, y = 0, z = 0}))
 rooted._grug_root_left = 1
@@ -104,6 +122,20 @@ local unloaded = mob(object(0, 8, {x = 0, y = -0.4, z = 0}))
 grug_mobs.flight_nudge_tick(unloaded, 0.75)
 check(unloaded.object.writes == 0 and unloaded.temp.grug_flight_clearance == nil,
 	"unknown ground changed native velocity")
+local unknown_release = mob(object(0, 8, {x = 0, y = -0.6, z = 0}))
+unknown_release.temp.grug_flight_bias = -0.6
+unknown_release.temp.grug_flight_applied_y = -0.6
+grug_mobs.flight_nudge_tick(unknown_release, 0.25)
+check(near(unknown_release.object.velocity.y, -0.4)
+	and near(unknown_release.temp.grug_flight_bias, -0.4),
+	"unknown ground did not gradually remove owned bias")
+
+nodes = {}
+ground(0, "water")
+local over_water = mob(object(0, 1.5, {x = 0, y = -0.3, z = 0}))
+grug_mobs.flight_nudge_tick(over_water, 0.75)
+check(near(over_water.object.velocity.y, 0.25),
+	"liquid surface did not protect air flyer")
 
 local fresh = mob(object(0, 8, {x = 0, y = 0, z = 0}))
 check(fresh.temp.grug_flight_bias == nil and fresh.temp.grug_flight_probe_left == nil,
@@ -120,6 +152,6 @@ grug_mobs.flight_nudge_tick(staggered, 0.1)
 check(probe_calls == 12, "probe was not throttled")
 
 return "schema\tgrug_wp40_flight_nudge_v1\n"
-	.. "cases\thigh,low,canyon,unloaded,attack,root,nonair,lifecycle,probe\n"
+	.. "cases\thigh,low,canyon,unknown,water,attack,root,nonair,lifecycle,probe\n"
 	.. "result\tpass\n"
 end

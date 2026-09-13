@@ -25,23 +25,26 @@ evade, or a Grudgelands root. It does not acquire or replace a target.
 - Probe period: 0.75 seconds, with the first probe staggered over 16 phases by
   the entity's initial integer position.
 - Probe depth: at most 12 integer node positions directly below the entity's
-  collision-box bottom. A walkable registered node is ground. An unknown,
-  unloaded, or `ignore` node ends the probe without a ground result.
+  collision-box bottom. A walkable registered node or liquid surface is the
+  lower boundary. An unknown, unloaded, or `ignore` node ends the probe with
+  an unknown result. Twelve known open nodes are a valid lower bound of at
+  least 12 nodes clearance and request the same gentle descent as known high
+  ground; this lets a bird cross a ravine without hovering there forever.
 - Comfortable clearance: 2 to 4 nodes between the ground-node top and the
   live collision-box bottom. This puts ordinary birds within practical melee
   reach without pinning them to one altitude.
 - Above 4 nodes: additive vertical bias tends toward -0.65 nodes/second.
 - Below 2 nodes: additive vertical bias tends toward +0.55 nodes/second.
-- Inside the band, without a valid probe, or while another steering owner is
-  active: the additive bias tends toward zero.
+- Inside the band or without a valid probe, the additive bias tends toward
+  zero. When another steering owner becomes active, a still-recognizable bias
+  is removed immediately; an externally replaced Y velocity is preserved.
 - Bias acceleration is limited to 0.8 nodes/second squared. Position is never
   teleported. The controller subtracts its previous additive bias from the
   current velocity before adding the next bias, preserving native horizontal
   and vertical steering. If mobs_redo replaces vertical velocity between
   ticks, that value becomes the new baseline and the obsolete bias is
-  discarded. Losing the bottom of the probe over a ravine removes
-  the downward tendency gradually instead of commanding a drop toward the
-  newly distant floor.
+  discarded. Crossing a ravine retains only the bounded, acceleration-limited
+  downward tendency; it never commands a velocity based on the distant floor.
 
 All controller state lives under mobs_redo's transient `self.temp` table. A
 reload starts with no cached ground and zero owned bias; there is no persisted

@@ -40,11 +40,13 @@ local function probe_clearance(self, pos)
 		if not def then
 			return nil
 		end
-		if def.walkable then
+		if def.walkable or (def.groups and (def.groups.liquid or 0) > 0) then
 			return bottom - (start_y - offset + 0.5)
 		end
 	end
-	return nil
+	-- Every sampled node was known and open. Ground is farther away than the
+	-- bounded probe, which is enough information to request gentle descent.
+	return PROBE_DEPTH
 end
 
 function grug_mobs.flight_nudge_tick(self, dtime)
@@ -59,8 +61,19 @@ function grug_mobs.flight_nudge_tick(self, dtime)
 		return
 	end
 	if steering_owned(self) then
-		-- A mobs_redo steering branch may have replaced vertical velocity since
-		-- our last tick. Relinquish ownership without undoing that value.
+		-- Remove a still-recognizable owned bias. mobs_redo's ordinary
+		-- set_velocity preserves Y, including in-reach dogfight movement, so
+		-- merely clearing bookkeeping would otherwise leave the bird drifting.
+		-- If another branch replaced Y, preserve that new authoritative value.
+		local previous = temp.grug_flight_bias or 0
+		if previous ~= 0 and temp.grug_flight_applied_y ~= nil
+				and math.abs(velocity.y - temp.grug_flight_applied_y) <= 0.000001 then
+			self.object:set_velocity({
+				x = velocity.x,
+				y = velocity.y - previous,
+				z = velocity.z,
+			})
+		end
 		temp.grug_flight_bias = nil
 		temp.grug_flight_applied_y = nil
 		return
