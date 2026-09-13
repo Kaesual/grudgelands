@@ -20,6 +20,12 @@ assert(#owners <= 12, "profile corpus exceeds bounded twelve structure owners")
 -- Include a second start as a control, then adjacent non-structure owners.
 local human = assert(grug_zones.anchor("elandor_dawnmere_fields", "start"))
 add(human.x, human.y, human.z)
+-- This seed puts Stillgrave's fitted surface at y=48, just above the
+-- generated owner's ceiling. Emerge only its lower owner to exercise filler
+-- restoration when the matching top opcode belongs to a different owner.
+local filler_boundary = core.settings:get("grug_wp40_profile_seed") == "8675309"
+if filler_boundary then add(-1863, 47, 2528) end
+assert(#owners <= 14, "WP13 control population is unbounded")
 local extra = 0
 while #owners < 10 do
 	extra = extra + 1
@@ -65,6 +71,12 @@ core.register_on_shutdown(function()
 		end
 	end
 	assert(soil_witnesses > 0, "WP13 apron remained entirely unpainted stone")
+	if filler_boundary then
+		assert(grug_zones.terrain_height_at(-1863, 2528) == 48,
+			"WP13 vertical boundary witness moved")
+		assert(core.get_node({x = -1863, y = 47, z = 2528}).name == "default:dirt",
+			"WP13 filler-only owner retained stone instead of biome soil")
+	end
 	local parts, torch_count, lit = {}, 0, 0
 	local edited_cell_seen = false
 	for _, cell in ipairs(blueprint.cells) do
@@ -120,6 +132,8 @@ core.register_on_shutdown(function()
 		" cells=" .. #blueprint.cells .. " torches=" .. lit ..
 		" edit_canary=" .. (phase == "cold" and "placed" or "preserved") ..
 		" digest_excluded_cells=1" ..
+		" soil_witnesses=" .. soil_witnesses ..
+		" filler_boundary=" .. tostring(filler_boundary) ..
 		" digest=" .. core.sha256(table.concat(parts, "\n"), false) ..
 		" anchor=" .. anchor.x .. "," .. anchor.y .. "," .. anchor.z)
 end)

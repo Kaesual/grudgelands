@@ -23,8 +23,10 @@ run_order() {
 		>"$output/$order-run.log" 2>&1
 }
 engine=("$@")
-run_order forward 32460 & forward_pid=$!
-run_order reverse 32470 & reverse_pid=$!
+port_base="${WP13_PORT_BASE:-32460}"
+[[ "$port_base" =~ ^[1-9][0-9]{3,4}$ && "$port_base" -le 65000 ]] || exit 2
+run_order forward "$port_base" & forward_pid=$!
+run_order reverse "$((port_base + 10))" & reverse_pid=$!
 forward_status=0; wait "$forward_pid" || forward_status=$?
 reverse_status=0; wait "$reverse_pid" || reverse_status=$?
 [[ "$forward_status" -eq 0 && "$reverse_status" -eq 0 ]] || {

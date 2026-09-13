@@ -2888,9 +2888,6 @@ local function settlement_factory()
 			return result
 		end
 		local fixture = {}
-		function fixture.analytic_p7_material_ref(x, y, z)
-			return analytic_p7_material_ref(x, y, z)
-		end
 		function fixture.last_ledger()
 			if not last_ledger then return nil end
 			local result = copy_map(last_ledger)

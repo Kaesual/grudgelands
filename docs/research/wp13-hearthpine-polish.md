@@ -52,11 +52,18 @@ with idle scheduling for independent runs and isolated output paths.
 - Compact independent blueprint acceptance: unique cells, palette/bounds,
   ground coverage, actual full-height roof bearing, every torch's support,
   conservative route reachability and all nine destinations.
-- Real successor clipping/replay and dry-start surface precedence fixtures.
-- Two independent fresh headless Luanti worlds with opposite owner orders,
+- Real successor clipping/replay and compact dry-start eligibility controls.
+- For each of two seeds (531802985935182545 and 8675309), two independent
+  fresh headless Luanti worlds with opposite owner orders,
   each followed by disk-only reload. Bound structure coverage to at most
-  twelve owners plus a second-start control; compare all authored names and
-  param2 values, night lights, clear routes and an intentional edit canary.
+  twelve owners plus a second-start control and one filler-only boundary
+  owner; compare all authored names and
+  param2 values, night lights, clear routes, outside-blueprint soil and an
+  intentional edit canary. Seed 8675309 checks Stillgrave at y=48 while only
+  its lower y<=47 owner is generated, requiring dirt at y=47.
+  The isolated full-R6 capture was stopped after about three minutes without
+  a completed pass; it is not acceptance evidence. Use the live R7 engine
+  boundary witness instead of retaining an unverified expensive fixture.
 - Plain-5.1 parser, SETGLOBAL and all five source sweeps, including changed
   Lua under tools; final compact PUC/LuaJIT canonical parity on frozen bytes.
 - Independent review of code and immutable evidence, then merge/sync and a

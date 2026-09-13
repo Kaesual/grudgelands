@@ -3,7 +3,7 @@ return function(repo, planner_repo)
 	planner_repo = planner_repo or repo
 	local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40/"
 	local calls, mode = 0, "mixed"
-	local feature_kind, feature_id, feature_water, cave_y
+	local feature_kind, feature_id, feature_water, cave_y, excluded
 	local function column_values_at(x, z)
 		calls = calls + 1
 		local terrain_y = 8
@@ -68,7 +68,7 @@ return function(repo, planner_repo)
 	local _, fixture = planner_module.new_runtime({
 		full_seed_string = "planner-throughput", planner_source = planner_source,
 		r5_planner = {plan_slice = function() error("unused") end},
-		horizontal = {static_exclusion_values_at = function() return nil end},
+		horizontal = {static_exclusion_values_at = function() return excluded end},
 		content = content,
 		templates = {maximum_footprint = function() return 17, 1, 17 end},
 		hash = hash,
@@ -136,7 +136,13 @@ return function(repo, planner_repo)
 			assert(select(12, fixture.column_values_at(0, 0)) == false,
 				"other grade cannot acquire start surface semantics")
 		end
-		feature_id = "anchor_001"
+		feature_id, excluded = "anchor_001", "fixture_exclusion"
+		assert(select(12, fixture.column_values_at(0, 0)) == false,
+			"protected starts must not generate rejected decoration candidates")
+		feature_kind = nil
+		assert(select(12, fixture.column_values_at(0, 0)) == true,
+			"ordinary candidate populations must remain unchanged")
+		excluded = nil
 		for _, kind in ipairs({"anchor_platform", "causeway", "ford"}) do
 			feature_kind = kind
 			assert(select(12, fixture.column_values_at(0, 0)) == false)
