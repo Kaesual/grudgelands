@@ -10,7 +10,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local saved_dofile = dofile
 	changed_roster_relative = changed_roster_relative or
 		"tools/wp40/r7/changed_production_lua.txt"
-	expected_changed_count = expected_changed_count or 74
+	expected_changed_count = expected_changed_count or 75
 	if type(changed_roster_relative) ~= "string" or
 		changed_roster_relative:sub(1, 1) == "/" or
 		changed_roster_relative:find("..", 1, true) or
@@ -150,6 +150,8 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		hex_sha256(table.concat(changed_rows)))
 
 	row("schema", "grug_wp40_r7_micro_kat_v1")
+	row("planner/hydrology_depth_sha256", hex_sha256(dofile(repo ..
+		"/tools/wp40/r7/hydrology_depth_fixture.lua")(repo)))
 
 	-- Execute the authentic bounded R3/R4 live construction under both final
 	-- interpreters.  Unlike the exhaustive evidence constructors, this is the
