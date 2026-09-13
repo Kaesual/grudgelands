@@ -68,7 +68,7 @@ return function(repo, seed_identity, content_only)
 		"/tools/wp40/r7/node_semantics_fixture.lua")(
 			repo, catalog, semantic_names)
 	if semantic_fixture.schema ~= "grug_wp40_r7_node_semantics_fixture_v1" or
-			semantic_fixture.target_count ~= 103 then
+			semantic_fixture.target_count ~= 104 then
 		fail("node-semantics fixture differs")
 	end
 

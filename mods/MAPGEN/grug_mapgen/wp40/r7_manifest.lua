@@ -9,7 +9,7 @@ return function(canonical, raw_sha256)
 	local ACCEPTED_R5_ARTIFACT_SHA256 =
 		"0ffd8cd5c0133645c330703b8e4ea581a21fe6e5891ddcd987236b26a7d07ca0"
 	local SOURCE_PROJECTION_SHA256 =
-		"8f1eef2702c631451ee987b3eb4a267d117fcc3ce1d97947d4b6936e0ea3502b"
+		"de79b1fe983d8b5aaadfd4180bc44e84704133248e20b117139267f232b803d4"
 	local FIELD_ORDER = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -189,7 +189,7 @@ return function(canonical, raw_sha256)
 			fail("gathering identity differs")
 		end
 		if inputs.production_content.semantic_digest ~=
-				"3e7d2eddded546e39e74656ab03d27dab606ff30867c948808277b724cff4ee2" or
+				"e23aea3c8bca6ffb28622a10e019324ad09930d5fed618c98da3d94e32f5bd76" or
 				inputs.p9g_content.semantic_digest ~=
 				"450c35e94af32721768d3771454db89dbdb43099660b2118c178a3ca6b438d49" then
 			fail("frozen content semantics differ")
@@ -247,7 +247,7 @@ return function(canonical, raw_sha256)
 			cultural_digests[index] = row.digest
 		end
 		if type(inputs.decoded_templates) ~= "table" or
-				#inputs.decoded_templates ~= 19 then
+				#inputs.decoded_templates ~= 21 then
 			fail("decoded template population differs")
 		end
 		local frozen = {
@@ -267,11 +267,11 @@ return function(canonical, raw_sha256)
 			consumer_payload = graph_digest(inputs.consumer_payload),
 		}
 		if frozen.r6_catalog ~=
-				"250fefd017d85fe652be66dbe0d6548e0bf3ada64668f4f9cc2f0fd5577edb2d" or
+				"71686cbaff9a2b6acb0415a3eda0ebc2d056412db1879c1bf4fcb162e14f4f74" or
 			frozen.accepted_r6_content ~=
-				"b91a815183d93c2ba0de70409f52911d1e019314e7870fa44eff86f363119155" or
+				"2486aac15521fbacdfa733f832aac615b799aa8d13c818525d1ce75221fad7d6" or
 			frozen.decoded_templates ~=
-				"807ddf131db405974f365c4e08aa124eeba6cac61fa1655e455794507f858a55" or
+				"ab77c5efa95878232fd5138445b97394be44a700ea5c145c706505a64b427f94" or
 			frozen.wp43_projection ~=
 				"c8088a4b6802c0fc1a74d8826e3df0bb49b64f9ab4c6e93bcbd66aa2a16b9895" or
 			frozen.cultural ~=

@@ -218,7 +218,8 @@ that its implementation dependencies or engineering gates are complete.
    to their surrounding terrain. The [terrain-life follow-up](docs/research/wp40-terrain-life-polish.md)
    adds bent Gravewood with sparse grey foliage, terrain-fitted ordinary POI
    building cores, balanced relief, varied shallow-water beds and a gentle
-   near-ground tendency for air fliers. Fresh-terrain visual acceptance and
+   near-ground tendency for air fliers. The [startup manifest repair](docs/research/wp40-startup-manifest-fix.md)
+   updates the content binding and adds a real-constructor regression plus actual-engine startup/emerge checks. Fresh-terrain visual acceptance and
    the remaining R8 gates stay open.
 2. **WP37 — surface-density multiplier.** Its only dependency, WP6, shipped.
 3. **WP11 — skill trees**, **WP14 — offhand/carried light**, **WP20 — party**,

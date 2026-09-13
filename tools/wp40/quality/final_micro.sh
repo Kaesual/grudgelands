@@ -30,6 +30,12 @@ for sentinel in game.conf mods/MAPGEN/grug_mapgen/wp40/height.lua \
 done
 (cd "$repo" && sha256sum "${inputs[@]}") >"$output/inputs.sha256"
 sha256sum "$repo/tools/bin/lua51" "$(command -v luajit)" >"$output/interpreters.sha256"
+# The portable receipt validator does not construct/authenticate the live
+# source projection. Exercise that boundary with real decoded MTS under LuaJIT
+# before the compact parity pair; never send the geometry constructor to PUC.
+chrt --idle 0 ionice -c3 luajit \
+	"$repo/tools/wp40/r7/manifest_constructor_kat.lua" "$repo" \
+	>"$output/constructor.tsv" 2>"$output/constructor.log"
 # Independent immutable inputs; two of the seven permitted interpreter slots.
 chrt --idle 0 ionice -c3 "$repo/tools/bin/lua51" \
 	"$repo/tools/wp40/quality/final_micro.lua" "$repo" >"$output/puc.tsv" 2>"$output/puc.log" &
