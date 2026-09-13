@@ -204,6 +204,11 @@ that its implementation dependencies or engineering gates are complete.
    once-per-layout capacity evidence; the accepted R6 artifact owns the
    32-seed content/supply/access evidence, while final production mapchunk and
    runtime measurements remain mandatory R8 outputs.
+   The 2026-09-13 [tree/performance follow-up](docs/research/wp40-mapgen-profile-tree-fix.md)
+   corrects omitted tree slices and profiles the real engine on Rehearsal.
+   Resource ranking now reuses canonical hash prefixes and consumes an exact
+   ordered root prefix; full owner/persistence parity accompanies the timing
+   evidence. Fresh-terrain visual acceptance and the remaining R8 gates stay open.
 2. **WP37 — surface-density multiplier.** Its only dependency, WP6, shipped.
 3. **WP11 — skill trees**, **WP14 — offhand/carried light**, **WP20 — party**,
    **WP21 — recovery/rest**, and **WP8 — quest framework**. Their listed

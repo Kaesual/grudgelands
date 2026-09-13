@@ -1,0 +1,71 @@
+--- a/mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua
++++ b/mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua
+@@ -61,10 +61,67 @@
+ local built = runtime.build(native.identities(), payload.manifest_sha256)
+ if built.full_seed ~= payload.full_seed then fail("main/emerge seed differs") end
+ 
++-- GRUG WP40 PROFILE: this block is installed only in a disposable snapshot.
++local profile_callback_count = 0
++local vm_method_names = {
++	"get_emerged_area", "get_data", "get_param2_data", "get_light_data",
++	"set_data", "set_param2_data", "set_lighting", "calc_lighting",
++	"set_light_data", "update_liquids",
++}
++local function profiled_vmanip(vmanip)
++	local proxy, calls, times = {}, {}, {}
++	for index = 1, #vm_method_names do
++		local name = vm_method_names[index]
++		local method = vmanip[name]
++		if type(method) ~= "function" then
++			fail("profiled VoxelManip method differs: " .. name)
++		end
++		calls[name], times[name] = 0, 0
++		proxy[name] = function(_, ...)
++			local started = core.get_us_time()
++			local values = {method(vmanip, ...)}
++			times[name] = times[name] + core.get_us_time() - started
++			calls[name] = calls[name] + 1
++			return unpack(values)
++		end
++	end
++	return proxy, calls, times
++end
++local function append_vm_profile(parts, calls, times)
++	for index = 1, #vm_method_names do
++		local name = vm_method_names[index]
++		parts[#parts + 1] = "vm_" .. name .. "_calls=" .. calls[name]
++		parts[#parts + 1] = "vm_" .. name .. "_us=" .. times[name]
++	end
++end
++
+ core.register_on_generated(function(vmanip, minp, maxp, blockseed)
++	profile_callback_count = profile_callback_count + 1
+ 	minp = plain_engine_position(minp, "generated minp")
+ 	maxp = plain_engine_position(maxp, "generated maxp")
++	local callback_started = core.get_us_time()
+ 	local plan, generation = built.session.plan_slice(minp, maxp)
+-	local result = built.writer.apply(vmanip, minp, maxp, plan, generation)
++	local plan_finished = core.get_us_time()
++	local proxy, vm_calls, vm_times = profiled_vmanip(vmanip)
++	local result = built.writer.apply(proxy, minp, maxp, plan, generation)
++	local writer_finished = core.get_us_time()
+ 	if type(result) ~= "string" then fail("writer result differs") end
++	local r5_plan = plan.r5_plan
++	local parts = {
++		"GRUG_WP40_PROFILE_CALLBACK",
++		"callback=" .. profile_callback_count,
++		"minp=" .. minp.x .. "," .. minp.y .. "," .. minp.z,
++		"maxp=" .. maxp.x .. "," .. maxp.y .. "," .. maxp.z,
++		"blockseed=" .. blockseed,
++		"plan_us=" .. (plan_finished - callback_started),
++		"writer_us=" .. (writer_finished - plan_finished),
++		"total_us=" .. (writer_finished - callback_started),
++		"columns=" .. (plan.column_count or -1),
++		"candidate_cells=" .. (plan.candidate_cell_count or -1),
++		"candidates=" .. (plan.candidate_count or -1),
++		"r5_runs=" .. (type(r5_plan) == "table" and r5_plan.run_count or -1),
++		"result=" .. result,
++	}
++	append_vm_profile(parts, vm_calls, vm_times)
++	core.log("action", table.concat(parts, " "))
+ end)

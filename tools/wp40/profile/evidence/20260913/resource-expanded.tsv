@@ -1,0 +1,12 @@
+schema	grug_wp40_resource_rank_diff_v1
+mode	expanded
+status	applied_c
+cases	H0/H1/H4096/B0/normal/equal/own_claim/short_frontier/exhausted
+h4096	4096/1
+own_claim	6/0
+short_frontier	3/1
+exhausted	0/6/6
+raw_calls	4351
+raw_framing_sha256	dcc891e6ece40d874120096a5e9208354a1bd28b104afd5ad2778d6f96aa9a16
+vm_canonical_sha256	530f38cfa6daaade1ed0cf00f44f371cb2e2bbf1b8634977df688262efcca3c9
+digest	8d81eec78dea789d8f03c803b460004a789c7ca9393226fd5a9ec06b3b137134

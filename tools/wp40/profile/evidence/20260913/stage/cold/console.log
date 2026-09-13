@@ -1,0 +1,136 @@
+WARNING[Main]: /!\ You are using the old mod storage files backend. This backend is deprecated and may be removed in a future release /!\
+WARNING[Main]: Switching to SQLite3 is advised, please read https://docs.luanti.org/for-server-hosts/database-backends.
+[MOD] Mobs Redo loaded
+ACTION[Main]: [grug_gear] 6 bracket catalogs: 24 weapons + 48 armor pieces
+ACTION[Main]: [grug_materials] registry audit passed: 6 tiers, 15 resources, 12 processed forms, 6 race regions
+ACTION[Main]: GRUG_WP40_PROFILE_PROBE phase=cold event=start engine=5.17.0 lua=LuaJIT_2.1.1787165859 seed=0 cases=10 manifest=dd201f3693954be7807cc52ea5840486a357ae57ba62b565ff11e0bab5d58989
+ACTION[Main]: [grug_traders] drop audit: 1 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit); their items are audited from the hardcoded FUNCTION_DROPS list
+ _                   _   _ 
+| |_   _  __ _ _ __ | |_(_)
+| | | | |/ _` | '_ \| __| |
+| | |_| | (_| | | | | |_| |
+|_|\__,_|\__,_|_| |_|\__|_|  ___ 5.17.0
+ACTION[Main]: World at [/tmp/grudgelands-wp40-profile-run.gezeA94F/world]
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32160.
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=1 stage=input_setup elapsed_us=11954 total_us=11954 minp=-1872,-32,-2592
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=2 stage=nested_r5 elapsed_us=99668 total_us=111655 minp=-1872,-32,-2592
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=3 stage=p7 elapsed_us=224 total_us=111918 minp=-1872,-32,-2592
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=4 stage=cultural_reservation elapsed_us=6 total_us=111961 minp=-1872,-32,-2592
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=5 stage=p8_resources elapsed_us=33568 total_us=145545 minp=-1872,-32,-2592 digest10_calls=0 digest10_sample_calls=0 digest10_sample_us=0 sort_calls=0 sort_us=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=6 stage=p9_cultural elapsed_us=0 total_us=145569 minp=-1872,-32,-2592
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=7 stage=p9_decorations elapsed_us=4 total_us=145585 minp=-1872,-32,-2592
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=8 stage=r7_successor elapsed_us=26782 total_us=172381 minp=-1872,-32,-2592
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=9 stage=final_diff elapsed_us=4157 total_us=176554 minp=-1872,-32,-2592
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=10 stage=final_commit elapsed_us=42267 total_us=218849 minp=-1872,-32,-2592
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=1 minp=-1872,-32,-2592 maxp=-1793,47,-2513 blockseed=3799390529 plan_us=369819 writer_us=218908 total_us=588727 columns=6400 candidate_cells=49 candidates=0 r5_runs=25600 result=applied_clq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=4 vm_get_data_calls=1 vm_get_data_us=3853 vm_get_param2_data_calls=1 vm_get_param2_data_us=3853 vm_get_light_data_calls=2 vm_get_light_data_us=7787 vm_set_data_calls=1 vm_set_data_us=6903 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=81 vm_set_lighting_us=337 vm_calc_lighting_calls=1 vm_calc_lighting_us=4130 vm_set_light_data_calls=1 vm_set_light_data_us=6676 vm_update_liquids_calls=1 vm_update_liquids_us=875
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=pine_hearthpine_center mapchunk=-1872,-32,-2592 elapsed_us=4382026 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=1 stage=input_setup elapsed_us=12011 total_us=12011 minp=-1792,-32,-2592
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=2 stage=nested_r5 elapsed_us=134863 total_us=146940 minp=-1792,-32,-2592
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=3 stage=p7 elapsed_us=270 total_us=147372 minp=-1792,-32,-2592
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=4 stage=cultural_reservation elapsed_us=23 total_us=147481 minp=-1792,-32,-2592
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=5 stage=p8_resources elapsed_us=34423 total_us=181974 minp=-1792,-32,-2592 digest10_calls=0 digest10_sample_calls=0 digest10_sample_us=0 sort_calls=0 sort_us=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=6 stage=p9_cultural elapsed_us=1 total_us=182060 minp=-1792,-32,-2592
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=7 stage=p9_decorations elapsed_us=4 total_us=182151 minp=-1792,-32,-2592
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=8 stage=r7_successor elapsed_us=30411 total_us=212630 minp=-1792,-32,-2592
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=9 stage=final_diff elapsed_us=5482 total_us=218127 minp=-1792,-32,-2592
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=10 stage=final_commit elapsed_us=45566 total_us=263788 minp=-1792,-32,-2592
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=2 minp=-1792,-32,-2592 maxp=-1713,47,-2513 blockseed=3693650209 plan_us=245652 writer_us=263931 total_us=509583 columns=6400 candidate_cells=49 candidates=0 r5_runs=25600 result=applied_clq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=10 vm_get_data_calls=1 vm_get_data_us=3863 vm_get_param2_data_calls=1 vm_get_param2_data_us=3844 vm_get_light_data_calls=2 vm_get_light_data_us=7809 vm_set_data_calls=1 vm_set_data_us=6889 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=81 vm_set_lighting_us=809 vm_calc_lighting_calls=1 vm_calc_lighting_us=4782 vm_set_light_data_calls=1 vm_set_light_data_us=6704 vm_update_liquids_calls=1 vm_update_liquids_us=921
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=pine_hearthpine_east mapchunk=-1792,-32,-2592 elapsed_us=537646 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=1 stage=input_setup elapsed_us=11873 total_us=11873 minp=-1872,-32,-2512
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=2 stage=nested_r5 elapsed_us=137282 total_us=149187 minp=-1872,-32,-2512
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=3 stage=p7 elapsed_us=225 total_us=149439 minp=-1872,-32,-2512
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=4 stage=cultural_reservation elapsed_us=34 total_us=149486 minp=-1872,-32,-2512
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=5 stage=p8_resources elapsed_us=36799 total_us=186295 minp=-1872,-32,-2512 digest10_calls=0 digest10_sample_calls=0 digest10_sample_us=0 sort_calls=0 sort_us=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=6 stage=p9_cultural elapsed_us=1 total_us=186312 minp=-1872,-32,-2512
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=7 stage=p9_decorations elapsed_us=42 total_us=186359 minp=-1872,-32,-2512
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=8 stage=r7_successor elapsed_us=25114 total_us=211481 minp=-1872,-32,-2512
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=9 stage=final_diff elapsed_us=8829 total_us=220326 minp=-1872,-32,-2512
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=10 stage=final_commit elapsed_us=44007 total_us=264349 minp=-1872,-32,-2512
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=3 minp=-1872,-32,-2512 maxp=-1793,47,-2433 blockseed=1181963239 plan_us=267614 writer_us=264386 total_us=532000 columns=6400 candidate_cells=49 candidates=64 r5_runs=25600 result=applied_clq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=3 vm_get_data_calls=1 vm_get_data_us=3907 vm_get_param2_data_calls=1 vm_get_param2_data_us=3841 vm_get_light_data_calls=2 vm_get_light_data_us=7784 vm_set_data_calls=1 vm_set_data_us=6851 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=1 vm_set_lighting_us=134 vm_calc_lighting_calls=1 vm_calc_lighting_us=4678 vm_set_light_data_calls=1 vm_set_light_data_us=6682 vm_update_liquids_calls=1 vm_update_liquids_us=914
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=pine_hearthpine_south mapchunk=-1872,-32,-2512 elapsed_us=561851 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=1 stage=input_setup elapsed_us=11997 total_us=11997 minp=-32,-32,-1552
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=2 stage=nested_r5 elapsed_us=106054 total_us=118085 minp=-32,-32,-1552
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=3 stage=p7 elapsed_us=278 total_us=118386 minp=-32,-32,-1552
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=4 stage=cultural_reservation elapsed_us=2 total_us=118403 minp=-32,-32,-1552
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=5 stage=p8_resources elapsed_us=26011 total_us=144421 minp=-32,-32,-1552 digest10_calls=0 digest10_sample_calls=0 digest10_sample_us=0 sort_calls=0 sort_us=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=6 stage=p9_cultural elapsed_us=0 total_us=144438 minp=-32,-32,-1552
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=7 stage=p9_decorations elapsed_us=37 total_us=144481 minp=-32,-32,-1552
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=8 stage=r7_successor elapsed_us=29369 total_us=173863 minp=-32,-32,-1552
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=9 stage=final_diff elapsed_us=2883 total_us=176759 minp=-32,-32,-1552
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=10 stage=final_commit elapsed_us=41740 total_us=218514 minp=-32,-32,-1552
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=4 minp=-32,-32,-1552 maxp=47,47,-1473 blockseed=893986625 plan_us=358171 writer_us=218543 total_us=576714 columns=6400 candidate_cells=49 candidates=0 r5_runs=25600 result=applied_clq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=3 vm_get_data_calls=1 vm_get_data_us=3905 vm_get_param2_data_calls=1 vm_get_param2_data_us=3843 vm_get_light_data_calls=2 vm_get_light_data_us=7763 vm_set_data_calls=1 vm_set_data_us=6940 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=1 vm_set_lighting_us=135 vm_calc_lighting_calls=1 vm_calc_lighting_us=2116 vm_set_light_data_calls=1 vm_set_light_data_us=6738 vm_update_liquids_calls=1 vm_update_liquids_us=939
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=human_capital mapchunk=-32,-32,-1552 elapsed_us=602559 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=1 stage=input_setup elapsed_us=12011 total_us=12011 minp=-32,48,-272
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=2 stage=nested_r5 elapsed_us=321122 total_us=333166 minp=-32,48,-272
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=3 stage=p7 elapsed_us=1421 total_us=334617 minp=-32,48,-272
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=4 stage=cultural_reservation elapsed_us=476 total_us=335110 minp=-32,48,-272
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=5 stage=p8_resources elapsed_us=53026 total_us=388154 minp=-32,48,-272 digest10_calls=0 digest10_sample_calls=0 digest10_sample_us=0 sort_calls=0 sort_us=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=6 stage=p9_cultural elapsed_us=12 total_us=388183 minp=-32,48,-272
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=7 stage=p9_decorations elapsed_us=3812 total_us=392001 minp=-32,48,-272
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=8 stage=r7_successor elapsed_us=48703 total_us=440719 minp=-32,48,-272
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=9 stage=final_diff elapsed_us=13690 total_us=454423 minp=-32,48,-272
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=10 stage=final_commit elapsed_us=52675 total_us=507117 minp=-32,48,-272
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=5 minp=-32,48,-272 maxp=47,127,-193 blockseed=1667303045 plan_us=336869 writer_us=507142 total_us=844011 columns=6400 candidate_cells=49 candidates=1401 r5_runs=19200 result=applied_cplq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=3896 vm_get_param2_data_calls=1 vm_get_param2_data_us=3868 vm_get_light_data_calls=2 vm_get_light_data_us=8175 vm_set_data_calls=1 vm_set_data_us=7282 vm_set_param2_data_calls=1 vm_set_param2_data_us=6765 vm_set_lighting_calls=1 vm_set_lighting_us=145 vm_calc_lighting_calls=1 vm_calc_lighting_us=5378 vm_set_light_data_calls=1 vm_set_light_data_us=6722 vm_update_liquids_calls=1 vm_update_liquids_us=934
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=elandor_front mapchunk=-32,48,-272 elapsed_us=868055 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=1 stage=input_setup elapsed_us=12060 total_us=12060 minp=-752,-32,-32
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=2 stage=nested_r5 elapsed_us=178815 total_us=190904 minp=-752,-32,-32
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=3 stage=p7 elapsed_us=1755 total_us=192692 minp=-752,-32,-32
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=4 stage=cultural_reservation elapsed_us=874 total_us=193583 minp=-752,-32,-32
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=5 stage=p8_resources elapsed_us=479023 total_us=672621 minp=-752,-32,-32 digest10_calls=246725 digest10_sample_calls=240 digest10_sample_us=542 sort_calls=130 sort_us=59205
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=6 stage=p9_cultural elapsed_us=1 total_us=672646 minp=-752,-32,-32
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=7 stage=p9_decorations elapsed_us=4327 total_us=676976 minp=-752,-32,-32
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=8 stage=r7_successor elapsed_us=62645 total_us=739639 minp=-752,-32,-32
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=9 stage=final_diff elapsed_us=9881 total_us=749536 minp=-752,-32,-32
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=10 stage=final_commit elapsed_us=52711 total_us=802263 minp=-752,-32,-32
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=6 minp=-752,-32,-32 maxp=-673,47,47 blockseed=3068557649 plan_us=419221 writer_us=802316 total_us=1221537 columns=6400 candidate_cells=49 candidates=1011 r5_runs=22322 result=applied_cplq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=4 vm_get_data_calls=1 vm_get_data_us=3991 vm_get_param2_data_calls=1 vm_get_param2_data_us=3865 vm_get_light_data_calls=2 vm_get_light_data_us=7803 vm_set_data_calls=1 vm_set_data_us=6952 vm_set_param2_data_calls=1 vm_set_param2_data_us=6822 vm_set_lighting_calls=81 vm_set_lighting_us=171 vm_calc_lighting_calls=1 vm_calc_lighting_us=4324 vm_set_light_data_calls=1 vm_set_light_data_us=9067 vm_update_liquids_calls=1 vm_update_liquids_us=1266
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=broken_causeway mapchunk=-752,-32,-32 elapsed_us=1251259 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=1 stage=input_setup elapsed_us=12079 total_us=12079 minp=-432,-32,-1552
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=2 stage=nested_r5 elapsed_us=186310 total_us=198421 minp=-432,-32,-1552
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=3 stage=p7 elapsed_us=622 total_us=199076 minp=-432,-32,-1552
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=4 stage=cultural_reservation elapsed_us=47 total_us=199139 minp=-432,-32,-1552
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=5 stage=p8_resources elapsed_us=2106704 total_us=2305854 minp=-432,-32,-1552 digest10_calls=1117880 digest10_sample_calls=1091 digest10_sample_us=1883 sort_calls=405 sort_us=260885
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=6 stage=p9_cultural elapsed_us=0 total_us=2305878 minp=-432,-32,-1552
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=7 stage=p9_decorations elapsed_us=136 total_us=2306017 minp=-432,-32,-1552
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=8 stage=r7_successor elapsed_us=27191 total_us=2333226 minp=-432,-32,-1552
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=9 stage=final_diff elapsed_us=12423 total_us=2345668 minp=-432,-32,-1552
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=10 stage=final_commit elapsed_us=43499 total_us=2389205 minp=-432,-32,-1552
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=7 minp=-432,-32,-1552 maxp=-353,47,-1473 blockseed=3635851569 plan_us=399492 writer_us=2389259 total_us=2788751 columns=6400 candidate_cells=49 candidates=1459 r5_runs=16304 result=applied_clq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=3 vm_get_data_calls=1 vm_get_data_us=3860 vm_get_param2_data_calls=1 vm_get_param2_data_us=3856 vm_get_light_data_calls=2 vm_get_light_data_us=8033 vm_set_data_calls=1 vm_set_data_us=6966 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=1 vm_set_lighting_us=195 vm_calc_lighting_calls=1 vm_calc_lighting_us=2314 vm_set_light_data_calls=1 vm_set_light_data_us=6890 vm_update_liquids_calls=1 vm_update_liquids_us=1024
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=whitebridge mapchunk=-432,-32,-1552 elapsed_us=2818998 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=1 stage=input_setup elapsed_us=12363 total_us=12363 minp=-2752,-32,-32
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=2 stage=nested_r5 elapsed_us=163610 total_us=176011 minp=-2752,-32,-32
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=3 stage=p7 elapsed_us=138 total_us=176190 minp=-2752,-32,-32
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=4 stage=cultural_reservation elapsed_us=2 total_us=176200 minp=-2752,-32,-32
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=5 stage=p8_resources elapsed_us=25015 total_us=201221 minp=-2752,-32,-32 digest10_calls=0 digest10_sample_calls=0 digest10_sample_us=0 sort_calls=0 sort_us=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=6 stage=p9_cultural elapsed_us=1 total_us=201247 minp=-2752,-32,-32
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=7 stage=p9_decorations elapsed_us=2 total_us=201255 minp=-2752,-32,-32
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=8 stage=r7_successor elapsed_us=15 total_us=201274 minp=-2752,-32,-32
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=9 stage=final_diff elapsed_us=9167 total_us=210445 minp=-2752,-32,-32
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=10 stage=final_commit elapsed_us=46288 total_us=256756 minp=-2752,-32,-32
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=8 minp=-2752,-32,-32 maxp=-2673,47,47 blockseed=2525044665 plan_us=145274 writer_us=256808 total_us=402082 columns=6400 candidate_cells=49 candidates=0 r5_runs=25600 result=applied_clq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=4 vm_get_data_calls=1 vm_get_data_us=4005 vm_get_param2_data_calls=1 vm_get_param2_data_us=3961 vm_get_light_data_calls=2 vm_get_light_data_us=7823 vm_set_data_calls=1 vm_set_data_us=7042 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=1 vm_set_lighting_us=134 vm_calc_lighting_calls=1 vm_calc_lighting_us=7044 vm_set_light_data_calls=1 vm_set_light_data_us=6816 vm_update_liquids_calls=1 vm_update_liquids_us=925
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=wyrmglass_channel mapchunk=-2752,-32,-32 elapsed_us=430205 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=1 stage=input_setup elapsed_us=13134 total_us=13134 minp=-3312,208,-112
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=2 stage=nested_r5 elapsed_us=168132 total_us=181313 minp=-3312,208,-112
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=3 stage=p7 elapsed_us=997 total_us=182379 minp=-3312,208,-112
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=4 stage=cultural_reservation elapsed_us=4 total_us=182410 minp=-3312,208,-112
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=5 stage=p8_resources elapsed_us=115481 total_us=297899 minp=-3312,208,-112 digest10_calls=0 digest10_sample_calls=0 digest10_sample_us=0 sort_calls=0 sort_us=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=6 stage=p9_cultural elapsed_us=1 total_us=297934 minp=-3312,208,-112
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=7 stage=p9_decorations elapsed_us=48 total_us=297991 minp=-3312,208,-112
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=8 stage=r7_successor elapsed_us=33373 total_us=331376 minp=-3312,208,-112
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=9 stage=final_diff elapsed_us=16457 total_us=347852 minp=-3312,208,-112
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=10 stage=final_commit elapsed_us=41899 total_us=389771 minp=-3312,208,-112
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=9 minp=-3312,208,-112 maxp=-3233,287,-33 blockseed=2857651185 plan_us=498367 writer_us=389806 total_us=888173 columns=6400 candidate_cells=49 candidates=1 r5_runs=25600 result=applied_clq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=3 vm_get_data_calls=1 vm_get_data_us=4099 vm_get_param2_data_calls=1 vm_get_param2_data_us=3884 vm_get_light_data_calls=2 vm_get_light_data_us=7730 vm_set_data_calls=1 vm_set_data_us=6913 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=81 vm_set_lighting_us=176 vm_calc_lighting_calls=1 vm_calc_lighting_us=3211 vm_set_light_data_calls=1 vm_set_light_data_us=6729 vm_update_liquids_calls=1 vm_update_liquids_us=900
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=wyrmglass_island mapchunk=-3312,208,-112 elapsed_us=912520 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=1 stage=input_setup elapsed_us=12484 total_us=12484 minp=-1712,-912,128
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=2 stage=nested_r5 elapsed_us=79 total_us=12591 minp=-1712,-912,128
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=3 stage=p7 elapsed_us=156 total_us=12791 minp=-1712,-912,128
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=4 stage=cultural_reservation elapsed_us=36 total_us=12886 minp=-1712,-912,128
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=5 stage=p8_resources elapsed_us=9918107 total_us=9931003 minp=-1712,-912,128 digest10_calls=5390506 digest10_sample_calls=5264 digest10_sample_us=9276 sort_calls=1375 sort_us=1461402
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=6 stage=p9_cultural elapsed_us=1 total_us=9931044 minp=-1712,-912,128
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=7 stage=p9_decorations elapsed_us=90 total_us=9931139 minp=-1712,-912,128
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=8 stage=r7_successor elapsed_us=11 total_us=9931171 minp=-1712,-912,128
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=9 stage=final_diff elapsed_us=2338 total_us=9933522 minp=-1712,-912,128
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_STAGE stage_index=10 stage=final_commit elapsed_us=6874 total_us=9940412 minp=-1712,-912,128
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=10 minp=-1712,-912,128 maxp=-1633,-833,207 blockseed=3960536441 plan_us=498060 writer_us=9940491 total_us=10438551 columns=6400 candidate_cells=49 candidates=228 r5_runs=0 result=applied_c vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=3884 vm_get_param2_data_calls=1 vm_get_param2_data_us=3897 vm_get_light_data_calls=0 vm_get_light_data_us=0 vm_set_data_calls=1 vm_set_data_us=6872 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=0 vm_set_lighting_us=0 vm_calc_lighting_calls=0 vm_calc_lighting_us=0 vm_set_light_data_calls=0 vm_set_light_data_us=0 vm_update_liquids_calls=0 vm_update_liquids_us=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=deep_cross_border mapchunk=-1712,-912,128 elapsed_us=10470794 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=complete requested=10 completed=10 callbacks=10 generated=10 disk=0 memory=1240 cancelled=0 errored=0 samples=370 digest=52227df5b48d18b88ee6dae78b4e3bec30957b83493f6ce338352202ae7eaa88 elapsed_us=23140972
+ACTION[Main]: Server: Shutting down
