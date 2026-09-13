@@ -24,7 +24,7 @@ return function(dependencies)
 	local WATER_LEVEL = 1
 	local GRADE_MIN = -30912
 	local GRADE_MAX = 30927
-	local HEIGHT_SCHEMA = "grug_wp40_simple_map_height_v4"
+	local HEIGHT_SCHEMA = "grug_wp40_simple_map_height_v5"
 	local HEIGHT_RANDOM_SCHEMA = "grug_wp40_simple_map_height_v2"
 	local BASE_CELL = 64
 	local FEATURE_CELL = 128
@@ -200,6 +200,43 @@ return function(dependencies)
 		if #values == 0 then return nil end
 		table.sort(values)
 		return values[math.floor((#values + 1) / 2)]
+	end
+
+	local function start_reference_value(natural_values, old_reference,
+			max_cut, max_fill, minimum_y)
+		local values = {}
+		local feasible_lower, feasible_upper
+		local old_cost = 0
+		for index = 1, #natural_values do
+			local natural = natural_values[index]
+			values[index] = natural
+			feasible_lower = math.max(feasible_lower or -math.huge,
+				natural - max_cut)
+			feasible_upper = math.min(feasible_upper or math.huge,
+				natural + max_fill)
+			old_cost = old_cost + math.abs(old_reference - natural)
+		end
+		local preferred = lower_median(values)
+		if preferred == nil then fail("start fitting has no natural samples") end
+		local lower = math.max(feasible_lower, minimum_y)
+		local target, rule
+		if lower <= feasible_upper then
+			target = clamp(preferred, lower, feasible_upper)
+			rule = "start_natural_samples_feasible"
+		else
+			target = math.max(preferred, minimum_y)
+			rule = "start_natural_samples_median_excess"
+		end
+		local fit_cost, limit_excess = 0, 0
+		for index = 1, #natural_values do
+			local delta = math.abs(target - natural_values[index])
+			fit_cost = fit_cost + delta
+			limit_excess = math.max(limit_excess,
+				math.max(0, delta - (target < natural_values[index] and
+					max_cut or max_fill)))
+		end
+		return target, rule, preferred, feasible_lower, feasible_upper,
+			limit_excess, old_cost, fit_cost
 	end
 
 	local function capital_reference_value(center_natural, feasible_lower,
@@ -1711,8 +1748,25 @@ return function(dependencies)
 			end
 			if is_start then
 				if center_class ~= "land" then fail("start centre is not land") end
-				fitting.reference_y = zone_station_y[anchor.zone_numeric_id]
-				fitting.reference_rule = "start_zone_station"
+				local natural_values = {}
+				for sample_z = 0, 8 do
+					local offset_z = -64 + math.floor(sample_z * 127 / 8)
+					for sample_x = 0, 8 do
+						local offset_x = -64 + math.floor(sample_x * 127 / 8)
+						natural_values[#natural_values + 1] = natural_height_at(
+							selected.x + offset_x, selected.z + offset_z)
+					end
+				end
+				fitting.reference_y, fitting.reference_rule,
+					fitting.start_preferred_y, fitting.start_feasible_lower_y,
+					fitting.start_feasible_upper_y, fitting.start_limit_excess,
+					fitting.start_old_sample_cost, fitting.start_fit_sample_cost =
+						start_reference_value(natural_values,
+							zone_station_y[anchor.zone_numeric_id], 8, 8,
+							WATER_LEVEL + 1)
+				fitting.start_sample_count = #natural_values
+				fitting.start_old_reference_y =
+					zone_station_y[anchor.zone_numeric_id]
 			elseif fitting.is_capital then
 				local civic_half = profile.civic_width / 2
 				local feasible_lower, feasible_upper
@@ -2590,7 +2644,8 @@ return function(dependencies)
 			derived_water_evidence, landing_evidence,
 			visible_surface_classification_digest
 		local function build_public_session(runtime_construction)
-			local anchor_records, anchor_evidence, capital_quality_records = {}, {}, {}
+			local anchor_records, anchor_evidence, capital_quality_records,
+				start_quality_records = {}, {}, {}, {}
 			local spur_id_by_anchor = {}
 			for index = 1, #source.poi_spurs do
 				spur_id_by_anchor[source.poi_spurs[index].anchor_id] =
@@ -2697,11 +2752,41 @@ return function(dependencies)
 					upper_witness_x = fitting.civic_upper_witness_x,
 					upper_witness_z = fitting.civic_upper_witness_z,
 				}
+			elseif fitting.start_sample_count then
+				start_quality_records[#start_quality_records + 1] = {
+					id = anchor.id, x = fitting.center.x, z = fitting.center.z,
+					reference_y = fitting.reference_y,
+					reference_rule = fitting.reference_rule,
+					sample_count = fitting.start_sample_count,
+					preferred_y = fitting.start_preferred_y,
+					feasible_lower_y = fitting.start_feasible_lower_y,
+					feasible_upper_y = fitting.start_feasible_upper_y,
+					limit_excess = fitting.start_limit_excess,
+					old_reference_y = fitting.start_old_reference_y,
+					old_sample_cost = fitting.start_old_sample_cost,
+					fit_sample_cost = fitting.start_fit_sample_cost,
+				}
 			end
 			if not runtime_construction then
 				anchor_evidence[anchor_index] = deep_copy(record)
 				anchor_evidence[anchor_index].reference_y = fitting.reference_y
 				anchor_evidence[anchor_index].reference_rule = fitting.reference_rule
+				anchor_evidence[anchor_index].start_sample_count =
+					fitting.start_sample_count
+				anchor_evidence[anchor_index].start_preferred_y =
+					fitting.start_preferred_y
+				anchor_evidence[anchor_index].start_feasible_lower_y =
+					fitting.start_feasible_lower_y
+				anchor_evidence[anchor_index].start_feasible_upper_y =
+					fitting.start_feasible_upper_y
+				anchor_evidence[anchor_index].start_limit_excess =
+					fitting.start_limit_excess
+				anchor_evidence[anchor_index].start_old_reference_y =
+					fitting.start_old_reference_y
+				anchor_evidence[anchor_index].start_old_sample_cost =
+					fitting.start_old_sample_cost
+				anchor_evidence[anchor_index].start_fit_sample_cost =
+					fitting.start_fit_sample_cost
 				anchor_evidence[anchor_index].profile_midpoint_y =
 					zone_midpoint_y[anchor.zone_numeric_id]
 				anchor_evidence[anchor_index].fitting_width = profile.fitting_width
@@ -2834,6 +2919,9 @@ return function(dependencies)
 			end
 			function session.quality_geometry_records()
 				return deep_copy(capital_quality_records)
+			end
+			function session.quality_start_fitting_records()
+				return deep_copy(start_quality_records)
 			end
 			function session.quality_junction_records()
 				return deep_copy(fittings.junctions)
@@ -3186,6 +3274,10 @@ return function(dependencies)
 
 		function session.quality_geometry_records()
 			return deep_copy(capital_quality_records)
+		end
+
+		function session.quality_start_fitting_records()
+			return deep_copy(start_quality_records)
 		end
 
 		function session.quality_junction_records()
@@ -4370,6 +4462,19 @@ return function(dependencies)
 	-- live capital and road construction without constructing a seed population.
 	function module.quality_geometry_micro_kat()
 		local rows = {HEIGHT_SCHEMA}
+		local target, rule, preferred, lower, upper, excess, old_cost, fit_cost =
+			start_reference_value({4, 6, 8, 10, 12}, 2, 8, 8, WATER_LEVEL + 1)
+		assert(target == 8 and rule == "start_natural_samples_feasible" and
+			preferred == 8 and lower == 4 and upper == 12 and excess == 0 and
+			fit_cost <= old_cost)
+		rows[#rows + 1] = table.concat({"start_reference", target, rule,
+			preferred, lower, upper, excess, old_cost, fit_cost}, "\t")
+		target, rule, preferred, lower, upper, excess = start_reference_value(
+			{2, 30}, 2, 8, 8, WATER_LEVEL + 1)
+		assert(target == 2 and rule == "start_natural_samples_median_excess" and
+			preferred == 2 and lower == 22 and upper == 10 and excess == 20)
+		rows[#rows + 1] = table.concat({"start_excess", target, rule,
+			preferred, lower, upper, excess}, "\t")
 		for _, case in ipairs({
 			{50, 33, 63, 9},
 			{40, 66, 27, 57},
