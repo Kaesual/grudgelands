@@ -85,6 +85,7 @@ local r6 = r6_factory({
 	deterministic = {},
 	index128 = {},
 	horizontal_factory = {},
+	coupled_grade = {},
 	height_factory = {},
 	raw_sha256 = raw_sha256,
 	hash_factory = r6_hash_factory,

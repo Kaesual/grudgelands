@@ -15,7 +15,6 @@ return function(raw_sha256)
 		"evidence_substrate_v1",
 		"resource_budget_remainder_v1",
 		"resource_frontier_rank_v1",
-		"resource_root_rank_v1",
 		"resource_root_shuffle_v1",
 		"template_probability_v1",
 	}
@@ -181,46 +180,7 @@ return function(raw_sha256)
 	function module.digest_count(domain, full_seed_string, fields, count)
 		return raw_digest_count(domain, full_seed_string, fields, count, false)
 	end
-	-- Freeze a canonical prefix for resource ranks sharing one cell/segment.
-	-- The ordinary digest path remains the independent full-framing oracle.
-	function module.prepare_digest3(domain, full_seed_string, fields, count)
-		if type(raw_sha256) ~= "function" then fail("raw SHA-256 seam missing") end
-		if not DOMAIN_SET[domain] then fail("unlisted domain " .. tostring(domain)) end
-		if type(full_seed_string) ~= "string" then fail("full seed is not bytes") end
-		if type(fields) ~= "table" then fail("field array missing") end
-		safe_integer(count, "field count", 0, 29)
-		for index = 1, count do
-			if fields[index] == nil then fail("field array has a hole") end
-		end
-		local parts = {frame(PREFIX), frame(domain), frame(full_seed_string)}
-		for index = 1, count do parts[index + 3] = frame(fields[index]) end
-		local prefix = table.concat(parts)
-		-- One cell/segment has at most 16 coordinates per axis. Bound the
-		-- cache independently of that caller invariant, and release it with
-		-- this prepared prefix rather than retaining world coordinates.
-		local number_frames, number_count = {}, 0
-		local function suffix_frame(value)
-			if type(value) ~= "number" then return frame(value) end
-			safe_integer(value, "canonical integer")
-			local bytes = number_frames[value]
-			if bytes then return bytes end
-			bytes = frame(value)
-			if number_count < 64 then
-				number_frames[value] = bytes
-				number_count = number_count + 1
-			end
-			return bytes
-		end
-		return function(x, y, z)
-			local digest = raw_sha256(prefix .. suffix_frame(x) ..
-				suffix_frame(y) .. suffix_frame(z))
-			if type(digest) ~= "string" or #digest ~= 32 then
-				fail("raw SHA-256 result is not 32 bytes")
-			end
-			return digest
-		end
-	end
-	-- Prototype: a cell-local draw stream for lazy Fisher-Yates root selection.
+	-- A cell-local draw stream for lazy Fisher-Yates root selection.
 	-- Park-Miller arithmetic stays exact in both Lua 5.1 number implementations:
 	-- (2147483646 * 16807) < 2^46. Rejection avoids additional draw-modulo bias.
 	function module.prepare_root_draw(full_seed_string, fields, count)
@@ -229,7 +189,7 @@ return function(raw_sha256)
 		local state = 0
 		for index = 1, 4 do state = state * 256 + string.byte(digest, index) end
 		-- The 32-bit reduction gives the first four states one extra preimage;
-		-- this prototype uses a reproducible PRNG, not a uniform cryptographic stream.
+		-- this sampler uses a reproducible PRNG, not a uniform cryptographic stream.
 		state = state % 2147483646 + 1
 		return function(remaining)
 			bound_integer(remaining, "remaining root population", 1, 4096)

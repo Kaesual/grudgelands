@@ -1,11 +1,10 @@
 # Resource-root sampling prototype — 2026-09-13
 
-**Status: measured prototype, awaiting the user's adoption decision.** It is on
-`wp40-resource-sampling-prototype`, based on `a87b58c`. It has not been merged to
-main or synced to the local playable game. The user authorized implementation
-and comparison after explicitly allowing changed ore positions for a substantial
-performance gain. The decided world-generation specification is not amended by
-this report.
+**Status: historical measured prototype; adopted by the user on 2026-09-13.**
+This report records the reviewed `wp40-resource-sampling-prototype` experiment
+based on `a87b58c`. Its evidence remains unchanged. Subsequent production
+integration and current acceptance checks are recorded in
+[the adoption report](wp40-resource-sampling-integration.md).
 
 ## Result
 
@@ -127,14 +126,15 @@ not replace the complete integration gate or the user's fallback-engine gate.
 
 ## Recommendation and adoption boundary
 
-Recommend adopting the selection algorithm: the measured gain is substantial,
-while the observed supply difference is tiny and planned supply is unchanged.
-Adoption still requires the user's explicit decision, updating the decided
-root-selection contract and affected integration expectations, and running the
-applicable integration checks before merge and sync. Historical exact-position
-and supply artifacts must remain labeled with the algorithm that produced them;
-they are not current proof for the sampler. The 50-owner audit is not a new
-whole-world 32-seed supply/access certificate.
+The prototype recommended adoption because the measured gain was substantial,
+while the observed supply difference was tiny and planned supply unchanged.
+The user approved adoption on 2026-09-13. Current specification, integration
+checks and merge evidence belong to [the adoption report](wp40-resource-sampling-integration.md).
+The archived evidence README and review describe their original prototype-time
+status; their references to a pending decision are historical. Historical exact-
+position and supply artifacts retain their algorithm identity and are not
+current proof for the sampler. The 50-owner audit is not a new whole-world
+32-seed supply/access certificate.
 
 After adoption and sync, the user runtime check is to explore fresh surface and
 deep terrain, inspect several ore veins, and revisit generated chunks. Confirm

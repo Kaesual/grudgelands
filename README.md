@@ -268,6 +268,11 @@ beds and gentle near-ground flight. A [startup correction](docs/research/wp40-st
 updates its content binding and verifies actual-engine startup and generation.
 The [hydrology fix](docs/research/wp40-hydrology-depth-fix.md) aligns the planner
 and bed seals with variable water depths.
+The [resource sampler](docs/research/wp40-resource-sampling-integration.md)
+replaces per-host root hashing with demand-driven deterministic selection.
+The local comparison reduces total generation-callback time by 53.7% across
+ten tested chunks (23.4% for the nine surface chunks); exact ore positions
+change, while budgets and planned vein counts remain unchanged.
 Fresh-terrain visual acceptance remains open.
 
 **Ready to start next:** WP5, WP26 and WP44 are the newly unblocked loot,

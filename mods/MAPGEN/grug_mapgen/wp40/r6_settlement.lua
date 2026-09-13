@@ -273,33 +273,6 @@ local function settlement_factory()
 		end
 	end
 
-	-- Runtime roots consume only a small ascending prefix. Keep every scratch
-	-- record in the array so the next resource group can reuse it unchanged.
-	local function sift_min(values, root, finish, less)
-		while root * 2 <= finish do
-			local child = root * 2
-			if child < finish and less(values[child + 1], values[child]) then
-				child = child + 1
-			end
-			if not less(values[child], values[root]) then return end
-			values[root], values[child] = values[child], values[root]
-			root = child
-		end
-	end
-
-	local function heap_prefix(values, count, less)
-		for root = math.floor(count / 2), 1, -1 do
-			sift_min(values, root, count, less)
-		end
-	end
-
-	local function pop_min(values, count, less)
-		local first = values[1]
-		values[1], values[count] = values[count], first
-		sift_min(values, 1, count - 1, less)
-		return first
-	end
-
 	local function new(dependencies, evidence_only, capture_enabled, runtime_mode)
 		if evidence_only ~= nil and evidence_only ~= true then
 			fail("fail_settlement", "evidence-only construction flag differs")
@@ -1544,7 +1517,6 @@ local function settlement_factory()
 			ledger.rejections[key] = (ledger.rejections[key] or 0) + 1
 		end
 		helpers = {equal_graph = equal_graph,
-			heap_prefix = heap_prefix, pop_min = pop_min,
 			primary_reason = primary_reason, exclusion_reason = exclusion_reason,
 			in_hard_ingress = in_hard_ingress,
 			housing_excluded_at = housing_excluded_at,
@@ -1574,13 +1546,6 @@ local function settlement_factory()
 			digest_fields[5], digest_fields[6], digest_fields[7] = e, f, g
 			return hash.prepare_root_draw(full_seed,
 				digest_fields, 7)
-		end
-		function helpers.digest10(domain, a, b, c, d, e, f, g, h, i, j)
-			digest_fields[1], digest_fields[2], digest_fields[3], digest_fields[4] =
-				a, b, c, d
-			digest_fields[5], digest_fields[6], digest_fields[7] = e, f, g
-			digest_fields[8], digest_fields[9], digest_fields[10] = h, i, j
-			return hash.digest_count(domain, full_seed, digest_fields, 10)
 		end
 		function helpers.digest11(domain, a, b, c, d, e, f, g, h, i, j, k)
 			digest_fields[1], digest_fields[2], digest_fields[3], digest_fields[4] =
