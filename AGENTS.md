@@ -13,6 +13,24 @@ projects: **[docs/research/](docs/research/)**.
 - Chat with the user is in **German**; code identifiers and code comments
   are in English.
 
+## Fresh-server development mode
+
+- **Standing user instruction, decided 2026-09-13:** the first release is
+  still under development. Assume the server and world are **always fresh**.
+  There are no old servers, worlds or player records to migrate.
+- Do not add backward-compatibility branches, saved-world/data migrations,
+  legacy-name aliases, old-format readers, compatibility placeholders or
+  cleanup LBMs/timers for earlier development versions. Remove existing code
+  whose sole purpose is supporting or cleaning up those earlier versions.
+- Current-version persistence (saving/reloading the same world, reconnects,
+  inventories and normal entity activation) remains required. Current engine
+  APIs, Lua 5.1 support and integrations with currently shipped dependencies
+  are not old-world migration mechanisms.
+- This instruction supersedes older migration/legacy-support requirements in
+  project documents. Do not infer a release transition from a commit, merge,
+  deployment or WP completion: **only the user's explicit announcement changes
+  this mode**.
+
 ## Anthropic repository sharing authorization
 
 - **Standing user authorization, decided 2026-08-30:** every file in this
