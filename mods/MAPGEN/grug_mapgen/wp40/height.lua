@@ -20,7 +20,9 @@ return function(dependencies)
 	local B = 32768
 	local MAX_SAFE = 9007199254740991
 	local WATER_LEVEL = 1
-	local HEIGHT_SCHEMA = "grug_wp40_simple_map_height_v1"
+	local GRADE_MIN = -30912
+	local GRADE_MAX = 30927
+	local HEIGHT_SCHEMA = "grug_wp40_simple_map_height_v2"
 	local BASE_CELL = 64
 	local FEATURE_CELL = 128
 	local CONTACT_FACE_SCOPE = "orthogonal_reach_contact_face_v1"
@@ -122,6 +124,59 @@ return function(dependencies)
 
 	local function qlerp_integer(a, b, weight_q)
 		return round_ratio(a * Q + (b - a) * weight_q, Q)
+	end
+
+	local function capital_reference_value(center_natural, feasible_lower,
+			feasible_upper, route_min_y)
+		local reference, rule
+		if feasible_lower <= feasible_upper then
+			reference = clamp(center_natural, feasible_lower, feasible_upper)
+			rule = "capital_natural_core_feasible"
+		else
+			reference = round_ratio(feasible_lower + feasible_upper, 2)
+			rule = "capital_natural_core_minimax"
+		end
+		if reference < route_min_y then
+			reference = route_min_y
+			rule = rule .. "_route_min"
+		end
+		return reference, rule, math.max(0, feasible_lower - reference,
+			reference - feasible_upper)
+	end
+
+	local function capital_terrace_value(incoming, reference, step,
+			civic_outside, max_cut, max_fill)
+		local terrace = reference + step * round_ratio(incoming - reference, step)
+		local shaped = terrace
+		if civic_outside == 0 then
+			shaped = reference
+		elseif civic_outside < 32 then
+			shaped = qlerp_integer(terrace, reference,
+				qweight(civic_outside, 32))
+		end
+		if civic_outside > 0 then
+			shaped = clamp(shaped, incoming - max_cut, incoming + max_fill)
+		end
+		return shaped
+	end
+
+	local function backtrack_preferred_grade(preferred, reachable_lower,
+			reachable_upper)
+		local last_run = #preferred
+		local result = {}
+		result[last_run] = clamp(preferred[last_run],
+			reachable_lower[last_run], reachable_upper[last_run])
+		for run_index = last_run - 1, 1, -1 do
+			local lower_y = math.max(reachable_lower[run_index],
+				result[run_index + 1] - 1)
+			local upper_y = math.min(reachable_upper[run_index],
+				result[run_index + 1] + 1)
+			if lower_y > upper_y then
+				return nil, run_index, lower_y, upper_y
+			end
+			result[run_index] = clamp(preferred[run_index], lower_y, upper_y)
+		end
+		return result
 	end
 
 	local function squared_distance(ax, az, bx, bz)
@@ -292,13 +347,21 @@ return function(dependencies)
 		bound_seed_string = full_seed_string
 		if source.schema ~= "grug_wp40_simple_map_source_v2" or
 				source.layout_id ~= "wp40-simple-map-v1d" or
-				source.layout_revision_id ~= "wp40-simple-map-v1e" then
+				source.layout_revision_id ~= "wp40-simple-map-v1e" or
+				source.height_revision_id ~= "wp40-height-quality-v2" then
 			fail("source schema/layout identity differs from V1e R2")
 		end
 		if #source.relief_profiles ~= 6 or #source.landmarks ~= 70 or
 				#source.anchors ~= 100 or #source.hard_protection ~= 42 or
 				#source.hydrology ~= 25 or #source.hydrology_interfaces ~= 15 then
 			fail("accepted R2 source population differs")
+		end
+		for _, route_class in ipairs({"primary", "secondary", "trail"}) do
+			local profile = source.route_profiles[route_class]
+			if type(profile) ~= "table" or
+					profile.grade_preference ~= "natural_surface_mean_v1" then
+				fail("route grade preference differs")
+			end
 		end
 		local proof = horizontal.warp_proof()
 		local bounds = {min_x = proof.min_x, max_x = proof.max_x,
@@ -347,7 +410,12 @@ return function(dependencies)
 			local profile = {id = source_profile.id,
 				min_above_water = source_profile.min_above_water,
 				max_above_water = source_profile.max_above_water,
+				detail_amplitude = integer(source_profile.detail_amplitude,
+					"relief detail amplitude"),
 				noise_domain = source_profile.noise_domain, root = root, octaves = {}}
+			if profile.detail_amplitude < 0 or profile.detail_amplitude > 16 then
+				fail("relief detail amplitude differs")
+			end
 			profiles[profile_index] = profile
 			profile_by_id[profile.id] = profile
 			relief_roots[profile_index] = {id = profile.id,
@@ -399,6 +467,48 @@ return function(dependencies)
 			end
 		end
 
+		-- The accepted profile periods remain the broad authority.  These two
+		-- common fields are evaluated only after the 64-node owner lattice, so
+		-- local relief is interpolated once instead of being baked into and then
+		-- smootherstepped through that lattice a second time.
+		local detail_root_input = "GRUGWP40HEIGHT" .. string.char(0) ..
+			canonical.encode(text(HEIGHT_SCHEMA)) ..
+			canonical.encode(text(full_seed_string)) ..
+			canonical.encode(text("relief_detail_after_64_v1"))
+		local detail_root = digest_first_word(counted_sha(detail_root_input)) % P
+		if detail_root == 0 then detail_root = 1 end
+		local detail_octaves = {}
+		for detail_index, detail_period in ipairs({64, 32}) do
+			note_lattice_construction()
+			local min_ix = floor_div(bounds.min_x - BASE_CELL, detail_period) - 1
+			local max_ix = floor_div(bounds.max_x + BASE_CELL, detail_period) + 1
+			local min_iz = floor_div(bounds.min_z - BASE_CELL, detail_period) - 1
+			local max_iz = floor_div(bounds.max_z + BASE_CELL, detail_period) + 1
+			local values, rows = {}, {}
+			for iz = min_iz, max_iz do
+				local row = {}
+				values[iz] = row
+				for ix = min_ix, max_ix do
+					local value = lattice_corner(detail_root, ix, iz,
+						100 + detail_index)
+					row[ix] = value
+					if not runtime_mode then
+						rows[#rows + 1] = canonical.array({signed(ix), signed(iz),
+							signed(value)})
+					end
+				end
+			end
+			detail_octaves[detail_index] = {period = detail_period,
+				values = values, numerator = detail_index == 1 and 2 or 1,
+				denominator = 3,
+				digest = not runtime_mode and counted_digest(rows) or nil}
+			if not runtime_mode then
+				octave_digest_rows[#octave_digest_rows + 1] = canonical.array({
+					text("detail"), signed(detail_index), signed(detail_period),
+					text(detail_octaves[detail_index].digest)})
+			end
+		end
+
 		local function raw_profile_height(profile, x, z)
 			local total = 0
 			for octave_index = 1, #profile.octaves do
@@ -431,14 +541,16 @@ return function(dependencies)
 		local base_max_ix = floor_div(bounds.max_x, BASE_CELL) + 1
 		local base_min_iz = floor_div(bounds.min_z, BASE_CELL) - 1
 		local base_max_iz = floor_div(bounds.max_z, BASE_CELL) + 1
-		local base_values, base_rows = {}, {}
+		local base_values, base_owners, base_detail_amplitudes, base_rows = {}, {}, {}, {}
 		local primary_profile_stats = {}
 		note_lattice_construction()
 		for profile_index = 1, #profiles do
 			primary_profile_stats[profile_index] = {count = 0}
 		end
 		for iz = base_min_iz, base_max_iz do
-			local row = {} base_values[iz] = row
+			local row, owner_row, amplitude_row = {}, {}, {}
+			base_values[iz], base_owners[iz], base_detail_amplitudes[iz] =
+				row, owner_row, amplitude_row
 			for ix = base_min_ix, base_max_ix do
 				local x, z = ix * BASE_CELL, iz * BASE_CELL
 				local _, _, owner = horizontal.classification_values_at(x, z)
@@ -465,6 +577,8 @@ return function(dependencies)
 					stats.maximum_count = stats.maximum_count + 1
 				end
 				row[ix] = height
+				owner_row[ix] = owner or 0
+				amplitude_row[ix] = profile.detail_amplitude
 				if not runtime_mode then
 					base_rows[#base_rows + 1] = canonical.array({signed(ix), signed(iz),
 						signed(height), text(profile.id)})
@@ -478,10 +592,8 @@ return function(dependencies)
 
 		local function base_height_at(x, z)
 			local ix, iz = floor_div(x, BASE_CELL), floor_div(z, BASE_CELL)
-			local tx = deterministic.smootherstep(deterministic.qfrom_ratio(
-				x - ix * BASE_CELL, BASE_CELL))
-			local tz = deterministic.smootherstep(deterministic.qfrom_ratio(
-				z - iz * BASE_CELL, BASE_CELL))
+			local tx = deterministic.qfrom_ratio(x - ix * BASE_CELL, BASE_CELL)
+			local tz = deterministic.qfrom_ratio(z - iz * BASE_CELL, BASE_CELL)
 			local row0, row1 = base_values[iz], base_values[iz + 1]
 			if not row0 or not row1 or not row0[ix] or not row0[ix + 1] or
 					not row1[ix] or not row1[ix + 1] then
@@ -491,6 +603,68 @@ return function(dependencies)
 			local bottom = deterministic.qlerp(row1[ix] * Q,
 				row1[ix + 1] * Q, tx)
 			return deterministic.qround(deterministic.qlerp(top, bottom, tz))
+		end
+
+		local function base_corner_q_at(values, x, z)
+			local ix, iz = floor_div(x, BASE_CELL), floor_div(z, BASE_CELL)
+			local tx = deterministic.qfrom_ratio(x - ix * BASE_CELL, BASE_CELL)
+			local tz = deterministic.qfrom_ratio(z - iz * BASE_CELL, BASE_CELL)
+			local row0, row1 = values[iz], values[iz + 1]
+			if not row0 or not row1 or row0[ix] == nil or row0[ix + 1] == nil or
+					row1[ix] == nil or row1[ix + 1] == nil then
+				fail("base-corner query escaped its precomputed lattice")
+			end
+			local a00, a10 = row0[ix] * Q, row0[ix + 1] * Q
+			local a01, a11 = row1[ix] * Q, row1[ix + 1] * Q
+			local top = deterministic.qlerp(a00, a10, tx)
+			local bottom = deterministic.qlerp(a01, a11, tx)
+			return deterministic.qlerp(top, bottom, tz)
+		end
+
+		local function detail_noise_q_at(octave, x, z)
+			local period = octave.period
+			local ix, iz = floor_div(x, period), floor_div(z, period)
+			local tx = deterministic.smootherstep(deterministic.qfrom_ratio(
+				x - ix * period, period))
+			local tz = deterministic.smootherstep(deterministic.qfrom_ratio(
+				z - iz * period, period))
+			local row0, row1 = octave.values[iz], octave.values[iz + 1]
+			if not row0 or not row1 or row0[ix] == nil or row0[ix + 1] == nil or
+					row1[ix] == nil or row1[ix + 1] == nil then
+				fail("detail query escaped its precomputed lattice")
+			end
+			local top = deterministic.qlerp(row0[ix], row0[ix + 1], tx)
+			local bottom = deterministic.qlerp(row1[ix], row1[ix + 1], tx)
+			return deterministic.qlerp(top, bottom, tz)
+		end
+
+		local function detail_height_and_q_at(x, z)
+			local total_q = 0
+			for index = 1, #detail_octaves do
+				local octave = detail_octaves[index]
+				total_q = total_q + round_ratio(detail_noise_q_at(octave, x, z) *
+					octave.numerator, octave.denominator)
+			end
+			total_q = clamp(total_q, -Q, Q)
+			local amplitude_q = base_corner_q_at(base_detail_amplitudes, x, z)
+			return round_ratio(total_q * amplitude_q, Q * Q), total_q
+		end
+
+		local function owner_affinity_q_at(owner_numeric_id, x, z)
+			local ix, iz = floor_div(x, BASE_CELL), floor_div(z, BASE_CELL)
+			local tx = deterministic.qfrom_ratio(x - ix * BASE_CELL, BASE_CELL)
+			local tz = deterministic.qfrom_ratio(z - iz * BASE_CELL, BASE_CELL)
+			local row0, row1 = base_owners[iz], base_owners[iz + 1]
+			if not row0 or not row1 or row0[ix] == nil or row0[ix + 1] == nil or
+					row1[ix] == nil or row1[ix + 1] == nil then
+				fail("owner-affinity query escaped its precomputed lattice")
+			end
+			local top = deterministic.qlerp(row0[ix] == owner_numeric_id and Q or 0,
+				row0[ix + 1] == owner_numeric_id and Q or 0, tx)
+			local bottom = deterministic.qlerp(
+				row1[ix] == owner_numeric_id and Q or 0,
+				row1[ix + 1] == owner_numeric_id and Q or 0, tx)
+			return deterministic.qlerp(top, bottom, tz)
 		end
 
 		local landmark_grid, landmark_evidence = {}, {}
@@ -505,6 +679,10 @@ return function(dependencies)
 				center = row.center, radius_x = row.radius_x,
 				radius_z = row.radius_z, replacement = replacement,
 				collar = BASE_CELL}
+			if owner_affinity_q_at(record.zone_numeric_id, record.center.x,
+					record.center.z) <= 0 then
+				fail("landmark centre has zero owner affinity at " .. record.id)
+			end
 			landmarks[index] = record
 			add_bucket(landmark_grid, record,
 				row.center.x - row.radius_x - BASE_CELL,
@@ -560,13 +738,14 @@ return function(dependencies)
 		local function natural_height_at(x, z, audit_landmark_numeric_id)
 			local height = base_height_at(x, z)
 			local audited_landmark_applied = false
-			local _, _, owner = horizontal.classification_values_at(x, z)
 			local candidates = bucket_at(landmark_grid, x, z)
 			if candidates then
 				for index = 1, #candidates do
 					local record = candidates[index]
-					if owner == record.zone_numeric_id then
-						local weight = landmark_weight(record, x, z)
+					local weight = landmark_weight(record, x, z)
+					if weight > 0 then
+						weight = deterministic.qmul(weight,
+							owner_affinity_q_at(record.zone_numeric_id, x, z))
 						if weight > 0 then
 							local replacement = raw_profile_height(record.replacement, x, z)
 							height = qlerp_integer(height, replacement, weight)
@@ -577,6 +756,7 @@ return function(dependencies)
 					end
 				end
 			end
+			height = height + detail_height_and_q_at(x, z)
 			if audit_landmark_numeric_id ~= nil then
 				return height, audited_landmark_applied
 			end
@@ -1361,6 +1541,14 @@ return function(dependencies)
 					profile.blend_width <= profile.fitting_width then
 				fail("anchor fitting widths differ from the exact primitive")
 			end
+			if fitting.is_capital and (profile.civic_width ~= 96 or
+					profile.civic_width % 2 ~= 0 or profile.terrace_step == nil or
+					profile.terrace_step < 2 or profile.terrace_step > 4) then
+				fail("capital civic/terrace profile differs")
+			elseif not fitting.is_capital and
+					(profile.civic_width ~= nil or profile.terrace_step ~= nil) then
+				fail("non-capital profile carries capital terrain fields")
+			end
 			local half = profile.fitting_width / 2
 			local land_count, water_count, civic_water_count = 0, 0, 0
 			local platform_witness_x, platform_witness_z
@@ -1381,8 +1569,59 @@ return function(dependencies)
 				fitting.reference_y = zone_station_y[anchor.zone_numeric_id]
 				fitting.reference_rule = "start_zone_station"
 			elseif fitting.is_capital then
-				fitting.reference_y = zone_station_y[anchor.zone_numeric_id]
-				fitting.reference_rule = "capital_zone_station"
+				local civic_half = profile.civic_width / 2
+				local feasible_lower, feasible_upper
+				local lower_x, lower_z, upper_x, upper_z
+				local dry_civic_columns = 0
+				for z = selected.z - civic_half, selected.z + civic_half - 1 do
+					for x = selected.x - civic_half, selected.x + civic_half - 1 do
+						local water_class, _, owner, bay_id, hydrology_id =
+							classified_values(x, z)
+						if owner ~= anchor.zone_numeric_id then
+							fail("capital civic core escaped its owner at " .. anchor.id)
+						elseif water_class == "land" then
+							local natural = natural_height_at(x, z)
+							local lower = natural - profile.max_cut
+							local upper = natural + profile.max_fill
+							if feasible_lower == nil or lower > feasible_lower then
+								feasible_lower, lower_x, lower_z = lower, x, z
+							end
+							if feasible_upper == nil or upper < feasible_upper then
+								feasible_upper, upper_x, upper_z = upper, x, z
+							end
+							dry_civic_columns = dry_civic_columns + 1
+						elseif water_class == "planned_water" then
+							local datum = clearance_datum_at(x, z, water_class,
+								bay_id, hydrology_id)
+							if datum == nil then
+								fail("capital civic water has no clearance datum")
+							end
+							if feasible_lower == nil or datum + 1 > feasible_lower then
+								feasible_lower, lower_x, lower_z = datum + 1, x, z
+							end
+						else
+							fail("capital civic core enters unsupported water at " .. anchor.id)
+						end
+					end
+				end
+				if dry_civic_columns == 0 or feasible_lower == nil or
+						feasible_upper == nil then
+					fail("capital civic core has no dry height interval at " .. anchor.id)
+				end
+				local center_natural = natural_height_at(selected.x, selected.z)
+				local route_min_y = zone_station_y[anchor.zone_numeric_id]
+				fitting.reference_y, fitting.reference_rule,
+					fitting.civic_limit_excess = capital_reference_value(center_natural,
+						feasible_lower, feasible_upper, route_min_y)
+				fitting.civic_feasible_lower_y = feasible_lower
+				fitting.civic_feasible_upper_y = feasible_upper
+				fitting.civic_center_natural_y = center_natural
+				fitting.civic_dry_columns = dry_civic_columns
+				fitting.civic_route_min_y = route_min_y
+				fitting.civic_lower_witness_x = lower_x
+				fitting.civic_lower_witness_z = lower_z
+				fitting.civic_upper_witness_x = upper_x
+				fitting.civic_upper_witness_z = upper_z
 			else
 				fitting.reference_y = zone_midpoint_y[anchor.zone_numeric_id]
 				fitting.reference_rule = center_class == "planned_water" and
@@ -1405,14 +1644,15 @@ return function(dependencies)
 							local datum = clearance_datum_at(x, z, water_class,
 								bay_id, hydrology_id)
 							if datum == nil then fail("anchor water has no clearance datum") end
-							if fitting.is_capital then
+							if fitting.is_capital and in_half_open_square(x, z,
+									fitting.center, profile.civic_width) then
 								civic_water_count = civic_water_count + 1
 								if civic_max_clearance_y == nil or
 										datum > civic_max_clearance_y then
 									civic_max_clearance_y, civic_witness_x,
 										civic_witness_z = datum, x, z
 								end
-							else
+							elseif not fitting.is_capital then
 								water_count = water_count + 1
 								if not platform_witness_x then
 									platform_witness_x, platform_witness_z = x, z
@@ -1421,11 +1661,6 @@ return function(dependencies)
 						end
 					end
 				end
-			end
-			if fitting.is_capital and civic_max_clearance_y ~= nil then
-				fitting.reference_y = math.max(fitting.reference_y,
-					civic_max_clearance_y + 1)
-				fitting.reference_rule = "capital_civic_max"
 			end
 			fitting.target_y = fitting.reference_y
 			fitting.land_count, fitting.water_count = land_count, water_count
@@ -1473,11 +1708,21 @@ return function(dependencies)
 						local outside = half_open_square_excess(x, z,
 							fitting.center, profile.fitting_width)
 						if outside < envelope_half - fitting_half then
-						local weight = qweight(math.max(0, outside),
-							envelope_half - fitting_half)
-						if weight > 0 then
-							return qlerp_integer(incoming, fitting.reference_y,
-								weight), fitting, false, weight
+							local weight = qweight(math.max(0, outside),
+								envelope_half - fitting_half)
+							if weight > 0 then
+								if fitting.is_capital then
+									local step = profile.terrace_step
+									local civic_outside = half_open_square_excess(x, z,
+										fitting.center, profile.civic_width)
+									local shaped = capital_terrace_value(incoming,
+										fitting.reference_y, step, civic_outside,
+										profile.max_cut, profile.max_fill)
+									return qlerp_integer(incoming, shaped, weight), fitting,
+										civic_outside == 0, weight
+								end
+								return qlerp_integer(incoming, fitting.reference_y,
+									weight), fitting, false, weight
 						end
 						end
 					end
@@ -1816,6 +2061,26 @@ return function(dependencies)
 			add_pin(path, #path.axis, last_y, last_kind, last_id)
 		end
 
+		-- Record route runs through each fixed 96-node civic core.  Their land
+		-- samples already prefer the flat capital grade; water and exact route
+		-- pins remain the harder constraints when a gate approach must ramp.
+		for path_index = 1, #paths do
+			local path = paths[path_index]
+			path.civic_preference_run_count = 0
+			for run_index = 1, #path.axis do
+				local point = path.axis[run_index]
+				local water_class, _, owner = classified_values(point.x, point.z)
+				local capital = owner and capital_by_zone[owner] or nil
+				if water_class == "land" and capital and
+						(owner == path.owner_a or owner == path.owner_b) and
+						in_half_open_square(point.x, point.z, capital.center,
+							capital.profile.civic_width) then
+					path.civic_preference_run_count =
+						path.civic_preference_run_count + 1
+				end
+			end
+		end
+
 		local landing_grades, landing_route_by_id = {}, {}
 		for path_index = 1, #paths do
 			local path = paths[path_index]
@@ -1981,7 +2246,7 @@ return function(dependencies)
 			derived_water_evidence, landing_evidence,
 			visible_surface_classification_digest
 		local function build_public_session(runtime_construction)
-			local anchor_records, anchor_evidence = {}, {}
+			local anchor_records, anchor_evidence, capital_quality_records = {}, {}, {}
 			local spur_id_by_anchor = {}
 			for index = 1, #source.poi_spurs do
 				spur_id_by_anchor[source.poi_spurs[index].anchor_id] =
@@ -2034,8 +2299,7 @@ return function(dependencies)
 						if water_class == "land" and owner == fitting.zone_numeric_id and
 								outside < envelope_half - fitting_half then
 							local natural = natural_height_at(x, z)
-							local weight = qweight(outside, envelope_half - fitting_half)
-							local value = qlerp_integer(natural, fitting.reference_y, weight)
+							local value = final_terrain_height_at(x, z)
 							local cut, fill = natural - value, value - natural
 							if cut_x == nil or cut > observed_max_cut then
 								observed_max_cut, cut_x, cut_z = cut, x, z
@@ -2065,6 +2329,19 @@ return function(dependencies)
 				path_kind = spur_id_by_anchor[anchor.id],
 				functional_feature_id = feature_id}
 			anchor_records[anchor_index] = record
+			if fitting.is_capital then
+				capital_quality_records[#capital_quality_records + 1] = {
+					id = anchor.id, reference_y = fitting.reference_y,
+					reference_rule = fitting.reference_rule,
+					feasible_lower_y = fitting.civic_feasible_lower_y,
+					feasible_upper_y = fitting.civic_feasible_upper_y,
+					limit_excess = fitting.civic_limit_excess,
+					lower_witness_x = fitting.civic_lower_witness_x,
+					lower_witness_z = fitting.civic_lower_witness_z,
+					upper_witness_x = fitting.civic_upper_witness_x,
+					upper_witness_z = fitting.civic_upper_witness_z,
+				}
+			end
 			if not runtime_construction then
 				anchor_evidence[anchor_index] = deep_copy(record)
 				anchor_evidence[anchor_index].reference_y = fitting.reference_y
@@ -2095,6 +2372,28 @@ return function(dependencies)
 					fitting.civic_witness_x
 				anchor_evidence[anchor_index].civic_max_clearance_witness_z =
 					fitting.civic_witness_z
+				anchor_evidence[anchor_index].civic_width = profile.civic_width
+				anchor_evidence[anchor_index].terrace_step = profile.terrace_step
+				anchor_evidence[anchor_index].civic_feasible_lower_y =
+					fitting.civic_feasible_lower_y
+				anchor_evidence[anchor_index].civic_feasible_upper_y =
+					fitting.civic_feasible_upper_y
+				anchor_evidence[anchor_index].civic_center_natural_y =
+					fitting.civic_center_natural_y
+				anchor_evidence[anchor_index].civic_limit_excess =
+					fitting.civic_limit_excess
+				anchor_evidence[anchor_index].civic_route_min_y =
+					fitting.civic_route_min_y
+				anchor_evidence[anchor_index].civic_dry_columns =
+					fitting.civic_dry_columns
+				anchor_evidence[anchor_index].civic_lower_witness_x =
+					fitting.civic_lower_witness_x
+				anchor_evidence[anchor_index].civic_lower_witness_z =
+					fitting.civic_lower_witness_z
+				anchor_evidence[anchor_index].civic_upper_witness_x =
+					fitting.civic_upper_witness_x
+				anchor_evidence[anchor_index].civic_upper_witness_z =
+					fitting.civic_upper_witness_z
 				anchor_evidence[anchor_index].platform_witness_x = platform_witness_x
 				anchor_evidence[anchor_index].platform_witness_z = platform_witness_z
 			end
@@ -2158,6 +2457,9 @@ return function(dependencies)
 			end
 			function session.hard_protection_volumes()
 				return deep_copy(hard_records)
+			end
+			function session.quality_geometry_records()
+				return deep_copy(capital_quality_records)
 			end
 			function session.metrics()
 				local result = deep_copy(metrics)
@@ -2270,7 +2572,7 @@ return function(dependencies)
 		for landmark_index = 1, #landmarks do
 			local landmark = landmarks[landmark_index]
 			local applied_count, full_mask_count, collar_count = 0, 0, 0
-			local rejected_owner_count, owner_escape_columns = 0, 0
+			local rejected_owner_count, owner_feather_columns = 0, 0
 			local observed_min, observed_max
 			local min_x, min_z, max_x, max_z
 			for z = math.max(bounds.min_z,
@@ -2281,13 +2583,19 @@ return function(dependencies)
 						landmark.center.x - landmark.radius_x - BASE_CELL),
 						math.min(bounds.max_x,
 						landmark.center.x + landmark.radius_x + BASE_CELL) do
-					local weight = landmark_weight(landmark, x, z)
-					if weight > 0 then
+					local shape_weight = landmark_weight(landmark, x, z)
+					if shape_weight > 0 then
 						local _, _, owner = classified_values(x, z)
-						if owner == landmark.zone_numeric_id then
+						local affinity = owner_affinity_q_at(
+							landmark.zone_numeric_id, x, z)
+						local weight = deterministic.qmul(shape_weight, affinity)
+						if weight > 0 then
 							applied_count = applied_count + 1
 							if weight == Q then full_mask_count = full_mask_count + 1
 							else collar_count = collar_count + 1 end
+							if owner ~= landmark.zone_numeric_id then
+								owner_feather_columns = owner_feather_columns + 1
+							end
 							local replacement = raw_profile_height(landmark.replacement,
 								x, z)
 							if not observed_min or replacement < observed_min then
@@ -2296,30 +2604,28 @@ return function(dependencies)
 							if not observed_max or replacement > observed_max then
 								observed_max, max_x, max_z = replacement, x, z
 							end
-						else
+						elseif owner ~= landmark.zone_numeric_id then
 							rejected_owner_count = rejected_owner_count + 1
-							local _, applied = natural_height_at(x, z,
-								landmark.numeric_id)
-							if applied then
-								owner_escape_columns = owner_escape_columns + 1
-							end
 						end
 					end
 				end
 			end
-			if owner_escape_columns ~= 0 then
-				fail("landmark mask escaped its owner at " .. landmark.id)
-			end
 			local evidence = landmark_evidence[landmark_index]
 			evidence.center_weight_q = landmark_weight(landmark,
 				landmark.center.x, landmark.center.z)
+			evidence.center_owner_affinity_q = owner_affinity_q_at(
+				landmark.zone_numeric_id, landmark.center.x, landmark.center.z)
+			if evidence.center_owner_affinity_q <= 0 then
+				fail("landmark centre has zero owner affinity at " .. landmark.id)
+			end
 			evidence.center_natural_y = natural_height_at(landmark.center.x,
 				landmark.center.z)
 			evidence.owner_clipped_count = applied_count
 			evidence.mask_columns = full_mask_count
 			evidence.collar_columns = collar_count
 			evidence.rejected_owner_count = rejected_owner_count
-			evidence.owner_escape_columns = owner_escape_columns
+			evidence.owner_escape_columns = 0
+			evidence.owner_feather_columns = owner_feather_columns
 			evidence.observed_min_y = observed_min
 			evidence.observed_min_witness_x = min_x
 			evidence.observed_min_witness_z = min_z
@@ -2369,6 +2675,7 @@ return function(dependencies)
 			stations = station_evidence,
 			anchors = anchor_evidence,
 			source_cut_fill_limits_consumed = false,
+			capital_cut_fill_limits_consumed = true,
 			hard_protection = hard_evidence,
 			routes = route_evidence,
 			route_exact_pins = route_exact_pin_evidence,
@@ -2498,6 +2805,10 @@ return function(dependencies)
 
 		function session.hard_protection_volumes()
 			return deep_copy(hard_records)
+		end
+
+		function session.quality_geometry_records()
+			return deep_copy(capital_quality_records)
 		end
 
 		function session.relief_lattice_digest()
@@ -2788,6 +3099,7 @@ return function(dependencies)
 			local path = paths[path_index]
 			path.baseline = baseline_from_pins(path)
 			path.lower, path.lower_columns, path.lower_witness = {}, {}, {}
+			path.preferred_sum, path.preferred_count = {}, {}
 			path.ford_cap_by_run = {}
 			visit_path_surface(path, 1, #path.axis, function(x, z, run_index)
 				local water_class, _, owner, bay_id, hydrology_id =
@@ -2839,32 +3151,55 @@ return function(dependencies)
 							kind = bound_kind, interface_id = interface_id,
 							water_y = datum, lower_y = lower_y, run = run_index}
 					end
+				elseif water_class == "land" then
+					local natural = scalar_before_paths(x, z)
+					path.preferred_sum[run_index] =
+						(path.preferred_sum[run_index] or 0) + natural
+					path.preferred_count[run_index] =
+						(path.preferred_count[run_index] or 0) + 1
 				elseif water_class ~= "land" then
 					fail("graded path enters forbidden exterior water at " .. path.id)
 				end
 			end)
 
-			path.y, path.support = {}, {}
+			path.preferred, path.reachable_lower, path.reachable_upper = {}, {}, {}
 			for run_index = 1, #path.axis do
-				local lower_y = path.lower[run_index]
-				if lower_y and lower_y > path.baseline[run_index] then
-					path.y[run_index] = lower_y
-					path.support[run_index] = path.lower_witness[run_index]
-				else path.y[run_index] = path.baseline[run_index] end
-			end
-			for run_index = 2, #path.axis do
-				local raised = path.y[run_index - 1] - 1
-				if raised > path.y[run_index] then
-					path.y[run_index], path.support[run_index] = raised,
-						path.support[run_index - 1]
+				local count = path.preferred_count[run_index] or 0
+				path.preferred[run_index] = count > 0 and round_ratio(
+					path.preferred_sum[run_index], count) or path.baseline[run_index]
+				local lower_y = path.lower[run_index] or GRADE_MIN
+				local upper_y = GRADE_MAX
+				local pin = path.pins[run_index]
+				if pin then
+					if pin.y < lower_y then
+						fail("route exact pin violates water lower bound at " .. path.id)
+					end
+					lower_y, upper_y = pin.y, pin.y
 				end
-			end
-			for run_index = #path.axis - 1, 1, -1 do
-				local raised = path.y[run_index + 1] - 1
-				if raised > path.y[run_index] then
-					path.y[run_index], path.support[run_index] = raised,
-						path.support[run_index + 1]
+				if run_index > 1 then
+					lower_y = math.max(lower_y,
+						path.reachable_lower[run_index - 1] - 1)
+					upper_y = math.min(upper_y,
+						path.reachable_upper[run_index - 1] + 1)
 				end
+				if lower_y > upper_y then
+					fail("route pin/water/grade interval is infeasible at " .. path.id ..
+						" run " .. tostring(run_index) .. " lower " ..
+						tostring(lower_y) .. " upper " .. tostring(upper_y) ..
+						" pin " .. tostring(pin and pin.y or nil) ..
+						" water " .. tostring(path.lower[run_index]))
+				end
+				path.reachable_lower[run_index] = lower_y
+				path.reachable_upper[run_index] = upper_y
+			end
+			local failed_run, failed_lower, failed_upper
+			path.y, failed_run, failed_lower, failed_upper =
+				backtrack_preferred_grade(path.preferred, path.reachable_lower,
+					path.reachable_upper)
+			if not path.y then
+				fail("route backtracking interval is infeasible at " .. path.id ..
+					" run " .. tostring(failed_run) .. " lower " ..
+					tostring(failed_lower) .. " upper " .. tostring(failed_upper))
 			end
 
 			local pin_indices = ordered_pin_indices(path)
@@ -2885,14 +3220,23 @@ return function(dependencies)
 			if not runtime_mode then
 				local baseline_rows, final_rows, pin_rows, lower_rows = {}, {}, {}, {}
 				local baseline_min, baseline_max, final_min, final_max, maximum_step
+				local preferred_min, preferred_max, maximum_preference_deviation =
+					nil, nil, 0
 				local lower_run_count, lower_column_count, raised_run_count = 0, 0, 0
 				for run_index = 1, #path.axis do
 					local point = path.axis[run_index]
 					local base_y, final_y = path.baseline[run_index], path.y[run_index]
+					local preferred_y = path.preferred[run_index]
 					baseline_min = baseline_min and math.min(baseline_min, base_y) or base_y
 					baseline_max = baseline_max and math.max(baseline_max, base_y) or base_y
 					final_min = final_min and math.min(final_min, final_y) or final_y
 					final_max = final_max and math.max(final_max, final_y) or final_y
+					preferred_min = preferred_min and math.min(preferred_min,
+						preferred_y) or preferred_y
+					preferred_max = preferred_max and math.max(preferred_max,
+						preferred_y) or preferred_y
+					maximum_preference_deviation = math.max(
+						maximum_preference_deviation, math.abs(final_y - preferred_y))
 					baseline_rows[#baseline_rows + 1] = canonical.array({signed(run_index),
 						signed(point.x), signed(point.z), signed(base_y)})
 					final_rows[#final_rows + 1] = canonical.array({signed(run_index),
@@ -2918,14 +3262,18 @@ return function(dependencies)
 					end
 					if final_y > base_y then
 						raised_run_count = raised_run_count + 1
-						local support = path.support[run_index]
-						if not support then fail("raised route run has no lower-bound support") end
+						local support = path.lower_witness[run_index]
+						local support_point = path.axis[run_index]
 						route_raise_evidence[#route_raise_evidence + 1] = {
 							path_id = path.id, run = run_index, baseline_y = base_y,
-							final_y = final_y, support_run = support.run,
-							support_lower_y = support.lower_y, support_x = support.x,
-							support_z = support.z, support_kind = support.kind,
-							support_id = support.interface_id}
+							final_y = final_y, support_run = support and support.run or
+								run_index,
+							support_lower_y = support and support.lower_y or preferred_y,
+							support_x = support and support.x or support_point.x,
+							support_z = support and support.z or support_point.z,
+							support_kind = support and support.kind or
+								"natural_preference",
+							support_id = support and support.interface_id or nil}
 					end
 					local active = path.ford_cap_by_run[run_index]
 					if active then ford_approach_evidence[#ford_approach_evidence + 1] =
@@ -2940,9 +3288,22 @@ return function(dependencies)
 
 				local classification_rows = {}
 				local derived_by_run = {}
+				local observed_max_cut, observed_max_fill = 0, 0
+				local cut_x, cut_z, fill_x, fill_z
 				visit_path_surface(path, 1, #path.axis, function(x, z, run_index)
 					local water_class, _, owner, bay_id, hydrology_id =
 						classified_values(x, z)
+					if water_class == "land" then
+						local natural = scalar_before_paths(x, z)
+						local cut = natural - path.y[run_index]
+						local fill = path.y[run_index] - natural
+						if cut > observed_max_cut then
+							observed_max_cut, cut_x, cut_z = cut, x, z
+						end
+						if fill > observed_max_fill then
+							observed_max_fill, fill_x, fill_z = fill, x, z
+						end
+					end
 					local kind, interface_id = "land_grade", nil
 					if water_class == "planned_water" and
 							(owner == path.owner_a or owner == path.owner_b) then
@@ -3001,8 +3362,17 @@ return function(dependencies)
 				local classification_digest = counted_digest(classification_rows)
 				route_evidence[path_index] = {numeric_id = path_index, id = path.id,
 					kind = path.kind, node_count = #path.axis,
+					civic_preference_run_count = path.civic_preference_run_count,
 					baseline_min_y = baseline_min, baseline_max_y = baseline_max,
+					preferred_min_y = preferred_min, preferred_max_y = preferred_max,
+					maximum_preference_deviation = maximum_preference_deviation,
 					final_min_y = final_min, final_max_y = final_max,
+					observed_max_cut = observed_max_cut,
+					observed_max_cut_witness_x = cut_x,
+					observed_max_cut_witness_z = cut_z,
+					observed_max_fill = observed_max_fill,
+					observed_max_fill_witness_x = fill_x,
+					observed_max_fill_witness_z = fill_z,
 					maximum_step = maximum_step or 0, exact_pin_count = #pin_indices,
 					water_lower_bound_run_count = lower_run_count,
 					water_lower_bound_column_count = lower_column_count,
@@ -3537,6 +3907,33 @@ return function(dependencies)
 	function module.diagnose_final_axis_violations(full_seed_string)
 		local _, violations = construct(full_seed_string, true, nil)
 		return deep_copy(violations)
+	end
+
+	-- Compact interpreter-parity seam.  It exercises the exact helpers used by
+	-- live capital and road construction without constructing a seed population.
+	function module.quality_geometry_micro_kat()
+		local rows = {HEIGHT_SCHEMA}
+		for _, case in ipairs({
+			{50, 33, 63, 9},
+			{40, 66, 27, 57},
+			{-20, -30, -10, -40},
+		}) do
+			local reference, rule, excess = capital_reference_value(case[1],
+				case[2], case[3], case[4])
+			rows[#rows + 1] = table.concat({"reference", reference, rule, excess}, "\t")
+		end
+		for _, case in ipairs({
+			{200, 57, 4, 0, 24, 16},
+			{73, 57, 4, 16, 24, 16},
+			{-9, 0, 4, 40, 24, 16},
+		}) do
+			rows[#rows + 1] = table.concat({"terrace",
+				capital_terrace_value(unpack(case))}, "\t")
+		end
+		local grade = assert(backtrack_preferred_grade({5, 20, 20, 5},
+			{5, 4, 3, 5}, {5, 6, 7, 5}))
+		rows[#rows + 1] = table.concat({"grade", unpack(grade)}, "\t")
+		return table.concat(rows, "\n") .. "\n"
 	end
 
 	return module
