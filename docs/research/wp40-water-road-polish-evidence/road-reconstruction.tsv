@@ -1,0 +1,5 @@
+baseline_commit	76576e3c64657c247b97909334dded6c32d1e73c
+reconstructed_snapshot	grug-road-only-reconstructed
+comparison	all rows equal except construction_seconds
+canonical_sha256	c92413c4798505d373753c1eb95bccd693586e14a58d59ba5cd2e1f9d18f69d4
+rows	146

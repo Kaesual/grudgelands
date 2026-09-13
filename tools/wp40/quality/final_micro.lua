@@ -6,6 +6,7 @@ io.write("schema\tgrug_wp40_quality_final_micro_v1\n")
 for _, relative in ipairs({
 	"tools/wp40/tree_slices/fixture.lua",
 	"tools/wp40/quality/gravewood_fixture.lua",
+	"tools/wp40/quality/banner_fixture.lua",
 	"tools/wp40/quality/gravewood_writer_fixture.lua",
 	"tools/wp40/quality/flight_fixture.lua",
 	"tools/wp40/quality/coupled_grade_oracle.lua",

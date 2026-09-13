@@ -189,11 +189,11 @@ source.channels = {
 
 source.route_profiles = {
 	primary = {surface_width=7,corridor_width=16,
-		grade_preference="natural_surface_mean_v1"},
+		grade_preference="natural_surface_low_edge_v1"},
 	secondary = {surface_width=5,corridor_width=12,
-		grade_preference="natural_surface_mean_v1"},
+		grade_preference="natural_surface_low_edge_v1"},
 	trail = {surface_width=3,corridor_width=8,
-		grade_preference="natural_surface_mean_v1"},
+		grade_preference="natural_surface_low_edge_v1"},
 }
 source.route_curve = {
 	id="bounded_pinned_curve_v1",points_per_leg=3,minimum_points_per_route=7,

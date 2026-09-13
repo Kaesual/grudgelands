@@ -276,6 +276,8 @@ change, while budgets and planned vein counts remain unchanged.
 The [planner follow-up](docs/research/wp40-planner-throughput.md) reduces those
 callbacks by another 8.8% in a three-run-per-variant local comparison, with
 identical tested terrain and ore output.
+The [water and road follow-up](docs/research/wp40-water-road-polish.md) repairs
+Kezamba’s leaking shore, favors hillside cuts and fixes transparent banner backs.
 Fresh-terrain visual acceptance remains open.
 
 **Ready to start next:** WP5, WP26 and WP44 are the newly unblocked loot,

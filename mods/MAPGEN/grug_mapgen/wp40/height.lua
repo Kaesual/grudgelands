@@ -118,6 +118,13 @@ return function(dependencies)
 		return value
 	end
 
+	local function record_road_land_preference(preferred, run_index, natural)
+		local previous = preferred[run_index]
+		if previous == nil or natural < previous then
+			preferred[run_index] = natural
+		end
+	end
+
 	local function feasible_preferred(preferred, lower, upper)
 		if lower > upper then return nil end
 		return clamp(preferred, lower, upper)
@@ -146,6 +153,49 @@ return function(dependencies)
 		return round_ratio(a * Q + (b - a) * weight_q, Q)
 	end
 
+	-- The same two-node Manhattan shore neighborhood used by the R5 seals.
+	local function ford_bank_water_floor(water_y, hydro_id, path, run)
+		if water_y and path then
+			for index = 1, #path.fords do
+				local ford = path.fords[index]
+				if ford.hydrology_id == hydro_id then
+					water_y = math.min(water_y, ford.ford_pin_y + math.abs(run - ford.ford_run))
+				end
+			end
+		end
+		return water_y
+	end
+
+	local function cached_bank_floor(query)
+		local xs, zs, values = {}, {}, {}
+		return function(x, z, path, run)
+			-- Ford caps depend on the path/run. Ordinary banks depend only on
+			-- the immutable seed and coordinates and fit a bounded direct cache.
+			if path and #path.fords > 0 then return query(x, z, path, run) end
+			local index = (z % 64) * 64 + (x % 64) + 1
+			if xs[index] == x and zs[index] == z then return values[index] or nil end
+			local value = query(x, z)
+			xs[index], zs[index], values[index] = x, z, value or false
+			return value
+		end
+	end
+
+	local function neighboring_water_floor(x, z, water_at, path, run)
+		local floor_y
+		for dx = -2, 2 do
+			for dz = -2, 2 do
+				local distance = math.abs(dx) + math.abs(dz)
+				if distance >= 1 and distance <= 2 then
+					local water_y = water_at(x + dx, z + dz, path, run)
+					if water_y and (not floor_y or water_y > floor_y) then
+						floor_y = water_y
+					end
+				end
+			end
+		end
+		return floor_y
+	end
+
 	local function lower_median(values)
 		if #values == 0 then return nil end
 		table.sort(values)
@@ -153,7 +203,7 @@ return function(dependencies)
 	end
 
 	local function capital_reference_value(center_natural, feasible_lower,
-			feasible_upper, route_min_y)
+			feasible_upper, route_min_y, water_min_y)
 		local reference, rule
 		if feasible_lower <= feasible_upper then
 			reference = clamp(center_natural, feasible_lower, feasible_upper)
@@ -165,6 +215,10 @@ return function(dependencies)
 		if reference < route_min_y then
 			reference = route_min_y
 			rule = rule .. "_route_min"
+		end
+		if water_min_y and reference < water_min_y then
+			reference = water_min_y
+			rule = rule .. "_water_min"
 		end
 		return reference, rule, math.max(0, feasible_lower - reference,
 			reference - feasible_upper)
@@ -386,7 +440,7 @@ return function(dependencies)
 		for _, route_class in ipairs({"primary", "secondary", "trail"}) do
 			local profile = source.route_profiles[route_class]
 			if type(profile) ~= "table" or
-					profile.grade_preference ~= "natural_surface_mean_v1" then
+					profile.grade_preference ~= "natural_surface_low_edge_v1" then
 				fail("route grade preference differs")
 			end
 		end
@@ -1527,6 +1581,43 @@ return function(dependencies)
 			return ordinary_water_surface(water_class, bay_id, hydrology_id)
 		end
 
+		local water_banks = {}
+		function water_banks.named_at(x, z, path, run)
+			local water_class, _, _, bay_id, hydro_id = classified_values(x, z)
+			if water_class ~= "planned_water" or not hydro_id then return nil end
+			local transition = transition_values_at(x, z)
+			local water_y = transition and transition.contact_face and transition.lower_y or
+				pregrade_water_surface_at(x, z, water_class, bay_id, hydro_id)
+			-- Authored fords deliberately enter the water. Preserve their exact
+			-- bed and one-step approach; ordinary roads retain the full bank floor.
+			return ford_bank_water_floor(water_y, hydro_id, path, run)
+		end
+
+		function water_banks.query_at(x, z, path, run)
+			-- Most land is nowhere near a reach. The conservative segment bound
+			-- only prunes work; exact classified neighbors decide the actual floor.
+			local candidates = bucket_at(hydro_grid, x, z)
+			if not candidates then return nil end
+			for index = 1, #candidates do
+				local segment = candidates[index]
+				if segment.reach.profile.depth > 0 then
+					local radius = math.max(segment.a.half_width, segment.b.half_width) + 2
+					local numerator, denominator = point_segment_ratio(x, z, segment.a, segment.b)
+					if numerator <= radius * radius * denominator then
+						return neighboring_water_floor(x, z, water_banks.named_at, path, run)
+					end
+				end
+			end
+			return nil
+		end
+
+		water_banks.floor_at = cached_bank_floor(water_banks.query_at)
+
+		function water_banks.protect(x, z, value, path, run)
+			local floor_y = water_banks.floor_at(x, z, path, run)
+			return floor_y and math.max(value, floor_y) or value
+		end
+
 		local anchor_profile_by_id = {}
 		for index = 1, #source.anchor_profiles do
 			local row = source.anchor_profiles[index]
@@ -1626,7 +1717,7 @@ return function(dependencies)
 				local civic_half = profile.civic_width / 2
 				local feasible_lower, feasible_upper
 				local lower_x, lower_z, upper_x, upper_z
-				local dry_civic_columns = 0
+				local dry_civic_columns, civic_water_floor = 0, nil
 				for z = selected.z - civic_half, selected.z + civic_half - 1 do
 					for x = selected.x - civic_half, selected.x + civic_half - 1 do
 						local water_class, _, owner, bay_id, hydrology_id =
@@ -1650,6 +1741,7 @@ return function(dependencies)
 							if datum == nil then
 								fail("capital civic water has no clearance datum")
 							end
+							civic_water_floor = math.max(civic_water_floor or datum + 1, datum + 1)
 							if feasible_lower == nil or datum + 1 > feasible_lower then
 								feasible_lower, lower_x, lower_z = datum + 1, x, z
 							end
@@ -1666,12 +1758,13 @@ return function(dependencies)
 				local route_min_y = zone_station_y[anchor.zone_numeric_id]
 				fitting.reference_y, fitting.reference_rule,
 					fitting.civic_limit_excess = capital_reference_value(center_natural,
-						feasible_lower, feasible_upper, route_min_y)
+						feasible_lower, feasible_upper, route_min_y, civic_water_floor)
 				fitting.civic_feasible_lower_y = feasible_lower
 				fitting.civic_feasible_upper_y = feasible_upper
 				fitting.civic_center_natural_y = center_natural
 				fitting.civic_dry_columns = dry_civic_columns
 				fitting.civic_route_min_y = route_min_y
+				fitting.civic_water_floor_y = civic_water_floor
 				fitting.civic_lower_witness_x = lower_x
 				fitting.civic_lower_witness_z = lower_z
 				fitting.civic_upper_witness_x = upper_x
@@ -1987,16 +2080,16 @@ return function(dependencies)
 			if water_class ~= "land" then return incoming end
 			local value = fitting_grade_at(fitting_grids.start, x, z, incoming,
 				owner, water_class, false)
-			if value ~= nil then return value end
+			if value ~= nil then return water_banks.protect(x, z, value) end
 			value = fitting_grade_at(fitting_grids.capital, x, z, incoming,
 				owner, water_class, false)
-			if value ~= nil then return value end
+			if value ~= nil then return water_banks.protect(x, z, value) end
 			value = coastal_grade_at(x, z, incoming, owner, water_class)
-			if value ~= nil then return value end
+			if value ~= nil then return water_banks.protect(x, z, value) end
 			value = fitting_grade_at(fitting_grids.selected, x, z, incoming,
 				owner, water_class, false)
-			if value ~= nil then return value end
-			return incoming
+			if value ~= nil then return water_banks.protect(x, z, value) end
+			return water_banks.protect(x, z, incoming)
 		end
 
 		-- Every path that meets at the same free junction must inherit one
@@ -3387,7 +3480,7 @@ return function(dependencies)
 			local path = paths[path_index]
 			path.baseline = baseline_from_pins(path)
 			path.lower, path.lower_columns, path.lower_witness = {}, {}, {}
-			path.preferred_sum, path.preferred_count = {}, {}
+			path.preferred_land = {}
 			path.ford_cap_by_run = {}
 			visit_path_surface(path, 1, #path.axis, function(x, z, run_index)
 				local water_class, _, owner, bay_id, hydrology_id =
@@ -3440,11 +3533,22 @@ return function(dependencies)
 							water_y = datum, lower_y = lower_y, run = run_index}
 					end
 				elseif water_class == "land" then
+					local bank_floor = water_banks.floor_at(x, z, path, run_index)
+					if bank_floor then
+						path.lower_columns[run_index] = (path.lower_columns[run_index] or 0) + 1
+						local old = path.lower[run_index]
+						local witness = path.lower_witness[run_index]
+						if not old or bank_floor > old or (bank_floor == old and
+								lexicographically_before(x, z, witness.x, witness.z)) then
+							path.lower[run_index] = bank_floor
+							path.lower_witness[run_index] = {x = x, z = z, kind = "water_bank",
+								water_y = bank_floor, lower_y = bank_floor, run = run_index}
+						end
+					end
 					local natural = scalar_before_paths(x, z)
-					path.preferred_sum[run_index] =
-						(path.preferred_sum[run_index] or 0) + natural
-					path.preferred_count[run_index] =
-						(path.preferred_count[run_index] or 0) + 1
+					-- Prefer cutting the uphill side over raising the downhill edge.
+					-- This is a preference only; pins, water and step limits win.
+					record_road_land_preference(path.preferred_land, run_index, natural)
 				elseif water_class ~= "land" then
 					fail("graded path enters forbidden exterior water at " .. path.id)
 				end
@@ -3452,9 +3556,8 @@ return function(dependencies)
 
 			path.preferred, path.reachable_lower, path.reachable_upper = {}, {}, {}
 			for run_index = 1, #path.axis do
-				local count = path.preferred_count[run_index] or 0
-				path.preferred[run_index] = count > 0 and round_ratio(
-					path.preferred_sum[run_index], count) or path.baseline[run_index]
+				path.preferred[run_index] = path.preferred_land[run_index] or
+					path.baseline[run_index]
 				local lower_y = path.lower[run_index] or GRADE_MIN
 				local upper_y = GRADE_MAX
 				local pin = path.pins[run_index]
@@ -3987,6 +4090,7 @@ return function(dependencies)
 			end
 			local operation = functional_operation_at(x, z)
 			local on_path_surface = false
+			local bank_path, bank_run
 			if operation and operation.kind == "tunnel_floor" then
 				on_path_surface = true
 				kind, surface_y, feature_id, interface_id = operation.kind,
@@ -3995,6 +4099,7 @@ return function(dependencies)
 				local path, projected_run
 				value, path, projected_run, on_path_surface = path_grade_at(x, z,
 					terrain_y)
+				if on_path_surface then bank_path, bank_run = path, projected_run end
 				if value ~= nil then
 					terrain_y, kind, surface_y, feature_id, interface_id = value,
 						"land_grade", value, path.id, nil
@@ -4021,6 +4126,8 @@ return function(dependencies)
 				terrain_y, kind, surface_y, feature_id, interface_id = value,
 					"land_grade", value, feature.id, nil
 			end
+			terrain_y = water_banks.protect(x, z, terrain_y, bank_path, bank_run)
+			if kind == "land_grade" then surface_y = terrain_y end
 			return terrain_y, kind, surface_y, feature_id, interface_id
 		end
 
@@ -4280,9 +4387,53 @@ return function(dependencies)
 			rows[#rows + 1] = table.concat({"terrace",
 				capital_terrace_value(unpack(case))}, "\t")
 		end
+		local road_preferences = {}
+		for _, sample in ipairs({{1, 9}, {1, 4}, {1, 7}, {2, -3}, {2, 0}}) do
+			record_road_land_preference(road_preferences, sample[1], sample[2])
+		end
+		assert(road_preferences[1] == 4 and road_preferences[2] == -3 and
+			road_preferences[3] == nil, "road low-edge preference differs")
+		rows[#rows + 1] = table.concat({"road_low_edge", road_preferences[1],
+			road_preferences[2]}, "\t")
 		local grade = assert(backtrack_preferred_grade({5, 20, 20, 5},
 			{5, 4, 3, 5}, {5, 6, 7, 5}))
 		rows[#rows + 1] = table.concat({"grade", unpack(grade)}, "\t")
+		local bank_queries = 0
+		local function wet_at(x, z)
+			bank_queries = bank_queries + 1
+			if x == 1 and z == 0 then return 65 end
+			if x == -2 and z == 0 then return 68 end
+			if x == 2 and z == 2 then return 100 end
+		end
+		local floor_y = neighboring_water_floor(0, 0, wet_at)
+		assert(floor_y == 68 and bank_queries == 12)
+		assert(neighboring_water_floor(10, 10, wet_at) == nil)
+		local reference, rule = capital_reference_value(40, 66, 50, 9, 66)
+		assert(reference == 66 and rule == "capital_natural_core_minimax_water_min")
+		local ford = {fords = {{hydrology_id = "river", ford_pin_y = 16, ford_run = 5}}}
+		assert(ford_bank_water_floor(17, "river", ford, 5) == 16)
+		assert(ford_bank_water_floor(17, "river", ford, 6) == 17)
+		assert(ford_bank_water_floor(20, "other", ford, 5) == 20)
+		assert(ford_bank_water_floor(nil, "river", ford, 5) == nil)
+		rows[#rows + 1] = table.concat({"bank_floor", floor_y, reference, rule}, "\t")
+		rows[#rows + 1] = "ford_bank\t16\t17\t20"
+		local cache_calls = 0
+		local cached = cached_bank_floor(function(x, z, path, run)
+			cache_calls = cache_calls + 1
+			if path then return run end
+			if x == 0 then return 0 end
+			if x == -1 then return 65 end
+		end)
+		assert(cached(0, 0) == 0 and cached(0, 0) == 0 and cache_calls == 1)
+		assert(cached(1, 0) == nil and cached(1, 0) == nil and cache_calls == 2)
+		assert(cached(-1, -1) == 65 and cached(-1, -1) == 65 and cache_calls == 3)
+		assert(cached(63, 63) == nil and cache_calls == 4)
+		assert(cached(-1, -1) == 65 and cache_calls == 5)
+		assert(cached(-1, -1, ford, 7) == 7 and cache_calls == 6)
+		assert(cached(-1, -1, ford, 8) == 8 and cache_calls == 7)
+		assert(cached(-1, -1, {fords = {}}, 9) == 65 and cache_calls == 7)
+		rows[#rows + 1] = "bank_cache\t7\t4096"
+
 		return table.concat(rows, "\n") .. "\n"
 	end
 

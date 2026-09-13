@@ -891,7 +891,8 @@ NODE_ICONS = [
     # Tile of grug_nodes:guard_banner (WP6/T8 guard post anchor). The node is
     # a nodebox, and nodebox faces sample the REGION of the tile their box
     # covers: columns 6..9 are the pole, columns 10..14 / rows 1..7 the flag
-    # board, the rest is never drawn and stays transparent. Faction-neutral
+    # board. The node uses face-specific transforms/crops so the unused
+    # transparent atlas region is not sampled on the back or narrow edges. Faction-neutral
     # colours on purpose (the faction comes from the territory, not the node).
     ("grug_nodes_guard_banner.png", GUARD_BANNER,
      {"p": "#4a3524", "P": "#6b4e33", "e": "#7a6a52", "c": "#d9d2be",

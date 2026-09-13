@@ -496,7 +496,13 @@ WP40 replaces it with the complete catalog and contracts below.
   64-node natural collar and owner-affinity fade, but their maximum secondary-
   profile replacement weight is 3/4. Their identity remains visible without
   replacing all intermediate relief inside a large ridge or bowl.
-- Routes prefer the mean pre-path terrain across their full land surface.
+- The two-node Manhattan bank around named water retains a solid terrain
+  surface at least as high as its neighboring water. This lower bound applies
+  after civic/POI grading and participates in the road grade solver, so later
+  cuts cannot open a low shore. Matching authored fords retain their fixed bed
+  and one-step approach instead of being dammed by the generic bank bound.
+- Routes prefer the lowest sampled pre-path land height in each road
+  cross-section, favoring hillside cuts over embankments.
   Forward reachable intervals and reverse clamping preserve exact pins,
   water clearance and the existing maximum one-node rise per adjacent run
   (45 degrees for one-node horizontal steps). The solver does not promise a
@@ -1110,7 +1116,8 @@ one-cell settlement checks are unchanged.
   The target reference interval for natural height N is [N-24, N+16],
   intersected over core columns with water lower bounds. A feasible interval
   clamps the natural centre; an infeasible interval uses its rounded midpoint.
-  Existing station floors remain lower bounds. Any resulting cut/fill excess
+  Existing station floors and the highest civic water level plus one remain
+  hard lower bounds even when the terrain interval is infeasible. Any resulting cut/fill excess
   is explicitly reported rather than hidden or used to move the fixed core.
   Outside the core, terrain terraces use steps dwarf/orc 4, human 2 and
   elf/undead/troll 3. The next 32 nodes blend to these terraces; the outer
