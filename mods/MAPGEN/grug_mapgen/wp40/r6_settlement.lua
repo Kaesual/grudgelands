@@ -659,7 +659,8 @@ local function settlement_factory()
 		local function analytic_p7_material_ref(x, y, z)
 			local _, _, zone_id, biome, _, terrain_y, water_y, classified_id,
 				classified_depth,
-				functional_kind, functional_y, _, _, transition_kind, transition_id,
+				functional_kind, functional_y, functional_feature_id, _,
+				transition_kind, transition_id,
 				_, transition_lower_y, _, transition_face_mask =
 					planner_source.column_values_at(x, z)
 			local surface = select_surface(biome, x, z, water_y, terrain_y)
@@ -667,8 +668,13 @@ local function settlement_factory()
 					y > terrain_y or y < -37 then return nil end
 			local cave_low, cave_high = planner_source.surface_cave_run_at(x, z)
 			if cave_low ~= nil and cave_low <= y and y <= cave_high then return nil end
+			local dry_start_grade = functional_kind == "land_grade" and
+				type(functional_feature_id) == "string" and
+				functional_feature_id:match("^anchor_00[1-6]$") ~= nil and
+				(water_y == nil or water_y <= terrain_y)
 			if functional_kind == "anchor_platform" or
-					functional_kind == "land_grade" or functional_kind == "causeway" or
+					(functional_kind == "land_grade" and not dry_start_grade) or
+					functional_kind == "causeway" or
 					(functional_kind == "ford" and y == terrain_y) or
 					(functional_kind == "tunnel_floor" and functional_y <= y and
 						y <= functional_y + 5) then
@@ -1732,9 +1738,19 @@ local function settlement_factory()
 					local alternate_ref = plan.column_values[base + 10]
 					local filler_depth = plan.column_values[base + 11]
 					local dust_ref = plan.column_values[base + 12]
+					local dry_start_grade
 					if top_ref ~= 0 and terrain_y >= min_y and terrain_y <= max_y then
 						local rbase = run_at(plan, column, terrain_y)
-						if rbase and plan.r5_plan.run_values[rbase + 4] == 28 then
+						local predecessor = rbase and plan.r5_plan.run_values[rbase + 4]
+						if predecessor == 22 then
+							local _, _, _, _, _, _, water_y, _, _, functional_kind, _,
+								functional_feature_id = planner_source.column_values_at(x, z)
+							dry_start_grade = functional_kind == "land_grade" and
+								type(functional_feature_id) == "string" and
+								functional_feature_id:match("^anchor_00[1-6]$") ~= nil and
+								(water_y == nil or water_y <= terrain_y)
+						end
+						if predecessor == 28 or dry_start_grade and predecessor == 22 then
 							local opcode = surface_kind == 1 and 4 or
 								(surface_kind == 2 and 3 or 1)
 							write_intent(x, terrain_y, z,
@@ -1745,7 +1761,16 @@ local function settlement_factory()
 					for y = terrain_y - filler_depth, terrain_y - 1 do
 						if y >= min_y and y <= max_y then
 							local rbase = run_at(plan, column, y)
-							if rbase and plan.r5_plan.run_values[rbase + 4] == 27 then
+							local predecessor = rbase and plan.r5_plan.run_values[rbase + 4]
+							if predecessor == 21 and dry_start_grade == nil then
+								local _, _, _, _, _, _, water_y, _, _, functional_kind, _,
+									functional_feature_id = planner_source.column_values_at(x, z)
+								dry_start_grade = functional_kind == "land_grade" and
+									type(functional_feature_id) == "string" and
+									functional_feature_id:match("^anchor_00[1-6]$") ~= nil and
+									(water_y == nil or water_y <= terrain_y)
+							end
+							if predecessor == 27 or dry_start_grade == true and predecessor == 21 then
 								local index = index_at(x, y, z)
 								local class_id = classify(final_data[index], final_param2[index])
 								if filler_ref ~= 0 and class_id ~= CLASS_AIR and

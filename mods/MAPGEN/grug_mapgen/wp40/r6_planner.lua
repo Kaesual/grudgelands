@@ -254,8 +254,8 @@ local function planner_factory()
 		local function column_tuple(x, z)
 			local water_class, zone_numeric, zone_id, biome, race, terrain_y,
 				water_y, classified_hydrology_id, classified_depth, functional_kind,
-				functional_y,
-				_, _, transition_kind, transition_id, _, transition_lower_y, _,
+				functional_y, functional_feature_id,
+				_, transition_kind, transition_id, _, transition_lower_y, _,
 				transition_face_mask =
 					planner_source.column_values_at(x, z)
 			if not WATER_CLASS_ID[water_class] or
@@ -265,6 +265,7 @@ local function planner_factory()
 				fail("fail_source", "R6 column vocabulary differs")
 			end
 			local wet = water_y ~= nil and water_y > terrain_y
+			local excluded = horizontal.static_exclusion_values_at(x, z) ~= nil
 			local surface_kind = wet and 3 or (biome == "grug_beach" and 2 or 1)
 			local surface = select_surface(biome, x, z, water_y, terrain_y)
 			local support_name = surface and (surface_kind == 1 and surface.top or
@@ -274,8 +275,13 @@ local function planner_factory()
 			-- and have no equivalent read-only source scalar, so settlement must still
 			-- verify the final predecessor.
 			local p7_support = surface ~= nil
+			local dry_start_grade = functional_kind == "land_grade" and
+				type(functional_feature_id) == "string" and
+				functional_feature_id:match("^anchor_00[1-6]$") ~= nil and
+				not wet and not excluded
 			if functional_kind == "anchor_platform" or
-					functional_kind == "land_grade" or functional_kind == "ford" or
+					(functional_kind == "land_grade" and not dry_start_grade) or
+					functional_kind == "ford" or
 					functional_kind == "causeway" then
 				p7_support = false
 			elseif functional_kind == "tunnel_floor" and
@@ -306,7 +312,7 @@ local function planner_factory()
 			end
 			return water_class, zone_numeric, zone_id, biome, race, terrain_y,
 				water_y, surface_kind, surface, support_name,
-				horizontal.static_exclusion_values_at(x, z) ~= nil, p7_support,
+				excluded, p7_support,
 				wet_surface, wet_bed
 		end
 

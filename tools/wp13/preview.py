@@ -26,6 +26,10 @@ def colour(name):
         return (141, 199, 211)
     if "pine_tree" in name or "fence" in name:
         return (93, 68, 49)
+    if "needles" in name or "fern" in name or "grass" in name:
+        return (81, 122, 62)
+    if "dirt" in name:
+        return (116, 94, 60)
     if "pine" in name:
         return (164, 120, 76)
     if "cobble" in name:
@@ -34,10 +38,10 @@ def colour(name):
 
 
 def project(x, y, z):
-    return (760 + (x - z) * 8, 480 + (x + z) * 4 - y * 10)
+    return (1100 + (x - z) * 8, 620 + (x + z) * 4 - y * 10)
 
 
-im = Image.new("RGB", (1500, 1100), (234, 236, 220))
+im = Image.new("RGB", (2200, 1250), (234, 236, 220))
 draw = ImageDraw.Draw(im)
 draw.polygon([project(x, -0.6, z) for x, z in
               [(-48, -38), (45, -38), (45, 70), (-48, 70)]], fill=(109, 137, 84))

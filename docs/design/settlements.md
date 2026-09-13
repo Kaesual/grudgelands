@@ -27,5 +27,30 @@ the zone name; this increment introduces no separate town name.
   The functional systems and their NPCs retain their own work packages.
 
 The other five starts, all capitals and the rest of WP13 remain separate
-increments. The first settlement receives a focused visual and walkability
-playtest before its architecture is extended to other places.
+increments. The first settlement receives focused visual and walkability
+playtests before its architecture is extended to other places.
+
+## Hearthpine expansion and ground integration
+
+Decided 2026-09-14 after the first native playtest.
+
+- Hearthpine has nine buildings: the forge, four homes, timber workyard,
+  storage building, community hall and small gate watchpost. The storage
+  building and community hall are scenery with walkable interiors, not new
+  services. Building orientations, proportions and porches vary.
+- Pine litter dominates the open ground, with modest dirt and grass patches,
+  a few pine trees and undergrowth. Paving serves the arrival plaza, paths and
+  work areas. Benches, timber stacks and small masonry details occupy the
+  spaces between plots. Warm exterior lights mark the main route and entries.
+- The watchpost roof sits on continuous masonry bearings; thin slabs serve
+  the projecting eaves without leaving a gap above the walls.
+- All six start pads derive their shared surface/spawn/road-pin height from
+  81 deterministic natural-terrain samples in a 9 × 9 grid spanning the
+  128-node build envelope. The lower median minimizes sampled absolute
+  earthwork. Clamp it to the common eight-node cut/fill interval when that
+  interval exists, and keep the surface above water. If those constraints
+  cannot all hold, use the dry median and report the actual sample excess.
+  This is a sampled fitting rule, not a universal bound on every terrain node.
+- Dry start-fitting ground and blending slopes retain their biome surface
+  materials. Authored roads and other functional surfaces retain precedence.
+  Individual building terraces and varied civic ground remain later work.

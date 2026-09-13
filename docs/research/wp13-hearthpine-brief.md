@@ -1,7 +1,9 @@
 # WP13: first Hearthpine settlement increment
 
-Status: first increment independently reviewed and ready for native GUI
-playtest, 2026-09-13.
+Status: first increment independently reviewed on 2026-09-13; native GUI
+appearance and leave/reload accepted by the user on 2026-09-14. Sparse occupancy,
+sunken ground and the watchpost roof gap are handled by the
+[second increment](wp13-hearthpine-polish.md).
 Non-trivial package. WP13 as a whole remains in progress.
 
 ## Authority and scope
