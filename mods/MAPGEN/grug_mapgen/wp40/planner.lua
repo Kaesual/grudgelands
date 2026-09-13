@@ -322,6 +322,7 @@ local function planner_factory(allocator_factory)
 		schema = true,
 		column_values_at = true,
 		hydrology_metric_values_at = true,
+		surface_cave_run_at = true,
 		metrics = true,
 	}
 	local RELATION_FIELDS = {
@@ -447,12 +448,14 @@ local function planner_factory(allocator_factory)
 		if planner_source.schema ~= SOURCE_SCHEMA or
 				type(planner_source.column_values_at) ~= "function" or
 				type(planner_source.hydrology_metric_values_at) ~= "function" or
+				type(planner_source.surface_cave_run_at) ~= "function" or
 				type(planner_source.metrics) ~= "function" then
 			fail("fail_source", "planner source API differs")
 		end
 		local column_values_at = planner_source.column_values_at
 		local hydrology_metric_values_at =
 			planner_source.hydrology_metric_values_at
+		local surface_cave_run_at = planner_source.surface_cave_run_at
 
 		exact_raw_fields(validated_manifest, MANIFEST_FIELDS, "manifest",
 			"fail_manifest")
@@ -1439,10 +1442,28 @@ local function planner_factory(allocator_factory)
 				end
 			end
 
-			add_candidate(AUTHORED_FLOOR, terrain_y - 1, 5, OP_TERRAIN_FILL,
-				ROLE_STRATUM_AT_Y, POLICY_FILL_VOID, nil, nil)
-			add_candidate(terrain_y, terrain_y, 5, OP_TERRAIN_SURFACE,
-				ROLE_STRATUM_AT_Y, POLICY_SURFACE_EXACT, nil, nil)
+			local cave_low, cave_high = surface_cave_run_at(x, z)
+			if cave_low ~= nil then
+				safe_integer(cave_low, "surface cave low", AUTHORED_FLOOR, OWNER_MAX,
+					"fail_source")
+				safe_integer(cave_high, "surface cave high", cave_low, OWNER_MAX,
+					"fail_source")
+				add_candidate(AUTHORED_FLOOR, math.min(terrain_y - 1, cave_low - 1), 5,
+					OP_TERRAIN_FILL, ROLE_STRATUM_AT_Y, POLICY_FILL_VOID, nil, nil)
+				add_candidate(math.max(AUTHORED_FLOOR, cave_high + 1), terrain_y - 1, 5,
+					OP_TERRAIN_FILL, ROLE_STRATUM_AT_Y, POLICY_FILL_VOID, nil, nil)
+				if terrain_y < cave_low or terrain_y > cave_high then
+					add_candidate(terrain_y, terrain_y, 5, OP_TERRAIN_SURFACE,
+						ROLE_STRATUM_AT_Y, POLICY_SURFACE_EXACT, nil, nil)
+				end
+				add_candidate(cave_low, cave_high, 5, OP_TERRAIN_CLEAR, ROLE_AIR,
+					POLICY_CUT_NATURAL, nil, nil)
+			else
+				add_candidate(AUTHORED_FLOOR, terrain_y - 1, 5, OP_TERRAIN_FILL,
+					ROLE_STRATUM_AT_Y, POLICY_FILL_VOID, nil, nil)
+				add_candidate(terrain_y, terrain_y, 5, OP_TERRAIN_SURFACE,
+					ROLE_STRATUM_AT_Y, POLICY_SURFACE_EXACT, nil, nil)
+			end
 			add_candidate(surface_cap + 1, OWNER_MAX, 5, OP_TERRAIN_CLEAR,
 				ROLE_AIR, POLICY_CUT_NATURAL, nil, nil)
 

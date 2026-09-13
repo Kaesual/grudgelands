@@ -113,6 +113,7 @@ return function(repo, expanded)
 		return "land", 1, "resource_rank_zone", surface.id, "none", -673,
 			nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, false
 	end
+	function planner_source.surface_cave_run_at() return nil end
 	local horizontal = {}
 	function horizontal.static_exclusion_values_at() return nil end
 	function horizontal.housing_mask_id_at() return nil end

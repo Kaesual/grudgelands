@@ -280,6 +280,7 @@ return function(repo)
 			nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
 			fake_source.hard_route_probe == "hard" and x == 0 and z == 0
 	end
+	function fake_source.surface_cave_run_at() return nil end
 	local horizontal = {}
 	function horizontal.static_exclusion_values_at(x, z)
 		if fake_source.hard_route_probe and x == 0 and z == 0 then

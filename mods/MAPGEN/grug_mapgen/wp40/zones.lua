@@ -1,6 +1,166 @@
 -- Pure, disabled WP40 named-zone and policy payload. Publication remains R7.
 
-return function(dependencies)
+local function new_surface_cave_factory(definition)
+	if type(definition) ~= "table" or type(definition.full_seed_string) ~= "string" or
+			definition.full_seed_string == "" or
+			type(definition.column_values_at) ~= "function" or
+			type(definition.static_exclusion_values_at) ~= "function" or
+			type(definition.housing_mask_id_at) ~= "function" then
+		error("WP40 surface caves: construction seam differs", 0)
+	end
+	local CELL_SIZE, MARGIN, LENGTH, RADIUS, CACHE_LIMIT = 192, 40, 32, 2, 128
+	local PRIME = 16777213
+	local phase = 0
+	for index = 1, #definition.full_seed_string do
+		phase = (phase * 131 + string.byte(definition.full_seed_string, index)) % 65521
+	end
+	local direction_x, direction_z = {1, 0, -1, 0}, {0, 1, 0, -1}
+	local cache = {}
+	for index = 1, CACHE_LIMIT do
+		cache[index] = {ready = false, valid = false, cell_x = 0, cell_z = 0,
+			record = {}}
+	end
+	local cache_hits, cache_misses, cache_evictions = 0, 0, 0
+
+	local function integer(value, label)
+		if type(value) ~= "number" or value ~= value or value == math.huge or
+				value == -math.huge or value % 1 ~= 0 or
+				math.abs(value) > 9007199254740991 then
+			error("WP40 surface caves: " .. label .. " differs", 0)
+		end
+		return value
+	end
+
+	local function mixed(cell_x, cell_z, salt)
+		local value = (cell_x * 374761 + cell_z * 668265 +
+			phase * 69069 + salt) % PRIME
+		value = (value * value) % PRIME
+		return (value * 48271) % PRIME
+	end
+
+	local function ordinary_column(x, z, wanted_zone)
+		local water_class, _, zone_id, biome, _, terrain_y, water_y,
+			classified_hydrology_id, _, functional_kind, _, _, _, transition_kind,
+			_, _, _, _, _, hard_foundation = definition.column_values_at(x, z)
+		if water_class ~= "land" or zone_id == nil or biome == nil or
+				(wanted_zone ~= nil and zone_id ~= wanted_zone) or water_y ~= nil or
+				classified_hydrology_id ~= nil or functional_kind ~= nil or
+				transition_kind ~= nil or hard_foundation ~= false or
+				definition.static_exclusion_values_at(x, z) ~= nil or
+				definition.housing_mask_id_at(x, z) ~= nil then
+			return nil
+		end
+		return integer(terrain_y, "terrain height"), zone_id
+	end
+
+	local function build_candidate(cell_x, cell_z, record)
+		if mixed(cell_x, cell_z, 19349663) % 4 ~= 0 then return false end
+		local cell_min_x, cell_min_z = cell_x * CELL_SIZE, cell_z * CELL_SIZE
+		local mouth_x = cell_min_x + MARGIN + mixed(cell_x, cell_z, 83492791) % 112
+		local mouth_z = cell_min_z + MARGIN + mixed(cell_x, cell_z, 297121507) % 112
+		local mouth_y, zone_id = ordinary_column(mouth_x, mouth_z, nil)
+		if not mouth_y or mouth_y < 16 then return false end
+		local endpoint_distance = mixed(cell_x, cell_z, 480752697) % 2 == 0 and 24 or 32
+		local first_direction = mixed(cell_x, cell_z, 982451653) % 4 + 1
+		local best_direction, best_height, best_rise
+		for offset = 0, 3 do
+			local direction = (first_direction + offset - 1) % 4 + 1
+			local endpoint_x = mouth_x + direction_x[direction] * endpoint_distance
+			local endpoint_z = mouth_z + direction_z[direction] * endpoint_distance
+			local endpoint_y = ordinary_column(endpoint_x, endpoint_z, zone_id)
+			local rise = endpoint_y and endpoint_y - mouth_y or -9007199254740991
+			if best_rise == nil or rise > best_rise then
+				best_direction, best_height, best_rise = direction, endpoint_y, rise
+			end
+		end
+		if not best_height or best_rise < 6 then return false end
+		local dx, dz = direction_x[best_direction], direction_z[best_direction]
+		local last_x, last_z = mouth_x + dx * (LENGTH - 1),
+			mouth_z + dz * (LENGTH - 1)
+		local min_x, max_x, min_z, max_z
+		if dx ~= 0 then
+			min_x, max_x = math.min(mouth_x, last_x) - 2,
+				math.max(mouth_x, last_x) + 2
+			min_z, max_z = mouth_z - RADIUS - 2, mouth_z + RADIUS + 2
+		else
+			min_x, max_x = mouth_x - RADIUS - 2, mouth_x + RADIUS + 2
+			min_z, max_z = math.min(mouth_z, last_z) - 2,
+				math.max(mouth_z, last_z) + 2
+		end
+		if min_x < cell_min_x or max_x >= cell_min_x + CELL_SIZE or
+				min_z < cell_min_z or max_z >= cell_min_z + CELL_SIZE then
+			error("WP40 surface caves: footprint escaped its cell", 0)
+		end
+		for z = min_z, max_z do
+			for x = min_x, max_x do
+				if not ordinary_column(x, z, zone_id) then return false end
+			end
+		end
+		local minimum_y = mouth_y + 1 - math.floor((LENGTH - 1) / 4) - RADIUS
+		if minimum_y < -37 then return false end
+		for step = LENGTH - 16, LENGTH - 1 do
+			local center_y = mouth_y + 1 - math.floor(step / 4)
+			for side = -RADIUS, RADIUS do
+				local x = mouth_x + dx * step - dz * side
+				local z = mouth_z + dz * step + dx * side
+				local terrain_y = ordinary_column(x, z, zone_id)
+				local half_height = math.floor(math.sqrt(RADIUS * RADIUS - side * side))
+				if not terrain_y or terrain_y - (center_y + half_height) < 3 then
+					return false
+				end
+			end
+		end
+		record.cell_x, record.cell_z = cell_x, cell_z
+		record.mouth_x, record.mouth_y, record.mouth_z = mouth_x, mouth_y, mouth_z
+		record.direction_x, record.direction_z = dx, dz
+		record.endpoint_distance, record.endpoint_height = endpoint_distance, best_height
+		record.length, record.radius, record.minimum_y = LENGTH, RADIUS, minimum_y
+		return true
+	end
+
+	local function candidate_at(cell_x, cell_z)
+		cell_x, cell_z = integer(cell_x, "cell x"), integer(cell_z, "cell z")
+		local slot_index = (cell_x * 37 + cell_z * 61) % CACHE_LIMIT + 1
+		local slot = cache[slot_index]
+		if slot.ready and slot.cell_x == cell_x and slot.cell_z == cell_z then
+			cache_hits = cache_hits + 1
+			return slot.valid and slot.record or nil
+		end
+		cache_misses = cache_misses + 1
+		if slot.ready then cache_evictions = cache_evictions + 1 end
+		slot.ready, slot.cell_x, slot.cell_z = true, cell_x, cell_z
+		slot.valid = build_candidate(cell_x, cell_z, slot.record)
+		return slot.valid and slot.record or nil
+	end
+
+	local session = {}
+	function session.run_at(x, z)
+		x, z = integer(x, "query x"), integer(z, "query z")
+		local record = candidate_at(math.floor(x / CELL_SIZE), math.floor(z / CELL_SIZE))
+		if not record then return nil end
+		local relative_x, relative_z = x - record.mouth_x, z - record.mouth_z
+		local step = relative_x * record.direction_x + relative_z * record.direction_z
+		local side = -relative_x * record.direction_z + relative_z * record.direction_x
+		if step < 0 or step >= LENGTH or math.abs(side) > RADIUS then return nil end
+		local half_height = math.floor(math.sqrt(RADIUS * RADIUS - side * side))
+		local center_y = record.mouth_y + 1 - math.floor(step / 4)
+		return center_y - half_height, center_y + half_height
+	end
+	function session.candidate_record_at_cell(cell_x, cell_z)
+		local record = candidate_at(cell_x, cell_z)
+		if not record then return nil end
+		local copy = {}
+		for key, value in pairs(record) do copy[key] = value end
+		return copy
+	end
+	function session.metrics()
+		return {cache_limit = CACHE_LIMIT, cache_hits = cache_hits,
+			cache_misses = cache_misses, cache_evictions = cache_evictions}
+	end
+	return session
+end
+
+local function zones_factory(dependencies)
 	if type(dependencies) ~= "table" then
 		error("WP40 R4 dependencies missing", 0)
 	end
@@ -274,7 +434,9 @@ return function(dependencies)
 				type(horizontal.classification_values_at) ~= "function" or
 				type(horizontal.difficulty_for_macro_at) ~= "function" or
 				type(horizontal.polyline_corridor_member) ~= "function" or
-				type(horizontal.housing_eligible_at) ~= "function" then
+				type(horizontal.housing_eligible_at) ~= "function" or
+				type(horizontal.static_exclusion_values_at) ~= "function" or
+				type(horizontal.housing_mask_id_at) ~= "function" then
 			fail("horizontal session seam differs")
 		end
 		horizontal_session_count = horizontal_session_count + 1
@@ -1524,6 +1686,16 @@ return function(dependencies)
 				return feature_id, segment, numerator, denominator
 			end
 
+			local surface_caves = new_surface_cave_factory({
+				full_seed_string = full_seed_string,
+				column_values_at = planner_source.column_values_at,
+				static_exclusion_values_at = horizontal.static_exclusion_values_at,
+				housing_mask_id_at = horizontal.housing_mask_id_at,
+			})
+			function planner_source.surface_cave_run_at(x, z)
+				return surface_caves.run_at(x, z)
+			end
+
 			function planner_source.metrics()
 				local height_metrics = height.metrics()
 				if type(height_metrics) ~= "table" or
@@ -1579,3 +1751,5 @@ return function(dependencies)
 
 	return module
 end
+
+return zones_factory, new_surface_cave_factory

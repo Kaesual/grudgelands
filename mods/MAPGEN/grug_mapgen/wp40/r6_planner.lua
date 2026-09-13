@@ -88,6 +88,7 @@ local function planner_factory()
 		if type(planner_source) ~= "table" or
 				planner_source.schema ~= "grug_wp40_r5_planner_source_v1" or
 				type(planner_source.column_values_at) ~= "function" or
+				type(planner_source.surface_cave_run_at) ~= "function" or
 				type(r5_planner) ~= "table" or type(r5_planner.plan_slice) ~= "function" or
 				type(horizontal) ~= "table" or
 				type(horizontal.static_exclusion_values_at) ~= "function" or
@@ -282,6 +283,10 @@ local function planner_factory()
 			if (classified_hydrology_id ~= nil and water_y ~= nil and
 					transition_kind ~= "waterfall") or
 					(transition_kind == "waterfall" and transition_face_mask ~= nil) then
+				p7_support = false
+			end
+			local cave_low, cave_high = planner_source.surface_cave_run_at(x, z)
+			if cave_low ~= nil and cave_low <= terrain_y and terrain_y <= cave_high then
 				p7_support = false
 			end
 			return water_class, zone_numeric, zone_id, biome, race, terrain_y,

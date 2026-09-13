@@ -339,7 +339,9 @@ local function settlement_factory()
 				type(hash) ~= "table" or type(hash.digest_count) ~= "function" or
 				(runtime_mode and type(hash.prepare_digest3) ~= "function") or
 				type(horizontal) ~= "table" or
-				type(planner_source) ~= "table" or type(source) ~= "table" or
+				type(planner_source) ~= "table" or
+				type(planner_source.surface_cave_run_at) ~= "function" or
+				type(source) ~= "table" or
 				(successor_tail ~= nil and (type(successor_tail) ~= "table" or
 					type(successor_tail.settle) ~= "function")) then
 			fail("fail_settlement", "construction seams differ")
@@ -686,6 +688,8 @@ local function settlement_factory()
 			local surface = select_surface(biome, x, z, water_y, terrain_y)
 			if not zone_id or not surface or y < terrain_y - surface.filler_depth or
 					y > terrain_y or y < -37 then return nil end
+			local cave_low, cave_high = planner_source.surface_cave_run_at(x, z)
+			if cave_low ~= nil and cave_low <= y and y <= cave_high then return nil end
 			if functional_kind == "anchor_platform" or
 					functional_kind == "land_grade" or functional_kind == "causeway" or
 					(functional_kind == "ford" and y == terrain_y) or
@@ -791,7 +795,9 @@ local function settlement_factory()
 					within(terrain_y + 1, water_y) then
 				offer(6, classified_id and 13 or 10, 7)
 			end
-			if within(-37, terrain_y - 1) or y == terrain_y then offer(5, 14, 6)
+			local cave_low, cave_high = planner_source.surface_cave_run_at(x, z)
+			if within(cave_low, cave_high) then offer(5, 1, 1)
+			elseif within(-37, terrain_y - 1) or y == terrain_y then offer(5, 14, 6)
 			elseif y > surface_cap then offer(5, 1, 1) end
 			if not winner_role then winner_priority, winner_role, winner_policy = 5, 1, 1 end
 

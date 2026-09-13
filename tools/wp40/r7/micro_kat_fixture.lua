@@ -1631,6 +1631,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			local planner_source_micro = {
 				schema = "grug_wp40_r5_planner_source_v1",
 				column_values_at = function() return "land", nil end,
+				surface_cave_run_at = function() return nil end,
 				metrics = function()
 					return {runtime_column_cache_limit = 65536,
 						runtime_column_cache_entries = 0,
@@ -1836,6 +1837,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		end
 		return "land", 1, "micro_no_zone", corn_biome, "human", -701
 	end
+	function planner_source.surface_cave_run_at() return nil end
 	local source_anchor = {id = "micro_apex", position = {x = 10000, z = 10000}}
 	local source = {claim_exclusions = {{id = "micro_resource_exclusion",
 		recipe_id = "hard_start_core_v1"}}, routes = {}, hard_protection = {},
