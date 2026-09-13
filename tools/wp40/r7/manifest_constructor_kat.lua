@@ -13,8 +13,11 @@ local canonical = dofile(wp40 .. "/canonical.lua")
 local manifest_module = dofile(wp40 .. "/r7_manifest.lua")(
 	canonical, raw_sha256)
 local r6_manifest = dofile(wp40 .. "/r7_r6_manifest.lua")()
+local hearthpine_blueprint = dofile(wp40 .. "/r7_hearthpine_blueprint.lua")()
 local content_set = dofile(wp40 .. "/r7_content.lua")(
-	fixture.core, fixture.projection, raw_sha256)
+	fixture.core, fixture.projection, raw_sha256, hearthpine_blueprint.palette)
+local hearthpine_identity = dofile(wp40 .. "/r7_hearthpine.lua")(
+	hearthpine_blueprint, content_set.hearthpine, raw_sha256).identity
 
 local r6_hash = dofile(wp40 .. "/r6_hash.lua")(raw_sha256)
 local r6_content = dofile(wp40 .. "/r6_content.lua")(
@@ -59,6 +62,11 @@ local inputs = {full_seed = "0",
 	anchor_content = {schema = content_set.anchors.schema,
 		digest = content_set.anchor_digest,
 		semantic_digest = content_set.anchor_semantic_digest},
+	hearthpine_content = {schema = content_set.hearthpine.schema,
+		digest = content_set.hearthpine_digest,
+		semantic_digest = content_set.hearthpine_semantic_digest,
+		count = #content_set.hearthpine.content_names},
+	hearthpine_blueprint = hearthpine_identity,
 	anchor_roster = anchor_roster.copy_rows(),
 	anchor_roster_sha256 = anchor_roster.sha256,
 	cultural_registrations = fixture.catalog.cultural_registrations(),

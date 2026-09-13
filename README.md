@@ -73,6 +73,9 @@ immutable, and full-column dragon channels keep the offshore islands boat-only.
 Natural resources exist under land and zone-owned planned water; the six-race
 supply gate compares all-resource deposit opportunities by exact host volume.
 Playable-boat behavior is decided in [boats.md](docs/design/boats.md).
+[Settlement design](docs/design/settlements.md) begins with Hearthpine Vale: a
+dwarf craft settlement with stone foundations, pine timber and a small
+guardpost.
 
 [Open-world housing](docs/design/housing.md) uses Claim Stones in exactly ten
 peaceful level-11–30 zones. Four tiers protect cube radii 20/30/40/50, while
@@ -224,10 +227,12 @@ mount and deep-content decisions live in [the crafting/mount TODO](TODO-design-c
 and [the depth TODO](TODO-design-depth.md); the [boat contract](docs/design/boats.md)
 and [PvP-death XP exemption](docs/design/progression.md) are already decided.
 
-**Selected next:** WP13 will make the world's intended settlements visible,
-starting with exactly one start settlement and a focused visual/playability
-review before broader rollout. Its WP40/WP43 foundations are shipped; the
-first settlement's race, style and implementation brief are not yet chosen.
+**In progress:** WP13 begins with the dwarf start in Hearthpine Vale, an
+inhabited craft settlement with a small guardpost. Its first increment adds
+architecture and walkable interiors on the shipped map foundation. Engine
+checks and independent code review are green; the focused user playtest
+precedes broader rollout. Other starts, capitals
+and functional settlement services remain later work.
 WP5, WP26, WP44, WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind
 shipped prerequisites. WP34 still needs structures and economy.
 

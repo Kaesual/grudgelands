@@ -202,8 +202,19 @@ local anchor_config = {new = function()
 			return {schema = "grug_wp40_r7_anchor_ledger_v1"}
 		end, metrics = function() return {} end, roster = function() return roster end}
 end}
-local successor = dofile(wp40 .. "/r7_successor.lua")(p9g_config, anchor_config).new({})
-local composed_context = {write_anchor = function() end}
+local hearthpine_config = {new = function()
+	return {bind_plan = function() order[#order + 1] = "hearthpine_plan" end,
+		settle = function(_, value)
+			check(type(value.write_hearthpine) == "function",
+				"Hearthpine writer is absent")
+			order[#order + 1] = "hearthpine_settle"
+			return {schema = "grug_wp13_hearthpine_ledger_v1"}
+		end, metrics = function() return {} end}
+end}
+local successor = dofile(wp40 .. "/r7_successor.lua")(
+	p9g_config, anchor_config, hearthpine_config).new({})
+local composed_context = {write_anchor = function() end,
+	write_hearthpine = function() end}
 for _, key in ipairs({"schema", "plan", "generation", "call_mode", "min_x",
 		"min_y", "min_z", "max_x", "max_y", "max_z", "inside_owner",
 		"original_at", "settled_at", "production_content", "analytic_p7_ref",
@@ -212,7 +223,9 @@ for _, key in ipairs({"schema", "plan", "generation", "call_mode", "min_x",
 successor:plan_slice({}, {}, {}, 1)
 local composed = successor:settle(composed_context)
 check(composed.schema == "grug_wp40_r7_successor_ledger_v1" and
-	table.concat(order, ",") == "p9g_plan,anchor_plan,p9g_settle,anchor_settle",
+	table.concat(order, ",") == table.concat({"p9g_plan", "anchor_plan",
+		"hearthpine_plan", "p9g_settle", "anchor_settle",
+		"hearthpine_settle"}, ","),
 	"successor order differs")
 
 io.write("WP40 R7 anchor activation KAT PASS roots=42 protected_columns=36\n")

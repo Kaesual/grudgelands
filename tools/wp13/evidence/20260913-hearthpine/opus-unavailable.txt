@@ -1,0 +1,1 @@
+2026-09-13: Opus review attempt ended with process status 1 and oauth_org_not_allowed (HTTP 403). Claude subscription access for Claude Code is disabled for this organization. No review was performed and no verdict inferred. A fresh independent GPT-5.6 Sol review replaces that unavailable route under the project model policy.

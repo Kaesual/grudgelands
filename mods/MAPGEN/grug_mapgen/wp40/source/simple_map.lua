@@ -792,7 +792,7 @@ source.hydrology_interfaces = {
 source.hard_protection_recipes = {
 	{id="hard_capital_build_plus_apron_v1",shape="centered_half_open_square",footprint_policy_id="centered_half_open_square_v1",total_width=532,y_policy_id="shallow_land_upward_to_world_top",y_min=-700,upward_unbounded=true},
 	{id="hard_capital_ingress_corridor_v1",shape="polyline_corridor",footprint_policy_id="polyline_corridor_v1",total_width=128,y_policy_id="shallow_land_upward_to_world_top",y_min=-700,upward_unbounded=true},
-	{id="hard_start_core_v1",shape="centered_half_open_square",footprint_policy_id="centered_half_open_square_v1",total_width=128,y_policy_id="shallow_land_upward_to_world_top",y_min=-700,upward_unbounded=true},
+	{id="hard_start_core_v1",shape="centered_half_open_square",footprint_policy_id="centered_half_open_square_v1",total_width=148,y_policy_id="shallow_land_upward_to_world_top",y_min=-700,upward_unbounded=true},
 	{id="hard_apex_socket_column_v1",shape="exact_column",footprint_policy_id="exact_column_v1",column_count=1,y_policy_id="shallow_land_upward_to_world_top",y_min=-700,upward_unbounded=true},
 }
 

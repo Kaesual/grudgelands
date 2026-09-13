@@ -30,6 +30,7 @@ return function(repo, seed_identity, content_only)
 	-- consumed by R6 placement and is not a production-loader substitute.
 	local projection = production_projection()
 	local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
+	local hearthpine_blueprint = dofile(wp40 .. "/r7_hearthpine_blueprint.lua")()
 	local catalog_manifest = catalog.manifest()
 	local p9g_rows = catalog.p9g_sources()
 	local cultural_rows = catalog.cultural_sources()
@@ -64,11 +65,20 @@ return function(repo, seed_identity, content_only)
 	end
 	semantic_names[#semantic_names + 1] = "grug_nodes:camp_fire"
 	semantic_names[#semantic_names + 1] = "grug_nodes:guard_banner"
+	local semantic_seen = {}
+	for index = 1, #semantic_names do semantic_seen[semantic_names[index]] = true end
+	for index = 1, #hearthpine_blueprint.palette do
+		local name = hearthpine_blueprint.palette[index]
+		if not semantic_seen[name] then
+			semantic_names[#semantic_names + 1] = name
+			semantic_seen[name] = true
+		end
+	end
 	local semantic_fixture = dofile(repo ..
 		"/tools/wp40/r7/node_semantics_fixture.lua")(
 			repo, catalog, semantic_names)
 	if semantic_fixture.schema ~= "grug_wp40_r7_node_semantics_fixture_v1" or
-			semantic_fixture.target_count ~= 104 then
+			semantic_fixture.target_count ~= #semantic_names then
 		fail("node-semantics fixture differs")
 	end
 
@@ -98,6 +108,10 @@ return function(repo, seed_identity, content_only)
 	register("grug_nodes:camp_fire", semantic_fixture.definitions["grug_nodes:camp_fire"])
 	register("grug_nodes:guard_banner",
 		semantic_fixture.definitions["grug_nodes:guard_banner"])
+	for index = 1, #hearthpine_blueprint.palette do
+		local name = hearthpine_blueprint.palette[index]
+		if cid_by_name[name] == nil then register(name, semantic_fixture.definitions[name]) end
+	end
 
 	local heightmap = {}
 	for index = 1, 6400 do heightmap[index] = -31007 end

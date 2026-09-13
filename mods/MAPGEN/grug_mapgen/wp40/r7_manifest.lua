@@ -26,6 +26,13 @@ return function(canonical, raw_sha256)
 		"anchor_delta_schema", "anchor_delta_sha256", "anchor_opcode",
 		"anchor_class", "anchor_policy", "anchor_order", "anchor_overwrite",
 		"functional_anchor_protection_schema", "functional_anchor_columns",
+		"hearthpine_content_schema", "hearthpine_content_sha256",
+		"hearthpine_semantic_sha256", "hearthpine_content_count",
+		"hearthpine_blueprint_schema",
+		"hearthpine_blueprint_sha256", "hearthpine_cell_count",
+		"hearthpine_delta_schema", "hearthpine_delta_sha256",
+		"hearthpine_opcode", "hearthpine_class", "hearthpine_policy",
+		"hearthpine_order", "hearthpine_overwrite",
 		"functional_anchor_y_min", "writer_schema", "p9g_opcode", "p9g_class",
 		"p9g_policy", "p9g_order", "p9g_overwrite", "source_projection_sha256",
 		"production_enabled",
@@ -150,6 +157,7 @@ return function(canonical, raw_sha256)
 			production_content = true, p9g_content = true,
 			anchor_content = true, anchor_roster = true,
 			anchor_roster_sha256 = true,
+			hearthpine_content = true, hearthpine_blueprint = true,
 			cultural_registrations = true, decoded_templates = true,
 			consumer_payload = true,
 		}
@@ -235,6 +243,36 @@ return function(canonical, raw_sha256)
 				family_counts.bandit ~= 12 then
 			fail("anchor roster population differs")
 		end
+		local hearthpine_content = inputs.hearthpine_content
+		if type(hearthpine_content) ~= "table" or
+				hearthpine_content.schema ~= "grug_wp13_hearthpine_content_v1" or
+				type(hearthpine_content.digest) ~= "string" or
+				#hearthpine_content.digest ~= 64 or
+				type(hearthpine_content.semantic_digest) ~= "string" or
+				#hearthpine_content.semantic_digest ~= 64 or
+				type(hearthpine_content.count) ~= "number" or
+				hearthpine_content.count < 1 or hearthpine_content.count % 1 ~= 0 then
+			fail("Hearthpine content identity differs")
+		end
+		local hearthpine_blueprint = inputs.hearthpine_blueprint
+		if type(hearthpine_blueprint) ~= "table" or
+				hearthpine_blueprint.schema ~=
+					"grug_wp13_hearthpine_blueprint_identity_v1" or
+				type(hearthpine_blueprint.sha256) ~= "string" or
+				#hearthpine_blueprint.sha256 ~= 64 or
+				type(hearthpine_blueprint.cell_count) ~= "number" or
+				hearthpine_blueprint.cell_count < 1 or
+				type(hearthpine_blueprint.min_x) ~= "number" or
+				type(hearthpine_blueprint.max_x) ~= "number" or
+				type(hearthpine_blueprint.min_y) ~= "number" or
+				type(hearthpine_blueprint.max_y) ~= "number" or
+				type(hearthpine_blueprint.min_z) ~= "number" or
+				type(hearthpine_blueprint.max_z) ~= "number" or
+				hearthpine_blueprint.min_x < -63 or hearthpine_blueprint.max_x > 63 or
+				hearthpine_blueprint.min_y < -2 or hearthpine_blueprint.max_y > 24 or
+				hearthpine_blueprint.min_z < -63 or hearthpine_blueprint.max_z > 63 then
+			fail("Hearthpine blueprint identity differs")
+		end
 		local cultural = inputs.cultural_registrations
 		if #cultural ~= 6 then fail("cultural population differs") end
 		local cultural_digests = {}
@@ -299,6 +337,18 @@ return function(canonical, raw_sha256)
 				"grug_wp40_r7_functional_anchor_protection_v1",
 			functional_columns = 36, functional_y_min = -700,
 		}
+		local hearthpine_delta = {
+			schema = "grug_wp13_hearthpine_delta_v1", opcode = 37,
+			class = 13, policy = 13,
+			order = "after_anchor_activation_before_run_derivation",
+			overwrite = true, anchor_id = "anchor_001",
+			blueprint_sha256 = hearthpine_blueprint.sha256,
+			content_sha256 = hearthpine_content.digest,
+			successor_ref_min = 99,
+			successor_ref_max = 98 + hearthpine_content.count,
+			cell_count = hearthpine_blueprint.cell_count,
+			clipping = "current_mapchunk_owner_intersection_v1",
+		}
 		local values = {
 			schema = SCHEMA, full_seed = inputs.full_seed,
 			r5_schema = "grug_wp40_r5_mapgen_manifest_v1",
@@ -334,6 +384,18 @@ return function(canonical, raw_sha256)
 			functional_anchor_protection_schema =
 				anchor_delta.functional_protection_schema,
 			functional_anchor_columns = 36, functional_anchor_y_min = -700,
+			hearthpine_content_schema = hearthpine_content.schema,
+			hearthpine_content_sha256 = hearthpine_content.digest,
+			hearthpine_semantic_sha256 = hearthpine_content.semantic_digest,
+			hearthpine_content_count = hearthpine_content.count,
+			hearthpine_blueprint_schema = hearthpine_blueprint.schema,
+			hearthpine_blueprint_sha256 = hearthpine_blueprint.sha256,
+			hearthpine_cell_count = hearthpine_blueprint.cell_count,
+			hearthpine_delta_schema = hearthpine_delta.schema,
+			hearthpine_delta_sha256 = graph_digest(hearthpine_delta),
+			hearthpine_opcode = 37, hearthpine_class = 13,
+			hearthpine_policy = 13, hearthpine_order = hearthpine_delta.order,
+			hearthpine_overwrite = true,
 			writer_schema = "grug_wp40_r7_single_vm_writer_v1",
 			p9g_opcode = 35, p9g_class = 10, p9g_policy = 11,
 			p9g_order = p9g_delta.order, p9g_overwrite = false,

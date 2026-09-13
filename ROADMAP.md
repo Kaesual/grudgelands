@@ -150,10 +150,11 @@ the goal-level view.
   design-unblocked (A1/A3/A4/A5/E21 decided 2026-08-13, incl. the revised
   food-restore buff model and the buff/debuff icon framework); it still
   follows WP26/WP33/WP43/WP44.
-- [ ] **WP13 — selected next:** final starts, capitals, settlements, camps,
+- [ ] **WP13 — in progress:** final starts, capitals, settlements, camps,
   kings/guards and both all-six-gem apex camps on shipped WP40 geometry and
-  WP43 materials. Begin with one start settlement, agree its brief/appearance
-  and playtest it before extending the approach to the remaining content.
+  WP43 materials. The first increment is Hearthpine Vale: an inhabited dwarf
+  craft settlement with a small guardpost. Playtest this one settlement before
+  extending the approach to the remaining content.
 - [x] WP33: gathering plants, signature woods and cultural sources on final
   zone/race-region ownership; accepted with WP40 R7 on 2026-09-02.
 - [ ] WP34: deep spawn pressure, corrected depth-level curve, camp-only

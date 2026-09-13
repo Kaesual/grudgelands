@@ -61,6 +61,8 @@ mods/MAPGEN/grug_mapgen/wp40/r7_anchor_activation.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_anchor_roster.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_consumer_payload.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_content.lua
+mods/MAPGEN/grug_mapgen/wp40/r7_hearthpine.lua
+mods/MAPGEN/grug_mapgen/wp40/r7_hearthpine_blueprint.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_loader.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_manifest.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua

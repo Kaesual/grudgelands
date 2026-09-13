@@ -1,9 +1,11 @@
 -- One R7 successor tail composed from P9G and the fixed activation suffix.
 
-return function(p9g_config, anchor_config)
+return function(p9g_config, anchor_config, hearthpine_config)
 	local function fail(message) error("WP40 R7 successor: " .. message, 0) end
 	if type(p9g_config) ~= "table" or type(p9g_config.new) ~= "function" or
-			type(anchor_config) ~= "table" or type(anchor_config.new) ~= "function" then
+			type(anchor_config) ~= "table" or type(anchor_config.new) ~= "function" or
+			type(hearthpine_config) ~= "table" or
+			type(hearthpine_config.new) ~= "function" then
 		fail("configuration seam differs")
 	end
 	local config = {schema = "grug_wp40_r7_successor_config_v1"}
@@ -15,16 +17,20 @@ return function(p9g_config, anchor_config)
 			construction_identity = dependencies.construction_identity,
 			runtime_mode = dependencies.runtime_mode})
 		local anchors = anchor_config.new(dependencies)
+		local hearthpine = hearthpine_config.new(dependencies)
 		local tail = {}
 		function tail.plan_slice(self, minp, maxp, plan, generation)
 			if not rawequal(self, tail) then fail("plan receiver differs") end
 			p9g:plan_slice(minp, maxp, plan, generation)
 			anchors:bind_plan(minp, maxp, plan, generation)
+			hearthpine:bind_plan(minp, maxp, plan, generation)
 		end
 		function tail.plan_evidence_owner(self, min_x, max_x, min_z, max_z)
 			if not rawequal(self, tail) then fail("evidence receiver differs") end
 			local plan, generation = p9g:plan_evidence_owner(min_x, max_x, min_z, max_z)
 			anchors:bind_plan({x = min_x, y = -30912, z = min_z},
+				{x = max_x, y = 30927, z = max_z}, plan, generation)
+			hearthpine:bind_plan({x = min_x, y = -30912, z = min_z},
 				{x = max_x, y = 30927, z = max_z}, plan, generation)
 			return plan, generation
 		end
@@ -38,13 +44,18 @@ return function(p9g_config, anchor_config)
 					"housing_excluded_at", "column_values_at", "write_p9g"}) do
 				p9g_context[key] = context[key]
 			end
+			local p9g_ledger = p9g:settle(p9g_context)
+			local anchor_ledger = anchors:settle(context)
+			local hearthpine_ledger = hearthpine:settle(context)
 			return {schema = "grug_wp40_r7_successor_ledger_v1",
-				p9g = p9g:settle(p9g_context), anchors = anchors:settle(context)}
+				p9g = p9g_ledger, anchors = anchor_ledger,
+				hearthpine = hearthpine_ledger}
 		end
 		function tail.metrics(self)
 			if not rawequal(self, tail) then fail("metrics receiver differs") end
 			return {schema = "grug_wp40_r7_successor_metrics_v1",
-				p9g = p9g:metrics(), anchors = anchors:metrics()}
+				p9g = p9g:metrics(), anchors = anchors:metrics(),
+				hearthpine = hearthpine:metrics()}
 		end
 		function tail.probe_reason(self, context, catalog_index, x, y, z)
 			if not rawequal(self, tail) then fail("probe receiver differs") end

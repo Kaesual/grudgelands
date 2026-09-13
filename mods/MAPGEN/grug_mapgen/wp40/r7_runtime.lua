@@ -111,6 +111,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		wp40_directory .. "/r7_anchor_roster.lua")
 	local r7_anchor_activation_factory = dofile(
 		wp40_directory .. "/r7_anchor_activation.lua")
+	local r7_hearthpine_factory = dofile(wp40_directory .. "/r7_hearthpine.lua")
 	local r7_successor_factory = dofile(wp40_directory .. "/r7_successor.lua")
 	local r7_zone_overlay_factory = dofile(wp40_directory .. "/r7_zone_overlay.lua")
 	local r7_r6_manifest = dofile(wp40_directory .. "/r7_r6_manifest.lua")
@@ -135,6 +136,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	local r6_manifest = r7_r6_manifest()
 	local template_source = template_source_factory(core_api, schematic_directory,
 		wp40_directory .. "/../../../ITEMS/grug_trees/schematics")
+	local hearthpine_blueprint = dofile(
+		wp40_directory .. "/r7_hearthpine_blueprint.lua")()
 
 	local module = {}
 	local function build(native_identities, expected_manifest_sha256, evidence_mode,
@@ -150,7 +153,10 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			fail("authority/evidence modes overlap")
 		end
 		local full_seed = validate_live_scalars()
-		local content_set = r7_content_factory(core_api, projection, raw_sha256)
+		local content_set = r7_content_factory(core_api, projection, raw_sha256,
+			hearthpine_blueprint.palette)
+		local hearthpine_config = r7_hearthpine_factory(hearthpine_blueprint,
+			content_set.hearthpine, raw_sha256)
 		local cultural = catalog.cultural_registrations()
 		local gathering_manifest = catalog.manifest()
 		local heightmap_fetches = 0
@@ -174,7 +180,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			local p9g_successor = r7_p9g_factory(catalog, content_set.p9g, raw_sha256)
 			local anchor_successor = r7_anchor_activation_factory(
 				r7_anchor_roster_factory, content_set.anchors)
-			successor = r7_successor_factory(p9g_successor, anchor_successor)
+			successor = r7_successor_factory(p9g_successor, anchor_successor,
+				hearthpine_config)
 		end
 		local authored_source = dofile(wp40_directory .. "/source/catalog.lua")
 		local consumer_payload = consumer_payload_factory(source,
@@ -242,6 +249,11 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			anchor_content = {schema = content_set.anchors.schema,
 				digest = content_set.anchor_digest,
 				semantic_digest = content_set.anchor_semantic_digest},
+			hearthpine_content = {schema = content_set.hearthpine.schema,
+				digest = content_set.hearthpine_digest,
+				semantic_digest = content_set.hearthpine_semantic_digest,
+				count = #content_set.hearthpine.content_names},
+			hearthpine_blueprint = hearthpine_config.identity,
 			anchor_roster = anchor_roster.copy_rows(),
 			anchor_roster_sha256 = anchor_roster.sha256,
 			cultural_registrations = cultural,

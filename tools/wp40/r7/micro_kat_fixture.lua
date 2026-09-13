@@ -10,7 +10,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local saved_dofile = dofile
 	changed_roster_relative = changed_roster_relative or
 		"tools/wp40/r7/changed_production_lua.txt"
-	expected_changed_count = expected_changed_count or 75
+	expected_changed_count = expected_changed_count or 77
 	if type(changed_roster_relative) ~= "string" or
 		changed_roster_relative:sub(1, 1) == "/" or
 		changed_roster_relative:find("..", 1, true) or
@@ -345,6 +345,10 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		anchors = {schema = "grug_wp40_r7_anchor_content_v1"},
 		anchor_digest = string.rep("9", 64),
 		anchor_semantic_digest = string.rep("a", 64),
+		hearthpine = {schema = "grug_wp13_hearthpine_content_v1",
+			content_names = {"air"}},
+		hearthpine_digest = string.rep("b", 64),
+		hearthpine_semantic_digest = string.rep("c", 64),
 		accepted_r6_rows = function() return {} end,
 	}
 	local runtime_manifest_module = {}
@@ -360,6 +364,9 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local runtime_r6_manifest = {schema = "micro_r6_manifest",
 		r5_manifest_values = {}}
 	local function runtime_stub_dofile(path)
+		if path:match("/r7_hearthpine_blueprint%.lua$") then
+			return function() return {palette = {"air"}} end
+		end
 		if path:match("/coupled_grade%.lua$") then return dofile(path) end
 		if path:match("/source/catalog%.lua$") then return {} end
 		if path:match("/source/simple_map%.lua$") then return {} end
@@ -389,6 +396,13 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		end
 		if path:match("/r7_anchor_activation%.lua$") then
 			return function() return {schema = "micro_anchor_config"} end
+		end
+		if path:match("/r7_hearthpine%.lua$") then
+			return function() return {identity = {
+				schema = "grug_wp13_hearthpine_blueprint_identity_v1",
+				sha256 = string.rep("d", 64), cell_count = 1,
+				min_x = 0, min_y = 0, min_z = 0, max_x = 0, max_y = 0, max_z = 0}}
+			end
 		end
 		if path:match("/r7_successor%.lua$") then
 			return function() return {schema = "grug_wp40_r7_successor_config_v1"} end
@@ -486,6 +500,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		"mods/MAPGEN/grug_mapgen/wp40/r7_anchor_activation.lua",
 		"mods/MAPGEN/grug_mapgen/wp40/r7_anchor_roster.lua",
 		"mods/MAPGEN/grug_mapgen/wp40/r7_consumer_payload.lua",
+		"mods/MAPGEN/grug_mapgen/wp40/r7_hearthpine.lua",
 		"mods/MAPGEN/grug_mapgen/wp40/r7_loader.lua",
 		"mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua", -- replaced below by full env run
 		"mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua",
@@ -941,6 +956,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	-- node semantics still come from the real registration files through the
 	-- dedicated engine-registration fixture.
 	local catalog = dofile(repo .. "/mods/ITEMS/grug_gathering/catalog.lua")
+	local hearthpine_blueprint = dofile(wp40 .. "/r7_hearthpine_blueprint.lua")()
 	local content_source = common.read_file(wp40 .. "/r7_content.lua")
 	local accepted_block = content_source:match(
 		"local ACCEPTED_R6_ROWS = {(.-)\n\t}\n\tlocal CULTURAL_NAMES")
@@ -965,10 +981,18 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	end
 	semantic_names[#semantic_names + 1] = "grug_nodes:camp_fire"
 	semantic_names[#semantic_names + 1] = "grug_nodes:guard_banner"
+	local semantic_seen = {}
+	for index = 1, #semantic_names do semantic_seen[semantic_names[index]] = true end
+	for index = 1, #hearthpine_blueprint.palette do
+		local name = hearthpine_blueprint.palette[index]
+		if not semantic_seen[name] then
+			semantic_names[#semantic_names + 1], semantic_seen[name] = name, true
+		end
+	end
 	local semantic_fixture = dofile(repo ..
 		"/tools/wp40/r7/node_semantics_fixture.lua")(
 		repo, catalog, semantic_names)
-	check(semantic_fixture.target_count == 104,
+	check(semantic_fixture.target_count == #semantic_names,
 		"semantic target population differs")
 
 	local material_core = {registered_nodes = {}}
@@ -1015,6 +1039,10 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	for index = 1, #p9g_rows do register(p9g_rows[index].source_node) end
 	register("grug_nodes:camp_fire")
 	register("grug_nodes:guard_banner")
+	for index = 1, #hearthpine_blueprint.palette do
+		local name = hearthpine_blueprint.palette[index]
+		if not cid_by_name[name] then register(name) end
+	end
 	local content_core = {registered_nodes = definitions, CONTENT_AIR = 0,
 		CONTENT_IGNORE = 65535}
 	function content_core.get_content_id(name)
@@ -1022,7 +1050,9 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	end
 	function content_core.get_name_from_content_id(cid) return name_by_cid[cid] end
 	local content_set = dofile(wp40 .. "/r7_content.lua")(
-		content_core, projection, raw_sha256)
+		content_core, projection, raw_sha256, hearthpine_blueprint.palette)
+	local hearthpine_config = dofile(wp40 .. "/r7_hearthpine.lua")(
+		hearthpine_blueprint, content_set.hearthpine, raw_sha256)
 	check(content_set.production_semantic_digest ==
 		"e23aea3c8bca6ffb28622a10e019324ad09930d5fed618c98da3d94e32f5bd76",
 		"production semantic identity differs: " .. content_set.production_semantic_digest)
@@ -1067,6 +1097,16 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			"grug_wp40_r7_functional_anchor_protection_v1",
 		functional_columns = 36, functional_y_min = -700}
 	local anchor_delta_digest = manifest_module.graph_digest_for_evidence(anchor_delta)
+	local hearthpine_delta = {schema = "grug_wp13_hearthpine_delta_v1",
+		opcode = 37, class = 13, policy = 13,
+		order = "after_anchor_activation_before_run_derivation", overwrite = true,
+		anchor_id = "anchor_001", blueprint_sha256 = hearthpine_config.identity.sha256,
+		content_sha256 = content_set.hearthpine_digest, successor_ref_min = 99,
+		successor_ref_max = 98 + #content_set.hearthpine.content_names,
+		cell_count = hearthpine_config.identity.cell_count,
+		clipping = "current_mapchunk_owner_intersection_v1"}
+	local hearthpine_delta_digest =
+		manifest_module.graph_digest_for_evidence(hearthpine_delta)
 	local manifest_values = {
 		schema = "grug_wp40_r7_mapgen_manifest_v1", full_seed = "0",
 		r5_schema = "grug_wp40_r5_mapgen_manifest_v1",
@@ -1112,6 +1152,17 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		functional_anchor_protection_schema =
 			anchor_delta.functional_protection_schema,
 		functional_anchor_columns = 36, functional_anchor_y_min = -700,
+		hearthpine_content_schema = content_set.hearthpine.schema,
+		hearthpine_content_sha256 = content_set.hearthpine_digest,
+		hearthpine_semantic_sha256 = content_set.hearthpine_semantic_digest,
+		hearthpine_content_count = #content_set.hearthpine.content_names,
+		hearthpine_blueprint_schema = hearthpine_config.identity.schema,
+		hearthpine_blueprint_sha256 = hearthpine_config.identity.sha256,
+		hearthpine_cell_count = hearthpine_config.identity.cell_count,
+		hearthpine_delta_schema = hearthpine_delta.schema,
+		hearthpine_delta_sha256 = hearthpine_delta_digest,
+		hearthpine_opcode = 37, hearthpine_class = 13, hearthpine_policy = 13,
+		hearthpine_order = hearthpine_delta.order, hearthpine_overwrite = true,
 		writer_schema = "grug_wp40_r7_single_vm_writer_v1",
 		p9g_opcode = 35, p9g_class = 10, p9g_policy = 11,
 		p9g_order = p9g_delta.order, p9g_overwrite = false,
@@ -1135,6 +1186,12 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		"anchor_delta_schema", "anchor_delta_sha256", "anchor_opcode",
 		"anchor_class", "anchor_policy", "anchor_order", "anchor_overwrite",
 		"functional_anchor_protection_schema", "functional_anchor_columns",
+		"hearthpine_content_schema", "hearthpine_content_sha256",
+		"hearthpine_semantic_sha256", "hearthpine_content_count",
+		"hearthpine_blueprint_schema", "hearthpine_blueprint_sha256",
+		"hearthpine_cell_count", "hearthpine_delta_schema",
+		"hearthpine_delta_sha256", "hearthpine_opcode", "hearthpine_class",
+		"hearthpine_policy", "hearthpine_order", "hearthpine_overwrite",
 		"functional_anchor_y_min", "writer_schema", "p9g_opcode", "p9g_class",
 		"p9g_policy", "p9g_order", "p9g_overwrite", "source_projection_sha256",
 		"production_enabled",
@@ -1631,8 +1688,17 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			end, metrics = function() return {schema = "micro_anchor_metrics"} end,
 			roster = function() return {sha256 = anchor_roster_sha256} end}
 	end}
+	local empty_hearthpine_config = {new = function()
+		return {bind_plan = function() end,
+			settle = function()
+				return {schema = "grug_wp13_hearthpine_ledger_v1", written = 0}
+			end, metrics = function()
+				return {schema = "grug_wp13_hearthpine_metrics_v1"}
+			end}
+	end}
 	local successor = dofile(wp40 .. "/r7_successor.lua")(
-		successor_config, empty_anchor_config).new(successor_dependencies)
+		successor_config, empty_anchor_config, empty_hearthpine_config).new(
+			successor_dependencies)
 
 	local settlement_hash = dofile(wp40 .. "/r6_hash.lua")(raw_sha256)
 	local map_adapter_factory = dofile(wp40 .. "/map_adapter.lua")
