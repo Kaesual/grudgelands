@@ -229,8 +229,10 @@ and [PvP-death XP exemption](docs/design/progression.md) are already decided.
 
 **In progress:** WP13 begins with the dwarf start in Hearthpine Vale, an
 inhabited craft settlement with a small guardpost. The first appearance and reload
-playtest is accepted. A second increment adds four buildings, natural ground
-and exterior lighting, and corrects the platform height and watchpost roof. Other starts, capitals
+playtest is accepted. The second increment adds four buildings, natural ground
+and exterior lighting, and corrects the platform height and watchpost roof.
+Native checks, interpreter parity and independent review are green; the
+expanded settlement awaits its next GUI playtest. Other starts, capitals
 and functional settlement services remain later work.
 WP5, WP26, WP44, WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind
 shipped prerequisites. WP34 still needs structures and economy.

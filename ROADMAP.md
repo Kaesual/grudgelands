@@ -154,7 +154,8 @@ the goal-level view.
   kings/guards and both all-six-gem apex camps on shipped WP40 geometry and
   WP43 materials. The first increment is Hearthpine Vale: an inhabited dwarf
   craft settlement with a small guardpost. Its first user appearance/reload
-  test is accepted; expand and polish this settlement before broader rollout.
+  test is accepted; the expanded nine-building settlement has green engine
+  checks and review, with its next GUI playtest pending before broader rollout.
 - [x] WP33: gathering plants, signature woods and cultural sources on final
   zone/race-region ownership; accepted with WP40 R7 on 2026-09-02.
 - [ ] WP34: deep spawn pressure, corrected depth-level curve, camp-only

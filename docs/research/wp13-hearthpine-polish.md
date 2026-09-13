@@ -1,6 +1,7 @@
 # WP13: Hearthpine settlement polish
 
-Status: implementation and integration checks in progress, 2026-09-14.
+Status: independently reviewed; native engine and interpreter checks green,
+ready for the focused user GUI playtest, 2026-09-14.
 Classification: non-trivial (terrain semantics, architecture and test gates).
 WP13 remains in progress; this is one settlement's second increment.
 
@@ -75,7 +76,46 @@ for routine fixes within this contract.
 
 ## Evidence and calibration
 
-Pending final checks and independent review. Implementing models: GPT-5.6 Sol
-(delegated terrain and blueprint), root coordinator (acceptance/integration).
-Reviewer, severity counts, fix rounds and elapsed wall time will be recorded
-before integration. Historical first-increment evidence retains its identity.
+Final implementation candidate: `fa39a23`. Preserved evidence:
+[`tools/wp13/evidence/20260914-hearthpine-polish`](../../tools/wp13/evidence/20260914-hearthpine-polish/).
+The package is ready for GUI testing; it does not close WP13.
+
+- 88,167 authored cells, 20 materials, 41 lights and nine reachable interior/
+  lookout destinations. All first-increment writer and clipping contracts remain.
+- Five-seed height receipt: all 30 starts pass. On user seed
+  `531802985935182545`, Hearthpine rises from y=9 to y=25; sampled absolute
+  earthwork falls from 1,288 to 104. One other start has no common eight-node
+  cut/fill interval and truthfully reports an excess of three. The road remains
+  y=25 through the gate and the checked continuation to local z=80.
+- Native Luanti: both seeds pass forward/reverse generation and cold/disk reload,
+  eight passes in total. All authored node names/param2, 41 lights, nine lit
+  destinations, every main-road foot position, soil outside the blueprint and
+  the deliberate edit canary pass. Stillgrave's surface at y=48 leaves the
+  required dirt at y=47 in the separately generated lower owner. All eight
+  architecture digests equal
+  `bf4c0d5aa132bb972516f8f98c95ba556411501f41ada6cbeb2f01f2c43d76d0`.
+- Final parser/SETGLOBAL/five sweeps and fresh-server source audit pass.
+  One final PUC-5.1/LuaJIT pair is byte-identical at
+  `f443cbb1971b857e9ff296f5802e6fcad1cf3f9414f0bc82e0869df52212806c`;
+  the real manifest constructor and immutable input checks pass. This parity
+  is not a claim of a new browser-engine playtest.
+- Independent review closed one Medium finding: excluded start grades no longer
+  create decoration candidates destined for rejection. Natural P7 painting is
+  retained; ordinary candidate populations remain unchanged. Final review has
+  zero remaining findings. The full report is preserved with the evidence.
+
+Calibration: implementing models GPT-5.6 Sol (two delegated lanes) and
+GPT-6/Codex (coordinator, acceptance and integration); reviewing model GPT-5.6
+Sol in a fresh independent context. Same-model review followed observed Opus
+unavailability, documented in the first increment's evidence. Initial review
+findings: 0 Critical / 0 High / 1 Medium; one review fix round; final findings:
+0. Observed elapsed wall time: `unknown`.
+
+## User runtime test
+
+Create a fresh world and choose dwarf. Walk through the nine buildings, inspect
+the watchpost roof and climb its lookout, follow the gate road into the vale,
+and look at the pad edge. Set night and inspect the illuminated route and
+interiors. Leave and reload. Seeds `531802985935182545` (Hearthpine y=25) and
+`8675309` (Hearthpine y=16) are the native regression examples. Broader civic
+terracing and the remaining starts/capitals remain later work.
