@@ -104,59 +104,31 @@ the goal-level view.
 - [x] WP15: Character/Bags pages, equipment lists and four bag slots.
 - [x] WP18, WP36: the current two-continent map, biome baseline, repaired
   coastline/capital generation, reference submodules and critter/prey pass.
-  **Legacy boundary:** the running surface still uses rectangles, radial
-  difficulty and the mandatory water separation until WP40.
+  WP40 now supersedes their surface geometry and difficulty authority.
 - [x] WP19, WP35, WP38, WP39: tuned class kits, race passives, weapon slot,
   native-animation held swings, exact current-ray aim, PvP/PvE settlement,
   ready reticle, diagnostics and swept Fireball projectiles.
 - [x] WP25: six visual strata and a first material implementation.
   **Historical boundary:** its 2026-08-08 Completion Record describes the
   Emberstone and coupled node-`level`/pick-`maxlevel` implementation that
-  WP43 now supersedes while preserving one-way saved-world migration.
+  WP43 now supersedes; development-era migrations have been removed.
 - [x] WP43: canonical Bronze→Abyssal Steel registry, Emberglass/Abyssal Steel
   namespaces, exact natural depth, separate harvest tier, complete
-  G1/G2/cultural/race-region data, migration diagnostics and the
-  protection-first mining transaction.
+  G1/G2/cultural/race-region data and the protection-first mining transaction.
 - [x] WP45: safe character-creation stasis, opaque faction/race/class flow and
   race-start preloading with one final teleport after successful emergence.
+- [x] **WP40 — Named-zone world foundation:** the fixed 38-zone world,
+  terrain/biome/content/resource generation, fitted pads/terraces and routes,
+  water handling and shared geography APIs are delivered. The first correction
+  round and native/browser-local Lua-5.1 user acceptance are complete on
+  2026-09-13. See the [completion record](docs/research/wp40-completion.md).
+  This development completion leaves the explicitly separated first-public-
+  release gates below open and does not end fresh-server mode.
 
 ### Next prerequisite roots
 
 - [ ] **WP26 — Universal bars and furnace:** implement the dual-input furnace
   and the six-tier alloy chain against WP43's shipped canonical registry.
-- [ ] **WP40 — Named-zone world foundation:** replace the WP18 surface with
-  the 38-zone hybrid-v7 target using WP43's shipped resource/race-region
-  contract. **In progress since 2026-08-13; simple-map rebase accepted
-  2026-08-25; R0, R1, V1b, V1c and V1d accepted 2026-08-25; fixed-layout
-  V1e R2 independently and visually accepted 2026-08-27 as the sole live R2
-  authority, with V1d retained as history at `d337160`.** R0
-  replaced the unfinished exact-T2 partition/topology path; R1 now provides
-  one fixed pure 2D model and canonical SVG; V1d adds stronger single-warp
-  border meanders, pinned curved routes, tapered bays with ownerless
-  deep-ocean mouth caps, coherent visible water and six hard-protected capital
-  ingress corridors; V1e freezes all 100 anchors and 74 actual POI spurs and
-  closes three contact-face waterfalls. The V1e visual gate, exhaustive R2
-  layout freeze, route/water/core validation and housing-capacity evidence are
-  independently accepted. The pure R3 vertical implementation and canonical
-  artifact and the complete still-disabled R4 geography/policy payload were
-  independently accepted 2026-08-27. The pure typed R5 planner/adapter payload
-  and canonical artifact were independently accepted 2026-08-29. R6's frozen
-  surface/resource catalogs, private cultural-slot API, complete 32-seed
-  evidence and canonical artifact were independently accepted 2026-08-31.
-  R7's single production writer, existing-consumer cutover, WP33 gathering
-  payload, P9G successor and functional-anchor suffix were independently
-  accepted 2026-09-02 at `68f6cec`; its bounded evidence is explicitly a
-  32-seed stratified main sample plus a seven-seed frontier-access lane, not
-  exhaustive spatial coverage. R8 is the remaining final release/runtime
-  stage and owns the first real fresh Luanti world.
-  Current technical contract:
-  [wp40-engineering-brief.md](docs/research/wp40-engineering-brief.md); current
-  R0-R8 sequence:
-  [wp40-simple-map-rebase-plan.md](docs/research/wp40-simple-map-rebase-plan.md).
-  The accepted R2 artifact owns fixed-layout route/housing validation and
-  once-per-layout capacity; the accepted R6 artifact owns the 32-seed
-  content/supply/access evidence. Production mapchunk performance and runtime
-  evidence remain R8 gates.
 - [ ] **WP44 — Economy Rebase:** migrate the Common-price axis, 5% buy-back
   and Income Ledger against the final material ids; calibrate exact Claim
   Stone and mount costs.
@@ -178,8 +150,10 @@ the goal-level view.
   design-unblocked (A1/A3/A4/A5/E21 decided 2026-08-13, incl. the revised
   food-restore buff model and the buff/debuff icon framework); it still
   follows WP26/WP33/WP43/WP44.
-- [ ] WP13: final starts, capitals, settlements, camps, kings/guards and both
-  all-six-gem apex camps on WP40 geometry and WP43 materials.
+- [ ] **WP13 — selected next:** final starts, capitals, settlements, camps,
+  kings/guards and both all-six-gem apex camps on shipped WP40 geometry and
+  WP43 materials. Begin with one start settlement, agree its brief/appearance
+  and playtest it before extending the approach to the remaining content.
 - [x] WP33: gathering plants, signature woods and cultural sources on final
   zone/race-region ownership; accepted with WP40 R7 on 2026-09-02.
 - [ ] WP34: deep spawn pressure, corrected depth-level curve, camp-only
@@ -200,6 +174,19 @@ the goal-level view.
   after loot, materials and economy.
 - [ ] WP31: mounts after final map/economy plus the remaining explicit mount
   questions in `TODO-design-crafting-rework.md`.
+
+### Before the first public release
+
+These gates remain **open** after WP40's user-approved development completion.
+The project coordinator owns them when preparing the release candidate, before
+user release approval: freeze game/engine/settings and the public seed; rebase
+current-sampler resource supply/regional access evidence; run current-candidate
+feature/native/generation-order and runtime/RSS checks; and confirm native plus
+actual fallback-engine startup/generation/restart. Historical source-bound
+results are not silently promoted to later bytes; native events not observed
+remain explicit coverage limits. Full tracking lives in
+[BACKLOG](BACKLOG.md#first-public-release-gates) and the
+[WP40 completion record](docs/research/wp40-completion.md).
 
 ## Phase 2 — Expansion
 

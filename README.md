@@ -206,94 +206,44 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 *Last updated: 2026-09-13. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
 
-**Shipped (18 of 46 work packages):** WP0–WP4, WP6, WP7, WP15, WP18,
-WP19, WP25, WP33, WP35, WP36, WP38, WP39, WP43 and WP45 provide the playable
-foundation, 42 mobs, three classes, equipment/bags, XP, threat, money/vendors,
-the canonical six-tier material/depth/harvest contract, gathering sources and
-current-ray combat/projectiles. New characters now remain frozen and immortal
-behind the faction/race/class UI until their race start is loaded, then arrive
-with one final teleport; the existing- and new-character runtime passes were
-green on 2026-09-03. WP16 is a canceled tombstone and is not shipped. WP43
-supersedes WP25's temporary material rules. Development assumes fresh servers;
-old-world and old-item migrations are removed.
+**Shipped (19 of 46 work packages):** WP0–WP4, WP6, WP7, WP15, WP18,
+WP19, WP25, WP33, WP35, WP36, WP38, WP39, WP40, WP43 and WP45 provide the
+playable foundation: three classes, combat, mobs, equipment/bags, currency,
+canonical materials, gathering and the named-zone world. New characters remain
+protected behind character creation until their race start is loaded. WP40's
+[development acceptance](docs/research/wp40-completion.md) now includes the first
+terrain/performance correction round and green native plus browser-local
+Lua-5.1 user tests; slower browser generation is accepted for this server game.
+WP16 is canceled and is not counted as shipped.
 
 **Not in the game yet:** quests, professions/recipes, talent trees, parties,
 recovery, offhand items, affixes, durability, final structures, travel/map,
-Claim Stone housing, mounts and bosses remain unbuilt. The 38-zone surface is
-implemented but awaits R8's real-world/visual/runtime gates; geographic PvP,
-bounded war-front life and the rebased economy are also pending. The
-remaining mount details and deep-content questions stay explicitly open in
-[the crafting/mount TODO](TODO-design-crafting-rework.md) and
-[the depth TODO](TODO-design-depth.md); the playable-boat contract is decided
-in [boats.md](docs/design/boats.md), and confirmed PvP deaths cost no XP under
-[progression.md](docs/design/progression.md).
+Claim Stone housing, mounts and bosses remain unbuilt. Geographic PvP,
+bounded war-front life and the rebased economy are also pending. Remaining
+mount and deep-content decisions live in [the crafting/mount TODO](TODO-design-crafting-rework.md)
+and [the depth TODO](TODO-design-depth.md); the [boat contract](docs/design/boats.md)
+and [PvP-death XP exemption](docs/design/progression.md) are already decided.
 
-**In progress:** WP40 now includes terrain-following roads, adaptive capital
-terraces, fine relief, material variation and hillside cave entrances; visual
-acceptance remains a fresh-world GUI test. The named-zone map foundation has been under
-implementation since 2026-08-13 on branch `wp40-named-zone-world-foundation`.
-The 2026-08-25 simple-map rebase deliberately retired its unfinished exact
-partition/topology path. R0, R1, V1b, V1c and V1d are accepted history;
-fixed-layout V1e R2 was independently and visually accepted on 2026-08-27.
-Its current SVG has stronger single-warp border meanders, pinned curved routes,
-tapered bays with deep-ocean mouth caps, coherent visible water and six
-protected capital ingress corridors. Exhaustive V1e R2 validation freezes all
-100 anchors, the 74 actual POI spurs, housing capacity and three exact
-contact-face waterfalls without moving their reaches. The pure R3 vertical
-implementation and canonical artifact and the complete R4 geography/policy
-payload were independently accepted on 2026-08-27. The pure typed R5 Planner,
-consolidated Adapter and canonical exhaustive artifact were independently
-accepted on 2026-08-29. R6's frozen surface/resource catalogs, private
-cultural-slot API, complete 32-seed evidence fleet and canonical artifact were
-independently accepted on 2026-08-31. R7's single production writer, consumer
-cutover, WP33 gathering payload, P9G successor and functional-anchor suffix
-were independently accepted on 2026-09-02. Its release-oriented evidence is a
-32-seed stratified main sample plus a separate seven-seed frontier-access lane,
-not an exhaustive spatial claim.
-The current [engineering contract](docs/research/wp40-engineering-brief.md)
-and [R0–R8 plan](docs/research/wp40-simple-map-rebase-plan.md) preserve the 38
-zones, routes, housing, policy and supply goals with a much smaller algorithm.
-The accepted R2 artifact owns fixed-layout and once-per-layout capacity
-evidence; the accepted R6 artifact owns 32-seed content/supply/access
-evidence. R8 now owns the first real fresh Luanti world, visual quality,
-production mapchunk performance and runtime evidence.
-The [2026-09-13 follow-up](docs/research/wp40-mapgen-profile-tree-fix.md)
-fixes gaps caused by omitted tree slices and reduces resource-generation work,
-with real-engine profiling and complete tested-chunk/persistence parity.
-The [biome-cover and junction follow-up](docs/research/wp40-biome-cover-junctions.md)
-couples surface variants with native vegetation and fits free road junctions
-to terrain. The [terrain-life follow-up](docs/research/wp40-terrain-life-polish.md)
-adds knotted Gravewood, smaller terrain-fitted POI foundations, varied water
-beds and gentle near-ground flight. A [startup correction](docs/research/wp40-startup-manifest-fix.md)
-updates its content binding and verifies actual-engine startup and generation.
-The [hydrology fix](docs/research/wp40-hydrology-depth-fix.md) aligns the planner
-and bed seals with variable water depths.
-The [resource sampler](docs/research/wp40-resource-sampling-integration.md)
-replaces per-host root hashing with demand-driven deterministic selection.
-The local comparison reduces total generation-callback time by 53.7% across
-ten tested chunks (23.4% for the nine surface chunks); exact ore positions
-change, while budgets and planned vein counts remain unchanged.
-The [planner follow-up](docs/research/wp40-planner-throughput.md) reduces those
-callbacks by another 8.8% in a three-run-per-variant local comparison, with
-identical tested terrain and ore output.
-The [water and road follow-up](docs/research/wp40-water-road-polish.md) repairs
-Kezamba’s leaking shore, favors hillside cuts and fixes transparent banner backs.
-Fresh-terrain visual acceptance remains open.
+**Selected next:** WP13 will make the world's intended settlements visible,
+starting with exactly one start settlement and a focused visual/playability
+review before broader rollout. Its WP40/WP43 foundations are shipped; the
+first settlement's race, style and implementation brief are not yet chosen.
+WP5, WP26, WP44, WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind
+shipped prerequisites. WP34 still needs structures and economy.
 
-**Ready to start next:** WP5, WP26 and WP44 are the newly unblocked loot,
-material and economy roots. WP37, WP11, WP14, WP20, WP21 and WP8 are also
-ready behind shipped dependencies; WP5 and WP26 each carry an executable task
-card. WP34 is not next because it still waits for map, structures and economy.
+**Release boundary:** WP40 is completed as development work; it does not declare
+our first public release or end fresh-server mode. Current-candidate resource
+supply/access, feature/native/generation-order, runtime/RSS and release-engine
+checks remain explicit [first-public-release work](BACKLOG.md#first-public-release-gates).
+Historical results retain their own source identities; the accepted browser
+playtest has no visible build ID. Old-world and old-item migrations remain absent.
 
-**Caveats:** fresh-server development mode applies throughout; R8 uses a fresh
-v7 world and has no old-world migration gate.
-WP7 still runs its old price curve and 25% buy-back until WP44. WP43 passed its
-headless and independent-review gates but has not received a GUI/runtime pass;
-validate current materials and ore removal in a fresh world. WP39 still needs its
-recorded GUI combat test. WP45's existing- and new-character flows are green,
-while an incomplete character's mid-flow reconnect remains headless-tested
-only. WP25, WP35 and WP36 retain their historical not-runtime-tested labels;
-WP40 remains fresh-world-only.
+**Other runtime caveats:** WP7 retains its old prices and 25% buy-back until
+WP44, and WP39's recorded GUI combat test remains outstanding. WP43 has
+headless/review evidence but no separate material-focused GUI acceptance;
+WP25, WP35 and WP36 retain their historical untested labels. WP45's existing-
+and new-character flows are green, while mid-creation reconnect is covered
+headlessly. These unrelated gates are not closed by the map playtests.
 
 ## Running it
 
