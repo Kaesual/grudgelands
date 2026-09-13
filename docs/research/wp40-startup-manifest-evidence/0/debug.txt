@@ -1,0 +1,69 @@
+
+
+-------------
+  Separator
+-------------
+
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_mese'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_mese'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_mese'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_mese'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_diamond'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_diamond'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_diamond'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_diamond'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copper_ingot'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copperblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tin_ingot'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tinblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronze_ingot'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronzeblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steel_ingot'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steelblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:gold_ingot'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:goldblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe known for output 'default:stone_with_mese'
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_mese'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal_fragment'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:meselamp'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_acacia_wood'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_junglewood'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_pine_wood'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_aspen_wood'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe known for output 'default:stone_with_diamond'
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_diamond'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamond'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamondblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sign_wall_steel'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:ladder_steel'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_steelblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_steelblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_steelblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_steelblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_tinblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_tinblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_tinblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_tinblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_copperblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_copperblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_copperblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_copperblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_bronzeblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_bronzeblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_bronzeblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_bronzeblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_goldblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_goldblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_goldblock'])
+2026-09-13 16:49:26: WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_goldblock'])
+2026-09-13 16:49:26: ACTION[Main]: [grug_gear] 6 bracket catalogs: 24 weapons + 48 armor pieces
+2026-09-13 16:49:33: ACTION[Main]: [grug_materials] registry audit passed: 6 tiers, 15 resources, 12 processed forms, 6 race regions
+2026-09-13 16:49:33: ACTION[Main]: [grug_traders] drop audit: 1 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit); their items are audited from the hardcoded FUNCTION_DROPS list
+2026-09-13 16:49:33: ACTION[Main]: World at [/tmp/grug-startup-smoke/0/world]
+2026-09-13 16:49:33: ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:30997.
+2026-09-13 16:49:33: ACTION[Server]: STARTUP_SMOKE authority_loaded seed=0
+2026-09-13 16:49:40: ACTION[Emerge-0]: STARTUP_SMOKE PASS generated
+2026-09-13 16:49:40: ACTION[Main]: Server: Shutting down

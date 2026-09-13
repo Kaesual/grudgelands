@@ -264,7 +264,9 @@ The [biome-cover and junction follow-up](docs/research/wp40-biome-cover-junction
 couples surface variants with native vegetation and fits free road junctions
 to terrain. The [terrain-life follow-up](docs/research/wp40-terrain-life-polish.md)
 adds knotted Gravewood, smaller terrain-fitted POI foundations, varied water
-beds and gentle near-ground flight. Fresh-terrain visual acceptance remains open.
+beds and gentle near-ground flight. A [startup correction](docs/research/wp40-startup-manifest-fix.md)
+updates its content binding and verifies actual-engine startup and generation.
+Fresh-terrain visual acceptance remains open.
 
 **Ready to start next:** WP5, WP26 and WP44 are the newly unblocked loot,
 material and economy roots. WP37, WP11, WP14, WP20, WP21 and WP8 are also

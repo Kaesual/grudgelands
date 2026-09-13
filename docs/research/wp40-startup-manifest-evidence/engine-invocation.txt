@@ -1,0 +1,2 @@
+flatpak run --filesystem=/tmp/grug-startup-smoke --env=LUANTI_USER_PATH=/tmp/grug-startup-smoke/user --command=luanti org.luanti.luanti --server --gameid grudgelands --world /tmp/grug-startup-smoke/SEED/world --config /tmp/grug-startup-smoke/SEED/run.conf --logfile /tmp/grug-startup-smoke/SEED/debug.txt
+Engine: Luanti 5.17.0, LuaJIT 2.1.1784272936 (OpenResty); no GUI or Rehearsal VM.

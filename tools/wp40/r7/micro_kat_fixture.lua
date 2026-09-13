@@ -1076,11 +1076,11 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		r6_artifact_sha256 =
 			"bb3e9674b768f7ef14fc0a703d0dc97022e9767d0c532b48cd5f1c0c741257b4",
 		r6_catalog_sha256 =
-			"250fefd017d85fe652be66dbe0d6548e0bf3ada64668f4f9cc2f0fd5577edb2d",
+			"71686cbaff9a2b6acb0415a3eda0ebc2d056412db1879c1bf4fcb162e14f4f74",
 		r6_accepted_content_sha256 =
-			"b91a815183d93c2ba0de70409f52911d1e019314e7870fa44eff86f363119155",
+			"2486aac15521fbacdfa733f832aac615b799aa8d13c818525d1ce75221fad7d6",
 		r6_template_inputs_sha256 =
-			"807ddf131db405974f365c4e08aa124eeba6cac61fa1655e455794507f858a55",
+			"ab77c5efa95878232fd5138445b97394be44a700ea5c145c706505a64b427f94",
 		wp43_projection_sha256 =
 			"c8088a4b6802c0fc1a74d8826e3df0bb49b64f9ab4c6e93bcbd66aa2a16b9895",
 		noise_schema = native_identities.noise_schema,
@@ -1114,7 +1114,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		p9g_opcode = 35, p9g_class = 10, p9g_policy = 11,
 		p9g_order = p9g_delta.order, p9g_overwrite = false,
 		source_projection_sha256 =
-			"8f1eef2702c631451ee987b3eb4a267d117fcc3ce1d97947d4b6936e0ea3502b",
+			"de79b1fe983d8b5aaadfd4180bc44e84704133248e20b117139267f232b803d4",
 		production_enabled = true,
 	}
 	local manifest_field_order = {

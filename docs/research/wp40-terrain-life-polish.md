@@ -156,3 +156,10 @@ A separate Floyd-Warshall oracle tests small cyclic, disconnected, negative,
 fixed and infeasible populations plus node/edge permutations and bounded
 larger line/fan graphs. The existing final composed-axis scan remains unchanged
 as the integrated geometry gate.
+
+## Subsequent startup correction
+
+The first user GUI start exposed stale live manifest pins that the portable
+receipt validator did not cover. The [startup repair](wp40-startup-manifest-fix.md)
+records the correction, actual-constructor regression and real-engine checks.
+The original parity evidence remains historical evidence of its narrower scope.
