@@ -470,6 +470,16 @@ WP40 replaces it with the complete catalog and contracts below.
   water clearance and the existing maximum one-node rise per adjacent run
   (45 degrees for one-node horizontal steps). The solver does not promise a
   universal cut/fill bound at fixed hubs and crossings.
+  Each ordinary dry junction now prefers its pre-path terrain height, shared
+  by every incident endpoint at that x/z coordinate. Fixed POI spurs bound
+  the reachable height interval at a station; the fixed island-route graph
+  propagates landing/arena/mine grade intervals to its free centres. The
+  chosen height is the closest feasible height to the local preference.
+  Start and capital fittings, building endpoints, landings and water
+  clearance remain hard constraints. The final route solver still checks
+  water, ford/tunnel pins and adjacent grade; all incident endpoint results
+  must exactly equal their shared junction target. The height output schema
+  is v3; existing relief random domains retain their fixed v2 tag.
 - Sparse hillside entrances use 192-node cells, a one-quarter candidate gate,
   radius 2 and length 32. A mouth at y >= 16 needs an uphill rise >= 6; the
   axis descends one node every four steps, and its final 16 sections retain

@@ -260,19 +260,20 @@ production mapchunk performance and runtime evidence.
 The [2026-09-13 follow-up](docs/research/wp40-mapgen-profile-tree-fix.md)
 fixes gaps caused by omitted tree slices and reduces resource-generation work,
 with real-engine profiling and complete tested-chunk/persistence parity.
-Fresh-terrain visual acceptance remains open; existing malformed trees retain
-their saved blocks.
+The [biome-cover and junction follow-up](docs/research/wp40-biome-cover-junctions.md)
+couples surface variants with native vegetation and fits free road junctions
+to terrain. Fresh-terrain visual acceptance remains open.
 
 **Ready to start next:** WP5, WP26 and WP44 are the newly unblocked loot,
 material and economy roots. WP37, WP11, WP14, WP20, WP21 and WP8 are also
 ready behind shipped dependencies; WP5 and WP26 each carry an executable task
 card. WP34 is not next because it still waits for map, structures and economy.
 
-**Caveats:** existing WP18/WP36 worlds retain already-generated rectangular
-continents and are not WP40 migration targets; R8 must use a fresh v7 world.
+**Caveats:** fresh-server development mode applies throughout; R8 uses a fresh
+v7 world and has no old-world migration gate.
 WP7 still runs its old price curve and 25% buy-back until WP44. WP43 passed its
 headless and independent-review gates but has not received a GUI/runtime pass;
-validate migration only in a backed-up WP25 world. WP39 still needs its
+validate current materials and ore removal in a fresh world. WP39 still needs its
 recorded GUI combat test. WP45's existing- and new-character flows are green,
 while an incomplete character's mid-flow reconnect remains headless-tested
 only. WP25, WP35 and WP36 retain their historical not-runtime-tested labels;

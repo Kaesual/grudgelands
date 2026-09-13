@@ -9,6 +9,7 @@ for _, relative in ipairs({
 	"tools/wp40/resource_rank/fixture.lua",
 	"tools/wp40/quality/surface_fixture.lua",
 	"tools/wp40/quality/cover_fixture.lua",
+	"tools/wp40/quality/junction_micro.lua",
 	"tools/wp40/quality/cave_fixture.lua",
 	"tools/wp40/quality/vendor_fixture.lua",
 	"tools/wp43/fresh_server_fixture.lua",
