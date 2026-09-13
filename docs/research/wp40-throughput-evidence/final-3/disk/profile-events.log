@@ -1,0 +1,12 @@
+ACTION[Main]: GRUG_WP40_PROFILE_PROBE phase=disk event=start engine=5.17.0 lua=LuaJIT_2.1.1784272936 seed=0 cases=10 manifest=1def39eb4797c00c7b134a8c493e1bd819c08840d0f5a4010cabda62d28f439a full_digest=true
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=pine_hearthpine_center mapchunk=-1872,-32,-2592 elapsed_us=7458507 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=pine_hearthpine_east mapchunk=-1792,-32,-2592 elapsed_us=2770 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=pine_hearthpine_south mapchunk=-1872,-32,-2512 elapsed_us=2635 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=human_capital mapchunk=-32,-32,-1552 elapsed_us=2758 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=elandor_front mapchunk=-32,48,-272 elapsed_us=2309 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=broken_causeway mapchunk=-752,-32,-32 elapsed_us=2656 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=whitebridge mapchunk=-432,-32,-1552 elapsed_us=3303 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=wyrmglass_channel mapchunk=-2752,-32,-32 elapsed_us=2438 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=wyrmglass_island mapchunk=-3312,208,-112 elapsed_us=2353 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=deep_cross_border mapchunk=-1712,-912,128 elapsed_us=3551 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=complete requested=10 completed=10 callbacks=0 generated=0 disk=1250 memory=0 cancelled=0 errored=0 samples=370 expected_nodes=0 digest=b0c8d9527473a99e356139f5bb7bd84d510f67f1daf7f916e7cabe4add4fbe64 full_digest=0104d96f7464b82c1862e5d178b9b5a93dd2747faa0b5da319df166d4eb2f6fe full_vocabulary_digest=b91b8197fb574561aa33c8cc7c56d3e935d9d4842f99019afc713a8bc5f56c22 full_voxels=5120000 measured_elapsed_us=7978297 diagnostic_us=670041

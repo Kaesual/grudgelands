@@ -6,7 +6,9 @@ content, param2, light and VoxelManip setter/liquid traces, as well as identical
 canonical hash inputs. Its cases cover zero, one and 4096 eligible hosts, a
 zero budget, equal root digests at negative coordinates, ordinary multi-node
 veins, roots consumed by their own frontier, foreign collisions, an exhausted
-root population and a short frontier.
+root population, a short frontier, an inactive resource tier and a completely
+disallowed region. It reuses each writer with changed predecessor content to
+check that eligibility does not leak between transactions.
 
 `run.sh` defaults to the compact, plain-Lua-5.1-compatible fixture used by the
 final interpreter comparison. `run.sh expanded` adds a larger connected host

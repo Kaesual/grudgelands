@@ -1,154 +1,96 @@
 --- a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
 +++ b/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
-@@ -1571,6 +1571,10 @@
+@@ -1540,3 +1540,3 @@
+ 		helpers = {equal_graph = equal_graph,
+-			heap_prefix = heap_prefix, pop_min = pop_min,
++			pop_min = pop_min,
+ 			primary_reason = primary_reason, exclusion_reason = exclusion_reason,
+@@ -1568,4 +1568,19 @@
+ 			digest_fields[5], digest_fields[6], digest_fields[7] = e, f, g
+-			return hash.prepare_digest3("resource_root_rank_v1", full_seed,
++			local prepared = hash.prepare_digest3("resource_root_rank_v1", full_seed,
+ 				digest_fields, 7)
++			return function(x, y, z)
++				local profile = transaction_state.profile
++				profile.root_digest_calls = profile.root_digest_calls + 1
++				return prepared(x, y, z)
++			end
++		end
++		function helpers.heap_prefix(values, count, less)
++			local profile = transaction_state.profile
++			local started = profile.enabled and core.get_us_time()
++			heap_prefix(values, count, less)
++			if started then
++				profile.root_build_calls = profile.root_build_calls + 1
++				profile.root_build_us = profile.root_build_us +
++					core.get_us_time() - started
++			end
  		end
- 
+@@ -1588,2 +1603,8 @@
  		local function apply_impl(vm, minp, maxp, plan, plan_generation, call_mode)
-+			local profile_enabled = call_mode == "production"
-+			local profile_started = profile_enabled and core.get_us_time() or 0
-+			local profile_previous = profile_started
-+			local profile_stage = 0
- 			local resource_excluded_column = transaction_state.resource_excluded_column
- 			if call_mode ~= "fixture" and call_mode ~= "production" and
- 					call_mode ~= "replay_fixture" then
-@@ -1590,6 +1594,19 @@
- 			end
- 			local min_x, min_y, min_z = position(minp, "minp")
++			local profile = {enabled = call_mode == "production"}
++			transaction_state.profile = profile
++			profile.started = profile.enabled and core.get_us_time() or 0
++			profile.previous, profile.stage = profile.started, 0
++			profile.root_digest_calls, profile.root_build_calls,
++				profile.root_build_us = 0, 0, 0
+ 			local resource_column_state = transaction_state.resource_excluded_column
+@@ -1607,2 +1628,15 @@
  			local max_x, max_y, max_z = position(maxp, "maxp")
 +			local function profile_mark(name, details)
-+				if not profile_enabled then return end
++				if not profile.enabled then return end
 +				local now = core.get_us_time()
-+				profile_stage = profile_stage + 1
++				profile.stage = profile.stage + 1
 +				local fields = {"GRUG_WP40_PROFILE_STAGE",
-+					"stage_index=" .. profile_stage, "stage=" .. name,
-+					"elapsed_us=" .. (now - profile_previous),
-+					"total_us=" .. (now - profile_started),
++					"stage_index=" .. profile.stage, "stage=" .. name,
++					"elapsed_us=" .. (now - profile.previous),
++					"total_us=" .. (now - profile.started),
 +					"minp=" .. min_x .. "," .. min_y .. "," .. min_z}
 +				if details then fields[#fields + 1] = details end
 +				core.log("action", table.concat(fields, " "))
-+				profile_previous = core.get_us_time()
++				profile.previous = core.get_us_time()
 +			end
  			if min_x ~= plan.min_x or min_y ~= plan.min_y or min_z ~= plan.min_z or
- 					max_x ~= plan.max_x or max_y ~= plan.max_y or max_z ~= plan.max_z then
- 				fail("fail_settlement", "plan bounds differ")
-@@ -1692,12 +1709,14 @@
- 			function shadow.calc_lighting() end
- 			function shadow.set_light_data() end
+@@ -1709,2 +1743,3 @@
  			function shadow.update_liquids() end
 +			profile_mark("input_setup")
  			local r5_result = r5_adapter:apply(shadow, minp, maxp, plan.r5_plan,
- 				plan.r5_generation, call_mode == "production" and
- 					"engine_fixture" or "offline_fixture")
- 			if type(r5_result) ~= "string" then
- 				fail("fail_settlement", "nested R5 result differs")
+@@ -1715,2 +1750,3 @@
  			end
 +			profile_mark("nested_r5")
  
- 			local ledger = not transaction_state.runtime_mode and
- 				{rejections = {}, resources = {}, cultural = {}, decorations = {},
-@@ -1777,6 +1796,7 @@
- 					end
- 				end
+@@ -1794,2 +1830,3 @@
  			end
 +			profile_mark("p7")
  
- 			local function inside_owner(x, y, z)
- 				return x >= min_x and x <= max_x and y >= min_y and y <= max_y and
-@@ -1855,6 +1875,7 @@
- 					end
- 				end
+@@ -1872,2 +1909,3 @@
  			end
 +			profile_mark("cultural_reservation")
  
- 			for z = min_z, max_z do
- 				for x = min_x, max_x do
-@@ -1887,6 +1908,9 @@
- 						final_data[index] == original_data[index]) or
- 						intent_opcode[index] == 24) and occupancy[index] ~= 1
- 			end
-+			local profile_p8_root_digest_calls = 0
-+			local profile_p8_root_build_calls = 0
-+			local profile_p8_root_build_us = 0
- 			for resource_index = 1, #resources do
- 				local resource = resources[resource_index]
- 				for cell_z = math.floor(min_z / 16), math.floor(max_z / 16) do
-@@ -1925,8 +1949,12 @@
- 													local coordinate = coordinate_scratch[eligible]
- 													coordinate.x, coordinate.y, coordinate.z = x, y, z
- 													if root_digest then
-+														profile_p8_root_digest_calls =
-+															profile_p8_root_digest_calls + 1
- 														coordinate.digest = root_digest(x, y, z)
- 													else
-+														profile_p8_root_digest_calls =
-+															profile_p8_root_digest_calls + 1
- 														coordinate.digest = helpers.digest10(
- 															"resource_root_rank_v1", resource.key, cell_x,
- 															cell_y, cell_z, host_name, tier, band, x, y, z)
-@@ -1947,7 +1975,15 @@
- 										remainder_digest)
- 									if transaction_state.runtime_mode then
- 										if budget > 0 then
-+											local root_build_started = profile_enabled and
-+												core.get_us_time()
- 											helpers.heap_prefix(coordinate_scratch, eligible, helpers.coordinate_less)
-+											if root_build_started then
-+												profile_p8_root_build_calls =
-+													profile_p8_root_build_calls + 1
-+												profile_p8_root_build_us = profile_p8_root_build_us +
-+													core.get_us_time() - root_build_started
-+											end
- 										end
- 									else
- 										sort_prefix(coordinate_scratch, eligible, helpers.coordinate_less)
-@@ -2068,6 +2104,10 @@
- 					end
- 				end
+@@ -2115,2 +2153,6 @@
  			end
 +			profile_mark("p8_resources", table.concat({
-+				"root_digest_calls=" .. profile_p8_root_digest_calls,
-+				"root_build_calls=" .. profile_p8_root_build_calls,
-+				"root_build_us=" .. profile_p8_root_build_us}, " "))
++				"root_digest_calls=" .. profile.root_digest_calls,
++				"root_build_calls=" .. profile.root_build_calls,
++				"root_build_us=" .. profile.root_build_us}, " "))
  
- 			-- P9 cultural output is visible only after P8.  The reservation itself
- 			-- remains the earlier occupancy authority.  Validate every cell before
-@@ -2124,6 +2164,7 @@
- 					end
- 				end
+@@ -2171,2 +2213,3 @@
  			end
 +			profile_mark("p9_cultural")
  
- 			-- P9 decorations, globally ordered by class, cell z/x and planned rank.
- 			for class = 1, 4 do
-@@ -2295,6 +2336,7 @@
- 					end
- 				end
+@@ -2338,2 +2381,3 @@
  			end
 +			profile_mark("p9_decorations")
  
- 			-- R7's only legal successor hook. It receives a deliberately narrow
- 			-- closure surface over these private buffers, runs after the complete R6
-@@ -2402,6 +2444,7 @@
- 					ledger.p9g, ledger.anchors = successor_ledger.p9g, successor_ledger.anchors
- 				end
+@@ -2445,2 +2489,3 @@
  			end
 +			profile_mark("r7_successor")
  
- 			-- Canonical runs and their checksums are an evidence product. The live
- 			-- writer has already materialized the same intent bytes and commits them
-@@ -2632,6 +2675,7 @@
- 				light_columns
- 			metrics_state.liquid_dirty_columns = metrics_state.liquid_dirty_columns +
+@@ -2675,2 +2720,3 @@
  				liquid_columns
 +			profile_mark("final_diff")
  			if not content_changed and not param2_changed then return "noop_equal_content" end
- 
- 			local box_min_x, box_min_y, box_min_z, box_max_x, box_max_y, box_max_z
-@@ -2782,6 +2826,7 @@
- 				local ok = pcall(vm.update_liquids, vm)
- 				if not ok then fail("fail_vm_contract", "update_liquids failed") end
+@@ -2825,2 +2871,3 @@
  			end
 +			profile_mark("final_commit")
  			metrics_state.apply_calls = metrics_state.apply_calls + 1
- 			local c, p, l, q = content_changed, param2_changed, light_changed,
- 				liquid_changed

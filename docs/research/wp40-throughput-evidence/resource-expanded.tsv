@@ -1,0 +1,15 @@
+schema	grug_wp40_resource_rank_diff_v1
+mode	expanded
+status	applied_c
+cases	H0/H1/H4096/B0/normal/equal/own_claim/short_frontier/exhausted/inactive/region_empty/reuse/no_r5
+h4096	4096/1
+b0	2048/0/0
+own_claim	6/0
+short_frontier	3/1
+exhausted	0/6/6
+raw_calls	4350
+root_calls	4245
+raw_framing_sha256	f95e498f56b3da1a87f864c6a6457f3bfeb14d0db1d0a4f1a52a35f07b11899c
+vm_canonical_sha256	82cf837950ac77e42fb533db6a142a6dbfa21b503edd5ffa53ddd3d950757c81
+reused_vm_sha256	e998a9da6e37ce28957c5345a9dece361cb6e0707827495e20f18d5d2e3d0622
+digest	398ef1b49bd8c4053cd55426c7ef94c5e3f330a7fe9606974b037e949c77e170

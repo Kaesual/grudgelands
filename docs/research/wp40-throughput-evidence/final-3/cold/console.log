@@ -1,0 +1,91 @@
+WARNING[Main]: /!\ You are using the old mod storage files backend. This backend is deprecated and may be removed in a future release /!\
+WARNING[Main]: Switching to SQLite3 is advised, please read https://docs.luanti.org/for-server-hosts/database-backends.
+[MOD] Mobs Redo loaded
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copper_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tin_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronze_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steel_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:gold_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:goldblock'])
+WARNING[Main]: No craft recipe known for output 'default:stone_with_mese'
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal_fragment'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:meselamp'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_acacia_wood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_junglewood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_pine_wood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_aspen_wood'])
+WARNING[Main]: No craft recipe known for output 'default:stone_with_diamond'
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamondblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sign_wall_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:ladder_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_goldblock'])
+ACTION[Main]: [grug_gear] 6 bracket catalogs: 24 weapons + 48 armor pieces
+ACTION[Main]: [grug_materials] registry audit passed: 6 tiers, 15 resources, 12 processed forms, 6 race regions
+ACTION[Main]: GRUG_WP40_PROFILE_PROBE phase=cold event=start engine=5.17.0 lua=LuaJIT_2.1.1784272936 seed=0 cases=10 manifest=1def39eb4797c00c7b134a8c493e1bd819c08840d0f5a4010cabda62d28f439a full_digest=true
+ACTION[Main]: [grug_traders] drop audit: 1 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit); their items are audited from the hardcoded FUNCTION_DROPS list
+ _                   _   _ 
+| |_   _  __ _ _ __ | |_(_)
+| | | | |/ _` | '_ \| __| |
+| | |_| | (_| | | | | |_| |
+|_|\__,_|\__,_|_| |_|\__|_|  ___ 5.17.0
+ACTION[Main]: World at [/tmp/grudgelands-wp40-profile-run.SwTIoMia/world]
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32160.
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=1 minp=-1872,-32,-2592 maxp=-1793,47,-2513 blockseed=3799390529 plan_us=360586 writer_us=172496 total_us=533082 columns=6400 candidate_cells=49 candidates=0 r5_runs=25600 result=applied_clq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=3 vm_get_data_calls=1 vm_get_data_us=4358 vm_get_param2_data_calls=1 vm_get_param2_data_us=4350 vm_get_light_data_calls=2 vm_get_light_data_us=8702 vm_set_data_calls=1 vm_set_data_us=7278 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=81 vm_set_lighting_us=187 vm_calc_lighting_calls=1 vm_calc_lighting_us=4151 vm_set_light_data_calls=1 vm_set_light_data_us=7091 vm_update_liquids_calls=1 vm_update_liquids_us=874
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=pine_hearthpine_center mapchunk=-1872,-32,-2592 elapsed_us=9469402 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=2 minp=-1792,-32,-2592 maxp=-1713,47,-2513 blockseed=3693650209 plan_us=250474 writer_us=184415 total_us=434889 columns=6400 candidate_cells=49 candidates=0 r5_runs=25600 result=applied_clq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=1 vm_get_data_calls=1 vm_get_data_us=4452 vm_get_param2_data_calls=1 vm_get_param2_data_us=4203 vm_get_light_data_calls=2 vm_get_light_data_us=8668 vm_set_data_calls=1 vm_set_data_us=7284 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=81 vm_set_lighting_us=148 vm_calc_lighting_calls=1 vm_calc_lighting_us=4753 vm_set_light_data_calls=1 vm_set_light_data_us=7085 vm_update_liquids_calls=1 vm_update_liquids_us=904
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=pine_hearthpine_east mapchunk=-1792,-32,-2592 elapsed_us=468611 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=3 minp=-1872,-32,-2512 maxp=-1793,47,-2433 blockseed=1181963239 plan_us=269847 writer_us=235525 total_us=505372 columns=6400 candidate_cells=49 candidates=64 r5_runs=25600 result=applied_clq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4354 vm_get_param2_data_calls=1 vm_get_param2_data_us=4335 vm_get_light_data_calls=2 vm_get_light_data_us=8667 vm_set_data_calls=1 vm_set_data_us=7275 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=1 vm_set_lighting_us=192 vm_calc_lighting_calls=1 vm_calc_lighting_us=4510 vm_set_light_data_calls=1 vm_set_light_data_us=7086 vm_update_liquids_calls=1 vm_update_liquids_us=889
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=pine_hearthpine_south mapchunk=-1872,-32,-2512 elapsed_us=548672 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=4 minp=-32,-32,-1552 maxp=47,47,-1473 blockseed=893986625 plan_us=379855 writer_us=194079 total_us=573934 columns=6400 candidate_cells=49 candidates=0 r5_runs=19200 result=applied_clq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=3 vm_get_data_calls=1 vm_get_data_us=4539 vm_get_param2_data_calls=1 vm_get_param2_data_us=4340 vm_get_light_data_calls=2 vm_get_light_data_us=8698 vm_set_data_calls=1 vm_set_data_us=7294 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=1 vm_set_lighting_us=158 vm_calc_lighting_calls=1 vm_calc_lighting_us=1356 vm_set_light_data_calls=1 vm_set_light_data_us=7111 vm_update_liquids_calls=1 vm_update_liquids_us=933
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=human_capital mapchunk=-32,-32,-1552 elapsed_us=604084 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=5 minp=-32,48,-272 maxp=47,127,-193 blockseed=1667303045 plan_us=387457 writer_us=492814 total_us=880271 columns=6400 candidate_cells=49 candidates=1350 r5_runs=19200 result=applied_cplq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=4 vm_get_data_calls=1 vm_get_data_us=4337 vm_get_param2_data_calls=1 vm_get_param2_data_us=4330 vm_get_light_data_calls=2 vm_get_light_data_us=8697 vm_set_data_calls=1 vm_set_data_us=7296 vm_set_param2_data_calls=1 vm_set_param2_data_us=7114 vm_set_lighting_calls=81 vm_set_lighting_us=143 vm_calc_lighting_calls=1 vm_calc_lighting_us=4723 vm_set_light_data_calls=1 vm_set_light_data_us=7104 vm_update_liquids_calls=1 vm_update_liquids_us=960
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=elandor_front mapchunk=-32,48,-272 elapsed_us=907962 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=6 minp=-752,-32,-32 maxp=-673,47,47 blockseed=3068557649 plan_us=474517 writer_us=569632 total_us=1044149 columns=6400 candidate_cells=49 candidates=937 r5_runs=23043 result=applied_cplq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4349 vm_get_param2_data_calls=1 vm_get_param2_data_us=4333 vm_get_light_data_calls=2 vm_get_light_data_us=8695 vm_set_data_calls=1 vm_set_data_us=7299 vm_set_param2_data_calls=1 vm_set_param2_data_us=7111 vm_set_lighting_calls=81 vm_set_lighting_us=142 vm_calc_lighting_calls=1 vm_calc_lighting_us=4046 vm_set_light_data_calls=1 vm_set_light_data_us=7112 vm_update_liquids_calls=1 vm_update_liquids_us=961
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=broken_causeway mapchunk=-752,-32,-32 elapsed_us=1079247 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=7 minp=-432,-32,-1552 maxp=-353,47,-1473 blockseed=3635851569 plan_us=474788 writer_us=1559816 total_us=2034604 columns=6400 candidate_cells=49 candidates=1431 r5_runs=14781 result=applied_clq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=3 vm_get_data_calls=1 vm_get_data_us=4382 vm_get_param2_data_calls=1 vm_get_param2_data_us=4119 vm_get_light_data_calls=2 vm_get_light_data_us=8672 vm_set_data_calls=1 vm_set_data_us=7285 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=1 vm_set_lighting_us=144 vm_calc_lighting_calls=1 vm_calc_lighting_us=2246 vm_set_light_data_calls=1 vm_set_light_data_us=7197 vm_update_liquids_calls=1 vm_update_liquids_us=1024
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=whitebridge mapchunk=-432,-32,-1552 elapsed_us=2068917 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=8 minp=-2752,-32,-32 maxp=-2673,47,47 blockseed=2525044665 plan_us=133967 writer_us=239230 total_us=373197 columns=6400 candidate_cells=49 candidates=0 r5_runs=25600 result=applied_clq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=1 vm_get_data_calls=1 vm_get_data_us=4401 vm_get_param2_data_calls=1 vm_get_param2_data_us=4389 vm_get_light_data_calls=2 vm_get_light_data_us=8668 vm_set_data_calls=1 vm_set_data_us=7270 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=1 vm_set_lighting_us=176 vm_calc_lighting_calls=1 vm_calc_lighting_us=6583 vm_set_light_data_calls=1 vm_set_light_data_us=7071 vm_update_liquids_calls=1 vm_update_liquids_us=953
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=wyrmglass_channel mapchunk=-2752,-32,-32 elapsed_us=407284 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=9 minp=-3312,208,-112 maxp=-3233,287,-33 blockseed=2857651185 plan_us=534445 writer_us=389703 total_us=924148 columns=6400 candidate_cells=49 candidates=1 r5_runs=21161 result=applied_clq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=3 vm_get_data_calls=1 vm_get_data_us=4393 vm_get_param2_data_calls=1 vm_get_param2_data_us=4220 vm_get_light_data_calls=2 vm_get_light_data_us=9230 vm_set_data_calls=1 vm_set_data_us=7294 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=1 vm_set_lighting_us=155 vm_calc_lighting_calls=1 vm_calc_lighting_us=2181 vm_set_light_data_calls=1 vm_set_light_data_us=7109 vm_update_liquids_calls=1 vm_update_liquids_us=904
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=wyrmglass_island mapchunk=-3312,208,-112 elapsed_us=951585 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=10 minp=-1712,-912,128 maxp=-1633,-833,207 blockseed=3960536441 plan_us=438701 writer_us=6992395 total_us=7431096 columns=6400 candidate_cells=49 candidates=213 r5_runs=0 result=applied_c vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4403 vm_get_param2_data_calls=1 vm_get_param2_data_us=4351 vm_get_light_data_calls=0 vm_get_light_data_us=0 vm_set_data_calls=1 vm_set_data_us=7315 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=0 vm_set_lighting_us=0 vm_calc_lighting_calls=0 vm_calc_lighting_us=0 vm_set_light_data_calls=0 vm_set_light_data_us=0 vm_update_liquids_calls=0 vm_update_liquids_us=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=deep_cross_border mapchunk=-1712,-912,128 elapsed_us=7468221 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=complete requested=10 completed=10 callbacks=10 generated=10 disk=0 memory=1240 cancelled=0 errored=0 samples=370 expected_nodes=0 digest=b0c8d9527473a99e356139f5bb7bd84d510f67f1daf7f916e7cabe4add4fbe64 full_digest=0104d96f7464b82c1862e5d178b9b5a93dd2747faa0b5da319df166d4eb2f6fe full_vocabulary_digest=b91b8197fb574561aa33c8cc7c56d3e935d9d4842f99019afc713a8bc5f56c22 full_voxels=5120000 measured_elapsed_us=24355020 diagnostic_us=636739
+ACTION[Main]: Server: Shutting down

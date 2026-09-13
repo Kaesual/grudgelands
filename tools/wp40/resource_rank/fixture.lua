@@ -41,7 +41,8 @@ return function(repo, expanded)
 	local resource_specs = {
 		{"H0", 1, 1, 1}, {"H1", 2, 1, 1}, {"H4096", 3, 4096, 1},
 		{"B0", 4, 12000, 1}, {"normal_a", 5, 1, 3},
-		{"normal_b", 5, 1, 2},
+		{"normal_b", 5, 1, 2}, {"inactive", 6, 1, 1},
+		{"regional_empty", 5, 1, 1},
 	}
 	for index = 1, #resource_specs do
 		add("test:ore_" .. resource_specs[index][1], 200 + index, 4)
@@ -81,7 +82,7 @@ return function(repo, expanded)
 		local spec, denominators = resource_specs[index],
 			{false, false, false, false, false, false}
 		denominators[spec[2]] = spec[3]
-		resources[index] = {key = spec[1], scope = "universal",
+		resources[index] = {key = spec[1], scope = spec[1] == "regional_empty" and "regional_g1" or "universal",
 			first_tier = spec[2], denominators = denominators,
 			max_nodes_per_vein = spec[4], deep_1500_1999_numerator = 5,
 			deep_1500_1999_denominator = 4, deep_2000_floor_numerator = 3,
@@ -138,8 +139,15 @@ return function(repo, expanded)
 	function allocator.metrics()
 		return {hotpath_table_allocations = 0, construction_sealed = true}
 	end
-	local r5_adapter = {}
-	function r5_adapter.apply() return "resource_rank_r5_ready" end
+	local r5_adapter, blocked_index = {}, false
+	function r5_adapter.apply(_, vm)
+		if blocked_index then
+			local buffer = vm:get_data({})
+			buffer[blocked_index] = 0
+			vm:set_data(buffer)
+		end
+		return "resource_rank_r5_ready"
+	end
 	local stable_refs = {}
 	for index = 1, #resources do stable_refs[index] = resources[index].key end
 	table.sort(stable_refs, hash.less_bytes)
@@ -150,14 +158,16 @@ return function(repo, expanded)
 		local base = (column - 1) * 12
 		for field = 1, 12 do column_values[base + field] = 0 end
 		column_values[base + 1] = 1
-		column_start[column] = 1
+		column_start[column] = column == 1 and 1 or 2
 	end
-	column_start[6401] = 1
+	column_start[6401] = 2
 	local plan = {schema = "grug_wp40_r6_refinement_plan_v1",
 		construction_identity = identity.value, generation = 1, valid = true,
 		min_x = owner_min.x, min_y = owner_min.y, min_z = owner_min.z,
 		max_x = owner_max.x, max_y = owner_max.y, max_z = owner_max.z,
-		r5_plan = {column_start = column_start, run_values = {}}, r5_generation = 1,
+		-- One harmless predecessor run activates the runtime eligibility cache.
+		r5_plan = {column_start = column_start,
+			run_values = {-673, -673, 7, 28, 0, 0, 0, 0, 0}}, r5_generation = 1,
 		column_values = column_values, column_count = 6400,
 		candidate_cell_values = {}, candidate_cell_count = 0,
 		candidate_values = {}, candidate_count = 0, stable_refs = stable_refs}
@@ -230,6 +240,7 @@ return function(repo, expanded)
 		planner_stable_refs = stable_refs, counting_allocator = allocator}
 	local function run(runtime)
 		raw_inputs, root_calls, b0_root_calls = {}, 0, 0
+		blocked_index = false
 		local settlement, fixture
 		if runtime then
 			settlement, fixture = settlement_factory.new_runtime(dependencies)
@@ -243,15 +254,43 @@ return function(repo, expanded)
 		local result = {status = status, canonical = canonical_snapshot(snapshot),
 			raw = raw_trace(), raw_count = #raw_inputs, root_calls = root_calls,
 			b0_root_calls = b0_root_calls, ledger = ledger}
+		-- Reuse the writer with changed predecessor content at the same owner
+		-- index. Eligibility must observe this transaction's predecessor bytes.
+		blocked_index = index_at(20, -700, -20) -- H1: exactly one host, budget 1.
+		raw_inputs = {}
+		vm, _, observer = new_vm()
+		result.reused_status = settlement:apply(vm, owner_min, owner_max, plan, 1, "fixture")
+		snapshot = observer.snapshot()
+		check(snapshot.data[blocked_index] == 0, "previous eligibility survived writer reuse")
+		result.reused_canonical = canonical_snapshot(snapshot)
+		result.reused_raw = raw_trace()
+		blocked_index = false
 		settlement, fixture, vm, observer, snapshot = nil, nil, nil, nil, nil
 		collectgarbage("collect")
 		return result
 	end
 	local ordinary = run(false)
 	local runtime = run(true)
+	-- Deep owners have no predecessor runs and bypass the cache entirely.
+	local populated_r5_plan = plan.r5_plan
+	local empty_starts = {}
+	for column = 1, 6401 do empty_starts[column] = 1 end
+	plan.r5_plan = {column_start = empty_starts, run_values = {}}
+	local uncached_runtime = run(true)
+	plan.r5_plan = populated_r5_plan
+	check(uncached_runtime.canonical == runtime.canonical and
+		uncached_runtime.raw == runtime.raw and
+		uncached_runtime.reused_canonical == runtime.reused_canonical and
+		uncached_runtime.reused_raw == runtime.reused_raw,
+		"no-predecessor cache bypass differs")
 	check(runtime.status == ordinary.status, "settlement status differs")
 	check(runtime.canonical == ordinary.canonical,
 		"content, param2, light or VoxelManip trace differs")
+	check(runtime.reused_status == ordinary.reused_status and
+		runtime.reused_canonical == ordinary.reused_canonical,
+		"reused writer differs from uncached settlement")
+	check(ordinary.reused_raw == runtime.reused_raw .. runtime.reused_raw,
+		"reused writer eligible population or hash framing differs")
 	-- The ordinary fixture performs its mandated private replay. Both passes must
 	-- frame the same inputs as the single runtime transaction.
 	check(ordinary.raw_count == runtime.raw_count * 2 and
@@ -280,6 +319,8 @@ return function(repo, expanded)
 		"B0 result differs")
 	for key in pairs(ordinary.ledger.resources) do
 		check(key:sub(1, 3) ~= "H0\0", "H0 unexpectedly has eligible hosts")
+		check(key:sub(1, 9) ~= "inactive\0", "inactive tier produced resources")
+		check(key:sub(1, 15) ~= "regional_empty\0", "disallowed region produced resources")
 	end
 	local own = check(ledger_row("normal_a", -2, -47, -2, 5),
 		"own-frontier ledger absent")
@@ -304,7 +345,7 @@ return function(repo, expanded)
 	local rows = {"schema\tgrug_wp40_resource_rank_diff_v1",
 		"mode\t" .. (expanded and "expanded" or "compact"),
 		"status\t" .. ordinary.status,
-		"cases\tH0/H1/H4096/B0/normal/equal/own_claim/short_frontier/exhausted",
+		"cases\tH0/H1/H4096/B0/normal/equal/own_claim/short_frontier/exhausted/inactive/region_empty/reuse/no_r5",
 		"h4096\t" .. h4096.eligible .. "/" .. h4096.budget,
 		"b0\t" .. b0.eligible .. "/" .. b0.budget .. "/" ..
 			runtime.b0_root_calls,
@@ -315,7 +356,8 @@ return function(repo, expanded)
 		"raw_calls\t" .. runtime.raw_count,
 		"root_calls\t" .. runtime.root_calls,
 		"raw_framing_sha256\t" .. raw_sha,
-		"vm_canonical_sha256\t" .. canonical_sha}
+		"vm_canonical_sha256\t" .. canonical_sha,
+		"reused_vm_sha256\t" .. common.hex(output_sha256(runtime.reused_canonical))}
 	local bytes = table.concat(rows, "\n") .. "\n"
 	return bytes .. "digest\t" .. common.hex(output_sha256(bytes)) .. "\n"
 end

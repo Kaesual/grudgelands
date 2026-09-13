@@ -1,0 +1,8 @@
+luajit: resource-rank fixture: previous eligibility survived writer reuse
+stack traceback:
+	[C]: in function 'error'
+	...rojects/grudgelands/tools/wp40/resource_rank/fixture.lua:5: in function 'check'
+	...rojects/grudgelands/tools/wp40/resource_rank/fixture.lua:264: in function 'run'
+	...rojects/grudgelands/tools/wp40/resource_rank/fixture.lua:273: in function <...rojects/grudgelands/tools/wp40/resource_rank/fixture.lua:3>
+	(command line):1: in main chunk
+	[C]: at 0x560084d7db00
