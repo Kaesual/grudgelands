@@ -1,0 +1,8 @@
+luajit: r6 micro KAT: short-vein witness differs
+stack traceback:
+	[C]: in function 'error'
+	/tmp/grug-cover-baseline-probe/micro_kat_fixture.lua:12: in function 'fail'
+	/tmp/grug-cover-baseline-probe/micro_kat_fixture.lua:14: in function 'check'
+	/tmp/grug-cover-baseline-probe/micro_kat_fixture.lua:614: in function </tmp/grug-cover-baseline-probe/micro_kat_fixture.lua:3>
+	/tmp/grug-cover-baseline-probe/run.lua:6: in main chunk
+	[C]: at 0x55fabe1d4b00

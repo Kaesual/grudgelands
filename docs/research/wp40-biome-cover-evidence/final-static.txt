@@ -1,0 +1,14 @@
+Plain Lua 5.1 parser: PASS
+mods/MAPGEN/grug_mapgen/wp40/height.lua
+mods/MAPGEN/grug_mapgen/wp40/r6_content.lua
+mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua
+mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua
+tools/wp40/quality/cover_fixture.lua
+tools/wp40/quality/final_micro.lua
+tools/wp40/quality/junction_fixture.lua
+tools/wp40/quality/junction_micro.lua
+tools/wp40/quality/surface_fixture.lua
+tools/wp40/r6/micro_kat_fixture.lua
+tools/wp40/tree_slices/fixture.lua
+Changed production SETGLOBAL: none

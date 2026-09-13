@@ -1,0 +1,8 @@
+luajit: r6 micro KAT: short-vein witness differs
+stack traceback:
+	[C]: in function 'error'
+	...projects/grudgelands/tools/wp40/r6/micro_kat_fixture.lua:12: in function 'fail'
+	...projects/grudgelands/tools/wp40/r6/micro_kat_fixture.lua:14: in function 'check'
+	...projects/grudgelands/tools/wp40/r6/micro_kat_fixture.lua:617: in function <...projects/grudgelands/tools/wp40/r6/micro_kat_fixture.lua:3>
+	(command line):1: in main chunk
+	[C]: at 0x558c981fcb00

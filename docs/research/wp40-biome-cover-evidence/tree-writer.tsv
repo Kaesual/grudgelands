@@ -1,0 +1,10 @@
+schema	grug_wp40_tree_slice_micro_kat_v1
+asset_sha256	3d91afa7dd3fbf6d15c295716af5409d3d77b0dff1464d623ef91433fdfd508f
+pine_rotation	1
+pine_source_slices	1100001110111111
+pine_destination_y	5,6,7,8,9,10,11,12,13,14,15
+probability_calls_sha256	f200ee32e8e3c8e8940ff671b2987937647a80fda8a16d14585b9c90a0eb0f7e
+evidence_reserved	400/8
+synthetic_destination	5,6,7/node_gap_at_6_x18
+live_result	applied_cl
+digest	fdfb2f0db29461ae9ccc98d4bb0602034f9a176143fad00fdb502dd45f017ff5
