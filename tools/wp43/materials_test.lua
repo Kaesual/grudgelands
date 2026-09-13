@@ -644,8 +644,10 @@ dofile(repo .. "/mods/ITEMS/grug_nodes/init.lua")
 current_modname = "grug_materials"
 assert_equal(#callbacks.dignode, dignode_count_before_nodes,
 	"natural-ore regeneration dig hooks")
-assert_equal(#core.registered_lbms, lbm_count_before_nodes + 1,
-	"legacy depleted LBM registration")
+assert_equal(#core.registered_lbms, lbm_count_before_nodes,
+	"natural-ore regeneration LBM hooks")
+assert_equal(core.registered_nodes["grug_nodes:depleted_vein"], nil,
+	"retired depleted-vein node")
 
 -- Hidden harness picks exercise pure profiles without registering WP29 gear.
 for tier = 1, 6 do
@@ -943,51 +945,6 @@ for index, resource in ipairs(grug_materials.RESOURCES) do
 end
 assert_equal(shatter_resource_cases, 10, "natural resource shatter fixture count")
 
--- Saved worlds may carry any old metadata or an already elapsed timer. The
--- compatibility node always disappears, and stale/repeated callbacks cannot
--- remove a replacement node.
-local depleted_name = "grug_nodes:depleted_vein"
-local depleted_def = core.registered_nodes[depleted_name]
-assert_equal(depleted_def.drop, "", "legacy depleted drop")
-assert_equal(depleted_def.groups.not_in_creative_inventory, 1,
-	"legacy depleted creative visibility")
-local depleted_lbm = core.registered_lbms[lbm_count_before_nodes + 1]
-assert_equal(depleted_lbm.name, "grug_nodes:remove_legacy_depleted_vein",
-	"legacy depleted LBM identity")
-assert_equal(depleted_lbm.nodenames[1], depleted_name,
-	"legacy depleted LBM node")
-assert_equal(depleted_lbm.run_at_every_load, false,
-	"legacy depleted LBM persistence")
-for index, old_meta in ipairs({"default:stone_with_gold", "unknown:ore", ""}) do
-	local probe = {x = 150 + index, y = -50, z = 150}
-	set_world_node(probe, depleted_name)
-	core.get_meta(probe):set_string("grug_ore", old_meta)
-	timers[pos_key(probe)] = 1
-	reset_counts()
-	assert_equal(depleted_def.on_timer(probe), false, "legacy timer return")
-	assert_equal(core.get_node(probe).name, "air", "legacy timer cleanup")
-	assert_equal(counts.remove_nodes, 1, "legacy timer remove count")
-	assert_equal(timers[pos_key(probe)], nil, "legacy timer cleared")
-	assert_equal(depleted_def.on_timer(probe), false, "repeated legacy timer return")
-	assert_equal(counts.remove_nodes, 1, "repeated legacy timer harmless")
-end
-local migration_pos = {x = 160, y = -50, z = 160}
-set_world_node(migration_pos, depleted_name)
-core.get_meta(migration_pos):set_string("grug_ore", "unknown:ore")
-reset_counts()
-depleted_lbm.action(migration_pos, {name = depleted_name})
-assert_equal(core.get_node(migration_pos).name, "air", "legacy LBM cleanup")
-assert_equal(counts.remove_nodes, 1, "legacy LBM remove count")
-depleted_lbm.action(migration_pos, {name = depleted_name})
-assert_equal(counts.remove_nodes, 1, "repeated legacy LBM harmless")
-set_world_node(migration_pos, "default:stone")
-reset_counts()
-depleted_def.on_timer(migration_pos)
-depleted_lbm.action(migration_pos, {name = depleted_name})
-assert_equal(core.get_node(migration_pos).name, "default:stone",
-	"stale legacy callbacks preserve replacement")
-assert_equal(counts.remove_nodes, 0, "stale legacy callbacks remove nothing")
-
 -- Engine nodedef defaults do not define natural taxonomy: a sapling inherits
 -- is_ground_content=true but remains hand-diggable, while generated dirt and
 -- blob clay carry the explicit natural group and require a real pick.
@@ -1252,19 +1209,13 @@ for _, node in ipairs({"grug_materials:slate", "grug_materials:basalt",
 	assert_contains(native_source, 'ore_type = "stratum", ore = "' .. node .. '"',
 		"R7 native stratum " .. node)
 end
-local respawn_source = read_file("mods/ITEMS/grug_nodes/ore_respawn.lua")
-assert_contains(respawn_source, "core.register_lbm", "legacy depleted LBM")
-assert_contains(respawn_source, "core.remove_node", "legacy depleted removal")
-assert_equal(respawn_source:find("register_on_dignode", 1, true), nil,
-	"retired natural-ore dig hook")
-assert_equal(respawn_source:find("get_node_timer", 1, true), nil,
-	"retired natural-ore timer start")
-assert_equal(respawn_source:find("CURRENT_SCATTER_RESOURCES", 1, true), nil,
-	"retired natural-ore respawn roster")
-assert_equal(respawn_source:find("core.set_node", 1, true), nil,
-	"legacy placeholder restores a node")
-assert_equal(respawn_source:find("grug_materials", 1, true), nil,
-	"legacy placeholder depends on natural-resource identities")
+local missing_respawn = io.open(repo .. "/mods/ITEMS/grug_nodes/ore_respawn.lua", "rb")
+assert_equal(missing_respawn, nil, "retired natural-ore respawn file")
+local nodes_source = read_file("mods/ITEMS/grug_nodes/init.lua")
+assert_equal(nodes_source:find("ore_respawn", 1, true), nil,
+	"retired natural-ore respawn load")
+assert_equal(nodes_source:find("depleted_vein", 1, true), nil,
+	"retired depleted-vein registration")
 
 local production_files = {
 	"mods/ITEMS/grug_materials/init.lua",
@@ -1278,7 +1229,6 @@ local production_files = {
 	"mods/MAPGEN/grug_mapgen/wp43_handoff.lua",
 	"mods/MAPGEN/grug_mapgen/wp40/r7_content.lua",
 	"mods/MAPGEN/grug_mapgen/wp40/r7_native.lua",
-	"mods/ITEMS/grug_nodes/ore_respawn.lua",
 	"mods/ITEMS/grug_nodes/init.lua",
 	"mods/ENTITIES/grug_mobs/golem.lua",
 	"mods/ENTITIES/grug_mobs/zombie.lua",

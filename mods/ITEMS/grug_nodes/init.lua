@@ -221,10 +221,3 @@ core.register_node("grug_nodes:bone_pile", {
 	groups = {snappy = 3, attached_node = 1},
 	sounds = default.node_sound_gravel_defaults(),
 })
-
---
--- Sub-files
---
-
--- Saved-world compatibility for the retired depleted-vein placeholder.
-dofile(core.get_modpath(core.get_current_modname()) .. "/ore_respawn.lua")
