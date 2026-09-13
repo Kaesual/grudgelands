@@ -470,6 +470,16 @@ WP40 replaces it with the complete catalog and contracts below.
   water clearance and the existing maximum one-node rise per adjacent run
   (45 degrees for one-node horizontal steps). The solver does not promise a
   universal cut/fill bound at fixed hubs and crossings.
+  Each ordinary dry junction now prefers its pre-path terrain height, shared
+  by every incident endpoint at that x/z coordinate. Fixed POI spurs bound
+  the reachable height interval at a station; the fixed island-route graph
+  propagates landing/arena/mine grade intervals to its free centres. The
+  chosen height is the closest feasible height to the local preference.
+  Start and capital fittings, building endpoints, landings and water
+  clearance remain hard constraints. The final route solver still checks
+  water, ford/tunnel pins and adjacent grade; all incident endpoint results
+  must exactly equal their shared junction target. The height output schema
+  is v3; existing relief random domains retain their fixed v2 tag.
 - Sparse hillside entrances use 192-node cells, a one-quarter candidate gate,
   radius 2 and length 32. A mouth at y >= 16 needs an uphill rise >= 6; the
   axis descends one node every four steps, and its final 16 sections retain
@@ -478,16 +488,41 @@ WP40 replaces it with the complete catalog and contracts below.
   foundations, exclusions and housing. P5 cuts the tube with priority 5;
   prospective and actual P7 support cannot re-cap it. A closed end is valid;
   connection to native underground caves is not guaranteed.
-- **Fresh-world surface refinement (2026-09-13):** logical biome ownership
-  stays unchanged. Dry surfaces receive coherent 32-node material patches
-  and 64-node variations in filler depth (1–4 nodes), using existing soil,
-  grass, gravel and stone. Wet surfaces, beaches and swamps retain their
-  declared substrate. Crags and badlands mix only their base, gravel and
-  stone; savanna retains dry soil, and blight/bone forest receive no green
-  grass patches. Rocky patches expose stone on steep final terrain. The
-  planner, writer and prospective vegetation support share the same seeded
-  selector. The original R6 surface table is the base palette, not a promise
-  that every column in a biome has the same material.
+- **Fresh-world surface and vegetation refinement (2026-09-13):** logical
+  biome ownership stays unchanged. Dry surfaces combine coherent 32-node and
+  8-node material fields at weights 3:1; filler depth varies from 1–4 nodes
+  on a 64-node field. Wet surfaces, beaches and swamps retain their substrate.
+  The base R6 surface table is refined by the following fertile palettes;
+  all existing biome decorations accept every fertile variant at their
+  existing density and retain their species, elevation and protection rules.
+
+  | Biome | Fertile surfaces (existing nodes) |
+  |---|---|
+  | Meadows | grass, dirt, forest litter |
+  | Pine hills | coniferous litter, forest litter, grass |
+  | Elf forest | silver litter, forest litter, grass |
+  | Deep forest | forest litter, coniferous litter, grass |
+  | Jungle edge | rainforest litter, canopy litter, mud |
+  | Deep jungle / jungle fringe | canopy litter, rainforest litter, mud |
+  | Savanna | dry grass, dry dirt, mesa clay |
+  | Badlands / eastern badlands | mesa clay, dry dirt |
+  | Blight / bone forest | blight dirt, bone litter |
+
+  Ordinary-biome patch values below 300 choose the second fertile surface;
+  values 300–439 choose the third (or repeat the base where only two exist).
+  Values 440–780 keep the base, 781–880 expose gravel, and above 880 expose
+  stone. Crags retain gravel and stone; snowy crags retain snow, gravel and
+  stone, with the existing elevation-gated crags pine exception. No new
+  snowy-crag species or gathering resources are introduced.
+  On final-terrain rises of at least 12 nodes across an eight-node sample,
+  patch values above 760 expose stone. Eight-node detail values above 680
+  interrupt gentle ordinary-biome outcrops with native soil pockets. Low
+  decorations (settlement class 4) accept gravel with one-quarter eligible
+  roots, selected from the existing seeded candidate digest before applying
+  the unchanged density budget. Trees and trunks do not root on these gravel
+  variants; native crags pines keep their existing gravel support. Stone
+  remains bare. Planner, prospective settlement and actual writer use the
+  same biome-and-substrate eligibility; actual predecessor checks remain.
 - The project owns one globally queryable integer surface-height field
   `H(full_seed_string, x, z)`, exposed as `terrain_height_at`. It combines
   bounded broad/detail lattices, the zone relief profiles, authored landmarks

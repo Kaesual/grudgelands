@@ -1,0 +1,6 @@
+schema	grug_wp40_r8_performance_static_v1
+status	pass
+production_lua_count	135
+tool_lua_count	5
+changed_production_lua_count	15
+source_set_sha256	cdd68ca71269fc93e5588a42efd24caa01d3a038372d2e032ee3f8c691667359

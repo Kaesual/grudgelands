@@ -829,6 +829,13 @@ local function settlement_factory()
 			return analytic_p7_material_ref(x, y, z)
 		end
 
+		local function decoration_support_ref(row, x, y, z)
+			local ref = analytic_p7_support_ref(x, y, z)
+			local _, _, _, biome = planner_source.column_values_at(x, z)
+			if content.decoration_cover(row.id, biome, ref) > 0 then return ref end
+			return nil
+		end
+
 		local function regional_allowed(resource, race)
 			if resource.scope == "universal" then return true end
 			local assignment = race_assignment[race]
@@ -1138,9 +1145,9 @@ local function settlement_factory()
 								candidate.z + min_fz, oy) or
 								not inside(candidate.x + max_fx, candidate.y + max_fy,
 									candidate.z + max_fz, oy) then flags.clipped_owner = true end
-						local support_ref = analytic_p7_support_ref(candidate.x,
+						local support_ref = decoration_support_ref(row, candidate.x,
 							candidate.y - 1, candidate.z)
-						if support_ref ~= content.content_ref(row.host) then
+						if not support_ref then
 							flags.wrong_host = true
 						end
 						if not flags.clipped_owner then
@@ -1537,6 +1544,7 @@ local function settlement_factory()
 			housing_excluded_at = housing_excluded_at,
 			analytic_p7_material_ref = analytic_p7_material_ref,
 			analytic_p7_support_ref = analytic_p7_support_ref,
+			decoration_support_ref = decoration_support_ref,
 			regional_allowed = regional_allowed, coordinate_less = coordinate_less,
 			run_class_policy = run_class_policy,
 			capture_private_buffers = capture_private_buffers,
@@ -2239,15 +2247,11 @@ local function settlement_factory()
 							end
 							local support = inside_owner(root_x, root_y - 1, root_z) and
 								index_at(root_x, root_y - 1, root_z) or nil
-							local support_ref
-							if not support then
-								support_ref = helpers.analytic_p7_support_ref(root_x,
-									root_y - 1, root_z)
-							end
-							if (support and (intent_opcode[support] < 1 or
+							local support_ref = helpers.decoration_support_ref(row, root_x,
+								root_y - 1, root_z)
+							if not support_ref or (support and (intent_opcode[support] < 1 or
 									intent_opcode[support] > 4 or final_data[support] ~=
-									contract.content_cids[content.content_ref(row.host)])) or
-									(not support and support_ref ~= content.content_ref(row.host)) then
+									contract.content_cids[support_ref])) then
 								flags.wrong_host = true
 							end
 							if not flags.clipped_owner then

@@ -147,6 +147,9 @@ return function(repo)
 	function content.resources() return clone(kat_resources) end
 	function content.cultural() return clone(cultural) end
 	function content.decorations() return clone(decorations) end
+	function content.decoration_cover(_, biome, support_ref)
+		return biome == "kat_biome" and support_ref == refs[names[1]] and 1 or 0
+	end
 	function content.wp43_projection() return clone(projection) end
 	function content.content_ref(name) return refs[name] end
 	function content.param2_kind(content_ref) return param2_kinds[content_ref] end

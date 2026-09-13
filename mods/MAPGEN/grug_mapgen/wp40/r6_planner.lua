@@ -499,16 +499,22 @@ local function planner_factory()
 					elseif height_rule == 3 then
 						special_ok = terrain_y >= 1 and terrain_y <= 4
 					end
-					if terrain_y >= 1 and special_ok and
-							decoration_biome[catalog][scratch.biome[column]] and
-							scratch.p7_support[column] and
-							scratch.support_name[column] == row.host then
-						eligible = eligible + 1
-						local ranked = rank_scratch[eligible]
-						ranked.x, ranked.y, ranked.z = scratch.x[column], terrain_y + 1,
-							scratch.z[column]
-						ranked.digest = hash.digest("decoration_candidate_rank_v1", full_seed,
-							{row.id, cell_x, cell_z, ranked.x, ranked.z})
+					local cover = terrain_y >= 1 and special_ok and
+						decoration_biome[catalog][scratch.biome[column]] and
+						scratch.p7_support[column] and
+						content.decoration_cover(row.id, scratch.biome[column],
+							content.content_ref(scratch.support_name[column])) or 0
+					if cover > 0 then
+						local digest = hash.digest("decoration_candidate_rank_v1", full_seed,
+							{row.id, cell_x, cell_z, scratch.x[column], scratch.z[column]})
+						-- Thin eligible roots before budgeting; no extra noise/hash pass.
+						if string.byte(digest, 1) % cover == 0 then
+							eligible = eligible + 1
+							local ranked = rank_scratch[eligible]
+							ranked.x, ranked.y, ranked.z = scratch.x[column], terrain_y + 1,
+								scratch.z[column]
+							ranked.digest = digest
+						end
 					end
 				end
 				local budget = 0
