@@ -1,6 +1,33 @@
 -- Actual catalog/selector regression; no full world or native noise required.
 return function(repo, expanded)
 	local common = dofile(repo .. "/tools/wp40/r6/common.lua")
+	-- This fixture needs only template dimensions and declared node names to
+	-- construct the content catalog. Decode that uncompressed MTS header in
+	-- plain 5.1; template voxels/deflate are outside the surface-selector test.
+	-- The override is local to this freshly loaded fixture-common table.
+	function common.read_mts(path)
+		local bytes = common.read_file(path)
+		local function u16(offset)
+			local a, b = bytes:byte(offset, offset + 1)
+			assert(b, "truncated MTS header")
+			return a * 256 + b
+		end
+		assert(bytes:sub(1, 4) == "MTSM" and u16(5) == 4)
+		local sx, sy, sz = u16(7), u16(9), u16(11)
+		assert(sx > 0 and sy > 0 and sz > 0)
+		local offset, names = 13 + sy, {}
+		local count = u16(offset)
+		offset = offset + 2
+		for index = 1, count do
+			local length = u16(offset)
+			offset = offset + 2
+			local name = bytes:sub(offset, offset + length - 1)
+			assert(#name == length)
+			names[index] = {name = name == "ignore" and "air" or name}
+			offset = offset + length
+		end
+		return {size = {x = sx, y = sy, z = sz}, data = names}
+	end
 	local fixtures = dofile(repo .. "/tools/wp40/r6/fixtures.lua")(
 		repo, common, common.new_sha256())
 	local content = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/r6_content.lua")(

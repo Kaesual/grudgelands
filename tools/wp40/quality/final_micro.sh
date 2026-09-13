@@ -4,7 +4,7 @@ export LC_ALL=C
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd -P)"
 output="${1:?absent absolute output directory required}"
 [[ "$output" == /* && ! -e "$output" ]] || exit 2
-for command_name in rg sort sha256sum cmp chrt ionice luajit; do
+for command_name in rg sort sha256sum cmp chrt ionice luajit tr; do
 	command -v "$command_name" >/dev/null 2>&1 || {
 		echo "Final quality micro-KAT: missing $command_name" >&2
 		exit 2
@@ -17,6 +17,10 @@ mkdir -p "$output"
 	rg --files mods tools/wp40 tools/wp43
 	printf '%s\n' game.conf minetest.conf tools/check_fresh_server.py
 	printf '%s\n' reference_projects/luanti/builtin/game/item.lua
+	rg --files docs/design
+	# The catalog fixture binds additional design/research and engine references.
+	rg -o '"(AGENTS.md|docs/[^"]+|reference_projects/[^"]+)"' \
+		tools/wp40/r6/fixtures.lua | tr -d '"'
 } | sort -u | rg -v '/__pycache__/|[.]pyc$') >"$output/input-paths.txt"
 mapfile -t inputs <"$output/input-paths.txt"
 [[ "${#inputs[@]}" -gt 0 ]] || exit 2
