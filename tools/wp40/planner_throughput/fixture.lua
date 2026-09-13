@@ -3,6 +3,7 @@ return function(repo, planner_repo)
 	planner_repo = planner_repo or repo
 	local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40/"
 	local calls, mode = 0, "mixed"
+	local feature_kind, feature_id, feature_water, cave_y
 	local function column_values_at(x, z)
 		calls = calls + 1
 		local terrain_y = 8
@@ -26,11 +27,12 @@ return function(repo, planner_repo)
 					10, "lower", nil
 			end
 		end
-		return "land", 1, "zone", "biome", "race", terrain_y
+		return "land", 1, "zone", "biome", "race", terrain_y,
+			feature_water, nil, nil, feature_kind, terrain_y, feature_id
 	end
 	local planner_source = {schema = "grug_wp40_r5_planner_source_v1",
 		column_values_at = column_values_at,
-		surface_cave_run_at = function() return nil end,
+		surface_cave_run_at = function() return cave_y, cave_y end,
 		metrics = function() return {runtime_column_cache_hits = 0,
 			runtime_column_cache_misses = calls} end}
 	local surface = {id = "biome", top = "fixture:soil", shore = "fixture:soil",
@@ -120,6 +122,32 @@ return function(repo, planner_repo)
 	assert(repeated == mixed and repeat_budget == mixed_budget and
 		repeat_candidates == mixed_candidates and repeat_digest == mixed_digest,
 		"wet-neighbor scratch reuse differs")
+	-- Compact final-parity witnesses for dry-start grade eligibility. They use
+	-- the actual planner with scalar fixtures, never a seed/world population.
+	if planner_repo == repo then
+		mode, feature_kind = "dry", "land_grade"
+		for index = 1, 6 do
+			feature_id = "anchor_00" .. index
+			assert(select(12, fixture.column_values_at(0, 0)) == true,
+				"dry start grade must support its biome surface")
+		end
+		for _, id in ipairs({"anchor_007", "anchor_0010", "road_001", "poi_001"}) do
+			feature_id = id
+			assert(select(12, fixture.column_values_at(0, 0)) == false,
+				"other grade cannot acquire start surface semantics")
+		end
+		feature_id = "anchor_001"
+		for _, kind in ipairs({"anchor_platform", "causeway", "ford"}) do
+			feature_kind = kind
+			assert(select(12, fixture.column_values_at(0, 0)) == false)
+		end
+		feature_kind, feature_water = "land_grade", 10
+		assert(select(12, fixture.column_values_at(0, 0)) == false,
+			"wet start cannot acquire dry surface semantics")
+		feature_water, cave_y = nil, 8
+		assert(select(12, fixture.column_values_at(0, 0)) == false,
+			"start surface cannot close a cave mouth")
+	end
 	return table.concat({"schema\tgrug_wp40_planner_throughput_fixture_v1",
 		"mixed_eligible\t" .. mixed, "dry_eligible\t" .. dry,
 		"mixed_budget_candidates\t" .. mixed_budget .. "/" .. mixed_candidates,

@@ -206,7 +206,7 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
 
-*Last updated: 2026-09-13. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-09-14. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
 
 **Shipped (19 of 46 work packages):** WP0–WP4, WP6, WP7, WP15, WP18,
@@ -228,10 +228,9 @@ and [the depth TODO](TODO-design-depth.md); the [boat contract](docs/design/boat
 and [PvP-death XP exemption](docs/design/progression.md) are already decided.
 
 **In progress:** WP13 begins with the dwarf start in Hearthpine Vale, an
-inhabited craft settlement with a small guardpost. Its first increment adds
-architecture and walkable interiors on the shipped map foundation. Engine
-checks and independent code review are green; the focused user playtest
-precedes broader rollout. Other starts, capitals
+inhabited craft settlement with a small guardpost. The first appearance and reload
+playtest is accepted. A second increment adds four buildings, natural ground
+and exterior lighting, and corrects the platform height and watchpost roof. Other starts, capitals
 and functional settlement services remain later work.
 WP5, WP26, WP44, WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind
 shipped prerequisites. WP34 still needs structures and economy.

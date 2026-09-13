@@ -16,7 +16,7 @@ end
 for _, cell in ipairs(blueprint.cells) do
 	add(anchor.x + cell.x, anchor.y + cell.y, anchor.z + cell.z)
 end
-assert(#owners <= 10, "profile corpus exceeds bounded ten-owner harness")
+assert(#owners <= 12, "profile corpus exceeds bounded twelve structure owners")
 -- Include a second start as a control, then adjacent non-structure owners.
 local human = assert(grug_zones.anchor("elandor_dawnmere_fields", "start"))
 add(human.x, human.y, human.z)
@@ -52,6 +52,19 @@ core.register_on_shutdown(function()
 			end
 		end
 	end
+	-- These witnesses are outside authored blueprint cells but inside the
+	-- generated owners: the fitted apron must receive actual biome ground.
+	local soil_witnesses = 0
+	for _, offset in ipairs({{-70, 0}, {-70, -40}, {40, -70}}) do
+		local x, z = anchor.x + offset[1], anchor.z + offset[2]
+		local y = grug_zones.terrain_height_at(x, z)
+		local name = core.get_node({x = x, y = y, z = z}).name
+		assert(name ~= "ignore", "WP13 apron witness is not generated")
+		if core.get_item_group(name, "soil") > 0 then
+			soil_witnesses = soil_witnesses + 1
+		end
+	end
+	assert(soil_witnesses > 0, "WP13 apron remained entirely unpainted stone")
 	local parts, torch_count, lit = {}, 0, 0
 	local edited_cell_seen = false
 	for _, cell in ipairs(blueprint.cells) do
@@ -90,6 +103,8 @@ core.register_on_shutdown(function()
 	for z = 0, 63 do
 		for x = -2, 2 do
 			local foot = {x = anchor.x + x, y = anchor.y + 1, z = anchor.z + z}
+			assert((core.get_node_light(foot, 0) or 0) > 0,
+				"WP13 dark main route at " .. x .. "," .. z)
 			assert(core.registered_nodes[core.get_node(foot).name].walkable == false)
 			foot.y = foot.y + 1
 			assert(core.registered_nodes[core.get_node(foot).name].walkable == false)

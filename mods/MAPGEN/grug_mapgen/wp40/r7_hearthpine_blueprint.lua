@@ -420,6 +420,7 @@ return function()
 	wall_torch(19, 4, 33, 3)
 	wall_torch(35, 4, 33, 2)
 	wall_torch(24, 3, 24, 4)
+	wall_torch(28, 3, 26, 5)
 
 	-- Community hall: the largest social room, turned east-west and furnished
 	-- with two long tables and perimeter benches.
@@ -455,6 +456,7 @@ return function()
 	wall_torch(-57, 5, 48, 3)
 	wall_torch(-40, 5, 48, 2)
 	wall_torch(-48, 3, 39, 4)
+	wall_torch(-49, 3, 41, 5)
 
 	-- Low roadside lights, benches and material stacks make the routes usable
 	-- and occupied after dark without enclosing the vale.
@@ -573,6 +575,8 @@ return function()
 				{id = "community_hall", x = -49, y = 1, z = 48},
 			},
 			lights = {
+				{x = 28, y = 3, z = 26},
+				{x = -49, y = 3, z = 41},
 				{x = -9, y = 5, z = -17},
 				{x = 9, y = 5, z = -17},
 				{x = 0, y = 1, z = -14},

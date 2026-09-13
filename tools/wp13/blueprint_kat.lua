@@ -30,7 +30,7 @@ return function(repo)
 		if (cell.name == "default:torch" or cell.name == "default:torch_wall") then lights = lights + 1 end
 		if cell.param2 ~= 0 then oriented = oriented + 1 end
 	end
-	assert(#blueprint.cells < 60000 and count > 1000, "bounded inhabited architecture")
+	assert(#blueprint.cells < 125000 and count > 1000, "bounded inhabited architecture")
 	assert(lights >= 8 and oriented >= 8, "lighting and shaped architecture missing")
 	local palette_count = 0
 	for name in pairs(names) do palette_count = palette_count + 1 end
@@ -45,7 +45,9 @@ return function(repo)
 		local name = node(x, y, z)
 		-- Treat stairs/slabs as whole nodes: this conservatively checks routes
 		-- that can be traversed by ordinary one-node stepping/jumping.
-		return name ~= "air" and name ~= "default:torch" and name ~= "default:torch_wall"
+		return name ~= "air" and name ~= "default:torch" and
+			name ~= "default:torch_wall" and name ~= "default:fern_1" and
+			name ~= "default:grass_1"
 	end
 	local function stand(x, y, z)
 		return solid(x, y - 1, z) and not solid(x, y, z) and not solid(x, y + 1, z)
@@ -57,14 +59,54 @@ return function(repo)
 		if cell.name == "default:torch" or cell.name == "default:torch_wall" then
 			local dir = assert(support_dir[cell.param2], "unsupported torch rotation")
 			assert(solid(cell.x + dir[1], cell.y + dir[2], cell.z + dir[3]),
-				"floating torch")
+				"floating torch at " .. key(cell.x, cell.y, cell.z))
 		end
 	end
+	local declared_lights = {}
+	for _, pos in ipairs(blueprint.landmarks.lights) do
+		local address = key(pos.x, pos.y, pos.z)
+		assert(not declared_lights[address], "duplicate light landmark")
+		declared_lights[address] = true
+		local name = node(pos.x, pos.y, pos.z)
+		assert(name == "default:torch" or name == "default:torch_wall",
+			"light landmark has no torch")
+	end
+	assert(#blueprint.landmarks.lights == lights, "light landmark population differs")
 	assert(solid(0, 0, 0) and stand(0, 1, 0) and not solid(0, 3, 0))
 	-- The road is a five-wide clear route rather than a one-cell cosmetic line.
 	for z = 0, 63 do
 		for x = -2, 2 do assert(stand(x, 1, z), "blocked north road") end
 	end
+	-- Exterior wall bearings must occupy the entire vertical node interval.
+	-- A lower slab is walkable but leaves the reported half-node roof gap.
+	for _, x1 in ipairs({-9, 4}) do
+		for x = x1, x1 + 5 do
+			for _, z in ipairs({51, 59}) do
+				assert(node(x, 8, z) == "default:pine_wood" and
+					node(x, 7, z) == "default:stonebrick",
+					"guardpost roof lacks a continuous masonry bearing")
+			end
+		end
+	end
+	-- Pine clusters need a continuous stem, including crown layers.
+	for _, pos in ipairs({{-60, -31}, {-34, -39}, {43, -34}, {58, 20}}) do
+		for y = 1, 6 do
+			assert(node(pos[1], y, pos[2]) == "default:pine_tree",
+				"authored pine has a broken trunk")
+		end
+	end
+	local ground = { ["default:dirt"] = 0,
+		["default:dirt_with_coniferous_litter"] = 0,
+		["default:dirt_with_grass"] = 0 }
+	for z = -63, 63 do
+		for x = -63, 63 do
+			local name = node(x, 0, z)
+			if ground[name] then ground[name] = ground[name] + 1 end
+		end
+	end
+	assert(ground["default:dirt_with_coniferous_litter"] > 8000 and
+		ground["default:dirt_with_grass"] > 100 and ground["default:dirt"] > 50,
+		"natural ground must dominate the spaces between plots")
 	local queue, visited = {{x = 0, y = 1, z = 0}}, {[key(0, 1, 0)] = true}
 	local cursor = 1
 	local directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}}
@@ -88,7 +130,7 @@ return function(repo)
 		end
 	end
 	local destinations = assert(blueprint.landmarks.destinations)
-	assert(#destinations >= 5, "all five buildings need reachable interiors")
+	assert(#destinations >= 9, "all nine buildings need reachable interiors")
 	for _, pos in ipairs(destinations) do
 		assert(visited[key(pos.x, pos.y, pos.z)], "unreachable interior: " .. pos.id)
 	end
