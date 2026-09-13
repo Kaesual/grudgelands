@@ -76,7 +76,7 @@ return function(dependencies)
 		"mods/ITEMS/grug_materials/audit.lua",
 		"mods/ITEMS/grug_materials/derivatives.lua",
 		"mods/ITEMS/grug_materials/init.lua",
-		"mods/ITEMS/grug_materials/migration.lua",
+		"mods/ITEMS/grug_materials/content_curation.lua",
 		"mods/ITEMS/grug_materials/mining.lua",
 		"mods/ITEMS/grug_materials/ores.lua",
 		"mods/ITEMS/grug_materials/overrides.lua",

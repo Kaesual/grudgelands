@@ -94,13 +94,6 @@
 -- every living member as dead and book refills for mobs that are merely
 -- unloaded.
 --
--- MIGRATION of camps that are already in a world: they carry a target but no
--- queue meta, so both new keys read 0 ("nothing owed") and the first tick
--- books whatever it finds missing with a FRESH due time (now + interval) —
--- an old camp never bursts on the first visit after the update. No LBM, no
--- version flag: "absent = 0 = nothing owed" is the correct reading of an
--- unmigrated camp, and the head count re-derives the rest.
---
 -- STATE lives in node meta, so a camp survives restarts and world unloads
 -- with zero mod storage:
 --   `_grug_camp_type`     string, a key of grug_mobs.registered_camp_types
@@ -219,12 +212,10 @@ local banner_camp_type
 
 -- Config of the camp anchored at pos. The type normally comes from meta; the
 -- fallback for an EMPTY meta value is decided by the NODE, never by
--- DEFAULT_TYPE alone: a guard banner that lost its meta (a /clearobjects-style
--- accident, a hand-placed node whose on_construct was bypassed, an old world
--- from before the init LBMs ran) would otherwise be read as a bandit camp and
--- spawn BANDITS inside a military outpost. Authenticated outpost/territory
--- authority stays decisive for a banner exactly as it is in place_camp and
--- init_banner; only the camp fire falls back to "bandit".
+-- DEFAULT_TYPE alone: VoxelManip placement bypasses on_construct, and a guard
+-- banner without metadata must not be read as a bandit camp. Authenticated
+-- outpost/territory authority stays decisive for a banner exactly as it is in
+-- place_camp and init_banner; only the camp fire falls back to "bandit".
 local function camp_cfg(pos, meta)
 	local id = meta:get_string(META_TYPE)
 	if id == "" then
@@ -576,9 +567,7 @@ local function init_camp_fire(pos)
 end
 
 -- grug_nodes owns both pure activation nodes so R7 can authenticate them before
--- grug_mobs loads. This higher layer supplies their runtime behaviour. The old
--- name is a compatibility alias only; fresh R7 worlds write CAMP_FIRE_NODE.
-core.register_alias("grug_mobs:camp_fire", CAMP_FIRE_NODE)
+-- grug_mobs loads. This higher layer supplies their runtime behaviour.
 core.override_item(CAMP_FIRE_NODE, {
 	on_construct = init_camp_fire,
 	-- Returning true would make the engine re-arm the elapsed timer with its
@@ -739,12 +728,9 @@ function grug_mobs.place_camp(pos, type_id)
 	-- (world.md §0/§4: "a post can never fly the wrong faction's colours").
 	-- banner_camp_type already
 	-- enforces that for every OTHER placement path — on_construct and the
-	-- mapgen LBM both go through it — but place_camp used to overwrite the
-	-- result with the caller's type_id afterwards, so one
-	-- place_camp(pos, "guard_throng") on Accord soil put a Throng garrison
-	-- inside Accord territory (and its guards would then hunt the players who
-	-- own that continent). The caller's wish loses; it is told so, because a
-	-- settlement schematic asking for the wrong watch is a bug worth seeing.
+	-- mapgen LBM both go through it. The caller's wish loses; it is told so,
+	-- because a settlement schematic asking for the wrong watch is a bug worth
+	-- seeing.
 	local effective = type_id
 	if cfg.node == BANNER_NODE then
 		effective = banner_camp_type(pos)

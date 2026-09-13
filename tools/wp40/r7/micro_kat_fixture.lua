@@ -553,8 +553,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	execute_in_environment("mods/ENTITIES/grug_mobs/init.lua", mob_environment)
 	check(#mob_defs >= 35 and #spawn_rows >= 25 and #arrow_rows >= 2,
 		"mob definition/spawn registration projection differs")
-	check(mob_core.registered_aliases["grug_mobs:camp_fire"] ==
-		"grug_nodes:camp_fire" and
+	check(mob_core.registered_aliases["grug_mobs:camp_fire"] == nil and
 		type(mob_core.registered_nodes["grug_nodes:camp_fire"].on_construct) ==
 			"function" and
 		type(mob_core.registered_nodes["grug_nodes:camp_fire"].on_timer) == "function",
@@ -1514,6 +1513,10 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			shore = support_name, bed = support_name, dust = support_name,
 			filler_depth = 1, top_ref = support_ref, filler_ref = support_ref,
 			shore_ref = support_ref, bed_ref = support_ref, dust_ref = 0}}
+	end
+	function content_wrapper.new_surface_selector()
+		local surface = content_wrapper.surfaces()[1]
+		return function() return surface end
 	end
 	local resource_name = "grug_materials:stone_with_citrine"
 	local resource_ref = check(production_ref[resource_name],

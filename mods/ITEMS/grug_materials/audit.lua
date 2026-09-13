@@ -78,15 +78,9 @@ core.register_on_mods_loaded(function()
 		end
 	end
 
-	for source, target in pairs(grug_materials.LEGACY_ALIASES) do
-		if raw_item(source) then
-			fail("legacy id remains a playable registration: " .. source)
-		end
-		if core.registered_aliases[source] ~= target then
-			fail("missing migration alias " .. source .. " -> " .. target)
-		end
-		if not core.registered_items[target] then
-			fail("migration target is not registered: " .. target)
+	for _, item_name in ipairs(grug_materials.CURATED_VENDOR_REMOVALS) do
+		if raw_item(item_name) then
+			fail("removed vendor item remains registered: " .. item_name)
 		end
 	end
 	for _, derivative in ipairs(grug_materials.STORAGE_DERIVATIVES) do
@@ -99,7 +93,7 @@ core.register_on_mods_loaded(function()
 	for name in pairs(core.registered_items) do
 		for _, stem in ipairs(grug_materials.FORBIDDEN_RUNTIME_STEMS) do
 			if name:find(stem, 1, true) then
-				fail("forbidden legacy registration remains: " .. name)
+				fail("forbidden material registration remains: " .. name)
 			end
 		end
 	end

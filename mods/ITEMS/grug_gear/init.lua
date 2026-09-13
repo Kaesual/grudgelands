@@ -322,8 +322,8 @@ core.log("action", "[grug_gear] " .. NUM_BRACKETS .. " bracket catalogs: " ..
 -- tools, and punching a mob with a pick keeps working through the ordinary
 -- wielded-item path either way.
 --
--- Mese and Diamond tools are migration aliases to Steel since WP43, so only
--- the four live vendored material steps belong in this compatibility list.
+-- Mese and Diamond tools are outside the current content roster, so only the
+-- four live vendored material steps belong in this list.
 --
 -- `core.override_item` REPLACES a named field wholesale, it does not merge
 -- (AGENTS.md, learned in WP25): handing it `groups = {grug_equip_weapon = 1}`

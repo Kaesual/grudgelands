@@ -38,5 +38,5 @@ end
 dofile(modpath .. "/ores.lua")
 dofile(modpath .. "/derivatives.lua")
 dofile(modpath .. "/overrides.lua")
-dofile(modpath .. "/migration.lua")
+dofile(modpath .. "/content_curation.lua")
 dofile(modpath .. "/audit.lua")

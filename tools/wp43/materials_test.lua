@@ -231,12 +231,11 @@ local default_items = {
 	"default:cobble", "default:coal_lump", "default:copper_lump",
 	"default:tin_lump", "default:iron_lump", "default:gold_lump",
 	"default:mese_crystal", "default:mese_crystal_fragment", "default:mese",
-	"default:diamond", "default:mese_block", "default:diamondblock",
+	"default:diamond", "default:diamondblock",
 	"default:stone_with_mese", "default:stone_with_diamond",
 	"default:meselamp", "default:mese_post_light",
 	"default:mese_post_light_acacia_wood", "default:mese_post_light_junglewood",
 	"default:mese_post_light_pine_wood", "default:mese_post_light_aspen_wood",
-	"mese", "MesePick", "steel_ingot", "steelblock",
 	"default:copper_ingot", "default:tin_ingot", "default:bronze_ingot",
 	"default:steel_ingot", "default:gold_ingot", "default:goldblock",
 	"default:shovel_steel", "default:axe_steel", "default:sword_steel",
@@ -339,6 +338,8 @@ function core.get_modpath(name)
 		return repo .. "/mods/MAPGEN/grug_mapgen"
 	elseif name == "stairs" then
 		return repo .. "/mods/BASE/stairs"
+	elseif name == "mobs" then
+		return repo .. "/mods/ENTITIES/mobs"
 	end
 	return nil
 end
@@ -404,16 +405,15 @@ function core.override_item(name, fields)
 	end
 end
 
-function core.register_alias_force(source, target)
-	core.registered_aliases[source] = target
-	core.registered_items[source] = nil
-	core.registered_nodes[source] = nil
-end
-
 function core.register_alias(source, target)
 	if not core.registered_items[source] then
 		core.registered_aliases[source] = target
 	end
+end
+
+function core.unregister_item(name)
+	core.registered_items[name] = nil
+	core.registered_nodes[name] = nil
 end
 
 function core.register_craft(def)
@@ -425,7 +425,10 @@ function core.clear_craft(query)
 	local removed = false
 	for i = #crafts, 1, -1 do
 		local output = crafts[i].output and crafts[i].output:match("^([^ ]+)")
-		if output == wanted then
+		local output_matches = wanted and output == wanted
+		local recipe_matches = not wanted and query and query.recipe and
+			crafts[i].type == query.type and crafts[i].recipe == query.recipe
+		if output_matches or recipe_matches then
 			table.remove(crafts, i)
 			removed = true
 		end
@@ -613,13 +616,13 @@ end
 
 -- Load the actual vendored stairs registration before grug_materials, matching
 -- the optional dependency order. The stub retains every registered node and
--- craft, so migration is exercised against live legacy derivatives.
+-- craft, so content curation is exercised against the live source shapes.
 minetest = core
 current_modname = "stairs"
 dofile(repo .. "/mods/BASE/stairs/init.lua")
 
--- Seed the vendored Steel-pick recipe that migration must remove. It resolves
--- to canonical Iron Bars after aliases and would otherwise bypass T2.
+-- Seed the vendored recipes whose outputs remain current. Content curation
+-- must replace every retired material input with a canonical item id.
 core.register_craft({
 	output = "default:pick_steel",
 	recipe = {
@@ -628,10 +631,32 @@ core.register_craft({
 		{"", "default:stick", ""},
 	},
 })
+for _, row in ipairs({
+	{"default:pick_bronze", "default:bronze_ingot"},
+	{"default:shovel_bronze", "default:bronze_ingot"},
+	{"default:axe_bronze", "default:bronze_ingot"},
+	{"default:sword_bronze", "default:bronze_ingot"},
+	{"default:shovel_steel", "default:steel_ingot"},
+	{"default:axe_steel", "default:steel_ingot"},
+	{"default:sword_steel", "default:steel_ingot"},
+	{"default:chest_locked", "default:steel_ingot"},
+	{"mobs:shears", "default:steel_ingot"},
+	{"mobs:protector", "default:goldblock"},
+	{"mobs:saddle", "default:steel_ingot"},
+	{"mobs:lasso", "default:diamond"},
+	{"mobs:protector2", "default:mese_crystal"},
+}) do
+	core.register_craft({output = row[1], recipe = {{row[2]}}})
+end
 
 -- Fresh-world load of the complete owner mod, unchanged.
 current_modname = "grug_materials"
 dofile(repo .. "/mods/ITEMS/grug_materials/init.lua")
+
+local handoff = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp43_handoff.lua")
+local projection = handoff.project(grug_materials)
+assert(handoff.validate_public(grug_materials, projection))
+assert(handoff.validate_target_names(grug_materials, projection))
 
 -- Load the remaining runtime consumer unchanged. WP40 R7 retired the legacy
 -- mapgen ore loader: its native allowlist and private content resolver are
@@ -642,6 +667,8 @@ local lbm_count_before_nodes = #core.registered_lbms
 current_modname = "grug_nodes"
 dofile(repo .. "/mods/ITEMS/grug_nodes/init.lua")
 current_modname = "grug_materials"
+assert(handoff.validate_registrations(projection, core.registered_items,
+	core.registered_nodes))
 assert_equal(#callbacks.dignode, dignode_count_before_nodes,
 	"natural-ore regeneration dig hooks")
 assert_equal(#core.registered_lbms, lbm_count_before_nodes,
@@ -1090,42 +1117,33 @@ for _, material in ipairs(grug_materials.PROCESSED_MATERIALS) do
 		"processed block namespace " .. material.key)
 end
 
-local function resolve_name(name)
-	local seen = {}
-	while core.registered_aliases[name] and not seen[name] do
-		seen[name] = true
-		name = core.registered_aliases[name]
-	end
-	return name
-end
-
 local function has_craft_output(item_name)
 	for _, craft in ipairs(crafts) do
 		local output = craft.output and craft.output:match("^([^ ]+)")
-		if output and resolve_name(output) == item_name then
+		if output == item_name then
 			return true
 		end
 	end
 	return false
 end
 
-assert_equal(resolve_name("default:steel_ingot"),
-	"grug_materials:iron_bar", "legacy Steel is canonical Iron")
 assert_equal(has_craft_output("default:pick_steel"), false,
 	"Iron Bars cannot craft the T3 verification pick")
 
--- Alias graph: repeat-safe registration, one hop, concrete targets, and no
--- playable legacy source. Run the real migration file a second time.
-dofile(repo .. "/mods/ITEMS/grug_materials/migration.lua")
-for source, target in pairs(grug_materials.LEGACY_ALIASES) do
-	assert(source ~= target, "self alias " .. source)
-	assert_equal(grug_materials.LEGACY_ALIASES[target], nil,
-		"multi-hop alias " .. source)
-	assert_equal(core.registered_aliases[source], target,
-		"registered alias " .. source)
-	assert_equal(rawget(core.registered_items, source), nil,
-		"legacy registration " .. source)
-	assert(rawget(core.registered_items, target), "concrete alias target " .. target)
+assert_equal(grug_materials.LEGACY_ALIASES, nil, "material alias catalog")
+assert_equal(grug_materials.canonical_name, nil, "material alias resolver")
+
+local removed_items = {}
+assert_equal(#grug_materials.CURATED_VENDOR_REMOVALS, 53,
+	"curated vendor removal population")
+for _, item_name in ipairs(grug_materials.CURATED_VENDOR_REMOVALS) do
+	assert_equal(removed_items[item_name], nil,
+		"duplicate curated vendor removal " .. item_name)
+	removed_items[item_name] = true
+	assert_equal(rawget(core.registered_items, item_name), nil,
+		"removed vendor registration " .. item_name)
+	assert_equal(core.registered_aliases[item_name], nil,
+		"removed vendor alias " .. item_name)
 end
 for _, derivative in ipairs(grug_materials.STORAGE_DERIVATIVES) do
 	local target = assert(rawget(core.registered_nodes, derivative.target),
@@ -1134,8 +1152,8 @@ for _, derivative in ipairs(grug_materials.STORAGE_DERIVATIVES) do
 		"derivative description " .. derivative.target)
 	assert_equal(target.drop, derivative.target,
 		"derivative self drop " .. derivative.target)
-	assert_equal(rawget(core.registered_items, derivative.source), nil,
-		"raw derivative source " .. derivative.source)
+	assert_equal(removed_items[derivative.source], true,
+		"curated derivative source " .. derivative.source)
 end
 assert(rawget(core.registered_nodes, "grug_materials:stair_iron_block"),
 	"canonical Iron block stair")
@@ -1153,6 +1171,61 @@ canonical_slab.on_place(ItemStack("grug_materials:slab_iron_block"),
 assert_equal(counts.item_place_nodes, 1, "canonical slab stacking")
 assert_equal(counts.stack_takes, 1, "canonical slab stacking consumption")
 
+local function craft_contains(value, wanted)
+	if type(value) == "string" then
+		return value == wanted
+	end
+	if type(value) == "table" then
+		for _, child in pairs(value) do
+			if craft_contains(child, wanted) then return true end
+		end
+	end
+	return false
+end
+
+-- Every surviving recipe that formerly consumed a removed vendored material
+-- now names its canonical input directly.
+local expected_inputs = {
+	["default:pick_bronze"] = "grug_materials:bronze_bar",
+	["default:shovel_bronze"] = "grug_materials:bronze_bar",
+	["default:axe_bronze"] = "grug_materials:bronze_bar",
+	["default:sword_bronze"] = "grug_materials:bronze_bar",
+	["default:shovel_steel"] = "grug_materials:iron_bar",
+	["default:axe_steel"] = "grug_materials:iron_bar",
+	["default:sword_steel"] = "grug_materials:iron_bar",
+	["default:chest_locked"] = "grug_materials:iron_bar",
+	["mobs:shears"] = "grug_materials:iron_bar",
+	["mobs:protector"] = "grug_materials:gold_block",
+	["mobs:saddle"] = "grug_materials:iron_bar",
+}
+for output, ingredient in pairs(expected_inputs) do
+	local found = false
+	for _, craft in ipairs(crafts) do
+		local craft_output = craft.output and craft.output:match("^([^ ]+)")
+		if craft_output == output then
+			assert(craft_contains(craft.recipe, ingredient),
+				"canonical input missing for " .. output)
+			found = true
+		end
+	end
+	assert(found, "canonical recipe missing for " .. output)
+end
+assert_equal(has_craft_output("mobs:lasso"), false, "lasso recipe curation")
+assert_equal(has_craft_output("mobs:protector2"), false,
+	"protector2 recipe curation")
+for _, craft in ipairs(crafts) do
+	for item_name in pairs(removed_items) do
+		assert(not craft_contains(craft.recipe, item_name),
+			"removed recipe input " .. item_name)
+	end
+end
+
+-- The curation pass is idempotent: it replaces its recipes rather than adding
+-- duplicates and safely ignores items that are already absent.
+local craft_count = #crafts
+dofile(repo .. "/mods/ITEMS/grug_materials/content_curation.lua")
+assert_equal(#crafts, craft_count, "repeat content curation craft count")
+
 -- Fresh-load diagnostics must all run successfully, including the material
 -- owner audit. The R7 mapgen relationship is checked against its closed source
 -- seams below rather than by reviving the retired scatter registration path.
@@ -1169,8 +1242,8 @@ end
 assert_equal(audit_passed, true, "startup audit log")
 
 -- Focused static audit: external consumers keep their public API seams,
--- production has no leveldiff/retired helper, and old runtime ids occur only
--- in the explicit registry/migration files. Vendored texture filenames are
+-- production has no leveldiff/retired helper, and removed vendor ids occur
+-- only in the explicit content-curation file. Vendored texture filenames are
 -- intentionally outside this item-id check.
 local function read_file(path)
 	local file = assert(io.open(repo .. "/" .. path, "rb"))
@@ -1224,7 +1297,7 @@ local production_files = {
 	"mods/ITEMS/grug_materials/derivatives.lua",
 	"mods/ITEMS/grug_materials/ores.lua",
 	"mods/ITEMS/grug_materials/overrides.lua",
-	"mods/ITEMS/grug_materials/migration.lua",
+	"mods/ITEMS/grug_materials/content_curation.lua",
 	"mods/ITEMS/grug_materials/audit.lua",
 	"mods/MAPGEN/grug_mapgen/wp43_handoff.lua",
 	"mods/MAPGEN/grug_mapgen/wp40/r7_content.lua",
@@ -1240,18 +1313,33 @@ for _, path in ipairs(production_files) do
 	assert_equal(source:lower():find("leveldiff", 1, true), nil,
 		"leveldiff in " .. path)
 	if path ~= "mods/ITEMS/grug_materials/registry.lua" and
-			path ~= "mods/ITEMS/grug_materials/migration.lua" then
+			path ~= "mods/ITEMS/grug_materials/content_curation.lua" then
 		assert_equal(source:lower():find("emberstone", 1, true), nil,
 			"stale Emberstone in " .. path)
 		assert_equal(source:lower():find("grudgesteel", 1, true), nil,
 			"stale Grudgesteel in " .. path)
-		for _, legacy_id in ipairs({"default:stone_with_mese", "default:mese\"",
+		for _, removed_id in ipairs({"default:stone_with_mese", "default:mese\"",
 				"default:mese_crystal", "default:stone_with_diamond",
 				"default:diamond\"", "default:diamondblock"}) do
-			assert_equal(source:find(legacy_id, 1, true), nil,
-				"legacy id in " .. path)
+			assert_equal(source:find(removed_id, 1, true), nil,
+				"removed vendor id in " .. path)
 		end
 	end
+end
+
+assert_equal(io.open(repo .. "/mods/ITEMS/grug_materials/migration.lua", "rb"),
+	nil, "saved-state migration file")
+for _, path in ipairs({"mods/ITEMS/grug_materials/registry.lua",
+		"mods/ITEMS/grug_materials/content_curation.lua",
+		"mods/ITEMS/grug_materials/audit.lua",
+		"mods/MAPGEN/grug_mapgen/wp43_handoff.lua"}) do
+	local source = read_file(path)
+	assert_equal(source:find("LEGACY_ALIASES", 1, true), nil,
+		"alias catalog in " .. path)
+	assert_equal(source:find("canonical_name", 1, true), nil,
+		"alias resolver in " .. path)
+	assert_equal(source:find("register_alias_force", 1, true), nil,
+		"force alias in " .. path)
 end
 
 print("WP43 material progression integration tests passed")
