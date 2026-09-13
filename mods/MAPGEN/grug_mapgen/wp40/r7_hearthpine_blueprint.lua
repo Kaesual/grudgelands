@@ -164,8 +164,8 @@ return function()
 		timber_post(p[1], p[2], 6)
 	end
 	clear(-26, 1, 9, -24, 4, 9)
-	put(-30, 4, 2, GLASS)
-	put(-20, 4, 2, GLASS)
+	fill(-30, 3, 1, -30, 4, 2, GLASS)
+	fill(-20, 3, 1, -20, 4, 2, GLASS)
 	fill(-31, 6, -5, -19, 6, 10, PINE_WOOD)
 	for rise = 0, 4 do
 		fill(-31 + rise, 7 + rise, -5, -19 - rise, 7 + rise, 10,
@@ -178,6 +178,8 @@ return function()
 	table_at(-25, 1, 3, true)
 	fill(-29, 1, 6, -27, 1, 6, PINE_SLAB)
 	wall_torch(-29, 4, 0, 3)
+	wall_torch(-28, 3, 8, 4)
+	wall_torch(-22, 3, 8, 4)
 
 	-- East home: a wider cross-gabled mason's cottage with a stone bay.
 	clear(18, 1, -5, 34, 12, 15)
@@ -191,9 +193,9 @@ return function()
 	fill(20, 3, -1, 20, 5, 11, PINE_WOOD)
 	fill(31, 3, -1, 31, 5, 11, PINE_WOOD)
 	clear(20, 1, 4, 20, 4, 6)
-	put(25, 4, -2, GLASS)
-	put(26, 4, 12, GLASS)
-	put(31, 4, 1, GLASS)
+	fill(24, 3, -2, 25, 4, -2, GLASS)
+	fill(25, 3, 12, 26, 4, 12, GLASS)
+	fill(31, 3, 1, 31, 4, 2, GLASS)
 	fill(19, 6, -3, 32, 6, 13, PINE_WOOD)
 	for rise = 0, 5 do
 		fill(19 + rise, 7 + rise, -3, 32 - rise, 7 + rise, 13,
@@ -206,6 +208,8 @@ return function()
 	table_at(25, 1, 5, false)
 	fill(22, 1, 9, 24, 1, 9, PINE_SLAB)
 	wall_torch(30, 4, 9, 2)
+	wall_torch(21, 3, 3, 3)
+	wall_torch(27, 3, 11, 4)
 
 	-- Open workyard: paved cutting floor, heavy corner posts, asymmetric
 	-- lean-to roof, timber racks and a stone shaping bench.
@@ -342,7 +346,11 @@ return function()
 				{x = 9, y = 5, z = -17},
 				{x = 0, y = 1, z = -14},
 				{x = -29, y = 4, z = 0},
+				{x = -28, y = 3, z = 8},
+				{x = -22, y = 3, z = 8},
 				{x = 30, y = 4, z = 9},
+				{x = 21, y = 3, z = 3},
+				{x = 27, y = 3, z = 11},
 				{x = -34, y = 5, z = 25},
 				{x = -20, y = 5, z = 28},
 				{x = -3, y = 4, z = 53},
