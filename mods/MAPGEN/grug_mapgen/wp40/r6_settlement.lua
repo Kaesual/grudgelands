@@ -841,12 +841,12 @@ local function settlement_factory()
 		end
 
 		local function run_class_policy(opcode)
-			local class_id = opcode == 36 and 12 or (opcode == 35 and 10 or
-				(opcode == 24 and 8 or ((opcode == 12 or opcode == 34) and 9 or 7)))
-			local policy = opcode == 36 and 12 or (opcode == 35 and 11 or
+			local class_id = opcode == 37 and 13 or (opcode == 36 and 12 or (opcode == 35 and 10 or
+				(opcode == 24 and 8 or ((opcode == 12 or opcode == 34) and 9 or 7))))
+			local policy = opcode == 37 and 13 or (opcode == 36 and 12 or (opcode == 35 and 11 or
 				(opcode == 2 and 10 or
-				(opcode == 34 and 9 or ((opcode == 12 or opcode == 33) and 8 or
-					(opcode == 24 and 2 or 6)))))
+					(opcode == 34 and 9 or ((opcode == 12 or opcode == 33) and 8 or
+						(opcode == 24 and 2 or 6))))))
 			return class_id, policy
 		end
 
@@ -1265,12 +1265,20 @@ local function settlement_factory()
 					written[key] = {x, y, z, cid, param2, -2, 36, feature, 0,
 						(#contract.content_names + 12 + local_ref - 1) * 256 + param2}
 				end
+				function context.write_hearthpine(x, y, z, cid, param2, local_ref, feature)
+					local key = occupied_key(x, y, z)
+					occupied[key] = -2
+					occupied_positions[key] = {x, y, z}
+					written[key] = {x, y, z, cid, param2, -2, 37, feature, 0,
+						(#contract.content_names + 14 + local_ref - 1) * 256 + param2}
+				end
 				local successor_result = successor_tail:settle(context)
 				if type(successor_result) ~= "table" or
 						successor_result.schema ~= "grug_wp40_r7_successor_ledger_v1" then
 					fail("fail_ledger", "R7 successor ledger differs")
 				end
 				result.p9g, result.anchors = successor_result.p9g, successor_result.anchors
+				result.hearthpine = successor_result.hearthpine
 				result.final_rows = evidence_rows(prospective)
 				result.final_runs = evidence_run_rows(result.final_rows)
 			end
@@ -2400,6 +2408,30 @@ local function settlement_factory()
 					intent_aux[index] = (successor_ref - 1) * 256 + param2
 					occupancy[index] = -2
 				end
+				function successor_context.write_hearthpine(x, y, z, cid, param2,
+						local_ref, feature_ref)
+					if not inside_owner(x, y, z) then
+						fail("fail_settlement", "Hearthpine write escaped central owner")
+					end
+					integer(cid, "Hearthpine CID", 0, MAX_SAFE, "fail_content_manifest")
+					integer(param2, "Hearthpine param2", 0, 255,
+						"fail_content_manifest")
+					integer(local_ref, "Hearthpine local ref", 1, MAX_SAFE,
+						"fail_content_manifest")
+					if feature_ref ~= 1 or cid == contract.ignore_cid then
+						fail("fail_content_manifest", "Hearthpine identity differs")
+					end
+					local index = index_at(x, y, z)
+					if original_data[index] == contract.ignore_cid then
+						fail("fail_content_ignore", "Hearthpine owner is ignore")
+					end
+					final_data[index], final_param2[index] = cid, param2
+					intent_opcode[index], intent_feature[index], intent_interface[index] =
+						37, feature_ref, 0
+					local successor_ref = #contract.content_names + 12 + 2 + local_ref
+					intent_aux[index] = (successor_ref - 1) * 256 + param2
+					occupancy[index] = -2
+				end
 				local successor_ledger = transaction_state.successor_tail:settle(successor_context)
 				if type(successor_ledger) ~= "table" or
 						successor_ledger.schema ~= "grug_wp40_r7_successor_ledger_v1" then
@@ -2407,10 +2439,12 @@ local function settlement_factory()
 				end
 				if ledger then
 					if type(successor_ledger.p9g) ~= "table" or
-							type(successor_ledger.anchors) ~= "table" then
+							type(successor_ledger.anchors) ~= "table" or
+							type(successor_ledger.hearthpine) ~= "table" then
 						fail("fail_ledger", "R7 successor detail differs")
 					end
 					ledger.p9g, ledger.anchors = successor_ledger.p9g, successor_ledger.anchors
+					ledger.hearthpine = successor_ledger.hearthpine
 				end
 			end
 

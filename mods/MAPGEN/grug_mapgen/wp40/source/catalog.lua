@@ -2785,7 +2785,7 @@ source.hard_protection_recipes = {
 		y_policy_id="shallow_land_upward_to_world_top",y_min=-700,
 		upward_unbounded=true},
 	{id="hard_start_core_v1",shape="centered_half_open_square",
-		footprint_policy_id="centered_half_open_square_v1",total_width=128,
+		footprint_policy_id="centered_half_open_square_v1",total_width=148,
 		y_policy_id="shallow_land_upward_to_world_top",y_min=-700,
 		upward_unbounded=true},
 	{id="hard_apex_socket_column_v1",shape="exact_column",

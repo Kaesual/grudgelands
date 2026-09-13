@@ -6,7 +6,7 @@
 return function(repo, catalog, expected_names)
 	local saved = {}
 	local globals = {"core", "minetest", "default", "grug_materials",
-		"grug_trees", "ItemStack", "vector"}
+		"grug_trees", "ItemStack", "vector", "stairs"}
 	for index = 1, #globals do
 		local name = globals[index]
 		saved[name] = rawget(_G, name)
@@ -68,6 +68,18 @@ return function(repo, catalog, expected_names)
 			"if nodedef%.liquidtype == \"flowing\" then%s*" ..
 			"nodedef%.paramtype2 = \"flowingliquid\"%s*end") then
 			error("WP40 R7 node semantics fixture: Luanti liquid preprocessing differs", 0)
+		end
+		local default_functions = read_file(repo .. "/mods/BASE/default/functions.lua")
+		if not default_functions:find('paramtype = "light"', 1, true) or
+				not default_functions:find('sunlight_propagates = true', 1, true) or
+				not default_functions:find('is_ground_content = false', 1, true) then
+			error("WP40 R7 node semantics fixture: fence semantics differ", 0)
+		end
+		local stairs_source = read_file(repo .. "/mods/BASE/stairs/init.lua")
+		if not stairs_source:find('paramtype = "light"', 1, true) or
+				not stairs_source:find('paramtype2 = "facedir"', 1, true) or
+				not stairs_source:find('is_ground_content = false', 1, true) then
+			error("WP40 R7 node semantics fixture: stair semantics differ", 0)
 		end
 
 		local callbacks = {mods_loaded = {}, dignode = {}, leaveplayer = {}}
@@ -184,7 +196,12 @@ return function(repo, catalog, expected_names)
 			after_place_leaves = noop, grow_sapling = noop,
 			grow_large_cactus = noop, dig_up = noop, log_player_action = noop,
 			get_inventory_drops = noop, sapling_on_place = function(stack) return stack end,
-			set_inventory_action_loggers = noop, register_fence = noop,
+			set_inventory_action_loggers = noop, register_fence = function(name, def)
+				def.paramtype = def.paramtype or "light"
+				if def.sunlight_propagates == nil then def.sunlight_propagates = true end
+				if def.is_ground_content == nil then def.is_ground_content = false end
+				api.register_node(name, def)
+			end,
 			register_fence_rail = noop, register_mesepost = noop,
 			register_leafdecay = noop, register_sapling_growth = noop,
 			node_sound_defaults = sound, node_sound_dirt_defaults = sound,
@@ -202,6 +219,17 @@ return function(repo, catalog, expected_names)
 			buildable_to = true})
 
 		dofile(repo .. "/mods/BASE/default/nodes.lua")
+		dofile(repo .. "/mods/BASE/default/torch.lua")
+		for _, row in ipairs({
+				{"stairs:slab_pine_wood", "default:pine_wood"},
+				{"stairs:slab_stonebrick", "default:stonebrick"},
+				{"stairs:stair_stonebrick", "default:stonebrick"},
+			}) do
+			local base = api.registered_nodes[row[2]]
+			api.register_node(row[1], {paramtype = "light", paramtype2 = "facedir",
+				sunlight_propagates = base.sunlight_propagates,
+				light_source = base.light_source, is_ground_content = false})
+		end
 
 		current_modname = "grug_trees"
 		dofile(repo .. "/mods/ITEMS/grug_trees/init.lua")
@@ -257,6 +285,9 @@ return function(repo, catalog, expected_names)
 				"reference_projects/luanti/builtin/game/item.lua",
 				"reference_projects/luanti/builtin/game/register.lua",
 				"mods/BASE/default/nodes.lua",
+				"mods/BASE/default/functions.lua",
+				"mods/BASE/default/torch.lua",
+				"mods/BASE/stairs/init.lua",
 				"mods/ITEMS/grug_trees/init.lua",
 				"mods/ITEMS/grug_materials/init.lua",
 				"mods/ITEMS/grug_nodes/init.lua",

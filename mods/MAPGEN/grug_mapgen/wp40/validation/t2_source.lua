@@ -4408,7 +4408,7 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 	for i=1,#source.hard_protection_recipes do local row=source.hard_protection_recipes[i]
 		local ordinary=row.id=="hard_capital_build_plus_apron_v1" or
 			row.id=="hard_start_core_v1"
-		local ordinary_width=row.id=="hard_capital_build_plus_apron_v1" and 532 or 128
+		local ordinary_width=row.id=="hard_capital_build_plus_apron_v1" and 532 or 148
 		local socket=row.id=="hard_apex_socket_column_v1"
 		if not ((ordinary and row.shape=="centered_half_open_square" and
 			row.footprint_policy_id=="centered_half_open_square_v1" and

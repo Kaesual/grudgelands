@@ -1,4 +1,7 @@
 mods/BASE/default/nodes.lua
+mods/BASE/default/functions.lua
+mods/BASE/default/torch.lua
+mods/BASE/stairs/init.lua
 mods/BASE/default/schematics/aspen_tree_from_sapling.mts
 mods/CORE/grug_core/protection.lua
 mods/CORE/grug_core/zone_authority.lua
