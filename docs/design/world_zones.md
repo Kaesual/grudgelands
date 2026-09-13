@@ -414,6 +414,19 @@ WP40 replaces it with the complete catalog and contracts below.
   `default:water_source`. Logical biome and landmark records may change bed,
   shore, depth and decorations within that material rule; subterranean lava
   is outside it.
+- Wet inland beds reuse the shared height-detail field and publish the actual
+  per-column depth in the existing planner tuple. Depth-1 profiles remain 1;
+  depth-2 profiles vary 1–3, depth-4 profiles 2–6, depth-8 profiles 5–11 and
+  depth-12 profiles 8–15. A named transition, ford, bridge/causeway water
+  operation or contact-face waterfall retains its exact authored profile
+  depth, so its clearance and three-layer bed/two-node bank seals stay fixed.
+  Continental bays vary from 6–10 nodes deep. The 80-node coastal shelf keeps
+  its monotone 1–8 slope with at most one node of detail away from land;
+  deep ocean and immutable dragon channels remain exactly 24 nodes deep.
+- Wet beds use deterministic patches of their authored bed material, sand,
+  gravel and stone; mud remains the dominant swamp bed. Dry continental beach
+  shores are mostly sand with sparse gravel patches. Deep-ocean and immutable
+  channel beds retain the authored biome material without patch variation.
 
 ### 7.5 Paths, anchors and housing
 
@@ -461,10 +474,17 @@ WP40 replaces it with the complete catalog and contracts below.
 
 - **Height refinement (2026-09-13):** the existing broad 64-node lattice
   uses linear Q16 bilinear interpolation. Two shared detail fields at periods
-  64 and 32 combine with weights 2/3 and 1/3. Per-profile amplitudes are
-  wetland 2, lowland 4, rolling hills 6, plateau 7, highland 9 and mountain 12
+  64 and 32 combine with equal weights. Per-profile amplitudes are wetland 3,
+  lowland 6, rolling hills 9, plateau 10, highland 12 and mountain 16
   nodes, blended by the four broad owner vertices. Every field uses the full
   decimal seed string. No previous-height-schema fallback is installed.
+- Relief-profile octave weights favor more intermediate structure while
+  retaining each profile's elevation band: wetland 2:3, lowland 1:1, rolling
+  hills 9:11, plateau 11:9, highland 11:9 and mountain 9:7:4 from longest to
+  shortest period. Authored landmarks retain their existing footprint,
+  64-node natural collar and owner-affinity fade, but their maximum secondary-
+  profile replacement weight is 3/4. Their identity remains visible without
+  replacing all intermediate relief inside a large ridge or bowl.
 - Routes prefer the mean pre-path terrain across their full land surface.
   Forward reachable intervals and reverse clamping preserve exact pins,
   water clearance and the existing maximum one-node rise per adjacent run
@@ -479,7 +499,7 @@ WP40 replaces it with the complete catalog and contracts below.
   clearance remain hard constraints. The final route solver still checks
   water, ford/tunnel pins and adjacent grade; all incident endpoint results
   must exactly equal their shared junction target. The height output schema
-  is v3; existing relief random domains retain their fixed v2 tag.
+  is v4; existing relief random domains retain their fixed v2 tag.
 - Sparse hillside entrances use 192-node cells, a one-quarter candidate gate,
   radius 2 and length 32. A mouth at y >= 16 needs an uphill rise >= 6; the
   axis descends one node every four steps, and its final 16 sections retain
@@ -491,7 +511,8 @@ WP40 replaces it with the complete catalog and contracts below.
 - **Fresh-world surface and vegetation refinement (2026-09-13):** logical
   biome ownership stays unchanged. Dry surfaces combine coherent 32-node and
   8-node material fields at weights 3:1; filler depth varies from 1–4 nodes
-  on a 64-node field. Wet surfaces, beaches and swamps retain their substrate.
+  on a 64-node field. Wet-bed and beach-shore patches follow §7.4; dry swamp
+  surfaces retain mud.
   The base R6 surface table is refined by the following fertile palettes;
   all existing biome decorations accept every fertile variant at their
   existing density and retain their species, elevation and protection rules.
