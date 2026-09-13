@@ -10,7 +10,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local saved_dofile = dofile
 	changed_roster_relative = changed_roster_relative or
 		"tools/wp40/r7/changed_production_lua.txt"
-	expected_changed_count = expected_changed_count or 74
+	expected_changed_count = expected_changed_count or 73
 	if type(changed_roster_relative) ~= "string" or
 		changed_roster_relative:sub(1, 1) == "/" or
 		changed_roster_relative:find("..", 1, true) or
@@ -177,7 +177,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			"R8 bounded zones runtime construction differs")
 
 		local samples = {
-			{0, -1500, "land", "elandor_highcourt", "grug_meadows", "human", 36,
+			{0, -1500, "land", "elandor_highcourt", "grug_meadows", "human", 50,
 				"hard_protected", "contested_land"},
 			{-900, -1100, "planned_water", "elandor_whitebridge_shire",
 				"grug_deep_forest", "human", 16, "accord_home", "contested_land"},
@@ -202,7 +202,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		end
 		local capital = live_zones.anchor("elandor_highcourt", "capital")
 		check(capital and capital.id == "anchor_008" and capital.numeric_id == 8 and
-			capital.x == 0 and capital.y == 36 and capital.z == -1500,
+			capital.x == 0 and capital.y == 50 and capital.z == -1500,
 			"R8 bounded runtime anchor differs")
 		row("runtime/zones_sample_sha256", hex_sha256(table.concat(sample_rows)))
 		row("runtime/zones_anchor", table.concat({capital.id, capital.numeric_id,

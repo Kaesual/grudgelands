@@ -20,7 +20,7 @@ for path in (ROOT / "mods").rglob("*.lua"):
         if re.search(r"legacy_(?:mineral|facedir_simple|wallmounted)\s*=", code):
             errors.append(f"{relative}:{number}: old mapblock conversion flag")
         if any(token in code for token in (
-            "LEGACY_ALIASES", "compatibility_check", "function mobs:alias_mob",
+            "LEGACY_ALIASES", "def.attacks_monsters", "compatibility_check", "function mobs:alias_mob",
             "default:3dtorch", "default:convert_saplings_to_node_timer",
             "enable_stairs_replace_abm", "group:slabs_replace",
             '"grug_nodes:depleted_vein"', '"grug_mobs:camp_fire"',

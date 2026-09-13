@@ -23,7 +23,7 @@ Emberstone/Mese and Grudgesteel targets. Six regional G1/G2 gems, cultural
 finishes, a separate PvP-special channel, the final Goldsmith/trinket model and
 the rebased 25c→25s Common-price axis are authoritative below. Private housing
 isles, guild systems, finder items and the Amplifier are absent from the target
-design. Historical decisions in §10 remain migration context only.
+design. Historical decisions in §10 remain design history only.
 
 Feeds: WP5 (loot/enchant rolls), WP7 (traders/consumables), WP10
 (professions/workbenches), WP22 (repair). Crafting mechanics frame:
@@ -2372,11 +2372,11 @@ Item path (source: `mcl_bows`, code LGPL 3.0 ✓, media CC BY-SA 4.0 +
   bow, arrow or quiver registrations or recipes until a class package explicitly
   adopts it.
 
-## 10. Historical decision log (non-authoritative migration context)
+## 10. Historical decision log (non-authoritative)
 
 This section records how shipped and staged work reached the current design.
-It deliberately preserves retired names and mechanisms so migrations and
-reverts can be understood. **Nothing in §10 is an active target rule; §§0–9
+It preserves retired names and mechanisms only to explain earlier decisions.
+Fresh-server mode forbids implementing compatibility for those states. **Nothing in §10 is an active target rule; §§0–9
 override every conflicting statement below.**
 
 ### 10.1 2026-08-06

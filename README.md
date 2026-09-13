@@ -214,7 +214,8 @@ current-ray combat/projectiles. New characters now remain frozen and immortal
 behind the faction/race/class UI until their race start is loaded, then arrive
 with one final teleport; the existing- and new-character runtime passes were
 green on 2026-09-03. WP16 is a canceled tombstone and is not shipped. WP43
-supersedes WP25's running legacy while preserving saved-world migration.
+supersedes WP25's temporary material rules. Development assumes fresh servers;
+old-world and old-item migrations are removed.
 
 **Not in the game yet:** quests, professions/recipes, talent trees, parties,
 recovery, offhand items, affixes, durability, final structures, travel/map,
@@ -227,7 +228,9 @@ remaining mount details and deep-content questions stay explicitly open in
 in [boats.md](docs/design/boats.md), and confirmed PvP deaths cost no XP under
 [progression.md](docs/design/progression.md).
 
-**In progress:** WP40, the named-zone map foundation, has been under
+**In progress:** WP40 now includes terrain-following roads, adaptive capital
+terraces, fine relief, material variation and hillside cave entrances; visual
+acceptance remains a fresh-world GUI test. The named-zone map foundation has been under
 implementation since 2026-08-13 on branch `wp40-named-zone-world-foundation`.
 The 2026-08-25 simple-map rebase deliberately retired its unfinished exact
 partition/topology path. R0, R1, V1b, V1c and V1d are accepted history;

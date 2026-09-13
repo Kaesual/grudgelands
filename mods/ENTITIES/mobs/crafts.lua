@@ -326,7 +326,8 @@ core.register_tool(":mobs:mob_reset_stick", {
 
 				ent2.protected = self.protected
 				ent2.owner = self.owner
-				ent2.nametag = self.nametag
+				-- GRUG PATCH: reset preserves the current canonical nametag field.
+				ent2._nametag = self._nametag
 				ent2.gotten = self.gotten
 				ent2.tamed = self.tamed
 				ent2.health = self.health
@@ -336,7 +337,7 @@ core.register_tool(":mobs:mob_reset_stick", {
 					obj2:set_velocity({x = 0, y = self.jump_height, z = 0})
 				end
 
-				obj2:set_properties({nametag = self.nametag})
+				obj2:set_properties({nametag = self._nametag or ""})
 
 				obj:remove()
 			end

@@ -62,7 +62,7 @@ return function(repo)
 	api.get_mod_storage = function() return {get_string = function() return "" end, set_string = noop} end
 	for _, name in ipairs({"register_craft", "register_privilege", "register_chatcommand",
 		"register_ore", "register_biome", "register_decoration", "log", "after", "sound_play",
-		"sound_stop", "sound_fade", "handle_node_drops", "item_eat", "rotate_node", "get_node_raw", "get_name_from_content_id", "get_node"}) do api[name] = noop end
+		"sound_stop", "sound_fade", "handle_node_drops", "item_eat", "rotate_node", "calculate_knockback", "get_node_raw", "get_name_from_content_id", "get_node"}) do api[name] = noop end
 	setmetatable(api, {__index = function(_, name)
 		if name:match("^register_on_") or name == "register_globalstep" then
 			return function(fn)
@@ -83,6 +83,20 @@ return function(repo)
 		return setfenv(assert(loadfile(path)), env)()
 	end
 	-- Full loaders include every changed default file and avoid hiding stale paths.
+	local join_count = #(callbacks.register_on_joinplayer or {})
+	env.dofile(repo .. "/mods/BASE/player_api/api.lua")
+	local player_props = {}
+	local player = {get_player_name=function() return "fixture_player" end,
+		set_properties=function(_, changes) for key,value in pairs(changes) do player_props[key]=value end end,
+		set_animation=noop, set_local_animation=noop}
+	callbacks.register_on_joinplayer[join_count + 1](player)
+	env.player_api.register_model("fixture.b3d", {textures={"player.png"}, animations={
+		stand={x=0,y=1}, walk={x=2,y=3}, mine={x=4,y=5}, walk_mine={x=6,y=7}}})
+	env.player_api.set_model(player, "fixture.b3d")
+	env.player_api.set_textures(player, {"changed.png"})
+	env.player_api.set_animation(player, "walk", 10)
+	assert(env.player_api.get_animation(player).animation == "walk")
+	assert(player_props.mesh == "fixture.b3d" and player_props.textures[1] == "changed.png")
 	env.dofile(repo .. "/mods/BASE/default/init.lua")
 	env.dofile(repo .. "/mods/BASE/stairs/init.lua")
 	env.dofile(repo .. "/mods/BASE/creative/init.lua")
@@ -162,6 +176,28 @@ return function(repo)
 	assert(reloaded.health == 7 and reloaded.owner == "keeper" and reloaded.tamed)
 	assert(reloaded._nametag == "Current name" and props.nametag == "Current name")
 	assert(reloaded.textures[1] == "fixture.png" and reloaded.floats == true)
+	local reset = instance()
+	local reset_props = copy(props)
+	local reset_object = copy(object)
+	reset_object.get_luaentity = function() return reset end
+	reset_object.get_properties = function() return reset_props end
+	reset_object.set_properties = function(_, changes)
+		for key, value in pairs(changes) do reset_props[key] = copy(value) end
+	end
+	reset.object = reset_object
+	local removed = false
+	object.get_luaentity = function() return reloaded end
+	object.remove = function() removed = true end
+	api.add_entity = function() return reset_object end
+	api.registered_tools["mobs:mob_reset_stick"].on_use({}, {
+		get_player_control = function() return {} end,
+	}, {type="object", ref=object})
+	assert(removed and reset._nametag == "Current name" and reset.owner == "keeper")
+	local reset_saved = reset:get_staticdata()
+	local reset_reloaded = instance()
+	reset_reloaded:on_activate(reset_saved, 20)
+	reset_reloaded:update_tag()
+	assert(reset_reloaded._nametag == "Current name" and props.nametag == "Current name")
 	local mount_actions, velocity = 0
 	reloaded.driver = {
 		get_player_control = function() return {up=true, LMB=true, sneak=true} end,
@@ -172,5 +208,5 @@ return function(repo)
 	reloaded.do_mount_action = function() mount_actions = mount_actions + 1 end
 	env.mobs.fly(reloaded, 0.1, 4, "walk", "stand")
 	assert(velocity.x == 4 and velocity.y == 2 and mount_actions == 1)
-	return "vendor_current_version\tPASS\tbook,chest,creative,torch,stairs,furnace,mob-reload,mount\n"
+	return "vendor_current_version\tPASS\tplayer-appearance,book,chest,creative,torch,stairs,furnace,mob-reload,mob-reset-reload,mount\n"
 end

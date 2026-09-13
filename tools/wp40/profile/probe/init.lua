@@ -80,7 +80,7 @@ core.register_on_generated(function()
 end)
 
 local function sampled_digest()
-	local parts = {"grug_wp40_profile_sample_v1", expected_seed}
+	local parts = {"grug_wp40_profile_sample_v2", expected_seed}
 	local offsets = {-8, 0, 8}
 	local vertical = {-3, 0, 1, 5}
 	for case_index = 1, #resolved do
@@ -96,9 +96,17 @@ local function sampled_digest()
 				end
 				for y_index = 1, #vertical do
 					local y = base_y + vertical[y_index]
-					local node = core.get_node({x = x, y = y, z = z})
-					parts[#parts + 1] = table.concat({x, y, z, node.name,
-						node.param2 or 0}, ":")
+					-- Neighbouring owners are not part of this request. Their
+					-- transient emergence/lighting halos need not persist.
+					local origin = case.origin
+					local name, param2 = "outside_owner", 0
+					if x >= origin.x and x <= origin.x + 79 and
+							y >= origin.y and y <= origin.y + 79 and
+							z >= origin.z and z <= origin.z + 79 then
+						local node = core.get_node({x = x, y = y, z = z})
+						name, param2 = node.name, node.param2 or 0
+					end
+					parts[#parts + 1] = table.concat({x, y, z, name, param2}, ":")
 				end
 			end
 		end
@@ -226,6 +234,17 @@ run_next = function()
 		local measured_finished_us = core.get_us_time()
 		local diagnostic_started_us = measured_finished_us
 		local callbacks_before_diagnostic = generated_callbacks
+		local expected_node_count = 0
+		for _, definition in ipairs(cases) do
+			for _, expected in ipairs(definition.expected_nodes or {}) do
+				local node = core.get_node(expected)
+				if node.name ~= expected.name then
+					fail("expected node differs at " .. core.pos_to_string(expected) ..
+						": " .. node.name .. " instead of " .. expected.name)
+				end
+				expected_node_count = expected_node_count + 1
+			end
+		end
 		local digest, sample_count = sampled_digest()
 		local full_digest, vocabulary_digest, full_voxels = "disabled", "-", 0
 		if full_digest_enabled then
@@ -241,6 +260,7 @@ run_next = function()
 			"generated=" .. totals.generated, "disk=" .. totals.disk,
 			"memory=" .. totals.memory, "cancelled=" .. totals.cancelled,
 			"errored=" .. totals.errored, "samples=" .. sample_count,
+			"expected_nodes=" .. expected_node_count,
 			"digest=" .. digest,
 			"full_digest=" .. full_digest,
 			"full_vocabulary_digest=" .. vocabulary_digest,

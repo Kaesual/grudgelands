@@ -78,7 +78,7 @@ if #missing ~= 0 or #unexpected ~= 0 then
 		table.concat(missing, ",") .. " unexpected=" ..
 		table.concat(unexpected, ","), 0)
 end
-if expected_count ~= 111 then
+if expected_count ~= 110 then
 	error("WP40 R8 performance micro-KAT input population differs", 0)
 end
 local probe = io.open(output, "rb")

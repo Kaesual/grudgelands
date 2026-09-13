@@ -3743,7 +3743,8 @@ function mobs:register_mob(name, def)
 		dogshoot_count2_max = def.dogshoot_count2_max or def.dogshoot_count_max,
 		group_attack = def.group_attack,
 		group_helper = def.group_helper,
-		attack_monsters = def.attacks_monsters or def.attack_monsters,
+		-- GRUG PATCH: current definitions use only the singular attack_monsters.
+		attack_monsters = def.attack_monsters,
 		attack_animals = def.attack_animals,
 		attack_players = def.attack_players,
 		attack_npcs = def.attack_npcs,

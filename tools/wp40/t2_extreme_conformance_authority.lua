@@ -16,7 +16,6 @@ return function(dependencies)
 		"mods/ITEMS/grug_materials/overrides.lua",
 		"mods/ITEMS/grug_materials/registry.lua",
 		"mods/ITEMS/grug_nodes/init.lua",
-		"mods/ITEMS/grug_nodes/ore_respawn.lua",
 		"mods/MAPGEN/grug_mapgen/ores.lua",
 		"mods/MAPGEN/grug_mapgen/wp40/compiled_schema.lua",
 		"mods/MAPGEN/grug_mapgen/wp40/schemas.lua",
