@@ -8,11 +8,12 @@ for _, relative in ipairs({
 	"tools/wp40/resource_rank/primitives.lua",
 	"tools/wp40/resource_rank/fixture.lua",
 	"tools/wp40/quality/surface_fixture.lua",
+	"tools/wp40/quality/cover_fixture.lua",
 	"tools/wp40/quality/cave_fixture.lua",
 	"tools/wp40/quality/vendor_fixture.lua",
 	"tools/wp43/fresh_server_fixture.lua",
 }) do
-	io.write(dofile(repo .. "/" .. relative)(repo))
+	io.write((dofile(repo .. "/" .. relative)(repo)))
 	collectgarbage("collect")
 end
 assert(loadfile(repo .. "/tools/wp40/quality_geometry_micro_kat.lua"))(repo)

@@ -478,16 +478,41 @@ WP40 replaces it with the complete catalog and contracts below.
   foundations, exclusions and housing. P5 cuts the tube with priority 5;
   prospective and actual P7 support cannot re-cap it. A closed end is valid;
   connection to native underground caves is not guaranteed.
-- **Fresh-world surface refinement (2026-09-13):** logical biome ownership
-  stays unchanged. Dry surfaces receive coherent 32-node material patches
-  and 64-node variations in filler depth (1–4 nodes), using existing soil,
-  grass, gravel and stone. Wet surfaces, beaches and swamps retain their
-  declared substrate. Crags and badlands mix only their base, gravel and
-  stone; savanna retains dry soil, and blight/bone forest receive no green
-  grass patches. Rocky patches expose stone on steep final terrain. The
-  planner, writer and prospective vegetation support share the same seeded
-  selector. The original R6 surface table is the base palette, not a promise
-  that every column in a biome has the same material.
+- **Fresh-world surface and vegetation refinement (2026-09-13):** logical
+  biome ownership stays unchanged. Dry surfaces combine coherent 32-node and
+  8-node material fields at weights 3:1; filler depth varies from 1–4 nodes
+  on a 64-node field. Wet surfaces, beaches and swamps retain their substrate.
+  The base R6 surface table is refined by the following fertile palettes;
+  all existing biome decorations accept every fertile variant at their
+  existing density and retain their species, elevation and protection rules.
+
+  | Biome | Fertile surfaces (existing nodes) |
+  |---|---|
+  | Meadows | grass, dirt, forest litter |
+  | Pine hills | coniferous litter, forest litter, grass |
+  | Elf forest | silver litter, forest litter, grass |
+  | Deep forest | forest litter, coniferous litter, grass |
+  | Jungle edge | rainforest litter, canopy litter, mud |
+  | Deep jungle / jungle fringe | canopy litter, rainforest litter, mud |
+  | Savanna | dry grass, dry dirt, mesa clay |
+  | Badlands / eastern badlands | mesa clay, dry dirt |
+  | Blight / bone forest | blight dirt, bone litter |
+
+  Ordinary-biome patch values below 300 choose the second fertile surface;
+  values 300–439 choose the third (or repeat the base where only two exist).
+  Values 440–780 keep the base, 781–880 expose gravel, and above 880 expose
+  stone. Crags retain gravel and stone; snowy crags retain snow, gravel and
+  stone, with the existing elevation-gated crags pine exception. No new
+  snowy-crag species or gathering resources are introduced.
+  On final-terrain rises of at least 12 nodes across an eight-node sample,
+  patch values above 760 expose stone. Eight-node detail values above 680
+  interrupt gentle ordinary-biome outcrops with native soil pockets. Low
+  decorations (settlement class 4) accept gravel with one-quarter eligible
+  roots, selected from the existing seeded candidate digest before applying
+  the unchanged density budget. Trees and trunks do not root on these gravel
+  variants; native crags pines keep their existing gravel support. Stone
+  remains bare. Planner, prospective settlement and actual writer use the
+  same biome-and-substrate eligibility; actual predecessor checks remain.
 - The project owns one globally queryable integer surface-height field
   `H(full_seed_string, x, z)`, exposed as `terrain_height_at`. It combines
   bounded broad/detail lattices, the zone relief profiles, authored landmarks

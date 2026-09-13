@@ -36,7 +36,7 @@ return function(repo, expanded)
 		return "land", 1, "fixture", "grug_pine_hills", "dwarf", 30
 	end}
 	local steep = {column_values_at = function(x)
-		return "land", 1, "fixture", "grug_pine_hills", "dwarf", x
+		return "land", 1, "fixture", "grug_pine_hills", "dwarf", x * 2
 	end}
 	local seed = "13191094842853985814"
 	local select = content.new_surface_selector(seed, flat)
@@ -90,8 +90,8 @@ return function(repo, expanded)
 		assert(select("grug_pine_hills", x, 3340, nil, 30))
 	end
 	table.sort(rows)
-	return "schema\tgrug_wp40_quality_surface_v1\n" .. table.concat(counts) ..
+	return "schema\tgrug_wp40_quality_surface_v2\n" .. table.concat(counts) ..
 		"samples\t" .. #samples .. "\nseed_differences\t" .. differences ..
 		"\nslope_changes\t" .. slope_changes .. "\noutput_sha256\t" ..
-		common.hex(common.new_sha256()(table.concat(rows))) .. "\n"
+		common.hex(common.new_sha256()(table.concat(rows))) .. "\n", content
 end

@@ -14,7 +14,7 @@ return function(repo, settlement_path)
 	local templates_factory = dofile(wp40 .. "/r6_templates.lua")
 	local vm_module = dofile(repo .. "/tools/wp40/simple_map_r5_vm.lua")
 	local pine_id, synthetic_id = "pine_hills_pine_tree", "tree_slice_synthetic"
-	local support_name, pine_tree_name = "test:surface", "default:pine_tree"
+	local support_name, pine_tree_name = "test:variant_soil", "default:pine_tree"
 	local pine_needles_name, marker_name = "default:pine_needles", "test:slice_marker"
 	local names = {support_name, pine_tree_name, pine_needles_name, marker_name}
 	local cids, masks, refs = {100, 101, 102, 103}, {9, 8, 8, 8}, {}
@@ -50,11 +50,11 @@ return function(repo, settlement_path)
 		shore_ref = 1, bed_ref = 1, dust_ref = 0}
 	local decorations = {
 		{id = pine_id, biomes = {surface.id}, kind = "template",
-			asset_or_node = "pine_tree.mts", host = support_name,
+			asset_or_node = "pine_tree.mts", host = "test:base_soil",
 			numerator = 1, denominator = 1,
 			rule = "center_xz;quarter_turn_rotation", settlement_class = 2},
 		{id = synthetic_id, biomes = {surface.id}, kind = "template",
-			asset_or_node = "tree_slice_synthetic.mts", host = support_name,
+			asset_or_node = "tree_slice_synthetic.mts", host = "test:base_soil",
 			numerator = 1, denominator = 1,
 			rule = "center_xz;quarter_turn_rotation", settlement_class = 2},
 	}
@@ -65,6 +65,10 @@ return function(repo, settlement_path)
 	function content.resources() return {} end
 	function content.cultural() return {} end
 	function content.decorations() return decorations end
+	function content.decoration_cover(id, biome, support_ref)
+		return (id == pine_id or id == synthetic_id) and biome == surface.id and
+			support_ref == 1 and 1 or 0
+	end
 	function content.wp43_projection()
 		return {tiers = {{y_min = -100, node = support_name},
 			{y_min = -300, node = support_name}, {y_min = -500, node = support_name},

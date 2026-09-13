@@ -559,6 +559,48 @@ return function(manifest_values, content_contract, wp43_projection)
 	function module.surface(id) return deep_copy(surface_by_id[id]) end
 	-- Fresh-world quality revision: coherent patches refine the base catalog.
 	-- Rows are built once and shared read-only by planner and settlement callers.
+	-- Surface palettes and vegetation support are one current-world contract.
+	-- Entries are fertile variants; exposed gravel/stone are handled separately.
+	local fertile_palettes = {
+		grug_meadows = {"default:dirt_with_grass", "default:dirt", "grug_nodes:dirt_with_forest_litter"},
+		grug_pine_hills = {"default:dirt_with_coniferous_litter", "grug_nodes:dirt_with_forest_litter", "default:dirt_with_grass"},
+		grug_elf_forest = {"grug_nodes:dirt_with_silver_litter", "grug_nodes:dirt_with_forest_litter", "default:dirt_with_grass"},
+		grug_deep_forest = {"grug_nodes:dirt_with_forest_litter", "default:dirt_with_coniferous_litter", "default:dirt_with_grass"},
+		grug_jungle_edge = {"default:dirt_with_rainforest_litter", "grug_nodes:dirt_with_canopy_litter", "grug_nodes:mud"},
+		grug_deep_jungle = {"grug_nodes:dirt_with_canopy_litter", "default:dirt_with_rainforest_litter", "grug_nodes:mud"},
+		grug_jungle_fringe = {"grug_nodes:dirt_with_canopy_litter", "default:dirt_with_rainforest_litter", "grug_nodes:mud"},
+		grug_savanna = {"default:dry_dirt_with_dry_grass", "default:dry_dirt", "grug_nodes:mesa_clay"},
+		grug_badlands = {"grug_nodes:mesa_clay", "default:dry_dirt", "grug_nodes:mesa_clay"},
+		grug_badlands_east = {"grug_nodes:mesa_clay", "default:dry_dirt", "grug_nodes:mesa_clay"},
+		grug_blight = {"grug_nodes:blight_dirt", "grug_nodes:dirt_with_bone_litter", "grug_nodes:blight_dirt"},
+		grug_bone_forest = {"grug_nodes:dirt_with_bone_litter", "grug_nodes:blight_dirt", "grug_nodes:dirt_with_bone_litter"},
+		grug_crags = {"default:gravel", "default:gravel", "default:gravel"},
+		grug_crags_snowy = {"default:snowblock", "default:snowblock", "default:snowblock"},
+	}
+	local decoration_cover = {}
+	for _, row in ipairs(decorations) do
+		local biomes = {}
+		decoration_cover[row.id] = biomes
+		for _, biome in ipairs(row.biomes) do
+			local hosts = {}
+			biomes[biome] = hosts
+			-- Preserve the native crags pine and wet-biome rules.
+			hosts[content_ref_by_name[row.host]] = 1
+			for _, name in ipairs(fertile_palettes[biome] or {}) do
+				hosts[require_role(name, 1, p7_classes, "fertile patch")] = 1
+			end
+			-- Low vegetation may colonize gravel at one quarter of its usual
+			-- eligible population. Trees/trunks retain soil requirements.
+			if row.settlement_class == 4 and not hosts[content_ref_by_name["default:gravel"]] then
+				hosts[content_ref_by_name["default:gravel"]] = 4
+			end
+		end
+	end
+	function module.decoration_cover(id, biome, support_ref)
+		local biomes = decoration_cover[id]
+		local hosts = biomes and biomes[biome]
+		return hosts and hosts[support_ref] or 0
+	end
 	function module.new_surface_selector(full_seed, planner_source)
 		local phase = 0
 		for index = 1, #full_seed do
@@ -566,9 +608,8 @@ return function(manifest_values, content_contract, wp43_projection)
 		end
 		local variants = {}
 		for id, base in pairs(surface_by_id) do
-			local dry = id == "grug_savanna"
-			local names = {base.top, dry and "default:dry_dirt" or "default:dirt",
-				"default:gravel", "default:stone", "default:dirt_with_grass"}
+			local palette = fertile_palettes[id] or {base.top, base.top, base.top}
+			local names = {palette[1], palette[2], "default:gravel", "default:stone", palette[3]}
 			local rows = {}
 			for kind = 1, #names do
 				rows[kind] = {}
@@ -613,28 +654,31 @@ return function(manifest_values, content_contract, wp43_projection)
 			local base = surface_by_id[id]
 			if not base or id == "grug_beach" or id == "grug_swamp" or
 					(water_y ~= nil and water_y > terrain_y) then return base end
-			local patch = noise(x, z, 32, 19349663)
+			local detail = noise(x, z, 8, 29712151)
+			local patch = math.floor((3 * noise(x, z, 32, 19349663) + detail) / 4)
 			local depth = 1 + math.min(3, math.floor(noise(x, z, 64, 83492791) / 256))
 			local kind = 1
-			if id == "grug_crags" or id == "grug_crags_snowy" or
-					id == "grug_badlands" or id == "grug_badlands_east" then
+			if patch > 880 then kind = 4
+			elseif patch > 780 then kind = 3
+			elseif patch < 300 then kind = 2
+			elseif patch < 440 then kind = 5 end
+			-- Exposed crags keep their rocky character; ordinary biomes get
+			-- smaller outcrops instead of entire bare bands on moderate slopes.
+			if id == "grug_crags" or id == "grug_crags_snowy" then
 				if patch > 650 then kind = 4 elseif patch < 300 then kind = 3 end
-			elseif patch > 790 then kind = 4
-			elseif patch > 690 then kind = 3
-			elseif patch < 240 then kind = 2
-			elseif patch < 360 and id ~= "grug_savanna" and
-					id ~= "grug_blight" and id ~= "grug_bone_forest" then kind = 5 end
-			-- Sample actual final relief only in the rocky part of the patch field.
-			-- This keeps slope evaluation bounded while breaking up steep faces.
-			if patch > 600 and kind ~= 4 and x >= -3736 and x <= 3736 and
+			end
+			if patch > 660 and x >= -3736 and x <= 3736 and
 					z >= -3336 and z <= 3336 then
 				local _, _, _, _, _, west = planner_source.column_values_at(x - 4, z)
 				local _, _, _, _, _, east = planner_source.column_values_at(x + 4, z)
 				local _, _, _, _, _, north = planner_source.column_values_at(x, z - 4)
 				local _, _, _, _, _, south = planner_source.column_values_at(x, z + 4)
-				if math.max(math.abs(east - west), math.abs(south - north)) >= 6 then
-					kind = 4
-				end
+				local rise = math.max(math.abs(east - west), math.abs(south - north))
+				if rise >= 12 and patch > 760 then kind = 4 end
+				-- Fine soil pockets interrupt gentle outcrops and receive the
+				-- biome's ordinary vegetation through the same support contract.
+				if (kind == 3 or kind == 4) and rise < 12 and detail > 680 and
+						id ~= "grug_crags" and id ~= "grug_crags_snowy" then kind = 1 end
 			end
 			return variants[id][kind][depth]
 		end
