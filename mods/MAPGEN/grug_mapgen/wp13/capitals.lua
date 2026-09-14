@@ -87,6 +87,32 @@ local function loader(directory)
 		end
 	end
 
+	-- Bear the bell frame of a stamped belfry on its own lantern ring.
+	--
+	-- `buildings.belfry` hangs the bell under a cross-beam whenever the
+	-- lantern is taller than three courses, and writes that beam as a single
+	-- cell at the centre of the plan (mods/MAPGEN/grug_mapgen/wp13/
+	-- buildings.lua, the bell frame). Its beam ring is the EDGE cells only,
+	-- so beam and bell touch each other and nothing else: a two-cell island
+	-- floating inside the lantern. Nothing catches it, because every rule
+	-- this library has asks whether a cell touches another cell, and these
+	-- two do.
+	--
+	-- The frame is therefore carried across to the ring here, in the two
+	-- cells between the centre and the plan's mid-side beams. This is a fix
+	-- scoped to the CAPITAL parts on purpose: Silverleaf Glade's shrine
+	-- stamps the same four-course lantern and its blueprint identity is
+	-- frozen, so `buildings.belfry` itself must not move a cell -- the same
+	-- reasoning as the well kerb in `well_court`. A composition that stamps
+	-- a lantern taller than three courses must call this.
+	local function bear_bell(buf, palette, ox, oy, oz, height)
+		if height - 1 <= 2 then return false end
+		for _, offset in ipairs({1, 3}) do
+			buf:put(ox + offset, oy + height, oz + 2, palette.node("beam"))
+		end
+		return true
+	end
+
 	-- A dressed column from y0 to y1. The castle kit's pillar is THREE
 	-- registered nodes -- base, shaft and capital -- and only that order
 	-- reads as a column (`palette.prefix_roles`); a race with no pillar
@@ -582,19 +608,31 @@ local function loader(directory)
 		-- The four corner turrets, written AFTER the roof: they rise through
 		-- the aisle lean-to, so a turret laid before the rasteriser would
 		-- have three courses cut out of it where the roof passes.
-		-- The turrets carry their merlons just clear of the ridge.
+		--
+		-- They are HOLLOW above the hall floor and they carry four storeys
+		-- of loopholes and a corbelled crown. The first version was three by
+		-- three of solid masonry twenty-two courses high with two slits in
+		-- it, and the render read as four chimneys: at this scale what makes
+		-- a turret a turret is the openings up its height and the course
+		-- that oversails at the top, not its plan.
 		local turret_top = nave_eave + 6
-		local merlons = 0
-		for _, corner in ipairs({{0, 0}, {w - 3, 0}, {0, d - 3},
-				{w - 3, d - 3}}) do
+		local merlons, corbels = 0, 0
+		local turrets = {{0, 0, -1, -1}, {w - 3, 0, 1, -1},
+			{0, d - 3, -1, 1}, {w - 3, d - 3, 1, 1}}
+		for _, corner in ipairs(turrets) do
 			for z = corner[2], corner[2] + 2 do
 				for x = corner[1], corner[1] + 2 do
+					local shaft = (x == corner[1] + 1) and (z == corner[2] + 1)
 					for y = 1, turret_top do
 						local name = stone(palette)
 						if y == base + 1 or y == lintel or y == turret_top then
 							name = mark(palette)
 						end
-						buf:put(x, y, z, name)
+						if shaft and y > base and y < turret_top then
+							buf:clear(x, y, z, x, y, z)
+						else
+							buf:put(x, y, z, name)
+						end
 					end
 					if (x + z) % 2 == 0 then
 						buf:put(x, turret_top + 1, z, stone(palette))
@@ -603,13 +641,26 @@ local function loader(directory)
 					end
 				end
 			end
+			-- The corbel table: a course oversailing the two OUTWARD faces,
+			-- one node clear of the shaft. That overhang is what throws a
+			-- shadow across the top of a turret and stops it reading as a
+			-- stack of masonry.
+			local ox = (corner[3] < 0) and (corner[1] - 1) or (corner[1] + 3)
+			local oz = (corner[4] < 0) and (corner[2] - 1) or (corner[2] + 3)
+			for step = 0, 2 do
+				buf:put(ox, turret_top - 1, corner[2] + step, mark_slab(palette))
+				buf:put(corner[1] + step, turret_top - 1, oz, mark_slab(palette))
+				corbels = corbels + 2
+			end
+			buf:put(ox, turret_top - 1, oz, mark_slab(palette))
+			corbels = corbels + 1
 		end
-		-- Loopholes in the outward faces of every turret, two storeys up.
+		-- Loopholes in the outward faces of every turret, four storeys up.
 		for _, face in ipairs({{0, 1, -1, 0}, {1, 0, 0, -1},
 				{w - 1, 1, 1, 0}, {w - 2, 0, 0, -1},
 				{0, d - 2, -1, 0}, {1, d - 1, 0, 1},
 				{w - 1, d - 2, 1, 0}, {w - 2, d - 1, 0, 1}}) do
-			for _, y in ipairs({base + 4, base + 9}) do
+			for _, y in ipairs({base + 4, base + 8, base + 12, base + 16}) do
 				if arrowslit(buf, palette, face[1], y, face[2],
 						face[3], face[4]) then
 					slits = slits + 1
@@ -628,6 +679,31 @@ local function loader(directory)
 		parts.stamp(buf, buildings.belfry(palette,
 			{roof_palette = spec.roof_palette, height = 4}),
 			centre - 2, peak, d - 10, 0)
+		bear_bell(buf, palette, centre - 2, peak, d - 10, 4)
+
+		-- Dormers. The review of the second render was right that the nave
+		-- roof is one unbroken plane thirty-nine nodes long on each side,
+		-- and that the ridge lantern only interrupts the ridge. Four
+		-- lucarnes per slope, three wide and three tall, each standing on
+		-- the course of roof it interrupts: a signature cheek, a light and a
+		-- slab hood.
+		local dormers = 0
+		for _, x in ipairs({arcade_x + 2, right - 2}) do
+			for z = 9, d - 10, 8 do
+				local h = field.height(x, z)
+				if h then
+					for offset = -1, 1 do
+						buf:put(x, h + 1, z + offset, mark(palette))
+						buf:put(x, h + 3, z + offset,
+							palette.node("roof_slab"))
+					end
+					buf:put(x, h + 2, z - 1, mark(palette))
+					buf:put(x, h + 2, z + 1, mark(palette))
+					parts.pane(buf, palette, x, h + 2, z, "z")
+					dormers = dormers + 1
+				end
+			end
+		end
 
 		local inside = spec.inside or {x = centre, y = base + 1, z = 6}
 		buf:clear(inside.x, inside.y, inside.z, inside.x, inside.y + 1, inside.z)
@@ -649,7 +725,8 @@ local function loader(directory)
 				{x = w - 2, y = base, z = d - 2},
 			},
 		}, {arcade_bays = bays, arrowslits = slits, merlons = merlons,
-			buttresses = buttresses, benches = benches})
+			buttresses = buttresses, benches = benches,
+			dormers = dormers, corbels = corbels})
 	end
 
 	-- -------------------------------------------------------------------
@@ -720,20 +797,26 @@ local function loader(directory)
 		end
 
 		-- The optional stair chamber: a run up the inside of the core with a
-		-- doorway in the inner face. Six treads take a walker from the pad at
-		-- y = 1 to the walkway at y = 7, one course per cell, which is what
-		-- the conservative walk of the blueprint fixtures climbs.
+		-- doorway in the inner face.
+		--
+		-- A flight from a floor at y = f to a floor at y = g carries
+		-- g - f treads, at y = f + 1 .. g, and the TOP one replaces a cell of
+		-- the upper floor. Stopping a tread short leaves the climber's feet
+		-- one whole node below the deck he is trying to reach -- a jump, not
+		-- a step -- which is what the first five-tread version of every
+		-- flight in this file did. Here: the landing is the wall's own base
+		-- course at y = 0 and the walkway is at y = 6, so six treads,
+		-- x = 2..7, and the last of them stands in the walkway.
 		if spec.stair then
 			if len < 10 then
 				error("wp13 capitals: a wall stair needs ten nodes", 0)
 			end
-			-- A LANDING behind the door, then five treads, then the walkway.
-			-- The first version started the flight in the doorway itself, so
-			-- a walker stepping out of the door put his foot on the raised
-			-- half of a stair rather than on a floor; the base course of the
-			-- wall is the landing, and the treads begin one node further in.
-			buf:clear(1, 1, thick - 2, 6, walk + 1, thick - 2)
-			for run = 1, 5 do
+			-- A LANDING behind the door, then the treads. The first version
+			-- started the flight in the doorway itself, so a walker stepping
+			-- out of the door put his foot on the raised half of a stair
+			-- rather than on a floor.
+			buf:clear(1, 1, thick - 2, 7, walk + 2, thick - 2)
+			for run = 1, walk do
 				parts.stair(buf, run + 1, run, thick - 2,
 					stone_stair(palette), 1)
 			end
@@ -803,22 +886,36 @@ local function loader(directory)
 			end
 		end
 
-		-- The two floors. Each carries the stairwell of the flight that
-		-- lands on it, so a climber is never stopped by his own ceiling.
+		-- The two floors and the two flights.
+		--
+		-- Both flights run along X, against the two faces the rampart does
+		-- NOT arrive at. That is not a stylistic choice: the rampart enters
+		-- this tower through the z = 0 face and leaves through the x = 0
+		-- face, so a walker turning the corner crosses the whole of the
+		-- z = 3..5 band, and a stairwell cut through the rampart floor
+		-- anywhere in that band is a hole in the wall walk. The first
+		-- version ran both flights along Z at x = 1 and x = 7 and cut
+		-- exactly that hole.
+		--
+		-- Six treads each (`walk` from the ground floor to the rampart
+		-- floor, `head - walk` from there to the fighting top), the last of
+		-- each standing in the floor it lands on.
 		buf:fill(1, walk, 1, last - 1, walk, last - 1, paving(palette))
-		buf:clear(1, walk, 1, 1, walk, 5)
 		buf:fill(1, head, 1, last - 1, head, last - 1, paving(palette))
-		buf:clear(last - 1, head, 1, last - 1, head, 5)
-		for run = 1, 5 do
-			parts.stair(buf, 1, run, run, stone_stair(palette), 0)
-			buf:clear(1, run + 1, run, 1, run + 2, run)
-			parts.stair(buf, last - 1, walk + run, run, stone_stair(palette), 0)
-			buf:clear(last - 1, walk + run + 1, run, last - 1, walk + run + 2, run)
+		-- The stairwell of each flight is cut over its OWN treads only: the
+		-- cell beyond the top tread is the landing, and clearing that as
+		-- well leaves the climber stepping off his last tread into a hole.
+		buf:clear(1, 1, last - 1, walk, walk + 2, last - 1)
+		buf:clear(1, walk + 1, 1, walk, head + 2, 1)
+		for run = 1, walk do
+			parts.stair(buf, run, run, last - 1, stone_stair(palette), 1)
+			parts.stair(buf, run, walk + run, 1, stone_stair(palette), 1)
 		end
 
 		-- Rampart openings, three wide and two high, in the two faces a
 		-- chained wall arrives at. They line up with the three-wide walkway
-		-- of `wall_segment`.
+		-- of `wall_segment`, which sits two nodes in from the face of a
+		-- five-deep wall centred on this nine-deep tower.
 		for step = 3, 5 do
 			buf:clear(step, walk + 1, 0, step, walk + 2, 0)
 			buf:clear(0, walk + 1, step, 0, walk + 2, step)
@@ -897,11 +994,27 @@ local function loader(directory)
 	-- running clean through it: x 4..8 is open air from the ground course to
 	-- the springing of the arch, which is the width and the headroom a city
 	-- avenue needs (contract section 2.1, the 32-node gate corridor). Each
-	-- pier holds a guard chamber with its own door, the left one also the
-	-- flight to the chamber above, and the roof is a crenellated deck level
-	-- with the curtain wall's own crown.
+	-- pier holds a guard chamber with its own door to the street.
 	--
-	-- Extent: 13 x 7, y -2..13.
+	-- The chamber above the passage is a RAMPART ROOM, not a dead end. Its
+	-- floor is the wall walk's own level and both end faces carry an opening
+	-- three wide and two high, so a walker on the curtain wall walks through
+	-- the gate rather than stopping at it. The first version walled those
+	-- two faces solid and the wall walk dead-ended at every gate in the city.
+	-- The openings sit at z 2..4: a five-deep wall centred on this
+	-- seven-deep gatehouse is inset one node, so its z 1..3 walkway arrives
+	-- at z 2..4 (the corner tower is nine deep, so the same walkway arrives
+	-- there at z 3..5).
+	--
+	-- Nothing cuts that floor. There is deliberately NO flight from the
+	-- ground to the chamber: any stairwell wide enough to climb would be a
+	-- hole in the wall walk, and a gate tower is reached from the rampart,
+	-- which is what the rampart is for. The fighting deck above is reached
+	-- from the chamber by a flight in the city-side row, clear of the
+	-- through-band.
+	--
+	-- Extent: 13 x 7, y -2..14. The deck is y = 11 and its merlons y 12..14,
+	-- three courses above the curtain wall's own crown at y 7..9.
 	function M.gatehouse(palette, spec)
 		local w, d = 13, 7
 		local gate_x0, gate_x1 = 4, 8
@@ -948,14 +1061,8 @@ local function loader(directory)
 			end
 		end
 
-		-- The chamber floor, with the stairwell of the left flight cut out
-		-- of it, and the flight itself.
+		-- The chamber floor: unbroken, because it is the wall walk.
 		buf:fill(0, 6, 0, w - 1, 6, d - 1, palette.node("floor"))
-		buf:clear(2, 6, 1, 2, 6, 5)
-		for run = 1, 5 do
-			parts.stair(buf, 2, run, run, stone_stair(palette), 0)
-			buf:clear(2, run + 1, run, 2, run + 2, run)
-		end
 
 		-- The chamber: walls, windows on the city face, loopholes on the
 		-- field face.
@@ -978,8 +1085,20 @@ local function loader(directory)
 			end
 		end
 
+		-- The rampart openings, and the flight from the chamber to the deck.
+		-- Five treads, y 7..11, the last of them standing in the deck, in the
+		-- city-side row so the through-band z 2..4 stays clear.
+		for step = 2, 4 do
+			buf:clear(0, 7, step, 0, 8, step)
+			buf:clear(w - 1, 7, step, w - 1, 8, step)
+		end
+
 		-- The deck and its crenellation.
 		buf:fill(0, 11, 0, w - 1, 11, d - 1, paving(palette))
+		for run = 0, 4 do
+			buf:clear(2 + run, 7 + run, d - 2, 2 + run, 9 + run, d - 2)
+			parts.stair(buf, 2 + run, 7 + run, d - 2, stone_stair(palette), 1)
+		end
 		local merlons = 0
 		for z = 0, d - 1 do
 			for x = 0, w - 1 do
@@ -1024,8 +1143,15 @@ local function loader(directory)
 			gate_x0, 1, 1, 2)
 		socket(sockets, id .. "_post_east", "guard_post",
 			gate_x1, 1, 1, 2)
-		patrol(sockets, id .. "_deck", spec.patrol_group or "rampart",
-			spec.order or 1, 6, 12, 3, 2)
+		-- The rampart waypoint is in the WALL's loop, at the wall's own
+		-- height, because the wall walk runs through this chamber. The deck
+		-- is five courses higher and is reached only by the flight inside,
+		-- so it is a loop of its own: a patrol that mixed the two would ask
+		-- an NPC to walk from y = 7 to y = 12 with nothing between.
+		patrol(sockets, id .. "_rampart", spec.patrol_group or "rampart",
+			spec.order or 1, 6, 7, 3, 2)
+		patrol(sockets, id .. "_deck",
+			spec.deck_group or (id .. "_deck"), 1, 6, 12, 3, 2)
 		socket(sockets, id .. "_idle_west", "idle", 1, 1, 4, 2,
 			{tags = {"fire"}})
 		socket(sockets, id .. "_idle_east", "idle", w - 2, 1, 4, 2,
@@ -1329,20 +1455,36 @@ local function loader(directory)
 			parts.stair(buf, last - 1, 1, step, stone_stair(palette), 3)
 		end
 
-		-- The figure. Five courses, and the shape is what carries it at node
-		-- scale: a flared robe, a narrow body, two stair shoulders whose
-		-- raised halves fall outward, a head and a crown. The first version
-		-- was a two-cube torso with a slab stuck out either side, which
-		-- rendered as a chimney wearing a hat.
+		-- The figure: an armoured man with a standard.
+		--
+		-- What carries a statue at node scale is the SILHOUETTE, and the
+		-- second version's was still a column with two arms on it. This one
+		-- is read from the ground up as a flared skirt, a shield arm on one
+		-- side, a body, two stair shoulders whose raised halves fall
+		-- outward, a head, a helm crest -- and, off the other shoulder, a
+		-- standard with a banner on it, which is the piece that makes the
+		-- outline unmistakably a figure rather than a pillar.
 		for _, spot in ipairs({{0, 0}, {-1, 0}, {1, 0}, {0, -1}, {0, 1}}) do
 			buf:put(c + spot[1], 3, c + spot[2], mark(palette))
 		end
 		buf:put(c, 4, c, mark(palette))
+		buf:put(c - 1, 4, c, mark(palette))
 		buf:put(c, 5, c, mark(palette))
 		parts.stair(buf, c - 1, 5, c, mark_stair(palette), 3)
 		parts.stair(buf, c + 1, 5, c, mark_stair(palette), 1)
 		buf:put(c, 6, c, mark(palette))
 		buf:put(c, 7, c, mark_slab(palette))
+		-- The standard rises off the right shoulder and the banner hangs
+		-- from it; both touch what carries them across a face, which is what
+		-- the connectivity flood of `library_kat` section 12 asks of every
+		-- cell of a capital part.
+		for y = 6, 8 do
+			buf:put(c + 1, y, c, palette.node("post"))
+		end
+		buf:put(c + 1, 9, c, mark_slab(palette))
+		for y = 7, 8 do
+			buf:put(c + 2, y, c, palette.node("rug_accent"))
+		end
 
 		for _, corner in ipairs({{1, 1}, {last - 1, 1}, {1, last - 1},
 				{last - 1, last - 1}}) do
@@ -1446,6 +1588,8 @@ local function loader(directory)
 		parts.stamp(part.buffer, buildings.belfry(palette,
 			{roof_palette = spec.roof_palette, height = 4}),
 			cx - 2, part.peak, math.floor(d / 2) - 2, 0)
+		bear_bell(part.buffer, palette, cx - 2, part.peak,
+			math.floor(d / 2) - 2, 4)
 		local id = spec.id or "temple"
 		local sockets = {}
 		socket(sockets, id .. "_altar", "idle", cx, 1, d - 4, 2,
@@ -1645,7 +1789,8 @@ local function loader(directory)
 	-- The troll edge: a basalt-pier platform carrying a railed deck, with a
 	-- walkway spur running off it and a flight down to the ground.
 	--
-	-- Extent: size x size plus the spur's length in z, y 0..(deck + 2).
+	-- Extent: size x size in x, size plus the spur and the flight in z (26 at
+	-- the defaults), y 0..(deck + 1).
 	function M.stilt_platform(palette, spec)
 		local size = spec.size or 15
 		local deck = spec.deck or 6
@@ -1703,6 +1848,13 @@ local function loader(directory)
 		-- other sign walks the flight back across the deck and cuts three
 		-- holes in it.
 		dressing.stair_up(buf, palette, centre, 0, deck, "z", 1)
+		-- ...and the tread `stair_up` does not write. It runs `1, top - 1`,
+		-- so its highest tread leaves a climber's feet one whole node below
+		-- the deck: a jump, not a step. The last tread stands IN the deck
+		-- edge, which is where a flight meets the floor it serves. The
+		-- shared routine is left alone because Kapok Cradle's identity is
+		-- frozen on its current output.
+		parts.stair(buf, centre, deck, 0, palette.node("roof_stair"), 0)
 
 		-- Lanterns under the deck and a lamp on it.
 		local lanterns = 0
@@ -1742,7 +1894,8 @@ local function loader(directory)
 	-- -- so what this part builds is the cut, the lining and the crossing.
 	-- Filling it is the composition lane's decision and the engine's job.
 	--
-	-- Extent: len x 7, y -3..2; the -3 is inside the plot's y -6.
+	-- Extent: len x 7, y -3..3 -- the lamp standards are the top course, not
+	-- the kerb rail. The -3 is inside the plot envelope's y -6.
 	function M.water_channel(palette, spec)
 		local len = spec.len or 21
 		local d = 7
