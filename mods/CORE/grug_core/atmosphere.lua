@@ -30,12 +30,13 @@
 -- defaults above (l_object.cpp:2834 `lua_isnoneornil`, documented in
 -- lua_api.md:9591-9592) — that is what the `off` preset uses.
 --
--- PRESET TABLE SHAPE (a later per-zone package extends this, it does not
--- restructure it):
+-- PRESET TABLE SHAPE (atmosphere_zones.lua extends this table with the
+-- per-region moods and the driver that picks one; it does not restructure it):
 --   description  human-readable, shown by /atmosphere
 --   zone         optional zone id this preset is the look FOR. Zone switching
---                is NOT implemented here; the key exists so a zone package can
---                index presets by zone without touching the entries again.
+--                is NOT implemented here. atmosphere_zones.lua resolves a mood
+--                from grug_zones instead of indexing on this key, so it is
+--                still only carried by `hearthpine` as a worked example.
 --   lighting     table for player:set_lighting, or nil for "engine defaults"
 --   sky          optional table for player:set_sky   (nil = engine default sky)
 --   clouds       optional table for player:set_clouds (nil = engine defaults)
@@ -57,6 +58,11 @@
 -- settingtypes.txt is parsed by the main menu, not by the server
 -- (lua_api.md:353-358).
 local atmosphere_enabled = core.settings:get_bool("grug_atmosphere_enabled", true)
+
+-- Published so the zone package can decide at load time whether to register a
+-- globalstep at all. A plain boolean field, read once: the master switch never
+-- changes during a run.
+grug_core.atmosphere_enabled = atmosphere_enabled
 
 -- Applied on join and the fallback for every zone that has no preset yet.
 -- Published so the later zone package can fall back to it by name instead of
@@ -195,8 +201,10 @@ function grug_core.set_atmosphere(player, preset_name)
 
 	player:set_lighting(preset.lighting)
 	-- Only touch sky/clouds when a preset actually has an opinion, or when the
-	-- previous one had and must be undone. No shipped preset sets them, so on
-	-- the current content this never sends a sky packet at all.
+	-- previous one had and must be undone. None of the four presets in THIS
+	-- file sets them; the zone moods in atmosphere_zones.lua all do, so moving
+	-- between a mood and a shipped preset resets sky and clouds to the engine
+	-- defaults rather than leaving half a mood behind.
 	if preset.sky or (previous and previous.sky) then
 		player:set_sky(preset.sky)
 	end
@@ -206,6 +214,28 @@ function grug_core.set_atmosphere(player, preset_name)
 
 	applied[name] = preset_name
 	return true
+end
+
+-- Zone-package seams, resolved by atmosphere_zones.lua through the same
+-- stub-override pattern init.lua uses for get_player_faction. They keep the
+-- chat command in one place while the auto-mode bookkeeping stays in the file
+-- that owns it; with the zone package off (or its setting false) the stubs
+-- make `/atmosphere` behave exactly as it did before this package.
+--
+-- atmosphere_manual_pause(name): a manual preset was just applied, stop
+--   driving that player from their zone.
+-- atmosphere_resume_auto(name): `/atmosphere auto`. Returns a message string
+--   on success, or nil when zone-driven mode is not available at all.
+function grug_core.atmosphere_manual_pause(name)
+end
+
+function grug_core.atmosphere_resume_auto(name)
+	return nil
+end
+
+-- atmosphere_mode(name): one word for the status line.
+function grug_core.atmosphere_mode(name)
+	return "manual"
 end
 
 core.register_on_joinplayer(function(player)
@@ -226,8 +256,9 @@ local function preset_list()
 end
 
 core.register_chatcommand("atmosphere", {
-	params = "[<preset>|off]",
-	description = "Apply a lighting preset to yourself (A/B test)",
+	params = "[<preset>|off|auto]",
+	description = "Apply a lighting preset to yourself (A/B test), " ..
+		"or `auto` to return to the zone-driven mood",
 	privs = {server = true},
 	func = function(name, param)
 		-- `privs` above is the engine-enforced gate; this repeats it through
@@ -240,14 +271,26 @@ core.register_chatcommand("atmosphere", {
 		if param == "" then
 			return true, "Atmosphere: " ..
 				tostring(grug_core.get_atmosphere(name) or "none") ..
-				". Presets: " .. preset_list()
+				" (" .. grug_core.atmosphere_mode(name) ..
+				"). Presets: " .. preset_list() .. ", auto"
 		end
 		if not atmosphere_enabled then
 			return false, "The atmosphere layer is off " ..
 				"(grug_atmosphere_enabled = false)."
 		end
+		-- `auto` is not a preset name and is checked before the preset table
+		-- so a future preset can never shadow it.
+		if param == "auto" then
+			local message = grug_core.atmosphere_resume_auto(name)
+			if not message then
+				return false, "Zone-driven atmosphere is not available " ..
+					"(grug_atmosphere_zones = false, or no zone authority)."
+			end
+			return true, message
+		end
 		if not presets[param] then
-			return false, "Unknown preset. Presets: " .. preset_list()
+			return false, "Unknown preset. Presets: " .. preset_list() ..
+				", auto"
 		end
 
 		-- Re-fetched by name rather than captured: the command runs long after
@@ -261,6 +304,10 @@ core.register_chatcommand("atmosphere", {
 		if not grug_core.set_atmosphere(player, param) then
 			return false, "Could not apply preset " .. param .. "."
 		end
+		-- After the preset landed, so a failed apply does not silently stop
+		-- the zone driver. Unconditional: re-applying the preset a player
+		-- already carries is still an explicit "hold this one".
+		grug_core.atmosphere_manual_pause(name)
 		if unchanged then
 			return true, "Atmosphere already " .. param .. "; nothing sent."
 		end
