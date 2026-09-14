@@ -171,9 +171,19 @@ return function(repo)
 			-- carted anywhere. The cobweb is deliberately absent from this
 			-- list -- it is the one prop in the corpus that SHOULD hang with
 			-- nothing under it, and the check below is a floating-prop check.
+			--
+			-- 418 low walls: the ten burial-ground runs (164 cells once the
+			-- shared corners are counted once), the grave markers inside
+			-- them, the six kerbed court plots, the gate's two flanking runs
+			-- and the cairn's four corner blocks. Six of the ten runs used to
+			-- be dropped in silence when an earlier run had claimed their
+			-- corner, and NOTHING here noticed -- a burial ground open on
+			-- three sides passes every geometric invariant in this file. An
+			-- exact population is what catches that class of defect.
 			props = {{"grug_decor:cottages_straw_bale", 0},
 				{"grug_decor:xdecor_barrel", 14},
 				{"grug_decor:xdecor_stonepath", 18},
+				{"walls:mossycobble", 418},
 				{"grug_decor:xdecor_ivy", 13, "wallmounted"},
 				{"grug_decor:cottages_wagon_wheel", 0, "wallmounted"}},
 			carts = 0,
@@ -427,9 +437,16 @@ return function(repo)
 		-- `start:north` gate and the southern group a `start:south` one.
 		local street = assert(blueprint.landmarks.main_street,
 			"no main street landmark")
-		assert(street.max.x - street.min.x == 4 and
-			street.max.z - street.min.z == 63,
-			"the main street is not the contract's five by sixty-four route")
+		-- Anchored to the pad, not merely five wide and sixty-four deep: the
+		-- route runs up the middle of the settlement and reaches its centre,
+		-- so x is exactly -2..2 and one end of the z span is the origin. An
+		-- extent test alone would accept a five-wide strip anywhere.
+		assert(street.min.x == -2 and street.max.x == 2,
+			"the main street is not the pad's own five-wide corridor")
+		assert(street.max.z - street.min.z == 63,
+			"the main street is not the contract's pad-deep route")
+		assert(street.min.z == 0 or street.max.z == 0,
+			"the main street does not reach the pad centre")
 		for z = street.min.z, street.max.z do
 			for x = street.min.x, street.max.x do
 				assert(stand(x, 1, z), "blocked main road at " .. key(x, 1, z))
@@ -486,7 +503,7 @@ return function(repo)
 		-- Stillgrave's two ruins -- keeps the full invariant below.
 		local ruins = 0
 		for _, room in ipairs(rooms) do
-			local lit = 0
+			local lit, open_columns = 0, 0
 			for z = room.min.z, room.max.z do
 				for x = room.min.x, room.max.x do
 					local covered = false
@@ -497,13 +514,35 @@ return function(repo)
 					for y = 1, room.top do
 						if declared_lights[key(x, y, z)] then lit = lit + 1 end
 					end
+					if not covered then open_columns = open_columns + 1 end
 					assert(covered or room.ruin,
 						"interior column open to the sky in " .. room.id)
 				end
 			end
 			if room.ruin then
 				ruins = ruins + 1
+				-- `ruin` switches off the watertight-roof and lit-interior
+				-- invariants, which are two of the strongest rules in this
+				-- file, so the flag itself is checked rather than believed.
+				-- A room that claims it is a ruin must BE one: nothing lives
+				-- there (no door landmark opens into it, it is nobody's
+				-- destination), it is unlit, and it is genuinely open --
+				-- at least one of its columns really does see the sky.
+				-- Without the last test a fully roofed, fully furnished
+				-- building could turn off both invariants by setting a flag.
 				assert(lit == 0, "a ruin is not a lit room: " .. room.id)
+				assert(open_columns > 0,
+					"a room flagged ruin is roofed over: " .. room.id)
+				for _, door in ipairs(doorways) do
+					assert(not (door.x >= room.min.x and door.x <= room.max.x and
+						door.z >= room.min.z and door.z <= room.max.z),
+						"a room flagged ruin has a door in it: " .. room.id)
+				end
+				for _, pos in ipairs(blueprint.landmarks.destinations) do
+					assert(not (pos.x >= room.min.x and pos.x <= room.max.x and
+						pos.z >= room.min.z and pos.z <= room.max.z),
+						"a room flagged ruin is a destination: " .. room.id)
+				end
 			else
 				assert(lit > 0, "unlit interior in " .. room.id)
 			end

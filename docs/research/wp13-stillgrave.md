@@ -108,6 +108,15 @@ the gate a **watchtower**. Behind the chapel, four homes on one lane: two kept
 the court lie two walled **burial grounds** of 162 markers. A broken ring of
 74 gravewoods surrounds the pad. No liquids, no spawner nodes, no NPCs.
 
+Each burial ground is walled by five runs — two long sides, the far return and
+the two stubs of the near one that leave a gate in the middle — and the runs
+share their corner cells. Until the 2026-09-14 review they were tested with
+`layout.free_area` over the whole run, so the first run to reach a corner
+claimed it and the next was refused, silently: six of the ten runs were never
+built and both grounds stood open on two sides. A run now tests only the cells
+it writes, accepts a cell already carrying this palette's own low wall, and is
+fatal on anything else; `blueprint_kat` holds the low-wall population at 418.
+
 New library code, all role-driven and all degrading when a palette lacks the
 optional role:
 
@@ -145,26 +154,43 @@ detail, which the branch runs give back anyway.
 
 ### A bug the Hollow found, and did not fix
 
-`dressing.undergrowth` picks cells with `(7x + 11z) % density` and then
-chooses its role with `(x + z) % 4`. Those are not independent: 7x + 11z is
-3(x + z) modulo 4, so at density 4 every cell it picks takes the
-`undergrowth` branch and `grass_tuft` is never reached. In a pine wood that is
-a slightly monotonous flora; in the Hollow it carpeted the pad with 3,300 bone
-piles. Hearthpine and Dawnmere are byte-frozen, so that routine is left
-exactly as it is and the Hollow sows its own (`dressing.blight_flora`, one
-hash and three bands: 347 bone piles and 616 dead shrubs). Fixing
-`undergrowth` is a one-line change for whichever increment is allowed to move
-the two frozen digests.
+`dressing.undergrowth` picked cells with `(7x + 11z) % density` and then chose
+its role with `(x + z) % 4`. Those are not independent: 7x + 11z is 3(x + z)
+modulo 4, so at density 4 every cell it picked took the `undergrowth` branch
+and `grass_tuft` was never reached. In a pine wood that is a slightly
+monotonous flora; in the Hollow it carpeted the pad with 3,300 bone piles, so
+the Hollow sows its own instead (`dressing.blight_flora`, one hash and three
+bands).
+
+**Fixed for everyone in the 2026-09-14 integration.** Both tests now read two
+different offsets into `parts.position_hash`; Hearthpine Vale, whose identity
+is in the frozen R7 manifest, keeps the old selector under the name
+`dressing.vale_undergrowth`, and `library_kat` section 8c asserts that every
+start emits both of its ground-cover nodes. `blight_flora` is unchanged: the
+Hollow wants its own proportions, not the shared routine's.
 
 ## Results
 
-51,597 cells, 37,667 of them not air, 45 materials, 75 lights, 1,300 oriented
+51,641 cells, 37,717 of them not air, 44 materials, 78 lights, 1,292 oriented
 nodes, 5 reachable destinations, 7 doors, 8 rooms of which 2 are ruins, 74
-gravewoods, 162 grave markers, 347 bone piles, 616 dead shrubs, 18 stepping
-stones, 14 barrels, 13 ivy tendrils, 7 cobwebs. Bounds x/z `[-63, 63]`,
-y `[-1, 12]`, inside the authorized volume and well under the 125,000 cell
-budget. Blueprint identity SHA-256
-`9c08a5c80194ae2aabc667d8dcb9e6888033bc41f557ce78ff6a12cd3d29627f`.
+gravewoods, 162 grave markers, 418 low-wall cells, 359 bone piles, 612 dead
+shrubs, 18 stepping stones, 14 barrels, 13 ivy tendrils, 7 cobwebs. Bounds
+x/z `[-63, 63]`, y `[-1, 12]`, inside the authorized volume and well under the
+125,000 cell budget. Blueprint identity SHA-256
+`a0f41a3b806f4075bf0545ac05bbdd89e88beae3a72d14c6f310054f90e6e657`, dump
+SHA-256 `eeda9dbf0700a4369962531fa892bc372712b6ec3af627447940aff6bd8cdf2b`.
+
+The bone-pile and dead-shrub figures are the whole pad, the ruins' own flora
+included; `blight_flora`'s own return is smaller, and the first version of
+this note quoted that return as if it were the population. 44 materials, not
+45: the review threw out `grug_decor:darkage_iron_bars` as a railing (below).
+
+**Superseded figures.** Before the 2026-09-14 review fixes this settlement was
+51,597 cells / 37,667 not air / 45 materials / 75 lights / 1,300 oriented,
+identity `9c08a5c8…3d29627f`, dump `7dd3dbbd…83b9c3ff`. The difference is the
+six burial-ground wall runs and the three route lamps that were being dropped
+in silence, the offering stall and one crate stack that moved out of a lamp's
+way, and the railing rebind.
 
 ## Verification
 
@@ -203,11 +229,35 @@ budget. Blueprint identity SHA-256
 
 Evidence: `tools/wp13/evidence/20260914-stillgrave/`.
 
+## What the 2026-09-14 review changed
+
+1. **The burial-ground walls** (High). Six of ten runs silently skipped; see
+   above. All ten stand, and the population is asserted.
+2. **The route lamps** (Medium). `layout.street_lamps` threw its return away
+   and the court pass hid its refusals in an `if`, so three authored lamps
+   were missing: the offering stall's roof oversailed one, a crate stack
+   stood on another, and the third was authored inside the sunken ruin's
+   footprint. Both passes are fatal now and the total is asserted at 41; the
+   stall moved two nodes east, the crate one node west, and the third lamp to
+   (17, 34), west of the ruin as its mirror is west of the warden house.
+3. **The ruin relaxation** (Medium). `room.ruin` switches off the watertight
+   roof and lit-interior invariants, so `blueprint_kat` now checks the flag
+   instead of believing it: a room that claims to be a ruin must have no door
+   landmark inside it, be nobody's destination, carry no light, and really
+   have at least one column open to the sky.
+4. **The railing** (Low). `grug_decor:darkage_iron_bars` is a `glasslike`
+   FULL cube, so the twelve cells meant to be a waist-high rail along the
+   works gallery were a solid barred screen. `grug_decor` registers no fence
+   and no vendored fence is black, so the railing is now
+   `default:fence_junglewood`, the Hollow's own fence timber.
+5. **The flora counts** in this note quoted `blight_flora`'s return, not the
+   pad's population. Corrected above.
+
 ## What the renders were changed for
 
 1. `dressing.undergrowth`'s aliasing (above) put 3,300 bone piles on the pad;
-   at overview scale the basin read as a field of bones. It is 347 now, with
-   616 dead shrubs, and the burial grounds are the only place the bones are
+   at overview scale the basin read as a field of bones. It is 359 now, with
+   612 dead shrubs, and the burial grounds are the only place the bones are
    thick.
 2. The ruins drew their wall heights per cell and read as crenellation. They
    draw them on a three-node lattice now, stand at wall height 6 instead of 5,

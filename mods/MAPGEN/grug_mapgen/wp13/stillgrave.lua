@@ -110,12 +110,25 @@ local function loader(directory)
 		{-48, -24, -28, -8},
 		{28, 10, 48, 26},
 	}
+	-- Ten runs, two burial grounds: for each, the two long sides, the far
+	-- return, and the two stubs of the near one that leave a gate in the
+	-- middle. They share their corner cells on purpose.
 	local GRAVE_WALLS = {
 		{-50, -26, -26, -26}, {-50, -6, -26, -6}, {-50, -26, -50, -6},
 		{-26, -26, -26, -18}, {-26, -12, -26, -6},
 		{26, 8, 50, 8}, {26, 28, 50, 28}, {50, 8, 50, 28},
 		{26, 8, 26, 14}, {26, 22, 26, 28},
 	}
+	-- The cells those runs write once the four shared corners per ground are
+	-- counted once each, and the lamps the two lighting passes stand. Both
+	-- are asserted where they are built: an authored population that the
+	-- placement rules quietly fail to reach is exactly the defect the review
+	-- found here twice.
+	local GRAVE_WALL_CELLS = 164
+	-- Eighteen from the road pass (nine z stations, both verges) and the
+	-- twenty-three court and lane spots authored below. Every one of them
+	-- now stands; three did not before the placement was made fatal.
+	local ROUTE_LAMPS = 41
 
 	-- The gravewood stand: a broken outer ring, which is what the zone's
 	-- `stillgrave_ringbarrows` landmark asks for, plus the two flanking
@@ -298,8 +311,12 @@ local function loader(directory)
 		-- post, bone cairns, stone settles and the stones worn across it.
 		dressing.well(buf, palette, -7, 3)
 		dressing.signpost(buf, palette, -4, -5)
-		paved_prop("offering stall", 3, -5, 7, -1, function()
-			dressing.stall(buf, palette, 4, -4, 2)
+		-- Two nodes east of where it first stood. (4, -2) is the east lamp of
+		-- the pair that flanks the court mouth, and the stall's roof slab
+		-- oversails its posts by one node on every side, so the awning was
+		-- standing over the lamp. The lamp is the route's; the stall moved.
+		paved_prop("offering stall", 5, -5, 9, -1, function()
+			dressing.stall(buf, palette, 6, -4, 2)
 		end)
 		-- The cairn: a stepped black plinth carrying one dressed pillar, the
 		-- marker the Hollow gathers round. It stands off the road's sight
@@ -347,14 +364,48 @@ local function loader(directory)
 		stepping(5, 0, 8, 0)
 
 		-- 6. The burial grounds and their low walls.
+		--
+		-- The ten runs MEET: each burial ground is a long side, a second long
+		-- side and a return, and the returns start on the cells the sides
+		-- already wrote. Testing a run with `free_area` over its whole extent
+		-- therefore refused it the moment an earlier run had claimed the
+		-- shared corner -- silently, because the test only guarded an `if`.
+		-- Six of the ten runs were being dropped that way and the burial
+		-- grounds stood open on three sides.
+		--
+		-- A run now tests only the cells it writes, accepts a cell that
+		-- already carries this palette's own low wall (that is its corner,
+		-- not an obstruction), and is FATAL on anything else, like every
+		-- other prop in this composition. All ten are then placed, and the
+		-- count is published so `tools/wp13/blueprint_kat.lua` can hold the
+		-- population exactly.
+		local low_wall = palette.node("low_wall")
+		local wall_cells = 0
 		for _, line in ipairs(GRAVE_WALLS) do
-			if layout.free_area(buf, math.min(line[1], line[3]),
-					math.min(line[2], line[4]), math.max(line[1], line[3]),
-					math.max(line[2], line[4]), 3) then
-				dressing.low_wall_line(buf, palette, line[1], line[2],
-					line[3], line[4])
+			local name = "grave wall " .. line[1] .. "," .. line[2]
+			for z = math.min(line[2], line[4]), math.max(line[2], line[4]) do
+				for x = math.min(line[1], line[3]), math.max(line[1], line[3]) do
+					local here = buf:at(x, 1, z)
+					local taken = here ~= nil and here.name ~= "air"
+					if taken and here.name ~= low_wall then
+						refuse(name, x, z, "the cell holds " .. here.name)
+					end
+					if not taken and not layout.free(buf, x, z, 3) then
+						refuse(name, x, z, "the space is taken")
+					end
+					local below = buf:at(x, 0, z)
+					if below == nil or not GROUND[below.name] then
+						refuse(name, x, z, "the ground is " ..
+							(below and below.name or "air"))
+					end
+					if not taken then wall_cells = wall_cells + 1 end
+				end
 			end
+			dressing.low_wall_line(buf, palette, line[1], line[2],
+				line[3], line[4])
 		end
+		assert(wall_cells == GRAVE_WALL_CELLS, "wp13 stillgrave: the burial " ..
+			"walls wrote " .. wall_cells .. " cells, not " .. GRAVE_WALL_CELLS)
 		local graves = 0
 		for _, yard in ipairs(GRAVEYARDS) do
 			graves = graves + dressing.graveyard(buf, palette, yard[1], yard[2],
@@ -371,7 +422,9 @@ local function loader(directory)
 				dressing.wood_pile(buf, palette, pile[1], pile[2], pile[3], axis)
 			end)
 		end
-		for _, crate in ipairs({{22, -6, 3}, {22, -5, 3}, {-22, 2, 1},
+		-- (-22, 2) is a route lamp; the crate that used to stand there stands
+		-- one node west of it now.
+		for _, crate in ipairs({{22, -6, 3}, {22, -5, 3}, {-23, 2, 1},
 				{16, -20, 2}, {-14, 26, 0}}) do
 			prop("crate stack", crate[1], crate[2], crate[1], crate[2],
 				function()
@@ -394,7 +447,16 @@ local function loader(directory)
 		end
 
 		-- 9. Route lighting: the road, the lanes and the court.
-		layout.street_lamps(buf, palette, 0, ROAD * 56, -4, 6, outdoors)
+		--
+		-- A lamp that cannot be placed is a dark stretch of route, which is
+		-- the one thing section 5's lit-route invariant forbids, so both
+		-- passes are fatal and the total is asserted. They were not: the
+		-- road pass threw its return away and the court pass hid its
+		-- failures in an `if`, which is how the crate stack at (-22, 2) came
+		-- to stand where a lamp was authored and three lamps went missing
+		-- with nothing said. The crate moved; the checks stayed.
+		local lamps = layout.street_lamps(buf, palette, 0, ROAD * 56, -4, 6,
+			outdoors)
 		-- The Hollow burns few open flames: the road lamps, the gate braziers
 		-- and the candles on the buildings. These are the road's own.
 		for _, spot in ipairs({{-4, -2}, {4, -2},
@@ -402,12 +464,26 @@ local function loader(directory)
 				{-19, -18}, {19, -18}, {-19, 10}, {19, 10},
 				{-19, 26}, {19, 26}, {-12, 30}, {12, 30},
 				{-30, 30}, {30, 30}, {-22, 2}, {-9, -6}, {9, -6},
-				{-6, 10}, {6, 10}, {-19, 34}, {19, 34}}) do
-			if outdoors(spot[1], spot[2]) and
-					layout.free(buf, spot[1], spot[2], 3) then
-				dressing.path_light(buf, palette, spot[1], spot[2])
+				-- (17, 34), not (19, 34): the sunken ruin's footprint starts
+				-- at x = 18, and a lamp authored inside a plot is a lamp that
+				-- never stood. Its mirror (-19, 34) sits west of the warden
+				-- house the same way.
+				{-6, 10}, {6, 10}, {-19, 34}, {17, 34}}) do
+			if not outdoors(spot[1], spot[2]) then
+				refuse("path lamp", spot[1], spot[2], "the spot is indoors")
 			end
+			-- `paved_prop`, not `prop`: a route lamp stands where the route
+			-- runs, and half of these stand on the court's paving. What it
+			-- needs is a floor and four clear courses, which is exactly what
+			-- `layout.free_area` demands.
+			paved_prop("path lamp", spot[1], spot[2], spot[1], spot[2],
+				function()
+					dressing.path_light(buf, palette, spot[1], spot[2])
+				end)
+			lamps = lamps + 1
 		end
+		assert(lamps == ROUTE_LAMPS, "wp13 stillgrave: " .. lamps ..
+			" route lamps stand, not " .. ROUTE_LAMPS)
 
 		-- 10. Bone piles and dead shrubs on whatever open blight is left:
 		-- thin over the basin, thicker where the ground is already turned.

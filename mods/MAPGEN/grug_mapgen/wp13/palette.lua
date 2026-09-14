@@ -366,7 +366,14 @@ M.races.undead = {
 	fence = "default:fence_junglewood",
 	fence_rail = "default:fence_rail_junglewood",
 	low_wall = "walls:mossycobble",
-	railing = "grug_decor:darkage_iron_bars",
+	-- A rail, not a wall of bars. `grug_decor:darkage_iron_bars` stood here
+	-- first and the review threw it out: it is a `glasslike` FULL cube, so the
+	-- twelve cells meant to be a waist-high rail along the works gallery were
+	-- a solid barred screen a player can neither see over nor step past.
+	-- `grug_decor` registers no fence at all and no vendored fence is black,
+	-- so the Hollow's railing is the Hollow's own fence: the darkest vendored
+	-- timber, which this palette already names for `fence` and `fence_rail`.
+	railing = "default:fence_junglewood",
 
 	-- Sparse light: a wallmounted candle (`light_source = 12`) indoors and
 	-- on the buildings, and the road lamps that the lit-route invariant
