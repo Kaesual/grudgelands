@@ -85,6 +85,47 @@ return function(repo)
 				{"grug_decor:cottages_wagon_wheel", 12, "wallmounted"}},
 			carts = 3, cart_load = "grug_decor:xdecor_barrel",
 		},
+		{
+			key = "stillgrave",
+			file = "r7_stillgrave_blueprint.lua",
+			schema = "grug_wp13_stillgrave_blueprint_v1",
+			light = {"default:torch", "grug_decor:xdecor_candle"},
+			passable = {"air", "default:torch", "grug_decor:xdecor_candle",
+				"default:dry_shrub", "grug_nodes:bone_pile",
+				"grug_decor:xdecor_cobweb", "grug_decor:xdecor_ivy",
+				"doors:door_steel_a", "doors:door_steel_b", "doors:hidden"},
+			paved = {"default:mossycobble", "default:obsidianbrick",
+				"grug_decor:castle_pavement_brick"},
+			-- Both roof materials: the hamlet is obsidian brick, the
+			-- crypt-chapel alone carries the pale stone-brick family.
+			roof = {"stairs:stair_obsidianbrick",
+				"stairs:stair_outer_obsidianbrick",
+				"stairs:stair_inner_obsidianbrick", "stairs:slab_obsidianbrick",
+				"stairs:stair_stonebrick", "stairs:stair_outer_stonebrick",
+				"stairs:stair_inner_stonebrick", "stairs:slab_stonebrick"},
+			door_leaves = {"doors:door_steel_a", "doors:door_steel_b"},
+			tree = {log = "grug_trees:gravewood_tree",
+				leaves = "grug_trees:gravewood_leaves",
+				min_trunk = 5, reach = 3, low = 3, high = 1, min_stems = 40},
+			ground = {{"grug_nodes:blight_dirt", 6000},
+				{"grug_nodes:dirt_with_bone_litter", 1000},
+				{"default:gravel", 20}},
+			min_destinations = 5, min_doors = 6, min_rooms = 8,
+			min_lights = 8, min_oriented = 8,
+			-- The Hollow's loose props, exactly. 18 stepping stones worn over
+			-- the court paving. 14 barrels: five crate stacks and the
+			-- interiors' own. 13 ivy tendrils on the two ruins' standing
+			-- walls. No bale, no wheel and no hand cart: nothing here is
+			-- carted anywhere. The cobweb is deliberately absent from this
+			-- list -- it is the one prop in the corpus that SHOULD hang with
+			-- nothing under it, and the check below is a floating-prop check.
+			props = {{"grug_decor:cottages_straw_bale", 0},
+				{"grug_decor:xdecor_barrel", 14},
+				{"grug_decor:xdecor_stonepath", 18},
+				{"grug_decor:xdecor_ivy", 13, "wallmounted"},
+				{"grug_decor:cottages_wagon_wheel", 0, "wallmounted"}},
+			carts = 0,
+		},
 	}
 
 	local function set(list)
@@ -218,9 +259,21 @@ return function(repo)
 		assert(#blueprint.landmarks.lights == lights,
 			"light landmark population differs")
 		assert(solid(0, 0, 0) and stand(0, 1, 0) and not solid(0, 3, 0))
-		-- The road is a five-wide clear route, not a cosmetic line.
-		for z = 0, 63 do
-			for x = -2, 2 do assert(stand(x, 1, z), "blocked north road") end
+		-- The road is a five-wide clear route, not a cosmetic line. Its
+		-- extent -- and with it its DIRECTION -- is read out of the
+		-- `main_street` landmark rather than assumed: the three Elandor
+		-- starts leave their pad toward +z and the three Kragmar starts
+		-- toward -z, because the zone catalog gives the northern group a
+		-- `start:north` gate and the southern group a `start:south` one.
+		local street = assert(blueprint.landmarks.main_street,
+			"no main street landmark")
+		assert(street.max.x - street.min.x == 4 and
+			street.max.z - street.min.z == 63,
+			"the main street is not the contract's five by sixty-four route")
+		for z = street.min.z, street.max.z do
+			for x = street.min.x, street.max.x do
+				assert(stand(x, 1, z), "blocked main road at " .. key(x, 1, z))
+			end
 		end
 
 		-- Section 5 invariant 2: every door is a real, usable doorway.
@@ -264,6 +317,14 @@ return function(repo)
 			end
 			return false
 		end
+		-- A room declared a RUIN is the one exception to the roof and light
+		-- invariant, and it is an exception by construction, not by neglect:
+		-- a roofless ruin has no roof to be watertight and no light to be
+		-- lit. The relaxation is keyed on the flag the generator publishes,
+		-- so it reaches exactly those rooms; every inhabited room of every
+		-- settlement -- including the two intact homes on the same lane as
+		-- Stillgrave's two ruins -- keeps the full invariant below.
+		local ruins = 0
 		for _, room in ipairs(rooms) do
 			local lit = 0
 			for z = room.min.z, room.max.z do
@@ -276,10 +337,16 @@ return function(repo)
 					for y = 1, room.top do
 						if declared_lights[key(x, y, z)] then lit = lit + 1 end
 					end
-					assert(covered, "interior column open to the sky in " .. room.id)
+					assert(covered or room.ruin,
+						"interior column open to the sky in " .. room.id)
 				end
 			end
-			assert(lit > 0, "unlit interior in " .. room.id)
+			if room.ruin then
+				ruins = ruins + 1
+				assert(lit == 0, "a ruin is not a lit room: " .. room.id)
+			else
+				assert(lit > 0, "unlit interior in " .. room.id)
+			end
 			-- The eaves land on a full node: no half-node gap over any wall
 			-- that actually exists (an open-sided workyard has none to check).
 			if room.closed then
@@ -390,7 +457,7 @@ return function(repo)
 		end
 		report[#report + 1] = table.concat({"wp13_blueprint", spec.key,
 			#blueprint.cells, count, palette_count, lights, oriented,
-			#destinations, #doorways, #rooms, stems, #queue}, "\t") .. "\n"
+			#destinations, #doorways, #rooms, ruins, stems, #queue}, "\t") .. "\n"
 	end
 	return table.concat(report)
 end

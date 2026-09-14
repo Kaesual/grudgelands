@@ -678,6 +678,50 @@ MANUAL_OVERRIDES = {
     "grug_decor:cottages_window_shutter_open": {
         "tiles": ["grug_decor_cottages_cottages_minimal_wood.png"],
         "drawtype": "nodebox", "paramtype2": "facedir"},
+    # ... and the undead vocabulary the Stillgrave palette adds. The castle
+    # pillars come out of a `register_pillar(material)` loop and the xdecor
+    # pieces out of the same `tex()` helper as the four above, so neither is
+    # reachable by static scanning.
+    "grug_decor:castle_pillar_obsidianbrick_bottom": {
+        "tiles": ["default_obsidian_brick.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_pillar_obsidianbrick_middle": {
+        "tiles": ["default_obsidian_brick.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_pillar_obsidianbrick_top": {
+        "tiles": ["default_obsidian_brick.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:darkage_iron_bars": {
+        "tiles": ["grug_decor_darkage_darkage_iron_bars.png"],
+        "drawtype": "glasslike", "alpha": "clip"},
+    "grug_decor:xdecor_candle": {
+        "tiles": ["grug_decor_xdecor_xdecor_candle_floor.png"],
+        "drawtype": "torchlike", "paramtype2": "wallmounted",
+        "alpha": "clip"},
+    "grug_decor:xdecor_cobweb": {
+        "tiles": ["grug_decor_xdecor_xdecor_cobweb.png"],
+        "drawtype": "plantlike", "alpha": "clip"},
+    "grug_decor:xdecor_ivy": {
+        "tiles": ["grug_decor_xdecor_xdecor_ivy.png"],
+        "drawtype": "signlike", "paramtype2": "wallmounted",
+        "alpha": "clip"},
+    "grug_decor:xdecor_table": {
+        "tiles": ["grug_decor_xdecor_xdecor_wood.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:xdecor_workbench": {
+        "tiles": ["grug_decor_xdecor_xdecor_workbench_top.png",
+                  "grug_decor_xdecor_xdecor_workbench_bottom.png",
+                  "grug_decor_xdecor_xdecor_workbench_sides.png",
+                  "grug_decor_xdecor_xdecor_workbench_sides.png",
+                  "grug_decor_xdecor_xdecor_workbench_sides.png",
+                  "grug_decor_xdecor_xdecor_workbench_front.png"],
+        "drawtype": "normal", "paramtype2": "facedir"},
+    # `grug_nodes` builds its litter tops through a `register_litter()`
+    # wrapper, in the same three-tile shape default's own litters use.
+    "grug_nodes:dirt_with_bone_litter": {
+        "tiles": ["grug_nodes_bone_litter.png", "default_dirt.png",
+                  "default_dirt.png^grug_nodes_bone_litter_side.png"],
+        "drawtype": "normal"},
     "grug_decor:cottages_wagon_wheel": {
         "tiles": ["grug_decor_cottages_cottages_wagonwheel.png"],
         "drawtype": "mesh", "paramtype2": "wallmounted", "alpha": "clip"},

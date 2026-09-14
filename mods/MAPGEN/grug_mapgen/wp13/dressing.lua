@@ -359,6 +359,151 @@ local function loader(directory)
 		end
 	end
 
+	-- A gravewood: the bent, mostly bare dead tree of the blight basin.
+	--
+	-- The proportions are decoded from the mod's own assets
+	-- (`mods/ITEMS/grug_trees/schematics/grug_gravewood_small.mts`, 7 x 7 x 7,
+	-- and `grug_gravewood_tall.mts`, 7 x 9 x 7): three clear stem logs, the
+	-- first fork on the fourth course, bent branch runs that reach two or
+	-- three nodes out while rising one, and only four to six grey leaf
+	-- remnants in the whole crown -- a tenth of what a pine or an apple
+	-- carries. Nothing here is a broad canopy.
+	--
+	-- The one deliberate difference from the assets is that the stem carries
+	-- on to its own tip and ends in a leaf remnant. The schematics let the
+	-- trunk stop in mid-air under a fork, and the settlement tree invariant
+	-- (every leaf rooted on an unbroken stem that starts on the ground) is
+	-- worth more than that detail, which the branch runs give back anyway.
+	--
+	-- `height` is the stem. Three of the four arms are taken, chosen by
+	-- position, so neighbouring gravewoods are not the same silhouette.
+	local GRAVEWOOD_ARMS = {
+		{dx = 1, dz = 0, lift = -3, reach = 3},
+		{dx = -1, dz = 0, lift = -2, reach = 2},
+		{dx = 0, dz = 1, lift = -1, reach = 2},
+		{dx = 0, dz = -1, lift = -2, reach = 3},
+	}
+
+	function M.gravewood(buf, palette, x, z, height)
+		local log = palette.node("tree_log")
+		local leaves = palette.node("tree_leaves")
+		for y = 1, height do buf:put(x, y, z, log) end
+		buf:put(x, height + 1, z, leaves)
+		local skip = (x * 37 + z * 53) % 4 + 1
+		for index = 1, #GRAVEWOOD_ARMS do
+			local arm = GRAVEWOOD_ARMS[index]
+			if index ~= skip then
+				local tip_y = height + arm.lift
+				for step = 1, arm.reach do
+					tip_y = height + arm.lift + math.floor(step / 2)
+					buf:put(x + arm.dx * step, tip_y, z + arm.dz * step, log)
+				end
+				buf:put(x + arm.dx * arm.reach, tip_y + 1,
+					z + arm.dz * arm.reach, leaves)
+			end
+		end
+	end
+
+	-- A grave: a flagstone laid in the blight with an upright marker on it.
+	-- `tall` stacks a second course, which is what the older half of a
+	-- burial ground looks like next to the newer.
+	function M.grave(buf, palette, x, z, tall)
+		buf:put(x, 0, z, palette.node("path"))
+		buf:put(x, 1, z, palette.node("low_wall"))
+		if tall then buf:put(x, 2, z, palette.node("low_wall")) end
+	end
+
+	-- A burial ground: rows of graves two nodes apart, with the odd plot
+	-- left open and a bone pile or a dry shrub where one has sunk. Returns
+	-- the number of markers set.
+	function M.graveyard(buf, palette, x1, z1, x2, z2)
+		local set = 0
+		for z = z1, z2, 2 do
+			for x = x1, x2, 2 do
+				local hash = (x * 29 + z * 61) % 11
+				local below = buf:at(x, 0, z)
+				local above = buf:at(x, 1, z)
+				if below and below.name ~= "air" and
+						(above == nil or above.name == "air") and hash ~= 3 then
+					if hash == 7 then
+						buf:put(x, 1, z, palette.node("undergrowth"))
+					else
+						M.grave(buf, palette, x, z, hash % 4 == 0)
+						set = set + 1
+					end
+				end
+			end
+		end
+		return set
+	end
+
+	-- A cobweb in a corner nobody sweeps. `grug_decor:xdecor_cobweb` is a
+	-- free plantlike with no `attached_node` group and no paramtype2, so it
+	-- needs neither support nor an orientation -- unlike the ivy below.
+	-- Returns false and writes nothing when the cell is taken or the palette
+	-- carries no cobweb.
+	function M.cobweb(buf, palette, x, y, z)
+		local name = palette.maybe("cobweb")
+		if name == nil then return false end
+		local here = buf:at(x, y, z)
+		if here ~= nil and here.name ~= "air" then return false end
+		buf:put(x, y, z, name)
+		return true
+	end
+
+	-- Ivy climbing the inner face of a standing wall. It is a wallmounted
+	-- `signlike`, so `parts.wall_prop` places it and refuses any face that is
+	-- not an opaque full node.
+	function M.ivy(buf, palette, x, y, z, dx, dz)
+		return parts.wall_prop(buf, palette, "ivy", x, y, z, dx, 0, dz)
+	end
+
+	-- A heap of fallen masonry, one to three courses.
+	function M.rubble_heap(buf, palette, x, z, height)
+		local name = palette.node("rubble")
+		for y = 1, height do buf:put(x, y, z, name) end
+	end
+
+	-- The blight's own ground cover.
+	--
+	-- `M.undergrowth` below cannot serve here, and not only because a blight
+	-- basin wants different proportions: its selector `(7x + 11z) % density`
+	-- and its role test `(x + z) % 4` are not independent -- 7x + 11z is
+	-- 3(x + z) modulo 4 -- so at density 4 every cell it picks takes the
+	-- `undergrowth` branch and the `grass_tuft` branch is never reached. In a
+	-- pine wood or a meadow that shows up as a slightly monotonous flora; in
+	-- the Hollow it carpeted the whole pad with bone piles. The two existing
+	-- settlements are byte-frozen, so that routine is left exactly as it is
+	-- and the Hollow scatters its own.
+	--
+	-- One hash, three bands: `bones` cells in `modulus` get a bone pile,
+	-- the next `shrubs` a dead shrub, the rest nothing. Only unbuilt soil is
+	-- sown. Returns the two populations.
+	function M.blight_flora(buf, palette, x1, z1, x2, z2, modulus, bones, shrubs)
+		local bone = palette.node("undergrowth")
+		local shrub = palette.node("grass_tuft")
+		local sown_bones, sown_shrubs = 0, 0
+		for z = z1, z2 do
+			for x = x1, x2 do
+				local hash = (x * 89 + z * 151 + x * z * 7) % modulus
+				local name
+				if hash < bones then name = bone
+				elseif hash < bones + shrubs then name = shrub end
+				if name then
+					local below = buf:at(x, 0, z)
+					local above = buf:at(x, 1, z)
+					if below and below.name:find("dirt") and
+							(above == nil or above.name == "air") then
+						buf:put(x, 1, z, name)
+						if name == bone then sown_bones = sown_bones + 1
+						else sown_shrubs = sown_shrubs + 1 end
+					end
+				end
+			end
+		end
+		return sown_bones, sown_shrubs
+	end
+
 	-- Scattered undergrowth on a rectangle of open ground.
 	function M.undergrowth(buf, palette, x1, z1, x2, z2, density)
 		for z = z1, z2 do

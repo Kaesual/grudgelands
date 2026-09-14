@@ -436,6 +436,119 @@ function M.kits.yard(buf, parts, palette, room, spec)
 	return lights
 end
 
+-- The crypt-chapel: the hall of the Hollow, and the one room whose floor is
+-- not flat. A board walkway runs round the inside of the walls at the usual
+-- course; between the walkways the nave is sunk one node into stone, so the
+-- room reads as a vault the hamlet built its chapel over rather than a hall
+-- with a dark carpet.
+--
+-- The drop is exactly one node, which the conservative walk crosses, and the
+-- doorway row stays at walkway level so the door's inside foot is standable
+-- like every other door in the game. Sarcophagus lids line the nave, the
+-- altar tomb closes the far end with a standing light at each shoulder, and
+-- the only fire in the room is the vigil cauldron in the corner. There is
+-- deliberately no bed: the dead keep this room, they do not sleep in it.
+function M.kits.crypt(buf, parts, palette, room, spec)
+	local lights = {}
+	local cx = math.floor((room.x1 + room.x2) / 2)
+	local nave = {x1 = room.x1 + 2, x2 = room.x2 - 2,
+		z1 = room.z1 + 2, z2 = room.z2 - 2}
+
+	-- Sink the nave and kerb its edge, so the walkway has a visible lip.
+	for z = nave.z1, nave.z2 do
+		for x = nave.x1, nave.x2 do
+			buf:put(x, room.y - 1, z, palette.node("plaza"))
+			buf:put(x, room.y, z, "air", 0)
+		end
+	end
+	for z = nave.z1 - 1, nave.z2 + 1 do
+		for x = nave.x1 - 1, nave.x2 + 1 do
+			if x == nave.x1 - 1 or x == nave.x2 + 1 or
+					z == nave.z1 - 1 or z == nave.z2 + 1 then
+				buf:put(x, room.y, z, palette.node("plaza_edge"))
+			end
+		end
+	end
+
+	-- Sarcophagi: a lid of slab on a kerb of low wall, down both sides of
+	-- the sunken nave.
+	for z = nave.z1 + 1, nave.z2 - 2, 3 do
+		for _, x in ipairs({nave.x1, nave.x2}) do
+			buf:put(x, room.y, z, palette.node("low_wall"))
+			buf:put(x, room.y, z + 1, palette.node("low_wall"))
+			buf:put(x, room.y + 1, z, palette.node("roof_slab"), 0)
+			buf:put(x, room.y + 1, z + 1, palette.node("roof_slab"), 0)
+		end
+	end
+
+	-- The altar tomb at the head of the nave, with a standing light at each
+	-- shoulder. Those two and the vigil cauldron are the room's only fires.
+	for x = cx - 1, cx + 1 do
+		buf:put(x, room.y, nave.z2, palette.node("foundation"))
+		buf:put(x, room.y + 1, nave.z2, palette.node("chimney_cap"), 0)
+	end
+	for _, x in ipairs({cx - 2, cx + 2}) do
+		buf:put(x, room.y, nave.z2, palette.node("foundation"))
+		parts.floor_torch(buf, palette, x, room.y + 1, nave.z2)
+		lights[#lights + 1] = {x = x, y = room.y + 1, z = nave.z2}
+	end
+
+	-- Pews on the walkway, the urn shelves on the side walls, the vigil
+	-- cauldron in the near corner and its flue.
+	for z = room.z1 + 2, room.z2 - 3, 2 do
+		M.settle(buf, parts, palette, room, room.x1, z, "z", 1, 1)
+		M.settle(buf, parts, palette, room, room.x2, z, "z", 1, 3)
+	end
+	M.shelves(buf, palette, room, room.x1, room.z2 - 1, "z", 2, 1)
+	M.shelves(buf, palette, room, room.x2, room.z2 - 1, "z", 2, 3)
+	M.hearth(buf, parts, palette, room, spec.hearth_x or room.x2,
+		spec.hearth_z or room.z1, spec.hearth_face or 3, room.h, lights)
+	for _, z in ipairs({room.z1 + 2, room.z2 - 2}) do
+		M.wall_light(buf, parts, palette, room, room.x1, room.y + 3, z, lights)
+		M.wall_light(buf, parts, palette, room, room.x2, room.y + 3, z, lights)
+	end
+	return lights
+end
+
+-- The bone-carver's floor: the stone bench under the window, the rack of
+-- stock, the sorting barrels and a second bench in the wing. No forge fire --
+-- carving bone is cold work -- so the light is candles, not a hearth.
+function M.kits.carver(buf, parts, palette, room, spec)
+	local lights = {}
+	local cx = math.floor((room.x1 + room.x2) / 2)
+	local cz = math.floor((room.z1 + room.z2) / 2)
+	for x = cx - 2, cx + 2 do
+		buf:put(x, room.y + 1, room.z1, palette.node("workbench"))
+	end
+	buf:put(cx, room.y + 2, room.z1, palette.node("chimney_cap"), 0)
+	M.board(buf, parts, palette, room, cx - 1, cz, "x", 3)
+	M.settle(buf, parts, palette, room, cx - 1, cz + 1, "x", 3, 2)
+	M.storage(buf, palette, room, room.x1, room.z2 - 2, "z", 3, 1)
+	M.shelves(buf, palette, room, room.x2, room.z2 - 2, "z", 3, 3)
+	M.rug(buf, palette, room, cx - 1, cz + 2, cx + 1, cz + 2, true)
+	for _, z in ipairs({room.z1 + 1, room.z2 - 1}) do
+		M.wall_light(buf, parts, palette, room, room.x1, room.y + 3, z, lights)
+		M.wall_light(buf, parts, palette, room, room.x2, room.y + 3, z, lights)
+	end
+	return lights
+end
+
+-- The carver's drying wing: the stock racks, a sorting table and one light.
+-- It opens onto the main floor, so its light hangs on a closed wall only.
+function M.kits.carver_wing(buf, parts, palette, room, spec)
+	local lights = {}
+	local cx = math.floor((room.x1 + room.x2) / 2)
+	local cz = math.floor((room.z1 + room.z2) / 2)
+	buf:put(cx, room.y + 1, cz, palette.node("workbench"))
+	buf:put(cx, room.y + 2, cz, palette.node("chimney_cap"), 0)
+	M.storage(buf, palette, room, room.x1 + 1, room.z1, "x", 2, 0)
+	M.shelves(buf, palette, room, room.x1 + 1, room.z2, "x", 2, 2)
+	M.rug(buf, palette, room, cx - 1, cz + 1, cx + 1, cz + 1, false)
+	M.wall_light(buf, parts, palette, room, room.x2, room.y + 3, room.z1, lights)
+	M.wall_light(buf, parts, palette, room, cx, room.y + 3, room.z2, lights)
+	return lights
+end
+
 function M.furnish(kit, buf, parts, palette, room, spec)
 	local builder = M.kits[kit]
 	if not builder then
