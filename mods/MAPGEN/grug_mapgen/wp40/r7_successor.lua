@@ -1,13 +1,29 @@
 -- One R7 successor tail composed from P9G and the fixed activation suffix.
+--
+-- `settlement_configs` is the ordered WP13 settlement list (`r7_settlement.lua`
+-- roster order: Hearthpine, then Dawnmere). Every settlement is planned and
+-- settled in that order, and its ledger and metrics are published under its
+-- own key, so `ledger.hearthpine` keeps the shape the accepted R6 settlement
+-- contract reads and a second start adds `ledger.dawnmere` beside it.
 
-return function(p9g_config, anchor_config, hearthpine_config)
+return function(p9g_config, anchor_config, settlement_configs)
 	local function fail(message) error("WP40 R7 successor: " .. message, 0) end
 	if type(p9g_config) ~= "table" or type(p9g_config.new) ~= "function" or
 			type(anchor_config) ~= "table" or type(anchor_config.new) ~= "function" or
-			type(hearthpine_config) ~= "table" or
-			type(hearthpine_config.new) ~= "function" then
+			type(settlement_configs) ~= "table" or #settlement_configs < 1 then
 		fail("configuration seam differs")
 	end
+	local keys = {}
+	for index = 1, #settlement_configs do
+		local settlement = settlement_configs[index]
+		if type(settlement) ~= "table" or type(settlement.new) ~= "function" or
+				type(settlement.key) ~= "string" or settlement.key == "" or
+				keys[settlement.key] then
+			fail("settlement configuration seam differs")
+		end
+		keys[settlement.key] = true
+	end
+	if not keys.hearthpine then fail("settlement roster lost Hearthpine") end
 	local config = {schema = "grug_wp40_r7_successor_config_v1"}
 	function config.new(dependencies)
 		local p9g = p9g_config.new({full_seed_string = dependencies.full_seed_string,
@@ -17,21 +33,33 @@ return function(p9g_config, anchor_config, hearthpine_config)
 			construction_identity = dependencies.construction_identity,
 			runtime_mode = dependencies.runtime_mode})
 		local anchors = anchor_config.new(dependencies)
-		local hearthpine = hearthpine_config.new(dependencies)
+		local settlements = {}
+		for index = 1, #settlement_configs do
+			local settlement = settlement_configs[index].new(dependencies)
+			if type(settlement) ~= "table" or
+					settlement.key ~= settlement_configs[index].key then
+				fail("settlement tail differs")
+			end
+			settlements[index] = settlement
+		end
 		local tail = {}
 		function tail.plan_slice(self, minp, maxp, plan, generation)
 			if not rawequal(self, tail) then fail("plan receiver differs") end
 			p9g:plan_slice(minp, maxp, plan, generation)
 			anchors:bind_plan(minp, maxp, plan, generation)
-			hearthpine:bind_plan(minp, maxp, plan, generation)
+			for index = 1, #settlements do
+				settlements[index]:bind_plan(minp, maxp, plan, generation)
+			end
 		end
 		function tail.plan_evidence_owner(self, min_x, max_x, min_z, max_z)
 			if not rawequal(self, tail) then fail("evidence receiver differs") end
 			local plan, generation = p9g:plan_evidence_owner(min_x, max_x, min_z, max_z)
 			anchors:bind_plan({x = min_x, y = -30912, z = min_z},
 				{x = max_x, y = 30927, z = max_z}, plan, generation)
-			hearthpine:bind_plan({x = min_x, y = -30912, z = min_z},
-				{x = max_x, y = 30927, z = max_z}, plan, generation)
+			for index = 1, #settlements do
+				settlements[index]:bind_plan({x = min_x, y = -30912, z = min_z},
+					{x = max_x, y = 30927, z = max_z}, plan, generation)
+			end
 			return plan, generation
 		end
 		function tail.settle(self, context)
@@ -46,16 +74,21 @@ return function(p9g_config, anchor_config, hearthpine_config)
 			end
 			local p9g_ledger = p9g:settle(p9g_context)
 			local anchor_ledger = anchors:settle(context)
-			local hearthpine_ledger = hearthpine:settle(context)
-			return {schema = "grug_wp40_r7_successor_ledger_v1",
-				p9g = p9g_ledger, anchors = anchor_ledger,
-				hearthpine = hearthpine_ledger}
+			local ledger = {schema = "grug_wp40_r7_successor_ledger_v1",
+				p9g = p9g_ledger, anchors = anchor_ledger}
+			for index = 1, #settlements do
+				ledger[settlements[index].key] = settlements[index]:settle(context)
+			end
+			return ledger
 		end
 		function tail.metrics(self)
 			if not rawequal(self, tail) then fail("metrics receiver differs") end
-			return {schema = "grug_wp40_r7_successor_metrics_v1",
-				p9g = p9g:metrics(), anchors = anchors:metrics(),
-				hearthpine = hearthpine:metrics()}
+			local metrics = {schema = "grug_wp40_r7_successor_metrics_v1",
+				p9g = p9g:metrics(), anchors = anchors:metrics()}
+			for index = 1, #settlements do
+				metrics[settlements[index].key] = settlements[index]:metrics()
+			end
+			return metrics
 		end
 		function tail.probe_reason(self, context, catalog_index, x, y, z)
 			if not rawequal(self, tail) then fail("probe receiver differs") end

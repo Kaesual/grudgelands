@@ -111,7 +111,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		wp40_directory .. "/r7_anchor_roster.lua")
 	local r7_anchor_activation_factory = dofile(
 		wp40_directory .. "/r7_anchor_activation.lua")
-	local r7_hearthpine_factory = dofile(wp40_directory .. "/r7_hearthpine.lua")
+	local r7_settlement_module = dofile(wp40_directory .. "/r7_settlement.lua")
 	local r7_successor_factory = dofile(wp40_directory .. "/r7_successor.lua")
 	local r7_zone_overlay_factory = dofile(wp40_directory .. "/r7_zone_overlay.lua")
 	local r7_r6_manifest = dofile(wp40_directory .. "/r7_r6_manifest.lua")
@@ -136,8 +136,28 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	local r6_manifest = r7_r6_manifest()
 	local template_source = template_source_factory(core_api, schematic_directory,
 		wp40_directory .. "/../../../ITEMS/grug_trees/schematics")
-	local hearthpine_blueprint = dofile(
-		wp40_directory .. "/r7_hearthpine_blueprint.lua")()
+	-- Every WP13 start, in the fixed roster order, plus the sorted ASCII
+	-- union of their palettes: one opcode-37 content channel serves them all,
+	-- so a cell's content ref is an index into this union.
+	local settlements = {}
+	local settlement_palette, settlement_seen = {}, {}
+	for index = 1, #r7_settlement_module.roster do
+		local profile = r7_settlement_module.roster[index]
+		local blueprint = dofile(
+			wp40_directory .. "/" .. profile.blueprint_file)()
+		if type(blueprint) ~= "table" or type(blueprint.palette) ~= "table" then
+			fail("WP13 blueprint " .. profile.key .. " differs")
+		end
+		settlements[index] = {profile = profile, blueprint = blueprint}
+		for palette_index = 1, #blueprint.palette do
+			local name = blueprint.palette[palette_index]
+			if not settlement_seen[name] then
+				settlement_seen[name] = true
+				settlement_palette[#settlement_palette + 1] = name
+			end
+		end
+	end
+	table.sort(settlement_palette)
 
 	local module = {}
 	local function build(native_identities, expected_manifest_sha256, evidence_mode,
@@ -154,9 +174,18 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		end
 		local full_seed = validate_live_scalars()
 		local content_set = r7_content_factory(core_api, projection, raw_sha256,
-			hearthpine_blueprint.palette)
-		local hearthpine_config = r7_hearthpine_factory(hearthpine_blueprint,
-			content_set.hearthpine, raw_sha256)
+			settlement_palette)
+		local settlement_configs, settlement_identities = {}, {}
+		for index = 1, #settlements do
+			local row = settlements[index]
+			local settlement_config = r7_settlement_module.config(row.profile,
+				row.blueprint, content_set.settlement, raw_sha256)
+			settlement_configs[index] = settlement_config
+			settlement_identities[index] = {key = row.profile.key,
+				anchor_id = row.profile.anchor_id,
+				delta_schema = row.profile.delta_schema,
+				identity = settlement_config.identity}
+		end
 		local cultural = catalog.cultural_registrations()
 		local gathering_manifest = catalog.manifest()
 		local heightmap_fetches = 0
@@ -181,7 +210,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			local anchor_successor = r7_anchor_activation_factory(
 				r7_anchor_roster_factory, content_set.anchors)
 			successor = r7_successor_factory(p9g_successor, anchor_successor,
-				hearthpine_config)
+				settlement_configs)
 		end
 		local authored_source = dofile(wp40_directory .. "/source/catalog.lua")
 		local consumer_payload = consumer_payload_factory(source,
@@ -249,11 +278,11 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			anchor_content = {schema = content_set.anchors.schema,
 				digest = content_set.anchor_digest,
 				semantic_digest = content_set.anchor_semantic_digest},
-			hearthpine_content = {schema = content_set.hearthpine.schema,
-				digest = content_set.hearthpine_digest,
-				semantic_digest = content_set.hearthpine_semantic_digest,
-				count = #content_set.hearthpine.content_names},
-			hearthpine_blueprint = hearthpine_config.identity,
+			settlement_content = {schema = content_set.settlement.schema,
+				digest = content_set.settlement_digest,
+				semantic_digest = content_set.settlement_semantic_digest,
+				count = #content_set.settlement.content_names},
+			settlement_blueprints = settlement_identities,
 			anchor_roster = anchor_roster.copy_rows(),
 			anchor_roster_sha256 = anchor_roster.sha256,
 			cultural_registrations = cultural,

@@ -19,8 +19,13 @@ M.required = {
 	"wall", "wall_accent", "window", "window_frame", "workbench",
 }
 
--- Roles a generator must degrade gracefully without.
-M.optional = {"bed_fancy", "crop", "fence_gate", "shutter"}
+-- Roles a generator must degrade gracefully without. Everything a race can
+-- do without lives here, so a palette that has no half timbering, no straw
+-- and no flower pots still builds; `palette.maybe(role)` answers nil and the
+-- part that wanted it writes nothing.
+M.optional = {"bale", "bed_fancy", "bench_seat", "board_table", "crop",
+	"fence_gate", "flower", "flower_alt", "ground_straw", "hedge",
+	"hedge_stem", "mat", "shutter", "stepping", "wall_infill", "wheel"}
 
 -- Three roles do not name a node at all: they name the BASE of a family the
 -- engine registers under several suffixes, and only the part that knows the
@@ -110,6 +115,91 @@ M.races.dwarf = {
 	undergrowth = "default:fern_1",
 	grass_tuft = "default:grass_1",
 	fern = "default:fern_2",
+}
+
+-- Human (Dawnmere Fields): cobble footings, plank and half-timbered walls,
+-- brick accents and chimneys, oak framing, and the straw, barrels, bales and
+-- flower pots of a working farm. Contract section 4's human column, plus the
+-- kit nodes that fit it; the roof stays the `stairs:` family because the
+-- cottages roof nodes ship no corner shapes (see the increment-3 evidence).
+M.races.human = {
+	ground = "default:dirt_with_grass",
+	ground_patch = "default:dirt",
+	ground_bare = "default:gravel",
+	ground_straw = "grug_decor:cottages_straw_ground",
+	subsoil = "default:dirt",
+	path = "default:cobble",
+	plaza = "default:cobble",
+	plaza_edge = "default:brick",
+	stepping = "grug_decor:xdecor_stonepath",
+	rubble = "default:gravel",
+
+	foundation = "default:cobble",
+	wall = "default:wood",
+	wall_infill = "grug_decor:cottages_loam",
+	wall_accent = "default:brick",
+	post = "default:tree",
+	beam = "default:tree",
+	floor = "default:wood",
+	ceiling = "default:wood",
+
+	roof_stair = "stairs:stair_wood",
+	roof_stair_outer = "stairs:stair_outer_wood",
+	roof_stair_inner = "stairs:stair_inner_wood",
+	roof_slab = "stairs:slab_wood",
+	roof_ridge = "default:wood",
+
+	window = "xpanes:pane_flat",
+	window_frame = "default:tree",
+	shutter = "grug_decor:cottages_window_shutter_closed",
+	door = "doors:door_wood",
+	door_hidden = "doors:hidden",
+
+	fence = "default:fence_wood",
+	fence_rail = "default:fence_rail_wood",
+	fence_gate = "doors:gate_wood_closed",
+	low_wall = "walls:cobble",
+	railing = "default:fence_wood",
+
+	light_wall = "default:torch_wall",
+	light_post = "default:torch",
+	light_indoor = "default:torch_wall",
+
+	bed = "beds:bed",
+	bed_fancy = "beds:fancy_bed",
+	table_top = "stairs:slab_wood",
+	table_leg = "default:fence_wood",
+	seat = "stairs:stair_wood",
+	bench_seat = "grug_decor:cottages_bench",
+	board_table = "grug_decor:cottages_table",
+	mat = "grug_decor:cottages_straw_mat",
+	bale = "grug_decor:cottages_straw_bale",
+	wheel = "grug_decor:cottages_wagon_wheel",
+	-- Furnishing: static decor only, for the reason written above the dwarf
+	-- palette. The anvil is the human workbench; it is geometry, not a
+	-- crafting service.
+	shelf = "grug_decor:xdecor_empty_shelf",
+	shelf_vessels = "grug_decor:cottages_shelf",
+	storage = "grug_decor:xdecor_barrel",
+	workbench = "grug_decor:cottages_anvil",
+	hearth = "grug_decor:xdecor_cauldron",
+	chimney = "default:brick",
+	chimney_cap = "stairs:slab_brick",
+	rug = "wool:white",
+	rug_accent = "wool:red",
+
+	planter = "default:brick",
+	planter_soil = "default:dirt_with_grass",
+	flower = "grug_decor:xdecor_potted_geranium",
+	flower_alt = "grug_decor:xdecor_potted_dandelion_yellow",
+	crop = "default:junglegrass",
+	tree_log = "default:tree",
+	tree_leaves = "default:leaves",
+	hedge = "default:bush_leaves",
+	hedge_stem = "default:bush_stem",
+	undergrowth = "default:grass_4",
+	grass_tuft = "default:grass_3",
+	fern = "default:fern_1",
 }
 
 local function contains(list, value)

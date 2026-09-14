@@ -2,12 +2,12 @@
 -- namespace remains separate from the 84-row production-R6 namespace and the
 -- twelve-row P9G suffix.
 
-return function(core_api, projection, raw_sha256, hearthpine_palette)
+return function(core_api, projection, raw_sha256, settlement_palette)
 	local MAX_SAFE = 9007199254740991
 	local PRODUCTION_SCHEMA = "grug_wp40_r7_production_r6_content_v1"
 	local P9G_SCHEMA = "grug_wp40_r7_p9g_content_v1"
 	local ANCHOR_SCHEMA = "grug_wp40_r7_anchor_content_v1"
-	local HEARTHPINE_SCHEMA = "grug_wp13_hearthpine_content_v1"
+	local SETTLEMENT_SCHEMA = "grug_wp13_settlement_content_v1"
 	local ACCEPTED_R6_ROWS = {
 		{"default:acacia_bush_leaves", 8},
 		{"default:acacia_bush_stem", 8},
@@ -163,8 +163,8 @@ return function(core_api, projection, raw_sha256, hearthpine_palette)
 			type(projection.tiers) ~= "table" or type(projection.resources) ~= "table" then
 		fail("construction seam differs")
 	end
-	if type(hearthpine_palette) ~= "table" or #hearthpine_palette < 1 then
-		fail("Hearthpine palette differs")
+	if type(settlement_palette) ~= "table" or #settlement_palette < 1 then
+		fail("settlement palette differs")
 	end
 
 	local rows = {}
@@ -249,7 +249,7 @@ return function(core_api, projection, raw_sha256, hearthpine_palette)
 	class_by_cid[ignore_cid] = {3, 0, 0, false, false, false, false, 0, "none"}
 
 	local calls = {resolve = 0, classify = 0, metrics = 0, p9g_resolve = 0,
-		anchor_resolve = 0, hearthpine_resolve = 0}
+		anchor_resolve = 0, settlement_resolve = 0}
 	local r5 = {schema = "grug_wp40_r5_content_contract_v1",
 		ignore_cid = ignore_cid, ordinary_water_family_id = 1,
 		river_water_family_id = 2}
@@ -372,33 +372,39 @@ return function(core_api, projection, raw_sha256, hearthpine_palette)
 		return anchor_cids[content_ref], 1, 1, 0, 32
 	end
 
-	local hearthpine_cids = {}
-	for index = 1, #hearthpine_palette do
-		local name = hearthpine_palette[index]
+	-- One opcode-37 content channel serves EVERY WP13 settlement. The palette
+	-- handed in is the sorted ASCII union of every start blueprint's palette,
+	-- so a cell's content ref is a single index into this shared table and the
+	-- `successor_ref` the R6 writer derives from it stays inside the one range
+	-- the manifest delta declares. A per-settlement channel would need its own
+	-- opcode, class and ref window in `r6_settlement.lua`; a union needs none.
+	local settlement_cids = {}
+	for index = 1, #settlement_palette do
+		local name = settlement_palette[index]
 		if type(name) ~= "string" or name == "" or
-				(index > 1 and not less_bytes(hearthpine_palette[index - 1], name)) then
-			fail("Hearthpine palette is not ASCII unique")
+				(index > 1 and not less_bytes(settlement_palette[index - 1], name)) then
+			fail("settlement palette is not ASCII unique")
 		end
 		local def = rawget(core_api.registered_nodes, name)
 		if type(def) ~= "table" then
-			fail("unregistered Hearthpine target " .. name)
+			fail("unregistered settlement target " .. name)
 		end
 		local cid = core_api.get_content_id(name)
-		integer(cid, "Hearthpine CID", 0, MAX_SAFE)
-		if cid == ignore_cid then fail("Hearthpine target is ignore") end
-		hearthpine_cids[index] = cid
+		integer(cid, "settlement CID", 0, MAX_SAFE)
+		if cid == ignore_cid then fail("settlement target is ignore") end
+		settlement_cids[index] = cid
 	end
-	local hearthpine = {schema = HEARTHPINE_SCHEMA,
-		content_names = copy_array(hearthpine_palette), content_cids = hearthpine_cids}
-	function hearthpine.resolve(content_ref, param2)
-		calls.hearthpine_resolve = calls.hearthpine_resolve + 1
-		integer(content_ref, "Hearthpine content ref", 1, #hearthpine_cids)
-		integer(param2, "Hearthpine param2", 0, 255)
-		return hearthpine_cids[content_ref], param2
+	local settlement = {schema = SETTLEMENT_SCHEMA,
+		content_names = copy_array(settlement_palette), content_cids = settlement_cids}
+	function settlement.resolve(content_ref, param2)
+		calls.settlement_resolve = calls.settlement_resolve + 1
+		integer(content_ref, "settlement content ref", 1, #settlement_cids)
+		integer(param2, "settlement param2", 0, 255)
+		return settlement_cids[content_ref], param2
 	end
-	function hearthpine.content_ref(name)
-		for index = 1, #hearthpine_palette do
-			if hearthpine_palette[index] == name then return index end
+	function settlement.content_ref(name)
+		for index = 1, #settlement_palette do
+			if settlement_palette[index] == name then return index end
 		end
 		return nil
 	end
@@ -445,7 +451,7 @@ return function(core_api, projection, raw_sha256, hearthpine_palette)
 		production = production,
 		p9g = p9g,
 		anchors = anchors,
-		hearthpine = hearthpine,
+		settlement = settlement,
 		accepted_r6_rows = function()
 			local copy = {}
 			for index = 1, #ACCEPTED_R6_ROWS do
@@ -456,16 +462,16 @@ return function(core_api, projection, raw_sha256, hearthpine_palette)
 		production_digest = identity(PRODUCTION_SCHEMA, names, cids, masks),
 		p9g_digest = identity(P9G_SCHEMA, P9G_NAMES, p9g_cids, nil),
 		anchor_digest = identity(ANCHOR_SCHEMA, ANCHOR_NAMES, anchor_cids, nil),
-		hearthpine_digest = identity(HEARTHPINE_SCHEMA, hearthpine_palette,
-			hearthpine_cids, nil),
+		settlement_digest = identity(SETTLEMENT_SCHEMA, settlement_palette,
+			settlement_cids, nil),
 		production_semantic_digest =
 			semantic_identity(PRODUCTION_SCHEMA, names, cids, masks),
 		p9g_semantic_digest =
 			semantic_identity(P9G_SCHEMA, P9G_NAMES, p9g_cids, nil),
 		anchor_semantic_digest =
 			semantic_identity(ANCHOR_SCHEMA, ANCHOR_NAMES, anchor_cids, nil),
-		hearthpine_semantic_digest =
-			semantic_identity(HEARTHPINE_SCHEMA, hearthpine_palette,
-				hearthpine_cids, nil),
+		settlement_semantic_digest =
+			semantic_identity(SETTLEMENT_SCHEMA, settlement_palette,
+				settlement_cids, nil),
 	}
 end

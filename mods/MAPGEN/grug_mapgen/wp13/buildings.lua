@@ -196,8 +196,19 @@ local function loader(directory)
 							end
 						else
 							buf:put(x, 1, z, palette.node("wall_accent"))
+							-- Half timbering: loam panels between timber studs
+							-- every third cell along the wall, which is the
+							-- rhythm the window frames already stand in, so
+							-- studs and frames read as one timber frame. A
+							-- palette without `wall_infill` keeps plain planks.
+							local infill = spec.infill and palette.maybe("wall_infill")
+							local name = palette.node("wall")
+							if infill then
+								name = (step % 3 == 0) and palette.node("post")
+									or infill
+							end
 							for y = 2, top do
-								buf:put(x, y, z, palette.node("wall"))
+								buf:put(x, y, z, name)
 							end
 						end
 					end
@@ -262,6 +273,29 @@ local function loader(directory)
 								for y = 1, math.min(block.wall_h,
 										wall_top(fx, fz)) do
 									buf:put(fx, y, fz, palette.node("window_frame"))
+								end
+							end
+							-- Shutters hang on the outside face of the opening.
+							-- `cottages_window_shutter_closed` is two thin
+							-- panels on the node's +Z face, so the leaf sits
+							-- flush against the wall when its facedir points
+							-- back at the wall, exactly like a wallmounted
+							-- fitting but in the facedir family.
+							local shutter = spec.shutters and palette.maybe("shutter")
+							if shutter then
+								local out = SIDE_STEP[side]
+								for _, step in ipairs({p, p + 1}) do
+									local wx, wz = wall_cell(block, side, step)
+									local ox, oz = wx + out[1], wz + out[2]
+									for y = 2, math.min(
+											block.wall_h >= 4 and 3 or 2,
+											wall_top(wx, wz)) do
+										local here = buf:at(ox, y, oz)
+										if here == nil or here.name == "air" then
+											buf:put(ox, y, oz, shutter,
+												inward(side))
+										end
+									end
 								end
 							end
 						end
@@ -354,6 +388,7 @@ local function loader(directory)
 		local wall_h = spec.wall_h or 4
 		return M.build(palette, {
 			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
+			infill = spec.infill, shutters = spec.shutters,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1,
 				wall_h = wall_h, roof = spec.roof or "gable",
 				ridge_axis = spec.ridge_axis or "x", lift = spec.lift,
@@ -377,6 +412,7 @@ local function loader(directory)
 		local wz = math.floor((d - wing) / 2)
 		return M.build(palette, {
 			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
+			infill = spec.infill, shutters = spec.shutters,
 			blocks = {
 				{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
 					roof = "gable", ridge_axis = "z", rise = 4,
@@ -387,8 +423,8 @@ local function loader(directory)
 			},
 			chimneys = {{x = math.floor(w / 2), z = 0},
 				{x = w - 2 + wing - 1, z = wz + 1}},
-			doors = {{side = spec.door_side or "z+", index = math.floor(w / 2),
-				double = true}},
+			doors = {{side = spec.door_side or "z+",
+				index = spec.door_index or math.floor(w / 2), double = true}},
 			inside = spec.inside or {x = 2, y = 1, z = d - 4},
 		})
 	end
@@ -399,6 +435,7 @@ local function loader(directory)
 		local wall_h = spec.wall_h or 5
 		return M.build(palette, {
 			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
+			infill = spec.infill, shutters = spec.shutters,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
 				roof = "hip", rise = 4, kit = "hall",
 				kit_spec = {hearth_x = 1, hearth_z = 2, hearth_face = 1}}},
@@ -416,10 +453,13 @@ local function loader(directory)
 		local wall_h = spec.wall_h or 4
 		return M.build(palette, {
 			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
+			infill = spec.infill, shutters = spec.shutters,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
-				roof = "saltbox", ridge_axis = "z", lift = 2, rise = 3,
-				kit = "store"}},
-			doors = {{side = spec.door_side or "z-", index = math.floor(w / 2)}},
+				roof = spec.roof or "saltbox", ridge_axis = "z", lift = 2,
+				rise = 3, kit = spec.kit or "store"}},
+			doors = {{side = spec.door_side or "z-",
+				index = spec.door_index or math.floor(w / 2),
+				double = spec.double_door}},
 			inside = spec.inside or {x = math.floor(w / 2), y = 1, z = 2},
 		})
 	end
@@ -430,12 +470,81 @@ local function loader(directory)
 		local wall_h = spec.wall_h or 4
 		return M.build(palette, {
 			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
+			infill = spec.infill, shutters = spec.shutters,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
 				roof = "gable", ridge_axis = "x", rise = 3, kit = "yard",
 				open_sides = spec.open_sides or {"z-", "x+"}}},
 			doors = {},
 			inside = spec.inside or {x = 2, y = 1, z = math.floor(d / 2)},
 		})
+	end
+
+	-- The barn: the largest farm building. Closed walls of plank and loam, a
+	-- cart-wide double door in the gable end, a straw floor and a saltbox
+	-- roof, so it stands a head taller at the back than the cottages do.
+	function M.barn(palette, spec)
+		local w, d = spec.w or 13, spec.d or 11
+		local wall_h = spec.wall_h or 5
+		return M.build(palette, {
+			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
+			infill = spec.infill, shutters = spec.shutters,
+			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
+				roof = spec.roof or "saltbox", ridge_axis = "z", lift = 2,
+				rise = 4, kit = "barn"}},
+			doors = {{side = spec.door_side or "z-",
+				index = spec.door_index or math.floor(w / 2), double = true}},
+			inside = spec.inside or {x = 2, y = 1, z = d - 3},
+		})
+	end
+
+	-- The meeting hall: the tallest ordinary building, hip roofed, with the
+	-- long benches and lamps of a village chapel. The belfry is a separate
+	-- part the composition stands on the ridge.
+	function M.chapel(palette, spec)
+		local w, d = spec.w or 11, spec.d or 15
+		local wall_h = spec.wall_h or 6
+		return M.build(palette, {
+			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
+			infill = spec.infill, shutters = spec.shutters,
+			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
+				roof = "hip", rise = 4, kit = "chapel"}},
+			chimneys = {},
+			doors = {{side = spec.door_side or "z-",
+				index = spec.door_index or math.floor(w / 2), double = true}},
+			inside = spec.inside or {x = 2, y = 1, z = d - 3},
+		})
+	end
+
+	-- A belfry: a five by five open lantern on four corner posts under a
+	-- little hip roof, with a lamp under it. The composition stamps it on the
+	-- ridge of the meeting hall, so its floor closes the hole it stands over.
+	function M.belfry(palette, spec)
+		local buf = parts.buffer()
+		local lights = {}
+		local w, d, height = 5, 5, spec.height or 3
+		buf:fill(0, 0, 0, w - 1, 0, d - 1, palette.node("floor"))
+		for _, corner in ipairs({{0, 0}, {w - 1, 0}, {0, d - 1}, {w - 1, d - 1}}) do
+			for y = 1, height do
+				buf:put(corner[1], y, corner[2], palette.node("post"))
+			end
+		end
+		for _, side in ipairs({{1, 0}, {2, 0}, {3, 0}, {1, d - 1}, {2, d - 1},
+				{3, d - 1}, {0, 1}, {0, 2}, {0, 3}, {w - 1, 1}, {w - 1, 2},
+				{w - 1, 3}}) do
+			buf:put(side[1], 1, side[2], palette.node("railing"))
+			buf:put(side[1], height, side[2], palette.node("beam"))
+		end
+		-- The bell frame and the lamp that marks the hamlet's centre at night.
+		buf:put(2, height - 1, 2, palette.node("chimney_cap"))
+		parts.floor_torch(buf, palette, 2, 1, 2)
+		lights[#lights + 1] = {x = 2, y = 1, z = 2}
+		local field = roofs.hip({x0 = -1, x1 = w, z0 = -1, z1 = d,
+			base = height + 1, rise = 3})
+		local peak = roofs.raster(buf, spec.roof_palette or palette, field)
+		return {
+			buffer = buf, w = w, d = d, peak = peak,
+			points = {lights = lights},
+		}
 	end
 
 	-- The gate watchpost: guard room below, railed lookout above, reached by
@@ -533,7 +642,7 @@ local function loader(directory)
 			lights[#lights + 1] = {x = corner[1], y = deck + 1, z = corner[2]}
 		end
 
-		local roof_top = roofs.raster(buf, palette, field)
+		local roof_top = roofs.raster(buf, spec.roof_palette or palette, field)
 
 		local inside = spec.inside or {x = 5, y = deck + 1, z = 4}
 		buf:clear(inside.x, inside.y, inside.z, inside.x, inside.y + 1, inside.z)

@@ -29,6 +29,32 @@ local function loader(directory)
 		end
 	end
 
+	-- Open meadow ground: unbroken turf, with trodden earth and a little
+	-- gravel only where the hamlet actually walks and works. `core` is the
+	-- half-width of that worn area; beyond it the meadow stays turf, because
+	-- scattering bare patches over the whole pad reads as litter, not as use.
+	--
+	-- The pattern is a different period and phase from `ground` above on
+	-- purpose: two settlements that share a ground routine must not share a
+	-- ground texture.
+	function M.meadow(buf, palette, radius, core)
+		core = core or 30
+		buf:fill(-radius, -1, -radius, radius, -1, radius, palette.node("subsoil"))
+		buf:fill(-radius, 0, -radius, radius, 0, radius, palette.node("ground"))
+		for z = -core, core, 5 do
+			for x = -core, core, 6 do
+				local hash = (x * 31 + z * 17) % 11
+				if hash < 4 then
+					buf:fill(x - 1, 0, z, x + 1, 0, z + 1,
+						palette.node("ground_patch"))
+				elseif hash == 7 then
+					buf:fill(x, 0, z - 1, x + 1, 0, z + 1,
+						palette.node("ground_bare"))
+				end
+			end
+		end
+	end
+
 	-- Pave a rectangle and clear the headroom above it.
 	function M.pave(buf, palette, x1, z1, x2, z2, role, height)
 		local name = palette.node(role or "path")
@@ -114,6 +140,29 @@ local function loader(directory)
 					M.free_area(buf, x - 2, z - 2, x + 2, z + 2, height + 1) then
 				dressing.tree(buf, palette, x, z, height)
 				planted = planted + 1
+			end
+		end
+		return planted
+	end
+
+	-- Broadleaf standards on open ground: an orchard when `spacing` is small
+	-- and regular, a field-corner grove when it is not. The crown of
+	-- `dressing.broadleaf` reaches three nodes, so the clearance test does
+	-- too, and the stem keeps a node of soil all round like the pines.
+	function M.plant_orchard(buf, palette, x1, z1, x2, z2, spacing, height)
+		local planted = 0
+		for z = z1, z2, spacing do
+			for x = x1, x2, spacing do
+				local hash = (x * 41 + z * 97) % 13
+				local tx = x + hash % 3 - 1
+				local tz = z + math.floor(hash / 3) % 3 - 1
+				local stem = height + hash % 2
+				if M.natural_area(buf, tx - 1, tz - 1, tx + 1, tz + 1) and
+						M.free_area(buf, tx - 3, tz - 3, tx + 3, tz + 3,
+							stem + 5) then
+					dressing.broadleaf(buf, palette, tx, tz, stem)
+					planted = planted + 1
+				end
 			end
 		end
 		return planted

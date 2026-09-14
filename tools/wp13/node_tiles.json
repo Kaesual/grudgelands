@@ -1695,7 +1695,7 @@
    ],
    "drawtype": "nodebox",
    "paramtype2": "facedir",
-   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "source": "MANUAL_OVERRIDES",
    "shape": "nodebox"
   },
   "grug_decor:cottages_barrel": {
@@ -1723,7 +1723,10 @@
   "grug_decor:cottages_bench": {
    "drawtype": "nodebox",
    "paramtype2": "facedir",
-   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_cottages_cottages_minimal_wood.png"
+   ],
    "shape": "nodebox"
   },
   "grug_decor:cottages_glass_pane": {
@@ -1741,7 +1744,11 @@
    "shape": "nodebox"
   },
   "grug_decor:cottages_loam": {
-   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_cottages_cottages_loam.png"
+   ],
+   "drawtype": "normal",
    "shape": "cube"
   },
   "grug_decor:cottages_reet": {
@@ -1764,7 +1771,10 @@
   },
   "grug_decor:cottages_straw": {
    "drawtype": "normal",
-   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_cottages_cottages_darkage_straw.png"
+   ],
    "shape": "cube"
   },
   "grug_decor:cottages_straw_bale": {
@@ -1772,23 +1782,35 @@
     "grug_decor_cottages_cottages_darkage_straw_bale.png"
    ],
    "drawtype": "nodebox",
-   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "source": "MANUAL_OVERRIDES",
    "shape": "nodebox"
   },
   "grug_decor:cottages_straw_ground": {
-   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_cottages_cottages_darkage_straw.png",
+    "grug_decor_cottages_cottages_loam.png",
+    "grug_decor_cottages_cottages_loam.png"
+   ],
+   "drawtype": "normal",
    "shape": "cube"
   },
   "grug_decor:cottages_straw_mat": {
    "drawtype": "nodebox",
    "paramtype2": "facedir",
-   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_cottages_cottages_darkage_straw.png"
+   ],
    "shape": "nodebox"
   },
   "grug_decor:cottages_table": {
    "drawtype": "nodebox",
    "paramtype2": "facedir",
-   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_cottages_cottages_minimal_wood.png"
+   ],
    "shape": "nodebox"
   },
   "grug_decor:cottages_tub": {
@@ -1809,7 +1831,11 @@
   "grug_decor:cottages_wagon_wheel": {
    "drawtype": "mesh",
    "paramtype2": "wallmounted",
-   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_cottages_cottages_wagonwheel.png"
+   ],
+   "alpha": "clip",
    "shape": "nodebox"
   },
   "grug_decor:cottages_wagon_wheel_road": {
@@ -1827,13 +1853,19 @@
   "grug_decor:cottages_window_shutter_closed": {
    "drawtype": "nodebox",
    "paramtype2": "facedir",
-   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_cottages_cottages_minimal_wood.png"
+   ],
    "shape": "nodebox"
   },
   "grug_decor:cottages_window_shutter_open": {
    "drawtype": "nodebox",
    "paramtype2": "facedir",
-   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_cottages_cottages_minimal_wood.png"
+   ],
    "shape": "nodebox"
   },
   "grug_decor:cottages_wood_flat": {
@@ -1975,6 +2007,24 @@
    "source": "mods/ITEMS/grug_decor/xdecor.lua",
    "shape": "plant"
   },
+  "grug_decor:xdecor_potted_dandelion_yellow": {
+   "tiles": [
+    "grug_decor_xdecor_xdecor_dandelion_yellow_pot.png"
+   ],
+   "drawtype": "plantlike",
+   "alpha": "clip",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "plant"
+  },
+  "grug_decor:xdecor_potted_geranium": {
+   "tiles": [
+    "grug_decor_xdecor_xdecor_geranium_pot.png"
+   ],
+   "drawtype": "plantlike",
+   "alpha": "clip",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "plant"
+  },
   "grug_decor:xdecor_rope": {
    "drawtype": "plantlike",
    "source": "mods/ITEMS/grug_decor/xdecor.lua",
@@ -1986,7 +2036,7 @@
    ],
    "drawtype": "nodebox",
    "paramtype2": "facedir",
-   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "source": "MANUAL_OVERRIDES",
    "shape": "nodebox"
   },
   "grug_decor:xdecor_table": {

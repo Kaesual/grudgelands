@@ -26,16 +26,33 @@ return function(canonical, raw_sha256)
 		"anchor_delta_schema", "anchor_delta_sha256", "anchor_opcode",
 		"anchor_class", "anchor_policy", "anchor_order", "anchor_overwrite",
 		"functional_anchor_protection_schema", "functional_anchor_columns",
-		"hearthpine_content_schema", "hearthpine_content_sha256",
-		"hearthpine_semantic_sha256", "hearthpine_content_count",
+		"settlement_content_schema", "settlement_content_sha256",
+		"settlement_semantic_sha256", "settlement_content_count",
 		"hearthpine_blueprint_schema",
 		"hearthpine_blueprint_sha256", "hearthpine_cell_count",
 		"hearthpine_delta_schema", "hearthpine_delta_sha256",
 		"hearthpine_opcode", "hearthpine_class", "hearthpine_policy",
 		"hearthpine_order", "hearthpine_overwrite",
+		"dawnmere_blueprint_schema",
+		"dawnmere_blueprint_sha256", "dawnmere_cell_count",
+		"dawnmere_delta_schema", "dawnmere_delta_sha256",
+		"dawnmere_opcode", "dawnmere_class", "dawnmere_policy",
+		"dawnmere_order", "dawnmere_overwrite",
 		"functional_anchor_y_min", "writer_schema", "p9g_opcode", "p9g_class",
 		"p9g_policy", "p9g_order", "p9g_overwrite", "source_projection_sha256",
 		"production_enabled",
+	}
+
+	-- The accepted WP13 settlement roster, in the fixed order the manifest
+	-- publishes. It mirrors the roster in `r7_settlement.lua`; keeping it here
+	-- as data makes the identity document closed rather than derived.
+	local SETTLEMENT_ORDER = {
+		{key = "hearthpine", anchor_id = "anchor_001",
+			identity_schema = "grug_wp13_hearthpine_blueprint_identity_v1",
+			delta_schema = "grug_wp13_hearthpine_delta_v1"},
+		{key = "dawnmere", anchor_id = "anchor_002",
+			identity_schema = "grug_wp13_dawnmere_blueprint_identity_v1",
+			delta_schema = "grug_wp13_dawnmere_delta_v1"},
 	}
 
 	local function fail(message)
@@ -157,7 +174,7 @@ return function(canonical, raw_sha256)
 			production_content = true, p9g_content = true,
 			anchor_content = true, anchor_roster = true,
 			anchor_roster_sha256 = true,
-			hearthpine_content = true, hearthpine_blueprint = true,
+			settlement_content = true, settlement_blueprints = true,
 			cultural_registrations = true, decoded_templates = true,
 			consumer_payload = true,
 		}
@@ -243,35 +260,47 @@ return function(canonical, raw_sha256)
 				family_counts.bandit ~= 12 then
 			fail("anchor roster population differs")
 		end
-		local hearthpine_content = inputs.hearthpine_content
-		if type(hearthpine_content) ~= "table" or
-				hearthpine_content.schema ~= "grug_wp13_hearthpine_content_v1" or
-				type(hearthpine_content.digest) ~= "string" or
-				#hearthpine_content.digest ~= 64 or
-				type(hearthpine_content.semantic_digest) ~= "string" or
-				#hearthpine_content.semantic_digest ~= 64 or
-				type(hearthpine_content.count) ~= "number" or
-				hearthpine_content.count < 1 or hearthpine_content.count % 1 ~= 0 then
-			fail("Hearthpine content identity differs")
+		-- One opcode-37 content channel serves every WP13 start; the blueprint
+		-- identities are per settlement and are published in roster order.
+		local settlement_content = inputs.settlement_content
+		if type(settlement_content) ~= "table" or
+				settlement_content.schema ~= "grug_wp13_settlement_content_v1" or
+				type(settlement_content.digest) ~= "string" or
+				#settlement_content.digest ~= 64 or
+				type(settlement_content.semantic_digest) ~= "string" or
+				#settlement_content.semantic_digest ~= 64 or
+				type(settlement_content.count) ~= "number" or
+				settlement_content.count < 1 or settlement_content.count % 1 ~= 0 then
+			fail("settlement content identity differs")
 		end
-		local hearthpine_blueprint = inputs.hearthpine_blueprint
-		if type(hearthpine_blueprint) ~= "table" or
-				hearthpine_blueprint.schema ~=
-					"grug_wp13_hearthpine_blueprint_identity_v1" or
-				type(hearthpine_blueprint.sha256) ~= "string" or
-				#hearthpine_blueprint.sha256 ~= 64 or
-				type(hearthpine_blueprint.cell_count) ~= "number" or
-				hearthpine_blueprint.cell_count < 1 or
-				type(hearthpine_blueprint.min_x) ~= "number" or
-				type(hearthpine_blueprint.max_x) ~= "number" or
-				type(hearthpine_blueprint.min_y) ~= "number" or
-				type(hearthpine_blueprint.max_y) ~= "number" or
-				type(hearthpine_blueprint.min_z) ~= "number" or
-				type(hearthpine_blueprint.max_z) ~= "number" or
-				hearthpine_blueprint.min_x < -63 or hearthpine_blueprint.max_x > 63 or
-				hearthpine_blueprint.min_y < -2 or hearthpine_blueprint.max_y > 24 or
-				hearthpine_blueprint.min_z < -63 or hearthpine_blueprint.max_z > 63 then
-			fail("Hearthpine blueprint identity differs")
+		local settlement_blueprints = inputs.settlement_blueprints
+		if type(settlement_blueprints) ~= "table" or
+				#settlement_blueprints ~= #SETTLEMENT_ORDER then
+			fail("settlement blueprint population differs")
+		end
+		for index = 1, #SETTLEMENT_ORDER do
+			local row = settlement_blueprints[index]
+			local expect = SETTLEMENT_ORDER[index]
+			if type(row) ~= "table" or row.key ~= expect.key or
+					row.anchor_id ~= expect.anchor_id or
+					row.delta_schema ~= expect.delta_schema or
+					type(row.identity) ~= "table" or
+					row.identity.schema ~= expect.identity_schema or
+					type(row.identity.sha256) ~= "string" or
+					#row.identity.sha256 ~= 64 or
+					type(row.identity.cell_count) ~= "number" or
+					row.identity.cell_count < 1 or
+					type(row.identity.min_x) ~= "number" or
+					type(row.identity.max_x) ~= "number" or
+					type(row.identity.min_y) ~= "number" or
+					type(row.identity.max_y) ~= "number" or
+					type(row.identity.min_z) ~= "number" or
+					type(row.identity.max_z) ~= "number" or
+					row.identity.min_x < -63 or row.identity.max_x > 63 or
+					row.identity.min_y < -2 or row.identity.max_y > 24 or
+					row.identity.min_z < -63 or row.identity.max_z > 63 then
+				fail("settlement blueprint identity differs at " .. index)
+			end
 		end
 		local cultural = inputs.cultural_registrations
 		if #cultural ~= 6 then fail("cultural population differs") end
@@ -337,18 +366,25 @@ return function(canonical, raw_sha256)
 				"grug_wp40_r7_functional_anchor_protection_v1",
 			functional_columns = 36, functional_y_min = -700,
 		}
-		local hearthpine_delta = {
-			schema = "grug_wp13_hearthpine_delta_v1", opcode = 37,
-			class = 13, policy = 13,
-			order = "after_anchor_activation_before_run_derivation",
-			overwrite = true, anchor_id = "anchor_001",
-			blueprint_sha256 = hearthpine_blueprint.sha256,
-			content_sha256 = hearthpine_content.digest,
-			successor_ref_min = 99,
-			successor_ref_max = 98 + hearthpine_content.count,
-			cell_count = hearthpine_blueprint.cell_count,
-			clipping = "current_mapchunk_owner_intersection_v1",
-		}
+		-- Every settlement carries the same opcode, class, policy, order and
+		-- successor-ref window, because they share one content channel; what
+		-- separates them is the anchor and the blueprint digest.
+		local settlement_deltas = {}
+		for index = 1, #settlement_blueprints do
+			local row = settlement_blueprints[index]
+			settlement_deltas[index] = {
+				schema = row.delta_schema, opcode = 37,
+				class = 13, policy = 13,
+				order = "after_anchor_activation_before_run_derivation",
+				overwrite = true, anchor_id = row.anchor_id,
+				blueprint_sha256 = row.identity.sha256,
+				content_sha256 = settlement_content.digest,
+				successor_ref_min = 99,
+				successor_ref_max = 98 + settlement_content.count,
+				cell_count = row.identity.cell_count,
+				clipping = "current_mapchunk_owner_intersection_v1",
+			}
+		end
 		local values = {
 			schema = SCHEMA, full_seed = inputs.full_seed,
 			r5_schema = "grug_wp40_r5_mapgen_manifest_v1",
@@ -384,24 +420,30 @@ return function(canonical, raw_sha256)
 			functional_anchor_protection_schema =
 				anchor_delta.functional_protection_schema,
 			functional_anchor_columns = 36, functional_anchor_y_min = -700,
-			hearthpine_content_schema = hearthpine_content.schema,
-			hearthpine_content_sha256 = hearthpine_content.digest,
-			hearthpine_semantic_sha256 = hearthpine_content.semantic_digest,
-			hearthpine_content_count = hearthpine_content.count,
-			hearthpine_blueprint_schema = hearthpine_blueprint.schema,
-			hearthpine_blueprint_sha256 = hearthpine_blueprint.sha256,
-			hearthpine_cell_count = hearthpine_blueprint.cell_count,
-			hearthpine_delta_schema = hearthpine_delta.schema,
-			hearthpine_delta_sha256 = graph_digest(hearthpine_delta),
-			hearthpine_opcode = 37, hearthpine_class = 13,
-			hearthpine_policy = 13, hearthpine_order = hearthpine_delta.order,
-			hearthpine_overwrite = true,
+			settlement_content_schema = settlement_content.schema,
+			settlement_content_sha256 = settlement_content.digest,
+			settlement_semantic_sha256 = settlement_content.semantic_digest,
+			settlement_content_count = settlement_content.count,
 			writer_schema = "grug_wp40_r7_single_vm_writer_v1",
 			p9g_opcode = 35, p9g_class = 10, p9g_policy = 11,
 			p9g_order = p9g_delta.order, p9g_overwrite = false,
 			source_projection_sha256 = SOURCE_PROJECTION_SHA256,
 			production_enabled = true,
 		}
+		for index = 1, #settlement_blueprints do
+			local row = settlement_blueprints[index]
+			local delta = settlement_deltas[index]
+			values[row.key .. "_blueprint_schema"] = row.identity.schema
+			values[row.key .. "_blueprint_sha256"] = row.identity.sha256
+			values[row.key .. "_cell_count"] = row.identity.cell_count
+			values[row.key .. "_delta_schema"] = delta.schema
+			values[row.key .. "_delta_sha256"] = graph_digest(delta)
+			values[row.key .. "_opcode"] = 37
+			values[row.key .. "_class"] = 13
+			values[row.key .. "_policy"] = 13
+			values[row.key .. "_order"] = delta.order
+			values[row.key .. "_overwrite"] = true
+		end
 		local bytes = canonical_bytes(values)
 		return {schema = SCHEMA, sha256 = sha256_hex(bytes),
 			canonical_bytes = bytes, values = values}
