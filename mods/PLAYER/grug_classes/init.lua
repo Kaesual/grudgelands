@@ -96,12 +96,24 @@ function grug_classes.get_race_def(player)
 	return id and grug_classes.registered_races[id] or nil
 end
 
+local race_chosen_callbacks = {}
+
+-- func(player, race_id) -- called after a race was set (selection dialog AND
+-- admin /race switches), the exact mirror of register_on_class_chosen above.
+-- grug_visuals composes the race skin and stature here.
+function grug_classes.register_on_race_chosen(func)
+	table.insert(race_chosen_callbacks, func)
+end
+
 function grug_classes.set_race(player, id)
 	local def = grug_classes.registered_races[id]
 	if not def or def.faction ~= grug_factions.get_faction(player) then
 		return false
 	end
 	player:get_meta():set_string(META_RACE, id)
+	for _, func in ipairs(race_chosen_callbacks) do
+		func(player, id)
+	end
 	return true
 end
 

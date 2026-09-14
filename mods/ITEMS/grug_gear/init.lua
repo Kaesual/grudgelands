@@ -63,7 +63,12 @@ end
 -- no-op, so bracket 6 shows the untinted art.
 --
 
-local BRACKET_TINT = {"#8a7f6a", "#a89478", "#c0b088", "#d8cc9a", "#e8dcb0", "#ffffff"}
+-- Published, not local: grug_visuals tints the armor OVERLAYS on the player
+-- model with the same six colours, and a second copy of this table would
+-- drift the moment one of them is retuned.
+grug_gear.BRACKET_TINT = {"#8a7f6a", "#a89478", "#c0b088", "#d8cc9a",
+	"#e8dcb0", "#ffffff"}
+local BRACKET_TINT = grug_gear.BRACKET_TINT
 local BRACKET_ADJECTIVE = {"Crude", "Plain", "Tempered", "Reinforced", "Superior", "Grand"}
 
 -- Item description (§6.1): name, item level, then the BASE stat line -- the
