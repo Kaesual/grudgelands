@@ -26,7 +26,8 @@ M.required = {
 M.optional = {"bale", "bed_fancy", "bench_seat", "board_table", "cargo",
 	"cobweb", "crop", "fence_gate", "flower", "flower_alt", "ground_straw",
 	"hedge", "hedge_stem", "ivy", "lantern", "light_beacon", "light_hanging",
-	"mat", "pillar", "rope", "shutter", "stepping", "wall_infill", "wheel"}
+	"mat", "pillar", "rope", "shutter", "stake_cap", "stepping", "wall_infill",
+	"wheel"}
 
 -- Two optional light roles for races whose lamps are not wallmounted.
 -- `light_hanging` is a lamp in `group:attached_node = 4`, which the engine
@@ -462,6 +463,10 @@ M.races.orc = {
 	fence_gate = "doors:gate_acacia_wood_closed",
 	low_wall = "walls:desertcobble",
 	railing = "default:fence_acacia_wood",
+	-- The point on a palisade stake. Acacia, like the stakes themselves: the
+	-- roof family here is desert stonebrick, and a stone point balanced on a
+	-- log is what the review threw out.
+	stake_cap = "stairs:stair_outer_acacia_wood",
 
 	light_wall = "default:torch_wall",
 	light_post = "default:torch",

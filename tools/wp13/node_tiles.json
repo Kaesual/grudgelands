@@ -1962,14 +1962,6 @@
    "source": "MANUAL_OVERRIDES",
    "shape": "cube"
   },
-  "grug_decor:darkage_ors_rubble": {
-   "tiles": [
-    "grug_decor_darkage_darkage_ors_rubble.png"
-   ],
-   "drawtype": "normal",
-   "source": "MANUAL_OVERRIDES",
-   "shape": "cube"
-  },
   "grug_decor:darkage_reinforced_wood": {
    "source": "MANUAL_OVERRIDES",
    "tiles": [

@@ -3,7 +3,7 @@
 --
 -- Hearthpine is a craft settlement in a pine clearing and Dawnmere a farming
 -- hamlet on open meadow. Sunscar is neither: it is a WAR CAMP that stopped
--- moving, on the ochre flats under the red mesa edge of Sunscar Flats
+-- moving, on the ochre flats beside a low red rock outcrop of Sunscar Flats
 -- (world_zones.md section 8.2 and section 10). What makes that legible from
 -- the gate is the roofline -- every building here is flat topped behind a
 -- crenellated breastwork, where the other two starts are all ridges -- and
@@ -141,23 +141,28 @@ local function loader(directory)
 	}
 	local BERM_CREST = {1, 2, 1}
 
-	-- The red mesa edge the camp sits under (world_zones.md section 8.4:
-	-- Sunscar's relief is open flats with small rock masks). Four terraces,
-	-- each stepped back from the last, fill the north-east corner of the pad
-	-- with a bluff eight courses high: it is the one piece of relief inside
-	-- the authorized volume, it gives the flats a horizon, and it is where
-	-- the camp's back is. The berms above stop short of it on purpose.
-	-- Six terraces, not four nested squares: the z of each step is staggered
-	-- against the last so the bluff's foot is a jagged, eroded line instead
-	-- of a quarter circle of masonry. Ascending height, because a later
-	-- terrace overwrites an earlier one.
-	local MESA = {
-		{40, 30, 63, 63, 2},
-		{46, 24, 63, 63, 2},
-		{50, 34, 63, 63, 4},
-		{54, 28, 63, 63, 5},
-		{57, 38, 63, 63, 7},
-		{60, 32, 63, 63, 8},
+	-- A low red rock outcrop in the north-east corner: the one piece of
+	-- relief on the flats, and all the relief they are allowed.
+	--
+	-- `docs/design/world_zones.md` section 8.4 gives Sunscar Flats open
+	-- golden savanna with SMALL rolling-hill rock masks. The first version
+	-- built an eight-course bluff right across the corner and out to the pad
+	-- edge -- a mesa, which is the neighbouring Bannerbreak zone's landform,
+	-- not this one's, and a wall at the edge where the writer's own apron has
+	-- to blend into whatever terrain the seed put there.
+	--
+	-- Three courses now, none of it closer than four nodes to the pad edge,
+	-- in overlapping slabs whose corners are staggered against each other so
+	-- the outcrop's foot is a broken line and its top is two or three ledges
+	-- rather than a quarter circle of masonry stepped like a ziggurat.
+	-- Ascending height, because a later slab overwrites an earlier one.
+	local OUTCROP = {
+		{38, 34, 59, 59, 1},
+		{44, 27, 55, 47, 1},
+		{41, 41, 59, 52, 2},
+		{48, 32, 57, 44, 2},
+		{46, 46, 54, 56, 3},
+		{51, 36, 56, 42, 3},
 	}
 
 	-- Acacia blocks on the open flats. The crown of `dressing.acacia` reaches
@@ -391,12 +396,24 @@ local function loader(directory)
 		-- 4. Breastworks. Every deck gets its crenellated ring; the armoury's
 		-- main ring is cut where the forge wing passes under it, so the two
 		-- roofs stay one working top and not a walled-off gutter.
-		local merlons = 0
+		local merlon_caps = {}
 		for _, work in ipairs(BREASTWORKS) do
-			merlons = merlons + dressing.parapet(buf, palette, work.x1,
-				work.z1, work.x2, work.z2, work.y, work.step)
+			dressing.parapet(buf, palette, work.x1, work.z1, work.x2, work.z2,
+				work.y, work.step, merlon_caps)
 		end
+		-- Two cuts where the armoury and its forge wing meet. The main ring
+		-- is cut where the wing passes under it, so the two roofs are one
+		-- working top and not a walled-off gutter -- and the WING's own west
+		-- ring stands on the main room's roof deck, where for seven columns
+		-- it was the only thing over the room: `walls:desertcobble` is a
+		-- connected nodebox, so daylight came straight down into the armoury
+		-- between the wall and its neighbours. That ring is cut too and the
+		-- deck laid across it.
 		buf:clear(32, 7, -4, 32, 8, 2)
+		buf:clear(31, 6, -4, 31, 7, 2)
+		for z = -4, 2 do
+			buf:put(31, 6, z, palette.node("roof_slab"))
+		end
 
 		-- 5. The warlord's fighting top: an external stair off the east
 		-- apron, a gap cut in the breastwork where it lands, and a brazier on
@@ -441,13 +458,13 @@ local function loader(directory)
 			buf:put(hole[1], 3, hole[2] - 1, palette.node("tree_log"))
 		end
 
-		-- 7. The mesa edge, then the siege berms on the sides the palisade
-		-- does not cover. The bluff goes down first: it is terrain, and the
+		-- 7. The rock outcrop, then the siege berms on the sides the palisade
+		-- does not cover. The rock goes down first: it is terrain, and the
 		-- earthworks are dug against it.
-		local mesa_cells = 0
-		for _, terrace in ipairs(MESA) do
-			mesa_cells = mesa_cells + dressing.rock_terrace(buf, palette,
-				terrace[1], terrace[2], terrace[3], terrace[4], terrace[5])
+		local outcrop_cells = 0
+		for _, slab in ipairs(OUTCROP) do
+			outcrop_cells = outcrop_cells + dressing.rock_terrace(buf, palette,
+				slab[1], slab[2], slab[3], slab[4], slab[5])
 		end
 		local berm_cells = 0
 		for _, bank in ipairs(BERMS) do
@@ -692,6 +709,19 @@ local function loader(directory)
 			error("wp13 sunscar: no door for " .. id, 0)
 		end
 
+		-- The merlon population, counted AFTER the two cuts above: the
+		-- landmark is what stands, not what was raised. The first version
+		-- published `dressing.parapet`'s return, which is the ring's cell
+		-- count and includes every plain wall cell between the merlons.
+		local merlon_node = palette.node("wall_accent")
+		local merlons = 0
+		for _, cap in ipairs(merlon_caps) do
+			local cell = buf:at(cap.x, cap.y, cap.z)
+			if cell ~= nil and cell.name == merlon_node then
+				merlons = merlons + 1
+			end
+		end
+
 		return {
 			schema = SCHEMA,
 			cells = cells,
@@ -726,7 +756,7 @@ local function loader(directory)
 				merlon_cells = merlons,
 				palisade_stakes = stakes,
 				berm_cells = berm_cells,
-				mesa_cells = mesa_cells,
+				outcrop_cells = outcrop_cells,
 				acacia_trees = trees,
 			},
 		}

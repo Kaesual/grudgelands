@@ -961,7 +961,14 @@ local function loader(directory)
 	--
 	-- `y` is the course the breastwork STANDS ON, one above the deck slab
 	-- `roofs.flat_deck` laid, so the deck stays continuous underneath it.
-	function M.parapet(buf, palette, x1, z1, x2, z2, y, step)
+	-- `caps`, when given, collects the position of every merlon this ring
+	-- raised. The return value is the ring's own cell count, which is NOT the
+	-- merlon population -- the first version published it as one, and the
+	-- composition cuts parts of two rings away afterwards, so the number in
+	-- the landmark was neither the merlons nor the merlons that survived.
+	-- A caller that wants the population counts the caps that are still there
+	-- once the clears are done.
+	function M.parapet(buf, palette, x1, z1, x2, z2, y, step, caps)
 		local wall = palette.node("low_wall")
 		local merlon = palette.node("wall_accent")
 		step = step or 2
@@ -972,6 +979,9 @@ local function loader(directory)
 					buf:put(x, y, z, wall)
 					if (x + z) % step == 0 then
 						buf:put(x, y + 1, z, merlon)
+						if caps then
+							caps[#caps + 1] = {x = x, y = y + 1, z = z}
+						end
 					end
 					placed = placed + 1
 				end
@@ -1003,9 +1013,16 @@ local function loader(directory)
 	-- outer stair, whose single raised quarter is exactly a stake cut to a
 	-- point, and the quarter alternates along the run so the crest reads as
 	-- hewn timber and not as a moulding.
+	-- A stake's point is sharpened wood, not masonry. The first version
+	-- capped every stake with `roof_stair_outer`, which in the orc palette is
+	-- `stairs:stair_outer_desert_stonebrick`: a stone point balanced on a log.
+	-- A palette that names `stake_cap` gets the timber point it asks for and
+	-- one that does not falls back to its roof family, so the role stays
+	-- optional.
 	function M.palisade(buf, palette, x1, z1, x2, z2, height)
 		local log = palette.node("tree_log")
-		local point = palette.node("roof_stair_outer")
+		local point = palette.maybe("stake_cap") or
+			palette.node("roof_stair_outer")
 		local top = height or 4
 		local stakes = 0
 		for z = math.min(z1, z2), math.max(z1, z2) do
@@ -1059,12 +1076,15 @@ local function loader(directory)
 	-- A war standard: a log pole carrying a cloth block and a torch above it,
 	-- so the camp's banners are also its beacons. Nothing here is a spawner
 	-- node: the cloth is `wool`, the light an ordinary torch.
-	function M.standard(buf, palette, x, z, height, lights)
+	-- No `lights` parameter: this settlement's light landmarks are read off
+	-- the finished cell list by node name, so a second, hand-kept list would
+	-- be a second source of truth for the same fact. Both callers passed
+	-- nothing and the parameter was dead.
+	function M.standard(buf, palette, x, z, height)
 		local pole = palette.node("post")
 		for y = 1, height do buf:put(x, y, z, pole) end
 		buf:put(x, height + 1, z, palette.node("rug_accent"))
 		parts.floor_torch(buf, palette, x, height + 2, z)
-		if lights then lights[#lights + 1] = {x = x, y = height + 2, z = z} end
 	end
 
 	-- A drill post: a sunk log with a cross beam and a straw head, which is

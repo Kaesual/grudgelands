@@ -91,10 +91,14 @@ mods/MAPGEN/grug_mapgen/wp13/dawnmere.lua
 mods/MAPGEN/grug_mapgen/wp13/dressing.lua
 mods/MAPGEN/grug_mapgen/wp13/hearthpine.lua
 mods/MAPGEN/grug_mapgen/wp13/interiors.lua
+mods/MAPGEN/grug_mapgen/wp13/kapok.lua
 mods/MAPGEN/grug_mapgen/wp13/layout.lua
 mods/MAPGEN/grug_mapgen/wp13/palette.lua
 mods/MAPGEN/grug_mapgen/wp13/parts.lua
 mods/MAPGEN/grug_mapgen/wp13/roofs.lua
+mods/MAPGEN/grug_mapgen/wp13/silverleaf.lua
+mods/MAPGEN/grug_mapgen/wp13/stillgrave.lua
+mods/MAPGEN/grug_mapgen/wp13/sunscar.lua
 mods/MAPGEN/grug_mapgen/wp40/coupled_grade.lua
 mods/MAPGEN/grug_mapgen/wp40/height.lua
 mods/MAPGEN/grug_mapgen/wp40/init.lua
@@ -113,6 +117,7 @@ mods/MAPGEN/grug_mapgen/wp40/r7_consumer_payload.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_content.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_dawnmere_blueprint.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_hearthpine_blueprint.lua
+mods/MAPGEN/grug_mapgen/wp40/r7_kapok_blueprint.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_loader.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_manifest.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua
@@ -121,7 +126,10 @@ mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_runtime.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua
+mods/MAPGEN/grug_mapgen/wp40/r7_silverleaf_blueprint.lua
+mods/MAPGEN/grug_mapgen/wp40/r7_stillgrave_blueprint.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua
+mods/MAPGEN/grug_mapgen/wp40/r7_sunscar_blueprint.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_template_source.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_wp13_library.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_zone_overlay.lua

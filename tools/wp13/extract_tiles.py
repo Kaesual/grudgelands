@@ -825,9 +825,6 @@ MANUAL_OVERRIDES = {
     "grug_decor:darkage_ors_block": {
         "tiles": ["grug_decor_darkage_darkage_ors_block.png"],
         "drawtype": "normal"},
-    "grug_decor:darkage_ors_rubble": {
-        "tiles": ["grug_decor_darkage_darkage_ors_rubble.png"],
-        "drawtype": "normal"},
 }
 
 # Last-resort flat colours for names that resolve to no texture at all.

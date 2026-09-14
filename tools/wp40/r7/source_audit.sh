@@ -38,7 +38,7 @@ derived_changed="${partial}.changed-lua"
 	git -C "$repo" diff --name-only --diff-filter=AM d6002a2 -- mods
 	git -C "$repo" ls-files --others --exclude-standard -- mods
 } | sort -u | rg '[.]lua$' >"$derived_changed"
-[[ "$(awk 'END {print NR + 0}' "$derived_changed")" -eq 134 ]] || {
+[[ "$(awk 'END {print NR + 0}' "$derived_changed")" -eq 142 ]] || {
 	echo "WP40 R7 source audit: baseline-derived changed Lua population differs" >&2
 	exit 1
 }

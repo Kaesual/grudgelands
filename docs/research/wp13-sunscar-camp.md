@@ -33,7 +33,8 @@ and digests are untouched — the same check, no longer holding an assumption.
 
 ## Part A: identity
 
-A war camp that stopped moving, on the ochre flats under a red mesa edge.
+A war camp that stopped moving, on the ochre flats beside a low red rock
+outcrop.
 What makes it legible from the gate is the **roofline**: every building is
 flat topped behind a crenellated breastwork, where the other two starts are
 all ridges. Then, in order: adobe over a desert-stone base course instead of
@@ -55,9 +56,10 @@ Nine buildings plus the bluff:
 | `west_tower`, `east_tower` | `watchpost` with a flat deck | the gate's flanking towers; the arch stands in the stake line between them |
 
 Identity details that are not palette: 96 palisade stakes with sharpened
-crests, 320 breastwork merlons, 537 berm cells in seven short banks, 2,626
-mesa cells in six terraces, 47 acacias, eight drill posts, two weapon racks,
-three bale targets, the council fire ring and ten war standards.
+acacia crests, 150 breastwork merlons standing after the two roof cuts, 537
+berm cells in seven short banks, 1,323 rock cells in six staggered slabs,
+47 acacias, eight drill posts, two weapon racks, three bale targets, the
+council fire ring and ten war standards.
 
 New library code, all role-driven and all degrading when a palette lacks the
 optional role: the `flat_deck` roof form (`roofs.lua`), and in `dressing.lua`
@@ -87,11 +89,50 @@ kit's own torches slide onto the inner one's chamfer walls, so the outer ring
 carries two hand-placed cressets — the one thing in the composition that
 knows about the shape it is lighting.
 
-Result: 59,673 cells, 46,551 of them not air, 44 materials, 112 lights, 1,320
+Result: 57,227 cells, 44,102 of them not air, 44 materials, 112 lights, 1,352
 oriented nodes, 10 reachable destinations (the fighting platform is one), 10
 doors, 11 rooms, 228 barred panes of which 14 are the connected shape.
 Bounds x/z `[-63, 63]`, y `[-1, 11]`. No liquids, no spawner nodes, no NPCs,
 no node that needs a callback bulk placement never runs.
+
+**Superseded figures.** Before the 2026-09-14 review fixes this settlement was
+59,673 cells / 46,551 not air / 1,320 oriented, identity `b29071e3…f22ade7c`.
+Almost all of the difference is the eight-course mesa coming out (below); the
+rest is the shared ground-cover fix, the decked armoury roof and the acacia
+stake caps.
+
+## What else the 2026-09-14 review changed
+
+- **M1** `tools/wp40/r7/changed_production_lua.txt` and `source_audit.sh` had
+  not been told about the four lanes' new production Lua. 134 → 142: the four
+  compositions and the four blueprint wrappers.
+- **L1** the `merlon_cells` landmark published `dressing.parapet`'s return,
+  which is the ring's whole cell count, and published it before the two cuts
+  where the armoury and its wing meet. `parapet` now collects its cap
+  positions and the composition counts the ones still standing: 150.
+- **L2** every palisade stake was capped with `roof_stair_outer`, which in
+  this palette is `stairs:stair_outer_desert_stonebrick`: a stone point
+  balanced on a log. A new optional role `stake_cap` binds
+  `stairs:stair_outer_acacia_wood`, the same timber the stakes are.
+- **L3** seven columns of the armoury's main room were roofed only by the
+  forge wing's west breastwork ring, and `walls:desertcobble` is a connected
+  nodebox: daylight came down between it and its neighbours. That ring is cut
+  like the main one already was and the roof deck laid across.
+- **L4** `dressing.standard`'s `lights` parameter was dead -- both callers
+  passed nothing, and this settlement reads its light landmarks off the
+  finished cell list by node name. Removed.
+- **L5** the control-owner loop in `engine_cases.lua` padded the owner list
+  up to a threshold, and once the roster reached six starts the structure
+  owners already exceeded it, so the corpus carried no controls at all while
+  still claiming to. Two controls are added outright now and counted in the
+  bound.
+- **L6** `PARAM2_KIND` and `FULL_SOLID` carried
+  `castle_arrowslit_desert_stonebrick`, `darkage_ors_rubble` and
+  `darkage_straw_bale`, which no blueprint emits and no palette binds:
+  unverified claims about node shapes. Removed.
+- **L7/L8** the owner-count comment said the superseded bound was "two per
+  axis, so eight"; it was a flat sixteen. And the `main_street` check is
+  anchored to the pad, not only measured.
 
 ## Part B: the seam took a third start unchanged
 
@@ -161,11 +202,19 @@ Evidence: `tools/wp13/evidence/20260914-sunscar/`.
    diagonally, version two banded it. Two rounds of a plain LCG fixed it.
    Single-cell hits also read as dithering at every camera distance, so each
    hit now paints a 2 × 2 blob.
-4. The camp had no horizon. The mesa edge §10 promises was built as six
-   stepped terraces in the north-east quarter, with the z of each step
-   staggered so the bluff's foot is an eroded line and not a quarter circle
-   of masonry; its top is capped with the same ground, so it reads as the
-   flats carried up. Two berm banks were shortened to leave it room.
+4. The camp had no horizon, so relief was built into the north-east quarter
+   as six stepped terraces with the z of each step staggered, capped with
+   the same ground so it reads as the flats carried up. Two berm banks were
+   shortened to leave it room.
+
+   **The 2026-09-14 review cut it down.** It had been built eight courses
+   high and run out to the pad edge, which is a MESA -- the landform of the
+   neighbouring Bannerbreak Mesa zone, not of Sunscar Flats, whose relief
+   `world_zones.md` §8.4 gives as open savanna with small rolling-hill rock
+   masks. It also met the edge, where the writer's apron has to blend into
+   whatever terrain the seed put there. Three courses now, nothing closer
+   than four nodes to the edge, and the slabs overlap so the foot is broken
+   and the top is two or three ledges: 1,323 cells where there were 2,626.
 5. The berms were first one continuous three-row band round the whole
    perimeter, which read as ploughed furrows. They are seven short banks now:
    a camp digs where it expects to be hit.

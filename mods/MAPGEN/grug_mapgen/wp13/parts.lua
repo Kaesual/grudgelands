@@ -80,8 +80,6 @@ local PARAM2_KIND = {
 	["grug_decor:cottages_window_shutter_open"] = M.FACEDIR,
 	["grug_decor:xdecor_stonepath"] = M.FACEDIR,
 	["grug_decor:cottages_wagon_load"] = M.FACEDIR,
-	-- a loophole looks out of the wall it is set into
-	["grug_decor:castle_arrowslit_desert_stonebrick"] = M.FACEDIR,
 	-- plantlike meshes whose definition pins the style they are placed at
 	["default:dry_shrub"] = M.MESHOPTIONS,
 	-- a wheel leans against the wall its param2 points at
@@ -230,8 +228,6 @@ local FULL_SOLID = {
 	["grug_decor:darkage_slate_brick"] = true,
 	["grug_decor:darkage_slate_tile"] = true,
 	["grug_decor:darkage_ors_block"] = true,
-	["grug_decor:darkage_ors_rubble"] = true,
-	["grug_decor:darkage_straw_bale"] = true,
 	["grug_decor:xdecor_barrel"] = true,
 	["grug_decor:xdecor_cauldron"] = true,
 	["grug_decor:xdecor_empty_shelf"] = true,

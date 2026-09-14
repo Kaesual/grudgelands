@@ -38,10 +38,13 @@ end
 -- seed. A start is 127 nodes wide and deep, and an 80-node owner grid cuts a
 -- 127-node span into at most ceil((127 + 79) / 80) = 3 columns whatever the
 -- anchor's offset is; the authorized y range is 27 nodes, which is at most 2
--- levels. Eighteen per roster row is therefore the structural ceiling. The
--- earlier "two per axis, so eight" held for the first two anchors by
--- accident of their offsets and failed on the third seed the moment a start
--- fitted across an owner floor.
+-- levels: 3 x 3 x 2 = eighteen per roster row is the structural ceiling.
+--
+-- The bound before this one was a flat sixteen, derived as "two starts, two
+-- owners per horizontal axis and two vertically". Two per axis is wrong for
+-- a 127-node span on an 80-node grid however the anchor falls; it held for
+-- the first two starts by accident of their offsets and refused the corpus
+-- the moment the third start fitted across an owner floor.
 assert(#owners <= 18 * #roster, "profile corpus exceeds the bounded structure owners")
 -- This seed puts the Stillgrave start's fitted surface at y=48, just above
 -- the generated owner's ceiling, which is why the lower owner is named here:
@@ -55,14 +58,25 @@ assert(#owners <= 18 * #roster, "profile corpus exceeds the bounded structure ow
 local filler_boundary = core.settings:get("grug_wp40_profile_seed") == "8675309"
 if filler_boundary then add(-1863, 47, 2528) end
 -- Adjacent non-structure owners as controls: they must receive no authored
--- byte at all, which the per-cell comparison below proves from the other side.
-local extra = 0
-while #owners < 7 * #starts do
-	extra = extra + 1
-	add(starts[1].anchor.x + extra * 80, starts[1].anchor.y - 80,
+-- byte at all, which the per-cell comparison below proves from the other
+-- side. TWO of them, added unconditionally.
+--
+-- The first version padded the owner list up to a threshold -- fourteen, then
+-- seven per start -- and by the time the roster reached six starts the
+-- structure owners already exceeded any such threshold, so the loop ran zero
+-- times and the corpus carried no controls at all while still claiming to. A
+-- control is not padding: it is a named part of the corpus, so it is added
+-- outright and counted in the bound.
+local CONTROLS = 2
+for index = 1, CONTROLS do
+	add(starts[1].anchor.x + index * 80, starts[1].anchor.y - 80,
 		starts[1].anchor.z)
 end
-assert(#owners <= 18 * #roster + 2, "WP13 control population is unbounded")
+-- The filler-boundary seed names one more owner above, which is already in
+-- the list on every seed since the fourth increment but is counted here so
+-- the bound holds even if it ever is not.
+assert(#owners <= 18 * #roster + 1 + CONTROLS,
+	"WP13 control population is unbounded")
 table.sort(owners, function(a, b) return a.id < b.id end)
 if reverse then
 	local reordered = {}
