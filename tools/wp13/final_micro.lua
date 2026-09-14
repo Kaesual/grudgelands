@@ -34,6 +34,11 @@ rows[#rows + 1] = dofile(repo .. "/tools/wp13/library_kat.lua")(repo)
 rows[#rows + 1] = dofile(repo .. "/tools/wp13/blueprint_kat.lua")(repo)
 rows[#rows + 1] = "wp13_integration\t" ..
 	dofile(repo .. "/tools/wp13/integration_fixture.lua")(repo) .. "\n"
+-- Last, and last on purpose: the socket-registry KAT drives real grug_core
+-- code, so it installs stub `core`/`vector`/`grug_core` globals and restores
+-- them again. Running it after the three pure fixtures keeps their
+-- environment untouched.
+rows[#rows + 1] = dofile(repo .. "/tools/wp13/settlement_sockets_kat.lua")(repo)
 local text = table.concat(rows)
 local digest = common.hex(common.new_sha256()(text))
 
