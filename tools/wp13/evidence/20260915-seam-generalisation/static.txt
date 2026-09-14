@@ -271,7 +271,6 @@ mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:478:		string.format("%.0f", blob.y_ma
 mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:487:		rows[#rows + 1] = "stratum|" .. definition.name .. "|ore=" ..
 mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:488:			definition.ore .. "|wherein=default:stone|clust_scarcity=1|y_min=" ..
 mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:489:			string.format("%.0f", definition.y_min) .. "|y_max=" ..
-mods/MAPGEN/grug_mapgen/wp13/highcourt_district.lua:122:		-- core-to-terrace blend band (|x| 48..78), where the surface fell EIGHT
 mods/PLAYER/grug_abilities/init.lua:317:-- Ability registration & item. One tool per ability; the item's `range`
 mods/PLAYER/grug_abilities/init.lua:1304:	return SKIN_VERSION .. "|" .. color .. "|" .. src.inv .. "|" .. src.wield
 mods/PLAYER/grug_abilities/init.lua:1348:	local token = SWING_CAPS_VERSION .. "|" .. string.format("%.17g", interval)
@@ -293,7 +292,8 @@ mods/CORE/grug_core/atmosphere.lua:155:		-- lighting on in our minetest.conf, so
 1 goto/labels: clean
 2 escapes: clean
 3 5.2+ stdlib: clean
-4 // and bitwise: clean
+4 // and bitwise: READ THESE
+tools/wp13/evidence/20260914-round-b-terrain/measure/road_shoulder.lua:2:-- rows on the approach, the smallest |dx| at which a biome decoration may host
 5 sandbox/namespace: READ THESE
 tools/wp13/dump_blueprint.lua:18:	os.exit(2)
 tools/wp13/dump_blueprint.lua:46:	os.exit(1)

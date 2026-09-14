@@ -1,6 +1,7 @@
 # WP13: the settlement seam generalisation, and Highcourt in the world
 
-Increment record, 2026-09-15. Implements section 2.2 of
+Increment record, 2026-09-15, rebased onto and re-measured against `main` at
+`0f6a80f` (the round-B terrain merge). Implements section 2.2 of
 [wp13-capitals-pois-contract.md](wp13-capitals-pois-contract.md) and binds the
 pilot capital of [wp13-highcourt.md](wp13-highcourt.md) into the WP40 R7 seam,
 including the hand-off list of that document's section 7. Evidence:
@@ -250,8 +251,8 @@ that reaches 13. It is covered, by one node. It is recorded in section 9.
 | **seam prepare** (all 11 blueprints built, hashed, released) | 286.7 – 309.9 ms | 904.4 – 925.2 ms |
 | **seam first touch** (core rebuilt, hashed, compared, 101 830 cells written) | 238.6 ms | 626.6 ms |
 
-The engine's own LuaJIT agrees: the probe timed the core at 164.3 ms and 137.6 ms
-on two boots, and the nine plots at 3.3 – 10.6 ms each.
+The engine's own LuaJIT agrees: the probe timed the core at 137.6 – 164.3 ms
+across boots and the nine plots at 3.3 – 10.6 ms each.
 
 Against the contract's section 2.3 budget: core **101 831 of 150 000** cells,
 largest plot **9 274 of 12 000**, whole capital including the overlay **168 758
@@ -266,10 +267,10 @@ real geometry, plus three kinds of control:
 
 | Kind | chunks | first | steady mean | worst | best |
 | --- | --- | --- | --- | --- | --- |
-| warm-up (open land, not counted) | 1 | 18.59 s | -- | -- | -- |
-| **Highcourt** | 33 | 1.04 s | **0.495 s** | 1.04 s | 0.10 s |
-| Lethariel (a capital with no WP13 cells) | 8 | 11.08 s | 1.95 s | 11.54 s | 0.19 s |
-| open land / the Dawnmere start | 3 | 0.78 s | 0.44 s | 0.88 s | 0.003 s |
+| warm-up (open land, not counted) | 1 | 21.96 s | -- | -- | -- |
+| **Highcourt** | 33 | 0.99 s | **0.452 s** | 0.99 s | 0.10 s |
+| Lethariel (a capital with no WP13 cells) | 8 | 11.69 s | 2.30 s | 13.92 s | 0.19 s |
+| open land / the Dawnmere start | 3 | 0.73 s | 0.42 s | 0.85 s | 0.003 s |
 
 The warm-up mapchunk carries the emerge environment's whole one-time R7
 construction -- the content channel, the R6 session and this package's identity
@@ -283,9 +284,9 @@ mapchunks are **cheaper** than that control's, so the capital settlement's own
 contribution is inside the noise of the terrain work around it.
 
 Against the contract's "no more than 2× the ~0.5 s Dawnmere chunk": the steady
-mean is 0.495 s and the worst single mapchunk 1.04 s, which is 2.1× the nominal
-0.5 s and below the 1.17 s worst that an EMPTY open-land mapchunk cost on the
-same boot. The per-chunk height cost is bounded by the avenue ground memo: a
+mean is **0.452 s** and the worst single mapchunk 0.99 s, which is under 2× the
+nominal 0.5 s. The worst is the FIRST Highcourt mapchunk, which is where the
+capital's own lazy construction lands; every later one is under 0.9 s. The per-chunk height cost is bounded by the avenue ground memo: a
 run's profile is read once per session and shared by every mapchunk that clips
 it, so the stacked mapchunks over one avenue do not re-read it once each.
 
@@ -368,13 +369,14 @@ ERROR and zero ModError lines. Its NPC counts:
 | Settlement | placed |
 | --- | --- |
 | each of the six starts | `guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0` |
-| Highcourt, first readiness pass | `guards 10/19 flair 27/49 vendor 2/2 quest 1/1 new 40 pending 31` |
+| Highcourt, first readiness pass | `guards 17/19 flair 30/49 vendor 2/2 quest 1/1 new 50 pending 21` |
 
 71 of Highcourt's 95 sockets carry an NPC (the king and the waypoint carry
 none by design, and 22 patrol waypoints are route data behind their six loop
-leaders). 40 went in on the readiness pass, which is every socket whose own
-mapblock was loaded at that moment; the remaining 31 are the far district plots
-and the gate towers, which fill in on the heartbeat as a player walks up. Both
+leaders). 50 went in on the readiness pass, which is every socket whose own
+mapblock was loaded at that moment; the remaining 21 are the far district plots
+and the upper gate-tower decks, which fill in on the heartbeat as a player walks
+up. Both
 capital vendors stand on their sockets, so `vendors.lua` places none of its own
 at Highcourt.
 

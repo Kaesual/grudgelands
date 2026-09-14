@@ -138,6 +138,41 @@ core.register_on_shutdown(function()
 		end
 		assert(soil_witnesses > 0, "WP13 apron remained entirely unpainted stone")
 
+		-- Round B: the blend ring outside the protected footprint carries biome
+		-- decorations again, while the pad and its ten-node apron stay clear. Only
+		-- columns this corpus actually emerged are counted -- the ring reaches
+		-- past the owners the roster names -- so `sampled` is reported beside
+		-- `cover` and an `ignore` column is neither.
+		local apron_sampled, apron_cover, ring_sampled, ring_cover = 0, 0, 0, 0
+		local wild_sampled, wild_cover = 0, 0
+		for dz = -190, 190, 3 do
+			for dx = -190, 190, 3 do
+				local chebyshev = math.max(math.abs(dx), math.abs(dz))
+				if chebyshev >= 64 then
+					local x, z = anchor.x + dx, anchor.z + dz
+					local y = grug_zones.terrain_height_at(x, z)
+					local name = core.get_node({x = x, y = y + 1, z = z}).name
+					local definition = core.registered_nodes[name]
+					local cover = name ~= "air" and name ~= "ignore" and
+						definition ~= nil and definition.liquidtype == "none"
+					if name ~= "ignore" then
+						if chebyshev <= 73 then
+							apron_sampled = apron_sampled + 1
+							if cover then apron_cover = apron_cover + 1 end
+						elseif chebyshev <= 127 then
+							ring_sampled = ring_sampled + 1
+							if cover then ring_cover = ring_cover + 1 end
+						else
+							-- Outside the blend envelope: untouched biome, the reference
+							-- the ring's own cover is compared against.
+							wild_sampled = wild_sampled + 1
+							if cover then wild_cover = wild_cover + 1 end
+						end
+					end
+				end
+			end
+		end
+
 		-- The persistence canary is one deliberate server-side edit, made at
 		-- the first start only and excluded from that start's digest.
 		local canary = (start.key == starts[1].key)
@@ -217,6 +252,12 @@ core.register_on_shutdown(function()
 		fields[#fields + 1] = start.key .. "_cells=" .. #blueprint.cells
 		fields[#fields + 1] = start.key .. "_torches=" .. lit
 		fields[#fields + 1] = start.key .. "_soil=" .. soil_witnesses
+		fields[#fields + 1] = start.key .. "_apron=" .. apron_cover .. "/" ..
+			apron_sampled
+		fields[#fields + 1] = start.key .. "_ring=" .. ring_cover .. "/" ..
+			ring_sampled
+		fields[#fields + 1] = start.key .. "_wild=" .. wild_cover .. "/" ..
+			wild_sampled
 		fields[#fields + 1] = start.key .. "_anchor=" .. anchor.x .. "," ..
 			anchor.y .. "," .. anchor.z
 		fields[#fields + 1] = start.key .. "_digest=" .. digest
