@@ -34,12 +34,29 @@ return function(repo)
 				{"default:dirt_with_grass", 100}, {"default:dirt", 50}},
 			min_destinations = 9, min_doors = 8, min_rooms = 9,
 			min_lights = 8, min_oriented = 8,
+			-- Hearthpine carries no cart, bale, stepping stone or wheel; its
+			-- barrels are the ones its interiors' kits stand on the floor.
+			props = {{"grug_decor:cottages_straw_bale", 0},
+				{"grug_decor:xdecor_barrel", 39},
+				{"grug_decor:xdecor_stonepath", 0},
+				{"grug_decor:cottages_wagon_wheel", 0, "wallmounted"}},
+			carts = 0,
 		},
 		{
 			key = "dawnmere",
 			file = "r7_dawnmere_blueprint.lua",
 			schema = "grug_wp13_dawnmere_blueprint_v1",
 			light = {"default:torch", "default:torch_wall"},
+			-- `grug_decor:cottages_straw_mat` is the ONE entry here that is
+			-- not a plant, a torch or a door: it is a floor mat registered
+			-- `walkable = false` with a nodebox a few pixels high, so a player
+			-- walks over it exactly as over the boards beside it. Treating it
+			-- as solid would wall off the bed alcoves it lies in and make this
+			-- fixture's route and doorway tests report rooms as unreachable
+			-- that the engine lets anyone walk into. Every other permissive
+			-- name in this list is passable in the engine for the obvious
+			-- reason; no other decor node may be added without the same
+			-- `walkable = false` evidence.
 			passable = {"air", "default:torch", "default:torch_wall",
 				"default:grass_3", "default:grass_4", "default:junglegrass",
 				"default:fern_1", "grug_decor:cottages_straw_mat",
@@ -56,6 +73,17 @@ return function(repo)
 				{"default:dirt", 400}, {"default:gravel", 20}},
 			min_destinations = 9, min_doors = 8, min_rooms = 9,
 			min_lights = 8, min_oriented = 8,
+			-- The farming hamlet's loose props, exactly. 27 bales: four yard
+			-- stacks of two, three and two, plus the barn kit's seven columns.
+			-- 24 barrels: three cart loads and the interiors' own. 25 stepping
+			-- stones over the green's turf. 12 wheels: two on each of the
+			-- three hand carts, four leaning on the barn and the inn, two in
+			-- the barn's kit.
+			props = {{"grug_decor:cottages_straw_bale", 27},
+				{"grug_decor:xdecor_barrel", 24},
+				{"grug_decor:xdecor_stonepath", 25},
+				{"grug_decor:cottages_wagon_wheel", 12, "wallmounted"}},
+			carts = 3, cart_load = "grug_decor:xdecor_barrel",
 		},
 		{
 			key = "kapok",
@@ -167,6 +195,51 @@ return function(repo)
 					"floating torch at " .. key(cell.x, cell.y, cell.z))
 			end
 		end
+		-- The loose props: their exact population, and none of them floating.
+		--
+		-- Section 5 has no invariant for a bale, a stepping stone or a hand
+		-- cart, and that is exactly where this settlement lost three carts,
+		-- two wheels and four bale stacks in silence -- each of them skipped
+		-- by a placement test whose false nobody read -- and left one cart's
+		-- barrel hanging in the air beside the cart instead of on it. The
+		-- composition now refuses to skip a prop; the counts below are the
+		-- independent check that it did not, and they are EXACT, so a prop
+		-- that moves under another prop's feet shows up here as a number.
+		local prop_wanted, prop_wall, prop_seen = {}, {}, {}
+		for _, row in ipairs(spec.props) do
+			prop_wanted[row[1]] = row[2]
+			prop_wall[row[1]] = row[3] == "wallmounted"
+			prop_seen[row[1]] = 0
+		end
+		local carts = 0
+		for _, cell in ipairs(blueprint.cells) do
+			if prop_wanted[cell.name] then
+				prop_seen[cell.name] = prop_seen[cell.name] + 1
+				-- A wallmounted prop hangs on the node its param2 points at;
+				-- everything else rests on the node under it.
+				local dir = {0, -1, 0}
+				if prop_wall[cell.name] then
+					dir = assert(support_dir[cell.param2],
+						"unsupported prop rotation")
+				end
+				assert(node(cell.x + dir[1], cell.y + dir[2],
+						cell.z + dir[3]) ~= "air",
+					"floating " .. cell.name .. " at " ..
+						key(cell.x, cell.y, cell.z))
+			end
+			-- A hand cart is its load riding ON a bearer log, never beside it.
+			if spec.cart_load and cell.name == spec.cart_load and cell.y == 2 and
+					node(cell.x, 1, cell.z) == spec.tree.log then
+				carts = carts + 1
+			end
+		end
+		for _, row in ipairs(spec.props) do
+			assert(prop_seen[row[1]] == row[2], "prop population differs: " ..
+				row[1] .. " is " .. prop_seen[row[1]] .. ", not " .. row[2])
+		end
+		assert(carts == spec.carts,
+			"hand cart population differs: " .. carts .. ", not " .. spec.carts)
+
 		local declared_lights = {}
 		for _, pos in ipairs(blueprint.landmarks.lights) do
 			local address = key(pos.x, pos.y, pos.z)

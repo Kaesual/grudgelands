@@ -60,6 +60,25 @@ M.roster = {
 	},
 }
 
+-- ASCII byte order. Lua's `<` on strings is `strcoll`, so under a locale that
+-- is not C it can order two node names differently from the byte order
+-- `r7_content.lua` validates the ONE shared palette with -- and the engine's
+-- locale is not this game's to choose. Every place that sorts or checks a
+-- settlement palette uses this: the union sort in `r7_runtime.lua` and the
+-- per-blueprint check below.
+function M.less_bytes(left, right)
+	if type(left) ~= "string" or type(right) ~= "string" then
+		error("WP13 settlement: byte-order input is not bytes", 0)
+	end
+	local count = math.min(#left, #right)
+	for index = 1, count do
+		local left_byte = string.byte(left, index)
+		local right_byte = string.byte(right, index)
+		if left_byte ~= right_byte then return left_byte < right_byte end
+	end
+	return #left < #right
+end
+
 local PROFILE_FIELDS = {"key", "label", "zone_id", "anchor_id", "numeric_id",
 	"x", "z", "blueprint_file", "blueprint_schema", "identity_schema",
 	"config_schema", "ledger_schema", "metrics_schema", "delta_schema"}
@@ -116,7 +135,8 @@ function M.config(profile, blueprint, content, raw_sha256)
 	for index = 1, #blueprint.palette do
 		local name = blueprint.palette[index]
 		if type(name) ~= "string" or name == "" or palette[name] or
-				(index > 1 and not (blueprint.palette[index - 1] < name)) then
+				(index > 1 and
+					not M.less_bytes(blueprint.palette[index - 1], name)) then
 			fail("palette differs")
 		end
 		local ref = content.content_ref(name)

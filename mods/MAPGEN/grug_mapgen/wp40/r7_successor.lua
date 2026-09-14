@@ -13,6 +13,12 @@ return function(p9g_config, anchor_config, settlement_configs)
 			type(settlement_configs) ~= "table" or #settlement_configs < 1 then
 		fail("configuration seam differs")
 	end
+	-- The ledger and the metrics below are ONE table per settle: the fixed
+	-- fields first, then one field per settlement under its roster key. A
+	-- roster key equal to a fixed field would overwrite it and publish a
+	-- settlement's ledger as the schema string, the P9G ledger or the anchor
+	-- ledger, so the roster may not carry one.
+	local RESERVED_LEDGER_FIELDS = {schema = true, p9g = true, anchors = true}
 	local keys = {}
 	for index = 1, #settlement_configs do
 		local settlement = settlement_configs[index]
@@ -20,6 +26,9 @@ return function(p9g_config, anchor_config, settlement_configs)
 				type(settlement.key) ~= "string" or settlement.key == "" or
 				keys[settlement.key] then
 			fail("settlement configuration seam differs")
+		end
+		if RESERVED_LEDGER_FIELDS[settlement.key] then
+			fail("settlement key is a reserved ledger field: " .. settlement.key)
 		end
 		keys[settlement.key] = true
 	end

@@ -55,7 +55,11 @@ passes of a seed.
 
 - Dawnmere: 66,291 cells, 44,805 of them not air, 52 materials, 97 lights,
   1,446 oriented nodes, 9 reachable destinations, 12 doors, 10 rooms, 27 oak
-  standards, 1,555 planted crop cells, 216 hedge cells. Bounds x/z
+  standards, 1,555 planted crop cells and 216 hedgerow COLUMNS, which are 432
+  cells (a `bush_stem` at y = 1 under a `bush_leaves` at y = 2):
+  `dressing.hedge_line` returns columns, so the `hedge_cells` landmark counts
+  columns and not cells, and an earlier wording here read "216 hedge cells".
+  Bounds x/z
   `[-63, 63]`, y `[-1, 17]`, inside the authorized volume and well under the
   125,000 cell budget.
 - Engine: both seeds pass forward and reverse generation and cold and disk
