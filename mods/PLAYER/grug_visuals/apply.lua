@@ -196,12 +196,19 @@ function grug_visuals.apply(player)
 		-- it is what keeps its own bookkeeping (and the character-page preview,
 		-- which reads the live object properties) correct.
 		player_api.set_textures(player, result.textures)
-		if result.visual_size then
-			-- VISUAL ONLY. collisionbox and eye_height stay with player_api's
-			-- model/animation classes, which is why a tall elf still fits
-			-- through a two-node door (contract §1).
-			player:set_properties({visual_size = result.visual_size})
-		end
+	end
+	if result.visual_size then
+		-- VISUAL ONLY. collisionbox and eye_height stay with player_api's
+		-- model/animation classes, which is why a tall elf still fits through a
+		-- two-node door (contract §1).
+		--
+		-- UNCONDITIONAL, outside the texture token: the stature is not ours
+		-- alone. mobs_redo's force_detach resets visual_size to {1, 1} on every
+		-- dismount (mount.lua, also on leaveplayer), so a dwarf whose key has
+		-- not changed would stay human-sized for the rest of the session. The
+		-- texture list is the expensive write and stays guarded; this one is a
+		-- two-number property.
+		player:set_properties({visual_size = result.visual_size})
 	end
 	sync_wield(entry, player, result.weapon)
 	return result
@@ -239,6 +246,14 @@ grug_classes.register_on_class_chosen(function(player)
 	grug_visuals.apply(player)
 end)
 
+-- REGISTERED BEFORE grug_inventory's single page-refresh consumer, and that
+-- ordering is load-bearing: the Character page renders the player's LIVE object
+-- properties (pages.lua preview_model), so a refresh that runs before this
+-- write shows the previous look until the next equip. grug_inventory therefore
+-- carries `optional_depends = grug_visuals` -- the edge goes exactly one way,
+-- because a mutual optional_depends is a dependency cycle. AGENTS.md allows
+-- exactly one page-refresh consumer, so the fix is the order, not a second
+-- refresh.
 grug_core.register_on_equipment_change(function(player, listname)
 	if listname and IRRELEVANT_LIST[listname] then
 		return

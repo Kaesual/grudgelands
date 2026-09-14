@@ -61,13 +61,35 @@ later WP's armor shows up without an edit here.
 
 | Trigger | Site |
 | --- | --- |
-| join | `mods/PLAYER/grug_visuals/apply.lua:210` |
-| respawn | `mods/PLAYER/grug_visuals/apply.lua:226` |
-| race chosen | `mods/PLAYER/grug_visuals/apply.lua:232` (new `grug_classes.register_on_race_chosen`, `mods/PLAYER/grug_classes/init.lua:104`) |
-| class changed | `mods/PLAYER/grug_visuals/apply.lua:236` |
-| equipment changed | `mods/PLAYER/grug_visuals/apply.lua:242` (skips offhand and the two trinkets) |
+| join | `mods/PLAYER/grug_visuals/apply.lua:217` |
+| respawn | `mods/PLAYER/grug_visuals/apply.lua:233` |
+| race chosen | `mods/PLAYER/grug_visuals/apply.lua:239` (new `grug_classes.register_on_race_chosen`, `mods/PLAYER/grug_classes/init.lua:104`) |
+| class changed | `mods/PLAYER/grug_visuals/apply.lua:243` |
+| equipment changed | `mods/PLAYER/grug_visuals/apply.lua:257` (skips offhand and the two trinkets; registered **before** grug_inventory's page refresh — see "Ordering") |
 | mob activation | `mods/ENTITIES/grug_mobs/init.lua:451` (the `after_activate` wrapper) via `apply_visual`, `mods/ENTITIES/grug_mobs/init.lua:333` |
 | vendor activation | `mods/ENTITIES/grug_traders/vendors.lua:260` |
+
+### Ordering
+
+The Character page renders the player's **live object properties**
+(`grug_inventory/pages.lua` `preview_model`), and AGENTS.md allows exactly one
+equipment-driven page-refresh consumer. So the composed look has to be written
+before that refresh runs, which is two orderings stacked:
+
+- **Load order.** `grug_inventory` now carries `optional_depends =
+  grug_visuals` and `grug_visuals` carries no dependency back (a mutual
+  `optional_depends` is a cycle and the game would not load). That makes
+  `grug_visuals` register its equipment consumer first.
+- **Callback order.** `grug_core.notify_equipment_change` runs consumers in
+  registration order (`ipairs` over the registry), so first registered is first
+  run.
+
+Both links are checked against the shipped sources by
+`tools/wp13/visuals_order_kat.lua`, which builds the real mod.conf graph of the
+whole game, topologically sorts it the way the engine does and then loads the
+real `grug_core/combat.lua` and fires the seam. Reverting the two mod.conf
+lines makes it fail with `grug_visuals does not load before grug_inventory`
+(positions 28 vs 26) — the negative control for the finding it closes.
 
 ### Mob rosters
 
@@ -83,6 +105,7 @@ later WP's armor shows up without an edit here.
 | Gate | Result |
 | --- | --- |
 | `tools/wp13/character_visuals_kat.lua` under LuaJIT and `tools/bin/lua51` | byte-identical, `wp13_cv_result PASS 0` |
+| `tools/wp13/visuals_order_kat.lua` under both | byte-identical, `wp13_order_result PASS 0` |
 | `luac51 -p` + `SETGLOBAL` on every changed file, tree-wide parse | pass; one `SETGLOBAL` per mod table, none in the new non-init files |
 | the five plain-5.1 sweeps, scoped and tree-wide | zero hits outside prose |
 | `tools/check_fresh_server.py` | pass |
@@ -101,6 +124,25 @@ two vendors through a temporary probe mod (archived, not merged:
 `tools/wp13/evidence/20260914-character-visuals/probe/`) and logged the textures
 the engine actually holds — the composed strings, with the guards at bracket 4
 for the level of the probe position and their swords in hand.
+
+## Behaviour notes worth knowing
+
+- A mob carrying `_grug_visual` runs `grug_mobs.ensure_init` in
+  `after_activate` instead of on its first `do_custom` tick, so a spec can read
+  the mob's own level; the level sources are pure classification math and the
+  health/armor it derives are set before anything reads them, so the earlier
+  call changes nothing but the moment.
+- `compose` returns the cache entry itself, and that table's `textures` list is
+  aliased into `entity.base_texture`, `entity._grug_base_texture` and
+  `player_api`'s stored texture list. Read-only by convention; no mutator of a
+  composed result exists today, and the engine copies the list into the object
+  properties rather than keeping it.
+- The wield entity's orphan poll is one per-step callback per **armed**
+  character — the same shape as mobs_redo's own per-entity step work; an
+  unarmed character has no entity and therefore no callback.
+- If `core.add_entity` fails at activation (no position yet, an entity budget),
+  the weapon is simply not shown and is not retried until the block reloads or
+  the character's weapon changes.
 
 ## Deviations from the contract, and why
 
@@ -149,6 +191,11 @@ for the level of the probe position and their swords in hand.
 - **Offhand is not drawn** (contract: "offhand later"). The equipment hook
   already treats `grug_offhand` as appearance-irrelevant; that entry is the one
   line to delete when shields arrive.
+- **The stature is written on every apply**, not only when the composed key
+  changes: `mobs/mount.lua`'s `force_detach` resets `visual_size` to `{1, 1}`
+  on every dismount (and on leaveplayer), so a remembered scale would silently
+  become human-sized for the rest of the session once mounts ship. The texture
+  list — the expensive write — stays token-guarded.
 - **The two bandit skins and the two guard skins in `grug_mobs/textures` are now
   the fallback path only** — what a build without `grug_visuals` shows. They are
   kept deliberately, because "inert when the mod is absent" is a contract

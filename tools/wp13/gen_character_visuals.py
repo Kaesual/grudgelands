@@ -450,8 +450,14 @@ OVERLAYS = {"head": overlay_head, "chest": overlay_chest,
 # Review composites: a flat front paper doll, because nobody in this lane can
 # open the game and look at the mesh.
 # --------------------------------------------------------------------------
-def paper_doll(layers, scale=8):
-    """layers: list of RGBA 64x32 images, composited in order."""
+def paper_doll(layers, scale=8, side="front"):
+    """layers: list of RGBA 64x32 images, composited in order.
+
+    `side` is "front" or "back". The back view exists because the front one
+    cannot answer "what does a guard look like from behind" -- the question a
+    reviewer asked of the chest overlay, and the one a flat front doll is
+    structurally unable to show.
+    """
     flat = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     for layer in layers:
         flat = Image.alpha_composite(flat, layer)
@@ -464,14 +470,75 @@ def paper_doll(layers, scale=8):
             part = part.transpose(Image.FLIP_LEFT_RIGHT)
         doll.alpha_composite(part, (dx, dy))
 
-    blit(HEAD["front"], 4, 0)
-    blit(HAT["front"], 4, 0)
-    blit(TORSO["front"], 4, 8)
-    blit(ARM["front"], 0, 8, mirror=True)
-    blit(ARM["front"], 12, 8)
-    blit(LEG["front"], 4, 20)
-    blit(LEG["front"], 8, 20, mirror=True)
+    blit(HEAD[side], 4, 0)
+    blit(HAT[side], 4, 0)
+    blit(TORSO[side], 4, 8)
+    # Seen from behind the limbs swap sides, so the mirror flips with them.
+    blit(ARM[side], 0, 8, mirror=(side == "front"))
+    blit(ARM[side], 12, 8, mirror=(side == "back"))
+    blit(LEG[side], 4, 20, mirror=(side == "back"))
+    blit(LEG[side], 8, 20, mirror=(side == "front"))
     return doll.resize((16 * scale, 32 * scale), Image.NEAREST)
+
+
+# What each overlay is REQUIRED to cover, per face, as
+# (box group, faces, rule, value). Rules:
+#   "full"    every pixel of the face is opaque,
+#   "min"     at least `value` opaque pixels,
+#   "open"    between 1 and full-1 -- the face is partly covered ON PURPOSE.
+#
+# Asserted by the generator on every run, because "the back of the chestpiece
+# is missing" is a claim a flat front render can neither prove nor disprove,
+# and one measurement settles it for good. The "open" rules are just as
+# load-bearing as the "full" ones: a helmet that covers the whole face is as
+# wrong as a chestplate with no back.
+REQUIRED_COVER = {
+    "chest": [
+        (TORSO, ("top", "bottom", "right", "front", "left", "back"), "full", 0),
+        (ARM, ("top",), "full", 0),
+        (ARM, ("right", "front", "left", "back"), "min", 16),
+    ],
+    "legs": [
+        (LEG, ("top",), "full", 0),
+        (LEG, ("right", "front", "left", "back"), "min", 32),
+    ],
+    "feet": [
+        (LEG, ("bottom",), "full", 0),
+        (LEG, ("right", "front", "left", "back"), "min", 12),
+    ],
+    "head": [
+        (HAT, ("top", "back"), "full", 0),
+        # The cowl ends above the jaw, so its side faces are deliberately short.
+        (HAT, ("right", "left"), "min", 48),
+        # The face stays visible: a brow band, never a closed helmet.
+        (HAT, ("front",), "open", 0),
+    ],
+}
+
+
+def check_coverage(overlays):
+    """Returns a list of complaint strings; empty means every overlay covers
+    exactly the faces its slot promises, and leaves open the ones it must."""
+    problems = []
+    for (line, slot), image in sorted(overlays.items()):
+        px = image.load()
+        for group, faces, rule, value in REQUIRED_COVER[slot]:
+            for face in faces:
+                x, y, w, h = group[face]
+                total = w * h
+                opaque = sum(1 for j in range(y, y + h)
+                             for i in range(x, x + w) if px[i, j][3] > 0)
+                bad = None
+                if rule == "full" and opaque != total:
+                    bad = "must be fully covered"
+                elif rule == "min" and opaque < value:
+                    bad = "must cover at least %d" % value
+                elif rule == "open" and not (0 < opaque < total):
+                    bad = "must be partly open"
+                if bad:
+                    problems.append("%s_%s %s: %s (%d/%d opaque)"
+                                    % (line, slot, face, bad, opaque, total))
+    return problems
 
 
 def contact_sheet(dolls, cols, gap=8, bg=(36, 38, 42, 255)):
@@ -514,32 +581,45 @@ def main():
     for path in written:
         print(path)
 
+    problems = check_coverage(overlays)
+    for problem in problems:
+        print("COVERAGE: " + problem)
+
     if args.renders:
         args.renders.mkdir(parents=True, exist_ok=True)
+
+        def dressed(race, line):
+            return [skins[race]] + [overlays[line, slot]
+                                    for slot in ("head", "chest", "legs",
+                                                 "feet")]
+
+        # Per race: bare / cloth / metal, front row then back row.
         for race in sorted(RACES):
-            variants = [paper_doll([skins[race]])]
-            for line in ("cloth", "metal"):
-                variants.append(paper_doll(
-                    [skins[race]] + [overlays[line, slot]
-                                     for slot in ("head", "chest", "legs",
-                                                  "feet")]))
-            sheet = contact_sheet(variants, 3)
+            cells = []
+            for side in ("front", "back"):
+                cells.append(paper_doll([skins[race]], side=side))
+                for line in ("cloth", "metal"):
+                    cells.append(paper_doll(dressed(race, line), side=side))
+            sheet = contact_sheet(cells, 3)
             out = args.renders / ("race-%s.png" % race)
             sheet.save(out, optimize=True)
             print(out)
-        allraces = contact_sheet([paper_doll([skins[r]])
-                                  for r in sorted(RACES)], 6)
-        allraces.save(args.renders / "races-bare.png", optimize=True)
-        print(args.renders / "races-bare.png")
-        for line in ("cloth", "metal"):
-            sheet = contact_sheet(
-                [paper_doll([skins[r]] + [overlays[line, slot]
-                                          for slot in ("head", "chest",
-                                                       "legs", "feet")])
-                 for r in sorted(RACES)], 6)
-            sheet.save(args.renders / ("races-%s.png" % line), optimize=True)
-            print(args.renders / ("races-%s.png" % line))
+
+        # All six races per look, front row then back row.
+        for label, build in (("bare", lambda r: [skins[r]]),
+                             ("cloth", lambda r: dressed(r, "cloth")),
+                             ("metal", lambda r: dressed(r, "metal"))):
+            cells = []
+            for side in ("front", "back"):
+                for race in sorted(RACES):
+                    cells.append(paper_doll(build(race), side=side))
+            sheet = contact_sheet(cells, 6)
+            out = args.renders / ("races-%s.png" % label)
+            sheet.save(out, optimize=True)
+            print(out)
+
+    return 1 if problems else 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

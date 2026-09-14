@@ -181,7 +181,10 @@ local function well_formed(texture)
 	end
 	local scan = 1
 	while true do
-		local at = texture:find("^%[multiply", scan, true)
+		-- PLAIN search, so the needle is the literal text "^[multiply" -- no
+		-- `%` escape. It used to carry one, which made the needle a string that
+		-- can never occur and this entire loop dead code.
+		local at = texture:find("^[multiply", scan, true)
 		if not at then
 			break
 		end
@@ -197,6 +200,18 @@ local function well_formed(texture)
 	end
 	return true, nil
 end
+
+-- The malformed strings `well_formed` MUST reject, with the reason it must
+-- give. A checker that accepts everything looks exactly like a checker that has
+-- nothing to complain about, so this corpus is what keeps it honest: the
+-- `[multiply` case is the one that went dead when its needle carried a pattern
+-- escape into a plain search.
+local MALFORMED = {
+	{"skin.png^overlay.png^[multiply:#ffffff", "[multiply outside a group"},
+	{"skin.png^(overlay.png^[multiply:#ffffff", "unbalanced '('"},
+	{"skin.png^overlay.png)", "unbalanced ')'"},
+	{"skin.png^(overlay.png^[multiply:#ffffff)\\", "trailing backslash"},
+}
 
 -- Every `<name>.png` a composition mentions.
 local function texture_names(texture)
@@ -376,6 +391,22 @@ function M.body(repo, V)
 	end
 	row("wp13_cv_matrix", combos, #corpus, cache_after - cache_before,
 		string.format("%010d", digest))
+
+	-- 4b. the shape checker itself: it must REJECT each malformed string, with
+	-- the reason it is malformed for.
+	local rejected = {}
+	for index = 1, #MALFORMED do
+		local texture, reason = MALFORMED[index][1], MALFORMED[index][2]
+		local ok, why = well_formed(texture)
+		check(ok == false, "well_formed accepted a malformed texture: " .. texture)
+		check(why == reason, "well_formed gave \"" .. tostring(why) ..
+			"\" for " .. texture .. ", expected \"" .. reason .. "\"")
+		rejected[#rejected + 1] = tostring(why)
+	end
+	-- ... and it must still accept a real composition.
+	check(well_formed(by_item.textures[1]) == true,
+		"well_formed rejected a real composition")
+	row("wp13_cv_shapecheck", #MALFORMED, table.concat(rejected, ";"))
 
 	-- 5. every texture the matrix named is on disk
 	local missing = {}

@@ -529,9 +529,11 @@ decisions this WP settled are folded into `economy.md` §1/§2,
   "unknown item". WP10's instant potions **must reuse**
   `grug_traders.potion_cooldown_left` / `start_potion_cooldown` instead
   of opening a second timer (§3.6: one shared 60 s cooldown).
-- **WP13**: vendors **reuse the guard model and skins**, so a
-  Quartermaster looks exactly like a faction guard, and the six race
-  vendors have **no race-specific skin**.
+- **WP13 (closed by the character-visuals lane, 2026-09-14)**: vendors still
+  share the player model, but their skin is now composed per race — the six
+  race vendors wear their own race's dress and the two Quartermasters the
+  founding race of their side, all of them unarmed so a shopkeeper never reads
+  as a guard (`docs/design/character_visuals.md` §3).
 - **WP11**: the **respec price** (§8.3, 5c × level, min 25c) has no
   consumer yet — `grug_money.take` is the API it will call.
 - **Known balance deviation**: a bandit's expected vendor yield runs

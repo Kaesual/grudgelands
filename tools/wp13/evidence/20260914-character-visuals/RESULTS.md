@@ -1,12 +1,13 @@
 # Results — WP13 character visuals
 
-Candidate `fc2253d`, on top of `main` at `9026d89`.
+Candidate: see `candidate.txt`. Base: `main` at `9026d89`.
+Second pass, after the coordinator's review verdict.
 
 ## Gates
 
 | Gate | Result |
 | --- | --- |
-| `character_visuals_kat.lua`, LuaJIT vs `tools/bin/lua51` | identical, `sha256 dcf476873312708396676c2075ec39f64a19cf73a06bc4de900fea890aefc610`, last row `wp13_cv_result PASS 0` |
+| `character_visuals_kat.lua` + `visuals_order_kat.lua`, LuaJIT vs `tools/bin/lua51` | identical, `sha256 85db85ab80ce74848dbb0ae431509958272a78c1c99d6339514b2e57ae2914ec`, `wp13_cv_result PASS 0` and `wp13_order_result PASS 0` |
 | `luac51 -p`, every changed file | PASS |
 | `luac51 -p`, all of `mods/*/grug_*` and `tools` | PASS |
 | `SETGLOBAL` | one per mod table (`grug_visuals`, `grug_classes`, `grug_gear`, `grug_mobs`), zero in `compose.lua`, `apply.lua`, `levels.lua`, the three mob defs, `vendors.lua` and the KAT |
@@ -14,6 +15,7 @@ Candidate `fc2253d`, on top of `main` at `9026d89`.
 | `tools/check_fresh_server.py` | `Fresh-server source audit: PASS` |
 | `LICENSE-media.md` row per shipped PNG | 14/14, none missing |
 | art regenerates byte-identically | `3a513139d90a9dbcab964214acb1584a3707e16cd6badabc7d2932d72dcdb203` before and after |
+| per-face overlay coverage | PASS, no complaints; both chest overlays cover all six torso faces at 100% |
 | headless boot, `tools/luanti_headless.sh 180` | `headless boot: PASS`, 0 `ERROR`/`ModError` |
 
 ## KAT rows
@@ -23,10 +25,14 @@ wp13_cv_inputs     6 races, 2 lines, 4 slots, 6 brackets
 wp13_cv_index      48 armor pieces: cloth=24 metal=24; chest/feet/head/legs 12 each
 wp13_cv_matrix     366 compositions, 365 new cache entries, digest 0760993141
 wp13_cv_textures   14 distinct textures named, 0 missing on disk
+wp13_cv_shapecheck 4 malformed strings rejected, each with its own reason
 wp13_cv_stature    0.85..1.12; dwarf 1.10/0.88/1.10 … troll 1.10/1.12/1.10
 wp13_cv_fallback   unknown race -> human, exactly 1 warning; skin-only keeps its skin, no stature
 wp13_cv_weapon     bare -> nil; passthrough; weapon_family at level 55 -> grug_gear:sword_b6
 wp13_cv_result     PASS 0
+wp13_order_graph   31 mods, 0 cyclic; grug_visuals 27 < grug_inventory 28
+wp13_order_callbacks grug_visuals,grug_inventory_page
+wp13_order_result  PASS 0
 ```
 
 (`kat-luajit.txt` is the authority; the block above is a reading of it.)
