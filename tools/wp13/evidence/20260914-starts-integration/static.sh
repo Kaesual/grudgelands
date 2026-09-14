@@ -17,12 +17,15 @@ CHANGED=(
 	mods/MAPGEN/grug_mapgen/wp13/layout.lua
 	mods/MAPGEN/grug_mapgen/wp13/palette.lua
 	mods/MAPGEN/grug_mapgen/wp13/parts.lua
+	mods/MAPGEN/grug_mapgen/wp13/roofs.lua
 	mods/MAPGEN/grug_mapgen/wp13/silverleaf.lua
 	mods/MAPGEN/grug_mapgen/wp13/stillgrave.lua
+	mods/MAPGEN/grug_mapgen/wp13/sunscar.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_kapok_blueprint.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_manifest.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_silverleaf_blueprint.lua
+	mods/MAPGEN/grug_mapgen/wp40/r7_sunscar_blueprint.lua
 	tools/wp13/blueprint_kat.lua
 	tools/wp13/engine_cases.lua
 	tools/wp13/library_kat.lua
@@ -72,6 +75,7 @@ sweeps mods/MAPGEN/grug_mapgen/wp13 tools/wp13 \
 	mods/MAPGEN/grug_mapgen/wp40/r7_kapok_blueprint.lua \
 	mods/MAPGEN/grug_mapgen/wp40/r7_silverleaf_blueprint.lua \
 	mods/MAPGEN/grug_mapgen/wp40/r7_stillgrave_blueprint.lua \
+	mods/MAPGEN/grug_mapgen/wp40/r7_sunscar_blueprint.lua \
 	mods/MAPGEN/grug_mapgen/wp40/r7_wp13_library.lua
 
 echo "== the changed Python file compiles =="

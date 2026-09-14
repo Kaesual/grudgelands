@@ -57,7 +57,7 @@ if filler_boundary then add(-1863, 47, 2528) end
 -- Adjacent non-structure owners as controls: they must receive no authored
 -- byte at all, which the per-cell comparison below proves from the other side.
 local extra = 0
-while #owners < 14 do
+while #owners < 7 * #starts do
 	extra = extra + 1
 	add(starts[1].anchor.x + extra * 80, starts[1].anchor.y - 80,
 		starts[1].anchor.z)

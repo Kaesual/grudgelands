@@ -6,12 +6,15 @@ mods/MAPGEN/grug_mapgen/wp13/kapok.lua parser PASS; SETGLOBAL [0]
 mods/MAPGEN/grug_mapgen/wp13/layout.lua parser PASS; SETGLOBAL [0]
 mods/MAPGEN/grug_mapgen/wp13/palette.lua parser PASS; SETGLOBAL [0]
 mods/MAPGEN/grug_mapgen/wp13/parts.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/roofs.lua parser PASS; SETGLOBAL [0]
 mods/MAPGEN/grug_mapgen/wp13/silverleaf.lua parser PASS; SETGLOBAL [0]
 mods/MAPGEN/grug_mapgen/wp13/stillgrave.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/sunscar.lua parser PASS; SETGLOBAL [0]
 mods/MAPGEN/grug_mapgen/wp40/r7_kapok_blueprint.lua parser PASS; SETGLOBAL [0]
 mods/MAPGEN/grug_mapgen/wp40/r7_manifest.lua parser PASS; SETGLOBAL [0]
 mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua parser PASS; SETGLOBAL [0]
 mods/MAPGEN/grug_mapgen/wp40/r7_silverleaf_blueprint.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp40/r7_sunscar_blueprint.lua parser PASS; SETGLOBAL [0]
 tools/wp13/blueprint_kat.lua parser PASS; SETGLOBAL [0]
 tools/wp13/engine_cases.lua parser PASS; SETGLOBAL [0]
 tools/wp13/library_kat.lua parser PASS; SETGLOBAL [0]
@@ -42,6 +45,6 @@ SWEEPS DONE (no output above a SWEEP line means zero hits)
 == the changed Python file compiles ==
 tools/wp13/extract_tiles.py py_compile PASS
 == node_tiles.json parses ==
-node_tiles.json nodes 453
+node_tiles.json nodes 456
 == fresh server check ==
 Fresh-server source audit: PASS

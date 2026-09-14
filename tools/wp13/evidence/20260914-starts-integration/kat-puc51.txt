@@ -1,7 +1,7 @@
 rotate_param2	facedir+upsidedown+wallmounted	pass
 rotate_footprint	bijective	pass
-palette	5	74	retirement_sources	2	names	145
-palette_static	145	registry_nodes	779
+palette	6	75	retirement_sources	2	names	170
+palette_static	170	registry_nodes	779
 roofs	hip_corners+cross_gable_valleys	16
 rotation	cottage	23	1	5	90
 determinism	cottage	1331
@@ -18,13 +18,17 @@ torch_support	silverleaf	93	opaque_full	pass
 registry	stillgrave	44	kinds	44	place_param2	1985	plain_cubes	34150
 panes	stillgrave	glazed	140	connected	0
 torch_support	stillgrave	75	opaque_full	pass
+registry	sunscar	43	kinds	43	place_param2	2179	plain_cubes	41493
+panes	sunscar	glazed	228	connected	14
+torch_support	sunscar	112	opaque_full	pass
 registry	kapok	41	kinds	41	place_param2	2846	plain_cubes	45854
 panes	kapok	open	0	connected	0
 torch_support	kapok	87	opaque_full	pass
-panes_connected_corpus	24
+panes_connected_corpus	38
 wp13_blueprint	hearthpine	61932	46389	41	74	1232	9	10	10	0	180	15588
 wp13_blueprint	dawnmere	66343	44863	52	98	1467	9	12	10	0	27	15410
 wp13_blueprint	silverleaf	68712	50408	48	113	1349	9	11	10	0	109	15649
 wp13_blueprint	stillgrave	51597	37667	45	75	1300	5	7	8	2	74	15675
+wp13_blueprint	sunscar	59673	46551	44	112	1320	10	10	11	0	47	15034
 wp13_blueprint	kapok	71783	51755	42	87	831	8	9	9	0	110	16094
-wp13_integration	hearthpine/e07ac54bec01e662f224c629d12c424ec67ca03ee3183c5389943b5100cf9ffb/61932/12/1 dawnmere/ea8d29ee595de40eb2e8a3de26ebbd3a64b6ecd3b51f4161d0c6b6d1f86c1c19/66343/18/1 silverleaf/e2c143c67f9697f88a4876770e90adacc1439db8470135912b845090d009b79c/68712/12/1 stillgrave/9c08a5c80194ae2aabc667d8dcb9e6888033bc41f557ce78ff6a12cd3d29627f/51597/12/1 kapok/0a0ad4784a0fe21ba6fa815498405bb43a446b25188b6f08230dfe67bb887777/71783/12/1 composed/5/147
+wp13_integration	hearthpine/e07ac54bec01e662f224c629d12c424ec67ca03ee3183c5389943b5100cf9ffb/61932/12/1 dawnmere/ea8d29ee595de40eb2e8a3de26ebbd3a64b6ecd3b51f4161d0c6b6d1f86c1c19/66343/18/1 silverleaf/e2c143c67f9697f88a4876770e90adacc1439db8470135912b845090d009b79c/68712/12/1 stillgrave/9c08a5c80194ae2aabc667d8dcb9e6888033bc41f557ce78ff6a12cd3d29627f/51597/12/1 sunscar/dcb6e82cac6dcc360b1485359c8c85566d49a033a131d2f51993005b07472744/59673/18/1 kapok/0a0ad4784a0fe21ba6fa815498405bb43a446b25188b6f08230dfe67bb887777/71783/12/1 composed/6/169

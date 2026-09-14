@@ -179,6 +179,45 @@ return function(repo)
 			carts = 0,
 		},
 		{
+			key = "sunscar",
+			file = "r7_sunscar_blueprint.lua",
+			schema = "grug_wp13_sunscar_blueprint_v1",
+			light = {"default:torch", "default:torch_wall"},
+			passable = {"air", "default:torch", "default:torch_wall",
+				"default:dry_grass_3", "default:dry_grass_5",
+				"default:dry_shrub", "grug_decor:cottages_straw_mat",
+				"doors:door_wood_a", "doors:door_wood_b", "doors:hidden"},
+			paved = {"default:desert_cobble", "default:desert_sand",
+				"default:desert_stone_block"},
+			-- One roof family: every deck in the camp is the desert
+			-- stonebrick stair family, flat, behind a breastwork.
+			roof = {"stairs:stair_desert_stonebrick",
+				"stairs:stair_outer_desert_stonebrick",
+				"stairs:stair_inner_desert_stonebrick",
+				"stairs:slab_desert_stonebrick"},
+			door_leaves = {"doors:door_wood_a", "doors:door_wood_b"},
+			tree = {log = "default:acacia_tree",
+				leaves = "default:acacia_leaves",
+				min_trunk = 5, reach = 3, low = 1, high = 2, min_stems = 20},
+			ground = {{"default:dirt_with_dry_grass", 6000},
+				{"default:dry_dirt", 400}, {"default:desert_sand", 400}},
+			min_destinations = 9, min_doors = 8, min_rooms = 9,
+			min_lights = 8, min_oriented = 8,
+			-- The camp's loose gear, exactly. 27 bales: eight drill-post
+			-- heads, seven in the three yard targets and twelve in the five
+			-- feed stacks. 24 barrels: seven crate stacks and the interiors'
+			-- own. No stepping stones -- the orc palette binds none. 19
+			-- wheels: three on each of the five wagons and four leaning on
+			-- walls. 15 wagon loads, one on every bearer of every wagon,
+			-- which is also the cart count below.
+			props = {{"grug_decor:cottages_straw_bale", 27},
+				{"grug_decor:xdecor_barrel", 24},
+				{"grug_decor:xdecor_stonepath", 0},
+				{"grug_decor:cottages_wagon_wheel", 19, "wallmounted"},
+				{"grug_decor:cottages_wagon_load", 15}},
+			carts = 15, cart_load = "grug_decor:cottages_wagon_load",
+		},
+		{
 			key = "kapok",
 			file = "r7_kapok_blueprint.lua",
 			schema = "grug_wp13_kapok_blueprint_v1",

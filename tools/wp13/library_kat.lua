@@ -495,6 +495,10 @@ return function(repo)
 			assert(def.paramtype2 == "wallmounted",
 				name .. " is rotated as wallmounted but is " ..
 					tostring(def.paramtype2))
+		elseif kind == parts.MESHOPTIONS then
+			assert(def.paramtype2 == "meshoptions",
+				name .. " is kept through rotation as a mesh style but is " ..
+					tostring(def.paramtype2))
 		end
 		-- And the two authored tables in parts.lua must equal the registry,
 		-- in both directions, for every name that actually occurs.

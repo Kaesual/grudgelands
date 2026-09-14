@@ -1,0 +1,931 @@
+
+
+-------------
+  Separator
+-------------
+
+INFO[Main]: Gettext: domainname="luanti" path="/app/share/locale"
+INFO[Main]: Message locale is now set to: C
+INFO[Main]: Using commanded gameid [grudgelands]
+INFO[Main]: Server created for gameid "grudgelands"
+INFO[Main]: - world:  /tmp/grudgelands-wp40-profile-run.B2rKzBG7/world
+INFO[Main]: - game:   /tmp/grudgelands-wp40-profile-run.B2rKzBG7/user/games/grudgelands
+INFO[Main]: Initializing world at /tmp/grudgelands-wp40-profile-run.B2rKzBG7/world
+INFO[Main]: ObjDefManager: added biome: name="default" index=0 uid=55
+INFO[Main]: BanManager: loading from /tmp/grudgelands-wp40-profile-run.B2rKzBG7/world/ipban.txt
+INFO[Main]: BanManager: creating /tmp/grudgelands-wp40-profile-run.B2rKzBG7/world/ipban.txt
+WARNING[Main]: /!\ You are using the old mod storage files backend. This backend is deprecated and may be removed in a future release /!\
+WARNING[Main]: Switching to SQLite3 is advised, please read https://docs.luanti.org/for-server-hosts/database-backends.
+INFO[Main]: Creating map database with backend "sqlite3"
+INFO[Main]: MapDatabaseSQLite3: split column format = yes
+INFO[Main]: ServerMap: Metadata loaded from /tmp/grudgelands-wp40-profile-run.B2rKzBG7/world
+INFO[Main]: Server: Initializing Lua
+INFO[Main]: SCRIPTAPI: Initialized game modules
+INFO[Main]: Server: Loading mods: sfinv creative player_api default walls vessels stairs mobs grug_trees grug_materials grug_nodes grug_gear grug_decor doors xpanes grug_core grug_xp grug_money grug_gathering dye wool beds grug_mapgen grug_wp40_profile_probe grug_fact
+INFO[Main]: ions grug_projectiles grug_mobs grug_classes grug_inventory grug_traders grug_abilities 
+INFO[Main]: Mod "sfinv" loaded after 1 ms
+INFO[Main]: Server creating detached inventory "trash"
+INFO[Main]: Mod "creative" loaded after 0 ms
+INFO[Main]: Mod "player_api" loaded after 0 ms
+INFO[Main]: Mod "default" loaded after 5 ms
+INFO[Main]: Mod "walls" loaded after 0 ms
+INFO[Main]: Mod "vessels" loaded after 0 ms
+INFO[Main]: Mod "stairs" loaded after 4 ms
+INFO[Main]: Mod "mobs" loaded after 2 ms
+INFO[Main]: ObjDefManager: added schematic: name="" index=0 uid=6
+INFO[Main]: ObjDefManager: added schematic: name="" index=1 uid=81
+INFO[Main]: ObjDefManager: added schematic: name="" index=2 uid=55
+INFO[Main]: Mod "grug_trees" loaded after 1 ms
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copper_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tin_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronze_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steel_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:gold_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:goldblock'])
+WARNING[Main]: No craft recipe known for output 'default:stone_with_mese'
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal_fragment'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:meselamp'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_acacia_wood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_junglewood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_pine_wood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_aspen_wood'])
+WARNING[Main]: No craft recipe known for output 'default:stone_with_diamond'
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamondblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sign_wall_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:ladder_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_goldblock'])
+INFO[Main]: Mod "grug_materials" loaded after 3 ms
+INFO[Main]: Mod "grug_nodes" loaded after 0 ms
+ACTION[Main]: [grug_gear] 6 bracket catalogs: 24 weapons + 48 armor pieces
+INFO[Main]: Mod "grug_gear" loaded after 1 ms
+INFO[Main]: Mod "grug_decor" loaded after 4 ms
+INFO[Main]: Mod "doors" loaded after 1 ms
+INFO[Main]: Mod "xpanes" loaded after 0 ms
+INFO[Main]: Mod "grug_core" loaded after 1 ms
+INFO[Main]: Mod "grug_xp" loaded after 0 ms
+INFO[Main]: Mod "grug_money" loaded after 0 ms
+INFO[Main]: Mod "grug_gathering" loaded after 1 ms
+INFO[Main]: Mod "dye" loaded after 0 ms
+INFO[Main]: Mod "wool" loaded after 1 ms
+INFO[Main]: Mod "beds" loaded after 0 ms
+INFO[Main]: ObjDefManager: added ore: name="grug_mapgen:native_gravel_blob_v1" index=0 uid=109
+INFO[Main]: ObjDefManager: added ore: name="grug_mapgen:native_stratum_iron_v1" index=1 uid=54
+INFO[Main]: ObjDefManager: added ore: name="grug_mapgen:native_stratum_steel_v1" index=2 uid=52
+INFO[Main]: ObjDefManager: added ore: name="grug_mapgen:native_stratum_silversteel_v1" index=3 uid=102
+INFO[Main]: ObjDefManager: added ore: name="grug_mapgen:native_stratum_embersteel_v1" index=4 uid=75
+INFO[Main]: ObjDefManager: added ore: name="grug_mapgen:native_stratum_abyssal_steel_v1" index=5 uid=69
+INFO[Main]: Mod "grug_mapgen" loaded after 7742 ms
+INFO[Main]: Mod "grug_wp40_profile_probe" loaded after 375 ms
+INFO[Main]: Mod "grug_factions" loaded after 1 ms
+INFO[Main]: Mod "grug_projectiles" loaded after 0 ms
+INFO[Main]: Mod "grug_mobs" loaded after 2 ms
+INFO[Main]: Mod "grug_classes" loaded after 1 ms
+INFO[Main]: Mod "grug_inventory" loaded after 0 ms
+INFO[Main]: Mod "grug_traders" loaded after 1 ms
+INFO[Main]: Mod "grug_abilities" loaded after 0 ms
+ACTION[Main]: [grug_materials] registry audit passed: 6 tiers, 15 resources, 12 processed forms, 6 race regions
+ACTION[Main]: GRUG_WP40_PROFILE_PROBE phase=cold event=start engine=5.17.0 lua=LuaJIT_2.1.1784272936 seed=531802985935182545 cases=24 manifest=114f03c2a5607c669382f300cd15fa6aad4573a1428ecca8331b35bb829dc621 full_digest=false
+ACTION[Main]: [grug_traders] drop audit: 1 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit); their items are audited from the hardcoded FUNCTION_DROPS list
+INFO[Main]: All mods loaded after 8149 ms
+INFO[Main]: Server: Calculating media file checksums
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: ignoring unsupported file extension: "character.blend"
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: ignoring unsupported file extension: "template.txt"
+INFO[Main]: Server: 1021 media files collected
+INFO[Main]: EmergeManager: initializing for mapgen=v7 and chunksize=(5,5,5)
+INFO[Main]: EmergeManager: using 1 thread(s)
+INFO[Main]: SCRIPTAPI: Initializing async engine
+INFO[Main]: AsyncEngine: using at most 14 threads with automatic scaling
+INFO[Main]: Initializing asynchronous environment (game)
+INFO[Main]: ServerEnvironment: 52 ABMs are registered
+INFO[Main]: ServerEnvironment: Using default environment metadata
+INFO[Main]: LBMManager: 1 unique times in lookup table
+INFO[Main]: Starting server thread...
+ACTION[Main]: World at [/tmp/grudgelands-wp40-profile-run.B2rKzBG7/world]
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:33100.
+INFO[Emerge-0]: Initialized emerge Lua environment
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x     0.05
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] 
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x     0.05
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] __________________________   20x     0.05
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x     0.05
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x     0.05
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] __________________________   20x     0.05
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] 
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] 
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x     0.05
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] __________________________   20x     0.05
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Emerge-0]: initialEmerge: area: (-128,-48,-2528)(-17,63,-2417)=112x112x112=1404928 (5MB)
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Emerge-0: processed [#] _________________________    1x        1
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       31
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    1x        4
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x      0.1
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] __________________________   20x      0.1
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]:   ServerMap: load block - sync (sum) [ms] _________    1x        1
+INFO[Server]: ServerMap: Written: 343 blocks, 343 blocks in memory.
+INFO[Server]: ServerMap: Blocks modified by: 
+INFO[Server]:   setIsUnderground ________________________________    1x      343
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=1 minp=-112,-32,-2512 maxp=-33,47,-2433 blockseed=477054105 plan_us=337254 writer_us=298612 total_us=635866 columns=6400 candidate_cells=49 candidates=333 r5_runs=25600 result=applied_clq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4101 vm_get_param2_data_calls=1 vm_get_param2_data_us=4108 vm_get_light_data_calls=2 vm_get_light_data_us=7892 vm_set_data_calls=1 vm_set_data_us=7579 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=81 vm_set_lighting_us=166 vm_calc_lighting_calls=1 vm_calc_lighting_us=3563 vm_set_light_data_calls=1 vm_set_light_data_us=7057 vm_update_liquids_calls=1 vm_update_liquids_us=1097
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_-112:-32:-2512 mapchunk=-112,-32,-2512 elapsed_us=9252620 generated=1 disk=0 memory=124 cancelled=0 errored=0
+INFO[Emerge-0]: initialEmerge: area: (-128,-48,-2608)(-17,63,-2497)=112x112x112=1404928 (5MB)
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=2 minp=-112,-32,-2592 maxp=-33,47,-2513 blockseed=2906213861 plan_us=231626 writer_us=282341 total_us=513967 columns=6400 candidate_cells=49 candidates=63 r5_runs=25600 result=applied_cplq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4078 vm_get_param2_data_calls=1 vm_get_param2_data_us=4074 vm_get_light_data_calls=2 vm_get_light_data_us=8156 vm_set_data_calls=1 vm_set_data_us=7249 vm_set_param2_data_calls=1 vm_set_param2_data_us=7125 vm_set_lighting_calls=1 vm_set_lighting_us=167 vm_calc_lighting_calls=1 vm_calc_lighting_us=4395 vm_set_light_data_calls=1 vm_set_light_data_us=7045 vm_update_liquids_calls=1 vm_update_liquids_us=1003
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_-112:-32:-2592 mapchunk=-112,-32,-2592 elapsed_us=547049 generated=1 disk=0 memory=124 cancelled=0 errored=0
+INFO[Emerge-0]: initialEmerge: area: (-128,-48,-2688)(-17,63,-2577)=112x112x112=1404928 (5MB)
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Emerge-0: processed [#] _________________________    1x      250
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      575
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     30.5
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________   86x    0.197
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        6
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x     0.35
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]:   ServerMap: load block - sync (sum) [ms] _________    1x        1
+INFO[Server]: ServerMap: Written: 833 blocks, 833 blocks in memory.
+INFO[Server]: ServerMap: Blocks modified by: 
+INFO[Server]:   finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      193
+INFO[Server]:   setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      150
+INFO[Server]:   setIsUnderground ________________________________    1x      245
+INFO[Server]:   setIsUnderground, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      145
+INFO[Server]:   setIsUnderground, setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      100
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=3 minp=-112,-32,-2672 maxp=-33,47,-2593 blockseed=2649330407 plan_us=259646 writer_us=309436 total_us=569082 columns=6400 candidate_cells=49 candidates=437 r5_runs=25600 result=applied_clq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=3 vm_get_data_calls=1 vm_get_data_us=4093 vm_get_param2_data_calls=1 vm_get_param2_data_us=4114 vm_get_light_data_calls=2 vm_get_light_data_us=8564 vm_set_data_calls=1 vm_set_data_us=7289 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=96 vm_set_lighting_us=259 vm_calc_lighting_calls=1 vm_calc_lighting_us=4110 vm_set_light_data_calls=1 vm_set_light_data_us=7065 vm_update_liquids_calls=1 vm_update_liquids_us=989
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_-112:-32:-2672 mapchunk=-112,-32,-2672 elapsed_us=602696 generated=1 disk=0 memory=124 cancelled=0 errored=0
+INFO[Emerge-0]: initialEmerge: area: (-128,-48,2432)(-17,63,2543)=112x112x112=1404928 (5MB)
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Emerge-0: processed [#] _________________________    1x      125
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      569
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       28
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    1x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________   98x    0.061
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       11
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x     0.55
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]:   ServerMap: load block - sync (sum) [ms] _________    1x        1
+INFO[Server]: ServerMap: Written: 686 blocks, 1176 blocks in memory.
+INFO[Server]: ServerMap: Blocks modified by: 
+INFO[Server]:   finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      218
+INFO[Server]:   setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      125
+INFO[Server]:   setIsUnderground ________________________________    1x      343
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=4 minp=-112,-32,2448 maxp=-33,47,2527 blockseed=1182291649 plan_us=328450 writer_us=338596 total_us=667046 columns=6400 candidate_cells=49 candidates=64 r5_runs=25600 result=applied_cplq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=4 vm_get_data_calls=1 vm_get_data_us=4184 vm_get_param2_data_calls=1 vm_get_param2_data_us=4220 vm_get_light_data_calls=2 vm_get_light_data_us=9204 vm_set_data_calls=1 vm_set_data_us=7326 vm_set_param2_data_calls=1 vm_set_param2_data_us=7634 vm_set_lighting_calls=1 vm_set_lighting_us=156 vm_calc_lighting_calls=1 vm_calc_lighting_us=2898 vm_set_light_data_calls=1 vm_set_light_data_us=6997 vm_update_liquids_calls=1 vm_update_liquids_us=937
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_-112:-32:2448 mapchunk=-112,-32,2448 elapsed_us=698370 generated=1 disk=0 memory=124 cancelled=0 errored=0
+INFO[Emerge-0]: initialEmerge: area: (-128,-48,2512)(-17,63,2623)=112x112x112=1404928 (5MB)
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=5 minp=-112,-32,2528 maxp=-33,47,2607 blockseed=2368640881 plan_us=222760 writer_us=279375 total_us=502135 columns=6400 candidate_cells=49 candidates=69 r5_runs=25600 result=applied_cplq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4558 vm_get_param2_data_calls=1 vm_get_param2_data_us=4561 vm_get_light_data_calls=2 vm_get_light_data_us=7919 vm_set_data_calls=1 vm_set_data_us=7269 vm_set_param2_data_calls=1 vm_set_param2_data_us=7145 vm_set_lighting_calls=1 vm_set_lighting_us=175 vm_calc_lighting_calls=1 vm_calc_lighting_us=3620 vm_set_light_data_calls=1 vm_set_light_data_us=7077 vm_update_liquids_calls=1 vm_update_liquids_us=1150
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_-112:-32:2528 mapchunk=-112,-32,2528 elapsed_us=531960 generated=1 disk=0 memory=124 cancelled=0 errored=0
+INFO[Emerge-0]: initialEmerge: area: (-128,-48,2592)(-17,63,2703)=112x112x112=1404928 (5MB)
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Emerge-0: processed [#] _________________________    1x      250
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    584.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     28.5
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x      0.5
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    6x        2
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        9
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x     0.45
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]:   ServerMap: load block - sync (sum) [ms] _________    1x        1
+INFO[Server]: ServerMap: Written: 833 blocks, 1666 blocks in memory.
+INFO[Server]: ServerMap: Blocks modified by: 
+INFO[Server]:   finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      193
+INFO[Server]:   setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      150
+INFO[Server]:   setIsUnderground ________________________________    1x      245
+INFO[Server]:   setIsUnderground, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      145
+INFO[Server]:   setIsUnderground, setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      100
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=6 minp=-112,-32,2608 maxp=-33,47,2687 blockseed=2865193273 plan_us=300573 writer_us=380351 total_us=680924 columns=6400 candidate_cells=49 candidates=1012 r5_runs=24640 result=applied_cplq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4105 vm_get_param2_data_calls=1 vm_get_param2_data_us=4112 vm_get_light_data_calls=2 vm_get_light_data_us=8235 vm_set_data_calls=1 vm_set_data_us=7281 vm_set_param2_data_calls=1 vm_set_param2_data_us=7162 vm_set_lighting_calls=1 vm_set_lighting_us=197 vm_calc_lighting_calls=1 vm_calc_lighting_us=3370 vm_set_light_data_calls=1 vm_set_light_data_us=7367 vm_update_liquids_calls=1 vm_update_liquids_us=1074
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_-112:-32:2608 mapchunk=-112,-32,2608 elapsed_us=713529 generated=1 disk=0 memory=124 cancelled=0 errored=0
+INFO[Emerge-0]: initialEmerge: area: (-1808,-48,-2528)(-1697,63,-2417)=112x112x112=1404928 (5MB)
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Emerge-0: processed [#] _________________________    1x      125
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      681
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       29
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    1x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    3x    2.333
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       11
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x      0.6
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] __________________________   20x     0.05
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]:   ServerMap: load block - sync (sum) [ms] _________    1x        2
+INFO[Server]: ServerMap: Written: 686 blocks, 2009 blocks in memory.
+INFO[Server]: ServerMap: Blocks modified by: 
+INFO[Server]:   finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      218
+INFO[Server]:   setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      125
+INFO[Server]:   setIsUnderground ________________________________    1x      343
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=7 minp=-1792,-32,-2512 maxp=-1713,47,-2433 blockseed=582672721 plan_us=376899 writer_us=242673 total_us=619572 columns=6400 candidate_cells=49 candidates=52 r5_runs=25600 result=applied_clq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=1 vm_get_data_calls=1 vm_get_data_us=4111 vm_get_param2_data_calls=1 vm_get_param2_data_us=4107 vm_get_light_data_calls=2 vm_get_light_data_us=8242 vm_set_data_calls=1 vm_set_data_us=7514 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=1 vm_set_lighting_us=449 vm_calc_lighting_calls=1 vm_calc_lighting_us=3347 vm_set_light_data_calls=1 vm_set_light_data_us=7113 vm_update_liquids_calls=1 vm_update_liquids_us=1016
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_-1792:-32:-2512 mapchunk=-1792,-32,-2512 elapsed_us=653015 generated=1 disk=0 memory=124 cancelled=0 errored=0
+INFO[Emerge-0]: initialEmerge: area: (-1808,-48,-2608)(-1697,63,-2497)=112x112x112=1404928 (5MB)
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=8 minp=-1792,-32,-2592 maxp=-1713,47,-2513 blockseed=477511193 plan_us=246299 writer_us=272410 total_us=518709 columns=6400 candidate_cells=49 candidates=0 r5_runs=25600 result=applied_cplq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4123 vm_get_param2_data_calls=1 vm_get_param2_data_us=4110 vm_get_light_data_calls=2 vm_get_light_data_us=7799 vm_set_data_calls=1 vm_set_data_us=7320 vm_set_param2_data_calls=1 vm_set_param2_data_us=7225 vm_set_lighting_calls=1 vm_set_lighting_us=200 vm_calc_lighting_calls=1 vm_calc_lighting_us=4261 vm_set_light_data_calls=1 vm_set_light_data_us=7192 vm_update_liquids_calls=1 vm_update_liquids_us=981
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_-1792:-32:-2592 mapchunk=-1792,-32,-2592 elapsed_us=551385 generated=1 disk=0 memory=124 cancelled=0 errored=0
+INFO[Emerge-0]: initialEmerge: area: (-1808,-48,-2688)(-1697,63,-2577)=112x112x112=1404928 (5MB)
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Emerge-0: processed [#] _________________________    1x      250
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    569.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     29.5
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    6x    2.833
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        9
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x     0.45
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]:   ServerMap: load block - sync (sum) [ms] 
+INFO[Server]: ServerMap: Written: 833 blocks, 2499 blocks in memory.
+INFO[Server]: ServerMap: Blocks modified by: 
+INFO[Server]:   finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      193
+INFO[Server]:   setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      150
+INFO[Server]:   setIsUnderground ________________________________    1x      245
+INFO[Server]:   setIsUnderground, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      145
+INFO[Server]:   setIsUnderground, setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      100
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=9 minp=-1792,-32,-2672 maxp=-1713,47,-2593 blockseed=3424714971 plan_us=289547 writer_us=234448 total_us=523995 columns=6400 candidate_cells=49 candidates=100 r5_runs=25600 result=applied_clq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=3 vm_get_data_calls=1 vm_get_data_us=4107 vm_get_param2_data_calls=1 vm_get_param2_data_us=4112 vm_get_light_data_calls=2 vm_get_light_data_us=8217 vm_set_data_calls=1 vm_set_data_us=7265 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=1 vm_set_lighting_us=144 vm_calc_lighting_calls=1 vm_calc_lighting_us=3490 vm_set_light_data_calls=1 vm_set_light_data_us=7072 vm_update_liquids_calls=1 vm_update_liquids_us=928
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_-1792:-32:-2672 mapchunk=-1792,-32,-2672 elapsed_us=556092 generated=1 disk=0 memory=124 cancelled=0 errored=0
+INFO[Emerge-0]: initialEmerge: area: (-1888,-48,-2528)(-1777,63,-2417)=112x112x112=1404928 (5MB)
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=10 minp=-1872,-32,-2512 maxp=-1793,47,-2433 blockseed=3973185169 plan_us=267699 writer_us=267661 total_us=535360 columns=6400 candidate_cells=49 candidates=51 r5_runs=25600 result=applied_cplq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=3 vm_get_data_calls=1 vm_get_data_us=3903 vm_get_param2_data_calls=1 vm_get_param2_data_us=3850 vm_get_light_data_calls=2 vm_get_light_data_us=8028 vm_set_data_calls=1 vm_set_data_us=7290 vm_set_param2_data_calls=1 vm_set_param2_data_us=7069 vm_set_lighting_calls=1 vm_set_lighting_us=160 vm_calc_lighting_calls=1 vm_calc_lighting_us=4069 vm_set_light_data_calls=1 vm_set_light_data_us=7103 vm_update_liquids_calls=1 vm_update_liquids_us=956
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_-1872:-32:-2512 mapchunk=-1872,-32,-2512 elapsed_us=569439 generated=1 disk=0 memory=124 cancelled=0 errored=0
+INFO[Emerge-0]: initialEmerge: area: (-1888,-48,-2608)(-1777,63,-2497)=112x112x112=1404928 (5MB)
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Emerge-0: processed [#] _________________________    1x      250
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    529.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       30
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    5x      2.2
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       12
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x     0.65
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] __________________________   20x     0.05
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]:   ServerMap: load block - sync (sum) [ms] _________    1x        2
+INFO[Server]: ServerMap: Written: 861 blocks, 2919 blocks in memory.
+INFO[Server]: ServerMap: Blocks modified by: 
+INFO[Server]:   finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      291
+INFO[Server]:   setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      150
+INFO[Server]:   setIsUnderground ________________________________    1x      175
+INFO[Server]:   setIsUnderground, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      145
+INFO[Server]:   setIsUnderground, setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      100
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=11 minp=-1872,-32,-2592 maxp=-1793,47,-2513 blockseed=1061529625 plan_us=166853 writer_us=259263 total_us=426116 columns=6400 candidate_cells=49 candidates=0 r5_runs=25600 result=applied_cplq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4102 vm_get_param2_data_calls=1 vm_get_param2_data_us=4087 vm_get_light_data_calls=2 vm_get_light_data_us=8259 vm_set_data_calls=1 vm_set_data_us=7321 vm_set_param2_data_calls=1 vm_set_param2_data_us=7172 vm_set_lighting_calls=1 vm_set_lighting_us=264 vm_calc_lighting_calls=1 vm_calc_lighting_us=5929 vm_set_light_data_calls=1 vm_set_light_data_us=7123 vm_update_liquids_calls=1 vm_update_liquids_us=1029
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_-1872:-32:-2592 mapchunk=-1872,-32,-2592 elapsed_us=460944 generated=1 disk=0 memory=124 cancelled=0 errored=0
+INFO[Emerge-0]: initialEmerge: area: (-1888,-48,-2688)(-1777,63,-2577)=112x112x112=1404928 (5MB)
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=12 minp=-1872,-32,-2672 maxp=-1793,47,-2593 blockseed=2347589339 plan_us=183830 writer_us=233924 total_us=417754 columns=6400 candidate_cells=49 candidates=98 r5_runs=25600 result=applied_clq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4097 vm_get_param2_data_calls=1 vm_get_param2_data_us=4108 vm_get_light_data_calls=2 vm_get_light_data_us=7955 vm_set_data_calls=1 vm_set_data_us=7455 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=1 vm_set_lighting_us=185 vm_calc_lighting_calls=1 vm_calc_lighting_us=4157 vm_set_light_data_calls=1 vm_set_light_data_us=7145 vm_update_liquids_calls=1 vm_update_liquids_us=981
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_-1872:-32:-2672 mapchunk=-1872,-32,-2672 elapsed_us=449673 generated=1 disk=0 memory=124 cancelled=0 errored=0
+INFO[Emerge-0]: initialEmerge: area: (-48,-48,-2528)(63,63,-2417)=112x112x112=1404928 (5MB)
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Emerge-0: processed [#] _________________________    1x      250
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    422.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x       30
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    7x    3.142
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       12
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x     0.65
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]:   ServerMap: load block - sync (sum) [ms] _________    1x        1
+INFO[Server]: ServerMap: Written: 833 blocks, 3339 blocks in memory.
+INFO[Server]: ServerMap: Blocks modified by: 
+INFO[Server]:   finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      243
+INFO[Server]:   setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      170
+INFO[Server]:   setIsUnderground ________________________________    1x      245
+INFO[Server]:   setIsUnderground, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x       95
+INFO[Server]:   setIsUnderground, setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x       80
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=13 minp=-32,-32,-2512 maxp=47,47,-2433 blockseed=3787661465 plan_us=336022 writer_us=274672 total_us=610694 columns=6400 candidate_cells=49 candidates=197 r5_runs=25694 result=applied_cplq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4132 vm_get_param2_data_calls=1 vm_get_param2_data_us=4110 vm_get_light_data_calls=2 vm_get_light_data_us=8199 vm_set_data_calls=1 vm_set_data_us=7284 vm_set_param2_data_calls=1 vm_set_param2_data_us=7191 vm_set_lighting_calls=1 vm_set_lighting_us=208 vm_calc_lighting_calls=1 vm_calc_lighting_us=4852 vm_set_light_data_calls=1 vm_set_light_data_us=7101 vm_update_liquids_calls=1 vm_update_liquids_us=959
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_-32:-32:-2512 mapchunk=-32,-32,-2512 elapsed_us=644275 generated=1 disk=0 memory=124 cancelled=0 errored=0
+INFO[Emerge-0]: initialEmerge: area: (-48,-48,-2608)(63,63,-2497)=112x112x112=1404928 (5MB)
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Emerge-0: processed [#] _________________________    1x      125
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      611
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       30
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] 
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    3x        3
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       12
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x      0.6
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]:   ServerMap: load block - sync (sum) [ms] 
+INFO[Server]: ServerMap: Written: 518 blocks, 3514 blocks in memory.
+INFO[Server]: ServerMap: Blocks modified by: 
+INFO[Server]:   finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      218
+INFO[Server]:   setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      125
+INFO[Server]:   setIsUnderground ________________________________    1x      175
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=14 minp=-32,-32,-2592 maxp=47,47,-2513 blockseed=3750423273 plan_us=216345 writer_us=284485 total_us=500830 columns=6400 candidate_cells=49 candidates=0 r5_runs=25600 result=applied_cplq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4096 vm_get_param2_data_calls=1 vm_get_param2_data_us=4112 vm_get_light_data_calls=2 vm_get_light_data_us=8174 vm_set_data_calls=1 vm_set_data_us=7251 vm_set_param2_data_calls=1 vm_set_param2_data_us=7127 vm_set_lighting_calls=1 vm_set_lighting_us=140 vm_calc_lighting_calls=1 vm_calc_lighting_us=7166 vm_set_light_data_calls=1 vm_set_light_data_us=7154 vm_update_liquids_calls=1 vm_update_liquids_us=1088
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_-32:-32:-2592 mapchunk=-32,-32,-2592 elapsed_us=533797 generated=1 disk=0 memory=124 cancelled=0 errored=0
+INFO[Emerge-0]: initialEmerge: area: (-48,-48,-2688)(63,63,-2577)=112x112x112=1404928 (5MB)
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=15 minp=-32,-32,-2672 maxp=47,47,-2593 blockseed=3815956711 plan_us=235058 writer_us=276666 total_us=511724 columns=6400 candidate_cells=49 candidates=387 r5_runs=25600 result=applied_clq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=3 vm_get_data_calls=1 vm_get_data_us=4110 vm_get_param2_data_calls=1 vm_get_param2_data_us=4111 vm_get_light_data_calls=2 vm_get_light_data_us=8721 vm_set_data_calls=1 vm_set_data_us=7257 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=96 vm_set_lighting_us=162 vm_calc_lighting_calls=1 vm_calc_lighting_us=4777 vm_set_light_data_calls=1 vm_set_light_data_us=7057 vm_update_liquids_calls=1 vm_update_liquids_us=986
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_-32:-32:-2672 mapchunk=-32,-32,-2672 elapsed_us=545203 generated=1 disk=0 memory=124 cancelled=0 errored=0
+INFO[Emerge-0]: initialEmerge: area: (-48,-48,2432)(63,63,2543)=112x112x112=1404928 (5MB)
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Emerge-0: processed [#] _________________________    1x      250
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    506.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     29.5
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________  101x    0.198
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        8
+INFO[Main]:   Server: map timer and unload [ms] _______________    1x        1
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x     0.55
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   Server::yieldTo...() progress [#] 
+INFO[Main]:   Server::yieldTo...() sleep [ms] _________________    1x        1
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]:   ServerMap: load block - sync (sum) [ms] _________    1x        1
+INFO[Server]: ServerMap: Written: 833 blocks, 3934 blocks in memory.
+INFO[Server]: ServerMap: Blocks modified by: 
+INFO[Server]:   finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      243
+INFO[Server]:   setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      170
+INFO[Server]:   setIsUnderground ________________________________    1x      245
+INFO[Server]:   setIsUnderground, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x       95
+INFO[Server]:   setIsUnderground, setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x       80
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=16 minp=-32,-32,2448 maxp=47,47,2527 blockseed=274748545 plan_us=287040 writer_us=291552 total_us=578592 columns=6400 candidate_cells=49 candidates=0 r5_runs=25600 result=applied_cplq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4370 vm_get_param2_data_calls=1 vm_get_param2_data_us=4364 vm_get_light_data_calls=2 vm_get_light_data_us=7896 vm_set_data_calls=1 vm_set_data_us=7510 vm_set_param2_data_calls=1 vm_set_param2_data_us=7141 vm_set_lighting_calls=1 vm_set_lighting_us=135 vm_calc_lighting_calls=1 vm_calc_lighting_us=4249 vm_set_light_data_calls=1 vm_set_light_data_us=7051 vm_update_liquids_calls=1 vm_update_liquids_us=1220
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_-32:-32:2448 mapchunk=-32,-32,2448 elapsed_us=609553 generated=1 disk=0 memory=124 cancelled=0 errored=0
+INFO[Emerge-0]: initialEmerge: area: (-48,-48,2512)(63,63,2623)=112x112x112=1404928 (5MB)
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=17 minp=-32,-32,2528 maxp=47,47,2607 blockseed=2089223153 plan_us=202430 writer_us=336286 total_us=538716 columns=6400 candidate_cells=49 candidates=0 r5_runs=25600 result=applied_cplq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4081 vm_get_param2_data_calls=1 vm_get_param2_data_us=4083 vm_get_light_data_calls=2 vm_get_light_data_us=8190 vm_set_data_calls=1 vm_set_data_us=7254 vm_set_param2_data_calls=1 vm_set_param2_data_us=7137 vm_set_lighting_calls=1 vm_set_lighting_us=141 vm_calc_lighting_calls=1 vm_calc_lighting_us=5894 vm_set_light_data_calls=1 vm_set_light_data_us=7088 vm_update_liquids_calls=1 vm_update_liquids_us=989
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_-32:-32:2528 mapchunk=-32,-32,2528 elapsed_us=572844 generated=1 disk=0 memory=124 cancelled=0 errored=0
+INFO[Emerge-0]: initialEmerge: area: (-48,-48,2592)(63,63,2703)=112x112x112=1404928 (5MB)
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Emerge-0: processed [#] _________________________    1x      250
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    558.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x       32
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x      0.5
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    6x    3.833
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       12
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x      0.6
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   Server::yieldTo...() progress [#] 
+INFO[Main]:   Server::yieldTo...() sleep [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]:   ServerMap: load block - sync (sum) [ms] _________    1x        1
+INFO[Server]: ServerMap: Written: 763 blocks, 4284 blocks in memory.
+INFO[Server]: ServerMap: Blocks modified by: 
+INFO[Server]:   finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      243
+INFO[Server]:   setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      170
+INFO[Server]:   setIsUnderground ________________________________    1x      175
+INFO[Server]:   setIsUnderground, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x       95
+INFO[Server]:   setIsUnderground, setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x       80
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=18 minp=-32,-32,2608 maxp=47,47,2687 blockseed=2111383743 plan_us=235149 writer_us=380416 total_us=615565 columns=6400 candidate_cells=49 candidates=956 r5_runs=24640 result=applied_cplq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=3 vm_get_data_calls=1 vm_get_data_us=4079 vm_get_param2_data_calls=1 vm_get_param2_data_us=4093 vm_get_light_data_calls=2 vm_get_light_data_us=7931 vm_set_data_calls=1 vm_set_data_us=7330 vm_set_param2_data_calls=1 vm_set_param2_data_us=7258 vm_set_lighting_calls=1 vm_set_lighting_us=187 vm_calc_lighting_calls=1 vm_calc_lighting_us=3955 vm_set_light_data_calls=1 vm_set_light_data_us=6814 vm_update_liquids_calls=1 vm_update_liquids_us=1306
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_-32:-32:2608 mapchunk=-32,-32,2608 elapsed_us=651079 generated=1 disk=0 memory=124 cancelled=0 errored=0
+INFO[Emerge-0]: initialEmerge: area: (32,-48,-2528)(143,63,-2417)=112x112x112=1404928 (5MB)
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Emerge-0: processed [#] _________________________    1x      125
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      616
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       30
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    1x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    3x        3
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       12
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x      0.6
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   Server::yieldTo...() progress [#] 
+INFO[Main]:   Server::yieldTo...() sleep [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]:   ServerMap: load block - sync (sum) [ms] _________    1x        1
+INFO[Server]: ServerMap: Written: 588 blocks, 4529 blocks in memory.
+INFO[Server]: ServerMap: Blocks modified by: 
+INFO[Server]:   finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      218
+INFO[Server]:   setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      125
+INFO[Server]:   setIsUnderground ________________________________    1x      245
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=19 minp=48,-32,-2512 maxp=127,47,-2433 blockseed=2231744537 plan_us=299593 writer_us=282920 total_us=582513 columns=6400 candidate_cells=49 candidates=409 r5_runs=25779 result=applied_clq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4141 vm_get_param2_data_calls=1 vm_get_param2_data_us=4267 vm_get_light_data_calls=2 vm_get_light_data_us=8188 vm_set_data_calls=1 vm_set_data_us=7313 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=96 vm_set_lighting_us=167 vm_calc_lighting_calls=1 vm_calc_lighting_us=4418 vm_set_light_data_calls=1 vm_set_light_data_us=7118 vm_update_liquids_calls=1 vm_update_liquids_us=956
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_48:-32:-2512 mapchunk=48,-32,-2512 elapsed_us=615463 generated=1 disk=0 memory=124 cancelled=0 errored=0
+INFO[Emerge-0]: initialEmerge: area: (32,-48,-2608)(143,63,-2497)=112x112x112=1404928 (5MB)
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=20 minp=48,-32,-2592 maxp=127,47,-2513 blockseed=4105102377 plan_us=215391 writer_us=254652 total_us=470043 columns=6400 candidate_cells=49 candidates=607 r5_runs=25440 result=applied_clq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4081 vm_get_param2_data_calls=1 vm_get_param2_data_us=4078 vm_get_light_data_calls=2 vm_get_light_data_us=7866 vm_set_data_calls=1 vm_set_data_us=7218 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=111 vm_set_lighting_us=260 vm_calc_lighting_calls=1 vm_calc_lighting_us=4948 vm_set_light_data_calls=1 vm_set_light_data_us=7041 vm_update_liquids_calls=1 vm_update_liquids_us=981
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_48:-32:-2592 mapchunk=48,-32,-2592 elapsed_us=503673 generated=1 disk=0 memory=124 cancelled=0 errored=0
+INFO[Emerge-0]: initialEmerge: area: (32,-48,-2688)(143,63,-2577)=112x112x112=1404928 (5MB)
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Emerge-0: processed [#] _________________________    1x      250
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    526.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x       30
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x      0.5
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________  211x    0.085
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        8
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x     0.55
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   Server::yieldTo...() progress [#] 
+INFO[Main]:   Server::yieldTo...() sleep [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] __________________________   20x      0.1
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]:   ServerMap: load block - sync (sum) [ms] _________    1x        2
+INFO[Server]: ServerMap: Written: 763 blocks, 4879 blocks in memory.
+INFO[Server]: ServerMap: Blocks modified by: 
+INFO[Server]:   finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      243
+INFO[Server]:   setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      170
+INFO[Server]:   setIsUnderground ________________________________    1x      175
+INFO[Server]:   setIsUnderground, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x       95
+INFO[Server]:   setIsUnderground, setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x       80
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=21 minp=48,-32,-2672 maxp=127,47,-2593 blockseed=2143039207 plan_us=234151 writer_us=262212 total_us=496363 columns=6400 candidate_cells=49 candidates=944 r5_runs=25440 result=applied_clq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4076 vm_get_param2_data_calls=1 vm_get_param2_data_us=4099 vm_get_light_data_calls=2 vm_get_light_data_us=8479 vm_set_data_calls=1 vm_set_data_us=7457 vm_set_param2_data_calls=0 vm_set_param2_data_us=0 vm_set_lighting_calls=96 vm_set_lighting_us=178 vm_calc_lighting_calls=1 vm_calc_lighting_us=4549 vm_set_light_data_calls=1 vm_set_light_data_us=7077 vm_update_liquids_calls=1 vm_update_liquids_us=965
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_48:-32:-2672 mapchunk=48,-32,-2672 elapsed_us=528547 generated=1 disk=0 memory=124 cancelled=0 errored=0
+INFO[Emerge-0]: initialEmerge: area: (32,-48,2432)(143,63,2543)=112x112x112=1404928 (5MB)
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=22 minp=48,-32,2448 maxp=127,47,2527 blockseed=1694184257 plan_us=332365 writer_us=287925 total_us=620290 columns=6400 candidate_cells=49 candidates=543 r5_runs=25440 result=applied_cplq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=2 vm_get_data_calls=1 vm_get_data_us=4082 vm_get_param2_data_calls=1 vm_get_param2_data_us=4105 vm_get_light_data_calls=2 vm_get_light_data_us=8147 vm_set_data_calls=1 vm_set_data_us=6972 vm_set_param2_data_calls=1 vm_set_param2_data_us=6855 vm_set_lighting_calls=1 vm_set_lighting_us=141 vm_calc_lighting_calls=1 vm_calc_lighting_us=3649 vm_set_light_data_calls=1 vm_set_light_data_us=6787 vm_update_liquids_calls=1 vm_update_liquids_us=967
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_48:-32:2448 mapchunk=48,-32,2448 elapsed_us=652000 generated=1 disk=0 memory=124 cancelled=0 errored=0
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Emerge-0: processed [#] _________________________    1x      249
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      559
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       29
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] 
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________  100x      0.1
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       10
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x      0.6
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   Server::yieldTo...() progress [#] 
+INFO[Main]:   Server::yieldTo...() sleep [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] __________________________   20x     0.05
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]:   ServerMap: load block - sync (sum) [ms] 
+INFO[Server]: ServerMap: Written: 686 blocks, 5124 blocks in memory.
+INFO[Server]: ServerMap: Blocks modified by: 
+INFO[Server]:   finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      291
+INFO[Server]:   setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      150
+INFO[Server]:   setIsUnderground, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      145
+INFO[Server]:   setIsUnderground, setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      100
+INFO[Emerge-0]: initialEmerge: area: (32,-48,2512)(143,63,2623)=112x112x112=1404928 (5MB)
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=23 minp=48,-32,2528 maxp=127,47,2607 blockseed=934311921 plan_us=223483 writer_us=343452 total_us=566935 columns=6400 candidate_cells=49 candidates=579 r5_runs=25440 result=applied_cplq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=3 vm_get_data_calls=1 vm_get_data_us=4280 vm_get_param2_data_calls=1 vm_get_param2_data_us=4152 vm_get_light_data_calls=2 vm_get_light_data_us=8143 vm_set_data_calls=1 vm_set_data_us=7245 vm_set_param2_data_calls=1 vm_set_param2_data_us=6900 vm_set_lighting_calls=1 vm_set_lighting_us=152 vm_calc_lighting_calls=1 vm_calc_lighting_us=4006 vm_set_light_data_calls=1 vm_set_light_data_us=7097 vm_update_liquids_calls=1 vm_update_liquids_us=1295
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_48:-32:2528 mapchunk=48,-32,2528 elapsed_us=611375 generated=1 disk=0 memory=124 cancelled=0 errored=0
+INFO[Emerge-0]: initialEmerge: area: (32,-48,2592)(143,63,2703)=112x112x112=1404928 (5MB)
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Emerge-0: processed [#] _________________________    1x      126
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      567
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x       33
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    1x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    4x        4
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        9
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________   20x      0.5
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   Server::yieldTo...() progress [#] 
+INFO[Main]:   Server::yieldTo...() sleep [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] 
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] 
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]:   ServerMap: load block - sync (sum) [ms] _________    1x        2
+INFO[Server]: ServerMap: Written: 518 blocks, 5474 blocks in memory.
+INFO[Server]: ServerMap: Blocks modified by: 
+INFO[Server]:   finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      123
+INFO[Server]:   setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x       45
+INFO[Server]:   setIsUnderground ________________________________    1x      175
+INFO[Server]:   setIsUnderground, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x       95
+INFO[Server]:   setIsUnderground, setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x       80
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_CALLBACK callback=24 minp=48,-32,2608 maxp=127,47,2687 blockseed=2694271519 plan_us=198923 writer_us=366864 total_us=565787 columns=6400 candidate_cells=49 candidates=1402 r5_runs=24504 result=applied_cplq vm_get_emerged_area_calls=1 vm_get_emerged_area_us=10 vm_get_data_calls=1 vm_get_data_us=3889 vm_get_param2_data_calls=1 vm_get_param2_data_us=3827 vm_get_light_data_calls=2 vm_get_light_data_us=8150 vm_set_data_calls=1 vm_set_data_us=7255 vm_set_param2_data_calls=1 vm_set_param2_data_us=7113 vm_set_lighting_calls=1 vm_set_lighting_us=132 vm_calc_lighting_calls=1 vm_calc_lighting_us=3713 vm_set_light_data_calls=1 vm_set_light_data_us=7318 vm_update_liquids_calls=1 vm_update_liquids_us=966
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=cold event=emerge case=owner_48:-32:2608 mapchunk=48,-32,2608 elapsed_us=601442 generated=1 disk=0 memory=124 cancelled=0 errored=0
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=cold event=complete requested=24 completed=24 callbacks=24 generated=24 disk=0 memory=2976 cancelled=0 errored=0 samples=888 expected_nodes=0 digest=eb42d51bdb11fdd8ba10c273d72850113cb57f03eb6ac2be78d7f094eb40bdb0 full_digest=disabled full_vocabulary_digest=- full_voxels=0 measured_elapsed_us=23378297 diagnostic_us=919
+INFO[Server]: *** Server shutting down in 0s.
+INFO[Main]: Dedicated server quitting
+INFO[Main]: Profiler:
+INFO[Main]:   ActiveObjectMgr: SAO count [#] 
+INFO[Main]:   Emerge-0: processed [#] _________________________    1x      124
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      566
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    1x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    2x        2
+INFO[Main]:   SEnv: modify in blocks avg per interval [ms] 
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        8
+INFO[Main]:   Server: map timer and unload [ms] 
+INFO[Main]:   Server: send SAO messages [ms] 
+INFO[Main]:   Server: update objects within range [ms] 
+INFO[Main]:   Server::AsyncRunStep() [ms] _____________________    8x     1.25
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]:   Server::SendBlocks(): Collect list [ms] 
+INFO[Main]:   Server::SendBlocks(): Send to clients [ms] 
+INFO[Main]:   Server::yieldTo...() progress [#] 
+INFO[Main]:   Server::yieldTo...() sleep [ms] 
+INFO[Main]:   ServerEnv: ABMs run 
+INFO[Main]:   ServerEnv: Run SAO::step() [ms] _________________    8x    0.125
+INFO[Main]:   ServerEnv: Run node timers [ms] 
+INFO[Main]:   ServerEnv: active blocks 
+INFO[Main]:   ServerEnv: active blocks cached 
+INFO[Main]:   ServerEnv: active blocks scanned for ABMs 
+INFO[Main]:   ServerEnv: update active blocks [ms] 
+INFO[Main]:   ServerEnv::step() [ms] __________________________    8x     0.25
+INFO[Main]:   ServerEnvironment::removeRemovedObjects() [ms] 
+INFO[Main]:   ServerMap: load block - sync (sum) [ms] 
+ACTION[Main]: Server: Shutting down
+INFO[Main]: Server: Stopping and waiting for threads
+INFO[Main]: Server: Threads stopped
+INFO[Main]: Server: Executing shutdown hooks
+ACTION[Main]: GRUG_WP13_ENGINE phase=cold starts=3 owners=24 edit_canary=placed digest_excluded_cells=1 filler_boundary=false hearthpine_cells=61932 hearthpine_torches=74 hearthpine_soil=2 hearthpine_anchor=-1800,25,-2550 hearthpine_digest=03311c95b8463c422371e78afabcba743ed70d4f56a013c16a362938ac00693c dawnmere_cells=66343 dawnmere_torches=98 dawnmere_soil=2 dawnmere_anchor=0,17,-2550 dawnmere_digest=cdbc03239c181f1f41caf1a4a2bd851753c17f2b04e2df95037d1e62893ef4f9 sunscar_cells=59673 sunscar_torches=112 sunscar_soil=3 sunscar_anchor=0,27,2550 sunscar_digest=bd673e4acd4f9c187b26a7649e3e64c7e8045c579f80dee2d335d6bf8407c8be digest=ffe90fedca583344c197078c41ec1a4882194e17cc284af32d9949ef27dbd220
+INFO[Main]: Server: Saving players
+INFO[Main]: Server: Kicking players
+INFO[Main]: Server: Saving environment metadata
+INFO[Main]: AsyncEngine: Waiting for 1 threads
+INFO[Main]: ServerMap: Written: 344 blocks, 5474 blocks in memory.
+INFO[Main]: ServerMap: Blocks modified by: 
+INFO[Main]:   finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      218
+INFO[Main]:   setGenerated, finishBlockMake: expireIsAir, MMVManip::blitBackAll     1x      125
+INFO[Main]:   setNode _________________________________________    1x        1
+INFO[Main]: ServerMap: Saved map to /tmp/grudgelands-wp40-profile-run.B2rKzBG7/world
+INFO[Main]: BanManager: saving to /tmp/grudgelands-wp40-profile-run.B2rKzBG7/world/ipban.txt

@@ -62,7 +62,8 @@ local function loader(directory)
 				else
 					buf:put(x, 1, z, palette.node("planter_soil"))
 					local role = ((x + z) % 3 == 0) and "fern" or "grass_tuft"
-					buf:put(x, 2, z, palette.node(role))
+					local name = palette.node(role)
+					buf:put(x, 2, z, name, parts.place_param2(name))
 				end
 			end
 		end
@@ -343,6 +344,49 @@ local function loader(directory)
 					buf:put(sx, y, sz, palette.node("plaza"))
 				end
 				parts.stair(buf, sx, tread, sz, palette.node("roof_stair"), face)
+			end
+		end
+	end
+
+	-- A savanna acacia on the proportions of the vendored schematic
+	-- (mods/BASE/default/schematics/acacia_tree.mts, decoded: 9 x 9 x 9, five
+	-- clear trunk logs, then two branch arms climbing diagonally to opposite
+	-- corners and a flat two-course umbrella over them). That flat crown on a
+	-- long bare stem is the whole silhouette of the dry flats, and it is the
+	-- opposite of both the conifer and the apple standard: nothing tapers,
+	-- and the widest part is the very top.
+	--
+	-- `height` is the trunk, so the lowest leaf sits at `height + 1` and the
+	-- stem is clear all the way. The branch arms are logs inside the crown,
+	-- exactly as the schematic has them; a parity notch on the outermost ring
+	-- keeps neighbouring crowns from being the same shape.
+	function M.acacia(buf, palette, x, z, height)
+		local log = palette.node("tree_log")
+		local leaves = palette.node("tree_leaves")
+		for y = 1, height do buf:put(x, y, z, log) end
+		-- Two arms, each climbing one node out and one node up, as the
+		-- schematic's branches do.
+		local arm = ((x + z) % 2 == 0) and 1 or -1
+		for step = 1, 2 do
+			buf:put(x + arm * step, height - 2 + step, z + arm * step, log)
+			buf:put(x - arm * step, height - 2 + step, z - arm * step, log)
+		end
+		local LAYERS = {
+			{offset = 1, span = 4, reach = 3, notch = true},
+			{offset = 2, span = 3, reach = 2, notch = false},
+		}
+		for index = 1, #LAYERS do
+			local layer = LAYERS[index]
+			local y = height + layer.offset
+			for dz = -layer.reach, layer.reach do
+				for dx = -layer.reach, layer.reach do
+					local span = math.abs(dx) + math.abs(dz)
+					local skip = layer.notch and span == layer.span and
+						(x + z + dx + dz) % 2 == 1
+					if span <= layer.span and not skip then
+						buf:put(x + dx, y, z + dz, leaves)
+					end
+				end
 			end
 		end
 	end
@@ -888,6 +932,165 @@ local function loader(directory)
 		return planted
 	end
 
+	-- A parapet on a finished flat roof deck: a continuous breastwork course
+	-- on the wall line with merlons standing one course above it every
+	-- `step` cells. The deck under it is already a slab, so the breastwork
+	-- lands on a bearing all the way round, and the crenels between the
+	-- merlons are what a fighting platform is looked over.
+	--
+	-- `y` is the course the breastwork STANDS ON, one above the deck slab
+	-- `roofs.flat_deck` laid, so the deck stays continuous underneath it.
+	function M.parapet(buf, palette, x1, z1, x2, z2, y, step)
+		local wall = palette.node("low_wall")
+		local merlon = palette.node("wall_accent")
+		step = step or 2
+		local placed = 0
+		for z = z1, z2 do
+			for x = x1, x2 do
+				if x == x1 or x == x2 or z == z1 or z == z2 then
+					buf:put(x, y, z, wall)
+					if (x + z) % step == 0 then
+						buf:put(x, y + 1, z, merlon)
+					end
+					placed = placed + 1
+				end
+			end
+		end
+		return placed
+	end
+
+	-- An external stair run climbing `steps` courses beside a wall, from the
+	-- ground course upward along `axis`. Each tread is a stair node on a
+	-- solid riser, so the whole flight is walkable and reads as masonry
+	-- rather than as a ladder.
+	function M.outer_stair(buf, palette, x, z, steps, axis, face)
+		local riser = palette.node("wall_accent")
+		local tread = palette.node("roof_stair")
+		local ax = (axis == "x") and 1 or 0
+		local az = (axis == "x") and 0 or 1
+		for step = 0, steps - 1 do
+			local sx, sz = x + ax * step, z + az * step
+			for y = 1, step do
+				buf:put(sx, y, sz, riser)
+			end
+			parts.stair(buf, sx, step + 1, sz, tread, face)
+		end
+		return steps
+	end
+
+	-- A stake palisade: a run of logs with a sharpened crest. The point is an
+	-- outer stair, whose single raised quarter is exactly a stake cut to a
+	-- point, and the quarter alternates along the run so the crest reads as
+	-- hewn timber and not as a moulding.
+	function M.palisade(buf, palette, x1, z1, x2, z2, height)
+		local log = palette.node("tree_log")
+		local point = palette.node("roof_stair_outer")
+		local top = height or 4
+		local stakes = 0
+		for z = math.min(z1, z2), math.max(z1, z2) do
+			for x = math.min(x1, x2), math.max(x1, x2) do
+				for y = 1, top do buf:put(x, y, z, log) end
+				buf:put(x, top + 1, z, point, (x + z) % 4)
+				stakes = stakes + 1
+			end
+		end
+		return stakes
+	end
+
+	-- A siege earthwork: a bank of subsoil with a beaten crest, thrown up
+	-- around the camp. `height` is the crest course; the bank's sides are its
+	-- own material, so it reads as dug earth rather than as a wall.
+	function M.berm(buf, palette, x1, z1, x2, z2, height)
+		local earth = palette.node("subsoil")
+		local crest = palette.node("ground_bare")
+		local raised = 0
+		for z = math.min(z1, z2), math.max(z1, z2) do
+			for x = math.min(x1, x2), math.max(x1, x2) do
+				for y = 1, height - 1 do buf:put(x, y, z, earth) end
+				buf:put(x, height, z, crest)
+				raised = raised + 1
+			end
+		end
+		return raised
+	end
+
+	-- One terrace of a rock shelf: the foot of a mesa, filled solid to
+	-- `height` in the palette's own masonry and capped with its own ground,
+	-- so the top of the bluff reads as the same country carried up and its
+	-- faces as bare rock. Stacking a few, each stepped back from the last,
+	-- gives an eroded bluff instead of a wall, and nothing grows on it,
+	-- because every column below the cap is rock and no planting rule will
+	-- take it.
+	function M.rock_terrace(buf, palette, x1, z1, x2, z2, height)
+		local rock = palette.node("foundation")
+		local scree = palette.node("ground")
+		local cells = 0
+		for z = math.min(z1, z2), math.max(z1, z2) do
+			for x = math.min(x1, x2), math.max(x1, x2) do
+				for y = 1, height - 1 do buf:put(x, y, z, rock) end
+				buf:put(x, height, z, scree)
+				cells = cells + 1
+			end
+		end
+		return cells
+	end
+
+	-- A war standard: a log pole carrying a cloth block and a torch above it,
+	-- so the camp's banners are also its beacons. Nothing here is a spawner
+	-- node: the cloth is `wool`, the light an ordinary torch.
+	function M.standard(buf, palette, x, z, height, lights)
+		local pole = palette.node("post")
+		for y = 1, height do buf:put(x, y, z, pole) end
+		buf:put(x, height + 1, z, palette.node("rug_accent"))
+		parts.floor_torch(buf, palette, x, height + 2, z)
+		if lights then lights[#lights + 1] = {x = x, y = height + 2, z = z} end
+	end
+
+	-- A drill post: a sunk log with a cross beam and a straw head, which is
+	-- what a training yard is full of.
+	function M.drill_post(buf, palette, x, z, height)
+		local log = palette.node("tree_log")
+		local top = height or 3
+		for y = 1, top do buf:put(x, y, z, log) end
+		local head = palette.maybe("bale") or palette.node("rug")
+		buf:put(x, top + 1, z, head)
+		return true
+	end
+
+	-- A loaded wagon: two log bearers, a load between them and a wheel
+	-- leaning on each bearer. Degrades to the bare bearers when the palette
+	-- carries neither a load nor a wheel.
+	function M.wagon(buf, palette, x, z, axis)
+		local log = palette.node("tree_log")
+		local ax = (axis == "x") and 1 or 0
+		local az = (axis == "x") and 0 or 1
+		for step = 0, 2 do
+			buf:put(x + ax * step, 1, z + az * step, log)
+		end
+		local load = palette.maybe("cargo")
+		local whole = true
+		for step = 0, 2 do
+			local wx, wz = x + ax * step - az, z + az * step - ax
+			if not parts.wall_prop(buf, palette, "wheel", wx, 1, wz,
+					az, 0, ax) then
+				whole = false
+			end
+			if load then
+				-- The load rides ON its bearer, never beside it, and only
+				-- into a free cell, so a wagon that shares a cell with
+				-- something else is refused rather than half built.
+				local lx, lz = x + ax * step, z + az * step
+				local above = buf:at(lx, 2, lz)
+				if above == nil or above.name == "air" then
+					buf:put(lx, 2, lz, load, parts.step_facedir(az, ax))
+				else
+					whole = false
+				end
+			end
+		end
+		return whole
+	end
+
 	-- Scattered undergrowth on a rectangle of open ground.
 	function M.undergrowth(buf, palette, x1, z1, x2, z2, density)
 		for z = z1, z2 do
@@ -899,7 +1102,8 @@ local function loader(directory)
 					if below and free and below.name:find("dirt") then
 						local role = ((x + z) % 4 == 0) and "undergrowth" or
 							"grass_tuft"
-						buf:put(x, 1, z, palette.node(role))
+						local name = palette.node(role)
+						buf:put(x, 1, z, name, parts.place_param2(name))
 					end
 				end
 			end

@@ -761,6 +761,19 @@ MANUAL_OVERRIDES = {
     "grug_decor:xdecor_potted_dandelion_yellow": {
         "tiles": ["grug_decor_xdecor_xdecor_dandelion_yellow_pot.png"],
         "drawtype": "plantlike", "alpha": "clip"},
+    # ... and the camp vocabulary the orc palette adds. `darkage.lua` builds
+    # its tile names through the same local helper, so the mud brick and the
+    # banded course had no texture at all and rendered as flat colour, which
+    # is exactly the wall the whole settlement is made of.
+    "grug_decor:darkage_adobe": {
+        "tiles": ["grug_decor_darkage_darkage_adobe.png"],
+        "drawtype": "normal"},
+    "grug_decor:darkage_ors_block": {
+        "tiles": ["grug_decor_darkage_darkage_ors_block.png"],
+        "drawtype": "normal"},
+    "grug_decor:darkage_ors_rubble": {
+        "tiles": ["grug_decor_darkage_darkage_ors_rubble.png"],
+        "drawtype": "normal"},
 }
 
 # Last-resort flat colours for names that resolve to no texture at all.

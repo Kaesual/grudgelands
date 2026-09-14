@@ -23,10 +23,10 @@ M.required = {
 -- do without lives here, so a palette that has no half timbering, no straw
 -- and no flower pots still builds; `palette.maybe(role)` answers nil and the
 -- part that wanted it writes nothing.
-M.optional = {"bale", "bed_fancy", "bench_seat", "board_table", "cobweb",
-	"crop", "fence_gate", "flower", "flower_alt", "ground_straw", "hedge",
-	"hedge_stem", "ivy", "lantern", "light_beacon", "light_hanging", "mat",
-	"pillar", "rope", "shutter", "stepping", "wall_infill", "wheel"}
+M.optional = {"bale", "bed_fancy", "bench_seat", "board_table", "cargo",
+	"cobweb", "crop", "fence_gate", "flower", "flower_alt", "ground_straw",
+	"hedge", "hedge_stem", "ivy", "lantern", "light_beacon", "light_hanging",
+	"mat", "pillar", "rope", "shutter", "stepping", "wall_infill", "wheel"}
 
 -- Two optional light roles for races whose lamps are not wallmounted.
 -- `light_hanging` is a lamp in `group:attached_node = 4`, which the engine
@@ -404,6 +404,93 @@ M.races.undead = {
 	undergrowth = "grug_nodes:bone_pile",
 	grass_tuft = "default:dry_shrub",
 	fern = "default:dry_shrub",
+}
+
+-- Orc (Sunscar Flats): adobe over a desert-stone base course, acacia framing,
+-- a flat desert-stonebrick roof deck behind a crenellated breastwork, barred
+-- slit windows instead of panes, and the straw, barrels and wagon gear of a
+-- camp that moved here and stayed. Contract section 4's orc column with two
+-- substitutions the licence-cleared kit made available: `darkage_adobe` is
+-- the real mud brick the column only described, and `ors_block` is the
+-- banded course between the footing and the adobe. The ground is the ochre
+-- grass, dry dirt and desert sand of world_zones.md section 10.
+M.races.orc = {
+	ground = "default:dirt_with_dry_grass",
+	-- The flats are all one ochre, so the wear carries the contrast: brown
+	-- trodden earth and pale blown sand. Binding these to two more shades of
+	-- dry grass left the whole pad reading as one flat colour; binding the
+	-- bare role to `default:gravel` swung the other way and scattered grey
+	-- litter across a warm landscape. Both patch materials stay warm.
+	ground_patch = "default:dry_dirt",
+	ground_bare = "default:desert_sand",
+	ground_straw = "grug_decor:cottages_straw_ground",
+	subsoil = "default:dry_dirt",
+	path = "default:desert_cobble",
+	plaza = "default:desert_sand",
+	plaza_edge = "default:desert_stone_block",
+	rubble = "default:gravel",
+
+	foundation = "default:desert_stone_block",
+	wall = "grug_decor:darkage_adobe",
+	wall_infill = "grug_decor:darkage_ors_block",
+	wall_accent = "default:desert_stonebrick",
+	post = "default:acacia_tree",
+	beam = "default:acacia_tree",
+	floor = "default:acacia_wood",
+	ceiling = "default:acacia_wood",
+
+	roof_stair = "stairs:stair_desert_stonebrick",
+	roof_stair_outer = "stairs:stair_outer_desert_stonebrick",
+	roof_stair_inner = "stairs:stair_inner_desert_stonebrick",
+	roof_slab = "stairs:slab_desert_stonebrick",
+	roof_ridge = "default:desert_stonebrick",
+
+	window = "xpanes:bar_flat",
+	window_frame = "default:acacia_tree",
+	door = "doors:door_wood",
+	door_hidden = "doors:hidden",
+
+	fence = "default:fence_acacia_wood",
+	fence_rail = "default:fence_rail_acacia_wood",
+	fence_gate = "doors:gate_acacia_wood_closed",
+	low_wall = "walls:desertcobble",
+	railing = "default:fence_acacia_wood",
+
+	light_wall = "default:torch_wall",
+	light_post = "default:torch",
+	light_indoor = "default:torch_wall",
+
+	bed = "beds:bed",
+	bed_fancy = "beds:fancy_bed",
+	table_top = "stairs:slab_acacia_wood",
+	table_leg = "default:fence_acacia_wood",
+	seat = "stairs:stair_acacia_wood",
+	bench_seat = "grug_decor:cottages_bench",
+	board_table = "grug_decor:cottages_table",
+	mat = "grug_decor:cottages_straw_mat",
+	bale = "grug_decor:cottages_straw_bale",
+	wheel = "grug_decor:cottages_wagon_wheel",
+	cargo = "grug_decor:cottages_wagon_load",
+	-- Furnishing: static decor only, for the reason written above the dwarf
+	-- palette. The anvil is the armourer's bench and the cauldron the fire
+	-- pit; both are geometry, and neither is a spawner node.
+	shelf = "grug_decor:xdecor_empty_shelf",
+	shelf_vessels = "grug_decor:cottages_shelf",
+	storage = "grug_decor:xdecor_barrel",
+	workbench = "grug_decor:cottages_anvil",
+	hearth = "grug_decor:xdecor_cauldron",
+	chimney = "default:desert_stonebrick",
+	chimney_cap = "stairs:slab_desert_stonebrick",
+	rug = "wool:brown",
+	rug_accent = "wool:red",
+
+	planter = "default:desert_stone_block",
+	planter_soil = "default:dry_dirt_with_dry_grass",
+	tree_log = "default:acacia_tree",
+	tree_leaves = "default:acacia_leaves",
+	undergrowth = "default:dry_shrub",
+	grass_tuft = "default:dry_grass_3",
+	fern = "default:dry_grass_5",
 }
 
 -- Troll (Kapok Cradle): a stilt village on the floor of a kapok basin.

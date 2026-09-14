@@ -71,6 +71,18 @@ M.roster = {
 		delta_schema = "grug_wp13_stillgrave_delta_v1",
 	},
 	{
+		key = "sunscar", label = "Sunscar",
+		zone_id = "kragmar_sunscar_flats",
+		anchor_id = "anchor_005", numeric_id = 5, x = 0, z = 2550,
+		blueprint_file = "r7_sunscar_blueprint.lua",
+		blueprint_schema = "grug_wp13_sunscar_blueprint_v1",
+		identity_schema = "grug_wp13_sunscar_blueprint_identity_v1",
+		config_schema = "grug_wp13_sunscar_config_v1",
+		ledger_schema = "grug_wp13_sunscar_ledger_v1",
+		metrics_schema = "grug_wp13_sunscar_metrics_v1",
+		delta_schema = "grug_wp13_sunscar_delta_v1",
+	},
+	{
 		key = "kapok", label = "Kapok",
 		zone_id = "kragmar_kapok_cradle",
 		anchor_id = "anchor_006", numeric_id = 6, x = 1800, z = 2550,

@@ -23,12 +23,14 @@ INPUTS=(
 	mods/MAPGEN/grug_mapgen/wp13/roofs.lua
 	mods/MAPGEN/grug_mapgen/wp13/silverleaf.lua
 	mods/MAPGEN/grug_mapgen/wp13/stillgrave.lua
+	mods/MAPGEN/grug_mapgen/wp13/sunscar.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_dawnmere_blueprint.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_hearthpine_blueprint.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_kapok_blueprint.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_silverleaf_blueprint.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_stillgrave_blueprint.lua
+	mods/MAPGEN/grug_mapgen/wp40/r7_sunscar_blueprint.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_wp13_library.lua
 	tools/wp13/blueprint_kat.lua

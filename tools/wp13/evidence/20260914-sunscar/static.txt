@@ -1,0 +1,357 @@
+== parser and SETGLOBAL on every Lua file this increment changed ==
+mods/MAPGEN/grug_mapgen/wp13/buildings.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/dressing.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/layout.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/palette.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/parts.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/roofs.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/sunscar.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp40/r7_manifest.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp40/r7_sunscar_blueprint.lua parser PASS; SETGLOBAL [0]
+tools/wp13/blueprint_kat.lua parser PASS; SETGLOBAL [0]
+tools/wp13/engine_cases.lua parser PASS; SETGLOBAL [0]
+tools/wp13/library_kat.lua parser PASS; SETGLOBAL [0]
+== whole tree parses ==
+mods/*/grug_* parser PASS
+tools parser PASS
+== five plain-5.1 sweeps, scoped to the Lua this increment changed ==
+SWEEP 1
+SWEEP 2
+SWEEP 3
+SWEEP 4
+SWEEP 5
+SWEEPS DONE (no output above a SWEEP line means zero hits)
+== the same five sweeps over all of mods/*/grug_* and tools ==
+SWEEP 1
+SWEEP 2
+mods/ENTITIES/grug_mobs/target_frame.lua:115:			-- UTF-8 written literally: \u{} escapes are LuaJIT-only
+mods/ENTITIES/grug_mobs/levels.lua:78:	-- UTF-8 written literally: \u{} escapes are LuaJIT-only (luanti-lua.md).
+SWEEP 3
+SWEEP 4
+mods/CORE/grug_core/combat.lua:1:-- Damage pipeline & combat state (docs/design/classes.md §2,
+mods/CORE/grug_core/combat_ray.lua:134:--   status = "target" | "aim_miss"
+mods/CORE/grug_core/combat_ray.lua:135:--   reason = hostile | friendly | dead | object | node | empty |
+mods/CORE/grug_core/combat_ray.lua:136:--            out_of_range | invalid
+mods/CORE/grug_core/atmosphere.lua:259:	params = "[<preset>|off|auto]",
+mods/CORE/grug_core/combat_debug.lua:64:	params = "on|off",
+mods/CORE/grug_core/combat_debug.lua:81:		return false, "Usage: /combatdebug on|off"
+mods/ENTITIES/grug_mobs/ram.lua:11:-- grug_mobs_hare_dust.png skin. That is why the §4 "Ram | gravel | 20 | 2200
+mods/ENTITIES/grug_mobs/ram.lua:12:-- | 2 | min 10 | outer" row is RAM-ONLY and has no mesa_clay twin — the Dust
+mods/ENTITIES/grug_mobs/ram.lua:71:-- §4 row "Ram | gravel | 20 | 2200 | 2 | min 10 | outer".
+mods/ENTITIES/grug_mobs/panther.lua:77:-- §4 row "Panther | rainforest litter | 20 | 1800 | 4 | max 5 | outer,
+mods/ENTITIES/grug_mobs/bog_ooze.lua:86:-- §4 row "Bog Ooze | mud | 20 | 2000 | 3 | any | outer".
+mods/ENTITIES/grug_mobs/eagle.lua:118:-- §4 row "Crag Eagle/Vulture | gravel, mesa_clay | 20 | 2000 | 3 | min 10 |
+mods/ENTITIES/grug_mobs/parrot.lua:2:-- jungle_edge critter | flees | day | 3.4 | feather 1/1; meat 1/2").
+mods/ENTITIES/grug_mobs/crocodile.lua:105:-- §4 row "Crocodile | mud, water at mud | 20 | 1800 | 3 | any | outer".
+mods/ENTITIES/grug_mobs/rares.lua:408:--   dz = | |z| - 900 |                  SEAT_Z = 900
+mods/ENTITIES/grug_mobs/rares.lua:414:-- coast band (needs |x| > 1350 or |z| > 1550) and all have |z| > 600, so the
+mods/ENTITIES/grug_mobs/rares.lua:445:-- axis, not by z: at |z| ~1000 the dz term is small, so the route has to sit
+mods/ENTITIES/grug_mobs/rares.lua:446:-- around |x| ~1050 to reach L35 — closer to the capital (|x| ~900) the field
+mods/ENTITIES/grug_mobs/rares.lua:464:--   n  = sqrt((dx/1150)^2 + (dz/f)^2)   f = 1000 for |z| < 900, else 775
+mods/ENTITIES/grug_mobs/rares.lua:471:-- is inside the war-coast cap band (all have |z| > 600).
+mods/ENTITIES/grug_mobs/rares.lua:481:-- (same as Marrowclaw): |x| has to reach ~1270 for L42, while |z| only
+mods/ENTITIES/grug_mobs/rares.lua:482:-- fine-tunes. All three stay inside |x| < 1350, i.e. zone "outer" as §3.3
+mods/ENTITIES/grug_mobs/rares.lua:518:-- DEVIATION worth knowing: "coast" and "~L50" together pin |z| to roughly
+mods/ENTITIES/grug_mobs/rares.lua:519:-- 740..1060. At |x| >= 1350 the field already sits at L47 where dz = 0, and
+mods/ENTITIES/grug_mobs/rares.lua:541:-- centre band dx is 0 up to |x| 300, so the level is essentially 20 * (dz/775
+mods/ENTITIES/grug_mobs/rares.lua:542:-- - 0.55)/0.35 + 25. The route stops at |z| 1500 — from 1550 on the back
+mods/ENTITIES/grug_mobs/rares.lua:561:-- level pins |z| to ~800..1020, and the x values hug the inner edge of the
+mods/ENTITIES/grug_mobs/rares.lua:576:-- §3.3's last row: "Captain Bonerattle (x2, one per continent) | Skeleton
+mods/ENTITIES/grug_mobs/rares.lua:577:-- Raider | war coast | 28". Both instances carry the SAME name — they are
+mods/ENTITIES/grug_mobs/rares.lua:588:-- nodes of a capital anchor, i.e. at |z| >= 660, and these routes run at
+mods/ENTITIES/grug_mobs/rares.lua:591:-- so the level is a pure function of |z| as long as the uncapped field stays
+mods/ENTITIES/grug_mobs/rares.lua:592:-- ABOVE the cap. Both routes run at |z| = 268 -> cap 28.40 -> **L28** after
+mods/ENTITIES/grug_mobs/rares.lua:597:--   x  410 -> dx 110 -> n 0.6392 -> L 30.1   |  all > 28.40,
+mods/ENTITIES/grug_mobs/rares.lua:598:--   x  535 -> dx 235 -> n 0.6642 -> L 31.5   |  so the CAP governs
+mods/ENTITIES/grug_mobs/rares.lua:599:--   x  555 -> dx 255 -> n 0.6698 -> L 31.8   |  at every point and
+mods/ENTITIES/grug_mobs/rares.lua:600:--   x  680 -> dx 380 -> n 0.7166 -> L 34.5   |  the level is uniform
+mods/ENTITIES/grug_mobs/rares.lua:602:-- Zone check: |z| 268 is > CONTINENT_Z_MIN (100) and <= WAR_COAST_Z (300),
+mods/ENTITIES/grug_mobs/rares.lua:635:-- Same |z|, same span, same level — different x because the coast noise is
+mods/ENTITIES/grug_mobs/jungle_lynx.lua:63:	-- Wolf table (§3.2: "wolf table | Wolf | ... Raptor*"): meat and leather
+mods/ENTITIES/grug_mobs/jungle_lynx.lua:81:-- §4 row "Raptor | rainforest litter | 20 | 1500 | 5 | min 10 | inner,
+mods/ENTITIES/grug_mobs/hyena.lua:72:-- §4 row "Hyena | dry grass, mesa_clay | 20 | 1500 | 5 | any | inner, outer".
+mods/ENTITIES/grug_mobs/bandit.lua:2:-- humanoid; camps placed by §1.4, inner+outer, both continents) | defends
+mods/ENTITIES/grug_mobs/bandit.lua:3:-- camp (leashes to camp, group) | 24 h | 4.4 | linen cloth 1/1 x1-2 (inner
+mods/ENTITIES/grug_mobs/bandit.lua:109:		-- this: "Linen cloth | 10-30 | bandit camps", "Heavy cloth | 25-45 |
+mods/ENTITIES/grug_mobs/serpent.lua:74:-- §4 row "Serpent | rainforest litter, mud | 20 | 1800 | 4 | min 10 | outer,
+mods/ENTITIES/grug_mobs/boar_variants.lua:102:-- still reaches with zone `inner` up to |x| ~932, and the patch model (§1.4)
+mods/ENTITIES/grug_mobs/camps.lua:3:-- (docs/design/world.md §4a "NPC binding & respawn slots";
+mods/ENTITIES/grug_mobs/stag.lua:85:-- §4 row "Stag/Gaunt Stag/Zebra | forest litter, bone litter, grass, dry
+mods/ENTITIES/grug_mobs/stag.lua:86:-- grass | 20 | 1800 | 3 | min 10 | inner, outer", split by continent side.
+mods/ENTITIES/grug_mobs/bear.lua:99:-- §4 row "Bear/Plaguehide | forest litter, bone litter | 20 | 2800 | 2 |
+mods/ENTITIES/grug_mobs/bear.lua:100:-- min 10 | outer, coast", split by continent-side top node.
+mods/ENTITIES/grug_mobs/bear.lua:114:-- WP6 time the centre band stopped at |z| 1500 and therefore could not reach
+mods/ENTITIES/grug_mobs/init.lua:40:--   def._grug_tier        — "normal" (default) | "elite" | "rare"
+mods/ENTITIES/grug_mobs/skeleton_raider.lua:7:-- boar/zombie/bandit/skeleton | identical biomes both sides | identical" —
+mods/ENTITIES/grug_mobs/jungle_ape.lua:3:-- (§3.2 "bear table | Bear/Elder Bear | Plaguehide Bear, Jungle Ape/
+mods/ENTITIES/grug_mobs/jungle_ape.lua:101:-- §4 row "Jungle Ape | rainforest litter | 20 | 2800 | 2 | min 10 | outer,
+mods/ENTITIES/grug_mobs/gull.lua:109:--   Shore Crab   | sand | 20 | 2200 | 3 | any | strait, war_coast, coast
+mods/ENTITIES/grug_mobs/gull.lua:110:--   Reef Lurker  | sand | 30 | 8000 | 1 | any | coast
+mods/ENTITIES/grug_mobs/spider.lua:80:-- §4 row "Giant Spider (all) | forest litter, bone litter, rainforest litter
+mods/ENTITIES/grug_mobs/spider.lua:81:-- | 20 | 1800 | 4 | max 5 | outer, coast, underground", split by continent
+mods/ENTITIES/grug_mobs/spider.lua:143:-- every spider tint on the same table anyway ("spider table | Giant Spider |
+mods/ENTITIES/grug_mobs/carrion_crow.lua:117:	-- biome, so whatever the local band's voronoi produces at |z| 100..300 is
+mods/ENTITIES/grug_mobs/items.lua:85:-- Hides & pelts (§6 rows "light leather" / "heavy leather" / "scaled hide")
+mods/ENTITIES/grug_mobs/levels.lua:2:-- Level & tier engine (combat_stats.md §3/§6, biomes_mobs.md §0).
+mods/ENTITIES/grug_mobs/mirefolk.lua:2:-- (fish-folk humanoid, camps at swamp pools; the 'murloc memory') | swarms
+mods/ENTITIES/grug_mobs/mirefolk.lua:3:-- (camp group aggro, all rush at once) | 24 h | 4.4 | linen cloth 1/2;
+mods/ENTITIES/grug_mobs/wolf.lua:73:-- §4 row "Wolf/Blightfang | coniferous litter, forest litter, bone litter,
+mods/ENTITIES/grug_mobs/wolf.lua:74:-- grass | 20 | 1500 | 5 | any | inner, outer", split along the continent
+mods/ENTITIES/grug_mobs/zebra.lua:7:-- table together with Stag and Gaunt Stag ("Stag, Zebra-mirror | Gaunt Stag,
+mods/ENTITIES/grug_mobs/zebra.lua:68:-- §4 row "Stag/Gaunt Stag/Zebra | forest litter, bone litter, grass, dry
+mods/ENTITIES/grug_mobs/zebra.lua:69:-- grass | 20 | 1800 | 3 | min 10 | inner, outer" — the Zebra's share of that
+mods/ENTITIES/grug_mobs/golem.lua:166:-- §4 row "Stone/Mesa Golem (elite) | gravel, stone, mesa_clay | 30 | 9000 |
+mods/ENTITIES/grug_mobs/golem.lua:167:-- 1 | any | outer, coast, underground", split by continent-side top node;
+mods/ENTITIES/grug_traders/stock.lua:22:-- §8.2 VERBATIM; "Wood & stone tools / bronze pick | 5-15c / 40c" is the
+mods/ENTITIES/grug_traders/stock.lua:32:-- {item = <name>, price = <copper>, category = "goods" | "tools"}
+mods/ENTITIES/grug_traders/stock.lua:93:-- Bracket catalogs & the hourly rotation (§3.8)
+mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua:1678:				out.probe_forward}, "|")
+mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua:6336:							out.probe_digest}, "|")
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:6:AGENTS.md|b12f55731dfee4e050f97ea0c221415fdffd9cef7ded5b0b8b7a3b5c16c4a53b|55978
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:7:docs/design/biomes_mobs.md|f1f3255033565d2eecb7752ac96b0585946e631f8e19a8f8a8af2ccc704f1fe4|103928
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:8:docs/design/items_crafting.md|b1210336d8733fd4cc606bc40f19758229a8fa75c69dc92cc891b55abbbdcdd1|125115
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:9:docs/design/world.md|3d99b9e32d64a271bb641b23d6a181850b3fb28cc6ae95bdb1c9a84a77a9ffb6|56864
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:10:docs/design/world_zones.md|f8bf8e8639d03d0932b70b9177f96bcb3e8c3a5288e65be61250233dd9e670ec|97916
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:11:docs/research/luanti-lua.md|0ea956b3ffc0594791a6b63f8fee4e912a5c1019010378294f191713158db79e|22929
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:12:docs/research/wp40-simple-map-r6-contract.md|814fbb7915c6c1590f65ec4d6c34b165543528a76c14db5f570cc8e9710a954f|61941
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:13:docs/research/wp40-simple-map-r6-cultural-opportunities.tsv|a398970fda8ecf0324ba807218aff1d2632910d85be6e68a4f4afa4e00a7967e|1831
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:14:docs/research/wp40-simple-map-r6-decisions.md|af0860e5d03239f9074510bca2247d9d46eabdce54cb425f0cd833f708ffcc58|6412
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:15:docs/research/wp40-simple-map-r6-decoration-draft.tsv|4c4a2cbc9b0ba8fffe83b549c773df27c0c4670791d52cc5904f893ec648d8ed|5462
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:16:docs/research/wp40-simple-map-r6-resource-density.tsv|31e616e0686d9099777de2304b6c21ba5294393444ec7ab1ef1cac1360443394|3655
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:17:docs/research/wp40-simple-map-r6-seed-corpus.tsv|c055c7910e97f6062111f33f15365c5d85694c51c0b474b0ffa378ba14e65c37|2443
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:18:docs/research/wp40-simple-map-r6-surface-content.tsv|085e3a3e3cefb8ea36bac101e8f801175cd5e8f2b32f9bad280eefe45412e5e4|10298
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:19:docs/research/wp43_wp40_handoff.md|85d0d0a24ec49602c22443c42ab9c7aa1bab1d441376a1d4f7be2e89b63dd9d8|9712
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:20:mods/BASE/default/schematics/acacia_bush.mts|2bbbf10178e47cca46a0fca4b038fc3dd2c6d34493e12a5994af71fb12872e3e|114
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:21:mods/BASE/default/schematics/acacia_tree.mts|9ca2398b751769529285cac76cb160eadc16889229679e7c9c3273b1e5b488ff|207
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:22:mods/BASE/default/schematics/apple_log.mts|815149bc000ad7141054ca1c8d00b3e551d910df872224ae0ceaacc74482bed9|88
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:23:mods/BASE/default/schematics/apple_tree.mts|63a8fac562fbc9cc1a1eacb00cb89a7d933c61b1c453df9817d9528528be7e02|209
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:24:mods/BASE/default/schematics/aspen_tree.mts|608033066589f71031da6e5eafbf2a29f38a443f104e70c7c0ae836e9c428dd6|174
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:25:mods/BASE/default/schematics/blueberry_bush.mts|e84c601c878b840fcacfed3b63110d8f1e92e061c30f5fc353fa84edc7f24fc8|80
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:26:mods/BASE/default/schematics/bush.mts|d7c609334560f5bc6c02525e2c79db0dd399dd99d4d3d1630a57927693b389f6|99
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:27:mods/BASE/default/schematics/emergent_jungle_tree.mts|84aa1bfe7a472e7d40ad6bb740a298b4bb9d079c2f96285a1d1874a0b469a34a|504
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:28:mods/BASE/default/schematics/jungle_tree.mts|89fd44e42457e75442e42324a22385c87a5f3f6f55dbafa6c4a61709631743f7|255
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:29:mods/BASE/default/schematics/large_cactus.mts|034be90f56d4002c8167fed1b8b18ce184ee59fa3e4d42569922e3143b7c8619|87
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:30:mods/BASE/default/schematics/papyrus_on_dirt.mts|bb9ba20b069a6f6661fe2c0179b23533e94776da41f7d38d47bbc7fd345f74d1|73
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:31:mods/BASE/default/schematics/pine_bush.mts|50ebbfb83d0bf1827086f3652c49b7b750d8eb13c7b3cbcbada7c0dcb5410431|110
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:32:mods/BASE/default/schematics/pine_tree.mts|3d91afa7dd3fbf6d15c295716af5409d3d77b0dff1464d623ef91433fdfd508f|178
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:33:mods/BASE/default/schematics/small_pine_tree.mts|a1b4e0dae20116c67f852f10578ddeda65f9596e60ae7c40cb5352124eefcdce|174
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:34:mods/BASE/default/schematics/snowy_pine_tree_from_sapling.mts|d0c408bfff1cfde8c3867c6e1c6b6672230c90c610ae95902a13c609c3f0433b|235
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:35:mods/ITEMS/grug_materials/registry.lua|fc58d8589530b67cd7b44f8e05e09a68fc16f7881054cb9d432d184f28282873|24894
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:36:mods/ITEMS/grug_nodes/init.lua|6559fc6f30ca8d857697c01fce61c54aca3a13c1ccdc562be327f607437ab152|7891
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:37:mods/ITEMS/grug_trees/init.lua|25c1398719f93ac194350fd6935513c798f9df2dd459b69e06208c52beb3626a|9688
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:38:mods/ITEMS/grug_trees/schematics/grug_gravewood_small.mts|d9ed79784879da9dd29a03a1221f87e0a292d933373061798ed27d9b4f272cd0|171
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:39:mods/ITEMS/grug_trees/schematics/grug_gravewood_tall.mts|ae5c035abc0e03317c1014d5373113a2d09ed7944865075fdfd45504febbc2f8|191
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:40:mods/MAPGEN/grug_mapgen/wp43_handoff.lua|14883f4ad90dcb1c18b6a093cbbb12cee300894d35db4e7974d6eef9c25a5be4|12099
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:41:reference_projects/luanti/doc/lua_api.md|6da3d285a40902c904f5f673cd32cdc2e47cce62559f0c0ebb4d8acb7efe1287|541196
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:42:reference_projects/luanti/src/mapgen/mg_schematic.cpp|64ca88cd9bc4b05230b8fda1a4b379c13912cdc524398a2855ebff626664b4be|14918
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:43:reference_projects/luanti/src/mapgen/mg_schematic.h|2f70779d64ef7422252eb7d4fb86bb2de6c865217f7b765a0993aab1b743a1dd|3394
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:44:reference_projects/luanti/src/mapnode.cpp|e4a54937a861143116774858aa39fff1b30560ad838282989ec54b038c74f389|17743
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:45:reference_projects/luanti/src/script/lua_api/l_mapgen.cpp|93590ed8fc136e352a38ef874e6b3e9d684ce943a48868ec22dc1aec15258ee0|54820
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:49:grug_badlands|grug_nodes:mesa_clay|grug_nodes:mesa_clay|3|default:gravel|default:gravel|-
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:50:grug_badlands_east|grug_nodes:mesa_clay|grug_nodes:mesa_clay|3|default:gravel|default:gravel|-
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:51:grug_beach|default:sand|default:sand|2|default:sand|default:sand|-
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:52:grug_blight|grug_nodes:blight_dirt|default:dirt|3|default:gravel|default:gravel|-
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:53:grug_bone_forest|grug_nodes:dirt_with_bone_litter|default:dirt|3|default:gravel|default:gravel|-
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:54:grug_crags|default:gravel|default:gravel|2|default:gravel|default:gravel|-
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:55:grug_crags_snowy|default:snowblock|default:gravel|2|default:gravel|default:gravel|default:snow
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:56:grug_deep_forest|grug_nodes:dirt_with_forest_litter|default:dirt|3|default:sand|default:sand|-
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:57:grug_deep_jungle|grug_nodes:dirt_with_canopy_litter|default:dirt|3|default:sand|default:sand|-
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:58:grug_elf_forest|grug_nodes:dirt_with_silver_litter|default:dirt|3|default:sand|default:sand|-
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:59:grug_jungle_edge|default:dirt_with_rainforest_litter|default:dirt|3|default:sand|default:sand|-
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:60:grug_jungle_fringe|grug_nodes:dirt_with_canopy_litter|default:dirt|3|default:sand|default:sand|-
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:61:grug_meadows|default:dirt_with_grass|default:dirt|3|default:sand|default:sand|-
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:62:grug_pine_hills|default:dirt_with_coniferous_litter|default:dirt|3|default:gravel|default:gravel|-
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:63:grug_savanna|default:dry_dirt_with_dry_grass|default:dry_dirt|3|default:sand|default:sand|-
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:64:grug_swamp|grug_nodes:mud|grug_nodes:mud|2|grug_nodes:mud|grug_nodes:mud|-
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:68:abyssal_crystal|universal|5|-;-;-;-;2048;2048|2
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:69:citrine|regional_g1|2|-;12000;6000;3000;3000;3000|3
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:70:coal|universal|1|128;128;128;128;128;128|8
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:71:copper|universal|1|256;256;256;256;256;256|8
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:72:diamond|regional_g2|4|-;-;-;12000;6000;3000|2
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:73:emberglass|universal|4|-;-;-;2048;2048;2048|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:74:garnet|regional_g1|2|-;12000;6000;3000;3000;3000|3
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:75:gold|universal|2|-;1024;1024;1024;1024;1024|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:76:iron|universal|1|128;128;128;128;128;128|8
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:77:jade|regional_g1|2|-;12000;6000;3000;3000;3000|3
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:78:quartz|universal|1|256;256;256;256;256;256|8
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:79:ruby|regional_g2|4|-;-;-;12000;6000;3000|2
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:80:sapphire|regional_g2|4|-;-;-;12000;6000;3000|2
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:81:silver|universal|3|-;-;1024;1024;1024;1024|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:82:tin|universal|1|384;384;384;384;384;384|8
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:86:undead|gravesalt|grug_blight;grug_bone_forest;grug_swamp;grug_beach|kragmar_blackwind_rise
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:87:elf|moonresin|grug_elf_forest;grug_deep_forest;grug_jungle_fringe|elandor_glassroot_wilds
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:88:orc|red_ochre|grug_savanna;grug_badlands|kragmar_bannerbreak_mesa
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:89:dwarf|runeslate|grug_pine_hills;grug_crags;grug_crags_snowy|elandor_stormvault_heights
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:90:troll|spirit_resin|grug_jungle_edge;grug_deep_jungle;grug_swamp;grug_badlands_east|kragmar_thunderroot_wilds
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:91:human|sunwax|grug_meadows;grug_deep_forest|elandor_ashenward_march
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:95:badlands_dry_shrub|grug_badlands;grug_badlands_east|simple|default:dry_shrub|grug_nodes:mesa_clay|1|125|param2_4|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:96:badlands_large_cactus|grug_badlands;grug_badlands_east|template|large_cactus.mts|grug_nodes:mesa_clay|1|1000|center_xz;quarter_turn_rotation|1
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:97:blight_bone_pile|grug_blight|simple|grug_nodes:bone_pile|grug_nodes:blight_dirt|1|500|none|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:98:blight_dry_shrub|grug_blight|simple|default:dry_shrub|grug_nodes:blight_dirt|3|200|param2_4|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:99:blight_gravewood|grug_blight|template|grug_gravewood_small.mts|grug_nodes:blight_dirt|3|2000|center_xz;quarter_turn_rotation|1
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:100:bone_forest_bone_pile|grug_bone_forest|simple|grug_nodes:bone_pile|grug_nodes:dirt_with_bone_litter|1|250|none|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:101:bone_forest_gravewood|grug_bone_forest|template|grug_gravewood_tall.mts|grug_nodes:dirt_with_bone_litter|3|200|center_xz;quarter_turn_rotation|1
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:102:crags_snowy_pine|grug_crags|template|snowy_pine_tree_from_sapling.mts|default:gravel|1|500|surface_y_at_least_60;center_xz;quarter_turn_rotation|2
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:103:deep_forest_apple_log|grug_deep_forest|template|apple_log.mts|grug_nodes:dirt_with_forest_litter|1|1000|offset_y_plus_1;center_x_only;replace_mushroom_with_air;quarter_turn_rotation|1
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:104:deep_forest_apple_tree|grug_deep_forest|template|apple_tree.mts|grug_nodes:dirt_with_forest_litter|3|250|center_xz;quarter_turn_rotation|1
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:105:deep_forest_aspen_tree|grug_deep_forest|template|aspen_tree.mts|grug_nodes:dirt_with_forest_litter|1|125|center_xz;quarter_turn_rotation|2
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:106:deep_forest_fern_1|grug_deep_forest|simple|default:fern_1|grug_nodes:dirt_with_forest_litter|1|50|one_entry_per_variant|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:107:deep_forest_fern_2|grug_deep_forest|simple|default:fern_2|grug_nodes:dirt_with_forest_litter|1|50|one_entry_per_variant|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:108:deep_forest_fern_3|grug_deep_forest|simple|default:fern_3|grug_nodes:dirt_with_forest_litter|1|50|one_entry_per_variant|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:109:elf_forest_apple_tree|grug_elf_forest|template|apple_tree.mts|grug_nodes:dirt_with_silver_litter|1|500|center_xz;quarter_turn_rotation|1
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:110:elf_forest_grass_1|grug_elf_forest|simple|default:grass_1|grug_nodes:dirt_with_silver_litter|1|50|one_entry_per_variant|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:111:elf_forest_grass_2|grug_elf_forest|simple|default:grass_2|grug_nodes:dirt_with_silver_litter|1|50|one_entry_per_variant|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:112:elf_forest_grass_3|grug_elf_forest|simple|default:grass_3|grug_nodes:dirt_with_silver_litter|1|50|one_entry_per_variant|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:113:elf_forest_silverwood|grug_elf_forest|template|aspen_tree.mts|grug_nodes:dirt_with_silver_litter|1|200|silverwood_replacements;center_xz;quarter_turn_rotation|2
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:114:emergent_jungle_tree|grug_deep_jungle;grug_jungle_fringe|template|emergent_jungle_tree.mts|grug_nodes:dirt_with_canopy_litter|1|200|surface_y_at_most_32;offset_y_minus_4;center_xz;quarter_turn_rotation|1
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:115:jungle_edge_jungle_tree|grug_jungle_edge|template|jungle_tree.mts|default:dirt_with_rainforest_litter|1|125|center_xz;quarter_turn_rotation|2
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:116:jungle_edge_junglegrass|grug_jungle_edge|simple|default:junglegrass|default:dirt_with_rainforest_litter|1|25|none|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:117:jungle_junglegrass|grug_deep_jungle;grug_jungle_fringe|simple|default:junglegrass|grug_nodes:dirt_with_canopy_litter|1|20|none|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:118:jungle_tree|grug_deep_jungle;grug_jungle_fringe|template|jungle_tree.mts|grug_nodes:dirt_with_canopy_litter|1|50|center_xz;quarter_turn_rotation|2
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:119:meadows_apple_tree|grug_meadows|template|apple_tree.mts|default:dirt_with_grass|3|2000|center_xz;quarter_turn_rotation|1
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:120:meadows_bush|grug_meadows|template|bush.mts|default:dirt_with_grass|1|250|center_xz;quarter_turn_rotation|2
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:121:meadows_grass_1|grug_meadows|simple|default:grass_1|default:dirt_with_grass|3|50|one_entry_per_variant|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:122:meadows_grass_2|grug_meadows|simple|default:grass_2|default:dirt_with_grass|3|50|one_entry_per_variant|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:123:meadows_grass_3|grug_meadows|simple|default:grass_3|default:dirt_with_grass|3|50|one_entry_per_variant|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:124:meadows_grass_4|grug_meadows|simple|default:grass_4|default:dirt_with_grass|3|50|one_entry_per_variant|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:125:meadows_grass_5|grug_meadows|simple|default:grass_5|default:dirt_with_grass|3|50|one_entry_per_variant|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:126:pine_hills_blueberry_bush|grug_pine_hills|template|blueberry_bush.mts|default:dirt_with_coniferous_litter|1|1000|offset_y_plus_1;center_xz;quarter_turn_rotation|2
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:127:pine_hills_fern_1|grug_pine_hills|simple|default:fern_1|default:dirt_with_coniferous_litter|1|50|one_entry_per_variant|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:128:pine_hills_fern_2|grug_pine_hills|simple|default:fern_2|default:dirt_with_coniferous_litter|1|50|one_entry_per_variant|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:129:pine_hills_fern_3|grug_pine_hills|simple|default:fern_3|default:dirt_with_coniferous_litter|1|50|one_entry_per_variant|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:130:pine_hills_pine_bush|grug_pine_hills|template|pine_bush.mts|default:dirt_with_coniferous_litter|3|500|center_xz;quarter_turn_rotation|2
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:131:pine_hills_pine_tree|grug_pine_hills|template|pine_tree.mts|default:dirt_with_coniferous_litter|1|250|center_xz;quarter_turn_rotation|2
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:132:pine_hills_small_pine_tree|grug_pine_hills|template|small_pine_tree.mts|default:dirt_with_coniferous_litter|1|500|center_xz;quarter_turn_rotation|2
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:133:savanna_acacia_bush|grug_savanna|template|acacia_bush.mts|default:dry_dirt_with_dry_grass|1|250|center_xz;quarter_turn_rotation|2
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:134:savanna_acacia_tree|grug_savanna|template|acacia_tree.mts|default:dry_dirt_with_dry_grass|1|500|center_xz;quarter_turn_rotation|1
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:135:savanna_dry_grass_1|grug_savanna|simple|default:dry_grass_1|default:dry_dirt_with_dry_grass|3|50|one_entry_per_variant|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:136:savanna_dry_grass_2|grug_savanna|simple|default:dry_grass_2|default:dry_dirt_with_dry_grass|3|50|one_entry_per_variant|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:137:savanna_dry_grass_3|grug_savanna|simple|default:dry_grass_3|default:dry_dirt_with_dry_grass|3|50|one_entry_per_variant|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:138:savanna_dry_grass_4|grug_savanna|simple|default:dry_grass_4|default:dry_dirt_with_dry_grass|3|50|one_entry_per_variant|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:139:savanna_dry_grass_5|grug_savanna|simple|default:dry_grass_5|default:dry_dirt_with_dry_grass|3|50|one_entry_per_variant|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:140:savanna_dry_shrub|grug_savanna|simple|default:dry_shrub|default:dry_dirt_with_dry_grass|1|250|param2_4|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:141:swamp_dry_shrub|grug_swamp|simple|default:dry_shrub|grug_nodes:mud|1|250|param2_4|4
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:142:swamp_papyrus|grug_swamp|template|papyrus_on_dirt.mts|grug_nodes:mud|1|50|surface_y_1_to_4;replace_dirt_with_mud;center_xz;quarter_turn_rotation|1
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:147:	for value in (line .. "|"):gmatch("([^|]*)|") do result[#result + 1] = value end
+mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:270:			"|offset=" .. string.format("%.0f", spec.offset) ..
+mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:271:			"|scale=" .. string.format("%.0f", spec.scale) ..
+mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:272:			"|spread=" .. string.format("%.0f", spec.spread_x) .. "," ..
+mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:275:			"|seed=" .. string.format("%.0f", spec.seed) ..
+mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:276:			"|octaves=" .. string.format("%.0f", spec.octaves) ..
+mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:277:			"|persist=" .. spec.lexical_persist ..
+mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:278:			"|lacunarity=" .. string.format("%.0f", spec.lacunarity) ..
+mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:279:			"|flags=" .. spec.flags .. "\n"
+mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:472:	rows[#rows + 1] = "blob|" .. blob.name .. "|ore=" .. blob.ore ..
+mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:473:		"|wherein=" .. blob.wherein[1] .. "|clust_scarcity=" ..
+mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:474:		string.format("%.0f", blob.clust_scarcity) .. "|clust_num_ores=" ..
+mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:475:		string.format("%.0f", clust_num_ores) .. "|clust_size=" ..
+mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:476:		string.format("%.0f", blob.clust_size) .. "|y_min=" ..
+mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:477:		string.format("%.0f", blob.y_min) .. "|y_max=" ..
+mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:478:		string.format("%.0f", blob.y_max) .. "|noise_threshold=0|noise=0.5,0.2," ..
+mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:487:		rows[#rows + 1] = "stratum|" .. definition.name .. "|ore=" ..
+mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:488:			definition.ore .. "|wherein=default:stone|clust_scarcity=1|y_min=" ..
+mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:489:			string.format("%.0f", definition.y_min) .. "|y_max=" ..
+mods/PLAYER/grug_abilities/init.lua:317:-- Ability registration & item. One tool per ability; the item's `range`
+mods/PLAYER/grug_abilities/init.lua:1304:	return SKIN_VERSION .. "|" .. color .. "|" .. src.inv .. "|" .. src.wield
+mods/PLAYER/grug_abilities/init.lua:1348:	local token = SWING_CAPS_VERSION .. "|" .. string.format("%.17g", interval)
+mods/PLAYER/grug_classes/selection.lua:447:		return true, ("%s %s %s, level %d | Str %d Int %d Dex %d | " ..
+mods/PLAYER/grug_classes/selection.lua:448:			"HP %d/%d, mana %d | melee +%d, spell +%d, crit %.1f%%, dodge %.1f%%"):format(
+mods/PLAYER/grug_classes/init.lua:118:-- level. resource = "mana" | "rage" (HUD/regen lands with WP4).
+mods/PLAYER/grug_factions/init.lua:304:	params = "[<player>] [throng|accord]",
+mods/PLAYER/grug_inventory/pages.lua:243:-- Homepage & nav order: Character first, Bags second, Crafting after.
+mods/PLAYER/grug_inventory/init.lua:1:-- Character screen & bags (WP15, spec: docs/design/inventory_equipment.md).
+mods/PLAYER/grug_inventory/bags.lua:58:-- List setup & rules
+mods/PLAYER/grug_xp/init.lua:99:-- HUD: "Level 12  |  3400 / 12100 XP" bottom center above the hotbar.
+tools/wp45/character_creation_test.lua:554:}, "|"))
+tools/wp39/combat_debug_test.lua:32:assert(command.params == "on|off")
+tools/wp39/combat_debug_test.lua:44:assert(message == "Usage: /combatdebug on|off")
+tools/wp40/t2_extreme_test.lua:6:		not value:find("//", 1, true), "unsafe absolute path")
+tools/wp40/t2_census_worker.lua:23:	not output_path:find("/../", 1, true) and not output_path:find("//", 1, true),
+tools/wp40/t2_extreme_shard_worker.lua:16:		not value:find("//", 1, true), "unsafe absolute path")
+tools/wp40/t2_census_hasher.lua:25:				path:find("//", 1, true) then
+tools/wp40/t2_census_hasher.lua:101:				response_path .. " </dev/null >/dev/null 2>&1 &") then
+tools/wp40/t2_extreme_merge.lua:13:		not value:find("//", 1, true), "unsafe absolute path")
+tools/wp40/t2_extreme_conformance_test.lua:634:		"tools//closure_a.lua", "/tools/closure_a.lua", "tools/closure_a.lua/",
+tools/wp40/r8/construction_hotpath.lua:8:	error("usage: construction_hotpath.lua REPO full|authority", 0)
+tools/wp40/r8/performance_hotpath.lua:7:	error("usage: performance_hotpath.lua REPO [forward|reverse]", 0)
+tools/wp40/t2_census_authority.lua:1178:	-- Section 6.6.1: eight ranges covering W exactly once.  |W| is not a
+tools/wp40/t2_extreme_authority.lua:65:				repo:find("//", 1, true) then
+tools/wp40/t2_extreme_verify_shard.lua:14:		not value:find("//", 1, true), "unsafe absolute path")
+tools/wp40/t2_census_merge.lua:29:		not value:find("//", 1, true), "unsafe " .. label)
+tools/wp40/t2_census_merge.lua:1610:					" | v2: " .. tostring(base[index])
+tools/wp40/resource_sampling/writer_fixture.lua:242:			"\ntrace=", table.concat(snapshot.trace, "|"), "\n"})
+SWEEP 5
+mods/CORE/grug_core/atmosphere_zones.lua:334:-- Sea level is y = 1 (minetest.conf water_level, mirrored in the authored
+mods/CORE/grug_core/atmosphere.lua:10:-- the game-directory minetest.conf merely shifts client defaults for a locally
+mods/CORE/grug_core/atmosphere.lua:155:		-- lighting on in our minetest.conf, so this preset is opt-in twice.
+tools/wp40/t2_extreme_test.lua:56:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_test.lua:85:local foundation_status, foundation_reason, foundation_code = os.execute(
+tools/wp40/t2_extreme_test.lua:235:	local status, reason, code = os.execute("git -C " .. repo ..
+tools/wp40/t2_extreme_test.lua:307:		local status, reason, code = os.execute(command)
+tools/wp40/t2_extreme_test.lua:1048:	local status, reason, code = os.execute("python3 " ..
+tools/wp40/simple_map_offline.lua:30:		local ok, why, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/dungeon_probe/source_audit.lua:153:require_text(default_mapgen, 'minetest.register_alias("mapgen_cobble", "default:cobble")',
+tools/wp40/simple_map_r4_offline.lua:36:			local ok, why, code = os.execute(
+tools/wp40/t2_extreme_shard_worker.lua:76:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_shard_worker.lua:169:	local status, reason, code = os.execute("python3 " .. repo ..
+tools/wp40/t2_extreme_conformance_v3_authority.lua:252:			local status, reason, code = os.execute("git -C " .. repo .. " show " ..
+tools/wp40/t2_extreme_conformance_v3_authority.lua:280:		local status, reason, code = os.execute("git -C " .. repo ..
+tools/wp40/t2_extreme_conformance_v3_authority.lua:343:		local status, reason, code = os.execute("git -C " .. repo ..
+tools/wp40/t2_extreme_conformance_v3_authority.lua:359:		local status, reason, code = os.execute("git -C " .. repo ..
+tools/wp40/t2_extreme_conformance_finalize.lua:65:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_conformance_finalize.lua:133:	assert(os.execute("mkdir " .. verify_scratch) == 0)
+tools/wp40/t2_extreme_conformance_finalize.lua:134:	local status, reason, code = os.execute(lua .. " " .. verifier .. " " .. repo ..
+tools/wp40/t2_extreme_conformance_finalize.lua:155:	assert(os.execute("mkdir " .. verify_scratch) == 0)
+tools/wp40/t2_extreme_conformance_finalize.lua:156:	local status, reason, code = os.execute(lua .. " " .. verifier .. " " .. repo ..
+tools/wp40/t2_schema_core_test.lua:25:	assert(os.execute("sha256sum " .. input .. " > " .. output) == 0)
+tools/wp40/t2_source_test.lua:48:		os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_census_hasher.lua:37:		local status, reason, code = os.execute(command)
+tools/wp40/t2_authored_test.lua:36:		os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/r7/native_inputs_kat.lua:3:--   luajit -e 'wp40_ffi=require("ffi")' \
+tools/wp40/t2_extreme_merge.lua:57:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_merge.lua:106:local status, reason, code = os.execute("python3 " .. repo ..
+tools/wp40/t2_extreme_conformance_test.lua:39:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_conformance_test.lua:648:	local status, reason, code = os.execute(command)
+tools/wp40/r6/common.lua:38:			local status = os.execute("sha256sum " .. base .. ".bin > " .. base .. ".txt")
+tools/wp40/t2_s1_authority_test.lua:30:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/quality/terrain_life_fixture.lua:18:	local ok, why, code = os.execute("sha256sum " .. input .. " > " .. digest)
+tools/wp40/t2_s11_acceptance_check.lua:376:	os.exit(0)
+tools/wp40/t2_s11_acceptance_check.lua:380:os.exit(1)
+tools/wp40/simple_map_r5_offline.lua:27:		local first, second, third = os.execute(command)
+tools/wp40/t2_extreme_authority.lua:111:		local status, reason, code = os.execute("git -C " .. repo ..
+tools/wp40/t2_extreme_authority.lua:120:			status, reason, code = os.execute("git -C " .. repo .. " show " ..
+tools/wp40/t2_extreme_authority.lua:262:			local status, reason, code = os.execute("git -C " .. repo ..
+tools/wp40/t2_extreme_authority.lua:284:		local status, reason, code = os.execute("git -C " .. repo ..
+tools/wp40/t2_extreme_authority.lua:291:		status, reason, code = os.execute("git -C " .. repo ..
+tools/wp40/t2_extreme_verify_shard.lua:38:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_verify_shard.lua:76:local status, reason, code = os.execute("python3 " .. repo ..
+tools/wp40/t2_extreme_puc_kat.lua:26:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_census_merge.lua:1824:	os.exit(3)
+tools/wp40/t2_census_merge.lua:1833:	os.exit(4)
+tools/wp40/simple_map_r3_offline.lua:34:			local ok, why, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_rescore_worker.lua:64:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/quality_geometry_fixture.lua:25:	local ok, why, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_compiler_optional_load_test.lua:32:local real_os_execute = os.execute
+tools/wp40/t2_census_gate.lua:69:	os.exit(3)
+tools/wp40/t2_census_gate.lua:246:			os.exit(0)
+tools/wp40/t2_extreme_conformance_recorded.lua:88:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_conformance_recorded.lua:114:		local status, reason, code = os.execute(lua .. " " .. finalizer .. " " ..
+tools/wp40/simple_map_v1e_anchor_migration.lua:93:		local ok, why, code = os.execute("sha256sum " .. input .. " > " .. result)
+tools/wp40/t2_extreme_conformance_authority.lua:110:			local status, reason, code = os.execute("git -C " .. repo .. " show " ..
+tools/wp40/t2_extreme_conformance_authority.lua:137:		local status, reason, code = os.execute("git -C " .. repo ..
+tools/wp40/t1_foundation_test.lua:29:	local status = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_selected_worker.lua:62:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_gate_check.lua:41:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_partition_test.lua:28:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_conformance_preflight.lua:32:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_conformance_verify.lua:62:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp13/dump_blueprint.lua:18:	os.exit(2)
+tools/wp13/dump_blueprint.lua:46:	os.exit(1)
+tools/wp13/dump_blueprint.lua:52:	os.exit(1)
+tools/wp13/dump_blueprint.lua:59:		os.exit(1)
+tools/wp13/dump_blueprint.lua:66:	os.exit(1)
+tools/wp13/dump_blueprint.lua:72:	os.exit(1)
+SWEEPS DONE (no output above a SWEEP line means zero hits)
+== fresh server check ==
+Fresh-server source audit: PASS

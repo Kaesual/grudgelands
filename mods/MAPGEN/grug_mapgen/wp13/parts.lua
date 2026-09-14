@@ -22,11 +22,14 @@ local M = {}
 
 M.FACEDIR = "facedir"
 M.WALLMOUNTED = "wallmounted"
--- `meshoptions` is a plantlike node's mesh variant, not an orientation: it
--- survives a rotation untouched, and the engine writes exactly the value the
--- definition pins in `place_param2` (`default:dry_shrub` is 4). It is a kind
--- of its own so that the buffer accepts that pinned value while still
--- refusing a rotation to change it.
+-- `meshoptions` is the third param2 family a settlement meets, and it is not
+-- an orientation at all: the low bits pick a plantlike mesh, its scale and
+-- whether the engine offsets it randomly, and the node's own definition pins
+-- the value every placement writes (`default:dry_shrub` is 4). Such a node
+-- keeps its param2 through every rotation, and a cell written at 0 instead is
+-- a value no placement could have produced. It is a kind of its own so that
+-- the buffer accepts the pinned value while still refusing a rotation to
+-- change it.
 M.MESHOPTIONS = "meshoptions"
 M.NONE = "none"
 
@@ -76,16 +79,19 @@ local PARAM2_KIND = {
 	["grug_decor:cottages_window_shutter_closed"] = M.FACEDIR,
 	["grug_decor:cottages_window_shutter_open"] = M.FACEDIR,
 	["grug_decor:xdecor_stonepath"] = M.FACEDIR,
+	["grug_decor:cottages_wagon_load"] = M.FACEDIR,
+	-- a loophole looks out of the wall it is set into
+	["grug_decor:castle_arrowslit_desert_stonebrick"] = M.FACEDIR,
+	-- plantlike meshes whose definition pins the style they are placed at
+	["default:dry_shrub"] = M.MESHOPTIONS,
 	-- a wheel leans against the wall its param2 points at
 	["grug_decor:cottages_wagon_wheel"] = M.WALLMOUNTED,
-	-- the undead vocabulary: a candle and an ivy tendril are wallmounted
-	-- fittings like a torch, the stone workbench is a facedir cube whose
-	-- front tile faces the room, and the dry shrub carries a pinned mesh
-	-- option rather than an orientation.
-	["grug_decor:xdecor_candle"] = M.WALLMOUNTED,
+	-- the rest of the undead vocabulary: an ivy tendril is a wallmounted
+	-- fitting like a torch, and the stone workbench is a facedir cube whose
+	-- front tile faces the room. Its candle and its dry shrub are listed
+	-- above -- the elf and orc palettes name them too.
 	["grug_decor:xdecor_ivy"] = M.WALLMOUNTED,
 	["grug_decor:xdecor_workbench"] = M.FACEDIR,
-	["default:dry_shrub"] = M.MESHOPTIONS,
 	-- `grug_decor/shapes.lua` is a vendored byte-for-byte copy of the four
 	-- shape registrations of `mods/BASE/stairs/init.lua`, so a grug_decor
 	-- stair, inner stair, outer stair or slab carries exactly the facedir a
@@ -106,7 +112,8 @@ local PARAM2_KIND = {
 -- could have produced -- and `tools/wp13/library_kat.lua` checks every
 -- emitted cell against the registration. `Buffer:put` falls back to this
 -- when the caller names no param2, so a part keeps writing
--- `buf:put(x, y, z, name)` and still lands on the engine's own value.
+-- `buf:put(x, y, z, name)` and still lands on the engine's own value; the
+-- dressing calls it by name where it builds the param2 itself.
 local PLACE_PARAM2 = {["default:dry_shrub"] = 4}
 
 function M.place_param2(name)
@@ -144,7 +151,12 @@ end
 -- `group:glass`, `group:wood` or `group:tree` (mods/BASE/xpanes/init.lua,
 -- the `connects_to` of the connected pane node).
 local PANE_CONNECTS = {
+	["default:acacia_tree"] = true,
+	["default:acacia_wood"] = true,
 	["default:cobble"] = true,
+	["default:desert_cobble"] = true,
+	["default:desert_stone_block"] = true,
+	["default:desert_stonebrick"] = true,
 	["default:pine_tree"] = true,
 	["default:pine_wood"] = true,
 	["default:stone_block"] = true,
@@ -157,18 +169,18 @@ local PANE_CONNECTS = {
 	["grug_trees:silverwood_tree"] = true,
 	["grug_trees:silverwood_wood"] = true,
 	["walls:cobble"] = true,
+	["walls:desertcobble"] = true,
 	["walls:mossycobble"] = true,
 	["xpanes:bar"] = true,
 	["xpanes:bar_flat"] = true,
 	["xpanes:pane"] = true,
 	["xpanes:pane_flat"] = true,
-	-- Troll (Kapok Cradle): jungle timber is `group:wood`/`group:tree` and
-	-- mossy cobble is `group:stone`, so all four connect a pane the same way
-	-- their dwarf and human counterparts do.
+	-- Troll (Kapok Cradle): jungle timber is `group:wood`/`group:tree`, so it
+	-- connects a pane the same way its dwarf and human counterparts do. The
+	-- mossy cobble and mossy wall this palette also names are listed above,
+	-- with the Hollow's.
 	["default:junglewood"] = true,
 	["default:jungletree"] = true,
-	["default:mossycobble"] = true,
-	["walls:mossycobble"] = true,
 }
 
 function M.pane_connects(name)
@@ -179,11 +191,20 @@ end
 -- only nodes that read as a wall. A nodebox, a mesh, a plant or a pane is
 -- not one of them, and neither is a full cube that light passes through.
 local FULL_SOLID = {
+	["default:acacia_tree"] = true,
+	["default:acacia_wood"] = true,
 	["default:brick"] = true,
 	["default:cobble"] = true,
+	["default:desert_cobble"] = true,
+	["default:desert_sand"] = true,
+	["default:desert_stone_block"] = true,
+	["default:desert_stonebrick"] = true,
 	["default:dirt"] = true,
 	["default:dirt_with_coniferous_litter"] = true,
+	["default:dirt_with_dry_grass"] = true,
 	["default:dirt_with_grass"] = true,
+	["default:dry_dirt"] = true,
+	["default:dry_dirt_with_dry_grass"] = true,
 	["default:gravel"] = true,
 	["default:pine_tree"] = true,
 	["default:pine_wood"] = true,
@@ -208,6 +229,9 @@ local FULL_SOLID = {
 	["grug_decor:darkage_serpentine"] = true,
 	["grug_decor:darkage_slate_brick"] = true,
 	["grug_decor:darkage_slate_tile"] = true,
+	["grug_decor:darkage_ors_block"] = true,
+	["grug_decor:darkage_ors_rubble"] = true,
+	["grug_decor:darkage_straw_bale"] = true,
 	["grug_decor:xdecor_barrel"] = true,
 	["grug_decor:xdecor_cauldron"] = true,
 	["grug_decor:xdecor_empty_shelf"] = true,
