@@ -894,5 +894,15 @@ Details + line numbers in [docs/research/](docs/research/).
   `~/.var/app/org.luanti.luanti/.minetest/games/grudgelands`.
   Re-sync after every code change. Engine logs:
   `~/.var/app/org.luanti.luanti/.minetest/debug.txt`.
+- **Agent engine runs never touch that personal folder** (decided
+  2026-09-14: the user runs the GUI client on the same machine at the same
+  time, and two instances on one folder can crash it). Boot a headless
+  server only through `tools/luanti_headless.sh` or with the same
+  guarantees: a fresh temp directory as `LUANTI_USER_PATH` **and** as all
+  XDG dirs, `--logfile` inside it, a `timeout --kill-after`, cleanup of the
+  directory, and `pgrep -f '^luanti.bin'` empty when the task ends. A
+  launcher that falls back to the personal folder when `LUANTI_USER_PATH` is
+  empty is a defect. The WP40 profiler and `tools/wp13/run_engine.sh` set
+  their own scratch user path; pass them a launcher that forwards it.
 - Take `strict.lua` warnings (undeclared global) seriously — usually typos.
 - Server log via `core.log("action"|"warning"|"error", msg)`.
