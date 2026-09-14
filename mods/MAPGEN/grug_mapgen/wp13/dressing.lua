@@ -103,6 +103,35 @@ local function loader(directory)
 		if lights then lights[#lights + 1] = {x = x - 1, y = 3, z = z} end
 	end
 
+	-- A market stall: four corner posts under a plank canopy, with a trestle
+	-- counter and a crate of goods beneath it.
+	function M.stall(buf, palette, x, z, face)
+		for _, corner in ipairs({{0, 0}, {2, 0}, {0, 2}, {2, 2}}) do
+			for y = 1, 3 do
+				buf:put(x + corner[1], y, z + corner[2], palette.node("post"))
+			end
+		end
+		buf:fill(x - 1, 4, z - 1, x + 3, 4, z + 3, palette.node("roof_slab"))
+		for step = 0, 2 do
+			buf:put(x + step, 1, z + 1, palette.node("table_leg"))
+			buf:put(x + step, 2, z + 1, palette.node("table_top"))
+		end
+		buf:put(x + 1, 1, z, palette.node("storage"), (face + 2) % 4)
+		buf:put(x + 1, 1, z + 2, palette.node("rug"))
+	end
+
+	-- An inlaid band of a second paving material, one node wide.
+	function M.inlay(buf, palette, x1, z1, x2, z2, role)
+		local name = palette.node(role or "plaza_edge")
+		for z = z1, z2 do
+			for x = x1, x2 do
+				if x == x1 or x == x2 or z == z1 or z == z2 then
+					buf:put(x, 0, z, name)
+				end
+			end
+		end
+	end
+
 	-- A notice post: a log standard with a sawn board.
 	function M.signpost(buf, palette, x, z)
 		buf:put(x, 1, z, palette.node("post"))

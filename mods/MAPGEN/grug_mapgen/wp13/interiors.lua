@@ -118,6 +118,15 @@ function M.kits.home(buf, parts, palette, room, spec)
 	M.rug(buf, palette, room, cx - 1, cz - 1, cx, cz, false)
 	M.table_set(buf, parts, palette, room, cx, cz, "x", 2)
 	M.shelves(buf, palette, room, room.x2, room.z2 - 1, "z", 2, 3)
+	-- A dresser and a crock shelf give the room a second storey of detail.
+	buf:put(room.x1, room.y + 1, room.z1 + 3, palette.node("shelf"), front(1))
+	buf:put(room.x1, room.y + 2, room.z1 + 3, palette.node("shelf"), front(1))
+	buf:put(room.x2, room.y + 2, room.z2 - 1, palette.node("shelf_vessels"),
+		front(3))
+	-- Hearthside: a stool on a small rug.
+	M.rug(buf, palette, room, room.x2 - 1, room.z1, room.x2 - 1, room.z1 + 1,
+		true)
+	parts.seat(buf, palette, room.x2 - 1, room.y + 1, room.z1 + 1, 1)
 	if spec.hearth ~= false then
 		M.hearth(buf, palette, room, spec.hearth_x or room.x2,
 			spec.hearth_z or room.z1, spec.hearth_face or 3, room.h)

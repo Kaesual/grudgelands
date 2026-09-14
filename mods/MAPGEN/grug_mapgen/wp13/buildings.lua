@@ -157,7 +157,14 @@ local function loader(directory)
 					if not shared(index, x, z) then
 						local top = wall_top(x, z)
 						if has(open_by_block[index], side) then
+							-- An open side is a timber bay: a top plate on
+							-- posts every fourth node, so nothing spans free.
 							buf:put(x, top, z, palette.node("beam"))
+							if step % 4 == 0 then
+								for y = 1, top - 1 do
+									buf:put(x, y, z, palette.node("post"))
+								end
+							end
 						else
 							buf:put(x, 1, z, palette.node("wall_accent"))
 							for y = 2, top do
@@ -190,16 +197,29 @@ local function loader(directory)
 			for _, side in ipairs(SIDES) do
 				if not has(open_by_block[index], side) then
 					local axis = (side == "z-" or side == "z+") and "x" or "z"
-					for _, p in ipairs(window_slots(side_length(block, side) - 2)) do
-						local free = true
-						for step = p - 1, p + 2 do
-							local fx, fz = wall_cell(block, side, step)
-							if blocked[index .. side .. ":" .. step] or
-									shared(index, fx, fz) then
-								free = false
+					local len = side_length(block, side)
+					local taken = {}
+					for _, slot in ipairs(window_slots(len - 2)) do
+						-- A doorway may sit where a window wanted to be; shift
+						-- the opening along the wall rather than dropping it.
+						local p
+						for _, candidate in ipairs({slot, slot + 2, slot - 2}) do
+							if p == nil and candidate >= 2 and
+									candidate + 2 <= len - 1 then
+								local free = true
+								for step = candidate - 1, candidate + 2 do
+									local fx, fz = wall_cell(block, side, step)
+									if taken[step] or
+											blocked[index .. side .. ":" .. step] or
+											shared(index, fx, fz) then
+										free = false
+									end
+								end
+								if free then p = candidate end
 							end
 						end
-						if free then
+						if p then
+							for step = p - 1, p + 2 do taken[step] = true end
 							for _, step in ipairs({p, p + 1}) do
 								local x, z = wall_cell(block, side, step)
 								local high = math.min(block.wall_h >= 4 and 3 or 2,
@@ -323,7 +343,7 @@ local function loader(directory)
 					hearth_x = w - 2, hearth_z = 1, hearth_face = 3}}},
 			chimneys = {{x = w - 1, z = 1}},
 			doors = {{side = spec.door_side or "z-",
-				index = spec.door_index or math.floor(w / 2)}},
+				index = spec.door_index or math.max(2, math.floor(w / 2) - 2)}},
 			inside = spec.inside or {x = 2, y = 1, z = d - 3},
 		})
 	end

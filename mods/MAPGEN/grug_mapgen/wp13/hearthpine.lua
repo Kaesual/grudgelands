@@ -82,6 +82,13 @@ local function loader(directory)
 			return true
 		end
 
+		-- Plaza furniture only needs clear space; it stands on paving.
+		local function paved_prop(x1, z1, x2, z2, build)
+			if not layout.free_area(buf, x1, z1, x2, z2, 4) then return false end
+			build()
+			return true
+		end
+
 		-- A prop is only built where nothing else stands on natural ground.
 		local function prop(x1, z1, x2, z2, build)
 			if not layout.free_area(buf, x1, z1, x2, z2, 4) then return false end
@@ -146,20 +153,33 @@ local function loader(directory)
 		dressing.low_wall_line(buf, palette, -9, 60, -4, 60)
 		dressing.low_wall_line(buf, palette, 4, 60, 9, 60)
 
-		-- 6. Exterior dressing between the plots. Plaza furniture first.
+		-- 6. Exterior dressing between the plots. The arrival plaza first:
+		-- an inlaid band, the draw well, a market stall and seating.
+		dressing.inlay(buf, palette, -7, -6, 7, 3)
 		dressing.well(buf, palette, -6, -4)
-		dressing.signpost(buf, palette, 6, -4)
-		prop(5, 2, 9, 5, function()
+		dressing.signpost(buf, palette, 8, -4)
+		paved_prop(3, -7, 7, -3, function()
+			dressing.stall(buf, palette, 4, -6, 2)
+		end)
+		paved_prop(-8, -8, -8, -6, function()
+			dressing.bench(buf, palette, -8, -8, 1, 3, "z")
+		end)
+		paved_prop(8, 0, 8, 2, function()
+			dressing.bench(buf, palette, 8, 0, 3, 3, "z")
+		end)
+		paved_prop(-8, 0, -8, 2, function()
+			dressing.bench(buf, palette, -8, 0, 1, 3, "z")
+		end)
+		paved_prop(8, -7, 8, -6, function()
+			dressing.crates(buf, palette, 8, -7, 3)
+			dressing.crates(buf, palette, 8, -6, 3)
+		end)
+		paved_prop(5, 2, 9, 5, function()
 			dressing.planter(buf, palette, 5, 2, 9, 5)
 		end)
-		prop(-9, 2, -5, 5, function()
+		paved_prop(-9, 2, -5, 5, function()
 			dressing.planter(buf, palette, -9, 2, -5, 5)
 		end)
-		for _, seat in ipairs({{-4, 2, 1}, {4, 2, 3}, {-8, -8, 1}, {8, -8, 3}}) do
-			prop(seat[1], seat[2], seat[1], seat[2] + 2, function()
-				dressing.bench(buf, palette, seat[1], seat[2], seat[3], 3, "z")
-			end)
-		end
 
 		-- Gardens, kerbs and yard goods around the plots.
 		local FENCES = {
@@ -216,9 +236,8 @@ local function loader(directory)
 
 		-- 7. Warm route lighting.
 		layout.street_lamps(buf, palette, 0, 2, 62, 7, outdoors)
-		for _, spot in ipairs({{-4, -7}, {4, -7}, {-4, 0}, {4, 0},
-				{-4, 6}, {4, 6}, {-9, -8}, {9, -8},
-				{-12, -10}, {12, -10}, {-30, -10}, {30, -10},
+		for _, spot in ipairs({{-9, -8}, {9, -8},
+				{-30, -10}, {30, -10},
 				{-17, 8}, {13, 1}, {-18, 16}, {12, 21},
 				{-30, 26}, {-6, 44}, {28, 1}, {-41, -11}}) do
 			if outdoors(spot[1], spot[2]) and
