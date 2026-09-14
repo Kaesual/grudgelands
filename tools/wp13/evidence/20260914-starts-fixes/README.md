@@ -165,3 +165,14 @@ tools/wp13/evidence/20260914-starts-fixes/engine.sh      # the combined six-star
 `renders/` holds a `-before.png` beside each `-after.png` for the five spots a
 review finding was about: Dawnmere's green, Stillgrave's burial-ground walls,
 Silverleaf's terrace back, Sunscar's outcrop and Kapok's bridge span.
+
+## Post-review comment edit (coordinator, 2026-09-14)
+
+After the focused re-review, two comment lines in
+`mods/MAPGEN/grug_mapgen/wp13/palette.lua` (the lantern attachment note and
+the troll vocabulary note) were corrected. No blueprint bytes changed: the
+Kapok dump stays `35a2597a06a7dbd7…` and the final micro pair re-run on the
+edited tree reproduces `78843a0595977b97…` under both interpreters. The
+`palette.lua` hash in `files.sha256` and both `final-micro/inputs-*.sha256`
+lists was updated from `e5b25058857aeb4d…` to `0656926d201da4c9…`; the engine receipts
+were not regenerated because they do not read that file.
