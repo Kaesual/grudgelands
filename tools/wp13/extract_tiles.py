@@ -825,6 +825,148 @@ MANUAL_OVERRIDES = {
     "grug_decor:darkage_ors_block": {
         "tiles": ["grug_decor_darkage_darkage_ors_block.png"],
         "drawtype": "normal"},
+    # ... and the CAPITAL vocabulary
+    # (docs/research/wp13-capital-library.md). Three families of it are
+    # unreachable by static scanning, for the same reasons the entries above
+    # are: `castle.lua` registers its pillars and arrowslits from a
+    # `register_pillar(material)` / `register_arrowslit(material)` loop over a
+    # material table, `shapes.lua` registers the four cut shapes of a
+    # grug_decor material from a loop, and `darkage.lua` builds every tile
+    # name through its own `tex()` helper. Each cut shape carries the tile of
+    # the cube it is cut from, which is what `register_stair_and_slab` does.
+    # The obsidian-brick pillar is above, with the undead vocabulary.
+    "grug_decor:castle_pillar_desert_stonebrick_bottom": {
+        "tiles": ["default_desert_stone_brick.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_pillar_desert_stonebrick_middle": {
+        "tiles": ["default_desert_stone_brick.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_pillar_desert_stonebrick_top": {
+        "tiles": ["default_desert_stone_brick.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_pillar_mossycobble_bottom": {
+        "tiles": ["default_mossycobble.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_pillar_mossycobble_middle": {
+        "tiles": ["default_mossycobble.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_pillar_mossycobble_top": {
+        "tiles": ["default_mossycobble.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_pillar_silver_sandstone_brick_bottom": {
+        "tiles": ["default_silver_sandstone_brick.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_pillar_silver_sandstone_brick_middle": {
+        "tiles": ["default_silver_sandstone_brick.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_pillar_silver_sandstone_brick_top": {
+        "tiles": ["default_silver_sandstone_brick.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_pillar_stone_block_bottom": {
+        "tiles": ["default_stone_block.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_pillar_stone_block_middle": {
+        "tiles": ["default_stone_block.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_pillar_stone_block_top": {
+        "tiles": ["default_stone_block.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_pillar_stonebrick_bottom": {
+        "tiles": ["default_stone_brick.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_pillar_stonebrick_middle": {
+        "tiles": ["default_stone_brick.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_pillar_stonebrick_top": {
+        "tiles": ["default_stone_brick.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_arrowslit_desert_stonebrick": {
+        "tiles": ["default_desert_stone_brick.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_arrowslit_mossycobble": {
+        "tiles": ["default_mossycobble.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_arrowslit_obsidianbrick": {
+        "tiles": ["default_obsidian_brick.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_arrowslit_silver_sandstone_brick": {
+        "tiles": ["default_silver_sandstone_brick.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_arrowslit_stone_block": {
+        "tiles": ["default_stone_block.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_arrowslit_stonebrick": {
+        "tiles": ["default_stone_brick.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_stonewall_stair": {
+        "tiles": ["grug_decor_castle_castle_stonewall.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir",
+        "shape": "stair"},
+    "grug_decor:castle_stonewall_stair_inner": {
+        "tiles": ["grug_decor_castle_castle_stonewall.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir",
+        "shape": "stair_inner"},
+    "grug_decor:castle_stonewall_stair_outer": {
+        "tiles": ["grug_decor_castle_castle_stonewall.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir",
+        "shape": "stair_outer"},
+    "grug_decor:castle_stonewall_slab": {
+        "tiles": ["grug_decor_castle_castle_stonewall.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir",
+        "shape": "slab"},
+    "grug_decor:castle_dungeon_stone_stair": {
+        "tiles": ["grug_decor_castle_castle_dungeon_stone.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir",
+        "shape": "stair"},
+    "grug_decor:castle_dungeon_stone_stair_inner": {
+        "tiles": ["grug_decor_castle_castle_dungeon_stone.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir",
+        "shape": "stair_inner"},
+    "grug_decor:castle_dungeon_stone_stair_outer": {
+        "tiles": ["grug_decor_castle_castle_dungeon_stone.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir",
+        "shape": "stair_outer"},
+    "grug_decor:castle_dungeon_stone_slab": {
+        "tiles": ["grug_decor_castle_castle_dungeon_stone.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir",
+        "shape": "slab"},
+    "grug_decor:darkage_basalt": {
+        "tiles": ["grug_decor_darkage_darkage_basalt.png"],
+        "drawtype": "normal"},
+    "grug_decor:darkage_ors_brick": {
+        "tiles": ["grug_decor_darkage_darkage_ors_brick.png"],
+        "drawtype": "normal"},
+    "grug_decor:darkage_basalt_stair": {
+        "tiles": ["grug_decor_darkage_darkage_basalt.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir",
+        "shape": "stair"},
+    "grug_decor:darkage_basalt_slab": {
+        "tiles": ["grug_decor_darkage_darkage_basalt.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir",
+        "shape": "slab"},
+    "grug_decor:darkage_ors_brick_stair": {
+        "tiles": ["grug_decor_darkage_darkage_ors_brick.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir",
+        "shape": "stair"},
+    "grug_decor:darkage_ors_brick_slab": {
+        "tiles": ["grug_decor_darkage_darkage_ors_brick.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir",
+        "shape": "slab"},
+    "grug_decor:darkage_marble_stair": {
+        "tiles": ["grug_decor_darkage_darkage_marble.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir",
+        "shape": "stair"},
+    "grug_decor:darkage_marble_slab": {
+        "tiles": ["grug_decor_darkage_darkage_marble.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir",
+        "shape": "slab"},
+    # The throne. The scanner finds the node but not its tile, because
+    # `xdecor.lua` builds that through the same `tex()` helper, so the chair
+    # arrived with a definition and no texture at all and rendered as flat
+    # colour.
+    "grug_decor:xdecor_chair": {
+        "tiles": ["grug_decor_xdecor_xdecor_wood.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
 }
 
 # Last-resort flat colours for names that resolve to no texture at all.
