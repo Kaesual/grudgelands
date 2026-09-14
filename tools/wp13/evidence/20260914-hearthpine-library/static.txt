@@ -1,0 +1,169 @@
+== parser and SETGLOBAL on every Lua file changed by this increment ==
+mods/BASE/beds/api.lua parser PASS; SETGLOBAL [0]
+mods/BASE/beds/beds.lua parser PASS; SETGLOBAL [0]
+mods/BASE/beds/init.lua parser PASS; SETGLOBAL [1]
+mods/BASE/doors/init.lua parser PASS; SETGLOBAL [1]
+mods/BASE/dye/init.lua parser PASS; SETGLOBAL [1]
+mods/BASE/vessels/init.lua parser PASS; SETGLOBAL [0]
+mods/BASE/walls/init.lua parser PASS; SETGLOBAL [1]
+mods/BASE/wool/init.lua parser PASS; SETGLOBAL [0]
+mods/BASE/xpanes/init.lua parser PASS; SETGLOBAL [1]
+mods/MAPGEN/grug_mapgen/wp13/buildings.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/dressing.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/hearthpine.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/interiors.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/layout.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/palette.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/parts.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/roofs.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp40/r7_hearthpine_blueprint.lua parser PASS; SETGLOBAL [0]
+tools/wp13/blueprint_kat.lua parser PASS; SETGLOBAL [0]
+tools/wp13/final_micro.lua parser PASS; SETGLOBAL [0]
+tools/wp13/library_kat.lua parser PASS; SETGLOBAL [0]
+== whole tree parses ==
+mods/*/grug_* parser PASS
+tools parser PASS
+== five plain-5.1 sweeps, scoped to the Lua this increment changed ==
+SWEEP 1
+SWEEP 2
+SWEEP 3
+SWEEP 4
+SWEEP 5
+SWEEPS DONE (no output above a SWEEP line means zero hits)
+== the same five sweeps over all of mods/*/grug_* and tools ==
+SWEEP 1
+SWEEP 2 (comments only: the two UTF-8 notes)
+mods/ENTITIES/grug_mobs/target_frame.lua:115:			-- UTF-8 written literally: \u{} escapes are LuaJIT-only
+mods/ENTITIES/grug_mobs/levels.lua:78:	-- UTF-8 written literally: \u{} escapes are LuaJIT-only (luanti-lua.md).
+SWEEP 3
+SWEEP 4 (prose in comments only)
+mods/CORE/grug_core/combat.lua:1
+mods/CORE/grug_core/combat_debug.lua:2
+mods/CORE/grug_core/combat_ray.lua:3
+mods/ENTITIES/grug_mobs/bandit.lua:3
+mods/ENTITIES/grug_mobs/bear.lua:3
+mods/ENTITIES/grug_mobs/boar_variants.lua:1
+mods/ENTITIES/grug_mobs/bog_ooze.lua:1
+mods/ENTITIES/grug_mobs/camps.lua:1
+mods/ENTITIES/grug_mobs/carrion_crow.lua:1
+mods/ENTITIES/grug_mobs/crocodile.lua:1
+mods/ENTITIES/grug_mobs/eagle.lua:1
+mods/ENTITIES/grug_mobs/golem.lua:2
+mods/ENTITIES/grug_mobs/gull.lua:2
+mods/ENTITIES/grug_mobs/hyena.lua:1
+mods/ENTITIES/grug_mobs/init.lua:1
+mods/ENTITIES/grug_mobs/items.lua:1
+mods/ENTITIES/grug_mobs/jungle_ape.lua:2
+mods/ENTITIES/grug_mobs/jungle_lynx.lua:2
+mods/ENTITIES/grug_mobs/levels.lua:1
+mods/ENTITIES/grug_mobs/mirefolk.lua:2
+mods/ENTITIES/grug_mobs/panther.lua:1
+mods/ENTITIES/grug_mobs/parrot.lua:1
+mods/ENTITIES/grug_mobs/ram.lua:3
+mods/ENTITIES/grug_mobs/rares.lua:24
+mods/ENTITIES/grug_mobs/serpent.lua:1
+mods/ENTITIES/grug_mobs/skeleton_raider.lua:1
+mods/ENTITIES/grug_mobs/spider.lua:3
+mods/ENTITIES/grug_mobs/stag.lua:2
+mods/ENTITIES/grug_mobs/wolf.lua:2
+mods/ENTITIES/grug_mobs/zebra.lua:3
+mods/ENTITIES/grug_traders/stock.lua:3
+mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua:2
+mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:18
+mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:126
+mods/PLAYER/grug_abilities/init.lua:3
+mods/PLAYER/grug_classes/init.lua:1
+mods/PLAYER/grug_classes/selection.lua:2
+mods/PLAYER/grug_factions/init.lua:1
+mods/PLAYER/grug_inventory/bags.lua:1
+mods/PLAYER/grug_inventory/init.lua:1
+mods/PLAYER/grug_inventory/pages.lua:1
+mods/PLAYER/grug_xp/init.lua:1
+tools/wp39/combat_debug_test.lua:2
+tools/wp40/r8/construction_hotpath.lua:1
+tools/wp40/r8/performance_hotpath.lua:1
+tools/wp40/resource_sampling/writer_fixture.lua:1
+tools/wp40/t2_census_authority.lua:1
+tools/wp40/t2_census_hasher.lua:2
+tools/wp40/t2_census_merge.lua:2
+tools/wp40/t2_census_worker.lua:1
+tools/wp40/t2_extreme_authority.lua:1
+tools/wp40/t2_extreme_conformance_test.lua:1
+tools/wp40/t2_extreme_merge.lua:1
+tools/wp40/t2_extreme_shard_worker.lua:1
+tools/wp40/t2_extreme_test.lua:1
+tools/wp40/t2_extreme_verify_shard.lua:1
+tools/wp45/character_creation_test.lua:1
+SWEEP 5 (comments, plus the disposable dumper CLI's os.exit)
+mods/CORE/grug_core/atmosphere.lua:10:-- the game-directory minetest.conf merely shifts client defaults for a locally
+mods/CORE/grug_core/atmosphere.lua:145:		-- lighting on in our minetest.conf, so this preset is opt-in twice.
+tools/wp40/t2_extreme_test.lua:56:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_test.lua:85:local foundation_status, foundation_reason, foundation_code = os.execute(
+tools/wp40/t2_extreme_test.lua:235:	local status, reason, code = os.execute("git -C " .. repo ..
+tools/wp40/t2_extreme_test.lua:307:		local status, reason, code = os.execute(command)
+tools/wp40/t2_extreme_test.lua:1048:	local status, reason, code = os.execute("python3 " ..
+tools/wp40/simple_map_offline.lua:30:		local ok, why, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/dungeon_probe/source_audit.lua:153:require_text(default_mapgen, 'minetest.register_alias("mapgen_cobble", "default:cobble")',
+tools/wp40/simple_map_r4_offline.lua:36:			local ok, why, code = os.execute(
+tools/wp40/t2_extreme_shard_worker.lua:76:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_shard_worker.lua:169:	local status, reason, code = os.execute("python3 " .. repo ..
+tools/wp40/t2_extreme_conformance_v3_authority.lua:252:			local status, reason, code = os.execute("git -C " .. repo .. " show " ..
+tools/wp40/t2_extreme_conformance_v3_authority.lua:280:		local status, reason, code = os.execute("git -C " .. repo ..
+tools/wp40/t2_extreme_conformance_v3_authority.lua:343:		local status, reason, code = os.execute("git -C " .. repo ..
+tools/wp40/t2_extreme_conformance_v3_authority.lua:359:		local status, reason, code = os.execute("git -C " .. repo ..
+tools/wp40/t2_extreme_conformance_finalize.lua:65:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_conformance_finalize.lua:133:	assert(os.execute("mkdir " .. verify_scratch) == 0)
+tools/wp40/t2_extreme_conformance_finalize.lua:134:	local status, reason, code = os.execute(lua .. " " .. verifier .. " " .. repo ..
+tools/wp40/t2_extreme_conformance_finalize.lua:155:	assert(os.execute("mkdir " .. verify_scratch) == 0)
+tools/wp40/t2_extreme_conformance_finalize.lua:156:	local status, reason, code = os.execute(lua .. " " .. verifier .. " " .. repo ..
+tools/wp40/t2_schema_core_test.lua:25:	assert(os.execute("sha256sum " .. input .. " > " .. output) == 0)
+tools/wp40/t2_source_test.lua:48:		os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_census_hasher.lua:37:		local status, reason, code = os.execute(command)
+tools/wp40/t2_authored_test.lua:36:		os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/r7/native_inputs_kat.lua:3:--   luajit -e 'wp40_ffi=require("ffi")' \
+tools/wp40/t2_extreme_merge.lua:57:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_merge.lua:106:local status, reason, code = os.execute("python3 " .. repo ..
+tools/wp40/t2_extreme_conformance_test.lua:39:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_conformance_test.lua:648:	local status, reason, code = os.execute(command)
+tools/wp40/r6/common.lua:38:			local status = os.execute("sha256sum " .. base .. ".bin > " .. base .. ".txt")
+tools/wp40/t2_s1_authority_test.lua:30:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/quality/terrain_life_fixture.lua:18:	local ok, why, code = os.execute("sha256sum " .. input .. " > " .. digest)
+tools/wp40/t2_s11_acceptance_check.lua:376:	os.exit(0)
+tools/wp40/t2_s11_acceptance_check.lua:380:os.exit(1)
+tools/wp40/simple_map_r5_offline.lua:27:		local first, second, third = os.execute(command)
+tools/wp40/t2_extreme_authority.lua:111:		local status, reason, code = os.execute("git -C " .. repo ..
+tools/wp40/t2_extreme_authority.lua:120:			status, reason, code = os.execute("git -C " .. repo .. " show " ..
+tools/wp40/t2_extreme_authority.lua:262:			local status, reason, code = os.execute("git -C " .. repo ..
+tools/wp40/t2_extreme_authority.lua:284:		local status, reason, code = os.execute("git -C " .. repo ..
+tools/wp40/t2_extreme_authority.lua:291:		status, reason, code = os.execute("git -C " .. repo ..
+tools/wp40/t2_extreme_verify_shard.lua:38:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_verify_shard.lua:76:local status, reason, code = os.execute("python3 " .. repo ..
+tools/wp40/t2_extreme_puc_kat.lua:26:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_census_merge.lua:1824:	os.exit(3)
+tools/wp40/t2_census_merge.lua:1833:	os.exit(4)
+tools/wp40/simple_map_r3_offline.lua:34:			local ok, why, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_rescore_worker.lua:64:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/quality_geometry_fixture.lua:25:	local ok, why, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_compiler_optional_load_test.lua:32:local real_os_execute = os.execute
+tools/wp40/t2_census_gate.lua:69:	os.exit(3)
+tools/wp40/t2_census_gate.lua:246:			os.exit(0)
+tools/wp40/t2_extreme_conformance_recorded.lua:88:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_conformance_recorded.lua:114:		local status, reason, code = os.execute(lua .. " " .. finalizer .. " " ..
+tools/wp40/simple_map_v1e_anchor_migration.lua:93:		local ok, why, code = os.execute("sha256sum " .. input .. " > " .. result)
+tools/wp40/t2_extreme_conformance_authority.lua:110:			local status, reason, code = os.execute("git -C " .. repo .. " show " ..
+tools/wp40/t2_extreme_conformance_authority.lua:137:		local status, reason, code = os.execute("git -C " .. repo ..
+tools/wp40/t1_foundation_test.lua:29:	local status = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_selected_worker.lua:62:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_gate_check.lua:41:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_partition_test.lua:28:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_conformance_preflight.lua:32:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp40/t2_extreme_conformance_verify.lua:62:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+tools/wp13/dump_blueprint.lua:18:	os.exit(2)
+tools/wp13/dump_blueprint.lua:46:	os.exit(1)
+tools/wp13/dump_blueprint.lua:52:	os.exit(1)
+tools/wp13/dump_blueprint.lua:59:		os.exit(1)
+tools/wp13/dump_blueprint.lua:66:	os.exit(1)
+tools/wp13/dump_blueprint.lua:72:	os.exit(1)
+SWEEPS DONE
+== fresh-server source audit ==
+Fresh-server source audit: PASS
