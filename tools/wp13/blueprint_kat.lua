@@ -105,13 +105,15 @@ return function(repo)
 				"default:grass_2", "default:fern_2", "default:fern_3",
 				"doors:door_wood_a", "doors:door_wood_b", "doors:hidden"},
 			paved = {"grug_decor:darkage_marble_tile",
-				"grug_decor:darkage_marble", "default:silver_sandstone_brick"},
-			-- Both roof cuts: the shrine, the lore hall and the gate lookout
-			-- carry the brick stair family, the rest the plain sandstone one.
-			roof = {"stairs:stair_silver_sandstone",
-				"stairs:stair_outer_silver_sandstone",
-				"stairs:stair_inner_silver_sandstone",
-				"stairs:slab_silver_sandstone",
+				"grug_decor:darkage_slate_tile", "grug_decor:darkage_marble",
+				"grug_decor:darkage_serpentine"},
+			-- Two roof materials: the shrine, the lore hall and the gate
+			-- lookout carry the pale silver sandstone brick family, every
+			-- domestic roof the darkage slate tile one.
+			roof = {"grug_decor:darkage_slate_tile_stair",
+				"grug_decor:darkage_slate_tile_stair_outer",
+				"grug_decor:darkage_slate_tile_stair_inner",
+				"grug_decor:darkage_slate_tile_slab",
 				"stairs:stair_silver_sandstone_brick",
 				"stairs:stair_outer_silver_sandstone_brick",
 				"stairs:stair_inner_silver_sandstone_brick",
@@ -124,6 +126,16 @@ return function(repo)
 				{"default:dirt_with_grass", 100}, {"default:dirt", 20}},
 			min_destinations = 9, min_doors = 8, min_rooms = 9,
 			min_lights = 8, min_oriented = 8,
+			-- The glade's loose props, exactly. No straw, no cart and no
+			-- wheel: this settlement carries none. 20 barrels are the ones
+			-- the interiors' kits and the four crate stacks stand on the
+			-- floor, and 24 stepping stones are the six four-cell runs off
+			-- the paving into the litter.
+			props = {{"grug_decor:cottages_straw_bale", 0},
+				{"grug_decor:xdecor_barrel", 20},
+				{"grug_decor:xdecor_stonepath", 24},
+				{"grug_decor:cottages_wagon_wheel", 0, "wallmounted"}},
+			carts = 0,
 		},
 	}
 

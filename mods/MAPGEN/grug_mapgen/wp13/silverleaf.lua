@@ -32,14 +32,16 @@ local function loader(directory)
 	-- off two avenues that leave it east and west, and off the five-wide
 	-- north road the contract reserves, which carries no plot.
 	local COURT = {x1 = -13, z1 = -10, x2 = 13, z2 = 7}
-	local CRESCENT = {x = 0, z = -4, outer = 20, inner = 13, offset = 3}
+	local CRESCENT = {x = 0, z = -2, outer = 40, inner = 30, offset = 4,
+		reach = 7}
 
 	local LANES = {
 		{-2, 0, 2, RADIUS},        -- the road, court to gate
 		{-2, -22, 2, -10},         -- the road's southern continuation
 		{-24, 8, -3, 10},          -- west avenue
 		{3, 8, 24, 10},            -- east avenue
-		{-23, 11, -19, 17},        -- shrine approach
+		{-23, 11, -19, 14},        -- shrine approach, between the colonnade
+		{-27, 15, -15, 17},        -- shrine forecourt
 		{19, 11, 23, 15},          -- lore hall doorstep
 		{-26, -22, -24, 10},       -- west lane
 		{24, -22, 26, 10},         -- east lane
@@ -54,9 +56,15 @@ local function loader(directory)
 	-- turns its door toward its lane and, for the two terrace houses, the
 	-- height of the podium the whole building is lifted onto.
 	local PLOTS = {
-		{id = "moon_shrine", make = "chapel", x = -26, z = 18, turns = 0,
+		-- The shrine is the one steep roof in the glade: a narrow nave under a
+		-- full-pitch gable whose ridge runs with the approach, so the moon
+		-- face at the gable end is what the colonnade walks you toward. A hip
+		-- at this width would clip into the broad flat deck the lore hall and
+		-- the lookout carry, and a shrine is not a hall.
+		{id = "moon_shrine", make = "chapel", x = -25, z = 18, turns = 0,
 			roof_material = "pale",
-			spec = {w = 11, d = 15, wall_h = 7, door_index = 5}},
+			spec = {w = 9, d = 15, wall_h = 7, door_index = 4,
+				roof = "gable", ridge_axis = "z", rise = 5}},
 		{id = "lore_hall", make = "hall", x = 14, z = 16, turns = 0,
 			roof_material = "pale",
 			spec = {w = 13, d = 15, wall_h = 6}},
@@ -123,9 +131,13 @@ local function loader(directory)
 		local buf = parts.buffer()
 		local lights, doorways, rooms = {}, {}, {}
 		local placed, inside_by_id = {}, {}
+		-- The same plots in roster order. `placed` is keyed by landmark id and
+		-- can only be walked with `pairs`; the ordered copy lets the footprint
+		-- test below run over an array with `ipairs` instead.
+		local plot_order = {}
 
 		local function outdoors(x, z)
-			for _, plot in pairs(placed) do
+			for _, plot in ipairs(plot_order) do
 				if x >= plot.x and x <= plot.x + plot.w - 1 and
 						z >= plot.z and z <= plot.z + plot.d - 1 then
 					return false
@@ -134,21 +146,55 @@ local function loader(directory)
 			return true
 		end
 
-		local function prop(x1, z1, x2, z2, build)
-			if not layout.free_area(buf, x1, z1, x2, z2, 4) then return false end
-			for z = z1, z2 do
-				for x = x1, x2 do
-					if not layout.natural(buf, x, z) then return false end
-				end
-			end
-			build()
-			return true
+		-- Ground this composition laid itself and has built nothing on: the
+		-- glade's litter, its lawns and its worn earth. `layout.natural` is
+		-- the stricter rule and stays the one the grove plants by.
+		local GROUND = {}
+		for _, role in ipairs({"ground", "ground_patch", "ground_bare"}) do
+			local name = palette.maybe(role)
+			if name ~= nil then GROUND[name] = true end
 		end
 
-		local function paved_prop(x1, z1, x2, z2, build)
-			if not layout.free_area(buf, x1, z1, x2, z2, 4) then return false end
-			build()
-			return true
+		-- Every prop the composition asks for MUST land. A prop that is
+		-- quietly skipped is a hole in the authored scene that no fixture can
+		-- see, so both helpers name the prop and its position and raise
+		-- instead of returning false -- as does a `build` that reports a
+		-- partial result of its own by returning false.
+		local function refuse(name, x, z, reason)
+			error("wp13 silverleaf: prop " .. name .. " at " .. x .. "," .. z ..
+				" was not placed: " .. reason, 0)
+		end
+
+		local function place(name, x1, z1, build)
+			if build() == false then
+				refuse(name, x1, z1, "the prop could not be completed")
+			end
+		end
+
+		-- A prop on open ground: clear space, and nothing built underneath.
+		local function prop(name, x1, z1, x2, z2, build)
+			if not layout.free_area(buf, x1, z1, x2, z2, 4) then
+				refuse(name, x1, z1, "the space is taken")
+			end
+			for z = z1, z2 do
+				for x = x1, x2 do
+					local below = buf:at(x, 0, z)
+					if below == nil or not GROUND[below.name] then
+						refuse(name, x1, z1, "the ground at " .. x .. "," .. z ..
+							" is " .. (below and below.name or "air"))
+					end
+				end
+			end
+			place(name, x1, z1, build)
+		end
+
+		-- Furniture that belongs on the paving it stands on, so only the space
+		-- is tested.
+		local function paved_prop(name, x1, z1, x2, z2, build)
+			if not layout.free_area(buf, x1, z1, x2, z2, 4) then
+				refuse(name, x1, z1, "the space is taken")
+			end
+			place(name, x1, z1, build)
 		end
 
 		-- 1. Glade ground.
@@ -161,21 +207,25 @@ local function loader(directory)
 				buf:put(x, 0, z, palette.node("plaza"))
 			end
 		end
-		dressing.inlay(buf, palette, COURT.x1, COURT.z1, COURT.x2, COURT.z2)
+		dressing.inlay(buf, palette, COURT.x1, COURT.z1, COURT.x2, COURT.z2,
+			"wall_accent")
 		for _, lane in ipairs(LANES) do
 			layout.pave(buf, palette, lane[1], lane[2], lane[3], lane[4],
 				"path", 5)
 		end
-		-- The crescent: a pale disc with a second disc cut out of it, laid
-		-- last so the paving does not break its edge.
-		for dz = -5, 5 do
-			for dx = -5, 5 do
+		-- The crescent: a disc with a second disc cut out of it, in the dark
+		-- stone of the kerb on the white marble, laid last so the paving does
+		-- not break its edge. Dark on pale rather than pale on pale: the
+		-- first review render had this in a stone one step from the court's
+		-- own and the moon simply was not there.
+		for dz = -CRESCENT.reach, CRESCENT.reach do
+			for dx = -CRESCENT.reach, CRESCENT.reach do
 				local outer = dx * dx + dz * dz
 				local cut = (dx + CRESCENT.offset) * (dx + CRESCENT.offset) +
 					dz * dz
 				if outer <= CRESCENT.outer and cut > CRESCENT.inner then
 					buf:put(CRESCENT.x + dx, 0, CRESCENT.z + dz,
-						palette.node("foundation"))
+						palette.node("wall_accent"))
 				end
 			end
 		end
@@ -197,6 +247,7 @@ local function loader(directory)
 			local footprint = points.footprint[1]
 			placed[plot.id] = {x = plot.x, z = plot.z, lift = lift,
 				w = footprint.w, d = footprint.d, peak = part.peak + lift}
+			plot_order[#plot_order + 1] = placed[plot.id]
 			for _, door in ipairs(points.doors) do
 				doorways[#doorways + 1] = {x = door.x, y = door.y, z = door.z,
 					face = door.face, id = plot.id}
@@ -235,7 +286,7 @@ local function loader(directory)
 			local shrine = placed.moon_shrine
 			local spire = buildings.belfry(palette,
 				{height = 4, roof_palette = pale})
-			parts.stamp(buf, spire, shrine.x + 3, shrine.peak, shrine.z + 5, 0)
+			parts.stamp(buf, spire, shrine.x + 2, shrine.peak, shrine.z + 5, 0)
 		end
 
 		-- 6. The gate: two brick piers under a silverwood lintel, candles
@@ -266,6 +317,19 @@ local function loader(directory)
 				COLONNADE.height, z)
 		end
 
+		-- 7b. Lanterns under the covered market's open bays. The top plate of
+		-- an open side follows the roof, so its height varies along the bay;
+		-- the lantern is hung under the first beam found scanning down.
+		local function lantern_under(x, z)
+			for y = 7, 3, -1 do
+				if parts.hanging_light(buf, palette, x, y, z) then return true end
+			end
+			refuse("market_lantern", x, z, "no beam to hang it under")
+		end
+		for _, bay in ipairs({{-32, -2}, {-32, 2}, {-42, -4}, {-38, -4}}) do
+			lantern_under(bay[1], bay[2])
+		end
+
 		-- 8. Gable lights: one emberglass lamp set into the ridge gable of
 		-- every house, which is what makes the glade readable at night from
 		-- the canopy paths.
@@ -277,57 +341,45 @@ local function loader(directory)
 
 		-- 9. The court: lantern standards, flower beds on marble kerbs,
 		-- benches and a notice post under the crescent.
-		for _, spot in ipairs({{-11, -8}, {11, -8}, {-11, 5}, {11, 5},
-				{-11, -2}, {11, -2}}) do
-			paved_prop(spot[1], spot[2], spot[1] + 1, spot[2], function()
-				dressing.lantern_post(buf, palette, spot[1], spot[2])
+		for _, spot in ipairs({{-11, -8}, {11, -8}, {-11, 5}, {11, 5}}) do
+			paved_prop("lantern_post", spot[1], spot[2], spot[1] + 1, spot[2],
+				function()
+					dressing.lantern_post(buf, palette, spot[1], spot[2])
+				end)
+		end
+		for _, bed in ipairs({{-11, -19, -8, -16}, {8, -19, 11, -16},
+				{-11, 12, -8, 15}, {8, 12, 11, 15}}) do
+			prop("flower_bed", bed[1], bed[2], bed[3], bed[4], function()
+				dressing.flower_bed(buf, palette, bed[1], bed[2], bed[3], bed[4])
 			end)
 		end
-		prop(-11, -19, -8, -16, function()
-			dressing.flower_bed(buf, palette, -11, -19, -8, -16)
-		end)
-		prop(8, -19, 11, -16, function()
-			dressing.flower_bed(buf, palette, 8, -19, 11, -16)
-		end)
-		prop(-11, 12, -8, 15, function()
-			dressing.flower_bed(buf, palette, -11, 12, -8, 15)
-		end)
-		prop(8, 12, 11, 15, function()
-			dressing.flower_bed(buf, palette, 8, 12, 11, 15)
-		end)
-		paved_prop(-8, 4, -6, 4, function()
-			dressing.bench(buf, palette, -8, 4, 2, 3, "x")
-		end)
-		paved_prop(6, 4, 8, 4, function()
-			dressing.bench(buf, palette, 6, 4, 2, 3, "x")
-		end)
-		paved_prop(-8, -9, -6, -9, function()
-			dressing.bench(buf, palette, -8, -9, 0, 3, "x")
-		end)
-		paved_prop(6, -9, 8, -9, function()
-			dressing.bench(buf, palette, 6, -9, 0, 3, "x")
-		end)
-		paved_prop(-6, -1, -6, -1, function()
+		for _, seat in ipairs({{-8, 4, 2}, {6, 4, 2}, {-8, -9, 0}, {6, -9, 0}}) do
+			paved_prop("bench", seat[1], seat[2], seat[1] + 2, seat[2],
+				function()
+					dressing.bench(buf, palette, seat[1], seat[2], seat[3], 3, "x")
+				end)
+		end
+		paved_prop("signpost", -6, -1, -6, -1, function()
 			dressing.signpost(buf, palette, -6, -1)
 		end)
 		-- The four lantern pillars that mark the corners of the court.
 		for _, pillar in ipairs({{-8, 1}, {8, 1}, {-8, -7}, {8, -7}}) do
-			paved_prop(pillar[1] - 1, pillar[2] - 1, pillar[1] + 1,
-				pillar[2] + 1, function()
+			paved_prop("lantern_pillar", pillar[1] - 1, pillar[2] - 1,
+				pillar[1] + 1, pillar[2] + 1, function()
 					dressing.lantern_pillar(buf, palette, pillar[1], pillar[2])
 				end)
 		end
 
 		-- 10. Planters and crates along the avenues and outside the market.
-		for _, bed in ipairs({{-22, 4, -20, 6}, {20, 4, 22, 6},
-				{-22, -8, -20, -6}, {20, -8, 22, -6}}) do
-			prop(bed[1], bed[2], bed[3], bed[4], function()
+		for _, bed in ipairs({{-19, 4, -17, 6}, {17, 4, 19, 6},
+				{-13, -14, -11, -12}, {11, -14, 13, -12}}) do
+			prop("planter", bed[1], bed[2], bed[3], bed[4], function()
 				dressing.planter(buf, palette, bed[1], bed[2], bed[3], bed[4])
 			end)
 		end
 		for _, crate in ipairs({{-30, -4, 3}, {-30, -3, 3}, {28, 2, 1},
 				{28, 3, 1}}) do
-			prop(crate[1], crate[2], crate[1], crate[2], function()
+			prop("crates", crate[1], crate[2], crate[1], crate[2], function()
 				dressing.crates(buf, palette, crate[1], crate[2], crate[3])
 			end)
 		end
@@ -336,7 +388,7 @@ local function loader(directory)
 			local axis = pile[4]
 			local x2 = axis == "x" and pile[1] + pile[3] - 1 or pile[1]
 			local z2 = axis == "z" and pile[2] + pile[3] - 1 or pile[2]
-			prop(pile[1], pile[2], x2, z2, function()
+			prop("wood_pile", pile[1], pile[2], x2, z2, function()
 				dressing.wood_pile(buf, palette, pile[1], pile[2], pile[3], axis)
 			end)
 		end
@@ -344,20 +396,30 @@ local function loader(directory)
 		-- 11. Low silverwood railings where a lane runs along a drop or a
 		-- grove edge, and stepping stones off the paving into the trees.
 		for _, line in ipairs({{-40, -26, -28, -26}, {28, -26, 40, -26},
-				{-24, 12, -24, 20}, {26, 16, 26, 24}}) do
-			prop(math.min(line[1], line[3]), math.min(line[2], line[4]),
-				math.max(line[1], line[3]), math.max(line[2], line[4]),
-				function()
+				{-28, 12, -28, 20}, {28, 16, 28, 24}}) do
+			prop("fence_line", math.min(line[1], line[3]),
+				math.min(line[2], line[4]), math.max(line[1], line[3]),
+				math.max(line[2], line[4]), function()
 					dressing.fence_line(buf, palette, line[1], line[2],
 						line[3], line[4])
 				end)
 		end
-		dressing.stepping_line(buf, palette, -14, 4, -14, 7)
-		dressing.stepping_line(buf, palette, 14, 4, 14, 7)
-		dressing.stepping_line(buf, palette, -18, -12, -15, -12)
-		dressing.stepping_line(buf, palette, 15, -12, 18, -12)
-		dressing.stepping_line(buf, palette, -3, 12, -3, 15)
-		dressing.stepping_line(buf, palette, 3, 12, 3, 15)
+		-- Stepping stones off the paving into the litter. Each run is four
+		-- cells of open ground, and `blueprint_kat` counts the lot, so a run
+		-- that walks under a later prop shows up as a number there.
+		local STEPPING = {{-16, 2, -16, 5}, {16, 2, 16, 5},
+			{-9, -14, -6, -14}, {6, -14, 9, -14},
+			{-16, 12, -13, 12}, {13, 12, 16, 12}}
+		local stepping_stones = 0
+		for _, run in ipairs(STEPPING) do
+			prop("stepping_line", math.min(run[1], run[3]),
+				math.min(run[2], run[4]), math.max(run[1], run[3]),
+				math.max(run[2], run[4]), function()
+					stepping_stones = stepping_stones +
+						dressing.stepping_line(buf, palette, run[1], run[2],
+							run[3], run[4])
+				end)
+		end
 
 		-- 12. Route lighting: the road, the avenues and the lanes.
 		layout.street_lamps(buf, palette, 0, 2, 56, 7, outdoors)
@@ -373,10 +435,10 @@ local function loader(directory)
 		end
 
 		-- 13. The silverwood: named specimens first, then the scatter.
-		local standards = layout.plant_grove(buf, palette, RADIUS, 7, SPECIMENS)
+		local standards = layout.plant_grove(buf, palette, RADIUS, 6, SPECIMENS)
 
 		-- 14. Ferns and pale grass on whatever litter is left.
-		dressing.undergrowth(buf, palette, -RADIUS, -RADIUS, RADIUS, RADIUS, 3)
+		dressing.undergrowth(buf, palette, -RADIUS, -RADIUS, RADIUS, RADIUS, 5)
 
 		-- 15. Pane shapes, settled once over the finished pad for the reason
 		-- written in `parts.resolve_panes`.
@@ -481,6 +543,7 @@ local function loader(directory)
 				rooms = rooms,
 				lights = lights,
 				standards = standards,
+				stepping_stones = stepping_stones,
 			},
 		}
 	end

@@ -181,7 +181,7 @@ local function loader(directory)
 		for z = -core, core, 4 do
 			for x = -core, core, 7 do
 				local hash = (x * 13 + z * 29) % 17
-				if hash < 6 then
+				if hash < 4 then
 					buf:fill(x - 2, 0, z - 1, x + 2, 0, z + 1,
 						palette.node("ground_patch"))
 				elseif hash == 11 or hash == 14 then
@@ -215,8 +215,12 @@ local function loader(directory)
 			for x = -radius + 3, radius - 3, step do
 				local hash = (x * 53 + z * 131 + x * z) % 89
 				-- Ten to thirteen logs: the schematic's six clear logs stay
-				-- clear at every height in that range.
-				if hash % 6 < 4 then
+				-- clear at every height in that range. The grove thins toward
+				-- the settlement, because a glade is a clearing the wood was
+				-- opened for and not a lawn with a lattice of trees on it.
+				local reach = math.max(math.abs(x), math.abs(z))
+				local density = reach < 24 and 1 or (reach < 40 and 3 or 4)
+				if hash % 7 < density then
 					try(x + hash % 5 - 2, z + math.floor(hash / 5) % 5 - 2,
 						10 + hash % 4)
 				end
