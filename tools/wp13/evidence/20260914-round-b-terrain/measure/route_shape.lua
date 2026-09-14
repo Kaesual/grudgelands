@@ -10,6 +10,14 @@ for index = 1, #src.anchors do
 		start_zone[anchor.zone_numeric_id] = anchor
 	end
 end
+-- Headings are compass-style, so a delta has to be brought back into
+-- (-180, 180] before it means anything: without this a 20 degree left turn
+-- across the +/-180 seam prints as -340.
+local function normalise(value)
+	while value <= -180 do value = value + 360 end
+	while value > 180 do value = value - 360 end
+	return value
+end
 local file = assert(io.open(output, "wb"))
 file:write("route\tanchor\tvertex\tx\tz\tradius\theading_deg\tturn_deg\n")
 for index = 1, #src.routes do
@@ -17,7 +25,7 @@ for index = 1, #src.routes do
 	local anchor = start_zone[route.zone_a]
 	if anchor then
 		local previous
-		for vertex = 1, math.min(#route.centreline, 5) do
+		for vertex = 1, math.min(#route.centreline, route.pinned_point_index + 2) do
 			local point = route.centreline[vertex]
 			local radius = math.max(math.abs(point.x - anchor.position.x),
 				math.abs(point.z - anchor.position.z))
@@ -26,14 +34,19 @@ for index = 1, #src.routes do
 				local back = route.centreline[vertex - 1]
 				heading = math.atan2(point.x - back.x, point.z - back.z) * 180 /
 					math.pi
-				if previous then turn = string.format("%.1f", heading - previous) end
+				if previous then
+					turn = string.format("%.1f", normalise(heading - previous))
+				end
 				previous = heading
 				heading = string.format("%.1f", heading)
 			end
-			file:write(table.concat({route.id, anchor.id, vertex, point.x, point.z,
+			local label = vertex
+			if vertex == route.pinned_point_index then label = vertex .. "_pin" end
+			file:write(table.concat({route.id, anchor.id, label, point.x, point.z,
 				radius, heading, turn}, "\t"), "\n")
 		end
-		file:write(route.id, "\tvertices\t", #route.centreline, "\n")
+		file:write(route.id, "\tvertices\t", #route.centreline,
+			"\tpinned_point_index\t", route.pinned_point_index, "\n")
 	end
 end
 assert(file:close())

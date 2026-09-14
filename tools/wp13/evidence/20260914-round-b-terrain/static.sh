@@ -12,6 +12,7 @@ changed=(
 	mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua
 	mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
 	mods/MAPGEN/grug_mapgen/wp40/simple_map.lua
+	mods/MAPGEN/grug_mapgen/wp40/zones.lua
 	mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua
 	tools/wp13/engine_cases.lua
 	tools/wp13/terrain_fixture.lua

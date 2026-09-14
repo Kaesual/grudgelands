@@ -797,7 +797,11 @@ local function zones_factory(dependencies)
 				"secondary", #path_rows + 1, profile.surface_width,
 				profile.corridor_width)
 		end
-		if #path_rows ~= 139 or #route_segments ~= 476 then
+		-- 139 graded paths, unchanged: this round adds no path. The segment count
+		-- was 476 until WP13 round B compiled the gate-axis run into the six start
+		-- routes' first leg, which inserts two vertices -- the gate point and the
+		-- second eased vertex -- and therefore two segments each: 476 + 6 x 2 = 488.
+		if #path_rows ~= 139 or #route_segments ~= 488 then
 			fail("graded path/segment population differs")
 		end
 		local route_index = index128.compile_sparse_segments({

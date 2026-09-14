@@ -1254,12 +1254,12 @@ b3e4e15bac02f0d48a0bc19e3b225cef152c7384dfc59a34159c96afadce2771  ./mods/MAPGEN/
 4ecd15b291ad474495493c4ecbedf79fb89c4cbbe5ff160c5ed6016319ce2069  ./mods/MAPGEN/grug_mapgen/wp40/r7_zone_overlay.lua
 1f3825d1b77972637c850fad32a56a3a0fe08962b14b6c1b107846b7b0004166  ./mods/MAPGEN/grug_mapgen/wp40/schemas.lua
 bf5e7702aaffd32c018cfcf59f7f2d48bc435107a5fe9115f9a1ea2541523738  ./mods/MAPGEN/grug_mapgen/wp40/seed_corpus.lua
-eb822f2c391fe58cf4cfdeb53a2ca8b5d4ec019f8b5a6e645ff21b3285904a30  ./mods/MAPGEN/grug_mapgen/wp40/simple_map.lua
+1b5519b9c70913386d08f6e81b681872419ba35d1c04dd65df8a904eca48f097  ./mods/MAPGEN/grug_mapgen/wp40/simple_map.lua
 139edeb89c6bf04ddeba39df684653246319bb4a5fdfbe70940c042e727932a5  ./mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua
-3d16d3343c48c51335b6aa467bb966ffd40a9fd92e21f4684fe4c61ca25b6813  ./mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua
+400d9f8b498fb825a1c6f0ee894b77f6bb9b5b4cc300c7b30b2f161515c50fcf  ./mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua
 cfd476cb5de866349afc90c64cc35ff6efab2431d8d157a7b6245e72d976fc18  ./mods/MAPGEN/grug_mapgen/wp40/validation.lua
 e525bdfcc6a7e27d007f7074d199234b0311488937d0b963f5320d59346bcdfb  ./mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua
-cf2c8ac2d4fa3cd3b105765efd3f66e70672ad44add871bb88d0ebc205eed4a5  ./mods/MAPGEN/grug_mapgen/wp40/zones.lua
+94d06103864e26dc599de8ee8d9bf00545b4063d6ff0d4f3ea840d2148086126  ./mods/MAPGEN/grug_mapgen/wp40/zones.lua
 b3ca26e45614d90628e23dfc1716448b49208fc326acf80f5ea7344f7bb30432  ./mods/MAPGEN/grug_mapgen/wp43_handoff.lua
 7bf4db745dedf5a2e9f9ed70c82fa02686dc44c70f38e2a2c8bf2d5b98c5e6eb  ./mods/MAPGEN/modpack.conf
 63951625113f42c6a09299474d4dcf12c6399a65e0cc15e597d0a669bf3019d0  ./mods/PLAYER/grug_abilities/LICENSE-media.md

@@ -1,5 +1,5 @@
 == parser, changed files
-luac51 -p PASS (8 files)
+luac51 -p PASS (9 files)
 == parser, tree-wide
 luac51 -p PASS (462 files)
 == SETGLOBAL, changed files
@@ -7,6 +7,7 @@ luac51 -p PASS (462 files)
 0	mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua
 0	mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
 0	mods/MAPGEN/grug_mapgen/wp40/simple_map.lua
+0	mods/MAPGEN/grug_mapgen/wp40/zones.lua
 0	mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua
 0	tools/wp13/engine_cases.lua
 0	tools/wp13/terrain_fixture.lua

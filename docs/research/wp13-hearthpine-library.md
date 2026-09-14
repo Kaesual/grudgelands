@@ -270,16 +270,26 @@ six per-start digests and combined `206a86a057b0b6ed…` are round A's. Evidence
   and its first bowed leg left the axis at once, so the road crossed the build
   envelope diagonally and surfaced 60-70 nodes beside the gate (Dawnmere and
   Kapok only 1-5, which is why nobody noticed it in a fixture). The gate-axis run
-  is compiled into the centreline now: hub, the gate point at anchor.z ± 128, one
-  bowed vertex leaning toward the axis, then the authored crossing pin. The
-  leaning vertex takes the place of the leg's first ordinary bow point, so the
-  vertex count, `pinned_point_index` and the two endpoint pins are unchanged, and
-  the bend reads as two ~20° turns instead of one corner. `height.lua` only
+  is compiled into the centreline now: hub, the gate point at anchor.z ± 128, two
+  eased vertices (smootherstep laterally, linear axially, so an S and not a
+  re-spaced chord) and then the leg's OWN second bow point unchanged before the
+  authored crossing pin. `height.lua` only
   rasterises it and reports the one thing the source cannot express — that the
   first segment carries the gate street's five-node width instead of the class's
   seven — through `make_path`'s new optional narrow leading prefix, whose three
   membership tests ask the segment width first while every bounding box keeps
   reading the path's widest values as the upper bound they are.
+- **The vertex that decides a corner is the one before it.** The first attempt
+  at the gate leg replaced the leg's FIRST bow point, which kept the vertex count
+  and `pinned_point_index` at 4 and looked equivalent -- and moved the road's
+  approach onto the chord, so the turn at the authored crossing pin went from
+  22.3° to 62° at Hearthpine and from 91-101° to 133-138° on the three starts
+  that already carry a switchback there. Keeping the SECOND bow point instead
+  makes every pin turn byte-for-byte the authored one, at the price of two extra
+  vertices (and therefore `pinned_point_index` 6, a graded-segment population of
+  488 instead of 476, and up to 49° at the gate point). When a change to a curve
+  has to leave a later corner alone, the vertex to preserve is the one that sets
+  the heading INTO it.
 - **A raster that its own source does not know about loses every rule derived
   from the source.** The first version of this fix rebuilt that leg inside
   `height.lua` and left the compiled centreline alone. It looked right and
@@ -328,7 +338,7 @@ six per-start digests and combined `206a86a057b0b6ed…` are round A's. Evidence
   square**, which is a rule and not a look; softening THAT outline is the next
   lever and was deliberately not taken here.
 
-Three library rules come out of it. A landmark the blueprints export is the
+Four library rules come out of it. A landmark the blueprints export is the
 authority on a settlement's geometry, and any WP40 layer that has its own idea
 of the same geometry has to be measured against it rather than trusted.
 Geometry other rules are derived from belongs in the compiled source, and the
@@ -337,10 +347,14 @@ height layer may shape what the source authored but never author its own. And a
 narrowed: count the thing that should appear, in the engine, before believing
 it.
 
-Calibration: implementing Claude Opus; independent Claude Opus review, verdict
-merge-after-fixes with one blocking finding (the approach outside its own claim
-exclusion) plus one medium and one record correction; one fix round, which moved
-the gate-axis prefix from `height.lua` into the compiled source. Blueprints
+Calibration: implementing Claude Opus; two independent Claude Opus reviews.
+First verdict merge-after-fixes, one blocking finding (the approach outside its
+own claim exclusion) plus one medium and one record correction; the fix round
+moved the gate-axis prefix from `height.lua` into the compiled source. Second
+verdict merge-after-fixes, no code defect, one finding about the relocated corner
+at the crossing pin plus two record items; the second fix round keeps the leg's
+second bow point and updates `pinned_point_index`, the graded-segment population
+and the records. Blueprints
 byte-identical, six per-start engine digests unchanged, the WP13 final micro pair
 `758c3e8c5facc9eb…` — main's own value, unmoved by this round.
 

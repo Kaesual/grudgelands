@@ -3,7 +3,7 @@ start	route	kind	z_offset	first_host_west	first_host_east
 anchor_001	route_001	approach	80	9	9
 anchor_001	route_001	approach	100	9	9
 anchor_001	route_001	approach	120	9	9
-anchor_001	route_001	ordinary	pin	9	12
+anchor_001	route_001	ordinary	pin	9	9
 anchor_002	route_004	approach	80	9	9
 anchor_002	route_004	approach	100	9	9
 anchor_002	route_004	approach	120	9	9

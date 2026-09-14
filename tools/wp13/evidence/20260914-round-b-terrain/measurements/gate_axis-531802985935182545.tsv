@@ -1,5 +1,5 @@
 seed	531802985935182545
-construction_seconds	7.062
+construction_seconds	7.094
 start	anchor	row_offset	min_x	max_x	count	holes	feature
 hearthpine	anchor_001	56	-2	2	5	0	route_001
 hearthpine	anchor_001	64	-2	2	5	0	route_001
@@ -10,11 +10,11 @@ hearthpine	anchor_001	96	-2	2	5	0	route_001
 hearthpine	anchor_001	104	-2	2	5	0	route_001
 hearthpine	anchor_001	112	-2	2	5	0	route_001
 hearthpine	anchor_001	120	-2	2	5	0	route_001
-hearthpine	anchor_001	128	-8	8	17	0	route_001
-hearthpine	anchor_001	136	-11	5	17	0	route_001
-hearthpine	anchor_001	144	-13	2	16	0	route_001
-hearthpine	anchor_001	152	-16	0	17	0	route_001
-hearthpine	anchor_001	160	-19	-3	17	0	route_001
+hearthpine	anchor_001	128	-11	8	20	0	route_001
+hearthpine	anchor_001	136	-20	3	24	0	route_001
+hearthpine	anchor_001	144	-28	-6	23	0	route_001
+hearthpine	anchor_001	152	-37	-14	24	0	route_001
+hearthpine	anchor_001	160	-55	-23	33	0	route_001
 dawnmere	anchor_002	56	-2	2	5	0	route_004
 dawnmere	anchor_002	64	-2	2	5	0	route_004
 dawnmere	anchor_002	72	-2	2	5	0	route_004
@@ -25,10 +25,10 @@ dawnmere	anchor_002	104	-2	2	5	0	route_004
 dawnmere	anchor_002	112	-2	2	5	0	route_004
 dawnmere	anchor_002	120	-2	2	5	0	route_004
 dawnmere	anchor_002	128	-8	8	17	0	route_004
-dawnmere	anchor_002	136	-10	5	16	0	route_004
-dawnmere	anchor_002	144	-13	3	17	0	route_004
-dawnmere	anchor_002	152	-16	0	17	0	route_004
-dawnmere	anchor_002	160	-18	-2	17	0	route_004
+dawnmere	anchor_002	136	-10	6	17	0	route_004
+dawnmere	anchor_002	144	-12	4	17	0	route_004
+dawnmere	anchor_002	152	-14	2	17	0	route_004
+dawnmere	anchor_002	160	-16	-1	16	0	route_004
 silverleaf	anchor_003	56	-2	2	5	0	route_007
 silverleaf	anchor_003	64	-2	2	5	0	route_007
 silverleaf	anchor_003	72	-2	2	5	0	route_007
@@ -38,11 +38,11 @@ silverleaf	anchor_003	96	-2	2	5	0	route_007
 silverleaf	anchor_003	104	-2	2	5	0	route_007
 silverleaf	anchor_003	112	-2	2	5	0	route_007
 silverleaf	anchor_003	120	-2	2	5	0	route_007
-silverleaf	anchor_003	128	-8	8	17	0	route_007
-silverleaf	anchor_003	136	-5	11	17	0	route_007
-silverleaf	anchor_003	144	-2	14	17	0	route_007
-silverleaf	anchor_003	152	1	17	17	0	route_007
-silverleaf	anchor_003	160	3	19	17	0	route_007
+silverleaf	anchor_003	128	-8	12	21	0	route_007
+silverleaf	anchor_003	136	-2	21	24	0	route_007
+silverleaf	anchor_003	144	7	30	24	0	route_007
+silverleaf	anchor_003	152	16	42	27	0	route_007
+silverleaf	anchor_003	160	26	68	43	0	route_007
 stillgrave	anchor_004	56	-2	2	5	0	route_010
 stillgrave	anchor_004	64	-2	2	5	0	route_010
 stillgrave	anchor_004	72	-2	2	5	0	route_010
@@ -52,11 +52,11 @@ stillgrave	anchor_004	96	-2	2	5	0	route_010
 stillgrave	anchor_004	104	-2	2	5	0	route_010
 stillgrave	anchor_004	112	-2	2	5	0	route_010
 stillgrave	anchor_004	120	-2	2	5	0	route_010
-stillgrave	anchor_004	128	-8	8	17	0	route_010
-stillgrave	anchor_004	136	-11	5	17	0	route_010
-stillgrave	anchor_004	144	-14	2	17	0	route_010
-stillgrave	anchor_004	152	-17	-1	17	0	route_010
-stillgrave	anchor_004	160	-20	-4	17	0	route_010
+stillgrave	anchor_004	128	-11	8	20	0	route_010
+stillgrave	anchor_004	136	-20	3	24	0	route_010
+stillgrave	anchor_004	144	-28	-6	23	0	route_010
+stillgrave	anchor_004	152	-37	-14	24	0	route_010
+stillgrave	anchor_004	160	-57	-23	35	0	route_010
 sunscar	anchor_005	56	-2	2	5	0	route_013
 sunscar	anchor_005	64	-2	2	5	0	route_013
 sunscar	anchor_005	72	-2	2	5	0	route_013
@@ -66,11 +66,11 @@ sunscar	anchor_005	96	-2	2	5	0	route_013
 sunscar	anchor_005	104	-2	2	5	0	route_013
 sunscar	anchor_005	112	-2	2	5	0	route_013
 sunscar	anchor_005	120	-2	2	5	0	route_013
-sunscar	anchor_005	128	-8	8	17	0	route_013
-sunscar	anchor_005	136	-11	5	17	0	route_013
-sunscar	anchor_005	144	-13	2	16	0	route_013
-sunscar	anchor_005	152	-16	0	17	0	route_013
-sunscar	anchor_005	160	-19	-3	17	0	route_013
+sunscar	anchor_005	128	-10	8	19	0	route_013
+sunscar	anchor_005	136	-18	3	22	0	route_013
+sunscar	anchor_005	144	-25	-4	22	0	route_013
+sunscar	anchor_005	152	-32	-12	21	0	route_013
+sunscar	anchor_005	160	-41	-19	23	0	route_013
 kapok	anchor_006	56	-2	2	5	0	route_016
 kapok	anchor_006	64	-2	2	5	0	route_016
 kapok	anchor_006	72	-2	2	5	0	route_016
@@ -81,7 +81,7 @@ kapok	anchor_006	104	-2	2	5	0	route_016
 kapok	anchor_006	112	-2	2	5	0	route_016
 kapok	anchor_006	120	-2	2	5	0	route_016
 kapok	anchor_006	128	-8	8	17	0	route_016
-kapok	anchor_006	136	-5	11	17	0	route_016
-kapok	anchor_006	144	-2	14	17	0	route_016
-kapok	anchor_006	152	1	17	17	0	route_016
-kapok	anchor_006	160	4	20	17	0	route_016
+kapok	anchor_006	136	-5	10	16	0	route_016
+kapok	anchor_006	144	-3	13	17	0	route_016
+kapok	anchor_006	152	0	15	16	0	route_016
+kapok	anchor_006	160	2	18	17	0	route_016

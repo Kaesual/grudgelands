@@ -542,8 +542,21 @@ return function(dependencies)
 		end
 		local class_counts = {primary=0,secondary=0,trail=0}
 		local route_pairs,route_by_id = {},{}
+		-- A start route's first leg carries the gate-axis run and the two eased
+		-- vertices in front of the leg's kept bow point, so its authored crossing
+		-- pin is four points further along than an ordinary route's. The index is
+		-- derived from the start anchors rather than hard-coded twice.
+		local start_route_zone = {}
+		for index = 1, #source.anchors do
+			local anchor = source.anchors[index]
+			if anchor.slot_id == "start" then
+				start_route_zone[anchor.zone_numeric_id] = true
+			end
+		end
 		for index = 1, #source.routes do
 			local row = source.routes[index]
+			local expected_pinned_point_index =
+				start_route_zone[row.zone_a] and 6 or 4
 			local pair_key=closed_pair(row.zone_a,row.zone_b)
 			local station_a=station_ids[row.station_a_id]
 			local station_b=station_ids[row.station_b_id]
@@ -553,7 +566,7 @@ return function(dependencies)
 					not source.zones[row.zone_a] or not source.zones[row.zone_b] or
 					not station_a or not station_b or
 					row.curve_policy_id ~= source.route_curve.id or
-					row.pinned_point_index ~= 4 or
+					row.pinned_point_index ~= expected_pinned_point_index or
 					dense_count(row.centreline,"route centreline") <
 						source.route_curve.minimum_points_per_route then
 				fail("route identity/reference differs at " .. index)

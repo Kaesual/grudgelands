@@ -2,36 +2,42 @@ route	anchor	vertex	x	z	radius	heading_deg	turn_deg
 route_001	anchor_001	1	-1800	-2550	0	-	-
 route_001	anchor_001	2	-1906	-2447	106	-45.8	-
 route_001	anchor_001	3	-1965	-2322	228	-25.3	20.6
-route_001	anchor_001	4	-1975	-2175	375	-3.9	21.4
+route_001	anchor_001	4_pin	-1975	-2175	375	-3.9	21.4
 route_001	anchor_001	5	-1963	-2139	411	18.4	22.3
-route_001	vertices	10
+route_001	anchor_001	6	-1938	-2120	430	52.8	34.3
+route_001	vertices	10	pinned_point_index	4
 route_004	anchor_002	1	0	-2550	0	-	-
 route_004	anchor_002	2	-10	-2394	156	-3.7	-
 route_004	anchor_002	3	-69	-2259	291	-23.6	-19.9
-route_004	anchor_002	4	-175	-2145	405	-42.9	-19.3
+route_004	anchor_002	4_pin	-175	-2145	405	-42.9	-19.3
 route_004	anchor_002	5	-140	-2070	480	25.0	67.9
-route_004	vertices	7
+route_004	anchor_002	6	-81	-2039	511	62.3	37.3
+route_004	vertices	7	pinned_point_index	4
 route_007	anchor_003	1	1800	-2550	0	-	-
 route_007	anchor_003	2	1906	-2453	106	47.5	-
 route_007	anchor_003	3	1965	-2333	217	26.2	-21.4
-route_007	anchor_003	4	1975	-2190	360	4.0	-22.2
+route_007	anchor_003	4_pin	1975	-2190	360	4.0	-22.2
 route_007	anchor_003	5	1883	-2186	364	-87.5	-91.5
-route_007	vertices	7
+route_007	anchor_003	6	1824	-2140	410	-52.1	35.5
+route_007	vertices	7	pinned_point_index	4
 route_010	anchor_004	1	-1800	2550	0	-	-
 route_010	anchor_004	2	-1908	2448	108	-133.4	-
 route_010	anchor_004	3	-1968	2323	227	-154.4	-21.0
-route_010	anchor_004	4	-1980	2175	375	-175.4	-21.0
-route_010	anchor_004	5	-1889	2178	372	88.1	263.5
-route_010	vertices	7
+route_010	anchor_004	4_pin	-1980	2175	375	-175.4	-21.0
+route_010	anchor_004	5	-1889	2178	372	88.1	-96.5
+route_010	anchor_004	6	-1829	2137	413	124.3	36.2
+route_010	vertices	7	pinned_point_index	4
 route_013	anchor_005	1	0	2550	0	-	-
 route_013	anchor_005	2	-108	2440	110	-135.5	-
 route_013	anchor_005	3	-168	2309	241	-155.4	-19.9
-route_013	anchor_005	4	-180	2155	395	-175.5	-20.2
-route_013	anchor_005	5	-94	2165	385	83.4	258.9
-route_013	vertices	7
+route_013	anchor_005	4_pin	-180	2155	395	-175.5	-20.2
+route_013	anchor_005	5	-94	2165	385	83.4	-101.1
+route_013	anchor_005	6	-34	2130	420	120.3	36.9
+route_013	vertices	7	pinned_point_index	4
 route_016	anchor_006	1	1800	2550	0	-	-
 route_016	anchor_006	2	1812	2402	148	175.4	-
 route_016	anchor_006	3	1872	2277	273	154.4	-21.0
-route_016	anchor_006	4	1980	2175	375	133.4	-21.0
-route_016	anchor_006	5	1951	2088	462	-161.6	-294.9
-route_016	vertices	7
+route_016	anchor_006	4_pin	1980	2175	375	133.4	-21.0
+route_016	anchor_006	5	1951	2088	462	-161.6	65.1
+route_016	anchor_006	6	1891	2047	503	-124.3	37.2
+route_016	vertices	7	pinned_point_index	4

@@ -53,22 +53,72 @@ reproduced in `measurements/road_protection-previous-head-*.tsv` and is zero
 everywhere now.
 
 A start route's first leg is therefore compiled as: the hub, the gate point at
-anchor.z ± 128 (64 nodes outside the pad edge), one bowed vertex leaning toward
-the gate axis, and the authored crossing pin. The bowed vertex takes the place
-of the first of the leg's two ordinary bow points, so the leg still contributes
-`points_per_leg` points, the route's vertex count is unchanged (10 for
-`route_001`, 7 for the other five) and the authored crossing pin stays at
-`pinned_point_index` = 4. The gate side is **derived** — it is the side the
-route's other station lies on, which is what `main_street` and the authored gate
-stations both encode — and `source/simple_map.lua` asserts that the six
-gate-axis zones are exactly the zones of the six start anchors and that each
-anchor sits on its zone hub, checked against `anchor_rows` rather than trusted.
+anchor.z ± 128 (64 nodes outside the pad edge), **two eased vertices**, the leg's
+**own second bow point unchanged**, and the authored crossing pin. The lateral
+offset of the eased vertices follows smootherstep — exactly 17/81 and 64/81 at
+t = 1/3 and 2/3, so it is integer arithmetic and not a float — while the axial
+one stays linear, which is what makes an S instead of a re-spaced chord.
 
-The bend is two turns instead of one corner, which is what the leaning vertex is
-for (`measurements/route_shape.tsv`): 19.0°/24.7° at Hearthpine, 17.6°/22.0°
-Dawnmere, 19.7°/26.1° Silverleaf, 20.0°/24.2° Stillgrave, 18.9°/22.7° Sunscar,
-20.0°/24.2° Kapok. Every vertex from the crossing pin onward is the authored
-geometry, untouched.
+Keeping the leg's second bow point is the load-bearing part, and the review's
+first version got it wrong: it REPLACED that point, and the point is the one
+that decides the heading INTO the authored crossing pin. Turn at the pin, before
+against the rejected version against now:
+
+| route | authored | rejected version | now |
+| --- | --- | --- | --- |
+| `route_001` Hearthpine | 22.3° | 62.0° | **22.3°** |
+| `route_004` Dawnmere | 67.9° | 64.7° | **67.9°** |
+| `route_007` Silverleaf | 91.5° | 133.3° | **91.5°** |
+| `route_010` Stillgrave | 96.5° | 136.1° | **96.5°** |
+| `route_013` Sunscar | 101.1° | 138.3° | **101.1°** |
+| `route_016` Kapok | 65.1° | 62.7° | **65.1°** |
+
+Every pin turn is now byte-for-byte the authored one. Three of the six start
+routes carry a 91–101° switchback at their crossing pin; that is pre-existing
+authored geometry beyond the pin and this round leaves it exactly as it was,
+which is why two of the numbers (Dawnmere, Kapok) are 3° *worse* than the
+rejected version: matching the authored value is the rule, not beating it.
+
+The turns this round introduces are all on the new leg-1 vertices, and none
+exceeds 50° (`measurements/route_shape{,-before}.tsv`; the turn printed on a row
+belongs to the vertex before it):
+
+| route | gate point | ease 1 | ease 2 | kept bow | worst introduced | authored leg-1 turns |
+| --- | --- | --- | --- | --- | --- | --- |
+| `route_001` | 46.7° | 23.6° | 23.6° | 42.8° | 46.7° | 20.6°, 21.4° |
+| `route_004` | 14.5° | 22.2° | 22.2° | 28.4° | 28.4° | 19.9°, 19.3° |
+| `route_007` | 49.4° | 23.6° | 23.6° | 45.4° | 49.4° | 21.4°, 22.2° |
+| `route_010` | 46.7° | 24.7° | 24.7° | 42.0° | 46.7° | 21.0°, 21.0° |
+| `route_013` | 42.6° | 26.7° | 26.7° | 38.2° | 42.6° | 19.9°, 20.2° |
+| `route_016` | 17.4° | 23.2° | 23.2° | 29.3° | 29.3° | 21.0°, 21.0° |
+
+The trade is explicit: the authored bow turned ~20° per vertex because it never
+had to break away from a straight run, and buying the on-axis approach costs up
+to 49° at the gate point.
+
+`pinned_point_index` moves from 4 to 6 on the six start routes, because the two
+extra vertices sit in front of the pin. It is no longer a constant anywhere:
+`curved_route` returns the index of its first leg's end, `source/simple_map.lua`
+asserts that index is 6 for a start route and 4 otherwise AND that the point it
+names is the authored crossing pin (checked for every route, which is how the
+reviewer's "prove the pin position is unchanged" is proven), and
+`simple_map.lua`'s validator derives the same 6-or-4 from the start anchors
+instead of demanding 4.
+
+The vertex count rises by two per start route — `route_001` 10 → 12, the other
+five 7 → 9 — so the world's graded-segment population goes from 476 to
+476 + 6 × 2 = **488**. That number is a frozen tripwire in
+`wp40/zones.lua:800`, and it is updated in the same commit with the arithmetic
+in a comment; without it the game does not boot at all. The graded-path
+population is unchanged at 139: this round adds no path. See "Frozen
+expectations this round moves" below for the one tool that still carries 476.
+
+The gate side is **derived** — it is the side the route's other station lies on,
+which is what `main_street` and the authored gate stations both encode — and
+`source/simple_map.lua` asserts that the six gate-axis zones are exactly the
+zones of the six start anchors, that each anchor sits on its zone hub (checked
+against `anchor_rows` rather than trusted), and that the gate run does not
+overshoot the bow point it eases into.
 
 Nothing frozen moved: the route keeps its id, its class, both stations, both
 endpoint pins (`centreline[1]` and `centreline[#centreline]` are still the two
@@ -87,6 +137,18 @@ reading the path's widest values as the upper bound they are.
 a start hub off its anchor, took a start off its z axis, or dropped the axis run
 stops construction instead of quietly putting the road beside the gate again.
 
+**The 16-wide route exclusion moved with the road, and other rules ride on it.**
+`exclude:route:<id>` is not only the claim rule: `r6_settlement.lua` reads the
+same answer for resource sockets and cultural sites, and `housing_mask` points
+are refused wherever `static_exclusion_values_at` answers. So the strip that is
+now closed to claims, housing and cultural placement is the new corridor rather
+than the old diagonal one, over roughly 250 nodes per start. Every one of those
+consumers becomes MORE restrictive along the new road and less restrictive along
+the old diagonal, which is the protective direction; the six starts' own 148-node
+cores and their blend envelopes are unchanged, so nothing that was protected
+stopped being protected. No separate measurement of housing eligibility was
+taken.
+
 Every road column within 400 nodes of every start is inside a compiled claim
 exclusion, on both seeds, in all three bands — 0 unprotected of 663–4,296 road
 columns per start per band (`measurements/road_protection-*.tsv`). Pristine main
@@ -99,13 +161,26 @@ yields to a path's actual SURFACE, so those five columns are the road surface
 and not its corridor.
 
 Full route evidence (`tools/wp40/road_polish/measure.lua`, all 57 routes plus
-spurs and island routes) moves **five of the six start routes and nothing else**
+spurs and island routes) moves **all six start routes and nothing else**
 (`measurements/road_geometry-{before,after}.tsv`, before = `main` at `6195555`):
-the maximum step stays 1 and the exact pin count stays 2 on every one of them;
-`route_001` 611 nodes 78/38 cut/fill to 608 nodes 78/38, `route_004` 621 nodes
-8/10 to 621 nodes 9/9, `route_007` 611 nodes 3/63 to 606 nodes 5/68, `route_010`
-620 nodes 13/22 to 614 nodes 10/22, `route_016` 620 nodes 4/56 to 614 nodes
-4/57. `route_013` and every other path in the world are byte-identical.
+the maximum step stays 1 and the exact pin count stays 2 on every one of them,
+and the observed cut and fill barely move.
+
+| route | nodes | max cut | max fill |
+| --- | --- | --- | --- |
+| `route_001` | 611 -> 673 | 78 -> 77 | 38 -> 39 |
+| `route_004` | 621 -> 621 | 8 -> 8 | 10 -> 10 |
+| `route_007` | 611 -> 678 | 3 -> 2 | 63 -> 63 |
+| `route_010` | 620 -> 683 | 13 -> 13 | 22 -> 20 |
+| `route_013` | 622 -> 683 | 2 -> 2 | 1 -> 1 |
+| `route_016` | 620 -> 620 | 4 -> 4 | 56 -> 56 |
+
+The node counts rise because a straight run out of the gate followed by an S is
+a longer road than a single bow. `route_004` and `route_016` keep every summary
+metric and move only their water-bound digest -- **their centrelines moved like
+the other four**; only these particular aggregates coincide, which is a property
+of the metric and not of the geometry. No path outside these six changed a
+number.
 
 ### 2. The blend ring was bare, and TWO gates said so
 
@@ -271,17 +346,34 @@ route evidence was taken against.
 | Engine gate, combined and per start | `206a86a057b0b6ed…` | unchanged | the settlements are written where they were |
 | `height.relief_lattice_digest` | `525620d5767fe976…` | unchanged | the natural terrain model is untouched |
 | `height.base_lattice_digest` | `1a28c24004d5c0bd…` | unchanged | same |
-| `height.canonical_kat_digest` | `9ae3a835a54596c9…` | `c9a65721fa710991…` | it covers the graded-route rasters and the visible-surface classification, and the six start routes' first legs are compiled differently |
+| `height.canonical_kat_digest` | `9ae3a835a54596c9…` | `2dae886258b2f466…` | it covers the graded-route rasters and the visible-surface classification, and the six start routes' first legs are compiled differently |
 | `quality_geometry_micro_kat` output | (pre-round bytes) | `7c35fa5d26d0a984…` | one new `start_edge` row exercising the pad-edge jitter arithmetic |
-| route `nodes` / `exact_pin_digest` / `lower_bound_digest` | — | changed for `route_001/004/007/010/016` | five of the six start routes; `route_013` and every other path in the world are byte-identical |
-| `source.routes[i].centreline` for the six start routes | — | one vertex replaced, one inserted, count unchanged | the gate-axis prefix; ids, classes, stations, endpoint pins, widths and `pinned_point_index` are unchanged |
+| route `nodes` / `exact_pin_digest` / `lower_bound_digest` | — | changed for all six start routes | every other path in the world is byte-identical |
+| `source.routes[i].centreline` for the six start routes | — | two vertices inserted (10 → 12, 7 → 9) | the gate-axis run and the two eased vertices; ids, classes, stations, endpoint pins, widths and the crossing-pin POSITION are unchanged |
+| `source.routes[i].pinned_point_index` for the six start routes | 4 | 6 | the same point, two vertices further along; derived from the curve now and asserted to name the authored crossing pin |
+| graded segment population (`wp40/zones.lua:800`) | 476 | 488 | 6 start routes x 2 inserted vertices; the graded PATH population stays 139 |
 
 Two construction metrics move with them: `construction_sha256_calls` 5,147 →
-5,150 and `water_operation_count` 4,396 → 4,393, because the six legs pass
+5,154 and `water_operation_count` 4,396 → 4,397, because the six legs pass
 slightly different water. `graded_path_count` (139), the relief profile, octave
 and base-lattice populations are unchanged.
 `measurements/height_digests-{before,after}-531802985935182545.tsv` and
 `measure/height_digests.lua`.
+
+### Frozen expectations this round moves
+
+- **`mods/MAPGEN/grug_mapgen/wp40/zones.lua:800`**, the graded path/segment
+  tripwire, 476 → 488. Updated here with the arithmetic in a comment, because
+  the two inserted vertices per start route are exactly 12 more segments and the
+  game refuses to load otherwise (`ModError: WP40 R4: graded path/segment
+  population differs`, caught by the engine pass before this was fixed).
+- **`tools/wp40/simple_map_r4_validate.lua`** carries the same 476 in three
+  places (lines 478, 804 and 832, the last one inside the R4 construction
+  receipt). That is historical R4 evidence, not a current gate — it is not run by
+  `tools/wp40/r7/run.sh` and rewriting a receipt is not this lane's call — so it
+  is **left at 476 and will fail against this source** until the WP40 lane
+  resyncs it, in the same way as the changed-production roster. Flagged rather
+  than edited.
 
 ### What could not run here, and why
 

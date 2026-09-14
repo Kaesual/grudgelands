@@ -45,6 +45,15 @@ run_seed() {
 	rm -rf -- "$out"
 }
 
-run_seed user-seed 531802985935182545 32900
-run_seed boundary-seed 8675309 32940
-echo "WP13 six-start engine gate: both seeds PASS"
+# No argument runs both seeds, which is the gate. A single seed name re-runs just
+# that one, for a fix round that has already shown the other seed agrees.
+case "${1:-both}" in
+	both)
+		run_seed user-seed 531802985935182545 32900
+		run_seed boundary-seed 8675309 32940
+		echo "WP13 six-start engine gate: both seeds PASS"
+		;;
+	user-seed) run_seed user-seed 531802985935182545 32900 ;;
+	boundary-seed) run_seed boundary-seed 8675309 32940 ;;
+	*) echo "usage: engine.sh [both|user-seed|boundary-seed]" >&2; exit 2 ;;
+esac
