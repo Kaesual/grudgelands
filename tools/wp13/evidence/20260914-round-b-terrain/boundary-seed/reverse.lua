@@ -4,7 +4,7 @@
 -- each settlement's owners, and on shutdown every authored cell of every
 -- settlement is compared against the map, name and param2, in both owner
 -- orders and after a disk-only reload.
-local reverse = false -- The WP13 runner changes only this switch in its copy.
+local reverse = true -- The WP13 runner changes only this switch in its copy.
 local wp40 = core.get_modpath("grug_mapgen") .. "/wp40"
 local roster = dofile(wp40 .. "/r7_settlement.lua").roster
 assert(#roster >= 2, "the WP13 settlement roster lost a start")

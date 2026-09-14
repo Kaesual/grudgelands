@@ -1,0 +1,1 @@
+LUANTI_USER_PATH=/tmp/grudgelands-wp40-profile-run.oS8jmpcK/user tools/wp13/evidence/20260914-round-b-terrain/luanti-flatpak-launcher.sh --server --gameid grudgelands --world /tmp/grudgelands-wp40-profile-run.oS8jmpcK/world --config PHASE.conf

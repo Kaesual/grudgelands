@@ -1,0 +1,142 @@
+WARNING[Main]: /!\ You are using the old mod storage files backend. This backend is deprecated and may be removed in a future release /!\
+WARNING[Main]: Switching to SQLite3 is advised, please read https://docs.luanti.org/for-server-hosts/database-backends.
+[MOD] Mobs Redo loaded
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copper_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tin_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronze_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steel_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:gold_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:goldblock'])
+WARNING[Main]: No craft recipe known for output 'default:stone_with_mese'
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal_fragment'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:meselamp'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_acacia_wood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_junglewood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_pine_wood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_aspen_wood'])
+WARNING[Main]: No craft recipe known for output 'default:stone_with_diamond'
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamondblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sign_wall_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:ladder_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_goldblock'])
+ACTION[Main]: [grug_gear] 6 bracket catalogs: 24 weapons + 48 armor pieces
+ACTION[Main]: [grug_materials] registry audit passed: 6 tiers, 15 resources, 12 processed forms, 6 race regions
+ACTION[Main]: GRUG_WP40_PROFILE_PROBE phase=disk event=start engine=5.17.0 lua=LuaJIT_2.1.1784272936 seed=8675309 cases=62 manifest=9db66234dc000739c70be6577ce15b6a480c8d4f0be7a1f60338cd1da3583ad5 full_digest=false
+ACTION[Main]: [grug_traders] drop audit: 1 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit); their items are audited from the hardcoded FUNCTION_DROPS list
+ _                   _   _ 
+| |_   _  __ _ _ __ | |_(_)
+| | | | |/ _` | '_ \| __| |
+| | |_| | (_| | | | | |_| |
+|_|\__,_|\__,_|_| |_|\__|_|  ___ 5.17.0
+ACTION[Main]: World at [/tmp/grudgelands-wp40-profile-run.Tt5PpLmd/world]
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32951.
+ACTION[Server]: [grug_core] start preload: emerging 6 start areas (128 x 128 nodes each, 2 at a time)
+ACTION[Emerge-0]: [grug_core] start area ready: dwarf (1/6, 9.1 s)
+ACTION[Emerge-0]: [grug_core] start area ready: human (2/6, 9.1 s)
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_48:48:2528 mapchunk=48,48,2528 elapsed_us=9087061 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: [grug_core] start area ready: elf (3/6, 9.1 s)
+ACTION[Emerge-0]: [grug_core] start area ready: undead (4/6, 9.1 s)
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_48:48:2448 mapchunk=48,48,2448 elapsed_us=19864 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: [grug_core] start area ready: orc (5/6, 9.2 s)
+ACTION[Emerge-0]: [grug_core] start area ready: troll (6/6, 9.2 s)
+ACTION[Emerge-0]: [grug_core] all 6 start areas ready after 9.2 s
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_48:-32:2608 mapchunk=48,-32,2608 elapsed_us=21383 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_48:-32:2528 mapchunk=48,-32,2528 elapsed_us=2567 generated=0 disk=115 memory=10 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_48:-32:2448 mapchunk=48,-32,2448 elapsed_us=2846 generated=0 disk=119 memory=6 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_48:-32:-2672 mapchunk=48,-32,-2672 elapsed_us=2448 generated=0 disk=117 memory=8 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_48:-32:-2592 mapchunk=48,-32,-2592 elapsed_us=2262 generated=0 disk=105 memory=20 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_48:-32:-2512 mapchunk=48,-32,-2512 elapsed_us=2600 generated=0 disk=117 memory=8 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1808:48:-2672 mapchunk=1808,48,-2672 elapsed_us=1304 generated=0 disk=85 memory=40 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1808:48:-2592 mapchunk=1808,48,-2592 elapsed_us=518 generated=0 disk=25 memory=100 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1808:48:-2512 mapchunk=1808,48,-2512 elapsed_us=1171 generated=0 disk=85 memory=40 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1808:-32:2608 mapchunk=1808,-32,2608 elapsed_us=2645 generated=0 disk=109 memory=16 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1808:-32:2528 mapchunk=1808,-32,2528 elapsed_us=1364 generated=0 disk=45 memory=80 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1808:-32:2448 mapchunk=1808,-32,2448 elapsed_us=2069 generated=0 disk=77 memory=48 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1808:-32:-2672 mapchunk=1808,-32,-2672 elapsed_us=2298 generated=0 disk=109 memory=16 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1808:-32:-2592 mapchunk=1808,-32,-2592 elapsed_us=2144 generated=0 disk=85 memory=40 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1808:-32:-2512 mapchunk=1808,-32,-2512 elapsed_us=2938 generated=0 disk=109 memory=16 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1728:48:-2672 mapchunk=1728,48,-2672 elapsed_us=1070 generated=0 disk=75 memory=50 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1728:48:-2592 mapchunk=1728,48,-2592 elapsed_us=152 generated=0 disk=0 memory=125 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1728:48:-2512 mapchunk=1728,48,-2512 elapsed_us=1252 generated=0 disk=75 memory=50 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1728:-32:2608 mapchunk=1728,-32,2608 elapsed_us=2386 generated=0 disk=105 memory=20 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1728:-32:2528 mapchunk=1728,-32,2528 elapsed_us=661 generated=0 disk=25 memory=100 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1728:-32:2448 mapchunk=1728,-32,2448 elapsed_us=1631 generated=0 disk=65 memory=60 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1728:-32:-2672 mapchunk=1728,-32,-2672 elapsed_us=2490 generated=0 disk=105 memory=20 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1728:-32:-2592 mapchunk=1728,-32,-2592 elapsed_us=1708 generated=0 disk=75 memory=50 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1728:-32:-2512 mapchunk=1728,-32,-2512 elapsed_us=2256 generated=0 disk=105 memory=20 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-32:48:2528 mapchunk=-32,48,2528 elapsed_us=127 generated=0 disk=0 memory=125 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-32:48:2448 mapchunk=-32,48,2448 elapsed_us=929 generated=0 disk=50 memory=75 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-32:-32:2608 mapchunk=-32,-32,2608 elapsed_us=2779 generated=0 disk=115 memory=10 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-32:-32:2528 mapchunk=-32,-32,2528 elapsed_us=1683 generated=0 disk=75 memory=50 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-32:-32:2448 mapchunk=-32,-32,2448 elapsed_us=2039 generated=0 disk=95 memory=30 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-32:-32:-2672 mapchunk=-32,-32,-2672 elapsed_us=1734 generated=0 disk=85 memory=40 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-32:-32:-2592 mapchunk=-32,-32,-2592 elapsed_us=692 generated=0 disk=25 memory=100 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-32:-32:-2512 mapchunk=-32,-32,-2512 elapsed_us=1707 generated=0 disk=85 memory=40 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1872:48:2608 mapchunk=-1872,48,2608 elapsed_us=1467 generated=0 disk=100 memory=25 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1872:48:2528 mapchunk=-1872,48,2528 elapsed_us=138 generated=0 disk=0 memory=125 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1872:48:2448 mapchunk=-1872,48,2448 elapsed_us=859 generated=0 disk=50 memory=75 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1872:-32:2608 mapchunk=-1872,-32,2608 elapsed_us=2179 generated=0 disk=115 memory=10 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1872:-32:2528 mapchunk=-1872,-32,2528 elapsed_us=1511 generated=0 disk=75 memory=50 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1872:-32:2448 mapchunk=-1872,-32,2448 elapsed_us=2266 generated=0 disk=95 memory=30 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1872:-32:-2672 mapchunk=-1872,-32,-2672 elapsed_us=1877 generated=0 disk=85 memory=40 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1872:-32:-2592 mapchunk=-1872,-32,-2592 elapsed_us=668 generated=0 disk=25 memory=100 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1872:-32:-2512 mapchunk=-1872,-32,-2512 elapsed_us=1906 generated=0 disk=85 memory=40 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1792:48:2608 mapchunk=-1792,48,2608 elapsed_us=1648 generated=0 disk=105 memory=20 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1792:48:2528 mapchunk=-1792,48,2528 elapsed_us=578 generated=0 disk=25 memory=100 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1792:48:2448 mapchunk=-1792,48,2448 elapsed_us=1035 generated=0 disk=65 memory=60 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1792:-32:2608 mapchunk=-1792,-32,2608 elapsed_us=2483 generated=0 disk=117 memory=8 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1792:-32:2528 mapchunk=-1792,-32,2528 elapsed_us=1708 generated=0 disk=85 memory=40 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1792:-32:2448 mapchunk=-1792,-32,2448 elapsed_us=1963 generated=0 disk=101 memory=24 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1792:-32:-2672 mapchunk=-1792,-32,-2672 elapsed_us=2230 generated=0 disk=93 memory=32 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1792:-32:-2592 mapchunk=-1792,-32,-2592 elapsed_us=1138 generated=0 disk=45 memory=80 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1792:-32:-2512 mapchunk=-1792,-32,-2512 elapsed_us=2005 generated=0 disk=93 memory=32 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1792:-112:-2592 mapchunk=-1792,-112,-2592 elapsed_us=3033 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1712:-112:-2592 mapchunk=-1712,-112,-2592 elapsed_us=3250 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-112:48:2528 mapchunk=-112,48,2528 elapsed_us=1091 generated=0 disk=75 memory=50 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-112:48:2448 mapchunk=-112,48,2448 elapsed_us=1404 generated=0 disk=95 memory=30 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-112:-32:2608 mapchunk=-112,-32,2608 elapsed_us=2775 generated=0 disk=121 memory=4 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-112:-32:2528 mapchunk=-112,-32,2528 elapsed_us=2281 generated=0 disk=105 memory=20 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-112:-32:2448 mapchunk=-112,-32,2448 elapsed_us=2594 generated=0 disk=113 memory=12 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-112:-32:-2672 mapchunk=-112,-32,-2672 elapsed_us=2862 generated=0 disk=109 memory=16 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-112:-32:-2592 mapchunk=-112,-32,-2592 elapsed_us=1831 generated=0 disk=85 memory=40 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-112:-32:-2512 mapchunk=-112,-32,-2512 elapsed_us=2336 generated=0 disk=109 memory=16 cancelled=0 errored=0
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=complete requested=62 completed=62 callbacks=0 generated=0 disk=5258 memory=2492 cancelled=0 errored=0 samples=2294 expected_nodes=0 digest=bfa37f791e45b77e1f3d3f2913402a31d4bab2b4642cda53a8e3abd6ffde7f38 full_digest=disabled full_vocabulary_digest=- full_voxels=0 measured_elapsed_us=12195915 diagnostic_us=3089
+ACTION[Main]: Server: Shutting down
+ACTION[Main]: GRUG_WP13_ENGINE phase=disk starts=6 owners=62 edit_canary=preserved digest_excluded_cells=1 filler_boundary=true hearthpine_cells=61932 hearthpine_torches=74 hearthpine_soil=3 hearthpine_apron=0/588 hearthpine_ring=101/1888 hearthpine_wild=0/0 hearthpine_anchor=-1800,16,-2550 hearthpine_digest=03311c95b8463c422371e78afabcba743ed70d4f56a013c16a362938ac00693c dawnmere_cells=66361 dawnmere_torches=98 dawnmere_soil=3 dawnmere_apron=0/637 dawnmere_ring=607/3999 dawnmere_wild=0/0 dawnmere_anchor=0,21,-2550 dawnmere_digest=19f8c63f3de9dfe052f0143c52486e60938f2543b96b53e20af3fa3d35787c95 silverleaf_cells=71495 silverleaf_torches=113 silverleaf_soil=3 silverleaf_apron=0/588 silverleaf_ring=97/1888 silverleaf_wild=0/0 silverleaf_anchor=1800,42,-2550 silverleaf_digest=a81a370a26a293f676a78f35b9e1f18dd9487320d8de9849b1151b86eb763a4c stillgrave_cells=51641 stillgrave_torches=78 stillgrave_soil=3 stillgrave_apron=0/588 stillgrave_ring=29/1676 stillgrave_wild=2/212 stillgrave_anchor=-1800,48,2550 stillgrave_digest=13f3cff1f580eb6d79146ee0233e0f46ff0227ba37b0f2a001fd0a16625d2ca1 sunscar_cells=57227 sunscar_torches=112 sunscar_soil=2 sunscar_apron=0/637 sunscar_ring=955/3679 sunscar_wild=83/320 sunscar_anchor=0,46,2550 sunscar_digest=de46c91105d3612598cc415e79a8fd44e45dc8f299971a331fd090d42e1da3c0 kapok_cells=72535 kapok_torches=87 kapok_soil=3 kapok_apron=0/588 kapok_ring=100/1676 kapok_wild=10/212 kapok_anchor=1800,17,2550 kapok_digest=e11c30ec9e88b7ce16f8942cd12f4bb5449fc489bf96c48004f5405790f8fd01 digest=206a86a057b0b6ed4cb5ee71df67413e0f40b70f0b486ea3947bbbbb99eac9a6
