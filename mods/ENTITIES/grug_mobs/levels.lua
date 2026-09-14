@@ -387,6 +387,29 @@ local function apply_tier_visuals(self)
 	self._grug_visual_tier = tier
 end
 
+-- Replace the PRISTINE texture list of a live mob and re-apply the tier tint
+-- on top of it. This is the seam the WP13 visuals lane writes a composed
+-- humanoid skin through (grug_visuals.apply_entity): writing `base_texture`
+-- directly would either lose an elite's gold tint or, on the next tier change,
+-- let apply_tier_visuals colorize an already-colorized string.
+--
+-- The SCALE is deliberately untouched: mobs:scale_mob is relative and has
+-- already run for this tier, so re-applying it here would double the mob.
+function grug_mobs.set_base_texture(self, textures)
+	if not self or not self.object or type(textures) ~= "table" then
+		return
+	end
+	self._grug_base_texture = textures
+	local tint = tier_def(self._grug_tier or "normal").tint
+	local out = textures
+	if tint then
+		out = tint_textures(textures, tint)
+	end
+	self.base_texture = out
+	self.textures = out
+	self.object:set_properties({textures = out})
+end
+
 --
 -- Level assignment
 --

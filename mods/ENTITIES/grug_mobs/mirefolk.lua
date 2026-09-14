@@ -46,6 +46,13 @@ local mirefolk = {
 	visual = "mesh",
 	mesh = "character.b3d",
 	textures = {{"grug_mobs_mirefolk.png"}},
+	-- WP13 character visuals: the mirefolk are NOT one of the six peoples, so
+	-- they name their own fish-folk skin as the base instead of a race and keep
+	-- exactly the look they have. The field is here so armor or a weapon can be
+	-- hung on them later through the one composition seam rather than a second
+	-- mechanism, and so the swamp camps are covered by the same audit as the
+	-- guard posts. No race -> no stature change: the 0.85 scale below stays.
+	_grug_visual = {skin = "grug_mobs_mirefolk.png"},
 	-- "character.b3d small scale" (§3.1 model column). wp6_model_notes §5
 	-- suggests ~0.8; 0.85 keeps the fish-folk clearly shorter than a player
 	-- (1.70 -> 1.45 nodes) without shrinking it into critter territory. The

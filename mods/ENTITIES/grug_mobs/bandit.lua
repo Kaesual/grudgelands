@@ -24,6 +24,11 @@
 -- writes into `_grug_home` — together they ARE "leashes to camp". The
 -- "group" half is mobs_redo's own group_attack.
 
+-- Published on the mod table rather than kept local: the roll happens inside a
+-- def field that mobs_redo copies nowhere, so the list has to be reachable from
+-- the entity at runtime.
+grug_mobs.BANDIT_RACES = {"human", "dwarf", "orc", "undead"}
+
 local bandit = {
 	description = "Bandit",
 	type = "monster",
@@ -65,6 +70,22 @@ local bandit = {
 		{"grug_mobs_bandit_1.png"},
 		{"grug_mobs_bandit_2.png"},
 	},
+	-- WP13 character visuals: outlaws of every people, in the cloth line at the
+	-- bracket their camp's level buys, with a dagger in hand. The race is rolled
+	-- ONCE per bandit and kept in a plain string field, so it survives in
+	-- staticdata -- that is what replaces (and widens) the two hand-painted
+	-- texture variants above: a camp is four different people, not four clones,
+	-- and it still costs camps.lua nothing.
+	_grug_visual = function(self)
+		local race = self._grug_visual_race
+		if not race then
+			race = grug_mobs.BANDIT_RACES[math.random(#grug_mobs.BANDIT_RACES)]
+			self._grug_visual_race = race
+		end
+		return {race = race, armor_line = "cloth", level = self._grug_level,
+			weapon_family = "dagger"}
+	end,
+
 	-- The player's own geometry (wp6_model_notes §5, cross-checked against
 	-- mods/BASE/player_api/init.lua): the mesh measures 17.0 units = 1.70
 	-- nodes at size 1, and 1.70 is the player collisionbox height.
