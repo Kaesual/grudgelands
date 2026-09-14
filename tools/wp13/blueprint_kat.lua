@@ -1,4 +1,8 @@
 -- Compact architectural acceptance, usable in the final interpreter pair.
+--
+-- Checks the generator invariants of
+-- docs/research/wp13-settlement-pipeline.md section 5 against the finished
+-- Hearthpine blueprint, without loading the engine.
 return function(repo)
 	local build = dofile(repo ..
 		"/mods/MAPGEN/grug_mapgen/wp40/r7_hearthpine_blueprint.lua")
@@ -41,13 +45,22 @@ return function(repo)
 	local function node(x, y, z)
 		return cells[key(x, y, z)] or (y <= 0 and "default:stone" or "air")
 	end
+	-- Nodes an ordinary walk can pass through. Stairs and slabs count as whole
+	-- nodes, which keeps the route check conservative; doors count as
+	-- passable, because a player opens them (section 5 invariant 3).
+	local PASSABLE = {["air"] = true, ["default:torch"] = true,
+		["default:torch_wall"] = true, ["default:grass_1"] = true,
+		["default:fern_1"] = true, ["default:fern_2"] = true,
+		["doors:door_wood_a"] = true, ["doors:door_wood_b"] = true,
+		["doors:hidden"] = true}
+	local PAVED = {["default:cobble"] = true, ["default:stone_block"] = true,
+		["default:stonebrick"] = true}
+	local ROOF = {["stairs:stair_pine_wood"] = true,
+		["stairs:stair_outer_pine_wood"] = true,
+		["stairs:stair_inner_pine_wood"] = true,
+		["stairs:slab_pine_wood"] = true}
 	local function solid(x, y, z)
-		local name = node(x, y, z)
-		-- Treat stairs/slabs as whole nodes: this conservatively checks routes
-		-- that can be traversed by ordinary one-node stepping/jumping.
-		return name ~= "air" and name ~= "default:torch" and
-			name ~= "default:torch_wall" and name ~= "default:fern_1" and
-			name ~= "default:grass_1"
+		return not PASSABLE[node(x, y, z)]
 	end
 	local function stand(x, y, z)
 		return solid(x, y - 1, z) and not solid(x, y, z) and not solid(x, y + 1, z)
@@ -77,24 +90,111 @@ return function(repo)
 	for z = 0, 63 do
 		for x = -2, 2 do assert(stand(x, 1, z), "blocked north road") end
 	end
-	-- Exterior wall bearings must occupy the entire vertical node interval.
-	-- A lower slab is walkable but leaves the reported half-node roof gap.
-	for _, x1 in ipairs({-9, 4}) do
-		for x = x1, x1 + 5 do
-			for _, z in ipairs({51, 59}) do
-				assert(node(x, 8, z) == "default:pine_wood" and
-					node(x, 7, z) == "default:stonebrick",
-					"guardpost roof lacks a continuous masonry bearing")
+
+	-- Section 5 invariant 2: every door is a real, usable doorway.
+	local facedir = {[0] = {0, 1}, {1, 0}, {0, -1}, {-1, 0}}
+	local doorways = assert(blueprint.landmarks.doors, "no door landmarks")
+	assert(#doorways >= 8, "every ordinary building needs a door")
+	for _, door in ipairs(doorways) do
+		local name = node(door.x, door.y, door.z)
+		assert(name == "doors:door_wood_a" or name == "doors:door_wood_b",
+			"door landmark is not a door")
+		assert(node(door.x, door.y + 1, door.z) == "doors:hidden",
+			"door has no hidden upper node")
+		local step = facedir[door.face]
+		assert(step, "door landmark has no orientation")
+		local ix, iz = door.x + step[1], door.z + step[2]
+		local ox, oz = door.x - step[1], door.z - step[2]
+		assert(stand(ix, door.y, iz), "door's inside foot is not standable")
+		assert(stand(ox, door.y, oz), "door's outside foot is not standable")
+		assert(PAVED[node(ox, door.y - 1, oz)],
+			"door's outside foot is not on a path or plaza")
+		-- The leaf sits in the wall: the jambs to either side are wall or the
+		-- second leaf of a double door, and the way through is open.
+		local function jamb(jx, jz)
+			local jamb_name = node(jx, door.y, jz)
+			return solid(jx, door.y, jz) or jamb_name == "doors:door_wood_a" or
+				jamb_name == "doors:door_wood_b"
+		end
+		assert(jamb(door.x + step[2], door.z - step[1]) and
+			jamb(door.x - step[2], door.z + step[1]),
+			"door orientation does not match its wall")
+	end
+
+	-- Section 5 invariant 4 plus the lit-interior rule, per authored room.
+	local rooms = assert(blueprint.landmarks.rooms, "no room landmarks")
+	assert(#rooms >= 9, "every building needs a room")
+	for _, room in ipairs(rooms) do
+		local lit = 0
+		for z = room.min.z, room.max.z do
+			for x = room.min.x, room.max.x do
+				local covered = false
+				for y = room.top + 1, 24 do
+					if node(x, y, z) ~= "air" then covered = true end
+					if declared_lights[key(x, y, z)] then lit = lit + 1 end
+				end
+				for y = 1, room.top do
+					if declared_lights[key(x, y, z)] then lit = lit + 1 end
+				end
+				assert(covered, "interior column open to the sky in " .. room.id)
+			end
+		end
+		assert(lit > 0, "unlit interior in " .. room.id)
+		-- The eaves land on a full node: no half-node gap over any wall that
+		-- actually exists (an open-sided workyard has none to check).
+		if room.closed then
+			for z = room.min.z - 1, room.max.z + 1 do
+				for x = room.min.x - 1, room.max.x + 1 do
+					if x == room.min.x - 1 or x == room.max.x + 1 or
+							z == room.min.z - 1 or z == room.max.z + 1 then
+						if node(x, 1, z) ~= "air" then
+							local eave
+							for y = room.top, 24 do
+								if ROOF[node(x, y, z)] then eave = y break end
+							end
+							if eave then
+								assert(node(x, eave - 1, z) ~= "air",
+									"roof lacks a bearing at " .. key(x, eave, z))
+							end
+						end
+					end
+				end
 			end
 		end
 	end
-	-- Pine clusters need a continuous stem, including crown layers.
-	for _, pos in ipairs({{-60, -31}, {-34, -39}, {43, -34}, {58, 20}}) do
-		for y = 1, 6 do
-			assert(node(pos[1], y, pos[2]) == "default:pine_tree",
-				"authored pine has a broken trunk")
+
+	-- Every authored pine stands on an unbroken stem that starts on the
+	-- ground, and no needle floats away from one.
+	local trunks, stems = {}, 0
+	for _, cell in ipairs(blueprint.cells) do
+		if cell.name == "default:pine_tree" and cell.y == 1 then
+			local top = 1
+			while node(cell.x, top + 1, cell.z) == "default:pine_tree" do
+				top = top + 1
+			end
+			if node(cell.x, top + 1, cell.z) == "default:pine_needles" then
+				assert(top >= 5, "authored pine has a short or broken trunk")
+				trunks[cell.x .. ":" .. cell.z] = top
+				stems = stems + 1
+			end
 		end
 	end
+	assert(stems > 40, "the pine vale lost its wood")
+	for _, cell in ipairs(blueprint.cells) do
+		if cell.name == "default:pine_needles" then
+			local rooted = false
+			for dz = -2, 2 do
+				for dx = -2, 2 do
+					local top = trunks[(cell.x + dx) .. ":" .. (cell.z + dz)]
+					if top and cell.y >= top - 4 and cell.y <= top + 1 then
+						rooted = true
+					end
+				end
+			end
+			assert(rooted, "floating pine needles at " .. key(cell.x, cell.y, cell.z))
+		end
+	end
+
 	local ground = { ["default:dirt"] = 0,
 		["default:dirt_with_coniferous_litter"] = 0,
 		["default:dirt_with_grass"] = 0 }
@@ -144,5 +244,6 @@ return function(repo)
 		end
 	end
 	return table.concat({"wp13_blueprint", #blueprint.cells, count,
-		palette_count, lights, oriented, #destinations, #queue}, "\t") .. "\n"
+		palette_count, lights, oriented, #destinations, #doorways, #rooms,
+		stems, #queue}, "\t") .. "\n"
 end

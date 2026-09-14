@@ -276,6 +276,20 @@
    "source": "mods/BASE/default/nodes.lua",
    "shape": "cube"
   },
+  "default:chest": {
+   "tiles": [
+    "default_chest_top.png",
+    "default_chest_top.png",
+    "default_chest_side.png",
+    "default_chest_side.png",
+    "default_chest_side.png",
+    "default_chest_front.png"
+   ],
+   "drawtype": "normal",
+   "paramtype2": "facedir",
+   "shape": "cube",
+   "source": "MANUAL_OVERRIDES"
+  },
   "default:clay": {
    "tiles": [
     "default_clay.png"
@@ -612,8 +626,18 @@
    "shape": "plant"
   },
   "default:furnace": {
-   "source": "reference_projects/minetest_game/mods/default/furnace.lua",
-   "shape": "cube"
+   "source": "MANUAL_OVERRIDES",
+   "shape": "cube",
+   "tiles": [
+    "default_furnace_top.png",
+    "default_furnace_bottom.png",
+    "default_furnace_side.png",
+    "default_furnace_side.png",
+    "default_furnace_side.png",
+    "default_furnace_front.png"
+   ],
+   "drawtype": "normal",
+   "paramtype2": "facedir"
   },
   "default:furnace_active": {
    "source": "MANUAL_OVERRIDES",
@@ -1957,6 +1981,14 @@
    "drawtype": "glasslike",
    "source": "mods/ITEMS/grug_materials/ores.lua",
    "shape": "glass"
+  },
+  "grug_materials:iron_block": {
+   "tiles": [
+    "default_steel_block.png"
+   ],
+   "drawtype": "normal",
+   "shape": "cube",
+   "source": "MANUAL_OVERRIDES"
   },
   "grug_nodes:blight_dirt": {
    "tiles": [
