@@ -483,9 +483,14 @@ function M.kits.smoker(buf, parts, palette, room, spec)
 	M.storage(buf, palette, room, room.x1, room.z1 + 2, "z", 3, 1)
 	M.shelves(buf, palette, room, room.x2, room.z1 + 2, "z", 3, 3)
 	M.rug(buf, palette, room, cx, room.z1 + 1, cx, room.z1 + 1, true)
-	-- The drying line: rope hung under the ceiling, clear of every wall.
+	-- The drying line: a tie beam across the room with rope hung off it. The
+	-- beam is written first so every rope cell has a solid node above it, the
+	-- same support rule the outdoor racks obey.
 	local rope = palette.maybe("rope")
 	if rope then
+		for x = room.x1, room.x2 do
+			buf:put(x, room.h, room.z2 - 2, palette.node("beam"))
+		end
 		for x = room.x1 + 1, room.x2 - 1, 2 do
 			buf:put(x, room.h - 1, room.z2 - 2, rope)
 		end

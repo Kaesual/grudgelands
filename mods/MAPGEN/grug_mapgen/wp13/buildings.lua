@@ -111,7 +111,7 @@ local function loader(directory)
 	-- 2, ... deck-1 in front of them and steps onto the apron at y = deck, so
 	-- the conservative walk of the blueprint KAT climbs it a node at a time.
 	local function stair_flight(buf, palette, block, side, index, deck,
-			overhang, width)
+			apron, width)
 		local step = SIDE_STEP[side]
 		local along = (side == "z-" or side == "z+") and "x" or "z"
 		local half = math.floor(((width or 1) - 1) / 2)
@@ -119,7 +119,7 @@ local function loader(directory)
 		-- The raised half of every tread points back at the building.
 		local face = inward(side)
 		for run = 1, deck - 1 do
-			local distance = overhang + (deck - run)
+			local distance = apron + (deck - run)
 			local base_x, base_z = wall_cell(block, side, index)
 			local x = base_x + step[1] * distance
 			local z = base_z + step[2] * distance
@@ -146,6 +146,11 @@ local function loader(directory)
 	-- it the flights that reach the deck.
 	function M.build(palette, spec)
 		local overhang = spec.overhang or 1
+		-- The plank apron round a plot is the roof's own overhang by default,
+		-- but a stilt house wants a veranda WIDER than its eaves: a roof that
+		-- projects as far as the deck does buries the walls, and the first
+		-- Kapok render was three buildings' worth of roof and no wall.
+		local apron = spec.apron or overhang
 		local deck = spec.stilt or 0
 		local blocks = spec.blocks
 		if not blocks then
@@ -201,12 +206,13 @@ local function loader(directory)
 		-- whatever the pad ground left behind, then pave the apron the
 		-- doorsteps and the eaves drip line stand on.
 		for _, block in ipairs(blocks) do
-			buf:clear(block.x0 - overhang, 1, block.z0 - overhang,
-				block.x1 + overhang, peak + 2, block.z1 + overhang)
+			local reach = math.max(overhang, apron)
+			buf:clear(block.x0 - reach, 1, block.z0 - reach,
+				block.x1 + reach, peak + 2, block.z1 + reach)
 		end
 		for _, block in ipairs(blocks) do
-			buf:fill(block.x0 - overhang, deck, block.z0 - overhang,
-				block.x1 + overhang, deck, block.z1 + overhang,
+			buf:fill(block.x0 - apron, deck, block.z0 - apron,
+				block.x1 + apron, deck, block.z1 + apron,
 				palette.node("path"))
 		end
 		for _, block in ipairs(blocks) do
@@ -234,9 +240,33 @@ local function loader(directory)
 					end
 				end
 			end
+			-- Piers under the veranda's own edge as well, so the deck reads
+			-- as carried on legs rather than as a plank slab floating over
+			-- the mud. Every third cell of the outer ring, plus its corners.
+			if apron > 0 then
+				for _, block in ipairs(blocks) do
+					local x0, x1 = block.x0 - apron, block.x1 + apron
+					local z0, z1 = block.z0 - apron, block.z1 + apron
+					local ring = {}
+					for x = x0, x1, 3 do
+						ring[#ring + 1] = {x, z0}
+						ring[#ring + 1] = {x, z1}
+					end
+					for z = z0, z1, 3 do
+						ring[#ring + 1] = {x0, z}
+						ring[#ring + 1] = {x1, z}
+					end
+					ring[#ring + 1] = {x1, z1}
+					for _, cell in ipairs(ring) do
+						for y = 1, deck - 1 do
+							buf:put(cell[1], y, cell[2], palette.node("post"))
+						end
+					end
+				end
+			end
 			for _, flight in ipairs(spec.stairs or {}) do
 				stair_flight(buf, palette, blocks[flight.block or 1],
-					flight.side, flight.index, deck, overhang, flight.width)
+					flight.side, flight.index, deck, apron, flight.width)
 			end
 		end
 
@@ -400,6 +430,41 @@ local function loader(directory)
 		-- passes one, so a stone roof needs no second generator.
 		local roof_top = roofs.raster(buf, spec.roof_palette or palette, field)
 
+		-- The veranda rail. A deck three courses off the ground is a fall, so
+		-- the outer ring of the apron carries a railing everywhere except the
+		-- mouth of a flight -- which is the one place a walk has to cross it.
+		-- Written after the roof so an eave that reaches this ring keeps it.
+		if deck > 0 and apron > 0 then
+			local mouth = {}
+			for _, flight in ipairs(spec.stairs or {}) do
+				local block = blocks[flight.block or 1]
+				local step = SIDE_STEP[flight.side]
+				local along = (flight.side == "z-" or flight.side == "z+")
+				local half = math.floor(((flight.width or 1) - 1) / 2)
+				local bx, bz = wall_cell(block, flight.side, flight.index)
+				for offset = -half - 1, half + 1 do
+					local mx = bx + step[1] * apron + (along and offset or 0)
+					local mz = bz + step[2] * apron + (along and 0 or offset)
+					mouth[mx .. ":" .. mz] = true
+				end
+			end
+			for _, block in ipairs(blocks) do
+				local x0, x1 = block.x0 - apron, block.x1 + apron
+				local z0, z1 = block.z0 - apron, block.z1 + apron
+				for z = z0, z1 do
+					for x = x0, x1 do
+						if (x == x0 or x == x1 or z == z0 or z == z1) and
+								not mouth[x .. ":" .. z] then
+							local here = buf:at(x, deck + 1, z)
+							if here == nil or here.name == "air" then
+								buf:put(x, deck + 1, z, palette.node("railing"))
+							end
+						end
+					end
+				end
+			end
+		end
+
 		-- Chimneys: stone stacks rising through the roof from a wall cell.
 		for _, stack in ipairs(spec.chimneys or {}) do
 			local top = math.min(roof_top, (field.height(stack.x, stack.z) or
@@ -458,7 +523,7 @@ local function loader(directory)
 		local w, d = spec.w or 9, spec.d or 7
 		local wall_h = spec.wall_h or 4
 		return M.build(palette, {
-			id = spec.id, overhang = spec.overhang or 1,
+			id = spec.id, overhang = spec.overhang or 1, apron = spec.apron,
 			stilt = spec.stilt, stairs = spec.stairs,
 			roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,
@@ -484,7 +549,7 @@ local function loader(directory)
 		local wall_h = spec.wall_h or 5
 		local wz = math.floor((d - wing) / 2)
 		return M.build(palette, {
-			id = spec.id, overhang = spec.overhang or 1,
+			id = spec.id, overhang = spec.overhang or 1, apron = spec.apron,
 			stilt = spec.stilt, stairs = spec.stairs,
 			roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,
@@ -509,12 +574,12 @@ local function loader(directory)
 		local w, d = spec.w or 13, spec.d or 15
 		local wall_h = spec.wall_h or 5
 		return M.build(palette, {
-			id = spec.id, overhang = spec.overhang or 1,
+			id = spec.id, overhang = spec.overhang or 1, apron = spec.apron,
 			stilt = spec.stilt, stairs = spec.stairs,
 			roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
-				roof = "hip", rise = 4, kit = spec.kit or "hall",
+				roof = "hip", rise = spec.rise or 4, kit = spec.kit or "hall",
 				kit_spec = {hearth_x = 1, hearth_z = 2, hearth_face = 1}}},
 			chimneys = spec.chimneys or {{x = 0, z = 2}},
 			doors = {{side = spec.door_side or "z-", index = math.floor(w / 2),
@@ -529,7 +594,7 @@ local function loader(directory)
 		local w, d = spec.w or 9, spec.d or 13
 		local wall_h = spec.wall_h or 4
 		return M.build(palette, {
-			id = spec.id, overhang = spec.overhang or 1,
+			id = spec.id, overhang = spec.overhang or 1, apron = spec.apron,
 			stilt = spec.stilt, stairs = spec.stairs,
 			roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,
@@ -548,7 +613,7 @@ local function loader(directory)
 		local w, d = spec.w or 13, spec.d or 9
 		local wall_h = spec.wall_h or 4
 		return M.build(palette, {
-			id = spec.id, overhang = spec.overhang or 1,
+			id = spec.id, overhang = spec.overhang or 1, apron = spec.apron,
 			stilt = spec.stilt, stairs = spec.stairs,
 			roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,
@@ -567,7 +632,7 @@ local function loader(directory)
 		local w, d = spec.w or 13, spec.d or 11
 		local wall_h = spec.wall_h or 5
 		return M.build(palette, {
-			id = spec.id, overhang = spec.overhang or 1,
+			id = spec.id, overhang = spec.overhang or 1, apron = spec.apron,
 			stilt = spec.stilt, stairs = spec.stairs,
 			roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,
@@ -587,7 +652,7 @@ local function loader(directory)
 		local w, d = spec.w or 11, spec.d or 15
 		local wall_h = spec.wall_h or 6
 		return M.build(palette, {
-			id = spec.id, overhang = spec.overhang or 1,
+			id = spec.id, overhang = spec.overhang or 1, apron = spec.apron,
 			stilt = spec.stilt, stairs = spec.stairs,
 			roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,

@@ -678,6 +678,33 @@ MANUAL_OVERRIDES = {
     "grug_decor:cottages_window_shutter_open": {
         "tiles": ["grug_decor_cottages_cottages_minimal_wood.png"],
         "drawtype": "nodebox", "paramtype2": "facedir"},
+    # ... and the jungle vocabulary the troll palette adds. `darkage.lua`
+    # builds its tile names through its own `tex()` helper and composes the
+    # reinforced timber as an overlay over `default_wood.png`, neither of
+    # which the scanner can follow.
+    "grug_decor:darkage_basalt_brick": {
+        "tiles": ["grug_decor_darkage_darkage_basalt_brick.png"],
+        "drawtype": "normal"},
+    "grug_decor:darkage_serpentine": {
+        "tiles": ["grug_decor_darkage_darkage_serpentine.png"],
+        "drawtype": "normal"},
+    "grug_decor:darkage_reinforced_wood": {
+        "tiles": ["default_wood.png^grug_decor_darkage_darkage_reinforce.png"],
+        "drawtype": "normal"},
+    "grug_decor:darkage_wood_bars": {
+        "tiles": ["grug_decor_darkage_darkage_wood_bars.png"],
+        "drawtype": "glasslike", "alpha": "clip"},
+    # The lantern's tile is a four-frame vertical animation strip (16 x 64);
+    # the renderer draws one frame.
+    "grug_decor:xdecor_lantern": {
+        "tiles": ["grug_decor_xdecor_xdecor_lantern.png^[verticalframe:4:0"],
+        "drawtype": "plantlike", "alpha": "clip"},
+    "grug_decor:xdecor_rope": {
+        "tiles": ["grug_decor_xdecor_xdecor_rope.png"],
+        "drawtype": "plantlike", "alpha": "clip"},
+    "grug_decor:cottages_tub": {
+        "tiles": ["grug_decor_cottages_cottages_barrel.png"],
+        "drawtype": "nodebox"},
     "grug_decor:cottages_wagon_wheel": {
         "tiles": ["grug_decor_cottages_cottages_wagonwheel.png"],
         "drawtype": "mesh", "paramtype2": "wallmounted", "alpha": "clip"},

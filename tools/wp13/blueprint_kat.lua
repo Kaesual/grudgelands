@@ -116,6 +116,21 @@ return function(repo)
 				{"grug_nodes:mud", 1000}, {"default:dirt", 100}},
 			min_destinations = 8, min_doors = 8, min_rooms = 8,
 			min_lights = 8, min_oriented = 8,
+			-- The stilt village's loose props, exactly. No bale, no cart and
+			-- no wheel: nothing here is wheeled. 20 barrels, all of them the
+			-- interiors' own. 42 stepping stones where the boardwalk stops.
+			-- 56 rope cells: two under each of the sixteen veranda corners,
+			-- two under each of the twelve rack lines, and four on the
+			-- smoker's drying beam. 16 lanterns under the bridges and the
+			-- verandas -- every one of them hanging from the deck above,
+			-- which is what `group:attached_node = 3` means.
+			props = {{"grug_decor:cottages_straw_bale", 0},
+				{"grug_decor:xdecor_barrel", 20},
+				{"grug_decor:xdecor_stonepath", 42},
+				{"grug_decor:cottages_wagon_wheel", 0, "wallmounted"},
+				{"grug_decor:xdecor_rope", 56, "ceiling"},
+				{"grug_decor:xdecor_lantern", 16, "ceiling"}},
+			carts = 0,
 		},
 	}
 
@@ -205,22 +220,26 @@ return function(repo)
 		-- composition now refuses to skip a prop; the counts below are the
 		-- independent check that it did not, and they are EXACT, so a prop
 		-- that moves under another prop's feet shows up here as a number.
-		local prop_wanted, prop_wall, prop_seen = {}, {}, {}
+		local prop_wanted, prop_mode, prop_seen = {}, {}, {}
 		for _, row in ipairs(spec.props) do
 			prop_wanted[row[1]] = row[2]
-			prop_wall[row[1]] = row[3] == "wallmounted"
+			prop_mode[row[1]] = row[3]
 			prop_seen[row[1]] = 0
 		end
 		local carts = 0
 		for _, cell in ipairs(blueprint.cells) do
 			if prop_wanted[cell.name] then
 				prop_seen[cell.name] = prop_seen[cell.name] + 1
-				-- A wallmounted prop hangs on the node its param2 points at;
-				-- everything else rests on the node under it.
+				-- A wallmounted prop hangs on the node its param2 points at; a
+				-- ceiling prop (`group:attached_node = 3`, and a rope tied to
+				-- a beam) on the node ABOVE it; everything else rests on the
+				-- node under it.
 				local dir = {0, -1, 0}
-				if prop_wall[cell.name] then
+				if prop_mode[cell.name] == "wallmounted" then
 					dir = assert(support_dir[cell.param2],
 						"unsupported prop rotation")
+				elseif prop_mode[cell.name] == "ceiling" then
+					dir = {0, 1, 0}
 				end
 				assert(node(cell.x + dir[1], cell.y + dir[2],
 						cell.z + dir[3]) ~= "air",

@@ -34,9 +34,13 @@ for _, start in ipairs(starts) do
 			start.anchor.z + cell.z)
 	end
 end
--- Two starts of 127 x 127 x ~20 authored cells occupy at most two owners per
--- horizontal axis and two vertically, so sixteen is the structural ceiling.
-assert(#owners <= 16, "profile corpus exceeds the bounded structure owners")
+-- A start's authored volume is 127 x 127 nodes wide and at most 27 tall. A
+-- 127-node span meets at most three of the 80-node owner columns and a
+-- 27-node one at most two, so eighteen owners per start is the structural
+-- ceiling and the corpus stays bounded by the roster, not by a constant that
+-- has to be edited every time a start is added.
+assert(#owners <= #roster * 18,
+	"profile corpus exceeds the bounded structure owners")
 -- This seed puts Stillgrave's fitted surface at y=48, just above the
 -- generated owner's ceiling. Emerge only its lower owner to exercise filler
 -- restoration when the matching top opcode belongs to a different owner.
@@ -50,7 +54,7 @@ while #owners < 14 do
 	add(starts[1].anchor.x + extra * 80, starts[1].anchor.y - 80,
 		starts[1].anchor.z)
 end
-assert(#owners <= 18, "WP13 control population is unbounded")
+assert(#owners <= #roster * 18 + 4, "WP13 control population is unbounded")
 table.sort(owners, function(a, b) return a.id < b.id end)
 if reverse then
 	local reordered = {}
@@ -150,8 +154,14 @@ core.register_on_shutdown(function()
 					"WP13 blocked interior " .. start.key .. "/" .. pos.id)
 			end
 		end
-		for z = 0, 63 do
-			for x = -2, 2 do
+		-- The five-wide main route, lit and walkable end to end. Which way it
+		-- runs is the start's own business -- an Elandor start exits north and
+		-- a Kragmar one south -- so it is read off the blueprint's
+		-- `main_street` landmark instead of being assumed to lie on +z.
+		local street = assert(blueprint.landmarks.main_street,
+			"WP13 start has no main street landmark")
+		for z = street.min.z, street.max.z do
+			for x = street.min.x, street.max.x do
 				local foot = {x = anchor.x + x, y = anchor.y + 1, z = anchor.z + z}
 				assert((core.get_node_light(foot, 0) or 0) > 0,
 					"WP13 dark main route " .. start.key .. " at " .. x .. "," .. z)

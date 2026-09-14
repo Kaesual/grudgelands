@@ -534,6 +534,34 @@ return function(repo)
 	say("registry", profile.key, #emitted_names, "kinds", kinds_checked,
 		"place_param2", pinned, "plain_cubes", plain_cells)
 
+	-- 8b. which window vocabulary this start builds with -------------------
+	-- Which race a blueprint was composed from is not recorded anywhere the
+	-- blueprint can be asked, but its windows are: exactly one of the names it
+	-- emits is some race's `window` role. Whether THAT node carries
+	-- `group:pane` in the real registry decides which of the two rules in
+	-- section 9 applies -- derived from the palettes and the registrations,
+	-- never from a roster kept here.
+	local window_names = {}
+	for _, race in ipairs(races) do
+		window_names[handles[race].node("window")] = true
+	end
+	local glazed, openings = nil, 0
+	for _, name in ipairs(emitted_names) do
+		if window_names[name] then
+			openings = openings + 1
+			local def = world.nodes[name]
+			local is_pane = type(def.groups) == "table" and
+				(def.groups.pane or 0) > 0
+			if glazed == nil then
+				glazed = is_pane
+			else
+				assert(glazed == is_pane,
+					"one start emits two window vocabularies")
+			end
+		end
+	end
+	assert(openings > 0, "the start emits no window at all")
+
 	-- 9. every pane is the node update_pane would have settled on ----------
 	-- Re-derived here from the mod source, not from `parts.resolve_panes`:
 	-- the connection test is `group:pane`, `group:stone`, `group:glass`,
@@ -583,10 +611,22 @@ return function(repo)
 			if want_name == base then connected_panes = connected_panes + 1 end
 		end
 	end
-	assert(pane_cells > 100, "the village lost its windows")
-	assert(connected_panes > 0,
-		"no pane has a third neighbour; the connected branch is untested")
-	say("panes", profile.key, pane_cells, "connected", connected_panes)
+	-- A race whose windows are open bars or a lattice writes no `group:pane`
+	-- node at all: the troll palette's `darkage_wood_bars` is `glasslike` and
+	-- carries no pane group, so `update_pane` has nothing to say about it and
+	-- demanding a hundred panes here would only force a material that race
+	-- does not build with. A start that DOES glaze still has to satisfy the
+	-- whole rule, including its connected branch.
+	if glazed then
+		assert(pane_cells > 100, "the village lost its windows")
+		assert(connected_panes > 0,
+			"no pane has a third neighbour; the connected branch is untested")
+	else
+		assert(pane_cells == 0,
+			"a start with open windows still wrote " .. pane_cells .. " panes")
+	end
+	say("panes", profile.key, glazed and "glazed" or "open", pane_cells,
+		"connected", connected_panes)
 
 	-- 10. every torch hangs on an opaque full node -------------------------
 	-- A wallmounted torch takes its support from the direction its param2

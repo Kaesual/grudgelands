@@ -62,6 +62,11 @@ M.SOURCES = {
 		seed = "grug_materials",
 		files = {"registry.lua", "mining.lua", "ores.lua",
 			"derivatives.lua"}},
+	-- `grug_nodes` after `grug_materials`, whose `natural_groups` it calls at
+	-- registration time, and after `default`, whose sound tables it reads. It
+	-- registers the signature surface nodes; the troll palette names its swamp
+	-- mud, and the biome tops of the remaining starts are here too.
+	{mod = "grug_nodes", path = "mods/ITEMS/grug_nodes", files = {"init.lua"}},
 	-- `grug_trees` is deliberately absent. Its module body reads real `.mts`
 	-- schematics and inspects the decoded `size` field before it registers a
 	-- single node, so it cannot run without an engine-grade schematic

@@ -589,6 +589,45 @@ local function loader(directory)
 		end
 	end
 
+	-- Basin flora: clumps of undergrowth, fern and tuft on the open litter.
+	--
+	-- `M.undergrowth` below scatters one plant per cell on a modulo test, and
+	-- on a 127-node jungle floor that lays a diagonal lattice which reads as
+	-- green stripes from above -- which is exactly what the first Kapok
+	-- overview showed. This seeds clump CENTRES on a coarse lattice and fills
+	-- a small ragged blob around each, so the floor reads as vegetation and
+	-- not as a pattern.
+	function M.basin_flora(buf, palette, x1, z1, x2, z2)
+		local planted = 0
+		for z = z1 + 2, z2 - 2, 3 do
+			for x = x1 + 2, x2 - 2, 3 do
+				local hash = (x * 131 + z * 197 + x * z * 7) % 61
+				if hash < 34 then
+					local reach = (hash % 5 == 0) and 2 or 1
+					local role = (hash % 3 == 0) and "undergrowth"
+						or ((hash % 3 == 1) and "fern" or "grass_tuft")
+					local name = palette.node(role)
+					for dz = -reach, reach do
+						for dx = -reach, reach do
+							if math.abs(dx) + math.abs(dz) <= reach and
+									(hash + dx * 3 + dz * 5) % 4 ~= 0 then
+								local cx, cz = x + dx, z + dz
+								local below = buf:at(cx, 0, cz)
+								local above = buf:at(cx, 1, cz)
+								if below ~= nil and below.name:find("dirt") and
+										(above == nil or above.name == "air") then
+									buf:put(cx, 1, cz, name)
+									planted = planted + 1
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+		return planted
+	end
+
 	-- Scattered undergrowth on a rectangle of open ground.
 	function M.undergrowth(buf, palette, x1, z1, x2, z2, density)
 		for z = z1, z2 do
