@@ -17,15 +17,15 @@
 -- traps decide the shape of the tables below:
 --
 --   1. Inside `sky_color`, every colour is read with `read_color` on a field
---      that may be nil (l_object.cpp:2255-2276). read_color leaves the target
+--      that may be nil (l_object.cpp:2257-2283). read_color leaves the target
 --      untouched when the value is not a table/number/string
 --      (common/c_converter.cpp:286-288), so an omitted colour is *inherited*,
 --      not defaulted. Every mood therefore states all seven sky colours.
 --   2. Merely HAVING a `sky_color` table resets fog_sun_tint and fog_moon_tint
---      to opaque white before reading them (l_object.cpp:2284, :2289 — the
+--      to opaque white before reading them (l_object.cpp:2286, :2291 — the
 --      "prevent flickering clouds at dawn/dusk" lines). Omitting them does not
 --      inherit, it whitens the sunrise. Every mood states both, and states
---      `fog_tint_type` (l_object.cpp:2297) to say which pair the client uses
+--      `fog_tint_type` (l_object.cpp:2296) to say which pair the client uses
 --      (lua_api.md:9438-9441).
 --   3. The `fog` block reads fog_distance/fog_start with the CURRENT value as
 --      the default (l_object.cpp:2305-2308) and fog_color through read_color
