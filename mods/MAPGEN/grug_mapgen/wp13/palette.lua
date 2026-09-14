@@ -23,9 +23,10 @@ M.required = {
 -- do without lives here, so a palette that has no half timbering, no straw
 -- and no flower pots still builds; `palette.maybe(role)` answers nil and the
 -- part that wanted it writes nothing.
-M.optional = {"bale", "bed_fancy", "bench_seat", "board_table", "crop",
-	"fence_gate", "flower", "flower_alt", "ground_straw", "hedge",
-	"hedge_stem", "mat", "shutter", "stepping", "wall_infill", "wheel"}
+M.optional = {"bale", "bed_fancy", "bench_seat", "board_table", "cobweb",
+	"crop", "fence_gate", "flower", "flower_alt", "ground_straw", "hedge",
+	"hedge_stem", "ivy", "mat", "pillar", "shutter", "stepping", "wall_infill",
+	"wheel"}
 
 -- Three roles do not name a node at all: they name the BASE of a family the
 -- engine registers under several suffixes, and only the part that knows the
@@ -35,6 +36,10 @@ M.prefix_roles = {
 	door = {"_a", "_b"},
 	bed = {"_bottom", "_top"},
 	bed_fancy = {"_bottom", "_top"},
+	-- A dressed stone column is three registered nodes, not one: the castle
+	-- kit ships `_bottom`, `_middle` and `_top` shapes that only read as a
+	-- pillar when they are stacked in that order.
+	pillar = {"_bottom", "_middle", "_top"},
 }
 
 -- Roles that must be bound to a node with no metadata behaviour at all.
@@ -200,6 +205,98 @@ M.races.human = {
 	undergrowth = "default:grass_4",
 	grass_tuft = "default:grass_3",
 	fern = "default:fern_1",
+}
+
+-- Undead (Stillgrave Hollow): blight dirt and bone litter underfoot,
+-- gravewood boards on black dungeon-stone footings, obsidian-brick roofs,
+-- iron bars instead of glass, steel doors, and candlelight instead of
+-- hearthfire. Contract section 4's undead column with three amendments the
+-- renders made: the roof family is `obsidianbrick` rather than `stonebrick`
+-- (the whole hamlet wears one black roof, and the composition gives the
+-- crypt-chapel pale stone WALLS instead, so the civic building is the one
+-- that reads light), the wall accent is `default:mossycobble` rather than
+-- `default:stonebrick` or the near-black `castle_dungeon_stone`, and the
+-- ground flora is `default:dry_shrub` and
+-- `grug_nodes:bone_pile` -- a blight basin has no grass.
+--
+-- `default:dry_shrub` is the one palette name whose param2 is not zero: its
+-- definition pins `place_param2 = 4`, and `parts.place_param2` writes that.
+M.races.undead = {
+	ground = "grug_nodes:blight_dirt",
+	ground_patch = "grug_nodes:dirt_with_bone_litter",
+	ground_bare = "default:gravel",
+	subsoil = "default:dirt",
+	path = "default:mossycobble",
+	plaza = "grug_decor:castle_pavement_brick",
+	plaza_edge = "default:obsidianbrick",
+	stepping = "grug_decor:xdecor_stonepath",
+	rubble = "grug_decor:castle_rubble",
+
+	foundation = "default:obsidianbrick",
+	wall = "grug_trees:gravewood_wood",
+	-- The one pale course in the hamlet. `castle_dungeon_stone` was here
+	-- first and the render threw it out: near-black masonry under near-black
+	-- boards under a black roof left every building a single silhouette. The
+	-- mossy cobble plinth is what lets a wall read as a wall.
+	wall_accent = "default:mossycobble",
+	post = "grug_trees:gravewood_tree",
+	beam = "grug_trees:gravewood_tree",
+	floor = "grug_trees:gravewood_wood",
+	ceiling = "grug_trees:gravewood_wood",
+
+	roof_stair = "stairs:stair_obsidianbrick",
+	roof_stair_outer = "stairs:stair_outer_obsidianbrick",
+	roof_stair_inner = "stairs:stair_inner_obsidianbrick",
+	roof_slab = "stairs:slab_obsidianbrick",
+	roof_ridge = "default:obsidianbrick",
+
+	-- No glass in the Hollow: every opening is barred.
+	window = "xpanes:bar_flat",
+	window_frame = "grug_trees:gravewood_tree",
+	door = "doors:door_steel",
+	door_hidden = "doors:hidden",
+
+	fence = "default:fence_junglewood",
+	fence_rail = "default:fence_rail_junglewood",
+	low_wall = "walls:mossycobble",
+	railing = "grug_decor:darkage_iron_bars",
+
+	-- Sparse light: a wallmounted candle (`light_source = 12`) indoors and
+	-- on the buildings, and the road lamps that the lit-route invariant
+	-- needs carry a plain torch on a gravewood standard.
+	light_wall = "grug_decor:xdecor_candle",
+	light_post = "default:torch",
+	light_indoor = "grug_decor:xdecor_candle",
+
+	bed = "beds:bed",
+	table_top = "stairs:slab_obsidianbrick",
+	table_leg = "default:fence_junglewood",
+	seat = "stairs:stair_obsidianbrick",
+	board_table = "grug_decor:xdecor_table",
+	-- Furnishing: static decor only, for the reason written above the dwarf
+	-- palette. The xdecor workbench in this kit is a plain textured cube --
+	-- the curated `grug_decor` copy carries no formspec and no inventory --
+	-- and it is the bone-carver's bench, not a crafting service.
+	shelf = "grug_decor:xdecor_empty_shelf",
+	shelf_vessels = "grug_decor:cottages_shelf",
+	storage = "grug_decor:xdecor_barrel",
+	workbench = "grug_decor:xdecor_workbench",
+	hearth = "grug_decor:xdecor_cauldron",
+	chimney = "grug_decor:castle_dungeon_stone",
+	chimney_cap = "stairs:slab_obsidianbrick",
+	rug = "wool:dark_grey",
+	rug_accent = "wool:black",
+
+	planter = "default:obsidianbrick",
+	planter_soil = "grug_nodes:blight_dirt",
+	cobweb = "grug_decor:xdecor_cobweb",
+	pillar = "grug_decor:castle_pillar_obsidianbrick",
+	ivy = "grug_decor:xdecor_ivy",
+	tree_log = "grug_trees:gravewood_tree",
+	tree_leaves = "grug_trees:gravewood_leaves",
+	undergrowth = "grug_nodes:bone_pile",
+	grass_tuft = "default:dry_shrub",
+	fern = "default:dry_shrub",
 }
 
 local function contains(list, value)

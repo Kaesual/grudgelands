@@ -22,6 +22,10 @@ local function loader(directory)
 	local parts = dofile(directory .. "/parts.lua")
 	local roofs = dofile(directory .. "/roofs.lua")
 	local interiors = dofile(directory .. "/interiors.lua")
+	-- `dressing` writes exterior props into a buffer and needs nothing from
+	-- this module, so the dependency is one way: the ruin generator below
+	-- reuses its rubble, ivy and cobweb.
+	local dressing = dofile(directory .. "/dressing.lua")(directory)
 
 	local M = {}
 
@@ -403,8 +407,10 @@ local function loader(directory)
 		})
 	end
 
-	-- The identity building: a cross gabled forge hall whose smithy wing
-	-- meets the main roof in two valleys.
+	-- The identity building: a cross gabled craft hall whose wing meets the
+	-- main roof in two valleys. `kit` and `wing_kit` name the two interiors,
+	-- so the same silhouette serves a forge and a bone-carver's shop without
+	-- a second generator; the forge kits stay the default.
 	function M.workshop(palette, spec)
 		local w, d = spec.w or 11, spec.d or 15
 		local wing = spec.wing or 7
@@ -416,10 +422,10 @@ local function loader(directory)
 			blocks = {
 				{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
 					roof = "gable", ridge_axis = "z", rise = 4,
-					kit = "workshop"},
+					kit = spec.kit or "workshop"},
 				{x0 = w - 2, z0 = wz, x1 = w - 2 + wing - 1, z1 = wz + wing - 1,
 					wall_h = wall_h, roof = "gable", ridge_axis = "x", rise = 3,
-					kit = "smithy"},
+					kit = spec.wing_kit or "smithy"},
 			},
 			chimneys = {{x = math.floor(w / 2), z = 0},
 				{x = w - 2 + wing - 1, z = wz + 1}},
@@ -507,8 +513,9 @@ local function loader(directory)
 			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
-				roof = "hip", rise = 4, kit = "chapel"}},
-			chimneys = {},
+				roof = spec.roof or "hip", ridge_axis = spec.ridge_axis,
+				rise = spec.rise or 4, kit = spec.kit or "chapel"}},
+			chimneys = spec.chimneys or {},
 			doors = {{side = spec.door_side or "z-",
 				index = spec.door_index or math.floor(w / 2), double = true}},
 			inside = spec.inside or {x = 2, y = 1, z = d - 3},
@@ -544,6 +551,137 @@ local function loader(directory)
 		return {
 			buffer = buf, w = w, d = d, peak = peak,
 			points = {lights = lights},
+		}
+	end
+
+	-- A roofless ruin: the shell of a home nobody rebuilt.
+	--
+	-- Everything the other generators guarantee, this one deliberately does
+	-- not. There is no roof, no door, no window, no light and no destination;
+	-- the wall runs break off at four different heights and two of them are
+	-- gone to the footing. What it does keep is the footprint, the footings
+	-- and the floor, so the plot still reads as a house on the lane and not
+	-- as a pile of stone in a field.
+	--
+	-- Its room corner is published with `ruin = true`. That flag is the whole
+	-- contract with `tools/wp13/blueprint_kat.lua`: the roof-and-light
+	-- invariant of the pipeline contract section 5 is relaxed for a room that
+	-- carries it, and stays in full force for every inhabited room of every
+	-- settlement -- including the two intact homes on the same lane.
+	--
+	-- `phase` shifts the wall-height hash, so two ruins of the same size on
+	-- the same lane collapse differently.
+	function M.ruin(palette, spec)
+		local w, d = spec.w or 9, spec.d or 9
+		local wall_h = spec.wall_h or 5
+		local phase = spec.phase or 0
+		local buf = parts.buffer()
+		local block = {x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1}
+
+		buf:clear(-1, 1, -1, w, wall_h + 2, d)
+		-- The plot keeps the apron every other house on the lane has, so it
+		-- still reads as a house plot and not as a heap in a field.
+		buf:fill(-1, 0, -1, w, 0, d, palette.node("path"))
+		buf:fill(0, 0, 0, w - 1, 0, d - 1, palette.node("foundation"))
+		-- What is left of the boards: a floor with holes in it.
+		for z = 1, d - 2 do
+			for x = 1, w - 2 do
+				local gone = (x * 5 + z * 3 + phase) % 5 == 0
+				buf:put(x, 0, z, palette.node(gone and "rubble" or "floor"))
+			end
+		end
+
+		-- The standing walls, in RUNS rather than cell by cell. A wall comes
+		-- down in stretches; a height drawn per cell reads as crenellation,
+		-- which is exactly what the first render showed. The hash is taken
+		-- over a three-node lattice, so a run of about three courses shares
+		-- one height, and it is a function of the cell's own position, so the
+		-- two sides that meet at a corner agree about it.
+		local standing, tops = 0, {}
+		for _, side in ipairs(SIDES) do
+			for index = 0, side_length(block, side) - 1 do
+				local x, z = wall_cell(block, side, index)
+				local hash = (math.floor(x / 3) * 7 + math.floor(z / 3) * 11 +
+					phase * 3) % 9
+				local top = 0
+				if hash < 1 then top = 0
+				elseif hash < 3 then top = 1
+				elseif hash < 5 then top = wall_h - 3
+				elseif hash < 7 then top = wall_h - 1
+				else top = wall_h end
+				tops[x .. ":" .. z] = top
+				if top >= 1 then
+					buf:put(x, 1, z, palette.node("wall_accent"))
+					for y = 2, top do buf:put(x, y, z, palette.node("wall")) end
+					standing = standing + 1
+				end
+			end
+		end
+		-- Corner posts: two still up, two snapped off at a course or three.
+		local peak = 1
+		for index, corner in ipairs({{0, 0}, {w - 1, 0}, {0, d - 1},
+				{w - 1, d - 1}}) do
+			local top = ((index + phase) % 2 == 0) and wall_h or
+				(1 + (index + phase) % 3)
+			for y = 1, top do
+				buf:put(corner[1], y, corner[2], palette.node("post"))
+			end
+			tops[corner[1] .. ":" .. corner[2]] = top
+		end
+		for _, top in pairs(tops) do
+			if top > peak then peak = top end
+		end
+
+		-- What came down: masonry heaps inside and against the walls, bones
+		-- where the blight reached in, ivy on the faces that still carry it
+		-- and cobwebs in the corners that are still corners.
+		for z = 1, d - 2 do
+			for x = 1, w - 2 do
+				local hash = (x * 13 + z * 31 + phase * 3) % 17
+				local here = buf:at(x, 1, z)
+				if here == nil or here.name == "air" then
+					if hash < 3 then
+						dressing.rubble_heap(buf, palette, x, z, 1 + hash % 2)
+					elseif hash == 5 then
+						buf:put(x, 1, z, palette.node("undergrowth"))
+					elseif hash == 9 then
+						buf:put(x, 1, z, palette.node("grass_tuft"))
+					end
+				end
+			end
+		end
+		local ivy, cobwebs = 0, 0
+		for _, side in ipairs(SIDES) do
+			local step = SIDE_STEP[side]
+			for index = 1, side_length(block, side) - 2 do
+				local x, z = wall_cell(block, side, index)
+				local top = tops[x .. ":" .. z] or 0
+				local ix, iz = x - step[1], z - step[2]
+				if top >= 3 and (x * 7 + z * 11 + phase) % 3 == 0 and
+						dressing.ivy(buf, palette, ix, top - 1, iz,
+							step[1], step[2]) then
+					ivy = ivy + 1
+				end
+				if top >= 2 and (x * 5 + z * 17 + phase) % 4 == 0 and
+						dressing.cobweb(buf, palette, ix, top, iz) then
+					cobwebs = cobwebs + 1
+				end
+			end
+		end
+
+		return {
+			buffer = buf, w = w, d = d, peak = peak,
+			standing = standing, ivy = ivy, cobwebs = cobwebs,
+			points = {
+				doors = {},
+				lights = {},
+				inside = {},
+				room_corner = {
+					{x = 1, y = 0, z = 1, top = peak, closed = false,
+						ruin = true, id = spec.id},
+					{x = w - 2, y = 0, z = d - 2},
+				},
+			},
 		}
 	end
 

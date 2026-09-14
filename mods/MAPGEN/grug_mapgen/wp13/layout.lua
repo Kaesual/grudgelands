@@ -55,6 +55,29 @@ local function loader(directory)
 		end
 	end
 
+	-- Blight basin ground: dead earth all over, with bone-litter drifts and
+	-- the odd gravel scar. Unlike `meadow` the blotches are NOT confined to
+	-- a worn core: a blight basin is blighted everywhere, and the litter is
+	-- what the ring barrows leave, not what the hamlet treads.
+	--
+	-- Third period and phase again, on purpose: three settlements that share
+	-- one ground routine must not share one ground texture.
+	function M.blight(buf, palette, radius)
+		buf:fill(-radius, -1, -radius, radius, -1, radius, palette.node("subsoil"))
+		buf:fill(-radius, 0, -radius, radius, 0, radius, palette.node("ground"))
+		for z = -radius + 1, radius - 1, 4 do
+			for x = -radius + 1, radius - 1, 5 do
+				local hash = (x * 17 + z * 29) % 13
+				if hash < 4 then
+					buf:fill(x - 1, 0, z, x + 1, 0, z + 1,
+						palette.node("ground_patch"))
+				elseif hash == 9 then
+					buf:put(x, 0, z, palette.node("ground_bare"))
+				end
+			end
+		end
+	end
+
 	-- Pave a rectangle and clear the headroom above it.
 	function M.pave(buf, palette, x1, z1, x2, z2, role, height)
 		local name = palette.node(role or "path")
@@ -161,6 +184,31 @@ local function loader(directory)
 						M.free_area(buf, tx - 3, tz - 3, tx + 3, tz + 3,
 							stem + 5) then
 					dressing.broadleaf(buf, palette, tx, tz, stem)
+					planted = planted + 1
+				end
+			end
+		end
+		return planted
+	end
+
+	-- The gravewood stand around the Hollow: a deterministic scatter over a
+	-- rectangle that only takes root where nothing was built. A gravewood
+	-- reaches three nodes out and one above its stem, so that is what the
+	-- clearance test asks for; the stems are five to seven logs, which is the
+	-- height range of the two decoded assets.
+	function M.plant_gravewood(buf, palette, x1, z1, x2, z2, step)
+		local planted = 0
+		for z = z1, z2, step do
+			for x = x1, x2, step do
+				local hash = (x * 53 + z * 89 + x * z) % 101
+				local tx = x + hash % 5 - 2
+				local tz = z + math.floor(hash / 5) % 5 - 2
+				local height = 5 + hash % 3
+				if hash % 5 < 3 and
+						M.natural_area(buf, tx - 1, tz - 1, tx + 1, tz + 1) and
+						M.free_area(buf, tx - 3, tz - 3, tx + 3, tz + 3,
+							height + 2) then
+					dressing.gravewood(buf, palette, tx, tz, height)
 					planted = planted + 1
 				end
 			end

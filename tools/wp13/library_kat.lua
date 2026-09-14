@@ -456,6 +456,17 @@ return function(repo)
 	local roster = dofile(repo ..
 		"/mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua").roster
 	assert(#roster >= 2, "the settlement roster lost a start")
+	-- Coverage of `update_pane`'s connected branch is a property of the
+	-- CORPUS, not of every start. A pane turns into the connected node only
+	-- when a third horizontal neighbour connects, and the neighbour that
+	-- does it in the two timber settlements is the chimney breast behind the
+	-- window, which is `group:stone`. A race whose chimney is not in that
+	-- group -- Stillgrave's is `grug_decor:castle_dungeon_stone`, a dungeon
+	-- block with no stone group -- legitimately writes none, and bending its
+	-- palette to keep a per-start assertion alive would be the test wagging
+	-- the settlement. Every pane that IS written is still checked, cell by
+	-- cell, against the transcribed branch table below, in every start.
+	local corpus_connected_panes = 0
 	for roster_index = 1, #roster do
 	local profile = roster[roster_index]
 	local blueprint = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/" ..
@@ -584,8 +595,7 @@ return function(repo)
 		end
 	end
 	assert(pane_cells > 100, "the village lost its windows")
-	assert(connected_panes > 0,
-		"no pane has a third neighbour; the connected branch is untested")
+	corpus_connected_panes = corpus_connected_panes + connected_panes
 	say("panes", profile.key, pane_cells, "connected", connected_panes)
 
 	-- 10. every torch hangs on an opaque full node -------------------------
@@ -616,6 +626,11 @@ return function(repo)
 	assert(torches >= 40, "the village went dark")
 	say("torch_support", profile.key, torches, "opaque_full", "pass")
 	end
+
+	assert(corpus_connected_panes > 0,
+		"no start writes a pane with a third neighbour; the connected branch " ..
+			"of update_pane is untested")
+	say("panes_connected_corpus", corpus_connected_panes)
 
 	return table.concat(report)
 end

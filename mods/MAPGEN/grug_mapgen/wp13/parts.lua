@@ -22,6 +22,12 @@ local M = {}
 
 M.FACEDIR = "facedir"
 M.WALLMOUNTED = "wallmounted"
+-- `meshoptions` is a plantlike node's mesh variant, not an orientation: it
+-- survives a rotation untouched, and the engine writes exactly the value the
+-- definition pins in `place_param2` (`default:dry_shrub` is 4). It is a kind
+-- of its own so that the buffer accepts that pinned value while still
+-- refusing a rotation to change it.
+M.MESHOPTIONS = "meshoptions"
 M.NONE = "none"
 
 -- ---------------------------------------------------------------------------
@@ -68,7 +74,28 @@ local PARAM2_KIND = {
 	["grug_decor:xdecor_stonepath"] = M.FACEDIR,
 	-- a wheel leans against the wall its param2 points at
 	["grug_decor:cottages_wagon_wheel"] = M.WALLMOUNTED,
+	-- the undead vocabulary: a candle and an ivy tendril are wallmounted
+	-- fittings like a torch, the stone workbench is a facedir cube whose
+	-- front tile faces the room, and the dry shrub carries a pinned mesh
+	-- option rather than an orientation.
+	["grug_decor:xdecor_candle"] = M.WALLMOUNTED,
+	["grug_decor:xdecor_ivy"] = M.WALLMOUNTED,
+	["grug_decor:xdecor_workbench"] = M.FACEDIR,
+	["default:dry_shrub"] = M.MESHOPTIONS,
 }
+
+-- The param2 the engine itself writes for a node whose definition pins one.
+-- `default:dry_shrub` is `paramtype2 = "meshoptions"` with
+-- `place_param2 = 4`, so a cell written at 0 carries a value no placement
+-- could have produced -- and `tools/wp13/library_kat.lua` checks every
+-- emitted cell against the registration. `Buffer:put` falls back to this
+-- when the caller names no param2, so a part keeps writing
+-- `buf:put(x, y, z, name)` and still lands on the engine's own value.
+local PLACE_PARAM2 = {["default:dry_shrub"] = 4}
+
+function M.place_param2(name)
+	return PLACE_PARAM2[name] or 0
+end
 
 -- Whole families whose every member is shaped.
 local PREFIX_KIND = {
@@ -108,7 +135,13 @@ local PANE_CONNECTS = {
 	["default:stonebrick"] = true,
 	["default:tree"] = true,
 	["default:wood"] = true,
+	["default:mossycobble"] = true,
+	["grug_trees:gravewood_tree"] = true,
+	["grug_trees:gravewood_wood"] = true,
 	["walls:cobble"] = true,
+	["walls:mossycobble"] = true,
+	["xpanes:bar"] = true,
+	["xpanes:bar_flat"] = true,
 	["xpanes:pane"] = true,
 	["xpanes:pane_flat"] = true,
 }
@@ -136,12 +169,24 @@ local FULL_SOLID = {
 	["grug_decor:cottages_loam"] = true,
 	["grug_decor:cottages_straw"] = true,
 	["grug_decor:cottages_straw_ground"] = true,
+	["default:mossycobble"] = true,
+	["default:obsidianbrick"] = true,
+	["grug_decor:castle_dungeon_stone"] = true,
+	["grug_decor:castle_pavement_brick"] = true,
+	["grug_decor:castle_rubble"] = true,
 	["grug_decor:darkage_adobe"] = true,
 	["grug_decor:xdecor_barrel"] = true,
 	["grug_decor:xdecor_cauldron"] = true,
 	["grug_decor:xdecor_empty_shelf"] = true,
+	["grug_decor:xdecor_workbench"] = true,
 	["grug_materials:iron_block"] = true,
+	["grug_nodes:blight_dirt"] = true,
+	["grug_nodes:dirt_with_bone_litter"] = true,
+	["grug_trees:gravewood_tree"] = true,
+	["grug_trees:gravewood_wood"] = true,
+	["wool:black"] = true,
 	["wool:brown"] = true,
+	["wool:dark_grey"] = true,
 	["wool:red"] = true,
 	["wool:white"] = true,
 	["wool:yellow"] = true,
@@ -200,6 +245,9 @@ function M.rotate_param2(param2, kind, turns)
 		end
 		return 0
 	end
+	-- A mesh option names a shape, not a direction; a quarter turn about +Y
+	-- leaves it exactly where it was.
+	if kind == M.MESHOPTIONS then return param2 end
 	if kind == M.WALLMOUNTED then
 		local step = {[2] = 5, [5] = 3, [3] = 4, [4] = 2}
 		local value = param2
@@ -251,11 +299,11 @@ function M.buffer()
 end
 
 function Buffer:put(x, y, z, name, param2)
-	param2 = param2 or 0
 	if type(name) ~= "string" or name == "" then
 		error("wp13 parts: cell name differs", 0)
 	end
-	if param2 % 1 ~= 0 or param2 < 0 or param2 > 255 then
+	param2 = param2 or M.place_param2(name)
+	if type(param2) ~= "number" or param2 % 1 ~= 0 or param2 < 0 or param2 > 255 then
 		error("wp13 parts: cell param2 differs", 0)
 	end
 	if param2 ~= 0 and M.param2_kind(name) == M.NONE then

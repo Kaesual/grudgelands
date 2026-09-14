@@ -1,0 +1,13 @@
+kernel	Linux 7.2.5-200.fc44.x86_64 x86_64 GNU/Linux
+processors	16
+memory_kib	61352420
+seed	531802985935182545
+cases_file	/tmp/grug-wp13-stillgrave-user-seed-646750/reverse.lua
+port_base	32710
+phase_timeout_seconds	540
+dedicated_binary	0
+settlement_stages	0
+full_digest	0
+source_game	/home/jan/projects/grudgelands/.claude/worktrees/agent-a3b37d689ba57adb9
+source_archive	
+luanti_user_path	/tmp/grudgelands-wp40-profile-run.Tm76bo1a/user
