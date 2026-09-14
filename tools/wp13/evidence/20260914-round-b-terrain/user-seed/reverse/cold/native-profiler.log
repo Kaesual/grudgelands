@@ -1,13 +1,4 @@
 INFO[Main]: Profiler:
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       50
-INFO[Main]: Profiler:
-INFO[Main]:   Server: map saving (sum) [ms] 
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   Server: map saving (sum) [ms] 
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       50
-INFO[Main]: Profiler:
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        1
 INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
 INFO[Main]: Profiler:
 INFO[Main]:   Server: map saving (sum) [ms] 
@@ -25,322 +16,331 @@ INFO[Main]: Profiler:
 INFO[Main]:   Server: map saving (sum) [ms] 
 INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
 INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      692
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x       29
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   Server: map saving (sum) [ms] 
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      654
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     29.5
 INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    1x        1
 INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________    4x     2.25
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    4x      2.5
 INFO[Main]:   Server: map saving (sum) [ms] 
 INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
 INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      407
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     35.5
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x        1
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________   77x    0.558
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        8
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      369
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x       30
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x        1
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________   19x    0.736
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       10
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x      318
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x       29
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    4x     1.25
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________   38x    1.157
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       11
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x  265.666
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x   28.666
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x  335.333
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x   33.666
 INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    3x    0.666
 INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________   20x      1.7
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       17
+INFO[Main]:   EmergeThread: update lighting [ms] ______________   78x    0.615
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        7
 INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
 INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      757
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       29
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    1x        1
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________   83x    0.096
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       15
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      643
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       29
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    506.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       30
 INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x        1
 INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________  165x    0.078
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        8
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x      156
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x     27.5
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    3x    1.666
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________    4x        9
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       10
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      536
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     30.5
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x      0.5
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________   36x    0.638
+INFO[Main]:   EmergeThread: update lighting [ms] ______________   35x    0.457
 INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       12
 INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
 INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x   270.25
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x      256
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x     29.5
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    3x    1.666
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________   21x    1.857
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       11
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x  258.666
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x   28.666
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    3x    1.333
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________   20x      1.7
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       13
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      765
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       29
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    1x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________   83x    0.108
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       15
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    617.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     27.5
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________  166x    0.132
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        7
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x      263
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x       28
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    4x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________   20x      1.6
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       12
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      453
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     30.5
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] 
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________   19x    0.947
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       13
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x      255
 INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x     31.5
 INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    4x     1.25
 INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________  139x    0.417
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       11
+INFO[Main]:   EmergeThread: update lighting [ms] ______________  139x    0.438
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        8
 INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
 INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      636
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       30
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    1x        1
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________   98x    0.102
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       15
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x  405.666
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x       29
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    3x        1
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________  117x    0.367
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        7
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    119.5
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     30.5
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x        2
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________    4x        5
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       14
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    748.5
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      572
 INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x       31
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x        1
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________    4x      3.5
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       11
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x  290.666
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x   27.666
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    3x    1.333
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________    5x        6
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        7
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x  385.666
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x       30
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    3x        1
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________   36x    0.861
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       12
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       50
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    365.5
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x   30.666
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x        1
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________   20x     1.65
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       13
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x  330.666
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x       34
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    3x        1
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________   83x    0.722
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       11
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      701
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       29
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] 
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________    3x    1.333
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       14
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x      301
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x     25.5
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    4x        1
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________  170x    0.323
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        8
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      340
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     29.5
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x        1
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________   37x    0.243
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       14
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    5x    231.8
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    5x     27.6
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    5x      1.2
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________  228x    0.311
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       10
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      828
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       28
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    1x        1
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________   22x    0.181
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       17
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      447
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x       26
 INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x      0.5
 INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________  116x    0.275
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        8
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x  223.333
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x   29.333
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    3x    1.333
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________  100x     0.41
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       12
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      771
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       27
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    1x        1
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________    3x        2
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       12
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    645.5
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x       28
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x      0.5
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________    6x    2.333
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        9
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x    271.5
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x       27
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    4x     1.75
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________    6x    6.666
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       10
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      508
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     29.5
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x      0.5
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________   36x    0.833
+INFO[Main]:   EmergeThread: update lighting [ms] ______________  116x    0.172
 INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       16
 INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
 INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x  124.333
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x       30
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    3x    1.666
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x   220.25
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x     29.5
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    4x     1.25
 INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________    3x       11
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       17
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    639.5
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     30.5
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x        1
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________   36x    0.777
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       13
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x  263.333
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x   29.333
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    3x        1
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] _____    1x        1
-INFO[Main]:   EmergeThread: update lighting [ms] ______________    3x    9.333
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       13
-INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
-INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      606
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x       26
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x        1
-INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________    6x    3.666
+INFO[Main]:   EmergeThread: update lighting [ms] ______________  101x    0.475
 INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       11
 INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
 INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x      275
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x   31.333
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    3x        1
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      833
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       31
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    1x        1
 INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________  102x    0.352
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       12
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    3x        3
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       18
 INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
 INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x      230
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x       31
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    3x    1.333
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      698
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       31
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    1x        1
 INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________   91x    0.483
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    3x        3
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       10
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x      346
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x       29
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    4x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________   23x    1.869
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        8
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x  222.333
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x   29.666
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    3x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________   20x     1.95
 INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       15
 INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
 INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x      389
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x       29
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    3x        1
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      564
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     35.5
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x        1
 INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________   37x    1.135
+INFO[Main]:   EmergeThread: update lighting [ms] ______________   36x    0.916
 INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       14
 INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
 INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x       93
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      213
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x       33
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________   65x     0.63
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       10
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    643.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x       26
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    6x    2.166
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       12
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x   177.75
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x    26.75
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    4x     1.25
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________  168x    0.297
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       10
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      550
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x       28
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________  163x    0.165
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       14
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x    166.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x    28.25
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    4x      1.5
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________  101x    0.514
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       12
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      625
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x       27
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________   40x    0.375
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       15
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x   192.75
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x     28.5
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    4x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________  198x    0.308
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       10
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x     1017
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       27
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] 
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    3x    1.666
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       15
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      785
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       28
 INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    1x        1
 INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    3x    1.666
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       11
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      673
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       29
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    1x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    3x    2.333
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        7
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x   376.25
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x    27.25
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    4x      1.5
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    6x      6.5
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        8
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      583
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       31
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    1x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________   35x    0.485
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       15
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x   201.25
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x    28.75
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    4x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    4x    10.25
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       11
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      648
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x       30
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________   36x    0.805
 INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       13
 INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
 INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x  242.333
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x   28.666
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    3x    1.333
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] _____    1x        1
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    3x        9
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       12
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      636
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       29
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x      0.5
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    5x      2.6
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       16
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x  290.666
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x    29.25
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    3x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________  103x    0.436
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       12
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x  241.333
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x   31.666
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    3x        1
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________   91x    0.527
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       13
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    557.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     29.5
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x      0.5
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________   36x    0.777
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       14
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    104.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       29
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x      1.5
+INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    1x       13
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       12
+INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
+INFO[Main]: Profiler:
 INFO[Main]:   EmergeThread: Lua on_generated [ms] 
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       21
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       20
 INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] 
 INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
 INFO[Main]:   EmergeThread: update lighting [ms] ______________    1x        1
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        4
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        8
 INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
 INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      536
-INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       25
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    2x        2
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      486
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       20
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    1x        1
 INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] ______________    5x      0.6
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    3x    0.666
 INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        4
 INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51
 INFO[Main]: Profiler:
-INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      561
 INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
-INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] 
+INFO[Main]:   EmergeThread: after Mapgen::makeChunk [ms] ______    1x        3
 INFO[Main]:   EmergeThread: load block - async (sum) [ms] 
-INFO[Main]:   EmergeThread: update lighting [ms] 
-INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x       10
+INFO[Main]:   EmergeThread: update lighting [ms] ______________    2x      0.5
+INFO[Main]:   Server: map saving (sum) [ms] ___________________    1x        9
 INFO[Main]:   Server::RunStep() (max) [ms] ____________________    1x       51

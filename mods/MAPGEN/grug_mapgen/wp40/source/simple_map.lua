@@ -249,7 +249,42 @@ local route_leading_pins_by_index={
 	[54]={point(1900,700),point(2050,600)},
 	[55]={point(-1900,-100),point(-1750,-150)},
 }
-local function curved_route(a,via,b,class,index)
+-- The six WP13 start zones. Their start anchor sits ON the zone hub (see
+-- `anchor_rows` below, which this is checked against), the settlement blueprint
+-- opens a five-wide main street on the z axis with its gate at anchor.z +/- 63,
+-- and the authored catalog places that start's `start_gate` station one node
+-- further out. The start route therefore leaves its hub STRAIGHT along that
+-- axis for 128 nodes -- 64 of them outside the build envelope -- and only then
+-- bows toward its authored crossing pin. That run is authored here, in the
+-- compiled centreline, because every consumer derives from it: the claim
+-- exclusion `exclude:route:<id>` is compiled from these points, so a road that
+-- the raster follows but the centreline does not know about would leave its own
+-- protected corridor.
+local START_GATE_ZONES = {[1]=true,[6]=true,[11]=true,[17]=true,[22]=true,
+	[27]=true}
+local START_GATE_RUN = 128
+-- One bowed vertex, leaning toward the gate axis, so the road leaves the gate
+-- straight and turns once it is clear of the pad instead of cornering at the
+-- gate itself. It takes the place of the first of the leg's two ordinary bow
+-- points, so a leg still contributes `points_per_leg` points and the authored
+-- crossing pin stays at `pinned_point_index`.
+local function append_gate_leg(result,gate,b,amplitude,gate_sign)
+	local dx,dz=b.x-gate.x,b.z-gate.z
+	local scale=math.max(math.abs(dx),math.abs(dz))
+	assert(scale > 0,"WP40 start gate leg has coincident pins")
+	local bounded=math.floor(math.min(amplitude,math.floor(scale/4))/2)
+	local lean=(dx > 0 and 1 or -1)*gate_sign
+	local offset_x,offset_z=0,0
+	if dx ~= 0 then
+		offset_x=round_div(-dz*bounded*lean,scale)
+		offset_z=round_div(dx*bounded*lean,scale)
+	end
+	result[#result+1]=point(gate.x,gate.z)
+	result[#result+1]=point(round_div(gate.x*2+b.x,3)+offset_x,
+		round_div(gate.z*2+b.z,3)+offset_z)
+	result[#result+1]=point(b.x,b.z)
+end
+local function curved_route(a,via,b,class,index,gate_sign)
 	local result={}
 	local amplitude=source.route_curve.amplitude_by_class[class]
 	local pins={a}
@@ -261,7 +296,13 @@ local function curved_route(a,via,b,class,index)
 	pins[#pins+1]=b
 	for leg=1,#pins-1 do
 		local sign=((index*37+leg*17)%11)<5 and -1 or 1
-		append_bowed_leg(result,pins[leg],pins[leg+1],amplitude,sign,leg==1)
+		if leg == 1 and gate_sign then
+			result[#result+1]=point(a.x,a.z)
+			append_gate_leg(result,point(a.x,a.z+gate_sign*START_GATE_RUN),
+				pins[2],amplitude,gate_sign)
+		else
+			append_bowed_leg(result,pins[leg],pins[leg+1],amplitude,sign,leg==1)
+		end
 	end
 	return result
 end
@@ -270,6 +311,14 @@ for index = 1, #route_rows do
 	local a, b = source.zones[row[1]], source.zones[row[2]]
 	local profile = source.route_profiles[row[3]]
 	local via=point(row[4],row[5])
+	local gate_sign
+	if START_GATE_ZONES[row[1]] then
+		assert(b.hub.x == a.hub.x and b.hub.z ~= a.hub.z,
+			"WP40 start route does not run on its start's z axis")
+		gate_sign=b.hub.z > a.hub.z and 1 or -1
+	elseif START_GATE_ZONES[row[2]] then
+		assert(false,"WP40 start route reaches its start as endpoint b")
+	end
 	source.routes[index] = {
 		numeric_id=index,id=("route_%03d"):format(index),zone_a=row[1],zone_b=row[2],
 		class=row[3],kind=row[3] == "trail" and "trail" or "road",
@@ -278,7 +327,7 @@ for index = 1, #route_rows do
 		curve_policy_id=source.route_curve.id,pinned_point_index=4,
 		station_a_id=source.route_stations[row[1]].id,
 		station_b_id=source.route_stations[row[2]].id,
-		centreline=curved_route(a.hub,via,b.hub,row[3],index),
+		centreline=curved_route(a.hub,via,b.hub,row[3],index,gate_sign),
 	}
 end
 
@@ -469,6 +518,26 @@ for index = 1, #anchor_rows do
 		placement_mode=row[4],approved_candidate_index=row[5],
 		position=point(row[6],row[7])}
 	source.anchors[index] = anchor
+end
+-- The gate-axis route prefix above is authored against `START_GATE_ZONES`, which
+-- has to be exactly the zones of the six start anchors, and it assumes the
+-- anchor sits on the zone hub. Both are checked here rather than trusted,
+-- because the routes are compiled before these rows are read.
+local start_gate_seen = {}
+for index = 1, #source.anchors do
+	local anchor = source.anchors[index]
+	if anchor.slot_id == "start" then
+		local hub = source.zones[anchor.zone_numeric_id].hub
+		assert(START_GATE_ZONES[anchor.zone_numeric_id] and
+			not start_gate_seen[anchor.zone_numeric_id] and
+			anchor.position.x == hub.x and anchor.position.z == hub.z,
+			"WP40 start anchor is not the gate-axis zone hub")
+		start_gate_seen[anchor.zone_numeric_id] = true
+	end
+end
+for zone_numeric_id in pairs(START_GATE_ZONES) do
+	assert(start_gate_seen[zone_numeric_id],
+		"WP40 gate-axis zone carries no start anchor")
 end
 
 source.poi_spurs = {}

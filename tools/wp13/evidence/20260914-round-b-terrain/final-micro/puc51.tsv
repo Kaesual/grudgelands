@@ -47,10 +47,48 @@ panes	kapok	open	0	connected	0
 torch_support	kapok	87	opaque_full	pass
 grounded	kapok	36626	no_detached_cell	pass
 panes_connected_corpus	38
-wp13_blueprint	hearthpine	61932	46389	41	74	1232	9	10	10	0	180	15588
-wp13_blueprint	dawnmere	66361	44440	54	98	1467	9	12	10	0	27	15410
-wp13_blueprint	silverleaf	71495	53191	48	113	1350	9	11	10	0	109	15631
-wp13_blueprint	stillgrave	51641	37717	44	78	1292	5	7	8	2	74	15672
-wp13_blueprint	sunscar	57227	44102	43	112	1352	10	10	11	0	48	15957
-wp13_blueprint	kapok	72535	51967	42	87	837	8	9	9	0	110	16094
+wp13_blueprint	hearthpine	61932	46389	41	74	1232	9	10	10	0	180	15588	13
+wp13_blueprint	dawnmere	66361	44440	54	98	1467	9	12	10	0	27	15410	13
+wp13_blueprint	silverleaf	71495	53191	48	113	1350	9	11	10	0	109	15631	13
+wp13_blueprint	stillgrave	51641	37717	44	78	1292	5	7	8	2	74	15672	13
+wp13_blueprint	sunscar	57227	44102	43	112	1352	10	10	11	0	48	15957	13
+wp13_blueprint	kapok	72535	51967	42	87	837	8	9	9	0	110	16094	13
 wp13_integration	hearthpine/e07ac54bec01e662f224c629d12c424ec67ca03ee3183c5389943b5100cf9ffb/61932/12/1 dawnmere/81d78a7a4e0f09c8d4fcff4c38bc5f58b45ba62fd5b5d36021ce7f191d55b2fe/66361/18/1 silverleaf/258ca31c863f1fea8028c097c1a9d5873e166ad5332768930b74bd1ed40b62cd/71495/12/1 stillgrave/a0f41a3b806f4075bf0545ac05bbdd89e88beae3a72d14c6f310054f90e6e657/51641/12/1 sunscar/10e67e0e52e48afe01b8389f0ed4a926696d1f1f9ab0f970416a94056031d2dc/57227/18/1 kapok/651193c7ffa57c6628704b6988131916526added3aa3378461fb805fa0ce8a0e/72535/12/1 composed/6/168
+registered	hearthpine	dwarf	7
+socket	gate_west	guard_post	nil	nil	nil	-	-1804	38	-2491	-0.000000
+socket	gate_east	guard_post	nil	nil	nil	-	-1796	38	-2491	-3.141593
+socket	watch_a	guard_patrol	vale	1	nil	-	-1800	38	-2498	-1.570796
+socket	watch_b	guard_patrol	vale	2	nil	-	-1800	39	-2526	1.570796
+socket	market	vendor	nil	nil	race	-	-1793	38	-2555	1.570796
+socket	bench	idle	nil	nil	nil	bench,shade	-1793	38	-2549	-1.570796
+socket	hall	quest	nil	nil	nil	-	-1828	38	-2524	-0.000000
+yaw	axis_facings	pass
+copies	queries_and_source	pass
+queries	by_key_and_missing	pass
+refused	a second registration of one settlement
+refused	an empty settlement key
+refused	an empty race id
+refused	a fractional anchor
+refused	a missing socket list
+refused	an unknown role
+refused	a fractional coordinate
+refused	a diagonal facing
+refused	a zero facing
+refused	a missing facing
+refused	an empty socket id
+refused	a patrol waypoint without a loop
+refused	a patrol waypoint without an order
+refused	a loop on a non-patrol socket
+refused	a vendor without a kind
+refused	an unknown vendor kind
+refused	a kind on a non-vendor socket
+refused	an empty tag list
+refused	a numeric tag
+refused	a duplicate socket id
+second_settlement	one_race	start_wins
+refusals	left_no_state	pass
+cold	7	7	7
+restart	7	7	0
+lost_entities	3	3	3
+death_respawn	not_before_due	refilled_after_window
+second_gate	no_twin	marker_restored

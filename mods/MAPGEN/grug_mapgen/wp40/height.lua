@@ -449,26 +449,23 @@ return function(dependencies)
 	-- WP13 round B, the start gate approach.
 	--
 	-- Every WP13 start blueprint opens a five-wide main street on the z axis and
-	-- puts its gate at anchor.z +/- 63; the authored catalog agrees and places
-	-- that start's `start_gate` station one node further out
-	-- (`source/catalog.lua`, the six "start:north"/"start:south" rows). The
-	-- COMPILED route does not: its centreline begins at the zone hub, which IS
-	-- the start anchor centre, and the first bowed leg pulls it straight off the
-	-- axis, so the road crosses the build envelope diagonally and surfaces 60-70
-	-- nodes beside the gate instead of in front of it.
+	-- puts its gate at anchor.z +/- 63; the authored catalog places that start's
+	-- `start_gate` station one node further out (`source/catalog.lua`, the six
+	-- "start:north"/"start:south" rows), and since round B the COMPILED
+	-- centreline carries the straight run down that axis as its first segment
+	-- (`source/simple_map.lua`, `START_GATE_ZONES`). It has to be authored there
+	-- and not rebuilt here: `exclude:route:<id>` is compiled from those same
+	-- points, so a road the raster followed but the centreline did not know about
+	-- would lie outside its own claim-excluded corridor.
 	--
-	-- Only the surface geometry of that first leg is rebuilt. The route keeps its
-	-- id, its class, both stations, both endpoint pins (run 1 is still the hub at
-	-- the start station's target height) and every compiled claim exclusion; the
-	-- whole rebuilt stretch lies inside the anchor's own 256-node blend envelope,
-	-- so no corridor leaves the exclusion that already covered it. The prefix is
-	-- one straight run down the gate axis, at the gate street's five-node width,
-	-- and then the ordinary bow from the first authored centreline point outside
-	-- the blend envelope onward. The gate side is derived, not assumed: it is the
-	-- side the route's other station lies on, which is what the blueprints'
-	-- `main_street` landmark and the authored gate stations both encode.
+	-- This function only verifies that the compiled centreline really opens on
+	-- the gate axis and reports the one thing the source cannot express: that the
+	-- first segment carries the gate street's five-node width instead of the
+	-- route class's seven. The three failures are deliberate -- the compiled
+	-- layout is load-bearing for the six start routes, and a source edit that
+	-- moved a start hub, took a start off its z axis or dropped the axis run
+	-- must stop construction rather than silently produce a road beside a gate.
 	local START_GATE_RUN = 128
-	local START_GATE_REJOIN = 256
 	-- Read-only; `make_path` only reads the three fields.
 	local START_GATE_PREFIX = {segments = 1, surface_width = 5,
 		corridor_width = 12}
@@ -477,7 +474,7 @@ return function(dependencies)
 			if start_b then
 				fail("start route reaches its start as endpoint b at " .. route.id)
 			end
-			return nil, nil
+			return nil
 		end
 		local hub = source.zones[route.zone_a].hub
 		local other = source.zones[route.zone_b].hub
@@ -487,25 +484,14 @@ return function(dependencies)
 		if other.x ~= hub.x or other.z == hub.z then
 			fail("start gate axis is not the z axis at " .. route.id)
 		end
-		local sign = other.z > hub.z and 1 or -1
-		local gate_z = hub.z + sign * START_GATE_RUN
-		local points = {{x = hub.x, z = hub.z}, {x = hub.x, z = gate_z}}
-		local rejoin
-		for index = 2, #route.centreline do
-			local point = route.centreline[index]
-			if math.max(math.abs(point.x - hub.x),
-					math.abs(point.z - hub.z)) >= START_GATE_REJOIN then
-				rejoin = index
-				break
-			end
+		local first, second = route.centreline[1], route.centreline[2]
+		if type(first) ~= "table" or type(second) ~= "table" or
+				first.x ~= hub.x or first.z ~= hub.z or second.x ~= hub.x or
+				second.z ~= hub.z + (other.z > hub.z and 1 or -1) * START_GATE_RUN then
+			fail("compiled start route does not open on its gate axis at " ..
+				route.id)
 		end
-		if not rejoin or sign * (route.centreline[rejoin].z - gate_z) <= 0 then
-			fail("start gate approach has no forward rejoin at " .. route.id)
-		end
-		for index = rejoin, #route.centreline do
-			points[#points + 1] = route.centreline[index]
-		end
-		return points, START_GATE_PREFIX
+		return START_GATE_PREFIX
 	end
 
 	-- WP13 round B, the soft pad edge.
@@ -2478,10 +2464,9 @@ return function(dependencies)
 
 		for route_index = 1, #source.routes do
 			local route = source.routes[route_index]
-			local centreline, narrow_prefix = start_gate_prefix(source, route,
+			local narrow_prefix = start_gate_prefix(source, route,
 				start_by_zone[route.zone_a], start_by_zone[route.zone_b])
-			local path = make_path(route.id, "land_route", 1,
-				centreline or route.centreline,
+			local path = make_path(route.id, "land_route", 1, route.centreline,
 				route.surface_width, route.corridor_width, route.zone_a,
 				route.zone_b, narrow_prefix)
 			path.source_route = route

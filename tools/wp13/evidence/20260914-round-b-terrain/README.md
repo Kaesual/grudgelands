@@ -2,11 +2,17 @@
 
 Round A fixed three things inside the blueprints. Round B fixes three things
 *around* them, all in the WP40 height/route/decoration layer; **no blueprint
-file and no blueprint identity moved** (the KAT trio and the WP13 final micro
-still digest `9b2466f08f84a246…`, the six per-start engine digests and the
-combined `206a86a057b0b6ed…` are the ones round A recorded).
+file and no blueprint identity moved** (the WP13 fixture set digests
+`758c3e8c5facc9eb…`, which is `main`'s own value at `6195555` after the visuals
+and start-NPC lanes, and the six per-start engine digests and the combined
+`206a86a057b0b6ed…` are the ones round A recorded).
 
 The previous record is `tools/wp13/evidence/20260914-round-a-blueprints/`.
+This round was independently reviewed at its first version; the review's
+blocking finding (the approach outside its own claim exclusion) is what moved
+the gate-axis geometry from `height.lua` into the compiled source, and both it
+and the medium finding beside it are measured below from the rejected version as
+well as from the fixed one.
 
 ## The three findings
 
@@ -32,21 +38,59 @@ both seeds because route geometry is seed-independent:
 | Sunscar | −67 … −58 (10 wide) | −2 … +2 (5 wide) |
 | Kapok | +2 … +8 (7 wide) | −2 … +2 (5 wide) |
 
-`height.lua` rebuilds the surface geometry of that one leg: a straight
-128-node run down the gate axis (64 of them outside the pad edge) at the gate
-street's five-node width, then the ordinary bow from the first authored
-centreline point outside the 256-node blend envelope onward. The gate side is
-**derived** — it is the side the route's other station lies on, which is what
-`main_street` and the authored gate stations both encode — and construction
-fails if a start route's hub is not its anchor or its axis is not z.
+The gate-axis run is authored in the **compiled centreline**
+(`source/simple_map.lua`, `START_GATE_ZONES`), not rebuilt in the height layer.
+That is not a matter of taste. `exclude:route:<id>` — the claim exclusion that
+makes `world.md` §2 R1's "ordinary roads remain claim-excluded" true — is
+compiled from those same points, and so are `nearest_path_at`,
+`path_corridor_member` and the planner's `route_or_water` reason. The first
+version of this round rebuilt the leg inside `height.lua` instead, and the
+independent review measured the consequence: **3,779 of 3,779 road columns on
+Hearthpine's approach lay outside any claim exclusion** (Silverleaf 3,862 of
+3,862, Stillgrave 3,798, Sunscar 3,702, Dawnmere 241, Kapok 261), because the
+raster no longer followed the polyline the corridor was cut from. That is
+reproduced in `measurements/road_protection-previous-head-*.tsv` and is zero
+everywhere now.
 
-Nothing was moved that is frozen: the route keeps its id, class, both stations
-and both endpoint pins (run 1 is still the hub, at the start station's target
-height), and the whole rebuilt stretch lies inside the anchor's own blend
-envelope, which already excluded it. `make_path` gained an optional narrow
+A start route's first leg is therefore compiled as: the hub, the gate point at
+anchor.z ± 128 (64 nodes outside the pad edge), one bowed vertex leaning toward
+the gate axis, and the authored crossing pin. The bowed vertex takes the place
+of the first of the leg's two ordinary bow points, so the leg still contributes
+`points_per_leg` points, the route's vertex count is unchanged (10 for
+`route_001`, 7 for the other five) and the authored crossing pin stays at
+`pinned_point_index` = 4. The gate side is **derived** — it is the side the
+route's other station lies on, which is what `main_street` and the authored gate
+stations both encode — and `source/simple_map.lua` asserts that the six
+gate-axis zones are exactly the zones of the six start anchors and that each
+anchor sits on its zone hub, checked against `anchor_rows` rather than trusted.
+
+The bend is two turns instead of one corner, which is what the leaning vertex is
+for (`measurements/route_shape.tsv`): 19.0°/24.7° at Hearthpine, 17.6°/22.0°
+Dawnmere, 19.7°/26.1° Silverleaf, 20.0°/24.2° Stillgrave, 18.9°/22.7° Sunscar,
+20.0°/24.2° Kapok. Every vertex from the crossing pin onward is the authored
+geometry, untouched.
+
+Nothing frozen moved: the route keeps its id, its class, both stations, both
+endpoint pins (`centreline[1]` and `centreline[#centreline]` are still the two
+station positions, which `simple_map.lua` validates), its class widths, its
+`pinned_point_index` and its vertex count. `height.lua` only rasterises what the
+source says; its `start_gate_prefix` verifies that the compiled centreline
+really opens on the gate axis and reports the one thing the source cannot
+express, namely that the first segment carries the gate street's five-node width
+instead of the route class's seven. `make_path` gained an optional narrow
 leading prefix; the three membership tests ask the segment width first and fall
 back to the path width, while every bounding box and grid insertion keeps
 reading the path's widest values as the upper bound they are.
+
+**The compiled layout is load-bearing for the six start routes.** Those three
+`fail()` paths in `start_gate_prefix` are the contract: a source edit that moved
+a start hub off its anchor, took a start off its z axis, or dropped the axis run
+stops construction instead of quietly putting the road beside the gate again.
+
+Every road column within 400 nodes of every start is inside a compiled claim
+exclusion, on both seeds, in all three bands — 0 unprotected of 663–4,296 road
+columns per start per band (`measurements/road_protection-*.tsv`). Pristine main
+measures 0 as well, so the invariant is restored rather than newly claimed.
 
 **After**, both seeds, all six starts, every z row from 56 to 120 nodes out:
 exactly five road columns at anchor.x−2 … anchor.x+2, no holes
@@ -55,12 +99,13 @@ yields to a path's actual SURFACE, so those five columns are the road surface
 and not its corridor.
 
 Full route evidence (`tools/wp40/road_polish/measure.lua`, all 57 routes plus
-spurs and island routes) moves **only the six start routes**
-(`measurements/road_geometry-{before,after}.tsv`): the maximum step stays 1 and
-the exact pin count stays 2 on every one of them; Hearthpine's observed cut and
-fill are unchanged, Silverleaf's go from 3/63 to 7/67, Stillgrave's from 13/22
-to 8/22, Sunscar's cut from 2 to 4, Dawnmere and Kapok keep theirs. No other
-path in the world changed a single number.
+spurs and island routes) moves **five of the six start routes and nothing else**
+(`measurements/road_geometry-{before,after}.tsv`, before = `main` at `6195555`):
+the maximum step stays 1 and the exact pin count stays 2 on every one of them;
+`route_001` 611 nodes 78/38 cut/fill to 608 nodes 78/38, `route_004` 621 nodes
+8/10 to 621 nodes 9/9, `route_007` 611 nodes 3/63 to 606 nodes 5/68, `route_010`
+620 nodes 13/22 to 614 nodes 10/22, `route_016` 620 nodes 4/56 to 614 nodes
+4/57. `route_013` and every other path in the world are byte-identical.
 
 ### 2. The blend ring was bare, and TWO gates said so
 
@@ -100,11 +145,28 @@ Columns per start by Chebyshev band, seed 531802985935182545
 | --- | --- | --- | --- | --- | --- |
 | pad 0–63 | 16,129 | 16,129 | 16,129 | 0 | 0 |
 | apron 64–73 | 5,480 | 5,480 | 5,480 | 0 | 0 |
-| ring 74–127 | 43,416 | 43,416 | 1,144–4,470 | 690–3,930 | 41,607–42,203 |
+| ring 74–127 | 43,416 | 43,416 | 1,196–4,521 | 691–3,930 | 42,204–42,221 |
 | outside 128–160 | 38,016 | 1,045–5,599 | 550–5,088 | 37,360–37,444 | unchanged |
 
 Band 128–160 loses 511 excluded columns per start, which is the one-node
-negative edge of the half-open 256 square and not a rule change.
+negative edge of the half-open 256 square and not a rule change. The boundary
+seed gives the same counts to within a few columns
+(`measurements/ring_bands-8675309.tsv`).
+
+**The gate approach keeps a road's ordinary shoulder.** The review's F2 was the
+other half of the same defect: with the approach missing from the compiled
+centreline its corridor exclusion was missing too, so vegetation could host one
+node off a five-wide carriageway. Measured as the smallest |dx| at which a
+decoration may host, at z offsets 80/100/120 out of the gate
+(`measurements/road_shoulder-*.tsv`):
+
+| | approach, before | approach, after | ordinary stretch of the same route |
+| --- | --- | --- | --- |
+| all six starts | 3 | 9 | 9–23 (9 where nothing else excludes) |
+
+Nine is exactly the ±8 clear corridor a primary route's 16-wide claim exclusion
+gives, on both seeds, so the approach is now indistinguishable from the rest of
+its own road.
 
 Measured in the engine, not inferred: `tools/wp13/engine_cases.lua` now
 censuses real ground cover (a non-air, non-liquid node one above the surface)
@@ -113,15 +175,17 @@ Identical on both seeds, both owner orders and both phases:
 
 | start | apron 64–73 | ring 74–127 | wild 128–190 |
 | --- | --- | --- | --- |
-| Hearthpine | 0/588 | 101/1888 | not emerged |
-| Dawnmere | 0/637 | 932/3999 | not emerged |
-| Silverleaf | 0/588 | 100/1888 | not emerged |
-| Stillgrave | 0/588 | 35/1676 | 1/212 |
-| Sunscar | 0/637 | 814/3679 | 69/320 |
-| Kapok | 0/588 | 100/1676 | 8/212 |
+| start | apron, user/boundary | ring, user/boundary | wild, user/boundary |
+| --- | --- | --- | --- |
+| Hearthpine | 0/588 · 0/588 | 96/1888 · 99/1888 | not emerged |
+| Dawnmere | 0/637 · 0/637 | 935/3999 · 602/3999 | not emerged |
+| Silverleaf | 0/588 · 0/588 | 98/1888 · 97/1888 | not emerged |
+| Stillgrave | 0/588 · 0/588 | 35/1676 · 29/1676 | 1/212 · 2/212 |
+| Sunscar | 0/637 · 0/637 | 823/3679 · 962/3679 | 69/320 · 83/320 |
+| Kapok | 0/588 · 0/588 | 99/1676 · 105/1676 | 8/212 · 10/212 |
 
-Where the corpus reaches past the envelope the ring's cover now matches the
-untouched biome around it — Sunscar 22.1% against 21.6%, Kapok 6.0% against
+Where the corpus reaches past the envelope the ring's cover matches the
+untouched biome around it — Sunscar 22.4% against 21.6%, Kapok 5.9% against
 3.8%, Stillgrave 2.1% against 0.5% on a 212-column sample — and the protected
 footprint is still bare. Before this round every ring number was `0/…`.
 
@@ -140,8 +204,11 @@ inside the 128 square still has excess 0 and therefore weight Q, and a column
 at the outer envelope edge still has weight 0, so the 256 boundary stays
 continuous and nothing escapes the fitting's bucket.
 
-Terrain height per column in a 281-node box around each start, before against
-after (`measurements/pad_edge_height_delta.tsv`):
+Terrain height per column in a 281-node box around each start, with the jitter
+branch in `fitting_grade_at` disabled against enabled on otherwise identical
+bytes — disabling exactly that branch is what makes this an A/B of the jitter
+and not of the whole round (`measure/pad_edge_delta.sh`,
+`measurements/pad_edge_height_delta.tsv`):
 
 | band | columns | changed, user seed | changed, boundary seed | max delta |
 | --- | --- | --- | --- | --- |
@@ -158,8 +225,7 @@ start: observed minimum 0–2, maximum 4–6, and a different digest for every o
 of its 5 × 6 rows (`terrain-luajit.tsv`). That fixture keeps every assertion it
 had — spawn surface, flat 3 × 3 spawn pad, junction target and every graded road
 endpoint exactly `reference_y` — and its first eleven columns are identical to
-the pre-change run, so no start's fitted height moved. The whole route evidence
-is byte-identical across this change, so no road moved either.
+the pre-change run, so no start's fitted height moved.
 
 **Honest limit of this fix.** The WP40 blend is gentle by construction — a
 64-node smootherstep carrying at most eight nodes of cut or fill — so a 0..6
@@ -177,53 +243,59 @@ this round on purpose rather than by oversight.
 
 | Gate | Result |
 | --- | --- |
-| `tools/bin/luac51 -p`, changed files | PASS, 7 files |
-| `tools/bin/luac51 -p`, tree-wide | PASS, 443 files |
+| `tools/bin/luac51 -p`, changed files | PASS, 8 files |
+| `tools/bin/luac51 -p`, tree-wide | PASS, 462 files |
 | SETGLOBAL, changed files | 0 on every one |
 | Five plain-5.1 sweeps, changed files | zero hits |
 | Five sweeps, `mods/*/grug_*` | only the three pre-existing `minetest.conf` comment mentions in `grug_core` |
 | `tools/check_fresh_server.py` | `Fresh-server source audit: PASS` |
 | `tools/wp40/r7/run.sh unit` | PASS (see the note below) |
-| `library_kat` + `blueprint_kat` + `integration_fixture`, LuaJIT vs PUC 5.1 | byte-identical, `9b2466f08f84a246…` — the round-A digest |
+| `library_kat` + `blueprint_kat` + `integration_fixture`, LuaJIT vs PUC 5.1 | byte-identical, `758c3e8c5facc9eb…` — main's own digest after the visuals and start-NPC lanes, unmoved by this round |
 | `quality_geometry_micro_kat`, LuaJIT vs PUC 5.1 | byte-identical, `7c35fa5d26d0a984…` (new `start_edge` row) |
 | `tools/wp13/terrain_fixture.lua`, 5 seeds × 6 starts | PASS |
-| `tools/wp13/final_micro.lua` pair | byte-identical, `9b2466f08f84a246…` |
+| `tools/wp13/final_micro.lua` pair | byte-identical, `758c3e8c5facc9eb…` |
 | Engine gate, six starts, both seeds | all eight runs agree on `206a86a057b0b6ed…` |
+| Road claim protection, both seeds | 0 unprotected road columns on all six approaches |
 
 `bash static.sh`, `bash kat.sh`, `bash final-micro.sh`, `bash engine.sh` and
 `bash measure.sh <absent absolute dir>` reproduce all of it.
 
 ### Which frozen digests moved
 
+Before means `main` at `6195555`, measured on the same immutable tree the
+route evidence was taken against.
+
 | Digest | Before | After | Why |
 | --- | --- | --- | --- |
-| WP13 KAT trio / `final_micro.lua` | `9b2466f08f84a246…` | unchanged | no blueprint byte moved |
+| WP13 KAT trio / `final_micro.lua` | `758c3e8c5facc9eb…` | unchanged | this round touches no blueprint, no `wp13/` library file and no `r7_*` file |
 | Engine gate, combined and per start | `206a86a057b0b6ed…` | unchanged | the settlements are written where they were |
 | `height.relief_lattice_digest` | `525620d5767fe976…` | unchanged | the natural terrain model is untouched |
 | `height.base_lattice_digest` | `1a28c24004d5c0bd…` | unchanged | same |
-| `height.canonical_kat_digest` | `9ae3a835a54596c9…` | `766d931d78dea52c…` | it covers the graded-route rasters and the visible-surface classification, and the six start routes' first legs were rebuilt |
-| `quality_geometry_micro_kat` output | (round A bytes) | `7c35fa5d26d0a984…` | one new `start_edge` row exercising the pad-edge jitter arithmetic |
-| route `exact_pin_digest` / `lower_bound_digest` | — | changed for exactly `route_001/004/007/010/013/016` | the six start routes; every other path's numbers are byte-identical |
+| `height.canonical_kat_digest` | `9ae3a835a54596c9…` | `c9a65721fa710991…` | it covers the graded-route rasters and the visible-surface classification, and the six start routes' first legs are compiled differently |
+| `quality_geometry_micro_kat` output | (pre-round bytes) | `7c35fa5d26d0a984…` | one new `start_edge` row exercising the pad-edge jitter arithmetic |
+| route `nodes` / `exact_pin_digest` / `lower_bound_digest` | — | changed for `route_001/004/007/010/016` | five of the six start routes; `route_013` and every other path in the world are byte-identical |
+| `source.routes[i].centreline` for the six start routes | — | one vertex replaced, one inserted, count unchanged | the gate-axis prefix; ids, classes, stations, endpoint pins, widths and `pinned_point_index` are unchanged |
 
 Two construction metrics move with them: `construction_sha256_calls` 5,147 →
-5,156 and `water_operation_count` 4,396 → 4,399, because the six rebuilt legs
-pass slightly different water. `graded_path_count` (139), the relief profile,
-octave and base-lattice populations are unchanged.
+5,150 and `water_operation_count` 4,396 → 4,393, because the six legs pass
+slightly different water. `graded_path_count` (139), the relief profile, octave
+and base-lattice populations are unchanged.
 `measurements/height_digests-{before,after}-531802985935182545.tsv` and
 `measure/height_digests.lua`.
 
 ### What could not run here, and why
 
-- **`tools/wp40/r7/run.sh static`** cannot pass, for three reasons that all
-  predate this lane: its `\bminetest\.` sweep hits the three `minetest.conf`
-  comment mentions in `mods/CORE/grug_core`; the changed-production roster
-  `tools/wp40/r7/changed_production_lua.txt` is missing round A's
-  `mods/CORE/grug_core/starts_preload.lua`; and the two frozen expectations
-  further down `source_audit.sh` (deleted-legacy 7 against 12, and the
-  micro-KAT binding) are known stale. This round adds a fourth roster entry,
-  `mods/MAPGEN/grug_mapgen/wp40/simple_map.lua`, so the derived population is
-  now 144 against the frozen 142. The roster and the audit belong to the WP40
-  lane and were deliberately left alone.
+- **`tools/wp40/r7/run.sh static`** cannot pass, for reasons that all predate
+  this lane: its `\bminetest\.` sweep hits the three `minetest.conf` comment
+  mentions in `mods/CORE/grug_core`; the changed-production roster
+  `tools/wp40/r7/changed_production_lua.txt` still has 142 rows while the
+  derived population on `main` is 151 (round A's `starts_preload.lua`, plus the
+  visuals and start-NPC lanes' nine files); and the two frozen expectations
+  further down `source_audit.sh` (deleted-legacy 7 against 12, and the micro-KAT
+  binding) are known stale. This round adds exactly one row of its own,
+  `mods/MAPGEN/grug_mapgen/wp40/simple_map.lua`, for 152. The roster and the
+  audit are WP40-lane state and the coordinator resyncs them in one commit after
+  the wave, so they were deliberately left alone here.
 - **`tools/wp40/r7/run.sh unit`** failed on `main` before this lane started:
   `anchor_activation_kat.lua` still handed the successor a single settlement
   config instead of the roster list the fourth WP13 increment introduced. That
@@ -261,18 +333,25 @@ round A recorded, which is the contract this round is held to.
 
 Every per-start digest and every fitted y is the one round A recorded. No
 `ERROR` and no `ModError` in any of the eight server logs, and the startup
-preload reported all six starts ready in each of them (12.6 s to the first,
-37.9 s to 6/6 on the user seed's cold run). `pgrep -af 'luanti.bin --server'`
-scoped to this run's output path was empty after each seed, and both scratch
-directories were removed. The process table was NOT compared as a whole and no
-`luanti.bin` was killed by name: the user runs a GUI client and another lane was
-running its own headless server at the same time.
+preload reported all six starts ready in each of them (44.0–48.5 s cold,
+8.8–9.2 s from disk). `pgrep -af 'luanti.bin --server'` scoped to this run's
+output path was empty after each seed, and both scratch directories were
+removed. The process table was NOT compared as a whole and no `luanti.bin` was
+killed by name: the user runs a GUI client and another lane was running its own
+headless server at the same time.
 
 ## Files
 
-`measure/` holds the four offline measurement scripts, `measurements/` their
+`measure/` holds the nine offline measurement scripts, `measurements/` their
 output (the 8 MB per-column height dumps are reproducible, not committed),
 `user-seed/` and `boundary-seed/` the engine evidence, `final-micro/` the
 frozen-byte pair, `static.txt` the static gates, `kat-*.txt`,
 `geometry-*.txt` and `terrain-luajit.tsv` the fixtures.
 `files.sha256` is the frozen-byte manifest, regenerated by `files.sha256.sh`.
+
+Before/after measurements were taken against immutable copies of two trees:
+`main` at `6195555` for everything called "before", and this round's own bytes
+with only the pad-edge jitter branch disabled for the pad-edge A/B. The
+`road_protection-previous-head` and `road_shoulder-previous-head` receipts were
+taken against this branch's first (rejected) version, to reproduce the review's
+F1 and F2 measurements before fixing them.

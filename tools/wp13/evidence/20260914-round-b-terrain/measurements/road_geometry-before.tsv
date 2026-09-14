@@ -1,5 +1,5 @@
 seed	531802985935182545
-construction_seconds	165.403733
+construction_seconds	153.151622
 path	nodes	max_cut	max_fill	max_step	pins	pin_digest	water_bounds	water_digest
 route_001	611	78	38	1	2	8578a39e104af0a6e47f9b61d26a3a2d7aee6d28353405325ee0cb6b249c0773	81	07f79e20cb8d05ee98bae7bb360fbbd6f134bc2d3979aedd28754a9ddab8d45b
 route_002	551	5	7	1	2	ed9e492b7b34bb3e30239bd926deb6c65792a280ac3f498325fde7d370c46a37	0	49e8e3297545c15ab6a79471a7a34d43e24a8f1cb25ea3d8417c61f699267a3f

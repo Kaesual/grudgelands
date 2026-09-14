@@ -4,7 +4,14 @@
 # (`new_runtime`, the same constructor live mapgen uses) and reads it through the
 # public query seams only.
 #
+#   route_shape   the compiled start-route vertices near the start, with each
+#                 vertex's Chebyshev radius and the heading change at it (reads
+#                 the source geometry only, so it takes no seed)
 #   gate_axis     the road columns on every start's gate axis, per z row
+#   road_protection  every road column within 400 nodes of a start that is NOT
+#                 inside a compiled claim exclusion (world.md section 2 R1)
+#   road_shoulder how close to the carriageway a biome decoration may host, on
+#                 the approach and on an ordinary stretch of the same route
 #   ring_bands    per-start column counts by Chebyshev band: claim exclusion,
 #                 vegetation exclusion, decoration host under the old and the
 #                 new planner predicate
@@ -25,8 +32,10 @@ out="${1:?absent absolute output directory required}"
 [[ "$out" == /* && ! -e "$out" ]] || exit 2
 mkdir -p "$out"
 here="$repo/tools/wp13/evidence/20260914-round-b-terrain/measure"
+chrt --idle 0 ionice -c3 luajit "$here/route_shape.lua" "$repo" \
+	"$out/route_shape.tsv"
 for seed in 531802985935182545 8675309; do
-	for probe in gate_axis ring_bands pad_edge; do
+	for probe in gate_axis ring_bands pad_edge road_protection road_shoulder; do
 		chrt --idle 0 ionice -c3 luajit "$here/$probe.lua" "$repo" "$seed" \
 			"$out/$probe-$seed.tsv"
 	done

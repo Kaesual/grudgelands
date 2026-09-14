@@ -1,12 +1,13 @@
 == parser, changed files
-luac51 -p PASS (7 files)
+luac51 -p PASS (8 files)
 == parser, tree-wide
-luac51 -p PASS (443 files)
+luac51 -p PASS (462 files)
 == SETGLOBAL, changed files
 0	mods/MAPGEN/grug_mapgen/wp40/height.lua
 0	mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua
 0	mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
 0	mods/MAPGEN/grug_mapgen/wp40/simple_map.lua
+0	mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua
 0	tools/wp13/engine_cases.lua
 0	tools/wp13/terrain_fixture.lua
 0	tools/wp40/r7/anchor_activation_kat.lua
@@ -22,8 +23,20 @@ did not touch and which are a file name, not the deprecated alias
 == fresh-server audit
 Fresh-server source audit: PASS
 == WP40 R7 changed-production roster
-24a25
+24a25,26
+> mods/CORE/grug_core/settlement_sockets.lua
 > mods/CORE/grug_core/starts_preload.lua
-135a137
+51a54
+> mods/ENTITIES/grug_mobs/patrol.lua
+60a64,65
+> mods/ENTITIES/grug_mobs/start_npcs.lua
+> mods/ENTITIES/grug_mobs/start_villagers.lua
+135a141
 > mods/MAPGEN/grug_mapgen/wp40/simple_map.lua
-roster rows 142, derived rows 144
+140a147
+> mods/PLAYER/grug_classes/init.lua
+142a150,152
+> mods/PLAYER/grug_visuals/apply.lua
+> mods/PLAYER/grug_visuals/compose.lua
+> mods/PLAYER/grug_visuals/init.lua
+roster rows 142, derived rows 152

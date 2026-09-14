@@ -1,5 +1,5 @@
 seed	8675309
-construction_seconds	6.921
+construction_seconds	6.786
 start	anchor	row_offset	min_x	max_x	count	holes	feature
 hearthpine	anchor_001	56	-62	-53	10	0	route_001
 hearthpine	anchor_001	64	-70	-61	10	0	route_001

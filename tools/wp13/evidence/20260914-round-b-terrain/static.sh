@@ -12,6 +12,7 @@ changed=(
 	mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua
 	mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
 	mods/MAPGEN/grug_mapgen/wp40/simple_map.lua
+	mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua
 	tools/wp13/engine_cases.lua
 	tools/wp13/terrain_fixture.lua
 	tools/wp40/r7/anchor_activation_kat.lua
@@ -55,6 +56,10 @@ echo "did not touch and which are a file name, not the deprecated alias"
 echo "== fresh-server audit"
 python3 tools/check_fresh_server.py
 
+# Reported, not asserted: the roster and `source_audit.sh`'s frozen count are
+# WP40-lane state, and main is several files further from 142 than this round is
+# (the visuals and start-NPC lanes, plus round A's starts_preload.lua). The
+# coordinator resyncs the roster in one commit after the wave.
 echo "== WP40 R7 changed-production roster"
 git diff --name-only --diff-filter=AM d6002a2 -- mods | rg '[.]lua$' | sort \
 	>/tmp/grug-wp13-round-b-derived.txt

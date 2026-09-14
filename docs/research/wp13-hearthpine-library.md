@@ -257,28 +257,44 @@ byte-identical at `760e0664…8ec9`; Stillgrave and Kapok untouched.
 Round A fixed three things inside the blueprints; the same playtest named three
 things *around* them, and all three live in the WP40 height/route/decoration
 layer. No blueprint file and no blueprint identity moved: the KAT trio and the
-WP13 final micro still digest `9b2466f08f84a246…`, and the engine gate's six
-per-start digests and combined `206a86a057b0b6ed…` are round A's. Evidence:
+WP13 final micro digest `758c3e8c5facc9eb…`, which is main's own value after the
+visuals and start-NPC lanes and is unmoved by this round, and the engine gate's
+six per-start digests and combined `206a86a057b0b6ed…` are round A's. Evidence:
 `tools/wp13/evidence/20260914-round-b-terrain/`.
 
 - **A blueprint landmark and a compiled route can disagree, and only the
   landmark is read.** Every start opens a five-wide `main_street` on the z axis
   with its `gate` at anchor.z ± 63, and `source/catalog.lua` agrees — it places
   each start's `start_gate` station one node further out. The COMPILED route in
-  `source/simple_map.lua` starts at the zone hub, which IS the anchor centre,
-  and its first bowed leg leaves the axis at once, so the road crossed the build
+  `source/simple_map.lua` started at the zone hub, which IS the anchor centre,
+  and its first bowed leg left the axis at once, so the road crossed the build
   envelope diagonally and surfaced 60-70 nodes beside the gate (Dawnmere and
-  Kapok only 1-5, which is why nobody noticed it in a fixture). `height.lua`
-  rebuilds the surface geometry of that one leg — a straight 128-node run down
-  the gate axis at the gate street's five-node width, then the ordinary bow from
-  the first authored centreline point outside the blend envelope — and derives
-  the gate side from the side the route's other station lies on instead of
-  assuming a sign. Stations, endpoint pins, claim exclusions and the route
-  census are untouched, and the rebuilt stretch lies inside the anchor's own
-  blend envelope. `make_path` learned an optional narrow leading prefix, so a
-  path can be 5 wide at the gate and 7 for the rest of its length; the three
-  membership tests ask the segment width first, while every bounding box keeps
+  Kapok only 1-5, which is why nobody noticed it in a fixture). The gate-axis run
+  is compiled into the centreline now: hub, the gate point at anchor.z ± 128, one
+  bowed vertex leaning toward the axis, then the authored crossing pin. The
+  leaning vertex takes the place of the leg's first ordinary bow point, so the
+  vertex count, `pinned_point_index` and the two endpoint pins are unchanged, and
+  the bend reads as two ~20° turns instead of one corner. `height.lua` only
+  rasterises it and reports the one thing the source cannot express — that the
+  first segment carries the gate street's five-node width instead of the class's
+  seven — through `make_path`'s new optional narrow leading prefix, whose three
+  membership tests ask the segment width first while every bounding box keeps
   reading the path's widest values as the upper bound they are.
+- **A raster that its own source does not know about loses every rule derived
+  from the source.** The first version of this fix rebuilt that leg inside
+  `height.lua` and left the compiled centreline alone. It looked right and
+  measured right on the gate axis, and it silently broke `world.md` §2 R1:
+  `exclude:route:<id>` is compiled from the source polyline, so 3,779 of 3,779
+  road columns on Hearthpine's approach — 3,862 of Silverleaf's, and thousands
+  more across the other four — lay outside any claim exclusion, and vegetation
+  could host one node off the carriageway where every other road keeps its
+  ±8 corridor. The independent review found it by measuring the claim rule
+  directly. **Geometry that consumers derive from belongs in the source**; the
+  height layer may shape what the source authored, never author its own. The
+  contract is now three `fail()` paths in `start_gate_prefix`: the compiled
+  layout is load-bearing for the six start routes, and a source edit that moves a
+  start hub off its anchor, takes a start off its z axis or drops the axis run
+  stops construction instead of quietly putting the road beside the gate again.
 - **One rule consulted twice is two gates, and narrowing one proves nothing.**
   `exclude:anchor:anchor_00N:01` covers a start's whole 256-node blend envelope,
   and both `r6_settlement.lua`'s decoration loops AND `r6_planner.lua`'s
@@ -296,14 +312,15 @@ per-start digests and combined `206a86a057b0b6ed…` are round A's. Evidence:
   The 148-node hard core, the road corridors, planned water and the coast still
   refuse. Ring cover per start went from `0/…` to 2-25% of sampled columns and
   now matches the untouched biome beyond the envelope where the corpus reaches
-  it (Sunscar 22.1% against 21.6%); the pad and its ten-node apron stay at 0.
+  it (Sunscar 22.4% against 21.6%); the pad and its ten-node apron stay at 0.
 - **A smootherstep ramp hides a radius jitter almost completely.** The pad's
   flat/slope boundary is an exact 128 square, and `height.lua` now pushes it
   outward by 0..6 seed-derived nodes from one memoised value-noise lattice per
   start while shrinking the ramp's span by the same amount — outward-only and
   span-compensated, so excess 0 keeps weight Q and the outer envelope edge keeps
-  weight 0. Nothing inside the envelope, in the apron or beyond 128 changed by a
-  single node, and no road moved. But the ramp is a 64-node smootherstep
+  weight 0. Measured against the same bytes with only that branch disabled:
+  nothing inside the envelope, in the apron or beyond 128 changed by a single
+  node. But the ramp is a 64-node smootherstep
   carrying at most eight nodes of cut or fill, so the rendered contour only
   moves by one or two nodes, and the flat radius per ray was already irregular
   (63…126, 27-41 distinct values per start). **After the vegetation fix the most
@@ -311,16 +328,21 @@ per-start digests and combined `206a86a057b0b6ed…` are round A's. Evidence:
   square**, which is a rule and not a look; softening THAT outline is the next
   lever and was deliberately not taken here.
 
-Two library rules come out of it. A landmark the blueprints export is the
+Three library rules come out of it. A landmark the blueprints export is the
 authority on a settlement's geometry, and any WP40 layer that has its own idea
-of the same geometry has to be measured against it rather than trusted. And a
+of the same geometry has to be measured against it rather than trusted.
+Geometry other rules are derived from belongs in the compiled source, and the
+height layer may shape what the source authored but never author its own. And a
 "narrow the suppression" fix is not done when the suppression it knows about is
 narrowed: count the thing that should appear, in the engine, before believing
 it.
 
-Calibration: implementing Claude Opus; no review round yet; blueprints
-byte-identical, six per-start engine digests unchanged, the WP13 final micro
-pair unchanged at `9b2466f08f84a246…`.
+Calibration: implementing Claude Opus; independent Claude Opus review, verdict
+merge-after-fixes with one blocking finding (the approach outside its own claim
+exclusion) plus one medium and one record correction; one fix round, which moved
+the gate-axis prefix from `height.lua` into the compiled source. Blueprints
+byte-identical, six per-start engine digests unchanged, the WP13 final micro pair
+`758c3e8c5facc9eb…` — main's own value, unmoved by this round.
 
 ## User runtime test
 

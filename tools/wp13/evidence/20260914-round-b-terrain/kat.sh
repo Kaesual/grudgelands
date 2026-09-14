@@ -1,15 +1,20 @@
 #!/usr/bin/env bash
-# library_kat + blueprint_kat + integration_fixture in one process under both
-# interpreters (must be byte-identical), then the two terrain-layer fixtures
-# this round is about: the WP13 terrain fitting fixture (five seeds, the start
-# pad and road-pin invariants plus the new pad-edge witness) and the portable
-# quality geometry micro-KAT, also under both interpreters.
+# The WP13 fixture set of `tools/wp13/final_micro.lua` -- library_kat,
+# blueprint_kat, integration_fixture and, last on purpose because they install
+# and restore stub globals, the two registry KATs the start-NPC lane added -- in
+# one process under both interpreters (must be byte-identical), then the two
+# terrain-layer fixtures this round is about: the WP13 terrain fitting fixture
+# (five seeds, the start pad and road-pin invariants plus the new pad-edge
+# witness) and the portable quality geometry micro-KAT, also under both.
+#
+# The fixture list is kept equal to `final_micro.lua`'s on purpose, so this
+# script's digest and the frozen-byte pair's digest are the same number.
 set -uo pipefail
 export LC_ALL=C
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd -P)"
 out="$repo/tools/wp13/evidence/20260914-round-b-terrain"
 cd "$repo"
-prog='local r="." io.write(dofile(r.."/tools/wp13/library_kat.lua")(r)) io.write(dofile(r.."/tools/wp13/blueprint_kat.lua")(r)) io.write("wp13_integration\t"..dofile(r.."/tools/wp13/integration_fixture.lua")(r).."\n")'
+prog='local r="." io.write(dofile(r.."/tools/wp13/library_kat.lua")(r)) io.write(dofile(r.."/tools/wp13/blueprint_kat.lua")(r)) io.write("wp13_integration\t"..dofile(r.."/tools/wp13/integration_fixture.lua")(r).."\n") io.write(dofile(r.."/tools/wp13/settlement_sockets_kat.lua")(r)) io.write(dofile(r.."/tools/wp13/start_npcs_kat.lua")(r))'
 
 luajit -e "$prog" >"$out/kat-luajit.txt"
 tools/bin/lua51 -e "$prog" >"$out/kat-puc51.txt"
