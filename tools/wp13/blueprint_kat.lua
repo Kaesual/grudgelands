@@ -40,6 +40,16 @@ return function(repo)
 				{"grug_decor:xdecor_barrel", 39},
 				{"grug_decor:xdecor_stonepath", 0},
 				{"grug_decor:cottages_wagon_wheel", 0, "wallmounted"}},
+			-- The ground-cover population, exactly. `dressing.undergrowth`
+			-- tests its support with `parts.wild_soil`, and the rule that
+			-- roster encodes -- a plant seeds itself in generated ground,
+			-- never in ground the settlement authored -- decides how much
+			-- green a pad carries. When that test was a substring of a node
+			-- name it silently changed answer as soon as a start introduced
+			-- a soil spelled differently: Dawnmere lost 286 tufts and 139
+			-- bushes to `grug_nodes:tilled_soil` and every fixture stayed
+			-- green. These counts are the assertion that would not have.
+			ground_cover = {{"default:fern_1", 665}, {"default:grass_1", 1982}},
 			carts = 0,
 		},
 		{
@@ -69,8 +79,18 @@ return function(repo)
 			door_leaves = {"doors:door_wood_a", "doors:door_wood_b"},
 			tree = {log = "default:tree", leaves = "default:leaves",
 				min_trunk = 4, reach = 3, low = 1, high = 4, min_stems = 8},
+			-- The hamlet's fields are no longer part of the `default:dirt`
+			-- population: a furrow written out of `ground_patch` is the one
+			-- and only name default's "Grass spread" ABM acts on, so the
+			-- fields greened over in the running world while the blueprint
+			-- stayed correct. They are `grug_nodes:tilled_soil` now, which
+			-- that ABM cannot reach, and the row below is what says so: the
+			-- pad has to carry a field, not just bare earth between plots.
+			-- 162 worn-earth patches remain, which is what `ground_patch` is
+			-- actually for.
 			ground = {{"default:dirt_with_grass", 6000},
-				{"default:dirt", 400}, {"default:gravel", 20}},
+				{"grug_nodes:tilled_soil", 3000},
+				{"default:dirt", 100}, {"default:gravel", 20}},
 			min_destinations = 9, min_doors = 8, min_rooms = 9,
 			min_lights = 8, min_oriented = 8,
 			-- The farming hamlet's loose props, exactly. 27 bales: four yard
@@ -83,6 +103,8 @@ return function(repo)
 				{"grug_decor:xdecor_barrel", 24},
 				{"grug_decor:xdecor_stonepath", 25},
 				{"grug_decor:cottages_wagon_wheel", 12, "wallmounted"}},
+			-- The ground-cover population, exactly; see Hearthpine's row.
+			ground_cover = {{"default:grass_4", 756}, {"default:grass_3", 1571}},
 			carts = 3, cart_load = "grug_decor:xdecor_barrel",
 		},
 		{
@@ -139,6 +161,8 @@ return function(repo)
 				{"grug_decor:xdecor_barrel", 20},
 				{"grug_decor:xdecor_stonepath", 24},
 				{"grug_decor:cottages_wagon_wheel", 0, "wallmounted"}},
+			-- The ground-cover population, exactly; see Hearthpine's row.
+			ground_cover = {{"default:fern_2", 849}, {"default:grass_2", 1752}},
 			carts = 0,
 		},
 		{
@@ -190,6 +214,8 @@ return function(repo)
 				{"walls:mossycobble", 418},
 				{"grug_decor:xdecor_ivy", 13, "wallmounted"},
 				{"grug_decor:cottages_wagon_wheel", 0, "wallmounted"}},
+			-- The ground-cover population, exactly; see Hearthpine's row.
+			ground_cover = {{"grug_nodes:bone_pile", 359}, {"default:dry_shrub", 612}},
 			carts = 0,
 		},
 		{
@@ -222,14 +248,20 @@ return function(repo)
 			-- feed stacks. 24 barrels: seven crate stacks and the interiors'
 			-- own. No stepping stones -- the orc palette binds none. 19
 			-- wheels: three on each of the five wagons and four leaning on
-			-- walls. 15 wagon loads, one on every bearer of every wagon,
-			-- which is also the cart count below.
+			-- walls. 43 acacia slabs: 15 wagon loads, one on every bearer of
+			-- every wagon -- which is also the cart count below -- and 28
+			-- table tops in the interiors. The load used to be
+			-- `grug_decor:cottages_wagon_load`, whose nodebox occupies the
+			-- top half of its cell, so it rode half a node above the bearer;
+			-- the camp emits that node nowhere now.
 			props = {{"grug_decor:cottages_straw_bale", 27},
 				{"grug_decor:xdecor_barrel", 24},
 				{"grug_decor:xdecor_stonepath", 0},
 				{"grug_decor:cottages_wagon_wheel", 19, "wallmounted"},
-				{"grug_decor:cottages_wagon_load", 15}},
-			carts = 15, cart_load = "grug_decor:cottages_wagon_load",
+				{"stairs:slab_acacia_wood", 43}},
+			-- The ground-cover population, exactly; see Hearthpine's row.
+			ground_cover = {{"default:dry_shrub", 932}, {"default:dry_grass_3", 899}},
+			carts = 15, cart_load = "stairs:slab_acacia_wood",
 		},
 		{
 			key = "kapok",
@@ -282,6 +314,8 @@ return function(repo)
 				{"grug_decor:cottages_wagon_wheel", 0, "wallmounted"},
 				{"grug_decor:xdecor_rope", 56, "ceiling"},
 				{"grug_decor:xdecor_lantern_hanging", 16, "ceiling"}},
+			-- The ground-cover population, exactly; see Hearthpine's row.
+			ground_cover = {{"default:junglegrass", 1129}, {"default:grass_1", 946}},
 			carts = 0,
 		},
 	}
@@ -498,6 +532,23 @@ return function(repo)
 		end
 		assert(carts == spec.carts,
 			"hand cart population differs: " .. carts .. ", not " .. spec.carts)
+
+		-- The two ground-cover nodes this race scatters, exactly. The counts
+		-- are whole-blueprint, the same question `library_kat` section 8c
+		-- asks, so a plant that moves from the pad into a planter still
+		-- shows up as a number here.
+		local cover_seen = {}
+		for _, row in ipairs(spec.ground_cover) do cover_seen[row[1]] = 0 end
+		for _, cell in ipairs(blueprint.cells) do
+			if cover_seen[cell.name] then
+				cover_seen[cell.name] = cover_seen[cell.name] + 1
+			end
+		end
+		for _, row in ipairs(spec.ground_cover) do
+			assert(cover_seen[row[1]] == row[2],
+				"ground cover population differs: " .. row[1] .. " is " ..
+					cover_seen[row[1]] .. ", not " .. row[2])
+		end
 
 		local declared_lights = {}
 		for _, pos in ipairs(blueprint.landmarks.lights) do

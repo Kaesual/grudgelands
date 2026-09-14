@@ -435,9 +435,20 @@ local function loader(directory)
 
 	-- A tilled field: bare furrows with a planted row between every pair, and
 	-- a headland of open soil all round so the fence has somewhere to stand.
+	-- Both courses of a field are the SAME node when the race binds
+	-- `crop_soil`. The first version ploughed the bare furrows out of
+	-- `ground_patch` and bedded the planted rows in `planter_soil`, which for
+	-- the human palette are `default:dirt` and `default:dirt_with_grass`: the
+	-- bare rows are the one and only nodename default's "Grass spread" ABM
+	-- acts on, so every lit furrow turned into the grass beside it and the
+	-- hamlet's fields became lawn -- a defect no construction-time fixture
+	-- can see, because the blueprint it checks is still correct. A race that
+	-- binds `crop_soil` gets a node that ABM cannot reach; the stripe the two
+	-- materials used to draw is carried by the crop rows themselves.
 	function M.crop_rows(buf, palette, x1, z1, x2, z2, axis)
-		local furrow = palette.node("ground_patch")
-		local soil = palette.node("planter_soil")
+		local tilled = palette.maybe("crop_soil")
+		local furrow = tilled or palette.node("ground_patch")
+		local soil = tilled or palette.node("planter_soil")
 		local crop = palette.maybe("crop")
 		local rows = 0
 		for z = z1, z2 do
@@ -672,7 +683,7 @@ local function loader(directory)
 				if name then
 					local below = buf:at(x, 0, z)
 					local above = buf:at(x, 1, z)
-					if below and below.name:find("dirt") and
+					if below and parts.wild_soil(below.name) and
 							(above == nil or above.name == "air") then
 						buf:put(x, 1, z, name)
 						if name == bone then sown_bones = sown_bones + 1
@@ -942,7 +953,7 @@ local function loader(directory)
 								local cx, cz = x + dx, z + dz
 								local below = buf:at(cx, 0, cz)
 								local above = buf:at(cx, 1, cz)
-								if below ~= nil and below.name:find("dirt") and
+								if below ~= nil and parts.wild_soil(below.name) and
 										(above == nil or above.name == "air") then
 									buf:put(cx, 1, cz, name)
 									planted = planted + 1
@@ -1157,7 +1168,7 @@ local function loader(directory)
 					local below = buf:at(x, 0, z)
 					local above = buf:at(x, 1, z)
 					local free = (above == nil or above.name == "air")
-					if below and free and below.name:find("dirt") then
+					if below and free and parts.wild_soil(below.name) then
 						local bush =
 							parts.position_hash(x + 977, z + 383) % 3 == 0
 						local name = palette.node(bush and "undergrowth" or
@@ -1192,7 +1203,7 @@ local function loader(directory)
 					local below = buf:at(x, 0, z)
 					local above = buf:at(x, 1, z)
 					local free = (above == nil or above.name == "air")
-					if below and free and below.name:find("dirt") then
+					if below and free and parts.wild_soil(below.name) then
 						local role = ((x + z) % 4 == 0) and "undergrowth" or
 							"grass_tuft"
 						local name = palette.node(role)

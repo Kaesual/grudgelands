@@ -33,6 +33,17 @@ M.WALLMOUNTED = "wallmounted"
 M.MESHOPTIONS = "meshoptions"
 M.NONE = "none"
 
+-- The facedir axis of a node that has been turned upside down: param2
+-- 20 + rotation. It is the axis `stairs`' own `rotate_and_place` writes when
+-- a player places a stair or a slab against the underside of something
+-- (mods/BASE/stairs/init.lua, `param2 = param2 + 20`), so it is a value the
+-- engine really produces -- for a stair or a slab, and for nothing else.
+-- A settlement needs it wherever a shaped node carries a LOAD or hangs from
+-- a frame: a bottom slab's surface is half a node below the top of its own
+-- cell, so whatever stands on it stands in air.
+local UPSIDE_DOWN = 20
+M.UPSIDE_DOWN = UPSIDE_DOWN
+
 -- ---------------------------------------------------------------------------
 -- the orientation-bearing families
 -- ---------------------------------------------------------------------------
@@ -79,7 +90,6 @@ local PARAM2_KIND = {
 	["grug_decor:cottages_window_shutter_closed"] = M.FACEDIR,
 	["grug_decor:cottages_window_shutter_open"] = M.FACEDIR,
 	["grug_decor:xdecor_stonepath"] = M.FACEDIR,
-	["grug_decor:cottages_wagon_load"] = M.FACEDIR,
 	-- plantlike meshes whose definition pins the style they are placed at
 	["default:dry_shrub"] = M.MESHOPTIONS,
 	-- a wheel leans against the wall its param2 points at
@@ -90,19 +100,38 @@ local PARAM2_KIND = {
 	-- above -- the elf and orc palettes name them too.
 	["grug_decor:xdecor_ivy"] = M.WALLMOUNTED,
 	["grug_decor:xdecor_workbench"] = M.FACEDIR,
-	-- `grug_decor/shapes.lua` is a vendored byte-for-byte copy of the four
-	-- shape registrations of `mods/BASE/stairs/init.lua`, so a grug_decor
-	-- stair, inner stair, outer stair or slab carries exactly the facedir a
-	-- `stairs:` one does. Only the shapes a palette actually names are
-	-- listed, so the family stays as explicit as the `stairs:` prefix rule
-	-- is implicit.
-	["grug_decor:darkage_slate_tile_stair"] = M.FACEDIR,
-	["grug_decor:darkage_slate_tile_stair_inner"] = M.FACEDIR,
-	["grug_decor:darkage_slate_tile_stair_outer"] = M.FACEDIR,
-	["grug_decor:darkage_slate_tile_slab"] = M.FACEDIR,
-	["grug_decor:darkage_slate_brick_slab"] = M.FACEDIR,
-	["grug_decor:darkage_serpentine_slab"] = M.FACEDIR,
+	-- The stair and slab shapes are folded in from `SHAPED` below, which is
+	-- the one place this library writes that family down.
 }
+
+-- The SHAPED family: stairs and slabs, the only nodes whose `on_place` can
+-- turn them upside down (`rotate_and_place`, mods/BASE/stairs/init.lua). It
+-- is not a third answer to a question asked elsewhere: it is the same two
+-- sources `param2_kind` already uses -- the `stairs:` prefix, whose mod
+-- registers stairs and slabs and nothing else, and the grug_decor shapes
+-- below -- and `library_kat` section 8 proves it equal to the registry's own
+-- `group:stair` / `group:slab` for every name a start emits, in both
+-- directions. These shapes are facedir-bearing too, so they are folded into
+-- `PARAM2_KIND` from here rather than written down twice.
+--
+-- `grug_decor/shapes.lua` is a vendored byte-for-byte copy of the four shape
+-- registrations of `mods/BASE/stairs/init.lua`, so a grug_decor stair, inner
+-- stair, outer stair or slab carries exactly the facedir a `stairs:` one
+-- does. Only the shapes a palette actually names are listed, so the family
+-- stays as explicit as the `stairs:` prefix rule is implicit.
+local SHAPED = {
+	["grug_decor:darkage_slate_tile_stair"] = true,
+	["grug_decor:darkage_slate_tile_stair_inner"] = true,
+	["grug_decor:darkage_slate_tile_stair_outer"] = true,
+	["grug_decor:darkage_slate_tile_slab"] = true,
+	["grug_decor:darkage_slate_brick_slab"] = true,
+	["grug_decor:darkage_serpentine_slab"] = true,
+}
+for name in pairs(SHAPED) do PARAM2_KIND[name] = M.FACEDIR end
+
+function M.shaped(name)
+	return SHAPED[name] == true or name:sub(1, 7) == "stairs:"
+end
 
 -- The param2 the engine itself writes for a node whose definition pins one.
 -- `default:dry_shrub` is `paramtype2 = "meshoptions"` with
@@ -236,6 +265,9 @@ local FULL_SOLID = {
 	["grug_nodes:blight_dirt"] = true,
 	["grug_nodes:dirt_with_bone_litter"] = true,
 	["grug_nodes:dirt_with_silver_litter"] = true,
+	-- The authored furrow of a crop field: a plain opaque cube, so a torch
+	-- may hang on it and a wall may stand on it like any other soil.
+	["grug_nodes:tilled_soil"] = true,
 	["grug_trees:gravewood_tree"] = true,
 	["grug_trees:gravewood_wood"] = true,
 	["grug_trees:silverwood_tree"] = true,
@@ -261,6 +293,42 @@ local FULL_SOLID = {
 
 function M.full_solid(name)
 	return FULL_SOLID[name] == true
+end
+
+-- Soil a WILD plant seeds itself in.
+--
+-- Six places in this library ask that question -- the ground-cover scatter,
+-- the flora and orchard clearance rules, the meadow and the mud flat -- and
+-- all six used to ask it as `name:find("dirt")`, a substring of a node name.
+-- That is not a property; it is a spelling, and it answered `false` for
+-- `grug_nodes:tilled_soil` the moment Dawnmere's furrows stopped being
+-- `default:dirt`, silently taking 425 tufts and bushes out of the fields with
+-- it. Nobody had decided that -- the substring had.
+--
+-- Written down, the rule is: a plant seeds itself in ground the MAPGEN
+-- generates, never in ground a settlement authored. Every name below is in
+-- `grug_materials.NATURAL_GROUND_NODES` and `library_kat` reads that roster
+-- out of the source and proves it. `grug_nodes:tilled_soil` is deliberately
+-- absent, and so is deliberately outside that roster: a ploughed furrow is
+-- kept weed-free, which is also what a field is supposed to look like.
+-- `grug_nodes:mud` is absent for the older reason that the substring never
+-- accepted it either -- the Cradle's mud flats are bare by authored intent.
+local WILD_SOIL = {
+	["default:dirt"] = true,
+	["default:dirt_with_coniferous_litter"] = true,
+	["default:dirt_with_dry_grass"] = true,
+	["default:dirt_with_grass"] = true,
+	["default:dirt_with_rainforest_litter"] = true,
+	["default:dry_dirt"] = true,
+	["grug_nodes:blight_dirt"] = true,
+	["grug_nodes:dirt_with_bone_litter"] = true,
+	["grug_nodes:dirt_with_silver_litter"] = true,
+}
+
+M.WILD_SOIL = WILD_SOIL
+
+function M.wild_soil(name)
+	return WILD_SOIL[name] == true
 end
 
 -- facedir index to unit step in the x/z plane.
@@ -375,6 +443,29 @@ function Buffer:put(x, y, z, name, param2)
 	end
 	if param2 ~= 0 and M.param2_kind(name) == M.NONE then
 		error("wp13 parts: " .. name .. " has no paramtype2", 0)
+	end
+	-- The upside-down facedir family. `stairs`' own `rotate_and_place`
+	-- (mods/BASE/stairs/init.lua) is the only placement in this game that
+	-- writes param2 20..23, and it writes it only for a stair or a slab, so
+	-- a settlement uses exactly two of the six facedir axes and may flip only
+	-- a shaped node. A flipped barrel or a flipped bed is a param2 no
+	-- placement could have produced, so both halves are refused here.
+	-- `library_kat` section 8e asks the REGISTRY the same question --
+	-- `group:stair` or `group:slab` -- of every cell a start emits, and
+	-- section 8 proves `M.shaped` equal to that answer in both directions;
+	-- this is the construction-time half, written without a registry.
+	if M.param2_kind(name) == M.FACEDIR then
+		local axis = param2 - (param2 % 4)
+		if axis ~= 0 then
+			if axis ~= UPSIDE_DOWN then
+				error("wp13 parts: settlements use only the upright and the " ..
+					"upside-down facedir axis, not " .. axis, 0)
+			end
+			if not M.shaped(name) then
+				error("wp13 parts: only a stair or a slab may be turned " ..
+					"upside down, not " .. name, 0)
+			end
+		end
 	end
 	local key = x .. ":" .. y .. ":" .. z
 	local cell = self.cell[key]

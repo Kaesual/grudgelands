@@ -2367,6 +2367,15 @@
    "source": "mods/ITEMS/grug_nodes/init.lua",
    "shape": "cube"
   },
+  "grug_nodes:tilled_soil": {
+   "tiles": [
+    "default_dirt.png^[colorize:#2b1d0e:70",
+    "default_dirt.png",
+    "default_dirt.png^[colorize:#2b1d0e:35"
+   ],
+   "source": "mods/ITEMS/grug_nodes/init.lua",
+   "shape": "cube"
+  },
   "grug_trees:gravewood_leaves": {
    "tiles": [
     "default_leaves.png^[colorize:#858585:210"

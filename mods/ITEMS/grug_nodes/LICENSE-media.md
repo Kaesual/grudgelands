@@ -42,6 +42,18 @@ preserved.
 | `grug_nodes_mud.png` | `default_dirt.png` | minetest_game contributors | CC BY-SA 3.0 | recolored via ImageMagick (dark brown-green `#3b3e2a`) |
 | `grug_nodes_bone_pile.png` | `default_coral_skeleton.png` | minetest_game contributors | CC BY-SA 3.0 | recolored via ImageMagick (bone white `#ddd8c9`) and masked down to a 16×16 heap silhouette (own alpha mask) |
 
+### 1b. Nodes that carry no media of their own
+
+`grug_nodes:tilled_soil` (WP13, the authored crop furrow) ships **no file**.
+Its three tiles are minetest_game's `default_dirt.png` — the vendored original,
+unmodified on disk — with the engine's own `^[colorize:#2b1d0e` texture
+modifier applied at load time on the top and side faces, which is a render-time
+operation and not a derivative work distributed by this project. The same is
+true of `register_litter()`'s bottom face and of every other place in this mod
+where a vendored texture name is used as written. Nothing to attribute beyond
+the vendored `default` media itself (`mods/BASE/default/license.txt`,
+CC BY-SA 3.0); the table above stays the roster of PNGs this mod *generates*.
+
 ## 2. Own pixel art — CC0 1.0
 
 Original 16×16 art of this project, **not** derived from any vendored or

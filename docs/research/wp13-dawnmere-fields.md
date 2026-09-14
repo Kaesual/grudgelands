@@ -61,7 +61,8 @@ market stall, flower beds, settles and hand carts -- no paved plaza. A
 belfried **meeting hall** and a **tollhouse** at the gate carry brick roofs;
 the **inn**, the **barn** and two cottages are half-timbered; four cottages
 show three roof forms (gable, hip, saltbox) and a fourth cross-ridge gable.
-Eight fenced crop fields with furrows and rows, hedgerows of
+Eight fenced crop fields with furrows and rows — 3,267 cells of
+`grug_nodes:tilled_soil` since round A, see below — hedgerows of
 `bush_stem`/`bush_leaves` on their outer boundaries, two orchard blocks and
 scattered standards on the proportions of the decoded
 `mods/BASE/default/schematics/apple_tree.mts` (7 x 7 x 8: four clear trunk
@@ -85,6 +86,49 @@ cells: `dressing.hedge_line` returns the number of columns it planted, and
 each column is a `bush_stem` at y = 1 under a `bush_leaves` at y = 2, so the
 `hedge_cells` landmark counts columns and not cells. Bounds x/z `[-63, 63]`,
 y `[-1, 17]`.
+
+### Round A: the fields were made of the one node that does not keep
+
+The user's first walk through the hamlet found the crop fields turning into
+lawn. `dressing.crop_rows` ploughed its bare furrows out of the palette's
+`ground_patch` and bedded its planted rows in `planter_soil`, which for this
+race are `default:dirt` and `default:dirt_with_grass`; default's "Grass
+spread" ABM (`mods/BASE/default/functions.lua`) has
+`nodenames = {"default:dirt"}` and exactly that one name, so every lit furrow
+became the grass next to it within minutes of the chunk being active. Nothing
+in the blueprint was wrong, which is why no fixture saw it: the defect lives
+in the running world, one ABM tick after the writer has finished.
+
+Both courses of a field are `grug_nodes:tilled_soil` now — 3,267 cells, the
+new optional palette role `crop_soil`, bound only by the human palette. That
+node is outside the ABM's `nodenames` and carries no `spreading_dirt_type`,
+so it is neither a target nor a source of grass spread; it also carries no
+`soil` (nothing is meant to grow a sapling out of a furrow) and no
+`grug_natural`, because the mining transaction gates excavated ground and a
+farmer's field is not an excavation (`grug_materials/audit.lua` requires only
+the converse — that every name in `NATURAL_GROUND_NODES` carries the marker —
+so a node outside that roster is free to stay out of it). The stripe the two
+old materials drew is carried by the crop rows themselves; the
+`attached_node` junglegrass still stands on walkable ground. The assertion is
+a `blueprint_kat` ground row of its own: the pad has to carry more than 3,000
+tilled cells, and `default:dirt` drops to the 162 worn-earth patches that role
+is actually for. 1,555 planted crop cells, unchanged.
+
+The fields also lost their weeds, and the interesting part is that nobody
+decided that. `dressing.undergrowth` tested its support with
+`below.name:find("dirt")` -- a substring of a node name, which is a spelling
+and not a property -- so the scatter stopped reaching the furrows the moment
+they stopped being spelled `default:dirt`, and **425 cells** went with it:
+`default:grass_3` 1,857 -> 1,571 and `default:grass_4` 895 -> 756. A ploughed
+field with no weeds in it is the look we want, so the counts stay; the
+substring does not. All six places in the library that asked that question
+ask `parts.wild_soil` now, a written-out roster whose rule is stated: a plant
+seeds itself in ground the MAPGEN generates, never in ground a settlement
+authored. `library_kat` section 7d proves every member of it is in
+`grug_materials.NATURAL_GROUND_NODES` and that `grug_nodes:tilled_soil` is in
+neither roster, and `blueprint_kat` now holds each start's two ground-cover
+populations at an exact number -- which is the assertion that would have made
+the 425 visible the day they vanished.
 
 ### The loose props, and why they are now fatal
 

@@ -7,6 +7,7 @@
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
 local function loader(directory)
+	local parts = dofile(directory .. "/parts.lua")
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 
 	local M = {}
@@ -163,9 +164,12 @@ local function loader(directory)
 	end
 
 	-- Only natural soil may be planted; paving and building floors are not.
+	-- Bare ground a settlement may plant in, which is ground the MAPGEN
+	-- generates and never ground the settlement authored: `parts.wild_soil`
+	-- is the one roster, and a substring of a node name is not a property.
 	function M.natural(buf, x, z)
 		local below = buf:at(x, 0, z)
-		return below ~= nil and below.name:find("dirt") ~= nil
+		return below ~= nil and parts.wild_soil(below.name)
 	end
 
 	-- A stem also keeps one node of soil all round, so no pine grows with
@@ -376,7 +380,7 @@ local function loader(directory)
 			for z = z1, z2 do
 				for x = x1, x2 do
 					local below = buf:at(x, 0, z)
-					if below == nil or (below.name:find("dirt") == nil and
+					if below == nil or (not parts.wild_soil(below.name) and
 							below.name ~= mud) then
 						return false
 					end
