@@ -144,5 +144,5 @@ stone block).
 - **Curtain walls** (a city wall along the 512 × 512 envelope with towers
   and gatehouses at the four ±256 gates): proposal is walls for Dur
   Brannoc, Nhal Veyr and Gor Drazhak, open edges (hedges/orchards, groves,
-  stilts and water) for Highcourt, Lethariel and Kezamba. Awaiting the
-  user's one-word answer: as proposed / all / none.
+  stilts and water) for Highcourt, Lethariel and Kezamba. **Decided
+  2026-09-14 as proposed**: three walled, three open, for variation.
