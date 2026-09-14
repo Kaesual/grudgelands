@@ -1,0 +1,21 @@
+rotate_param2	facedir+upsidedown+wallmounted	pass
+rotate_footprint	bijective	pass
+palette	3	69	retirement_sources	2	names	97
+palette_static	97	registry_nodes	779
+roofs	hip_corners+cross_gable_valleys	16
+rotation	cottage	23	1	5	90
+determinism	cottage	1331
+guards	param2_kind	pass
+registry	hearthpine	40	kinds	40	place_param2	1723	plain_cubes	41646
+panes	hearthpine	266	connected	6
+torch_support	hearthpine	74	opaque_full	pass
+registry	dawnmere	51	kinds	51	place_param2	1510	plain_cubes	41099
+panes	dawnmere	264	connected	2
+torch_support	dawnmere	98	opaque_full	pass
+registry	silverleaf	47	kinds	47	place_param2	1480	plain_cubes	45894
+panes	silverleaf	258	connected	16
+torch_support	silverleaf	93	opaque_full	pass
+wp13_blueprint	hearthpine	61932	46389	41	74	1232	9	10	10	180	15588
+wp13_blueprint	dawnmere	66343	44863	52	98	1467	9	12	10	27	15411
+wp13_blueprint	silverleaf	68712	50408	48	113	1349	9	11	10	109	15649
+wp13_integration	hearthpine/e07ac54bec01e662f224c629d12c424ec67ca03ee3183c5389943b5100cf9ffb/61932/12/1 dawnmere/66c7f8118b0b761d8e7c009f72753e9ec7578c1cb2b6d464f55ca97d54354f74/66343/18/1 silverleaf/0419cc5e59bda7ca2cd7533f7e9b0d2da4cc956fef64ee9e402793dd5027a4ae/68712/12/1 composed/3/100

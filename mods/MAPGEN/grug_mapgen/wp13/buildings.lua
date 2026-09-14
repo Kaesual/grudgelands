@@ -22,6 +22,10 @@ local function loader(directory)
 	local parts = dofile(directory .. "/parts.lua")
 	local roofs = dofile(directory .. "/roofs.lua")
 	local interiors = dofile(directory .. "/interiors.lua")
+	-- `dressing` writes exterior props into a buffer and needs nothing from
+	-- this module, so the dependency is one way: the ruin generator below
+	-- reuses its rubble, ivy and cobweb.
+	local dressing = dofile(directory .. "/dressing.lua")(directory)
 
 	local M = {}
 
@@ -101,10 +105,57 @@ local function loader(directory)
 		return slots
 	end
 
+	-- An outside stair from the pad up to a raised deck, on the named side of
+	-- a block, `width` cells wide and centred on `index`.
+	--
+	-- The flight is the only way into a stilt house, so it is authored as a
+	-- walkable route rather than as decoration: a tread every course, each on
+	-- its own log pier, starting one node beyond the deck's apron and running
+	-- outward. A player standing on the pad at the foot has treads at y = 1,
+	-- 2, ... deck-1 in front of them and steps onto the apron at y = deck, so
+	-- the conservative walk of the blueprint KAT climbs it a node at a time.
+	local function stair_flight(buf, palette, block, side, index, deck,
+			apron, width)
+		local step = SIDE_STEP[side]
+		local along = (side == "z-" or side == "z+") and "x" or "z"
+		local half = math.floor(((width or 1) - 1) / 2)
+		local tread = palette.node("roof_stair")
+		-- The raised half of every tread points back at the building.
+		local face = inward(side)
+		for run = 1, deck - 1 do
+			local distance = apron + (deck - run)
+			local base_x, base_z = wall_cell(block, side, index)
+			local x = base_x + step[1] * distance
+			local z = base_z + step[2] * distance
+			for offset = -half, half do
+				local cx = (along == "x") and x + offset or x
+				local cz = (along == "z") and z + offset or z
+				buf:clear(cx, run, cz, cx, run + 3, cz)
+				for y = 1, run - 1 do
+					buf:put(cx, y, cz, palette.node("post"))
+				end
+				parts.stair(buf, cx, run, cz, tread, face)
+			end
+		end
+	end
+
 	-- A building: footings, apron, walls, framed windows, doors, roof,
 	-- chimney stacks and furnished rooms.
+	--
+	-- `spec.stilt` raises the whole building on posts: the floor lands at
+	-- y = stilt instead of y = 0 and walls, windows, doors, roof, chimneys
+	-- and rooms travel up with it, while the corner posts and the window
+	-- frames keep their feet on the pad, which is what makes the house read
+	-- as standing on legs rather than on a plinth. `spec.stairs` then gives
+	-- it the flights that reach the deck.
 	function M.build(palette, spec)
 		local overhang = spec.overhang or 1
+		-- The plank apron round a plot is the roof's own overhang by default,
+		-- but a stilt house wants a veranda WIDER than its eaves: a roof that
+		-- projects as far as the deck does buries the walls, and the first
+		-- Kapok render was three buildings' worth of roof and no wall.
+		local apron = spec.apron or overhang
+		local deck = spec.stilt or 0
 		local blocks = spec.blocks
 		if not blocks then
 			blocks = {{x0 = 0, z0 = 0, x1 = spec.w - 1, z1 = spec.d - 1}}
@@ -119,7 +170,8 @@ local function loader(directory)
 			fields[index] = roofs.field(block.roof or spec.roof or "gable", {
 				x0 = block.x0 - overhang, x1 = block.x1 + overhang,
 				z0 = block.z0 - overhang, z1 = block.z1 + overhang,
-				base = block.wall_h, axis = block.ridge_axis or spec.ridge_axis or "x",
+				base = deck + block.wall_h,
+				axis = block.ridge_axis or spec.ridge_axis or "x",
 				lift = block.lift or spec.lift, rise = block.rise or spec.rise,
 				up = block.up or spec.up,
 			})
@@ -158,20 +210,68 @@ local function loader(directory)
 		-- whatever the pad ground left behind, then pave the apron the
 		-- doorsteps and the eaves drip line stand on.
 		for _, block in ipairs(blocks) do
-			buf:clear(block.x0 - overhang, 1, block.z0 - overhang,
-				block.x1 + overhang, peak + 2, block.z1 + overhang)
+			local reach = math.max(overhang, apron)
+			buf:clear(block.x0 - reach, 1, block.z0 - reach,
+				block.x1 + reach, peak + 2, block.z1 + reach)
 		end
 		for _, block in ipairs(blocks) do
-			buf:fill(block.x0 - overhang, 0, block.z0 - overhang,
-				block.x1 + overhang, 0, block.z1 + overhang, palette.node("path"))
+			buf:fill(block.x0 - apron, deck, block.z0 - apron,
+				block.x1 + apron, deck, block.z1 + apron,
+				palette.node("path"))
 		end
 		for _, block in ipairs(blocks) do
-			buf:fill(block.x0, 0, block.z0, block.x1, 0, block.z1,
+			buf:fill(block.x0, deck, block.z0, block.x1, deck, block.z1,
 				palette.node("foundation"))
 		end
 		for _, block in ipairs(blocks) do
-			buf:fill(block.x0 + 1, 0, block.z0 + 1, block.x1 - 1, 0, block.z1 - 1,
-				palette.node("floor"))
+			buf:fill(block.x0 + 1, deck, block.z0 + 1, block.x1 - 1, deck,
+				block.z1 - 1, palette.node("floor"))
+		end
+		-- Stilts: the piers the deck stands on, at every corner of a block and
+		-- every third cell along its perimeter, so the underside reads as a
+		-- forest of posts rather than as a floating slab.
+		if deck > 0 then
+			for _, block in ipairs(blocks) do
+				for _, side in ipairs(SIDES) do
+					local len = side_length(block, side)
+					for step = 0, len - 1 do
+						if step % 3 == 0 or step == len - 1 then
+							local x, z = wall_cell(block, side, step)
+							for y = 1, deck - 1 do
+								buf:put(x, y, z, palette.node("post"))
+							end
+						end
+					end
+				end
+			end
+			-- Piers under the veranda's own edge as well, so the deck reads
+			-- as carried on legs rather than as a plank slab floating over
+			-- the mud. Every third cell of the outer ring, plus its corners.
+			if apron > 0 then
+				for _, block in ipairs(blocks) do
+					local x0, x1 = block.x0 - apron, block.x1 + apron
+					local z0, z1 = block.z0 - apron, block.z1 + apron
+					local ring = {}
+					for x = x0, x1, 3 do
+						ring[#ring + 1] = {x, z0}
+						ring[#ring + 1] = {x, z1}
+					end
+					for z = z0, z1, 3 do
+						ring[#ring + 1] = {x0, z}
+						ring[#ring + 1] = {x1, z}
+					end
+					ring[#ring + 1] = {x1, z1}
+					for _, cell in ipairs(ring) do
+						for y = 1, deck - 1 do
+							buf:put(cell[1], y, cell[2], palette.node("post"))
+						end
+					end
+				end
+			end
+			for _, flight in ipairs(spec.stairs or {}) do
+				stair_flight(buf, palette, blocks[flight.block or 1],
+					flight.side, flight.index, deck, apron, flight.width)
+			end
 		end
 
 		-- Walls: stone base course, plank infill up to the eave. Perimeter
@@ -195,7 +295,7 @@ local function loader(directory)
 								end
 							end
 						else
-							buf:put(x, 1, z, palette.node("wall_accent"))
+							buf:put(x, deck + 1, z, palette.node("wall_accent"))
 							-- Half timbering: loam panels between timber studs
 							-- every third cell along the wall, which is the
 							-- rhythm the window frames already stand in, so
@@ -207,7 +307,7 @@ local function loader(directory)
 								name = (step % 3 == 0) and palette.node("post")
 									or infill
 							end
-							for y = 2, top do
+							for y = deck + 2, top do
 								buf:put(x, y, z, name)
 							end
 						end
@@ -217,7 +317,7 @@ local function loader(directory)
 			for _, corner in ipairs({{block.x0, block.z0}, {block.x1, block.z0},
 					{block.x0, block.z1}, {block.x1, block.z1}}) do
 				if not shared(index, corner[1], corner[2]) then
-					for y = 1, math.max(block.wall_h,
+					for y = 1, math.max(deck + block.wall_h,
 							wall_top(corner[1], corner[2])) do
 						buf:put(corner[1], y, corner[2], palette.node("post"))
 					end
@@ -262,15 +362,16 @@ local function loader(directory)
 							for step = p - 1, p + 2 do taken[step] = true end
 							for _, step in ipairs({p, p + 1}) do
 								local x, z = wall_cell(block, side, step)
-								local high = math.min(block.wall_h >= 4 and 3 or 2,
+								local high = math.min(
+									deck + (block.wall_h >= 4 and 3 or 2),
 									wall_top(x, z))
-								for y = 2, high do
+								for y = deck + 2, high do
 									parts.pane(buf, palette, x, y, z, axis)
 								end
 							end
 							for _, step in ipairs({p - 1, p + 2}) do
 								local fx, fz = wall_cell(block, side, step)
-								for y = 1, math.min(block.wall_h,
+								for y = 1, math.min(deck + block.wall_h,
 										wall_top(fx, fz)) do
 									buf:put(fx, y, fz, palette.node("window_frame"))
 								end
@@ -287,8 +388,8 @@ local function loader(directory)
 								for _, step in ipairs({p, p + 1}) do
 									local wx, wz = wall_cell(block, side, step)
 									local ox, oz = wx + out[1], wz + out[2]
-									for y = 2, math.min(
-											block.wall_h >= 4 and 3 or 2,
+									for y = deck + 2, math.min(
+											deck + (block.wall_h >= 4 and 3 or 2),
 											wall_top(wx, wz)) do
 										local here = buf:at(ox, y, oz)
 										if here == nil or here.name == "air" then
@@ -309,21 +410,22 @@ local function loader(directory)
 			local block = blocks[door.block or 1]
 			local face = inward(door.side)
 			local x, z = wall_cell(block, door.side, door.index)
-			buf:clear(x, 1, z, x, 2, z)
+			buf:clear(x, deck + 1, z, x, deck + 2, z)
 			local partner_x, partner_z
 			if door.double then
-				partner_x, partner_z = parts.double_door(buf, palette, x, 1, z, face)
+				partner_x, partner_z = parts.double_door(buf, palette, x,
+					deck + 1, z, face)
 			else
-				parts.door(buf, palette, x, 1, z, face, door.right_hinge)
+				parts.door(buf, palette, x, deck + 1, z, face, door.right_hinge)
 			end
-			doors[#doors + 1] = {x = x, y = 1, z = z, face = face}
+			doors[#doors + 1] = {x = x, y = deck + 1, z = z, face = face}
 			if partner_x then
-				doors[#doors + 1] = {x = partner_x, y = 1, z = partner_z,
-					face = face}
+				doors[#doors + 1] = {x = partner_x, y = deck + 1,
+					z = partner_z, face = face}
 			end
 			for _, sign in ipairs({-1, 1}) do
-				entry_torch(buf, palette, block, door.side, x, z, sign, 3,
-					lights)
+				entry_torch(buf, palette, block, door.side, x, z, sign,
+					deck + 3, lights)
 			end
 		end
 
@@ -331,6 +433,41 @@ local function loader(directory)
 		-- roles are read from `spec.roof_palette` when the composition
 		-- passes one, so a stone roof needs no second generator.
 		local roof_top = roofs.raster(buf, spec.roof_palette or palette, field)
+
+		-- The veranda rail. A deck three courses off the ground is a fall, so
+		-- the outer ring of the apron carries a railing everywhere except the
+		-- mouth of a flight -- which is the one place a walk has to cross it.
+		-- Written after the roof so an eave that reaches this ring keeps it.
+		if deck > 0 and apron > 0 then
+			local mouth = {}
+			for _, flight in ipairs(spec.stairs or {}) do
+				local block = blocks[flight.block or 1]
+				local step = SIDE_STEP[flight.side]
+				local along = (flight.side == "z-" or flight.side == "z+")
+				local half = math.floor(((flight.width or 1) - 1) / 2)
+				local bx, bz = wall_cell(block, flight.side, flight.index)
+				for offset = -half - 1, half + 1 do
+					local mx = bx + step[1] * apron + (along and offset or 0)
+					local mz = bz + step[2] * apron + (along and 0 or offset)
+					mouth[mx .. ":" .. mz] = true
+				end
+			end
+			for _, block in ipairs(blocks) do
+				local x0, x1 = block.x0 - apron, block.x1 + apron
+				local z0, z1 = block.z0 - apron, block.z1 + apron
+				for z = z0, z1 do
+					for x = x0, x1 do
+						if (x == x0 or x == x1 or z == z0 or z == z1) and
+								not mouth[x .. ":" .. z] then
+							local here = buf:at(x, deck + 1, z)
+							if here == nil or here.name == "air" then
+								buf:put(x, deck + 1, z, palette.node("railing"))
+							end
+						end
+					end
+				end
+			end
+		end
 
 		-- Chimneys: stone stacks rising through the roof from a wall cell.
 		for _, stack in ipairs(spec.chimneys or {}) do
@@ -347,23 +484,26 @@ local function loader(directory)
 			if block.kit then
 				local room = {x1 = block.x0 + 1, z1 = block.z0 + 1,
 					x2 = block.x1 - 1, z2 = block.z1 - 1,
-					y = 0, h = block.wall_h}
+					y = deck, h = deck + block.wall_h}
 				local kit_lights = interiors.furnish(block.kit, buf, parts,
 					palette, room, block.kit_spec)
 				for _, light in ipairs(kit_lights) do
 					lights[#lights + 1] = light
 				end
 			end
-			room_corners[#room_corners + 1] = {x = block.x0 + 1, y = 0,
-				z = block.z0 + 1, top = block.wall_h,
+			room_corners[#room_corners + 1] = {x = block.x0 + 1, y = deck,
+				z = block.z0 + 1, top = deck + block.wall_h,
 				closed = (#(block.open_sides or spec.open_sides or {}) == 0)
 					and true or false, id = spec.id}
-			room_corners[#room_corners + 1] = {x = block.x1 - 1, y = 0,
+			room_corners[#room_corners + 1] = {x = block.x1 - 1, y = deck,
 				z = block.z1 - 1}
 		end
 
-		local inside = spec.inside or {x = blocks[1].x0 + 2, y = 1,
+		-- A generator names its destination one course above ITS floor, so
+		-- the deck is added here and every existing generator stays correct.
+		local wanted = spec.inside or {x = blocks[1].x0 + 2, y = 1,
 			z = blocks[1].z1 - 2}
+		local inside = {x = wanted.x, y = wanted.y + deck, z = wanted.z}
 		buf:clear(inside.x, inside.y, inside.z, inside.x, inside.y + 1, inside.z)
 
 		return {
@@ -387,7 +527,9 @@ local function loader(directory)
 		local w, d = spec.w or 9, spec.d or 7
 		local wall_h = spec.wall_h or 4
 		return M.build(palette, {
-			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
+			id = spec.id, overhang = spec.overhang or 1, apron = spec.apron,
+			stilt = spec.stilt, stairs = spec.stairs,
+			roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1,
 				wall_h = wall_h, roof = spec.roof or "gable",
@@ -403,25 +545,30 @@ local function loader(directory)
 		})
 	end
 
-	-- The identity building: a cross gabled forge hall whose smithy wing
-	-- meets the main roof in two valleys.
+	-- The identity building: a cross gabled craft hall whose wing meets the
+	-- main roof in two valleys. `kit` and `wing_kit` name the two interiors,
+	-- so the same silhouette serves a forge and a bone-carver's shop without
+	-- a second generator; the forge kits stay the default.
 	function M.workshop(palette, spec)
 		local w, d = spec.w or 11, spec.d or 15
 		local wing = spec.wing or 7
 		local wall_h = spec.wall_h or 5
 		local wz = math.floor((d - wing) / 2)
 		return M.build(palette, {
-			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
+			id = spec.id, overhang = spec.overhang or 1, apron = spec.apron,
+			stilt = spec.stilt, stairs = spec.stairs,
+			roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,
 			blocks = {
 				{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
-					roof = "gable", ridge_axis = "z", rise = 4,
-					kit = "workshop"},
+					roof = spec.roof or "gable", ridge_axis = "z", rise = 4,
+					kit = spec.kit or "workshop"},
 				{x0 = w - 2, z0 = wz, x1 = w - 2 + wing - 1, z1 = wz + wing - 1,
-					wall_h = wall_h, roof = "gable", ridge_axis = "x", rise = 3,
-					kit = "smithy"},
+					wall_h = spec.wing_wall_h or wall_h,
+					roof = spec.roof or "gable", ridge_axis = "x", rise = 3,
+					kit = spec.wing_kit or "smithy"},
 			},
-			chimneys = {{x = math.floor(w / 2), z = 0},
+			chimneys = spec.chimneys or {{x = math.floor(w / 2), z = 0},
 				{x = w - 2 + wing - 1, z = wz + 1}},
 			doors = {{side = spec.door_side or "z+",
 				index = spec.door_index or math.floor(w / 2), double = true}},
@@ -434,12 +581,15 @@ local function loader(directory)
 		local w, d = spec.w or 13, spec.d or 15
 		local wall_h = spec.wall_h or 5
 		return M.build(palette, {
-			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
+			id = spec.id, overhang = spec.overhang or 1, apron = spec.apron,
+			stilt = spec.stilt, stairs = spec.stairs,
+			roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
-				roof = "hip", rise = 4, kit = "hall",
+				roof = spec.roof or "hip", rise = spec.rise or 4,
+				kit = spec.kit or "hall",
 				kit_spec = {hearth_x = 1, hearth_z = 2, hearth_face = 1}}},
-			chimneys = {{x = 0, z = 2}},
+			chimneys = spec.chimneys or {{x = 0, z = 2}},
 			doors = {{side = spec.door_side or "z-", index = math.floor(w / 2),
 				double = true}},
 			inside = spec.inside or {x = 2, y = 1, z = d - 3},
@@ -452,7 +602,9 @@ local function loader(directory)
 		local w, d = spec.w or 9, spec.d or 13
 		local wall_h = spec.wall_h or 4
 		return M.build(palette, {
-			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
+			id = spec.id, overhang = spec.overhang or 1, apron = spec.apron,
+			stilt = spec.stilt, stairs = spec.stairs,
+			roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
 				roof = spec.roof or "saltbox", ridge_axis = "z", lift = 2,
@@ -469,10 +621,13 @@ local function loader(directory)
 		local w, d = spec.w or 13, spec.d or 9
 		local wall_h = spec.wall_h or 4
 		return M.build(palette, {
-			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
+			id = spec.id, overhang = spec.overhang or 1, apron = spec.apron,
+			stilt = spec.stilt, stairs = spec.stairs,
+			roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
-				roof = "gable", ridge_axis = "x", rise = 3, kit = "yard",
+				roof = spec.roof or "gable", ridge_axis = "x", rise = 3,
+				kit = "yard",
 				open_sides = spec.open_sides or {"z-", "x+"}}},
 			doors = {},
 			inside = spec.inside or {x = 2, y = 1, z = math.floor(d / 2)},
@@ -486,7 +641,9 @@ local function loader(directory)
 		local w, d = spec.w or 13, spec.d or 11
 		local wall_h = spec.wall_h or 5
 		return M.build(palette, {
-			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
+			id = spec.id, overhang = spec.overhang or 1, apron = spec.apron,
+			stilt = spec.stilt, stairs = spec.stairs,
+			roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
 				roof = spec.roof or "saltbox", ridge_axis = "z", lift = 2,
@@ -504,12 +661,15 @@ local function loader(directory)
 		local w, d = spec.w or 11, spec.d or 15
 		local wall_h = spec.wall_h or 6
 		return M.build(palette, {
-			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
+			id = spec.id, overhang = spec.overhang or 1, apron = spec.apron,
+			stilt = spec.stilt, stairs = spec.stairs,
+			roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
-				roof = "hip", rise = 4, kit = "chapel",
+				roof = spec.roof or "hip", ridge_axis = spec.ridge_axis,
+				rise = spec.rise or 4, kit = spec.kit or "chapel",
 				kit_spec = {door_side = spec.door_side or "z-"}}},
-			chimneys = {},
+			chimneys = spec.chimneys or {},
 			doors = {{side = spec.door_side or "z-",
 				index = spec.door_index or math.floor(w / 2), double = true}},
 			inside = spec.inside or {x = 2, y = 1, z = d - 3},
@@ -536,7 +696,18 @@ local function loader(directory)
 			buf:put(side[1], height, side[2], palette.node("beam"))
 		end
 		-- The bell frame and the lamp that marks the hamlet's centre at night.
+		--
+		-- The bell hangs one course under the beam ring and the lamp stands
+		-- on the floor. In a three-course lantern those two touch, which is
+		-- why nothing noticed that in a TALLER one they do not: the elf
+		-- shrine's spire is four courses, and its bell hung in the middle of
+		-- the lantern with air on all six sides. A bell hangs from a frame,
+		-- so a taller lantern gets the cross-beam it hangs from; a
+		-- three-course one is unchanged, bell resting straight on its lamp.
 		buf:put(2, height - 1, 2, palette.node("chimney_cap"))
+		if height - 1 > 2 then
+			buf:put(2, height, 2, palette.node("beam"))
+		end
 		parts.floor_torch(buf, palette, 2, 1, 2)
 		lights[#lights + 1] = {x = 2, y = 1, z = 2}
 		local field = roofs.hip({x0 = -1, x1 = w, z0 = -1, z1 = d,
@@ -545,6 +716,137 @@ local function loader(directory)
 		return {
 			buffer = buf, w = w, d = d, peak = peak,
 			points = {lights = lights},
+		}
+	end
+
+	-- A roofless ruin: the shell of a home nobody rebuilt.
+	--
+	-- Everything the other generators guarantee, this one deliberately does
+	-- not. There is no roof, no door, no window, no light and no destination;
+	-- the wall runs break off at four different heights and two of them are
+	-- gone to the footing. What it does keep is the footprint, the footings
+	-- and the floor, so the plot still reads as a house on the lane and not
+	-- as a pile of stone in a field.
+	--
+	-- Its room corner is published with `ruin = true`. That flag is the whole
+	-- contract with `tools/wp13/blueprint_kat.lua`: the roof-and-light
+	-- invariant of the pipeline contract section 5 is relaxed for a room that
+	-- carries it, and stays in full force for every inhabited room of every
+	-- settlement -- including the two intact homes on the same lane.
+	--
+	-- `phase` shifts the wall-height hash, so two ruins of the same size on
+	-- the same lane collapse differently.
+	function M.ruin(palette, spec)
+		local w, d = spec.w or 9, spec.d or 9
+		local wall_h = spec.wall_h or 5
+		local phase = spec.phase or 0
+		local buf = parts.buffer()
+		local block = {x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1}
+
+		buf:clear(-1, 1, -1, w, wall_h + 2, d)
+		-- The plot keeps the apron every other house on the lane has, so it
+		-- still reads as a house plot and not as a heap in a field.
+		buf:fill(-1, 0, -1, w, 0, d, palette.node("path"))
+		buf:fill(0, 0, 0, w - 1, 0, d - 1, palette.node("foundation"))
+		-- What is left of the boards: a floor with holes in it.
+		for z = 1, d - 2 do
+			for x = 1, w - 2 do
+				local gone = (x * 5 + z * 3 + phase) % 5 == 0
+				buf:put(x, 0, z, palette.node(gone and "rubble" or "floor"))
+			end
+		end
+
+		-- The standing walls, in RUNS rather than cell by cell. A wall comes
+		-- down in stretches; a height drawn per cell reads as crenellation,
+		-- which is exactly what the first render showed. The hash is taken
+		-- over a three-node lattice, so a run of about three courses shares
+		-- one height, and it is a function of the cell's own position, so the
+		-- two sides that meet at a corner agree about it.
+		local standing, tops = 0, {}
+		for _, side in ipairs(SIDES) do
+			for index = 0, side_length(block, side) - 1 do
+				local x, z = wall_cell(block, side, index)
+				local hash = (math.floor(x / 3) * 7 + math.floor(z / 3) * 11 +
+					phase * 3) % 9
+				local top = 0
+				if hash < 1 then top = 0
+				elseif hash < 3 then top = 1
+				elseif hash < 5 then top = wall_h - 3
+				elseif hash < 7 then top = wall_h - 1
+				else top = wall_h end
+				tops[x .. ":" .. z] = top
+				if top >= 1 then
+					buf:put(x, 1, z, palette.node("wall_accent"))
+					for y = 2, top do buf:put(x, y, z, palette.node("wall")) end
+					standing = standing + 1
+				end
+			end
+		end
+		-- Corner posts: two still up, two snapped off at a course or three.
+		local peak = 1
+		for index, corner in ipairs({{0, 0}, {w - 1, 0}, {0, d - 1},
+				{w - 1, d - 1}}) do
+			local top = ((index + phase) % 2 == 0) and wall_h or
+				(1 + (index + phase) % 3)
+			for y = 1, top do
+				buf:put(corner[1], y, corner[2], palette.node("post"))
+			end
+			tops[corner[1] .. ":" .. corner[2]] = top
+		end
+		for _, top in pairs(tops) do
+			if top > peak then peak = top end
+		end
+
+		-- What came down: masonry heaps inside and against the walls, bones
+		-- where the blight reached in, ivy on the faces that still carry it
+		-- and cobwebs in the corners that are still corners.
+		for z = 1, d - 2 do
+			for x = 1, w - 2 do
+				local hash = (x * 13 + z * 31 + phase * 3) % 17
+				local here = buf:at(x, 1, z)
+				if here == nil or here.name == "air" then
+					if hash < 3 then
+						dressing.rubble_heap(buf, palette, x, z, 1 + hash % 2)
+					elseif hash == 5 then
+						buf:put(x, 1, z, palette.node("undergrowth"))
+					elseif hash == 9 then
+						buf:put(x, 1, z, palette.node("grass_tuft"))
+					end
+				end
+			end
+		end
+		local ivy, cobwebs = 0, 0
+		for _, side in ipairs(SIDES) do
+			local step = SIDE_STEP[side]
+			for index = 1, side_length(block, side) - 2 do
+				local x, z = wall_cell(block, side, index)
+				local top = tops[x .. ":" .. z] or 0
+				local ix, iz = x - step[1], z - step[2]
+				if top >= 3 and (x * 7 + z * 11 + phase) % 3 == 0 and
+						dressing.ivy(buf, palette, ix, top - 1, iz,
+							step[1], step[2]) then
+					ivy = ivy + 1
+				end
+				if top >= 2 and (x * 5 + z * 17 + phase) % 4 == 0 and
+						dressing.cobweb(buf, palette, ix, top, iz) then
+					cobwebs = cobwebs + 1
+				end
+			end
+		end
+
+		return {
+			buffer = buf, w = w, d = d, peak = peak,
+			standing = standing, ivy = ivy, cobwebs = cobwebs,
+			points = {
+				doors = {},
+				lights = {},
+				inside = {},
+				room_corner = {
+					{x = 1, y = 0, z = 1, top = peak, closed = false,
+						ruin = true, id = spec.id},
+					{x = w - 2, y = 0, z = d - 2},
+				},
+			},
 		}
 	end
 
@@ -558,8 +860,8 @@ local function loader(directory)
 		local lights, doors = {}, {}
 		local block = {x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1}
 
-		local field = roofs.hip({x0 = -1, x1 = w, z0 = -1, z1 = d,
-			base = plate, rise = 4})
+		local field = roofs.field(spec.roof or "hip", {x0 = -1, x1 = w,
+			z0 = -1, z1 = d, base = plate, rise = 4})
 		local peak = plate
 		for z = -1, d do
 			for x = -1, w do

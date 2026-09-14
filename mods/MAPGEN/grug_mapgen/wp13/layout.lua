@@ -55,6 +55,54 @@ local function loader(directory)
 		end
 	end
 
+	-- Blight basin ground: dead earth all over, with bone-litter drifts and
+	-- the odd gravel scar. Unlike `meadow` the blotches are NOT confined to
+	-- a worn core: a blight basin is blighted everywhere, and the litter is
+	-- what the ring barrows leave, not what the hamlet treads.
+	--
+	-- Third period and phase again, on purpose: three settlements that share
+	-- one ground routine must not share one ground texture.
+	function M.blight(buf, palette, radius)
+		buf:fill(-radius, -1, -radius, radius, -1, radius, palette.node("subsoil"))
+		buf:fill(-radius, 0, -radius, radius, 0, radius, palette.node("ground"))
+		for z = -radius + 1, radius - 1, 4 do
+			for x = -radius + 1, radius - 1, 5 do
+				local hash = (x * 17 + z * 29) % 13
+				if hash < 4 then
+					buf:fill(x - 1, 0, z, x + 1, 0, z + 1,
+						palette.node("ground_patch"))
+				elseif hash == 9 then
+					buf:put(x, 0, z, palette.node("ground_bare"))
+				end
+			end
+		end
+	end
+
+	-- Basin floor: rainforest litter broken by blotches of swamp mud and a
+	-- little bare earth. The mud is laid in five-by-three patches on a coarse
+	-- lattice rather than cell by cell, because a per-cell scatter reads as
+	-- noise at overview scale and, more practically, leaves no three-by-three
+	-- of clean litter for a tree to root in.
+	--
+	-- Period and phase differ again from `ground` and `meadow`: three
+	-- settlements that share a ground routine must not share a ground texture.
+	function M.basin(buf, palette, radius)
+		buf:fill(-radius, -1, -radius, radius, -1, radius, palette.node("subsoil"))
+		buf:fill(-radius, 0, -radius, radius, 0, radius, palette.node("ground"))
+		for z = -radius + 2, radius - 2, 6 do
+			for x = -radius + 2, radius - 2, 7 do
+				local hash = (x * 37 + z * 53) % 17
+				if hash < 7 then
+					buf:fill(x - 2, 0, z - 1, x + 2, 0, z + 1,
+						palette.node("ground_patch"))
+				elseif hash == 11 then
+					buf:fill(x - 1, 0, z, x + 1, 0, z + 1,
+						palette.node("ground_bare"))
+				end
+			end
+		end
+	end
+
 	-- Pave a rectangle and clear the headroom above it.
 	function M.pave(buf, palette, x1, z1, x2, z2, role, height)
 		local name = palette.node(role or "path")
@@ -149,7 +197,15 @@ local function loader(directory)
 	-- and regular, a field-corner grove when it is not. The crown of
 	-- `dressing.broadleaf` reaches three nodes, so the clearance test does
 	-- too, and the stem keeps a node of soil all round like the pines.
-	function M.plant_orchard(buf, palette, x1, z1, x2, z2, spacing, height)
+	-- `species` names the dressing routine that draws the tree, so a dry
+	-- region can scatter acacias through the same clearance rule; it defaults
+	-- to the broadleaf the orchards were written for.
+	function M.plant_orchard(buf, palette, x1, z1, x2, z2, spacing, height,
+			species)
+		local draw = dressing[species or "broadleaf"]
+		if type(draw) ~= "function" then
+			error("wp13 layout: unknown tree species " .. tostring(species), 0)
+		end
 		local planted = 0
 		for z = z1, z2, spacing do
 			for x = x1, x2, spacing do
@@ -160,8 +216,94 @@ local function loader(directory)
 				if M.natural_area(buf, tx - 1, tz - 1, tx + 1, tz + 1) and
 						M.free_area(buf, tx - 3, tz - 3, tx + 3, tz + 3,
 							stem + 5) then
-					dressing.broadleaf(buf, palette, tx, tz, stem)
+					draw(buf, palette, tx, tz, stem)
 					planted = planted + 1
+				end
+			end
+		end
+		return planted
+	end
+
+	-- The gravewood stand around the Hollow: a deterministic scatter over a
+	-- rectangle that only takes root where nothing was built. A gravewood
+	-- reaches three nodes out and one above its stem, so that is what the
+	-- clearance test asks for; the stems are five to seven logs, which is the
+	-- height range of the two decoded assets.
+	function M.plant_gravewood(buf, palette, x1, z1, x2, z2, step)
+		local planted = 0
+		for z = z1, z2, step do
+			for x = x1, x2, step do
+				local hash = (x * 53 + z * 89 + x * z) % 101
+				local tx = x + hash % 5 - 2
+				local tz = z + math.floor(hash / 5) % 5 - 2
+				local height = 5 + hash % 3
+				if hash % 5 < 3 and
+						M.natural_area(buf, tx - 1, tz - 1, tx + 1, tz + 1) and
+						M.free_area(buf, tx - 3, tz - 3, tx + 3, tz + 3,
+							height + 2) then
+					dressing.gravewood(buf, palette, tx, tz, height)
+					planted = planted + 1
+				end
+			end
+		end
+		return planted
+	end
+
+	-- Glade ground: the biome's own litter, opened into a few grassy lawns
+	-- where the settlement sits and worn to bare earth only under the market
+	-- and the workshop yard. `core` is the half-width of the worn area.
+	--
+	-- Third period and phase, for the reason given above `meadow`: three
+	-- settlements sharing a ground routine must not share a ground texture.
+	function M.glade(buf, palette, radius, core)
+		core = core or 34
+		buf:fill(-radius, -1, -radius, radius, -1, radius, palette.node("subsoil"))
+		buf:fill(-radius, 0, -radius, radius, 0, radius, palette.node("ground"))
+		for z = -core, core, 4 do
+			for x = -core, core, 7 do
+				local hash = (x * 13 + z * 29) % 17
+				if hash < 4 then
+					buf:fill(x - 2, 0, z - 1, x + 2, 0, z + 1,
+						palette.node("ground_patch"))
+				elseif hash == 11 or hash == 14 then
+					buf:fill(x, 0, z, x + 1, 0, z + 1,
+						palette.node("ground_bare"))
+				end
+			end
+		end
+	end
+
+	-- Columnar standards on open ground: the silverwood grove. The crown of
+	-- `dressing.columnar` reaches two nodes and one course above the last
+	-- log, so the clearance test is a 5 x 5 column of `height + 2`, and the
+	-- stem keeps a node of soil all round like the pines.
+	function M.plant_grove(buf, palette, radius, step, spots)
+		local planted = 0
+		local function try(tx, tz, height)
+			if tx >= -radius + 3 and tx <= radius - 3 and
+					tz >= -radius + 3 and tz <= radius - 3 and
+					M.natural_area(buf, tx - 1, tz - 1, tx + 1, tz + 1) and
+					M.free_area(buf, tx - 2, tz - 2, tx + 2, tz + 2,
+						height + 2) then
+				dressing.columnar(buf, palette, tx, tz, height)
+				planted = planted + 1
+			end
+		end
+		for _, spot in ipairs(spots or {}) do
+			try(spot[1], spot[2], spot[3] or 12)
+		end
+		for z = -radius + 3, radius - 3, step do
+			for x = -radius + 3, radius - 3, step do
+				local hash = (x * 53 + z * 131 + x * z) % 89
+				-- Ten to thirteen logs: the schematic's six clear logs stay
+				-- clear at every height in that range. The grove thins toward
+				-- the settlement, because a glade is a clearing the wood was
+				-- opened for and not a lawn with a lattice of trees on it.
+				local reach = math.max(math.abs(x), math.abs(z))
+				local density = reach < 24 and 1 or (reach < 40 and 3 or 4)
+				if hash % 7 < density then
+					try(x + hash % 5 - 2, z + math.floor(hash / 5) % 5 - 2,
+						10 + hash % 4)
 				end
 			end
 		end
@@ -189,6 +331,66 @@ local function loader(directory)
 					dressing.tree(buf, palette, tx, tz, height)
 					planted = planted + 1
 				end
+			end
+		end
+		return planted
+	end
+
+	-- The kapok jungle the basin stands in: a deterministic scatter of jungle
+	-- trees wherever nothing was built. `dressing.jungle_tree` puts its crown
+	-- in the top three courses and reaches two nodes out, so the clearance
+	-- test does too, and the buttress root wants a node of soil all round
+	-- like every other stem here.
+	function M.plant_jungle(buf, palette, radius, step)
+		local planted = 0
+		for z = -radius + 3, radius - 3, step do
+			for x = -radius + 3, radius - 3, step do
+				local hash = (x * 89 + z * 167 + x * z) % 101
+				local tx = x + hash % 5 - 2
+				local tz = z + math.floor(hash / 5) % 5 - 2
+				local height = 11 + hash % 5
+				if hash % 6 < 4 and
+						tx >= -radius + 3 and tx <= radius - 3 and
+						tz >= -radius + 3 and tz <= radius - 3 and
+						M.natural_area(buf, tx - 1, tz - 1, tx + 1, tz + 1) and
+						M.free_area(buf, tx - 2, tz - 2, tx + 2, tz + 2,
+							height + 4) then
+					dressing.jungle_tree(buf, palette, tx, tz, height)
+					planted = planted + 1
+				end
+			end
+		end
+		return planted
+	end
+
+	-- The emergent giants that stand out of the canopy. Their buttress is
+	-- five cells across and their crown seven, so they are placed by hand
+	-- and each one is silently skipped if its ground is not clear.
+	function M.plant_giants(buf, palette, spots)
+		-- An emergent is the one tree that roots in the wet as readily as in
+		-- the dry, so its ground test accepts the pad's own mud as well as
+		-- its soil. Everything the settlement laid down -- plank, basalt,
+		-- straw -- still refuses it.
+		local mud = palette.node("ground_patch")
+		local function rooted(x1, z1, x2, z2)
+			for z = z1, z2 do
+				for x = x1, x2 do
+					local below = buf:at(x, 0, z)
+					if below == nil or (below.name:find("dirt") == nil and
+							below.name ~= mud) then
+						return false
+					end
+				end
+			end
+			return true
+		end
+		local planted = 0
+		for _, spot in ipairs(spots) do
+			local x, z, height = spot[1], spot[2], spot[3] or 18
+			if rooted(x - 2, z - 2, x + 2, z + 2) and
+					M.free_area(buf, x - 3, z - 3, x + 3, z + 3, height + 5) then
+				dressing.emergent(buf, palette, x, z, height)
+				planted = planted + 1
 			end
 		end
 		return planted

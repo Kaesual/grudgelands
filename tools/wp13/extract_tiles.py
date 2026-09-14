@@ -678,6 +678,131 @@ MANUAL_OVERRIDES = {
     "grug_decor:cottages_window_shutter_open": {
         "tiles": ["grug_decor_cottages_cottages_minimal_wood.png"],
         "drawtype": "nodebox", "paramtype2": "facedir"},
+    # ... and the undead vocabulary the Stillgrave palette adds. The castle
+    # pillars come out of a `register_pillar(material)` loop and the xdecor
+    # pieces out of the same `tex()` helper as the four above, so neither is
+    # reachable by static scanning.
+    "grug_decor:castle_pillar_obsidianbrick_bottom": {
+        "tiles": ["default_obsidian_brick.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_pillar_obsidianbrick_middle": {
+        "tiles": ["default_obsidian_brick.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:castle_pillar_obsidianbrick_top": {
+        "tiles": ["default_obsidian_brick.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:darkage_iron_bars": {
+        "tiles": ["grug_decor_darkage_darkage_iron_bars.png"],
+        "drawtype": "glasslike", "alpha": "clip"},
+    "grug_decor:xdecor_candle": {
+        "tiles": ["grug_decor_xdecor_xdecor_candle_floor.png"],
+        "drawtype": "torchlike", "paramtype2": "wallmounted",
+        "alpha": "clip"},
+    "grug_decor:xdecor_cobweb": {
+        "tiles": ["grug_decor_xdecor_xdecor_cobweb.png"],
+        "drawtype": "plantlike", "alpha": "clip"},
+    "grug_decor:xdecor_ivy": {
+        "tiles": ["grug_decor_xdecor_xdecor_ivy.png"],
+        "drawtype": "signlike", "paramtype2": "wallmounted",
+        "alpha": "clip"},
+    "grug_decor:xdecor_table": {
+        "tiles": ["grug_decor_xdecor_xdecor_wood.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:xdecor_workbench": {
+        "tiles": ["grug_decor_xdecor_xdecor_workbench_top.png",
+                  "grug_decor_xdecor_xdecor_workbench_bottom.png",
+                  "grug_decor_xdecor_xdecor_workbench_sides.png",
+                  "grug_decor_xdecor_xdecor_workbench_sides.png",
+                  "grug_decor_xdecor_xdecor_workbench_sides.png",
+                  "grug_decor_xdecor_xdecor_workbench_front.png"],
+        "drawtype": "normal", "paramtype2": "facedir"},
+    # `grug_nodes` builds its litter tops through a `register_litter()`
+    # wrapper, in the same three-tile shape default's own litters use.
+    "grug_nodes:dirt_with_bone_litter": {
+        "tiles": ["grug_nodes_bone_litter.png", "default_dirt.png",
+                  "default_dirt.png^grug_nodes_bone_litter_side.png"],
+        "drawtype": "normal"},
+    # ... the elf vocabulary the Silverleaf palette adds. `darkage.lua` builds
+    # every one of these tile names through its own `tex()` helper, and
+    # `shapes.lua` registers the stair and slab family through a loop, so the
+    # scanner can follow neither. Each shape carries the tile of the cube it
+    # is cut from, which is what `register_stair_and_slab` does.
+    "grug_decor:darkage_marble": {
+        "tiles": ["grug_decor_darkage_darkage_marble.png"],
+        "drawtype": "normal"},
+    "grug_decor:darkage_marble_tile": {
+        "tiles": ["grug_decor_darkage_darkage_marble_tile.png"],
+        "drawtype": "normal"},
+    "grug_decor:darkage_slate_brick": {
+        "tiles": ["grug_decor_darkage_darkage_slate_brick.png"],
+        "drawtype": "normal"},
+    "grug_decor:darkage_slate_tile": {
+        "tiles": ["grug_decor_darkage_darkage_slate_tile.png"],
+        "drawtype": "normal"},
+    "grug_decor:darkage_slate_tile_stair": {
+        "tiles": ["grug_decor_darkage_darkage_slate_tile.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir", "shape": "stair"},
+    "grug_decor:darkage_slate_tile_stair_inner": {
+        "tiles": ["grug_decor_darkage_darkage_slate_tile.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir",
+        "shape": "stair_inner"},
+    "grug_decor:darkage_slate_tile_stair_outer": {
+        "tiles": ["grug_decor_darkage_darkage_slate_tile.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir",
+        "shape": "stair_outer"},
+    "grug_decor:darkage_slate_tile_slab": {
+        "tiles": ["grug_decor_darkage_darkage_slate_tile.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir", "shape": "slab"},
+    "grug_decor:darkage_slate_brick_slab": {
+        "tiles": ["grug_decor_darkage_darkage_slate_brick.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir", "shape": "slab"},
+    "grug_decor:darkage_serpentine_slab": {
+        "tiles": ["grug_decor_darkage_darkage_serpentine.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir", "shape": "slab"},
+    "grug_decor:xdecor_potted_viola": {
+        "tiles": ["grug_decor_xdecor_xdecor_viola_pot.png"],
+        "drawtype": "plantlike", "alpha": "clip"},
+    "grug_decor:xdecor_potted_dandelion_white": {
+        "tiles": ["grug_decor_xdecor_xdecor_dandelion_white_pot.png"],
+        "drawtype": "plantlike", "alpha": "clip"},
+    # The hanging lantern's tile is the same four-frame strip as the floor
+    # lantern's; the renderer draws one frame.
+    "grug_decor:xdecor_lantern_hanging": {
+        "tiles": ["grug_decor_xdecor_xdecor_lantern.png^[verticalframe:4:0"],
+        "drawtype": "plantlike", "alpha": "clip"},
+    # `grug_nodes` builds the elf litter top through the same
+    # `register_litter()` wrapper as the undead one.
+    "grug_nodes:dirt_with_silver_litter": {
+        "tiles": ["grug_nodes_silver_litter.png", "default_dirt.png",
+                  "default_dirt.png^grug_nodes_silver_litter_side.png"],
+        "drawtype": "normal"},
+    # ... and the jungle vocabulary the troll palette adds. `darkage.lua`
+    # builds its tile names through its own `tex()` helper and composes the
+    # reinforced timber as an overlay over `default_wood.png`, neither of
+    # which the scanner can follow.
+    "grug_decor:darkage_basalt_brick": {
+        "tiles": ["grug_decor_darkage_darkage_basalt_brick.png"],
+        "drawtype": "normal"},
+    "grug_decor:darkage_serpentine": {
+        "tiles": ["grug_decor_darkage_darkage_serpentine.png"],
+        "drawtype": "normal"},
+    "grug_decor:darkage_reinforced_wood": {
+        "tiles": ["default_wood.png^grug_decor_darkage_darkage_reinforce.png"],
+        "drawtype": "normal"},
+    "grug_decor:darkage_wood_bars": {
+        "tiles": ["grug_decor_darkage_darkage_wood_bars.png"],
+        "drawtype": "glasslike", "alpha": "clip"},
+    # The lantern's tile is a four-frame vertical animation strip (16 x 64);
+    # the renderer draws one frame.
+    "grug_decor:xdecor_lantern": {
+        "tiles": ["grug_decor_xdecor_xdecor_lantern.png^[verticalframe:4:0"],
+        "drawtype": "plantlike", "alpha": "clip"},
+    "grug_decor:xdecor_rope": {
+        "tiles": ["grug_decor_xdecor_xdecor_rope.png"],
+        "drawtype": "plantlike", "alpha": "clip"},
+    "grug_decor:cottages_tub": {
+        "tiles": ["grug_decor_cottages_cottages_barrel.png"],
+        "drawtype": "nodebox"},
     "grug_decor:cottages_wagon_wheel": {
         "tiles": ["grug_decor_cottages_cottages_wagonwheel.png"],
         "drawtype": "mesh", "paramtype2": "wallmounted", "alpha": "clip"},
@@ -690,6 +815,16 @@ MANUAL_OVERRIDES = {
     "grug_decor:xdecor_potted_dandelion_yellow": {
         "tiles": ["grug_decor_xdecor_xdecor_dandelion_yellow_pot.png"],
         "drawtype": "plantlike", "alpha": "clip"},
+    # ... and the camp vocabulary the orc palette adds. `darkage.lua` builds
+    # its tile names through the same local helper, so the mud brick and the
+    # banded course had no texture at all and rendered as flat colour, which
+    # is exactly the wall the whole settlement is made of.
+    "grug_decor:darkage_adobe": {
+        "tiles": ["grug_decor_darkage_darkage_adobe.png"],
+        "drawtype": "normal"},
+    "grug_decor:darkage_ors_block": {
+        "tiles": ["grug_decor_darkage_darkage_ors_block.png"],
+        "drawtype": "normal"},
 }
 
 # Last-resort flat colours for names that resolve to no texture at all.

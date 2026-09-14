@@ -1,0 +1,10 @@
+exit=4
+WP13 engine PASS: forward/reverse, cold/disk: /tmp/grug-wp13-kapok-user-seed
+pids before: 645720 
+pids after:  645720 
+WP13 engine PASS: forward/reverse, cold/disk: /tmp/grug-wp13-kapok-boundary-seed
+pids before: 645720 
+pids after:  645720 678438 678477 
+a headless server was left behind
+
+[exited with code 0]

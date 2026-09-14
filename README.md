@@ -73,9 +73,13 @@ immutable, and full-column dragon channels keep the offshore islands boat-only.
 Natural resources exist under land and zone-owned planned water; the six-race
 supply gate compares all-resource deposit opportunities by exact host volume.
 Playable-boat behavior is decided in [boats.md](docs/design/boats.md).
-[Settlement design](docs/design/settlements.md) begins with Hearthpine Vale: a
-dwarf craft settlement with stone foundations, pine timber and a small
-guardpost.
+[Settlement design](docs/design/settlements.md) begins with the six race
+starts, each built from the same library and its own palette: Hearthpine Vale
+(dwarf, pine and stone), Dawnmere Fields (human, half-timbered loam on a
+village green), Silverleaf Glade (elf, slate and marble under columnar
+silverwoods), Stillgrave Hollow (undead, gravewood and obsidian round two
+burial grounds), Sunscar Camp (orc, adobe behind crenellated breastworks) and
+Kapok Cradle (troll, a plank village on stilts over a basin).
 
 [Open-world housing](docs/design/housing.md) uses Claim Stones in exactly ten
 peaceful level-11–30 zones. Four tiers protect cube radii 20/30/40/50, while
@@ -227,21 +231,23 @@ mount and deep-content decisions live in [the crafting/mount TODO](TODO-design-c
 and [the depth TODO](TODO-design-depth.md); the [boat contract](docs/design/boats.md)
 and [PvP-death XP exemption](docs/design/progression.md) are already decided.
 
-**In progress:** WP13 begins with the dwarf start in Hearthpine Vale, an
-inhabited craft settlement with a small guardpost. After two accepted
-increments, the third rebuilds the settlement from a reusable building
-library with per-race palettes: small dense houses with doors, pane windows,
-stair roofs, furnished interiors and exterior dressing inside a pine-wood
-clearing. The same package adds a server-side atmosphere layer (shadows,
-bloom, saturation, waving), seven vendored minetest_game building mods, a
-curated 333-node decorative kit from castle_masonry, cottages, darkage and
-xdecor-libre, and a textured isometric renderer used to review buildings
-before playtests. Native checks, interpreter parity and independent reviews
-are green. Dawnmere Fields (human) followed the same day on a generalised
-settlement roster, and a zone atmosphere layer gives each race region,
-the underground and the sea its own fog, sky and light; both await the
-user's playtest. The remaining four starts, capitals and functional
-settlement services remain later work.
+**In progress:** WP13 has built **all six start settlements**. They share one
+reusable building library with per-race palettes -- small dense houses with
+doors, pane windows, stair roofs, furnished interiors and exterior dressing
+-- and each start is a different settlement out of it: a dwarf craft village
+in a pine clearing, a human farming hamlet on a green, an elf glade under
+columnar silverwoods, an undead hollow round two walled burial grounds, an
+orc war camp behind a stake palisade, and a troll stilt village on
+boardwalks over a basin. The package also adds a server-side atmosphere
+layer (shadows, bloom, saturation, waving) with per-zone fog, sky and light,
+seven vendored minetest_game building mods, a curated 333-node decorative kit
+from castle_masonry, cottages, darkage and xdecor-libre, and a textured
+isometric renderer used to review buildings before playtests. The last four
+starts were built in parallel lanes, merged onto one branch and given one
+combined review-fix round; native checks, interpreter parity and independent
+reviews are green. **Every start still awaits the user's GUI playtest**, and
+capitals, villages, outposts, camps and functional settlement services remain
+later work.
 WP5, WP26, WP44, WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind
 shipped prerequisites. WP34 still needs structures and economy.
 

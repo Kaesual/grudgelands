@@ -447,15 +447,98 @@ return function(repo)
 	assert(parts.rotate_param2(0, parts.NONE, 3) == 0)
 	say("guards", "param2_kind", "pass")
 
+	-- 7a. the pane set agrees with the registry -----------------------------
+	-- `parts.lua` is pure arithmetic with no registry, so it carries the pane
+	-- names as a written-out set instead of asking `group:pane` the way this
+	-- file and `xpanes` itself do. Two sources for one fact need a test that
+	-- they still say the same thing, so every node the loaded mods register
+	-- is asked both ways. The first version of `parts` tested the `xpanes:`
+	-- prefix, which is a third answer again: true of every node that mod
+	-- registers, pane or not.
+	local pane_checked, pane_members = 0, 0
+	for _, name in ipairs(world.order) do
+		local def = world.nodes[name]
+		local grouped = type(def.groups) == "table" and
+			(def.groups.pane or 0) > 0
+		assert(parts.is_pane(name) == grouped,
+			"parts and the registry disagree about whether " .. name ..
+				" is a pane")
+		pane_checked = pane_checked + 1
+		if grouped then pane_members = pane_members + 1 end
+	end
+	say("pane_set", "parts+registry", pane_checked, "panes", pane_members)
+
+	-- 7b. the two byte-order comparators agree ------------------------------
+	-- `parts.less_bytes` sorts every composition's palette; the identical
+	-- comparator in `wp40/r7_settlement.lua` serves the consumers that never
+	-- load this library. Two copies of one rule need a test that they are
+	-- still one rule, so both are run over a corpus that exercises the cases
+	-- `<` gets wrong under a non-C locale: case, the colon and the
+	-- underscore, a prefix against its extension, and the empty string.
+	local settlement = dofile(repo ..
+		"/mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua")
+	local ORDER_CORPUS = {"", "a", "A", "_", ":", "aa", "a_", "a:", "ab",
+		"default:dirt", "default:dirt_with_grass", "default:dirtY",
+		"grug_decor:xdecor_candle", "grug_decor:xdecor_cauldron",
+		"Grug_decor:xdecor_candle", "stairs:slab_wood", "stairs:stair_wood",
+		"walls:cobble", "walls:mossycobble", "xpanes:pane", "xpanes:pane_flat"}
+	local order_pairs = 0
+	for i = 1, #ORDER_CORPUS do
+		for j = 1, #ORDER_CORPUS do
+			local left, right = ORDER_CORPUS[i], ORDER_CORPUS[j]
+			assert(parts.less_bytes(left, right) ==
+				settlement.less_bytes(left, right),
+				"the two byte-order comparators disagree on " ..
+					left .. " / " .. right)
+			order_pairs = order_pairs + 1
+		end
+	end
+	assert(not pcall(parts.less_bytes, "a", 1))
+	assert(not pcall(settlement.less_bytes, "a", 1))
+	say("byte_order", "parts+r7_settlement", order_pairs, "pass")
+
+	-- 7c. the frozen Vale ground cover has exactly one caller ---------------
+	-- `dressing.vale_undergrowth` is the degenerate selector, kept only
+	-- because Hearthpine Vale's blueprint identity is part of the frozen R7
+	-- manifest. A second caller would be a new settlement inheriting a known
+	-- defect, so the source is read and the callers counted. `M.undergrowth`
+	-- is the routine every other start uses.
+	local vale_callers = {}
+	for _, source in ipairs({"hearthpine", "dawnmere", "silverleaf",
+			"stillgrave", "sunscar", "kapok", "dressing", "layout",
+			"buildings", "interiors", "parts", "roofs", "palette"}) do
+		local handle = assert(io.open(wp13 .. "/" .. source .. ".lua", "rb"))
+		local text = handle:read("*a")
+		handle:close()
+		for _ in text:gmatch("dressing%.vale_undergrowth") do
+			vale_callers[#vale_callers + 1] = source
+		end
+	end
+	assert(#vale_callers == 1 and vale_callers[1] == "hearthpine",
+		"dressing.vale_undergrowth must be called by hearthpine and nothing " ..
+			"else; found " .. (#vale_callers == 0 and "no caller" or
+				table.concat(vale_callers, ",")))
+	say("frozen_flora", "vale_undergrowth", "callers", 1)
+
 	-- 8. every finished settlement against the real registry ---------------
 	-- Sections 1-7 test the library in isolation. What actually reaches the
 	-- engine is each start's cell list, so the last three sections check
 	-- THOSE, name by name and cell by cell, against the registrations loaded
 	-- in section 3. The roster is the R7 settlement roster, so a start added
 	-- to the game is checked here without a second line.
-	local roster = dofile(repo ..
-		"/mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua").roster
+	local roster = settlement.roster
 	assert(#roster >= 2, "the settlement roster lost a start")
+	-- Coverage of `update_pane`'s connected branch is a property of the
+	-- CORPUS, not of every start. A pane turns into the connected node only
+	-- when a third horizontal neighbour connects, and the neighbour that
+	-- does it in the two timber settlements is the chimney breast behind the
+	-- window, which is `group:stone`. A race whose chimney is not in that
+	-- group -- Stillgrave's is `grug_decor:castle_dungeon_stone`, a dungeon
+	-- block with no stone group -- legitimately writes none, and bending its
+	-- palette to keep a per-start assertion alive would be the test wagging
+	-- the settlement. Every pane that IS written is still checked, cell by
+	-- cell, against the transcribed branch table below, in every start.
+	local corpus_connected_panes = 0
 	for roster_index = 1, #roster do
 	local profile = roster[roster_index]
 	local blueprint = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/" ..
@@ -483,6 +566,10 @@ return function(repo)
 		elseif kind == parts.WALLMOUNTED then
 			assert(def.paramtype2 == "wallmounted",
 				name .. " is rotated as wallmounted but is " ..
+					tostring(def.paramtype2))
+		elseif kind == parts.MESHOPTIONS then
+			assert(def.paramtype2 == "meshoptions",
+				name .. " is kept through rotation as a mesh style but is " ..
 					tostring(def.paramtype2))
 		end
 		-- And the two authored tables in parts.lua must equal the registry,
@@ -534,6 +621,51 @@ return function(repo)
 	say("registry", profile.key, #emitted_names, "kinds", kinds_checked,
 		"place_param2", pinned, "plain_cubes", plain_cells)
 
+	-- 8b. which window vocabulary this start builds with -------------------
+	-- Whether this start's `window` node carries `group:pane` in the real
+	-- registry decides which of the two rules in section 9 applies. The
+	-- question is asked of the start's OWN race palette, named by the roster
+	-- row: the first version matched the emitted names against every race's
+	-- `window` role at once, and `doors:door_wood` aside, nothing stops two
+	-- races binding the same window node -- the dwarf and human palettes
+	-- already both use `xpanes:pane_flat`, so a start could be told it
+	-- emitted "two window vocabularies" for building with one.
+	local race = assert(profile.race, "roster row names no race")
+	local handle = assert(handles[race], "roster names an unknown race " .. race)
+	local window = handle.node("window")
+	local window_def = world.nodes[window]
+	assert(window_def, "the " .. race .. " window is not registered")
+	local glazed = type(window_def.groups) == "table" and
+		(window_def.groups.pane or 0) > 0
+	local openings = 0
+	for _, name in ipairs(emitted_names) do
+		if name == window then openings = openings + 1 end
+	end
+	assert(openings > 0, "the start emits no window at all")
+
+	-- 8c. both ground-cover roles reach the pad ----------------------------
+	-- `dressing.undergrowth` picks a cell with one hash and chooses between
+	-- the palette's `undergrowth` and its `grass_tuft` with another. When the
+	-- two are not independent -- and the first pair were not, `7x + 11z`
+	-- being `3(x + z)` modulo 4 -- every picked cell takes one branch and the
+	-- other node never appears. Dawnmere's green was carpeted in bushes for
+	-- exactly that reason and nothing failed. This is the assertion that
+	-- would have: where a race binds the two roles to different nodes, a
+	-- finished settlement has to show both.
+	local bush = handle.node("undergrowth")
+	local tuft = handle.node("grass_tuft")
+	if bush ~= tuft then
+		local bush_cells, tuft_cells = 0, 0
+		for _, cell in ipairs(blueprint.cells) do
+			if cell.name == bush then bush_cells = bush_cells + 1
+			elseif cell.name == tuft then tuft_cells = tuft_cells + 1 end
+		end
+		assert(bush_cells > 0 and tuft_cells > 0,
+			"one ground-cover role never reached the pad: " .. bush .. "=" ..
+				bush_cells .. " " .. tuft .. "=" .. tuft_cells)
+		say("ground_cover", profile.key, bush, bush_cells, tuft, tuft_cells)
+	end
+
 	-- 9. every pane is the node update_pane would have settled on ----------
 	-- Re-derived here from the mod source, not from `parts.resolve_panes`:
 	-- the connection test is `group:pane`, `group:stone`, `group:glass`,
@@ -583,10 +715,27 @@ return function(repo)
 			if want_name == base then connected_panes = connected_panes + 1 end
 		end
 	end
-	assert(pane_cells > 100, "the village lost its windows")
-	assert(connected_panes > 0,
-		"no pane has a third neighbour; the connected branch is untested")
-	say("panes", profile.key, pane_cells, "connected", connected_panes)
+	-- A race whose windows are open bars or a lattice writes no `group:pane`
+	-- node at all: the troll palette's `darkage_wood_bars` is `glasslike` and
+	-- carries no pane group, so `update_pane` has nothing to say about it and
+	-- demanding a hundred panes here would only force a material that race
+	-- does not build with. A start that DOES glaze still has to satisfy the
+	-- whole rule.
+	--
+	-- The connected branch of `update_pane` is required of the CORPUS, not of
+	-- every glazed start: the Hollow bars every opening with a single flat
+	-- face and writes 140 panes and no junction, which is the architecture and
+	-- not an untested branch. The corpus assertion below is what keeps that
+	-- branch covered, and the per-start count is reported either way.
+	if glazed then
+		assert(pane_cells > 100, "the village lost its windows")
+	else
+		assert(pane_cells == 0,
+			"a start with open windows still wrote " .. pane_cells .. " panes")
+	end
+	corpus_connected_panes = corpus_connected_panes + connected_panes
+	say("panes", profile.key, glazed and "glazed" or "open", pane_cells,
+		"connected", connected_panes)
 
 	-- 10. every torch hangs on an opaque full node -------------------------
 	-- A wallmounted torch takes its support from the direction its param2
@@ -615,7 +764,84 @@ return function(repo)
 	end
 	assert(torches >= 40, "the village went dark")
 	say("torch_support", profile.key, torches, "opaque_full", "pass")
+
+	-- 11. no piece of architecture stands detached ------------------------
+	-- Every cell of a BUILDING must touch another non-air cell across a face
+	-- or across a vertical diagonal. The vertical diagonal is in the rule
+	-- because a free-standing flight of stairs is a real thing the library
+	-- builds: Hearthpine's cellar steps climb one node out and one node up
+	-- per tread, so two of its treads touch nothing across a face at all.
+	--
+	-- Three families are outside the rule, and each exemption is a property
+	-- of the NODE read out of the real registrations, never a list of starts
+	-- or of cells:
+	--
+	--   * `group:tree` and `group:leaves`. A tree's silhouette is the
+	--     vendored schematic's, and the vendored acacia hangs its branch
+	--     logs on HORIZONTAL diagonals off the trunk -- 94 of Sunscar's do.
+	--     Vegetation has its own, sharper invariant in `blueprint_kat`: the
+	--     trunk height, the crown reach and the leaf-to-trunk path.
+	--   * a node whose `paramtype2` is `wallmounted`, which names its own
+	--     support with its param2. Section 10 and `blueprint_kat`'s prop
+	--     check test that exactly; leaving it out keeps one cell from being
+	--     reported twice under two rules.
+	--   * `plantlike`, `torchlike`, `signlike` and `airlike` nodes, which are
+	--     crosses and sprites rather than blocks, held up by the engine's own
+	--     attachment rules where each is sown.
+	--
+	-- What this rule does NOT catch is worth writing down, because the
+	-- review expected it to: Silverleaf's terrace podium was built one node
+	-- shallower than the apron and railing standing on it, and those 18
+	-- apron cells each touched the podium beside them across a face, so a
+	-- neighbour rule of any kind passes them. The invariant that catches a
+	-- floor with nothing under it is in `blueprint_kat`, where each start's
+	-- own `paved` family is known.
+	local LOOSE_DRAWTYPE = {plantlike = true, torchlike = true,
+		signlike = true, airlike = true}
+	local NEIGHBOURS = {{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0},
+		{0, 0, 1}, {0, 0, -1},
+		{1, 1, 0}, {-1, 1, 0}, {0, 1, 1}, {0, 1, -1},
+		{1, -1, 0}, {-1, -1, 0}, {0, -1, 1}, {0, -1, -1}}
+	local floating, checked = 0, 0
+	local first_floating
+	for _, cell in ipairs(blueprint.cells) do
+		local def = world.nodes[cell.name]
+		local groups = def and type(def.groups) == "table" and def.groups or {}
+		local loose = cell.name == "air" or def == nil or
+			LOOSE_DRAWTYPE[def.drawtype] or def.paramtype2 == "wallmounted" or
+			(groups.tree or 0) > 0 or (groups.leaves or 0) > 0 or
+			(groups.leafdecay or 0) > 0
+		if not loose then
+			checked = checked + 1
+			local touched = false
+			for _, step in ipairs(NEIGHBOURS) do
+				local other = cell_at[(cell.x + step[1]) .. ":" ..
+					(cell.y + step[2]) .. ":" .. (cell.z + step[3])]
+				-- Outside the cell list is the settlement's own ground: at
+				-- y <= 0 the pad is solid terrain the writer never clears, so
+				-- a cell resting on it is held. Above y = 0 an absent cell is
+				-- air.
+				if (other ~= nil and other.name ~= "air") or
+						cell.y + step[2] <= 0 then
+					touched = true
+				end
+			end
+			if not touched then
+				floating = floating + 1
+				first_floating = first_floating or (cell.name .. " at " ..
+					cell.x .. "," .. cell.y .. "," .. cell.z)
+			end
+		end
 	end
+	assert(floating == 0, floating .. " detached cells in " .. profile.key ..
+		", first " .. tostring(first_floating))
+	say("grounded", profile.key, checked, "no_detached_cell", "pass")
+	end
+
+	assert(corpus_connected_panes > 0,
+		"no start writes a pane with a third neighbour; the connected branch " ..
+			"of update_pane is untested")
+	say("panes_connected_corpus", corpus_connected_panes)
 
 	return table.concat(report)
 end

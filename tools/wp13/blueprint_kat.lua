@@ -85,6 +85,205 @@ return function(repo)
 				{"grug_decor:cottages_wagon_wheel", 12, "wallmounted"}},
 			carts = 3, cart_load = "grug_decor:xdecor_barrel",
 		},
+		{
+			key = "silverleaf",
+			file = "r7_silverleaf_blueprint.lua",
+			schema = "grug_wp13_silverleaf_blueprint_v1",
+			light = {"grug_decor:xdecor_candle",
+				"grug_decor:xdecor_lantern_hanging",
+				"grug_materials:emberglass_lamp"},
+			-- The elf lamps are not all wallmounted, so this start says how
+			-- each of its lights is carried; see `light_carrier` below.
+			light_support = {
+				["grug_decor:xdecor_lantern_hanging"] = "above",
+				["grug_materials:emberglass_lamp"] = "self",
+			},
+			passable = {"air", "grug_decor:xdecor_candle",
+				"grug_decor:xdecor_lantern_hanging",
+				"grug_decor:xdecor_potted_viola",
+				"grug_decor:xdecor_potted_dandelion_white",
+				"default:grass_2", "default:fern_2", "default:fern_3",
+				"doors:door_wood_a", "doors:door_wood_b", "doors:hidden"},
+			paved = {"grug_decor:darkage_marble_tile",
+				"grug_decor:darkage_slate_tile", "grug_decor:darkage_marble",
+				"grug_decor:darkage_serpentine"},
+			-- Two roof materials: the shrine, the lore hall and the gate
+			-- lookout carry the pale silver sandstone brick family, every
+			-- domestic roof the darkage slate tile one.
+			roof = {"grug_decor:darkage_slate_tile_stair",
+				"grug_decor:darkage_slate_tile_stair_outer",
+				"grug_decor:darkage_slate_tile_stair_inner",
+				"grug_decor:darkage_slate_tile_slab",
+				"stairs:stair_silver_sandstone_brick",
+				"stairs:stair_outer_silver_sandstone_brick",
+				"stairs:stair_inner_silver_sandstone_brick",
+				"stairs:slab_silver_sandstone_brick"},
+			door_leaves = {"doors:door_wood_a", "doors:door_wood_b"},
+			-- `high = 2`: the aspen silhouette this grove reproduces ends in
+			-- one leaf two courses above its last log, which is what the
+			-- schematic does and what the first version was one course short
+			-- of.
+			tree = {log = "grug_trees:silverwood_tree",
+				leaves = "grug_trees:silverwood_leaves",
+				min_trunk = 9, reach = 2, low = 5, high = 2, min_stems = 40},
+			ground = {{"grug_nodes:dirt_with_silver_litter", 8000},
+				{"default:dirt_with_grass", 100}, {"default:dirt", 20}},
+			min_destinations = 9, min_doors = 8, min_rooms = 9,
+			min_lights = 8, min_oriented = 8,
+			-- The glade's loose props, exactly. No straw, no cart and no
+			-- wheel: this settlement carries none. 20 barrels are the ones
+			-- the interiors' kits and the four crate stacks stand on the
+			-- floor, and 24 stepping stones are the six four-cell runs off
+			-- the paving into the litter.
+			props = {{"grug_decor:cottages_straw_bale", 0},
+				{"grug_decor:xdecor_barrel", 20},
+				{"grug_decor:xdecor_stonepath", 24},
+				{"grug_decor:cottages_wagon_wheel", 0, "wallmounted"}},
+			carts = 0,
+		},
+		{
+			key = "stillgrave",
+			file = "r7_stillgrave_blueprint.lua",
+			schema = "grug_wp13_stillgrave_blueprint_v1",
+			light = {"default:torch", "grug_decor:xdecor_candle"},
+			passable = {"air", "default:torch", "grug_decor:xdecor_candle",
+				"default:dry_shrub", "grug_nodes:bone_pile",
+				"grug_decor:xdecor_cobweb", "grug_decor:xdecor_ivy",
+				"doors:door_steel_a", "doors:door_steel_b", "doors:hidden"},
+			paved = {"default:mossycobble", "default:obsidianbrick",
+				"grug_decor:castle_pavement_brick"},
+			-- Both roof materials: the hamlet is obsidian brick, the
+			-- crypt-chapel alone carries the pale stone-brick family.
+			roof = {"stairs:stair_obsidianbrick",
+				"stairs:stair_outer_obsidianbrick",
+				"stairs:stair_inner_obsidianbrick", "stairs:slab_obsidianbrick",
+				"stairs:stair_stonebrick", "stairs:stair_outer_stonebrick",
+				"stairs:stair_inner_stonebrick", "stairs:slab_stonebrick"},
+			door_leaves = {"doors:door_steel_a", "doors:door_steel_b"},
+			tree = {log = "grug_trees:gravewood_tree",
+				leaves = "grug_trees:gravewood_leaves",
+				min_trunk = 5, reach = 3, low = 3, high = 1, min_stems = 40},
+			ground = {{"grug_nodes:blight_dirt", 6000},
+				{"grug_nodes:dirt_with_bone_litter", 1000},
+				{"default:gravel", 20}},
+			min_destinations = 5, min_doors = 6, min_rooms = 8,
+			min_lights = 8, min_oriented = 8,
+			-- The Hollow's loose props, exactly. 18 stepping stones worn over
+			-- the court paving. 14 barrels: five crate stacks and the
+			-- interiors' own. 13 ivy tendrils on the two ruins' standing
+			-- walls. No bale, no wheel and no hand cart: nothing here is
+			-- carted anywhere. The cobweb is deliberately absent from this
+			-- list -- it is the one prop in the corpus that SHOULD hang with
+			-- nothing under it, and the check below is a floating-prop check.
+			--
+			-- 418 low walls: the ten burial-ground runs (164 cells once the
+			-- shared corners are counted once), the grave markers inside
+			-- them, the six kerbed court plots, the gate's two flanking runs
+			-- and the cairn's four corner blocks. Six of the ten runs used to
+			-- be dropped in silence when an earlier run had claimed their
+			-- corner, and NOTHING here noticed -- a burial ground open on
+			-- three sides passes every geometric invariant in this file. An
+			-- exact population is what catches that class of defect.
+			props = {{"grug_decor:cottages_straw_bale", 0},
+				{"grug_decor:xdecor_barrel", 14},
+				{"grug_decor:xdecor_stonepath", 18},
+				{"walls:mossycobble", 418},
+				{"grug_decor:xdecor_ivy", 13, "wallmounted"},
+				{"grug_decor:cottages_wagon_wheel", 0, "wallmounted"}},
+			carts = 0,
+		},
+		{
+			key = "sunscar",
+			file = "r7_sunscar_blueprint.lua",
+			schema = "grug_wp13_sunscar_blueprint_v1",
+			light = {"default:torch", "default:torch_wall"},
+			passable = {"air", "default:torch", "default:torch_wall",
+				"default:dry_grass_3", "default:dry_grass_5",
+				"default:dry_shrub", "grug_decor:cottages_straw_mat",
+				"doors:door_wood_a", "doors:door_wood_b", "doors:hidden"},
+			paved = {"default:desert_cobble", "default:desert_sand",
+				"default:desert_stone_block"},
+			-- One roof family: every deck in the camp is the desert
+			-- stonebrick stair family, flat, behind a breastwork.
+			roof = {"stairs:stair_desert_stonebrick",
+				"stairs:stair_outer_desert_stonebrick",
+				"stairs:stair_inner_desert_stonebrick",
+				"stairs:slab_desert_stonebrick"},
+			door_leaves = {"doors:door_wood_a", "doors:door_wood_b"},
+			tree = {log = "default:acacia_tree",
+				leaves = "default:acacia_leaves",
+				min_trunk = 5, reach = 3, low = 1, high = 2, min_stems = 20},
+			ground = {{"default:dirt_with_dry_grass", 6000},
+				{"default:dry_dirt", 400}, {"default:desert_sand", 400}},
+			min_destinations = 9, min_doors = 8, min_rooms = 9,
+			min_lights = 8, min_oriented = 8,
+			-- The camp's loose gear, exactly. 27 bales: eight drill-post
+			-- heads, seven in the three yard targets and twelve in the five
+			-- feed stacks. 24 barrels: seven crate stacks and the interiors'
+			-- own. No stepping stones -- the orc palette binds none. 19
+			-- wheels: three on each of the five wagons and four leaning on
+			-- walls. 15 wagon loads, one on every bearer of every wagon,
+			-- which is also the cart count below.
+			props = {{"grug_decor:cottages_straw_bale", 27},
+				{"grug_decor:xdecor_barrel", 24},
+				{"grug_decor:xdecor_stonepath", 0},
+				{"grug_decor:cottages_wagon_wheel", 19, "wallmounted"},
+				{"grug_decor:cottages_wagon_load", 15}},
+			carts = 15, cart_load = "grug_decor:cottages_wagon_load",
+		},
+		{
+			key = "kapok",
+			file = "r7_kapok_blueprint.lua",
+			schema = "grug_wp13_kapok_blueprint_v1",
+			light = {"default:torch", "default:torch_wall"},
+			-- The rope and the lantern really are `walkable = false`, so a
+			-- route may pass through them; the window bars are not, so they
+			-- stay solid and keep counting as wall.
+			passable = {"air", "default:torch", "default:torch_wall",
+				"default:grass_1", "default:fern_1", "default:junglegrass",
+				"grug_decor:cottages_straw_mat", "grug_decor:xdecor_lantern_hanging",
+				"grug_decor:xdecor_rope",
+				"doors:door_wood_a", "doors:door_wood_b", "doors:hidden"},
+			-- The whole settlement is a raised boardwalk on piers, which is
+			-- the one start that may stand a floor clear of the ground. The
+			-- count is exact so a second, accidental floating floor cannot
+			-- hide inside the declared one.
+			deck = {nodes = {"default:junglewood",
+				"grug_decor:darkage_basalt_brick"}, cells = 912},
+			-- A stilt village's doorsteps stand on plank verandas and the
+			-- lodge's on its basalt platform, so both count as paving.
+			paved = {"default:junglewood", "default:mossycobble",
+				"grug_decor:darkage_basalt_brick",
+				"grug_decor:darkage_serpentine"},
+			roof = {"stairs:stair_junglewood", "stairs:stair_outer_junglewood",
+				"stairs:stair_inner_junglewood", "stairs:slab_junglewood"},
+			door_leaves = {"doors:door_wood_a", "doors:door_wood_b"},
+			-- A jungle tree carries its crown in the top three courses over a
+			-- long bare trunk and hangs leaf spurs far below it, and an
+			-- emergent's crown stands four courses above its last log, so the
+			-- rooting window is deeper and taller than an orchard's.
+			tree = {log = "default:jungletree", leaves = "default:jungleleaves",
+				min_trunk = 8, reach = 3, low = 10, high = 8, min_stems = 20},
+			ground = {{"default:dirt_with_rainforest_litter", 6000},
+				{"grug_nodes:mud", 1000}, {"default:dirt", 100}},
+			min_destinations = 8, min_doors = 8, min_rooms = 8,
+			min_lights = 8, min_oriented = 8,
+			-- The stilt village's loose props, exactly. No bale, no cart and
+			-- no wheel: nothing here is wheeled. 20 barrels, all of them the
+			-- interiors' own. 42 stepping stones where the boardwalk stops.
+			-- 56 rope cells: two under each of the sixteen veranda corners,
+			-- two under each of the twelve rack lines, and four on the
+			-- smoker's drying beam. 16 lanterns under the bridges and the
+			-- verandas -- every one of them hanging from the deck above,
+			-- which is what `group:attached_node = 4` means.
+			props = {{"grug_decor:cottages_straw_bale", 0},
+				{"grug_decor:xdecor_barrel", 20},
+				{"grug_decor:xdecor_stonepath", 42},
+				{"grug_decor:cottages_wagon_wheel", 0, "wallmounted"},
+				{"grug_decor:xdecor_rope", 56, "ceiling"},
+				{"grug_decor:xdecor_lantern_hanging", 16, "ceiling"}},
+			carts = 0,
+		},
 	}
 
 	local function set(list)
@@ -155,14 +354,99 @@ return function(repo)
 		-- Luanti's wallmounted direction points from the torch to its support.
 		local support_dir = {[0] = {0, 1, 0}, {0, -1, 0}, {1, 0, 0},
 			{-1, 0, 0}, {0, 0, 1}, {0, 0, -1}}
+		-- How a light is carried. A wallmounted lamp (the default, and every
+		-- torch of the first two starts) names its support with its own
+		-- param2; a lamp in `group:attached_node = 4` always hangs from the
+		-- node above it; a lamp that is a full cube carries itself. The rule
+		-- is per start because the palettes differ, and it is the same
+		-- invariant in all three cases: a light that is not held up is a
+		-- light the engine drops.
+		local function light_carrier(name, param2)
+			local rule = spec.light_support and spec.light_support[name]
+			if rule == "self" then
+				-- A full glowing cube carries its own weight, so it names no
+				-- support direction -- but it is still masonry, and masonry
+				-- built into nothing is masonry in mid air. It returns no
+				-- direction and the caller checks all six faces instead of
+				-- one; the first version returned nil and the caller skipped
+				-- the cell entirely, which made `self` a way to opt out of
+				-- the floating-light check rather than a different way of
+				-- being held up.
+				assert(param2 == 0, "a self-carrying lamp carries a param2")
+				return nil, true
+			end
+			if rule == "above" then
+				assert(param2 == 0, "hanging lamp carries a param2")
+				return {0, 1, 0}
+			end
+			return assert(support_dir[param2], "unsupported torch rotation")
+		end
 		for _, cell in ipairs(blueprint.cells) do
 			if LIGHT[cell.name] then
-				local dir = assert(support_dir[cell.param2],
-					"unsupported torch rotation")
-				assert(solid(cell.x + dir[1], cell.y + dir[2], cell.z + dir[3]),
-					"floating torch at " .. key(cell.x, cell.y, cell.z))
+				local dir, any_face = light_carrier(cell.name, cell.param2)
+				if dir then
+					assert(solid(cell.x + dir[1], cell.y + dir[2],
+						cell.z + dir[3]),
+						"floating light at " .. key(cell.x, cell.y, cell.z))
+				elseif any_face then
+					local held = false
+					for _, step in ipairs({{1, 0, 0}, {-1, 0, 0}, {0, 1, 0},
+							{0, -1, 0}, {0, 0, 1}, {0, 0, -1}}) do
+						if node(cell.x + step[1], cell.y + step[2],
+								cell.z + step[3]) ~= "air" then
+							held = true
+						end
+					end
+					assert(held, "a self-carrying lamp is built into nothing " ..
+						"at " .. key(cell.x, cell.y, cell.z))
+				end
 			end
 		end
+		-- Every floor rests on something ----------------------------------
+		--
+		-- A cell of this start's OWN `paved` family -- the ground a player
+		-- walks on -- must have a non-air cell directly beneath it. Below
+		-- y = 1 that is the pad itself, which the writer never clears.
+		--
+		-- This is the rule that catches a podium built one node too small.
+		-- Silverleaf's terrace filled to `plot.z + spec.d - 1` while the
+		-- apron ring and the railing standing on it reached `plot.z +
+		-- spec.d`, so eighteen apron cells and the rail on them hung a full
+		-- storey up behind both terrace houses. No NEIGHBOUR rule can see
+		-- that -- each of those cells touches the podium beside it across a
+		-- face, which is why `library_kat`'s detached-cell rule passes them
+		-- and this one does not. What is wrong with them is what is under
+		-- them.
+		--
+		-- A start may raise a floor clear of the ground on purpose: Kapok is
+		-- a stilt village and its boardwalks, landings and platforms are the
+		-- whole settlement. No geometric test separates a boardwalk on piers
+		-- from a cantilevered slab -- both have a bearing one node away --
+		-- so the separation is declared instead, and declared EXACTLY: a
+		-- start names the nodes its raised floors are built from and the
+		-- number of cells of them that stand clear. An undeclared start
+		-- allows none, which is what Silverleaf's eighteen would have hit,
+		-- and a declared one cannot grow a nineteenth without moving a
+		-- number somebody has to re-derive.
+		local deck = spec.deck
+		local deck_nodes = deck and set(deck.nodes) or {}
+		local unsupported, first_unsupported = 0, nil
+		for _, cell in ipairs(blueprint.cells) do
+			if PAVED[cell.name] and cell.y >= 1 and
+					node(cell.x, cell.y - 1, cell.z) == "air" then
+				unsupported = unsupported + 1
+				first_unsupported = first_unsupported or (cell.name .. " at " ..
+					key(cell.x, cell.y, cell.z))
+				assert(deck_nodes[cell.name],
+					"a floor hangs in the air: " .. cell.name .. " at " ..
+						key(cell.x, cell.y, cell.z))
+			end
+		end
+		assert(unsupported == (deck and deck.cells or 0),
+			"raised-floor population differs: " .. unsupported .. " not " ..
+				(deck and deck.cells or 0) .. ", first " ..
+				tostring(first_unsupported))
+
 		-- The loose props: their exact population, and none of them floating.
 		--
 		-- Section 5 has no invariant for a bale, a stepping stone or a hand
@@ -173,22 +457,29 @@ return function(repo)
 		-- composition now refuses to skip a prop; the counts below are the
 		-- independent check that it did not, and they are EXACT, so a prop
 		-- that moves under another prop's feet shows up here as a number.
-		local prop_wanted, prop_wall, prop_seen = {}, {}, {}
+		local prop_wanted, prop_mode, prop_seen = {}, {}, {}
 		for _, row in ipairs(spec.props) do
 			prop_wanted[row[1]] = row[2]
-			prop_wall[row[1]] = row[3] == "wallmounted"
+			prop_mode[row[1]] = row[3]
 			prop_seen[row[1]] = 0
 		end
 		local carts = 0
 		for _, cell in ipairs(blueprint.cells) do
 			if prop_wanted[cell.name] then
 				prop_seen[cell.name] = prop_seen[cell.name] + 1
-				-- A wallmounted prop hangs on the node its param2 points at;
-				-- everything else rests on the node under it.
+				-- A wallmounted prop hangs on the node its param2 points at; a
+				-- ceiling prop on the node ABOVE it; everything else rests on
+				-- the node under it. "Ceiling" is `group:attached_node = 4`
+				-- for a node the engine holds up (the hanging lantern), and
+				-- an authoring convention for one it does not:
+				-- `grug_decor:xdecor_rope` is in no attachment group at all,
+				-- so nothing but this check keeps a rope tied to a beam.
 				local dir = {0, -1, 0}
-				if prop_wall[cell.name] then
+				if prop_mode[cell.name] == "wallmounted" then
 					dir = assert(support_dir[cell.param2],
 						"unsupported prop rotation")
+				elseif prop_mode[cell.name] == "ceiling" then
+					dir = {0, 1, 0}
 				end
 				assert(node(cell.x + dir[1], cell.y + dir[2],
 						cell.z + dir[3]) ~= "air",
@@ -218,9 +509,28 @@ return function(repo)
 		assert(#blueprint.landmarks.lights == lights,
 			"light landmark population differs")
 		assert(solid(0, 0, 0) and stand(0, 1, 0) and not solid(0, 3, 0))
-		-- The road is a five-wide clear route, not a cosmetic line.
-		for z = 0, 63 do
-			for x = -2, 2 do assert(stand(x, 1, z), "blocked north road") end
+		-- The road is a five-wide clear route, not a cosmetic line. Its
+		-- extent -- and with it its DIRECTION -- is read out of the
+		-- `main_street` landmark rather than assumed: the three Elandor
+		-- starts leave their pad toward +z and the three Kragmar starts
+		-- toward -z, because the zone catalog gives the northern group a
+		-- `start:north` gate and the southern group a `start:south` one.
+		local street = assert(blueprint.landmarks.main_street,
+			"no main street landmark")
+		-- Anchored to the pad, not merely five wide and sixty-four deep: the
+		-- route runs up the middle of the settlement and reaches its centre,
+		-- so x is exactly -2..2 and one end of the z span is the origin. An
+		-- extent test alone would accept a five-wide strip anywhere.
+		assert(street.min.x == -2 and street.max.x == 2,
+			"the main street is not the pad's own five-wide corridor")
+		assert(street.max.z - street.min.z == 63,
+			"the main street is not the contract's pad-deep route")
+		assert(street.min.z == 0 or street.max.z == 0,
+			"the main street does not reach the pad centre")
+		for z = street.min.z, street.max.z do
+			for x = street.min.x, street.max.x do
+				assert(stand(x, 1, z), "blocked main road at " .. key(x, 1, z))
+			end
 		end
 
 		-- Section 5 invariant 2: every door is a real, usable doorway.
@@ -264,8 +574,16 @@ return function(repo)
 			end
 			return false
 		end
+		-- A room declared a RUIN is the one exception to the roof and light
+		-- invariant, and it is an exception by construction, not by neglect:
+		-- a roofless ruin has no roof to be watertight and no light to be
+		-- lit. The relaxation is keyed on the flag the generator publishes,
+		-- so it reaches exactly those rooms; every inhabited room of every
+		-- settlement -- including the two intact homes on the same lane as
+		-- Stillgrave's two ruins -- keeps the full invariant below.
+		local ruins = 0
 		for _, room in ipairs(rooms) do
-			local lit = 0
+			local lit, open_columns = 0, 0
 			for z = room.min.z, room.max.z do
 				for x = room.min.x, room.max.x do
 					local covered = false
@@ -276,10 +594,38 @@ return function(repo)
 					for y = 1, room.top do
 						if declared_lights[key(x, y, z)] then lit = lit + 1 end
 					end
-					assert(covered, "interior column open to the sky in " .. room.id)
+					if not covered then open_columns = open_columns + 1 end
+					assert(covered or room.ruin,
+						"interior column open to the sky in " .. room.id)
 				end
 			end
-			assert(lit > 0, "unlit interior in " .. room.id)
+			if room.ruin then
+				ruins = ruins + 1
+				-- `ruin` switches off the watertight-roof and lit-interior
+				-- invariants, which are two of the strongest rules in this
+				-- file, so the flag itself is checked rather than believed.
+				-- A room that claims it is a ruin must BE one: nothing lives
+				-- there (no door landmark opens into it, it is nobody's
+				-- destination), it is unlit, and it is genuinely open --
+				-- at least one of its columns really does see the sky.
+				-- Without the last test a fully roofed, fully furnished
+				-- building could turn off both invariants by setting a flag.
+				assert(lit == 0, "a ruin is not a lit room: " .. room.id)
+				assert(open_columns > 0,
+					"a room flagged ruin is roofed over: " .. room.id)
+				for _, door in ipairs(doorways) do
+					assert(not (door.x >= room.min.x and door.x <= room.max.x and
+						door.z >= room.min.z and door.z <= room.max.z),
+						"a room flagged ruin has a door in it: " .. room.id)
+				end
+				for _, pos in ipairs(blueprint.landmarks.destinations) do
+					assert(not (pos.x >= room.min.x and pos.x <= room.max.x and
+						pos.z >= room.min.z and pos.z <= room.max.z),
+						"a room flagged ruin is a destination: " .. room.id)
+				end
+			else
+				assert(lit > 0, "unlit interior in " .. room.id)
+			end
 			-- The eaves land on a full node: no half-node gap over any wall
 			-- that actually exists (an open-sided workyard has none to check).
 			if room.closed then
@@ -390,7 +736,7 @@ return function(repo)
 		end
 		report[#report + 1] = table.concat({"wp13_blueprint", spec.key,
 			#blueprint.cells, count, palette_count, lights, oriented,
-			#destinations, #doorways, #rooms, stems, #queue}, "\t") .. "\n"
+			#destinations, #doorways, #rooms, ruins, stems, #queue}, "\t") .. "\n"
 	end
 	return table.concat(report)
 end

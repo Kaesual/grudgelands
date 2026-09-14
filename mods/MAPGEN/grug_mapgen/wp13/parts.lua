@@ -22,6 +22,15 @@ local M = {}
 
 M.FACEDIR = "facedir"
 M.WALLMOUNTED = "wallmounted"
+-- `meshoptions` is the third param2 family a settlement meets, and it is not
+-- an orientation at all: the low bits pick a plantlike mesh, its scale and
+-- whether the engine offsets it randomly, and the node's own definition pins
+-- the value every placement writes (`default:dry_shrub` is 4). Such a node
+-- keeps its param2 through every rotation, and a cell written at 0 instead is
+-- a value no placement could have produced. It is a kind of its own so that
+-- the buffer accepts the pinned value while still refusing a rotation to
+-- change it.
+M.MESHOPTIONS = "meshoptions"
 M.NONE = "none"
 
 -- ---------------------------------------------------------------------------
@@ -49,6 +58,10 @@ local PARAM2_KIND = {
 	["default:torch_ceiling"] = M.WALLMOUNTED,
 	["default:ladder_wood"] = M.WALLMOUNTED,
 	["default:sign_wall_wood"] = M.WALLMOUNTED,
+	-- xdecor's candle is a torch in every respect that matters here: a
+	-- wallmounted light whose three tiles are the floor, ceiling and wall
+	-- states, so its param2 points from the flame to the node holding it.
+	["grug_decor:xdecor_candle"] = M.WALLMOUNTED,
 	-- panes: a flat pane records the axis it spans. The connected
 	-- `xpanes:pane` has no paramtype2 at all and is always written at 0.
 	["xpanes:pane_flat"] = M.FACEDIR,
@@ -66,9 +79,44 @@ local PARAM2_KIND = {
 	["grug_decor:cottages_window_shutter_closed"] = M.FACEDIR,
 	["grug_decor:cottages_window_shutter_open"] = M.FACEDIR,
 	["grug_decor:xdecor_stonepath"] = M.FACEDIR,
+	["grug_decor:cottages_wagon_load"] = M.FACEDIR,
+	-- plantlike meshes whose definition pins the style they are placed at
+	["default:dry_shrub"] = M.MESHOPTIONS,
 	-- a wheel leans against the wall its param2 points at
 	["grug_decor:cottages_wagon_wheel"] = M.WALLMOUNTED,
+	-- the rest of the undead vocabulary: an ivy tendril is a wallmounted
+	-- fitting like a torch, and the stone workbench is a facedir cube whose
+	-- front tile faces the room. Its candle and its dry shrub are listed
+	-- above -- the elf and orc palettes name them too.
+	["grug_decor:xdecor_ivy"] = M.WALLMOUNTED,
+	["grug_decor:xdecor_workbench"] = M.FACEDIR,
+	-- `grug_decor/shapes.lua` is a vendored byte-for-byte copy of the four
+	-- shape registrations of `mods/BASE/stairs/init.lua`, so a grug_decor
+	-- stair, inner stair, outer stair or slab carries exactly the facedir a
+	-- `stairs:` one does. Only the shapes a palette actually names are
+	-- listed, so the family stays as explicit as the `stairs:` prefix rule
+	-- is implicit.
+	["grug_decor:darkage_slate_tile_stair"] = M.FACEDIR,
+	["grug_decor:darkage_slate_tile_stair_inner"] = M.FACEDIR,
+	["grug_decor:darkage_slate_tile_stair_outer"] = M.FACEDIR,
+	["grug_decor:darkage_slate_tile_slab"] = M.FACEDIR,
+	["grug_decor:darkage_slate_brick_slab"] = M.FACEDIR,
+	["grug_decor:darkage_serpentine_slab"] = M.FACEDIR,
 }
+
+-- The param2 the engine itself writes for a node whose definition pins one.
+-- `default:dry_shrub` is `paramtype2 = "meshoptions"` with
+-- `place_param2 = 4`, so a cell written at 0 carries a value no placement
+-- could have produced -- and `tools/wp13/library_kat.lua` checks every
+-- emitted cell against the registration. `Buffer:put` falls back to this
+-- when the caller names no param2, so a part keeps writing
+-- `buf:put(x, y, z, name)` and still lands on the engine's own value; the
+-- dressing calls it by name where it builds the param2 itself.
+local PLACE_PARAM2 = {["default:dry_shrub"] = 4}
+
+function M.place_param2(name)
+	return PLACE_PARAM2[name] or 0
+end
 
 -- Whole families whose every member is shaped.
 local PREFIX_KIND = {
@@ -101,16 +149,36 @@ end
 -- `group:glass`, `group:wood` or `group:tree` (mods/BASE/xpanes/init.lua,
 -- the `connects_to` of the connected pane node).
 local PANE_CONNECTS = {
+	["default:acacia_tree"] = true,
+	["default:acacia_wood"] = true,
 	["default:cobble"] = true,
+	["default:desert_cobble"] = true,
+	["default:desert_stone_block"] = true,
+	["default:desert_stonebrick"] = true,
 	["default:pine_tree"] = true,
 	["default:pine_wood"] = true,
 	["default:stone_block"] = true,
 	["default:stonebrick"] = true,
 	["default:tree"] = true,
 	["default:wood"] = true,
+	["default:mossycobble"] = true,
+	["grug_trees:gravewood_tree"] = true,
+	["grug_trees:gravewood_wood"] = true,
+	["grug_trees:silverwood_tree"] = true,
+	["grug_trees:silverwood_wood"] = true,
 	["walls:cobble"] = true,
+	["walls:desertcobble"] = true,
+	["walls:mossycobble"] = true,
+	["xpanes:bar"] = true,
+	["xpanes:bar_flat"] = true,
 	["xpanes:pane"] = true,
 	["xpanes:pane_flat"] = true,
+	-- Troll (Kapok Cradle): jungle timber is `group:wood`/`group:tree`, so it
+	-- connects a pane the same way its dwarf and human counterparts do. The
+	-- mossy cobble and mossy wall this palette also names are listed above,
+	-- with the Hollow's.
+	["default:junglewood"] = true,
+	["default:jungletree"] = true,
 }
 
 function M.pane_connects(name)
@@ -121,14 +189,26 @@ end
 -- only nodes that read as a wall. A nodebox, a mesh, a plant or a pane is
 -- not one of them, and neither is a full cube that light passes through.
 local FULL_SOLID = {
+	["default:acacia_tree"] = true,
+	["default:acacia_wood"] = true,
 	["default:brick"] = true,
 	["default:cobble"] = true,
+	["default:desert_cobble"] = true,
+	["default:desert_sand"] = true,
+	["default:desert_stone_block"] = true,
+	["default:desert_stonebrick"] = true,
 	["default:dirt"] = true,
 	["default:dirt_with_coniferous_litter"] = true,
+	["default:dirt_with_dry_grass"] = true,
 	["default:dirt_with_grass"] = true,
+	["default:dry_dirt"] = true,
+	["default:dry_dirt_with_dry_grass"] = true,
 	["default:gravel"] = true,
 	["default:pine_tree"] = true,
 	["default:pine_wood"] = true,
+	["default:silver_sandstone"] = true,
+	["default:silver_sandstone_block"] = true,
+	["default:silver_sandstone_brick"] = true,
 	["default:stone_block"] = true,
 	["default:stonebrick"] = true,
 	["default:tree"] = true,
@@ -136,15 +216,47 @@ local FULL_SOLID = {
 	["grug_decor:cottages_loam"] = true,
 	["grug_decor:cottages_straw"] = true,
 	["grug_decor:cottages_straw_ground"] = true,
+	["default:mossycobble"] = true,
+	["default:obsidianbrick"] = true,
+	["grug_decor:castle_dungeon_stone"] = true,
+	["grug_decor:castle_pavement_brick"] = true,
+	["grug_decor:castle_rubble"] = true,
 	["grug_decor:darkage_adobe"] = true,
+	["grug_decor:darkage_marble"] = true,
+	["grug_decor:darkage_marble_tile"] = true,
+	["grug_decor:darkage_serpentine"] = true,
+	["grug_decor:darkage_slate_brick"] = true,
+	["grug_decor:darkage_slate_tile"] = true,
+	["grug_decor:darkage_ors_block"] = true,
 	["grug_decor:xdecor_barrel"] = true,
 	["grug_decor:xdecor_cauldron"] = true,
 	["grug_decor:xdecor_empty_shelf"] = true,
+	["grug_decor:xdecor_workbench"] = true,
 	["grug_materials:iron_block"] = true,
+	["grug_nodes:blight_dirt"] = true,
+	["grug_nodes:dirt_with_bone_litter"] = true,
+	["grug_nodes:dirt_with_silver_litter"] = true,
+	["grug_trees:gravewood_tree"] = true,
+	["grug_trees:gravewood_wood"] = true,
+	["grug_trees:silverwood_tree"] = true,
+	["grug_trees:silverwood_wood"] = true,
+	["wool:black"] = true,
 	["wool:brown"] = true,
+	["wool:dark_grey"] = true,
+	["wool:green"] = true,
 	["wool:red"] = true,
 	["wool:white"] = true,
 	["wool:yellow"] = true,
+	-- Troll (Kapok Cradle). `darkage_wood_bars` is deliberately absent: it is
+	-- `glasslike`, so it is a window, not a wall, and nothing may hang on it.
+	-- `default:mossycobble` and `grug_decor:darkage_serpentine` are the
+	-- Hollow's and the Glade's, already listed above.
+	["default:dirt_with_rainforest_litter"] = true,
+	["default:junglewood"] = true,
+	["default:jungletree"] = true,
+	["grug_decor:darkage_basalt_brick"] = true,
+	["grug_decor:darkage_reinforced_wood"] = true,
+	["grug_nodes:mud"] = true,
 }
 
 function M.full_solid(name)
@@ -200,6 +312,9 @@ function M.rotate_param2(param2, kind, turns)
 		end
 		return 0
 	end
+	-- A mesh option names a shape, not a direction; a quarter turn about +Y
+	-- leaves it exactly where it was.
+	if kind == M.MESHOPTIONS then return param2 end
 	if kind == M.WALLMOUNTED then
 		local step = {[2] = 5, [5] = 3, [3] = 4, [4] = 2}
 		local value = param2
@@ -222,7 +337,7 @@ end
 -- a part must therefore land back on those two values, not on their half
 -- turns, so that the blueprint keeps writing what the engine would write.
 function M.canonical_param2(name, param2)
-	if name:sub(1, 7) == "xpanes:" and name:sub(-5) == "_flat" then
+	if M.is_pane(name) and name:sub(-5) == "_flat" then
 		if param2 == 1 then return 3 end
 		if param2 == 2 then return 0 end
 	end
@@ -251,11 +366,11 @@ function M.buffer()
 end
 
 function Buffer:put(x, y, z, name, param2)
-	param2 = param2 or 0
 	if type(name) ~= "string" or name == "" then
 		error("wp13 parts: cell name differs", 0)
 	end
-	if param2 % 1 ~= 0 or param2 < 0 or param2 > 255 then
+	param2 = param2 or M.place_param2(name)
+	if type(param2) ~= "number" or param2 % 1 ~= 0 or param2 < 0 or param2 > 255 then
 		error("wp13 parts: cell param2 differs", 0)
 	end
 	if param2 ~= 0 and M.param2_kind(name) == M.NONE then
@@ -410,19 +525,55 @@ end
 -- update_pane settles on for two opposite connections. `resolve_panes` below
 -- then runs the real rule over the finished blueprint, because a pane's
 -- shape depends on neighbours the part that wrote it cannot see.
+-- A race whose windows are open bars or a lattice binds `window` to a node
+-- that is not an `xpanes` pane at all. Such a node records no axis -- it has
+-- no paramtype2 to record one in -- so the opening is written at param2 0 and
+-- `resolve_panes` below never sees it, because it carries no `group:pane`.
 function M.pane(buf, palette, x, y, z, axis)
 	if axis ~= "x" and axis ~= "z" then
 		error("wp13 parts: pane axis differs", 0)
 	end
-	buf:put(x, y, z, palette.node("window"), axis == "x" and 0 or 3)
+	local name = palette.node("window")
+	if not M.is_pane(name) then
+		-- A race whose windows are open bars or a lattice writes a plain
+		-- node: no axis to record, no `update_pane` to satisfy.
+		buf:put(x, y, z, name, 0)
+		return
+	end
+	buf:put(x, y, z, name, axis == "x" and 0 or 3)
+end
+
+-- Which node names are panes.
+--
+-- `xpanes` decides everything about a pane from `group:pane`, and
+-- `tools/wp13/library_kat.lua` reads that group out of the real
+-- registrations. This file has no registry -- it is pure, engine-free
+-- arithmetic -- so it cannot ask the same question the same way, and the
+-- first version answered a DIFFERENT one: it tested the `xpanes:` prefix,
+-- which is true of `xpanes:pane_flat` and also of anything else that mod
+-- ever registers, pane or not.
+--
+-- The set is therefore written out, and `library_kat` asserts that it agrees
+-- with `group:pane` for every name any palette binds and every name any
+-- start emits. A pane added to a palette without being added here fails
+-- there, which is the only place that can tell.
+local PANE_NAMES = {
+	["xpanes:bar"] = true, ["xpanes:bar_flat"] = true,
+	["xpanes:pane"] = true, ["xpanes:pane_flat"] = true,
+	["xpanes:obsidian_pane"] = true, ["xpanes:obsidian_pane_flat"] = true,
+}
+
+function M.is_pane(name)
+	return PANE_NAMES[name] == true
 end
 
 -- The connected name behind a pane node, or nil if this is not a pane.
 local function pane_base(name)
-	if name:sub(1, 7) ~= "xpanes:" then return nil end
+	if not PANE_NAMES[name] then return nil end
 	if name:sub(-5) == "_flat" then return name:sub(1, -6) end
 	return name
 end
+M.pane_base = pane_base
 
 -- `xpanes` decides a pane's node and param2 from its four horizontal
 -- neighbours, in `update_pane` (mods/BASE/xpanes/init.lua). The engine runs
@@ -518,6 +669,32 @@ function M.wall_prop(buf, palette, role, x, y, z, dx, dy, dz)
 	return true
 end
 
+-- A lamp hung under a beam or an eave. `light_hanging` is bound to a node in
+-- `group:attached_node = 4` -- "the node is always attached to the node
+-- above" (lua_api.md) -- so the cell overhead has to be an opaque full node
+-- or the engine drops the lamp the first time anything near it updates. It
+-- carries no paramtype2, so it is written at param2 0.
+--
+-- Returns false and writes nothing when the palette has no hanging lamp or
+-- the ceiling is not a wall, so a caller can try the next candidate cell.
+function M.hanging_light(buf, palette, x, y, z)
+	local name = palette.maybe("light_hanging")
+	if name == nil or not M.solid_at(buf, x, y + 1, z) then return false end
+	local here = buf:at(x, y, z)
+	if here ~= nil and here.name ~= "air" then return false end
+	buf:put(x, y, z, name, 0)
+	return true
+end
+
+-- A glowing block built into masonry: the palette's `light_beacon` is a full
+-- cube that carries itself, so it needs no support test, only a free cell.
+function M.beacon(buf, palette, x, y, z)
+	local name = palette.maybe("light_beacon")
+	if name == nil then return false end
+	buf:put(x, y, z, name, 0)
+	return true
+end
+
 function M.floor_torch(buf, palette, x, y, z)
 	if not M.solid_at(buf, x, y - 1, z) then
 		local cell = buf:at(x, y - 1, z)
@@ -557,6 +734,55 @@ end
 function M.table_cell(buf, palette, x, y, z)
 	buf:put(x, y, z, palette.node("table_leg"))
 	buf:put(x, y + 1, z, palette.node("table_top"))
+end
+
+-- One round of a plain 32-bit LCG. The caller must feed a value below 2^15,
+-- which keeps every product under 2^53 -- the largest integer a C double
+-- holds exactly -- so LuaJIT and the engine's bundled PUC 5.1 build agree bit
+-- for bit. The result is the middle 15 bits, because the low bits of an LCG
+-- are the ones with the short period.
+function M.mix(value)
+	value = (value * 1103515245 + 12345) % 2147483648
+	return math.floor(value / 65536) % 32768
+end
+
+-- A position hash with no visible lattice, in [0, 32768).
+--
+-- Any expression linear in x and z lays its hits on an arithmetic
+-- progression, and an arithmetic progression modulo a sieve's period is a
+-- stripe. Worse, two linear expressions over the same position are rarely
+-- independent: `7x + 11z` IS `3(x + z)` modulo 4, which is how the first
+-- ground-cover routine came to pick only cells whose role test then always
+-- answered the same way. Two LCG rounds decorrelate x from z, and two
+-- different offsets into this function are independent enough to drive a
+-- selector and a role test at once.
+--
+-- `+ 200` keeps a pad coordinate positive; the pad is 127 nodes wide.
+function M.position_hash(x, z)
+	return M.mix((M.mix(x + 200) + (z + 200) * 7) % 32768)
+end
+
+-- ASCII byte order, NOT `<`.
+--
+-- Lua's `<` on strings is `strcoll`, so under a locale that is not C it can
+-- order two node names differently from the byte order the R7 content channel
+-- validates a palette with -- and the engine's locale is not this game's to
+-- choose. Every composition sorts its palette with this.
+--
+-- `mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua` carries the same
+-- comparator for the consumers that never load this library;
+-- `tools/wp13/library_kat.lua` asserts the two agree on a corpus of names.
+function M.less_bytes(left, right)
+	if type(left) ~= "string" or type(right) ~= "string" then
+		error("wp13 parts: byte-order input is not bytes", 0)
+	end
+	local count = math.min(#left, #right)
+	for index = 1, count do
+		local left_byte = string.byte(left, index)
+		local right_byte = string.byte(right, index)
+		if left_byte ~= right_byte then return left_byte < right_byte end
+	end
+	return #left < #right
 end
 
 return M

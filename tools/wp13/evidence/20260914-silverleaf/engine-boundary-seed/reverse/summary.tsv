@@ -1,0 +1,10 @@
+schema	grug_wp40_real_engine_profile_v1
+cold_generated_blocks	28
+cold_mapgen_callbacks	28
+disk_loaded_blocks	3500
+disk_mapgen_callbacks	0
+sample_digest	73a3908e9416eae21e5284f62188812c1135dcf14219c89fe638e82d47906116
+full_digest	disabled
+full_vocabulary_digest	-
+full_voxels	0
+snapshot_manifest_sha256	2cf9ae1dd1accb82db5d6195dcb6cb50e19862b05653b7d6b8496e6e5fa3712c

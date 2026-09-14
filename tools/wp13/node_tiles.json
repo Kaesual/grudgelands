@@ -1651,6 +1651,33 @@
    "source": "mods/ITEMS/grug_decor/castle.lua",
    "shape": "cube"
   },
+  "grug_decor:castle_pillar_obsidianbrick_bottom": {
+   "tiles": [
+    "default_obsidian_brick.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
+  },
+  "grug_decor:castle_pillar_obsidianbrick_middle": {
+   "tiles": [
+    "default_obsidian_brick.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
+  },
+  "grug_decor:castle_pillar_obsidianbrick_top": {
+   "tiles": [
+    "default_obsidian_brick.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
+  },
   "grug_decor:castle_roofslate": {
    "tiles": [
     "grug_decor_castle_castle_slate.png"
@@ -1814,8 +1841,11 @@
    "shape": "nodebox"
   },
   "grug_decor:cottages_tub": {
-   "drawtype": "mesh",
-   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "drawtype": "nodebox",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_cottages_cottages_barrel.png"
+   ],
    "shape": "nodebox"
   },
   "grug_decor:cottages_wagon_load": {
@@ -1883,8 +1913,61 @@
    "source": "mods/ITEMS/grug_decor/cottages.lua",
    "shape": "nodebox"
   },
+  "grug_decor:darkage_adobe": {
+   "tiles": [
+    "grug_decor_darkage_darkage_adobe.png"
+   ],
+   "drawtype": "normal",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "cube"
+  },
+  "grug_decor:darkage_basalt_brick": {
+   "tiles": [
+    "grug_decor_darkage_darkage_basalt_brick.png"
+   ],
+   "drawtype": "normal",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "cube"
+  },
+  "grug_decor:darkage_iron_bars": {
+   "tiles": [
+    "grug_decor_darkage_darkage_iron_bars.png"
+   ],
+   "drawtype": "glasslike",
+   "alpha": "clip",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "glass"
+  },
+  "grug_decor:darkage_marble": {
+   "tiles": [
+    "grug_decor_darkage_darkage_marble.png"
+   ],
+   "drawtype": "normal",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "cube"
+  },
+  "grug_decor:darkage_marble_tile": {
+   "tiles": [
+    "grug_decor_darkage_darkage_marble_tile.png"
+   ],
+   "drawtype": "normal",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "cube"
+  },
+  "grug_decor:darkage_ors_block": {
+   "tiles": [
+    "grug_decor_darkage_darkage_ors_block.png"
+   ],
+   "drawtype": "normal",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "cube"
+  },
   "grug_decor:darkage_reinforced_wood": {
-   "source": "mods/ITEMS/grug_decor/darkage.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "default_wood.png^grug_decor_darkage_darkage_reinforce.png"
+   ],
+   "drawtype": "normal",
    "shape": "cube"
   },
   "grug_decor:darkage_reinforced_wood_arrow": {
@@ -1900,6 +1983,93 @@
    "paramtype2": "facedir",
    "source": "mods/ITEMS/grug_decor/darkage.lua",
    "shape": "cube"
+  },
+  "grug_decor:darkage_serpentine": {
+   "tiles": [
+    "grug_decor_darkage_darkage_serpentine.png"
+   ],
+   "drawtype": "normal",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "cube"
+  },
+  "grug_decor:darkage_serpentine_slab": {
+   "tiles": [
+    "grug_decor_darkage_darkage_serpentine.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "slab",
+   "source": "MANUAL_OVERRIDES"
+  },
+  "grug_decor:darkage_slate_brick": {
+   "tiles": [
+    "grug_decor_darkage_darkage_slate_brick.png"
+   ],
+   "drawtype": "normal",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "cube"
+  },
+  "grug_decor:darkage_slate_brick_slab": {
+   "tiles": [
+    "grug_decor_darkage_darkage_slate_brick.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "slab",
+   "source": "MANUAL_OVERRIDES"
+  },
+  "grug_decor:darkage_slate_tile": {
+   "tiles": [
+    "grug_decor_darkage_darkage_slate_tile.png"
+   ],
+   "drawtype": "normal",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "cube"
+  },
+  "grug_decor:darkage_slate_tile_slab": {
+   "tiles": [
+    "grug_decor_darkage_darkage_slate_tile.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "slab",
+   "source": "MANUAL_OVERRIDES"
+  },
+  "grug_decor:darkage_slate_tile_stair": {
+   "tiles": [
+    "grug_decor_darkage_darkage_slate_tile.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "stair",
+   "source": "MANUAL_OVERRIDES"
+  },
+  "grug_decor:darkage_slate_tile_stair_inner": {
+   "tiles": [
+    "grug_decor_darkage_darkage_slate_tile.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "stair_inner",
+   "source": "MANUAL_OVERRIDES"
+  },
+  "grug_decor:darkage_slate_tile_stair_outer": {
+   "tiles": [
+    "grug_decor_darkage_darkage_slate_tile.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "stair_outer",
+   "source": "MANUAL_OVERRIDES"
+  },
+  "grug_decor:darkage_wood_bars": {
+   "tiles": [
+    "grug_decor_darkage_darkage_wood_bars.png"
+   ],
+   "drawtype": "glasslike",
+   "alpha": "clip",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "glass"
   },
   "grug_decor:darkage_wood_frame": {
    "drawtype": "glasslike_framed",
@@ -1920,7 +2090,11 @@
   "grug_decor:xdecor_candle": {
    "drawtype": "torchlike",
    "paramtype2": "wallmounted",
-   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_xdecor_xdecor_candle_floor.png"
+   ],
+   "alpha": "clip",
    "shape": "torch"
   },
   "grug_decor:xdecor_cauldron": {
@@ -1942,7 +2116,11 @@
   },
   "grug_decor:xdecor_cobweb": {
    "drawtype": "plantlike",
-   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_xdecor_xdecor_cobweb.png"
+   ],
+   "alpha": "clip",
    "shape": "plant"
   },
   "grug_decor:xdecor_curtain": {
@@ -1994,17 +2172,38 @@
   "grug_decor:xdecor_ivy": {
    "drawtype": "signlike",
    "paramtype2": "wallmounted",
-   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_xdecor_xdecor_ivy.png"
+   ],
+   "alpha": "clip",
    "shape": "billboard"
   },
   "grug_decor:xdecor_lantern": {
    "drawtype": "plantlike",
-   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_xdecor_xdecor_lantern.png^[verticalframe:4:0"
+   ],
+   "alpha": "clip",
    "shape": "plant"
   },
   "grug_decor:xdecor_lantern_hanging": {
    "drawtype": "plantlike",
-   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_xdecor_xdecor_lantern.png^[verticalframe:4:0"
+   ],
+   "alpha": "clip",
+   "shape": "plant"
+  },
+  "grug_decor:xdecor_potted_dandelion_white": {
+   "tiles": [
+    "grug_decor_xdecor_xdecor_dandelion_white_pot.png"
+   ],
+   "drawtype": "plantlike",
+   "alpha": "clip",
+   "source": "MANUAL_OVERRIDES",
    "shape": "plant"
   },
   "grug_decor:xdecor_potted_dandelion_yellow": {
@@ -2025,9 +2224,22 @@
    "source": "MANUAL_OVERRIDES",
    "shape": "plant"
   },
+  "grug_decor:xdecor_potted_viola": {
+   "tiles": [
+    "grug_decor_xdecor_xdecor_viola_pot.png"
+   ],
+   "drawtype": "plantlike",
+   "alpha": "clip",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "plant"
+  },
   "grug_decor:xdecor_rope": {
    "drawtype": "plantlike",
-   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_xdecor_xdecor_rope.png"
+   ],
+   "alpha": "clip",
    "shape": "plant"
   },
   "grug_decor:xdecor_stonepath": {
@@ -2042,7 +2254,10 @@
   "grug_decor:xdecor_table": {
    "drawtype": "nodebox",
    "paramtype2": "facedir",
-   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_xdecor_xdecor_wood.png"
+   ],
    "shape": "nodebox"
   },
   "grug_decor:xdecor_woodframed_glass": {
@@ -2053,7 +2268,16 @@
   },
   "grug_decor:xdecor_workbench": {
    "paramtype2": "facedir",
-   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_xdecor_xdecor_workbench_top.png",
+    "grug_decor_xdecor_xdecor_workbench_bottom.png",
+    "grug_decor_xdecor_xdecor_workbench_sides.png",
+    "grug_decor_xdecor_xdecor_workbench_sides.png",
+    "grug_decor_xdecor_xdecor_workbench_sides.png",
+    "grug_decor_xdecor_xdecor_workbench_front.png"
+   ],
+   "drawtype": "normal",
    "shape": "cube"
   },
   "grug_materials:emberglass_lamp": {
@@ -2094,6 +2318,26 @@
    "drawtype": "nodebox",
    "source": "mods/ITEMS/grug_nodes/init.lua",
    "shape": "nodebox"
+  },
+  "grug_nodes:dirt_with_bone_litter": {
+   "tiles": [
+    "grug_nodes_bone_litter.png",
+    "default_dirt.png",
+    "default_dirt.png^grug_nodes_bone_litter_side.png"
+   ],
+   "drawtype": "normal",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "cube"
+  },
+  "grug_nodes:dirt_with_silver_litter": {
+   "tiles": [
+    "grug_nodes_silver_litter.png",
+    "default_dirt.png",
+    "default_dirt.png^grug_nodes_silver_litter_side.png"
+   ],
+   "drawtype": "normal",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "cube"
   },
   "grug_nodes:guard_banner": {
    "tiles": [
