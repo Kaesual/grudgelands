@@ -136,10 +136,13 @@ stone block).
 3. The other five capitals, one lane each, after the pilot's fix round.
 4. Villages (12), then outposts/camps, then mining/apex/mirefolk dressing.
 
-## 4. Open for the user
+## 4. User rulings
 
-- Curtain walls: dwarf, undead and orc get one in the first version; human,
-  elf and troll do not. Say if you want walls everywhere or nowhere.
-- Whether the king's hall interior should already have the throne room
-  layout that WP13's king encounter will use (recommended: yes, so the NPC
-  package places entities into finished architecture).
+- **King's hall**: decided 2026-09-14, the core blueprint builds the throne
+  room layout the king encounter will use, so the NPC package places
+  entities into finished architecture.
+- **Curtain walls** (a city wall along the 512 × 512 envelope with towers
+  and gatehouses at the four ±256 gates): proposal is walls for Dur
+  Brannoc, Nhal Veyr and Gor Drazhak, open edges (hedges/orchards, groves,
+  stilts and water) for Highcourt, Lethariel and Kezamba. Awaiting the
+  user's one-word answer: as proposed / all / none.
