@@ -1525,6 +1525,300 @@ local function loader(directory)
 		return district(part, sockets)
 	end
 
+	-- -------------------------------------------------------------------
+	-- 14-17. the open-edge pieces
+	-- -------------------------------------------------------------------
+
+	-- The hedge and orchard edge: what Highcourt has instead of a wall.
+	-- A kerbed ring street, a clipped hedge behind it, two rows of fruit
+	-- trees and a gap with a gate for the orchard track.
+	--
+	-- Extent: len x 11, y 0..(tree height + 4).
+	function M.orchard_edge(palette, spec)
+		local len = spec.len or 21
+		local d = spec.d or 11
+		local buf = parts.buffer()
+		local lights, sockets = {}, {}
+		if len < 13 then error("wp13 capitals: orchard edge too short", 0) end
+		local gap = math.floor(len / 2)
+
+		buf:clear(0, 1, 0, len - 1, 16, d - 1)
+		buf:fill(0, 0, 0, len - 1, 0, d - 1, palette.node("ground"))
+		buf:fill(0, 0, 0, len - 1, 0, 1, palette.node("path"))
+		dressing.low_wall_line(buf, palette, 0, 2, gap - 2, 2)
+		dressing.low_wall_line(buf, palette, gap + 2, 2, len - 1, 2)
+
+		-- The hedge, broken at the gate. `hedge_line` degrades to nothing
+		-- for a race with no hedge, which is why the kerb above carries the
+		-- boundary on its own.
+		local hedged = dressing.hedge_line(buf, palette, 0, 3, gap - 2, 3, 3)
+		hedged = hedged + dressing.hedge_line(buf, palette, gap + 2, 3,
+			len - 1, 3, 3)
+		local gate = palette.maybe("fence_gate")
+		for x = gap - 1, gap + 1 do
+			buf:put(x, 0, 3, palette.node("path"))
+		end
+		if gate then
+			buf:put(gap, 1, 3, gate)
+		end
+
+		-- Two rows of trees on the field side.
+		local trees = 0
+		for x = 3, len - 4, 5 do
+			dressing.broadleaf(buf, palette, x, 6, 5)
+			dressing.broadleaf(buf, palette, x + 2, d - 2, 4)
+			trees = trees + 2
+		end
+		dressing.undergrowth(buf, palette, 0, 4, len - 1, d - 1, 7)
+
+		local id = spec.id or "orchard"
+		for x = 4, len - 5, 8 do
+			dressing.path_light(buf, palette, x, 1, lights)
+		end
+		socket(sockets, id .. "_work", "idle", gap, 1, 5, 0, {tags = {"work"}})
+		patrol(sockets, id .. "_street_a", spec.patrol_group or "ring",
+			spec.order or 1, 2, 1, 0, 1)
+		patrol(sockets, id .. "_street_b", spec.patrol_group or "ring",
+			(spec.order or 1) + 1, len - 3, 1, 0, 3)
+
+		return finish(buf, len, d, top_of(buf), {
+			doors = {},
+			lights = lights,
+			sockets = sockets,
+			inside = {},
+			room_corner = {},
+		}, {trees = trees, hedge = hedged})
+	end
+
+	-- A grove: the kept trees between two plots, with a paved walk crossing
+	-- and lanterns on the walk. `spec.kind` names the dressing silhouette, so
+	-- one generator gives a pine grove, a broadleaf grove, a columnar aspen
+	-- grove or a kapok stand.
+	--
+	-- Extent: size x size, y 0..(tree height + 6).
+	function M.grove(palette, spec)
+		local size = spec.size or 17
+		local buf = parts.buffer()
+		local lights, sockets = {}, {}
+		if size < 11 then error("wp13 capitals: grove too small", 0) end
+		local last = size - 1
+		local centre = math.floor(last / 2)
+		local kind = spec.kind or "tree"
+		local plant = dressing[kind]
+		if type(plant) ~= "function" then
+			error("wp13 capitals: unknown grove kind " .. tostring(kind), 0)
+		end
+
+		buf:clear(0, 1, 0, last, 24, last)
+		buf:fill(0, 0, 0, last, 0, last, palette.node("ground"))
+		for step = 0, last do
+			for offset = -1, 1 do
+				buf:put(centre + offset, 0, step, palette.node("path"))
+				buf:put(step, 0, centre + offset, palette.node("path"))
+			end
+		end
+
+		local trees = 0
+		for _, spot in ipairs({{2, 2}, {last - 2, 2}, {2, last - 2},
+				{last - 2, last - 2}, {centre - 4, centre + 4}}) do
+			plant(buf, palette, spot[1], spot[2], spec.height or 8)
+			trees = trees + 1
+		end
+		dressing.undergrowth(buf, palette, 0, 0, last, last, 6)
+		for _, spot in ipairs({{centre - 2, 2}, {centre + 2, last - 2}}) do
+			dressing.path_light(buf, palette, spot[1], spot[2], lights)
+		end
+
+		local id = spec.id or "grove"
+		socket(sockets, id .. "_idle", "idle", centre, 1, centre, 0,
+			{tags = {"bench"}})
+
+		return finish(buf, size, size, top_of(buf), {
+			doors = {},
+			lights = lights,
+			sockets = sockets,
+			inside = {},
+			room_corner = {},
+		}, {trees = trees})
+	end
+
+	-- The troll edge: a basalt-pier platform carrying a railed deck, with a
+	-- walkway spur running off it and a flight down to the ground.
+	--
+	-- Extent: size x size plus the spur's length in z, y 0..(deck + 2).
+	function M.stilt_platform(palette, spec)
+		local size = spec.size or 15
+		local deck = spec.deck or 6
+		local spur = spec.spur or 6
+		local buf = parts.buffer()
+		local lights, sockets = {}, {}
+		if size < 9 then error("wp13 capitals: stilt platform too small", 0) end
+		local last = size - 1
+		local centre = math.floor(last / 2)
+
+		buf:clear(0, 1, 0, last, deck + 4, last)
+		buf:fill(0, 0, 0, last, 0, last, palette.node("ground_patch"))
+
+		-- Legs on a four-node grid, plus every corner, on masonry pad stones.
+		-- The first version stood them three apart in the race's `foundation`
+		-- masonry and only two courses clear of the mud: from any camera
+		-- angle that is a plinth with a deck on it, not a platform on stilts.
+		-- Timber posts on a wider grid under a six-course deck are legs.
+		local piers = 0
+		local function leg(x, z)
+			buf:put(x, 1, z, palette.node("foundation"))
+			for y = 2, deck - 1 do
+				buf:put(x, y, z, palette.node("post"))
+			end
+			piers = piers + 1
+		end
+		for z = 0, last, 4 do
+			for x = 0, last, 4 do leg(x, z) end
+		end
+		for _, corner in ipairs({{last, 0}, {0, last}, {last, last}}) do
+			leg(corner[1], corner[2])
+		end
+		buf:fill(0, deck, 0, last, deck, last, palette.node("path"))
+
+		-- The rail, opened at the head of the spur and at the head of the
+		-- flight, because those are the two places a walk has to cross it.
+		local mouth = {}
+		for offset = -1, 1 do
+			mouth[(centre + offset) .. ":" .. last] = true
+			mouth[(centre + offset) .. ":0"] = true
+		end
+		for z = 0, last do
+			for x = 0, last do
+				if (x == 0 or x == last or z == 0 or z == last) and
+						not mouth[x .. ":" .. z] then
+					buf:put(x, deck + 1, z, palette.node("railing"))
+				end
+			end
+		end
+
+		dressing.walkway(buf, palette, centre, last + 1, spur, "z", deck)
+		-- `stair_up` puts its treads on the far side of the deck edge it is
+		-- given and clears four courses over each of them, so the sign that
+		-- lands the flight OUTSIDE the platform is the positive one: the
+		-- other sign walks the flight back across the deck and cuts three
+		-- holes in it.
+		dressing.stair_up(buf, palette, centre, 0, deck, "z", 1)
+
+		-- Lanterns under the deck and a lamp on it.
+		local lanterns = 0
+		for _, spot in ipairs({{3, 3}, {last - 3, last - 3}}) do
+			if dressing.lantern(buf, palette, spot[1], deck - 1, spot[2]) then
+				lanterns = lanterns + 1
+				lights[#lights + 1] = {x = spot[1], y = deck - 1, z = spot[2]}
+			end
+		end
+		parts.floor_torch(buf, palette, 2, deck + 1, centre)
+		lights[#lights + 1] = {x = 2, y = deck + 1, z = centre}
+
+		local id = spec.id or "stilt"
+		patrol(sockets, id .. "_deck_a", spec.patrol_group or "boardwalk",
+			spec.order or 1, centre, deck + 1, 2, 0)
+		patrol(sockets, id .. "_deck_b", spec.patrol_group or "boardwalk",
+			(spec.order or 1) + 1, centre, deck + 1, last - 2, 2)
+		socket(sockets, id .. "_idle", "idle", centre + 3, deck + 1, centre, 1,
+			{tags = {"work"}})
+
+		return finish(buf, size, size, top_of(buf), {
+			doors = {},
+			lights = lights,
+			sockets = sockets,
+			inside = {},
+			room_corner = {},
+		}, {piers = piers, lanterns = lanterns})
+	end
+
+	-- A lined water channel: the elf and troll edge, and the drain of every
+	-- terraced capital. A masonry invert two courses down, lined cheeks, a
+	-- paved bank either side with a kerb rail, and a plank crossing.
+	--
+	-- The channel is authored DRY. Pipeline contract section 5 invariant 1
+	-- forbids a liquid in a blueprint -- a VoxelManip write places no liquid
+	-- update, so authored water is either static or a flood nobody asked for
+	-- -- so what this part builds is the cut, the lining and the crossing.
+	-- Filling it is the composition lane's decision and the engine's job.
+	--
+	-- Extent: len x 7, y -3..2; the -3 is inside the plot's y -6.
+	function M.water_channel(palette, spec)
+		local len = spec.len or 21
+		local d = 7
+		local buf = parts.buffer()
+		local lights, sockets = {}, {}
+		if len < 11 then error("wp13 capitals: water channel too short", 0) end
+		local bridge = spec.bridge or (math.floor(len / 2) - 2)
+		local bridge_end = bridge + 4
+		if bridge < 1 or bridge_end > len - 2 then
+			error("wp13 capitals: the crossing falls outside the channel", 0)
+		end
+
+		buf:clear(0, 1, 0, len - 1, 4, d - 1)
+		buf:fill(0, -3, 0, len - 1, -3, d - 1, palette.node("foundation"))
+		for x = 0, len - 1 do
+			-- Banks.
+			for _, z in ipairs({0, d - 1}) do
+				for y = -2, 0 do
+					buf:put(x, y, z, palette.node("subsoil"))
+				end
+				buf:put(x, 0, z, paving(palette))
+			end
+			-- Cheeks.
+			for _, z in ipairs({1, d - 2}) do
+				for y = -2, 0 do
+					buf:put(x, y, z, stone(palette))
+				end
+			end
+			-- Invert and void.
+			for z = 2, d - 3 do
+				buf:put(x, -2, z, spoil(palette))
+				buf:clear(x, -1, z, x, 0, z)
+			end
+		end
+		-- The kerb rail, opened where the crossing lands.
+		local kerb = 0
+		for x = 0, len - 1 do
+			if x < bridge or x > bridge_end then
+				buf:put(x, 1, 1, palette.node("low_wall"))
+				buf:put(x, 1, d - 2, palette.node("low_wall"))
+				kerb = kerb + 2
+			end
+		end
+		-- The crossing: a five-wide deck level with the banks, railed on the
+		-- two cells that overhang the water.
+		for x = bridge, bridge_end do
+			for z = 1, d - 2 do
+				buf:put(x, 0, z, palette.node("path"))
+			end
+		end
+		for z = 2, d - 3 do
+			buf:put(bridge, 1, z, palette.node("railing"))
+			buf:put(bridge_end, 1, z, palette.node("railing"))
+		end
+
+		for x = 3, len - 4, 7 do
+			dressing.path_light(buf, palette, x, 0, lights)
+		end
+
+		local id = spec.id or "channel"
+		socket(sockets, id .. "_cross", "idle", bridge + 2, 1,
+			math.floor(d / 2), 0, {tags = {"bench"}})
+		patrol(sockets, id .. "_bank_a", spec.patrol_group or "ring",
+			spec.order or 1, 2, 1, 0, 1)
+		patrol(sockets, id .. "_bank_b", spec.patrol_group or "ring",
+			(spec.order or 1) + 1, len - 3, 1, d - 1, 3)
+
+		return finish(buf, len, d, top_of(buf), {
+			doors = {},
+			lights = lights,
+			sockets = sockets,
+			inside = {},
+			room_corner = {},
+		}, {kerb = kerb})
+	end
+
 	return M
 end
 
