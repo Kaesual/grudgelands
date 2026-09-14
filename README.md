@@ -217,7 +217,8 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 WP19, WP25, WP33, WP35, WP36, WP38, WP39, WP40, WP43 and WP45 provide the
 playable foundation: three classes, combat, mobs, equipment/bags, currency,
 canonical materials, gathering and the named-zone world. New characters remain
-protected behind character creation until their race start is loaded. WP40's
+protected behind character creation until the server has prepared all six
+start areas, which it emerges once at startup. WP40's
 [development acceptance](docs/research/wp40-completion.md) now includes the first
 terrain/performance correction round and green native plus browser-local
 Lua-5.1 user tests; slower browser generation is accepted for this server game.
@@ -245,9 +246,11 @@ from castle_masonry, cottages, darkage and xdecor-libre, and a textured
 isometric renderer used to review buildings before playtests. The last four
 starts were built in parallel lanes, merged onto one branch and given one
 combined review-fix round; native checks, interpreter parity and independent
-reviews are green. **Every start still awaits the user's GUI playtest**, and
-capitals, villages, outposts, camps and functional settlement services remain
-later work.
+reviews are green. Two round-A playtest rulings also shipped here: the six
+start areas are emerged once at server start (6/6 in 42.6 s on a fresh
+world) and no hostile mob spawns inside their protected footprints.
+**Every start still awaits the user's GUI playtest**, and capitals, villages,
+outposts, camps and functional settlement services remain later work.
 WP5, WP26, WP44, WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind
 shipped prerequisites. WP34 still needs structures and economy.
 

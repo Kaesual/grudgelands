@@ -313,6 +313,11 @@ function grug_mobs.register_mob(name, def)
 	-- are engine-owned from here on, the def must not hand-set them.
 	grug_mobs.register_level_cfg(name, def)
 	grug_mobs.registered_cadence[name] = true
+	-- Hostile-role derivation for the start-footprint spawn refusal
+	-- (spawn_policy.lua). Must run BEFORE mobs:register_mob copies the def
+	-- into the entity prototype, and it reads the def fields the verbs have
+	-- already installed (verbs.lua contract: verbs first, register after).
+	grug_mobs.register_spawn_role(name, def)
 	-- Aggro config kept as an upvalue: mobs_redo does not copy custom def
 	-- fields onto the entity, so the wrappers install them at runtime
 	-- (grug_mobs.apply_aggro_fields, aggro.lua).

@@ -93,3 +93,14 @@ no relevant Lua error or fatal engine error. No map population or fresh-world
 run was required because WP45 changes no mapgen bytes. The executed GUI scope
 did not disconnect an incomplete character in the middle of creation; that
 reconnect path remains covered by the headless callback harness only.
+
+## Superseded on 2026-09-14
+
+The round-A playtest ruling replaced WP45's per-race emerge with a server-wide
+startup preload of all six start areas and a wait gate in character creation:
+[wp13-start-preload.md](wp13-start-preload.md). The frozen file hashes and the
+`wp45_character_creation_v1` digest above are therefore historical; the current
+regression is `wp45_character_creation_v2` plus the two new KATs in
+`tools/wp45/`. Everything the review found and fixed — stasis re-assertion,
+exact-once commit, identity binding at commit, coordinated admin changes and
+dead-incomplete recovery — is unchanged and still covered.

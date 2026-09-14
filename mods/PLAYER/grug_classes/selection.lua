@@ -1,7 +1,8 @@
 -- Character creation flow: faction (grug_factions) -> race -> class, all
 -- mandatory, all final. Closing a dialog without choosing re-opens it. While
--- the flow is incomplete the player remains frozen and engine-immortal; the
--- selected race start loads behind the class/loading UI and is committed once.
+-- the flow is incomplete the player remains frozen and engine-immortal. The
+-- final teleport waits for grug_core's server-wide preload of ALL SIX start
+-- areas (user decision 2026-09-14) and is committed exactly once.
 
 local RACE_FORM = "grug_classes:race"
 local CLASS_FORM = "grug_classes:class"
@@ -115,7 +116,17 @@ local function options_formspec(title, subtitle, options)
 	return table.concat(parts)
 end
 
+-- The loading form is no longer on screen after one of these, so its
+-- send-on-change memory has to be cleared.
+local function forget_loading(player)
+	local session = creation_sessions[player:get_player_name()]
+	if session then
+		session.shown_loading = false
+	end
+end
+
 local function show_race_selection(player)
+	forget_loading(player)
 	local faction_id = grug_factions.get_faction(player)
 	if not faction_id then
 		return
@@ -131,6 +142,7 @@ local function show_race_selection(player)
 end
 
 local function show_class_selection(player)
+	forget_loading(player)
 	local options = {}
 	for _, id in ipairs(grug_classes.class_ids) do
 		table.insert(options, grug_classes.registered_classes[id])
@@ -140,13 +152,14 @@ local function show_class_selection(player)
 			"How will you fight? This decision is final.", options))
 end
 
-local function loading_formspec(failed)
+local function loading_formspec(failed, ready, total)
 	local parts = {
 		"formspec_version[4]",
 		"size[8.6,3.3]",
 		DARK_BACKGROUND,
 		"label[0.6,0.8;" .. core.formspec_escape(
-			"Preparing your starting area...") .. "]",
+			("Preparing the starting areas (%d of %d)..."):format(
+				ready or 0, total or 0)) .. "]",
 	}
 	if failed then
 		parts[#parts + 1] = "label[0.6,1.5;" .. core.formspec_escape(
@@ -159,9 +172,27 @@ local function loading_formspec(failed)
 	return table.concat(parts)
 end
 
+-- The loading form is the one piece of creation UI that changes while the
+-- player only waits. Send it exactly on a change of what it displays: the
+-- server-wide preload progress moves at most six times, so a per-step or
+-- per-callback resend would be pure packet noise.
 local function show_loading(player, failed)
-	core.show_formspec(player:get_player_name(), LOADING_FORM,
-		loading_formspec(failed))
+	local name = player:get_player_name()
+	local session = creation_sessions[name]
+	local ready, total = grug_core.starts_ready()
+	failed = failed and true or false
+	if session then
+		if session.shown_loading and session.shown_failed == failed and
+				session.shown_ready == ready and session.shown_total == total then
+			return
+		end
+		session.shown_loading = true
+		session.shown_failed = failed
+		session.shown_ready = ready
+		session.shown_total = total
+	end
+	core.show_formspec(name, LOADING_FORM,
+		loading_formspec(failed, ready, total))
 end
 
 local function identity_key(player)
@@ -180,6 +211,66 @@ function grug_core.player_in_creation_stasis(name)
 	return creation_sessions[name] ~= nil
 end
 
+-- Loads THIS player's arrival area and caches the position it belongs to.
+-- The server-wide startup preload (grug_core/starts_preload.lua) proves the
+-- six starts were GENERATED; it does not keep them loaded — blocks unload
+-- again after server_unload_unused_data_timeout. A character created an hour
+-- after server start would otherwise teleport into unloaded space, so the
+-- single teleport still happens only after its own successful emerge. Once
+-- the blocks exist on disk this returns almost immediately.
+local function start_arrival_load(player)
+	local session = creation_sessions[player:get_player_name()]
+	local key = identity_key(player)
+	if not session or not key then
+		return false
+	end
+	session.loading = true
+	session.load_generation = (session.load_generation or 0) + 1
+	local generation = session.load_generation
+	local name = player:get_player_name()
+	local started = grug_factions.prepare_spawn(player,
+		function(_, spawn, failure)
+			-- Deferred by one step on purpose: on an identity change this
+			-- reaction starts a REPLACEMENT emerge, and core.emerge_area must
+			-- never be called from inside an emerge completion callback
+			-- (the shutdown deadlock documented in starts_preload.lua).
+			core.after(0, function()
+				local p = core.get_player_by_name(name)
+				local current = creation_sessions[name]
+				if not p or current ~= session or
+						current.load_generation ~= generation then
+					return
+				end
+				current.loading = false
+				if identity_key(p) ~= key then
+					current.spawn_key = nil
+					current.load_failed = nil
+					continue_creation(p)
+					return
+				end
+				if not spawn then
+					current.load_failed = failure or "spawn_unavailable"
+					if current.pending_class_id or character_complete(p) then
+						show_loading(p, true)
+					end
+					return
+				end
+				current.spawn_ready = true
+				current.spawn_pos = spawn
+				finish_if_ready(p)
+			end)
+		end)
+	if not started then
+		session.loading = false
+		session.load_failed = "spawn_unavailable"
+		return false
+	end
+	return true
+end
+
+-- Binds the pending start identity. The arrival load above may only start
+-- once ALL SIX starts are prepared (user decision 2026-09-14): before that it
+-- would compete with the startup preload for the same mapgen threads.
 start_spawn_load = function(player)
 	local session = creation_sessions[player:get_player_name()]
 	local key = identity_key(player)
@@ -190,45 +281,16 @@ start_spawn_load = function(player)
 			(session.loading or session.spawn_ready or session.load_failed) then
 		return true
 	end
-
 	session.spawn_key = key
 	session.spawn_ready = false
 	session.spawn_pos = nil
 	session.load_failed = nil
-	session.loading = true
-	session.load_generation = (session.load_generation or 0) + 1
-	local generation = session.load_generation
-	local name = player:get_player_name()
-	local started = grug_factions.prepare_spawn(player,
-		function(p, spawn, failure)
-			local current = creation_sessions[name]
-			if current ~= session or current.load_generation ~= generation then
-				return
-			end
-			current.loading = false
-			if identity_key(p) ~= key then
-				current.spawn_key = nil
-				current.load_failed = nil
-				continue_creation(p)
-				return
-			end
-			if not spawn then
-				current.load_failed = failure or "spawn_unavailable"
-				if current.pending_class_id or character_complete(p) then
-					show_loading(p, true)
-				end
-				return
-			end
-			current.spawn_ready = true
-			current.spawn_pos = spawn
-			finish_if_ready(p)
-		end)
-	if not started then
-		session.loading = false
-		session.load_failed = "spawn_unavailable"
-		return false
+	session.loading = false
+	local ready, total = grug_core.starts_ready()
+	if ready < total then
+		return true
 	end
-	return true
+	return start_arrival_load(player)
 end
 
 finish_if_ready = function(player)
@@ -242,9 +304,20 @@ finish_if_ready = function(player)
 	if not key or not class_id then
 		return false
 	end
+	local ready, total = grug_core.starts_ready()
+	if ready < total then
+		-- Gate one: every race start must be prepared, not only this player's
+		-- (user decision 2026-09-14). Nothing of this player's own is loaded
+		-- while the shared preload still runs.
+		session.spawn_key = key
+		show_loading(player, session.load_failed ~= nil or
+			grug_core.starts_preload_failed())
+		return false
+	end
 	if session.spawn_key ~= key then
-		-- An admin may change race/faction after a prefetch completed. Retire the
-		-- cached position and its callback generation before loading the new one.
+		-- An admin may change race/faction after a prefetch completed. Retire
+		-- the cached position and its callback generation before loading the
+		-- new one.
 		session.load_generation = (session.load_generation or 0) + 1
 		session.spawn_key = nil
 		session.spawn_ready = false
@@ -255,6 +328,7 @@ finish_if_ready = function(player)
 		show_loading(player, session.load_failed ~= nil)
 		return false
 	end
+	-- Gate two: this player's own arrival area is loaded RIGHT NOW.
 	if not session.spawn_ready then
 		if not session.loading and not session.load_failed then
 			start_spawn_load(player)
@@ -382,16 +456,20 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		return true
 	elseif formname == LOADING_FORM then
 		local session = creation_sessions[player:get_player_name()]
-		if fields.retry_spawn and session and session.load_failed then
+		if fields.retry_spawn and session and
+				(session.load_failed or grug_core.starts_preload_failed()) then
 			session.spawn_key = nil
 			session.load_failed = nil
-			show_loading(player, false)
+			-- Re-requests only the start areas that are still missing; the
+			-- ready ones are never emerged twice. start_spawn_load then
+			-- re-runs this player's own arrival load once they are.
+			grug_core.request_starts_preload()
 			start_spawn_load(player)
-			if creation_sessions[player:get_player_name()] == session and
-					session.load_failed then
-				show_loading(player, true)
-			end
+			finish_if_ready(player)
 		else
+			-- The player closed the form (Esc). It is gone from the screen, so
+			-- the send-on-change memo must not suppress the re-send.
+			forget_loading(player)
 			reopen_later(player)
 		end
 		return true
@@ -400,6 +478,19 @@ end)
 
 grug_factions.register_on_faction_chosen(function(player, faction_id)
 	continue_creation(player)
+end)
+
+-- Progress of the server-wide start preload. This fires at most once per
+-- start (six times per server life), so walking the small waiting-player
+-- table here is cheaper than any polling would be, and show_loading only
+-- sends a formspec when its text actually changed.
+grug_core.register_on_starts_progress(function()
+	for name in pairs(creation_sessions) do
+		local player = core.get_player_by_name(name)
+		if player then
+			finish_if_ready(player)
+		end
+	end
 end)
 
 core.register_on_joinplayer(function(player)

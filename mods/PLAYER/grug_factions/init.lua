@@ -99,7 +99,7 @@ local faction_chosen_callbacks = {}
 
 -- func(player, faction_id) — called after every successful faction set,
 -- including the selection dialog and the admin command. grug_classes chains
--- the race/class creation steps and invalidates any in-flight spawn load here.
+-- the race/class creation steps and re-binds the pending start identity here.
 function grug_factions.register_on_faction_chosen(func)
 	table.insert(faction_chosen_callbacks, func)
 end
@@ -134,8 +134,12 @@ end
 -- on success; spawn is nil and failure is a short diagnostic on an emerge
 -- failure or an identity change. If the player left, the callback is omitted.
 --
--- Character creation uses this split phase so its remaining UI can cover the
--- asynchronous map load. Ordinary respawns keep using teleport_to_spawn below.
+-- Since 2026-09-14 all six starts are emerged once at server start
+-- (grug_core/starts_preload.lua). Character creation still calls this as its
+-- SECOND gate after 6/6: blocks generated at startup may be unloaded again
+-- by the time a character commits, and the arrival area must be present at
+-- the moment of the single final teleport. Respawn uses it for the same
+-- reason.
 function grug_factions.prepare_spawn(player, callback)
 	local id = grug_factions.get_faction(player)
 	if not id then
