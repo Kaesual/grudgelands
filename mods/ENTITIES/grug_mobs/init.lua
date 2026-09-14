@@ -4,8 +4,9 @@ if not grug_core.zone_authority_installed() then
 	error("[grug_mobs] validated R7 zone authority was not installed")
 end
 
--- Mod-wide persistence (AGENTS.md: fetch at load time). Currently only the
--- named-rare spawner writes here (rares.lua).
+-- Mod-wide persistence (AGENTS.md: fetch at load time). Two writers: the
+-- named-rare spawner (rares.lua) and the start settlements' one marker per
+-- occupied NPC socket (start_npcs.lua).
 grug_mobs.storage = core.get_mod_storage()
 
 -- Builds one texture entry per MATERIAL SLOT of a mesh (wp6_model_notes §0.3).

@@ -63,9 +63,10 @@
 --   all.
 --
 --   The scan is still used, as a SECOND gate before every placement: if the
---   marker is missing but an entity of that family is standing there anyway
---   (a marker lost to an admin edit), the marker is restored instead of a
---   twin being spawned.
+--   marker is missing but the entity BOOKED ON THAT SOCKET is standing there
+--   anyway (a marker lost to an admin edit), the marker is restored instead of
+--   a twin being spawned. It matches the socket and not just the entity name,
+--   for the reason written at `socket_occupied`.
 --
 --   Guards are the one family that must come back after a death, so their
 --   marker is cleared from `on_die` together with a due time; nothing else
@@ -177,6 +178,22 @@ local function build_rows()
 		local record = settlements[index]
 		local faction_id = faction_of[record.race_id]
 		local sockets = grug_core.settlement_sockets(record.race_id)
+		-- The registry compiled its world positions against the anchor the
+		-- settlement WRITER uses; the preload and the arrival use the one the
+		-- consumer payload publishes. They are the same anchor, and if they
+		-- ever were not, every NPC in this settlement would stand at a
+		-- different height from the buildings -- so it is checked rather than
+		-- assumed, once per start at load.
+		local published = faction_id and
+			grug_core.start_anchor(faction_id, record.race_id) or nil
+		if published and (published.x ~= record.anchor.x or
+				published.y ~= record.anchor.y or
+				published.z ~= record.anchor.z) then
+			core.log("error", "[grug_mobs] start npcs: " .. record.key ..
+				" socket anchor " .. core.pos_to_string(record.anchor) ..
+				" differs from the published start anchor " ..
+				core.pos_to_string(published))
+		end
 		if not faction_id then
 			core.log("error", "[grug_mobs] start npcs: no faction for race " ..
 				record.race_id)
@@ -289,14 +306,25 @@ local function player_near(positions, pos)
 	return false
 end
 
--- Second gate only (see the header): an activated entity of this family
--- already standing at the socket means the marker was lost, not that a twin
--- is wanted.
-local function entity_present(pos, entity_name)
-	local objects = core.get_objects_inside_radius(pos, PRESENCE_RADIUS)
+-- Second gate only (see the header): an activated entity ALREADY BOOKED ON
+-- THIS SOCKET means the marker was lost, not that a twin is wanted.
+--
+-- The match is the socket, not merely the entity name, and that is not a
+-- refinement: a start's two gate posts are eight nodes apart and carry the
+-- same faction guard, and the patrol loop's first waypoint sits on the same
+-- road. A name-only scan inside PRESENCE_RADIUS therefore saw the guard of
+-- the post NEXT DOOR, "restored" a marker nobody had lost and left that post
+-- empty -- measured on the first headless boot, where Hearthpine came up with
+-- one guard instead of three.
+local function socket_occupied(row, slot)
+	local objects = core.get_objects_inside_radius(slot.pos, PRESENCE_RADIUS)
 	for index = 1, #objects do
 		local entity = objects[index]:get_luaentity()
-		if entity and entity.name == entity_name then return true end
+		if entity and entity.name == slot.entity and
+				entity._grug_start == row.race_id and
+				entity._grug_socket == slot.id then
+			return true
+		end
 	end
 	return false
 end
@@ -317,6 +345,11 @@ end
 local function install(entity, row, slot)
 	entity._grug_start = row.race_id
 	entity._grug_socket = slot.id
+	-- The facing to re-assert on every activation: mob_activate hands every mob
+	-- a random yaw (api.lua:3401), so an authored one has to be written back.
+	-- The two families with a tick of their own do it there; the quest shell has
+	-- none and restores it from `after_activate`.
+	entity._grug_face_yaw = slot.yaw
 	if slot.role == "guard_post" then
 		-- `_grug_home` is where aggro.lua's evade runs a guard back to after a
 		-- chase; the post fields are what guard.lua's tick holds it at while
@@ -324,8 +357,11 @@ local function install(entity, row, slot)
 		-- aggro.lua's 20-node camp roam cap, which would be a second, looser
 		-- owner of the same behaviour.
 		entity._grug_home = {x = slot.pos.x, y = slot.pos.y, z = slot.pos.z}
+		-- Horizontal only, like every other "am I where I belong" rule in this
+		-- mod (aggro.lua's evade and its roam cap): a guard standing on the
+		-- step above its post is not off it. The full position lives in
+		-- `_grug_home`.
 		entity._grug_post_x = slot.pos.x
-		entity._grug_post_y = slot.pos.y
 		entity._grug_post_z = slot.pos.z
 		entity._grug_post_yaw = slot.yaw
 	elseif slot.role == "guard_patrol" then
@@ -357,8 +393,8 @@ local function place(row, slot)
 	end
 	-- The ground correction mobs:add_mob skips (init.lua place_on_ground).
 	grug_mobs.place_on_ground(object, slot.pos)
-	object:set_yaw(slot.yaw)
 	install(entity, row, slot)
+	grug_mobs.face_yaw(entity, slot.yaw)
 	return true
 end
 
@@ -377,10 +413,10 @@ local function serve(row, positions)
 				(not positions or player_near(positions, slot.pos)) then
 			local node = core.get_node_or_nil(slot.pos)
 			if node and node.name ~= "ignore" then
-				if entity_present(slot.pos, slot.entity) then
-					core.log("action", "[grug_mobs] start npcs " .. row.key ..
+				if socket_occupied(row, slot) then
+					core.log("warning", "[grug_mobs] start npcs " .. row.key ..
 						": " .. slot.entity .. " already stands at socket " ..
-						slot.id .. "; marker restored")
+						slot.id .. " without a marker; marker restored")
 					mark_placed(row, slot)
 					row.placed_count[slot.family] =
 						row.placed_count[slot.family] + 1
@@ -498,7 +534,7 @@ function grug_mobs.start_post_tick(self, dtime)
 	end
 	self.state = "stand"
 	self:set_velocity(0)
-	self:set_yaw(self._grug_post_yaw or 0, 0)
+	grug_mobs.face_yaw(self, self._grug_post_yaw or 0)
 end
 
 --

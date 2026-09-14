@@ -1,0 +1,15 @@
+grug_core atmosphere KAT
+  interpreter        : Lua 5.1
+  presets total      : 14
+  zone moods         : 10
+    battlegrounds  fog #9a9188 at 140 nodes, start 0.28, saturation 0.85
+    dragon_island  fog #6e6785 at 150 nodes, start 0.30, saturation 1.18
+    dwarf          fog #8fa3ad at 220 nodes, start 0.45, saturation 1.05
+    elf            fog #dceaee at client range, start 0.60, saturation 1.02
+    human          fog #cfe0ea at client range, start 0.70, saturation 1.12
+    ocean          fog #a6c4da at client range, start 0.75, saturation 1.05
+    orc            fog #c9a271 at 160 nodes, start 0.35, saturation 1.08
+    troll          fog #a8c096 at 130 nodes, start 0.30, saturation 1.20
+    undead         fog #9aa894 at 110 nodes, start 0.25, saturation 0.72
+    underground    fog #16130f at 90 nodes, start 0.20, saturation 0.80
+OK

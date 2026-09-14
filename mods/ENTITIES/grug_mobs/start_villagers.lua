@@ -155,6 +155,25 @@ local function install_nametag(self, text)
 	self:update_tag()
 end
 
+-- Is another villager of this family visibly standing on that spot? Only
+-- asked when one of them changes spot, i.e. a handful of times a minute in a
+-- whole settlement. `get_objects_inside_radius` sees only ACTIVATED objects,
+-- so a spot in an unloaded corner reads as free -- which is the harmless
+-- direction: nobody is watching that corner either.
+local function spot_taken(self, spot)
+	local objects = core.get_objects_inside_radius(
+		{x = spot.x, y = spot.y, z = spot.z}, SPOT_ARRIVED)
+	for index = 1, #objects do
+		local entity = objects[index]:get_luaentity()
+		-- `entity ~= self` and not an ObjectRef comparison: the luaentity table
+		-- is the identity that is certainly unique per mob.
+		if entity and entity ~= self and entity.name == self.name then
+			return true
+		end
+	end
+	return false
+end
+
 --
 -- The amble. Walk to the current idle socket, stand there facing its
 -- direction for a while, then pick another one. Every field it reads is a
@@ -193,18 +212,22 @@ local function amble_tick(self, dtime)
 		self._grug_idle_dwell = self._grug_idle_dwell - AMBLE_TICK
 		self.state = "stand"
 		self:set_velocity(0)
-		self:set_yaw(spot.yaw or 0, 0)
+		grug_mobs.face_yaw(self, spot.yaw or 0)
 		-- The line this NPC answers with follows the spot it is standing at.
 		self._grug_idle_tag = spot.tag
 		return
 	end
-	-- Dwell over: choose a different spot (a single-socket settlement keeps
-	-- the one it has) and let the next tick walk there.
+	-- Dwell over: step on to the next spot in the ring and let the next tick
+	-- walk there. Deliberately +1 and not a random pick: four villagers start
+	-- on four distinct sockets, so advancing in step keeps them spread, while
+	-- random picks put two of them on one node most of the time (four on four
+	-- collide in about nine attempts out of ten). The occupancy check is the
+	-- second half of that, because the dwell times drift apart.
 	if #spots > 1 then
 		local pick = index
-		for _ = 1, 8 do
-			pick = math.random(#spots)
-			if pick ~= index then break end
+		for _ = 1, #spots do
+			pick = pick % #spots + 1
+			if pick == index or not spot_taken(self, spots[pick]) then break end
 		end
 		self._grug_idle_spot = pick
 	end
@@ -329,6 +352,7 @@ for index = 1, #identities do
 				self._grug_npc_race = race_id
 				self._grug_npc_tag = names.villager
 				install_nametag(self, names.villager)
+				grug_mobs.face_yaw(self, self._grug_face_yaw)
 			end,
 			on_rightclick = function(self, clicker)
 				answer(self, clicker, self._grug_idle_tag)
@@ -345,6 +369,9 @@ for index = 1, #identities do
 				self._grug_npc_race = race_id
 				self._grug_npc_tag = names.elder
 				install_nametag(self, names.elder)
+				-- The quest shell has no tick of its own, so this is the ONLY
+				-- thing that puts it back on its authored facing after a reload.
+				grug_mobs.face_yaw(self, self._grug_face_yaw)
 			end,
 			on_rightclick = function(self, clicker)
 				answer(self, clicker, "quest")
