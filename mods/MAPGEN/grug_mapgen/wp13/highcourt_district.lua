@@ -94,8 +94,17 @@ local function loader(directory)
 		-- buys is planted. On the first render it was a paved square with a
 		-- well on it standing in a field, which is what a court with a
 		-- two-node verge looks like from outside.
+		--
+		-- MOVED from x = 152 to x = 192 by the seam package, which measured the
+		-- real surface under every plot on both gate seeds
+		-- (docs/research/wp13-seam-generalisation.md). At 152 the 23 x 23
+		-- footprint this plot's garden margin buys straddled a terrace shoulder
+		-- and its perimeter fell SEVEN nodes below its reference column, one
+		-- more than the foundation skirt reaches, so its downhill corner stood
+		-- on air. At 192 the fall is 0 on both seeds. It is the widest plot of
+		-- the district and therefore the one a terrace joint catches first.
 		{id = "market_well", module = "capitals", make = "well_court",
-			x = 152, z = -28, order = 5, along = "avenue", margin = 5,
+			x = 192, z = -28, order = 5, along = "avenue", margin = 5,
 			garden = true, spec = {size = 11}},
 		-- The watch stands at z = 31, not 28: the gate corridor WP40 keeps
 		-- clear is 32 nodes wide (z -16..16) and a 21-deep barracks centred
@@ -108,8 +117,15 @@ local function loader(directory)
 		{id = "market_grove", module = "capitals", make = "grove",
 			x = 76, z = -64, order = 7, along = "ring",
 			spec = {size = 15, kind = "broadleaf", height = 6}},
+		-- MOVED from x = 76 to x = 112 for the same measured reason as the well
+		-- court, on the other gate seed: at 76 this plot sits on the 32-node
+		-- core-to-terrace blend band, 48 to 78 nodes out, where the surface fell EIGHT
+		-- nodes below its reference column on seed 8675309 against a skirt that
+		-- reaches six. At 112 the fall is 0 on both seeds. It keeps the ring
+		-- street's z = 64 line and its neighbour `market_store`'s distance from
+		-- the core.
 		{id = "market_orchard", module = "capitals", make = "orchard_edge",
-			x = 76, z = 64, along = "ring",
+			x = 112, z = 64, along = "ring",
 			spec = {len = 21, d = 11, patrol_group = WATCH, order = 8}},
 		-- Door index 4, single leaf: the `store` kit stands its roof posts
 		-- on the odd cells of the gable's inner run, so an eleven-wide
