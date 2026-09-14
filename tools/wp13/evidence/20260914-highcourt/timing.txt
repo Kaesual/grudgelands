@@ -1,0 +1,7 @@
+# nproc 16, Linux 7.2.5-200.fc44.x86_64
+wp13_highcourt_timing	luajit	load_ms	12.734	core_ms	112.133	core_again_ms	115.356	district_ms	53.469	avenue_ms	2.951	core_cells	101831	district_cells	55685	avenue_cells	1297	capital_cells	157516
+wp13_highcourt_timing	luajit	load_ms	13.136	core_ms	113.712	core_again_ms	113.709	district_ms	53.197	avenue_ms	2.808	core_cells	101831	district_cells	55685	avenue_cells	1297	capital_cells	157516
+wp13_highcourt_timing	luajit	load_ms	13.054	core_ms	112.256	core_again_ms	117.510	district_ms	52.983	avenue_ms	2.829	core_cells	101831	district_cells	55685	avenue_cells	1297	capital_cells	157516
+wp13_highcourt_timing	puc51	load_ms	17.274	core_ms	345.233	core_again_ms	347.157	district_ms	174.277	avenue_ms	2.025	core_cells	101831	district_cells	55685	avenue_cells	1297	capital_cells	157516
+wp13_highcourt_timing	puc51	load_ms	17.345	core_ms	342.989	core_again_ms	366.649	district_ms	176.655	avenue_ms	2.044	core_cells	101831	district_cells	55685	avenue_cells	1297	capital_cells	157516
+wp13_highcourt_timing	puc51	load_ms	16.986	core_ms	349.598	core_again_ms	351.535	district_ms	174.120	avenue_ms	2.022	core_cells	101831	district_cells	55685	avenue_cells	1297	capital_cells	157516

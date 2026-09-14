@@ -1,0 +1,65 @@
+#socket	king	king	0	6	32	2	
+#socket	throne_guard_west	guard_post	-7	4	29	2	
+#socket	throne_guard_east	guard_post	7	4	29	2	
+#socket	door_guard_west	guard_post	-3	3	11	0	
+#socket	door_guard_east	guard_post	4	3	11	0	
+#socket	hall_idle_west	idle	-13	3	19	1	bench
+#socket	hall_idle_east	idle	13	3	19	3	bench
+#socket	hall_idle_service	idle	-13	3	28	1	door
+#socket	gate_south_post_west	guard_post	-2	1	-46	2	
+#socket	gate_south_post_east	guard_post	2	1	-46	2	
+#socket	gate_south_rampart	guard_patrol	0	7	-44	2	highcourt_gate_south_tower
+#socket	gate_south_deck	guard_patrol	0	12	-44	2	highcourt_gate_south_tower
+#socket	gate_south_idle_west	idle	-5	1	-43	2	fire
+#socket	gate_south_idle_east	idle	5	1	-43	2	fire
+#socket	gate_west_post_west	guard_post	-46	1	2	3	
+#socket	gate_west_post_east	guard_post	-46	1	-2	3	
+#socket	gate_west_rampart	guard_patrol	-44	7	0	3	highcourt_gate_west_tower
+#socket	gate_west_deck	guard_patrol	-44	12	0	3	highcourt_gate_west_tower
+#socket	gate_west_idle_west	idle	-43	1	5	3	fire
+#socket	gate_west_idle_east	idle	-43	1	-5	3	fire
+#socket	gate_north_post_west	guard_post	2	1	46	0	
+#socket	gate_north_post_east	guard_post	-2	1	46	0	
+#socket	gate_north_rampart	guard_patrol	0	7	44	0	highcourt_gate_north_tower
+#socket	gate_north_deck	guard_patrol	0	12	44	0	highcourt_gate_north_tower
+#socket	gate_north_idle_west	idle	5	1	43	0	fire
+#socket	gate_north_idle_east	idle	-5	1	43	0	fire
+#socket	gate_east_post_west	guard_post	46	1	-2	1	
+#socket	gate_east_post_east	guard_post	46	1	2	1	
+#socket	gate_east_rampart	guard_patrol	44	7	0	1	highcourt_gate_east_tower
+#socket	gate_east_deck	guard_patrol	44	12	0	1	highcourt_gate_east_tower
+#socket	gate_east_idle_west	idle	43	1	-5	1	fire
+#socket	gate_east_idle_east	idle	43	1	5	1	fire
+#socket	market_booth_1	idle	-31	1	-28	0	work
+#socket	market_booth_2	idle	-17	1	-28	0	work
+#socket	market_booth_3	idle	-31	1	-10	2	work
+#socket	market_booth_4	idle	-17	1	-10	2	work
+#socket	market_idle_west	idle	-33	1	-26	1	bench
+#socket	market_idle_east	idle	-15	1	-12	3	bench
+#socket	colonnade_west_idle_a	idle	-8	1	-9	1	bench
+#socket	colonnade_west_idle_b	idle	-6	1	-19	3	bench
+#socket	colonnade_west_walk	guard_patrol	-7	1	-14	2	highcourt_watch
+#socket	colonnade_east_idle_a	idle	7	1	-19	3	bench
+#socket	colonnade_east_idle_b	idle	5	1	-9	1	bench
+#socket	colonnade_east_walk	guard_patrol	6	1	-14	0	highcourt_watch
+#socket	statue_idle	idle	16	1	-11	0	bench
+#socket	well_court_idle_a	idle	-41	1	10	0	bench
+#socket	well_court_idle_b	idle	-41	1	16	2	bench
+#socket	orchard_east_work	idle	18	1	-40	2	work
+#socket	orchard_east_street_a	guard_patrol	26	1	-35	3	highcourt_watch
+#socket	orchard_east_street_b	guard_patrol	10	1	-35	1	highcourt_watch
+#socket	orchard_west_work	idle	-35	1	-40	2	work
+#socket	orchard_west_street_a	guard_patrol	-27	1	-35	3	highcourt_watch
+#socket	orchard_west_street_b	guard_patrol	-43	1	-35	1	highcourt_watch
+#socket	vendor_race	vendor	42	1	7	0	race
+#socket	vendor_general	vendor	42	1	13	0	general
+#socket	chapel_quest	quest	-22	1	27	3	
+#socket	travel_waypoint	waypoint	22	1	-22	0	
+#socket	watch_south_east	guard_patrol	34	1	-31	0	highcourt_watch
+#socket	watch_north_east	guard_patrol	42	1	32	2	highcourt_watch
+#socket	watch_north_west	guard_patrol	-38	1	34	2	highcourt_watch
+#socket	watch_south_west	guard_patrol	-40	1	-16	0	highcourt_watch
+#socket	court_idle_well	idle	44	1	27	0	work
+#socket	court_idle_yard	idle	34	1	20	0	work
+#socket	forecourt_idle_west	idle	-6	1	3	1	bench
+#socket	forecourt_idle_east	idle	7	1	3	3	bench

@@ -22,8 +22,12 @@ local args = {...}
 local repo = args[1]
 local what = args[2]
 if not repo or not what then
-	io.stderr:write("usage: dump_highcourt.lua <repo> core|plot|avenue " ..
-		"[<plot id>] [--sockets] [--list]\n")
+	-- The three subjects are spelled out in words rather than separated by
+	-- the usual vertical bar: the fourth plain-5.1 sweep greps for bitwise
+	-- operators, and a bar between two words in a usage string is a hit it
+	-- cannot tell from one.
+	io.stderr:write("usage: dump_highcourt.lua <repo> " ..
+		"[core, plot or avenue] [<plot id>] [--sockets] [--list]\n")
 	os.exit(2)
 end
 

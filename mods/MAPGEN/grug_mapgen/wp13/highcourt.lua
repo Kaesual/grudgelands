@@ -50,11 +50,12 @@ local function loader(directory)
 	local RADIUS = 47
 	local SCHEMA = "grug_wp13_highcourt_core_v1"
 
-	-- The city keeps ONE patrol loop (the sockets contract's `group`), and
-	-- every waypoint in it carries its place in the walk. The loop leaves the
-	-- south gate, follows the open southern and western edge, takes in the
-	-- three other gates along the boundary and comes back up the great
-	-- avenue through the two colonnades.
+	-- The city's own patrol loop (the sockets contract's `group`), and every
+	-- waypoint in it carries its place in the walk: out along the southern
+	-- orchard street, round the four corners of the open edge, back along
+	-- the western orchard street and up the great avenue through the two
+	-- colonnades. The four gate towers keep their own two-waypoint watches;
+	-- see the gatehouse rows below for why they cannot be in this one.
 	local WATCH = "highcourt_watch"
 
 	-- The crown's white stone. `signature` is the role every capital part
@@ -155,8 +156,13 @@ local function loader(directory)
 	local PLOTS = {
 		-- 1. The king's hall, on the north-south axis, its great door
 		-- looking down the approach to the south gate.
+		-- The hall is built with the slate handle as well as roofed with it.
+		-- Its four lucarnes per slope take their hoods from the palette's
+		-- own `roof_slab` rather than from the roof palette, so a hall built
+		-- with the plain human handle wears four plank hoods on a slate
+		-- roof; the two handles differ in nothing but the five roof roles.
 		{id = "kings_hall", module = "capitals", make = "king_hall",
-			x = -15, z = 9, turns = 0, palette = "white", roof = "slate",
+			x = -15, z = 9, turns = 0, palette = "slate", roof = "slate",
 			spec = {w = 31, d = 27, rise = 7},
 			drop = {waypoint = true}},
 
@@ -165,34 +171,54 @@ local function loader(directory)
 		-- carrying the five-wide passage of the gate corridor, its two guard
 		-- chambers and its share of the one patrol loop. The field face of
 		-- the part (its loopholes) is turned outward by the rotation.
+		--
+		-- Each gate keeps its own TOWER WATCH of two waypoints instead of a
+		-- share of the city loop, and that is the part's geometry talking:
+		-- its patrol waypoint stands on the wall walk at y = 7 and its deck
+		-- waypoint on the fighting top at y = 12, five courses higher, with
+		-- only the internal flight between them. A ground loop that took
+		-- either one in would ask an NPC to step from the street to the
+		-- wall walk through a wall -- and Highcourt has no curtain wall to
+		-- carry a walk from one gate to the next, so the walk inside each
+		-- gatehouse is all there is. `order = 2` puts the chamber above the
+		-- deck the part always numbers 1, which makes each tower a loop of
+		-- 1..2 that its own stair really joins.
 		{id = "gate_south", module = "capitals", make = "gatehouse",
 			x = -6, z = -RADIUS, turns = 0, palette = "white", roof = "slate",
-			spec = {patrol_group = WATCH, order = 1}},
+			spec = {patrol_group = "highcourt_gate_south_tower",
+				deck_group = "highcourt_gate_south_tower", order = 2}},
 		{id = "gate_west", module = "capitals", make = "gatehouse",
 			x = -RADIUS, z = -6, turns = 1, palette = "white", roof = "slate",
-			spec = {patrol_group = WATCH, order = 9}},
+			spec = {patrol_group = "highcourt_gate_west_tower",
+				deck_group = "highcourt_gate_west_tower", order = 2}},
 		{id = "gate_north", module = "capitals", make = "gatehouse",
 			x = -6, z = 41, turns = 2, palette = "white", roof = "slate",
-			spec = {patrol_group = WATCH, order = 7}},
+			spec = {patrol_group = "highcourt_gate_north_tower",
+				deck_group = "highcourt_gate_north_tower", order = 2}},
 		{id = "gate_east", module = "capitals", make = "gatehouse",
 			x = 41, z = -6, turns = 3, palette = "white", roof = "slate",
-			spec = {patrol_group = WATCH, order = 5}},
+			spec = {patrol_group = "highcourt_gate_east_tower",
+				deck_group = "highcourt_gate_east_tower", order = 2}},
 
 		-- 3. The market square, west of the approach.
 		{id = "market", module = "capitals", make = "market_square",
 			x = -36, z = -31, turns = 0, palette = "white",
 			spec = {size = 25},
 			drop = {waypoint = true},
-			recast = {vendor = {role = "idle", tags = {"work"}}}},
+			-- and the booth's id says booth, not vendor: an id is a string
+			-- the NPC lane reads in logs, and `market_vendor_1` with the
+			-- role `idle` is a socket that argues with itself.
+			recast = {vendor = {role = "idle", tags = {"work"},
+				from = "_vendor_", to = "_booth_"}}},
 
 		-- 4. The two colonnades flanking the approach, turned so their
 		-- walks run with it.
 		{id = "colonnade_west", module = "capitals", make = "colonnade",
 			x = -9, z = -21, turns = 1, palette = "white",
-			spec = {len = 15, patrol_group = WATCH, order = 14}},
+			spec = {len = 15, patrol_group = WATCH, order = 9}},
 		{id = "colonnade_east", module = "capitals", make = "colonnade",
 			x = 4, z = -21, turns = 3, palette = "white",
-			spec = {len = 15, patrol_group = WATCH, order = 13}},
+			spec = {len = 15, patrol_group = WATCH, order = 10}},
 
 		-- 5. The civic furniture: the king's statue on the east side of the
 		-- crossing, the public well court on the west.
@@ -212,10 +238,10 @@ local function loader(directory)
 		-- two nodes outside the core. Both are therefore inset.
 		{id = "orchard_east", module = "capitals", make = "orchard_edge",
 			x = 8, z = -45, turns = 2, palette = "human",
-			spec = {len = 21, patrol_group = WATCH, order = 2}},
+			spec = {len = 21, patrol_group = WATCH, order = 1}},
 		{id = "orchard_west", module = "capitals", make = "orchard_edge",
 			x = -45, z = -45, turns = 2, palette = "human",
-			spec = {len = 21, patrol_group = WATCH, order = 11}},
+			spec = {len = 21, patrol_group = WATCH, order = 7}},
 
 		-- 7. The chapel with its belfry, on the west lane; the belfry itself
 		-- is stamped on its ridge below.
@@ -286,10 +312,10 @@ local function loader(directory)
 	-- parts do not reach. Each stands on the lane or the ring street, so the
 	-- walk between two gates has something to follow.
 	local CORNERS = {
-		{id = "watch_south_east", x = 34, z = -31, face = 0, order = 4},
-		{id = "watch_north_east", x = 42, z = 32, face = 2, order = 6},
-		{id = "watch_north_west", x = -38, z = 34, face = 2, order = 8},
-		{id = "watch_south_west", x = -40, z = -16, face = 0, order = 10},
+		{id = "watch_south_east", x = 34, z = -31, face = 0, order = 3},
+		{id = "watch_north_east", x = 42, z = 32, face = 2, order = 4},
+		{id = "watch_north_west", x = -38, z = 34, face = 2, order = 5},
+		{id = "watch_south_west", x = -40, z = -16, face = 0, order = 6},
 	}
 
 	-- The waypoint plaza reserved for WP17: a flat, open, kerbed square east
@@ -430,6 +456,24 @@ local function loader(directory)
 		dressing.inlay(buf, human, PLAZA.x1, PLAZA.z1, PLAZA.x2, PLAZA.z2)
 		dressing.inlay(buf, human, PLAZA.x1 + 4, PLAZA.z1 + 4,
 			PLAZA.x2 - 4, PLAZA.z2 - 4)
+		-- The pad itself, drawn INTO the ground course: a white stone cross
+		-- and the diamond round it. An empty square of paving reads as
+		-- nothing at all, and the one thing this plaza may not have is
+		-- anything standing on it, so its whole decoration is the floor --
+		-- which also marks the spot WP17's travel pad is being kept for.
+		local pad_x = math.floor((PLAZA.x1 + PLAZA.x2) / 2)
+		local pad_z = math.floor((PLAZA.z1 + PLAZA.z2) / 2)
+		local WHITE_STONE = white.maybe("signature") or KERB
+		for step = -6, 6 do
+			buf:put(pad_x + step, 0, pad_z, WHITE_STONE)
+			buf:put(pad_x, 0, pad_z + step, WHITE_STONE)
+		end
+		for step = 0, 6 do
+			for _, corner in ipairs({{step, 6 - step}, {-step, 6 - step},
+					{step, step - 6}, {-step, step - 6}}) do
+				buf:put(pad_x + corner[1], 0, pad_z + corner[2], WHITE_STONE)
+			end
+		end
 
 		-- 4. The plots.
 		for _, plot in ipairs(PLOTS) do
@@ -507,6 +551,9 @@ local function loader(directory)
 						out.role = recast.role
 						out.tags = recast.tags
 						out.kind, out.group, out.order = nil, nil, nil
+						if recast.from then
+							out.id = out.id:gsub(recast.from, recast.to, 1)
+						end
 					end
 					sockets[#sockets + 1] = out
 				end
@@ -518,9 +565,23 @@ local function loader(directory)
 		-- same way Dawnmere's meeting hall carries one.
 		do
 			local chapel = placed.chapel
+			local height = 4
+			local bx, bz = chapel.x + 3, chapel.z + 6
 			parts.stamp(buf, buildings.belfry(human,
-				{height = 4, roof_palette = slate}),
-				chapel.x + 3, chapel.peak, chapel.z + 6, 0)
+				{height = height, roof_palette = slate}),
+				bx, chapel.peak, bz, 0)
+			-- The bell's frame needs bearing. A lantern taller than three
+			-- courses hangs its bell from a cross-beam at its own centre,
+			-- and that beam touches nothing but the bell: the two of them
+			-- are an island four courses above the ridge. `capitals.lua`
+			-- carries the same two cells for the king's hall and the temple
+			-- (`bear_bell`), which is a local function there, so the same
+			-- fix is written at this call site -- the beam is landed on the
+			-- lantern's own beam ring, on both sides.
+			for _, offset in ipairs({1, 3}) do
+				buf:put(bx + offset, chapel.peak + height, bz + 2,
+					human.node("beam"))
+			end
 		end
 
 		-- 6. The principal service court, east of the hall: the two royal

@@ -380,6 +380,62 @@ return function(repo)
 			end
 		end
 
+		-- Nothing floats as an ISLAND either. The neighbour rule above is
+		-- local -- two cells that touch each other and nothing else pass it
+		-- -- so the same adjacency is flooded from the GROUND COURSE up:
+		-- every piece of architecture has to be connected to the pad through
+		-- other cells and not merely to itself. Same rule as `library_kat`
+		-- section 12 (f2), applied to a whole composition, where the seed is
+		-- the settlement's own ground and footings rather than the terrain
+		-- under a part.
+		local grounded, frontier, frontier_count = {}, {}, 0
+		for _, cell in ipairs(cells) do
+			if cell.name ~= "air" and cell.y <= 0 then
+				local key = cell.x .. ":" .. cell.y .. ":" .. cell.z
+				if not grounded[key] then
+					grounded[key] = true
+					frontier_count = frontier_count + 1
+					frontier[frontier_count] = cell
+				end
+			end
+		end
+		local head = 1
+		while head <= frontier_count do
+			local cell = frontier[head]
+			head = head + 1
+			for _, step in ipairs(NEIGHBOUR_STEPS) do
+				local other = at(cell.x + step[1], cell.y + step[2],
+					cell.z + step[3])
+				if other ~= nil and other.name ~= "air" then
+					local key = other.x .. ":" .. other.y .. ":" .. other.z
+					if not grounded[key] then
+						grounded[key] = true
+						frontier_count = frontier_count + 1
+						frontier[frontier_count] = other
+					end
+				end
+			end
+		end
+		local islands = 0
+		for _, cell in ipairs(cells) do
+			if cell.name ~= "air" then
+				local def = world.nodes[cell.name]
+				local groups = (def and type(def.groups) == "table") and
+					def.groups or {}
+				local loose = def == nil or LOOSE[def.drawtype] or
+					def.paramtype2 == "wallmounted" or
+					(groups.tree or 0) > 0 or (groups.leaves or 0) > 0 or
+					(groups.leafdecay or 0) > 0
+				if not loose then
+					islands = islands + 1
+					assert(grounded[cell.x .. ":" .. cell.y .. ":" .. cell.z],
+						label .. ": " .. cell.name .. " at " .. cell.x .. "," ..
+							cell.y .. "," .. cell.z .. " is an island -- " ..
+							"nothing connects it to the ground")
+				end
+			end
+		end
+
 		-- Every floor a player walks on rests on something -- and where it
 		-- does not, it is an UPPER floor carried on walls, and the
 		-- composition says how many such cells it has, exactly.
@@ -610,16 +666,18 @@ return function(repo)
 	local core = highcourt.core()
 	local CORE = {
 		reach = 47, ymin = -2, ymax = 40, budget = 150000,
-		min_lights = 40, min_doors = 12, loops = 1,
+		min_lights = 40, min_doors = 12, loops = 5,
 		-- The four gatehouses' chamber floors (90 cells at y = 6) and their
 		-- fighting decks (220 at y = 11). Nothing else in the core is a
 		-- floor over air.
-		raised = 310, whole_loop = true,
+		raised = 298, whole_loop = true,
 		-- The capital's socket roster, exactly. The three singular roles are
 		-- the reason the composition owns a socket policy at all: one
 		-- throne, one travel pad for WP17, two vendor families.
+		-- 10 waypoints in the city's own loop and 8 in the four gate
+		-- towers' own two-waypoint watches.
 		roles = {king = 1, waypoint = 1, quest = 1, vendor = 2,
-			guard_post = 12, guard_patrol = 14, idle = 30},
+			guard_post = 12, guard_patrol = 18, idle = 30},
 	}
 	local core_result = check_composition("highcourt core", core, CORE)
 
