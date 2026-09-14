@@ -260,6 +260,145 @@ function M.kits.watch(buf, parts, palette, room, spec)
 	return lights
 end
 
+-- A bench that prefers the palette's own joinery. A race with a
+-- `bench_seat` gets the long settle; every other race gets a stair seat,
+-- which is what `parts.seat` writes.
+function M.settle(buf, parts, palette, room, x, z, axis, len, face)
+	local bench = palette.maybe("bench_seat")
+	for step = 0, len - 1 do
+		local cx = axis == "x" and x + step or x
+		local cz = axis == "z" and z + step or z
+		if bench then
+			buf:put(cx, room.y + 1, cz, bench, front(face))
+		else
+			parts.seat(buf, palette, cx, room.y + 1, cz, face)
+		end
+	end
+end
+
+-- A board table: the palette's own table where it has one, otherwise the
+-- trestle of `table_cell`.
+function M.board(buf, parts, palette, room, x, z, axis, len)
+	local board = palette.maybe("board_table")
+	for step = 0, len - 1 do
+		local cx = axis == "x" and x + step or x
+		local cz = axis == "z" and z + step or z
+		if board then
+			buf:put(cx, room.y + 1, cz, board, 0)
+		else
+			parts.table_cell(buf, palette, cx, room.y + 1, cz)
+		end
+	end
+end
+
+-- The meeting hall: two blocks of benches down a runner, a lectern table on
+-- a low dais at the far end, shelves of crocks along the walls and lamps
+-- between every second window. Deliberately no bed and no hearth: this is
+-- the room the hamlet meets in, not a house.
+function M.kits.chapel(buf, parts, palette, room, spec)
+	local lights = {}
+	local cx = math.floor((room.x1 + room.x2) / 2)
+	for z = room.z1, room.z2 do
+		buf:put(cx, room.y, z, palette.node("rug_accent"))
+	end
+	for z = room.z1 + 2, room.z2 - 3, 2 do
+		M.settle(buf, parts, palette, room, room.x1 + 1, z, "x", cx - room.x1 - 1, 0)
+		M.settle(buf, parts, palette, room, cx + 1, z, "x", room.x2 - cx - 1, 0)
+	end
+	-- The dais: a step of slab, the lectern on it and a pair of standing
+	-- lamps that make the end of the room the bright one.
+	for x = cx - 2, cx + 2 do
+		buf:put(x, room.y, room.z1, palette.node("plaza_edge"))
+	end
+	M.board(buf, parts, palette, room, cx, room.z1 + 1, "x", 1)
+	M.shelves(buf, palette, room, room.x1, room.z1, "z", 2, 1)
+	M.shelves(buf, palette, room, room.x2, room.z1, "z", 2, 3)
+	for _, z in ipairs({room.z1 + 2, room.z2 - 2}) do
+		M.wall_light(buf, parts, palette, room, room.x1, room.y + 3, z, lights)
+		M.wall_light(buf, parts, palette, room, room.x2, room.y + 3, z, lights)
+	end
+	M.wall_light(buf, parts, palette, room, cx - 2, room.y + 3, room.z1, lights)
+	M.wall_light(buf, parts, palette, room, cx + 2, room.y + 3, room.z1, lights)
+	return lights
+end
+
+-- The inn: a long common table with settles down both sides, the hearth on
+-- the gable wall, barrels behind the counter and two made-up beds in the
+-- back corner for travellers.
+function M.kits.inn(buf, parts, palette, room, spec)
+	local lights = {}
+	local cx = math.floor((room.x1 + room.x2) / 2)
+	local cz = math.floor((room.z1 + room.z2) / 2)
+	M.board(buf, parts, palette, room, cx, room.z1 + 2, "z",
+		room.z2 - room.z1 - 3)
+	M.settle(buf, parts, palette, room, cx - 1, room.z1 + 2, "z",
+		room.z2 - room.z1 - 3, 1)
+	M.settle(buf, parts, palette, room, cx + 1, room.z1 + 2, "z",
+		room.z2 - room.z1 - 3, 3)
+	M.rug(buf, palette, room, cx - 1, cz, cx + 1, cz, true)
+	M.hearth(buf, parts, palette, room, spec.hearth_x or room.x1,
+		spec.hearth_z or room.z1 + 1, spec.hearth_face or 1, room.h, lights)
+	M.storage(buf, palette, room, room.x2, room.z1 + 1, "z", 3, 3)
+	M.shelves(buf, palette, room, room.x2, room.z2 - 2, "z", 2, 3)
+	M.bed(buf, parts, palette, room, room.x1, room.z2, 0)
+	M.bed(buf, parts, palette, room, room.x1 + 2, room.z2, 0)
+	local mat = palette.maybe("mat")
+	if mat then
+		buf:put(room.x1 + 1, room.y + 1, room.z2, mat, 0)
+	end
+	for _, z in ipairs({room.z1 + 2, cz, room.z2 - 1}) do
+		M.wall_light(buf, parts, palette, room, room.x1, room.y + 3, z, lights)
+		M.wall_light(buf, parts, palette, room, room.x2, room.y + 3, z, lights)
+	end
+	return lights
+end
+
+-- The barn: a straw floor, stacked bales against the gable wall, feed
+-- barrels, a work bench and the cart wheels leaning where they were left.
+function M.kits.barn(buf, parts, palette, room, spec)
+	local lights = {}
+	local cx = math.floor((room.x1 + room.x2) / 2)
+	local cz = math.floor((room.z1 + room.z2) / 2)
+	local straw = palette.maybe("ground_straw")
+	if straw then
+		for z = room.z1, room.z2 do
+			for x = room.x1, room.x2 do
+				if (x + z) % 3 ~= 0 then buf:put(x, room.y, z, straw) end
+			end
+		end
+	end
+	local bale = palette.maybe("bale")
+	if bale then
+		for x = room.x1, room.x1 + 2 do
+			for z = room.z1, room.z1 + 1 do
+				for y = room.y + 1, room.y + 2 + (x % 2) do
+					buf:put(x, y, z, bale)
+				end
+			end
+		end
+		for y = room.y + 1, room.y + 2 do
+			buf:put(room.x2, y, room.z1, bale)
+		end
+	end
+	M.storage(buf, palette, room, room.x2, room.z1 + 2, "z", 3, 3)
+	M.board(buf, parts, palette, room, cx + 1, cz, "x", 2)
+	M.shelves(buf, palette, room, room.x1, cz, "z", 2, 1)
+	-- Timber stacked against the back wall, and the cart wheels on it.
+	for x = cx - 1, cx + 1 do
+		for y = room.y + 1, room.y + 2 do
+			buf:put(x, y, room.z2, palette.node("tree_log"))
+		end
+	end
+	parts.wall_prop(buf, palette, "wheel", cx, room.y + 2, room.z2 - 1, 0, 0, 1)
+	parts.wall_prop(buf, palette, "wheel", cx + 1, room.y + 2, room.z2 - 1,
+		0, 0, 1)
+	for _, z in ipairs({room.z1 + 2, room.z2 - 2}) do
+		M.wall_light(buf, parts, palette, room, room.x1, room.y + 3, z, lights)
+		M.wall_light(buf, parts, palette, room, room.x2, room.y + 3, z, lights)
+	end
+	return lights
+end
+
 -- An open timber workyard: saw trestles, log stacks, benches and a lamp.
 function M.kits.yard(buf, parts, palette, room, spec)
 	local lights = {}

@@ -645,6 +645,51 @@ MANUAL_OVERRIDES = {
     "grug_decor:cottages_shelf": {
         "tiles": ["default_wood.png"],
         "drawtype": "nodebox", "paramtype2": "facedir"},
+    # ... and the farm vocabulary the human palette adds.
+    "grug_decor:cottages_loam": {
+        "tiles": ["grug_decor_cottages_cottages_loam.png"],
+        "drawtype": "normal"},
+    "grug_decor:cottages_straw": {
+        "tiles": ["grug_decor_cottages_cottages_darkage_straw.png"],
+        "drawtype": "normal"},
+    "grug_decor:cottages_straw_bale": {
+        "tiles": ["grug_decor_cottages_cottages_darkage_straw_bale.png"],
+        "drawtype": "nodebox"},
+    "grug_decor:cottages_straw_ground": {
+        "tiles": ["grug_decor_cottages_cottages_darkage_straw.png",
+                  "grug_decor_cottages_cottages_loam.png",
+                  "grug_decor_cottages_cottages_loam.png"],
+        "drawtype": "normal"},
+    "grug_decor:cottages_straw_mat": {
+        "tiles": ["grug_decor_cottages_cottages_darkage_straw.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:cottages_bench": {
+        "tiles": ["grug_decor_cottages_cottages_minimal_wood.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:cottages_table": {
+        "tiles": ["grug_decor_cottages_cottages_minimal_wood.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:cottages_anvil": {
+        "tiles": ["grug_decor_cottages_cottages_stone.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:cottages_window_shutter_closed": {
+        "tiles": ["grug_decor_cottages_cottages_minimal_wood.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:cottages_window_shutter_open": {
+        "tiles": ["grug_decor_cottages_cottages_minimal_wood.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:cottages_wagon_wheel": {
+        "tiles": ["grug_decor_cottages_cottages_wagonwheel.png"],
+        "drawtype": "mesh", "paramtype2": "wallmounted", "alpha": "clip"},
+    "grug_decor:xdecor_stonepath": {
+        "tiles": ["default_stone.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
+    "grug_decor:xdecor_potted_geranium": {
+        "tiles": ["grug_decor_xdecor_xdecor_geranium_pot.png"],
+        "drawtype": "plantlike", "alpha": "clip"},
+    "grug_decor:xdecor_potted_dandelion_yellow": {
+        "tiles": ["grug_decor_xdecor_xdecor_dandelion_yellow_pot.png"],
+        "drawtype": "plantlike", "alpha": "clip"},
 }
 
 # Last-resort flat colours for names that resolve to no texture at all.

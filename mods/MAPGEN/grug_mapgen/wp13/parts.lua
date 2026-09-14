@@ -59,6 +59,15 @@ local PARAM2_KIND = {
 	["grug_decor:xdecor_empty_shelf"] = M.FACEDIR,
 	["grug_decor:xdecor_cauldron"] = M.FACEDIR,
 	["grug_decor:cottages_shelf"] = M.FACEDIR,
+	["grug_decor:cottages_bench"] = M.FACEDIR,
+	["grug_decor:cottages_table"] = M.FACEDIR,
+	["grug_decor:cottages_straw_mat"] = M.FACEDIR,
+	["grug_decor:cottages_anvil"] = M.FACEDIR,
+	["grug_decor:cottages_window_shutter_closed"] = M.FACEDIR,
+	["grug_decor:cottages_window_shutter_open"] = M.FACEDIR,
+	["grug_decor:xdecor_stonepath"] = M.FACEDIR,
+	-- a wheel leans against the wall its param2 points at
+	["grug_decor:cottages_wagon_wheel"] = M.WALLMOUNTED,
 }
 
 -- Whole families whose every member is shaped.
@@ -97,6 +106,8 @@ local PANE_CONNECTS = {
 	["default:pine_wood"] = true,
 	["default:stone_block"] = true,
 	["default:stonebrick"] = true,
+	["default:tree"] = true,
+	["default:wood"] = true,
 	["walls:cobble"] = true,
 	["xpanes:pane"] = true,
 	["xpanes:pane_flat"] = true,
@@ -110,6 +121,7 @@ end
 -- only nodes that read as a wall. A nodebox, a mesh, a plant or a pane is
 -- not one of them, and neither is a full cube that light passes through.
 local FULL_SOLID = {
+	["default:brick"] = true,
 	["default:cobble"] = true,
 	["default:dirt"] = true,
 	["default:dirt_with_coniferous_litter"] = true,
@@ -119,12 +131,20 @@ local FULL_SOLID = {
 	["default:pine_wood"] = true,
 	["default:stone_block"] = true,
 	["default:stonebrick"] = true,
+	["default:tree"] = true,
+	["default:wood"] = true,
+	["grug_decor:cottages_loam"] = true,
+	["grug_decor:cottages_straw"] = true,
+	["grug_decor:cottages_straw_ground"] = true,
+	["grug_decor:darkage_adobe"] = true,
 	["grug_decor:xdecor_barrel"] = true,
 	["grug_decor:xdecor_cauldron"] = true,
 	["grug_decor:xdecor_empty_shelf"] = true,
 	["grug_materials:iron_block"] = true,
 	["wool:brown"] = true,
 	["wool:red"] = true,
+	["wool:white"] = true,
+	["wool:yellow"] = true,
 }
 
 function M.full_solid(name)
@@ -481,6 +501,21 @@ function M.wall_torch(buf, palette, x, y, z, dx, dy, dz)
 	end
 	buf:put(x, y, z, palette.node("light_wall"),
 		M.wallmounted_support(dx, dy, dz))
+end
+
+-- A wallmounted decoration (not a light) hung on an opaque full cube, with
+-- the same support rule the torches obey: `dx/dy/dz` steps from the prop to
+-- the node carrying it. Returns false and writes nothing when that node is
+-- not a wall, so a caller can try the next candidate cell.
+function M.wall_prop(buf, palette, role, x, y, z, dx, dy, dz)
+	local name = palette.maybe(role)
+	if name == nil or not M.solid_at(buf, x + dx, y + dy, z + dz) then
+		return false
+	end
+	local here = buf:at(x, y, z)
+	if here ~= nil and here.name ~= "air" then return false end
+	buf:put(x, y, z, name, M.wallmounted_support(dx, dy, dz))
+	return true
 end
 
 function M.floor_torch(buf, palette, x, y, z)
