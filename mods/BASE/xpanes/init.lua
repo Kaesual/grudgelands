@@ -157,10 +157,15 @@ function xpanes.register_pane(name, def)
 		connects_to = {"group:pane", "group:stone", "group:glass", "group:wood", "group:tree"},
 	})
 
-	minetest.register_craft({
-		output = "xpanes:" .. name .. "_flat 16",
-		recipe = def.recipe
-	})
+	-- GRUG PATCH: `def.recipe` is now optional - a pane whose upstream recipe
+	-- consumed a retired material (Steel Bars) is registered without one, and
+	-- core.register_craft rejects a nil recipe outright.
+	if def.recipe then
+		minetest.register_craft({
+			output = "xpanes:" .. name .. "_flat 16",
+			recipe = def.recipe
+		})
+	end
 end
 
 xpanes.register_pane("pane", {
