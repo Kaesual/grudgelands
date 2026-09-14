@@ -24,10 +24,34 @@ M.required = {
 -- and no flower pots still builds; `palette.maybe(role)` answers nil and the
 -- part that wanted it writes nothing.
 M.optional = {"bale", "bed_fancy", "bench_seat", "board_table", "cargo",
-	"cobweb", "crop", "crop_soil", "fence_gate", "flower", "flower_alt",
-	"ground_straw", "hedge", "hedge_stem", "ivy", "lantern", "light_beacon",
-	"light_hanging", "mat", "pillar", "rope", "shutter", "stake_cap",
-	"stepping", "wall_infill", "wheel"}
+	"castle_paving", "castle_rubble", "castle_slit", "castle_wall",
+	"castle_wall_slab", "castle_wall_stair", "cobweb", "crop", "crop_soil",
+	"fence_gate", "flower", "flower_alt", "ground_straw", "hedge",
+	"hedge_stem", "ivy", "lantern", "light_beacon", "light_hanging", "mat",
+	"pillar", "rope", "shutter", "signature", "signature_slab",
+	"signature_stair", "stake_cap", "stepping", "throne", "wall_infill",
+	"wheel"}
+
+-- The capital vocabulary (docs/research/wp13-capitals-pois-contract.md
+-- section 2.4): the castle kit for the walls, pillars, arrowslits, paving and
+-- rubble of a citadel, and one SIGNATURE material per race -- stone block,
+-- brick, marble, obsidian brick, adobe, basalt. Everything here is optional,
+-- for two reasons. A start composition must keep building without it, which
+-- is what keeps the six shipped start blueprints byte-identical; and a part
+-- that wants a signature stair for a race whose signature material ships no
+-- stair shape has to degrade rather than name a node that is not registered.
+--
+-- `pillar` was already the undead vocabulary and keeps its binding exactly;
+-- the other five races bind the castle pillar of their own masonry, so the
+-- three-node `_bottom`/`_middle`/`_top` stack of `prefix_roles` reaches every
+-- capital. Nothing in the six start compositions but Stillgrave's gate reads
+-- the role, so the five new bindings move no shipped cell.
+--
+-- `signature_stair`/`signature_slab` are NOT always the shape family of
+-- `signature`: `grug_decor:darkage_adobe` ships no stair or slab shape at
+-- all (mods/ITEMS/grug_decor/darkage.lua, the `shaped` roster), so the orc
+-- pair is the Old Red Sandstone brick the same palette already builds its
+-- base courses out of.
 
 -- Two optional light roles for races whose lamps are not wallmounted.
 -- `light_hanging` is a lamp in `group:attached_node = 4`, which the engine
@@ -131,6 +155,22 @@ M.races.dwarf = {
 	rug = "wool:brown",
 	rug_accent = "wool:red",
 
+	-- Capital vocabulary: Dur Brannoc's citadel. Stone block is the dwarf
+	-- signature of the capitals contract, and it is the one signature
+	-- material that carries the `stone` group, so a pane set in a signature
+	-- course connects to it (`parts.pane_connects`).
+	castle_wall = "grug_decor:castle_stonewall",
+	castle_wall_stair = "grug_decor:castle_stonewall_stair",
+	castle_wall_slab = "grug_decor:castle_stonewall_slab",
+	castle_paving = "grug_decor:castle_pavement_brick",
+	castle_rubble = "grug_decor:castle_rubble",
+	castle_slit = "grug_decor:castle_arrowslit_stone_block",
+	pillar = "grug_decor:castle_pillar_stone_block",
+	signature = "default:stone_block",
+	signature_stair = "stairs:stair_stone_block",
+	signature_slab = "stairs:slab_stone_block",
+	throne = "grug_decor:xdecor_chair",
+
 	planter = "default:stonebrick",
 	planter_soil = "default:dirt_with_grass",
 	tree_log = "default:pine_tree",
@@ -210,6 +250,21 @@ M.races.human = {
 	chimney_cap = "stairs:slab_brick",
 	rug = "wool:white",
 	rug_accent = "wool:red",
+
+	-- Capital vocabulary: Highcourt. Brick is the human signature of the
+	-- capitals contract and the palette already builds its accents and
+	-- chimneys out of it, so the citadel courses read as the same city.
+	castle_wall = "grug_decor:castle_stonewall",
+	castle_wall_stair = "grug_decor:castle_stonewall_stair",
+	castle_wall_slab = "grug_decor:castle_stonewall_slab",
+	castle_paving = "grug_decor:castle_pavement_brick",
+	castle_rubble = "grug_decor:castle_rubble",
+	castle_slit = "grug_decor:castle_arrowslit_stonebrick",
+	pillar = "grug_decor:castle_pillar_stonebrick",
+	signature = "default:brick",
+	signature_stair = "stairs:stair_brick",
+	signature_slab = "stairs:slab_brick",
+	throne = "grug_decor:xdecor_chair",
 
 	planter = "default:brick",
 	planter_soil = "default:dirt_with_grass",
@@ -316,6 +371,25 @@ M.races.elf = {
 	rug = "wool:white",
 	rug_accent = "wool:green",
 
+	-- Capital vocabulary: Lethariel. Marble is the elf signature of the
+	-- capitals contract; the silver sandstone brick arrowslit and pillar are
+	-- the pale cut stone the composition's civic roof already uses, so the
+	-- colonnades agree with the halls they stand in front of. Lethariel
+	-- carries no curtain wall (the user's 2026-09-14 ruling), but the roles
+	-- are bound anyway: a king's hall, a gatehouse over an avenue and a
+	-- watch tower are built from the same masonry.
+	castle_wall = "grug_decor:castle_stonewall",
+	castle_wall_stair = "grug_decor:castle_stonewall_stair",
+	castle_wall_slab = "grug_decor:castle_stonewall_slab",
+	castle_paving = "grug_decor:castle_pavement_brick",
+	castle_rubble = "grug_decor:castle_rubble",
+	castle_slit = "grug_decor:castle_arrowslit_silver_sandstone_brick",
+	pillar = "grug_decor:castle_pillar_silver_sandstone_brick",
+	signature = "grug_decor:darkage_marble",
+	signature_stair = "grug_decor:darkage_marble_stair",
+	signature_slab = "grug_decor:darkage_marble_slab",
+	throne = "grug_decor:xdecor_chair",
+
 	planter = "grug_decor:darkage_serpentine",
 	planter_soil = "default:dirt_with_grass",
 	flower = "grug_decor:xdecor_potted_viola",
@@ -413,6 +487,24 @@ M.races.undead = {
 	chimney_cap = "stairs:slab_obsidianbrick",
 	rug = "wool:dark_grey",
 	rug_accent = "wool:black",
+
+	-- Capital vocabulary: Nhal Veyr. Obsidian brick is the undead signature
+	-- of the capitals contract and is already the hamlet's footing and roof,
+	-- and dungeon stone -- which the hamlet's render threw out as a WALL,
+	-- because near-black boards over near-black masonry left one silhouette
+	-- -- is exactly right for a curtain wall that is supposed to read as a
+	-- single black mass. `pillar` keeps the binding Stillgrave's gate
+	-- already uses.
+	castle_wall = "grug_decor:castle_dungeon_stone",
+	castle_wall_stair = "grug_decor:castle_dungeon_stone_stair",
+	castle_wall_slab = "grug_decor:castle_dungeon_stone_slab",
+	castle_paving = "grug_decor:castle_pavement_brick",
+	castle_rubble = "grug_decor:castle_rubble",
+	castle_slit = "grug_decor:castle_arrowslit_obsidianbrick",
+	signature = "default:obsidianbrick",
+	signature_stair = "stairs:stair_obsidianbrick",
+	signature_slab = "stairs:slab_obsidianbrick",
+	throne = "grug_decor:xdecor_chair",
 
 	planter = "default:obsidianbrick",
 	planter_soil = "grug_nodes:blight_dirt",
@@ -520,6 +612,24 @@ M.races.orc = {
 	rug = "wool:brown",
 	rug_accent = "wool:red",
 
+	-- Capital vocabulary: Gor Drazhak. Adobe is the orc signature of the
+	-- capitals contract, and it is the one signature material with NO stair
+	-- or slab shape in the tree (darkage.lua's `shaped` roster), so the
+	-- signature stair and slab are the Old Red Sandstone brick this palette
+	-- already bands its walls with -- the banded base course of the contract
+	-- section 2.4 orc line, in the shape family adobe does not have.
+	castle_wall = "grug_decor:castle_stonewall",
+	castle_wall_stair = "grug_decor:castle_stonewall_stair",
+	castle_wall_slab = "grug_decor:castle_stonewall_slab",
+	castle_paving = "grug_decor:castle_pavement_brick",
+	castle_rubble = "grug_decor:castle_rubble",
+	castle_slit = "grug_decor:castle_arrowslit_desert_stonebrick",
+	pillar = "grug_decor:castle_pillar_desert_stonebrick",
+	signature = "grug_decor:darkage_adobe",
+	signature_stair = "grug_decor:darkage_ors_brick_stair",
+	signature_slab = "grug_decor:darkage_ors_brick_slab",
+	throne = "grug_decor:xdecor_chair",
+
 	planter = "default:desert_stone_block",
 	planter_soil = "default:dry_dirt_with_dry_grass",
 	tree_log = "default:acacia_tree",
@@ -614,6 +724,24 @@ M.races.troll = {
 	-- straw mat is not, and lives on the optional `mat` role instead.
 	rug = "grug_decor:cottages_straw",
 	rug_accent = "wool:green",
+
+	-- Capital vocabulary: Kezamba. Basalt is the troll signature of the
+	-- capitals contract, and this palette already builds its platforms and
+	-- footings out of basalt brick, so the signature course is the same rock
+	-- uncut. Kezamba carries no curtain wall either (stilts and water are
+	-- its edge); the roles are bound for the hall, the gatehouse and the
+	-- tower the same way Lethariel's are.
+	castle_wall = "grug_decor:castle_stonewall",
+	castle_wall_stair = "grug_decor:castle_stonewall_stair",
+	castle_wall_slab = "grug_decor:castle_stonewall_slab",
+	castle_paving = "grug_decor:castle_pavement_brick",
+	castle_rubble = "grug_decor:castle_rubble",
+	castle_slit = "grug_decor:castle_arrowslit_mossycobble",
+	pillar = "grug_decor:castle_pillar_mossycobble",
+	signature = "grug_decor:darkage_basalt",
+	signature_stair = "grug_decor:darkage_basalt_stair",
+	signature_slab = "grug_decor:darkage_basalt_slab",
+	throne = "grug_decor:xdecor_chair",
 
 	planter = "default:mossycobble",
 	planter_soil = "grug_nodes:mud",

@@ -100,6 +100,21 @@ local PARAM2_KIND = {
 	-- above -- the elf and orc palettes name them too.
 	["grug_decor:xdecor_ivy"] = M.WALLMOUNTED,
 	["grug_decor:xdecor_workbench"] = M.FACEDIR,
+	-- The capital vocabulary. An ARROWSLIT is the one castle-kit node whose
+	-- param2 is load bearing: its opening runs from z = 0.3125 to z = 0.5,
+	-- the node's own +Z face (mods/ITEMS/grug_decor/castle.lua,
+	-- `register_arrowslit`), so a slit meant to look out of a wall carries
+	-- the facedir pointing THAT way -- exactly like the shutter, and unlike
+	-- the pillars, whose three nodeboxes are symmetric about both horizontal
+	-- axes and are therefore left unoriented so that a rotation cannot write
+	-- a param2 that means nothing. The throne chair's back is its front tile.
+	["grug_decor:castle_arrowslit_stone_block"] = M.FACEDIR,
+	["grug_decor:castle_arrowslit_stonebrick"] = M.FACEDIR,
+	["grug_decor:castle_arrowslit_silver_sandstone_brick"] = M.FACEDIR,
+	["grug_decor:castle_arrowslit_obsidianbrick"] = M.FACEDIR,
+	["grug_decor:castle_arrowslit_desert_stonebrick"] = M.FACEDIR,
+	["grug_decor:castle_arrowslit_mossycobble"] = M.FACEDIR,
+	["grug_decor:xdecor_chair"] = M.FACEDIR,
 	-- The stair and slab shapes are folded in from `SHAPED` below, which is
 	-- the one place this library writes that family down.
 }
@@ -126,6 +141,29 @@ local SHAPED = {
 	["grug_decor:darkage_slate_tile_slab"] = true,
 	["grug_decor:darkage_slate_brick_slab"] = true,
 	["grug_decor:darkage_serpentine_slab"] = true,
+	-- The capital shape families: the castle-kit masonry the curtain walls,
+	-- towers and gatehouses are cut from, and the three signature materials
+	-- whose shapes live in `grug_decor` rather than in `stairs:`. Every name
+	-- here is a `grug_decor.register_shapes` product
+	-- (mods/ITEMS/grug_decor/shapes.lua), which is the vendored byte-for-byte
+	-- copy of the four `stairs` registrations, so each carries the same
+	-- `group:stair` / `group:slab` and the same facedir; `library_kat`
+	-- section 12 proves that against the registry for every name the capital
+	-- parts emit, in both directions.
+	["grug_decor:castle_stonewall_stair"] = true,
+	["grug_decor:castle_stonewall_stair_inner"] = true,
+	["grug_decor:castle_stonewall_stair_outer"] = true,
+	["grug_decor:castle_stonewall_slab"] = true,
+	["grug_decor:castle_dungeon_stone_stair"] = true,
+	["grug_decor:castle_dungeon_stone_stair_inner"] = true,
+	["grug_decor:castle_dungeon_stone_stair_outer"] = true,
+	["grug_decor:castle_dungeon_stone_slab"] = true,
+	["grug_decor:darkage_marble_stair"] = true,
+	["grug_decor:darkage_marble_slab"] = true,
+	["grug_decor:darkage_basalt_stair"] = true,
+	["grug_decor:darkage_basalt_slab"] = true,
+	["grug_decor:darkage_ors_brick_stair"] = true,
+	["grug_decor:darkage_ors_brick_slab"] = true,
 }
 for name in pairs(SHAPED) do PARAM2_KIND[name] = M.FACEDIR end
 
@@ -289,6 +327,14 @@ local FULL_SOLID = {
 	["grug_decor:darkage_basalt_brick"] = true,
 	["grug_decor:darkage_reinforced_wood"] = true,
 	["grug_nodes:mud"] = true,
+	-- The capital masonry. `castle_stonewall` sets `sunlight_propagates =
+	-- false` explicitly and declares no `paramtype`, so it is an opaque full
+	-- cube a torch may hang on; `darkage_basalt` is a plain normal cube. The
+	-- other signature materials -- stone block, brick, obsidian brick, adobe,
+	-- marble, dungeon stone, pavement brick and castle rubble -- are already
+	-- above, each named by a start palette.
+	["grug_decor:castle_stonewall"] = true,
+	["grug_decor:darkage_basalt"] = true,
 }
 
 function M.full_solid(name)
