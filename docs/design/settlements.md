@@ -54,3 +54,18 @@ Decided 2026-09-14 after the first native playtest.
 - Dry start-fitting ground and blending slopes retain their biome surface
   materials. Authored roads and other functional surfaces retain precedence.
   Individual building terraces and varied civic ground remain later work.
+
+## Start preparation and start-area safety
+
+Decided 2026-09-14 after the round-A playtest.
+
+- The server prepares all six start areas at startup: it emerges each start's
+  128 × 128 build envelope (not its blend ring) once, at most two at a time,
+  and reports one log line per completed start plus one summary line.
+- Character creation's final teleport waits until every one of the six starts
+  is ready, not only the player's own, and shows the waiting player the
+  prepared-count progress while it waits.
+- No mob that can attack players spawns inside a start footprint — the
+  128-node build envelope plus its 10-node apron, the 148 × 148 hard-protected
+  square of [world.md](world.md) §2 R1. Passive critters and prey animals keep
+  spawning there, and the undead night truce is unchanged.

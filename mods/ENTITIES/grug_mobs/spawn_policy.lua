@@ -134,6 +134,82 @@ local RACE_FACTIONS = {
 	troll = "throng",
 }
 
+--
+-- Start-footprint hostile-spawn refusal (user decision, 2026-09-14).
+--
+-- No mob that can attack players spawns inside one of the six start
+-- footprints. That footprint is the 128-node build envelope plus its
+-- 10-node protection apron (world.md Section 2 R1) = the 148 x 148
+-- hard-protected square, a half-open square centred on the start anchor:
+-- anchor - 74 is inside, anchor + 73 is inside, anchor + 74 is outside
+-- (wp40/source/catalog.lua, recipe hard_start_core_v1, total_width 148).
+--
+-- grug_zones.territory_rule_at(pos) == "hard_protected" is the same
+-- predicate, but it normalizes a position table, walks a sparse footprint
+-- index and allocates a candidate list on every call. This gate runs on
+-- every ABM spawn candidate, so the six rectangles are compiled once from
+-- grug_core.start_anchor's authority and tested as plain number
+-- comparisons: at most 24 of them, no allocation.
+--
+-- Capitals are hard-protected too and are deliberately NOT covered here:
+-- their mob palettes are empty, so no ordinary row reaches them anyway.
+local START_HALF_LOW = 74 -- anchor - 74 .. anchor + 73, half-open
+local START_HALF_HIGH = 73
+local start_rects
+
+local function compile_start_rects()
+	local rects = {}
+	local identities = grug_core.start_identities()
+	if #identities ~= 6 then
+		error("[grug_mobs] start footprints: expected 6 start anchors, got " ..
+			#identities)
+	end
+	for i = 1, #identities do
+		local anchor = identities[i].anchor
+		rects[#rects + 1] = {
+			min_x = anchor.x - START_HALF_LOW,
+			max_x = anchor.x + START_HALF_HIGH,
+			min_z = anchor.z - START_HALF_LOW,
+			max_z = anchor.z + START_HALF_HIGH,
+		}
+	end
+	return rects
+end
+
+-- Exposed for the regression harness; production reads it through
+-- spawn_policy_allows below.
+function grug_mobs.in_start_footprint(x, z)
+	if not start_rects then
+		start_rects = compile_start_rects()
+	end
+	for i = 1, #start_rects do
+		local rect = start_rects[i]
+		if x >= rect.min_x and x <= rect.max_x and
+				z >= rect.min_z and z <= rect.max_z then
+			return true
+		end
+	end
+	return false
+end
+
+-- Hostile role, derived from exactly the fields mobs_redo's general_attack
+-- tests for a player candidate: `self.passive` returns before any candidate
+-- is looked at (api.lua:3598) and `not self.attack_players` drops every
+-- player (api.lua:1782). attack_players defaults to TRUE in mob_class
+-- (api.lua:169), hence the explicit `== false`; grug_mobs.passive_prey
+-- (verbs.lua) sets it for the four non-passive prey animals. Deriving it
+-- keeps it from drifting the way a hand-kept hostile list would.
+local hostile_spawns = {}
+
+function grug_mobs.register_spawn_role(name, def)
+	hostile_spawns[name] = def.passive ~= true and def.attack_players ~= false
+	return hostile_spawns[name]
+end
+
+function grug_mobs.spawn_role_hostile(name)
+	return hostile_spawns[name] == true
+end
+
 local function zone_palette_at(pos)
 	local zone_id = grug_zones.id_at(pos.x, pos.z)
 	return zone_id and ZONE_MOB_PALETTES[zone_id] or nil
@@ -187,6 +263,13 @@ end
 
 -- Allocation-free spawn policy. Unknown ABM families fail closed.
 function grug_mobs.spawn_policy_allows(mob_name, pos)
+	-- Before every other authority, the Kraken's included: a start footprint
+	-- refuses each hostile row outright, the zombie's 24 h blight row inside
+	-- Stillgrave Hollow among them. Passive critters keep spawning there.
+	if hostile_spawns[mob_name] and
+			grug_mobs.in_start_footprint(pos.x, pos.z) then
+		return false
+	end
 	if INDEPENDENT_AUTHORITY[mob_name] then
 		return true
 	end

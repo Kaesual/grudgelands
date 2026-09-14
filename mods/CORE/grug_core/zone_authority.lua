@@ -33,6 +33,11 @@ local EXPECTED_RACES = {
 	troll = {faction_id = "throng", start_id = 6, capital_id = 12},
 }
 
+-- EXPECTED_RACES ordered by start_id. A map has no order, and both the
+-- startup start-area preload and the mob start-footprint gate need the six
+-- start identities in one stable order.
+local START_ORDER = {"dwarf", "human", "elf", "undead", "orc", "troll"}
+
 local EXPECTED_OUTPOST_RACES = {
 	"dwarf", "dwarf", "dwarf", "dwarf",
 	"human", "human", "human", "human",
@@ -449,6 +454,29 @@ end
 function grug_core.start_anchor(faction_id, race_id)
 	local row = race_record(faction_id, race_id)
 	return row and copy_position(row.start) or nil
+end
+
+-- The six start identities in START_ORDER, each with its own anchor copy.
+-- Empty before the authority is installed. Consumers that need every start
+-- (startup preload, start-footprint spawn gate) read exactly this list
+-- instead of restating the race roster.
+function grug_core.start_identities()
+	local result = {}
+	if not authority then
+		return result
+	end
+	for i = 1, #START_ORDER do
+		local race_id = START_ORDER[i]
+		local row = race_anchors[race_id]
+		if row then
+			result[#result + 1] = {
+				race_id = race_id,
+				faction_id = row.faction_id,
+				anchor = copy_position(row.start),
+			}
+		end
+	end
+	return result
 end
 
 function grug_core.capital_anchor(faction_id, race_id)

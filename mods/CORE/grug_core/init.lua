@@ -41,6 +41,9 @@ dofile(modpath .. "/atmosphere.lua")
 -- zone_authority.lua, which only installs a seam grug_mapgen fills in later.
 dofile(modpath .. "/atmosphere_zones.lua")
 dofile(modpath .. "/zone_authority.lua")
+-- After zone_authority.lua: it reads grug_core.start_identities(), which that
+-- file publishes. The request itself waits for register_on_mods_loaded.
+dofile(modpath .. "/starts_preload.lua")
 dofile(modpath .. "/protection.lua")
 dofile(modpath .. "/combat_debug.lua")
 dofile(modpath .. "/combat_ray.lua")

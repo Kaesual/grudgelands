@@ -13,7 +13,9 @@ local callbacks = {
 local after_queue = {}
 local emerge_requests = {}
 local online = {}
+local mods_loaded = {}
 local chats = {}
+local clock = 0
 local class_sets = 0
 local chatcommands = {}
 
@@ -80,6 +82,7 @@ core = {
 		assert(player, "show_formspec player is online")
 		player.formname = formname
 		player.formspec = formspec
+		player.formspec_sends = (player.formspec_sends or 0) + 1
 	end,
 	close_formspec = function(name, formname)
 		local player = online[name]
@@ -96,6 +99,24 @@ core = {
 			pos1 = copy_table(pos1), pos2 = copy_table(pos2), callback = callback,
 		}
 	end,
+	register_on_mods_loaded = function(fn)
+		mods_loaded[#mods_loaded + 1] = fn
+	end,
+	get_us_time = function()
+		clock = clock + 250000
+		return clock
+	end,
+}
+
+-- The six authenticated start anchors. start_position() below is exactly
+-- anchor.y + 1, as in the production authority.
+local START_ANCHORS = {
+	{race_id = "dwarf", faction_id = "accord", x = -550, y = 40, z = -900},
+	{race_id = "human", faction_id = "accord", x = 10, y = 30, z = -900},
+	{race_id = "elf", faction_id = "accord", x = 560, y = 35, z = -900},
+	{race_id = "undead", faction_id = "throng", x = -550, y = 20, z = 900},
+	{race_id = "orc", faction_id = "throng", x = 10, y = 35, z = 900},
+	{race_id = "troll", faction_id = "throng", x = 560, y = 25, z = 900},
 }
 
 grug_core = {
@@ -104,17 +125,49 @@ grug_core = {
 		throng = {name = "Throng", color = "#CC3322"},
 	},
 	zone_authority_installed = function() return true end,
+	start_identities = function()
+		local result = {}
+		for index = 1, #START_ANCHORS do
+			local row = START_ANCHORS[index]
+			result[index] = {
+				race_id = row.race_id,
+				faction_id = row.faction_id,
+				anchor = {x = row.x, y = row.y, z = row.z},
+			}
+		end
+		return result
+	end,
 	start_position = function(faction, race)
-		local positions = {
-			human = {faction = "accord", x = 10, y = 31, z = -900},
-			dwarf = {faction = "accord", x = -550, y = 41, z = -900},
-			orc = {faction = "throng", x = 10, y = 36, z = 900},
-		}
-		local row = positions[race]
-		if not row or row.faction ~= faction then return nil end
-		return {x = row.x, y = row.y, z = row.z}
+		for index = 1, #START_ANCHORS do
+			local row = START_ANCHORS[index]
+			if row.race_id == race then
+				if row.faction_id ~= faction then return nil end
+				return {x = row.x, y = row.y + 1, z = row.z}
+			end
+		end
+		return nil
 	end,
 }
+
+-- The startup preload's still-open emerge request for one start, found by the
+-- envelope it asked for (grug_core/starts_preload.lua: anchor +- 64).
+local function preload_request(race_id)
+	local anchor
+	for index = 1, #START_ANCHORS do
+		if START_ANCHORS[index].race_id == race_id then
+			anchor = START_ANCHORS[index]
+		end
+	end
+	assert(anchor, "unknown start race " .. tostring(race_id))
+	for index = #emerge_requests, 1, -1 do
+		local request = emerge_requests[index]
+		if not request.finished and request.pos1.x == anchor.x - 64 and
+				request.pos1.z == anchor.z - 64 then
+			return request
+		end
+	end
+	error("no open preload request for " .. race_id)
+end
 
 local Meta = {}
 Meta.__index = Meta
@@ -228,9 +281,18 @@ local function respawn(player)
 end
 
 local function finish_emerge(request, actions)
+	request.finished = true
 	for index = 1, #actions do
 		request.callback({x = index, y = 0, z = 0}, actions[index],
 			#actions - index)
+	end
+end
+
+-- Blocks of a request that is not finished yet (calls_remaining > 0).
+local function partial_emerge(request, blocks)
+	for index = 1, blocks do
+		request.callback({x = index, y = 0, z = 0}, core.EMERGE_GENERATED,
+			blocks - index + 1)
 	end
 end
 
@@ -295,6 +357,7 @@ grug_core.get_player_race = function(name)
 end
 grug_xp = {get_level = function() return 1 end}
 
+dofile(repo .. "/mods/CORE/grug_core/starts_preload.lua")
 dofile(repo .. "/mods/PLAYER/grug_classes/selection.lua")
 
 -- A later dependent mod resets old slows on join. The after(0) creation pass
@@ -320,8 +383,17 @@ local function assert_dark_form(player, formname, context)
 		context .. " background")
 end
 
+--
+-- Server start: grug_core emerges ALL SIX start areas, two at a time, before
+-- any player can finish character creation (user decision 2026-09-14).
+--
+for index = 1, #mods_loaded do mods_loaded[index]() end
+run_after()
+assert_equal(#emerge_requests, 2, "startup emerges two start areas at a time")
+assert_equal(select(2, grug_core.starts_ready()), 6, "six start areas")
+
 -- Fresh character: lock before the first position send, reopen a closed
--- faction form, prepare after race, defer class persistence, then commit once.
+-- faction form, defer class persistence, wait for all six starts, commit once.
 local fresh = new_player("fresh")
 join(fresh, true)
 assert_equal(fresh.physics.gravity, 0, "newplayer gravity lock")
@@ -343,25 +415,84 @@ assert_equal(fresh.formname, nil, "closed faction form")
 run_after()
 assert_dark_form(fresh, "grug_factions:select", "reopened faction")
 
+local requests_before_fresh = #emerge_requests
 receive(fresh, "grug_factions:select", {choose_accord = true})
 assert_equal(grug_factions.get_faction(fresh), "accord", "chosen faction")
 assert_dark_form(fresh, "grug_classes:race", "race")
-assert_equal(#emerge_requests, 0, "no faction-only emerge")
 
 receive(fresh, "grug_classes:race", {choose_human = true})
 assert_equal(grug_classes.get_race(fresh), "human", "chosen race")
 assert_dark_form(fresh, "grug_classes:class", "class")
-assert_equal(#emerge_requests, 1, "race starts one emerge")
 assert_equal(fresh.teleports, 0, "no pre-class teleport")
+assert_equal(#emerge_requests, requests_before_fresh,
+	"character creation emerges nothing of its own")
 
 receive(fresh, "grug_classes:class", {choose_mage = true})
-assert_equal(grug_classes.get_class(fresh), nil, "class waits for emerge")
+assert_equal(grug_classes.get_class(fresh), nil, "class waits for the preload")
 assert_dark_form(fresh, "grug_classes:loading", "loading")
-assert_locked(fresh, "pending load")
+assert_contains(fresh.formspec, "(0 of 6)", "loading progress text")
+assert_locked(fresh, "pending preload")
 
-finish_emerge(emerge_requests[1], {
-	core.EMERGE_FROM_MEMORY, core.EMERGE_GENERATED,
-})
+-- Progress is sent on change only: a partial emerge callback changes nothing
+-- and must not produce a formspec packet.
+local sends_before = fresh.formspec_sends
+partial_emerge(preload_request("dwarf"), 2)
+assert_equal(fresh.formspec_sends, sends_before, "partial emerge sends nothing")
+finish_emerge(preload_request("dwarf"), {core.EMERGE_FROM_MEMORY})
+assert_equal(grug_core.starts_ready(), 1, "one start ready")
+assert_equal(fresh.formspec_sends, sends_before + 1, "one send per change")
+assert_contains(fresh.formspec, "(1 of 6)", "updated progress text")
+assert_equal(fresh.teleports, 0, "another race's start does not release")
+
+-- The player's OWN start being ready is deliberately not enough.
+finish_emerge(preload_request("human"), {core.EMERGE_GENERATED})
+assert_equal(grug_core.start_ready("human"), true, "own start ready")
+assert_equal(fresh.teleports, 0, "own start ready still waits")
+assert_contains(fresh.formspec, "(2 of 6)", "own-start progress text")
+
+-- A second player reaches the class click inside the same waiting window.
+-- Its class is deliberately transient: a disconnect before the one commit
+-- must leave nothing persisted and resume at exactly that step.
+local waiting_meta = new_meta()
+local waiting = new_player("waiting", waiting_meta)
+join(waiting, true)
+run_after()
+receive(waiting, "grug_factions:select", {choose_accord = true})
+receive(waiting, "grug_classes:race", {choose_dwarf = true})
+receive(waiting, "grug_classes:class", {choose_priest = true})
+assert_dark_form(waiting, "grug_classes:loading", "waiting loading")
+assert_contains(waiting.formspec, "(2 of 6)", "waiting progress text")
+assert_equal(grug_classes.get_class(waiting), nil, "waiting class is pending")
+leave(waiting)
+assert_equal(waiting_meta:get_string("grug_classes:class"), "",
+	"pending class not persisted")
+
+local waiting_races = {"elf", "undead", "troll"}
+for index = 1, #waiting_races do
+	finish_emerge(preload_request(waiting_races[index]),
+		{core.EMERGE_GENERATED})
+end
+assert_equal(grug_core.starts_ready(), 5, "five starts ready")
+assert_equal(fresh.teleports, 0, "five of six still waits")
+
+-- The sixth start keeps failing: after its bounded attempts the wait turns
+-- into the existing retryable failure state instead of an endless wait.
+for _ = 1, 3 do
+	finish_emerge(preload_request("orc"), {core.EMERGE_ERRORED})
+	run_after()
+end
+assert_equal(grug_core.starts_preload_failed(), true, "preload failure state")
+assert_dark_form(fresh, "grug_classes:loading", "failed loading")
+assert_contains(fresh.formspec, "retry_spawn", "retry button")
+assert_equal(fresh.teleports, 0, "failed preload does not teleport")
+assert_locked(fresh, "failed preload")
+
+local requests_before_retry = #emerge_requests
+receive(fresh, "grug_classes:loading", {retry_spawn = true})
+assert_equal(#emerge_requests, requests_before_retry + 1, "retry re-requests")
+finish_emerge(preload_request("orc"), {core.EMERGE_GENERATED})
+assert_equal(grug_core.starts_ready(), 6, "all six start areas ready")
+
 assert_equal(grug_classes.get_class(fresh), "mage", "class commit")
 assert_equal(fresh.teleports, 1, "one final teleport")
 assert_equal(fresh.pos.x, 10, "fresh spawn x")
@@ -374,127 +505,91 @@ assert_equal(fresh.physics.speed_climb, 1.5, "preserve unrelated physics")
 assert_equal(fresh.armor.immortal, nil, "restore immortality")
 assert_equal(fresh.armor.custom, 7, "preserve armor group")
 assert_equal(fresh.formname, nil, "close loading form")
-finish_emerge(emerge_requests[1], {core.EMERGE_FROM_DISK})
-assert_equal(fresh.teleports, 1, "duplicate callback cannot re-teleport")
 
--- The intended fast path hides all generation behind the class decision: an
--- early emerge completion keeps the player in stasis until the click, then
--- that click commits immediately without a loading form.
+-- The player that disconnected while waiting resumes at the class step and
+-- commits exactly once, at its own race start.
+local resumed = new_player("waiting", waiting_meta)
+join(resumed, false)
+run_after()
+assert_locked(resumed, "resumed waiting player")
+assert_dark_form(resumed, "grug_classes:class", "resumed class")
+receive(resumed, "grug_classes:class", {choose_priest = true})
+assert_equal(resumed.teleports, 1, "resumed final teleport")
+assert_equal(resumed.pos.x, -550, "resumed dwarf spawn x")
+assert_equal(grug_classes.get_class(resumed), "priest", "resumed class commit")
+
+-- With every start prepared the class click commits immediately and no
+-- loading form is ever shown.
 local prefetched = new_player("prefetched")
 join(prefetched, true)
 run_after()
+local requests_before_prefetched = #emerge_requests
 receive(prefetched, "grug_factions:select", {choose_accord = true})
 receive(prefetched, "grug_classes:race", {choose_human = true})
-local prefetched_request = emerge_requests[#emerge_requests]
-finish_emerge(prefetched_request, {core.EMERGE_FROM_MEMORY})
-assert_equal(prefetched.teleports, 0, "prefetch waits for class")
+assert_equal(prefetched.teleports, 0, "prepared start waits for class")
 assert_equal(grug_classes.get_class(prefetched), nil, "prefetch class absent")
 assert_dark_form(prefetched, "grug_classes:class", "prefetched class")
 receive(prefetched, "grug_classes:class", {choose_mage = true})
 assert_equal(prefetched.teleports, 1, "prefetched immediate teleport")
 assert_equal(prefetched.formname, nil, "prefetched form closes")
+assert_equal(#emerge_requests, requests_before_prefetched,
+	"a ready preload emerges nothing per player")
 
--- A ready cache belongs to the exact faction/race identity. An admin race
--- change retires it and class completion waits for the replacement emerge.
+-- The committed position belongs to the exact faction/race identity at commit
+-- time: an admin race change before the class click moves the destination.
 local changed = new_player("changed")
 join(changed, true)
 run_after()
 receive(changed, "grug_factions:select", {choose_accord = true})
 receive(changed, "grug_classes:race", {choose_human = true})
-finish_emerge(emerge_requests[#emerge_requests], {core.EMERGE_FROM_MEMORY})
-local changed_requests = #emerge_requests
 local changed_ok = chatcommands.race.func("admin", "changed dwarf")
 assert(changed_ok, "admin race change")
-assert_equal(#emerge_requests, changed_requests + 1,
-	"identity change starts replacement emerge")
+assert_equal(changed.teleports, 0, "admin race change does not teleport")
 receive(changed, "grug_classes:class", {choose_warrior = true})
-assert_equal(changed.teleports, 0, "stale ready spawn not committed")
-finish_emerge(emerge_requests[#emerge_requests], {core.EMERGE_FROM_DISK})
 assert_equal(changed.pos.x, -550, "changed race spawn x")
 assert_equal(changed.teleports, 1, "changed identity final teleport")
 
 -- The faction admin path joins the coordinator instead of launching an
--- independent early teleport. Re-setting the same faction neither re-emerges
--- nor moves the classless player.
+-- independent early teleport, and a first admin-picked class stays transient
+-- until that one commit.
 local administered = new_player("administered")
 join(administered, true)
 run_after()
 receive(administered, "grug_factions:select", {choose_accord = true})
 receive(administered, "grug_classes:race", {choose_human = true})
-local administered_request = emerge_requests[#emerge_requests]
-local administered_requests = #emerge_requests
 local faction_ok = chatcommands.faction.func("admin", "administered accord")
 assert(faction_ok, "admin faction set")
-assert_equal(#emerge_requests, administered_requests,
-	"admin faction reuses coordinator load")
 assert_equal(administered.teleports, 0, "admin faction no early teleport")
 local class_ok = chatcommands.class.func("admin", "administered priest")
 assert(class_ok, "admin class set")
-assert_equal(grug_classes.get_class(administered), nil,
-	"admin first class remains transient")
-assert_dark_form(administered, "grug_classes:loading", "admin class loading")
-finish_emerge(administered_request, {core.EMERGE_GENERATED})
 assert_equal(administered.teleports, 1, "admin faction one final teleport")
 assert_equal(grug_classes.get_class(administered), "priest",
-	"admin class commits after emerge")
+	"admin class commits once")
 
--- Any failed block fails closed. The explicit retry gets a new request and a
--- successful second attempt performs the same single commit.
-local retrying = new_player("retrying")
-join(retrying, true)
-run_after()
-receive(retrying, "grug_factions:select", {choose_throng = true})
-receive(retrying, "grug_classes:race", {choose_orc = true})
-receive(retrying, "grug_classes:class", {choose_warrior = true})
-local failed_request = emerge_requests[#emerge_requests]
-finish_emerge(failed_request, {
-	core.EMERGE_ERRORED, core.EMERGE_FROM_DISK,
-})
-assert_equal(grug_classes.get_class(retrying), nil, "failed class remains pending")
-assert_equal(retrying.teleports, 0, "failed emerge does not teleport")
-assert_locked(retrying, "failed emerge")
-assert_dark_form(retrying, "grug_classes:loading", "failed loading")
-assert_contains(retrying.formspec, "retry_spawn", "retry button")
-
-local requests_before_retry = #emerge_requests
-receive(retrying, "grug_classes:loading", {retry_spawn = true})
-assert_equal(#emerge_requests, requests_before_retry + 1, "retry request")
-finish_emerge(emerge_requests[#emerge_requests], {core.EMERGE_GENERATED})
-assert_equal(grug_classes.get_class(retrying), "warrior", "retry class commit")
-assert_equal(retrying.teleports, 1, "retry final teleport")
-
--- Disconnect after choosing a class but before emerge: the pending class is
--- transient. A stale callback may observe the new ObjectRef but cannot release
--- its new session; the player chooses again and only the new emerge commits.
+-- Disconnect after choosing a race but before the class commit: the pending
+-- class is transient, and the reconnect resumes at exactly that step.
 local shared_meta = new_meta()
 local old = new_player("rejoin", shared_meta)
 join(old, true)
 run_after()
 receive(old, "grug_factions:select", {choose_accord = true})
 receive(old, "grug_classes:race", {choose_dwarf = true})
-receive(old, "grug_classes:class", {choose_priest = true})
-local stale_request = emerge_requests[#emerge_requests]
 leave(old)
-assert_equal(grug_classes.get_class(old), nil, "pending class not persisted")
+assert_equal(grug_classes.get_class(old), nil, "no class persisted on leave")
 
 local rejoined = new_player("rejoin", shared_meta)
 join(rejoined, false)
 run_after()
 assert_locked(rejoined, "rejoin")
 assert_dark_form(rejoined, "grug_classes:class", "rejoin class")
-local current_request = emerge_requests[#emerge_requests]
 receive(rejoined, "grug_classes:class", {choose_priest = true})
-finish_emerge(stale_request, {core.EMERGE_GENERATED})
-assert_equal(rejoined.teleports, 0, "stale session cannot teleport")
-assert_equal(grug_classes.get_class(rejoined), nil, "stale session cannot commit")
-assert_locked(rejoined, "after stale callback")
-finish_emerge(current_request, {core.EMERGE_FROM_DISK})
-assert_equal(rejoined.teleports, 1, "current session teleport")
-assert_equal(grug_classes.get_class(rejoined), "priest", "current class commit")
+assert_equal(rejoined.teleports, 1, "rejoined session teleport")
+assert_equal(rejoined.pos.x, -550, "rejoined dwarf spawn x")
+assert_equal(grug_classes.get_class(rejoined), "priest", "rejoined class commit")
 
 -- A persisted dead, incomplete character cannot take the eager respawn path;
--- completion revives it at the emerged start instead of leaving it dead behind
--- the replaced builtin death form.
+-- completion revives it at the prepared start instead of leaving it dead
+-- behind the replaced builtin death form.
 local dead_meta = new_meta()
 dead_meta:set_string("grug_factions:faction", "accord")
 dead_meta:set_string("grug_classes:race", "human")
@@ -502,12 +597,10 @@ local dead = new_player("dead", dead_meta, {hp = 0})
 join(dead, false)
 run_after()
 assert_locked(dead, "dead incomplete")
-local dead_request = emerge_requests[#emerge_requests]
 local dead_teleports = dead.teleports
 assert(respawn(dead), "creation owns dead respawn")
 assert_equal(dead.teleports, dead_teleports, "dead respawn no eager teleport")
 receive(dead, "grug_classes:class", {choose_mage = true})
-finish_emerge(dead_request, {core.EMERGE_FROM_MEMORY})
 assert_equal(dead.teleports, dead_teleports + 1, "dead final teleport")
 assert_equal(dead.hp, 30, "dead character revived at full class HP")
 assert_equal(dead.hp_reason.type, "set_hp", "dead revive reason")
@@ -532,7 +625,8 @@ assert_equal(complete.teleports, 0, "complete character teleport")
 assert_equal(#emerge_requests, requests_before_complete,
 	"complete character emerge")
 
--- The ordinary public teleport wrapper still waits for a successful emerge.
+-- The ordinary respawn wrapper still emerges its destination itself: long
+-- after the startup preload the start blocks may have been unloaded again.
 local traveler = new_player("traveler", complete_meta)
 online.traveler = traveler
 local start_count = #emerge_requests
@@ -544,10 +638,10 @@ finish_emerge(emerge_requests[start_count + 2], {core.EMERGE_FROM_MEMORY})
 assert_equal(traveler.teleports, 1, "successful ordinary teleport")
 
 print(table.concat({
-	"wp45_character_creation_v1",
+	"wp45_character_creation_v2",
+	"preload_requests=" .. #emerge_requests,
 	"fresh_teleports=" .. fresh.teleports,
 	"prefetched_teleports=" .. prefetched.teleports,
-	"retry_teleports=" .. retrying.teleports,
 	"rejoin_teleports=" .. rejoined.teleports,
 	"class_sets=" .. class_sets,
 	"chats=" .. #chats,
