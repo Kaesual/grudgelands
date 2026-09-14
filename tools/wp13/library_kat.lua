@@ -447,14 +447,65 @@ return function(repo)
 	assert(parts.rotate_param2(0, parts.NONE, 3) == 0)
 	say("guards", "param2_kind", "pass")
 
+	-- 7b. the two byte-order comparators agree ------------------------------
+	-- `parts.less_bytes` sorts every composition's palette; the identical
+	-- comparator in `wp40/r7_settlement.lua` serves the consumers that never
+	-- load this library. Two copies of one rule need a test that they are
+	-- still one rule, so both are run over a corpus that exercises the cases
+	-- `<` gets wrong under a non-C locale: case, the colon and the
+	-- underscore, a prefix against its extension, and the empty string.
+	local settlement = dofile(repo ..
+		"/mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua")
+	local ORDER_CORPUS = {"", "a", "A", "_", ":", "aa", "a_", "a:", "ab",
+		"default:dirt", "default:dirt_with_grass", "default:dirtY",
+		"grug_decor:xdecor_candle", "grug_decor:xdecor_cauldron",
+		"Grug_decor:xdecor_candle", "stairs:slab_wood", "stairs:stair_wood",
+		"walls:cobble", "walls:mossycobble", "xpanes:pane", "xpanes:pane_flat"}
+	local order_pairs = 0
+	for i = 1, #ORDER_CORPUS do
+		for j = 1, #ORDER_CORPUS do
+			local left, right = ORDER_CORPUS[i], ORDER_CORPUS[j]
+			assert(parts.less_bytes(left, right) ==
+				settlement.less_bytes(left, right),
+				"the two byte-order comparators disagree on " ..
+					left .. " / " .. right)
+			order_pairs = order_pairs + 1
+		end
+	end
+	assert(not pcall(parts.less_bytes, "a", 1))
+	assert(not pcall(settlement.less_bytes, "a", 1))
+	say("byte_order", "parts+r7_settlement", order_pairs, "pass")
+
+	-- 7c. the frozen Vale ground cover has exactly one caller ---------------
+	-- `dressing.vale_undergrowth` is the degenerate selector, kept only
+	-- because Hearthpine Vale's blueprint identity is part of the frozen R7
+	-- manifest. A second caller would be a new settlement inheriting a known
+	-- defect, so the source is read and the callers counted. `M.undergrowth`
+	-- is the routine every other start uses.
+	local vale_callers = {}
+	for _, source in ipairs({"hearthpine", "dawnmere", "silverleaf",
+			"stillgrave", "sunscar", "kapok", "dressing", "layout",
+			"buildings", "interiors", "parts", "roofs", "palette"}) do
+		local handle = assert(io.open(wp13 .. "/" .. source .. ".lua", "rb"))
+		local text = handle:read("*a")
+		handle:close()
+		for _ in text:gmatch("dressing%.vale_undergrowth") do
+			vale_callers[#vale_callers + 1] = source
+		end
+	end
+	assert(#vale_callers == 1 and vale_callers[1] == "hearthpine",
+		"dressing.vale_undergrowth must be called by hearthpine and nothing " ..
+			"else; found " .. (#vale_callers == 0 and "no caller" or
+				table.concat(vale_callers, ",")))
+	say("frozen_flora", "vale_undergrowth", "callers", 1)
+
 	-- 8. every finished settlement against the real registry ---------------
 	-- Sections 1-7 test the library in isolation. What actually reaches the
 	-- engine is each start's cell list, so the last three sections check
 	-- THOSE, name by name and cell by cell, against the registrations loaded
 	-- in section 3. The roster is the R7 settlement roster, so a start added
 	-- to the game is checked here without a second line.
-	local roster = dofile(repo ..
-		"/mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua").roster
+	local roster = settlement.roster
 	assert(#roster >= 2, "the settlement roster lost a start")
 	-- Coverage of `update_pane`'s connected branch is a property of the
 	-- CORPUS, not of every start. A pane turns into the connected node only
@@ -550,32 +601,49 @@ return function(repo)
 		"place_param2", pinned, "plain_cubes", plain_cells)
 
 	-- 8b. which window vocabulary this start builds with -------------------
-	-- Which race a blueprint was composed from is not recorded anywhere the
-	-- blueprint can be asked, but its windows are: exactly one of the names it
-	-- emits is some race's `window` role. Whether THAT node carries
-	-- `group:pane` in the real registry decides which of the two rules in
-	-- section 9 applies -- derived from the palettes and the registrations,
-	-- never from a roster kept here.
-	local window_names = {}
-	for _, race in ipairs(races) do
-		window_names[handles[race].node("window")] = true
-	end
-	local glazed, openings = nil, 0
+	-- Whether this start's `window` node carries `group:pane` in the real
+	-- registry decides which of the two rules in section 9 applies. The
+	-- question is asked of the start's OWN race palette, named by the roster
+	-- row: the first version matched the emitted names against every race's
+	-- `window` role at once, and `doors:door_wood` aside, nothing stops two
+	-- races binding the same window node -- the dwarf and human palettes
+	-- already both use `xpanes:pane_flat`, so a start could be told it
+	-- emitted "two window vocabularies" for building with one.
+	local race = assert(profile.race, "roster row names no race")
+	local handle = assert(handles[race], "roster names an unknown race " .. race)
+	local window = handle.node("window")
+	local window_def = world.nodes[window]
+	assert(window_def, "the " .. race .. " window is not registered")
+	local glazed = type(window_def.groups) == "table" and
+		(window_def.groups.pane or 0) > 0
+	local openings = 0
 	for _, name in ipairs(emitted_names) do
-		if window_names[name] then
-			openings = openings + 1
-			local def = world.nodes[name]
-			local is_pane = type(def.groups) == "table" and
-				(def.groups.pane or 0) > 0
-			if glazed == nil then
-				glazed = is_pane
-			else
-				assert(glazed == is_pane,
-					"one start emits two window vocabularies")
-			end
-		end
+		if name == window then openings = openings + 1 end
 	end
 	assert(openings > 0, "the start emits no window at all")
+
+	-- 8c. both ground-cover roles reach the pad ----------------------------
+	-- `dressing.undergrowth` picks a cell with one hash and chooses between
+	-- the palette's `undergrowth` and its `grass_tuft` with another. When the
+	-- two are not independent -- and the first pair were not, `7x + 11z`
+	-- being `3(x + z)` modulo 4 -- every picked cell takes one branch and the
+	-- other node never appears. Dawnmere's green was carpeted in bushes for
+	-- exactly that reason and nothing failed. This is the assertion that
+	-- would have: where a race binds the two roles to different nodes, a
+	-- finished settlement has to show both.
+	local bush = handle.node("undergrowth")
+	local tuft = handle.node("grass_tuft")
+	if bush ~= tuft then
+		local bush_cells, tuft_cells = 0, 0
+		for _, cell in ipairs(blueprint.cells) do
+			if cell.name == bush then bush_cells = bush_cells + 1
+			elseif cell.name == tuft then tuft_cells = tuft_cells + 1 end
+		end
+		assert(bush_cells > 0 and tuft_cells > 0,
+			"one ground-cover role never reached the pad: " .. bush .. "=" ..
+				bush_cells .. " " .. tuft .. "=" .. tuft_cells)
+		say("ground_cover", profile.key, bush, bush_cells, tuft, tuft_cells)
+	end
 
 	-- 9. every pane is the node update_pane would have settled on ----------
 	-- Re-derived here from the mod source, not from `parts.resolve_panes`:

@@ -317,16 +317,10 @@ local function loader(directory)
 		-- its hits on an arithmetic progression, and an arithmetic
 		-- progression modulo the sieve's period is exactly a stripe: the
 		-- first version streaked the pad diagonally, the second banded it.
-		-- Two rounds of a plain LCG, each fed a value below 2^15 so every
-		-- product stays under 2^53 and LuaJIT and PUC agree bit for bit,
-		-- decorrelate x from z and leave no visible lattice.
-		local function mix(value)
-			value = (value * 1103515245 + 12345) % 2147483648
-			return math.floor(value / 65536) % 32768
-		end
-		local function wear_hash(x, z)
-			return mix((mix(x + 200) + (z + 200) * 7) % 32768)
-		end
+		-- Two rounds of a plain LCG decorrelate x from z and leave no visible
+		-- lattice. `parts.position_hash` is exactly that pair of rounds, and
+		-- the ground cover in `dressing.lua` reads the same helper.
+		local wear_hash = parts.position_hash
 		-- Each hit paints a 2 x 2 blob, not a single cell: single-cell noise
 		-- reads as dithering at every camera distance, where a patch two
 		-- nodes across reads as ground somebody wore out.
@@ -667,7 +661,9 @@ local function loader(directory)
 			if cell.y > maxp.y then maxp.y = cell.y end
 			if cell.z > maxp.z then maxp.z = cell.z end
 		end
-		table.sort(palette_list)
+		-- ASCII byte order, not Lua's `<`, which is `strcoll` and so
+		-- locale-dependent; see `parts.less_bytes`.
+		table.sort(palette_list, parts.less_bytes)
 
 		local destinations = {}
 		for _, id in ipairs(DESTINATION_ORDER) do

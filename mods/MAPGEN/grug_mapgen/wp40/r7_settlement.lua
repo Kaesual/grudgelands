@@ -21,9 +21,15 @@ local M = {}
 
 -- Fixed order. The successor settles the roster in this order, and the
 -- manifest publishes one identity block per row in the same order.
+--
+-- `race` names the `palette.races` entry the composition builds from. It is
+-- the ONE place a start is tied to a race, and `tools/wp13/library_kat.lua`
+-- reads it to check a start's window vocabulary and its ground cover against
+-- that race's palette alone instead of guessing from the node names, which
+-- can match two races at once.
 M.roster = {
 	{
-		key = "hearthpine", label = "Hearthpine",
+		key = "hearthpine", label = "Hearthpine", race = "dwarf",
 		zone_id = "elandor_hearthpine_vale",
 		anchor_id = "anchor_001", numeric_id = 1, x = -1800, z = -2550,
 		blueprint_file = "r7_hearthpine_blueprint.lua",
@@ -35,7 +41,7 @@ M.roster = {
 		delta_schema = "grug_wp13_hearthpine_delta_v1",
 	},
 	{
-		key = "dawnmere", label = "Dawnmere",
+		key = "dawnmere", label = "Dawnmere", race = "human",
 		zone_id = "elandor_dawnmere_fields",
 		anchor_id = "anchor_002", numeric_id = 2, x = 0, z = -2550,
 		blueprint_file = "r7_dawnmere_blueprint.lua",
@@ -47,7 +53,7 @@ M.roster = {
 		delta_schema = "grug_wp13_dawnmere_delta_v1",
 	},
 	{
-		key = "silverleaf", label = "Silverleaf",
+		key = "silverleaf", label = "Silverleaf", race = "elf",
 		zone_id = "elandor_silverleaf_glades",
 		anchor_id = "anchor_003", numeric_id = 3, x = 1800, z = -2550,
 		blueprint_file = "r7_silverleaf_blueprint.lua",
@@ -59,7 +65,7 @@ M.roster = {
 		delta_schema = "grug_wp13_silverleaf_delta_v1",
 	},
 	{
-		key = "stillgrave", label = "Stillgrave",
+		key = "stillgrave", label = "Stillgrave", race = "undead",
 		zone_id = "kragmar_stillgrave_hollow",
 		anchor_id = "anchor_004", numeric_id = 4, x = -1800, z = 2550,
 		blueprint_file = "r7_stillgrave_blueprint.lua",
@@ -71,7 +77,7 @@ M.roster = {
 		delta_schema = "grug_wp13_stillgrave_delta_v1",
 	},
 	{
-		key = "sunscar", label = "Sunscar",
+		key = "sunscar", label = "Sunscar", race = "orc",
 		zone_id = "kragmar_sunscar_flats",
 		anchor_id = "anchor_005", numeric_id = 5, x = 0, z = 2550,
 		blueprint_file = "r7_sunscar_blueprint.lua",
@@ -83,7 +89,7 @@ M.roster = {
 		delta_schema = "grug_wp13_sunscar_delta_v1",
 	},
 	{
-		key = "kapok", label = "Kapok",
+		key = "kapok", label = "Kapok", race = "troll",
 		zone_id = "kragmar_kapok_cradle",
 		anchor_id = "anchor_006", numeric_id = 6, x = 1800, z = 2550,
 		blueprint_file = "r7_kapok_blueprint.lua",
@@ -115,9 +121,10 @@ function M.less_bytes(left, right)
 	return #left < #right
 end
 
-local PROFILE_FIELDS = {"key", "label", "zone_id", "anchor_id", "numeric_id",
-	"x", "z", "blueprint_file", "blueprint_schema", "identity_schema",
-	"config_schema", "ledger_schema", "metrics_schema", "delta_schema"}
+local PROFILE_FIELDS = {"key", "label", "race", "zone_id", "anchor_id",
+	"numeric_id", "x", "z", "blueprint_file", "blueprint_schema",
+	"identity_schema", "config_schema", "ledger_schema", "metrics_schema",
+	"delta_schema"}
 
 function M.config(profile, blueprint, content, raw_sha256)
 	if type(profile) ~= "table" then

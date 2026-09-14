@@ -270,7 +270,7 @@ local function loader(directory)
 		-- 8. Planting: the pine wood the clearing was cut from, then
 		-- scattered undergrowth on whatever soil is still open.
 		layout.plant_wood(buf, palette, RADIUS, 5)
-		dressing.undergrowth(buf, palette, -RADIUS, -RADIUS, RADIUS, RADIUS, 5)
+		dressing.vale_undergrowth(buf, palette, -RADIUS, -RADIUS, RADIUS, RADIUS, 5)
 
 		-- 9. Pane shapes. `xpanes` settles a pane's node and param2 from its
 		-- horizontal neighbours in `update_pane`, which the engine runs from
@@ -313,7 +313,9 @@ local function loader(directory)
 			if cell.y > maxp.y then maxp.y = cell.y end
 			if cell.z > maxp.z then maxp.z = cell.z end
 		end
-		table.sort(palette_list)
+		-- ASCII byte order, not Lua's `<`, which is `strcoll` and so
+		-- locale-dependent; see `parts.less_bytes`.
+		table.sort(palette_list, parts.less_bytes)
 
 		local destinations = {}
 		for _, id in ipairs(DESTINATION_ORDER) do

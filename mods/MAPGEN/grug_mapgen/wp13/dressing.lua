@@ -1091,8 +1091,57 @@ local function loader(directory)
 		return whole
 	end
 
-	-- Scattered undergrowth on a rectangle of open ground.
+	-- Scattered ground cover on a rectangle of open ground: one plant per
+	-- cell the selector picks, either the palette's bushy `undergrowth` or
+	-- its finer `grass_tuft`, and only on unbuilt soil with air above it.
+	--
+	-- The selector and the role test MUST be independent, and the first
+	-- version's were not. It picked on `(7x + 11z) % density` and chose the
+	-- role on `(x + z) % 4`, and `7x + 11z` IS `3(x + z)` modulo 4: at
+	-- density 4 every picked cell satisfied the role test as well, so
+	-- `grass_tuft` was unreachable and Dawnmere's green came out carpeted in
+	-- bushes. Densities 5 and 6 escaped by being coprime to 4, which is luck,
+	-- not design. Both tests now read two different offsets into
+	-- `parts.position_hash`, whose two LCG rounds leave neither derivable
+	-- from the other. `tools/wp13/library_kat.lua` asserts that every start
+	-- emits both of its ground-cover nodes.
 	function M.undergrowth(buf, palette, x1, z1, x2, z2, density)
+		local planted_bush, planted_tuft = 0, 0
+		for z = z1, z2 do
+			for x = x1, x2 do
+				if parts.position_hash(x, z) % density == 0 then
+					local below = buf:at(x, 0, z)
+					local above = buf:at(x, 1, z)
+					local free = (above == nil or above.name == "air")
+					if below and free and below.name:find("dirt") then
+						local bush =
+							parts.position_hash(x + 977, z + 383) % 3 == 0
+						local name = palette.node(bush and "undergrowth" or
+							"grass_tuft")
+						buf:put(x, 1, z, name, parts.place_param2(name))
+						if bush then planted_bush = planted_bush + 1
+						else planted_tuft = planted_tuft + 1 end
+					end
+				end
+			end
+		end
+		return planted_bush, planted_tuft
+	end
+
+	-- Hearthpine Vale's ground cover, and nothing else's.
+	--
+	-- The Vale's blueprint identity SHA-256 is part of the frozen R7 mapgen
+	-- manifest from the first WP13 increment, and every piece of engine
+	-- evidence recorded since is taken against those bytes. The degenerate
+	-- selector above is therefore not a bug that can be fixed HERE: at
+	-- density 5 it does produce both roles, and re-picking its cells would
+	-- move the Vale's identity for no visual gain. This routine is the
+	-- original, kept verbatim and called from exactly one place.
+	--
+	-- No new settlement may call it. `M.undergrowth` is the one every other
+	-- start uses, and `tools/wp13/library_kat.lua` checks that this one has a
+	-- single caller.
+	function M.vale_undergrowth(buf, palette, x1, z1, x2, z2, density)
 		for z = z1, z2 do
 			for x = x1, x2 do
 				if (x * 7 + z * 11) % density == 0 then

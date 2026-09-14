@@ -713,4 +713,53 @@ function M.table_cell(buf, palette, x, y, z)
 	buf:put(x, y + 1, z, palette.node("table_top"))
 end
 
+-- One round of a plain 32-bit LCG. The caller must feed a value below 2^15,
+-- which keeps every product under 2^53 -- the largest integer a C double
+-- holds exactly -- so LuaJIT and the engine's bundled PUC 5.1 build agree bit
+-- for bit. The result is the middle 15 bits, because the low bits of an LCG
+-- are the ones with the short period.
+function M.mix(value)
+	value = (value * 1103515245 + 12345) % 2147483648
+	return math.floor(value / 65536) % 32768
+end
+
+-- A position hash with no visible lattice, in [0, 32768).
+--
+-- Any expression linear in x and z lays its hits on an arithmetic
+-- progression, and an arithmetic progression modulo a sieve's period is a
+-- stripe. Worse, two linear expressions over the same position are rarely
+-- independent: `7x + 11z` IS `3(x + z)` modulo 4, which is how the first
+-- ground-cover routine came to pick only cells whose role test then always
+-- answered the same way. Two LCG rounds decorrelate x from z, and two
+-- different offsets into this function are independent enough to drive a
+-- selector and a role test at once.
+--
+-- `+ 200` keeps a pad coordinate positive; the pad is 127 nodes wide.
+function M.position_hash(x, z)
+	return M.mix((M.mix(x + 200) + (z + 200) * 7) % 32768)
+end
+
+-- ASCII byte order, NOT `<`.
+--
+-- Lua's `<` on strings is `strcoll`, so under a locale that is not C it can
+-- order two node names differently from the byte order the R7 content channel
+-- validates a palette with -- and the engine's locale is not this game's to
+-- choose. Every composition sorts its palette with this.
+--
+-- `mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua` carries the same
+-- comparator for the consumers that never load this library;
+-- `tools/wp13/library_kat.lua` asserts the two agree on a corpus of names.
+function M.less_bytes(left, right)
+	if type(left) ~= "string" or type(right) ~= "string" then
+		error("wp13 parts: byte-order input is not bytes", 0)
+	end
+	local count = math.min(#left, #right)
+	for index = 1, count do
+		local left_byte = string.byte(left, index)
+		local right_byte = string.byte(right, index)
+		if left_byte ~= right_byte then return left_byte < right_byte end
+	end
+	return #left < #right
+end
+
 return M

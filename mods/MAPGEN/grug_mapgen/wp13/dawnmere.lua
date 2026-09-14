@@ -478,7 +478,9 @@ local function loader(directory)
 			if cell.y > maxp.y then maxp.y = cell.y end
 			if cell.z > maxp.z then maxp.z = cell.z end
 		end
-		table.sort(palette_list)
+		-- ASCII byte order, not Lua's `<`, which is `strcoll` and so
+		-- locale-dependent; see `parts.less_bytes`.
+		table.sort(palette_list, parts.less_bytes)
 
 		local destinations = {}
 		for _, id in ipairs(DESTINATION_ORDER) do
