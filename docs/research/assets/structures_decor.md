@@ -4,6 +4,15 @@ Topic: building material for faction capitals, military outposts, race villages,
 plus props/flair and faction banners. Target: GPLv3+ game; media reuse only under
 GPL-family / LGPL / MIT / Apache / CC0 / CC BY / CC BY-SA.
 
+> **Correction 2026-09-14** ([asset-audit-2026-09-14.md](asset-audit-2026-09-14.md)):
+> the castle_* suite's **media is CC-BY-SA 3.0** (Philipner/Napiophelios, per
+> `textures/LICENSE.txt` in each repo), not MIT; only the code is MIT.
+> `castle_tapestries` depends on `unifieddyes`, which is **GPL-2.0-only** and
+> must never be vendored. `castle_shields` has no per-file media licence.
+> The audit also covers cottages, darkage, xdecor-libre, nativevillages,
+> pixelfurniture, x_farming, multidecor, Asuna and Natural Habitat (rejected:
+> GPL-2.0-only in-repo).
+
 ## Summary
 
 The **castle_* suite by FaceDeer** (MIT code+media, minetest-mods org) is the single
@@ -26,11 +35,11 @@ and prune crafting recipes for a from-scratch game.
 
 | Mod / Pack | Author | Code / Media | Harvestable | Deps on MTG | Maint. | Prio |
 |---|---|---|---|---|---|---|
-| [castle_masonry](https://content.luanti.org/packages/FaceDeer/castle_masonry/) | FaceDeer | MIT / MIT | Node set: walls, pillars, arrowslits, embrasures, machicolations, roof slate, paving | Medium (material list uses `default` nodes; mask-overlay textures easy to retarget) | Stable, low activity | **1** |
-| [castle_gates](https://content.luanti.org/packages/FaceDeer/castle_gates/) | FaceDeer | MIT / MIT | Swinging/sliding gate system, portcullis, dungeon doors + gate code | Low | Stable | **1** |
-| [castle_lighting](https://content.luanti.org/packages/FaceDeer/castle_lighting/) | FaceDeer | MIT / MIT | Braziers, chandeliers, candles — capital lighting | Low | Stable | **1** |
-| [castle_tapestries](https://content.luanti.org/packages/FaceDeer/castle_tapestries/) | FaceDeer | MIT / MIT | Colorable tapestries in 3 lengths — faction-color hall decor | Low | Stable | **1** |
-| castle_shields / castle_storage / castle_weapons | FaceDeer | MIT / MIT | Decorative wall shields (heraldry!), crates/barrels, weapon props | Low | Stable | 2 |
+| [castle_masonry](https://content.luanti.org/packages/FaceDeer/castle_masonry/) | FaceDeer | MIT / CC-BY-SA 3.0 (corrected 2026-09-14) | Node set: walls, pillars, arrowslits, embrasures, machicolations, roof slate, paving | Medium (material list uses `default` nodes; mask-overlay textures easy to retarget) | Stable, low activity | **1** |
+| [castle_gates](https://content.luanti.org/packages/FaceDeer/castle_gates/) | FaceDeer | MIT / CC-BY-SA 3.0 | Swinging/sliding gate system, portcullis, dungeon doors + gate code | Low | Stable | **1** |
+| [castle_lighting](https://content.luanti.org/packages/FaceDeer/castle_lighting/) | FaceDeer | MIT / CC-BY-SA 3.0 | Braziers, chandeliers, candles — capital lighting | Low | Stable | **1** |
+| [castle_tapestries](https://content.luanti.org/packages/FaceDeer/castle_tapestries/) | FaceDeer | MIT / undocumented media; depends on GPL-2.0-only unifieddyes | Colorable tapestries in 3 lengths — faction-color hall decor | Low | Stable | **1** |
+| castle_shields / castle_storage / castle_weapons | FaceDeer | MIT / shields undocumented, storage CC-BY-SA 3.0 | Decorative wall shields (heraldry!), crates/barrels, weapon props | Low | Stable | 2 |
 | [banners (pandorabox fork)](https://github.com/pandorabox-io/banners) | shamoanjac / pandorabox-io | GPL-3.0 / CC0 | Layered heraldic banner designs, banner items — ideal for 6 faction crests | Low | Fork of abandoned repo, minimal activity — plan to vendor & own | **1** |
 | [Banners](https://content.luanti.org/packages/Anonymous_moose/banner/) | Anonymous_moose | CC0 / CC0 | Simple wool-color banners + loom mechanic, banner hangers | Low (wool) | Low activity; CC0 = harvest freely | 2 |
 | [cottages](https://content.luanti.org/packages/Sokomine/cottages/) | Sokomine | GPL-3.0-only / CC-BY-SA-3.0 | Village-tier: straw/slate/reed roofs, shutters, simple beds/tables/benches, anvil | Low-Medium | Maintained, active tracker | **1** |
