@@ -155,6 +155,14 @@ return function(repo)
 		"an unregistered settlement is not empty")
 	check(grug_core.settlement_socket_anchor("sunscar") == nil,
 		"an unregistered settlement has an anchor")
+	local settlements = grug_core.settlement_socket_settlements()
+	check(#settlements == 1, "settlement roster length differs")
+	check(settlements[1].key == "hearthpine" and
+		settlements[1].race_id == "dwarf" and
+		settlements[1].anchor.y == ANCHOR.y, "settlement roster row differs")
+	settlements[1].anchor.y = 0
+	check(grug_core.settlement_socket_settlements()[1].anchor.y == ANCHOR.y,
+		"the settlement roster returns references")
 	line("queries", "by_key_and_missing", "pass")
 
 	-- Everything the registry refuses. Authored data, so each of these is a
@@ -214,6 +222,8 @@ return function(repo)
 		"a refused registration was kept")
 	check(#grug_core.settlement_sockets_at("kapok") == 0,
 		"a refused settlement was kept")
+	check(#grug_core.settlement_socket_settlements() == 1,
+		"a refused registration reached the settlement roster")
 	line("refusals", "left_no_state", "pass")
 
 	restore()

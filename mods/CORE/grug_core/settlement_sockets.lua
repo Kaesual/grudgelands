@@ -33,9 +33,10 @@ local ROLES = {guard_post = true, guard_patrol = true, vendor = true,
 	idle = true, quest = true, king = true, waypoint = true}
 local VENDOR_KINDS = {race = true, general = true}
 
--- settlement_key -> record; race_id -> the same record.
+-- settlement_key -> record; race_id -> the same record; registration order.
 local by_key = {}
 local by_race = {}
+local order = {}
 
 local function fail(message)
 	error("grug_core settlement sockets: " .. message, 0)
@@ -170,7 +171,23 @@ function grug_core.register_settlement_sockets(settlement_key, race_id, anchor,
 	}
 	by_key[settlement_key] = record
 	by_race[race_id] = record
+	order[#order + 1] = record
 	return #compiled
+end
+
+-- Every registered settlement, in registration order, as copies: key, race
+-- and the anchor its sockets were compiled against. This is how a consumer
+-- walks the registry without restating the start roster, and how it can
+-- cross-check the anchor against the one the rest of grug_core publishes.
+function grug_core.settlement_socket_settlements()
+	local result = {}
+	for index = 1, #order do
+		local record = order[index]
+		result[index] = {key = record.key, race_id = record.race_id,
+			anchor = {x = record.anchor.x, y = record.anchor.y,
+				z = record.anchor.z}}
+	end
+	return result
 end
 
 -- The sockets of a race's START, in authored order, as world-space copies.

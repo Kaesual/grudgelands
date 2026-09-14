@@ -371,6 +371,23 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			evidence = evidence}
 	end
 
+	-- The authored WP13 NPC sockets of every start, in roster order, with the
+	-- zone id their fitted start anchor answers under. Read off the
+	-- blueprints this factory already loaded: sockets are landmarks, not
+	-- identity bytes, so nothing here enters a digest, and a second
+	-- construction would cost six more compositions for pure landmark data.
+	function module.settlement_sockets()
+		local rows = {}
+		for index = 1, #settlements do
+			local row = settlements[index]
+			local landmarks = row.blueprint.landmarks
+			rows[index] = {key = row.profile.key, race = row.profile.race,
+				zone_id = row.profile.zone_id,
+				sockets = type(landmarks) == "table" and landmarks.sockets or nil}
+		end
+		return rows
+	end
+
 	function module.build(...)
 		return build(...)
 	end
