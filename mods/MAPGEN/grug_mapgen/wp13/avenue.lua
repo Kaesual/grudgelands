@@ -77,6 +77,37 @@ local function loader(directory)
 		return palette.maybe("castle_wall_stair") or palette.node("roof_stair")
 	end
 
+	-- Every node name a run may write, in ASCII byte order and without
+	-- duplicates. The seam needs it because an overlay has NO CELLS until a
+	-- surface is handed to it, so the one thing its identity can be written
+	-- from is its specification, and the palette is part of that
+	-- specification (`wp40/r7_settlement.lua`, the "overlay" blueprint kind).
+	-- It is also what lets a settlement's shared content channel carry the
+	-- road: the channel is closed at load, and a name the road can write but
+	-- the channel does not know would only fail on the mapchunk that finally
+	-- needs it.
+	--
+	-- Derived from the same four resolvers the run itself uses plus the two
+	-- names the standard is built from, so a change to any of them cannot
+	-- leave this list behind.
+	function M.palette_names(palette)
+		local names, seen, list = {paving(palette), kerb(palette),
+			tread(palette), palette.node("post"),
+			palette.node("light_post")}, {}, {}
+		for index = 1, #names do
+			local name = names[index]
+			if type(name) ~= "string" or name == "" then
+				error("wp13 avenue: the palette has no name for a road role", 0)
+			end
+			if not seen[name] then
+				seen[name] = true
+				list[#list + 1] = name
+			end
+		end
+		table.sort(list, parts.less_bytes)
+		return list
+	end
+
 	local function axis_steps(axis)
 		if axis == "x" then return 1, 0 end
 		if axis == "z" then return 0, 1 end

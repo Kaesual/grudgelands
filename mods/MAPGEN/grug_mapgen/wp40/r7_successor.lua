@@ -1,16 +1,24 @@
 -- One R7 successor tail composed from P9G and the fixed activation suffix.
 --
--- `settlement_configs` is the ordered WP13 settlement list (`r7_settlement.lua`
--- roster order: Hearthpine, then Dawnmere). Every settlement is planned and
--- settled in that order, and its ledger and metrics are published under its
--- own key, so `ledger.hearthpine` keeps the shape the accepted R6 settlement
--- contract reads and a second start adds `ledger.dawnmere` beside it.
+-- `settlement_configs` is the ordered WP13 settlement list, and `roster_keys`
+-- is the settlement key of every row of `r7_settlement.M.roster` in roster
+-- order. Every settlement is planned and settled in that order, and its ledger
+-- and metrics are published under its own key, so `ledger.hearthpine` keeps the
+-- shape the accepted R6 settlement contract reads and every later settlement
+-- adds its own field beside it.
+--
+-- The key check used to be `if not keys.hearthpine`, i.e. one settlement named
+-- in this file. It is derived from the roster now (contract section 2.2.2):
+-- the configs must be exactly the roster's keys, in the roster's order, so
+-- losing ANY settlement -- or reordering them, which would reorder the manifest
+-- -- is what fails here.
 
-return function(p9g_config, anchor_config, settlement_configs)
+return function(p9g_config, anchor_config, settlement_configs, roster_keys)
 	local function fail(message) error("WP40 R7 successor: " .. message, 0) end
 	if type(p9g_config) ~= "table" or type(p9g_config.new) ~= "function" or
 			type(anchor_config) ~= "table" or type(anchor_config.new) ~= "function" or
-			type(settlement_configs) ~= "table" or #settlement_configs < 1 then
+			type(settlement_configs) ~= "table" or #settlement_configs < 1 or
+			type(roster_keys) ~= "table" or #roster_keys ~= #settlement_configs then
 		fail("configuration seam differs")
 	end
 	-- The ledger and the metrics below are ONE table per settle: the fixed
@@ -30,9 +38,12 @@ return function(p9g_config, anchor_config, settlement_configs)
 		if RESERVED_LEDGER_FIELDS[settlement.key] then
 			fail("settlement key is a reserved ledger field: " .. settlement.key)
 		end
+		if settlement.key ~= roster_keys[index] then
+			fail("settlement " .. index .. " is not the roster's " ..
+				tostring(roster_keys[index]))
+		end
 		keys[settlement.key] = true
 	end
-	if not keys.hearthpine then fail("settlement roster lost Hearthpine") end
 	local config = {schema = "grug_wp40_r7_successor_config_v1"}
 	function config.new(dependencies)
 		local p9g = p9g_config.new({full_seed_string = dependencies.full_seed_string,

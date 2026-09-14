@@ -39,31 +39,39 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		fail("prepared authority seam differs")
 	end
 	-- WP13 NPC sockets (docs/research/wp13-npc-sockets-contract.md section 3).
-	-- The blueprints are loaded and every start anchor is fitted, so the six
+	-- Every blueprint is prepared and every settlement anchor is fitted, so the
 	-- socket sets can be published to the runtime registry in grug_core here,
 	-- BEFORE the irreversible cutover below: registration validates authored
 	-- data and fails loudly, and a broken socket must stop the load while
 	-- nothing is registered rather than after the writer is live. Sockets are
 	-- landmarks, so this reads nothing the writer owns and enters no digest.
+	--
+	-- The starts come first, in roster order, and every capital after them,
+	-- which is what the contract's "a settlement key is unique, a race id is
+	-- not" rule needs: `settlement_sockets(race_id)` answers with the FIRST
+	-- settlement registered for a race, i.e. its start.
 	if type(core_owner.register_settlement_sockets) ~= "function" then
 		fail("settlement socket registry differs")
 	end
-	local socket_rows = runtime.settlement_sockets()
+	local socket_rows = runtime.settlement_sockets(built)
 	if type(socket_rows) ~= "table" or #socket_rows < 1 then
 		fail("settlement socket roster differs")
 	end
 	local socket_count = 0
-	for index = 1, #socket_rows do
-		local row = socket_rows[index]
-		-- The same fitted anchor the settlement writer projects the cells
-		-- against, from the same session, so socket y = 1 is the node above
-		-- the settlement's own ground course.
-		local anchor = built.zones_session.anchor(row.zone_id, "start")
-		if type(anchor) ~= "table" or type(row.sockets) ~= "table" then
-			fail("settlement socket anchor differs: " .. tostring(row.key))
+	for _, wanted in ipairs({"start", "capital"}) do
+		for index = 1, #socket_rows do
+			local row = socket_rows[index]
+			-- The anchor is the same fitted one the settlement writer projects the
+			-- cells against, from the same session, so socket y = 1 is the node
+			-- above the settlement's own ground course.
+			if type(row.anchor) ~= "table" or type(row.sockets) ~= "table" then
+				fail("settlement socket anchor differs: " .. tostring(row.key))
+			end
+			if row.slot == wanted then
+				socket_count = socket_count + core_owner.register_settlement_sockets(
+					row.key, row.race, row.anchor, row.sockets)
+			end
 		end
-		socket_count = socket_count + core_owner.register_settlement_sockets(
-			row.key, row.race, anchor, row.sockets)
 	end
 
 	local payload = {schema = "grug_wp40_r7_ipc_v1",
