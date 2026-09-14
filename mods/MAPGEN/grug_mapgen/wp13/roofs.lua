@@ -167,6 +167,26 @@ function M.flat(spec)
 	return field
 end
 
+-- A flat roof DECK: `flat` raised by one course.
+--
+-- Every pitched form puts its lowest course AT the eave, level with the top
+-- wall course, because one node inward the roof is already higher and passes
+-- over the wall. A flat roof has no inward course: rasterised at the eave it
+-- would REPLACE the top wall course with a slab and leave the room below
+-- open to the sky at its own ceiling height. The deck therefore stands one
+-- course above the wall head, which is what a flat roof on a parapeted
+-- building actually is -- walls to full height, joists and deck on top.
+--
+-- The parapet that makes such a roof read as a fighting platform rather than
+-- as a shed lid is a ring of full nodes standing proud of the deck, which no
+-- height field can express (the rasteriser writes exactly one cell per
+-- column); `dressing.parapet` writes it over the finished deck.
+function M.flat_deck(spec)
+	local lifted = {x0 = spec.x0, x1 = spec.x1, z0 = spec.z0, z1 = spec.z1,
+		base = spec.base + 1}
+	return M.flat(lifted)
+end
+
 -- The union of several roofs: the highest surface wins at every column. A
 -- cross gable built this way produces real valleys, which the rasteriser
 -- resolves into inner corner stairs.
@@ -190,7 +210,7 @@ function M.combine(fields)
 end
 
 M.forms = {gable = M.gable, hip = M.hip, saltbox = M.saltbox,
-	lean_to = M.lean_to, flat = M.flat}
+	lean_to = M.lean_to, flat = M.flat, flat_deck = M.flat_deck}
 
 function M.field(form, spec)
 	local builder = M.forms[form]

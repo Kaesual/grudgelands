@@ -149,7 +149,15 @@ local function loader(directory)
 	-- and regular, a field-corner grove when it is not. The crown of
 	-- `dressing.broadleaf` reaches three nodes, so the clearance test does
 	-- too, and the stem keeps a node of soil all round like the pines.
-	function M.plant_orchard(buf, palette, x1, z1, x2, z2, spacing, height)
+	-- `species` names the dressing routine that draws the tree, so a dry
+	-- region can scatter acacias through the same clearance rule; it defaults
+	-- to the broadleaf the orchards were written for.
+	function M.plant_orchard(buf, palette, x1, z1, x2, z2, spacing, height,
+			species)
+		local draw = dressing[species or "broadleaf"]
+		if type(draw) ~= "function" then
+			error("wp13 layout: unknown tree species " .. tostring(species), 0)
+		end
 		local planted = 0
 		for z = z1, z2, spacing do
 			for x = x1, x2, spacing do
@@ -160,7 +168,7 @@ local function loader(directory)
 				if M.natural_area(buf, tx - 1, tz - 1, tx + 1, tz + 1) and
 						M.free_area(buf, tx - 3, tz - 3, tx + 3, tz + 3,
 							stem + 5) then
-					dressing.broadleaf(buf, palette, tx, tz, stem)
+					draw(buf, palette, tx, tz, stem)
 					planted = planted + 1
 				end
 			end

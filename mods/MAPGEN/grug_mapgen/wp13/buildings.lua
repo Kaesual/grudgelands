@@ -415,10 +415,11 @@ local function loader(directory)
 			infill = spec.infill, shutters = spec.shutters,
 			blocks = {
 				{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
-					roof = "gable", ridge_axis = "z", rise = 4,
+					roof = spec.roof or "gable", ridge_axis = "z", rise = 4,
 					kit = "workshop"},
 				{x0 = w - 2, z0 = wz, x1 = w - 2 + wing - 1, z1 = wz + wing - 1,
-					wall_h = wall_h, roof = "gable", ridge_axis = "x", rise = 3,
+					wall_h = spec.wing_wall_h or wall_h,
+					roof = spec.roof or "gable", ridge_axis = "x", rise = 3,
 					kit = "smithy"},
 			},
 			chimneys = {{x = math.floor(w / 2), z = 0},
@@ -437,7 +438,7 @@ local function loader(directory)
 			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
-				roof = "hip", rise = 4, kit = "hall",
+				roof = spec.roof or "hip", rise = 4, kit = "hall",
 				kit_spec = {hearth_x = 1, hearth_z = 2, hearth_face = 1}}},
 			chimneys = {{x = 0, z = 2}},
 			doors = {{side = spec.door_side or "z-", index = math.floor(w / 2),
@@ -472,7 +473,8 @@ local function loader(directory)
 			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
-				roof = "gable", ridge_axis = "x", rise = 3, kit = "yard",
+				roof = spec.roof or "gable", ridge_axis = "x", rise = 3,
+				kit = "yard",
 				open_sides = spec.open_sides or {"z-", "x+"}}},
 			doors = {},
 			inside = spec.inside or {x = 2, y = 1, z = math.floor(d / 2)},
@@ -557,8 +559,8 @@ local function loader(directory)
 		local lights, doors = {}, {}
 		local block = {x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1}
 
-		local field = roofs.hip({x0 = -1, x1 = w, z0 = -1, z1 = d,
-			base = plate, rise = 4})
+		local field = roofs.field(spec.roof or "hip", {x0 = -1, x1 = w,
+			z0 = -1, z1 = d, base = plate, rise = 4})
 		local peak = plate
 		for z = -1, d do
 			for x = -1, w do

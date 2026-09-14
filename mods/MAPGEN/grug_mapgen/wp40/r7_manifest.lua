@@ -38,6 +38,11 @@ return function(canonical, raw_sha256)
 		"dawnmere_delta_schema", "dawnmere_delta_sha256",
 		"dawnmere_opcode", "dawnmere_class", "dawnmere_policy",
 		"dawnmere_order", "dawnmere_overwrite",
+		"sunscar_blueprint_schema",
+		"sunscar_blueprint_sha256", "sunscar_cell_count",
+		"sunscar_delta_schema", "sunscar_delta_sha256",
+		"sunscar_opcode", "sunscar_class", "sunscar_policy",
+		"sunscar_order", "sunscar_overwrite",
 		"functional_anchor_y_min", "writer_schema", "p9g_opcode", "p9g_class",
 		"p9g_policy", "p9g_order", "p9g_overwrite", "source_projection_sha256",
 		"production_enabled",
@@ -53,6 +58,9 @@ return function(canonical, raw_sha256)
 		{key = "dawnmere", anchor_id = "anchor_002",
 			identity_schema = "grug_wp13_dawnmere_blueprint_identity_v1",
 			delta_schema = "grug_wp13_dawnmere_delta_v1"},
+		{key = "sunscar", anchor_id = "anchor_005",
+			identity_schema = "grug_wp13_sunscar_blueprint_identity_v1",
+			delta_schema = "grug_wp13_sunscar_delta_v1"},
 	}
 
 	local function fail(message)

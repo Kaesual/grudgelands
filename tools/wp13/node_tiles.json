@@ -1883,6 +1883,30 @@
    "source": "mods/ITEMS/grug_decor/cottages.lua",
    "shape": "nodebox"
   },
+  "grug_decor:darkage_adobe": {
+   "drawtype": "normal",
+   "shape": "cube",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_darkage_darkage_adobe.png"
+   ]
+  },
+  "grug_decor:darkage_ors_block": {
+   "drawtype": "normal",
+   "shape": "cube",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_darkage_darkage_ors_block.png"
+   ]
+  },
+  "grug_decor:darkage_ors_rubble": {
+   "drawtype": "normal",
+   "shape": "cube",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_darkage_darkage_ors_rubble.png"
+   ]
+  },
   "grug_decor:darkage_reinforced_wood": {
    "source": "mods/ITEMS/grug_decor/darkage.lua",
    "shape": "cube"

@@ -85,6 +85,45 @@ return function(repo)
 				{"grug_decor:cottages_wagon_wheel", 12, "wallmounted"}},
 			carts = 3, cart_load = "grug_decor:xdecor_barrel",
 		},
+		{
+			key = "sunscar",
+			file = "r7_sunscar_blueprint.lua",
+			schema = "grug_wp13_sunscar_blueprint_v1",
+			light = {"default:torch", "default:torch_wall"},
+			passable = {"air", "default:torch", "default:torch_wall",
+				"default:dry_grass_3", "default:dry_grass_5",
+				"default:dry_shrub", "grug_decor:cottages_straw_mat",
+				"doors:door_wood_a", "doors:door_wood_b", "doors:hidden"},
+			paved = {"default:desert_cobble", "default:desert_sand",
+				"default:desert_stone_block"},
+			-- One roof family: every deck in the camp is the desert
+			-- stonebrick stair family, flat, behind a breastwork.
+			roof = {"stairs:stair_desert_stonebrick",
+				"stairs:stair_outer_desert_stonebrick",
+				"stairs:stair_inner_desert_stonebrick",
+				"stairs:slab_desert_stonebrick"},
+			door_leaves = {"doors:door_wood_a", "doors:door_wood_b"},
+			tree = {log = "default:acacia_tree",
+				leaves = "default:acacia_leaves",
+				min_trunk = 5, reach = 3, low = 1, high = 2, min_stems = 20},
+			ground = {{"default:dirt_with_dry_grass", 6000},
+				{"default:dry_dirt", 400}, {"default:desert_sand", 400}},
+			min_destinations = 9, min_doors = 8, min_rooms = 9,
+			min_lights = 8, min_oriented = 8,
+			-- The camp's loose gear, exactly. 27 bales: eight drill-post
+			-- heads, seven in the three yard targets and twelve in the five
+			-- feed stacks. 24 barrels: seven crate stacks and the interiors'
+			-- own. No stepping stones -- the orc palette binds none. 19
+			-- wheels: three on each of the five wagons and four leaning on
+			-- walls. 15 wagon loads, one on every bearer of every wagon,
+			-- which is also the cart count below.
+			props = {{"grug_decor:cottages_straw_bale", 27},
+				{"grug_decor:xdecor_barrel", 24},
+				{"grug_decor:xdecor_stonepath", 0},
+				{"grug_decor:cottages_wagon_wheel", 19, "wallmounted"},
+				{"grug_decor:cottages_wagon_load", 15}},
+			carts = 15, cart_load = "grug_decor:cottages_wagon_load",
+		},
 	}
 
 	local function set(list)
@@ -218,9 +257,21 @@ return function(repo)
 		assert(#blueprint.landmarks.lights == lights,
 			"light landmark population differs")
 		assert(solid(0, 0, 0) and stand(0, 1, 0) and not solid(0, 3, 0))
-		-- The road is a five-wide clear route, not a cosmetic line.
-		for z = 0, 63 do
-			for x = -2, 2 do assert(stand(x, 1, z), "blocked north road") end
+		-- The road is a five-wide clear route, not a cosmetic line. WHICH
+		-- way it runs belongs to the settlement, not to the checker: the
+		-- Accord starts leave north and the Throng starts south (their gate
+		-- stations are `start:south` in `wp40/source/catalog.lua`), so the
+		-- corridor is read off the blueprint's own `main_street` landmark
+		-- instead of being assumed to reach +z.
+		local street = assert(blueprint.landmarks.main_street,
+			"no main street landmark")
+		assert(street.max.z - street.min.z == 63 and
+			street.max.x - street.min.x == 4,
+			"the main road is not the five-wide, pad-deep route")
+		for z = street.min.z, street.max.z do
+			for x = street.min.x, street.max.x do
+				assert(stand(x, 1, z), "blocked main road")
+			end
 		end
 
 		-- Section 5 invariant 2: every door is a real, usable doorway.

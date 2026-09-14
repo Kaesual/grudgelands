@@ -22,6 +22,13 @@ local M = {}
 
 M.FACEDIR = "facedir"
 M.WALLMOUNTED = "wallmounted"
+-- `meshoptions` is the third param2 family a settlement meets, and it is not
+-- an orientation at all: the low bits pick a plantlike mesh, its scale and
+-- whether the engine offsets it randomly, and the node's own definition pins
+-- the value every placement writes. Such a node therefore keeps its param2
+-- through every rotation, and a cell written at 0 instead is a node the
+-- engine would never have produced.
+M.MESHOPTIONS = "meshoptions"
 M.NONE = "none"
 
 -- ---------------------------------------------------------------------------
@@ -66,9 +73,24 @@ local PARAM2_KIND = {
 	["grug_decor:cottages_window_shutter_closed"] = M.FACEDIR,
 	["grug_decor:cottages_window_shutter_open"] = M.FACEDIR,
 	["grug_decor:xdecor_stonepath"] = M.FACEDIR,
+	["grug_decor:cottages_wagon_load"] = M.FACEDIR,
+	-- a loophole looks out of the wall it is set into
+	["grug_decor:castle_arrowslit_desert_stonebrick"] = M.FACEDIR,
+	-- plantlike meshes whose definition pins the style they are placed at
+	["default:dry_shrub"] = M.MESHOPTIONS,
 	-- a wheel leans against the wall its param2 points at
 	["grug_decor:cottages_wagon_wheel"] = M.WALLMOUNTED,
 }
+
+-- The param2 a plant is always written at. A plantlike node whose definition
+-- pins `place_param2` is only ever produced at that value by the engine, so
+-- the dressing writes it there instead of at a bare 0. Every other plant
+-- answers 0, which is what the library already wrote.
+local PLANT_PARAM2 = {["default:dry_shrub"] = 4}
+
+function M.plant_param2(name)
+	return PLANT_PARAM2[name] or 0
+end
 
 -- Whole families whose every member is shaped.
 local PREFIX_KIND = {
@@ -101,7 +123,12 @@ end
 -- `group:glass`, `group:wood` or `group:tree` (mods/BASE/xpanes/init.lua,
 -- the `connects_to` of the connected pane node).
 local PANE_CONNECTS = {
+	["default:acacia_tree"] = true,
+	["default:acacia_wood"] = true,
 	["default:cobble"] = true,
+	["default:desert_cobble"] = true,
+	["default:desert_stone_block"] = true,
+	["default:desert_stonebrick"] = true,
 	["default:pine_tree"] = true,
 	["default:pine_wood"] = true,
 	["default:stone_block"] = true,
@@ -109,6 +136,9 @@ local PANE_CONNECTS = {
 	["default:tree"] = true,
 	["default:wood"] = true,
 	["walls:cobble"] = true,
+	["walls:desertcobble"] = true,
+	["xpanes:bar"] = true,
+	["xpanes:bar_flat"] = true,
 	["xpanes:pane"] = true,
 	["xpanes:pane_flat"] = true,
 }
@@ -121,11 +151,20 @@ end
 -- only nodes that read as a wall. A nodebox, a mesh, a plant or a pane is
 -- not one of them, and neither is a full cube that light passes through.
 local FULL_SOLID = {
+	["default:acacia_tree"] = true,
+	["default:acacia_wood"] = true,
 	["default:brick"] = true,
 	["default:cobble"] = true,
+	["default:desert_cobble"] = true,
+	["default:desert_sand"] = true,
+	["default:desert_stone_block"] = true,
+	["default:desert_stonebrick"] = true,
 	["default:dirt"] = true,
 	["default:dirt_with_coniferous_litter"] = true,
+	["default:dirt_with_dry_grass"] = true,
 	["default:dirt_with_grass"] = true,
+	["default:dry_dirt"] = true,
+	["default:dry_dirt_with_dry_grass"] = true,
 	["default:gravel"] = true,
 	["default:pine_tree"] = true,
 	["default:pine_wood"] = true,
@@ -137,6 +176,9 @@ local FULL_SOLID = {
 	["grug_decor:cottages_straw"] = true,
 	["grug_decor:cottages_straw_ground"] = true,
 	["grug_decor:darkage_adobe"] = true,
+	["grug_decor:darkage_ors_block"] = true,
+	["grug_decor:darkage_ors_rubble"] = true,
+	["grug_decor:darkage_straw_bale"] = true,
 	["grug_decor:xdecor_barrel"] = true,
 	["grug_decor:xdecor_cauldron"] = true,
 	["grug_decor:xdecor_empty_shelf"] = true,
@@ -200,6 +242,7 @@ function M.rotate_param2(param2, kind, turns)
 		end
 		return 0
 	end
+	if kind == M.MESHOPTIONS then return param2 end
 	if kind == M.WALLMOUNTED then
 		local step = {[2] = 5, [5] = 3, [3] = 4, [4] = 2}
 		local value = param2
