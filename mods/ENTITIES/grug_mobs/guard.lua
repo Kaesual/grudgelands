@@ -33,9 +33,19 @@
 --      _grug_patrol_route and ambles to the neighbouring ring's outpost and
 --      back (patrol.lua + the patrol leash exemption in aggro.lua).
 --
+-- THE SECOND SOURCE OF GUARDS, since WP13: the six START SETTLEMENTS. Their
+-- watch does not come out of a banner at all -- a blueprint exports two
+-- `guard_post` sockets and one `guard_patrol` loop, `start_npcs.lua` places
+-- this same entity on them, and the reasons that is a registry and not a
+-- banner are written out in that file's header. Such a guard carries
+-- `_grug_post_*` (its authored standing position and facing), `_grug_start`
+-- and `_grug_socket`; its level still comes from the guard field below, and
+-- its targeting is untouched -- the user's 2026-09-14 ruling is that the
+-- faction veto is the single rule everywhere.
+--
 -- NO mobs:spawn ROW, deliberately: guards are not wildlife. Every guard in
--- the world comes out of a guard post, which is also what gives it its
--- _grug_home and _grug_camp_pos.
+-- the world comes out of a guard post or a start socket, which is also what
+-- gives it its _grug_home and (at an outpost) its _grug_camp_pos.
 --
 -- TARGETING (combat_stats.md §4, world.md §9):
 --   * attack_players = true, but the faction veto in init.lua drops
@@ -83,6 +93,13 @@ local function guard_tick(self, dtime)
 	local route = self._grug_patrol_route
 	if route then
 		grug_mobs.route_tick(self, dtime, route.points, route, "wp")
+	end
+	-- A START SETTLEMENT's post guard holds its authored socket and faces its
+	-- authored direction while idle (start_npcs.lua, WP13). An outpost guard
+	-- carries no post field at all and keeps aggro.lua's 20-node camp roam cap
+	-- instead, so the two never steer the same mob.
+	if self._grug_post_x then
+		grug_mobs.start_post_tick(self, dtime)
 	end
 end
 
@@ -206,6 +223,17 @@ local function guard_def(faction, description, texture)
 		light_damage = 0,
 
 		do_custom = guard_tick,
+
+		-- A start settlement's guard post is a respawn slot (world.md §4a,
+		-- start_npcs.lua): its death frees the slot and books the refill. An
+		-- outpost guard carries no start fields and this is a no-op for it.
+		-- MUST return nil: any truthy return skips the removal of the mob
+		-- (api.lua:870-874, "skips removal of mob").
+		on_die = function(self)
+			if self._grug_start and self._grug_socket then
+				grug_mobs.start_guard_died(self)
+			end
+		end,
 	}
 end
 

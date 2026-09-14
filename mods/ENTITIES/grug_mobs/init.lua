@@ -601,6 +601,11 @@ dofile(modpath .. "/mirefolk.lua")
 -- come before camps.lua, which names the two guard mobs in its camp types.
 dofile(modpath .. "/guard.lua")
 dofile(modpath .. "/camps.lua")
+-- WP13 start settlements: the flair/quest NPC families first (start_npcs.lua
+-- resolves their entity names), then the socket-driven placement engine,
+-- which must come after guard.lua because it places the two faction guards.
+dofile(modpath .. "/start_villagers.lua")
+dofile(modpath .. "/start_npcs.lua")
 -- The 2026-08-08 critter round (biomes_mobs.md §3.0, WP36): the two cave
 -- critters — the underground had none at all — plus the two surface ones.
 -- All four run on the `critter` tier of levels.lua, so they must come after
