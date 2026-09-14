@@ -47,6 +47,18 @@ M.roster = {
 		delta_schema = "grug_wp13_dawnmere_delta_v1",
 	},
 	{
+		key = "silverleaf", label = "Silverleaf",
+		zone_id = "elandor_silverleaf_glades",
+		anchor_id = "anchor_003", numeric_id = 3, x = 1800, z = -2550,
+		blueprint_file = "r7_silverleaf_blueprint.lua",
+		blueprint_schema = "grug_wp13_silverleaf_blueprint_v1",
+		identity_schema = "grug_wp13_silverleaf_blueprint_identity_v1",
+		config_schema = "grug_wp13_silverleaf_config_v1",
+		ledger_schema = "grug_wp13_silverleaf_ledger_v1",
+		metrics_schema = "grug_wp13_silverleaf_metrics_v1",
+		delta_schema = "grug_wp13_silverleaf_delta_v1",
+	},
+	{
 		key = "stillgrave", label = "Stillgrave",
 		zone_id = "kragmar_stillgrave_hollow",
 		anchor_id = "anchor_004", numeric_id = 4, x = -1800, z = 2550,

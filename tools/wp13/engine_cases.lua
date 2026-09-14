@@ -34,13 +34,15 @@ for _, start in ipairs(starts) do
 			start.anchor.z + cell.z)
 	end
 end
--- A start of 127 x 127 x ~20 authored cells straddles at most two 80-node
--- owners per horizontal axis -- three when its 127-node span happens to cross
--- two owner boundaries -- and two vertically, so twelve per start is the
--- structural ceiling and the bound grows with the roster instead of being
--- retyped for every new settlement.
-assert(#owners <= 12 * #starts,
-	"profile corpus exceeds the bounded structure owners")
+-- The corpus is bounded by the roster and the authorized volume, not by the
+-- seed. A start is 127 nodes wide and deep, and an 80-node owner grid cuts a
+-- 127-node span into at most ceil((127 + 79) / 80) = 3 columns whatever the
+-- anchor's offset is; the authorized y range is 27 nodes, which is at most 2
+-- levels. Eighteen per roster row is therefore the structural ceiling. The
+-- earlier "two per axis, so eight" held for the first two anchors by
+-- accident of their offsets and failed on the third seed the moment a start
+-- fitted across an owner floor.
+assert(#owners <= 18 * #roster, "profile corpus exceeds the bounded structure owners")
 -- This seed puts the Stillgrave start's fitted surface at y=48, just above
 -- the generated owner's ceiling, which is why the lower owner is named here:
 -- it exercises filler restoration when the matching top opcode belongs to a
@@ -60,7 +62,7 @@ while #owners < 14 do
 	add(starts[1].anchor.x + extra * 80, starts[1].anchor.y - 80,
 		starts[1].anchor.z)
 end
-assert(#owners <= 12 * #starts + 4, "WP13 control population is unbounded")
+assert(#owners <= 18 * #roster + 2, "WP13 control population is unbounded")
 table.sort(owners, function(a, b) return a.id < b.id end)
 if reverse then
 	local reordered = {}
@@ -116,8 +118,9 @@ core.register_on_shutdown(function()
 		-- the first start only and excluded from that start's digest.
 		local canary = (start.key == starts[1].key)
 		-- Which node names are this start's lights is a palette question --
-		-- the two timber starts burn torches, the Hollow burns candles -- so
-		-- the census is taken from the blueprint's own light landmarks, which
+		-- the timber starts burn torches, the Hollow burns candles, the Glade
+		-- hangs lanterns -- so the census is taken from the blueprint's own
+		-- light landmarks instead of from hard-coded torch names, which
 		-- `tools/wp13/blueprint_kat.lua` proves equal to the set of light
 		-- cells in the cell list.
 		local light_at = {}

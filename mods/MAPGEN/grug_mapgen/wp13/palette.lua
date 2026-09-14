@@ -25,8 +25,17 @@ M.required = {
 -- part that wanted it writes nothing.
 M.optional = {"bale", "bed_fancy", "bench_seat", "board_table", "cobweb",
 	"crop", "fence_gate", "flower", "flower_alt", "ground_straw", "hedge",
-	"hedge_stem", "ivy", "mat", "pillar", "shutter", "stepping", "wall_infill",
-	"wheel"}
+	"hedge_stem", "ivy", "light_beacon", "light_hanging", "mat", "pillar",
+	"shutter", "stepping", "wall_infill", "wheel"}
+
+-- Two optional light roles for races whose lamps are not wallmounted.
+-- `light_hanging` is a lamp in `group:attached_node = 4`, which the engine
+-- keeps only while the node ABOVE it is walkable, so `parts.hanging_light`
+-- is the only emitter and it refuses any other support. `light_beacon` is a
+-- full glowing cube that carries itself and is built into masonry. Neither
+-- has a paramtype2, so both are written at param2 0; the required
+-- `light_wall` / `light_post` / `light_indoor` trio stays wallmounted,
+-- because that is what `parts.wall_torch` and `parts.floor_torch` write.
 
 -- Three roles do not name a node at all: they name the BASE of a family the
 -- engine registers under several suffixes, and only the part that knows the
@@ -205,6 +214,98 @@ M.races.human = {
 	undergrowth = "default:grass_4",
 	grass_tuft = "default:grass_3",
 	fern = "default:fern_1",
+}
+
+-- Elf (Silverleaf Glades): a glade settlement, pale and vertical. Silver
+-- sandstone footings and roofs, silverwood plank walls on silverwood posts,
+-- marble paving, aspen-pale fences and candlelight. Contract section 4's elf
+-- column with three corrections the registry forced:
+--
+--   * `grug_trees` registers no stair, slab or fence shape, so the roofs come
+--     out of a stone family and the railings are `default:fence_aspen_wood`
+--     -- silverwood IS default's aspen retinted
+--     (mods/ITEMS/grug_trees/init.lua), so the pale fence and the pale plank
+--     agree. Silverwood plank, silver sandstone and silver litter all sit
+--     between luminance 187 and 202, so a settlement built only out of them
+--     is invisible against its own ground, which is what the first review
+--     render showed. The DOMESTIC roof is therefore darkage slate tile
+--     (#6d818d), and the contract's `stairs:*_silver_sandstone_brick` family
+--     stays as the composition's civic roof, where the pale cut now reads
+--     against the slate instead of against the litter;
+--   * the contract's `default:glass` is a cube, not a pane, and the whole
+--     window vocabulary of this library (framing, rhythm, `update_pane`) is
+--     the `xpanes` one, so the ordinary windows are clear flat panes in
+--     silverwood frames and the glass cubes appear only as gable lights;
+--   * `walls:` ships nothing pale, so the low wall is a silver sandstone
+--     brick slab: a marble kerb, not a rubble parapet.
+M.races.elf = {
+	ground = "grug_nodes:dirt_with_silver_litter",
+	ground_patch = "default:dirt_with_grass",
+	ground_bare = "default:dirt",
+	subsoil = "default:dirt",
+	path = "grug_decor:darkage_slate_tile",
+	plaza = "grug_decor:darkage_marble",
+	plaza_edge = "grug_decor:darkage_serpentine",
+	stepping = "grug_decor:xdecor_stonepath",
+	rubble = "default:silver_sandstone",
+
+	foundation = "grug_decor:darkage_marble_tile",
+	wall = "grug_trees:silverwood_wood",
+	wall_accent = "grug_decor:darkage_slate_brick",
+	post = "grug_trees:silverwood_tree",
+	beam = "grug_trees:silverwood_tree",
+	floor = "grug_trees:silverwood_wood",
+	ceiling = "grug_trees:silverwood_wood",
+
+	roof_stair = "grug_decor:darkage_slate_tile_stair",
+	roof_stair_outer = "grug_decor:darkage_slate_tile_stair_outer",
+	roof_stair_inner = "grug_decor:darkage_slate_tile_stair_inner",
+	roof_slab = "grug_decor:darkage_slate_tile_slab",
+	roof_ridge = "grug_decor:darkage_slate_tile",
+
+	window = "xpanes:pane_flat",
+	window_frame = "grug_trees:silverwood_tree",
+	door = "doors:door_wood",
+	door_hidden = "doors:hidden",
+
+	fence = "default:fence_aspen_wood",
+	fence_rail = "default:fence_rail_aspen_wood",
+	low_wall = "grug_decor:darkage_serpentine_slab",
+	railing = "default:fence_aspen_wood",
+
+	light_wall = "grug_decor:xdecor_candle",
+	light_post = "grug_decor:xdecor_candle",
+	light_indoor = "grug_decor:xdecor_candle",
+	light_hanging = "grug_decor:xdecor_lantern_hanging",
+	light_beacon = "grug_materials:emberglass_lamp",
+
+	bed = "beds:bed",
+	bed_fancy = "beds:fancy_bed",
+	table_top = "stairs:slab_silver_sandstone",
+	table_leg = "default:fence_aspen_wood",
+	seat = "stairs:stair_silver_sandstone",
+	-- Furnishing: static decor only, for the reason written above the dwarf
+	-- palette. The bowyer's bench is xdecor's plain work top, which is
+	-- geometry and not a crafting service.
+	shelf = "grug_decor:xdecor_empty_shelf",
+	shelf_vessels = "grug_decor:cottages_shelf",
+	storage = "grug_decor:xdecor_barrel",
+	workbench = "grug_decor:xdecor_workbench",
+	hearth = "grug_decor:xdecor_cauldron",
+	chimney = "grug_decor:darkage_slate_brick",
+	chimney_cap = "grug_decor:darkage_slate_brick_slab",
+	rug = "wool:white",
+	rug_accent = "wool:green",
+
+	planter = "grug_decor:darkage_serpentine",
+	planter_soil = "default:dirt_with_grass",
+	flower = "grug_decor:xdecor_potted_viola",
+	flower_alt = "grug_decor:xdecor_potted_dandelion_white",
+	tree_log = "grug_trees:silverwood_tree",
+	tree_leaves = "grug_trees:silverwood_leaves",
+	undergrowth = "default:fern_2",
+	grass_tuft = "default:grass_2",
+	fern = "default:fern_3",
 }
 
 -- Undead (Stillgrave Hollow): blight dirt and bone litter underfoot,

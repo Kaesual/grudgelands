@@ -76,6 +76,47 @@ local function loader(directory)
 		if lights then lights[#lights + 1] = {x = x, y = 3, z = z} end
 	end
 
+	-- A lantern standard: a tall post with a cross arm, and the palette's
+	-- hanging lamp under the arm. A race without `light_hanging` gets the
+	-- ordinary path light instead, so the standard is never a dark post.
+	function M.lantern_post(buf, palette, x, z, lights)
+		if palette.maybe("light_hanging") == nil then
+			return M.path_light(buf, palette, x, z, lights)
+		end
+		for y = 1, 5 do buf:put(x, y, z, palette.node("post")) end
+		buf:put(x + 1, 5, z, palette.node("beam"))
+		parts.hanging_light(buf, palette, x + 1, 4, z)
+		if lights then lights[#lights + 1] = {x = x + 1, y = 4, z = z} end
+	end
+
+	-- A wayside lantern pillar: a masonry plinth, four corner posts, a band
+	-- of glazing round a timber core, and the palette's glowing block behind
+	-- the lower panes. Three by three, four courses; it is the one piece of
+	-- the settlement whose windows are glazed on more than one face, so the
+	-- panes of its upper band settle on the CONNECTED pane node rather than
+	-- the flat one (`parts.resolve_panes`).
+	--
+	-- Degrades to a plain lamp post for a race with no `light_beacon`.
+	function M.lantern_pillar(buf, palette, x, z, lights)
+		if palette.maybe("light_beacon") == nil then
+			return M.path_light(buf, palette, x, z, lights)
+		end
+		buf:fill(x - 1, 1, z - 1, x + 1, 1, z + 1, palette.node("plaza_edge"))
+		for y = 2, 3 do
+			for _, corner in ipairs({{-1, -1}, {1, -1}, {-1, 1}, {1, 1}}) do
+				buf:put(x + corner[1], y, z + corner[2], palette.node("post"))
+			end
+			parts.pane(buf, palette, x, y, z - 1, "x")
+			parts.pane(buf, palette, x, y, z + 1, "x")
+			parts.pane(buf, palette, x - 1, y, z, "z")
+			parts.pane(buf, palette, x + 1, y, z, "z")
+		end
+		parts.beacon(buf, palette, x, 2, z)
+		if lights then lights[#lights + 1] = {x = x, y = 2, z = z} end
+		buf:put(x, 3, z, palette.node("post"))
+		buf:fill(x - 1, 4, z - 1, x + 1, 4, z + 1, palette.node("roof_slab"))
+	end
+
 	-- A crate stack: a barrel with a wool bale on top.
 	function M.crates(buf, palette, x, z, face)
 		buf:put(x, 1, z, palette.node("storage"), (face + 2) % 4)
@@ -229,6 +270,80 @@ local function loader(directory)
 		-- Branch logs in the lowest crown course, as the schematic has them.
 		for _, branch in ipairs({{-1, 0}, {1, 1}}) do
 			buf:put(x + branch[1], height + 1, z + branch[2], log)
+		end
+	end
+
+	-- A columnar tree on the proportions of the vendored aspen
+	-- (mods/BASE/default/schematics/aspen_tree.mts, decoded: 5 x 14 x 5, six
+	-- clear trunk logs, then seven crown courses that alternate a 3 x 3 ring
+	-- and a full 5 x 5 square, with the top course sitting one node above the
+	-- last log). Silverwood IS that schematic with the aspen nodes replaced
+	-- (`grug_trees.silverwood_replacements`), so this is the silhouette the
+	-- surrounding elf forest actually grows and an authored grove matches it.
+	--
+	-- `height` is the trunk: a twelve log stem reproduces the schematic
+	-- exactly, and a shorter one keeps the six clear logs and loses crown
+	-- courses from the bottom, never from the top.
+	function M.columnar(buf, palette, x, z, height)
+		local log = palette.node("tree_log")
+		local leaves = palette.node("tree_leaves")
+		for y = 1, height do buf:put(x, y, z, log) end
+		-- reach per crown course, counted down from the top log
+		local LAYERS = {
+			{offset = -5, reach = 1}, {offset = -4, reach = 2},
+			{offset = -3, reach = 1}, {offset = -2, reach = 2},
+			{offset = -1, reach = 1}, {offset = 0, reach = 2},
+			{offset = 1, reach = 1},
+		}
+		for index = 1, #LAYERS do
+			local layer = LAYERS[index]
+			local y = height + layer.offset
+			if y >= 2 then
+				for dz = -layer.reach, layer.reach do
+					for dx = -layer.reach, layer.reach do
+						-- A parity notch on the wide courses only, so
+						-- neighbouring stems of the same height are not the
+						-- same silhouette; the narrow ring stays closed.
+						local edge = math.max(math.abs(dx), math.abs(dz)) ==
+							layer.reach
+						local notch = layer.reach == 2 and edge and
+							(x + z + dx + dz) % 2 == 1
+						if not notch and not (dx == 0 and dz == 0) then
+							buf:put(x + dx, y, z + dz, leaves)
+						end
+					end
+				end
+			end
+		end
+		buf:put(x, height + 1, z, leaves)
+	end
+
+	-- A raised terrace: a masonry podium `height` nodes tall with a flight of
+	-- steps up its `side` ("z-", "z+", "x-" or "x+"), three treads wide and
+	-- centred on that side. The podium top is the caller's building pad, so
+	-- a building stamped at y = height stands on it with its own apron.
+	function M.terrace(buf, palette, x1, z1, x2, z2, height, side)
+		buf:fill(x1, 1, z1, x2, height, z2, palette.node("plaza"))
+		buf:clear(x1, height + 1, z1, x2, height + 4, z2)
+		local along_x = (side == "z-" or side == "z+")
+		local centre = along_x and math.floor((x1 + x2) / 2)
+			or math.floor((z1 + z2) / 2)
+		local face, edge
+		if side == "z-" then face, edge = 0, z1
+		elseif side == "z+" then face, edge = 2, z2
+		elseif side == "x-" then face, edge = 1, x1
+		else face, edge = 3, x2 end
+		local outward = (side == "z-" or side == "x-") and -1 or 1
+		for tread = 1, height - 1 do
+			local step = edge + outward * (height - tread)
+			for offset = -1, 1 do
+				local sx = along_x and (centre + offset) or step
+				local sz = along_x and step or (centre + offset)
+				for y = 1, tread - 1 do
+					buf:put(sx, y, sz, palette.node("plaza"))
+				end
+				parts.stair(buf, sx, tread, sz, palette.node("roof_stair"), face)
+			end
 		end
 	end
 

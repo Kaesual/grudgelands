@@ -216,6 +216,67 @@ local function loader(directory)
 		return planted
 	end
 
+	-- Glade ground: the biome's own litter, opened into a few grassy lawns
+	-- where the settlement sits and worn to bare earth only under the market
+	-- and the workshop yard. `core` is the half-width of the worn area.
+	--
+	-- Third period and phase, for the reason given above `meadow`: three
+	-- settlements sharing a ground routine must not share a ground texture.
+	function M.glade(buf, palette, radius, core)
+		core = core or 34
+		buf:fill(-radius, -1, -radius, radius, -1, radius, palette.node("subsoil"))
+		buf:fill(-radius, 0, -radius, radius, 0, radius, palette.node("ground"))
+		for z = -core, core, 4 do
+			for x = -core, core, 7 do
+				local hash = (x * 13 + z * 29) % 17
+				if hash < 4 then
+					buf:fill(x - 2, 0, z - 1, x + 2, 0, z + 1,
+						palette.node("ground_patch"))
+				elseif hash == 11 or hash == 14 then
+					buf:fill(x, 0, z, x + 1, 0, z + 1,
+						palette.node("ground_bare"))
+				end
+			end
+		end
+	end
+
+	-- Columnar standards on open ground: the silverwood grove. The crown of
+	-- `dressing.columnar` reaches two nodes and one course above the last
+	-- log, so the clearance test is a 5 x 5 column of `height + 2`, and the
+	-- stem keeps a node of soil all round like the pines.
+	function M.plant_grove(buf, palette, radius, step, spots)
+		local planted = 0
+		local function try(tx, tz, height)
+			if tx >= -radius + 3 and tx <= radius - 3 and
+					tz >= -radius + 3 and tz <= radius - 3 and
+					M.natural_area(buf, tx - 1, tz - 1, tx + 1, tz + 1) and
+					M.free_area(buf, tx - 2, tz - 2, tx + 2, tz + 2,
+						height + 2) then
+				dressing.columnar(buf, palette, tx, tz, height)
+				planted = planted + 1
+			end
+		end
+		for _, spot in ipairs(spots or {}) do
+			try(spot[1], spot[2], spot[3] or 12)
+		end
+		for z = -radius + 3, radius - 3, step do
+			for x = -radius + 3, radius - 3, step do
+				local hash = (x * 53 + z * 131 + x * z) % 89
+				-- Ten to thirteen logs: the schematic's six clear logs stay
+				-- clear at every height in that range. The grove thins toward
+				-- the settlement, because a glade is a clearing the wood was
+				-- opened for and not a lawn with a lattice of trees on it.
+				local reach = math.max(math.abs(x), math.abs(z))
+				local density = reach < 24 and 1 or (reach < 40 and 3 or 4)
+				if hash % 7 < density then
+					try(x + hash % 5 - 2, z + math.floor(hash / 5) % 5 - 2,
+						10 + hash % 4)
+				end
+			end
+		end
+		return planted
+	end
+
 	-- The pine wood the settlement stands in: a deterministic scatter over
 	-- the whole pad that only takes root where nothing was built.
 	function M.plant_wood(buf, palette, radius, step)
