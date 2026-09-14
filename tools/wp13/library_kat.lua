@@ -666,6 +666,68 @@ return function(repo)
 		say("ground_cover", profile.key, bush, bush_cells, tuft, tuft_cells)
 	end
 
+	-- 8d. nothing stands on half a node of air -----------------------------
+	-- A bottom slab fills the LOWER half of its cell, so its surface lies at
+	-- the middle of the cell and anything written in the cell above it begins
+	-- half a node higher, hanging. That is what the user's first walk through
+	-- Sunscar Camp found: `roofs.flat_deck` capped every deck with
+	-- `roof_slab`, and the breastwork, the braziers and the warlord's
+	-- fighting top all stood clear of the boards they were meant to rest on,
+	-- 296 cells of it. No fixture saw it, because every one of those cells is
+	-- correctly placed, correctly oriented and correctly supported -- the
+	-- defect is in the SHAPE of the node under them, which nothing was
+	-- asking about.
+	--
+	-- The family is read from the real registry, not from a name: `stairs`
+	-- puts `slab = 1` in a slab's groups and `stair = 1` in a stair's
+	-- (mods/BASE/stairs/init.lua), and `grug_decor/shapes.lua` is a
+	-- byte-for-byte copy of those four registrations. A STAIR is not in the
+	-- rule: its raised half reaches the top of its own cell, so something
+	-- standing on that half stands on wood. Every other short node -- a mat,
+	-- an anvil, a bed, a stone path -- is a prop, not a course, and a wall or
+	-- a deck passing over one is a building, not a gap.
+	local shape_index = {}
+	for _, cell in ipairs(blueprint.cells) do
+		shape_index[cell.x .. ":" .. cell.y .. ":" .. cell.z] = cell.name
+	end
+	local carried_slabs, flipped_cells = 0, 0
+	for _, cell in ipairs(blueprint.cells) do
+		local def = world.nodes[cell.name]
+		local groups = (def and type(def.groups) == "table") and def.groups or {}
+		local axis = cell.param2 - (cell.param2 % 4)
+		local above = shape_index[cell.x .. ":" .. (cell.y + 1) .. ":" .. cell.z]
+		if (groups.slab or 0) > 0 and axis == 0 then
+			assert(above == nil or above == "air",
+				"a bottom slab carries " .. tostring(above) .. " at " ..
+					cell.x .. "," .. cell.y .. "," .. cell.z ..
+					" in " .. profile.key)
+			carried_slabs = carried_slabs + 1
+		end
+		-- 8e. and the upside-down family is only ever a stair or a slab.
+		-- `stairs`' `rotate_and_place` is this game's one placement that
+		-- writes param2 20..23, and it writes it for nothing else, so a
+		-- flipped cell outside that family is a node the engine could never
+		-- have produced. A settlement flips a slab for exactly one reason --
+		-- to meet what is above it -- so a flipped cell with air over it is a
+		-- flip that bought nothing and is refused here too.
+		if cell.param2 >= 20 then
+			assert(cell.param2 <= 23,
+				cell.name .. " carries the unsupported facedir axis " .. axis)
+			assert(def and def.paramtype2 == "facedir",
+				cell.name .. " is turned upside down but is " ..
+					tostring(def and def.paramtype2))
+			assert((groups.slab or 0) > 0 or (groups.stair or 0) > 0,
+				cell.name .. " is turned upside down but is neither a slab " ..
+					"nor a stair")
+			assert(above ~= nil and above ~= "air",
+				"a top slab meets nothing at " .. cell.x .. "," .. cell.y ..
+					"," .. cell.z .. " in " .. profile.key)
+			flipped_cells = flipped_cells + 1
+		end
+	end
+	say("shapes", profile.key, "free_slabs", carried_slabs,
+		"upside_down", flipped_cells)
+
 	-- 9. every pane is the node update_pane would have settled on ----------
 	-- Re-derived here from the mod source, not from `parts.resolve_panes`:
 	-- the connection test is `group:pane`, `group:stone`, `group:glass`,

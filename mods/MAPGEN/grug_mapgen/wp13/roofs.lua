@@ -42,6 +42,17 @@ function M.raster(buf, palette, field)
 	local inner = palette.node("roof_stair_inner")
 	local slab = palette.node("roof_slab")
 	local ridge = palette.node("roof_ridge")
+	-- A DECK is walked on and built on; every other flat cap is looked at.
+	-- `roof_slab` is a bottom slab, so its surface lies half a node below the
+	-- top of its own cell, and everything a composition then stands on the
+	-- deck -- a breastwork, a brazier -- begins at the cell boundary above
+	-- it. That half node of air is the gap the user's playtest found along
+	-- every parapet in Sunscar Camp. A deck therefore caps flat with
+	-- `roof_ridge`, the full cube of the same roof family, and its surface is
+	-- its cell's top face: joists and boarding rather than a lid. Only
+	-- `M.flat_deck` sets the flag, so no pitched roof and no other start
+	-- moves a cell because of it.
+	local cap = field.deck and ridge or slab
 	local top = nil
 	for z = z0, z1 do
 		for x = x0, x1 do
@@ -59,7 +70,7 @@ function M.raster(buf, palette, field)
 					if high then count = count + 1 end
 				end
 				if count == 0 or count == 4 then
-					buf:put(x, y, z, count == 0 and slab or ridge, 0)
+					buf:put(x, y, z, count == 0 and cap or ridge, 0)
 				elseif count == 1 then
 					for key, high in pairs(raised) do
 						if high then buf:put(x, y, z, outer, OUTER_PARAM2[key]) end
@@ -180,11 +191,16 @@ end
 -- The parapet that makes such a roof read as a fighting platform rather than
 -- as a shed lid is a ring of full nodes standing proud of the deck, which no
 -- height field can express (the rasteriser writes exactly one cell per
--- column); `dressing.parapet` writes it over the finished deck.
+-- column); `dressing.parapet` writes it over the finished deck, and
+-- `deck = true` is what tells the rasteriser to cap this field with the full
+-- cube of the roof family, so that ring has a surface to stand on rather
+-- than half a node of air above a bottom slab.
 function M.flat_deck(spec)
 	local lifted = {x0 = spec.x0, x1 = spec.x1, z0 = spec.z0, z1 = spec.z1,
 		base = spec.base + 1}
-	return M.flat(lifted)
+	local field = M.flat(lifted)
+	field.deck = true
+	return field
 end
 
 -- The union of several roofs: the highest surface wins at every column. A
@@ -192,6 +208,19 @@ end
 -- resolves into inner corner stairs.
 function M.combine(fields)
 	local field = {x0 = nil, x1 = nil, z0 = nil, z1 = nil}
+	-- `buildings.build` combines even a single block's field, so the deck
+	-- flag has to survive this call or it reaches nothing. A combined roof is
+	-- a deck only when EVERY part is one: where a deck meets a pitched block
+	-- the rasteriser cannot tell from `field.height` alone which part won a
+	-- given column, and capping a pitched roof's flat top with a full cube
+	-- would thicken a ridge nobody stands on. The one building in the six
+	-- starts that raises a deck over more than one block, Sunscar's armoury
+	-- and its forge wing, declares `flat_deck` on both.
+	local deck = #fields > 0
+	for _, part in ipairs(fields) do
+		if not part.deck then deck = false end
+	end
+	field.deck = deck
 	for _, part in ipairs(fields) do
 		if field.x0 == nil or part.x0 < field.x0 then field.x0 = part.x0 end
 		if field.x1 == nil or part.x1 > field.x1 then field.x1 = part.x1 end

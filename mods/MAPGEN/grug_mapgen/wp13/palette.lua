@@ -24,10 +24,10 @@ M.required = {
 -- and no flower pots still builds; `palette.maybe(role)` answers nil and the
 -- part that wanted it writes nothing.
 M.optional = {"bale", "bed_fancy", "bench_seat", "board_table", "cargo",
-	"cobweb", "crop", "fence_gate", "flower", "flower_alt", "ground_straw",
-	"hedge", "hedge_stem", "ivy", "lantern", "light_beacon", "light_hanging",
-	"mat", "pillar", "rope", "shutter", "stake_cap", "stepping", "wall_infill",
-	"wheel"}
+	"cobweb", "crop", "crop_soil", "fence_gate", "flower", "flower_alt",
+	"ground_straw", "hedge", "hedge_stem", "ivy", "lantern", "light_beacon",
+	"light_hanging", "mat", "pillar", "rope", "shutter", "stake_cap",
+	"stepping", "wall_infill", "wheel"}
 
 -- Two optional light roles for races whose lamps are not wallmounted.
 -- `light_hanging` is a lamp in `group:attached_node = 4`, which the engine
@@ -216,6 +216,16 @@ M.races.human = {
 	flower = "grug_decor:xdecor_potted_geranium",
 	flower_alt = "grug_decor:xdecor_potted_dandelion_yellow",
 	crop = "default:junglegrass",
+	-- The furrow the hamlet's fields are ploughed out of. It is NOT
+	-- `ground_patch` (`default:dirt`): default's "Grass spread" ABM names
+	-- exactly `default:dirt` and nothing else, so a field written out of the
+	-- worn-earth role greened over row by row while the player watched.
+	-- `grug_nodes:tilled_soil` is outside that ABM's `nodenames` and carries
+	-- no `spreading_dirt_type`, so it is neither a target nor a source of
+	-- grass spread and a field stays a field. Only this race ploughs, so only
+	-- this palette binds the role; `dressing.crop_rows` falls back to the old
+	-- pair for a race that does not.
+	crop_soil = "grug_nodes:tilled_soil",
 	tree_log = "default:tree",
 	tree_leaves = "default:leaves",
 	hedge = "default:bush_leaves",
@@ -484,7 +494,19 @@ M.races.orc = {
 	mat = "grug_decor:cottages_straw_mat",
 	bale = "grug_decor:cottages_straw_bale",
 	wheel = "grug_decor:cottages_wagon_wheel",
-	cargo = "grug_decor:cottages_wagon_load",
+	-- The load riding on a wain's bearers. `grug_decor:cottages_wagon_load`
+	-- was the obvious-looking binding and is the wrong SHAPE for this job:
+	-- its nodebox runs from y = 0 to y = 0.5, the TOP half of its own node
+	-- (mods/ITEMS/grug_decor/cottages.lua, `wagon_load_box`), so a load
+	-- written one course above a bearer log stood half a node clear of the
+	-- cart it was meant to be sitting on. That is what the user's playtest
+	-- saw on all five wains, and no arrangement of full-node bearers can
+	-- close it -- the node below would have to be one and a half nodes tall.
+	-- A sawn-acacia slab fills the BOTTOM half of its node instead, so it
+	-- rests on the bearer, and a half-height stack of boards is what a loaded
+	-- flatbed looks like. Nothing rides on the load, so a bottom slab is the
+	-- right shape here.
+	cargo = "stairs:slab_acacia_wood",
 	-- Furnishing: static decor only, for the reason written above the dwarf
 	-- palette. The anvil is the armourer's bench and the cauldron the fire
 	-- pit; both are geometry, and neither is a spawner node.

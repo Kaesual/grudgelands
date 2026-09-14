@@ -33,6 +33,17 @@ M.WALLMOUNTED = "wallmounted"
 M.MESHOPTIONS = "meshoptions"
 M.NONE = "none"
 
+-- The facedir axis of a node that has been turned upside down: param2
+-- 20 + rotation. It is the axis `stairs`' own `rotate_and_place` writes when
+-- a player places a stair or a slab against the underside of something
+-- (mods/BASE/stairs/init.lua, `param2 = param2 + 20`), so it is a value the
+-- engine really produces -- for a stair or a slab, and for nothing else.
+-- A settlement needs it wherever a shaped node carries a LOAD or hangs from
+-- a frame: a bottom slab's surface is half a node below the top of its own
+-- cell, so whatever stands on it stands in air.
+local UPSIDE_DOWN = 20
+M.UPSIDE_DOWN = UPSIDE_DOWN
+
 -- ---------------------------------------------------------------------------
 -- the orientation-bearing families
 -- ---------------------------------------------------------------------------
@@ -79,7 +90,6 @@ local PARAM2_KIND = {
 	["grug_decor:cottages_window_shutter_closed"] = M.FACEDIR,
 	["grug_decor:cottages_window_shutter_open"] = M.FACEDIR,
 	["grug_decor:xdecor_stonepath"] = M.FACEDIR,
-	["grug_decor:cottages_wagon_load"] = M.FACEDIR,
 	-- plantlike meshes whose definition pins the style they are placed at
 	["default:dry_shrub"] = M.MESHOPTIONS,
 	-- a wheel leans against the wall its param2 points at
@@ -236,6 +246,9 @@ local FULL_SOLID = {
 	["grug_nodes:blight_dirt"] = true,
 	["grug_nodes:dirt_with_bone_litter"] = true,
 	["grug_nodes:dirt_with_silver_litter"] = true,
+	-- The authored furrow of a crop field: a plain opaque cube, so a torch
+	-- may hang on it and a wall may stand on it like any other soil.
+	["grug_nodes:tilled_soil"] = true,
 	["grug_trees:gravewood_tree"] = true,
 	["grug_trees:gravewood_wood"] = true,
 	["grug_trees:silverwood_tree"] = true,
@@ -375,6 +388,22 @@ function Buffer:put(x, y, z, name, param2)
 	end
 	if param2 ~= 0 and M.param2_kind(name) == M.NONE then
 		error("wp13 parts: " .. name .. " has no paramtype2", 0)
+	end
+	-- The upside-down facedir family. `stairs`' own `rotate_and_place`
+	-- (mods/BASE/stairs/init.lua) is the only placement in this game that
+	-- writes param2 20..23, and it writes it only for a stair or a slab, so
+	-- those are the only cells that may carry it and nothing outside the
+	-- facedir family may come near it. `library_kat` section 8d asks the real
+	-- registry the same question -- `group:stair` or `group:slab` -- for every
+	-- cell a start emits; this is the construction-time half of it, and it is
+	-- what keeps a flipped nodebox that the engine could never produce out of
+	-- the buffer in the first place.
+	if M.param2_kind(name) == M.FACEDIR then
+		local axis = param2 - (param2 % 4)
+		if axis ~= 0 and axis ~= UPSIDE_DOWN then
+			error("wp13 parts: settlements use only the upright and the " ..
+				"upside-down facedir axis, not " .. axis, 0)
+		end
 	end
 	local key = x .. ":" .. y .. ":" .. z
 	local cell = self.cell[key]

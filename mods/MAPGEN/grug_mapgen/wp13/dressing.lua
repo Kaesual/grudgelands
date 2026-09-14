@@ -435,9 +435,20 @@ local function loader(directory)
 
 	-- A tilled field: bare furrows with a planted row between every pair, and
 	-- a headland of open soil all round so the fence has somewhere to stand.
+	-- Both courses of a field are the SAME node when the race binds
+	-- `crop_soil`. The first version ploughed the bare furrows out of
+	-- `ground_patch` and bedded the planted rows in `planter_soil`, which for
+	-- the human palette are `default:dirt` and `default:dirt_with_grass`: the
+	-- bare rows are the one and only nodename default's "Grass spread" ABM
+	-- acts on, so every lit furrow turned into the grass beside it and the
+	-- hamlet's fields became lawn -- a defect no construction-time fixture
+	-- can see, because the blueprint it checks is still correct. A race that
+	-- binds `crop_soil` gets a node that ABM cannot reach; the stripe the two
+	-- materials used to draw is carried by the crop rows themselves.
 	function M.crop_rows(buf, palette, x1, z1, x2, z2, axis)
-		local furrow = palette.node("ground_patch")
-		local soil = palette.node("planter_soil")
+		local tilled = palette.maybe("crop_soil")
+		local furrow = tilled or palette.node("ground_patch")
+		local soil = tilled or palette.node("planter_soil")
 		local crop = palette.maybe("crop")
 		local rows = 0
 		for z = z1, z2 do

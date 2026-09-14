@@ -704,9 +704,19 @@ local function loader(directory)
 		-- the lantern with air on all six sides. A bell hangs from a frame,
 		-- so a taller lantern gets the cross-beam it hangs from; a
 		-- three-course one is unchanged, bell resting straight on its lamp.
-		buf:put(2, height - 1, 2, palette.node("chimney_cap"))
+		--
+		-- A bell that hangs from a frame hangs UNDER it. The cap is a slab
+		-- in every palette, and a bottom slab fills the lower half of its
+		-- cell, so the elf shrine's bell hung half a node below the beam it
+		-- was supposed to be tied to. Where there is a frame the bell is
+		-- written upside down and its bronze meets the timber; where there is
+		-- none it rests on the lamp below it and stays the right way up.
 		if height - 1 > 2 then
+			buf:put(2, height - 1, 2, palette.node("chimney_cap"),
+				parts.UPSIDE_DOWN)
 			buf:put(2, height, 2, palette.node("beam"))
+		else
+			buf:put(2, height - 1, 2, palette.node("chimney_cap"))
 		end
 		parts.floor_torch(buf, palette, 2, 1, 2)
 		lights[#lights + 1] = {x = 2, y = 1, z = 2}

@@ -411,8 +411,11 @@ local function loader(directory)
 		-- deck laid across it.
 		buf:clear(32, 7, -4, 32, 8, 2)
 		buf:clear(31, 6, -4, 31, 7, 2)
+		-- The patch is the same course the rasteriser lays for a deck, so it
+		-- is the deck's full cube and not a bottom slab: a slab here would
+		-- put back exactly the half node of air the parapet fix removed.
 		for z = -4, 2 do
-			buf:put(31, 6, z, palette.node("roof_slab"))
+			buf:put(31, 6, z, palette.node("roof_ridge"))
 		end
 
 		-- 5. The warlord's fighting top: an external stair off the east

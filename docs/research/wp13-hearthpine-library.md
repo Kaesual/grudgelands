@@ -1,7 +1,8 @@
 # WP13: building library and Hearthpine rebuild (third increment)
 
 Status: implemented, independently reviewed and fix-rounded on 2026-09-14;
-awaiting the user's focused GUI playtest. Classification: non-trivial
+the user's first GUI playtest of the six starts produced the round-A fix
+round recorded below, which is not reviewed yet. Classification: non-trivial
 (architecture, raw node semantics, vendored code, licences, test gates).
 WP13 remains in progress.
 
@@ -182,6 +183,56 @@ forward as library knowledge:
 Calibration: implementing Claude Opus, reviewing Claude Opus, one combined
 fix round across four lanes, final findings 0. Six starts built; none is
 accepted until the user has walked it.
+
+## Round A (user playtest), 2026-09-14
+
+The user walked the six starts in the GUI client and came back with three
+things the review rounds had not caught, all of them the same kind of defect:
+a cell that is correctly placed, correctly oriented and correctly supported,
+and still wrong, because the question nobody was asking was about the SHAPE of
+the node or about what the running world does to it afterwards. Evidence:
+`tools/wp13/evidence/20260914-round-a-blueprints/`.
+
+- **A bottom slab's surface is half a node below the top of its own cell.**
+  `roofs.flat_deck` capped every deck in Sunscar Camp with `roof_slab`, so the
+  breastworks, the five braziers and the warlord's fighting top stood on half a
+  node of air — 296 cells, on every parapeted building in the camp. A deck is
+  walked on and built on, so it now caps with `roof_ridge`, the full cube of
+  the same roof family; `roofs.combine` carries the flag, because
+  `buildings.build` combines even a single block's field. `library_kat`
+  section 8d is the rule: an upright `group:slab` cell may not have a non-air
+  cell above it, in any start. A stair is exempt — its raised half reaches the
+  top of its cell, which is the whole point of a stair.
+- **A nodebox can float from above as well as from below.**
+  `grug_decor:cottages_wagon_load` occupies y 0..0.5 of its cell, so the 15
+  loads on Sunscar's wains rode half a node above their bearers and no
+  full-node bearer could have closed it. The `cargo` role is
+  `stairs:slab_acacia_wood` now, a half-height stack of boards that fills the
+  bottom of its cell. Dawnmere's handcarts were already flush — their load is
+  `grug_decor:xdecor_barrel`, a full cube — which is why the shape of the node,
+  not the shape of the cart, is what the rule is about.
+- **A blueprint can be correct and still not survive the world.** Dawnmere's
+  crop furrows were `default:dirt`, the one and only name in default's "Grass
+  spread" ABM, so the fields greened over minutes after the chunk went active
+  while every fixture stayed green. Both courses of a field are now
+  `grug_nodes:tilled_soil` (new optional role `crop_soil`, human palette only),
+  which that ABM cannot reach and which is deliberately outside
+  `NATURAL_GROUND_NODES`: `grug_materials`' audit requires only that every name
+  IN that roster carries `grug_natural`, and putting authored ground under the
+  mining transaction's pick-tier gating would be wrong. 3,267 tilled cells,
+  asserted as a `blueprint_kat` ground row.
+
+Two library rules came out of it and hold for every start from here:
+`parts.Buffer:put` refuses any facedir axis but upright and upside-down, and
+`library_kat` section 8e requires every param2 20..23 cell to be a `group:slab`
+or `group:stair` node — the only family whose `on_place` (`stairs`'
+`rotate_and_place`) can produce that value — and to meet a non-air cell above
+it, since meeting what is above is the only reason to flip a slab. There is
+exactly one such cell in the six starts: the elf shrine's bell, which used to
+hang half a node below the frame it is tied to.
+
+Calibration: implementing Claude Opus; no review round yet; Hearthpine
+byte-identical at `760e0664…8ec9`; Stillgrave and Kapok untouched.
 
 ## User runtime test
 

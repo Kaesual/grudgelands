@@ -81,6 +81,41 @@ the wall head, which is what a flat roof on a parapeted building is; the
 breastwork is written over the finished deck, because a parapet is a ring of
 full nodes and the rasteriser writes exactly one cell per column.
 
+### Round A: the deck was half a node lower than everything on it
+
+The user's first walk through the camp found a strip of daylight under every
+breastwork. The rasteriser caps a flat field with `roof_slab`, and a bottom
+slab fills the LOWER half of its cell, so the deck's surface lay at the middle
+of its own cell while the breastwork, the five braziers and the warlord's
+fighting top all began at the cell boundary above it — 296 cells standing on
+half a node of air. Every one of them was correctly placed, correctly oriented
+and correctly supported; what was wrong was the SHAPE of the node under them,
+which no fixture was asking about.
+
+A deck is walked on and built on, so `flat_deck` now marks its field
+(`deck = true`, carried through `roofs.combine`, which `buildings.build` runs
+even for a single block) and the rasteriser caps it with `roof_ridge` — the
+full cube of the same desert-stonebrick roof family. Joists and boarding
+rather than a lid: the surface is the top face of its cell and the ring stands
+on it. The deck patch laid where the forge wing's west ring is cut is the same
+full cube, for the same reason. No cell moved and no landmark changed: 150
+merlons, 537 berm cells, 1,323 rock cells, 96 stakes as before. The assertion
+is `library_kat` section 8d — a node in `group:slab` written upright may not
+have a non-air cell above it, in any start. A stair is outside that rule,
+because its raised half reaches the top of its own cell.
+
+The camp's five wains had the same defect from the other side.
+`grug_decor:cottages_wagon_load`'s nodebox runs from y = 0 to y = 0.5, the top
+half of its cell, so each of the 15 loads rode half a node above the acacia
+bearer it sat on and no arrangement of full-node bearers could close it — the
+node below would have to be one and a half nodes tall. The `cargo` role is
+`stairs:slab_acacia_wood` now: a half-height stack of sawn boards that fills
+the bottom of its cell, rests on the bearer and carries nothing itself, which
+is what a bottom slab is for. The camp emits `cottages_wagon_load` nowhere any
+more, and its `parts.PARAM2_KIND` claim went with it. `blueprint_kat` holds
+the acacia-slab population at 43 — 15 loads and 28 table tops — and the cart
+rule still reads "a load at y = 2 on a bearer log at y = 1", 15 of them.
+
 The octagon needs no new generator. `buildings.build` already takes several
 blocks and opens every wall cell that falls strictly inside another, so the
 union of a tall narrow rectangle and a short wide one is a single room whose
