@@ -298,27 +298,41 @@ end
 function M.kits.chapel(buf, parts, palette, room, spec)
 	local lights = {}
 	local cx = math.floor((room.x1 + room.x2) / 2)
+	-- The dais sits at the end of the runner AWAY from the door: a door on
+	-- the z+ wall puts it at z1, any other door side puts it at z2 (the
+	-- runner always follows the room's z axis). Found by the user's Dawnmere
+	-- playtest on 2026-09-14, where the lectern faced the entrance.
+	local door_side = spec and spec.door_side or "z-"
+	local dais_at_z1 = door_side == "z+"
+	local function ez(k)
+		if dais_at_z1 then return room.z1 + k end
+		return room.z2 - k
+	end
 	for z = room.z1, room.z2 do
 		buf:put(cx, room.y, z, palette.node("rug_accent"))
 	end
-	for z = room.z1 + 2, room.z2 - 3, 2 do
+	-- Bench rows start two cells from the dais and leave a two-cell aisle
+	-- at the door end.
+	for k = 2, room.z2 - room.z1 - 3, 2 do
+		local z = ez(k)
 		M.settle(buf, parts, palette, room, room.x1 + 1, z, "x", cx - room.x1 - 1, 0)
 		M.settle(buf, parts, palette, room, cx + 1, z, "x", room.x2 - cx - 1, 0)
 	end
 	-- The dais: a step of slab, the lectern on it and a pair of standing
 	-- lamps that make the end of the room the bright one.
 	for x = cx - 2, cx + 2 do
-		buf:put(x, room.y, room.z1, palette.node("plaza_edge"))
+		buf:put(x, room.y, ez(0), palette.node("plaza_edge"))
 	end
-	M.board(buf, parts, palette, room, cx, room.z1 + 1, "x", 1)
-	M.shelves(buf, palette, room, room.x1, room.z1, "z", 2, 1)
-	M.shelves(buf, palette, room, room.x2, room.z1, "z", 2, 3)
+	M.board(buf, parts, palette, room, cx, ez(1), "x", 1)
+	local shelf_z = dais_at_z1 and room.z1 or room.z2 - 1
+	M.shelves(buf, palette, room, room.x1, shelf_z, "z", 2, 1)
+	M.shelves(buf, palette, room, room.x2, shelf_z, "z", 2, 3)
 	for _, z in ipairs({room.z1 + 2, room.z2 - 2}) do
 		M.wall_light(buf, parts, palette, room, room.x1, room.y + 3, z, lights)
 		M.wall_light(buf, parts, palette, room, room.x2, room.y + 3, z, lights)
 	end
-	M.wall_light(buf, parts, palette, room, cx - 2, room.y + 3, room.z1, lights)
-	M.wall_light(buf, parts, palette, room, cx + 2, room.y + 3, room.z1, lights)
+	M.wall_light(buf, parts, palette, room, cx - 2, room.y + 3, ez(0), lights)
+	M.wall_light(buf, parts, palette, room, cx + 2, room.y + 3, ez(0), lights)
 	return lights
 end
 

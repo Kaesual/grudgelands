@@ -216,3 +216,14 @@ z = -2550, fitted y = 17):
    field fence blocks a route you need.
 6. Set night, follow the lit road green -> gate -> tollhouse, climb its
    lookout, leave and reload.
+
+## Playtest fix (2026-09-14)
+
+The user accepted Dawnmere Fields on first sight with one note: the meeting
+hall's lectern stood at the door end of the runner. The chapel kit now
+places the dais opposite the door side it is told (`kit_spec.door_side`),
+so the lectern sits at z = 22 with the door at z = 10. Hearthpine bytes are
+unchanged; the Dawnmere identity changes. KATs and the final interpreter
+pair were rerun on the new bytes; the engine gate for the combined tree
+runs with the six-start integration.
+
