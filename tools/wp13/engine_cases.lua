@@ -34,9 +34,10 @@ for _, start in ipairs(starts) do
 			start.anchor.z + cell.z)
 	end
 end
--- Two starts of 127 x 127 x ~20 authored cells occupy at most two owners per
--- horizontal axis and two vertically, so sixteen is the structural ceiling.
-assert(#owners <= 16, "profile corpus exceeds the bounded structure owners")
+-- A start of 127 x 127 x ~26 authored cells occupies at most two owners per
+-- horizontal axis and two vertically, so eight per roster row is the
+-- structural ceiling and the corpus is bounded by the roster, not by data.
+assert(#owners <= 8 * #roster, "profile corpus exceeds the bounded structure owners")
 -- This seed puts Stillgrave's fitted surface at y=48, just above the
 -- generated owner's ceiling. Emerge only its lower owner to exercise filler
 -- restoration when the matching top opcode belongs to a different owner.
@@ -50,7 +51,7 @@ while #owners < 14 do
 	add(starts[1].anchor.x + extra * 80, starts[1].anchor.y - 80,
 		starts[1].anchor.z)
 end
-assert(#owners <= 18, "WP13 control population is unbounded")
+assert(#owners <= 8 * #roster + 2, "WP13 control population is unbounded")
 table.sort(owners, function(a, b) return a.id < b.id end)
 if reverse then
 	local reordered = {}
@@ -107,6 +108,15 @@ core.register_on_shutdown(function()
 		local canary = (start.key == starts[1].key)
 		local parts, torch_count, lit = {}, 0, 0
 		local edited_cell_seen = false
+		-- Which cells are lights is the blueprint's own answer: every
+		-- composition publishes the position of every light it wrote as a
+		-- landmark. Reading the set from there instead of from two hard-coded
+		-- torch names keeps the check exact for a start whose lamps are
+		-- candles, hanging lanterns or glowing blocks.
+		local is_light = {}
+		for _, light in ipairs(blueprint.landmarks.lights) do
+			is_light[light.x .. ":" .. light.y .. ":" .. light.z] = true
+		end
 		for _, cell in ipairs(blueprint.cells) do
 			local pos = {x = anchor.x + cell.x, y = anchor.y + cell.y,
 				z = anchor.z + cell.z}
@@ -130,7 +140,7 @@ core.register_on_shutdown(function()
 				parts[#parts + 1] = table.concat({cell.x, cell.y, cell.z,
 					node.name, node.param2}, ":")
 			end
-			if cell.name == "default:torch" or cell.name == "default:torch_wall" then
+			if is_light[cell.x .. ":" .. cell.y .. ":" .. cell.z] then
 				torch_count = torch_count + 1
 				if (core.get_node_light(pos, 0) or 0) > 0 then lit = lit + 1 end
 			end

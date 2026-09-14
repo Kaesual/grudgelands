@@ -49,6 +49,10 @@ local PARAM2_KIND = {
 	["default:torch_ceiling"] = M.WALLMOUNTED,
 	["default:ladder_wood"] = M.WALLMOUNTED,
 	["default:sign_wall_wood"] = M.WALLMOUNTED,
+	-- xdecor's candle is a torch in every respect that matters here: a
+	-- wallmounted light whose three tiles are the floor, ceiling and wall
+	-- states, so its param2 points from the flame to the node holding it.
+	["grug_decor:xdecor_candle"] = M.WALLMOUNTED,
 	-- panes: a flat pane records the axis it spans. The connected
 	-- `xpanes:pane` has no paramtype2 at all and is always written at 0.
 	["xpanes:pane_flat"] = M.FACEDIR,
@@ -68,6 +72,18 @@ local PARAM2_KIND = {
 	["grug_decor:xdecor_stonepath"] = M.FACEDIR,
 	-- a wheel leans against the wall its param2 points at
 	["grug_decor:cottages_wagon_wheel"] = M.WALLMOUNTED,
+	-- `grug_decor/shapes.lua` is a vendored byte-for-byte copy of the four
+	-- shape registrations of `mods/BASE/stairs/init.lua`, so a grug_decor
+	-- stair, inner stair, outer stair or slab carries exactly the facedir a
+	-- `stairs:` one does. Only the shapes a palette actually names are
+	-- listed, so the family stays as explicit as the `stairs:` prefix rule
+	-- is implicit.
+	["grug_decor:darkage_slate_tile_stair"] = M.FACEDIR,
+	["grug_decor:darkage_slate_tile_stair_inner"] = M.FACEDIR,
+	["grug_decor:darkage_slate_tile_stair_outer"] = M.FACEDIR,
+	["grug_decor:darkage_slate_tile_slab"] = M.FACEDIR,
+	["grug_decor:darkage_slate_brick_slab"] = M.FACEDIR,
+	["grug_decor:darkage_serpentine_slab"] = M.FACEDIR,
 }
 
 -- Whole families whose every member is shaped.
@@ -108,6 +124,8 @@ local PANE_CONNECTS = {
 	["default:stonebrick"] = true,
 	["default:tree"] = true,
 	["default:wood"] = true,
+	["grug_trees:silverwood_tree"] = true,
+	["grug_trees:silverwood_wood"] = true,
 	["walls:cobble"] = true,
 	["xpanes:pane"] = true,
 	["xpanes:pane_flat"] = true,
@@ -129,6 +147,9 @@ local FULL_SOLID = {
 	["default:gravel"] = true,
 	["default:pine_tree"] = true,
 	["default:pine_wood"] = true,
+	["default:silver_sandstone"] = true,
+	["default:silver_sandstone_block"] = true,
+	["default:silver_sandstone_brick"] = true,
 	["default:stone_block"] = true,
 	["default:stonebrick"] = true,
 	["default:tree"] = true,
@@ -137,11 +158,21 @@ local FULL_SOLID = {
 	["grug_decor:cottages_straw"] = true,
 	["grug_decor:cottages_straw_ground"] = true,
 	["grug_decor:darkage_adobe"] = true,
+	["grug_decor:darkage_marble"] = true,
+	["grug_decor:darkage_marble_tile"] = true,
+	["grug_decor:darkage_serpentine"] = true,
+	["grug_decor:darkage_slate_brick"] = true,
+	["grug_decor:darkage_slate_tile"] = true,
 	["grug_decor:xdecor_barrel"] = true,
 	["grug_decor:xdecor_cauldron"] = true,
 	["grug_decor:xdecor_empty_shelf"] = true,
+	["grug_decor:xdecor_workbench"] = true,
 	["grug_materials:iron_block"] = true,
+	["grug_nodes:dirt_with_silver_litter"] = true,
+	["grug_trees:silverwood_tree"] = true,
+	["grug_trees:silverwood_wood"] = true,
 	["wool:brown"] = true,
+	["wool:green"] = true,
 	["wool:red"] = true,
 	["wool:white"] = true,
 	["wool:yellow"] = true,
@@ -515,6 +546,32 @@ function M.wall_prop(buf, palette, role, x, y, z, dx, dy, dz)
 	local here = buf:at(x, y, z)
 	if here ~= nil and here.name ~= "air" then return false end
 	buf:put(x, y, z, name, M.wallmounted_support(dx, dy, dz))
+	return true
+end
+
+-- A lamp hung under a beam or an eave. `light_hanging` is bound to a node in
+-- `group:attached_node = 4` -- "the node is always attached to the node
+-- above" (lua_api.md) -- so the cell overhead has to be an opaque full node
+-- or the engine drops the lamp the first time anything near it updates. It
+-- carries no paramtype2, so it is written at param2 0.
+--
+-- Returns false and writes nothing when the palette has no hanging lamp or
+-- the ceiling is not a wall, so a caller can try the next candidate cell.
+function M.hanging_light(buf, palette, x, y, z)
+	local name = palette.maybe("light_hanging")
+	if name == nil or not M.solid_at(buf, x, y + 1, z) then return false end
+	local here = buf:at(x, y, z)
+	if here ~= nil and here.name ~= "air" then return false end
+	buf:put(x, y, z, name, 0)
+	return true
+end
+
+-- A glowing block built into masonry: the palette's `light_beacon` is a full
+-- cube that carries itself, so it needs no support test, only a free cell.
+function M.beacon(buf, palette, x, y, z)
+	local name = palette.maybe("light_beacon")
+	if name == nil then return false end
+	buf:put(x, y, z, name, 0)
 	return true
 end
 

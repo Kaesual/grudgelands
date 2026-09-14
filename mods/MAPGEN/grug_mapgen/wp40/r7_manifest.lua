@@ -38,6 +38,11 @@ return function(canonical, raw_sha256)
 		"dawnmere_delta_schema", "dawnmere_delta_sha256",
 		"dawnmere_opcode", "dawnmere_class", "dawnmere_policy",
 		"dawnmere_order", "dawnmere_overwrite",
+		"silverleaf_blueprint_schema",
+		"silverleaf_blueprint_sha256", "silverleaf_cell_count",
+		"silverleaf_delta_schema", "silverleaf_delta_sha256",
+		"silverleaf_opcode", "silverleaf_class", "silverleaf_policy",
+		"silverleaf_order", "silverleaf_overwrite",
 		"functional_anchor_y_min", "writer_schema", "p9g_opcode", "p9g_class",
 		"p9g_policy", "p9g_order", "p9g_overwrite", "source_projection_sha256",
 		"production_enabled",
@@ -53,6 +58,9 @@ return function(canonical, raw_sha256)
 		{key = "dawnmere", anchor_id = "anchor_002",
 			identity_schema = "grug_wp13_dawnmere_blueprint_identity_v1",
 			delta_schema = "grug_wp13_dawnmere_delta_v1"},
+		{key = "silverleaf", anchor_id = "anchor_003",
+			identity_schema = "grug_wp13_silverleaf_blueprint_identity_v1",
+			delta_schema = "grug_wp13_silverleaf_delta_v1"},
 	}
 
 	local function fail(message)

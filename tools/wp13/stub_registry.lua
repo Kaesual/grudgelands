@@ -62,12 +62,17 @@ M.SOURCES = {
 		seed = "grug_materials",
 		files = {"registry.lua", "mining.lua", "ores.lua",
 			"derivatives.lua"}},
-	-- `grug_trees` is deliberately absent. Its module body reads real `.mts`
-	-- schematics and inspects the decoded `size` field before it registers a
-	-- single node, so it cannot run without an engine-grade schematic
-	-- reader. No current palette names a `grug_trees` node; the elf and
-	-- undead palettes that will must either land after the mod grows an
-	-- engine-free node table, or carry their own denylist entry here.
+	-- `grug_trees` registers the two race woods the elf and undead palettes
+	-- name. Its module body reads real `.mts` schematics and inspects the
+	-- decoded `size` field before it registers a single node; the stub's
+	-- `read_schematic` above answers a unit volume, which is all the body
+	-- needs, and `default` is already in the registry by the time it runs.
+	{mod = "grug_trees", path = "mods/ITEMS/grug_trees", seed = "grug_trees",
+		files = {"init.lua"}},
+	-- `grug_nodes` registers the signature surface nodes the race biomes
+	-- stand on, which is what a start pad's ground has to match. It reads
+	-- `grug_materials.natural_groups`, so it follows that mod.
+	{mod = "grug_nodes", path = "mods/ITEMS/grug_nodes", files = {"init.lua"}},
 }
 
 local function deep_copy(t, seen)
@@ -81,7 +86,8 @@ local function deep_copy(t, seen)
 end
 
 local MOD_GLOBALS = {"default", "stairs", "doors", "beds", "wool", "vessels",
-	"walls", "xpanes", "grug_decor", "dye", "grug_materials"}
+	"walls", "xpanes", "grug_decor", "dye", "grug_materials", "grug_trees",
+	"grug_nodes"}
 
 -- Load every source under a stub `core` and return what it registered.
 -- `repo` is the repository root; the result is
@@ -136,8 +142,12 @@ function M.load(repo)
 	end
 	function core_stub.dir_to_facedir() return 0 end
 	-- A schematic handle is opaque to the registry; a mod only checks that it
-	-- got one back before it keeps it.
-	function core_stub.read_schematic() return {} end
+	-- got one back before it keeps it. `grug_trees` also reads the decoded
+	-- `size.y` of its gravewood assets, so the stub answers a unit volume:
+	-- nothing here depends on the real extent, only on the field existing.
+	function core_stub.read_schematic()
+		return {size = {x = 1, y = 1, z = 1}}
+	end
 	function core_stub.register_schematic() return "wp13-stub-schematic" end
 	function core_stub.get_craft_result()
 		return {time = 0, item = nil, replacements = {}}

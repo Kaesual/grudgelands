@@ -57,6 +57,46 @@ return function(repo)
 			min_destinations = 9, min_doors = 8, min_rooms = 9,
 			min_lights = 8, min_oriented = 8,
 		},
+		{
+			key = "silverleaf",
+			file = "r7_silverleaf_blueprint.lua",
+			schema = "grug_wp13_silverleaf_blueprint_v1",
+			light = {"grug_decor:xdecor_candle",
+				"grug_decor:xdecor_lantern_hanging",
+				"grug_materials:emberglass_lamp"},
+			-- The elf lamps are not all wallmounted, so this start says how
+			-- each of its lights is carried; see `light_carrier` below.
+			light_support = {
+				["grug_decor:xdecor_lantern_hanging"] = "above",
+				["grug_materials:emberglass_lamp"] = "self",
+			},
+			passable = {"air", "grug_decor:xdecor_candle",
+				"grug_decor:xdecor_lantern_hanging",
+				"grug_decor:xdecor_potted_viola",
+				"grug_decor:xdecor_potted_dandelion_white",
+				"default:grass_2", "default:fern_2", "default:fern_3",
+				"doors:door_wood_a", "doors:door_wood_b", "doors:hidden"},
+			paved = {"grug_decor:darkage_marble_tile",
+				"grug_decor:darkage_marble", "default:silver_sandstone_brick"},
+			-- Both roof cuts: the shrine, the lore hall and the gate lookout
+			-- carry the brick stair family, the rest the plain sandstone one.
+			roof = {"stairs:stair_silver_sandstone",
+				"stairs:stair_outer_silver_sandstone",
+				"stairs:stair_inner_silver_sandstone",
+				"stairs:slab_silver_sandstone",
+				"stairs:stair_silver_sandstone_brick",
+				"stairs:stair_outer_silver_sandstone_brick",
+				"stairs:stair_inner_silver_sandstone_brick",
+				"stairs:slab_silver_sandstone_brick"},
+			door_leaves = {"doors:door_wood_a", "doors:door_wood_b"},
+			tree = {log = "grug_trees:silverwood_tree",
+				leaves = "grug_trees:silverwood_leaves",
+				min_trunk = 9, reach = 2, low = 5, high = 1, min_stems = 40},
+			ground = {{"grug_nodes:dirt_with_silver_litter", 8000},
+				{"default:dirt_with_grass", 100}, {"default:dirt", 20}},
+			min_destinations = 9, min_doors = 8, min_rooms = 9,
+			min_lights = 8, min_oriented = 8,
+		},
 	}
 
 	local function set(list)
@@ -127,12 +167,30 @@ return function(repo)
 		-- Luanti's wallmounted direction points from the torch to its support.
 		local support_dir = {[0] = {0, 1, 0}, {0, -1, 0}, {1, 0, 0},
 			{-1, 0, 0}, {0, 0, 1}, {0, 0, -1}}
+		-- How a light is carried. A wallmounted lamp (the default, and every
+		-- torch of the first two starts) names its support with its own
+		-- param2; a lamp in `group:attached_node = 4` always hangs from the
+		-- node above it; a lamp that is a full cube carries itself. The rule
+		-- is per start because the palettes differ, and it is the same
+		-- invariant in all three cases: a light that is not held up is a
+		-- light the engine drops.
+		local function light_carrier(name, param2)
+			local rule = spec.light_support and spec.light_support[name]
+			if rule == "self" then return nil end
+			if rule == "above" then
+				assert(param2 == 0, "hanging lamp carries a param2")
+				return {0, 1, 0}
+			end
+			return assert(support_dir[param2], "unsupported torch rotation")
+		end
 		for _, cell in ipairs(blueprint.cells) do
 			if LIGHT[cell.name] then
-				local dir = assert(support_dir[cell.param2],
-					"unsupported torch rotation")
-				assert(solid(cell.x + dir[1], cell.y + dir[2], cell.z + dir[3]),
-					"floating torch at " .. key(cell.x, cell.y, cell.z))
+				local dir = light_carrier(cell.name, cell.param2)
+				if dir then
+					assert(solid(cell.x + dir[1], cell.y + dir[2],
+						cell.z + dir[3]),
+						"floating light at " .. key(cell.x, cell.y, cell.z))
+				end
 			end
 		end
 		local declared_lights = {}
