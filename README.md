@@ -228,12 +228,17 @@ and [the depth TODO](TODO-design-depth.md); the [boat contract](docs/design/boat
 and [PvP-death XP exemption](docs/design/progression.md) are already decided.
 
 **In progress:** WP13 begins with the dwarf start in Hearthpine Vale, an
-inhabited craft settlement with a small guardpost. The first appearance and reload
-playtest is accepted. The second increment adds four buildings, natural ground
-and exterior lighting, and corrects the platform height and watchpost roof.
-Native checks, interpreter parity and independent review are green; the
-expanded settlement awaits its next GUI playtest. Other starts, capitals
-and functional settlement services remain later work.
+inhabited craft settlement with a small guardpost. After two accepted
+increments, the third rebuilds the settlement from a reusable building
+library with per-race palettes: small dense houses with doors, pane windows,
+stair roofs, furnished interiors and exterior dressing inside a pine-wood
+clearing. The same package adds a server-side atmosphere layer (shadows,
+bloom, saturation, waving), seven vendored minetest_game building mods, a
+curated 333-node decorative kit from castle_masonry, cottages, darkage and
+xdecor-libre, and a textured isometric renderer used to review buildings
+before playtests. Native checks, interpreter parity and independent reviews
+are green; the rebuilt settlement awaits its GUI playtest. Other starts,
+capitals and functional settlement services remain later work.
 WP5, WP26, WP44, WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind
 shipped prerequisites. WP34 still needs structures and economy.
 
@@ -292,7 +297,7 @@ licensing and stable `file:line` citations. See
 
 ## License
 
-- **Code: GPL-3.0-or-later** — [LICENSE.txt](LICENSE.txt), with the
+- **Code: GPL-3.0** — our own files are GPL-3.0-or-later ([LICENSE.txt](LICENSE.txt)), but the combined game is GPL-3.0-only since the `grug_decor` kit includes GPL-3.0-only code from cottages (2026-09-14); with the
   compatibility matrix in
   [docs/research/licensing.md](docs/research/licensing.md).
 - **Media:** original CC0 / CC BY / CC BY-SA / GPL terms, documented per mod;

@@ -1,0 +1,22 @@
+# Grudgelands — game settings shown in the main menu under "Games"
+# (lua_api.md:198-201). Format per builtin/settingtypes.txt in the engine
+# checkout (reference_projects/luanti):
+# `name (Readable name) type type_args`, parts separated by exactly one space.
+# Context annotations (`[server]` and friends) are valid only in builtin's own
+# file and are INVALID here (builtin/settingtypes.txt:19-21).
+#
+# This file is read by the main menu, not by the server: the runtime default
+# lives in the `core.settings:get_bool(..., true)` call that reads the setting
+# (mods/CORE/grug_core/atmosphere.lua).
+
+[Atmosphere]
+
+#    Master switch for the server-side atmosphere layer: dynamic shadows,
+#    bloom, exposure and saturation sent per player with player:set_lighting.
+#    With this off, grug_core.set_atmosphere does nothing and joining players
+#    are left at the engine's own lighting defaults — i.e. the look a player
+#    gets without the game asking for anything. Turn it off to compare, or if
+#    a client's post-processing pipeline misbehaves.
+#    Render settings themselves stay the player's own (Settings > Graphics);
+#    this switch only decides whether the game asks for anything at all.
+grug_atmosphere_enabled (Enable Grudgelands atmosphere presets) bool true

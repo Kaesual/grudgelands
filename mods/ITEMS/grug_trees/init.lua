@@ -238,6 +238,9 @@ core.register_node("grug_trees:gravewood_leaves", {
 	-- Existing CC BY-SA leaf texture; the engine modifier tints the foliage toward grey.
 	tiles = {"default_leaves.png^[colorize:#858585:210"},
 	paramtype = "light",
+	-- Same waving as silverwood leaves; the client setting decides whether
+	-- it renders (allfaces_optional maps waving 1 to the leaves material).
+	waving = 1,
 	is_ground_content = false,
 	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1},
 	drop = "",
