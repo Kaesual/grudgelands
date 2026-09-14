@@ -560,7 +560,14 @@ M.races.troll = {
 	light_wall = "default:torch_wall",
 	light_post = "default:torch",
 	light_indoor = "default:torch_wall",
-	lantern = "grug_decor:xdecor_lantern",
+	-- The HANGING lantern, not the floor one. `grug_decor:xdecor_lantern` is
+	-- in `group:attached_node = 3` and rating 3 is "always attach to floor"
+	-- (reference_projects/luanti/builtin/game/falling.lua:391-399), so every
+	-- one of the sixteen lanterns this village hangs under a deck would have
+	-- been dropped as an item the first time anything near it updated.
+	-- `xdecor_lantern_hanging` is rating 4, "always attach to ceiling", which
+	-- is what a lantern under a bridge needs.
+	lantern = "grug_decor:xdecor_lantern_hanging",
 	rope = "grug_decor:xdecor_rope",
 
 	bed = "beds:bed",

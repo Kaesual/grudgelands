@@ -44,8 +44,14 @@ junglewood fences, wooden doors --- plus the kit nodes the basin asks for:
 `darkage_basalt_brick` terrace and wall bases, `darkage_reinforced_wood`
 beams and lintels, `darkage_serpentine` accents, `darkage_wood_bars` window
 bars, `xdecor_cauldron` fires, `cottages_tub` soaking vats, `cottages_straw`
-and `cottages_straw_mat` floors, `xdecor_lantern` and `xdecor_rope`. Two
-roles are new and optional: `lantern` and `rope`.
+and `cottages_straw_mat` floors, `xdecor_lantern_hanging` and `xdecor_rope`.
+Two roles are new and optional: `lantern` and `rope`.
+
+The "fires" are cold geometry. `grug_decor:xdecor_cauldron` is a nodebox with
+a light source and a texture of embers; this game ships no fire mod, nothing
+here burns, spreads, cooks or damages, and no cell in this blueprint has a
+callback of any kind. The hearths, the smoking fires and the council ring are
+all scenery, and the light they give is the node's own `light_source`.
 
 The one binding that decides the whole look is `path = default:junglewood`.
 In a basin that floods, a settlement walks on boardwalks, not on stone, so
@@ -78,6 +84,12 @@ refuses a post anywhere within three nodes of the route's centre, which is
 what keeps the five-wide road clear underneath. Sixteen lanterns hang under
 the bridges and the verandas.
 
+The deck height is **4**, raised from 3 by the 2026-09-14 review. At 3 the
+plank soffit was two nodes above a player walking the route -- one node of
+headroom over a 1.8-node model, which is a duck, not a bridge. Four gives the
+road the three clear courses section 5's route invariant means it to have,
+at one more tread on each flight and one more course on each pier.
+
 Planting: 83 jungle trees and 3 emergent kapoks on the decoded proportions of
 `mods/BASE/default/schematics/jungle_tree.mts` (5 x 17 x 5: a plus-shaped
 buttress root three courses high, a bare single-log trunk for two thirds of
@@ -99,10 +111,47 @@ optional role:
 | `layout.lua` | `basin` (the mud-blotched jungle floor), `plant_jungle`, `plant_giants` |
 | `parts.lua` | the pane writer accepts a window role that is not an `xpanes` pane; the pane-connection and opaque-cube tables grew the jungle vocabulary |
 
-Result: 71,783 cells, 51,755 of them not air, 42 materials, 87 lights, 831
-oriented nodes, 8 reachable destinations, 9 doors, 9 rooms, 32 rope cells, 16
-lanterns, 42 stepping stones, 2,967 flora cells, 83 jungle trees and 3
-emergent kapoks. Bounds x/z `[-63, 63]`, y `[-1, 22]`.
+Result: 72,535 cells, 51,967 of them not air, 42 materials, 87 lights, 837
+oriented nodes, 8 reachable destinations, 9 doors, 9 rooms, 56 rope cells, 16
+lanterns, 42 stepping stones, 83 jungle trees and 3 emergent kapoks. Bounds
+x/z `[-63, 63]`, y `[-1, 22]`.
+
+**Superseded figures.** Before the 2026-09-14 review fixes this settlement was
+71,783 cells / 51,755 not air / 831 oriented, identity `0a0ad478…bb887777`.
+The difference is the deck raised from 3 to 4 and the shared belfry and
+ground-cover changes.
+
+## What the 2026-09-14 review changed
+
+1. **H1, the lantern** (High). The palette bound
+   `grug_decor:xdecor_lantern`, which is in `group:attached_node = 3`, and
+   rating 3 is "always attach to FLOOR"
+   (`reference_projects/luanti/builtin/game/falling.lua:391-399`). All
+   sixteen lanterns hang under a deck, so every one of them would have been
+   dropped as an item the first time anything near it updated. Rebound to
+   `grug_decor:xdecor_lantern_hanging`, rating 4, "always attach to ceiling".
+   Three comments in `blueprint_kat`, `dressing.lua` and this note had the
+   two ratings the wrong way round and are corrected. `xdecor_rope` carries
+   no attachment group at all: its "ceiling" mode is an authoring convention
+   this project enforces, and nothing but `blueprint_kat` enforces it.
+2. **M1, the deck height.** Above.
+3. **M2**, the engine evidence, regenerated with the sealed script as part of
+   the combined six-start gate.
+4. **L1**, `parts.pane`/`pane_base` keyed on the `xpanes:` PREFIX where
+   `library_kat` and `xpanes` itself key on `group:pane`. `parts.lua` has no
+   registry, so it now carries a written-out `PANE_NAMES` set and
+   `library_kat` section 7a asserts the set agrees with `group:pane` for all
+   779 registered nodes.
+5. **L2**, `library_kat` section 8b matched a start's emitted names against
+   every race's `window` role at once; the dwarf and human palettes both bind
+   `xpanes:pane_flat`, so a start could be told it emitted "two window
+   vocabularies" for building with one. The roster rows now carry `race` and
+   the question is asked of the start's own palette.
+6. **L3**, the prop clearance tested four courses while a totem post is seven
+   or eight, so a totem could have been driven through a veranda deck with
+   nothing said. `open_air` takes the real height and both totem calls pass
+   it.
+7. **L5**, the cauldron fires are cold geometry. Above.
 
 ## What the renders were changed for
 

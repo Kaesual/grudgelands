@@ -845,9 +845,12 @@ local function loader(directory)
 		return hung
 	end
 
-	-- A lantern hung under a solid node. `xdecor_lantern` is in
-	-- `group:attached_node = 3`, which is the engine's "attached to the node
-	-- ABOVE", so the support test looks up, not down.
+	-- A lantern hung under a solid node. The palette's `lantern` must be in
+	-- `group:attached_node = 4` -- rating 4 is "always attach to ceiling"
+	-- (reference_projects/luanti/builtin/game/falling.lua:391-399) -- so the
+	-- support test looks UP. Rating 3, which the troll palette bound first,
+	-- is the opposite: "always attach to floor", and every lantern hung here
+	-- would have been dropped as an item on the first node update near it.
 	function M.lantern(buf, palette, x, y, z)
 		local name = palette.maybe("lantern")
 		if name == nil or not parts.solid_at(buf, x, y + 1, z) then

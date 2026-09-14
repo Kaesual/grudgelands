@@ -190,8 +190,14 @@ local function loader(directory)
 		-- plot footprint. A stilt house leaves its own floor cleared at pad
 		-- level, and a cleared room passes an emptiness test while being the
 		-- last place a notice post belongs.
-		local function open_air(name, x1, z1, x2, z2)
-			if not layout.free_area(buf, x1, z1, x2, z2, 4) then
+		-- `height` is how tall the thing being placed actually is, and it
+		-- defaults to four because most props are shorter than that. It is a
+		-- parameter because two of them are not: a totem post is seven or
+		-- eight courses, and clearing four of them proved nothing about the
+		-- other four -- a totem could have been driven straight through a
+		-- veranda deck with nothing said.
+		local function open_air(name, x1, z1, x2, z2, height)
+			if not layout.free_area(buf, x1, z1, x2, z2, height or 4) then
 				refuse(name, x1, z1, "the space is taken")
 			end
 			for z = z1, z2 do
@@ -205,8 +211,8 @@ local function loader(directory)
 		end
 
 		-- A prop on open ground: clear space, and nothing built underneath.
-		local function prop(name, x1, z1, x2, z2, build)
-			open_air(name, x1, z1, x2, z2)
+		local function prop(name, x1, z1, x2, z2, build, height)
+			open_air(name, x1, z1, x2, z2, height)
 			for z = z1, z2 do
 				for x = x1, x2 do
 					local below = buf:at(x, 0, z)
@@ -221,8 +227,8 @@ local function loader(directory)
 
 		-- Furniture that belongs on the paving it stands on, so only the space
 		-- is tested.
-		local function paved_prop(name, x1, z1, x2, z2, build)
-			open_air(name, x1, z1, x2, z2)
+		local function paved_prop(name, x1, z1, x2, z2, build, height)
+			open_air(name, x1, z1, x2, z2, height)
 			place(name, x1, z1, build)
 		end
 
@@ -288,9 +294,10 @@ local function loader(directory)
 		-- 5. The gate: two totem posts either side of the road under a
 		-- reinforced lintel, with a torch on each post.
 		for _, x in ipairs({-3, 3}) do
+			-- Seven courses: six posts and the carved cap on top of them.
 			prop("gate_totem", x, -56, x, -56, function()
 				dressing.totem(buf, palette, x, -56, 6)
-			end)
+			end, 7)
 		end
 		for x = -2, 2 do buf:put(x, 7, -56, palette.node("beam")) end
 		for _, side in ipairs({{-2, -1}, {2, 1}}) do
@@ -302,7 +309,7 @@ local function loader(directory)
 			paved_prop("terrace_totem", totem[1], totem[2], totem[1], totem[2],
 				function()
 					dressing.totem(buf, palette, totem[1], totem[2], totem[3])
-				end)
+				end, totem[3] + 1)
 		end
 
 		-- 7. The terrace itself: a notice post, a fish stall, low walls down

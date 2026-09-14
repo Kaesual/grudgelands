@@ -241,7 +241,7 @@ return function(repo)
 			-- stay solid and keep counting as wall.
 			passable = {"air", "default:torch", "default:torch_wall",
 				"default:grass_1", "default:fern_1", "default:junglegrass",
-				"grug_decor:cottages_straw_mat", "grug_decor:xdecor_lantern",
+				"grug_decor:cottages_straw_mat", "grug_decor:xdecor_lantern_hanging",
 				"grug_decor:xdecor_rope",
 				"doors:door_wood_a", "doors:door_wood_b", "doors:hidden"},
 			-- The whole settlement is a raised boardwalk on piers, which is
@@ -275,13 +275,13 @@ return function(repo)
 			-- two under each of the twelve rack lines, and four on the
 			-- smoker's drying beam. 16 lanterns under the bridges and the
 			-- verandas -- every one of them hanging from the deck above,
-			-- which is what `group:attached_node = 3` means.
+			-- which is what `group:attached_node = 4` means.
 			props = {{"grug_decor:cottages_straw_bale", 0},
 				{"grug_decor:xdecor_barrel", 20},
 				{"grug_decor:xdecor_stonepath", 42},
 				{"grug_decor:cottages_wagon_wheel", 0, "wallmounted"},
 				{"grug_decor:xdecor_rope", 56, "ceiling"},
-				{"grug_decor:xdecor_lantern", 16, "ceiling"}},
+				{"grug_decor:xdecor_lantern_hanging", 16, "ceiling"}},
 			carts = 0,
 		},
 	}
@@ -468,9 +468,12 @@ return function(repo)
 			if prop_wanted[cell.name] then
 				prop_seen[cell.name] = prop_seen[cell.name] + 1
 				-- A wallmounted prop hangs on the node its param2 points at; a
-				-- ceiling prop (`group:attached_node = 3`, and a rope tied to
-				-- a beam) on the node ABOVE it; everything else rests on the
-				-- node under it.
+				-- ceiling prop on the node ABOVE it; everything else rests on
+				-- the node under it. "Ceiling" is `group:attached_node = 4`
+				-- for a node the engine holds up (the hanging lantern), and
+				-- an authoring convention for one it does not:
+				-- `grug_decor:xdecor_rope` is in no attachment group at all,
+				-- so nothing but this check keeps a rope tied to a beam.
 				local dir = {0, -1, 0}
 				if prop_mode[cell.name] == "wallmounted" then
 					dir = assert(support_dir[cell.param2],

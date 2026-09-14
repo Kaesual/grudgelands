@@ -447,6 +447,27 @@ return function(repo)
 	assert(parts.rotate_param2(0, parts.NONE, 3) == 0)
 	say("guards", "param2_kind", "pass")
 
+	-- 7a. the pane set agrees with the registry -----------------------------
+	-- `parts.lua` is pure arithmetic with no registry, so it carries the pane
+	-- names as a written-out set instead of asking `group:pane` the way this
+	-- file and `xpanes` itself do. Two sources for one fact need a test that
+	-- they still say the same thing, so every node the loaded mods register
+	-- is asked both ways. The first version of `parts` tested the `xpanes:`
+	-- prefix, which is a third answer again: true of every node that mod
+	-- registers, pane or not.
+	local pane_checked, pane_members = 0, 0
+	for _, name in ipairs(world.order) do
+		local def = world.nodes[name]
+		local grouped = type(def.groups) == "table" and
+			(def.groups.pane or 0) > 0
+		assert(parts.is_pane(name) == grouped,
+			"parts and the registry disagree about whether " .. name ..
+				" is a pane")
+		pane_checked = pane_checked + 1
+		if grouped then pane_members = pane_members + 1 end
+	end
+	say("pane_set", "parts+registry", pane_checked, "panes", pane_members)
+
 	-- 7b. the two byte-order comparators agree ------------------------------
 	-- `parts.less_bytes` sorts every composition's palette; the identical
 	-- comparator in `wp40/r7_settlement.lua` serves the consumers that never

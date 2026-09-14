@@ -337,7 +337,7 @@ end
 -- a part must therefore land back on those two values, not on their half
 -- turns, so that the blueprint keeps writing what the engine would write.
 function M.canonical_param2(name, param2)
-	if name:sub(1, 7) == "xpanes:" and name:sub(-5) == "_flat" then
+	if M.is_pane(name) and name:sub(-5) == "_flat" then
 		if param2 == 1 then return 3 end
 		if param2 == 2 then return 0 end
 	end
@@ -534,19 +534,46 @@ function M.pane(buf, palette, x, y, z, axis)
 		error("wp13 parts: pane axis differs", 0)
 	end
 	local name = palette.node("window")
-	if name:sub(1, 7) ~= "xpanes:" then
+	if not M.is_pane(name) then
+		-- A race whose windows are open bars or a lattice writes a plain
+		-- node: no axis to record, no `update_pane` to satisfy.
 		buf:put(x, y, z, name, 0)
 		return
 	end
 	buf:put(x, y, z, name, axis == "x" and 0 or 3)
 end
 
+-- Which node names are panes.
+--
+-- `xpanes` decides everything about a pane from `group:pane`, and
+-- `tools/wp13/library_kat.lua` reads that group out of the real
+-- registrations. This file has no registry -- it is pure, engine-free
+-- arithmetic -- so it cannot ask the same question the same way, and the
+-- first version answered a DIFFERENT one: it tested the `xpanes:` prefix,
+-- which is true of `xpanes:pane_flat` and also of anything else that mod
+-- ever registers, pane or not.
+--
+-- The set is therefore written out, and `library_kat` asserts that it agrees
+-- with `group:pane` for every name any palette binds and every name any
+-- start emits. A pane added to a palette without being added here fails
+-- there, which is the only place that can tell.
+local PANE_NAMES = {
+	["xpanes:bar"] = true, ["xpanes:bar_flat"] = true,
+	["xpanes:pane"] = true, ["xpanes:pane_flat"] = true,
+	["xpanes:obsidian_pane"] = true, ["xpanes:obsidian_pane_flat"] = true,
+}
+
+function M.is_pane(name)
+	return PANE_NAMES[name] == true
+end
+
 -- The connected name behind a pane node, or nil if this is not a pane.
 local function pane_base(name)
-	if name:sub(1, 7) ~= "xpanes:" then return nil end
+	if not PANE_NAMES[name] then return nil end
 	if name:sub(-5) == "_flat" then return name:sub(1, -6) end
 	return name
 end
+M.pane_base = pane_base
 
 -- `xpanes` decides a pane's node and param2 from its four horizontal
 -- neighbours, in `update_pane` (mods/BASE/xpanes/init.lua). The engine runs
