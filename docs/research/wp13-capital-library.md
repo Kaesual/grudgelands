@@ -1,6 +1,8 @@
 # WP13: the capital parts library
 
-Status: implemented 2026-09-14, not reviewed yet. Lane: "Capital parts",
+Status: implemented and fix-rounded 2026-09-14; one independent review
+(verdict: merge after fixes), whose 2 Medium, 5 Low and 3 judgement calls are
+recorded in section 3b. Not re-reviewed. Lane: "Capital parts",
 implementing Claude Opus, coordinator Claude Fable (policy "Day-to-day
 routing rule"). This is the increment record for
 `mods/MAPGEN/grug_mapgen/wp13/capitals.lua`, the capital-scale half of the
@@ -22,7 +24,7 @@ modules and the renderer review loop are
 | File | Change |
 | --- | --- |
 | `mods/MAPGEN/grug_mapgen/wp13/capitals.lua` | **new**: eighteen generators, the socket seam, the capital accessors |
-| `mods/MAPGEN/grug_mapgen/wp13/palette.lua` | eleven new OPTIONAL roles, bound for all six races |
+| `mods/MAPGEN/grug_mapgen/wp13/palette.lua` | ten new OPTIONAL roles plus five new bindings of the pre-existing `pillar` |
 | `mods/MAPGEN/grug_mapgen/wp13/parts.lua` | the arrowslit and throne orientation families, the capital shape families, two opaque cubes |
 | `mods/MAPGEN/grug_mapgen/wp13/interiors.lua` | five new kits: `barracks`, `temple`, `scriptorium`, `granary`, `stable` |
 | `tools/wp13/library_kat.lua` | section 12 and 12b: every capital part, every race, all four rotations |
@@ -35,12 +37,14 @@ existing rows are unchanged; §5 carries the proof.
 
 ## 2. The capital vocabulary
 
-Eleven roles, all **optional**, added to `palette.optional` and bound for
-every race. Optional is not politeness: a start composition must keep building
-without them (which is what keeps the six shipped blueprints byte-identical),
-and every generator has a fallback into the start vocabulary, proved by KAT
-section 12b, which strips the whole vocabulary out of a throwaway palette and
-builds all eighteen parts against it.
+Eleven roles, all **optional** and all bound for every race. TEN of them are
+new to `palette.optional`; the eleventh, `pillar`, was already there and
+already bound for the undead (`palette.lua`, the Stillgrave table), and what
+this lane added is its five other race bindings. Optional is not politeness: a
+start composition must keep building without them (which is what keeps the six
+shipped blueprints byte-identical), and every generator has a fallback into the
+start vocabulary, proved by KAT section 12b, which strips the whole vocabulary
+out of a throwaway palette and builds all eighteen parts against it.
 
 | Role | Dwarf | Human | Elf | Undead | Orc | Troll |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -93,31 +97,39 @@ flights included, which is the plot a composition has to reserve. The envelope
 is the capitals contract's: **core** 48 x 48 and y -2..40, **plot** 32 x 32
 and y -6..24. KAT section 12 measures both.
 
-| Generator | Spec (defaults) | Extent (x, z, y) | Sockets | Cells |
+| Generator | Spec (defaults) | Extent (x, z, y) | Sockets | Solid / all cells |
 | --- | --- | --- | --- | --- |
-| `king_hall` | `w 31, d 39, arcade 5, rise 7, door_x, service_z, dais_z, inside, roof_palette` | 36 x 44, y -2..31 (core) | `king` 1, `guard_post` 4, `waypoint` 1, `idle` 3 | 8 685 |
-| `wall_segment` | `len 8, phase 0, stair, patrol_group, order` | len x 5, y -2..9 | `guard_patrol` 2 | 386 / 549 |
-| `wall_tower` | `patrol_group, order` | 9 x 9, y -2..15 | `guard_post` 1, `guard_patrol` 1, `idle` 1 | 780 |
-| `gatehouse` | `patrol_group, order` | 13 x 7, y -2..14 | `guard_post` 2, `guard_patrol` 1, `idle` 2 | 903 |
-| `colonnade` | `len 15, d 5, patrol_group, order` | 17 x 7, y 0..7 | `idle` 2, `guard_patrol` 1 | 344 |
-| `market_square` | `size 25` | 25 x 25, y 0..7 | `vendor` 4, `idle` 2, `waypoint` 1 | 919 |
-| `well_court` | `size 11` | 11 x 11, y 0..4 | `idle` 2 | 155 |
-| `statue_plinth` | -- | 9 x 9, y 0..7 | `idle` 1 | 150 |
-| `barracks` | `w 15, d 21, wall_h 5, roof "gable", rise 4, infill, shutters` | 17 x 23, y 0..10 | `guard_post` 1, `idle` 1, `guard_patrol` 1 | 1 233 |
-| `temple` | `w 13, d 19, wall_h 7, roof "hip", rise 5` | 15 x 21, y 0..20 | `idle` 1, `quest` 1 | 1 184 |
-| `scriptorium` | `w 13, d 17, wall_h 6, roof "saltbox"` | 15 x 19, y 0..11 | `idle` 2 | 1 089 |
-| `granary` | `w 11, d 15, wall_h 5, roof "saltbox"` | 13 x 17, y 0..11 | `idle` 1 | 810 |
-| `stable` | `w 15, d 11, wall_h 5, roof "gable"` | 17 x 13, y 0..9 | `idle` 2 | 749 |
-| `orchard_edge` | `len 21, d 11, patrol_group, order` | 21 x 13, y 0..9 | `idle` 1, `guard_patrol` 2 | 727 |
-| `grove` | `size 17, kind "tree", height 8` | 17 x 17, y 0..9 | `idle` 1 | 516 |
-| `stilt_platform` | `size 15, deck 6, spur 6, patrol_group, order` | 15 x 26, y 0..7 | `guard_patrol` 2, `idle` 1 | 643 |
-| `water_channel` | `len 21, bridge, patrol_group, order` | 21 x 7, y -3..3 | `idle` 1, `guard_patrol` 2 | 524 |
+| `king_hall` | `w 31, d 39, arcade 5, rise 7, door_x, service_z, dais_z, inside, roof_palette` | 36 x 44, y -2..31 (core) | `king` 1, `guard_post` 4, `waypoint` 1, `idle` 3 | 8 693 / 47 817 |
+| `wall_segment` | `len 8, phase 0, stair, patrol_group, order` | len x 5, y -2..9 | `guard_patrol` 2 | 386 / 520 (544 / 780 with the stair) |
+| `wall_tower` | `patrol_group, order` | 9 x 9, y -2..15 | `guard_post` 1, `guard_patrol` 1, `idle` 1 | 780 / 1 539 |
+| `gatehouse` | `patrol_group, deck_group, order` | 13 x 7, y -2..14 | `guard_post` 2, `guard_patrol` 2, `idle` 2 | 899 / 1 547 |
+| `colonnade` | `len 15, d 5, patrol_group, order` | 17 x 7, y 0..7 | `idle` 2, `guard_patrol` 1 | 344 / 1 071 |
+| `market_square` | `size 25` | 25 x 25, y 0..7 | `vendor` 4, `idle` 2, `waypoint` 1 | 919 / 5 625 |
+| `well_court` | `size 11` | 11 x 11, y 0..4 | `idle` 2 | 155 / 847 |
+| `statue_plinth` | -- | 9 x 9, y 0..9 | `idle` 1 | 157 / 810 |
+| `barracks` | `w 15, d 21, wall_h 5, roof "gable", rise 4, infill, shutters` | 17 x 23, y 0..10 | `guard_post` 1, `idle` 1, `guard_patrol` 1 | 1 233 / 4 692 |
+| `temple` | `w 13, d 19, wall_h 7, roof "hip", rise 5` | 15 x 21, y 0..20 | `idle` 1, `quest` 1 | 1 186 / 4 798 |
+| `scriptorium` | `w 13, d 17, wall_h 6, roof "saltbox"` | 15 x 19, y 0..11 | `idle` 2 | 1 089 / 3 990 |
+| `granary` | `w 11, d 15, wall_h 5, roof "saltbox"` | 13 x 17, y 0..11 | `idle` 1 | 810 / 3 094 |
+| `stable` | `w 15, d 11, wall_h 5, roof "gable"` | 17 x 13, y 0..9 | `idle` 2 | 749 / 2 652 |
+| `orchard_edge` | `len 21, d 11, patrol_group, order` | 21 x 13, y 0..9 | `idle` 1, `guard_patrol` 2 | 727 / 3 968 |
+| `grove` | `size 17, kind "tree", height 8` | 17 x 17, y 0..9 | `idle` 1 | 516 / 7 225 |
+| `stilt_platform` | `size 15, deck 6, spur 6, patrol_group, order` | 15 x 26, y 0..7 | `guard_patrol` 2, `idle` 1 | 643 / 2 587 |
+| `water_channel` | `len 21, bridge, patrol_group, order` | 21 x 7, y -3..3 | `idle` 1, `guard_patrol` 2 | 524 / 1 176 |
 
-Cell counts are the dwarf palette's solid (non-air) cells; the six races differ
-by at most 55 cells on one part, where an optional role degrades (the orchard
-plants a hedge only for the human palette, the stable beds its boxes only for
-the three races that bind a mat). The whole catalogue is 122 101 solid cells
-over eighteen parts and six races.
+Cell counts are the dwarf palette's, SOLID (non-air) first and then the whole
+cell list. The two differ a great deal and only the second is the budget
+number: a blueprint's cell list carries its authored AIR as well, which is what
+clears the volume a part stands in, and the contract's per-plot and per-core
+budgets count cells, not stone. Hearthpine Vale, for comparison, is 61,932
+cells of which 46,389 are solid. The king's hall is 47,817 cells, 32% of the
+capitals contract's 150,000-cell core budget; the largest plot is the grove at
+7,225, well inside the 12,000 a plot is allowed, and it is mostly the cleared
+volume over the trees.
+
+The six races differ by at most 55 cells on one part, where an optional role
+degrades (the orchard plants a hedge only for the human palette, the stable
+beds its boxes only for the three races that bind a mat).
 
 What each one is, and the decisions inside it:
 
@@ -146,13 +158,26 @@ What each one is, and the decisions inside it:
 - **`wall_tower`** is the corner: a nine by nine drum, two straight flights
   to the rampart floor and on to the fighting top, rampart openings three
   wide in two adjacent faces at walkway height, loopholes on all four, a
-  crenellated crown.
+  crenellated crown. **Both flights run along X, against the two faces the
+  rampart does not arrive at.** That is not style: the rampart enters through
+  the z = 0 face and leaves through the x = 0 face, so a walker turning the
+  corner crosses the whole z 3..5 band, and a stairwell cut through the
+  rampart floor anywhere in that band is a hole in the wall walk.
 - **`gatehouse`** carries a chamber over a **five-wide passage**: x 4..8 is
   clear from the paving to head height for the whole depth, which KAT section
   12 asserts against the registry's `walkable`. The arch springs from a stone
-  stair each side at y = 5. Each pier holds a guard chamber with its own door,
-  the west one also the flight to the chamber above; the roof is a
-  crenellated deck level with the curtain wall's crown.
+  stair each side at y = 5. Each pier holds a guard chamber with its own door
+  to the street.
+  Its chamber is a **rampart room, not a dead end**: the floor is the wall
+  walk's own level and both end faces carry an opening three wide and two
+  high at z 2..4, so a walker on the curtain wall walks THROUGH the gate.
+  Nothing cuts that floor -- there is deliberately no flight from the ground
+  to the chamber, because any stairwell wide enough to climb would be a hole
+  in the wall walk, and a gate tower is reached from the rampart. The fighting
+  deck five courses higher is reached by a flight in the city-side row, clear
+  of the through-band, and its patrol waypoint is in a **loop of its own**
+  (`spec.deck_group`), because a loop that mixed y = 7 and y = 12 would ask an
+  NPC to walk between them with nothing in between.
 - **`colonnade`**, **`market_square`**, **`well_court`**,
   **`statue_plinth`** are the civic furniture. The market is four awninged
   `dressing.stall` booths round a stepped market cross, with crates, benches
@@ -175,6 +200,68 @@ What each one is, and the decisions inside it:
   stilt platform is timber legs on masonry pads under a six-course deck, with
   a railed walkway spur and a flight down; the water channel is a lined cut
   with paved banks, a kerb rail and a five-wide plank crossing.
+
+## 3b. The review round
+
+An independent review of the first version returned "merge after these fixes".
+What changed:
+
+- **The wall walk dead-ended at every gate** (M1). The gatehouse chamber was
+  walled solid on the two end faces the curtain wall abuts, so a walker on the
+  rampart stopped at each gate; its only patrol waypoint was on the roof deck
+  five courses higher and in the same loop as the wall's own. Fixed as
+  described above: rampart openings at z 2..4 on both end faces, an unbroken
+  chamber floor, the ground flight removed, a chamber-to-deck flight in the
+  city-side row, and two waypoints in two loops.
+  The review did not say so, but **the corner tower had the same defect one
+  level down**: its two flights ran along Z at x = 1 and x = 7 and cut their
+  stairwells straight through the z 3..5 band a walker crosses to turn the
+  corner. Both flights run along X now, against the two faces the rampart does
+  not use. A scratch conservative walk over each part confirms rampart-to-
+  rampart, rampart-to-top and ground-to-rampart on the tower, and
+  rampart-to-rampart and rampart-to-deck on the gatehouse.
+- **A two-cell island inside every belfry** (M2). `buildings.belfry` hangs the
+  bell under a cross-beam whenever the lantern is taller than three courses,
+  and writes that beam as one cell at the centre of the plan while its beam
+  ring is the edge cells only: beam and bell touch each other and nothing
+  else. Every rule this library had asks whether a cell touches another cell,
+  and these two do, so nothing caught it. `capitals.bear_bell` carries the
+  frame across to the ring, and the king's hall and the temple call it.
+  **Scoped to the capital parts on purpose, exactly like the well kerb in
+  `well_court`:** Silverleaf Glade's shrine stamps the same four-course
+  lantern at (-21, 15/16, 25) and its blueprint identity is frozen, so
+  `buildings.belfry` itself must not move a cell. A composition that stamps a
+  lantern taller than three courses has to call `bear_bell` too.
+  The durable half of the fix is in the KAT: section 12 now floods the same
+  adjacency (face or vertical diagonal) from the GROUND up and requires every
+  non-loose cell to be reachable, so a piece of architecture has to be
+  connected to the terrain and not merely to itself. Deleting the `bear_bell`
+  call makes it fail on the bell slab, which is how the guard was proved.
+- **Every internal flight landed one tread short** (L1) -- a 1.0-node jump
+  rather than a 0.5 step. The rule is written down at the wall stair now: a
+  flight from a floor at y = f to a floor at y = g carries g - f treads, at
+  y = f + 1 .. g, and the TOP one stands IN the upper floor. The wall stair,
+  both tower flights and the stilt platform's flight gained their last tread.
+  `dressing.stair_up` is left alone (Kapok's identity is frozen) and the stilt
+  platform writes the tread the shared routine omits, with the reason at the
+  call site.
+- Three judgement calls from the renders, all taken:
+  **the corner turrets** read as chimneys -- three by three of solid masonry
+  twenty-two courses high with two slits. They are hollow above the hall floor
+  now, carry four storeys of loopholes instead of two, and wear a corbel table
+  that oversails their two outward faces one node under the crown. What is
+  left, and a composition should know it: a turret's two INNER faces are
+  genuinely internal below the aisle roof, so from a camera over the building's
+  own corner a near turret still shows blank masonry.
+  **The statue** is an armoured man with a standard: a flared skirt, a shield
+  arm, two stair shoulders, a head, a helm crest, and a standard with a banner
+  off the other shoulder, which is the piece that makes the outline a figure
+  rather than a pillar. The per-race obelisk and lantern-pillar variants the
+  review offered as an alternative are a `spec.form` away and are not built.
+  **The nave roof** gained four dormers per slope, three wide and three tall,
+  each standing on the course of roof it interrupts. A full change of pitch
+  was priced and not taken: the roof is a height field, and a second pitch
+  needs cheek-filling the rasteriser does not do.
 
 ## 4. Two things deliberately left out
 
@@ -214,7 +301,9 @@ through, against the real registry loaded by `tools/wp13/stub_registry.lua`:
    direction its own rating names, transcribed from
    `builtin/game/falling.lua:391-434`;
 6. no detached cell, with the same three node-property exemptions as section
-   11;
+   11, AND no island: the same adjacency flooded from the ground up, so two
+   cells that touch each other and nothing else fail where the local
+   neighbour rule passes them;
 7. every torch on an opaque full node;
 8. the socket contract: unique ids, a valid role, the exact authored role
    multiset, a facing, two free cells and a walkable floor, `group`/`order`
@@ -226,6 +315,9 @@ through, against the real registry loaded by `tools/wp13/stub_registry.lua`:
 11. the chaining footprint of the linear pieces and the five-wide clear of the
     gate passage.
 
+The status line at the top is now: reviewed once (verdict "merge after these
+fixes"), fixes applied, not re-reviewed.
+
 **Section 12b** registers a throwaway race with all eleven capital roles
 stripped out and builds all eighteen parts against it, which is the only place
 the "optional, with a fallback" claim is actually tested.
@@ -235,8 +327,8 @@ Run through `tools/wp13/evidence/20260914-capital-parts/kat.sh`
 
 ```
 KAT PAIR BYTE-IDENTICAL
-875fc3ddc6aecea28752a68b0b9ba9cbb6abd50dd5c31cb951500eaa985b4ee7  kat-luajit.txt
-875fc3ddc6aecea28752a68b0b9ba9cbb6abd50dd5c31cb951500eaa985b4ee7  kat-puc51.txt
+f3a38c47a3a94715ae318beca0d8f45bb8f395e807f286a7ed261f6a053b343e  kat-luajit.txt
+f3a38c47a3a94715ae318beca0d8f45bb8f395e807f286a7ed261f6a053b343e  kat-puc51.txt
 ```
 
 ### (b) The six start blueprints are byte-identical
@@ -333,8 +425,8 @@ the same three arguments and runs the same three fixtures). One LuaJIT process
 and one PUC 5.1 process over the frozen inputs, hashed before and after:
 
 ```
-875fc3ddc6aecea28752a68b0b9ba9cbb6abd50dd5c31cb951500eaa985b4ee7  micro-luajit.tsv
-875fc3ddc6aecea28752a68b0b9ba9cbb6abd50dd5c31cb951500eaa985b4ee7  micro-puc51.tsv
+f3a38c47a3a94715ae318beca0d8f45bb8f395e807f286a7ed261f6a053b343e  micro-luajit.tsv
+f3a38c47a3a94715ae318beca0d8f45bb8f395e807f286a7ed261f6a053b343e  micro-puc51.tsv
 ```
 
 `files.sha256` is the frozen-byte manifest of every input and every artefact.
@@ -352,8 +444,15 @@ and one PUC 5.1 process over the frozen inputs, hashed before and after:
    generator prefixes with `spec.id`; give each plot a distinct `id` or two
    colonnades will publish `colonnade_idle_a` twice.
 4. **The wall chains on its own footprint** (`len x 5`), and `spec.phase`
-   carries the crenellation. A tower or a gatehouse at a corner lines up with
-   the three-wide walkway at y = 6 / standing y = 7.
+   carries the crenellation. Its walkway is the three cells z 1..3 of that
+   footprint, decked at y = 6 and walked at y = 7.
+   **A wall is CENTRED on the tower or gatehouse it meets, and that inset is
+   the composition's to get right.** A five-deep wall centred on the nine-deep
+   `wall_tower` is inset two nodes, so the walkway's z 1..3 arrives at the
+   tower's z 3..5, which is where the tower's rampart openings are; centred on
+   the seven-deep `gatehouse` it is inset one node, so the same walkway arrives
+   at z 2..4, which is where the gatehouse's are. Get the inset wrong and the
+   walk meets masonry.
 5. **`grove` takes `spec.kind`** naming any `dressing` tree function
    (`tree`, `broadleaf`, `columnar`, `acacia`, `jungle_tree`, `gravewood`,
    `emergent`); the default conifer is not what a troll basin wants.

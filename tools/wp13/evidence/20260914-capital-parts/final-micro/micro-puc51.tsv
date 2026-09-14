@@ -47,17 +47,17 @@ panes	kapok	open	0	connected	0
 torch_support	kapok	87	opaque_full	pass
 grounded	kapok	36626	no_detached_cell	pass
 panes_connected_corpus	38
-capital	king_hall	core	dwarf=8685,elf=8685,human=8685,orc=8685,troll=8685,undead=8685
+capital	king_hall	core	dwarf=8693,elf=8693,human=8693,orc=8693,troll=8693,undead=8693
 capital	wall_segment	plot	dwarf=386,elf=386,human=386,orc=386,troll=386,undead=386
-capital	wall_segment_stair	plot	dwarf=549,elf=549,human=549,orc=549,troll=549,undead=549
+capital	wall_segment_stair	plot	dwarf=544,elf=544,human=544,orc=544,troll=544,undead=544
 capital	wall_tower	plot	dwarf=780,elf=780,human=780,orc=780,troll=780,undead=780
-capital	gatehouse	plot	dwarf=903,elf=903,human=903,orc=903,troll=903,undead=903
+capital	gatehouse	plot	dwarf=899,elf=899,human=899,orc=899,troll=899,undead=899
 capital	colonnade	plot	dwarf=344,elf=344,human=344,orc=344,troll=344,undead=344
 capital	market_square	plot	dwarf=919,elf=919,human=919,orc=919,troll=919,undead=919
 capital	well_court	plot	dwarf=155,elf=155,human=155,orc=155,troll=155,undead=155
-capital	statue_plinth	plot	dwarf=150,elf=150,human=150,orc=150,troll=150,undead=150
+capital	statue_plinth	plot	dwarf=157,elf=157,human=157,orc=157,troll=157,undead=157
 capital	barracks	plot	dwarf=1233,elf=1233,human=1233,orc=1233,troll=1233,undead=1233
-capital	temple	plot	dwarf=1184,elf=1184,human=1181,orc=1181,troll=1184,undead=1181
+capital	temple	plot	dwarf=1186,elf=1186,human=1183,orc=1183,troll=1186,undead=1183
 capital	scriptorium	plot	dwarf=1089,elf=1089,human=1073,orc=1073,troll=1089,undead=1073
 capital	granary	plot	dwarf=810,elf=810,human=810,orc=810,troll=810,undead=810
 capital	stable	plot	dwarf=749,elf=749,human=757,orc=757,troll=757,undead=749
@@ -65,7 +65,7 @@ capital	orchard_edge	plot	dwarf=727,elf=727,human=782,orc=728,troll=727,undead=7
 capital	grove	plot	dwarf=516,elf=516,human=516,orc=516,troll=516,undead=516
 capital	stilt_platform	plot	dwarf=643,elf=643,human=643,orc=643,troll=645,undead=643
 capital	water_channel	plot	dwarf=524,elf=524,human=524,orc=524,troll=524,undead=524
-capital_total	18	parts	122101	cells	324	sockets
+capital_total	18	parts	122149	cells	330	sockets
 capital_degrade	11	roles_stripped	18	parts
 wp13_blueprint	hearthpine	61932	46389	41	74	1232	9	10	10	0	180	15588
 wp13_blueprint	dawnmere	66361	44440	54	98	1467	9	12	10	0	27	15410

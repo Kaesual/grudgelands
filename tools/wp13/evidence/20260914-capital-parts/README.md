@@ -18,10 +18,10 @@ Results on the frozen bytes:
 
 ```
 KAT PAIR BYTE-IDENTICAL
-875fc3ddc6aecea28752a68b0b9ba9cbb6abd50dd5c31cb951500eaa985b4ee7  kat-luajit.txt
-875fc3ddc6aecea28752a68b0b9ba9cbb6abd50dd5c31cb951500eaa985b4ee7  kat-puc51.txt
-875fc3ddc6aecea28752a68b0b9ba9cbb6abd50dd5c31cb951500eaa985b4ee7  final-micro/micro-luajit.tsv
-875fc3ddc6aecea28752a68b0b9ba9cbb6abd50dd5c31cb951500eaa985b4ee7  final-micro/micro-puc51.tsv
+f3a38c47a3a94715ae318beca0d8f45bb8f395e807f286a7ed261f6a053b343e  kat-luajit.txt
+f3a38c47a3a94715ae318beca0d8f45bb8f395e807f286a7ed261f6a053b343e  kat-puc51.txt
+f3a38c47a3a94715ae318beca0d8f45bb8f395e807f286a7ed261f6a053b343e  final-micro/micro-luajit.tsv
+f3a38c47a3a94715ae318beca0d8f45bb8f395e807f286a7ed261f6a053b343e  final-micro/micro-puc51.tsv
 ```
 
 (The KAT pair and the final micro carry the same digest because

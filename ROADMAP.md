@@ -161,6 +161,12 @@ the goal-level view.
   review-fix round. Every start awaits the user's GUI playtest; capitals,
   villages, outposts, camps and the king/guard content are the rest of the
   package.
+  The **capital parts library** followed the same day: eighteen generators
+  (king's hall with throne room, curtain wall, tower, gatehouse, market
+  square, colonnade, temple, barracks, scriptorium, granary, stable,
+  statue, and hedge/grove/stilt/water edge pieces), the capital palette
+  vocabulary and the NPC socket seam, with the six starts byte-identical
+  (`docs/research/wp13-capital-library.md`). No capital is composed yet.
 - [x] WP33: gathering plants, signature woods and cultural sources on final
   zone/race-region ownership; accepted with WP40 R7 on 2026-09-02.
 - [ ] WP34: deep spawn pressure, corrected depth-level curve, camp-only

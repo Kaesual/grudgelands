@@ -249,6 +249,15 @@ combined review-fix round; native checks, interpreter parity and independent
 reviews are green. Two round-A playtest rulings also shipped here: the six
 start areas are emerged once at server start (6/6 in 42.6 s on a fresh
 world) and no hostile mob spawns inside their protected footprints.
+A ninth increment adds the **capital parts library**: eighteen more
+generators -- a basilica king's hall with a throne room, a chainable curtain
+wall with corner towers and gatehouses for the three walled races, a market
+square, colonnade, temple, barracks, scriptorium, granary, stable and statue,
+and hedge, grove, stilt and water edge pieces for the three open ones -- plus
+the named standing positions (king, vendors, guard posts, patrol loops) a
+later NPC package will place characters into. None of it is wired into a
+settlement yet; a composition lane builds the first capital, Highcourt, out of
+these parts.
 **Every start still awaits the user's GUI playtest**, and capitals, villages,
 outposts, camps and functional settlement services remain later work.
 WP5, WP26, WP44, WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind
