@@ -247,10 +247,10 @@ isometric renderer used to review buildings before playtests. The last four
 starts were built in parallel lanes, merged onto one branch and given one
 combined review-fix round; native checks, interpreter parity and independent
 reviews are green. Two round-A playtest rulings also shipped here: the six
-start areas are emerged once at server start (6/6 in 42.6 s on a fresh world)
-and no hostile mob spawns inside their protected footprints. **Every start still awaits the user's GUI playtest**, and
-capitals, villages, outposts, camps and functional settlement services remain
-later work.
+start areas are emerged once at server start (6/6 in 42.6 s on a fresh
+world) and no hostile mob spawns inside their protected footprints.
+**Every start still awaits the user's GUI playtest**, and capitals, villages,
+outposts, camps and functional settlement services remain later work.
 WP5, WP26, WP44, WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind
 shipped prerequisites. WP34 still needs structures and economy.
 

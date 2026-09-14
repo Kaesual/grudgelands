@@ -59,10 +59,17 @@ local function elapsed_s()
 	return (now_us() - started_us) / 1000000
 end
 
+-- Deferred on purpose, with a snapshot of the state that changed. A listener
+-- may react by emerging something itself (character creation loads the
+-- arrival area at commit), and NOTHING may call core.emerge_area from inside
+-- an emerge callback — see the deadlock note at dispatch_later below.
 local function notify_progress()
-	for i = 1, #progress_callbacks do
-		progress_callbacks[i](ready_count, #starts, failed_count > 0)
-	end
+	local ready, total, failed = ready_count, #starts, failed_count > 0
+	core.after(0, function()
+		for i = 1, #progress_callbacks do
+			progress_callbacks[i](ready, total, failed)
+		end
+	end)
 end
 
 --
@@ -96,6 +103,19 @@ end
 
 local request_next
 
+-- core.emerge_area must NEVER be called from inside an emerge callback. On
+-- shutdown EmergeThread::cancelPendingItems holds m_queue_mutex while it runs
+-- the completion callbacks (luanti src/emerge.cpp:494-508), and
+-- enqueueBlockEmerge re-locks that same non-recursive mutex (emerge.cpp:302):
+-- enqueuing from a callback self-deadlocks the emerge thread, and the server
+-- joins those threads before on_shutdown runs, so no Lua-side flag can help.
+-- Every dispatch out of a callback therefore goes through one scheduled job.
+local function dispatch_later()
+	core.after(0, function()
+		request_next()
+	end)
+end
+
 local function enqueue(row)
 	if row.queued or row.pending or row.ready then
 		return
@@ -125,7 +145,7 @@ local function emerge_finished(row, failed)
 				" could not be prepared after " .. row.attempts .. " attempts")
 			notify_progress()
 		end
-		request_next()
+		dispatch_later()
 		return
 	end
 	if not row.ready then
@@ -143,7 +163,7 @@ local function emerge_finished(row, failed)
 		end
 		notify_progress()
 	end
-	request_next()
+	dispatch_later()
 end
 
 local function request(row)

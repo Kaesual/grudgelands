@@ -70,6 +70,11 @@ local function reset(identity_count)
 			harness.mods_loaded[#harness.mods_loaded + 1] = fn
 		end,
 		emerge_area = function(pos1, pos2, callback)
+			-- HARD RULE: the engine self-deadlocks if a block is enqueued from
+			-- inside an emerge completion callback (src/emerge.cpp:302 vs
+			-- :494-508), so every enqueue must come from a scheduled job.
+			assert(not harness.in_callback,
+				"core.emerge_area called from inside an emerge callback")
 			harness.open = harness.open + 1
 			if harness.open > harness.max_open then
 				harness.max_open = harness.open
@@ -89,10 +94,12 @@ local function deliver(index, action, blocks)
 	request.done = true
 	harness.open = harness.open - 1
 	blocks = blocks or 3
+	harness.in_callback = true
 	for block = 1, blocks do
 		request.callback({x = block, y = 0, z = 0},
 			block == 1 and action or core.EMERGE_GENERATED, blocks - block)
 	end
+	harness.in_callback = false
 end
 
 -- Which start a queued request belongs to, read back from its envelope.
@@ -184,6 +191,13 @@ for index = 1, 6 do
 	deliver(index, core.EMERGE_GENERATED)
 	ready = grug_core.starts_ready()
 	assert_equal(ready, index, "ready after start " .. index)
+	-- The replacement request is enqueued by a scheduled job, never by the
+	-- callback that just completed.
+	if index < 6 then
+		assert_equal(#harness.requests, math.min(index + 1, 6),
+			"no synchronous re-entry after start " .. index)
+	end
+	run_after()
 	if index < 6 then
 		assert_equal(#harness.requests, math.min(index + 2, 6),
 			"queued requests after start " .. index)
@@ -208,6 +222,9 @@ assert_equal(#harness.logs, 8, "log line count")
 --
 boot()
 deliver(1, core.EMERGE_CANCELLED)
+assert_equal(#harness.requests, 2,
+	"a cancelled callback enqueues nothing synchronously")
+run_after()
 assert_equal(grug_core.starts_ready(), 0, "cancelled start is not ready")
 assert_equal(grug_core.start_ready("dwarf"), false, "cancelled dwarf")
 assert_equal(grug_core.starts_preload_failed(), false,
@@ -246,6 +263,7 @@ assert_equal(grug_core.starts_ready(), 6, "re-requested start is ready")
 boot()
 for index = 1, 6 do
 	deliver(index, core.EMERGE_FROM_DISK, 1)
+	run_after()
 end
 ready, total = grug_core.starts_ready()
 assert_equal(ready, 6, "restart ready count")
@@ -253,6 +271,7 @@ assert_equal(total, 6, "restart total count")
 assert_equal(#harness.requests, 6, "restart request count")
 -- Requesting again after completion emerges nothing a second time.
 assert_equal(grug_core.request_starts_preload(), true, "idle re-request")
+run_after()
 assert_equal(#harness.requests, 6, "idle re-request emerges nothing")
 
 --
@@ -272,4 +291,5 @@ print(table.concat({
 	"cancel_retries=1",
 	"permanent_failures=1",
 	"restart_from_disk=6",
+	"callback_reentry=0",
 }, "|"))

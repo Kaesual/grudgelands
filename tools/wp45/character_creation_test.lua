@@ -288,6 +288,18 @@ local function finish_emerge(request, actions)
 	end
 end
 
+-- Completes the pending arrival emerge (creation's second gate: the player's
+-- OWN start blocks must be loaded right now, not merely generated once) and
+-- runs the scheduled jobs its callback defers to.
+local function finish_arrival(context)
+	local request = emerge_requests[#emerge_requests]
+	assert(request and not request.finished,
+		"an arrival emerge is pending: " .. (context or "?"))
+	finish_emerge(request, {core.EMERGE_FROM_DISK})
+	run_after()
+	return request
+end
+
 -- Blocks of a request that is not finished yet (calls_remaining > 0).
 local function partial_emerge(request, blocks)
 	for index = 1, blocks do
@@ -437,15 +449,29 @@ assert_locked(fresh, "pending preload")
 -- and must not produce a formspec packet.
 local sends_before = fresh.formspec_sends
 partial_emerge(preload_request("dwarf"), 2)
+run_after()
 assert_equal(fresh.formspec_sends, sends_before, "partial emerge sends nothing")
 finish_emerge(preload_request("dwarf"), {core.EMERGE_FROM_MEMORY})
+run_after()
 assert_equal(grug_core.starts_ready(), 1, "one start ready")
 assert_equal(fresh.formspec_sends, sends_before + 1, "one send per change")
 assert_contains(fresh.formspec, "(1 of 6)", "updated progress text")
 assert_equal(fresh.teleports, 0, "another race's start does not release")
 
+-- Closing the progress form (Esc) must re-send it: it is gone from the
+-- screen, so the send-on-change memo may not suppress the next send.
+local sends_before_close = fresh.formspec_sends
+receive(fresh, "grug_classes:loading", {quit = true})
+assert_equal(fresh.formname, nil, "closed loading form")
+run_after()
+assert_dark_form(fresh, "grug_classes:loading", "reopened loading")
+assert_contains(fresh.formspec, "(1 of 6)", "reopened progress text")
+assert_equal(fresh.formspec_sends, sends_before_close + 1,
+	"closing re-sends the same text exactly once")
+
 -- The player's OWN start being ready is deliberately not enough.
 finish_emerge(preload_request("human"), {core.EMERGE_GENERATED})
+run_after()
 assert_equal(grug_core.start_ready("human"), true, "own start ready")
 assert_equal(fresh.teleports, 0, "own start ready still waits")
 assert_contains(fresh.formspec, "(2 of 6)", "own-start progress text")
@@ -471,6 +497,7 @@ local waiting_races = {"elf", "undead", "troll"}
 for index = 1, #waiting_races do
 	finish_emerge(preload_request(waiting_races[index]),
 		{core.EMERGE_GENERATED})
+	run_after()
 end
 assert_equal(grug_core.starts_ready(), 5, "five starts ready")
 assert_equal(fresh.teleports, 0, "five of six still waits")
@@ -481,6 +508,7 @@ for _ = 1, 3 do
 	finish_emerge(preload_request("orc"), {core.EMERGE_ERRORED})
 	run_after()
 end
+run_after()
 assert_equal(grug_core.starts_preload_failed(), true, "preload failure state")
 assert_dark_form(fresh, "grug_classes:loading", "failed loading")
 assert_contains(fresh.formspec, "retry_spawn", "retry button")
@@ -491,7 +519,19 @@ local requests_before_retry = #emerge_requests
 receive(fresh, "grug_classes:loading", {retry_spawn = true})
 assert_equal(#emerge_requests, requests_before_retry + 1, "retry re-requests")
 finish_emerge(preload_request("orc"), {core.EMERGE_GENERATED})
+run_after()
 assert_equal(grug_core.starts_ready(), 6, "all six start areas ready")
+
+-- Gate two: 6/6 proves the starts were generated, not that they are still
+-- loaded. The one teleport still happens only after this player's own
+-- arrival emerge succeeded.
+assert_equal(fresh.teleports, 0, "6/6 alone does not teleport")
+local fresh_arrival = emerge_requests[#emerge_requests]
+assert_equal(fresh_arrival.pos1.x, 10 - 16, "arrival envelope min x")
+assert_equal(fresh_arrival.pos2.x, 10 + 16, "arrival envelope max x")
+assert_equal(grug_classes.get_class(fresh), nil, "class waits for the arrival")
+finish_emerge(fresh_arrival, {core.EMERGE_FROM_MEMORY, core.EMERGE_GENERATED})
+run_after()
 
 assert_equal(grug_classes.get_class(fresh), "mage", "class commit")
 assert_equal(fresh.teleports, 1, "one final teleport")
@@ -505,6 +545,9 @@ assert_equal(fresh.physics.speed_climb, 1.5, "preserve unrelated physics")
 assert_equal(fresh.armor.immortal, nil, "restore immortality")
 assert_equal(fresh.armor.custom, 7, "preserve armor group")
 assert_equal(fresh.formname, nil, "close loading form")
+finish_emerge(fresh_arrival, {core.EMERGE_FROM_DISK})
+run_after()
+assert_equal(fresh.teleports, 1, "duplicate callback cannot re-teleport")
 
 -- The player that disconnected while waiting resumes at the class step and
 -- commits exactly once, at its own race start.
@@ -514,6 +557,7 @@ run_after()
 assert_locked(resumed, "resumed waiting player")
 assert_dark_form(resumed, "grug_classes:class", "resumed class")
 receive(resumed, "grug_classes:class", {choose_priest = true})
+finish_arrival("resumed")
 assert_equal(resumed.teleports, 1, "resumed final teleport")
 assert_equal(resumed.pos.x, -550, "resumed dwarf spawn x")
 assert_equal(grug_classes.get_class(resumed), "priest", "resumed class commit")
@@ -526,14 +570,17 @@ run_after()
 local requests_before_prefetched = #emerge_requests
 receive(prefetched, "grug_factions:select", {choose_accord = true})
 receive(prefetched, "grug_classes:race", {choose_human = true})
+-- With every start prepared, race selection prefetches the arrival area
+-- behind the class dialog, exactly as WP45 intended.
+finish_arrival("prefetched")
 assert_equal(prefetched.teleports, 0, "prepared start waits for class")
 assert_equal(grug_classes.get_class(prefetched), nil, "prefetch class absent")
 assert_dark_form(prefetched, "grug_classes:class", "prefetched class")
 receive(prefetched, "grug_classes:class", {choose_mage = true})
 assert_equal(prefetched.teleports, 1, "prefetched immediate teleport")
 assert_equal(prefetched.formname, nil, "prefetched form closes")
-assert_equal(#emerge_requests, requests_before_prefetched,
-	"a ready preload emerges nothing per player")
+assert_equal(#emerge_requests, requests_before_prefetched + 1,
+	"exactly one arrival emerge per player, none for the starts")
 
 -- The committed position belongs to the exact faction/race identity at commit
 -- time: an admin race change before the class click moves the destination.
@@ -542,10 +589,16 @@ join(changed, true)
 run_after()
 receive(changed, "grug_factions:select", {choose_accord = true})
 receive(changed, "grug_classes:race", {choose_human = true})
+finish_arrival("changed human")
+local changed_requests = #emerge_requests
 local changed_ok = chatcommands.race.func("admin", "changed dwarf")
 assert(changed_ok, "admin race change")
+assert_equal(#emerge_requests, changed_requests + 1,
+	"identity change starts a replacement arrival emerge")
 assert_equal(changed.teleports, 0, "admin race change does not teleport")
 receive(changed, "grug_classes:class", {choose_warrior = true})
+assert_equal(changed.teleports, 0, "stale ready spawn not committed")
+finish_arrival("changed dwarf")
 assert_equal(changed.pos.x, -550, "changed race spawn x")
 assert_equal(changed.teleports, 1, "changed identity final teleport")
 
@@ -557,11 +610,18 @@ join(administered, true)
 run_after()
 receive(administered, "grug_factions:select", {choose_accord = true})
 receive(administered, "grug_classes:race", {choose_human = true})
+local administered_requests = #emerge_requests
 local faction_ok = chatcommands.faction.func("admin", "administered accord")
 assert(faction_ok, "admin faction set")
+assert_equal(#emerge_requests, administered_requests,
+	"admin faction reuses the coordinator load")
 assert_equal(administered.teleports, 0, "admin faction no early teleport")
 local class_ok = chatcommands.class.func("admin", "administered priest")
 assert(class_ok, "admin class set")
+assert_equal(grug_classes.get_class(administered), nil,
+	"admin first class remains transient")
+assert_dark_form(administered, "grug_classes:loading", "admin class loading")
+finish_arrival("administered")
 assert_equal(administered.teleports, 1, "admin faction one final teleport")
 assert_equal(grug_classes.get_class(administered), "priest",
 	"admin class commits once")
@@ -583,6 +643,7 @@ run_after()
 assert_locked(rejoined, "rejoin")
 assert_dark_form(rejoined, "grug_classes:class", "rejoin class")
 receive(rejoined, "grug_classes:class", {choose_priest = true})
+finish_arrival("rejoined")
 assert_equal(rejoined.teleports, 1, "rejoined session teleport")
 assert_equal(rejoined.pos.x, -550, "rejoined dwarf spawn x")
 assert_equal(grug_classes.get_class(rejoined), "priest", "rejoined class commit")
@@ -601,6 +662,7 @@ local dead_teleports = dead.teleports
 assert(respawn(dead), "creation owns dead respawn")
 assert_equal(dead.teleports, dead_teleports, "dead respawn no eager teleport")
 receive(dead, "grug_classes:class", {choose_mage = true})
+finish_arrival("dead")
 assert_equal(dead.teleports, dead_teleports + 1, "dead final teleport")
 assert_equal(dead.hp, 30, "dead character revived at full class HP")
 assert_equal(dead.hp_reason.type, "set_hp", "dead revive reason")
@@ -638,8 +700,8 @@ finish_emerge(emerge_requests[start_count + 2], {core.EMERGE_FROM_MEMORY})
 assert_equal(traveler.teleports, 1, "successful ordinary teleport")
 
 print(table.concat({
-	"wp45_character_creation_v2",
-	"preload_requests=" .. #emerge_requests,
+	"wp45_character_creation_v3",
+	"emerge_requests=" .. #emerge_requests,
 	"fresh_teleports=" .. fresh.teleports,
 	"prefetched_teleports=" .. prefetched.teleports,
 	"rejoin_teleports=" .. rejoined.teleports,

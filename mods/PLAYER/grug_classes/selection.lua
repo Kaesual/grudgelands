@@ -211,19 +211,86 @@ function grug_core.player_in_creation_stasis(name)
 	return creation_sessions[name] ~= nil
 end
 
--- The six start areas are prepared server-wide at startup (grug_core's
--- starts_preload.lua), not per player and not per race. Nothing is prefetched
--- here any more; the creation flow only reads the shared progress. Keeping the
--- identity binding makes an admin race change during the wait visible without
--- a cached position that could go stale.
+-- Loads THIS player's arrival area and caches the position it belongs to.
+-- The server-wide startup preload (grug_core/starts_preload.lua) proves the
+-- six starts were GENERATED; it does not keep them loaded — blocks unload
+-- again after server_unload_unused_data_timeout. A character created an hour
+-- after server start would otherwise teleport into unloaded space, so the
+-- single teleport still happens only after its own successful emerge. Once
+-- the blocks exist on disk this returns almost immediately.
+local function start_arrival_load(player)
+	local session = creation_sessions[player:get_player_name()]
+	local key = identity_key(player)
+	if not session or not key then
+		return false
+	end
+	session.loading = true
+	session.load_generation = (session.load_generation or 0) + 1
+	local generation = session.load_generation
+	local name = player:get_player_name()
+	local started = grug_factions.prepare_spawn(player,
+		function(_, spawn, failure)
+			-- Deferred by one step on purpose: on an identity change this
+			-- reaction starts a REPLACEMENT emerge, and core.emerge_area must
+			-- never be called from inside an emerge completion callback
+			-- (the shutdown deadlock documented in starts_preload.lua).
+			core.after(0, function()
+				local p = core.get_player_by_name(name)
+				local current = creation_sessions[name]
+				if not p or current ~= session or
+						current.load_generation ~= generation then
+					return
+				end
+				current.loading = false
+				if identity_key(p) ~= key then
+					current.spawn_key = nil
+					current.load_failed = nil
+					continue_creation(p)
+					return
+				end
+				if not spawn then
+					current.load_failed = failure or "spawn_unavailable"
+					if current.pending_class_id or character_complete(p) then
+						show_loading(p, true)
+					end
+					return
+				end
+				current.spawn_ready = true
+				current.spawn_pos = spawn
+				finish_if_ready(p)
+			end)
+		end)
+	if not started then
+		session.loading = false
+		session.load_failed = "spawn_unavailable"
+		return false
+	end
+	return true
+end
+
+-- Binds the pending start identity. The arrival load above may only start
+-- once ALL SIX starts are prepared (user decision 2026-09-14): before that it
+-- would compete with the startup preload for the same mapgen threads.
 start_spawn_load = function(player)
 	local session = creation_sessions[player:get_player_name()]
 	local key = identity_key(player)
 	if not session or not key then
 		return false
 	end
+	if session.spawn_key == key and
+			(session.loading or session.spawn_ready or session.load_failed) then
+		return true
+	end
 	session.spawn_key = key
-	return true
+	session.spawn_ready = false
+	session.spawn_pos = nil
+	session.load_failed = nil
+	session.loading = false
+	local ready, total = grug_core.starts_ready()
+	if ready < total then
+		return true
+	end
+	return start_arrival_load(player)
 end
 
 finish_if_ready = function(player)
@@ -237,31 +304,46 @@ finish_if_ready = function(player)
 	if not key or not class_id then
 		return false
 	end
-	-- Re-bind after an admin race/faction change: no cached position exists
-	-- any more, so binding is the whole invalidation.
-	session.spawn_key = key
 	local ready, total = grug_core.starts_ready()
 	if ready < total then
-		-- Every race start must be prepared, not only this player's: the
-		-- server-wide preload is the single gate (user decision 2026-09-14).
+		-- Gate one: every race start must be prepared, not only this player's
+		-- (user decision 2026-09-14). Nothing of this player's own is loaded
+		-- while the shared preload still runs.
+		session.spawn_key = key
 		show_loading(player, session.load_failed ~= nil or
 			grug_core.starts_preload_failed())
 		return false
 	end
-	-- Resolved at commit time, never cached: the identity above is the one
-	-- this position must belong to.
-	local spawn = grug_core.start_position(grug_factions.get_faction(player),
-		grug_classes.get_race(player))
-	if not spawn then
-		session.load_failed = "spawn_unavailable"
-		show_loading(player, true)
+	if session.spawn_key ~= key then
+		-- An admin may change race/faction after a prefetch completed. Retire
+		-- the cached position and its callback generation before loading the
+		-- new one.
+		session.load_generation = (session.load_generation or 0) + 1
+		session.spawn_key = nil
+		session.spawn_ready = false
+		session.spawn_pos = nil
+		session.load_failed = nil
+		session.loading = false
+		start_spawn_load(player)
+		show_loading(player, session.load_failed ~= nil)
+		return false
+	end
+	-- Gate two: this player's own arrival area is loaded RIGHT NOW.
+	if not session.spawn_ready then
+		if not session.loading and not session.load_failed then
+			start_spawn_load(player)
+		end
+		if creation_sessions[name] ~= session then
+			return true
+		end
+		show_loading(player, session.load_failed ~= nil)
 		return false
 	end
 
 	-- Position first, then persist the final identity. A disconnect before the
-	-- start areas are ready therefore cannot leave a fully-created character
-	-- behind at the unsafe engine spawn.
-	player:set_pos(spawn)
+	-- asynchronous load completes therefore cannot leave a fully-created
+	-- character behind at the unsafe engine spawn.
+	player:set_pos(session.spawn_pos)
 	stop_velocity(player)
 	if not grug_classes.get_class(player) and
 			not grug_classes.set_class(player, class_id) then
@@ -376,13 +458,18 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		local session = creation_sessions[player:get_player_name()]
 		if fields.retry_spawn and session and
 				(session.load_failed or grug_core.starts_preload_failed()) then
+			session.spawn_key = nil
 			session.load_failed = nil
 			-- Re-requests only the start areas that are still missing; the
-			-- ready ones are never emerged twice.
+			-- ready ones are never emerged twice. start_spawn_load then
+			-- re-runs this player's own arrival load once they are.
 			grug_core.request_starts_preload()
 			start_spawn_load(player)
 			finish_if_ready(player)
 		else
+			-- The player closed the form (Esc). It is gone from the screen, so
+			-- the send-on-change memo must not suppress the re-send.
+			forget_loading(player)
 			reopen_later(player)
 		end
 		return true
