@@ -270,9 +270,16 @@ its podium, four gate houses, a market square, colonnades, a chapel with a
 belfry, a service court with the two royal traders and a travel plaza held
 empty for the waypoint package, a market and professions district of nine
 plots that level themselves onto terraced ground, and gate avenues computed
-from the terrain rather than authored as cells. It is a library composition:
-binding a capital into the mapgen seam is the next package.
-**Every start still awaits the user's GUI playtest**, and capitals, villages,
+from the terrain rather than authored as cells. An eleventh increment puts
+that city **into the world**: the settlement seam now lets one place own many
+buildings of different kinds, levels each district plot onto the ground under
+its own middle, lays the avenues down the terraces and across the river as the
+map is generated, and builds the whole capital only when somebody actually
+goes there. Highcourt's seventy-one inhabitants -- gate guards, six separate
+watch patrols, market villagers, the two royal traders -- arrive with the place
+rather than at server start. The six starts come out byte-for-byte unchanged.
+**Every start still awaits the user's GUI playtest**, Highcourt has not been
+walked either, and the remaining capitals, villages,
 outposts, camps and functional settlement services remain later work.
 WP5, WP26, WP44, WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind
 shipped prerequisites. WP34 still needs structures and economy.

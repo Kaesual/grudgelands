@@ -112,6 +112,42 @@ Decided 2026-09-14.
   are composed by one function for players and humanoid mobs, see
   [wp13-character-visuals-contract.md](../research/wp13-character-visuals-contract.md).
 
+## Capitals in the world
+
+Decided 2026-09-15 with the pilot capital, Highcourt.
+
+A capital is not one blueprint but a civic core, a list of district plots and
+the avenues between them, and the three reach the world in three different ways.
+The **core** is anchor-relative like a start, flat on the fitted capital height,
+and the guard banner the map already writes at the anchor stays where it is: the
+core leaves that one cell alone. A **district plot** stands on terraced ground
+and cannot be anchor-relative, so each plot names one reference column, the
+server asks the final height of that column once per world session and projects
+the whole plot from it; a foundation skirt carries the plot's perimeter six
+nodes down and the plot clears its own airspace, and a plot whose ground falls
+further than the skirt reaches is moved rather than propped. The **avenues** and
+the ring street have no fixed cells at all: they are computed per mapchunk from
+the ground the map actually has, climbing terraces half a node at a time and
+crossing water as a causeway, with a lamp line every eight nodes that survives
+the mapchunk borders. Where an avenue crosses the ring street the avenue runs
+through and the side street yields, and no lamp stands in the crossing road.
+
+A capital's buildings are **not built until somebody goes there**: they are
+constructed the first time a mapchunk touches the capital's envelope and
+released again once the map has moved away, so six capitals never sit in memory
+at once. The six starts stay built from the start, because the spawn depends on
+them.
+
+**NPCs arrive with the place, not with the server.** The six starts are prepared
+and populated at startup; a capital is not preloaded, so its roster is placed
+the first time its area is actually emerged or loaded, and its outlying district
+plots fill in as a player walks up to them. A capital carries several patrol
+loops — a city ring and one per gate tower — and each loop gets its own guard,
+walking that loop and no other; its flair villagers keep to the composition they
+belong to, the core or their own plot, instead of wandering the whole city. Its
+two traders stand on the blueprint's own vendor sockets; the five capitals whose
+cores have not been built yet keep their fixed vendor offsets until they are.
+
 Shipped behaviour of that first roster: each start's nine NPCs are placed once
 its area is prepared at server start, from the sockets alone, and stay for the
 life of the world. Two faction guards hold their authored gate posts, returning
