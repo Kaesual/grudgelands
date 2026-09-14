@@ -126,9 +126,14 @@ local function loader(directory)
 		local buf = parts.buffer()
 		local lights, doorways, rooms = {}, {}, {}
 		local placed, inside_by_id = {}, {}
+		-- The same plots in roster order. `placed` is keyed by landmark id, so
+		-- it can only be walked with `pairs`; the ordered copy lets the tests
+		-- below run over an array with `ipairs` instead, which is why the
+		-- footprint test is free of hash-table iteration.
+		local plot_order = {}
 
 		local function outdoors(x, z)
-			for _, plot in pairs(placed) do
+			for _, plot in ipairs(plot_order) do
 				if x >= plot.x and x <= plot.x + plot.w - 1 and
 						z >= plot.z and z <= plot.z + plot.d - 1 then
 					return false
@@ -137,21 +142,67 @@ local function loader(directory)
 			return true
 		end
 
-		local function prop(x1, z1, x2, z2, build)
-			if not layout.free_area(buf, x1, z1, x2, z2, 4) then return false end
-			for z = z1, z2 do
-				for x = x1, x2 do
-					if not layout.natural(buf, x, z) then return false end
-				end
-			end
-			build()
-			return true
+		-- Ground this composition laid itself and has built nothing on: the
+		-- meadow's turf, its worn earth and gravel patches, and the farmyard's
+		-- straw. `layout.natural` is stricter -- bare soil only -- and stays
+		-- the rule for the orchard and the meadow flora; a bench, a bale or a
+		-- crate is allowed to stand on a worn patch or in the straw yard, and
+		-- must not be lost to one.
+		local GROUND = {}
+		for _, role in ipairs({"ground", "ground_patch", "ground_bare",
+				"ground_straw"}) do
+			local name = palette.maybe(role)
+			if name ~= nil then GROUND[name] = true end
 		end
 
-		local function paved_prop(x1, z1, x2, z2, build)
-			if not layout.free_area(buf, x1, z1, x2, z2, 4) then return false end
-			build()
-			return true
+		-- Every prop the composition asks for MUST land. A prop that is
+		-- quietly skipped is a hole in the authored scene that no fixture can
+		-- see, so both helpers name the prop and its position and raise
+		-- instead of returning false -- as does a `build` that reports a
+		-- partial result of its own by returning false.
+		local function refuse(name, x, z, reason)
+			error("wp13 dawnmere: prop " .. name .. " at " .. x .. "," .. z ..
+				" was not placed: " .. reason, 0)
+		end
+
+		local function place(name, x1, z1, build)
+			if build() == false then
+				refuse(name, x1, z1, "the prop could not be completed")
+			end
+		end
+
+		-- A prop on open ground: clear space, and nothing built underneath.
+		local function prop(name, x1, z1, x2, z2, build)
+			if not layout.free_area(buf, x1, z1, x2, z2, 4) then
+				refuse(name, x1, z1, "the space is taken")
+			end
+			for z = z1, z2 do
+				for x = x1, x2 do
+					local below = buf:at(x, 0, z)
+					if below == nil or not GROUND[below.name] then
+						refuse(name, x1, z1, "the ground at " .. x .. "," .. z ..
+							" is " .. (below and below.name or "air"))
+					end
+				end
+			end
+			place(name, x1, z1, build)
+		end
+
+		-- Furniture that belongs on the paving it stands on, so only the space
+		-- is tested.
+		local function paved_prop(name, x1, z1, x2, z2, build)
+			if not layout.free_area(buf, x1, z1, x2, z2, 4) then
+				refuse(name, x1, z1, "the space is taken")
+			end
+			place(name, x1, z1, build)
+		end
+
+		-- A wall prop must find its support and a free cell, or the wall it
+		-- was authored against has moved.
+		local function wall_prop(name, role, x, y, z, dx, dy, dz)
+			if not parts.wall_prop(buf, palette, role, x, y, z, dx, dy, dz) then
+				refuse(name, x, z, "no support or no room at height " .. y)
+			end
 		end
 
 		-- 1. Meadow ground.
@@ -176,6 +227,7 @@ local function loader(directory)
 			local footprint = points.footprint[1]
 			placed[plot.id] = {x = plot.x, z = plot.z,
 				w = footprint.w, d = footprint.d, peak = part.peak}
+			plot_order[#plot_order + 1] = placed[plot.id]
 			for _, door in ipairs(points.doors) do
 				doorways[#doorways + 1] = {x = door.x, y = door.y, z = door.z,
 					face = door.face, id = plot.id}
@@ -219,30 +271,36 @@ local function loader(directory)
 		-- left where the carter left it.
 		dressing.well(buf, palette, -6, -3)
 		dressing.signpost(buf, palette, 7, -4)
-		paved_prop(3, 2, 7, 6, function()
+		paved_prop("market_stall", 3, 2, 7, 6, function()
 			dressing.stall(buf, palette, 4, 3, 2)
 		end)
-		prop(-10, 2, -6, 5, function()
+		-- The carts go down before the flower beds and the settles, and the
+		-- claimed area covers the wheel row at z - 1 as well as the two
+		-- bearers: a cart that shares a cell with a bed kerb loses its wheels
+		-- and its barrel, which is what used to happen here in silence.
+		for _, cart in ipairs({{8, 3}, {-10, -3}}) do
+			prop("handcart", cart[1], cart[2] - 1, cart[1] + 1, cart[2],
+				function()
+					return dressing.handcart(buf, palette, cart[1], cart[2], "x")
+				end)
+		end
+		prop("flower_bed", -10, 2, -6, 5, function()
 			dressing.flower_bed(buf, palette, -10, 2, -6, 5)
 		end)
-		prop(-10, -8, -8, -6, function()
+		prop("flower_bed", -10, -8, -8, -6, function()
 			dressing.flower_bed(buf, palette, -10, -8, -8, -6)
 		end)
-		prop(8, -8, 10, -6, function()
+		prop("flower_bed", 8, -8, 10, -6, function()
 			dressing.flower_bed(buf, palette, 8, -8, 10, -6)
 		end)
-		for _, seat in ipairs({{-4, 6, 2, "x"}, {-4, -8, 0, "x"},
-				{4, -8, 0, "x"}, {-10, -1, 1, "z"}, {9, -1, 3, "z"}}) do
-			prop(seat[1], seat[2], seat[1] + 2, seat[2], function()
+		-- Settles along the green's edges. None may reach the road (x -2 to 2)
+		-- or the green's own brick kerb, which are not open ground.
+		for _, seat in ipairs({{-7, 6, 2, "x"}, {-5, -8, 0, "x"},
+				{3, -8, 0, "x"}, {-10, -1, 1, "z"}, {8, -1, 3, "z"}}) do
+			prop("bench", seat[1], seat[2], seat[1] + 2, seat[2], function()
 				dressing.bench(buf, palette, seat[1], seat[2], seat[3], 3, "x")
 			end)
 		end
-		prop(7, -7, 8, -7, function()
-			dressing.handcart(buf, palette, 7, -7, "x")
-		end)
-		prop(-9, 6, -8, 6, function()
-			dressing.handcart(buf, palette, -9, 6, "x")
-		end)
 		-- Stepping stones across the turf, from the green's kerb to the well
 		-- and on to the lanes, so the green reads as walked on.
 		dressing.stepping_line(buf, palette, -6, -1, -6, 1)
@@ -266,18 +324,20 @@ local function loader(directory)
 		end
 		for _, stack in ipairs({{-32, -10, 2}, {-31, -10, 3}, {-24, -10, 2},
 				{-23, -10, 2}}) do
-			prop(stack[1], stack[2], stack[1], stack[2], function()
+			prop("bale_stack", stack[1], stack[2], stack[1], stack[2], function()
 				dressing.bale_stack(buf, palette, stack[1], stack[2], stack[3])
 			end)
 		end
-		prop(-27, -10, -26, -10, function()
-			dressing.handcart(buf, palette, -27, -10, "x")
+		prop("handcart", -27, -11, -26, -10, function()
+			return dressing.handcart(buf, palette, -27, -10, "x")
 		end)
-		-- Cart wheels left leaning on the barn and the inn gable.
-		parts.wall_prop(buf, palette, "wheel", -34, 2, -2, 1, 0, 0)
-		parts.wall_prop(buf, palette, "wheel", -34, 2, 0, 1, 0, 0)
-		parts.wall_prop(buf, palette, "wheel", 17, 2, 14, -1, 0, 0)
-		parts.wall_prop(buf, palette, "wheel", 17, 2, 16, -1, 0, 0)
+		-- Cart wheels left leaning on the barn and the inn gable. Both walls
+		-- carry glass between their posts, so each wheel hangs on a post
+		-- column: the barn's at z = -2 and z = 2, the inn's at z = 14 and 15.
+		wall_prop("barn_wheel", "wheel", -34, 2, -2, 1, 0, 0)
+		wall_prop("barn_wheel", "wheel", -34, 2, 2, 1, 0, 0)
+		wall_prop("inn_wheel", "wheel", 17, 2, 14, -1, 0, 0)
+		wall_prop("inn_wheel", "wheel", 17, 2, 15, -1, 0, 0)
 
 		-- 8. Fields, their fences and their gates.
 		local crop_cells = 0
@@ -314,30 +374,40 @@ local function loader(directory)
 		end
 
 		-- 10. Kerbs, timber and props between the plots.
+		-- Kerbs in the open ground between the plots: clear of the crop
+		-- fields to the south and of the cottage footprints to the north.
 		local KERBS = {
-			{-20, 36, -12, 36}, {12, 36, 20, 36},
-			{-17, -20, -9, -20}, {7, -20, 15, -20},
+			{-15, 36, -12, 36}, {12, 36, 15, 36},
+			{-20, -20, -16, -20}, {16, -20, 20, -20},
 		}
 		for _, line in ipairs(KERBS) do
-			prop(line[1], line[2], line[3], line[4], function()
+			prop("kerb", line[1], line[2], line[3], line[4], function()
 				dressing.low_wall_line(buf, palette, line[1], line[2],
 					line[3], line[4])
 			end)
 		end
 		for _, pile in ipairs({{-22, 6, 4, "z"}, {22, 8, 3, "z"},
-				{-36, -12, 3, "x"}, {26, 28, 3, "x"}}) do
+				{-36, -12, 3, "x"}, {26, 24, 3, "x"}}) do
 			local axis = pile[4]
 			local x2 = axis == "x" and pile[1] + pile[3] - 1 or pile[1]
 			local z2 = axis == "z" and pile[2] + pile[3] - 1 or pile[2]
-			prop(pile[1], pile[2], x2, z2, function()
+			prop("wood_pile", pile[1], pile[2], x2, z2, function()
 				dressing.wood_pile(buf, palette, pile[1], pile[2], pile[3], axis)
 			end)
 		end
-		for _, crate in ipairs({{22, 2, 3}, {22, 3, 3}, {-22, 2, 1},
-				{-14, 12, 0}}) do
-			prop(crate[1], crate[2], crate[1], crate[2], function()
+		-- Crates on the worn ground outside the smithy.
+		for _, crate in ipairs({{22, 2, 3}, {22, 3, 3}}) do
+			prop("crates", crate[1], crate[2], crate[1], crate[2], function()
 				dressing.crates(buf, palette, crate[1], crate[2], crate[3])
 			end)
+		end
+		-- And two more stacked indoors, on the barn's straw and the meeting
+		-- hall's boards, where the floor underneath is built and not ground.
+		for _, crate in ipairs({{-22, 2, 1}, {-14, 12, 0}}) do
+			paved_prop("crates", crate[1], crate[2], crate[1], crate[2],
+				function()
+					dressing.crates(buf, palette, crate[1], crate[2], crate[3])
+				end)
 		end
 
 		-- 11. Orchards: apple standards on the proportions of the vendored

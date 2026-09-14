@@ -157,7 +157,9 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			end
 		end
 	end
-	table.sort(settlement_palette)
+	-- Byte order, never Lua's locale-dependent `<`: `r7_content.lua` accepts
+	-- this union only if it is sorted the way IT compares names.
+	table.sort(settlement_palette, r7_settlement_module.less_bytes)
 
 	local module = {}
 	local function build(native_identities, expected_manifest_sha256, evidence_mode,

@@ -398,7 +398,10 @@ local function loader(directory)
 		return true
 	end
 
-	-- A hand cart: two log bearers with a wheel leaning on each of them.
+	-- A hand cart: two log bearers, a wheel leaning on the outer face of each,
+	-- and the barrel the cart carries riding on the far bearer. Returns false
+	-- when a wheel or the barrel could not be placed, so a caller can refuse
+	-- to keep half a cart instead of losing the rest silently.
 	function M.handcart(buf, palette, x, z, axis)
 		local log = palette.node("tree_log")
 		local ax = (axis == "x") and 1 or 0
@@ -408,11 +411,27 @@ local function loader(directory)
 		end
 		-- The wheels hang on the outer face of the bearers, which are logs and
 		-- therefore opaque full cubes.
+		local whole = true
 		for step = 0, 1 do
 			local wx, wz = x + ax * step - az, z + az * step - ax
-			parts.wall_prop(buf, palette, "wheel", wx, 1, wz, az, 0, ax)
+			if not parts.wall_prop(buf, palette, "wheel", wx, 1, wz, az, 0, ax) then
+				whole = false
+			end
 		end
-		buf:put(x + ax + az, 2, z + az + ax, palette.node("storage"), 0)
+		-- The barrel rides ON the far bearer, at `(x + ax, z + az)`. The
+		-- diagonal `(x + ax + az, z + az + ax)` is `(x + 1, z + 1)` on BOTH
+		-- axes, which is a cell off the cart, so the barrel floated there.
+		-- Guarded the way `parts.wall_prop` guards its props: the bearer under
+		-- it must be solid and the cell itself must be free.
+		local bx, bz = x + ax, z + az
+		local above = buf:at(bx, 2, bz)
+		if parts.solid_at(buf, bx, 1, bz) and
+				(above == nil or above.name == "air") then
+			buf:put(bx, 2, bz, palette.node("storage"), 0)
+		else
+			whole = false
+		end
+		return whole
 	end
 
 	-- Stepping stones laid over open ground, one node wide.
