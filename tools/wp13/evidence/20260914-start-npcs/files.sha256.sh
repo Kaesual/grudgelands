@@ -24,6 +24,8 @@ here="tools/wp13/evidence/20260914-start-npcs"
 		mods/ENTITIES/grug_mobs/start_npcs.lua \
 		mods/ENTITIES/grug_mobs/start_villagers.lua \
 		mods/ENTITIES/grug_traders/vendors.lua \
+		mods/PLAYER/grug_visuals/apply.lua \
+		mods/PLAYER/grug_visuals/compose.lua \
 		mods/MAPGEN/grug_mapgen/wp40/r7_dawnmere_blueprint.lua \
 		mods/MAPGEN/grug_mapgen/wp40/r7_hearthpine_blueprint.lua \
 		mods/MAPGEN/grug_mapgen/wp40/r7_kapok_blueprint.lua \
@@ -41,6 +43,7 @@ here="tools/wp13/evidence/20260914-start-npcs"
 		tools/wp13/integration_fixture.lua \
 		tools/wp13/library_kat.lua \
 		tools/wp13/settlement_sockets_kat.lua \
+		tools/wp13/start_npcs_kat.lua \
 		tools/wp13/stub_registry.lua
 	find "$here" -type f ! -name files.sha256 -print
 } | sort -u | xargs sha256sum >"$here/files.sha256"

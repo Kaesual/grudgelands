@@ -174,6 +174,26 @@ local function spot_taken(self, spot)
 	return false
 end
 
+-- THE VISUALS SEAM, called by hand and not by a wrapper.
+--
+-- `grug_mobs.register_mob` is what reads a definition's `_grug_visual` and
+-- installs the after_activate that applies it (grug_mobs/init.lua). These two
+-- families go through plain `mobs:register_mob` on purpose -- they must never
+-- get the level/XP engine -- so nothing would ever read the field, and a
+-- villager would keep the placeholder guard skin for good. Calling
+-- `grug_visuals.apply_entity` here is exactly what `grug_traders/vendors.lua`
+-- does for the same reason. The def still carries `_grug_visual` as the
+-- contract's declaration of what this entity looks like; this call is what
+-- makes it act.
+--
+-- No `write_textures` argument: that exists for grug_mobs' tier tint, which
+-- layers an elite's gold over the pristine list. A villager has no tier.
+local function apply_race_visual(self, race_id)
+	if core.global_exists("grug_visuals") then
+		grug_visuals.apply_entity(self, {race = race_id})
+	end
+end
+
 --
 -- The amble. Walk to the current idle socket, stand there facing its
 -- direction for a while, then pick another one. Every field it reads is a
@@ -352,6 +372,7 @@ for index = 1, #identities do
 				self._grug_npc_race = race_id
 				self._grug_npc_tag = names.villager
 				install_nametag(self, names.villager)
+				apply_race_visual(self, race_id)
 				grug_mobs.face_yaw(self, self._grug_face_yaw)
 			end,
 			on_rightclick = function(self, clicker)
@@ -369,6 +390,7 @@ for index = 1, #identities do
 				self._grug_npc_race = race_id
 				self._grug_npc_tag = names.elder
 				install_nametag(self, names.elder)
+				apply_race_visual(self, race_id)
 				-- The quest shell has no tick of its own, so this is the ONLY
 				-- thing that puts it back on its authored facing after a reload.
 				grug_mobs.face_yaw(self, self._grug_face_yaw)

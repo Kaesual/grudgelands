@@ -4,8 +4,10 @@
 # under the engine's bundled PUC 5.1 build, with the exact input set hashed
 # before and after so the two runs provably saw the same bytes.
 #
-# New in this round's input set: `tools/wp13/settlement_sockets_kat.lua` and the
-# production file it drives, `mods/CORE/grug_core/settlement_sockets.lua`.
+# New in this round's input set: the two real-code KATs and the production
+# files they drive -- `settlement_sockets_kat.lua` with
+# `mods/CORE/grug_core/settlement_sockets.lua`, and `start_npcs_kat.lua` with
+# `mods/ENTITIES/grug_mobs/start_npcs.lua`.
 set -euo pipefail
 export LC_ALL=C
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd -P)"
@@ -19,6 +21,7 @@ INPUTS=(
 	# sources of the vendored mods; `grug_nodes` is hashed with the rest
 	# because that reconstruction reads it.
 	mods/CORE/grug_core/settlement_sockets.lua
+	mods/ENTITIES/grug_mobs/start_npcs.lua
 	mods/ITEMS/grug_nodes/init.lua
 	mods/MAPGEN/grug_mapgen/wp13/buildings.lua
 	mods/MAPGEN/grug_mapgen/wp13/dawnmere.lua
@@ -47,6 +50,7 @@ INPUTS=(
 	tools/wp13/integration_fixture.lua
 	tools/wp13/library_kat.lua
 	tools/wp13/settlement_sockets_kat.lua
+	tools/wp13/start_npcs_kat.lua
 	tools/wp13/stub_registry.lua
 	/usr/bin/luajit
 	tools/bin/lua51

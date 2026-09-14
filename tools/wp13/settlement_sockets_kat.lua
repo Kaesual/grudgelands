@@ -157,6 +157,7 @@ return function(repo)
 		"an unregistered settlement has an anchor")
 	local settlements = grug_core.settlement_socket_settlements()
 	check(#settlements == 1, "settlement roster length differs")
+	-- (still one here: the capital is registered further down)
 	check(settlements[1].key == "hearthpine" and
 		settlements[1].race_id == "dwarf" and
 		settlements[1].anchor.y == ANCHOR.y, "settlement roster row differs")
@@ -185,7 +186,6 @@ return function(repo)
 	end
 	refuses("a second registration of one settlement", "hearthpine", "elf",
 		ANCHOR, one({}))
-	refuses("a second start for one race", "kapok", "dwarf", ANCHOR, one({}))
 	refuses("an empty settlement key", "", "elf", ANCHOR, one({}))
 	refuses("an empty race id", "kapok", "", ANCHOR, one({}))
 	refuses("a fractional anchor", "kapok", "elf", {x = 0, y = 1.5, z = 0},
@@ -217,12 +217,33 @@ return function(repo)
 		dir = {x = 0, z = 1}}
 	refuses("a duplicate socket id", "kapok", "elf", ANCHOR, duplicate)
 
+	-- A SECOND SETTLEMENT FOR ONE RACE IS ACCEPTED, because every race has a
+	-- start AND a capital and only the key is unique (contract section 3). The
+	-- race accessor keeps answering with the START -- the first registration --
+	-- and the capital is reached by its own key.
+	local CAPITAL = {x = -2400, y = 44, z = -3600}
+	local capital_count = grug_core.register_settlement_sockets(
+		"dwarf_capital", "dwarf", CAPITAL,
+		{{id = "throne", role = "king", x = 0, y = 1, z = 0,
+			dir = {x = 0, z = -1}}})
+	check(capital_count == 1, "capital registration count differs")
+	local start_again = grug_core.settlement_sockets("dwarf")
+	check(#start_again == #SOCKETS and start_again[1].id == "gate_west",
+		"the capital displaced the race's start sockets")
+	local capital = grug_core.settlement_sockets_at("dwarf_capital")
+	check(#capital == 1 and capital[1].id == "throne" and
+		capital[1].role == "king" and capital[1].pos.y == CAPITAL.y + 1,
+		"the capital's own key does not answer")
+	check(#grug_core.settlement_socket_settlements() == 2,
+		"the settlement roster lost the capital")
+	line("second_settlement", "one_race", "start_wins")
+
 	-- A refused registration leaves nothing behind.
 	check(#grug_core.settlement_sockets("elf") == 0,
 		"a refused registration was kept")
 	check(#grug_core.settlement_sockets_at("kapok") == 0,
 		"a refused settlement was kept")
-	check(#grug_core.settlement_socket_settlements() == 1,
+	check(#grug_core.settlement_socket_settlements() == 2,
 		"a refused registration reached the settlement roster")
 	line("refusals", "left_no_state", "pass")
 

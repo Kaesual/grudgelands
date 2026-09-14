@@ -31,8 +31,15 @@ seed="${SEED:-}"
 }
 supplied_root="${ROOT:-}"
 if [[ -n "$supplied_root" ]]; then
-	[[ "$supplied_root" = /tmp/grudgelands-headless.* && -d "$supplied_root" ]] || {
-		echo "ROOT must be an existing /tmp/grudgelands-headless.* directory" >&2
+	# RESOLVED, not glob-matched: this directory is about to have its staged
+	# game tree removed and rewritten, and a prefix test alone accepts
+	# /tmp/grudgelands-headless.x/../../home/... -- the pattern matches the
+	# literal string while the path is somewhere else entirely.
+	supplied_root="$(realpath -e -- "$supplied_root" 2>/dev/null || true)"
+	[[ -n "$supplied_root" && -d "$supplied_root" &&
+		"$supplied_root" == /tmp/grudgelands-headless.?* &&
+		"$supplied_root" != */../* ]] || {
+		echo "ROOT must resolve to an existing /tmp/grudgelands-headless.* directory" >&2
 		exit 2
 	}
 	root="$supplied_root"

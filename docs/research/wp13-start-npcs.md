@@ -96,8 +96,9 @@ frees a start socket. Neither touches targeting.
 
 `grug_mobs.storage` holds `startnpc:<race>:<socket>` = `"1"` for every occupied
 socket, plus `startnpcdue:<race>:<socket>` for a guard slot waiting out its
-refill. A marker is written the moment an NPC is placed and cleared only by
-that NPC's death.
+refill. A marker is written the moment an NPC is placed, and cleared in two
+places: from the guard's `on_die`, and from the heartbeat pass when the socket
+is visibly empty.
 
 **Why not a presence scan as the primary gate.** `core.get_objects_inside_radius`
 only ever sees *activated* objects, and a mapblock is activated by a player
@@ -118,6 +119,21 @@ gate posts are eight nodes apart and carry the same entity), "restored" a marker
 nobody had lost and left that post empty: Hearthpine came up with one guard
 instead of three. The fix is in `socket_occupied`, with that measurement in the
 comment.
+
+**A marker must never outlive its NPC, and `on_die` alone does not guarantee
+that.** `on_die` is reached only from `check_for_death` (api.lua:870-876), so
+`/clearobjects`, the `mob_active_limit` removal inside `mob_activate`
+(api.lua:3311-3314) and a shutdown between the mod-storage flush and the map
+flush all end with a marker and nothing standing on it — and that socket would
+then never refill for the life of the world. The heartbeat pass therefore also
+re-checks the sockets it *can* see: a placed slot within `PLAYER_RANGE` of a
+player whose `socket_occupied` is false is freed and queued again at once (no
+respawn delay — a death earns one, an entity that simply is not there any more
+does not). It is the exact mirror of the second gate, and it runs only on the
+heartbeat because a player being near is what makes the mapblock active, which
+is what makes the scan able to answer at all. This is also why the heartbeat
+now walks every row instead of skipping full ones: a full row is exactly where
+a marker without an NPC hides.
 
 Only guards are mortal; every other family cancels every punch and switches off
 every environmental damage source (the api.lua evidence is quoted in
@@ -153,14 +169,26 @@ The collision-box lift `add_mob` performs is kept via
 - **Quest shell**: stationary, nametagged, one placeholder line. No quest logic.
 - **Vendor**: the race's own `grug_traders:vendor_race_<race>` entity, with the
   capital offsets in `vendors.lua` untouched — the contract migrates those to
-  `vendor` sockets when the capital core lands, not before.
+  `vendor` sockets when the capital core lands, not before. Its
+  `after_activate` now also re-asserts `_grug_face_yaw`, so a start vendor
+  keeps its authored facing across reloads (a capital vendor carries no such
+  field and the call is a no-op for it).
+- **Race appearance**: both new families call
+  `grug_visuals.apply_entity(self, {race = race_id})` from `after_activate`,
+  guarded by `core.global_exists("grug_visuals")`, exactly as `vendors.lua`
+  does. `grug_mobs.register_mob` is what normally reads a definition's
+  `_grug_visual`, and these two families deliberately do not go through it, so
+  without the explicit call they would keep the placeholder guard skin for
+  good. The def still carries `_grug_visual` as the contract's declaration;
+  this call is what makes it act. No `write_textures` argument: that exists for
+  grug_mobs' tier tint, and a villager has no tier.
 
 ## Verification
 
 - **KAT pair, byte-identical.** `library_kat` + `blueprint_kat` +
-  `integration_fixture` + the new `settlement_sockets_kat` in one process under
-  LuaJIT and under `tools/bin/lua51`, `LC_ALL=C`:
-  `0dbeadcd07d98f3de19e7eb536953c0a7e561a653acbf4bfc7220b39588179d1` from both
+  `integration_fixture` + `settlement_sockets_kat` + `start_npcs_kat` in one
+  process under LuaJIT and under `tools/bin/lua51`, `LC_ALL=C`:
+  `758c3e8c5facc9eb75a25cb25eb4bd56455e3d79f4f7830614a74068191455de` from both
   (`kat.sh`, and the same digest from `final-micro.sh`, which hashes its input
   set before and after both runs).
 - **Socket validity, all six starts.** `blueprint_kat.lua` now checks every
@@ -170,6 +198,18 @@ The collision-box lift `add_mob` performs is kept via
   own flood fill. Plus one patrol loop of 4–6 waypoints numbered without a gap,
   no two consecutive waypoints inside `route_tick`'s 4 m arrival radius, and
   **exact** per-start socket populations, like the prop populations beside them.
+- **Placement-engine KAT.** `tools/wp13/start_npcs_kat.lua` drives the real
+  `start_npcs.lua` against a stub engine through the five states that decide
+  whether a settlement ends up with its roster exactly once: cold placement
+  with nobody near, a restart that places nothing, markers whose NPCs are gone
+  (`/clearobjects`) freed and refilled by the heartbeat, a guard death that is
+  not refilled before its slot falls due and is afterwards, and the second gate
+  restoring a lost marker instead of spawning a twin. The stub models the one
+  engine fact the whole design hangs off — `get_objects_inside_radius` answers
+  only while a player is inside the activation radius — so the restart case
+  cannot pass for the wrong reason. This is also the only place the lost-entity
+  re-check can be *proved*: it is gated on a nearby player by design, and a
+  headless boot has no player in it.
 - **Registry KAT.** `tools/wp13/settlement_sockets_kat.lua` drives the real
   `grug_core` file against a stub engine: world-space conversion against the
   published fitted anchor, the four axis yaws against the engine's own
@@ -193,7 +233,7 @@ The collision-box lift `add_mob` performs is kept via
 
 | | boot 1 (fresh world) | boot 2 (same world) |
 | --- | --- | --- |
-| preload | 6/6 ready after 37.6 s | 6/6 ready after 8.8 s, from disk |
+| preload | 6/6 ready after 38.0 s | 6/6 ready after 10.4 s, from disk |
 | per start | `guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0` | `… new 0 pending 0` |
 | placed | 54 (9 × 6 starts) | 0 |
 | ERROR / ModError | 0 | 0 |
@@ -201,7 +241,11 @@ The collision-box lift `add_mob` performs is kept via
 `engine-census.txt` closes the half the log cannot: the kept world's
 `map.sqlite` is decompressed block by block and its static objects counted by
 entity name after the second boot — 18 guards, 24 villagers, 6 elders and 6
-race vendors, 54 in total, which is the roster exactly once. A static object in
+race vendors, 54 in total, which is the roster exactly once. It counts the
+composed skins from the same blobs, which is the proof that the visuals seam
+really ran: 54 `grug_visuals_skin_<race>.png` textures, six per start for the
+villagers, elder and race vendor plus nine per faction for the guards (the
+guard's own `_grug_visual` composes accord as human and throng as orc). A static object in
 a loaded but inactive mapblock is invisible to every Lua query, so this is the
 only way to see that the first boot's entities survived the restart and were
 not doubled. The 54 mod-storage markers are in
@@ -220,12 +264,43 @@ because nothing died.
   against the anchor the consumer payload publishes (it logs an error if they
   ever differ, which would put every NPC at a different height from the
   buildings).
+- **Uniqueness is per settlement key, not per race**, and contract §3 gained
+  one sentence saying so. The first version refused a second registration for a
+  race, which would have refused every capital the moment the capital core
+  lands — each race has a start *and* a capital. `settlement_sockets(race_id)`
+  answers with the race's START (the first settlement registered for it, which
+  `grug_mapgen` publishes while the world authority is installed) and
+  `settlement_sockets_at(key)` is the capital path. The registry KAT covers
+  it: a second settlement for one race is accepted, the race accessor still
+  returns the start, and the capital answers under its own key.
 - Returned socket entries keep `x`, `y`, `z` as the **authored local**
   coordinates and add `pos`/`yaw` in world space, which is the literal reading
   of "the same fields plus `pos` and `yaw`".
 - Flair NPCs carry a nametag, which the contract asks for only on the quest
   shell. Without one a player cannot tell a clickable villager from a guard,
   and there are at most five per settlement.
+
+## Known limits, deliberately accepted
+
+- **Hostile mobs can target a villager.** `attack_npcs` defaults to true in
+  mobs_redo's `mob_class` (api.lua:170), and these families are `type = "npc"`,
+  so a wandering monster may attack one — they are invulnerable, so it would
+  only look odd, never cost an NPC. In practice nothing hostile reaches them:
+  no hostile ABM row may spawn inside a start footprint (wp13-start-preload.md,
+  decision 2) and no authored hostile stands in one. Guards ignore them
+  (`attack_npcs = false` on the guard def).
+- **A wiped mod storage with a kept map duplicates the roster once.** The
+  markers are the primary gate and the scan cannot substitute for them at
+  start-ready, where no player is near and `get_objects_inside_radius`
+  therefore sees nothing. Deleting `world/mod_storage/grug_mobs` while keeping
+  `map.sqlite` is the one state that produces a second roster; it is not a
+  state the game can reach on its own, and in fresh-server mode it is a
+  developer action.
+- **`face_yaw` writes a rotation once a second per post guard and per dwelling
+  villager even when the yaw has not changed** (`set_rotation` on at most 30
+  objects in a fully populated world, and only while they are activated). It is
+  cheap enough to leave unconditional rather than add a compare that would have
+  to reproduce mobs_redo's own pending smooth-rotation state.
 
 ## Open points
 
@@ -238,11 +313,18 @@ because nothing died.
   its socket correctly, but the refill appears at the socket while the corpse's
   loot lies where it fell. That is the same behaviour an outpost has.
 - `tools/wp40/r7/changed_production_lua.txt` (the WP40 R7 source audit's frozen
-  roster of changed production Lua) was already stale on `main` before this
-  lane: `mods/CORE/grug_core/starts_preload.lua` from the round-A server half is
-  missing from it, so the audit's population check fails at 143 against its
-  expected 142. This increment adds three more files and does not touch that
-  WP40-owned artefact.
+  roster of changed production Lua) was **already stale on `main` at
+  `44c2a34`**: the derived population is 151 against its expected 142, because
+  round A's `starts_preload.lua` and the visuals lane's four files
+  (`grug_classes/init.lua`, `grug_visuals/{apply,compose,init}.lua`) are not in
+  it. This increment adds four more (`settlement_sockets.lua`, `patrol.lua`,
+  `start_npcs.lua`, `start_villagers.lua`) and changes the content of twelve
+  files that *are* in it (both `init.lua`, `guard.lua`, `vendors.lua`, the six
+  compositions, `r7_loader.lua`, `r7_runtime.lua`), so the fixture's
+  `source/changed_production_lua_sha256` moves from
+  `8eb4e6ee…a9b4` (at `44c2a34`) to `f6e0ca2e…cf8b`. That WP40-owned artefact is
+  deliberately not edited here; the live engine boots are what covers the two
+  R7 files this lane touched.
 - `docs/design/world.md` §4a describes respawn slots in terms of camp anchors;
   the start watch is a third consumer of that rule and is documented in
   `settlements.md` instead.
@@ -270,7 +352,13 @@ first.
 6. Kill one gate guard (creative, or an enemy character). The post stays empty
    for three to six minutes and is then manned again, once — not twice.
 7. Leave and rejoin, then restart the server and walk the same settlement: the
-   same nine NPCs, in the same places, facing the same way. None of them is
-   doubled.
-8. Take an enemy-faction character to another race's start: the gate guards
+   same nine NPCs, in the same places, facing the same way, each wearing its
+   race's skin rather than a guard's. None of them is doubled.
+8. `/clearobjects` while standing on the arrival plaza, then wait one
+   heartbeat: the sockets within ~24 nodes of you report "marked but empty" in
+   the log and are filled again; walk to the gate and the posts there fill as
+   you arrive. (This is the one behaviour a headless boot cannot show, because
+   the re-check deliberately runs only where a player makes the mapblock
+   active.)
+9. Take an enemy-faction character to another race's start: the gate guards
    attack; with an own-faction or a brand-new factionless character they do not.

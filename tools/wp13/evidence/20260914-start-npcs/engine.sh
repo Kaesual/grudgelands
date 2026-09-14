@@ -62,9 +62,13 @@ import zstandard
 root = sys.argv[1]
 con = sqlite3.connect(root + "/world/map.sqlite")
 rows = con.execute("select x,y,z,data from blocks").fetchall()
+# Entity names AND the composed race skins: a villager that never reached the
+# visuals seam would still be counted as an entity but would carry the
+# placeholder guard texture, so both are counted from the same blobs.
 pattern = re.compile(
     rb"grug_mobs:(?:villager|elder|guard)_[a-z]+"
-    rb"|grug_traders:vendor_race_[a-z]+")
+    rb"|grug_traders:vendor_race_[a-z]+"
+    rb"|grug_visuals_skin_[a-z]+\.png")
 found, undecodable = Counter(), 0
 for x, y, z, blob in rows:
     if not blob:

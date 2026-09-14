@@ -66,7 +66,6 @@ yaw	axis_facings	pass
 copies	queries_and_source	pass
 queries	by_key_and_missing	pass
 refused	a second registration of one settlement
-refused	a second start for one race
 refused	an empty settlement key
 refused	an empty race id
 refused	a fractional anchor
@@ -86,4 +85,10 @@ refused	a kind on a non-vendor socket
 refused	an empty tag list
 refused	a numeric tag
 refused	a duplicate socket id
+second_settlement	one_race	start_wins
 refusals	left_no_state	pass
+cold	7	7	7
+restart	7	7	0
+lost_entities	3	3	3
+death_respawn	not_before_due	refilled_after_window
+second_gate	no_twin	marker_restored

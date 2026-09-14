@@ -9,7 +9,7 @@ previous WP13 record is `../20260914-round-a-blueprints/`.
 
 | Script | What it proves |
 | --- | --- |
-| `kat.sh` | `library_kat` + `blueprint_kat` + `integration_fixture` + `settlement_sockets_kat` in one process under LuaJIT and under `tools/bin/lua51`, byte-identical (`kat-luajit.txt`, `kat-puc51.txt`), plus the atmosphere pair |
+| `kat.sh` | `library_kat` + `blueprint_kat` + `integration_fixture` + `settlement_sockets_kat` + `start_npcs_kat` in one process under LuaJIT and under `tools/bin/lua51`, byte-identical (`kat-luajit.txt`, `kat-puc51.txt`), plus the atmosphere pair |
 | `final-micro.sh` | the single bounded final-byte pair, with its input set hashed before and after both runs (`final-micro/`) |
 | `dump.sh` | the per-start blueprint dump SHA-256 (`dumps.txt`) — the identity check for "this start's cells did not move" |
 | `static.sh` | `luac51 -p`, the SETGLOBAL count, the five plain-5.1 sweeps, the unchanged dumps and `check_fresh_server.py` (`static.txt`) |
@@ -27,9 +27,16 @@ previous WP13 record is `../20260914-round-a-blueprints/`.
   the moment each prepared area was loaded, with no player in the world.
 - **`engine-boot2.log`**: the same six lines with `new 0 pending 0`, and
   `engine-census.txt` counts exactly 54 static objects in the kept world's
-  `map.sqlite` afterwards. A static object in a loaded but inactive mapblock is
-  invisible to every Lua query, which is why the census exists: it is the only
-  way to see that the roster survived the restart AND was not doubled.
+  `map.sqlite` afterwards, plus the 30 composed `grug_visuals_skin_<race>.png`
+  textures the villagers, elders and race vendors are wearing. A static object
+  in a loaded but inactive mapblock is invisible to every Lua query, which is
+  why the census exists: it is the only way to see that the roster survived the
+  restart, was not doubled, and really went through the visuals seam.
+
+The ONE behaviour no boot here can show is the lost-entity re-check: it is
+gated on a nearby player by design and a headless boot has none. That is what
+`tools/wp13/start_npcs_kat.lua` proves instead, against the real production
+file.
 
 ## Note on the first, discarded boot
 

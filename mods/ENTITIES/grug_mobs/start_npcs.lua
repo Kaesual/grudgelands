@@ -72,6 +72,16 @@
 --   marker is cleared from `on_die` together with a due time; nothing else
 --   here is mortal (every other family cancels every punch).
 --
+--   AND A MARKER IS NEVER LEFT STANDING ALONE. `on_die` is reached only from
+--   `check_for_death` (api.lua:870-876), so it is not the only way an entity
+--   can leave: `/clearobjects`, the `mob_active_limit` removal inside
+--   `mob_activate` (api.lua:3311-3314) and a shutdown between the mod-storage
+--   flush and the map flush all end with a marker and no NPC, and without a
+--   re-check that socket would stay empty for the life of the world. So the
+--   heartbeat pass -- the one where a player IS near, which is the only state
+--   in which the scan can answer at all -- also frees a marked socket that has
+--   nothing standing on it. That is the exact mirror of the second gate.
+--
 -- WHY `core.add_entity` AND NOT `grug_mobs.add_mob`: `mobs:add_mob` refuses
 -- whenever no player is inside the active area (api.lua:3885-3890,
 -- `count_mobs` -> `is_pla`) because it is the ABM spawner's own gate. Authored
@@ -160,6 +170,19 @@ local function mark_placed(row, slot)
 	storage:set_string(placed_key(row.race_id, slot.id), "1")
 	storage:set_string(due_key(row.race_id, slot.id), "")
 	row.pending = row.pending - 1
+	row.placed_count[slot.family] = row.placed_count[slot.family] + 1
+end
+
+-- The marker outlived its NPC: free the socket and queue it again. `due` is
+-- what a DEATH books (a respawn slot); an entity that simply is not there any
+-- more is refilled at once, because nothing was earned by its absence.
+local function mark_free(row, slot, due)
+	slot.placed = false
+	slot.due = due
+	storage:set_string(placed_key(row.race_id, slot.id), "")
+	storage:set_string(due_key(row.race_id, slot.id), due and tostring(due) or "")
+	row.pending = row.pending + 1
+	row.placed_count[slot.family] = row.placed_count[slot.family] - 1
 end
 
 --
@@ -402,15 +425,37 @@ end
 -- runs while the prepared area is loaded and deliberately has no player in
 -- it; a heartbeat pass hands the player positions in and only looks at
 -- sockets one of them is near.
+--
+-- THE MARKER IS NOT ALLOWED TO OUTLIVE ITS NPC, and `on_die` alone does not
+-- guarantee that: it is reached only from `check_for_death` (api.lua:870-876),
+-- so `/clearobjects`, the `mob_active_limit` removal inside `mob_activate`
+-- (api.lua:3311-3314) and a shutdown between the mod-storage flush and the map
+-- flush all leave a marker with nothing standing on it -- and that socket
+-- would then never refill again for the life of the world. So a HEARTBEAT pass
+-- also re-checks the sockets it can actually see, which is the exact mirror of
+-- the second gate below: a player within PLAYER_RANGE is what makes the
+-- mapblock active, which is what makes `socket_occupied` able to answer at all
+-- (on the start-ready pass, where no player is near, it can not, which is why
+-- that pass never frees anything).
 local function serve(row, positions)
-	if row.pending <= 0 then return 0 end
-	if not grug_core.start_ready(row.race_id) then return 0 end
+	if not grug_core.start_ready(row.race_id) then return 0, 0 end
+	if row.pending <= 0 and not positions then return 0, 0 end
 	local now = core.get_gametime()
-	local new = 0
+	local new, freed = 0, 0
 	for index = 1, #row.slots do
 		local slot = row.slots[index]
-		if not slot.placed and (not slot.due or now >= slot.due) and
-				(not positions or player_near(positions, slot.pos)) then
+		local near = not positions or player_near(positions, slot.pos)
+		if slot.placed and positions and near then
+			local node = core.get_node_or_nil(slot.pos)
+			if node and node.name ~= "ignore" and not socket_occupied(row, slot) then
+				core.log("warning", "[grug_mobs] start npcs " .. row.key ..
+					": socket " .. slot.id .. " is marked but empty; " ..
+					slot.entity .. " is gone and the slot is queued again")
+				mark_free(row, slot, nil)
+				freed = freed + 1
+			end
+		end
+		if not slot.placed and (not slot.due or now >= slot.due) and near then
 			local node = core.get_node_or_nil(slot.pos)
 			if node and node.name ~= "ignore" then
 				if socket_occupied(row, slot) then
@@ -418,12 +463,8 @@ local function serve(row, positions)
 						": " .. slot.entity .. " already stands at socket " ..
 						slot.id .. " without a marker; marker restored")
 					mark_placed(row, slot)
-					row.placed_count[slot.family] =
-						row.placed_count[slot.family] + 1
 				elseif place(row, slot) then
 					mark_placed(row, slot)
-					row.placed_count[slot.family] =
-						row.placed_count[slot.family] + 1
 					new = new + 1
 					core.log("action", "[grug_mobs] start npcs " .. row.key ..
 						": " .. slot.entity .. " placed at socket " .. slot.id ..
@@ -432,7 +473,7 @@ local function serve(row, positions)
 			end
 		end
 	end
-	return new
+	return new, freed
 end
 
 -- The countable per-start line both engine boots are read from.
@@ -467,7 +508,8 @@ local function serve_ready_starts()
 		local row = rows[index]
 		if not ready_served[row.race_id] and grug_core.start_ready(row.race_id) then
 			ready_served[row.race_id] = true
-			log_row(row, serve(row, nil))
+			local new = serve(row, nil)
+			log_row(row, new)
 		end
 	end
 end
@@ -488,10 +530,10 @@ core.register_globalstep(function(dtime)
 	if #positions == 0 then return end
 	for index = 1, #rows do
 		local row = rows[index]
-		if row.pending > 0 then
-			local new = serve(row, positions)
-			if new > 0 then log_row(row, new) end
-		end
+		-- Every row, every heartbeat, and not only the ones with something
+		-- pending: a full row is exactly where a marker without an NPC hides.
+		local new, freed = serve(row, positions)
+		if new > 0 or freed > 0 then log_row(row, new) end
 	end
 end)
 
@@ -546,12 +588,8 @@ function grug_mobs.start_guard_died(self)
 	local row = by_race[self._grug_start]
 	local slot = row and row.by_socket[self._grug_socket]
 	if not slot or not slot.placed then return end
-	slot.placed = false
-	slot.due = core.get_gametime() + math.random(RESPAWN_MIN, RESPAWN_MAX)
-	row.pending = row.pending + 1
-	row.placed_count[slot.family] = row.placed_count[slot.family] - 1
-	storage:set_string(placed_key(row.race_id, slot.id), "")
-	storage:set_string(due_key(row.race_id, slot.id), tostring(slot.due))
+	mark_free(row, slot,
+		core.get_gametime() + math.random(RESPAWN_MIN, RESPAWN_MAX))
 	core.log("action", "[grug_mobs] start npcs " .. row.key .. ": socket " ..
 		slot.id .. " lost its guard, refill due at " .. slot.due)
 end

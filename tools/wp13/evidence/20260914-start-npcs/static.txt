@@ -20,6 +20,7 @@ mods/MAPGEN/grug_mapgen/wp40/r7_runtime.lua parser PASS; SETGLOBAL [0]
 tools/wp13/blueprint_kat.lua parser PASS; SETGLOBAL [0]
 tools/wp13/final_micro.lua parser PASS; SETGLOBAL [0]
 tools/wp13/settlement_sockets_kat.lua parser PASS; SETGLOBAL [0]
+tools/wp13/start_npcs_kat.lua parser PASS; SETGLOBAL [0]
 == whole tree parses ==
 mods/*/grug_* parser PASS
 tools parser PASS
@@ -89,7 +90,7 @@ mods/ENTITIES/grug_mobs/jungle_lynx.lua:81:-- §4 row "Raptor | rainforest litte
 mods/ENTITIES/grug_mobs/hyena.lua:72:-- §4 row "Hyena | dry grass, mesa_clay | 20 | 1500 | 5 | any | inner, outer".
 mods/ENTITIES/grug_mobs/bandit.lua:2:-- humanoid; camps placed by §1.4, inner+outer, both continents) | defends
 mods/ENTITIES/grug_mobs/bandit.lua:3:-- camp (leashes to camp, group) | 24 h | 4.4 | linen cloth 1/1 x1-2 (inner
-mods/ENTITIES/grug_mobs/bandit.lua:109:		-- this: "Linen cloth | 10-30 | bandit camps", "Heavy cloth | 25-45 |
+mods/ENTITIES/grug_mobs/bandit.lua:130:		-- this: "Linen cloth | 10-30 | bandit camps", "Heavy cloth | 25-45 |
 mods/ENTITIES/grug_mobs/serpent.lua:74:-- §4 row "Serpent | rainforest litter, mud | 20 | 1800 | 4 | min 10 | outer,
 mods/ENTITIES/grug_mobs/boar_variants.lua:102:-- still reaches with zone `inner` up to |x| ~932, and the patch model (§1.4)
 mods/ENTITIES/grug_mobs/camps.lua:3:-- (docs/design/world.md §4a "NPC binding & respawn slots";

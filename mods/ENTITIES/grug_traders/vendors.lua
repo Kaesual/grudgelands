@@ -259,6 +259,13 @@ local function vendor_def(vendor, texture)
 			if core.global_exists("grug_visuals") then
 				grug_visuals.apply_entity(self, visual)
 			end
+			-- A vendor on a WP13 start socket was placed facing the way its
+			-- blueprint says (grug_mobs/start_npcs.lua writes `_grug_face_yaw`).
+			-- mob_activate hands every mob a RANDOM yaw on every activation
+			-- (api.lua:3401), so without this the start vendor turns somewhere
+			-- else on every reload. A capital vendor carries no such field and
+			-- this is a no-op for it.
+			grug_mobs.face_yaw(self, self._grug_face_yaw)
 		end,
 
 		on_rightclick = function(self, clicker)

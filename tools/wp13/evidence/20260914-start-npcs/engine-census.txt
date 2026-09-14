@@ -19,4 +19,10 @@ grug_traders:vendor_race_human 1
 grug_traders:vendor_race_orc 1
 grug_traders:vendor_race_troll 1
 grug_traders:vendor_race_undead 1
-total 54
+grug_visuals_skin_dwarf.png 6
+grug_visuals_skin_elf.png 6
+grug_visuals_skin_human.png 15
+grug_visuals_skin_orc.png 15
+grug_visuals_skin_troll.png 6
+grug_visuals_skin_undead.png 6
+total 108

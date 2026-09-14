@@ -151,9 +151,6 @@ function grug_core.register_settlement_sockets(settlement_key, race_id, anchor,
 	if by_key[settlement_key] then
 		fail(settlement_key .. " is already registered")
 	end
-	if by_race[race_id] then
-		fail(settlement_key .. ": race " .. race_id .. " is already registered")
-	end
 	if type(anchor) ~= "table" then fail(settlement_key .. ": anchor differs") end
 	integer(anchor.x, settlement_key .. ": anchor x")
 	integer(anchor.y, settlement_key .. ": anchor y")
@@ -170,7 +167,17 @@ function grug_core.register_settlement_sockets(settlement_key, race_id, anchor,
 		sockets = compiled,
 	}
 	by_key[settlement_key] = record
-	by_race[race_id] = record
+	-- THE KEY IS THE IDENTITY; THE RACE IS NOT. Every race has a start AND a
+	-- capital (contract section 3: "capitals register under their own key"), so
+	-- a race is registered twice over a world's life and only the key is
+	-- unique. `settlement_sockets(race_id)` is the START accessor, so the
+	-- FIRST registration for a race wins it: grug_mapgen publishes the six
+	-- starts from `r7_loader.lua` while the world authority is being
+	-- installed, before any other consumer exists, and a capital landing later
+	-- reaches its own sockets through `settlement_sockets_at(key)`.
+	if not by_race[race_id] then
+		by_race[race_id] = record
+	end
 	order[#order + 1] = record
 	return #compiled
 end
@@ -191,12 +198,14 @@ function grug_core.settlement_socket_settlements()
 end
 
 -- The sockets of a race's START, in authored order, as world-space copies.
+-- A race also has a capital; this accessor answers with the start, which is
+-- the first settlement registered for that race (see the note at the writer).
 function grug_core.settlement_sockets(race_id)
 	return copy_list(by_race[race_id])
 end
 
--- The same by settlement key (capitals register under their own key when the
--- capital core lands).
+-- The same by settlement key. This is the path a capital's consumer uses: a
+-- key is unique, a race is not.
 function grug_core.settlement_sockets_at(settlement_key)
 	return copy_list(by_key[settlement_key])
 end

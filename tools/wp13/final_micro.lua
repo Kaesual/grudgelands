@@ -39,6 +39,9 @@ rows[#rows + 1] = "wp13_integration\t" ..
 -- them again. Running it after the three pure fixtures keeps their
 -- environment untouched.
 rows[#rows + 1] = dofile(repo .. "/tools/wp13/settlement_sockets_kat.lua")(repo)
+-- Same reason, same treatment: this one drives grug_mobs' placement engine
+-- against a stub engine and restores `core`/`grug_core`/`grug_mobs` again.
+rows[#rows + 1] = dofile(repo .. "/tools/wp13/start_npcs_kat.lua")(repo)
 local text = table.concat(rows)
 local digest = common.hex(common.new_sha256()(text))
 

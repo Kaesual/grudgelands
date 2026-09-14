@@ -29,6 +29,7 @@ CHANGED=(
 	tools/wp13/blueprint_kat.lua
 	tools/wp13/final_micro.lua
 	tools/wp13/settlement_sockets_kat.lua
+	tools/wp13/start_npcs_kat.lua
 )
 
 echo "== parser and SETGLOBAL on every Lua file this round touched =="
