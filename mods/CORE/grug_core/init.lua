@@ -36,6 +36,7 @@ function grug_core.get_player_race(name)
 end
 
 local modpath = core.get_modpath(core.get_current_modname())
+dofile(modpath .. "/atmosphere.lua")
 dofile(modpath .. "/zone_authority.lua")
 dofile(modpath .. "/protection.lua")
 dofile(modpath .. "/combat_debug.lua")
