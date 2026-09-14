@@ -52,9 +52,12 @@ M.SOURCES = {
 	{mod = "grug_decor", path = "mods/ITEMS/grug_decor", files = {"init.lua"}},
 	-- `grug_materials` last: its derivative nodes are clones of vendored
 	-- definitions, so the sources above must already be in the registry.
-	-- Only the two node-bearing files are run; `overrides.lua`,
-	-- `content_curation.lua` and `audit.lua` work on the tool and craft
-	-- vocabulary, which no settlement palette can name.
+	-- `overrides.lua`, `content_curation.lua` and `audit.lua` are not run:
+	-- `core.override_item` is a no-op in this stub, so group edits made by
+	-- `overrides.lua` (today only grug_natural/level/grug_pick_tier on a few
+	-- ground nodes) are invisible here. If an override ever touches a group
+	-- that `PANE_CONNECT_GROUPS` or `is_opaque_full` reads, extend this
+	-- stub to apply it, or the KAT and the engine will disagree silently.
 	{mod = "grug_materials", path = "mods/ITEMS/grug_materials",
 		seed = "grug_materials",
 		files = {"registry.lua", "mining.lua", "ores.lua",

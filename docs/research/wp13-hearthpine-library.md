@@ -66,8 +66,13 @@ fix round). Renders live next to each.
   neighbour must be written as the connected `xpanes:pane`; fixed by
   applying the engine's pane rule at construction. Lows: rotated param2 on
   `place_param2 = 0` nodes, torches hung on window panes, incomplete
-  retirement cross-check, palette docstring. Fix round: see the fixes
-  evidence directory and the focused re-review recorded in the merge commit.
+  retirement cross-check, palette docstring. One fix round
+  (`tools/wp13/evidence/20260914-hearthpine-fixes/`): static decor roles,
+  the engine's pane rule at construction, param2 only on orientation-bearing
+  nodes, torches on opaque walls, both retirement sources, prefix roles,
+  plus proper pines and stone-brick roofs on the two halls. Focused
+  re-review (Claude Opus, fresh context): CLEAN, four non-blocking notes
+  applied before merge. Final findings: 0.
 
 Calibration: coordinator Claude Fable; implementing model Claude Opus (five
 lanes plus one fix lane); reviewing model Claude Opus in fresh contexts;

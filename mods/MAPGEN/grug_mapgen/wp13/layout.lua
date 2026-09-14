@@ -109,7 +109,7 @@ local function loader(directory)
 	function M.plant_pines(buf, palette, spots)
 		local planted = 0
 		for _, spot in ipairs(spots) do
-			local x, z, height = spot[1], spot[2], spot[3] or 6
+			local x, z, height = spot[1], spot[2], spot[3] or 10
 			if M.natural(buf, x, z) and
 					M.free_area(buf, x - 2, z - 2, x + 2, z + 2, height + 1) then
 				dressing.tree(buf, palette, x, z, height)

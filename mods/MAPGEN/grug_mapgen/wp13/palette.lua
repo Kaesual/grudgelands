@@ -38,11 +38,8 @@ M.prefix_roles = {
 -- vessel shelf written this way has no inventory and no formspec: it is a
 -- dead prop that a player can open into nothing. Every furnishing role is
 -- therefore bound to a static decor node. `tools/wp13/library_kat.lua`
--- proves this against the real registrations, not against this comment.
-M.static_roles = {
-	"bed", "bed_fancy", "hearth", "seat", "shelf", "shelf_vessels",
-	"storage", "table_top", "workbench",
-}
+-- proves this for EVERY palette name against the real registrations, so
+-- no role list is kept here.
 
 M.races = {}
 
