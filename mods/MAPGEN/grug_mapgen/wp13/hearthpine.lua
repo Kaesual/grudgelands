@@ -84,11 +84,15 @@ local function loader(directory)
 		local buf = parts.buffer()
 		local lights, doorways, rooms = {}, {}, {}
 		local placed, inside_by_id = {}, {}
+		-- The same plots in roster order. `placed` is keyed by landmark id and
+		-- can only be walked with `pairs`; the ordered copy lets the footprint
+		-- test below run over an array with `ipairs` instead.
+		local plot_order = {}
 
 		-- Outside every building footprint: an empty room has free ground and
 		-- headroom, but no street lamp belongs in it.
 		local function outdoors(x, z)
-			for _, plot in pairs(placed) do
+			for _, plot in ipairs(plot_order) do
 				if x >= plot.x and x <= plot.x + plot.w - 1 and
 						z >= plot.z and z <= plot.z + plot.d - 1 then
 					return false
@@ -135,6 +139,7 @@ local function loader(directory)
 			local footprint = points.footprint[1]
 			placed[plot.id] = {x = plot.x, z = plot.z,
 				w = footprint.w, d = footprint.d, peak = part.peak}
+			plot_order[#plot_order + 1] = placed[plot.id]
 			for _, door in ipairs(points.doors) do
 				doorways[#doorways + 1] = {x = door.x, y = door.y, z = door.z,
 					face = door.face, id = plot.id}

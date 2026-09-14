@@ -38,7 +38,7 @@ derived_changed="${partial}.changed-lua"
 	git -C "$repo" diff --name-only --diff-filter=AM d6002a2 -- mods
 	git -C "$repo" ls-files --others --exclude-standard -- mods
 } | sort -u | rg '[.]lua$' >"$derived_changed"
-[[ "$(awk 'END {print NR + 0}' "$derived_changed")" -eq 74 ]] || {
+[[ "$(awk 'END {print NR + 0}' "$derived_changed")" -eq 134 ]] || {
 	echo "WP40 R7 source audit: baseline-derived changed Lua population differs" >&2
 	exit 1
 }
@@ -554,7 +554,7 @@ rm -f -- "$input_hashes"
 	printf 'count\tvm_set_param2_data\t1\n'
 	printf 'count\tvm_update_liquids\t1\n'
 	printf 'count\tmapgen_default_settings\t8\n'
-	printf 'count\tchanged_production_lua\t74\n'
+	printf 'count\tchanged_production_lua\t134\n'
 	printf 'count\tdeleted_legacy_lua\t7\n'
 	printf 'count\tmod_dependency_nodes\t%s\n' "$dependency_node_count"
 	printf 'count\tmod_dependency_edges\t%s\n' "$dependency_edge_count"

@@ -189,6 +189,176 @@ local function loader(directory)
 		buf:put(x, height + 1, z, needles)
 	end
 
+	-- A broadleaf tree on the proportions of the vendored apple tree
+	-- (mods/BASE/default/schematics/apple_tree.mts, decoded: 7 x 8 x 7, four
+	-- clear trunk logs, then four crown courses). `height` is the trunk, so a
+	-- four log stem shows the whole stem below the lowest leaf and a six log
+	-- stem an orchard standard.
+	--
+	-- The crown is four diamonds clipped to the 7 x 7 box, widest at the
+	-- bottom, exactly as the schematic: |dx| + |dz| <= 4 (capped at reach 3),
+	-- then <= 3, then <= 3 capped at reach 2, then the plus. Two branch logs
+	-- sit inside the lowest crown course, which is what gives the schematic
+	-- its silhouette; a parity notch keeps neighbouring crowns distinct.
+	function M.broadleaf(buf, palette, x, z, height)
+		local log = palette.node("tree_log")
+		local leaves = palette.node("tree_leaves")
+		for y = 1, height do buf:put(x, y, z, log) end
+		local LAYERS = {
+			{offset = 1, span = 4, reach = 3, notch = true},
+			{offset = 2, span = 3, reach = 3, notch = false},
+			{offset = 3, span = 3, reach = 2, notch = false},
+			{offset = 4, span = 1, reach = 1, notch = false},
+		}
+		for index = 1, #LAYERS do
+			local layer = LAYERS[index]
+			local y = height + layer.offset
+			for dz = -layer.reach, layer.reach do
+				for dx = -layer.reach, layer.reach do
+					local span = math.abs(dx) + math.abs(dz)
+					local skip = layer.notch and span == layer.span and
+						(x + z + dx + dz) % 2 == 1
+					if span <= layer.span and not skip and
+							not (dx == 0 and dz == 0) then
+						buf:put(x + dx, y, z + dz, leaves)
+					end
+				end
+			end
+			buf:put(x, y, z, leaves)
+		end
+		-- Branch logs in the lowest crown course, as the schematic has them.
+		for _, branch in ipairs({{-1, 0}, {1, 1}}) do
+			buf:put(x + branch[1], height + 1, z + branch[2], log)
+		end
+	end
+
+	-- A hedgerow: a woody stem course with a leafy crown above it, so a field
+	-- boundary reads as a hedge and not as a green wall. Degrades to nothing
+	-- when the palette carries no hedge.
+	function M.hedge_line(buf, palette, x1, z1, x2, z2, height)
+		local leaves = palette.maybe("hedge")
+		if leaves == nil then return 0 end
+		local stem = palette.maybe("hedge_stem") or leaves
+		local top = height or 2
+		local planted = 0
+		for z = math.min(z1, z2), math.max(z1, z2) do
+			for x = math.min(x1, x2), math.max(x1, x2) do
+				buf:put(x, 1, z, stem)
+				for y = 2, top do
+					buf:put(x, y, z, leaves)
+				end
+				planted = planted + 1
+			end
+		end
+		return planted
+	end
+
+	-- A tilled field: bare furrows with a planted row between every pair, and
+	-- a headland of open soil all round so the fence has somewhere to stand.
+	function M.crop_rows(buf, palette, x1, z1, x2, z2, axis)
+		local furrow = palette.node("ground_patch")
+		local soil = palette.node("planter_soil")
+		local crop = palette.maybe("crop")
+		local rows = 0
+		for z = z1, z2 do
+			for x = x1, x2 do
+				local along = (axis == "z") and x or z
+				local planted = (along - ((axis == "z") and x1 or z1)) % 2 == 1
+				buf:put(x, 0, z, planted and soil or furrow)
+				buf:clear(x, 1, z, x, 2, z)
+				if planted and crop then
+					buf:put(x, 1, z, crop)
+					rows = rows + 1
+				end
+			end
+		end
+		return rows
+	end
+
+	-- A stack of straw bales.
+	function M.bale_stack(buf, palette, x, z, height)
+		local bale = palette.maybe("bale")
+		if bale == nil then return false end
+		for y = 1, height do buf:put(x, y, z, bale) end
+		return true
+	end
+
+	-- A hand cart: two log bearers, a wheel leaning on the outer face of each,
+	-- and the barrel the cart carries riding on the far bearer. Returns false
+	-- when a wheel or the barrel could not be placed, so a caller can refuse
+	-- to keep half a cart instead of losing the rest silently.
+	function M.handcart(buf, palette, x, z, axis)
+		local log = palette.node("tree_log")
+		local ax = (axis == "x") and 1 or 0
+		local az = (axis == "x") and 0 or 1
+		for step = 0, 1 do
+			buf:put(x + ax * step, 1, z + az * step, log)
+		end
+		-- The wheels hang on the outer face of the bearers, which are logs and
+		-- therefore opaque full cubes.
+		local whole = true
+		for step = 0, 1 do
+			local wx, wz = x + ax * step - az, z + az * step - ax
+			if not parts.wall_prop(buf, palette, "wheel", wx, 1, wz, az, 0, ax) then
+				whole = false
+			end
+		end
+		-- The barrel rides ON the far bearer, at `(x + ax, z + az)`. The
+		-- diagonal `(x + ax + az, z + az + ax)` is `(x + 1, z + 1)` on BOTH
+		-- axes, which is a cell off the cart, so the barrel floated there.
+		-- Guarded the way `parts.wall_prop` guards its props: the bearer under
+		-- it must be solid and the cell itself must be free.
+		local bx, bz = x + ax, z + az
+		local above = buf:at(bx, 2, bz)
+		if parts.solid_at(buf, bx, 1, bz) and
+				(above == nil or above.name == "air") then
+			buf:put(bx, 2, bz, palette.node("storage"), 0)
+		else
+			whole = false
+		end
+		return whole
+	end
+
+	-- Stepping stones laid over open ground, one node wide.
+	function M.stepping_line(buf, palette, x1, z1, x2, z2)
+		local name = palette.maybe("stepping")
+		if name == nil then return 0 end
+		local laid = 0
+		for z = math.min(z1, z2), math.max(z1, z2) do
+			for x = math.min(x1, x2), math.max(x1, x2) do
+				local below = buf:at(x, 0, z)
+				local here = buf:at(x, 1, z)
+				if below and below.name ~= "air" and
+						(here == nil or here.name == "air") then
+					buf:put(x, 1, z, name, (x + z) % 4)
+					laid = laid + 1
+				end
+			end
+		end
+		return laid
+	end
+
+	-- A flower bed: the same masonry kerb as `planter`, sown with pot plants
+	-- instead of tufts where the palette has them.
+	function M.flower_bed(buf, palette, x1, z1, x2, z2)
+		local first = palette.maybe("flower")
+		local second = palette.maybe("flower_alt") or first
+		for z = z1, z2 do
+			for x = x1, x2 do
+				if x == x1 or x == x2 or z == z1 or z == z2 then
+					buf:put(x, 1, z, palette.node("planter"))
+				else
+					buf:put(x, 1, z, palette.node("planter_soil"))
+					if first then
+						buf:put(x, 2, z, ((x + z) % 2 == 0) and first or second)
+					else
+						buf:put(x, 2, z, palette.node("grass_tuft"))
+					end
+				end
+			end
+		end
+	end
+
 	-- Scattered undergrowth on a rectangle of open ground.
 	function M.undergrowth(buf, palette, x1, z1, x2, z2, density)
 		for z = z1, z2 do

@@ -99,44 +99,60 @@ return function(repo)
 	end
 	say("rotate_footprint", "bijective", "pass")
 
-	-- 3. palette binding ----------------------------------------------------
-	local palette = palettes.new("dwarf")
-	-- Every name the dwarf palette can emit, role by role. A family role
-	-- ("door", "bed", "bed_fancy") is a base, not a node name: `node` must
-	-- refuse it and `variant`/`names` are the only way to reach its members,
-	-- which is what keeps `parts.door` and `parts.bed` the sole emitters.
-	local palette_names = {}
-	local function collect(role)
+	-- 3. palette binding, for EVERY race the library ships -----------------
+	-- Every name any palette can emit, role by role. A family role ("door",
+	-- "bed", "bed_fancy") is a base, not a node name: `node` must refuse it
+	-- and `variant`/`names` are the only way to reach its members, which is
+	-- what keeps `parts.door` and `parts.bed` the sole emitters.
+	--
+	-- The roster is read out of `palettes.races`, so a race added without a
+	-- line here is still checked: a palette that names an unregistered, a
+	-- retired or a metadata-bearing node fails below.
+	local races = {}
+	for race in pairs(palettes.races) do races[#races + 1] = race end
+	table.sort(races)
+	assert(#races >= 2, "the library ships only one race")
+	local palette_names, palette_race = {}, {}
+	local function collect(handle, race, role)
 		if palettes.prefix_roles[role] then
-			assert(not pcall(palette.node, role),
+			assert(not pcall(handle.node, role),
 				"family role " .. role .. " answered node()")
-			assert(not pcall(palette.maybe, role),
+			assert(not pcall(handle.maybe, role),
 				"family role " .. role .. " answered maybe()")
-			assert(not pcall(palette.variant, role, "_nonsense"),
+			assert(not pcall(handle.variant, role, "_nonsense"),
 				"family role " .. role .. " accepted an undeclared variant")
-			for _, name in ipairs(palette.names(role)) do
+			for _, name in ipairs(handle.names(role)) do
 				assert(type(name) == "string" and name ~= "")
 				palette_names[name] = role
+				palette_race[name] = race
 			end
 			return
 		end
-		assert(not pcall(palette.variant, role, "_a"),
+		assert(not pcall(handle.variant, role, "_a"),
 			"plain role " .. role .. " answered variant()")
-		local name = palette.maybe(role)
+		local name = handle.maybe(role)
 		if name ~= nil then
 			assert(type(name) == "string" and name ~= "")
-			assert(palette.node(role) == name)
+			assert(handle.node(role) == name)
 			palette_names[name] = role
+			palette_race[name] = race
 		end
 	end
-	for _, role in ipairs(palettes.required) do
-		if not palettes.prefix_roles[role] then
-			assert(type(palette.node(role)) == "string" and
-				palette.node(role) ~= "")
+	local handles = {}
+	for _, race in ipairs(races) do
+		local handle = palettes.new(race)
+		handles[race] = handle
+		for _, role in ipairs(palettes.required) do
+			if not palettes.prefix_roles[role] then
+				assert(type(handle.node(role)) == "string" and
+					handle.node(role) ~= "",
+					race .. " leaves the required role " .. role .. " unbound")
+			end
+			collect(handle, race, role)
 		end
-		collect(role)
+		for _, role in ipairs(palettes.optional) do collect(handle, race, role) end
 	end
-	for _, role in ipairs(palettes.optional) do collect(role) end
+	local palette = handles.dwarf
 	assert(palette_names[palette.variant("door", "_a")] == "door")
 	assert(palette_names[palette.variant("bed", "_top")] == "bed")
 	assert(not pcall(palettes.new, "no_such_race"))
@@ -208,13 +224,13 @@ return function(repo)
 	-- actually writes, which is the set that reaches the engine.
 	local checked = 0
 	for name, role in pairs(palette_names) do
-		assert(not removed[name],
-			"palette role " .. role .. " names the retired " .. name)
-		assert(world.nodes[name],
-			"palette role " .. role .. " names the unregistered " .. name)
+		assert(not removed[name], palette_race[name] .. " role " .. role ..
+			" names the retired " .. name)
+		assert(world.nodes[name], palette_race[name] .. " role " .. role ..
+			" names the unregistered " .. name)
 		checked = checked + 1
 	end
-	say("palette", "dwarf", #palettes.required + #palettes.optional,
+	say("palette", #races, #palettes.required + #palettes.optional,
 		"retirement_sources", retirement_sources, "names", checked)
 
 	-- 3b. no palette role may need a callback VoxelManip never runs --------
@@ -237,12 +253,12 @@ return function(repo)
 	for name, role in pairs(palette_names) do
 		local def = world.nodes[name]
 		local hits = registry.meta_fields(def)
-		assert(#hits == 0, "palette role " .. role .. " is bound to " .. name ..
-			", which needs " .. table.concat(hits, "/") ..
-			" that bulk placement never runs")
+		assert(#hits == 0, palette_race[name] .. " role " .. role ..
+			" is bound to " .. name .. ", which needs " ..
+			table.concat(hits, "/") .. " that bulk placement never runs")
 		if def.on_rightclick ~= nil then
-			assert(name:sub(1, 6) == "doors:", "palette role " .. role ..
-				" is bound to " .. name .. ", which has an on_rightclick")
+			assert(name:sub(1, 6) == "doors:", palette_race[name] .. " role " ..
+				role .. " is bound to " .. name .. ", which has an on_rightclick")
 		end
 		meta_checked = meta_checked + 1
 	end
@@ -431,13 +447,19 @@ return function(repo)
 	assert(parts.rotate_param2(0, parts.NONE, 3) == 0)
 	say("guards", "param2_kind", "pass")
 
-	-- 8. the finished settlement against the real registry -----------------
+	-- 8. every finished settlement against the real registry ---------------
 	-- Sections 1-7 test the library in isolation. What actually reaches the
-	-- engine is the Hearthpine cell list, so the last three sections check
-	-- THAT, name by name and cell by cell, against the registrations loaded
-	-- in section 3.
-	local blueprint = dofile(repo ..
-		"/mods/MAPGEN/grug_mapgen/wp40/r7_hearthpine_blueprint.lua")()
+	-- engine is each start's cell list, so the last three sections check
+	-- THOSE, name by name and cell by cell, against the registrations loaded
+	-- in section 3. The roster is the R7 settlement roster, so a start added
+	-- to the game is checked here without a second line.
+	local roster = dofile(repo ..
+		"/mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua").roster
+	assert(#roster >= 2, "the settlement roster lost a start")
+	for roster_index = 1, #roster do
+	local profile = roster[roster_index]
+	local blueprint = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/" ..
+		profile.blueprint_file)()
 	local emitted, emitted_names = {}, {}
 	for _, cell in ipairs(blueprint.cells) do
 		if cell.name ~= "air" and not emitted[cell.name] then
@@ -477,8 +499,18 @@ return function(repo)
 	-- it produces a param2 no placement could have made: that is what put a
 	-- meaningless facedir on 440 `default:pine_wood` and 144
 	-- `default:stonebrick` cells.
-	local plain = {["default:pine_wood"] = 0, ["default:stonebrick"] = 0,
-		["default:stone_block"] = 0, ["default:cobble"] = 0}
+	-- The plain-cube sample: every emitted name the registry says can only
+	-- ever be written at param2 0, either because it declares no paramtype2
+	-- at all or because it pins `place_param2 = 0`. Deriving the set from the
+	-- registry instead of listing it by hand keeps it growing with the
+	-- palette rather than going stale.
+	local plain = {}
+	for _, name in ipairs(emitted_names) do
+		local def = world.nodes[name]
+		if def and (def.paramtype2 == nil or def.place_param2 == 0) then
+			plain[name] = 0
+		end
+	end
 	local plain_cells = 0
 	for _, cell in ipairs(blueprint.cells) do
 		local def = world.nodes[cell.name]
@@ -499,8 +531,8 @@ return function(repo)
 		end
 	end
 	assert(plain_cells > 2000, "the plain-cube sample disappeared")
-	say("registry", #emitted_names, "kinds", kinds_checked, "place_param2",
-		pinned, "plain_cubes", plain_cells)
+	say("registry", profile.key, #emitted_names, "kinds", kinds_checked,
+		"place_param2", pinned, "plain_cubes", plain_cells)
 
 	-- 9. every pane is the node update_pane would have settled on ----------
 	-- Re-derived here from the mod source, not from `parts.resolve_panes`:
@@ -554,15 +586,17 @@ return function(repo)
 	assert(pane_cells > 100, "the village lost its windows")
 	assert(connected_panes > 0,
 		"no pane has a third neighbour; the connected branch is untested")
-	say("panes", pane_cells, "connected", connected_panes)
+	say("panes", profile.key, pane_cells, "connected", connected_panes)
 
 	-- 10. every torch hangs on an opaque full node -------------------------
 	-- A wallmounted torch takes its support from the direction its param2
 	-- names. `xpanes:pane_flat` is a nodebox: a torch pointing at one hangs
 	-- in a window, which is where fifteen of them were.
 	local torch_names = {}
-	for _, role in ipairs({"light_wall", "light_post", "light_indoor"}) do
-		torch_names[palette.node(role)] = true
+	for _, race in ipairs(races) do
+		for _, role in ipairs({"light_wall", "light_post", "light_indoor"}) do
+			torch_names[handles[race].node(role)] = true
+		end
 	end
 	local torches = 0
 	for _, cell in ipairs(blueprint.cells) do
@@ -580,7 +614,8 @@ return function(repo)
 		end
 	end
 	assert(torches >= 40, "the village went dark")
-	say("torch_support", torches, "opaque_full", "pass")
+	say("torch_support", profile.key, torches, "opaque_full", "pass")
+	end
 
 	return table.concat(report)
 end
