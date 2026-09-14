@@ -629,6 +629,185 @@ function M.kits.smoker(buf, parts, palette, room, spec)
 	return lights
 end
 
+-- ---------------------------------------------------------------------------
+-- capital kits (docs/research/wp13-capital-library.md)
+-- ---------------------------------------------------------------------------
+--
+-- The five district buildings of a capital are ordinary `buildings.build`
+-- blocks with a kit of their own, so they inherit the walls, the framed
+-- windows, the real doors and the rasterised roof of every other building in
+-- the library. Each kit keeps the room's CENTRE COLUMN clear from wall to
+-- wall: that aisle is where the generator publishes its NPC sockets, and a
+-- socket has to stand on a walkable node with two free cells over it
+-- (docs/research/wp13-npc-sockets-contract.md section 2). Nothing here writes
+-- a node with an `on_construct`; the storage, shelf, workbench and hearth
+-- roles are the same static decor the start kits use.
+
+-- Bunks down both side walls, arms racked at the far end, a fire by the door.
+function M.kits.barracks(buf, parts, palette, room, spec)
+	local lights = {}
+	local cx = math.floor((room.x1 + room.x2) / 2)
+	for z = room.z1 + 1, room.z2 - 1 do
+		buf:put(cx, room.y, z, palette.node("rug"))
+	end
+	-- Bunks: foot against the wall, head one step into the room, so the pair
+	-- of bed nodes never crosses the aisle.
+	local bunks = 0
+	for z = room.z1 + 1, room.z2 - 2, 3 do
+		M.bed(buf, parts, palette, room, room.x1, z, 1, false)
+		M.bed(buf, parts, palette, room, room.x2, z, 3, false)
+		bunks = bunks + 2
+	end
+	if bunks == 0 then error("wp13 interiors: barracks with no bunk", 0) end
+	M.storage(buf, palette, room, room.x1 + 1, room.z2, "x", 2, 2)
+	M.storage(buf, palette, room, room.x2 - 2, room.z2, "x", 2, 2)
+	M.shelves(buf, palette, room, room.x1 + 1, room.z1, "x", 2, 0)
+	-- The fire sits against the wall the generator runs its chimney stack
+	-- up, the way `buildings.cottage` pairs them: the flue is the interior
+	-- cell and the stack the wall cell beside it.
+	M.hearth(buf, parts, palette, room, room.x2, room.z1,
+		spec.hearth_face or 0, room.h, lights)
+	for _, z in ipairs({room.z1 + 2, room.z2 - 2}) do
+		M.wall_light(buf, parts, palette, room, room.x1, room.y + 3, z, lights)
+		M.wall_light(buf, parts, palette, room, room.x2, room.y + 3, z, lights)
+	end
+	return lights
+end
+
+-- A temple or shrine: a runner up the middle, benches either side, and an
+-- altar of the race's own board and candlelight at the far end.
+function M.kits.temple(buf, parts, palette, room, spec)
+	local lights = {}
+	local cx = math.floor((room.x1 + room.x2) / 2)
+	for z = room.z1 + 1, room.z2 - 1 do
+		buf:put(cx, room.y, z, palette.node("rug_accent"))
+	end
+	local rows = 0
+	for z = room.z1 + 2, room.z2 - 4, 2 do
+		M.settle(buf, parts, palette, room, cx - 2, z, "x", 2, 1)
+		M.settle(buf, parts, palette, room, cx + 1, z, "x", 2, 3)
+		rows = rows + 1
+	end
+	if rows == 0 then error("wp13 interiors: temple with no bench row", 0) end
+	-- The altar: a board table across the head of the nave with a standing
+	-- light on each side of it, both on the floor and both against a table
+	-- that carries nothing, so no prop stands on half a node of air.
+	M.board(buf, parts, palette, room, cx - 1, room.z2 - 1, "x", 3)
+	for _, offset in ipairs({-2, 2}) do
+		parts.floor_torch(buf, palette, cx + offset, room.y + 1, room.z2 - 1)
+		lights[#lights + 1] = {x = cx + offset, y = room.y + 1, z = room.z2 - 1}
+	end
+	M.shelves(buf, palette, room, room.x1, room.z1 + 1, "z", 2, 1)
+	M.shelves(buf, palette, room, room.x2, room.z1 + 1, "z", 2, 3)
+	for _, z in ipairs({room.z1 + 3, room.z2 - 3}) do
+		M.wall_light(buf, parts, palette, room, room.x1, room.y + 3, z, lights)
+		M.wall_light(buf, parts, palette, room, room.x2, room.y + 3, z, lights)
+	end
+	return lights
+end
+
+-- A scriptorium: shelving the length of both side walls, reading desks in
+-- front of it, and a lamp over every second desk.
+function M.kits.scriptorium(buf, parts, palette, room, spec)
+	local lights = {}
+	local cx = math.floor((room.x1 + room.x2) / 2)
+	local shelf_len = room.z2 - room.z1 - 1
+	M.shelves(buf, palette, room, room.x1, room.z1 + 1, "z", shelf_len, 1)
+	M.shelves(buf, palette, room, room.x2, room.z1 + 1, "z", shelf_len, 3)
+	local desks = 0
+	for z = room.z1 + 2, room.z2 - 2, 3 do
+		M.board(buf, parts, palette, room, room.x1 + 1, z, "z", 2)
+		M.board(buf, parts, palette, room, room.x2 - 1, z, "z", 2)
+		parts.seat(buf, palette, room.x1 + 2, room.y + 1, z, 3)
+		parts.seat(buf, palette, room.x2 - 2, room.y + 1, z, 1)
+		desks = desks + 2
+	end
+	if desks == 0 then error("wp13 interiors: scriptorium with no desk", 0) end
+	M.storage(buf, palette, room, cx - 1, room.z2, "x", 3, 2)
+	for _, z in ipairs({room.z1 + 2, room.z2 - 2}) do
+		M.wall_light(buf, parts, palette, room, room.x1, room.y + 3, z, lights)
+		M.wall_light(buf, parts, palette, room, room.x2, room.y + 3, z, lights)
+	end
+	return lights
+end
+
+-- A granary: bins of grain along both walls under a straw floor, sacks and
+-- barrels stacked at the gable end.
+function M.kits.granary(buf, parts, palette, room, spec)
+	local lights = {}
+	local cx = math.floor((room.x1 + room.x2) / 2)
+	local straw = palette.maybe("ground_straw")
+	if straw then
+		for z = room.z1, room.z2 do
+			for x = room.x1, room.x2 do
+				if x ~= cx then buf:put(x, room.y, z, straw) end
+			end
+		end
+	end
+	local bins = 0
+	for z = room.z1 + 1, room.z2 - 1 do
+		buf:put(room.x1, room.y + 1, z, palette.node("wall_accent"))
+		buf:put(room.x2, room.y + 1, z, palette.node("wall_accent"))
+		bins = bins + 2
+	end
+	if bins == 0 then error("wp13 interiors: granary with no bin", 0) end
+	local bale = palette.maybe("bale")
+	for _, offset in ipairs({-1, 1}) do
+		buf:put(cx + offset, room.y + 1, room.z2, bale or palette.node("storage"),
+			bale and 0 or front(2))
+	end
+	M.storage(buf, palette, room, room.x1 + 1, room.z1, "x", 2, 0)
+	M.storage(buf, palette, room, room.x2 - 2, room.z1, "x", 2, 0)
+	for _, z in ipairs({room.z1 + 2, room.z2 - 2}) do
+		M.wall_light(buf, parts, palette, room, room.x1, room.y + 3, z, lights)
+		M.wall_light(buf, parts, palette, room, room.x2, room.y + 3, z, lights)
+	end
+	return lights
+end
+
+-- A stable: fence partitions between the boxes, bedding in each box and a
+-- feed trough against the head wall, with the centre aisle left open.
+function M.kits.stable(buf, parts, palette, room, spec)
+	local lights = {}
+	local cx = math.floor((room.x1 + room.x2) / 2)
+	local mat = palette.maybe("mat")
+	local boxes = 0
+	for z = room.z1 + 1, room.z2 - 1, 2 do
+		for _, side in ipairs({room.x1, room.x2}) do
+			local step = (side == room.x1) and 1 or -1
+			-- The water trough is the race's own cauldron, not its work top:
+			-- `workbench` is an anvil in two palettes and an iron block in a
+			-- third, and an anvil in a horse box is a prop that means the
+			-- wrong thing. Only some of these carry an orientation, so the
+			-- facedir is written only where the node has a paramtype2 to
+			-- record one in -- a facedir on a node without one is a value no
+			-- placement could have produced and `Buffer:put` refuses it.
+			local trough = palette.node("hearth")
+			buf:put(side, room.y + 1, z, trough,
+				(parts.param2_kind(trough) == parts.FACEDIR) and
+					front(step == 1 and 1 or 3) or 0)
+			-- The bedding lies ON the floor, not in it: a straw mat is a thin
+			-- nodebox at the bottom of its own cell, so it belongs one course
+			-- above the floor node the way `kits.lodge` writes it.
+			if mat then
+				buf:put(side + step, room.y + 1, z, mat, 0)
+			end
+			buf:put(side + step, room.y + 1, z + 1, palette.node("fence"))
+			boxes = boxes + 1
+		end
+	end
+	if boxes == 0 then error("wp13 interiors: stable with no box", 0) end
+	-- The feed store goes against the FAR wall. Against the near one it
+	-- stands in the middle of the cart doorway, which is where the first
+	-- version put it.
+	M.storage(buf, palette, room, cx - 1, room.z2, "x", 3, 2)
+	for _, z in ipairs({room.z1 + 2, room.z2 - 2}) do
+		M.wall_light(buf, parts, palette, room, room.x1, room.y + 3, z, lights)
+		M.wall_light(buf, parts, palette, room, room.x2, room.y + 3, z, lights)
+	end
+	return lights
+end
+
 function M.furnish(kit, buf, parts, palette, room, spec)
 	local builder = M.kits[kit]
 	if not builder then
