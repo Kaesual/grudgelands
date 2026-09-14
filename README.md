@@ -237,8 +237,11 @@ bloom, saturation, waving), seven vendored minetest_game building mods, a
 curated 333-node decorative kit from castle_masonry, cottages, darkage and
 xdecor-libre, and a textured isometric renderer used to review buildings
 before playtests. Native checks, interpreter parity and independent reviews
-are green; the rebuilt settlement awaits its GUI playtest. Other starts,
-capitals and functional settlement services remain later work.
+are green. Dawnmere Fields (human) followed the same day on a generalised
+settlement roster, and a zone atmosphere layer gives each race region,
+the underground and the sea its own fog, sky and light; both await the
+user's playtest. The remaining four starts, capitals and functional
+settlement services remain later work.
 WP5, WP26, WP44, WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind
 shipped prerequisites. WP34 still needs structures and economy.
 

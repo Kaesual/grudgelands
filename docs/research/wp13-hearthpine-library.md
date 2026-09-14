@@ -104,6 +104,20 @@ re-join a left player; citation lines corrected before merge). Calibration:
 implementing Claude Opus, reviewing Claude Opus, 0 Critical / 0 High, zero
 fix rounds.
 
+## Increment 4: Dawnmere Fields and the settlement roster (same day)
+
+`docs/research/wp13-dawnmere-fields.md` records the human start and the
+roster seam (`wp40/r7_settlement.lua`, one union palette channel, per-
+settlement manifest identity, Hearthpine byte-identical). Independent Claude
+Opus review: 0 Critical / 0 High / 2 Medium / 7 Low; one fix round
+(`tools/wp13/evidence/20260914-dawnmere-fixes/`): grounded handcart
+barrel, fatal prop placement with exact prop-population assertions (the
+fix lane found 22 of 27 exterior props silently lost, not only the carts),
+byte-order palette sorting, reserved roster keys, WP40 roster refresh.
+Calibration: implementing Claude Opus, reviewing Claude Opus, one fix
+round, final findings 0. The user accepted the zone atmosphere first
+version on 2026-09-14 before seeing Dawnmere.
+
 ## User runtime test
 
 Fresh world, dwarf, seed `531802985935182545` (Hearthpine y = 25):
