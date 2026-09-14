@@ -162,6 +162,13 @@ local PANE_CONNECTS = {
 	["xpanes:bar_flat"] = true,
 	["xpanes:pane"] = true,
 	["xpanes:pane_flat"] = true,
+	-- Troll (Kapok Cradle): jungle timber is `group:wood`/`group:tree` and
+	-- mossy cobble is `group:stone`, so all four connect a pane the same way
+	-- their dwarf and human counterparts do.
+	["default:junglewood"] = true,
+	["default:jungletree"] = true,
+	["default:mossycobble"] = true,
+	["walls:mossycobble"] = true,
 }
 
 function M.pane_connects(name)
@@ -220,6 +227,16 @@ local FULL_SOLID = {
 	["wool:red"] = true,
 	["wool:white"] = true,
 	["wool:yellow"] = true,
+	-- Troll (Kapok Cradle). `darkage_wood_bars` is deliberately absent: it is
+	-- `glasslike`, so it is a window, not a wall, and nothing may hang on it.
+	-- `default:mossycobble` and `grug_decor:darkage_serpentine` are the
+	-- Hollow's and the Glade's, already listed above.
+	["default:dirt_with_rainforest_litter"] = true,
+	["default:junglewood"] = true,
+	["default:jungletree"] = true,
+	["grug_decor:darkage_basalt_brick"] = true,
+	["grug_decor:darkage_reinforced_wood"] = true,
+	["grug_nodes:mud"] = true,
 }
 
 function M.full_solid(name)
@@ -488,11 +505,20 @@ end
 -- update_pane settles on for two opposite connections. `resolve_panes` below
 -- then runs the real rule over the finished blueprint, because a pane's
 -- shape depends on neighbours the part that wrote it cannot see.
+-- A race whose windows are open bars or a lattice binds `window` to a node
+-- that is not an `xpanes` pane at all. Such a node records no axis -- it has
+-- no paramtype2 to record one in -- so the opening is written at param2 0 and
+-- `resolve_panes` below never sees it, because it carries no `group:pane`.
 function M.pane(buf, palette, x, y, z, axis)
 	if axis ~= "x" and axis ~= "z" then
 		error("wp13 parts: pane axis differs", 0)
 	end
-	buf:put(x, y, z, palette.node("window"), axis == "x" and 0 or 3)
+	local name = palette.node("window")
+	if name:sub(1, 7) ~= "xpanes:" then
+		buf:put(x, y, z, name, 0)
+		return
+	end
+	buf:put(x, y, z, name, axis == "x" and 0 or 3)
 end
 
 -- The connected name behind a pane node, or nil if this is not a pane.

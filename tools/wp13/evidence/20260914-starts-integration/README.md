@@ -13,6 +13,7 @@ where a fix on `main` was deliberately carried into a lane.
 | Dawnmere | `main` (increment 4 + `239f462`) | `239f462` | `3bba042d…c832` | `3bba042d…c832` |
 | Silverleaf | `worktree-agent-a91e5457962f4b19b` | `79582d0` | `d756a3fb…4d10` (lane) | `081bded8…0b5b` |
 | Stillgrave | `worktree-agent-a3b37d689ba57adb9` | `286c3ca` | `7dd3dbbd…c3ff` | `7dd3dbbd…c3ff` |
+| Kapok | `worktree-agent-a0ef785034b3a5b50` | `11889e6` | `a73e0ede…a9c8` | `a73e0ede…a9c8` |
 
 Full digests: `dumps.txt`. Reproduce with `dump.sh` (it dumps each start's
 blueprint wrapper, which pulls the whole WP13 library, so the digest covers
@@ -30,7 +31,10 @@ the merged result. The cell diff against the lane is 68 lines, all of them the
 shrine's dais, its bench rows, its shelves and its two dais lamps moving from the
 door end of the runner to the far end. Nothing else in the elf lane changed.
 
-## Conflicts resolved (nine files, all "two lanes added to the same table")
+## Conflicts resolved
+
+Every conflict was two lanes adding to the same table, list or hunk. Rows
+marked "(troll)" are the files the elf merge did not conflict in.
 
 | File | Both sides added | Kept |
 | --- | --- | --- |
@@ -42,23 +46,29 @@ door end of the runner to the far end. Nothing else in the elf lane changed.
 | `wp40/r7_settlement.lua` | one `M.roster` row each | both, in the same anchor order |
 | `tools/wp13/blueprint_kat.lua` | one `SETTLEMENTS` spec row each; elf generalised the light-support rule (`spec.light_support`, `light_carrier`), undead generalised the light node names into `spec.light` | both spec rows (silverleaf first) and both generalisations — they compose: `LIGHT` comes from `spec.light`, the carrier rule from `spec.light_support` |
 | `tools/wp13/engine_cases.lua` | elf: owner cap `18 * #roster` with its `ceil((127 + 79) / 80) = 3` derivation; undead: `12 * #starts` plus the note on the filler-boundary seed. Both lanes independently added a light-landmark set (`is_light` / `light_at`) and both routed the street check through the `main_street` landmark | the elf derivation and both caps (`18 * #roster`, `18 * #roster + 2`), the undead seed note folded in, **one** light set (`light_at`), and the `main_street` road generalisation |
+| `wp13/dressing.lua` (troll) | undead `gravewood`/`grave`/`graveyard`/`cobweb`/`ivy`/`rubble_heap`/`blight_flora` and elf `lantern_post`/`lantern_pillar`/`columnar`; troll `jungle_tree`/`emergent`/`totem`/`drying_rack`/`rope_fall`/`lantern`/`walkway`/`stair_up`/`basin_flora` | every function of both sides; verified purely additive in both directions (zero deleted lines against either parent) |
+| `wp13/interiors.lua` (troll) | main's chapel-dais fix; troll `M.kits.lodge` and `M.kits.smoker` | both; the troll lane never saw the dais fix, and Kapok builds no chapel |
+| `tools/wp13/library_kat.lua` (troll) | undead: per-start `connected_panes` accumulated into `corpus_connected_panes` + a corpus-level assertion; troll: a `glazed`/`open` window-vocabulary split so a race with open bars is not forced to glaze | both. The troll lane's per-start `connected_panes > 0` was dropped in favour of the undead lane's corpus-level assertion — Stillgrave bars every opening with a single flat face and legitimately writes 140 panes and no junction, which the per-start rule would have failed |
+| `tools/wp13/extract_tiles.py` (troll) | one `MANUAL_OVERRIDES` block each | both, no key collisions |
+| `tools/wp13/node_tiles.json` (troll) | one generated file each | **regenerated** from the merged tree (`extract_tiles.py --root mods --root reference_projects/minetest_game/mods --relative-to .`) and checked to be the exact union: 453 nodes, none missing, every differing entry equal to the other side's override |
 | `tools/wp13/stub_registry.lua` | both lanes added `grug_trees` and `grug_nodes` to `SOURCES` and `MOD_GLOBALS`, and both stubbed `read_schematic` (zero volume vs unit volume) | one entry each, elf's `seed = "grug_trees"`, the merged `MOD_GLOBALS`, and the unit-volume stub — `grug_trees` reads `size.y` only for a runtime growth height, never for a node definition |
 
 ## Checks
 
 | Gate | Result |
 | --- | --- |
-| `tools/bin/luac51 -p` on every changed Lua | PASS (17 files individually, plus `mods/*/grug_*` and `tools` tree-wide) |
+| `tools/bin/luac51 -p` on every changed Lua | PASS (19 files individually, plus `mods/*/grug_*` and `tools` tree-wide) |
 | SETGLOBAL | 0 on every changed file |
 | Five plain-5.1 sweeps, changed files | zero hits |
 | Five plain-5.1 sweeps, `wp13/` + changed `wp40` + `tools/wp13` | only the six pre-existing `os.exit` lines in `tools/wp13/dump_blueprint.lua`, a developer tool that never runs in the engine sandbox |
 | `tools/check_fresh_server.py` | `Fresh-server source audit: PASS` |
-| `library_kat` + `blueprint_kat` + `integration_fixture`, LuaJIT vs PUC 5.1 | byte-identical, `fced90b21ef32dcd…` |
+| `python3 -m py_compile tools/wp13/extract_tiles.py`, `node_tiles.json` parses | PASS, 453 nodes |
+| `library_kat` + `blueprint_kat` + `integration_fixture`, LuaJIT vs PUC 5.1 | byte-identical, `e4d2cb264879918e…` |
 | `atmosphere_kat`, LuaJIT vs PUC 5.1 | `OK` under both, identical apart from the interpreter banner the KAT prints on line 2 |
-| `tools/wp13/final_micro.lua` pair | byte-identical, `fced90b21ef32dcdff61110318eb071651fed7d3a2c87dd5943436707edb141f` |
+| `tools/wp13/final_micro.lua` pair | byte-identical, `e4d2cb264879918e77ba01405ee0b69cf67b9a748879baff4476286938a4c290` |
 | Engine gate | **not run here** — the coordinator runs one combined engine gate over all six starts |
 
-Composed integration row: `composed/4/130` — four starts, 130 names in the one
+Composed integration row: `composed/5/147` — five starts, 147 names in the one
 shared opcode-37 settlement palette.
 
 Scripts: `static.sh`, `kat.sh`, `dump.sh`, `final-micro.sh`. Outputs:

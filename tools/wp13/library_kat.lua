@@ -545,6 +545,34 @@ return function(repo)
 	say("registry", profile.key, #emitted_names, "kinds", kinds_checked,
 		"place_param2", pinned, "plain_cubes", plain_cells)
 
+	-- 8b. which window vocabulary this start builds with -------------------
+	-- Which race a blueprint was composed from is not recorded anywhere the
+	-- blueprint can be asked, but its windows are: exactly one of the names it
+	-- emits is some race's `window` role. Whether THAT node carries
+	-- `group:pane` in the real registry decides which of the two rules in
+	-- section 9 applies -- derived from the palettes and the registrations,
+	-- never from a roster kept here.
+	local window_names = {}
+	for _, race in ipairs(races) do
+		window_names[handles[race].node("window")] = true
+	end
+	local glazed, openings = nil, 0
+	for _, name in ipairs(emitted_names) do
+		if window_names[name] then
+			openings = openings + 1
+			local def = world.nodes[name]
+			local is_pane = type(def.groups) == "table" and
+				(def.groups.pane or 0) > 0
+			if glazed == nil then
+				glazed = is_pane
+			else
+				assert(glazed == is_pane,
+					"one start emits two window vocabularies")
+			end
+		end
+	end
+	assert(openings > 0, "the start emits no window at all")
+
 	-- 9. every pane is the node update_pane would have settled on ----------
 	-- Re-derived here from the mod source, not from `parts.resolve_panes`:
 	-- the connection test is `group:pane`, `group:stone`, `group:glass`,
@@ -594,9 +622,27 @@ return function(repo)
 			if want_name == base then connected_panes = connected_panes + 1 end
 		end
 	end
-	assert(pane_cells > 100, "the village lost its windows")
+	-- A race whose windows are open bars or a lattice writes no `group:pane`
+	-- node at all: the troll palette's `darkage_wood_bars` is `glasslike` and
+	-- carries no pane group, so `update_pane` has nothing to say about it and
+	-- demanding a hundred panes here would only force a material that race
+	-- does not build with. A start that DOES glaze still has to satisfy the
+	-- whole rule.
+	--
+	-- The connected branch of `update_pane` is required of the CORPUS, not of
+	-- every glazed start: the Hollow bars every opening with a single flat
+	-- face and writes 140 panes and no junction, which is the architecture and
+	-- not an untested branch. The corpus assertion below is what keeps that
+	-- branch covered, and the per-start count is reported either way.
+	if glazed then
+		assert(pane_cells > 100, "the village lost its windows")
+	else
+		assert(pane_cells == 0,
+			"a start with open windows still wrote " .. pane_cells .. " panes")
+	end
 	corpus_connected_panes = corpus_connected_panes + connected_panes
-	say("panes", profile.key, pane_cells, "connected", connected_panes)
+	say("panes", profile.key, glazed and "glazed" or "open", pane_cells,
+		"connected", connected_panes)
 
 	-- 10. every torch hangs on an opaque full node -------------------------
 	-- A wallmounted torch takes its support from the direction its param2

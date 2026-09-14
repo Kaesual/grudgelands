@@ -48,6 +48,11 @@ return function(canonical, raw_sha256)
 		"stillgrave_delta_schema", "stillgrave_delta_sha256",
 		"stillgrave_opcode", "stillgrave_class", "stillgrave_policy",
 		"stillgrave_order", "stillgrave_overwrite",
+		"kapok_blueprint_schema",
+		"kapok_blueprint_sha256", "kapok_cell_count",
+		"kapok_delta_schema", "kapok_delta_sha256",
+		"kapok_opcode", "kapok_class", "kapok_policy",
+		"kapok_order", "kapok_overwrite",
 		"functional_anchor_y_min", "writer_schema", "p9g_opcode", "p9g_class",
 		"p9g_policy", "p9g_order", "p9g_overwrite", "source_projection_sha256",
 		"production_enabled",
@@ -69,6 +74,9 @@ return function(canonical, raw_sha256)
 		{key = "stillgrave", anchor_id = "anchor_004",
 			identity_schema = "grug_wp13_stillgrave_blueprint_identity_v1",
 			delta_schema = "grug_wp13_stillgrave_delta_v1"},
+		{key = "kapok", anchor_id = "anchor_006",
+			identity_schema = "grug_wp13_kapok_blueprint_identity_v1",
+			delta_schema = "grug_wp13_kapok_delta_v1"},
 	}
 
 	local function fail(message)

@@ -549,6 +549,86 @@ function M.kits.carver_wing(buf, parts, palette, room, spec)
 	return lights
 end
 
+-- The spirit lodge: one open floor round a central fire, woven mats and low
+-- stair benches facing it, crocks on the side walls and lamps between every
+-- window. Deliberately no bed: this is the room the throng meets in.
+function M.kits.lodge(buf, parts, palette, room, spec)
+	local lights = {}
+	local cx = math.floor((room.x1 + room.x2) / 2)
+	local cz = math.floor((room.z1 + room.z2) / 2)
+	local mat = palette.maybe("mat")
+	for z = cz - 2, cz + 2 do
+		for x = cx - 2, cx + 2 do
+			if math.abs(x - cx) + math.abs(z - cz) > 1 then
+				buf:put(x, room.y, z, palette.node("rug"))
+			end
+		end
+	end
+	-- The fire in the middle of the floor, its flue rising to the ridge.
+	M.hearth(buf, parts, palette, room, cx, cz, 0, room.h, lights)
+	-- Two benches to each side, looking inward across the fire.
+	for _, row in ipairs({{cz - 4, 0}, {cz + 4, 2}}) do
+		M.settle(buf, parts, palette, room, cx - 3, row[1], "x", 7, row[2])
+	end
+	if mat then
+		for _, row in ipairs({cz - 3, cz + 3}) do
+			for x = cx - 3, cx + 3 do
+				buf:put(x, room.y + 1, row, mat, 0)
+			end
+		end
+	end
+	M.shelves(buf, palette, room, room.x1, room.z1 + 1, "z", 3, 1)
+	M.shelves(buf, palette, room, room.x2, room.z1 + 1, "z", 3, 3)
+	M.storage(buf, palette, room, room.x1, room.z2 - 2, "z", 2, 1)
+	M.storage(buf, palette, room, room.x2, room.z2 - 2, "z", 2, 3)
+	M.rug(buf, palette, room, cx, room.z1, cx, room.z1, true)
+	for _, z in ipairs({room.z1 + 2, cz, room.z2 - 2}) do
+		M.wall_light(buf, parts, palette, room, room.x1, room.y + 3, z, lights)
+		M.wall_light(buf, parts, palette, room, room.x2, room.y + 3, z, lights)
+	end
+	return lights
+end
+
+-- The fish smoker and kitchen: a row of smoking fires on the gable wall,
+-- soaking tubs down the middle, crocks and barrels on the long walls and a
+-- rope line of split fish hanging over the floor.
+function M.kits.smoker(buf, parts, palette, room, spec)
+	local lights = {}
+	local cx = math.floor((room.x1 + room.x2) / 2)
+	local cz = math.floor((room.z1 + room.z2) / 2)
+	-- The smoking fires stand against the BACK wall, so the doorway in the
+	-- front wall stays a doorway: an interior kit that furnishes the cell a
+	-- door opens onto has built a wall, not a room.
+	for offset = -2, 2, 2 do
+		M.hearth(buf, parts, palette, room, cx + offset, room.z2, 2, room.h,
+			lights)
+	end
+	for _, tub in ipairs({{cx - 1, cz}, {cx + 1, cz}, {cx, cz + 2}}) do
+		buf:put(tub[1], room.y + 1, tub[2], palette.node("workbench"))
+	end
+	M.board(buf, parts, palette, room, cx - 1, cz - 2, "x", 3)
+	M.storage(buf, palette, room, room.x1, room.z1 + 2, "z", 3, 1)
+	M.shelves(buf, palette, room, room.x2, room.z1 + 2, "z", 3, 3)
+	M.rug(buf, palette, room, cx, room.z1 + 1, cx, room.z1 + 1, true)
+	-- The drying line: a tie beam across the room with rope hung off it. The
+	-- beam is written first so every rope cell has a solid node above it, the
+	-- same support rule the outdoor racks obey.
+	local rope = palette.maybe("rope")
+	if rope then
+		for x = room.x1, room.x2 do
+			buf:put(x, room.h, room.z2 - 2, palette.node("beam"))
+		end
+		for x = room.x1 + 1, room.x2 - 1, 2 do
+			buf:put(x, room.h - 1, room.z2 - 2, rope)
+		end
+	end
+	for _, z in ipairs({room.z1 + 2, room.z2 - 1}) do
+		M.wall_light(buf, parts, palette, room, room.x1, room.y + 3, z, lights)
+		M.wall_light(buf, parts, palette, room, room.x2, room.y + 3, z, lights)
+	end
+	return lights
+end
+
 function M.furnish(kit, buf, parts, palette, room, spec)
 	local builder = M.kits[kit]
 	if not builder then

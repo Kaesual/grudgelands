@@ -1841,8 +1841,11 @@
    "shape": "nodebox"
   },
   "grug_decor:cottages_tub": {
-   "drawtype": "mesh",
-   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "drawtype": "nodebox",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_cottages_cottages_barrel.png"
+   ],
    "shape": "nodebox"
   },
   "grug_decor:cottages_wagon_load": {
@@ -1910,6 +1913,14 @@
    "source": "mods/ITEMS/grug_decor/cottages.lua",
    "shape": "nodebox"
   },
+  "grug_decor:darkage_basalt_brick": {
+   "tiles": [
+    "grug_decor_darkage_darkage_basalt_brick.png"
+   ],
+   "drawtype": "normal",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "cube"
+  },
   "grug_decor:darkage_iron_bars": {
    "tiles": [
     "grug_decor_darkage_darkage_iron_bars.png"
@@ -1920,7 +1931,11 @@
    "shape": "glass"
   },
   "grug_decor:darkage_reinforced_wood": {
-   "source": "mods/ITEMS/grug_decor/darkage.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "default_wood.png^grug_decor_darkage_darkage_reinforce.png"
+   ],
+   "drawtype": "normal",
    "shape": "cube"
   },
   "grug_decor:darkage_reinforced_wood_arrow": {
@@ -1936,6 +1951,23 @@
    "paramtype2": "facedir",
    "source": "mods/ITEMS/grug_decor/darkage.lua",
    "shape": "cube"
+  },
+  "grug_decor:darkage_serpentine": {
+   "tiles": [
+    "grug_decor_darkage_darkage_serpentine.png"
+   ],
+   "drawtype": "normal",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "cube"
+  },
+  "grug_decor:darkage_wood_bars": {
+   "tiles": [
+    "grug_decor_darkage_darkage_wood_bars.png"
+   ],
+   "drawtype": "glasslike",
+   "alpha": "clip",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "glass"
   },
   "grug_decor:darkage_wood_frame": {
    "drawtype": "glasslike_framed",
@@ -2047,7 +2079,11 @@
   },
   "grug_decor:xdecor_lantern": {
    "drawtype": "plantlike",
-   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_xdecor_xdecor_lantern.png^[verticalframe:4:0"
+   ],
+   "alpha": "clip",
    "shape": "plant"
   },
   "grug_decor:xdecor_lantern_hanging": {
@@ -2075,7 +2111,11 @@
   },
   "grug_decor:xdecor_rope": {
    "drawtype": "plantlike",
-   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_xdecor_xdecor_rope.png"
+   ],
+   "alpha": "clip",
    "shape": "plant"
   },
   "grug_decor:xdecor_stonepath": {

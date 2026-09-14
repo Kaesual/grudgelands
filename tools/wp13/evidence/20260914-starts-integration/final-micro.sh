@@ -16,6 +16,7 @@ INPUTS=(
 	mods/MAPGEN/grug_mapgen/wp13/dressing.lua
 	mods/MAPGEN/grug_mapgen/wp13/hearthpine.lua
 	mods/MAPGEN/grug_mapgen/wp13/interiors.lua
+	mods/MAPGEN/grug_mapgen/wp13/kapok.lua
 	mods/MAPGEN/grug_mapgen/wp13/layout.lua
 	mods/MAPGEN/grug_mapgen/wp13/palette.lua
 	mods/MAPGEN/grug_mapgen/wp13/parts.lua
@@ -24,6 +25,7 @@ INPUTS=(
 	mods/MAPGEN/grug_mapgen/wp13/stillgrave.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_dawnmere_blueprint.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_hearthpine_blueprint.lua
+	mods/MAPGEN/grug_mapgen/wp40/r7_kapok_blueprint.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_silverleaf_blueprint.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_stillgrave_blueprint.lua

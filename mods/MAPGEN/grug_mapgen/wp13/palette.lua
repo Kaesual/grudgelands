@@ -25,8 +25,8 @@ M.required = {
 -- part that wanted it writes nothing.
 M.optional = {"bale", "bed_fancy", "bench_seat", "board_table", "cobweb",
 	"crop", "fence_gate", "flower", "flower_alt", "ground_straw", "hedge",
-	"hedge_stem", "ivy", "light_beacon", "light_hanging", "mat", "pillar",
-	"shutter", "stepping", "wall_infill", "wheel"}
+	"hedge_stem", "ivy", "lantern", "light_beacon", "light_hanging", "mat",
+	"pillar", "rope", "shutter", "stepping", "wall_infill", "wheel"}
 
 -- Two optional light roles for races whose lamps are not wallmounted.
 -- `light_hanging` is a lamp in `group:attached_node = 4`, which the engine
@@ -36,6 +36,12 @@ M.optional = {"bale", "bed_fancy", "bench_seat", "board_table", "cobweb",
 -- has a paramtype2, so both are written at param2 0; the required
 -- `light_wall` / `light_post` / `light_indoor` trio stays wallmounted,
 -- because that is what `parts.wall_torch` and `parts.floor_torch` write.
+--
+-- `lantern` and `rope` are the troll vocabulary: `grug_decor:xdecor_lantern`
+-- is in `group:attached_node = 3`, the engine's "attached to the node ABOVE",
+-- and `xdecor_rope` falls from the underside of a stilt deck. The four start
+-- lanes each added their own roles here; the integration folded them into the
+-- one sorted literal above.
 
 -- Three roles do not name a node at all: they name the BASE of a family the
 -- engine registers under several suffixes, and only the part that knows the
@@ -398,6 +404,94 @@ M.races.undead = {
 	undergrowth = "grug_nodes:bone_pile",
 	grass_tuft = "default:dry_shrub",
 	fern = "default:dry_shrub",
+}
+
+-- Troll (Kapok Cradle): a stilt village on the floor of a kapok basin.
+-- Contract section 4's troll column -- mossy and basalt footings, junglewood
+-- walls, jungletree posts, the `stairs:*_junglewood` roof family, open
+-- windows instead of glass, junglewood fences and wooden doors -- plus the
+-- kit nodes the basin asks for: `darkage_basalt_brick` platforms and wall
+-- bases, `darkage_reinforced_wood` beams, `darkage_serpentine` accents,
+-- `darkage_wood_bars` window bars, the hanging `xdecor_lantern` and the
+-- `xdecor_rope` that falls from the underside of every stilt deck.
+--
+-- The ground is rainforest litter over swamp `grug_nodes:mud`, and `path` is
+-- junglewood: in a basin that floods, a settlement walks on boardwalks, not
+-- on stone. That single binding is what makes the road, the lanes, the
+-- building aprons and the raised walkways one continuous timber deck.
+M.races.troll = {
+	ground = "default:dirt_with_rainforest_litter",
+	ground_patch = "grug_nodes:mud",
+	ground_bare = "default:dirt",
+	ground_straw = "grug_decor:cottages_straw_ground",
+	subsoil = "default:dirt",
+	path = "default:junglewood",
+	plaza = "grug_decor:darkage_basalt_brick",
+	plaza_edge = "grug_decor:darkage_serpentine",
+	stepping = "grug_decor:xdecor_stonepath",
+	rubble = "default:gravel",
+
+	foundation = "grug_decor:darkage_basalt_brick",
+	wall = "default:junglewood",
+	wall_accent = "default:mossycobble",
+	post = "default:jungletree",
+	beam = "grug_decor:darkage_reinforced_wood",
+	floor = "default:junglewood",
+	ceiling = "default:junglewood",
+
+	roof_stair = "stairs:stair_junglewood",
+	roof_stair_outer = "stairs:stair_outer_junglewood",
+	roof_stair_inner = "stairs:stair_inner_junglewood",
+	roof_slab = "stairs:slab_junglewood",
+	roof_ridge = "default:junglewood",
+
+	-- Open windows: a bar node, not a pane. `parts.pane` writes it at param2
+	-- 0 and `parts.resolve_panes` leaves it alone, because it carries no
+	-- `group:pane` and the `xpanes` update rule does not apply to it.
+	window = "grug_decor:darkage_wood_bars",
+	window_frame = "default:jungletree",
+	door = "doors:door_wood",
+	door_hidden = "doors:hidden",
+
+	fence = "default:fence_junglewood",
+	fence_rail = "default:fence_rail_junglewood",
+	low_wall = "walls:mossycobble",
+	railing = "default:fence_junglewood",
+
+	light_wall = "default:torch_wall",
+	light_post = "default:torch",
+	light_indoor = "default:torch_wall",
+	lantern = "grug_decor:xdecor_lantern",
+	rope = "grug_decor:xdecor_rope",
+
+	bed = "beds:bed",
+	bed_fancy = "beds:fancy_bed",
+	table_top = "stairs:slab_junglewood",
+	table_leg = "default:fence_junglewood",
+	seat = "stairs:stair_junglewood",
+	mat = "grug_decor:cottages_straw_mat",
+	-- Furnishing: static decor only, for the reason written above the dwarf
+	-- palette. The tub is the troll workbench: a fish-smoker's soaking tub,
+	-- geometry and nothing else.
+	shelf = "grug_decor:xdecor_empty_shelf",
+	shelf_vessels = "grug_decor:cottages_shelf",
+	storage = "grug_decor:xdecor_barrel",
+	workbench = "grug_decor:cottages_tub",
+	hearth = "grug_decor:xdecor_cauldron",
+	chimney = "default:mossycobble",
+	chimney_cap = "stairs:slab_mossycobble",
+	-- A rug is written INTO the floor course, so it has to be a full node; a
+	-- straw mat is not, and lives on the optional `mat` role instead.
+	rug = "grug_decor:cottages_straw",
+	rug_accent = "wool:green",
+
+	planter = "default:mossycobble",
+	planter_soil = "grug_nodes:mud",
+	tree_log = "default:jungletree",
+	tree_leaves = "default:jungleleaves",
+	undergrowth = "default:junglegrass",
+	grass_tuft = "default:grass_1",
+	fern = "default:fern_1",
 }
 
 local function contains(list, value)

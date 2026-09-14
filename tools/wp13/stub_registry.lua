@@ -71,9 +71,10 @@ M.SOURCES = {
 	{mod = "grug_trees", path = "mods/ITEMS/grug_trees", seed = "grug_trees",
 		files = {"init.lua"}},
 	-- `grug_nodes` carries the signature surface nodes the race biomes stand
-	-- on (blight dirt, the litters, the bone pile), which is what a start
-	-- pad's ground has to match. It reads `grug_materials.natural_groups`,
-	-- so it must load after that mod.
+	-- on (blight dirt, swamp mud, the litters, the bone pile), which is what
+	-- a start pad's ground has to match. It calls
+	-- `grug_materials.natural_groups` at registration time and reads
+	-- `default`'s sound tables, so it must load after both.
 	{mod = "grug_nodes", path = "mods/ITEMS/grug_nodes", files = {"init.lua"}},
 }
 

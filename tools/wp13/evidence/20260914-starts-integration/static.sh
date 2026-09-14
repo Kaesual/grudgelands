@@ -13,11 +13,13 @@ CHANGED=(
 	mods/MAPGEN/grug_mapgen/wp13/buildings.lua
 	mods/MAPGEN/grug_mapgen/wp13/dressing.lua
 	mods/MAPGEN/grug_mapgen/wp13/interiors.lua
+	mods/MAPGEN/grug_mapgen/wp13/kapok.lua
 	mods/MAPGEN/grug_mapgen/wp13/layout.lua
 	mods/MAPGEN/grug_mapgen/wp13/palette.lua
 	mods/MAPGEN/grug_mapgen/wp13/parts.lua
 	mods/MAPGEN/grug_mapgen/wp13/silverleaf.lua
 	mods/MAPGEN/grug_mapgen/wp13/stillgrave.lua
+	mods/MAPGEN/grug_mapgen/wp40/r7_kapok_blueprint.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_manifest.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_silverleaf_blueprint.lua
@@ -67,9 +69,17 @@ sweeps mods/MAPGEN/grug_mapgen/wp13 tools/wp13 \
 	mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua \
 	mods/MAPGEN/grug_mapgen/wp40/r7_dawnmere_blueprint.lua \
 	mods/MAPGEN/grug_mapgen/wp40/r7_hearthpine_blueprint.lua \
+	mods/MAPGEN/grug_mapgen/wp40/r7_kapok_blueprint.lua \
 	mods/MAPGEN/grug_mapgen/wp40/r7_silverleaf_blueprint.lua \
 	mods/MAPGEN/grug_mapgen/wp40/r7_stillgrave_blueprint.lua \
 	mods/MAPGEN/grug_mapgen/wp40/r7_wp13_library.lua
+
+echo "== the changed Python file compiles =="
+python3 -m py_compile tools/wp13/extract_tiles.py &&
+	echo "tools/wp13/extract_tiles.py py_compile PASS"
+
+echo "== node_tiles.json parses =="
+python3 -c "import json; d = json.load(open('tools/wp13/node_tiles.json')); print('node_tiles.json nodes', len(d['nodes']))"
 
 echo "== fresh server check =="
 python3 tools/check_fresh_server.py
