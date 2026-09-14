@@ -133,6 +133,8 @@ local function loader(directory)
 		{-37, 24, -35, 26, "lane"},
 		{34, -25, 36, -23, "lane"},
 		{34, -12, 36, -10, "lane"},
+		{-37, 37, -35, 39, "lane"},
+		{-37, -25, -35, -23, "lane"},
 		{29, -36, 33, -34, "lane"},
 	}
 
@@ -264,12 +266,21 @@ local function loader(directory)
 			x = 37, z = -30, turns = 1, palette = "human",
 			spec = {w = 9, d = 9, wall_h = 5, roof = "saltbox",
 				ridge_axis = "x", infill = true, shutters = true}},
+		{id = "chapel_house", module = "buildings", make = "cottage",
+			x = -46, z = 36, turns = 3, palette = "human",
+			spec = {w = 9, d = 9, wall_h = 5, roof = "hip",
+				infill = true, shutters = true}},
+		{id = "market_house", module = "buildings", make = "cottage",
+			x = -46, z = -30, turns = 1, palette = "human",
+			spec = {w = 9, d = 9, wall_h = 5, roof = "gable",
+				ridge_axis = "z", infill = true, shutters = true}},
 	}
 
 	-- Destination order is part of the consumer contract and never changes.
 	local DESTINATION_ORDER = {"kings_hall", "gate_south", "gate_west",
 		"gate_north", "gate_east", "chapel", "service_yard", "service_store",
-		"city_workshop", "north_house", "lane_house", "orchard_house"}
+		"city_workshop", "north_house", "lane_house", "orchard_house",
+		"chapel_house", "market_house"}
 
 	-- The four corner waypoints of the patrol loop, in the open ground the
 	-- parts do not reach. Each stands on the lane or the ring street, so the
@@ -278,7 +289,7 @@ local function loader(directory)
 		{id = "watch_south_east", x = 34, z = -31, face = 0, order = 4},
 		{id = "watch_north_east", x = 42, z = 32, face = 2, order = 6},
 		{id = "watch_north_west", x = -38, z = 34, face = 2, order = 8},
-		{id = "watch_south_west", x = -40, z = -30, face = 0, order = 10},
+		{id = "watch_south_west", x = -40, z = -16, face = 0, order = 10},
 	}
 
 	-- The waypoint plaza reserved for WP17: a flat, open, kerbed square east
@@ -606,18 +617,32 @@ local function loader(directory)
 		-- between the orchard pieces.
 		local orchard = 0
 		for _, block in ipairs({{-46, -12, -38, 4, 4, 5},
-				{-18, -46, -8, -38, 4, 5}, {-34, 40, -24, RADIUS - 1, 4, 5},
-				{24, 40, 34, RADIUS - 1, 4, 5}}) do
+				{-18, -46, -8, -38, 4, 5}, {-34, 40, -24, 45, 4, 5},
+				{24, 40, 34, 45, 4, 5}, {-34, 8, -24, 18, 4, 5},
+				{8, 8, 18, 18, 4, 5}, {-18, -34, -8, -14, 4, 5},
+				{8, 30, 18, 44, 4, 5}, {-18, 30, -8, 44, 4, 5},
+				{-34, -12, -24, -2, 4, 5}}) do
 			orchard = orchard + layout.plant_orchard(buf, human, block[1],
 				block[2], block[3], block[4], block[5], block[6])
 		end
+		-- The open edge. Highcourt has no curtain wall (the user's ruling of
+		-- 2026-09-14), so what holds its boundary is a clipped hedge, and it
+		-- runs round the WHOLE pad rather than in four authored stretches:
+		-- every column of the boundary ring that is still open ground gets
+		-- three courses of hedge, and the run breaks by itself wherever a
+		-- gatehouse, an orchard piece, a house or a street already holds the
+		-- edge. Hand-placed runs are how a hedge ends up planted through a
+		-- cottage's apron, which is what the first version of this did.
 		local hedge = 0
-		for _, line in ipairs({{-46, RADIUS - 1, -36, RADIUS - 1},
-				{36, RADIUS - 1, 46, RADIUS - 1},
-				{RADIUS - 1, -34, RADIUS - 1, -14},
-				{RADIUS - 1, 14, RADIUS - 1, 34}}) do
-			hedge = hedge + dressing.hedge_line(buf, human, line[1], line[2],
-				line[3], line[4], 3)
+		for offset = -RADIUS + 1, RADIUS - 1 do
+			for _, spot in ipairs({{offset, RADIUS - 1}, {offset, -RADIUS + 1},
+					{RADIUS - 1, offset}, {-RADIUS + 1, offset}}) do
+				local x, z = spot[1], spot[2]
+				if layout.natural(buf, x, z) and layout.free(buf, x, z, 4) then
+					hedge = hedge + dressing.hedge_line(buf, human, x, z, x, z,
+						3)
+				end
+			end
 		end
 
 		-- 10. Meadow flora on the turf between the plots.
