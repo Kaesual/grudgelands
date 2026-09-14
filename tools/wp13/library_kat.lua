@@ -1038,7 +1038,7 @@ return function(repo)
 			doors = 1, rooms = 1,
 			counts = {merlons = true, arrowslits = true}},
 		{key = "gatehouse", class = "plot", spec = {id = "kat_gate"},
-			roles = {guard_post = 2, guard_patrol = 1, idle = 2},
+			roles = {guard_post = 2, guard_patrol = 2, idle = 2},
 			doors = 2, rooms = 1,
 			-- The five-wide street of the capitals contract, clear from the
 			-- paving to head height on every node of the passage. The arch
@@ -1323,6 +1323,72 @@ return function(repo)
 					assert(touched, where .. ": " .. cell.name ..
 						" stands detached at " .. cell.x .. "," .. cell.y ..
 						"," .. cell.z)
+				end
+			end
+		end
+
+		-- (f2) and nothing floats as an ISLAND. The neighbour rule above is
+		-- local: two cells that touch each other and nothing else pass it,
+		-- which is how a bell hung under a cross-beam in the middle of a
+		-- lantern went unnoticed -- both cells had a neighbour, and the
+		-- neighbour was the other one. This is the same adjacency (face or
+		-- vertical diagonal) flooded from the GROUND up, so a piece of
+		-- architecture has to be connected to the terrain through other
+		-- cells, not merely to itself.
+		--
+		-- The same three families are outside the rule, for the same
+		-- reasons, and they conduct without being required: a torch is held
+		-- by its own param2 and a leaf by its trunk.
+		local grounded, island_checked = {}, 0
+		local frontier, frontier_count = {}, 0
+		local function solid_cell(cell)
+			if cell == nil or cell.name == "air" then return false end
+			return true
+		end
+		for _, cell in ipairs(order) do
+			if cell.name ~= "air" and held(cell.x, cell.y - 1, cell.z) and
+					not solid_cell(at(cell.x, cell.y - 1, cell.z)) then
+				-- resting straight on the settlement's own terrain
+				local key = cell.x .. ":" .. cell.y .. ":" .. cell.z
+				if not grounded[key] then
+					grounded[key] = true
+					frontier_count = frontier_count + 1
+					frontier[frontier_count] = cell
+				end
+			end
+		end
+		local head = 1
+		while head <= frontier_count do
+			local cell = frontier[head]
+			head = head + 1
+			for _, step in ipairs(NEIGHBOUR_STEPS) do
+				local other = at(cell.x + step[1], cell.y + step[2],
+					cell.z + step[3])
+				if other ~= nil and other.name ~= "air" then
+					local key = other.x .. ":" .. other.y .. ":" .. other.z
+					if not grounded[key] then
+						grounded[key] = true
+						frontier_count = frontier_count + 1
+						frontier[frontier_count] = other
+					end
+				end
+			end
+		end
+		for _, cell in ipairs(order) do
+			if cell.name ~= "air" then
+				local def = world.nodes[cell.name]
+				local groups = def and type(def.groups) == "table" and
+					def.groups or {}
+				local loose = def == nil or LOOSE_CAPITAL[def.drawtype] or
+					def.paramtype2 == "wallmounted" or
+					(groups.tree or 0) > 0 or (groups.leaves or 0) > 0 or
+					(groups.leafdecay or 0) > 0
+				if not loose then
+					island_checked = island_checked + 1
+					assert(grounded[cell.x .. ":" .. cell.y .. ":" .. cell.z],
+						where .. ": " .. cell.name .. " at " .. cell.x .. "," ..
+							cell.y .. "," .. cell.z ..
+							" is an island -- nothing connects it to the ground")
 				end
 			end
 		end
