@@ -163,9 +163,13 @@ def as_string(arg: str):
             return arg[1:end - 1].replace('\\"', '"').replace("\\'", "'")
     if ".." in arg:
         parts = split_concat(arg)
-        vals = [as_string(p) for p in parts]
-        if all(v is not None for v in vals):
-            return "".join(vals)
+        # A `..` that sits inside brackets (e.g. a `{a .. b, c}` table literal)
+        # leaves the whole argument as the single part, and recursing on it
+        # would never terminate -- that is not a concatenation we can read.
+        if len(parts) > 1:
+            vals = [as_string(p) for p in parts]
+            if all(v is not None for v in vals):
+                return "".join(vals)
     return None
 
 
