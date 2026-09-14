@@ -25,7 +25,7 @@ eb822f2c391fe58cf4cfdeb53a2ca8b5d4ec019f8b5a6e645ff21b3285904a30  mods/MAPGEN/gr
 139edeb89c6bf04ddeba39df684653246319bb4a5fdfbe70940c042e727932a5  mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua
 b2ea1b3b6fe0116c395c70eb051d99e311d65b0a5e29c2c2aefc6671dd0e9527  mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua
 deb5fdba771003149c7aa990fb23a7766cb48b4c903df68182de3d9477b18ef0  tools/wp13/engine_cases.lua
-3c9b1b7b7796e95797fb9756fd80fc294a4a02de27127f5f8bb0aaecd86d65f9  tools/wp13/evidence/20260914-round-b-terrain/README.md
+3ccd0fa2d8869d989721ac70d4ed6d77bcf55235105c2332d77a7d7792311c22  tools/wp13/evidence/20260914-round-b-terrain/README.md
 bf3b44093c7dbc6c7ef628295e5cf3490f68e616a0b909c54ae93e85dd77cc7f  tools/wp13/evidence/20260914-round-b-terrain/boundary-seed/digests.txt
 3e56467c03f8adfbdf80b11f8b08e1cf939c1cbc9b68caf0d5cdfb3be8d587a5  tools/wp13/evidence/20260914-round-b-terrain/boundary-seed/forward-cold.tsv
 f6de8dffe8d54f09326d6b30974fdf46f06874f004b8d1be8ec462a220575574  tools/wp13/evidence/20260914-round-b-terrain/boundary-seed/forward-disk.tsv

@@ -229,13 +229,16 @@ octave and base-lattice populations are unchanged.
   config instead of the roster list the fourth WP13 increment introduced. That
   one call is repaired here, because every mode of `run.sh` runs `run_unit`
   first and nothing could be verified otherwise.
-- **`tools/wp40/quality/final_micro.sh`** needs the
-  `reference_projects/luanti` submodule for its input manifest, and an agent
-  worktree deliberately does not initialise submodules (they share
-  `.git/modules` with the user's checkout, and moving a pinned commit as a side
-  effect is forbidden). Its `quality_geometry_micro_kat` component — the one
-  that covers this round's new arithmetic — was run under both interpreters
-  directly and is in the table above.
+- **`tools/wp40/quality/final_micro.sh`** and the **R7 integration KAT**
+  (`adapter_cli.lua integration-kat`, and with it `run.sh integration|freeze|
+  pilot|fleet`) both need the `reference_projects/luanti` submodule — the first
+  for its input manifest, the second because `tools/wp40/r6/fixtures.lua` reads
+  `doc/lua_api.md`. An agent worktree deliberately does not initialise
+  submodules: they share `.git/modules` with the user's own checkout, and moving
+  a pinned commit as a side effect is forbidden. The
+  `quality_geometry_micro_kat` component — the one that covers this round's new
+  arithmetic — was run under both interpreters directly and is in the table
+  above; the engine gate is the broader integration evidence that did run.
 
 ## Engine gate
 
