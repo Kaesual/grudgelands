@@ -287,8 +287,22 @@
    ],
    "drawtype": "normal",
    "paramtype2": "facedir",
-   "shape": "cube",
-   "source": "MANUAL_OVERRIDES"
+   "source": "MANUAL_OVERRIDES",
+   "shape": "cube"
+  },
+  "default:chest_locked": {
+   "tiles": [
+    "default_chest_top.png",
+    "default_chest_top.png",
+    "default_chest_side.png",
+    "default_chest_side.png",
+    "default_chest_side.png",
+    "default_chest_lock.png"
+   ],
+   "drawtype": "normal",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "cube"
   },
   "default:clay": {
    "tiles": [
@@ -627,7 +641,6 @@
   },
   "default:furnace": {
    "source": "MANUAL_OVERRIDES",
-   "shape": "cube",
    "tiles": [
     "default_furnace_top.png",
     "default_furnace_bottom.png",
@@ -637,7 +650,8 @@
     "default_furnace_front.png"
    ],
    "drawtype": "normal",
-   "paramtype2": "facedir"
+   "paramtype2": "facedir",
+   "shape": "cube"
   },
   "default:furnace_active": {
    "source": "MANUAL_OVERRIDES",
@@ -1987,8 +2001,8 @@
     "default_steel_block.png"
    ],
    "drawtype": "normal",
-   "shape": "cube",
-   "source": "MANUAL_OVERRIDES"
+   "source": "MANUAL_OVERRIDES",
+   "shape": "cube"
   },
   "grug_nodes:blight_dirt": {
    "tiles": [
