@@ -26,6 +26,16 @@ Rules:
    upstream project, the **commit the assets were harvested at**, license,
    and any local modification (retint, rescale, rename).
 
+Media in the seven building-material mods vendored on 2026-09-14 (`doors`,
+`xpanes`, `beds`, `wool`, `dye`, `vessels`, `walls`) is licensed **per that
+mod's own `license.txt`**, which is vendored unchanged and carries the
+complete per-file provenance (CC BY-SA 3.0 / CC BY-SA 4.0 / CC BY 3.0 /
+CC0 1.0 as listed there). Two upstream files are deliberately NOT vendored:
+`doors/models/door.blend` (426 KiB Blender editing source, never loaded at
+runtime) and `vessels/textures/vessels_steel_bottle.png` (the node it
+belonged to is removed). No vendored media file is modified, so no
+`LICENSE-media.md` row is needed for them.
+
 WP38 review note for the `mobs_redo` row below: its historical `(k)` wording
 names the former combined `melee_crit` helper. The current patch resolves the
 same multiplier through pure `roll_melee_crit`, snapshots the target position,
@@ -65,6 +75,47 @@ and entity formats. Reapply these local patches after an upstream update:
   boolean `floats`; Crocodile, Kraken and vendors are normalized accordingly.
   Same-version staticdata serialization, activation and spawning remain.
 
+### Building-material mods — 2026-09-14
+
+The seven mods vendored for the settlement builders (`doors`, `xpanes`,
+`beds`, `wool`, `dye`, `vessels`, `walls`) came from the same pinned
+`b5243f3` checkout and were cleaned to the same standing rule:
+
+- **doors:** remove the `doors_owner` node-meta reader
+  (`replace_old_owner_information`) and its four call sites, the per-door
+  `:doors:replace_<name>` LBM that converted the old `<name>_b_1`/`_b_2`
+  two-node door format, and the deprecated `doors.register_door()` API shim
+  (including its `only_placer_can_open` translation and fallback tiledef).
+  Keep open/close, the `doors.register`/`doors.register_trapdoor` API, the
+  `core.is_protected` / `default.can_interact_with_node` checks, the locked
+  door key hooks (kept for the same reason `default/chests.lua` keeps them)
+  and the five wooden fence gates.
+- **xpanes:** remove the 15 numbered old-name aliases registered per pane
+  (`xpanes:<name>_1` … `_15`) and the one-shot `xpanes:gen2` LBM that
+  re-derived their connection state. Keep `xpanes.register_pane`, the
+  `register_on_placenode`/`register_on_dignode` updaters and pane
+  connection.
+- **beds:** delete `functions.lua` and `spawns.lua` and their `init.lua`
+  loaders; remove `beds.on_rightclick`, `beds.can_dig`, the spawn/kick
+  bookkeeping in `destruct_bed`, the `on_rotate` screwdriver hook, the two
+  PilzAdam old-name aliases and the `<name>` → `<name>_bottom` alias (the
+  recipe names the real node instead). Keep placement of both facedir
+  halves, paired destruction, digging and the recipes.
+- **wool:** remove the two jordach 16-colour aliases (`wool:dark_blue`,
+  `wool:gold`).
+- **walls:** remove the single-texture-string fallback in `walls.register`
+  for callers written against the pre-table API.
+
+Removed files (`beds/functions.lua`, `beds/spawns.lua`) are listed here
+because they cannot retain in-file markers. Every other removal carries a
+`-- GRUG PATCH` marker at its site.
+
+Beyond the fresh-server rule these mods also drop code for dependencies
+Grudgelands does not ship (`screwdriver`, `flowers`, `dungeon_loot`,
+`spawn`, `player_monoids`, `pova`) and recipes whose inputs
+`grug_materials/content_curation.lua` retires (`default:steel_ingot`); see
+the per-mod rows below.
+
 These deletions do not change upstream pins or licenses. Markers at the
 remaining load/call/registration sites document removed code; removed files
 are listed here because they cannot retain in-file markers.
@@ -77,6 +128,13 @@ are listed here because they cannot retain in-file markers.
 | `mods/BASE/sfinv` | minetest_game `mods/sfinv` | `b5243f3` | LGPL-2.1+ | none |
 | `mods/BASE/stairs` | minetest_game `mods/stairs` | `b5243f3` | LGPL-2.1+ | Old-name aliases and upside-down conversion removed (see above). WP43's external `grug_materials/derivatives.lua` copies the four generated Steel/Tin/Copper/Bronze/Gold shapes into 20 canonical Iron/Tin/Copper/Bronze/Gold nodes with canonical drops and no recipes. `overrides.lua` separately removes inherited non-zero `level` from the four Obsidian/Obsidian Brick/Obsidian Block shapes (12 registrations), so crafted stairs cannot revive the retired engine gate |
 | `mods/BASE/player_api` | minetest_game `mods/player_api` | `b5243f3` | LGPL-2.1+ | Obsolete offline-player API wrappers removed; see fresh-server cleanup above. |
+| `mods/BASE/doors` | minetest_game `mods/doors` | `b5243f3` | MIT / media per `license.txt` (CC BY-SA 3.0, CC BY-SA 4.0, CC BY 3.0, CC0 1.0) | Fresh-server removals (old `doors_owner` meta reader + 4 call sites, per-door `:doors:replace_<name>` conversion LBM, deprecated `doors.register_door()` shim) — see cleanup above. `on_rotate` removed with the upstream `optional_depends = screwdriver` (mod not shipped). Steel Door and Steel Trapdoor **recipes** removed: they consumed `default:steel_ingot`, which `grug_materials/content_curation.lua` retires and unregisters; both nodes stay registered and placeable. `level = 2` dropped from the Steel Door and Steel Trapdoor node groups — `grug_materials/audit.lua` hard-fails startup on any node with a non-zero `level` group. `models/door.blend` not vendored. 13 `GRUG PATCH` markers (4 of them the removed `doors_owner` call sites) |
+| `mods/BASE/xpanes` | minetest_game `mods/xpanes` | `b5243f3` | MIT / media per `license.txt` (CC BY-SA 3.0, CC0 1.0) | Fresh-server removals (15 numbered old-name aliases per pane, one-shot `xpanes:gen2` upgrade LBM) — see cleanup above. `doors` promoted from `optional_depends` to `depends` and its `core.get_modpath("doors")` guard removed (we ship `doors`). Steel Bars **recipe** removed (`default:steel_ingot`, retired); the pane stays registered. `level = 2` dropped from the Steel Bar Door and Steel Bar Trapdoor node groups (see the `doors` row). `xpanes.register_pane`'s `def.recipe` is now optional, because `core.register_craft` refuses a nil recipe outright. 7 `GRUG PATCH` markers |
+| `mods/BASE/beds` | minetest_game `mods/beds` | `b5243f3` | MIT / media per `license.txt` (CC BY-SA 3.0) | **Decoration only.** `functions.lua` and `spawns.lua` deleted with their loaders (sleeping, physics override, night skip, the in-bed formspec, respawn/die/leave callbacks and the `beds_spawns` world-file reader/writer incl. its old-format branch). Player spawn stays owned by `grug_core`. `beds.on_rightclick`, `beds.can_dig`, the spawn/kick bookkeeping in `destruct_bed` and the `on_rotate` screwdriver hook removed; the `<name>` → `<name>_bottom` alias and the two PilzAdam aliases removed (the recipe names the real node). `mod.conf` drops `spawn`, `player_monoids` and `pova`. A Grudgelands note is appended to `README.txt`, whose upstream text still describes the removed mechanic. Both halves still place (facedir), render and dig. 5 `GRUG PATCH` markers (1 in `init.lua`, 3 in `api.lua`, 1 in `beds.lua`) |
+| `mods/BASE/wool` | minetest_game `mods/wool` | `b5243f3` | MIT / media per `license.txt` (CC BY-SA 3.0) | The two jordach 16-colour old-name aliases removed — see cleanup above. 1 `GRUG PATCH` marker |
+| `mods/BASE/dye` | minetest_game `mods/dye` | `b5243f3` | MIT / media per `license.txt` (CC BY-SA 3.0) | The per-colour `group:flower,color_X` recipe removed: Grudgelands ships no `flowers` mod, so no node ever carries the `flower` group. Coal → black, blueberries → violet and the 19 mix recipes are unchanged. 1 `GRUG PATCH` marker |
+| `mods/BASE/vessels` | minetest_game `mods/vessels` | `b5243f3` | LGPL-2.1+ / media per `license.txt` (CC BY-SA 3.0) | The `dungeon_loot` registration and its `optional_depends` removed (mod not shipped). The Heavy Steel Bottle node, its craft recipe, its cooking return and `textures/vessels_steel_bottle.png` removed: both recipes referenced `default:steel_ingot`, retired and unregistered by `grug_materials/content_curation.lua`. Shelf, glass bottle, drinking glass, glass fragments and the fragments → `default:glass` cooking recipe are unchanged. 2 `GRUG PATCH` markers |
+| `mods/BASE/walls` | minetest_game `mods/walls` | `b5243f3` | LGPL-2.1+ (no media; uses `default` textures) | The single-texture-string fallback in `walls.register` for callers written against the pre-table API removed — see cleanup above. `walls.register` and the three cobblestone/mossy/desert walls are otherwise unchanged. 1 `GRUG PATCH` marker |
 
 WP43 also clears the vendored `mobs:lasso` and `mobs:protector2` recipes from
 the external `grug_materials/content_curation.lua` module because their Mese/Diamond
