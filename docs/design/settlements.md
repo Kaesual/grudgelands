@@ -69,3 +69,21 @@ Decided 2026-09-14 after the round-A playtest.
   128-node build envelope plus its 10-node apron, the 148 × 148 hard-protected
   square of [world.md](world.md) §2 R1. Passive critters and prey animals keep
   spawning there, and the undead night truce is unchanged.
+
+## Settlement NPCs and guard targeting
+
+Decided 2026-09-14.
+
+- Guards attack enemy-faction players everywhere, in starts as at outposts
+  and capitals; the faction veto stays the one rule. They ignore own-faction
+  and factionless players and fight hostile mobs.
+- Blueprints export named sockets (guard post, patrol loop, vendor, idle,
+  quest, king, waypoint) that runtime mods read through one registry, see
+  [wp13-npc-sockets-contract.md](../research/wp13-npc-sockets-contract.md).
+- Every start receives a first NPC roster: two gate guards and one patrol,
+  the race's own vendor, a few flair NPCs at doors, benches and work areas,
+  and a quest-giver shell with a placeholder line. None of this adds quest,
+  storage or profession services.
+- Race appearance (skin, visual-only stature) and visible armor and weapons
+  are composed by one function for players and humanoid mobs, see
+  [wp13-character-visuals-contract.md](../research/wp13-character-visuals-contract.md).

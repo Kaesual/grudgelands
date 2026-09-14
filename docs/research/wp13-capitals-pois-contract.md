@@ -141,6 +141,10 @@ stone block).
 - **King's hall**: decided 2026-09-14, the core blueprint builds the throne
   room layout the king encounter will use, so the NPC package places
   entities into finished architecture.
+- **Sockets**: capital cores export `landmarks.sockets` (king, vendor ×2,
+  guard posts, patrol loop, idle, waypoint) per
+  [wp13-npc-sockets-contract.md](wp13-npc-sockets-contract.md); the fixed
+  vendor offsets in `vendors.lua` migrate when the first core lands.
 - **Curtain walls** (a city wall along the 512 × 512 envelope with towers
   and gatehouses at the four ±256 gates): proposal is walls for Dur
   Brannoc, Nhal Veyr and Gor Drazhak, open edges (hedges/orchards, groves,
