@@ -55,6 +55,31 @@ local function loader(directory)
 		end
 	end
 
+	-- Basin floor: rainforest litter broken by blotches of swamp mud and a
+	-- little bare earth. The mud is laid in five-by-three patches on a coarse
+	-- lattice rather than cell by cell, because a per-cell scatter reads as
+	-- noise at overview scale and, more practically, leaves no three-by-three
+	-- of clean litter for a tree to root in.
+	--
+	-- Period and phase differ again from `ground` and `meadow`: three
+	-- settlements that share a ground routine must not share a ground texture.
+	function M.basin(buf, palette, radius)
+		buf:fill(-radius, -1, -radius, radius, -1, radius, palette.node("subsoil"))
+		buf:fill(-radius, 0, -radius, radius, 0, radius, palette.node("ground"))
+		for z = -radius + 2, radius - 2, 6 do
+			for x = -radius + 2, radius - 2, 7 do
+				local hash = (x * 37 + z * 53) % 17
+				if hash < 7 then
+					buf:fill(x - 2, 0, z - 1, x + 2, 0, z + 1,
+						palette.node("ground_patch"))
+				elseif hash == 11 then
+					buf:fill(x - 1, 0, z, x + 1, 0, z + 1,
+						palette.node("ground_bare"))
+				end
+			end
+		end
+	end
+
 	-- Pave a rectangle and clear the headroom above it.
 	function M.pave(buf, palette, x1, z1, x2, z2, role, height)
 		local name = palette.node(role or "path")
@@ -189,6 +214,66 @@ local function loader(directory)
 					dressing.tree(buf, palette, tx, tz, height)
 					planted = planted + 1
 				end
+			end
+		end
+		return planted
+	end
+
+	-- The kapok jungle the basin stands in: a deterministic scatter of jungle
+	-- trees wherever nothing was built. `dressing.jungle_tree` puts its crown
+	-- in the top three courses and reaches two nodes out, so the clearance
+	-- test does too, and the buttress root wants a node of soil all round
+	-- like every other stem here.
+	function M.plant_jungle(buf, palette, radius, step)
+		local planted = 0
+		for z = -radius + 3, radius - 3, step do
+			for x = -radius + 3, radius - 3, step do
+				local hash = (x * 89 + z * 167 + x * z) % 101
+				local tx = x + hash % 5 - 2
+				local tz = z + math.floor(hash / 5) % 5 - 2
+				local height = 11 + hash % 5
+				if hash % 6 < 4 and
+						tx >= -radius + 3 and tx <= radius - 3 and
+						tz >= -radius + 3 and tz <= radius - 3 and
+						M.natural_area(buf, tx - 1, tz - 1, tx + 1, tz + 1) and
+						M.free_area(buf, tx - 2, tz - 2, tx + 2, tz + 2,
+							height + 4) then
+					dressing.jungle_tree(buf, palette, tx, tz, height)
+					planted = planted + 1
+				end
+			end
+		end
+		return planted
+	end
+
+	-- The emergent giants that stand out of the canopy. Their buttress is
+	-- five cells across and their crown seven, so they are placed by hand
+	-- and each one is silently skipped if its ground is not clear.
+	function M.plant_giants(buf, palette, spots)
+		-- An emergent is the one tree that roots in the wet as readily as in
+		-- the dry, so its ground test accepts the pad's own mud as well as
+		-- its soil. Everything the settlement laid down -- plank, basalt,
+		-- straw -- still refuses it.
+		local mud = palette.node("ground_patch")
+		local function rooted(x1, z1, x2, z2)
+			for z = z1, z2 do
+				for x = x1, x2 do
+					local below = buf:at(x, 0, z)
+					if below == nil or (below.name:find("dirt") == nil and
+							below.name ~= mud) then
+						return false
+					end
+				end
+			end
+			return true
+		end
+		local planted = 0
+		for _, spot in ipairs(spots) do
+			local x, z, height = spot[1], spot[2], spot[3] or 18
+			if rooted(x - 2, z - 2, x + 2, z + 2) and
+					M.free_area(buf, x - 3, z - 3, x + 3, z + 3, height + 5) then
+				dressing.emergent(buf, palette, x, z, height)
+				planted = planted + 1
 			end
 		end
 		return planted

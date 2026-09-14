@@ -340,6 +340,236 @@ local function loader(directory)
 		end
 	end
 
+	-- A jungle tree on the proportions of the vendored schematic
+	-- (mods/BASE/default/schematics/jungle_tree.mts, decoded: 5 x 17 x 5).
+	-- What makes that tree recognisable is not its crown but its silhouette:
+	-- a plus-shaped buttress root three courses high, then a bare single-log
+	-- trunk for two thirds of its height, four small leaf spurs on alternating
+	-- diagonals, and only then a flat crown in the top three courses -- two
+	-- full 5 x 5 leaf slabs and a 3 x 3 cap. A pine's tapering cone and an
+	-- oak's round ball are both wrong for it.
+	--
+	-- `height` is the trunk: the crown occupies `height + 1` to `height + 3`.
+	function M.jungle_tree(buf, palette, x, z, height)
+		local log = palette.node("tree_log")
+		local leaves = palette.node("tree_leaves")
+		for y = 1, height do buf:put(x, y, z, log) end
+		-- The buttress: the four orthogonal neighbours, three courses high.
+		for _, step in ipairs({{0, -1}, {-1, 0}, {1, 0}, {0, 1}}) do
+			for y = 1, 3 do
+				buf:put(x + step[1], y, z + step[2], log)
+			end
+		end
+		-- Four leaf spurs, one per diagonal, climbing the bare trunk. The
+		-- starting diagonal comes off the position, so two neighbouring trees
+		-- of the same height do not carry the same branches.
+		local DIAGONAL = {{1, 1}, {-1, 1}, {-1, -1}, {1, -1}}
+		for index = 1, 4 do
+			local spur = DIAGONAL[(index + x + z) % 4 + 1]
+			local y = height - 6 + index
+			if y >= 5 then
+				for dz = 0, 2 do
+					for dx = 0, 2 do
+						if dx + dz > 0 then
+							buf:put(x + spur[1] * dx, y, z + spur[2] * dz, leaves)
+						end
+					end
+				end
+				buf:put(x + spur[1], y, z + spur[2], log)
+			end
+		end
+		-- The crown: two full slabs and a cap, the schematic's own shape.
+		for _, offset in ipairs({1, 2}) do
+			for dz = -2, 2 do
+				for dx = -2, 2 do
+					buf:put(x + dx, height + offset, z + dz, leaves)
+				end
+			end
+		end
+		for dz = -1, 1 do
+			for dx = -1, 1 do
+				buf:put(x + dx, height + 3, z + dz, leaves)
+			end
+		end
+	end
+
+	-- An emergent kapok, on the proportions of
+	-- mods/BASE/default/schematics/emergent_jungle_tree.mts (7 x 37 x 7): a
+	-- buttressed base five cells across, a solid three-by-three trunk, leaf
+	-- collars where the branches leave it, and a seven-cell crown that stands
+	-- clear of everything else. The schematic is thirty-seven courses tall
+	-- and the authorized blueprint volume is twenty-seven, so the trunk is
+	-- shortened and nothing else is: the proportions of base, collar and
+	-- crown are the schematic's.
+	--
+	-- `height` is the top trunk course; the crown reaches `height + 4`.
+	function M.emergent(buf, palette, x, z, height)
+		local log = palette.node("tree_log")
+		local leaves = palette.node("tree_leaves")
+		for y = 1, height do
+			for dz = -1, 1 do
+				for dx = -1, 1 do
+					buf:put(x + dx, y, z + dz, log)
+				end
+			end
+		end
+		-- The buttress: the arms of a five-cell plus, four courses high.
+		for y = 1, 4 do
+			for _, step in ipairs({{0, -2}, {-2, 0}, {2, 0}, {0, 2}}) do
+				buf:put(x + step[1], y, z + step[2], log)
+			end
+		end
+		-- Two leaf collars on the bare trunk, where a branch whorl leaves it.
+		for _, offset in ipairs({8, 4}) do
+			local y = height - offset
+			if y >= 6 then
+				for dz = -2, 2 do
+					for dx = -2, 2 do
+						if math.abs(dx) == 2 or math.abs(dz) == 2 then
+							buf:put(x + dx, y, z + dz, leaves)
+						end
+					end
+				end
+			end
+		end
+		-- The crown: hollow shoulders, a solid course, a cap.
+		local LAYERS = {{1, 4, 3}, {2, 4, 3}, {3, 6, 3}, {4, 3, 2}}
+		for _, layer in ipairs(LAYERS) do
+			local y = height + layer[1]
+			for dz = -layer[3], layer[3] do
+				for dx = -layer[3], layer[3] do
+					if math.abs(dx) + math.abs(dz) <= layer[2] then
+						buf:put(x + dx, y, z + dz, leaves)
+					end
+				end
+			end
+		end
+	end
+
+	-- A totem post: stacked logs banded with the palette's accent stone under
+	-- a carved cap. The gate of a troll village is two of these and nothing
+	-- else, so the post has to read as made rather than grown.
+	function M.totem(buf, palette, x, z, height)
+		local log = palette.node("post")
+		local accent = palette.node("plaza_edge")
+		for y = 1, height do
+			buf:put(x, y, z, (y % 3 == 0) and accent or log)
+		end
+		buf:put(x, height + 1, z, palette.node("roof_slab"))
+	end
+
+	-- A drying rack: two posts carrying a beam, with rope lines hanging off
+	-- it. Degrades to the bare frame when the palette has no rope.
+	function M.drying_rack(buf, palette, x, z, len, axis)
+		local ax = (axis == "x") and 1 or 0
+		local az = 1 - ax
+		for y = 1, 3 do
+			buf:put(x, y, z, palette.node("post"))
+			buf:put(x + ax * (len - 1), y, z + az * (len - 1),
+				palette.node("post"))
+		end
+		for step = 0, len - 1 do
+			buf:put(x + ax * step, 4, z + az * step, palette.node("beam"))
+		end
+		local rope = palette.maybe("rope")
+		if rope == nil then return 0 end
+		local hung = 0
+		for step = 1, len - 2 do
+			if step % 2 == 1 then
+				for y = 2, 3 do
+					buf:put(x + ax * step, y, z + az * step, rope)
+					hung = hung + 1
+				end
+			end
+		end
+		return hung
+	end
+
+	-- Rope falling from the underside of a deck, as far as the first
+	-- obstruction or `length` cells, whichever comes first. The cell above
+	-- must be a solid node: a rope tied to nothing is a rope in mid air.
+	function M.rope_fall(buf, palette, x, y, z, length)
+		local rope = palette.maybe("rope")
+		if rope == nil or not parts.solid_at(buf, x, y + 1, z) then return 0 end
+		local hung = 0
+		for step = 0, length - 1 do
+			local cell = buf:at(x, y - step, z)
+			if cell ~= nil and cell.name ~= "air" then break end
+			buf:put(x, y - step, z, rope)
+			hung = hung + 1
+		end
+		return hung
+	end
+
+	-- A lantern hung under a solid node. `xdecor_lantern` is in
+	-- `group:attached_node = 3`, which is the engine's "attached to the node
+	-- ABOVE", so the support test looks up, not down.
+	function M.lantern(buf, palette, x, y, z)
+		local name = palette.maybe("lantern")
+		if name == nil or not parts.solid_at(buf, x, y + 1, z) then
+			return false
+		end
+		local here = buf:at(x, y, z)
+		if here ~= nil and here.name ~= "air" then return false end
+		buf:put(x, y, z, name)
+		return true
+	end
+
+	-- A raised plank walkway at height `y`, three cells wide, running `len`
+	-- cells along `axis` from (x, z), with railings down both flanks and log
+	-- piers under it every third cell. The two end cells of each flank stay
+	-- open so the walk can step on and off the bridge.
+	--
+	-- `pier(x, z)` may refuse a pier: a bridge that flies over the five-wide
+	-- main route has to clear it, and a post in the middle of the road is
+	-- exactly what the route invariant forbids.
+	function M.walkway(buf, palette, x, z, len, axis, y, pier)
+		local ax = (axis == "x") and 1 or 0
+		local az = 1 - ax
+		local deck = palette.node("path")
+		local rail = palette.node("railing")
+		local post = palette.node("post")
+		for step = 0, len - 1 do
+			for side = -1, 1 do
+				local cx = x + ax * step + az * side
+				local cz = z + az * step + ax * side
+				buf:clear(cx, y, cz, cx, y + 3, cz)
+				buf:put(cx, y, cz, deck)
+				if side ~= 0 and step > 1 and step < len - 2 then
+					buf:put(cx, y + 1, cz, rail)
+				end
+			end
+			local cx, cz = x + ax * step, z + az * step
+			if step % 3 == 0 and (pier == nil or pier(cx, cz)) then
+				for py = 1, y - 1 do
+					local cell = buf:at(cx, py, cz)
+					if cell == nil or cell.name == "air" then
+						buf:put(cx, py, cz, post)
+					end
+				end
+			end
+		end
+	end
+
+	-- A free-standing flight up to a deck. (x, z) is the deck's own edge
+	-- cell and (ax, az) the direction of ascent, so the highest tread lands
+	-- immediately before the deck and the lowest on the pad.
+	function M.stair_up(buf, palette, x, z, top, axis, sign)
+		local ax = (axis == "x") and sign or 0
+		local az = (axis == "z") and sign or 0
+		local tread = palette.node("roof_stair")
+		local face = parts.step_facedir(ax, az)
+		for run = 1, top - 1 do
+			local back = top - run
+			local cx, cz = x - ax * back, z - az * back
+			buf:clear(cx, run, cz, cx, run + 3, cz)
+			for y = 1, run - 1 do
+				buf:put(cx, y, cz, palette.node("post"))
+			end
+			parts.stair(buf, cx, run, cz, tread, face)
+		end
+	end
+
 	-- Scattered undergrowth on a rectangle of open ground.
 	function M.undergrowth(buf, palette, x1, z1, x2, z2, density)
 		for z = z1, z2 do

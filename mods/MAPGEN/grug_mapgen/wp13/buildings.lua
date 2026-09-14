@@ -101,10 +101,52 @@ local function loader(directory)
 		return slots
 	end
 
+	-- An outside stair from the pad up to a raised deck, on the named side of
+	-- a block, `width` cells wide and centred on `index`.
+	--
+	-- The flight is the only way into a stilt house, so it is authored as a
+	-- walkable route rather than as decoration: a tread every course, each on
+	-- its own log pier, starting one node beyond the deck's apron and running
+	-- outward. A player standing on the pad at the foot has treads at y = 1,
+	-- 2, ... deck-1 in front of them and steps onto the apron at y = deck, so
+	-- the conservative walk of the blueprint KAT climbs it a node at a time.
+	local function stair_flight(buf, palette, block, side, index, deck,
+			overhang, width)
+		local step = SIDE_STEP[side]
+		local along = (side == "z-" or side == "z+") and "x" or "z"
+		local half = math.floor(((width or 1) - 1) / 2)
+		local tread = palette.node("roof_stair")
+		-- The raised half of every tread points back at the building.
+		local face = inward(side)
+		for run = 1, deck - 1 do
+			local distance = overhang + (deck - run)
+			local base_x, base_z = wall_cell(block, side, index)
+			local x = base_x + step[1] * distance
+			local z = base_z + step[2] * distance
+			for offset = -half, half do
+				local cx = (along == "x") and x + offset or x
+				local cz = (along == "z") and z + offset or z
+				buf:clear(cx, run, cz, cx, run + 3, cz)
+				for y = 1, run - 1 do
+					buf:put(cx, y, cz, palette.node("post"))
+				end
+				parts.stair(buf, cx, run, cz, tread, face)
+			end
+		end
+	end
+
 	-- A building: footings, apron, walls, framed windows, doors, roof,
 	-- chimney stacks and furnished rooms.
+	--
+	-- `spec.stilt` raises the whole building on posts: the floor lands at
+	-- y = stilt instead of y = 0 and walls, windows, doors, roof, chimneys
+	-- and rooms travel up with it, while the corner posts and the window
+	-- frames keep their feet on the pad, which is what makes the house read
+	-- as standing on legs rather than on a plinth. `spec.stairs` then gives
+	-- it the flights that reach the deck.
 	function M.build(palette, spec)
 		local overhang = spec.overhang or 1
+		local deck = spec.stilt or 0
 		local blocks = spec.blocks
 		if not blocks then
 			blocks = {{x0 = 0, z0 = 0, x1 = spec.w - 1, z1 = spec.d - 1}}
@@ -119,7 +161,8 @@ local function loader(directory)
 			fields[index] = roofs.field(block.roof or spec.roof or "gable", {
 				x0 = block.x0 - overhang, x1 = block.x1 + overhang,
 				z0 = block.z0 - overhang, z1 = block.z1 + overhang,
-				base = block.wall_h, axis = block.ridge_axis or spec.ridge_axis or "x",
+				base = deck + block.wall_h,
+				axis = block.ridge_axis or spec.ridge_axis or "x",
 				lift = block.lift or spec.lift, rise = block.rise or spec.rise,
 				up = block.up or spec.up,
 			})
@@ -162,16 +205,39 @@ local function loader(directory)
 				block.x1 + overhang, peak + 2, block.z1 + overhang)
 		end
 		for _, block in ipairs(blocks) do
-			buf:fill(block.x0 - overhang, 0, block.z0 - overhang,
-				block.x1 + overhang, 0, block.z1 + overhang, palette.node("path"))
+			buf:fill(block.x0 - overhang, deck, block.z0 - overhang,
+				block.x1 + overhang, deck, block.z1 + overhang,
+				palette.node("path"))
 		end
 		for _, block in ipairs(blocks) do
-			buf:fill(block.x0, 0, block.z0, block.x1, 0, block.z1,
+			buf:fill(block.x0, deck, block.z0, block.x1, deck, block.z1,
 				palette.node("foundation"))
 		end
 		for _, block in ipairs(blocks) do
-			buf:fill(block.x0 + 1, 0, block.z0 + 1, block.x1 - 1, 0, block.z1 - 1,
-				palette.node("floor"))
+			buf:fill(block.x0 + 1, deck, block.z0 + 1, block.x1 - 1, deck,
+				block.z1 - 1, palette.node("floor"))
+		end
+		-- Stilts: the piers the deck stands on, at every corner of a block and
+		-- every third cell along its perimeter, so the underside reads as a
+		-- forest of posts rather than as a floating slab.
+		if deck > 0 then
+			for _, block in ipairs(blocks) do
+				for _, side in ipairs(SIDES) do
+					local len = side_length(block, side)
+					for step = 0, len - 1 do
+						if step % 3 == 0 or step == len - 1 then
+							local x, z = wall_cell(block, side, step)
+							for y = 1, deck - 1 do
+								buf:put(x, y, z, palette.node("post"))
+							end
+						end
+					end
+				end
+			end
+			for _, flight in ipairs(spec.stairs or {}) do
+				stair_flight(buf, palette, blocks[flight.block or 1],
+					flight.side, flight.index, deck, overhang, flight.width)
+			end
 		end
 
 		-- Walls: stone base course, plank infill up to the eave. Perimeter
@@ -195,7 +261,7 @@ local function loader(directory)
 								end
 							end
 						else
-							buf:put(x, 1, z, palette.node("wall_accent"))
+							buf:put(x, deck + 1, z, palette.node("wall_accent"))
 							-- Half timbering: loam panels between timber studs
 							-- every third cell along the wall, which is the
 							-- rhythm the window frames already stand in, so
@@ -207,7 +273,7 @@ local function loader(directory)
 								name = (step % 3 == 0) and palette.node("post")
 									or infill
 							end
-							for y = 2, top do
+							for y = deck + 2, top do
 								buf:put(x, y, z, name)
 							end
 						end
@@ -217,7 +283,7 @@ local function loader(directory)
 			for _, corner in ipairs({{block.x0, block.z0}, {block.x1, block.z0},
 					{block.x0, block.z1}, {block.x1, block.z1}}) do
 				if not shared(index, corner[1], corner[2]) then
-					for y = 1, math.max(block.wall_h,
+					for y = 1, math.max(deck + block.wall_h,
 							wall_top(corner[1], corner[2])) do
 						buf:put(corner[1], y, corner[2], palette.node("post"))
 					end
@@ -262,15 +328,16 @@ local function loader(directory)
 							for step = p - 1, p + 2 do taken[step] = true end
 							for _, step in ipairs({p, p + 1}) do
 								local x, z = wall_cell(block, side, step)
-								local high = math.min(block.wall_h >= 4 and 3 or 2,
+								local high = math.min(
+									deck + (block.wall_h >= 4 and 3 or 2),
 									wall_top(x, z))
-								for y = 2, high do
+								for y = deck + 2, high do
 									parts.pane(buf, palette, x, y, z, axis)
 								end
 							end
 							for _, step in ipairs({p - 1, p + 2}) do
 								local fx, fz = wall_cell(block, side, step)
-								for y = 1, math.min(block.wall_h,
+								for y = 1, math.min(deck + block.wall_h,
 										wall_top(fx, fz)) do
 									buf:put(fx, y, fz, palette.node("window_frame"))
 								end
@@ -287,8 +354,8 @@ local function loader(directory)
 								for _, step in ipairs({p, p + 1}) do
 									local wx, wz = wall_cell(block, side, step)
 									local ox, oz = wx + out[1], wz + out[2]
-									for y = 2, math.min(
-											block.wall_h >= 4 and 3 or 2,
+									for y = deck + 2, math.min(
+											deck + (block.wall_h >= 4 and 3 or 2),
 											wall_top(wx, wz)) do
 										local here = buf:at(ox, y, oz)
 										if here == nil or here.name == "air" then
@@ -309,21 +376,22 @@ local function loader(directory)
 			local block = blocks[door.block or 1]
 			local face = inward(door.side)
 			local x, z = wall_cell(block, door.side, door.index)
-			buf:clear(x, 1, z, x, 2, z)
+			buf:clear(x, deck + 1, z, x, deck + 2, z)
 			local partner_x, partner_z
 			if door.double then
-				partner_x, partner_z = parts.double_door(buf, palette, x, 1, z, face)
+				partner_x, partner_z = parts.double_door(buf, palette, x,
+					deck + 1, z, face)
 			else
-				parts.door(buf, palette, x, 1, z, face, door.right_hinge)
+				parts.door(buf, palette, x, deck + 1, z, face, door.right_hinge)
 			end
-			doors[#doors + 1] = {x = x, y = 1, z = z, face = face}
+			doors[#doors + 1] = {x = x, y = deck + 1, z = z, face = face}
 			if partner_x then
-				doors[#doors + 1] = {x = partner_x, y = 1, z = partner_z,
-					face = face}
+				doors[#doors + 1] = {x = partner_x, y = deck + 1,
+					z = partner_z, face = face}
 			end
 			for _, sign in ipairs({-1, 1}) do
-				entry_torch(buf, palette, block, door.side, x, z, sign, 3,
-					lights)
+				entry_torch(buf, palette, block, door.side, x, z, sign,
+					deck + 3, lights)
 			end
 		end
 
@@ -347,23 +415,26 @@ local function loader(directory)
 			if block.kit then
 				local room = {x1 = block.x0 + 1, z1 = block.z0 + 1,
 					x2 = block.x1 - 1, z2 = block.z1 - 1,
-					y = 0, h = block.wall_h}
+					y = deck, h = deck + block.wall_h}
 				local kit_lights = interiors.furnish(block.kit, buf, parts,
 					palette, room, block.kit_spec)
 				for _, light in ipairs(kit_lights) do
 					lights[#lights + 1] = light
 				end
 			end
-			room_corners[#room_corners + 1] = {x = block.x0 + 1, y = 0,
-				z = block.z0 + 1, top = block.wall_h,
+			room_corners[#room_corners + 1] = {x = block.x0 + 1, y = deck,
+				z = block.z0 + 1, top = deck + block.wall_h,
 				closed = (#(block.open_sides or spec.open_sides or {}) == 0)
 					and true or false, id = spec.id}
-			room_corners[#room_corners + 1] = {x = block.x1 - 1, y = 0,
+			room_corners[#room_corners + 1] = {x = block.x1 - 1, y = deck,
 				z = block.z1 - 1}
 		end
 
-		local inside = spec.inside or {x = blocks[1].x0 + 2, y = 1,
+		-- A generator names its destination one course above ITS floor, so
+		-- the deck is added here and every existing generator stays correct.
+		local wanted = spec.inside or {x = blocks[1].x0 + 2, y = 1,
 			z = blocks[1].z1 - 2}
+		local inside = {x = wanted.x, y = wanted.y + deck, z = wanted.z}
 		buf:clear(inside.x, inside.y, inside.z, inside.x, inside.y + 1, inside.z)
 
 		return {
@@ -387,7 +458,9 @@ local function loader(directory)
 		local w, d = spec.w or 9, spec.d or 7
 		local wall_h = spec.wall_h or 4
 		return M.build(palette, {
-			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
+			id = spec.id, overhang = spec.overhang or 1,
+			stilt = spec.stilt, stairs = spec.stairs,
+			roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1,
 				wall_h = wall_h, roof = spec.roof or "gable",
@@ -411,17 +484,19 @@ local function loader(directory)
 		local wall_h = spec.wall_h or 5
 		local wz = math.floor((d - wing) / 2)
 		return M.build(palette, {
-			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
+			id = spec.id, overhang = spec.overhang or 1,
+			stilt = spec.stilt, stairs = spec.stairs,
+			roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,
 			blocks = {
 				{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
 					roof = "gable", ridge_axis = "z", rise = 4,
-					kit = "workshop"},
+					kit = spec.kit or "workshop"},
 				{x0 = w - 2, z0 = wz, x1 = w - 2 + wing - 1, z1 = wz + wing - 1,
 					wall_h = wall_h, roof = "gable", ridge_axis = "x", rise = 3,
 					kit = "smithy"},
 			},
-			chimneys = {{x = math.floor(w / 2), z = 0},
+			chimneys = spec.chimneys or {{x = math.floor(w / 2), z = 0},
 				{x = w - 2 + wing - 1, z = wz + 1}},
 			doors = {{side = spec.door_side or "z+",
 				index = spec.door_index or math.floor(w / 2), double = true}},
@@ -434,12 +509,14 @@ local function loader(directory)
 		local w, d = spec.w or 13, spec.d or 15
 		local wall_h = spec.wall_h or 5
 		return M.build(palette, {
-			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
+			id = spec.id, overhang = spec.overhang or 1,
+			stilt = spec.stilt, stairs = spec.stairs,
+			roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
-				roof = "hip", rise = 4, kit = "hall",
+				roof = "hip", rise = 4, kit = spec.kit or "hall",
 				kit_spec = {hearth_x = 1, hearth_z = 2, hearth_face = 1}}},
-			chimneys = {{x = 0, z = 2}},
+			chimneys = spec.chimneys or {{x = 0, z = 2}},
 			doors = {{side = spec.door_side or "z-", index = math.floor(w / 2),
 				double = true}},
 			inside = spec.inside or {x = 2, y = 1, z = d - 3},
@@ -452,7 +529,9 @@ local function loader(directory)
 		local w, d = spec.w or 9, spec.d or 13
 		local wall_h = spec.wall_h or 4
 		return M.build(palette, {
-			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
+			id = spec.id, overhang = spec.overhang or 1,
+			stilt = spec.stilt, stairs = spec.stairs,
+			roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
 				roof = spec.roof or "saltbox", ridge_axis = "z", lift = 2,
@@ -469,7 +548,9 @@ local function loader(directory)
 		local w, d = spec.w or 13, spec.d or 9
 		local wall_h = spec.wall_h or 4
 		return M.build(palette, {
-			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
+			id = spec.id, overhang = spec.overhang or 1,
+			stilt = spec.stilt, stairs = spec.stairs,
+			roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
 				roof = "gable", ridge_axis = "x", rise = 3, kit = "yard",
@@ -486,7 +567,9 @@ local function loader(directory)
 		local w, d = spec.w or 13, spec.d or 11
 		local wall_h = spec.wall_h or 5
 		return M.build(palette, {
-			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
+			id = spec.id, overhang = spec.overhang or 1,
+			stilt = spec.stilt, stairs = spec.stairs,
+			roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
 				roof = spec.roof or "saltbox", ridge_axis = "z", lift = 2,
@@ -504,7 +587,9 @@ local function loader(directory)
 		local w, d = spec.w or 11, spec.d or 15
 		local wall_h = spec.wall_h or 6
 		return M.build(palette, {
-			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
+			id = spec.id, overhang = spec.overhang or 1,
+			stilt = spec.stilt, stairs = spec.stairs,
+			roof_palette = spec.roof_palette,
 			infill = spec.infill, shutters = spec.shutters,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
 				roof = "hip", rise = 4, kit = "chapel"}},

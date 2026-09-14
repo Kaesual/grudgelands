@@ -38,6 +38,11 @@ return function(canonical, raw_sha256)
 		"dawnmere_delta_schema", "dawnmere_delta_sha256",
 		"dawnmere_opcode", "dawnmere_class", "dawnmere_policy",
 		"dawnmere_order", "dawnmere_overwrite",
+		"kapok_blueprint_schema",
+		"kapok_blueprint_sha256", "kapok_cell_count",
+		"kapok_delta_schema", "kapok_delta_sha256",
+		"kapok_opcode", "kapok_class", "kapok_policy",
+		"kapok_order", "kapok_overwrite",
 		"functional_anchor_y_min", "writer_schema", "p9g_opcode", "p9g_class",
 		"p9g_policy", "p9g_order", "p9g_overwrite", "source_projection_sha256",
 		"production_enabled",
@@ -53,6 +58,9 @@ return function(canonical, raw_sha256)
 		{key = "dawnmere", anchor_id = "anchor_002",
 			identity_schema = "grug_wp13_dawnmere_blueprint_identity_v1",
 			delta_schema = "grug_wp13_dawnmere_delta_v1"},
+		{key = "kapok", anchor_id = "anchor_006",
+			identity_schema = "grug_wp13_kapok_blueprint_identity_v1",
+			delta_schema = "grug_wp13_kapok_delta_v1"},
 	}
 
 	local function fail(message)

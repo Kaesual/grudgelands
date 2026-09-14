@@ -57,6 +57,38 @@ return function(repo)
 			min_destinations = 9, min_doors = 8, min_rooms = 9,
 			min_lights = 8, min_oriented = 8,
 		},
+		{
+			key = "kapok",
+			file = "r7_kapok_blueprint.lua",
+			schema = "grug_wp13_kapok_blueprint_v1",
+			light = {"default:torch", "default:torch_wall"},
+			-- The rope and the lantern really are `walkable = false`, so a
+			-- route may pass through them; the window bars are not, so they
+			-- stay solid and keep counting as wall.
+			passable = {"air", "default:torch", "default:torch_wall",
+				"default:grass_1", "default:fern_1", "default:junglegrass",
+				"grug_decor:cottages_straw_mat", "grug_decor:xdecor_lantern",
+				"grug_decor:xdecor_rope",
+				"doors:door_wood_a", "doors:door_wood_b", "doors:hidden"},
+			-- A stilt village's doorsteps stand on plank verandas and the
+			-- lodge's on its basalt platform, so both count as paving.
+			paved = {"default:junglewood", "default:mossycobble",
+				"grug_decor:darkage_basalt_brick",
+				"grug_decor:darkage_serpentine"},
+			roof = {"stairs:stair_junglewood", "stairs:stair_outer_junglewood",
+				"stairs:stair_inner_junglewood", "stairs:slab_junglewood"},
+			door_leaves = {"doors:door_wood_a", "doors:door_wood_b"},
+			-- A jungle tree carries its crown in the top three courses over a
+			-- long bare trunk and hangs leaf spurs far below it, and an
+			-- emergent's crown stands four courses above its last log, so the
+			-- rooting window is deeper and taller than an orchard's.
+			tree = {log = "default:jungletree", leaves = "default:jungleleaves",
+				min_trunk = 8, reach = 3, low = 10, high = 8, min_stems = 20},
+			ground = {{"default:dirt_with_rainforest_litter", 6000},
+				{"grug_nodes:mud", 1000}, {"default:dirt", 100}},
+			min_destinations = 8, min_doors = 8, min_rooms = 8,
+			min_lights = 8, min_oriented = 8,
+		},
 	}
 
 	local function set(list)
@@ -145,9 +177,18 @@ return function(repo)
 		assert(#blueprint.landmarks.lights == lights,
 			"light landmark population differs")
 		assert(solid(0, 0, 0) and stand(0, 1, 0) and not solid(0, 3, 0))
-		-- The road is a five-wide clear route, not a cosmetic line.
-		for z = 0, 63 do
-			for x = -2, 2 do assert(stand(x, 1, z), "blocked north road") end
+		-- The road is a five-wide clear route, not a cosmetic line. Which way
+		-- it runs is the start's own business: an Elandor start exits north
+		-- and a Kragmar one south, so the route is read off the settlement's
+		-- `main_street` landmark instead of being assumed to lie on +z.
+		local street = assert(blueprint.landmarks.main_street,
+			"no main street landmark")
+		assert(street.max.x - street.min.x == 4 and
+			(street.max.z - street.min.z) >= 63, "main street is not the route")
+		for z = street.min.z, street.max.z do
+			for x = street.min.x, street.max.x do
+				assert(stand(x, 1, z), "blocked main road")
+			end
 		end
 
 		-- Section 5 invariant 2: every door is a real, usable doorway.
