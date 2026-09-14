@@ -1,160 +1,104 @@
-# WP13: the settlement building library, and Hearthpine rebuilt on it
+# WP13: building library and Hearthpine rebuild (third increment)
 
-Status: implementation candidate, 2026-09-14. Third Hearthpine increment.
-Classification: non-trivial (new shared architecture code, raw node
-semantics, test gates). WP13 remains in progress.
+Status: implemented, independently reviewed and fix-rounded on 2026-09-14;
+awaiting the user's focused GUI playtest. Classification: non-trivial
+(architecture, raw node semantics, vendored code, licences, test gates).
+WP13 remains in progress.
 
-Contract: [wp13-settlement-pipeline.md](wp13-settlement-pipeline.md)
-(section 2 decision, section 3 module layout, section 4 palette roles,
-section 5 invariants, section 6 increment 3, section 7 verification).
-Decided appearance: [settlements.md](../design/settlements.md). The previous
-increment is [wp13-hearthpine-polish.md](wp13-hearthpine-polish.md).
+## Why
 
-## What this increment delivers
+The user's playtest of the nine-building settlement found the houses
+acceptable but plainer than VoxeLibre's villages. The comparison in
+[wp13-settlement-pipeline.md](wp13-settlement-pipeline.md) §1 showed the
+cause: large hollow buildings with stepped block roofs, glass blocks and
+open door gaps versus small dense houses with stair roofs, panes, doors and
+furniture. The user also asked for ContentDB building assets and a more
+immersive look, and ruled that on this day Claude Fable coordinates with
+Claude Opus lanes (policy "Day-to-day routing rule").
 
-`mods/MAPGEN/grug_mapgen/wp13/` is the reusable library of contract section
-3. Plain Lua 5.1, pure functions, no engine calls at construction time, no
-globals; every file returns a table or a constructor and is loaded with the
-`dofile(<directory>/<file>)` pattern the WP40 runtime already uses.
+## What shipped, in lanes
 
-| File | Owns |
-| --- | --- |
-| `palette.lua` | role vocabulary, race palettes, validation |
-| `parts.lua` | cell buffer (`put`/`fill`/`clear`/`box`/`hollow_box`/`ring`), rotation of cells, points and param2, and the primitive parts (door, pane, bed, torch, stair, seat, table) |
-| `roofs.lua` | gable, hip, saltbox, lean-to and flat height fields, their union, and one rasteriser that turns any height field into stair, outer stair, inner stair and slab cells |
-| `buildings.lua` | `build` plus the named generators `cottage`, `workshop`, `hall`, `longhouse`, `shed`, `watchpost` |
-| `interiors.lua` | furnishing kits `home`, `workshop`, `smithy`, `store`, `hall`, `watch`, `yard` |
-| `dressing.lua` | fences, low walls, timber stacks, benches, planters, lamp posts, crates, well, market stall, paving inlay, pines, undergrowth |
-| `layout.lua` | pad ground, paving, path routing, street lighting, planting |
-| `hearthpine.lua` | the Hearthpine composition |
+1. **Atmosphere layer** (`mods/CORE/grug_core/atmosphere.lua`,
+   `settingtypes.txt`, `minetest.conf`): presets `default`, `hearthpine`,
+   `godrays`, `off` applied through `player:set_lighting` on join and by the
+   admin command `/atmosphere`; sent only on change; game defaults enable
+   dynamic shadows, bloom and waving. Gravewood leaves now wave.
+2. **Vendored minetest_game mods** `doors`, `xpanes`, `beds`, `wool`, `dye`,
+   `vessels`, `walls` from the pinned `b5243f3` checkout under `mods/BASE/`,
+   fresh-server cleaned; beds are decoration only (no sleep, no respawn).
+   Steel-ingot recipes were removed because `default:steel_ingot` is retired.
+3. **Curated kit `mods/ITEMS/grug_decor`**: 333 static decorative nodes from
+   castle_masonry `900d633` (148), cottages `ab7f7e1` (52), darkage
+   `494f81c` (102) and xdecor-libre `43a7753` (31); 109 media files with a
+   licence row each; no recipes, no mechanics. Licences verified in the
+   source repositories
+   ([asset-audit-2026-09-14.md](assets/asset-audit-2026-09-14.md)); the
+   combined game is GPL-3.0-only because cottages is GPL-3.0-only.
+4. **Textured blueprint renderer** `tools/wp13/render_blueprint.py` with
+   `dump_blueprint.lua`, `extract_tiles.py` and `node_tiles.json`: isometric
+   views, interior cutaway and a night mode. It is the review loop for every
+   building generator from now on.
+5. **Building library** `mods/MAPGEN/grug_mapgen/wp13/` (palette, parts,
+   roofs, buildings, interiors, dressing, layout, hearthpine) and the
+   rebuilt Hearthpine blueprint behind the unchanged
+   `grug_wp13_hearthpine_blueprint_v1` schema, landmarks and bounds. Roofs
+   are height fields rasterised into straight/outer/inner stairs and slab
+   ridges; the same field sets wall heights. Generators: cottage (gable,
+   hip, saltbox), workshop with smithy wing, hall, longhouse, shed,
+   watchpost. Doors, beds, torches, panes, walls and stairs are written
+   exactly as normal placement leaves them.
 
-`wp40/r7_hearthpine_blueprint.lua` keeps its file name and is now a thin
-wrapper. It derives the library directory from its own chunk source
-(`debug.getinfo(1, "S").source`, which the engine sandbox whitelists) and
-falls back to `core.get_modpath` if the debug library is unavailable, so the
-same file works under `r7_runtime.lua`, `tools/wp13/dump_blueprint.lua`,
-`tools/wp13/blueprint_kat.lua` and `tools/wp13/engine_cases.lua`. The schema
-string, the bounds contract (x/z `[-63, 63]`, y `[-2, 24]`), every landmark
-key, every destination id and the canonical z/y/x cell order are unchanged;
-`landmarks.doors` and `landmarks.rooms` are added for the new invariants.
+Evidence: `tools/wp13/evidence/20260914-hearthpine-library/` (lane result:
+KATs under LuaJIT and PUC 5.1, eight engine passes on two seeds, final micro
+pair) and `tools/wp13/evidence/20260914-hearthpine-fixes/` (after the review
+fix round). Renders live next to each.
 
-## Raw node semantics
+## Reviews and fix rounds
 
-WP13 writes nodes straight into the map through VoxelManip, with no
-`on_place` and no construct callbacks, so every part must emit exactly what
-the engine's own placement would leave behind. These were read off the
-vendored mods, not guessed:
+- Lanes 1–4, independent Claude Opus review: 0 Critical / 0 High /
+  1 Medium / 8 Low; one fix round (tile map regenerated, unused dependency,
+  README licence line, VENDOR.md completeness, KAT coverage). Final: 0.
+- Lane 5, independent Claude Opus review: 0 Critical / 1 High / 1 Medium /
+  4 Low. High: chests, furnaces, bookshelves and vessel shelves written
+  through VoxelManip never receive `on_construct`, so they were dead props;
+  fixed by binding those roles to static decor nodes (settlements carry no
+  storage services by design). Medium: eleven panes with a third solid
+  neighbour must be written as the connected `xpanes:pane`; fixed by
+  applying the engine's pane rule at construction. Lows: rotated param2 on
+  `place_param2 = 0` nodes, torches hung on window panes, incomplete
+  retirement cross-check, palette docstring. Fix round: see the fixes
+  evidence directory and the focused re-review recorded in the merge commit.
 
-- **Doors** (`mods/BASE/doors/init.lua`): the leaf at the foot is
-  `doors:door_wood_a` with `param2 = dir`, where `dir` is the facedir of the
-  direction the placer looked, that is inward; the mesh puts the leaf on the
-  outward face. Above it sits `doors:hidden` with `param2 = dir`. A right
-  hinged twin is `_b` with its hidden node at `(dir + 3) % 4`, placed where
-  `on_place` looks for a neighbouring door. `doors.door_toggle` explicitly
-  repairs the missing `state` meta of an lvm-placed right-hinged door, so
-  raw placement is a supported case.
-- **Panes** (`mods/BASE/xpanes/init.lua`): `update_pane` settles a pane with
-  two opposite connections on the flat node, `param2 0` for a wall running
-  along X and `3` for one running along Z. `xpanes:pane_flat` is a fixed
-  nodebox, so it renders correctly with no update callback; the connected
-  `xpanes:pane` variant is only what three and four way junctions become.
-  Rotating a part therefore also canonicalises `1` back to `3` and `2` to
-  `0`, which are the same plate seen from the other side.
-- **Beds** (`mods/BASE/beds/api.lua`): foot node carries the facedir, head
-  node sits one step along `facedir_to_dir` and repeats it.
-- **Walls** (`mods/BASE/walls/init.lua`): `walls:cobble` is a connected
-  nodebox evaluated from its neighbours at render time; no param2, no
-  callback.
-- **Torches**: wallmounted `param2` points from the torch to its support.
-- **Stairs**: the raised half of a stair points at `facedir_to_dir(param2)`;
-  an outer stair raises one quarter, an inner stair all but one.
-- A facedir node shows its front tile on the face **opposite**
-  `facedir_to_dir(param2)`, which is what chests, bookshelves, shelves and
-  furnaces are oriented by.
+Calibration: coordinator Claude Fable; implementing model Claude Opus (five
+lanes plus one fix lane); reviewing model Claude Opus in fresh contexts;
+initial findings 0 Critical / 1 High across both reviews; two fix rounds
+(one per review); observed elapsed wall time about six hours for the whole
+package.
 
-## Roofs
+## What the WP40 R7 portable micro-KAT no longer covers
 
-A roof is a height field over the building footprint grown by the eave
-overhang. The lowest course sits level with the top wall course and one node
-inward is one node higher, so the wall always meets the roof with no gap.
-The rasteriser decides per column which of the four quarters of the node are
-raised (a quarter is raised when either flanking neighbour or the diagonal
-is higher): one raised quarter is an outer corner, two adjacent a straight
-stair, three an inner corner, zero a slab ridge. The same rule serves every
-roof form, and the union of two height fields produces real valleys, which
-is how the cross gabled forge hall gets its inner corner stairs.
-
-The height field also drives the walls: every perimeter column is built up
-to one node below the roof above it. Gable ends therefore close themselves,
-and a saltbox gets its taller rear wall without a special case. A `rise`
-clip keeps a wide building from carrying a roof taller than its walls.
-
-## Hearthpine
-
-Nine plots on the same pad, arranged around the arrival plaza and a paved
-cross street, in a pine wood clearing:
-
-| Landmark | Generator | Footprint | Roof |
-| --- | --- | --- | --- |
-| `forge_hall` | `workshop` | 16 x 15 (hall 11 x 15 plus a 7 x 7 smithy wing) | cross gable |
-| `west_home` | `cottage` | 9 x 9 | gable |
-| `east_home` | `cottage` | 9 x 11 placed | hip |
-| `southwest_home` | `cottage` | 9 x 9 | saltbox |
-| `east_gable_home` | `cottage` | 11 x 9 | gable |
-| `lagerhouse` | `longhouse` | 9 x 13 | saltbox |
-| `community_hall` | `hall` | 13 x 15 | hip |
-| `workyard` | `shed` | 13 x 9, open on two sides | gable |
-| `gatewatch` | `watchpost` | 9 x 9, guard room plus lookout | hip |
-
-Every closed building has a door on its path side, two-wide pane windows in
-log frames, a stone base course, log corner posts, a stair roof with a one
-node overhang, a chimney where there is a hearth, a furnished interior and
-at least one interior light. Exterior dressing fills the space between
-plots; the arrival plaza has an inlaid paving band, a draw well, a market
-stall, benches and planters. Warm lamps line the street and the cross
-street.
-
-## Verification
-
-Per `luanti-lua.md`: `tools/bin/luac51 -p` and the `SETGLOBAL` check on every
-changed Lua file and on the whole `grug_*` and `tools` trees; all five source
-sweeps including `tools/`; `tools/check_fresh_server.py`. LuaJIT owns
-development; the frozen bytes get one PUC 5.1 pair.
-
-- `tools/wp13/library_kat.lua` is new. It proves rotation by re-deriving
-  orientation from direction vectors rather than from the index arithmetic
-  under test: facedir and wallmounted rotation against `core.facedir_to_dir`,
-  the upside-down family turning the other way, footprint rotation as a
-  bijection, hip corner shapes, cross gable valleys, and a whole cottage
-  stamped at all four rotations with an unchanged node census, doors that
-  keep their hidden node pairing, torches that keep a solid support, bed
-  halves that stay together and panes that stay in the plane of their wall.
-  It also checks that no palette role names a node `grug_materials`
-  curates away with `core.unregister_item`.
-- `tools/wp13/blueprint_kat.lua` keeps every previous assertion and adds
-  contract section 5 invariant 2 (door reachable, outside foot paved,
-  inside foot standable, orientation matching the wall, hidden node
-  present), invariant 4 (no interior column open to the sky), the
-  lit-interior rule and a general "no gap under the eaves" check that
-  replaces the previous hand-written guardpost assertion. Doors count as
-  passable in the conservative walk.
-- `tools/wp13/engine_cases.lua` is unchanged: it compares authored names and
-  param2 after generation and after reload, and the new blueprint keeps the
-  explicit air cell at local `(5, 2, 0)` its edit canary needs.
-- `tools/wp13/integration_fixture.lua` is unchanged and still exercises the
-  real successor clipping and replay.
-
-## Evidence
-
-`tools/wp13/evidence/20260914-hearthpine-library/`, including the rendered
-review set the architecture was iterated on
-(`renders/`: two opposite full views, an interior cutaway, a night view, one
-zoom per generator and the plaza).
+`tools/wp40/r7/node_semantics_fixture.lua` reconstructs node semantics from
+`default`/`grug_*` plus three stair shapes and cannot resolve the new palette
+(doors, beds, panes, wool, vessels, walls, grug_decor). This increment's
+`tools/wp13/final_micro.lua` keeps the interpreter-equality property on the
+WP13 fixtures; registration and param2 legality are covered by the library
+KAT's registry scan and by the live engine runs. Teaching the WP40 fixture the
+new mods is a WP40-lane follow-up.
 
 ## User runtime test
 
-Fresh dwarf world, seeds `531802985935182545` (Hearthpine y=25) and
-`8675309` (y=16). Walk the plaza and the cross street, open the doors, look
-at the furnished interiors, climb the watchpost stairs to the lookout,
-follow the road out through the gate, set night and check the lit route,
-then leave and reload.
+Fresh world, dwarf, seed `531802985935182545` (Hearthpine y = 25):
+
+1. Look around the arrival plaza (paving band, well, market stall, benches,
+   planters), then walk the cross street west and east.
+2. Open the forge hall's double doors, walk through the hall into the smithy
+   wing, check the roof valley from outside.
+3. Enter the four homes: bed, hearth with chimney, table and stools, shelves,
+   barrel, rug, wall lights.
+4. Visit the open timber workyard, the storage longhouse and the community
+   hall.
+5. Climb the watchpost's internal stairs to the lookout, check the roof, walk
+   out under the gate arch.
+6. `/atmosphere off`, `default`, `hearthpine` at midday and at night by the
+   torches; `godrays` once to price it on your GPU.
+7. Set night, follow the lit road plaza → gate; leave and reload.
