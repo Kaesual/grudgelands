@@ -7,7 +7,18 @@ area. Domain-specific documents may define technical roles and deliverables,
 but must not define a competing model priority.
 
 The user is the final authority over every routing choice, ruling, and merge;
-every clause in this policy yields to an explicit user instruction. Where this
+every clause in this policy yields to an explicit user instruction.
+
+**Day-to-day routing rule (decided 2026-09-14):** the role assignments below
+are *defaults*, not mandates. The user decides per session which model
+coordinates, implements and reviews, depending on how they plan their credits
+over the week, and states that at session start. A session-level instruction
+such as "today only Claude: Fable coordinates, Opus implements" replaces the
+routing table for that session without a policy amendment. What does not
+relax: every non-trivial change still receives one independent review by an
+agent that did not author it (Section 5), destructive-action safeguards, and
+the technical checklist in `wp-workflow.md`. Model names in that review record
+are whatever the user chose that day. Where this
 policy and a process document overlap on non-model process, the process
 document governs; this policy governs model choice. At adoption, the model
 labels mean GPT-5.6 Sol, Claude Opus ("Opus"), Claude Fable ("Fable"), and

@@ -5,8 +5,9 @@ autonomously. AGENTS.md links here; this file is the detailed contract.
 
 ## Roles (revised 2026-08-22)
 
-All model selection follows the sole project-wide authority,
-[agent-model-policy.md](agent-model-policy.md). A WP, research note, or package
+Model selection defaults come from
+[agent-model-policy.md](agent-model-policy.md); the user overrides them per
+session (its "Day-to-day routing rule"). A WP, research note, or package
 contract must not invent a local model priority.
 
 - **The coordinator is architect, tracker, and integration judge.** Its model

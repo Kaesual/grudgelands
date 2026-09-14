@@ -97,8 +97,9 @@ current state). It is **derived, never authoritative**:
 3. **WPs run autonomously on their own branch** (`wp<NN>-<slug>`) per
    the workflow contract in
    **[docs/process/wp-workflow.md](docs/process/wp-workflow.md)**. Model
-   routing for every project area is governed solely by
-   **[docs/process/agent-model-policy.md](docs/process/agent-model-policy.md)**.
+   routing defaults live in
+   **[docs/process/agent-model-policy.md](docs/process/agent-model-policy.md)**;
+   the user overrides them per session (its "Day-to-day routing rule").
    Its **Independent review** trigger and independence rules are binding;
    every required review uses the checklist and the
    `docs/research/luanti-lua.md` rules in the workflow document. Merge to main
