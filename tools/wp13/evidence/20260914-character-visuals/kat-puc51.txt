@@ -1,0 +1,9 @@
+wp13_cv_inputs	6	2	4	6	dwarf,elf,human,orc,troll,undead	cloth,metal	head,chest,legs,feet	#8a7f6a,#a89478,#c0b088,#d8cc9a,#e8dcb0,#ffffff
+wp13_cv_index	48	cloth=24,metal=24	chest=12,feet=12,head=12,legs=12
+wp13_cv_roundtrip	grug_visuals_skin_dwarf.png^(grug_visuals_metal_head.png^[multiply:#c0b088)^(grug_visuals_metal_chest.png^[multiply:#c0b088)^(grug_visuals_metal_legs.png^[multiply:#c0b088)^(grug_visuals_metal_feet.png^[multiply:#c0b088)
+wp13_cv_matrix	366	366	365	0760993141
+wp13_cv_textures	14	0	grug_visuals_cloth_chest.png,grug_visuals_cloth_feet.png,grug_visuals_cloth_head.png,grug_visuals_cloth_legs.png,grug_visuals_metal_chest.png,grug_visuals_metal_feet.png,grug_visuals_metal_head.png,grug_visuals_metal_legs.png,grug_visuals_skin_dwarf.png,grug_visuals_skin_elf.png,grug_visuals_skin_human.png,grug_visuals_skin_orc.png,grug_visuals_skin_troll.png,grug_visuals_skin_undead.png
+wp13_cv_stature	0.85	1.12	dwarf=1.10/0.88/1.10,elf=0.94/1.06/0.94,human=1.00/1.00/1.00,orc=1.12/0.98/1.12,troll=1.10/1.12/1.10,undead=0.90/1.00/0.90
+wp13_cv_fallback	human;grug_visuals_skin_human.png;-;-;-;-;-	1	grug_mobs_mirefolk.png	nil
+wp13_cv_weapon	nil	grug_gear:sword_b1	grug_gear:sword_b6
+wp13_cv_result	PASS	0
