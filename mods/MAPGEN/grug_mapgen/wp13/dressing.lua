@@ -274,13 +274,35 @@ local function loader(directory)
 		end
 	end
 
-	-- A columnar tree on the proportions of the vendored aspen
-	-- (mods/BASE/default/schematics/aspen_tree.mts, decoded: 5 x 14 x 5, six
-	-- clear trunk logs, then seven crown courses that alternate a 3 x 3 ring
-	-- and a full 5 x 5 square, with the top course sitting one node above the
-	-- last log). Silverwood IS that schematic with the aspen nodes replaced
+	-- A columnar tree on the proportions of the vendored aspen, course for
+	-- course. `mods/BASE/default/schematics/aspen_tree.mts` decodes (5 x 14 x
+	-- 5, trunk at its centre column) to:
+	--
+	--     y 0-5   trunk only, six clear logs
+	--     y 6     3 x 3 leaf ring round the trunk
+	--     y 7     full 5 x 5 leaf square round the trunk
+	--     y 8     3 x 3      y 9  5 x 5      y 10 3 x 3     y 11 5 x 5
+	--     y 12    3 x 3, and its CENTRE is a leaf: the trunk stopped at 11
+	--     y 13    one leaf, alone, two courses above the last log
+	--
+	-- Silverwood IS that schematic with the aspen nodes replaced
 	-- (`grug_trees.silverwood_replacements`), so this is the silhouette the
 	-- surrounding elf forest actually grows and an authored grove matches it.
+	--
+	-- Two things were wrong with the first version and the review caught
+	-- both. The top leaf sat at `height + 1`, one course short, on top of the
+	-- last crown course instead of clear above it. And the wide courses
+	-- carried a parity notch -- every other edge cell dropped, keyed on the
+	-- stem's position -- meant to keep neighbouring stems from sharing a
+	-- silhouette. It took 868 leaf cells out of the corpus and left each of
+	-- them with no leaf, log or anything else across any of its six faces:
+	-- the crowns were lace. The aspen's own alternation of 3 x 3 and 5 x 5
+	-- already breaks the outline, and the stem heights already vary, so the
+	-- notch bought nothing the schematic was not doing better.
+	--
+	-- Leaf decay: default registers aspen leaves with radius 3, and no leaf
+	-- here is further than 2 from the trunk in x/z and 2 above the last log,
+	-- so every one of them stays inside the radius of its own stem.
 	--
 	-- `height` is the trunk: a twelve log stem reproduces the schematic
 	-- exactly, and a shorter one keeps the six clear logs and loses crown
@@ -289,7 +311,8 @@ local function loader(directory)
 		local log = palette.node("tree_log")
 		local leaves = palette.node("tree_leaves")
 		for y = 1, height do buf:put(x, y, z, log) end
-		-- reach per crown course, counted down from the top log
+		-- Reach per crown course, counted down from the top log: 1 is the
+		-- 3 x 3 ring, 2 the full 5 x 5 square.
 		local LAYERS = {
 			{offset = -5, reach = 1}, {offset = -4, reach = 2},
 			{offset = -3, reach = 1}, {offset = -2, reach = 2},
@@ -302,21 +325,19 @@ local function loader(directory)
 			if y >= 2 then
 				for dz = -layer.reach, layer.reach do
 					for dx = -layer.reach, layer.reach do
-						-- A parity notch on the wide courses only, so
-						-- neighbouring stems of the same height are not the
-						-- same silhouette; the narrow ring stays closed.
-						local edge = math.max(math.abs(dx), math.abs(dz)) ==
-							layer.reach
-						local notch = layer.reach == 2 and edge and
-							(x + z + dx + dz) % 2 == 1
-						if not notch and not (dx == 0 and dz == 0) then
+						if dx ~= 0 or dz ~= 0 then
 							buf:put(x + dx, y, z + dz, leaves)
+						elseif y > height then
+							-- The last crown course stands above the stem, so
+							-- its centre is a leaf, not the log that is not
+							-- there.
+							buf:put(x, y, z, leaves)
 						end
 					end
 				end
 			end
 		end
-		buf:put(x, height + 1, z, leaves)
+		buf:put(x, height + 2, z, leaves)
 	end
 
 	-- A raised terrace: a masonry podium `height` nodes tall with a flight of

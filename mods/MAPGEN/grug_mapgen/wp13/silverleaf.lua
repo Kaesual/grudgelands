@@ -7,8 +7,10 @@
 -- ground is the elf forest's own silver litter, the paving is marble, the
 -- houses are narrow and steep instead of broad and low, two of them stand on
 -- marble terraces with railed fronts, the light is candle and hanging
--- lantern instead of pitch torch, and the whole place is roofed in pale
--- silver sandstone under columnar silverwood standards that overtop it.
+-- lantern instead of pitch torch, and the place is roofed in darkage slate
+-- tile -- pale silver sandstone brick is the CIVIC roof, on the shrine, the
+-- lore hall and the gate lookout only -- under columnar silverwood standards
+-- that overtop all of it.
 --
 -- Authored in local coordinates around the elf spawn; the caller fits y = 0
 -- to the fitted start terrain before projecting the cells. The result is the
@@ -234,8 +236,13 @@ local function loader(directory)
 		for _, plot in ipairs(PLOTS) do
 			local lift = plot.lift or 0
 			if lift > 0 then
+				-- The podium reaches `plot.z + spec.d`, one node PAST the
+				-- back wall, because that is where the apron ring and the
+				-- railing below stand. It used to stop at `spec.d - 1`, flush
+				-- with the wall, and the 33 cells of ring and rail behind the
+				-- two terrace houses had nothing under them at all.
 				dressing.terrace(buf, palette, plot.x - 1, plot.z - 1,
-					plot.x + plot.spec.w, plot.z + plot.spec.d - 1, lift, "z-")
+					plot.x + plot.spec.w, plot.z + plot.spec.d, lift, "z-")
 			end
 			local spec = {}
 			for key, value in pairs(plot.spec) do spec[key] = value end

@@ -1938,6 +1938,22 @@
    "source": "MANUAL_OVERRIDES",
    "shape": "glass"
   },
+  "grug_decor:darkage_marble": {
+   "tiles": [
+    "grug_decor_darkage_darkage_marble.png"
+   ],
+   "drawtype": "normal",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "cube"
+  },
+  "grug_decor:darkage_marble_tile": {
+   "tiles": [
+    "grug_decor_darkage_darkage_marble_tile.png"
+   ],
+   "drawtype": "normal",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "cube"
+  },
   "grug_decor:darkage_ors_block": {
    "tiles": [
     "grug_decor_darkage_darkage_ors_block.png"
@@ -1983,6 +1999,76 @@
    "drawtype": "normal",
    "source": "MANUAL_OVERRIDES",
    "shape": "cube"
+  },
+  "grug_decor:darkage_serpentine_slab": {
+   "tiles": [
+    "grug_decor_darkage_darkage_serpentine.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "slab",
+   "source": "MANUAL_OVERRIDES"
+  },
+  "grug_decor:darkage_slate_brick": {
+   "tiles": [
+    "grug_decor_darkage_darkage_slate_brick.png"
+   ],
+   "drawtype": "normal",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "cube"
+  },
+  "grug_decor:darkage_slate_brick_slab": {
+   "tiles": [
+    "grug_decor_darkage_darkage_slate_brick.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "slab",
+   "source": "MANUAL_OVERRIDES"
+  },
+  "grug_decor:darkage_slate_tile": {
+   "tiles": [
+    "grug_decor_darkage_darkage_slate_tile.png"
+   ],
+   "drawtype": "normal",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "cube"
+  },
+  "grug_decor:darkage_slate_tile_slab": {
+   "tiles": [
+    "grug_decor_darkage_darkage_slate_tile.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "slab",
+   "source": "MANUAL_OVERRIDES"
+  },
+  "grug_decor:darkage_slate_tile_stair": {
+   "tiles": [
+    "grug_decor_darkage_darkage_slate_tile.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "stair",
+   "source": "MANUAL_OVERRIDES"
+  },
+  "grug_decor:darkage_slate_tile_stair_inner": {
+   "tiles": [
+    "grug_decor_darkage_darkage_slate_tile.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "stair_inner",
+   "source": "MANUAL_OVERRIDES"
+  },
+  "grug_decor:darkage_slate_tile_stair_outer": {
+   "tiles": [
+    "grug_decor_darkage_darkage_slate_tile.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "stair_outer",
+   "source": "MANUAL_OVERRIDES"
   },
   "grug_decor:darkage_wood_bars": {
    "tiles": [
@@ -2112,7 +2198,20 @@
   },
   "grug_decor:xdecor_lantern_hanging": {
    "drawtype": "plantlike",
-   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_xdecor_xdecor_lantern.png^[verticalframe:4:0"
+   ],
+   "alpha": "clip",
+   "shape": "plant"
+  },
+  "grug_decor:xdecor_potted_dandelion_white": {
+   "tiles": [
+    "grug_decor_xdecor_xdecor_dandelion_white_pot.png"
+   ],
+   "drawtype": "plantlike",
+   "alpha": "clip",
+   "source": "MANUAL_OVERRIDES",
    "shape": "plant"
   },
   "grug_decor:xdecor_potted_dandelion_yellow": {
@@ -2127,6 +2226,15 @@
   "grug_decor:xdecor_potted_geranium": {
    "tiles": [
     "grug_decor_xdecor_xdecor_geranium_pot.png"
+   ],
+   "drawtype": "plantlike",
+   "alpha": "clip",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "plant"
+  },
+  "grug_decor:xdecor_potted_viola": {
+   "tiles": [
+    "grug_decor_xdecor_xdecor_viola_pot.png"
    ],
    "drawtype": "plantlike",
    "alpha": "clip",
@@ -2224,6 +2332,16 @@
     "grug_nodes_bone_litter.png",
     "default_dirt.png",
     "default_dirt.png^grug_nodes_bone_litter_side.png"
+   ],
+   "drawtype": "normal",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "cube"
+  },
+  "grug_nodes:dirt_with_silver_litter": {
+   "tiles": [
+    "grug_nodes_silver_litter.png",
+    "default_dirt.png",
+    "default_dirt.png^grug_nodes_silver_litter_side.png"
    ],
    "drawtype": "normal",
    "source": "MANUAL_OVERRIDES",

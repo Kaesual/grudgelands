@@ -743,6 +743,78 @@ return function(repo)
 	end
 	assert(torches >= 40, "the village went dark")
 	say("torch_support", profile.key, torches, "opaque_full", "pass")
+
+	-- 11. no piece of architecture stands detached ------------------------
+	-- Every cell of a BUILDING must touch another non-air cell across a face
+	-- or across a vertical diagonal. The vertical diagonal is in the rule
+	-- because a free-standing flight of stairs is a real thing the library
+	-- builds: Hearthpine's cellar steps climb one node out and one node up
+	-- per tread, so two of its treads touch nothing across a face at all.
+	--
+	-- Three families are outside the rule, and each exemption is a property
+	-- of the NODE read out of the real registrations, never a list of starts
+	-- or of cells:
+	--
+	--   * `group:tree` and `group:leaves`. A tree's silhouette is the
+	--     vendored schematic's, and the vendored acacia hangs its branch
+	--     logs on HORIZONTAL diagonals off the trunk -- 94 of Sunscar's do.
+	--     Vegetation has its own, sharper invariant in `blueprint_kat`: the
+	--     trunk height, the crown reach and the leaf-to-trunk path.
+	--   * a node whose `paramtype2` is `wallmounted`, which names its own
+	--     support with its param2. Section 10 and `blueprint_kat`'s prop
+	--     check test that exactly; leaving it out keeps one cell from being
+	--     reported twice under two rules.
+	--   * `plantlike`, `torchlike`, `signlike` and `airlike` nodes, which are
+	--     crosses and sprites rather than blocks, held up by the engine's own
+	--     attachment rules where each is sown.
+	--
+	-- What this rule does NOT catch is worth writing down, because the
+	-- review expected it to: Silverleaf's terrace podium was built one node
+	-- shallower than the apron and railing standing on it, and those 18
+	-- apron cells each touched the podium beside them across a face, so a
+	-- neighbour rule of any kind passes them. The invariant that catches a
+	-- floor with nothing under it is in `blueprint_kat`, where each start's
+	-- own `paved` family is known.
+	local LOOSE_DRAWTYPE = {plantlike = true, torchlike = true,
+		signlike = true, airlike = true}
+	local NEIGHBOURS = {{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0},
+		{0, 0, 1}, {0, 0, -1},
+		{1, 1, 0}, {-1, 1, 0}, {0, 1, 1}, {0, 1, -1},
+		{1, -1, 0}, {-1, -1, 0}, {0, -1, 1}, {0, -1, -1}}
+	local floating, checked = 0, 0
+	local first_floating
+	for _, cell in ipairs(blueprint.cells) do
+		local def = world.nodes[cell.name]
+		local groups = def and type(def.groups) == "table" and def.groups or {}
+		local loose = cell.name == "air" or def == nil or
+			LOOSE_DRAWTYPE[def.drawtype] or def.paramtype2 == "wallmounted" or
+			(groups.tree or 0) > 0 or (groups.leaves or 0) > 0 or
+			(groups.leafdecay or 0) > 0
+		if not loose then
+			checked = checked + 1
+			local touched = false
+			for _, step in ipairs(NEIGHBOURS) do
+				local other = cell_at[(cell.x + step[1]) .. ":" ..
+					(cell.y + step[2]) .. ":" .. (cell.z + step[3])]
+				-- Outside the cell list is the settlement's own ground: at
+				-- y <= 0 the pad is solid terrain the writer never clears, so
+				-- a cell resting on it is held. Above y = 0 an absent cell is
+				-- air.
+				if (other ~= nil and other.name ~= "air") or
+						cell.y + step[2] <= 0 then
+					touched = true
+				end
+			end
+			if not touched then
+				floating = floating + 1
+				first_floating = first_floating or (cell.name .. " at " ..
+					cell.x .. "," .. cell.y .. "," .. cell.z)
+			end
+		end
+	end
+	assert(floating == 0, floating .. " detached cells in " .. profile.key ..
+		", first " .. tostring(first_floating))
+	say("grounded", profile.key, checked, "no_detached_cell", "pass")
 	end
 
 	assert(corpus_connected_panes > 0,

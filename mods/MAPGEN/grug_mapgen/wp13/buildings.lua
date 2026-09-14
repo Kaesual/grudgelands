@@ -696,7 +696,18 @@ local function loader(directory)
 			buf:put(side[1], height, side[2], palette.node("beam"))
 		end
 		-- The bell frame and the lamp that marks the hamlet's centre at night.
+		--
+		-- The bell hangs one course under the beam ring and the lamp stands
+		-- on the floor. In a three-course lantern those two touch, which is
+		-- why nothing noticed that in a TALLER one they do not: the elf
+		-- shrine's spire is four courses, and its bell hung in the middle of
+		-- the lantern with air on all six sides. A bell hangs from a frame,
+		-- so a taller lantern gets the cross-beam it hangs from; a
+		-- three-course one is unchanged, bell resting straight on its lamp.
 		buf:put(2, height - 1, 2, palette.node("chimney_cap"))
+		if height - 1 > 2 then
+			buf:put(2, height, 2, palette.node("beam"))
+		end
 		parts.floor_torch(buf, palette, 2, 1, 2)
 		lights[#lights + 1] = {x = 2, y = 1, z = 2}
 		local field = roofs.hip({x0 = -1, x1 = w, z0 = -1, z1 = d,

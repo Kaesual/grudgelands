@@ -119,9 +119,13 @@ return function(repo)
 				"stairs:stair_inner_silver_sandstone_brick",
 				"stairs:slab_silver_sandstone_brick"},
 			door_leaves = {"doors:door_wood_a", "doors:door_wood_b"},
+			-- `high = 2`: the aspen silhouette this grove reproduces ends in
+			-- one leaf two courses above its last log, which is what the
+			-- schematic does and what the first version was one course short
+			-- of.
 			tree = {log = "grug_trees:silverwood_tree",
 				leaves = "grug_trees:silverwood_leaves",
-				min_trunk = 9, reach = 2, low = 5, high = 1, min_stems = 40},
+				min_trunk = 9, reach = 2, low = 5, high = 2, min_stems = 40},
 			ground = {{"grug_nodes:dirt_with_silver_litter", 8000},
 				{"default:dirt_with_grass", 100}, {"default:dirt", 20}},
 			min_destinations = 9, min_doors = 8, min_rooms = 9,
@@ -240,6 +244,12 @@ return function(repo)
 				"grug_decor:cottages_straw_mat", "grug_decor:xdecor_lantern",
 				"grug_decor:xdecor_rope",
 				"doors:door_wood_a", "doors:door_wood_b", "doors:hidden"},
+			-- The whole settlement is a raised boardwalk on piers, which is
+			-- the one start that may stand a floor clear of the ground. The
+			-- count is exact so a second, accidental floating floor cannot
+			-- hide inside the declared one.
+			deck = {nodes = {"default:junglewood",
+				"grug_decor:darkage_basalt_brick"}, cells = 912},
 			-- A stilt village's doorsteps stand on plank verandas and the
 			-- lodge's on its basalt platform, so both count as paving.
 			paved = {"default:junglewood", "default:mossycobble",
@@ -353,7 +363,18 @@ return function(repo)
 		-- light the engine drops.
 		local function light_carrier(name, param2)
 			local rule = spec.light_support and spec.light_support[name]
-			if rule == "self" then return nil end
+			if rule == "self" then
+				-- A full glowing cube carries its own weight, so it names no
+				-- support direction -- but it is still masonry, and masonry
+				-- built into nothing is masonry in mid air. It returns no
+				-- direction and the caller checks all six faces instead of
+				-- one; the first version returned nil and the caller skipped
+				-- the cell entirely, which made `self` a way to opt out of
+				-- the floating-light check rather than a different way of
+				-- being held up.
+				assert(param2 == 0, "a self-carrying lamp carries a param2")
+				return nil, true
+			end
 			if rule == "above" then
 				assert(param2 == 0, "hanging lamp carries a param2")
 				return {0, 1, 0}
@@ -362,14 +383,70 @@ return function(repo)
 		end
 		for _, cell in ipairs(blueprint.cells) do
 			if LIGHT[cell.name] then
-				local dir = light_carrier(cell.name, cell.param2)
+				local dir, any_face = light_carrier(cell.name, cell.param2)
 				if dir then
 					assert(solid(cell.x + dir[1], cell.y + dir[2],
 						cell.z + dir[3]),
 						"floating light at " .. key(cell.x, cell.y, cell.z))
+				elseif any_face then
+					local held = false
+					for _, step in ipairs({{1, 0, 0}, {-1, 0, 0}, {0, 1, 0},
+							{0, -1, 0}, {0, 0, 1}, {0, 0, -1}}) do
+						if node(cell.x + step[1], cell.y + step[2],
+								cell.z + step[3]) ~= "air" then
+							held = true
+						end
+					end
+					assert(held, "a self-carrying lamp is built into nothing " ..
+						"at " .. key(cell.x, cell.y, cell.z))
 				end
 			end
 		end
+		-- Every floor rests on something ----------------------------------
+		--
+		-- A cell of this start's OWN `paved` family -- the ground a player
+		-- walks on -- must have a non-air cell directly beneath it. Below
+		-- y = 1 that is the pad itself, which the writer never clears.
+		--
+		-- This is the rule that catches a podium built one node too small.
+		-- Silverleaf's terrace filled to `plot.z + spec.d - 1` while the
+		-- apron ring and the railing standing on it reached `plot.z +
+		-- spec.d`, so eighteen apron cells and the rail on them hung a full
+		-- storey up behind both terrace houses. No NEIGHBOUR rule can see
+		-- that -- each of those cells touches the podium beside it across a
+		-- face, which is why `library_kat`'s detached-cell rule passes them
+		-- and this one does not. What is wrong with them is what is under
+		-- them.
+		--
+		-- A start may raise a floor clear of the ground on purpose: Kapok is
+		-- a stilt village and its boardwalks, landings and platforms are the
+		-- whole settlement. No geometric test separates a boardwalk on piers
+		-- from a cantilevered slab -- both have a bearing one node away --
+		-- so the separation is declared instead, and declared EXACTLY: a
+		-- start names the nodes its raised floors are built from and the
+		-- number of cells of them that stand clear. An undeclared start
+		-- allows none, which is what Silverleaf's eighteen would have hit,
+		-- and a declared one cannot grow a nineteenth without moving a
+		-- number somebody has to re-derive.
+		local deck = spec.deck
+		local deck_nodes = deck and set(deck.nodes) or {}
+		local unsupported, first_unsupported = 0, nil
+		for _, cell in ipairs(blueprint.cells) do
+			if PAVED[cell.name] and cell.y >= 1 and
+					node(cell.x, cell.y - 1, cell.z) == "air" then
+				unsupported = unsupported + 1
+				first_unsupported = first_unsupported or (cell.name .. " at " ..
+					key(cell.x, cell.y, cell.z))
+				assert(deck_nodes[cell.name],
+					"a floor hangs in the air: " .. cell.name .. " at " ..
+						key(cell.x, cell.y, cell.z))
+			end
+		end
+		assert(unsupported == (deck and deck.cells or 0),
+			"raised-floor population differs: " .. unsupported .. " not " ..
+				(deck and deck.cells or 0) .. ", first " ..
+				tostring(first_unsupported))
+
 		-- The loose props: their exact population, and none of them floating.
 		--
 		-- Section 5 has no invariant for a bale, a stepping stone or a hand

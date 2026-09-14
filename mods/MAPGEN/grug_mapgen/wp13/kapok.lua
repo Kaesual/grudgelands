@@ -38,7 +38,14 @@ local function loader(directory)
 	-- The deck height every dwelling and every bridge shares. One height for
 	-- the whole village is what lets a bridge leave one veranda and arrive at
 	-- another without a step.
-	local DECK = 3
+	--
+	-- Four, not three. At three the bridge deck sat at y = 3 and the main
+	-- route runs at y = 1, so a player on the road had the plank soffit two
+	-- nodes over their head -- one node of headroom above a 1.8-node player
+	-- model, which is a duck, not a bridge. Four gives the road the three
+	-- clear courses every route in section 5 is meant to have, and costs one
+	-- more tread on each flight and one more course on each pier.
+	local DECK = 4
 
 	-- The lodge terrace: the only masonry in the village, and the only floor
 	-- in it that is neither plank nor mud.

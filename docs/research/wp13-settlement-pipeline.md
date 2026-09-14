@@ -95,21 +95,49 @@ generator must degrade gracefully when an optional role is nil.
 
 | Role | Dwarf (Hearthpine) | Human (Dawnmere) | Elf | Undead | Orc | Troll |
 |---|---|---|---|---|---|---|
-| foundation | `default:stone_block` | `default:cobble` | `default:silver_sandstone_block` | `default:obsidianbrick` or dark stone | `default:desert_stone_block` | `default:mossycobble` |
+| foundation | `default:stone_block` | `default:cobble` | `grug_decor:darkage_marble_tile` | `default:obsidianbrick` or dark stone | `default:desert_stone_block` | `default:mossycobble` |
 | wall | `default:pine_wood` | `default:wood` | `grug_trees:silverwood_wood` | `grug_trees:gravewood_wood` | `default:desert_sandstone_brick` (adobe) | `default:junglewood` |
-| wall_accent | `default:stonebrick` | `default:brick` | `default:silver_sandstone_brick` | `default:stonebrick` | `default:desert_stonebrick` | `default:sandstone_block` |
+| wall_accent | `default:stonebrick` | `default:brick` | `grug_decor:darkage_slate_brick` | `default:stonebrick` | `default:desert_stonebrick` | `default:sandstone_block` |
 | post | `default:pine_tree` | `default:tree` | `grug_trees:silverwood_tree` | `grug_trees:gravewood_tree` | `default:acacia_tree` | `default:jungletree` |
-| roof_stair family | `stairs:stair_pine_wood` (+outer/inner) | `stairs:stair_wood` | `stairs:stair_silver_sandstone` | `stairs:stair_stonebrick` | `stairs:stair_desert_stonebrick` | `stairs:stair_junglewood` |
-| window | `xpanes:pane_flat` | `xpanes:pane_flat` | `default:glass` | `xpanes:bar_flat` | `xpanes:bar_flat` | open, `default:fence_junglewood` |
+| roof_stair family | `stairs:stair_pine_wood` (+outer/inner) | `stairs:stair_wood` | `grug_decor:darkage_slate_tile_stair` domestic, `stairs:stair_silver_sandstone_brick` civic | `stairs:stair_stonebrick` | `stairs:stair_desert_stonebrick` | `stairs:stair_junglewood` |
+| window | `xpanes:pane_flat` | `xpanes:pane_flat` | `xpanes:pane_flat` | `xpanes:bar_flat` | `xpanes:bar_flat` | open, `default:fence_junglewood` |
 | door | `doors:door_wood` | `doors:door_wood` | `doors:door_wood` | `doors:door_steel` | `doors:door_wood` | `doors:door_wood` |
-| light_wall / post | `default:torch_wall` / `default:torch` | same | `grug_materials:emberglass_lamp` | `default:torch` (few) | `default:torch` | `default:torch` |
-| fence / low_wall | `default:fence_pine_wood` / `walls:cobble` | `default:fence_wood` / `walls:cobble` | `default:fence_wood` / none | `walls:mossycobble` | `walls:desertcobble` | `default:fence_junglewood` |
+| light_wall / post | `default:torch_wall` / `default:torch` | same | `grug_decor:xdecor_candle`, plus `grug_decor:xdecor_lantern_hanging` and `grug_materials:emberglass_lamp` as optional roles | `default:torch` (few) | `default:torch` | `default:torch` |
+| fence / low_wall | `default:fence_pine_wood` / `walls:cobble` | `default:fence_wood` / `walls:cobble` | `default:fence_aspen_wood` / `grug_decor:darkage_serpentine_slab` | `walls:mossycobble` | `walls:desertcobble` | `default:fence_junglewood` |
 
 All names above exist in the vendored `default`/`stairs` mods (every
 `register_stair_and_slab` material also has `stair_outer`/`stair_inner`
 shapes) or in the seven mods being vendored. Silverwood and gravewood
 stair/slab shapes do not exist yet; registering them in `grug_trees` is a
 small follow-up, not a design question.
+
+**The elf column was corrected on 2026-09-14 to the palette that shipped.**
+Four of its six entries had been drafted before the kit was in the tree and
+the registry refused them:
+
+- the roofs. `grug_trees` registers no stair or slab shape, so silverwood
+  cannot roof anything, and silverwood plank, silver sandstone and silver
+  litter all sit between luminance 187 and 202 -- a settlement built only out
+  of them is invisible against its own ground, which is what the first review
+  render showed. The DOMESTIC roof is therefore darkage slate tile (#6d818d)
+  and the drafted `stairs:*_silver_sandstone_brick` family became the CIVIC
+  roof, where the pale cut reads against slate instead of against litter.
+  The drafted `stairs:stair_silver_sandstone` (not `_brick`) survives only as
+  the table-top slab.
+- the windows. `default:glass` is a cube, not a pane, and the whole window
+  vocabulary of this library -- framing, rhythm, `update_pane` -- is the
+  `xpanes` one. Ordinary windows are clear flat panes in silverwood frames;
+  glass cubes appear only as gable lights.
+- the low wall. `walls:` ships nothing pale, so it is a serpentine slab: a
+  marble kerb rather than a rubble parapet.
+- the lights. `grug_materials:emberglass_lamp` is a full glowing cube and
+  cannot be the wallmounted `light_wall`/`light_post` the parts write. The
+  required trio is the candle; the lamp and the hanging lantern are the two
+  optional roles `light_beacon` and `light_hanging`, which
+  `parts.beacon` and `parts.hanging_light` are the only emitters of.
+
+The fence entry was `default:fence_wood`; aspen is the pale one, and
+silverwood IS default's aspen retinted, so the fence and the plank agree.
 
 ## 5. Generator invariants (checked by the KAT, not by eye)
 
