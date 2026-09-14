@@ -1,6 +1,6 @@
 -- One bounded final-byte process for a WP13 settlement increment.
 --
--- Runs the three WP13 fixtures in a single interpreter process and writes one
+-- Runs every WP13 fixture in a single interpreter process and writes one
 -- canonical TSV. The same bytes are run once under LuaJIT and once under the
 -- engine's bundled PUC 5.1 build and the two outputs must be byte-identical
 -- (docs/research/luanti-lua.md, "Interpreter and test strategy").
@@ -32,12 +32,15 @@ local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 local rows = {}
 rows[#rows + 1] = dofile(repo .. "/tools/wp13/library_kat.lua")(repo)
 rows[#rows + 1] = dofile(repo .. "/tools/wp13/blueprint_kat.lua")(repo)
+rows[#rows + 1] = dofile(repo .. "/tools/wp13/highcourt_kat.lua")(repo)
 rows[#rows + 1] = "wp13_integration\t" ..
 	dofile(repo .. "/tools/wp13/integration_fixture.lua")(repo) .. "\n"
 -- Last, and last on purpose: the socket-registry KAT drives real grug_core
 -- code, so it installs stub `core`/`vector`/`grug_core` globals and restores
 -- them again. Running it after the three pure fixtures keeps their
--- environment untouched.
+-- environment untouched. "Pure" is the four above it: the library, the
+-- blueprint, the Highcourt and the integration fixtures, none of which
+-- installs a global.
 rows[#rows + 1] = dofile(repo .. "/tools/wp13/settlement_sockets_kat.lua")(repo)
 -- Same reason, same treatment: this one drives grug_mobs' placement engine
 -- against a stub engine and restores `core`/`grug_core`/`grug_mobs` again.

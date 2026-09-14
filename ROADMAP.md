@@ -166,7 +166,15 @@ the goal-level view.
   square, colonnade, temple, barracks, scriptorium, granary, stable,
   statue, and hedge/grove/stilt/water edge pieces), the capital palette
   vocabulary and the NPC socket seam, with the six starts byte-identical
-  (`docs/research/wp13-capital-library.md`). No capital is composed yet.
+  (`docs/research/wp13-capital-library.md`).
+  **Highcourt**, the human capital and the pilot for the other five, was
+  composed out of those parts on 2026-09-14: a 96 x 96 civic core with the
+  king's hall, four gatehouses, market square, colonnades, chapel, service
+  court with the two royal vendors and a travel plaza reserved for WP17;
+  the market and professions district as nine terrain-relative plots; and
+  the gate avenues as a pure surface overlay a successor can run per
+  mapchunk (`docs/research/wp13-highcourt.md`). Nothing is wired into the
+  mapgen seam yet -- that generalisation is its own package.
 - [x] WP33: gathering plants, signature woods and cultural sources on final
   zone/race-region ownership; accepted with WP40 R7 on 2026-09-02.
 - [ ] WP34: deep spawn pressure, corrected depth-level curve, camp-only
