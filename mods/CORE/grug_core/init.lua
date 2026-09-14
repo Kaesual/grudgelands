@@ -37,6 +37,9 @@ end
 
 local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/atmosphere.lua")
+-- After atmosphere.lua (it extends that preset table) and before
+-- zone_authority.lua, which only installs a seam grug_mapgen fills in later.
+dofile(modpath .. "/atmosphere_zones.lua")
 dofile(modpath .. "/zone_authority.lua")
 dofile(modpath .. "/protection.lua")
 dofile(modpath .. "/combat_debug.lua")
