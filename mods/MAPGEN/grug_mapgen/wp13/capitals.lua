@@ -1043,6 +1043,325 @@ local function loader(directory)
 		}, {merlons = merlons, arrowslits = slits})
 	end
 
+	-- -------------------------------------------------------------------
+	-- 5. the colonnade
+	-- -------------------------------------------------------------------
+
+	-- An open-sided walk: two rows of columns on a paved terrace under a
+	-- flat cornice, with a solid pier every third bay because a column is a
+	-- nodebox and nothing may hang a lamp on one.
+	--
+	-- Extent: len x 5 plus a one-node apron and cornice oversail, y 0..7.
+	function M.colonnade(palette, spec)
+		local len = spec.len or 15
+		local d = spec.d or 5
+		local buf = parts.buffer()
+		local lights, sockets = {}, {}
+		if len < 7 then error("wp13 capitals: colonnade too short", 0) end
+
+		buf:clear(-1, 1, -1, len, 8, d)
+		buf:fill(-1, 0, -1, len, 0, d, paving(palette))
+		dressing.inlay(buf, palette, 0, 0, len - 1, d - 1, "plaza_edge")
+
+		local piers, columns = 0, 0
+		for x = 0, len - 1, 2 do
+			for _, z in ipairs({0, d - 1}) do
+				if x % 6 == 0 then
+					for y = 1, 4 do buf:put(x, y, z, stone(palette)) end
+					piers = piers + 1
+				else
+					column(buf, palette, x, 1, 4, z)
+					columns = columns + 1
+				end
+			end
+		end
+		-- Architrave, cornice and the oversailing drip course.
+		for x = 0, len - 1 do
+			for _, z in ipairs({0, d - 1}) do
+				buf:put(x, 5, z, mark(palette))
+			end
+		end
+		buf:fill(0, 6, 0, len - 1, 6, d - 1, paving(palette))
+		for x = -1, len do
+			buf:put(x, 7, -1, mark_slab(palette))
+			buf:put(x, 7, d, mark_slab(palette))
+		end
+		for z = 0, d - 1 do
+			buf:put(-1, 7, z, mark_slab(palette))
+			buf:put(len, 7, z, mark_slab(palette))
+		end
+
+		-- Benches against the piers, and a lamp on every pier that has one.
+		local benches = 0
+		for x = 0, len - 1, 6 do
+			for _, z in ipairs({0, d - 1}) do
+				local step = (z == 0) and 1 or -1
+				if x + 1 <= len - 1 then
+					parts.seat(buf, palette, x + 1, 1, z,
+						parts.step_facedir(0, step))
+					benches = benches + 1
+					parts.wall_torch(buf, palette, x + 1, 3, z, -1, 0, 0)
+					lights[#lights + 1] = {x = x + 1, y = 3, z = z}
+				end
+			end
+		end
+
+		local id = spec.id or "colonnade"
+		socket(sockets, id .. "_idle_a", "idle", 2, 1, 1, 0, {tags = {"bench"}})
+		socket(sockets, id .. "_idle_b", "idle", len - 3, 1, d - 2, 2,
+			{tags = {"bench"}})
+		patrol(sockets, id .. "_walk", spec.patrol_group or "civic",
+			spec.order or 1, math.floor(len / 2), 1, math.floor(d / 2), 1)
+
+		return finish(buf, len, d, top_of(buf), {
+			doors = {},
+			lights = lights,
+			sockets = sockets,
+			inside = {},
+			room_corner = {},
+		}, {piers = piers, columns = columns, benches = benches})
+	end
+
+	-- -------------------------------------------------------------------
+	-- 6. the market square
+	-- -------------------------------------------------------------------
+
+	-- A paved square with four awninged stalls round a central kerb, benches
+	-- and planters along the edges and a lamp at each corner. The stalls are
+	-- the library's own `dressing.stall`, so a capital market is built out of
+	-- the same booth a start market is.
+	--
+	-- Extent: size x size, y 0..7; the default 25 is inside the 32-node plot.
+	function M.market_square(palette, spec)
+		local size = spec.size or 25
+		local buf = parts.buffer()
+		local lights, sockets = {}, {}
+		if size < 17 then error("wp13 capitals: market square too small", 0) end
+		local last = size - 1
+		local centre = math.floor(last / 2)
+
+		buf:clear(0, 1, 0, last, 8, last)
+		buf:fill(0, 0, 0, last, 0, last, palette.node("plaza"))
+		dressing.inlay(buf, palette, 0, 0, last, last, "plaza_edge")
+		band(buf, 3, 3, last - 3, last - 3, paving(palette))
+		for step = 0, last do
+			buf:put(centre, 0, step, paving(palette))
+			buf:put(step, 0, centre, paving(palette))
+		end
+
+		-- Four stalls, one per quadrant, each looking at the crossing.
+		-- A booth is three by three and every one of its nine cells is taken
+		-- -- four posts, a three-cell counter, a crate and a bale -- so the
+		-- trader stands one cell OUTSIDE it, on the side away from the
+		-- crossing and still under the canopy, looking back at the square.
+		local stalls = {
+			{x = 4, z = 4, face = 1, vz = 3, vface = 0, kind = "race"},
+			{x = last - 6, z = 4, face = 3, vz = 3, vface = 0,
+				kind = "general"},
+			{x = 4, z = last - 6, face = 1, vz = last - 3, vface = 2,
+				kind = "general"},
+			{x = last - 6, z = last - 6, face = 3, vz = last - 3, vface = 2,
+				kind = "race"},
+		}
+		local id = spec.id or "market"
+		for index, stall in ipairs(stalls) do
+			dressing.stall(buf, palette, stall.x, stall.z, stall.face)
+			dressing.crates(buf, palette, stall.x - 1, stall.vz, stall.vface)
+			socket(sockets, id .. "_vendor_" .. index, "vendor",
+				stall.x + 1, 1, stall.vz, stall.vface, {kind = stall.kind})
+		end
+
+		-- The market cross at the crossing. The first render of this square
+		-- was four booths round thirteen by thirteen nodes of bare paving
+		-- with a signpost on it: a market needs something at its centre to
+		-- stand round, and a stepped cross is what a market square has.
+		buf:fill(centre - 2, 1, centre - 2, centre + 2, 1, centre + 2,
+			mark(palette))
+		buf:fill(centre - 1, 2, centre - 1, centre + 1, 2, centre + 1,
+			mark(palette))
+		column(buf, palette, centre, 3, 6, centre)
+		buf:put(centre, 7, centre, mark_slab(palette))
+		for _, corner in ipairs({{-2, -2}, {2, -2}, {-2, 2}, {2, 2}}) do
+			parts.floor_torch(buf, palette, centre + corner[1], 2,
+				centre + corner[2])
+			lights[#lights + 1] = {x = centre + corner[1], y = 2,
+				z = centre + corner[2]}
+		end
+
+		-- Benches and planters round the rim, goods stacked beside every
+		-- booth, and a lamp at each corner and each gate of the square.
+		local benches = 0
+		for _, edge in ipairs({{2, "z"}, {last - 2, "z"}}) do
+			for z = 5, last - 5, 6 do
+				local face = (edge[1] == 2) and 1 or 3
+				parts.seat(buf, palette, edge[1], 1, z, face)
+				parts.seat(buf, palette, edge[1], 1, z + 1, face)
+				benches = benches + 2
+			end
+		end
+		for _, edge in ipairs({2, last - 2}) do
+			for x = 5, last - 5, 6 do
+				local face = (edge == 2) and 0 or 2
+				parts.seat(buf, palette, x, 1, edge, face)
+				parts.seat(buf, palette, x + 1, 1, edge, face)
+				benches = benches + 2
+			end
+		end
+		dressing.planter(buf, palette, 1, 1, 1, 3)
+		dressing.planter(buf, palette, last - 1, last - 3, last - 1, last - 1)
+		dressing.planter(buf, palette, 1, last - 3, 1, last - 1)
+		dressing.planter(buf, palette, last - 1, 1, last - 1, 3)
+		for _, spot in ipairs({{2, 2}, {last - 2, 2}, {2, last - 2},
+				{last - 2, last - 2}, {centre, 1}, {centre, last - 1},
+				{1, centre}, {last - 1, centre}}) do
+			dressing.path_light(buf, palette, spot[1], spot[2], lights)
+		end
+		dressing.signpost(buf, palette, 3, centre)
+
+		socket(sockets, id .. "_idle_west", "idle", 3, 1, 5, 1,
+			{tags = {"bench"}})
+		socket(sockets, id .. "_idle_east", "idle", last - 3, 1, last - 5, 3,
+			{tags = {"bench"}})
+		-- The waypoint stands clear of the market cross, on the paving of
+		-- the north arm of the crossing.
+		socket(sockets, id .. "_waypoint", "waypoint", centre, 1, centre - 4, 0)
+
+		return finish(buf, size, size, top_of(buf), {
+			doors = {},
+			lights = lights,
+			sockets = sockets,
+			inside = {},
+			room_corner = {},
+		}, {stalls = #stalls, benches = benches})
+	end
+
+	-- -------------------------------------------------------------------
+	-- 7. the well court
+	-- -------------------------------------------------------------------
+
+	-- A small paved court with the library's draw well at its centre, a kerb
+	-- of low wall, four benches and two planters.
+	--
+	-- Extent: size x size, y 0..5; the default 11 is a quarter-plot.
+	function M.well_court(palette, spec)
+		local size = spec.size or 11
+		local buf = parts.buffer()
+		local lights, sockets = {}, {}
+		if size < 9 then error("wp13 capitals: well court too small", 0) end
+		local last = size - 1
+		local centre = math.floor(last / 2)
+
+		buf:clear(0, 1, 0, last, 6, last)
+		buf:fill(0, 0, 0, last, 0, last, paving(palette))
+		dressing.inlay(buf, palette, 0, 0, last, last, "plaza_edge")
+		dressing.well(buf, palette, centre, centre, lights)
+		-- `dressing.well` stands its two frame posts on its own kerb, and the
+		-- kerb is the palette's `low_wall`. For the three starts that draw a
+		-- well that is a `walls:` nodebox, a full-height cube; for the elf it
+		-- is `grug_decor:darkage_serpentine_slab`, a BOTTOM slab whose surface
+		-- lies half a node down, so both posts would ride half a node clear of
+		-- their footing -- the round-A defect, in a piece of dressing no
+		-- pale-stone race had drawn yet. The two bearing cells are therefore
+		-- re-laid in the court's own paving, which is a full cube in every
+		-- palette. The fix is scoped to this part on purpose: changing
+		-- `dressing.well` itself would move cells in Hearthpine, Dawnmere and
+		-- Stillgrave, whose blueprint identities are frozen.
+		for _, corner in ipairs({{-1, -1}, {1, 1}}) do
+			buf:put(centre + corner[1], 1, centre + corner[2], paving(palette))
+		end
+
+		local benches = 0
+		for _, entry in ipairs({{centre, 1, 0}, {centre, last - 1, 2},
+				{1, centre, 1}, {last - 1, centre, 3}}) do
+			parts.seat(buf, palette, entry[1], 1, entry[2], entry[3])
+			benches = benches + 1
+		end
+		dressing.planter(buf, palette, 1, 1, 2, 2)
+		dressing.planter(buf, palette, last - 2, last - 2, last - 1, last - 1)
+
+		local id = spec.id or "well"
+		socket(sockets, id .. "_idle_a", "idle", centre, 1, 2, 0,
+			{tags = {"bench"}})
+		socket(sockets, id .. "_idle_b", "idle", centre, 1, last - 2, 2,
+			{tags = {"bench"}})
+
+		return finish(buf, size, size, top_of(buf), {
+			doors = {},
+			lights = lights,
+			sockets = sockets,
+			inside = {},
+			room_corner = {},
+		}, {benches = benches})
+	end
+
+	-- -------------------------------------------------------------------
+	-- 8. the statue plinth
+	-- -------------------------------------------------------------------
+
+	-- A stepped plinth carrying a standing figure, with a lamp at each
+	-- corner of the base. The figure is masonry, not a mesh: two courses of
+	-- body, a pair of slab arms and a signature head, which at node scale is
+	-- what a monument looks like.
+	--
+	-- Extent: 9 x 9, y 0..8.
+	function M.statue_plinth(palette, spec)
+		local size = 9
+		local buf = parts.buffer()
+		local lights, sockets = {}, {}
+		local last = size - 1
+		local c = 4
+
+		buf:clear(0, 1, 0, last, 9, last)
+		buf:fill(0, 0, 0, last, 0, last, paving(palette))
+		dressing.inlay(buf, palette, 0, 0, last, last, "plaza_edge")
+		-- The plinth is the citadel masonry and the figure is the signature
+		-- material, all of it. The first version alternated the two up the
+		-- figure and the render was a striped totem: a monument reads as
+		-- carved out of ONE stone, standing on another.
+		buf:fill(2, 1, 2, last - 2, 1, last - 2, stone(palette))
+		buf:fill(3, 2, 3, last - 3, 2, last - 3, stone(palette))
+		-- The risers of the two steps, so the plinth is climbable rather
+		-- than a pair of stacked boxes.
+		for step = 2, last - 2 do
+			parts.stair(buf, step, 1, 1, stone_stair(palette), 0)
+			parts.stair(buf, step, 1, last - 1, stone_stair(palette), 2)
+			parts.stair(buf, 1, 1, step, stone_stair(palette), 1)
+			parts.stair(buf, last - 1, 1, step, stone_stair(palette), 3)
+		end
+
+		-- The figure. Five courses, and the shape is what carries it at node
+		-- scale: a flared robe, a narrow body, two stair shoulders whose
+		-- raised halves fall outward, a head and a crown. The first version
+		-- was a two-cube torso with a slab stuck out either side, which
+		-- rendered as a chimney wearing a hat.
+		for _, spot in ipairs({{0, 0}, {-1, 0}, {1, 0}, {0, -1}, {0, 1}}) do
+			buf:put(c + spot[1], 3, c + spot[2], mark(palette))
+		end
+		buf:put(c, 4, c, mark(palette))
+		buf:put(c, 5, c, mark(palette))
+		parts.stair(buf, c - 1, 5, c, mark_stair(palette), 3)
+		parts.stair(buf, c + 1, 5, c, mark_stair(palette), 1)
+		buf:put(c, 6, c, mark(palette))
+		buf:put(c, 7, c, mark_slab(palette))
+
+		for _, corner in ipairs({{1, 1}, {last - 1, 1}, {1, last - 1},
+				{last - 1, last - 1}}) do
+			parts.floor_torch(buf, palette, corner[1], 1, corner[2])
+			lights[#lights + 1] = {x = corner[1], y = 1, z = corner[2]}
+		end
+
+		local id = spec.id or "statue"
+		socket(sockets, id .. "_idle", "idle", c, 1, 0, 0, {tags = {"bench"}})
+
+		return finish(buf, size, size, top_of(buf), {
+			doors = {},
+			lights = lights,
+			sockets = sockets,
+			inside = {},
+			room_corner = {},
+		})
+	end
+
 	return M
 end
 
