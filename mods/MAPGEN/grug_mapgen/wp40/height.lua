@@ -508,6 +508,84 @@ return function(dependencies)
 		return points, START_GATE_PREFIX
 	end
 
+	-- WP13 round B, the soft pad edge.
+	--
+	-- A start pad is a half-open 128-node square that is flat at the fitted
+	-- reference height, and the 64 nodes outside it smootherstep down to the
+	-- natural terrain. The inner edge of that ramp -- where flat ground becomes
+	-- slope -- is therefore an exact square, and the user can see it from the
+	-- ground.
+	--
+	-- The jitter below pushes that inner edge OUTWARD by 0..6 nodes, from one
+	-- seed-derived value-noise lattice per start (period 24, smootherstepped, so
+	-- the outline undulates instead of dithering). Outward only, and the ramp's
+	-- span shrinks by the same amount: a column inside the 128 square keeps
+	-- excess 0 and therefore weight Q -- the envelope's surface height, the
+	-- spawn height, the road pins and every blueprint cell cannot move -- and a
+	-- column at the outer envelope edge keeps weight 0, so the 256 boundary stays
+	-- continuous and nothing escapes the fitting's own bucket. Same world seed,
+	-- same bytes; a different seed gives a different outline.
+	local START_EDGE_PERIOD = 24
+	local START_EDGE_AMPLITUDE = 6
+	local START_EDGE_OCTAVE = 200
+	local function start_edge_root(counted_sha, full_seed_string)
+		local root = digest_first_word(counted_sha("GRUGWP40HEIGHT" ..
+			string.char(0) .. canonical.encode(text(HEIGHT_RANDOM_SCHEMA)) ..
+			canonical.encode(text(full_seed_string)) ..
+			canonical.encode(text("start-edge-jitter-v1")))) % P
+		if root == 0 then root = 1 end
+		return root
+	end
+	-- The lattice is memoised on demand rather than precomputed over a box,
+	-- because a fitting's bucket cell reaches further than its own envelope and a
+	-- box would have to guess how much further.
+	local function start_edge_corner(fitting, ix, iz)
+		local row = fitting.edge_jitter[iz]
+		if not row then row = {} fitting.edge_jitter[iz] = row end
+		local value = row[ix]
+		if value == nil then
+			value = lattice_corner(fitting.edge_root, ix, iz, START_EDGE_OCTAVE)
+			row[ix] = value
+		end
+		return value
+	end
+	local function start_edge_offset(fitting, x, z)
+		local ix, iz = floor_div(x, START_EDGE_PERIOD),
+			floor_div(z, START_EDGE_PERIOD)
+		local tx = deterministic.smootherstep(deterministic.qfrom_ratio(
+			x - ix * START_EDGE_PERIOD, START_EDGE_PERIOD))
+		local tz = deterministic.smootherstep(deterministic.qfrom_ratio(
+			z - iz * START_EDGE_PERIOD, START_EDGE_PERIOD))
+		local value = deterministic.qlerp(
+			deterministic.qlerp(start_edge_corner(fitting, ix, iz),
+				start_edge_corner(fitting, ix + 1, iz), tx),
+			deterministic.qlerp(start_edge_corner(fitting, ix, iz + 1),
+				start_edge_corner(fitting, ix + 1, iz + 1), tx), tz)
+		return round_ratio((clamp(value, -Q, Q) + Q) * START_EDGE_AMPLITUDE, 2 * Q)
+	end
+	-- The outline itself, as measurable output: the jitter offset at every column
+	-- of the pad's four sides, in a fixed order, with its observed range. This is
+	-- what a fixture digests and compares between seeds and between runs.
+	local function start_edge_witness(fitting)
+		local offsets, minimum, maximum = {}, nil, nil
+		for side = -64, 63 do
+			offsets[#offsets + 1] = start_edge_offset(fitting,
+				fitting.center.x + side, fitting.center.z - 64)
+			offsets[#offsets + 1] = start_edge_offset(fitting,
+				fitting.center.x + side, fitting.center.z + 63)
+			offsets[#offsets + 1] = start_edge_offset(fitting,
+				fitting.center.x - 64, fitting.center.z + side)
+			offsets[#offsets + 1] = start_edge_offset(fitting,
+				fitting.center.x + 63, fitting.center.z + side)
+		end
+		for index = 1, #offsets do
+			minimum = minimum and math.min(minimum, offsets[index]) or offsets[index]
+			maximum = math.max(maximum or offsets[index], offsets[index])
+		end
+		return {amplitude = START_EDGE_AMPLITUDE, minimum = minimum,
+			maximum = maximum, count = #offsets, offsets = offsets}
+	end
+
 	local module = {}
 	local bound_seed_string
 
@@ -1985,6 +2063,15 @@ return function(dependencies)
 			else class, collection = "selected", selected_fittings end
 			collection[#collection + 1] = fitting
 			local envelope_half = profile.blend_width / 2
+			if class == "start" then
+				-- The soft pad edge: one memoised jitter lattice per start, plus the
+				-- perimeter witness the start quality record publishes.
+				-- `build_public_session` sits at Lua 5.1's 60-upvalue ceiling, so the
+				-- witness is built here and only read there.
+				fitting.edge_root = start_edge_root(counted_sha, full_seed_string)
+				fitting.edge_jitter = {}
+				fitting.edge_witness = start_edge_witness(fitting)
+			end
 			add_bucket(fitting_grids[class], fitting,
 				selected.x - envelope_half, selected.x + envelope_half,
 				selected.z - envelope_half, selected.z + envelope_half)
@@ -2013,9 +2100,17 @@ return function(dependencies)
 						local grade_half = grade_width / 2
 						local outside = half_open_square_excess(x, z,
 							fitting.center, grade_width)
-						if outside < envelope_half - grade_half then
-							local weight = qweight(math.max(0, outside),
-								envelope_half - grade_half)
+						-- Soft pad edge (starts only): the flat square grows outward by
+						-- 0..6 seed-derived nodes and the ramp gives the same amount up,
+						-- so excess 0 and the outer envelope edge are both untouched.
+						local span = envelope_half - grade_half
+						if fitting.edge_jitter then
+							local offset = start_edge_offset(fitting, x, z)
+							outside = math.max(0, outside - offset)
+							span = span - offset
+						end
+						if outside < span then
+							local weight = qweight(math.max(0, outside), span)
 							if weight > 0 then
 								if fitting.is_capital then
 									local step = profile.terrace_step
@@ -2850,6 +2945,7 @@ return function(dependencies)
 					old_reference_y = fitting.start_old_reference_y,
 					old_sample_cost = fitting.start_old_sample_cost,
 					fit_sample_cost = fitting.start_fit_sample_cost,
+					edge_jitter = fitting.edge_witness,
 				}
 			end
 			if not runtime_construction then
@@ -4587,6 +4683,21 @@ return function(dependencies)
 			road_preferences[3] == nil, "road low-edge preference differs")
 		rows[#rows + 1] = table.concat({"road_low_edge", road_preferences[1],
 			road_preferences[2]}, "\t")
+		-- The soft pad edge, with a fixed root instead of a seed digest: integer
+		-- Q16 interpolation over the memoised jitter lattice, which is the one
+		-- new arithmetic the two interpreters have to agree on byte for byte.
+		local edge_fitting = {edge_root = 1234567, edge_jitter = {}}
+		local edge_offsets = {}
+		for _, case in ipairs({{-1800, -2486}, {-1800, -2480}, {-1736, -2550},
+				{0, 2486}, {1800, 2514}, {12, -36}, {-13, 37}}) do
+			local offset = start_edge_offset(edge_fitting, case[1], case[2])
+			assert(offset >= 0 and offset <= START_EDGE_AMPLITUDE and
+				offset % 1 == 0 and
+				start_edge_offset(edge_fitting, case[1], case[2]) == offset,
+				"start edge jitter offset differs")
+			edge_offsets[#edge_offsets + 1] = offset
+		end
+		rows[#rows + 1] = "start_edge\t" .. table.concat(edge_offsets, "\t")
 		local grade = assert(backtrack_preferred_grade({5, 20, 20, 5},
 			{5, 4, 3, 5}, {5, 6, 7, 5}))
 		rows[#rows + 1] = table.concat({"grade", unpack(grade)}, "\t")
