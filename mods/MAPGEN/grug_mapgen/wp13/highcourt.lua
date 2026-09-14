@@ -308,9 +308,10 @@ local function loader(directory)
 		"city_workshop", "north_house", "lane_house", "orchard_house",
 		"chapel_house", "market_house"}
 
-	-- The four corner waypoints of the patrol loop, in the open ground the
-	-- parts do not reach. Each stands on the lane or the ring street, so the
-	-- walk between two gates has something to follow.
+	-- The four corner waypoints of the city's patrol loop, in the open ground
+	-- between the outer plots that no part reaches, so the walk along the
+	-- open edge has something to follow between one orchard street and the
+	-- next.
 	local CORNERS = {
 		{id = "watch_south_east", x = 34, z = -31, face = 0, order = 3},
 		{id = "watch_north_east", x = 42, z = 32, face = 2, order = 4},
