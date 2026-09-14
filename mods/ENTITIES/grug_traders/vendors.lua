@@ -43,10 +43,12 @@
 --   unconditionally. Environmental damage bypasses on_punch, so every damage
 --   source in the def is switched off as well.
 --
--- ASSET TODO (WP13): vendors reuse the faction guards' character.b3d skins, so
--- a Quartermaster currently looks exactly like a guard. Real vendor art —
--- and race-specific skins for the six race vendors — belongs to the WP13
--- settlement/asset pass.
+-- APPEARANCE (WP13 character visuals): a vendor wears its own race's dress and
+-- carries nothing — a shopkeeper with a sword reads as a guard. The six race
+-- vendors take their race straight from the registry entry they were built
+-- from; the two faction Quartermasters take the founding race of their side.
+-- The guard skins below stay as the definition's textures, which is what a
+-- build without grug_visuals falls back to.
 
 --
 -- Registry
@@ -169,7 +171,12 @@ local function install_nametag(self, text)
 	self:update_tag()
 end
 
+-- The race a faction Quartermaster is drawn as. Only the two general vendors
+-- need it; a race vendor carries its own `race` field.
+local VENDOR_FACTION_RACE = {accord = "human", throng = "orc"}
+
 local function vendor_def(vendor, texture)
+	local visual = {race = vendor.race or VENDOR_FACTION_RACE[vendor.faction]}
 	return {
 		description = vendor.nametag,
 		nametag = vendor.nametag,
@@ -245,6 +252,13 @@ local function vendor_def(vendor, texture)
 
 		after_activate = function(self)
 			install_nametag(self, vendor.nametag)
+			-- Vendors are registered through plain mobs:register_mob (they must
+			-- never get grug_mobs' level/XP engine), so the visuals seam is
+			-- called here rather than by a register_mob wrapper. No tier tint
+			-- writer: a vendor has no tier. Inert without the mod.
+			if core.global_exists("grug_visuals") then
+				grug_visuals.apply_entity(self, visual)
+			end
 		end,
 
 		on_rightclick = function(self, clicker)

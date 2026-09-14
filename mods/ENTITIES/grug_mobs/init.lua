@@ -308,6 +308,36 @@ function grug_mobs.add_mob(pos, def)
 	return ent
 end
 
+--
+-- WP13 character visuals. A definition may carry `_grug_visual` -- a spec table
+-- or a function(self) -> spec -- and grug_visuals composes race skin, armor
+-- overlays and the visible weapon from it
+-- (docs/research/wp13-character-visuals-contract.md §2).
+--
+-- INERT WITHOUT THE MOD: no dependency, no registration, nothing to configure.
+-- A mob without the field never reaches this function at all, and a mob with
+-- one keeps its own def textures while grug_visuals is absent.
+--
+-- mobs_redo copies only a whitelisted set of def fields onto the entity
+-- (api.lua register_mob), so `_grug_visual` never arrives on `self`: the
+-- registration captures it as an upvalue and hands it in here.
+--
+-- ensure_init FIRST, so a spec that reads `self._grug_level` (the guards, whose
+-- armor bracket follows their level) sees the assigned value rather than nil on
+-- the very first activation. It is idempotent and already called from two other
+-- places.
+--
+-- grug_mobs.set_base_texture rather than a plain property write: the composed
+-- skin has to become the PRISTINE list the tier tint is layered on
+-- (levels.lua).
+local function apply_visual(self, cfg)
+	if not core.global_exists("grug_visuals") then
+		return
+	end
+	grug_mobs.ensure_init(self)
+	grug_visuals.apply_entity(self, cfg, grug_mobs.set_base_texture)
+end
+
 function grug_mobs.register_mob(name, def)
 	-- Level/tier config + stat derivation (levels.lua); HP, damage and XP
 	-- are engine-owned from here on, the def must not hand-set them.
@@ -416,6 +446,17 @@ function grug_mobs.register_mob(name, def)
 		end
 		local pf = grug_core.get_player_faction(player:get_player_name())
 		return pf == nil or pf == faction
+	end
+
+	local visual_cfg = def._grug_visual
+	if visual_cfg then
+		local old_after_activate = def.after_activate
+		def.after_activate = function(self, staticdata, mob_def, dtime)
+			apply_visual(self, visual_cfg)
+			if old_after_activate then
+				return old_after_activate(self, staticdata, mob_def, dtime)
+			end
+		end
 	end
 
 	grug_mobs.install_flight_nudge(def)

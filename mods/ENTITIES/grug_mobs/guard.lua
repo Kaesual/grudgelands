@@ -86,6 +86,13 @@ local function guard_tick(self, dtime)
 	end
 end
 
+-- WP13 character visuals: the Accord watch is human, the Throng watch orc --
+-- the two most distinct silhouettes of their sides, so the faction stays
+-- readable at a distance now that the skin is composed rather than painted per
+-- faction (the old per-faction PNGs remain the definition fallback for a build
+-- without grug_visuals).
+local GUARD_RACE = {accord = "human", throng = "orc"}
+
 -- One def per faction; everything except description/texture/_grug_faction is
 -- shared, so the two guards can never drift apart.
 local function guard_def(faction, description, texture)
@@ -93,6 +100,22 @@ local function guard_def(faction, description, texture)
 		description = description,
 		type = "npc",
 		_grug_faction = faction,
+
+		-- Metal line at the bracket its own level buys (contract §2). The
+		-- level IS the tier here: the elite city watch of world.md §1 starts at
+		-- 60, which is exactly where grug_gear's sixth bracket starts, so a
+		-- promoted guard wears the Grand set without a second rule. `faction`
+		-- is read from the closure, not from `self`: mobs_redo installs
+		-- `_grug_faction` only on the first do_custom tick, which is later than
+		-- this.
+		_grug_visual = function(self)
+			return {
+				race = GUARD_RACE[faction],
+				armor_line = "metal",
+				level = self._grug_level,
+				weapon_family = "sword",
+			}
+		end,
 
 		-- Level from the INVERSE guard field (world.md §1), cap 70
 		-- (levels.lua LEVEL_CAP.guard — capping at 60 would delete the elite

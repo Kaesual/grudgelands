@@ -81,6 +81,14 @@ silverwoods), Stillgrave Hollow (undead, gravewood and obsidian round two
 burial grounds), Sunscar Camp (orc, adobe behind crenellated breastworks) and
 Kapok Cradle (troll, a plank village on stilts over a basin).
 
+[Character visuals](docs/design/character_visuals.md) give the six peoples
+recognisably different skins and a visual-only stature between 0.85 and 1.12 —
+the collision box and eye height never change, so a troll fits through a
+dwarf's door. Armor is visible: two lines, four slots, tinted with the same six
+bracket colours the vendor icons use, and a character holds the weapon it has
+equipped. Players and the humanoid NPCs on the same model — guards, bandits,
+vendors — go through one composition function.
+
 [Open-world housing](docs/design/housing.md) uses Claim Stones in exactly ten
 peaceful level-11–30 zones. Four tiers protect cube radii 20/30/40/50, while
 the first placement immediately reserves the complete future 101×101 x/z
