@@ -506,7 +506,8 @@ return function(repo)
 	local vale_callers = {}
 	for _, source in ipairs({"hearthpine", "dawnmere", "silverleaf",
 			"stillgrave", "sunscar", "kapok", "dressing", "layout",
-			"buildings", "interiors", "parts", "roofs", "palette"}) do
+			"buildings", "capitals", "interiors", "parts", "roofs",
+			"palette"}) do
 		local handle = assert(io.open(wp13 .. "/" .. source .. ".lua", "rb"))
 		local text = handle:read("*a")
 		handle:close()
@@ -989,6 +990,605 @@ return function(repo)
 		"no start writes a pane with a third neighbour; the connected branch " ..
 			"of update_pane is untested")
 	say("panes_connected_corpus", corpus_connected_panes)
+
+	-- 12. the capital parts, every race, every rotation --------------------
+	-- Sections 8-11 check the six finished START blueprints. The capital
+	-- parts have no composition yet -- that is a later lane -- so this
+	-- section is their equivalent: every generator of
+	-- `mods/MAPGEN/grug_mapgen/wp13/capitals.lua` is built for every race
+	-- palette, stamped at all four rotations, and put through the same rules
+	-- the starts are held to, plus the three the capital contracts add:
+	-- the bounds envelope of `wp13-capitals-pois-contract.md` section 2.1,
+	-- the socket rules of `wp13-npc-sockets-contract.md` section 2, and the
+	-- walkability of every doorway the part publishes.
+	local capitals = dofile(wp13 .. "/capitals.lua")(wp13)
+
+	-- The two envelopes of the capitals contract. A district plot lives in
+	-- 32 x 32 and y -6..24, the king's hall in 48 x 48 and y -2..40. The
+	-- span counts EVERY cell the part writes, aprons, eaves, buttresses and
+	-- flights included, because the plot the composition reserves has to hold
+	-- all of them.
+	local ENVELOPE = {
+		core = {span = 48, ymin = -2, ymax = 40},
+		plot = {span = 32, ymin = -6, ymax = 24},
+	}
+
+	-- One row per generator: how it is called, which envelope it has to fit,
+	-- the exact socket roles it must publish, and the authored populations it
+	-- must produce. The socket multiset is exact on purpose: a placement test
+	-- that only counts "at least one" is how twenty-two of Dawnmere's props
+	-- went missing without a fixture noticing.
+	local CAPITAL_PARTS = {
+		{key = "king_hall", class = "core", spec = {id = "kat_hall"},
+			roles = {king = 1, guard_post = 4, waypoint = 1, idle = 3},
+			doors = 3, rooms = 1,
+			counts = {arcade_bays = true, arrowslits = true}},
+		{key = "wall_segment", class = "plot",
+			spec = {id = "kat_wall", len = 8, phase = 0},
+			roles = {guard_patrol = 2}, doors = 0, rooms = 0,
+			chain = {w = 8, d = 5},
+			counts = {merlons = true, arrowslits = true}},
+		{key = "wall_segment", class = "plot", label = "wall_segment_stair",
+			spec = {id = "kat_wall_stair", len = 12, phase = 2, stair = true},
+			roles = {guard_patrol = 2}, doors = 1, rooms = 0,
+			chain = {w = 12, d = 5},
+			counts = {merlons = true, arrowslits = true}},
+		{key = "wall_tower", class = "plot", spec = {id = "kat_tower"},
+			roles = {guard_post = 1, guard_patrol = 1, idle = 1},
+			doors = 1, rooms = 1,
+			counts = {merlons = true, arrowslits = true}},
+		{key = "gatehouse", class = "plot", spec = {id = "kat_gate"},
+			roles = {guard_post = 2, guard_patrol = 1, idle = 2},
+			doors = 2, rooms = 1,
+			-- The five-wide street of the capitals contract, clear from the
+			-- paving to head height on every node of the passage. The arch
+			-- springs at y = 5 and narrows the top of the opening to three,
+			-- which is a vault and not an obstruction.
+			clear = {x0 = 4, x1 = 8, y0 = 1, y1 = 4},
+			counts = {merlons = true, arrowslits = true}},
+		{key = "colonnade", class = "plot",
+			spec = {id = "kat_colonnade", len = 15},
+			roles = {idle = 2, guard_patrol = 1}, doors = 0, rooms = 0,
+			counts = {piers = true, columns = true, benches = true}},
+		{key = "market_square", class = "plot",
+			spec = {id = "kat_market", size = 25},
+			roles = {vendor = 4, idle = 2, waypoint = 1}, doors = 0, rooms = 0,
+			counts = {stalls = true, benches = true}},
+		{key = "well_court", class = "plot",
+			spec = {id = "kat_well", size = 11},
+			roles = {idle = 2}, doors = 0, rooms = 0,
+			counts = {benches = true}},
+		{key = "statue_plinth", class = "plot", spec = {id = "kat_statue"},
+			roles = {idle = 1}, doors = 0, rooms = 0, counts = {}},
+		{key = "barracks", class = "plot", spec = {id = "kat_barracks"},
+			roles = {guard_post = 1, idle = 1, guard_patrol = 1},
+			doors = 2, rooms = 1, counts = {}},
+		{key = "temple", class = "plot", spec = {id = "kat_temple"},
+			roles = {idle = 1, quest = 1}, doors = 2, rooms = 1, counts = {}},
+		{key = "scriptorium", class = "plot", spec = {id = "kat_scriptorium"},
+			roles = {idle = 2}, doors = 1, rooms = 1, counts = {}},
+		{key = "granary", class = "plot", spec = {id = "kat_granary"},
+			roles = {idle = 1}, doors = 2, rooms = 1, counts = {}},
+		{key = "stable", class = "plot", spec = {id = "kat_stable"},
+			roles = {idle = 2}, doors = 2, rooms = 1, counts = {}},
+		{key = "orchard_edge", class = "plot",
+			spec = {id = "kat_orchard", len = 21},
+			roles = {idle = 1, guard_patrol = 2}, doors = 0, rooms = 0,
+			counts = {trees = true}},
+		{key = "grove", class = "plot", spec = {id = "kat_grove", size = 17},
+			roles = {idle = 1}, doors = 0, rooms = 0, counts = {trees = true}},
+		{key = "stilt_platform", class = "plot", spec = {id = "kat_stilt"},
+			roles = {guard_patrol = 2, idle = 1}, doors = 0, rooms = 0,
+			counts = {piers = true}},
+		{key = "water_channel", class = "plot",
+			spec = {id = "kat_channel", len = 21},
+			roles = {idle = 1, guard_patrol = 2}, doors = 0, rooms = 0,
+			counts = {kerb = true}},
+	}
+
+	-- Walkable, as the engine reads it: the absence of `walkable = false`.
+	-- Every socket, doorstep and attached node below is decided with this and
+	-- not with `parts.full_solid`, which is the stricter "opaque cube a torch
+	-- may hang on" and would refuse a perfectly good paving slab underfoot.
+	local function walkable(name)
+		local def = world.nodes[name]
+		return def ~= nil and def.walkable ~= false
+	end
+
+	-- The support direction of an attached node, transcribed from
+	-- `builtin_shared.check_attached_node`
+	-- (reference_projects/luanti/builtin/game/falling.lua:391-434): rating 3
+	-- is the floor, rating 4 the ceiling, rating 2 the facedir the node is
+	-- mounted to, and every other rating follows the node's own paramtype2 --
+	-- wallmounted to what its param2 points at, anything else to the floor.
+	-- Kapok bound a floor lantern to a role that hangs under a deck and the
+	-- engine would have dropped all sixteen; the ratings are not
+	-- interchangeable, so the rule is read off the registry per cell.
+	local function attach_step(def, param2)
+		local rating = (type(def.groups) == "table") and
+			(def.groups.attached_node or 0) or 0
+		if rating == 0 then return nil end
+		if rating == 3 then return 0, -1, 0 end
+		if rating == 4 then return 0, 1, 0 end
+		if rating == 2 then
+			if def.paramtype2 == "facedir" then
+				local dir = FACEDIR_DIR[param2 % 4]
+				return dir[1], 0, dir[2]
+			end
+			return 0, 0, 1
+		end
+		if def.paramtype2 == "wallmounted" then
+			local dir = WALL_DIR[param2]
+			if not dir then return 0, 1, 0 end
+			return dir[1], dir[2], dir[3]
+		end
+		return 0, -1, 0
+	end
+
+	local LOOSE_CAPITAL = {plantlike = true, torchlike = true,
+		signlike = true, airlike = true}
+	local NEIGHBOUR_STEPS = {{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0},
+		{0, 0, 1}, {0, 0, -1},
+		{1, 1, 0}, {-1, 1, 0}, {0, 1, 1}, {0, 1, -1},
+		{1, -1, 0}, {-1, -1, 0}, {0, -1, 1}, {0, -1, -1}}
+
+	-- Every check one stamped part has to pass. `label` names the case in a
+	-- failure, because the same generator appears twice with two specs.
+	local function check_capital_part(label, race, case, part, turns)
+		local target = parts.buffer()
+		local moved = parts.stamp(target, part, 0, 0, 0, turns)
+		-- A pane's shape depends on neighbours the part that wrote it cannot
+		-- see, so a composition settles them once over the whole pad
+		-- (`parts.resolve_panes`). Run the same pass over the part alone and
+		-- then hold it to `update_pane`'s own rule: a part whose windows are
+		-- wrong in isolation is wrong in a district too.
+		parts.resolve_panes(target)
+		local order, count = target:cells()
+		local index, solids = {}, 0
+		local minx, maxx, miny, maxy, minz, maxz
+		for step = 1, count do
+			local cell = order[step]
+			index[cell.x .. ":" .. cell.y .. ":" .. cell.z] = cell
+			if cell.name ~= "air" then
+				solids = solids + 1
+				if minx == nil or cell.x < minx then minx = cell.x end
+				if maxx == nil or cell.x > maxx then maxx = cell.x end
+				if miny == nil or cell.y < miny then miny = cell.y end
+				if maxy == nil or cell.y > maxy then maxy = cell.y end
+				if minz == nil or cell.z < minz then minz = cell.z end
+				if maxz == nil or cell.z > maxz then maxz = cell.z end
+			end
+		end
+		local where = label .. "/" .. race .. "/turn" .. turns
+		assert(solids > 0, where .. " wrote nothing")
+		local function at(x, y, z) return index[x .. ":" .. y .. ":" .. z] end
+		-- Outside the cell list, a column at or below the ground course is
+		-- the settlement's own terrain and holds what rests on it; above it
+		-- an absent cell is air. Same convention as section 11.
+		local function held(x, y, z)
+			local cell = at(x, y, z)
+			if cell ~= nil then return cell.name ~= "air" end
+			return y <= 0
+		end
+		local function free(x, y, z)
+			local cell = at(x, y, z)
+			return cell == nil or cell.name == "air"
+		end
+		local function standable(x, y, z)
+			local cell = at(x, y, z)
+			if cell == nil then return y <= 0 end
+			return cell.name ~= "air" and walkable(cell.name)
+		end
+
+		-- (a) the bounds envelope.
+		local envelope = ENVELOPE[case.class]
+		assert(envelope, where .. " names no envelope")
+		assert(maxx - minx + 1 <= envelope.span and
+				maxz - minz + 1 <= envelope.span,
+			where .. " spans " .. (maxx - minx + 1) .. " x " ..
+				(maxz - minz + 1) .. ", over the " .. case.class ..
+				" envelope of " .. envelope.span)
+		assert(miny >= envelope.ymin and maxy <= envelope.ymax,
+			where .. " reaches y " .. miny .. ".." .. maxy ..
+				", outside the " .. case.class .. " envelope y " ..
+				envelope.ymin .. ".." .. envelope.ymax)
+		assert(maxy <= part.peak, where .. " writes y " .. maxy ..
+			" above its own declared peak " .. part.peak)
+
+		-- (b) every emitted name against the real registry, and the three
+		-- authored tables of parts.lua in both directions.
+		for _, cell in ipairs(order) do
+			if cell.name ~= "air" then
+				local def = world.nodes[cell.name]
+				assert(def, where .. " writes the unregistered " .. cell.name)
+				assert(not removed[cell.name],
+					where .. " writes the retired " .. cell.name)
+				local kind = parts.param2_kind(cell.name)
+				if kind == parts.FACEDIR then
+					assert(def.paramtype2 == "facedir", where .. ": " ..
+						cell.name .. " is rotated as facedir but is " ..
+						tostring(def.paramtype2))
+				elseif kind == parts.WALLMOUNTED then
+					assert(def.paramtype2 == "wallmounted", where .. ": " ..
+						cell.name .. " is rotated as wallmounted but is " ..
+						tostring(def.paramtype2))
+				elseif kind == parts.MESHOPTIONS then
+					assert(def.paramtype2 == "meshoptions", where .. ": " ..
+						cell.name .. " is kept as a mesh style but is " ..
+						tostring(def.paramtype2))
+				else
+					assert(cell.param2 == 0, where .. ": unoriented " ..
+						cell.name .. " carries param2 " .. cell.param2)
+				end
+				assert(parts.pane_connects(cell.name) ==
+						registry.pane_connects(world, cell.name),
+					where .. ": parts.pane_connects disagrees with the " ..
+						"registry for " .. cell.name)
+				assert(parts.full_solid(cell.name) ==
+						registry.is_opaque_full(world, cell.name),
+					where .. ": parts.full_solid disagrees with the " ..
+						"registry for " .. cell.name)
+				local groups = (type(def.groups) == "table") and def.groups or {}
+				assert(parts.shaped(cell.name) ==
+						((groups.slab or 0) > 0 or (groups.stair or 0) > 0),
+					where .. ": parts.shaped disagrees with the registry " ..
+						"for " .. cell.name)
+				if def.place_param2 ~= nil then
+					assert(cell.param2 == def.place_param2, where .. ": " ..
+						cell.name .. " pins place_param2 " ..
+						def.place_param2 .. " but a cell carries " ..
+						cell.param2)
+				end
+				-- (c) the two shape rules of round A: a bottom slab carries
+				-- nothing, and the upside-down family is a stair or a slab
+				-- that meets what is above it.
+				local axis = cell.param2 - (cell.param2 % 4)
+				local above = at(cell.x, cell.y + 1, cell.z)
+				if (groups.slab or 0) > 0 and axis == 0 then
+					assert(above == nil or above.name == "air",
+						where .. ": a bottom slab carries " ..
+							tostring(above and above.name) .. " at " ..
+							cell.x .. "," .. cell.y .. "," .. cell.z)
+				end
+				if def.paramtype2 == "facedir" and axis ~= 0 then
+					assert(axis == 20, where .. ": " .. cell.name ..
+						" carries the unsupported facedir axis " .. axis)
+					assert((groups.slab or 0) > 0 or (groups.stair or 0) > 0,
+						where .. ": " .. cell.name .. " is turned upside " ..
+							"down but is neither a slab nor a stair")
+					assert(above ~= nil and above.name ~= "air",
+						where .. ": a top slab meets nothing at " .. cell.x ..
+							"," .. cell.y .. "," .. cell.z)
+				end
+				-- (d) every pane is what update_pane would have settled on,
+				-- re-derived from the mod's own connection groups.
+				if (groups.pane or 0) > 0 then
+					local pane_base = cell.name
+					if pane_base:sub(-5) == "_flat" then
+						pane_base = pane_base:sub(1, -6)
+					end
+					local any, total, hit = cell.param2, 0, {}
+					for dir = 0, 3 do
+						local step = FACEDIR_DIR[dir]
+						local other = at(cell.x + step[1], cell.y,
+							cell.z + step[2])
+						hit[dir] = other ~= nil and
+							registry.pane_connects(world, other.name)
+						if hit[dir] then
+							any = dir
+							total = total + 1
+						end
+					end
+					local want, want_param2
+					if total == 0 then
+						want, want_param2 = pane_base .. "_flat", cell.param2
+					elseif total == 1 or (total == 2 and
+							((hit[0] and hit[2]) or (hit[1] and hit[3]))) then
+						want, want_param2 = pane_base .. "_flat", (any + 1) % 4
+					else
+						want, want_param2 = pane_base, 0
+					end
+					assert(cell.name == want and cell.param2 == want_param2,
+						where .. ": pane at " .. cell.x .. "," .. cell.y ..
+							"," .. cell.z .. " is " .. cell.name .. "/" ..
+							cell.param2 .. " but update_pane would leave " ..
+							want .. "/" .. want_param2)
+				end
+				-- (e) an attached node keeps the support its own rating
+				-- names, and that support is walkable.
+				local ax, ay, az = attach_step(def, cell.param2)
+				if ax then
+					local sx, sy, sz = cell.x + ax, cell.y + ay, cell.z + az
+					assert(standable(sx, sy, sz), where .. ": " .. cell.name ..
+						" at " .. cell.x .. "," .. cell.y .. "," .. cell.z ..
+						" is attached to " ..
+						tostring(at(sx, sy, sz) and at(sx, sy, sz).name or
+							"nothing") .. " at " .. sx .. "," .. sy .. "," ..
+						sz .. ", which the engine would drop it off")
+				end
+				-- (f) nothing stands detached. Same three exemptions as
+				-- section 11, each a property of the node.
+				local loose = LOOSE_CAPITAL[def.drawtype] or
+					def.paramtype2 == "wallmounted" or
+					(groups.tree or 0) > 0 or (groups.leaves or 0) > 0 or
+					(groups.leafdecay or 0) > 0
+				if not loose then
+					local touched = false
+					for _, step in ipairs(NEIGHBOUR_STEPS) do
+						if held(cell.x + step[1], cell.y + step[2],
+								cell.z + step[3]) then
+							touched = true
+						end
+					end
+					assert(touched, where .. ": " .. cell.name ..
+						" stands detached at " .. cell.x .. "," .. cell.y ..
+						"," .. cell.z)
+				end
+			end
+		end
+
+		-- (g) every torch hangs on an opaque full node.
+		local torch_names = {}
+		for _, other in ipairs(races) do
+			for _, role in ipairs({"light_wall", "light_post",
+					"light_indoor"}) do
+				torch_names[handles[other].node(role)] = true
+			end
+		end
+		local torches = 0
+		for _, cell in ipairs(order) do
+			if torch_names[cell.name] then
+				local dir = WALL_DIR[cell.param2]
+				assert(dir, where .. ": a torch has no wallmounted direction")
+				local support = at(cell.x + dir[1], cell.y + dir[2],
+					cell.z + dir[3])
+				assert(support and
+						registry.is_opaque_full(world, support.name),
+					where .. ": torch at " .. cell.x .. "," .. cell.y .. "," ..
+						cell.z .. " hangs on " ..
+						tostring(support and support.name or "air"))
+				torches = torches + 1
+			end
+		end
+
+		-- (h) the socket contract, against the registry this time.
+		local seen, roles = {}, {}
+		for _, entry in ipairs(moved.sockets or {}) do
+			assert(type(entry.id) == "string" and entry.id ~= "",
+				where .. " publishes a socket with no id")
+			assert(not seen[entry.id],
+				where .. " publishes the socket id " .. entry.id .. " twice")
+			seen[entry.id] = true
+			roles[entry.role] = (roles[entry.role] or 0) + 1
+			assert(entry.face ~= nil and entry.face >= 0 and entry.face <= 3,
+				where .. ": socket " .. entry.id .. " has no facedir")
+			assert(free(entry.x, entry.y, entry.z) and
+					free(entry.x, entry.y + 1, entry.z),
+				where .. ": socket " .. entry.id .. " has no headroom at " ..
+					entry.x .. "," .. entry.y .. "," .. entry.z)
+			assert(standable(entry.x, entry.y - 1, entry.z),
+				where .. ": socket " .. entry.id .. " stands on " ..
+					tostring(at(entry.x, entry.y - 1, entry.z) and
+						at(entry.x, entry.y - 1, entry.z).name or "air"))
+			if entry.role == "guard_patrol" then
+				assert(type(entry.group) == "string" and
+						type(entry.order) == "number",
+					where .. ": patrol waypoint " .. entry.id ..
+						" carries no loop or no order")
+			end
+			if entry.role == "vendor" then
+				assert(entry.kind == "race" or entry.kind == "general",
+					where .. ": vendor " .. entry.id ..
+						" names no vendor family")
+			end
+		end
+		for role, wanted in pairs(case.roles) do
+			assert((roles[role] or 0) == wanted, where .. " publishes " ..
+				(roles[role] or 0) .. " " .. role .. " sockets, not " ..
+				wanted)
+		end
+		for role in pairs(roles) do
+			assert(case.roles[role], where .. " publishes an unexpected " ..
+				role .. " socket")
+		end
+
+		-- (i) every doorway is a real door and passable from both sides.
+		local leaves = {}
+		for _, other in ipairs(races) do
+			for _, name in ipairs(handles[other].names("door")) do
+				leaves[name] = true
+			end
+		end
+		assert(#(moved.doors or {}) == case.doors, where .. " publishes " ..
+			#(moved.doors or {}) .. " doors, not " .. case.doors)
+		for _, door in ipairs(moved.doors or {}) do
+			local leaf = at(door.x, door.y, door.z)
+			assert(leaf and leaves[leaf.name], where .. ": the door at " ..
+				door.x .. "," .. door.y .. "," .. door.z .. " is " ..
+				tostring(leaf and leaf.name or "air"))
+			local top = at(door.x, door.y + 1, door.z)
+			assert(top and top.name == handles[race].node("door_hidden"),
+				where .. ": the door at " .. door.x .. "," .. door.y .. "," ..
+					door.z .. " has no hidden upper node")
+			local step = FACEDIR_DIR[door.face % 4]
+			for _, sign in ipairs({1, -1}) do
+				local sx = door.x + step[1] * sign
+				local sz = door.z + step[2] * sign
+				assert(free(sx, door.y, sz) and free(sx, door.y + 1, sz),
+					where .. ": the doorway at " .. door.x .. "," .. door.y ..
+						"," .. door.z .. " is blocked on the " ..
+						(sign == 1 and "inside" or "outside"))
+				assert(standable(sx, door.y - 1, sz), where ..
+					": the doorstep at " .. sx .. "," .. (door.y - 1) .. "," ..
+					sz .. " is not walkable")
+			end
+		end
+
+		-- (j) roof and wall closure, plus a light, for every room the part
+		-- declares closed. Room corners come in pairs, the first carrying
+		-- the flags; rotation keeps the pairing.
+		local rooms = 0
+		local corners = moved.room_corner or {}
+		for step = 1, #corners, 2 do
+			local first, second = corners[step], corners[step + 1]
+			assert(second, where .. " publishes an odd room corner")
+			rooms = rooms + 1
+			if first.closed then
+				local x0 = math.min(first.x, second.x)
+				local x1 = math.max(first.x, second.x)
+				local z0 = math.min(first.z, second.z)
+				local z1 = math.max(first.z, second.z)
+				local lit = 0
+				for _, light in ipairs(moved.lights or {}) do
+					if light.x >= x0 and light.x <= x1 and
+							light.z >= z0 and light.z <= z1 then
+						lit = lit + 1
+					end
+				end
+				assert(lit > 0, where .. ": the room " ..
+					tostring(first.id) .. " is unlit")
+				for z = z0, z1 do
+					for x = x0, x1 do
+						local covered = false
+						for y = first.top + 1, ENVELOPE[case.class].ymax do
+							local cell = at(x, y, z)
+							if cell and cell.name ~= "air" then
+								covered = true
+							end
+						end
+						assert(covered, where .. ": interior column " .. x ..
+							"," .. z .. " of room " .. tostring(first.id) ..
+							" is open to the sky")
+					end
+				end
+			end
+		end
+		assert(rooms == case.rooms, where .. " declares " .. rooms ..
+			" rooms, not " .. case.rooms)
+		return solids, torches
+	end
+
+	-- Build, stamp and check. Determinism first: these generators are pure,
+	-- so two builds of one spec must produce the identical cell list, in the
+	-- identical order.
+	local capital_cells, capital_sockets = 0, 0
+	for _, case in ipairs(CAPITAL_PARTS) do
+		local label = case.label or case.key
+		local generator = capitals[case.key]
+		assert(type(generator) == "function",
+			"capitals.lua has no generator " .. case.key)
+		local rows = {}
+		for _, race in ipairs(races) do
+			local handle = handles[race]
+			local part = generator(handle, case.spec)
+			local twin = generator(handle, case.spec)
+			local a_order, a_count = part.buffer:cells()
+			local b_order, b_count = twin.buffer:cells()
+			assert(a_count == b_count, label .. "/" .. race ..
+				" is not deterministic: " .. a_count .. " then " .. b_count)
+			for step = 1, a_count do
+				assert(a_order[step].x == b_order[step].x and
+						a_order[step].y == b_order[step].y and
+						a_order[step].z == b_order[step].z and
+						a_order[step].name == b_order[step].name and
+						a_order[step].param2 == b_order[step].param2,
+					label .. "/" .. race .. " differs between two builds at " ..
+						"cell " .. step)
+			end
+			-- A linear piece has to CHAIN: every cell inside the footprint
+			-- the composition will place the next copy next to, or two
+			-- segments in a row overwrite each other's parapets.
+			if case.chain then
+				local order, count = part.buffer:cells()
+				for step = 1, count do
+					local cell = order[step]
+					assert(cell.x >= 0 and cell.x < case.chain.w and
+							cell.z >= 0 and cell.z < case.chain.d,
+						label .. "/" .. race .. " writes " .. cell.name ..
+							" at " .. cell.x .. "," .. cell.z ..
+							", outside the footprint it chains on")
+				end
+			end
+			-- A passage the contract gives a width has to have it.
+			if case.clear then
+				local order, count = part.buffer:cells()
+				for step = 1, count do
+					local cell = order[step]
+					-- WALKABLE is the test, not "any cell": the gate jambs
+					-- carry a wallmounted torch inside the opening, and a
+					-- torch is not something a cart runs into.
+					if cell.name ~= "air" and walkable(cell.name) and
+							cell.x >= case.clear.x0 and cell.x <= case.clear.x1 and
+							cell.y >= case.clear.y0 and cell.y <= case.clear.y1 then
+						error(label .. "/" .. race .. ": " .. cell.name ..
+							" at " .. cell.x .. "," .. cell.y .. "," ..
+							cell.z .. " stands in the passage", 0)
+					end
+				end
+			end
+			for key in pairs(case.counts) do
+				assert(type(part[key]) == "number" and part[key] > 0,
+					label .. "/" .. race .. " authored " ..
+						tostring(part[key]) .. " " .. key)
+			end
+			-- `hedge` is the degradation probe of the orchard edge: only the
+			-- human palette binds a hedge, so exactly that race must plant
+			-- one and every other race must plant none and still build.
+			if case.key == "orchard_edge" then
+				local wanted = (handle.maybe("hedge") ~= nil)
+				assert((part.hedge > 0) == wanted, label .. "/" .. race ..
+					" planted " .. part.hedge .. " hedge cells but binds " ..
+					tostring(handle.maybe("hedge")))
+			end
+			local solids
+			for turns = 0, 3 do
+				solids = check_capital_part(label, race, case, part, turns)
+			end
+			capital_cells = capital_cells + solids
+			capital_sockets = capital_sockets + #(part.points.sockets or {})
+			rows[#rows + 1] = race .. "=" .. solids
+		end
+		say("capital", label, case.class, table.concat(rows, ","))
+	end
+	assert(capital_sockets > 0, "the capital parts publish no socket at all")
+	say("capital_total", #CAPITAL_PARTS, "parts", capital_cells, "cells",
+		capital_sockets, "sockets")
+
+	-- 12b. the capital vocabulary really is optional ------------------------
+	-- Every role of the capital vocabulary is declared optional, and a
+	-- generator is supposed to degrade into the start vocabulary without it.
+	-- That claim is worth nothing unless something builds without them, so a
+	-- throwaway race is registered with the whole capital vocabulary stripped
+	-- out and every generator is built for it. A missing fallback fails here
+	-- and nowhere else -- the six shipped palettes all carry the bindings.
+	local bare = {}
+	for role, name in pairs(palettes.races.dwarf) do bare[role] = name end
+	local stripped = 0
+	for _, role in ipairs({"castle_paving", "castle_rubble", "castle_slit",
+			"castle_wall", "castle_wall_slab", "castle_wall_stair", "pillar",
+			"signature", "signature_slab", "signature_stair", "throne"}) do
+		assert(bare[role] ~= nil,
+			"the dwarf palette no longer binds the capital role " .. role)
+		bare[role] = nil
+		stripped = stripped + 1
+	end
+	palettes.races.kat_bare = bare
+	local bare_handle = palettes.new("kat_bare")
+	for _, role in ipairs({"castle_wall", "signature", "throne"}) do
+		assert(bare_handle.maybe(role) == nil,
+			"the stripped palette still binds " .. role)
+	end
+	local bare_built = 0
+	for _, case in ipairs(CAPITAL_PARTS) do
+		local part = capitals[case.key](bare_handle, case.spec)
+		local _, count = part.buffer:cells()
+		assert(count > 0, (case.label or case.key) ..
+			" built nothing without the capital vocabulary")
+		bare_built = bare_built + 1
+	end
+	palettes.races.kat_bare = nil
+	assert(palettes.races.kat_bare == nil, "the probe race was left behind")
+	say("capital_degrade", stripped, "roles_stripped", bare_built, "parts")
 
 	return table.concat(report)
 end
