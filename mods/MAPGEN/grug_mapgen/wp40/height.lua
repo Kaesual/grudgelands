@@ -446,6 +446,68 @@ return function(dependencies)
 		return math.floor(s * 131073 / P) - 65536, s
 	end
 
+	-- WP13 round B, the start gate approach.
+	--
+	-- Every WP13 start blueprint opens a five-wide main street on the z axis and
+	-- puts its gate at anchor.z +/- 63; the authored catalog agrees and places
+	-- that start's `start_gate` station one node further out
+	-- (`source/catalog.lua`, the six "start:north"/"start:south" rows). The
+	-- COMPILED route does not: its centreline begins at the zone hub, which IS
+	-- the start anchor centre, and the first bowed leg pulls it straight off the
+	-- axis, so the road crosses the build envelope diagonally and surfaces 60-70
+	-- nodes beside the gate instead of in front of it.
+	--
+	-- Only the surface geometry of that first leg is rebuilt. The route keeps its
+	-- id, its class, both stations, both endpoint pins (run 1 is still the hub at
+	-- the start station's target height) and every compiled claim exclusion; the
+	-- whole rebuilt stretch lies inside the anchor's own 256-node blend envelope,
+	-- so no corridor leaves the exclusion that already covered it. The prefix is
+	-- one straight run down the gate axis, at the gate street's five-node width,
+	-- and then the ordinary bow from the first authored centreline point outside
+	-- the blend envelope onward. The gate side is derived, not assumed: it is the
+	-- side the route's other station lies on, which is what the blueprints'
+	-- `main_street` landmark and the authored gate stations both encode.
+	local START_GATE_RUN = 128
+	local START_GATE_REJOIN = 256
+	-- Read-only; `make_path` only reads the three fields.
+	local START_GATE_PREFIX = {segments = 1, surface_width = 5,
+		corridor_width = 12}
+	local function start_gate_prefix(source, route, start_a, start_b)
+		if not start_a then
+			if start_b then
+				fail("start route reaches its start as endpoint b at " .. route.id)
+			end
+			return nil, nil
+		end
+		local hub = source.zones[route.zone_a].hub
+		local other = source.zones[route.zone_b].hub
+		if hub.x ~= start_a.center.x or hub.z ~= start_a.center.z then
+			fail("start route hub is not the start anchor at " .. route.id)
+		end
+		if other.x ~= hub.x or other.z == hub.z then
+			fail("start gate axis is not the z axis at " .. route.id)
+		end
+		local sign = other.z > hub.z and 1 or -1
+		local gate_z = hub.z + sign * START_GATE_RUN
+		local points = {{x = hub.x, z = hub.z}, {x = hub.x, z = gate_z}}
+		local rejoin
+		for index = 2, #route.centreline do
+			local point = route.centreline[index]
+			if math.max(math.abs(point.x - hub.x),
+					math.abs(point.z - hub.z)) >= START_GATE_REJOIN then
+				rejoin = index
+				break
+			end
+		end
+		if not rejoin or sign * (route.centreline[rejoin].z - gate_z) <= 0 then
+			fail("start gate approach has no forward rejoin at " .. route.id)
+		end
+		for index = rejoin, #route.centreline do
+			points[#points + 1] = route.centreline[index]
+		end
+		return points, START_GATE_PREFIX
+	end
+
 	local module = {}
 	local bound_seed_string
 
@@ -2270,7 +2332,7 @@ return function(dependencies)
 
 		local paths, path_by_id = {}, {}
 		local function make_path(id, kind, priority, centreline, surface_width,
-				corridor_width, owner_a, owner_b)
+				corridor_width, owner_a, owner_b, narrow_prefix)
 			if path_by_id[id] then fail("duplicate graded path " .. id) end
 			local axis, source_segments = raster_polyline(centreline)
 			local path = {id = id, kind = kind, priority = priority,
@@ -2278,6 +2340,25 @@ return function(dependencies)
 				corridor_width = corridor_width, owner_a = owner_a,
 				owner_b = owner_b, axis = axis, source_segments = source_segments,
 				pins = {}, operations = {}, fords = {}}
+			-- A leading run of source segments may be narrower than the rest of
+			-- the path (the start gate approach is the only such case).
+			-- `path.surface_width`/`path.corridor_width` stay the path's WIDEST
+			-- values, because every bounding box, grid insertion and surface scan
+			-- reads them as an upper bound; the three membership tests
+			-- (`path_surface_run_at`, `nearest_path_segment_at`, `path_grade_at`)
+			-- ask the segment first and fall back to the path.
+			if narrow_prefix then
+				if narrow_prefix.segments < 1 or
+						narrow_prefix.segments >= #source_segments or
+						narrow_prefix.surface_width > surface_width or
+						narrow_prefix.corridor_width > corridor_width then
+					fail("narrow path prefix differs at " .. id)
+				end
+				for index = 1, narrow_prefix.segments do
+					source_segments[index].surface_width = narrow_prefix.surface_width
+					source_segments[index].corridor_width = narrow_prefix.corridor_width
+				end
+			end
 			paths[#paths + 1] = path
 			path_by_id[id] = path
 			return path
@@ -2302,9 +2383,12 @@ return function(dependencies)
 
 		for route_index = 1, #source.routes do
 			local route = source.routes[route_index]
-			local path = make_path(route.id, "land_route", 1, route.centreline,
+			local centreline, narrow_prefix = start_gate_prefix(source, route,
+				start_by_zone[route.zone_a], start_by_zone[route.zone_b])
+			local path = make_path(route.id, "land_route", 1,
+				centreline or route.centreline,
 				route.surface_width, route.corridor_width, route.zone_a,
-				route.zone_b)
+				route.zone_b, narrow_prefix)
 			path.source_route = route
 			add_pin(path, 1, route_station_target[route.zone_a], "endpoint_a",
 				source.zones[route.zone_a].id)
@@ -2529,7 +2613,8 @@ return function(dependencies)
 				local segment = path.source_segments[segment_index]
 				local numerator, denominator, dot, length_squared =
 					point_segment_ratio(x, z, segment.a, segment.b)
-				if corridor_member_ratio(numerator, denominator, path.surface_width) then
+				if corridor_member_ratio(numerator, denominator,
+						segment.surface_width or path.surface_width) then
 					local better = not best or rational_compare(numerator, denominator,
 						best_numerator, best_denominator) < 0
 					if not better and best and rational_compare(numerator, denominator,
@@ -3532,8 +3617,9 @@ return function(dependencies)
 			for index = 1, #candidates do
 				local segment = candidates[index]
 				local path = segment.path or only_path
-				local width = width_kind == "surface" and path.surface_width or
-					path.corridor_width
+				local width = width_kind == "surface" and
+					(segment.surface_width or path.surface_width) or
+					(segment.corridor_width or path.corridor_width)
 				local numerator, denominator, dot, length_squared =
 					point_segment_ratio(x, z, segment.a, segment.b)
 				if corridor_member_ratio(numerator, denominator, width) and
@@ -4130,10 +4216,11 @@ return function(dependencies)
 			if not segment then return nil end
 			local path = segment.path
 			local target = path.y[run_index]
-			local qnumerator = 4 * numerator -
-				path.surface_width * path.surface_width * denominator
-			local qdenominator = (path.corridor_width * path.corridor_width -
-				path.surface_width * path.surface_width) * denominator
+			local surface = segment.surface_width or path.surface_width
+			local corridor = segment.corridor_width or path.corridor_width
+			local qnumerator = 4 * numerator - surface * surface * denominator
+			local qdenominator = (corridor * corridor - surface * surface) *
+				denominator
 			local fraction = clamp(deterministic.qfrom_ratio(qnumerator,
 				qdenominator), 0, Q)
 			local weight = Q - deterministic.smootherstep(fraction)

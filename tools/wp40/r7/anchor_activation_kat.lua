@@ -202,8 +202,12 @@ local anchor_config = {new = function()
 			return {schema = "grug_wp40_r7_anchor_ledger_v1"}
 		end, metrics = function() return {} end, roster = function() return roster end}
 end}
-local hearthpine_config = {new = function()
-	return {bind_plan = function() order[#order + 1] = "hearthpine_plan" end,
+-- The fourth WP13 increment turned the successor's single settlement into the
+-- roster list `r7_settlement.lua` publishes, so a settlement config carries its
+-- key and `new` returns a tail under the same key.
+local hearthpine_config = {key = "hearthpine", new = function()
+	return {key = "hearthpine",
+		bind_plan = function() order[#order + 1] = "hearthpine_plan" end,
 		settle = function(_, value)
 			check(type(value.write_hearthpine) == "function",
 				"Hearthpine writer is absent")
@@ -212,7 +216,7 @@ local hearthpine_config = {new = function()
 		end, metrics = function() return {} end}
 end}
 local successor = dofile(wp40 .. "/r7_successor.lua")(
-	p9g_config, anchor_config, hearthpine_config).new({})
+	p9g_config, anchor_config, {hearthpine_config}).new({})
 local composed_context = {write_anchor = function() end,
 	write_hearthpine = function() end}
 for _, key in ipairs({"schema", "plan", "generation", "call_mode", "min_x",
