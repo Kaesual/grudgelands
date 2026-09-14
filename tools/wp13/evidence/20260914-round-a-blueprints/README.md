@@ -62,7 +62,8 @@ cells, 96 stakes, as before.
 | --- | --- |
 | `library_kat` §8d | a `group:slab` cell written at an upright facedir may not have a non-air cell above it, in ANY start. The family is read from the real registry (`stairs` puts `slab = 1` in a slab's groups, `stair = 1` in a stair's); a STAIR is outside the rule because its raised half reaches the top of its own cell. Reported per start as `free_slabs`. |
 | `library_kat` §8e | every param2 20..23 cell is a `group:slab` or `group:stair` node with `paramtype2 = "facedir"` — `stairs`' `rotate_and_place` is the one placement in this game that writes that axis, and it writes it for nothing else — and meets a non-air cell above it, because meeting what is above is the only reason to flip a slab. Reported as `upside_down`. |
-| `parts.Buffer:put` | the construction-time half of §8e: a facedir node may carry only the upright axis or axis 20, and nothing else may come near either. |
+| `parts.Buffer:put` | the construction-time half of §8e, written without a registry: a facedir node may carry only the upright axis or axis 20, and only a `parts.shaped` node — a `stairs:` node or one of the six grug_decor shapes — may be flipped at all. A flipped barrel is refused at construction; `library_kat` §8 proves `parts.shaped` equal to the registry's `group:stair`/`group:slab` for every emitted name, in both directions. |
+| no table-top exemption | §8d deliberately has none. A prop on a bottom-slab table floats exactly as a breastwork on a bottom-slab deck does; a table meant to carry something is a top slab or a full node, and §8e then requires that flip to meet what is above it. The two rules compose into one: a shaped node's surface must be at the top of its cell whenever anything rests on it. No start exercises it today — all six tables are bare. |
 
 The same measurement found one more slab under a load, in Silverleaf: the
 shrine's bell. `buildings.belfry` hangs the bell one course under the frame
@@ -132,6 +133,21 @@ carries, and why:
 - `is_ground_content = false`, so cave carving cannot eat a field;
 - `drop = "default:dirt"`, so it adds nothing to the economy.
 
+**A tilled furrow carries no weeds, and that is a decision, not a side
+effect.** Six places in the library ask whether a cell may carry a wild plant
+and all six asked it as `below.name:find("dirt")` — a substring of a node
+name, which is a spelling and not a property. `grug_nodes:tilled_soil` does
+not contain "dirt", so the moment the furrows changed the answer changed with
+them and **425 tufts and bushes left Dawnmere's fields** (286 `grass_3`, 139
+`grass_4`) without anyone deciding it. The look is the one we want — a
+ploughed field is weed-free — but nobody had chosen it, so the substring is
+gone. All six sites now ask `parts.wild_soil`, a written-out roster of the
+nine soils the substring used to accept, and the rule it encodes is written
+down: *a plant seeds itself in ground the MAPGEN generates, never in ground a
+settlement authored.* Converting the six sites is byte-identical — the roster
+is exactly the set of dirt-family names the six starts emit, measured, and the
+dumps above are unchanged by it.
+
 No new PNG. The three tiles are the vendored `default_dirt.png` with the
 engine's own `^[colorize:#2b1d0e` modifier on the top and side faces, which is
 a render-time operation on a file this project already ships; `LICENSE-media.md`
@@ -145,13 +161,15 @@ walkable.
 | Guarded by | What it says |
 | --- | --- |
 | `blueprint_kat` dawnmere `ground` | a new row: more than 3,000 `grug_nodes:tilled_soil` cells at y = 0. The `default:dirt` row drops from 400 to 100, because the 1,712 furrows left the population and the 162 worn-earth patches that role is actually for stay |
-| `library_kat` §3, §8 | the node must be registered, not retired, callback-free, and `parts.full_solid` / `parts.pane_connects` must agree with the real registry about it in both directions |
+| `blueprint_kat` `ground_cover` | a new EXACT row per start, both of that race's ground-cover nodes. Dawnmere is 756 / 1,571; putting back the pre-round 1,857 fails the fixture with `ground cover population differs`. This is the assertion that would have caught the 425 |
+| `library_kat` §7d | every member of `parts.WILD_SOIL` is registered, is an opaque full cube, and is in `grug_materials.NATURAL_GROUND_NODES` — read out of `registry.lua` as text, the way the retirement roster is. `grug_nodes:tilled_soil` is asserted absent from BOTH rosters, so adding it to either cannot pass unnoticed. The converse is deliberately not asserted: `grug_nodes:mud` is generated ground that still carries nothing, because the Cradle's mud flats are bare by authored intent |
+| `library_kat` §3, §8 | the node must be registered, not retired, callback-free, and `parts.full_solid` / `parts.pane_connects` / `parts.shaped` must agree with the real registry about it in both directions |
 
 ## Checks
 
 | Gate | Result |
 | --- | --- |
-| `tools/bin/luac51 -p` per changed file | PASS, 9 files |
+| `tools/bin/luac51 -p` per changed file | PASS, 10 files |
 | `tools/bin/luac51 -p` tree-wide | PASS for `mods/*/grug_*` and for `tools` |
 | SETGLOBAL | 0 on every changed file |
 | Five plain-5.1 sweeps, changed files | zero hits |
@@ -160,9 +178,9 @@ walkable.
 | `node_tiles.json` parses, regenerated | PASS, 469 nodes |
 | WP40 R7 changed-production roster | PASS, 142 files, script expects 142 (`grug_nodes/init.lua` was already on it) |
 | `tools/check_fresh_server.py` | `Fresh-server source audit: PASS` |
-| `library_kat` + `blueprint_kat` + `integration_fixture`, LuaJIT vs PUC 5.1 | byte-identical, `54736d39d1ca0c01…` |
+| `library_kat` + `blueprint_kat` + `integration_fixture`, LuaJIT vs PUC 5.1 | byte-identical, `9b2466f08f84a246…` |
 | `atmosphere_kat`, LuaJIT vs PUC 5.1 | `OK` under both, identical apart from the interpreter banner the KAT prints on line 2 |
-| `tools/wp13/final_micro.lua` pair | byte-identical, `54736d39d1ca0c013f25a2b88c95ba267b65973eed1d2d54027f9a551b60a0c8` |
+| `tools/wp13/final_micro.lua` pair | byte-identical, `9b2466f08f84a246a74b42ce582540b760f78e9a22a134c8e1f5f7db6f8f60d8` |
 | Engine gate, both seeds | see below |
 
 The whole `tools/wp40/r7/source_audit.sh` still cannot pass, for the two frozen
@@ -195,8 +213,12 @@ The per-start digests are identical on both seeds, which is the contract: a
 blueprint's bytes are the same wherever the terrain puts it, and only the
 anchor's fitted y moves. Every fitted y is the one the previous round
 recorded, and Hearthpine's `03311c95b8463c42…` is the digest the first
-increment recorded. Cell counts are unchanged in all six starts: every fix
-this round replaced a node, none added or removed one.
+increment recorded. The cell TOTALS are unchanged in all six starts, but that
+is a property of the buffer and not of the settlement — a cell a composition
+clears stays in the list as `air`. Sunscar and Silverleaf really did only
+replace nodes; **Dawnmere lost 425 ground-cover cells** (286 `default:grass_3`
+and 139 `default:grass_4`), which is the consequence of the tilled furrows
+described under finding 3 and not a fourth change.
 
 - **user seed** `531802985935182545`, 44 structure owners, evidence in
   `user-seed/`.
@@ -255,6 +277,14 @@ Two more short-node-under-something sites were measured and deliberately left:
   Hearthpine, whose bytes are frozen.
 - Kapok's bath-house slab over the tub, and its stone paths under a stilt
   deck. Same reason: the deck passes over the path, it does not stand on it.
+- Sunscar's armoury-wing ring posts at (34, 6, -4) and (34, 6, 2). They stand
+  on the stair that steps the main deck down to the wing deck, so a quarter of
+  each `walls:desertcobble` post oversails the stair's low half. Pre-existing
+  and unchanged by this round (the same stair is there in the parent commit);
+  it is half a nodebox post over the step it runs along, and every way of
+  moving it rebuilds the armoury's roof field. It is the one shape §8d's stair
+  exemption lets through, and the KAT comment says so at the rule.
 
-Neither was in the user's report. They are recorded here so the next round
-starts from a measurement rather than from a re-reading of the same screens.
+None of the three was in the user's report. They are recorded here so the next
+round starts from a measurement rather than from a re-reading of the same
+screens.

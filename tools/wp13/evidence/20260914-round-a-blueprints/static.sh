@@ -13,6 +13,7 @@ CHANGED=(
 	mods/ITEMS/grug_nodes/init.lua
 	mods/MAPGEN/grug_mapgen/wp13/buildings.lua
 	mods/MAPGEN/grug_mapgen/wp13/dressing.lua
+	mods/MAPGEN/grug_mapgen/wp13/layout.lua
 	mods/MAPGEN/grug_mapgen/wp13/palette.lua
 	mods/MAPGEN/grug_mapgen/wp13/parts.lua
 	mods/MAPGEN/grug_mapgen/wp13/roofs.lua

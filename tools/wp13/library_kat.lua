@@ -520,6 +520,59 @@ return function(repo)
 				table.concat(vale_callers, ",")))
 	say("frozen_flora", "vale_undergrowth", "callers", 1)
 
+	-- 7d. a plant seeds itself in generated ground, never authored ground --
+	-- Six places in this library ask whether a cell may carry a wild plant,
+	-- and all six used to ask it as `name:find("dirt")` -- a substring of a
+	-- node name, which is a spelling and not a property. It answered false
+	-- for `grug_nodes:tilled_soil` the moment Dawnmere's furrows stopped
+	-- being `default:dirt`, and 425 tufts and bushes left the fields without
+	-- anyone deciding that they should. `parts.WILD_SOIL` is the roster now,
+	-- and the rule it is supposed to encode is checked against the source of
+	-- truth for "ground the mapgen generates": every member must be in
+	-- `grug_materials.NATURAL_GROUND_NODES`, which is read out of the
+	-- registry source the way the retirement roster above is.
+	--
+	-- The converse is deliberately NOT asserted. `grug_nodes:mud` is
+	-- generated ground and still carries no wild plants, because the Cradle's
+	-- mud flats are bare by authored intent; the roster may be a subset.
+	-- What must hold is the one direction that keeps authored ground out of
+	-- it -- and `grug_nodes:tilled_soil` is outside both rosters, which is
+	-- asserted here so that adding it to either cannot pass unnoticed.
+	local ground_source = io.open(repo ..
+		"/mods/ITEMS/grug_materials/registry.lua", "r")
+	assert(ground_source, "the grug_materials registry source is missing")
+	local ground_text = ground_source:read("*a")
+	ground_source:close()
+	local roster = ground_text:match(
+		"grug_materials%.NATURAL_GROUND_NODES = {(.-)\n}")
+	assert(roster, "NATURAL_GROUND_NODES is no longer a readable roster")
+	local natural_ground, natural_count = {}, 0
+	for name in roster:gmatch('"([%w_]+:[%w_]+)"') do
+		natural_ground[name] = true
+		natural_count = natural_count + 1
+	end
+	assert(natural_count >= 20, "the natural ground roster shrank to " ..
+		natural_count)
+	local wild_names, wild_count = {}, 0
+	for name in pairs(parts.WILD_SOIL) do
+		wild_names[#wild_names + 1] = name
+		wild_count = wild_count + 1
+	end
+	table.sort(wild_names)
+	for _, name in ipairs(wild_names) do
+		assert(world.nodes[name], "wild soil " .. name .. " is not registered")
+		assert(natural_ground[name],
+			"wild soil " .. name .. " is not generated ground")
+		assert(registry.is_opaque_full(world, name),
+			"wild soil " .. name .. " is not an opaque full cube")
+	end
+	assert(not parts.wild_soil("grug_nodes:tilled_soil"),
+		"an authored furrow may not carry wild plants")
+	assert(not natural_ground["grug_nodes:tilled_soil"],
+		"an authored furrow may not be generated ground")
+	say("wild_soil", wild_count, "of", natural_count, "natural_ground",
+		"authored_excluded", "pass")
+
 	-- 8. every finished settlement against the real registry ---------------
 	-- Sections 1-7 test the library in isolation. What actually reaches the
 	-- engine is each start's cell list, so the last three sections check
@@ -578,6 +631,16 @@ return function(repo)
 			"parts.pane_connects disagrees with the registry for " .. name)
 		assert(parts.full_solid(name) == registry.is_opaque_full(world, name),
 			"parts.full_solid disagrees with the registry for " .. name)
+		-- And the third authored table: the stair/slab family `parts.shaped`
+		-- answers without a registry, which is what decides whether a cell
+		-- may be turned upside down at all. `stairs` puts `stair = 1` in a
+		-- stair's groups and `slab = 1` in a slab's; `grug_decor/shapes.lua`
+		-- is a byte-for-byte copy of those registrations, so the same two
+		-- groups are the whole answer.
+		local shape_groups = (type(def.groups) == "table") and def.groups or {}
+		assert(parts.shaped(name) ==
+				((shape_groups.slab or 0) > 0 or (shape_groups.stair or 0) > 0),
+			"parts.shaped disagrees with the registry for " .. name)
 		kinds_checked = kinds_checked + 1
 	end
 
@@ -686,6 +749,25 @@ return function(repo)
 	-- standing on that half stands on wood. Every other short node -- a mat,
 	-- an anvil, a bed, a stone path -- is a prop, not a course, and a wall or
 	-- a deck passing over one is a building, not a gap.
+	--
+	-- There is deliberately NO exemption for a table top. The review that
+	-- asked for one is right that `table_top` is a slab in every palette and
+	-- that no composition can currently stand a tankard on a table; it is
+	-- wrong that it should be able to. A prop on a bottom-slab table floats
+	-- half a node exactly as a breastwork on a bottom-slab deck does -- same
+	-- defect, same picture, and an exemption would be a licence to author it.
+	-- A table meant to CARRY something is a table top written upside down or
+	-- as a full node, and section 8e below then requires that flip to meet
+	-- what is above it, so the two rules compose into one: a shaped node's
+	-- surface must be at the top of its cell whenever anything rests on it.
+	-- No start exercises this today; all six tables are bare.
+	--
+	-- One shape the stair exemption does let through, measured and left:
+	-- Sunscar's armoury-wing ring at (34, 6, -4) and (34, 6, 2) stands on the
+	-- stair that steps the main deck down to the wing deck, so a quarter of
+	-- each `walls:desertcobble` post oversails the stair's low half. It
+	-- predates this round, it is half a nodebox post over the step it runs
+	-- along, and every way of moving it rebuilds the armoury roof.
 	local shape_index = {}
 	for _, cell in ipairs(blueprint.cells) do
 		shape_index[cell.x .. ":" .. cell.y .. ":" .. cell.z] = cell.name
@@ -710,12 +792,15 @@ return function(repo)
 		-- have produced. A settlement flips a slab for exactly one reason --
 		-- to meet what is above it -- so a flipped cell with air over it is a
 		-- flip that bought nothing and is refused here too.
-		if cell.param2 >= 20 then
-			assert(cell.param2 <= 23,
-				cell.name .. " carries the unsupported facedir axis " .. axis)
-			assert(def and def.paramtype2 == "facedir",
-				cell.name .. " is turned upside down but is " ..
-					tostring(def and def.paramtype2))
+		--
+		-- The gate is the node's `paramtype2`, not the raw param2 value: 20
+		-- is an axis only for `facedir`, and the same number means a rotation
+		-- step on a `degrotate` node and a palette index on a `color` one.
+		-- Neither occurs in a settlement today, and this rule must not be the
+		-- reason the first one cannot.
+		if def and def.paramtype2 == "facedir" and axis ~= 0 then
+			assert(axis == 20, cell.name ..
+				" carries the unsupported facedir axis " .. axis)
 			assert((groups.slab or 0) > 0 or (groups.stair or 0) > 0,
 				cell.name .. " is turned upside down but is neither a slab " ..
 					"nor a stair")

@@ -221,15 +221,33 @@ the node or about what the running world does to it afterwards. Evidence:
   IN that roster carries `grug_natural`, and putting authored ground under the
   mining transaction's pick-tier gating would be wrong. 3,267 tilled cells,
   asserted as a `blueprint_kat` ground row.
+- **A substring of a node name is a spelling, not a property.** Six places in
+  the library asked whether a cell may carry a wild plant as
+  `below.name:find("dirt")`, so renaming Dawnmere's furrows silently took 425
+  tufts and bushes out of its fields -- the look we want, arrived at by
+  accident. All six ask `parts.wild_soil` now, whose rule is written down: a
+  plant seeds itself in ground the MAPGEN generates, never in ground a
+  settlement authored. `library_kat` section 7d proves every member is in
+  `grug_materials.NATURAL_GROUND_NODES` and that the authored furrow is in
+  neither roster, and `blueprint_kat` holds each start's two ground-cover
+  populations at an exact count.
 
 Two library rules came out of it and hold for every start from here:
-`parts.Buffer:put` refuses any facedir axis but upright and upside-down, and
-`library_kat` section 8e requires every param2 20..23 cell to be a `group:slab`
-or `group:stair` node — the only family whose `on_place` (`stairs`'
-`rotate_and_place`) can produce that value — and to meet a non-air cell above
-it, since meeting what is above is the only reason to flip a slab. There is
-exactly one such cell in the six starts: the elf shrine's bell, which used to
-hang half a node below the frame it is tied to.
+`parts.Buffer:put` refuses any facedir axis but upright and upside-down and
+refuses to flip anything that is not a stair or a slab (`parts.shaped`, proven
+equal to the registry's `group:stair`/`group:slab` for every emitted name, in
+both directions), and `library_kat` section 8e requires every upside-down
+facedir cell -- gated on the node's own `paramtype2`, so a future `degrotate`
+or `color` node is not caught by a number it uses for something else -- to be
+a slab or a stair and to meet a non-air cell above it, since meeting what is
+above is the only reason to flip a slab. There is exactly one such cell in the
+six starts: the elf shrine's bell, which used to hang half a node below the
+frame it is tied to. Section 8d deliberately grants no table-top exemption: a
+prop on a bottom-slab table floats exactly as a breastwork on a bottom-slab
+deck does, so a table that carries something is a top slab or a full node, and
+8e then requires that flip to meet its load. The two rules compose into one --
+a shaped node's surface must be at the top of its cell whenever anything rests
+on it.
 
 Calibration: implementing Claude Opus; no review round yet; Hearthpine
 byte-identical at `760e0664…8ec9`; Stillgrave and Kapok untouched.

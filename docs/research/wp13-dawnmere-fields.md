@@ -114,6 +114,22 @@ a `blueprint_kat` ground row of its own: the pad has to carry more than 3,000
 tilled cells, and `default:dirt` drops to the 162 worn-earth patches that role
 is actually for. 1,555 planted crop cells, unchanged.
 
+The fields also lost their weeds, and the interesting part is that nobody
+decided that. `dressing.undergrowth` tested its support with
+`below.name:find("dirt")` -- a substring of a node name, which is a spelling
+and not a property -- so the scatter stopped reaching the furrows the moment
+they stopped being spelled `default:dirt`, and **425 cells** went with it:
+`default:grass_3` 1,857 -> 1,571 and `default:grass_4` 895 -> 756. A ploughed
+field with no weeds in it is the look we want, so the counts stay; the
+substring does not. All six places in the library that asked that question
+ask `parts.wild_soil` now, a written-out roster whose rule is stated: a plant
+seeds itself in ground the MAPGEN generates, never in ground a settlement
+authored. `library_kat` section 7d proves every member of it is in
+`grug_materials.NATURAL_GROUND_NODES` and that `grug_nodes:tilled_soil` is in
+neither roster, and `blueprint_kat` now holds each start's two ground-cover
+populations at an exact number -- which is the assertion that would have made
+the 425 visible the day they vanished.
+
 ### The loose props, and why they are now fatal
 
 The first increment-4 bytes lost props in silence. `dawnmere.lua` guarded

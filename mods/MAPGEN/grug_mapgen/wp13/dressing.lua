@@ -683,7 +683,7 @@ local function loader(directory)
 				if name then
 					local below = buf:at(x, 0, z)
 					local above = buf:at(x, 1, z)
-					if below and below.name:find("dirt") and
+					if below and parts.wild_soil(below.name) and
 							(above == nil or above.name == "air") then
 						buf:put(x, 1, z, name)
 						if name == bone then sown_bones = sown_bones + 1
@@ -953,7 +953,7 @@ local function loader(directory)
 								local cx, cz = x + dx, z + dz
 								local below = buf:at(cx, 0, cz)
 								local above = buf:at(cx, 1, cz)
-								if below ~= nil and below.name:find("dirt") and
+								if below ~= nil and parts.wild_soil(below.name) and
 										(above == nil or above.name == "air") then
 									buf:put(cx, 1, cz, name)
 									planted = planted + 1
@@ -1168,7 +1168,7 @@ local function loader(directory)
 					local below = buf:at(x, 0, z)
 					local above = buf:at(x, 1, z)
 					local free = (above == nil or above.name == "air")
-					if below and free and below.name:find("dirt") then
+					if below and free and parts.wild_soil(below.name) then
 						local bush =
 							parts.position_hash(x + 977, z + 383) % 3 == 0
 						local name = palette.node(bush and "undergrowth" or
@@ -1203,7 +1203,7 @@ local function loader(directory)
 					local below = buf:at(x, 0, z)
 					local above = buf:at(x, 1, z)
 					local free = (above == nil or above.name == "air")
-					if below and free and below.name:find("dirt") then
+					if below and free and parts.wild_soil(below.name) then
 						local role = ((x + z) % 4 == 0) and "undergrowth" or
 							"grass_tuft"
 						local name = palette.node(role)

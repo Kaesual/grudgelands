@@ -9,6 +9,7 @@ guards	param2_kind	pass
 pane_set	parts+registry	780	panes	6
 byte_order	parts+r7_settlement	441	pass
 frozen_flora	vale_undergrowth	callers	1
+wild_soil	9	of	23	natural_ground	authored_excluded	pass
 registry	hearthpine	40	kinds	40	place_param2	1723	plain_cubes	41646
 ground_cover	hearthpine	default:fern_1	665	default:grass_1	1982
 shapes	hearthpine	free_slabs	516	upside_down	0

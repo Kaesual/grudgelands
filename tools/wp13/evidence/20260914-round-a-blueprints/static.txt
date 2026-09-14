@@ -2,6 +2,7 @@
 mods/ITEMS/grug_nodes/init.lua parser PASS; SETGLOBAL [0]
 mods/MAPGEN/grug_mapgen/wp13/buildings.lua parser PASS; SETGLOBAL [0]
 mods/MAPGEN/grug_mapgen/wp13/dressing.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/layout.lua parser PASS; SETGLOBAL [0]
 mods/MAPGEN/grug_mapgen/wp13/palette.lua parser PASS; SETGLOBAL [0]
 mods/MAPGEN/grug_mapgen/wp13/parts.lua parser PASS; SETGLOBAL [0]
 mods/MAPGEN/grug_mapgen/wp13/roofs.lua parser PASS; SETGLOBAL [0]
