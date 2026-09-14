@@ -24,30 +24,48 @@ M.FACEDIR = "facedir"
 M.WALLMOUNTED = "wallmounted"
 M.NONE = "none"
 
--- Nodes whose paramtype2 cannot be guessed from the mod prefix.
+-- ---------------------------------------------------------------------------
+-- the orientation-bearing families
+-- ---------------------------------------------------------------------------
+--
+-- Only a node whose param2 actually carries an orientation may be rotated.
+-- Several vendored full cubes declare `paramtype2 = "facedir"` merely so a
+-- player can align a texture, and then pin `place_param2 = 0` so the engine
+-- itself never writes anything else: `default:pine_wood` and
+-- `default:stonebrick` are exactly that. Turning their param2 with the part
+-- writes a value the engine would never produce, which is how 440 plank and
+-- 144 stone-brick cells ended up carrying a rotation that means nothing.
+--
+-- So the rule is the other way round from the mod's own paramtype2: a node
+-- is orientation-bearing only if it is listed here, and everything else must
+-- be written at param2 0 and stays there through every rotation. The
+-- families are the shaped ones -- stairs and slabs (including the
+-- upside-down family), doors, beds, panes -- plus wallmounted fittings and
+-- the handful of facedir furniture pieces whose front tile is their point.
 local PARAM2_KIND = {
+	-- wallmounted fittings: param2 points from the node to its support
 	["default:torch"] = M.WALLMOUNTED,
 	["default:torch_wall"] = M.WALLMOUNTED,
 	["default:torch_ceiling"] = M.WALLMOUNTED,
 	["default:ladder_wood"] = M.WALLMOUNTED,
-	["default:ladder_steel"] = M.WALLMOUNTED,
 	["default:sign_wall_wood"] = M.WALLMOUNTED,
-	["default:chest"] = M.FACEDIR,
-	["default:chest_locked"] = M.FACEDIR,
-	["default:bookshelf"] = M.FACEDIR,
-	["default:furnace"] = M.FACEDIR,
-	["default:pine_wood"] = M.FACEDIR,
-	["default:pine_tree"] = M.FACEDIR,
-	["default:stonebrick"] = M.FACEDIR,
-	["default:brick"] = M.FACEDIR,
-	["vessels:shelf"] = M.FACEDIR,
+	-- panes: a flat pane records the axis it spans. The connected
+	-- `xpanes:pane` has no paramtype2 at all and is always written at 0.
+	["xpanes:pane_flat"] = M.FACEDIR,
+	["xpanes:bar_flat"] = M.FACEDIR,
+	["xpanes:obsidian_pane_flat"] = M.FACEDIR,
+	-- static decor furniture whose front tile faces the room
+	["grug_decor:xdecor_barrel"] = M.FACEDIR,
+	["grug_decor:xdecor_empty_shelf"] = M.FACEDIR,
+	["grug_decor:xdecor_cauldron"] = M.FACEDIR,
+	["grug_decor:cottages_shelf"] = M.FACEDIR,
 }
 
+-- Whole families whose every member is shaped.
 local PREFIX_KIND = {
 	["stairs:"] = M.FACEDIR,
 	["doors:"] = M.FACEDIR,
 	["beds:"] = M.FACEDIR,
-	["xpanes:"] = M.FACEDIR,
 }
 
 function M.param2_kind(name)
@@ -57,6 +75,60 @@ function M.param2_kind(name)
 		if name:sub(1, #prefix) == prefix then return value end
 	end
 	return M.NONE
+end
+
+-- ---------------------------------------------------------------------------
+-- two node properties the construction-time code needs and cannot ask for
+-- ---------------------------------------------------------------------------
+--
+-- A blueprint is built with no engine, so `core.registered_nodes` is out of
+-- reach; both tables below are therefore authored, and
+-- `tools/wp13/library_kat.lua` proves them equal to the real registry (loaded
+-- under a stub `core` by `tools/wp13/stub_registry.lua`) for every node name
+-- the blueprint actually emits, in both directions. A stale or invented entry
+-- fails the KAT.
+
+-- Nodes an `xpanes` pane connects to: `group:pane`, `group:stone`,
+-- `group:glass`, `group:wood` or `group:tree` (mods/BASE/xpanes/init.lua,
+-- the `connects_to` of the connected pane node).
+local PANE_CONNECTS = {
+	["default:cobble"] = true,
+	["default:pine_tree"] = true,
+	["default:pine_wood"] = true,
+	["default:stone_block"] = true,
+	["default:stonebrick"] = true,
+	["walls:cobble"] = true,
+	["xpanes:pane"] = true,
+	["xpanes:pane_flat"] = true,
+}
+
+function M.pane_connects(name)
+	return PANE_CONNECTS[name] == true
+end
+
+-- Opaque full cubes: the only nodes a wallmounted torch may hang on, and the
+-- only nodes that read as a wall. A nodebox, a mesh, a plant or a pane is
+-- not one of them, and neither is a full cube that light passes through.
+local FULL_SOLID = {
+	["default:cobble"] = true,
+	["default:dirt"] = true,
+	["default:dirt_with_coniferous_litter"] = true,
+	["default:dirt_with_grass"] = true,
+	["default:gravel"] = true,
+	["default:pine_tree"] = true,
+	["default:pine_wood"] = true,
+	["default:stone_block"] = true,
+	["default:stonebrick"] = true,
+	["grug_decor:xdecor_barrel"] = true,
+	["grug_decor:xdecor_cauldron"] = true,
+	["grug_decor:xdecor_empty_shelf"] = true,
+	["grug_materials:iron_block"] = true,
+	["wool:brown"] = true,
+	["wool:red"] = true,
+}
+
+function M.full_solid(name)
+	return FULL_SOLID[name] == true
 end
 
 -- facedir index to unit step in the x/z plane.
@@ -292,14 +364,13 @@ end
 -- hinged twin uses the `_b` mesh and turns its hidden node by three quarters;
 -- `doors.door_toggle` repairs the missing `state` meta for lvm placed doors.
 function M.door(buf, palette, x, y, z, face, right_hinge)
-	local base = palette.node("door")
 	local suffix = "_a"
 	local top = face % 4
 	if right_hinge then
 		suffix = "_b"
 		top = (face + 3) % 4
 	end
-	buf:put(x, y, z, base .. suffix, face % 4)
+	buf:put(x, y, z, palette.variant("door", suffix), face % 4)
 	buf:put(x, y + 1, z, palette.node("door_hidden"), top)
 end
 
@@ -314,12 +385,11 @@ function M.double_door(buf, palette, x, y, z, face)
 	return x - ref[1], z - ref[2]
 end
 
--- A pane between two solid neighbours. `xpanes:pane_flat` is a fixed nodebox,
--- so it renders correctly with no update callback; the connected
--- `xpanes:pane` variant is what update_pane swaps in only for three and four
--- way junctions. update_pane's two-opposite-connection branch is what a
--- window in a straight wall becomes, and it yields the flat node with
--- param2 0 for a wall running along X and param2 3 for one running along Z.
+-- A pane in a wall running along `axis`. This is the provisional value: a
+-- window in a straight wall is a flat pane spanning that axis, which is what
+-- update_pane settles on for two opposite connections. `resolve_panes` below
+-- then runs the real rule over the finished blueprint, because a pane's
+-- shape depends on neighbours the part that wrote it cannot see.
 function M.pane(buf, palette, x, y, z, axis)
 	if axis ~= "x" and axis ~= "z" then
 		error("wp13 parts: pane axis differs", 0)
@@ -327,25 +397,115 @@ function M.pane(buf, palette, x, y, z, axis)
 	buf:put(x, y, z, palette.node("window"), axis == "x" and 0 or 3)
 end
 
--- A torch on a wall. `support` is the unit step from the torch to the node
--- carrying it.
+-- The connected name behind a pane node, or nil if this is not a pane.
+local function pane_base(name)
+	if name:sub(1, 7) ~= "xpanes:" then return nil end
+	if name:sub(-5) == "_flat" then return name:sub(1, -6) end
+	return name
+end
+
+-- `xpanes` decides a pane's node and param2 from its four horizontal
+-- neighbours, in `update_pane` (mods/BASE/xpanes/init.lua). The engine runs
+-- that from `register_on_placenode`, which a VoxelManip write never fires, so
+-- a blueprint has to write the settled shape itself or leave the wrong node
+-- in the world forever. This is that decision, transcribed:
+--
+--   `any` starts at the pane's own param2 and becomes the LAST connecting
+--   direction, scanning dir 0..3 (facedir_to_dir: +Z, +X, -Z, -X);
+--   count 0                  -> flat, param2 unchanged;
+--   count 1                  -> flat, param2 (any + 1) % 4;
+--   count 2 opposite         -> flat, param2 (any + 1) % 4;
+--   count 2 adjacent, 3 or 4 -> the connected node, param2 0.
+--
+-- A straight wall along X therefore settles on flat/0 and one along Z on
+-- flat/3, which is what `M.pane` already guesses; the branch that matters is
+-- a third neighbour, such as the stone chimney breast standing behind a
+-- window, which turns the window into the connected node at param2 0.
+--
+-- Run this once over the whole pad, after every cell is written: rewriting a
+-- pane never changes whether a neighbour connects, because both pane shapes
+-- are in `group:pane`, so one pass is exact and order-independent.
+function M.resolve_panes(buf)
+	local order, count = buf:cells()
+	local panes = {}
+	for index = 1, count do
+		local cell = order[index]
+		local base = pane_base(cell.name)
+		if base then
+			panes[#panes + 1] = {cell = cell, base = base}
+		end
+	end
+	for index = 1, #panes do
+		local cell, base = panes[index].cell, panes[index].base
+		local any, total = cell.param2, 0
+		local connected = {}
+		for dir = 0, 3 do
+			local dx, dz = M.facedir_step(dir)
+			local neighbour = buf:at(cell.x + dx, cell.y, cell.z + dz)
+			local hit = neighbour ~= nil and M.pane_connects(neighbour.name)
+			connected[dir] = hit
+			if hit then
+				any = dir
+				total = total + 1
+			end
+		end
+		if total == 0 then
+			buf:put(cell.x, cell.y, cell.z, base .. "_flat", cell.param2)
+		elseif total == 1 or (total == 2 and
+				((connected[0] and connected[2]) or
+					(connected[1] and connected[3]))) then
+			buf:put(cell.x, cell.y, cell.z, base .. "_flat", (any + 1) % 4)
+		else
+			buf:put(cell.x, cell.y, cell.z, base, 0)
+		end
+	end
+	return #panes
+end
+
+-- Is the cell at these coordinates an opaque full cube?
+function M.solid_at(buf, x, y, z)
+	local cell = buf:at(x, y, z)
+	return cell ~= nil and M.full_solid(cell.name)
+end
+
+-- A torch on a wall. `dx/dy/dz` is the unit step from the torch to the node
+-- carrying it, which must be an opaque full cube: a wallmounted torch on a
+-- pane, a door leaf or a slab hangs in the air with a window behind it,
+-- which is exactly what fifteen of them did. Callers pick the cell; this
+-- refuses to write a torch onto anything that is not a wall.
 function M.wall_torch(buf, palette, x, y, z, dx, dy, dz)
+	if not M.solid_at(buf, x + dx, y + dy, z + dz) then
+		local cell = buf:at(x + dx, y + dy, z + dz)
+		error("wp13 parts: wall torch at " .. x .. "," .. y .. "," .. z ..
+			" has no solid support (" .. (cell and cell.name or "air") .. ")", 0)
+	end
 	buf:put(x, y, z, palette.node("light_wall"),
 		M.wallmounted_support(dx, dy, dz))
 end
 
 function M.floor_torch(buf, palette, x, y, z)
+	if not M.solid_at(buf, x, y - 1, z) then
+		local cell = buf:at(x, y - 1, z)
+		error("wp13 parts: floor torch at " .. x .. "," .. y .. "," .. z ..
+			" stands on " .. (cell and cell.name or "air"), 0)
+	end
 	buf:put(x, y, z, palette.node("light_post"), M.wallmounted_support(0, -1, 0))
 end
 
 -- A bed exactly as beds' on_place writes it: the foot node carries the
 -- facedir, the head node sits one step along facedir_to_dir and repeats it.
 function M.bed(buf, palette, x, y, z, face, fancy)
-	local base = palette.maybe(fancy and "bed_fancy" or "bed") or
-		palette.node("bed")
+	local role = fancy and "bed_fancy" or "bed"
+	local foot = palette.variant(role, "_bottom")
+	if foot == nil then
+		-- An optional fancy bed the race does not carry falls back to the
+		-- plain one, which every race must bind.
+		role = "bed"
+		foot = palette.variant(role, "_bottom")
+	end
 	local dx, dz = M.facedir_step(face)
-	buf:put(x, y, z, base .. "_bottom", face % 4)
-	buf:put(x + dx, y, z + dz, base .. "_top", face % 4)
+	buf:put(x, y, z, foot, face % 4)
+	buf:put(x + dx, y, z + dz, palette.variant(role, "_top"), face % 4)
 end
 
 -- A stair whose raised half points at `face`.

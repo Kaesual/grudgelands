@@ -55,10 +55,16 @@ return function(repo)
 		["doors:hidden"] = true}
 	local PAVED = {["default:cobble"] = true, ["default:stone_block"] = true,
 		["default:stonebrick"] = true}
+	-- Both roof materials: the forge hall and the community hall carry the
+	-- stone-brick stair family, the rest pine.
 	local ROOF = {["stairs:stair_pine_wood"] = true,
 		["stairs:stair_outer_pine_wood"] = true,
 		["stairs:stair_inner_pine_wood"] = true,
-		["stairs:slab_pine_wood"] = true}
+		["stairs:slab_pine_wood"] = true,
+		["stairs:stair_stonebrick"] = true,
+		["stairs:stair_outer_stonebrick"] = true,
+		["stairs:stair_inner_stonebrick"] = true,
+		["stairs:slab_stonebrick"] = true}
 	local function solid(x, y, z)
 		return not PASSABLE[node(x, y, z)]
 	end

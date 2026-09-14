@@ -23,6 +23,7 @@ local function loader(directory)
 	-- rotation that turns its door toward the path.
 	local PLOTS = {
 		{id = "forge_hall", make = "workshop", x = -5, z = -26, turns = 0,
+			roof_material = "slate",
 			spec = {w = 11, d = 15, wing = 7, wall_h = 5}},
 		{id = "west_home", make = "cottage", x = -26, z = 2, turns = 3,
 			spec = {w = 9, d = 9, roof = "gable", ridge_axis = "x"}},
@@ -35,6 +36,7 @@ local function loader(directory)
 		{id = "lagerhouse", make = "longhouse", x = 14, z = 22, turns = 0,
 			spec = {w = 9, d = 13}},
 		{id = "community_hall", make = "hall", x = -34, z = 28, turns = 0,
+			roof_material = "slate",
 			spec = {w = 13, d = 15, wall_h = 5}},
 		{id = "workyard", make = "shed", x = -32, z = 14, turns = 0,
 			spec = {w = 13, d = 9, open_sides = {"z-", "x+"}}},
@@ -64,8 +66,21 @@ local function loader(directory)
 	-- The watchpost lookout keeps its historical destination id.
 	local DESTINATION_ID = {gatewatch = "gatewatch_roof"}
 
+	-- Not every roof is pine. The two civic buildings -- the forge hall and
+	-- the community hall -- carry a stone-brick roof, which is the same
+	-- rasterised stair family in a different material, so the roof generator
+	-- needs no change and the village reads as more than one trade.
+	local SLATE_ROOF = {
+		roof_stair = "stairs:stair_stonebrick",
+		roof_stair_outer = "stairs:stair_outer_stonebrick",
+		roof_stair_inner = "stairs:stair_inner_stonebrick",
+		roof_slab = "stairs:slab_stonebrick",
+		roof_ridge = "default:stonebrick",
+	}
+
 	return function()
 		local palette = palettes.new("dwarf")
+		local slate = palettes.new("dwarf", SLATE_ROOF)
 		local buf = parts.buffer()
 		local lights, doorways, rooms = {}, {}, {}
 		local placed, inside_by_id = {}, {}
@@ -114,6 +129,7 @@ local function loader(directory)
 			local spec = {}
 			for key, value in pairs(plot.spec) do spec[key] = value end
 			spec.id = plot.id
+			if plot.roof_material == "slate" then spec.roof_palette = slate end
 			local part = buildings[plot.make](palette, spec)
 			local points = parts.stamp(buf, part, plot.x, 0, plot.z, plot.turns)
 			local footprint = points.footprint[1]
@@ -251,7 +267,14 @@ local function loader(directory)
 		layout.plant_wood(buf, palette, RADIUS, 5)
 		dressing.undergrowth(buf, palette, -RADIUS, -RADIUS, RADIUS, RADIUS, 5)
 
-		-- 9. Canonical cell list, bounds and palette.
+		-- 9. Pane shapes. `xpanes` settles a pane's node and param2 from its
+		-- horizontal neighbours in `update_pane`, which the engine runs from
+		-- `register_on_placenode` and therefore never for a VoxelManip write.
+		-- Every neighbour is now in the buffer, so the decision can be made
+		-- exactly, once, over the finished pad.
+		parts.resolve_panes(buf)
+
+		-- 10. Canonical cell list, bounds and palette.
 		local source, count = buf:cells()
 		local cells = {}
 		for index = 1, count do cells[index] = source[index] end

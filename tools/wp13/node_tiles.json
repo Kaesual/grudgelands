@@ -1751,7 +1751,10 @@
   "grug_decor:cottages_shelf": {
    "drawtype": "nodebox",
    "paramtype2": "facedir",
-   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "default_wood.png"
+   ],
    "shape": "nodebox"
   },
   "grug_decor:cottages_slate_vertical": {
@@ -1873,7 +1876,13 @@
   },
   "grug_decor:xdecor_barrel": {
    "paramtype2": "facedir",
-   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_xdecor_xdecor_barrel_top.png",
+    "grug_decor_xdecor_xdecor_barrel_top.png",
+    "grug_decor_xdecor_xdecor_barrel_sides.png"
+   ],
+   "drawtype": "normal",
    "shape": "cube"
   },
   "grug_decor:xdecor_candle": {
@@ -1884,7 +1893,13 @@
   },
   "grug_decor:xdecor_cauldron": {
    "paramtype2": "facedir",
-   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_xdecor_xdecor_cauldron_top_empty.png",
+    "grug_decor_xdecor_xdecor_cauldron_bottom.png",
+    "grug_decor_xdecor_xdecor_cauldron_sides.png"
+   ],
+   "drawtype": "normal",
    "shape": "cube"
   },
   "grug_decor:xdecor_chair": {
@@ -1928,11 +1943,14 @@
     "default_wood.png",
     "default_wood.png",
     "default_wood.png",
-    "default_wood.png"
+    "default_wood.png",
+    "default_wood.png^grug_decor_xdecor_xdecor_empty_shelf.png",
+    "default_wood.png^grug_decor_xdecor_xdecor_empty_shelf.png"
    ],
    "paramtype2": "facedir",
    "alpha": "opaque",
-   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "source": "MANUAL_OVERRIDES",
+   "drawtype": "normal",
    "shape": "cube"
   },
   "grug_decor:xdecor_itemframe": {
