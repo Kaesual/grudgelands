@@ -109,7 +109,42 @@ return function(repo)
 	palettes.races.broken_race = {wall = "default:pine_wood"}
 	assert(not pcall(palettes.new, "broken_race"), "unbound role accepted")
 	palettes.races.broken_race = nil
-	say("palette", "dwarf", #palettes.required)
+
+	-- A palette may only name nodes the game still registers. `grug_materials`
+	-- curates part of the vendored vocabulary away with `core.unregister_item`,
+	-- and R7 hard-fails on an unregistered Hearthpine target, so the removed
+	-- names are read out of the curation source and checked here instead of
+	-- being discovered by a headless engine run.
+	local removed = {}
+	local curation = io.open(repo ..
+		"/mods/ITEMS/grug_materials/content_curation.lua", "r")
+	assert(curation, "content curation source is missing")
+	local text = curation:read("*a")
+	curation:close()
+	local blocks = 0
+	for block in text:gmatch("local REMOVED_[A-Z_]+ = {(.-)}") do
+		blocks = blocks + 1
+		for name in block:gmatch('"([%w_]+:[%w_]+)"') do
+			removed[name] = true
+			-- The stairs shapes of a removed block go with it.
+			local material = name:match("^default:([%w_]+)$")
+			if material then
+				for _, shape in ipairs({"stair_", "stair_inner_", "stair_outer_",
+						"slab_"}) do
+					removed["stairs:" .. shape .. material] = true
+				end
+			end
+		end
+	end
+	assert(blocks >= 3, "curation source no longer lists its removals")
+	local checked = 0
+	for _, role in ipairs(palettes.required) do
+		local name = palette.node(role)
+		assert(not removed[name],
+			"palette role " .. role .. " names the curated-away " .. name)
+		checked = checked + 1
+	end
+	say("palette", "dwarf", #palettes.required, "curated_names", blocks, checked)
 
 	-- 4. the roof rasteriser produces the corner shapes it claims -----------
 	local function raster_names(field)

@@ -610,6 +610,8 @@ MANUAL_OVERRIDES = {
                                        "default_chest_side.png",
                                        "default_chest_lock.png"],
                              "drawtype": "normal", "paramtype2": "facedir"},
+    "grug_materials:iron_block": {"tiles": ["default_steel_block.png"],
+                                  "drawtype": "normal"},
     "default:furnace": {"tiles": ["default_furnace_top.png",
                                   "default_furnace_bottom.png",
                                   "default_furnace_side.png",

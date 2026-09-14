@@ -1629,6 +1629,14 @@
    "source": "mods/ITEMS/grug_materials/ores.lua",
    "shape": "glass"
   },
+  "grug_materials:iron_block": {
+   "tiles": [
+    "default_steel_block.png"
+   ],
+   "drawtype": "normal",
+   "shape": "cube",
+   "source": "MANUAL_OVERRIDES"
+  },
   "grug_nodes:blight_dirt": {
    "tiles": [
     "grug_nodes_blight_dirt.png"
