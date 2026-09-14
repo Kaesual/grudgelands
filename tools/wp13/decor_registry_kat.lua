@@ -73,6 +73,7 @@ local FORBIDDEN_FIELDS = {
 	"on_metadata_inventory_move", "on_rightclick", "on_punch", "on_blast",
 	"on_construct", "after_place_node", "after_dig_node", "on_destruct",
 	"after_destruct", "can_dig", "preserve_metadata", "on_rotate",
+	"on_dig", "on_use", "on_flood", "node_dig_prediction",
 }
 
 ---------------------------------------------------------------------------
@@ -321,6 +322,9 @@ for _, name in ipairs(registered_order) do
 	end
 	check(def.formspec == nil, name .. " carries a formspec")
 	check(def.inventory == nil, name .. " carries an inventory")
+	-- grug_materials/audit.lua hard-fails startup on any node with level > 0.
+	check(type(def.groups) ~= "table" or def.groups.level == nil,
+		name .. " carries a level group")
 	-- `_grug_sell_price` is deliberately unset (0 = not sellable)
 	check(def._grug_sell_price == nil, name .. " sets _grug_sell_price")
 end

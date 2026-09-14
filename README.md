@@ -292,7 +292,7 @@ licensing and stable `file:line` citations. See
 
 ## License
 
-- **Code: GPL-3.0-or-later** — [LICENSE.txt](LICENSE.txt), with the
+- **Code: GPL-3.0** — our own files are GPL-3.0-or-later ([LICENSE.txt](LICENSE.txt)), but the combined game is GPL-3.0-only since the `grug_decor` kit includes GPL-3.0-only code from cottages (2026-09-14); with the
   compatibility matrix in
   [docs/research/licensing.md](docs/research/licensing.md).
 - **Media:** original CC0 / CC BY / CC BY-SA / GPL terms, documented per mod;

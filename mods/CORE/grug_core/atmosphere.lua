@@ -22,7 +22,11 @@
 -- (l_object.cpp:2836 `lighting = player->getLighting()`). A preset that omits
 -- `volumetric_light` therefore INHERITS whatever the previous preset set. So
 -- every preset below states every group it cares about, which makes preset
--- switching order-independent. Given nil, the engine resets everything to the
+-- switching order-independent. Two merged keys are deliberately never set by
+-- any preset: `shadows.direction` (l_object.cpp:2843-2846) and
+-- `exposure.center_weight_power` (:2859); a future preset that sets either
+-- must be paired with the same key stated in every other preset, or switching
+-- away will inherit it. Given nil, the engine resets everything to the
 -- defaults above (l_object.cpp:2834 `lua_isnoneornil`, documented in
 -- lua_api.md:9591-9592) — that is what the `off` preset uses.
 --

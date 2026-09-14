@@ -17,7 +17,7 @@
    "drawtype": "nodebox",
    "paramtype2": "facedir",
    "shape": "bed",
-   "source": "reference_projects/minetest_game/mods/beds/beds.lua"
+   "source": "mods/BASE/beds/beds.lua"
   },
   "beds:bed_top": {
    "tiles": [
@@ -31,7 +31,7 @@
    "drawtype": "nodebox",
    "paramtype2": "facedir",
    "shape": "bed",
-   "source": "reference_projects/minetest_game/mods/beds/beds.lua"
+   "source": "mods/BASE/beds/beds.lua"
   },
   "beds:fancy_bed_bottom": {
    "tiles": [
@@ -45,7 +45,7 @@
    "drawtype": "nodebox",
    "paramtype2": "facedir",
    "shape": "bed",
-   "source": "reference_projects/minetest_game/mods/beds/beds.lua"
+   "source": "mods/BASE/beds/beds.lua"
   },
   "beds:fancy_bed_top": {
    "tiles": [
@@ -59,7 +59,7 @@
    "drawtype": "nodebox",
    "paramtype2": "facedir",
    "shape": "bed",
-   "source": "reference_projects/minetest_game/mods/beds/beds.lua"
+   "source": "mods/BASE/beds/beds.lua"
   },
   "bones:bones": {
    "tiles": [
@@ -1179,7 +1179,7 @@
    "drawtype": "mesh",
    "paramtype2": "facedir",
    "shape": "door",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:door_glass_b": {
    "tiles": [
@@ -1188,7 +1188,7 @@
    "drawtype": "mesh",
    "paramtype2": "facedir",
    "shape": "door",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:door_glass_c": {
    "tiles": [
@@ -1197,7 +1197,7 @@
    "drawtype": "mesh",
    "paramtype2": "facedir",
    "shape": "door",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:door_glass_d": {
    "tiles": [
@@ -1206,7 +1206,7 @@
    "drawtype": "mesh",
    "paramtype2": "facedir",
    "shape": "door",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:door_obsidian_glass_a": {
    "tiles": [
@@ -1215,7 +1215,7 @@
    "drawtype": "mesh",
    "paramtype2": "facedir",
    "shape": "door",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:door_obsidian_glass_b": {
    "tiles": [
@@ -1224,7 +1224,7 @@
    "drawtype": "mesh",
    "paramtype2": "facedir",
    "shape": "door",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:door_obsidian_glass_c": {
    "tiles": [
@@ -1233,7 +1233,7 @@
    "drawtype": "mesh",
    "paramtype2": "facedir",
    "shape": "door",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:door_obsidian_glass_d": {
    "tiles": [
@@ -1242,7 +1242,7 @@
    "drawtype": "mesh",
    "paramtype2": "facedir",
    "shape": "door",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:door_steel_a": {
    "tiles": [
@@ -1251,7 +1251,7 @@
    "drawtype": "mesh",
    "paramtype2": "facedir",
    "shape": "door",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:door_steel_b": {
    "tiles": [
@@ -1260,7 +1260,7 @@
    "drawtype": "mesh",
    "paramtype2": "facedir",
    "shape": "door",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:door_steel_c": {
    "tiles": [
@@ -1269,7 +1269,7 @@
    "drawtype": "mesh",
    "paramtype2": "facedir",
    "shape": "door",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:door_steel_d": {
    "tiles": [
@@ -1278,7 +1278,7 @@
    "drawtype": "mesh",
    "paramtype2": "facedir",
    "shape": "door",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:door_wood_a": {
    "tiles": [
@@ -1287,7 +1287,7 @@
    "drawtype": "mesh",
    "paramtype2": "facedir",
    "shape": "door",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:door_wood_b": {
    "tiles": [
@@ -1296,7 +1296,7 @@
    "drawtype": "mesh",
    "paramtype2": "facedir",
    "shape": "door",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:door_wood_c": {
    "tiles": [
@@ -1305,7 +1305,7 @@
    "drawtype": "mesh",
    "paramtype2": "facedir",
    "shape": "door",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:door_wood_d": {
    "tiles": [
@@ -1314,7 +1314,7 @@
    "drawtype": "mesh",
    "paramtype2": "facedir",
    "shape": "door",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:gate_acacia_wood_closed": {
    "tiles": [
@@ -1323,7 +1323,7 @@
    "drawtype": "nodebox",
    "paramtype2": "facedir",
    "shape": "fence",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:gate_acacia_wood_open": {
    "tiles": [
@@ -1332,7 +1332,7 @@
    "drawtype": "nodebox",
    "paramtype2": "facedir",
    "shape": "fence",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:gate_aspen_wood_closed": {
    "tiles": [
@@ -1341,7 +1341,7 @@
    "drawtype": "nodebox",
    "paramtype2": "facedir",
    "shape": "fence",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:gate_aspen_wood_open": {
    "tiles": [
@@ -1350,7 +1350,7 @@
    "drawtype": "nodebox",
    "paramtype2": "facedir",
    "shape": "fence",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:gate_junglewood_closed": {
    "tiles": [
@@ -1359,7 +1359,7 @@
    "drawtype": "nodebox",
    "paramtype2": "facedir",
    "shape": "fence",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:gate_junglewood_open": {
    "tiles": [
@@ -1368,7 +1368,7 @@
    "drawtype": "nodebox",
    "paramtype2": "facedir",
    "shape": "fence",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:gate_pine_wood_closed": {
    "tiles": [
@@ -1377,7 +1377,7 @@
    "drawtype": "nodebox",
    "paramtype2": "facedir",
    "shape": "fence",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:gate_pine_wood_open": {
    "tiles": [
@@ -1386,7 +1386,7 @@
    "drawtype": "nodebox",
    "paramtype2": "facedir",
    "shape": "fence",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:gate_wood_closed": {
    "tiles": [
@@ -1395,7 +1395,7 @@
    "drawtype": "nodebox",
    "paramtype2": "facedir",
    "shape": "fence",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:gate_wood_open": {
    "tiles": [
@@ -1404,7 +1404,7 @@
    "drawtype": "nodebox",
    "paramtype2": "facedir",
    "shape": "fence",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:hidden": {
    "tiles": [
@@ -1412,7 +1412,7 @@
    ],
    "drawtype": "airlike",
    "paramtype2": "facedir",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua",
+   "source": "mods/BASE/doors/init.lua",
    "shape": "air"
   },
   "doors:trapdoor": {
@@ -1427,7 +1427,7 @@
    "drawtype": "nodebox",
    "paramtype2": "facedir",
    "shape": "trapdoor",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:trapdoor_open": {
    "tiles": [
@@ -1441,7 +1441,7 @@
    "drawtype": "nodebox",
    "paramtype2": "facedir",
    "shape": "trapdoor_open",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:trapdoor_steel": {
    "tiles": [
@@ -1455,7 +1455,7 @@
    "drawtype": "nodebox",
    "paramtype2": "facedir",
    "shape": "trapdoor",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "doors:trapdoor_steel_open": {
    "tiles": [
@@ -1469,7 +1469,7 @@
    "drawtype": "nodebox",
    "paramtype2": "facedir",
    "shape": "trapdoor_open",
-   "source": "reference_projects/minetest_game/mods/doors/init.lua"
+   "source": "mods/BASE/doors/init.lua"
   },
   "farming:cotton_wild": {
    "tiles": [
@@ -1595,6 +1595,359 @@
   },
   "flowers:waterlily_waving": {
    "source": "reference_projects/minetest_game/mods/flowers/init.lua",
+   "shape": "cube"
+  },
+  "grug_decor:castle_dungeon_stone": {
+   "tiles": [
+    "grug_decor_castle_castle_dungeon_stone.png"
+   ],
+   "drawtype": "normal",
+   "source": "mods/ITEMS/grug_decor/castle.lua",
+   "shape": "cube"
+  },
+  "grug_decor:castle_pavement_brick": {
+   "tiles": [
+    "grug_decor_castle_castle_pavement_brick.png"
+   ],
+   "drawtype": "normal",
+   "source": "mods/ITEMS/grug_decor/castle.lua",
+   "shape": "cube"
+  },
+  "grug_decor:castle_roofslate": {
+   "tiles": [
+    "grug_decor_castle_castle_slate.png"
+   ],
+   "drawtype": "raillike",
+   "source": "mods/ITEMS/grug_decor/castle.lua",
+   "shape": "cube"
+  },
+  "grug_decor:castle_rubble": {
+   "tiles": [
+    "grug_decor_castle_castle_rubble.png"
+   ],
+   "drawtype": "normal",
+   "source": "mods/ITEMS/grug_decor/castle.lua",
+   "shape": "cube"
+  },
+  "grug_decor:castle_stonewall": {
+   "tiles": [
+    "grug_decor_castle_castle_stonewall.png"
+   ],
+   "drawtype": "normal",
+   "source": "mods/ITEMS/grug_decor/castle.lua",
+   "shape": "cube"
+  },
+  "grug_decor:castle_stonewall_corner": {
+   "tiles": [
+    "grug_decor_castle_castle_corner_stonewall_tb.png^[transformR90",
+    "grug_decor_castle_castle_corner_stonewall_tb.png^[transformR180",
+    "grug_decor_castle_castle_corner_stonewall1.png",
+    "grug_decor_castle_castle_stonewall.png",
+    "grug_decor_castle_castle_stonewall.png",
+    "grug_decor_castle_castle_corner_stonewall2.png"
+   ],
+   "drawtype": "normal",
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/castle.lua",
+   "shape": "cube"
+  },
+  "grug_decor:cottages_anvil": {
+   "tiles": [
+    "grug_decor_cottages_cottages_stone.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:cottages_barrel": {
+   "drawtype": "mesh",
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:cottages_barrel_lying": {
+   "drawtype": "mesh",
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:cottages_barrel_lying_open": {
+   "drawtype": "mesh",
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:cottages_barrel_open": {
+   "drawtype": "mesh",
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:cottages_bench": {
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:cottages_glass_pane": {
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "alpha": "clip",
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:cottages_glass_pane_side": {
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "alpha": "clip",
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:cottages_loam": {
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "cube"
+  },
+  "grug_decor:cottages_reet": {
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "cube"
+  },
+  "grug_decor:cottages_shelf": {
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:cottages_slate_vertical": {
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "cube"
+  },
+  "grug_decor:cottages_straw": {
+   "drawtype": "normal",
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "cube"
+  },
+  "grug_decor:cottages_straw_bale": {
+   "tiles": [
+    "grug_decor_cottages_cottages_darkage_straw_bale.png"
+   ],
+   "drawtype": "nodebox",
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:cottages_straw_ground": {
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "cube"
+  },
+  "grug_decor:cottages_straw_mat": {
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:cottages_table": {
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:cottages_tub": {
+   "drawtype": "mesh",
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:cottages_wagon_load": {
+   "tiles": [
+    "default_wood.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "alpha": "clip",
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:cottages_wagon_wheel": {
+   "drawtype": "mesh",
+   "paramtype2": "wallmounted",
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:cottages_wagon_wheel_road": {
+   "drawtype": "mesh",
+   "paramtype2": "wallmounted",
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:cottages_washing": {
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:cottages_window_shutter_closed": {
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:cottages_window_shutter_open": {
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:cottages_wood_flat": {
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:cottages_wool_tent": {
+   "tiles": [
+    "grug_decor_cottages_cottages_wool.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/cottages.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:darkage_reinforced_wood": {
+   "source": "mods/ITEMS/grug_decor/darkage.lua",
+   "shape": "cube"
+  },
+  "grug_decor:darkage_reinforced_wood_arrow": {
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/darkage.lua",
+   "shape": "cube"
+  },
+  "grug_decor:darkage_reinforced_wood_bars": {
+   "source": "mods/ITEMS/grug_decor/darkage.lua",
+   "shape": "cube"
+  },
+  "grug_decor:darkage_reinforced_wood_slope": {
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/darkage.lua",
+   "shape": "cube"
+  },
+  "grug_decor:darkage_wood_frame": {
+   "drawtype": "glasslike_framed",
+   "source": "mods/ITEMS/grug_decor/darkage.lua",
+   "shape": "glass"
+  },
+  "grug_decor:xdecor_barrel": {
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "shape": "cube"
+  },
+  "grug_decor:xdecor_candle": {
+   "drawtype": "torchlike",
+   "paramtype2": "wallmounted",
+   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "shape": "torch"
+  },
+  "grug_decor:xdecor_cauldron": {
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "shape": "cube"
+  },
+  "grug_decor:xdecor_chair": {
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:xdecor_cobweb": {
+   "drawtype": "plantlike",
+   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "shape": "plant"
+  },
+  "grug_decor:xdecor_curtain": {
+   "drawtype": "nodebox",
+   "paramtype2": "wallmounted",
+   "alpha": "clip",
+   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:xdecor_curtain_open": {
+   "drawtype": "nodebox",
+   "paramtype2": "wallmounted",
+   "alpha": "clip",
+   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:xdecor_cushion": {
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:xdecor_cushion_block": {
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "shape": "cube"
+  },
+  "grug_decor:xdecor_empty_shelf": {
+   "tiles": [
+    "default_wood.png",
+    "default_wood.png",
+    "default_wood.png",
+    "default_wood.png"
+   ],
+   "paramtype2": "facedir",
+   "alpha": "opaque",
+   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "shape": "cube"
+  },
+  "grug_decor:xdecor_itemframe": {
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:xdecor_ivy": {
+   "drawtype": "signlike",
+   "paramtype2": "wallmounted",
+   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "shape": "billboard"
+  },
+  "grug_decor:xdecor_lantern": {
+   "drawtype": "plantlike",
+   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "shape": "plant"
+  },
+  "grug_decor:xdecor_lantern_hanging": {
+   "drawtype": "plantlike",
+   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "shape": "plant"
+  },
+  "grug_decor:xdecor_rope": {
+   "drawtype": "plantlike",
+   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "shape": "plant"
+  },
+  "grug_decor:xdecor_stonepath": {
+   "tiles": [
+    "default_stone.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:xdecor_table": {
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "shape": "nodebox"
+  },
+  "grug_decor:xdecor_woodframed_glass": {
+   "drawtype": "glasslike_framed",
+   "alpha": "clip",
+   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "shape": "glass"
+  },
+  "grug_decor:xdecor_workbench": {
+   "paramtype2": "facedir",
+   "source": "mods/ITEMS/grug_decor/xdecor.lua",
    "shape": "cube"
   },
   "grug_materials:emberglass_lamp": {
@@ -3039,7 +3392,7 @@
     "vessels_drinking_glass.png"
    ],
    "drawtype": "plantlike",
-   "source": "reference_projects/minetest_game/mods/vessels/init.lua",
+   "source": "mods/BASE/vessels/init.lua",
    "shape": "plant"
   },
   "vessels:glass_bottle": {
@@ -3047,7 +3400,7 @@
     "vessels_glass_bottle.png"
    ],
    "drawtype": "plantlike",
-   "source": "reference_projects/minetest_game/mods/vessels/init.lua",
+   "source": "mods/BASE/vessels/init.lua",
    "shape": "plant"
   },
   "vessels:shelf": {
@@ -3060,7 +3413,7 @@
     "vessels_shelf.png"
    ],
    "paramtype2": "facedir",
-   "source": "reference_projects/minetest_game/mods/vessels/init.lua",
+   "source": "mods/BASE/vessels/init.lua",
    "shape": "cube"
   },
   "vessels:steel_bottle": {
@@ -3077,7 +3430,7 @@
    ],
    "drawtype": "nodebox",
    "shape": "wall",
-   "source": "reference_projects/minetest_game/mods/walls/init.lua"
+   "source": "mods/BASE/walls/init.lua"
   },
   "walls:desertcobble": {
    "tiles": [
@@ -3085,7 +3438,7 @@
    ],
    "drawtype": "nodebox",
    "shape": "wall",
-   "source": "reference_projects/minetest_game/mods/walls/init.lua"
+   "source": "mods/BASE/walls/init.lua"
   },
   "walls:mossycobble": {
    "tiles": [
@@ -3093,7 +3446,7 @@
    ],
    "drawtype": "nodebox",
    "shape": "wall",
-   "source": "reference_projects/minetest_game/mods/walls/init.lua"
+   "source": "mods/BASE/walls/init.lua"
   },
   "xpanes:bar": {
    "tiles": [
@@ -3108,7 +3461,7 @@
    "paramtype2": "facedir",
    "alpha": "clip",
    "shape": "pane",
-   "source": "reference_projects/minetest_game/mods/xpanes/init.lua"
+   "source": "mods/BASE/xpanes/init.lua"
   },
   "xpanes:bar_flat": {
    "tiles": [
@@ -3123,7 +3476,7 @@
    "paramtype2": "facedir",
    "alpha": "clip",
    "shape": "pane",
-   "source": "reference_projects/minetest_game/mods/xpanes/init.lua"
+   "source": "mods/BASE/xpanes/init.lua"
   },
   "xpanes:door_steel_bar_a": {
    "tiles": [
@@ -3132,7 +3485,7 @@
    "drawtype": "mesh",
    "paramtype2": "facedir",
    "shape": "door",
-   "source": "reference_projects/minetest_game/mods/xpanes/init.lua"
+   "source": "mods/BASE/xpanes/init.lua"
   },
   "xpanes:door_steel_bar_b": {
    "tiles": [
@@ -3141,7 +3494,7 @@
    "drawtype": "mesh",
    "paramtype2": "facedir",
    "shape": "door",
-   "source": "reference_projects/minetest_game/mods/xpanes/init.lua"
+   "source": "mods/BASE/xpanes/init.lua"
   },
   "xpanes:door_steel_bar_c": {
    "tiles": [
@@ -3150,7 +3503,7 @@
    "drawtype": "mesh",
    "paramtype2": "facedir",
    "shape": "door",
-   "source": "reference_projects/minetest_game/mods/xpanes/init.lua"
+   "source": "mods/BASE/xpanes/init.lua"
   },
   "xpanes:door_steel_bar_d": {
    "tiles": [
@@ -3159,7 +3512,7 @@
    "drawtype": "mesh",
    "paramtype2": "facedir",
    "shape": "door",
-   "source": "reference_projects/minetest_game/mods/xpanes/init.lua"
+   "source": "mods/BASE/xpanes/init.lua"
   },
   "xpanes:obsidian_pane": {
    "tiles": [
@@ -3174,7 +3527,7 @@
    "paramtype2": "facedir",
    "alpha": "clip",
    "shape": "pane",
-   "source": "reference_projects/minetest_game/mods/xpanes/init.lua"
+   "source": "mods/BASE/xpanes/init.lua"
   },
   "xpanes:obsidian_pane_flat": {
    "tiles": [
@@ -3189,7 +3542,7 @@
    "paramtype2": "facedir",
    "alpha": "clip",
    "shape": "pane",
-   "source": "reference_projects/minetest_game/mods/xpanes/init.lua"
+   "source": "mods/BASE/xpanes/init.lua"
   },
   "xpanes:pane": {
    "tiles": [
@@ -3204,7 +3557,7 @@
    "paramtype2": "facedir",
    "alpha": "clip",
    "shape": "pane",
-   "source": "reference_projects/minetest_game/mods/xpanes/init.lua"
+   "source": "mods/BASE/xpanes/init.lua"
   },
   "xpanes:pane_flat": {
    "tiles": [
@@ -3219,7 +3572,7 @@
    "paramtype2": "facedir",
    "alpha": "clip",
    "shape": "pane",
-   "source": "reference_projects/minetest_game/mods/xpanes/init.lua"
+   "source": "mods/BASE/xpanes/init.lua"
   },
   "xpanes:trapdoor_steel_bar": {
    "tiles": [
@@ -3233,7 +3586,7 @@
    "drawtype": "nodebox",
    "paramtype2": "facedir",
    "shape": "trapdoor",
-   "source": "reference_projects/minetest_game/mods/xpanes/init.lua"
+   "source": "mods/BASE/xpanes/init.lua"
   },
   "xpanes:trapdoor_steel_bar_open": {
    "tiles": [
@@ -3247,25 +3600,25 @@
    "drawtype": "nodebox",
    "paramtype2": "facedir",
    "shape": "trapdoor_open",
-   "source": "reference_projects/minetest_game/mods/xpanes/init.lua"
+   "source": "mods/BASE/xpanes/init.lua"
   }
  },
  "textures": {
-  "beds_bed.png": "reference_projects/minetest_game/mods/beds/textures/beds_bed.png",
-  "beds_bed_fancy.png": "reference_projects/minetest_game/mods/beds/textures/beds_bed_fancy.png",
-  "beds_bed_foot.png": "reference_projects/minetest_game/mods/beds/textures/beds_bed_foot.png",
-  "beds_bed_head.png": "reference_projects/minetest_game/mods/beds/textures/beds_bed_head.png",
-  "beds_bed_side1.png": "reference_projects/minetest_game/mods/beds/textures/beds_bed_side1.png",
-  "beds_bed_side2.png": "reference_projects/minetest_game/mods/beds/textures/beds_bed_side2.png",
-  "beds_bed_side_bottom.png": "reference_projects/minetest_game/mods/beds/textures/beds_bed_side_bottom.png",
-  "beds_bed_side_bottom_r.png": "reference_projects/minetest_game/mods/beds/textures/beds_bed_side_bottom_r.png",
-  "beds_bed_side_top.png": "reference_projects/minetest_game/mods/beds/textures/beds_bed_side_top.png",
-  "beds_bed_side_top_r.png": "reference_projects/minetest_game/mods/beds/textures/beds_bed_side_top_r.png",
-  "beds_bed_top1.png": "reference_projects/minetest_game/mods/beds/textures/beds_bed_top1.png",
-  "beds_bed_top2.png": "reference_projects/minetest_game/mods/beds/textures/beds_bed_top2.png",
-  "beds_bed_top_bottom.png": "reference_projects/minetest_game/mods/beds/textures/beds_bed_top_bottom.png",
-  "beds_bed_top_top.png": "reference_projects/minetest_game/mods/beds/textures/beds_bed_top_top.png",
-  "beds_bed_under.png": "reference_projects/minetest_game/mods/beds/textures/beds_bed_under.png",
+  "beds_bed.png": "mods/BASE/beds/textures/beds_bed.png",
+  "beds_bed_fancy.png": "mods/BASE/beds/textures/beds_bed_fancy.png",
+  "beds_bed_foot.png": "mods/BASE/beds/textures/beds_bed_foot.png",
+  "beds_bed_head.png": "mods/BASE/beds/textures/beds_bed_head.png",
+  "beds_bed_side1.png": "mods/BASE/beds/textures/beds_bed_side1.png",
+  "beds_bed_side2.png": "mods/BASE/beds/textures/beds_bed_side2.png",
+  "beds_bed_side_bottom.png": "mods/BASE/beds/textures/beds_bed_side_bottom.png",
+  "beds_bed_side_bottom_r.png": "mods/BASE/beds/textures/beds_bed_side_bottom_r.png",
+  "beds_bed_side_top.png": "mods/BASE/beds/textures/beds_bed_side_top.png",
+  "beds_bed_side_top_r.png": "mods/BASE/beds/textures/beds_bed_side_top_r.png",
+  "beds_bed_top1.png": "mods/BASE/beds/textures/beds_bed_top1.png",
+  "beds_bed_top2.png": "mods/BASE/beds/textures/beds_bed_top2.png",
+  "beds_bed_top_bottom.png": "mods/BASE/beds/textures/beds_bed_top_bottom.png",
+  "beds_bed_top_top.png": "mods/BASE/beds/textures/beds_bed_top_top.png",
+  "beds_bed_under.png": "mods/BASE/beds/textures/beds_bed_under.png",
   "binoculars_binoculars.png": "reference_projects/minetest_game/mods/binoculars/textures/binoculars_binoculars.png",
   "boats_inventory.png": "reference_projects/minetest_game/mods/boats/textures/boats_inventory.png",
   "boats_wield.png": "reference_projects/minetest_game/mods/boats/textures/boats_wield.png",
@@ -3544,34 +3897,34 @@
   "default_water_flowing_animated.png": "mods/BASE/default/textures/default_water_flowing_animated.png",
   "default_water_source_animated.png": "mods/BASE/default/textures/default_water_source_animated.png",
   "default_wood.png": "mods/BASE/default/textures/default_wood.png",
-  "doors_door_glass.png": "reference_projects/minetest_game/mods/doors/textures/doors_door_glass.png",
-  "doors_door_obsidian_glass.png": "reference_projects/minetest_game/mods/doors/textures/doors_door_obsidian_glass.png",
-  "doors_door_steel.png": "reference_projects/minetest_game/mods/doors/textures/doors_door_steel.png",
-  "doors_door_wood.png": "reference_projects/minetest_game/mods/doors/textures/doors_door_wood.png",
-  "doors_hidden_segment.png": "reference_projects/minetest_game/mods/doors/textures/doors_hidden_segment.png",
-  "doors_item_glass.png": "reference_projects/minetest_game/mods/doors/textures/doors_item_glass.png",
-  "doors_item_obsidian_glass.png": "reference_projects/minetest_game/mods/doors/textures/doors_item_obsidian_glass.png",
-  "doors_item_steel.png": "reference_projects/minetest_game/mods/doors/textures/doors_item_steel.png",
-  "doors_item_wood.png": "reference_projects/minetest_game/mods/doors/textures/doors_item_wood.png",
-  "doors_trapdoor.png": "reference_projects/minetest_game/mods/doors/textures/doors_trapdoor.png",
-  "doors_trapdoor_side.png": "reference_projects/minetest_game/mods/doors/textures/doors_trapdoor_side.png",
-  "doors_trapdoor_steel.png": "reference_projects/minetest_game/mods/doors/textures/doors_trapdoor_steel.png",
-  "doors_trapdoor_steel_side.png": "reference_projects/minetest_game/mods/doors/textures/doors_trapdoor_steel_side.png",
-  "dye_black.png": "reference_projects/minetest_game/mods/dye/textures/dye_black.png",
-  "dye_blue.png": "reference_projects/minetest_game/mods/dye/textures/dye_blue.png",
-  "dye_brown.png": "reference_projects/minetest_game/mods/dye/textures/dye_brown.png",
-  "dye_cyan.png": "reference_projects/minetest_game/mods/dye/textures/dye_cyan.png",
-  "dye_dark_green.png": "reference_projects/minetest_game/mods/dye/textures/dye_dark_green.png",
-  "dye_dark_grey.png": "reference_projects/minetest_game/mods/dye/textures/dye_dark_grey.png",
-  "dye_green.png": "reference_projects/minetest_game/mods/dye/textures/dye_green.png",
-  "dye_grey.png": "reference_projects/minetest_game/mods/dye/textures/dye_grey.png",
-  "dye_magenta.png": "reference_projects/minetest_game/mods/dye/textures/dye_magenta.png",
-  "dye_orange.png": "reference_projects/minetest_game/mods/dye/textures/dye_orange.png",
-  "dye_pink.png": "reference_projects/minetest_game/mods/dye/textures/dye_pink.png",
-  "dye_red.png": "reference_projects/minetest_game/mods/dye/textures/dye_red.png",
-  "dye_violet.png": "reference_projects/minetest_game/mods/dye/textures/dye_violet.png",
-  "dye_white.png": "reference_projects/minetest_game/mods/dye/textures/dye_white.png",
-  "dye_yellow.png": "reference_projects/minetest_game/mods/dye/textures/dye_yellow.png",
+  "doors_door_glass.png": "mods/BASE/doors/textures/doors_door_glass.png",
+  "doors_door_obsidian_glass.png": "mods/BASE/doors/textures/doors_door_obsidian_glass.png",
+  "doors_door_steel.png": "mods/BASE/doors/textures/doors_door_steel.png",
+  "doors_door_wood.png": "mods/BASE/doors/textures/doors_door_wood.png",
+  "doors_hidden_segment.png": "mods/BASE/doors/textures/doors_hidden_segment.png",
+  "doors_item_glass.png": "mods/BASE/doors/textures/doors_item_glass.png",
+  "doors_item_obsidian_glass.png": "mods/BASE/doors/textures/doors_item_obsidian_glass.png",
+  "doors_item_steel.png": "mods/BASE/doors/textures/doors_item_steel.png",
+  "doors_item_wood.png": "mods/BASE/doors/textures/doors_item_wood.png",
+  "doors_trapdoor.png": "mods/BASE/doors/textures/doors_trapdoor.png",
+  "doors_trapdoor_side.png": "mods/BASE/doors/textures/doors_trapdoor_side.png",
+  "doors_trapdoor_steel.png": "mods/BASE/doors/textures/doors_trapdoor_steel.png",
+  "doors_trapdoor_steel_side.png": "mods/BASE/doors/textures/doors_trapdoor_steel_side.png",
+  "dye_black.png": "mods/BASE/dye/textures/dye_black.png",
+  "dye_blue.png": "mods/BASE/dye/textures/dye_blue.png",
+  "dye_brown.png": "mods/BASE/dye/textures/dye_brown.png",
+  "dye_cyan.png": "mods/BASE/dye/textures/dye_cyan.png",
+  "dye_dark_green.png": "mods/BASE/dye/textures/dye_dark_green.png",
+  "dye_dark_grey.png": "mods/BASE/dye/textures/dye_dark_grey.png",
+  "dye_green.png": "mods/BASE/dye/textures/dye_green.png",
+  "dye_grey.png": "mods/BASE/dye/textures/dye_grey.png",
+  "dye_magenta.png": "mods/BASE/dye/textures/dye_magenta.png",
+  "dye_orange.png": "mods/BASE/dye/textures/dye_orange.png",
+  "dye_pink.png": "mods/BASE/dye/textures/dye_pink.png",
+  "dye_red.png": "mods/BASE/dye/textures/dye_red.png",
+  "dye_violet.png": "mods/BASE/dye/textures/dye_violet.png",
+  "dye_white.png": "mods/BASE/dye/textures/dye_white.png",
+  "dye_yellow.png": "mods/BASE/dye/textures/dye_yellow.png",
   "farming_bread.png": "reference_projects/minetest_game/mods/farming/textures/farming_bread.png",
   "farming_cotton.png": "reference_projects/minetest_game/mods/farming/textures/farming_cotton.png",
   "farming_cotton_1.png": "reference_projects/minetest_game/mods/farming/textures/farming_cotton_1.png",
@@ -3631,6 +3984,108 @@
   "flowers_waterlily_bottom.png": "reference_projects/minetest_game/mods/flowers/textures/flowers_waterlily_bottom.png",
   "grug_abilities_orb.png": "mods/PLAYER/grug_abilities/textures/grug_abilities_orb.png",
   "grug_abilities_weapon_ready.png": "mods/PLAYER/grug_abilities/textures/grug_abilities_weapon_ready.png",
+  "grug_decor_castle_castle_corner_stonewall1.png": "mods/ITEMS/grug_decor/textures/grug_decor_castle_castle_corner_stonewall1.png",
+  "grug_decor_castle_castle_corner_stonewall2.png": "mods/ITEMS/grug_decor/textures/grug_decor_castle_castle_corner_stonewall2.png",
+  "grug_decor_castle_castle_corner_stonewall_tb.png": "mods/ITEMS/grug_decor/textures/grug_decor_castle_castle_corner_stonewall_tb.png",
+  "grug_decor_castle_castle_dungeon_stone.png": "mods/ITEMS/grug_decor/textures/grug_decor_castle_castle_dungeon_stone.png",
+  "grug_decor_castle_castle_pavement_brick.png": "mods/ITEMS/grug_decor/textures/grug_decor_castle_castle_pavement_brick.png",
+  "grug_decor_castle_castle_rubble.png": "mods/ITEMS/grug_decor/textures/grug_decor_castle_castle_rubble.png",
+  "grug_decor_castle_castle_slate.png": "mods/ITEMS/grug_decor/textures/grug_decor_castle_castle_slate.png",
+  "grug_decor_castle_castle_stonewall.png": "mods/ITEMS/grug_decor/textures/grug_decor_castle_castle_stonewall.png",
+  "grug_decor_cottages_cottages_barrel.png": "mods/ITEMS/grug_decor/textures/grug_decor_cottages_cottages_barrel.png",
+  "grug_decor_cottages_cottages_clay.png": "mods/ITEMS/grug_decor/textures/grug_decor_cottages_cottages_clay.png",
+  "grug_decor_cottages_cottages_darkage_straw.png": "mods/ITEMS/grug_decor/textures/grug_decor_cottages_cottages_darkage_straw.png",
+  "grug_decor_cottages_cottages_darkage_straw_bale.png": "mods/ITEMS/grug_decor/textures/grug_decor_cottages_cottages_darkage_straw_bale.png",
+  "grug_decor_cottages_cottages_glass_pane.png": "mods/ITEMS/grug_decor/textures/grug_decor_cottages_cottages_glass_pane.png",
+  "grug_decor_cottages_cottages_homedecor_shingles_terracotta.png": "mods/ITEMS/grug_decor/textures/grug_decor_cottages_cottages_homedecor_shingles_terracotta.png",
+  "grug_decor_cottages_cottages_homedecor_shingles_wood.png": "mods/ITEMS/grug_decor/textures/grug_decor_cottages_cottages_homedecor_shingles_wood.png",
+  "grug_decor_cottages_cottages_loam.png": "mods/ITEMS/grug_decor/textures/grug_decor_cottages_cottages_loam.png",
+  "grug_decor_cottages_cottages_minimal_wood.png": "mods/ITEMS/grug_decor/textures/grug_decor_cottages_cottages_minimal_wood.png",
+  "grug_decor_cottages_cottages_reet.png": "mods/ITEMS/grug_decor/textures/grug_decor_cottages_cottages_reet.png",
+  "grug_decor_cottages_cottages_slate.png": "mods/ITEMS/grug_decor/textures/grug_decor_cottages_cottages_slate.png",
+  "grug_decor_cottages_cottages_stone.png": "mods/ITEMS/grug_decor/textures/grug_decor_cottages_cottages_stone.png",
+  "grug_decor_cottages_cottages_wagonwheel.png": "mods/ITEMS/grug_decor/textures/grug_decor_cottages_cottages_wagonwheel.png",
+  "grug_decor_cottages_cottages_wool.png": "mods/ITEMS/grug_decor/textures/grug_decor_cottages_cottages_wool.png",
+  "grug_decor_darkage_darkage_adobe.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_adobe.png",
+  "grug_decor_darkage_darkage_basalt.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_basalt.png",
+  "grug_decor_darkage_darkage_basalt_block.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_basalt_block.png",
+  "grug_decor_darkage_darkage_basalt_brick.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_basalt_brick.png",
+  "grug_decor_darkage_darkage_basalt_rubble.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_basalt_rubble.png",
+  "grug_decor_darkage_darkage_chalk.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_chalk.png",
+  "grug_decor_darkage_darkage_chalked_bricks.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_chalked_bricks.png",
+  "grug_decor_darkage_darkage_glass.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_glass.png",
+  "grug_decor_darkage_darkage_glass_round.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_glass_round.png",
+  "grug_decor_darkage_darkage_glass_square.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_glass_square.png",
+  "grug_decor_darkage_darkage_iron_bars.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_iron_bars.png",
+  "grug_decor_darkage_darkage_iron_grille.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_iron_grille.png",
+  "grug_decor_darkage_darkage_marble.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_marble.png",
+  "grug_decor_darkage_darkage_marble_tile.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_marble_tile.png",
+  "grug_decor_darkage_darkage_mud.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_mud.png",
+  "grug_decor_darkage_darkage_mud_up.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_mud_up.png",
+  "grug_decor_darkage_darkage_ors.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_ors.png",
+  "grug_decor_darkage_darkage_ors_block.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_ors_block.png",
+  "grug_decor_darkage_darkage_ors_brick.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_ors_brick.png",
+  "grug_decor_darkage_darkage_ors_rubble.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_ors_rubble.png",
+  "grug_decor_darkage_darkage_reinforce.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_reinforce.png",
+  "grug_decor_darkage_darkage_reinforce_arrow.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_reinforce_arrow.png",
+  "grug_decor_darkage_darkage_reinforce_bars.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_reinforce_bars.png",
+  "grug_decor_darkage_darkage_reinforce_left.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_reinforce_left.png",
+  "grug_decor_darkage_darkage_reinforce_right.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_reinforce_right.png",
+  "grug_decor_darkage_darkage_serpentine.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_serpentine.png",
+  "grug_decor_darkage_darkage_slate.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_slate.png",
+  "grug_decor_darkage_darkage_slate_block.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_slate_block.png",
+  "grug_decor_darkage_darkage_slate_brick.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_slate_brick.png",
+  "grug_decor_darkage_darkage_slate_rubble.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_slate_rubble.png",
+  "grug_decor_darkage_darkage_slate_side.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_slate_side.png",
+  "grug_decor_darkage_darkage_slate_tile.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_slate_tile.png",
+  "grug_decor_darkage_darkage_stone_brick.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_stone_brick.png",
+  "grug_decor_darkage_darkage_straw_bale.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_straw_bale.png",
+  "grug_decor_darkage_darkage_wood_bars.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_wood_bars.png",
+  "grug_decor_darkage_darkage_wood_frame.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_wood_frame.png",
+  "grug_decor_darkage_darkage_wood_grille.png": "mods/ITEMS/grug_decor/textures/grug_decor_darkage_darkage_wood_grille.png",
+  "grug_decor_xdecor_xdecor_barrel_sides.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_barrel_sides.png",
+  "grug_decor_xdecor_xdecor_barrel_top.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_barrel_top.png",
+  "grug_decor_xdecor_xdecor_candle_floor.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_candle_floor.png",
+  "grug_decor_xdecor_xdecor_candle_hanging.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_candle_hanging.png",
+  "grug_decor_xdecor_xdecor_candle_inv.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_candle_inv.png",
+  "grug_decor_xdecor_xdecor_candle_wall.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_candle_wall.png",
+  "grug_decor_xdecor_xdecor_candle_wield.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_candle_wield.png",
+  "grug_decor_xdecor_xdecor_cauldron_bottom.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_cauldron_bottom.png",
+  "grug_decor_xdecor_xdecor_cauldron_sides.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_cauldron_sides.png",
+  "grug_decor_xdecor_xdecor_cauldron_top_empty.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_cauldron_top_empty.png",
+  "grug_decor_xdecor_xdecor_chrysanthemum_green_pot.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_chrysanthemum_green_pot.png",
+  "grug_decor_xdecor_xdecor_cobweb.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_cobweb.png",
+  "grug_decor_xdecor_xdecor_curtain_open_overlay.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_curtain_open_overlay.png",
+  "grug_decor_xdecor_xdecor_curtain_open_overlay_bottom.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_curtain_open_overlay_bottom.png",
+  "grug_decor_xdecor_xdecor_curtain_open_overlay_top.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_curtain_open_overlay_top.png",
+  "grug_decor_xdecor_xdecor_cushion.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_cushion.png",
+  "grug_decor_xdecor_xdecor_dandelion_white_pot.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_dandelion_white_pot.png",
+  "grug_decor_xdecor_xdecor_dandelion_yellow_pot.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_dandelion_yellow_pot.png",
+  "grug_decor_xdecor_xdecor_empty_shelf.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_empty_shelf.png",
+  "grug_decor_xdecor_xdecor_geranium_pot.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_geranium_pot.png",
+  "grug_decor_xdecor_xdecor_itemframe.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_itemframe.png",
+  "grug_decor_xdecor_xdecor_ivy.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_ivy.png",
+  "grug_decor_xdecor_xdecor_lantern.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_lantern.png",
+  "grug_decor_xdecor_xdecor_lantern_hanging_overlay_inv.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_lantern_hanging_overlay_inv.png",
+  "grug_decor_xdecor_xdecor_lantern_inv.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_lantern_inv.png",
+  "grug_decor_xdecor_xdecor_painting_1.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_painting_1.png",
+  "grug_decor_xdecor_xdecor_painting_2.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_painting_2.png",
+  "grug_decor_xdecor_xdecor_painting_3.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_painting_3.png",
+  "grug_decor_xdecor_xdecor_painting_4.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_painting_4.png",
+  "grug_decor_xdecor_xdecor_painting_empty.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_painting_empty.png",
+  "grug_decor_xdecor_xdecor_rope.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_rope.png",
+  "grug_decor_xdecor_xdecor_rope_inv.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_rope_inv.png",
+  "grug_decor_xdecor_xdecor_rose_pot.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_rose_pot.png",
+  "grug_decor_xdecor_xdecor_tulip_black_pot.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_tulip_black_pot.png",
+  "grug_decor_xdecor_xdecor_tulip_pot.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_tulip_pot.png",
+  "grug_decor_xdecor_xdecor_viola_pot.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_viola_pot.png",
+  "grug_decor_xdecor_xdecor_wood.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_wood.png",
+  "grug_decor_xdecor_xdecor_woodframed_glass.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_woodframed_glass.png",
+  "grug_decor_xdecor_xdecor_woodframed_glass_detail.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_woodframed_glass_detail.png",
+  "grug_decor_xdecor_xdecor_workbench_bottom.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_workbench_bottom.png",
+  "grug_decor_xdecor_xdecor_workbench_front.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_workbench_front.png",
+  "grug_decor_xdecor_xdecor_workbench_sides.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_workbench_sides.png",
+  "grug_decor_xdecor_xdecor_workbench_top.png": "mods/ITEMS/grug_decor/textures/grug_decor_xdecor_xdecor_workbench_top.png",
   "grug_gear_item_chest_cloth.png": "mods/ITEMS/grug_gear/textures/grug_gear_item_chest_cloth.png",
   "grug_gear_item_chest_metal.png": "mods/ITEMS/grug_gear/textures/grug_gear_item_chest_metal.png",
   "grug_gear_item_dagger.png": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger.png",
@@ -3814,37 +4269,37 @@
   "tnt_top.png": "reference_projects/minetest_game/mods/tnt/textures/tnt_top.png",
   "tnt_top_burning.png": "reference_projects/minetest_game/mods/tnt/textures/tnt_top_burning.png",
   "tnt_top_burning_animated.png": "reference_projects/minetest_game/mods/tnt/textures/tnt_top_burning_animated.png",
-  "vessels_drinking_glass.png": "reference_projects/minetest_game/mods/vessels/textures/vessels_drinking_glass.png",
-  "vessels_drinking_glass_inv.png": "reference_projects/minetest_game/mods/vessels/textures/vessels_drinking_glass_inv.png",
-  "vessels_glass_bottle.png": "reference_projects/minetest_game/mods/vessels/textures/vessels_glass_bottle.png",
-  "vessels_glass_fragments.png": "reference_projects/minetest_game/mods/vessels/textures/vessels_glass_fragments.png",
-  "vessels_shelf.png": "reference_projects/minetest_game/mods/vessels/textures/vessels_shelf.png",
-  "vessels_shelf_slot.png": "reference_projects/minetest_game/mods/vessels/textures/vessels_shelf_slot.png",
+  "vessels_drinking_glass.png": "mods/BASE/vessels/textures/vessels_drinking_glass.png",
+  "vessels_drinking_glass_inv.png": "mods/BASE/vessels/textures/vessels_drinking_glass_inv.png",
+  "vessels_glass_bottle.png": "mods/BASE/vessels/textures/vessels_glass_bottle.png",
+  "vessels_glass_fragments.png": "mods/BASE/vessels/textures/vessels_glass_fragments.png",
+  "vessels_shelf.png": "mods/BASE/vessels/textures/vessels_shelf.png",
+  "vessels_shelf_slot.png": "mods/BASE/vessels/textures/vessels_shelf_slot.png",
   "vessels_steel_bottle.png": "reference_projects/minetest_game/mods/vessels/textures/vessels_steel_bottle.png",
   "wieldhand.png": "mods/BASE/default/textures/wieldhand.png",
-  "wool_black.png": "reference_projects/minetest_game/mods/wool/textures/wool_black.png",
-  "wool_blue.png": "reference_projects/minetest_game/mods/wool/textures/wool_blue.png",
-  "wool_brown.png": "reference_projects/minetest_game/mods/wool/textures/wool_brown.png",
-  "wool_cyan.png": "reference_projects/minetest_game/mods/wool/textures/wool_cyan.png",
-  "wool_dark_green.png": "reference_projects/minetest_game/mods/wool/textures/wool_dark_green.png",
-  "wool_dark_grey.png": "reference_projects/minetest_game/mods/wool/textures/wool_dark_grey.png",
-  "wool_green.png": "reference_projects/minetest_game/mods/wool/textures/wool_green.png",
-  "wool_grey.png": "reference_projects/minetest_game/mods/wool/textures/wool_grey.png",
-  "wool_magenta.png": "reference_projects/minetest_game/mods/wool/textures/wool_magenta.png",
-  "wool_orange.png": "reference_projects/minetest_game/mods/wool/textures/wool_orange.png",
-  "wool_pink.png": "reference_projects/minetest_game/mods/wool/textures/wool_pink.png",
-  "wool_red.png": "reference_projects/minetest_game/mods/wool/textures/wool_red.png",
-  "wool_violet.png": "reference_projects/minetest_game/mods/wool/textures/wool_violet.png",
-  "wool_white.png": "reference_projects/minetest_game/mods/wool/textures/wool_white.png",
-  "wool_yellow.png": "reference_projects/minetest_game/mods/wool/textures/wool_yellow.png",
-  "xpanes_bar.png": "reference_projects/minetest_game/mods/xpanes/textures/xpanes_bar.png",
-  "xpanes_bar_top.png": "reference_projects/minetest_game/mods/xpanes/textures/xpanes_bar_top.png",
-  "xpanes_door_steel_bar.png": "reference_projects/minetest_game/mods/xpanes/textures/xpanes_door_steel_bar.png",
-  "xpanes_edge.png": "reference_projects/minetest_game/mods/xpanes/textures/xpanes_edge.png",
-  "xpanes_edge_obsidian.png": "reference_projects/minetest_game/mods/xpanes/textures/xpanes_edge_obsidian.png",
-  "xpanes_item_steel_bar.png": "reference_projects/minetest_game/mods/xpanes/textures/xpanes_item_steel_bar.png",
-  "xpanes_trapdoor_steel_bar.png": "reference_projects/minetest_game/mods/xpanes/textures/xpanes_trapdoor_steel_bar.png",
-  "xpanes_trapdoor_steel_bar_side.png": "reference_projects/minetest_game/mods/xpanes/textures/xpanes_trapdoor_steel_bar_side.png"
+  "wool_black.png": "mods/BASE/wool/textures/wool_black.png",
+  "wool_blue.png": "mods/BASE/wool/textures/wool_blue.png",
+  "wool_brown.png": "mods/BASE/wool/textures/wool_brown.png",
+  "wool_cyan.png": "mods/BASE/wool/textures/wool_cyan.png",
+  "wool_dark_green.png": "mods/BASE/wool/textures/wool_dark_green.png",
+  "wool_dark_grey.png": "mods/BASE/wool/textures/wool_dark_grey.png",
+  "wool_green.png": "mods/BASE/wool/textures/wool_green.png",
+  "wool_grey.png": "mods/BASE/wool/textures/wool_grey.png",
+  "wool_magenta.png": "mods/BASE/wool/textures/wool_magenta.png",
+  "wool_orange.png": "mods/BASE/wool/textures/wool_orange.png",
+  "wool_pink.png": "mods/BASE/wool/textures/wool_pink.png",
+  "wool_red.png": "mods/BASE/wool/textures/wool_red.png",
+  "wool_violet.png": "mods/BASE/wool/textures/wool_violet.png",
+  "wool_white.png": "mods/BASE/wool/textures/wool_white.png",
+  "wool_yellow.png": "mods/BASE/wool/textures/wool_yellow.png",
+  "xpanes_bar.png": "mods/BASE/xpanes/textures/xpanes_bar.png",
+  "xpanes_bar_top.png": "mods/BASE/xpanes/textures/xpanes_bar_top.png",
+  "xpanes_door_steel_bar.png": "mods/BASE/xpanes/textures/xpanes_door_steel_bar.png",
+  "xpanes_edge.png": "mods/BASE/xpanes/textures/xpanes_edge.png",
+  "xpanes_edge_obsidian.png": "mods/BASE/xpanes/textures/xpanes_edge_obsidian.png",
+  "xpanes_item_steel_bar.png": "mods/BASE/xpanes/textures/xpanes_item_steel_bar.png",
+  "xpanes_trapdoor_steel_bar.png": "mods/BASE/xpanes/textures/xpanes_trapdoor_steel_bar.png",
+  "xpanes_trapdoor_steel_bar_side.png": "mods/BASE/xpanes/textures/xpanes_trapdoor_steel_bar_side.png"
  },
  "fallback_colors": {
   "air": null,
