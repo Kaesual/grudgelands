@@ -51,6 +51,11 @@ return function(repo)
 			-- green. These counts are the assertion that would not have.
 			ground_cover = {{"default:fern_1", 665}, {"default:grass_1", 1982}},
 			carts = 0,
+			-- The NPC socket roster of contract section 4, exactly: two gate
+			-- posts, one patrol loop, one race vendor, four idle spots and
+			-- one quest spot.
+			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 4,
+				quest = 1},
 		},
 		{
 			key = "dawnmere",
@@ -106,6 +111,11 @@ return function(repo)
 			-- The ground-cover population, exactly; see Hearthpine's row.
 			ground_cover = {{"default:grass_4", 756}, {"default:grass_3", 1571}},
 			carts = 3, cart_load = "grug_decor:xdecor_barrel",
+			-- The NPC socket roster of contract section 4, exactly: two gate
+			-- posts, one patrol loop, one race vendor, four idle spots and
+			-- one quest spot.
+			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 4,
+				quest = 1},
 		},
 		{
 			key = "silverleaf",
@@ -164,6 +174,11 @@ return function(repo)
 			-- The ground-cover population, exactly; see Hearthpine's row.
 			ground_cover = {{"default:fern_2", 849}, {"default:grass_2", 1752}},
 			carts = 0,
+			-- The NPC socket roster of contract section 4, exactly: two gate
+			-- posts, one patrol loop, one race vendor, four idle spots and
+			-- one quest spot.
+			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 4,
+				quest = 1},
 		},
 		{
 			key = "stillgrave",
@@ -217,6 +232,11 @@ return function(repo)
 			-- The ground-cover population, exactly; see Hearthpine's row.
 			ground_cover = {{"grug_nodes:bone_pile", 359}, {"default:dry_shrub", 612}},
 			carts = 0,
+			-- The NPC socket roster of contract section 4, exactly: two gate
+			-- posts, one patrol loop, one race vendor, four idle spots and
+			-- one quest spot.
+			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 4,
+				quest = 1},
 		},
 		{
 			key = "sunscar",
@@ -262,6 +282,11 @@ return function(repo)
 			-- The ground-cover population, exactly; see Hearthpine's row.
 			ground_cover = {{"default:dry_shrub", 932}, {"default:dry_grass_3", 899}},
 			carts = 15, cart_load = "stairs:slab_acacia_wood",
+			-- The NPC socket roster of contract section 4, exactly: two gate
+			-- posts, one patrol loop, one race vendor, four idle spots and
+			-- one quest spot.
+			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 4,
+				quest = 1},
 		},
 		{
 			key = "kapok",
@@ -317,6 +342,11 @@ return function(repo)
 			-- The ground-cover population, exactly; see Hearthpine's row.
 			ground_cover = {{"default:junglegrass", 1129}, {"default:grass_1", 946}},
 			carts = 0,
+			-- The NPC socket roster of contract section 4, exactly: two gate
+			-- posts, one patrol loop, one race vendor, four idle spots and
+			-- one quest spot.
+			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 4,
+				quest = 1},
 		},
 	}
 
@@ -776,6 +806,120 @@ return function(repo)
 			assert(visited[key(pos.x, pos.y, pos.z)],
 				"unreachable interior: " .. pos.id)
 		end
+		-- The NPC sockets (docs/research/wp13-npc-sockets-contract.md).
+		--
+		-- A socket is a POSITION A BODY OCCUPIES, so the pad has to be able
+		-- to hold one: walkable ground under it, the cell itself and the one
+		-- above it air (a mob is 1.7 nodes tall and the engine will not let
+		-- it stand inside a node), outside every authored room, and reachable
+		-- on foot from the arrival. That last one is what separates a socket
+		-- from a coordinate that merely happens to be free: a guard post on a
+		-- roof, in a walled-off yard or on the far side of a river passes
+		-- every other test here.
+		--
+		-- The counts are EXACT, per start, for the same reason the prop
+		-- populations above are: a socket that is dropped, duplicated or
+		-- retyped has to move a number somebody re-derives, not disappear.
+		local SOCKET_ROLES = {guard_post = true, guard_patrol = true,
+			vendor = true, idle = true, quest = true, king = true,
+			waypoint = true}
+		local AXIS_DIRS = {["0:1"] = true, ["0:-1"] = true, ["1:0"] = true,
+			["-1:0"] = true}
+		local sockets = assert(blueprint.landmarks.sockets,
+			"no socket landmarks")
+		local socket_ids, role_count, patrol_groups = {}, {}, {}
+		for role in pairs(SOCKET_ROLES) do role_count[role] = 0 end
+		for index, socket in ipairs(sockets) do
+			local where = spec.key .. " socket " .. tostring(socket.id)
+			assert(type(socket.id) == "string" and socket.id ~= "" and
+				not socket_ids[socket.id], "socket id differs at " .. index)
+			socket_ids[socket.id] = true
+			assert(SOCKET_ROLES[socket.role], "socket role differs: " .. where)
+			role_count[socket.role] = role_count[socket.role] + 1
+			for _, axis in ipairs({"x", "y", "z"}) do
+				assert(type(socket[axis]) == "number" and socket[axis] % 1 == 0,
+					"socket coordinate differs: " .. where)
+			end
+			assert(socket.x >= -63 and socket.x <= 63 and
+				socket.z >= -63 and socket.z <= 63 and
+				socket.y >= 1 and socket.y <= 24,
+				"socket escapes the authorized volume: " .. where)
+			assert(type(socket.dir) == "table" and
+				AXIS_DIRS[tostring(socket.dir.x) .. ":" .. tostring(socket.dir.z)],
+				"socket facing is not an axis vector: " .. where)
+			-- Feet and head air, ground under the feet: the two-node standing
+			-- volume of the contract, read off the finished pad.
+			assert(node(socket.x, socket.y, socket.z) == "air" and
+				node(socket.x, socket.y + 1, socket.z) == "air",
+				"socket has no headroom: " .. where)
+			assert(solid(socket.x, socket.y - 1, socket.z),
+				"socket stands on nothing: " .. where)
+			assert(not indoors(socket.x, socket.z),
+				"socket stands inside a building: " .. where)
+			assert(visited[key(socket.x, socket.y, socket.z)],
+				"socket is unreachable on foot: " .. where)
+			if socket.role == "guard_patrol" then
+				assert(type(socket.group) == "string" and socket.group ~= "",
+					"patrol waypoint without a loop: " .. where)
+				local loop = patrol_groups[socket.group]
+				if not loop then
+					loop = {}
+					patrol_groups[socket.group] = loop
+				end
+				assert(type(socket.order) == "number" and socket.order % 1 == 0 and
+					socket.order >= 1 and not loop[socket.order],
+					"patrol order differs: " .. where)
+				loop[socket.order] = socket
+				loop.count = (loop.count or 0) + 1
+			else
+				assert(socket.group == nil and socket.order == nil,
+					"only a patrol waypoint carries a loop: " .. where)
+			end
+			if socket.role == "vendor" then
+				assert(socket.kind == "race" or socket.kind == "general",
+					"vendor socket kind differs: " .. where)
+			else
+				assert(socket.kind == nil, "only a vendor carries a kind: " .. where)
+			end
+			if socket.tags ~= nil then
+				assert(type(socket.tags) == "table" and #socket.tags >= 1,
+					"socket tags differ: " .. where)
+				for _, tag in ipairs(socket.tags) do
+					assert(type(tag) == "string" and tag ~= "",
+						"socket tag differs: " .. where)
+				end
+			end
+		end
+		-- Every loop is 4 to 6 waypoints long (contract section 4), numbered
+		-- 1..n without a gap, and no two consecutive waypoints sit inside the
+		-- 4 m arrival radius `grug_mobs.route_tick` uses -- a pair that close
+		-- is a waypoint the patrol consumes the instant it takes it.
+		local loop_count = 0
+		for group, loop in pairs(patrol_groups) do
+			loop_count = loop_count + 1
+			assert(loop.count >= 4 and loop.count <= 6,
+				spec.key .. " patrol loop " .. group .. " is not 4..6 long")
+			for order = 1, loop.count do
+				local here = assert(loop[order],
+					spec.key .. " patrol loop " .. group .. " skips " .. order)
+				local next_one = loop[order % loop.count + 1]
+				local dx, dz = here.x - next_one.x, here.z - next_one.z
+				assert(dx * dx + dz * dz > 16,
+					spec.key .. " patrol loop " .. group ..
+						" doubles a waypoint at " .. order)
+			end
+		end
+		assert(loop_count == 1, spec.key .. " does not have exactly one patrol loop")
+		for role, wanted in pairs(spec.sockets) do
+			assert(role_count[role] == wanted, "socket population differs: " ..
+				spec.key .. " " .. role .. " is " .. role_count[role] ..
+				", not " .. wanted)
+		end
+		for role, seen_count in pairs(role_count) do
+			assert(spec.sockets[role] ~= nil or seen_count == 0,
+				"undeclared socket role: " .. spec.key .. " " .. role)
+		end
+
 		-- A second construction cannot depend on table iteration order or RNG.
 		local again = build()
 		assert(#again.cells == #blueprint.cells)
@@ -787,7 +931,8 @@ return function(repo)
 		end
 		report[#report + 1] = table.concat({"wp13_blueprint", spec.key,
 			#blueprint.cells, count, palette_count, lights, oriented,
-			#destinations, #doorways, #rooms, ruins, stems, #queue}, "\t") .. "\n"
+			#destinations, #doorways, #rooms, ruins, stems, #queue,
+			#sockets}, "\t") .. "\n"
 	end
 	return table.concat(report)
 end
