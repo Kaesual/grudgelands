@@ -43,6 +43,7 @@ function vector.offset(pos, x, y, z)
 	return {x = pos.x + x, y = pos.y + y, z = pos.z + z}
 end
 
+local in_callback = false
 core = {
 	EMERGE_GENERATED = 1,
 	EMERGE_FROM_MEMORY = 2,
@@ -95,6 +96,12 @@ core = {
 		chats[#chats + 1] = name .. "=" .. message
 	end,
 	emerge_area = function(pos1, pos2, callback)
+		-- HARD RULE (shared with starts_preload_kat): the engine self-deadlocks
+		-- when a block is enqueued from inside an emerge completion callback
+		-- (src/emerge.cpp:302 vs :494-508); every enqueue must come from a
+		-- scheduled job. `in_callback` is raised by finish_emerge below.
+		assert(not in_callback,
+			"core.emerge_area called from inside an emerge callback")
 		emerge_requests[#emerge_requests + 1] = {
 			pos1 = copy_table(pos1), pos2 = copy_table(pos2), callback = callback,
 		}
@@ -282,10 +289,12 @@ end
 
 local function finish_emerge(request, actions)
 	request.finished = true
+	in_callback = true
 	for index = 1, #actions do
 		request.callback({x = index, y = 0, z = 0}, actions[index],
 			#actions - index)
 	end
+	in_callback = false
 end
 
 -- Completes the pending arrival emerge (creation's second gate: the player's

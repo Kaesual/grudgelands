@@ -134,11 +134,12 @@ end
 -- on success; spawn is nil and failure is a short diagnostic on an emerge
 -- failure or an identity change. If the player left, the callback is omitted.
 --
--- Character creation NO LONGER uses this: since 2026-09-14 all six starts are
--- emerged once at server start (grug_core/starts_preload.lua) and creation
--- waits for that shared progress. This path stays for RESPAWN, where the
--- destination may have been unloaded again long after the preload and must be
--- present at that moment.
+-- Since 2026-09-14 all six starts are emerged once at server start
+-- (grug_core/starts_preload.lua). Character creation still calls this as its
+-- SECOND gate after 6/6: blocks generated at startup may be unloaded again
+-- by the time a character commits, and the arrival area must be present at
+-- the moment of the single final teleport. Respawn uses it for the same
+-- reason.
 function grug_factions.prepare_spawn(player, callback)
 	local id = grug_factions.get_faction(player)
 	if not id then
