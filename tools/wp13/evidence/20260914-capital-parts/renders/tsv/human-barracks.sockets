@@ -1,0 +1,3 @@
+#socket	barracks_post	guard_post	7	1	2	0
+#socket	barracks_muster	idle	7	1	17	2
+#socket	barracks_yard	guard_patrol	7	1	14	0

@@ -1,0 +1,9 @@
+#socket	king	king	15	6	35	2
+#socket	throne_guard_west	guard_post	8	4	32	2
+#socket	throne_guard_east	guard_post	22	4	32	2
+#socket	door_guard_west	guard_post	12	3	2	0
+#socket	door_guard_east	guard_post	19	3	2	0
+#socket	hall_waypoint	waypoint	15	3	4	0
+#socket	hall_idle_west	idle	2	3	10	1
+#socket	hall_idle_east	idle	28	3	10	3
+#socket	hall_idle_service	idle	2	3	31	1

@@ -1,0 +1,6 @@
+#socket	gatehouse_post_west	guard_post	4	1	1	2
+#socket	gatehouse_post_east	guard_post	8	1	1	2
+#socket	gatehouse_rampart	guard_patrol	6	7	3	2
+#socket	gatehouse_deck	guard_patrol	6	12	3	2
+#socket	gatehouse_idle_west	idle	1	1	4	2
+#socket	gatehouse_idle_east	idle	11	1	4	2

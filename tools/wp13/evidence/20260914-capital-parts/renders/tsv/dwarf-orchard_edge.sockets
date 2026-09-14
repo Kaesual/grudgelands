@@ -1,0 +1,3 @@
+#socket	orchard_edge_work	idle	10	1	5	0
+#socket	orchard_edge_street_a	guard_patrol	2	1	0	1
+#socket	orchard_edge_street_b	guard_patrol	18	1	0	3

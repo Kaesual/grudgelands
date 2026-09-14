@@ -1635,6 +1635,60 @@
    "source": "reference_projects/minetest_game/mods/flowers/init.lua",
    "shape": "cube"
   },
+  "grug_decor:castle_arrowslit_desert_stonebrick": {
+   "tiles": [
+    "default_desert_stone_brick.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
+  },
+  "grug_decor:castle_arrowslit_mossycobble": {
+   "tiles": [
+    "default_mossycobble.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
+  },
+  "grug_decor:castle_arrowslit_obsidianbrick": {
+   "tiles": [
+    "default_obsidian_brick.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
+  },
+  "grug_decor:castle_arrowslit_silver_sandstone_brick": {
+   "tiles": [
+    "default_silver_sandstone_brick.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
+  },
+  "grug_decor:castle_arrowslit_stone_block": {
+   "tiles": [
+    "default_stone_block.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
+  },
+  "grug_decor:castle_arrowslit_stonebrick": {
+   "tiles": [
+    "default_stone_brick.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
+  },
   "grug_decor:castle_dungeon_stone": {
    "tiles": [
     "grug_decor_castle_castle_dungeon_stone.png"
@@ -1643,6 +1697,42 @@
    "source": "mods/ITEMS/grug_decor/castle.lua",
    "shape": "cube"
   },
+  "grug_decor:castle_dungeon_stone_slab": {
+   "tiles": [
+    "grug_decor_castle_castle_dungeon_stone.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "slab",
+   "source": "MANUAL_OVERRIDES"
+  },
+  "grug_decor:castle_dungeon_stone_stair": {
+   "tiles": [
+    "grug_decor_castle_castle_dungeon_stone.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "stair",
+   "source": "MANUAL_OVERRIDES"
+  },
+  "grug_decor:castle_dungeon_stone_stair_inner": {
+   "tiles": [
+    "grug_decor_castle_castle_dungeon_stone.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "stair_inner",
+   "source": "MANUAL_OVERRIDES"
+  },
+  "grug_decor:castle_dungeon_stone_stair_outer": {
+   "tiles": [
+    "grug_decor_castle_castle_dungeon_stone.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "stair_outer",
+   "source": "MANUAL_OVERRIDES"
+  },
   "grug_decor:castle_pavement_brick": {
    "tiles": [
     "grug_decor_castle_castle_pavement_brick.png"
@@ -1650,6 +1740,60 @@
    "drawtype": "normal",
    "source": "mods/ITEMS/grug_decor/castle.lua",
    "shape": "cube"
+  },
+  "grug_decor:castle_pillar_desert_stonebrick_bottom": {
+   "tiles": [
+    "default_desert_stone_brick.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
+  },
+  "grug_decor:castle_pillar_desert_stonebrick_middle": {
+   "tiles": [
+    "default_desert_stone_brick.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
+  },
+  "grug_decor:castle_pillar_desert_stonebrick_top": {
+   "tiles": [
+    "default_desert_stone_brick.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
+  },
+  "grug_decor:castle_pillar_mossycobble_bottom": {
+   "tiles": [
+    "default_mossycobble.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
+  },
+  "grug_decor:castle_pillar_mossycobble_middle": {
+   "tiles": [
+    "default_mossycobble.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
+  },
+  "grug_decor:castle_pillar_mossycobble_top": {
+   "tiles": [
+    "default_mossycobble.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
   },
   "grug_decor:castle_pillar_obsidianbrick_bottom": {
    "tiles": [
@@ -1672,6 +1816,87 @@
   "grug_decor:castle_pillar_obsidianbrick_top": {
    "tiles": [
     "default_obsidian_brick.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
+  },
+  "grug_decor:castle_pillar_silver_sandstone_brick_bottom": {
+   "tiles": [
+    "default_silver_sandstone_brick.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
+  },
+  "grug_decor:castle_pillar_silver_sandstone_brick_middle": {
+   "tiles": [
+    "default_silver_sandstone_brick.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
+  },
+  "grug_decor:castle_pillar_silver_sandstone_brick_top": {
+   "tiles": [
+    "default_silver_sandstone_brick.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
+  },
+  "grug_decor:castle_pillar_stone_block_bottom": {
+   "tiles": [
+    "default_stone_block.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
+  },
+  "grug_decor:castle_pillar_stone_block_middle": {
+   "tiles": [
+    "default_stone_block.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
+  },
+  "grug_decor:castle_pillar_stone_block_top": {
+   "tiles": [
+    "default_stone_block.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
+  },
+  "grug_decor:castle_pillar_stonebrick_bottom": {
+   "tiles": [
+    "default_stone_brick.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
+  },
+  "grug_decor:castle_pillar_stonebrick_middle": {
+   "tiles": [
+    "default_stone_brick.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "nodebox"
+  },
+  "grug_decor:castle_pillar_stonebrick_top": {
+   "tiles": [
+    "default_stone_brick.png"
    ],
    "drawtype": "nodebox",
    "paramtype2": "facedir",
@@ -1715,6 +1940,42 @@
    "paramtype2": "facedir",
    "source": "mods/ITEMS/grug_decor/castle.lua",
    "shape": "cube"
+  },
+  "grug_decor:castle_stonewall_slab": {
+   "tiles": [
+    "grug_decor_castle_castle_stonewall.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "slab",
+   "source": "MANUAL_OVERRIDES"
+  },
+  "grug_decor:castle_stonewall_stair": {
+   "tiles": [
+    "grug_decor_castle_castle_stonewall.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "stair",
+   "source": "MANUAL_OVERRIDES"
+  },
+  "grug_decor:castle_stonewall_stair_inner": {
+   "tiles": [
+    "grug_decor_castle_castle_stonewall.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "stair_inner",
+   "source": "MANUAL_OVERRIDES"
+  },
+  "grug_decor:castle_stonewall_stair_outer": {
+   "tiles": [
+    "grug_decor_castle_castle_stonewall.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "stair_outer",
+   "source": "MANUAL_OVERRIDES"
   },
   "grug_decor:cottages_anvil": {
    "tiles": [
@@ -1921,6 +2182,14 @@
    "source": "MANUAL_OVERRIDES",
    "shape": "cube"
   },
+  "grug_decor:darkage_basalt": {
+   "tiles": [
+    "grug_decor_darkage_darkage_basalt.png"
+   ],
+   "drawtype": "normal",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "cube"
+  },
   "grug_decor:darkage_basalt_brick": {
    "tiles": [
     "grug_decor_darkage_darkage_basalt_brick.png"
@@ -1928,6 +2197,24 @@
    "drawtype": "normal",
    "source": "MANUAL_OVERRIDES",
    "shape": "cube"
+  },
+  "grug_decor:darkage_basalt_slab": {
+   "tiles": [
+    "grug_decor_darkage_darkage_basalt.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "slab",
+   "source": "MANUAL_OVERRIDES"
+  },
+  "grug_decor:darkage_basalt_stair": {
+   "tiles": [
+    "grug_decor_darkage_darkage_basalt.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "stair",
+   "source": "MANUAL_OVERRIDES"
   },
   "grug_decor:darkage_iron_bars": {
    "tiles": [
@@ -1946,6 +2233,24 @@
    "source": "MANUAL_OVERRIDES",
    "shape": "cube"
   },
+  "grug_decor:darkage_marble_slab": {
+   "tiles": [
+    "grug_decor_darkage_darkage_marble.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "slab",
+   "source": "MANUAL_OVERRIDES"
+  },
+  "grug_decor:darkage_marble_stair": {
+   "tiles": [
+    "grug_decor_darkage_darkage_marble.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "stair",
+   "source": "MANUAL_OVERRIDES"
+  },
   "grug_decor:darkage_marble_tile": {
    "tiles": [
     "grug_decor_darkage_darkage_marble_tile.png"
@@ -1961,6 +2266,32 @@
    "drawtype": "normal",
    "source": "MANUAL_OVERRIDES",
    "shape": "cube"
+  },
+  "grug_decor:darkage_ors_brick": {
+   "tiles": [
+    "grug_decor_darkage_darkage_ors_brick.png"
+   ],
+   "drawtype": "normal",
+   "source": "MANUAL_OVERRIDES",
+   "shape": "cube"
+  },
+  "grug_decor:darkage_ors_brick_slab": {
+   "tiles": [
+    "grug_decor_darkage_darkage_ors_brick.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "slab",
+   "source": "MANUAL_OVERRIDES"
+  },
+  "grug_decor:darkage_ors_brick_stair": {
+   "tiles": [
+    "grug_decor_darkage_darkage_ors_brick.png"
+   ],
+   "drawtype": "nodebox",
+   "paramtype2": "facedir",
+   "shape": "stair",
+   "source": "MANUAL_OVERRIDES"
   },
   "grug_decor:darkage_reinforced_wood": {
    "source": "MANUAL_OVERRIDES",
@@ -2111,7 +2442,10 @@
   "grug_decor:xdecor_chair": {
    "drawtype": "nodebox",
    "paramtype2": "facedir",
-   "source": "mods/ITEMS/grug_decor/xdecor.lua",
+   "source": "MANUAL_OVERRIDES",
+   "tiles": [
+    "grug_decor_xdecor_xdecor_wood.png"
+   ],
    "shape": "nodebox"
   },
   "grug_decor:xdecor_cobweb": {

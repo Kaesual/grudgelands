@@ -1,0 +1,219 @@
+== dwarf-barracks
+#socket	barracks_post	guard_post	7	1	2	0
+#socket	barracks_muster	idle	7	1	17	2
+#socket	barracks_yard	guard_patrol	7	1	14	0
+== dwarf-colonnade
+#socket	colonnade_idle_a	idle	2	1	1	0
+#socket	colonnade_idle_b	idle	12	1	3	2
+#socket	colonnade_walk	guard_patrol	7	1	2	1
+== dwarf-gatehouse
+#socket	gatehouse_post_west	guard_post	4	1	1	2
+#socket	gatehouse_post_east	guard_post	8	1	1	2
+#socket	gatehouse_rampart	guard_patrol	6	7	3	2
+#socket	gatehouse_deck	guard_patrol	6	12	3	2
+#socket	gatehouse_idle_west	idle	1	1	4	2
+#socket	gatehouse_idle_east	idle	11	1	4	2
+== dwarf-granary
+#socket	granary_work	idle	5	1	11	2
+== dwarf-grove
+#socket	grove_idle	idle	8	1	8	0
+== dwarf-king_hall
+#socket	king	king	15	6	35	2
+#socket	throne_guard_west	guard_post	8	4	32	2
+#socket	throne_guard_east	guard_post	22	4	32	2
+#socket	door_guard_west	guard_post	12	3	2	0
+#socket	door_guard_east	guard_post	19	3	2	0
+#socket	hall_waypoint	waypoint	15	3	4	0
+#socket	hall_idle_west	idle	2	3	10	1
+#socket	hall_idle_east	idle	28	3	10	3
+#socket	hall_idle_service	idle	2	3	31	1
+== dwarf-market_square
+#socket	market_square_vendor_1	vendor	5	1	3	0
+#socket	market_square_vendor_2	vendor	19	1	3	0
+#socket	market_square_vendor_3	vendor	5	1	21	2
+#socket	market_square_vendor_4	vendor	19	1	21	2
+#socket	market_square_idle_west	idle	3	1	5	1
+#socket	market_square_idle_east	idle	21	1	19	3
+#socket	market_square_waypoint	waypoint	12	1	8	0
+== dwarf-orchard_edge
+#socket	orchard_edge_work	idle	10	1	5	0
+#socket	orchard_edge_street_a	guard_patrol	2	1	0	1
+#socket	orchard_edge_street_b	guard_patrol	18	1	0	3
+== dwarf-scriptorium
+#socket	scriptorium_desk_a	idle	6	1	4	1
+#socket	scriptorium_desk_b	idle	6	1	12	3
+== dwarf-stable
+#socket	stable_groom	idle	7	1	8	2
+#socket	stable_gate	idle	7	1	2	0
+== dwarf-statue_plinth
+#socket	statue_plinth_idle	idle	4	1	0	0
+== dwarf-stilt_platform
+#socket	stilt_platform_deck_a	guard_patrol	7	7	2	0
+#socket	stilt_platform_deck_b	guard_patrol	7	7	12	2
+#socket	stilt_platform_idle	idle	10	7	7	1
+== dwarf-temple
+#socket	temple_altar	idle	6	1	15	2
+#socket	temple_quest	quest	6	1	3	0
+== dwarf-wall_segment
+#socket	wall_segment_patrol_a	guard_patrol	1	7	2	1
+#socket	wall_segment_patrol_b	guard_patrol	6	7	2	3
+== dwarf-wall_stair
+#socket	wall_segment_patrol_a	guard_patrol	1	7	2	1
+#socket	wall_segment_patrol_b	guard_patrol	10	7	2	3
+== dwarf-wall_tower
+#socket	wall_tower_top	guard_post	4	13	4	2
+#socket	wall_tower_rampart	guard_patrol	4	7	4	2
+#socket	wall_tower_gate_idle	idle	6	1	6	2
+== dwarf-water_channel
+#socket	water_channel_cross	idle	10	1	3	0
+#socket	water_channel_bank_a	guard_patrol	2	1	0	1
+#socket	water_channel_bank_b	guard_patrol	18	1	6	3
+== dwarf-well_court
+#socket	well_court_idle_a	idle	5	1	2	0
+#socket	well_court_idle_b	idle	5	1	8	2
+== human-barracks
+#socket	barracks_post	guard_post	7	1	2	0
+#socket	barracks_muster	idle	7	1	17	2
+#socket	barracks_yard	guard_patrol	7	1	14	0
+== human-colonnade
+#socket	colonnade_idle_a	idle	2	1	1	0
+#socket	colonnade_idle_b	idle	12	1	3	2
+#socket	colonnade_walk	guard_patrol	7	1	2	1
+== human-gatehouse
+#socket	gatehouse_post_west	guard_post	4	1	1	2
+#socket	gatehouse_post_east	guard_post	8	1	1	2
+#socket	gatehouse_rampart	guard_patrol	6	7	3	2
+#socket	gatehouse_deck	guard_patrol	6	12	3	2
+#socket	gatehouse_idle_west	idle	1	1	4	2
+#socket	gatehouse_idle_east	idle	11	1	4	2
+== human-granary
+#socket	granary_work	idle	5	1	11	2
+== human-grove
+#socket	grove_idle	idle	8	1	8	0
+== human-king_hall
+#socket	king	king	15	6	35	2
+#socket	throne_guard_west	guard_post	8	4	32	2
+#socket	throne_guard_east	guard_post	22	4	32	2
+#socket	door_guard_west	guard_post	12	3	2	0
+#socket	door_guard_east	guard_post	19	3	2	0
+#socket	hall_waypoint	waypoint	15	3	4	0
+#socket	hall_idle_west	idle	2	3	10	1
+#socket	hall_idle_east	idle	28	3	10	3
+#socket	hall_idle_service	idle	2	3	31	1
+== human-market_square
+#socket	market_square_vendor_1	vendor	5	1	3	0
+#socket	market_square_vendor_2	vendor	19	1	3	0
+#socket	market_square_vendor_3	vendor	5	1	21	2
+#socket	market_square_vendor_4	vendor	19	1	21	2
+#socket	market_square_idle_west	idle	3	1	5	1
+#socket	market_square_idle_east	idle	21	1	19	3
+#socket	market_square_waypoint	waypoint	12	1	8	0
+== human-orchard_edge
+#socket	orchard_edge_work	idle	10	1	5	0
+#socket	orchard_edge_street_a	guard_patrol	2	1	0	1
+#socket	orchard_edge_street_b	guard_patrol	18	1	0	3
+== human-scriptorium
+#socket	scriptorium_desk_a	idle	6	1	4	1
+#socket	scriptorium_desk_b	idle	6	1	12	3
+== human-stable
+#socket	stable_groom	idle	7	1	8	2
+#socket	stable_gate	idle	7	1	2	0
+== human-statue_plinth
+#socket	statue_plinth_idle	idle	4	1	0	0
+== human-stilt_platform
+#socket	stilt_platform_deck_a	guard_patrol	7	7	2	0
+#socket	stilt_platform_deck_b	guard_patrol	7	7	12	2
+#socket	stilt_platform_idle	idle	10	7	7	1
+== human-temple
+#socket	temple_altar	idle	6	1	15	2
+#socket	temple_quest	quest	6	1	3	0
+== human-wall_segment
+#socket	wall_segment_patrol_a	guard_patrol	1	7	2	1
+#socket	wall_segment_patrol_b	guard_patrol	6	7	2	3
+== human-wall_stair
+#socket	wall_segment_patrol_a	guard_patrol	1	7	2	1
+#socket	wall_segment_patrol_b	guard_patrol	10	7	2	3
+== human-wall_tower
+#socket	wall_tower_top	guard_post	4	13	4	2
+#socket	wall_tower_rampart	guard_patrol	4	7	4	2
+#socket	wall_tower_gate_idle	idle	6	1	6	2
+== human-water_channel
+#socket	water_channel_cross	idle	10	1	3	0
+#socket	water_channel_bank_a	guard_patrol	2	1	0	1
+#socket	water_channel_bank_b	guard_patrol	18	1	6	3
+== human-well_court
+#socket	well_court_idle_a	idle	5	1	2	0
+#socket	well_court_idle_b	idle	5	1	8	2
+== troll-barracks
+#socket	barracks_post	guard_post	7	1	2	0
+#socket	barracks_muster	idle	7	1	17	2
+#socket	barracks_yard	guard_patrol	7	1	14	0
+== troll-colonnade
+#socket	colonnade_idle_a	idle	2	1	1	0
+#socket	colonnade_idle_b	idle	12	1	3	2
+#socket	colonnade_walk	guard_patrol	7	1	2	1
+== troll-gatehouse
+#socket	gatehouse_post_west	guard_post	4	1	1	2
+#socket	gatehouse_post_east	guard_post	8	1	1	2
+#socket	gatehouse_rampart	guard_patrol	6	7	3	2
+#socket	gatehouse_deck	guard_patrol	6	12	3	2
+#socket	gatehouse_idle_west	idle	1	1	4	2
+#socket	gatehouse_idle_east	idle	11	1	4	2
+== troll-granary
+#socket	granary_work	idle	5	1	11	2
+== troll-grove
+#socket	grove_idle	idle	8	1	8	0
+== troll-king_hall
+#socket	king	king	15	6	35	2
+#socket	throne_guard_west	guard_post	8	4	32	2
+#socket	throne_guard_east	guard_post	22	4	32	2
+#socket	door_guard_west	guard_post	12	3	2	0
+#socket	door_guard_east	guard_post	19	3	2	0
+#socket	hall_waypoint	waypoint	15	3	4	0
+#socket	hall_idle_west	idle	2	3	10	1
+#socket	hall_idle_east	idle	28	3	10	3
+#socket	hall_idle_service	idle	2	3	31	1
+== troll-market_square
+#socket	market_square_vendor_1	vendor	5	1	3	0
+#socket	market_square_vendor_2	vendor	19	1	3	0
+#socket	market_square_vendor_3	vendor	5	1	21	2
+#socket	market_square_vendor_4	vendor	19	1	21	2
+#socket	market_square_idle_west	idle	3	1	5	1
+#socket	market_square_idle_east	idle	21	1	19	3
+#socket	market_square_waypoint	waypoint	12	1	8	0
+== troll-orchard_edge
+#socket	orchard_edge_work	idle	10	1	5	0
+#socket	orchard_edge_street_a	guard_patrol	2	1	0	1
+#socket	orchard_edge_street_b	guard_patrol	18	1	0	3
+== troll-scriptorium
+#socket	scriptorium_desk_a	idle	6	1	4	1
+#socket	scriptorium_desk_b	idle	6	1	12	3
+== troll-stable
+#socket	stable_groom	idle	7	1	8	2
+#socket	stable_gate	idle	7	1	2	0
+== troll-statue_plinth
+#socket	statue_plinth_idle	idle	4	1	0	0
+== troll-stilt_platform
+#socket	stilt_platform_deck_a	guard_patrol	7	7	2	0
+#socket	stilt_platform_deck_b	guard_patrol	7	7	12	2
+#socket	stilt_platform_idle	idle	10	7	7	1
+== troll-temple
+#socket	temple_altar	idle	6	1	15	2
+#socket	temple_quest	quest	6	1	3	0
+== troll-wall_segment
+#socket	wall_segment_patrol_a	guard_patrol	1	7	2	1
+#socket	wall_segment_patrol_b	guard_patrol	6	7	2	3
+== troll-wall_stair
+#socket	wall_segment_patrol_a	guard_patrol	1	7	2	1
+#socket	wall_segment_patrol_b	guard_patrol	10	7	2	3
+== troll-wall_tower
+#socket	wall_tower_top	guard_post	4	13	4	2
+#socket	wall_tower_rampart	guard_patrol	4	7	4	2
+#socket	wall_tower_gate_idle	idle	6	1	6	2
+== troll-water_channel
+#socket	water_channel_cross	idle	10	1	3	0
+#socket	water_channel_bank_a	guard_patrol	2	1	0	1
+#socket	water_channel_bank_b	guard_patrol	18	1	6	3
+== troll-well_court
+#socket	well_court_idle_a	idle	5	1	2	0
+#socket	well_court_idle_b	idle	5	1	8	2

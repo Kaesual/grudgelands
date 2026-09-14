@@ -1,0 +1,42 @@
+== parser and SETGLOBAL on every Lua file this lane touched ==
+mods/MAPGEN/grug_mapgen/wp13/capitals.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/interiors.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/palette.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/parts.lua parser PASS; SETGLOBAL [0]
+tools/wp13/dump_capital_part.lua parser PASS; SETGLOBAL [0]
+tools/wp13/library_kat.lua parser PASS; SETGLOBAL [0]
+== whole tree parses ==
+mods/*/grug_* parser PASS
+tools parser PASS
+== five plain-5.1 sweeps, scoped to the Lua this lane touched ==
+SWEEP 1
+SWEEP 2
+SWEEP 3
+SWEEP 4
+SWEEP 5
+tools/wp13/dump_capital_part.lua:30:	os.exit(2)
+tools/wp13/dump_capital_part.lua:53:			os.exit(2)
+tools/wp13/dump_capital_part.lua:72:	os.exit(2)
+SWEEPS DONE (no output above a SWEEP line means zero hits)
+== the same five sweeps over wp13/ and tools/wp13 ==
+SWEEP 1
+SWEEP 2
+SWEEP 3
+SWEEP 4
+SWEEP 5
+tools/wp13/dump_blueprint.lua:18:	os.exit(2)
+tools/wp13/dump_blueprint.lua:46:	os.exit(1)
+tools/wp13/dump_blueprint.lua:52:	os.exit(1)
+tools/wp13/dump_blueprint.lua:59:		os.exit(1)
+tools/wp13/dump_blueprint.lua:66:	os.exit(1)
+tools/wp13/dump_blueprint.lua:72:	os.exit(1)
+tools/wp13/dump_capital_part.lua:30:	os.exit(2)
+tools/wp13/dump_capital_part.lua:53:			os.exit(2)
+tools/wp13/dump_capital_part.lua:72:	os.exit(2)
+SWEEPS DONE (no output above a SWEEP line means zero hits)
+== the changed Python compiles ==
+tools/wp13/extract_tiles.py py_compile PASS
+== node_tiles.json parses ==
+node_tiles.json nodes 506
+== fresh server check ==
+Fresh-server source audit: PASS
