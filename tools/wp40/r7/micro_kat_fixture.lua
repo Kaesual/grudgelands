@@ -748,9 +748,15 @@ return function(repo, changed_roster_relative, expected_changed_count)
 
 	-- Trader registrations and dispatcher callback are captured without objects.
 	do
-	local trader_defs, trader_steps = {}, 0
+	local trader_defs, trader_steps, trader_loaded = {}, 0, 0
 	local trader_core = {registered_nodes = {}, registered_entities = {}}
 	function trader_core.register_globalstep() trader_steps = trader_steps + 1 end
+	-- WP13 seam generalisation: the capital vendor slots are built after every
+	-- mod has loaded, because whether a capital's vendors come from its blueprint
+	-- sockets or from the fixed offsets is a question only the filled socket
+	-- registry can answer. The stub records the registration; the callback body
+	-- belongs to the WP13 socket KATs, which drive the real registry.
+	function trader_core.register_on_mods_loaded() trader_loaded = trader_loaded + 1 end
 	function trader_core.get_connected_players() return {} end
 	function trader_core.get_objects_inside_radius() return {} end
 	function trader_core.get_node_or_nil() return nil end
@@ -780,7 +786,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 				return {x = race == "human" and 1 or 2, y = 1, z = 0}
 			end}}, {__index = _G})
 	execute_in_environment("mods/ENTITIES/grug_traders/vendors.lua", trader_environment)
-	check(#trader_defs == 8 and trader_steps == 1,
+	check(#trader_defs == 8 and trader_steps == 1 and trader_loaded == 1,
 		"trader registration projection differs")
 	table.sort(trader_defs, less_bytes)
 	row("registration/trader_projection_sha256",

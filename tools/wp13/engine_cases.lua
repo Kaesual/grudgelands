@@ -6,14 +6,24 @@
 -- orders and after a disk-only reload.
 local reverse = false -- The WP13 runner changes only this switch in its copy.
 local wp40 = core.get_modpath("grug_mapgen") .. "/wp40"
-local roster = dofile(wp40 .. "/r7_settlement.lua").roster
+-- The STARTS of the settlement roster. This corpus is the six-start digest
+-- gate, so it is deliberately bounded to the rows whose slot is "start": a
+-- capital owns several blueprints of three kinds, two of which have no cells at
+-- all until a height query answers, and pulling it in here would change the
+-- digests this file exists to keep. The capital's own engine pass is
+-- `tools/wp13/run_highcourt.sh`.
+local roster = {}
+for index = 1, #dofile(wp40 .. "/r7_settlement.lua").roster do
+	local profile = dofile(wp40 .. "/r7_settlement.lua").roster[index]
+	if profile.slot == "start" then roster[#roster + 1] = profile end
+end
 assert(#roster >= 2, "the WP13 settlement roster lost a start")
 
 local starts = {}
 for index = 1, #roster do
 	local profile = roster[index]
 	local blueprint = dofile(wp40 .. "/" .. profile.blueprint_file)()
-	local anchor = assert(grug_zones.anchor(profile.zone_id, "start"))
+	local anchor = assert(grug_zones.anchor(profile.zone_id, profile.slot))
 	assert(anchor.id == profile.anchor_id and anchor.x == profile.x and
 		anchor.z == profile.z, "WP13 start anchor moved")
 	starts[index] = {key = profile.key, blueprint = blueprint, anchor = anchor}

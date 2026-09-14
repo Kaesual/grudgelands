@@ -55,6 +55,34 @@ return function(repo)
 	local ACTIVATION = 32
 
 	local ANCHOR = {x = -1800, y = 25, z = -2550}
+	-- A CAPITAL of the same race, registered under its own key. It is never
+	-- preloaded, so nothing of it may be placed until its anchor column answers
+	-- with a real node, and then the whole of it goes in on one pass with no
+	-- player anywhere near -- which is exactly what happens when somebody walks
+	-- up and the area emerges. Its two patrol loops are what a start does not
+	-- have: a capital carries one per gate tower besides its city ring, and one
+	-- guard has to come out of each.
+	local CAPITAL = {x = -1800, y = 40, z = -1500}
+	local CAPITAL_SOCKETS = {
+		{id = "king", role = "king", x = 0, y = 6, z = 32, dir = {x = 0, z = -1}},
+		{id = "hall_guard", role = "guard_post", x = -3, y = 1, z = 8,
+			dir = {x = 0, z = 1}},
+		{id = "ring_1", role = "guard_patrol", group = "city", order = 1,
+			x = 0, y = 1, z = -20, dir = {x = 0, z = 1}},
+		{id = "ring_2", role = "guard_patrol", group = "city", order = 2,
+			x = 20, y = 1, z = -20, dir = {x = -1, z = 0}},
+		{id = "tower_1", role = "guard_patrol", group = "gate_tower", order = 1,
+			x = 0, y = 7, z = -46, dir = {x = 0, z = 1}},
+		{id = "tower_2", role = "guard_patrol", group = "gate_tower", order = 2,
+			x = 0, y = 12, z = -46, dir = {x = 0, z = -1}},
+		{id = "vendor_race", role = "vendor", kind = "race", x = 42, y = 1,
+			z = 7, dir = {x = -1, z = 0}},
+		{id = "core_idle", role = "idle", tags = {"door"}, x = -8, y = 1, z = 4,
+			dir = {x = 1, z = 0}},
+		-- A district plot's socket, prefixed with its plot id by the seam.
+		{id = "market_granary/market_granary_gate_idle", role = "idle",
+			tags = {"door"}, x = 72, y = 1, z = -40, dir = {x = 0, z = 1}},
+	}
 	local SOCKETS = {
 		{id = "gate_west", role = "guard_post", x = -4, y = 1, z = 59,
 			dir = {x = 0, z = 1}},
@@ -79,6 +107,10 @@ return function(repo)
 		["grug_mobs:elder_dwarf"] = true,
 		["grug_traders:vendor_race_dwarf"] = true,
 	}
+	-- Whether the capital's own area has been emerged yet. `get_node_or_nil`
+	-- answers nil for a block that is not loaded, which is the gate a capital
+	-- is placed behind.
+	local capital_loaded = false
 
 	--
 	-- The world the stub keeps between boots: mod storage and the objects that
@@ -132,25 +164,42 @@ return function(repo)
 				anchor = {x = ANCHOR.x, y = ANCHOR.y, z = ANCHOR.z}}}
 		end
 		function grug_core.settlement_socket_settlements()
-			return {{key = "hearthpine", race_id = "dwarf",
-				anchor = {x = ANCHOR.x, y = ANCHOR.y, z = ANCHOR.z}}}
+			return {
+				{key = "hearthpine", race_id = "dwarf",
+					anchor = {x = ANCHOR.x, y = ANCHOR.y, z = ANCHOR.z}},
+				{key = "dur_brannoc", race_id = "dwarf",
+					anchor = {x = CAPITAL.x, y = CAPITAL.y, z = CAPITAL.z}},
+			}
 		end
-		function grug_core.settlement_sockets(race_id)
-			if race_id ~= "dwarf" then return {} end
+		local function compile(list, anchor)
 			local out = {}
-			for index = 1, #SOCKETS do
-				local socket = SOCKETS[index]
+			for index = 1, #list do
+				local socket = list[index]
 				out[index] = {id = socket.id, role = socket.role, x = socket.x,
 					y = socket.y, z = socket.z,
 					dir = {x = socket.dir.x, z = socket.dir.z},
 					group = socket.group, order = socket.order,
 					kind = socket.kind, tags = socket.tags,
-					pos = socket_world_pos(socket), yaw = 0}
+					pos = {x = anchor.x + socket.x, y = anchor.y + socket.y,
+						z = anchor.z + socket.z},
+					yaw = 0}
 			end
 			return out
 		end
+		function grug_core.settlement_sockets(race_id)
+			if race_id ~= "dwarf" then return {} end
+			return compile(SOCKETS, ANCHOR)
+		end
+		function grug_core.settlement_sockets_at(key)
+			if key == "hearthpine" then return compile(SOCKETS, ANCHOR) end
+			if key == "dur_brannoc" then return compile(CAPITAL_SOCKETS, CAPITAL) end
+			return {}
+		end
 		function grug_core.start_anchor()
 			return {x = ANCHOR.x, y = ANCHOR.y, z = ANCHOR.z}
+		end
+		function grug_core.capital_anchor()
+			return {x = CAPITAL.x, y = CAPITAL.y, z = CAPITAL.z}
 		end
 		function grug_core.start_ready() return harness.ready == true end
 		function grug_core.register_on_starts_progress(fn)
@@ -177,7 +226,13 @@ return function(repo)
 			end
 			return out
 		end
-		function core_api.get_node_or_nil() return {name = "air"} end
+		-- A position inside the capital's envelope answers only once its area has
+		-- been emerged; everything else is the loaded start. nil is what the
+		-- engine returns for an unloaded block, and it is the capital's gate.
+		function core_api.get_node_or_nil(pos)
+			if pos and pos.z > -2000 and not capital_loaded then return nil end
+			return {name = "air"}
+		end
 		function core_api.get_objects_inside_radius(pos, radius)
 			local out = {}
 			for index = 1, #world.objects do
@@ -329,9 +384,9 @@ return function(repo)
 		end
 	end
 	grug_mobs.start_guard_died(guard)
-	check(world.storage["startnpc:dwarf:gate_west"] == nil,
+	check(world.storage["startnpc:hearthpine:gate_west"] == nil,
 		"a dead guard kept its marker")
-	check(world.storage["startnpcdue:dwarf:gate_west"] ~= nil,
+	check(world.storage["startnpcdue:hearthpine:gate_west"] ~= nil,
 		"a dead guard booked no refill")
 	local before = #world.objects
 	step(5)
@@ -341,7 +396,7 @@ return function(repo)
 	step(400)
 	check(#world.objects == before + 1,
 		"a dead guard's slot never refilled: " .. #world.objects)
-	check(world.storage["startnpcdue:dwarf:gate_west"] == nil,
+	check(world.storage["startnpcdue:hearthpine:gate_west"] == nil,
 		"a served refill kept its due time")
 	line("death_respawn", "not_before_due", "refilled_after_window")
 
@@ -352,17 +407,106 @@ return function(repo)
 	-- Cleared in STORAGE and then booted again: during a run the in-memory
 	-- slot is authoritative, so this is the shape the loss really has -- a
 	-- world whose markers no longer match the NPCs standing in it.
-	world.storage["startnpc:dwarf:gate_west"] = nil
+	world.storage["startnpc:hearthpine:gate_west"] = nil
 	local standing = #world.objects
 	boot()
 	harness.players = {socket_world_pos(SOCKETS[1])}
 	become_ready()
 	check(#world.objects == standing, "the second gate spawned a twin")
-	check(world.storage["startnpc:dwarf:gate_west"] == "1",
+	check(world.storage["startnpc:hearthpine:gate_west"] == "1",
 		"the second gate did not restore the marker")
 	check(logged("without a marker; marker restored") >= 1,
 		"the restored marker was not reported")
 	line("second_gate", "no_twin", "marker_restored")
+
+	--
+	-- 6. A CAPITAL, which is not preloaded. Nothing of it exists until its own
+	--    area is emerged; then the whole of it goes in on one pass with no
+	--    player near it, and each of its TWO patrol loops carries its own guard.
+	--
+	local function capital_slots()
+		local count = 0
+		for index = 1, #CAPITAL_SOCKETS do
+			local socket = CAPITAL_SOCKETS[index]
+			local carries = socket.role ~= "king" and socket.role ~= "waypoint" and
+				(socket.role ~= "guard_patrol" or socket.order == 1)
+			if carries then count = count + 1 end
+		end
+		return count
+	end
+	local CAPITAL_SLOTS = capital_slots()
+	local function standing_at_capital()
+		local count = 0
+		for index = 1, #world.objects do
+			local entity = world.objects[index].ref:get_luaentity()
+			if entity and entity._grug_start == "dur_brannoc" then count = count + 1 end
+		end
+		return count
+	end
+	world.objects = {}
+	world.storage = {}
+	capital_loaded = false
+	boot()
+	harness.players = {}
+	become_ready()
+	check(standing_at_capital() == 0,
+		"a capital was populated before its area was emerged")
+	-- Several heartbeats with nobody anywhere: still nothing, because the
+	-- capital's anchor column does not answer yet.
+	step(5)
+	step(5)
+	check(standing_at_capital() == 0,
+		"a capital was populated by a heartbeat before its area was emerged")
+	-- Somebody walks up and the area emerges. No player is near any socket --
+	-- the readiness pass is deliberately not a player question.
+	capital_loaded = true
+	step(5)
+	check(standing_at_capital() == CAPITAL_SLOTS,
+		"the emerged capital was not populated in one pass: " ..
+		standing_at_capital() .. " of " .. CAPITAL_SLOTS)
+	-- One guard per LOOP, each walking its own loop's waypoints and nobody
+	-- else's. A start has one loop; a capital has as many as it authored.
+	local loops, patrollers = {}, 0
+	for index = 1, #world.objects do
+		local entity = world.objects[index].ref:get_luaentity()
+		if entity and entity._grug_start == "dur_brannoc" and
+				entity._grug_patrol_route then
+			patrollers = patrollers + 1
+			local route = entity._grug_patrol_route
+			check(#route.points == 2,
+				"a capital patroller got a route of " .. #route.points ..
+				" waypoints instead of its own loop's two")
+			loops[entity._grug_socket] = #route.points
+		end
+	end
+	check(patrollers == 2, "a capital's two loops produced " .. patrollers ..
+		" guards")
+	check(loops.ring_1 == 2 and loops.tower_1 == 2,
+		"the two loops are not the two authored ones")
+	-- A district villager wanders its own plot, never the whole city: the idle
+	-- spots are grouped by the composition the socket id names.
+	local district_spots, core_spots
+	for index = 1, #world.objects do
+		local entity = world.objects[index].ref:get_luaentity()
+		if entity and entity._grug_start == "dur_brannoc" and
+				entity._grug_idle_spots then
+			if entity._grug_socket:find("/", 1, true) then
+				district_spots = #entity._grug_idle_spots
+			else
+				core_spots = #entity._grug_idle_spots
+			end
+		end
+	end
+	check(district_spots == 1 and core_spots == 1,
+		"a capital villager was given another composition's idle spots")
+	-- And the START beside it is untouched: the two settlements of one race
+	-- keep separate markers, which is why the key and not the race is the
+	-- marker's identity.
+	check(world.storage["startnpc:dur_brannoc:hall_guard"] == "1" and
+		world.storage["startnpc:hearthpine:gate_west"] == "1",
+		"the two settlements of one race share a marker")
+	line("capital", CAPITAL_SLOTS, standing_at_capital(), patrollers,
+		"loops_separate", "markers_separate")
 
 	restore()
 	return table.concat(report)
