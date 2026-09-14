@@ -118,6 +118,71 @@ Calibration: implementing Claude Opus, reviewing Claude Opus, one fix
 round, final findings 0. The user accepted the zone atmosphere first
 version on 2026-09-14 before seeing Dawnmere.
 
+## Increments 5-8: four starts in parallel, then one integration
+
+The remaining four races were built at the same time, each on its own branch
+off `main` at `90d19ef`, each against the same shared library, and then merged
+one after the other onto `wp13-starts`. Every lane therefore touched the same
+nine or thirteen files, and every conflict was two lanes adding to the same
+table; the integration kept both sides in anchor order and is recorded in
+`tools/wp13/evidence/20260914-starts-integration/`.
+
+| Increment | Start | Race | Anchor | Note | Review |
+| --- | --- | --- | --- | --- | --- |
+| 5 | Stillgrave Hollow | undead | 4 | `wp13-stillgrave.md` | 0C / 1H / 2M / 8L |
+| 6 | Silverleaf Glade | elf | 3 | `wp13-silverleaf.md` | 0C / 1H / 1M / 4L |
+| 7 | Sunscar Camp | orc | 5 | `wp13-sunscar-camp.md` | 0C / 0H / 2M / 8L |
+| 8 | Kapok Cradle | troll | 6 | `wp13-kapok.md` | 0C / 1H / 2M / 5L |
+
+**One combined fix round** for all four, plus two cross-cutting findings the
+reviews raised against the shared library, recorded in
+`tools/wp13/evidence/20260914-starts-fixes/`. The findings worth carrying
+forward as library knowledge:
+
+- **Two hashes over one position are rarely independent.**
+  `dressing.undergrowth` picked cells with `(7x + 11z) % density` and chose
+  the plant with `(x + z) % 4`, and 7x + 11z IS 3(x + z) modulo 4: at density
+  4 one of the two plants could never appear. Both tests read different
+  offsets into `parts.position_hash` now, and `library_kat` asserts every
+  start emits both of its ground-cover nodes. Hearthpine Vale keeps the old
+  selector as `dressing.vale_undergrowth` because its identity is in the
+  frozen R7 manifest; exactly one caller is allowed and the KAT counts them.
+- **A placement test that only guards an `if` is not a test.** Stillgrave
+  lost six of ten burial-ground wall runs and three of 41 route lamps that
+  way, and Dawnmere had already lost 22 of 27 exterior props to the same
+  shape of code one increment earlier. Every placement in these compositions
+  is fatal now, and every authored population is asserted.
+- **A flag that switches an invariant off has to be checked itself.**
+  `room.ruin` turns off the watertight-roof and lit-interior rules;
+  `blueprint_kat` now requires a room that claims to be a ruin to have no
+  door landmark in it, be nobody's destination, be unlit, and really have a
+  column open to the sky.
+- **Neighbour rules and support rules catch different defects.**
+  `library_kat` section 11 requires every building cell to touch another
+  across a face or a vertical diagonal (trees, wallmounted nodes and sprites
+  excepted, each for a reason at the site) -- that is what found a bell
+  hanging in mid air inside a four-course belfry. It does NOT catch a floor
+  with nothing under it, because each such cell touches the podium beside it,
+  so `blueprint_kat` separately requires every cell of a start's `paved`
+  family to rest on something, with an exact declared population for the one
+  start that raises its floors on purpose.
+- **`attached_node` ratings are not interchangeable.** 3 is floor, 4 is
+  ceiling (`reference_projects/luanti/builtin/game/falling.lua:391-399`).
+  Kapok bound the floor lantern and hung sixteen of them from decks.
+- **`<` on strings is `strcoll`.** Every composition sorts its palette with
+  `parts.less_bytes`, and the KAT runs it against the identical comparator in
+  `wp40/r7_settlement.lua` over a corpus chosen to separate them if they ever
+  drift.
+- **A generator must reproduce the schematic it claims.** The elf grove's
+  crowns were the aspen's courses minus a "parity notch" that left 868 leaves
+  with nothing on any face; the orc camp's relief was a Bannerbreak mesa in a
+  Sunscar savanna. Both were decoded from the source (`aspen_tree.mts`,
+  `world_zones.md` section 8.4) and rebuilt.
+
+Calibration: implementing Claude Opus, reviewing Claude Opus, one combined
+fix round across four lanes, final findings 0. Six starts built; none is
+accepted until the user has walked it.
+
 ## User runtime test
 
 Fresh world, dwarf, seed `531802985935182545` (Hearthpine y = 25):

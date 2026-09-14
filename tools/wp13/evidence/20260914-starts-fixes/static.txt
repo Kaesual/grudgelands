@@ -1,0 +1,58 @@
+== parser and SETGLOBAL on every Lua file this integration touched ==
+mods/MAPGEN/grug_mapgen/wp13/buildings.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/dawnmere.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/dressing.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/hearthpine.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/interiors.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/kapok.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/layout.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/palette.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/parts.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/roofs.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/silverleaf.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/stillgrave.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/sunscar.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp40/r7_dawnmere_blueprint.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp40/r7_hearthpine_blueprint.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp40/r7_kapok_blueprint.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp40/r7_manifest.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp40/r7_silverleaf_blueprint.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp40/r7_stillgrave_blueprint.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp40/r7_sunscar_blueprint.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp40/r7_wp13_library.lua parser PASS; SETGLOBAL [0]
+tools/wp13/blueprint_kat.lua parser PASS; SETGLOBAL [0]
+tools/wp13/engine_cases.lua parser PASS; SETGLOBAL [0]
+tools/wp13/library_kat.lua parser PASS; SETGLOBAL [0]
+tools/wp13/stub_registry.lua parser PASS; SETGLOBAL [0]
+== whole tree parses ==
+mods/*/grug_* parser PASS
+tools parser PASS
+== five plain-5.1 sweeps, scoped to the Lua this integration touched ==
+SWEEP 1
+SWEEP 2
+SWEEP 3
+SWEEP 4
+SWEEP 5
+SWEEPS DONE (no output above a SWEEP line means zero hits)
+== the same five sweeps over wp13/, the changed wp40 files and tools/wp13 ==
+SWEEP 1
+SWEEP 2
+SWEEP 3
+SWEEP 4
+SWEEP 5
+tools/wp13/dump_blueprint.lua:18:	os.exit(2)
+tools/wp13/dump_blueprint.lua:46:	os.exit(1)
+tools/wp13/dump_blueprint.lua:52:	os.exit(1)
+tools/wp13/dump_blueprint.lua:59:		os.exit(1)
+tools/wp13/dump_blueprint.lua:66:	os.exit(1)
+tools/wp13/dump_blueprint.lua:72:	os.exit(1)
+SWEEPS DONE (no output above a SWEEP line means zero hits)
+== the changed Python file compiles ==
+tools/wp13/extract_tiles.py py_compile PASS
+== node_tiles.json parses ==
+node_tiles.json nodes 468
+== WP40 R7 changed-production roster ==
+changed_production_lua roster PASS (142 files, script expects 142)
+== fresh server check ==
+Fresh-server source audit: PASS

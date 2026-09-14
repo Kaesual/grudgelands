@@ -152,12 +152,15 @@ the goal-level view.
   follows WP26/WP33/WP43/WP44.
 - [ ] **WP13 — in progress:** final starts, capitals, settlements, camps,
   kings/guards and both all-six-gem apex camps on shipped WP40 geometry and
-  WP43 materials. The first increment is Hearthpine Vale: an inhabited dwarf
-  craft settlement with a small guardpost. Two increments are accepted; the
-  third (2026-09-14) rebuilds it from a reusable building library with
-  per-race palettes, adds the atmosphere layer and a licence-audited
-  decorative building kit, and awaits its GUI playtest before the other five
-  starts follow as palette increments.
+  WP43 materials. **All six start settlements are built** (2026-09-14) on one
+  reusable building library with per-race palettes, together with the
+  atmosphere layer and a licence-audited decorative building kit: Hearthpine
+  Vale (dwarf), Dawnmere Fields (human), Silverleaf Glade (elf), Stillgrave
+  Hollow (undead), Sunscar Camp (orc) and Kapok Cradle (troll). The four
+  parallel lanes were merged onto one branch and given one combined
+  review-fix round. Every start awaits the user's GUI playtest; capitals,
+  villages, outposts, camps and the king/guard content are the rest of the
+  package.
 - [x] WP33: gathering plants, signature woods and cultural sources on final
   zone/race-region ownership; accepted with WP40 R7 on 2026-09-02.
 - [ ] WP34: deep spawn pressure, corrected depth-level curve, camp-only
