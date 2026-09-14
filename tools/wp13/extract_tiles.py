@@ -623,6 +623,28 @@ MANUAL_OVERRIDES = {
                                   "default_furnace_side.png",
                                   "default_furnace_front.png"],
                         "drawtype": "normal", "paramtype2": "facedir"},
+    # grug_decor builds its tile names through a local `tex()` helper, which
+    # the scanner cannot follow; these are the four static furnishing nodes a
+    # WP13 palette binds.
+    "grug_decor:xdecor_barrel": {
+        "tiles": ["grug_decor_xdecor_xdecor_barrel_top.png",
+                  "grug_decor_xdecor_xdecor_barrel_top.png",
+                  "grug_decor_xdecor_xdecor_barrel_sides.png"],
+        "drawtype": "normal", "paramtype2": "facedir"},
+    "grug_decor:xdecor_cauldron": {
+        "tiles": ["grug_decor_xdecor_xdecor_cauldron_top_empty.png",
+                  "grug_decor_xdecor_xdecor_cauldron_bottom.png",
+                  "grug_decor_xdecor_xdecor_cauldron_sides.png"],
+        "drawtype": "normal", "paramtype2": "facedir"},
+    "grug_decor:xdecor_empty_shelf": {
+        "tiles": ["default_wood.png", "default_wood.png", "default_wood.png",
+                  "default_wood.png",
+                  "default_wood.png^grug_decor_xdecor_xdecor_empty_shelf.png",
+                  "default_wood.png^grug_decor_xdecor_xdecor_empty_shelf.png"],
+        "drawtype": "normal", "paramtype2": "facedir"},
+    "grug_decor:cottages_shelf": {
+        "tiles": ["default_wood.png"],
+        "drawtype": "nodebox", "paramtype2": "facedir"},
 }
 
 # Last-resort flat colours for names that resolve to no texture at all.

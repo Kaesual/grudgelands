@@ -59,6 +59,35 @@ local function loader(directory)
 		return false
 	end
 
+	-- The two entry torches beside a doorway. Each one hangs on the outside
+	-- face of a wall cell, so that cell has to BE a wall: the window rhythm
+	-- puts panes two nodes from many doorways, and a wallmounted torch on a
+	-- pane hangs in the window instead of on the house. The torch therefore
+	-- walks outward along its own wall until it finds an opaque full node to
+	-- hang on, and is dropped if the wall offers none.
+	local function entry_torch(buf, palette, block, side, x, z, sign, y, lights)
+		local step = SIDE_STEP[side]
+		local along = (side == "z-" or side == "z+")
+		for _, distance in ipairs({2, 3, 4}) do
+			local offset = sign * distance
+			local tx, tz = x, z
+			if along then tx = x + offset else tz = z + offset end
+			if tx >= block.x0 and tx <= block.x1 and
+					tz >= block.z0 and tz <= block.z1 and
+					parts.solid_at(buf, tx, y, tz) then
+				local lx, lz = tx + step[1], tz + step[2]
+				local here = buf:at(lx, y, lz)
+				if here == nil or here.name == "air" then
+					parts.wall_torch(buf, palette, lx, y, lz,
+						-step[1], 0, -step[2])
+					lights[#lights + 1] = {x = lx, y = y, z = lz}
+					return true
+				end
+			end
+		end
+		return false
+	end
+
 	-- Window rhythm along an inner wall run of length `len` (positions
 	-- 1..len): a two wide pane opening every four positions starting at 2,
 	-- each flanked by a log frame, which reads as half timbering.
@@ -258,25 +287,16 @@ local function loader(directory)
 				doors[#doors + 1] = {x = partner_x, y = 1, z = partner_z,
 					face = face}
 			end
-			local step = SIDE_STEP[door.side]
-			for _, offset in ipairs({-2, 2}) do
-				local tx, tz = x, z
-				if door.side == "z-" or door.side == "z+" then
-					tx = x + offset
-				else
-					tz = z + offset
-				end
-				if tx >= block.x0 and tx <= block.x1 and
-						tz >= block.z0 and tz <= block.z1 then
-					local lx, lz = tx + step[1], tz + step[2]
-					parts.wall_torch(buf, palette, lx, 3, lz,
-						-step[1], 0, -step[2])
-					lights[#lights + 1] = {x = lx, y = 3, z = lz}
-				end
+			for _, sign in ipairs({-1, 1}) do
+				entry_torch(buf, palette, block, door.side, x, z, sign, 3,
+					lights)
 			end
 		end
 
-		local roof_top = roofs.raster(buf, palette, field)
+		-- A building may carry a roof of a different material: the roof
+		-- roles are read from `spec.roof_palette` when the composition
+		-- passes one, so a stone roof needs no second generator.
+		local roof_top = roofs.raster(buf, spec.roof_palette or palette, field)
 
 		-- Chimneys: stone stacks rising through the roof from a wall cell.
 		for _, stack in ipairs(spec.chimneys or {}) do
@@ -333,7 +353,7 @@ local function loader(directory)
 		local w, d = spec.w or 9, spec.d or 7
 		local wall_h = spec.wall_h or 4
 		return M.build(palette, {
-			id = spec.id, overhang = 1,
+			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1,
 				wall_h = wall_h, roof = spec.roof or "gable",
 				ridge_axis = spec.ridge_axis or "x", lift = spec.lift,
@@ -356,7 +376,7 @@ local function loader(directory)
 		local wall_h = spec.wall_h or 5
 		local wz = math.floor((d - wing) / 2)
 		return M.build(palette, {
-			id = spec.id, overhang = 1,
+			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
 			blocks = {
 				{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
 					roof = "gable", ridge_axis = "z", rise = 4,
@@ -378,7 +398,7 @@ local function loader(directory)
 		local w, d = spec.w or 13, spec.d or 15
 		local wall_h = spec.wall_h or 5
 		return M.build(palette, {
-			id = spec.id, overhang = 1,
+			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
 				roof = "hip", rise = 4, kit = "hall",
 				kit_spec = {hearth_x = 1, hearth_z = 2, hearth_face = 1}}},
@@ -395,7 +415,7 @@ local function loader(directory)
 		local w, d = spec.w or 9, spec.d or 13
 		local wall_h = spec.wall_h or 4
 		return M.build(palette, {
-			id = spec.id, overhang = 1,
+			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
 				roof = "saltbox", ridge_axis = "z", lift = 2, rise = 3,
 				kit = "store"}},
@@ -409,7 +429,7 @@ local function loader(directory)
 		local w, d = spec.w or 13, spec.d or 9
 		local wall_h = spec.wall_h or 4
 		return M.build(palette, {
-			id = spec.id, overhang = 1,
+			id = spec.id, overhang = 1, roof_palette = spec.roof_palette,
 			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
 				roof = "gable", ridge_axis = "x", rise = 3, kit = "yard",
 				open_sides = spec.open_sides or {"z-", "x+"}}},
@@ -478,14 +498,8 @@ local function loader(directory)
 		buf:clear(dx, 1, dz, dx, 2, dz)
 		parts.door(buf, palette, dx, 1, dz, face, false)
 		doors[#doors + 1] = {x = dx, y = 1, z = dz, face = face}
-		local step = SIDE_STEP[door_side]
-		for _, offset in ipairs({-2, 2}) do
-			local tx, tz = dx, dz
-			if door_side == "z-" or door_side == "z+" then tx = dx + offset
-			else tz = dz + offset end
-			local lx, lz = tx + step[1], tz + step[2]
-			parts.wall_torch(buf, palette, lx, 3, lz, -step[1], 0, -step[2])
-			lights[#lights + 1] = {x = lx, y = 3, z = lz}
+		for _, sign in ipairs({-1, 1}) do
+			entry_torch(buf, palette, block, door_side, dx, dz, sign, 3, lights)
 		end
 
 		-- Guard room furniture, then the lookout deck with an open stairwell.

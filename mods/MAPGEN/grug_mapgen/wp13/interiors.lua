@@ -28,15 +28,31 @@ local function torch_side(room, x, z)
 end
 
 -- A wall torch on the inner face of the room wall next to (x, z).
+--
+-- The wanted cell is only a wish: interior lights sit at the height of the
+-- window band, so the wall cell behind the wish is often a pane, and a
+-- wallmounted torch on a pane hangs in a window instead of on a wall. The
+-- torch therefore slides along its own wall to the nearest cell whose
+-- support is an opaque full node and whose own cell is still free.
 function M.wall_light(buf, parts, palette, room, x, y, z, lights)
 	local dx, dy, dz = torch_side(room, x, z)
 	if not dx then error("wp13 interiors: light is not against a wall", 0) end
-	local support = buf:at(x + dx, y + dy, z + dz)
-	if support == nil or support.name == "air" then
-		error("wp13 interiors: indoor light has no support", 0)
+	-- The wall runs perpendicular to the direction of its support.
+	local sx, sz = (dx == 0) and 1 or 0, (dz == 0) and 1 or 0
+	for _, offset in ipairs({0, 1, -1, 2, -2, 3, -3}) do
+		local cx, cz = x + sx * offset, z + sz * offset
+		if cx >= room.x1 and cx <= room.x2 and cz >= room.z1 and cz <= room.z2 and
+				parts.solid_at(buf, cx + dx, y + dy, cz + dz) then
+			local here = buf:at(cx, y, cz)
+			if here == nil or here.name == "air" then
+				parts.wall_torch(buf, palette, cx, y, cz, dx, dy, dz)
+				lights[#lights + 1] = {x = cx, y = y, z = cz}
+				return
+			end
+		end
 	end
-	parts.wall_torch(buf, palette, x, y, z, dx, dy, dz)
-	lights[#lights + 1] = {x = x, y = y, z = z}
+	error("wp13 interiors: indoor light near " .. x .. "," .. y .. "," .. z ..
+		" found no solid wall", 0)
 end
 
 function M.rug(buf, palette, room, x1, z1, x2, z2, accent)
@@ -83,7 +99,7 @@ function M.shelves(buf, palette, room, x, z, axis, len, face)
 	end
 end
 
--- Chests standing against a wall, looking into the room.
+-- Barrels standing against a wall, their lid ring toward the room.
 function M.storage(buf, palette, room, x, z, axis, len, face)
 	for step = 0, len - 1 do
 		local cx = axis == "x" and x + step or x
@@ -92,11 +108,21 @@ function M.storage(buf, palette, room, x, z, axis, len, face)
 	end
 end
 
--- A furnace with a stone breast above it; the caller runs the chimney on up
--- through the roof.
-function M.hearth(buf, palette, room, x, z, face, top)
+-- A hearth: the iron pot in the fire opening, the fire itself, and the stone
+-- breast carrying the flue on up to the caller's chimney.
+--
+-- There is deliberately no `default:furnace` here. A furnace written through
+-- VoxelManip never runs its `on_construct`, so it has no inventory, no
+-- formspec and no timer: it is a prop that looks like a service the
+-- settlement design does not offer (docs/design/settlements.md: "Furniture
+-- does not introduce profession, storage, quest, innkeeper or travel
+-- services"). Three static nodes say the same thing honestly, and the torch
+-- makes it the warmest corner of the room.
+function M.hearth(buf, parts, palette, room, x, z, face, top, lights)
 	buf:put(x, room.y + 1, z, palette.node("hearth"), front(face))
-	for y = room.y + 2, top do
+	parts.floor_torch(buf, palette, x, room.y + 2, z)
+	if lights then lights[#lights + 1] = {x = x, y = room.y + 2, z = z} end
+	for y = room.y + 3, top do
 		buf:put(x, y, z, palette.node("chimney"))
 	end
 end
@@ -107,7 +133,7 @@ end
 
 M.kits = {}
 
--- A lived-in home: bed corner, rug, table and seats, shelf wall, chest,
+-- A lived-in home: bed corner, rug, table and seats, shelf wall, barrel,
 -- hearth under the chimney and two wall torches.
 function M.kits.home(buf, parts, palette, room, spec)
 	local lights = {}
@@ -128,22 +154,23 @@ function M.kits.home(buf, parts, palette, room, spec)
 		true)
 	parts.seat(buf, palette, room.x2 - 1, room.y + 1, room.z1 + 1, 1)
 	if spec.hearth ~= false then
-		M.hearth(buf, palette, room, spec.hearth_x or room.x2,
-			spec.hearth_z or room.z1, spec.hearth_face or 3, room.h)
+		M.hearth(buf, parts, palette, room, spec.hearth_x or room.x2,
+			spec.hearth_z or room.z1, spec.hearth_face or 3, room.h, lights)
 	end
 	M.wall_light(buf, parts, palette, room, room.x1, room.y + 3, cz, lights)
 	M.wall_light(buf, parts, palette, room, room.x2, room.y + 3, cz, lights)
 	return lights
 end
 
--- The forge floor: furnaces on the back wall, a steel workbench, anvil block,
--- benches, storage and four torches.
+-- The forge floor: three hearths on the back wall, two iron anvil blocks,
+-- benches, storage and four wall torches.
 function M.kits.workshop(buf, parts, palette, room, spec)
 	local lights = {}
 	local cx = math.floor((room.x1 + room.x2) / 2)
 	local cz = math.floor((room.z1 + room.z2) / 2)
 	for offset = -2, 2, 2 do
-		M.hearth(buf, palette, room, cx + offset, room.z1, 0, room.h)
+		M.hearth(buf, parts, palette, room, cx + offset, room.z1, 0, room.h,
+			lights)
 	end
 	buf:put(cx - 3, room.y + 1, room.z1, palette.node("workbench"))
 	buf:put(cx + 3, room.y + 1, room.z1, palette.node("workbench"))
@@ -165,7 +192,7 @@ function M.kits.smithy(buf, parts, palette, room, spec)
 	local lights = {}
 	local cx = math.floor((room.x1 + room.x2) / 2)
 	local cz = math.floor((room.z1 + room.z2) / 2)
-	M.hearth(buf, palette, room, room.x2, cz, 3, room.h)
+	M.hearth(buf, parts, palette, room, room.x2, cz, 3, room.h, lights)
 	buf:put(cx, room.y + 1, cz, palette.node("workbench"))
 	buf:put(cx, room.y + 2, cz, palette.node("chimney_cap"))
 	M.storage(buf, palette, room, room.x1 + 1, room.z1, "x", 2, 0)
@@ -176,7 +203,7 @@ function M.kits.smithy(buf, parts, palette, room, spec)
 	return lights
 end
 
--- The storage building: chest rows, stacked timber and a work table.
+-- The storage building: barrel rows, stacked timber and a work table.
 function M.kits.store(buf, parts, palette, room, spec)
 	local lights = {}
 	local cz = math.floor((room.z1 + room.z2) / 2)
@@ -197,7 +224,7 @@ function M.kits.store(buf, parts, palette, room, spec)
 	return lights
 end
 
--- The community hall: two long tables with benches, a hearth, book wall and
+-- The community hall: two long tables with benches, a hearth, shelf wall and
 -- carpet runner down the middle.
 function M.kits.hall(buf, parts, palette, room, spec)
 	local lights = {}
@@ -209,8 +236,8 @@ function M.kits.hall(buf, parts, palette, room, spec)
 	for _, offset in ipairs({-3, 3}) do
 		M.table_set(buf, parts, palette, room, cx + offset, cz - 2, "z", 5)
 	end
-	M.hearth(buf, palette, room, spec.hearth_x or cx,
-		spec.hearth_z or room.z1, spec.hearth_face or 0, room.h)
+	M.hearth(buf, parts, palette, room, spec.hearth_x or cx,
+		spec.hearth_z or room.z1, spec.hearth_face or 0, room.h, lights)
 	M.shelves(buf, palette, room, room.x1, room.z1 + 2, "z", 4, 1)
 	M.shelves(buf, palette, room, room.x2, room.z1 + 2, "z", 4, 3)
 	M.storage(buf, palette, room, room.x1 + 1, room.z2, "x", 2, 2)
@@ -222,7 +249,7 @@ function M.kits.hall(buf, parts, palette, room, spec)
 	return lights
 end
 
--- The gate watchpost guard room: one bed, a chest, a table and a torch.
+-- The gate watchpost guard room: one bed, a barrel, a table and a torch.
 function M.kits.watch(buf, parts, palette, room, spec)
 	local lights = {}
 	local cz = math.floor((room.z1 + room.z2) / 2)

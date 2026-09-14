@@ -76,7 +76,7 @@ local function loader(directory)
 		if lights then lights[#lights + 1] = {x = x, y = 3, z = z} end
 	end
 
-	-- A crate stack: chests with a wool bale on top.
+	-- A crate stack: a barrel with a wool bale on top.
 	function M.crates(buf, palette, x, z, face)
 		buf:put(x, 1, z, palette.node("storage"), (face + 2) % 4)
 		buf:put(x, 2, z, palette.node("rug"))
@@ -139,30 +139,54 @@ local function loader(directory)
 		buf:put(x, 3, z, palette.node("roof_slab"))
 	end
 
-	-- A pine with a continuous trunk and a tapering needle crown. Taller
-	-- stems carry a deeper crown, so a stand of them is not one silhouette
-	-- repeated.
+	-- A pine: a bare trunk carrying a layered, tapering crown.
+	--
+	-- The proportions are those of the vendored pine schematics
+	-- (mods/BASE/default/schematics/pine_tree.mts and small_pine.mts): the
+	-- crown occupies only the top four or five courses, the widest ring is
+	-- two nodes out and sits at the bottom of the crown, and everything
+	-- below that is clear stem. The previous version started its crown three
+	-- nodes above the ground on a five node stem, which read as a shrub from
+	-- every camera angle.
+	--
+	-- `height` is the trunk: the lowest needle sits at `height - 4`, so a
+	-- nine node stem shows five clear logs and an eleven node stem seven.
+	-- The crown is cut with a parity notch per layer, so neighbouring trees
+	-- of the same height are not the same silhouette.
 	function M.tree(buf, palette, x, z, height)
 		local log = palette.node("tree_log")
 		local needles = palette.node("tree_leaves")
 		for y = 1, height do buf:put(x, y, z, log) end
-		local depth = height >= 7 and 4 or 3
-		for step = 0, depth - 1 do
-			local y = height - depth + step
-			local reach = 2 - math.floor(step * 2 / depth)
-			for dz = -reach, reach do
-				for dx = -reach, reach do
-					local span = math.abs(dx) + math.abs(dz)
-					if span <= reach + (step % 2) and not (dx == 0 and dz == 0) then
-						buf:put(x + dx, y, z + dz, needles)
+		-- reach per crown layer, from the widest ring up to the tip
+		local LAYERS = {
+			{offset = -4, reach = 2, notch = true},
+			{offset = -3, reach = 2, notch = false},
+			{offset = -2, reach = 1, notch = false},
+			{offset = -1, reach = 1, notch = true},
+			{offset = 0, reach = 1, notch = false},
+		}
+		for index = 1, #LAYERS do
+			local layer = LAYERS[index]
+			local y = height + layer.offset
+			if y >= 2 then
+				local reach = layer.reach
+				for dz = -reach, reach do
+					for dx = -reach, reach do
+						local span = math.abs(dx) + math.abs(dz)
+						local corner = math.abs(dx) == reach and
+							math.abs(dz) == reach
+						local skip = corner or
+							(layer.notch and span == reach and
+								(x + z + dx + dz) % 2 == 1)
+						if span <= reach and not skip and
+								not (dx == 0 and dz == 0) then
+							buf:put(x + dx, y, z + dz, needles)
+						end
 					end
 				end
 			end
 		end
 		buf:put(x, height + 1, z, needles)
-		for _, offset in ipairs({{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) do
-			buf:put(x + offset[1], height, z + offset[2], needles)
-		end
 	end
 
 	-- Scattered undergrowth on a rectangle of open ground.

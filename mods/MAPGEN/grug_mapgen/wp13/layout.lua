@@ -128,7 +128,9 @@ local function loader(directory)
 				local hash = (x * 73 + z * 151 + x * z) % 97
 				local tx = x + hash % 5 - 2
 				local tz = z + math.floor(hash / 5) % 5 - 2
-				local height = 5 + hash % 4
+				-- Nine to eleven logs: five to seven of them clear of the
+				-- crown, which is what `dressing.tree` asks for.
+				local height = 9 + hash % 3
 				if hash % 7 < 5 and
 						tx >= -radius + 3 and tx <= radius - 3 and
 						tz >= -radius + 3 and tz <= radius - 3 and

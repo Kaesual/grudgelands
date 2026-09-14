@@ -101,21 +101,82 @@ return function(repo)
 
 	-- 3. palette binding ----------------------------------------------------
 	local palette = palettes.new("dwarf")
-	for _, role in ipairs(palettes.required) do
-		assert(type(palette.node(role)) == "string" and palette.node(role) ~= "")
+	-- Every name the dwarf palette can emit, role by role. A family role
+	-- ("door", "bed", "bed_fancy") is a base, not a node name: `node` must
+	-- refuse it and `variant`/`names` are the only way to reach its members,
+	-- which is what keeps `parts.door` and `parts.bed` the sole emitters.
+	local palette_names = {}
+	local function collect(role)
+		if palettes.prefix_roles[role] then
+			assert(not pcall(palette.node, role),
+				"family role " .. role .. " answered node()")
+			assert(not pcall(palette.maybe, role),
+				"family role " .. role .. " answered maybe()")
+			assert(not pcall(palette.variant, role, "_nonsense"),
+				"family role " .. role .. " accepted an undeclared variant")
+			for _, name in ipairs(palette.names(role)) do
+				assert(type(name) == "string" and name ~= "")
+				palette_names[name] = role
+			end
+			return
+		end
+		assert(not pcall(palette.variant, role, "_a"),
+			"plain role " .. role .. " answered variant()")
+		local name = palette.maybe(role)
+		if name ~= nil then
+			assert(type(name) == "string" and name ~= "")
+			assert(palette.node(role) == name)
+			palette_names[name] = role
+		end
 	end
+	for _, role in ipairs(palettes.required) do
+		if not palettes.prefix_roles[role] then
+			assert(type(palette.node(role)) == "string" and
+				palette.node(role) ~= "")
+		end
+		collect(role)
+	end
+	for _, role in ipairs(palettes.optional) do collect(role) end
+	assert(palette_names[palette.variant("door", "_a")] == "door")
+	assert(palette_names[palette.variant("bed", "_top")] == "bed")
 	assert(not pcall(palettes.new, "no_such_race"))
 	assert(not pcall(palette.node, "no_such_role"))
+	assert(not pcall(palette.names, "wall"), "a plain role answered names()")
 	palettes.races.broken_race = {wall = "default:pine_wood"}
 	assert(not pcall(palettes.new, "broken_race"), "unbound role accepted")
 	palettes.races.broken_race = nil
+	-- An override rebinds a declared role and nothing else.
+	local overridden = palettes.new("dwarf",
+		{roof_ridge = "default:stonebrick"})
+	assert(overridden.node("roof_ridge") == "default:stonebrick" and
+		palette.node("roof_ridge") ~= "default:stonebrick",
+		"palette override leaked into the race")
+	assert(not pcall(palettes.new, "dwarf", {no_such_role = "x"}),
+		"undeclared override role accepted")
 
 	-- A palette may only name nodes the game still registers. `grug_materials`
-	-- curates part of the vendored vocabulary away with `core.unregister_item`,
-	-- and R7 hard-fails on an unregistered Hearthpine target, so the removed
-	-- names are read out of the curation source and checked here instead of
-	-- being discovered by a headless engine run.
-	local removed = {}
+	-- retires part of the vendored vocabulary with `core.unregister_item`, and
+	-- R7 hard-fails on an unregistered Hearthpine target, so the retired names
+	-- are read out of the sources instead of being discovered by a headless
+	-- engine run. There are TWO sources and both must be read: the
+	-- `REMOVED_*` blocks of `content_curation.lua`, and the `source` side of
+	-- `grug_materials.STORAGE_DERIVATIVES` (registry.lua), every entry of
+	-- which content_curation.lua appends to the same removal roster a few
+	-- lines further down. Reading only the first source is how
+	-- `default:ladder_steel` stayed on a WP13 whitelist after it had been
+	-- unregistered.
+	local removed, retirement_sources = {}, 0
+	local function retire(name)
+		removed[name] = true
+		-- The stairs shapes of a removed material go with it.
+		local material = name:match("^default:([%w_]+)$")
+		if material then
+			for _, shape in ipairs({"stair_", "stair_inner_", "stair_outer_",
+					"slab_"}) do
+				removed["stairs:" .. shape .. material] = true
+			end
+		end
+	end
 	local curation = io.open(repo ..
 		"/mods/ITEMS/grug_materials/content_curation.lua", "r")
 	assert(curation, "content curation source is missing")
@@ -124,27 +185,74 @@ return function(repo)
 	local blocks = 0
 	for block in text:gmatch("local REMOVED_[A-Z_]+ = {(.-)}") do
 		blocks = blocks + 1
-		for name in block:gmatch('"([%w_]+:[%w_]+)"') do
-			removed[name] = true
-			-- The stairs shapes of a removed block go with it.
-			local material = name:match("^default:([%w_]+)$")
-			if material then
-				for _, shape in ipairs({"stair_", "stair_inner_", "stair_outer_",
-						"slab_"}) do
-					removed["stairs:" .. shape .. material] = true
-				end
-			end
-		end
+		for name in block:gmatch('"([%w_]+:[%w_]+)"') do retire(name) end
 	end
 	assert(blocks >= 3, "curation source no longer lists its removals")
+	retirement_sources = retirement_sources + 1
+	assert(text:find("grug_materials.STORAGE_DERIVATIVES", 1, true),
+		"content curation no longer folds the storage derivatives in")
+	local registry = dofile(repo .. "/tools/wp13/stub_registry.lua")
+	local world = registry.load(repo)
+	local derivatives = 0
+	for _, derivative in ipairs(world.storage_derivatives) do
+		retire(derivative.source)
+		derivatives = derivatives + 1
+	end
+	assert(derivatives >= 22, "the storage derivative roster shrank")
+	retirement_sources = retirement_sources + 1
+	assert(removed["default:ladder_steel"] and removed["default:steel_ingot"],
+		"both retirement sources must be in the roster")
+
+	-- Every name the palette can emit, required AND optional, families
+	-- expanded. Section 8 widens this to every name the finished blueprint
+	-- actually writes, which is the set that reaches the engine.
 	local checked = 0
-	for _, role in ipairs(palettes.required) do
-		local name = palette.node(role)
+	for name, role in pairs(palette_names) do
 		assert(not removed[name],
-			"palette role " .. role .. " names the curated-away " .. name)
+			"palette role " .. role .. " names the retired " .. name)
+		assert(world.nodes[name],
+			"palette role " .. role .. " names the unregistered " .. name)
 		checked = checked + 1
 	end
-	say("palette", "dwarf", #palettes.required, "curated_names", blocks, checked)
+	say("palette", "dwarf", #palettes.required + #palettes.optional,
+		"retirement_sources", retirement_sources, "names", checked)
+
+	-- 3b. no palette role may need a callback VoxelManip never runs --------
+	-- `on_construct` is "Not called for bulk node placement" (lua_api.md), and
+	-- WP13 writes every cell through VoxelManip, so a node whose inventory,
+	-- formspec or timer is created there arrives empty and stays empty: 39
+	-- chests, 21 bookshelves, 15 vessel shelves and 9 furnaces were exactly
+	-- that. The test is made against the REAL registrations, loaded under a
+	-- stub `core` by `tools/wp13/stub_registry.lua`, not against a list kept
+	-- by hand here, so an upstream mod that grows a callback is caught.
+	--
+	-- `on_rightclick` is checked with one documented exception: the `doors`
+	-- family, whose rightclick IS the door and whose `doors.door_toggle`
+	-- repairs the `state` meta an lvm-placed leaf never got. Nothing else may
+	-- carry one. `on_destruct`, `on_blast` and `after_place_node` are not in
+	-- the set: they run on dig or on player placement, never on construction,
+	-- so a node carrying only those behaves identically however it was
+	-- written.
+	local meta_checked = 0
+	for name, role in pairs(palette_names) do
+		local def = world.nodes[name]
+		local hits = registry.meta_fields(def)
+		assert(#hits == 0, "palette role " .. role .. " is bound to " .. name ..
+			", which needs " .. table.concat(hits, "/") ..
+			" that bulk placement never runs")
+		if def.on_rightclick ~= nil then
+			assert(name:sub(1, 6) == "doors:", "palette role " .. role ..
+				" is bound to " .. name .. ", which has an on_rightclick")
+		end
+		meta_checked = meta_checked + 1
+	end
+	-- The guard proves itself: the nodes the palette used to name do fail it.
+	for _, dead in ipairs({"default:chest", "default:bookshelf",
+			"default:furnace", "vessels:shelf"}) do
+		assert(#registry.meta_fields(world.nodes[dead]) > 0,
+			dead .. " no longer demonstrates the metadata trap")
+	end
+	say("palette_static", meta_checked, "registry_nodes", #world.order)
 
 	-- 4. the roof rasteriser produces the corner shapes it claims -----------
 	local function raster_names(field)
@@ -188,9 +296,11 @@ return function(repo)
 	-- 5. a whole building at all four rotations ----------------------------
 	local reference = buildings.cottage(palette, {id = "kat", w = 9, d = 9,
 		roof = "gable", ridge_axis = "x", door_side = "z-"})
-	local door_base = palette.node("door")
+	local door_leaves = palette.names("door")
+	local door_a, door_b = door_leaves[1], door_leaves[2]
 	local hidden = palette.node("door_hidden")
-	local bed_base = palette.node("bed")
+	local bed_halves = palette.names("bed")
+	local bed_foot, bed_head = bed_halves[1], bed_halves[2]
 	local torch_wall = palette.node("light_wall")
 	local torch_post = palette.node("light_post")
 	local stair_names = {[palette.node("roof_stair")] = true,
@@ -224,7 +334,7 @@ return function(repo)
 		local doors_here, torches_here, stairs_here = 0, 0, 0
 		for index = 1, count do
 			local cell = order[index]
-			if cell.name == door_base .. "_a" or cell.name == door_base .. "_b" then
+			if cell.name == door_a or cell.name == door_b then
 				doors_here = doors_here + 1
 				-- The hidden upper node is exactly what `doors` places.
 				local above = map[cell.x .. ":" .. (cell.y + 1) .. ":" .. cell.z]
@@ -252,11 +362,11 @@ return function(repo)
 				stairs_here = stairs_here + 1
 				assert(cell.param2 >= 0 and cell.param2 <= 3,
 					"roof stair left the upright facedir family")
-			elseif cell.name == bed_base .. "_bottom" then
+			elseif cell.name == bed_foot then
 				local step = FACEDIR_DIR[cell.param2]
 				local head = map[(cell.x + step[1]) .. ":" .. cell.y .. ":" ..
 					(cell.z + step[2])]
-				assert(head and head.name == bed_base .. "_top" and
+				assert(head and head.name == bed_head and
 					head.param2 == cell.param2, "bed halves came apart")
 			elseif cell.name == pane then
 				-- A flat pane spans the wall it sits in: param2 0 across x,
@@ -320,6 +430,157 @@ return function(repo)
 	assert(not pcall(parts.rotate_param2, 2, parts.NONE, 1))
 	assert(parts.rotate_param2(0, parts.NONE, 3) == 0)
 	say("guards", "param2_kind", "pass")
+
+	-- 8. the finished settlement against the real registry -----------------
+	-- Sections 1-7 test the library in isolation. What actually reaches the
+	-- engine is the Hearthpine cell list, so the last three sections check
+	-- THAT, name by name and cell by cell, against the registrations loaded
+	-- in section 3.
+	local blueprint = dofile(repo ..
+		"/mods/MAPGEN/grug_mapgen/wp40/r7_hearthpine_blueprint.lua")()
+	local emitted, emitted_names = {}, {}
+	for _, cell in ipairs(blueprint.cells) do
+		if cell.name ~= "air" and not emitted[cell.name] then
+			emitted[cell.name] = true
+			emitted_names[#emitted_names + 1] = cell.name
+		end
+	end
+	table.sort(emitted_names)
+
+	local pinned, kinds_checked = 0, 0
+	for _, name in ipairs(emitted_names) do
+		local def = world.nodes[name]
+		assert(def, "the blueprint writes the unregistered " .. name)
+		assert(not removed[name], "the blueprint writes the retired " .. name)
+		-- `parts.param2_kind` must agree with the mod's own paramtype2.
+		local kind = parts.param2_kind(name)
+		if kind == parts.FACEDIR then
+			assert(def.paramtype2 == "facedir",
+				name .. " is rotated as facedir but is " ..
+					tostring(def.paramtype2))
+		elseif kind == parts.WALLMOUNTED then
+			assert(def.paramtype2 == "wallmounted",
+				name .. " is rotated as wallmounted but is " ..
+					tostring(def.paramtype2))
+		end
+		-- And the two authored tables in parts.lua must equal the registry,
+		-- in both directions, for every name that actually occurs.
+		assert(parts.pane_connects(name) == registry.pane_connects(world, name),
+			"parts.pane_connects disagrees with the registry for " .. name)
+		assert(parts.full_solid(name) == registry.is_opaque_full(world, name),
+			"parts.full_solid disagrees with the registry for " .. name)
+		kinds_checked = kinds_checked + 1
+	end
+
+	-- A node whose definition pins `place_param2` is one the engine itself
+	-- only ever writes at that value, however its paramtype2 reads. Rotating
+	-- it produces a param2 no placement could have made: that is what put a
+	-- meaningless facedir on 440 `default:pine_wood` and 144
+	-- `default:stonebrick` cells.
+	local plain = {["default:pine_wood"] = 0, ["default:stonebrick"] = 0,
+		["default:stone_block"] = 0, ["default:cobble"] = 0}
+	local plain_cells = 0
+	for _, cell in ipairs(blueprint.cells) do
+		local def = world.nodes[cell.name]
+		if def and def.place_param2 ~= nil then
+			assert(cell.param2 == def.place_param2,
+				cell.name .. " pins place_param2 " .. def.place_param2 ..
+					" but a cell carries " .. cell.param2)
+			pinned = pinned + 1
+		end
+		if plain[cell.name] then
+			assert(cell.param2 == 0,
+				"plain cube " .. cell.name .. " carries param2 " .. cell.param2)
+			plain_cells = plain_cells + 1
+		end
+		if parts.param2_kind(cell.name) == parts.NONE then
+			assert(cell.param2 == 0,
+				"unoriented " .. cell.name .. " carries param2 " .. cell.param2)
+		end
+	end
+	assert(plain_cells > 2000, "the plain-cube sample disappeared")
+	say("registry", #emitted_names, "kinds", kinds_checked, "place_param2",
+		pinned, "plain_cubes", plain_cells)
+
+	-- 9. every pane is the node update_pane would have settled on ----------
+	-- Re-derived here from the mod source, not from `parts.resolve_panes`:
+	-- the connection test is `group:pane`, `group:stone`, `group:glass`,
+	-- `group:wood` or `group:tree` read off the real registrations, and the
+	-- branch table is transcribed straight from mods/BASE/xpanes/init.lua.
+	local cell_at = {}
+	for _, cell in ipairs(blueprint.cells) do
+		cell_at[cell.x .. ":" .. cell.y .. ":" .. cell.z] = cell
+	end
+	local pane_cells, connected_panes = 0, 0
+	for _, cell in ipairs(blueprint.cells) do
+		local def = world.nodes[cell.name]
+		if def and type(def.groups) == "table" and (def.groups.pane or 0) > 0 then
+			pane_cells = pane_cells + 1
+			local base = cell.name
+			if base:sub(-5) == "_flat" then base = base:sub(1, -6) end
+			local any, count, c = cell.param2, 0, {}
+			for dir = 0, 3 do
+				local step = FACEDIR_DIR[dir]
+				local other = cell_at[(cell.x + step[1]) .. ":" .. cell.y .. ":" ..
+					(cell.z + step[2])]
+				c[dir] = other ~= nil and registry.pane_connects(world, other.name)
+				if c[dir] then
+					any = dir
+					count = count + 1
+				end
+			end
+			local want_name, want_param2
+			if count == 0 then
+				want_name, want_param2 = base .. "_flat", cell.param2
+			elseif count == 1 then
+				want_name, want_param2 = base .. "_flat", (any + 1) % 4
+			elseif count == 2 then
+				if (c[0] and c[2]) or (c[1] and c[3]) then
+					want_name, want_param2 = base .. "_flat", (any + 1) % 4
+				else
+					want_name, want_param2 = base, 0
+				end
+			else
+				want_name, want_param2 = base, 0
+			end
+			assert(cell.name == want_name and cell.param2 == want_param2,
+				"pane at " .. cell.x .. "," .. cell.y .. "," .. cell.z ..
+					" is " .. cell.name .. "/" .. cell.param2 ..
+					" but update_pane would leave " .. want_name .. "/" ..
+					want_param2)
+			if want_name == base then connected_panes = connected_panes + 1 end
+		end
+	end
+	assert(pane_cells > 100, "the village lost its windows")
+	assert(connected_panes > 0,
+		"no pane has a third neighbour; the connected branch is untested")
+	say("panes", pane_cells, "connected", connected_panes)
+
+	-- 10. every torch hangs on an opaque full node -------------------------
+	-- A wallmounted torch takes its support from the direction its param2
+	-- names. `xpanes:pane_flat` is a nodebox: a torch pointing at one hangs
+	-- in a window, which is where fifteen of them were.
+	local torch_names = {}
+	for _, role in ipairs({"light_wall", "light_post", "light_indoor"}) do
+		torch_names[palette.node(role)] = true
+	end
+	local torches = 0
+	for _, cell in ipairs(blueprint.cells) do
+		if torch_names[cell.name] then
+			local dir = WALL_DIR[cell.param2]
+			assert(dir, "torch has no wallmounted direction")
+			local support = cell_at[(cell.x + dir[1]) .. ":" .. (cell.y + dir[2]) ..
+				":" .. (cell.z + dir[3])]
+			assert(support, "torch at " .. cell.x .. "," .. cell.y .. "," ..
+				cell.z .. " has no support cell at all")
+			assert(registry.is_opaque_full(world, support.name),
+				"torch at " .. cell.x .. "," .. cell.y .. "," .. cell.z ..
+					" hangs on " .. support.name .. ", which is not a full node")
+			torches = torches + 1
+		end
+	end
+	assert(torches >= 40, "the village went dark")
+	say("torch_support", torches, "opaque_full", "pass")
 
 	return table.concat(report)
 end
