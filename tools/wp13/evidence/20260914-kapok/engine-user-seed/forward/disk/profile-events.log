@@ -1,0 +1,23 @@
+ACTION[Main]: GRUG_WP40_PROFILE_PROBE phase=disk event=start engine=5.17.0 lua=LuaJIT_2.1.1784272936 seed=531802985935182545 cases=21 manifest=01ddde8daecbd444d5221ea4d68316903f9f288f4da2238903340c78b6afcd1b full_digest=false
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-112:-32:-2512 mapchunk=-112,-32,-2512 elapsed_us=8329148 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-112:-32:-2592 mapchunk=-112,-32,-2592 elapsed_us=2465 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-112:-32:-2672 mapchunk=-112,-32,-2672 elapsed_us=2353 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1792:-32:-2512 mapchunk=-1792,-32,-2512 elapsed_us=2585 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1792:-32:-2592 mapchunk=-1792,-32,-2592 elapsed_us=2805 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1792:-32:-2672 mapchunk=-1792,-32,-2672 elapsed_us=2492 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1872:-32:-2512 mapchunk=-1872,-32,-2512 elapsed_us=2614 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1872:-32:-2592 mapchunk=-1872,-32,-2592 elapsed_us=2783 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-1872:-32:-2672 mapchunk=-1872,-32,-2672 elapsed_us=2599 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-32:-32:-2512 mapchunk=-32,-32,-2512 elapsed_us=2565 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-32:-32:-2592 mapchunk=-32,-32,-2592 elapsed_us=2720 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_-32:-32:-2672 mapchunk=-32,-32,-2672 elapsed_us=2389 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1728:-32:2448 mapchunk=1728,-32,2448 elapsed_us=2603 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1728:-32:2528 mapchunk=1728,-32,2528 elapsed_us=2802 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1728:-32:2608 mapchunk=1728,-32,2608 elapsed_us=2716 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1808:-32:2448 mapchunk=1808,-32,2448 elapsed_us=2575 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1808:-32:2528 mapchunk=1808,-32,2528 elapsed_us=2691 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_1808:-32:2608 mapchunk=1808,-32,2608 elapsed_us=2518 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_48:-32:-2512 mapchunk=48,-32,-2512 elapsed_us=2477 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_48:-32:-2592 mapchunk=48,-32,-2592 elapsed_us=2337 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Emerge-0]: GRUG_WP40_PROFILE_PROBE phase=disk event=emerge case=owner_48:-32:-2672 mapchunk=48,-32,-2672 elapsed_us=2530 generated=0 disk=125 memory=0 cancelled=0 errored=0
+ACTION[Server]: GRUG_WP40_PROFILE_PROBE phase=disk event=complete requested=21 completed=21 callbacks=0 generated=0 disk=2625 memory=0 cancelled=0 errored=0 samples=777 expected_nodes=0 digest=f297365a560ac0139ab79f09627e203e39ced1484733836295718ffb01ad9fe1 full_digest=disabled full_vocabulary_digest=- full_voxels=0 measured_elapsed_us=9391881 diagnostic_us=1297
