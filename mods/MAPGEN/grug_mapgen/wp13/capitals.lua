@@ -1362,6 +1362,169 @@ local function loader(directory)
 		})
 	end
 
+	-- -------------------------------------------------------------------
+	-- 9-13. the five district buildings
+	-- -------------------------------------------------------------------
+	--
+	-- Each is an ordinary `buildings.build` block with a capital interior
+	-- kit, so it inherits the library's walls, framed windows, real doors and
+	-- rasterised roof unchanged. The generator adds the sockets, which is the
+	-- only thing `buildings.build` does not know how to publish; every socket
+	-- stands in the centre aisle the kits deliberately keep clear.
+	--
+	-- All five ask for half timbering and shutters by default. Both are
+	-- optional roles, so a race that binds neither gets plain planks and open
+	-- reveals and nothing fails; a race that binds them gets a wall with a
+	-- rhythm in it, which is what stops a district plot reading as a shed.
+	--
+	-- Extent of all five at their defaults: at most 17 x 23 including the
+	-- apron, y 0..14 -- inside the 32 x 32 / y -6..24 plot envelope.
+
+	local function district(part, sockets)
+		part.points.sockets = sockets
+		return finish(part.buffer, part.w, part.d, top_of(part.buffer),
+			part.points)
+	end
+
+	local function dress(spec)
+		local infill = spec.infill
+		if infill == nil then infill = true end
+		-- Shutters are NOT on by default. `cottages_window_shutter_closed` is
+		-- the only shutter in the tree and it is the CLOSED leaf, so a plot
+		-- that asks for shutters everywhere renders as a boarded-up building
+		-- -- which is what the first temple looked like. A composition that
+		-- wants a shuttered building asks for one.
+		local shutters = spec.shutters
+		if shutters == nil then shutters = false end
+		return infill, shutters
+	end
+
+	-- The garrison hall: bunks down both walls, arms racked at the far end
+	-- and a fire by the door under a real chimney stack.
+	function M.barracks(palette, spec)
+		local w, d = spec.w or 15, spec.d or 21
+		local wall_h = spec.wall_h or 5
+		local infill, shutters = dress(spec)
+		local cx = math.floor(w / 2)
+		local part = buildings.build(palette, {
+			id = spec.id, infill = infill, shutters = shutters,
+			roof_palette = spec.roof_palette,
+			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1,
+				wall_h = wall_h, roof = spec.roof or "gable",
+				ridge_axis = "z", rise = spec.rise or 4, kit = "barracks"}},
+			chimneys = {{x = w - 1, z = 1}},
+			doors = {{side = "z-", index = cx, double = true}},
+			inside = {x = cx, y = 1, z = 3},
+		})
+		local id = spec.id or "barracks"
+		local sockets = {}
+		socket(sockets, id .. "_post", "guard_post", cx, 1, 2, 0)
+		socket(sockets, id .. "_muster", "idle", cx, 1, d - 4, 2,
+			{tags = {"fire"}})
+		patrol(sockets, id .. "_yard", spec.patrol_group or "garrison",
+			spec.order or 1, cx, 1, d - 7, 0)
+		return district(part, sockets)
+	end
+
+	-- The temple: the tallest plot of a district, hip roofed, with the
+	-- library's own belfry on its ridge -- the same silhouette Dawnmere's
+	-- meeting hall carries, which is what makes a civic building read as one
+	-- from the far end of an avenue.
+	function M.temple(palette, spec)
+		local w, d = spec.w or 13, spec.d or 19
+		local wall_h = spec.wall_h or 7
+		local infill, shutters = dress(spec)
+		local cx = math.floor(w / 2)
+		local part = buildings.chapel(palette, {
+			id = spec.id, w = w, d = d, wall_h = wall_h,
+			roof = spec.roof or "hip", rise = spec.rise or 5,
+			door_side = "z-", door_index = cx, kit = "temple",
+			infill = infill, shutters = shutters,
+			roof_palette = spec.roof_palette,
+			inside = {x = cx, y = 1, z = 3},
+		})
+		parts.stamp(part.buffer, buildings.belfry(palette,
+			{roof_palette = spec.roof_palette, height = 4}),
+			cx - 2, part.peak, math.floor(d / 2) - 2, 0)
+		local id = spec.id or "temple"
+		local sockets = {}
+		socket(sockets, id .. "_altar", "idle", cx, 1, d - 4, 2,
+			{tags = {"work"}})
+		socket(sockets, id .. "_quest", "quest", cx, 1, 3, 0)
+		return district(part, sockets)
+	end
+
+	-- The scriptorium: shelving the length of both walls, desks in front of
+	-- it, and a saltbox roof so its rear wall stands taller than its front.
+	function M.scriptorium(palette, spec)
+		local w, d = spec.w or 13, spec.d or 17
+		local wall_h = spec.wall_h or 6
+		local infill, shutters = dress(spec)
+		local cx = math.floor(w / 2)
+		local part = buildings.build(palette, {
+			id = spec.id, infill = infill, shutters = shutters,
+			roof_palette = spec.roof_palette,
+			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1,
+				wall_h = wall_h, roof = spec.roof or "saltbox",
+				ridge_axis = "z", lift = 2, rise = 3, kit = "scriptorium"}},
+			doors = {{side = "z-", index = cx}},
+			inside = {x = cx, y = 1, z = 3},
+		})
+		local id = spec.id or "scriptorium"
+		local sockets = {}
+		socket(sockets, id .. "_desk_a", "idle", cx, 1, 4, 1, {tags = {"work"}})
+		socket(sockets, id .. "_desk_b", "idle", cx, 1, d - 5, 3,
+			{tags = {"work"}})
+		return district(part, sockets)
+	end
+
+	-- The granary: bins of grain along both walls, a cart-wide double door
+	-- in the gable end and a saltbox roof.
+	function M.granary(palette, spec)
+		local w, d = spec.w or 11, spec.d or 15
+		local wall_h = spec.wall_h or 5
+		local infill, shutters = dress(spec)
+		local cx = math.floor(w / 2)
+		local part = buildings.build(palette, {
+			id = spec.id, infill = infill, shutters = shutters,
+			roof_palette = spec.roof_palette,
+			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1,
+				wall_h = wall_h, roof = spec.roof or "saltbox",
+				ridge_axis = "z", lift = 2, rise = 4, kit = "granary"}},
+			doors = {{side = "z-", index = cx, double = true}},
+			inside = {x = cx, y = 1, z = 3},
+		})
+		local id = spec.id or "granary"
+		local sockets = {}
+		socket(sockets, id .. "_work", "idle", cx, 1, d - 4, 2,
+			{tags = {"work"}})
+		return district(part, sockets)
+	end
+
+	-- The stable: fence partitions between the boxes, bedding in each one, a
+	-- feed trough against the head wall and the aisle left open for a cart.
+	function M.stable(palette, spec)
+		local w, d = spec.w or 15, spec.d or 11
+		local wall_h = spec.wall_h or 5
+		local infill, shutters = dress(spec)
+		local cx = math.floor(w / 2)
+		local part = buildings.build(palette, {
+			id = spec.id, infill = infill, shutters = shutters,
+			roof_palette = spec.roof_palette,
+			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1,
+				wall_h = wall_h, roof = spec.roof or "gable",
+				ridge_axis = "x", rise = spec.rise or 4, kit = "stable"}},
+			doors = {{side = "z-", index = cx, double = true}},
+			inside = {x = cx, y = 1, z = 3},
+		})
+		local id = spec.id or "stable"
+		local sockets = {}
+		socket(sockets, id .. "_groom", "idle", cx, 1, d - 3, 2,
+			{tags = {"work"}})
+		socket(sockets, id .. "_gate", "idle", cx, 1, 2, 0, {tags = {"door"}})
+		return district(part, sockets)
+	end
+
 	return M
 end
 
