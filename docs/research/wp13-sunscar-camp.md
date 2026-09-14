@@ -58,7 +58,7 @@ Nine buildings plus the bluff:
 Identity details that are not palette: 96 palisade stakes with sharpened
 acacia crests, 150 breastwork merlons standing after the two roof cuts, 537
 berm cells in seven short banks, 1,323 rock cells in six staggered slabs,
-47 acacias, eight drill posts, two weapon racks, three bale targets, the
+48 acacias, eight drill posts, two weapon racks, three bale targets, the
 council fire ring and ten war standards.
 
 New library code, all role-driven and all degrading when a palette lacks the

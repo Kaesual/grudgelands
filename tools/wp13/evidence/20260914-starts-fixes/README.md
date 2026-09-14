@@ -46,7 +46,7 @@ shared opcode-37 settlement palette.
 | **H1** six of ten burial-ground wall runs silently skipped: the runs share their corners and each was tested with `free_area` over its whole extent | a run tests only the cells it writes, accepts a cell already carrying this palette's low wall, and is fatal on anything else | the composition asserts 164 wall cells; `blueprint_kat` holds the whole low-wall population at 418 |
 | **M2** three route lamps silently dropped (the stall's roof oversailed one, a crate stood on one, one was authored inside the sunken ruin's footprint) | both lighting passes are fatal; the stall moved two nodes east, the crate one west, the third lamp to (17, 34) | the composition asserts 41 lamps |
 | **M3** `room.ruin` switched off two invariants on an unchecked flag | a ruin must have no door landmark in it, be nobody's destination, be unlit, and really have a column open to the sky | `blueprint_kat`, per room |
-| **L8** `railing` was `grug_decor:darkage_iron_bars`, a `glasslike` FULL cube | `default:fence_junglewood`, the Hollow's own fence timber | 43 materials, not 44 |
+| **L8** `railing` was `grug_decor:darkage_iron_bars`, a `glasslike` FULL cube | `default:fence_junglewood`, the Hollow's own fence timber | 44 palette entries incl. air (43 non-air), not 45 |
 | **L7** the note quoted `blight_flora`'s return as the pad's flora | 359 bone piles, 612 dead shrubs | `library_kat` `ground_cover` row |
 
 ### Silverleaf Glade (1 High, 1 Medium, 4 Low)
@@ -162,6 +162,6 @@ tools/wp13/evidence/20260914-starts-fixes/renders.sh     # overviews and the fix
 tools/wp13/evidence/20260914-starts-fixes/engine.sh      # the combined six-start engine gate
 ```
 
-`renders/` holds a `-before.png` beside each `-after.png` for the four spots a
+`renders/` holds a `-before.png` beside each `-after.png` for the five spots a
 review finding was about: Dawnmere's green, Stillgrave's burial-ground walls,
 Silverleaf's terrace back, Sunscar's outcrop and Kapok's bridge span.

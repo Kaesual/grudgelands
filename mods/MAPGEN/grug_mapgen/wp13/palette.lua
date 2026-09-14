@@ -38,9 +38,11 @@ M.optional = {"bale", "bed_fancy", "bench_seat", "board_table", "cargo",
 -- `light_wall` / `light_post` / `light_indoor` trio stays wallmounted,
 -- because that is what `parts.wall_torch` and `parts.floor_torch` write.
 --
--- `lantern` and `rope` are the troll vocabulary: `grug_decor:xdecor_lantern`
--- is in `group:attached_node = 3`, the engine's "attached to the node ABOVE",
--- and `xdecor_rope` falls from the underside of a stilt deck. The four start
+-- `lantern` and `rope` are the troll vocabulary: `lantern` binds
+-- `grug_decor:xdecor_lantern_hanging` (`attached_node = 4`, the engine's
+-- "attach to ceiling"; rating 3 would mean floor), and `xdecor_rope`, which
+-- has no attachment group, falls from the underside of a stilt deck by
+-- authoring convention. The four start
 -- lanes each added their own roles here; the integration folded them into the
 -- one sorted literal above.
 
@@ -511,7 +513,7 @@ M.races.orc = {
 -- windows instead of glass, junglewood fences and wooden doors -- plus the
 -- kit nodes the basin asks for: `darkage_basalt_brick` platforms and wall
 -- bases, `darkage_reinforced_wood` beams, `darkage_serpentine` accents,
--- `darkage_wood_bars` window bars, the hanging `xdecor_lantern` and the
+-- `darkage_wood_bars` window bars, the `xdecor_lantern_hanging` and the
 -- `xdecor_rope` that falls from the underside of every stilt deck.
 --
 -- The ground is rainforest litter over swamp `grug_nodes:mud`, and `path` is
