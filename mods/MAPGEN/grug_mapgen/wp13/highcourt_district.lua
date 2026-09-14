@@ -89,11 +89,20 @@ local function loader(directory)
 			make = "scriptorium", x = 116, z = 28, order = 4,
 			along = "avenue", roof = "slate",
 			spec = {w = 13, d = 17, wall_h = 6}},
+		-- The well court is the district's public garden, so its plot is
+		-- five nodes wider all round than a building's and the ring that
+		-- buys is planted. On the first render it was a paved square with a
+		-- well on it standing in a field, which is what a court with a
+		-- two-node verge looks like from outside.
 		{id = "market_well", module = "capitals", make = "well_court",
-			x = 152, z = -28, order = 5, along = "avenue",
-			spec = {size = 11}},
+			x = 152, z = -28, order = 5, along = "avenue", margin = 5,
+			garden = true, spec = {size = 11}},
+		-- The watch stands at z = 31, not 28: the gate corridor WP40 keeps
+		-- clear is 32 nodes wide (z -16..16) and a 21-deep barracks centred
+		-- on 28 reaches z = 15. Nothing enforces that width anywhere in the
+		-- tree, so it is kept here.
 		{id = "market_watch", module = "capitals", make = "barracks",
-			x = 152, z = 28, along = "avenue", roof = "slate",
+			x = 152, z = 31, along = "avenue", roof = "slate",
 			spec = {w = 15, d = 21, wall_h = 5, patrol_group = WATCH,
 				order = 6}},
 		{id = "market_grove", module = "capitals", make = "grove",
@@ -115,7 +124,7 @@ local function loader(directory)
 	-- The plot's own ground area: the part's extent grown by two nodes on
 	-- every side and then clamped into the envelope, so the kerb, the
 	-- doorstep path and the lamps stand on the plot and not beside it.
-	local function ground_area(part, ox, oz, turns)
+	local function ground_area(part, ox, oz, turns, margin)
 		local order, count = part.buffer:cells()
 		local x0, x1, z0, z1
 		for index = 1, count do
@@ -135,7 +144,9 @@ local function loader(directory)
 			if value > REACH then return REACH end
 			return value
 		end
-		return clamp(x0 - 2), clamp(z0 - 2), clamp(x1 + 2), clamp(z1 + 2)
+		margin = margin or 2
+		return clamp(x0 - margin), clamp(z0 - margin), clamp(x1 + margin),
+			clamp(z1 + margin)
 	end
 
 	-- Build one plot.
@@ -161,7 +172,7 @@ local function loader(directory)
 		local rd = (turns % 2 == 1) and part.w or part.d
 		local ox = -math.floor((rw - 1) / 2)
 		local oz = -math.floor((rd - 1) / 2)
-		local x0, z0, x1, z1 = ground_area(part, ox, oz, turns)
+		local x0, z0, x1, z1 = ground_area(part, ox, oz, turns, plot.margin)
 
 		local buf = parts.buffer()
 		-- 1. The plot's ground and its airspace. The clear goes down to the
@@ -200,6 +211,22 @@ local function loader(directory)
 			dressing.path_light(buf, palette, lamp[1], lamp[2])
 		end
 		dressing.bench(buf, palette, 3, z0 + 2, 0, 3, "x")
+
+		-- 5b. A garden plot plants the ring its wider ground bought: a fruit
+		-- tree at each corner, a planter and a bench between them, and the
+		-- carrier's crates by the gate. Everything stands on the plot's own
+		-- turf, outside the part's paving, which is why only a plot with a
+		-- margin may ask for it.
+		if plot.garden then
+			for _, spot in ipairs({{x0 + 2, z0 + 2}, {x1 - 2, z0 + 2},
+					{x0 + 2, z1 - 2}, {x1 - 2, z1 - 2}}) do
+				dressing.broadleaf(buf, palette, spot[1], spot[2], 5)
+			end
+			dressing.planter(buf, palette, x0 + 1, oz - 1, x0 + 2, oz + 1)
+			dressing.planter(buf, palette, x1 - 2, oz - 1, x1 - 1, oz + 1)
+			dressing.bench(buf, palette, -1, z1 - 2, 2, 3, "x")
+			dressing.crates(buf, palette, x1 - 2, z0 + 4, 2)
+		end
 
 		-- 6. Sockets: the part's own, plus this plot's waypoint in the
 		-- district loop where the part publishes none of its own.
@@ -285,7 +312,12 @@ local function loader(directory)
 		end
 
 		return {
-			schema = "grug_wp13_highcourt_plot_v1",
+			-- One schema per plot, not one for the district: the successor
+			-- compares `blueprint.schema` with the profile's own
+			-- (`r7_settlement.validate`), so nine plots behind one string
+			-- would need nine profiles that all claim to be the same
+			-- blueprint.
+			schema = "grug_wp13_highcourt_plot_" .. plot.id .. "_v1",
 			id = plot.id,
 			cells = cells,
 			bounds = {min = minp, max = maxp},

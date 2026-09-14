@@ -705,6 +705,19 @@ return function(repo)
 		"course has " .. ground_cells .. " cells, so the core is not flat " ..
 		"ground from edge to edge")
 
+	-- The authored populations, exactly. The floor the composition lays
+	-- inside the king's hall, the fruit trees it plants and the hedge it
+	-- walks round the pad are all placed by rules that can silently plant
+	-- nothing -- a band that finds no paving, a corner with no open ground
+	-- -- and the number is what says they did not. Dawnmere lost 22 of 27
+	-- props to exactly that shape of code.
+	for _, row in ipairs({{"nave_floor", 90}, {"orchard_trees", 11},
+			{"hedge_cells", 197}}) do
+		assert(core.landmarks[row[1]] == row[2], "the core's " .. row[1] ..
+			" population is " .. tostring(core.landmarks[row[1]]) ..
+			", not " .. row[2])
+	end
+
 	-- The four gate openings and their avenues: five wide, walkable end to
 	-- end, and each one really reaching its gate at the core edge.
 	local RADIUS = 47
@@ -774,8 +787,8 @@ return function(repo)
 	-- the reserved square, so WP17's travel pad has room and sky.
 	local plaza = assert(core.landmarks.waypoint_plaza)
 	local occupied = 0
-	for z = plaza.min.z + 1, plaza.max.z - 1 do
-		for x = plaza.min.x + 1, plaza.max.x - 1 do
+	for z = plaza.min.z, plaza.max.z do
+		for x = plaza.min.x, plaza.max.x do
 			for y = 1, 40 do
 				if core_result.node(x, y, z) ~= "air" then
 					occupied = occupied + 1
@@ -789,9 +802,9 @@ return function(repo)
 	for _, entry in ipairs(core.landmarks.sockets) do
 		if entry.role == "waypoint" then waypoint = entry end
 	end
-	assert(waypoint and waypoint.x > plaza.min.x and
-		waypoint.x < plaza.max.x and waypoint.z > plaza.min.z and
-		waypoint.z < plaza.max.z, "the waypoint socket is not on its plaza")
+	assert(waypoint and waypoint.x >= plaza.min.x and
+		waypoint.x <= plaza.max.x and waypoint.z >= plaza.min.z and
+		waypoint.z <= plaza.max.z, "the waypoint socket is not on its plaza")
 
 	-- A second construction cannot depend on table iteration order.
 	local again = highcourt.core()
@@ -876,7 +889,11 @@ return function(repo)
 					end
 					skirted = skirted + 1
 				end
-				for y = 1, 4 do
+				-- Up to the plot's own roof and two courses over it, which
+				-- is what the composition clears: checking four courses
+				-- would leave the whole upper half of a plot unasserted,
+				-- and a terrace shoulder stands wherever the terrain does.
+				for y = 1, box.max.y + 2 do
 					assert(result.at(x, y, z) ~= nil, entry.id ..
 						": the airspace at " .. x .. "," .. y .. "," .. z ..
 						" was never cleared, so a terrace shoulder stays " ..
@@ -890,14 +907,61 @@ return function(repo)
 		-- The plot's own offset from the capital anchor keeps it clear of
 		-- the avenue and of every other plot: two plots that overlap in the
 		-- envelope are two plots the writer projects into each other.
+		-- No plot may share a column with another plot or with a STREET.
+		-- The streets are the runs the overlay will pave -- the four gate
+		-- avenues and the four sides of the ring -- and each is five wide,
+		-- so the rule is read off the same specs the overlay is given
+		-- rather than approximated by the square around the anchor, which
+		-- is what let a plot sit on the ring street.
+		local STREET_HALF = math.floor(avenue.WIDTH / 2)
+		local function on_a_street(x, z)
+			local runs = {}
+			for _, spec in ipairs(highcourt.avenues) do
+				runs[#runs + 1] = spec
+			end
+			for _, spec in ipairs(highcourt.ring) do
+				runs[#runs + 1] = spec
+			end
+			for _, spec in ipairs(runs) do
+				local along = (spec.axis == "x") and x or z
+				local across = (spec.axis == "x") and z or x
+				if along >= spec.from - STREET_HALF and
+						along <= spec.to + STREET_HALF and
+						math.abs(across - spec.at) <= STREET_HALF then
+					return spec.id
+				end
+			end
+			return nil
+		end
 		for z = entry.z + plot.bounds.min.z, entry.z + plot.bounds.max.z do
 			for x = entry.x + plot.bounds.min.x, entry.x + plot.bounds.max.x do
 				local key = x .. ":" .. z
 				assert(taken[key] == nil, entry.id .. " overlaps " ..
 					tostring(taken[key]) .. " at " .. key)
 				taken[key] = entry.id
-				assert(math.abs(z) > 2 or math.abs(x) > 2,
-					entry.id .. " stands on the avenue at " .. key)
+				local street = on_a_street(x, z)
+				assert(street == nil, entry.id .. " stands on " ..
+					tostring(street) .. " at " .. key)
+			end
+		end
+		-- and no plot reaches into the 32-node gate corridor WP40 keeps
+		-- clear on each axis (`capital_gate_width`), which nothing else in
+		-- the tree enforces.
+		for _, spec in ipairs(highcourt.avenues) do
+			local along_min = (spec.axis == "x") and
+				(entry.x + plot.bounds.min.x) or (entry.z + plot.bounds.min.z)
+			local along_max = (spec.axis == "x") and
+				(entry.x + plot.bounds.max.x) or (entry.z + plot.bounds.max.z)
+			local across_min = (spec.axis == "x") and
+				(entry.z + plot.bounds.min.z) or (entry.x + plot.bounds.min.x)
+			local across_max = (spec.axis == "x") and
+				(entry.z + plot.bounds.max.z) or (entry.x + plot.bounds.max.x)
+			local inside = (along_max >= math.min(spec.from, spec.to)) and
+				(along_min <= math.max(spec.from, spec.to))
+			if inside then
+				assert(across_min > spec.at + 16 or across_max < spec.at - 16,
+					entry.id .. " reaches into the 32-node gate corridor of " ..
+						spec.id)
 			end
 		end
 
@@ -932,23 +996,105 @@ return function(repo)
 		district_length)
 
 	-- ------------------------------------------------------------------
-	-- 3. the avenue overlay on a synthetic terrace profile
+	-- 3. the avenue overlay
 	-- ------------------------------------------------------------------
 	--
-	-- The profile is deliberately worse than the human plateau's: a flat
-	-- run, a two-node rise (the human terrace step), a four-node rise (the
-	-- dwarf and orc step), a three-node drop (elf, undead, troll) and a flat
-	-- tail, with the joints at positions that are not multiples of the lamp
-	-- rhythm. The road has to be walkable over every one of them.
+	-- The overlay has no cells of its own until a surface is handed to it, so
+	-- it is checked as a function: over profiles worse than the human
+	-- plateau's, in every lane, for the three properties the successor will
+	-- depend on -- the road lies on the ground, it is walkable, and a piece
+	-- of it is the same cells as that stretch of the whole run.
+	--
+	-- A cell at y spans [y - 0.5, y + 0.5]: a full node's walking surface is
+	-- its top at y + 0.5, and a stair carries two, the top of its own lower
+	-- half at y and its raised half at y + 0.5. A surface is only a surface
+	-- when the cell above it is free.
+	local function lane_tops(index, x, z, floor)
+		local tops = {}
+		for y = floor - 2, floor + 16 do
+			local cell = index[x .. ":" .. y .. ":" .. z]
+			if cell and index[x .. ":" .. (y + 1) .. ":" .. z] == nil then
+				local def = world.nodes[cell.name]
+				assert(def, "the avenue writes the unregistered " .. cell.name)
+				local groups = (type(def.groups) == "table") and def.groups or {}
+				if (groups.stair or 0) > 0 then tops[#tops + 1] = y end
+				tops[#tops + 1] = y + 0.5
+			end
+		end
+		return tops
+	end
+
+	-- Walk one lane end to end in half-node steps, which is what the engine
+	-- lets a player do without jumping. Within a column every surface the
+	-- walk can reach in half nodes is taken, up AND down: the two halves of
+	-- one stair are exactly such a pair, and a flight is walked both ways.
+	local function walk_lane(label, cells, from, to, ground, lanes)
+		local index = {}
+		for _, cell in ipairs(cells) do
+			index[cell.x .. ":" .. cell.y .. ":" .. cell.z] = cell
+		end
+		local climbs = 0
+		for _, z in ipairs(lanes) do
+			local reach = nil
+			for x = from, to do
+				local tops = lane_tops(index, x, z, ground(x, z))
+				assert(#tops > 0, label .. ": the column " .. x .. "," .. z ..
+					" carries nothing to walk on")
+				local here = {}
+				if reach == nil then
+					for _, top in ipairs(tops) do here[top] = true end
+				else
+					for _, top in ipairs(tops) do
+						for previous in pairs(reach) do
+							if math.abs(top - previous) <= 0.5 then
+								here[top] = true
+							end
+						end
+					end
+				end
+				local any = false
+				for _ in pairs(here) do any = true end
+				assert(any, label .. ": the road is not walkable into " ..
+					"column " .. x .. " of lane " .. z ..
+					" -- no surface within half a node of the last column")
+				local spreading = true
+				while spreading do
+					spreading = false
+					for _, top in ipairs(tops) do
+						if not here[top] then
+							for other in pairs(here) do
+								if math.abs(top - other) <= 0.5 then
+									here[top] = true
+									spreading = true
+								end
+							end
+						end
+					end
+				end
+				if reach ~= nil then
+					local same = true
+					for top in pairs(here) do
+						if not reach[top] then same = false end
+					end
+					if not same then climbs = climbs + 1 end
+				end
+				reach = here
+			end
+		end
+		return climbs
+	end
+
+	-- (a) The pilot profile: a flat approach, a two-node rise (the human
+	-- terrace step), a four-node rise (dwarf and orc), a three-node drop
+	-- (elf, undead and troll) and a flat tail, with the joints off the lamp
+	-- rhythm and one node of cross fall on the southern verge, so the five
+	-- lanes do not share one profile.
 	local STEPS = {{-40, 20}, {-12, 22}, {5, 26}, {26, 23}}
 	local function surface(x, z)
-		local along = x
 		local height = 20
 		for _, step in ipairs(STEPS) do
-			if along >= step[1] then height = step[2] end
+			if x >= step[1] then height = step[2] end
 		end
-		-- One node of cross fall on the southern verge, so the five lanes do
-		-- not share one profile and a lane-wise flight is really needed.
 		if z <= -2 then height = height - 1 end
 		return height
 	end
@@ -961,37 +1107,39 @@ return function(repo)
 		to = 48, lamp_phase = -48}
 	local run = avenue.run(human, avenue_spec, counted_surface)
 
-	-- (a) one query per column, and not one column outside the run.
+	-- One query per column, none twice, none outside the run's own
+	-- carriageway, verges and look-around window. That window is what makes
+	-- the overlay chunk independent, and it is also what it costs: five lanes
+	-- over the span plus twice the reach, and the two verges only where the
+	-- rhythm puts a lamp.
 	local columns = 0
 	for key, times in pairs(queried) do
 		assert(times == 1, "the avenue queried the column " .. key .. " " ..
 			times .. " times")
 		local x, z = key:match("^(-?%d+):(-?%d+)$")
 		x, z = tonumber(x), tonumber(z)
-		assert(x >= avenue_spec.from and x <= avenue_spec.to,
-			"the avenue queried " .. key .. ", outside its own run")
+		assert(x >= avenue_spec.from - avenue.REACH and
+			x <= avenue_spec.to + avenue.REACH,
+			"the avenue queried " .. key .. ", outside its run and window")
 		assert(math.abs(z) <= 3, "the avenue queried " .. key ..
 			", outside its own carriageway and verges")
 		columns = columns + 1
 	end
-	-- One query per carriageway column, plus one per lamp standard: five
-	-- lanes over the whole run, and the two verges only where the rhythm
-	-- puts a lamp. A run that asked for more than that would be reading
-	-- heights it does not use, which is what a per-chunk caller pays for.
 	local lamp_positions = 0
 	for p = avenue_spec.from, avenue_spec.to do
 		if (p - avenue_spec.lamp_phase) % avenue.LAMP_SPACING == 0 then
 			lamp_positions = lamp_positions + 1
 		end
 	end
-	local wanted_columns = (avenue_spec.to - avenue_spec.from + 1) *
-		avenue.WIDTH + 2 * lamp_positions
+	local wanted_columns = (avenue_spec.to - avenue_spec.from +
+		2 * avenue.REACH + 1) * avenue.WIDTH + 2 * lamp_positions
 	assert(columns == wanted_columns and run.queries == wanted_columns,
 		"the avenue queried " .. columns .. " columns and reported " ..
 			run.queries .. ", not the " .. wanted_columns ..
-			" its own carriageway and lamp rhythm need")
+			" its carriageway, window and lamp rhythm need")
 
-	-- (b) the pavement really lies at the surface, and nothing below it.
+	-- (b) The road lies ON the ground: a cell at every column's surface, and
+	-- nothing under it.
 	local index = {}
 	for _, cell in ipairs(run.cells) do
 		index[cell.x .. ":" .. cell.y .. ":" .. cell.z] = cell
@@ -1001,93 +1149,18 @@ return function(repo)
 	end
 	for x = avenue_spec.from, avenue_spec.to do
 		for z = -2, 2 do
-			local cell = index[x .. ":" .. surface(x, z) .. ":" .. z]
-			assert(cell, "the avenue leaves the column " .. x .. "," .. z ..
-				" unpaved at its surface")
+			assert(index[x .. ":" .. surface(x, z) .. ":" .. z],
+				"the avenue leaves the column " .. x .. "," .. z ..
+					" unpaved at its surface")
 		end
 	end
 
-	-- (c) every lane is walkable from end to end in half-node steps.
-	--
-	-- A full node's walking surface is the top of its cell; a stair carries
-	-- two, the top of its own lower half and the top of its raised half. A
-	-- walker may climb or drop half a node between two columns, which is
-	-- exactly what the engine lets a player do without jumping, so a road
-	-- that passes this is a road nobody has to jump up.
-	--
-	-- A cell at y spans [y - 0.5, y + 0.5]: a full node's walking surface is
-	-- its top at y + 0.5, and a stair carries TWO, the top of its own lower
-	-- half at y and the top of its raised half at y + 0.5. A surface is only
-	-- a surface when the cell above it is free.
-	local climbs = 0
-	for z = -2, 2 do
-		local reach = nil
-		for x = avenue_spec.from, avenue_spec.to do
-			local tops = {}
-			for y = surface(x, z), surface(x, z) + 8 do
-				local cell = index[x .. ":" .. y .. ":" .. z]
-				if cell and index[x .. ":" .. (y + 1) .. ":" .. z] == nil then
-					local def = world.nodes[cell.name]
-					assert(def, "the avenue writes the unregistered " ..
-						cell.name)
-					local groups = (type(def.groups) == "table") and
-						def.groups or {}
-					if (groups.stair or 0) > 0 then
-						tops[#tops + 1] = y
-					end
-					tops[#tops + 1] = y + 0.5
-				end
-			end
-			assert(#tops > 0, "the avenue column " .. x .. "," .. z ..
-				" carries nothing to walk on")
-			-- Step onto this column from any surface the walk has reached,
-			-- then take everything the column itself connects in half-node
-			-- steps, up AND down: the two halves of one stair are exactly
-			-- such a pair, and a flight is walked in both directions.
-			local here = {}
-			if reach == nil then
-				for _, top in ipairs(tops) do here[top] = true end
-			else
-				for _, top in ipairs(tops) do
-					for previous in pairs(reach) do
-						if math.abs(top - previous) <= 0.5 then
-							here[top] = true
-						end
-					end
-				end
-			end
-			local any = false
-			for _ in pairs(here) do any = true end
-			assert(any, "the avenue is not walkable from " .. (x - 1) ..
-				" to " .. x .. " in lane " .. z .. ": the walk has no " ..
-				"surface within half a node of the last column")
-			local spreading = true
-			while spreading do
-				spreading = false
-				for _, top in ipairs(tops) do
-					if not here[top] then
-						for other in pairs(here) do
-							if math.abs(top - other) <= 0.5 then
-								here[top] = true
-								spreading = true
-							end
-						end
-					end
-				end
-			end
-			if reach ~= nil then
-				local same = true
-				for top in pairs(here) do
-					if not reach[top] then same = false end
-				end
-				if not same then climbs = climbs + 1 end
-			end
-			reach = here
-		end
-	end
-	assert(climbs > 0, "the synthetic profile produced no climb at all")
+	-- (c) Every lane walkable end to end.
+	local climbs = walk_lane("kat_avenue", run.cells, avenue_spec.from,
+		avenue_spec.to, surface, {-2, -1, 0, 1, 2})
+	assert(climbs > 0, "the pilot profile produced no climb at all")
 
-	-- (d) the lamps: on the rhythm, on both verges, each on its own column's
+	-- (d) The lamps: on the rhythm, on both verges, each on its own column's
 	-- surface with a torch on top of its standard.
 	local lamp_columns = {}
 	for _, lamp in ipairs(run.lamps) do
@@ -1111,7 +1184,7 @@ return function(repo)
 	end
 	assert(spacing_ok > 4, "the lamp rhythm was never exercised")
 
-	-- (e) two runs of the same arguments are the identical cell list.
+	-- (e) Two runs of the same arguments are the identical cell list.
 	local twin = avenue.run(human, avenue_spec, surface)
 	assert(#twin.cells == #run.cells, "the avenue is not deterministic")
 	for position, cell in ipairs(run.cells) do
@@ -1122,30 +1195,150 @@ return function(repo)
 		end
 	end
 
-	-- (f) the four gate avenues and the ring street of the capital itself
-	-- are runs this module can take, each starting clear of the core edge
-	-- and ending at its gate station.
+	-- (f) The profiles the per-joint version could not carry, and the cut
+	-- that proves the overlay is a per-chunk function.
+	--
+	-- Each profile is walked in every lane, and each is CUT at every column:
+	-- the union of the two pieces has to be the whole run, cell for cell, or
+	-- a successor emerging the road one mapchunk at a time gets a wall where
+	-- a joint fell on a chunk border and a flight that lost its outer treads
+	-- where it reached back over one.
+	--
+	-- The heights stay inside a range narrower than `avenue.REACH`, which is
+	-- the condition the window's exactness rests on, and the assertion says
+	-- so rather than trusting the profiles to be modest.
+	local PROFILES = {
+		{name = "four_node_rise", f = function(x)
+			return (x >= 0) and 14 or 10
+		end},
+		{name = "adjacent_two_and_two", f = function(x)
+			if x >= 2 then return 14 end
+			if x >= 0 then return 12 end
+			return 10
+		end},
+		{name = "adjacent_four_and_four", f = function(x)
+			if x >= 1 then return 18 end
+			if x >= 0 then return 14 end
+			return 10
+		end},
+		{name = "terrace_stair", f = function(x)
+			return 10 + 3 * math.max(0, math.min(6, math.floor((x + 12) / 2)))
+		end},
+		-- A random walk over the three race terrace steps, off the library's
+		-- own position hash so both interpreters walk the same ground, and
+		-- bounded the way WP40 bounds a capital envelope (cut 24, fill 16).
+		{name = "random_terraces", f = function(x)
+			local height = 20
+			for step = -60, x do
+				if step % 3 == 0 then
+					local hash = parts.position_hash(step, 7) % 6
+					local size = 2 + hash % 3
+					if hash < 3 then
+						height = height + size
+					else
+						height = height - size
+					end
+					if height > 32 then height = 32 end
+					if height < 8 then height = 8 end
+				end
+			end
+			return height
+		end},
+	}
+	local SPLIT_FROM, SPLIT_TO = -16, 16
+	local splits, split_cells = 0, 0
+	for _, profile in ipairs(PROFILES) do
+		local function ground(x, z)
+			local height = profile.f(x)
+			if z <= -2 then height = height - 1 end
+			if z >= 2 then height = height + 1 end
+			return height
+		end
+		local low, high
+		for x = SPLIT_FROM - avenue.REACH, SPLIT_TO + avenue.REACH do
+			for z = -3, 3 do
+				local height = ground(x, z)
+				if low == nil or height < low then low = height end
+				if high == nil or height > high then high = height end
+			end
+		end
+		assert(high - low < avenue.REACH, profile.name .. " spans " ..
+			(high - low) .. " nodes, which the look-around window of " ..
+			avenue.REACH .. " cannot see across")
+		local function piece(from, to)
+			return avenue.run(human, {id = profile.name, axis = "x", at = 0,
+				from = from, to = to, lamp_phase = SPLIT_FROM}, ground)
+		end
+		local whole = piece(SPLIT_FROM, SPLIT_TO)
+		walk_lane(profile.name, whole.cells, SPLIT_FROM, SPLIT_TO, ground,
+			{-2, -1, 0, 1, 2})
+		local wanted = {}
+		for _, cell in ipairs(whole.cells) do
+			wanted[cell.x .. ":" .. cell.y .. ":" .. cell.z] =
+				cell.name .. "/" .. cell.param2
+		end
+		split_cells = split_cells + #whole.cells
+		for cut = SPLIT_FROM, SPLIT_TO - 1 do
+			local union, count = {}, 0
+			for _, half_run in ipairs({piece(SPLIT_FROM, cut),
+					piece(cut + 1, SPLIT_TO)}) do
+				for _, cell in ipairs(half_run.cells) do
+					local key = cell.x .. ":" .. cell.y .. ":" .. cell.z
+					local value = cell.name .. "/" .. cell.param2
+					if union[key] == nil then count = count + 1 end
+					union[key] = value
+					assert(wanted[key] == value, profile.name ..
+						": the piece cut at " .. cut .. " writes " .. value ..
+						" at " .. key .. ", which the whole run does not")
+				end
+			end
+			assert(count == #whole.cells, profile.name ..
+				": the two pieces cut at " .. cut .. " carry " .. count ..
+				" cells, the whole run " .. #whole.cells)
+			splits = splits + 1
+		end
+	end
+
+	-- (g) The four gate avenues and the ring street of the capital itself are
+	-- runs this module can take, each starting clear of the core edge and
+	-- ending at its gate station, and the ring is a closed circuit.
 	local runs = 0
 	for _, spec in ipairs(highcourt.avenues) do
 		assert(math.abs(spec.from) == 256 or math.abs(spec.to) == 256,
 			"the avenue " .. spec.id .. " does not reach its gate station")
 		assert(math.abs(spec.from) >= 48 and math.abs(spec.to) >= 48,
 			"the avenue " .. spec.id .. " starts inside the core")
-		local piece = avenue.run(human, {id = spec.id, axis = spec.axis,
+		local ride = avenue.run(human, {id = spec.id, axis = spec.axis,
 			at = spec.at, from = spec.from, to = spec.from + 16}, surface)
-		assert(#piece.cells > 0, "the avenue " .. spec.id .. " writes nothing")
+		assert(#ride.cells > 0, "the avenue " .. spec.id .. " writes nothing")
 		runs = runs + 1
 	end
+	local ring = {}
 	for _, spec in ipairs(highcourt.ring) do
-		local piece = avenue.run(human, {id = spec.id, axis = spec.axis,
+		ring[spec.id] = spec
+		local ride = avenue.run(human, {id = spec.id, axis = spec.axis,
 			at = spec.at, from = spec.from, to = spec.from + 16}, surface)
-		assert(#piece.cells > 0, "the ring run " .. spec.id ..
-			" writes nothing")
+		assert(#ride.cells > 0, "the ring run " .. spec.id .. " writes nothing")
 		runs = runs + 1
+	end
+	-- The ring closes. Each side has to reach the centre line of the two runs
+	-- that meet it, or the circuit has a hole at every corner -- which is
+	-- what a ring street shorter than its own width apart really is.
+	for _, along in ipairs({"west", "east"}) do
+		for _, across in ipairs({"south", "north"}) do
+			local side = assert(ring["ring_" .. along], "no ring_" .. along)
+			local cap = assert(ring["ring_" .. across], "no ring_" .. across)
+			assert(side.from <= cap.at and cap.at <= side.to,
+				"the ring street stops short of the corner where ring_" ..
+					along .. " meets ring_" .. across)
+			assert(cap.from <= side.at and side.at <= cap.to,
+				"the ring street stops short of the corner where ring_" ..
+					across .. " meets ring_" .. along)
+		end
 	end
 
 	say("highcourt_avenue", #run.cells, run.pavement, run.treads, run.risers,
-		#run.lamps, run.queries, climbs, runs)
+		#run.lamps, run.queries, climbs, runs, #PROFILES, splits, split_cells)
 
 	return table.concat(report)
 end

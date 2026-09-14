@@ -1,6 +1,8 @@
 # WP13: Highcourt, the pilot capital
 
-Status: implemented 2026-09-14, not reviewed yet. Lane: "Highcourt core",
+Status: implemented 2026-09-14; one independent review (verdict: merge after
+fixes), whose two blocking findings, one Medium and six Lows are recorded in
+section 9 and fixed on 2026-09-15. Not re-reviewed. Lane: "Highcourt core",
 implementing Claude Opus, coordinator Claude Fable (policy "Day-to-day routing
 rule"). This is the increment record for the third increment of the capitals
 contract's section 3 order: **Highcourt core plus one district plus its
@@ -141,11 +143,14 @@ landmarks and sockets, plus a `reference` column.
 | `market_stable` | `stable` | (72, 28) | 5 001 | 4 |
 | `market_workshop` | `workshop`, turned | (116, -28) | 5 824 | 2 |
 | `market_counting_house` | `scriptorium`, slate | (116, 28) | 6 955 | 4 |
-| `market_well` | `well_court` | (152, -28) | 2 080 | 4 |
-| `market_watch` | `barracks`, slate | (152, 28) | 8 398 | 4 |
+| `market_well` | `well_court`, garden plot | (152, -28) | 4 156 | 4 |
+| `market_watch` | `barracks`, slate | (152, 31) | 8 398 | 4 |
 | `market_grove` | `grove` (broadleaf) | (76, -64) | 9 274 | 3 |
 | `market_orchard` | `orchard_edge` | (76, 64) | 7 080 | 4 |
 | `market_store` | `longhouse` | (116, -64) | 5 358 | 2 |
+
+Each plot carries its own schema string, because the successor's `validate`
+compares a blueprint's schema with its profile's.
 
 The **reference column** is the plot origin, that is the middle of the
 building: a plot levels to the ground under its own centre, never to a corner,
@@ -182,22 +187,50 @@ crossing the road at an angle arrives at the five lanes in five different
 columns. The carriageway is the citadel paving with a kerb lane either side.
 
 **Where the contract's sentence was not enough.** "One stair node at each
-terrace rise" is one stair per NODE of rise, not one per rise. A player walks
+terrace rise" is one stair per NODE of rise, not one per rise: a player walks
 up half a node and jumps a whole one, and the WP40 race terrace steps are 2
-(human), 3 (elf, undead, troll) and 4 (dwarf, orc): a single stair in front of
-a two-node rise leaves the second node to be jumped, which is not a road. A
-rise of `h` therefore gets a flight of `h` treads in the `h` columns on the
-low side of the joint, each one course above the last on its own riser, so the
-walk climbs in half nodes the whole way. A rise of one is the contract's
-single stair, unchanged. A column that does not really lie on the low terrace
-carries no tread, so two joints within `h` columns of each other each climb
-their own rise instead of one writing risers under the other.
+(human), 3 (elf, undead, troll) and 4 (dwarf, orc).
+
+The first version built a flight per joint, and a per-joint rule cannot be
+right. Two joints closer than their flights fought over the columns between
+them and left a step nobody could climb, and a joint that fell between two
+PIECES of a run was walked by neither, so a road emerged one mapchunk at a
+time grew a wall where a single call had a flight. Both were found by the
+review, measured, and are what section 9 records.
+
+What replaces it is one rule with no joints in it. The road's walking level is
+the **one-Lipschitz upper envelope** of the lane's ground: the lowest height
+field that is everywhere at or above the surface and never changes by more
+than a node between two columns (two sweeps, no search). Each column is filled
+from its ground up to one course below its envelope and capped with a tread
+wherever the envelope stands above the ground or above a neighbour -- because
+a one-node change is walked as the two halves of one stair, and a full cube
+there is a node to jump. From that single rule:
+
+- a rise of `h` still climbs over `h` columns, half a node at a time;
+- two joints in a row simply make the road leave the ground earlier, which is
+  what a ramp is;
+- a descent is the same picture mirrored, with no second code path;
+- and the envelope of a column depends on the ground within `REACH` columns of
+  it and on nothing else, so a piece of the run is **exactly** that stretch of
+  the whole run. `REACH` is 40: WP40 terraces a capital envelope within cut 24
+  and fill 16, and a column's influence decays by one node per column of
+  distance, so nothing further away can lift this one. A caller whose terrain
+  is flatter may pass a smaller `reach`.
+
+The price of chunk independence is the look-around: a run reads the ground
+over its span plus twice the reach, five lanes wide, plus the two verge
+columns the lamp rhythm lands on. The KAT counts those queries exactly.
 
 The KAT profiles a synthetic terrace worse than the human plateau's -- a flat
 approach, a two-node rise, a four-node rise, a three-node drop and one node of
 cross fall on the southern verge, with the joints off the lamp rhythm -- and
 walks every lane end to end in half-node steps, where a full node's surface is
-the top of its cell and a stair carries two.
+the top of its cell and a stair carries two. It then does the same over five
+more profiles, including two joints of four one column apart and a random walk
+over the three race terrace steps off the library's own position hash, and
+**cuts each of them at every column**, asserting that the union of the two
+pieces is the whole run cell for cell: 160 cuts over 1 775 cells.
 
 ## 6. Verification
 
@@ -219,16 +252,23 @@ For the core it adds: the flat ground course (only footings below y = 0), the
 four gate openings walkable end to end, the king socket at the throne and
 inside the hall's own box, one vendor of each family, and the waypoint plaza
 empty of everything above its own paving. For a plot it adds: the reference
-column, the skirt to -6 without a hole, the cleared airspace, and that no two
-plots overlap in the envelope or stand on the avenue.
+column, the skirt to -6 without a hole, the airspace cleared to its own roof,
+and that no two plots overlap in the envelope, stand on one of the eight
+street runs, or reach into a gate corridor.
+
+For the overlay it adds the two rows the review asked for: five profiles --
+including two four-node joints one column apart and a random walk over the
+race terrace steps -- walked lane by lane in half-node steps, and every one of
+them cut at every column with the union of the two pieces compared to the
+whole run, cell for cell.
 
 Run through `tools/wp13/evidence/20260914-highcourt/kat.sh` (library_kat +
 blueprint_kat + highcourt_kat + integration_fixture in one process):
 
 ```
 KAT PAIR BYTE-IDENTICAL
-2f855396bad8e6d05a70661a4a45588f20b83a0e4b1dd4fd2ddf000b0edfe5a8  kat-luajit.txt
-2f855396bad8e6d05a70661a4a45588f20b83a0e4b1dd4fd2ddf000b0edfe5a8  kat-puc51.txt
+be4258e12c0214ed1f7222fe504dc01d10e25a6396e6dc3f793aa18a7e9eac34  kat-luajit.txt
+be4258e12c0214ed1f7222fe504dc01d10e25a6396e6dc3f793aa18a7e9eac34  kat-puc51.txt
 ```
 
 ### (b) Build time and budget
@@ -238,23 +278,23 @@ KAT PAIR BYTE-IDENTICAL
 
 | Subject | LuaJIT | PUC 5.1 | Cells |
 | --- | --- | --- | --- |
-| module load | 12.7 - 13.1 ms | 17.0 - 17.3 ms | -- |
-| core | 112.1 - 113.7 ms | 343.0 - 349.6 ms | 101 831 |
-| core, second build | 113.7 - 117.5 ms | 347.2 - 366.6 ms | same |
-| district, all nine plots | 53.0 - 53.5 ms | 174.1 - 176.7 ms | 55 685 |
-| one 209-node avenue run | 2.8 - 3.0 ms | 2.0 ms | 1 297 |
+| module load | 12.7 - 13.2 ms | 16.9 - 17.1 ms | -- |
+| core | 111.6 - 115.5 ms | 338.0 - 354.1 ms | 101 831 |
+| core, second build | 114.1 - 119.5 ms | 341.8 - 349.5 ms | same |
+| district, all nine plots | 49.5 - 51.0 ms | 180.0 - 182.5 ms | 57 761 |
+| one 209-node avenue run | 2.9 - 3.0 ms | 2.0 - 2.1 ms | 1 237 |
 
 Against the contract's section 2.3 budget: the core is **101 831 of 150 000**
 cells, the largest plot **9 274 of 12 000**, and a whole capital -- core plus
-district -- is **157 516 of 400 000**. "Builds in a few seconds under LuaJIT
-when first touched" is 0.17 s for core and district together, and 0.52 s under
+district -- is **159 592 of 400 000**. "Builds in a few seconds under LuaJIT
+when first touched" is 0.17 s for core and district together, and 0.53 s under
 the fallback interpreter. The overlay is the one piece that is faster under
-PUC than under LuaJIT: it is 1 297 cells of work, too little for the JIT to
-pay for itself, which is worth knowing because it is the piece the successor
-will call per mapchunk.
+PUC than under LuaJIT: it is a thousand cells of work, too little for the JIT
+to pay for itself, which is worth knowing because it is the piece the
+successor will call per mapchunk.
 
 The 96 x 96 ground course is 9 025 cells and the footings 9 509; the core
-carries 151 lights, 21 doorways, 15 rooms and 7 889 standable positions
+carries 155 lights, 21 doorways, 15 rooms and 7 885 standable positions
 reachable from the crossing.
 
 ### (c) Renders, and what changed after looking
@@ -330,11 +370,11 @@ runner; it touched no shared module, so the six starts are unchanged by
 construction and the digest says so.
 
 `final-micro.sh`: one LuaJIT process and one PUC 5.1 process over the frozen
-inputs, hashed before and after, running the four WP13 fixtures:
+inputs, hashed before and after, running every WP13 fixture, this lane's among them:
 
 ```
-4436ebe0e811d3c4fbf004294220a09447d982e481a5429b72226d32de9ed89d  micro-luajit.tsv
-4436ebe0e811d3c4fbf004294220a09447d982e481a5429b72226d32de9ed89d  micro-puc51.tsv
+9ea624d599f3a97af3ce09b56a432509de30fdc689ceb5827eb658838a87c0c9  micro-luajit.tsv
+9ea624d599f3a97af3ce09b56a432509de30fdc689ceb5827eb658838a87c0c9  micro-puc51.tsv
 ```
 
 `files.sha256` is the frozen-byte manifest of every input and every artefact.
@@ -364,14 +404,68 @@ emits. The seam package that binds a capital owes the engine run.
    plot's own are distinct, but a plot id is only unique within its own
    composition, so the registry key has to be the settlement key plus the plot
    id when the district registers.
-5. **The five remaining capitals** reuse this file's shape: a plot roster, a
+5. **Four district plots sit on the blend band.** WP40 blends the core to
+   the race terraces over the 32 nodes outside it (|x| 48..78 on this axis),
+   and `market_granary`, `market_stable`, `market_grove` and `market_orchard`
+   reach into it at |x| 62..88. The plot skirt assumes a fall no deeper than
+   a terrace step; on the blend the surface may drop further, so the seam
+   package must measure the real surface under each plot and either move them
+   out to |x| >= 80 or deepen the skirt. Everything it needs is one height
+   query per plot corner.
+6. **The two capital vendors are still hard-coded.** `grug_traders/
+   vendors.lua` places them at the anchor plus (+-5, 1, 3), which in this core
+   is the kerb of the gate avenue. The sockets contract says they migrate to
+   the `vendor` sockets when the first core lands; that is the same change
+   that binds the core, and it cannot be split from it.
+7. **The five remaining capitals** reuse this file's shape: a plot roster, a
    socket policy, the two or three palette handles, and the same KAT with its
    own expected multiset. Three of them are walled (Dur Brannoc, Nhal Veyr,
    Gor Drazhak), which is where `wall_segment`, `wall_tower` and the
    gatehouse's chaining really come in; Highcourt uses the gatehouse as a
    free-standing city gate and nothing else of the wall kit.
 
-## 8. Open points
+## 8. The review round (2026-09-15)
+
+One independent review, verdict "merge after fixes": two blocking findings,
+one Medium, six Lows and two look notes. What changed:
+
+- **H1, H2 (blocking): the avenue overlay.** Both are the per-joint flight
+  rule, and both are fixed by replacing it with the one-Lipschitz envelope of
+  section 5. The KAT gained the two rows the review asked for: five profiles
+  walked lane by lane, and every one of them cut at every column with the
+  union of the pieces compared to the whole.
+- **M1: the waypoint plaza landmark contained its own lamps.** The published
+  box is the square inside the kerb now, and the KAT holds every column of it
+  empty, edge included, instead of skipping the border.
+- **M3: `market_watch` reached into the gate corridor.** Moved from z = 28 to
+  z = 31, and the KAT now asserts that no plot enters the 32-node corridor of
+  any gate axis -- a width nothing else in the tree enforces.
+- **L1: the ring street had a one-column hole at each corner.** All four runs
+  span -96..96 now, and the KAT closes the circuit by construction.
+- **L2: nine plots shared one schema string.** Each plot carries its own, so
+  the successor's `validate` has something to compare per plot.
+- **L4: two KAT rules were narrower than the code they guard.** The plot
+  airspace is checked to the plot's own roof instead of four courses, and the
+  "not on a street" rule is read off the avenue and ring specs themselves
+  instead of the 5 x 5 square at the anchor.
+- **L5, L6:** BACKLOG, README and ROADMAP carry the increment; the stale
+  comments in `highcourt.lua` and `final_micro.lua` say what the files do.
+- **Look: the nave was a bare paving field.** The composition now lays a white
+  stone edging either side of the carpet, a band across the nave at every
+  arcade bay, four braziers and four hangings on the aisle walls -- 90 floor
+  cells, asserted exactly, and each hanging searches its own bay for two
+  courses of masonry rather than counting on the window rhythm.
+- **Look: `market_well` read as a paved court in a field.** It is a garden
+  plot now: five nodes of extra ground all round, four fruit trees, two
+  planters, a second bench and the carrier's crates.
+- **Look: the gatehouses read as brick prisms.** Left alone, as instructed:
+  that is the parts lane's generator.
+
+M2 (the blend band under four plots) and L3 (the hard-coded vendor offsets)
+are recorded for the seam package in section 7 rather than fixed here, because
+both belong to the package that binds a capital.
+
+## 9. Open points
 
 - The king's hall's nave floor is a large plain paving field between the
   benches and the dais. The part is the capital-parts lane's and this lane

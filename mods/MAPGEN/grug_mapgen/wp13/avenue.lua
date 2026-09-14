@@ -23,16 +23,31 @@
 -- "One stair node at each terrace rise" is one stair per NODE of rise, not
 -- one per rise. A player walks up half a node and jumps a whole one, and the
 -- race terrace steps of WP40 are 2 (human), 3 (elf, undead, troll) and 4
--- (dwarf, orc). A single stair in front of a two-node rise leaves the second
--- node to be jumped, which is not a road. A rise of `h` therefore gets a
--- FLIGHT of `h` treads in the `h` columns on the low side of the joint, each
--- one course above the last on its own riser of paving, so the walk climbs
--- in half nodes the whole way up. A rise of one is the contract's single
--- stair, unchanged.
+-- (dwarf, orc), so a single stair in front of a two-node rise leaves the
+-- second node to be jumped, which is not a road.
+--
+-- The first version of this module built a flight per joint and it was wrong
+-- twice, in ways a per-joint rule cannot be right: two joints closer than
+-- their flights fought over the columns between them and left a wall, and a
+-- joint that fell on the border between two PIECES of the run was walked by
+-- neither, so a road emerged one mapchunk at a time grew a four-node step
+-- where a single call had a flight.
+--
+-- What replaces it is one rule with no joints in it: the road's walking
+-- level is the ONE-LIPSCHITZ UPPER ENVELOPE of the ground -- the lowest
+-- height field that is everywhere at or above the surface and never changes
+-- by more than a node between two columns. Fill carries each column up to
+-- its envelope and a tread caps it wherever the envelope stands above the
+-- ground or above a neighbour, because a one-node change is walked as the
+-- two halves of a stair. A rise of `h` still climbs over `h` columns; two
+-- joints in a row simply make the road leave the ground earlier; and the
+-- envelope of a column depends on the ground within `REACH` columns of it
+-- and on nothing else, which is what makes a piece of the run equal to that
+-- stretch of the whole.
 --
 -- Every lane of the road is profiled on its own, because a terrace joint
 -- crossing the road at an angle arrives at the five lanes in five different
--- columns; a per-lane flight follows it, a road-wide one would step where
+-- columns; a per-lane envelope follows it, a road-wide one would step where
 -- the ground does not.
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
@@ -45,6 +60,8 @@ local function loader(directory)
 	-- The capitals contract's own numbers.
 	M.WIDTH = 5
 	M.LAMP_SPACING = 8
+	-- How far beyond a piece the ground is read; see the carriageway below.
+	M.REACH = 40
 
 	-- The avenue vocabulary, each with its fallback into the start
 	-- vocabulary, exactly as `capitals.lua` resolves the same roles: the
@@ -128,60 +145,81 @@ local function loader(directory)
 			return y
 		end
 
-		-- 1. The carriageway, lane by lane. Each lane is profiled first and
-		-- paved afterwards, because the flight of a joint is written into the
-		-- columns BEFORE the joint and has to know both sides of it.
+		-- 1. The carriageway, lane by lane.
+		--
+		-- The road's walking level is the ONE-LIPSCHITZ UPPER ENVELOPE of the
+		-- lane's own surface: the lowest height field that is everywhere at or
+		-- above the ground and never changes by more than one node between two
+		-- columns. A column whose envelope stands above its ground is filled up
+		-- to one course below it and capped with a tread; a column whose
+		-- envelope is higher than a neighbour's is a step and is capped with a
+		-- tread too, because a one-node change is walked as two half nodes --
+		-- the tread's own lower half and its raised half -- and a full cube
+		-- there would be a node to jump.
+		--
+		-- That single rule replaces the per-joint flights the first version
+		-- built, and it is what makes the road work where those did not:
+		--
+		--   * a rise of `h` still climbs over `h` columns, one half node at a
+		--     time, which is the contract's stair per terrace rise generalised
+		--     to the two-, three- and four-node race terrace steps;
+		--   * TWO JOINTS CLOSER THAN THEIR FLIGHTS no longer fight over the
+		--     columns between them. The envelope simply rises earlier: the
+		--     profile 0, 0, 2, 4 is walked as 1, 2, 3, 4 and the road leaves
+		--     the ground where it has to, instead of leaving a wall the
+		--     per-joint version could not reach back over;
+		--   * and it is CHUNK INDEPENDENT. The envelope of a column depends on
+		--     the ground within `reach` columns of it and on nothing else, so
+		--     the profile is read that far beyond both ends of the piece and
+		--     the union of the pieces is the whole run, cell for cell.
+		--
+		-- `reach` is the distance a terrace can still raise the envelope here.
+		-- WP40 terraces the capital envelope within cut 24 and fill 16, so no
+		-- column further than 40 away can lift this one: the influence of a
+		-- column decays by exactly one node per column of distance. A caller
+		-- that knows its own terrain is flatter may pass a smaller `reach`.
+		local reach = spec.reach or M.REACH
+		local low_end, high_end = from - reach, to + reach
 		local pavement, treads, risers = 0, 0, 0
 		for offset = -half, half do
-			local profile = {}
-			for p = from, to do
+			local ground, level = {}, {}
+			for p = low_end, high_end do
 				local x, z = column(p, offset)
-				profile[p] = height(x, z)
+				ground[p] = height(x, z)
+				level[p] = ground[p]
+			end
+			for p = low_end + 1, high_end do
+				if level[p] < level[p - 1] - 1 then level[p] = level[p - 1] - 1 end
+			end
+			for p = high_end - 1, low_end, -1 do
+				if level[p] < level[p + 1] - 1 then level[p] = level[p + 1] - 1 end
 			end
 			local surface_name = (offset == -half or offset == half) and
 				kerb(palette) or paving(palette)
 			for p = from, to do
 				local x, z = column(p, offset)
-				buf:put(x, profile[p], z, surface_name)
-				pavement = pavement + 1
-			end
-			-- The flights. A joint between p and p + 1 whose two surfaces
-			-- differ by `h` gets `h` treads, in the `h` columns on the LOW
-			-- side counted away from the joint: the column next to the joint
-			-- carries `h - 1` risers and the tread that lands level with the
-			-- high side, the next one out carries one riser fewer, and so on
-			-- down to a single tread `h - 1` columns away. Walking the other
-			-- way the same flight is a stair down.
-			for p = from, to - 1 do
-				local low, high = profile[p], profile[p + 1]
-				local step = 1
-				local base = p
-				if high < low then
-					low, high = high, low
-					step = -1
-					base = p + 1
-				end
-				local rise = high - low
-				for back = 0, rise - 1 do
-					local q = base - step * back
-					-- Only a column that really lies on the low terrace
-					-- carries a tread of this flight. Two joints within `h`
-					-- columns of each other would otherwise have the upper
-					-- flight write risers under the lower terrace it does
-					-- not stand on; each joint then climbs its own rise from
-					-- its own column, which is what the profile 8-10-12
-					-- needs and gets.
-					if q >= from and q <= to and profile[q] == low then
-						local x, z = column(q, offset)
-						for y = low + 1, high - back - 1 do
-							buf:put(x, y, z, surface_name)
-							risers = risers + 1
-						end
-						parts.stair(buf, x, high - back, z, tread(palette),
-							parts.step_facedir(dx * step, dz * step))
-						treads = treads + 1
+				local top = level[p]
+				for y = ground[p], top - 1 do
+					buf:put(x, y, z, surface_name)
+					if y == ground[p] then
+						pavement = pavement + 1
+					else
+						risers = risers + 1
 					end
 				end
+				local before, after = level[p - 1], level[p + 1]
+				if top > before or top > after then
+					-- A step. The raised half faces the higher neighbour, which is
+					-- the way a walker climbs it; a column higher than both is
+					-- walked over either half, so the run's own direction decides.
+					local sign = (after >= before) and 1 or -1
+					parts.stair(buf, x, top, z, tread(palette),
+						parts.step_facedir(dx * sign, dz * sign))
+					treads = treads + 1
+				else
+					buf:put(x, top, z, surface_name)
+				end
+				if top == ground[p] then pavement = pavement + 1 end
 			end
 		end
 

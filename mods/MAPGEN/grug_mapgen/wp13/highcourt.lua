@@ -2,8 +2,9 @@
 --
 -- This file is the CORE composition of docs/research/wp13-capitals-pois-
 -- contract.md section 2.1: the 96 x 96 civic core, anchor-relative exactly
--- like a start, flat at y = 0 by construction, bounds x/z [-47, 47] and
--- y [-2, 40]. It is authored out of the capital parts of `capitals.lua` and
+-- like a start, flat at y = 0 by construction, inside the contract's bounds
+-- of x/z [-47, 47] and y [-2, 40] (it reaches y 31, the hall's ridge
+-- lantern). It is authored out of the capital parts of `capitals.lua` and
 -- the start generators of `buildings.lua`, the same way Dawnmere Fields is
 -- authored out of the latter alone.
 --
@@ -89,6 +90,15 @@ local function loader(directory)
 		return out
 	end
 
+	-- The king's hall's own dimensions, in one place: the plot row below is
+	-- built from them and so is the floor the composition lays inside it, so
+	-- a hall of another size cannot leave its carpet edging behind.
+	-- `base`, `arcade` and the dais offset are the generator's own
+	-- (`capitals.king_hall`): y = 2 is the hall floor, the arcades stand at
+	-- x = arcade and w - 1 - arcade, and the carpet runs from z = 1 to the
+	-- foot of the dais at d - 9.
+	local HALL = {w = 31, d = 27, rise = 7, base = 2, arcade = 5, dais = 9}
+
 	-- The streets. Every one of them is five or three nodes wide, paved at
 	-- y = 0 and cleared to head height; the plots are laid clear of them, so
 	-- a plot stamped later never has to fight a street for a cell.
@@ -163,7 +173,7 @@ local function loader(directory)
 		-- roof; the two handles differ in nothing but the five roof roles.
 		{id = "kings_hall", module = "capitals", make = "king_hall",
 			x = -15, z = 9, turns = 0, palette = "slate", roof = "slate",
-			spec = {w = 31, d = 27, rise = 7},
+			spec = {w = HALL.w, d = HALL.d, rise = HALL.rise},
 			drop = {waypoint = true}},
 
 		-- 2. The four gatehouses. Highcourt has no curtain wall, so these
@@ -343,12 +353,15 @@ local function loader(directory)
 	}
 
 	-- The ring street: the square circuit at 96 that the district plots sit
-	-- along, in the same four runs.
+	-- along, in the same four runs. Every run reaches the centre line of the
+	-- two it meets -- all four span the full -96..96 -- because a side that
+	-- stops at 92 leaves the circuit a hole at each corner, which is a ring
+	-- street a patrol cannot walk round.
 	M.ring = {
 		{id = "ring_west", axis = "z", at = -96, from = -96, to = 96},
 		{id = "ring_east", axis = "z", at = 96, from = -96, to = 96},
-		{id = "ring_south", axis = "x", at = -96, from = -92, to = 92},
-		{id = "ring_north", axis = "x", at = 96, from = -92, to = 92},
+		{id = "ring_south", axis = "x", at = -96, from = -96, to = 96},
+		{id = "ring_north", axis = "x", at = 96, from = -96, to = 96},
 	}
 
 	M.district = district.market
@@ -582,6 +595,113 @@ local function loader(directory)
 			for _, offset in ipairs({1, 3}) do
 				buf:put(bx + offset, chapel.peak + height, bz + 2,
 					human.node("beam"))
+			end
+		end
+
+		-- 5b. The hall's floor and its hangings.
+		--
+		-- The first render of the finished core showed what the section
+		-- drawing could not: a nave twenty-five nodes long paved in one
+		-- material, with the carpet the only thing on it. The generator
+		-- owns the architecture and this lane does not change it, so the
+		-- composition dresses the floor it stands on -- a white stone edging
+		-- either side of the carpet, a band across the nave at every arcade
+		-- bay, braziers between the bays and hangings on the aisle walls.
+		local nave = {}
+		do
+			local hall = placed.kings_hall
+			local floor_y = HALL.base
+			local west = hall.x + HALL.arcade + 1
+			local east = hall.x + HALL.w - 2 - HALL.arcade
+			local carpet_from = hall.z + 1
+			local carpet_to = hall.z + HALL.d - HALL.dais - 1
+			local centre = hall.x + math.floor((HALL.w - 1) / 2)
+			local marble = white.node("signature")
+			-- Every cell this writes has to BE the hall's floor already: a
+			-- band that lands on a dais step or outside the nave is a band
+			-- the hall did not have room for.
+			local paving_name = white.maybe("castle_paving") or
+				white.node("plaza")
+			local function inlay_floor(x, z)
+				local cell = buf:at(x, floor_y, z)
+				if cell == nil or cell.name ~= paving_name then
+					error("wp13 highcourt: the hall's floor at " .. x .. "," ..
+						z .. " is " .. (cell and cell.name or "air") ..
+						", not the paving this band is laid into", 0)
+				end
+				buf:put(x, floor_y, z, marble)
+				nave[#nave + 1] = {x = x, z = z}
+			end
+			for z = carpet_from, carpet_to do
+				inlay_floor(centre - 2, z)
+				inlay_floor(centre + 2, z)
+			end
+			-- A band at every arcade bay, broken by the carpet it crosses.
+			for z = carpet_from + 3, carpet_to, 4 do
+				for x = west, east do
+					if x < centre - 2 or x > centre + 2 then
+						inlay_floor(x, z)
+					end
+				end
+			end
+			-- Braziers between the bays, on the band's own stone. The
+			-- clearance test is written here rather than taken from
+			-- `layout.free`, which asks about the cells above the PAD: the
+			-- hall's floor is two courses up and everything under it is the
+			-- podium, so the pad test calls every cell in the building
+			-- taken.
+			for _, z in ipairs({carpet_from + 5, carpet_to - 4}) do
+				for _, x in ipairs({centre - 4, centre + 4}) do
+					for level = floor_y + 1, floor_y + 2 do
+						local cell = buf:at(x, level, z)
+						if cell ~= nil and cell.name ~= parts.AIR then
+							error("wp13 highcourt: the brazier at " .. x ..
+								"," .. z .. " stands in " .. cell.name, 0)
+						end
+					end
+					parts.floor_torch(buf, human, x, floor_y + 1, z)
+				end
+			end
+			-- Hangings on the aisle walls, clear of the wall lights and of
+			-- the benches, each hung on the outer wall behind it.
+			-- A hanging is a plain cloth cell against the wall behind it,
+			-- not a wallmounted prop: `wool:red` carries no paramtype2, so
+			-- `parts.wall_prop` refuses it -- and the hall's own royal
+			-- hangings are written the same way. What has to hold is that
+			-- the wall IS there and the cell is free.
+			-- The bay is SEARCHED for, not counted out: the aisle wall
+			-- carries a pane every fourth bay and a cloth hung over a window
+			-- is a cloth hung over a hole. Each hanging walks along its own
+			-- wall until it finds two courses of masonry, exactly as the
+			-- library's entry torches do, and is fatal when the wall offers
+			-- none.
+			for _, wanted in ipairs({carpet_from + 4, carpet_to - 4}) do
+				for _, side in ipairs({{hall.x + 1, -1},
+						{hall.x + HALL.w - 2, 1}}) do
+					local x, hung = side[1], false
+					for _, step in ipairs({0, 1, -1, 2, -2}) do
+						local z = wanted + step
+						local usable = true
+						for y = floor_y + 2, floor_y + 3 do
+							local here = buf:at(x, y, z)
+							if (here ~= nil and here.name ~= parts.AIR) or
+									not parts.solid_at(buf, x + side[2], y, z) then
+								usable = false
+							end
+						end
+						if usable and not hung then
+							for y = floor_y + 2, floor_y + 3 do
+								buf:put(x, y, z, human.node("rug_accent"))
+							end
+							hung = true
+						end
+					end
+					if not hung then
+						error("wp13 highcourt: no bay of the aisle wall at " ..
+							x .. " near " .. wanted .. " can carry a " ..
+							"hanging", 0)
+					end
+				end
 			end
 		end
 
@@ -844,8 +964,15 @@ local function loader(directory)
 					max = {x = RADIUS, y = 5, z = 2}},
 				throne_approach = {min = {x = -2, y = 2, z = 9},
 					max = {x = 2, y = 8, z = 33}},
-				waypoint_plaza = {min = {x = PLAZA.x1, y = 0, z = PLAZA.z1},
-					max = {x = PLAZA.x2, y = 4, z = PLAZA.z2}},
+				-- The reserved square is the plaza INSIDE its kerb: the
+				-- four lamp standards stand on the kerb ring itself, so a
+				-- box drawn on the kerb is a box with four lamps in it and
+				-- "nothing inside" would have to be qualified. The landmark
+				-- is what WP17 may fill, and the KAT holds every column of
+				-- it empty, edge included.
+				waypoint_plaza = {min = {x = PLAZA.x1 + 1, y = 0,
+						z = PLAZA.z1 + 1},
+					max = {x = PLAZA.x2 - 1, y = 4, z = PLAZA.z2 - 1}},
 				service_court = {min = {x = 23, y = 0, z = 6},
 					max = {x = 46, y = 6, z = 37}},
 				kings_hall = box("kings_hall", 2, 2),
@@ -860,6 +987,7 @@ local function loader(directory)
 				sockets = sockets,
 				orchard_trees = orchard,
 				hedge_cells = hedge,
+				nave_floor = #nave,
 			},
 		}
 	end

@@ -218,7 +218,7 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
 
-*Last updated: 2026-09-14. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-09-15. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
 
 **Shipped (19 of 46 work packages):** WP0–WP4, WP6, WP7, WP15, WP18,
@@ -264,8 +264,14 @@ square, colonnade, temple, barracks, scriptorium, granary, stable and statue,
 and hedge, grove, stilt and water edge pieces for the three open ones -- plus
 the named standing positions (king, vendors, guard posts, patrol loops) a
 later NPC package will place characters into. None of it is wired into a
-settlement yet; a composition lane builds the first capital, Highcourt, out of
-these parts.
+settlement yet. A tenth increment composes the first capital out of them:
+**Highcourt**, the human city -- a 96 x 96 civic core with the king's hall on
+its podium, four gate houses, a market square, colonnades, a chapel with a
+belfry, a service court with the two royal traders and a travel plaza held
+empty for the waypoint package, a market and professions district of nine
+plots that level themselves onto terraced ground, and gate avenues computed
+from the terrain rather than authored as cells. It is a library composition:
+binding a capital into the mapgen seam is the next package.
 **Every start still awaits the user's GUI playtest**, and capitals, villages,
 outposts, camps and functional settlement services remain later work.
 WP5, WP26, WP44, WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind
