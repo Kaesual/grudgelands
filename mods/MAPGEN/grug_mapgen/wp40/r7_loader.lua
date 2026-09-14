@@ -38,6 +38,34 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 	if type(publish_authority) ~= "function" then
 		fail("prepared authority seam differs")
 	end
+	-- WP13 NPC sockets (docs/research/wp13-npc-sockets-contract.md section 3).
+	-- The blueprints are loaded and every start anchor is fitted, so the six
+	-- socket sets can be published to the runtime registry in grug_core here,
+	-- BEFORE the irreversible cutover below: registration validates authored
+	-- data and fails loudly, and a broken socket must stop the load while
+	-- nothing is registered rather than after the writer is live. Sockets are
+	-- landmarks, so this reads nothing the writer owns and enters no digest.
+	if type(core_owner.register_settlement_sockets) ~= "function" then
+		fail("settlement socket registry differs")
+	end
+	local socket_rows = runtime.settlement_sockets()
+	if type(socket_rows) ~= "table" or #socket_rows < 1 then
+		fail("settlement socket roster differs")
+	end
+	local socket_count = 0
+	for index = 1, #socket_rows do
+		local row = socket_rows[index]
+		-- The same fitted anchor the settlement writer projects the cells
+		-- against, from the same session, so socket y = 1 is the node above
+		-- the settlement's own ground course.
+		local anchor = built.zones_session.anchor(row.zone_id, "start")
+		if type(anchor) ~= "table" or type(row.sockets) ~= "table" then
+			fail("settlement socket anchor differs: " .. tostring(row.key))
+		end
+		socket_count = socket_count + core_owner.register_settlement_sockets(
+			row.key, row.race, anchor, row.sockets)
+	end
+
 	local payload = {schema = "grug_wp40_r7_ipc_v1",
 		manifest_sha256 = built.manifest.sha256, full_seed = built.full_seed,
 		projection = projection}
@@ -51,5 +79,6 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 	return {schema = "grug_wp40_r7_loader_status_v1", enabled = true,
 		production_enabled = true, writer_count = 1,
 		manifest_sha256 = built.manifest.sha256, full_seed = built.full_seed,
+		settlement_sockets = socket_count,
 		zones = rawget(_G, "grug_zones")}
 end

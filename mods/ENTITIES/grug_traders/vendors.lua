@@ -259,6 +259,13 @@ local function vendor_def(vendor, texture)
 			if core.global_exists("grug_visuals") then
 				grug_visuals.apply_entity(self, visual)
 			end
+			-- A vendor on a WP13 start socket was placed facing the way its
+			-- blueprint says (grug_mobs/start_npcs.lua writes `_grug_face_yaw`).
+			-- mob_activate hands every mob a RANDOM yaw on every activation
+			-- (api.lua:3401), so without this the start vendor turns somewhere
+			-- else on every reload. A capital vendor carries no such field and
+			-- this is a no-op for it.
+			grug_mobs.face_yaw(self, self._grug_face_yaw)
 		end,
 
 		on_rightclick = function(self, clicker)
@@ -447,3 +454,31 @@ end)
 -- mapblock and mob_activate brings them back. No ObjectRef is stored anywhere
 -- in this mod — the slot table holds coordinates only (AGENTS.md: refs must be
 -- re-fetched across any callback boundary).
+
+--
+-- The start settlements (WP13)
+--
+-- A capital's two vendors sit at the fixed offsets above; a START's vendor
+-- stands on the `vendor` socket its blueprint exports
+-- (docs/research/wp13-npc-sockets-contract.md). The socket says WHERE and of
+-- which family, this mod says WHICH ENTITY, and `grug_mobs/start_npcs.lua`
+-- owns the one placement engine that serves every start NPC -- including its
+-- persistence, which must survive a restart in which no player is anywhere
+-- near the settlement and therefore cannot be a presence scan (see that
+-- file's header). The capital offsets, their globalstep and their presence
+-- gate above are deliberately untouched: the contract migrates them to
+-- `vendor` sockets when the capital core lands, and not before.
+--
+if type(grug_mobs.register_start_socket_role) == "function" then
+	grug_mobs.register_start_socket_role("vendor", function(socket, start)
+		if socket.kind == "general" then
+			return "grug_traders:vendor_general_" .. start.faction_id
+		end
+		-- The race-exclusive vendor of world.md §7 -- the start roster's own
+		-- kind, and the same entity the race's capital gets.
+		return "grug_traders:vendor_race_" .. start.race_id
+	end)
+else
+	core.log("error", "[grug_traders] grug_mobs offers no start socket role " ..
+		"registry; the start settlements get no vendor")
+end

@@ -127,6 +127,48 @@ local function loader(directory)
 		{-6, 30, 11}, {6, 34, 13}, {-34, -8, 12}, {34, -14, 11},
 	}
 
+	-- NPC sockets: the named standing positions this settlement exports for
+	-- the runtime mods (docs/research/wp13-npc-sockets-contract.md section 2).
+	-- Anchor-relative like every other landmark, in a fixed authored order;
+	-- `y` is the node the entity stands IN, so that cell and the one above it
+	-- are air and the node under it is walkable. `dir` is the facing as one
+	-- of the four axis vectors. Sockets are not identity bytes -- the
+	-- settlement identity SHA covers schema, bounds, palette and cells only --
+	-- but `tools/wp13/blueprint_kat.lua` checks every one of them against the
+	-- finished pad.
+	local SOCKETS = {
+		-- The gate watch: one post either side of the avenue, inside the
+		-- gate wall at z = 58, both facing the way out of the glade.
+		{id = "gate_west", role = "guard_post", x = -4, y = 1, z = 57,
+			dir = {x = 0, z = 1}},
+		{id = "gate_east", role = "guard_post", x = 4, y = 1, z = 57,
+			dir = {x = 0, z = 1}},
+		{id = "watch_gate", role = "guard_patrol", group = "glade", order = 1,
+			x = 0, y = 1, z = 52, dir = {x = 0, z = 1}},
+		{id = "watch_avenue", role = "guard_patrol", group = "glade",
+			order = 2, x = 0, y = 1, z = 24, dir = {x = 0, z = -1}},
+		{id = "watch_court_west", role = "guard_patrol", group = "glade",
+			order = 3, x = -10, y = 1, z = 0, dir = {x = -1, z = 0}},
+		{id = "watch_court_south", role = "guard_patrol", group = "glade",
+			order = 4, x = 0, y = 1, z = -7, dir = {x = 0, z = -1}},
+		{id = "watch_court_east", role = "guard_patrol", group = "glade",
+			order = 5, x = 10, y = 1, z = 0, dir = {x = 1, z = 0}},
+		{id = "court_vendor", role = "vendor", kind = "race", x = 7, y = 1,
+			z = -4, dir = {x = -1, z = 0}},
+		{id = "idle_shrine_door", role = "idle", tags = {"door"}, x = -21,
+			y = 1, z = 16, dir = {x = 0, z = 1}},
+		{id = "idle_court_bench", role = "idle", tags = {"bench"}, x = -7,
+			y = 1, z = 5, dir = {x = 0, z = -1}},
+		{id = "idle_bowyer", role = "idle", tags = {"work"}, x = 28, y = 1,
+			z = -1, dir = {x = 1, z = 0}},
+		-- The covered market's hanging lanterns are the only open flame the
+		-- glade keeps outdoors; this is its fireside.
+		{id = "idle_market", role = "idle", tags = {"fire"}, x = -31, y = 1,
+			z = 0, dir = {x = -1, z = 0}},
+		{id = "hall_quest", role = "quest", x = 20, y = 1, z = 14,
+			dir = {x = 0, z = 1}},
+	}
+
 	return function()
 		local palette = palettes.new("elf")
 		local pale = palettes.new("elf", PALE_ROOF)
@@ -551,6 +593,7 @@ local function loader(directory)
 				doors = doorways,
 				rooms = rooms,
 				lights = lights,
+				sockets = SOCKETS,
 				standards = standards,
 				stepping_stones = stepping_stones,
 			},

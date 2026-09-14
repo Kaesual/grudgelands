@@ -87,3 +87,17 @@ Decided 2026-09-14.
 - Race appearance (skin, visual-only stature) and visible armor and weapons
   are composed by one function for players and humanoid mobs, see
   [wp13-character-visuals-contract.md](../research/wp13-character-visuals-contract.md).
+
+Shipped behaviour of that first roster: each start's nine NPCs are placed once
+its area is prepared at server start, from the sockets alone, and stay for the
+life of the world. Two faction guards hold their authored gate posts, returning
+to them and facing their authored direction whenever they are not fighting, and
+one more guard walks the authored five-waypoint loop; they take their level from
+the guard field and their targeting is unchanged, so the faction veto above is
+still the single rule. Four flair villagers occupy the idle spots, amble between
+them at walking pace, stand facing each spot and answer a right-click with one
+short race-flavoured line; the race's own vendor stands on the vendor socket and
+trades exactly as at a capital; the quest shell carries a nametag and one
+placeholder answer. Only guards are mortal: a killed one leaves its post empty
+and the settlement fills that one slot again after three to six minutes, the
+same respawn-slot rhythm outposts use.

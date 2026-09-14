@@ -78,6 +78,50 @@ local function loader(directory)
 		roof_ridge = "default:stonebrick",
 	}
 
+	-- NPC sockets: the named standing positions this settlement exports for
+	-- the runtime mods (docs/research/wp13-npc-sockets-contract.md section 2).
+	-- Anchor-relative like every other landmark, in a fixed authored order;
+	-- `y` is the node the entity stands IN, so that cell and the one above it
+	-- are air and the node under it is walkable. `dir` is the facing as one
+	-- of the four axis vectors. Sockets are not identity bytes -- the
+	-- settlement identity SHA covers schema, bounds, palette and cells only --
+	-- but `tools/wp13/blueprint_kat.lua` checks every one of them against the
+	-- finished pad.
+	local SOCKETS = {
+		-- The gate watch: one post either side of the road, inside the gate
+		-- line at z = 60, both facing the road out of the vale.
+		{id = "gate_west", role = "guard_post", x = -4, y = 1, z = 59,
+			dir = {x = 0, z = 1}},
+		{id = "gate_east", role = "guard_post", x = 4, y = 1, z = 59,
+			dir = {x = 0, z = 1}},
+		-- One loop: gate, main street, the plaza's two flanks and the forge
+		-- front. Consumers walk it in `order` and wrap around.
+		{id = "watch_gate", role = "guard_patrol", group = "vale", order = 1,
+			x = 0, y = 1, z = 52, dir = {x = 0, z = 1}},
+		{id = "watch_street", role = "guard_patrol", group = "vale", order = 2,
+			x = 0, y = 1, z = 24, dir = {x = 0, z = -1}},
+		{id = "watch_plaza_west", role = "guard_patrol", group = "vale",
+			order = 3, x = -9, y = 1, z = 2, dir = {x = -1, z = 0}},
+		{id = "watch_forge", role = "guard_patrol", group = "vale", order = 4,
+			x = 0, y = 1, z = -6, dir = {x = 0, z = -1}},
+		{id = "watch_plaza_east", role = "guard_patrol", group = "vale",
+			order = 5, x = 9, y = 1, z = 2, dir = {x = 1, z = 0}},
+		-- The race vendor stands beside the market stall on the arrival
+		-- plaza, facing across it.
+		{id = "plaza_vendor", role = "vendor", kind = "race", x = 7, y = 1,
+			z = -5, dir = {x = -1, z = 0}},
+		{id = "idle_west_door", role = "idle", tags = {"door"}, x = -16, y = 1,
+			z = 4, dir = {x = -1, z = 0}},
+		{id = "idle_plaza_bench", role = "idle", tags = {"bench"}, x = 7, y = 1,
+			z = 1, dir = {x = 1, z = 0}},
+		{id = "idle_workyard", role = "idle", tags = {"work"}, x = -19, y = 1,
+			z = 17, dir = {x = -1, z = 0}},
+		{id = "idle_forge_door", role = "idle", tags = {"fire"}, x = 2, y = 1,
+			z = -10, dir = {x = 0, z = -1}},
+		{id = "hall_quest", role = "quest", x = -28, y = 1, z = 26,
+			dir = {x = 0, z = 1}},
+	}
+
 	return function()
 		local palette = palettes.new("dwarf")
 		local slate = palettes.new("dwarf", SLATE_ROOF)
@@ -375,6 +419,7 @@ local function loader(directory)
 				doors = doorways,
 				rooms = rooms,
 				lights = lights,
+				sockets = SOCKETS,
 			},
 		}
 	end

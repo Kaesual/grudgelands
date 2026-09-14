@@ -4,8 +4,9 @@ if not grug_core.zone_authority_installed() then
 	error("[grug_mobs] validated R7 zone authority was not installed")
 end
 
--- Mod-wide persistence (AGENTS.md: fetch at load time). Currently only the
--- named-rare spawner writes here (rares.lua).
+-- Mod-wide persistence (AGENTS.md: fetch at load time). Two writers: the
+-- named-rare spawner (rares.lua) and the start settlements' one marker per
+-- occupied NPC socket (start_npcs.lua).
 grug_mobs.storage = core.get_mod_storage()
 
 -- Builds one texture entry per MATERIAL SLOT of a mesh (wp6_model_notes §0.3).
@@ -601,6 +602,11 @@ dofile(modpath .. "/mirefolk.lua")
 -- come before camps.lua, which names the two guard mobs in its camp types.
 dofile(modpath .. "/guard.lua")
 dofile(modpath .. "/camps.lua")
+-- WP13 start settlements: the flair/quest NPC families first (start_npcs.lua
+-- resolves their entity names), then the socket-driven placement engine,
+-- which must come after guard.lua because it places the two faction guards.
+dofile(modpath .. "/start_villagers.lua")
+dofile(modpath .. "/start_npcs.lua")
 -- The 2026-08-08 critter round (biomes_mobs.md §3.0, WP36): the two cave
 -- critters — the underground had none at all — plus the two surface ones.
 -- All four run on the `critter` tier of levels.lua, so they must come after

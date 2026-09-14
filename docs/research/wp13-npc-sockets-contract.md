@@ -72,6 +72,11 @@ grug_core.settlement_sockets_at(settlement_key)
 - Capitals register under their own key when the capital core lands; the
   two vendor offsets in `vendors.lua` migrate to `vendor` sockets at that
   moment and not before.
+- **A settlement key is unique, a race id is not** (every race has a start and
+  a capital). `settlement_sockets(race_id)` therefore answers with the race's
+  START — the first settlement registered for it, which `grug_mapgen` publishes
+  while the world authority is installed — and every other settlement is
+  reached through `settlement_sockets_at(key)`.
 
 ## 4. Start roster (first version, coordinator's defaults)
 

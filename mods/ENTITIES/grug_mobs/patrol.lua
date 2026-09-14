@@ -44,6 +44,29 @@ function grug_mobs.walk_toward(self, x, z, pos)
 end
 
 --
+-- MAKE A MOB FACE ONE DIRECTION AND KEEP IT.
+--
+-- `set_yaw(yaw, 0)` alone is not enough, and the reason is api.lua:3401:
+-- `mob_activate` gives every mob a RANDOM yaw with a SIX-STEP smooth rotation,
+-- and the step function keeps feeding that pending target
+-- (api.lua:3544-3553) until the six steps are spent. An instant yaw written
+-- while such a rotation is pending is turned away again over the next half
+-- second. Overwriting `target_yaw` first makes the pending rotation a no-op
+-- (`shortest_rotation(yaw, yaw) == 0`), so the facing sticks.
+--
+-- This is what an authored standing position needs: a guard at its post and a
+-- villager at its spot face the direction the blueprint gave them, on every
+-- activation, not a random one (WP13 sockets).
+--
+function grug_mobs.face_yaw(self, yaw)
+	if type(yaw) ~= "number" or not self.object then
+		return
+	end
+	self.target_yaw = yaw
+	self:set_yaw(yaw, 0)
+end
+
+--
 -- points     — array of {x = , z = }, at least 2; y is never used, the mob
 --              walks on whatever ground it finds (the route is a direction,
 --              not a path — pathfinding = 1 handles the obstacles).

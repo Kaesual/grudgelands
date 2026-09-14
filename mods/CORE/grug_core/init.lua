@@ -44,6 +44,10 @@ dofile(modpath .. "/zone_authority.lua")
 -- After zone_authority.lua: it reads grug_core.start_identities(), which that
 -- file publishes. The request itself waits for register_on_mods_loaded.
 dofile(modpath .. "/starts_preload.lua")
+-- The settlement NPC socket registry. After zone_authority.lua only because
+-- everything in grug_core is loaded in dependency order; it needs nothing
+-- from it, and grug_mapgen fills it once the authority is installed.
+dofile(modpath .. "/settlement_sockets.lua")
 dofile(modpath .. "/protection.lua")
 dofile(modpath .. "/combat_debug.lua")
 dofile(modpath .. "/combat_ray.lua")
