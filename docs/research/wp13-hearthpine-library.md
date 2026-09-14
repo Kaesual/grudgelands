@@ -252,6 +252,76 @@ on it.
 Calibration: implementing Claude Opus; no review round yet; Hearthpine
 byte-identical at `760e0664…8ec9`; Stillgrave and Kapok untouched.
 
+## Round B (user playtest), 2026-09-14
+
+Round A fixed three things inside the blueprints; the same playtest named three
+things *around* them, and all three live in the WP40 height/route/decoration
+layer. No blueprint file and no blueprint identity moved: the KAT trio and the
+WP13 final micro still digest `9b2466f08f84a246…`, and the engine gate's six
+per-start digests and combined `206a86a057b0b6ed…` are round A's. Evidence:
+`tools/wp13/evidence/20260914-round-b-terrain/`.
+
+- **A blueprint landmark and a compiled route can disagree, and only the
+  landmark is read.** Every start opens a five-wide `main_street` on the z axis
+  with its `gate` at anchor.z ± 63, and `source/catalog.lua` agrees — it places
+  each start's `start_gate` station one node further out. The COMPILED route in
+  `source/simple_map.lua` starts at the zone hub, which IS the anchor centre,
+  and its first bowed leg leaves the axis at once, so the road crossed the build
+  envelope diagonally and surfaced 60-70 nodes beside the gate (Dawnmere and
+  Kapok only 1-5, which is why nobody noticed it in a fixture). `height.lua`
+  rebuilds the surface geometry of that one leg — a straight 128-node run down
+  the gate axis at the gate street's five-node width, then the ordinary bow from
+  the first authored centreline point outside the blend envelope — and derives
+  the gate side from the side the route's other station lies on instead of
+  assuming a sign. Stations, endpoint pins, claim exclusions and the route
+  census are untouched, and the rebuilt stretch lies inside the anchor's own
+  blend envelope. `make_path` learned an optional narrow leading prefix, so a
+  path can be 5 wide at the gate and 7 for the rest of its length; the three
+  membership tests ask the segment width first, while every bounding box keeps
+  reading the path's widest values as the upper bound they are.
+- **One rule consulted twice is two gates, and narrowing one proves nothing.**
+  `exclude:anchor:anchor_00N:01` covers a start's whole 256-node blend envelope,
+  and both `r6_settlement.lua`'s decoration loops AND `r6_planner.lua`'s
+  `dry_start_grade` host test read it. Narrowing only the settlement side left
+  the ring exactly as bare as before — measured in the engine as `0/1888` cover,
+  not assumed. The planner side was worse than narrow: because every dry
+  start-grade column is inside that one exclusion, `not excluded` made the
+  branch **unreachable**, so the whole envelope had no decoration host and
+  `settlements.md`'s "dry start-fitting ground and blending slopes retain their
+  biome surface materials" was not delivered by it.
+  `static_exclusion_values_at` now takes a `purpose`; `"vegetation"` SKIPS the
+  six start blend envelopes and lets the rest of the bucket answer. Skipping and
+  not short-circuiting is the load-bearing detail: the blend envelope is the
+  first shape in its bucket, so an early return would have opened the pad too.
+  The 148-node hard core, the road corridors, planned water and the coast still
+  refuse. Ring cover per start went from `0/…` to 2-25% of sampled columns and
+  now matches the untouched biome beyond the envelope where the corpus reaches
+  it (Sunscar 22.1% against 21.6%); the pad and its ten-node apron stay at 0.
+- **A smootherstep ramp hides a radius jitter almost completely.** The pad's
+  flat/slope boundary is an exact 128 square, and `height.lua` now pushes it
+  outward by 0..6 seed-derived nodes from one memoised value-noise lattice per
+  start while shrinking the ramp's span by the same amount — outward-only and
+  span-compensated, so excess 0 keeps weight Q and the outer envelope edge keeps
+  weight 0. Nothing inside the envelope, in the apron or beyond 128 changed by a
+  single node, and no road moved. But the ramp is a 64-node smootherstep
+  carrying at most eight nodes of cut or fill, so the rendered contour only
+  moves by one or two nodes, and the flat radius per ray was already irregular
+  (63…126, 27-41 distinct values per start). **After the vegetation fix the most
+  visible square around a start is the treeline on the 148-node protection
+  square**, which is a rule and not a look; softening THAT outline is the next
+  lever and was deliberately not taken here.
+
+Two library rules come out of it. A landmark the blueprints export is the
+authority on a settlement's geometry, and any WP40 layer that has its own idea
+of the same geometry has to be measured against it rather than trusted. And a
+"narrow the suppression" fix is not done when the suppression it knows about is
+narrowed: count the thing that should appear, in the engine, before believing
+it.
+
+Calibration: implementing Claude Opus; no review round yet; blueprints
+byte-identical, six per-start engine digests unchanged, the WP13 final micro
+pair unchanged at `9b2466f08f84a246…`.
+
 ## User runtime test
 
 Fresh world, dwarf, seed `531802985935182545` (Hearthpine y = 25):
