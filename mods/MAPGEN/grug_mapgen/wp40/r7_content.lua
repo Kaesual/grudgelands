@@ -128,6 +128,11 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		return value
 	end
 
+	-- ASCII byte order, the one order this file accepts for every roster it
+	-- validates. `r7_settlement.lua` carries the same function as
+	-- `M.less_bytes` for the union sort in `r7_runtime.lua` and for its own
+	-- per-blueprint palette check; this copy stays local because this file is
+	-- a closed factory that must not reach back into the settlement module.
 	local function less_bytes(left, right)
 		local count = math.min(#left, #right)
 		for index = 1, count do
