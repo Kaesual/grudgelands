@@ -90,6 +90,20 @@ WP13 fixtures; registration and param2 legality are covered by the library
 KAT's registry scan and by the live engine runs. Teaching the WP40 fixture the
 new mods is a WP40-lane follow-up.
 
+## Zone atmosphere (same day, separate lane)
+
+`mods/CORE/grug_core/atmosphere_zones.lua`: ten moods (six race regions,
+battlegrounds, dragon islands, ocean, underground below y = -20) with full
+lighting, sky colours, tinted fog and clouds, applied by a 2 s per-player
+staggered globalstep only when the mood key changes; `/atmosphere auto`
+resumes zone mode after a manual preset; `grug_atmosphere_zones` switches
+it off. Independent Claude Opus review: CLEAN, five Low notes (ownerless
+columns stay "ocean" at any depth by design; `fog_distance` is a hard cap on
+every client's view range, 110 in undead land and 90 underground; KAT does not
+re-join a left player; citation lines corrected before merge). Calibration:
+implementing Claude Opus, reviewing Claude Opus, 0 Critical / 0 High, zero
+fix rounds.
+
 ## User runtime test
 
 Fresh world, dwarf, seed `531802985935182545` (Hearthpine y = 25):

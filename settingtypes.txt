@@ -20,3 +20,14 @@
 #    Render settings themselves stay the player's own (Settings > Graphics);
 #    this switch only decides whether the game asks for anything at all.
 grug_atmosphere_enabled (Enable Grudgelands atmosphere presets) bool true
+
+#    Zone-driven moods on top of the preset layer above: one sky, fog and
+#    lighting mood per race region (dwarf, human, elf, undead, orc, troll),
+#    plus underground, open ocean, the shared Battlegrounds and the two
+#    dragon islands. A globalstep re-checks each player's zone about every
+#    two seconds and sends one lighting, sky and cloud packet only when the
+#    mood actually changes; a standing player costs nothing.
+#    With this off the moods stay available as manual /atmosphere presets,
+#    but nobody is moved between them automatically.
+#    Requires the master switch above.
+grug_atmosphere_zones (Drive the atmosphere from the player's zone) bool true
