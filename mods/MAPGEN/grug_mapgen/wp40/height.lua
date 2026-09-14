@@ -446,6 +446,132 @@ return function(dependencies)
 		return math.floor(s * 131073 / P) - 65536, s
 	end
 
+	-- WP13 round B, the start gate approach.
+	--
+	-- Every WP13 start blueprint opens a five-wide main street on the z axis and
+	-- puts its gate at anchor.z +/- 63; the authored catalog places that start's
+	-- `start_gate` station one node further out (`source/catalog.lua`, the six
+	-- "start:north"/"start:south" rows), and since round B the COMPILED
+	-- centreline carries the straight run down that axis as its first segment
+	-- (`source/simple_map.lua`, `START_GATE_ZONES`). It has to be authored there
+	-- and not rebuilt here: `exclude:route:<id>` is compiled from those same
+	-- points, so a road the raster followed but the centreline did not know about
+	-- would lie outside its own claim-excluded corridor.
+	--
+	-- This function only verifies that the compiled centreline really opens on
+	-- the gate axis and reports the one thing the source cannot express: that the
+	-- first segment carries the gate street's five-node width instead of the
+	-- route class's seven. The three failures are deliberate -- the compiled
+	-- layout is load-bearing for the six start routes, and a source edit that
+	-- moved a start hub, took a start off its z axis or dropped the axis run
+	-- must stop construction rather than silently produce a road beside a gate.
+	local START_GATE_RUN = 128
+	-- Read-only; `make_path` only reads the three fields.
+	local START_GATE_PREFIX = {segments = 1, surface_width = 5,
+		corridor_width = 12}
+	local function start_gate_prefix(source, route, start_a, start_b)
+		if not start_a then
+			if start_b then
+				fail("start route reaches its start as endpoint b at " .. route.id)
+			end
+			return nil
+		end
+		local hub = source.zones[route.zone_a].hub
+		local other = source.zones[route.zone_b].hub
+		if hub.x ~= start_a.center.x or hub.z ~= start_a.center.z then
+			fail("start route hub is not the start anchor at " .. route.id)
+		end
+		if other.x ~= hub.x or other.z == hub.z then
+			fail("start gate axis is not the z axis at " .. route.id)
+		end
+		local first, second = route.centreline[1], route.centreline[2]
+		if type(first) ~= "table" or type(second) ~= "table" or
+				first.x ~= hub.x or first.z ~= hub.z or second.x ~= hub.x or
+				second.z ~= hub.z + (other.z > hub.z and 1 or -1) * START_GATE_RUN then
+			fail("compiled start route does not open on its gate axis at " ..
+				route.id)
+		end
+		return START_GATE_PREFIX
+	end
+
+	-- WP13 round B, the soft pad edge.
+	--
+	-- A start pad is a half-open 128-node square that is flat at the fitted
+	-- reference height, and the 64 nodes outside it smootherstep down to the
+	-- natural terrain. The inner edge of that ramp -- where flat ground becomes
+	-- slope -- is therefore an exact square, and the user can see it from the
+	-- ground.
+	--
+	-- The jitter below pushes that inner edge OUTWARD by 0..6 nodes, from one
+	-- seed-derived value-noise lattice per start (period 24, smootherstepped, so
+	-- the outline undulates instead of dithering). Outward only, and the ramp's
+	-- span shrinks by the same amount: a column inside the 128 square keeps
+	-- excess 0 and therefore weight Q -- the envelope's surface height, the
+	-- spawn height, the road pins and every blueprint cell cannot move -- and a
+	-- column at the outer envelope edge keeps weight 0, so the 256 boundary stays
+	-- continuous and nothing escapes the fitting's own bucket. Same world seed,
+	-- same bytes; a different seed gives a different outline.
+	local START_EDGE_PERIOD = 24
+	local START_EDGE_AMPLITUDE = 6
+	local START_EDGE_OCTAVE = 200
+	local function start_edge_root(counted_sha, full_seed_string)
+		local root = digest_first_word(counted_sha("GRUGWP40HEIGHT" ..
+			string.char(0) .. canonical.encode(text(HEIGHT_RANDOM_SCHEMA)) ..
+			canonical.encode(text(full_seed_string)) ..
+			canonical.encode(text("start-edge-jitter-v1")))) % P
+		if root == 0 then root = 1 end
+		return root
+	end
+	-- The lattice is memoised on demand rather than precomputed over a box,
+	-- because a fitting's bucket cell reaches further than its own envelope and a
+	-- box would have to guess how much further.
+	local function start_edge_corner(fitting, ix, iz)
+		local row = fitting.edge_jitter[iz]
+		if not row then row = {} fitting.edge_jitter[iz] = row end
+		local value = row[ix]
+		if value == nil then
+			value = lattice_corner(fitting.edge_root, ix, iz, START_EDGE_OCTAVE)
+			row[ix] = value
+		end
+		return value
+	end
+	local function start_edge_offset(fitting, x, z)
+		local ix, iz = floor_div(x, START_EDGE_PERIOD),
+			floor_div(z, START_EDGE_PERIOD)
+		local tx = deterministic.smootherstep(deterministic.qfrom_ratio(
+			x - ix * START_EDGE_PERIOD, START_EDGE_PERIOD))
+		local tz = deterministic.smootherstep(deterministic.qfrom_ratio(
+			z - iz * START_EDGE_PERIOD, START_EDGE_PERIOD))
+		local value = deterministic.qlerp(
+			deterministic.qlerp(start_edge_corner(fitting, ix, iz),
+				start_edge_corner(fitting, ix + 1, iz), tx),
+			deterministic.qlerp(start_edge_corner(fitting, ix, iz + 1),
+				start_edge_corner(fitting, ix + 1, iz + 1), tx), tz)
+		return round_ratio((clamp(value, -Q, Q) + Q) * START_EDGE_AMPLITUDE, 2 * Q)
+	end
+	-- The outline itself, as measurable output: the jitter offset at every column
+	-- of the pad's four sides, in a fixed order, with its observed range. This is
+	-- what a fixture digests and compares between seeds and between runs.
+	local function start_edge_witness(fitting)
+		local offsets, minimum, maximum = {}, nil, nil
+		for side = -64, 63 do
+			offsets[#offsets + 1] = start_edge_offset(fitting,
+				fitting.center.x + side, fitting.center.z - 64)
+			offsets[#offsets + 1] = start_edge_offset(fitting,
+				fitting.center.x + side, fitting.center.z + 63)
+			offsets[#offsets + 1] = start_edge_offset(fitting,
+				fitting.center.x - 64, fitting.center.z + side)
+			offsets[#offsets + 1] = start_edge_offset(fitting,
+				fitting.center.x + 63, fitting.center.z + side)
+		end
+		for index = 1, #offsets do
+			minimum = minimum and math.min(minimum, offsets[index]) or offsets[index]
+			maximum = math.max(maximum or offsets[index], offsets[index])
+		end
+		return {amplitude = START_EDGE_AMPLITUDE, minimum = minimum,
+			maximum = maximum, count = #offsets, offsets = offsets}
+	end
+
 	local module = {}
 	local bound_seed_string
 
@@ -1923,6 +2049,15 @@ return function(dependencies)
 			else class, collection = "selected", selected_fittings end
 			collection[#collection + 1] = fitting
 			local envelope_half = profile.blend_width / 2
+			if class == "start" then
+				-- The soft pad edge: one memoised jitter lattice per start, plus the
+				-- perimeter witness the start quality record publishes.
+				-- `build_public_session` sits at Lua 5.1's 60-upvalue ceiling, so the
+				-- witness is built here and only read there.
+				fitting.edge_root = start_edge_root(counted_sha, full_seed_string)
+				fitting.edge_jitter = {}
+				fitting.edge_witness = start_edge_witness(fitting)
+			end
 			add_bucket(fitting_grids[class], fitting,
 				selected.x - envelope_half, selected.x + envelope_half,
 				selected.z - envelope_half, selected.z + envelope_half)
@@ -1951,9 +2086,17 @@ return function(dependencies)
 						local grade_half = grade_width / 2
 						local outside = half_open_square_excess(x, z,
 							fitting.center, grade_width)
-						if outside < envelope_half - grade_half then
-							local weight = qweight(math.max(0, outside),
-								envelope_half - grade_half)
+						-- Soft pad edge (starts only): the flat square grows outward by
+						-- 0..6 seed-derived nodes and the ramp gives the same amount up,
+						-- so excess 0 and the outer envelope edge are both untouched.
+						local span = envelope_half - grade_half
+						if fitting.edge_jitter then
+							local offset = start_edge_offset(fitting, x, z)
+							outside = math.max(0, outside - offset)
+							span = span - offset
+						end
+						if outside < span then
+							local weight = qweight(math.max(0, outside), span)
 							if weight > 0 then
 								if fitting.is_capital then
 									local step = profile.terrace_step
@@ -2270,7 +2413,7 @@ return function(dependencies)
 
 		local paths, path_by_id = {}, {}
 		local function make_path(id, kind, priority, centreline, surface_width,
-				corridor_width, owner_a, owner_b)
+				corridor_width, owner_a, owner_b, narrow_prefix)
 			if path_by_id[id] then fail("duplicate graded path " .. id) end
 			local axis, source_segments = raster_polyline(centreline)
 			local path = {id = id, kind = kind, priority = priority,
@@ -2278,6 +2421,25 @@ return function(dependencies)
 				corridor_width = corridor_width, owner_a = owner_a,
 				owner_b = owner_b, axis = axis, source_segments = source_segments,
 				pins = {}, operations = {}, fords = {}}
+			-- A leading run of source segments may be narrower than the rest of
+			-- the path (the start gate approach is the only such case).
+			-- `path.surface_width`/`path.corridor_width` stay the path's WIDEST
+			-- values, because every bounding box, grid insertion and surface scan
+			-- reads them as an upper bound; the three membership tests
+			-- (`path_surface_run_at`, `nearest_path_segment_at`, `path_grade_at`)
+			-- ask the segment first and fall back to the path.
+			if narrow_prefix then
+				if narrow_prefix.segments < 1 or
+						narrow_prefix.segments >= #source_segments or
+						narrow_prefix.surface_width > surface_width or
+						narrow_prefix.corridor_width > corridor_width then
+					fail("narrow path prefix differs at " .. id)
+				end
+				for index = 1, narrow_prefix.segments do
+					source_segments[index].surface_width = narrow_prefix.surface_width
+					source_segments[index].corridor_width = narrow_prefix.corridor_width
+				end
+			end
 			paths[#paths + 1] = path
 			path_by_id[id] = path
 			return path
@@ -2302,9 +2464,11 @@ return function(dependencies)
 
 		for route_index = 1, #source.routes do
 			local route = source.routes[route_index]
+			local narrow_prefix = start_gate_prefix(source, route,
+				start_by_zone[route.zone_a], start_by_zone[route.zone_b])
 			local path = make_path(route.id, "land_route", 1, route.centreline,
 				route.surface_width, route.corridor_width, route.zone_a,
-				route.zone_b)
+				route.zone_b, narrow_prefix)
 			path.source_route = route
 			add_pin(path, 1, route_station_target[route.zone_a], "endpoint_a",
 				source.zones[route.zone_a].id)
@@ -2529,7 +2693,8 @@ return function(dependencies)
 				local segment = path.source_segments[segment_index]
 				local numerator, denominator, dot, length_squared =
 					point_segment_ratio(x, z, segment.a, segment.b)
-				if corridor_member_ratio(numerator, denominator, path.surface_width) then
+				if corridor_member_ratio(numerator, denominator,
+						segment.surface_width or path.surface_width) then
 					local better = not best or rational_compare(numerator, denominator,
 						best_numerator, best_denominator) < 0
 					if not better and best and rational_compare(numerator, denominator,
@@ -2765,6 +2930,7 @@ return function(dependencies)
 					old_reference_y = fitting.start_old_reference_y,
 					old_sample_cost = fitting.start_old_sample_cost,
 					fit_sample_cost = fitting.start_fit_sample_cost,
+					edge_jitter = fitting.edge_witness,
 				}
 			end
 			if not runtime_construction then
@@ -3532,8 +3698,9 @@ return function(dependencies)
 			for index = 1, #candidates do
 				local segment = candidates[index]
 				local path = segment.path or only_path
-				local width = width_kind == "surface" and path.surface_width or
-					path.corridor_width
+				local width = width_kind == "surface" and
+					(segment.surface_width or path.surface_width) or
+					(segment.corridor_width or path.corridor_width)
 				local numerator, denominator, dot, length_squared =
 					point_segment_ratio(x, z, segment.a, segment.b)
 				if corridor_member_ratio(numerator, denominator, width) and
@@ -4130,10 +4297,11 @@ return function(dependencies)
 			if not segment then return nil end
 			local path = segment.path
 			local target = path.y[run_index]
-			local qnumerator = 4 * numerator -
-				path.surface_width * path.surface_width * denominator
-			local qdenominator = (path.corridor_width * path.corridor_width -
-				path.surface_width * path.surface_width) * denominator
+			local surface = segment.surface_width or path.surface_width
+			local corridor = segment.corridor_width or path.corridor_width
+			local qnumerator = 4 * numerator - surface * surface * denominator
+			local qdenominator = (corridor * corridor - surface * surface) *
+				denominator
 			local fraction = clamp(deterministic.qfrom_ratio(qnumerator,
 				qdenominator), 0, Q)
 			local weight = Q - deterministic.smootherstep(fraction)
@@ -4500,6 +4668,21 @@ return function(dependencies)
 			road_preferences[3] == nil, "road low-edge preference differs")
 		rows[#rows + 1] = table.concat({"road_low_edge", road_preferences[1],
 			road_preferences[2]}, "\t")
+		-- The soft pad edge, with a fixed root instead of a seed digest: integer
+		-- Q16 interpolation over the memoised jitter lattice, which is the one
+		-- new arithmetic the two interpreters have to agree on byte for byte.
+		local edge_fitting = {edge_root = 1234567, edge_jitter = {}}
+		local edge_offsets = {}
+		for _, case in ipairs({{-1800, -2486}, {-1800, -2480}, {-1736, -2550},
+				{0, 2486}, {1800, 2514}, {12, -36}, {-13, 37}}) do
+			local offset = start_edge_offset(edge_fitting, case[1], case[2])
+			assert(offset >= 0 and offset <= START_EDGE_AMPLITUDE and
+				offset % 1 == 0 and
+				start_edge_offset(edge_fitting, case[1], case[2]) == offset,
+				"start edge jitter offset differs")
+			edge_offsets[#edge_offsets + 1] = offset
+		end
+		rows[#rows + 1] = "start_edge\t" .. table.concat(edge_offsets, "\t")
 		local grade = assert(backtrack_preferred_grade({5, 20, 20, 5},
 			{5, 4, 3, 5}, {5, 6, 7, 5}))
 		rows[#rows + 1] = table.concat({"grade", unpack(grade)}, "\t")

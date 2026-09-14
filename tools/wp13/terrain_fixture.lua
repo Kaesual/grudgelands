@@ -63,9 +63,17 @@ for seed_index = 1, #seeds do
 			assert(junction.uses[use_index].final_y == start.reference_y,
 				"graded road endpoint differs at " .. start.id)
 		end
+		-- The soft pad edge. The outline may only grow OUTWARD, by at most the
+		-- declared amplitude, which is what keeps the 128 envelope, the spawn
+		-- height and the road pins above where they were.
+		local edge = assert(start.edge_jitter, "start edge jitter witness missing")
+		assert(edge.count == 512 and #edge.offsets == 512 and edge.minimum >= 0 and
+			edge.maximum <= edge.amplitude and edge.maximum > edge.minimum,
+			"start edge jitter witness differs at " .. start.id)
 		io.write(table.concat({"start", seed, start.id, start.reference_y,
 			start.preferred_y, start.feasible_lower_y, start.feasible_upper_y,
 			start.limit_excess, start.old_reference_y, start.old_sample_cost,
-			start.fit_sample_cost}, "\t"), "\n")
+			start.fit_sample_cost, edge.minimum, edge.maximum,
+			canonical.hex(raw_sha256(table.concat(edge.offsets, ",")))}, "\t"), "\n")
 	end
 end

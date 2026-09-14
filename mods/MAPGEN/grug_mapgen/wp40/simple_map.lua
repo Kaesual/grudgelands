@@ -542,8 +542,21 @@ return function(dependencies)
 		end
 		local class_counts = {primary=0,secondary=0,trail=0}
 		local route_pairs,route_by_id = {},{}
+		-- A start route's first leg carries the gate-axis run and the two eased
+		-- vertices in front of the leg's kept bow point, so its authored crossing
+		-- pin is four points further along than an ordinary route's. The index is
+		-- derived from the start anchors rather than hard-coded twice.
+		local start_route_zone = {}
+		for index = 1, #source.anchors do
+			local anchor = source.anchors[index]
+			if anchor.slot_id == "start" then
+				start_route_zone[anchor.zone_numeric_id] = true
+			end
+		end
 		for index = 1, #source.routes do
 			local row = source.routes[index]
+			local expected_pinned_point_index =
+				start_route_zone[row.zone_a] and 6 or 4
 			local pair_key=closed_pair(row.zone_a,row.zone_b)
 			local station_a=station_ids[row.station_a_id]
 			local station_b=station_ids[row.station_b_id]
@@ -553,7 +566,7 @@ return function(dependencies)
 					not source.zones[row.zone_a] or not source.zones[row.zone_b] or
 					not station_a or not station_b or
 					row.curve_policy_id ~= source.route_curve.id or
-					row.pinned_point_index ~= 4 or
+					row.pinned_point_index ~= expected_pinned_point_index or
 					dense_count(row.centreline,"route centreline") <
 						source.route_curve.minimum_points_per_route then
 				fail("route identity/reference differs at " .. index)
@@ -1082,6 +1095,10 @@ return function(dependencies)
 		if exclusion.recipe_id == "exclude_anchor_blend_v1" then
 			shape.kind="square" shape.center=exclusion.center
 			shape.total_width=exclusion.total_width
+			-- A start's blend envelope is the one claim exclusion that is terrain
+			-- and not settlement ground; `static_exclusion_values_at` can be asked
+			-- to skip it. See the "vegetation" purpose below.
+			shape.start_blend=record.slot_id == "start"
 			local half=math.floor((shape.total_width+1)/2)
 			shape.bounds={min_x=shape.center.x-half,max_x=shape.center.x+half,
 				min_z=shape.center.z-half,max_z=shape.center.z+half}
@@ -1555,14 +1572,20 @@ return function(dependencies)
 				fixed=fixed or nil,civic_water=civic_water or nil}
 		end
 
-		local function static_exclusion_values_at(x,z)
+		local function static_exclusion_values_at(x,z,purpose)
 			local grid_row=exclusion_grid[deterministic.floor_div(z,exclusion_cell)]
 			local candidates=grid_row and
 				grid_row[deterministic.floor_div(x,exclusion_cell)] or nil
 			if not candidates then return nil end
 			for index=1,#candidates do
 				local shape=candidates[index]
-				if in_rectangle(x,z,shape.bounds,0) then
+				if shape.start_blend and purpose == "vegetation" then
+					-- Skipped, not returned as "no exclusion": the remaining shapes in
+					-- this bucket still answer, which is what makes the start's own
+					-- 148-node hard core (`exclude:active:hard:anchor_00N`), its route
+					-- corridors, water and coast keep excluding while the blend ring
+					-- around them does not.
+				elseif in_rectangle(x,z,shape.bounds,0) then
 					local member=false
 					if shape.kind == "square" then
 						member=in_centered_half_open_square(x,z,shape.center,
@@ -1743,11 +1766,21 @@ return function(dependencies)
 			return core ~= nil and in_capsule(x,z,core,0) or false
 		end
 
-		function session.static_exclusion_values_at(x,z)
+		-- `purpose` selects which compiled claim exclusions the caller is subject
+		-- to. nil is the territory rule and answers all of them. "vegetation"
+		-- skips the six START anchors' blend envelopes, because the 256-node blend
+		-- ring is terrain and not settlement ground: a bare ring made every start
+		-- read as a cut-out square in the user's playtest. Every other exclusion
+		-- still answers there, so the 148-node hard start core, the road
+		-- corridors, planned water and the coast projection stay clear.
+		function session.static_exclusion_values_at(x,z,purpose)
 			integer(x,"static exclusion query x")
 			integer(z,"static exclusion query z")
+			if purpose ~= nil and purpose ~= "vegetation" then
+				fail("static exclusion purpose differs")
+			end
 			if not in_rectangle(x,z,query_bounds,0) then return nil end
-			return static_exclusion_values_at(x,z)
+			return static_exclusion_values_at(x,z,purpose)
 		end
 
 		function session.power_owner_at(x,z,macro_region)

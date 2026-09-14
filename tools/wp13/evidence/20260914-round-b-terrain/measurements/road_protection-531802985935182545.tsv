@@ -1,0 +1,20 @@
+seed	531802985935182545
+start	band	road_columns	unprotected	worst_x	worst_z	feature
+anchor_001	envelope_0_127	665	0	-	-	-
+anchor_001	approach_128_320	4635	0	-	-	-
+anchor_001	beyond_321	1306	0	-	-	-
+anchor_002	envelope_0_127	659	0	-	-	-
+anchor_002	approach_128_320	2823	0	-	-	-
+anchor_002	beyond_321	1722	0	-	-	-
+anchor_003	envelope_0_127	663	0	-	-	-
+anchor_003	approach_128_320	4717	0	-	-	-
+anchor_003	beyond_321	3042	0	-	-	-
+anchor_004	envelope_0_127	659	0	-	-	-
+anchor_004	approach_128_320	5212	0	-	-	-
+anchor_004	beyond_321	1581	0	-	-	-
+anchor_005	envelope_0_127	656	0	-	-	-
+anchor_005	approach_128_320	4606	0	-	-	-
+anchor_005	beyond_321	3012	0	-	-	-
+anchor_006	envelope_0_127	651	0	-	-	-
+anchor_006	approach_128_320	2270	0	-	-	-
+anchor_006	beyond_321	0	0	-	-	-

@@ -389,8 +389,18 @@ local function settlement_factory()
 				"fixed_or_protected"
 			exclusion_reason_by_id[row.id] = reason
 		end
-		local function exclusion_reason(x, z)
-			local _, id = horizontal.static_exclusion_values_at(x, z)
+		-- `purpose` is the exclusion-set selector of
+		-- `simple_map.lua`'s `static_exclusion_values_at`. Everything that claims,
+		-- reserves or censuses ground passes nil and gets the full territory rule.
+		-- Biome DECORATIONS pass "vegetation", which skips exactly the six start
+		-- anchors' 256-node blend envelopes: that ring is terrain, not settlement
+		-- ground, and a bare ring made every start read as a cut-out square in the
+		-- user's playtest. Every other exclusion still refuses there -- the start's
+		-- own 148-node hard core, the road corridors, planned water and the coast
+		-- projection -- so the pad, its ten-node apron, the blueprint volume and
+		-- the road surfaces stay clear.
+		local function exclusion_reason(x, z, purpose)
+			local _, id = horizontal.static_exclusion_values_at(x, z, purpose)
 			if not id then return nil end
 			local reason = exclusion_reason_by_id[id]
 			if not reason then fail("fail_settlement", "exclusion identity differs") end
@@ -1137,7 +1147,7 @@ local function settlement_factory()
 							for z = candidate.z + min_fz, candidate.z + max_fz do
 								for y = candidate.y + min_fy, candidate.y + max_fy do
 									for x = candidate.x + min_fx, candidate.x + max_fx do
-										local excluded = exclusion_reason(x, z)
+										local excluded = exclusion_reason(x, z, "vegetation")
 										if excluded then flags[excluded] = true end
 										local occupant = occupied[occupied_key(x, y, z)]
 										if occupant == 1 then flags.cultural_collision = true
@@ -2265,7 +2275,7 @@ local function settlement_factory()
 											if original_data[index] == contract.ignore_cid then
 												flags.content_ignore = true
 											end
-											local excluded = helpers.exclusion_reason(x, z)
+											local excluded = helpers.exclusion_reason(x, z, "vegetation")
 											if excluded then flags[excluded] = true end
 											if occupancy[index] == 1 then flags.cultural_collision = true
 											elseif occupancy[index] >= 2 and
