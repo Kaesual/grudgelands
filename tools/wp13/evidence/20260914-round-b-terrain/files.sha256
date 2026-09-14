@@ -25,7 +25,7 @@ eb822f2c391fe58cf4cfdeb53a2ca8b5d4ec019f8b5a6e645ff21b3285904a30  mods/MAPGEN/gr
 139edeb89c6bf04ddeba39df684653246319bb4a5fdfbe70940c042e727932a5  mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua
 b2ea1b3b6fe0116c395c70eb051d99e311d65b0a5e29c2c2aefc6671dd0e9527  mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua
 deb5fdba771003149c7aa990fb23a7766cb48b4c903df68182de3d9477b18ef0  tools/wp13/engine_cases.lua
-01a67244b8082368b6d20d07769010100baf1a43950ad8ed01cb9f898a2fb356  tools/wp13/evidence/20260914-round-b-terrain/README.md
+3c9b1b7b7796e95797fb9756fd80fc294a4a02de27127f5f8bb0aaecd86d65f9  tools/wp13/evidence/20260914-round-b-terrain/README.md
 bf3b44093c7dbc6c7ef628295e5cf3490f68e616a0b909c54ae93e85dd77cc7f  tools/wp13/evidence/20260914-round-b-terrain/boundary-seed/digests.txt
 3e56467c03f8adfbdf80b11f8b08e1cf939c1cbc9b68caf0d5cdfb3be8d587a5  tools/wp13/evidence/20260914-round-b-terrain/boundary-seed/forward-cold.tsv
 f6de8dffe8d54f09326d6b30974fdf46f06874f004b8d1be8ec462a220575574  tools/wp13/evidence/20260914-round-b-terrain/boundary-seed/forward-disk.tsv
@@ -100,8 +100,9 @@ f35aaf21b665daadd4c62b06f3abb0b81007638442391aff55f4b8002015ed27  tools/wp13/evi
 9b2466f08f84a246a74b42ce582540b760f78e9a22a134c8e1f5f7db6f8f60d8  tools/wp13/evidence/20260914-round-b-terrain/kat-puc51.txt
 ab0aed3b3c00108864a33e3c709c578e2154da394dd2bb413b50dd698dc1d48c  tools/wp13/evidence/20260914-round-b-terrain/kat.sh
 481aa616661615f423ea84a7d16ddf889c9abbd385e0c5fbc029581d08c29cb9  tools/wp13/evidence/20260914-round-b-terrain/luanti-flatpak-launcher.sh
-f5b7234637a9ca26fc8fdc2084ba43bacb363d9b4a1563e835de4d4bd70c9402  tools/wp13/evidence/20260914-round-b-terrain/measure.sh
+347512b40b4c827bf26677cec9f25761812859cea99b4d8b818c61cb90454238  tools/wp13/evidence/20260914-round-b-terrain/measure.sh
 9d9351bf94733cfede71141d0559e436c3d65ef14d61e468e45677f7256820be  tools/wp13/evidence/20260914-round-b-terrain/measure/gate_axis.lua
+3abf2f77fce8e2349b12da0683a6e0a5c5025eac40e0da955b6815a6040f9e3b  tools/wp13/evidence/20260914-round-b-terrain/measure/height_digests.lua
 fcd088a093a3b284158fb7adae6c2f0b7ec5b9ee978a22e49834c638a83293a3  tools/wp13/evidence/20260914-round-b-terrain/measure/pad_edge.lua
 c1baf24dfbb113f027f078eb6533223189b5df395babf8ecf4d1cf5e45ee3436  tools/wp13/evidence/20260914-round-b-terrain/measure/ring_bands.lua
 130c443fac0d9af67392dbd7491c3de503a27983cb98f11bc2711ac6ef5ee708  tools/wp13/evidence/20260914-round-b-terrain/measure/ring_heights.lua
@@ -109,6 +110,8 @@ c1baf24dfbb113f027f078eb6533223189b5df395babf8ecf4d1cf5e45ee3436  tools/wp13/evi
 5fb985b23f657a60fe1575a4b8423d77936f16a11ac28746aa4fe14b59c893b6  tools/wp13/evidence/20260914-round-b-terrain/measurements/gate_axis-8675309.tsv
 8f3cd6f62cb24f098a32e8d864853d9cf08631d73875fc4d7f311776054417ac  tools/wp13/evidence/20260914-round-b-terrain/measurements/gate_axis-before-531802985935182545.tsv
 8acc4b3eefc8dbcd823ffde031f93dc43268a9873186cbe766ce8edabae30f19  tools/wp13/evidence/20260914-round-b-terrain/measurements/gate_axis-before-8675309.tsv
+95910eb4fcaced8b862cf8495475b8412c1e27c6c19a775e82770466704d8d55  tools/wp13/evidence/20260914-round-b-terrain/measurements/height_digests-after-531802985935182545.tsv
+e79b73ae713bb145dd798b0e0c42a1b948ea6eb73717c95e1c2e67df25b87cad  tools/wp13/evidence/20260914-round-b-terrain/measurements/height_digests-before-531802985935182545.tsv
 02a6075a37863ea3086787ef68ea7ad4968add0cdb42cd87484aca8212121cec  tools/wp13/evidence/20260914-round-b-terrain/measurements/pad_edge-531802985935182545.tsv
 d54ffb2a58ab76f72684491f19fb14203a68a08a24b068b101e4bae9a460e369  tools/wp13/evidence/20260914-round-b-terrain/measurements/pad_edge-8675309.tsv
 837ec5afff6656be90fcbd7a180624f8b9159855f7bb982e354c5334f49a9aa7  tools/wp13/evidence/20260914-round-b-terrain/measurements/pad_edge_height_delta.tsv

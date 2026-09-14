@@ -12,6 +12,8 @@
 #                 for a before/after column diff of the pad-edge jitter
 #   pad_edge      reference/spawn height, the 128-envelope deviation count, the
 #                 outer-envelope grade count and the flat-edge ray profile
+#   height_digests  the frozen construction digests and metrics of the full
+#                 artifact (`new`, not `new_runtime`)
 #
 # A before/after comparison needs a second, immutable source tree as the first
 # argument; the numbers in README.md were taken against `git show`-extracted
@@ -31,4 +33,8 @@ for seed in 531802985935182545 8675309; do
 	chrt --idle 0 ionice -c3 luajit "$here/ring_heights.lua" "$repo" "$seed" \
 		"$out/ring_heights-$seed.tsv"
 done
+# The frozen construction digests. This one builds the FULL artifact (about
+# three minutes per seed), so it runs for the user seed only.
+chrt --idle 0 ionice -c3 luajit "$here/height_digests.lua" "$repo" \
+	531802985935182545 "$out/height_digests-531802985935182545.tsv"
 sha256sum "$out"/*.tsv

@@ -193,6 +193,25 @@ this round on purpose rather than by oversight.
 `bash static.sh`, `bash kat.sh`, `bash final-micro.sh`, `bash engine.sh` and
 `bash measure.sh <absent absolute dir>` reproduce all of it.
 
+### Which frozen digests moved
+
+| Digest | Before | After | Why |
+| --- | --- | --- | --- |
+| WP13 KAT trio / `final_micro.lua` | `9b2466f08f84a246…` | unchanged | no blueprint byte moved |
+| Engine gate, combined and per start | `206a86a057b0b6ed…` | unchanged | the settlements are written where they were |
+| `height.relief_lattice_digest` | `525620d5767fe976…` | unchanged | the natural terrain model is untouched |
+| `height.base_lattice_digest` | `1a28c24004d5c0bd…` | unchanged | same |
+| `height.canonical_kat_digest` | `9ae3a835a54596c9…` | `766d931d78dea52c…` | it covers the graded-route rasters and the visible-surface classification, and the six start routes' first legs were rebuilt |
+| `quality_geometry_micro_kat` output | (round A bytes) | `7c35fa5d26d0a984…` | one new `start_edge` row exercising the pad-edge jitter arithmetic |
+| route `exact_pin_digest` / `lower_bound_digest` | — | changed for exactly `route_001/004/007/010/013/016` | the six start routes; every other path's numbers are byte-identical |
+
+Two construction metrics move with them: `construction_sha256_calls` 5,147 →
+5,156 and `water_operation_count` 4,396 → 4,399, because the six rebuilt legs
+pass slightly different water. `graded_path_count` (139), the relief profile,
+octave and base-lattice populations are unchanged.
+`measurements/height_digests-{before,after}-531802985935182545.tsv` and
+`measure/height_digests.lua`.
+
 ### What could not run here, and why
 
 - **`tools/wp40/r7/run.sh static`** cannot pass, for three reasons that all
