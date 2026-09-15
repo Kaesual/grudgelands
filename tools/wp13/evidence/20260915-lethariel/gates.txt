@@ -1,11 +1,11 @@
 seed	run	deck_top	lintel	air	verdict
 531802985935182545	edge_west	35	42	6	ok
 531802985935182545	edge_east	50	57	6	ok
-531802985935182545	edge_south	55	59	3	ok
-531802985935182545	edge_north	48	54	5	ok
+531802985935182545	edge_south	54	59	4	ok
+531802985935182545	edge_north	48	52	3	ok
 8675309	edge_west	36	43	6	ok
 8675309	edge_east	35	40	4	ok
-8675309	edge_south	59	63	3	ok
+8675309	edge_south	58	62	3	ok
 8675309	edge_north	42	48	5	ok
 15912857179583385436	edge_west	33	38	4	ok
 15912857179583385436	edge_east	37	43	5	ok
@@ -13,28 +13,28 @@ seed	run	deck_top	lintel	air	verdict
 15912857179583385436	edge_north	41	46	4	ok
 0	edge_west	42	49	6	ok
 0	edge_east	44	49	4	ok
-0	edge_south	70	74	3	ok
+0	edge_south	70	75	4	ok
 0	edge_north	57	64	6	ok
 1	edge_west	44	48	3	ok
 1	edge_east	38	44	5	ok
 1	edge_south	43	49	5	ok
 1	edge_north	56	60	3	ok
 2	edge_west	36	43	6	ok
-2	edge_east	51	55	3	ok
-2	edge_south	56	61	4	ok
+2	edge_east	50	55	4	ok
+2	edge_south	55	61	5	ok
 2	edge_north	48	53	4	ok
-42	edge_west	28	34	5	ok
-42	edge_east	40	46	5	ok
+42	edge_west	27	34	6	ok
+42	edge_east	39	46	6	ok
 42	edge_south	54	58	3	ok
-42	edge_north	57	61	3	ok
-12345	edge_west	28	34	5	ok
+42	edge_north	56	60	3	ok
+12345	edge_west	27	34	6	ok
 12345	edge_east	34	38	3	ok
 12345	edge_south	47	51	3	ok
 12345	edge_north	42	46	3	ok
 999999999	edge_west	48	53	4	ok
 999999999	edge_east	53	58	4	ok
 999999999	edge_south	61	67	5	ok
-999999999	edge_north	69	73	3	ok
+999999999	edge_north	68	72	3	ok
 
 36 gate/seed pairs, worst air 3 against MIN_CLEAR 3
 every threshold clears the road it spans on every seed
