@@ -110,9 +110,25 @@ return function(roster_factory, anchor_content)
 						-- surface from that same plan whenever it generates. So the
 						-- settled bytes are asserted where this transaction writes them
 						-- and trusted from the plan where it does not.
+						--
+						-- The seven support values and the seven root values are
+						-- declared HERE and not inside the two branches, because the
+						-- diagnostic ledger below records them. Declared inside, the
+						-- ledger's `support_*` and `prior_*` fields read fourteen
+						-- globals that are always nil -- which is what
+						-- `tools/wp40/r7/anchor_activation_kat.lua` catches at
+						-- "operation differs at 1". Outside them, a row whose support
+						-- or root this transaction does NOT own still records nil for
+						-- those fields, which is the honest answer: it did not read
+						-- them.
+						local support_cid, support_param2, support_occupancy,
+							support_opcode, support_feature, support_interface,
+							support_aux
+						local prior_cid, prior_param2, prior_occupancy, prior_opcode,
+							prior_feature, prior_interface, prior_aux
 						local support_owned = row.y >= bound_min_y and row.y <= bound_max_y
 						if support_owned then
-							local support_cid, support_param2, support_occupancy,
+							support_cid, support_param2, support_occupancy,
 								support_opcode, support_feature, support_interface,
 								support_aux = context.settled_at(row.x, row.y, row.z)
 							local class_id, _, liquid_kind =
@@ -136,7 +152,7 @@ return function(roster_factory, anchor_content)
 						-- to clear, and reading it here would depend on emerge order the
 						-- same way.
 						if root_y >= bound_min_y and root_y <= bound_max_y then
-							local prior_cid, prior_param2, prior_occupancy, prior_opcode,
+							prior_cid, prior_param2, prior_occupancy, prior_opcode,
 								prior_feature, prior_interface, prior_aux =
 									context.settled_at(row.x, root_y, row.z)
 							if prior_cid ~= air_cid or prior_param2 ~= 0 or
