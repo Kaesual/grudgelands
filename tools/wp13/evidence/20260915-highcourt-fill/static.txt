@@ -22,7 +22,8 @@ SWEEP 2
 SWEEP 3
 SWEEP 4
 SWEEP 5
-tools/wp13/highcourt_plots.lua:520:	os.exit(1)
+tools/wp13/highcourt_plots.lua:398:	os.exit(0)
+tools/wp13/highcourt_plots.lua:579:	os.exit(1)
 tools/wp13/dump_highcourt.lua:43:	os.exit(2)
 tools/wp13/dump_highcourt.lua:76:	os.exit(2)
 tools/wp13/dump_highcourt.lua:97:	os.exit(0)
@@ -295,6 +296,8 @@ tools/wp40/t2_extreme_verify_shard.lua:14:		not value:find("//", 1, true), "unsa
 tools/wp40/t2_census_merge.lua:29:		not value:find("//", 1, true), "unsafe " .. label)
 tools/wp40/t2_census_merge.lua:1610:					" | v2: " .. tostring(base[index])
 tools/wp40/resource_sampling/writer_fixture.lua:242:			"\ntrace=", table.concat(snapshot.trace, "|"), "\n"})
+tools/wp13/evidence/20260915-capital-terrain/measurements/band-bound.lua:12:--   gentle  the worst |output step| over pairs whose RELIEF step is at most 1.
+tools/wp13/evidence/20260915-capital-terrain/measurements/band-bound.lua:44:io.write("deviation = worst |output - plain terrace|\n\n")
 tools/wp13/evidence/20260914-round-b-terrain/measure/road_shoulder.lua:2:-- rows on the approach, the smallest |dx| at which a biome decoration may host
 SWEEP 5
 mods/CORE/grug_core/atmosphere_zones.lua:334:-- Sea level is y = 1 (minetest.conf water_level, mirrored in the authored
@@ -328,7 +331,7 @@ tools/wp40/t2_extreme_merge.lua:57:	local status, reason, code = os.execute("sha
 tools/wp40/t2_extreme_merge.lua:106:local status, reason, code = os.execute("python3 " .. repo ..
 tools/wp40/t2_extreme_conformance_test.lua:39:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
 tools/wp40/t2_extreme_conformance_test.lua:648:	local status, reason, code = os.execute(command)
-tools/wp40/r6/common.lua:38:			local status = os.execute("sha256sum " .. base .. ".bin > " .. base .. ".txt")
+tools/wp40/r6/common.lua:45:			local status = os.execute("sha256sum " .. base .. ".bin > " .. base .. ".txt")
 tools/wp40/t2_s1_authority_test.lua:30:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
 tools/wp40/quality/terrain_life_fixture.lua:18:	local ok, why, code = os.execute("sha256sum " .. input .. " > " .. digest)
 tools/wp40/t2_s11_acceptance_check.lua:376:	os.exit(0)
@@ -370,7 +373,9 @@ tools/wp13/dump_blueprint.lua:52:	os.exit(1)
 tools/wp13/dump_blueprint.lua:59:		os.exit(1)
 tools/wp13/dump_blueprint.lua:66:	os.exit(1)
 tools/wp13/dump_blueprint.lua:72:	os.exit(1)
-tools/wp13/highcourt_plots.lua:520:	os.exit(1)
+tools/wp13/lane_routes.lua:347:	os.exit(1)
+tools/wp13/highcourt_plots.lua:398:	os.exit(0)
+tools/wp13/highcourt_plots.lua:579:	os.exit(1)
 tools/wp13/dump_highcourt.lua:43:	os.exit(2)
 tools/wp13/dump_highcourt.lua:76:	os.exit(2)
 tools/wp13/dump_highcourt.lua:97:	os.exit(0)

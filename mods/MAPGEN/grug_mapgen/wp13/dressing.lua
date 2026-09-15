@@ -567,6 +567,25 @@ local function loader(directory)
 		end
 	end
 
+	-- ONE PLANT, ON THE GROUND, WHERE SOMEBODY CAN REACH IT.
+	--
+	-- A raised bed is a kerb of masonry round soil, and the sockets contract
+	-- (section 8.1, 2026-09-15) says a work socket's feature search stops at
+	-- the first solid node on its own course -- so a gardener standing outside
+	-- a bed looks at brick, and the flowers two cells further in do not count.
+	-- That is the right rule (a feature behind a wall is not a feature) and the
+	-- answer is not to weaken it but to put the plant where the hands are: this
+	-- breaks the kerb at one cell and grows something there instead.
+	--
+	-- Returns the node it wrote, so a caller can say which cell the socket is
+	-- for.
+	function M.plant(buf, palette, x, z)
+		local name = palette.maybe("flower") or palette.maybe("crop") or
+			palette.node("grass_tuft")
+		buf:put(x, 1, z, name, parts.place_param2(name))
+		return name
+	end
+
 	-- A gravewood: the bent, mostly bare dead tree of the blight basin.
 	--
 	-- The proportions are decoded from the mod's own assets

@@ -9,7 +9,12 @@ export LC_ALL=C
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd -P)"
 cd "$repo"
 here="tools/wp13/evidence/20260915-highcourt-fill"
-fields="tools/wp13/evidence/20260915-highcourt-districts/highcourt"
+# THE FIELDS ARE THIS PACKAGE'S OWN since the rebase onto the capital-terrain
+# lane: that lane gave every capital riser a band of one-block ground steps, so
+# the districts package's committed fields describe ground this world no longer
+# has. Both were re-dumped from the merged tree with
+# `run_highcourt.sh <out> field <seed>`.
+fields="tools/wp13/evidence/20260915-highcourt-fill/highcourt"
 
 luajit -e 'io.write(dofile("tools/wp13/highcourt_kat.lua")("."))' \
 	>"$here/kat/kat-luajit.txt"

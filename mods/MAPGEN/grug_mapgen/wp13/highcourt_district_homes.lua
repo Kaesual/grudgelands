@@ -175,6 +175,7 @@ local function loader(directory)
 				dressing.broadleaf(buf, palette, 6, 4, 5)
 				dressing.wood_pile(buf, palette, -9, -8, 3, "x")
 				dressing.flower_bed(buf, palette, 5, -9, 8, -7)
+				dressing.plant(buf, palette, 6, -9)
 				dressing.bench(buf, palette, -3, -10, 0, 3, "x")
 			end,
 			extra_sockets = function()
@@ -211,6 +212,7 @@ local function loader(directory)
 				local dressing = area.dressing
 				dressing.planter(buf, palette, -4, -1, -2, 2)
 				dressing.planter(buf, palette, 2, -1, 4, 2)
+				dressing.plant(buf, palette, -2, 0)
 				dressing.bench(buf, palette, -3, -3, 0, 3, "x")
 			end,
 			extra_sockets = function()

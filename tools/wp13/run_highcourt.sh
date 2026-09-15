@@ -41,6 +41,17 @@ timeout_s="${WP13_HIGHCOURT_TIMEOUT:-1500}"
 	echo "run_highcourt: WP13_HIGHCOURT_TIMEOUT must be 1..3600" >&2
 	exit 2
 }
+# Seconds of ordinary server time between the probe's report and its shutdown.
+# Zero by default, which is every run this harness has ever taken; a run that
+# wants to see the NPC placement engine FINISH filling the capital's roster --
+# it fills incrementally, a few slots per heartbeat -- asks for a couple of
+# minutes. The probe's own numbers are published before the soak starts, so a
+# soaking run and a soak-free run report the same geometry and timings.
+soak="${WP13_HIGHCOURT_SOAK:-0}"
+[[ "$soak" =~ ^(0|[1-9][0-9]*)$ && "$soak" -le 600 ]] || {
+	echo "run_highcourt: WP13_HIGHCOURT_SOAK must be 0..600" >&2
+	exit 2
+}
 port="${WP13_HIGHCOURT_PORT:-32910}"
 [[ "$port" =~ ^[1-9][0-9]{3,4}$ && "$port" -le 65000 ]] || exit 2
 # An extra region for the probe to read back out of the finished map, as
@@ -94,6 +105,7 @@ fixed_map_seed = $seed
 num_emerge_threads = 1
 grug_wp13_probe_mode = $mode
 grug_wp13_probe_timeout = $((timeout_s - 120))
+grug_wp13_probe_soak = $soak
 grug_wp13_probe_crossing = $crossing
 CONF
 

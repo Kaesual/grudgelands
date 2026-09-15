@@ -44,6 +44,22 @@ local timeout_seconds =
 -- ROUTE CROSSING is not one of them: where WP40 bridges a river inside the
 -- capital envelope is a fact about the seed, so the box comes from whoever
 -- measured it (`tools/wp13/lane_routes.lua`) and the probe only reads it.
+-- THE SOAK, and why it is off by default.
+--
+-- The NPC placement engine (`grug_mobs/start_npcs.lua`) fills a settlement
+-- INCREMENTALLY: a slot is placed when its area is loaded and its turn in the
+-- heartbeat comes, so a capital with 175 slots takes minutes of server time to
+-- finish, while this probe's job is done the moment its mapchunk programme is.
+-- The snapshot the shutdown catches is therefore "most of them, and the rest
+-- pending", which is exactly what the log said for round 3's seven profession
+-- vendors: six placed, one still queued, and nothing wrong.
+--
+-- `grug_wp13_probe_soak` buys seconds of ordinary server time after the dumps
+-- and before the shutdown, for a run whose question is the ROSTER rather than
+-- the geometry. It defaults to ZERO, so every timing number this probe has ever
+-- published is taken under the same programme it always was.
+local soak = tonumber(core.settings:get("grug_wp13_probe_soak")) or 0
+if soak < 0 or soak > 600 then soak = 0 end
 local crossing = core.settings:get("grug_wp13_probe_crossing")
 
 local function fail(message)
@@ -560,8 +576,12 @@ local function report_complete()
 	parts[#parts + 1] = "worst_submerged_plot=" .. worst_wet_plot
 	local sockets = select(1, socket_report())
 	for index = 1, #sockets do parts[#parts + 1] = sockets[index] end
+	parts[#parts + 1] = "soak=" .. soak
 	log(parts)
-	core.request_shutdown("WP13 Highcourt probe complete", false, 0.2)
+	-- The soak runs BETWEEN the report and the shutdown, so the numbers above
+	-- are the same numbers a soak-free run publishes and only the roster the
+	-- NPC engine has finished filling differs.
+	core.request_shutdown("WP13 Highcourt probe complete", false, 0.2 + soak)
 end
 
 run_dumps = function()

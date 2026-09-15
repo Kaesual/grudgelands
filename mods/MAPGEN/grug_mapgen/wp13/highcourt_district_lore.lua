@@ -118,15 +118,24 @@ local function loader(directory)
 			spec = {w = 11, d = 13, wall_h = 5, infill = true},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
-				dressing.graveyard(buf, palette, area.x0 + 1, area.z1 - 2,
+				dressing.graveyard(buf, palette, area.x0 + 1, area.z1 - 1,
 					area.x1 - 1, area.z1 - 1)
 				dressing.low_wall_line(buf, palette, area.x0, area.z1,
 					area.x1, area.z1)
 				dressing.flower_bed(buf, palette, 2, area.z0, 4, area.z0 + 2)
+				dressing.plant(buf, palette, 4, area.z0 + 1)
+				-- THE GRAVE THE MOURNER STANDS AT. `graveyard` scatters its
+				-- markers on a position hash and leaves some plots open, which
+				-- is what a burial ground looks like and exactly what a socket
+				-- may not depend on: the contract's `pray` feature (section
+				-- 8.1) is the chapel's door, an altar, a candle or a GRAVE
+				-- MARKER, so this row sets one marker unconditionally and the
+				-- socket below faces it from the row in front.
+				dressing.grave(buf, palette, 0, area.z1 - 1, true)
 			end,
 			extra_sockets = function(area)
 				return {
-					plots.work("chapel_pray", "pray", -3, area.z0 + 2, 0),
+					plots.work("chapel_pray", "pray", 0, area.z1 - 2, 0),
 					plots.work("chapel_beds", "tend", 5, area.z0 + 1, 3),
 				}
 			end},
@@ -140,6 +149,7 @@ local function loader(directory)
 				dressing.hedge_line(buf, palette, -11, 11, 11, 11, 2)
 				dressing.flower_bed(buf, palette, -11, -9, -9, -7)
 				dressing.flower_bed(buf, palette, 9, -9, 11, -7)
+				dressing.plant(buf, palette, -9, -8)
 				dressing.bench(buf, palette, -3, -10, 0, 3, "x")
 				dressing.crates(buf, palette, 8, -10, 0)
 			end,
@@ -157,6 +167,8 @@ local function loader(directory)
 				local dressing = area.dressing
 				dressing.flower_bed(buf, palette, -6, -5, -3, -2)
 				dressing.flower_bed(buf, palette, 3, -5, 6, -2)
+				dressing.plant(buf, palette, -3, -4)
+				dressing.plant(buf, palette, 3, -4)
 				dressing.gravewood(buf, palette, 0, 4, 5)
 				dressing.bench(buf, palette, -3, -7, 0, 2, "x")
 				dressing.crates(buf, palette, 6, -7, 0)

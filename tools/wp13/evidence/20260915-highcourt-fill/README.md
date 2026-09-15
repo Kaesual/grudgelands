@@ -45,7 +45,7 @@ bash tools/wp13/evidence/20260915-highcourt-fill/files.sha256.sh
 | sockets | **256** (191 before) — 36 `work`, 7 `vendor` one per kind, 26 spare |
 | residents / idle spawn sockets | 144 / 108, against §8.3's one per five |
 | fill lots | 16, all dry, skirted and roofed on **both** gate seeds |
-| engine | `exit=0 errors=0 complete=1`, **zero** `audit_terrain` warnings, zero submerged columns, on both seeds |
-| per-mapchunk | steady mean 0.48 s (user seed) / 0.51 s (boundary), against a 2 × 0.5 s limit |
+| engine | `exit=0 errors=0 complete=1`, **zero** `audit_terrain` warnings, zero submerged columns, on both seeds (rebased onto main 3a1e90c0) |
+| per-mapchunk | steady mean 0.53 s (user seed) / 0.57 s (boundary), against a 2 × 0.5 s limit |
 | the six start identities | unchanged |
 | Highcourt core digest | unchanged at `187f79e0…` |

@@ -175,6 +175,9 @@ return function(repo)
 	end
 	feature_set("smith", {"workbench", "hearth"},
 		{"default:furnace", "default:furnace_active"})
+	-- `fish` is CAPITAL-ONLY (contract section 8.1): a start blueprint may
+	-- contain no water cell at all, so no start can satisfy this rule; a
+	-- capital plot may dig its own pond, and Highcourt's does.
 	feature_set("fish", {"water"},
 		{"default:water_source", "default:water_flowing",
 			"default:river_water_source", "default:river_water_flowing"})
@@ -182,13 +185,21 @@ return function(repo)
 	feature_set("chop", {"tree_log", "post", "beam"}, {})
 	feature_set("tend", {"flower", "flower_alt", "hedge", "hedge_stem",
 		"undergrowth", "grass_tuft", "fern", "crop", "tree_leaves"}, {})
-	-- `pray`: any node of the chapel interior. The altar, the rail and the
-	-- shrine furniture are all the chapel kit's own, and a plot may put the
-	-- socket at a different one, so the rule is "something solid is there and
-	-- it is not the open air of a field".
-	feature_set("pray", {"signature", "castle_wall", "low_wall", "wall",
-		"wall_accent", "floor", "seat", "shelf", "shelf_vessels", "storage",
-		"hearth"}, {})
+	-- `pray`: THE CHAPEL'S DOOR, AN ALTAR, A CANDLE OR A GRAVE MARKER
+	-- (contract section 8.1, corrected 2026-09-15 after the NPC lane's review).
+	-- The first wording said "any node of the chapel interior", which
+	-- contradicted the rule every socket obeys -- a socket stands OUTSIDE a
+	-- room -- and this KAT implemented that first wording by accepting the
+	-- chapel's own walls and furniture. It does not any more: a wall is not
+	-- something to pray at.
+	--
+	-- `low_wall` is the grave marker (`dressing.grave` sets one on a flagstone)
+	-- and the door family is the palette's `door` prefix, which `palette.node`
+	-- refuses to hand out as a family base, so the two door shapes are named.
+	feature_set("pray", {"light_post", "light_wall", "light_indoor",
+		"low_wall", "signature"},
+		{"doors:door_wood", "doors:door_wood_a", "doors:door_wood_b",
+			"doors:door_wood_c", "doors:door_wood_d"})
 
 	local LIGHT = {}
 	for _, role in ipairs({"light_wall", "light_post", "light_indoor"}) do
@@ -772,14 +783,27 @@ return function(repo)
 				local wdx, wdz = parts.facedir_step(entry.face)
 				local wanted = FEATURE[entry.activity]
 				if wanted then
-					local found = nil
+					--
+					-- THE SEARCH STOPS AT THE FIRST SOLID NODE ON THE SOCKET'S
+					-- OWN COURSE (contract section 8.1, 2026-09-15): a feature
+					-- behind a wall does not count, because the resident cannot
+					-- see or reach it. The cell that stops the search is
+					-- examined first, so a counter or an anvil -- which is
+					-- itself solid -- still counts at the range it stands at.
+					--
+					local found, blocked = nil, false
 					for reach = 1, 3 do
 						local fx = entry.x + wdx * reach
 						local fz = entry.z + wdz * reach
-						for dy = -1, 1 do
-							local cell = at(fx, entry.y + dy, fz)
-							if found == nil and cell and wanted[cell.name] then
-								found = cell.name
+						if not blocked then
+							for dy = -1, 1 do
+								local cell = at(fx, entry.y + dy, fz)
+								if found == nil and cell and wanted[cell.name] then
+									found = cell.name
+								end
+							end
+							if found == nil and solid(fx, entry.y, fz) then
+								blocked = true
 							end
 						end
 					end
@@ -792,6 +816,10 @@ return function(repo)
 					-- A counter: a solid node at the socket's own feet
 					-- course, which is waist height to somebody standing
 					-- beside it.
+					-- A counter IS the first solid node on the socket's own
+					-- course, so the stopping rule above is this rule: the
+					-- first solid cell within three either is the counter or
+					-- there is none.
 					local found = false
 					for reach = 1, 3 do
 						if not found and solid(entry.x + wdx * reach, entry.y,
@@ -2421,7 +2449,76 @@ return function(repo)
 		wall_splits = wall_splits + 1
 	end
 
-	-- (f) NO AVENUE LAMP STANDARD IN A WALL PIER: a lamp stands on the verge,
+	-- (f) THE CROSSING RULE DOES NOT REACH THE WALL.
+	--
+	-- Since the route lane landed, the seam hands every run of an overlay an
+	-- `overhead(x, z)` callback and `avenue.run` ramps the carriageway up to a
+	-- bridge deck wherever a route crosses with less than three blocks of
+	-- clearance. A curtain must not do that: a wall that climbed to meet a deck
+	-- would leave the ground it is founded on, which is the one thing
+	-- `wall.lua`'s no-gap guarantee promises cannot happen.
+	--
+	-- `highcourt.overlay_run` therefore copies the spec WITHOUT `overhead`
+	-- before handing it to the wall module. This is the bite test for that: the
+	-- same run is built twice, once through `overlay_run` with an `overhead`
+	-- that would lift a road six courses over its whole span, and once with no
+	-- overhead at all, and the two cell lists must be identical. It goes red
+	-- either if the dispatcher starts passing the seam on or if `wall.lua`
+	-- starts reading it.
+	do
+		-- A deck two blocks over the ground, which is under the module's own
+		-- `MIN_CLEAR` and therefore a column a road must climb onto rather
+		-- than walk under.
+		local lift_calls = 0
+		local function lifting_overhead(x, z)
+			lift_calls = lift_calls + 1
+			return wall_ground(cut_spec.axis == "x" and x or z) + 2
+		end
+		local plain = wall.run(human, cut_spec, cut_surface, cut_plan)
+		local through = highcourt.overlay_run(avenue, human, {
+			id = cut_spec.id, axis = cut_spec.axis, at = cut_spec.at,
+			from = cut_spec.from, to = cut_spec.to, width = cut_spec.width,
+			lamp_spacing = cut_spec.lamp_spacing,
+			lamp_phase = cut_spec.lamp_phase, reach = cut_spec.reach,
+			overhead = lifting_overhead}, cut_surface)
+		assert(#through.cells == #plain.cells, "the wall run built with an " ..
+			"overhead carries " .. #through.cells .. " cells and the same run " ..
+			"without one " .. #plain.cells .. ": the curtain obeyed the " ..
+			"crossing rule")
+		for index = 1, #plain.cells do
+			local a, b = plain.cells[index], through.cells[index]
+			assert(a.x == b.x and a.y == b.y and a.z == b.z and
+				a.name == b.name and (a.param2 or 0) == (b.param2 or 0),
+				"the wall run moved when it was given an overhead, at cell " ..
+					index)
+		end
+		assert(lift_calls == 0, "the wall asked the overhead seam " ..
+			lift_calls .. " questions; it may not ask any")
+		local wall_lift_calls = lift_calls
+		-- And the control: the ROAD does move when it is given the same
+		-- overhead, so the test above is not passing because the fixture is
+		-- inert.
+		local road_plain = avenue.run(human, {id = "control", axis = "z",
+			at = 256, from = cut_spec.from, to = cut_spec.to,
+			width = avenue.WIDTH, lamp_spacing = avenue.LAMP_SPACING,
+			lamp_phase = cut_spec.from, reach = avenue.REACH}, cut_surface)
+		local road_lifted = avenue.run(human, {id = "control", axis = "z",
+			at = 256, from = cut_spec.from, to = cut_spec.to,
+			width = avenue.WIDTH, lamp_spacing = avenue.LAMP_SPACING,
+			lamp_phase = cut_spec.from, reach = avenue.REACH,
+			overhead = lifting_overhead}, cut_surface)
+		assert(road_lifted.crossings and #road_lifted.crossings > 0,
+			"the control road crossed nothing under a deck two blocks over " ..
+				"its own ground, so the wall test proves nothing")
+		assert(#road_lifted.cells ~= #road_plain.cells,
+			"the control road did not move under a deck it has to climb, so " ..
+				"the wall test proves nothing")
+		say("highcourt_wall_crossing", #plain.cells, wall_lift_calls,
+			#road_plain.cells, #road_lifted.cells, #road_lifted.crossings,
+			lift_calls)
+	end
+
+	-- (g) NO AVENUE LAMP STANDARD IN A WALL PIER: a lamp stands on the verge,
 	-- and inside a gate that verge is a column of the gatehouse. The avenue is
 	-- authored BEFORE the wall and wins every cell the two share, so the gate
 	-- passage has to be at least as wide as the carriageway plus both verges.

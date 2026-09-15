@@ -160,6 +160,7 @@ local function loader(directory)
 				dressing.handcart(buf, palette, 3, -8, "x")
 				dressing.wood_pile(buf, palette, -9, -8, 3, "x")
 				dressing.flower_bed(buf, palette, 5, -8, 8, -6)
+				dressing.plant(buf, palette, 6, -8)
 				dressing.bench(buf, palette, -3, -10, 0, 3, "x")
 			end,
 			extra_sockets = function()

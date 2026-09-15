@@ -485,10 +485,33 @@ local function loader(directory)
 	-- where the turrets and the gate stand -- so it is looked up here, from the
 	-- same table for every piece, which is what keeps a piece of a run exactly
 	-- that stretch of the whole run.
+	--
+	-- A WALL DOES NOT OBEY THE CROSSING RULE, and this is where that is decided.
+	-- Since the route lane landed, `r7_settlement.lua` hands EVERY run of an
+	-- overlay an `overhead(x, z)` callback, and `avenue.run` uses it to ramp the
+	-- carriageway up to a bridge deck wherever a WP40 route passes over the run
+	-- with less than three blocks of clearance. That is right for a road, whose
+	-- job is to be walkable from end to end, and wrong for a curtain wall,
+	-- whose job is to be a continuous line of masonry standing on the ground:
+	-- a wall that climbed to meet a deck would leave the ground it was
+	-- founded on and open exactly the gap the module's no-gap guarantee exists
+	-- to make impossible.
+	--
+	-- So the seam is not passed on. The spec is copied field by field WITHOUT
+	-- `overhead` rather than handed over and hoped about, because `wall.lua`
+	-- ignoring a field today is not the same promise as this file never giving
+	-- it one. `highcourt_kat.lua` holds the two to that: it builds a wall run
+	-- with an overhead that would lift a road by six courses and asserts the
+	-- cells are identical to the run built without it.
 	function M.overlay_run(avenue, palette, spec, surface)
 		local plan = M.wall_plan[spec.id]
-		if plan then return wall.run(palette, spec, surface, plan) end
-		return avenue.run(palette, spec, surface)
+		if not plan then return avenue.run(palette, spec, surface) end
+		return wall.run(palette, {
+			id = spec.id, axis = spec.axis, at = spec.at,
+			from = spec.from, to = spec.to, width = spec.width,
+			lamp_spacing = spec.lamp_spacing, lamp_phase = spec.lamp_phase,
+			reach = spec.reach,
+		}, surface, plan)
 	end
 
 	M.district = district.market

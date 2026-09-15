@@ -9,7 +9,9 @@ highcourt_quadrant_permutation	3	4,2,3,1
 highcourt_quadrant_permutation	12345	1,3,4,2
 highcourt_quadrant_permutation	999999999	2,4,1,3
 highcourt_lots	36	4	9	13	8	15	7
+highcourt_lot_grid	36	6977103e6bcc188691b22316abba8547bf37d1853e28e0f6843e86823e1f7551
 highcourt_fill_lots	16	4	4	11	8	5
+highcourt_fill_grid	16	26e64ab94490378e7079c29a87e0d8f9e703aec92388672f832edce4263d1bc1
 highcourt_plot	market_granary	plot	5715	1672	19	8	2	1	3	0	0	913	13
 highcourt_plot	market_stable	plot	5001	1619	20	8	2	1	4	0	0	913	11
 highcourt_plot	market_workshop	plot	5824	1860	25	14	2	2	4	1	1	903	11
@@ -47,7 +49,7 @@ highcourt_plot	lore_chapter_house	plot	4862	1536	19	6	1	1	2	0	0	913	12
 highcourt_plot	lore_almonry	plot	3360	1175	25	7	1	1	2	0	0	923	10
 highcourt_plot	lore_cloister_walk	plot	2841	996	16	8	0	0	4	0	0	943	9
 highcourt_plot	lore_quiet_grove	plot	7978	1615	11	4	0	0	4	0	0	913	11
-highcourt_plot	lore_chapel_yard	fill	5567	1669	26	10	2	1	3	2	2	916	11
+highcourt_plot	lore_chapel_yard	fill	5567	1673	26	10	2	1	3	2	2	917	11
 highcourt_plot	lore_physic_field	fill	5730	1694	15	2	0	0	4	3	3	937	8
 highcourt_plot	lore_sexton_garden	fill	3210	964	13	2	0	0	4	2	2	957	8
 highcourt_plot	lore_green	fill	1410	568	11	2	0	0	3	1	0	936	8
@@ -64,12 +66,13 @@ highcourt_plot	homes_orchard	plot	7960	1978	15	4	0	0	4	0	0	935	11
 highcourt_plot	homes_common_field	fill	5730	1700	13	2	0	0	4	3	3	958	8
 highcourt_plot	homes_goose_green	fill	5740	1890	17	2	0	0	4	2	2	954	8
 highcourt_plot	homes_lane_park	fill	3220	1092	10	2	0	0	3	2	0	959	8
-highcourt_plot	homes_kitchen_garden	fill	1410	479	10	2	0	0	3	1	1	959	8
+highcourt_plot	homes_kitchen_garden	fill	1410	479	11	2	0	0	3	1	1	959	8
 highcourt_district	highcourt_homes	residential_cultural	9	57015	10	4	0
 highcourt_sockets	256	guard_patrol=56,guard_post=19,idle=134,king=1,quest=2,spare=26,vendor=7,waypoint=1,work=36
 highcourt_work	36	144	108	chop=7,farm=7,fish=3,pray=1,sit=5,smith=1,stall=1,sweep=2,tend=9
 highcourt_vendors	7	baker=1,butcher=1,fishmonger=1,general=1,race=1,smith=1,tailor=1
 highcourt_capital	101831	274443	376274	10451	lore_shrine
 highcourt_avenue	639	485	45	20	26	911	50	8	5	160	1825
+highcourt_wall_crossing	5331	0	499	498	405	827
 highcourt_wall	4	2056	137580	64	196	80	4	dc08f3e76f8012201f4eb0f904caa6d0d80af59d366bc52263b5f2cc407bf7b5
 highcourt_avenue_built	2	c20565c7fc6c671d5c9956a434d74b0878b03dcd170d680bd792716f0bc8ef4c

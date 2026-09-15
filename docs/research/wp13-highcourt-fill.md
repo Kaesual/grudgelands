@@ -1,7 +1,9 @@
 # WP13: Highcourt's wall ring, its fill and its trades
 
-Increment record, 2026-09-15, written on `main` at `19abee02` (playtest round 3,
-lane 4). Evidence: `tools/wp13/evidence/20260915-highcourt-fill/`.
+Increment record, 2026-09-15, written on `main` at `19abee02` and **rebased onto
+`3a1e90c0`** with the other four round-3 lanes merged (playtest round 3, lane 4).
+Evidence: `tools/wp13/evidence/20260915-highcourt-fill/`. What the rebase cost
+and what it proved is §9.
 
 What the user said after playtest round 3, and what this package is:
 
@@ -322,11 +324,9 @@ construction and is not counted.
 
 | Kind | user seed | boundary seed |
 | --- | --- | --- |
-| Highcourt mapchunks | 95 | 86 |
-| steady mean | **0.47 s** | **0.51 s** |
-| worst single chunk | 1.02 s | 1.01 s |
-| Lethariel (a capital with no WP13 cells) | 2.32 s | 2.67 s |
-| open land / the Dawnmere start | 0.57 s | 0.36 s |
+| Highcourt mapchunks | 94 | 84 |
+| steady mean | **0.53 s** | **0.57 s** |
+| Lethariel (a capital with no WP13 cells) | 2.32 s | 2.70 s |
 
 The contract's limit is "no more than 2× the ~0.5 s Dawnmere chunk". The
 capital's steady mean is at or below the open-land control on both seeds and
@@ -357,8 +357,8 @@ every WP13 fixture agrees:
 
 ```
 WP13 FINAL MICRO PAIR BYTE-IDENTICAL
-0f5872e4c337b78d39ed31711efc7f3a3296e30afc3ee57853d0e11d53d3d2b3  micro-luajit.tsv
-0f5872e4c337b78d39ed31711efc7f3a3296e30afc3ee57853d0e11d53d3d2b3  micro-puc51.tsv
+f31d4480a3a674499518b92a5e4fa037740fca2104f4a518be95be9acdf30db4  micro-luajit.tsv
+f31d4480a3a674499518b92a5e4fa037740fca2104f4a518be95be9acdf30db4  micro-puc51.tsv
 ```
 
 ### (b) Identity: what moved and what did not
@@ -384,8 +384,8 @@ WP13 FINAL MICRO PAIR BYTE-IDENTICAL
   load-time diagnostic walks every reference plot's perimeter, its two-node
   margin and its interior on a stride of two, and found nothing to say about any
   of the 52;
-- worst perimeter fall as built 6 (user seed) and 4 (boundary seed), **zero
-  submerged columns** on both;
+- worst perimeter fall as built 6 (`lore_sexton_garden`, user seed) and 5
+  (`market_well`, boundary seed), **zero submerged columns** on both;
 - the socket census the engine reports matches the KAT's exactly:
   `sockets=256 role_guard_patrol=56 role_guard_post=19 role_idle=134 role_king=1
   role_quest=2 role_vendor=7 role_waypoint=1 role_work=36`, nine patrol loops.
@@ -515,9 +515,187 @@ about the permutation, and always did; only the probe did not.
   walker selection and the profession stock tables are lane 5's
   (`grug_mobs`, `grug_traders`); this package places the positions and names the
   activities.
-- **The wall has no sockets.** Dur Brannoc's gate towers keep two-waypoint
-  watches published by the CORE's gatehouses, and Highcourt's core does the same
-  for its precinct gates. The ring's four gatehouses and fourteen turrets are
-  overlay geometry and an overlay publishes no landmarks, so nobody stands on the
-  rampart. Giving the ring a garrison needs a socket source that is not a
-  blueprint, which is a seam question and not this lane's.
+- **The wall has no sockets, and that is settled.** The ring's four gatehouses
+  and fourteen turrets are overlay geometry, and an overlay publishes no
+  landmarks, so nobody stands on the rampart. **The user ruled on 2026-09-15
+  that the wall stays and that no guards on the wall walk are needed**, so this
+  is not an open question any more and not a seam question to answer later: the
+  rampart is architecture. Should a later package want a garrison up there, it
+  needs a socket source that is not a blueprint — but nothing asks for one.
+
+## 9. The rebase onto the other four round-3 lanes
+
+Rebased from `main` 19abee02 onto **3a1e90c0** (bushes 2282422c, the lane/route
+crossing rule b8c28c41, the section-8 wording 658b6763, the NPC work lane
+a046434a, the capital terrain 3a1e90c0). Two commits conflicted, both additively,
+and both were resolved keeping BOTH sides.
+
+### 9.1 The terrain moved, and not one fill lot moved with it
+
+The terrace lane turned every capital riser into a band of one-block ground
+steps, so the field TSVs the districts package committed describe ground this
+world no longer has. **Both were re-dumped from the merged tree**
+(`run_highcourt.sh <out> field <seed>`) and are committed here; both differ from
+the districts package's.
+
+Against the new fields, `highcourt_plots.lua` says **all 36 lots and all 16 fill
+lots are still legal on both gate seeds**, and `--derive-fill` re-derives the
+committed fill table **cell for cell, with the same shifts and the same worst
+moves** — so no fill lot moved, and none had to. The one district lot the
+terrain lane itself moved (northwest 8, by four nodes) is main's and is carried
+through unchanged.
+
+What DID move is the margins, both ways. At zero margin on the new ground:
+
+| | fall = skirt 6 | rise = 6 |
+| --- | --- | --- |
+| district lots | northeast/9, northwest/8, southwest/5 | northeast/6, southwest/2, southwest/8 |
+| fill lots | northeast/3, southwest/1 | southeast/1, northeast/1, northeast/2 |
+
+Six district lots and five fill lots are now touching a limit that had slack
+before. They pass, and `audit_terrain` reports zero on both seeds, but this is
+the row a future terrain change breaks first — see §8's standing warning about
+the predicate answering against frozen fields.
+
+### 9.2 The wall does not obey the crossing rule
+
+The route lane made an overlay run ramp up to a bridge deck wherever a WP40
+route crosses it with less than three blocks of clearance, and the seam now
+hands **every** run of an overlay the `overhead(x, z)` callback that does it.
+My wall runs are runs of that same overlay.
+
+A curtain must not ramp. A wall that climbed to meet a deck would leave the
+ground it is founded on, which is precisely the gap `wall.lua`'s no-gap
+guarantee exists to make impossible — and unlike a road, a wall has no reason to
+be walkable over a route: it is masonry, and a route that crosses the envelope
+crosses it at a gate or not at all.
+
+**How it is ensured**, in two places rather than by hoping:
+
+1. `highcourt.overlay_run` copies the spec field by field WITHOUT `overhead`
+   before handing it to `wall.run`. `wall.lua` ignoring a field it never reads
+   is not the same promise as this file never giving it one.
+2. `highcourt_kat.lua` has the bite test. The same run is built twice — once
+   through `overlay_run` with an `overhead` that puts a deck two blocks over the
+   ground (under the module's own `MIN_CLEAR`, so a road must climb it) and once
+   with none — and the two cell lists must be identical, with the wall asking
+   the seam **zero** questions. The control in the same block proves the fixture
+   is not inert: the same overhead run through `avenue.run` registers 405
+   crossings and changes the road's cells.
+
+   ```
+   highcourt_wall_crossing  5331  0  499  498  405  827
+   ```
+
+   (wall cells, overhead questions the wall asked, control road cells plain and
+   lifted, crossings the control made, overhead questions in total.)
+
+### 9.3 The sockets are exercised at runtime now
+
+The NPC lane places profession vendors and work residents through the real
+placement path, and the engine enumerates EVERY registered settlement, so
+Highcourt's are live. From the engine pass on the user seed:
+
+```
+[grug_mobs] start npcs human highcourt: guards 28/28 flair 131/144 vendor 6/7
+            quest 2/2 new 2 pending 14 spare 26 residents 144 walkers 22
+```
+
+- **residents 144** — the KAT's own census exactly (108 idle spawn + 36 work).
+- **walkers 22**, which is **15.3 %** of 144 and inside §8.3's 10–30 % band.
+- **spare 26**, the ten in the core plus four per district.
+- **six of the seven vendor kinds seen standing at their counters**:
+  `vendor_race_human` at `vendor_race` and `vendor_general_accord` at
+  `vendor_general` in the core's service court, and four professions out in the
+  districts — `vendor_smith` at `market_workshop`, `vendor_butcher` at
+  `market_store`, `vendor_tailor` at `market_counting_house` and
+  `vendor_fishmonger` at `market_pond`, each at the counter its roster row
+  places it at.
+
+**THE SEVENTH IS THE BAKER, AND WHAT IS MISSING IS THE GROUND UNDER HIM, NOT
+THE SOCKET.** `homes_bakehouse` stands on southwest lot 8, world
+(−128, −1628), and **no socket of that plot is placed at all** — not the
+vendor, not the `stall` work socket, not even the gate idle. The engine's own
+denominator says the roster knows about all seven (`vendor 6/7`), and the
+`pending` count falls monotonically (63 → 43 → 28 → 16 → 14) and simply never
+reaches zero: placement is incremental, a few slots per heartbeat and only where
+the area is RESIDENT, while this probe emerges each mapchunk once and moves on.
+By the time the heartbeat reaches the bakehouse its block is unloaded again.
+
+A 180-second soak was tried and did not change that, which is the evidence for
+the diagnosis rather than against it: more time does not help a slot whose
+ground is not loaded. The gate that does cover the baker is the KAT, which holds
+his socket to every §8.1 rule including the counter under his `dir`.
+
+`run_highcourt.sh` keeps the soak as `WP13_HIGHCOURT_SOAK` — seconds of ordinary
+server time between the probe's report and its shutdown, **defaulting to zero**
+so every timing number the harness has ever published is taken under the
+programme it always was. Making the baker place needs the capital force-loaded,
+which is the new harness §9.4 declines to build.
+
+### 9.4 Why the NPC probe was not given a Highcourt mode
+
+`tools/wp13/npc_probe` takes `settlement_socket_settlements()[1]`, which is a
+START, and the coordinator asked whether it could be pointed at Highcourt
+instead. It could be made to, and it should not be, for a reason that is not the
+hard-coded index:
+
+- its readiness gate is `grug_core.start_ready(race_id)`, which is a statement
+  about the race's START. For Highcourt that is Dawnmere, 1 500 nodes away and
+  ready long before any capital chunk is emerged, so the probe would begin its
+  programme against an empty map;
+- its programme is built around a start's scale and its preload: it displaces
+  every NPC 40 nodes, samples the amble for three minutes and then reboots the
+  same world twice. A capital has no preload, 175 slots against a start's
+  fourteen, and an envelope no single emerge covers.
+
+Pointing it at a capital is therefore a new harness — force-load the core,
+replace the readiness gate, rescale the programme — and not a mode flag. The
+Highcourt engine pass already emerges the capital and logs the real placement
+engine's own census, which is what the questions of this round actually needed,
+so that is where §9.3's numbers come from.
+
+### 9.5 The section-8 wording changed under us, and the KAT was wrong
+
+The contract's `pray` feature became "the chapel's door, an altar, a candle or a
+grave marker", explicitly because the first wording ("any node of the chapel
+interior") contradicted the rule that a socket stands OUTSIDE a room — and this
+KAT had implemented the first wording, accepting the chapel's own walls and
+furniture. It does not any more: the `pray` set is lamps, grave markers, the
+signature stone and the door family, and `lore_chapel_yard`'s socket moved from
+facing the chapel's south wall to facing a grave the roster now sets
+unconditionally (`dressing.grave`), because `dressing.graveyard` scatters its
+markers on a position hash and leaves plots open — which is what a burial ground
+looks like and exactly what a socket may not depend on.
+
+The same revision added **"the feature search stops at the first solid node on
+the socket's own course"**, and that bit immediately: seven `tend` sockets faced
+a raised bed and saw its brick kerb, with the flowers two cells behind it. The
+rule is right — a feature behind a wall is not a feature — so the answer was to
+put the plant where the hands are. `dressing.plant` breaks the kerb at one cell
+and grows something there, and the seven sockets face that.
+
+`fish` is now capital-only, which Highcourt satisfies by construction: it is the
+only WP13 composition that writes water, and it writes it as a lined pond.
+
+### 9.6 One fixture of another lane needed a change
+
+`tools/wp13/seam_kat.lua`'s route-handoff section takes every name in the
+overlay's palette as a road surface and asserts the topmost such cell in a deck
+column stands at the route's grade. Two of this package's changes break that
+assumption without breaking the road:
+
+- the overlay palette now contains **`air`**, because `wall.palette_names`
+  declares it (a wall CLEARS; the walk's headroom and the gate passage are
+  authored air, and a name the content channel does not know only fails on the
+  mapchunk that finally needs it);
+- the avenues reach **261** instead of 256 so the road rides through the gate
+  tunnel, which moves the lamp phase, which put a **lamp standard** on the
+  stub's deck for the first time. A standard is two log posts and a torch and it
+  stands ON the carriageway, so the highest road-palette cell in that column was
+  the torch three courses up.
+
+The fixture now excludes air and the lamp vocabulary and measures paving, kerb
+and tread, which is what "the street stands at the route's grade" is a sentence
+about. This is the route lane's file and the change is four lines; it is called
+out here because it is not mine to own.
