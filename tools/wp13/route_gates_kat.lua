@@ -120,6 +120,51 @@ return function(repo)
 	end
 
 	-- -----------------------------------------------------------------------
+	-- 1b. The OTHER table that publishes the same twenty-four points
+	-- -----------------------------------------------------------------------
+	-- WP40 has two authored sources. `source/simple_map.lua` is what the live
+	-- mapgen loads (`grug_mapgen/init.lua`); `source/catalog.lua` is the
+	-- retired exact-topology catalog the T2 compiler reads, and it has carried
+	-- the same twenty-four coordinates since before this lane, as route
+	-- stations of kind `capital_gate` with ids `station:<zone>:capital_<side>`.
+	-- `wp13/highcourt.lua` cites THOSE ("the gate stations sit at +-256 on each
+	-- axis (WP40)").
+	--
+	-- Two tables and one truth is how a wave produces a silent divergence, so
+	-- this ties them together point for point. Neither is derived from the
+	-- other -- the catalog is frozen input to a different pipeline and this
+	-- lane may not edit it -- but they may not disagree, and if one ever moves
+	-- this is where it says so.
+	local catalog = dofile(wp40 .. "/source/catalog.lua")
+	local catalog_gates, catalog_count = {}, 0
+	for index = 1, #catalog.route_stations do
+		local row = catalog.route_stations[index]
+		if row.kind == "capital_gate" then
+			catalog_count = catalog_count + 1
+			local zone_id, side = row.id:match("^station:(.+):capital_(%a+)$")
+			assert(zone_id and side and row.gate_ref == "capital:" .. side,
+				"wp13 route gates: catalog capital_gate id differs at " .. row.id)
+			assert(row.zone_id == zone_id,
+				"wp13 route gates: catalog capital_gate zone differs at " .. row.id)
+			catalog_gates[zone_id .. ":" .. side] =
+				{x = row.position.x, z = row.position.z}
+		end
+	end
+	assert(catalog_count == 24, "wp13 route gates: source/catalog.lua publishes " ..
+		catalog_count .. " capital_gate stations, not 24")
+	for _, zone_numeric_id in ipairs(capital_order) do
+		local zone = capital_zone[zone_numeric_id]
+		for _, side in ipairs(SIDES) do
+			local gate = gate_by_key[zone_numeric_id .. ":" .. side[1]]
+			local other = catalog_gates[zone.id .. ":" .. side[1]]
+			assert(other and other.x == gate.x and other.z == gate.z,
+				"wp13 route gates: source/catalog.lua and source/simple_map.lua " ..
+					"disagree about " .. gate.id)
+		end
+	end
+	say("route_gate_catalog_agreement", catalog_count, 24)
+
+	-- -----------------------------------------------------------------------
 	-- 2, 3. The assignment and the straight approach
 	-- -----------------------------------------------------------------------
 	local APPROACH = 144
@@ -185,21 +230,44 @@ return function(repo)
 	-- -----------------------------------------------------------------------
 	-- 4. Nothing runs into the interior
 	-- -----------------------------------------------------------------------
-	-- The RULING itself. Every segment of a capital's gate leg is axial, so a
-	-- polyline whose points are all outside an envelope is a polyline that is
-	-- entirely outside it; the bowed legs never come near one. Spurs are walked
-	-- too, because a POI spur ends at its zone hub and a hub inside a capital
-	-- would be the same defect by another road.
-	local interior_faults = 0
+	-- The RULING itself, tested on SEGMENTS and not on points. Two points can
+	-- both lie outside a square and the segment between them still cut its
+	-- corner, and an earlier version of this KAT argued that away instead of
+	-- checking it ("every segment of a capital's gate leg is axial"). An
+	-- argument is not a check; a slab clip is eight comparisons.
+	--
+	-- Spurs are walked too, because a POI spur ends at its zone hub and a hub
+	-- inside a capital would be the same defect by another road.
+	--
+	-- The open envelope is |dx| < HALF and |dz| < HALF, so the closed box the
+	-- clip runs against is [-HALF+1, HALF-1] on both axes: a segment that only
+	-- touches the edge at exactly ±HALF is outside, which is where a gate is.
+	local function segment_enters(ax, az, bx, bz, min_x, max_x, min_z, max_z)
+		local lower, upper = 0, 1
+		local function slab(origin, delta, low, high)
+			if delta == 0 then return origin >= low and origin <= high end
+			local first, second = (low - origin) / delta, (high - origin) / delta
+			if first > second then first, second = second, first end
+			if first > lower then lower = first end
+			if second < upper then upper = second end
+			return lower <= upper
+		end
+		if not slab(ax, bx - ax, min_x, max_x) then return false end
+		if not slab(az, bz - az, min_z, max_z) then return false end
+		return lower <= upper
+	end
+
+	local interior_faults, segments_tested = 0, 0
 	for _, collection in ipairs({source.routes, source.poi_spurs}) do
 		for index = 1, #collection do
-			local row = collection[index]
-			for point_index = 1, #row.centreline do
-				local point = row.centreline[point_index]
+			local centreline = collection[index].centreline
+			for point_index = 1, #centreline - 1 do
+				local a, b = centreline[point_index], centreline[point_index + 1]
+				segments_tested = segments_tested + 1
 				for _, zone_numeric_id in ipairs(capital_order) do
 					local hub = capital_zone[zone_numeric_id].hub
-					if math.abs(point.x - hub.x) < HALF and
-							math.abs(point.z - hub.z) < HALF then
+					if segment_enters(a.x, a.z, b.x, b.z, hub.x - HALF + 1,
+							hub.x + HALF - 1, hub.z - HALF + 1, hub.z + HALF - 1) then
 						interior_faults = interior_faults + 1
 					end
 				end
@@ -207,8 +275,8 @@ return function(repo)
 		end
 	end
 	assert(interior_faults == 0, "wp13 route gates: " .. interior_faults ..
-		" route or spur point(s) lie inside a capital build envelope")
-	say("route_gate_interior_points", interior_faults)
+		" route or spur segment(s) enter a capital build envelope")
+	say("route_gate_interior_segments", segments_tested, interior_faults)
 
 	-- -----------------------------------------------------------------------
 	-- 5. Nothing else moved

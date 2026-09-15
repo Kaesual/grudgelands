@@ -717,10 +717,34 @@ return function(dependencies)
 							(gate.axis == "z" and neighbour.x ~= gate.position.x) then
 						fail("capital route gate pin differs at " .. index)
 					end
-					for point_index=1,#row.centreline do
-						local sample=row.centreline[point_index]
-						if math.abs(sample.x-zone.hub.x) < gate_half and
-								math.abs(sample.z-zone.hub.z) < gate_half then
+					-- SEGMENTS, not points: two points can both lie outside a
+					-- square and the chord between them still cut its corner. The
+					-- open envelope is |d| < gate_half, so the closed box this
+					-- clips against is [-gate_half+1, gate_half-1] and a segment
+					-- that only touches the edge at exactly +-gate_half -- which
+					-- is where a gate is -- is outside.
+					local min_x,max_x=zone.hub.x-gate_half+1,zone.hub.x+gate_half-1
+					local min_z,max_z=zone.hub.z-gate_half+1,zone.hub.z+gate_half-1
+					for point_index=1,#row.centreline-1 do
+						local a,b=row.centreline[point_index],row.centreline[point_index+1]
+						local lower,upper=0,1
+						local inside=true
+						for _, slab in ipairs({{a.x,b.x-a.x,min_x,max_x},
+								{a.z,b.z-a.z,min_z,max_z}}) do
+							if inside then
+								if slab[2] == 0 then
+									inside=slab[1] >= slab[3] and slab[1] <= slab[4]
+								else
+									local first=(slab[3]-slab[1])/slab[2]
+									local second=(slab[4]-slab[1])/slab[2]
+									if first > second then first,second=second,first end
+									if first > lower then lower=first end
+									if second < upper then upper=second end
+									inside=lower <= upper
+								end
+							end
+						end
+						if inside and lower <= upper then
 							fail("capital route enters the build envelope at " .. index)
 						end
 					end
