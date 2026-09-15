@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# The ONE combined engine gate for all six WP13 starts, run against the frozen
+# bytes of playtest round 1. Two seeds, one after the other, each a
+# full `run_engine.sh` pass: forward and reverse owner order, each with its own
+# cold world and its own disk-only reload, four digests that must all agree.
+#
+# This round lets biome decorations into the ten-node protection apron outside a
+# seed-deterministic jittered inner boundary. The per-start digest covers the
+# AUTHORED BLUEPRINT CELLS only (`tools/wp13/engine_cases.lua` hashes
+# `blueprint.cells` read back out of the map), so it must come out exactly as
+# round A recorded it, while the `_apron=` field beside it -- a cover census,
+# not part of the digest -- moves from 0/N to a real count.
+#
+# Isolation: the launcher refuses to start without an absolute scratch
+# `LUANTI_USER_PATH` and pins every XDG directory inside it, so no headless
+# server can touch the personal Flatpak folder the user's GUI client uses;
+# output goes to /tmp because the launcher mounts the repository read-only; each
+# seed is bounded by `timeout --kill-after`; and after each seed the process
+# table is checked for a server still naming THIS run's output path. Never
+# compare the whole `luanti.bin` PID set -- that would also catch the user's own
+# client and another lane's servers.
+set -euo pipefail
+export LC_ALL=C
+repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd -P)"
+cd "$repo"
+here="tools/wp13/evidence/20260915-apron-and-throne"
+launcher="$here/luanti-flatpak-launcher.sh"
+
+run_seed() {
+	local label="$1" seed="$2" port="$3"
+	local out="/tmp/grug-wp13-round-1-$label"
+	rm -rf -- "$out"
+	echo "== $label: seed $seed, ports $port =="
+	WP13_SEED="$seed" WP13_PORT_BASE="$port" WP40_PROFILE_TIMEOUT=600 \
+		timeout --kill-after=30 900 bash tools/wp13/run_engine.sh \
+		"$out" "$launcher"
+	local stragglers
+	stragglers="$(pgrep -af 'luanti.bin --server' | grep -F -- "$out" || true)"
+	[[ -z "$stragglers" ]] || {
+		printf 'a headless server was left behind:\n%s\n' "$stragglers" >&2
+		exit 4
+	}
+	echo "no $label server remains"
+	rm -rf -- "$repo/$here/$label"
+	mkdir -p "$repo/$here/$label"
+	cp -a "$out/." "$repo/$here/$label/"
+	rm -rf -- "$out"
+}
+
+# No argument runs both seeds, which is the gate. A single seed name re-runs just
+# that one, for a fix round that has already shown the other seed agrees.
+case "${1:-both}" in
+	both)
+		run_seed user-seed 531802985935182545 32900
+		run_seed boundary-seed 8675309 32940
+		echo "WP13 six-start engine gate: both seeds PASS"
+		;;
+	user-seed) run_seed user-seed 531802985935182545 32900 ;;
+	boundary-seed) run_seed boundary-seed 8675309 32940 ;;
+	*) echo "usage: engine.sh [both|user-seed|boundary-seed]" >&2; exit 2 ;;
+esac
