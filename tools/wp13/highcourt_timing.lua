@@ -8,8 +8,8 @@
 --     luajit tools/wp13/highcourt_timing.lua . luajit
 --     tools/bin/lua51 tools/wp13/highcourt_timing.lua . puc51
 --
--- Prints one TSV row per subject: the module load, one core construction, one
--- district construction (all nine plots) and the avenue overlay over a
+-- Prints one TSV row per subject: the module load, one core construction, the
+-- four districts (all thirty-six plots) and the avenue overlay over a
 -- 209-node run. Times are `os.clock` seconds, that is CPU time, reported as
 -- milliseconds with three digits; the row also carries the cell counts, so a
 -- later run can be compared per cell as well as per build.
@@ -45,9 +45,14 @@ started = os.clock()
 local again = highcourt.core()
 local core_again = os.clock() - started
 
+-- All four districts, thirty-six plots, in the order the capital source hands
+-- them to the seam. The offsets are this run's canonical assignment and do not
+-- matter here: a plot's cells are the same wherever it stands.
+local districts_module = dofile(wp13 .. "/highcourt_districts.lua")(wp13)
+local district_roster = districts_module.resolve()
 started = os.clock()
 local district_cells = 0
-for _, entry in ipairs(highcourt.district.plots) do
+for _, entry in ipairs(district_roster) do
 	district_cells = district_cells + #entry.build().cells
 end
 local district_time = os.clock() - started

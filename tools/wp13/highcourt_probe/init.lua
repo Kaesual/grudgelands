@@ -41,8 +41,8 @@ local timeout_seconds =
 local function fail(message)
 	error("grug_wp13_highcourt_probe: " .. message, 0)
 end
-if mode ~= "surface" and mode ~= "full" and mode ~= "scan" then
-	fail("mode must be surface, scan or full")
+if mode ~= "surface" and mode ~= "full" and mode ~= "field" then
+	fail("mode must be surface, field or full")
 end
 
 local function log(fields)
@@ -89,6 +89,8 @@ local plots = {}
 for index = 1, #source.plots do
 	local plot = source.plots[index]
 	plots[index] = {id = plot.id, x = plot.x, z = plot.z,
+		district = plot.district, role = plot.role, quadrant = plot.quadrant,
+		lot = plot.lot,
 		composition = timed("plot_" .. plot.id, plot.build)}
 end
 local overlay = source.overlay
@@ -169,60 +171,47 @@ local function surface_report()
 			submerged,
 			submerged_count(origin_x, origin_z, bounds, PLOT_MARGIN),
 			tostring(wet(origin_x + reference.x, origin_z + reference.z)),
-			bounds.max.y, columns}, "\t") .. "\n"
+			-- The airspace the plot CLEARED, not the top of its bounds: a
+			-- lamp post or a fruit tree written after the clear reaches
+			-- above it, so the bounds would credit headroom nobody cut.
+			plot.composition.clear_to or bounds.max.y, columns}, "\t") .. "\n"
 	end
 	return table.concat(rows), worst_fall, worst_plot, worst_wet, worst_wet_plot
 end
 
--- A candidate sweep for a plot that has to be MOVED: the perimeter fall and
--- rise its footprint would see at every position on a coarse grid of the
--- capital's own quadrant. Two seeds' sweeps intersected is what decides a new
--- position, because a plot that only stands on one world's terrain has not been
--- fixed. The geometric constraints (envelope, gate corridors, street runs, the
--- other plots) are applied afterwards, outside the engine, where the whole
--- composition is in one place.
-local function scan_report()
-	local rows = {"plot\tx\tz\tperimeter_fall\tperimeter_rise" ..
-		"\tsubmerged\tsubmerged_margin\treference_wet\tclear_to\n"}
-	for index = 1, #plots do
-		local plot = plots[index]
-		local bounds = plot.composition.bounds
-		local reference = plot.composition.reference
-		for z = -96, 96, 4 do
-			for x = 52, 204, 4 do
-				local origin_x, origin_z = anchor_x + x, anchor_z + z
-				local reference_y = grug_zones.terrain_height_at(
-					origin_x + reference.x, origin_z + reference.z)
-				local edge_min, edge_max = reference_y, reference_y
-				local submerged = 0
-				for ez = bounds.min.z, bounds.max.z do
-					for ex = bounds.min.x, bounds.max.x do
-						if wet(origin_x + ex, origin_z + ez) then
-							submerged = submerged + 1
-						end
-						if ex == bounds.min.x or ex == bounds.max.x or
-								ez == bounds.min.z or ez == bounds.max.z then
-							local y = grug_zones.terrain_height_at(origin_x + ex,
-								origin_z + ez)
-							if y < edge_min then edge_min = y end
-							if y > edge_max then edge_max = y end
-						end
-					end
-				end
-				-- The margin ring is only counted when the footprint itself is dry,
-				-- because a wet footprint is already refused and the ring costs
-				-- another 200 queries per candidate.
-				local margin = -1
-				if submerged == 0 then
-					margin = submerged_count(origin_x, origin_z, bounds, PLOT_MARGIN)
-				end
-				rows[#rows + 1] = table.concat({plot.id, x, z,
-					reference_y - edge_min, edge_max - reference_y,
-					submerged, margin,
-					tostring(wet(origin_x + reference.x, origin_z + reference.z)),
-					bounds.max.y}, "\t") .. "\n"
-			end
+-- THE WHOLE FIELD, once.
+--
+-- The seam package's candidate sweep answered "where may THIS plot stand", and
+-- it answered it by re-reading the same terrain column once per candidate
+-- position per plot: one quadrant's 39 x 49 grid cost a plot two million
+-- queries, and the districts increment has four districts to place in four
+-- quadrants. The field is the same two numbers per column whoever asks, so
+-- `field_report` reads it ONCE -- the pure final height and whether the map
+-- calls the column land -- over the whole capital envelope, and every plot
+-- question becomes arithmetic on an array outside the engine
+-- (`tools/wp13/highcourt_plots.lua`). The sweep mode is gone with it.
+--
+-- One line per z row: the row's z, then the heights for x = -reach..reach
+-- separated by spaces, then the same number of `0`/`1` land flags as one
+-- string. That is about a megabyte per seed, it is re-derivable by a reviewer
+-- in one boot, and it turns the four-quadrant legality question from four
+-- engine runs into a table lookup.
+local FIELD_REACH = 250
+local function field_report()
+	local rows = {"# grug_wp13_highcourt_field_v1 reach=" .. FIELD_REACH ..
+		" anchor=" .. anchor_x .. "," .. anchor_y .. "," .. anchor_z .. "\n",
+		"# z\theights(x=-reach..reach)\tland(1=land)\n"}
+	local heights, land = {}, {}
+	for z = -FIELD_REACH, FIELD_REACH do
+		local count = 0
+		for x = -FIELD_REACH, FIELD_REACH do
+			count = count + 1
+			heights[count] = grug_zones.terrain_height_at(anchor_x + x, anchor_z + z)
+			land[count] = (grug_zones.water_class_at(anchor_x + x, anchor_z + z) ==
+				"land") and "1" or "0"
 		end
+		rows[#rows + 1] = z .. "\t" .. table.concat(heights, " ", 1, count) ..
+			"\t" .. table.concat(land, "", 1, count) .. "\n"
 	end
 	return table.concat(rows)
 end
@@ -530,10 +519,19 @@ run_dumps = function()
 end
 
 local function finish()
-	local plot = plots[1]
-	local plot_base = grug_zones.terrain_height_at(
-		anchor_x + plot.x + plot.composition.reference.x,
-		anchor_z + plot.z + plot.composition.reference.z)
+	-- One plot per DISTRICT, and each is the plot that took its quadrant's
+	-- first lot: four dumps where the pilot lane had one, because a district
+	-- standing on its own terraced quarter is exactly the thing the four
+	-- composition renders cannot show.
+	local shown, shown_by_district = {}, {}
+	for index = 1, #plots do
+		local plot = plots[index]
+		if plot.district and not shown_by_district[plot.district] then
+			shown_by_district[plot.district] = true
+			shown[#shown + 1] = plot
+		end
+	end
+	if #shown == 0 then shown[1] = plots[1] end
 	-- The east avenue over the terraces, plus the ring street crossing it.
 	local avenue_low, avenue_high = anchor_y, anchor_y
 	for x = 40, 260, 4 do
@@ -550,15 +548,6 @@ local function finish()
 			max_y = anchor_y + core_bounds.max.y,
 			min_z = anchor_z + core_bounds.min.z,
 			max_z = anchor_z + core_bounds.max.z},
-		{name = "highcourt-plot.tsv", label = "plot",
-			header = "Highcourt district plot " .. plot.id ..
-				" as built, anchor-relative",
-			min_x = anchor_x + plot.x + plot_bounds.min.x,
-			max_x = anchor_x + plot.x + plot_bounds.max.x,
-			min_y = plot_base + plot_bounds.min.y,
-			max_y = plot_base + plot_bounds.max.y,
-			min_z = anchor_z + plot.z + plot_bounds.min.z,
-			max_z = anchor_z + plot.z + plot_bounds.max.z},
 		{name = "highcourt-avenue.tsv", label = "avenue",
 			header = "Highcourt east avenue as built over the terraces, " ..
 				"anchor-relative",
@@ -566,6 +555,24 @@ local function finish()
 			min_y = avenue_low - 6, max_y = avenue_high + 6,
 			min_z = anchor_z - 12, max_z = anchor_z + 12},
 	}
+	for index = 1, #shown do
+		local plot = shown[index]
+		local base = grug_zones.terrain_height_at(
+			anchor_x + plot.x + plot.composition.reference.x,
+			anchor_z + plot.z + plot.composition.reference.z)
+		dump_queue[#dump_queue + 1] = {
+			name = "highcourt-plot-" .. index .. ".tsv",
+			label = "plot_" .. plot.id,
+			header = "Highcourt district plot " .. plot.id .. " (" ..
+				tostring(plot.district) .. ", " .. tostring(plot.quadrant) ..
+				") as built, anchor-relative",
+			min_x = anchor_x + plot.x + plot_bounds.min.x,
+			max_x = anchor_x + plot.x + plot_bounds.max.x,
+			min_y = base + plot_bounds.min.y,
+			max_y = base + plot_bounds.max.y,
+			min_z = anchor_z + plot.z + plot_bounds.min.z,
+			max_z = anchor_z + plot.z + plot_bounds.max.z}
+	end
 	run_dumps()
 end
 
@@ -605,23 +612,40 @@ core.register_on_mods_loaded(function()
 		"anchor=" .. anchor_x .. "," .. anchor_y .. "," .. anchor_z,
 		"mode=" .. mode,
 		"build_us=" .. table.concat(build_us, ",")})
+	-- WHICH DISTRICT STANDS WHERE, on this world. It is a permutation of the
+	-- world seed (`wp13/highcourt_quadrants.lua`), so it is the one thing
+	-- about the capital that two seeds legitimately disagree about, and the
+	-- log is where a reviewer reads it back.
+	if type(source.districts) == "table" and
+			type(source.districts.assignment) == "table" then
+		local rows = {}
+		for role, placement in pairs(source.districts.assignment) do
+			rows[#rows + 1] = role .. "=" .. placement.quadrant
+		end
+		table.sort(rows)
+		log({"event=districts", "assignment=" .. table.concat(rows, ",")})
+	end
+	for index = 1, #plots do
+		local plot = plots[index]
+		log({"event=plot", "id=" .. plot.id,
+			"district=" .. tostring(plot.district),
+			"quadrant=" .. tostring(plot.quadrant),
+			"lot=" .. tostring(plot.lot),
+			"x=" .. plot.x, "z=" .. plot.z,
+			"world=" .. (anchor_x + plot.x) .. "," .. (anchor_z + plot.z)})
+	end
 	log({"event=build"})
 	for index = 1, #build_us do
 		log({"event=build_time", build_us[index]})
 	end
 	for index = 1, #sockets do log({"event=socket", sockets[index]}) end
-	if mode == "scan" then
-		local file = assert(io.open(worldpath .. "/highcourt-scan.tsv", "wb"))
-		file:write(scan_report())
+	if mode == "field" then
+		local file = assert(io.open(worldpath .. "/highcourt-field.tsv", "wb"))
+		file:write(field_report())
 		assert(file:close())
-		local surface_text = surface_report()
-		local surface_file = assert(io.open(worldpath .. "/highcourt-surface.tsv",
-			"wb"))
-		surface_file:write(surface_text)
-		assert(surface_file:close())
-		log({"event=complete", "mode=scan"})
+		log({"event=complete", "mode=field", "reach=" .. FIELD_REACH})
 		finished = true
-		core.request_shutdown("WP13 Highcourt scan complete", false, 0.2)
+		core.request_shutdown("WP13 Highcourt field dump complete", false, 0.2)
 		return
 	end
 	if mode == "surface" then

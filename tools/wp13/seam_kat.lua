@@ -434,20 +434,29 @@ return function(repo)
 	-- A plot is projected from its reference column, not from the anchor. The
 	-- stub height field is not flat, so a plot whose reference column answers a
 	-- height other than the anchor's must land at that height.
+	--
+	-- WHICH plot is picked matters, and only in one way: it has to be one the
+	-- stub field puts at a height that is NOT the anchor's, or the projection
+	-- it is meant to demonstrate is invisible. A capital owns 36 of them and
+	-- the stub field is a coarse terrace, so several land on the anchor's own
+	-- height by coincidence; the first that does not is the one to walk.
 	local plot_index
 	for index = 1, #prepared.blueprints do
-		if prepared.blueprints[index].descriptor.kind == "reference" then
-			plot_index = plot_index or index
+		local candidate = prepared.blueprints[index]
+		if plot_index == nil and candidate.descriptor.kind == "reference" then
+			local offset = candidate.descriptor.offset
+			local height = stub_height(anchor.x + offset.x + candidate.reference.x,
+				anchor.z + offset.z + candidate.reference.z)
+			if height ~= anchor.y then plot_index = index end
 		end
 	end
+	assert(plot_index, "the stub height field puts every plot at the anchor's " ..
+		"own height, which would make the projection unobservable")
 	local plot = prepared.blueprints[plot_index]
 	local descriptor = plot.descriptor
 	local plot_x = anchor.x + descriptor.offset.x
 	local plot_z = anchor.z + descriptor.offset.z
 	local base = stub_height(plot_x + plot.reference.x, plot_z + plot.reference.z)
-	assert(base ~= anchor.y,
-		"the stub height field puts this plot at the anchor's own height, " ..
-		"which would make the projection unobservable")
 	local plot_written = owner(tail, owner_origin(plot_x), owner_origin(base),
 		owner_origin(plot_z), 2)
 	local found = 0

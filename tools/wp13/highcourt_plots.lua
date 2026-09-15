@@ -1,110 +1,163 @@
 -- Where a Highcourt district plot may stand, and where it may not.
 --
---     luajit tools/wp13/highcourt_plots.lua <repo> <scan-a.tsv> <scan-b.tsv>
---     luajit tools/wp13/highcourt_plots.lua <repo> <scan-a.tsv> <scan-b.tsv> --sweep
+--     luajit tools/wp13/highcourt_plots.lua <repo> <field-a.tsv> <field-b.tsv>
+--     luajit tools/wp13/highcourt_plots.lua <repo> <field-a.tsv> <field-b.tsv> --derive
 --
--- The default run VERIFIES the positions `wp13/highcourt_district.lua`
--- currently carries, against every rule below, on both worlds at once. `--sweep`
--- additionally lists the best legal candidates per plot, which is how a plot
--- that has to move finds its new home.
+-- The default run VERIFIES the 36 lots `wp13/highcourt_quadrants.lua` carries
+-- and the 36 plots the four districts build, against every rule below, on two
+-- worlds at once. `--derive` re-runs the search that produced those lots, so
+-- the committed table is re-derivable rather than remembered.
 --
 -- WHY THIS IS A COMMITTED TOOL AND NOT A SCRATCH SCRIPT. The first version of
--- the seam package moved two plots with an ad-hoc sweep that asked one question
--- -- "where is the ground flattest?" -- and the answer inside a terraced capital
--- envelope is THE RIVER BED. Both plots landed in the water, on both gate seeds,
--- and nothing in the tree could say so: the surface probe measured terrain
--- height only, the composition KAT has no terrain at all, and the settlement
--- seam is deliberately water-agnostic. The predicate belongs in one place that
--- can be re-run and read, and this is it.
+-- the seam package moved two plots with an ad-hoc sweep that asked one
+-- question -- "where is the ground flattest?" -- and the answer inside a
+-- terraced capital envelope is THE RIVER BED. Both plots landed in the water,
+-- on both gate seeds, and nothing in the tree could say so: the surface probe
+-- measured terrain height only, the composition KAT has no terrain at all,
+-- and the settlement seam is deliberately water-agnostic. The predicate
+-- belongs in one place that can be re-run and read, and this is it.
+--
+-- WHAT CHANGED WITH THE FOUR DISTRICTS. The question is no longer "where may
+-- THIS plot stand". Four districts stand in four quadrants and the world seed
+-- decides which in which, so the thing that has to be legal is a LOT -- a
+-- position that carries ANY district's plot -- and legality is therefore
+-- asked once, against one envelope, for all 36 of them. The plot side of the
+-- same rule is checked here too and in `highcourt_kat.lua`: every plot fits
+-- inside +-13 of its lot origin and clears at least 8 nodes of airspace.
 --
 -- THE RULES, in the order they refuse:
 --
---   1. DRY. Not one column of the plot's footprint may be water, and neither
---      may its two-node margin, and neither may its reference column. A plot
---      is not a pier.
---   2. STANDS ON ITS OWN GROUND. The fall under the plot's PERIMETER, measured
---      from its reference column, may not exceed the foundation skirt (6), on
---      either seed; the perimeter is what the skirt carries down.
---   3. FITS UNDER ITS OWN ROOF. The rise under the footprint may not exceed the
---      airspace the plot clears (its own `bounds.max.y`), on either seed.
+--   1. DRY. Not one column of the lot's +-13 footprint may be water, and
+--      neither may its two-node margin. A plot is not a pier.
+--   2. STANDS ON ITS OWN GROUND. The fall under the footprint's PERIMETER,
+--      measured from the lot's own reference column, may not exceed the
+--      foundation skirt (6), on either seed; the perimeter is what the skirt
+--      carries down.
+--   3. FITS UNDER ITS OWN ROOF. The rise under the footprint may not exceed
+--      6, on either seed, against an airspace clear of at least 8.
 --   4. INSIDE THE ENVELOPE, one node clear of the gate stations at +-256.
---   5. OFF THE CORE, off all four 32-node gate corridors, off all eight street
---      runs (carriageway plus verge), and one node clear of every other plot.
+--   5. OFF THE CORE, off all four 32-node gate corridors, off all eight
+--      street runs (carriageway plus verge), inside its OWN quarter, and a
+--      lane of 8 clear of every other lot of every other quadrant.
 --
--- The scan TSVs come from `tools/wp13/run_highcourt.sh <out> scan <seed>`; the
--- two must be different seeds, which this tool checks by refusing two files
--- whose values are identical everywhere.
+-- The field TSVs come from `tools/wp13/run_highcourt.sh <out> field <seed>`:
+-- the pure final height and the land/water class of every column of the
+-- capital's envelope, read once. The two must be different seeds, which this
+-- tool checks by refusing two files whose heights are identical everywhere.
 --
 -- Plain Lua 5.1.
 
 local repo = assert(arg[1], "repository root required")
-local scan_a = assert(arg[2], "first scan TSV required")
-local scan_b = assert(arg[3], "second scan TSV required")
-local sweep = arg[4] == "--sweep"
-
-local SKIRT = 6
-local MARGIN = 2
-local GATE_CORRIDOR = 16      -- half of WP40's 32-node gate corridor
-local ENVELOPE = 250          -- the 512 envelope, one node clear of the gates
-local CORE = 48               -- the core's own +-47 plus a node of street
+local field_a = assert(arg[2], "first field TSV required")
+local field_b = assert(arg[3], "second field TSV required")
+local derive = arg[4] == "--derive"
 
 local wp13 = repo .. "/mods/MAPGEN/grug_mapgen/wp13"
 local avenue = dofile(wp13 .. "/avenue.lua")(wp13)
 local highcourt = dofile(wp13 .. "/highcourt.lua")(wp13)
+local quadrants = dofile(wp13 .. "/highcourt_quadrants.lua")()
+local districts = dofile(wp13 .. "/highcourt_districts.lua")(wp13)
 
-local function read(path)
-	local rows, count = {}, 0
+local LOT = quadrants.LOT
+local ENVELOPE = 250 - LOT.reach - LOT.margin   -- one node clear of the gates
+local CORE = 48                                 -- the core's own +-47 plus a node
+
+local function read_field(path)
 	local file = assert(io.open(path, "r"), "cannot read " .. path)
-	local header = file:read("*l")
-	assert(header and header:find("submerged", 1, true),
-		path .. " has no submerged column; re-run the scan with a probe that " ..
-		"measures water")
+	local reach
+	local heights, land = {}, {}
+	local rows = 0
 	for line in file:lines() do
-		local id, x, z, fall, rise, submerged, margin, wet_reference =
-			line:match("^(%S+)\t(%-?%d+)\t(%-?%d+)\t(%-?%d+)\t(%-?%d+)\t" ..
-				"(%-?%d+)\t(%-?%d+)\t(%a+)")
-		assert(id, "unreadable scan row: " .. line)
-		rows[id] = rows[id] or {}
-		rows[id][x .. ":" .. z] = {fall = tonumber(fall), rise = tonumber(rise),
-			submerged = tonumber(submerged), margin = tonumber(margin),
-			wet_reference = wet_reference == "true"}
-		count = count + 1
+		if line:sub(1, 1) == "#" then
+			local value = line:match("reach=(%d+)")
+			if value then reach = tonumber(value) end
+		elseif line ~= "" then
+			local z, numbers, flags = line:match("^(%-?%d+)\t(.-)\t([01]+)$")
+			assert(z, "unreadable field row: " .. line:sub(1, 40))
+			z = tonumber(z)
+			local row, count = {}, 0
+			for number in numbers:gmatch("%-?%d+") do
+				count = count + 1
+				row[count] = tonumber(number)
+			end
+			assert(count == #flags, "field row " .. z .. " is ragged")
+			heights[z], land[z] = row, flags
+			rows = rows + 1
+		end
 	end
 	file:close()
-	assert(count > 0, path .. " is empty")
-	return rows, count
+	assert(reach, path .. " has no reach header; re-run the field dump")
+	assert(rows == 2 * reach + 1, path .. " is not a whole field")
+	return {reach = reach, heights = heights, land = land}
 end
 
-local a, count_a = read(scan_a)
-local b, count_b = read(scan_b)
-assert(count_a == count_b, "the two scans do not cover the same grid")
+local a = read_field(field_a)
+local b = read_field(field_b)
+assert(a.reach == b.reach, "the two fields do not cover the same envelope")
 do
 	local differs = false
-	for id, cells in pairs(a) do
-		for key, row in pairs(cells) do
-			local other = b[id] and b[id][key]
-			assert(other, "the two scans do not cover the same grid")
-			if other.fall ~= row.fall or other.submerged ~= row.submerged then
-				differs = true
+	for z = -a.reach, a.reach do
+		if not differs then
+			for x = 1, 2 * a.reach + 1 do
+				if a.heights[z][x] ~= b.heights[z][x] then differs = true end
 			end
 		end
 	end
-	assert(differs, "the two scans are the same world; use two different seeds")
+	assert(differs, "the two fields are the same world; use two different seeds")
 end
 
--- The plots, built once, with the footprint the ground fill actually covers.
-local plots = {}
-for index = 1, #highcourt.district.plots do
-	local entry = highcourt.district.plots[index]
-	local composition = entry.build()
-	plots[index] = {id = entry.id, x = entry.x, z = entry.z,
-		bounds = composition.bounds, clear_to = composition.bounds.max.y}
+local function height_at(field, x, z)
+	return field.heights[z][x + field.reach + 1]
+end
+local function is_land(field, x, z)
+	return field.land[z]:byte(x + field.reach + 1) == 49   -- "1"
+end
+
+-- The terrain half of the predicate, on ONE world: nil when the position is
+-- refused, otherwise the perimeter fall and the footprint rise.
+local function terrain(field, x, z)
+	local reach, margin = LOT.reach, LOT.margin
+	if math.abs(x) + reach + margin > field.reach or
+			math.abs(z) + reach + margin > field.reach then
+		return nil, "envelope"
+	end
+	for row = z - reach - margin, z + reach + margin do
+		for column = x - reach - margin, x + reach + margin do
+			if not is_land(field, column, row) then return nil, "water" end
+		end
+	end
+	local reference = height_at(field, x, z)
+	local lowest, highest = reference, reference
+	for row = z - reach, z + reach do
+		for column = x - reach, x + reach do
+			local y = height_at(field, column, row)
+			if y > highest then highest = y end
+			if (row == z - reach or row == z + reach or
+					column == x - reach or column == x + reach) and
+					y < lowest then
+				lowest = y
+			end
+		end
+	end
+	local fall, rise = reference - lowest, highest - reference
+	if fall > LOT.fall then return nil, "fall:" .. fall end
+	if rise > LOT.rise then return nil, "rise:" .. rise end
+	return fall, rise
+end
+
+local function both(x, z)
+	local fall_a, rise_a = terrain(a, x, z)
+	if not fall_a then return nil, "a:" .. tostring(rise_a) end
+	local fall_b, rise_b = terrain(b, x, z)
+	if not fall_b then return nil, "b:" .. tostring(rise_b) end
+	return math.max(fall_a, fall_b), math.max(rise_a, rise_b)
 end
 
 -- The eight street runs, carriageway plus a verge column either side: that is
 -- the width the overlay actually writes.
 local runs = {}
-for _, list in ipairs({highcourt.avenues, highcourt.ring}) do
+for _, list in ipairs({highcourt.avenues, highcourt.ring,
+		quadrants.lane_runs()}) do
 	for index = 1, #list do
 		local run = list[index]
 		local half = (avenue.WIDTH - 1) / 2 + 1
@@ -120,198 +173,176 @@ end
 
 local function overlaps(a1, a2, b1, b2) return a1 <= b2 and b1 <= a2 end
 
--- Geometry only: everything that can be decided without terrain.
-local function geometry(plot, x, z, moving)
-	local min_x, max_x = x + plot.bounds.min.x, x + plot.bounds.max.x
-	local min_z, max_z = z + plot.bounds.min.z, z + plot.bounds.max.z
-	if min_x < -ENVELOPE or max_x > ENVELOPE or min_z < -ENVELOPE or
-			max_z > ENVELOPE then
+-- Geometry only: everything that can be decided without terrain. `turns` says
+-- which quadrant the lot belongs to, because "inside its own quarter" is the
+-- one rule that is not symmetric in the lot alone.
+local function geometry(x, z, turns, placed)
+	local reach = LOT.reach
+	local min_x, max_x, min_z, max_z = x - reach, x + reach, z - reach, z + reach
+	if min_x < -ENVELOPE - reach or max_x > ENVELOPE + reach or
+			min_z < -ENVELOPE - reach or max_z > ENVELOPE + reach then
 		return false, "envelope"
 	end
 	if overlaps(min_x, max_x, -CORE, CORE) and
 			overlaps(min_z, max_z, -CORE, CORE) then
 		return false, "core"
 	end
-	if overlaps(min_z, max_z, -GATE_CORRIDOR, GATE_CORRIDOR) then
-		return false, "gate_corridor_x"
+	local qx, qz = quadrants.rotate(x, z, 4 - turns)
+	if qx - reach < LOT.quarter or qz + reach > -LOT.quarter then
+		return false, "quarter"
 	end
-	if overlaps(min_x, max_x, -GATE_CORRIDOR, GATE_CORRIDOR) then
-		return false, "gate_corridor_z"
-	end
+	if overlaps(min_z, max_z, -16, 16) then return false, "gate_corridor_x" end
+	if overlaps(min_x, max_x, -16, 16) then return false, "gate_corridor_z" end
 	for _, run in ipairs(runs) do
 		if overlaps(min_x, max_x, run.min_x, run.max_x) and
 				overlaps(min_z, max_z, run.min_z, run.max_z) then
 			return false, "street:" .. run.id
 		end
 	end
-	for _, other in ipairs(plots) do
-		if other.id ~= moving and
-				overlaps(min_x, max_x, other.x + other.bounds.min.x - 1,
-					other.x + other.bounds.max.x + 1) and
-				overlaps(min_z, max_z, other.z + other.bounds.min.z - 1,
-					other.z + other.bounds.max.z + 1) then
-			return false, "plot:" .. other.id
+	for _, other in ipairs(placed or {}) do
+		if overlaps(min_x, max_x, other.x - reach - LOT.lane,
+				other.x + reach + LOT.lane) and
+				overlaps(min_z, max_z, other.z - reach - LOT.lane,
+					other.z + reach + LOT.lane) then
+			return false, "lot:" .. other.id
 		end
 	end
 	return true
 end
 
--- Terrain, on BOTH worlds. A position legal on one seed and not the other is
--- not legal.
-local function terrain(plot, x, z)
-	local key = x .. ":" .. z
-	local first, second = a[plot.id] and a[plot.id][key], b[plot.id] and b[plot.id][key]
-	if not first or not second then return false, "unscanned" end
-	for _, row in ipairs({first, second}) do
-		if row.wet_reference then return false, "reference_in_water" end
-		if row.submerged > 0 then
-			return false, "submerged:" .. row.submerged
-		end
-		if row.margin > 0 then return false, "margin_in_water:" .. row.margin end
-		if row.fall > SKIRT then return false, "fall:" .. row.fall end
-		if row.rise > plot.clear_to then return false, "rise:" .. row.rise end
-	end
-	return true, nil, math.max(first.fall, second.fall),
-		math.max(first.rise, second.rise)
-end
+----------------------------------------------------------------------
+-- Verify
+----------------------------------------------------------------------
 
 local failures = 0
-io.write("plot\tx\tz\tverdict\tworst_fall\tworst_rise\tsubmerged_a" ..
-	"\tsubmerged_b\n")
-for _, plot in ipairs(plots) do
-	local ok, why = geometry(plot, plot.x, plot.z, plot.id)
-	local fall, rise = "-", "-"
-	if ok then
-		local measured_fall, measured_rise
-		ok, why, measured_fall, measured_rise = terrain(plot, plot.x, plot.z)
-		fall = measured_fall or "-"
-		rise = measured_rise or "-"
-	end
-	local key = plot.x .. ":" .. plot.z
-	local first = a[plot.id] and a[plot.id][key]
-	local second = b[plot.id] and b[plot.id][key]
-	if not ok then failures = failures + 1 end
-	io.write(table.concat({plot.id, plot.x, plot.z,
-		ok and "legal" or ("ILLEGAL " .. tostring(why)), fall, rise,
-		first and first.submerged or "-", second and second.submerged or "-"},
-		"\t"), "\n")
-end
-
--- `--assign` proposes a whole district at once: every plot that is already
--- legal and comfortable keeps its authored position, and every plot that is not
--- takes the NEAREST one that is, with the plots already placed blocking the
--- ground they stand on. Nearest, not flattest: the authored layout is a design,
--- and the first version of this package lost it by sorting on flatness alone.
---
--- "Comfortable" is a margin on both terrain rules: a fall of at most four
--- against a skirt of six, and a rise at least two nodes under the plot's own
--- airspace clear, so a plot is not one node from failing on the next seed.
-local COMFORT_FALL = 4
-local COMFORT_RISE_MARGIN = 2
-
-if arg[4] == "--assign" then
-	local taken = {}
-	local function blocked(plot, x, z)
-		local min_x, max_x = x + plot.bounds.min.x, x + plot.bounds.max.x
-		local min_z, max_z = z + plot.bounds.min.z, z + plot.bounds.max.z
-		for _, box in ipairs(taken) do
-			if overlaps(min_x, max_x, box.min_x, box.max_x) and
-					overlaps(min_z, max_z, box.min_z, box.max_z) then
-				return true
+io.write("== the 36 lots\n")
+io.write("quadrant\tlot\tx\tz\tverdict\tworst_fall\tworst_rise\n")
+local placed = {}
+for turns = 0, 3 do
+	local name = quadrants.QUADRANTS[turns + 1]
+	for index, lot in ipairs(quadrants.LOTS[name]) do
+		local id = name .. "/" .. index
+		local ok, why = geometry(lot.x, lot.z, turns, placed)
+		local fall, rise = "-", "-"
+		if ok then
+			local measured_fall, measured_rise = both(lot.x, lot.z)
+			if measured_fall then
+				fall, rise = measured_fall, measured_rise
+			else
+				ok, why = false, measured_rise
 			end
 		end
-		return false
+		if not ok then failures = failures + 1 end
+		io.write(table.concat({name, index, lot.x, lot.z,
+			ok and "legal" or ("ILLEGAL " .. tostring(why)), fall, rise},
+			"\t"), "\n")
+		placed[#placed + 1] = {id = id, x = lot.x, z = lot.z}
 	end
-	-- The legality rule is one node of gap; a DISTRICT wants more than that, or
-	-- two plots read as one building with a seam in it. Six is the width of a
-	-- lane between them, which is what the authored layout has.
-	local DISTRICT_GAP = 6
-	local function keep(plot, x, z)
-		taken[#taken + 1] = {min_x = x + plot.bounds.min.x - DISTRICT_GAP,
-			max_x = x + plot.bounds.max.x + DISTRICT_GAP,
-			min_z = z + plot.bounds.min.z - DISTRICT_GAP,
-			max_z = z + plot.bounds.max.z + DISTRICT_GAP}
+end
+
+io.write("\n== the 36 plots against the lot envelope\n")
+io.write("plot\tdistrict\tquadrant\tlot\tverdict\tx_reach\tz_reach\tclear\n")
+for _, entry in ipairs(districts.resolve()) do
+	local composition = entry.build()
+	local bounds = composition.bounds
+	local x_reach = math.max(math.abs(bounds.min.x), math.abs(bounds.max.x))
+	local z_reach = math.max(math.abs(bounds.min.z), math.abs(bounds.max.z))
+	local clear = composition.clear_to
+	local verdict = "fits"
+	if x_reach > LOT.reach or z_reach > LOT.reach then
+		verdict = "WIDER THAN THE LOT"
+	elseif clear < LOT.clear then
+		verdict = "CLEARS TOO LITTLE"
 	end
-	local function comfortable(plot, x, z)
-		local ok, why, fall, rise = terrain(plot, x, z)
-		if not ok then return false, why end
-		if fall > COMFORT_FALL then return false, "fall:" .. fall end
-		if rise > plot.clear_to - COMFORT_RISE_MARGIN then
-			return false, "rise:" .. rise
+	if verdict ~= "fits" then failures = failures + 1 end
+	io.write(table.concat({entry.id, entry.district, entry.quadrant, entry.lot,
+		verdict, x_reach, z_reach, clear}, "\t"), "\n")
+end
+
+----------------------------------------------------------------------
+-- Derive
+----------------------------------------------------------------------
+--
+-- How the committed grids were found, kept so they are re-derivable. The
+-- authored layout is rotated into the quadrant, slid as a whole to the
+-- translation that needs the least correction, and every lot that still does
+-- not stand takes the NEAREST position that does, with the lots already
+-- placed blocking a lane around themselves. The objective is the WORST move,
+-- not the total: a layout where one lot walks eighty nodes and the rest stay
+-- put is not the same design any more, and minimising the sum is what chooses
+-- it.
+if derive then
+	io.write("\n== derived grids\n")
+	local STEP = 4
+	for turns = 0, 3 do
+		local name = quadrants.QUADRANTS[turns + 1]
+		local candidates = {}
+		for z = -232, 232, STEP do
+			for x = -232, 232, STEP do
+				if geometry(x, z, turns) and both(x, z) then
+					candidates[#candidates + 1] = {x = x, z = z}
+				end
+			end
 		end
-		return true, nil, fall, rise
-	end
-	io.write("\n== proposed district\n")
-	for _, plot in ipairs(plots) do
-		local ok = geometry(plot, plot.x, plot.z, plot.id) and
-			not blocked(plot, plot.x, plot.z)
-		local fall, rise
-		if ok then ok, _, fall, rise = comfortable(plot, plot.x, plot.z) end
-		if ok then
-			keep(plot, plot.x, plot.z)
-			io.write(string.format("%-24s keep  x=%4d z=%4d fall=%d rise=%d\n",
-				plot.id, plot.x, plot.z, fall, rise))
-		else
-			local best
-			for z = -96, 96, 4 do
-				for x = 52, 204, 4 do
-					if geometry(plot, x, z, plot.id) and not blocked(plot, x, z) then
-						local good, _, candidate_fall, candidate_rise =
-							comfortable(plot, x, z)
-						if good then
-							local distance = math.abs(x - plot.x) + math.abs(z - plot.z)
-							if not best or distance < best.distance then
-								best = {x = x, z = z, fall = candidate_fall,
-									rise = candidate_rise, distance = distance}
+		local best
+		for dz = -64, 64, STEP do
+			for dx = -64, 64, STEP do
+				local here, worst, total = {}, 0, 0
+				local ok = true
+				for index, authored in ipairs(quadrants.AUTHORED) do
+					local x, z = quadrants.rotate(authored.x + dx,
+						authored.z + dz, turns)
+					local move
+					if geometry(x, z, turns, here) and both(x, z) then
+						move = 0
+					else
+						local nearest
+						for _, candidate in ipairs(candidates) do
+							if geometry(candidate.x, candidate.z, turns, here) then
+								local distance = math.abs(candidate.x - x) +
+									math.abs(candidate.z - z)
+								if not nearest or distance < nearest.distance then
+									nearest = {x = candidate.x, z = candidate.z,
+										distance = distance}
+								end
 							end
 						end
+						if not nearest then ok = false break end
+						x, z, move = nearest.x, nearest.z, nearest.distance
 					end
+					here[#here + 1] = {id = index, x = x, z = z, move = move}
+					if move > worst then worst = move end
+					total = total + move
 				end
-			end
-			assert(best, "no legal home for " .. plot.id)
-			keep(plot, best.x, best.z)
-			io.write(string.format(
-				"%-24s MOVE  x=%4d z=%4d fall=%d rise=%d (was %d,%d, move %d)\n",
-				plot.id, best.x, best.z, best.fall, best.rise, plot.x, plot.z,
-				best.distance))
-		end
-	end
-	os.exit(0)
-end
-
-if sweep then
-	for _, plot in ipairs(plots) do
-		io.write("\n== candidates for ", plot.id, " (now at ", plot.x, ",",
-			plot.z, ")\n")
-		local best = {}
-		for z = -96, 96, 4 do
-			for x = 52, 204, 4 do
-				local ok = geometry(plot, x, z, plot.id)
-				local fall, rise
-				if ok then ok, _, fall, rise = terrain(plot, x, z) end
-				if ok then
-					best[#best + 1] = {x = x, z = z, fall = fall, rise = rise,
-						distance = math.abs(x - plot.x) + math.abs(z - plot.z)}
+				-- Rank: the worst move first, then the sum of the moves, then
+				-- the translation itself. The last of the three is what stops
+				-- a layout that needs no correction at all from being chosen
+				-- at the far edge of the envelope merely because the search
+				-- reached it first; ties there are broken towards the
+				-- authored position.
+				local shift = math.abs(dx) + math.abs(dz)
+				if ok and (not best or worst < best.worst or
+						(worst == best.worst and (total < best.total or
+							(total == best.total and shift < best.shift)))) then
+					best = {worst = worst, total = total, shift = shift,
+						dx = dx, dz = dz, lots = here}
 				end
 			end
 		end
-		table.sort(best, function(p, q)
-			if p.fall ~= q.fall then return p.fall < q.fall end
-			if p.rise ~= q.rise then return p.rise < q.rise end
-			return p.distance < q.distance
-		end)
-		for index = 1, math.min(10, #best) do
-			local row = best[index]
-			io.write(string.format("  x=%4d z=%4d fall=%d rise=%d move=%d\n",
-				row.x, row.z, row.fall, row.rise, row.distance))
+		assert(best, "no nine-lot grid exists in " .. name)
+		io.write(string.format("%s: shift dx=%d dz=%d worst move %d, total %d\n",
+			name, best.dx, best.dz, best.worst, best.total))
+		for _, lot in ipairs(best.lots) do
+			local fall, rise = both(lot.x, lot.z)
+			io.write(string.format("  {x = %d, z = %d},  -- lot %d fall=%d rise=%d move=%d\n",
+				lot.x, lot.z, lot.id, fall, rise, lot.move))
 		end
-		io.write("  legal candidates: ", #best, "\n")
 	end
 end
 
 if failures > 0 then
-	io.write("\n", failures, " plot(s) stand somewhere they may not\n")
+	io.write("\n", failures, " lot(s) or plot(s) stand somewhere they may not\n")
 	os.exit(1)
 end
-io.write("\nevery district plot is dry, inside the skirt and under its own roof",
-	" on both worlds\n")
+io.write("\nevery lot is dry, inside the skirt and under its own roof on both",
+	" worlds, and every plot fits every lot\n")

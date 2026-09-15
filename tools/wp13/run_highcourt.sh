@@ -14,22 +14,22 @@
 # directory, the log inside it, a `timeout --kill-after`, only this run's own
 # server killed, and nothing under the personal Flatpak folder touched.
 #
-# Usage: run_highcourt.sh OUTPUT_DIR [surface|full] [SEED]
+# Usage: run_highcourt.sh OUTPUT_DIR [surface|field|full] [SEED]
 #   OUTPUT_DIR  absolute, must not exist; receives the log, the dumps and the
 #               per-mapchunk timings.
 set -euo pipefail
 export LC_ALL=C
 
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
-output="${1:?usage: run_highcourt.sh OUTPUT_DIR [surface|full] [SEED]}"
+output="${1:?usage: run_highcourt.sh OUTPUT_DIR [surface|field|full] [SEED]}"
 mode="${2:-full}"
 seed="${3:-531802985935182545}"
 [[ "$output" = /* && ! -e "$output" ]] || {
 	echo "run_highcourt: OUTPUT_DIR must be an absent absolute path" >&2
 	exit 2
 }
-[[ "$mode" == "surface" || "$mode" == "scan" || "$mode" == "full" ]] || {
-	echo "run_highcourt: mode must be surface, scan or full" >&2
+[[ "$mode" == "surface" || "$mode" == "field" || "$mode" == "full" ]] || {
+	echo "run_highcourt: mode must be surface, field or full" >&2
 	exit 2
 }
 [[ "$seed" =~ ^(0|[1-9][0-9]*)$ ]] || {
@@ -106,8 +106,11 @@ set -e
 [[ -f "$engine_log" ]] && cp "$engine_log" "$log"
 [[ -f "$log" ]] || { echo "run_highcourt: no server log" >&2; exit 1; }
 
-for dump in highcourt-core.tsv highcourt-plot.tsv highcourt-avenue.tsv \
-		highcourt-surface.tsv highcourt-scan.tsv; do
+# The probe dumps one region per district plus the core and the avenue, so the
+# plot dumps are numbered rather than named.
+for dump in highcourt-core.tsv highcourt-avenue.tsv highcourt-surface.tsv \
+		highcourt-field.tsv highcourt-plot-1.tsv highcourt-plot-2.tsv \
+		highcourt-plot-3.tsv highcourt-plot-4.tsv; do
 	[[ -f "$world/$dump" ]] && cp "$world/$dump" "$output/$dump"
 done
 grep 'GRUG_WP13_HIGHCOURT' "$log" >"$output/probe.txt" || true
@@ -142,7 +145,11 @@ if [[ "$mode" == "full" ]]; then
 		cut -d= -f2)"
 	printf '%s  seed=%s avenue_road_cells=%s\n' "$digest" "$seed" "$road_cells" \
 		>"$output/avenue-digest.txt"
-	expected_file="$repo/tools/wp13/evidence/20260915-seam-generalisation/highcourt/avenue-digest-$seed.txt"
+	# The expectation lives with the lane that last CHANGED the road, so a
+	# package that moves it says so by moving this path and recording why. The
+	# districts increment added eight district lanes to the overlay's run list,
+	# which is the last thing to have moved it.
+	expected_file="$repo/tools/wp13/evidence/20260915-highcourt-districts/highcourt/avenue-digest-$seed.txt"
 	if [[ -f "$expected_file" ]]; then
 		expected="$(awk 'NR==1 {print $1}' "$expected_file")"
 		if [[ "$digest" != "$expected" ]]; then
