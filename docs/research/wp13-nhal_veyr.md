@@ -1,7 +1,9 @@
 # WP13: Nhal Veyr, the undead capital and the raised necropolis
 
 Increment record, 2026-09-15, written against `main` at `922bfd92` ("Extend the
-socket vocabulary for the wave-2 capitals"). It is the third capital of the
+socket vocabulary for the wave-2 capitals") and rebased onto `c8050057` ("Merge
+the wave-2 NPC vocabulary"), which is where the `herbalist` and `embalmer`
+trader entities this capital's sockets ask for come from. It is the third capital of the
 capitals contract's section 3 order and the second WALLED one (the user's
 ruling of 2026-09-14: walls for Dur Brannoc, Nhal Veyr and Gor Drazhak; open
 edges for Lethariel and Kezamba, with Highcourt joining the walled three
@@ -111,6 +113,50 @@ Read out of that:
   that never changes by more than a node per column over masonry that starts
   under each column's own lowest ground.
 
+## 3a. The curtain wall's corners, on all nine seeds — A FINDING
+
+`tools/wp13/capital_wall.lua` asks whether the real ground under the four wall
+lines is ground the module's rules were written for, and one of its five
+questions is the one the wave-2 review asked every walled capital for: **where
+an x-run's walk arrives at a z-run's CORNER TURRET, how far does it step?** The
+turret's own rampart opening is three courses, so a step of three or less is
+walked through it and anything more is a break in the circuit.
+
+`wall_all.sh` runs the predicate over the nine seeds as eight consecutive
+pairs, 64 corner measurements in all:
+
+| step | 0 | 1 | 2 | 3 | 4 | 5 | 7 | 9 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| corners | 16 | 12 | 12 | 4 | 4 | 9 | 5 | 2 |
+
+**Twenty of the sixty-four step more than the undead terrace step of three, and
+the worst steps nine nodes.** On the two gate seeds alone, two of the four
+corners break: `wall_east`/`wall_north` steps 7 on the user seed and 5 on the
+boundary seed. The rampart of this capital is not a continuous circuit.
+
+**It is the module's mechanism and this capital's ground.** Measured the same
+way on the same two gate seeds (`wall-across-capitals.txt`):
+
+| capital | corner steps, both gate seeds | worst wall-line range |
+| --- | --- | --- |
+| Dur Brannoc | 0, 0, 0, 0, 1, 1, 1, 0 | 36 |
+| Highcourt | 2, 2, 2, 2, 1, 0, 1, 2 | — |
+| **Nhal Veyr** | **0, 1, 1, 7, 0, 3, 2, 5** | **52** |
+
+Two perpendicular one-Lipschitz envelopes meeting at a corner agree exactly
+when the ground they each smooth agrees, and `wall.lua` computes each run's
+deck from its OWN axis over a 40-column look-around. Dur Brannoc's granite
+terrace is calm enough at its corners for the two to land within a node;
+Nhal Veyr's raised necropolis ranges 47 to 52 nodes along a single line and
+they do not.
+
+**WHAT WOULD FIX IT IS NOT THIS LANE'S.** The composition cannot: the divergence
+is between two runs' envelopes and a run sees only its own. The fix belongs in
+`wall.lua` — a corner turret that carries a flight between the two decks, or a
+plan field that tells one run the other's deck at the shared corner — and
+`wall.lua` is the shared module two shipped capitals' built walls are frozen
+against. Section 8 carries it as this package's first open point.
+
 **Calibration of the coarse grid.** The grid dump samples every FOURTH column
 and the lot predicate is built on it, so how much that hides is measured rather
 than assumed. Against the 1-node wall lines of the SAME dumps, over the same
@@ -129,32 +175,37 @@ Every margin is the measured error or better, and the engine pass of section
 skirt, under its own roof, inside its own quarter, clear of the core, the four
 32-node gate corridors, every street run the overlay writes — the avenues, the
 ring, the eight district lanes AND the curtain — and a lane clear of every other
-lot, on BOTH gate seeds. Of 52 lots:
+lot.
 
-| | exact | slid ≤ 12 | slid 20 – 44 |
-| --- | --- | --- | --- |
-| district lots (36) | 10 | 22 | 4 |
-| fill lots (16) | 6 | 4 | 6 |
+**ON ALL NINE SEEDS, and that is the whole of this section's history.** The
+first version of these grids was derived against the two gate seeds, which is
+how the pilot capital's were derived and is how this lane started. The wave-2
+coordinator's review of the first two capitals then found twenty-one illegal
+lots in another lane on seeds nobody had looked at, and the same predicate run
+over the nine seeds of `capital_anchor_fixture.lua` said the same thing here:
+**34 of this capital's 52 lots stood somewhere they may not**, sixteen of them
+with a perimeter fall of 6 to 11 against a skirt of 6. Two worlds is not a
+sample.
 
-Three of the four district grids carry a two-node shift in z that the
-whole-grid search found. The four that had to move far, and what was under
-them:
+Re-derived against all nine, of 52 lots: **9 keep the authored position, 18
+slid twelve nodes or less, 25 slid further**, the worst of them 76. Nothing is
+homeless: every lot is dry on all nine worlds, falls at most 5 and rises at most
+6 (5 for a fill lot) at the grid's own resolution, and the engine's own
+per-plot measurement of section 6 (e) confirms it on the real ground.
 
-| lot | from | to | why |
-| --- | --- | --- | --- |
-| `southeast` 6 | (160, −116) | (198, −116) | fall 7 against a skirt of 6 |
-| `northeast` 6 | (116, 162) | (116, 202) | rise 8 against a clear of 8 |
-| `northeast` 8 | (160, 118) | (198, 118) | fall 9 |
-| `southwest` 9 | (−160, −158) | (−172, −158) | fall 6, the skirt exactly |
+The authored 3 × 3 layout is therefore a starting point on this terrain and not
+a plan: what survives nine worlds is scattered, and the tables in
+`nhal_veyr_quadrants.lua` are what the search returned rather than what anyone
+drew. That is the honest cost of a raised necropolis whose envelope ranges 47
+to 52 nodes along one wall line.
 
-**Fill slot 4 moved in every quadrant, and the reason is arithmetic rather than
-ground.** The authored close is a 5-reach lot in the gap between two columns of
-the grid; a 5-reach lot with two nodes of margin is 15 wide, the gap between two
-31-wide footprints 44 apart is 14, and a four-node lane either side needs 23.
-The authored position cannot exist on any world, so in three quadrants the close
-takes the nearest open ground inside its own quarter and in the north-east it
-sits in the hole lot 8 left when it slid outward. Highcourt's own fill slot 4
-stands where it does because its grid is staggered; this one's cannot.
+**Fill slot 4 cannot stand where it is authored on any world, and the reason is
+arithmetic rather than ground.** The authored close is a 5-reach lot in the gap
+between two columns of the grid; a 5-reach lot with two nodes of margin is 15
+wide, the gap between two 31-wide footprints 44 apart is 14, and a four-node
+lane either side needs 23. It takes the nearest open ground inside its own
+quarter in all four. Highcourt's own fill slot 4 stands where it does because
+its grid is staggered; this one's cannot.
 
 ## 5. The core, the districts and the socket table
 
@@ -228,14 +279,14 @@ pond carries `fish`.
 vigil. One of each, which the KAT's family rule asserts across every
 composition at once.
 
-**`herbalist` and `embalmer` have no entity yet**, and that is the sockets
-contract's own predicted behaviour (§8.4: "a kind whose entity the traders mod
-has not registered yet is an error line at placement and an empty socket, never
-a load failure"). `grug_traders` registers `butcher`, `smith`, `fishmonger`,
-`baker` and `tailor`; the wave-2 seven are the NPC vocabulary lane's. Every
-engine pass of this package therefore carries exactly two ERROR lines and no
-others — see section 6 (e), which is where that stops being a footnote and
-becomes the gate.
+**All six kinds have an entity.** `herbalist` and `embalmer` are WAVE-2 kinds
+and had none while this package was being built, which the sockets contract's
+section 8.4 covers ("a kind whose entity the traders mod has not registered yet
+is an error line at placement and an empty socket, never a load failure"): every
+engine pass carried exactly those two ERROR lines and nothing else. Lane N
+landed the seven wave-2 vendor entities on `main` at `c8050057`, this package
+was rebased onto it, and the passes of section 6 (e) carry **no ERROR and no
+ModError line at all**.
 
 ## 6. Verification
 
@@ -271,8 +322,8 @@ Two rules in it are this lane's own:
 
 ```
 WP13 FINAL MICRO PAIR BYTE-IDENTICAL
-62cbc3c5d955d1151a2c7fb13a16aa95aa58c75506a66721893cc543db2ca961  micro-luajit.tsv
-62cbc3c5d955d1151a2c7fb13a16aa95aa58c75506a66721893cc543db2ca961  micro-puc51.tsv
+7f2d2fc9720a40fd2aa8b6c10d2f72450228803dc41bf4e89161c2b6c8198293  micro-luajit.tsv
+7f2d2fc9720a40fd2aa8b6c10d2f72450228803dc41bf4e89161c2b6c8198293  micro-puc51.tsv
 ```
 
 That is the whole WP13 fixture set in one process under each interpreter, this
@@ -281,9 +332,10 @@ KAT among them.
 ### (b) The six starts, Highcourt and Dur Brannoc are byte-identical
 
 The same five fixtures, run on this tree and on an archive of `main` at
-`922bfd92`:
+`c8050057` (the merge of Lane N's wave-2 NPC vocabulary, which this package was
+rebased onto):
 
-| fixture | main 922bfd92 | this lane |
+| fixture | main c8050057 | this lane |
 | --- | --- | --- |
 | `start_identity` | `0bbf87a7…` | `0bbf87a7…` |
 | `library_kat` | `bd4b51ab…` | `bd4b51ab…` |
@@ -300,12 +352,12 @@ The same five fixtures, run on this tree and on an archive of `main` at
 
 | Subject | LuaJIT | PUC 5.1 | Cells |
 | --- | --- | --- | --- |
-| module load | 47.3 – 49.2 ms | 65.8 – 67.3 ms | — |
-| core | 114.7 – 117.1 ms | 376.6 – 391.6 ms | 97 494 |
-| core, second build | 117.9 – 125.1 ms | 383.1 – 411.1 ms | same |
-| all 52 plots | 261.5 – 275.2 ms | 715.2 – 716.4 ms | 268 856 |
-| one 209-node avenue run | 1.15 – 1.51 ms | 2.72 – 2.77 ms | 1 291 |
-| **seam prepare** (all 54 blueprints built, hashed, released) | 739 – 761 ms | 2189 – 2211 ms | — |
+| module load | 48.9 – 50.5 ms | 64.9 – 68.5 ms | — |
+| core | 120.5 – 131.6 ms | 381.0 – 386.0 ms | 97 494 |
+| core, second build | 135.8 – 147.5 ms | 383.9 – 399.7 ms | same |
+| all 52 plots | 260.1 – 271.6 ms | 707.5 – 717.1 ms | 268 856 |
+| one 209-node avenue run | 1.22 – 1.27 ms | 3.81 – 3.90 ms | 1 291 |
+| **seam prepare** (all 54 blueprints built, hashed, released) | 724 – 811 ms | 2079 – 2150 ms | — |
 
 Against the contract's section 2.3 budget: core **97 494 of 150 000** cells,
 largest plot **9 795 of 12 000** (the watch barracks), the 53 cell-bearing
@@ -322,23 +374,22 @@ the real geometry, plus three kinds of control.
 
 | Kind | chunks | steady mean | worst | best |
 | --- | --- | --- | --- | --- |
-| warm-up (not counted) | 1 | — | 25.3 – 28.4 s | — |
-| **Nhal Veyr**, user/gate seed 531802985935182545 | 79 | **0.62 s** | 1.24 s | 0.11 s |
-| **Nhal Veyr**, boundary seed 8675309 | 70 | **0.59 s** | 1.46 s | 0.11 s |
-| **Nhal Veyr**, the user's world seed | 74 | **0.70 s** | 1.57 s | 0.10 s |
-| Lethariel (a capital with no WP13 cells) | 8 | 2.49 / 3.02 / 2.66 s | 15.1 / 19.1 / 16.6 s | — |
-| open land and the Dawnmere start | 3 | 0.66 / 0.39 / 0.52 s | 1.31 / 0.78 / 1.04 s | — |
+| warm-up (not counted) | 1 | — | ~25 s | — |
+| **Nhal Veyr**, user/gate seed 531802985935182545 | 80 | **0.57 s** | 1.38 s | 0.12 s |
+| **Nhal Veyr**, boundary seed 8675309 | 69 | **0.81 s** | 1.33 s | 0.10 s |
+| **Nhal Veyr**, the user's world seed | 73 | **0.63 s** | 1.40 s | 0.10 s |
+| Lethariel (a capital with no WP13 cells) | 8 | 2.44 / 2.77 / 2.57 s | 14.6 / 17.3 / 16.0 s | — |
+| open land and the Dawnmere start | 3 | 0.51 / 0.42 / 0.50 s | 1.01 / 0.83 / 0.99 s | — |
 
 The warm-up mapchunk carries the emerge environment's whole one-time R7
 construction, which is why it is emerged first and not counted. Lethariel is
 the honest control: WP40 fits, flattens, terraces and protects it exactly like
 Nhal Veyr and it has no WP13 blueprints at all. **Nhal Veyr's mapchunks are
-four times cheaper than that control's**, and its steady mean sits within a
-tenth of the open-land control's. Against the contract's "no more than 2× the
-~0.5 s Dawnmere chunk": 0.59 – 0.70 s.
+three to four times cheaper than that control's.** Against the contract's "no
+more than 2× the ~0.5 s Dawnmere chunk": 0.57 – 0.81 s.
 
-79 mapchunks against Dur Brannoc's 85 and Highcourt's 33 — a wall round a 512
-envelope touches every mapchunk on the ring, and four districts of thirteen
+69 to 80 mapchunks against Dur Brannoc's 85 and Highcourt's 33 — a wall round a
+512 envelope touches every mapchunk on the ring, and four districts of thirteen
 plots touch most of the rest.
 
 **NO CAUSEWAY PARAPET, and that is measured.** Dur Brannoc has one because
@@ -365,11 +416,12 @@ tower, one per district — and the roster placed:
 | --- | --- | --- | --- |
 | sockets registered | 274 | 274 | 274 |
 | loops | 9 | 9 | 9 |
-| guards | 30/30 | 30/30 | 27/30 |
-| flair | 163/168 | 168/168 | 115/168 |
-| vendors | 4/4 registered kinds | 4/4 | 2/4 |
+| guards | 30/30 | 27/30 | 28/30 |
+| flair | 168/168 | 118/168 | 137/168 |
+| vendors | **6/6** | 5/6 | 3/6 |
 | spare | 26 | 26 | 26 |
 | residents / walkers | 168 / 24 | 168 / 24 | 168 / 24 |
+| ERROR / ModError lines | 0 | 0 | 0 |
 
 As at Highcourt and Dur Brannoc, the split between "placed at readiness" and
 "pending" depends on which mapblocks the emerge sequence had loaded and is not
@@ -377,45 +429,33 @@ a gate; what is reproducible is that the boundary seed's roster ends complete
 and that the walker share is 24 of 168 on all three.
 
 **The load-time terrain audit** (`r7_settlement.audit_terrain`, run from
-`r7_loader.lua` on every boot) is what says whether the lots this package chose
-against two seeds survive a third:
+`r7_loader.lua` on every boot) is the authority the offline predicate is a
+pre-flight for, and with the grids re-derived against all nine seeds it has
+nothing to say about this capital:
 
-| seed | Nhal Veyr findings | Highcourt findings |
-| --- | --- | --- |
-| 531802985935182545 | 0 | 0 |
-| 8675309 | 0 | 0 |
-| 15912857179583385436 (the user's) | 0 | 1 |
-| 0 | 0 | 1 |
-| 1 | 0 | 0 |
-| 2 | 0 | 1 |
-| 42 | **2** | 1 |
-| 12345 | **2** | 1 |
-| 999999999 | 0 | 6 |
+| seed | Nhal Veyr | Highcourt | Dur Brannoc | worst perimeter fall | submerged |
+| --- | --- | --- | --- | --- | --- |
+| 531802985935182545 | **0** | 0 | 0 | 4 | 0 |
+| 8675309 | **0** | 0 | 0 | 5 | 0 |
+| 15912857179583385436 (the user's) | **0** | 1 | 0 | 5 | 0 |
+| 0 | **0** | 1 | 0 | 6 | 0 |
+| 1 | **0** | 0 | 0 | 6 | 0 |
+| 2 | **0** | 1 | 0 | 5 | 0 |
+| 42 | **0** | 1 | 0 | 6 | 0 |
+| 12345 | **0** | 1 | 0 | 5 | 0 |
+| 999999999 | **0** | 6 | 1 | 6 | 0 |
 
-Seven of nine clean, and the two that are not are one node over the skirt each
-— `watch_barracks` and `homes_cistern` at a perimeter fall of 7 against 6 on
-seed 42, `watch_captain_hall` and `vigil_watch` on 12345. That is the
-two-seed derivation running out on a third world, which is exactly what the
-loader's warning exists to say; the pilot capital does the same on five of the
-nine. No plot of this capital is ever submerged on any of the nine.
+Zero findings on all nine, a worst perimeter fall of 6 against a skirt of 6,
+and not one submerged column anywhere. The two capitals already on main have
+findings on five and one of the nine respectively, which is what a two-seed
+derivation buys — and is exactly what this capital's own first version looked
+like before section 4's re-derivation.
 
-**THE TWO ERROR LINES.** Every engine pass of this package logs exactly two,
-both the sockets contract's predicted shape:
-
-```
-ERROR[Main]: [grug_mobs] settlement npcs: nhal_veyr socket
-  market_physic/market_physic_vendor_herbalist resolves to no registered
-  entity (grug_traders:vendor_herbalist)
-ERROR[Main]: [grug_mobs] settlement npcs: nhal_veyr socket
-  vigil_embalmer/vigil_embalmer_vendor_embalmer resolves to no registered
-  entity (grug_traders:vendor_embalmer)
-```
-
-`run_capital.sh` gates on `errors == 0`, so it reports FAILED on every pass of
-this capital until the NPC vocabulary lane registers the two wave-2 vendor
-entities. **The gate's own verdict is therefore not the signal here; the signal
-is that there are exactly these two lines and no others**, which
-`errors.sh` in the evidence directory checks by name.
+**No error line of any kind.** Every pass of section 6 (e) logs 0 ERROR and 0
+ModError, and `run_capital.sh` reports PASS. Until the rebase onto `c8050057` it
+carried two — the unregistered `herbalist` and `embalmer` vendor entities of
+section 5.3 — and `errors.sh` in the evidence directory is what said so by name
+rather than by exit code; it now expects zero and still names any line it finds.
 
 ### (f) Static gates
 
@@ -430,7 +470,7 @@ have carried since the seam package: it is never loaded by the engine.
 
 ## 7. What changed after looking, and what the fixtures caught
 
-Six defects and one render verdict, each worth recording because each is a
+Seven defects and one render verdict, each worth recording because each is a
 shape the next capital will meet:
 
 1. **A grave marker on a cottage's doorstep.** `dressing.graveyard` sets a
@@ -463,7 +503,15 @@ shape the next capital will meet:
    of range of a resident standing at y = 1. Every `mourn` and `pray` feature in
    this capital is now at knee height — a votive light on a single block, or a
    grave marker — which is also what a candle at a grave looks like.
-
+6. **`tend` faced a heap of bones.** The feature set was built from the palette
+   roles the pilot capital's is built from, and one of them is `undergrowth`,
+   which is a bush in the human palette and `grug_nodes:bone_pile` in this one.
+   A gardener tending a bone pile passes a rule written as "a plant or a
+   flower". The set lost that role, and the KAT now asserts that every name
+   surviving into `tend` or `forage` is a plant BY ITS OWN REGISTRATION — drawn
+   `plantlike`, `plantlike_rooted`, `firelike` or the wallmounted `signlike` a
+   vine is, or in the leaves group. The wave-2 coordinator's review asked for
+   the rule; the assertion is what makes the answer checkable.
 7. **A mausoleum roofed in its own walls.** The first version gave the crypt
    handle a dungeon-stone roof family to go with its dungeon-stone walls, and
    the render out of the engine was one unbroken black mass with a lantern on
@@ -490,11 +538,19 @@ And one the SEAM caught, which is the one worth the most:
 
 ## 8. Open points
 
-1. **The two wave-2 vendor entities do not exist.** `herbalist` and `embalmer`
-   are placed as sockets and error at placement until `grug_traders` registers
-   them; that is the NPC vocabulary lane's, and section 6 (e) is the whole
-   consequence. Until then `run_capital.sh` reports FAILED for this capital on
-   every pass.
+1. **THE CURTAIN WALL'S CORNERS BREAK, and the fix is in `wall.lua`.** Section
+   3a: twenty of sixty-four corner measurements over the nine seeds step more
+   than the undead terrace step of three, and the worst steps nine nodes, so the
+   rampart is not a continuous circuit. The mechanism is the module's -- two
+   perpendicular one-Lipschitz envelopes meeting at a corner, each smoothed over
+   its own axis -- and the reason it shows here and not at Dur Brannoc is this
+   capital's ground, which ranges 47 to 52 nodes along a wall line against Dur
+   Brannoc's 36. A composition cannot fix it: the divergence is between two runs
+   and a run sees only its own. What would: a corner turret that carries a
+   flight between the two decks, or a plan field that hands one run the other's
+   deck at the shared corner. Both are `wall.lua`, which is shared and which two
+   shipped capitals' built walls are frozen against. **This is the first thing
+   the review should look at.**
 2. **`tools/wp13/capital_timing.lua` cannot time a four-district capital.** It
    reads `capital.district.plots` — one district — and builds the road with
    `palettes.new("dwarf")`. Two lines would generalise it (take the race from
@@ -509,10 +565,12 @@ And one the SEAM caught, which is the one worth the most:
    at `922bfd92` with no WP13 change in the tree at all, so it is pre-existing
    and belongs to whoever owns that fixture; it is recorded here because this
    lane ran into it and somebody should.
-4. **Two lots are one node over the skirt on two of the nine seeds.** Section
-   6 (e). Fixing them means deriving the grids against more than two seeds,
-   which is a change to how every capital's lots are chosen and not this
-   capital's to make alone.
+4. **The pilot capital's own lots have not been through the nine-seed rule.**
+   Section 4 is what re-deriving Nhal Veyr's against nine worlds cost: 34 of 52
+   lots moved. The same predicate run against Highcourt on the same nine seeds
+   reports findings on five of them (section 6 (e)'s table), so the pilot's
+   grids were derived the way this lane's first version was. That is
+   `highcourt_plots.lua`'s to answer, not this file's.
 5. **The capital's own lot predicate reads a 4-node grid.** Section 3 calibrates
    the error — a fall by at most one node, a rise by at most two — and section
    4's limits carry that margin, but a 1-node field dump would be better.

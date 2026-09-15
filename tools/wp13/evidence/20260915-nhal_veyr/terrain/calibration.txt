@@ -1,10 +1,10 @@
-== 531802985935182545 (tools/wp13/evidence/20260915-nhal_veyr/terrain/wall-531802985935182545.tsv)
+== 531802985935182545 (terrain/wall-531802985935182545.tsv)
    line z -256: sampled
    line z +256: sampled
    line x -256: sampled
    line x +256: sampled
    464 window positions; 4-node sampling understates a fall by at most 1 and a rise by at most 1
-== 8675309 (tools/wp13/evidence/20260915-nhal_veyr/terrain/wall-8675309.tsv)
+== 8675309 (terrain/wall-8675309.tsv)
    line z -256: sampled
    line z +256: sampled
    line x -256: sampled

@@ -1,15 +1,20 @@
 -- Where a Nhal Veyr district lot may stand, and where it may not.
 --
---     luajit tools/wp13/nhal_veyr_plots.lua <repo> <grid-a.tsv> <grid-b.tsv>
---     luajit tools/wp13/nhal_veyr_plots.lua <repo> <a.tsv> <b.tsv> --derive
---     luajit tools/wp13/nhal_veyr_plots.lua <repo> <a.tsv> <b.tsv> --repair
+--     luajit tools/wp13/nhal_veyr_plots.lua <repo> <grid.tsv>...
+--     luajit tools/wp13/nhal_veyr_plots.lua <repo> <grid.tsv>... --repair
 --
 -- The default run VERIFIES the 36 lots `wp13/nhal_veyr_quadrants.lua` carries,
 -- the 16 FILL LOTS it carries beside them, and the 52 plots the four districts
--- build, against every rule below, on two worlds at once. `--derive` re-runs
--- the whole-grid search that produced the tables and `--repair` moves only the
--- lots that no longer stand, so both committed tables are re-derivable rather
--- than remembered.
+-- build, against every rule below, on EVERY WORLD it is given at once.
+-- `--repair` moves only the lots that no longer stand, so the committed tables
+-- are re-derivable rather than remembered.
+--
+-- ALL NINE SEEDS AND NOT TWO. The wave-2 coordinator's review of the first two
+-- capitals found twenty-one illegal lots on seeds a lane had not looked at: a
+-- grid derived against two worlds is a grid nobody has asked a third about, and
+-- the seeds of `tools/wp13/capital_anchor_fixture.lua` are the nine the rest of
+-- this package is measured on. Any number of grids is accepted; they must not
+-- all be the same world.
 --
 -- It is `tools/wp13/highcourt_plots.lua`'s predicate for this capital. That
 -- file is the pilot's own committed gate and stays exactly as it is; this one
@@ -42,9 +47,9 @@
 --
 --   1. DRY. Not one column of the lot's own footprint may be water, and
 --      neither may its two-node margin. A plot is not a pier. (No column of
---      this capital's envelope is water on either gate seed, which is what
---      makes this rule cheap here and not pointless: the day WP40's terrain
---      changes, it is what says so.)
+--      this capital's envelope is water on any of the nine seeds, which is
+--      what makes this rule cheap here and not pointless: the day WP40's
+--      terrain changes, it is what says so.)
 --   2. STANDS ON ITS OWN GROUND. The fall under the footprint, measured from
 --      the lot's own reference column, may not exceed the foundation skirt.
 --   3. FITS UNDER ITS OWN ROOF. The rise may not exceed the airspace a plot
@@ -58,15 +63,21 @@
 --      lot of every other quadrant (8 between district lots, 4 for a fill lot,
 --      which is what "loose, with fields and gardens" is as arithmetic).
 --
--- The grid TSVs must be different seeds, which this tool checks by refusing
--- two files whose heights are identical everywhere.
+-- The grid TSVs must not all be the same seed, which this tool checks by
+-- refusing a set whose heights are identical everywhere.
 --
 -- Plain Lua 5.1.
 
 local repo = assert(arg[1], "repository root required")
-local grid_a = assert(arg[2], "first terrain grid TSV required")
-local grid_b = assert(arg[3], "second terrain grid TSV required")
-local mode = arg[4]
+local paths, mode = {}, nil
+for index = 2, #arg do
+	if arg[index]:sub(1, 2) == "--" then
+		mode = arg[index]
+	else
+		paths[#paths + 1] = arg[index]
+	end
+end
+assert(#paths >= 2, "at least two terrain grid TSVs are required")
 
 local wp13 = repo .. "/mods/MAPGEN/grug_mapgen/wp13"
 local avenue = dofile(wp13 .. "/avenue.lua")(wp13)
@@ -104,16 +115,25 @@ local function read_grid(path)
 	return rows, count
 end
 
-local a, count_a = read_grid(grid_a)
-local b, count_b = read_grid(grid_b)
-assert(count_a == count_b, "the two grids do not cover the same columns")
+local worlds = {}
+local columns
+for index = 1, #paths do
+	local grid, count = read_grid(paths[index])
+	columns = columns or count
+	assert(count == columns, paths[index] ..
+		" does not cover the same columns as the first grid")
+	worlds[#worlds + 1] = grid
+end
 do
 	local differs = false
-	for key, row in pairs(a) do
-		local other = assert(b[key], "the two grids do not cover the same columns")
-		if other.y ~= row.y then differs = true end
+	for key, row in pairs(worlds[1]) do
+		for index = 2, #worlds do
+			local other = assert(worlds[index][key],
+				"the grids do not cover the same columns")
+			if other.y ~= row.y then differs = true end
+		end
 	end
-	assert(differs, "the two grids are the same world; use two different seeds")
+	assert(differs, "every grid is the same world; use different seeds")
 end
 
 local function snap(value)
@@ -140,13 +160,19 @@ local function relief(grid, cx, cz, reach)
 	return reference.y - low, high - reference.y
 end
 
+-- The WORST a lot sees over every world it was given. One world's verdict is
+-- not a verdict: a position legal on eight seeds and submerged on the ninth is
+-- a position this table may not carry.
 local function terrain(cx, cz, reach, max_rise)
-	local fall_a, rise_a = relief(a, cx, cz, reach)
-	if fall_a == nil then return nil, nil, rise_a or "unscanned" end
-	local fall_b, rise_b = relief(b, cx, cz, reach)
-	if fall_b == nil then return nil, nil, rise_b or "unscanned" end
-	local fall = math.max(fall_a, fall_b)
-	local rise = math.max(rise_a, rise_b)
+	local fall, rise = 0, 0
+	for index = 1, #worlds do
+		local world_fall, world_rise = relief(worlds[index], cx, cz, reach)
+		if world_fall == nil then
+			return nil, nil, world_rise or "unscanned"
+		end
+		if world_fall > fall then fall = world_fall end
+		if world_rise > rise then rise = world_rise end
+	end
 	if fall > MAX_FALL then return fall, rise, "fall:" .. fall end
 	if rise > max_rise then return fall, rise, "rise:" .. rise end
 	return fall, rise
@@ -189,8 +215,15 @@ local function geometry(x, z, reach, lane, turns, placed, skip)
 			max_z > ENVELOPE then
 		return "envelope"
 	end
+	-- IN ITS OWN QUARTER, and by the KAT's own arithmetic rather than a looser
+	-- one of this tool's: rotated back into the authored south-east frame the
+	-- lot's whole FOOTPRINT has to clear both avenues by the quarter's margin,
+	-- so it is `quarter + reach` and not `quarter + a number`. The two used to
+	-- differ by five nodes and the KAT was the one that said so.
 	local qx, qz = unrotate(x, z, turns)
-	if qx < LOT.quarter + 8 or qz > -(LOT.quarter + 8) then return "quarter" end
+	if qx - reach < LOT.quarter or qz + reach > -LOT.quarter then
+		return "quarter"
+	end
 	if overlaps(min_x, max_x, -CORE, CORE) and
 			overlaps(min_z, max_z, -CORE, CORE) then
 		return "core"
@@ -357,4 +390,4 @@ if failures > 0 or plot_failures > 0 then
 	os.exit(1)
 end
 io.write("\nevery nhal_veyr lot is dry, inside the skirt and under its own ",
-	"roof on both worlds, and every plot fits the lot it stands on\n")
+	"roof on every world, and every plot fits the lot it stands on\n")

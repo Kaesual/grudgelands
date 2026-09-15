@@ -3,12 +3,12 @@
 #
 # Digests every shipped WP13 fixture output in ONE tree, so two trees can be
 # compared byte for byte. Run it against this worktree and against a
-# `git archive` of `main` at 922bfd92 and the two columns must be identical:
+# `git archive` of `main` at c8050057 and the two columns must be identical:
 # the six start blueprint identities, the shared library, the six starts'
 # acceptance, the pilot capital's and the dwarf capital's.
 #
 #     bash tools/wp13/evidence/20260915-nhal_veyr/identity.sh .
-#     git archive 922bfd92 | tar -x -C /tmp/main-ref
+#     git archive c8050057 | tar -x -C /tmp/main-ref
 #     cp -a tools/bin /tmp/main-ref/tools/
 #     bash tools/wp13/evidence/20260915-nhal_veyr/identity.sh /tmp/main-ref
 set -euo pipefail

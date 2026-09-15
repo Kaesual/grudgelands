@@ -201,8 +201,17 @@ return function(repo)
 			"default:river_water_source", "default:river_water_flowing"})
 	feature_set("farm", {"crop_soil", "crop"}, {"farming:soil_wet"})
 	feature_set("chop", {"tree_log", "post", "beam"}, {})
+	--
+	-- `tend`: A PLANT OR A FLOWER, and nothing else. `undergrowth` is NOT in
+	-- the set, which is where this capital's rule is tighter than the pilot's
+	-- and has to be: in the human palette that role is a bush and in this one
+	-- it is `grug_nodes:bone_pile`, so a set built from the role would let a
+	-- gardener tend a heap of bones. The wave-2 coordinator's review asked for
+	-- exactly this, and the assertion below is what makes the answer checkable
+	-- rather than a promise -- every name that survives into `tend` or `forage`
+	-- has to be a plant BY ITS OWN REGISTRATION.
 	feature_set("tend", {"flower", "flower_alt", "hedge", "hedge_stem",
-		"undergrowth", "grass_tuft", "fern", "crop", "tree_leaves"}, {})
+		"grass_tuft", "fern", "crop", "tree_leaves"}, {})
 	-- `pray`: THE CHAPEL'S DOOR, AN ALTAR, A CANDLE OR A GRAVE MARKER
 	-- (contract section 8.1, corrected 2026-09-15 after the NPC lane's review).
 	-- The first wording said "any node of the chapel interior", which
@@ -256,6 +265,38 @@ return function(repo)
 	-- accepted it because a necropolis has bone piles would accept anything.
 	feature_set("forage", {"ivy", "tree_leaves", "flower", "flower_alt",
 		"crop", "grass_tuft", "fern", "hedge", "hedge_stem"}, {})
+
+	--
+	-- AND THE TWO PLANT SETS ARE HELD TO THE REGISTRY, not to their role names.
+	-- The sockets contract's section 8.1 says `tend` faces "a plant or a
+	-- flower" and 8.2 says `forage` faces "a mushroom, a bush, a plant, a vine
+	-- or leaves"; a set built out of palette roles says what a palette CALLS a
+	-- thing, and this says what the thing IS. A node qualifies when its own
+	-- registration draws it as a plant (`plantlike`, `plantlike_rooted`,
+	-- `firelike`, or the wallmounted `signlike` a vine is) or puts it in the
+	-- leaves group. `grug_nodes:bone_pile` is a normal opaque cube and fails
+	-- both, which is the whole reason this assertion exists.
+	do
+		local PLANT_DRAW = {plantlike = true, plantlike_rooted = true,
+			firelike = true, signlike = true}
+		for _, activity in ipairs({"tend", "forage"}) do
+			local counted = 0
+			for name in pairs(FEATURE[activity]) do
+				local def = world.nodes[name]
+				assert(def, "the " .. activity .. " feature " .. name ..
+					" is not a registered node")
+				local draw = def.drawtype or "normal"
+				local leaves = type(def.groups) == "table" and
+					(def.groups.leaves or 0) > 0
+				assert(PLANT_DRAW[draw] or leaves, "the " .. activity ..
+					" feature " .. name .. " is drawn as " .. draw ..
+					" and is in no leaves group, so it is not a plant")
+				counted = counted + 1
+			end
+			assert(counted > 0, "the " .. activity .. " feature set is empty")
+			say("nhal_veyr_" .. activity .. "_features", counted)
+		end
+	end
 
 	local LIGHT = {}
 	for _, role in ipairs({"light_wall", "light_post", "light_indoor"}) do
