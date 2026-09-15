@@ -104,12 +104,37 @@ local overlay = source.overlay
 -- two-node floor over a void -- not visible, but worth knowing -- and because a
 -- RISE anywhere under the plot is what the plot's own airspace clear has to
 -- cover.
+-- A column is WET unless the map calls it land. A plot standing on wet columns
+-- is a plot in the water, and the first version of this package put two of them
+-- there: a sweep that looked only for FLAT ground found the river bed, which is
+-- the flattest ground inside a terraced capital envelope. So every plot report
+-- carries the submerged count beside the fall, and a plot whose footprint has
+-- one wet column is not a legal position however flat it is.
+--
+-- The MARGIN is sampled too, because a plot whose skirt ends one node from the
+-- water is a building with a moat.
+local PLOT_MARGIN = 2
+local function wet(x, z)
+	return grug_zones.water_class_at(x, z) ~= "land"
+end
+
+local function submerged_count(origin_x, origin_z, bounds, margin)
+	local count = 0
+	for z = bounds.min.z - margin, bounds.max.z + margin do
+		for x = bounds.min.x - margin, bounds.max.x + margin do
+			if wet(origin_x + x, origin_z + z) then count = count + 1 end
+		end
+	end
+	return count
+end
+
 local function surface_report()
 	local rows = {"plot\treference_x\treference_z\treference_y" ..
 		"\tperimeter_min\tperimeter_max\tperimeter_fall\tperimeter_rise" ..
 		"\tfootprint_min\tfootprint_max\tfootprint_fall\tfootprint_rise" ..
-		"\tclear_to\tcolumns\n"}
+		"\tsubmerged\tsubmerged_margin\treference_wet\tclear_to\tcolumns\n"}
 	local worst_fall, worst_plot = 0, "-"
+	local worst_wet, worst_wet_plot = 0, "-"
 	for index = 1, #plots do
 		local plot = plots[index]
 		local bounds = plot.composition.bounds
@@ -119,11 +144,13 @@ local function surface_report()
 			origin_z + reference.z)
 		local min_y, max_y = reference_y, reference_y
 		local edge_min, edge_max, columns = reference_y, reference_y, 0
+		local submerged = 0
 		for z = bounds.min.z, bounds.max.z do
 			for x = bounds.min.x, bounds.max.x do
 				local y = grug_zones.terrain_height_at(origin_x + x, origin_z + z)
 				if y < min_y then min_y = y end
 				if y > max_y then max_y = y end
+				if wet(origin_x + x, origin_z + z) then submerged = submerged + 1 end
 				if x == bounds.min.x or x == bounds.max.x or z == bounds.min.z or
 						z == bounds.max.z then
 					if y < edge_min then edge_min = y end
@@ -134,13 +161,17 @@ local function surface_report()
 		end
 		local fall = reference_y - edge_min
 		if fall > worst_fall then worst_fall, worst_plot = fall, plot.id end
+		if submerged > worst_wet then worst_wet, worst_wet_plot = submerged, plot.id end
 		rows[#rows + 1] = table.concat({plot.id, origin_x + reference.x,
 			origin_z + reference.z, reference_y,
 			edge_min, edge_max, fall, edge_max - reference_y,
 			min_y, max_y, reference_y - min_y, max_y - reference_y,
+			submerged,
+			submerged_count(origin_x, origin_z, bounds, PLOT_MARGIN),
+			tostring(wet(origin_x + reference.x, origin_z + reference.z)),
 			bounds.max.y, columns}, "\t") .. "\n"
 	end
-	return table.concat(rows), worst_fall, worst_plot
+	return table.concat(rows), worst_fall, worst_plot, worst_wet, worst_wet_plot
 end
 
 -- A candidate sweep for a plot that has to be MOVED: the perimeter fall and
@@ -151,7 +182,8 @@ end
 -- other plots) are applied afterwards, outside the engine, where the whole
 -- composition is in one place.
 local function scan_report()
-	local rows = {"plot\tx\tz\tperimeter_fall\tperimeter_rise\n"}
+	local rows = {"plot\tx\tz\tperimeter_fall\tperimeter_rise" ..
+		"\tsubmerged\tsubmerged_margin\treference_wet\tclear_to\n"}
 	for index = 1, #plots do
 		local plot = plots[index]
 		local bounds = plot.composition.bounds
@@ -162,8 +194,12 @@ local function scan_report()
 				local reference_y = grug_zones.terrain_height_at(
 					origin_x + reference.x, origin_z + reference.z)
 				local edge_min, edge_max = reference_y, reference_y
+				local submerged = 0
 				for ez = bounds.min.z, bounds.max.z do
 					for ex = bounds.min.x, bounds.max.x do
+						if wet(origin_x + ex, origin_z + ez) then
+							submerged = submerged + 1
+						end
 						if ex == bounds.min.x or ex == bounds.max.x or
 								ez == bounds.min.z or ez == bounds.max.z then
 							local y = grug_zones.terrain_height_at(origin_x + ex,
@@ -173,8 +209,18 @@ local function scan_report()
 						end
 					end
 				end
+				-- The margin ring is only counted when the footprint itself is dry,
+				-- because a wet footprint is already refused and the ring costs
+				-- another 200 queries per candidate.
+				local margin = -1
+				if submerged == 0 then
+					margin = submerged_count(origin_x, origin_z, bounds, PLOT_MARGIN)
+				end
 				rows[#rows + 1] = table.concat({plot.id, x, z,
-					reference_y - edge_min, edge_max - reference_y}, "\t") .. "\n"
+					reference_y - edge_min, edge_max - reference_y,
+					submerged, margin,
+					tostring(wet(origin_x + reference.x, origin_z + reference.z)),
+					bounds.max.y}, "\t") .. "\n"
 			end
 		end
 	end
@@ -295,11 +341,24 @@ end
 -- so `tools/wp13/render_blueprint.py` draws them the way it draws a
 -- composition dump.
 --
+-- The dump also DIGESTS what it wrote, over the road's own node names only.
+-- Nothing else hashes the avenue's built geometry: the overlay's manifest
+-- identity is its specification and not its cells, and the six-start engine gate
+-- excludes capitals by construction. Without this, a change to `avenue.run`
+-- would move every node of every capital road and no gate would notice.
+--
+-- The digest is taken over the ROAD cells alone -- the overlay's own palette --
+-- so the surrounding terrain, which is WP40's and moves for WP40's reasons,
+-- does not make the value churn.
+local road_names = {}
+for index = 1, #overlay.names do road_names[overlay.names[index]] = true end
+
 local function dump(name, min_x, max_x, min_y, max_y, min_z, max_z, header)
 	local file = assert(io.open(worldpath .. "/" .. name, "wb"))
 	file:write("# ", header, "\n")
 	file:write("# anchor ", anchor_x, ",", anchor_y, ",", anchor_z, "\n")
 	local written, ignored = 0, 0
+	local road, road_rows = 0, {}
 	for z = min_z, max_z do
 		for y = min_y, max_y do
 			for x = min_x, max_x do
@@ -310,12 +369,19 @@ local function dump(name, min_x, max_x, min_y, max_y, min_z, max_z, header)
 					file:write(x - anchor_x, "\t", y - anchor_y, "\t", z - anchor_z,
 						"\t", node.name, "\t", node.param2 or 0, "\n")
 					written = written + 1
+					if road_names[node.name] then
+						road = road + 1
+						road_rows[#road_rows + 1] = table.concat({x - anchor_x,
+							y - anchor_y, z - anchor_z, node.name,
+							node.param2 or 0}, ":")
+					end
 				end
 			end
 		end
 	end
 	assert(file:close())
-	return written, ignored
+	local digest = core.sha256(table.concat(road_rows, "\n"), false)
+	return written, ignored, road, digest
 end
 
 --
@@ -386,12 +452,13 @@ local run_dumps
 
 local function dump_done()
 	local spec = dump_queue[dump_index]
-	local written, ignored = dump(spec.name, spec.min_x, spec.max_x, spec.min_y,
-		spec.max_y, spec.min_z, spec.max_z, spec.header)
+	local written, ignored, road, digest = dump(spec.name, spec.min_x, spec.max_x,
+		spec.min_y, spec.max_y, spec.min_z, spec.max_z, spec.header)
 	dump_results[#dump_results + 1] = {label = spec.label, written = written,
-		ignored = ignored}
+		ignored = ignored, road = road,
+		digest = spec.label == "avenue" and digest or nil}
 	log({"event=dump", "file=" .. spec.name, "cells=" .. written,
-		"ignored=" .. ignored})
+		"ignored=" .. ignored, "road_cells=" .. road, "road_digest=" .. digest})
 	core.after(0, run_dumps)
 end
 
@@ -431,13 +498,20 @@ local function report_complete()
 		local row = dump_results[index]
 		parts[#parts + 1] = row.label .. "_cells=" .. row.written
 		parts[#parts + 1] = row.label .. "_ignored=" .. row.ignored
+		parts[#parts + 1] = row.label .. "_road_cells=" .. row.road
+		if row.digest then
+			parts[#parts + 1] = row.label .. "_road_digest=" .. row.digest
+		end
 	end
-	local surface_text, worst_fall, worst_plot = surface_report()
+	local surface_text, worst_fall, worst_plot, worst_wet, worst_wet_plot =
+		surface_report()
 	local surface_file = assert(io.open(worldpath .. "/highcourt-surface.tsv", "wb"))
 	surface_file:write(surface_text)
 	assert(surface_file:close())
 	parts[#parts + 1] = "worst_plot_fall=" .. worst_fall
 	parts[#parts + 1] = "worst_plot=" .. worst_plot
+	parts[#parts + 1] = "worst_plot_submerged=" .. worst_wet
+	parts[#parts + 1] = "worst_submerged_plot=" .. worst_wet_plot
 	local sockets = select(1, socket_report())
 	for index = 1, #sockets do parts[#parts + 1] = sockets[index] end
 	log(parts)
@@ -551,12 +625,15 @@ core.register_on_mods_loaded(function()
 		return
 	end
 	if mode == "surface" then
-		local surface_text, worst_fall, worst_plot = surface_report()
+		local surface_text, worst_fall, worst_plot, worst_wet, worst_wet_plot =
+			surface_report()
 		local file = assert(io.open(worldpath .. "/highcourt-surface.tsv", "wb"))
 		file:write(surface_text)
 		assert(file:close())
 		log({"event=complete", "mode=surface", "worst_plot_fall=" .. worst_fall,
-			"worst_plot=" .. worst_plot})
+			"worst_plot=" .. worst_plot,
+			"worst_plot_submerged=" .. worst_wet,
+			"worst_submerged_plot=" .. worst_wet_plot})
 		finished = true
 		core.request_shutdown("WP13 Highcourt surface probe complete", false, 0.2)
 		return

@@ -1,0 +1,12 @@
+plot	x	z	verdict	worst_fall	worst_rise	submerged_a	submerged_b
+market_granary	72	-28	legal	4	3	0	0
+market_stable	72	28	legal	2	4	0	0
+market_workshop	116	-28	legal	2	4	0	0
+market_counting_house	200	28	legal	2	8	0	0
+market_well	160	-52	legal	2	4	0	0
+market_watch	160	76	legal	4	6	0	0
+market_grove	76	-64	legal	0	4	0	0
+market_orchard	56	60	legal	4	4	0	0
+market_store	116	-64	legal	2	2	0	0
+
+every district plot is dry, inside the skirt and under its own roof on both worlds

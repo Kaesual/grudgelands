@@ -21,12 +21,15 @@ touched=(
 	mods/ENTITIES/grug_mobs/start_npcs.lua
 	mods/ENTITIES/grug_traders/vendors.lua
 	tools/wp13/seam_kat.lua
+	tools/wp13/highcourt_plots.lua
+	tools/wp13/highcourt_kat.lua
 	tools/wp13/integration_fixture.lua
 	tools/wp13/library_kat.lua
 	tools/wp13/engine_cases.lua
 	tools/wp13/final_micro.lua
 	tools/wp13/highcourt_timing.lua
 	tools/wp13/highcourt_probe/init.lua
+	tools/wp13/evidence/20260914-capital-parts/start_identity.lua
 	tools/wp40/r7/micro_kat_fixture.lua
 )
 

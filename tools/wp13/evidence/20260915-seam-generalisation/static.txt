@@ -10,12 +10,15 @@ mods/MAPGEN/grug_mapgen/wp13/highcourt_district.lua            parse=PASS setglo
 mods/ENTITIES/grug_mobs/start_npcs.lua                         parse=PASS setglobal=0
 mods/ENTITIES/grug_traders/vendors.lua                         parse=PASS setglobal=0
 tools/wp13/seam_kat.lua                                        parse=PASS setglobal=0
+tools/wp13/highcourt_plots.lua                                 parse=PASS setglobal=0
+tools/wp13/highcourt_kat.lua                                   parse=PASS setglobal=0
 tools/wp13/integration_fixture.lua                             parse=PASS setglobal=0
 tools/wp13/library_kat.lua                                     parse=PASS setglobal=0
 tools/wp13/engine_cases.lua                                    parse=PASS setglobal=0
 tools/wp13/final_micro.lua                                     parse=PASS setglobal=0
 tools/wp13/highcourt_timing.lua                                parse=PASS setglobal=0
 tools/wp13/highcourt_probe/init.lua                            parse=PASS setglobal=1
+tools/wp13/evidence/20260914-capital-parts/start_identity.lua  parse=PASS setglobal=0
 tools/wp40/r7/micro_kat_fixture.lua                            parse=PASS setglobal=0
 
 == luac51 -p, whole mods and tools trees ==
@@ -301,6 +304,8 @@ tools/wp13/dump_blueprint.lua:52:	os.exit(1)
 tools/wp13/dump_blueprint.lua:59:		os.exit(1)
 tools/wp13/dump_blueprint.lua:66:	os.exit(1)
 tools/wp13/dump_blueprint.lua:72:	os.exit(1)
+tools/wp13/highcourt_plots.lua:279:	os.exit(0)
+tools/wp13/highcourt_plots.lua:314:	os.exit(1)
 tools/wp13/dump_highcourt.lua:31:	os.exit(2)
 tools/wp13/dump_highcourt.lua:49:		os.exit(0)
 tools/wp13/dump_highcourt.lua:68:		os.exit(2)

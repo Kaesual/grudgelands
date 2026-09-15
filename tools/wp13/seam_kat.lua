@@ -208,8 +208,57 @@ return function(repo)
 		if kinds[index] == "reference" then reference_count = reference_count + 1 end
 	end
 	assert(reference_count >= 1, "the capital owns no terrain-relative plot")
+
+	-- THE OVERLAY'S PUBLISHED BOX IS THE ROAD'S, not the civic core's, and it
+	-- is inside the capital's hard protection. The first version of this package
+	-- published the 96-node core box for a blueprint that writes out to +-256,
+	-- and a cell count of 8 for a blueprint that has no cells at all.
+	local overlay_blueprint
+	for index = 1, #prepared.blueprints do
+		if prepared.blueprints[index].descriptor.kind == "overlay" then
+			overlay_blueprint = prepared.blueprints[index]
+		end
+	end
+	local overlay_identity = overlay_blueprint.identity
+	assert(overlay_identity.cell_count == nil,
+		"the overlay publishes a cell count, and it has no cells")
+	assert(overlay_identity.run_count == #overlay_blueprint.runs,
+		"the overlay's published population is not its run count")
+	local reach = 0
+	for index = 1, #overlay_blueprint.runs do
+		local run = overlay_blueprint.runs[index]
+		reach = math.max(reach, math.abs(run.from), math.abs(run.to),
+			math.abs(run.at) + overlay_blueprint.half + 1)
+	end
+	assert(overlay_identity.max_x >= reach and overlay_identity.min_x <= -reach,
+		"the overlay's published box is narrower than the road it describes")
+	-- The 532-node hard capital footprint of `source/simple_map.lua`, which is
+	-- what the overlay's own envelope entry is: 266 either side.
+	local PROTECTED_HALF_WIDTH = 266
+	assert(settlement.BOUNDS.capital_overlay.max.x == PROTECTED_HALF_WIDTH and
+		settlement.BOUNDS.capital_overlay.min.x == -PROTECTED_HALF_WIDTH,
+		"the overlay envelope is no longer the capital's protected footprint")
+	assert(reach <= PROTECTED_HALF_WIDTH,
+		"an avenue run reaches " .. reach ..
+		", outside the 532-node protected capital footprint")
+	-- And a run that DOES leave it is refused, so the bound is enforced and not
+	-- merely true today.
+	do
+		local rogue = {schema = "grug_wp13_capital_source_v1", core = source.core,
+			plots = source.plots, overlay = {}}
+		for key, value in pairs(source.overlay) do rogue.overlay[key] = value end
+		rogue.overlay.runs = {}
+		for index = 1, #source.overlay.runs do
+			local run = source.overlay.runs[index]
+			rogue.overlay.runs[index] = {id = run.id, axis = run.axis, at = run.at,
+				from = run.from, to = run.to}
+		end
+		rogue.overlay.runs[1].to = PROTECTED_HALF_WIDTH + 1
+		refuses("an avenue run outside the protected capital footprint",
+			settlement.prepare, capital_profile, rogue, sha)
+	end
 	say("blueprints", #prepared.blueprints, reference_count,
-		table.concat(kinds, ","))
+		table.concat(kinds, ","), "overlay_reach_" .. reach)
 
 	-- Landmarks survive the cell release, because the NPC sockets are in them.
 	local socket_anchor = {x = capital_profile.x, y = 40, z = capital_profile.z}
@@ -276,9 +325,15 @@ return function(repo)
 	assert(config.lazy == (capital_profile.lazy == true))
 
 	local height_calls = 0
+	-- Every column the successor asks about, counted: this is what makes "once
+	-- per session per plot" a statement about the plot's own column rather than
+	-- about a total that several callers share.
+	local probe_columns = {}
 	local planner_source = {}
 	function planner_source.column_values_at(x, z)
 		height_calls = height_calls + 1
+		local key = x .. ":" .. z
+		probe_columns[key] = (probe_columns[key] or 0) + 1
 		return "land", 1, "zone", "biome", "region", stub_height(x, z)
 	end
 	local anchor = {id = capital_profile.anchor_id,
@@ -327,7 +382,48 @@ return function(repo)
 		"the capital core did not pave the anchor's own support")
 	local metrics = tail:metrics()
 	assert(metrics.build_calls >= 1, "the lazy core was never built")
-	say("reserve", "anchor_root_kept", "support_written", metrics.build_calls)
+	-- THE NEGATIVE CASE, without which "the reservation works" says nothing: a
+	-- settlement that does NOT reserve its anchor root writes that cell like any
+	-- other. The six starts are exactly that, and a start's blueprint has air at
+	-- (0, 1, 0) too -- its spawn clearance -- so the same cell is the test.
+	local start_profile
+	for index = 1, #settlement.roster do
+		if settlement.roster[index].slot == "start" and not start_profile then
+			start_profile = settlement.roster[index]
+		end
+	end
+	assert(start_profile.reserve_anchor_root == nil,
+		"a start reserves an anchor root; the negative case is gone")
+	local start_source = dofile(wp40 .. "/" .. start_profile.blueprint_file)()
+	local start_prepared = settlement.prepare(start_profile, start_source, sha)
+	local start_union = {}
+	for index = 1, #start_prepared.palette do
+		start_union[index] = start_prepared.palette[index]
+	end
+	local start_refs = {}
+	for index = 1, #start_union do start_refs[start_union[index]] = index end
+	local start_content = {schema = "grug_wp13_settlement_content_v1",
+		content_names = start_union}
+	function start_content.content_ref(name) return start_refs[name] end
+	function start_content.resolve(ref, param2) return 2000 + ref, param2 end
+	local start_anchor = {id = start_profile.anchor_id,
+		numeric_id = start_profile.numeric_id, x = start_profile.x, y = 40,
+		z = start_profile.z}
+	local start_tail = settlement.config(start_prepared, start_content, sha).new({
+		zones_session = {anchor = function(zone_id, slot)
+			if zone_id == start_profile.zone_id and slot == start_profile.slot then
+				return start_anchor
+			end
+		end}})
+	local start_written = owner(start_tail, owner_origin(start_anchor.x),
+		owner_origin(start_anchor.y), owner_origin(start_anchor.z), 1)
+	local start_root = start_anchor.x .. "/" .. (start_anchor.y + 1) .. "/" ..
+		start_anchor.z
+	assert(start_written[start_root] ~= nil,
+		"a settlement that reserves nothing still skipped its anchor root, " ..
+		"so the reservation is not what keeps the capital's banner")
+	say("reserve", "anchor_root_kept", "support_written", metrics.build_calls,
+		"start_root_written")
 
 	-- A plot is projected from its reference column, not from the anchor. The
 	-- stub height field is not flat, so a plot whose reference column answers a
@@ -365,24 +461,65 @@ return function(repo)
 	assert(found > 0, "the plot was not projected from its reference column")
 	say("projection", descriptor.id, base, found)
 
-	-- The height query is asked ONCE PER SESSION per plot: settling the same
-	-- plot's owner again must not ask again.
-	local before = height_calls
+	-- The height query is asked ONCE PER SESSION PER PLOT, and the way to say
+	-- that is to count the reference-column queries themselves, not to watch a
+	-- total stop growing: the overlay's ground memo shares the same counter, so
+	-- "the number did not move" only ever meant "this owner asked nothing new".
+	--
+	-- `plot_probe` records every column the successor asks about. A plot's
+	-- reference column must appear exactly once over the whole session,
+	-- whatever order the mapchunks arrive in and however often the same plot is
+	-- settled.
+	local reference_column = (plot_x + plot.reference.x) .. ":" ..
+		(plot_z + plot.reference.z)
+	assert(probe_columns[reference_column] == 1,
+		"the plot's reference column was asked " ..
+		tostring(probe_columns[reference_column]) .. " times, not once")
 	owner(tail, owner_origin(plot_x), owner_origin(base), owner_origin(plot_z), 3)
-	local plot_queries = 0
-	for _ = 1, 0 do plot_queries = 0 end
-	assert(height_calls - before >= 0)
-	local cached = tail:metrics().height_calls
 	owner(tail, owner_origin(plot_x), owner_origin(base), owner_origin(plot_z), 4)
-	assert(tail:metrics().height_calls == cached,
-		"a second settle of the same owner asked the surface again")
-	say("height_cache", cached)
+	assert(probe_columns[reference_column] == 1,
+		"re-settling a plot's owner asked its reference column again")
+	-- And after a release and a rebuild it is STILL not asked again: the height
+	-- is session state, the cells are not.
+	local cached = tail:metrics().height_calls
+	say("height_cache", cached, probe_columns[reference_column])
 
 	----------------------------------------------------------------------
 	-- 4. Lazy release and rebuild
 	----------------------------------------------------------------------
-	local released_before = tail:metrics().release_calls
+	-- The idle window is PINNED, not read from the module: a package that
+	-- shortened it to one would otherwise still pass this section while making
+	-- every second mapchunk rebuild a capital.
+	assert(settlement.IDLE_RELEASE == 64,
+		"the lazy idle window is " .. tostring(settlement.IDLE_RELEASE) ..
+		", not the 64 plans this KAT and the record are written against")
 	local far = 8000
+	-- The window, both sides, on a FRESH session so the idle counters start
+	-- where this section can reason about them: one touch of the core's owner
+	-- builds it and puts its counter at zero, and every later plan is a miss.
+	do
+		local window_tail = config.new(dependencies)
+		owner(window_tail, owner_origin(anchor.x), owner_origin(anchor.y),
+			owner_origin(anchor.z), 1)
+		assert(window_tail:metrics().build_calls >= 1 and
+			window_tail:metrics().release_calls == 0,
+			"the fresh session did not build, or released at once")
+		for generation = 2, settlement.IDLE_RELEASE do
+			local plan = {}
+			window_tail:bind_plan({x = far, y = 0, z = far},
+				{x = far + 79, y = 79, z = far + 79}, plan, generation)
+		end
+		assert(window_tail:metrics().release_calls == 0,
+			"a lazy settlement released its cells before the idle window was out")
+		for generation = settlement.IDLE_RELEASE + 1, settlement.IDLE_RELEASE + 3 do
+			local plan = {}
+			window_tail:bind_plan({x = far, y = 0, z = far},
+				{x = far + 79, y = 79, z = far + 79}, plan, generation)
+		end
+		assert(window_tail:metrics().release_calls >= 1,
+			"a lazy settlement never released after its idle window was out")
+	end
+	local released_before = tail:metrics().release_calls
 	for generation = 5, 5 + settlement.IDLE_RELEASE + 2 do
 		local plan = {}
 		tail:bind_plan({x = far, y = 0, z = far},
@@ -468,6 +605,32 @@ return function(repo)
 		assert(palette_set[whole.cells[index].name],
 			"the run writes " .. whole.cells[index].name ..
 			", which is outside the overlay palette")
+	end
+	-- Inclusion is only half of it. The seam must REFUSE a run that writes a
+	-- name the channel was not closed over, or the check above is a promise
+	-- nothing keeps: drive one whose run returns a foreign cell and watch the
+	-- settle fail rather than write an unresolvable ref.
+	do
+		local rogue_profile = {}
+		for key, value in pairs(capital_profile) do rogue_profile[key] = value end
+		local rogue_source = {schema = "grug_wp13_capital_source_v1",
+			core = source.core, plots = source.plots, overlay = {}}
+		for key, value in pairs(source.overlay) do rogue_source.overlay[key] = value end
+		rogue_source.overlay.run = function(spec, surface_fn)
+			local piece = source.overlay.run(spec, surface_fn)
+			if #piece.cells > 0 then
+				piece.cells[1] = {x = piece.cells[1].x, y = piece.cells[1].y,
+					z = piece.cells[1].z, name = "default:mese", param2 = 0}
+			end
+			return piece
+		end
+		local rogue_prepared = settlement.prepare(rogue_profile, rogue_source, sha)
+		local rogue_tail = settlement.config(rogue_prepared, content, sha).new(
+			dependencies)
+		-- An owner over a run, so the overlay is actually evaluated.
+		refuses("an overlay cell whose name the content channel never saw",
+			owner, rogue_tail, owner_origin(anchor.x + 100),
+			owner_origin(40), owner_origin(anchor.z), 300)
 	end
 	-- Cross-run arbitration, on the mapchunk that holds a real crossing: an
 	-- avenue and a side of the ring street meet there, so the second run finds

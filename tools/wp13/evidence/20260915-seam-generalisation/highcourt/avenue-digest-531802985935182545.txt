@@ -1,0 +1,17 @@
+9d6f0167f043f8993edef2a44b60afd37a530e07691ccff9c600b37bd93640a2  seed=531802985935182545 avenue_road_cells=1595
+# The SHA-256 of Highcourt's avenue and ring street as READ BACK OUT OF THE
+# FINISHED MAP: every cell whose name belongs to the overlay's own palette, in
+# the dumped band along the east avenue, anchor-relative, "x:y:z:name:param2"
+# joined by newlines.
+#
+# Why this file exists: nothing else hashes the road's built geometry. The
+# overlay's manifest identity is its SPECIFICATION -- it has no cells until a
+# surface arrives -- and the six-start engine gate excludes capitals by
+# construction, so a change to `avenue.run` could move every node of every
+# capital road without a single gate saying so. `tools/wp13/run_highcourt.sh`
+# compares this value on every full pass.
+#
+# It is NOT frozen forever. WP40 terrain changes move the ground the road
+# follows and therefore this digest; the gate is "look at what moved and say
+# why", not "never changes". Taken on main 0f6a80f with the causeway surface
+# and the lamp footings of the 2026-09-15 review round.

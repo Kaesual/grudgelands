@@ -57,8 +57,26 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 	if type(socket_rows) ~= "table" or #socket_rows < 1 then
 		fail("settlement socket roster differs")
 	end
+	-- The registration ORDER is "every start, then everything else", and the
+	-- list of slots is derived from the roster rather than typed here: a roster
+	-- that gains a village or an outpost slot must register it, not be silently
+	-- skipped by a literal pair. Only the position of "start" is a rule -- it is
+	-- what makes `settlement_sockets(race_id)` answer with a race's START -- so
+	-- starts go first and every other slot follows in roster order.
 	local socket_count = 0
-	for _, wanted in ipairs({"start", "capital"}) do
+	local slot_order, slot_seen = {"start"}, {start = true}
+	for index = 1, #socket_rows do
+		local slot = socket_rows[index].slot
+		if type(slot) ~= "string" or slot == "" then
+			fail("settlement slot differs: " .. tostring(socket_rows[index].key))
+		end
+		if not slot_seen[slot] then
+			slot_seen[slot] = true
+			slot_order[#slot_order + 1] = slot
+		end
+	end
+	local registered_rows = 0
+	for _, wanted in ipairs(slot_order) do
 		for index = 1, #socket_rows do
 			local row = socket_rows[index]
 			-- The anchor is the same fitted one the settlement writer projects the
@@ -68,10 +86,15 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 				fail("settlement socket anchor differs: " .. tostring(row.key))
 			end
 			if row.slot == wanted then
+				registered_rows = registered_rows + 1
 				socket_count = socket_count + core_owner.register_settlement_sockets(
 					row.key, row.race, row.anchor, row.sockets)
 			end
 		end
+	end
+	if registered_rows ~= #socket_rows then
+		fail("a settlement was never registered: " .. registered_rows .. " of " ..
+			#socket_rows)
 	end
 
 	local payload = {schema = "grug_wp40_r7_ipc_v1",

@@ -122,4 +122,37 @@ printf 'exit=%s errors=%s complete=%s log=%s\n' "$status" "$errors" "$complete" 
 	echo "WP13 Highcourt pass FAILED; inspect $log" >&2
 	exit 1
 }
+
+# THE ROAD'S BUILT GEOMETRY, checked against a frozen value.
+#
+# Nothing else in the tree hashes it: the overlay's manifest identity is its
+# SPECIFICATION (it has no cells until a surface arrives) and the six-start
+# engine gate excludes capitals by construction, so a change to `avenue.run`
+# could move every node of every capital road in silence. The probe digests the
+# avenue it read back out of the finished map; this compares that digest with
+# the one the evidence carries for this seed.
+#
+# WP40 terrain changes move the ground the road follows and therefore this
+# value: it is a "look at what moved" gate, not a frozen-forever constant, and
+# the expectation file says which seed and which main commit it was taken on.
+if [[ "$mode" == "full" ]]; then
+	digest="$(grep -o 'avenue_road_digest=[0-9a-f]*' "$log" | tail -1 |
+		cut -d= -f2)"
+	road_cells="$(grep -o 'avenue_road_cells=[0-9]*' "$log" | tail -1 |
+		cut -d= -f2)"
+	printf '%s  seed=%s avenue_road_cells=%s\n' "$digest" "$seed" "$road_cells" \
+		>"$output/avenue-digest.txt"
+	expected_file="$repo/tools/wp13/evidence/20260915-seam-generalisation/highcourt/avenue-digest-$seed.txt"
+	if [[ -f "$expected_file" ]]; then
+		expected="$(awk 'NR==1 {print $1}' "$expected_file")"
+		if [[ "$digest" != "$expected" ]]; then
+			printf 'WP13 Highcourt: the built avenue moved.\n  now      %s\n  expected %s (%s)\n' \
+				"$digest" "$expected" "$expected_file" >&2
+			exit 1
+		fi
+		echo "avenue road digest matches the committed value"
+	else
+		echo "avenue road digest recorded (no committed value for seed $seed yet)"
+	fi
+fi
 echo "WP13 Highcourt pass PASS: $output"

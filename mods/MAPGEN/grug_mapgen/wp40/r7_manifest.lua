@@ -44,11 +44,14 @@ return function(canonical, raw_sha256, settlement_order)
 		"p9g_policy", "p9g_order", "p9g_overwrite", "source_projection_sha256",
 		"production_enabled",
 	}
-	-- The ten fields every WP13 blueprint publishes, in this order, under its
-	-- own field prefix.
+	-- The eleven fields every WP13 blueprint publishes. `population` is the
+	-- blueprint's own size in the unit its kind HAS: a cell count for a
+	-- blueprint made of cells, a run count for an overlay, which has none until
+	-- a surface arrives. `population_kind` says which, so the row cannot be read
+	-- as a cell count it never was.
 	local BLUEPRINT_FIELDS = {"blueprint_schema", "blueprint_sha256",
-		"cell_count", "delta_schema", "delta_sha256", "opcode", "class",
-		"policy", "order", "overwrite"}
+		"population", "population_kind", "delta_schema", "delta_sha256",
+		"opcode", "class", "policy", "order", "overwrite"}
 
 	local function fail(message)
 		error("WP40 R7 manifest: " .. message, 0)
@@ -351,14 +354,23 @@ return function(canonical, raw_sha256, settlement_order)
 				-- +-63 / y -2..24 typed out here, which is the third of the three
 				-- places contract section 2.2.1 names.
 				local bounds = wanted.bounds
+				-- A blueprint with cells publishes `cell_count`; an OVERLAY has no
+				-- cells until a surface arrives and publishes `run_count`
+				-- instead. Exactly one of the two, so a row cannot quietly claim
+				-- a cell count it does not have.
+				local population = entry.kind == "overlay" and
+					entry.identity.run_count or entry.identity.cell_count
 				if type(entry) ~= "table" or entry.id ~= wanted.id or
 						entry.prefix ~= wanted.prefix or entry.kind ~= wanted.kind or
 						type(entry.identity) ~= "table" or
 						entry.identity.schema ~= wanted.identity_schema or
 						type(entry.identity.sha256) ~= "string" or
 						#entry.identity.sha256 ~= 64 or
-						type(entry.identity.cell_count) ~= "number" or
-						entry.identity.cell_count < 1 or
+						type(population) ~= "number" or population < 1 or
+						(entry.kind == "overlay") ~=
+							(entry.identity.cell_count == nil) or
+						(entry.kind == "overlay") ~=
+							(entry.identity.run_count ~= nil) or
 						type(entry.identity.min_x) ~= "number" or
 						type(entry.identity.max_x) ~= "number" or
 						type(entry.identity.min_y) ~= "number" or
@@ -463,7 +475,15 @@ return function(canonical, raw_sha256, settlement_order)
 					content_sha256 = settlement_content.digest,
 					successor_ref_min = 99,
 					successor_ref_max = 98 + settlement_content.count,
-					cell_count = entry.identity.cell_count,
+					population = entry.kind == "overlay" and
+						entry.identity.run_count or entry.identity.cell_count,
+					population_kind = entry.kind == "overlay" and "runs" or "cells",
+					reach_min_x = entry.identity.min_x,
+					reach_min_y = entry.identity.min_y,
+					reach_min_z = entry.identity.min_z,
+					reach_max_x = entry.identity.max_x,
+					reach_max_y = entry.identity.max_y,
+					reach_max_z = entry.identity.max_z,
 					clipping = "current_mapchunk_owner_intersection_v1",
 				}
 			end
@@ -521,7 +541,8 @@ return function(canonical, raw_sha256, settlement_order)
 				local prefix = entry.prefix
 				values[prefix .. "_blueprint_schema"] = entry.identity.schema
 				values[prefix .. "_blueprint_sha256"] = entry.identity.sha256
-				values[prefix .. "_cell_count"] = entry.identity.cell_count
+				values[prefix .. "_population"] = delta.population
+				values[prefix .. "_population_kind"] = delta.population_kind
 				values[prefix .. "_delta_schema"] = delta.schema
 				values[prefix .. "_delta_sha256"] = graph_digest(delta)
 				values[prefix .. "_opcode"] = 37

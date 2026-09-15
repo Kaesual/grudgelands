@@ -6,6 +6,35 @@ output="${1:?usage: run_engine.sh ABSENT_OUTPUT ENGINE_OR_LAUNCHER [ARGS]}"
 shift
 [[ "$output" = /* && ! -e "$output" && "$#" -gt 0 ]] || exit 2
 mkdir -p "$output"
+# Leave no server behind, however this exits -- an interrupt and a failed phase
+# included. Scoped by this run's own output path, which every server this run
+# starts names on its command line: comparing the whole `luanti.bin` process set
+# would also catch the user's own GUI client, which runs on the same machine.
+cleanup() {
+	local status=$?
+	local pids stragglers=""
+	# `|| true` on both halves, and not for tidiness: this script runs under
+	# `set -o pipefail`, where a `pgrep` that finds nothing (exit 1 -- the
+	# ordinary case) would fail the whole pipeline and, inside an EXIT trap
+	# under `set -e`, turn a passing run into a failing one. That is exactly
+	# what the first version of this trap did.
+	pids="$(pgrep -f 'luanti.bin' 2>/dev/null || true)"
+	local pid
+	for pid in $pids; do
+		if tr '\0' ' ' <"/proc/$pid/cmdline" 2>/dev/null |
+				grep -qF -- "$output"; then
+			stragglers="$stragglers $pid"
+		fi
+	done
+	if [[ -n "$stragglers" ]]; then
+		kill -TERM $stragglers 2>/dev/null || true
+		sleep 1
+		kill -KILL $stragglers 2>/dev/null || true
+	fi
+	return "$status"
+}
+trap cleanup EXIT
+trap 'exit 130' HUP INT TERM
 cp "$repo/tools/wp13/engine_cases.lua" "$output/forward.lua"
 sed 's/local reverse = false/local reverse = true/' \
 	"$repo/tools/wp13/engine_cases.lua" >"$output/reverse.lua"

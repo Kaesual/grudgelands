@@ -62,6 +62,15 @@ M.BOUNDS = {
 	start = {min = {x = -63, y = -2, z = -63}, max = {x = 63, y = 24, z = 63}},
 	capital_core = {min = {x = -47, y = -2, z = -47}, max = {x = 47, y = 40, z = 47}},
 	capital_plot = {min = {x = -15, y = -6, z = -15}, max = {x = 15, y = 24, z = 15}},
+	-- The avenues are the one blueprint that legitimately leaves the civic
+	-- core: they run to the gate stations at +-256. Their authorized volume is
+	-- therefore the capital's own HARD PROTECTION -- the 532-node square of
+	-- `source/simple_map.lua`'s `hard_capital_build_plus_apron_v1`, 266 either
+	-- side of the anchor. A road outside it would write mutable world, which is
+	-- what that protection exists to prevent, so the envelope and the
+	-- protection are deliberately the same number in one place.
+	capital_overlay = {min = {x = -266, y = -2, z = -266},
+		max = {x = 266, y = 40, z = 266}},
 }
 
 -- How many consecutive plans may miss a lazy settlement before its cells are
@@ -412,6 +421,14 @@ local function prepare_overlay(fail, descriptor, overlay)
 		table.concat({"carriageway", overlay.width, overlay.lamp_spacing,
 			overlay.reach}, "\t") .. "\n"}
 	local runs, seen = {}, {}
+	local half = (overlay.width - 1) / 2 + 1
+	local reach = {min = {x = 0, y = 0, z = 0}, max = {x = 0, y = 0, z = 0}}
+	local function stretch(min_x, max_x, min_z, max_z)
+		if min_x < reach.min.x then reach.min.x = min_x end
+		if max_x > reach.max.x then reach.max.x = max_x end
+		if min_z < reach.min.z then reach.min.z = min_z end
+		if max_z > reach.max.z then reach.max.z = max_z end
+	end
 	for index = 1, #overlay.runs do
 		local run = overlay.runs[index]
 		if type(run) ~= "table" or type(run.id) ~= "string" or run.id == "" or
@@ -422,11 +439,39 @@ local function prepare_overlay(fail, descriptor, overlay)
 		integer(run.at, "run centre line", -1023, 1023)
 		integer(run.from, "run start", -1023, 1023)
 		integer(run.to, "run end", run.from, 1023)
+		if run.axis == "x" then
+			stretch(run.from, run.to, run.at - half, run.at + half)
+		else
+			stretch(run.at - half, run.at + half, run.from, run.to)
+		end
 		runs[index] = {id = run.id, axis = run.axis, at = run.at,
 			from = run.from, to = run.to}
 		bytes[#bytes + 1] = table.concat({"run", index, run.id, run.axis,
 			run.at, run.from, run.to}, "\t") .. "\n"
 	end
+	-- THE OVERLAY'S REACH, and the protection it has to stay inside.
+	--
+	-- The manifest used to publish the settlement's PRIMARY bounds for the
+	-- overlay -- the 96-node civic core -- while the road it describes runs out
+	-- to the gate stations at +-256 and writes tens of thousands of cells there.
+	-- That is not a box the identity row may claim. The real reach is computed
+	-- from the runs, and it is checked against the hard capital footprint of
+	-- `source/simple_map.lua` (`hard_capital_build_plus_apron_v1`, total width
+	-- 532, i.e. 266 either side of the anchor): a road outside it would write
+	-- mutable world, which is exactly what a capital's protection exists to
+	-- prevent.
+	if reach.min.x < descriptor.bounds.min.x or
+			reach.max.x > descriptor.bounds.max.x or
+			reach.min.z < descriptor.bounds.min.z or
+			reach.max.z > descriptor.bounds.max.z then
+		fail(descriptor.id ..
+			": an overlay run leaves the 532-node protected capital footprint")
+	end
+	-- The vertical reach is the settlement's own authorized volume: the road
+	-- follows the ground, and the ground of a capital envelope is inside it.
+	reach.min.y, reach.max.y = descriptor.bounds.min.y, descriptor.bounds.max.y
+	bytes[#bytes + 1] = table.concat({"reach", reach.min.x, reach.min.y,
+		reach.min.z, reach.max.x, reach.max.y, reach.max.z}, "\t") .. "\n"
 	local names = {}
 	for index = 1, #overlay.names do
 		local name = overlay.names[index]
@@ -440,7 +485,11 @@ local function prepare_overlay(fail, descriptor, overlay)
 	return {runs = runs, palette = names, identity_bytes = table.concat(bytes),
 		run = overlay.run, half = (overlay.width - 1) / 2,
 		lamp_spacing = overlay.lamp_spacing, reach = overlay.reach,
-		width = overlay.width}
+		width = overlay.width, bounds = reach,
+		-- The count the identity is written from is a RUN count, not a cell
+		-- count: an overlay has no cells until a surface arrives, and the
+		-- manifest row says so rather than publishing an 8 that looks like one.
+		run_count = #runs}
 end
 
 local CAPITAL_SOURCE_SCHEMA = "grug_wp13_capital_source_v1"
@@ -512,8 +561,9 @@ function M.descriptors(profile, source)
 			identity_schema = identity_schema_of(fail, plot.schema),
 			offset = {x = plot.x, z = plot.z}, build = plot.build})
 	end
+	local overlay_bounds = M.BOUNDS.capital_overlay
 	add({id = "avenue", prefix = profile.key .. "_avenue", kind = "overlay",
-		bounds = primary, blueprint_schema = source.overlay.schema,
+		bounds = overlay_bounds, blueprint_schema = source.overlay.schema,
 		identity_schema = identity_schema_of(fail, source.overlay.schema),
 		overlay = source.overlay})
 	return list
@@ -560,7 +610,11 @@ function M.prepare(profile, source, raw_sha256)
 		local box = prepared.bounds or descriptor.bounds
 		prepared.identity = {schema = descriptor.identity_schema,
 			sha256 = hex(digest),
-			cell_count = prepared.cells and #prepared.cells or #prepared.runs,
+			-- A blueprint with cells publishes its cell count; an OVERLAY has
+			-- none until a surface arrives, so it publishes the size of its
+			-- specification -- the number of runs -- under its own field name.
+			cell_count = prepared.cells and #prepared.cells or nil,
+			run_count = prepared.run_count,
 			min_x = box.min.x, min_y = box.min.y, min_z = box.min.z,
 			max_x = box.max.x, max_y = box.max.y, max_z = box.max.z}
 		prepared.identity_bytes = nil

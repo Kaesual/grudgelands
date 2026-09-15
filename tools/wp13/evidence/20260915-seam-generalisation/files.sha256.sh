@@ -45,6 +45,7 @@ here="tools/wp13/evidence/20260915-seam-generalisation"
 		tools/wp13/run_engine.sh \
 		tools/wp13/run_highcourt.sh \
 		tools/wp13/seam_kat.lua \
+		tools/wp13/highcourt_plots.lua \
 		tools/wp13/settlement_sockets_kat.lua \
 		tools/wp13/start_npcs_kat.lua \
 		tools/wp13/stub_registry.lua \

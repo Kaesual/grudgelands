@@ -258,11 +258,24 @@ local function loader(directory)
 		-- carriageway, every `spacing` nodes. The verge column carries the
 		-- lamp at its OWN surface, so a standard beside a terrace joint
 		-- stands on the ground it is next to and not on the road's level.
+		--
+		-- EVERY STANDARD GETS ITS OWN FOOTING, at the verge column's surface and
+		-- in the kerb's material. On ordinary ground that cell is already solid
+		-- and the footing is a paving stone under the post; over water it is the
+		-- only thing between the post and the river. The run cannot tell the two
+		-- apart -- it is a pure function of one surface number and knows nothing
+		-- about water -- so it lays the footing unconditionally, which is both
+		-- correct and cheaper than a rule with a case in it.
+		--
+		-- This is not hypothetical: the first engine pass of the WP13 seam took
+		-- Highcourt's east avenue across a river as a causeway, and sixteen
+		-- standards stood in the water with nothing under them.
 		for p = from, to do
 			if (p - phase) % spacing == 0 then
 				for _, offset in ipairs({-half - 1, half + 1}) do
 					local x, z = column(p, offset)
 					local y = height(x, z)
+					buf:put(x, y, z, kerb(palette))
 					buf:put(x, y + 1, z, palette.node("post"))
 					buf:put(x, y + 2, z, palette.node("post"))
 					parts.floor_torch(buf, palette, x, y + 3, z)
