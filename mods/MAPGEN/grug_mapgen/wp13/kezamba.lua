@@ -1022,23 +1022,37 @@ local function loader(directory)
 		return list
 	end
 
-	-- THE LAKE RAIL.
+	-- THE LAKE RAIL AND THE CAUSEWAY RAIL, which are one rule with two halves.
 	--
 	-- The seam hands an overlay the WALKABLE surface of a column, which over
 	-- water is the water's own surface (`r7_settlement.lua`), so the east and
 	-- north avenues cross the cenote as a solid causeway one node over it. That
 	-- is the right geometry and the wrong picture for a troll capital: what
-	-- belongs there is a railed timber walk.
+	-- belongs there is a railed timber walk. And where the road leaves the lake
+	-- it runs down the blend from the flat civic pad to the terraces, which
+	-- falls faster than a one-Lipschitz road may descend, so the avenue leaves
+	-- the ground on an embankment with nothing at its edge -- the same thing the
+	-- first engine pass of Dur Brannoc found and the seam package called "the
+	-- causeway has no parapet".
 	--
-	-- `avenue.lua` is NOT where this goes -- it is the shared road module and
-	-- Highcourt's and Dur Brannoc's built roads are frozen against it. It goes
-	-- here instead, as a pure function of the piece the road module just
-	-- returned and of the COMMITTED LAKE MASK: a kerb column inside the mask is
-	-- a column of road standing on the cenote, and one course of junglewood
-	-- railing on it is the rail. Both inputs are chunk-independent -- a piece of
-	-- a run is exactly that stretch of the whole run, and the mask is a
-	-- constant -- so the rail is too, which is what the KAT's cut-at-every-
-	-- column test proves.
+	-- `avenue.lua` is NOT where either goes: it is the shared road module and
+	-- Highcourt's and Dur Brannoc's built roads are frozen against it. Both go
+	-- here, as a pure function of the piece the road module just returned and of
+	-- the COMMITTED LAKE MASK:
+	--
+	--   * the two KERB lanes are the road's outermost, at `at +- half`;
+	--   * a kerb column inside the mask is a column of road standing on the
+	--     cenote, and gets a rail;
+	--   * a kerb column whose cells span `RAIL_FILL` or more courses is a column
+	--     the road had to FILL, which is exactly where the drop is, and gets one
+	--     too. Three courses and not two, for Dur Brannoc's reason: a column one
+	--     or two above its own ground is a terrace stair, and a rail on every
+	--     tread would turn the ordinary road into a trench.
+	--
+	-- Both inputs are chunk-independent -- a piece of a run is exactly that
+	-- stretch of the whole run, and the mask is a constant -- so the rail is
+	-- too, which is what the KAT's cut-at-every-column test proves.
+	local RAIL_FILL = 3
 	local function lake_rail(palette, spec, piece)
 		local width = spec.width
 		if type(width) ~= "number" or width % 2 ~= 1 then
@@ -1046,31 +1060,37 @@ local function loader(directory)
 		end
 		local half = (width - 1) / 2
 		local kerb_a, kerb_b = spec.at - half, spec.at + half
-		local high, order = {}, {}
+		local low, high, order = {}, {}, {}
 		for index = 1, #piece.cells do
 			local cell = piece.cells[index]
 			local across = (spec.axis == "x") and cell.z or cell.x
-			if (across == kerb_a or across == kerb_b) and
-					mask.lagoon(cell.x, cell.z) then
+			if across == kerb_a or across == kerb_b then
 				local key = cell.x .. ":" .. cell.z
 				if high[key] == nil then
-					high[key] = cell.y
+					low[key], high[key] = cell.y, cell.y
 					order[#order + 1] = {key = key, x = cell.x, z = cell.z}
-				elseif cell.y > high[key] then
-					high[key] = cell.y
+				else
+					if cell.y < low[key] then low[key] = cell.y end
+					if cell.y > high[key] then high[key] = cell.y end
 				end
 			end
 		end
 		local name = palette.node("railing")
-		local added = 0
+		local added, over_water = 0, 0
 		for index = 1, #order do
 			local column = order[index]
-			piece.cells[#piece.cells + 1] = {x = column.x,
-				y = high[column.key] + 1, z = column.z, name = name,
-				param2 = 0}
-			added = added + 1
+			local wet = mask.lagoon(column.x, column.z)
+			if wet or high[column.key] - low[column.key] >= RAIL_FILL then
+				piece.cells[#piece.cells + 1] = {x = column.x,
+					y = high[column.key] + 1, z = column.z, name = name,
+					param2 = 0}
+				added = added + 1
+				if wet then over_water = over_water + 1 end
+			end
 		end
 		piece.rail = added
+		piece.rail_over_water = over_water
+		piece.rail_fill = RAIL_FILL
 		return piece
 	end
 

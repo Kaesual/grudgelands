@@ -822,17 +822,43 @@ return function(repo)
 			if whole.rail then
 				local rail_name = road.node("railing")
 				local rail_seen = 0
+				-- A RAIL STANDS ON A KERB, AND ONLY WHERE THE ROAD NEEDS
+				-- ONE: over the lake, or on a column the road had to fill by
+				-- three courses or more, which is the embankment. Both halves
+				-- are read back off the piece rather than trusted.
+				local across_half = (avenue.WIDTH - 1) / 2
+				local span = {}
+				for _, cell in ipairs(whole.cells) do
+					local across = (run.axis == "x") and (cell.z - run.at) or
+						(cell.x - run.at)
+					if math.abs(across) == across_half and
+							cell.name ~= rail_name then
+						local key = cell.x .. ":" .. cell.z
+						local box = span[key]
+						if box == nil then span[key] = {cell.y, cell.y}
+						else
+							if cell.y < box[1] then box[1] = cell.y end
+							if cell.y > box[2] then box[2] = cell.y end
+						end
+					end
+				end
 				for _, cell in ipairs(whole.cells) do
 					if cell.name == rail_name then
-						assert(mask.lagoon(cell.x, cell.z),
-							"kezamba overlay: the run " .. run.id ..
-							" rails a column at " .. cell.x .. "," .. cell.z ..
-							" that is not the lake")
 						local across = (run.axis == "x") and
 							(cell.z - run.at) or (cell.x - run.at)
-						assert(math.abs(across) == (avenue.WIDTH - 1) / 2,
+						assert(math.abs(across) == across_half,
 							"kezamba overlay: the run " .. run.id ..
 							" rails a column that is not a kerb")
+						local box = span[cell.x .. ":" .. cell.z]
+						assert(mask.lagoon(cell.x, cell.z) or
+							(box ~= nil and box[2] - box[1] >= whole.rail_fill),
+							"kezamba overlay: the run " .. run.id ..
+							" rails the column " .. cell.x .. "," .. cell.z ..
+							", which is neither lake nor embankment")
+						assert(box ~= nil and cell.y == box[2] + 1,
+							"kezamba overlay: the run " .. run.id ..
+							" rails " .. cell.x .. "," .. cell.z ..
+							" somewhere other than on top of its own kerb")
 						rail_seen = rail_seen + 1
 					end
 				end
