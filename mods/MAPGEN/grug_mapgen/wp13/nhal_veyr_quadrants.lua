@@ -29,12 +29,17 @@
 --
 -- WHY THE FOUR GRIDS ARE STILL NOT ONE GRID TURNED FOUR TIMES. With no water
 -- in the envelope the obvious implementation nearly works, and the table below
--- is what "nearly" costs: of the 36 lots, 30 stand at the authored layout
--- rotated into their quadrant, four slid 2 to 6 nodes off a terrace riser, and
--- two of the north-east's slid about 40 because the ground there rises 8 and
--- falls 9 under a 31-node footprint. The terrain is radially TERRACED but not
--- radially symmetric: the blight north of the anchor climbs where the ground
--- east of it drops.
+-- is what "nearly" costs. Of the 36 district lots, 32 are the authored layout
+-- rotated into their quadrant and slid at most twelve nodes -- three of the
+-- four grids carry a two-node shift in z that the whole-grid search found, and
+-- five lots slid a further four to twelve off a riser -- and FOUR had to move
+-- 38 to 42 nodes, because the ground under them falls or rises more than the
+-- skirt and the clear allow whatever the grid does. Of the 16 fill lots, ten
+-- moved, four of them the full width of a lot.
+--
+-- The terrain is radially TERRACED but not radially symmetric: the blight
+-- north of the anchor climbs where the ground east of it drops, so the same
+-- authored position is flat in one quarter and on a riser in the next.
 --
 --
 -- 2. A LOT IS A LOT, WHICHEVER DISTRICT STANDS ON IT
@@ -106,15 +111,29 @@ local function loader()
 	-- the most lots on the authored layout wins, and on this terrain two nodes
 	-- north takes the north-east, north-west and south-west grids off a
 	-- terrace riser that would otherwise have cost each of them a lot.
+	--
+	-- THE FOUR THAT MOVED FAR, and what was under them, measured on both gate
+	-- seeds over the lot's own footprint plus its two-node margin:
+	--
+	--   * `southeast` lot 6, (160, -116) -> (198, -116): a fall of 7 against a
+	--     skirt of 6;
+	--   * `northeast` lot 6, (116, 162) -> (116, 202): a rise of 8 against a
+	--     clear of 8, with nothing to spare;
+	--   * `northeast` lot 8, (160, 118) -> (198, 118): a fall of 9;
+	--   * `southwest` lot 9, (-160, -158) -> (-172, -158): a fall of 6, which
+	--     is the skirt exactly and is the one case where this table is
+	--     TIGHTER than the rule -- `nhal_veyr_plots.lua` derives against a
+	--     fall of 5, because its input samples every fourth column and can
+	--     understate a relief by a node.
 	M.LOTS = {
 		southeast = {
 			{x = 72, z = -72}, {x = 116, z = -72}, {x = 160, z = -72},
-			{x = 72, z = -116}, {x = 116, z = -116}, {x = 162, z = -116},
+			{x = 72, z = -116}, {x = 116, z = -116}, {x = 198, z = -116},
 			{x = 72, z = -160}, {x = 116, z = -160}, {x = 160, z = -160},
 		},
 		northeast = {
 			{x = 72, z = 74}, {x = 72, z = 118}, {x = 72, z = 162},
-			{x = 116, z = 74}, {x = 116, z = 118}, {x = 116, z = 202},
+			{x = 116, z = 72}, {x = 116, z = 118}, {x = 116, z = 202},
 			{x = 160, z = 74}, {x = 198, z = 118}, {x = 160, z = 162},
 		},
 		northwest = {
@@ -123,9 +142,9 @@ local function loader()
 			{x = -72, z = 162}, {x = -116, z = 162}, {x = -158, z = 162},
 		},
 		southwest = {
-			{x = -72, z = -70}, {x = -68, z = -116}, {x = -72, z = -160},
+			{x = -76, z = -70}, {x = -68, z = -116}, {x = -72, z = -160},
 			{x = -116, z = -70}, {x = -116, z = -114}, {x = -116, z = -158},
-			{x = -160, z = -70}, {x = -160, z = -114}, {x = -160, z = -158},
+			{x = -160, z = -70}, {x = -160, z = -114}, {x = -172, z = -158},
 		},
 	}
 
@@ -182,7 +201,7 @@ local function loader()
 	-- in the hole lot 8 left when it slid outward.
 	M.FILL_LOTS = {
 		southeast = {
-			{x = 208, z = -104}, {x = 104, z = -210},
+			{x = 208, z = -82}, {x = 104, z = -210},
 			{x = 200, z = -200}, {x = 78, z = -188},
 		},
 		northeast = {
@@ -191,7 +210,7 @@ local function loader()
 		},
 		northwest = {
 			{x = -208, z = 104}, {x = -106, z = 208},
-			{x = -200, z = 200}, {x = -80, z = 190},
+			{x = -202, z = 200}, {x = -80, z = 190},
 		},
 		southwest = {
 			{x = -104, z = -208}, {x = -208, z = -104},

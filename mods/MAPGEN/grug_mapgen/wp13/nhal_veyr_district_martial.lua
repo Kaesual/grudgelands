@@ -149,7 +149,15 @@ local function loader(directory)
 				dressing.standard(buf, palette, 7, -6, 5)
 				dressing.fence_line(buf, palette, -11, 11, 11, 11)
 				dressing.wood_pile(buf, palette, -9, -8, 3, "x")
-				dressing.blight_flora(buf, palette, -10, -5, 10, 10, 9, 2, 3)
+				-- The flora is sown in two bands with the SOCKET ROW left
+				-- out between them. `dressing.blight_flora` sows any column
+				-- whose ground is its own and whose cell above is free, and a
+				-- standing position is exactly a free cell above its own
+				-- ground: a dead shrub in a sparring guard's feet is a socket
+				-- with no headroom, which is what the KAT said about the first
+				-- version of this row.
+				dressing.blight_flora(buf, palette, -10, 2, 10, 10, 9, 2, 3)
+				dressing.blight_flora(buf, palette, -10, -8, 10, -3, 9, 2, 3)
 				dressing.bench(buf, palette, -3, -10, 0, 3, "x")
 			end,
 			extra_sockets = function()
@@ -171,7 +179,15 @@ local function loader(directory)
 				local dressing = area.dressing
 				dressing.berm(buf, palette, -9, 4, 9, 9, 3)
 				dressing.palisade(buf, palette, -11, 11, 11, 11, 3)
-				dressing.blight_flora(buf, palette, -10, -5, 10, 3, 7, 2, 2)
+				-- The flora is sown in two bands with the SOCKET ROW left
+				-- out between them. `dressing.blight_flora` sows any column
+				-- whose ground is its own and whose cell above is free, and a
+				-- standing position is exactly a free cell above its own
+				-- ground: a dead shrub in a sparring guard's feet is a socket
+				-- with no headroom, which is what the KAT said about the first
+				-- version of this row.
+				dressing.blight_flora(buf, palette, -10, -8, 10, -6, 7, 2, 2)
+				dressing.blight_flora(buf, palette, -10, -2, 10, 3, 7, 2, 2)
 				-- The quarry face: two courses of masonry standing clear, so
 				-- the miner's pick meets stone at chest height.
 				for x = -7, -3 do
@@ -191,9 +207,9 @@ local function loader(directory)
 			end,
 			extra_sockets = function()
 				return {
-					plots.work("face_west", "mine", -5, -5, 0),
-					plots.work("face_east", "mine", 5, -5, 0),
-					plots.spare("rampart", 10, -10, 0),
+					plots.work("face_west", "mine", -5, -4, 0),
+					plots.work("face_east", "mine", 5, -4, 0),
+					plots.spare("rampart", 8, -10, 0),
 				}
 			end},
 		-- 3. THE PYRE COURT, where the watch burns its own: the candle court

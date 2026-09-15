@@ -215,8 +215,16 @@ local function loader(directory)
 		-- candle on a two-course standard sits at y = 3 and a mourner standing
 		-- at y = 1 never sees it. A votive light on a single block is at y = 2,
 		-- which is in range -- and is also what a candle at a grave looks like.
+		--
+		-- They stand on the plinth's FRONT ROW either side of the doorstep,
+		-- two nodes off the axis, and not on its outer corners. The corners
+		-- are where the plot builder puts the bench every plot carries beside
+		-- its door -- `nhal_veyr_plot.lua` writes it at `(3, z0 + 2)` and a
+		-- tomb's plinth makes that exactly the corner column -- so a candle
+		-- there had its masonry base replaced by a seat and its light left
+		-- hanging on a stair. The KAT's torch rule is what found it.
 		local candles = 0
-		for _, spot in ipairs({{-1, -1}, {w, -1}}) do
+		for _, spot in ipairs({{cx - 2, -1}, {cx + 2, -1}}) do
 			local x, z = spot[1], spot[2]
 			buf:put(x, 1, z, stone(palette))
 			parts.floor_torch(buf, palette, x, 2, z)

@@ -33,6 +33,11 @@ local function loader(directory)
 			buf:put(area.ox + 6, y, area.oz, palette.node("window"))
 		end
 		area.dressing.path_light(buf, palette, area.ox + 4, area.oz - 2)
+		-- And a marker on the step, which is what the mourner actually faces:
+		-- a lamp standard's light is three courses up and the feature search
+		-- reaches one above the feet, so the candle lights the ruin and the
+		-- marker is the feature. See the vigil district's ruin close.
+		area.dressing.grave(buf, palette, area.ox + 4, area.oz - 3, false)
 	end
 
 	local PLOTS = {
@@ -102,7 +107,9 @@ local function loader(directory)
 		{id = "homes_cistern", module = "capitals", make = "well_court",
 			order = 9, margin = 5, garden = true, spec = {size = 11},
 			extra_sockets = function(area)
-				return {plots.spare("cistern", area.x0 + 2, area.z1 - 2, 2)}
+				-- On the back row of the planted ring, not its corner: the
+				-- corner is where `garden` stands a gravewood.
+				return {plots.spare("cistern", area.x0 + 4, area.z1 - 1, 2)}
 			end},
 	}
 
@@ -118,21 +125,35 @@ local function loader(directory)
 				local dressing = area.dressing
 				dressing.graveyard(buf, palette, -8, 3, 8, 10)
 				for x = -10, 10 do buf:put(x, 0, 0, palette.node("path")) end
+				-- The two household markers the mourners face, set
+				-- deliberately rather than left to the scatter's hash; see
+				-- the market district's grave field for why.
+				dressing.grave(buf, palette, -6, 1, false)
+				dressing.grave(buf, palette, 6, 1, true)
 				dressing.low_wall_line(buf, palette, -11, 11, 11, 11)
 				dressing.low_wall_line(buf, palette, -11, 2, -11, 11)
 				dressing.low_wall_line(buf, palette, 11, 2, 11, 11)
-				dressing.gravewood(buf, palette, -9, 1, 6)
-				dressing.gravewood(buf, palette, 9, 1, 5)
+				dressing.gravewood(buf, palette, -8, 1, 6)
+				dressing.gravewood(buf, palette, 8, 1, 5)
 				dressing.path_light(buf, palette, 0, 1)
-				dressing.flower_bed(buf, palette, 2, -11, 5, -9)
+				-- THE BLIGHT BED THE TENDER WORKS, and why its kerb is
+				-- broken at one cell. A raised bed is masonry round soil and
+				-- the sockets contract's feature search stops at the first
+				-- solid node on the socket's own course, so a tender standing
+				-- outside a bed looks at brick and the growth two cells
+				-- further in does not count. `dressing.plant` breaks the kerb
+				-- and grows something in the gap, which is where the hands
+				-- are.
+				dressing.flower_bed(buf, palette, 2, -10, 5, -8)
+				dressing.plant(buf, palette, 4, -8)
 				dressing.bench(buf, palette, -4, -11, 0, 3, "x")
 				dressing.crates(buf, palette, 8, -11, 0)
 			end,
 			extra_sockets = function()
 				return {
-					plots.work("mourn_west", "mourn", -6, 1, 0),
-					plots.work("mourn_east", "mourn", 6, 1, 0),
-					plots.work("bed", "tend", 3, -8, 0),
+					plots.work("mourn_west", "mourn", -6, 0, 0),
+					plots.work("mourn_east", "mourn", 6, 0, 0),
+					plots.work("bed", "tend", 4, -7, 2),
 				}
 			end},
 		-- 2. THE BLIGHT GARDEN: what grows in a necropolis, which is not a
@@ -145,9 +166,17 @@ local function loader(directory)
 				dressing.flower_bed(buf, palette, -9, 3, -3, 8)
 				dressing.flower_bed(buf, palette, 3, 3, 9, 8)
 				for x = -10, 10 do buf:put(x, 0, 0, palette.node("path")) end
-				dressing.gravewood(buf, palette, -9, 1, 5)
-				dressing.gravewood(buf, palette, 9, 1, 6)
-				dressing.blight_flora(buf, palette, -10, -8, 10, -2, 7, 2, 3)
+				dressing.gravewood(buf, palette, -8, 1, 5)
+				dressing.gravewood(buf, palette, 8, 1, 6)
+				-- The flora is sown in two bands with the SOCKET ROW left
+				-- out between them. `dressing.blight_flora` sows any column
+				-- whose ground is its own and whose cell above is free, and a
+				-- standing position is exactly a free cell above its own
+				-- ground: a dead shrub in a sparring guard's feet is a socket
+				-- with no headroom, which is what the KAT said about the first
+				-- version of this row.
+				dressing.blight_flora(buf, palette, -10, -8, 10, -6, 7, 2, 3)
+				dressing.blight_flora(buf, palette, -10, -4, 10, -2, 7, 2, 3)
 				for x = 2, 8 do
 					for y = 1, 2 do
 						buf:put(x, y, -3, palette.node("foundation"))

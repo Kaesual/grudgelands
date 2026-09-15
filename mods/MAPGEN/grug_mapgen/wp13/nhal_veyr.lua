@@ -9,9 +9,9 @@
 -- curtain wall.
 --
 -- Nhal Veyr is the undead capital of the contract's section 2.4 table:
--- "raised necropolis, step 3 | dungeon stone and obsidian brick, mausoleum
--- core, stepped terraces with ruins mixed among kept houses, candles and iron
--- bars", and -- by the user's ruling of 2026-09-14 -- a WALLED one. The
+-- "raised necropolis, step 3", and "dungeon stone and obsidian brick,
+-- mausoleum core, stepped terraces with ruins mixed among kept houses, candles
+-- and iron bars" -- and, by the user's ruling of 2026-09-14, a WALLED one. The
 -- Stillgrave palette is the city, the castle kit is the necropolis, and
 -- `default:obsidianbrick` is the signature material every capital part dresses
 -- itself in.
@@ -287,14 +287,86 @@ local function loader(directory)
 		"charnel_yard", "bonesmith_guild", "market_house", "south_house",
 		"lane_house", "plaza_house"}
 
-	-- The corner waypoints of the city loop, in the open ground between the
-	-- outer plots, so the walk along the precinct wall has something to follow
-	-- between one quarter and the next.
+	-- THE STANDING POSITIONS THIS COMPOSITION PUBLISHES ARE DATA, and they are
+	-- declared up here rather than written at the socket step, because three
+	-- SCATTERS run over the same ground before that step and every one of them
+	-- would happily plant on a place somebody has to stand:
+	--
+	--   * the gravewood stands, whose branches reach three nodes from the stem
+	--     and a course or two above it;
+	--   * the burial ground, whose markers are set two nodes apart over every
+	--     open column of four rectangles;
+	--   * the blight flora, which sows about a fifth of every unbuilt column
+	--     on the pad.
+	--
+	-- None of the three can see a socket, because a socket is an absence of
+	-- cells. The first version of this composition let them loose and the KAT
+	-- found a bone pile in a patrol waypoint's headroom. So the positions are
+	-- a table, `STANDING` is built from it before the scatters, and the three
+	-- of them ask it.
+	--
+	-- The corner waypoints of the city loop stand on the lanes that box the
+	-- mausoleum, which closes the circuit the two colonnades open at the
+	-- south. On a LANE and not on the turf between the plots, deliberately:
+	-- the guard that walks this loop is walking the city's own streets, and a
+	-- waypoint on paving is one the burial ground can never reach.
 	local CORNERS = {
-		{id = "watch_south_west", x = -30, z = -35, face = 0, order = 2},
-		{id = "watch_north_west", x = -28, z = 44, face = 2, order = 3},
-		{id = "watch_north_east", x = 43, z = 33, face = 2, order = 4},
-		{id = "watch_south_east", x = 22, z = -40, face = 0, order = 5},
+		{id = "watch_south_west", x = -23, z = 10, face = 0, order = 2},
+		{id = "watch_north_west", x = -23, z = 39, face = 1, order = 3},
+		{id = "watch_north_east", x = 20, z = 39, face = 3, order = 4},
+		{id = "watch_south_east", x = 20, z = 10, face = 2, order = 5},
+	}
+
+	-- The flair spots the composition owns, beside the ones its parts publish.
+	local IDLES = {
+		{id = "court_idle_works", x = 41, z = 23, face = 3, tags = {"work"}},
+		{id = "court_idle_yard", x = 28, z = 24, face = 0, tags = {"work"}},
+		{id = "court_idle_fire", x = 35, z = 39, face = 0, tags = {"fire"}},
+		{id = "forecourt_idle_west", x = -6, z = 3, face = 1,
+			tags = {"bench"}},
+		{id = "forecourt_idle_east", x = 7, z = 3, face = 3,
+			tags = {"bench"}},
+	}
+
+	-- THE CORE'S OWN WORKPLACES (sockets contract section 8.1). Each stands on
+	-- the ossuary court's paving and faces a feature the composition itself
+	-- writes -- an embalmer's slab, a wax pot, a gravewood stack -- which is
+	-- the whole point of the feature rule: the KAT re-derives it from the
+	-- finished cells, so a prop that moves takes its socket's acceptance with
+	-- it.
+	local WORKS = {
+		{id = "court_work_slab", activity = "carve", x = 27, z = 23, face = 1},
+		{id = "court_work_pot", activity = "brew", x = 31, z = 23, face = 1},
+		-- One node east of the gravewood stack at (22, 12..15) and looking at
+		-- it: the stack's own column is four courses of log and a socket on it
+		-- has no feet, which is what the KAT's headroom rule said about the
+		-- first version of this row.
+		{id = "court_work_stack", activity = "carve", x = 23, z = 13,
+			face = 3},
+	}
+
+	-- THE CORE'S SPARE IDLE SPOTS (playtest round 2, 2026-09-15).
+	-- `spawn = false` is what makes them wander TARGETS and never homes: the
+	-- roster places one citizen per SPAWN socket and `next_spot` walks every
+	-- idle socket, so a city whose spots and citizens are the same thirty has
+	-- an amble in which every destination is permanently taken. Ten spares
+	-- along the avenues and courts is what gives the crowd somewhere to go,
+	-- and is the population Highcourt's core carries.
+	--
+	-- No tag: a tag is what the spoken line and the facing rule read
+	-- (`_grug_idle_tag`, `FACE_AWAY_TAGS`), and a spare has neither a line nor
+	-- a door.
+	local SPARES = {
+		{id = "core_spare_crossing_east", x = 12, z = -1, face = 3},
+		{id = "core_spare_crossing_west", x = -13, z = 1, face = 1},
+		{id = "core_spare_hall_green", x = 20, z = 13, face = 3},
+		{id = "core_spare_market_walk", x = -15, z = -20, face = 0},
+		{id = "core_spare_approach", x = 2, z = -26, face = 0},
+		{id = "core_spare_west_lane", x = -23, z = 16, face = 1},
+		{id = "core_spare_east_avenue", x = 30, z = -1, face = 3},
+		{id = "core_spare_west_avenue", x = -31, z = 1, face = 1},
+		{id = "core_spare_north_court", x = 20, z = 31, face = 2},
+		{id = "core_spare_plaza_south", x = 24, z = -20, face = 3},
 	}
 
 	-- Where the four avenues and the ring street run in the 512 envelope.
@@ -733,35 +805,100 @@ local function loader(directory)
 			end)
 		end
 
-		-- 9. The gravewood stands, BEFORE the burial ground and not after it.
-		-- A tree needs three nodes of clear ground round its stem and a graveyard
-		-- leaves none: `dressing.graveyard` sets a marker on every other column
-		-- of its rectangle, so run the other way round only one stand in the
-		-- whole pad finds room. The markers break round the trees instead, which
-		-- is also what a burial ground under trees looks like.
+		-- 9. THE STANDING POSITIONS, as a set, before anything is scattered
+		-- over the ground they stand on. See the tables at the head of this
+		-- file for what this is for and what it cost to learn.
 		--
-		-- THREE NODES CLEAR OF THE PRECINCT RING, every stand. A crown reaches three nodes
-		-- from its stem, the parapet is written after the trees and only asks
-		-- whether the four courses above the ground are free -- so a stem at
-		-- the ring's own column lets the wall be built under it and hangs
+		-- A tree's guard is three nodes wider than a marker's, because a
+		-- gravewood's arms reach three nodes from its stem and end a course or
+		-- two above the ground -- which is exactly a standing position's head.
+		local STANDING = {}
+		local function reserve(x, z) STANDING[x .. ":" .. z] = true end
+		for _, entry in ipairs(CORNERS) do reserve(entry.x, entry.z) end
+		for _, entry in ipairs(IDLES) do reserve(entry.x, entry.z) end
+		for _, entry in ipairs(WORKS) do reserve(entry.x, entry.z) end
+		for _, entry in ipairs(SPARES) do reserve(entry.x, entry.z) end
+		for _, entry in ipairs(sockets) do reserve(entry.x, entry.z) end
+		local function open_ground(x, z)
+			return layout.natural(buf, x, z) and layout.free(buf, x, z, 4) and
+				not STANDING[x .. ":" .. z]
+		end
+		local function tree_ground(x, z)
+			for dz = -3, 3 do
+				for dx = -3, 3 do
+					if STANDING[(x + dx) .. ":" .. (z + dz)] then return false end
+				end
+			end
+			return layout.natural(buf, x, z)
+		end
+
+		-- 10. The gravewood stands, BEFORE the burial ground and not after it:
+		-- a tree needs seven clear columns round its stem and a graveyard
+		-- leaves none, so the other way round exactly one stand in the whole
+		-- pad finds room. The markers break round the trees instead, which is
+		-- also what a burial ground under trees looks like.
+		--
+		-- THREE NODES CLEAR OF THE PRECINCT RING, every stand, which is what
+		-- the `-42` bound buys against a ring at 46: a crown reaches three
+		-- nodes from its stem, the parapet is written after the trees and only
+		-- asks whether the four courses above the ground are free -- so a stem
+		-- at the ring's own column lets the wall be built under it and hangs
 		-- leaves on the merlon cap. That is the defect Dur Brannoc's pines had
 		-- and the KAT's shape rule is what found it.
-		local trees = layout.plant_gravewood(buf, undead, -42, -42, 42, 42, 4)
+		local trees = 0
+		for z = -42, 42, 4 do
+			for x = -42, 42, 4 do
+				local hash = (x * 53 + z * 89 + x * z) % 101
+				local tx = x + hash % 5 - 2
+				local tz = z + math.floor(hash / 5) % 5 - 2
+				local height = 5 + hash % 3
+				if hash % 5 < 3 and tree_ground(tx, tz) and
+						layout.natural_area(buf, tx - 1, tz - 1, tx + 1,
+							tz + 1) and
+						layout.free_area(buf, tx - 3, tz - 3, tx + 3, tz + 3,
+							height + 2) then
+					dressing.gravewood(buf, undead, tx, tz, height)
+					trees = trees + 1
+				end
+			end
+		end
 		if trees < 12 then
 			error("wp13 nhal veyr: only " .. trees ..
 				" gravewood stands found open ground", 0)
 		end
 
-		-- 10. THE BURIAL GROUND between the quarters, which is what a necropolis
-		-- puts on the turf its plots leave. Four stretches of open ground get
-		-- rows of markers; `dressing.graveyard` sets one only where the ground
-		-- is its own and the cell above is free, so the run breaks by itself at
-		-- a street, a plot or a lamp standard.
+		-- 10. THE BURIAL GROUND between the quarters, which is what a
+		-- necropolis puts on the turf its plots leave: rows of markers on
+		-- flagstones, two nodes apart, with about one plot in six left open.
+		--
+		-- `dressing.graveyard` is NOT what writes it, and the reason is worth
+		-- recording because it cost this composition a doorway. That routine
+		-- sets a marker wherever the cell below is not air and the cell above
+		-- is free, which on a hamlet pad means "on the turf" and on a CAPITAL
+		-- pad means "on the turf, on the market square, on the travel plaza
+		-- and on a cottage's own doorstep". The first version used it and the
+		-- KAT's doorway rule found a grave marker on the step of the plaza
+		-- house.
+		--
+		-- So the scatter is walked here with the guard the citadel parapet
+		-- already uses: `layout.natural` says the column is ground this
+		-- composition laid and has built nothing on -- which paving is not --
+		-- and `layout.free` says nothing stands in the four courses above it.
+		-- The run then breaks by itself at a street, a plot, a lamp standard
+		-- or a gravewood stem, which is what a burial ground round a city
+		-- looks like.
 		local graves = 0
 		for _, field in ipairs({{-20, -44, -8, -20}, {6, -44, 18, -20},
 				{-20, 8, -8, 34}, {24, -36, 36, -20}}) do
-			graves = graves + dressing.graveyard(buf, undead, field[1],
-				field[2], field[3], field[4])
+			for z = field[2], field[4], 2 do
+				for x = field[1], field[3], 2 do
+					local hash = (x * 29 + z * 61) % 11
+					if hash ~= 3 and open_ground(x, z) then
+						dressing.grave(buf, undead, x, z, hash % 4 == 0)
+						graves = graves + 1
+					end
+				end
+			end
 		end
 		if graves < 60 then
 			error("wp13 nhal veyr: only " .. graves ..
@@ -833,11 +970,32 @@ local function loader(directory)
 			end
 		end
 
-		-- 12. Blight flora on the turf between the quarters.
-		dressing.blight_flora(buf, undead, -RADIUS, -RADIUS, RADIUS, RADIUS,
-			11, 3, 4)
+		-- 13. Blight flora on the turf between the quarters: bone piles and
+		-- dead shrubs on about a fifth of the columns the city has not built
+		-- on. `dressing.blight_flora` is the shared routine and it does the
+		-- same hash, but it has no notion of a standing position -- the
+		-- reason the scatter is walked here instead is written at the head of
+		-- this file, and it is a bone pile that stood in a patrol waypoint's
+		-- headroom.
+		local flora = 0
+		for z = -RADIUS, RADIUS do
+			for x = -RADIUS, RADIUS do
+				local hash = (x * 89 + z * 151 + x * z * 7) % 11
+				local role
+				if hash < 3 then role = "undergrowth"
+				elseif hash < 7 then role = "grass_tuft" end
+				if role and open_ground(x, z) then
+					local name = undead.node(role)
+					buf:put(x, 1, z, name, parts.place_param2(name))
+					flora = flora + 1
+				end
+			end
+		end
 
-		-- 13. The sockets the composition owns.
+		-- 14. The sockets the composition owns, out of the four tables at the
+		-- head of this file. They are declared there and published here because
+		-- the scatters above had to know about them first; see the comment over
+		-- `CORNERS` for what that cost.
 		local function socket(id, role, x, y, z, face, extra)
 			local entry = {id = id, role = role, x = x, y = y, z = z,
 				face = face % 4}
@@ -853,49 +1011,18 @@ local function loader(directory)
 			socket(corner.id, "guard_patrol", corner.x, 1, corner.z,
 				corner.face, {group = WATCH, order = corner.order})
 		end
-		socket("court_idle_works", "idle", 41, 1, 23, 3, {tags = {"work"}})
-		socket("court_idle_yard", "idle", 28, 1, 24, 0, {tags = {"work"}})
-		socket("court_idle_fire", "idle", 35, 1, 39, 0, {tags = {"fire"}})
-		socket("forecourt_idle_west", "idle", -6, 1, 3, 1, {tags = {"bench"}})
-		socket("forecourt_idle_east", "idle", 7, 1, 3, 3, {tags = {"bench"}})
-
-		-- THE CORE'S OWN WORKPLACES (sockets contract section 8.1). Each one
-		-- stands on the composition's own paving and faces a feature the
-		-- composition itself wrote three lines above, which is the whole point
-		-- of the feature rule: the KAT re-derives it from the finished cells,
-		-- so a slab or a pot that moves takes its socket's acceptance with it.
-		local function work(id, activity, x, z, face, tags)
-			socket(id, "work", x, 1, z, face, {activity = activity,
-				tags = tags})
+		for _, entry in ipairs(IDLES) do
+			socket(entry.id, "idle", entry.x, 1, entry.z, entry.face,
+				{tags = entry.tags})
 		end
-		work("court_work_slab", "carve", 27, 23, 1)
-		work("court_work_pot", "brew", 31, 23, 1)
-		work("court_work_stack", "carve", 22, 13, 0)
-
-		-- 14. THE CORE'S SPARE IDLE SPOTS (playtest round 2, 2026-09-15).
-		-- `spawn = false` is what makes them wander TARGETS and never homes:
-		-- the roster places one citizen per SPAWN socket and `next_spot` walks
-		-- every idle socket, so a city whose spots and citizens are the same
-		-- thirty has an amble in which every destination is permanently taken.
-		-- Ten spares along the avenues and courts is what gives the crowd
-		-- somewhere to go, and is the population Highcourt's core carries.
-		--
-		-- No tag: a tag is what the spoken line and the facing rule read
-		-- (`_grug_idle_tag`, `FACE_AWAY_TAGS`), and a spare has neither a line
-		-- nor a door.
-		local function spare(id, x, z, face)
-			socket(id, "idle", x, 1, z, face, {spawn = false})
+		for _, entry in ipairs(WORKS) do
+			socket(entry.id, "work", entry.x, 1, entry.z, entry.face,
+				{activity = entry.activity})
 		end
-		spare("core_spare_crossing_east", 12, -4, 3)
-		spare("core_spare_crossing_west", -13, -1, 1)
-		spare("core_spare_hall_green", 19, 13, 3)
-		spare("core_spare_market_walk", -15, -20, 0)
-		spare("core_spare_approach", 2, -26, 0)
-		spare("core_spare_west_lane", -23, 16, 1)
-		spare("core_spare_east_avenue", 30, -2, 3)
-		spare("core_spare_west_avenue", -31, 0, 1)
-		spare("core_spare_north_court", 20, 31, 2)
-		spare("core_spare_plaza_south", 24, -20, 3)
+		for _, entry in ipairs(SPARES) do
+			socket(entry.id, "idle", entry.x, 1, entry.z, entry.face,
+				{spawn = false})
+		end
 
 		-- 15. Pane shapes, settled once over the finished pad.
 		parts.resolve_panes(buf)
@@ -1003,8 +1130,14 @@ local function loader(directory)
 					max = {x = PLAZA.x2 - 1, y = 4, z = PLAZA.z2 - 1}},
 				ossuary_court = {min = {x = COURT.x1, y = 0, z = COURT.z1},
 					max = {x = COURT.x2, y = 8, z = COURT.z2}},
-				mausoleum = box("mausoleum", 2, 2),
-				mausoleum_door = door_of("mausoleum"),
+				-- `kings_hall` and not `mausoleum`, even though the plot is
+				-- called one: the landmark is the consumer seam every capital
+				-- publishes (the king encounter, WP17), and a capital that
+				-- renamed it for flavour would be a capital nothing could find
+				-- the throne room of. The tomb is the hall; the name is the
+				-- contract's.
+				kings_hall = box("mausoleum", 2, 2),
+				kings_hall_door = door_of("mausoleum"),
 				market = box("market", 1, 1),
 				vigil_hall = box("vigil_hall", 2, 4),
 				vigil_hall_door = door_of("vigil_hall"),
@@ -1018,6 +1151,7 @@ local function loader(directory)
 				corner_drums = drums,
 				graves = graves,
 				gravewoods = trees,
+				flora = flora,
 				nave_floor = #nave,
 			},
 		}

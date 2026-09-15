@@ -201,19 +201,36 @@ local function loader(directory)
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.graveyard(buf, palette, -9, 2, 9, 10)
-				dressing.graveyard(buf, palette, -9, -8, 9, -3)
+				dressing.graveyard(buf, palette, -9, -7, 9, -3)
 				for x = -10, 10 do buf:put(x, 0, 0, palette.node("path")) end
-				dressing.gravewood(buf, palette, -9, 1, 6)
-				dressing.gravewood(buf, palette, 9, 1, 5)
-				dressing.flower_bed(buf, palette, 2, -11, 5, -9)
+				-- Two markers set DELIBERATELY on the row the walk runs
+				-- along, because the two mourners have to face one and
+				-- `dressing.graveyard` decides by a hash which of its
+				-- columns carry a marker at all. A socket whose feature is
+				-- whatever a scatter happened to leave is a socket that
+				-- breaks the day the scatter's phase changes.
+				dressing.grave(buf, palette, -6, 1, false)
+				dressing.grave(buf, palette, 6, 1, false)
+				dressing.gravewood(buf, palette, -8, 1, 6)
+				dressing.gravewood(buf, palette, 8, 1, 5)
+				-- THE BLIGHT BED THE TENDER WORKS, and why its kerb is
+				-- broken at one cell. A raised bed is masonry round soil and
+				-- the sockets contract's feature search stops at the first
+				-- solid node on the socket's own course, so a tender standing
+				-- outside a bed looks at brick and the growth two cells
+				-- further in does not count. `dressing.plant` breaks the kerb
+				-- and grows something in the gap, which is where the hands
+				-- are.
+				dressing.flower_bed(buf, palette, 2, -10, 5, -8)
+				dressing.plant(buf, palette, 4, -8)
 				dressing.counter(buf, palette, -9, -11, 4, "x")
 				dressing.crates(buf, palette, 8, -11, 0)
 			end,
 			extra_sockets = function()
 				return {
-					plots.work("mourn_west", "mourn", -6, -2, 0),
-					plots.work("mourn_east", "mourn", 6, -2, 0),
-					plots.work("bed", "tend", 3, -8, 0),
+					plots.work("mourn_west", "mourn", -6, 0, 0),
+					plots.work("mourn_east", "mourn", 6, 0, 0),
+					plots.work("bed", "tend", 4, -7, 2),
 				}
 			end},
 		--

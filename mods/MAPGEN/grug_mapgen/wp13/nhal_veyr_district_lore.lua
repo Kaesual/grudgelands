@@ -73,15 +73,27 @@ local function loader(directory)
 			order = 4, handle = "crypt", roof = "vault",
 			spec = {w = 11, d = 13, wall_h = 4},
 			extra_sockets = function(area)
-				return {plots.work("candle", "mourn",
-					area.ox, area.oz - 1, 3)}
+				-- Two nodes west of the west candle standard, on the plinth's
+				-- own front row, looking along it. The candle's local x is -2
+				-- whatever the tomb's width is, because the plot builder
+				-- centres a part on its origin and the part stands the
+				-- standard two nodes off its own axis; the mourner stands at
+				-- -4 and looks at +x, so the first thing on its course past an
+				-- empty cell is the light.
+				return {plots.work("candle", "mourn", -4, area.oz - 1, 1)}
 			end},
 		{id = "vigil_mausoleum_east", module = "undead", make = "mausoleum",
 			order = 5, handle = "crypt", roof = "vault",
 			spec = {w = 9, d = 13, wall_h = 4},
 			extra_sockets = function(area)
-				return {plots.work("candle", "mourn",
-					area.ox, area.oz - 1, 3)}
+				-- Two nodes west of the west candle standard, on the plinth's
+				-- own front row, looking along it. The candle's local x is -2
+				-- whatever the tomb's width is, because the plot builder
+				-- centres a part on its origin and the part stands the
+				-- standard two nodes off its own axis; the mourner stands at
+				-- -4 and looks at +x, so the first thing on its course past an
+				-- empty cell is the light.
+				return {plots.work("candle", "mourn", -4, area.oz - 1, 1)}
 			end},
 		--
 		-- 6. THE CANDLE WORKS. The contract's own "candle-maker": a workshop
@@ -104,8 +116,16 @@ local function loader(directory)
 		-- gravewoods. The sweeper of the cloisters stands on its walk.
 		{id = "vigil_cloister", module = "capitals", make = "well_court",
 			order = 7, margin = 5, garden = true, spec = {size = 11},
+			-- The garth also carries one of the district's four spare wander
+			-- spots, on the back row of its own planted ring between the
+			-- corner gravewood and the bench: the one part of a garden plot
+			-- that neither the trees, the planters, the bench nor the crates
+			-- reach.
 			extra_sockets = function(area)
-				return {plots.work("walk", "sweep", area.x0 + 3, area.oz, 1)}
+				return {
+					plots.work("walk", "sweep", area.x0 + 3, area.oz, 1),
+					plots.spare("garth", area.x0 + 4, area.z1 - 1, 2),
+				}
 			end},
 		-- 8. The keepers' watch.
 		{id = "vigil_watch", module = "capitals", make = "barracks",
@@ -133,22 +153,38 @@ local function loader(directory)
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.graveyard(buf, palette, -9, 2, 9, 10)
-				dressing.graveyard(buf, palette, -9, -8, 9, -3)
+				dressing.graveyard(buf, palette, -9, -7, 9, -3)
 				for x = -10, 10 do buf:put(x, 0, 0, palette.node("path")) end
-				dressing.path_light(buf, palette, 0, 1)
-				dressing.gravewood(buf, palette, -9, 1, 7)
-				dressing.gravewood(buf, palette, 9, 1, 6)
-				dressing.flower_bed(buf, palette, 2, -11, 5, -9)
-				dressing.rubble_heap(buf, palette, -7, 1, 2)
+				-- Markers set DELIBERATELY on the walk's own row for the two
+				-- mourners and the keeper of the vigil, for the reason the
+				-- market's grave field records: a socket whose feature is
+				-- whatever a hash left is a socket that breaks the day the
+				-- hash's phase moves.
+				dressing.grave(buf, palette, -6, 1, true)
+				dressing.grave(buf, palette, 6, 1, true)
+				dressing.grave(buf, palette, 0, 1, false)
+				dressing.gravewood(buf, palette, -8, 1, 7)
+				dressing.gravewood(buf, palette, 8, 1, 6)
+				-- THE BLIGHT BED THE TENDER WORKS, and why its kerb is
+				-- broken at one cell. A raised bed is masonry round soil and
+				-- the sockets contract's feature search stops at the first
+				-- solid node on the socket's own course, so a tender standing
+				-- outside a bed looks at brick and the growth two cells
+				-- further in does not count. `dressing.plant` breaks the kerb
+				-- and grows something in the gap, which is where the hands
+				-- are.
+				dressing.flower_bed(buf, palette, 2, -10, 5, -8)
+				dressing.plant(buf, palette, 4, -8)
+				dressing.rubble_heap(buf, palette, -8, 1, 2)
 				dressing.counter(buf, palette, -9, -11, 4, "x")
 				dressing.crates(buf, palette, 8, -11, 0)
 			end,
 			extra_sockets = function()
 				return {
-					plots.work("mourn_west", "mourn", -6, -2, 0),
-					plots.work("mourn_east", "mourn", 6, -2, 0),
-					plots.work("walk_vigil", "pray", 0, -2, 0),
-					plots.work("bed", "tend", 3, -8, 0),
+					plots.work("mourn_west", "mourn", -6, 0, 0),
+					plots.work("mourn_east", "mourn", 6, 0, 0),
+					plots.work("walk_vigil", "pray", 0, 0, 0),
+					plots.work("bed", "tend", 4, -7, 2),
 				}
 			end},
 		--
@@ -182,6 +218,15 @@ local function loader(directory)
 				end
 				dressing.path_light(buf, palette, -5, -1)
 				dressing.path_light(buf, palette, 5, -1)
+				-- A MARKER in front of each shell, and a marker rather than
+				-- the candle standard beside it, because the sockets
+				-- contract's feature search looks one course below, level
+				-- with and one above the mourner's FEET -- and a lamp
+				-- standard's light is three courses up, behind two courses of
+				-- post that stop the search. A grave marker is in the same
+				-- `mourn` set and is at the height a marker is.
+				dressing.grave(buf, palette, -5, -2, false)
+				dressing.grave(buf, palette, 5, -2, true)
 				dressing.counter(buf, palette, -9, -11, 4, "x")
 				dressing.bench(buf, palette, 2, -11, 0, 3, "x")
 			end,
