@@ -30,7 +30,7 @@ M.optional = {"bale", "bed_fancy", "bench_seat", "board_table", "cargo",
 	"hedge_stem", "ivy", "lantern", "light_beacon", "light_hanging", "mat",
 	"pillar", "rope", "shutter", "signature", "signature_slab",
 	"signature_stair", "stake_cap", "stepping", "throne", "wall_infill",
-	"wheel"}
+	"water", "wheel"}
 
 -- The capital vocabulary (docs/research/wp13-capitals-pois-contract.md
 -- section 2.4): the castle kit for the walls, pillars, arrowslits, paving and
@@ -281,6 +281,14 @@ M.races.human = {
 	-- this palette binds the role; `dressing.crop_rows` falls back to the old
 	-- pair for a race that does not.
 	crop_soil = "grug_nodes:tilled_soil",
+	-- The town pond of playtest round 3, and the only water any WP13
+	-- composition writes. RIVER water and not ordinary water: it is
+	-- `liquid_renewable = false` with `liquid_range = 2` (default/nodes.lua),
+	-- which is default's own answer to "a pool on sloping ground must not
+	-- flood the bank". A pond lined on five sides cannot leak, and if a player
+	-- digs the liner out, river water spreads two nodes and stops instead of
+	-- running down the terrace.
+	water = "default:river_water_source",
 	tree_log = "default:tree",
 	tree_leaves = "default:leaves",
 	hedge = "default:bush_leaves",

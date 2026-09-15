@@ -127,6 +127,84 @@ local function loader()
 		},
 	}
 
+	----------------------------------------------------------------------
+	-- THE FILL LOTS (user ruling, playtest round 3)
+	----------------------------------------------------------------------
+	--
+	-- The round-3 playtest said the capital is huge and empty: 36 buildings
+	-- stand in a 512 envelope and between them there is nothing. The user's
+	-- ruling is a fill grade of "loose, with fields and gardens" -- not dense,
+	-- but lived in, with open ground still visible between the pieces.
+	--
+	-- A dressing is therefore a PLOT like any other: terrain-relative, with its
+	-- own reference column, its own foundation skirt and its own cleared
+	-- airspace, because a field laid at the core's height across a two-node
+	-- terrace is a field with a step through it. It stands on a FILL LOT, and a
+	-- fill lot obeys the same rule a district lot does for the same reason:
+	-- the four districts move between the quadrants with the world seed and a
+	-- district's own fill -- the lore district's chapel yard, the market's pond
+	-- -- moves with it, so every fill lot has to carry any district's dressing.
+	--
+	-- WHAT IS DIFFERENT FROM A DISTRICT LOT, and why:
+	--
+	--   * a fill lot carries its OWN REACH. A district lot is one size because
+	--     any of 36 plots may stand on it; the four fill slots are four
+	--     deliberately different sizes -- two field-sized, one paddock-sized,
+	--     one garden-sized -- because a capital of nothing but 23-node squares
+	--     is as repetitive as a capital of nothing but houses. Slot k has the
+	--     same reach in all four quadrants, which is all the interchange needs.
+	--   * the LANE is 4 and not 8. Eight nodes of clearance is what a street
+	--     between two building lots needs; a garden between two cottages is
+	--     four nodes of grass, and four is also what keeps "loose" visible.
+	--
+	-- FOUR SLOTS AND NOT MORE is the cell budget, measured and not guessed: the
+	-- capital's 400 000-cell budget had 88 517 cells left after the four
+	-- districts, and four fill plots per quadrant spend about 71 000 of them.
+	-- Section 5 of docs/research/wp13-highcourt-fill.md is the arithmetic.
+	M.FILL = {margin = 2, fall = 6, rise = 6, clear = 8, lane = 4,
+		quarter = 32}
+
+	-- The authored fill layout, in the south-east quadrant's frame, with the
+	-- reach of each slot:
+	--
+	--   1. the east outer band, between the lot grid and the curtain -- this is
+	--      where the contract's "orchards inside the wall ring" stand;
+	--   2. the south outer band, the field belt;
+	--   3. the outer corner of the quarter, a paddock;
+	--   4. the garden strip in the gap between two columns of the lot grid,
+	--      which is the one fill lot that stands INSIDE the district rather
+	--      than round it.
+	M.FILL_AUTHORED = {
+		{x = 208, z = -104, reach = 11},
+		{x = 104, z = -208, reach = 11},
+		{x = 200, z = -200, reach = 8},
+		{x = 94, z = -160, reach = 5},
+	}
+
+	-- The four fill lots of each quadrant, in the order a district's fill
+	-- plots take them. Derived and verified by `tools/wp13/highcourt_plots.lua`
+	-- against the terrain of seeds 531802985935182545 and 8675309
+	-- (`--derive-fill` reproduces this table); section 4 of
+	-- docs/research/wp13-highcourt-fill.md is the measurement.
+	M.FILL_LOTS = {
+		southeast = {
+			{x = 208, z = -128}, {x = 104, z = -232},
+			{x = 200, z = -224}, {x = 94, z = -184},
+		},
+		northeast = {
+			{x = 76, z = 204}, {x = 180, z = 76},
+			{x = 172, z = 224}, {x = 140, z = 84},
+		},
+		northwest = {
+			{x = -180, z = 48}, {x = -76, z = 180},
+			{x = -172, z = 196}, {x = -80, z = 132},
+		},
+		southwest = {
+			{x = -88, z = -220}, {x = -220, z = -116},
+			{x = -196, z = -212}, {x = -144, z = -104},
+		},
+	}
+
 	-- THE DISTRICT LANES.
 	--
 	-- The first render of the four districts showed nine buildings standing in
@@ -322,7 +400,8 @@ local function loader()
 			end
 			assignment[M.ROLES[index]] = {quadrant = quadrant,
 				turns = permutation[index] - 1,
-				lots = M.LOTS[quadrant]}
+				lots = M.LOTS[quadrant],
+				fill_lots = M.FILL_LOTS[quadrant]}
 		end
 		return assignment, permutation
 	end

@@ -162,6 +162,23 @@ local function loader(directory)
 		buf:put(x + 1, 1, z + 2, palette.node("rug"))
 	end
 
+	-- A TRESTLE COUNTER: the shopfront of a profession house (playtest round
+	-- 3). `M.stall` is the market square's four-poster booth with a canopy,
+	-- which needs five nodes by five and overhangs them; a counter is the
+	-- three or four nodes of trestle a butcher, a baker or a smith serves over
+	-- and it stands in the two-node ring a plot leaves round its building.
+	-- Waist high on purpose: the sockets contract's `stall` activity is "a
+	-- counter (any solid node at waist height)", and waist height from a
+	-- socket standing beside it is the socket's own feet course.
+	function M.counter(buf, palette, x, z, len, axis)
+		for step = 0, (len or 3) - 1 do
+			local cx = (axis == "z") and x or x + step
+			local cz = (axis == "z") and z + step or z
+			buf:put(cx, 1, cz, palette.node("table_leg"))
+			buf:put(cx, 2, cz, palette.node("table_top"))
+		end
+	end
+
 	-- An inlaid band of a second paving material, one node wide.
 	function M.inlay(buf, palette, x1, z1, x2, z2, role)
 		local name = palette.node(role or "plaza_edge")
@@ -626,6 +643,51 @@ local function loader(directory)
 			end
 		end
 		return set
+	end
+
+	-- A POND: the town water of playtest round 3, dug into the plot's own
+	-- ground course and LINED on five sides, so it is a pond and not a leak.
+	--
+	-- The plot under it has already laid `ground` at y = 0 and `subsoil` at
+	-- y = -1 over its whole rectangle; everything below that is untouched
+	-- terrain, and on a terraced envelope "untouched terrain" is not a promise
+	-- of solid rock at a given depth. So the basin writes its own floor and its
+	-- own walls rather than trusting the ground: the ring one node outside the
+	-- water is carried down as subsoil, and the floor under it is subsoil too.
+	-- The water then stands three courses deep with its surface flush with the
+	-- grass, which is what a pond in a meadow looks like.
+	--
+	-- Returns the number of water cells, or 0 when the palette binds no water.
+	function M.pond(buf, palette, x1, z1, x2, z2, depth)
+		local water = palette.maybe("water")
+		if water == nil then return 0 end
+		depth = depth or 3
+		local subsoil = palette.node("subsoil")
+		local shore = palette.maybe("ground_bare") or subsoil
+		local floor = -depth
+		-- The liner: the ring one node outside the water, from the ground
+		-- course down past the floor.
+		for z = z1 - 1, z2 + 1 do
+			for x = x1 - 1, x2 + 1 do
+				local edge = (x < x1 or x > x2 or z < z1 or z > z2)
+				if edge then
+					for y = -1, floor - 1, -1 do buf:put(x, y, z, subsoil) end
+					buf:put(x, 0, z, shore)
+				else
+					buf:put(x, floor - 1, z, subsoil)
+				end
+			end
+		end
+		local filled = 0
+		for z = z1, z2 do
+			for x = x1, x2 do
+				for y = floor, 0 do
+					buf:put(x, y, z, water)
+					filled = filled + 1
+				end
+			end
+		end
+		return filled
 	end
 
 	-- A cobweb in a corner nobody sweeps. `grug_decor:xdecor_cobweb` is a

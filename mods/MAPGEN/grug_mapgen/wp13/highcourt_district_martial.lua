@@ -115,11 +115,102 @@ local function loader(directory)
 			end},
 	}
 
+	-- THE DISTRICT'S OWN FILL (playtest round 3): four dressings on the
+	-- quadrant's four fill lots, reaches 11, 11, 8 and 5, laid out on the
+	-- forecourt/feature rule the market district's roster writes down. A
+	-- garrison quarter is not fields and gardens, so its fill is the ground an
+	-- army keeps: the muster field it drills on, the pasture its remounts
+	-- stand in, the wood yard that feeds its fires, and one green.
+	local FILL = {
+		-- 1. THE MUSTER FIELD: open trodden ground inside a rail, drill posts
+		-- across the middle, standards at the head of it and hay at the far
+		-- end. The sweeper is the one activity that moves (contract section
+		-- 8.2) and this is where it belongs: somebody rakes a drill yard.
+		{id = "martial_muster_field", yard = {},
+			decorate = function(buf, palette, area)
+				local dressing = area.dressing
+				for x = -8, 8, 4 do
+					dressing.drill_post(buf, palette, x, 0, 3)
+				end
+				dressing.standard(buf, palette, -7, -6, 5)
+				dressing.standard(buf, palette, 7, -6, 5)
+				dressing.fence_line(buf, palette, -11, 11, 11, 11)
+				dressing.wood_pile(buf, palette, -9, -8, 3, "x")
+				dressing.bale_stack(buf, palette, 9, 6, 2)
+				dressing.bale_stack(buf, palette, 7, 6, 2)
+				dressing.bench(buf, palette, -3, -10, 0, 3, "x")
+			end,
+			extra_sockets = function()
+				return {
+					plots.work("muster_rake", "sweep", 0, -9, 0),
+					plots.work("muster_saw", "chop", -8, -9, 0),
+				}
+			end},
+		-- 2. THE REMOUNT PASTURE: fenced grass with a hedge on the field side,
+		-- hay, a handcart and the two who keep it.
+		{id = "martial_remount_pasture", yard = {},
+			decorate = function(buf, palette, area)
+				local dressing = area.dressing
+				dressing.fence_line(buf, palette, -11, -8, -11, 11)
+				dressing.fence_line(buf, palette, 11, -8, 11, 11)
+				dressing.hedge_line(buf, palette, -11, 11, 11, 11, 2)
+				dressing.undergrowth(buf, palette, -10, -5, 10, 10, 4)
+				dressing.bale_stack(buf, palette, -4, 6, 3)
+				dressing.bale_stack(buf, palette, -2, 6, 2)
+				dressing.handcart(buf, palette, 3, -8, "x")
+				dressing.wood_pile(buf, palette, -9, -8, 3, "x")
+				dressing.flower_bed(buf, palette, 5, -8, 8, -6)
+				dressing.bench(buf, palette, -3, -10, 0, 3, "x")
+			end,
+			extra_sockets = function()
+				return {
+					plots.work("pasture_saw", "chop", -8, -9, 0),
+					plots.work("pasture_tend", "tend", 6, -9, 0),
+					plots.spare("pasture", 10, -11, 0),
+				}
+			end},
+		-- 3. THE WOOD YARD: stacked timber, two chopping blocks and the two
+		-- who cut it.
+		{id = "martial_wood_yard", yard = {},
+			decorate = function(buf, palette, area)
+				local dressing = area.dressing
+				dressing.wood_pile(buf, palette, -6, 0, 5, "x")
+				dressing.wood_pile(buf, palette, -6, 3, 5, "x")
+				buf:put(-4, 1, -5, palette.node("tree_log"))
+				buf:put(4, 1, -5, palette.node("tree_log"))
+				dressing.crates(buf, palette, 6, -7, 0)
+				dressing.bench(buf, palette, -3, -7, 0, 2, "x")
+			end,
+			extra_sockets = function()
+				return {
+					plots.work("saw_west", "chop", -4, -6, 0),
+					plots.work("saw_east", "chop", 4, -6, 0),
+				}
+			end},
+		-- 4. THE GUARD GREEN inside the lot grid: a tree, a bench, the stores
+		-- and the district's second spare.
+		{id = "martial_green", yard = {},
+			decorate = function(buf, palette, area)
+				local dressing = area.dressing
+				dressing.broadleaf(buf, palette, 0, 2, 5)
+				dressing.bench(buf, palette, -4, -3, 0, 2, "x")
+				dressing.crates(buf, palette, 3, -3, 0)
+			end,
+			extra_sockets = function()
+				return {
+					plots.work("green_bench", "sit", -4, -3, 0, {"bench"}, 2),
+					plots.spare("green", 4, -5, 0),
+				}
+			end},
+	}
+
 	M.martial = plots.district({
 		key = "highcourt_martial",
 		role = "martial_garrison",
 		patrol_group = WATCH,
 		plots = PLOTS,
+		fill = FILL,
+		fill_reaches = {11, 11, 8, 5},
 	})
 
 	return M

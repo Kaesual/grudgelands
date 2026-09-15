@@ -33,6 +33,16 @@
 -- canonical cells, bounds (x/z inside [-13, 13], y [-6, 24]), sorted palette
 -- and landmarks, plus `reference` and the `sockets` of the NPC contract.
 --
+-- A PLOT NEED NOT BE A BUILDING (playtest round 3). A roster row that carries
+-- `yard` instead of `module`/`make` builds the same thing without a part in the
+-- middle of it: the same ground course, the same foundation skirt, the same
+-- cleared airspace, the same sockets -- and whatever its own `decorate` plants
+-- on it. That is what a field, an orchard, a paddock, a graveyard or a pond is,
+-- and it is the same builder because the reason a plot exists is the terrace
+-- under it, which does not care whether a house or a furrow stands on top.
+-- A yard's ground is authored as a half-extent rather than grown from a part's
+-- footprint, because there is no footprint to grow from.
+--
 -- THE +-13 IS NOT THE CONTRACT'S +-15, AND THAT IS DELIBERATE. Every plot of
 -- every district stands on a LOT of `highcourt_quadrants.lua`, and a lot is
 -- held to one envelope on both gate seeds so that any district may stand in
@@ -91,7 +101,7 @@ local function loader(directory)
 	-- The plot's own ground area: the part's extent grown by two nodes on
 	-- every side and then clamped into the envelope, so the kerb, the
 	-- doorstep path and the lamps stand on the plot and not beside it.
-	local function ground_area(part, ox, oz, turns, margin)
+	local function ground_area(part, ox, oz, turns, margin, reach)
 		local order, count = part.buffer:cells()
 		local x0, x1, z0, z1
 		for index = 1, count do
@@ -106,9 +116,14 @@ local function loader(directory)
 				if z1 == nil or z > z1 then z1 = z end
 			end
 		end
+		-- A plot on a FILL lot is clamped to that lot's own reach and not to
+		-- the district lot's 13: the fill lots are four deliberately different
+		-- sizes and a building that overran one would be a building the lot
+		-- predicate never measured.
+		reach = reach or M.REACH
 		local function clamp(value)
-			if value < -M.REACH then return -M.REACH end
-			if value > M.REACH then return M.REACH end
+			if value < -reach then return -reach end
+			if value > reach then return reach end
 			return value
 		end
 		margin = margin or 2
@@ -141,6 +156,29 @@ local function loader(directory)
 			face = face or 0, spawn = false}
 	end
 
+	-- A WORK SOCKET is the sockets contract's section 8.1: a resident's
+	-- workplace, always staffed, always static, naming the ACTIVITY it does and
+	-- facing the feature that activity works within three nodes. The closed
+	-- vocabulary is the registry's (`grug_core/settlement_sockets.lua`) and the
+	-- KAT measures the feature; this is only the shape, spelled once so five
+	-- rosters spell it the same way.
+	-- `y` is the feet course and defaults to 1, the first walkable course over
+	-- the plot's ground. A work socket ON a bench passes 2, because a seat is
+	-- a walkable node and the resident stands (sits) on top of it.
+	function M.work(id, activity, x, z, face, tags, y)
+		return {id = "work_" .. id, role = "work", activity = activity,
+			x = x, y = y or 1, z = z, face = face or 0, tags = tags}
+	end
+
+	-- A PROFESSION VENDOR is section 8.4: a trader with a stock table of its
+	-- own profession, standing at the counter of the building that sells it.
+	-- The capital holds at most one of each kind, which the KAT's family rule
+	-- asserts across every composition at once.
+	function M.vendor(id, kind, x, z, face)
+		return {id = "vendor_" .. id, role = "vendor", kind = kind,
+			x = x, z = z, face = face or 0}
+	end
+
 	-- Build one plot from its roster row.
 	--
 	-- The row: `id`, `module` ("capitals" or "buildings"), `make` (the
@@ -148,6 +186,26 @@ local function loader(directory)
 	-- turns of the part on its own plot), `margin` (extra ground all round),
 	-- `handle` ("human" or "white"), `roof` ("slate"), `garden`, `order` (its
 	-- waypoint in the district loop), `decorate` and `extra_sockets`.
+	-- A YARD: the open-ground plot of playtest round 3. It is the roster row's
+	-- own half-extent, which is the fill lot's reach or less, and a peak of
+	-- zero, because nothing of the composition's own stands above the ground
+	-- course until `decorate` puts it there.
+	local function yard_area(plot)
+		local yard = plot.yard
+		local half_x = yard.w or yard.reach
+		local half_z = yard.d or yard.reach
+		if type(half_x) ~= "number" or type(half_z) ~= "number" or
+				half_x < 3 or half_z < 3 then
+			error("wp13 highcourt plot: the yard " .. tostring(plot.id) ..
+				" has no extent", 0)
+		end
+		if half_x > yard.reach or half_z > yard.reach then
+			error("wp13 highcourt plot: the yard " .. tostring(plot.id) ..
+				" is wider than its own lot", 0)
+		end
+		return -half_x, -half_z, half_x, half_z
+	end
+
 	function M.build(plot, context)
 		context = context or {}
 		local watch = plot.patrol_group or context.patrol_group
@@ -165,25 +223,35 @@ local function loader(directory)
 			end
 		end
 		local spec = {}
-		for key, value in pairs(plot.spec) do spec[key] = value end
+		for key, value in pairs(plot.spec or {}) do spec[key] = value end
 		spec.id = plot.id
 		if roof_palette then spec.roof_palette = roof_palette end
-		local module = (plot.module == "capitals") and capitals or buildings
-		local generator = module[plot.make]
-		if type(generator) ~= "function" then
-			error("wp13 highcourt district: no generator " .. plot.make, 0)
+		local part, turns, rw, rd, ox, oz
+		local x0, z0, x1, z1
+		if plot.yard then
+			turns, rw, rd, ox, oz = 0, 1, 1, 0, 0
+			x0, z0, x1, z1 = yard_area(plot)
+		else
+			local module = (plot.module == "capitals") and capitals or buildings
+			local generator = module[plot.make]
+			if type(generator) ~= "function" then
+				error("wp13 highcourt district: no generator " ..
+					tostring(plot.make), 0)
+			end
+			part = generator(palette, spec)
+			-- The part is centred on the plot origin, which is also the
+			-- reference column: the terrain height under the middle of the
+			-- plot is the height the whole plot is levelled to. A quarter turn
+			-- swaps the footprint, so the centring reads the ROTATED width.
+			turns = (plot.turns or 0) % 4
+			rw = (turns % 2 == 1) and part.d or part.w
+			rd = (turns % 2 == 1) and part.w or part.d
+			ox = -math.floor((rw - 1) / 2)
+			oz = -math.floor((rd - 1) / 2)
+			x0, z0, x1, z1 = ground_area(part, ox, oz, turns, plot.margin,
+				plot.reach)
 		end
-		local part = generator(palette, spec)
-		-- The part is centred on the plot origin, which is also the
-		-- reference column: the terrain height under the middle of the plot
-		-- is the height the whole plot is levelled to. A quarter turn swaps
-		-- the footprint, so the centring reads the ROTATED width.
-		local turns = (plot.turns or 0) % 4
-		local rw = (turns % 2 == 1) and part.d or part.w
-		local rd = (turns % 2 == 1) and part.w or part.d
-		local ox = -math.floor((rw - 1) / 2)
-		local oz = -math.floor((rd - 1) / 2)
-		local x0, z0, x1, z1 = ground_area(part, ox, oz, turns, plot.margin)
+		local peak = part and part.peak or 0
 
 		local buf = parts.buffer()
 		-- 1. The plot's ground and its airspace. The clear goes down to the
@@ -191,7 +259,7 @@ local function loader(directory)
 		-- through occupies those cells in the world.
 		buf:fill(x0, -1, z0, x1, -1, z1, palette.node("subsoil"))
 		buf:fill(x0, 0, z0, x1, 0, z1, palette.node("ground"))
-		local clear_to = part.peak + 2
+		local clear_to = peak + 2
 		if clear_to < M.MIN_CLEAR then clear_to = M.MIN_CLEAR end
 		buf:clear(x0, 1, z0, x1, clear_to, z1)
 		-- 2. The foundation skirt, the perimeter only, down to the
@@ -205,25 +273,39 @@ local function loader(directory)
 				end
 			end
 		end
-		-- 3. The kerb of the plot, and the doorstep path from the part's own
-		-- apron out to the street edge of the plot.
-		dressing.inlay(buf, palette, x0, z0, x1, z1)
-		for z = z0 + 1, oz - 1 do
-			for x = -1, 1 do
-				buf:put(x, 0, z, palette.node("path"))
+		local points = {sockets = {}, doors = {}, room_corner = {}, inside = {}}
+		if plot.yard then
+			-- A yard's own gate: three columns of path at the street edge, so
+			-- the field is entered from the lane rather than walked into over
+			-- its own kerb, and the two lamps every plot carries.
+			for z = z0, z0 + 1 do
+				for x = -1, 1 do
+					buf:put(x, 0, z, palette.node("path"))
+				end
 			end
-		end
+			dressing.path_light(buf, palette, x0 + 1, z0 + 1)
+			dressing.path_light(buf, palette, x1 - 1, z0 + 1)
+		else
+			-- 3. The kerb of the plot, and the doorstep path from the part's
+			-- own apron out to the street edge of the plot.
+			dressing.inlay(buf, palette, x0, z0, x1, z1)
+			for z = z0 + 1, oz - 1 do
+				for x = -1, 1 do
+					buf:put(x, 0, z, palette.node("path"))
+				end
+			end
 
-		-- 4. The part itself.
-		local points = parts.stamp(buf, part, ox, 0, oz, turns)
+			-- 4. The part itself.
+			points = parts.stamp(buf, part, ox, 0, oz, turns)
 
-		-- 5. Two lamps on the street corners of the plot, and a bench beside
-		-- the door.
-		local lamps = {{x0 + 1, z0 + 1}, {x1 - 1, z0 + 1}}
-		for _, lamp in ipairs(lamps) do
-			dressing.path_light(buf, palette, lamp[1], lamp[2])
+			-- 5. Two lamps on the street corners of the plot, and a bench
+			-- beside the door.
+			local lamps = {{x0 + 1, z0 + 1}, {x1 - 1, z0 + 1}}
+			for _, lamp in ipairs(lamps) do
+				dressing.path_light(buf, palette, lamp[1], lamp[2])
+			end
+			dressing.bench(buf, palette, 3, z0 + 2, 0, 3, "x")
 		end
-		dressing.bench(buf, palette, 3, z0 + 2, 0, 3, "x")
 
 		-- 5b. A garden plot plants the ring its wider ground bought: a fruit
 		-- tree at each corner, a planter and a bench between them, and the
@@ -248,8 +330,8 @@ local function loader(directory)
 		-- piece of dressing can stand where a socket would otherwise be
 		-- published into a wall.
 		local area = {x0 = x0, z0 = z0, x1 = x1, z1 = z1, ox = ox, oz = oz,
-			pw = rw, pd = rd, peak = part.peak, dressing = dressing,
-			parts = parts}
+			pw = rw, pd = rd, peak = peak, clear_to = clear_to,
+			dressing = dressing, parts = parts, palettes = palettes}
 		if type(plot.decorate) == "function" then
 			plot.decorate(buf, palette, area)
 		end
@@ -280,6 +362,7 @@ local function loader(directory)
 				z = override.z or entry.z,
 				face = override.face or entry.face,
 				group = entry.group, order = entry.order, kind = entry.kind,
+				activity = entry.activity,
 				spawn = entry.spawn, tags = override.tags or entry.tags}
 		end
 		if plot.order then
@@ -304,6 +387,7 @@ local function loader(directory)
 				sockets[#sockets + 1] = {id = plot.id .. "_" .. entry.id,
 					role = entry.role, x = entry.x, y = entry.y or 1,
 					z = entry.z, face = entry.face or 0, tags = entry.tags,
+					kind = entry.kind, activity = entry.activity,
 					spawn = entry.spawn}
 			end
 		end
@@ -396,7 +480,7 @@ local function loader(directory)
 			landmarks = {
 				arrival = {x = 0, y = 1, z = z0 + 2},
 				plot = {min = {x = x0, y = -1, z = z0},
-					max = {x = x1, y = part.peak, z = z1}},
+					max = {x = x1, y = peak, z = z1}},
 				entry = {x = 0, y = 1, z = z0 + 1},
 				destinations = destinations,
 				doors = doorways,
@@ -417,15 +501,29 @@ local function loader(directory)
 			role = definition.role,
 			patrol_group = definition.patrol_group,
 			plots = {},
+			fill = {},
 		}
-		for index, plot in ipairs(definition.plots) do
-			district.plots[index] = {
-				id = plot.id,
-				build = function()
-					return M.build(plot, {patrol_group = definition.patrol_group})
-				end,
-			}
+		local function entries(list, into, yard_reaches)
+			for index, plot in ipairs(list or {}) do
+				-- A fill row is handed the reach of the fill lot it will stand
+				-- on, so a roster says WHAT a dressing is and the quadrants
+				-- module stays the only place that says how big its lot is.
+				if yard_reaches then
+					local reach = yard_reaches[index]
+					plot.reach = reach
+					if plot.yard then plot.yard.reach = reach end
+				end
+				into[index] = {
+					id = plot.id,
+					build = function()
+						return M.build(plot,
+							{patrol_group = definition.patrol_group})
+					end,
+				}
+			end
 		end
+		entries(definition.plots, district.plots)
+		entries(definition.fill, district.fill, definition.fill_reaches)
 		return district
 	end
 
