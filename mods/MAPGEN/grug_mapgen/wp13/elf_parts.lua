@@ -26,8 +26,14 @@
 --     work socket needs a feature for (sockets contract section 8.1: the
 --     socket stands OUTSIDE and the altar, candle or grave marker stands
 --     within three nodes under its `dir`).
---   * `M.boat_stage` -- the fishing stage of a lakeside city: a plank deck on
---     posts over its own water, drying racks behind it.
+--
+-- There is deliberately NO fishing-stage part. The first version of this file
+-- had one -- a plank deck on posts reaching out over its own basin -- and the
+-- mere precinct's stages ended up being built as a YARD instead, out of
+-- `dressing.pond` and the bank walk, because a plot whose reference column is
+-- its own bank levels to walkable ground and a plot whose deck reaches over
+-- water does not. A generator nothing calls is a generator nothing checks, so
+-- it was taken out rather than left to rot.
 --
 -- Every generator returns a part in the exact shape `wp13/capitals.lua`
 -- returns one (buffer, w, d, peak, points), so `parts.stamp` and both plot
@@ -540,89 +546,6 @@ local function loader(directory)
 			inside = {{x = c, y = 1, z = c - 2}},
 			room_corner = {},
 		}, {})
-	end
-
-	-- ------------------------------------------------------------------
-	-- 4. The boat stage
-	-- ------------------------------------------------------------------
-
-	-- The fishing stage of a lakeside city: the plot digs its OWN basin (the
-	-- pond of playtest round 3, lined on five sides, so it is water the
-	-- capital dug and not a lake the capital was built into), and the stage is
-	-- a plank deck on posts reaching over it with a drying rack behind.
-	--
-	-- `w` is the pad across the water and `d` along it. The basin fills the
-	-- far half, the deck the near half, and the three `fish` sockets stand on
-	-- the deck's own planks looking at the water one node in front of them.
-	--
-	-- Extent: w x d, y -4..3.
-	function M.boat_stage(palette, spec)
-		local w = spec.w or 17
-		local d = spec.d or 13
-		local buf = parts.buffer()
-		local lights, sockets = {}, {}
-		if w < 13 or d < 11 then
-			error("wp13 elf parts: the boat stage is too small", 0)
-		end
-		local last_x, last_z = w - 1, d - 1
-		local c = math.floor(last_x / 2)
-
-		buf:clear(0, 1, 0, last_x, 6, last_z)
-		buf:fill(0, 0, 0, last_x, 0, last_z, palette.node("ground"))
-		-- The bank walk along the near edge, and the shore behind it.
-		for x = 0, last_x do
-			buf:put(x, 0, 0, palette.node("path"))
-			buf:put(x, 0, 1, palette.node("path"))
-		end
-		local filled = dressing.pond(buf, palette, 2, 5, last_x - 2,
-			last_z - 1, 3)
-		if filled == 0 then
-			error("wp13 elf parts: the boat stage has no water", 0)
-		end
-
-		-- The stage itself: two rows of posts carrying a plank deck that
-		-- reaches three nodes out over the basin.
-		local posts = 0
-		for _, x in ipairs({c - 2, c + 2}) do
-			for z = 5, 7 do
-				for y = -2, 0 do buf:put(x, y, z, palette.node("post")) end
-				posts = posts + 1
-			end
-		end
-		for z = 2, 7 do
-			for x = c - 2, c + 2 do
-				buf:put(x, 1, z, palette.node("floor"))
-			end
-		end
-		for z = 2, 7 do
-			for _, x in ipairs({c - 3, c + 3}) do
-				buf:put(x, 1, z, palette.node("railing"))
-			end
-		end
-		buf:put(c - 2, 2, 7, palette.node("railing"))
-		buf:put(c + 2, 2, 7, palette.node("railing"))
-
-		-- The rack and the crates on the bank.
-		dressing.drying_rack(buf, palette, 2, 2, 4, "x")
-		dressing.crates(buf, palette, last_x - 3, 2, 0)
-		dressing.path_light(buf, palette, 1, 1, lights)
-		dressing.path_light(buf, palette, last_x - 1, 1, lights)
-
-		local id = spec.id or "stage"
-		-- Three anglers on the deck, each looking at the water beside it.
-		socket(sockets, id .. "_rod_west", "work", c - 2, 2, 6, 1,
-			{activity = "fish"})
-		socket(sockets, id .. "_rod_east", "work", c + 2, 2, 6, 3,
-			{activity = "fish"})
-		socket(sockets, id .. "_rod_head", "work", c, 2, 7, 2,
-			{activity = "fish"})
-		socket(sockets, id .. "_rack", "work", 2, 1, 1, 2,
-			{activity = "tend"})
-
-		return finish(buf, w, d, top_of(buf), {
-			doors = {}, lights = lights, sockets = sockets,
-			inside = {}, room_corner = {},
-		}, {water = filled, posts = posts})
 	end
 
 	return M
