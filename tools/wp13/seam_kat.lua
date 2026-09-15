@@ -172,7 +172,13 @@ return function(repo)
 	----------------------------------------------------------------------
 	local capital_profile
 	for index = 1, #settlement.roster do
-		if settlement.roster[index].slot == "capital" then
+		-- The FIRST capital, not the last. This used to take whichever capital
+		-- the roster ended with, so the day a second one landed this fixture
+		-- silently stopped exercising the first and nothing said so. The seam
+		-- is what is under test here and one capital proves it; each capital's
+		-- own KAT (`highcourt_kat.lua`, `dur_brannoc_kat.lua`) proves its own
+		-- composition and its own seam wiring.
+		if settlement.roster[index].slot == "capital" and not capital_profile then
 			capital_profile = settlement.roster[index]
 		end
 	end

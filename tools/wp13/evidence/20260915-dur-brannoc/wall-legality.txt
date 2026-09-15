@@ -1,0 +1,21 @@
+world	line	wet	worst_step	worst_step_at	low	high	range	overlap	gate_fall
+a	wall_west	0	4	-251	93	105	12	4	4
+a	wall_east	0	4	-230	85	101	16	4	4
+a	wall_south	0	4	-203	97	105	8	4	4
+a	wall_north	0	4	-207	89	101	12	4	0
+b	wall_west	0	4	-246	76	96	20	4	4
+b	wall_east	0	4	-234	80	116	36	4	0
+b	wall_south	0	4	-233	76	108	32	4	4
+b	wall_north	0	4	-239	76	96	20	4	0
+
+world	corner	z_run_deck	x_run_deck	step
+a	wall_west/wall_south	103	103	0
+a	wall_west/wall_north	103	103	0
+a	wall_east/wall_south	107	107	0
+a	wall_east/wall_north	103	103	0
+b	wall_west/wall_south	82	82	0
+b	wall_west/wall_north	102	102	0
+b	wall_east/wall_south	110	110	0
+b	wall_east/wall_north	86	86	0
+
+every dur_brannoc wall line is dry, steps no more than a terrace, and leaves no gap on either world

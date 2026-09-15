@@ -33,6 +33,10 @@ local rows = {}
 rows[#rows + 1] = dofile(repo .. "/tools/wp13/library_kat.lua")(repo)
 rows[#rows + 1] = dofile(repo .. "/tools/wp13/blueprint_kat.lua")(repo)
 rows[#rows + 1] = dofile(repo .. "/tools/wp13/highcourt_kat.lua")(repo)
+-- The second capital, and the first walled one: the same acceptance as
+-- Highcourt's for its core, its nine plots and its avenues, plus the four
+-- curtain-wall rules only a wall needs (`dur_brannoc_kat.lua` section 4).
+rows[#rows + 1] = dofile(repo .. "/tools/wp13/dur_brannoc_kat.lua")(repo)
 -- The settlement seam itself: roster-derived manifest order, bounds per slot,
 -- several blueprints per settlement, the terrain-relative projection against a
 -- stub height function, and lazy build/release (contract section 2.2).

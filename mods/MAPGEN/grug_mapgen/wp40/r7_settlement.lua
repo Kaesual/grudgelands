@@ -195,6 +195,33 @@ M.roster = {
 		-- whole argument.
 		reserve_anchor_root = true,
 	},
+	-- The second capital, and the first WALLED one (the user's ruling of
+	-- 2026-09-14: walls for Dur Brannoc, Nhal Veyr and Gor Drazhak). Its
+	-- overlay carries twelve runs -- four avenues, four sides of the ring
+	-- street and the four sides of the curtain wall -- because the wall follows
+	-- the terraced ground exactly the way the road does and belongs to the same
+	-- kind of blueprint (`r7_dur_brannoc_blueprint.lua`).
+	{
+		key = "dur_brannoc", label = "Dur Brannoc", race = "dwarf",
+		slot = "capital", bounds = "capital_core", plot_bounds = "capital_plot",
+		lazy = true,
+		zone_id = "elandor_dur_brannoc",
+		anchor_id = "anchor_007", numeric_id = 7, x = -1800, z = -1500,
+		blueprint_file = "r7_dur_brannoc_blueprint.lua",
+		blueprint_schema = "grug_wp13_dur_brannoc_core_v1",
+		identity_schema = "grug_wp13_dur_brannoc_core_identity_v1",
+		config_schema = "grug_wp13_dur_brannoc_config_v1",
+		ledger_schema = "grug_wp13_dur_brannoc_ledger_v1",
+		metrics_schema = "grug_wp13_dur_brannoc_metrics_v1",
+		delta_schema = "grug_wp13_dur_brannoc_delta_v1",
+		-- Same reservation as Highcourt's, for the same reason: the anchor
+		-- writer puts one `grug_nodes:guard_banner` at (x, y + 1, z) of every
+		-- capital anchor and runs BEFORE the settlement writer, and this core
+		-- has air at exactly that cell -- the crossing of the two great
+		-- avenues. The banner is `walkable = false`, so a five-wide gate road
+		-- crossing stays five wide.
+		reserve_anchor_root = true,
+	},
 }
 
 -- ASCII byte order. Lua's `<` on strings is `strcoll`, so under a locale that
