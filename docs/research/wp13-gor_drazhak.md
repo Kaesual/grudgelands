@@ -1,6 +1,8 @@
 # WP13: Gor Drazhak, the orc capital
 
-> **Read section 10 first.** An independent review of the first version found
+> **Read sections 10 and 11 first.** Section 11 is the second rebase (onto
+> `main` at `f5583e13` = Lane N + Lane R + Lane D) and carries the current
+> numbers. An independent review of the first version found
 > one blocker and six should-fixes, all but one of them the same root cause: the
 > coverage the brief asked for (nine fixture seeds) was taken on three. Sections
 > 1-9 are the first version's record and their three-seed numbers stand as
@@ -948,3 +950,142 @@ defect.
    limit** (worst perimeter fall 6 against a skirt of 6, worst rise 7 against a
    clear of 9). `gor_drazhak_lots.lua --repair` over fresh grids is the one
    command that moves them when WP40's terrain does.
+
+## 11. The second rebase, onto `main` at `f5583e13`
+
+Lane N (the wave-2 NPC vocabulary), Lane R (routes end at the 24 gate points)
+and Lane D (the Dur Brannoc upgrade, and the capital tooling with it). What the
+rebase moved, what it fixed for free and what it cost.
+
+### 11.1 What moved in the rebase
+
+One conflict, in `docs/design/settlements.md`: Lane D added two paragraphs (the
+fill ground between the plots, and the dwarf capital's own shape) exactly where
+this lane adds two (the palisade variant of a walled capital, and the orc
+capital's shape). Both sides are pure additions to the same place; both are
+kept, main's first. Everything else merged: the roster row stayed after
+`dur_brannoc`, and the `final_micro.lua` rows appended beside Lane R's new
+`route_gates_kat`.
+
+**Nothing in this lane's own code changed.** The KAT's every row is
+byte-identical across the rebase.
+
+### 11.2 The route gates: zero faults for this capital, on nine seeds
+
+`luajit tools/wp13/route_gates.lua "$PWD" <seed> --strict` on all nine fixture
+seeds, wrapped as `evidence/.../gates.sh` (which follows THIS capital's fault
+count rather than the world's, and keeps every report under `gates/`). **Gor Drazhak has zero route faults and zero city faults on every one of
+them.** The tool's exit status is the whole world's, not one capital's, and it
+exits 1 on five seeds -- every one of those faults is **Nhal Veyr's north gate**
+(`steps 4 between route grade and avenue road`, `entry breaks 1 time(s), worst
+5`), which is the case Lane R's own note §2.1.1 names as "a capital's own
+fitting must reach its four gates".
+
+| seed | route faults (world) | city faults (world) | of those, Gor Drazhak's |
+| --- | --- | --- | --- |
+| 531802985935182545 | 0 | 2 | **0** |
+| 8675309 | 0 | 2 | **0** |
+| 15912857179583385436 | 0 | 0 | **0** |
+| 0 | 0 | 0 | **0** |
+| 1 | 0 | 0 | **0** |
+| 2 | 0 | 2 | **0** |
+| 42 | 0 | 1 | **0** |
+| 12345 | 0 | 2 | **0** |
+| 999999999 | 0 | 0 | **0** |
+
+**The ground inside the gates, which §3.1 of Lane R's note hands to the capital
+lane.** The worst raw terrain step over the eight columns inside a Gor Drazhak
+gate, across the nine seeds: **west 3, east 3, south 1, north 2** -- Lane R's own
+table says 3/3/—/3 and this reproduces it. The tool refuses 12 and the
+contract's own bound is twice the race terrace rise, which is 8, so nothing here
+needs terracing: this capital's gate approaches are among the flattest of the
+six. And nothing of this lane's is standing in those columns to be disturbed --
+the lot predicate holds every plot clear of the four 32-node gate corridors, and
+the rampart's own gate passage is authored air from one course over the ground
+to the walk.
+
+The gate geometry the contract asks for is satisfied unchanged: the four avenues
+run to ±261 so they cross the whole seven-node rampart, the gate passage is
+`2 × GATE_PASSAGE + 1 = 7` columns centred on the anchor's own axis (the
+contract's floor is 7), and the tool's `approach` rows show all four routes
+ending AT their gate (`gate distance 0`, `144` nodes of straight approach) with
+`end_cap 15/15` -- the fifteen columns the contract allows inside, paved over by
+the avenue.
+
+### 11.3 Lane D's probe fix closes §10.9b
+
+The `EXPLAIN` row §10.9b recorded -- `bone_barrow rise 10 against a clear of 9`
+on the boundary seed, where the engine's own audit logged nothing -- was the
+probe pairing CANONICAL plot offsets with a SEEDED map. Lane D's
+`capital_probe` now passes the seeded assignment, and the plot gate is clean:
+
+```
+rows 104   plots 52   illegal 0   to explain 0
+worst perimeter fall 6  war_armoury   (skirt 6)
+worst rise          7   bazaar_armourer (airspace floor 9)
+```
+
+The `worst_plot` the engine names has changed with it -- `war_armoury` and
+`war_muster_field` where the first rounds said `warren_cook_court` and
+`bone_totem_court` -- because the labels are finally the ones the map holds.
+`surface_check.lua` keeps its split (water and fall asserted, a rise over its
+row's clear reported) as a guard rather than a live finding.
+
+### 11.4 The nine-seed gates, re-measured on the new terrain
+
+Lane R's change moves the ground INSIDE the envelope: a route no longer grades
+anything there, so the anchor fitting meets the hillside on its own. The nine
+terrain dumps were therefore re-taken and both gates re-run.
+
+**The layout survives it unchanged.** `gor_drazhak_lots.lua --repair` over the
+nine new grids proposes nothing, so none of the eighteen repairs moved and no
+nineteenth is needed; `nine.sh` is green end to end:
+
+| | result |
+| --- | --- |
+| rampart, nine worlds | dry, terrace step, no gap, gates dry; worst RAW corner step 4, **worst reconciled 0** |
+| lots, nine worlds | **52/52 legal** |
+| `audit_terrain`, nine worlds | **0 findings** |
+
+### 11.5 Two engine passes with the corrected labels
+
+| | 531802985935182545 | 15912857179583385436 |
+| --- | --- | --- |
+| verdict | **PASS**, `errors=0` | **PASS**, `errors=0` |
+| sockets | 315 | 315 |
+| roster | `guards 30/30 flair 160/160 vendor 7/7 quest 2/2 pending 0 spare 73` | `guards 30/30 flair 151/160 vendor 7/7 quest 2/2 pending 9 spare 73` |
+| residents / walkers | 160 / 21 | 160 / 21 |
+| per-mapchunk steady mean | **0.640 s** | **0.473 s** |
+| Lethariel control | 2.452 s | 2.375 s |
+| mapchunks | 60 | 112 |
+| worst plot perimeter fall | 6 (`war_armoury`) | 5 (`war_muster_field`) |
+| terrain-audit findings | 0 | 0 |
+
+Both means are lower than the fix round's 0.681 / 0.710 s, and the reason is
+Lane R's: a route that no longer grades inside the envelope is work the emerge
+no longer does there. The user's world seed now places the whole roster but
+nine, against sixty-two before -- the same emerge-corpus effect, smaller.
+
+### 11.5b The interpreter pair
+
+`final-micro.sh` on the rebased tree: **byte-identical**,
+`d9b7a41ffa56ca7bdf781fb599cad75b6ced40203fb804aa88bcb3199bd4e8a2`. It moved
+from the fix round's `757efd30...` because the set now carries Lane R's
+`route_gates_kat` and Lane D's upgraded `dur_brannoc_kat` beside this lane's
+rows; **this lane's own eight rows are unchanged across the rebase.**
+
+### 11.6 The whole capital as a plan
+
+`renders/plan-whole-capital.png`, drawn through Lane D's new generic
+`tools/wp13/dump_capital_plan.lua` at seed 531802985935182545: 52 plots, 789 883
+cells on one flat plane, with the quarters this world's permutation gives --
+lore south-east, market north-west, martial south-west, residential north-east.
+It is the picture the contract's §2.3 density question wants and no number
+answers: the rampart ring with its towers, the four avenues and the ring street,
+each quarter's lane pair and its 3 × 3 grid with the fill lots pushed out into
+the outer band, and the dense core in the middle.
+
+What it also shows, honestly: a band of open ground roughly thirty nodes deep
+between the outermost fill lots and the rampart. That is the wall margin every
+walled capital has and it is where a later increment would put what a city keeps
+against its own wall.

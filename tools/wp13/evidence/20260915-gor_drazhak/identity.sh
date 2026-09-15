@@ -30,14 +30,17 @@ echo "== the KATs of the settlements before this one =="
 # The four expected values were taken on an ARCHIVE OF MAIN extracted into a
 # scratch tree, with the same KAT run there -- so this is a comparison against
 # the tree before this lane and not a number somebody wrote down from this one.
-# Re-verified in the fix round against main at c8050057: all four, the
+# Re-verified against main at f5583e13 (the second rebase): all four, the
 # start-identity fixture (0bbf87a7...) and Highcourt's own identity listing
-# (66e2ed00...) are byte-identical on both trees.
+# (66e2ed00...) are byte-identical on both trees. `dur_brannoc_kat`'s value
+# MOVED between c8050057 and f5583e13 (bfffe682... -> 36b36628...) and that is
+# Lane D's own upgrade of Dur Brannoc to the Highcourt standard, not this lane:
+# the new value is what main itself produces, and this tree reproduces it.
 declare -A expect=(
 	[library_kat]=bd4b51ab87f33ebc719c7833f1ff560d6a8d6332d2f8e5691acf7b5af0bcddee
 	[blueprint_kat]=13f7fd7da93cf3a0fb67a8f83c3eb757d83eee36625ebbc82ae8bd535489a30f
 	[highcourt_kat]=ac3877565002bfdb3ce9f1975ceb76a878ee6be14c89d33f394edc62892ed183
-	[dur_brannoc_kat]=bfffe682c3329e1197b7f8da44819fef2779d98379f38016a37fe5c31696730c
+	[dur_brannoc_kat]=36b366288f7017832e790be4cf9bec54c388861b3a0ee727dc9f6b214fa52ee9
 )
 status=0
 for kat in library_kat blueprint_kat highcourt_kat dur_brannoc_kat; do

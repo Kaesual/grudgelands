@@ -18,7 +18,9 @@ here="tools/wp13/evidence/20260915-gor_drazhak"
 		mods/MAPGEN/grug_mapgen/wp40/r7_gor_drazhak_blueprint.lua \
 		mods/MAPGEN/grug_mapgen/wp40/r7_wp13_library.lua \
 		tools/wp13/capital_wall.lua \
+		tools/wp13/dump_capital_plan.lua \
 		tools/wp13/final_micro.lua \
+		tools/wp13/route_gates.lua \
 		tools/wp13/run_capital.sh \
 		docs/research/wp13-gor_drazhak.md
 	find "$here" -type f ! -name 'files.sha256' -print

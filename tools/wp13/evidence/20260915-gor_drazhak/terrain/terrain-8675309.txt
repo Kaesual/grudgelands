@@ -1,1 +1,1 @@
-ACTION[Main]: GRUG_WP13_CAPITAL event=complete mode=terrain engine=5.17.0 seed=8675309 anchor=0,104,1500 legend=low:high:range:worst_step:worst_step_at:wet_columns line_west=72:106:34:2:43:0 line_east=84:108:24:3:55:0 line_south=76:96:20:1:-241:0 line_north=89:124:35:3:-54:0
+ACTION[Main]: GRUG_WP13_CAPITAL event=complete mode=terrain engine=5.17.0 seed=8675309 anchor=0,104,1500 legend=low:high:range:worst_step:worst_step_at:wet_columns line_west=72:106:34:2:-6:0 line_east=84:108:24:3:-6:0 line_south=76:96:20:1:-241:0 line_north=89:124:35:2:176:0

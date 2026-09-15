@@ -268,8 +268,8 @@ mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:478:		string.format("%.0f", blob.y_ma
 mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:487:		rows[#rows + 1] = "stratum|" .. definition.name .. "|ore=" ..
 mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:488:			definition.ore .. "|wherein=default:stone|clust_scarcity=1|y_min=" ..
 mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:489:			string.format("%.0f", definition.y_min) .. "|y_max=" ..
+mods/MAPGEN/grug_mapgen/wp40/simple_map.lua:722:					-- open envelope is |d| < gate_half, so the closed box this
 mods/MAPGEN/grug_mapgen/wp13/gor_drazhak.lua:11:--     "Gor Drazhak | orc | mesa shelf, step 4 | adobe flat roofs with
-mods/MAPGEN/grug_mapgen/wp13/dur_brannoc_district.lua:64:		-- 44 nodes between |x| 60 and |x| 104 on the user seed, so the four
 mods/PLAYER/grug_abilities/init.lua:470:-- Ability registration & item. One tool per ability; the item's `range`
 mods/PLAYER/grug_abilities/init.lua:1462:	return SKIN_VERSION .. "|" .. color .. "|" .. src.inv .. "|" .. src.wield
 mods/PLAYER/grug_abilities/init.lua:1506:	local token = SWING_CAPS_VERSION .. "|" .. string.format("%.17g", interval)
@@ -293,14 +293,18 @@ tools/wp13/wield_transform_kat.lua:212:-- `core::Transform::buildMatrix` rotates
 2 escapes: clean
 3 5.2+ stdlib: clean
 4 // and bitwise: READ THESE
+tools/wp13/route_gates_kat.lua:242:	-- The open envelope is |dx| < HALF and |dz| < HALF, so the closed box the
 tools/wp13/evidence/20260915-capital-terrain/measurements/band-bound.lua:12:--   gentle  the worst |output step| over pairs whose RELIEF step is at most 1.
 tools/wp13/evidence/20260915-capital-terrain/measurements/band-bound.lua:44:io.write("deviation = worst |output - plain terrace|\n\n")
 tools/wp13/evidence/20260914-round-b-terrain/measure/road_shoulder.lua:2:-- rows on the approach, the smallest |dx| at which a biome decoration may host
 tools/wp13/evidence/20260915-gor_drazhak/surface_check.lua:5:-- The dumps come from `run_capital.sh <out> gor_drazhak surface|full <seed>`,
 5 sandbox/namespace: READ THESE
 tools/wp13/capital_wall.lua:246:	os.exit(1)
-tools/wp13/capital_plots.lua:313:	os.exit(0)
-tools/wp13/capital_plots.lua:349:	os.exit(1)
+tools/wp13/route_gates.lua:667:os.exit(gated == 0 and 0 or 1)
+tools/wp13/capital_plots.lua:357:	os.exit(0)
+tools/wp13/capital_plots.lua:393:	os.exit(1)
+tools/wp13/capital_lots.lua:414:	os.exit(0)
+tools/wp13/capital_lots.lua:594:	os.exit(1)
 tools/wp13/dump_blueprint.lua:18:	os.exit(2)
 tools/wp13/dump_blueprint.lua:46:	os.exit(1)
 tools/wp13/dump_blueprint.lua:52:	os.exit(1)

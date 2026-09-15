@@ -39,3 +39,14 @@ render "$tsv/gor_drazhak-rampart.tsv" -o "$out/rampart-night.png" --view ne \
 	--light
 render "$tsv/gor_drazhak-gate.tsv" -o "$out/gate.png" --view ne
 render "$tsv/gor_drazhak-gate.tsv" -o "$out/gate-night.png" --view ne --light
+
+# THE WHOLE CAPITAL ON ONE FLAT PLANE, which is the picture to compare one
+# capital's density with another's by. It is not read out of the map: the
+# ground is flat and the terraces are not in it, which is what makes it a PLAN.
+# `dump_capital_plan.lua` is Lane D's generic dumper and it takes the world
+# seed, so the quarters are the ones this world's permutation gives. Its TSV is
+# 789 883 cells and 23 MB, so it is written to scratch and NOT committed -- the
+# PNG is the evidence and this line is how to get the TSV back.
+plan="${TMPDIR:-/tmp}/gor_drazhak-plan.tsv"
+luajit tools/wp13/dump_capital_plan.lua . gor_drazhak 531802985935182545 >"$plan"
+render "$plan" -o "$out/plan-whole-capital.png" --view ne

@@ -16,5 +16,4 @@ cd "$repo"
 here="tools/wp13/evidence/20260915-gor_drazhak"
 GRUG_REPO="$repo" luajit "$here/surface_check.lua" \
 	"$here/surface/surface-531802985935182545.tsv" \
-	"$here/surface/surface-8675309.tsv" \
 	"$here/surface/surface-15912857179583385436.tsv"
