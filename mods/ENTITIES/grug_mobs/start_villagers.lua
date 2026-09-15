@@ -127,6 +127,35 @@ local GUARD_TEXTURE = {
 local SPOT_ARRIVED = 1.6
 local DWELL_MIN, DWELL_MAX = 20, 60
 local AMBLE_TICK = 1
+--
+-- A STATIC IDLE RESIDENT'S DWELL (contract section 8.3, playtest round 3): four
+-- residents out of five never walk a route, and the one thing they keep of the
+-- round-1 amble is "at most a rare short hop on the spare ring". So the same
+-- machinery runs with a dwell an order of magnitude longer -- three to seven
+-- minutes of standing at the door or the bench -- and with a ring that holds
+-- its own socket and the SPARE spots near it and nothing else, so a hop is
+-- never a trade of homes with a neighbour.
+--
+local STATIC_DWELL_MIN, STATIC_DWELL_MAX = 180, 420
+-- The bound on a walker's route lives where the ring is BUILT
+-- (start_npcs.lua's `WALK_RADIUS`), not here: this file only spends the ring
+-- it is handed.
+-- The work tick, the same one-second throttle every ambient movement here uses.
+local WORK_TICK = 1
+-- HOW FAR A PLAYER MAY BE and still make the animation worth running. The model
+-- is the vendor presence poll of grug_traders (PLAYER_RANGE = 24): an animation
+-- nobody can see is a property write nobody can see. Squared, because this runs
+-- once a second per resident and a square root does not.
+local WATCH_RANGE_D2 = 24 * 24
+-- The occasional swing of `fish` and `tend`: two seconds of animation every ten.
+-- Two property writes per ten seconds per watched resident, and none at all
+-- while nobody is near.
+local SWING_ON, SWING_PERIOD = 2, 10
+-- `sweep` is the one activity that moves (contract section 8.2: "it stays
+-- within two nodes of its socket"). The line runs along the socket's own facing
+-- and is walked at the ordinary pace, with no path-finding of any kind.
+local SWEEP_SPAN = 2
+local SWEEP_ARRIVED = 0.6
 -- Seconds of no measurable progress toward a spot after which the villager
 -- gives that spot up and takes another (patrol.lua's stall clock). Short,
 -- because the usual obstacle is another villager and the usual fix is to go
@@ -135,6 +164,50 @@ local SPOT_GIVE_UP = 15
 -- One answer per player per two seconds: on_rightclick fires per click and a
 -- held mouse button is a chat flood otherwise.
 local ANSWER_COOLDOWN = 2
+
+--
+-- THE ACTIVITY TABLE (contract section 8.2, which is closed on the NAMES and
+-- leaves the animation and the wielded item to this lane).
+--
+-- `anim` is the mobs_redo animation key of the definition below:
+--   stand  frames 0..79     the idle pose of `character.b3d`
+--   walk   frames 168..187  the only moving activity, `sweep`
+--   work   frames 189..198  the mesh's `mine` swing, run at a THIRD of the
+--                           player's speed (10 against 30) so a hammer, a hoe
+--                           and an axe read as work rather than as a fight
+--   sit    frames 81..160   the mesh's own sit range
+-- All four are `mods/BASE/player_api/init.lua`'s registered ranges, read off
+-- that file rather than copied from a wiki: stand 0-79, sit 81-160, lay
+-- 162-166, walk 168-187, mine 189-198, walk_mine 200-219.
+--
+-- `swing` means "stand, and lift the arm now and then": the weeding and the
+-- rod-tending of section 8.2, which are a stand pose with an occasional mine
+-- frame rather than a loop.
+--
+-- `item` is what the hand holds, through the character-visuals wield seam
+-- (`grug_visuals.apply_entity`'s `weapon` field, the same one a guard's sword
+-- goes through). Only items the game ACTUALLY registers are named -- there is
+-- no farming mod and therefore no hoe, so the field hand carries the stone
+-- shovel, which is the closest tool this vocabulary has; a rod is the stick
+-- section 8.2 explicitly allows. An unregistered name would draw nothing at all
+-- (grug_visuals/apply.lua), so the startup audit at the bottom of this file
+-- reports one instead of leaving an empty hand nobody notices.
+--
+local ACTIVITY = {
+	smith = {anim = "work", item = "default:pick_bronze"},
+	fish = {anim = "stand", swing = true, item = "default:stick"},
+	farm = {anim = "work", item = "default:shovel_stone"},
+	chop = {anim = "work", item = "default:axe_stone"},
+	tend = {anim = "stand", swing = true},
+	pray = {anim = "stand"},
+	stall = {anim = "stand"},
+	sit = {anim = "sit"},
+	sweep = {anim = "walk", sweep = true},
+}
+
+function grug_mobs.start_npc_activity(name)
+	return ACTIVITY[name]
+end
 
 function grug_mobs.start_npc_line(race_id, key)
 	local race = LINES[race_id]
@@ -177,20 +250,39 @@ function grug_mobs.settlement_npc_name(settlement_key, kind, race_id, family)
 		(FAMILY_TITLE[family] or FAMILY_TITLE.villager)
 end
 
--- Static white nametag. mobs_redo recolours the tag by health on every
--- do_env_damage tick (api.lua:634-662, called from :989), so the method is
--- overridden PER ENTITY exactly as vendors.lua and levels.lua do it. A
--- function field never reaches staticdata, so this runs from after_activate
--- on every activation; the "already written" flag lives in self.temp, which
--- mob_activate resets per activation.
+--
+-- Static white nametag, BEHIND THE PROXIMITY GATE (playtest round 3,
+-- 2026-09-15).
+--
+-- mobs_redo recolours the tag by health on every do_env_damage tick
+-- (api.lua:634-662, called from :989), so the method is overridden PER ENTITY
+-- exactly as vendors.lua and levels.lua do it. A function field never reaches
+-- staticdata, so this runs from after_activate on every activation.
+--
+-- WHAT CHANGED IN ROUND 3: this used to write the nametag property once and be
+-- done, and the engine has no distance cull of its own -- so a villager's name
+-- rendered out to the ~128 m object-send range while a guard's disappeared at
+-- thirty, which is the clutter the user reported. The DESIRED text is now kept
+-- in a plain string field (so it survives unload/reload with the mob and a
+-- rename while the tag is hidden costs nothing), and the only writer of the
+-- property is `grug_mobs.plain_tag_gate_tick`, from this family's own
+-- once-a-second slot. mobs_redo's own `update_tag` calls therefore refresh the
+-- desired text and touch no property at all.
+--
 local function install_nametag(self, text)
+	self._grug_tag_want = text
 	self.update_tag = function(other)
-		local obj = other.object
-		if not obj or not other.temp or other.temp.grug_tag_set then return end
-		other.temp.grug_tag_set = true
-		obj:set_properties({nametag = text, nametag_color = "#ffffff"})
+		other._grug_tag_want = text
 	end
-	self:update_tag()
+end
+
+-- The gate, called from every family's per-second tick. Resolved through the
+-- table on each call because `levels.lua` is what installs it: the KAT fixture
+-- drives these two families without the level engine, and a settlement NPC has
+-- no level to want it for.
+local function tag_gate(self)
+	local gate = grug_mobs.plain_tag_gate_tick
+	if gate then gate(self, self._grug_tag_want) end
 end
 
 --
@@ -210,10 +302,10 @@ function grug_mobs.start_npc_retag(self)
 		return
 	end
 	self._grug_npc_tag = name
-	if self.temp then
-		self.temp.grug_tag_set = nil
-	end
 	install_nametag(self, name)
+	-- No property write and no flag reset: the proximity gate owns the
+	-- property, and it re-reads the desired text on its next tick -- which is
+	-- also what makes a rename that happens while the tag is hidden free.
 end
 
 -- Is another villager of this family visibly standing on that spot? Only
@@ -249,9 +341,18 @@ end
 --
 -- No `write_textures` argument: that exists for grug_mobs' tier tint, which
 -- layers an elite's gold over the pristine list. A villager has no tier.
-local function apply_race_visual(self, race_id)
+--
+-- `item` is the wielded tool of a WORK resident (contract section 8.2) and nil
+-- for everybody else. It goes through the same `weapon` field of the visuals
+-- spec a guard's sword does, so the wield entity, its bone attachment and its
+-- transform are the visuals lane's and not a second copy here. Both halves are
+-- idempotent -- `apply_entity` skips the texture write while the composed skin
+-- is unchanged and `sync_wield` skips while the item is unchanged -- which is
+-- what makes calling it from a per-second tick free.
+--
+local function apply_race_visual(self, race_id, item)
 	if core.global_exists("grug_visuals") then
-		grug_visuals.apply_entity(self, {race = race_id})
+		grug_visuals.apply_entity(self, {race = race_id, weapon = item})
 	end
 end
 
@@ -309,6 +410,9 @@ local function amble_tick(self, dtime)
 		-- the rest of its own step.
 		if not grug_mobs.start_npc_claim(self) then return false end
 	end
+	-- THE ONE PER-SECOND SLOT this family has, shared by the amble and the
+	-- nametag gate rather than opened twice (levels.lua's own note).
+	tag_gate(self)
 	local spots = self._grug_idle_spots
 	if type(spots) ~= "table" or #spots == 0 then return end
 	-- Idle only, the same test patrol.lua and aggro.lua's roam cap use.
@@ -342,18 +446,39 @@ local function amble_tick(self, dtime)
 		return
 	end
 	grug_mobs.stall_clear(self)
+	--
+	-- HOW LONG THIS RESIDENT STANDS STILL is the whole of the 80/20 rule on the
+	-- idle side (contract section 8.3). A WALKER keeps the round-1 twenty to
+	-- sixty seconds, which is a continuous route; a STATIC resident stands for
+	-- three to seven minutes, which is a rare short hop with a very long dwell
+	-- either side of it. `_grug_walker` is the plain boolean the placement
+	-- engine wrote, so the two are decided once and never re-rolled.
+	--
+	local dwell_min, dwell_max = STATIC_DWELL_MIN, STATIC_DWELL_MAX
+	if self._grug_walker then
+		dwell_min, dwell_max = DWELL_MIN, DWELL_MAX
+	end
 	if self._grug_idle_dwell == nil then
-		self._grug_idle_dwell = math.random(DWELL_MIN, DWELL_MAX)
+		self._grug_idle_dwell = math.random(dwell_min, dwell_max)
 	end
 	-- THE FIRST TICK OF AN ACTIVATION caps whatever is left of the dwell at
 	-- DWELL_MIN. A villager's dwell only counts down while its mapblock is
 	-- active, i.e. while somebody is there to see it, so this is what bounds the
 	-- wait a player walking into a settlement has before anything moves. The
 	-- flag lives in self.temp, which mob_activate resets per activation.
-	if not temp.grug_amble_fresh then
+	--
+	-- WALKERS ONLY, since round 3. The cap exists because a dwell only counts
+	-- down while somebody is there to see it, so it bounds the wait a player
+	-- walking into a settlement has before anything moves -- and that is a
+	-- statement about the people who are supposed to be moving. A STATIC
+	-- resident standing at its door for its first three minutes is the
+	-- behaviour, not a wait, and capping it would have made every static
+	-- resident hop the moment its minimum ran out.
+	--
+	if self._grug_walker and not temp.grug_amble_fresh then
 		temp.grug_amble_fresh = true
-		if self._grug_idle_dwell > DWELL_MIN then
-			self._grug_idle_dwell = DWELL_MIN
+		if self._grug_idle_dwell > dwell_min then
+			self._grug_idle_dwell = dwell_min
 		end
 	end
 	if self._grug_idle_dwell > 0 then
@@ -368,6 +493,148 @@ local function amble_tick(self, dtime)
 	-- Dwell over: step on to the next spot and let the next tick walk there.
 	self._grug_idle_spot = next_spot(self, spots, index)
 	self._grug_idle_dwell = nil
+end
+
+--
+-- THE WORK TICK (contract section 8.1/8.2, playtest round 3).
+--
+-- A resident booked on a `work` socket never leaves it. It stands on the
+-- socket, faces the authored direction, plays its activity's animation and
+-- holds its activity's tool. Everything about it is built for the user's own
+-- constraint -- "lived-in settlements without paying for it in server load" --
+-- and the three things that cost anything are all switched off:
+--
+--   1. NO PATH-FINDING, EVER. A static resident has no destination, so nothing
+--      here ever reaches `core.find_path`; `sweep`, the one activity that
+--      moves, walks a two-node straight line with `walk_toward` and no rescue.
+--   2. ONE PROPERTY WRITE PER CHANGE. mobs_redo's own `set_animation` returns
+--      without touching the object when the animation is already the one asked
+--      for (api.lua:461), so a hammering smith writes its animation once for
+--      the life of its activation, and a swinging fisher twice per ten seconds.
+--   3. NOTHING AT ALL WHILE NOBODY IS WATCHING. The vendor presence poll's own
+--      rule (grug_traders/vendors.lua PLAYER_RANGE): beyond 24 nodes from the
+--      nearest player the tick sets the velocity to zero once and returns.
+--
+-- AND IT RETURNS `false`, which is what makes the whole thing hold. mobs_redo
+-- skips the rest of `on_step` as soon as `do_custom` answers exactly false
+-- (api.lua:3595), so `do_states` never runs for a work resident -- and
+-- `do_states` in the stand state calls `set_animation("stand")` once a second
+-- (api.lua:2133), which would overwrite the activity's animation within a
+-- second of it being set. It also skips `general_attack`, `breed` and
+-- `follow_flop`, which for a non-combatant with no follow list is pure saving.
+--
+local function watched(self, pos)
+	local nearest = grug_mobs.nearest_player_d2
+	if not nearest then return true end
+	local d2 = nearest(pos)
+	return d2 ~= nil and d2 <= WATCH_RANGE_D2
+end
+
+-- The two ends of a `sweep`'s line: the socket itself and two nodes along its
+-- authored facing. Derived from the yaw the placement engine wrote, so it
+-- needs no second copy of the socket's `dir`.
+local function sweep_ends(self)
+	local home_x = self._grug_work_x
+	local home_z = self._grug_work_z
+	local yaw = self._grug_face_yaw or 0
+	-- core.dir_to_yaw is atan2(-x, z), so this is its inverse.
+	local dx = -math.sin(yaw)
+	local dz = math.cos(yaw)
+	return home_x, home_z, home_x + dx * SWEEP_SPAN, home_z + dz * SWEEP_SPAN
+end
+
+local function work_tick(self, dtime)
+	self.temp = self.temp or {}
+	local temp = self.temp
+	temp.grug_work_acc = (temp.grug_work_acc or 0) + dtime
+	if temp.grug_work_acc < WORK_TICK then return false end
+	local elapsed = temp.grug_work_acc
+	temp.grug_work_acc = 0
+	if not temp.grug_socket_claimed then
+		temp.grug_socket_claimed = true
+		if not grug_mobs.start_npc_claim(self) then return false end
+	end
+	tag_gate(self)
+	local activity = ACTIVITY[self._grug_work_activity]
+	local pos = self.object and self.object:get_pos()
+	if not activity or not pos then return false end
+	-- Fighting, fleeing and flopping own the movement; a non-combatant can
+	-- reach none of those states, and the test is the one patrol.lua and
+	-- aggro.lua's roam cap use.
+	if self.attack or (self.state ~= "stand" and self.state ~= "walk") then
+		return false
+	end
+	if not watched(self, pos) then
+		if (self.velocity or 0) ~= 0 then self:set_velocity(0) end
+		return false
+	end
+	-- The tool, once per activation. Both halves of `apply_entity` are
+	-- no-ops once the composed skin and the held item are what they should be.
+	if not temp.grug_work_dressed then
+		temp.grug_work_dressed = true
+		apply_race_visual(self, self._grug_npc_race, activity.item)
+	end
+	if activity.sweep then
+		local home_x, home_z, far_x, far_z = sweep_ends(self)
+		local to_far = temp.grug_sweep_far == true
+		local x, z = home_x, home_z
+		if to_far then x, z = far_x, far_z end
+		local dx, dz = x - pos.x, z - pos.z
+		if dx * dx + dz * dz > SWEEP_ARRIVED * SWEEP_ARRIVED then
+			grug_mobs.walk_toward(self, x, z, pos)
+			self:set_animation("walk")
+		else
+			temp.grug_sweep_far = not to_far
+			self.state = "stand"
+			self:set_velocity(0)
+		end
+		return false
+	end
+	-- Everything else stands on its socket, facing the feature it works at.
+	self.state = "stand"
+	if (self.velocity or 0) ~= 0 then self:set_velocity(0) end
+	grug_mobs.face_yaw(self, self._grug_face_yaw)
+	if activity.swing then
+		-- Two seconds of swing every ten. The phase is a runtime counter in
+		-- self.temp, so it never reaches staticdata and a reload simply starts
+		-- the cycle again.
+		local phase = ((temp.grug_swing or 0) + elapsed) % SWING_PERIOD
+		temp.grug_swing = phase
+		self:set_animation(phase < SWING_ON and "work" or activity.anim)
+	else
+		self:set_animation(activity.anim)
+	end
+	return false
+end
+
+--
+-- What a resident does is decided ONCE, by which socket it was placed on: a
+-- `work` socket writes `_grug_work_activity` and a resident that carries one
+-- never ambles. Both are plain fields, so the choice survives unload/reload
+-- with the mob and no activation has to re-derive it.
+--
+local function resident_tick(self, dtime)
+	if self._grug_work_activity then
+		return work_tick(self, dtime)
+	end
+	return amble_tick(self, dtime)
+end
+
+--
+-- The quest shell's own tick. It exists for ONE reason -- the nametag gate
+-- needs a per-second slot and an elder has no movement to hang one on -- so it
+-- does nothing else at all, and it returns false for the same reason the work
+-- tick does: an elder that never reaches `do_states` also never has its
+-- authored facing overwritten by mobs_redo's random idle turn (api.lua:2127).
+--
+local function elder_tick(self, dtime)
+	self.temp = self.temp or {}
+	local temp = self.temp
+	temp.grug_elder_acc = (temp.grug_elder_acc or 0) + dtime
+	if temp.grug_elder_acc < WORK_TICK then return false end
+	temp.grug_elder_acc = 0
+	tag_gate(self)
+	return false
 end
 
 local function answer(self, clicker, key)
@@ -469,6 +736,17 @@ local function npc_def(race_id, faction_id, nametag, extra)
 			walk_start = 168, walk_end = 187, walk_speed = 30,
 			run_start = 168, run_end = 187, run_speed = 30,
 			punch_start = 189, punch_end = 198, punch_speed = 30,
+			-- THE TWO WORK RANGES (contract section 8.2), taken from
+			-- `mods/BASE/player_api/init.lua`'s own registration of
+			-- `character.b3d`: `mine` is 189..198 and `sit` is 81..160.
+			-- `work` is the mine swing at a THIRD of the player's 30 fps, which
+			-- is what turns a punch into a hammer blow, a hoe stroke and an axe
+			-- swing; `sit` loops the sit range at its own pace. Both are extra
+			-- keys of the same animation table, so `mob_class:set_animation`
+			-- reaches them by name and still writes nothing when the animation
+			-- is already the one asked for (api.lua:461).
+			work_start = 189, work_end = 198, work_speed = 10,
+			sit_start = 81, sit_end = 160, sit_speed = 15,
 		},
 
 		-- The character-visuals seam
@@ -512,7 +790,7 @@ for index = 1, #identities do
 	end
 	mobs:register_mob("grug_mobs:villager_" .. race_id,
 		npc_def(race_id, faction_id, names.villager, {
-			do_custom = amble_tick,
+			do_custom = resident_tick,
 			after_activate = function(self)
 				-- The name the PLACEMENT resolved (start_npcs.lua), because one
 				-- entity per race serves that race's start and its capital.
@@ -522,7 +800,17 @@ for index = 1, #identities do
 				self._grug_npc_race = race_id
 				self._grug_npc_tag = name
 				install_nametag(self, name)
-				apply_race_visual(self, race_id)
+				-- A WORK RESIDENT COMES BACK HOLDING ITS TOOL. On a reload the
+				-- activity is already in staticdata, so the hand can be dressed
+				-- here; a fresh placement has no activity yet (`install` runs
+				-- after `add_entity` activated the entity) and the first work
+				-- tick dresses it instead.
+				local activity = ACTIVITY[self._grug_work_activity]
+				apply_race_visual(self, race_id, activity and activity.item)
+				if activity then
+					self.temp = self.temp or {}
+					self.temp.grug_work_dressed = true
+				end
 				grug_mobs.face_yaw(self, self._grug_face_yaw)
 			end,
 			on_rightclick = function(self, clicker)
@@ -536,6 +824,10 @@ for index = 1, #identities do
 			run_velocity = 0,
 			stand_chance = 100,
 			jump_height = 0,
+			-- The elder's only tick: the nametag proximity gate needs a
+			-- per-second slot and the quest shell has no movement to hang one
+			-- on (see `elder_tick`).
+			do_custom = elder_tick,
 			after_activate = function(self)
 				local name = self._grug_npc_name or names.elder
 				self._grug_npc_race = race_id
@@ -554,3 +846,37 @@ for index = 1, #identities do
 			end,
 		}))
 end
+
+--
+-- Startup audit of the activity tools (the pattern grug_traders' own audits
+-- established: a check nobody sees the result of is a check nobody notices
+-- breaking).
+--
+-- An item nobody registered draws NOTHING through the wield seam
+-- (grug_visuals/apply.lua refuses to spawn a wielditem for an unknown name),
+-- so a renamed or retired tool would leave the smith swinging an empty fist and
+-- nothing would say so. This says so. Sorted, because `pairs` order over the
+-- activity table is not reproducible and a log line that reorders itself is a
+-- log line nobody can diff.
+--
+core.register_on_mods_loaded(function()
+	local items = core.registered_items or {}
+	local missing, tools = {}, 0
+	for name, activity in pairs(ACTIVITY) do
+		if activity.item then
+			tools = tools + 1
+			if not items[activity.item] then
+				missing[#missing + 1] = name .. "=" .. activity.item
+			end
+		end
+	end
+	if #missing == 0 then
+		core.log("action", "[grug_mobs] settlement work activities: " ..
+			tools .. " wielded tools, all registered")
+		return
+	end
+	table.sort(missing)
+	core.log("error", "[grug_mobs] settlement work activities wield " ..
+		"unregistered items, so those hands stay empty: " ..
+		table.concat(missing, " "))
+end)

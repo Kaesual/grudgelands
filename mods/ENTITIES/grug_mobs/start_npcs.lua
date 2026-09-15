@@ -11,6 +11,11 @@
 --                 `spawn = false` is a SPARE: a wander target of the amble that
 --                 nobody is ever placed on, so a settlement offers more places
 --                 to stand than it has people (playtest round 2).
+--   work          the same villager entity at a WORKPLACE (playtest round 3):
+--                 it never leaves the socket and plays the animation its
+--                 `activity` names. Residents split 80/20 static/walking by the
+--                 deterministic rule of contract section 8.3 -- see
+--                 WALKER_EVERY below.
 --   quest         the quest shell (start_villagers.lua)
 --   vendor        resolved by grug_traders, which owns vendors
 --   king          nothing yet (the encounter is a later work package)
@@ -175,6 +180,40 @@ local POST_SLACK = 2
 -- one difference is that a post has no next waypoint to skip to.
 local POST_STALL_PATH = 20
 local POST_STALL_SNAP = 90
+--
+-- THE 80/20 SPLIT (contract section 8.3, user ruling of playtest round 3).
+--
+-- Nothing about it is authored. Among a settlement's resident spawn sockets in
+-- AUTHORED order, every WALKER_EVERY-th `idle` spawn socket -- starting with
+-- the first -- hosts a walker; every `work` socket and every other `idle`
+-- socket hosts a static resident. Deterministic, so the same settlement gets
+-- the same people whatever order the map happens to load in, and so a census
+-- taken twice says the same thing.
+--
+-- Spares are NOT residents and take no place in the count: `spawn = false`
+-- means "a destination, never a home" (section 6), and counting them would
+-- shift every later socket's parity for a reason that has nothing to do with
+-- who lives there.
+--
+local WALKER_EVERY = 5
+--
+-- HOW FAR A WALKER GOES FROM HOME, in nodes. Contract section 8.3 leaves the
+-- bound to this lane and asks for it to be measured and stated.
+--
+-- 20 is measured: the six starts' idle sockets sit 9 to 24 nodes apart --
+-- Hearthpine's walker at (-16, 4) is 9.4 nodes from its nearest spare, 13.3
+-- from the workyard, 19.7 from the forge spare and 22.8 to 23.5 from the plaza
+-- pair -- so a bound of 20 leaves every walker two to four destinations around
+-- its own socket while cutting the cross-settlement march that had a villager
+-- spend most of its life in transit (and, in a capital, walking a plot's whole
+-- length between two doorsteps).
+--
+-- HORIZONTAL, like every other "am I where I belong" rule in this mod
+-- (aggro.lua's evade and its roam cap), and a resident ALWAYS keeps its own
+-- socket in its ring whatever the radius says -- a ring of one is a resident
+-- that stands still, which is a legal outcome and never an empty ring.
+--
+local WALK_RADIUS = 20
 
 --
 -- Role resolvers. A role with no resolver is a socket nobody stands on
@@ -206,6 +245,14 @@ end)
 grug_mobs.register_start_socket_role("idle", function(socket, start)
 	return "grug_mobs:villager_" .. start.race_id
 end)
+-- A WORKPLACE IS A RESIDENT'S SOCKET, not a family of its own: the same
+-- villager entity stands at the forge, at the counter and on the bench, and
+-- what it does there comes out of the socket's `activity` (contract section
+-- 8.1). One entity per race keeps the nametag rule, the non-combatant flag and
+-- the claim registry exactly as they are.
+grug_mobs.register_start_socket_role("work", function(socket, start)
+	return "grug_mobs:villager_" .. start.race_id
+end)
 grug_mobs.register_start_socket_role("quest", function(socket, start)
 	return "grug_mobs:elder_" .. start.race_id
 end)
@@ -222,11 +269,12 @@ local by_key = {}
 
 -- Which log family a role reports under.
 local FAMILY = {guard_post = "guards", guard_patrol = "guards",
-	idle = "flair", vendor = "vendor", quest = "quest"}
+	idle = "flair", work = "flair", vendor = "vendor", quest = "quest"}
 local FAMILY_ORDER = {"guards", "flair", "vendor", "quest"}
 
--- Which NPC family (start_villagers.lua) a role is nametagged as.
-local NAMED_FAMILY = {idle = "villager", quest = "elder"}
+-- Which NPC family (start_villagers.lua) a role is nametagged as. A work
+-- resident is a villager with a workplace, so it is named like one.
+local NAMED_FAMILY = {idle = "villager", work = "villager", quest = "elder"}
 
 --
 -- THE CLAIM REGISTRY: settlement key -> socket id -> the luaentity holding that
@@ -481,7 +529,13 @@ local function build_rows()
 				key = record.key, kind = kind, anchor = record.anchor,
 				slots = {}, by_socket = {}, pending = 0, idle_groups = {},
 				patrols = {}, totals = {}, placed_count = {}, spare_count = 0,
+				-- socket id -> true for the residents that WALK (section 8.3),
+				-- plus the two counts a census reports the share from.
+				walkers = {}, walker_count = 0, resident_count = 0,
 				scan_radius = SCAN_MARGIN}
+			-- The ordinal of the current `idle` SPAWN socket in authored order,
+			-- which is what the every-fifth rule counts.
+			local resident_idle = 0
 			-- The patrol loops and the idle spots first: both are read by every
 			-- entity the row places, so they are built before the slots. A loop
 			-- is named by its waypoints' `group`, which is how a capital carries
@@ -536,11 +590,27 @@ local function build_rows()
 						x = socket.pos.x, y = socket.pos.y, z = socket.pos.z,
 						yaw = socket_face_yaw(socket),
 						tag = socket.tags and socket.tags[1] or nil,
+						-- A SPARE is the only spot a STATIC resident is allowed
+						-- to hop to, so the ring has to know which of its
+						-- entries are spares (see `bounded_spots`).
+						spare = socket.spawn == false or nil,
 					}
 					spot_index[socket.id] = #spots
 					if socket.spawn == false then
 						row.spare_count = row.spare_count + 1
+					else
+						-- THE EVERY-FIFTH RULE, in authored order and over the
+						-- `idle` SPAWN sockets only.
+						resident_idle = resident_idle + 1
+						row.resident_count = row.resident_count + 1
+						if (resident_idle - 1) % WALKER_EVERY == 0 then
+							row.walkers[socket.id] = true
+							row.walker_count = row.walker_count + 1
+						end
 					end
+				elseif socket.role == "work" and socket.spawn ~= false then
+					-- A workplace is a resident and never a walker.
+					row.resident_count = row.resident_count + 1
 				end
 			end
 			for _, group in ipairs(loop_order) do
@@ -586,6 +656,10 @@ local function build_rows()
 								z = socket.pos.z},
 							yaw = socket_face_yaw(socket),
 							tag = socket.tags and socket.tags[1] or nil,
+							-- The closed vocabulary of contract section 8.2,
+							-- already validated by the registry: a typo is a
+							-- build error there and never reaches this file.
+							activity = socket.activity,
 							idle_index = spot_index[socket.id],
 							placed = storage:get_string(
 								placed_key(record.key, socket.id)) == "1",
@@ -770,14 +844,52 @@ mobs.mob_class.on_deactivate = function(self, removal)
 	end
 end
 
-local function copy_spots(spots)
-	local out = {}
-	for index = 1, #spots do
-		local spot = spots[index]
-		out[index] = {x = spot.x, y = spot.y, z = spot.z, yaw = spot.yaw,
-			tag = spot.tag}
+--
+-- THE RING A RESIDENT IS HANDED, bounded by `WALK_RADIUS` around its own
+-- socket (contract section 8.3). Two shapes, and the difference IS the 80/20
+-- rule on the idle side:
+--
+--   * a WALKER gets every spot of its composition within the radius -- homes
+--     and spares alike -- which is the round-1 amble with a leash on it;
+--   * a STATIC resident gets its own socket and the SPARES within the radius
+--     and nothing else, so its rare hop is always to a place nobody lives and
+--     never a trade of doorsteps with the neighbour. That is the user's "at
+--     most a rare short hop on the spare ring".
+--
+-- The home spot is ALWAYS in the ring, whatever the radius says, and the index
+-- returned is its place in the new list -- the amble reads `_grug_idle_spot`
+-- as an index INTO THE RING it was given, so filtering the ring without
+-- re-basing the index is exactly how everybody would end up pointed at the
+-- wrong spot.
+--
+local function bounded_spots(group, home_index, walker)
+	local home = group[home_index]
+	if not home then
+		local out = {}
+		for index = 1, #group do
+			local spot = group[index]
+			out[index] = {x = spot.x, y = spot.y, z = spot.z, yaw = spot.yaw,
+				tag = spot.tag, spare = spot.spare}
+		end
+		return out, home_index or 1
 	end
-	return out
+	local out, index = {}, 1
+	for position = 1, #group do
+		local spot = group[position]
+		local keep = position == home_index
+		if not keep then
+			local dx, dz = spot.x - home.x, spot.z - home.z
+			if dx * dx + dz * dz <= WALK_RADIUS * WALK_RADIUS then
+				keep = walker == true or spot.spare == true
+			end
+		end
+		if keep then
+			out[#out + 1] = {x = spot.x, y = spot.y, z = spot.z,
+				yaw = spot.yaw, tag = spot.tag, spare = spot.spare}
+			if position == home_index then index = #out end
+		end
+	end
+	return out, index
 end
 
 -- Every field installed here is a plain number, string or flat table, so it
@@ -808,6 +920,10 @@ local function install(entity, row, slot)
 	-- The two families with a tick of their own do it there; the quest shell has
 	-- none and restores it from `after_activate`.
 	entity._grug_face_yaw = slot.yaw
+	-- WHAT KIND OF SOCKET THIS IS, as a plain string on the entity. Read by the
+	-- engine probe's census and by anything that has an ObjectRef and wants to
+	-- know what the NPC is for without a second lookup into this file's rows.
+	entity._grug_socket_role = slot.role
 	if slot.role == "guard_post" then
 		-- `_grug_home` is where aggro.lua's evade runs a guard back to after a
 		-- chase; the post fields are what guard.lua's tick holds it at while
@@ -838,9 +954,30 @@ local function install(entity, row, slot)
 		entity._grug_patrol_route = {points = points, wp = 1}
 	elseif slot.role == "idle" then
 		-- Its own composition's spots, so a district villager keeps to its plot
-		-- and a core villager to the core.
-		entity._grug_idle_spots = copy_spots(row.idle_groups[slot.composition] or {})
-		entity._grug_idle_spot = slot.idle_index
+		-- and a core villager to the core -- and, since round 3, only the ones
+		-- within WALK_RADIUS of its own socket, with a static resident's ring
+		-- narrowed to the spares (see `bounded_spots`).
+		local walker = row.walkers[slot.id] == true
+		local spots, index = bounded_spots(
+			row.idle_groups[slot.composition] or {}, slot.idle_index, walker)
+		entity._grug_idle_spots = spots
+		entity._grug_idle_spot = index
+		entity._grug_idle_tag = slot.tag
+		-- A plain boolean, so the 80/20 decision survives unload/reload with
+		-- the mob and no activation re-derives it from a socket list.
+		entity._grug_walker = walker
+	elseif slot.role == "work" then
+		-- A WORKPLACE. The resident never leaves it, so it is handed no ring at
+		-- all: a nil `_grug_idle_spots` is what routes `resident_tick` to the
+		-- work tick's cheap path rather than to the amble (start_villagers.lua
+		-- keys that off the activity, and this is the second half of the same
+		-- statement -- there is nowhere to amble to).
+		entity._grug_work_activity = slot.activity
+		entity._grug_work_x = slot.pos.x
+		entity._grug_work_z = slot.pos.z
+		entity._grug_walker = false
+		-- The spoken line still follows the socket's first tag, exactly as an
+		-- idle socket's does.
 		entity._grug_idle_tag = slot.tag
 	end
 end
@@ -989,7 +1126,14 @@ function grug_mobs.start_npc_census()
 			-- Idle sockets nothing is ever placed on (`spawn = false`): wander
 			-- targets, so they are part of what the settlement OFFERS and no
 			-- part of what it HOLDS. The probe reads both.
-			spare = row.spare_count}
+			spare = row.spare_count,
+			-- The 80/20 split as the KAT and the load probe judge it
+			-- (contract section 8.3): how many residents this settlement has
+			-- and how many of them walk. Both are decided once at load from
+			-- the authored order, so they are properties of the settlement and
+			-- not of who happens to be standing in it right now.
+			residents = row.resident_count,
+			walkers = row.walker_count}
 	end
 	return out
 end
@@ -1004,7 +1148,9 @@ local function log_row(row, new)
 	end
 	core.log("action", "[grug_mobs] start npcs " .. row.race_id .. " " ..
 		row.key .. ": " .. table.concat(parts, " ") .. " new " .. new ..
-		" pending " .. row.pending .. " spare " .. row.spare_count)
+		" pending " .. row.pending .. " spare " .. row.spare_count ..
+		" residents " .. row.resident_count ..
+		" walkers " .. row.walker_count)
 end
 
 --
