@@ -515,9 +515,16 @@ Details + line numbers in [docs/research/](docs/research/).
   - **`aoc` is per entity NAME**, counted in a 128-node sphere — two
     rows of one name share a budget, per-biome tints do not. Spawn
     calibration reference: **`docs/research/wp6_spawn_budget.md`**.
-  - **39 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** — the
+  - **40 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** — the
     inventory and rationale live in VENDOR.md; re-apply them on any
-    mobs_redo update. WP35's 21st: the `set_wielded_item` write-back at
+    mobs_redo update. The 40th (WP13 playtest round 2, 2026-09-15) is the
+    per-TARGET non-combatant veto in `general_attack`'s candidate filter:
+    hostiles and guards MAY fight each other, but nothing in the world may
+    acquire an entity carrying `_grug_noncombatant` (villagers, elders,
+    vendors — they cancel every punch, so such a fight never ends). The flag
+    is installed at activation by `grug_mobs.noncombatant`; do NOT narrow an
+    attacker's `attack_npcs` on a civilian's behalf.
+    WP35's 21st: the `set_wielded_item` write-back at
     the end of the wear block runs only when wear/toolranks changed the stack
     or WP38's per-stack wear id was newly assigned (on a player that call is a
     full inventory serialization plus packet; the skipped no-op ability writes
