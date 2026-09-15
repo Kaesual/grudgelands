@@ -13,4 +13,5 @@ kezamba_water_mask_seeds	9	mismatch	0
 kezamba_core_lagoon	2645	rows	55	sha256	01afa1128651fd6fedc6c9bfb3616c59bdffe27e8df4c6853c848c9bda06dea4
 kezamba_core_ravine	0	rows	0	sha256	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 kezamba_core_reference	66	water_surface	65
-kezamba_water PASS: one wet mask on all 9 seeds
+kezamba_mask_verify	disagreements	0
+kezamba_water PASS: the committed mask is the map on all 9 seeds

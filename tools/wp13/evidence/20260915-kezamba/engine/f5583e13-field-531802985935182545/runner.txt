@@ -1,0 +1,2 @@
+exit=0 errors=0 complete=1 log=/tmp/grug-w2-kezamba/engine2/field/server.log
+WP13 capital pass PASS: kezamba field /tmp/grug-w2-kezamba/engine2/field
