@@ -1030,26 +1030,44 @@ return function(repo)
 	-- A `work` socket faces the feature its activity works, within three
 	-- nodes, and the feature search stops at the first solid node on the
 	-- socket's own course, so a feature behind a wall does not count.
+	--
+	-- THE LIST IS TRANSCRIBED FROM THE CONTRACT'S SECTION 8.1 AND 8.2 TABLES
+	-- AND FROM NOTHING ELSE, with the contract's own words over each entry. A
+	-- list looser than the contract makes this KAT read stricter than it is,
+	-- and that is not hypothetical: with `default:desert_stone_block` in the
+	-- `tend` list -- a planter's own stone KERB, which is neither a plant nor a
+	-- flower -- all six `tend` sockets passed, and with it gone four of them
+	-- faced a kerb that blocked their own course and two faced no plant at all.
+	-- `smith` carried a cauldron, `mine` gravel and `pray`/`mourn` plain
+	-- cobble on the same terms; nothing relied on those three, which is exactly
+	-- why they went unnoticed.
 	local FEATURE = {
-		smith = {"grug_decor:cottages_anvil", "grug_decor:xdecor_cauldron",
-			"default:furnace"},
+		-- "an anvil or furnace"
+		smith = {"grug_decor:cottages_anvil", "default:furnace"},
+		-- "a log or tree"
 		chop = {"default:acacia_tree", "default:acacia_leaves"},
+		-- "a cauldron, barrel or a cooking pot node"
 		brew = {"grug_decor:xdecor_cauldron", "grug_decor:xdecor_barrel",
 			"grug_decor:cottages_barrel"},
+		-- "a log, a totem/statue part or a stone block"
 		carve = {"default:acacia_tree", "default:acacia_wood",
 			"default:desert_stone_block", "grug_decor:darkage_adobe",
 			"grug_decor:darkage_ors_block", "default:desert_stonebrick"},
+		-- "a stone, ore or cobble node at head or chest height"
 		mine = {"default:desert_stone_block", "default:desert_stonebrick",
-			"default:desert_cobble", "default:gravel"},
-		mourn = {"walls:desertcobble", "default:desert_cobble"},
-		pray = {"walls:desertcobble", "default:desert_cobble",
-			"grug_decor:darkage_ors_block", "default:torch",
-			"default:torch_wall", "doors:door_wood_a", "doors:door_wood_b"},
-		tend = {"default:desert_stone_block", "default:dry_grass_3",
-			"default:dry_grass_5", "default:dry_shrub",
-			"default:dry_dirt_with_dry_grass"},
+			"default:desert_cobble"},
+		-- "a grave marker, a coffin or a candle"
+		mourn = {"walls:desertcobble"},
+		-- "the chapel's door, an altar, a candle or a grave marker"
+		pray = {"walls:desertcobble", "default:torch", "default:torch_wall",
+			"doors:door_wood_a", "doors:door_wood_b"},
+		-- "a plant or a flower"
+		tend = {"default:dry_grass_3", "default:dry_grass_5",
+			"default:dry_shrub"},
+		-- "a mushroom, a bush, a plant, a vine or leaves"
 		forage = {"default:dry_shrub", "default:acacia_leaves",
 			"default:dry_grass_3", "default:dry_grass_5"},
+		-- "a counter (any solid node at waist height)"
 		stall = {"grug_decor:cottages_table", "stairs:slab_acacia_wood",
 			"default:fence_acacia_wood", "grug_decor:cottages_shelf",
 			"grug_decor:xdecor_barrel"},
