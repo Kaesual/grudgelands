@@ -1,12 +1,8 @@
 # Lethariel identity evidence
-# branch wp13-w2-lethariel, base main 922bfd92
+# branch wp13-w2-lethariel, base main c8050057
 
-## The three files this package CHANGES against 922bfd92
+## The three files this package CHANGES against c8050057
 docs/design/settlements.md
-mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua
-tools/wp13/final_micro.lua
-
-## The files it ADDS
 docs/research/wp13-lethariel.md
 mods/MAPGEN/grug_mapgen/wp13/elf_grove.lua
 mods/MAPGEN/grug_mapgen/wp13/elf_parts.lua
@@ -15,9 +11,41 @@ mods/MAPGEN/grug_mapgen/wp13/lethariel_districts.lua
 mods/MAPGEN/grug_mapgen/wp13/lethariel_plot.lua
 mods/MAPGEN/grug_mapgen/wp13/lethariel_quadrants.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_lethariel_blueprint.lua
-tools/wp13/evidence/20260915-lethariel/
+mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua
+tools/wp13/evidence/20260915-lethariel/README.md
+tools/wp13/evidence/20260915-lethariel/edge.txt
+tools/wp13/evidence/20260915-lethariel/files.sha256
+tools/wp13/evidence/20260915-lethariel/identity.txt
+tools/wp13/evidence/20260915-lethariel/kat.txt
+tools/wp13/evidence/20260915-lethariel/lots.txt
+tools/wp13/evidence/20260915-lethariel/micro-luajit.tsv
+tools/wp13/evidence/20260915-lethariel/micro-puc51.tsv
+tools/wp13/evidence/20260915-lethariel/npcs-531802985935182545.txt
+tools/wp13/evidence/20260915-lethariel/probe-15912857179583385436.txt
+tools/wp13/evidence/20260915-lethariel/probe-531802985935182545.txt
+tools/wp13/evidence/20260915-lethariel/probe-8675309.txt
+tools/wp13/evidence/20260915-lethariel/renders/avenue.png
+tools/wp13/evidence/20260915-lethariel/renders/core-night.png
+tools/wp13/evidence/20260915-lethariel/renders/core-overview.png
+tools/wp13/evidence/20260915-lethariel/renders/core-sw.png
+tools/wp13/evidence/20260915-lethariel/renders/kings-hall.png
+tools/wp13/evidence/20260915-lethariel/renders/plot.png
+tools/wp13/evidence/20260915-lethariel/renders/quay.png
+tools/wp13/evidence/20260915-lethariel/renders/sacred-grove.png
+tools/wp13/evidence/20260915-lethariel/renders/tsv/lethariel-avenue.tsv
+tools/wp13/evidence/20260915-lethariel/renders/tsv/lethariel-core.tsv
+tools/wp13/evidence/20260915-lethariel/renders/tsv/lethariel-plot.tsv
+tools/wp13/evidence/20260915-lethariel/seeds.txt
+tools/wp13/evidence/20260915-lethariel/shore.txt
+tools/wp13/evidence/20260915-lethariel/static.sh
+tools/wp13/evidence/20260915-lethariel/static.txt
+tools/wp13/final_micro.lua
 tools/wp13/lethariel_kat.lua
 tools/wp13/lethariel_plots.lua
+
+## The files it ADDS
+tools/wp13/evidence/20260915-lethariel/audit-nine-seeds.txt
+tools/wp13/evidence/20260915-lethariel/overlay-digests-531802985935182545.txt
 
 ## No shared WP13 library file, and no Highcourt or Dur Brannoc file,
 ## is among either list.
@@ -103,8 +131,8 @@ dur_brannoc_forge_copse/reference/c4f56543a5984305f20489f09edd0ccd28d1a926b03ed8
 dur_brannoc_forge_ore_yard/reference/ca760f88e67f0c7d5c22c724afa08cadb15e0b2b41dd3b69d34838d77c1ae18b/5715
 dur_brannoc_forge_store/reference/5633f26336bcd184760e1768dca27ba750902d4e33ad8faa9ffcf2bf85d1361a/5358
 dur_brannoc_avenue/overlay/e2aeef747567f4e52068ba44228f3931a3b7fee57f5b0c508c990180402f2f57
-lethariel/64ff44a16083e141b2af804c5b5c3a060c01680f601a19b8ea0cb7d748b00227/354491/112/1/45/26
-lethariel_core/anchor/64ff44a16083e141b2af804c5b5c3a060c01680f601a19b8ea0cb7d748b00227/91332
+lethariel/999a22c949b5a34bc4a42b735703c90623de9689f4c7974e7281334a504ac9c9/354491/112/1/45/26
+lethariel_core/anchor/999a22c949b5a34bc4a42b735703c90623de9689f4c7974e7281334a504ac9c9/91332
 lethariel_market_granary/reference/d0a7d785ce7e883297ea957c3588f1fde5a5354c4da05d1047b0dfe11fe1de96/5715
 lethariel_market_stable/reference/44f311d6001e0641919a83965a6d350bf796691644cdc77facdb1dc492d1ee46/5001
 lethariel_market_bowyer/reference/43b856784af3fe1cefc9416b273c95afb3440bd27156cb7818280132bdae414b/5824
@@ -150,4 +178,4 @@ lethariel_homes_singing_grove/reference/595a27bce753399da005d1798308d92f9c34c62d
 lethariel_homes_yard/reference/c6a55ba81cdc1fda440c715f457b12f612255fcb21e6e112174ad397e376de27/3210
 lethariel_homes_green/reference/3923bf8e1ac3bd07b20533065ed097e5f8cd0017440ff032247a42a9d0a106b2/1410
 lethariel_avenue/overlay/50ed81b8f6461638d81e210ad51c692a6ff0206bbfcc7aa45a89f1c13a37e616
-composed/9/192
+composed/9/193

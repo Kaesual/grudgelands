@@ -212,8 +212,13 @@ return function(repo)
 	feature("chop", {"tree_log", "post", "beam"})
 	feature("pray", {"signature", "signature_slab", "light_post",
 		"light_wall", "low_wall"})
-	feature("tend", {"flower", "flower_alt", "hedge", "hedge_stem",
-		"undergrowth", "grass_tuft", "fern", "crop", "tree_leaves"})
+	-- `tend` is A PLANT OR A FLOWER and nothing else (contract section 8.1,
+	-- and the coordinator's wave-2 ruling of 2026-09-15 after the first two
+	-- capital reviews). `highcourt_kat` also accepts a hedge, a leaf, a tuft
+	-- of grass and a fern here; this capital's six `tend` sockets all face a
+	-- cell `dressing.plant` wrote, which is the palette's own flower, so the
+	-- narrow set costs nothing and says what the contract says.
+	feature("tend", {"flower", "flower_alt", "crop"})
 	feature("brew", {"hearth", "storage"})
 	feature("carve", {"tree_log", "signature", "signature_slab"})
 	feature("mourn", {"low_wall", "light_post", "light_wall"})

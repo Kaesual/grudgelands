@@ -1,4 +1,0 @@
-ERROR[Main]: [grug_mobs] settlement npcs: lethariel socket market_bowyer/market_bowyer_vendor_bowyer resolves to no registered entity (grug_traders:vendor_bowyer)
-ERROR[Main]: [grug_mobs] settlement npcs: lethariel socket martial_armoury/martial_armoury_vendor_armourer resolves to no registered entity (grug_traders:vendor_armourer)
-ERROR[Main]: [grug_mobs] settlement npcs: lethariel socket mere_lore_hall/mere_lore_hall_vendor_herbalist resolves to no registered entity (grug_traders:vendor_herbalist)
-ERROR[Main]: [grug_mobs] settlement npcs: lethariel socket homes_brewhouse/homes_brewhouse_vendor_brewer resolves to no registered entity (grug_traders:vendor_brewer)

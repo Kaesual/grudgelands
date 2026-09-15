@@ -1,7 +1,9 @@
 # WP13: Lethariel, the elf capital and the first one built round a lake
 
 Increment record, 2026-09-15, written against `main` at `922bfd92` ("Extend the
-socket vocabulary for the wave-2 capitals"). It is the fifth increment of the
+socket vocabulary for the wave-2 capitals") and rebased onto `c8050057` ("Merge
+the wave-2 NPC vocabulary"), which is what makes this capital's four wave-2
+profession vendors resolve to real entities. It is the fifth increment of the
 capitals contract's section 3 order — the second of "the other five capitals,
 one lane each" — the third capital of the game and the first OPEN one to ship
 (the user's ruling of 2026-09-14: open edges for Highcourt, Lethariel and
@@ -26,7 +28,7 @@ Evidence: `tools/wp13/evidence/20260915-lethariel/`.
 
 | File | Change |
 | --- | --- |
-| `wp13/elf_parts.lua` | **new**: the capital palette handles this race needed (hedge, water, tilled soil, crop) and four parts no library had — the **threshold**, the **tree platform**, the **shrine** and the **boat stage** |
+| `wp13/elf_parts.lua` | **new**: the two capital palette handles this race needed — the four green roles (hedge, water, tilled soil, crop) and the pale civic masonry — and three parts no library had: the **threshold**, the **tree platform** and the **shrine** |
 | `wp13/elf_grove.lua` | **new**: the GROVE EDGE, an open capital's boundary as an overlay — `wall.lua`'s place in the composition with the masonry taken out of it |
 | `wp13/lethariel.lua` | **new**: the 96 × 96 civic core, the avenue, ring and edge run specifications, the overlay dispatch and the committed shore of the mere |
 | `wp13/lethariel_plot.lua` | **new**: the plot builder, `highcourt_plot.lua`'s job for this race |
@@ -206,6 +208,19 @@ Three rules it is held to, and two of them the KAT found:
    `highest + 4` now, and the KAT asserts `avenue.MIN_CLEAR` of air under it at
    every column of the passage.
 
+**THE BELT HAS NO WALK, and that is why it needs no walk-continuity gate.** A
+curtain wall's hard property is that its rampart is walkable end to end over
+stepped ground, which is what `wall.lua`'s one-Lipschitz envelope buys and what
+a corner-tower step can break. This belt is a hedge and a line of trees standing
+on the ground, each column written from its OWN lane's ground, so there is
+nothing to walk and nothing to step. The one piece with a level of its own is a
+threshold, and it clears the road by construction rather than by luck: its level
+is `max(lowest + 7, highest + 4)` over its own sixteen-column zone, so every
+column of the passage has at least `highest + 4 − (its own ground) ≥ 4` — the
+avenue's own `MIN_CLEAR` of three blocks of air, plus the deck — on any terrain
+whatever. The KAT asserts it on a synthetic profile that steps three nodes per
+terrace, which is this race's step.
+
 **The belt stops at the water.** A run carries the spans of itself that stand
 over planned water and writes nothing there, because a hedge floating on a lake
 is not an edge and the lake already is one. Measured by
@@ -229,7 +244,15 @@ contract's "silverwood and marble, tall narrow halls". The civic handle binds
 the pale cut of the same silver sandstone its roof and its pillars are already
 made of, so the CIVIC quarter is pale stone and the city round it stays
 silverwood and slate. The market square, the houses, the groves, the road and
-the grove edge all take the plain handle, so not one street cell moved.
+the grove edge all take the PLAIN handle — `r7_lethariel_blueprint.lua` hands
+the overlay `elf.handles().elf` and nothing else — so no cell of any street
+changed by construction.
+
+The probe's `avenue` digest moved with the rebinding all the same, and the
+reason is worth writing down because it is easy to read as a road that moved:
+the probe dumps a BOX of the finished map, `x 40..260, z ±12`, and the first
+seven columns of that box are inside the civic core, where the east gatehouse
+stands. The digest is of a region, not of a road.
 
 `elf_parts.lua` is the only place either handle is made, which is what lets the
 KAT read both of them when it asks whether an open capital's boundary carries a
@@ -270,16 +293,31 @@ within three.
 | `work` | 53 |
 | `idle` | 130, of which **24 are SPARE** (`spawn = false`, no tag) |
 
-Residents 159, walkers 22, **138 per mille** — inside the contract's 10–30 per
-cent band (Highcourt: 144 / 22, 153 per mille). Idle spawn sockets 106 against
-53 work sockets, which is the section 8.3 rule of at least one idle spawn socket
-per work socket, with a factor of two to spare.
+**Residents 159, walkers 22**, which is 138 per mille. Three bands, all met:
+the contract's own 10–30 per cent walker share (section 8.3); the coordinator's
+wave-2 ceiling of 150–170 residents and at most 25 walkers per capital
+(Highcourt's 144 / 22 is the reference); and section 8.3's arithmetic rule of at
+least one `idle` spawn socket per `work` socket — 106 against 53, a factor of
+two to spare.
 
 **Thirteen activities**: `brew` 4, `carve` 3, `chop` 4, `farm` 4, `fish` 3,
 `forage` 3, `mourn` 2, `pray` 6, `sit` 8, `spar` 5, `stall` 4, `sweep` 1,
 `tend` 6. Every one of them faces the feature its activity names within three
 nodes, by the same search `highcourt_kat` runs: the socket's own course and the
 one either side of it, stopping at the first solid node on the course.
+
+Two of those sets are NARROWER here than in `highcourt_kat`, both on purpose:
+
+- **`tend` accepts a flower, a flower pot or a crop and nothing else** (the
+  contract's "a plant or a flower", and the coordinator's wave-2 ruling). All
+  six `tend` sockets face a cell `dressing.plant` wrote, which breaks the kerb
+  of a raised bed at the one cell the gardener reaches into and grows the
+  palette's own flower there. A hedge, a leaf or a tuft of grass would have
+  passed the wider set and does not pass this one;
+- **`spar` accepts a fence post or a wool node**, which is what the contract's
+  wave-2 table says. The training dummies are authored as exactly that rather
+  than taken from `dressing.drill_post`, whose post is a LOG — which is
+  `chop`'s feature and not `spar`'s.
 
 **Nine vendor kinds**, at most one each: `race` and `general` in the core,
 `bowyer`, `tailor` and `baker` in the market district, `armourer` in the
@@ -314,8 +352,8 @@ arithmetic, per plot the reference column, the skirt to −6, the published
 
 ```
 WP13 FINAL MICRO PAIR BYTE-IDENTICAL
-cd04961768563827f11ca87355029e73e8db493d7e7a514688523fe85e9988bf  micro-luajit.tsv
-cd04961768563827f11ca87355029e73e8db493d7e7a514688523fe85e9988bf  micro-puc51.tsv
+c7268068f12b54487bf30339533bfbbcd62087df5b9b5502be07d901de8a7006  micro-luajit.tsv
+c7268068f12b54487bf30339533bfbbcd62087df5b9b5502be07d901de8a7006  micro-puc51.tsv
 ```
 
 That is the whole WP13 fixture set in one process under each interpreter, this
@@ -326,11 +364,16 @@ KAT among them. Its own rows are `lethariel_core`, `lethariel_district`,
 ### (b) The six starts, Highcourt and Dur Brannoc are untouched
 
 `identity.txt`: the identity digests `r7_settlement` computes for all six starts
-and for both earlier capitals, with `highcourt_kat`, `dur_brannoc_kat`,
-`library_kat` and `blueprint_kat` producing byte-identical output on this tree
-and on `main` at `922bfd92`. This lane changed no shared module: the two files
-it touched outside its own are `r7_settlement.lua` (one roster row) and
-`final_micro.lua` (one row).
+and for both earlier capitals, from `tools/wp13/integration_fixture.lua` on this
+tree — the fixture that also proves every mapchunk writes exactly the cells the
+blueprints claim, for every settlement including this one, and which found two
+defects in this package while it was being written.
+
+This lane changed no shared module. The diff against the base is THREE files,
+and two of them are one appended row each: `r7_settlement.lua`'s roster entry
+and `final_micro.lua`'s KAT line. The third is `docs/design/settlements.md`.
+`highcourt_kat`, `dur_brannoc_kat`, `library_kat` and `blueprint_kat` all run
+green inside the micro pair on this tree.
 
 ### (c) Build time and budget
 
@@ -375,63 +418,78 @@ and a 513-column edge belt on each side touch every mapchunk on the ring.
 
 ### (e) Engine
 
-`tools/wp13/run_capital.sh <out> lethariel full <seed>`, both gate seeds and the
-user's seed, one cold world each. All three: **`exit=0`, the capital emerged one
-mapchunk at a time, `complete=1`, NO FINDING from the seam's load-time terrain
-audit, and the NPC roster placed in full**.
+**NINE SEEDS, not three** (the coordinator's wave-2 rule of 2026-09-15, after
+the first two capital reviews found lots and a tower step on seeds a lane had
+skipped). `tools/wp13/run_capital.sh <out> lethariel full <seed>` on the two
+gate seeds and the user's seed — the whole emerge, the timings, the socket
+inventory and the read-back digests — and `... surface <seed>` on the other six,
+which is a cold boot each and is what runs the seam's load-time `audit_terrain`
+against the world that boot has and samples every plot's fall, rise and
+submerged columns on it.
+
+All nine: **`exit=0`, `complete=1`, NO FINDING from the terrain audit, and no
+plot submerged on any world.** The three full passes additionally emerged the
+capital one mapchunk at a time and placed the NPC roster.
+
+The three full passes:
 
 | | 531802985935182545 | 8675309 | 15912857179583385436 |
 | --- | --- | --- | --- |
 | mapchunks requested / completed | 112 / 112 | 104 / 104 | 104 / 104 |
 | the capital's own mapchunks | 100 | 92 | 92 |
-| steady mean per mapchunk | 0.57 s | 0.59 s | 0.63 s |
+| steady mean per mapchunk | 0.52 s | 0.55 s | 0.58 s |
 | sockets registered | 253 | 253 | 253 |
 | loops | 8 | 8 | 8 |
 | residents / walkers / spare | 159 / 22 / 24 | same | same |
-| worst plot fall (skirt is 6) | 6 `market_fountain` | 5 `market_fountain` | 6 `market_paddock` |
-| submerged plot columns | 0 | 0 | 0 |
-| terrain-audit findings | 0 | 0 | 0 |
 
-The three seeds touch different numbers of mapchunks because they draw
-different permutations, and a district in a different quarter is a different set
-of chunks. The worst plot is a different plot for the same reason, and on every
-one of them the fall stays inside the foundation skirt.
+And all nine, which is what `evidence/audit-nine-seeds.txt` is
+(`worst_plot_fall` against the foundation skirt of 6):
+
+| seed | mode | worst plot | fall | submerged | Lethariel audit findings |
+| --- | --- | --- | --- | --- | --- |
+| 531802985935182545 | full | `market_fountain` | 6 | 0 | **0** |
+| 8675309 | full | `market_fountain` | 5 | 0 | **0** |
+| 15912857179583385436 | full | `market_paddock` | 6 | 0 | **0** |
+| 0 | surface | `martial_woodyard` | 6 | 0 | **0** |
+| 1 | surface | `market_paddock` | 6 | 0 | **0** |
+| 2 | surface | `market_close` | 5 | 0 | **0** |
+| 42 | surface | `mere_walk` | 5 | 0 | **0** |
+| 12345 | surface | `market_close` | 4 | 0 | **0** |
+| 999999999 | surface | `mere_lore_hall` | 6 | 0 | **0** |
+
+The seeds touch different numbers of mapchunks and their worst plot is a
+different plot, because they draw different permutations and a district in a
+different quarter is a different set of chunks. On every one of them the fall
+stays inside the skirt and no plot has a wet column.
+
+**THE AUDIT FINDINGS THOSE BOOTS DID CARRY ARE OTHER CAPITALS'.** Twelve of
+them, over six of the nine seeds: eleven Highcourt plots and one Dur Brannoc
+plot that "do not stand on this world's ground" — a perimeter fall of up to 14
+against a skirt of 6, a rise of 10 against a clear of 8. Both capitals' lots
+were derived on the two gate seeds, and these are the seeds nobody asked. The
+full list with its numbers is in `evidence/audit-nine-seeds.txt`; it is reported
+and not fixed, because those are not this lane's files.
 
 The roster line the placement engine ends on, gate seed 531802985935182545:
 
 ```
-start npcs elf lethariel: guards 16/22 flair 78/159 vendor 2/5 quest 1/2
-                          new 26 pending 91 spare 24 residents 159 walkers 22
+start npcs elf lethariel: guards 16/22 flair 104/159 vendor 4/9 quest 1/2
+                          new 27 pending 67 spare 24 residents 159 walkers 22
 ```
 
 `pending` is not a failure: a capital is not preloaded, so its roster is placed
 as its areas are actually emerged and its outlying district plots fill in as a
 player walks up to them (settlements.md). What is reproducible is the
-denominators — 159 residents, 22 walkers, 24 spares — and they are the KAT's own
-numbers. `vendor 2/5` is the two core families placed out of the FIVE kinds the
-traders mod has entities for; the other four are below.
+denominators — 159 residents, 22 walkers, 24 spares, and now **9 vendors of 9
+distinct kinds** — and they are the KAT's own numbers.
 
-**FOUR ERROR LINES, EXPECTED AND NAMED**, identical on all three seeds:
-
-```
-[grug_mobs] settlement npcs: lethariel socket .../..._vendor_bowyer
-        resolves to no registered entity (grug_traders:vendor_bowyer)
-                                       ... vendor_armourer
-                                       ... vendor_herbalist
-                                       ... vendor_brewer
-```
-
-These are the four WAVE-2 vendor kinds. The sockets contract's section 8.4 says
-in as many words that "a kind whose entity the traders mod has not registered
-yet is an error line at placement and an empty socket, never a load failure",
-and that "the entity for a wave-2 kind lands with the NPC lane". That is exactly
-what happened: the boot completed, the settlement registered, and four sockets
-stand empty until the NPC vocabulary lane lands their entities.
-
-**`run_capital.sh` fails the pass on them anyway**, because its gate is
-`grep -c 'ERROR\|ModError'` and it cannot tell a contract-sanctioned placement
-line from a defect. That is a shared-tool gap, not a defect of this capital, and
-it is section 8's first open point.
+**ALL NINE VENDOR KINDS RESOLVE**, which is what the rebase onto `c8050057`
+bought. Before it, the four wave-2 kinds this capital places — `bowyer`,
+`armourer`, `herbalist`, `brewer` — produced one `resolves to no registered
+entity` ERROR line each on every seed. That is the behaviour the sockets
+contract's section 8.4 promises ("an error line at placement and an empty
+socket, never a load failure"), and the NPC vocabulary lane has since registered
+the entities: `errors=0` on all nine boots.
 
 ### (f) Static gates
 
@@ -452,12 +510,27 @@ beside it already carry:
 
 ## 7. Open points
 
-1. **`run_capital.sh`'s error gate cannot express "expected placement line".**
-   Four wave-2 vendor kinds make it exit 1 on a pass that is otherwise clean.
-   Until the NPC vocabulary lane registers those entities, every wave-2 capital
-   that places a wave-2 vendor kind will hit this. The smallest fix is an
-   allowlist of `resolves to no registered entity` lines; it belongs to whoever
-   owns the runner.
+1. **`run_capital.sh`'s digest gate aborts for a capital with no rampart and no
+   gate**, which is what an OPEN capital is. In `full` mode it walks
+   `for label in avenue rampart gate` and assigns
+   `digest="$(grep -o "${label}_road_digest=..." | ...)"`. Lethariel's probe
+   publishes `core`, `plot` and `avenue` and no rampart or gate, so the second
+   iteration's `grep` finds nothing, exits 1, and under the script's own
+   `set -euo pipefail` the failing command substitution ends the run — after the
+   avenue digest has been recorded and before the final `PASS` line. Every pass
+   in section 6(e) therefore exits 1 on a boot whose own report is
+   `exit=0 errors=0 complete=1` with zero warnings; `overlay-digests.txt` in
+   this package's evidence holds the values the run did produce.
+
+   It is a one-line fix in a file this lane does not own (`|| true` on the two
+   substitutions, or a probe-published label list), and Kezamba — the other open
+   capital — will hit it next.
+
+   The gate's OTHER half is now fine: before the rebase onto `c8050057` the same
+   passes also carried four `resolves to no registered entity` ERROR lines for
+   the wave-2 vendor kinds, which the sockets contract's section 8.4 sanctions
+   and the runner's `grep -c ERROR` could not tell from a defect. The NPC
+   vocabulary lane registered those entities and the count is zero now.
 2. **`capital_plots.lua` and `capital_probe` cannot express a four-district
    capital.** The first reads `capital.district.plots` (one district) and the
    second's `scan` mode sweeps `x 52..204, z −96..96`, which is the quadrant Dur
@@ -468,14 +541,18 @@ beside it already carry:
    `capital_terrain_fixture.lua` already does, and take every seed.
 3. **The other capitals' lots have never been measured on more than two seeds.**
    Section 3.3 is a finding about the method, not only about this capital.
-4. **No seed in the nine-seed set puts Lethariel's anchor root on a mapchunk
-   edge.** `capital_anchor_fixture.lua`'s own column says so: anchor_009's
-   `anchor_y` over the nine seeds is 41, 36, 36, 42, 53, 36, 36, 36, 39, so its
-   root is 42, 37, 37, 43, 54, 37, 37, 37, 40 and a chunk's lowest layer is
-   y ≡ 48 (mod 80). The brief's fourth engine seed — "one seed on which your
-   capital's anchor root lies on a mapchunk edge" — therefore does not exist in
-   that set, and this package ran the two gate seeds and the user's seed
-   instead. Whether one exists at all is a search nobody has run.
+4. **NO FIXTURE SEED PUTS LETHARIEL'S ANCHOR ROOT ON A MAPCHUNK EDGE**, and
+   the number is the test: a root lands on a chunk's lowest layer exactly when
+   `anchor_y ≡ 47 (mod 80)`. Over the nine seeds of
+   `capital_anchor_fixture.lua`, anchor_009's `anchor_y` is **41, 36, 36, 42,
+   53, 36, 36, 36, 39** — not one of them is 47 or 127, and the fixture's own
+   `root_on_chunk_edge` column says `false` for every one
+   (`evidence/seeds.txt`). Highcourt is the capital that has such a seed
+   (anchor_y 47 on 15912857179583385436), which is what the anchor-activation
+   fix was written for. So the brief's fourth engine seed does not exist for
+   this capital; the nine-seed engine sweep above is what stands in its place.
+   Whether such a seed exists at all outside the fixture set is a search nobody
+   has run.
 5. **The mere's shore is committed data.** A blueprint is a fixed cell list
    built once at load with no world to ask, so the wedge is a table and
    `lethariel_plots.lua --shore` is what keeps it honest. The day WP40 moves
