@@ -1,1 +1,1 @@
-1af6d47524bb90ca5d09cd4de767fdcbff2b3b42cc423617927a656ea2621aab  avenue seed=531802985935182545 overlay_cells=5954 main=922bfd92 package=20260915-route-gates
+1299e97e94c2263ffd70a38c5dad27215526c60a9bef213d8fd26e966ea00252  avenue seed=531802985935182545 overlay_cells=6048 main=922bfd92 package=20260915-dur-brannoc-upgrade

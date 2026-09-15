@@ -1,0 +1,413 @@
+ACTION[Main]: GRUG_WP13_CAPITAL event=districts lore_spiritual=northwest market_professions=southeast martial_garrison=northeast residential_cultural=southwest permutation=1,2,3,4
+ACTION[Main]: GRUG_WP13_CAPITAL event=start engine=5.17.0 seed=8675309 manifest=f717bde1d238cc26c7a88c624ee4c49feb555582ded2e4afa00d7be9070d31bf sockets_registered=633 anchor=-1800,140,-1500 mode=full build_us=module_load=35803,core=329593,plot_forge_charcoal=71753,plot_forge_pack_stable=31085,plot_forge_smithy=8274,plot_forge_guild_house=8487,plot_forge_quench_court=3694,plot_forge_watch=9277,plot_forge_copse=9478,plot_forge_ore_yard=6953,plot_forge_store=6260,plot_forge_ore_court=3965,plot_forge_charcoal_field=3769,plot_forge_slag_yard=1985,plot_forge_green=884,plot_garrison_barracks=14358,plot_garrison_muster_hall=9078,plot_garrison_armoury=8524,plot_garrison_drill_yard=6759,plot_garrison_stable=6767,plot_garrison_quartermaster=6925,plot_garrison_wain_shed=4982,plot_garrison_serjeant=2990,plot_garrison_watch_tower=4052,plot_garrison_muster_field=3972,plot_garrison_pack_pen=3953,plot_garrison_wood_yard=2020,plot_garrison_green=898,plot_deep_hall_of_record=13552,plot_deep_scriptorium=9482,plot_deep_memory_hall=11563,plot_deep_carvers=11789,plot_deep_lantern_court=4834,plot_deep_archive=8630,plot_deep_keeper=3866,plot_deep_lamp_store=6734,plot_deep_watch=4676,plot_deep_mushroom_garden=4936,plot_deep_barrow_terrace=4814,plot_deep_markers_yard=2627,plot_deep_green=1077,plot_terrace_market=4181,plot_terrace_brewhouse=11629,plot_terrace_alehouse=9353,plot_terrace_bakehouse=9284,plot_terrace_well_court=5130,plot_terrace_long_house=9874,plot_terrace_cottage_west=4027,plot_terrace_cottage_east=4473,plot_terrace_watch=5621,plot_terrace_kitchen_garden=5030,plot_terrace_goat_pasture=4210,plot_terrace_brew_court=2133,plot_terrace_green=963
+ACTION[Main]: GRUG_WP13_CAPITAL event=build
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time module_load=35803
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time core=329593
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_forge_charcoal=71753
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_forge_pack_stable=31085
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_forge_smithy=8274
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_forge_guild_house=8487
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_forge_quench_court=3694
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_forge_watch=9277
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_forge_copse=9478
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_forge_ore_yard=6953
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_forge_store=6260
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_forge_ore_court=3965
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_forge_charcoal_field=3769
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_forge_slag_yard=1985
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_forge_green=884
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_garrison_barracks=14358
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_garrison_muster_hall=9078
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_garrison_armoury=8524
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_garrison_drill_yard=6759
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_garrison_stable=6767
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_garrison_quartermaster=6925
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_garrison_wain_shed=4982
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_garrison_serjeant=2990
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_garrison_watch_tower=4052
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_garrison_muster_field=3972
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_garrison_pack_pen=3953
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_garrison_wood_yard=2020
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_garrison_green=898
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_deep_hall_of_record=13552
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_deep_scriptorium=9482
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_deep_memory_hall=11563
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_deep_carvers=11789
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_deep_lantern_court=4834
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_deep_archive=8630
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_deep_keeper=3866
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_deep_lamp_store=6734
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_deep_watch=4676
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_deep_mushroom_garden=4936
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_deep_barrow_terrace=4814
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_deep_markers_yard=2627
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_deep_green=1077
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_terrace_market=4181
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_terrace_brewhouse=11629
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_terrace_alehouse=9353
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_terrace_bakehouse=9284
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_terrace_well_court=5130
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_terrace_long_house=9874
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_terrace_cottage_west=4027
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_terrace_cottage_east=4473
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_terrace_watch=5621
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_terrace_kitchen_garden=5030
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_terrace_goat_pasture=4210
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_terrace_brew_court=2133
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_terrace_green=963
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket sockets=269
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_guard_patrol=50
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_guard_post=19
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_idle=129
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_king=1
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_quest=2
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_vendor=9
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_waypoint=1
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_work=58
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loops=9
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loop_dur_brannoc_deep_watch=9
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loop_dur_brannoc_forge_watch=9
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loop_dur_brannoc_garrison_watch=9
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loop_dur_brannoc_gate_east_tower=2
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loop_dur_brannoc_gate_north_tower=2
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loop_dur_brannoc_gate_south_tower=2
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loop_dur_brannoc_gate_west_tower=2
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loop_dur_brannoc_terrace_watch=9
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loop_dur_brannoc_watch=6
+ACTION[Main]: GRUG_WP13_CAPITAL event=corpus mapchunks=120
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=warmup mapchunk=1488:48:688 kind=warmup elapsed_us=25552523
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1728:-32:-1552 kind=control_capital elapsed_us=14471539
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1808:-32:-1552 kind=control_capital elapsed_us=16424673
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1728:48:-1552 kind=control_capital elapsed_us=570728
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1808:48:-1552 kind=control_capital elapsed_us=104115
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1728:-32:-1472 kind=control_capital elapsed_us=711976
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1808:-32:-1472 kind=control_capital elapsed_us=530671
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1728:48:-1472 kind=control_capital elapsed_us=104929
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1808:48:-1472 kind=control_capital elapsed_us=93611
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=core mapchunk=-1872:128:-1552 kind=capital elapsed_us=1083857
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=core mapchunk=-1792:128:-1552 kind=capital elapsed_us=684901
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=core mapchunk=-1872:128:-1472 kind=capital elapsed_us=696175
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=core mapchunk=-1792:128:-1472 kind=capital elapsed_us=540898
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_forge_charcoal mapchunk=-1712:48:-1632 kind=capital elapsed_us=933329
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_forge_smithy mapchunk=-1632:48:-1632 kind=capital elapsed_us=765252
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket throne_guard_west (-1807,144,-1471)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket throne_guard_east (-1793,144,-1471)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket door_guard_west (-1803,143,-1489)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket door_guard_east (-1796,143,-1489)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket hall_idle_west (-1813,143,-1481)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket hall_idle_east (-1787,143,-1481)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket hall_idle_service (-1813,143,-1472)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket gate_south_post_west (-1802,141,-1546)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket gate_south_post_east (-1798,141,-1546)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket gate_south_deck (-1800,152,-1544)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket gate_south_idle_west (-1805,141,-1543)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket gate_south_idle_east (-1795,141,-1543)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket gate_west_post_west (-1846,141,-1498)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket gate_west_post_east (-1846,141,-1502)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket gate_west_deck (-1844,152,-1500)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket gate_west_idle_west (-1843,141,-1495)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket gate_west_idle_east (-1843,141,-1505)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket gate_north_post_west (-1798,141,-1454)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket gate_north_post_east (-1802,141,-1454)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket gate_north_deck (-1800,152,-1456)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket gate_north_idle_west (-1795,141,-1457)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket gate_north_idle_east (-1805,141,-1457)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket gate_east_post_west (-1754,141,-1502)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket gate_east_post_east (-1754,141,-1498)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket gate_east_deck (-1756,152,-1500)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket gate_east_idle_west (-1757,141,-1505)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket gate_east_idle_east (-1757,141,-1495)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket market_booth_1 (-1830,141,-1525)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket market_booth_2 (-1816,141,-1525)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket market_booth_3 (-1830,141,-1507)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket market_booth_4 (-1816,141,-1507)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket market_idle_west (-1832,141,-1523)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket market_idle_east (-1814,141,-1509)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket colonnade_west_idle_a (-1808,141,-1509)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket colonnade_west_idle_b (-1806,141,-1519)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket colonnade_west_walk (-1807,141,-1514)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket colonnade_east_idle_a (-1793,141,-1519)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket colonnade_east_idle_b (-1795,141,-1509)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket statue_idle (-1784,141,-1511)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket cistern_court_idle_a (-1840,141,-1489)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket cistern_court_idle_b (-1840,141,-1483)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket ancestor_hall_altar (-1838,141,-1463)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:elder_dwarf placed at socket ancestor_hall_quest (-1838,141,-1479)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket masons_guild_desk_a (-1765,141,-1542)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket masons_guild_desk_b (-1765,141,-1534)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_traders:vendor_race_dwarf placed at socket vendor_race (-1757,141,-1491)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_traders:vendor_general_accord placed at socket vendor_general (-1757,141,-1484)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket court_idle_forge (-1759,141,-1477)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket court_idle_yard (-1772,141,-1476)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket court_idle_fire (-1765,141,-1461)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forecourt_idle_west (-1806,141,-1497)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forecourt_idle_east (-1793,141,-1497)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_charcoal/forge_charcoal_work (-1680,105,-1616)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket forge_charcoal/forge_charcoal_watch (-1680,105,-1628)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_charcoal/forge_charcoal_gate_idle (-1680,105,-1628)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_charcoal/forge_charcoal_work_charcoal_west (-1685,105,-1630)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_charcoal/forge_charcoal_work_charcoal_east (-1675,105,-1630)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_pack_stable/forge_pack_stable_groom (-1644,109,-1609)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_pack_stable/forge_pack_stable_gate (-1644,109,-1615)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_pack_stable/forge_pack_stable_gate_idle (-1644,109,-1618)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_pack_stable/forge_pack_stable_work_stable_tend (-1651,109,-1620)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_smithy/forge_smithy_gate_idle (-1600,109,-1620)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_smithy/forge_smithy_work_anvil (-1606,109,-1622)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_traders:vendor_smith placed at socket forge_smithy/forge_smithy_vendor_smith (-1595,109,-1622)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_ore_court/forge_ore_court_gate_idle (-1568,112,-1625)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_ore_court/forge_ore_court_work_court_face (-1575,112,-1608)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_ore_court/forge_ore_court_work_court_adit (-1563,112,-1608)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_ore_court/forge_ore_court_work_court_spoil (-1577,112,-1608)
+ACTION[Server]: [grug_mobs] start npcs dwarf dur_brannoc: guards 18/28 flair 46/164 vendor 3/9 quest 1/2 new 68 pending 135 spare 23 residents 164 walkers 22
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_forge_guild_house mapchunk=-1712:48:-1712 kind=capital elapsed_us=800729
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_forge_watch mapchunk=-1632:48:-1712 kind=capital elapsed_us=679694
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_forge_copse mapchunk=-1712:48:-1792 kind=capital elapsed_us=763511
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_forge_store mapchunk=-1632:48:-1792 kind=capital elapsed_us=657242
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_forge_charcoal_field mapchunk=-1792:48:-1792 kind=capital elapsed_us=761741
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_garrison_barracks mapchunk=-1712:48:-1472 kind=capital elapsed_us=1039830
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_guild_house/forge_guild_house_desk_a (-1688,105,-1668)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_guild_house/forge_guild_house_desk_b (-1688,105,-1660)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_guild_house/forge_guild_house_gate_idle (-1688,105,-1673)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_guild_house/forge_guild_house_work_guild_bench (-1694,106,-1674)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_quench_court/forge_quench_court_idle_a (-1644,107,-1667)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_quench_court/forge_quench_court_idle_b (-1644,107,-1661)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_quench_court/forge_quench_court_gate_idle (-1644,107,-1672)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_quench_court/forge_quench_court_work_quench_bench (-1645,108,-1656)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket forge_watch/forge_watch_post (-1600,109,-1672)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_watch/forge_watch_muster (-1600,109,-1657)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_watch/forge_watch_gate_idle (-1600,109,-1675)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_copse/forge_copse_idle (-1688,100,-1712)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_copse/forge_copse_gate_idle (-1688,100,-1719)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_copse/forge_copse_work_copse_forage (-1694,100,-1721)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_ore_yard/forge_ore_yard_work (-1644,108,-1704)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_ore_yard/forge_ore_yard_gate_idle (-1644,108,-1716)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_ore_yard/forge_ore_yard_work_ore_sort (-1649,108,-1718)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_store/forge_store_gate_idle (-1600,113,-1716)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_store/forge_store_work_store_counter (-1594,113,-1718)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_charcoal_field/forge_charcoal_field_gate_idle (-1720,93,-1741)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_charcoal_field/forge_charcoal_field_work_field_west (-1726,93,-1732)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_charcoal_field/forge_charcoal_field_work_field_east (-1716,93,-1732)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_slag_yard/forge_slag_yard_gate_idle (-1572,105,-1738)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_slag_yard/forge_slag_yard_work_slag_banker (-1569,105,-1736)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_slag_yard/forge_slag_yard_work_slag_blocks (-1574,105,-1735)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_green/forge_green_gate_idle (-1638,105,-1735)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_green/forge_green_work_green_bench (-1642,106,-1735)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket garrison_barracks/garrison_barracks_post (-1684,97,-1400)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_barracks/garrison_barracks_gate_idle (-1684,97,-1403)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket garrison_barracks/garrison_barracks_post_gate_west (-1693,97,-1402)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket garrison_barracks/garrison_barracks_post_gate_east (-1675,97,-1402)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_drill_yard/garrison_drill_yard_gate_idle (-1644,97,-1396)
+ACTION[Server]: [grug_mobs] start npcs dwarf dur_brannoc: guards 22/28 flair 74/164 vendor 3/9 quest 1/2 new 32 pending 103 spare 23 residents 164 walkers 22
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_garrison_barracks mapchunk=-1712:48:-1392 kind=capital elapsed_us=754157
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_garrison_armoury mapchunk=-1712:48:-1312 kind=capital elapsed_us=746852
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_garrison_wain_shed mapchunk=-1632:48:-1472 kind=capital elapsed_us=788812
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_garrison_wain_shed mapchunk=-1632:48:-1392 kind=capital elapsed_us=676181
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_garrison_watch_tower mapchunk=-1632:48:-1312 kind=capital elapsed_us=643573
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_deep_hall_of_record mapchunk=-1952:48:-1472 kind=capital elapsed_us=1040254
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_barracks/garrison_barracks_muster (-1684,97,-1385)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket garrison_barracks/garrison_barracks_yard (-1684,97,-1388)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_muster_hall/garrison_muster_hall_gate_idle (-1680,93,-1353)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_armoury/garrison_armoury_gate_idle (-1684,89,-1304)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_armoury/garrison_armoury_work_armoury_anvil (-1691,89,-1306)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_traders:vendor_armourer placed at socket garrison_armoury/garrison_armoury_vendor_armourer (-1678,89,-1306)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket garrison_drill_yard/garrison_drill_yard_post_yard_west (-1651,97,-1392)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket garrison_drill_yard/garrison_drill_yard_post_yard_east (-1637,97,-1392)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_drill_yard/garrison_drill_yard_work_yard_spar_west (-1652,97,-1381)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_drill_yard/garrison_drill_yard_work_yard_spar_east (-1636,97,-1381)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_stable/garrison_stable_groom (-1644,98,-1340)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_stable/garrison_stable_gate (-1644,98,-1348)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_stable/garrison_stable_gate_idle (-1644,98,-1351)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_stable/garrison_stable_work_stable_tend (-1651,98,-1353)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_quartermaster/garrison_quartermaster_gate_idle (-1644,88,-1308)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_wain_shed/garrison_wain_shed_gate_idle (-1596,98,-1395)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_wain_shed/garrison_wain_shed_work_shed_saw (-1605,98,-1397)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_serjeant/garrison_serjeant_gate_idle (-1596,97,-1348)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_watch_tower/garrison_watch_tower_gate_idle (-1596,93,-1301)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket garrison_watch_tower/garrison_watch_tower_post_tower_foot (-1601,93,-1300)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_muster_field/garrison_muster_field_gate_idle (-1684,89,-1275)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_muster_field/garrison_muster_field_work_muster_spar_south (-1684,89,-1268)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_muster_field/garrison_muster_field_work_muster_spar_north (-1684,89,-1264)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_muster_field/garrison_muster_field_work_muster_rake (-1692,89,-1275)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_pack_pen/garrison_pack_pen_gate_idle (-1566,101,-1393)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_pack_pen/garrison_pack_pen_work_pen_trough (-1574,101,-1381)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_pack_pen/garrison_pack_pen_work_pen_saw (-1574,101,-1393)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_wood_yard/garrison_wood_yard_gate_idle (-1568,89,-1274)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_wood_yard/garrison_wood_yard_work_saw_west (-1572,89,-1274)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_wood_yard/garrison_wood_yard_work_saw_east (-1564,89,-1274)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_green/garrison_green_gate_idle (-1568,91,-1321)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_green/garrison_green_work_green_bench (-1572,92,-1321)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_hall_of_record/deep_hall_of_record_altar (-1920,85,-1423)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:elder_dwarf placed at socket deep_hall_of_record/deep_hall_of_record_quest (-1920,85,-1433)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket deep_hall_of_record/deep_hall_of_record_watch (-1920,85,-1437)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_hall_of_record/deep_hall_of_record_gate_idle (-1920,85,-1437)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_hall_of_record/deep_hall_of_record_work_record_vigil (-1926,85,-1439)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_carvers/deep_carvers_gate_idle (-1920,85,-1396)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_carvers/deep_carvers_work_carver_blocks (-1928,85,-1398)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_traders:vendor_mason placed at socket deep_carvers/deep_carvers_vendor_deep_mason_stall (-1914,85,-1398)
+ACTION[Server]: [grug_mobs] start npcs dwarf dur_brannoc: guards 27/28 flair 106/164 vendor 5/9 quest 2/2 new 40 pending 63 spare 23 residents 164 walkers 22
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_deep_scriptorium mapchunk=-2032:48:-1472 kind=capital elapsed_us=744931
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_deep_carvers mapchunk=-1952:48:-1392 kind=capital elapsed_us=695874
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_deep_lantern_court mapchunk=-2032:48:-1392 kind=capital elapsed_us=595668
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_deep_mushroom_garden mapchunk=-2112:48:-1392 kind=capital elapsed_us=765057
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_deep_barrow_terrace mapchunk=-1952:48:-1312 kind=capital elapsed_us=766979
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_deep_markers_yard mapchunk=-2112:48:-1312 kind=capital elapsed_us=748448
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_deep_markers_yard mapchunk=-2032:48:-1312 kind=capital elapsed_us=493556
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_scriptorium/deep_scriptorium_desk_a (-1964,89,-1432)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_scriptorium/deep_scriptorium_desk_b (-1964,89,-1424)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_scriptorium/deep_scriptorium_gate_idle (-1964,89,-1437)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_scriptorium/deep_scriptorium_work_scriptorium_bench (-1970,90,-1438)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_memory_hall/deep_memory_hall_gate_idle (-2008,85,-1437)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_memory_hall/deep_memory_hall_work_memory_vigil (-2016,85,-1439)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_traders:vendor_embalmer placed at socket deep_memory_hall/deep_memory_hall_vendor_deep_embalmer (-2002,85,-1439)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_lantern_court/deep_lantern_court_idle_a (-1964,89,-1387)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_lantern_court/deep_lantern_court_idle_b (-1964,89,-1381)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_lantern_court/deep_lantern_court_gate_idle (-1964,89,-1392)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_lantern_court/deep_lantern_court_work_lantern_bench (-1965,90,-1376)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_archive/deep_archive_gate_idle (-2008,91,-1392)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_keeper/deep_keeper_gate_idle (-1920,85,-1348)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_lamp_store/deep_lamp_store_gate_idle (-1964,93,-1347)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_lamp_store/deep_lamp_store_work_lamp_saw (-1973,93,-1349)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_watch/deep_watch_gate_idle (-2004,93,-1345)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_mushroom_garden/deep_mushroom_garden_gate_idle (-2034,93,-1361)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_mushroom_garden/deep_mushroom_garden_work_garden_west (-2040,93,-1349)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_mushroom_garden/deep_mushroom_garden_work_garden_east (-2028,93,-1349)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_mushroom_garden/deep_mushroom_garden_work_garden_lower (-2040,93,-1355)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_barrow_terrace/deep_barrow_terrace_gate_idle (-1920,85,-1277)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_barrow_terrace/deep_barrow_terrace_work_terrace_vigil (-1928,85,-1267)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_barrow_terrace/deep_barrow_terrace_work_terrace_rake (-1921,85,-1270)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_markers_yard/deep_markers_yard_gate_idle (-2032,93,-1274)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_markers_yard/deep_markers_yard_work_yard_banker_west (-2036,93,-1271)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_markers_yard/deep_markers_yard_work_yard_banker_east (-2029,93,-1271)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_green/deep_green_gate_idle (-1984,97,-1271)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_green/deep_green_work_green_bench (-1988,98,-1271)
+ACTION[Server]: [grug_mobs] start npcs dwarf dur_brannoc: guards 27/28 flair 133/164 vendor 6/9 quest 2/2 new 28 pending 35 spare 23 residents 164 walkers 22
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_terrace_market mapchunk=-1952:48:-1632 kind=capital elapsed_us=910626
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_terrace_brewhouse mapchunk=-1952:48:-1712 kind=capital elapsed_us=733444
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_terrace_alehouse mapchunk=-1952:48:-1792 kind=capital elapsed_us=707953
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_terrace_bakehouse mapchunk=-2032:48:-1632 kind=capital elapsed_us=697987
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_terrace_well_court mapchunk=-2032:48:-1712 kind=capital elapsed_us=565032
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_terrace_long_house mapchunk=-2032:48:-1792 kind=capital elapsed_us=597270
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_terrace_brew_court mapchunk=-2112:48:-1712 kind=capital elapsed_us=767136
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_market/terrace_market_idle_a (-1921,79,-1621)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_market/terrace_market_idle_b (-1911,79,-1619)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket terrace_market/terrace_market_walk (-1916,79,-1620)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_market/terrace_market_gate_idle (-1916,79,-1623)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_market/terrace_market_work_market_stall (-1908,79,-1625)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_traders:vendor_butcher placed at socket terrace_market/terrace_market_vendor_butcher (-1910,79,-1625)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_brewhouse/terrace_brewhouse_gate_idle (-1916,89,-1672)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_brewhouse/terrace_brewhouse_work_brewhouse_vats (-1924,89,-1674)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_traders:vendor_brewer placed at socket terrace_brewhouse/terrace_brewhouse_vendor_brewer (-1910,89,-1674)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_alehouse/terrace_alehouse_gate_idle (-1916,82,-1716)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_alehouse/terrace_alehouse_work_alehouse_bench (-1923,83,-1717)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_alehouse/terrace_alehouse_work_alehouse_bench_east (-1911,83,-1717)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_bakehouse/terrace_bakehouse_gate_idle (-1964,81,-1628)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_bakehouse/terrace_bakehouse_work_bakehouse_counter (-1957,81,-1630)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_traders:vendor_baker placed at socket terrace_bakehouse/terrace_bakehouse_vendor_baker (-1959,81,-1630)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_well_court/terrace_well_court_idle_a (-1960,81,-1667)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_well_court/terrace_well_court_idle_b (-1960,81,-1661)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_well_court/terrace_well_court_gate_idle (-1960,81,-1672)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_well_court/terrace_well_court_work_well_bench (-1961,82,-1656)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_long_house/terrace_long_house_gate_idle (-1960,77,-1717)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_cottage_west/terrace_cottage_west_gate_idle (-2004,84,-1625)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_cottage_east/terrace_cottage_east_gate_idle (-2004,81,-1670)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_watch/terrace_watch_gate_idle (-2004,81,-1717)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_kitchen_garden/terrace_kitchen_garden_gate_idle (-1884,85,-1717)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_kitchen_garden/terrace_kitchen_garden_work_garden_beds_west (-1890,85,-1706)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_kitchen_garden/terrace_kitchen_garden_work_garden_beds_east (-1878,85,-1706)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_kitchen_garden/terrace_kitchen_garden_work_garden_planter (-1890,85,-1712)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_goat_pasture/terrace_goat_pasture_gate_idle (-2018,81,-1597)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_goat_pasture/terrace_goat_pasture_work_pasture_trough (-2026,81,-1585)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_goat_pasture/terrace_goat_pasture_work_pasture_bed (-2025,81,-1597)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_brew_court/terrace_brew_court_gate_idle (-2032,85,-1710)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_brew_court/terrace_brew_court_work_court_vats_north (-2037,85,-1702)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_brew_court/terrace_brew_court_work_court_vats_south (-2033,85,-1706)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_green/terrace_green_gate_idle (-2028,83,-1659)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_green/terrace_green_work_green_bench (-2032,84,-1659)
+ACTION[Server]: [grug_mobs] start npcs dwarf dur_brannoc: guards 28/28 flair 164/164 vendor 9/9 quest 2/2 new 35 pending 0 spare 23 residents 164 walkers 22
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_south mapchunk=-1872:48:-1792 kind=capital elapsed_us=718358
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_south mapchunk=-1872:128:-1792 kind=capital elapsed_us=136334
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_south mapchunk=-1872:48:-1712 kind=capital elapsed_us=715450
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_south mapchunk=-1872:128:-1712 kind=capital elapsed_us=262878
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_south mapchunk=-1872:48:-1632 kind=capital elapsed_us=855587
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_south mapchunk=-1872:128:-1632 kind=capital elapsed_us=266942
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_south mapchunk=-1872:48:-1552 kind=capital elapsed_us=819838
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_north mapchunk=-1872:48:-1472 kind=capital elapsed_us=864090
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_north mapchunk=-1872:48:-1392 kind=capital elapsed_us=854419
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_north mapchunk=-1872:128:-1392 kind=capital elapsed_us=248451
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_north mapchunk=-1872:48:-1312 kind=capital elapsed_us=797521
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_north mapchunk=-1872:128:-1312 kind=capital elapsed_us=385299
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_west mapchunk=-2112:48:-1552 kind=capital elapsed_us=1023569
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_west mapchunk=-2032:48:-1552 kind=capital elapsed_us=657299
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_west mapchunk=-1952:48:-1552 kind=capital elapsed_us=683592
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_west mapchunk=-2112:128:-1552 kind=capital elapsed_us=155063
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_west mapchunk=-2032:128:-1552 kind=capital elapsed_us=118172
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_west mapchunk=-1952:128:-1552 kind=capital elapsed_us=276423
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_east mapchunk=-1792:48:-1552 kind=capital elapsed_us=1068061
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_east mapchunk=-1712:48:-1552 kind=capital elapsed_us=795531
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_east mapchunk=-1632:48:-1552 kind=capital elapsed_us=727167
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_east mapchunk=-1552:48:-1552 kind=capital elapsed_us=889911
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_east mapchunk=-1712:128:-1552 kind=capital elapsed_us=117538
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_east mapchunk=-1632:128:-1552 kind=capital elapsed_us=113496
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_east mapchunk=-1552:128:-1552 kind=capital elapsed_us=171036
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_ring_west mapchunk=-1952:128:-1632 kind=capital elapsed_us=507326
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_ring_west mapchunk=-1952:128:-1472 kind=capital elapsed_us=688714
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_ring_east mapchunk=-1712:128:-1632 kind=capital elapsed_us=513538
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_ring_east mapchunk=-1712:128:-1472 kind=capital elapsed_us=529126
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_ring_south mapchunk=-1792:48:-1632 kind=capital elapsed_us=879480
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_ring_south mapchunk=-1792:128:-1632 kind=capital elapsed_us=309078
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_ring_north mapchunk=-1792:48:-1472 kind=capital elapsed_us=844673
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_lane_southeast_spine mapchunk=-1712:128:-1792 kind=capital elapsed_us=594019
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_lane_southeast_spine mapchunk=-1712:128:-1712 kind=capital elapsed_us=284214
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_lane_southeast_cross mapchunk=-1792:48:-1712 kind=capital elapsed_us=618665
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_lane_southeast_cross mapchunk=-1792:128:-1712 kind=capital elapsed_us=239305
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_lane_southeast_cross mapchunk=-1632:128:-1712 kind=capital elapsed_us=473070
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_lane_northeast_spine mapchunk=-1712:128:-1392 kind=capital elapsed_us=498021
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_lane_northeast_spine mapchunk=-1712:128:-1312 kind=capital elapsed_us=512029
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_lane_northeast_cross mapchunk=-1792:48:-1392 kind=capital elapsed_us=809869
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_lane_northeast_cross mapchunk=-1792:128:-1392 kind=capital elapsed_us=255463
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_lane_northeast_cross mapchunk=-1632:128:-1392 kind=capital elapsed_us=464493
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_lane_northwest_spine mapchunk=-1952:128:-1392 kind=capital elapsed_us=608926
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_lane_northwest_spine mapchunk=-1952:128:-1312 kind=capital elapsed_us=519839
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_lane_northwest_cross mapchunk=-2032:128:-1392 kind=capital elapsed_us=424015
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_lane_southwest_spine mapchunk=-1952:128:-1792 kind=capital elapsed_us=645965
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_lane_southwest_spine mapchunk=-1952:128:-1712 kind=capital elapsed_us=449875
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_lane_southwest_cross mapchunk=-2032:128:-1712 kind=capital elapsed_us=416069
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_west mapchunk=-2112:48:-1792 kind=capital elapsed_us=816693
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_west mapchunk=-2112:128:-1792 kind=capital elapsed_us=120294
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_west mapchunk=-2112:128:-1712 kind=capital elapsed_us=297351
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_west mapchunk=-2112:48:-1632 kind=capital elapsed_us=827828
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_west mapchunk=-2112:128:-1632 kind=capital elapsed_us=122616
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_west mapchunk=-2112:48:-1472 kind=capital elapsed_us=927553
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_west mapchunk=-2112:128:-1472 kind=capital elapsed_us=145387
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_west mapchunk=-2112:128:-1392 kind=capital elapsed_us=445852
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_west mapchunk=-2112:128:-1312 kind=capital elapsed_us=443833
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_east mapchunk=-1552:48:-1792 kind=capital elapsed_us=875206
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_east mapchunk=-1552:128:-1792 kind=capital elapsed_us=116687
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_east mapchunk=-1552:48:-1712 kind=capital elapsed_us=785614
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_east mapchunk=-1552:128:-1712 kind=capital elapsed_us=154768
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_east mapchunk=-1552:48:-1632 kind=capital elapsed_us=815839
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_east mapchunk=-1552:128:-1632 kind=capital elapsed_us=177521
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_east mapchunk=-1552:48:-1472 kind=capital elapsed_us=923248
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_east mapchunk=-1552:128:-1472 kind=capital elapsed_us=143683
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_east mapchunk=-1552:48:-1392 kind=capital elapsed_us=691629
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_east mapchunk=-1552:128:-1392 kind=capital elapsed_us=118908
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_east mapchunk=-1552:48:-1312 kind=capital elapsed_us=642115
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_east mapchunk=-1552:128:-1312 kind=capital elapsed_us=117518
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_south mapchunk=-2032:128:-1792 kind=capital elapsed_us=630243
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_south mapchunk=-1792:128:-1792 kind=capital elapsed_us=618672
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_south mapchunk=-1632:128:-1792 kind=capital elapsed_us=568557
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_north mapchunk=-1792:48:-1312 kind=capital elapsed_us=852716
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_north mapchunk=-2032:128:-1312 kind=capital elapsed_us=573751
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_north mapchunk=-1792:128:-1312 kind=capital elapsed_us=343799
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_wall_north mapchunk=-1632:128:-1312 kind=capital elapsed_us=593174
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_open_land mapchunk=848:-32:848 kind=control elapsed_us=779940
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_open_land_far mapchunk=1168:128:768 kind=control elapsed_us=827096
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_dawnmere_start mapchunk=-32:-32:-2592 kind=control elapsed_us=3494
+ACTION[Server]: GRUG_WP13_CAPITAL event=dump file=dur_brannoc-core.tsv cells=42163 ignored=0 road_cells=14709 road_digest=13641b2321319293651e32b5e63853af989bcd7794603737056b313f6451f6e1
+ACTION[Server]: GRUG_WP13_CAPITAL event=dump file=dur_brannoc-plot.tsv cells=7230 ignored=0 road_cells=750 road_digest=509cc4dc8d276e324241d63e56344775b149f03a568328a02ca7cae03d02cf85
+ACTION[Server]: GRUG_WP13_CAPITAL event=dump file=dur_brannoc-avenue.tsv cells=94593 ignored=0 road_cells=3630 road_digest=260941bbefb14a94caefd3f566b4fa6401f04ff029fe4d65dce78ec2dfd67aa9
+ACTION[Server]: GRUG_WP13_CAPITAL event=dump file=dur_brannoc-district.tsv cells=240679 ignored=0 road_cells=7225 road_digest=2ff87483375ea5379de98462d3dda0d196013d5e5952ffb7f287e6bf84268d33
+ACTION[Server]: GRUG_WP13_CAPITAL event=dump file=dur_brannoc-fill.tsv cells=4868 ignored=0 road_cells=609 road_digest=4fdfb6f12a49ca14d34f53a766f26c186e08688fb04d779ef60897e63d9475ab
+ACTION[Server]: GRUG_WP13_CAPITAL event=dump file=dur_brannoc-rampart.tsv cells=35571 ignored=0 road_cells=9077 road_digest=13ed6dfb45e9734ea29401541d12d4fcb6ff4e4ad01fe936d03bd8f8a3c6d660
+ACTION[Server]: GRUG_WP13_CAPITAL event=dump file=dur_brannoc-gate.tsv cells=14254 ignored=0 road_cells=2472 road_digest=38c4f36208906ac80965515aa3f5d50ab270d0c81dba4b627a1a5e86c659c920
+ACTION[Server]: GRUG_WP13_CAPITAL event=complete mode=full requested=120 completed=120 warmup_chunks=1 warmup_total_us=25552523 warmup_first_us=25552523 warmup_worst_us=25552523 warmup_best_us=25552523 capital_chunks=108 capital_total_us=63545801 capital_first_us=1083857 capital_worst_us=1083857 capital_best_us=113496 capital_steady_mean_us=583756 control_capital_chunks=8 control_capital_total_us=33012242 control_capital_first_us=14471539 control_capital_worst_us=16424673 control_capital_best_us=93611 control_capital_steady_mean_us=2648671 control_chunks=3 control_total_us=1610530 control_first_us=779940 control_worst_us=827096 control_best_us=3494 control_steady_mean_us=415295 core_cells=42163 core_ignored=0 core_road_cells=14709 core_road_digest=13641b2321319293651e32b5e63853af989bcd7794603737056b313f6451f6e1 plot_cells=7230 plot_ignored=0 plot_road_cells=750 plot_road_digest=509cc4dc8d276e324241d63e56344775b149f03a568328a02ca7cae03d02cf85 avenue_cells=94593 avenue_ignored=0 avenue_road_cells=3630 avenue_road_digest=260941bbefb14a94caefd3f566b4fa6401f04ff029fe4d65dce78ec2dfd67aa9 district_cells=240679 district_ignored=0 district_road_cells=7225 district_road_digest=2ff87483375ea5379de98462d3dda0d196013d5e5952ffb7f287e6bf84268d33 fill_cells=4868 fill_ignored=0 fill_road_cells=609 fill_road_digest=4fdfb6f12a49ca14d34f53a766f26c186e08688fb04d779ef60897e63d9475ab rampart_cells=35571 rampart_ignored=0 rampart_road_cells=9077 rampart_road_digest=13ed6dfb45e9734ea29401541d12d4fcb6ff4e4ad01fe936d03bd8f8a3c6d660 gate_cells=14254 gate_ignored=0 gate_road_cells=2472 gate_road_digest=38c4f36208906ac80965515aa3f5d50ab270d0c81dba4b627a1a5e86c659c920 worst_plot_fall=6 worst_plot=forge_ore_court worst_plot_submerged=0 worst_submerged_plot=- sockets=269 role_guard_patrol=50 role_guard_post=19 role_idle=129 role_king=1 role_quest=2 role_vendor=9 role_waypoint=1 role_work=58 loops=9 loop_dur_brannoc_deep_watch=9 loop_dur_brannoc_forge_watch=9 loop_dur_brannoc_garrison_watch=9 loop_dur_brannoc_gate_east_tower=2 loop_dur_brannoc_gate_north_tower=2 loop_dur_brannoc_gate_south_tower=2 loop_dur_brannoc_gate_west_tower=2 loop_dur_brannoc_terrace_watch=9 loop_dur_brannoc_watch=6

@@ -1,0 +1,9 @@
+# grug_wp13_capital_field_v1 key=dur_brannoc reach=250 anchor=-1800,149,-1500
+# grug_wp13_capital_field_v1 key=dur_brannoc reach=250 anchor=-1800,140,-1500
+# grug_wp13_capital_field_v1 key=dur_brannoc reach=250 anchor=-1800,134,-1500
+# grug_wp13_capital_field_v1 key=dur_brannoc reach=250 anchor=-1800,146,-1500
+# grug_wp13_capital_field_v1 key=dur_brannoc reach=250 anchor=-1800,128,-1500
+# grug_wp13_capital_field_v1 key=dur_brannoc reach=250 anchor=-1800,141,-1500
+# grug_wp13_capital_field_v1 key=dur_brannoc reach=250 anchor=-1800,114,-1500
+# grug_wp13_capital_field_v1 key=dur_brannoc reach=250 anchor=-1800,156,-1500
+# grug_wp13_capital_field_v1 key=dur_brannoc reach=250 anchor=-1800,140,-1500

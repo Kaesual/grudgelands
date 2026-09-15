@@ -1,0 +1,84 @@
+== the six start blueprint identities, this tree ==
+dawnmere     cells= 66361 palette= 54 sha=80b3f0fcd3005f5186e528393f171029eb9fcf66ed0674ce321dbe1bc38f748b
+hearthpine   cells= 61932 palette= 41 sha=8233c7bc0fe668991e2afd1de53eaae1ede18cf1893cb8ab37ecb223248d4240
+kapok        cells= 72535 palette= 42 sha=c7aadf6a8f599d0f9213cce26153a62e739f1ff2f7920c3a25c1031b63bc21a5
+silverleaf   cells= 71495 palette= 48 sha=149ca6ebdfea6dac18b9385f7fbaa7bbadf37c400cd5d22422acb184859bba05
+stillgrave   cells= 51641 palette= 44 sha=ed6ddd43946d3909aa4a061e3bfa816d80c3e9b6663f33cfc640ec919f836a34
+sunscar      cells= 57227 palette= 43 sha=8110477c6fc555b32c8bd34834812e7b2adb3c561b68202d050cefd6c686fbc6
+
+start_identity digest 0bbf87a7253deadca55951752adde73e82c31cd10878dc64ef6d44af91ad1f5f  -
+
+== every blueprint identity Highcourt publishes, this tree ==
+core                               anchor      101831  187f79e0ba52103818eba53f7ed9c3beadc631682648918301287fa4a7200499
+plot_market_granary                reference     5715  71a78a27a59a902952161e9537fc2470a737b8ed33b5307e75b65da9fb87125c
+plot_market_stable                 reference     5001  b6d38985abdc98d820aafa79076741591e9e1519879e01b86f221aa276964893
+plot_market_workshop               reference     5824  58693c95bd771ab983e7b2b24fab281d5067572555a0c1420f46f98b38e85ef3
+plot_market_counting_house         reference     6955  6c858c999db30c592a2747f93232cd41fc8a7d84d0f669beeb31d229b6680228
+plot_market_well                   reference     4862  840394cdc23af18b08c70670cf09175c03fb6ac5423a64056b97d4f0494baa36
+plot_market_watch                  reference     8398  be9cf74f7ce1a8b58d5a40bbf4220b93b6829fd5582cd983d5cfef8626f91c08
+plot_market_grove                  reference     9274  eb787a9cfe5e75d0ecea575a5a6204ebcf2ac01963ab82e27d65d0d6edbeb70d
+plot_market_orchard                reference     7080  9fce30147d7843436c890b185ff1b8eaf3a4145d4ac8073ae0e4b5eb454dc6cc
+plot_market_store                  reference     5358  0d68bfaad3d932963315dd1c38fee236ba7ef45e27d6e8953d05996b21c94e33
+plot_market_pond                   reference     6274  c0a0ed8d68ccadfa8f7f3b7c0c96dc9c7b1e12a56fbf993411a5c3307430d6cb
+plot_market_orchard_close          reference     5790  954f222a4d4c0b2d106c775570564104c9b02abea7a56a30cf340a271475007a
+plot_market_gardens                reference     3210  4944fd7a7f9eb47e967f50a2b6ddbd38ef1c117c6284a467822803f98184c907
+plot_market_green                  reference     1415  c4c5e8451fd97aa04db81bb994d985a47bc9c7b32d7ea00c9736c36fe707deca
+plot_martial_barracks              reference     9795  c8562cc19e9f40c79fcb4d6da53606d8a65f2a0e393234404e2923520ebaef36
+plot_martial_muster_hall           reference     6699  d7ac8d063393f9952b63672f339c675ec54d40968a4cfb8de2281ea119ac4a1b
+plot_martial_armoury               reference     6416  8779579c649d2ee4f06d6adc783a53ae521f12b0e76eae3a38c0b5aaea561b0d
+plot_martial_stables               reference     5567  a3fac71a35c414168823ab2ba7ec550310c92259e07879d2f6e69fc0bdd8bcae
+plot_martial_drill_yard            reference     7456  264f7e380c0474549d52fe4f5fb6017ffb505a91df9163e433c154cd99048da0
+plot_martial_quartermaster         reference     5966  07340d15b9358166eab1cc189f987ee5d7a6ed92840712536e6546a15182a4bd
+plot_martial_wain_shed             reference     5207  e151992308757cd136fa49408fc130f94af6737677754a7bd8eae4278eff0435
+plot_martial_guard_house           reference     2711  64829ee6f7df3d9389611a2ed7c16b9b841c9329dd25d6739802a915cbcf6778
+plot_martial_watch_tower           reference     3880  73918d7498ac645ffb0f7afee4232f3e99816ca4eed65ecc047651d466dcf8b4
+plot_martial_muster_field          reference     5730  17737defa7a97a501f9c18d12e8cbe27f4bca236deb2c1a311c3e8c8c3b2306f
+plot_martial_remount_pasture       reference     5730  15bdfe01625e8c5de7722e80969b0ec717e4c35267973951f59991bddc0f1fbd
+plot_martial_wood_yard             reference     3210  03aea6a28ecc193ec1c892c14e0e6c107d0fc9ca477d849da6263c4903be3969
+plot_martial_green                 reference     1415  f635e3d8d0bbdf500b8b61a7801b2feca60eb6bd7a642c44a0c32638ee23cd81
+plot_lore_shrine                   reference    10451  9cb90bc24e7a3bf11ab1f18c54dc93cbe0e48972581fb8c514084f6d0f66855e
+plot_lore_library                  reference     7790  776f73f71d8ec2707421f890f9324ca36f7c833f6c29bdb174928f41fba5a3d1
+plot_lore_scriptorium              reference     7665  dde20d4166e2199746209346320febaec1c3a205e439aec4207f7b6f15ea64e2
+plot_lore_archive                  reference     6764  87c0f253c5d5700c47ea33d36ea369223784600f297636bd232c6034a3480e9a
+plot_lore_herb_garden              reference     4862  4d7931e80af38864ec0e15a142d5d4550037a686a16d3b2cc9822649a556c252
+plot_lore_chapter_house            reference     4862  0489b42be9e87563bab74b13715777318fcdf6b0bc43086df22e1e3640257919
+plot_lore_almonry                  reference     3360  3c71f1ccff96635debf5b31aae4d7efd64b49cfb64a7370168356061c88dbdca
+plot_lore_cloister_walk            reference     2841  3d7312b1ad21eb7ec85c46febdfe9e73b15229d99d2d9d3d28369d9521146792
+plot_lore_quiet_grove              reference     7978  d748ad7d107c19a5429a2e97169326f1fbff0bc6ca151e7e32bdf3d1a26597fb
+plot_lore_chapel_yard              reference     5567  cc66991a9038556510869905aa01583b2bfc1c2f5ea2aa52ee95ecfaa1a404bd
+plot_lore_physic_field             reference     5730  4808cfd1b00459dafb090d23a1ab25215a8328b51311e0bf441f9b14dfbdd81c
+plot_lore_sexton_garden            reference     3210  0dabc977bc0d6052597ead63bc967d1837fd7eca738f2ed5e21734cef0d5ab0b
+plot_lore_green                    reference     1410  31300c6c4ac1f872c0221715c53af3b28e9ae5565de162e3e86af6fd667db9b3
+plot_homes_tavern                  reference     6699  268aa73ac5bc2c32d00eb8bbcf0074b2ca297c653e38a367f95a20f34a83a007
+plot_homes_well                    reference     3210  a8b44074ed03fb54c6ebb13cdf5c84c874145a973c9cc82255553aeeff50b270
+plot_homes_monument                reference     4077  67021e6597ab531c3a69ee7f1286cbb11f70f76f0a7f8178d2f574dce27d45e0
+plot_homes_house_gable             reference     2600  37362a4a619d58ec912536279eb329e95448bab2333bb6445b4fc590ca266284
+plot_homes_house_hip               reference     3105  63d6d13956c600b6f578d91ccff73277a5977f93578e1151f2dc6df265cba3ac
+plot_homes_house_lane              reference     2980  3abb4afd8115fc1076f6d078d1176ddc3e80b95e724bd17db0fee2560372a881
+plot_homes_tenement                reference     5854  73460ab4a49c9cfdf1fc75dad952da989269e46f28931e4ed1855344f19fd083
+plot_homes_bakehouse               reference     4430  b7c82cfc8200071eed773c81960de04de13f0228189bb9487a37200c03b3773c
+plot_homes_orchard                 reference     7960  b4c7ab202ce9b59b4d5ee769f0713980bb2d00831535785391a261af2853aa22
+plot_homes_common_field            reference     5730  4ea8aa5afa0174294a742ee02abcaa775bc14c342116bf141b3d0ca39cc2b20d
+plot_homes_goose_green             reference     5740  d74d73ea9ef146b126b2ac1d9953191a1cdfa122a061f6123826a9332d23c764
+plot_homes_lane_park               reference     3220  5b59710409410fd65077ceffc36cdb68b8081d46428aa1f81ba5797d5a17e2cf
+plot_homes_kitchen_garden          reference     1410  eab679e63b9f3b4e365982f26cf35ba5cd87884d3a34229603a9d8226358d9ad
+avenue                             overlay         19  5e09544202cfa811432657ebf6cabb1dc8512b82928de5caa4a124b45c251682
+TOTAL CELLS                        -           376274
+
+== library_kat / blueprint_kat / highcourt_kat, this tree ==
+library_kat      bd4b51ab87f33ebc719c7833f1ff560d6a8d6332d2f8e5691acf7b5af0bcddee  -
+blueprint_kat    13f7fd7da93cf3a0fb67a8f83c3eb757d83eee36625ebbc82ae8bd535489a30f  -
+highcourt_kat    ac3877565002bfdb3ce9f1975ceb76a878ee6be14c89d33f394edc62892ed183  -
+
+== the Dur Brannoc KAT under both interpreters ==
+luajit           36b366288f7017832e790be4cf9bec54c388861b3a0ee727dc9f6b214fa52ee9  -
+tools/bin/lua51  36b366288f7017832e790be4cf9bec54c388861b3a0ee727dc9f6b214fa52ee9  -
+
+== the same three fixtures, on main at /tmp/grug-w2-main-tree ==
+library_kat      bd4b51ab87f33ebc719c7833f1ff560d6a8d6332d2f8e5691acf7b5af0bcddee  -
+blueprint_kat    13f7fd7da93cf3a0fb67a8f83c3eb757d83eee36625ebbc82ae8bd535489a30f  -
+highcourt_kat    ac3877565002bfdb3ce9f1975ceb76a878ee6be14c89d33f394edc62892ed183  -
+
+== the six starts and Highcourt's identities, on main ==
+0bbf87a7253deadca55951752adde73e82c31cd10878dc64ef6d44af91ad1f5f  -
+66e2ed00fc77d1c422d1a03428481114705a6b29a44b3aa241ada42cb9998f79  -

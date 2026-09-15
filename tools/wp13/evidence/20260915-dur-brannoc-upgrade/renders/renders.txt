@@ -1,0 +1,15 @@
+== the whole capital, per gate seed ==
+dur_brannoc plan lore_spiritual=southeast market_professions=southwest martial_garrison=northwest residential_cultural=northeast: 52 plots, 759188 cells, seed 531802985935182545
+dur_brannoc plan lore_spiritual=northwest market_professions=southeast martial_garrison=northeast residential_cultural=southwest: 52 plots, 759188 cells, seed 8675309
+night mode: 120 light sources
+-rw-r--r--. 1 jan jan 2520542 Sep 15 23:59 tools/wp13/evidence/20260915-dur-brannoc-upgrade/renders/avenue-east.png
+-rw-r--r--. 1 jan jan  862841 Sep 15 23:59 tools/wp13/evidence/20260915-dur-brannoc-upgrade/renders/capital-531802985935182545.png
+-rw-r--r--. 1 jan jan  861406 Sep 15 23:59 tools/wp13/evidence/20260915-dur-brannoc-upgrade/renders/capital-8675309.png
+-rw-r--r--. 1 jan jan  234173 Sep 15 23:59 tools/wp13/evidence/20260915-dur-brannoc-upgrade/renders/core-overview.png
+-rw-r--r--. 1 jan jan 2515538 Sep 15 23:59 tools/wp13/evidence/20260915-dur-brannoc-upgrade/renders/district-ne.png
+-rw-r--r--. 1 jan jan 2506909 Sep 15 23:59 tools/wp13/evidence/20260915-dur-brannoc-upgrade/renders/district-night.png
+-rw-r--r--. 1 jan jan 2543851 Sep 15 23:59 tools/wp13/evidence/20260915-dur-brannoc-upgrade/renders/district-sw.png
+-rw-r--r--. 1 jan jan   90324 Sep 15 23:59 tools/wp13/evidence/20260915-dur-brannoc-upgrade/renders/fill-ore-court-sw.png
+-rw-r--r--. 1 jan jan  104774 Sep 15 23:59 tools/wp13/evidence/20260915-dur-brannoc-upgrade/renders/fill-ore-court.png
+-rw-r--r--. 1 jan jan  212843 Sep 15 23:59 tools/wp13/evidence/20260915-dur-brannoc-upgrade/renders/gatehouse.png
+-rw-r--r--. 1 jan jan   96451 Sep 15 23:59 tools/wp13/evidence/20260915-dur-brannoc-upgrade/renders/plot-first.png

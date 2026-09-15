@@ -3,13 +3,25 @@
 -- section 2.2.3).
 --
 --   * the 96 x 96 civic core, anchor-relative exactly like a start;
---   * the nine plots of the forge and craft district, each with its own offset
---     from the capital anchor and its own reference column, because WP40
---     terraces the rest of the 512 envelope in four-node steps -- the deepest
---     of the six races -- and a plot sixty nodes out does not stand at the
---     core's height;
---   * ONE overlay, carrying twelve runs: the four avenues, the four sides of
---     the ring street and the four sides of the CURTAIN WALL.
+--   * the 52 plots of the four districts -- nine buildings and four dressings
+--     each -- with their own offsets from the capital anchor and their own
+--     reference columns, because WP40 terraces the rest of the 512 envelope in
+--     four-node steps, the deepest of the six races, and a plot sixty nodes out
+--     does not stand at the core's height;
+--   * ONE overlay, carrying twenty runs: the four avenues, the four sides of
+--     the ring street, the eight district lanes and the four sides of the
+--     CURTAIN WALL.
+--
+-- WHICH DISTRICT STANDS IN WHICH QUADRANT IS THE WORLD SEED'S (the capitals
+-- contract, section 2.1). The permutation is `wp13/dur_brannoc_quadrants.lua`,
+-- and the seed and the SHA-256 it needs are HANDED TO THIS FILE by
+-- `r7_runtime.lua`, which validates the seed once and refuses to build if the
+-- live value has moved since. That is what makes main and emerge agree about
+-- where a district stands exactly when they agree about `full_seed`. An
+-- engine-free caller -- a fixture, the renderer, the timing harness -- can pass
+-- no options at all and gets the canonical assignment. Nothing in the manifest
+-- moves either way: a plot's identity is its cells, and its cells do not know
+-- where they will stand.
 --
 -- WHY THE WALL IS IN THE SAME OVERLAY AS THE ROAD. The seam gives a settlement
 -- exactly one overlay blueprint, and that is the right number here rather than
@@ -36,35 +48,41 @@ if not here or here == "" then here = core.get_modpath("grug_mapgen") .. "/wp40"
 
 local library = dofile(here .. "/r7_wp13_library.lua")
 
--- The seam `r7_runtime.lua` hands every blueprint source: the world seed it
--- validated once and the engine's raw SHA-256. Dur Brannoc has ONE district and
--- no quadrant permutation, so it reads neither -- but it still refuses a HALF
--- seam rather than shrugging at it. A caller that passes one field and not the
--- other has a defect somewhere upstream, and the day this capital grows a
--- seeded assignment the refusal is already where it belongs. A caller that
--- passes nothing at all is engine-free (a fixture, the renderer, the timing
--- harness) and is fine.
-local function check_options(options)
-	if options == nil then return end
+-- The quadrant seam, exactly as handed over, or nothing at all.
+--
+-- `r7_runtime.lua` passes the validated world seed and the engine's raw
+-- SHA-256. A caller that passes neither is engine-free and gets the canonical
+-- assignment; a caller that passes a HALF seam is a defect and is refused here
+-- rather than silently placing the districts somewhere else. Wave 1 made the
+-- same refusal with nothing behind it -- this capital had one district and read
+-- neither field -- and said so; wave 2 is where it starts to matter.
+local function quadrant_options(options)
+	if options == nil then return {} end
 	if type(options) ~= "table" then
 		error("WP13 Dur Brannoc: the blueprint options differ", 0)
 	end
-	if options.full_seed == nil and options.raw_sha256 == nil then return end
-	if type(options.full_seed) ~= "string" or
-			not options.full_seed:match("^%-?%d+$") or
-			type(options.raw_sha256) ~= "function" then
-		error("WP13 Dur Brannoc: the blueprint seam differs", 0)
+	if options.full_seed == nil and options.raw_sha256 == nil and
+			options.permutation == nil then
+		return {}
 	end
+	if options.permutation == nil and
+			(type(options.full_seed) ~= "string" or
+				not options.full_seed:match("^%-?%d+$") or
+				type(options.raw_sha256) ~= "function") then
+		error("WP13 Dur Brannoc: the quadrant seam differs", 0)
+	end
+	return {full_seed = options.full_seed, raw_sha256 = options.raw_sha256,
+		permutation = options.permutation}
 end
 
 return function(options)
-	check_options(options)
 	local path = library.path()
 	local palettes = dofile(path .. "/palette.lua")
 	local avenue = dofile(path .. "/avenue.lua")(path)
 	local capital = library.composition("dur_brannoc")
 	if type(capital) ~= "table" or type(capital.core) ~= "function" or
-			type(capital.district) ~= "table" or
+			type(capital.districts) ~= "table" or
+			type(capital.quadrants) ~= "table" or
 			type(capital.avenues) ~= "table" or type(capital.ring) ~= "table" or
 			type(capital.wall) ~= "table" or
 			type(capital.wall_plan) ~= "table" or
@@ -74,14 +92,18 @@ return function(options)
 		error("WP13 Dur Brannoc: the capital composition seam differs", 0)
 	end
 
-	-- The plot list's positions and ids are the composition's own
-	-- (`wp13/dur_brannoc_district.lua`); the schema string is the one each plot
-	-- publishes, spelled here so the seam can compare it after the build
-	-- instead of trusting it.
+	-- The plot list's ids are the rosters' own and its offsets are this world's
+	-- quadrant assignment (`wp13/dur_brannoc_districts.lua`); the schema string
+	-- is the one each plot publishes, spelled here so the seam can compare it
+	-- after the build instead of trusting it.
+	local resolved, assignment, permutation =
+		capital.districts.resolve(quadrant_options(options))
 	local plots = {}
-	for index = 1, #capital.district.plots do
-		local plot = capital.district.plots[index]
+	for index = 1, #resolved do
+		local plot = resolved[index]
 		plots[index] = {id = plot.id, x = plot.x, z = plot.z,
+			district = plot.district, role = plot.role,
+			quadrant = plot.quadrant, lot = plot.lot, kind = plot.kind,
 			schema = "grug_wp13_dur_brannoc_plot_" .. plot.id .. "_v1",
 			build = plot.build}
 	end
@@ -95,9 +117,20 @@ return function(options)
 		schema = "grug_wp13_capital_source_v1",
 		core = {schema = "grug_wp13_dur_brannoc_core_v1", build = capital.core},
 		plots = plots,
+		-- What this world decided, for the probe's log and the KAT; the seam
+		-- itself neither reads nor publishes it.
+		districts = {assignment = assignment, permutation = permutation},
 		overlay = {
 			schema = "grug_wp13_dur_brannoc_overlay_v1",
-			runs = capital.overlay_runs(),
+			-- The avenues first, then the ring street, then the eight district
+			-- lanes, then the four sides of the curtain wall. The successor's
+			-- arbitration gives a shared cell to the run that comes FIRST, so
+			-- the great roads run through, the lanes yield at the kerb, and the
+			-- wall yields the road it lets through its gate. The lanes belong
+			-- to the QUADRANTS and not to the districts standing in them, so
+			-- this list is the same on every world and the overlay's identity
+			-- does not depend on the seed.
+			runs = capital.overlay_runs(capital.quadrants.lane_runs()),
 			width = avenue.WIDTH,
 			lamp_spacing = avenue.LAMP_SPACING,
 			reach = avenue.REACH,
