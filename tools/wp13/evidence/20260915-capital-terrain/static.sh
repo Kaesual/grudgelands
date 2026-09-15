@@ -15,10 +15,13 @@ touched=(
 	mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua
 	mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
 	mods/MAPGEN/grug_mapgen/wp13/highcourt_quadrants.lua
+	mods/MAPGEN/grug_mapgen/wp40/r7_anchor_activation.lua
+	tools/wp13/capital_anchor_fixture.lua
 	tools/wp13/capital_terrain_fixture.lua
 	tools/wp13/highcourt_plots.lua
 	tools/wp13/highcourt_kat.lua
 	tools/wp40/planner_throughput/fixture.lua
+	tools/wp13/highcourt_probe/init.lua
 )
 
 echo "== luac51 -p and SETGLOBAL, per touched file =="

@@ -340,7 +340,69 @@ gives.
    independent checks say it does not: the six start blueprint identities, the
    start terrain fixture over five seeds, and the WP13 micro pair.
 
-## 5. What is open
+## 5. The anchor activation crash, and why two seeds never saw it
+
+A user's fresh world on seed 15912857179583385436 crashed on teleport to
+(0, 50, -1500):
+
+    fail_anchor_activation: anchor settled support differs at anchor_008
+    actual=126/0/0/0/0/0/0
+
+126 is that world's content id for `air`. `anchor_008` is Highcourt.
+
+### The cause
+
+It is geometry, not seed luck and not this package. Every roster anchor writes
+its content at `anchor.y + 1` and needs solid ground at `anchor.y`. A Luanti
+mapchunk is 80 nodes tall and offset by -32, so chunks span
+`[80k - 32, 80k + 47]`. On that seed Highcourt's anchor sits at **y 47**, which
+puts its root at **48 — exactly a chunk's lowest layer** — and its support at 47,
+one node down in the chunk BELOW.
+
+`r7_anchor_activation.lua` read that support through `context.settled_at`. That
+call answers for the authenticated one-node halo as well as for the owned
+mapchunk, and the halo carries our column only if the lower chunk has already
+generated. Which chunk generates first is the engine's emerge order: the
+ordinary corpus walks y upward and always makes the lower chunk first, while a
+player teleporting in from above makes the upper one first. Then the check read
+air out of an ungenerated halo and failed the whole mapgen transaction.
+
+**Not this lane.** The anchor y on that seed is 47 at `19abee02` too — before
+the step band existed — and so is every other capital anchor y on that seed. The
+band cannot move it: at the anchor column `civic_outside` is 0, so
+`capital_terrace_value` returns the fitting reference and never reads the band
+at all. The latent bug is as old as the check.
+
+**Why the gate never saw it.** On neither gate seed does any capital anchor's
+root land on a chunk edge (Highcourt is at 33 and 40, mid-chunk), and the
+probe's corpus only ever emerges upward. Two seeds and one emerge order cannot
+cover a case that needs a particular height class and the other order.
+
+### The fix
+
+The settled bytes are asserted where this transaction writes them and trusted
+from the plan where it does not. `tail.bind_plan` already receives the mapchunk
+bounds, so the module remembers them; the support check and the root-emptiness
+check now run only when that cell is inside the owned chunk. Outside it, the
+**column authority** that the same function already verified against the planner
+— terrain height, functional kind, functional y, feature, foundation — is the
+guarantee, and it is the one that survives emerge order, because the chunk that
+owns the support writes its surface from that same plan whenever it generates.
+
+### The gates
+
+* `tools/wp13/capital_anchor_fixture.lua` — offline, nine seeds (both gate
+  seeds, the user's, and six more) × six capitals. It asserts the column
+  authority each anchor stands on, and it asserts that the seed set still
+  CONTAINS an anchor whose root is on a chunk edge, so a future pruning of the
+  seed list says out loud that it stopped covering this. On the current set that
+  count is 1: Highcourt on 15912857179583385436.
+* `tools/wp13/run_highcourt.sh <out> edge <seed>` — a new probe mode that
+  emerges every capital's ROOT chunk before its SUPPORT chunk, which is the
+  order the ordinary corpus can never produce. On `main` at e4880e7d it fails at
+  mapchunk `-32:48:-1552`, the Highcourt root chunk; on this branch it passes.
+
+## 6. What is open
 
 * **Vegetation inside the walls.** As above: WP40 keeps the 532 build square
   host-free, so the plateau has race GROUND but no plants. Lethariel's "grove

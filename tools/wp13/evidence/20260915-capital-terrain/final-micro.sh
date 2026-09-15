@@ -19,9 +19,11 @@ INPUTS=(
 	mods/MAPGEN/grug_mapgen/wp40/height.lua
 	mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua
 	mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+	mods/MAPGEN/grug_mapgen/wp40/r7_anchor_activation.lua
 	mods/MAPGEN/grug_mapgen/wp40/simple_map.lua
 	mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua
 	mods/MAPGEN/grug_mapgen/wp40/zones.lua
+	tools/wp13/capital_anchor_fixture.lua
 	tools/wp13/capital_terrain_fixture.lua
 	tools/wp13/final_micro.lua
 	tools/wp13/highcourt_kat.lua
@@ -48,6 +50,8 @@ luajit tools/wp13/terrain_fixture.lua "$repo" >"$out/start-terrain.tsv"
 echo "START TERRAIN FIXTURE PASS (5 seeds x 6 starts)"
 luajit tools/wp13/capital_terrain_fixture.lua "$repo" >"$out/capital-walk.tsv"
 echo "CAPITAL WALKABILITY FIXTURE PASS (2 gate seeds x 6 capitals)"
+luajit tools/wp13/capital_anchor_fixture.lua "$repo" >"$out/capital-anchor.tsv"
+echo "CAPITAL ANCHOR FIXTURE PASS (9 seeds x 6 capitals, edge case covered)"
 
 # The six starts' terrain must be BYTE-IDENTICAL to the round-B evidence: this
 # package may not move a start by one node.
@@ -65,6 +69,7 @@ diff <(tail -n +2 tools/wp13/evidence/20260915-dur-brannoc/identity.txt | head -
 	tools/wp13/evidence/20260915-capital-terrain/final-micro/micro-luajit.tsv \
 	tools/wp13/evidence/20260915-capital-terrain/final-micro/micro-puc51.tsv \
 	tools/wp13/evidence/20260915-capital-terrain/final-micro/start-terrain.tsv \
-	tools/wp13/evidence/20260915-capital-terrain/final-micro/capital-walk.tsv ) \
+	tools/wp13/evidence/20260915-capital-terrain/final-micro/capital-walk.tsv \
+	tools/wp13/evidence/20260915-capital-terrain/final-micro/capital-anchor.tsv ) \
 	>"$out/digests.txt"
 cat "$out/digests.txt"
