@@ -198,10 +198,17 @@ resident is placed on it, the roster counts it) and it carries
   the arrival) and additionally require the feature named by the activity to
   stand where `dir` points, within three nodes: `smith` an anvil or furnace,
   `fish` a water node, `farm` a farmland or crop node, `chop` a log or tree,
-  `pray` any node of the chapel interior, `tend` a plant or a flower,
-  `stall` a counter (any solid node at waist height), `sit` a stair or slab
-  or bench node under the socket's own feet cell is NOT required — `sit` sits
-  on the ground it stands on.
+  `pray` the chapel's door, an altar, a candle or a grave marker (the socket
+  stands OUTSIDE, as every socket does; "chapel interior" was the first
+  wording and contradicted the outside rule, corrected 2026-09-15 after the
+  NPC lane's review), `tend` a plant or a flower, `stall` a counter (any
+  solid node at waist height), `sit` a stair or slab or bench node under the
+  socket's own feet cell is NOT required — `sit` sits on the ground it
+  stands on. The feature search stops at the first solid node on the
+  socket's own course, so a feature behind a wall does not count.
+- `fish` is **capital-only**: a start blueprint may contain no water cell
+  (`blueprint_kat`), and the feature test reads blueprint cells, so no start
+  can author it; a capital plot may carry its own pond and does (Highcourt).
 
 ### 8.2 Activity vocabulary (closed; extend here first)
 
@@ -234,8 +241,17 @@ a bounded distance of its home (the NPC lane measures and states the bound).
 
 The KAT of the NPC lane asserts the resulting walker share per settlement is
 between 10 % and 30 % of residents, so a composition that is all `work`
-sockets (zero walkers) is a KAT failure, not a lively district. Structure
-lanes therefore author at least one `idle` spawn socket per five residents.
+sockets (zero walkers) is a KAT failure, not a lively district. The
+arithmetic: with I idle spawn sockets and W work sockets the rule yields
+ceil(I/5) walkers of I+W residents, which stays inside the band exactly when
+I >= W (roughly). Structure lanes therefore author **at least one `idle`
+spawn socket per `work` socket** (the first wording, "one per five
+residents", would have yielded 4 % and was corrected 2026-09-15 after the
+NPC lane's review; Highcourt with 108 idle spawn and 36 work sockets gives
+22 of 144, 15.3 %). A walker's ring holds at least two destinations: the
+spots within the walk radius, and when fewer than two lie inside it, the
+nearest spots until there are two, so no walker is ever handed a ring of one
+(Stillgrave's first idle socket was, in the first version).
 
 ### 8.4 Profession vendors
 
