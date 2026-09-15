@@ -1,0 +1,10 @@
+The Highcourt lots the step bands pushed one node outside their
+envelope, BEFORE tools/wp13/highcourt_plots.lua --repair moved them:
+main's committed lot grid at 19abee02 against THIS branch's terrain.
+The repair proposal is in plot-repair-highcourt.txt and the three
+moves landed in wp13/highcourt_quadrants.lua.
+
+northeast	9	220	196	ILLEGAL b:fall:7	-	-
+northwest	8	-176	168	ILLEGAL b:fall:7	-	-
+southwest	2	-48	-132	ILLEGAL a:rise:7	-	-
+3 lot(s) or plot(s) stand somewhere they may not

@@ -96,6 +96,14 @@ local function loader()
 	-- the terrain of seeds 531802985935182545 and 8675309; the shift each
 	-- grid needed and the plots that had to slide further are the table in
 	-- section 4 of the research note.
+	--
+	-- THREE OF THEM MOVED WITH THE TERRACE STEP BANDS (2026-09-15, WP13 round
+	-- 3): the band turns every terrace riser into one-block steps, which lifts
+	-- about one Highcourt column in nine by a node, and three lots then stood
+	-- one node past their skirt or their roof. `highcourt_plots.lua --repair`
+	-- moved exactly those three to the nearest legal position and left the
+	-- other thirty-three where they were -- northeast 9 by 4 nodes, northwest 8
+	-- by 8, south-west 2 by 4.
 	M.LOTS = {
 		southeast = {
 			{x = 72, z = -72}, {x = 116, z = -72}, {x = 160, z = -72},
@@ -105,15 +113,15 @@ local function loader()
 		northeast = {
 			{x = 132, z = 108}, {x = 132, z = 152}, {x = 132, z = 196},
 			{x = 176, z = 108}, {x = 176, z = 152}, {x = 176, z = 196},
-			{x = 220, z = 108}, {x = 220, z = 152}, {x = 220, z = 196},
+			{x = 220, z = 108}, {x = 220, z = 152}, {x = 216, z = 196},
 		},
 		northwest = {
 			{x = -132, z = 80}, {x = -176, z = 80}, {x = -220, z = 80},
 			{x = -132, z = 124}, {x = -176, z = 124}, {x = -220, z = 124},
-			{x = -132, z = 168}, {x = -176, z = 168}, {x = -220, z = 168},
+			{x = -132, z = 168}, {x = -180, z = 164}, {x = -220, z = 168},
 		},
 		southwest = {
-			{x = -48, z = -76}, {x = -48, z = -132}, {x = -48, z = -172},
+			{x = -48, z = -76}, {x = -48, z = -136}, {x = -48, z = -172},
 			{x = -84, z = -116}, {x = -84, z = -152}, {x = -84, z = -188},
 			{x = -120, z = -84}, {x = -128, z = -128}, {x = -120, z = -164},
 		},

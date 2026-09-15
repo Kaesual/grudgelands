@@ -1,0 +1,79 @@
+== the 36 lots
+quadrant	lot	x	z	verdict	worst_fall	worst_rise
+southeast	1	72	-72	legal	2	4
+southeast	2	116	-72	legal	3	2
+southeast	3	160	-72	legal	4	4
+southeast	4	72	-116	legal	4	5
+southeast	5	116	-116	legal	5	5
+southeast	6	160	-116	legal	2	4
+southeast	7	72	-160	legal	2	4
+southeast	8	116	-160	legal	2	6
+southeast	9	160	-160	legal	4	3
+northeast	1	132	108	legal	5	4
+northeast	2	132	152	legal	4	3
+northeast	3	132	196	legal	4	4
+northeast	4	176	108	legal	4	4
+northeast	5	176	152	legal	2	2
+northeast	6	176	196	legal	2	6
+northeast	7	220	108	legal	5	3
+northeast	8	220	152	legal	3	4
+northeast	9	216	196	legal	6	2
+northwest	1	-132	80	legal	2	4
+northwest	2	-176	80	legal	4	4
+northwest	3	-220	80	legal	6	4
+northwest	4	-132	124	legal	2	6
+northwest	5	-176	124	legal	5	5
+northwest	6	-220	124	legal	3	6
+northwest	7	-132	168	legal	2	6
+northwest	8	-180	164	legal	6	4
+northwest	9	-220	168	legal	2	4
+southwest	1	-48	-76	legal	4	4
+southwest	2	-48	-136	legal	3	6
+southwest	3	-48	-172	legal	4	4
+southwest	4	-84	-116	legal	6	4
+southwest	5	-84	-152	legal	5	4
+southwest	6	-84	-188	legal	4	5
+southwest	7	-120	-84	legal	4	4
+southwest	8	-128	-128	legal	2	6
+southwest	9	-120	-164	legal	4	4
+
+== the 36 plots against the lot envelope
+plot	district	quadrant	lot	verdict	x_reach	z_reach	clear
+market_granary	highcourt_market	southeast	1	fits	8	10	13
+market_stable	highcourt_market	southeast	2	fits	10	8	11
+market_workshop	highcourt_market	southeast	3	fits	9	11	11
+market_counting_house	highcourt_market	southeast	4	fits	9	11	13
+market_well	highcourt_market	southeast	5	fits	11	11	8
+market_watch	highcourt_market	southeast	6	fits	10	13	12
+market_grove	highcourt_market	southeast	7	fits	10	10	12
+market_orchard	highcourt_market	southeast	8	fits	12	9	11
+market_store	highcourt_market	southeast	9	fits	8	10	12
+martial_barracks	highcourt_martial	northeast	1	fits	11	13	13
+martial_muster_hall	highcourt_martial	northeast	2	fits	10	11	11
+martial_armoury	highcourt_martial	northeast	3	fits	10	11	11
+martial_stables	highcourt_martial	northeast	4	fits	10	9	11
+martial_drill_yard	highcourt_martial	northeast	5	fits	10	10	14
+martial_quartermaster	highcourt_martial	northeast	6	fits	9	10	12
+martial_wain_shed	highcourt_martial	northeast	7	fits	11	9	9
+martial_guard_house	highcourt_martial	northeast	8	fits	8	6	9
+martial_watch_tower	highcourt_martial	northeast	9	fits	7	7	14
+lore_shrine	highcourt_lore	northwest	1	fits	9	11	21
+lore_library	highcourt_lore	northwest	2	fits	10	12	12
+lore_scriptorium	highcourt_lore	northwest	3	fits	10	11	13
+lore_archive	highcourt_lore	northwest	4	fits	9	10	14
+lore_herb_garden	highcourt_lore	northwest	5	fits	11	11	8
+lore_chapter_house	highcourt_lore	northwest	6	fits	8	9	12
+lore_almonry	highcourt_lore	northwest	7	fits	7	8	10
+lore_cloister_walk	highcourt_lore	northwest	8	fits	10	5	9
+lore_quiet_grove	highcourt_lore	northwest	9	fits	9	9	11
+homes_tavern	highcourt_homes	southwest	1	fits	10	11	11
+homes_well	highcourt_homes	southwest	2	fits	8	8	8
+homes_monument	highcourt_homes	southwest	3	fits	8	8	11
+homes_house_gable	highcourt_homes	southwest	4	fits	7	6	10
+homes_house_hip	highcourt_homes	southwest	5	fits	8	7	9
+homes_house_lane	highcourt_homes	southwest	6	fits	7	7	10
+homes_tenement	highcourt_homes	southwest	7	fits	8	11	12
+homes_bakehouse	highcourt_homes	southwest	8	fits	8	10	10
+homes_orchard	highcourt_homes	southwest	9	fits	12	10	11
+
+every lot is dry, inside the skirt and under its own roof on both worlds, and every plot fits every lot

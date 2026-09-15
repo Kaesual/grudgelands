@@ -1,0 +1,8 @@
+Lua 5.1	LuaJIT 2.1.1767980792
+luajit: ...a5098a0f12d9bc887/mods/ENTITIES/grug_traders/vendors.lua:290: attempt to call field 'noncombatant' (a nil value)
+stack traceback:
+	...a5098a0f12d9bc887/mods/ENTITIES/grug_traders/vendors.lua:290: in function 'register_vendor'
+	...a5098a0f12d9bc887/mods/ENTITIES/grug_traders/vendors.lua:300: in function 'dofile'
+	...-a5098a0f12d9bc887/tools/wp40/quality/vendor_fixture.lua:120: in function <...-a5098a0f12d9bc887/tools/wp40/quality/vendor_fixture.lua:2>
+	...ent-a5098a0f12d9bc887/tools/wp40/quality/final_micro.lua:26: in main chunk
+	[C]: at 0x55f101996b00

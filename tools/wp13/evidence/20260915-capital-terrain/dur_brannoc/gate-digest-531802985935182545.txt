@@ -1,0 +1,1 @@
+ea99c240ab14764b6f760aa29647d1d22598fa0b6f77e0daa2d2c3d4c8dba4cc  gate seed=531802985935182545 overlay_cells=2464 main=19abee02 package=20260915-capital-terrain

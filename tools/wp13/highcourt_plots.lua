@@ -2,11 +2,21 @@
 --
 --     luajit tools/wp13/highcourt_plots.lua <repo> <field-a.tsv> <field-b.tsv>
 --     luajit tools/wp13/highcourt_plots.lua <repo> <field-a.tsv> <field-b.tsv> --derive
+--     luajit tools/wp13/highcourt_plots.lua <repo> <field-a.tsv> <field-b.tsv> --repair
 --
 -- The default run VERIFIES the 36 lots `wp13/highcourt_quadrants.lua` carries
 -- and the 36 plots the four districts build, against every rule below, on two
 -- worlds at once. `--derive` re-runs the search that produced those lots, so
 -- the committed table is re-derivable rather than remembered.
+--
+-- `--repair` is the mode a TERRAIN change needs, and it is `capital_plots.lua
+-- --assign` for this capital: every lot that still stands keeps its authored
+-- position and only the ones that no longer do take the nearest position that
+-- does. `--derive` searches the whole-quadrant translation again and will
+-- happily slide nine lots forty nodes to save one of them a four-node move,
+-- which is the right answer when the grid is being INVENTED and the wrong one
+-- when the ground under a finished city has moved by a node: the districts
+-- that stand on those lots are authored against them.
 --
 -- WHY THIS IS A COMMITTED TOOL AND NOT A SCRATCH SCRIPT. The first version of
 -- the seam package moved two plots with an ad-hoc sweep that asked one
@@ -51,6 +61,7 @@ local repo = assert(arg[1], "repository root required")
 local field_a = assert(arg[2], "first field TSV required")
 local field_b = assert(arg[3], "second field TSV required")
 local derive = arg[4] == "--derive"
+local repair = arg[4] == "--repair"
 
 local wp13 = repo .. "/mods/MAPGEN/grug_mapgen/wp13"
 local avenue = dofile(wp13 .. "/avenue.lua")(wp13)
@@ -258,6 +269,54 @@ for _, entry in ipairs(districts.resolve()) do
 	if verdict ~= "fits" then failures = failures + 1 end
 	io.write(table.concat({entry.id, entry.district, entry.quadrant, entry.lot,
 		verdict, x_reach, z_reach, clear}, "\t"), "\n")
+end
+
+----------------------------------------------------------------------
+-- Repair
+----------------------------------------------------------------------
+--
+-- What a terrain change needs: the smallest edit to `M.LOTS` that makes every
+-- lot legal again. Each quadrant is walked in its committed order, a lot that
+-- is still legal is kept exactly where it is and blocks its lane around
+-- itself, and a lot that is not takes the nearest legal position on the same
+-- four-node grid the derivation used. The output is the table to paste.
+if repair then
+	io.write("\n== repaired grids\n")
+	local STEP = 4
+	local moved = 0
+	for turns = 0, 3 do
+		local name = quadrants.QUADRANTS[turns + 1]
+		local here = {}
+		local rows = {}
+		for index, lot in ipairs(quadrants.LOTS[name]) do
+			local x, z, move = lot.x, lot.z, 0
+			if not (geometry(x, z, turns, here) and both(x, z)) then
+				local nearest
+				for cz = -232, 232, STEP do
+					for cx = -232, 232, STEP do
+						if geometry(cx, cz, turns, here) and both(cx, cz) then
+							local distance = math.abs(cx - lot.x) + math.abs(cz - lot.z)
+							if not nearest or distance < nearest.distance then
+								nearest = {x = cx, z = cz, distance = distance}
+							end
+						end
+					end
+				end
+				assert(nearest, "no legal home for " .. name .. " lot " .. index)
+				x, z, move = nearest.x, nearest.z, nearest.distance
+				moved = moved + 1
+			end
+			here[#here + 1] = {id = index, x = x, z = z}
+			local fall, rise = both(x, z)
+			rows[index] = string.format(
+				"  {x = %d, z = %d},  -- lot %d fall=%d rise=%d move=%d",
+				x, z, index, fall, rise, move)
+		end
+		io.write(name, ":\n")
+		for index = 1, #rows do io.write(rows[index], "\n") end
+	end
+	io.write(moved, " lot(s) moved\n")
+	os.exit(0)
 end
 
 ----------------------------------------------------------------------

@@ -680,9 +680,16 @@ local function settlement_factory()
 					y > terrain_y or y < -37 then return nil end
 			local cave_low, cave_high = planner_source.surface_cave_run_at(x, z)
 			if cave_low ~= nil and cave_low <= y and y <= cave_high then return nil end
+			-- Anchors 1..12: the six starts and, since WP13 round 3, the six
+			-- CAPITALS. A capital fitting grades its whole 704-node blend square
+			-- and everything inside it was `default:stone` before, which is why
+			-- all six looked like the same slab. They keep the surface of their
+			-- own zone's biomes now, exactly as a start does. Anchors 13 and up
+			-- are ordinary POIs and keep the path surface.
 			local dry_start_grade = functional_kind == "land_grade" and
 				type(functional_feature_id) == "string" and
-				functional_feature_id:match("^anchor_00[1-6]$") ~= nil and
+				(functional_feature_id:match("^anchor_00[1-9]$") ~= nil or
+					functional_feature_id:match("^anchor_01[0-2]$") ~= nil) and
 				(water_y == nil or water_y <= terrain_y)
 			if functional_kind == "anchor_platform" or
 					(functional_kind == "land_grade" and not dry_start_grade) or
@@ -1759,7 +1766,8 @@ local function settlement_factory()
 								functional_feature_id = planner_source.column_values_at(x, z)
 							dry_start_grade = functional_kind == "land_grade" and
 								type(functional_feature_id) == "string" and
-								functional_feature_id:match("^anchor_00[1-6]$") ~= nil and
+								(functional_feature_id:match("^anchor_00[1-9]$") ~= nil or
+									functional_feature_id:match("^anchor_01[0-2]$") ~= nil) and
 								(water_y == nil or water_y <= terrain_y)
 						end
 						if predecessor == 28 or dry_start_grade and predecessor == 22 then
@@ -1779,7 +1787,8 @@ local function settlement_factory()
 									functional_feature_id = planner_source.column_values_at(x, z)
 								dry_start_grade = functional_kind == "land_grade" and
 									type(functional_feature_id) == "string" and
-									functional_feature_id:match("^anchor_00[1-6]$") ~= nil and
+									(functional_feature_id:match("^anchor_00[1-9]$") ~= nil or
+										functional_feature_id:match("^anchor_01[0-2]$") ~= nil) and
 									(water_y == nil or water_y <= terrain_y)
 							end
 							if predecessor == 27 or dry_start_grade == true and predecessor == 21 then

@@ -1,0 +1,6 @@
+tools/wp40/r6/micro_kat.lua, both trees:
+
+main at 19abee02  luajit: r6 micro KAT: short-vein witness differs
+this branch       luajit: r6 micro KAT: short-vein witness differs
+
+Already red before this lane, as the lane brief records.
