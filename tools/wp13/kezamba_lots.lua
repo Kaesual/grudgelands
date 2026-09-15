@@ -278,12 +278,16 @@ end
 -- walk up to from the other three. A lot is reachable if ANY of its four sides
 -- is, so the verdict is the BEST of the four and not the doorstep's.
 --
+-- (3) Its third version took the best APPROACH of the four sides but the worst
+-- KERB FACE, and failed three lot-seed pairs by one node on a face a walker
+-- would never use. Both halves belong to the same side.
+--
 -- So: for each side, walk sixteen columns straight out from the first column
--- beyond the plot's own ground and record the worst step between neighbours,
--- with a water column ending that direction (you cannot walk into the cenote);
--- then take the best side. And separately record the step OFF the plot itself,
--- which is the foundation skirt's own face and is bounded by the contract's
--- skirt of six rather than by a walking step.
+-- beyond the plot's own ground, recording the step off the kerb and the worst
+-- step between neighbours, with a water column ending that direction (you
+-- cannot walk into the cenote). The verdict is the side a walker would pick --
+-- the lowest kerb face, then the gentlest approach -- held to one terrace step
+-- on the walk and to the contract's foundation skirt of six on the face.
 if mode == "walk" then
 	local TERRACE = 3            -- the troll cenote terrace of contract 2.4
 	local SKIRT_FACE = 6         -- the contract's foundation skirt
@@ -299,10 +303,9 @@ if mode == "walk" then
 		for _, entry in ipairs(lots.all()) do
 			local base = column(session, entry.x, entry.z).y
 			local out0 = entry.reach + 1
-			local best, best_side, walkable = nil, "-", 0
-			local face = 0
+			local best, best_side, best_face, walkable = nil, "-", 99, 0
 			for _, side in ipairs(SIDES) do
-				local step, reached = 0, 0
+				local step, reached, face = 0, 0, 0
 				for out = out0, out0 + APPROACH do
 					local x = entry.x + side[1] * out
 					local z = entry.z + side[2] * out
@@ -312,8 +315,7 @@ if mode == "walk" then
 						entry.x + side[1] * (out - 1),
 						entry.z + side[2] * (out - 1))
 					if out == out0 then
-						local gap = math.abs(cell.y - base)
-						if gap > face then face = gap end
+						face = math.abs(cell.y - base)
 					elseif not previous.wet then
 						local gap = math.abs(cell.y - previous.y)
 						if gap > step then step = gap end
@@ -323,20 +325,31 @@ if mode == "walk" then
 				-- A side that walks into the water before it has left the plot
 				-- is no approach at all.
 				if reached >= 4 then
-					if step <= TERRACE then walkable = walkable + 1 end
-					if best == nil or step < best then
-						best, best_side = step, side[1] .. "," .. side[2]
+					if step <= TERRACE and face <= SKIRT_FACE then
+						walkable = walkable + 1
+					end
+					-- THE BEST SIDE IS THE ONE A WALKER WOULD USE, so it is
+					-- chosen on the face FIRST and the approach second: a plot
+					-- with a seven-node kerb on one side and a level one on
+					-- another is entered from the level one. Taking the worst
+					-- of the four sides was this mode's third wrong question.
+					if best == nil or face < best_face or
+							(face == best_face and step < best) then
+						best, best_face = step, face
+						best_side = side[1] .. "," .. side[2]
 					end
 				end
 			end
 			best = best or 99
 			io.write(table.concat({"kezamba_walk", session.seed, entry.id,
-				base, face, best_side, best, walkable}, "\t"), "\n")
+				base, best_face, best_side, best, walkable}, "\t"), "\n")
 			if best > worst_walk then
 				worst_walk, worst_lot, worst_seed = best, entry.id,
 					session.seed
 			end
-			if face > worst_face then worst_face, worst_face_lot = face, entry.id end
+			if best_face > worst_face then
+				worst_face, worst_face_lot = best_face, entry.id
+			end
 		end
 		for _, spot in ipairs({{CORE_EDGE, 0}, {-CORE_EDGE, 0},
 				{0, CORE_EDGE}, {0, -CORE_EDGE}}) do
@@ -355,9 +368,9 @@ if mode == "walk" then
 		io.write("kezamba_walk FAIL: a plot cannot be walked up to\n")
 		os.exit(1)
 	end
-	io.write("kezamba_walk PASS: every lot has an approach that steps at most ",
-		TERRACE, " nodes a column and a face inside the skirt, on all ",
-		#SEEDS, " seeds\n")
+	io.write("kezamba_walk PASS: every lot has a side whose kerb is inside the ",
+		"skirt and whose approach steps at most ", TERRACE,
+		" nodes a column, on all ", #SEEDS, " seeds\n")
 	os.exit(0)
 end
 

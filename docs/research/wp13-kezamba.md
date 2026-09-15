@@ -202,7 +202,7 @@ three are:
 | --- | --- | --- |
 | the wet mask and the water surface | `kezamba_water.lua --verify` | one mask, surface y = 65, nine of nine |
 | lot legality (dry, skirt, clear, off the core/corridors/streets, one node clear of each other) | `kezamba_lots.lua check` | **52 of 52 legal, nine of nine** |
-| can a player step on and off every plot | `kezamba_lots.lua walk` | WALK_RESULT |
+| can a player walk up to every plot | `kezamba_lots.lua walk` | **PASS on nine of nine**: every lot has a side whose kerb face is at most 3 (against a skirt of 6) and whose sixteen-column approach steps at most **1 terrace step (3) a column**; the worst face measured is 3 (`shore_4`) and the worst approach 3 (`shore_7`) |
 | `audit_terrain` findings at load | nine `run_capital.sh full` boots | AUDIT_RESULT |
 
 **Why the core needs no per-seed continuity check and the plots do.** The civic
