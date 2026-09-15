@@ -271,9 +271,50 @@ return function(hash, content, template_source)
 				end
 			end
 		end
-		local offset_y = 0
-		if definition.rule:find("offset_y_plus_1", 1, true) then offset_y = 1
-		elseif definition.rule:find("offset_y_minus_4", 1, true) then offset_y = -4 end
+		-- THE VERTICAL ANCHOR, and the one node the three bush schematics floated
+		-- on before 2026-09-15.
+		--
+		-- Luanti places a schematic decoration with its y = 0 slice ON the
+		-- surface node: `Decoration::placeDeco` passes the heightmap value itself
+		-- and `DecoSchematic::generate` only adds `place_offset_y` to it
+		-- (`reference_projects/luanti/src/mapgen/mg_decoration.cpp`). A WP40
+		-- template is anchored one node HIGHER, on the first free node above the
+		-- surface, because a decoration here never cuts the natural surface --
+		-- `decoration_support_ref` asks for the host at `candidate.y - 1`, and
+		-- the writer refuses a cell that would replace a natural surface node.
+		--
+		-- Two things the catalog inherited from Luanti therefore encode that same
+		-- single node of clearance a SECOND time, and each lifted its decoration
+		-- one node into the air: the all-air bottom slice of `bush.mts`,
+		-- `pine_bush.mts` and `acacia_bush.mts`, and `offset_y_plus_1`, which is
+		-- Luanti's `place_offset_y = 1` for `blueberry_bush.mts` and
+		-- `apple_log.mts` transcribed unchanged.
+		--
+		-- So the anchor is the schematic's lowest OCCUPIED slice. That consumes a
+		-- leading all-air slice, and it is exactly the node `offset_y_plus_1`
+		-- names, which is why that rule adds nothing here and may not be combined
+		-- with an air base. `offset_y_minus_4` sinks the emergent jungle tree on
+		-- purpose and is authored against this anchor already, so it stands.
+		local occupied_base = 0
+		while occupied_base < sy - 1 do
+			local empty = true
+			for z = 1, sz do
+				for x = 1, sx do
+					if cells[cell_index(x, occupied_base + 1, z, sx, sy)].name ~= "air" then
+						empty = false
+					end
+				end
+			end
+			if not empty then break end
+			occupied_base = occupied_base + 1
+		end
+		local offset_y = -occupied_base
+		if definition.rule:find("offset_y_minus_4", 1, true) then
+			offset_y = -4
+		elseif definition.rule:find("offset_y_plus_1", 1, true) and
+				occupied_base ~= 0 then
+			fail("template offsets its own air base at " .. definition.id)
+		end
 		local min_x = definition.rule:find("center_x", 1, true) and
 			-math.floor((rx - 1) / 2) or 0
 		local min_z = definition.rule:find("center_xz", 1, true) and

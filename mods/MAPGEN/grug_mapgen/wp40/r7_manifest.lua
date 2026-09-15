@@ -18,8 +18,16 @@ return function(canonical, raw_sha256, settlement_order)
 		"bb3e9674b768f7ef14fc0a703d0dc97022e9767d0c532b48cd5f1c0c741257b4"
 	local ACCEPTED_R5_ARTIFACT_SHA256 =
 		"0ffd8cd5c0133645c330703b8e4ea581a21fe6e5891ddcd987236b26a7d07ca0"
+	-- WP13 playtest round 3, 2026-09-15: the template anchor fix moves exactly
+	-- one of the six frozen limbs, `decoded_templates`, and with it this roll-up.
+	-- `r6_templates` now anchors a template by its lowest OCCUPIED slice, so the
+	-- three bush schematics' all-air bottom slice and the two transcribed
+	-- `offset_y_plus_1` rules no longer add a second node of ground clearance;
+	-- five of the twenty-one decoded records move their `min_y`/`max_y` by one and
+	-- nothing else in the projection changes. Was
+	-- `de79b1fe983d8b5a...`, with `decoded_templates` `ab77c5efa9587823...`.
 	local SOURCE_PROJECTION_SHA256 =
-		"de79b1fe983d8b5aaadfd4180bc44e84704133248e20b117139267f232b803d4"
+		"8735e5f7af1c63316b13b71bfed3e2db02d83bd455e970c7ac5c0ed539536482"
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -424,7 +432,7 @@ return function(canonical, raw_sha256, settlement_order)
 			frozen.accepted_r6_content ~=
 				"2486aac15521fbacdfa733f832aac615b799aa8d13c818525d1ce75221fad7d6" or
 			frozen.decoded_templates ~=
-				"ab77c5efa95878232fd5138445b97394be44a700ea5c145c706505a64b427f94" or
+				"3734b3e2e3203c61a2f08fdc7ee5abd7a8d3f7d00ae585c206aabc7c4ca7d42d" or
 			frozen.wp43_projection ~=
 				"c8088a4b6802c0fc1a74d8826e3df0bb49b64f9ab4c6e93bcbd66aa2a16b9895" or
 			frozen.cultural ~=

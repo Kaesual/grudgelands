@@ -1,0 +1,45 @@
+asset acacia_bush.mts 3x3x3 air_base=1 bytes=114 decoded
+asset acacia_tree.mts 9x9x9 air_base=0 bytes=207 decoded
+asset apple_log.mts 4x2x1 air_base=0 bytes=88 decoded
+asset apple_tree.mts 7x8x7 air_base=0 bytes=209 decoded
+asset aspen_tree.mts 5x14x5 air_base=0 bytes=174 decoded
+asset blueberry_bush.mts 3x1x3 air_base=0 bytes=80 decoded
+asset bush.mts 3x3x3 air_base=1 bytes=99 decoded
+asset emergent_jungle_tree.mts 7x37x7 air_base=0 bytes=504 decoded
+asset grug_gravewood_small.mts 7x7x7 air_base=0 bytes=171 decoded
+asset grug_gravewood_tall.mts 7x9x7 air_base=0 bytes=191 decoded
+asset jungle_tree.mts 5x17x5 air_base=0 bytes=255 decoded
+asset large_cactus.mts 5x7x5 air_base=0 bytes=87 decoded
+asset papyrus_on_dirt.mts 1x7x1 air_base=0 bytes=73 decoded
+asset pine_bush.mts 3x3x3 air_base=1 bytes=110 decoded
+asset pine_tree.mts 5x16x5 air_base=0 bytes=178 decoded
+asset small_pine_tree.mts 5x12x5 air_base=0 bytes=174 decoded
+asset snowy_pine_tree_from_sapling.mts 5x16x5 air_base=0 bytes=235 decoded
+row badlands_large_cactus large_cactus.mts min_y=0 air_base=0 rule=center_xz;quarter_turn_rotation
+row blight_gravewood grug_gravewood_small.mts min_y=0 air_base=0 rule=center_xz;quarter_turn_rotation
+row bone_forest_gravewood grug_gravewood_tall.mts min_y=0 air_base=0 rule=center_xz;quarter_turn_rotation
+row crags_snowy_pine snowy_pine_tree_from_sapling.mts min_y=0 air_base=0 rule=surface_y_at_least_60;center_xz;quarter_turn_rotation
+row deep_forest_apple_log apple_log.mts min_y=0 air_base=0 rule=offset_y_plus_1;center_x_only;replace_mushroom_with_air;quarter_turn_rotation
+row deep_forest_apple_tree apple_tree.mts min_y=0 air_base=0 rule=center_xz;quarter_turn_rotation
+row deep_forest_aspen_tree aspen_tree.mts min_y=0 air_base=0 rule=center_xz;quarter_turn_rotation
+row elf_forest_apple_tree apple_tree.mts min_y=0 air_base=0 rule=center_xz;quarter_turn_rotation
+row elf_forest_silverwood aspen_tree.mts min_y=0 air_base=0 rule=silverwood_replacements;center_xz;quarter_turn_rotation
+row emergent_jungle_tree emergent_jungle_tree.mts min_y=-4 air_base=0 rule=surface_y_at_most_32;offset_y_minus_4;center_xz;quarter_turn_rotation
+row jungle_edge_jungle_tree jungle_tree.mts min_y=0 air_base=0 rule=center_xz;quarter_turn_rotation
+row jungle_tree jungle_tree.mts min_y=0 air_base=0 rule=center_xz;quarter_turn_rotation
+row meadows_apple_tree apple_tree.mts min_y=0 air_base=0 rule=center_xz;quarter_turn_rotation
+row meadows_bush bush.mts min_y=-1 air_base=1 rule=center_xz;quarter_turn_rotation
+row pine_hills_blueberry_bush blueberry_bush.mts min_y=0 air_base=0 rule=offset_y_plus_1;center_xz;quarter_turn_rotation
+row pine_hills_pine_bush pine_bush.mts min_y=-1 air_base=1 rule=center_xz;quarter_turn_rotation
+row pine_hills_pine_tree pine_tree.mts min_y=0 air_base=0 rule=center_xz;quarter_turn_rotation
+row pine_hills_small_pine_tree small_pine_tree.mts min_y=0 air_base=0 rule=center_xz;quarter_turn_rotation
+row savanna_acacia_bush acacia_bush.mts min_y=-1 air_base=1 rule=center_xz;quarter_turn_rotation
+row savanna_acacia_tree acacia_tree.mts min_y=0 air_base=0 rule=center_xz;quarter_turn_rotation
+row swamp_papyrus papyrus_on_dirt.mts min_y=0 air_base=0 rule=surface_y_1_to_4;replace_dirt_with_mud;center_xz;quarter_turn_rotation
+rule air_base=0 min_y=0
+rule air_base=1 min_y=-1
+rule air_base=2 min_y=-2
+rule air_base=3 min_y=-3
+rule offset_y_plus_1 over an air base fails closed
+rule offset_y_plus_1 without an air base min_y=0
+decoration anchor KAT PASS: 17 assets, 20 templates anchored, 1 sunk, air_base decoded from the schematics
