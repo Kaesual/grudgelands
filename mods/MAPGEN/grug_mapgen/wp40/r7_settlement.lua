@@ -286,6 +286,40 @@ M.roster = {
 		-- the two great avenues.
 		reserve_anchor_root = true,
 	},
+	-- The fifth capital: the troll one, and the only
+	-- capital of the six whose 512 envelope carries an AUTHORED LAKE. WP40's
+	-- `hydro_kezamba_cenote` fills 11.5 per cent of it -- essentially the whole
+	-- north-east quadrant and a wedge of the civic core itself -- in the same
+	-- columns on all nine seeds of `tools/wp13/capital_anchor_fixture.lua`, with
+	-- its surface one node below the fitted civic reference. The composition
+	-- therefore builds ROUND the water rather than over it, and the roster row
+	-- is otherwise an ordinary capital's.
+	--
+	-- Kezamba is OPEN (the user's ruling of 2026-09-14, unchanged by the round-3
+	-- plan that walled Highcourt), so its overlay carries twelve runs and none
+	-- of them is a curtain: four avenues, four sides of the ring street and the
+	-- four gate thresholds of `wp13/kezamba_gate.lua`.
+	{
+		key = "kezamba", label = "Kezamba", race = "troll",
+		slot = "capital", bounds = "capital_core", plot_bounds = "capital_plot",
+		lazy = true,
+		zone_id = "kragmar_kezamba",
+		anchor_id = "anchor_012", numeric_id = 12, x = 1800, z = 1500,
+		blueprint_file = "r7_kezamba_blueprint.lua",
+		blueprint_schema = "grug_wp13_kezamba_core_v1",
+		identity_schema = "grug_wp13_kezamba_core_identity_v1",
+		config_schema = "grug_wp13_kezamba_config_v1",
+		ledger_schema = "grug_wp13_kezamba_ledger_v1",
+		metrics_schema = "grug_wp13_kezamba_metrics_v1",
+		delta_schema = "grug_wp13_kezamba_delta_v1",
+		-- Same reservation as Highcourt's and Dur Brannoc's, for the same
+		-- reason: the anchor writer puts one `grug_nodes:guard_banner` at
+		-- (x, y + 1, z) of every capital anchor and runs BEFORE the settlement
+		-- writer, and this core has air at exactly that cell -- the crossing of
+		-- the two great avenues, on the dry side of the cenote. The banner is
+		-- `walkable = false`, so a five-wide gate road crossing stays five wide.
+		reserve_anchor_root = true,
+	},
 }
 
 -- ASCII byte order. Lua's `<` on strings is `strcoll`, so under a locale that

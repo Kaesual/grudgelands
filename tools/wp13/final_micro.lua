@@ -44,6 +44,13 @@ rows[#rows + 1] = dofile(repo .. "/tools/wp13/dur_brannoc_kat.lua")(repo)
 -- section -- the work-socket feature rule of section 6 and the quadrant rules
 -- of section 7.
 rows[#rows + 1] = dofile(repo .. "/tools/wp13/gor_drazhak_kat.lua")(repo)
+-- The third capital, the first OPEN one, and the only one with a lake in its
+-- own civic core: the same acceptance again, plus the three rules a capital
+-- built round WP40's authored cenote needs -- nothing of the composition in a
+-- masked column but the boardwalk, every carriageway column over the water
+-- decked, and the anglers facing open water measured on nine seeds
+-- (`kezamba_kat.lua`).
+rows[#rows + 1] = dofile(repo .. "/tools/wp13/kezamba_kat.lua")(repo)
 -- What a capital's street does where a WP40 route passes over it. It belongs
 -- to neither capital: `wp13/avenue.lua` is the road of both of them, and the
 -- crossing rule is a property of the module, held to synthetic profiles the

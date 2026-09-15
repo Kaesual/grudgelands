@@ -264,6 +264,45 @@ warren of clan lodges round a cook court and a story fire. In front of the
 warlord's hall stands a raised **fighting platform** with its own breastwork,
 its own stair and two guard posts on it.
 
+**Open capitals, and the one with a lake in it.** The SPLIT is the user's ruling
+of 2026-09-14 (three walled, three open; the round-3 plan later moved Highcourt
+across, leaving Lethariel and Kezamba). Everything below it — what an open
+capital puts at its gate points, and how a capital with a lake in its core is
+laid out — is the third capital's own lane, 2026-09-15/16, and is open to the
+user's correction like any other design.
+
+Two of the six have no wall at all — Lethariel and Kezamba — and what an open
+capital has where a walled one has a gatehouse is a
+**threshold** at each of its four gate points: two carved posts with a beam
+across the road and a light on each of them, so a traveller arriving on the
+long-distance route can see that they have arrived somewhere. Like the wall and
+the avenues it has no fixed cells and is computed from the ground the map has.
+
+Kezamba is also the one capital whose **civic core is not flat**, and that is
+the map's doing rather than the city's: a deep cenote fills its north-eastern
+quarter and reaches into the core itself. The city is built round it. Its two
+great avenues leave the crossing and become **timber boardwalks on basalt piers**
+the moment they reach the water; its moot house stands on stilts half on the bank
+and half over the lake, with a flight up to it from the shore; a quay follows the
+waterline, its anglers fish the cenote itself and the fishmonger keeps a counter
+behind them. The lake is never filled in and never floored over: the ground the
+city lays stops at the waterline.
+
+For a while there was a second hole in that pad — a narrow gorge cutting in from
+the south-west, which the city railed along the rim and crossed with one plank
+bridge. It was a ROAD: a long-distance route grading its way across the civic
+pad. Now that routes stop at a capital's gate points, the pad is whole, and the
+bridge and the rail are gone with the gorge. The measurement that found it is
+kept as a gate, because the next terrain change that cuts a capital's pad should
+turn a light red rather than become part of the architecture.
+
+Where a capital's four districts cannot be four quarters — because the water
+takes one of them in every world — the districts are **pinned to the ground that
+exists** instead of being shuffled between the quarters by the world seed, and
+the count per district follows the ground: Kezamba's are nine, nine, eleven and
+seven plots, thirty-six in all, with the same sixteen fill dressings every
+capital has.
+
 Shipped behaviour of that first roster: each start's eleven NPCs are placed once
 its area is prepared at server start, from the sockets alone, and stay for the
 life of the world. Two faction guards hold their authored gate posts, returning
