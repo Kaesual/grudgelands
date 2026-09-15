@@ -772,8 +772,45 @@ return function(repo)
 		end
 	end
 	assert(found_throne, "the king socket is not at the throne")
-	-- and the throne is inside the hall's own landmark box.
+	-- ... and the king SITS THE RIGHT WAY ROUND. Playtest round 1 found the
+	-- backrest between the king and his hall. Both nodes the throne role can
+	-- bind carry their back on their own +Z side -- the chair's posts and back
+	-- panel, a stair-seat's raised half -- and a facedir node's +Z side looks
+	-- along `facedir_to_dir(param2)`, so the seat looks the OTHER way. Derived
+	-- from FACEDIR_DIR here rather than from `parts.seat`'s `(face + 2) % 4`,
+	-- which is the arithmetic under test, and compared against the king
+	-- socket's own facing so the two cannot drift apart.
+	local throne_cell
+	for dz = -2, 2 do
+		for dx = -1, 1 do
+			local cell = core_result.at(king.x + dx, king.y, king.z + dz)
+			if cell and cell.name == THRONE then throne_cell = cell end
+		end
+	end
+	assert(throne_cell, "the throne is not a cell of the core")
+	local back = assert(FACEDIR_DIR[throne_cell.param2],
+		"the throne carries a param2 outside the upright facedir family")
+	-- `0 - 0` is a NEGATIVE zero in a double and prints as "-0", which would put
+	-- a byte in the report that means nothing; the cardinal directions are the
+	-- only values here, so flip the sign only where there is one.
+	local function opposite(value) return value == 0 and 0 or -value end
+	local look = {opposite(back[1]), opposite(back[2])}
+	local king_look = assert(FACEDIR_DIR[king.face],
+		"the king socket carries a param2 outside the upright facedir family")
+	assert(look[1] == king_look[1] and look[2] == king_look[2],
+		"the throne looks " .. look[1] .. "," .. look[2] ..
+			" while the king it seats looks " .. king_look[1] .. "," ..
+			king_look[2])
+	-- And that shared direction is DOWN THE APPROACH: the great door is the
+	-- low-z end of the hall, so both must look at -z.
 	local hall = assert(core.landmarks.kings_hall)
+	assert(look[1] == 0 and look[2] == -1,
+		"the throne does not look at the great door")
+	assert(throne_cell.z > hall.min.z and throne_cell.z <= hall.max.z,
+		"the throne is not at the far end of its own hall")
+	say("highcourt_throne", throne_cell.param2, king.face,
+		look[1] .. "," .. look[2], "great_door")
+	-- ... and the throne is inside the hall's own landmark box.
 	assert(king.x >= hall.min.x and king.x <= hall.max.x and
 		king.z >= hall.min.z and king.z <= hall.max.z,
 		"the king socket is outside the king's hall")

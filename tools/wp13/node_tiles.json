@@ -2442,11 +2442,11 @@
   "grug_decor:xdecor_chair": {
    "drawtype": "nodebox",
    "paramtype2": "facedir",
+   "shape": "chair",
    "source": "MANUAL_OVERRIDES",
    "tiles": [
     "grug_decor_xdecor_xdecor_wood.png"
-   ],
-   "shape": "nodebox"
+   ]
   },
   "grug_decor:xdecor_cobweb": {
    "drawtype": "plantlike",
