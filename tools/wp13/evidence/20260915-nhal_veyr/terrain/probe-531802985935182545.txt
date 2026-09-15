@@ -1,0 +1,1 @@
+ACTION[Main]: GRUG_WP13_CAPITAL event=complete mode=terrain engine=5.17.0 seed=531802985935182545 anchor=-1800,106,1500 legend=low:high:range:worst_step:worst_step_at:wet_columns line_west=72:118:46:2:245:0 line_east=69:121:52:3:-54:0 line_south=91:127:36:3:55:0 line_north=75:103:28:2:-262:0

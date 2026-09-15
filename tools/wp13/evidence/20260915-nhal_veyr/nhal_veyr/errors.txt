@@ -1,0 +1,4 @@
+/tmp/grug-w2-nhal3/full-531802985935182545/server.log: 2 error line(s), 2 of them the two unregistered wave-2 vendors
+/tmp/grug-w2-nhal3/full-8675309/server.log: 2 error line(s), 2 of them the two unregistered wave-2 vendors
+/tmp/grug-w2-nhal3/full-15912857179583385436/server.log: 2 error line(s), 2 of them the two unregistered wave-2 vendors
+every pass logs exactly the two predicted lines and nothing else

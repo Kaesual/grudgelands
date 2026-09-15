@@ -22,12 +22,15 @@
 -- envelope and its collar (`capital_probe`'s `grid_report`), which is what a
 -- capital that is not yet on the roster can be measured with -- Highcourt's
 -- own `field` dump is that capital's probe's and is not offered for any other.
--- Sampling every fourth column UNDERSTATES a relief: measured against the
--- 1-node wall lines of the same dumps, over the same 31-column window, by at
--- most ONE node anywhere on either gate seed. So this tool holds a lot to a
--- fall of 5 and a rise of 6 where the real limits are 6 and the plot's own
--- airspace clear of at least 8, and the margin it leaves is exactly that
--- error plus one.
+-- Sampling every fourth column UNDERSTATES a relief, and by how much is
+-- measured and not guessed: against the 1-node wall lines of the same dumps,
+-- over the same 31-column window at 464 window positions per seed, a FALL by
+-- at most one node and a RISE by at most two (`terrain/calibration.txt` of the
+-- evidence directory). So this tool holds a district lot to a fall of 5 and a
+-- rise of 6 where the real limits are 6 and the plot's own airspace clear of at
+-- least 8, and a fill lot to a rise of 5 because a yard plot clears the
+-- builder's floor of 8 and nothing more. Every margin is the measured error or
+-- better.
 --
 -- What decides in the end is the ENGINE: `run_capital.sh <out> nhal_veyr
 -- surface <seed>` measures every plot's perimeter, footprint and margin column

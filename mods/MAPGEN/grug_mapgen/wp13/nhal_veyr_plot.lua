@@ -105,17 +105,26 @@ local function loader(directory)
 		floor = "grug_decor:castle_pavement_brick",
 		ceiling = "grug_decor:castle_dungeon_stone",
 	}
-	-- And the roof to go over it. `grug_decor.register_shapes` gives dungeon
-	-- stone the four shapes the roof rasteriser needs (stair, inner, outer,
-	-- slab), which the palette's own obsidian-brick roof also has; the two
-	-- differ in colour, and a tomb roofed in the same brick as a cottage reads
-	-- as a big cottage, which is the defect Highcourt's slate fixed.
+	-- And the roof to go over it: DRESSED STONE BRICK, a mid grey.
+	--
+	-- Pale and not black, and that is a render's verdict rather than a taste.
+	-- The first version roofed a crypt in the same dungeon stone its walls are
+	-- built of and the mausoleum came out of the engine as one unbroken black
+	-- mass with a lantern on top -- the "big cottage" defect Highcourt's slate
+	-- fixed, in reverse. A grey lid over black walls is what makes a tomb read
+	-- as a tomb from the end of an avenue.
+	--
+	-- `stairs:` and not the castle kit's own shapes, and this is the second
+	-- thing the attempt taught: `grug_decor.register_shapes` gives its stairs
+	-- NO paramtype2, so `parts.put` refuses them outright -- a roof stair has
+	-- to carry a facedir or the rasteriser cannot turn it. The `stairs` mod's
+	-- families do, which is why every roof in this library comes from one.
 	M.VAULT = {
-		roof_stair = "grug_decor:castle_dungeon_stone_stair",
-		roof_stair_outer = "grug_decor:castle_dungeon_stone_stair_outer",
-		roof_stair_inner = "grug_decor:castle_dungeon_stone_stair_inner",
-		roof_slab = "grug_decor:castle_dungeon_stone_slab",
-		roof_ridge = "grug_decor:castle_dungeon_stone",
+		roof_stair = "stairs:stair_stonebrick",
+		roof_stair_outer = "stairs:stair_outer_stonebrick",
+		roof_stair_inner = "stairs:stair_inner_stonebrick",
+		roof_slab = "stairs:slab_stonebrick",
+		roof_ridge = "default:stonebrick",
 	}
 
 	local function merged(...)

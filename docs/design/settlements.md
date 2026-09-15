@@ -303,6 +303,26 @@ the count per district follows the ground: Kezamba's are nine, nine, eleven and
 seven plots, thirty-six in all, with the same sixteen fill dressings every
 capital has.
 
+**Nhal Veyr, the raised necropolis.** Shipped 2026-09-15, the third capital and
+the second walled one. It is the first capital whose FILL is not fields and
+gardens: where Highcourt has crop fields, an orchard belt and a pond, the undead
+capital has grave fields, bone yards, ruin closes and candle courts, and the
+turf between its civic quarters is a burial ground with gravewood stands in it.
+Its civic buildings are dungeon stone under a pale stone roof and everything a
+citizen built is gravewood board; its own two parts, which no other capital has,
+are a walk-in mausoleum on a stepped plinth and a candle court with an altar at
+its centre. Its curtain wall, its four districts, its lot grids and its seeded
+quadrant permutation are the mechanisms Dur Brannoc and Highcourt landed,
+unchanged.
+
+It is also the first capital to place the WAVE-2 activities of the NPC socket
+contract: its residents mourn at grave markers, pray at candles, tend the
+blight that grows over the graves, carve bone, brew wax, mine a quarry face,
+spar in the drill yards and forage the vines on a yard wall. Two of its six
+profession vendors — the embalmer and the herbalist — have no trader entity
+yet; the socket stands empty and the server logs one line, which is what the
+socket contract says an unregistered vendor kind does.
+
 Shipped behaviour of that first roster: each start's eleven NPCs are placed once
 its area is prepared at server start, from the sockets alone, and stay for the
 life of the world. Two faction guards hold their authored gate posts, returning
