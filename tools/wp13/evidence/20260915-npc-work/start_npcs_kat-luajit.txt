@@ -18,7 +18,7 @@ stuck_route	path_at_20	skip_at_45	quiet_after_3_lines	no_snap_in_sight	snap_out_
 noncombatant	declared	installed_on_activate	chained	all_2_defs_correct	prey_unchanged
 walker_split	residents_8	walkers_2	share_25.0	idle_a=true idle_b=false idle_c=false idle_d=false idle_e=false idle_f=true forge_work=false bench_work=false
 static_idle	still_after_150s	state_stand
-work	smith_work_anim	sit_anim	writes_1_in_120s	swing_7_in_30s	no_path	step_vetoed_120
+work	smith_work_anim	sit_anim	writes_1_in_120s	swing_7_in_30s	no_path	step_vetoed_120	home_at_9s_unwatched	resumed_when_watched
 animation	stand=0..79 walk=168..187 punch=189..198 work=189..198 sit=81..160	work_speed_10
 activities	smith=work/default:pick_bronze fish=stand/default:stick farm=work/default:shovel_stone chop=work/default:axe_stone tend=stand pray=stand stall=stand sit=sit sweep=walk
 tag_gate	elder=Vale Elder walker=Vale Dwarf work=Vale Dwarf	once_a_second

@@ -1001,6 +1001,18 @@ return function(repo)
 						"activity " .. socket.activity .. ": " .. where)
 					local levels = FEATURE_LEVELS[socket.activity] or
 						FEATURE_LEVELS_DEFAULT
+					--
+					-- THE SEARCH STOPS AT THE FIRST OBSTRUCTION, and that is
+					-- not a detail: without it a socket that stares at a tree
+					-- trunk one node away passes because there is grass behind
+					-- the trunk. Hearthpine's first `work_garden` was exactly
+					-- that, and it showed up in the engine as a resident that
+					-- could not walk home because the trunk was in the way.
+					-- The obstruction is tested at the socket's OWN course --
+					-- the cell a body would walk through -- and only after the
+					-- feature test at that reach, so a counter or an anvil is
+					-- still found at the reach it stands at.
+					--
 					local found
 					for reach = 1, FEATURE_REACH do
 						local x = socket.x + socket.dir.x * reach
@@ -1010,6 +1022,9 @@ return function(repo)
 							if found == nil and wanted[name] then
 								found = name .. "@" .. reach
 							end
+						end
+						if found ~= nil or solid(x, socket.y, z) then
+							break
 						end
 					end
 					assert(found ~= nil,

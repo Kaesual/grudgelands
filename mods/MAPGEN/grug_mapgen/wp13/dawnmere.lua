@@ -166,8 +166,11 @@ local function loader(directory)
 		-- somebody sitting out the afternoon on the green's bench walk. The
 		-- SMITHY is deliberately not one of them: its anvil stands inside the
 		-- room, and a socket is a standing position OUTSIDE every building.
+		-- IN the field, not on the lane outside it: the strips are fenced, so a
+		-- farmer standing on the cobble faces a rail rather than a furrow. This
+		-- stands on the first tilled row and works the one in front of it.
 		{id = "work_field", role = "work", activity = "farm", tags = {"work"},
-			x = 18, y = 1, z = 29, dir = {x = 0, z = 1}},
+			x = 18, y = 1, z = 31, dir = {x = 0, z = 1}},
 		{id = "work_green_seat", role = "work", activity = "sit",
 			tags = {"bench"}, x = -5, y = 1, z = 15, dir = {x = -1, z = 0}},
 		-- The elder stands ON the hall's doorstep, so its authored facing is

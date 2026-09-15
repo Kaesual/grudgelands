@@ -179,7 +179,7 @@ local function census_line(tag, strict, expect_live)
 	log({"event=census", "phase=" .. tag, "key=" .. settlement.key,
 		"roster=" .. roster, "marked=" .. marked, "live=" .. #npcs,
 		"twins=" .. twins, "spare=" .. spare,
-		"strict=" .. tostring(strict == true)})
+		"strict=" .. tostring(strict or false)})
 	-- R1. A SPARE SOCKET IS NEVER A HOME. Nothing may be booked on one, in any
 	-- phase, whatever the roster count happens to be.
 	if spare < 1 then
@@ -208,7 +208,31 @@ local function census_line(tag, strict, expect_live)
 				"is merely unloaded")
 		end
 	end
-	if strict then
+	--
+	-- `strict = "held"` is the form every phase AFTER the wolf pass must use,
+	-- and the reason is world.md section 4a rather than a weakening of the
+	-- test: a guard that loses its fight frees its socket with a respawn slot
+	-- of 180 to 360 seconds, so from that moment the settlement legitimately
+	-- holds fewer NPCs than its roster until the refill falls due -- and the
+	-- two reboots are on the same world and inherit the same owed slot. What
+	-- must still hold, and is what a real defect would break, is that every
+	-- marker has its NPC and nothing stands around without one, and that at
+	-- most as many sockets are owed as the probe placed hostiles.
+	--
+	-- The phases before the fight stay `strict = true`, which is the full
+	-- claim; there are seven of them.
+	--
+	if strict == "held" then
+		if #npcs ~= marked then
+			fail("phase " .. tag .. ": live=" .. #npcs ..
+				" differs from marked=" .. marked .. " (roster " .. roster ..
+				")")
+		end
+		if roster - marked > 2 then
+			fail("phase " .. tag .. ": " .. (roster - marked) ..
+				" sockets are owed a refill and the probe placed two hostiles")
+		end
+	elseif strict then
 		if #npcs ~= roster then
 			fail("phase " .. tag .. ": live=" .. #npcs .. " differs from " ..
 				"roster=" .. roster)
@@ -1046,7 +1070,7 @@ local FULL = {
 		if not back then
 			fail("the unloaded NPC did not come back with its mapblock")
 		end
-		local live = census_line("reloaded_npc", true)
+		local live = census_line("reloaded_npc", "held")
 		log({"event=unload_done", "socket=" .. tostring(unloaded_socket),
 			"live=" .. live})
 		log({"event=complete", "programme=full"})
@@ -1059,7 +1083,7 @@ local RELOAD = {
 		log({"event=forceload", "blocks=" .. forceload_area(settlement.anchor)})
 	end},
 	{at = 20, what = function()
-		census_line("reloaded", true)
+		census_line("reloaded", "held")
 		hp_lines("reloaded")
 		positions_line()
 		-- A work resident has to come back onto its socket with its activity

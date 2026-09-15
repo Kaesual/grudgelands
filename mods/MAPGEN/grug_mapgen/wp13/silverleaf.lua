@@ -173,7 +173,7 @@ local function loader(directory)
 		-- A gardener at the court's planters, and a stall keeper at the covered
 		-- market's own slate counter.
 		{id = "work_planters", role = "work", activity = "tend",
-			tags = {"work"}, x = 9, y = 1, z = 10, dir = {x = 0, z = 1}},
+			tags = {"work"}, x = 4, y = 1, z = 11, dir = {x = 0, z = 1}},
 		{id = "work_market", role = "work", activity = "stall", tags = {"work"},
 			x = -33, y = 1, z = 5, dir = {x = 0, z = -1}},
 		-- `door`: the elder faces the hall door it stands at, and the consumer

@@ -131,8 +131,13 @@ local function loader(directory)
 		-- beside the workyard.
 		{id = "work_woodpile", role = "work", activity = "chop",
 			tags = {"work"}, x = -12, y = 1, z = -13, dir = {x = 0, z = -1}},
+		-- The tuft is the node in FRONT of the socket, not two nodes behind a
+		-- pine trunk: the first version of this socket stood at (-19, 14)
+		-- looking east at a trunk with grass behind it, which passed the
+		-- feature test until that test learned to stop at an obstruction, and
+		-- in the engine was a gardener who could not walk back to its own spot.
 		{id = "work_garden", role = "work", activity = "tend", tags = {"work"},
-			x = -19, y = 1, z = 14, dir = {x = 1, z = 0}},
+			x = -19, y = 1, z = 21, dir = {x = 1, z = 0}},
 		-- `door`: the elder faces the hall door it stands at, and the consumer
 		-- turns it round to the street (start_npcs.lua `socket_face_yaw`).
 		{id = "hall_quest", role = "quest", tags = {"door"}, x = -28, y = 1,

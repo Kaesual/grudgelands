@@ -174,11 +174,15 @@ local SWEEP_ARRIVED = 0.6
 -- squared distance per second, and a walk only in the rare case.
 --
 -- The last resort is patrol.lua's third stage, the out-of-sight snap (the
--- user's round-1 ruling: a teleport never happens where anyone can watch it),
--- with the same ninety seconds the guard post allows.
+-- user's round-1 ruling: a teleport never happens where anyone can watch it).
+-- It is keyed on the STALL clock -- thirty seconds without measurable progress
+-- toward home -- and not on the total, because the thing that stops a resident
+-- getting home is a tree or a fence it is pressed against, and a mob that
+-- oscillates around an obstacle makes progress often enough to keep resetting a
+-- total. Thirty seconds is also well inside the time a player takes to walk up.
 --
 local WORK_SLACK = 1.2
-local WORK_STALL_SNAP = 90
+local WORK_STALL_SNAP = 30
 -- Seconds of no measurable progress toward a spot after which the villager
 -- gives that spot up and takes another (patrol.lua's stall clock). Short,
 -- because the usual obstacle is another villager and the usual fix is to go
@@ -597,9 +601,9 @@ local function work_tick(self, dtime)
 		local dx = (home_x or pos.x) - pos.x
 		local dz = (home_z or pos.z) - pos.z
 		if dx * dx + dz * dz > WORK_SLACK * WORK_SLACK then
-			local _, total = grug_mobs.stall_clock(self, home_x, home_z, pos,
+			local stalled = grug_mobs.stall_clock(self, home_x, home_z, pos,
 				elapsed)
-			if total >= WORK_STALL_SNAP and
+			if stalled >= WORK_STALL_SNAP and
 					grug_mobs.snap_try(self, pos, home_x, home_z, elapsed) then
 				return false
 			end
