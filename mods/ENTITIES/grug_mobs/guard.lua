@@ -59,7 +59,11 @@
 --     does not butcher rabbits.
 --   * attack_npcs = false: never guard vs. guard, not even across factions.
 --     (Enemy guards ignoring each other is a deliberate simplification for
---     the MVP; NPC-vs-NPC war would need its own design pass.)
+--     the MVP; NPC-vs-NPC war would need its own design pass.) Since the
+--     2026-09-15 playtest this is no longer a per-def choice at all --
+--     `grug_mobs.register_mob` applies it to EVERY mob (verbs.lua's
+--     `no_npc_targets`, world.md §4) and the field is kept here only because
+--     this def is where the rule is documented.
 --   * owner stays "" — nobody owns a guard, and mobs_redo's owner checks
 --     (general_attack, follow) must never match a real player name.
 --
@@ -97,7 +101,10 @@ local function guard_tick(self, dtime)
 	if self._grug_start and not self.temp.grug_socket_claimed then
 		self.temp.grug_socket_claimed = true
 		if not grug_mobs.start_npc_claim(self) then
-			return
+			-- FALSE, not nil: mobs_redo's on_step returns as soon as do_custom
+			-- answers false (api.lua "run custom function"), which is how a mob
+			-- that has just removed itself skips the rest of its own step.
+			return false
 		end
 	end
 	-- Ambient outpost patrol (world.md §4). Only the camp's designated

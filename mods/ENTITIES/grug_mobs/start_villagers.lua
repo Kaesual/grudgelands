@@ -301,7 +301,10 @@ local function amble_tick(self, dtime)
 	-- place, and nothing below may run for a mob that has just been removed.
 	if not temp.grug_socket_claimed then
 		temp.grug_socket_claimed = true
-		if not grug_mobs.start_npc_claim(self) then return end
+		-- FALSE, not nil: mobs_redo's on_step returns as soon as do_custom
+		-- answers false, which is how a mob that has just removed itself skips
+		-- the rest of its own step.
+		if not grug_mobs.start_npc_claim(self) then return false end
 	end
 	local spots = self._grug_idle_spots
 	if type(spots) ~= "table" or #spots == 0 then return end
