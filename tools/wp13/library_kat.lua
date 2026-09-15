@@ -580,7 +580,17 @@ return function(repo)
 	-- THOSE, name by name and cell by cell, against the registrations loaded
 	-- in section 3. The roster is the R7 settlement roster, so a start added
 	-- to the game is checked here without a second line.
-	local roster = settlement.roster
+	-- The STARTS of the R7 settlement roster. Every row of that roster whose
+	-- slot is "start" owns exactly one anchor-relative blueprint in the shape
+	-- this section reads, so a start added to the game is checked here without a
+	-- second line. A capital owns several blueprints of three kinds and is
+	-- checked by `tools/wp13/highcourt_kat.lua`, which knows what a core, a
+	-- terrain-relative plot and a surface overlay are.
+	local roster = {}
+	for index = 1, #settlement.roster do
+		local profile = settlement.roster[index]
+		if profile.slot == "start" then roster[#roster + 1] = profile end
+	end
 	assert(#roster >= 2, "the settlement roster lost a start")
 	-- Coverage of `update_pane`'s connected branch is a property of the
 	-- CORPUS, not of every start. A pane turns into the connected node only

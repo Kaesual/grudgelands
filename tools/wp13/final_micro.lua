@@ -33,6 +33,10 @@ local rows = {}
 rows[#rows + 1] = dofile(repo .. "/tools/wp13/library_kat.lua")(repo)
 rows[#rows + 1] = dofile(repo .. "/tools/wp13/blueprint_kat.lua")(repo)
 rows[#rows + 1] = dofile(repo .. "/tools/wp13/highcourt_kat.lua")(repo)
+-- The settlement seam itself: roster-derived manifest order, bounds per slot,
+-- several blueprints per settlement, the terrain-relative projection against a
+-- stub height function, and lazy build/release (contract section 2.2).
+rows[#rows + 1] = dofile(repo .. "/tools/wp13/seam_kat.lua")(repo)
 rows[#rows + 1] = "wp13_integration\t" ..
 	dofile(repo .. "/tools/wp13/integration_fixture.lua")(repo) .. "\n"
 -- Last, and last on purpose: the socket-registry KAT drives real grug_core

@@ -132,25 +132,41 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			type(r6_module.new_authority) ~= "function" then
 		fail("R6 runtime constructor differs")
 	end
-	local r7_manifest_module = r7_manifest_factory(canonical, raw_sha256)
 	local r6_manifest = r7_r6_manifest()
 	local template_source = template_source_factory(core_api, schematic_directory,
 		wp40_directory .. "/../../../ITEMS/grug_trees/schematics")
-	-- Every WP13 start, in the fixed roster order, plus the sorted ASCII
-	-- union of their palettes: one opcode-37 content channel serves them all,
-	-- so a cell's content ref is an index into this union.
+	-- Every WP13 settlement, in the fixed roster order, plus the sorted ASCII
+	-- union of every blueprint's palette: one opcode-37 content channel serves
+	-- them all, so a cell's content ref is an index into this union.
+	--
+	-- `prepare` is where every blueprint is BUILT once and hashed. A lazy
+	-- settlement's cells are released again straight away (contract section
+	-- 2.2.4): what has to exist at load is the identity the manifest publishes
+	-- and the palette the channel is closed over, and neither of them is a
+	-- 100,000-cell buffer.
 	local settlements = {}
 	local settlement_palette, settlement_seen = {}, {}
+	local settlement_keys, settlement_order = {}, {}
 	for index = 1, #r7_settlement_module.roster do
 		local profile = r7_settlement_module.roster[index]
-		local blueprint = dofile(
-			wp40_directory .. "/" .. profile.blueprint_file)()
-		if type(blueprint) ~= "table" or type(blueprint.palette) ~= "table" then
-			fail("WP13 blueprint " .. profile.key .. " differs")
+		local source = dofile(wp40_directory .. "/" .. profile.blueprint_file)()
+		if type(source) == "function" then source = source() end
+		local prepared = r7_settlement_module.prepare(profile, source, raw_sha256)
+		settlements[index] = {profile = profile, prepared = prepared}
+		settlement_keys[index] = profile.key
+		local blueprints = {}
+		for blueprint_index = 1, #prepared.blueprints do
+			local blueprint = prepared.blueprints[blueprint_index]
+			blueprints[blueprint_index] = {id = blueprint.descriptor.id,
+				prefix = blueprint.descriptor.prefix,
+				kind = blueprint.descriptor.kind,
+				identity_schema = blueprint.descriptor.identity_schema,
+				bounds = blueprint.descriptor.bounds}
 		end
-		settlements[index] = {profile = profile, blueprint = blueprint}
-		for palette_index = 1, #blueprint.palette do
-			local name = blueprint.palette[palette_index]
+		settlement_order[index] = {key = profile.key, anchor_id = profile.anchor_id,
+			delta_schema = profile.delta_schema, blueprints = blueprints}
+		for palette_index = 1, #prepared.palette do
+			local name = prepared.palette[palette_index]
 			if not settlement_seen[name] then
 				settlement_seen[name] = true
 				settlement_palette[#settlement_palette + 1] = name
@@ -160,6 +176,11 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	-- Byte order, never Lua's locale-dependent `<`: `r7_content.lua` accepts
 	-- this union only if it is sorted the way IT compares names.
 	table.sort(settlement_palette, r7_settlement_module.less_bytes)
+	-- The manifest's field order and settlement order are derived from the
+	-- roster (contract section 2.2.2) and therefore constructed here, with the
+	-- roster in hand, not typed inside the manifest.
+	local r7_manifest_module = r7_manifest_factory(canonical, raw_sha256,
+		settlement_order)
 
 	local module = {}
 	local function build(native_identities, expected_manifest_sha256, evidence_mode,
@@ -180,13 +201,13 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		local settlement_configs, settlement_identities = {}, {}
 		for index = 1, #settlements do
 			local row = settlements[index]
-			local settlement_config = r7_settlement_module.config(row.profile,
-				row.blueprint, content_set.settlement, raw_sha256)
+			local settlement_config = r7_settlement_module.config(row.prepared,
+				content_set.settlement, raw_sha256)
 			settlement_configs[index] = settlement_config
 			settlement_identities[index] = {key = row.profile.key,
 				anchor_id = row.profile.anchor_id,
 				delta_schema = row.profile.delta_schema,
-				identity = settlement_config.identity}
+				blueprints = settlement_config.identities}
 		end
 		local cultural = catalog.cultural_registrations()
 		local gathering_manifest = catalog.manifest()
@@ -212,7 +233,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			local anchor_successor = r7_anchor_activation_factory(
 				r7_anchor_roster_factory, content_set.anchors)
 			successor = r7_successor_factory(p9g_successor, anchor_successor,
-				settlement_configs)
+				settlement_configs, settlement_keys)
 		end
 		local authored_source = dofile(wp40_directory .. "/source/catalog.lua")
 		local consumer_payload = consumer_payload_factory(source,
@@ -296,6 +317,10 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 				full_seed = full_seed, manifest = manifest,
 				zones_session = public_zones_session, content = content_set,
 				anchor_roster = anchor_roster, consumer_payload = consumer_payload,
+				-- The pure column query, published so the load-time socket export
+				-- can ask the final height of a district plot's reference column
+				-- with the same function the writer projects that plot with.
+				planner_source = r6_identity.planner_source,
 				mapgen_context = mapgen_context}
 		end
 		local direct_session, direct_fixture, direct_identity
@@ -371,19 +396,44 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			evidence = evidence}
 	end
 
-	-- The authored WP13 NPC sockets of every start, in roster order, with the
-	-- zone id their fitted start anchor answers under. Read off the
-	-- blueprints this factory already loaded: sockets are landmarks, not
-	-- identity bytes, so nothing here enters a digest, and a second
-	-- construction would cost six more compositions for pure landmark data.
-	function module.settlement_sockets()
+	-- The authored WP13 NPC sockets of every settlement, in roster order, with
+	-- the fitted anchor they are relative to. Read off the blueprints this
+	-- factory already prepared: sockets are landmarks, not identity bytes, so
+	-- nothing here enters a digest, and a second construction would cost every
+	-- composition again for pure landmark data.
+	--
+	-- `built` is what `build_authority` returned. A capital's district plots are
+	-- terrain-relative, so their sockets need the same pure final height the
+	-- writer projects them with; `r7_settlement.M.sockets` owns that
+	-- correction and this function only hands it the query.
+	function module.settlement_sockets(built)
+		if type(built) ~= "table" or type(built.zones_session) ~= "table" or
+				type(built.zones_session.anchor) ~= "function" or
+				type(built.planner_source) ~= "table" or
+				type(built.planner_source.column_values_at) ~= "function" then
+			fail("settlement socket authority differs")
+		end
+		local function height_at(x, z)
+			local _, _, _, _, _, terrain_y =
+				built.planner_source.column_values_at(x, z)
+			if type(terrain_y) ~= "number" or terrain_y % 1 ~= 0 then
+				fail("settlement socket column height differs")
+			end
+			return terrain_y
+		end
 		local rows = {}
 		for index = 1, #settlements do
 			local row = settlements[index]
-			local landmarks = row.blueprint.landmarks
-			rows[index] = {key = row.profile.key, race = row.profile.race,
-				zone_id = row.profile.zone_id,
-				sockets = type(landmarks) == "table" and landmarks.sockets or nil}
+			local profile = row.profile
+			local anchor = built.zones_session.anchor(profile.zone_id, profile.slot)
+			if type(anchor) ~= "table" or anchor.id ~= profile.anchor_id or
+					type(anchor.y) ~= "number" then
+				fail("settlement socket anchor differs: " .. profile.key)
+			end
+			rows[index] = {key = profile.key, race = profile.race,
+				slot = profile.slot, zone_id = profile.zone_id, anchor = anchor,
+				sockets = r7_settlement_module.sockets(row.prepared, anchor,
+					height_at)}
 		end
 		return rows
 	end

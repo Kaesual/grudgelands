@@ -310,39 +310,96 @@ end
 --
 -- Placement
 --
--- Two slots per race capital. R7's stable capital anchor is the only origin;
--- there is no retired platform state, discovery or height fallback.
+-- SOCKET IF REGISTERED, OFFSET OTHERWISE (docs/research/wp13-npc-sockets-
+-- contract.md section 3: "the two vendor offsets in `vendors.lua` migrate to
+-- `vendor` sockets at that moment and not before").
 --
+-- A capital whose core has landed exports two `vendor` sockets, and the one
+-- placement engine that serves settlement sockets -- `grug_mobs/start_npcs.lua`
+-- -- puts the two traders on them, through the `vendor` role resolver at the
+-- bottom of this file. This mod then owns NO slot for that capital at all, or
+-- the two mechanisms would both place a trader and the capital would end up
+-- with four.
+--
+-- A capital whose core has NOT landed keeps the two fixed offsets below and the
+-- globalstep that serves them, which is the whole of the pre-WP13 behaviour.
+-- R7's stable capital anchor is the only origin in either case; there is no
+-- retired platform state, discovery or height fallback.
+--
+-- Which capitals have sockets is read from the registry, not from a list of
+-- capital names: a settlement is registered under a key this mod does not know,
+-- so what identifies a race's capital is its published capital ANCHOR, the same
+-- authority the offsets are measured from.
 local SLOT_OFFSETS = {
 	general = {x = -5, z = 3},
 	race = {x = 5, z = 3},
 }
 
 local slots = {}
-for _, race_id in ipairs(race_ids) do
-	local race = grug_classes.registered_races[race_id]
-	if not race then error("grug_traders: race registry differs: " .. race_id, 0) end
-	local capital = grug_core.capital_anchor(race.faction, race_id)
-	if type(capital) ~= "table" or type(capital.x) ~= "number" or
-			type(capital.y) ~= "number" or type(capital.z) ~= "number" then
-		error("grug_traders: capital authority differs: " .. race_id, 0)
+
+local function socketed_capitals()
+	local socketed = {}
+	if type(grug_core.settlement_socket_settlements) ~= "function" then
+		return socketed
 	end
-	slots[#slots + 1] = {
-		entity = "grug_traders:vendor_general_" .. race.faction,
-		race = race_id,
-		x = capital.x + SLOT_OFFSETS.general.x,
-		y = capital.y + 1,
-		z = capital.z + SLOT_OFFSETS.general.z,
-	}
-	slots[#slots + 1] = {
-		entity = "grug_traders:vendor_race_" .. race_id,
-		race = race_id,
-		x = capital.x + SLOT_OFFSETS.race.x,
-		y = capital.y + 1,
-		z = capital.z + SLOT_OFFSETS.race.z,
-	}
+	local settlements = grug_core.settlement_socket_settlements()
+	for index = 1, #settlements do
+		local record = settlements[index]
+		local race = grug_classes.registered_races[record.race_id]
+		local capital = race and grug_core.capital_anchor(race.faction,
+			record.race_id) or nil
+		if type(capital) == "table" and record.anchor.x == capital.x and
+				record.anchor.y == capital.y and record.anchor.z == capital.z then
+			local vendors = 0
+			local sockets = grug_core.settlement_sockets_at(record.key)
+			for socket_index = 1, #sockets do
+				if sockets[socket_index].role == "vendor" then vendors = vendors + 1 end
+			end
+			if vendors > 0 then socketed[record.race_id] = record.key end
+		end
+	end
+	return socketed
 end
-if #slots ~= 12 then error("grug_traders: capital slot population differs", 0) end
+
+-- Built after every mod has loaded, because that is when grug_mapgen has
+-- published its socket sets; before then the registry is legitimately empty and
+-- this mod would give every capital the offsets.
+local function build_slots()
+	local socketed = socketed_capitals()
+	local offset_races = 0
+	for _, race_id in ipairs(race_ids) do
+		local race = grug_classes.registered_races[race_id]
+		if not race then error("grug_traders: race registry differs: " .. race_id, 0) end
+		local capital = grug_core.capital_anchor(race.faction, race_id)
+		if type(capital) ~= "table" or type(capital.x) ~= "number" or
+				type(capital.y) ~= "number" or type(capital.z) ~= "number" then
+			error("grug_traders: capital authority differs: " .. race_id, 0)
+		end
+		if socketed[race_id] then
+			core.log("action", "[grug_traders] " .. race_id ..
+				" capital vendors come from the sockets of " .. socketed[race_id])
+		else
+			offset_races = offset_races + 1
+			slots[#slots + 1] = {
+				entity = "grug_traders:vendor_general_" .. race.faction,
+				race = race_id,
+				x = capital.x + SLOT_OFFSETS.general.x,
+				y = capital.y + 1,
+				z = capital.z + SLOT_OFFSETS.general.z,
+			}
+			slots[#slots + 1] = {
+				entity = "grug_traders:vendor_race_" .. race_id,
+				race = race_id,
+				x = capital.x + SLOT_OFFSETS.race.x,
+				y = capital.y + 1,
+				z = capital.z + SLOT_OFFSETS.race.z,
+			}
+		end
+	end
+	if #slots ~= offset_races * 2 then
+		error("grug_traders: capital slot population differs", 0)
+	end
+end
 
 local CHECK_INTERVAL = 5 -- s (AGENTS.md performance rule: dtime accumulator)
 -- Only slots a player could actually see are checked — and the number is
@@ -456,29 +513,33 @@ end)
 -- re-fetched across any callback boundary).
 
 --
--- The start settlements (WP13)
+-- The socketed settlements (WP13)
 --
--- A capital's two vendors sit at the fixed offsets above; a START's vendor
--- stands on the `vendor` socket its blueprint exports
--- (docs/research/wp13-npc-sockets-contract.md). The socket says WHERE and of
--- which family, this mod says WHICH ENTITY, and `grug_mobs/start_npcs.lua`
--- owns the one placement engine that serves every start NPC -- including its
+-- A settlement's vendor stands on the `vendor` socket its blueprint exports
+-- (docs/research/wp13-npc-sockets-contract.md), whether that settlement is a
+-- start or a capital whose core has landed. The socket says WHERE and of which
+-- family, this mod says WHICH ENTITY, and `grug_mobs/start_npcs.lua` owns the
+-- one placement engine that serves every settlement NPC -- including its
 -- persistence, which must survive a restart in which no player is anywhere
 -- near the settlement and therefore cannot be a presence scan (see that
--- file's header). The capital offsets, their globalstep and their presence
--- gate above are deliberately untouched: the contract migrates them to
--- `vendor` sockets when the capital core lands, and not before.
+-- file's header). The offsets and the globalstep above serve exactly the
+-- capitals whose core has not landed yet.
 --
 if type(grug_mobs.register_start_socket_role) == "function" then
-	grug_mobs.register_start_socket_role("vendor", function(socket, start)
+	grug_mobs.register_start_socket_role("vendor", function(socket, settlement)
 		if socket.kind == "general" then
-			return "grug_traders:vendor_general_" .. start.faction_id
+			return "grug_traders:vendor_general_" .. settlement.faction_id
 		end
 		-- The race-exclusive vendor of world.md §7 -- the start roster's own
 		-- kind, and the same entity the race's capital gets.
-		return "grug_traders:vendor_race_" .. start.race_id
+		return "grug_traders:vendor_race_" .. settlement.race_id
 	end)
 else
-	core.log("error", "[grug_traders] grug_mobs offers no start socket role " ..
-		"registry; the start settlements get no vendor")
+	core.log("error", "[grug_traders] grug_mobs offers no settlement socket role " ..
+		"registry; the settlements get no vendor")
 end
+
+-- Last: the capital slots this mod still owns itself, which is every capital
+-- whose core has not landed. It has to run after grug_mapgen published its
+-- socket sets, and `register_on_mods_loaded` is where that is guaranteed.
+core.register_on_mods_loaded(build_slots)

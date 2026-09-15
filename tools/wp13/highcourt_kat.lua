@@ -37,6 +37,7 @@ return function(repo)
 	local palettes = dofile(wp13 .. "/palette.lua")
 	local avenue = dofile(wp13 .. "/avenue.lua")(wp13)
 	local highcourt = dofile(wp13 .. "/highcourt.lua")(wp13)
+	local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 	local registry = dofile(repo .. "/tools/wp13/stub_registry.lua")
 	local world = registry.load(repo)
 
@@ -127,6 +128,12 @@ return function(repo)
 	for _, role in ipairs({"light_wall", "light_post", "light_indoor"}) do
 		LIGHT[human.node(role)] = true
 	end
+	-- What a lamp standard may NOT stand on. The road writes none of these, so
+	-- the set is the engine's water families rather than a palette role.
+	local LIQUID = {["default:water_source"] = true,
+		["default:water_flowing"] = true,
+		["default:river_water_source"] = true,
+		["default:river_water_flowing"] = true}
 	local LEAF = {}
 	for _, name in ipairs(human.names("door")) do LEAF[name] = true end
 	local HIDDEN = human.node("door_hidden")
@@ -1169,6 +1176,21 @@ return function(repo)
 			"a lamp is not carried on its own column's surface")
 		assert(LIGHT[index[lamp.x .. ":" .. lamp.y .. ":" .. lamp.z].name],
 			"a lamp landmark is not a light")
+		-- EVERY STANDARD STANDS ON ITS OWN FOOTING, written by the run itself.
+		-- On ordinary ground the world's own terrain is under the post and the
+		-- footing is a paving stone; over water it is the only thing there.
+		-- Highcourt's east avenue crosses a river as a causeway, and sixteen
+		-- standards stood in it before this rule, so the run may not rely on
+		-- the world having put something under the verge.
+		local base = index[lamp.x .. ":" .. (lamp.y - 3) .. ":" .. lamp.z]
+		assert(base, "a lamp standard has no footing of its own at " ..
+			lamp.x .. "," .. (lamp.y - 3) .. "," .. lamp.z ..
+			"; over water it would stand on nothing")
+		assert(base.name ~= parts.AIR and not LIQUID[base.name],
+			"a lamp standard's footing is " .. base.name)
+		local shaft = index[lamp.x .. ":" .. (lamp.y - 1) .. ":" .. lamp.z]
+		assert(shaft and shaft.name == human.node("post"),
+			"a lamp standard has no shaft under its light")
 		lamp_columns[lamp.x] = (lamp_columns[lamp.x] or 0) + 1
 	end
 	local spacing_ok = 0
@@ -1339,6 +1361,68 @@ return function(repo)
 
 	say("highcourt_avenue", #run.cells, run.pavement, run.treads, run.risers,
 		#run.lamps, run.queries, climbs, runs, #PROFILES, splits, split_cells)
+
+	-- 3b. the BUILT GEOMETRY of the two real runs, digested
+	--
+	-- Everything above tests the overlay's PROPERTIES. Nothing hashed its
+	-- output, and nothing else in the tree does either: the seam publishes the
+	-- overlay's identity from its SPECIFICATION (it has no cells until a
+	-- surface arrives), and the six-start engine gate excludes capitals by
+	-- construction. So a change to `avenue.run` could move every node of every
+	-- capital road and no gate would say a word.
+	--
+	-- This is that gate. Two of Highcourt's own runs -- the east avenue and the
+	-- north one, one per axis -- are built over ONE synthetic profile that
+	-- carries every feature the real ground has (terraces of each race step, a
+	-- flat reach, and a stretch below a water line so the causeway and its lamp
+	-- footings are in the digest), and the cell list is hashed. The profile is
+	-- deterministic and interpreter-independent, so the two interpreters of the
+	-- final micro pair agree on the value, and the engine pass digests the SAME
+	-- runs as actually built in terrain (`run_highcourt.sh`).
+	local function reference_profile(x, z)
+		-- Terraces of 2, 3 and 4 over the run, a flat middle, and a basin that
+		-- the walkable surface floors at the water line, which is how the
+		-- successor hands a river to the overlay.
+		local WATER = 12
+		local ground
+		if x < -160 then ground = 30 - 2 * math.floor((x + 256) / 24)
+		elseif x < -60 then ground = 10 + 3 * math.floor((x + 160) / 20)
+		elseif x < 40 then ground = 8
+		else ground = 8 + 4 * math.floor((x - 40) / 30) end
+		-- One node of cross fall, so the five lanes do not share a profile.
+		if z > 0 then ground = ground - 1 end
+		if ground < WATER then return WATER end
+		return ground
+	end
+	local digest_rows = {}
+	local digest_runs = 0
+	for _, spec in ipairs({highcourt.avenues[4], highcourt.avenues[2]}) do
+		local built = avenue.run(human, {id = spec.id, axis = spec.axis,
+			at = spec.at, from = spec.from, to = spec.to},
+			reference_profile)
+		digest_runs = digest_runs + 1
+		digest_rows[#digest_rows + 1] = spec.id .. "/" .. #built.cells
+		for _, cell in ipairs(built.cells) do
+			digest_rows[#digest_rows + 1] = table.concat({cell.x, cell.y, cell.z,
+				cell.name, cell.param2 or 0}, ":")
+		end
+		-- And on this profile every standard's footing is written by the run,
+		-- which is what the causeway needs and the bare terrain does not care
+		-- about.
+		local built_index = {}
+		for _, cell in ipairs(built.cells) do
+			built_index[cell.x .. ":" .. cell.y .. ":" .. cell.z] = cell
+		end
+		for _, lamp in ipairs(built.lamps) do
+			local base = built_index[lamp.x .. ":" .. (lamp.y - 3) .. ":" .. lamp.z]
+			assert(base and base.name ~= parts.AIR and not LIQUID[base.name],
+				"a standard of " .. spec.id .. " has no footing at " .. lamp.x ..
+					"," .. lamp.z)
+		end
+	end
+	assert(digest_runs == 2, "the built-geometry digest lost a run")
+	say("highcourt_avenue_built", digest_runs,
+		common.hex(common.new_sha256()(table.concat(digest_rows, "\n"))))
 
 	return table.concat(report)
 end

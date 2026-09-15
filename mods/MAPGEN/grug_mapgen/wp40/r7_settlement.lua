@@ -1,35 +1,100 @@
--- The WP13 start settlements. One pure successor per settlement clips its
--- fixed blueprint to the current mapchunk owner and mutates bytes only
--- through R7's private writer.
+-- The WP13 settlements. One pure successor per settlement clips its
+-- blueprints to the current mapchunk owner and mutates bytes only through
+-- R7's private writer.
 --
 -- The first increment hard-wired Hearthpine Vale into this file. From the
--- fourth increment on the same code serves every start: a settlement is a
--- profile in `M.roster` (zone, anchor identity, blueprint file and the schema
--- strings its identity, ledger and metrics carry) plus a blueprint, and
--- `M.config(profile, blueprint, content, raw_sha256)` returns the successor
--- configuration the R7 successor composes. Hearthpine keeps every schema
--- string and every identity byte it had, so its blueprint identity SHA-256 is
--- unchanged by the generalisation.
+-- fourth increment on the same code served every START: a settlement was a
+-- profile in `M.roster` plus one blueprint. This increment generalises that
+-- seam to the capitals of `docs/research/wp13-capitals-pois-contract.md`
+-- section 2.2, and the four things it adds are the whole of that section:
+--
+--   1. A profile carries its `slot` (the anchor slot the zone session
+--      resolves) and its BOUNDS, so the literal +-63 / y -2..24 of the start
+--      is now the start profile's own value in `M.BOUNDS` and a capital core
+--      or district plot carries its own. The three places that literal used
+--      to be typed -- the bounds check, the per-cell range and the manifest's
+--      identity row -- all read it from here now.
+--   2. A settlement may own SEVERAL BLUEPRINTS. `M.prepare` turns whatever
+--      the profile's blueprint file returns into an ordered list of blueprint
+--      descriptors, each with its own identity SHA-256, and the manifest
+--      publishes one identity block per descriptor in that order.
+--   3. A blueprint is one of three KINDS, and the kind is what decides how
+--      its cells reach the world:
+--        "anchor"    -- anchor-relative, exactly like a start: the cell at
+--                       local y = 0 lands on the settlement's fitted anchor.
+--        "reference" -- terrain-relative: the descriptor carries the plot's
+--                       offset from the anchor and the plot carries its own
+--                       REFERENCE COLUMN, whose pure final height is asked
+--                       ONCE per session and cached. A capital's district
+--                       plots stand on terraced ground and cannot be
+--                       anchor-relative.
+--        "overlay"   -- no cells at all until a surface is handed to it: the
+--                       avenues are a pure function of the plan's own column
+--                       surface, evaluated per mapchunk (`wp13/avenue.lua`).
+--      An overlay's identity is therefore its SPECIFICATION -- the runs, the
+--      carriageway width, the lamp rhythm, the look-around and the exact set
+--      of node names it may write -- because it has no cells to hash.
+--   4. LAZY CONSTRUCTION. A profile marked `lazy` keeps no cells at all until
+--      the first `bind_plan` whose mapchunk touches the blueprint's envelope,
+--      and drops them again once `IDLE_RELEASE` consecutive plans have
+--      touched nothing of it. Identity is NOT lazy: the manifest is a closed
+--      document, so every blueprint is built once at load, hashed, and its
+--      cells released. What lazy construction hides is the 100,000-cell
+--      buffer, not the digest. Starts stay eager: they are small and the
+--      spawn depends on them.
+--
+-- Hearthpine keeps every schema string and every identity byte it had, so its
+-- blueprint identity SHA-256 -- and every other start's -- is unchanged by the
+-- generalisation.
 --
 -- `content` is the ONE shared opcode-37 settlement content channel
 -- (`r7_content.lua`): a cell's `content_ref` indexes the sorted union of
--- every start's palette, not this blueprint's own palette.
+-- every settlement's palette, not this blueprint's own palette.
 --
 -- Plain Lua 5.1, no globals.
 
 local M = {}
 
+-- The authorized volume per blueprint kind (contract sections 2.1 and 2.2).
+-- The start's numbers are the literal the first four increments typed in
+-- three places; they are data now and nothing else changed about them.
+M.BOUNDS = {
+	start = {min = {x = -63, y = -2, z = -63}, max = {x = 63, y = 24, z = 63}},
+	capital_core = {min = {x = -47, y = -2, z = -47}, max = {x = 47, y = 40, z = 47}},
+	capital_plot = {min = {x = -15, y = -6, z = -15}, max = {x = 15, y = 24, z = 15}},
+	-- The avenues are the one blueprint that legitimately leaves the civic
+	-- core: they run to the gate stations at +-256. Their authorized volume is
+	-- therefore the capital's own HARD PROTECTION -- the 532-node square of
+	-- `source/simple_map.lua`'s `hard_capital_build_plus_apron_v1`, 266 either
+	-- side of the anchor. A road outside it would write mutable world, which is
+	-- what that protection exists to prevent, so the envelope and the
+	-- protection are deliberately the same number in one place.
+	capital_overlay = {min = {x = -266, y = -2, z = -266},
+		max = {x = 266, y = 40, z = 266}},
+}
+
+-- How many consecutive plans may miss a lazy settlement before its cells are
+-- released. A mapchunk is 80 nodes, so 64 plans is the emerge thread walking
+-- well clear of a 512-node capital envelope and not coming back; a player
+-- walking up and down one avenue never pays a rebuild.
+M.IDLE_RELEASE = 64
+
 -- Fixed order. The successor settles the roster in this order, and the
--- manifest publishes one identity block per row in the same order.
+-- manifest publishes one identity block per blueprint of each row in the same
+-- order.
 --
 -- `race` names the `palette.races` entry the composition builds from. It is
--- the ONE place a start is tied to a race, and `tools/wp13/library_kat.lua`
+-- the ONE place a settlement is tied to a race, and `tools/wp13/library_kat.lua`
 -- reads it to check a start's window vocabulary and its ground cover against
 -- that race's palette alone instead of guessing from the node names, which
 -- can match two races at once.
+--
+-- `slot` is the anchor slot the zone session answers under, and `bounds` names
+-- the `M.BOUNDS` entry the settlement's primary blueprint is held to.
 M.roster = {
 	{
 		key = "hearthpine", label = "Hearthpine", race = "dwarf",
+		slot = "start", bounds = "start",
 		zone_id = "elandor_hearthpine_vale",
 		anchor_id = "anchor_001", numeric_id = 1, x = -1800, z = -2550,
 		blueprint_file = "r7_hearthpine_blueprint.lua",
@@ -42,6 +107,7 @@ M.roster = {
 	},
 	{
 		key = "dawnmere", label = "Dawnmere", race = "human",
+		slot = "start", bounds = "start",
 		zone_id = "elandor_dawnmere_fields",
 		anchor_id = "anchor_002", numeric_id = 2, x = 0, z = -2550,
 		blueprint_file = "r7_dawnmere_blueprint.lua",
@@ -54,6 +120,7 @@ M.roster = {
 	},
 	{
 		key = "silverleaf", label = "Silverleaf", race = "elf",
+		slot = "start", bounds = "start",
 		zone_id = "elandor_silverleaf_glades",
 		anchor_id = "anchor_003", numeric_id = 3, x = 1800, z = -2550,
 		blueprint_file = "r7_silverleaf_blueprint.lua",
@@ -66,6 +133,7 @@ M.roster = {
 	},
 	{
 		key = "stillgrave", label = "Stillgrave", race = "undead",
+		slot = "start", bounds = "start",
 		zone_id = "kragmar_stillgrave_hollow",
 		anchor_id = "anchor_004", numeric_id = 4, x = -1800, z = 2550,
 		blueprint_file = "r7_stillgrave_blueprint.lua",
@@ -78,6 +146,7 @@ M.roster = {
 	},
 	{
 		key = "sunscar", label = "Sunscar", race = "orc",
+		slot = "start", bounds = "start",
 		zone_id = "kragmar_sunscar_flats",
 		anchor_id = "anchor_005", numeric_id = 5, x = 0, z = 2550,
 		blueprint_file = "r7_sunscar_blueprint.lua",
@@ -90,6 +159,7 @@ M.roster = {
 	},
 	{
 		key = "kapok", label = "Kapok", race = "troll",
+		slot = "start", bounds = "start",
 		zone_id = "kragmar_kapok_cradle",
 		anchor_id = "anchor_006", numeric_id = 6, x = 1800, z = 2550,
 		blueprint_file = "r7_kapok_blueprint.lua",
@@ -99,6 +169,30 @@ M.roster = {
 		ledger_schema = "grug_wp13_kapok_ledger_v1",
 		metrics_schema = "grug_wp13_kapok_metrics_v1",
 		delta_schema = "grug_wp13_kapok_delta_v1",
+	},
+	-- The first capital (contract section 3, third increment): a core in the
+	-- start's shape, nine terrain-relative district plots and the avenue
+	-- overlay, built lazily. `plot_bounds` is the envelope every "reference"
+	-- blueprint of this settlement is held to.
+	{
+		key = "highcourt", label = "Highcourt", race = "human",
+		slot = "capital", bounds = "capital_core", plot_bounds = "capital_plot",
+		lazy = true,
+		zone_id = "elandor_highcourt",
+		anchor_id = "anchor_008", numeric_id = 8, x = 0, z = -1500,
+		blueprint_file = "r7_highcourt_blueprint.lua",
+		blueprint_schema = "grug_wp13_highcourt_core_v1",
+		identity_schema = "grug_wp13_highcourt_core_identity_v1",
+		config_schema = "grug_wp13_highcourt_config_v1",
+		ledger_schema = "grug_wp13_highcourt_ledger_v1",
+		metrics_schema = "grug_wp13_highcourt_metrics_v1",
+		delta_schema = "grug_wp13_highcourt_delta_v1",
+		-- The guard banner the anchor writer puts at (x, y + 1, z) of every
+		-- capital anchor stands on this core's own paving, and the composition
+		-- has nothing but air in that cell, so the writer RESERVES it instead
+		-- of overwriting the banner with that air. See the settle loop for the
+		-- whole argument.
+		reserve_anchor_root = true,
 	},
 }
 
@@ -121,19 +215,371 @@ function M.less_bytes(left, right)
 	return #left < #right
 end
 
-local PROFILE_FIELDS = {"key", "label", "race", "zone_id", "anchor_id",
-	"numeric_id", "x", "z", "blueprint_file", "blueprint_schema",
+local PROFILE_FIELDS = {"key", "label", "race", "slot", "bounds", "zone_id",
+	"anchor_id", "numeric_id", "x", "z", "blueprint_file", "blueprint_schema",
 	"identity_schema", "config_schema", "ledger_schema", "metrics_schema",
 	"delta_schema"}
+local NUMBER_FIELDS = {numeric_id = true, x = true, z = true}
 
-function M.config(profile, blueprint, content, raw_sha256)
+-- Packed cell key. The duplicate-cell check used to build one string per
+-- cell; a 100,000-cell capital core would allocate 100,000 of them per
+-- construction for nothing but a set membership test (contract section
+-- 2.2.5: "buffers use packed integer keys, not string keys, for anything
+-- above the start size" -- and the start size pays the same price, so this is
+-- unconditional). Every blueprint bound is validated inside +-1023 first, so
+-- the packed value stays below 2^33 and is exact in a double.
+local PACK_BIAS, PACK_SPAN = 1024, 2048
+local function packed_key(x, y, z)
+	return ((x + PACK_BIAS) * PACK_SPAN + (y + PACK_BIAS)) * PACK_SPAN +
+		(z + PACK_BIAS)
+end
+
+-- The same idea for a WORLD column, which the avenue ground memo is keyed by.
+-- The map limit is 31007, so the biased coordinate stays below 65536 and the
+-- product below 2^32.
+local WORLD_BIAS, WORLD_SPAN = 31008, 65536
+local function column_key(x, z)
+	return (x + WORLD_BIAS) * WORLD_SPAN + (z + WORLD_BIAS)
+end
+
+-- And for a whole world cell: the column key times the vertical span plus the
+-- biased y. The map limit keeps every factor below 65536, so the product stays
+-- under 2^48 and is exact in a double.
+local function cell_key(x, y, z)
+	return column_key(x, z) * WORLD_SPAN + (y + WORLD_BIAS)
+end
+
+local function hex(bytes)
+	return (bytes:gsub(".", function(char)
+		return string.format("%02x", string.byte(char))
+	end))
+end
+
+local function integer_or_fail(fail, value, label, minimum, maximum)
+	if type(value) ~= "number" or value ~= value or value == math.huge or
+			value == -math.huge or value % 1 ~= 0 or
+			value < minimum or value > maximum then
+		fail(label .. " differs")
+	end
+	return value
+end
+
+-- One blueprint of a settlement: validate the authored composition, write its
+-- canonical identity bytes and return them together with the cells and the
+-- landmarks. Nothing here knows about content refs, which is what lets the
+-- identity be computed once at load and the cells be dropped again.
+local function prepare_cells(fail, descriptor, blueprint)
+	local bounds = descriptor.bounds
+	local function integer(value, label, minimum, maximum)
+		return integer_or_fail(fail, value, label, minimum, maximum)
+	end
+	if type(blueprint) ~= "table" or
+			blueprint.schema ~= descriptor.blueprint_schema or
+			type(blueprint.cells) ~= "table" or #blueprint.cells < 1 or
+			type(blueprint.bounds) ~= "table" or
+			type(blueprint.bounds.min) ~= "table" or
+			type(blueprint.bounds.max) ~= "table" or
+			type(blueprint.palette) ~= "table" or #blueprint.palette < 1 or
+			type(blueprint.landmarks) ~= "table" then
+		fail(descriptor.id .. ": construction seam differs")
+	end
+	local palette, palette_list = {}, {}
+	for index = 1, #blueprint.palette do
+		local name = blueprint.palette[index]
+		if type(name) ~= "string" or name == "" or palette[name] or
+				(index > 1 and
+					not M.less_bytes(blueprint.palette[index - 1], name)) then
+			fail(descriptor.id .. ": palette differs")
+		end
+		palette[name] = true
+		palette_list[index] = name
+	end
+	local minimum, maximum = blueprint.bounds.min, blueprint.bounds.max
+	for _, axis in ipairs({"x", "y", "z"}) do
+		integer(minimum[axis], "minimum " .. axis, -1023, 1023)
+		integer(maximum[axis], "maximum " .. axis, minimum[axis], 1023)
+	end
+	if minimum.x < bounds.min.x or maximum.x > bounds.max.x or
+			minimum.z < bounds.min.z or maximum.z > bounds.max.z or
+			minimum.y < bounds.min.y or maximum.y > bounds.max.y then
+		fail(descriptor.id .. ": blueprint bounds escape the authorized volume")
+	end
+	local cells, prior, seen, actual_min, actual_max = {}, nil, {}, {}, {}
+	local bytes = {"schema\t" .. descriptor.identity_schema .. "\n",
+		table.concat({"bounds", minimum.x, minimum.y, minimum.z,
+			maximum.x, maximum.y, maximum.z}, "\t") .. "\n"}
+	for index = 1, #palette_list do
+		bytes[#bytes + 1] = table.concat({"palette", index,
+			palette_list[index]}, "\t") .. "\n"
+	end
+	for index = 1, #blueprint.cells do
+		local cell = blueprint.cells[index]
+		if type(cell) ~= "table" then
+			fail(descriptor.id .. ": cell differs at " .. index)
+		end
+		local x = integer(cell.x, "cell x", bounds.min.x, bounds.max.x)
+		local y = integer(cell.y, "cell y", bounds.min.y, bounds.max.y)
+		local z = integer(cell.z, "cell z", bounds.min.z, bounds.max.z)
+		local param2 = integer(cell.param2, "cell param2", 0, 255)
+		if not palette[cell.name] then
+			fail(descriptor.id .. ": cell name is outside palette")
+		end
+		if prior and (z < prior.z or (z == prior.z and
+				(y < prior.y or (y == prior.y and x <= prior.x)))) then
+			fail(descriptor.id .. ": cells are not canonical z/y/x unique")
+		end
+		local key = packed_key(x, y, z)
+		if seen[key] then fail(descriptor.id .. ": duplicate cell") end
+		seen[key], prior = true, {x = x, y = y, z = z}
+		cells[index] = {x = x, y = y, z = z, param2 = param2, name = cell.name}
+		for _, axis in ipairs({"x", "y", "z"}) do
+			local value = cell[axis]
+			if actual_min[axis] == nil or value < actual_min[axis] then
+				actual_min[axis] = value
+			end
+			if actual_max[axis] == nil or value > actual_max[axis] then
+				actual_max[axis] = value
+			end
+		end
+		bytes[#bytes + 1] =
+			table.concat({"cell", x, y, z, cell.name, param2}, "\t") .. "\n"
+	end
+	for _, axis in ipairs({"x", "y", "z"}) do
+		if minimum[axis] ~= actual_min[axis] or maximum[axis] ~= actual_max[axis] then
+			fail(descriptor.id .. ": declared bounds differ on " .. axis)
+		end
+	end
+	local by_key = {}
+	for index = 1, #cells do
+		local cell = cells[index]
+		by_key[packed_key(cell.x, cell.y, cell.z)] = cell
+	end
+	local function cell_at(x, y, z)
+		return by_key[packed_key(x, y, z)]
+	end
+	-- An anchor-relative blueprint lands its local y = 0 on the fitted anchor
+	-- and its local y = 1 is where an entity stands. The anchor writer of
+	-- `r7_anchor_activation.lua` asserts exactly that -- solid support at the
+	-- anchor, an empty root above it -- so the rule is the same for a start's
+	-- spawn and for a capital core's arrival crossing.
+	if descriptor.kind == "anchor" then
+		local support = cell_at(0, 0, 0)
+		if not support or support.name == "air" then
+			fail(descriptor.id .. ": spawn support differs")
+		end
+		for y = 1, 3 do
+			local cell = cell_at(0, y, 0)
+			if not cell or cell.name ~= "air" then
+				fail(descriptor.id .. ": spawn clearance differs")
+			end
+		end
+	end
+	-- A terrain-relative plot levels to the final height of ONE column, and
+	-- that column has to be a column of the plot's own ground course, or the
+	-- projection is measured against terrain the plot does not stand on.
+	if descriptor.kind == "reference" then
+		local reference = blueprint.reference
+		if type(reference) ~= "table" then
+			fail(descriptor.id .. ": reference column differs")
+		end
+		integer(reference.x, "reference x", bounds.min.x, bounds.max.x)
+		integer(reference.z, "reference z", bounds.min.z, bounds.max.z)
+		local ground = cell_at(reference.x, 0, reference.z)
+		if not ground or ground.name == "air" then
+			fail(descriptor.id .. ": reference column has no ground course")
+		end
+	end
+	return {cells = cells, palette = palette_list, landmarks = blueprint.landmarks,
+		identity_bytes = table.concat(bytes),
+		bounds = {min = {x = minimum.x, y = minimum.y, z = minimum.z},
+			max = {x = maximum.x, y = maximum.y, z = maximum.z}},
+		reference = blueprint.reference}
+end
+
+-- The canonical identity bytes of an OVERLAY. An overlay has no cells until a
+-- surface is handed to it, so what is frozen is its specification: the runs in
+-- authored order, the carriageway, the lamp rhythm, the look-around and the
+-- exact set of node names a run may write. A change to any of them changes the
+-- road, and nothing else can.
+local function prepare_overlay(fail, descriptor, overlay)
+	if type(overlay) ~= "table" or overlay.schema ~= descriptor.blueprint_schema or
+			type(overlay.runs) ~= "table" or #overlay.runs < 1 or
+			type(overlay.run) ~= "function" or type(overlay.names) ~= "table" or
+			#overlay.names < 1 then
+		fail(descriptor.id .. ": overlay seam differs")
+	end
+	local function integer(value, label, minimum, maximum)
+		return integer_or_fail(fail, value, label, minimum, maximum)
+	end
+	integer(overlay.width, "overlay width", 3, 15)
+	integer(overlay.lamp_spacing, "overlay lamp spacing", 1, 64)
+	integer(overlay.reach, "overlay reach", 0, 256)
+	if overlay.width % 2 ~= 1 then
+		fail(descriptor.id .. ": overlay width is not an odd carriageway")
+	end
+	local bytes = {"schema\t" .. descriptor.identity_schema .. "\n",
+		table.concat({"carriageway", overlay.width, overlay.lamp_spacing,
+			overlay.reach}, "\t") .. "\n"}
+	local runs, seen = {}, {}
+	local half = (overlay.width - 1) / 2 + 1
+	local reach = {min = {x = 0, y = 0, z = 0}, max = {x = 0, y = 0, z = 0}}
+	local function stretch(min_x, max_x, min_z, max_z)
+		if min_x < reach.min.x then reach.min.x = min_x end
+		if max_x > reach.max.x then reach.max.x = max_x end
+		if min_z < reach.min.z then reach.min.z = min_z end
+		if max_z > reach.max.z then reach.max.z = max_z end
+	end
+	for index = 1, #overlay.runs do
+		local run = overlay.runs[index]
+		if type(run) ~= "table" or type(run.id) ~= "string" or run.id == "" or
+				seen[run.id] or (run.axis ~= "x" and run.axis ~= "z") then
+			fail(descriptor.id .. ": overlay run differs at " .. index)
+		end
+		seen[run.id] = true
+		integer(run.at, "run centre line", -1023, 1023)
+		integer(run.from, "run start", -1023, 1023)
+		integer(run.to, "run end", run.from, 1023)
+		if run.axis == "x" then
+			stretch(run.from, run.to, run.at - half, run.at + half)
+		else
+			stretch(run.at - half, run.at + half, run.from, run.to)
+		end
+		runs[index] = {id = run.id, axis = run.axis, at = run.at,
+			from = run.from, to = run.to}
+		bytes[#bytes + 1] = table.concat({"run", index, run.id, run.axis,
+			run.at, run.from, run.to}, "\t") .. "\n"
+	end
+	-- THE OVERLAY'S REACH, and the protection it has to stay inside.
+	--
+	-- The manifest used to publish the settlement's PRIMARY bounds for the
+	-- overlay -- the 96-node civic core -- while the road it describes runs out
+	-- to the gate stations at +-256 and writes tens of thousands of cells there.
+	-- That is not a box the identity row may claim. The real reach is computed
+	-- from the runs, and it is checked against the hard capital footprint of
+	-- `source/simple_map.lua` (`hard_capital_build_plus_apron_v1`, total width
+	-- 532, i.e. 266 either side of the anchor): a road outside it would write
+	-- mutable world, which is exactly what a capital's protection exists to
+	-- prevent.
+	if reach.min.x < descriptor.bounds.min.x or
+			reach.max.x > descriptor.bounds.max.x or
+			reach.min.z < descriptor.bounds.min.z or
+			reach.max.z > descriptor.bounds.max.z then
+		fail(descriptor.id ..
+			": an overlay run leaves the 532-node protected capital footprint")
+	end
+	-- The vertical reach is the settlement's own authorized volume: the road
+	-- follows the ground, and the ground of a capital envelope is inside it.
+	reach.min.y, reach.max.y = descriptor.bounds.min.y, descriptor.bounds.max.y
+	bytes[#bytes + 1] = table.concat({"reach", reach.min.x, reach.min.y,
+		reach.min.z, reach.max.x, reach.max.y, reach.max.z}, "\t") .. "\n"
+	local names = {}
+	for index = 1, #overlay.names do
+		local name = overlay.names[index]
+		if type(name) ~= "string" or name == "" or
+				(index > 1 and not M.less_bytes(overlay.names[index - 1], name)) then
+			fail(descriptor.id .. ": overlay palette differs")
+		end
+		names[index] = name
+		bytes[#bytes + 1] = table.concat({"palette", index, name}, "\t") .. "\n"
+	end
+	return {runs = runs, palette = names, identity_bytes = table.concat(bytes),
+		run = overlay.run, half = (overlay.width - 1) / 2,
+		lamp_spacing = overlay.lamp_spacing, reach = overlay.reach,
+		width = overlay.width, bounds = reach,
+		-- The count the identity is written from is a RUN count, not a cell
+		-- count: an overlay has no cells until a surface arrives, and the
+		-- manifest row says so rather than publishing an 8 that looks like one.
+		run_count = #runs}
+end
+
+local CAPITAL_SOURCE_SCHEMA = "grug_wp13_capital_source_v1"
+
+local function identity_schema_of(fail, blueprint_schema)
+	if type(blueprint_schema) ~= "string" or
+			not blueprint_schema:match("_v%d+$") then
+		fail("blueprint schema differs: " .. tostring(blueprint_schema))
+	end
+	return (blueprint_schema:gsub("_v(%d+)$", "_identity_v%1"))
+end
+
+-- `source` is what `dofile(profile.blueprint_file)()` returned: a blueprint
+-- table for a one-blueprint settlement, or a capital source declaring a core,
+-- a plot list and the avenue overlay. Returns the ordered blueprint
+-- descriptors; an identity schema is derived from the blueprint's own schema
+-- string, which is what keeps Hearthpine's
+-- `grug_wp13_hearthpine_blueprint_identity_v1` exactly where it was.
+function M.descriptors(profile, source)
+	local function fail(message)
+		error("WP13 " .. tostring(profile and profile.label) .. ": " .. message, 0)
+	end
+	local primary = M.BOUNDS[profile.bounds]
+	if type(primary) ~= "table" then fail("profile bounds differ") end
+	if type(source) ~= "table" then fail("blueprint source differs") end
+	local list, seen = {}, {}
+	local function add(descriptor)
+		if descriptor.identity_schema ~=
+				identity_schema_of(fail, descriptor.blueprint_schema) then
+			fail(descriptor.id .. ": identity schema differs")
+		end
+		if seen[descriptor.id] or seen[descriptor.prefix] then
+			fail(descriptor.id .. ": blueprint id or manifest prefix is not unique")
+		end
+		seen[descriptor.id], seen[descriptor.prefix] = true, true
+		list[#list + 1] = descriptor
+	end
+	if source.schema ~= CAPITAL_SOURCE_SCHEMA then
+		-- One blueprint, anchor-relative, under the settlement's own schema
+		-- strings and manifest field prefix. This is every start.
+		add({id = "blueprint", prefix = profile.key, kind = "anchor",
+			bounds = primary, blueprint_schema = profile.blueprint_schema,
+			identity_schema = profile.identity_schema,
+			build = function() return source end})
+		return list
+	end
+	local plot_bounds = M.BOUNDS[profile.plot_bounds]
+	if type(plot_bounds) ~= "table" then fail("profile plot bounds differ") end
+	if type(source.core) ~= "table" or type(source.core.build) ~= "function" or
+			source.core.schema ~= profile.blueprint_schema or
+			type(source.plots) ~= "table" or #source.plots < 1 or
+			type(source.overlay) ~= "table" then
+		fail("capital source differs")
+	end
+	add({id = "core", prefix = profile.key .. "_core", kind = "anchor",
+		bounds = primary, blueprint_schema = source.core.schema,
+		identity_schema = profile.identity_schema, build = source.core.build})
+	for index = 1, #source.plots do
+		local plot = source.plots[index]
+		if type(plot) ~= "table" or type(plot.id) ~= "string" or plot.id == "" or
+				type(plot.build) ~= "function" or type(plot.schema) ~= "string" then
+			fail("capital plot differs at " .. index)
+		end
+		integer_or_fail(fail, plot.x, "plot x", -1023, 1023)
+		integer_or_fail(fail, plot.z, "plot z", -1023, 1023)
+		add({id = "plot_" .. plot.id, plot_id = plot.id,
+			prefix = profile.key .. "_" .. plot.id, kind = "reference",
+			bounds = plot_bounds, blueprint_schema = plot.schema,
+			identity_schema = identity_schema_of(fail, plot.schema),
+			offset = {x = plot.x, z = plot.z}, build = plot.build})
+	end
+	local overlay_bounds = M.BOUNDS.capital_overlay
+	add({id = "avenue", prefix = profile.key .. "_avenue", kind = "overlay",
+		bounds = overlay_bounds, blueprint_schema = source.overlay.schema,
+		identity_schema = identity_schema_of(fail, source.overlay.schema),
+		overlay = source.overlay})
+	return list
+end
+
+-- Build every blueprint of a settlement once, hash it, and keep what is not
+-- a cell: the identity, the palette and the landmarks (the NPC sockets among
+-- them). The cells of a LAZY settlement are dropped here and rebuilt on the
+-- first mapchunk that touches the blueprint; an eager settlement keeps them.
+function M.prepare(profile, source, raw_sha256)
 	if type(profile) ~= "table" then
 		error("WP13 settlement: profile differs", 0)
 	end
 	for _, field in ipairs(PROFILE_FIELDS) do
 		local value = profile[field]
-		local wanted = (field == "numeric_id" or field == "x" or field == "z")
-			and "number" or "string"
+		local wanted = NUMBER_FIELDS[field] and "number" or "string"
 		if type(value) ~= wanted or (wanted == "string" and value == "") then
 			error("WP13 settlement: profile field " .. field .. " differs", 0)
 		end
@@ -141,153 +587,393 @@ function M.config(profile, blueprint, content, raw_sha256)
 	local function fail(message)
 		error("WP13 " .. profile.label .. ": " .. message, 0)
 	end
-	local function integer(value, label, minimum, maximum)
-		if type(value) ~= "number" or value ~= value or value == math.huge or
-				value == -math.huge or value % 1 ~= 0 or
-				value < minimum or value > maximum then
-			fail(label .. " differs")
+	if profile.lazy ~= nil and profile.lazy ~= true then fail("lazy flag differs") end
+	if profile.reserve_anchor_root ~= nil and
+			profile.reserve_anchor_root ~= true then
+		fail("anchor-root reservation differs")
+	end
+	if type(raw_sha256) ~= "function" then fail("SHA-256 seam differs") end
+	local descriptors = M.descriptors(profile, source)
+	local blueprints, union, seen = {}, {}, {}
+	for index = 1, #descriptors do
+		local descriptor = descriptors[index]
+		local prepared
+		if descriptor.kind == "overlay" then
+			prepared = prepare_overlay(fail, descriptor, descriptor.overlay)
+		else
+			prepared = prepare_cells(fail, descriptor, descriptor.build())
 		end
-		return value
+		local digest = raw_sha256(prepared.identity_bytes)
+		if type(digest) ~= "string" or #digest ~= 32 then
+			fail(descriptor.id .. ": SHA-256 seam differs")
+		end
+		local box = prepared.bounds or descriptor.bounds
+		prepared.identity = {schema = descriptor.identity_schema,
+			sha256 = hex(digest),
+			-- A blueprint with cells publishes its cell count; an OVERLAY has
+			-- none until a surface arrives, so it publishes the size of its
+			-- specification -- the number of runs -- under its own field name.
+			cell_count = prepared.cells and #prepared.cells or nil,
+			run_count = prepared.run_count,
+			min_x = box.min.x, min_y = box.min.y, min_z = box.min.z,
+			max_x = box.max.x, max_y = box.max.y, max_z = box.max.z}
+		prepared.identity_bytes = nil
+		prepared.descriptor = descriptor
+		if profile.lazy then prepared.cells = nil end
+		for palette_index = 1, #prepared.palette do
+			local name = prepared.palette[palette_index]
+			if not seen[name] then
+				seen[name] = true
+				union[#union + 1] = name
+			end
+		end
+		blueprints[index] = prepared
 	end
-	local function hex(bytes)
-		return (bytes:gsub(".", function(char)
-			return string.format("%02x", string.byte(char))
-		end))
+	table.sort(union, M.less_bytes)
+	return {schema = "grug_wp13_settlement_prepared_v1", profile = profile,
+		blueprints = blueprints, palette = union}
+end
+
+-- The NPC sockets of a prepared settlement, in blueprint order, ready for
+-- `grug_core.register_settlement_sockets`. A plot's sockets are
+-- PLOT-relative and TERRAIN-relative, so both corrections happen here and
+-- nowhere else: the plot's offset from the anchor, and the difference between
+-- the plot's own reference height and the settlement's fitted anchor height.
+-- `height_at(x, z)` is the pure final height of one column -- the same query
+-- the writer projects the plot's cells with.
+--
+-- A socket id is unique only within its own composition (a plot knows nothing
+-- of the plot next door), so a plot's ids are prefixed with the plot id.
+function M.sockets(prepared, anchor, height_at)
+	if type(prepared) ~= "table" or
+			prepared.schema ~= "grug_wp13_settlement_prepared_v1" then
+		error("WP13 settlement: prepared settlement differs", 0)
 	end
-	if type(blueprint) ~= "table" or
-			blueprint.schema ~= profile.blueprint_schema or
-			type(blueprint.cells) ~= "table" or #blueprint.cells < 1 or
-			type(blueprint.bounds) ~= "table" or
-			type(blueprint.bounds.min) ~= "table" or
-			type(blueprint.bounds.max) ~= "table" or
-			type(blueprint.palette) ~= "table" or #blueprint.palette < 1 or
-			type(blueprint.landmarks) ~= "table" or
-			type(content) ~= "table" or
+	local profile = prepared.profile
+	local function fail(message)
+		error("WP13 " .. profile.label .. " sockets: " .. message, 0)
+	end
+	if type(anchor) ~= "table" or type(anchor.x) ~= "number" or
+			type(anchor.y) ~= "number" or type(anchor.z) ~= "number" then
+		fail("anchor differs")
+	end
+	local rows = {}
+	for index = 1, #prepared.blueprints do
+		local blueprint = prepared.blueprints[index]
+		local descriptor = blueprint.descriptor
+		local landmarks = blueprint.landmarks
+		local sockets = type(landmarks) == "table" and landmarks.sockets or nil
+		if type(sockets) == "table" then
+			local dx, dy, dz, prefix = 0, 0, 0, ""
+			if descriptor.kind == "reference" then
+				if type(height_at) ~= "function" then fail("height seam differs") end
+				local reference = blueprint.reference
+				local base = height_at(anchor.x + descriptor.offset.x + reference.x,
+					anchor.z + descriptor.offset.z + reference.z)
+				if type(base) ~= "number" or base % 1 ~= 0 then
+					fail(descriptor.id .. ": reference height differs")
+				end
+				dx, dy, dz = descriptor.offset.x, base - anchor.y, descriptor.offset.z
+				prefix = descriptor.plot_id .. "/"
+			end
+			for socket_index = 1, #sockets do
+				local socket = sockets[socket_index]
+				if type(socket) ~= "table" or type(socket.id) ~= "string" then
+					fail(descriptor.id .. ": socket differs")
+				end
+				local row = {}
+				for key, value in pairs(socket) do row[key] = value end
+				row.id = prefix .. socket.id
+				row.x, row.y, row.z = socket.x + dx, socket.y + dy, socket.z + dz
+				rows[#rows + 1] = row
+			end
+		end
+	end
+	return rows
+end
+
+-- The successor configuration of one prepared settlement.
+function M.config(prepared, content, raw_sha256)
+	if type(prepared) ~= "table" or
+			prepared.schema ~= "grug_wp13_settlement_prepared_v1" then
+		error("WP13 settlement: prepared settlement differs", 0)
+	end
+	local profile = prepared.profile
+	local function fail(message)
+		error("WP13 " .. profile.label .. ": " .. message, 0)
+	end
+	if type(content) ~= "table" or
 			content.schema ~= "grug_wp13_settlement_content_v1" or
 			type(content.content_names) ~= "table" or
-			#content.content_names < #blueprint.palette or
+			#content.content_names < #prepared.palette or
 			type(content.resolve) ~= "function" or
 			type(content.content_ref) ~= "function" or
 			type(raw_sha256) ~= "function" then
 		fail("construction seam differs")
 	end
-	-- Every blueprint name resolves to one ref in the shared channel; the
-	-- blueprint's own palette stays sorted and duplicate free, which is what
-	-- the identity bytes below are written from.
-	local palette = {}
-	for index = 1, #blueprint.palette do
-		local name = blueprint.palette[index]
-		if type(name) ~= "string" or name == "" or palette[name] or
-				(index > 1 and
-					not M.less_bytes(blueprint.palette[index - 1], name)) then
-			fail("palette differs")
-		end
+	-- Every blueprint name resolves to one ref in the shared channel. The refs
+	-- are resolved ONCE per settlement here, not per build, so a lazy rebuild
+	-- costs a composition and a digest and no channel work at all.
+	local refs = {}
+	for index = 1, #prepared.palette do
+		local name = prepared.palette[index]
 		local ref = content.content_ref(name)
 		if type(ref) ~= "number" or ref % 1 ~= 0 or ref < 1 or
 				content.content_names[ref] ~= name then
 			fail("palette differs")
 		end
-		palette[name] = ref
+		refs[name] = ref
 	end
-	local minimum, maximum = blueprint.bounds.min, blueprint.bounds.max
-	for _, axis in ipairs({"x", "y", "z"}) do
-		integer(minimum[axis], "minimum " .. axis, -9007199254740991,
-			9007199254740991)
-		integer(maximum[axis], "maximum " .. axis, minimum[axis],
-			9007199254740991)
-	end
-	if minimum.x < -63 or maximum.x > 63 or minimum.z < -63 or maximum.z > 63 or
-			minimum.y < -2 or maximum.y > 24 then
-		fail("blueprint bounds escape the authorized volume")
-	end
-	local cells, prior, seen, actual_min, actual_max = {}, nil, {}, {}, {}
-	local bytes = {"schema\t" .. profile.identity_schema .. "\n",
-		table.concat({"bounds", minimum.x, minimum.y, minimum.z,
-			maximum.x, maximum.y, maximum.z}, "\t") .. "\n"}
-	for index = 1, #blueprint.palette do
-		bytes[#bytes + 1] = table.concat({"palette", index,
-			blueprint.palette[index]}, "\t") .. "\n"
-	end
-	for index = 1, #blueprint.cells do
-		local cell = blueprint.cells[index]
-		if type(cell) ~= "table" then fail("cell differs at " .. index) end
-		local x = integer(cell.x, "cell x", -63, 63)
-		local y = integer(cell.y, "cell y", -2, 24)
-		local z = integer(cell.z, "cell z", -63, 63)
-		local ref = palette[cell.name]
-		local param2 = integer(cell.param2, "cell param2", 0, 255)
-		if not ref then fail("cell name is outside palette") end
-		if prior and (z < prior.z or (z == prior.z and
-				(y < prior.y or (y == prior.y and x <= prior.x)))) then
-			fail("cells are not canonical z/y/x unique")
-		end
-		local key = x .. "/" .. y .. "/" .. z
-		if seen[key] then fail("duplicate cell") end
-		seen[key], prior = true, {x = x, y = y, z = z}
-		cells[index] = {x = x, y = y, z = z, content_ref = ref,
-			param2 = param2, name = cell.name}
-		for _, axis in ipairs({"x", "y", "z"}) do
-			local value = cell[axis]
-			if actual_min[axis] == nil or value < actual_min[axis] then actual_min[axis] = value end
-			if actual_max[axis] == nil or value > actual_max[axis] then actual_max[axis] = value end
-		end
-		bytes[#bytes + 1] = table.concat({"cell", x, y, z, cell.name, param2}, "\t") .. "\n"
-	end
-	for _, axis in ipairs({"x", "y", "z"}) do
-		if minimum[axis] ~= actual_min[axis] or maximum[axis] ~= actual_max[axis] then
-			fail("declared bounds differ on " .. axis)
-		end
-	end
-	local function cell_at(x, y, z)
-		for index = 1, #cells do
-			local cell = cells[index]
-			if cell.x == x and cell.y == y and cell.z == z then return cell end
-		end
-		return nil
-	end
-	local support = cell_at(0, 0, 0)
-	if not support or support.name == "air" then fail("spawn support differs") end
-	for y = 1, 3 do
-		local cell = cell_at(0, y, 0)
-		if not cell or cell.name ~= "air" then fail("spawn clearance differs") end
-	end
-	local digest = raw_sha256(table.concat(bytes))
-	if type(digest) ~= "string" or #digest ~= 32 then fail("SHA-256 seam differs") end
-	local identity = {schema = profile.identity_schema,
-		sha256 = hex(digest), cell_count = #cells,
-		min_x = minimum.x, min_y = minimum.y, min_z = minimum.z,
-		max_x = maximum.x, max_y = maximum.y, max_z = maximum.z}
 
-	local config = {schema = profile.config_schema, identity = identity,
-		key = profile.key, label = profile.label, anchor_id = profile.anchor_id,
-		delta_schema = profile.delta_schema}
+	local identities = {}
+	for index = 1, #prepared.blueprints do
+		local blueprint = prepared.blueprints[index]
+		identities[index] = {id = blueprint.descriptor.id,
+			prefix = blueprint.descriptor.prefix,
+			kind = blueprint.descriptor.kind,
+			identity = blueprint.identity}
+	end
+
+	local config = {schema = profile.config_schema,
+		identity = prepared.blueprints[1].identity,
+		identities = identities,
+		key = profile.key, label = profile.label, slot = profile.slot,
+		anchor_id = profile.anchor_id, delta_schema = profile.delta_schema,
+		lazy = profile.lazy == true}
+
 	function config.new(dependencies)
-		if type(dependencies) ~= "table" or type(dependencies.zones_session) ~= "table" or
+		if type(dependencies) ~= "table" or
+				type(dependencies.zones_session) ~= "table" or
 				type(dependencies.zones_session.anchor) ~= "function" then
 			fail("successor dependencies differ")
 		end
-		local anchor = dependencies.zones_session.anchor(profile.zone_id, "start")
+		local anchor = dependencies.zones_session.anchor(profile.zone_id, profile.slot)
 		if type(anchor) ~= "table" or anchor.id ~= profile.anchor_id or
 				anchor.numeric_id ~= profile.numeric_id or
 				anchor.x ~= profile.x or anchor.z ~= profile.z or
 				type(anchor.y) ~= "number" or anchor.y % 1 ~= 0 then
-			fail("stable start anchor differs")
+			fail("stable " .. profile.slot .. " anchor differs")
 		end
-		local bound_plan, bound_generation, active = false, 0, false
+
+		-- The pure final height of one column: the same query the capital
+		-- reference rule of `height.lua` is authenticated through in
+		-- `r7_anchor_roster.lua`, reached from the planner source the
+		-- successor is constructed with. Only a settlement that owns a
+		-- terrain-relative blueprint or an overlay needs it, so a start's
+		-- dependencies are unchanged.
+		local needs_height = false
+		for index = 1, #prepared.blueprints do
+			local kind = prepared.blueprints[index].descriptor.kind
+			if kind == "reference" or kind == "overlay" then needs_height = true end
+		end
+		local column_values_at
+		if needs_height then
+			local planner_source = dependencies.planner_source
+			if type(planner_source) ~= "table" or
+					type(planner_source.column_values_at) ~= "function" then
+				fail("planner source differs")
+			end
+			column_values_at = planner_source.column_values_at
+		end
+		local function final_height(x, z)
+			local _, _, _, _, _, terrain_y = column_values_at(x, z)
+			if type(terrain_y) ~= "number" or terrain_y % 1 ~= 0 then
+				fail("final height at " .. x .. "," .. z .. " differs")
+			end
+			return terrain_y
+		end
+
+		-- THE WALKABLE SURFACE of a column, which is what a ROAD follows: the
+		-- ground, or the water standing on it where there is any.
+		--
+		-- The first engine pass of this package ran the east avenue straight
+		-- along a river bed. Highcourt is the contract's "river plateau" capital
+		-- and WP40 leaves that river inside the 512 envelope, so between local
+		-- x 128 and x 210 the ground under the avenue is nine nodes below the
+		-- core and the water is one node above it: "pavement at surface" read as
+		-- the GROUND surface paves a trench under the river. A road is walked on
+		-- the surface a traveller stands on, so that is what the successor hands
+		-- `avenue.lua` -- and because the settlement writer overwrites, the
+		-- result is a solid causeway across the water and not paving floating on
+		-- it. The overlay itself is unchanged: it still queries no height of its
+		-- own and still knows nothing about water.
+		local function walkable_height(x, z)
+			local _, _, _, _, _, terrain_y, water_y = column_values_at(x, z)
+			if type(terrain_y) ~= "number" or terrain_y % 1 ~= 0 then
+				fail("final height at " .. x .. "," .. z .. " differs")
+			end
+			if type(water_y) == "number" and water_y % 1 == 0 and
+					water_y > terrain_y then
+				return water_y
+			end
+			return terrain_y
+		end
+
 		local metrics = {plan_calls = 0, settle_calls = 0, replay_calls = 0,
-			written = 0}
+			written = 0, build_calls = 0, release_calls = 0, height_calls = 0,
+			overlay_calls = 0}
+
+		-- Per-session state of every blueprint: the world box it occupies, the
+		-- cells with their content refs (nil while released) and, for a plot,
+		-- the reference height that box was derived from.
+		local states = {}
+		for index = 1, #prepared.blueprints do
+			local blueprint = prepared.blueprints[index]
+			local descriptor = blueprint.descriptor
+			local state = {blueprint = blueprint, descriptor = descriptor,
+				active = false, idle = 0}
+			if descriptor.kind == "overlay" then
+				-- A run's ground is read once per session and shared by every
+				-- mapchunk that clips it: the envelope of a column depends on the
+				-- ground within `reach` columns of it, so the mapchunks stacked
+				-- above and below one avenue must not re-read the same profile
+				-- once each. The memo IS the plan's own column surface -- every
+				-- value in it comes from `column_values_at` and from nothing else.
+				state.ground = {}
+				state.runs = {}
+				for run_index = 1, #blueprint.runs do
+					local run = blueprint.runs[run_index]
+					local half = blueprint.half + 1
+					local min_x, max_x, min_z, max_z
+					if run.axis == "x" then
+						min_x, max_x = run.from, run.to
+						min_z, max_z = run.at - half, run.at + half
+					else
+						min_z, max_z = run.from, run.to
+						min_x, max_x = run.at - half, run.at + half
+					end
+					-- The CARRIAGEWAY rectangle, verges excluded, in the
+					-- composition's own coordinates: this is what decides whether
+					-- another run's lamp standard would stand in the middle of this
+					-- road (see the arbitration in `settle`).
+					local car_min_x, car_max_x, car_min_z, car_max_z
+					if run.axis == "x" then
+						car_min_x, car_max_x = run.from, run.to
+						car_min_z, car_max_z = run.at - blueprint.half, run.at + blueprint.half
+					else
+						car_min_z, car_max_z = run.from, run.to
+						car_min_x, car_max_x = run.at - blueprint.half, run.at + blueprint.half
+					end
+					state.runs[run_index] = {run = run, active = false,
+						min_x = anchor.x + min_x, max_x = anchor.x + max_x,
+						min_z = anchor.z + min_z, max_z = anchor.z + max_z,
+						car_min_x = car_min_x, car_max_x = car_max_x,
+						car_min_z = car_min_z, car_max_z = car_max_z}
+				end
+			end
+			states[index] = state
+		end
+
+		-- The world box of a blueprint, and the base height its cells are
+		-- projected from. For an anchor-relative blueprint that is the fitted
+		-- anchor; for a plot it is the pure final height of its reference
+		-- column, asked ONCE per session and cached here.
+		local function base_of(state)
+			if state.base then return state.base end
+			local descriptor = state.descriptor
+			local base
+			if descriptor.kind == "anchor" then
+				base = {x = anchor.x, y = anchor.y, z = anchor.z}
+			else
+				local reference = state.blueprint.reference
+				local x = anchor.x + descriptor.offset.x
+				local z = anchor.z + descriptor.offset.z
+				metrics.height_calls = metrics.height_calls + 1
+				base = {x = x, y = final_height(x + reference.x, z + reference.z),
+					z = z}
+			end
+			local bounds = state.blueprint.bounds
+			state.base = base
+			state.box = {min_x = base.x + bounds.min.x, max_x = base.x + bounds.max.x,
+				min_y = base.y + bounds.min.y, max_y = base.y + bounds.max.y,
+				min_z = base.z + bounds.min.z, max_z = base.z + bounds.max.z}
+			return base
+		end
+
+		-- The cells of a blueprint with their content refs. Built on demand:
+		-- a lazy settlement holds none until a mapchunk touches it, and the
+		-- rebuild is compared against the identity the manifest published, so
+		-- a composition that is not a pure function of its own source is a
+		-- loud failure and not a silently different capital.
+		local function cells_of(state)
+			if state.cells then return state.cells end
+			local source_cells = state.blueprint.cells
+			if not source_cells then
+				metrics.build_calls = metrics.build_calls + 1
+				local rebuilt = prepare_cells(fail, state.descriptor,
+					state.descriptor.build())
+				if hex(raw_sha256(rebuilt.identity_bytes)) ~=
+						state.blueprint.identity.sha256 then
+					fail(state.descriptor.id ..
+						": the lazy rebuild differs from its published identity")
+				end
+				source_cells = rebuilt.cells
+			end
+			local cells = {}
+			for index = 1, #source_cells do
+				local cell = source_cells[index]
+				local ref = refs[cell.name]
+				if not ref then
+					fail(state.descriptor.id .. ": cell name lost its content ref")
+				end
+				cells[index] = {x = cell.x, y = cell.y, z = cell.z,
+					content_ref = ref, param2 = cell.param2}
+			end
+			state.cells = cells
+			return cells
+		end
+
+		local function release(state)
+			if state.cells and not state.blueprint.cells then
+				state.cells = nil
+				metrics.release_calls = metrics.release_calls + 1
+			end
+		end
+
+		local bound_plan, bound_generation = false, 0
 		local tail = {key = profile.key}
+
 		function tail.bind_plan(self, minp, maxp, plan, generation)
 			if not rawequal(self, tail) or type(minp) ~= "table" or
 					type(maxp) ~= "table" or type(plan) ~= "table" then
 				fail("plan binding differs")
 			end
-			active = anchor.x + maximum.x >= minp.x and anchor.x + minimum.x <= maxp.x and
-				anchor.y + maximum.y >= minp.y and anchor.y + minimum.y <= maxp.y and
-				anchor.z + maximum.z >= minp.z and anchor.z + minimum.z <= maxp.z
+			for index = 1, #states do
+				local state = states[index]
+				if state.descriptor.kind == "overlay" then
+					local active = false
+					for run_index = 1, #state.runs do
+						local entry = state.runs[run_index]
+						entry.active = entry.max_x >= minp.x and entry.min_x <= maxp.x and
+							entry.max_z >= minp.z and entry.min_z <= maxp.z
+						if entry.active then active = true end
+					end
+					state.active = active
+				else
+					if not state.box then
+						-- The height query that decides a plot's box is the one a plan
+						-- cannot avoid: the box is what says whether this mapchunk
+						-- touches the plot at all. It is asked once per session per
+						-- plot and cached, which is the contract's "query the pure
+						-- final height once per session".
+						base_of(state)
+					end
+					local box = state.box
+					state.active = box.max_x >= minp.x and box.min_x <= maxp.x and
+						box.max_y >= minp.y and box.min_y <= maxp.y and
+						box.max_z >= minp.z and box.min_z <= maxp.z
+				end
+				if state.active then
+					state.idle = 0
+				else
+					state.idle = state.idle + 1
+					if state.idle > M.IDLE_RELEASE then release(state) end
+				end
+			end
 			bound_plan, bound_generation = plan, generation
 			metrics.plan_calls = metrics.plan_calls + 1
 		end
+
 		function tail.settle(self, context)
 			if not rawequal(self, tail) or type(context) ~= "table" or
 					not rawequal(context.plan, bound_plan) or
@@ -297,20 +983,161 @@ function M.config(profile, blueprint, content, raw_sha256)
 				fail("settlement plan binding differs")
 			end
 			local written = 0
-			if active then
-				for index = 1, #cells do
-					local cell = cells[index]
-					local x, y, z = anchor.x + cell.x, anchor.y + cell.y,
-						anchor.z + cell.z
-					if context.inside_owner(x, y, z) then
-						local cid, param2 = content.resolve(cell.content_ref, cell.param2)
-						-- `write_hearthpine` is R7's opcode-37 settlement writer.
-						-- The name is the historical one from the first increment
-						-- and belongs to the accepted R6 settlement contract; the
-						-- channel carries every start, not only Hearthpine.
-						context.write_hearthpine(x, y, z, cid, param2,
-							cell.content_ref, 1)
-						written = written + 1
+			local reserved_x, reserved_y, reserved_z
+			if profile.reserve_anchor_root then
+				reserved_x, reserved_y, reserved_z = anchor.x, anchor.y + 1, anchor.z
+			end
+			-- Cells first, in blueprint order (the core, then the plots), and the
+			-- overlay last: the contract's "a surface overlay written by the same
+			-- successor, after the plots".
+			for index = 1, #states do
+				local state = states[index]
+				if state.active and state.descriptor.kind ~= "overlay" then
+					local base = base_of(state)
+					local cells = cells_of(state)
+					for cell_index = 1, #cells do
+						local cell = cells[cell_index]
+						local x, y, z = base.x + cell.x, base.y + cell.y, base.z + cell.z
+						-- The one cell a capital core does not write: the guard banner
+						-- the anchor writer already put on the anchor root. The
+						-- composition has air there, so nothing of the city is lost,
+						-- and the banner is `walkable = false`, so it blocks neither
+						-- the crossing it stands on nor its own watch.
+						if (x ~= reserved_x or y ~= reserved_y or z ~= reserved_z) and
+								context.inside_owner(x, y, z) then
+							local cid, param2 = content.resolve(cell.content_ref, cell.param2)
+							-- `write_hearthpine` is R7's opcode-37 settlement writer.
+							-- The name is the historical one from the first increment
+							-- and belongs to the accepted R6 settlement contract; the
+							-- channel carries every settlement, not only Hearthpine.
+							context.write_hearthpine(x, y, z, cid, param2,
+								cell.content_ref, 1)
+							written = written + 1
+						end
+					end
+				end
+			end
+			for index = 1, #states do
+				local state = states[index]
+				if state.active and state.descriptor.kind == "overlay" then
+					local blueprint = state.blueprint
+					local ground = state.ground
+					local function surface(x, z)
+						local key = column_key(x, z)
+						local value = ground[key]
+						if value == nil then
+							metrics.height_calls = metrics.height_calls + 1
+							value = walkable_height(x, z)
+							ground[key] = value
+						end
+						return value
+					end
+					local function local_surface(x, z)
+						return surface(anchor.x + x, anchor.z + z)
+					end
+					-- CROSS-RUN ARBITRATION, and the successor is the only thing that
+					-- can do it: `avenue.run` is a pure function of ONE run and knows
+					-- nothing of the road it crosses, while a capital's four avenues
+					-- and its four ring-street sides meet at four corners.
+					--
+					-- Two rules, both a pure function of the run rectangles and the
+					-- column, so a piece of a run is still exactly that stretch of the
+					-- whole run and the union of the mapchunks is unchanged:
+					--
+					--   1. THE FIRST RUN WINS A SHARED CELL. The runs are authored
+					--      avenues first, ring street second, so the great road runs
+					--      through and the side street yields at the kerb, which is
+					--      what a crossroads looks like. Every run that covers a cell
+					--      produces it in every mapchunk that contains it, so which
+					--      run wins does not depend on the mapchunk.
+					--   2. NO LAMP STANDARD IN ANOTHER ROAD'S CARRIAGEWAY. A lamp
+					--      stands on the verge, one node outside its own carriageway,
+					--      and at a crossing that verge is the middle of the other
+					--      road: Highcourt's lamp rhythm puts one pair exactly on each
+					--      ring crossing, i.e. eight posts in the ring street. The
+					--      three cells of such a standard are dropped. This is the
+					--      same defect the core's own streets had, and the same fix.
+					local written_here = {}
+					for run_index = 1, #state.runs do
+						local entry = state.runs[run_index]
+						if entry.active then
+							local run = entry.run
+							-- The piece of the run this mapchunk owns, in the run's own
+							-- coordinates, and nothing else: `avenue.lua`'s look-around
+							-- reads the ground beyond the piece and the envelope of a
+							-- column depends on nothing further away, so the union of the
+							-- pieces is the whole run, cell for cell. The lamp phase is
+							-- the WHOLE run's start, which is what keeps one lamp line
+							-- across a mapchunk border.
+							local low, high
+							if run.axis == "x" then
+								low, high = context.min_x - anchor.x, context.max_x - anchor.x
+							else
+								low, high = context.min_z - anchor.z, context.max_z - anchor.z
+							end
+							if low < run.from then low = run.from end
+							if high > run.to then high = run.to end
+							if low <= high then
+								metrics.overlay_calls = metrics.overlay_calls + 1
+								local piece = blueprint.run({id = run.id, axis = run.axis,
+									at = run.at, from = low, to = high,
+									width = blueprint.width,
+									lamp_spacing = blueprint.lamp_spacing,
+									lamp_phase = run.from, reach = blueprint.reach},
+									local_surface)
+								-- Rule 2: the standards this run may not raise, by the
+								-- three cells each of them occupies (post, post, torch,
+								-- counted down from the lamp's own light cell).
+								local dropped = {}
+								for lamp_index = 1, #piece.lamps do
+									local lamp = piece.lamps[lamp_index]
+									local blocked = false
+									for other_index = 1, #state.runs do
+										if other_index ~= run_index then
+											local other = state.runs[other_index]
+											if lamp.x >= other.car_min_x and lamp.x <= other.car_max_x and
+													lamp.z >= other.car_min_z and
+													lamp.z <= other.car_max_z then
+												blocked = true
+												break
+											end
+										end
+									end
+									if blocked then
+										for y = lamp.y - 2, lamp.y do
+											dropped[cell_key(lamp.x, y, lamp.z)] = true
+										end
+										metrics.overlay_lamps_dropped =
+											(metrics.overlay_lamps_dropped or 0) + 1
+									end
+								end
+								for cell_index = 1, #piece.cells do
+									local cell = piece.cells[cell_index]
+									local x, y, z = anchor.x + cell.x, cell.y, anchor.z + cell.z
+									local ref = refs[cell.name]
+									if not ref then
+										fail("avenue name outside the overlay palette: " ..
+											tostring(cell.name))
+									end
+									local here = cell_key(x, y, z)
+									if dropped[cell_key(cell.x, cell.y, cell.z)] then
+										metrics.overlay_cells_dropped =
+											(metrics.overlay_cells_dropped or 0) + 1
+									elseif written_here[here] then
+										-- Rule 1: an earlier run already owns this cell.
+										metrics.overlay_overlaps =
+											(metrics.overlay_overlaps or 0) + 1
+									elseif context.inside_owner(x, y, z) then
+										written_here[here] = true
+										local cid, param2 = content.resolve(ref, cell.param2)
+										context.write_hearthpine(x, y, z, cid, param2, ref, 1)
+										written = written + 1
+									else
+										written_here[here] = true
+									end
+								end
+							end
+						end
 					end
 				end
 			end
@@ -321,14 +1148,24 @@ function M.config(profile, blueprint, content, raw_sha256)
 				metrics.written = metrics.written + written
 			end
 			return {schema = profile.ledger_schema,
-				blueprint_sha256 = identity.sha256, written = written}
+				blueprint_sha256 = config.identity.sha256, written = written}
 		end
+
 		function tail.metrics(self)
 			if not rawequal(self, tail) then fail("metrics receiver differs") end
 			return {schema = profile.metrics_schema,
 				plan_calls = metrics.plan_calls, settle_calls = metrics.settle_calls,
 				replay_calls = metrics.replay_calls, written = metrics.written,
-				blueprint_sha256 = identity.sha256}
+				build_calls = metrics.build_calls,
+				release_calls = metrics.release_calls,
+				height_calls = metrics.height_calls,
+				overlay_calls = metrics.overlay_calls,
+				-- The cross-run arbitration, counted so a measurement can say how
+				-- much of the road two crossing runs actually argued about.
+				overlay_overlaps = metrics.overlay_overlaps,
+				overlay_lamps_dropped = metrics.overlay_lamps_dropped,
+				overlay_cells_dropped = metrics.overlay_cells_dropped,
+				blueprint_sha256 = config.identity.sha256}
 		end
 		return tail
 	end

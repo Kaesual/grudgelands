@@ -63,10 +63,73 @@ local run = avenue.run(human, {id = "timing", axis = "x", at = 0,
 	from = -256, to = -48}, surface)
 local avenue_time = os.clock() - started
 
+-- And the seam's own two costs, which are what a server actually pays
+-- (`wp40/r7_settlement.lua`, contract section 2.2.4):
+--
+--   * PREPARE, once at load: every blueprint of the capital built, validated,
+--     canonically serialised and hashed, then its cells released again. This is
+--     the price of publishing a closed identity document for a lazy settlement.
+--   * THE LAZY REBUILD, on the first mapchunk that touches the envelope: the
+--     core built again, hashed again and compared with the published identity,
+--     and its cells mapped onto the shared content channel.
+local common = dofile(repo .. "/tools/wp40/r6/common.lua")
+local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
+local settlement = dofile(wp40 .. "/r7_settlement.lua")
+local sha = common.new_sha256()
+local profile
+for index = 1, #settlement.roster do
+	if settlement.roster[index].slot == "capital" then
+		profile = settlement.roster[index]
+	end
+end
+assert(profile, "the roster carries no capital")
+local source = dofile(wp40 .. "/" .. profile.blueprint_file)()
+started = os.clock()
+local prepared = settlement.prepare(profile, source, sha)
+local prepare_time = os.clock() - started
+
+local union = prepared.palette
+local ref_by_name = {}
+for index = 1, #union do ref_by_name[union[index]] = index end
+local content = {schema = "grug_wp13_settlement_content_v1",
+	content_names = union}
+function content.content_ref(name) return ref_by_name[name] end
+function content.resolve(ref, param2) return 1000 + ref, param2 end
+local config = settlement.config(prepared, content, sha)
+local planner_source = {}
+function planner_source.column_values_at(x, z)
+	return "land", 1, "zone", "biome", "region", 40
+end
+local tail = config.new({planner_source = planner_source,
+	zones_session = {anchor = function(zone_id, slot)
+		if zone_id == profile.zone_id and slot == profile.slot then
+			return {id = profile.anchor_id, numeric_id = profile.numeric_id,
+				x = profile.x, y = 40, z = profile.z}
+		end
+	end}})
+local plan = {}
+tail:bind_plan({x = profile.x - 40, y = 0, z = profile.z - 40},
+	{x = profile.x + 39, y = 79, z = profile.z + 39}, plan, 1)
+local written = 0
+started = os.clock()
+tail:settle({plan = plan, generation = 1, call_mode = "fixture",
+	min_x = profile.x - 40, min_y = 0, min_z = profile.z - 40,
+	max_x = profile.x + 39, max_y = 79, max_z = profile.z + 39,
+	inside_owner = function() return true end,
+	write_hearthpine = function() written = written + 1 end})
+local rebuild_time = os.clock() - started
+local seam_metrics = tail:metrics()
+
 io.write(table.concat({"wp13_highcourt_timing", label, "load_ms",
 	ms(load_time), "core_ms", ms(core_time), "core_again_ms", ms(core_again),
 	"district_ms", ms(district_time), "avenue_ms", ms(avenue_time),
+	"seam_prepare_ms", ms(prepare_time), "seam_first_touch_ms",
+	ms(rebuild_time),
 	"core_cells", #core.cells, "district_cells", district_cells,
 	"avenue_cells", #run.cells,
-	"capital_cells", #core.cells + district_cells}, "\t"), "\n")
+	"capital_cells", #core.cells + district_cells,
+	"seam_blueprints", #prepared.blueprints,
+	"seam_first_touch_cells", written,
+	"seam_builds", seam_metrics.build_calls,
+	"seam_height_calls", seam_metrics.height_calls}, "\t"), "\n")
 assert(#again.cells == #core.cells, "the two core builds differ")

@@ -85,8 +85,13 @@ local function loader(directory)
 			x = 116, z = -28, order = 3, along = "avenue", turns = 3,
 			spec = {w = 11, d = 13, wing = 7, wall_h = 5, door_side = "x-",
 				door_index = 6, infill = true}},
+		-- MOVED from x = 116 by the seam package's water sweep: at 116 the
+		-- counting house's own reference column stood in the river that WP40
+		-- runs through this capital's envelope, and 297 of its 437 footprint
+		-- columns with it. It also had the district's tightest airspace margin
+		-- there (a rise of 12 against a clear of 13); at 200 the rise is 8.
 		{id = "market_counting_house", module = "capitals",
-			make = "scriptorium", x = 116, z = 28, order = 4,
+			make = "scriptorium", x = 200, z = 28, order = 4,
 			along = "avenue", roof = "slate",
 			spec = {w = 13, d = 17, wall_h = 6}},
 		-- The well court is the district's public garden, so its plot is
@@ -94,22 +99,42 @@ local function loader(directory)
 		-- buys is planted. On the first render it was a paved square with a
 		-- well on it standing in a field, which is what a court with a
 		-- two-node verge looks like from outside.
+		--
+		-- MOVED TWICE, and the second move is the instructive one. At the
+		-- authored x = 152 this plot's 23 x 23 garden footprint straddled a
+		-- terrace shoulder and its perimeter fell SEVEN nodes below its
+		-- reference column against a skirt that reaches six. A sweep for FLAT
+		-- ground then put it at 192 -- in the river, all 529 columns of it,
+		-- because the flattest ground inside a terraced capital envelope is the
+		-- river bed. `tools/wp13/highcourt_plots.lua` is the predicate that
+		-- asks both questions at once now; (160, -52) is dry on both gate seeds
+		-- with a fall of 2.
 		{id = "market_well", module = "capitals", make = "well_court",
-			x = 152, z = -28, order = 5, along = "avenue", margin = 5,
+			x = 160, z = -52, order = 5, along = "avenue", margin = 5,
 			garden = true, spec = {size = 11}},
 		-- The watch stands at z = 31, not 28: the gate corridor WP40 keeps
 		-- clear is 32 nodes wide (z -16..16) and a 21-deep barracks centred
 		-- on 28 reaches z = 15. Nothing enforces that width anywhere in the
 		-- tree, so it is kept here.
+		-- MOVED from (152, 31): 619 of its 625 footprint columns were river.
+		-- The z = 31 the review round before this one chose was about the gate
+		-- corridor, and it is still respected -- (160, 76) is clear of every
+		-- corridor, and dry.
 		{id = "market_watch", module = "capitals", make = "barracks",
-			x = 152, z = 31, along = "avenue", roof = "slate",
+			x = 160, z = 76, along = "avenue", roof = "slate",
 			spec = {w = 15, d = 21, wall_h = 5, patrol_group = WATCH,
 				order = 6}},
 		{id = "market_grove", module = "capitals", make = "grove",
 			x = 76, z = -64, order = 7, along = "ring",
 			spec = {size = 15, kind = "broadleaf", height = 6}},
+		-- MOVED TWICE, like the well court and for the same two reasons in the
+		-- same order. At the authored x = 76 it sat on the core-to-terrace blend
+		-- band, 48 to 78 nodes out, and fell EIGHT nodes below its reference
+		-- column on seed 8675309. The flatness sweep then put it at 112, where
+		-- all 425 of its footprint columns are river. (56, 60) is dry on both
+		-- seeds with a fall of 4.
 		{id = "market_orchard", module = "capitals", make = "orchard_edge",
-			x = 76, z = 64, along = "ring",
+			x = 56, z = 60, along = "ring",
 			spec = {len = 21, d = 11, patrol_group = WATCH, order = 8}},
 		-- Door index 4, single leaf: the `store` kit stands its roof posts
 		-- on the odd cells of the gable's inner run, so an eleven-wide

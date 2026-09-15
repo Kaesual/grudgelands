@@ -2,7 +2,17 @@
 -- constructor runs in the main and emerge environments; numeric content IDs
 -- are therefore authenticated instead of being trusted through IPC.
 
-return function(canonical, raw_sha256)
+-- `settlement_order` is derived from the WP13 roster in roster order
+-- (`r7_settlement.lua`, contract section 2.2.2): one row per settlement, each
+-- carrying its blueprints in blueprint order. Before this increment the field
+-- list and the settlement roster were typed out here per settlement, which
+-- meant a capital could not be added without editing two closed literals that
+-- had to agree with a third. What is closed now is the SHAPE -- the fixed head
+-- and tail fields, the ten fields every blueprint publishes, and the rule that
+-- the order is the roster's -- and the roster is the single authority for which
+-- settlements and blueprints exist. Every start keeps its own field prefix, so
+-- `hearthpine_blueprint_sha256` is still spelled exactly that.
+return function(canonical, raw_sha256, settlement_order)
 	local SCHEMA = "grug_wp40_r7_mapgen_manifest_v1"
 	local ACCEPTED_R6_ARTIFACT_SHA256 =
 		"bb3e9674b768f7ef14fc0a703d0dc97022e9767d0c532b48cd5f1c0c741257b4"
@@ -10,7 +20,7 @@ return function(canonical, raw_sha256)
 		"0ffd8cd5c0133645c330703b8e4ea581a21fe6e5891ddcd987236b26a7d07ca0"
 	local SOURCE_PROJECTION_SHA256 =
 		"de79b1fe983d8b5aaadfd4180bc44e84704133248e20b117139267f232b803d4"
-	local FIELD_ORDER = {
+	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
 		"r6_artifact_sha256", "r6_catalog_sha256",
@@ -28,68 +38,83 @@ return function(canonical, raw_sha256)
 		"functional_anchor_protection_schema", "functional_anchor_columns",
 		"settlement_content_schema", "settlement_content_sha256",
 		"settlement_semantic_sha256", "settlement_content_count",
-		"hearthpine_blueprint_schema",
-		"hearthpine_blueprint_sha256", "hearthpine_cell_count",
-		"hearthpine_delta_schema", "hearthpine_delta_sha256",
-		"hearthpine_opcode", "hearthpine_class", "hearthpine_policy",
-		"hearthpine_order", "hearthpine_overwrite",
-		"dawnmere_blueprint_schema",
-		"dawnmere_blueprint_sha256", "dawnmere_cell_count",
-		"dawnmere_delta_schema", "dawnmere_delta_sha256",
-		"dawnmere_opcode", "dawnmere_class", "dawnmere_policy",
-		"dawnmere_order", "dawnmere_overwrite",
-		"silverleaf_blueprint_schema",
-		"silverleaf_blueprint_sha256", "silverleaf_cell_count",
-		"silverleaf_delta_schema", "silverleaf_delta_sha256",
-		"silverleaf_opcode", "silverleaf_class", "silverleaf_policy",
-		"silverleaf_order", "silverleaf_overwrite",
-		"stillgrave_blueprint_schema",
-		"stillgrave_blueprint_sha256", "stillgrave_cell_count",
-		"stillgrave_delta_schema", "stillgrave_delta_sha256",
-		"stillgrave_opcode", "stillgrave_class", "stillgrave_policy",
-		"stillgrave_order", "stillgrave_overwrite",
-		"sunscar_blueprint_schema",
-		"sunscar_blueprint_sha256", "sunscar_cell_count",
-		"sunscar_delta_schema", "sunscar_delta_sha256",
-		"sunscar_opcode", "sunscar_class", "sunscar_policy",
-		"sunscar_order", "sunscar_overwrite",
-		"kapok_blueprint_schema",
-		"kapok_blueprint_sha256", "kapok_cell_count",
-		"kapok_delta_schema", "kapok_delta_sha256",
-		"kapok_opcode", "kapok_class", "kapok_policy",
-		"kapok_order", "kapok_overwrite",
+	}
+	local FIELD_TAIL = {
 		"functional_anchor_y_min", "writer_schema", "p9g_opcode", "p9g_class",
 		"p9g_policy", "p9g_order", "p9g_overwrite", "source_projection_sha256",
 		"production_enabled",
 	}
-
-	-- The accepted WP13 settlement roster, in the fixed order the manifest
-	-- publishes. It mirrors the roster in `r7_settlement.lua`; keeping it here
-	-- as data makes the identity document closed rather than derived.
-	local SETTLEMENT_ORDER = {
-		{key = "hearthpine", anchor_id = "anchor_001",
-			identity_schema = "grug_wp13_hearthpine_blueprint_identity_v1",
-			delta_schema = "grug_wp13_hearthpine_delta_v1"},
-		{key = "dawnmere", anchor_id = "anchor_002",
-			identity_schema = "grug_wp13_dawnmere_blueprint_identity_v1",
-			delta_schema = "grug_wp13_dawnmere_delta_v1"},
-		{key = "silverleaf", anchor_id = "anchor_003",
-			identity_schema = "grug_wp13_silverleaf_blueprint_identity_v1",
-			delta_schema = "grug_wp13_silverleaf_delta_v1"},
-		{key = "stillgrave", anchor_id = "anchor_004",
-			identity_schema = "grug_wp13_stillgrave_blueprint_identity_v1",
-			delta_schema = "grug_wp13_stillgrave_delta_v1"},
-		{key = "sunscar", anchor_id = "anchor_005",
-			identity_schema = "grug_wp13_sunscar_blueprint_identity_v1",
-			delta_schema = "grug_wp13_sunscar_delta_v1"},
-		{key = "kapok", anchor_id = "anchor_006",
-			identity_schema = "grug_wp13_kapok_blueprint_identity_v1",
-			delta_schema = "grug_wp13_kapok_delta_v1"},
-	}
+	-- The eleven fields every WP13 blueprint publishes. `population` is the
+	-- blueprint's own size in the unit its kind HAS: a cell count for a
+	-- blueprint made of cells, a run count for an overlay, which has none until
+	-- a surface arrives. `population_kind` says which, so the row cannot be read
+	-- as a cell count it never was.
+	local BLUEPRINT_FIELDS = {"blueprint_schema", "blueprint_sha256",
+		"population", "population_kind", "delta_schema", "delta_sha256",
+		"opcode", "class", "policy", "order", "overwrite"}
 
 	local function fail(message)
 		error("WP40 R7 manifest: " .. message, 0)
 	end
+
+	-- The roster-derived settlement order, validated once here so every
+	-- consumer below can read it as authored data.
+	local SETTLEMENT_ORDER = {}
+	if type(settlement_order) ~= "table" or #settlement_order < 1 then
+		fail("settlement order differs")
+	end
+	local seen_key, seen_prefix = {}, {}
+	for index = 1, #settlement_order do
+		local row = settlement_order[index]
+		if type(row) ~= "table" or type(row.key) ~= "string" or row.key == "" or
+				seen_key[row.key] or type(row.anchor_id) ~= "string" or
+				row.anchor_id == "" or type(row.delta_schema) ~= "string" or
+				row.delta_schema == "" or type(row.blueprints) ~= "table" or
+				#row.blueprints < 1 then
+			fail("settlement order row differs at " .. index)
+		end
+		seen_key[row.key] = true
+		local blueprints = {}
+		for blueprint_index = 1, #row.blueprints do
+			local blueprint = row.blueprints[blueprint_index]
+			if type(blueprint) ~= "table" or type(blueprint.id) ~= "string" or
+					blueprint.id == "" or type(blueprint.prefix) ~= "string" or
+					blueprint.prefix == "" or seen_prefix[blueprint.prefix] or
+					type(blueprint.identity_schema) ~= "string" or
+					blueprint.identity_schema == "" or
+					type(blueprint.kind) ~= "string" or blueprint.kind == "" or
+					type(blueprint.bounds) ~= "table" or
+					type(blueprint.bounds.min) ~= "table" or
+					type(blueprint.bounds.max) ~= "table" then
+				fail("settlement blueprint order differs at " .. index .. "/" ..
+					blueprint_index)
+			end
+			seen_prefix[blueprint.prefix] = true
+			blueprints[blueprint_index] = {id = blueprint.id,
+				prefix = blueprint.prefix, kind = blueprint.kind,
+				identity_schema = blueprint.identity_schema,
+				bounds = {min = {x = blueprint.bounds.min.x, y = blueprint.bounds.min.y,
+						z = blueprint.bounds.min.z},
+					max = {x = blueprint.bounds.max.x, y = blueprint.bounds.max.y,
+						z = blueprint.bounds.max.z}}}
+		end
+		SETTLEMENT_ORDER[index] = {key = row.key, anchor_id = row.anchor_id,
+			delta_schema = row.delta_schema, blueprints = blueprints}
+	end
+
+	local FIELD_ORDER = {}
+	for index = 1, #FIELD_HEAD do FIELD_ORDER[#FIELD_ORDER + 1] = FIELD_HEAD[index] end
+	for index = 1, #SETTLEMENT_ORDER do
+		local blueprints = SETTLEMENT_ORDER[index].blueprints
+		for blueprint_index = 1, #blueprints do
+			local prefix = blueprints[blueprint_index].prefix
+			for field_index = 1, #BLUEPRINT_FIELDS do
+				FIELD_ORDER[#FIELD_ORDER + 1] = prefix .. "_" ..
+					BLUEPRINT_FIELDS[field_index]
+			end
+		end
+	end
+	for index = 1, #FIELD_TAIL do FIELD_ORDER[#FIELD_ORDER + 1] = FIELD_TAIL[index] end
 
 	local function hex(bytes)
 		return (bytes:gsub(".", function(char)
@@ -292,8 +317,9 @@ return function(canonical, raw_sha256)
 				family_counts.bandit ~= 12 then
 			fail("anchor roster population differs")
 		end
-		-- One opcode-37 content channel serves every WP13 start; the blueprint
-		-- identities are per settlement and are published in roster order.
+		-- One opcode-37 content channel serves every WP13 settlement; the
+		-- blueprint identities are per BLUEPRINT and are published in roster
+		-- order, then blueprint order.
 		local settlement_content = inputs.settlement_content
 		if type(settlement_content) ~= "table" or
 				settlement_content.schema ~= "grug_wp13_settlement_content_v1" or
@@ -316,22 +342,50 @@ return function(canonical, raw_sha256)
 			if type(row) ~= "table" or row.key ~= expect.key or
 					row.anchor_id ~= expect.anchor_id or
 					row.delta_schema ~= expect.delta_schema or
-					type(row.identity) ~= "table" or
-					row.identity.schema ~= expect.identity_schema or
-					type(row.identity.sha256) ~= "string" or
-					#row.identity.sha256 ~= 64 or
-					type(row.identity.cell_count) ~= "number" or
-					row.identity.cell_count < 1 or
-					type(row.identity.min_x) ~= "number" or
-					type(row.identity.max_x) ~= "number" or
-					type(row.identity.min_y) ~= "number" or
-					type(row.identity.max_y) ~= "number" or
-					type(row.identity.min_z) ~= "number" or
-					type(row.identity.max_z) ~= "number" or
-					row.identity.min_x < -63 or row.identity.max_x > 63 or
-					row.identity.min_y < -2 or row.identity.max_y > 24 or
-					row.identity.min_z < -63 or row.identity.max_z > 63 then
-				fail("settlement blueprint identity differs at " .. index)
+					type(row.blueprints) ~= "table" or
+					#row.blueprints ~= #expect.blueprints then
+				fail("settlement blueprint population differs at " .. index)
+			end
+			for blueprint_index = 1, #expect.blueprints do
+				local entry = row.blueprints[blueprint_index]
+				local wanted = expect.blueprints[blueprint_index]
+				-- The authorized volume is the BLUEPRINT'S OWN, from the roster
+				-- profile (`r7_settlement.M.BOUNDS`). It used to be the start's
+				-- +-63 / y -2..24 typed out here, which is the third of the three
+				-- places contract section 2.2.1 names.
+				local bounds = wanted.bounds
+				-- A blueprint with cells publishes `cell_count`; an OVERLAY has no
+				-- cells until a surface arrives and publishes `run_count`
+				-- instead. Exactly one of the two, so a row cannot quietly claim
+				-- a cell count it does not have.
+				local population = entry.kind == "overlay" and
+					entry.identity.run_count or entry.identity.cell_count
+				if type(entry) ~= "table" or entry.id ~= wanted.id or
+						entry.prefix ~= wanted.prefix or entry.kind ~= wanted.kind or
+						type(entry.identity) ~= "table" or
+						entry.identity.schema ~= wanted.identity_schema or
+						type(entry.identity.sha256) ~= "string" or
+						#entry.identity.sha256 ~= 64 or
+						type(population) ~= "number" or population < 1 or
+						(entry.kind == "overlay") ~=
+							(entry.identity.cell_count == nil) or
+						(entry.kind == "overlay") ~=
+							(entry.identity.run_count ~= nil) or
+						type(entry.identity.min_x) ~= "number" or
+						type(entry.identity.max_x) ~= "number" or
+						type(entry.identity.min_y) ~= "number" or
+						type(entry.identity.max_y) ~= "number" or
+						type(entry.identity.min_z) ~= "number" or
+						type(entry.identity.max_z) ~= "number" or
+						entry.identity.min_x < bounds.min.x or
+						entry.identity.max_x > bounds.max.x or
+						entry.identity.min_y < bounds.min.y or
+						entry.identity.max_y > bounds.max.y or
+						entry.identity.min_z < bounds.min.z or
+						entry.identity.max_z > bounds.max.z then
+					fail("settlement blueprint identity differs at " .. index .. "/" ..
+						blueprint_index)
+				end
 			end
 		end
 		local cultural = inputs.cultural_registrations
@@ -400,22 +454,39 @@ return function(canonical, raw_sha256)
 		}
 		-- Every settlement carries the same opcode, class, policy, order and
 		-- successor-ref window, because they share one content channel; what
-		-- separates them is the anchor and the blueprint digest.
+		-- separates them is the anchor and the blueprint digest. A settlement
+		-- that owns several blueprints publishes one delta per BLUEPRINT, whose
+		-- `kind` says how its cells reach the world -- anchor-relative,
+		-- projected from a reference column, or computed per mapchunk from the
+		-- plan's own column surface.
 		local settlement_deltas = {}
 		for index = 1, #settlement_blueprints do
 			local row = settlement_blueprints[index]
-			settlement_deltas[index] = {
-				schema = row.delta_schema, opcode = 37,
-				class = 13, policy = 13,
-				order = "after_anchor_activation_before_run_derivation",
-				overwrite = true, anchor_id = row.anchor_id,
-				blueprint_sha256 = row.identity.sha256,
-				content_sha256 = settlement_content.digest,
-				successor_ref_min = 99,
-				successor_ref_max = 98 + settlement_content.count,
-				cell_count = row.identity.cell_count,
-				clipping = "current_mapchunk_owner_intersection_v1",
-			}
+			settlement_deltas[index] = {}
+			for blueprint_index = 1, #row.blueprints do
+				local entry = row.blueprints[blueprint_index]
+				settlement_deltas[index][blueprint_index] = {
+					schema = row.delta_schema, opcode = 37,
+					class = 13, policy = 13,
+					order = "after_anchor_activation_before_run_derivation",
+					overwrite = true, anchor_id = row.anchor_id,
+					blueprint_id = entry.id, blueprint_kind = entry.kind,
+					blueprint_sha256 = entry.identity.sha256,
+					content_sha256 = settlement_content.digest,
+					successor_ref_min = 99,
+					successor_ref_max = 98 + settlement_content.count,
+					population = entry.kind == "overlay" and
+						entry.identity.run_count or entry.identity.cell_count,
+					population_kind = entry.kind == "overlay" and "runs" or "cells",
+					reach_min_x = entry.identity.min_x,
+					reach_min_y = entry.identity.min_y,
+					reach_min_z = entry.identity.min_z,
+					reach_max_x = entry.identity.max_x,
+					reach_max_y = entry.identity.max_y,
+					reach_max_z = entry.identity.max_z,
+					clipping = "current_mapchunk_owner_intersection_v1",
+				}
+			end
 		end
 		local values = {
 			schema = SCHEMA, full_seed = inputs.full_seed,
@@ -464,17 +535,22 @@ return function(canonical, raw_sha256)
 		}
 		for index = 1, #settlement_blueprints do
 			local row = settlement_blueprints[index]
-			local delta = settlement_deltas[index]
-			values[row.key .. "_blueprint_schema"] = row.identity.schema
-			values[row.key .. "_blueprint_sha256"] = row.identity.sha256
-			values[row.key .. "_cell_count"] = row.identity.cell_count
-			values[row.key .. "_delta_schema"] = delta.schema
-			values[row.key .. "_delta_sha256"] = graph_digest(delta)
-			values[row.key .. "_opcode"] = 37
-			values[row.key .. "_class"] = 13
-			values[row.key .. "_policy"] = 13
-			values[row.key .. "_order"] = delta.order
-			values[row.key .. "_overwrite"] = true
+			for blueprint_index = 1, #row.blueprints do
+				local entry = row.blueprints[blueprint_index]
+				local delta = settlement_deltas[index][blueprint_index]
+				local prefix = entry.prefix
+				values[prefix .. "_blueprint_schema"] = entry.identity.schema
+				values[prefix .. "_blueprint_sha256"] = entry.identity.sha256
+				values[prefix .. "_population"] = delta.population
+				values[prefix .. "_population_kind"] = delta.population_kind
+				values[prefix .. "_delta_schema"] = delta.schema
+				values[prefix .. "_delta_sha256"] = graph_digest(delta)
+				values[prefix .. "_opcode"] = 37
+				values[prefix .. "_class"] = 13
+				values[prefix .. "_policy"] = 13
+				values[prefix .. "_order"] = delta.order
+				values[prefix .. "_overwrite"] = true
+			end
 		end
 		local bytes = canonical_bytes(values)
 		return {schema = SCHEMA, sha256 = sha256_hex(bytes),

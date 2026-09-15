@@ -77,6 +77,37 @@ local function loader(directory)
 		return palette.maybe("castle_wall_stair") or palette.node("roof_stair")
 	end
 
+	-- Every node name a run may write, in ASCII byte order and without
+	-- duplicates. The seam needs it because an overlay has NO CELLS until a
+	-- surface is handed to it, so the one thing its identity can be written
+	-- from is its specification, and the palette is part of that
+	-- specification (`wp40/r7_settlement.lua`, the "overlay" blueprint kind).
+	-- It is also what lets a settlement's shared content channel carry the
+	-- road: the channel is closed at load, and a name the road can write but
+	-- the channel does not know would only fail on the mapchunk that finally
+	-- needs it.
+	--
+	-- Derived from the same four resolvers the run itself uses plus the two
+	-- names the standard is built from, so a change to any of them cannot
+	-- leave this list behind.
+	function M.palette_names(palette)
+		local names, seen, list = {paving(palette), kerb(palette),
+			tread(palette), palette.node("post"),
+			palette.node("light_post")}, {}, {}
+		for index = 1, #names do
+			local name = names[index]
+			if type(name) ~= "string" or name == "" then
+				error("wp13 avenue: the palette has no name for a road role", 0)
+			end
+			if not seen[name] then
+				seen[name] = true
+				list[#list + 1] = name
+			end
+		end
+		table.sort(list, parts.less_bytes)
+		return list
+	end
+
 	local function axis_steps(axis)
 		if axis == "x" then return 1, 0 end
 		if axis == "z" then return 0, 1 end
@@ -227,11 +258,24 @@ local function loader(directory)
 		-- carriageway, every `spacing` nodes. The verge column carries the
 		-- lamp at its OWN surface, so a standard beside a terrace joint
 		-- stands on the ground it is next to and not on the road's level.
+		--
+		-- EVERY STANDARD GETS ITS OWN FOOTING, at the verge column's surface and
+		-- in the kerb's material. On ordinary ground that cell is already solid
+		-- and the footing is a paving stone under the post; over water it is the
+		-- only thing between the post and the river. The run cannot tell the two
+		-- apart -- it is a pure function of one surface number and knows nothing
+		-- about water -- so it lays the footing unconditionally, which is both
+		-- correct and cheaper than a rule with a case in it.
+		--
+		-- This is not hypothetical: the first engine pass of the WP13 seam took
+		-- Highcourt's east avenue across a river as a causeway, and sixteen
+		-- standards stood in the water with nothing under them.
 		for p = from, to do
 			if (p - phase) % spacing == 0 then
 				for _, offset in ipairs({-half - 1, half + 1}) do
 					local x, z = column(p, offset)
 					local y = height(x, z)
+					buf:put(x, y, z, kerb(palette))
 					buf:put(x, y + 1, z, palette.node("post"))
 					buf:put(x, y + 2, z, palette.node("post"))
 					parts.floor_torch(buf, palette, x, y + 3, z)

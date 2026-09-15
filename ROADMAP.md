@@ -173,8 +173,17 @@ the goal-level view.
   court with the two royal vendors and a travel plaza reserved for WP17;
   the market and professions district as nine terrain-relative plots; and
   the gate avenues as a pure surface overlay a successor can run per
-  mapchunk (`docs/research/wp13-highcourt.md`). Nothing is wired into the
-  mapgen seam yet -- that generalisation is its own package.
+  mapchunk (`docs/research/wp13-highcourt.md`).
+  On 2026-09-15 the **settlement seam was generalised** and Highcourt now
+  stands in the world: a settlement carries its own build envelope and may
+  own many blueprints, its district plots are projected from the terrain
+  under their own reference column, its avenues are computed per mapchunk
+  from the ground the map has, and a capital's buildings are constructed
+  only when somebody goes there. Its 71 NPCs arrive with the place rather
+  than at server start, and its two royal traders stand on the blueprint's
+  own sockets. The six starts are byte-identical, engine digests included
+  (`docs/research/wp13-seam-generalisation.md`). The other three districts,
+  the remaining five capitals and the king content are still open.
 - [x] WP33: gathering plants, signature woods and cultural sources on final
   zone/race-region ownership; accepted with WP40 R7 on 2026-09-02.
 - [ ] WP34: deep spawn pressure, corrected depth-level curve, camp-only

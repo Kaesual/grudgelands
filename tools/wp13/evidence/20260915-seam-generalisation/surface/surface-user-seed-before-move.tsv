@@ -1,0 +1,10 @@
+plot	reference_x	reference_z	reference_y	perimeter_min	perimeter_max	perimeter_fall	perimeter_rise	footprint_min	footprint_max	footprint_fall	footprint_rise	clear_to	columns
+market_granary	72	-1528	46	42	46	4	0	42	46	4	0	13	357
+market_stable	72	-1472	35	34	39	1	4	34	39	1	4	11	357
+market_workshop	116	-1528	44	42	46	2	2	42	46	2	2	11	418
+market_counting_house	116	-1472	32	31	44	1	12	31	44	1	12	13	437
+market_well	152	-1528	38	31	42	7	4	31	42	7	4	9	529
+market_watch	152	-1469	32	31	36	1	4	31	36	1	4	12	567
+market_grove	76	-1564	38	38	42	0	4	38	42	0	4	24	441
+market_orchard	76	-1436	36	31	42	5	6	31	42	5	6	16	425
+market_store	116	-1564	42	40	44	2	2	40	44	2	2	12	357

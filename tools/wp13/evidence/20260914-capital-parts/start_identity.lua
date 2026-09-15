@@ -7,6 +7,12 @@ local settlement = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/r7_settlement.l
 local roster = settlement.roster
 local out = {}
 for _, profile in ipairs(roster) do
+	-- The STARTS only. Since the seam generalisation a roster row may be a
+	-- capital, whose blueprint file returns a source declaring several
+	-- blueprints of three kinds rather than one table with `bounds` and
+	-- `cells` -- this scratch comparison is about the six starts and would
+	-- otherwise crash on the first capital it met.
+	if profile.slot == "start" then
 	local bp = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/" ..
 		profile.blueprint_file)()
 	local rows = {}
@@ -23,6 +29,7 @@ for _, profile in ipairs(roster) do
 	out[#out + 1] = string.format("%-12s cells=%6d palette=%3d sha=%s",
 		profile.key, #bp.cells, #bp.palette,
 		common.hex(common.new_sha256()(text)))
+	end
 end
 table.sort(out)
 print(table.concat(out, "\n"))
