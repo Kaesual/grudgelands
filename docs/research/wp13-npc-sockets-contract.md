@@ -162,3 +162,101 @@ and two readings of that are both in use and both legal:
   looking in, so the turn faces the citizen at the door it is about to leave by.
 
 A new role placed at a door inherits the turn by carrying the tag.
+
+## 8. Work sockets, profession vendors and the 80/20 rule (2026-09-15)
+
+Playtest round 3: the capitals are empty and every resident is either a
+doorstep-stander or a wanderer. The user's rulings: guards always patrol;
+residents are **about 80 % static at a workplace with an activity animation
+and about 20 % walkers on short routes** (server load: path-finding and
+animated meshes are the cost, not the entity count); and the variety of
+activities is what makes a district read as lived in — a butcher with a
+butcher's house, a smith at a forge, citizens fishing at a pond with a
+fishmonger beside it.
+
+### 8.1 The `work` role
+
+A new role, `work`, is a resident's workplace. It is a `spawn` socket (one
+resident is placed on it, the roster counts it) and it carries
+
+```lua
+{id = "forge_anvil", role = "work", activity = "smith",
+ x = 12, y = 1, z = -7, dir = {x = 1, z = 0}}
+```
+
+- `activity` is REQUIRED and one of the closed vocabulary below. Anything else
+  is a build error in the registry, so a typo in a plot table fails at load
+  and never silently produces a standing NPC.
+- `dir` faces the thing being worked (the anvil, the water, the field row,
+  the counter). The NPC lane may turn the mesh as the animation needs, but
+  the authored facing names the feature, like `idle`'s does.
+- A `work` socket is always STATIC: its resident never leaves it. It may carry
+  `tags` like an `idle` socket (for the spoken line); `door` keeps its §7
+  meaning.
+- The blueprint KATs hold a `work` socket to every rule an `idle` socket
+  obeys (feet and head air, walkable ground, outside rooms, reachable from
+  the arrival) and additionally require the feature named by the activity to
+  stand where `dir` points, within three nodes: `smith` an anvil or furnace,
+  `fish` a water node, `farm` a farmland or crop node, `chop` a log or tree,
+  `pray` any node of the chapel interior, `tend` a plant or a flower,
+  `stall` a counter (any solid node at waist height), `sit` a stair or slab
+  or bench node under the socket's own feet cell is NOT required — `sit` sits
+  on the ground it stands on.
+
+### 8.2 Activity vocabulary (closed; extend here first)
+
+| activity | what the resident does | wielded item (NPC lane) |
+|---|---|---|
+| `smith` | hammers, punch animation on a slow loop | a hammer or pick |
+| `fish` | stands still holding a rod, occasional punch swing | fishing rod (an existing item or a stick) |
+| `farm` | hoes on a slow loop, punch animation | hoe |
+| `chop` | swings an axe on a slow loop | axe |
+| `tend` | crouch-free stand, occasional punch (weeding) | nothing |
+| `pray` | stand animation, no swing | nothing |
+| `stall` | stand animation, faces the counter | nothing |
+| `sit` | sitting pose (the player mesh's sit frames 81..160) | nothing |
+| `sweep` | walks a two-node line back and forth beside the socket | nothing |
+
+The exact animation choice is the NPC lane's; this table is the contract on
+NAMES and on the feature each name expects. `sweep` is the only activity that
+moves, and it stays within two nodes of its socket.
+
+### 8.3 Walkers and the 80/20 split
+
+Nothing is authored for it. Among a settlement's resident spawn sockets
+(`idle` with `spawn ~= false`, plus `work`) taken in authored order, the NPC
+lane decides deterministically which residents walk: **every fifth `idle`
+spawn socket, starting with the first, hosts a walker; every `work` socket
+and every other `idle` socket hosts a static resident.** A static `idle`
+resident keeps the round-1 amble only as a rare short hop (the spare ring),
+never a continuous walk. A walker's route is short: spot ring entries within
+a bounded distance of its home (the NPC lane measures and states the bound).
+
+The KAT of the NPC lane asserts the resulting walker share per settlement is
+between 10 % and 30 % of residents, so a composition that is all `work`
+sockets (zero walkers) is a KAT failure, not a lively district. Structure
+lanes therefore author at least one `idle` spawn socket per five residents.
+
+### 8.4 Profession vendors
+
+`vendor.kind` grows from `{race, general}` to
+`{race, general, butcher, smith, fishmonger, baker, tailor}`. A profession
+vendor is a trader with a stock table of its profession (the NPC lane owns
+the tables, `grug_traders`) and the structure lane places its socket at the
+matching building (a butcher's socket at the butcher's counter). A capital
+may hold at most ONE vendor per kind (the Highcourt KAT's family rule
+extends to every kind); the six starts keep their single `race` vendor.
+
+### 8.5 Who owns what
+
+- Registry vocabulary (`grug_core/settlement_sockets.lua`): the coordinator,
+  landed with this section so both lanes build on it.
+- KAT rules of §8.1 for `work` sockets and the feature-under-`dir` check:
+  the Highcourt fill lane in `highcourt_kat.lua`; the NPC lane in
+  `blueprint_kat.lua`, because it places the first `work` sockets in the six
+  starts (one or two per start, at features that already exist) to have
+  something to animate and to measure against.
+- Animations, wield items, walker selection, walker bound, load measurement:
+  the NPC lane (`grug_mobs/start_villagers.lua`, `start_npcs.lua`).
+- Profession stock tables and the vendor entities: the NPC lane
+  (`grug_traders`); the Highcourt fill lane places the sockets.

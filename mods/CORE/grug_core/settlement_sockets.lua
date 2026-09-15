@@ -30,8 +30,13 @@
 --
 
 local ROLES = {guard_post = true, guard_patrol = true, vendor = true,
-	idle = true, quest = true, king = true, waypoint = true}
-local VENDOR_KINDS = {race = true, general = true}
+	idle = true, quest = true, king = true, waypoint = true, work = true}
+-- Contract section 8.4: the two vendor families plus the professions.
+local VENDOR_KINDS = {race = true, general = true, butcher = true,
+	smith = true, fishmonger = true, baker = true, tailor = true}
+-- Contract section 8.2: the closed activity vocabulary of a `work` socket.
+local ACTIVITIES = {smith = true, fish = true, farm = true, chop = true,
+	tend = true, pray = true, stall = true, sit = true, sweep = true}
 
 -- settlement_key -> record; race_id -> the same record; registration order.
 local by_key = {}
@@ -85,6 +90,16 @@ local function compile(settlement_key, anchor, socket, seen)
 	elseif socket.kind ~= nil then
 		fail(where .. ": only a vendor carries a kind")
 	end
+	-- A WORKPLACE NAMES ITS ACTIVITY (contract section 8.1). The vocabulary is
+	-- closed so a plot table's typo fails here at load, instead of producing a
+	-- resident who stands at a forge doing nothing.
+	if socket.role == "work" then
+		if not ACTIVITIES[socket.activity] then
+			fail(where .. ": work activity differs")
+		end
+	elseif socket.activity ~= nil then
+		fail(where .. ": only a work socket carries an activity")
+	end
 	--
 	-- A SPARE SOCKET IS A DESTINATION, NOT A HOME (playtest round 2,
 	-- 2026-09-15). `spawn = false` says "nobody is placed here"; the socket is
@@ -121,6 +136,7 @@ local function compile(settlement_key, anchor, socket, seen)
 		id = id, role = socket.role, x = x, y = y, z = z,
 		dir_x = dir.x, dir_z = dir.z,
 		group = socket.group, order = socket.order, kind = socket.kind,
+		activity = socket.activity,
 		-- Normalized to a boolean here, so a consumer reads one field and
 		-- never has to spell "nil means true" itself.
 		spawn = socket.spawn ~= false,
@@ -142,6 +158,7 @@ local function copy_entry(entry)
 		x = entry.x, y = entry.y, z = entry.z,
 		dir = {x = entry.dir_x, z = entry.dir_z},
 		group = entry.group, order = entry.order, kind = entry.kind,
+		activity = entry.activity,
 		spawn = entry.spawn,
 		tags = tags,
 		pos = vector.new(entry.wx, entry.wy, entry.wz),

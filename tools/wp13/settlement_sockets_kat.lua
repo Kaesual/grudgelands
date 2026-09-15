@@ -226,6 +226,16 @@ return function(repo)
 		one({role = "guard_post", spawn = false}))
 	refuses("a spare vendor", "kapok", "elf", ANCHOR,
 		one({role = "vendor", kind = "race", spawn = false}))
+	-- Contract section 8: a workplace names a closed activity, and only a
+	-- workplace does; a vendor may be a profession.
+	refuses("a work socket without an activity", "kapok", "elf", ANCHOR,
+		one({role = "work"}))
+	refuses("an unknown work activity", "kapok", "elf", ANCHOR,
+		one({role = "work", activity = "juggle"}))
+	refuses("an activity on a non-work socket", "kapok", "elf", ANCHOR,
+		one({activity = "smith"}))
+	refuses("a spare work socket", "kapok", "elf", ANCHOR,
+		one({role = "work", activity = "smith", spawn = false}))
 	refuses("an empty tag list", "kapok", "elf", ANCHOR, one({tags = {}}))
 	refuses("a numeric tag", "kapok", "elf", ANCHOR, one({tags = {7}}))
 	local duplicate = one({})
@@ -241,15 +251,26 @@ return function(repo)
 	local capital_count = grug_core.register_settlement_sockets(
 		"dwarf_capital", "dwarf", CAPITAL,
 		{{id = "throne", role = "king", x = 0, y = 1, z = 0,
-			dir = {x = 0, z = -1}}})
-	check(capital_count == 1, "capital registration count differs")
+			dir = {x = 0, z = -1}},
+		 {id = "anvil", role = "work", activity = "smith", x = 3, y = 1, z = 4,
+			dir = {x = 1, z = 0}, tags = {"work"}},
+		 {id = "butcher", role = "vendor", kind = "butcher", x = -3, y = 1,
+			z = 4, dir = {x = 0, z = 1}}})
+	check(capital_count == 3, "capital registration count differs")
 	local start_again = grug_core.settlement_sockets("dwarf")
 	check(#start_again == #SOCKETS and start_again[1].id == "gate_west",
 		"the capital displaced the race's start sockets")
 	local capital = grug_core.settlement_sockets_at("dwarf_capital")
-	check(#capital == 1 and capital[1].id == "throne" and
+	check(#capital == 3 and capital[1].id == "throne" and
 		capital[1].role == "king" and capital[1].pos.y == CAPITAL.y + 1,
 		"the capital's own key does not answer")
+	check(capital[2].role == "work" and capital[2].activity == "smith" and
+		capital[2].spawn == true and capital[2].tags[1] == "work",
+		"the work socket lost its activity")
+	check(capital[1].activity == nil and capital[3].activity == nil,
+		"an activity leaked onto a non-work socket")
+	check(capital[3].kind == "butcher", "the profession vendor lost its kind")
+	line("work_and_profession", "smith", "butcher")
 	check(#grug_core.settlement_socket_settlements() == 2,
 		"the settlement roster lost the capital")
 	line("second_settlement", "one_race", "start_wins")
