@@ -515,6 +515,11 @@ zones. They enforce authored routes and make the zone's strategic role visible:
   (`attack_npcs = false`). Dedicated war-front soldiers are the scoped
   exception: their authored encounter anchors may target the opposing
   war-front population, hostile players and dangerous local creatures.
+  **The rule is universal and not a guard rule** (decided 2026-09-15): no mob
+  initiates against an NPC — monsters, animals and guards alike — and only a
+  war-front unit may. A guard still initiates against monsters, and a monster a
+  guard attacks fights back, so a camp beside an outpost no longer opens
+  hostilities on its own.
 - War-front squads use fixed population caps, place-bound respawn slots and
   fixed clash points. Their fights are ambient life only and do not capture a
   zone or move the faction boundary in the MVP (`world_zones.md` §5).

@@ -59,7 +59,11 @@
 --     does not butcher rabbits.
 --   * attack_npcs = false: never guard vs. guard, not even across factions.
 --     (Enemy guards ignoring each other is a deliberate simplification for
---     the MVP; NPC-vs-NPC war would need its own design pass.)
+--     the MVP; NPC-vs-NPC war would need its own design pass.) Since the
+--     2026-09-15 playtest this is no longer a per-def choice at all --
+--     `grug_mobs.register_mob` applies it to EVERY mob (verbs.lua's
+--     `no_npc_targets`, world.md §4) and the field is kept here only because
+--     this def is where the rule is documented.
 --   * owner stays "" — nobody owns a guard, and mobs_redo's owner checks
 --     (general_attack, follow) must never match a real player name.
 --
@@ -88,11 +92,28 @@ local function guard_tick(self, dtime)
 			grug_mobs.set_tier(self, "elite")
 		end
 	end
+	-- A SOCKET GUARD CLAIMS ITS SOCKET, once per activation: a twin standing on
+	-- a socket somebody else already holds removes itself rather than joining
+	-- the watch (start_npcs.lua's claim registry, playtest round 1 — a world
+	-- that lost markers had ~50 guards in one start). Nothing else in this tick
+	-- may run for a mob that is about to be removed.
+	self.temp = self.temp or {}
+	if self._grug_start and not self.temp.grug_socket_claimed then
+		self.temp.grug_socket_claimed = true
+		if not grug_mobs.start_npc_claim(self) then
+			-- FALSE, not nil: mobs_redo's on_step returns as soon as do_custom
+			-- answers false (api.lua "run custom function"), which is how a mob
+			-- that has just removed itself skips the rest of its own step.
+			return false
+		end
+	end
 	-- Ambient outpost patrol (world.md §4). Only the camp's designated
 	-- patroller carries the route; every other guard holds its post.
+	-- `rescue` is on: a guard walking an authored loop through a settlement is
+	-- exactly the mob the stuck rescue was written for (patrol.lua).
 	local route = self._grug_patrol_route
 	if route then
-		grug_mobs.route_tick(self, dtime, route.points, route, "wp")
+		grug_mobs.route_tick(self, dtime, route.points, route, "wp", true)
 	end
 	-- A START SETTLEMENT's post guard holds its authored socket and faces its
 	-- authored direction while idle (start_npcs.lua, WP13). An outpost guard

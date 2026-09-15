@@ -676,3 +676,42 @@ function grug_mobs.passive_prey(def)
 	def.attack_type = def.attack_type or "dogfight"
 	return def
 end
+
+--
+-- NOBODY HUNTS NPCs (world.md §4: "Ordinary guards attack enemy players and
+-- monsters, never arbitrary NPCs (attack_npcs = false). Dedicated war-front
+-- soldiers are the scoped exception"; §9 repeats it for world life).
+--
+-- `attack_npcs` DEFAULTS TO TRUE in mobs_redo's mob_class (api.lua:170) and is
+-- read in exactly one place, general_attack's candidate filter
+-- (api.lua:1814: `not self.attack_npcs and ent.type == "npc"`). Every hostile
+-- family in this mod therefore used to acquire `type = "npc"` entities on sight,
+-- which the 2026-09-15 playtest found the ugly end of: a boar stood in front of
+-- a village woman hitting her for as long as the player watched, because a
+-- settlement NPC cancels every punch and the fight can never end.
+--
+-- Applied in `grug_mobs.register_mob` for EVERY mob, not per file, because "this
+-- one forgot the field" is precisely the failure this replaces -- guard.lua had
+-- it, the eighteen hostiles did not. The opt-out is explicit and named after the
+-- design's own exception:
+--
+--   `_grug_attack_npcs = true` -- a dedicated war-front unit, whose authored
+--   encounter may target the opposing faction's NPC population.
+--
+-- It touches no other targeting field: `attack_players`, `attack_animals` and
+-- `attack_monsters` stay exactly as the def wrote them, so retaliation (a
+-- punched monster's own `do_attack` in on_punch, api.lua:2979) and guard vs.
+-- monster are unaffected. NB `no_acquire` in init.lua is derived from the same
+-- four fields AFTER this runs, which is correct: a def that may target nobody at
+-- all is one this cannot create -- it only ever narrows `attack_npcs`, and every
+-- def whose `attack_players` is false already set `attack_npcs = false` itself
+-- (the five passive-prey mobs above, the two settlement families).
+--
+function grug_mobs.no_npc_targets(def)
+	if def._grug_attack_npcs == true then
+		def.attack_npcs = true
+		return def
+	end
+	def.attack_npcs = false
+	return def
+end

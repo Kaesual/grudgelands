@@ -81,15 +81,45 @@
 --   and no player is anywhere near them, so on the second boot that scan
 --   would find nothing at all and duplicate the entire roster -- forever,
 --   because npc entities never expire. vendors.lua avoids that by only ever
---   looking at slots within 24 nodes of a player; a start roster that may
---   only appear once a player walks up cannot be placed at start-ready at
---   all.
+--   looking at slots close to a player; a start roster that may only appear
+--   once a player walks up cannot be placed at start-ready at all.
 --
 --   The scan is still used, as a SECOND gate before every placement: if the
---   marker is missing but the entity BOOKED ON THAT SOCKET is standing there
---   anyway (a marker lost to an admin edit), the marker is restored instead of
---   a twin being spawned. It matches the socket and not just the entity name,
---   for the reason written at `socket_occupied`.
+--   marker is missing but the entity BOOKED ON THAT SOCKET exists anyway (a
+--   marker lost to an admin edit), the marker is restored instead of a twin
+--   being spawned.
+--
+--   OCCUPANCY IS AN IDENTITY QUESTION, NOT A POSITION ONE, and getting that
+--   wrong is what the 2026-09-15 playtest found. The first version asked
+--   `get_objects_inside_radius(socket, 8)`, i.e. "is my NPC standing ON its
+--   socket right now" -- which a guard walking its patrol loop and a villager
+--   ambling between idle spots both answer NO. The heartbeat then freed the
+--   marker and placed a twin, every five seconds, for every NPC that was not
+--   at home: after a while a start had about fifty guards walking through it.
+--   So a settlement is scanned ONCE per heartbeat around its anchor, out to its
+--   furthest socket plus SCAN_MARGIN, and every entity carrying this
+--   settlement's key is matched to the socket it is BOOKED ON
+--   (`_grug_socket`), wherever it happens to stand. That map -- `held` -- is
+--   what answers both questions the pass asks.
+--
+--   THREE THINGS BOUND THE POPULATION, and the marker alone does not:
+--     1. the marker, which is what makes a restart place nothing;
+--     2. the identity scan, which REMOVES a second entity found on a socket
+--        that is already held -- this is what heals a world that already has
+--        twins;
+--     3. `grug_mobs.start_npc_claim`, which every family calls on activation,
+--        so a twin arriving with its mapblock removes itself at once instead of
+--        waiting for a heartbeat.
+--   Plus the hard cap in `place`: a settlement already holding as many NPCs as
+--   its roster has places nothing more, whatever its markers say.
+--
+--   AND THE CONTEST BETWEEN TWO NPCs ON ONE SOCKET IS DECIDED BY AGE, never by
+--   which of them activated second (`placed_at`). That is what makes even a
+--   misfired strike cheap: the fresh replacement is the one that goes, and the
+--   original keeps its wound, its dwell and its place in the loop.
+--
+--   WHOSE MAPBLOCK HAS TO BE ACTIVE is a separate question from where the socket
+--   is, and the review of this round caught it: see `strikeable`.
 --
 --   Guards are the one family that must come back after a death, so their
 --   marker is cleared from `on_die` together with a due time; nothing else
@@ -100,10 +130,11 @@
 --   can leave: `/clearobjects`, the `mob_active_limit` removal inside
 --   `mob_activate` (api.lua:3311-3314) and a shutdown between the mod-storage
 --   flush and the map flush all end with a marker and no NPC, and without a
---   re-check that socket would stay empty for the life of the world. So the
---   heartbeat pass -- the one where a player IS near, which is the only state
---   in which the scan can answer at all -- also frees a marked socket that has
---   nothing standing on it. That is the exact mirror of the second gate.
+--   re-check that socket would stay empty for the life of the world. So a pass
+--   over a socket whose own mapblock is ACTIVE -- the only state in which the
+--   scan can answer at all -- also frees a marked socket that nothing holds,
+--   once FREE_STRIKES passes running have agreed. That is the exact mirror of
+--   the second gate.
 --
 -- WHY `core.add_entity` AND NOT `grug_mobs.add_mob`: `mobs:add_mob` refuses
 -- whenever no player is inside the active area (api.lua:3885-3890,
@@ -116,14 +147,19 @@
 
 local storage = grug_mobs.storage
 
--- The placement retry heartbeat, and how close a player has to be for a
--- retry. PLAYER_RANGE is vendors.lua's 24 and for its documented reason: the
--- presence scan below only sees activated objects, and activation reaches
--- `active_block_range * 16` nodes, which is 32 in the smallest shipped
--- platform profile. 24 + PRESENCE_RADIUS 8 = 32 keeps the scan honest there.
+-- The placement retry heartbeat.
 local PLACE_INTERVAL = 5
-local PLAYER_RANGE = 24
-local PRESENCE_RADIUS = 8
+-- How far outside its own sockets a settlement's NPCs may be and still count as
+-- present. A guard may be dragged `_grug_leash_range` = 30 nodes from its post
+-- before it turns round, a patroller is between waypoints by definition, and a
+-- villager is somewhere between two idle spots half the time.
+local SCAN_MARGIN = 48
+-- How many consecutive heartbeats a marked socket must read as EMPTY -- with its
+-- own mapblock active, so that the answer is real -- before the marker is freed.
+-- One heartbeat is not proof: an NPC whose own mapblock happens to be inactive
+-- at that moment is not in the environment at all and cannot be seen from
+-- anywhere, and freeing on the first miss is how a twin gets placed.
+local FREE_STRIKES = 3
 -- One guard respawn slot, world.md section 4a's guard rhythm (the same
 -- GUARD_RESPAWN_MIN/MAX camps.lua uses for an outpost picket).
 local RESPAWN_MIN, RESPAWN_MAX = 180, 360
@@ -131,6 +167,11 @@ local RESPAWN_MIN, RESPAWN_MAX = 180, 360
 -- two nodes of slack so a nudged guard is not permanently walking home.
 local POST_TICK = 1
 local POST_SLACK = 2
+-- The post walk's own two stages of patrol.lua's stuck rescue. Deliberately the
+-- same numbers as the route's first and third stage: a guard is a guard, and the
+-- one difference is that a post has no next waypoint to skip to.
+local POST_STALL_PATH = 20
+local POST_STALL_SNAP = 90
 
 --
 -- Role resolvers. A role with no resolver is a socket nobody stands on
@@ -181,6 +222,105 @@ local FAMILY = {guard_post = "guards", guard_patrol = "guards",
 	idle = "flair", vendor = "vendor", quest = "quest"}
 local FAMILY_ORDER = {"guards", "flair", "vendor", "quest"}
 
+-- Which NPC family (start_villagers.lua) a role is nametagged as.
+local NAMED_FAMILY = {idle = "villager", quest = "elder"}
+
+--
+-- THE CLAIM REGISTRY: settlement key -> socket id -> the luaentity holding that
+-- socket. Runtime only and deliberately so -- it is a view of what is ACTIVE
+-- right now, while the markers are what persists.
+--
+-- The luaentity TABLE is the identity, never an ObjectRef comparison: the table
+-- is certainly unique per mob, and a mob whose object has gone is recognized by
+-- `get_pos()` answering nil.
+--
+local held = {}
+
+local function holder_alive(entity, key, socket_id)
+	return entity ~= nil and entity._grug_start == key and
+		entity._grug_socket == socket_id and entity.object ~= nil and
+		entity.object:get_pos() ~= nil
+end
+
+--
+-- WHICH OF TWO NPCs ON ONE SOCKET IS THE ORIGINAL: the one placed first.
+--
+-- `_grug_placed_at` is the gametime `install` stamped on it, a plain number, so
+-- it survives unload/reload with the mob. An entity without one (nothing this
+-- engine placed) counts as the newest, which keeps every contest decided in
+-- favour of a real placement.
+--
+-- Age and not distance-to-socket, because what is at stake is STATE: the older
+-- NPC is the one carrying the wound, the dwell and the position in its patrol
+-- loop, and a fresh full-HP replacement standing on the socket must never be the
+-- one that survives.
+--
+local function placed_at(entity)
+	local stamp = entity and entity._grug_placed_at
+	if type(stamp) ~= "number" then return math.huge end
+	return stamp
+end
+
+local function claims_of(key)
+	local slots = held[key]
+	if not slots then
+		slots = {}
+		held[key] = slots
+	end
+	return slots
+end
+
+--
+-- Called by every settlement NPC family on activation (guard.lua's tick,
+-- start_villagers.lua's and vendors.lua's after_activate). Returns false when
+-- the caller has removed itself, in which case its activation must do nothing
+-- else.
+--
+-- One socket is ONE lease. Two entities booked on it can only come from a world
+-- that lost a marker while its NPC lived, so one of them goes -- and it is
+-- always the YOUNGER one (`placed_at` above), never whichever happened to
+-- activate second. That is what heals such a world without throwing a wounded
+-- guard away, and it is why a strike that does misfire costs a transient spare
+-- and no state.
+--
+-- Returns false when the CALLER has removed itself, in which case its activation
+-- must do nothing else.
+--
+function grug_mobs.start_npc_claim(entity)
+	if type(entity) ~= "table" then
+		return true
+	end
+	local key, socket_id = entity._grug_start, entity._grug_socket
+	if type(key) ~= "string" or type(socket_id) ~= "string" then
+		return true -- not a settlement NPC at all (an outpost guard)
+	end
+	local slots = claims_of(key)
+	local other = slots[socket_id]
+	if other ~= nil and other ~= entity and
+			holder_alive(other, key, socket_id) then
+		if placed_at(entity) < placed_at(other) then
+			-- The arrival is the original; the sitting holder is the spare.
+			core.log("warning", "[grug_mobs] start npcs " .. key ..
+				": the newer " .. tostring(other.name) .. " on socket " ..
+				socket_id .. " gave way to the one that was placed first")
+			if other.object then
+				mobs:remove(other, true)
+			end
+			slots[socket_id] = entity
+			return true
+		end
+		core.log("warning", "[grug_mobs] start npcs " .. key .. ": a second " ..
+			tostring(entity.name) .. " activated on socket " .. socket_id ..
+			" and removed itself")
+		if entity.object then
+			mobs:remove(entity, true)
+		end
+		return false
+	end
+	slots[socket_id] = entity
+	return true
+end
+
 -- The marker is keyed by the SETTLEMENT KEY, not the race: every race has a
 -- start and a capital, so a race is not a unique settlement (the sockets
 -- contract's own rule) and two settlements of one race would otherwise share
@@ -208,6 +348,10 @@ end
 local function mark_free(row, slot, due)
 	slot.placed = false
 	slot.due = due
+	-- The next NPC on this socket is a different one, so whatever the last one
+	-- was doing when it went out of memory is no longer interesting
+	-- (see `strikeable`).
+	slot.away_x = nil
 	storage:set_string(placed_key(row.key, slot.id), "")
 	storage:set_string(due_key(row.key, slot.id), due and tostring(due) or "")
 	row.pending = row.pending + 1
@@ -225,6 +369,35 @@ end
 -- slash belongs to the settlement's own core or pad.
 local function composition_of(socket_id)
 	return socket_id:match("^([^/]+)/") or "-"
+end
+
+--
+-- AN IDLE SOCKET AT A DOOR FACES AWAY FROM IT (playtest round 1, 2026-09-15).
+--
+-- A socket's `dir` is measured at the feature it stands on -- that is what the
+-- blueprint authored and what every other role wants -- but a villager on a
+-- doorstep whose face is the door shows the street its back, which is what the
+-- player walking up the street actually sees. So the CONSUMER turns a
+-- door-tagged idle socket round; the blueprint data keeps meaning one thing, and
+-- no future composition can forget the rule.
+--
+-- Sockets are not identity bytes, so editing the seven socket tables instead
+-- would have been legal -- but it would be seven files, ~30 entries and one more
+-- thing to get right per new settlement.
+--
+local FACE_AWAY_TAGS = {door = true}
+local TWO_PI = 2 * math.pi
+
+local function socket_face_yaw(socket)
+	local yaw = socket.yaw
+	local tag = socket.tags and socket.tags[1] or nil
+	if socket.role == "idle" and tag and FACE_AWAY_TAGS[tag] then
+		yaw = yaw + math.pi
+		if yaw >= TWO_PI then
+			yaw = yaw - TWO_PI
+		end
+	end
+	return yaw
 end
 
 -- Is this settlement a race's START or its CAPITAL? The registry is keyed by
@@ -283,13 +456,27 @@ local function build_rows()
 			local row = {race_id = record.race_id, faction_id = faction_id,
 				key = record.key, kind = kind, anchor = record.anchor,
 				slots = {}, by_socket = {}, pending = 0, idle_groups = {},
-				patrols = {}, totals = {}, placed_count = {}}
+				patrols = {}, totals = {}, placed_count = {},
+				scan_radius = SCAN_MARGIN}
 			-- The patrol loops and the idle spots first: both are read by every
 			-- entity the row places, so they are built before the slots. A loop
 			-- is named by its waypoints' `group`, which is how a capital carries
 			-- six of them without this file knowing there are six.
 			local loops, loop_order = {}, {}
 			for _, socket in ipairs(sockets) do
+					-- The identity scan's radius: every socket this settlement has --
+					-- patrol waypoints included, because that is where its guard
+					-- walks -- plus the margin a leashed fight or an amble adds.
+					-- Computed here so a capital's district plots widen it and a
+					-- start's 128-node pad does not.
+				local sdx = socket.pos.x - record.anchor.x
+				local sdy = socket.pos.y - record.anchor.y
+				local sdz = socket.pos.z - record.anchor.z
+				local reach = math.sqrt(sdx * sdx + sdy * sdy + sdz * sdz) +
+					SCAN_MARGIN
+				if reach > row.scan_radius then
+					row.scan_radius = reach
+				end
 				if socket.role == "guard_patrol" then
 					local loop = loops[socket.group]
 					if not loop then
@@ -313,7 +500,7 @@ local function build_rows()
 					end
 					spots[#spots + 1] = {
 						x = socket.pos.x, y = socket.pos.y, z = socket.pos.z,
-						yaw = socket.yaw,
+						yaw = socket_face_yaw(socket),
 						tag = socket.tags and socket.tags[1] or nil,
 					}
 				end
@@ -359,7 +546,7 @@ local function build_rows()
 							group = socket.group, composition = group,
 							pos = {x = socket.pos.x, y = socket.pos.y,
 								z = socket.pos.z},
-							yaw = socket.yaw,
+							yaw = socket_face_yaw(socket),
 							tag = socket.tags and socket.tags[1] or nil,
 							idle_index = socket.role == "idle" and idle_index[group] or nil,
 							placed = storage:get_string(
@@ -391,44 +578,158 @@ end
 -- Placement
 --
 
-local function player_near(positions, pos)
-	for index = 1, #positions do
-		local player_pos = positions[index]
-		local dx = player_pos.x - pos.x
-		local dy = player_pos.y - pos.y
-		local dz = player_pos.z - pos.z
-		if dx * dx + dy * dy + dz * dz <= PLAYER_RANGE * PLAYER_RANGE then
-			return true
-		end
-	end
-	return false
-end
-
--- Second gate only (see the header): an activated entity ALREADY BOOKED ON
--- THIS SOCKET means the marker was lost, not that a twin is wanted.
 --
--- The match is the socket, not merely the entity name, and that is not a
--- refinement: a start's two gate posts are eight nodes apart and carry the
--- same faction guard, and the patrol loop's first waypoint sits on the same
--- road. A name-only scan inside PRESENCE_RADIUS therefore saw the guard of
--- the post NEXT DOOR, "restored" a marker nobody had lost and left that post
--- empty -- measured on the first headless boot, where Hearthpine came up with
--- one guard instead of three.
-local function socket_occupied(row, slot)
-	local objects = core.get_objects_inside_radius(slot.pos, PRESENCE_RADIUS)
+-- ONE IDENTITY SCAN PER SETTLEMENT PER PASS (see the header). Returns
+--   claims  socket id -> the luaentity booked on it, wherever it stands, and
+--   total   how many of this settlement's NPCs are standing in the scanned
+--           volume at all -- which is what the hard cap in `place` reads.
+--
+-- A SECOND entity found on a socket that is already held is REMOVED here. That
+-- is the heal for a world the pre-fix heartbeat already filled with twins: the
+-- markers cannot tell them apart, the sockets can.
+--
+local function scan_row(row)
+	local slots = claims_of(row.key)
+	local claims, total = {}, 0
+	local objects = core.get_objects_inside_radius(row.anchor, row.scan_radius)
 	for index = 1, #objects do
 		local entity = objects[index]:get_luaentity()
 		-- The settlement KEY, which is what `install` writes: a race has a start
-		-- and a capital, and comparing the race here would make every socket of
-		-- both read as empty, free its marker and spawn a twin on every
-		-- heartbeat.
-		if entity and entity.name == slot.entity and
-				entity._grug_start == row.key and
-				entity._grug_socket == slot.id then
-			return true
+		-- AND a capital, so comparing the race here would make every socket of
+		-- both read as held by the other one's NPC.
+		if entity and entity._grug_start == row.key then
+			local socket_id = entity._grug_socket
+			local slot = socket_id and row.by_socket[socket_id]
+			if slot and entity.name == slot.entity then
+				local first = claims[socket_id]
+				if first == nil then
+					claims[socket_id] = entity
+					-- Seen alive, so it is not away with an unloaded mapblock.
+					slot.away_x = nil
+					total = total + 1
+				elseif first ~= entity then
+					-- One socket is one lease, and the YOUNGER of the two goes
+					-- (`placed_at`): a fresh replacement must never displace the
+					-- NPC that carries the wound and the route. `mobs:remove`
+					-- rather than `object:remove` for mobs_redo's own active-mob
+					-- bookkeeping.
+					local keep, drop = first, entity
+					if placed_at(entity) < placed_at(first) then
+						keep, drop = entity, first
+					end
+					claims[socket_id] = keep
+					slot.away_x = nil
+					core.log("warning", "[grug_mobs] start npcs " .. row.key ..
+						": a second " .. entity.name ..
+						" was booked on socket " .. socket_id ..
+						" and was removed")
+					mobs:remove(drop, true)
+				end
+			end
 		end
 	end
-	return false
+	-- An NPC that is active but OUTSIDE the scanned volume still exists, so its
+	-- socket is not free: keep the claim it made on activation. (A guard dragged
+	-- past SCAN_MARGIN by a running fight is the case.)
+	for socket_id, entity in pairs(slots) do
+		if claims[socket_id] == nil and
+				holder_alive(entity, row.key, socket_id) then
+			claims[socket_id] = entity
+			total = total + 1
+		end
+	end
+	held[row.key] = claims
+	return claims, total
+end
+
+--
+-- CAN THE SCAN ANSWER FOR THIS SOCKET AT ALL? An object exists in the
+-- environment only while its mapblock is ACTIVE, and a mapblock is activated by
+-- a player being near it (or by a forceload) -- not by being loaded. At
+-- start-ready the whole 128 x 128 envelope is loaded and nobody is in it, so
+-- nothing can be seen and therefore nothing may be freed.
+--
+-- `compare_block_status` asks that question directly. The first version
+-- approximated it with "a player within 24 nodes", which is neither necessary
+-- (a forceload activates too) nor sufficient (the engine's activation radius is
+-- a setting, not 24).
+--
+local function socket_seeable(pos)
+	return core.compare_block_status(pos, "active") == true
+end
+
+--
+-- MAY THIS PASS STRIKE A MARKED SOCKET THAT NOTHING HOLDS?
+--
+-- THE SOCKET'S OWN MAPBLOCK BEING ACTIVE IS NECESSARY AND NOT SUFFICIENT, and
+-- reading it as sufficient was a defect of its own, found by the review of this
+-- round (2026-09-15). `compare_block_status` answers for the block containing the
+-- position it is handed (`ServerEnvironment::getBlockStatus`,
+-- serverenvironment.cpp:1159-1172) and `active_block_range` defaults to four
+-- mapblocks = 64 nodes, while Highcourt's ring loop spans about a hundred: a
+-- player at the south gate leaves the north-west patroller's OWN block inactive.
+-- Its object is then not in the environment at all -- `get_pos()` nil, so no
+-- claim -- while the socket it is booked on is active, and striking on that alone
+-- replaces a guard that is merely out of range.
+--
+-- The engine says which of the two it is, so we do not have to guess:
+-- `on_deactivate(self, removal)` distinguishes "removed" from "its mapblock was
+-- unloaded" (lua_api.md: object callbacks). The unload case records WHERE the NPC
+-- went out of memory -- a position whose block is inactive by construction at
+-- that moment -- and the socket is then struck only once THAT block is active
+-- again, because an NPC still on disk comes back with its own block. An NPC we
+-- have no such record for is one the engine never told us about, which is the
+-- `/clearobjects` case (`mode = "full"` deliberately calls no callback), and
+-- there the socket's own block is the whole test.
+--
+-- `start_npc_claim`'s age rule is the backstop under all of it: if a strike ever
+-- does misfire, the fresh replacement is the entity that goes.
+--
+local function strikeable(slot)
+	if not socket_seeable(slot.pos) then
+		return false
+	end
+	if slot.away_x == nil then
+		return true
+	end
+	return socket_seeable({x = slot.away_x, y = slot.away_y, z = slot.away_z})
+end
+
+--
+-- The deactivation record above. Installed on mobs_redo's SHARED mob class,
+-- which is what makes it one hook for all five families and no patch to a
+-- vendored file: mobs_redo defines no `on_deactivate` at all, and the engine
+-- looks the callback up on the entity's table, which reaches `mob_class` through
+-- its metatable (api.lua `mob_class_meta`). Chained anyway, so a later
+-- mobs_redo that grows one keeps it.
+--
+local function track_deactivation(entity, removal)
+	local key, socket_id = entity._grug_start, entity._grug_socket
+	if type(key) ~= "string" or type(socket_id) ~= "string" then
+		return
+	end
+	local row = by_key[key]
+	local slot = row and row.by_socket[socket_id]
+	if not slot or claims_of(key)[socket_id] ~= entity then
+		return -- not this socket's holder (a spare on its way out)
+	end
+	if removal then
+		-- Gone for good: the marker may be freed on the ordinary strike rule.
+		slot.away_x = nil
+		return
+	end
+	local pos = entity.object and entity.object:get_pos()
+	if pos then
+		slot.away_x, slot.away_y, slot.away_z = pos.x, pos.y, pos.z
+	end
+end
+
+local old_on_deactivate = mobs.mob_class.on_deactivate
+mobs.mob_class.on_deactivate = function(self, removal)
+	track_deactivation(self, removal)
+	if old_on_deactivate then
+		return old_on_deactivate(self, removal)
+	end
 end
 
 local function copy_spots(spots)
@@ -450,6 +751,20 @@ local function install(entity, row, slot)
 	-- already reads.
 	entity._grug_start = row.key
 	entity._grug_socket = slot.id
+	-- When this NPC was placed, so a contest over one socket can be decided by
+	-- age instead of by which of the two activated second (`placed_at`). Plain
+	-- number, so it survives unload/reload with the mob.
+	entity._grug_placed_at = core.get_gametime()
+	-- THE NAMETAG FOLLOWS THE SETTLEMENT, NOT THE RACE (playtest round 1): one
+	-- villager entity serves a race's start AND its capital, so a name that
+	-- hangs on the race put "Dawnmere Farmer" in the middle of Highcourt. The
+	-- name is resolved once, here, and persists with the entity;
+	-- start_villagers.lua owns what a settlement's people are called.
+	local named = NAMED_FAMILY[slot.role]
+	if named and grug_mobs.settlement_npc_name then
+		entity._grug_npc_name = grug_mobs.settlement_npc_name(row.key, row.kind,
+			row.race_id, named)
+	end
 	-- The facing to re-assert on every activation: mob_activate hands every mob
 	-- a random yaw (api.lua:3401), so an authored one has to be written back.
 	-- The two families with a tick of their own do it there; the quest shell has
@@ -505,25 +820,20 @@ local function place(row, slot)
 	grug_mobs.place_on_ground(object, slot.pos)
 	install(entity, row, slot)
 	grug_mobs.face_yaw(entity, slot.yaw)
+	-- Both of these exist because `core.add_entity` activates the entity
+	-- synchronously: its `after_activate` has already run, with none of the
+	-- fields `install` has just written. The facing is one, the settlement's own
+	-- name for its people is the other.
+	if grug_mobs.start_npc_retag then
+		grug_mobs.start_npc_retag(entity)
+	end
+	-- Claim the socket at once. The families claim on activation, which for THIS
+	-- entity happened before it had a socket at all.
+	grug_mobs.start_npc_claim(entity)
+	slot.away_x = nil
 	return true
 end
 
--- One pass over a start. `positions` is nil for the start-ready pass, which
--- runs while the prepared area is loaded and deliberately has no player in
--- it; a heartbeat pass hands the player positions in and only looks at
--- sockets one of them is near.
---
--- THE MARKER IS NOT ALLOWED TO OUTLIVE ITS NPC, and `on_die` alone does not
--- guarantee that: it is reached only from `check_for_death` (api.lua:870-876),
--- so `/clearobjects`, the `mob_active_limit` removal inside `mob_activate`
--- (api.lua:3311-3314) and a shutdown between the mod-storage flush and the map
--- flush all leave a marker with nothing standing on it -- and that socket
--- would then never refill again for the life of the world. So a HEARTBEAT pass
--- also re-checks the sockets it can actually see, which is the exact mirror of
--- the second gate below: a player within PLAYER_RANGE is what makes the
--- mapblock active, which is what makes `socket_occupied` able to answer at all
--- (on the start-ready pass, where no player is near, it can not, which is why
--- that pass never frees anything).
 -- Is this settlement's area prepared? A start has the preload's own answer; a
 -- capital is not preloaded at all, so what says "the area exists now" is its
 -- anchor column answering with a real node. `get_node_or_nil` is nil for an
@@ -536,43 +846,110 @@ local function settlement_ready(row)
 	return node ~= nil and node.name ~= "ignore"
 end
 
-local function serve(row, positions)
+--
+-- ONE PASS OVER A SETTLEMENT. The same pass serves the start-ready trigger and
+-- the heartbeat, because what a pass may do is decided PER SOCKET and not per
+-- caller: a socket whose node is loaded can be filled, a socket whose mapblock
+-- is active can also be freed. At start-ready the envelope is loaded and nobody
+-- is in it, so the second half of that is simply false everywhere -- which is
+-- exactly the old "the ready pass never frees anything", without a flag.
+--
+-- THE MARKER IS NOT ALLOWED TO OUTLIVE ITS NPC, and `on_die` alone does not
+-- guarantee that: it is reached only from `check_for_death` (api.lua:870-876),
+-- so `/clearobjects`, the `mob_active_limit` removal inside `mob_activate`
+-- (api.lua:3311-3314) and a shutdown between the mod-storage flush and the map
+-- flush all leave a marker with nothing standing on it -- and that socket would
+-- then never refill again for the life of the world.
+--
+-- But a socket that reads empty ONCE is not proof of that, and believing it was
+-- the round-1 defect: FREE_STRIKES consecutive passes must agree, each of them
+-- with the socket's own mapblock active.
+--
+local function serve(row)
 	if not settlement_ready(row) then return 0, 0 end
-	if row.pending <= 0 and not positions then return 0, 0 end
+	local claims, live = scan_row(row)
 	local now = core.get_gametime()
 	local new, freed = 0, 0
 	for index = 1, #row.slots do
 		local slot = row.slots[index]
-		local near = not positions or player_near(positions, slot.pos)
-		if slot.placed and positions and near then
-			local node = core.get_node_or_nil(slot.pos)
-			if node and node.name ~= "ignore" and not socket_occupied(row, slot) then
-				core.log("warning", "[grug_mobs] start npcs " .. row.key ..
-					": socket " .. slot.id .. " is marked but empty; " ..
-					slot.entity .. " is gone and the slot is queued again")
-				mark_free(row, slot, nil)
-				freed = freed + 1
+		local occupied = claims[slot.id] ~= nil
+		if slot.placed then
+			if occupied then
+				slot.strikes = 0
+			elseif strikeable(slot) then
+				slot.strikes = (slot.strikes or 0) + 1
+				if slot.strikes >= FREE_STRIKES then
+					core.log("warning", "[grug_mobs] start npcs " .. row.key ..
+						": socket " .. slot.id .. " is marked but empty; " ..
+						slot.entity .. " is gone and the slot is queued again")
+					mark_free(row, slot, nil)
+					slot.strikes = 0
+					freed = freed + 1
+				end
 			end
 		end
-		if not slot.placed and (not slot.due or now >= slot.due) and near then
-			local node = core.get_node_or_nil(slot.pos)
-			if node and node.name ~= "ignore" then
-				if socket_occupied(row, slot) then
-					core.log("warning", "[grug_mobs] start npcs " .. row.key ..
-						": " .. slot.entity .. " already stands at socket " ..
-						slot.id .. " without a marker; marker restored")
-					mark_placed(row, slot)
-				elseif place(row, slot) then
-					mark_placed(row, slot)
-					new = new + 1
-					core.log("action", "[grug_mobs] start npcs " .. row.key ..
-						": " .. slot.entity .. " placed at socket " .. slot.id ..
-						" " .. core.pos_to_string(slot.pos))
+		if not slot.placed and (not slot.due or now >= slot.due) then
+			if occupied then
+				-- The second gate: the marker was lost, the NPC was not.
+				core.log("warning", "[grug_mobs] start npcs " .. row.key ..
+					": " .. slot.entity .. " already stands at socket " ..
+					slot.id .. " without a marker; marker restored")
+				mark_placed(row, slot)
+			else
+				local node = core.get_node_or_nil(slot.pos)
+				if node and node.name ~= "ignore" then
+					if live >= #row.slots then
+						-- THE HARD CAP: a settlement never holds more NPCs than
+						-- it has sockets, whatever its markers say -- the
+						-- round-1 defect grew a start's watch to about fifty.
+						-- Deliberately a belt-and-braces ASSERTION: while the
+						-- claim map is keyed per socket and `scan_row` removes
+						-- the second holder, `live` cannot reach the roster size
+						-- in a pass where THIS socket is unheld, so the branch
+						-- should be unreachable. It costs one comparison and it
+						-- fires loudly if that keying is ever broken again,
+						-- which is exactly the defect's own shape.
+						core.log("error", "[grug_mobs] start npcs " .. row.key ..
+							": " .. live .. " NPCs already stand in a roster of " ..
+							#row.slots .. "; socket " .. slot.id ..
+							" is left empty")
+					elseif place(row, slot) then
+						mark_placed(row, slot)
+						live = live + 1
+						new = new + 1
+						core.log("action", "[grug_mobs] start npcs " .. row.key ..
+							": " .. slot.entity .. " placed at socket " ..
+							slot.id .. " " .. core.pos_to_string(slot.pos))
+					end
 				end
 			end
 		end
 	end
 	return new, freed
+end
+
+--
+-- What is actually standing in a settlement right now, by identity: the roster
+-- size, how many sockets are marked, and how many NPCs the last scan found.
+-- Read by the engine probe and safe to call from anywhere (it is a pure read of
+-- the claim registry the heartbeat maintains).
+--
+function grug_mobs.start_npc_census()
+	local out = {}
+	for index = 1, #rows do
+		local row = rows[index]
+		local claims, live = claims_of(row.key), 0
+		for socket_id, entity in pairs(claims) do
+			if holder_alive(entity, row.key, socket_id) then live = live + 1 end
+		end
+		local marked = 0
+		for slot_index = 1, #row.slots do
+			if row.slots[slot_index].placed then marked = marked + 1 end
+		end
+		out[#out + 1] = {key = row.key, race_id = row.race_id, kind = row.kind,
+			roster = #row.slots, marked = marked, live = live}
+	end
+	return out
 end
 
 -- The countable per-settlement line every engine boot is read from.
@@ -599,19 +976,27 @@ end
 --    a player's arrival has actually emerged the place -- and the same
 --    no-player pass then fills every socket whose own node is already loaded.
 -- 2. The heartbeat: whatever the ready pass could not place (a node that was
---    not loaded after all, which for a capital is most of its district) plus
---    every guard respawn slot that has fallen due, for sockets a player is
---    standing near.
+--    not loaded after all, which for a capital is most of its district), every
+--    guard respawn slot that has fallen due, and the re-check that frees a
+--    marker whose NPC is really gone.
+--
+-- NEITHER TRIGGER ASKS ABOUT PLAYERS. What a pass may do is decided per socket
+-- by the map itself (`serve`): loaded is what allows a placement, active is what
+-- allows a marker to be freed. A capital is emerged by whoever walks there, and
+-- equally by an admin's forceload or a headless probe -- and the first version's
+-- "no player connected, return" made both the retry and the re-check dead code
+-- on a server nobody was logged in to, which is also every engine probe.
 --
 
 local ready_served = {}
 
-local function serve_ready_settlements()
+local function serve_ready_settlements(served)
 	for index = 1, #rows do
 		local row = rows[index]
 		if not ready_served[row.key] and settlement_ready(row) then
 			ready_served[row.key] = true
-			local new = serve(row, nil)
+			local new = serve(row)
+			if served then served[row.key] = true end
 			log_row(row, new)
 		end
 	end
@@ -623,27 +1008,19 @@ core.register_globalstep(function(dtime)
 	accumulator = accumulator + dtime
 	if accumulator < PLACE_INTERVAL then return end
 	accumulator = 0
-	-- A settlement's area becoming available is not a question about players: a
-	-- capital is emerged by whoever walks there, and equally by an admin's
-	-- forceload or a headless probe. So the readiness pass runs on every
-	-- heartbeat, BEFORE the player check, and the first pass over a freshly
-	-- emerged capital is the no-player one that fills every socket already
-	-- loaded. Only the per-socket retry work below needs a player near.
-	serve_ready_settlements()
-	local players = core.get_connected_players()
-	if #players == 0 then return end
-	local positions = {}
-	for index = 1, #players do
-		local pos = players[index]:get_pos()
-		if pos then positions[#positions + 1] = pos end
-	end
-	if #positions == 0 then return end
+	local served = {}
+	serve_ready_settlements(served)
 	for index = 1, #rows do
 		local row = rows[index]
 		-- Every row, every heartbeat, and not only the ones with something
 		-- pending: a full row is exactly where a marker without an NPC hides.
-		local new, freed = serve(row, positions)
-		if new > 0 or freed > 0 then log_row(row, new) end
+		-- A row the readiness pass has just served in this same heartbeat is
+		-- skipped -- one identity scan per settlement per heartbeat is the
+		-- budget.
+		if not served[row.key] then
+			local new, freed = serve(row)
+			if new > 0 or freed > 0 then log_row(row, new) end
+		end
 	end
 end)
 
@@ -654,9 +1031,11 @@ core.register_on_mods_loaded(function()
 	-- that was already ready before this registration is caught by the
 	-- first-step sweep below.
 	grug_core.register_on_starts_progress(function()
-		serve_ready_settlements()
+		serve_ready_settlements(nil)
 	end)
-	core.after(0, serve_ready_settlements)
+	core.after(0, function()
+		serve_ready_settlements(nil)
+	end)
 end)
 
 --
@@ -675,15 +1054,36 @@ function grug_mobs.start_post_tick(self, dtime)
 	if self.attack or (self.state ~= "stand" and self.state ~= "walk") then
 		return
 	end
-	if temp.grug_evading then return end
+	if temp.grug_evading then
+		grug_mobs.stall_clear(self)
+		return
+	end
 	local pos = self.object and self.object:get_pos()
 	if not pos then return end
 	local dx = self._grug_post_x - pos.x
 	local dz = self._grug_post_z - pos.z
 	if dx * dx + dz * dz > POST_SLACK * POST_SLACK then
+		-- THE WALK HOME GETS THE SAME THREE-STAGE RESCUE THE PATROL HAS
+		-- (patrol.lua, playtest round 1): a post is a standing position, so a
+		-- guard that cannot get back to it is a guard that is missing from the
+		-- gate. Stage 2 has nothing to skip to here -- a post is one point --
+		-- so this is stage 1 (the pathfinder) and stage 3 (the out-of-sight
+		-- snap, which lands exactly on the authored post).
+		local stalled, total = grug_mobs.stall_clock(self, self._grug_post_x,
+			self._grug_post_z, pos, POST_TICK)
+		if total >= POST_STALL_SNAP and
+				grug_mobs.snap_try(self, pos, self._grug_post_x,
+					self._grug_post_z, POST_TICK) then
+			return
+		end
+		if stalled >= POST_STALL_PATH and grug_mobs.path_nudge(self,
+				self._grug_post_x, self._grug_post_z, pos) then
+			return
+		end
 		grug_mobs.walk_toward(self, self._grug_post_x, self._grug_post_z, pos)
 		return
 	end
+	grug_mobs.stall_clear(self)
 	self.state = "stand"
 	self:set_velocity(0)
 	grug_mobs.face_yaw(self, self._grug_post_yaw or 0)

@@ -471,6 +471,44 @@ function grug_mobs.register_level_cfg(name, def)
 	end
 end
 
+--
+-- RE-ASSERT THE DERIVED MAXIMUM ON EVERY ACTIVATION, because mob_activate loses
+-- it (playtest round 1, 2026-09-15: "Elite Accord Guard [Lv 60] 945/10").
+--
+-- `hp_max` is in mobs_redo's `is_property_name` table (api.lua:3297-3301), so the
+-- staticdata loop writes it to the OBJECT and never back onto `self`
+-- (api.lua:3327-3332). Two consequences, and the second is the bug:
+--
+--   1. `self.hp_max` is nil for the whole of every activation after the first,
+--      so `tag_text` and aggro.lua's leash heal fall back to the property.
+--   2. The NEXT save therefore carries no `hp_max` at all -- `clean_staticdata`
+--      serializes the fields that exist -- and on the activation after that the
+--      object keeps `initial_properties.hp_max`, which for a def that does not
+--      set one is mobs_redo's own default of 10 (api.lua:3647). A level-60 elite
+--      guard then reads 945/10, and its first damage is clamped to 10 by
+--      check_for_death's "make sure health isn't higher than max"
+--      (api.lua:849). That is two reload cycles, which is why it looked random.
+--
+-- Fixing it where the max is OWNED rather than in the vendored api.lua: the
+-- level and tier are persisted plain fields, so the derived max is a pure
+-- function of what came back, and re-deriving it is idempotent. The health is
+-- deliberately NOT touched except to bring a value above the max down: a wounded
+-- mob stays wounded across a reload.
+--
+local function reassert_max(self)
+	local hp = grug_mobs.stats_for(self._grug_level or 1, self._grug_tier)
+	if self.hp_max == hp and self.hp_min == hp then
+		return -- steady state: two comparisons and nothing else
+	end
+	self.hp_max = hp
+	self.hp_min = hp
+	self.object:set_properties({hp_max = hp})
+	if (self.health or 0) > hp then
+		self.health = hp
+		self.old_health = hp
+	end
+end
+
 -- First-tick initialization + per-activation re-hooks. Cheap enough to call
 -- on every step: two field comparisons in the steady state.
 function grug_mobs.ensure_init(self)
@@ -501,6 +539,10 @@ function grug_mobs.ensure_init(self)
 		self._grug_level = resolve_level(self, cfg, self._grug_tier)
 		apply_tier_visuals(self)
 		apply_stats(self, false)
+	elseif self.object then
+		-- Already levelled, i.e. this is a reactivation: put the derived maximum
+		-- back (see reassert_max -- mob_activate never restores the field).
+		reassert_max(self)
 	end
 	if self.update_tag ~= update_tag then
 		-- Function fields never reach staticdata -> re-install on every

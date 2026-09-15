@@ -1,0 +1,75 @@
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket gate_west (-1804,26,-2491)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket gate_east (-1796,26,-2491)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket watch_gate (-1800,26,-2498)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_traders:vendor_race_dwarf placed at socket plaza_vendor (-1793,26,-2555)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_west_door (-1816,26,-2546)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_plaza_bench (-1793,26,-2549)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_workyard (-1819,26,-2533)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_forge_door (-1798,26,-2560)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:elder_dwarf placed at socket hall_quest (-1828,26,-2524)
+ACTION[Server]: [grug_mobs] start npcs dwarf hearthpine: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket gate_west (-4,18,-2493)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket gate_east (4,18,-2493)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket watch_gate (0,18,-2498)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_traders:vendor_race_human placed at socket green_vendor (6,18,-2554)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_cottage_door (10,18,-2566)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_green_bench (-6,18,-2543)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_barn (-19,18,-2550)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_smithy (22,18,-2551)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:elder_human placed at socket hall_quest (-11,18,-2542)
+ACTION[Server]: [grug_mobs] start npcs human dawnmere: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket gate_west (1796,22,-2493)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket gate_east (1804,22,-2493)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket watch_gate (1800,22,-2498)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_traders:vendor_race_elf placed at socket court_vendor (1807,22,-2554)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_shrine_door (1779,22,-2534)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_court_bench (1793,22,-2545)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_bowyer (1828,22,-2551)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_market (1769,22,-2550)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:elder_elf placed at socket hall_quest (1820,22,-2536)
+ACTION[Server]: [grug_mobs] start npcs elf silverleaf: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket gate_west (-1804,55,2494)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket gate_east (-1796,55,2494)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket watch_gate (-1800,55,2498)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_traders:vendor_race_undead placed at socket court_vendor (-1793,55,2545)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_warden_door (-1813,55,2582)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_court_settle (-1810,55,2554)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_bone_works (-1778,55,2549)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_gate_brazier (-1805,55,2493)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:elder_undead placed at socket hall_quest (-1798,55,2560)
+ACTION[Server]: [grug_mobs] start npcs undead stillgrave: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket gate_west (-4,28,2499)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket gate_east (4,28,2499)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket watch_gate (0,28,2510)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_traders:vendor_race_orc placed at socket yard_vendor (8,28,2545)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_tusk_door (-11,28,2528)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_council_seat (-3,28,2558)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_beast_pen (-25,28,2548)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_armoury_forge (20,28,2548)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:elder_orc placed at socket hall_quest (3,28,2562)
+ACTION[Server]: [grug_mobs] start npcs orc sunscar: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket gate_west (1796,21,2505)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket gate_east (1804,21,2505)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket watch_gate (1800,21,2514)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_traders:vendor_race_troll placed at socket clearing_vendor (1807,21,2546)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_lodge_door (1798,21,2567)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_terrace_settle (1788,21,2577)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_drying_shed (1783,21,2574)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_smoker (1813,21,2570)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:elder_troll placed at socket hall_quest (1803,21,2567)
+ACTION[Server]: [grug_mobs] start npcs troll kapok: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0
+WARNING[Server]: [grug_mobs] start npcs hearthpine: socket idle_plaza_bench is marked but empty; grug_mobs:villager_dwarf is gone and the slot is queued again
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_plaza_bench (-1793,26,-2549)
+ACTION[Server]: [grug_mobs] start npcs dwarf hearthpine: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 1 pending 0
+ACTION[Server]: [grug_mobs] start npcs dwarf hearthpine: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 0 pending 0
+ACTION[Server]: [grug_mobs] start npcs human dawnmere: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 0 pending 0
+ACTION[Server]: [grug_mobs] start npcs elf silverleaf: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 0 pending 0
+ACTION[Server]: [grug_mobs] start npcs undead stillgrave: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 0 pending 0
+ACTION[Server]: [grug_mobs] start npcs orc sunscar: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 0 pending 0
+ACTION[Server]: [grug_mobs] start npcs troll kapok: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 0 pending 0
+ACTION[Server]: [grug_mobs] start npcs dwarf hearthpine: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 0 pending 0
+ACTION[Server]: [grug_mobs] start npcs human dawnmere: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 0 pending 0
+ACTION[Server]: [grug_mobs] start npcs elf silverleaf: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 0 pending 0
+ACTION[Server]: [grug_mobs] start npcs undead stillgrave: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 0 pending 0
+ACTION[Server]: [grug_mobs] start npcs orc sunscar: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 0 pending 0
+ACTION[Server]: [grug_mobs] start npcs troll kapok: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 0 pending 0

@@ -122,8 +122,13 @@ local GUARD_TEXTURE = {
 -- and the tick rate of the amble. One second is the throttle every ambient
 -- movement in this mod uses (patrol.lua, aggro.lua's roam cap).
 local SPOT_ARRIVED = 1.6
-local DWELL_MIN, DWELL_MAX = 20, 50
+local DWELL_MIN, DWELL_MAX = 20, 60
 local AMBLE_TICK = 1
+-- Seconds of no measurable progress toward a spot after which the villager
+-- gives that spot up and takes another (patrol.lua's stall clock). Short,
+-- because the usual obstacle is another villager and the usual fix is to go
+-- somewhere else.
+local SPOT_GIVE_UP = 15
 -- One answer per player per two seconds: on_rightclick fires per click and a
 -- held mouse button is a chat flood otherwise.
 local ANSWER_COOLDOWN = 2
@@ -137,6 +142,36 @@ end
 function grug_mobs.start_npc_name(race_id, family)
 	local row = NAMES[race_id]
 	return row and row[family] or nil
+end
+
+--
+-- A NAME FOLLOWS THE SETTLEMENT, NOT THE RACE (playtest round 1, 2026-09-15).
+--
+-- There is one villager entity per RACE and it serves that race's start AND its
+-- capital, so a nametag read off the race put "Dawnmere Farmer" in the middle of
+-- Highcourt. The six starts keep the flavour names they shipped with -- a race
+-- has exactly one start, so those are settlement names already -- and every
+-- other settlement is named after itself: "Highcourt Citizen", "Highcourt
+-- Elder". Derived from the key rather than a second hand-kept roster, so the
+-- next capital needs no edit here.
+--
+local FAMILY_TITLE = {villager = "Citizen", elder = "Elder"}
+
+local function settlement_label(settlement_key)
+	local words = {}
+	for word in settlement_key:gmatch("[^_]+") do
+		words[#words + 1] = word:sub(1, 1):upper() .. word:sub(2)
+	end
+	return table.concat(words, " ")
+end
+
+function grug_mobs.settlement_npc_name(settlement_key, kind, race_id, family)
+	if kind == "start" then
+		local name = grug_mobs.start_npc_name(race_id, family)
+		if name then return name end
+	end
+	return settlement_label(settlement_key) .. " " ..
+		(FAMILY_TITLE[family] or FAMILY_TITLE.villager)
 end
 
 -- Static white nametag. mobs_redo recolours the tag by health on every
@@ -153,6 +188,29 @@ local function install_nametag(self, text)
 		obj:set_properties({nametag = text, nametag_color = "#ffffff"})
 	end
 	self:update_tag()
+end
+
+--
+-- Re-assert the nametag once the placement engine has decided it.
+--
+-- ORDERING, and it is the engine's and not ours: `core.add_entity` activates the
+-- entity synchronously, so `after_activate` has already run by the time
+-- `start_npcs.lua`'s `install` writes `_grug_npc_name`. Without this the very
+-- first placement of a capital villager would wear the race's start name until
+-- the first reload -- which is the whole defect this fixes. `place` calls it
+-- immediately after `install`, next to the same file's `face_yaw` call, which
+-- exists for exactly the same reason.
+--
+function grug_mobs.start_npc_retag(self)
+	local name = self._grug_npc_name
+	if type(name) ~= "string" or name == "" then
+		return
+	end
+	self._grug_npc_tag = name
+	if self.temp then
+		self.temp.grug_tag_set = nil
+	end
+	install_nametag(self, name)
 end
 
 -- Is another villager of this family visibly standing on that spot? Only
@@ -201,16 +259,58 @@ end
 -- whole state survives unload/reload with the mob: never an ObjectRef, never
 -- a function (the WP6 runtime-field rule in AGENTS.md).
 --
+-- THE NEXT SPOT IS THE NEXT ONE IN THE RING, and the occupancy test may only
+-- ever SKIP a candidate, never cancel the move. That last clause is the
+-- 2026-09-15 playtest fix: the first version walked the ring looking for a free
+-- spot and fell back to `pick == index` -- its own spot -- when it found none,
+-- and with four villagers standing on four spots EVERY candidate is always
+-- taken. So every villager re-rolled its dwell where it stood and the four of
+-- them never moved again, which is exactly what the user saw: villagers
+-- standing in front of their houses doing nothing.
+--
+local function next_spot(self, spots, index)
+	local count = #spots
+	if count < 2 then
+		return index
+	end
+	-- Advancing by exactly one is what keeps four villagers on four distinct
+	-- sockets spread out: they all advance in step. A random pick puts two of
+	-- them on one node most of the time (four on four collide in about nine
+	-- attempts out of ten).
+	local fallback = index % count + 1
+	local pick = index
+	for _ = 1, count - 1 do
+		pick = pick % count + 1
+		if not spot_taken(self, spots[pick]) then
+			return pick
+		end
+	end
+	return fallback
+end
+
 local function amble_tick(self, dtime)
 	self.temp = self.temp or {}
 	local temp = self.temp
 	temp.grug_amble_acc = (temp.grug_amble_acc or 0) + dtime
 	if temp.grug_amble_acc < AMBLE_TICK then return end
+	local elapsed = temp.grug_amble_acc
 	temp.grug_amble_acc = 0
+	-- A twin on a socket somebody else already holds removes itself, once per
+	-- activation (start_npcs.lua's claim registry). Checked here rather than in
+	-- after_activate so it runs after the placement fields are certainly in
+	-- place, and nothing below may run for a mob that has just been removed.
+	if not temp.grug_socket_claimed then
+		temp.grug_socket_claimed = true
+		-- FALSE, not nil: mobs_redo's on_step returns as soon as do_custom
+		-- answers false, which is how a mob that has just removed itself skips
+		-- the rest of its own step.
+		if not grug_mobs.start_npc_claim(self) then return false end
+	end
 	local spots = self._grug_idle_spots
 	if type(spots) ~= "table" or #spots == 0 then return end
 	-- Idle only, the same test patrol.lua and aggro.lua's roam cap use.
 	if self.attack or (self.state ~= "stand" and self.state ~= "walk") then
+		grug_mobs.stall_clear(self)
 		return
 	end
 	local pos = self.object and self.object:get_pos()
@@ -222,14 +322,39 @@ local function amble_tick(self, dtime)
 	if dx * dx + dz * dz > SPOT_ARRIVED * SPOT_ARRIVED then
 		-- Still on the way: clear the dwell so arriving starts a fresh one.
 		self._grug_idle_dwell = nil
+		-- A BLOCKED VILLAGER PICKS ANOTHER SPOT instead of pushing forever. It
+		-- has no pathfinder (mobs_redo only path-finds in the attack state) and
+		-- since the round-1 fix no jump either, so "walk into it until it moves"
+		-- is not a plan -- and the thing in the way is usually another villager
+		-- on the same errand.
+		local stalled = grug_mobs.stall_clock(self, spot.x, spot.z, pos, elapsed)
+		if stalled >= SPOT_GIVE_UP then
+			grug_mobs.stall_clear(self)
+			self._grug_idle_spot = next_spot(self, spots, index)
+			self.state = "stand"
+			self:set_velocity(0)
+			return
+		end
 		grug_mobs.walk_toward(self, spot.x, spot.z, pos)
 		return
 	end
+	grug_mobs.stall_clear(self)
 	if self._grug_idle_dwell == nil then
 		self._grug_idle_dwell = math.random(DWELL_MIN, DWELL_MAX)
 	end
+	-- THE FIRST TICK OF AN ACTIVATION caps whatever is left of the dwell at
+	-- DWELL_MIN. A villager's dwell only counts down while its mapblock is
+	-- active, i.e. while somebody is there to see it, so this is what bounds the
+	-- wait a player walking into a settlement has before anything moves. The
+	-- flag lives in self.temp, which mob_activate resets per activation.
+	if not temp.grug_amble_fresh then
+		temp.grug_amble_fresh = true
+		if self._grug_idle_dwell > DWELL_MIN then
+			self._grug_idle_dwell = DWELL_MIN
+		end
+	end
 	if self._grug_idle_dwell > 0 then
-		self._grug_idle_dwell = self._grug_idle_dwell - AMBLE_TICK
+		self._grug_idle_dwell = self._grug_idle_dwell - elapsed
 		self.state = "stand"
 		self:set_velocity(0)
 		grug_mobs.face_yaw(self, spot.yaw or 0)
@@ -237,20 +362,8 @@ local function amble_tick(self, dtime)
 		self._grug_idle_tag = spot.tag
 		return
 	end
-	-- Dwell over: step on to the next spot in the ring and let the next tick
-	-- walk there. Deliberately +1 and not a random pick: four villagers start
-	-- on four distinct sockets, so advancing in step keeps them spread, while
-	-- random picks put two of them on one node most of the time (four on four
-	-- collide in about nine attempts out of ten). The occupancy check is the
-	-- second half of that, because the dwell times drift apart.
-	if #spots > 1 then
-		local pick = index
-		for _ = 1, #spots do
-			pick = pick % #spots + 1
-			if pick == index or not spot_taken(self, spots[pick]) then break end
-		end
-		self._grug_idle_spot = pick
-	end
+	-- Dwell over: step on to the next spot and let the next tick walk there.
+	self._grug_idle_spot = next_spot(self, spots, index)
 	self._grug_idle_dwell = nil
 end
 
@@ -289,8 +402,31 @@ local function npc_def(race_id, faction_id, nametag, extra)
 		randomly_turn = false,
 		walk_velocity = 1.1, -- a walking pace, not the guard's 1.2 patrol
 		run_velocity = 1.1,
-		jump = true,
-		jump_height = 4,
+		--
+		-- A VILLAGER NEVER JUMPS, and `jump_height = 0` is the only field that
+		-- says so (playtest round 1, 2026-09-15).
+		--
+		-- `walk_chance = 0` above means "mobs_redo's wander is off" to us, but
+		-- inside mobs_redo's `do_jump` it means "this is a JUMPING mob"
+		-- (api.lua:1131: `or self.walk_chance == 0` is an alternative to having
+		-- a solid node in front worth hopping onto). do_jump runs four times a
+		-- second from on_step and only skips a mob whose vertical velocity is
+		-- non-zero, so every one of these villagers hopped again the instant it
+		-- landed, for the whole length of every walk -- with `jump_height = 4`
+		-- and the `core.after(0.3, set_acceleration{y = 0})` that follows the
+		-- jump in the same function. In Highcourt's core, where a villager's
+		-- idle spots are further apart, that is most of its life.
+		--
+		-- `do_jump` returns before that clause when `jump_height == 0`
+		-- (api.lua:1114), which is the switch. `jump` itself is not a field
+		-- mobs_redo reads at all -- it is in no def whitelist and nothing in
+		-- api.lua consults it -- and is kept false only so the def does not
+		-- claim the opposite of what it does. Flat settlement ground plus
+		-- `stepheight = 1.1` is what a villager needs; something in the way is
+		-- handled by picking another spot (amble_tick), not by climbing it.
+		--
+		jump = false,
+		jump_height = 0,
 		stepheight = 1.1,
 		fear_height = 4,
 		-- No `pathfinding`: mobs_redo only path-finds in the attack state
@@ -369,9 +505,14 @@ for index = 1, #identities do
 		npc_def(race_id, faction_id, names.villager, {
 			do_custom = amble_tick,
 			after_activate = function(self)
+				-- The name the PLACEMENT resolved (start_npcs.lua), because one
+				-- entity per race serves that race's start and its capital.
+				-- The race's own start flavour is the fallback for anything
+				-- this engine did not place.
+				local name = self._grug_npc_name or names.villager
 				self._grug_npc_race = race_id
-				self._grug_npc_tag = names.villager
-				install_nametag(self, names.villager)
+				self._grug_npc_tag = name
+				install_nametag(self, name)
 				apply_race_visual(self, race_id)
 				grug_mobs.face_yaw(self, self._grug_face_yaw)
 			end,
@@ -387,13 +528,17 @@ for index = 1, #identities do
 			stand_chance = 100,
 			jump_height = 0,
 			after_activate = function(self)
+				local name = self._grug_npc_name or names.elder
 				self._grug_npc_race = race_id
-				self._grug_npc_tag = names.elder
-				install_nametag(self, names.elder)
+				self._grug_npc_tag = name
+				install_nametag(self, name)
 				apply_race_visual(self, race_id)
 				-- The quest shell has no tick of its own, so this is the ONLY
-				-- thing that puts it back on its authored facing after a reload.
+				-- thing that puts it back on its authored facing after a reload,
+				-- and the only place it can claim its socket (start_npcs.lua):
+				-- a twin removes itself here instead of joining the settlement.
 				grug_mobs.face_yaw(self, self._grug_face_yaw)
+				grug_mobs.start_npc_claim(self)
 			end,
 			on_rightclick = function(self, clicker)
 				answer(self, clicker, "quest")
