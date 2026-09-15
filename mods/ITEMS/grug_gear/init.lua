@@ -58,18 +58,59 @@ function grug_gear.bracket_for_level(level)
 end
 
 --
--- Presentation. One art per family/slot, differentiated per bracket by a
--- texture modifier instead of six PNGs each -- `[multiply:#ffffff` is a
--- no-op, so bracket 6 shows the untinted art.
+-- Presentation. ONE ITEM PER CONCEPT (items_crafting.md §3.0.3, binding): the
+-- six brackets are the six MATERIAL tiers and the items are named after their
+-- material, not after a bracket adjective. The WP7 catalog's
+-- Crude/Plain/Tempered/Reinforced/Superior/Grand is retired here (WP13 playtest
+-- round 2, 2026-09-15), and so are the two `default` swords the ladder now
+-- covers -- `grug_materials/content_curation.lua` unregisters those.
 --
+-- Nothing about the GENERATOR changed with the rename: the brackets, the ilvl
+-- anchors, the prices, the damage curve and the armor curve are the same
+-- numbers WP7 shipped.
+--
+-- Three naming ladders, one per line:
+--   * metal   -- the six universal metals of §3.0.1, which are also the six
+--                weapon materials and the six pick tiers;
+--   * cloth   -- the Tailor's six bolt grades (§3.5); the doc's "T2 linen
+--                cloth -> woven bolt" becomes the adjective `Woven`;
+--   * leather -- the Leatherworker's six leather grades (§3.4). Registered
+--                `false` below (its only wearer, the Rogue, is Phase 2) but
+--                NAMED here, so the day it registers nothing is invented.
+--
+grug_gear.MATERIALS = {
+	{metal = {key = "bronze", name = "Bronze"},
+		cloth = {key = "patch", name = "Patch"},
+		leather = {key = "light", name = "Light"}},
+	{metal = {key = "iron", name = "Iron"},
+		cloth = {key = "woven", name = "Woven"},
+		leather = {key = "cured", name = "Cured"}},
+	{metal = {key = "steel", name = "Steel"},
+		cloth = {key = "heavy", name = "Heavy"},
+		leather = {key = "heavy", name = "Heavy"}},
+	{metal = {key = "silversteel", name = "Silversteel"},
+		cloth = {key = "silkweave", name = "Silkweave"},
+		leather = {key = "scaled", name = "Scaled"}},
+	{metal = {key = "embersteel", name = "Embersteel"},
+		cloth = {key = "silk", name = "Silk"},
+		leather = {key = "sleek", name = "Sleek"}},
+	{metal = {key = "abyssal_steel", name = "Abyssal Steel"},
+		cloth = {key = "stormweave", name = "Stormweave"},
+		leather = {key = "nightscale", name = "Nightscale"}},
+}
 
 -- Published, not local: grug_visuals tints the armor OVERLAYS on the player
 -- model with the same six colours, and a second copy of this table would
 -- drift the moment one of them is retuned.
+--
+-- WEAPONS NO LONGER USE IT. Every weapon family now ships one sprite per
+-- material (`tools/wp13/gen_weapon_ladder.py`), so a Bronze Sword is bronze
+-- because it is drawn bronze, not because a grey sprite is multiplied. The
+-- tint survives for the two armor lines, which still share one silhouette per
+-- slot -- `[multiply:#ffffff` is a no-op, so the sixth tier shows untinted art.
 grug_gear.BRACKET_TINT = {"#8a7f6a", "#a89478", "#c0b088", "#d8cc9a",
 	"#e8dcb0", "#ffffff"}
 local BRACKET_TINT = grug_gear.BRACKET_TINT
-local BRACKET_ADJECTIVE = {"Crude", "Plain", "Tempered", "Reinforced", "Superior", "Grand"}
 
 -- Item description (§6.1): name, item level, then the BASE stat line -- the
 -- number the item actually contributes, so a player can compare two pieces
@@ -85,8 +126,8 @@ local BRACKET_ADJECTIVE = {"Crude", "Plain", "Tempered", "Reinforced", "Superior
 -- quality colors.
 local STAT_COLOR = "#9aa0a6"
 
-local function describe(bracket, noun, ilvl, stat_line)
-	return BRACKET_ADJECTIVE[bracket] .. " " .. noun ..
+local function describe(material, noun, ilvl, stat_line)
+	return material .. " " .. noun ..
 		"\nItem level " .. ilvl ..
 		"\n" .. core.colorize(STAT_COLOR, stat_line)
 end
@@ -217,6 +258,27 @@ end
 
 grug_gear.catalog = {}
 
+-- The one place an item NAME is built from a family and a tier. Every consumer
+-- that knows a family and a bracket -- grug_visuals' `weapon_family` shorthand
+-- for the guards and bandits, the gear-catalogue KAT, a later drop table --
+-- asks here instead of concatenating `_b<n>` (which is exactly what this round
+-- renamed away).
+function grug_gear.weapon_item(family, bracket)
+	local material = grug_gear.MATERIALS[bracket]
+	if type(family) ~= "string" or not material then
+		return nil
+	end
+	return "grug_gear:" .. family .. "_" .. material.metal.key
+end
+
+function grug_gear.armor_item(slot, line, bracket)
+	local material = grug_gear.MATERIALS[bracket]
+	if type(slot) ~= "string" or not material or not material[line] then
+		return nil
+	end
+	return "grug_gear:" .. slot .. "_" .. line .. "_" .. material[line].key
+end
+
 local tool_count, craftitem_count = 0, 0
 
 for bracket, br in ipairs(grug_gear.BRACKETS) do
@@ -225,9 +287,10 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 
 	local tint = "^[multiply:" .. BRACKET_TINT[bracket]
 	local base_damage = dmg1h(br.ilvl)
+	local metal = grug_gear.MATERIALS[bracket].metal
 
 	for _, w in ipairs(WEAPONS) do
-		local itemname = "grug_gear:" .. w.key .. "_b" .. bracket
+		local itemname = grug_gear.weapon_item(w.key, bracket)
 		local damage = math.max(1, math.floor(base_damage * w.factor + 0.5))
 		-- Every weapon family is weapon-slot eligible (weapon-slot design B3).
 		-- No class gate: weapon families are class FLAVOR, not a power ladder
@@ -238,9 +301,12 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 		local groups = {grug_gear = 1, grug_equip_weapon = 1}
 		groups[w.group] = 1
 		core.register_tool(itemname, {
-			description = describe(bracket, w.noun, br.ilvl,
+			description = describe(metal.name, w.noun, br.ilvl,
 				weapon_stats(damage, w.fpi, w.hands)),
-			inventory_image = "grug_gear_item_" .. w.key .. ".png" .. tint,
+			-- One sprite per family AND material, all in the one diagonal
+			-- convention (grip bottom-left) the wield transform is derived for.
+			inventory_image = "grug_gear_item_" .. w.key .. "_" ..
+				metal.key .. ".png",
 			groups = groups,
 			stack_max = 1,
 			tool_capabilities = {
@@ -264,9 +330,9 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 	for _, line in ipairs(ARMOR_LINES) do
 		if line.register then
 			local total = line.base + line.per_ilvl * br.ilvl
+			local grade = grug_gear.MATERIALS[bracket][line.key]
 			for _, slot in ipairs(ARMOR_SLOTS) do
-				local itemname = "grug_gear:" .. slot.key .. "_" .. line.key ..
-					"_b" .. bracket
+				local itemname = grug_gear.armor_item(slot.key, line.key, bracket)
 				-- max(1) is a deliberate deviation from the raw split: at the
 				-- low cloth brackets the 16% foot share rounds to 0, and a
 				-- 0-armor boot is a bug, not a design statement.
@@ -276,7 +342,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 					price = br.price.chest
 				end
 				core.register_craftitem(itemname, {
-					description = describe(bracket, line.nouns[slot.key],
+					description = describe(grade.name, line.nouns[slot.key],
 						br.ilvl, armor_stats(armor)),
 					inventory_image = "grug_gear_item_" .. slot.key .. "_" ..
 						line.key .. ".png" .. tint,
@@ -310,6 +376,45 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 	end
 end
 
+--
+-- The two BELOW-LADDER starters (items_crafting.md §3.0.1: "Wood and Stone gear
+-- stays below the generated ilvl anchors and carries no level requirement").
+--
+-- `default` ships the wood and stone swords and they stay exactly as they are.
+-- It ships no staff at all, so a Priest or a Mage had no starter weapon of
+-- their own family -- the class kit handed every class the stone sword. This
+-- is the missing half: one wooden staff, the caster's stone-sword equivalent,
+-- two-handed like every staff (§3.2's caster 2H row).
+--
+-- NO `_grug_ilvl` and no bracket: it is not part of the generated catalog, it
+-- is never on a vendor bracket tab, and WP5's level requirement must never bite
+-- on it. Its damage is the starter step read off the same curve the ladder
+-- uses: the stone sword's 4 fleshy as the 1H value, times the staff family's
+-- x1.2, rounded the §3.2 way -- 5 at a 1.4 s swing.
+local STARTER_STAFF = "grug_gear:staff_wood"
+
+core.register_tool(STARTER_STAFF, {
+	description = "Wooden Staff\n" ..
+		core.colorize(STAT_COLOR, weapon_stats(5, 1.4, 2)),
+	inventory_image = "grug_gear_item_staff_wood.png",
+	groups = {grug_gear = 1, grug_equip_weapon = 1, staff = 1, flammable = 2},
+	stack_max = 1,
+	tool_capabilities = {
+		full_punch_interval = 1.4,
+		damage_groups = {fleshy = 5},
+		max_drop_level = 0,
+		groupcaps = {},
+	},
+	_grug_quality = 1,
+	_grug_hands = 2,
+	_grug_sell_price = 3,
+})
+
+grug_gear.STARTER_STAFF = STARTER_STAFF
+-- The Warrior half of the same pair, published so the starter-kit grant in
+-- grug_inventory names neither item twice.
+grug_gear.STARTER_SWORD = "default:sword_stone"
+
 core.log("action", "[grug_gear] " .. NUM_BRACKETS .. " bracket catalogs: " ..
 	tool_count .. " weapons + " .. craftitem_count .. " armor pieces")
 
@@ -327,8 +432,13 @@ core.log("action", "[grug_gear] " .. NUM_BRACKETS .. " bracket catalogs: " ..
 -- tools, and punching a mob with a pick keeps working through the ordinary
 -- wielded-item path either way.
 --
--- Mese and Diamond tools are outside the current content roster, so only the
--- four live vendored material steps belong in this list.
+-- Mese and Diamond tools are outside the current content roster, and since
+-- WP13's round-2 merge the BRONZE and STEEL swords are too: those two concepts
+-- are now `grug_gear:sword_bronze` and `grug_gear:sword_steel` and
+-- `grug_materials/content_curation.lua` unregisters the `default` ones
+-- (§3.0.3's "no `default` stone sword standing next to a Crude Sword", applied
+-- to the two steps the ladder actually covers). The wood and stone swords stay:
+-- they are the below-ladder starters, not a second copy of a ladder item.
 --
 -- `core.override_item` REPLACES a named field wholesale, it does not merge
 -- (AGENTS.md, learned in WP25): handing it `groups = {grug_equip_weapon = 1}`
@@ -350,8 +460,7 @@ core.log("action", "[grug_gear] " .. NUM_BRACKETS .. " bracket catalogs: " ..
 -- explicitly rather than left to the "no field = one-handed" default, so the
 -- decision is visible at the site it applies to.
 local VENDORED_WEAPONS = {
-	"default:sword_wood", "default:sword_stone", "default:sword_bronze",
-	"default:sword_steel",
+	"default:sword_wood", "default:sword_stone",
 	"default:axe_wood", "default:axe_stone", "default:axe_bronze",
 	"default:axe_steel",
 }

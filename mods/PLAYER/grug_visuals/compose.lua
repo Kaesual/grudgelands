@@ -20,30 +20,41 @@
 
 --
 -- Races. `skin` is the base layer in the `character.png` layout shipped by
--- player_api; `size` is the VISUAL-ONLY stature of the contract's §1 --
+-- player_api; `stature` is the VISUAL-ONLY scale of the contract's §1 --
 -- collision box and eye height stay exactly what player_api's model says, so
 -- every race walks through the two-node doors of its own houses.
 --
--- The window is 0.85..1.12 in every axis (asserted below, and again by the
--- KAT): dwarves and orcs broader and lower, elves and trolls taller, humans
--- the 1.0 reference.
+-- ONE SCALAR PER RACE, not an (x, y, z) triple (playtest round 2, 2026-09-15).
+-- The first version made dwarves and orcs broader AND lower (1.10/0.88 and
+-- 1.12/0.98), which is a nicer body language and is why it was written that
+-- way -- but a non-uniform parent scale is applied to the ATTACHED wield
+-- entity too, in model axes, after that entity's own rotation. On a sprite
+-- whose weapon runs along the image's diagonal that is a shear: the blade
+-- comes out longer, thinner and tilted, which is exactly what the player saw
+-- on a player and not on a 1:1 guard. `wield_geometry.lua` section 9 works
+-- through why no `visual_size` on the child can cancel it while the parent's
+-- vertical and horizontal scales differ, and therefore why the anisotropy is
+-- what had to go. Six distinct sizes survive; "broad" now belongs to the skin
+-- art, which is where a shape difference the engine cannot shear belongs.
+--
+-- The window is 0.85..1.12 (asserted below, and again by the KAT).
 --
 local STATURE_MIN, STATURE_MAX = 0.85, 1.12
 
 local RACES = {
-	human = {skin = "grug_visuals_skin_human.png",
-		size = {x = 1.00, y = 1.00, z = 1.00}},
-	dwarf = {skin = "grug_visuals_skin_dwarf.png",
-		size = {x = 1.10, y = 0.88, z = 1.10}},
-	elf = {skin = "grug_visuals_skin_elf.png",
-		size = {x = 0.94, y = 1.06, z = 0.94}},
-	undead = {skin = "grug_visuals_skin_undead.png",
-		size = {x = 0.90, y = 1.00, z = 0.90}},
-	orc = {skin = "grug_visuals_skin_orc.png",
-		size = {x = 1.12, y = 0.98, z = 1.12}},
-	troll = {skin = "grug_visuals_skin_troll.png",
-		size = {x = 1.10, y = 1.12, z = 1.10}},
+	human = {skin = "grug_visuals_skin_human.png", stature = 1.00},
+	dwarf = {skin = "grug_visuals_skin_dwarf.png", stature = 0.90},
+	elf = {skin = "grug_visuals_skin_elf.png", stature = 1.06},
+	undead = {skin = "grug_visuals_skin_undead.png", stature = 0.94},
+	orc = {skin = "grug_visuals_skin_orc.png", stature = 1.08},
+	troll = {skin = "grug_visuals_skin_troll.png", stature = 1.12},
 }
+
+-- `size` is the engine-shaped form of `stature`, built once so no consumer has
+-- to remember that a scalar stature is three equal numbers.
+for _, race in pairs(RACES) do
+	race.size = {x = race.stature, y = race.stature, z = race.stature}
+end
 
 grug_visuals.RACES = RACES
 grug_visuals.STATURE_MIN = STATURE_MIN
@@ -219,6 +230,7 @@ function grug_visuals.compose(spec)
 	-- Stature belongs to a RACE. A spec that only names a skin (a humanoid mob
 	-- that is nobody's race) keeps whatever size its own definition set.
 	local size = race and RACES[race].size or nil
+	local stature = race and RACES[race].stature or nil
 
 	-- Armor: the per-slot items first, the line shorthand for whatever is left.
 	local line_default = spec.armor_line
@@ -252,7 +264,10 @@ function grug_visuals.compose(spec)
 		weapon = nil
 	end
 	if not weapon and type(spec.weapon_family) == "string" then
-		weapon = "grug_gear:" .. spec.weapon_family .. "_b" .. bracket_default
+		-- grug_gear owns the name: since the WP13 round-2 merge an item is
+		-- called after its MATERIAL, not after its bracket number, and this is
+		-- the one place that used to build `_b<n>` by hand.
+		weapon = grug_gear.weapon_item(spec.weapon_family, bracket_default)
 	end
 
 	-- The key covers every normalized input, and nothing else: two specs that
@@ -285,8 +300,8 @@ function grug_visuals.compose(spec)
 		end
 	end
 
-	local result = {textures = {texture}, visual_size = size, weapon = weapon,
-		key = key}
+	local result = {textures = {texture}, visual_size = size,
+		stature = stature, weapon = weapon, key = key}
 	cache[key] = result
 	return result
 end

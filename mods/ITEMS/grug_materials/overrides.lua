@@ -114,6 +114,29 @@ core.override_item("default:pick_steel", {
 	})),
 })
 
+-- ONE SPRITE CONVENTION FOR THE DIAGONAL TOOL LADDER (WP13 round 2). The
+-- visible weapon/tool is an attached `wielditem` entity, and the engine builds
+-- that extruded mesh from `wield_image` when an item declares one
+-- (src/client/wieldmesh.cpp), falling back to the inventory image otherwise.
+--
+-- Plenty of vendored items declare a `wield_image` -- the torch, every sapling,
+-- the doors, the xpanes, the grasses, the beds -- and none of those matters
+-- here, because none of them is a diagonal tool sprite: `grug_visuals` holds
+-- anything outside the `sword`/`axe`/`pickaxe`/`shovel`/`staff` families in its
+-- own upright pose, which makes no assumption about the image at all.
+--
+-- default's four shovels are the exception, and the only one: they are IN the
+-- tool ladder, so they are held by the grip pixel the diagonal convention puts
+-- at (3.4, 12.6) -- and their `wield_image` is that same sprite turned
+-- `^[transformR90`, which moves the grip out from under the fist and lays the
+-- shovel across the hand at 90 degrees to every sword, axe and pick. Clearing
+-- the key makes the engine fall back to the inventory image, which is in the
+-- convention `grug_visuals/wield_geometry.lua` derives the hand from.
+for _, shovel in ipairs({"default:shovel_wood", "default:shovel_stone",
+		"default:shovel_bronze", "default:shovel_steel"}) do
+	core.override_item(shovel, {wield_image = ""})
+end
+
 -- stairs is optional for a standalone grug_materials load, but ordered before
 -- us when present through mod.conf. Normalize all four generated shapes.
 if core.get_modpath("stairs") then

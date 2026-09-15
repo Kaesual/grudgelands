@@ -1,4 +1,11 @@
--- Known-answer test for the WIELD ATTACHMENT (playtest round 1, 2026-09-15).
+-- Known-answer test for the WIELD ATTACHMENT (playtest rounds 1 and 2,
+-- 2026-09-15).
+--
+-- Round 2 re-derived the transform for the one DIAGONAL sprite convention the
+-- whole game now uses and made the weapon stature-independent; the three
+-- negative controls at the bottom are the uncompensated stature, the round-1
+-- rotation applied to a diagonal sprite, and the sword the player photographed
+-- before round 1.
 --
 -- The visuals lane cannot open a client, so the sword in a guard's hand is
 -- checked the only other way there is: derive the transform from the mesh and
@@ -381,7 +388,9 @@ function M.run(repo)
 		return table.concat(out, "\n") .. "\n"
 	end
 	chunk()
-	local wield = rawget(_G, "grug_visuals").WIELD
+	local geometry = rawget(_G, "grug_visuals")
+	local wield = geometry.WIELD
+	local wield_transform = geometry.wield_transform
 	rawset(_G, "grug_visuals", had)
 
 	check(wield ~= nil, GEOMETRY .. " sets no grug_visuals.WIELD")
@@ -400,7 +409,14 @@ function M.run(repo)
 	--
 	-- C. the printed check: sprite points in the bone's frame and in model space
 	--
-
+	-- Since WP13 round 2 every held item is drawn in ONE convention: 16x16,
+	-- long axis on the image's ANTI-DIAGONAL, grip bottom-left, tip top-right
+	-- (minetest_game's own tool convention, which
+	-- `tools/wp13/gen_weapon_ladder.py` now generates every weapon and tool in).
+	-- So the blade is the entity-local direction (1, 1, 0)/sqrt(2), not the
+	-- +y it was while grug_gear's sprites were drawn vertically, and the grip
+	-- is a POINT in the image rather than an offset along one axis.
+	--
 	-- `raise` rotates the bone about its own local x, which is how both the walk
 	-- and the mine animation move this arm: measured off character.b3d's KEYS
 	-- for Arm_Right, relative to the hanging rest pose, the walk frames
@@ -415,11 +431,21 @@ function M.run(repo)
 	-- `getMatrix_transposed`) the mine swing is +114 and forward; under the
 	-- ordinary one it would be -114. The rest frame checked above is immune to
 	-- that, because Ry(180) and Rx(180) are symmetric matrices.
-	local function measure(label, pos, rot, raise)
+	--
+	-- `stature` is the wielder's UNIFORM visual_size. The engine parents this
+	-- entity's matrix node to the parent's joint node, under the parent's own
+	-- scale (content_cao.cpp:705 and :1462-1470), so every model-space offset
+	-- below is multiplied by it -- which is precisely what the compensation in
+	-- `wield_transform(stature)` has to undo.
+	local ROOT_HALF = math.sqrt(0.5)
+
+	local function measure(label, attachment, raise, stature)
 		local frame = arm_rot
 		if raise ~= 0 then
 			frame = compose(arm_rot, euler_rot(raise, 0, 0))
 		end
+		local pos, rot = attachment.pos, attachment.rot
+		local edge = 40 * attachment.size.x / 2
 		local attach = euler_rot(rot.x, rot.y, rot.z)
 		local hand_bone = {0, wield.hand.y, 0}
 		local function to_model(v)
@@ -430,18 +456,27 @@ function M.run(repo)
 		local hand = to_model(hand_bone)
 		-- A sprite point, image coordinates in [-0.5, 0.5] with v pointing up.
 		local function sprite(u, v)
-			local local_point = {u * wield.sprite_edge, v * wield.sprite_edge, 0}
+			local local_point = {u * edge, v * edge, 0}
 			local turned = apply(attach, local_point)
 			return to_model({pos.x + turned[1], pos.y + turned[2],
 				pos.z + turned[3]})
 		end
 		local function relative(p)
-			return {p[1] - hand[1], p[2] - hand[2], p[3] - hand[3]}
+			return {(p[1] - hand[1]) * stature, (p[2] - hand[2]) * stature,
+				(p[3] - hand[3]) * stature}
 		end
-		local hilt = relative(sprite(0, -0.5))
-		local grip = relative(sprite(0, wield.grip_fraction))
-		local tip = relative(sprite(0, 0.5))
-		local blade = apply(frame, apply(attach, {0, 1, 0}))
+		-- The image's bottom-left and top-right corners ARE the two ends of the
+		-- weapon in the diagonal convention, and its anti-diagonal is the
+		-- blade. `ends`/`axis` exist only so the historical control below can
+		-- be measured in the VERTICAL convention it was drawn for -- mixing the
+		-- two would make that row meaningless.
+		local ends = attachment.ends or {hilt = {-0.5, -0.5}, tip = {0.5, 0.5}}
+		local axis = attachment.axis or {ROOT_HALF, ROOT_HALF, 0}
+		local hilt = relative(sprite(ends.hilt[1], ends.hilt[2]))
+		local grip = relative(sprite(attachment.grip_fraction_x,
+			attachment.grip_fraction_y))
+		local tip = relative(sprite(ends.tip[1], ends.tip[2]))
+		local blade = apply(frame, apply(attach, axis))
 		local flat = apply(frame, apply(attach, {0, 0, 1}))
 		row(label, "hand", vec(hand), "hilt-hand", vec(hilt), "grip-hand",
 			vec(grip), "tip-hand", vec(tip), "blade", vec(blade), "flat",
@@ -449,8 +484,8 @@ function M.run(repo)
 		return {hilt = hilt, grip = grip, tip = tip, blade = blade, flat = flat}
 	end
 
-	local hanging = measure("wp13_wield_hanging", wield.pos, wield.rot, 0)
-	local raised = measure("wp13_wield_raised90", wield.pos, wield.rot, 90)
+	local hanging = measure("wp13_wield_hanging", wield, 0, 1)
+	local raised = measure("wp13_wield_raised90", wield, 90, 1)
 
 	-- The grip belongs IN the fist, both poses.
 	for _, case in ipairs({{"hanging", hanging}, {"raised", raised}}) do
@@ -458,15 +493,22 @@ function M.run(repo)
 		local distance = math.sqrt(g[1] * g[1] + g[2] * g[2] + g[3] * g[3])
 		check(distance <= 0.001, "the grip is " .. num(distance) ..
 			" units from the fist with the arm " .. case[1])
+		-- The far bottom-left CORNER of the image, i.e. behind the pommel: it
+		-- must sit behind the fist along the blade and stay close to the hand.
 		local h = case[2].hilt
+		local along = h[1] * case[2].blade[1] + h[2] * case[2].blade[2] +
+			h[3] * case[2].blade[3]
+		check(along < 0, "the image's grip corner is not behind the fist " ..
+			"with the arm " .. case[1] .. " (" .. num(along) .. ")")
 		local hilt_distance = math.sqrt(h[1] * h[1] + h[2] * h[2] + h[3] * h[3])
-		check(hilt_distance <= 1.0, "the hilt end is " .. num(hilt_distance) ..
-			" units from the fist with the arm " .. case[1] ..
-			" -- it must stay inside the hand")
+		check(hilt_distance <= 2.5, "the grip corner is " ..
+			num(hilt_distance) .. " units from the fist with the arm " ..
+			case[1] .. " -- the pommel must stay at the hand")
 	end
 
-	-- Hanging arm: forward, tilted up by exactly the declared angle, and the
-	-- broad face of the blade standing vertical (a horizontal flat normal).
+	-- Hanging arm: the ruling is "blade straight forward, 90 degrees to the
+	-- arm", i.e. tilt 0, with the broad face of the blade standing vertical
+	-- (a horizontal flat normal).
 	local expect = math.sin(wield.tilt_up * math.pi / 180)
 	close(hanging.blade[3], math.cos(wield.tilt_up * math.pi / 180), 0.002,
 		"the blade does not point forward (model +z)")
@@ -477,7 +519,6 @@ function M.run(repo)
 		"the blade is not held with its flat vertical (edge down)")
 	check(hanging.tip[3] > 3, "the tip is not well in front of the fist (" ..
 		num(hanging.tip[3]) .. ")")
-	check(hanging.tip[2] > 0, "the tip is not above the fist")
 
 	-- Raised arm: the same grip, the blade swung up with the arm.
 	check(raised.blade[2] > 0.9, "the raised arm's blade does not point up (" ..
@@ -485,22 +526,131 @@ function M.run(repo)
 	check(raised.tip[2] > 3, "the raised arm's tip is not above the fist")
 
 	--
-	-- D. negative control: the version the user photographed
+	-- C2. the same weapon in every hand (playtest round 2's second ruling)
 	--
-	local OLD_POS = {x = 0, y = 5.5, z = -1.5}
-	local OLD_ROT = {x = -90, y = 180, z = 0}
-	local old_hanging = measure("wp13_wield_old_hanging", OLD_POS, OLD_ROT, 0)
-	measure("wp13_wield_old_raised90", OLD_POS, OLD_ROT, 90)
-	-- The reported picture: hilt far behind the fist, tip sitting in it.
+	-- Race stature is now one scalar per race (compose.lua), and
+	-- `wield_transform(k)` divides the sprite's size by it. Both ends of the
+	-- ladder are checked, plus the human 1.0 in the middle by construction.
+	local STATURES = {0.90, 1.12}
+	for _, k in ipairs(STATURES) do
+		local compensated = measure("wp13_wield_stature_" ..
+			string.format("%.2f", k), wield_transform(k), 0, k)
+		for _, field in ipairs({"hilt", "grip", "tip", "blade", "flat"}) do
+			for axis = 1, 3 do
+				close(compensated[field][axis], hanging[field][axis], 0.001,
+					"stature " .. num(k) .. " moves the " .. field ..
+					" on axis " .. axis)
+			end
+		end
+	end
+
+	--
+	-- C3. the second pose: an item that is NOT a diagonal tool sprite
+	--
+	-- A torch, an apple or a bag is an ordinary upright icon. It has no
+	-- diagonal and no grip pixel, so the tool transform would hang it by a
+	-- point its art does not have -- a quarter of a node in front of the fist,
+	-- rolled 45 degrees. `wield_transform(stature, true)` puts its CENTRE in
+	-- the fist standing up instead, and that is what is checked: measured in
+	-- the upright convention (the weapon's ends are the middles of the top and
+	-- bottom edges, its axis the image's +y), the sprite centre lands on the
+	-- fist and the icon's own up points at model up.
+	local upright = wield_transform(1, true)
+	local UPRIGHT_MEASURE = {
+		pos = upright.pos,
+		rot = upright.rot,
+		size = upright.size,
+		grip_fraction_x = upright.grip_fraction_x,
+		grip_fraction_y = upright.grip_fraction_y,
+		ends = {hilt = {0, -0.5}, tip = {0, 0.5}},
+		axis = {0, 1, 0},
+	}
+	local node_item = measure("wp13_wield_upright", UPRIGHT_MEASURE, 0, 1)
+	local centre = node_item.grip
+	check(math.sqrt(centre[1] * centre[1] + centre[2] * centre[2] +
+		centre[3] * centre[3]) <= 0.001,
+		"an upright item's sprite centre is not in the fist")
+	close(node_item.blade[2], 1, 0.002,
+		"an upright item does not stand up (model +y)")
+	close(node_item.flat[2], 0, 0.002,
+		"an upright item's face is not vertical")
+	close(node_item.tip[2], 0.5 * 40 * upright.size.x / 2, 0.002,
+		"an upright item's top edge is not half a sprite above the fist")
+	-- The stature compensation is the same one, and must hold here too.
+	local upright_dwarf = wield_transform(0.90, true)
+	local UPRIGHT_DWARF = {
+		pos = upright_dwarf.pos,
+		rot = upright_dwarf.rot,
+		size = upright_dwarf.size,
+		grip_fraction_x = upright_dwarf.grip_fraction_x,
+		grip_fraction_y = upright_dwarf.grip_fraction_y,
+		ends = UPRIGHT_MEASURE.ends,
+		axis = UPRIGHT_MEASURE.axis,
+	}
+	local dwarf_item = measure("wp13_wield_upright_0.90", UPRIGHT_DWARF, 0, 0.90)
+	for _, field in ipairs({"hilt", "grip", "tip", "blade", "flat"}) do
+		for axis = 1, 3 do
+			close(dwarf_item[field][axis], node_item[field][axis], 0.001,
+				"stature 0.90 moves an upright item's " .. field ..
+				" on axis " .. axis)
+		end
+	end
+
+	--
+	-- D. negative controls
+	--
+	-- D1: the same stature WITHOUT the compensation -- what a 0.90 dwarf
+	-- carried before this round. The weapon has to come out visibly shorter,
+	-- or the compensation above is checking nothing.
+	local uncompensated = measure("wp13_wield_uncompensated_0.90", wield, 0, 0.90)
+	local function length(v)
+		return math.sqrt(v[1] * v[1] + v[2] * v[2] + v[3] * v[3])
+	end
+	close(length(uncompensated.tip), 0.90 * length(hanging.tip), 0.001,
+		"the uncompensated control does not shrink with its wielder")
+	check(length(hanging.tip) - length(uncompensated.tip) > 0.3,
+		"the uncompensated control is indistinguishable from the fix")
+
+	-- D2: the round-1 rotation, which was derived for VERTICALLY drawn sprites,
+	-- applied to this round's diagonal ones. It is the whole reason `rot.y`
+	-- carries a 45: without it the blade comes out 45 degrees off, pointing
+	-- down-forward instead of forward.
+	local OLD = {
+		pos = wield.pos,
+		rot = {x = 90, y = -wield.tilt_up, z = 90},
+		size = wield.size,
+		grip_fraction_x = wield.grip_fraction_x,
+		grip_fraction_y = wield.grip_fraction_y,
+	}
+	local old_convention = measure("wp13_wield_old_convention", OLD, 0, 1)
+	local dot = old_convention.blade[1] * hanging.blade[1] +
+		old_convention.blade[2] * hanging.blade[2] +
+		old_convention.blade[3] * hanging.blade[3]
+	close(dot, math.cos(45 * math.pi / 180), 0.002,
+		"the vertical-convention control is not 45 degrees off the fix")
+
+	-- D3: the version the user photographed in round 1 -- hilt far behind the
+	-- fist, tip sitting in it. Kept because a fixture that cannot reproduce a
+	-- reported defect has not modelled the engine.
+	-- Measured in the VERTICAL sprite convention those numbers were drawn for:
+	-- the blade ran along the image's +y, so the weapon's ends are the middle
+	-- of the top and bottom edges, not the corners.
+	local PHOTOGRAPHED = {
+		pos = {x = 0, y = 5.5, z = -1.5},
+		rot = {x = -90, y = 180, z = 0},
+		size = {x = 0.22, y = 0.22},
+		grip_fraction_x = 0,
+		grip_fraction_y = -5.5 / 16,
+		ends = {hilt = {0, -0.5}, tip = {0, 0.5}},
+		axis = {0, 1, 0},
+	}
+	local old_hanging = measure("wp13_wield_photographed", PHOTOGRAPHED, 0, 1)
 	check(old_hanging.hilt[3] < -3,
-		"the negative control does not reproduce the photographed hilt (" ..
+		"the photographed control does not reproduce the hilt behind the fist (" ..
 		num(old_hanging.hilt[3]) .. ") -- the model of the engine is wrong")
 	check(math.abs(old_hanging.tip[3]) < 1,
-		"the negative control does not reproduce the tip in the fist (" ..
+		"the photographed control does not reproduce the tip in the fist (" ..
 		num(old_hanging.tip[3]) .. ")")
-	check(math.abs(old_hanging.flat[2]) > 0.9,
-		"the negative control's flat is not horizontal -- the 90 degree roll " ..
-		"this fix adds would then be wrong")
 
 	table.sort(failures)
 	row("wp13_wield_result", #failures == 0 and "PASS" or "FAIL", #failures)

@@ -71,13 +71,22 @@ local SLOT_POS = {
 -- §1). Reused grug_gear art for the five slots with a natural match, dimmed by
 -- one multiply — the two new silhouettes are authored dim already. Keep every
 -- modifier exact: a malformed one is a client-side generateImagePart error and
--- an untextured icon, with nothing in the server log.
+-- an untextured icon, with nothing in the server log. The same is true of a
+-- name that no longer exists, which is exactly what the weapon row was between
+-- WP13's round-2 art commit and this one: weapons went from one sprite per
+-- family to one per family AND material, so `grug_gear_item_sword.png` is gone
+-- and the row names the Steel one. Steel rather than any other tier because the
+-- ghost is dimmed grey anyway and a grey source dims cleanly.
+--
+-- `static.sh` in this round's evidence directory now scans every `.png` literal
+-- under `mods/*/grug_*` against the real texture pool, so the next deleted
+-- sprite is a failing gate instead of an untextured slot.
 local GHOST_TEXTURE = {
 	grug_head = "grug_gear_item_head_metal.png^[multiply:#666666",
 	grug_chest = "grug_gear_item_chest_metal.png^[multiply:#666666",
 	grug_legs = "grug_gear_item_legs_metal.png^[multiply:#666666",
 	grug_feet = "grug_gear_item_feet_metal.png^[multiply:#666666",
-	grug_weapon = "grug_gear_item_sword.png^[multiply:#666666",
+	grug_weapon = "grug_gear_item_sword_steel.png^[multiply:#666666",
 	grug_offhand = "grug_inventory_ghost_offhand.png",
 	grug_trinket1 = "grug_inventory_ghost_trinket.png",
 	grug_trinket2 = "grug_inventory_ghost_trinket.png",

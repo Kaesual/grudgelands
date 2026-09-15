@@ -67,29 +67,48 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     Swing LMB press additionally restores builtin-item pickup through a 4 m
     first-visible-object server ray; nodes and other objects stop that ray.
   - **Eligible is whatever carries the item group `grug_equip_weapon`**:
-    all four `grug_gear` weapon families (sword, dagger, greataxe, staff)
-    and the vendored `default:` swords and axes — twelve when this was
-    written, **eight today**, because WP25/WP43 deleted the mese and diamond
-    tool tiers; `grug_gear/init.lua`'s `VENDORED_WEAPONS` is the live list,
-    and it shrinks to nothing by construction as WP28/WP29 fold those items
-    into the material ladder. Mining tools stay mining tools — **picks and shovels are not
+    all four `grug_gear` weapon families (sword, dagger, greataxe, staff) at
+    all six material tiers, the below-ladder starters
+    (`default:sword_wood`, `default:sword_stone`, `grug_gear:staff_wood`) and
+    every **hatchet** — the four vendored `default:` axes plus the four
+    `grug_materials` ones that complete the tool ladder. It was twelve
+    vendored items when this was written and is **six today**: WP25/WP43
+    deleted the mese and diamond tiers and WP13's round-2 merge retired
+    `default:sword_bronze`/`_steel` in favour of `grug_gear:sword_bronze` and
+    `grug_gear:sword_steel` (`items_crafting.md` §3.0.3).
+    `grug_gear/init.lua`'s `VENDORED_WEAPONS` is the live list, and it shrinks
+    to nothing by construction as WP28/WP29 fold those items into the material
+    ladder. Mining tools stay mining tools — **picks and shovels are not
     eligible**.
+  - **A fresh character starts with its class's weapon already in the slot**
+    (decided 2026-09-15, playtest round 2). A **Warrior** gets the stone sword,
+    a **Priest** and a **Mage** the wooden staff; the grant fires once per
+    character when the class is chosen — not at faction choice, where no class
+    exists yet — and writes the equipment list server-side through
+    `grug_inventory.equipment_changed`, so the ability skins and the visible
+    weapon follow exactly as they do for a manual equip. It obeys the
+    two-handed rule below rather than bypassing it, and falls back to `main`
+    (with a chat line saying so) if the slot cannot take the item. The starter
+    torch stays in `main` for the same reason: in the offhand it would cost
+    every caster their two-handed staff.
   - **No class gate.** Weapon families are class *flavor*, not a power
     ladder (`items_crafting.md` §8.2), so a Mage may equip a greataxe and
     simply gains nothing from it. The **only** gate on this slot is the
     level requirement below (`grug_req_level`, WP5).
   - The slot is **family-agnostic** — it holds whatever carries the group,
     which is how the future bow family joins without a second slot.
-  - **No migration**: the slot starts empty and weapons stay valid `main`
-    items. A character that owns a slot-eligible weapon, has finished
-    character creation and has the slot empty gets a **one-time chat hint**
-    instead of having its items moved.
+  - **No migration**: weapons stay valid `main` items and nothing of a
+    character's is moved behind its back. A character that owns a
+    slot-eligible weapon, has finished character creation and has the slot
+    empty gets a **one-time chat hint** instead. Since the starter grant above
+    fills the slot at class choice, a fresh character never sees that hint;
+    it survives for a character that took its weapon back out.
 - **Hand count — the mechanism for `combat_stats.md` §7's two-handed rule**
   (decided 2026-08-08): every weapon declares `_grug_hands` —
   **greataxe 2, staff 2, sword 1, dagger 1** (the caster 1H family of
-  `items_crafting.md` §3.2 is one-handed too when WP30 registers it), and
-  the eight vendored
-  `default:` swords and axes **1** (a `default:` axe is a hatchet, not the
+  `items_crafting.md` §3.2 is one-handed too when WP30 registers it; the
+  below-ladder **wooden staff is 2**, like every staff), and
+  every surviving `default:` sword and every hatchet **1** (a hatchet is not the
   Greataxe: 4 fleshy at a 1.0 s interval against the same tier's sword at 6
   and 0.8 s, i.e. strictly worse in combat, and it is the woodcutting tool
   every character carries). An item **without** the field counts as

@@ -2,10 +2,18 @@
 -- The vendored default and mobs mods load first. Canonical derivative nodes
 -- have already copied the few source definitions they need when this file runs.
 
+-- The Mese and Diamond tiers are retired material tiers (items_crafting.md
+-- §3.0.1). The Bronze and Steel SWORDS join them for a different reason (WP13
+-- round 2): §3.0.3's one-item-per-concept rule, now that `grug_gear` registers
+-- the same two concepts as `grug_gear:sword_bronze` and `grug_gear:sword_steel`
+-- on the one material ladder. Only the swords go -- the bronze and steel
+-- PICK/AXE/SHOVEL are the ladder's own T1 and T3 rungs (see tools.lua), and
+-- `default:sword_wood`/`_stone` stay as the below-ladder starters.
 local REMOVED_TOOLS = {
 	"default:pick_mese", "default:shovel_mese", "default:axe_mese",
 	"default:sword_mese", "default:pick_diamond", "default:shovel_diamond",
 	"default:axe_diamond", "default:sword_diamond",
+	"default:sword_bronze", "default:sword_steel",
 }
 
 local REMOVED_PROCESSED = {
@@ -85,11 +93,13 @@ end
 
 -- WP29 owns the final catalog. Until then the surviving Bronze and historical
 -- default Steel tool steps remain usable with the canonical Bronze and Iron
--- bars. The Steel pick is deliberately excluded by the gate above.
-for _, kind in ipairs({"pick", "shovel", "axe", "sword"}) do
+-- bars. The Steel pick is deliberately excluded by the gate above, and the two
+-- swords are gone entirely (REMOVED_TOOLS) -- their recipes are cleared by the
+-- removal loop above, so neither loop may name `sword` any more.
+for _, kind in ipairs({"pick", "shovel", "axe"}) do
 	register_tool_recipe(kind, "bronze", "grug_materials:bronze_bar")
 end
-for _, kind in ipairs({"shovel", "axe", "sword"}) do
+for _, kind in ipairs({"shovel", "axe"}) do
 	register_tool_recipe(kind, "steel", "grug_materials:iron_bar")
 end
 

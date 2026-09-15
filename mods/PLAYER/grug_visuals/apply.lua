@@ -12,8 +12,8 @@
 --
 -- The visible weapon: ONE attached entity per character (contract §1), never a
 -- per-frame update. `visual = "wielditem"` renders the item's own inventory
--- image as the extruded mesh, so a grug_gear weapon arrives already tinted for
--- its bracket and no texture of ours is involved at all.
+-- image as the extruded mesh, so a Bronze Sword arrives drawn bronze and no
+-- texture of ours is involved at all.
 --
 -- The offhand is deliberately absent (contract §1, "offhand later").
 --
@@ -24,11 +24,15 @@ local WIELD_ENTITY = "grug_visuals:wield"
 -- layout and the engine's wielditem extrusion -- that file carries the whole
 -- derivation and is the one place to adjust the look. Nothing here may hold a
 -- second copy of a number.
-local WIELD = grug_visuals.WIELD
-local WIELD_BONE = WIELD.bone
-local WIELD_POS = WIELD.pos
-local WIELD_ROT = WIELD.rot
-local WIELD_SIZE = WIELD.size
+--
+-- It is a FUNCTION of the wielder's stature, not a constant: the parent's
+-- `visual_size` multiplies the attached entity too, so a 0.90 dwarf would
+-- otherwise carry a 0.90 sword (wield_geometry.lua section 9). Players pass
+-- their race stature and get the same absolute weapon in every hand; mobs pass
+-- nil, because a mob's scale is its real size and an elite guard's sword should
+-- grow with him.
+local WIELD_BONE = grug_visuals.WIELD.bone
+local wield_transform = grug_visuals.wield_transform
 
 -- How often an orphaned wield entity notices that its character is gone.
 -- Luanti DETACHES the children of a removed object instead of removing them,
@@ -49,7 +53,10 @@ core.register_entity(WIELD_ENTITY, {
 		-- persisted copy would accumulate one sword per world load.
 		static_save = false,
 		visual = "wielditem",
-		visual_size = WIELD_SIZE,
+		-- Overwritten per attachment (the stature compensation above); the
+		-- 1:1 value is only what an entity looks like for the one step between
+		-- add_entity and set_attach.
+		visual_size = grug_visuals.WIELD.size,
 		textures = {"air"},
 	},
 	_grug_age = 0,
@@ -72,7 +79,34 @@ local function drawable(itemname)
 		core.registered_items[itemname] ~= nil
 end
 
-local function spawn_wield(parent, itemname)
+-- WHICH OF THE TWO POSES an item is held in (wield_geometry.lua). The tool pose
+-- is derived from the diagonal sprite convention -- long axis on the image's
+-- anti-diagonal, grip at pixel (3.4, 12.6) -- so it is right only for art drawn
+-- that way. A torch or an apple is an ordinary upright icon with no diagonal
+-- and no grip pixel, and through the tool transform it floats a quarter of a
+-- node in front of the fist, rolled 45 degrees about an axis its art does not
+-- have.
+--
+-- The discriminator is a GROUP, not the item type (project convention, and it
+-- is also the more honest test): these five are exactly the families the
+-- convention covers. Every `default` tool carries one, every grug_gear weapon
+-- carries `sword`/`axe`/`staff` plus `grug_equip_weapon`, and every tool that
+-- is NOT drawn that way -- `mobs:lasso`, `mobs:net`, the ability orbs -- carries
+-- none and gets the upright pose without an exception list. A new weapon family
+-- joins by declaring its group, the same way it joins the weapon slot.
+local DIAGONAL_GROUP = {"sword", "axe", "pickaxe", "shovel", "staff",
+	"grug_equip_weapon"}
+
+local function held_upright(itemname)
+	for _, group in ipairs(DIAGONAL_GROUP) do
+		if core.get_item_group(itemname, group) > 0 then
+			return false
+		end
+	end
+	return true
+end
+
+local function spawn_wield(parent, itemname, stature, upright)
 	local pos = parent:get_pos()
 	if not pos then
 		return nil
@@ -81,8 +115,9 @@ local function spawn_wield(parent, itemname)
 	if not obj then
 		return nil
 	end
-	obj:set_properties({textures = {itemname}})
-	obj:set_attach(parent, WIELD_BONE, WIELD_POS, WIELD_ROT)
+	local wield = wield_transform(stature, upright)
+	obj:set_properties({textures = {itemname}, visual_size = wield.size})
+	obj:set_attach(parent, WIELD_BONE, wield.pos, wield.rot)
 	return obj
 end
 
@@ -93,7 +128,12 @@ end
 -- deliberately `_grug_`-prefixed and the ObjectRef is userdata, which mobs_redo
 -- drops from staticdata -- so a reactivated mob re-creates its weapon rather
 -- than inheriting a dead handle.
-local function sync_wield(holder, parent, itemname)
+--
+-- `stature` is the wielder's uniform visual scale (players) or nil (mobs, and
+-- anything else that is its own size). A CHANGED stature re-attaches rather
+-- than re-textures: position and size both depend on it, and an admin `/race`
+-- switch is the only thing that can move it.
+local function sync_wield(holder, parent, itemname, stature)
 	if not drawable(itemname) then
 		itemname = nil
 	end
@@ -101,12 +141,27 @@ local function sync_wield(holder, parent, itemname)
 	if obj and not obj:get_pos() then
 		obj = nil -- removed under us (its parent died)
 	end
+	-- Swapping a sword for a torch is not a re-texture: the two are held in
+	-- DIFFERENT poses, and so are two wielders of different stature. Both
+	-- therefore re-attach, which is the only way position, rotation and size
+	-- move together.
+	local upright = false
+	if itemname then
+		upright = held_upright(itemname)
+	end
+	if obj and (holder._grug_wield_stature ~= stature or
+			holder._grug_wield_upright ~= upright) then
+		obj:remove()
+		obj = nil
+	end
 	if not itemname then
 		if obj then
 			obj:remove()
 		end
 		holder._grug_wield_obj = nil
 		holder._grug_wield_item = nil
+		holder._grug_wield_stature = nil
+		holder._grug_wield_upright = nil
 		return
 	end
 	if obj then
@@ -116,8 +171,24 @@ local function sync_wield(holder, parent, itemname)
 		end
 		return
 	end
-	holder._grug_wield_obj = spawn_wield(parent, itemname)
-	holder._grug_wield_item = holder._grug_wield_obj and itemname or nil
+	-- `add_entity` can fail (no loaded block at the parent's position yet, an
+	-- entity budget). Leaving both fields nil is what makes the next pass --
+	-- the once-a-second poll below for players, the next equipment change or
+	-- activation otherwise -- try again instead of believing the hand is empty.
+	holder._grug_wield_obj = spawn_wield(parent, itemname, stature, upright)
+	-- Written as a branch, not as `obj and value or nil`: `upright` is a real
+	-- boolean and that idiom turns a legitimate `false` into nil, which the
+	-- compare above would then read as a changed pose and re-attach every
+	-- single poll for every tool in the game.
+	if holder._grug_wield_obj then
+		holder._grug_wield_item = itemname
+		holder._grug_wield_stature = stature
+		holder._grug_wield_upright = upright
+	else
+		holder._grug_wield_item = nil
+		holder._grug_wield_stature = nil
+		holder._grug_wield_upright = nil
+	end
 end
 
 --
@@ -145,7 +216,9 @@ local IRRELEVANT_LIST = {
 	grug_trinket2 = true,
 }
 
-local players = {} -- player name -> {key, _grug_wield_obj, _grug_wield_item}
+-- player name -> {key, stature, _grug_wield_obj, _grug_wield_item,
+-- _grug_wield_stature, _grug_wield_upright}
+local players = {}
 
 local function player_entry(name)
 	local entry = players[name]
@@ -179,6 +252,39 @@ function grug_visuals.player_spec(player)
 	}
 end
 
+--
+-- WHAT A PLAYER IS SHOWN HOLDING (character_visuals.md §4, decided in playtest
+-- round 2). Three cases, in this order:
+--
+--   1. the hotbar holds an ABILITY item -> the EQUIPPED weapon. An ability item
+--      is an orb wearing the weapon's own art (grug_abilities' skins), and it
+--      is the weapon slot that drives its damage -- so the hand shows the
+--      weapon, which is also what makes a fighting character look armed.
+--   2. the hotbar holds anything else the registry knows -> that item. A
+--      pickaxe in the hotbar is a pickaxe in the hand.
+--   3. empty hand, or an item nobody registered -> nothing.
+--
+-- Deliberately NOT "the weapon slot always wins": the weapon slot is the single
+-- source of melee damage (inventory_equipment.md §2), but it is not what the
+-- character is DOING, and a player who selects a torch or a shovel expects to
+-- see it.
+local ABILITY_GROUP = "grug_ability"
+
+local function shown_item(player)
+	local wielded = player:get_wielded_item()
+	local name = wielded:get_name()
+	if name == "" then
+		return nil
+	end
+	if core.get_item_group(name, ABILITY_GROUP) > 0 then
+		-- grug_core's stub-override accessor, not grug_inventory's: no
+		-- dependency on the inventory mod, and the stack is our own copy.
+		local weapon = grug_core.get_equipped_weapon(player)
+		return weapon and weapon:get_name() or nil
+	end
+	return name
+end
+
 -- Compose and apply. Cheap on a no-op: one compose (cached) and one compare.
 function grug_visuals.apply(player)
 	if not player or not player.is_player or not player:is_player() then
@@ -187,6 +293,8 @@ function grug_visuals.apply(player)
 	local name = player:get_player_name()
 	local entry = player_entry(name)
 	local result = grug_visuals.compose(grug_visuals.player_spec(player))
+	-- Remembered for the poll below, which has no composed result of its own.
+	entry.stature = result.stature
 	if entry.key ~= result.key then
 		entry.key = result.key
 		-- player_api owns the texture list of the player model; going through
@@ -207,9 +315,40 @@ function grug_visuals.apply(player)
 		-- two-number property.
 		player:set_properties({visual_size = result.visual_size})
 	end
-	sync_wield(entry, player, result.weapon)
+	sync_wield(entry, player, shown_item(player), result.stature)
 	return result
 end
+
+--
+-- The wield poll. `get_wielded_item` has no server-side change hook -- the
+-- hotbar index is client state that only arrives with the next player packet --
+-- so the display rule above needs a look every so often. It doubles as the
+-- retry for a failed spawn (`sync_wield` leaves the entry empty, so the next
+-- pass simply tries again), which is the "the sword was once not shown at all"
+-- report from the playtest.
+--
+-- One second per player, throttled the AGENTS.md way. The work per player is
+-- one `get_wielded_item`, one group lookup and one string compare; everything
+-- expensive (compose, the texture list, the entity write) is behind the
+-- unchanged-item compare inside `sync_wield`.
+local WIELD_POLL = 1.0
+local poll_accumulator = 0
+
+core.register_globalstep(function(dtime)
+	poll_accumulator = poll_accumulator + dtime
+	if poll_accumulator < WIELD_POLL then
+		return
+	end
+	poll_accumulator = 0
+	for _, player in ipairs(core.get_connected_players()) do
+		local entry = players[player:get_player_name()]
+		if entry then
+			-- `entry.stature` is written by apply(); before the first apply
+			-- there is no entry at all, so this cannot race the join hook.
+			sync_wield(entry, player, shown_item(player), entry.stature)
+		end
+	end
+end)
 
 core.register_on_joinplayer(function(player)
 	-- After player_api's own join hook (this mod depends on it, so its

@@ -240,12 +240,23 @@ local default_items = {
 	"default:steel_ingot", "default:gold_ingot", "default:goldblock",
 	"default:shovel_steel", "default:axe_steel", "default:sword_steel",
 	"default:sign_wall_steel", "default:ladder_steel",
+	-- WP13 round 2 strips the `^[transformR90` wield image off default's four
+	-- shovels (overrides.lua) so every held item shares one sprite convention.
+	-- They have to exist here for that override to have a target.
+	"default:shovel_wood", "default:shovel_stone", "default:shovel_bronze",
+	"default:sword_bronze",
 }
 
+-- The Bronze and Steel SWORDS joined the retired Mese/Diamond tiers with
+-- WP13's round-2 one-item-per-concept merge (items_crafting.md §3.0.3): those
+-- two concepts are `grug_gear:sword_bronze` and `grug_gear:sword_steel` now.
+-- Only the swords -- the bronze and steel pick/axe/shovel are the material
+-- ladder's own T1 and T3 rungs.
 local retired_tools = {
 	"default:pick_mese", "default:shovel_mese", "default:axe_mese",
 	"default:sword_mese", "default:pick_diamond", "default:shovel_diamond",
 	"default:axe_diamond", "default:sword_diamond",
+	"default:sword_bronze", "default:sword_steel",
 }
 for _, name in ipairs(retired_tools) do
 	default_items[#default_items + 1] = name
@@ -352,6 +363,13 @@ function core.register_node(name, def)
 end
 
 function core.register_craftitem(name, def)
+	core.registered_items[name] = def
+end
+
+-- WP13 round 2 completes the pick/axe/shovel ladder in grug_materials/tools.lua
+-- (the four metal tiers `default` never had), so the model needs a tool
+-- registration too.
+function core.register_tool(name, def)
 	core.registered_items[name] = def
 end
 
@@ -635,10 +653,8 @@ for _, row in ipairs({
 	{"default:pick_bronze", "default:bronze_ingot"},
 	{"default:shovel_bronze", "default:bronze_ingot"},
 	{"default:axe_bronze", "default:bronze_ingot"},
-	{"default:sword_bronze", "default:bronze_ingot"},
 	{"default:shovel_steel", "default:steel_ingot"},
 	{"default:axe_steel", "default:steel_ingot"},
-	{"default:sword_steel", "default:steel_ingot"},
 	{"default:chest_locked", "default:steel_ingot"},
 	{"mobs:shears", "default:steel_ingot"},
 	{"mobs:protector", "default:goldblock"},
@@ -1134,7 +1150,9 @@ assert_equal(grug_materials.LEGACY_ALIASES, nil, "material alias catalog")
 assert_equal(grug_materials.canonical_name, nil, "material alias resolver")
 
 local removed_items = {}
-assert_equal(#grug_materials.CURATED_VENDOR_REMOVALS, 53,
+-- 53 until WP13 round 2 added the two `default` swords the one material ladder
+-- now covers (items_crafting.md §3.0.3).
+assert_equal(#grug_materials.CURATED_VENDOR_REMOVALS, 55,
 	"curated vendor removal population")
 for _, item_name in ipairs(grug_materials.CURATED_VENDOR_REMOVALS) do
 	assert_equal(removed_items[item_name], nil,
@@ -1189,10 +1207,8 @@ local expected_inputs = {
 	["default:pick_bronze"] = "grug_materials:bronze_bar",
 	["default:shovel_bronze"] = "grug_materials:bronze_bar",
 	["default:axe_bronze"] = "grug_materials:bronze_bar",
-	["default:sword_bronze"] = "grug_materials:bronze_bar",
 	["default:shovel_steel"] = "grug_materials:iron_bar",
 	["default:axe_steel"] = "grug_materials:iron_bar",
-	["default:sword_steel"] = "grug_materials:iron_bar",
 	["default:chest_locked"] = "grug_materials:iron_bar",
 	["mobs:shears"] = "grug_materials:iron_bar",
 	["mobs:protector"] = "grug_materials:gold_block",
