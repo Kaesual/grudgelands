@@ -12,6 +12,7 @@ Branch `wp13-r3-npc-work`, based on main `19abee02`. The change is described in
 | `files.sha256` | the sources this increment changed |
 | `start_npcs_kat-luajit.txt`, `start_npcs_kat-puc51.txt` | the placement/behaviour KAT under both interpreters (identical) |
 | `blueprint_kat-luajit.txt`, `blueprint_kat-puc51.txt` | the blueprint KAT under both interpreters (identical) |
+| `final_micro-luajit.tsv`, `final_micro-puc51.tsv` | the WP13 micro pair, byte-identical, `output_sha256=b713b6623d60bd10d186484a6cbaef0800c1735363fc00bc96e835d46d77eaf3` under both |
 | `load-before.txt`, `load-after.txt` | the engine load probe, on the tree before the change and on the finished tree |
 | `npc-probe.txt` | the three-boot behaviour probe's own lines |
 | `npc-probe-boot1.log`, `npc-probe-boot2.log`, `npc-probe-boot3.log` | its server logs |
