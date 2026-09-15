@@ -503,23 +503,50 @@ And one the SEAM caught, which is the one worth the most:
    in its own evidence directory instead. The same is true of
    `tools/wp13/capital_plots.lua`, which reads the same single-district field:
    `nhal_veyr_plots.lua` is this capital's own.
-3. **Two lots are one node over the skirt on two of the nine seeds.** Section
+3. **`tools/wp40/r7/anchor_activation_kat.lua` fails, and it is not this
+   lane's.** `bash tools/wp40/r7/run.sh unit` stops at "WP40 R7 anchor KAT:
+   operation differs at 1". It fails identically on a pristine archive of `main`
+   at `922bfd92` with no WP13 change in the tree at all, so it is pre-existing
+   and belongs to whoever owns that fixture; it is recorded here because this
+   lane ran into it and somebody should.
+4. **Two lots are one node over the skirt on two of the nine seeds.** Section
    6 (e). Fixing them means deriving the grids against more than two seeds,
    which is a change to how every capital's lots are chosen and not this
    capital's to make alone.
-4. **The capital's own lot predicate reads a 4-node grid.** Section 3 calibrates
-   the error at one node and section 4's limits carry the margin, but a 1-node
-   field dump would be better. Adding a `field` mode to `capital_probe` is the
-   generic fix and belongs with whoever owns that probe next.
-5. **No seed of the fixture's nine puts NHAL VEYR's own anchor root on a
-   mapchunk edge.** Its roots are 88..125 across the nine and a chunk's lowest
-   slice is 48 or 128. The chunk-edge case is covered for the roster as a whole
-   by `capital_anchor_fixture.lua` and by the emerge-order-independent
-   activation that landed on main at `2932a9c7`; this capital's own coverage of
-   it is open.
-6. **The wall's identity is its specification**, and the turret and gate
+5. **The capital's own lot predicate reads a 4-node grid.** Section 3 calibrates
+   the error — a fall by at most one node, a rise by at most two — and section
+   4's limits carry that margin, but a 1-node field dump would be better.
+   Adding a `field` mode to `capital_probe` is the generic fix and belongs with
+   whoever owns that probe next.
+6. **No seed found puts NHAL VEYR's own anchor root on a mapchunk edge**, so
+   the lane brief's "plus one seed on which your capital's anchor root lies on a
+   mapchunk edge" has no engine pass behind it. What was measured instead: across
+   the nine seeds of `capital_anchor_fixture.lua` this capital's fitted anchor is
+   87..124, and a scan of the first 84 small seeds through the same height
+   runtime widens that to **71..132** — which does contain 127, the one value
+   whose root (128) is a chunk's lowest slice, but no seed in the scan hits it.
+   The scan costs about ten seconds a seed, which is why it stopped there.
+
+   The case itself is not uncovered: `capital_anchor_fixture.lua` asserts that
+   SOME capital anchor in its nine-seed set has its root on a chunk edge and
+   refuses a seed list in which none does, and the emerge-order-independent
+   anchor activation that landed on main at `2932a9c7` is what makes that case
+   survive. What is open is a pass on a world where the anchor in question is
+   this one.
+7. **The wall's identity is its specification**, and the turret and gate
    positions are not in it — the same arrangement Dur Brannoc records, and the
    same two things that catch a change: the KAT's built-cell digest and the
-   engine pass's read-back digest.
-7. **The user has not walked Nhal Veyr.** Nothing here is accepted until they
-   have.
+   engine pass's read-back digest. No `*-digest-<seed>.txt` is committed for
+   this capital yet, so `run_capital.sh` prints "recorded (no committed value
+   for seed … yet)" rather than comparing; the values are in
+   `nhal_veyr/probe-<seed>.txt` and freezing them is the first thing to do
+   after the user's playtest, not before it.
+8. **The user has not walked Nhal Veyr.** Nothing here is accepted until they
+   have. On seed 531802985935182545 the crossing of the two great avenues —
+   the `arrival` landmark, with the guard banner on it — is at
+   **(−1800, 107, 1500)**. The king stands on his throne at the north end of
+   the mausoleum, the two traders in the ossuary court north-east of the
+   crossing, the quest shell on the hall of vigil's doorstep in the west
+   quarter, and the travel plaza WP17 is being kept clear of south-east of it.
+   Walk east out of the precinct, down the avenue over the terraces, and the
+   curtain's east gatehouse is 256 nodes out.
