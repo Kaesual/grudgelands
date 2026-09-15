@@ -38,11 +38,37 @@ local mode = core.settings:get("grug_wp13_probe_mode") or "full"
 local timeout_seconds =
 	tonumber(core.settings:get("grug_wp13_probe_timeout")) or 900
 
+-- AN EXTRA REGION TO READ BACK, given as anchor-relative
+-- `min_x,max_x,min_z,max_z`. The probe's own regions are the core, the east
+-- avenue and one plot per district -- the places a capital always has. A
+-- ROUTE CROSSING is not one of them: where WP40 bridges a river inside the
+-- capital envelope is a fact about the seed, so the box comes from whoever
+-- measured it (`tools/wp13/lane_routes.lua`) and the probe only reads it.
+local crossing = core.settings:get("grug_wp13_probe_crossing")
+
 local function fail(message)
 	error("grug_wp13_highcourt_probe: " .. message, 0)
 end
 if mode ~= "surface" and mode ~= "full" and mode ~= "field" then
 	fail("mode must be surface, field or full")
+end
+local crossing_boxes = {}
+if crossing ~= nil and crossing ~= "" then
+	for field in (crossing .. ";"):gmatch("([^;]+);") do
+		local min_x, max_x, min_z, max_z =
+			field:match("^(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+)$")
+		if not min_x then
+			fail("a crossing region must be min_x,max_x,min_z,max_z")
+		end
+		local box = {min_x = tonumber(min_x), max_x = tonumber(max_x),
+			min_z = tonumber(min_z), max_z = tonumber(max_z)}
+		if box.min_x > box.max_x or box.min_z > box.max_z or
+				(box.max_x - box.min_x) > 128 or (box.max_z - box.min_z) > 128 then
+			fail("a crossing region is empty or larger than 128 nodes")
+		end
+		crossing_boxes[#crossing_boxes + 1] = box
+	end
+	if #crossing_boxes > 4 then fail("at most four crossing regions") end
 end
 
 local function log(fields)
@@ -555,6 +581,29 @@ local function finish()
 			min_y = avenue_low - 6, max_y = avenue_high + 6,
 			min_z = anchor_z - 12, max_z = anchor_z + 12},
 	}
+	-- The route crossing, if the run was given one. The height band is read
+	-- off the region's own ground with room for a bridge over it: a deck
+	-- stands on a clearance datum and the road that joins it climbs to the
+	-- deck, so both are inside the ground's own band plus the span.
+	for index = 1, #crossing_boxes do
+		local box = crossing_boxes[index]
+		local low, high = anchor_y, anchor_y
+		for z = box.min_z, box.max_z do
+			for x = box.min_x, box.max_x do
+				local y = grug_zones.terrain_height_at(anchor_x + x, anchor_z + z)
+				if y < low then low = y end
+				if y > high then high = y end
+			end
+		end
+		dump_queue[#dump_queue + 1] = {
+			name = "highcourt-crossing-" .. index .. ".tsv",
+			label = "crossing_" .. index,
+			header = "Highcourt route crossing " .. index ..
+				" as built, anchor-relative",
+			min_x = anchor_x + box.min_x, max_x = anchor_x + box.max_x,
+			min_y = low - 6, max_y = high + 16,
+			min_z = anchor_z + box.min_z, max_z = anchor_z + box.max_z}
+	end
 	for index = 1, #shown do
 		local plot = shown[index]
 		local base = grug_zones.terrain_height_at(

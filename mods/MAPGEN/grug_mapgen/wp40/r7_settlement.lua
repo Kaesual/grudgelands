@@ -920,16 +920,40 @@ function M.config(prepared, content, raw_sha256)
 		-- result is a solid causeway across the water and not paving floating on
 		-- it. The overlay itself is unchanged: it still queries no height of its
 		-- own and still knows nothing about water.
-		local function walkable_height(x, z)
-			local _, _, _, _, _, terrain_y, water_y = column_values_at(x, z)
+		--
+		-- THE ROUTE OVER THE ROAD, which is the second half of the same
+		-- query. WP40's long-distance routes cross the same rivers the
+		-- capital's streets do, and where a route crosses on a BRIDGE its
+		-- deck passes over the street in the air. The column query already in
+		-- hand answers that too: a column the route spans reports the
+		-- functional kind `bridge_deck` and the deck's own walking height,
+		-- and every other functional kind (a land grade, a causeway, a ford)
+		-- is written INTO the ground and is therefore already the surface
+		-- this function returns.
+		--
+		-- So the overlay is handed two numbers per column instead of one, out
+		-- of ONE `column_values_at`, and `wp13/avenue.lua` owns what to do
+		-- with them (its "crossing rule"). The seam publishes geometry and
+		-- decides nothing: the deck height is what WP40 built, not what WP13
+		-- would like it to be.
+		local function walkable_values(x, z)
+			local _, _, _, _, _, terrain_y, water_y, _, _, functional_kind,
+				functional_y = column_values_at(x, z)
 			if type(terrain_y) ~= "number" or terrain_y % 1 ~= 0 then
 				fail("final height at " .. x .. "," .. z .. " differs")
 			end
+			local deck_y
+			if functional_kind == "bridge_deck" then
+				if type(functional_y) ~= "number" or functional_y % 1 ~= 0 then
+					fail("bridge deck height at " .. x .. "," .. z .. " differs")
+				end
+				deck_y = functional_y
+			end
 			if type(water_y) == "number" and water_y % 1 == 0 and
 					water_y > terrain_y then
-				return water_y
+				return water_y, deck_y
 			end
-			return terrain_y
+			return terrain_y, deck_y
 		end
 
 		local metrics = {plan_calls = 0, settle_calls = 0, replay_calls = 0,
@@ -952,7 +976,11 @@ function M.config(prepared, content, raw_sha256)
 				-- above and below one avenue must not re-read the same profile
 				-- once each. The memo IS the plan's own column surface -- every
 				-- value in it comes from `column_values_at` and from nothing else.
+				-- `state.deck` is the same memo for the route surface that spans
+				-- the column, filled by the same query and in the same pass, so
+				-- the crossing rule costs no extra column.
 				state.ground = {}
+				state.deck = {}
 				state.runs = {}
 				for run_index = 1, #blueprint.runs do
 					local run = blueprint.runs[run_index]
@@ -1144,19 +1172,35 @@ function M.config(prepared, content, raw_sha256)
 				local state = states[index]
 				if state.active and state.descriptor.kind == "overlay" then
 					local blueprint = state.blueprint
-					local ground = state.ground
-					local function surface(x, z)
+					local ground, decks = state.ground, state.deck
+					-- One query fills both memos. `decks` distinguishes "not
+					-- asked yet" (nil) from "nothing spans this column"
+					-- (`false`), so a column with no bridge over it is still
+					-- read exactly once.
+					local function read(x, z)
 						local key = column_key(x, z)
 						local value = ground[key]
 						if value == nil then
 							metrics.height_calls = metrics.height_calls + 1
-							value = walkable_height(x, z)
+							local deck_y
+							value, deck_y = walkable_values(x, z)
 							ground[key] = value
+							decks[key] = deck_y or false
 						end
+						return key, value
+					end
+					local function surface(x, z)
+						local _, value = read(x, z)
 						return value
 					end
 					local function local_surface(x, z)
 						return surface(anchor.x + x, anchor.z + z)
+					end
+					local function local_overhead(x, z)
+						local key = read(anchor.x + x, anchor.z + z)
+						local deck_y = decks[key]
+						if deck_y == false then return nil end
+						return deck_y
 					end
 					-- CROSS-RUN ARBITRATION, and the successor is the only thing that
 					-- can do it: `avenue.run` is a pure function of ONE run and knows
@@ -1206,7 +1250,13 @@ function M.config(prepared, content, raw_sha256)
 									at = run.at, from = low, to = high,
 									width = blueprint.width,
 									lamp_spacing = blueprint.lamp_spacing,
-									lamp_phase = run.from, reach = blueprint.reach},
+									lamp_phase = run.from, reach = blueprint.reach,
+									-- The route geometry over this run's columns. A
+									-- run built without it is the road this seam
+									-- built before there was a crossing rule, which
+									-- is what every engine-free fixture still asks
+									-- for.
+									overhead = local_overhead},
 									local_surface)
 								-- Rule 2: the standards this run may not raise, by the
 								-- three cells each of them occupies (post, post, torch,

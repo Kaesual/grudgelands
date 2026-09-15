@@ -37,6 +37,11 @@ rows[#rows + 1] = dofile(repo .. "/tools/wp13/highcourt_kat.lua")(repo)
 -- Highcourt's for its core, its nine plots and its avenues, plus the four
 -- curtain-wall rules only a wall needs (`dur_brannoc_kat.lua` section 4).
 rows[#rows + 1] = dofile(repo .. "/tools/wp13/dur_brannoc_kat.lua")(repo)
+-- What a capital's street does where a WP40 route passes over it. It belongs
+-- to neither capital: `wp13/avenue.lua` is the road of both of them, and the
+-- crossing rule is a property of the module, held to synthetic profiles the
+-- real gate seeds do not all happen to contain.
+rows[#rows + 1] = dofile(repo .. "/tools/wp13/lane_crossing_kat.lua")(repo)
 -- The settlement seam itself: roster-derived manifest order, bounds per slot,
 -- several blueprints per settlement, the terrain-relative projection against a
 -- stub height function, and lazy build/release (contract section 2.2).

@@ -43,6 +43,18 @@ timeout_s="${WP13_HIGHCOURT_TIMEOUT:-1500}"
 }
 port="${WP13_HIGHCOURT_PORT:-32910}"
 [[ "$port" =~ ^[1-9][0-9]{3,4}$ && "$port" -le 65000 ]] || exit 2
+# An extra region for the probe to read back out of the finished map, as
+# anchor-relative `min_x,max_x,min_z,max_z`. Empty by default: the probe's own
+# regions are the ones a capital always has, and where a WP40 route bridges a
+# river inside the envelope is a fact about the seed that
+# `tools/wp13/lane_routes.lua` measures.
+crossing="${WP13_HIGHCOURT_CROSSING:-}"
+[[ -z "$crossing" ||
+	"$crossing" =~ ^(-?[0-9]+,-?[0-9]+,-?[0-9]+,-?[0-9]+)(\;-?[0-9]+,-?[0-9]+,-?[0-9]+,-?[0-9]+)*$ ]] || {
+	echo "run_highcourt: WP13_HIGHCOURT_CROSSING must be one to four" \
+		"min_x,max_x,min_z,max_z boxes separated by ';'" >&2
+	exit 2
+}
 
 mkdir -p "$output"
 root="$(mktemp -d /tmp/grudgelands-wp13-highcourt.XXXXXX)"
@@ -82,6 +94,7 @@ fixed_map_seed = $seed
 num_emerge_threads = 1
 grug_wp13_probe_mode = $mode
 grug_wp13_probe_timeout = $((timeout_s - 120))
+grug_wp13_probe_crossing = $crossing
 CONF
 
 # The log lives inside the scratch tree the sandbox is given, and is copied out
@@ -109,8 +122,10 @@ set -e
 # The probe dumps one region per district plus the core and the avenue, so the
 # plot dumps are numbered rather than named.
 for dump in highcourt-core.tsv highcourt-avenue.tsv highcourt-surface.tsv \
-		highcourt-field.tsv highcourt-plot-1.tsv highcourt-plot-2.tsv \
-		highcourt-plot-3.tsv highcourt-plot-4.tsv; do
+		highcourt-field.tsv highcourt-crossing-1.tsv highcourt-crossing-2.tsv \
+		highcourt-crossing-3.tsv highcourt-crossing-4.tsv \
+		highcourt-plot-1.tsv highcourt-plot-2.tsv highcourt-plot-3.tsv \
+		highcourt-plot-4.tsv; do
 	[[ -f "$world/$dump" ]] && cp "$world/$dump" "$output/$dump"
 done
 grep 'GRUG_WP13_HIGHCOURT' "$log" >"$output/probe.txt" || true
