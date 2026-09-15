@@ -1,1 +1,1 @@
-6088a09f6a25e9c854bb04c1a0d508f98984ec83338ca47ea456d39299db7344  avenue seed=8675309 overlay_cells=3514 main=658b6763 package=20260915-capital-terrain
+260941bbefb14a94caefd3f566b4fa6401f04ff029fe4d65dce78ec2dfd67aa9  avenue seed=8675309 overlay_cells=3630 main=922bfd92 package=20260915-dur-brannoc-upgrade

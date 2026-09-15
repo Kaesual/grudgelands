@@ -58,9 +58,14 @@ if not KEY:match("^[a-z][a-z0-9_]*$") then
 	fail("grug_wp13_probe_key must be a roster key")
 end
 if mode ~= "terrain" and mode ~= "surface" and mode ~= "full" and
-		mode ~= "scan" then
-	fail("mode must be terrain, surface, scan or full")
+		mode ~= "scan" and mode ~= "field" and mode ~= "edge" then
+	fail("mode must be terrain, field, surface, scan, edge or full")
 end
+-- The two modes that need no composition at all: they measure the GROUND and
+-- the emerge order, both of which exist before a capital is designed. They are
+-- grouped once here so the three places that ask "is there a settlement yet"
+-- cannot drift apart.
+local ground_only = (mode == "terrain" or mode == "field" or mode == "edge")
 
 local function log(fields)
 	local parts = {"GRUG_WP13_CAPITAL"}
@@ -88,7 +93,7 @@ end
 -- therefore takes the faction and the race from settings instead, and it is the
 -- only mode that may run without a roster row.
 if not profile then
-	if mode ~= "terrain" then fail("the roster has no " .. KEY) end
+	if not ground_only then fail("the roster has no " .. KEY) end
 	profile = {key = KEY, label = KEY,
 		faction = core.settings:get("grug_wp13_probe_faction") or "",
 		race = core.settings:get("grug_wp13_probe_race") or ""}
@@ -104,11 +109,43 @@ local function timed(label, body)
 	return result
 end
 
+-- THE WORLD'S OWN QUADRANT SEAM, and not the canonical one.
+--
+-- A capital's blueprint source takes `full_seed` and `raw_sha256` and decides
+-- which district stands in which quadrant from them; a caller that passes
+-- neither is engine-free and gets the CANONICAL assignment, the roles in
+-- authored order. This probe has an engine, so passing neither is a defect and
+-- a quiet one: every plot dump and every surface row would be labelled with the
+-- district the canonical assignment puts there while the map underneath holds
+-- the district the SEED put there. The terrain numbers stay right -- a lot is a
+-- lot whichever district takes it, and the SET of lot positions does not depend
+-- on the permutation -- but "fill forge_ore_court" would name a region where
+-- another quarter's mushroom garden actually stands, which is exactly what the
+-- first render of this package showed.
+--
+-- The seam is spelled the way `r7_runtime.lua` spells it, from the same two
+-- engine calls, so probe and world agree about the permutation by construction.
+-- A single-district capital passes the same two fields and ignores them.
+local function world_seed()
+	local seed = core.get_mapgen_setting("seed")
+	if type(seed) ~= "string" or seed == "" or not seed:match("^%-?%d+$") then
+		fail("full world seed differs")
+	end
+	return seed
+end
+local function raw_sha256(bytes)
+	local digest = core.sha256(bytes, true)
+	if type(digest) ~= "string" or #digest ~= 32 then
+		fail("core.sha256 raw result differs")
+	end
+	return digest
+end
+
 local source, plots, overlay
-if mode ~= "terrain" then
+if not ground_only then
 	source = timed("module_load", function()
 		local loaded = dofile(wp40 .. "/" .. profile.blueprint_file)
-		return loaded()
+		return loaded({full_seed = world_seed(), raw_sha256 = raw_sha256})
 	end)
 	-- Built and dropped: what is measured is the build, which is exactly the
 	-- work the emerge thread does on the first mapchunk that touches the
@@ -117,7 +154,13 @@ if mode ~= "terrain" then
 	plots = {}
 	for index = 1, #source.plots do
 		local plot = source.plots[index]
+		-- `district`, `kind` and `lot` are present only for a capital whose
+		-- source resolves several districts (Highcourt, Dur Brannoc since wave
+		-- 2); a single-district capital carries none of them and every report
+		-- below reads them as nil.
 		plots[index] = {id = plot.id, x = plot.x, z = plot.z,
+			district = plot.district, role = plot.role, kind = plot.kind,
+			lot = plot.lot,
 			composition = timed("plot_" .. plot.id, plot.build)}
 	end
 	overlay = source.overlay
@@ -272,6 +315,44 @@ local function terrain_report()
 				wet_columns}, ":")
 	end
 	return table.concat(rows), summary
+end
+
+-- THE WHOLE FIELD, once (added 2026-09-15 by the Dur Brannoc upgrade lane;
+-- `tools/wp13/highcourt_probe/` has carried it since the districts increment
+-- and every capital lane needs it).
+--
+-- `scan_report` below answers "where may THIS plot stand" by re-reading the
+-- same terrain column once per candidate position per plot: one quadrant's
+-- 39 x 49 grid costs a plot two million queries, and a capital with four
+-- districts has four quadrants and 52 compositions to place. The field is the
+-- same two numbers per column whoever asks, so this reads it ONCE -- the pure
+-- final height and whether the map calls the column land -- over the whole
+-- capital envelope, and every lot question becomes arithmetic on an array
+-- outside the engine (`tools/wp13/capital_lots.lua`).
+--
+-- One line per z row: the row's z, then the heights for x = -reach..reach
+-- separated by spaces, then the same number of `0`/`1` land flags as one
+-- string. About a megabyte per seed, re-derivable by a reviewer in one boot.
+local FIELD_REACH = 250
+local function field_report()
+	local rows = {"# grug_wp13_capital_field_v1 key=" .. KEY .. " reach=" ..
+		FIELD_REACH .. " anchor=" .. anchor_x .. "," .. anchor_y .. "," ..
+		anchor_z .. "\n",
+		"# z\theights(x=-reach..reach)\tland(1=land)\n"}
+	local heights, land = {}, {}
+	for z = -FIELD_REACH, FIELD_REACH do
+		local count = 0
+		for x = -FIELD_REACH, FIELD_REACH do
+			count = count + 1
+			heights[count] = grug_zones.terrain_height_at(anchor_x + x,
+				anchor_z + z)
+			land[count] = (grug_zones.water_class_at(anchor_x + x,
+				anchor_z + z) == "land") and "1" or "0"
+		end
+		rows[#rows + 1] = z .. "\t" .. table.concat(heights, " ", 1, count) ..
+			"\t" .. table.concat(land, "", 1, count) .. "\n"
+	end
+	return table.concat(rows)
 end
 
 -- The coarse grid of the whole envelope plus its collar, which is what the
@@ -667,17 +748,23 @@ local function report_complete()
 			parts[#parts + 1] = row.label .. "_road_digest=" .. row.digest
 		end
 	end
-	local surface_text, worst_fall, worst_plot, worst_wet, worst_wet_plot =
-		surface_report()
-	local surface_file = assert(io.open(worldpath .. "/" .. KEY .. "-surface.tsv", "wb"))
-	surface_file:write(surface_text)
-	assert(surface_file:close())
-	parts[#parts + 1] = "worst_plot_fall=" .. worst_fall
-	parts[#parts + 1] = "worst_plot=" .. worst_plot
-	parts[#parts + 1] = "worst_plot_submerged=" .. worst_wet
-	parts[#parts + 1] = "worst_submerged_plot=" .. worst_wet_plot
-	local sockets = select(1, socket_report())
-	for index = 1, #sockets do parts[#parts + 1] = sockets[index] end
+	-- THE SURFACE AND SOCKET REPORTS NEED A COMPOSITION, and the ground-only
+	-- modes have none: `edge` walks mapchunks before a capital is in the roster
+	-- at all. Its completion is the timing summary and nothing else.
+	if plots ~= nil then
+		local surface_text, worst_fall, worst_plot, worst_wet, worst_wet_plot =
+			surface_report()
+		local surface_file = assert(io.open(worldpath .. "/" .. KEY ..
+			"-surface.tsv", "wb"))
+		surface_file:write(surface_text)
+		assert(surface_file:close())
+		parts[#parts + 1] = "worst_plot_fall=" .. worst_fall
+		parts[#parts + 1] = "worst_plot=" .. worst_plot
+		parts[#parts + 1] = "worst_plot_submerged=" .. worst_wet
+		parts[#parts + 1] = "worst_submerged_plot=" .. worst_wet_plot
+		local sockets = select(1, socket_report())
+		for index = 1, #sockets do parts[#parts + 1] = sockets[index] end
+	end
 	log(parts)
 	core.request_shutdown("WP13 capital probe complete", false, 0.2)
 end
@@ -694,6 +781,13 @@ run_dumps = function()
 end
 
 local function finish()
+	-- THE GROUND-ONLY MODES HAVE NOTHING TO DUMP. `edge` emerges mapchunks and
+	-- loads no capital source at all (it runs before a capital is in the
+	-- roster), so there are no plots to read a dump region off and the run ends
+	-- on the corpus it just walked. The first version of that mode fell through
+	-- to the dump queue and indexed a nil `plots`, which is the one defect this
+	-- probe's own engine pass caught rather than a reader.
+	if plots == nil then return report_complete() end
 	local plot = plots[1]
 	local plot_base = grug_zones.terrain_height_at(
 		anchor_x + plot.x + plot.composition.reference.x,
@@ -730,6 +824,86 @@ local function finish()
 			min_y = avenue_low - 6, max_y = avenue_high + 6,
 			min_z = anchor_z - 12, max_z = anchor_z + 12},
 	}
+	-- A capital with DISTRICTS publishes two more regions, because one plot on
+	-- its own says nothing about whether a quarter reads as a quarter: a band
+	-- over the near half of the first district's lot grid, and the first FILL
+	-- dressing of that district. Both are added only when the source resolved
+	-- districts, so a single-district capital's dump set is unchanged.
+	do
+		local first_fill, district_key
+		local min_x, max_x, min_z, max_z
+		for index = 1, #plots do
+			local entry = plots[index]
+			if entry.district and district_key == nil then
+				district_key = entry.district
+			end
+			if entry.district == district_key then
+				if entry.kind == "fill" then
+					first_fill = first_fill or entry
+				else
+					local bounds = entry.composition.bounds
+					local lo_x = entry.x + bounds.min.x
+					local hi_x = entry.x + bounds.max.x
+					local lo_z = entry.z + bounds.min.z
+					local hi_z = entry.z + bounds.max.z
+					if min_x == nil or lo_x < min_x then min_x = lo_x end
+					if max_x == nil or hi_x > max_x then max_x = hi_x end
+					if min_z == nil or lo_z < min_z then min_z = lo_z end
+					if max_z == nil or hi_z > max_z then max_z = hi_z end
+				end
+			end
+		end
+		if district_key and min_x then
+			-- The whole grid is some 130 nodes across and a dump of that with
+			-- its headroom is a few million cells, so the band is CLIPPED to
+			-- 112 on each axis from the corner nearest the core: what the
+			-- picture has to show is lanes with buildings either side, and four
+			-- lots do that as well as nine.
+			local CLIP = 112
+			if min_x < 0 then
+				if min_x < max_x - CLIP then min_x = max_x - CLIP end
+			elseif max_x > min_x + CLIP then
+				max_x = min_x + CLIP
+			end
+			if min_z < 0 then
+				if min_z < max_z - CLIP then min_z = max_z - CLIP end
+			elseif max_z > min_z + CLIP then
+				max_z = min_z + CLIP
+			end
+			local low, high = anchor_y, anchor_y
+			for z = min_z, max_z, 4 do
+				for x = min_x, max_x, 4 do
+					local y = grug_zones.terrain_height_at(anchor_x + x,
+						anchor_z + z)
+					if y < low then low = y end
+					if y > high then high = y end
+				end
+			end
+			dump_queue[#dump_queue + 1] = {name = (KEY .. "-district.tsv"),
+				label = "district",
+				header = profile.label .. " district " .. district_key ..
+					" as built, anchor-relative",
+				min_x = anchor_x + min_x, max_x = anchor_x + max_x,
+				min_y = low - 8, max_y = high + 24,
+				min_z = anchor_z + min_z, max_z = anchor_z + max_z}
+		end
+		if first_fill then
+			local bounds = first_fill.composition.bounds
+			local base = grug_zones.terrain_height_at(
+				anchor_x + first_fill.x + first_fill.composition.reference.x,
+				anchor_z + first_fill.z + first_fill.composition.reference.z)
+			dump_queue[#dump_queue + 1] = {name = (KEY .. "-fill.tsv"),
+				label = "fill",
+				header = profile.label .. " fill dressing " .. first_fill.id ..
+					" as built, anchor-relative",
+				min_x = anchor_x + first_fill.x + bounds.min.x - 2,
+				max_x = anchor_x + first_fill.x + bounds.max.x + 2,
+				min_y = base + bounds.min.y,
+				max_y = base + bounds.max.y + 4,
+				min_z = anchor_z + first_fill.z + bounds.min.z - 2,
+				max_z = anchor_z + first_fill.z + bounds.max.z + 2}
+		end
+	end
 	-- A WALLED capital publishes two more regions: a stretch of curtain that
 	-- crosses a terrace step with a turret on it, and its east gate. Neither
 	-- exists for an open capital, so both are added only when the composition
@@ -821,12 +995,103 @@ core.register_on_mods_loaded(function()
 		core.request_shutdown("WP13 capital terrain probe complete", false, 0.2)
 		return
 	end
+	if mode == "field" then
+		-- The height and land field of the whole envelope, once, for the
+		-- offline lot predicate. No settlement is needed and none is loaded.
+		local file = assert(io.open(worldpath .. "/" .. KEY .. "-field.tsv",
+			"wb"))
+		file:write(field_report())
+		assert(file:close())
+		log({"event=complete", "mode=field",
+			"engine=" .. core.get_version().string,
+			"seed=" .. core.get_mapgen_setting("seed"),
+			"anchor=" .. anchor_x .. "," .. anchor_y .. "," .. anchor_z,
+			"reach=250"})
+		finished = true
+		core.request_shutdown("WP13 capital field probe complete", false, 0.2)
+		return
+	end
+	-- THE EMERGE ORDER GATE (`tools/wp13/run_highcourt.sh edge`, generalised
+	-- so every capital lane can run it without the pilot capital's runner).
+	--
+	-- An anchor writes its content at anchor.y + 1 and needs solid ground at
+	-- anchor.y. A mapchunk is 80 nodes tall and offset by -32, so a root can
+	-- land on a chunk's LOWEST layer and the support is then one node down in
+	-- the chunk below. Which of the two the engine generates first is the
+	-- emerge order, and a player teleporting in from above gets the upper one
+	-- first. The ordinary corpus walks y upward and can therefore never see
+	-- it; this mode emerges, for every one of the six capitals, the ROOT's
+	-- chunk first and the SUPPORT's chunk second.
+	if mode == "edge" then
+		resolved = {}
+		local seen = {}
+		local races = {"human", "dwarf", "elf", "undead", "orc", "troll"}
+		local factions = {human = "accord", dwarf = "accord", elf = "accord",
+			undead = "throng", orc = "throng", troll = "throng"}
+		for index = 1, #races do
+			local race = races[index]
+			local seat = grug_core.capital_anchor(factions[race], race)
+			if type(seat) ~= "table" then
+				fail("capital anchor differs for " .. race)
+			end
+			local root_chunk = chunk_origin(seat.y + 1)
+			local support_chunk = chunk_origin(seat.y)
+			for _, y in ipairs({root_chunk, support_chunk}) do
+				local chunk_key = chunk_origin(seat.x) .. ":" .. y .. ":" ..
+					chunk_origin(seat.z)
+				if not seen[chunk_key] then
+					seen[chunk_key] = true
+					resolved[#resolved + 1] = {id = "anchor_" .. race,
+						kind = "anchor_order", key = chunk_key,
+						x = chunk_origin(seat.x), y = y,
+						z = chunk_origin(seat.z)}
+				end
+			end
+			log({"event=anchor_order", "race=" .. race,
+				"anchor=" .. seat.x .. "," .. seat.y .. "," .. seat.z,
+				"root_chunk_y=" .. root_chunk,
+				"support_chunk_y=" .. support_chunk,
+				"root_on_chunk_edge=" .. tostring(root_chunk ~= support_chunk)})
+		end
+		log({"event=corpus", "mapchunks=" .. #resolved, "mode=edge"})
+		core.after(1, run_next)
+		core.after(timeout_seconds, function()
+			if not finished then
+				log({"event=timeout", "current=" .. current,
+					"completed=" .. completed})
+				core.request_shutdown("WP13 capital probe timeout", false, 0)
+			end
+		end)
+		return
+	end
 	local registered = grug_core.settlement_socket_anchor(KEY)
 	if type(registered) ~= "table" or registered.x ~= anchor_x or
 			registered.y ~= anchor_y or registered.z ~= anchor_z then
 		fail("the registered " .. KEY .. " anchor is not the published capital anchor")
 	end
 	local sockets = select(1, socket_report())
+	-- WHICH DISTRICT THIS WORLD PUT IN WHICH QUARTER. The source publishes what
+	-- it decided; a capital with one district publishes nothing and this logs
+	-- nothing. It is the one thing about a capital that a reader cannot work
+	-- out from the dumps, and the renders are labelled by it.
+	if type(source.districts) == "table" and
+			type(source.districts.assignment) == "table" then
+		local rows = {"event=districts"}
+		local roles = {}
+		for role in pairs(source.districts.assignment) do
+			roles[#roles + 1] = role
+		end
+		table.sort(roles)
+		for index = 1, #roles do
+			rows[#rows + 1] = roles[index] .. "=" ..
+				tostring(source.districts.assignment[roles[index]].quadrant)
+		end
+		if type(source.districts.permutation) == "table" then
+			rows[#rows + 1] = "permutation=" ..
+				table.concat(source.districts.permutation, ",")
+		end
+		log(rows)
+	end
 	log({"event=start", "engine=" .. core.get_version().string,
 		"seed=" .. core.get_mapgen_setting("seed"),
 		"manifest=" .. status.manifest_sha256,

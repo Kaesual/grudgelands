@@ -20,13 +20,26 @@
 # directory, the log inside it, a `timeout --kill-after`, only this run's own
 # server killed, and nothing under the personal Flatpak folder touched.
 #
-# Usage: run_capital.sh OUTPUT_DIR KEY [terrain|surface|scan|full] [SEED]
+# Usage: run_capital.sh OUTPUT_DIR KEY [terrain|field|surface|scan|edge|full] [SEED]
 #   OUTPUT_DIR  absolute, must not exist; receives the log, the dumps and the
 #               per-mapchunk timings.
 #   KEY         the settlement key in `wp40/r7_settlement.lua`'s roster
-#               ("dur_brannoc", "highcourt", ...). In `terrain` mode the roster
-#               need not carry it yet, and WP13_CAPITAL_RACE names the race
-#               whose capital anchor is measured.
+#               ("dur_brannoc", "highcourt", ...). In `terrain`, `field` and
+#               `edge` mode the roster need not carry it yet, and
+#               WP13_CAPITAL_RACE names the race whose capital anchor is
+#               measured.
+#
+# `field` and `edge` were added on 2026-09-15 by the Dur Brannoc upgrade lane,
+# generalised from `tools/wp13/run_highcourt.sh` so that every capital lane has
+# them without the pilot capital's runner:
+#   field       the pure final height and the land/water class of every column
+#               of the 512 envelope, dumped ONCE per seed, which is what the
+#               offline lot predicate `tools/wp13/capital_lots.lua` reads. It
+#               replaces the per-plot candidate sweep of `scan` for any capital
+#               with more than one district.
+#   edge        emerges every capital anchor's ROOT chunk before its SUPPORT
+#               chunk, which is the emerge order a player teleporting in from
+#               above produces and the one the ordinary corpus can never see.
 set -euo pipefail
 export LC_ALL=C
 
@@ -44,8 +57,8 @@ seed="${4:-531802985935182545}"
 	exit 2
 }
 [[ "$mode" == "terrain" || "$mode" == "surface" || "$mode" == "scan" ||
-	"$mode" == "full" ]] || {
-	echo "run_capital: mode must be terrain, surface, scan or full" >&2
+	"$mode" == "full" || "$mode" == "field" || "$mode" == "edge" ]] || {
+	echo "run_capital: mode must be terrain, field, surface, scan, edge or full" >&2
 	exit 2
 }
 [[ "$seed" =~ ^(0|[1-9][0-9]*)$ ]] || {
@@ -134,7 +147,8 @@ set -e
 [[ -f "$engine_log" ]] && cp "$engine_log" "$log"
 [[ -f "$log" ]] || { echo "run_capital: no server log" >&2; exit 1; }
 
-for dump in core plot avenue rampart gate wall surface scan grid; do
+for dump in core plot district fill avenue rampart gate wall surface scan \
+		grid field; do
 	[[ -f "$world/$key-$dump.tsv" ]] && cp "$world/$key-$dump.tsv" "$output/"
 done
 grep 'GRUG_WP13_CAPITAL' "$log" >"$output/probe.txt" || true
@@ -142,9 +156,21 @@ grep 'start npcs' "$log" >"$output/npcs.txt" || true
 grep -c 'ERROR' "$log" >"$output/error-count.txt" || echo 0 >"$output/error-count.txt"
 grep -c 'ModError' "$log" >"$output/moderror-count.txt" || echo 0 >"$output/moderror-count.txt"
 
-errors="$(grep -c 'ERROR\|ModError' "$log" || true)"
+# A VENDOR KIND THE TRADERS MOD HAS NOT REGISTERED YET is a documented
+# condition and not a defect (docs/research/wp13-npc-sockets-contract.md section
+# 8.4: "a kind whose entity the traders mod has not registered yet is an error
+# line at placement and an empty socket, never a load failure"). The wave-2
+# capital lanes place the wave-2 kinds before the NPC vocabulary lane registers
+# their entities, so the line appears on purpose; it is counted and printed
+# separately rather than folded into the gate. The pattern is exact -- the
+# placement engine's own sentence, with a `grug_traders:vendor_*` name in it --
+# so nothing else can slip through it.
+vendor_pending='settlement npcs: .* resolves to no registered entity (grug_traders:vendor_'
+pending_vendors="$(grep -c "$vendor_pending" "$log" || true)"
+errors="$(grep 'ERROR\|ModError' "$log" | grep -vc "$vendor_pending" || true)"
 complete="$(grep -c 'GRUG_WP13_CAPITAL event=complete' "$log" || true)"
-printf 'exit=%s errors=%s complete=%s log=%s\n' "$status" "$errors" "$complete" "$log"
+printf 'exit=%s errors=%s pending_vendor_kinds=%s complete=%s log=%s\n' \
+	"$status" "$errors" "$pending_vendors" "$complete" "$log"
 [[ "$errors" -eq 0 && "$complete" -ge 1 ]] || {
 	echo "WP13 capital pass FAILED; inspect $log" >&2
 	exit 1

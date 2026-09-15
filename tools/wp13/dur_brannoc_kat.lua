@@ -140,6 +140,90 @@ return function(repo)
 	local HIDDEN = dwarf.node("door_hidden")
 	local THRONE = dwarf.maybe("throne")
 
+	-- ------------------------------------------------------------------
+	-- THE WORK SOCKETS OF SECTION 8.1, and the feature each activity names
+	-- ------------------------------------------------------------------
+	--
+	-- The sockets contract's section 8 adds the role `work`: a resident's
+	-- workplace, always staffed, always static, naming the ACTIVITY it does and
+	-- FACING the feature that activity works within three nodes. The registry
+	-- (`grug_core/settlement_sockets.lua`) owns the closed vocabulary and
+	-- refuses a typo at load; what it cannot do is look at the blueprint and
+	-- see whether there is a rock face in front of the miner. That is this
+	-- file's half of section 8.5 for the six WAVE-2 activities this capital
+	-- places, and it is the half that catches the real defect: a socket whose
+	-- dressing moved.
+	--
+	-- The vocabulary is spelled here rather than read from the registry because
+	-- the registry is an engine module and this KAT has no engine; the two
+	-- lists disagreeing is what `settlement_sockets_kat.lua` and the contract
+	-- table are for.
+	local ACTIVITIES = {smith = true, fish = true, farm = true, chop = true,
+		tend = true, pray = true, stall = true, sit = true, sweep = true,
+		mine = true, brew = true, carve = true, mourn = true, spar = true,
+		forage = true}
+	-- Section 8.4: the two `grug_traders` families, the five wave-1
+	-- professions and the seven of wave 2.
+	local VENDOR_KINDS = {race = true, general = true, butcher = true,
+		smith = true, fishmonger = true, baker = true, tailor = true,
+		mason = true, brewer = true, bowyer = true, herbalist = true,
+		armourer = true, tanner = true, embalmer = true}
+	-- The two the CORE alone may publish: `grug_traders` has exactly two
+	-- vendor families and the core's forge court already carries one of each,
+	-- so one out in a district would have the runtime place a third.
+	local CORE_VENDOR_KINDS = {race = true, general = true}
+
+	-- Which node names satisfy which activity. Built from the PALETTE's own
+	-- roles wherever the contract names a palette thing ("a cauldron", "a
+	-- log", "a stone block"), so a palette rebinding moves the rule with it.
+	--
+	-- `sit` and `sweep` name no feature: the contract says so in as many words.
+	-- `stall` is geometric rather than a name list -- "a counter (any solid
+	-- node at waist height)" -- and is answered below by solidity at the
+	-- socket's own feet course. `spar` is the one rule whose feature may be
+	-- ANOTHER SOCKET, and that half is answered where the whole composition's
+	-- socket list is in hand.
+	local FEATURE = {}
+	local function feature_set(activity, roles, extra)
+		local set = {}
+		for _, role in ipairs(roles) do
+			local name = dwarf.maybe(role)
+			if name then set[name] = true end
+		end
+		for _, name in ipairs(extra or {}) do set[name] = true end
+		FEATURE[activity] = set
+	end
+	feature_set("smith", {"workbench", "hearth"},
+		{"default:furnace", "default:furnace_active"})
+	feature_set("chop", {"tree_log", "post", "beam"}, {})
+	-- `tend` is "a plant or a flower" and a stone trough is neither: the set is
+	-- growing things and the soil they grow in, and nothing else. A bed's KERB
+	-- is masonry and stops the search on the socket's own course, which is why
+	-- `dressing.plant` exists and why every `tend` socket of this capital has a
+	-- plant written at the cell it looks at.
+	feature_set("tend", {"flower", "flower_alt", "hedge", "hedge_stem",
+		"undergrowth", "grass_tuft", "fern", "crop", "tree_leaves",
+		"planter_soil"}, {})
+	feature_set("pray", {"light_post", "light_wall", "light_indoor",
+		"low_wall", "signature"},
+		{"doors:door_wood", "doors:door_wood_a", "doors:door_wood_b"})
+	-- WAVE 2 (contract section 8.2, the six race-flavoured activities). Each
+	-- set is the contract's own sentence read against the dwarf palette:
+	--   `mine`   "a stone, ore or cobble node at head or chest height";
+	--   `brew`   "a cauldron, barrel or a cooking pot node";
+	--   `carve`  "a log, a totem/statue part or a stone block";
+	--   `mourn`  "a grave marker, a coffin or a candle";
+	--   `forage` "a mushroom, a bush, a plant, a vine or leaves".
+	feature_set("mine", {"castle_wall", "castle_rubble", "foundation",
+		"plaza", "plaza_edge", "path", "rubble", "signature", "wall_accent"},
+		{})
+	feature_set("brew", {"hearth", "storage"}, {})
+	feature_set("carve", {"tree_log", "signature", "signature_stair",
+		"signature_slab", "foundation", "plaza_edge", "wall_accent"}, {})
+	feature_set("mourn", {"low_wall", "light_post", "light_wall"}, {})
+	feature_set("forage", {"undergrowth", "fern", "grass_tuft", "tree_leaves",
+		"flower", "planter_soil", "crop"}, {})
+
 	-- Nodes an ordinary walk passes through. Everything else counts as solid,
 	-- which keeps the route check conservative; a door counts as passable
 	-- because a player opens it (pipeline contract section 5 invariant 3).
@@ -586,6 +670,8 @@ return function(repo)
 		local sockets = assert(blueprint.landmarks.sockets,
 			label .. " publishes no sockets")
 		local seen, roles, loops = {}, {}, {}
+		local work_count, work_features, work_checked = 0, 0, 0
+		local spar_sockets, spar_dummy = {}, {}
 		local spares = 0
 		for _, entry in ipairs(sockets) do
 			assert(type(entry.id) == "string" and entry.id ~= "",
@@ -644,12 +730,148 @@ return function(repo)
 					label .. ": socket " .. entry.id ..
 						" carries a patrol field but is no waypoint")
 			end
+			--
+			-- THE VENDOR FAMILIES of section 8.4. Which of them a composition
+			-- may publish, and the rule that the capital holds at most one of
+			-- each kind, are asserted where the whole capital is in hand; here
+			-- the kind only has to BE one, and the CORE is additionally held to
+			-- the two `grug_traders` families it has always carried.
 			if entry.role == "vendor" then
-				assert(entry.kind == "race" or entry.kind == "general",
+				assert(VENDOR_KINDS[entry.kind],
 					label .. ": vendor " .. entry.id .. " names no family")
+				if spec.core_vendors then
+					assert(CORE_VENDOR_KINDS[entry.kind], label ..
+						": the core may publish no " .. tostring(entry.kind) ..
+						" vendor")
+				end
 			else
 				assert(entry.kind == nil, label .. ": socket " .. entry.id ..
 					" carries a vendor family but is no vendor")
+			end
+			--
+			-- A WORKPLACE (section 8.1). Every standing test above has already
+			-- run against it, because a work socket is held to every rule an
+			-- idle socket is. What is left is its own three:
+			--
+			--   * it names an activity of the closed vocabulary;
+			--   * it is a SPAWN socket -- a workplace nobody works at is a
+			--     spare with a hammer in its hand, and the contract gives
+			--     `spawn = false` to `idle` alone;
+			--   * the FEATURE the activity names stands where `dir` points,
+			--     within three nodes. That is the rule a moved piece of
+			--     dressing breaks, and nothing else in the tree would see it.
+			--
+			if entry.role == "work" then
+				assert(ACTIVITIES[entry.activity], label .. ": the work " ..
+					"socket " .. entry.id .. " names the activity " ..
+					tostring(entry.activity) .. ", which is not one of the " ..
+					"contract's")
+				assert(entry.spawn == nil, label .. ": the work socket " ..
+					entry.id .. " is spare, and only an idle socket may be")
+				local wdx, wdz = parts.facedir_step(entry.face)
+				local wanted = FEATURE[entry.activity]
+				-- `sit` and `sweep` name no feature -- the contract says so in
+				-- as many words -- so they are workplaces that are not counted
+				-- as checked. Everything else is.
+				if wanted or entry.activity == "stall" or
+						entry.activity == "spar" then
+					work_checked = work_checked + 1
+				end
+				if wanted then
+					--
+					-- THE SEARCH STOPS AT THE FIRST SOLID NODE ON THE SOCKET'S
+					-- OWN COURSE (contract section 8.1): a feature behind a
+					-- wall does not count, because the resident cannot see or
+					-- reach it. The cell that stops the search is examined
+					-- first, so a cauldron or a rock face -- which is itself
+					-- solid -- still counts at the range it stands at.
+					--
+					local found, blocked = nil, false
+					for reach = 1, 3 do
+						local fx = entry.x + wdx * reach
+						local fz = entry.z + wdz * reach
+						if not blocked then
+							for dy = -1, 1 do
+								local cell = at(fx, entry.y + dy, fz)
+								if found == nil and cell and
+										wanted[cell.name] then
+									found = cell.name
+								end
+							end
+							if found == nil and solid(fx, entry.y, fz) then
+								blocked = true
+							end
+						end
+					end
+					assert(found, label .. ": the work socket " .. entry.id ..
+						" does " .. entry.activity .. " but faces no " ..
+						entry.activity .. " feature within three nodes of " ..
+						entry.x .. "," .. entry.y .. "," .. entry.z)
+					work_features = work_features + 1
+				elseif entry.activity == "stall" then
+					-- A counter IS the first solid node on the socket's own
+					-- course, so the stopping rule above is this rule: the
+					-- first solid cell within three either is the counter or
+					-- there is none.
+					local found = false
+					for reach = 1, 3 do
+						if not found and solid(entry.x + wdx * reach, entry.y,
+								entry.z + wdz * reach) then
+							found = true
+						end
+					end
+					assert(found, label .. ": the work socket " .. entry.id ..
+						" keeps a stall but faces no counter within three " ..
+						"nodes")
+					work_features = work_features + 1
+				elseif entry.activity == "spar" then
+					-- "Another `spar` socket or a training dummy". The dummy
+					-- half is `dressing.drill_post`, whose cap is the palette's
+					-- `rug` over a `tree_log`; the partner half is answered
+					-- after the whole socket list is read, below.
+					local found = false
+					for reach = 1, 3 do
+						local fx = entry.x + wdx * reach
+						local fz = entry.z + wdz * reach
+						for dy = -1, 1 do
+							local cell = at(fx, entry.y + dy, fz)
+							if cell and (cell.name == dwarf.node("tree_log") or
+									cell.name == dwarf.node("rug")) then
+								found = true
+							end
+						end
+					end
+					spar_sockets[#spar_sockets + 1] = entry
+					if found then work_features = work_features + 1 end
+					spar_dummy[entry.id] = found
+				end
+				work_count = work_count + 1
+			else
+				assert(entry.activity == nil, label .. ": socket " ..
+					entry.id .. " carries an activity but is no workplace")
+			end
+		end
+		-- THE PARTNER HALF OF `spar`: a socket whose facing found no dummy is
+		-- legal when another `spar` socket of the same composition stands
+		-- within three nodes along its own facing. Both halves are built here,
+		-- so both are checked.
+		for _, entry in ipairs(spar_sockets) do
+			if not spar_dummy[entry.id] then
+				local wdx, wdz = parts.facedir_step(entry.face)
+				local partner = false
+				for _, other in ipairs(spar_sockets) do
+					for reach = 1, 3 do
+						if other.id ~= entry.id and
+								other.x == entry.x + wdx * reach and
+								other.z == entry.z + wdz * reach then
+							partner = true
+						end
+					end
+				end
+				assert(partner, label .. ": the work socket " .. entry.id ..
+					" spars but faces neither a training dummy nor another " ..
+					"spar socket within three nodes")
+				work_features = work_features + 1
 			end
 		end
 		-- The patrol loops: one group per composition, and its orders are
@@ -690,7 +912,9 @@ return function(repo)
 			sockets = #sockets, reachable = #queue, panes = panes,
 			attached = attached, torches = torches, oriented = oriented,
 			loop = loop_length, node = node, at = at, stand = stand,
-			index = index, spares = spares}
+			index = index, spares = spares, work = work_count,
+			work_features = work_features, work_checked = work_checked,
+			roles = roles}
 	end
 
 	-- ------------------------------------------------------------------
@@ -724,6 +948,11 @@ return function(repo)
 		-- same two ends of the same line.
 		roles = {king = 1, waypoint = 1, quest = 1, vendor = 2,
 			guard_post = 12, guard_patrol = 14, idle = 34},
+		-- The core is the one composition of this capital held to the two
+		-- `grug_traders` families and nothing else: the profession vendors of
+		-- the sockets contract's section 8.4 stand in the districts, at the
+		-- counters of the buildings that sell them.
+		core_vendors = true,
 		-- Two of those 34 idle spots are SPARE, and the roster the runtime
 		-- places is therefore 32 of them. Declared, because an authored spare
 		-- that quietly became an ordinary spot is the exact defect the review
@@ -926,73 +1155,299 @@ return function(repo)
 		core_result.reachable, footings, ground_cells, core_result.spares)
 
 	-- ------------------------------------------------------------------
-	-- 2. the district plots
+	-- 2. the four districts: 36 plots and 16 dressings
 	-- ------------------------------------------------------------------
+	--
+	-- Wave 1 had ONE district of nine plots at hand-picked positions. Wave 2
+	-- has four, one per quadrant, standing on the lot grids of
+	-- `wp13/dur_brannoc_quadrants.lua`, and which district takes which quadrant
+	-- is the world seed's. Everything below is therefore asserted of the
+	-- RESOLVED list -- 52 entries with the offsets one assignment gives them --
+	-- and the assignment itself is asserted separately, because a permutation
+	-- that is not a bijection would put two districts on one grid and leave a
+	-- quarter of the capital empty.
 	local PLOT = {
-		reach = 15, ymin = -6, ymax = 24, budget = 12000,
+		reach = 13, ymin = -6, ymax = 24, budget = 12000,
 		min_lights = 2, min_doors = 0, loops = 1, raised = 0,
 	}
-	local district = capital.district
-	assert(district.role == "martial_craft",
-		"the first Dur Brannoc district is not the forge and craft one")
-	assert(#district.plots >= 8, "the district has " .. #district.plots ..
-		" plots")
-	local district_cells, district_loop = 0, {}
-	local district_spares, settlement_idle, placed_idle = 0, 0, 0
+	-- WHICH PLOTS CARRY AN UPPER FLOOR, and how many cells of it. No geometric
+	-- test separates a roof deck carried on piers from a cantilevered apron --
+	-- both have their bearing one node to the side -- so the number is
+	-- declared, and a plot whose architecture moved shows up here as a number
+	-- that moved. The market arcade is the only one of this capital's 52: a
+	-- `capitals.colonnade` is a paved deck on two rows of piers.
+	local PLOT_RAISED = {terrace_market = 59}
+	-- The FILL lots are four deliberately different sizes and a dressing is
+	-- clamped to its own lot's reach, so the envelope a fill composition is
+	-- held to is the slot's and not the district lot's.
+	local quadrants = capital.quadrants
+	local districts = capital.districts
+
+	assert(#districts.districts == 4,
+		"Dur Brannoc has " .. #districts.districts .. " districts, not 4")
+	for index, role in ipairs(quadrants.ROLES) do
+		assert(districts.districts[index].role == role,
+			"district " .. index .. " is not " .. role)
+	end
+
+	-- THE SEEDED PERMUTATION. Three properties, none of which the composition
+	-- can check for itself: the canonical assignment is the identity, a seeded
+	-- one is a bijection of the four roles onto the four quadrants, and two
+	-- different seeds do not have to differ but the twenty-four indices must
+	-- each produce a different permutation.
+	do
+		local canonical = quadrants.assign()
+		local used = {}
+		for _, role in ipairs(quadrants.ROLES) do
+			local placement = canonical[role]
+			assert(type(placement) == "table" and placement.lots,
+				"the canonical assignment gives " .. role .. " no lots")
+			assert(not used[placement.quadrant],
+				"the canonical assignment puts two districts in " ..
+					placement.quadrant)
+			used[placement.quadrant] = role
+		end
+		local seen = {}
+		for index = 0, 23 do
+			local permutation = quadrants.permutation_of_index(index)
+			local key = table.concat(permutation, ",")
+			assert(not seen[key], "permutation index " .. index ..
+				" repeats " .. key)
+			seen[key] = index
+			quadrants.check_permutation(permutation)
+		end
+		local ok = pcall(quadrants.check_permutation, {1, 1, 2, 3})
+		assert(not ok, "a permutation that is not a bijection was accepted")
+		-- The hash itself, against the framing R6 uses: the same seed and the
+		-- same prefix must always give the same index, and Dur Brannoc's prefix
+		-- must not give Highcourt's answer -- two capitals laying their
+		-- districts out in lockstep is the defect a shared prefix produces.
+		local highcourt_quadrants = dofile(wp13 .. "/highcourt_quadrants.lua")()
+		local same, different = 0, 0
+		for _, seed in ipairs({"531802985935182545", "8675309",
+				"15912857179583385436", "0", "1", "2", "42", "12345",
+				"999999999"}) do
+			local mine = quadrants.permutation(seed, common.new_sha256())
+			local twice = quadrants.permutation(seed, common.new_sha256())
+			assert(table.concat(mine, ",") == table.concat(twice, ","),
+				"the permutation of seed " .. seed .. " is not a function")
+			local theirs =
+				highcourt_quadrants.permutation(seed, common.new_sha256())
+			if table.concat(mine, ",") == table.concat(theirs, ",") then
+				same = same + 1
+			else
+				different = different + 1
+			end
+		end
+		assert(different >= 5, "Dur Brannoc's district permutation follows " ..
+			"Highcourt's on " .. same .. " of nine seeds, so the two prefixes " ..
+			"are not independent")
+		say("dur_brannoc_quadrants", #quadrants.QUADRANTS, #quadrants.ROLES,
+			#quadrants.AUTHORED, #quadrants.FILL_AUTHORED,
+			#quadrants.lane_runs(), same, different)
+	end
+
+	-- Every lot of every quadrant is inside the envelope, off the core, off the
+	-- gate corridors and a lane clear of every other lot of its own quadrant.
+	-- The TERRAIN half of the same question needs a world and is
+	-- `tools/wp13/capital_lots.lua`; this is the half a composition can answer
+	-- on its own, and it is here because the offline predicate needs nine
+	-- engine field dumps to run at all.
+	do
+		local LOT = quadrants.LOT
+		for turns = 0, 3 do
+			local name = quadrants.QUADRANTS[turns + 1]
+			local grid = quadrants.LOTS[name]
+			assert(#grid == #quadrants.AUTHORED, name .. " has " .. #grid ..
+				" lots, not " .. #quadrants.AUTHORED)
+			local here = {}
+			local function place(x, z, reach, lane, id)
+				assert(math.abs(x) + reach <= 248 and
+					math.abs(z) + reach <= 248,
+					id .. " reaches past the gate stations")
+				assert(math.abs(x) - reach > 47 or math.abs(z) - reach > 47,
+					id .. " stands on the civic core")
+				assert(math.abs(z) - reach > 16 or math.abs(x) + reach < 0,
+					id .. " reaches into a gate corridor")
+				assert(math.abs(x) - reach > 16, id ..
+					" reaches into a gate corridor")
+				for _, other in ipairs(here) do
+					local gap = math.max(lane, other.lane)
+					local far = math.abs(x - other.x) >
+							reach + other.reach + gap or
+						math.abs(z - other.z) > reach + other.reach + gap
+					assert(far, id .. " stands less than a lane from " ..
+						other.id)
+				end
+				here[#here + 1] = {x = x, z = z, reach = reach, lane = lane,
+					id = id}
+			end
+			for index, lot in ipairs(grid) do
+				place(lot.x, lot.z, LOT.reach, quadrants.FILL.lane,
+					name .. "/" .. index)
+			end
+			local fill = quadrants.FILL_LOTS[name]
+			assert(#fill == #quadrants.FILL_AUTHORED, name .. " has " ..
+				#fill .. " fill lots, not " .. #quadrants.FILL_AUTHORED)
+			for index, lot in ipairs(fill) do
+				place(lot.x, lot.z, quadrants.FILL_AUTHORED[index].reach,
+					quadrants.FILL.lane, name .. "/fill" .. index)
+			end
+		end
+	end
+
+	local resolved = districts.resolve()
+	assert(#resolved == 52, "the four districts resolve to " .. #resolved ..
+		" plots, not 52")
+
+	local district_cells, district_spares = 0, 0
+	local district_work, district_features, district_checked = 0, 0, 0
+	local settlement_idle, placed_idle = 0, 0
+	local loops_by_group = {}
+	local vendor_kinds = {}
+	local activity_count = {}
+	local plot_ids = {}
 	for _, entry in ipairs(core.landmarks.sockets) do
 		if entry.role == "idle" then
 			settlement_idle = settlement_idle + 1
 			if entry.spawn ~= false then placed_idle = placed_idle + 1 end
 		end
+		if entry.role == "vendor" then
+			assert(vendor_kinds[entry.kind] == nil,
+				"the capital publishes two " .. entry.kind .. " vendors")
+			vendor_kinds[entry.kind] = "core/" .. entry.id
+		end
 	end
+
 	local taken = {}
-	for _, entry in ipairs(district.plots) do
+	-- The street runs a plot may not stand on: the four avenues, the four
+	-- sides of the ring, the eight district lanes -- five wide plus a verge --
+	-- and the four sides of the CURTAIN, which are `wall.HALF` either side of
+	-- their centre line. The rule is read off the same specs the overlay is
+	-- given rather than approximated by the square round the anchor.
+	--
+	-- The wall and the lanes belong here and not only in the offline
+	-- predicates: those need engine field dumps to run at all, so without this
+	-- row a plot pushed against the curtain or across a lane would be caught
+	-- only by somebody who had nine worlds to hand.
+	local STREET_HALF = math.floor(avenue.WIDTH / 2)
+	local street_runs = {}
+	for _, list in ipairs({capital.avenues, capital.ring,
+			quadrants.lane_runs()}) do
+		for _, spec in ipairs(list) do
+			street_runs[#street_runs + 1] = {spec = spec, half = STREET_HALF}
+		end
+	end
+	for _, spec in ipairs(capital.wall) do
+		street_runs[#street_runs + 1] = {spec = spec, half = wall.HALF}
+	end
+	local function on_a_street(x, z)
+		for _, run in ipairs(street_runs) do
+			local spec, half = run.spec, run.half
+			local along = (spec.axis == "x") and x or z
+			local across = (spec.axis == "x") and z or x
+			if along >= math.min(spec.from, spec.to) - half and
+					along <= math.max(spec.from, spec.to) + half and
+					math.abs(across - spec.at) <= half then
+				return spec.id
+			end
+		end
+		return nil
+	end
+
+	for _, entry in ipairs(resolved) do
 		local plot = entry.build()
+		assert(not plot_ids[entry.id],
+			"two compositions are called " .. entry.id)
+		plot_ids[entry.id] = entry.district
+		local reach = PLOT.reach
+		if entry.kind == "fill" then
+			reach = quadrants.FILL_AUTHORED[entry.lot].reach
+		end
 		local spec = {}
 		for key, value in pairs(PLOT) do spec[key] = value end
+		spec.reach = reach
+		spec.raised = PLOT_RAISED[entry.id] or 0
+		-- A BUILDING plot carries one waypoint of its district's patrol loop;
+		-- a FILL dressing carries none, because a watch walks the street the
+		-- houses stand on and not the field behind them (the shape Highcourt's
+		-- districts settled on in playtest round 3).
+		spec.loops = (entry.kind == "fill") and 0 or 1
 		-- Every plot publishes the roles its own part publishes, so the
-		-- multiset is read off the plot and only its SHAPE is asserted:
-		-- at least one flair spot, and no role the contract does not name.
+		-- multiset is read off the plot and only its SHAPE is asserted: at
+		-- least one flair spot, and no role the contract does not name.
 		spec.roles = {}
 		for _, socket in ipairs(plot.landmarks.sockets) do
 			spec.roles[socket.role] = (spec.roles[socket.role] or 0) + 1
 		end
 		for role in pairs(spec.roles) do
 			assert(role == "guard_post" or role == "guard_patrol" or
-				role == "idle" or role == "quest" or role == "vendor",
+				role == "idle" or role == "quest" or role == "vendor" or
+				role == "work",
 				entry.id .. " publishes the role " .. role ..
 					", which no district plot may own")
 		end
 		assert((spec.roles.idle or 0) >= 1,
 			entry.id .. " publishes no flair spot")
-		-- A district plot publishes no spare: the slack in the amble belongs to
-		-- the composition that owns the walk, and a plot's own villager keeps
-		-- to its own plot.
-		spec.spares = 0
+		-- A district plot MAY publish spares now (the round-3 shape Highcourt's
+		-- districts settled on: two or three per district, so an ambling
+		-- villager has somewhere to go that is not another villager's
+		-- doorstep). The arithmetic is asserted over the settlement below.
+		spec.spares = nil
+		local spare_here = 0
 		for _, socket in ipairs(plot.landmarks.sockets) do
 			if socket.role == "idle" then
 				settlement_idle = settlement_idle + 1
 				if socket.spawn ~= false then placed_idle = placed_idle + 1 end
+				if socket.spawn == false then spare_here = spare_here + 1 end
+			end
+			if socket.role == "vendor" then
+				assert(vendor_kinds[socket.kind] == nil,
+					"the capital publishes two " .. tostring(socket.kind) ..
+						" vendors: " .. tostring(vendor_kinds[socket.kind]) ..
+						" and " .. entry.id .. "/" .. socket.id)
+				vendor_kinds[socket.kind] = entry.id .. "/" .. socket.id
+			end
+			if socket.role == "work" then
+				activity_count[socket.activity] =
+					(activity_count[socket.activity] or 0) + 1
 			end
 		end
-		local result = check_composition("plot " .. entry.id, plot, spec)
+		spec.spares = spare_here
+		local result = check_composition(entry.kind .. " " .. entry.id, plot,
+			spec)
 		district_cells = district_cells + result.cells
 		district_spares = district_spares + result.spares
+		district_work = district_work + result.work
+		district_features = district_features + result.work_features
+		district_checked = district_checked + result.work_checked
 
-		-- The reference column: inside the plot, and a column the plot
-		-- itself paves, because it is the column whose terrain height the
-		-- whole plot is levelled to.
+		-- The plot fits the LOT it stands on: a composition wider than its lot
+		-- is a composition the lot predicate never measured.
+		for _, axis in ipairs({"x", "z"}) do
+			local low = math.abs(plot.bounds.min[axis])
+			local high = math.abs(plot.bounds.max[axis])
+			assert(low <= reach and high <= reach, entry.id ..
+				" reaches " .. math.max(low, high) .. " on " .. axis ..
+				", outside its lot's " .. reach)
+		end
+		assert(plot.clear_to >= quadrants.LOT.clear, entry.id ..
+			" clears only " .. plot.clear_to .. " nodes of airspace")
+
+		-- The reference column: inside the plot, and a column the plot itself
+		-- paves, because it is the column whose terrain height the whole plot
+		-- is levelled to.
 		local reference = assert(plot.reference,
 			entry.id .. " publishes no reference column")
-		assert(math.abs(reference.x) <= PLOT.reach and
-			math.abs(reference.z) <= PLOT.reach,
+		assert(math.abs(reference.x) <= reach and
+			math.abs(reference.z) <= reach,
 			entry.id .. ": the reference column is outside the plot")
 		local floor = result.at(reference.x, 0, reference.z)
 		assert(floor and floor.name ~= "air" and walkable(floor.name),
 			entry.id .. ": the reference column has no ground course")
 
-		-- The foundation skirt reaches the contract's floor all the way
-		-- round the plot, and the airspace above the plot is cleared.
+		-- The foundation skirt reaches the contract's floor all the way round
+		-- the plot, and the airspace above the plot is cleared.
 		local box = assert(plot.landmarks.plot, entry.id .. " has no box")
 		local skirted, cleared = 0, 0
 		for z = box.min.z, box.max.z do
@@ -1008,11 +1463,10 @@ return function(repo)
 					end
 					skirted = skirted + 1
 				end
-				-- Up to the plot's own roof and two courses over it, which
-				-- is what the composition clears: checking four courses
-				-- would leave the whole upper half of a plot unasserted,
-				-- and a terrace shoulder stands wherever the terrain does.
-				for y = 1, box.max.y + 2 do
+				-- Up to the airspace the composition PUBLISHES as cut, which
+				-- is the number the seam's own load-time `audit_terrain` holds
+				-- the terrain rise against.
+				for y = 1, plot.clear_to do
 					assert(result.at(x, y, z) ~= nil, entry.id ..
 						": the airspace at " .. x .. "," .. y .. "," .. z ..
 						" was never cleared, so a terrace shoulder stays " ..
@@ -1023,45 +1477,8 @@ return function(repo)
 		end
 		assert(skirted > 0 and cleared > 0, entry.id .. " has no plot box")
 
-		-- The plot's own offset from the capital anchor keeps it clear of
-		-- the avenue and of every other plot: two plots that overlap in the
-		-- envelope are two plots the writer projects into each other.
-		-- No plot may share a column with another plot or with anything the
-		-- OVERLAY writes. That is the four gate avenues and the four sides of
-		-- the ring, each five wide -- and, for a walled capital, the four sides
-		-- of the CURTAIN, which are `wall.HALF` either side of their centre
-		-- line. The rule is read off the same specs the overlay is given rather
-		-- than approximated by the square around the anchor, which is what let
-		-- a plot sit on the ring street.
-		--
-		-- The wall runs belong here and not only in
-		-- `tools/wp13/capital_plots.lua`: that tool needs two engine scans to
-		-- run at all, so without this row a plot pushed against the curtain
-		-- would be caught only by somebody who had a world to hand.
-		local STREET_HALF = math.floor(avenue.WIDTH / 2)
-		local function on_a_street(x, z)
-			local runs = {}
-			for _, spec in ipairs(capital.avenues) do
-				runs[#runs + 1] = {spec = spec, half = STREET_HALF}
-			end
-			for _, spec in ipairs(capital.ring) do
-				runs[#runs + 1] = {spec = spec, half = STREET_HALF}
-			end
-			for _, spec in ipairs(capital.wall) do
-				runs[#runs + 1] = {spec = spec, half = wall.HALF}
-			end
-			for _, run in ipairs(runs) do
-				local spec, half = run.spec, run.half
-				local along = (spec.axis == "x") and x or z
-				local across = (spec.axis == "x") and z or x
-				if along >= spec.from - half and
-						along <= spec.to + half and
-						math.abs(across - spec.at) <= half then
-					return spec.id
-				end
-			end
-			return nil
-		end
+		-- No plot shares a column with another plot or with anything the
+		-- OVERLAY writes.
 		for z = entry.z + plot.bounds.min.z, entry.z + plot.bounds.max.z do
 			for x = entry.x + plot.bounds.min.x, entry.x + plot.bounds.max.x do
 				local key = x .. ":" .. z
@@ -1073,73 +1490,179 @@ return function(repo)
 					tostring(street) .. " at " .. key)
 			end
 		end
-		-- and no plot reaches into the 32-node gate corridor WP40 keeps
-		-- clear on each axis (`capital_gate_width`), which nothing else in
-		-- the tree enforces.
-		for _, spec in ipairs(capital.avenues) do
-			local along_min = (spec.axis == "x") and
+		-- and no plot reaches into the 32-node gate corridor WP40 keeps clear
+		-- on each axis (`capital_gate_width`), which nothing else enforces.
+		for _, spec_run in ipairs(capital.avenues) do
+			local along_min = (spec_run.axis == "x") and
 				(entry.x + plot.bounds.min.x) or (entry.z + plot.bounds.min.z)
-			local along_max = (spec.axis == "x") and
+			local along_max = (spec_run.axis == "x") and
 				(entry.x + plot.bounds.max.x) or (entry.z + plot.bounds.max.z)
-			local across_min = (spec.axis == "x") and
+			local across_min = (spec_run.axis == "x") and
 				(entry.z + plot.bounds.min.z) or (entry.x + plot.bounds.min.x)
-			local across_max = (spec.axis == "x") and
+			local across_max = (spec_run.axis == "x") and
 				(entry.z + plot.bounds.max.z) or (entry.x + plot.bounds.max.x)
-			local inside = (along_max >= math.min(spec.from, spec.to)) and
-				(along_min <= math.max(spec.from, spec.to))
+			local inside = (along_max >= math.min(spec_run.from, spec_run.to))
+				and (along_min <= math.max(spec_run.from, spec_run.to))
 			if inside then
-				assert(across_min > spec.at + 16 or across_max < spec.at - 16,
+				assert(across_min > spec_run.at + 16 or
+					across_max < spec_run.at - 16,
 					entry.id .. " reaches into the 32-node gate corridor of " ..
-						spec.id)
+						spec_run.id)
 			end
 		end
 
 		for _, socket in ipairs(plot.landmarks.sockets) do
 			if socket.role == "guard_patrol" then
-				assert(socket.group == district.patrol_group,
-					entry.id .. ": the waypoint " .. socket.id ..
-						" is not in the district's loop")
-				assert(district_loop[socket.order] == nil,
-					"the district loop has two waypoints at order " ..
-						socket.order)
-				district_loop[socket.order] = socket.id
+				loops_by_group[socket.group] =
+					loops_by_group[socket.group] or {}
+				assert(loops_by_group[socket.group][socket.order] == nil,
+					"the loop " .. socket.group ..
+						" has two waypoints at order " .. socket.order)
+				loops_by_group[socket.group][socket.order] = socket.id
 			end
 		end
 
-		say("dur_brannoc_plot", entry.id, entry.x, entry.z, result.cells,
-			result.solids, result.palette, result.lights, result.doors,
-			result.rooms, result.sockets, result.reachable)
+		say("dur_brannoc_plot", entry.id, entry.district, entry.kind,
+			entry.lot, entry.x, entry.z, result.cells, result.solids,
+			result.palette, result.lights, result.doors, result.rooms,
+			result.sockets, result.reachable, result.work)
 	end
-	-- The district's loop is one walk, 1..n, across all its plots.
-	local district_length = 0
-	for _ in pairs(district_loop) do district_length = district_length + 1 end
-	for order = 1, district_length do
-		assert(district_loop[order],
-			"the district patrol loop has no waypoint at order " .. order)
-	end
-	assert(district_length >= 8, "the district patrol loop is " ..
-		district_length .. " waypoints long")
-	assert(district_cells <= 12000 * #district.plots,
-		"the district is over its plot budget")
-	say("dur_brannoc_district", district.key, #district.plots, district_cells,
-		district_length, district_spares)
 
-	-- THE SETTLEMENT'S SPARES, over the whole of it and not per composition:
-	-- the two the core owns and none anywhere else. A spare is an `idle` socket
-	-- with `spawn = false`, which is the runtime's own word for a wander target
-	-- nobody is placed on, so the roster the engine really places is every idle
-	-- socket MINUS these. The engine pass prints both halves of that arithmetic
-	-- (`spare 2`, and a flair count two short of the idle total); this is the
-	-- composition-side half of the same claim, and it is here rather than only
-	-- there because a composition should not need a world to be checked.
-	assert(core_result.spares + district_spares == 2,
-		"the settlement publishes " .. (core_result.spares + district_spares) ..
-			" spare sockets, not 2")
-	assert(settlement_idle - placed_idle == 2,
+	-- Each district's loop is one walk, 1..n, across its own plots.
+	local loop_total = 0
+	for index = 1, #districts.districts do
+		local district = districts.districts[index]
+		local orders = assert(loops_by_group[district.patrol_group],
+			district.key .. " publishes no patrol loop")
+		local length = 0
+		for _ in pairs(orders) do length = length + 1 end
+		for order = 1, length do
+			assert(orders[order], district.key ..
+				": the patrol loop has no waypoint at order " .. order)
+		end
+		assert(length >= 8, district.key .. "'s patrol loop is " .. length ..
+			" waypoints long")
+		loop_total = loop_total + length
+		say("dur_brannoc_district", district.key, district.role,
+			#district.plots, #district.fill, length)
+	end
+
+	assert(district_cells <= 12000 * #resolved,
+		"the districts are over their plot budget")
+
+	-- THE CAPITAL AGAINST THE CONTRACT'S 400 000-CELL BUDGET (section 2.3).
+	-- The overlay is not in it: it has no cells until a surface is handed to
+	-- it and is computed per mapchunk, never stored.
+	local capital_cells = core_result.cells + district_cells
+	assert(capital_cells <= 400000, "the capital writes " .. capital_cells ..
+		" cells, over the contract budget of 400 000")
+
+	-- THE 80/20 RULE (sockets contract section 8.3). The NPC lane makes every
+	-- fifth idle SPAWN socket a walker and asserts the resulting share is
+	-- 10-30 % of residents; a capital of nothing but workplaces would fail
+	-- that, and this is the structure lane's half of the same rule: at least
+	-- one idle spawn socket per work socket.
+	local work_total = district_work
+	assert(placed_idle >= work_total, "the capital publishes " .. work_total ..
+		" work sockets against " .. placed_idle .. " idle spawn sockets, so " ..
+		"the walker share falls below the contract's band")
+	local residents = placed_idle + work_total
+	local walkers = math.ceil(placed_idle / 5)
+	assert(walkers * 100 >= residents * 10 and walkers * 100 <= residents * 30,
+		"the walker share is " .. walkers .. " of " .. residents ..
+			" residents, outside the contract's 10-30 %")
+	-- Every work socket whose activity NAMES a feature faces one. `sit` and
+	-- `sweep` name none (the contract says so), so they are workplaces this
+	-- count does not reach, and the two numbers are printed side by side rather
+	-- than folded together.
+	assert(district_features == district_checked, "only " ..
+		district_features .. " of " .. district_checked ..
+		" work sockets whose activity names a feature face one")
+
+	-- THE SETTLEMENT'S SPARES, over the whole of it and not per composition: a
+	-- spare is an `idle` socket with `spawn = false`, which is the runtime's
+	-- own word for a wander target nobody is placed on, so the roster the
+	-- engine really places is every idle socket MINUS these.
+	local spare_total = core_result.spares + district_spares
+	assert(settlement_idle - placed_idle == spare_total,
 		"the placed idle roster is " .. placed_idle .. " of " ..
-			settlement_idle .. " idle sockets, so the spares are not 2")
+			settlement_idle .. " idle sockets, which is not " .. spare_total ..
+			" spares")
+	assert(core_result.spares == 2, "the core publishes " ..
+		core_result.spares .. " spare sockets, not 2")
+	assert(district_spares >= 8, "the four districts publish " ..
+		district_spares .. " spare sockets, fewer than two each")
 	say("dur_brannoc_spares", core_result.spares, district_spares,
 		settlement_idle, placed_idle)
+
+	-- THE VENDOR FAMILIES over the whole capital: at most one of each kind
+	-- (sockets contract section 8.4), and the two `grug_traders` families are
+	-- among them.
+	local vendor_total = 0
+	for _ in pairs(vendor_kinds) do vendor_total = vendor_total + 1 end
+	assert(vendor_kinds.race and vendor_kinds.general,
+		"the capital publishes no race or no general vendor")
+	local activity_total = 0
+	for _ in pairs(activity_count) do activity_total = activity_total + 1 end
+	say("dur_brannoc_trades", vendor_total, work_total, activity_total,
+		district_checked, district_features, capital_cells, residents, walkers)
+
+	-- ------------------------------------------------------------------
+	-- 2b. the four avenues reach the four GATE POINTS, exactly
+	-- ------------------------------------------------------------------
+	--
+	-- WP40 fixes four gate stations per capital at (ax +- 256, az) and
+	-- (ax, az +- 256), and the wave-2 route lane moves every WP40 route end
+	-- from the capital anchor to those four points on the avenue centre lines,
+	-- with no route cell or bridge deck inside the 512 envelope. A road that
+	-- stopped at the core edge, or half a node off the axis, would leave the
+	-- world's road network ending at a wall. So each avenue is asserted to run
+	-- ALONG its own axis with `at = 0` -- the centre line the gate point sits
+	-- on -- from the core edge to at least 256, and the capital's curtain is
+	-- asserted to carry a gate on that same axis.
+	--
+	-- The reach is 261 and not 256 because this capital has a wall: the
+	-- curtain's centre line is at 256 and its gate tunnel runs through the
+	-- whole seven-node thickness, so a road that stopped at the centre line
+	-- would stop inside the gate.
+	do
+		local GATE_AT = 256
+		local seen = {}
+		for _, spec in ipairs(capital.avenues) do
+			assert(spec.at == 0, spec.id ..
+				" does not run on its own gate axis")
+			local far = math.max(math.abs(spec.from), math.abs(spec.to))
+			assert(far >= GATE_AT, spec.id .. " reaches " .. far ..
+				", short of the gate station at " .. GATE_AT)
+			local near = math.min(math.abs(spec.from), math.abs(spec.to))
+			assert(near <= 48, spec.id .. " starts at " .. near ..
+				", away from the core edge")
+			local sign = (spec.to > 0) and 1 or -1
+			seen[spec.axis .. ":" .. sign] = spec.id
+			assert(type(spec.gate) == "string",
+				spec.id .. " names no gate of the core")
+		end
+		local count = 0
+		for _ in pairs(seen) do count = count + 1 end
+		assert(count == 4, "the capital has " .. count ..
+			" gate axes, not four")
+		-- And the curtain carries a gate where each avenue crosses it: the
+		-- wall plan's `gates` list is the offset along the run, and every
+		-- avenue is at 0.
+		for _, spec in ipairs(capital.wall) do
+			local plan = capital.wall_plan[spec.id]
+			assert(type(plan) == "table" and type(plan.gates) == "table",
+				spec.id .. " has no wall plan")
+			local on_axis = false
+			for _, gate in ipairs(plan.gates) do
+				if gate == 0 then on_axis = true end
+			end
+			assert(on_axis, spec.id ..
+				" carries no gate on the avenue's centre line")
+		end
+		say("dur_brannoc_gate_points", count, #capital.wall, GATE_AT,
+			capital.avenues[1].to, capital.avenues[4].to)
+	end
 
 	-- ------------------------------------------------------------------
 	-- 3. the avenue overlay

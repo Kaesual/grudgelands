@@ -49,10 +49,28 @@ started = os.clock()
 local again = capital.core()
 local core_again = os.clock() - started
 
+-- THE PLOT LIST, whichever shape the capital publishes it in. A capital with
+-- ONE district publishes `district.plots`; a capital with FOUR publishes a
+-- `districts` roster whose `resolve()` returns every plot with the offset its
+-- quadrant gives it. Both are read, `districts` first, so a capital that grows
+-- its other three districts keeps its timing row and every capital that has not
+-- is timed exactly as before.
+local function plot_list()
+	if type(capital.districts) == "table" and
+			type(capital.districts.resolve) == "function" then
+		return capital.districts.resolve()
+	end
+	if type(capital.district) == "table" then
+		return capital.district.plots
+	end
+	error("the composition of " .. key .. " publishes no district plots", 0)
+end
+
 started = os.clock()
-local district_cells = 0
-for _, entry in ipairs(capital.district.plots) do
+local district_cells, district_plots = 0, 0
+for _, entry in ipairs(plot_list()) do
 	district_cells = district_cells + #entry.build().cells
+	district_plots = district_plots + 1
 end
 local district_time = os.clock() - started
 
@@ -136,5 +154,8 @@ io.write(table.concat({"wp13_capital_timing", key, label, "load_ms",
 	"seam_blueprints", #prepared.blueprints,
 	"seam_first_touch_cells", written,
 	"seam_builds", seam_metrics.build_calls,
-	"seam_height_calls", seam_metrics.height_calls}, "\t"), "\n")
+	"seam_height_calls", seam_metrics.height_calls,
+	-- Appended rather than inserted: the row is read as key/value pairs and
+	-- four capital lanes are running this harness at the same time.
+	"district_plots", district_plots}, "\t"), "\n")
 assert(#again.cells == #core.cells, "the two core builds differ")

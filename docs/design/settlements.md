@@ -194,6 +194,30 @@ Where a capital's avenue has to leave the ground — the blend from the flat civ
 core to the terraces can fall faster than a road may descend — the raised
 stretch carries a masonry rail on both kerbs.
 
+**Between the plots.** Decided 2026-09-15 with the round-3 playtest: a quarter
+of nine buildings in a 512 envelope is empty, so each quarter carries four more
+pieces of open ground beside its nine plots — a field, a pasture, a yard and a
+green, at four deliberately different sizes. They are plots like any other, with
+their own reference column and their own foundation skirt, because ground laid
+at the core's height across a terrace is ground with a step through it, and they
+travel with their district when the seed moves it. What stands on them is the
+district's trade: a garrison musters and chops wood on its ground, a residential
+quarter grows and grazes on its.
+
+**The dwarf capital.** Decided 2026-09-15 with Dur Brannoc's four quarters. Its
+citadel is stone block, its halls are pine under slate, and its city stands
+ABOVE AND BELOW the ring of hillside the map blends from the flat civic core
+down to the granite terraces — that band falls as much as forty-four nodes and
+carries no building at all, so the four quarters begin further out than a
+human capital's and the lanes that reach them are stair streets the whole way
+down. The four quarters are the forge and its professions, the garrison, the
+halls of record with the carvers' yard and the barrow terrace, and the terrace
+houses with their alehouse and brewhouse. Its open ground is what a dwarf city
+keeps: an ore court with a mine mouth cut into a rock face, charcoal clamps, a
+slag yard, mushroom beds grown in the lee of the wall, goat pens and brewing
+courts. Its trades are a smith, a mason, an armourer, an embalmer, a butcher, a
+brewer and a baker, beside the two travelling traders every capital's core has.
+
 Shipped behaviour of that first roster: each start's eleven NPCs are placed once
 its area is prepared at server start, from the sockets alone, and stay for the
 life of the world. Two faction guards hold their authored gate posts, returning

@@ -197,10 +197,14 @@ M.roster = {
 	},
 	-- The second capital, and the first WALLED one (the user's ruling of
 	-- 2026-09-14: walls for Dur Brannoc, Nhal Veyr and Gor Drazhak). Its
-	-- overlay carries twelve runs -- four avenues, four sides of the ring
-	-- street and the four sides of the curtain wall -- because the wall follows
-	-- the terraced ground exactly the way the road does and belongs to the same
-	-- kind of blueprint (`r7_dur_brannoc_blueprint.lua`).
+	-- overlay carries twenty runs -- four avenues, four sides of the ring
+	-- street, eight district lanes and the four sides of the curtain wall --
+	-- because the wall follows the terraced ground exactly the way the road
+	-- does and belongs to the same kind of blueprint
+	-- (`r7_dur_brannoc_blueprint.lua`). Since the wave-2 upgrade of 2026-09-15
+	-- it carries four districts of nine plots and four dressings each, exactly
+	-- like Highcourt, with the quadrant permutation of
+	-- `wp13/dur_brannoc_quadrants.lua`.
 	{
 		key = "dur_brannoc", label = "Dur Brannoc", race = "dwarf",
 		slot = "capital", bounds = "capital_core", plot_bounds = "capital_plot",

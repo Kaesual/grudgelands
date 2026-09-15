@@ -117,10 +117,35 @@ do
 	assert(differs, "the two scans are the same world; use two different seeds")
 end
 
+-- THE PLOT LIST, whichever shape the capital publishes it in.
+--
+-- A capital with ONE district publishes `district.plots` (Dur Brannoc did in
+-- wave 1, and that is what this tool was written against); a capital with FOUR
+-- publishes a `districts` roster whose `resolve()` returns every plot with the
+-- offset its quadrant gives it. Both are read here, `districts` first, so a
+-- capital that grows its other three districts does not lose its pre-flight --
+-- and so that this tool, which four capital lanes are using at the same time,
+-- keeps behaving exactly as it did for every capital that has not.
+--
+-- `tools/wp13/capital_lots.lua` is the four-district predicate proper: it asks
+-- the same questions of the LOTS rather than of the plots standing on them, and
+-- it takes as many worlds as it is given rather than two.
+local function plot_list()
+	if type(capital.districts) == "table" and
+			type(capital.districts.resolve) == "function" then
+		return capital.districts.resolve()
+	end
+	if type(capital.district) == "table" then
+		return capital.district.plots
+	end
+	error("the composition of " .. key .. " publishes no district plots", 0)
+end
+
 -- The plots, built once, with the footprint the ground fill actually covers.
 local plots = {}
-for index = 1, #capital.district.plots do
-	local entry = capital.district.plots[index]
+local roster = plot_list()
+for index = 1, #roster do
+	local entry = roster[index]
 	local composition = entry.build()
 	-- THE AIRSPACE THE PLOT REALLY CUT, which is what `r7_settlement.
 	-- audit_terrain` holds a rise against and is NOT the top of the plot's
@@ -149,7 +174,16 @@ local function add_run(run, half)
 			min_x = run.at - half, max_x = run.at + half}
 	end
 end
-for _, list in ipairs({capital.avenues, capital.ring}) do
+-- The district LANES belong here too wherever a capital has them: they are
+-- ordinary `avenue.lua` runs of the same overlay, so a plot standing on one is
+-- a plot with a road through it. A capital that publishes no quadrants module
+-- has no lanes and this adds nothing.
+local lanes = {}
+if type(capital.quadrants) == "table" and
+		type(capital.quadrants.lane_runs) == "function" then
+	lanes = capital.quadrants.lane_runs()
+end
+for _, list in ipairs({capital.avenues, capital.ring, lanes}) do
 	for index = 1, #list do
 		add_run(list[index], (avenue.WIDTH - 1) / 2 + 1)
 	end

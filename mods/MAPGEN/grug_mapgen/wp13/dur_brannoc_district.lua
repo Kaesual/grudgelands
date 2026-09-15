@@ -1,381 +1,285 @@
--- Dur Brannoc, the forge and craft district: nine terrain-relative plots along
--- the east avenue and the ring street.
+-- Dur Brannoc, the forge and professions district: nine terrain-relative plots
+-- and four dressings.
 --
--- The rule is `highcourt_district.lua`'s and the capitals contract section
--- 2.1's, and it is repeated here rather than shared because a district is a
--- COMPOSITION and not a generator: a plot cannot be anchor-relative, because
--- WP40 terraces the 512 envelope (step 4 for the dwarf granite terrace, the
--- deepest of the six races), so each plot names one REFERENCE COLUMN whose
--- final height the settlement config asks once per session and projects the
--- whole plot from. Two halves of one rule keep that standing on a terrace
--- edge:
+-- The contract's FIRST district role (`market_professions`), and the one this
+-- capital shipped with in wave 1 under the ad-hoc role name `martial_craft`.
+-- What a plot is and how it is built is `dur_brannoc_plot.lua`; where the nine
+-- plots stand is `dur_brannoc_quadrants.lua`. This file is the roster and
+-- nothing else.
 --
---   * a FOUNDATION SKIRT, the perimeter carried down to y = -6, so a downhill
---     corner stands on masonry and not on air;
---   * a CLEAR VOLUME, the plot's own airspace up to its roof, so an uphill
---     shoulder of terrace is not left standing inside a wall.
---
--- Only the perimeter is skirted and only the airspace is cleared: a solid
--- block of either would cost a plot four thousand cells of buried stone and
--- put it over the contract's 12,000-cell budget on its own.
---
--- WHERE THE PLOTS MAY STAND is not a design decision. `tools/wp13/
--- capital_plots.lua` is the committed predicate -- dry, inside the skirt,
--- under its own roof, clear of the core, the gate corridors, the streets and
--- every other plot, on BOTH gate seeds -- and the positions below are what it
--- accepts. The dwarf terrace has no river in it, which is the one thing
--- Highcourt's own sweep got wrong, but it has the game's deepest terrace step,
--- so the skirt is what matters here rather than the water.
+-- THE NINE PLOT IDS ARE WAVE 1'S, UNCHANGED, and so are every socket id they
+-- publish. The upgrade to four districts moves the plots -- they stood at nine
+-- hand-picked positions and they stand on a quadrant's lot grid now -- but a
+-- socket id is what an entity in the user's existing world is remembered
+-- against, so `forge_charcoal`, `forge_pack_stable`, `forge_smithy`,
+-- `forge_guild_house`, `forge_quench_court`, `forge_watch`, `forge_copse`,
+-- `forge_ore_yard` and `forge_store` keep their names and their generators.
+-- What is new here is their WORK: wave 1 published one flair spot per plot and
+-- no workplace at all, which is the "every resident is a doorstep-stander"
+-- finding of playtest round 3.
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
 local function loader(directory)
-	local parts = dofile(directory .. "/parts.lua")
-	local palettes = dofile(directory .. "/palette.lua")
-	local buildings = dofile(directory .. "/buildings.lua")(directory)
-	local capitals = dofile(directory .. "/capitals.lua")(directory)
-	local dressing = dofile(directory .. "/dressing.lua")(directory)
+	local plots = dofile(directory .. "/dur_brannoc_plot.lua")(directory)
 
 	local M = {}
 
-	-- The contract's plot envelope.
-	local REACH = 15
-	local FLOOR = -6
-
 	local WATCH = "dur_brannoc_forge_watch"
 
-	local SLATE = {
-		roof_stair = "grug_decor:darkage_slate_tile_stair",
-		roof_stair_outer = "grug_decor:darkage_slate_tile_stair_outer",
-		roof_stair_inner = "grug_decor:darkage_slate_tile_stair_inner",
-		roof_slab = "grug_decor:darkage_slate_tile_slab",
-		roof_ridge = "grug_decor:darkage_slate_tile",
-	}
+	-- THE APRON IS WHERE A BUILDING PLOT'S DRESSING GOES, and the rule is
+	-- geometric rather than a matter of taste: a plot's ground is the part's
+	-- own extent grown by its margin, so the only cells a `decorate` may write
+	-- without landing inside the building are the ring round it. The front row
+	-- of that ring -- `z0 + 1`, between the two corner lamps and clear of the
+	-- doorstep path down the middle -- is the one every plot has, whatever its
+	-- margin, and it is also the row a passer-by on the lane sees. So every
+	-- workplace of a building plot stands on the outermost row `z0` and faces
+	-- the feature on `z0 + 1`, which is what makes the socket's `dir` name the
+	-- feature (sockets contract section 8.1). The wave-1 version of this file
+	-- wrote its dressing at `x1 - 4, z0 + 3` and put a wood pile inside the
+	-- granary; the KAT's own "a bottom slab carries nothing" rule found it.
+	local function shop_counter(buf, palette, area)
+		area.dressing.counter(buf, palette, area.x1 - 5, area.z0 + 1, 4, "x")
+	end
+	local function shop_vendor(id, kind, area)
+		return plots.vendor(id, kind, area.x1 - 4, area.z0, 0)
+	end
 
-	-- The roster. `x`/`z` is the plot origin's offset from the CAPITAL anchor;
-	-- the east avenue runs along z = 0 from the core edge at 48 out through the
-	-- gate at 256, and the ring street crosses it at x = 96.
-	--
-	-- `order` is the plot's waypoint in the district's own patrol loop, which
-	-- is one loop with one group and no gaps: the KAT walks it.
 	local PLOTS = {
-		-- MOVED from the authored (72, -28) by `tools/wp13/capital_plots.lua`:
-		-- WP40's blend from the flat civic core to the granite terraces falls
-		-- 44 nodes between |x| 60 and |x| 104 on the user seed, so the four
-		-- plots the Highcourt layout puts at 72 and 76 stand on the steepest
-		-- ground in the whole envelope -- a perimeter fall of 8 to 12 against a
-		-- foundation skirt that reaches 6. All four are out past the band now.
+		-- 1. The charcoal store: the fuel the forge court burns, kept dry in a
+		-- granary and stacked on the apron outside it.
 		{id = "forge_charcoal", module = "capitals", make = "granary",
-			x = 56, z = -72, order = 1, along = "ring",
-			spec = {w = 11, d = 15, wall_h = 5}},
+			order = 1, spec = {w = 11, d = 15, wall_h = 5},
+			decorate = function(buf, palette, area)
+				buf:put(area.x0 + 3, 1, area.z0 + 1, palette.node("tree_log"))
+				buf:put(area.x1 - 3, 1, area.z0 + 1, palette.node("tree_log"))
+			end,
+			extra_sockets = function(area)
+				return {
+					plots.work("charcoal_west", "chop", area.x0 + 3,
+						area.z0, 0),
+					plots.work("charcoal_east", "chop", area.x1 - 3,
+						area.z0, 0),
+				}
+			end},
+		-- 2. The pack stable: the goats that carry ore down from the workings.
 		{id = "forge_pack_stable", module = "capitals", make = "stable",
-			x = 56, z = 60, order = 2, along = "ring",
-			spec = {w = 15, d = 11, wall_h = 5}},
-		-- The smithy opens in its x- wall and the plot is TURNED, for the two
-		-- reasons `highcourt_district.lua` records: the `workshop` interior kit
-		-- stands the forge's cauldrons on the odd cells of the z- gable's inner
-		-- run, and the generator's own chimney stack stands on the middle cell
-		-- of that same wall and is written after the door.
+			order = 2, spec = {w = 15, d = 11, wall_h = 5},
+			decorate = function(buf, palette, area)
+				-- The fodder on the apron: a planter's KERB is solid masonry
+				-- and stops the feature search on the socket's own course, so
+				-- the thing a `tend` socket faces is a plant standing on the
+				-- ground beside it and not a raised bed it cannot see into.
+				area.dressing.plant(buf, palette, area.x0 + 3, area.z0 + 1)
+				area.dressing.plant(buf, palette, area.x0 + 4, area.z0 + 1)
+			end,
+			extra_sockets = function(area)
+				return {
+					plots.work("stable_tend", "tend", area.x0 + 3, area.z0, 0),
+					plots.spare("stable", area.x1 - 1, area.z0, 0),
+				}
+			end},
+		-- 3. The smithy. It opens in its x- wall and the plot is TURNED, for
+		-- the two reasons wave 1 recorded: the `workshop` interior kit stands
+		-- the forge's cauldrons on the odd cells of the z- gable's inner run,
+		-- and the generator's own chimney stack stands on the middle cell of
+		-- that same wall and is written after the door.
 		{id = "forge_smithy", module = "buildings", make = "workshop",
-			x = 116, z = -28, order = 3, along = "avenue", turns = 3,
+			order = 3, turns = 3,
 			spec = {w = 11, d = 13, wing = 7, wall_h = 5, door_side = "x-",
-				door_index = 6, infill = true}},
+				door_index = 6, infill = true},
+			decorate = function(buf, palette, area)
+				-- The anvil on the apron: the dwarf palette's `workbench` is
+				-- `grug_materials:iron_block`, which is the node the sockets
+				-- contract's `smith` activity names.
+				buf:put(area.x0 + 3, 1, area.z0 + 1, palette.node("workbench"))
+				shop_counter(buf, palette, area)
+			end,
+			extra_sockets = function(area)
+				return {
+					plots.work("anvil", "smith", area.x0 + 3, area.z0, 0),
+					shop_vendor("smith", "smith", area),
+				}
+			end},
+		-- 4. The guild house of the forge, roofed in slate so it reads as
+		-- civic from the lane rather than as the largest workshop in it.
 		{id = "forge_guild_house", module = "capitals", make = "scriptorium",
-			x = 116, z = 28, order = 4, along = "avenue", roof = "slate",
-			spec = {w = 13, d = 17, wall_h = 6}},
-		-- The quenching court is the district's public ground, so its plot is
-		-- five nodes wider all round than a building's and the ring that buys
-		-- is planted: a paved square with a well on it standing in a field is
-		-- what a court with a two-node verge looks like from outside.
+			order = 4, roof = "slate", spec = {w = 13, d = 17, wall_h = 6},
+			decorate = function(buf, palette, area)
+				area.dressing.bench(buf, palette, area.x0 + 3, area.z0 + 1,
+					2, 2, "x")
+			end,
+			extra_sockets = function(area)
+				return {
+					plots.work("guild_bench", "sit", area.x0 + 3, area.z0 + 1,
+						2, {"bench"}, 2),
+				}
+			end},
+		-- 5. The quenching court is the district's public ground, so its plot
+		-- is five nodes wider all round than a building's and the ring that
+		-- buys is planted.
 		{id = "forge_quench_court", module = "capitals", make = "well_court",
-			x = 160, z = -28, order = 5, along = "avenue", margin = 5,
-			garden = true, spec = {size = 11}},
-		-- The watch stands at z = 32, not 28: WP40 keeps a 32-node corridor
-		-- clear on each gate axis (z -16..16) and a 21-deep barracks centred on
-		-- 28 reaches z = 15. Nothing else in the tree enforces that width.
+			order = 5, margin = 5, garden = true, spec = {size = 11},
+			extra_sockets = function(area)
+				return {
+					plots.work("quench_bench", "sit", -1, area.z1 - 2, 2,
+						{"bench"}, 2),
+					plots.spare("quench", area.x0 + 3, area.z0 + 2, 0),
+				}
+			end},
+		-- 6. The district watch. The barracks generator publishes its own
+		-- guard post, its muster idle spot and waypoint 6 of the loop, so this
+		-- row carries no `order` of its own.
 		{id = "forge_watch", module = "capitals", make = "barracks",
-			x = 160, z = 32, along = "avenue", roof = "slate",
+			roof = "slate",
 			spec = {w = 15, d = 21, wall_h = 5, patrol_group = WATCH,
 				order = 6}},
-		-- A pine copse rather than a broadleaf grove: this is the Hearthpine
-		-- terrace, and `grove` takes the dressing silhouette it is given.
-		-- MOVED AGAIN, from (112, -88), and by a rule rather than by taste:
-		-- a grove's own authored air reaches y = 24 over the trees, but the
-		-- plot's clear over its two-node margin ring stops at its roof (11),
-		-- and the terrace shoulder at -88 stands 12 above the reference column.
-		-- The seam's load-time `audit_terrain` said so out of the engine before
-		-- `tools/wp13/capital_plots.lua` did -- that tool was reading the top of
-		-- the plot's BOUNDS instead of the airspace it really cut, which is the
-		-- weaker of the two rules and the one this move corrected.
+		-- 7. A pine copse rather than a broadleaf grove: this is the
+		-- Hearthpine terrace, and `grove` takes the dressing silhouette it is
+		-- given. It is also where the district forages.
 		{id = "forge_copse", module = "capitals", make = "grove",
-			x = 112, z = -92, order = 7, along = "ring",
-			spec = {size = 15, kind = "tree", height = 8}},
-		-- Four nodes east of (108, 64): with the rise measured the way the
-		-- load-time audit measures it -- the margin ring and the interior, not
-		-- the perimeter alone -- the shoulder there stands 12 against a clear of
-		-- 13, which is legal and one node from not being. 112 is 8 against 13.
+			order = 7, spec = {size = 15, kind = "tree", height = 8},
+			decorate = function(buf, palette, area)
+				buf:put(area.x0 + 3, 1, area.z0 + 1,
+					palette.node("undergrowth"))
+			end,
+			extra_sockets = function(area)
+				return {
+					plots.work("copse_forage", "forage", area.x0 + 3,
+						area.z0, 0),
+				}
+			end},
+		-- 8. The ore yard: what comes down from the workings before it is
+		-- smelted, kept in a granary with the heaps on the apron.
 		{id = "forge_ore_yard", module = "capitals", make = "granary",
-			x = 112, z = 64, order = 8, along = "ring",
-			spec = {w = 11, d = 15, wall_h = 5}},
-		-- Door index 4, single leaf, for the roof-post reason above.
+			order = 8, spec = {w = 11, d = 15, wall_h = 5},
+			decorate = function(buf, palette, area)
+				-- A face of bedded granite on the apron, two courses, which is
+				-- what a `mine` socket at the outer row looks at.
+				area.dwarf.rock_face(buf, palette, area.x0 + 2, area.z0 + 1,
+					area.x0 + 5, area.z0 + 1, 2)
+			end,
+			extra_sockets = function(area)
+				return {
+					plots.work("ore_sort", "mine", area.x0 + 3, area.z0, 0),
+					plots.spare("ore_yard", area.x1 - 1, area.z0, 0),
+				}
+			end},
+		-- 9. The store. Door index 4, single leaf: the `store` kit stands its
+		-- roof posts on the odd cells of the gable's inner run, so an
+		-- eleven-wide longhouse's centred door opens onto a post.
 		{id = "forge_store", module = "buildings", make = "longhouse",
-			x = 116, z = -60, order = 9, along = "ring",
+			order = 9,
 			spec = {w = 11, d = 15, wall_h = 5, door_side = "z-",
-				door_index = 4, infill = true}},
+				door_index = 4, infill = true},
+			decorate = function(buf, palette, area)
+				shop_counter(buf, palette, area)
+			end,
+			extra_sockets = function(area)
+				return {
+					plots.work("store_counter", "stall", area.x1 - 2,
+						area.z0, 0),
+					shop_vendor("mason", "mason", area),
+				}
+			end},
 	}
 
-	-- The plot's own ground area: the part's extent grown by two nodes on every
-	-- side and clamped into the envelope, so the kerb, the doorstep path and
-	-- the lamps stand on the plot and not beside it.
-	local function ground_area(part, ox, oz, turns, margin)
-		local order, count = part.buffer:cells()
-		local x0, x1, z0, z1
-		for index = 1, count do
-			local cell = order[index]
-			if cell.name ~= parts.AIR then
-				local rx, rz = parts.rotate_footprint(cell.x, cell.z,
-					part.w, part.d, turns)
-				local x, z = ox + rx, oz + rz
-				if x0 == nil or x < x0 then x0 = x end
-				if x1 == nil or x > x1 then x1 = x end
-				if z0 == nil or z < z0 then z0 = z end
-				if z1 == nil or z > z1 then z1 = z end
-			end
-		end
-		local function clamp(value)
-			if value < -REACH then return -REACH end
-			if value > REACH then return REACH end
-			return value
-		end
-		margin = margin or 2
-		return clamp(x0 - margin), clamp(z0 - margin), clamp(x1 + margin),
-			clamp(z1 + margin)
-	end
+	-- THE DISTRICT'S OWN FILL: four dressings on the quadrant's four fill lots,
+	-- reaches 11, 11, 8 and 5. A forge quarter's open ground is the ground the
+	-- trade needs: the workings it digs, the fuel it burns, the spoil it throws
+	-- and one green to sit in.
+	local FILL = {
+		-- 1. THE ORE COURT: a cut rock face along the back of the lot with a
+		-- mine mouth in the middle of it, the heaps in front, and the two who
+		-- work it. This is the `mine` activity's home, and the rock face is the
+		-- feature the contract's section 8.2 requires under `dir`.
+		{id = "forge_ore_court", yard = {},
+			decorate = function(buf, palette, area)
+				local dwarf = area.dwarf
+				dwarf.rock_face(buf, palette, -10, 9, -4, 9, 5)
+				dwarf.mine_mouth(buf, palette, 2, 9, 9, 5)
+				dwarf.ore_heap(buf, palette, -7, 3, 3)
+				dwarf.ore_heap(buf, palette, 6, 2, 2)
+				area.dressing.crates(buf, palette, -9, -6, 0)
+				area.dressing.handcart(buf, palette, 3, -6, "x")
+				area.dressing.bench(buf, palette, -3, -9, 0, 3, "x")
+			end,
+			extra_sockets = function()
+				return {
+					plots.work("court_face", "mine", -7, 8, 0),
+					plots.work("court_adit", "mine", 5, 8, 0),
+					plots.work("court_spoil", "mine", -9, 8, 0),
+					plots.spare("ore_court", 9, -9, 0),
+				}
+			end},
+		-- 2. THE CHARCOAL FIELD: the clamps, the billet stacks and the two
+		-- burners who keep them.
+		{id = "forge_charcoal_field", yard = {},
+			decorate = function(buf, palette, area)
+				local dressing = area.dressing
+				local dwarf = area.dwarf
+				dwarf.charcoal_clamp(buf, palette, -6, 7)
+				dwarf.charcoal_clamp(buf, palette, 5, 7)
+				-- The billet stacks the clamps are fed from. The two burners
+				-- stand SOUTH of them and face the timber, because `chop` names
+				-- a log and a clamp's own earth dome is dirt.
+				dressing.wood_pile(buf, palette, -8, 1, 5, "x")
+				dressing.wood_pile(buf, palette, 2, 1, 5, "x")
+				dressing.fence_line(buf, palette, -11, 10, 11, 10)
+				dressing.handcart(buf, palette, 8, -6, "x")
+				dressing.bench(buf, palette, -3, -9, 0, 3, "x")
+			end,
+			extra_sockets = function()
+				return {
+					plots.work("field_west", "chop", -6, 0, 0),
+					plots.work("field_east", "chop", 4, 0, 0),
+					plots.spare("charcoal_field", 9, -9, 0),
+				}
+			end},
+		-- 3. THE SLAG YARD: what the smelting throws away, and the mason who
+		-- squares the good stone out of it.
+		{id = "forge_slag_yard", yard = {},
+			decorate = function(buf, palette, area)
+				local dressing = area.dressing
+				local dwarf = area.dwarf
+				dressing.rubble_heap(buf, palette, -4, 3, 3)
+				dressing.rubble_heap(buf, palette, 4, 3, 2)
+				dwarf.cut_blocks(buf, palette, -2, -2, 4, "x")
+				dwarf.banker(buf, palette, 3, -3)
+				dressing.crates(buf, palette, 6, -6, 0)
+			end,
+			extra_sockets = function()
+				return {
+					plots.work("slag_banker", "carve", 3, -4, 0),
+					plots.work("slag_blocks", "carve", -2, -3, 0),
+				}
+			end},
+		-- 4. THE FORGE GREEN inside the outer band: a pine, a bench, the
+		-- stores, and the district's second spare.
+		{id = "forge_green", yard = {},
+			decorate = function(buf, palette, area)
+				local dressing = area.dressing
+				dressing.tree(buf, palette, 0, 2, 5)
+				dressing.bench(buf, palette, -4, -3, 0, 2, "x")
+				dressing.crates(buf, palette, 3, -3, 0)
+			end,
+			extra_sockets = function()
+				return {
+					plots.work("green_bench", "sit", -4, -3, 0, {"bench"}, 2),
+					plots.spare("forge_green", 4, -5, 0),
+				}
+			end},
+	}
 
-	local function build(plot)
-		local palette = palettes.new("dwarf")
-		local slate = palettes.new("dwarf", SLATE)
-		local spec = {}
-		for key, value in pairs(plot.spec) do spec[key] = value end
-		spec.id = plot.id
-		if plot.roof == "slate" then spec.roof_palette = slate end
-		local module = (plot.module == "capitals") and capitals or buildings
-		local generator = module[plot.make]
-		if type(generator) ~= "function" then
-			error("wp13 dur brannoc district: no generator " .. plot.make, 0)
-		end
-		local part = generator(palette, spec)
-		-- The part is centred on the plot origin, which is also the reference
-		-- column: the terrain height under the MIDDLE of the plot is the height
-		-- the whole plot is levelled to, never a corner, or half of every plot
-		-- on a slope would stand a terrace step too high. A quarter turn swaps
-		-- the footprint, so the centring reads the ROTATED width.
-		local turns = (plot.turns or 0) % 4
-		local rw = (turns % 2 == 1) and part.d or part.w
-		local rd = (turns % 2 == 1) and part.w or part.d
-		local ox = -math.floor((rw - 1) / 2)
-		local oz = -math.floor((rd - 1) / 2)
-		local x0, z0, x1, z1 = ground_area(part, ox, oz, turns, plot.margin)
-
-		local buf = parts.buffer()
-		-- 1. The plot's ground and its airspace. The clear reaches the ground
-		-- course as well, because the terrace shoulder this plot cuts through
-		-- occupies those cells in the world.
-		buf:fill(x0, -1, z0, x1, -1, z1, palette.node("subsoil"))
-		buf:fill(x0, 0, z0, x1, 0, z1, palette.node("ground"))
-		-- THE AIRSPACE THIS PLOT CUTS, over the WHOLE of its ground and not only
-		-- over the part's own footprint. `part.peak + 2` is the right number for
-		-- a building, whose authored air stops just over its ridge; it is the
-		-- wrong one for a GROVE, which carries air to y = 24 over its trees on
-		-- its own 15 x 15 and would leave the two-node margin ring round it cut
-		-- to 11. A terrace shoulder standing in that ring is terrain left inside
-		-- the plot, and `r7_settlement.audit_terrain` said so out of the engine
-		-- about `forge_copse` before anything here did.
-		--
-		-- So the clear is the higher of the two, and the ring is cut to it: 136
-		-- columns times the difference, which for the grove is some 1 800 cells
-		-- and for every other plot in this district is zero, because their parts
-		-- reach no higher than their own roofs.
-		local part_top = part.peak + 2
-		do
-			local order, count = part.buffer:cells()
-			for index = 1, count do
-				if order[index].y > part_top then part_top = order[index].y end
-			end
-		end
-		local clear_to = part_top
-		buf:clear(x0, 1, z0, x1, clear_to, z1)
-		-- 2. The foundation skirt, the perimeter only, down to the contract's
-		-- floor.
-		for y = -1, FLOOR, -1 do
-			for z = z0, z1 do
-				for x = x0, x1 do
-					if x == x0 or x == x1 or z == z0 or z == z1 then
-						buf:put(x, y, z, palette.node("foundation"))
-					end
-				end
-			end
-		end
-		-- 3. The kerb of the plot and the doorstep path out to its street edge.
-		dressing.inlay(buf, palette, x0, z0, x1, z1)
-		for z = z0 + 1, oz - 1 do
-			for x = -1, 1 do
-				buf:put(x, 0, z, palette.node("path"))
-			end
-		end
-
-		-- 4. The part itself.
-		local points = parts.stamp(buf, part, ox, 0, oz, turns)
-
-		-- 5. Two lamps on the street corners and a bench beside the door.
-		for _, lamp in ipairs({{x0 + 1, z0 + 1}, {x1 - 1, z0 + 1}}) do
-			dressing.path_light(buf, palette, lamp[1], lamp[2])
-		end
-		dressing.bench(buf, palette, 3, z0 + 2, 0, 3, "x")
-
-		-- 5b. A garden plot plants the ring its wider ground bought.
-		if plot.garden then
-			-- The four pines stand on the back half of the court and beside
-			-- it, never on the two street corners: a conifer's crown reaches
-			-- two nodes and `dressing.tree` writes where it is told, so a tree
-			-- at the corner buries the lamp post that stands there.
-			for _, spot in ipairs({{x0 + 2, z1 - 2}, {x1 - 2, z1 - 2},
-					{x0 + 2, oz}, {x1 - 2, oz}}) do
-				dressing.tree(buf, palette, spot[1], spot[2], 6)
-			end
-			dressing.planter(buf, palette, x0 + 1, oz - 1, x0 + 2, oz + 1)
-			dressing.planter(buf, palette, x1 - 2, oz - 1, x1 - 1, oz + 1)
-			dressing.bench(buf, palette, -1, z1 - 2, 2, 3, "x")
-			dressing.crates(buf, palette, x1 - 2, z0 + 4, 2)
-		end
-
-		-- 6. Sockets: the part's own, plus this plot's waypoint in the district
-		-- loop and one flair spot at its own gate. The plots built from
-		-- `buildings.lua` publish no socket of their own -- a start generator
-		-- knows nothing about the NPC seam -- and a district of nine plots with
-		-- four inhabited ones is not a district anybody lives in.
-		local sockets = {}
-		for _, entry in ipairs(points.sockets or {}) do
-			sockets[#sockets + 1] = {id = entry.id, role = entry.role,
-				x = entry.x, y = entry.y, z = entry.z, face = entry.face,
-				group = entry.group, order = entry.order, kind = entry.kind,
-				tags = entry.tags}
-		end
-		if plot.order then
-			sockets[#sockets + 1] = {id = plot.id .. "_watch",
-				role = "guard_patrol", x = 0, y = 1, z = z0 + 2, face = 0,
-				group = WATCH, order = plot.order}
-		end
-		sockets[#sockets + 1] = {id = plot.id .. "_gate_idle", role = "idle",
-			x = 0, y = 1, z = z0 + 2, face = 0, tags = {"door"}}
-		for _, entry in ipairs(sockets) do
-			local dx, dz = parts.facedir_step(entry.face)
-			entry.dir = {x = dx, z = dz}
-		end
-
-		parts.resolve_panes(buf)
-
-		local source, count = buf:cells()
-		local cells = {}
-		for index = 1, count do cells[index] = source[index] end
-		table.sort(cells, function(a, b)
-			if a.z ~= b.z then return a.z < b.z end
-			if a.y ~= b.y then return a.y < b.y end
-			return a.x < b.x
-		end)
-		local light_names = {[palette.node("light_post")] = true,
-			[palette.node("light_wall")] = true,
-			[palette.node("light_indoor")] = true}
-		local lights = {}
-		local names, palette_list = {}, {}
-		local minp = {x = cells[1].x, y = cells[1].y, z = cells[1].z}
-		local maxp = {x = cells[1].x, y = cells[1].y, z = cells[1].z}
-		for index = 1, #cells do
-			local cell = cells[index]
-			if light_names[cell.name] then
-				lights[#lights + 1] = {x = cell.x, y = cell.y, z = cell.z}
-			end
-			if not names[cell.name] then
-				names[cell.name] = true
-				palette_list[#palette_list + 1] = cell.name
-			end
-			if cell.x < minp.x then minp.x = cell.x end
-			if cell.y < minp.y then minp.y = cell.y end
-			if cell.z < minp.z then minp.z = cell.z end
-			if cell.x > maxp.x then maxp.x = cell.x end
-			if cell.y > maxp.y then maxp.y = cell.y end
-			if cell.z > maxp.z then maxp.z = cell.z end
-		end
-		table.sort(palette_list, parts.less_bytes)
-
-		local doorways = {}
-		for _, door in ipairs(points.doors or {}) do
-			doorways[#doorways + 1] = {x = door.x, y = door.y, z = door.z,
-				face = door.face, id = plot.id}
-		end
-		local rooms = {}
-		for index = 1, #(points.room_corner or {}), 2 do
-			local a = points.room_corner[index]
-			local b = points.room_corner[index + 1]
-			rooms[#rooms + 1] = {
-				min = {x = math.min(a.x, b.x), y = a.y, z = math.min(a.z, b.z)},
-				max = {x = math.max(a.x, b.x), y = a.y, z = math.max(a.z, b.z)},
-				top = a.top, closed = a.closed, id = plot.id,
-			}
-		end
-		local destinations = {}
-		local spot = (points.inside or {})[1]
-		if spot then
-			destinations[1] = {id = plot.id, x = spot.x, y = spot.y, z = spot.z}
-		end
-
-		return {
-			-- One schema per plot, not one for the district: the successor
-			-- compares `blueprint.schema` with the profile's own, so nine plots
-			-- behind one string would need nine profiles all claiming to be the
-			-- same blueprint.
-			schema = "grug_wp13_dur_brannoc_plot_" .. plot.id .. "_v1",
-			id = plot.id,
-			cells = cells,
-			bounds = {min = minp, max = maxp},
-			palette = palette_list,
-			reference = {x = 0, z = 0},
-			-- The airspace this plot actually CUT, which is not the top of its
-			-- bounds: a lamp post or a pine written after the clear reaches
-			-- above it. `r7_settlement.audit_terrain` holds the rise under the
-			-- plot against this number and falls back to the bounds where a
-			-- composition does not publish one, which is the weaker rule.
-			clear_to = clear_to,
-			landmarks = {
-				arrival = {x = 0, y = 1, z = z0 + 2},
-				plot = {min = {x = x0, y = -1, z = z0},
-					max = {x = x1, y = part.peak, z = z1}},
-				entry = {x = 0, y = 1, z = z0 + 1},
-				destinations = destinations,
-				doors = doorways,
-				rooms = rooms,
-				lights = lights,
-				sockets = sockets,
-			},
-		}
-	end
-
-	M.forge = {
+	M.forge = plots.district({
 		key = "dur_brannoc_forge",
-		role = "martial_craft",
-		quadrant = "east",
+		role = "market_professions",
 		patrol_group = WATCH,
-		plots = {},
-	}
-	for index, plot in ipairs(PLOTS) do
-		M.forge.plots[index] = {
-			id = plot.id,
-			x = plot.x,
-			z = plot.z,
-			along = plot.along,
-			build = function() return build(plot) end,
-		}
-	end
+		plots = PLOTS,
+		fill = FILL,
+		fill_reaches = {11, 11, 8, 5},
+	})
 
 	return M
 end

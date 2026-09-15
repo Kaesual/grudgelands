@@ -17,9 +17,16 @@
 --     composition (schema, canonical cells, bounds, sorted palette, landmarks)
 --     plus `landmarks.sockets`, the NPC seam of
 --     docs/research/wp13-npc-sockets-contract.md.
---   * `M.district` is the forge and craft district: a list of PLOT
---     compositions, each with its own reference column, because a plot outside
---     the core stands on terraced ground (`dur_brannoc_district.lua`).
+--   * `M.districts` is the four districts of the contract's section 2.1 --
+--     market and professions, martial and garrison, lore and spiritual,
+--     residential and cultural -- each a list of nine PLOT compositions and
+--     four FILL compositions, every one of them with its own reference column,
+--     because a plot outside the core stands on terraced ground. The rosters
+--     are `dur_brannoc_district*.lua`, the builder is `dur_brannoc_plot.lua`
+--     and which district stands in which quarter is the world seed's
+--     (`dur_brannoc_quadrants.lua`).
+--   * `M.quadrants` is that quadrant module, published so the blueprint source
+--     and the offline lot predicate read the same geometry.
 --   * `M.avenues` and `M.ring` are the runs `avenue.lua` turns into pavement.
 --   * `M.wall` is the four runs `wall.lua` turns into curtain, turrets and
 --     gatehouses at the 512 envelope edge, and `M.wall_plan` is the authored
@@ -52,9 +59,16 @@ local function loader(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 	local wall = dofile(directory .. "/wall.lua")(directory)
-	local district = dofile(directory .. "/dur_brannoc_district.lua")(directory)
+	local districts = dofile(directory .. "/dur_brannoc_districts.lua")(directory)
 
 	local M = {}
+
+	-- The four quadrants' lot grids and the seeded permutation that hands one
+	-- grid to one district (`dur_brannoc_quadrants.lua`). Published here
+	-- because that is where every consumer looks for a capital's geometry: the
+	-- blueprint source asks it for the plot offsets, and
+	-- `tools/wp13/capital_lots.lua` asks it for the lots themselves.
+	M.quadrants = districts.quadrants
 
 	local RADIUS = 47
 	local SCHEMA = "grug_wp13_dur_brannoc_core_v1"
@@ -352,7 +366,12 @@ local function loader(directory)
 			cross_towers = {}},
 	}
 
-	M.district = district.forge
+	-- The four districts and their 36 + 16 plots, resolved against this
+	-- world's quadrant permutation (`dur_brannoc_districts.lua`). Wave 1 had
+	-- ONE district here and published it as `M.district`; the four of wave 2
+	-- are a roster the source resolves, so the field is gone and the note
+	-- records it.
+	M.districts = districts
 
 	function M.core()
 		local dwarf = palettes.new("dwarf")
@@ -976,9 +995,13 @@ local function loader(directory)
 	-- turns a run into cells. The successor's first-run-wins arbitration reads
 	-- this order, so the avenue runs through the gate and the wall yields the
 	-- cells of the road it lets past.
-	function M.overlay_runs()
+	-- `lanes` is the district lane list of `dur_brannoc_quadrants.lua`, handed
+	-- in by the blueprint source. The lanes come AFTER the avenues and the ring
+	-- and BEFORE the wall: a lane yields the cells of the great road it meets,
+	-- and the wall yields the cells of every road it lets through its gate.
+	function M.overlay_runs(lanes)
 		local runs = {}
-		for _, list in ipairs({M.avenues, M.ring, M.wall}) do
+		for _, list in ipairs({M.avenues, M.ring, lanes or {}, M.wall}) do
 			for index = 1, #list do runs[#runs + 1] = list[index] end
 		end
 		return runs

@@ -1,0 +1,10 @@
+night mode: 120 light sources
+-rw-r--r--. 1 jan jan 2520542 Sep 15 22:58 tools/wp13/evidence/20260915-dur-brannoc-upgrade/renders/avenue-east.png
+-rw-r--r--. 1 jan jan  234173 Sep 15 22:58 tools/wp13/evidence/20260915-dur-brannoc-upgrade/renders/core-overview.png
+-rw-r--r--. 1 jan jan 2515538 Sep 15 22:58 tools/wp13/evidence/20260915-dur-brannoc-upgrade/renders/district-ne.png
+-rw-r--r--. 1 jan jan 2506909 Sep 15 22:58 tools/wp13/evidence/20260915-dur-brannoc-upgrade/renders/district-night.png
+-rw-r--r--. 1 jan jan 2543851 Sep 15 22:58 tools/wp13/evidence/20260915-dur-brannoc-upgrade/renders/district-sw.png
+-rw-r--r--. 1 jan jan   90324 Sep 15 22:58 tools/wp13/evidence/20260915-dur-brannoc-upgrade/renders/fill-ore-court-sw.png
+-rw-r--r--. 1 jan jan  104774 Sep 15 22:58 tools/wp13/evidence/20260915-dur-brannoc-upgrade/renders/fill-ore-court.png
+-rw-r--r--. 1 jan jan  212843 Sep 15 22:58 tools/wp13/evidence/20260915-dur-brannoc-upgrade/renders/gatehouse.png
+-rw-r--r--. 1 jan jan   96451 Sep 15 22:58 tools/wp13/evidence/20260915-dur-brannoc-upgrade/renders/plot-first.png
