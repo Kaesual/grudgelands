@@ -17,8 +17,8 @@
 -- WHAT IS DIFFERENT HERE, AND IT IS NOT A STYLE CHOICE
 -- ---------------------------------------------------
 -- The contract's section 1 says "the 96 x 96 civic core is flat at the fitted
--- reference height". At Kezamba that is true of 6 192 of its 9 025 columns and
--- false of the other 2 833, and `tools/wp13/kezamba_water.lua` is the
+-- reference height". At Kezamba that is true of 6 380 of its 9 025 columns and
+-- false of the other 2 645, and `tools/wp13/kezamba_water.lua` is the
 -- measurement rather than the impression:
 --
 --   * 2 645 columns are the CENOTE. WP40's `hydro_kezamba_cenote` is an
@@ -27,14 +27,18 @@
 --     NODE below the fitted reference of 66, on all nine seeds of
 --     `tools/wp13/capital_anchor_fixture.lua` -- which is the WP40 water
 --     correction of 2026-09-13 doing what it says.
---   * 188 to 273 columns are a RAVINE: one diagonal cut running into the pad
---     from its south-west edge, up to 26 nodes deep. Its footprint is the same
---     in every world and only its depth moves.
+--   * ZERO columns are a RAVINE, since main `f5583e13`. Until WP40's routes
+--     were taught to end at the capital gates, 188 to 273 columns were one
+--     diagonal cut running into the pad from its south-west edge, up to 26
+--     nodes deep, and this composition was built around it as a gorge. It was
+--     a graded ROUTE CORRIDOR. `--verify` caught its disappearance on the
+--     rebase; the mask, the refusals and the counters stay as the guard that
+--     will catch its return.
 --
 -- Both masks are committed in `wp13/kezamba_lagoon.lua`, generated and verified
 -- by that tool against the planner on nine seeds. THE COMPOSITION LAYS NO
 -- GROUND IN EITHER. A ground course written at y = 0 over the lake would fill
--- the cenote with mud, and over the ravine it would be a slab hanging in the
+-- the cenote with mud, and over a ravine it would be a slab hanging in the
 -- air; both are refused at construction time by `pad_area`, loudly, naming the
 -- column.
 --
@@ -47,8 +51,10 @@
 --
 --   * `M.core()` returns the core composition in the exact shape of a start
 --     composition, plus `landmarks.sockets`.
---   * `M.district` is resolved by `kezamba_districts.lua` from the four
---     district rosters and the searched lots of `kezamba_lots.lua`.
+--   * `M.districts.resolve()` is `kezamba_districts.lua`'s own resolve, loaded
+--     lazily, so a generic reader (`tools/wp13/dump_capital_plan.lua`) can ask
+--     this one file for the whole capital: the four district rosters over the
+--     searched lots of `kezamba_lots.lua`.
 --   * `M.avenues`, `M.ring` and `M.gates` are the overlay's runs.
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
@@ -74,13 +80,29 @@ local function loader(directory)
 
 	M.mask = mask
 
+	-- The district plots, for a reader that holds only this file. The roster is
+	-- a different module and a heavy one, so it is loaded on the first call and
+	-- not at load time: the mapgen seam builds its plots through the blueprint,
+	-- which loads `kezamba_districts.lua` itself, and must not pay for a second
+	-- copy of it on every world start.
+	M.districts = {
+		resolve = function(options)
+			return dofile(directory .. "/kezamba_districts.lua")(directory)
+				.resolve(options)
+		end,
+	}
+
 	-- The travel plaza reserved for WP17.
 	local PLAZA = {x1 = -44, z1 = -30, x2 = -32, z2 = -18}
 
 	-- THE STREETS. The four avenues are five wide on the two axes; the lanes
 	-- are the quarters' own. Every run is checked against the ravine mask at
 	-- construction time, because a lane laid across a 26-node gorge is a lane
-	-- hanging in the air.
+	-- hanging in the air. That mask is EMPTY since WP40's routes stopped
+	-- grading through the envelope (`kezamba_lagoon.lua`'s header), so the
+	-- check now passes everywhere; the lane positions below are the ones the
+	-- gorge dictated and they stay, because moving a street that works buys
+	-- nothing and costs every digest in the evidence.
 	local STREETS = {
 		{-2, -RADIUS, 2, -3, "avenue", "z"},
 		{-2, 3, 2, RADIUS, "avenue", "z"},
@@ -114,9 +136,13 @@ local function loader(directory)
 	-- rotation, `handle` which palette handle it is built with.
 	local PLOTS = {
 		-- 1. The king's hall, east of the throne approach with its great door
-		-- looking west onto it. It is NOT on the axis, and that is the ravine's
-		-- doing rather than a choice: the approach has to reach the south gate
-		-- and the gorge takes the ground west of it from z = -47 to z = -21.
+		-- looking west onto it. It is NOT on the axis, and that was the
+		-- ravine's doing rather than a choice: the approach has to reach the
+		-- south gate and the gorge took the ground west of it from z = -47 to
+		-- z = -21. The gorge is gone (it was a route corridor, see step 6), and
+		-- the hall stays where the gorge put it: an off-axis hall facing its
+		-- own approach is a better forecourt than a symmetrical one, and
+		-- re-centring it would move the whole south quarter.
 		{id = "kings_hall", module = "capitals", make = "king_hall",
 			x = 8, z = -42, turns = 3, handle = "basalt",
 			spec = {w = 23, d = 23, rise = 6},
@@ -576,50 +602,33 @@ local function loader(directory)
 			end
 		end
 
-		-- 6. THE RAVINE: a rope-and-post rail along its rim, and ONE plank
-		-- footbridge over it at its narrowest, which is where it leaves the pad
-		-- on its way north-east.
-		local bridge = 0
-		do
-			local z = -22
-			local x1, x2
-			for x = -RADIUS, RADIUS do
-				if mask.ravine(x, z) then
-					if x1 == nil then x1 = x end
-					x2 = x
-				end
-			end
-			if x1 == nil then
-				error("wp13 kezamba: the ravine does not reach z = -22", 0)
-			end
-			for step = -2, 2 do
-				for x = x1 - 2, x2 + 2 do
-					buf:put(x, 0, z + step, DECK)
-					claim_water(x, 0, z + step)
-					bridge = bridge + 1
-					if step == -2 or step == 2 then
-						buf:put(x, 1, z + step, RAIL)
-						claim_water(x, 1, z + step)
-					end
-				end
-			end
-		end
-
-		local rim = 0
+		-- 6. THE RAVINE, AND WHY THERE IS NO LONGER A FOOTBRIDGE OVER IT.
+		--
+		-- The first version of this composition spanned the gorge that cut the
+		-- pad diagonally from the south-west with a five-lane plank footbridge
+		-- at z = -22 and railed its rim with rope and post, 25 posts on the
+		-- even columns beside it. Both are gone, because the gorge is:
+		-- `tools/wp13/kezamba_water.lua --verify` measured 273 ravine columns
+		-- on 2026-09-15 and measures ZERO on main `f5583e13`. It was a graded
+		-- ROUTE CORRIDOR, and WP40's wave-2 route lane taught every route to
+		-- stop at the capital's gate points instead of grading on through the
+		-- envelope, so every dry column of the core now stands at the fitted
+		-- reference on all nine seeds (`kezamba_lagoon.lua`'s own header).
+		--
+		-- A bridge over flat ground is worse than no bridge, and a rim rail
+		-- round nothing is a fence in a plaza. What stays is the MASK and every
+		-- refusal that reads it — a lane that crosses a ravine column, a stilt
+		-- that stands in one, a plot that reaches one — so that a later terrain
+		-- package cutting the pad again is refused at construction time instead
+		-- of shipping a street in the air. `--verify` is the gate that says
+		-- when that happens, and this is the round in which it said so.
+		local bridge, rim = 0, 0
 		for z = -RADIUS, RADIUS do
 			for x = -RADIUS, RADIUS do
-				if not mask.ravine(x, z) and not mask.lagoon(x, z) then
-					local beside = false
-					for _, step in ipairs({{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) do
-						if mask.ravine(x + step[1], z + step[2]) then
-							beside = true
-						end
-					end
-					if beside and layout.free(buf, x, z, 3) and
-							layout.natural(buf, x, z) and (x + z) % 2 == 0 then
-						buf:put(x, 1, z, RAIL)
-						rim = rim + 1
-					end
+				if mask.ravine(x, z) then
+					error("wp13 kezamba: the ravine is back at " .. x .. "," ..
+						z .. "; re-emit the mask and give it a crossing again",
+						0)
 				end
 			end
 		end

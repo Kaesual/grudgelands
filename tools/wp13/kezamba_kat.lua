@@ -13,8 +13,11 @@
 -- `dur_brannoc_kat.lua` and `highcourt_kat.lua` measure a capital standing on
 -- flat ground it was given. Kezamba's core is NOT flat: WP40's authored
 -- `hydro_kezamba_cenote` fills 2 645 of its 9 025 columns with water whose
--- surface stands one node below the fitted civic reference, and a ravine cuts
--- up to 26 nodes into another 273. `wp13/kezamba_lagoon.lua` is the committed
+-- surface stands one node below the fitted civic reference. A second mask, the
+-- RAVINE, held the 273 columns one graded route corridor used to cut up to 26
+-- nodes into the pad; since WP40's routes stop at the capital gates
+-- (`f5583e13`) it is empty, and both the mask and the rules below stay as the
+-- guard that fires if it returns. `wp13/kezamba_lagoon.lua` is the committed
 -- measurement of both (`tools/wp13/kezamba_water.lua --verify` re-takes it
 -- against the planner on nine seeds), and the three rules this KAT exists for
 -- are what that mask buys:

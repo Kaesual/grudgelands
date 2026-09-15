@@ -6,6 +6,7 @@
 --     luajit tools/wp13/kezamba_water.lua <repo> --core --map
 --     luajit tools/wp13/kezamba_water.lua <repo> --emit      -- the mask module
 --     luajit tools/wp13/kezamba_water.lua <repo> --verify    -- against the tree
+--     luajit tools/wp13/kezamba_water.lua <repo> --field <field.tsv>
 --
 -- WHAT THIS IS FOR.
 --
@@ -33,16 +34,23 @@
 --
 -- WHAT IT FOUND (2026-09-15, and the reason `wp13/kezamba_lagoon.lua` exists):
 -- claim 1 holds exactly -- one wet mask, one water surface, on all nine seeds --
--- and claim 2 does NOT. Besides the lake, one narrow diagonal RAVINE runs into
--- the pad from its south-west edge and reaches up to 26 nodes below it. Its
--- footprint is the same in every world; only its depth moves. Both masks are
--- emitted as one committed module so the composition can build round them, and
--- `--verify` is what turns a change in either into a red run.
+-- and claim 2 did NOT. Besides the lake, one narrow diagonal RAVINE ran into
+-- the pad from its south-west edge and reached up to 26 nodes below it, with
+-- the same footprint in every world and only its depth moving.
+--
+-- WHAT IT FINDS NOW (2026-09-16, on main `f5583e13`): the ravine is GONE. It
+-- was a graded ROUTE CORRIDOR, and WP40's wave-2 route lane taught every route
+-- to end at the capital's gate points instead of grading on through the
+-- envelope. Every dry column of the core now stands at the fitted reference on
+-- all nine seeds; the wet mask is unchanged to the column. This is exactly what
+-- `--verify` exists for: it went red on the committed ravine the first time it
+-- ran on the rebased tree, which is how the change was found rather than shipped.
 --
 -- Plain Lua 5.1, LuaJIT in practice; no engine, no globals.
 
 local repo = assert(arg[1], "repository root required")
 local want_map, csv_dir, core_only, emit, verify = false, nil, false, false, false
+local field_path = nil
 do
 	local index = 2
 	while arg[index] do
@@ -51,6 +59,9 @@ do
 		elseif option == "--core" then core_only = true
 		elseif option == "--emit" then emit = true; core_only = true
 		elseif option == "--verify" then verify = true; core_only = true
+		elseif option == "--field" then
+			index = index + 1
+			field_path = assert(arg[index], "--field needs a field TSV")
 		elseif option == "--csv" then
 			index = index + 1
 			csv_dir = assert(arg[index], "--csv needs a directory")
@@ -131,6 +142,85 @@ local function runs_text(list, indent)
 			table.concat(pairs_text, ", ") .. "},"
 	end
 	return table.concat(lines, "\n")
+end
+
+-- `--field`: THE ENGINE'S OWN ANSWER TO THE SAME QUESTION.
+--
+-- Everything else in this file asks the PLANNER, engine-free, and that is what
+-- makes it a fixture. `tools/wp13/run_capital.sh <out> kezamba field <seed>`
+-- asks the running server instead: the probe writes `kezamba-field.tsv`, the
+-- final height and the land/water class of every column within +-250 of the
+-- anchor, read from `grug_zones` inside the boot. This mode reads that file back
+-- and compares it, column by column, with the mask this package COMMITTED. A
+-- disagreement means the committed lagoon is not the lake the world has, which
+-- is the one failure mode a purely offline fixture cannot see.
+if field_path then
+	local mask = dofile(wp13 .. "/kezamba_lagoon.lua")()
+	local heights, land, reach = {}, {}, nil
+	for line in io.lines(field_path) do
+		if line:sub(1, 1) ~= "#" then
+			local z, hs, ls = line:match("^(-?%d+)\t([^\t]*)\t(%S*)$")
+			if z then
+				z = tonumber(z)
+				local row = {}
+				for value in hs:gmatch("%-?%d+") do
+					row[#row + 1] = tonumber(value)
+				end
+				reach = reach or (#row - 1) / 2
+				heights[z], land[z] = row, ls
+			end
+		end
+	end
+	assert(reach and reach > CORE, "the field TSV carries no rows")
+	local function height_at(x, z) return heights[z][x + reach + 1] end
+	local function wet_at(x, z)
+		return land[z]:sub(x + reach + 1, x + reach + 1) ~= "1"
+	end
+	local core_wet, core_bad = 0, 0
+	local envelope_wet, envelope_bad = 0, 0
+	local dry_low, dry_high = 9999, -9999
+	local wet_low, wet_high = 9999, -9999
+	local ravine_low, ravine_high = 9999, -9999
+	for z = -reach, reach do
+		for x = -reach, reach do
+			local engine_wet = wet_at(x, z)
+			local mask_wet = mask.lagoon(x, z) and true or false
+			if engine_wet then envelope_wet = envelope_wet + 1 end
+			if engine_wet ~= mask_wet then envelope_bad = envelope_bad + 1 end
+			if x >= -CORE and x <= CORE and z >= -CORE and z <= CORE then
+				local y = height_at(x, z)
+				if engine_wet then
+					core_wet = core_wet + 1
+					if y < wet_low then wet_low = y end
+					if y > wet_high then wet_high = y end
+				elseif mask.ravine(x, z) then
+					if y < ravine_low then ravine_low = y end
+					if y > ravine_high then ravine_high = y end
+				else
+					if y < dry_low then dry_low = y end
+					if y > dry_high then dry_high = y end
+				end
+				if engine_wet ~= mask_wet then core_bad = core_bad + 1 end
+			end
+		end
+	end
+	io.write(string.format(
+		"kezamba_field\treach=%d\tcore_wet=%d\tcore_disagreements=%d" ..
+		"\tenvelope_wet_engine=%d\tenvelope_wet_mask=%d" ..
+		"\tenvelope_disagreements=%d\tdry_y=%d..%d\travine_y=%d..%d" ..
+		"\twet_y=%d..%d\treference_y=%d\twater_surface_y=%d\n",
+		reach, core_wet, core_bad, envelope_wet, mask.LAGOON_COLUMNS,
+		envelope_bad, dry_low, dry_high, ravine_low, ravine_high,
+		wet_low, wet_high, mask.REFERENCE_Y, mask.WATER_SURFACE_Y))
+	if envelope_bad ~= 0 then
+		io.write("kezamba_field FAIL: the engine's water class differs from ",
+			"the committed lagoon mask on ", envelope_bad, " columns\n")
+		os.exit(1)
+	end
+	io.write("kezamba_field PASS: the engine's own field agrees with the ",
+		"committed mask on every one of the ", (2 * reach + 1) * (2 * reach + 1),
+		" columns it covers\n")
+	os.exit(0)
 end
 
 io.write("kind\tseed\tanchor_x\tanchor_y\tanchor_z\tcolumns\twet\twet_core",
@@ -323,7 +413,8 @@ end
 if emit then
 	local out = assert(io.open(wp13 .. "/kezamba_lagoon.lua", "wb"))
 	out:write([==[
--- Kezamba's two holes in the pad: the CENOTE and the RAVINE.
+-- Kezamba's one hole in the pad: the CENOTE. And the RAVINE, which was a
+-- ROUTE and is now empty.
 --
 -- GENERATED, and regenerated by the tool that measured it:
 --
@@ -337,8 +428,8 @@ if emit then
 --
 -- WHY A CAPITAL CORE HAS A MASK AT ALL. The capitals contract's section 1 says
 -- "the 96 x 96 civic core is flat at the fitted reference height". At Kezamba
--- it is flat over 6 192 of its 9 025 columns and not over the rest, and both
--- exceptions are WP40's own authored geometry rather than noise:
+-- it is flat over 6 380 of its 9 025 columns and not over the other 2 645, and
+-- that exception is WP40's own authored geometry rather than noise:
 --
 --   * THE CENOTE. `hydro_kezamba_cenote` is a `deep_cenote` of four basins at
 --     fixed world coordinates, and its north-east wedge reaches into the core.
@@ -346,11 +437,17 @@ if emit then
 --     reference of 66 -- on every seed measured, which is the WP40 water
 --     correction of 2026-09-13 doing what it says: the civic water minimum is a
 --     hard floor under the reference solver.
---   * THE RAVINE. One diagonal cut runs into the pad from its south-west edge.
---     Its FOOTPRINT is the same in every world and its DEPTH is not: it reaches
---     8 nodes below the pad on seed 531802985935182545 and 26 on seed 0. The
---     committed mask is therefore the UNION over the nine seeds, grown by one
---     node, and the composition treats it as a gorge rather than as ground.
+--   * THE RAVINE IS EMPTY, and the story is worth keeping. Until WP40's routes
+--     were taught to END at the capital gates (the wave-2 route lane, main
+--     `0518a01b`), one graded ROUTE CORRIDOR ran diagonally through the pad
+--     from its south-west edge and cut up to 26 nodes into it. This fixture
+--     measured that as a ravine, and the composition was built around it as a
+--     gorge. With the routes stopping at the gate points, every dry column of
+--     the core stands at the reference on all nine seeds and the union is zero
+--     columns wide. The mask stays in the module as an API and a GUARD: the
+--     composition still refuses to lay a lane or stand a stilt in a ravine
+--     column, so if a later terrain package cuts the pad again, `--verify`
+--     turns red here and the refusals fire there.
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 

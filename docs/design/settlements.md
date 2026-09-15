@@ -234,15 +234,21 @@ the avenues it has no fixed cells and is computed from the ground the map has.
 
 Kezamba is also the one capital whose **civic core is not flat**, and that is
 the map's doing rather than the city's: a deep cenote fills its north-eastern
-quarter and reaches into the core itself, and one narrow gorge cuts into the pad
-from the south-west. The city is built round both. Its two great avenues leave
-the crossing and become **timber boardwalks on basalt piers** the moment they
-reach the water; its moot house stands on stilts half on the bank and half over
-the lake, with a flight up to it from the shore; a quay follows the waterline,
-its anglers fish the cenote itself and the fishmonger keeps a counter behind
-them; and the gorge is railed along its rim and crossed by one plank bridge. The
-lake is never filled in and never floored over: the ground the city lays stops
-at the waterline.
+quarter and reaches into the core itself. The city is built round it. Its two
+great avenues leave the crossing and become **timber boardwalks on basalt piers**
+the moment they reach the water; its moot house stands on stilts half on the bank
+and half over the lake, with a flight up to it from the shore; a quay follows the
+waterline, its anglers fish the cenote itself and the fishmonger keeps a counter
+behind them. The lake is never filled in and never floored over: the ground the
+city lays stops at the waterline.
+
+For a while there was a second hole in that pad — a narrow gorge cutting in from
+the south-west, which the city railed along the rim and crossed with one plank
+bridge. It was a ROAD: a long-distance route grading its way across the civic
+pad. Now that routes stop at a capital's gate points, the pad is whole, and the
+bridge and the rail are gone with the gorge. The measurement that found it is
+kept as a gate, because the next terrain change that cuts a capital's pad should
+turn a light red rather than become part of the architecture.
 
 Where a capital's four districts cannot be four quarters — because the water
 takes one of them in every world — the districts are **pinned to the ground that

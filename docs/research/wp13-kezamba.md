@@ -22,9 +22,17 @@ Evidence: `tools/wp13/evidence/20260915-kezamba/`.
 ## 1. The measurement this package exists because of
 
 The capitals contract's §1 says of every capital that "the 96 × 96 civic core is
-flat at the fitted reference height". At Kezamba that is true of **6 192 of its
-9 025 columns and false of the other 2 833**, and the first thing this lane did
+flat at the fitted reference height". At Kezamba that is true of **6 380 of its
+9 025 columns and false of the other 2 645**, and the first thing this lane did
 was measure it rather than discover it in a render.
+
+**Those numbers moved once, and the move is the second finding of this package.**
+Until WP40's routes were taught to end at the capital gates (main `f5583e13`),
+the pad was flat over only 6 192 columns: one graded route corridor cut a
+diagonal trench up to 26 nodes deep into it, this fixture measured the trench as
+a ravine, and this composition was built around it as a gorge with a rail and a
+footbridge. The trench is gone, `--verify` is what caught it, and §3d is what
+happened next.
 
 `tools/wp13/kezamba_water.lua` reads the planner directly — the same
 `terrain_height_at` / `water_class_at` / `water_surface_at` the engine's world
@@ -38,21 +46,25 @@ over the whole 512 envelope, on the **nine seeds** of
 | wet columns in the envelope | **30 354 of 263 169 (11.5 %)**, the same mask on all nine seeds (one SHA-256 over 66 049 sampled columns, zero mismatches) |
 | wet columns in the 95 × 95 core | **2 645 of 9 025 (29.3 %)** |
 | water surface | **y = 65, everywhere, on every seed** — exactly one node below the pad |
-| dry core columns at the reference | 6 192 – 6 327 depending on seed |
-| dry core columns BELOW it | **53 (seed 531802985935182545) to 188 (seed 0)**, reaching 8 to 26 nodes down |
+| dry core columns at the reference | **6 380 — all of them — on all nine seeds** (on the pre-`f5583e13` terrain: 6 192 to 6 327) |
+| dry core columns BELOW it | **0 on all nine seeds** (before: 53 on seed 531802985935182545, 188 on seed 0, reaching 8 to 26 nodes down) |
 
 The lake is WP40's own `hydro_kezamba_cenote`, a `deep_cenote` of four basins at
 **fixed world coordinates** (`wp40/source/simple_map.lua`), and the reason its
 surface sits one node under the pad is the water-correction package of
 2026-09-13 ([wp40-water-road-polish.md](wp40-water-road-polish.md)): "the civic
 water minimum is now applied as a hard floor after that compromise". The
-off-reference dry columns are one narrow **ravine** running into the pad from its
-south-west edge; its footprint is the same in every world and only its depth
-moves.
+off-reference dry columns were one narrow **ravine** running into the pad from
+its south-west edge, with the same footprint in every world and only its depth
+moving — which is exactly the signature of a graded route corridor, and is what
+it turned out to be (§3d).
 
 The engine's own terrain probe agrees with the offline reading: nine
 `run_capital.sh … terrain` boots produce nine **identical wet masks** over the
-envelope grid and report the anchor at (1800, 66, 1500) in every one.
+envelope grid and report the anchor at (1800, 66, 1500) in every one. So does
+the engine's `field` mode at node resolution over 251 001 columns, against the
+committed mask, with zero disagreements (§6 d2) — and the planner and the engine
+agree on the height of every one of the 9 025 core columns to the node.
 
 **Both masks are therefore committed**, as `wp13/kezamba_lagoon.lua` — generated
 by `kezamba_water.lua --emit`, re-checked column for column against the planner
@@ -65,7 +77,7 @@ and not an assumption.
 
 | File | Change |
 | --- | --- |
-| `wp13/kezamba_lagoon.lua` | **new, generated**: the cenote and the ravine as inclusive x runs per z, with the reference height and the water surface |
+| `wp13/kezamba_lagoon.lua` | **new, generated**: the cenote (and the now-empty ravine) as inclusive x runs per z, with the reference height and the water surface |
 | `wp13/kezamba.lua` | **new**: the 96 × 96 civic core built round both masks, the avenue/ring/threshold run specifications, the overlay dispatch and the lake and causeway rail |
 | `wp13/kezamba_lots.lua` | **new**: the 52 searched lot positions and the four district definitions |
 | `wp13/kezamba_plot.lua` | **new**: one district plot from a roster row, in the troll palette |
@@ -76,16 +88,22 @@ and not an assumption.
 | `wp13/troll_palette.lua` | **new**: the basalt and water rebindings, as `palettes.new` overrides rather than an edit to the shared palette |
 | `wp40/r7_kezamba_blueprint.lua` | **new**: the capital source the seam reads — core, 52 plots, one overlay of twelve runs |
 | `wp40/r7_settlement.lua` | one roster row, appended last; nothing else |
-| `tools/wp13/kezamba_water.lua` | **new**: the nine-seed water and pad survey, and the mask generator |
+| `wp13/kezamba_ramp.lua` | **new**: the gate ramp that brings each avenue down to the height Lane R's route ends at, and the guard that keeps it there |
+| `tools/wp13/kezamba_water.lua` | **new**: the nine-seed water and pad survey, the mask generator, and `--field`, which reads the ENGINE's own terrain field back against the committed mask |
 | `tools/wp13/kezamba_lots.lua` | **new**: `capital_plots.lua`'s four rules asked of the planner on nine seeds, before a composition exists |
 | `tools/wp13/kezamba_kat.lua` | **new**: acceptance for the masks, the core, every plot, the sockets and the overlay |
 | `tools/wp13/final_micro.lua` | the new KAT joins the interpreter pair |
 | `docs/design/settlements.md` | the open capital, the threshold, and the capital with a lake in it |
 
+`wp13/kezamba.lua` also publishes `M.districts.resolve`, loaded lazily, so Lane
+D's generic `tools/wp13/dump_capital_plan.lua` can draw this capital whole from
+the one file (`evidence/…/renders/plan-whole-capital-ne.png`).
+
 Not touched: the six start compositions, `highcourt*.lua`, `dur_brannoc*.lua`,
 `avenue.lua`, `wall.lua`, `capitals.lua`, `buildings.lua`, `parts.lua`,
-`palette.lua`, `dressing.lua`, `layout.lua`, `interiors.lua`, `roofs.lua`, and
-every WP40 file but the roster row. §6(b) carries the proof.
+`palette.lua`, `dressing.lua`, `layout.lua`, `interiors.lua`, `roofs.lua`,
+`run_capital.sh`, `capital_probe/`, and every WP40 file but the roster row.
+§6(b) carries the proof.
 
 ## 3. The core, and the three rules the lake imposes
 
@@ -116,48 +134,105 @@ rules follow, and all three are in the KAT:
 
 | Quarter | What stands there |
 | --- | --- |
-| South-east of the crossing | the **king's hall**, the library's basilica on its podium with its great door on the throne approach. It is east of the axis and not on it, because the RAVINE takes the ground west of the approach from z −47 to z −21 |
+| South-east of the crossing | the **king's hall**, the library's basilica on its podium with its great door on the throne approach. It is east of the axis and not on it, because the RAVINE took the ground west of the approach from z −47 to z −21; the gorge is gone (§3d) and the hall stays where it put it |
 | The lake's west bank | the **moot house**: a stilt hall whose flight stands on the shore, whose platform stands half on the bank and half on piers over the water, and whose walkway runs on out over the cenote. This is the contract's troll row built out of the terrain rather than on top of it |
 | The quay | the waterline from z 6 to z 44, kerbed in basalt; the fishmonger's counter, three drying racks and the three anglers on the shore columns |
 | South-west | the **cauldron court** — this capital's market cross is four pots on a basalt hearth ring with a fire between them — and the carvers' yard |
 | North-west | the **shaman's shrine** on its basalt platform, which carries the capital's one quest shell |
-| The gorge | railed along its rim on a two-node rhythm and crossed by one plank footbridge where it is narrowest |
 | The boundary | no wall and no parapet: totem posts at the gate mouths, and jungle |
 
-Measured populations of the finished core: 6 107 pad columns, 2 645 lagoon,
-273 ravine, 367 boardwalk cells, 53 piers, 80 quay stones, 60 bridge cells,
-25 gorge-rim rails, 4 totem posts, **5 emergent kapoks and 7 jungle trees**,
-54 sockets, 68 028 cells.
+Measured populations of the finished core: 6 380 pad columns, 2 645 lagoon,
+**0 ravine**, 367 boardwalk cells, 53 piers, 80 quay stones, 0 bridge cells,
+0 gorge-rim rails, 4 totem posts, **7 emergent kapoks and 7 jungle trees**,
+54 sockets, 69 559 cells. The six numbers that moved are §3d.
+
+### 3d. The gorge that was a road
+
+**What happened.** The first version of this package measured 273 columns of the
+civic pad standing up to 26 nodes below the fitted reference — a narrow diagonal
+band entering from the south-west — committed them as `kezamba_lagoon.lua`'s
+RAVINE mask, and built the core around them: no pad in those columns, a
+rope-and-post rail on 25 even columns along the rim, one five-lane plank
+footbridge at z = −22 where the band is narrowest, the king's hall pushed east
+off its own axis, and the market walk held at z −20..−16 so no lane would hang
+over the gap.
+
+On the rebase onto main `f5583e13`, `tools/wp13/kezamba_water.lua --verify`
+went red: **273 disagreements, every one of them a ravine column**. The lagoon
+half still agreed to the column on all nine seeds. Re-measured, the pad is flat
+at y = 66 over every one of its 6 380 dry columns on all nine seeds, and the
+engine's own `field` boot says the same at node resolution.
+
+**What it was.** A graded ROUTE CORRIDOR. WP40's wave-2 route lane (main
+`0518a01b`) taught every route to end at a capital's gate points instead of
+grading on through the envelope; the trench that cut this pad was a road being
+laid across it. The direction fits — in from the south-west edge, diagonal, one
+band wide — and so does the depth moving with the seed while the footprint does
+not.
+
+**What changed here.** The mask was re-emitted (0 ravine columns), the footbridge
+and the rim rail are gone — a bridge over flat ground is worse than no bridge —
+and the 273 columns now take the pad like any other, which is where the +1 531
+core cells and the two extra emergent kapoks come from. **Everything that
+REFUSES stays**: a lane that crosses a ravine column, a stilt that stands in one,
+a plot that reaches one, and now a loud error if the core ever finds a ravine
+column at all. The mask, the counters and the KAT's rules stay with them.
+
+**And the gate that was missing is in.** Nothing that runs on every change had
+ever asked the planner about the ravine half of the mask: the KAT asserts the
+module against itself, and `kezamba_lots.lua check` verified only the lagoon.
+`check` now verifies both — a dry core column below the reference must be a mask
+column, a committed ravine no seed has is a failure — so the next terrain package
+that cuts or heals this pad turns a gate red instead of shipping a fence round
+nothing.
 
 ### 3a. "Emergent trees kept", and what that can honestly mean here
 
 The contract's troll row ends "emergent trees kept" and the brief asks for the
-count inside the envelope **before and after**. The after is measurable and the
-before is not with the tools this tree has, so the honest version of the claim is
-the arithmetic rather than a number nobody took. The independent review of
-2026-09-16 was right to call the first version of this paragraph a different
-claim from the one the contract makes.
+count inside the envelope **before and after**. The after is a count; the before
+is an estimate from a control band of untouched ground in the same built world,
+because nothing in this tree censuses nodes in a world the capital is absent
+from. The independent review of 2026-09-16 was right to call the first version of
+this paragraph a different claim from the one the contract makes.
 
-* **What the composition writes on.** The core lays ground on 6 107 of its 9 025
-  columns and leaves 2 918 to the lake and the gorge; the 52 plots' ground
-  rectangles are 32 116 columns; the overlay's eight seven-lane bands are 11 256.
-  That is **49 479 of the envelope's 263 169 columns, 18.8 %**, and it is an
-  upper bound, because the bands overlap the core and each other. **At least
-  81.2 % of the envelope is never touched, and WP40's own emergents there stand
-  exactly as the mapgen placed them.** That is the whole of what "kept" can mean
-  for a settlement that writes cells.
+* **What the composition writes on.** The core lays ground on 6 380 of its 9 025
+  columns and leaves 2 645 to the lake; the 52 plots' ground rectangles are
+  32 116 columns; the overlay's eight seven-lane bands are 11 256. That is
+  **49 752 of the envelope's 263 169 columns, 18.9 %**, and it is an upper
+  bound, because the bands overlap the core and each other. **At least 81.1 % of
+  the envelope is never touched, and WP40's own emergents there stand exactly as
+  the mapgen placed them.** That is the whole of what "kept" can mean for a
+  settlement that writes cells.
 * **What the composition plants.** Inside its own footprint it puts back 5
-  emergent kapoks and 7 jungle trees in the core — a floor of 4 emergents is a
+  emergent kapoks and 7 jungle trees in the core (7 kapoks since the gorge
+  healed, §3d) — a floor of 4 emergents is a
   build error, which is the number the KAT holds — plus the groves and totem rows
   of the fill lots. The built core carries **3 000 tree cells**, 1 708
   `default:jungletree` and 1 292 `default:jungleleaves`, read back out of the
   finished map.
-* **What is NOT measured.** How many of WP40's own trees stood on those 49 479
-  columns before the settlement was written. That needs the same seed emerged
-  with the capital absent from the roster, and `run_capital.sh` has no mode for
-  it (lane D's `field` mode, announced for its round, is what would do it). The
-  claim "kept" is therefore made about the 81.2 % and not about the whole
-  envelope, and this note does not call the twelve planted trees a preservation.
+* **The control, which is the nearest thing to a "before" this tree can take.**
+  `measurements/emergent-trees.txt`. The `full` boot's east-avenue dump reaches
+  from x 40 to x 260, so the band x 60..260, z -12..12 — **5 025 columns of the
+  envelope that carry no core, no plot and no dressing** — is WP40's own ground
+  in the finished world. It carries **52 tree columns, 10.3 per thousand**. At
+  that density the core's 9 025 columns would have held **about 93 trees**. The
+  core as built carries **585 tree columns and 3 000 tree cells** (1 708
+  `default:jungletree`, 1 292 `default:jungleleaves`). The settlement therefore
+  leaves the pad with **roughly six times the tree columns the wild ground it
+  replaced would have had**, which is the strongest form the contract's "kept"
+  can take for a capital that also clears a terrace. The band's dump is clipped
+  to the road's deck ±6, so its CELL count is a floor and only its COLUMN count
+  is used.
+* **`field` mode does not answer this, and the previous version of this
+  paragraph said it would.** Lane D shipped `run_capital.sh <out> <key> field
+  <seed>` on 2026-09-15 and it is a TERRAIN field — the final height and the
+  land/water class of every column within ±250, from `grug_zones` — not a node
+  census. It cannot see a tree. A true before/after needs a node census of the
+  same region in a world whose roster does NOT carry the capital, which is one
+  region and one loop in `tools/wp13/capital_probe` (a `census` mode taking a
+  region and counting node names, runnable in `ground_only` mode where the
+  roster need not carry the key). That probe is Lane D's and the change is not
+  this lane's to make; the number above is what this lane can take without it.
 
 ## 3c. The gate ramp: how the avenues come down to the ground Lane R hands them
 
@@ -204,30 +279,52 @@ rather than silently stepped.
 capitals, and the same instrument gives Highcourt at most +4 and Dur Brannoc +2
 over the same seeds — this is Kezamba's terrain, not the road's defect.
 
-### The measurement: four gates, nine seeds, step / ramp columns / drop
+### The measurement: four gates, nine seeds, against Lane R's route ends
 
     luajit tools/wp13/kezamba_lots.lua <repo> gates
+    luajit tools/wp13/route_gates.lua  <repo> <seed> --strict
 
-| seed | south | north | west | east |
-| --- | --- | --- | --- | --- |
-| `531802985935182545` | 0 / 2 / 3 | 0 / 1 / 1 | 0 / 8 / 16 | 0 / 8 / 16 |
-| `8675309` | 0 / 6 / 12 | 0 / 1 / 1 | 0 / 1 / 1 | 0 / 14 / 27 |
-| `15912857179583385436` | 0 / 2 / 4 | 0 / 0 / 0 | 0 / 8 / 16 | 0 / 5 / 9 |
-| `0` | 0 / 1 / 1 | 0 / 1 / 1 | 0 / 5 / 9 | 0 / 0 / 0 |
-| `1` | 0 / 2 / 4 | 0 / 0 / 0 | 0 / 4 / 8 | 0 / 6 / 11 |
-| `2` | 0 / 1 / 1 | 0 / 0 / 0 | 0 / 4 / 8 | 0 / 2 / 2 |
-| `42` | 0 / 4 / 7 | 0 / 1 / 1 | 0 / 0 / 0 | 0 / 4 / 7 |
-| `12345` | 0 / 7 / 13 | 0 / 0 / 0 | 0 / 2 / 3 | 0 / 2 / 3 |
-| `999999999` | 0 / 1 / 1 | 0 / 0 / 0 | 0 / 0 / 0 | 0 / 1 / 1 |
+Two instruments, one number each. `kezamba_lots.lua gates` builds the
+composition's own avenue for a seed and reports, per gate, the step between the
+road's last deck and the terrain, the number of columns `kezamba_ramp` had to
+rebuild, the depth of that descent and the count of cells resting on nothing.
+`route_gates.lua` is Lane R's, reads the OTHER side of the junction — the height
+its route arrives at the same gate point with — and is the authority on what the
+city lane must meet.
 
-**Step 0 on 36 of 36**, and **0 floating cells on 36 of 36**. The longest descent
-is 14 columns for 27 nodes (east gate, seed 8675309); the shortest is none at
-all, where the road already arrives on the ground. The two counts the measurement
-reports beside `floating` are the cells that rest on something the piece does not
-contain and legitimately so: `on_water`, the causeway over the cenote, which the
-seam hands the road the water's surface for on purpose; and `on_deck`, a column a
-WP40 route bridge spans, which `avenue.lua`'s crossing rule deliberately does not
-fill up to.
+| seed | gate | R route end | ramp `gate_level` | step | ramp columns | floating |
+| --- | --- | --- | --- | --- | --- | --- |
+| `531802985935182545` | W / E / S / N | 37 / 44 / 76 / 90 | 37 / 44 / 76 / 90 | 0 | 0 | 0 |
+| `8675309` | W / E / S / N | 33 / 33 / 90 / 72 | 33 / 33 / 90 / 72 | 0 | 0 | 0 |
+| `15912857179583385436` | W / E / S / N | 37 / 44 / 75 / 74 | 37 / 44 / 75 / 74 | 0 | 0 | 0 |
+| `0` | W / E / S / N | 27 / 21 / 72 / 52 | 27 / 21 / 72 / 52 | 0 | 0 | 0 |
+| `1` | W / E / S / N | 33 / 39 / 72 / 71 | 33 / 39 / 72 / 71 | 0 | 0 | 0 |
+| `2` | W / E / S / N | 36 / 28 / 58 / 59 | 36 / 28 / 58 / 59 | 0 | 0 | 0 |
+| `42` | W / E / S / N | 39 / 43 / 84 / 80 | 39 / 43 / 84 / 80 | 0 | 0 | 0 |
+| `12345` | W / E / S / N | 41 / 39 / 96 / 73 | 41 / 39 / 96 / 73 | 0 | 0 | 0 |
+| `999999999` | W / E / S / N | 27 / 34 / 69 / 75 | 27 / 34 / 69 / 75 | 0 | 0 | 0 |
+
+**The two readings agree on 36 of 36**: the height `kezamba_ramp.gate_level`
+reads at a gate point is, to the node, the height Lane R's route ends at there,
+so `gate_level` needed no adaptation when the routes landed. The step is 0 on 36
+of 36 and nothing floats on 36 of 36 (`measurements/gate-vs-route-ends.txt`
+carries the full table, `measurements/route-gates-531802985935182545.txt` Lane
+R's own strict output for the gate seed).
+
+**The ramp now rebuilds nothing, and that is the point of the number.** On the
+terrain this lane measured before Lane R landed, `avenue.run`'s one-Lipschitz
+upper envelope arrived up to 27 nodes high and the ramp rebuilt between 1 and 14
+columns per gate (the previous version of this table). Lane R's routes now stop
+AT the gate point at free-terrain height instead of grading through the envelope,
+so the ground the road walks no longer climbs away beyond the gate and the
+envelope no longer lifts: 0 rebuilt columns on all nine seeds. `kezamba_ramp` is
+therefore a standing GUARD rather than an active correction — it costs one
+comparison per column and fires the moment a future terrain change puts the
+approach back above the ground. The KAT keeps its rules for exactly that reason,
+and the two counts the measurement reports beside `floating` stay as they were:
+`on_water`, the causeway over the cenote, which the seam hands the road the
+water's surface for on purpose, and `on_deck`, a column a WP40 route bridge spans
+and `avenue.lua`'s crossing rule deliberately does not fill up to.
 
 ## 3b. The gate threshold: what an open capital has instead of a gatehouse
 
@@ -307,8 +404,8 @@ three are:
 
 **Why the core needs no per-seed continuity check and the plots do.** The civic
 core is ANCHOR-RELATIVE and Kezamba's anchor is authored-fixed at y = 66 in every
-world (§1), so the core's own boardwalks, its stilt-hall flight, its quay and its
-gorge bridge are the same cells at the same heights in every world — the engine's
+world (§1), so the core's own boardwalks, its stilt-hall flight and its quay are
+the same cells at the same heights in every world — the engine's
 own read-back digest says so (`core_road_digest` identical on four seeds, §6d).
 A district plot is projected from a reference column whose height the world
 decides, so the step between it and the ground beside it is a per-seed question,
@@ -358,9 +455,9 @@ follow the precedent the Highcourt fill set with its baker:
 row reads
 
 ```
-wp13_kezamba budget/68038/249940/317978/400000
-  core/68038/51/54/6107/2645/273/367/53/80/60/5/2230/315
-  mask/30354/273/120/66/65
+wp13_kezamba budget/69559/249940/319499/400000
+  core/69559/50/54/6380/2645/0/367/53/80/0/7/2182/315
+  mask/30354/0/120/66/65
   overlay/12/11/…/3369caec589539d4955d190198890b154639230e91e238170189d9c3adc5bf07
   plots/52/249940/11820/totem_shrine/canopy=15,shore=13,totem=11,vine=13
   roster/anchor_012/12/kragmar_kezamba/capital_core/capital_plot
@@ -382,17 +479,22 @@ could break and does not.
 The whole WP13 fixture set in one process under each interpreter:
 
 ```
-WP13 final micro PASS interpreter=luajit output_sha256=f9e8976d…
-WP13 final micro PASS interpreter=puc51  output_sha256=f9e8976d…
+WP13 final micro PASS interpreter=luajit output_sha256=41ed5eb2…
+WP13 final micro PASS interpreter=puc51  output_sha256=41ed5eb2…
 ```
 
-The digest has moved twice and each move is accounted for. `46b4dea6…` was the
-pre-rebase value; `a15f5630…` is what the rebase onto Lane N (`c8050057`, the
+The digest has moved five times and each move is accounted for. `46b4dea6…` was
+the pre-rebase value; `a15f5630…` is what the rebase onto Lane N (`c8050057`, the
 wave-2 NPC vocabulary) produced, and **that delta is Lane N's, not this lane's**
 — the independent review measured the branch's TSV against an archive of
 `c8050057` and found it differs only by the three Kezamba rows. `f9e8976d…` is
-this fix round: the KAT gained the avenue-obstruction rule, the occlusion half of
-the `fish` test and a tighter `smith` set, so its own row changed.
+the fix round of 2026-09-16: the KAT gained the avenue-obstruction rule, the
+occlusion half of the `fish` test and a tighter `smith` set, so its own row
+changed. `9e36e83c…` is the rebase onto `f5583e13`, which brought Lane R's route gates
+and the Dur Brannoc upgrade into the fixture set with rows of their own, and
+this lane's own row did not move across that rebase. `41ed5eb2…` is the gorge
+round of §3d: the core gained 1 531 cells and the mask lost 273 columns, so the
+Kezamba row moved and nothing else did.
 
 ### (b) The six starts are byte-identical
 
@@ -423,13 +525,29 @@ by the engine — and three comment lines whose prose contains a `|` or a `//`.
 
 ### (d) Engine
 
-`tools/wp13/run_capital.sh <out> kezamba terrain|full <seed>`, port block
+`tools/wp13/run_capital.sh <out> kezamba terrain|field|full <seed>`, port block
 31500-31599, one headless server at a time, every boot under `nice -n 19`.
 **Nine `terrain` boots (§1) and nine `full` ones**, one per fixture seed, each a
-cold world. The runner's own verdict is not the gate here -- it aborts in `full`
-mode for an OPEN capital before printing PASS (§7.8) -- so each boot is read from
-its log: the ERROR and ModError counts, the `event=complete` line, the
-terrain-audit lines and the NPC roster.
+cold world, plus — after the rebase onto `f5583e13` — one `full` and one `field`
+boot on the gate seed against Lane D's fixed runner.
+
+**The runner now reports PASS.** Lane D fixed the open-capital digest loop in its
+round (`run_capital.sh`, "AN OPEN CAPITAL PUBLISHES NO RAMPART AND NO GATE, and
+that is not a failure"), so the `full` pass on `f5583e13` ends with
+
+```
+exit=0 errors=0 complete=1
+avenue overlay digest recorded (no committed value for seed 531802985935182545 yet)
+rampart: this capital publishes no such overlay region
+gate: this capital publishes no such overlay region
+WP13 capital pass PASS: kezamba full
+```
+
+(`engine/f5583e13-full-531802985935182545/`). The nine-seed tables below were
+taken before that fix and were read from their logs, which is what §7.8 records;
+nothing in them changed, and the one seed re-run on the fixed runner agrees with
+its row. Each boot is read from its log in any case: the ERROR and ModError
+counts, the `event=complete` line, the terrain-audit lines and the NPC roster.
 
 | seed | chunks | steady mean | worst | Lethariel control | worst plot fall | submerged | sockets | ERROR lines | audit findings |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -484,23 +602,48 @@ The two seeds re-run after the causeway rail landed (§6e) measured 0.618 s and
 same window: the RATIO held at 4.4 – 4.5×, and it is the ratio that says what
 this settlement costs.
 
-The NPC roster is complete on every seed:
+The `full` boot on the fixed runner (`f5583e13`, seed `531802985935182545`,
+after the gorge round of §3d) reports the same roster, 66 capital mapchunks, a
+steady mean of **0.504 s** against a Lethariel control of 2.244 s (4.5×),
+`worst_plot_fall=5`, `sockets=262`, `errors=0`, `complete=1`, and **zero ERROR
+or ModError lines in the whole log**:
 
 ```
 start npcs troll kezamba: guards 18/18 flair 163/163 vendor 7/7 quest 1/1
-  new … pending 0 spare 11 residents 163 walkers 21
+  new 3 pending 0 spare 11 residents 163 walkers 21
+WP13 capital pass PASS: kezamba full
 ```
 
-All seven vendor kinds resolve since this lane was rebased onto Lane N
-(`c8050057`, the wave-2 NPC vocabulary): before that rebase `brewer` and
-`herbalist` had no entity and the log carried the two error lines §8.4 says it
-should ("an error line at placement and an empty socket, never a load failure").
-The passes after the rebase carry **zero** errors.
+The built core moved with the pad, as it must: `core_road_digest` is now
+`eafdce92…` over 6 611 read-back cells (it was `0d6e6eea…`), and the avenue's
+`4f2fb544…`/1 993 is unchanged by the gorge round, which touched no street.
 
-**Build time in the engine**, from the probe's own `build_us`: module load
-17.2 ms, the core 116.4 ms, the 52 plots 230 ms together with `totem_shrine`
-the slowest at 10.6 ms. "Builds in a few seconds under LuaJIT when first
-touched" is 0.36 s for the whole capital.
+### (d2) The engine's own field against the committed mask
+
+`run_capital.sh <out> kezamba field <seed>` (Lane D's new mode) writes
+`kezamba-field.tsv`: the final height and the land/water class of **every column
+within ±250 of the anchor**, read from `grug_zones` inside the boot.
+`kezamba_water.lua --field <that file>` compares it, column by column, with the
+lagoon mask this package committed:
+
+```
+kezamba_field reach=250 core_wet=2645 core_disagreements=0
+  envelope_wet_engine=30354 envelope_wet_mask=30354 envelope_disagreements=0
+  dry_y=66..66 ravine_y=66..66 wet_y=53..55 reference_y=66 water_surface_y=65
+kezamba_field PASS: the engine's own field agrees with the committed mask on
+  every one of the 251001 columns it covers
+```
+
+This is the one check the offline fixture cannot make of itself. `kezamba_lagoon.lua`
+was generated from the PLANNER; here the running server answers the same question
+and gives the same 30 354 wet columns, the same 2 645 inside the core, and not one
+column of disagreement. It also shows what §1 measured from the other side: the
+height authority reports **66 for every dry column of the core** — the pad is
+flat at the fitted reference, exactly as the contract says — while
+the water class marks 2 645 of those columns as the cenote, whose bed the field
+puts at 53..55 under a surface at 65. And it is the reading that closes §3d: on
+the terrain this package was first written against, the same probe would have
+answered 58..65 for 53 of those columns.
 
 ### (e) What the engine reads back, and what is invariant across the seeds
 
@@ -514,18 +657,29 @@ evidence (`engine/full-<seed>/probe.txt`) over the nine seeds:
 | `avenue_road_digest` | one per seed |
 
 At the head of this branch, on seed `531802985935182545`:
-`core_road_digest = 0d6e6eea619c53db5899c5aa93e4f8c6e45bdcaa253633b7887201e955a63bcb`,
-`avenue_road_digest = f91542ccf9a5b17b677d3908f967d481030795d7ca5d34e03650d63eb19d6e2d`
-with 110 388 cells. The nine-seed table of §6d was taken before the fix round of
-2026-09-16 and its timings and counts still hold — the core moved by the six
-cells B1's rail change took out of it and the avenue by the gate ramp — but the
-three digests it recorded belong to the pre-fix tree and are superseded by these.
+`core_road_digest = eafdce922db68f98366c0da49823bfe9bb1e81d63328b6d2315a748af0203056`
+over 6 611 read-back cells, and
+`avenue_road_digest = 4f2fb544ff4f514aeb078053278f21bb88284f855b2e06554f0e053e9cdf9fbe`
+with **1 993 overlay cells in the dumped region**. The core digest moved with the
+gorge round of §3d (it read `0d6e6eea…` while the pad had a hole in it). The nine-seed table of §6d was
+taken before the fix round of 2026-09-16 and its timings and counts still hold —
+the core moved by the six cells B1's rail change took out of it and the avenue by
+the gate ramp — but the three digests it recorded belong to the pre-fix tree and
+are superseded by these.
+
+**The avenue digest moved again on the rebase onto `f5583e13`, and Lane R's
+routes are why.** Before the rebase the same seed read
+`f91542cc…`/2 274 overlay cells; after it, `4f2fb544…`/1 993. The difference is
+the 281 cells the gate ramp used to rebuild at the east gate: the routes now stop
+at the gate point instead of grading through the envelope, the road no longer
+arrives above the ground, and the ramp writes nothing (§3c). Nothing in this
+lane's own code changed between the two readings.
 
 **The CORE builds to the same bytes on every seed; the plots follow the world,
 as they must.** The core is anchor-relative and Kezamba's civic reference is
 authored-fixed at y = 66 in every world (§1), so its cells land at the same
-heights everywhere — which is also why its boardwalks, its stilt-hall flight, its
-quay and its gorge bridge need no per-seed continuity check. A district plot is
+heights everywhere — which is also why its boardwalks, its stilt-hall flight and
+its quay need no per-seed continuity check. A district plot is
 projected from a reference column whose height the world decides, so its
 read-back digest moves with the world; that is the reference-projection working.
 An earlier version of this note claimed both were invariant and the independent
@@ -589,14 +743,15 @@ verge's kerbs and posts at `-6` with nothing between them and the ground.
    the water, which is what a stilt is; what a diver sees is a leg that ends.
    Deepening it is a change to `M.BOUNDS.capital_core`, which is the seam's and
    not this lane's.
-3. **The gorge's footbridge has no piers either**, for the same reason and with
-   the same visible consequence: a six-node plank span with nothing under it.
-   It is connected at both ends, so no rule this tree has calls it an island.
+3. **CLOSED: the gorge, and with it the footbridge that had no piers.** The
+   trench was a graded route corridor and WP40's wave-2 route lane removed it
+   (§3d). The bridge and the rim rail are gone with it; the mask, the refusals
+   and a new planner-backed gate in `kezamba_lots.lua check` stay.
 4. **The core lays two courses and not a terrace.** Like Highcourt's and Dur
    Brannoc's, the pad is subsoil and ground; where WP40's pad is already flat at
-   the fitted height that is exactly right, and at Kezamba the measurement says
-   6 192 of 6 380 dry columns are. The other 188 are the ravine, which the
-   composition leaves alone.
+   the fitted height that is exactly right, and at Kezamba the measurement now
+   says **all 6 380** dry columns are (§3d); before the routes moved, 188 of
+   them were not.
 5. **THE KING'S HALL IS THE WEAKEST THING IN THE RENDERS.** The independent
    review read it as "a red-brick manor with a timber roof" rather than a troll
    hall, and it was right: `capitals.king_hall` dresses itself in the CAPITAL
@@ -620,29 +775,28 @@ verge's kerbs and posts at `-6` with nothing between them and the ground.
    §4 above says why. A later package that wants variation here has the room for
    it: the lots are searched and could be re-searched per seed, at the cost of
    a per-seed lot derivation the manifest would have to be independent of.
-8. **The gate ramps are the lane's own answer to `avenue.lua`'s envelope, and
-   the seam it needs from Lane R is a number this lane does not have.** The road
-   comes down to the terrain at each gate point (§3c) and the measurement is
-   zero on 36 of 36 gate-seed pairs, but what it comes down TO is the free
-   terrain at that column, read through the seam's own surface callback. Lane R
-   states that is where its route ends; this lane could not check that from
-   inside the envelope, because Lane R's branch is not in this tree. If R's
-   junction is ever not free terrain, `wp13/kezamba_ramp.lua`'s `M.gate_level`
-   is the one function to change, and nothing else moves.
-9. **`run_capital.sh` aborts in `full` mode for an OPEN capital**, and its
-   verdict on Kezamba is that abort and not a failure of this capital. The
-   full-mode digest gate greps the log for three labels — avenue, rampart,
-   gate — and two of the three find nothing where there is no curtain wall;
-   under `set -euo pipefail` a command substitution whose pipeline failed is a
-   failed assignment, so the runner exits before its own
-   `[[ -n "$digest" ]] || continue` can act, after a boot that reported
-   `exit=0 errors=0 complete=1`. Lane E met the same thing independently. The
-   runner is lane D's and lands there; **this lane's engine evidence is judged
-   from the LOG** — the ERROR and ModError counts, the `event=complete` line,
-   the terrain-audit lines and the NPC roster — which is what §6d tabulates.
-   (This lane did patch it with `|| true` on the two substitutions and then
-   reverted that on the coordinator's ruling; the revert commit carries the
-   diagnosis for whoever lands it.)
+8. **CLOSED on the rebase onto `f5583e13`: the gate ramp now rebuilds nothing.**
+   The open point was that this lane could not check its `gate_level` against
+   Lane R's actual route ends. It can now: `route_gates.lua --strict` prints the
+   height R's route arrives at, and it equals the terrain height `gate_level`
+   reads at all 36 gate-seed pairs (§3c). With the routes no longer grading
+   through the envelope, `avenue.run` already arrives on the ground and
+   `kezamba_ramp` rebuilds 0 columns on all nine seeds. It stays in the tree as
+   a guard with a KAT rule behind it, and `M.gate_level` is still the one
+   function to change if a future terrain package lifts the approach again.
+9. **CLOSED by Lane D: `run_capital.sh` no longer aborts in `full` mode for an
+   OPEN capital.** The full-mode digest gate used to grep the log for three
+   labels — avenue, rampart, gate — and two of the three find nothing where
+   there is no curtain wall; under `set -euo pipefail` that ended the script
+   after a boot that had reported `exit=0 errors=0 complete=1`. Lane E met the
+   same thing independently and Lane D fixed it in its round: each lookup is now
+   explicitly allowed to find nothing and a label with no digest is skipped with
+   a line saying so. The `full` pass on `f5583e13` prints
+   `WP13 capital pass PASS: kezamba full` (§6d). The nine-seed tables of §6d
+   predate the fix and were read from their logs. (This lane patched the runner
+   itself with `|| true` and then reverted that on the coordinator's ruling; both
+   commits were skipped on the rebase because the fix landed upstream.)
+
 10. **No committed overlay digest yet.** `run_capital.sh` compares the built road
    against `tools/wp13/evidence/20260915-capital-terrain/<key>/<label>-digest-
    <seed>.txt`, and Kezamba has none, so its passes say "recorded (no committed

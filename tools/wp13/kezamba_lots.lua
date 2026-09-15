@@ -586,9 +586,20 @@ end
 -- `check` already builds the nine planner sessions this needs, so the
 -- verification is free here and nowhere else. It is the gate; the note and the
 -- tool headers say so.
+--
+-- BOTH HALVES OF THE MASK ARE CHECKED HERE, and the second half is the reason
+-- this paragraph was written twice. The lagoon half was added after the review
+-- of 2026-09-16. The RAVINE half was added a day later, after the rebase onto
+-- main `f5583e13`: WP40's routes had stopped grading through the capital
+-- envelope, the graded corridor that cut the pad was gone, and the only thing
+-- in the tree that noticed was `kezamba_water.lua --verify`, which nothing runs
+-- on every change. A dry column standing below the fitted reference must be a
+-- ravine column of the committed mask, and a ravine column must stand below it:
+-- anything else and the composition is building around a gorge that is not
+-- there, or laying ground over one that is.
 do
 	local committed = dofile(wp13 .. "/kezamba_lagoon.lua")()
-	local bad, wet_core = 0, 0
+	local bad, wet_core, low_core = 0, 0, 0
 	for index = 1, #sessions do
 		local session = sessions[index]
 		for z = -committed.REACH, committed.REACH do
@@ -597,17 +608,29 @@ do
 				if cell.wet then
 					if index == 1 then wet_core = wet_core + 1 end
 					if not committed.lagoon(x, z) then bad = bad + 1 end
-				elseif committed.lagoon(x, z) then
-					bad = bad + 1
+				else
+					if committed.lagoon(x, z) then bad = bad + 1 end
+					-- The ravine half. The committed mask is the UNION over the
+					-- nine seeds grown by one node, so a mask column may stand
+					-- at the reference on any single seed; a column BELOW the
+					-- reference may never be outside it.
+					if cell.y < committed.REFERENCE_Y then
+						low_core = low_core + 1
+						if not committed.ravine(x, z) then bad = bad + 1 end
+					end
 				end
 			end
 		end
 		if session.anchor.y ~= committed.REFERENCE_Y then bad = bad + 1 end
 	end
-	io.write("kezamba_mask\tcore_wet\t", wet_core, "\tdisagreements\t", bad,
-		"\tseeds\t", #sessions, "\n")
+	-- And the other direction, which a union cannot state per seed: a mask that
+	-- claims a gorge no seed has is a composition built around nothing.
+	if committed.RAVINE_COLUMNS > 0 and low_core == 0 then bad = bad + 1 end
+	io.write("kezamba_mask\tcore_wet\t", wet_core, "\tcore_below_reference\t",
+		low_core, "\travine_columns\t", committed.RAVINE_COLUMNS,
+		"\tdisagreements\t", bad, "\tseeds\t", #sessions, "\n")
 	if bad ~= 0 then
-		io.write("kezamba_lots FAIL: the committed lagoon mask is not the map\n")
+		io.write("kezamba_lots FAIL: the committed mask is not the map\n")
 		os.exit(1)
 	end
 end
