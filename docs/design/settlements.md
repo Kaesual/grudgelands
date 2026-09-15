@@ -119,10 +119,11 @@ Decided 2026-09-14.
   lives on (below).
 - **A settlement offers no quest and no storage services**, and a vendor is
   the only trade there is. Since playtest round 3 a settlement may hold a
-  PROFESSION vendor -- butcher, smith, fishmonger, baker, tailor -- but that is
-  a shop with its own shelf, not the crafting-profession system of
-  [professions.md](professions.md): nothing there is taught, levelled or
-  unlocked in a settlement.
+  PROFESSION vendor -- butcher, smith, fishmonger, baker, tailor, and since
+  the wave-2 capitals also mason, brewer, bowyer, herbalist, armourer, tanner
+  and embalmer -- but that is a shop with its own shelf, not the
+  crafting-profession system of [professions.md](professions.md): nothing
+  there is taught, levelled or unlocked in a settlement.
 - Race appearance (skin, visual-only stature) and visible armor and weapons
   are composed by one function for players and humanoid mobs, see
   [wp13-character-visuals-contract.md](../research/wp13-character-visuals-contract.md).
@@ -248,7 +249,10 @@ want lived-in settlements without paying for it in server load"):
 - **Four residents in five work; one in five walks.** A resident on a **work**
   socket never leaves it: it faces the feature the socket names, plays that
   activity's animation and holds its tool — a smith at an anvil, a farmer in a
-  field, a woodcutter at a tree, somebody sitting on a bench. The split is
+  field, a woodcutter at a tree, somebody sitting on a bench. Since the wave-2
+  capitals the vocabulary also covers a miner at a rock face, a brewer at a
+  cauldron, a carver at a totem, a mourner at a grave (still, head bowed), a
+  pair sparring with the tier-1 sword and a forager at a bush. The split is
   decided by the placement engine and nothing about it is authored: among a
   settlement's resident sockets in authored order, every fifth `idle` one hosts
   a walker and everybody else stands still. A static resident keeps at most a
@@ -263,11 +267,12 @@ want lived-in settlements without paying for it in server load"):
   nothing at all, writes its animation once per change, and does nothing
   whatsoever while no player is within 24 nodes.
 - **Profession vendors.** A district reads as lived in when the butcher's house
-  has a butcher in it, so a `vendor` socket may name one of five professions —
-  butcher, smith, fishmonger, baker, tailor. Each has a shelf of its own trade
-  and serves everybody (no faction and no race restriction, and therefore no
-  kinship discount); only the smith also sells the equipment ladder. The six
-  starts keep their single race vendor.
+  has a butcher in it, so a `vendor` socket may name one of twelve professions —
+  butcher, smith, fishmonger, baker, tailor, mason, brewer, bowyer, herbalist,
+  armourer, tanner and embalmer. Each has a shelf of its own trade and serves
+  everybody (no faction and no race restriction, and therefore no kinship
+  discount); only the smith and the armourer also sell the equipment ladder.
+  The six starts keep their single race vendor.
 - **A peaceful NPC's nametag is culled like a guard's.** Villagers, elders and
   vendors used to render their name out to the engine's whole object-send
   range, which made a busy district a wall of floating text; they now use the

@@ -1,0 +1,7 @@
+inputs before: b61e5fcdef01c9275d82f9614878d784c71c88f6c929046bd3ed9af5e98aa127  -
+WP13 final micro PASS interpreter=luajit output_sha256=b3aa0177d8997a0d5019ffbd8c581842e3bbc10b9ddb11966a75da99348aef51
+WP13 final micro PASS interpreter=puc51 output_sha256=b3aa0177d8997a0d5019ffbd8c581842e3bbc10b9ddb11966a75da99348aef51
+inputs after:  b61e5fcdef01c9275d82f9614878d784c71c88f6c929046bd3ed9af5e98aa127  -
+final micro pair byte-identical
+b3aa0177d8997a0d5019ffbd8c581842e3bbc10b9ddb11966a75da99348aef51  tools/wp13/evidence/20260915-npc-vocabulary/final-micro/luajit.tsv
+b3aa0177d8997a0d5019ffbd8c581842e3bbc10b9ddb11966a75da99348aef51  tools/wp13/evidence/20260915-npc-vocabulary/final-micro/puc51.tsv

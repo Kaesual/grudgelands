@@ -131,9 +131,10 @@ return function(repo)
 		assert(api.registered_entities[name].floats == true)
 		vendor_count = vendor_count + 1
 	end
-	-- Two faction Quartermasters, six race vendors and the five profession
-	-- vendors of WP13 playtest round 3 (sockets contract section 8.4).
-	assert(vendor_count == 13)
+	-- Two faction Quartermasters, six race vendors and the TWELVE profession
+	-- vendors of sockets contract section 8.4 (five from WP13 playtest round 3,
+	-- seven from the wave-2 vocabulary lane of 2026-09-15).
+	assert(vendor_count == 20)
 	assert(api.is_creative_enabled("builder") and not api.is_creative_enabled("player"))
 	assert(api.registered_nodes["default:torch_wall"].paramtype2 == "wallmounted")
 	assert(api.registered_nodes["stairs:stair_pine_wood"].paramtype2 == "facedir")

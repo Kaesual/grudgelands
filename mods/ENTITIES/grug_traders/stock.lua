@@ -314,7 +314,9 @@ end
 -- PROFESSION SHELVES (WP13 playtest round 3, sockets contract section 8.4).
 --
 -- `vendor.kind` grew from {race, general} to also carry butcher, smith,
--- fishmonger, baker and tailor. A profession vendor is an ordinary trader with
+-- fishmonger, baker and tailor, and in wave 2 (2026-09-15) mason, brewer,
+-- bowyer, herbalist, armourer, tanner and embalmer. A profession vendor is an
+-- ordinary trader with
 -- ONE difference: its General tab is its own shelf instead of the
 -- level-independent core stock above. Everything else -- the money, the sell
 -- side, the buy-back prices, the formspec -- is the same code, and the two
@@ -327,12 +329,12 @@ end
 -- enforces that at load rather than in a player's hand: a shelf entry whose
 -- item is not registered is DROPPED from the shelf and reported as an error.
 --
--- The SMITH additionally keeps the bracket tabs, so its shelf is the metal and
--- the below-ladder tools while the gear ladder itself comes from `grug_gear`'s
--- own catalog (items_crafting.md section 3.0.3: the vendor bracket catalog and
--- the base craft ladder are the same items, so a smith that listed them again
--- would be a second copy of the ladder). The other four sell no equipment and
--- carry no bracket tab at all.
+-- The SMITH and, since wave 2, the ARMOURER additionally keep the bracket
+-- tabs, so their shelves are the metal and the padding while the gear ladder
+-- itself comes from `grug_gear`'s own catalog (items_crafting.md section
+-- 3.0.3: the vendor bracket catalog and the base craft ladder are the same
+-- items, so a smith that listed them again would be a second copy of the
+-- ladder). The other ten sell no equipment and carry no bracket tab at all.
 --
 -- Prices are in COPPER (economy.md section 1) and sit above the
 -- `_grug_sell_price` the same items carry as loot, so buying from a profession
@@ -411,6 +413,112 @@ profession_shelf("smith", {
 	{"default:pick_bronze", 40, "tools"},
 	{"default:axe_bronze", 36, "tools"},
 	{"default:shovel_bronze", 32, "tools"},
+})
+
+--
+-- WAVE 2 (2026-09-15): seven more shelves for contract section 8.4's second
+-- row of kinds -- mason, brewer, bowyer, herbalist, armourer, tanner and
+-- embalmer.
+--
+-- EVERY ITEM BELOW WAS MEASURED, not looked up in a design doc: one headless
+-- boot of this tree dumped all 1012 registered item names and their
+-- `_grug_sell_price`, and every name here and every price comparison comes out
+-- of that dump (the evidence directory carries it). Two things it settled:
+--
+--   * THERE IS NO BOW. Nothing in the 1012 is a bow, a stave, a bowstring or a
+--     quiver -- the only archery items in the game are `grug_mobs:arrow`
+--     ("Bundle of Arrows", the skeleton archer's drop, whose own item comment
+--     already says "there is no bow/quiver item yet") and the castle
+--     ARROWSLIT nodes, which are masonry. So the bowyer sells arrows and the
+--     stick-class goods they are made of, exactly as the wave-2 brief allows,
+--     and gets no bracket tab (there is no ranged family in `grug_gear` to
+--     reach).
+--   * THERE ARE NO PROCESSED INTERMEDIATE GOODS. §3.0.3's leather grades are
+--     "named, not yet registered", and nothing in the tree is a rivet, a
+--     buckle, a bolt of cured hide or a jar. Twelve trades therefore share one
+--     pool of about forty sellable materials, so a few items appear on two
+--     shelves (the butcher and the tanner both sell hides; the tailor and the
+--     embalmer both sell linen scrap). Where that happens the PRICE IS THE
+--     SAME on both, so the overlap is one good in two shops and never an
+--     arbitrage.
+--
+-- Prices sit above each item's `_grug_sell_price` buy-back the same way the
+-- five original shelves do, and since this lane the audit in init.lua proves
+-- it for every profession shelf instead of only for the core stock.
+--
+
+-- The mason: the ground a district is paved and walled with. Nothing here has
+-- a buy-back price at all, so the trade is one-way by construction.
+profession_shelf("mason", {
+	{"default:cobble", 2},
+	{"default:gravel", 1},
+	{"default:clay_brick", 2},
+	{"default:stonebrick", 5},
+	{"default:sandstonebrick", 5},
+	{"default:stone_block", 6},
+})
+
+-- The brewer: the one potion the game has, and what a brewhouse puts in a vat.
+-- The potion keeps the core stock's own 8 c -- it is the same item on another
+-- counter, not a second price for it.
+profession_shelf("brewer", {
+	{"grug_traders:potion_healing_weak", 8},
+	{"grug_gathering:wild_cocoa", 4},
+	{"grug_gathering:marshbloom", 3},
+	{"grug_gathering:rock_salt", 3},
+	{"default:apple", 2},
+})
+
+-- The bowyer: arrows and the stick-and-feather goods behind them (see the
+-- measurement above -- no bow exists to sell).
+profession_shelf("bowyer", {
+	{"grug_mobs:arrow", 5},
+	{"default:stick", 2},
+	{"grug_mobs:feather", 3},
+	{"grug_mobs:sharp_feather", 9},
+})
+
+-- The herbalist: WP33's healing herbs plus the two mob reagents that belong on
+-- an apothecary's counter rather than a butcher's.
+profession_shelf("herbalist", {
+	{"grug_gathering:gravemoss", 3},
+	{"grug_gathering:dragonweed", 5},
+	{"grug_gathering:crimson_lotus", 8},
+	{"grug_gathering:sunleaf", 3},
+	{"grug_mobs:venom_gland", 9},
+	{"grug_mobs:slime_gel", 7},
+})
+
+-- The armourer: the plate, the padding and the backing. Its distinguishing
+-- offer is the BRACKET TABS (vendors.lua's GEAR_KINDS), so the general shelf
+-- is deliberately materials and not a hand-copied ladder.
+profession_shelf("armourer", {
+	{"grug_materials:bronze_bar", 7},
+	{"grug_materials:steel_bar", 26},
+	{"grug_mobs:heavy_leather", 16},
+	{"grug_mobs:heavy_cloth", 13},
+	{"grug_mobs:shiny_scale", 9},
+})
+
+-- The tanner: hides and pelts. Two of them (the sleek pelt and the ape hair)
+-- are on no other shelf; the three it shares with the butcher carry the
+-- butcher's own prices.
+profession_shelf("tanner", {
+	{"mobs:leather", 8},
+	{"grug_mobs:light_leather", 6},
+	{"grug_mobs:heavy_leather", 16},
+	{"grug_mobs:sleek_pelt", 18},
+	{"grug_mobs:ape_hair", 10},
+})
+
+-- The embalmer: the undead capital's own trade. `grug_materials:gravesalt` is
+-- the cultural material of that region and is sold nowhere else.
+profession_shelf("embalmer", {
+	{"grug_mobs:bone", 3},
+	{"grug_materials:gravesalt", 6},
+	{"grug_decor:xdecor_candle", 4},
+	{"grug_mobs:linen_scrap", 3},
+	{"grug_mobs:zombie_flesh", 5},
 })
 
 --

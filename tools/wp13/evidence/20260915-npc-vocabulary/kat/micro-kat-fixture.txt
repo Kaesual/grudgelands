@@ -1,0 +1,7 @@
+luajit: ./tools/wp40/r7/node_semantics_fixture.lua:39: cannot open ./reference_projects/luanti/builtin/game/item.lua
+stack traceback:
+	[C]: in function 'error'
+	./tools/wp40/r7/node_semantics_fixture.lua:300: in function <./tools/wp40/r7/node_semantics_fixture.lua:6>
+	tools/wp40/r7/micro_kat_fixture.lua:1074: in function <tools/wp40/r7/micro_kat_fixture.lua:4>
+	(command line):1: in main chunk
+	[C]: at 0x5611bcd91b00
