@@ -66,7 +66,8 @@ decisions are the coordinator's and are open to the user's correction.
   street; the library's generators scale up (hall, longhouse, workshop,
   cottage, shed, watchpost) plus new capital parts: curtain-wall segment
   with walkway and towers on the envelope edge where the race wants one
-  (dwarf, undead, orc), colonnade, market square, barracks, temple/shrine,
+  (dwarf, undead, orc — and, since the round-3 plan, human: §4), colonnade,
+  market square, barracks, temple/shrine,
   library, granary, stable, well, statue plinth, gatehouse.
 
 ### 2.2 Seam generalisation (mechanical, one package before any capital)
@@ -142,7 +143,9 @@ stone block).
    remaining capitals inherit, is that a curtain wall is an **overlay** and
    shares its capital's one overlay blueprint with the avenues, because the
    cross-run arbitration that lets a road through a gate only exists inside one
-   overlay. Nhal Veyr and Gor Drazhak are the other two walled ones.
+   overlay. Nhal Veyr and Gor Drazhak are the other two walled ones of the
+   2026-09-14 decision; Highcourt joined them through the round-3 plan (§4) and
+   uses the same overlay unchanged.
 4. Villages (12), then outposts/camps, then mining/apex/mirefolk dressing.
 
 ## 4. User rulings
@@ -158,11 +161,23 @@ stone block).
   and gatehouses at the four ±256 gates): proposal is walls for Dur
   Brannoc, Nhal Veyr and Gor Drazhak, open edges (hedges/orchards, groves,
   stilts and water) for Highcourt, Lethariel and Kezamba. **Decided
-  2026-09-14 as proposed**: three walled, three open, for variation.
-  **Amended 2026-09-15 (playtest round 3): Highcourt is walled too**, so the
-  split is four walled and two open. The user's reason is §2.4's own line for
-  the human capital — "orchards inside the wall ring" — and that an open
-  capital reads as a field with houses in it. The wall is `wp13/wall.lua`'s
-  overlay in Highcourt's palette, the mechanism Dur Brannoc landed; the
-  orchards now stand inside it. Lethariel and Kezamba stay open (a grove city
-  and a stilt city), which is the variation the original ruling wanted.
+  2026-09-14 as proposed**: three walled (dwarf, undead, orc), three open
+  (human, elf, troll), for variation.
+
+  **Changed 2026-09-15, and the record of how matters.** The user's decision of
+  2026-09-14 put Highcourt among the OPEN capitals and nothing in this contract
+  said otherwise: the phrase "orchards inside the wall ring" in §2.4's Look
+  column is prose describing an orchard belt, not a wall decision, and it should
+  not be read as one. What happened on 2026-09-15 is that the **coordinator's
+  playtest-round-3 plan proposed a wall ring for Highcourt**, with the
+  coordinator's reason that an open capital reads as a field with houses in it,
+  and **the user approved that plan**. So the split is now four walled and two
+  open (Lethariel and Kezamba stay open), the wall is `wp13/wall.lua`'s overlay
+  in Highcourt's palette — the mechanism Dur Brannoc landed, unchanged — and the
+  orchards stand inside it.
+
+  This is a plan the user approved, not a ruling the user gave, and the
+  2026-09-14 decision it departs from IS a user ruling. **The user may reverse
+  it**, in which case Highcourt loses four overlay runs and their plan and
+  keeps everything else this package built; the fill, the pond and the trades do
+  not depend on the wall.

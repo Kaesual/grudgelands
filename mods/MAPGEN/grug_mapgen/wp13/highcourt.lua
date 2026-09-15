@@ -10,13 +10,20 @@
 --
 -- Highcourt is the human capital of the contract's section 2.4 table: a
 -- brick-and-white-stone city on a river plateau, half-timbered lanes, a
--- market square, a chapel with a belfry, and "orchards inside the wall ring".
+-- market square, a chapel with a belfry, and an orchard belt.
 --
--- THE WALL RING ARRIVED IN PLAYTEST ROUND 3 (user ruling, 2026-09-15). The
--- 2026-09-14 ruling had Highcourt among the three OPEN capitals; round 3
--- reversed it for this one capital, because the contract's own section 2.4
--- line for the human capital names a wall ring and because a capital the
--- player can walk into from any direction reads as a field with houses in it.
+-- THE WALL RING ARRIVED WITH THE PLAYTEST-ROUND-3 PLAN, approved 2026-09-15.
+-- Its provenance is worth spelling out, because the capitals contract says
+-- something else and only one of the two is a user ruling. On 2026-09-14 the
+-- USER decided three walled capitals (dwarf, undead, orc) and three open ones,
+-- Highcourt among the open; the "orchards inside the wall ring" phrase in the
+-- contract's section 2.4 Look column is prose about an orchard belt and is not
+-- a wall decision. On 2026-09-15 the COORDINATOR's round-3 plan proposed a wall
+-- ring for Highcourt -- the coordinator's reason being that an open capital
+-- reads as a field with houses in it -- and the user approved the plan. So the
+-- wall stands on an approved plan, not on a ruling, and the user may reverse it;
+-- nothing else in this file depends on it.
+--
 -- The wall is `wall.lua`'s overlay, the same mechanism Dur Brannoc landed
 -- (wp13-dur-brannoc.md), in Highcourt's own palette: castle stonewall over
 -- brick string courses, brick merlon caps, four gatehouses on the avenues.
@@ -382,8 +389,9 @@ local function loader(directory)
 		{id = "ring_north", axis = "x", at = 96, from = -96, to = 96},
 	}
 
-	-- THE WALL RING, on the four edges of the 512 envelope (user ruling,
-	-- playtest round 3). Authored exactly the way Dur Brannoc's is, because
+	-- THE WALL RING, on the four edges of the 512 envelope (the round-3 plan,
+	-- approved 2026-09-15; see the header for whose decision that is and whose
+	-- it is not). Authored exactly the way Dur Brannoc's is, because
 	-- the geometry question is the same one and the answer is not Highcourt's
 	-- to re-decide:
 	--
@@ -926,9 +934,17 @@ local function loader(directory)
 			orchard = orchard + layout.plant_orchard(buf, human, block[1],
 				block[2], block[3], block[4], block[5], block[6])
 		end
-		-- The open edge. Highcourt has no curtain wall (the user's ruling of
-		-- 2026-09-14), so what holds its boundary is a clipped hedge, and it
-		-- runs round the WHOLE pad rather than in four authored stretches:
+		-- The PRECINCT edge, which is a hedge and not masonry.
+		--
+		-- This is the civic core's own 96-node boundary and it has nothing to
+		-- do with the curtain 209 nodes further out: the core was authored
+		-- while Highcourt was an open capital and the hedge is what held its
+		-- boundary then, and the round-3 wall ring did not change it -- a
+		-- clipped hedge round a precinct inside a walled city is an ordinary
+		-- thing, and rebuilding the core to put masonry there would move a
+		-- blueprint identity the playtest round froze for no gain.
+		--
+		-- It runs round the WHOLE pad rather than in four authored stretches:
 		-- every column of the boundary ring that is still open ground gets
 		-- three courses of hedge, and the run breaks by itself wherever a
 		-- gatehouse, an orchard piece, a house or a street already holds the

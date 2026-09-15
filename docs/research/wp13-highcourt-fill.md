@@ -16,9 +16,9 @@ human capital a silhouette of its own, the **fill** between the plots, and the
 **trades** that put somebody at a counter or an anvil instead of a doorstep.
 
 Contracts implemented:
-[wp13-capitals-pois-contract.md](wp13-capitals-pois-contract.md) §2.4 (the human
-capital's "orchards inside the wall ring"), §4 (amended today: Highcourt is
-walled), §2.3 (the 400 000-cell budget), and
+[wp13-capitals-pois-contract.md](wp13-capitals-pois-contract.md) §4 (corrected
+today: Highcourt is walled by the round-3 plan the user approved, not by the
+2026-09-14 ruling — see §2 below), §2.3 (the 400 000-cell budget), and
 [wp13-npc-sockets-contract.md](wp13-npc-sockets-contract.md) §8 in full — the
 `work` role, the closed activity vocabulary, the 80/20 rule's structure-lane
 half and the profession vendors. The seam it is carried by,
@@ -47,7 +47,7 @@ where it used to hand it 36.
 | `tools/wp13/highcourt_identities.lua` | picks Highcourt by KEY: since Dur Brannoc joined the roster it had been printing Dur Brannoc's identities under a Highcourt name |
 | `tools/wp13/run_highcourt.sh` | the new dumps, and the avenue-digest expectation moves to this package |
 | `tools/wp13/dump_highcourt.lua` | the capital plan draws the whole overlay, wall included |
-| `docs/research/wp13-capitals-pois-contract.md` | §4 amended with the user's round-3 ruling |
+| `docs/research/wp13-capitals-pois-contract.md` | §4 records the round-3 plan and who decided what; §2.1 and §3 made consistent with it |
 
 Not touched: `avenue.lua`, `wall.lua`, `capitals.lua`, `buildings.lua`,
 `parts.lua`, `height.lua`, the six start compositions, `mods/ENTITIES/*`,
@@ -55,12 +55,18 @@ Not touched: `avenue.lua`, `wall.lua`, `capitals.lua`, `buildings.lua`,
 
 ## 2. The wall ring
 
-The 2026-09-14 ruling put Highcourt among the three OPEN capitals. Round 3
-reversed it for this one capital, and the contract's own §2.4 line for the human
-capital had always said "orchards inside the wall ring". §4 of the contract now
-records the amendment; the split is four walled and two open, and Lethariel (a
-grove city) and Kezamba (a stilt city) keep the variation the original ruling
-wanted.
+**Whose decision this is.** On 2026-09-14 the USER decided three walled
+capitals (dwarf, undead, orc) and three open ones, Highcourt among the open. The
+phrase "orchards inside the wall ring" in §2.4's Look column is prose describing
+an orchard belt and is NOT a wall decision — an earlier draft of this note and of
+`highcourt.lua` cited it as one, and that was wrong. What actually happened is
+that the COORDINATOR's playtest-round-3 plan proposed a wall ring for Highcourt,
+with the coordinator's reason that an open capital reads as a field with houses
+in it, and the user approved that plan. §4 of the contract now records it that
+way: the split is four walled and two open, Lethariel (a grove city) and Kezamba
+(a stilt city) keep the variation the original ruling wanted, and **the user may
+reverse the wall** — it is four overlay runs and their plan, and the fill, the
+pond and the trades do not depend on it.
 
 **Nothing new was written to build it.** Dur Brannoc landed the answer that a
 curtain wall is an OVERLAY sharing its capital's one overlay blueprint with the
@@ -220,14 +226,17 @@ with a vendor socket outside it looking at it and a work socket at the tool.
 | `homes_bakehouse` — the baker's | `baker` | `stall` | his own counter |
 | `market_pond` — the fishmonger | `fishmonger` | (the three `fish` stands beside him) | the counter at the pond gate |
 
-**The baker's activity was a choice the contract asked to have written down**
-(§8.1: "baker at the furnace as `stall` or `smith`, choose and document).
-`stall` is chosen, because the other option names a feature this palette does not
-have: the human palette binds no furnace — its `hearth` is
-`grug_decor:xdecor_cauldron` and its `workbench` is an anvil — so a `smith`
-socket at a bakehouse would have to face a blacksmith's anvil to satisfy its own
-feature rule. The baker stands at the counter he has; the hammering loop stays
-with the smith, who has an anvil.
+**The baker's activity is `stall`, and the reason is that the vocabulary has no
+baking in it.** §8.2's closed list offers no `bake`; the nearest candidate is
+`smith`, whose feature rule in §8.1 is "an anvil or furnace", and this palette
+binds neither to an oven — its `hearth` is `grug_decor:xdecor_cauldron` and its
+`workbench` is `grug_decor:cottages_anvil`. A `smith` socket at a bakehouse
+would therefore have to face a blacksmith's anvil to satisfy its own rule, and
+the KAT would hold it to exactly that. `stall` is "a counter (any solid node at
+waist height)", the bakehouse has a counter, and that is the honest reading; the
+hammering loop stays with the smith, who has an anvil. A later package that
+wants a baker who bakes adds a `bake` activity to §8.2 and an oven node to the
+palette, rather than a socket here pointing at the wrong thing.
 
 The buildings did not move and their kits did not change. What changed is that
 the smithy has an anvil in front of it and somebody standing at it.
@@ -466,13 +475,26 @@ about the permutation, and always did; only the probe did not.
 
 ## 8. What is open
 
-- **Lane 1 (terraces) and lane 3 (route ramps) have not landed here.** This
-  package is terrain-relative throughout and expects to be rebased onto lane 1's
-  step bands; nothing in it reads a terrace height directly. The fill lots were
-  derived against the CURRENT terrain fields, so after lane 1 lands
-  `highcourt_plots.lua` should be re-run on fresh fields and `--derive-fill`
-  re-checked. If lane 1 moves the plateau surface material, the dressings' ground
-  role follows the palette and needs no edit.
+- **Two fill lots are at the edge of their own rule, and the predicate answers
+  against FROZEN fields.** `southwest/1` (`homes_common_field`) has worst
+  perimeter fall **6 against a skirt of 6**, and four fill lots sit at rise **6
+  against a clear of 8**. Those pass, but with nothing to spare — and
+  `highcourt_plots.lua` measures against the two committed field TSVs of the
+  districts package, so a terrain change moves the ground while the predicate
+  stays green. The live gate is `r7_settlement.audit_terrain`, which walks the
+  real column authority at every load and warns per plot; it reports zero on
+  both gate seeds today. Any package that moves WP40 terrain must re-dump the
+  fields and re-run this predicate rather than trust it.
+- **Lane 1 has already moved three district lots, and this branch owes it a
+  rebase.** Lane 1 (terrace step band, race surface) is finished and under
+  review; it moves northeast 9 by 4, northwest 8 by 8 and southwest 2 by 4 with
+  a new `highcourt_plots.lua --repair`. When it merges, this branch rebases onto
+  main, regenerates both field TSVs, re-runs the plot and `--derive-fill`
+  predicates and the engine pass on both seeds, and reports which FILL lots
+  moved with them. No code change is expected: this package is terrain-relative
+  throughout, nothing in it reads a terrace height, and if lane 1 changes the
+  plateau surface material the dressings' ground role follows the palette. Lane
+  3 (route ramps) is likewise untouched by this package.
 - **The other five capitals are still interchangeable.** The user's second
   complaint is only half answered: Highcourt now has a wall ring, a pond, fields
   and trades that none of the others has, but the answer for Lethariel, Nhal

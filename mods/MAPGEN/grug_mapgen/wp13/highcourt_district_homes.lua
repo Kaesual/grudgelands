@@ -99,15 +99,21 @@ local function loader(directory)
 		-- counter on the street row of its own ring, the baker's vendor socket
 		-- at one end of it and a WORK socket at the other.
 		--
-		-- THE ACTIVITY IS `stall`, AND THE CONTRACT ASKED FOR THE CHOICE TO BE
-		-- WRITTEN DOWN (section 8.1: "baker at the furnace as `stall` or
-		-- `smith`, choose and document"). `stall` is chosen because the other
-		-- option names a feature this palette does not have: the human palette
-		-- binds no furnace -- its `hearth` is `grug_decor:xdecor_cauldron` and
-		-- its `workbench` is an anvil -- so a `smith` socket at a bakehouse
-		-- would have to face a blacksmith's anvil to satisfy its own feature
-		-- rule. The baker therefore stands at the counter he has, and the
+		-- THE ACTIVITY IS `stall`, AND HERE IS WHY IT IS NOT `smith`. The
+		-- sockets contract's closed vocabulary (section 8.2) has no baking
+		-- activity; the nearest candidate is `smith`, whose feature rule
+		-- (section 8.1) is "an anvil or furnace". This palette binds NEITHER
+		-- of those to an oven: its `hearth` is `grug_decor:xdecor_cauldron`
+		-- and its `workbench` is `grug_decor:cottages_anvil`, so a `smith`
+		-- socket at a bakehouse would have to face a blacksmith's anvil to
+		-- satisfy its own rule -- and the KAT would hold it to exactly that.
+		-- `stall` is "a counter (any solid node at waist height)", the
+		-- bakehouse has a counter, and that is the honest reading. The
 		-- hammering loop stays with the smith, who has an anvil.
+		--
+		-- If a later package wants a baker who bakes, the change is a `bake`
+		-- activity in section 8.2 and an oven node in the palette, not a
+		-- socket here pointing at the wrong thing.
 		{id = "homes_bakehouse", module = "buildings", make = "workshop",
 			order = 8, turns = 3,
 			spec = {w = 11, d = 11, wing = 5, wall_h = 4, door_side = "x-",
