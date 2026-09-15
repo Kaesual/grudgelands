@@ -266,6 +266,11 @@ local function vendor_def(vendor, texture)
 			-- else on every reload. A capital vendor carries no such field and
 			-- this is a no-op for it.
 			grug_mobs.face_yaw(self, self._grug_face_yaw)
+			-- A socket vendor claims its socket, so a twin from a world that
+			-- lost a marker removes itself instead of standing in its own shop
+			-- (grug_mobs/start_npcs.lua). A no-op for the two fixed capital
+			-- offsets, which carry no settlement key.
+			grug_mobs.start_npc_claim(self)
 		end,
 
 		on_rightclick = function(self, clicker)
