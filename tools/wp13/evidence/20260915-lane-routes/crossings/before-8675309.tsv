@@ -1,0 +1,5 @@
+# grug_wp13_lane_routes_v1 seed=8675309 mode=legacy min_clear=3
+# spanned_columns=1 illegal=1 walk_faults=0 cross_faults=0 cuts=0 cut_faults=0 lamp_faults=0
+capital	run	lane	x	road_y	z	natural_y	deck_y	clear	verdict
+highcourt	ring_north	-2	-32	36	-1406	35	37	-1	ILLEGAL
+# highcourt	ring_north	ILLEGAL	1

@@ -59,11 +59,14 @@ timeout_s="${WP13_CAPITAL_TIMEOUT:-1500}"
 	echo "run_capital: WP13_CAPITAL_TIMEOUT must be 1..3600" >&2
 	exit 2
 }
-# The WP13 round-2 lanes share one host with the user's own GUI client; this
-# lane's ports are 31300-31399 and nothing else.
+# The WP13 lanes share one host with the user's own GUI client, and each lane's
+# brief pins it a hundred-port block of its own inside 31000-31999. The runner
+# holds the thousand and the brief holds the block: a runner that named one
+# lane's block refused every other lane's (round 2 owned 31300-31399, round 3
+# lane 3 owns 31200-31299).
 port="${WP13_CAPITAL_PORT:-31300}"
-[[ "$port" =~ ^313[0-9][0-9]$ ]] || {
-	echo "run_capital: WP13_CAPITAL_PORT must be in 31300-31399" >&2
+[[ "$port" =~ ^31[0-9][0-9][0-9]$ ]] || {
+	echo "run_capital: WP13_CAPITAL_PORT must be in 31000-31999" >&2
 	exit 2
 }
 
