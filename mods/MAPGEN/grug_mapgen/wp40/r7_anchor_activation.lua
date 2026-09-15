@@ -135,11 +135,41 @@ return function(roster_factory, anchor_content)
 								production.r5.classify(support_cid, support_param2)
 							local solid = class_id == 2 or class_id == 6 or class_id == 7 or
 								class_id == 10 or class_id == 11
+							-- WHAT AN ANCHOR MAY STAND ON.
+							--
+							-- `occupancy`, `feature` and `interface` are the CLAIM fields:
+							-- something else owns this cell, and an anchor may not stand on
+							-- it. They stay zero.
+							--
+							-- `opcode` and `aux` are not a claim. They say which operation
+							-- produced the node and out of which material. Zero -- nothing
+							-- wrote the cell, the ground came straight out of the engine's
+							-- own mapgen -- was the only value the six capitals ever showed,
+							-- because until playtest round 4 a WP40 ROUTE ran across every
+							-- capital anchor and suppressed R6's surface pass there. With
+							-- the routes ruled back to the gates the same columns are
+							-- ordinary ground again, and R6 writes them as what they are:
+							-- opcode 4, a biome TOP, carrying its material in `aux`
+							-- (measured at anchor_007 and anchor_009, seed
+							-- 531802985935182545: 393/0/0/4/0/0/19456 where the route-era
+							-- value was 0/0/0/0/0/0/0).
+							--
+							-- 3 (shore) and 4 (top) are R6's own two SURFACE opcodes, and
+							-- they are already this tree's spelling of "this cell is ground
+							-- a thing may stand on": `r6_settlement.lua`'s cultural
+							-- placement refuses any root whose support is not one of those
+							-- two (`wrong_support`). An anchor is held to the same rule,
+							-- plus the untouched case its POI and bandit rows still show.
+							-- Every other opcode -- a decoration, a bridge deck, a path
+							-- surface, a foundation -- stays refused.
+							local natural_support = support_opcode == 0 or
+								support_opcode == 3 or support_opcode == 4
 							local support_ok = support_cid ~= air_cid and
 								support_cid ~= production.ignore_cid and liquid_kind == 0 and
 								solid and support_occupancy == 0 and
-								support_opcode == 0 and support_feature == 0 and
-								support_interface == 0 and support_aux == 0
+								natural_support and support_feature == 0 and
+								support_interface == 0 and
+								(support_opcode ~= 0 or support_aux == 0)
 							if not support_ok then
 								fail("anchor settled support differs at " .. row.id ..
 									" actual=" .. table.concat({support_cid,
