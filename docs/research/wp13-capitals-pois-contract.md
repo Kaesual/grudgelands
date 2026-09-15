@@ -70,6 +70,42 @@ decisions are the coordinator's and are open to the user's correction.
   market square, barracks, temple/shrine,
   library, granary, stable, well, statue plinth, gatehouse.
 
+### 2.1.1 Routes and gates
+
+Playtest round 4, 2026-09-15. In Dur Brannoc the incoming WP40 route is cut by
+the curtain wall at (-1847,-1756) while the gate stands at (-1801,-1756) --
+anchor (-1800,-1500), so the south gate is at `z = anchor.z - 256` on the
+avenue's centre line. The star-shaped anchor-bound routes predate the cities.
+**The user's ruling: every incoming route ends at a planned point of the city
+boundary (a gate) and no longer runs into the interior; inside, the WP13 streets
+take over.** The consequence the user drew and the coordinator confirmed: no
+WP40 bridge decks inside the 512 envelope any more (decks come from routes), so
+the wave-1 lane-crossing rule ([wp13-lane-routes.md](wp13-lane-routes.md),
+`wp13/avenue.lua`'s `spec.overhead`) becomes a safeguard, not a feature, inside
+capitals.
+
+What that means for a capital blueprint, and what a capital lane may rely on:
+
+- **The four gate points are published once**, by WP40, as
+  `source.capital_gates` in `mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua`:
+  twenty-four rows, `(ax +- 256, az)` and `(ax, az +- 256)` derived from
+  `capital_core` (512 square), each a ROUTE STATION of its own
+  (`station:<zone id>:gate_<side>`). A capital's own avenue geometry stays where
+  it is -- `wp13/highcourt.lua` and `wp13/dur_brannoc.lua` author the same
+  numbers, a run out to 261 so the road crosses the whole seven-node curtain --
+  and the gate passage is 13 nodes wide, centred on the anchor's own axis.
+- **Exactly four routes reach a capital, one per side**, so no gate is shared
+  and no tie-break is needed. Each of them ends AT its gate point and enters it
+  dead straight along the axis for the last 144 nodes, which is the whole leg
+  from the gate to that route's own authored via pin.
+- **A route grades nothing inside the envelope** except the 15 columns of its
+  own seven-wide end cap, which reach three nodes in, lie inside the curtain's
+  thickness under the gate passage, and are paved over by the avenue.
+- **The road arrives at the gate's own ground.** A capital's hub station used to
+  carry the anchor's platform height because the hub IS the anchor column; a
+  gate station is a free-terrain junction instead, so the route meets the height
+  the avenue will pave at that same column.
+
 ### 2.2 Seam generalisation (mechanical, one package before any capital)
 
 1. Roster entries carry `slot` (start, capital, village_1, outpost_1…) and

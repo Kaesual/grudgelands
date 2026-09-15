@@ -1,0 +1,30 @@
+== approach: distance of route end to its gate (max over 24 routes x 9 seeds) ==
+before	rows=216 max=256 sum=55296
+after	rows=216 max= sum=0
+
+== interior route columns per capital x seed ==
+before	rows=54 route_total=395757 route_max=7330 spur_total=0 deck_total=11994 deck_max=1210
+after	rows=54 route_total=3240 route_max=60 spur_total=0 deck_total=0 deck_max=
+
+== gate step (route grade vs built avenue at the gate column) ==
+before	rows=216 max=30 over_one=23 sum=209
+after	rows=216 max=6 over_one=4 sum=15
+
+== entry: steps of more than one node from 64 nodes outside the avenue in to the core ==
+before	runs=216 runs_with_a_break=84 breaks=616 worst=30
+after	runs=216 runs_with_a_break=5 breaks=5 worst=7
+
+== water columns under the four avenues (of 1070 per avenue) ==
+before	runs=216 wet_runs=63 water_columns=26586 max=549 unpaved=0 lipschitz_faults=0
+after	runs=216 wet_runs=63 water_columns=26586 max=549 unpaved=0 lipschitz_faults=0
+
+== entry breaks per capital, after ==
+      5 kragmar_nhal_veyr	north
+
+== entry breaks per capital, before ==
+      7 elandor_dur_brannoc
+     16 elandor_highcourt
+      7 elandor_lethariel
+      9 kragmar_gor_drazhak
+     28 kragmar_kezamba
+     17 kragmar_nhal_veyr
