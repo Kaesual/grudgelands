@@ -1,6 +1,7 @@
 -- Where Kezamba's district and fill lots may stand, on all NINE seeds.
 --
 --     luajit tools/wp13/kezamba_lots.lua <repo> check
+--     luajit tools/wp13/kezamba_lots.lua <repo> walk
 --     luajit tools/wp13/kezamba_lots.lua <repo> sweep <reach> [<count>]
 --     luajit tools/wp13/kezamba_lots.lua <repo> map
 --
@@ -251,6 +252,112 @@ if mode == "pack" then
 		end
 		io.write("\t\t-- ", region.key, ": ", placed, " of ", #reaches, "\n")
 	end
+	os.exit(0)
+end
+
+-- `walk`: CAN A PLAYER WALK UP TO EVERY PLOT, ON ALL NINE SEEDS.
+--
+-- The coordinator's wave-2 update of 2026-09-15, after the first two capital
+-- reviews found a four-node step on seeds a lane had skipped.
+--
+-- WHAT THE QUESTION IS, AND THE TWO WAYS THIS MODE FIRST ASKED IT WRONG.
+--
+-- (1) Its first version took the greatest |reference - surface| over the whole
+-- ring one node outside each plot, and 267 of its 468 lot-seed pairs came back
+-- over three -- which says nothing, because a capital envelope is TERRACED and a
+-- terrace riser IS a three-node difference. WP13 round 3 already turned every
+-- riser into a band of one-block ground steps
+-- (`tools/wp13/capital_terrain_fixture.lua`), so three nodes spread over three
+-- columns is a staircase, not a wall. The property that decides reachability is
+-- the step between ADJACENT columns.
+--
+-- (2) Its second version walked only the plot's own z- doorstep, and failed
+-- `totem_f2` by 35 nodes on eight seeds -- correctly measuring the CENOTE'S
+-- BANK, which is what lies south of a lot on the lake's north shore. But a plot
+-- with a cliff on one side and open ground on the other three is a plot you
+-- walk up to from the other three. A lot is reachable if ANY of its four sides
+-- is, so the verdict is the BEST of the four and not the doorstep's.
+--
+-- So: for each side, walk sixteen columns straight out from the first column
+-- beyond the plot's own ground and record the worst step between neighbours,
+-- with a water column ending that direction (you cannot walk into the cenote);
+-- then take the best side. And separately record the step OFF the plot itself,
+-- which is the foundation skirt's own face and is bounded by the contract's
+-- skirt of six rather than by a walking step.
+if mode == "walk" then
+	local TERRACE = 3            -- the troll cenote terrace of contract 2.4
+	local SKIRT_FACE = 6         -- the contract's foundation skirt
+	local APPROACH = 16
+	local CORE_EDGE = 48
+	local SIDES = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}}
+	io.write("kind\tseed\tlot\treference\tskirt_face\tbest_side",
+		"\tbest_step\twalkable_sides\n")
+	local worst_walk, worst_lot, worst_seed = 0, "-", "-"
+	local worst_face, worst_face_lot = 0, "-"
+	for index = 1, #sessions do
+		local session = sessions[index]
+		for _, entry in ipairs(lots.all()) do
+			local base = column(session, entry.x, entry.z).y
+			local out0 = entry.reach + 1
+			local best, best_side, walkable = nil, "-", 0
+			local face = 0
+			for _, side in ipairs(SIDES) do
+				local step, reached = 0, 0
+				for out = out0, out0 + APPROACH do
+					local x = entry.x + side[1] * out
+					local z = entry.z + side[2] * out
+					local cell = column(session, x, z)
+					if cell.wet then break end
+					local previous = column(session,
+						entry.x + side[1] * (out - 1),
+						entry.z + side[2] * (out - 1))
+					if out == out0 then
+						local gap = math.abs(cell.y - base)
+						if gap > face then face = gap end
+					elseif not previous.wet then
+						local gap = math.abs(cell.y - previous.y)
+						if gap > step then step = gap end
+					end
+					reached = out - out0 + 1
+				end
+				-- A side that walks into the water before it has left the plot
+				-- is no approach at all.
+				if reached >= 4 then
+					if step <= TERRACE then walkable = walkable + 1 end
+					if best == nil or step < best then
+						best, best_side = step, side[1] .. "," .. side[2]
+					end
+				end
+			end
+			best = best or 99
+			io.write(table.concat({"kezamba_walk", session.seed, entry.id,
+				base, face, best_side, best, walkable}, "\t"), "\n")
+			if best > worst_walk then
+				worst_walk, worst_lot, worst_seed = best, entry.id,
+					session.seed
+			end
+			if face > worst_face then worst_face, worst_face_lot = face, entry.id end
+		end
+		for _, spot in ipairs({{CORE_EDGE, 0}, {-CORE_EDGE, 0},
+				{0, CORE_EDGE}, {0, -CORE_EDGE}}) do
+			local cell = column(session, spot[1], spot[2])
+			io.write(table.concat({"kezamba_core_edge", session.seed,
+				spot[1] .. "," .. spot[2], session.anchor.y,
+				cell.wet and "water" or math.abs(cell.y - session.anchor.y),
+				"-", "-", "-"}, "\t"), "\n")
+		end
+	end
+	io.write("kezamba_walk_worst\tbest_side_step\t", worst_walk, "\t",
+		worst_lot, "\t", worst_seed, "\tskirt_face\t", worst_face, "\t",
+		worst_face_lot, "\tterrace\t", TERRACE, "\tskirt\t", SKIRT_FACE,
+		"\n")
+	if worst_walk > TERRACE or worst_face > SKIRT_FACE then
+		io.write("kezamba_walk FAIL: a plot cannot be walked up to\n")
+		os.exit(1)
+	end
+	io.write("kezamba_walk PASS: every lot has an approach that steps at most ",
+		TERRACE, " nodes a column and a face inside the skirt, on all ",
+		#SEEDS, " seeds\n")
 	os.exit(0)
 end
 

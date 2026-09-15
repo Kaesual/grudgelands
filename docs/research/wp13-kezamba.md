@@ -190,6 +190,30 @@ only seven legal reach-13 centres north of the lake that are not a hundred and
 seventy nodes from their own district, and the west strip has room for the two
 that are left over. That is a measurement, not a preference.
 
+## 4b. Nine seeds, not three
+
+The coordinator's wave-2 update of 2026-09-15, after the first two capital
+reviews found a four-node step and twenty-one illegal lots on seeds a lane had
+skipped: lot legality, the load-time terrain audit and walkway continuity are
+measured on **all nine** seeds of `capital_anchor_fixture.lua`. For Kezamba all
+three are:
+
+| measurement | tool | result |
+| --- | --- | --- |
+| the wet mask and the water surface | `kezamba_water.lua --verify` | one mask, surface y = 65, nine of nine |
+| lot legality (dry, skirt, clear, off the core/corridors/streets, one node clear of each other) | `kezamba_lots.lua check` | **52 of 52 legal, nine of nine** |
+| can a player step on and off every plot | `kezamba_lots.lua walk` | WALK_RESULT |
+| `audit_terrain` findings at load | nine `run_capital.sh full` boots | AUDIT_RESULT |
+
+**Why the core needs no per-seed continuity check and the plots do.** The civic
+core is ANCHOR-RELATIVE and Kezamba's anchor is authored-fixed at y = 66 in every
+world (§1), so the core's own boardwalks, its stilt-hall flight, its quay and its
+gorge bridge are the same cells at the same heights in every world — the engine's
+own read-back digest says so (`core_road_digest` identical on four seeds, §6d).
+A district plot is projected from a reference column whose height the world
+decides, so the step between it and the ground beside it is a per-seed question,
+and that is what `walk` asks.
+
 ## 5. Against the Highcourt standard
 
 | measure | Highcourt (wave 1) | Kezamba |
@@ -197,11 +221,11 @@ that are left over. That is a measurement, not a preference.
 | districts / plots / fill lots | 4 / 36 / 16 | 4 / 36 / 16 |
 | cells | 376 274 of 400 000 | **317 978 of 400 000** (core 68 038, plots 249 940) |
 | largest single plot | 10 451 of 12 000 | **11 820** (`totem_shrine`) of 12 000 |
-| sockets | 256 | **274** |
+| sockets | 256 | **262** |
 | work sockets | 36, over 9 activities | **62**, over **13** activities |
 | vendors | 7 kinds, one each | **7 kinds, one each** (race, general, fishmonger, brewer, butcher, herbalist, tailor) |
-| residents / walkers | 144 / 22 (15.3 %) | **175 / 23 (13.1 %)** |
-| idle spawn ≥ work (§8.3) | 108 ≥ 36 | **113 ≥ 62** |
+| residents / walkers | 144 / 22 (15.3 %) | **163 / 21 (12.9 %)** |
+| idle spawn ≥ work (§8.3) | 108 ≥ 36 | **101 ≥ 62** |
 | spare spots | 10 core + 8 district | **11** |
 | patrol loops | one per district plus the ring | **5**, walked 1..n with no gap (9, 14, 14, 17, 11) |
 
@@ -240,7 +264,7 @@ wp13_kezamba budget/68038/249940/317978/400000
   overlay/12/11/…/3369caec589539d4955d190198890b154639230e91e238170189d9c3adc5bf07
   plots/52/249940/11820/totem_shrine/canopy=15,shore=13,totem=11,vine=13
   roster/anchor_012/12/kragmar_kezamba/capital_core/capital_plot
-  sockets/…/175/23/13.1/52/brewer,butcher,fishmonger,general,herbalist,race,tailor/…
+  sockets/…/163/21/12.9/52/brewer,butcher,fishmonger,general,herbalist,race,tailor/…
 ```
 
 Its six sections: the two masks against their own published counts and against
@@ -304,7 +328,7 @@ Nine `terrain` boots (§1) and four `full` ones, each a cold world.
 | open land / the Dawnmere start | 0.429 s | — | 0.415 s | — |
 | worst plot perimeter fall | 5 | 6 | 5 | 5 |
 | submerged plots | **0** | **0** | **0** | **0** |
-| sockets registered | 274 | 274 | 274 | 274 |
+| sockets registered | 262 | 262 | 262 | 262 |
 | terrain-audit findings | 0 | 0 | 0 | 0 |
 
 Against the contract's "no more than 2× the ≈0.5 s Dawnmere chunk":
@@ -325,16 +349,15 @@ this settlement costs.
 The NPC roster is complete on every seed:
 
 ```
-start npcs troll kezamba: guards 18/18 flair 175/175 vendor 5/5 quest 1/1
-  new … pending 0 spare 11 residents 175 walkers 23
+start npcs troll kezamba: guards 18/18 flair 163/163 vendor 7/7 quest 1/1
+  new … pending 0 spare 11 residents 163 walkers 21
 ```
 
-`vendor 5/5` and not 7/7 because `brewer` and `herbalist` are two of the seven
-wave-2 vendor kinds and `grug_traders` has not registered their entities yet.
-§8.4 says exactly what happens then — "an error line at placement and an empty
-socket, never a load failure" — and that is what the log shows. It is also why
-`run_capital.sh` calls these passes FAILED: it gates on the ERROR **count**
-rather than on the content. The runner is lane D's, not this lane's; see §7.
+All seven vendor kinds resolve since this lane was rebased onto Lane N
+(`c8050057`, the wave-2 NPC vocabulary): before that rebase `brewer` and
+`herbalist` had no entity and the log carried the two error lines §8.4 says it
+should ("an error line at placement and an empty socket, never a load failure").
+The passes after the rebase carry **zero** errors.
 
 **Build time in the engine**, from the probe's own `build_us`: module load
 17.2 ms, the core 116.4 ms, the 52 plots 230 ms together with `totem_shrine`
@@ -416,22 +439,23 @@ outside the envelope and those are the world's.
    ground, and whether the WP40 route on the far side meets that deck cleanly is
    Lane R's question and not one this lane could answer from inside the
    envelope. Worth a look on the user's first walk.
-8. **`run_capital.sh` gates on the ERROR count and not on its content**, so a
-   capital that places a vendor of a kind the traders mod has not registered
-   yet — which §8.4 says is "an error line at placement and an empty socket,
-   never a load failure" — turns a complete pass red. Kezamba places `brewer`
-   and `herbalist`, two of the seven wave-2 kinds, so all four of its full
-   passes read FAILED while reporting `event=complete`, zero `ModError`, no
-   terrain-audit finding and a complete roster. The runner is lane D's
-   (`tools/wp13/capital_*`), and this lane did not weaken a shared gate to make
-   its own run green. The fix is one line there — count the ERROR lines that are
-   not the contract's own unregistered-kind line — or the NPC vocabulary lane
-   landing the two entities, whichever comes first.
-9. **Seven vendor kinds are placed and five have entities.** `race`, `general`,
-   `fishmonger`, `butcher` and `tailor` resolve today; `brewer` (the cauldron
-   market) and `herbalist` (the vine quarter) are waiting on the NPC vocabulary
-   lane. Their sockets are real and reach every consumer; nobody stands on them
-   yet.
+8. **`run_capital.sh` could not pass a capital with no rampart**, and this lane
+   fixed it with the smallest append rather than working round it (its own
+   commit, and lane D owns the file). The full-mode digest gate greps the log
+   for three labels — avenue, rampart, gate — and two of the three find nothing
+   for an OPEN capital. Under `set -euo pipefail` a command substitution whose
+   pipeline failed is a failed assignment, so the runner exited before its own
+   `[[ -n "$digest" ]] || continue` could do the job it was written to do:
+   Kezamba read FAILED after a pass with zero errors, zero `ModError`s, a
+   complete roster and no terrain-audit finding. `|| true` on the two
+   substitutions, nothing else; a walled capital's three digests are still taken
+   and still compared.
+9. **No committed overlay digest yet.** `run_capital.sh` compares the built road
+   against `tools/wp13/evidence/20260915-capital-terrain/<key>/<label>-digest-
+   <seed>.txt`, and Kezamba has none, so its passes say "recorded (no committed
+   value for seed … yet)". Freezing one is a decision with a number attached and
+   belongs with the coordinator's merge, because the avenue digest moves with
+   Lane R's route ends; the KAT's own overlay digest is the gate meanwhile.
 10. **The user has not walked Kezamba.** Nothing here is accepted until they have.
    On seed 531802985935182545 the crossing of the two great avenues — the
    `arrival` landmark, with the guard banner on it — is at **(1800, 67, 1500)**.
