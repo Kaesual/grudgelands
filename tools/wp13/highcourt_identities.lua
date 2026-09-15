@@ -2,7 +2,8 @@
 --
 --     luajit tools/wp13/highcourt_identities.lua <repo>
 --
--- The capital's core, its 36 district plots and its avenue overlay each carry
+-- The capital's core, its 36 district plots, its 16 dressings and its avenue
+-- and wall overlay each carry
 -- their own identity SHA-256 (`r7_settlement.prepare`). This prints them, and
 -- it exists because two of them are things a lane must not move by accident:
 -- the CORE, whose digest the playtest round froze, and the nine MARKET plots,
@@ -19,13 +20,19 @@ local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 local settlement = dofile(wp40 .. "/r7_settlement.lua")
 local sha = common.new_sha256()
 
+-- BY KEY AND NOT BY SLOT. The first version took the last roster entry whose
+-- slot was "capital", which was Highcourt while Highcourt was the only one; the
+-- moment Dur Brannoc joined the roster this tool started printing Dur Brannoc's
+-- identities under a Highcourt filename, in silence. The thing it exists to
+-- protect -- the core digest the playtest froze -- is the one it stopped
+-- showing.
 local profile
 for index = 1, #settlement.roster do
-	if settlement.roster[index].slot == "capital" then
+	if settlement.roster[index].key == "highcourt" then
 		profile = settlement.roster[index]
 	end
 end
-assert(profile, "the roster has no capital")
+assert(profile, "the roster has no Highcourt")
 
 local source = dofile(wp40 .. "/" .. profile.blueprint_file)()
 local prepared = settlement.prepare(profile, source, sha)

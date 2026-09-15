@@ -104,9 +104,40 @@ local function timed(label, body)
 	return result
 end
 
+-- THE WORLD'S OWN QUADRANT SEAM, and not the canonical one.
+--
+-- The blueprint source takes `full_seed` and `raw_sha256` and decides which
+-- district stands in which quadrant from them; a caller that passes neither is
+-- engine-free and gets the CANONICAL assignment, the roles in authored order
+-- (`highcourt_quadrants.lua` section 4). This probe has an engine, so passing
+-- neither was a defect and a quiet one: every plot dump and every surface row
+-- was labelled with the district the canonical assignment would have put
+-- there, while the map underneath held the district the SEED put there. The
+-- terrain numbers were still right -- a lot is a lot whichever district takes
+-- it, and the set of lot positions does not depend on the permutation -- but
+-- "plot lore_chapel_yard" named a region where the garrison's muster field
+-- actually stands.
+--
+-- The seam is spelled exactly as `r7_runtime.lua` spells it, from the same two
+-- engine calls, so probe and world agree about the permutation by construction.
+local function world_seed()
+	local seed = core.get_mapgen_setting("seed")
+	if type(seed) ~= "string" or seed == "" or not seed:match("^%-?%d+$") then
+		fail("full world seed differs")
+	end
+	return seed
+end
+local function raw_sha256(bytes)
+	local digest = core.sha256(bytes, true)
+	if type(digest) ~= "string" or #digest ~= 32 then
+		fail("core.sha256 raw result differs")
+	end
+	return digest
+end
+
 local source = timed("module_load", function()
 	local loaded = dofile(wp40 .. "/" .. profile.blueprint_file)
-	return loaded()
+	return loaded({full_seed = world_seed(), raw_sha256 = raw_sha256})
 end)
 -- Built and dropped: what is measured is the build, which is exactly the work
 -- the emerge thread does on the first mapchunk that touches the envelope.
@@ -604,6 +635,20 @@ local function finish()
 			min_y = low - 6, max_y = high + 16,
 			min_z = anchor_z + box.min_z, max_z = anchor_z + box.max_z}
 	end
+	-- THE DRESSINGS AND THE TRADES OF PLAYTEST ROUND 3, by name rather than by
+	-- district: the user asked to see the pond, the orchards inside the wall
+	-- ring, the chapel yard and a profession house, and these four are exactly
+	-- those. They are read off the resolved plot list, so a render shows what
+	-- the MAP has and not what the composition says.
+	local BY_NAME = {"market_pond", "market_orchard_close", "lore_chapel_yard",
+		"market_workshop"}
+	for index = 1, #BY_NAME do
+		for entry = 1, #plots do
+			if plots[entry].id == BY_NAME[index] then
+				shown[#shown + 1] = plots[entry]
+			end
+		end
+	end
 	for index = 1, #shown do
 		local plot = shown[index]
 		local base = grug_zones.terrain_height_at(
@@ -622,6 +667,39 @@ local function finish()
 			min_z = anchor_z + plot.z + plot_bounds.min.z,
 			max_z = anchor_z + plot.z + plot_bounds.max.z}
 	end
+
+	-- THE WALL RING (playtest round 3): a stretch of the east curtain carrying
+	-- a turret, and the east gatehouse with the avenue running through it. The
+	-- height band is sampled off the ground the wall stands on, plus the rise
+	-- to the walk and the turret crown above that.
+	local function wall_band(from_z, to_z)
+		local low, high = anchor_y, anchor_y
+		for z = from_z, to_z, 4 do
+			for lane = -3, 3, 3 do
+				local y = grug_zones.terrain_height_at(anchor_x + 256 + lane,
+					anchor_z + z)
+				if y < low then low = y end
+				if y > high then high = y end
+			end
+		end
+		return low - 6, high + 26
+	end
+	local turret_low, turret_high = wall_band(36, 92)
+	dump_queue[#dump_queue + 1] = {
+		name = "highcourt-wall.tsv", label = "wall",
+		header = "Highcourt east curtain with the turret at z = 64, " ..
+			"as built, anchor-relative",
+		min_x = anchor_x + 248, max_x = anchor_x + 264,
+		min_y = turret_low, max_y = turret_high,
+		min_z = anchor_z + 36, max_z = anchor_z + 92}
+	local gate_low, gate_high = wall_band(-24, 24)
+	dump_queue[#dump_queue + 1] = {
+		name = "highcourt-gate.tsv", label = "gate",
+		header = "Highcourt east gatehouse with the avenue through it, " ..
+			"as built, anchor-relative",
+		min_x = anchor_x + 240, max_x = anchor_x + 266,
+		min_y = gate_low, max_y = gate_high,
+		min_z = anchor_z - 24, max_z = anchor_z + 24}
 	run_dumps()
 end
 

@@ -1,0 +1,230 @@
+rotate_param2	facedir+upsidedown+wallmounted	pass
+rotate_footprint	bijective	pass
+palette	6	88	retirement_sources	2	names	207
+palette_static	207	registry_nodes	780
+roofs	hip_corners+cross_gable_valleys	16
+rotation	cottage	23	1	5	90
+determinism	cottage	1331
+guards	param2_kind	pass
+pane_set	parts+registry	780	panes	6
+byte_order	parts+r7_settlement	441	pass
+frozen_flora	vale_undergrowth	callers	1
+wild_soil	9	of	23	natural_ground	authored_excluded	pass
+registry	hearthpine	40	kinds	40	place_param2	1723	plain_cubes	41646
+ground_cover	hearthpine	default:fern_1	665	default:grass_1	1982
+shapes	hearthpine	free_slabs	516	upside_down	0
+panes	hearthpine	glazed	266	connected	6
+torch_support	hearthpine	74	opaque_full	pass
+grounded	hearthpine	35442	no_detached_cell	pass
+registry	dawnmere	53	kinds	53	place_param2	1510	plain_cubes	40676
+ground_cover	dawnmere	default:grass_4	756	default:grass_3	1571
+shapes	dawnmere	free_slabs	474	upside_down	0
+panes	dawnmere	glazed	264	connected	2
+torch_support	dawnmere	98	opaque_full	pass
+grounded	dawnmere	36483	no_detached_cell	pass
+registry	silverleaf	47	kinds	47	place_param2	1480	plain_cubes	48676
+ground_cover	silverleaf	default:fern_2	849	default:grass_2	1752
+shapes	silverleaf	free_slabs	423	upside_down	1
+panes	silverleaf	glazed	258	connected	16
+torch_support	silverleaf	93	opaque_full	pass
+grounded	silverleaf	36497	no_detached_cell	pass
+registry	stillgrave	43	kinds	43	place_param2	1974	plain_cubes	34202
+ground_cover	stillgrave	grug_nodes:bone_pile	359	default:dry_shrub	612
+shapes	stillgrave	free_slabs	326	upside_down	0
+panes	stillgrave	glazed	140	connected	0
+torch_support	stillgrave	78	opaque_full	pass
+grounded	stillgrave	34719	no_detached_cell	pass
+registry	sunscar	42	kinds	42	place_param2	3704	plain_cubes	40490
+ground_cover	sunscar	default:dry_shrub	932	default:dry_grass_3	899
+shapes	sunscar	free_slabs	69	upside_down	0
+panes	sunscar	glazed	228	connected	14
+torch_support	sunscar	112	opaque_full	pass
+grounded	sunscar	37708	no_detached_cell	pass
+registry	kapok	41	kinds	41	place_param2	2846	plain_cubes	45863
+ground_cover	kapok	default:junglegrass	1129	default:grass_1	946
+shapes	kapok	free_slabs	517	upside_down	0
+panes	kapok	open	0	connected	0
+torch_support	kapok	87	opaque_full	pass
+grounded	kapok	36626	no_detached_cell	pass
+panes_connected_corpus	38
+capital	king_hall	core	dwarf=8693,elf=8693,human=8693,orc=8693,troll=8693,undead=8693
+capital	wall_segment	plot	dwarf=386,elf=386,human=386,orc=386,troll=386,undead=386
+capital	wall_segment_stair	plot	dwarf=544,elf=544,human=544,orc=544,troll=544,undead=544
+capital	wall_tower	plot	dwarf=780,elf=780,human=780,orc=780,troll=780,undead=780
+capital	gatehouse	plot	dwarf=899,elf=899,human=899,orc=899,troll=899,undead=899
+capital	colonnade	plot	dwarf=344,elf=344,human=344,orc=344,troll=344,undead=344
+capital	market_square	plot	dwarf=919,elf=919,human=919,orc=919,troll=919,undead=919
+capital	well_court	plot	dwarf=155,elf=155,human=155,orc=155,troll=155,undead=155
+capital	statue_plinth	plot	dwarf=157,elf=157,human=157,orc=157,troll=157,undead=157
+capital	barracks	plot	dwarf=1233,elf=1233,human=1233,orc=1233,troll=1233,undead=1233
+capital	temple	plot	dwarf=1186,elf=1186,human=1183,orc=1183,troll=1186,undead=1183
+capital	scriptorium	plot	dwarf=1089,elf=1089,human=1073,orc=1073,troll=1089,undead=1073
+capital	granary	plot	dwarf=810,elf=810,human=810,orc=810,troll=810,undead=810
+capital	stable	plot	dwarf=749,elf=749,human=757,orc=757,troll=757,undead=749
+capital	orchard_edge	plot	dwarf=727,elf=727,human=782,orc=728,troll=727,undead=727
+capital	grove	plot	dwarf=516,elf=516,human=516,orc=516,troll=516,undead=516
+capital	stilt_platform	plot	dwarf=643,elf=643,human=643,orc=643,troll=645,undead=643
+capital	water_channel	plot	dwarf=524,elf=524,human=524,orc=524,troll=524,undead=524
+capital_total	18	parts	122149	cells	330	sockets
+capital_degrade	11	roles_stripped	18	parts
+wp13_blueprint	hearthpine	61932	46389	41	74	1232	9	10	10	0	180	15588	16	3
+wp13_blueprint	dawnmere	66361	44440	54	98	1467	9	12	10	0	27	15410	16	3
+wp13_blueprint	silverleaf	71495	53191	48	113	1350	9	11	10	0	109	15631	16	3
+wp13_blueprint	stillgrave	51641	37717	44	78	1292	5	7	8	2	74	15672	16	3
+wp13_blueprint	sunscar	57227	44102	43	112	1352	10	10	11	0	48	15957	16	3
+wp13_blueprint	kapok	72535	51967	42	87	837	8	9	9	0	110	16094	16	3
+highcourt_throne	0	2	0,-1	great_door
+highcourt_core	grug_wp13_highcourt_core_v1	101831	34533	57	155	21	15	75	10	18	7885	9509	9025
+highcourt_quadrant_permutation	531802985935182545	1,3,2,4
+highcourt_quadrant_permutation	8675309	1,3,4,2
+highcourt_quadrant_permutation	0	3,2,1,4
+highcourt_quadrant_permutation	1	1,4,2,3
+highcourt_quadrant_permutation	2	3,1,4,2
+highcourt_quadrant_permutation	3	4,2,3,1
+highcourt_quadrant_permutation	12345	1,3,4,2
+highcourt_quadrant_permutation	999999999	2,4,1,3
+highcourt_lots	36	4	9	13	8	15	7
+highcourt_fill_lots	16	4	4	11	8	5
+highcourt_plot	market_granary	plot	5715	1672	19	8	2	1	3	0	0	913	13
+highcourt_plot	market_stable	plot	5001	1619	20	8	2	1	4	0	0	913	11
+highcourt_plot	market_workshop	plot	5824	1860	25	14	2	2	4	1	1	903	11
+highcourt_plot	market_counting_house	plot	6955	2081	22	8	1	1	6	1	0	905	13
+highcourt_plot	market_well	plot	4862	1713	16	3	0	0	4	0	0	953	8
+highcourt_plot	market_watch	plot	8398	2445	25	9	2	1	4	0	0	892	12
+highcourt_plot	market_grove	plot	9274	1722	11	4	0	0	4	0	0	952	12
+highcourt_plot	market_orchard	plot	7080	1810	15	4	0	0	4	0	0	935	11
+highcourt_plot	market_store	plot	5358	1687	19	6	1	1	5	1	1	910	12
+highcourt_plot	market_pond	fill	6274	2241	16	2	0	0	5	3	3	828	8
+highcourt_plot	market_orchard_close	fill	5790	2567	18	2	0	0	4	3	3	920	8
+highcourt_plot	market_gardens	fill	3210	1015	13	2	0	0	4	2	2	941	8
+highcourt_plot	market_green	fill	1415	557	11	2	0	0	3	1	0	960	8
+highcourt_district	highcourt_market	market_professions	9	75156	10	4	1
+highcourt_plot	martial_barracks	plot	9795	2724	25	9	2	1	6	0	0	888	13
+highcourt_plot	martial_muster_hall	plot	6699	2071	26	11	2	1	2	0	0	900	11
+highcourt_plot	martial_armoury	plot	6416	2005	25	14	2	2	2	0	0	898	11
+highcourt_plot	martial_stables	plot	5567	1795	20	8	2	1	4	0	0	909	11
+highcourt_plot	martial_drill_yard	plot	7456	1755	21	11	1	1	5	0	0	965	14
+highcourt_plot	martial_quartermaster	plot	5966	1855	20	6	1	1	2	0	0	904	12
+highcourt_plot	martial_wain_shed	plot	5207	1619	17	4	0	1	2	0	0	926	9
+highcourt_plot	martial_guard_house	plot	2711	1003	26	7	1	1	2	0	0	927	9
+highcourt_plot	martial_watch_tower	plot	3880	1164	19	9	1	1	4	0	0	974	14
+highcourt_plot	martial_muster_field	fill	5730	1577	11	4	0	0	3	2	1	947	8
+highcourt_plot	martial_remount_pasture	fill	5730	1714	19	2	0	0	4	2	2	954	8
+highcourt_plot	martial_wood_yard	fill	3210	940	10	2	0	0	3	2	2	948	8
+highcourt_plot	martial_green	fill	1415	545	10	2	0	0	3	1	0	958	8
+highcourt_district	highcourt_martial	martial_garrison	9	69782	9	4	6
+highcourt_plot	lore_shrine	plot	10451	2033	25	11	2	1	4	0	0	905	21
+highcourt_plot	lore_library	plot	7790	2294	26	11	2	1	2	0	0	896	12
+highcourt_plot	lore_scriptorium	plot	7665	2261	20	8	1	1	4	0	0	900	13
+highcourt_plot	lore_archive	plot	6764	1902	20	8	2	1	3	0	0	909	14
+highcourt_plot	lore_herb_garden	plot	4862	1789	18	3	0	0	5	0	0	953	8
+highcourt_plot	lore_chapter_house	plot	4862	1536	19	6	1	1	2	0	0	913	12
+highcourt_plot	lore_almonry	plot	3360	1175	25	7	1	1	2	0	0	923	10
+highcourt_plot	lore_cloister_walk	plot	2841	996	16	8	0	0	4	0	0	943	9
+highcourt_plot	lore_quiet_grove	plot	7978	1615	11	4	0	0	4	0	0	913	11
+highcourt_plot	lore_chapel_yard	fill	5567	1669	26	10	2	1	3	2	2	916	11
+highcourt_plot	lore_physic_field	fill	5730	1694	15	2	0	0	4	3	3	937	8
+highcourt_plot	lore_sexton_garden	fill	3210	964	13	2	0	0	4	2	2	957	8
+highcourt_plot	lore_green	fill	1410	568	11	2	0	0	3	1	0	936	8
+highcourt_district	highcourt_lore	lore_spiritual	9	72490	9	4	0
+highcourt_plot	homes_tavern	plot	6699	1978	24	11	2	1	2	0	0	905	11
+highcourt_plot	homes_well	plot	3210	941	13	3	0	0	5	0	0	957	8
+highcourt_plot	homes_monument	plot	4077	990	14	6	0	0	4	0	0	956	11
+highcourt_plot	homes_house_gable	plot	2600	915	25	7	1	1	2	0	0	931	10
+highcourt_plot	homes_house_hip	plot	3105	1133	26	7	1	1	2	0	0	923	9
+highcourt_plot	homes_house_lane	plot	2980	1045	25	7	1	1	2	0	0	927	10
+highcourt_plot	homes_tenement	plot	5854	1820	19	6	1	1	2	0	0	905	12
+highcourt_plot	homes_bakehouse	plot	4430	1519	25	14	2	2	4	1	1	907	10
+highcourt_plot	homes_orchard	plot	7960	1978	15	4	0	0	4	0	0	935	11
+highcourt_plot	homes_common_field	fill	5730	1700	13	2	0	0	4	3	3	958	8
+highcourt_plot	homes_goose_green	fill	5740	1890	17	2	0	0	4	2	2	954	8
+highcourt_plot	homes_lane_park	fill	3220	1092	10	2	0	0	3	2	0	959	8
+highcourt_plot	homes_kitchen_garden	fill	1410	479	10	2	0	0	3	1	1	959	8
+highcourt_district	highcourt_homes	residential_cultural	9	57015	10	4	0
+highcourt_sockets	256	guard_patrol=56,guard_post=19,idle=134,king=1,quest=2,spare=26,vendor=7,waypoint=1,work=36
+highcourt_work	36	144	108	chop=7,farm=7,fish=3,pray=1,sit=5,smith=1,stall=1,sweep=2,tend=9
+highcourt_vendors	7	baker=1,butcher=1,fishmonger=1,general=1,race=1,smith=1,tailor=1
+highcourt_capital	101831	274443	376274	10451	lore_shrine
+highcourt_avenue	639	485	45	20	26	911	50	8	5	160	1825
+highcourt_wall	4	2056	137580	64	196	80	4	dc08f3e76f8012201f4eb0f904caa6d0d80af59d366bc52263b5f2cc407bf7b5
+highcourt_avenue_built	2	c20565c7fc6c671d5c9956a434d74b0878b03dcd170d680bd792716f0bc8ef4c
+dur_brannoc_throne	0	2	0,-1	great_door
+dur_brannoc_core	grug_wp13_dur_brannoc_core_v1	95914	33621	51	144	20	14	65	14	7852	9509	9025	2
+dur_brannoc_plot	forge_charcoal	56	-72	5715	1672	17	8	2	1	3	913
+dur_brannoc_plot	forge_pack_stable	56	60	5001	1611	19	8	2	1	4	913
+dur_brannoc_plot	forge_smithy	116	-28	5824	1851	26	14	2	2	2	902
+dur_brannoc_plot	forge_guild_house	116	28	6955	2087	21	8	1	1	4	904
+dur_brannoc_plot	forge_quench_court	160	-28	3932	1486	17	3	0	0	4	917
+dur_brannoc_plot	forge_watch	160	32	8398	2445	25	9	2	1	4	892
+dur_brannoc_plot	forge_copse	112	-92	9746	1299	12	4	0	0	3	952
+dur_brannoc_plot	forge_ore_yard	112	64	5715	1672	17	8	2	1	3	913
+dur_brannoc_plot	forge_store	116	-60	5358	1678	19	6	1	1	2	909
+dur_brannoc_district	dur_brannoc_forge	9	56644	9	0
+dur_brannoc_spares	2	0	53	51
+dur_brannoc_avenue	639	485	45	20	26	911	50	8	5	160	1825
+dur_brannoc_avenue_built	2	92136b649de649b5f44dc4157390de2da9cf2b7a864061d32d6d427bbe364a97
+dur_brannoc_wall	4	2056	137860	128	128	196	100	4	3e74ab7c07ed94d9efd792aabd4361eef73e74bc362a6a5c29f9c106d4d00346
+dur_brannoc_causeway	1605	1647	42	152
+wp13_seam	roster/6/2/hearthpine:start:start,dawnmere:start:start,silverleaf:start:start,stillgrave:start:start,sunscar:start:start,kapok:start:start,highcourt:capital:capital_core,dur_brannoc:capital:capital_core bounds/start_63_ok/start_64_refused/start_y39_refused/core_y39_ok quadrants/52/39/52/1,3,4,2 blueprints/54/52/anchor,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,overlay/overlay_reach_261 sockets/256/181/26 terrain_audit/48/22/45 manifest/derived/empty_refused/no_blueprint_refused/duplicate_prefix_refused reserve/anchor_root_kept/support_written/1/start_root_written projection/plot_market_stable/43/2502 height_cache/1739/1 lazy/5/6 drift/refused overlay/1376/707/669/11/8/70 successor/8
+wp13_integration	hearthpine/e07ac54bec01e662f224c629d12c424ec67ca03ee3183c5389943b5100cf9ffb/61932/12/1/0/0 hearthpine/anchor/e07ac54bec01e662f224c629d12c424ec67ca03ee3183c5389943b5100cf9ffb/61932 dawnmere/81d78a7a4e0f09c8d4fcff4c38bc5f58b45ba62fd5b5d36021ce7f191d55b2fe/66361/18/1/0/0 dawnmere/anchor/81d78a7a4e0f09c8d4fcff4c38bc5f58b45ba62fd5b5d36021ce7f191d55b2fe/66361 silverleaf/258ca31c863f1fea8028c097c1a9d5873e166ad5332768930b74bd1ed40b62cd/71495/12/1/0/0 silverleaf/anchor/258ca31c863f1fea8028c097c1a9d5873e166ad5332768930b74bd1ed40b62cd/71495 stillgrave/a0f41a3b806f4075bf0545ac05bbdd89e88beae3a72d14c6f310054f90e6e657/51641/12/1/0/0 stillgrave/anchor/a0f41a3b806f4075bf0545ac05bbdd89e88beae3a72d14c6f310054f90e6e657/51641 sunscar/10e67e0e52e48afe01b8389f0ed4a926696d1f1f9ab0f970416a94056031d2dc/57227/18/1/0/0 sunscar/anchor/10e67e0e52e48afe01b8389f0ed4a926696d1f1f9ab0f970416a94056031d2dc/57227 kapok/651193c7ffa57c6628704b6988131916526added3aa3378461fb805fa0ce8a0e/72535/12/1/0/0 kapok/anchor/651193c7ffa57c6628704b6988131916526added3aa3378461fb805fa0ce8a0e/72535 highcourt/187f79e0ba52103818eba53f7ed9c3beadc631682648918301287fa4a7200499/532299/98/1/53/12 highcourt_core/anchor/187f79e0ba52103818eba53f7ed9c3beadc631682648918301287fa4a7200499/101831 highcourt_market_granary/reference/71a78a27a59a902952161e9537fc2470a737b8ed33b5307e75b65da9fb87125c/5715 highcourt_market_stable/reference/b6d38985abdc98d820aafa79076741591e9e1519879e01b86f221aa276964893/5001 highcourt_market_workshop/reference/58693c95bd771ab983e7b2b24fab281d5067572555a0c1420f46f98b38e85ef3/5824 highcourt_market_counting_house/reference/6c858c999db30c592a2747f93232cd41fc8a7d84d0f669beeb31d229b6680228/6955 highcourt_market_well/reference/840394cdc23af18b08c70670cf09175c03fb6ac5423a64056b97d4f0494baa36/4862 highcourt_market_watch/reference/be9cf74f7ce1a8b58d5a40bbf4220b93b6829fd5582cd983d5cfef8626f91c08/8398 highcourt_market_grove/reference/eb787a9cfe5e75d0ecea575a5a6204ebcf2ac01963ab82e27d65d0d6edbeb70d/9274 highcourt_market_orchard/reference/9fce30147d7843436c890b185ff1b8eaf3a4145d4ac8073ae0e4b5eb454dc6cc/7080 highcourt_market_store/reference/0d68bfaad3d932963315dd1c38fee236ba7ef45e27d6e8953d05996b21c94e33/5358 highcourt_market_pond/reference/c0a0ed8d68ccadfa8f7f3b7c0c96dc9c7b1e12a56fbf993411a5c3307430d6cb/6274 highcourt_market_orchard_close/reference/a939f0c8485836ba3c14d7dc1af7e07e9187b97140810ba3c44e211b8dd79061/5790 highcourt_market_gardens/reference/4944fd7a7f9eb47e967f50a2b6ddbd38ef1c117c6284a467822803f98184c907/3210 highcourt_market_green/reference/c4c5e8451fd97aa04db81bb994d985a47bc9c7b32d7ea00c9736c36fe707deca/1415 highcourt_martial_barracks/reference/c8562cc19e9f40c79fcb4d6da53606d8a65f2a0e393234404e2923520ebaef36/9795 highcourt_martial_muster_hall/reference/d7ac8d063393f9952b63672f339c675ec54d40968a4cfb8de2281ea119ac4a1b/6699 highcourt_martial_armoury/reference/8779579c649d2ee4f06d6adc783a53ae521f12b0e76eae3a38c0b5aaea561b0d/6416 highcourt_martial_stables/reference/a3fac71a35c414168823ab2ba7ec550310c92259e07879d2f6e69fc0bdd8bcae/5567 highcourt_martial_drill_yard/reference/264f7e380c0474549d52fe4f5fb6017ffb505a91df9163e433c154cd99048da0/7456 highcourt_martial_quartermaster/reference/07340d15b9358166eab1cc189f987ee5d7a6ed92840712536e6546a15182a4bd/5966 highcourt_martial_wain_shed/reference/e151992308757cd136fa49408fc130f94af6737677754a7bd8eae4278eff0435/5207 highcourt_martial_guard_house/reference/64829ee6f7df3d9389611a2ed7c16b9b841c9329dd25d6739802a915cbcf6778/2711 highcourt_martial_watch_tower/reference/73918d7498ac645ffb0f7afee4232f3e99816ca4eed65ecc047651d466dcf8b4/3880 highcourt_martial_muster_field/reference/17737defa7a97a501f9c18d12e8cbe27f4bca236deb2c1a311c3e8c8c3b2306f/5730 highcourt_martial_remount_pasture/reference/599c1909a77e7153e627f81a82de0f91b0003f448a568b002ec105bbb5a0792c/5730 highcourt_martial_wood_yard/reference/03aea6a28ecc193ec1c892c14e0e6c107d0fc9ca477d849da6263c4903be3969/3210 highcourt_martial_green/reference/f635e3d8d0bbdf500b8b61a7801b2feca60eb6bd7a642c44a0c32638ee23cd81/1415 highcourt_lore_shrine/reference/9cb90bc24e7a3bf11ab1f18c54dc93cbe0e48972581fb8c514084f6d0f66855e/10451 highcourt_lore_library/reference/776f73f71d8ec2707421f890f9324ca36f7c833f6c29bdb174928f41fba5a3d1/7790 highcourt_lore_scriptorium/reference/dde20d4166e2199746209346320febaec1c3a205e439aec4207f7b6f15ea64e2/7665 highcourt_lore_archive/reference/87c0f253c5d5700c47ea33d36ea369223784600f297636bd232c6034a3480e9a/6764 highcourt_lore_herb_garden/reference/4d7931e80af38864ec0e15a142d5d4550037a686a16d3b2cc9822649a556c252/4862 highcourt_lore_chapter_house/reference/0489b42be9e87563bab74b13715777318fcdf6b0bc43086df22e1e3640257919/4862 highcourt_lore_almonry/reference/3c71f1ccff96635debf5b31aae4d7efd64b49cfb64a7370168356061c88dbdca/3360 highcourt_lore_cloister_walk/reference/3d7312b1ad21eb7ec85c46febdfe9e73b15229d99d2d9d3d28369d9521146792/2841 highcourt_lore_quiet_grove/reference/d748ad7d107c19a5429a2e97169326f1fbff0bc6ca151e7e32bdf3d1a26597fb/7978 highcourt_lore_chapel_yard/reference/70c83acbd81accbf10781fa6b2a7dfaae22e8c618bae24e2de0c63b51e12d013/5567 highcourt_lore_physic_field/reference/5dc571b4bbd1d6528c49887dc73812d4f4756f1200f6e8f8d482bb2614b155ce/5730 highcourt_lore_sexton_garden/reference/852d03ca96edc32170497adc4e8607edf10ba8553057d867c282aeb77970c7a7/3210 highcourt_lore_green/reference/31300c6c4ac1f872c0221715c53af3b28e9ae5565de162e3e86af6fd667db9b3/1410 highcourt_homes_tavern/reference/268aa73ac5bc2c32d00eb8bbcf0074b2ca297c653e38a367f95a20f34a83a007/6699 highcourt_homes_well/reference/a8b44074ed03fb54c6ebb13cdf5c84c874145a973c9cc82255553aeeff50b270/3210 highcourt_homes_monument/reference/67021e6597ab531c3a69ee7f1286cbb11f70f76f0a7f8178d2f574dce27d45e0/4077 highcourt_homes_house_gable/reference/37362a4a619d58ec912536279eb329e95448bab2333bb6445b4fc590ca266284/2600 highcourt_homes_house_hip/reference/63d6d13956c600b6f578d91ccff73277a5977f93578e1151f2dc6df265cba3ac/3105 highcourt_homes_house_lane/reference/3abb4afd8115fc1076f6d078d1176ddc3e80b95e724bd17db0fee2560372a881/2980 highcourt_homes_tenement/reference/73460ab4a49c9cfdf1fc75dad952da989269e46f28931e4ed1855344f19fd083/5854 highcourt_homes_bakehouse/reference/b7c82cfc8200071eed773c81960de04de13f0228189bb9487a37200c03b3773c/4430 highcourt_homes_orchard/reference/b4c7ab202ce9b59b4d5ee769f0713980bb2d00831535785391a261af2853aa22/7960 highcourt_homes_common_field/reference/4ea8aa5afa0174294a742ee02abcaa775bc14c342116bf141b3d0ca39cc2b20d/5730 highcourt_homes_goose_green/reference/8174d9681ef714ac9596b98a35af50d3d41f862475aba8bb516340980f146bcd/5740 highcourt_homes_lane_park/reference/5b59710409410fd65077ceffc36cdb68b8081d46428aa1f81ba5797d5a17e2cf/3220 highcourt_homes_kitchen_garden/reference/5012d92e143a0952cc6ed1870b620b97f2767e082e16658eaa2ac9c67b2ed3b0/1410 highcourt_avenue/overlay/5e09544202cfa811432657ebf6cabb1dc8512b82928de5caa4a124b45c251682 dur_brannoc/c87bf21b083db8ac55202d9e17ad953aec7721c27dd76f30fff1fd00bedf293f/299660/112/1/10/2 dur_brannoc_core/anchor/c87bf21b083db8ac55202d9e17ad953aec7721c27dd76f30fff1fd00bedf293f/95914 dur_brannoc_forge_charcoal/reference/aac19688564023b46107fe23abf3ab0a6c4e1c57a8ec25e206aaacdba3585ce8/5715 dur_brannoc_forge_pack_stable/reference/1e44b3741c45897de40dc014ecb11547e682fcbefe1ccd77067d826b2041961d/5001 dur_brannoc_forge_smithy/reference/a501a57abf2a6da48ba982857b74bf5e7f3a341217b3d9ee37d4b7e08e4be5b1/5824 dur_brannoc_forge_guild_house/reference/ce4e7d157a984986ddf531f63a217a9d9e37a0c0efbf1d5b51a74975b2d8e17f/6955 dur_brannoc_forge_quench_court/reference/6d639c10a9886f3259c897ec88515b72ce672e156ee48920265787fbbdd4e8f4/3932 dur_brannoc_forge_watch/reference/e7373d7c3fc086ad2dd5728e54b5cbff5b4b71fa80195af011fc0a006fb12c72/8398 dur_brannoc_forge_copse/reference/c4f56543a5984305f20489f09edd0ccd28d1a926b03ed86c5f5c38b050a371f3/9746 dur_brannoc_forge_ore_yard/reference/ca760f88e67f0c7d5c22c724afa08cadb15e0b2b41dd3b69d34838d77c1ae18b/5715 dur_brannoc_forge_store/reference/5633f26336bcd184760e1768dca27ba750902d4e33ad8faa9ffcf2bf85d1361a/5358 dur_brannoc_avenue/overlay/e2aeef747567f4e52068ba44228f3931a3b7fee57f5b0c508c990180402f2f57 composed/8/186
+registered	hearthpine	dwarf	8
+socket	gate_west	guard_post	nil	nil	nil	-	spawn_true	-1804	38	-2491	-0.000000
+socket	gate_east	guard_post	nil	nil	nil	-	spawn_true	-1796	38	-2491	-3.141593
+socket	watch_a	guard_patrol	vale	1	nil	-	spawn_true	-1800	38	-2498	-1.570796
+socket	watch_b	guard_patrol	vale	2	nil	-	spawn_true	-1800	39	-2526	1.570796
+socket	market	vendor	nil	nil	race	-	spawn_true	-1793	38	-2555	1.570796
+socket	bench	idle	nil	nil	nil	bench,shade	spawn_true	-1793	38	-2549	-1.570796
+socket	hall	quest	nil	nil	nil	door	spawn_true	-1828	38	-2524	-0.000000
+socket	spare	idle	nil	nil	nil	-	spawn_false	-1804	38	-2538	-3.141593
+yaw	axis_facings	pass
+copies	queries_and_source	pass
+queries	by_key_and_missing	pass
+refused	a second registration of one settlement
+refused	an empty settlement key
+refused	an empty race id
+refused	a fractional anchor
+refused	a missing socket list
+refused	an unknown role
+refused	a fractional coordinate
+refused	a diagonal facing
+refused	a zero facing
+refused	a missing facing
+refused	an empty socket id
+refused	a patrol waypoint without a loop
+refused	a patrol waypoint without an order
+refused	a loop on a non-patrol socket
+refused	a vendor without a kind
+refused	an unknown vendor kind
+refused	a kind on a non-vendor socket
+refused	a truthy spawn flag
+refused	a numeric spawn flag
+refused	a spare guard post
+refused	a spare vendor
+refused	a work socket without an activity
+refused	an unknown work activity
+refused	an activity on a non-work socket
+refused	a spare work socket
+refused	an empty tag list
+refused	a numeric tag
+refused	a duplicate socket id
+work_and_profession	smith	butcher
+second_settlement	one_race	start_wins
+refusals	left_no_state	pass
+cold	7	7	7
+door_facing	door_turned_on_second_tag	line_keeps_first_tag	bench_kept	elder_turned
+spare	unplaced	unmarked	ring_3	spots_1_2
+nametags	Vale Dwarf	Dur Brannoc Citizen	Highcourt Elder
+restart	7	7	0
+lost_entities	6	6	6
+death_respawn	not_before_due	refilled_after_window
+second_gate	no_twin	marker_restored
+capital	6	6	2	loops_separate	markers_separate
+wanderer	13	13	13	10_heartbeats
+out_of_range	13	13	no_strike
+twins	14	13	claim_refused
+census	hearthpine	start	7	7	spare_1
+amble	moved_at_22	spots_3_and_3_of_3	spare_reached	10:-16.0/4.0 20:-16.0/4.0 30:-7.8/9.5 40:-5.0/11.3 50:-5.0/11.3 60:-5.0/11.3
+amble_blocked	2_targets_in_40s
+no_jump	0	0	model_reproduces_defect
+stuck_route	path_at_20	skip_at_45	quiet_after_3_lines	no_snap_in_sight	snap_out_of_sight_after_backoff
+noncombatant	declared	installed_on_activate	chained	all_2_defs_correct	prey_unchanged

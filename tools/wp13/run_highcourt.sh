@@ -119,13 +119,19 @@ set -e
 [[ -f "$engine_log" ]] && cp "$engine_log" "$log"
 [[ -f "$log" ]] || { echo "run_highcourt: no server log" >&2; exit 1; }
 
-# The probe dumps one region per district plus the core and the avenue, so the
-# plot dumps are numbered rather than named.
+# The probe dumps one region per district, four more named regions -- the pond,
+# the orchard belt, the chapel yard and a profession house -- the core, the
+# avenue, the four lane/route crossings, and since the wall ring landed a
+# stretch of curtain with a turret and the east gatehouse. The plot dumps are
+# numbered rather than named, so the eight of them run 1..8 in the probe's own
+# order.
 for dump in highcourt-core.tsv highcourt-avenue.tsv highcourt-surface.tsv \
 		highcourt-field.tsv highcourt-crossing-1.tsv highcourt-crossing-2.tsv \
 		highcourt-crossing-3.tsv highcourt-crossing-4.tsv \
+		highcourt-wall.tsv highcourt-gate.tsv \
 		highcourt-plot-1.tsv highcourt-plot-2.tsv highcourt-plot-3.tsv \
-		highcourt-plot-4.tsv; do
+		highcourt-plot-4.tsv highcourt-plot-5.tsv highcourt-plot-6.tsv \
+		highcourt-plot-7.tsv highcourt-plot-8.tsv; do
 	[[ -f "$world/$dump" ]] && cp "$world/$dump" "$output/$dump"
 done
 grep 'GRUG_WP13_HIGHCOURT' "$log" >"$output/probe.txt" || true
@@ -161,10 +167,16 @@ if [[ "$mode" == "full" ]]; then
 	printf '%s  seed=%s avenue_road_cells=%s\n' "$digest" "$seed" "$road_cells" \
 		>"$output/avenue-digest.txt"
 	# The expectation lives with the lane that last CHANGED the road, so a
-	# package that moves it says so by moving this path and recording why. WP13
-	# round 3 gave every capital terrace riser a band of one-block ground steps,
-	# which moves the ground the avenue is laid on, so the road moved with it.
-	expected_file="$repo/tools/wp13/evidence/20260915-capital-terrain/highcourt/avenue-digest-$seed.txt"
+	# package that moves it says so by moving this path and recording why.
+	# Three of round 3's lanes moved it and this is the last of them: the
+	# terrace lane gave every capital riser a band of one-block ground steps,
+	# which moves the ground the avenue is laid on; the route lane made a run
+	# ramp to route grade under a low bridge deck; and this lane ran the four
+	# avenues out to 261 so the road rides through the curtain's gate tunnel,
+	# and put the curtain's own vocabulary into the overlay's palette, so the
+	# gatehouse masonry inside the avenue's dump region is digested with the
+	# road it lets through.
+	expected_file="$repo/tools/wp13/evidence/20260915-highcourt-fill/highcourt/avenue-digest-$seed.txt"
 	if [[ -f "$expected_file" ]]; then
 		expected="$(awk 'NR==1 {print $1}' "$expected_file")"
 		if [[ "$digest" != "$expected" ]]; then

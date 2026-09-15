@@ -657,6 +657,17 @@ local function loader(directory)
 	-- The water then stands three courses deep with its surface flush with the
 	-- grass, which is what a pond in a meadow looks like.
 	--
+	-- THE SHAPE IS AN OCTAGON, not the rectangle it is given. A rectangular
+	-- basin with square corners reads as a tank; cutting the four corners back
+	-- by a few cells is the cheapest thing that makes a body of water read as a
+	-- pond, and it costs nothing but the cells it does not write. The cut is a
+	-- quarter of the shorter side, capped at three, so a small garden pool and a
+	-- village pond get the same silhouette at their own sizes.
+	--
+	-- The liner follows the SHAPE and not the rectangle: every column that is
+	-- not water but touches water on one of its eight neighbours is carried
+	-- down, which is what keeps the cut corners lined too.
+	--
 	-- Returns the number of water cells, or 0 when the palette binds no water.
 	function M.pond(buf, palette, x1, z1, x2, z2, depth)
 		local water = palette.maybe("water")
@@ -665,25 +676,42 @@ local function loader(directory)
 		local subsoil = palette.node("subsoil")
 		local shore = palette.maybe("ground_bare") or subsoil
 		local floor = -depth
-		-- The liner: the ring one node outside the water, from the ground
-		-- course down past the floor.
+		local cut = math.floor(math.min(x2 - x1 + 1, z2 - z1 + 1) / 4)
+		if cut > 3 then cut = 3 end
+		local function wet(x, z)
+			if x < x1 or x > x2 or z < z1 or z > z2 then return false end
+			local ex = math.min(x - x1, x2 - x)
+			local ez = math.min(z - z1, z2 - z)
+			return ex + ez >= cut
+		end
 		for z = z1 - 1, z2 + 1 do
 			for x = x1 - 1, x2 + 1 do
-				local edge = (x < x1 or x > x2 or z < z1 or z > z2)
-				if edge then
-					for y = -1, floor - 1, -1 do buf:put(x, y, z, subsoil) end
-					buf:put(x, 0, z, shore)
-				else
+				if wet(x, z) then
 					buf:put(x, floor - 1, z, subsoil)
+				else
+					local touches = false
+					for dz = -1, 1 do
+						for dx = -1, 1 do
+							if wet(x + dx, z + dz) then touches = true end
+						end
+					end
+					if touches then
+						for y = -1, floor - 1, -1 do
+							buf:put(x, y, z, subsoil)
+						end
+						buf:put(x, 0, z, shore)
+					end
 				end
 			end
 		end
 		local filled = 0
 		for z = z1, z2 do
 			for x = x1, x2 do
-				for y = floor, 0 do
-					buf:put(x, y, z, water)
-					filled = filled + 1
+				if wet(x, z) then
+					for y = floor, 0 do
+						buf:put(x, y, z, water)
+						filled = filled + 1
+					end
 				end
 			end
 		end
