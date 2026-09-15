@@ -10,9 +10,19 @@
 --
 -- Highcourt is the human capital of the contract's section 2.4 table: a
 -- brick-and-white-stone city on a river plateau, half-timbered lanes, a
--- market square, a chapel with a belfry and orchards -- and, by the user's
--- ruling of 2026-09-14, NO curtain wall. Its edges are open: hedges, fruit
--- trees and the four gatehouses that stand where the avenues leave the core.
+-- market square, a chapel with a belfry, and "orchards inside the wall ring".
+--
+-- THE WALL RING ARRIVED IN PLAYTEST ROUND 3 (user ruling, 2026-09-15). The
+-- 2026-09-14 ruling had Highcourt among the three OPEN capitals; round 3
+-- reversed it for this one capital, because the contract's own section 2.4
+-- line for the human capital names a wall ring and because a capital the
+-- player can walk into from any direction reads as a field with houses in it.
+-- The wall is `wall.lua`'s overlay, the same mechanism Dur Brannoc landed
+-- (wp13-dur-brannoc.md), in Highcourt's own palette: castle stonewall over
+-- brick string courses, brick merlon caps, four gatehouses on the avenues.
+-- The four gatehouses that stand where the avenues leave the CORE stay where
+-- they are -- they are the precinct's gates, the ring's are 209 nodes further
+-- out.
 -- The white stone is the crown's, not the city's: the king's hall, the
 -- chapel, the colonnades, the gatehouses and the civic furniture are dressed
 -- in marble over citadel masonry under slate, and everything a citizen built
@@ -44,6 +54,7 @@ local function loader(directory)
 	local capitals = dofile(directory .. "/capitals.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
+	local wall = dofile(directory .. "/wall.lua")(directory)
 	local district = dofile(directory .. "/highcourt_district.lua")(directory)
 
 	local M = {}
@@ -341,14 +352,21 @@ local function loader(directory)
 	-- whatever surface the terrain has, and the successor calls it per chunk.
 	-- The gate stations sit at +-256 on each axis (WP40); the core edge is
 	-- at +-47, so a run starts one node clear of it.
+	--
+	-- THEY REACH 261, not the gate station at 256, since the wall ring landed:
+	-- the curtain's centre line is at +-256 and its gate tunnel runs through
+	-- the whole seven-node thickness, so a road that stopped at the centre
+	-- line would stop inside the gate. Dur Brannoc records the same number for
+	-- the same reason.
+	local GATE_OUT = 261
 	M.avenues = {
-		{id = "avenue_south", axis = "z", at = 0, from = -256, to = -48,
+		{id = "avenue_south", axis = "z", at = 0, from = -GATE_OUT, to = -48,
 			gate = "gate_south"},
-		{id = "avenue_north", axis = "z", at = 0, from = 48, to = 256,
+		{id = "avenue_north", axis = "z", at = 0, from = 48, to = GATE_OUT,
 			gate = "gate_north"},
-		{id = "avenue_west", axis = "x", at = 0, from = -256, to = -48,
+		{id = "avenue_west", axis = "x", at = 0, from = -GATE_OUT, to = -48,
 			gate = "gate_west"},
-		{id = "avenue_east", axis = "x", at = 0, from = 48, to = 256,
+		{id = "avenue_east", axis = "x", at = 0, from = 48, to = GATE_OUT,
 			gate = "gate_east"},
 	}
 
@@ -363,6 +381,107 @@ local function loader(directory)
 		{id = "ring_south", axis = "x", at = -96, from = -96, to = 96},
 		{id = "ring_north", axis = "x", at = 96, from = -96, to = 96},
 	}
+
+	-- THE WALL RING, on the four edges of the 512 envelope (user ruling,
+	-- playtest round 3). Authored exactly the way Dur Brannoc's is, because
+	-- the geometry question is the same one and the answer is not Highcourt's
+	-- to re-decide:
+	--
+	--   * the z-runs (west and east) carry the four CORNER TURRETS and
+	--     therefore reach 261, five nodes past the envelope edge, so a turret
+	--     centred on the corner is whole;
+	--   * the x-runs (south and north) stop at 252, one node short of the
+	--     corner turret's own face, so the two never write into each other:
+	--     the successor's first-run-wins arbitration would otherwise decide
+	--     which half of a corner survives, and half a turret is not a corner.
+	--
+	-- `outside` says which lane sign faces the field, which is what turns the
+	-- crenellated parapet, the loopholes and the merlon caps outward. Every
+	-- side carries ONE gate, on its avenue, and the avenues are authored FIRST
+	-- in the overlay's run list, so the road wins every cell of the passage and
+	-- the four gates are walkable.
+	local WALL_AT = 256
+	local WALL_END = 261
+	local WALL_SIDE = 252
+	local TURRETS = {-192, -128, -64, 64, 128, 192}
+	local function turret_list(extra)
+		local list = {}
+		for index = 1, #TURRETS do list[index] = TURRETS[index] end
+		for index = 1, #(extra or {}) do list[#list + 1] = extra[index] end
+		table.sort(list)
+		return list
+	end
+	M.wall = {
+		{id = "wall_west", axis = "z", at = -WALL_AT,
+			from = -WALL_END, to = WALL_END},
+		{id = "wall_east", axis = "z", at = WALL_AT,
+			from = -WALL_END, to = WALL_END},
+		{id = "wall_south", axis = "x", at = -WALL_AT,
+			from = -WALL_SIDE, to = WALL_SIDE},
+		{id = "wall_north", axis = "x", at = WALL_AT,
+			from = -WALL_SIDE, to = WALL_SIDE},
+	}
+	M.wall_plan = {
+		wall_west = {outside = -1, gates = {0},
+			towers = turret_list({-WALL_AT, WALL_AT}),
+			cross_towers = {-WALL_AT, WALL_AT}},
+		wall_east = {outside = 1, gates = {0},
+			towers = turret_list({-WALL_AT, WALL_AT}),
+			cross_towers = {-WALL_AT, WALL_AT}},
+		wall_south = {outside = -1, gates = {0}, towers = turret_list(),
+			cross_towers = {}},
+		wall_north = {outside = 1, gates = {0}, towers = turret_list(),
+			cross_towers = {}},
+	}
+
+	-- The overlay seam, in one place, exactly as Dur Brannoc spells it: the
+	-- avenues first, then the ring street, then the district lanes, then the
+	-- wall. The successor's first-run-wins arbitration reads this order, so
+	-- the avenue runs through the gate and the wall yields the cells of the
+	-- road it lets past.
+	--
+	-- The district lanes belong to the four QUADRANTS and not to the districts
+	-- standing in them, so the caller passes them in rather than this file
+	-- reaching for `highcourt_quadrants.lua`: the core composition knows about
+	-- the streets it authored itself and about nothing else.
+	function M.overlay_runs(lanes)
+		local runs = {}
+		for _, list in ipairs({M.avenues, M.ring, lanes or {}, M.wall}) do
+			for index = 1, #list do runs[#runs + 1] = list[index] end
+		end
+		return runs
+	end
+
+	-- Every node name either overlay may write, byte-sorted and without
+	-- duplicates: the union of the road's vocabulary and the wall's, which is
+	-- what the settlement's shared content channel is closed over and what the
+	-- overlay's specification identity is written from.
+	function M.overlay_names(avenue, palette)
+		local seen, list = {}, {}
+		for _, source in ipairs({avenue.palette_names(palette),
+				wall.palette_names(palette)}) do
+			for index = 1, #source do
+				local name = source[index]
+				if not seen[name] then
+					seen[name] = true
+					list[#list + 1] = name
+				end
+			end
+		end
+		table.sort(list, parts.less_bytes)
+		return list
+	end
+
+	-- One run, dispatched by its own id. A wall run carries authored geometry
+	-- the seam's overlay spec has no field for -- which side is the field,
+	-- where the turrets and the gate stand -- so it is looked up here, from the
+	-- same table for every piece, which is what keeps a piece of a run exactly
+	-- that stretch of the whole run.
+	function M.overlay_run(avenue, palette, spec, surface)
+		local plan = M.wall_plan[spec.id]
+		if plan then return wall.run(palette, spec, surface, plan) end
+		return avenue.run(palette, spec, surface)
+	end
 
 	M.district = district.market
 

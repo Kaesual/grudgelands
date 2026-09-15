@@ -7,9 +7,17 @@
 --     capital anchor and its own reference column, because WP40 terraces the
 --     rest of the 512 envelope and a plot sixty nodes out does not stand at
 --     the core's height;
---   * the avenue and ring-street overlay, which has no cells until a column
---     surface is handed to it and is therefore declared as its runs plus the
---     function that turns one run into road.
+--   * ONE overlay, carrying sixteen runs: the four avenues, the four sides of
+--     the ring street, the seven district lanes and the four sides of the
+--     curtain wall. It has no cells until a column surface is handed to it and
+--     is therefore declared as its runs plus the function that turns one run
+--     into road or into masonry.
+--
+-- ONE overlay and not two, for the reason Dur Brannoc records: the successor's
+-- cross-run arbitration -- the rule that gives a shared cell to the run that
+-- comes first -- only exists WITHIN one overlay. The avenue runs first and the
+-- wall yields the cells of the road it lets through its gate; in two overlays
+-- neither could see the other and the gate would be a wall with a road in it.
 --
 -- WHICH DISTRICT STANDS IN WHICH QUADRANT IS THE WORLD SEED'S (the capitals
 -- contract, section 2.1). The permutation is `wp13/highcourt_quadrants.lua`,
@@ -76,7 +84,13 @@ return function(options)
 	local highcourt = library.composition("highcourt")
 	if type(highcourt) ~= "table" or type(highcourt.core) ~= "function" or
 			type(highcourt.district) ~= "table" or
-			type(highcourt.avenues) ~= "table" or type(highcourt.ring) ~= "table" then
+			type(highcourt.avenues) ~= "table" or
+			type(highcourt.ring) ~= "table" or
+			type(highcourt.wall) ~= "table" or
+			type(highcourt.wall_plan) ~= "table" or
+			type(highcourt.overlay_runs) ~= "function" or
+			type(highcourt.overlay_names) ~= "function" or
+			type(highcourt.overlay_run) ~= "function" then
 		error("WP13 Highcourt: the capital composition seam differs", 0)
 	end
 	local districts = dofile(path .. "/highcourt_districts.lua")(path)
@@ -98,23 +112,22 @@ return function(options)
 	end
 
 	-- The four avenues first, then the four sides of the ring street, then the
-	-- district lanes, in the composition's own order: the overlay identity is
-	-- written from this list, and the successor's arbitration gives a shared
-	-- cell to the run that comes FIRST -- so the great roads run through and
-	-- the side streets yield at the kerb.
+	-- district lanes, then the four sides of the curtain wall, in the
+	-- composition's own order (`highcourt.overlay_runs`): the overlay identity
+	-- is written from this list, and the successor's arbitration gives a shared
+	-- cell to the run that comes FIRST -- so the great roads run through, the
+	-- side streets yield at the kerb, and the wall yields the road it lets
+	-- through its gate.
 	--
 	-- The lanes belong to the four QUADRANTS, not to the districts standing in
 	-- them, so this list is the same on every world and the overlay's identity
 	-- does not depend on the seed.
-	local runs = {}
-	for _, list in ipairs({highcourt.avenues, highcourt.ring,
-			districts.quadrants.lane_runs()}) do
-		for index = 1, #list do runs[#runs + 1] = list[index] end
-	end
+	local runs = highcourt.overlay_runs(districts.quadrants.lane_runs())
 
-	-- One palette handle for the road, built once and closed over: the
-	-- carriageway is the citadel paving of the human palette and the overlay
-	-- never asks for a capital handle of its own.
+	-- One palette handle for both overlays, built once and closed over: the
+	-- carriageway is the citadel paving of the human palette and the curtain is
+	-- its castle stonewall over brick string courses, so neither asks for a
+	-- capital handle of its own.
 	local road = palettes.new("human")
 
 	return {
@@ -130,8 +143,10 @@ return function(options)
 			width = avenue.WIDTH,
 			lamp_spacing = avenue.LAMP_SPACING,
 			reach = avenue.REACH,
-			names = avenue.palette_names(road),
-			run = function(spec, surface) return avenue.run(road, spec, surface) end,
+			names = highcourt.overlay_names(avenue, road),
+			run = function(spec, surface)
+				return highcourt.overlay_run(avenue, road, spec, surface)
+			end,
 		},
 	}
 end

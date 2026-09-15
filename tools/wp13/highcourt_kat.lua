@@ -36,6 +36,7 @@ return function(repo)
 	local parts = dofile(wp13 .. "/parts.lua")
 	local palettes = dofile(wp13 .. "/palette.lua")
 	local avenue = dofile(wp13 .. "/avenue.lua")(wp13)
+	local wall = dofile(wp13 .. "/wall.lua")(wp13)
 	local highcourt = dofile(wp13 .. "/highcourt.lua")(wp13)
 	local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 	local registry = dofile(repo .. "/tools/wp13/stub_registry.lua")
@@ -1067,6 +1068,15 @@ return function(repo)
 				quadrants.lane_runs()}) do
 			for _, spec in ipairs(list) do runs[#runs + 1] = spec end
 		end
+		-- The curtain is a run of the same overlay, so a lot may no more
+		-- stand on it than on a street; it is `wall.HALF` either side of its
+		-- centre line rather than the road's verge, which is why it is
+		-- appended here with its own half-width rather than folded into the
+		-- list above.
+		local wall_runs = {}
+		for _, spec in ipairs(highcourt.wall) do
+			wall_runs[#wall_runs + 1] = spec
+		end
 		-- Every lane starts on an avenue, which is what makes a district
 		-- reachable from the city rather than merely near it, and no two runs
 		-- share an id (the overlay's identity is the list of them).
@@ -1133,6 +1143,19 @@ return function(repo)
 						along_min <= math.max(spec.from, spec.to) and
 						across_max >= spec.at - STREET_HALF and
 						across_min <= spec.at + STREET_HALF
+					assert(not overlap, id .. " stands on " .. spec.id)
+				end
+				-- off the curtain wall, which is `wall.HALF` either side of
+				-- its own centre line
+				for _, spec in ipairs(wall_runs) do
+					local along_min = (spec.axis == "x") and x0 or z0
+					local along_max = (spec.axis == "x") and x1 or z1
+					local across_min = (spec.axis == "x") and z0 or x0
+					local across_max = (spec.axis == "x") and z1 or x1
+					local overlap = along_max >= math.min(spec.from, spec.to) and
+						along_min <= math.max(spec.from, spec.to) and
+						across_max >= spec.at - wall.HALF and
+						across_min <= spec.at + wall.HALF
 					assert(not overlap, id .. " stands on " .. spec.id)
 				end
 				-- clear of the 32-node gate corridor of every avenue
@@ -1693,8 +1716,14 @@ return function(repo)
 	-- ending at its gate station, and the ring is a closed circuit.
 	local runs = 0
 	for _, spec in ipairs(highcourt.avenues) do
-		assert(math.abs(spec.from) == 256 or math.abs(spec.to) == 256,
+		-- PAST the gate station, not to it. The curtain is centred on that
+		-- same line at +-256 and its gate tunnel runs through the whole
+		-- seven-node thickness, so a road that stopped at 256 would stop
+		-- inside the gate; 261 leaves the tunnel by two nodes.
+		assert(math.abs(spec.from) >= 256 or math.abs(spec.to) >= 256,
 			"the avenue " .. spec.id .. " does not reach its gate station")
+		assert(math.abs(spec.from) <= 261 and math.abs(spec.to) <= 261,
+			"the avenue " .. spec.id .. " runs past the wall's own outer face")
 		assert(math.abs(spec.from) >= 48 and math.abs(spec.to) >= 48,
 			"the avenue " .. spec.id .. " starts inside the core")
 		local ride = avenue.run(human, {id = spec.id, axis = spec.axis,
@@ -1728,6 +1757,251 @@ return function(repo)
 
 	say("highcourt_avenue", #run.cells, run.pavement, run.treads, run.risers,
 		#run.lamps, run.queries, climbs, runs, #PROFILES, splits, split_cells)
+
+	-- ------------------------------------------------------------------
+	-- 3a-bis. THE WALL RING (user ruling, playtest round 3)
+	-- ------------------------------------------------------------------
+	--
+	-- Highcourt's curtain is the same module Dur Brannoc's is (`wp13/wall.lua`)
+	-- in the human palette, so it is held to the same five rules, which are the
+	-- ones no road needs:
+	--
+	--   (a) EVERY CELL IS INSIDE THE RUN RECTANGLE the seam activates the run
+	--       on -- `wall.HALF` either side of the centre line. A cell outside it
+	--       is a cell in a mapchunk the run is never called for.
+	--   (b) NO GAP. Every column of curtain is masonry, without a hole, from
+	--       under its own lowest ground to its walk.
+	--   (c) THE WALK IS WALKED: the deck changes by at most a node per column.
+	--   (d) THE GATE IS OPEN: seven columns carry no masonry below the walk,
+	--       through the whole thickness, so the avenue rides through it.
+	--   (e) A PIECE OF A RUN IS EXACTLY THAT STRETCH of the whole run.
+	--
+	-- Plus the digest of the built geometry, for the reason the road's exists:
+	-- an overlay's manifest identity is its SPECIFICATION and would not move if
+	-- every node of the wall did.
+	local WALL_LANES = wall.HALF
+	assert(WALL_LANES == (avenue.WIDTH - 1) / 2 + 1,
+		"the wall's own half-width is no longer the seam's activation band")
+	assert(#highcourt.wall == 4, "a capital envelope has four sides, not " ..
+		#highcourt.wall)
+	local wall_by_id = {}
+	for _, spec in ipairs(highcourt.wall) do
+		wall_by_id[spec.id] = spec
+		local plan = assert(highcourt.wall_plan[spec.id],
+			"the wall run " .. spec.id .. " carries no plan")
+		assert(plan.outside == 1 or plan.outside == -1,
+			"the wall run " .. spec.id .. " does not say which side is the field")
+		assert(#plan.gates == 1 and plan.gates[1] == 0,
+			"the wall run " .. spec.id .. " does not carry exactly one gate " ..
+				"on its own axis")
+		assert(math.abs(spec.at) == 256,
+			"the wall run " .. spec.id .. " is not on the 512 envelope edge")
+	end
+	for _, id in ipairs({"wall_west", "wall_east"}) do
+		local plan = highcourt.wall_plan[id]
+		assert(#plan.cross_towers == 2,
+			id .. " does not carry the two corner turrets")
+		assert(wall_by_id[id].to >= 256 + wall.TURRET_HALF,
+			id .. " ends before its own corner turret does")
+	end
+	for _, id in ipairs({"wall_south", "wall_north"}) do
+		local plan = highcourt.wall_plan[id]
+		assert(#plan.cross_towers == 0, id .. " claims a corner turret")
+		assert(wall_by_id[id].to <= 256 - WALL_LANES,
+			id .. " reaches into the corner turret of the run it meets")
+	end
+
+	-- The synthetic ground the four runs are built over: the human plateau's
+	-- own two-node terraces, a flat reach, two steps one column apart and a
+	-- cross fall across the wall's own thickness, which is what a river bank
+	-- inside the envelope does to it.
+	local function wall_ground(p)
+		local y = 60
+		if p > -150 then y = y - 2 end
+		if p > -70 then y = y - 2 end
+		if p > -69 then y = y - 2 end
+		if p > 10 then y = y + 2 end
+		if p > 80 then y = y - 2 end
+		if p > 160 then y = y - 2 end
+		return y
+	end
+	local function wall_surface(axis, at)
+		return function(x, z)
+			local p, lane
+			if axis == "x" then p, lane = x, z - at else p, lane = z, x - at end
+			local y = wall_ground(p)
+			if lane >= 2 and p > -20 and p < 60 then y = y - 2 end
+			return y
+		end
+	end
+
+	local WALL_NAMES = {}
+	for _, name in ipairs(wall.palette_names(human)) do WALL_NAMES[name] = true end
+
+	local wall_digest_rows, wall_cells, wall_columns = {}, 0, 0
+	local wall_gaps, wall_steps, wall_passage = 0, 0, 0
+	for _, spec in ipairs(highcourt.wall) do
+		local plan = highcourt.wall_plan[spec.id]
+		local wsurface = wall_surface(spec.axis, spec.at)
+		local piece = wall.run(human, {id = spec.id, axis = spec.axis,
+			at = spec.at, from = spec.from, to = spec.to, width = avenue.WIDTH,
+			lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.from,
+			reach = avenue.REACH}, wsurface, plan)
+		wall_cells = wall_cells + #piece.cells
+		wall_columns = wall_columns + piece.columns
+
+		local at_cell = {}
+		for _, cell in ipairs(piece.cells) do
+			assert(WALL_NAMES[cell.name], spec.id .. " writes " .. cell.name ..
+				", which is outside the wall's own palette")
+			local p, lane
+			if spec.axis == "x" then
+				p, lane = cell.x, cell.z - spec.at
+			else
+				p, lane = cell.z, cell.x - spec.at
+			end
+			assert(lane >= -WALL_LANES and lane <= WALL_LANES,
+				spec.id .. " writes a cell " .. lane ..
+					" lanes from its centre line, outside the " .. WALL_LANES ..
+					" the seam activates the run on")
+			at_cell[p .. ":" .. lane .. ":" .. cell.y] = cell.name
+			wall_digest_rows[#wall_digest_rows + 1] =
+				table.concat({p, lane, cell.y, cell.name, cell.param2 or 0}, ":")
+		end
+
+		-- The walk of a column, read back out of the PIECE and not out of the
+		-- module that wrote it: the highest solid cell of the centre lane that
+		-- carries authored air directly above it.
+		local function deck_of(p)
+			for y = 140, 20, -1 do
+				local here = at_cell[p .. ":0:" .. y]
+				local above = at_cell[p .. ":0:" .. (y + 1)]
+				if here ~= nil and here ~= parts.AIR and above == parts.AIR then
+					return y
+				end
+			end
+			return nil
+		end
+
+		local gate_from, gate_to = -wall.GATE_PASSAGE, wall.GATE_PASSAGE
+		local previous_deck
+		for p = spec.from, spec.to do
+			local deck = deck_of(p)
+			assert(deck, spec.id .. ": the column " .. p .. " has no walk at all")
+			local in_gate = p >= gate_from and p <= gate_to
+			if in_gate then
+				for lane = -WALL_LANES, WALL_LANES do
+					for y = wall_ground(p) + 1, deck - 1 do
+						local name = at_cell[p .. ":" .. lane .. ":" .. y]
+						assert(name == nil or name == parts.AIR,
+							spec.id .. ": the gate passage at " .. p .. "," ..
+								lane .. "," .. y .. " is " .. name)
+					end
+					wall_passage = wall_passage + 1
+				end
+			else
+				for lane = -2, 2 do
+					local ground = wsurface(
+						spec.axis == "x" and p or spec.at + lane,
+						spec.axis == "x" and spec.at + lane or p)
+					local lowest
+					for y = ground, 20, -1 do
+						if at_cell[p .. ":" .. lane .. ":" .. y] == nil then
+							lowest = y + 1
+							break
+						end
+					end
+					assert(lowest and lowest <= ground, spec.id ..
+						": the curtain at " .. p .. "," .. lane ..
+						" does not reach its own ground")
+					for y = lowest, deck do
+						local name = at_cell[p .. ":" .. lane .. ":" .. y]
+						if name == nil or name == parts.AIR then
+							wall_gaps = wall_gaps + 1
+						end
+					end
+				end
+			end
+			if previous_deck ~= nil then
+				local step = deck - previous_deck
+				assert(math.abs(step) <= 1, spec.id ..
+					": the walk changes by " .. step .. " nodes at column " .. p)
+				if step ~= 0 then wall_steps = wall_steps + 1 end
+			end
+			previous_deck = deck
+		end
+	end
+	assert(wall_gaps == 0, "the curtain has " .. wall_gaps ..
+		" cells of hole between its footing and its walk")
+	assert(wall_steps >= 12, "the test profile did not exercise the walk: " ..
+		wall_steps .. " one-node steps")
+
+	-- (e) a piece of a run is exactly that stretch of the whole run.
+	local cut_spec = {id = "wall_east", axis = "z", at = 256, from = -40,
+		to = 40, width = avenue.WIDTH, lamp_spacing = avenue.LAMP_SPACING,
+		lamp_phase = -40, reach = avenue.REACH}
+	local cut_plan = highcourt.wall_plan.wall_east
+	local cut_surface = wall_surface("z", 256)
+	local whole_wall = wall.run(human, cut_spec, cut_surface, cut_plan)
+	local whole_index = {}
+	for _, cell in ipairs(whole_wall.cells) do
+		whole_index[cell.x .. ":" .. cell.y .. ":" .. cell.z] =
+			cell.name .. ":" .. (cell.param2 or 0)
+	end
+	local wall_splits = 0
+	for cut = cut_spec.from, cut_spec.to - 1 do
+		local union, count = {}, 0
+		for _, half in ipairs({{cut_spec.from, cut}, {cut + 1, cut_spec.to}}) do
+			local piece = wall.run(human, {id = cut_spec.id, axis = "z",
+				at = 256, from = half[1], to = half[2], width = cut_spec.width,
+				lamp_spacing = cut_spec.lamp_spacing,
+				lamp_phase = cut_spec.lamp_phase, reach = cut_spec.reach},
+				cut_surface, cut_plan)
+			for _, cell in ipairs(piece.cells) do
+				local key = cell.x .. ":" .. cell.y .. ":" .. cell.z
+				local value = cell.name .. ":" .. (cell.param2 or 0)
+				assert(whole_index[key] == value, cut_spec.id ..
+					": the piece cut at " .. cut .. " writes " .. value ..
+					" at " .. key .. ", which the whole run does not")
+				if union[key] == nil then
+					union[key] = value
+					count = count + 1
+				end
+			end
+		end
+		assert(count == #whole_wall.cells, cut_spec.id ..
+			": the two pieces cut at " .. cut .. " carry " .. count ..
+			" cells, the whole run " .. #whole_wall.cells)
+		wall_splits = wall_splits + 1
+	end
+
+	-- (f) NO AVENUE LAMP STANDARD IN A WALL PIER: a lamp stands on the verge,
+	-- and inside a gate that verge is a column of the gatehouse. The avenue is
+	-- authored BEFORE the wall and wins every cell the two share, so the gate
+	-- passage has to be at least as wide as the carriageway plus both verges.
+	local lamps_in_gate = 0
+	for _, spec in ipairs(highcourt.avenues) do
+		local half = (avenue.WIDTH - 1) / 2 + 1
+		for p = spec.from, spec.to do
+			if (p - spec.from) % avenue.LAMP_SPACING == 0 then
+				for _, side in ipairs({256, -256}) do
+					local lane = p - side
+					if lane >= -WALL_LANES and lane <= WALL_LANES then
+						assert(half <= wall.GATE_PASSAGE,
+							"the avenue's verge is " .. half ..
+								" lanes out and the gate passage only " ..
+								wall.GATE_PASSAGE .. " columns wide, so a " ..
+								"standard stands in a pier")
+						lamps_in_gate = lamps_in_gate + 1
+					end
+				end
+			end
+		end
+	end
+
+	say("highcourt_wall", #highcourt.wall, wall_columns, wall_cells,
+		wall_steps, wall_passage, wall_splits, lamps_in_gate,
+		common.hex(common.new_sha256()(table.concat(wall_digest_rows, "\n"))))
 
 	-- 3b. the BUILT GEOMETRY of the two real runs, digested
 	--

@@ -153,14 +153,19 @@ elseif what == "capital" then
 				cell.param2)
 		end
 	end
+	-- The whole overlay, in the composition's own run order -- avenues, ring,
+	-- district lanes, curtain wall -- so the plan shows the wall ring and its
+	-- four gates and not just the roads inside it. `emit` keeps the first
+	-- writer of a cell, which is the same first-run-wins arbitration the
+	-- successor applies, so the avenue rides through the gate here too.
 	local road = palettes.new("human")
 	local function flat() return 0 end
-	for _, list in ipairs({highcourt.avenues, highcourt.ring,
-			quadrants.lane_runs()}) do
-		for _, spec in ipairs(list) do
-			for _, cell in ipairs(avenue.run(road, spec, flat).cells) do
-				emit(cell.x, cell.y, cell.z, cell.name, cell.param2)
-			end
+	for _, spec in ipairs(highcourt.overlay_runs(quadrants.lane_runs())) do
+		for _, cell in ipairs(highcourt.overlay_run(avenue, road,
+				{id = spec.id, axis = spec.axis, at = spec.at,
+					from = spec.from, to = spec.to, lamp_phase = spec.from},
+				flat).cells) do
+			emit(cell.x, cell.y, cell.z, cell.name, cell.param2)
 		end
 	end
 	-- The ground everything stands on, so the plan reads as a city on a

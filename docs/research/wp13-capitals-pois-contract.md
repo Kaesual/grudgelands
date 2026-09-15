@@ -159,3 +159,10 @@ stone block).
   Brannoc, Nhal Veyr and Gor Drazhak, open edges (hedges/orchards, groves,
   stilts and water) for Highcourt, Lethariel and Kezamba. **Decided
   2026-09-14 as proposed**: three walled, three open, for variation.
+  **Amended 2026-09-15 (playtest round 3): Highcourt is walled too**, so the
+  split is four walled and two open. The user's reason is §2.4's own line for
+  the human capital — "orchards inside the wall ring" — and that an open
+  capital reads as a field with houses in it. The wall is `wp13/wall.lua`'s
+  overlay in Highcourt's palette, the mechanism Dur Brannoc landed; the
+  orchards now stand inside it. Lethariel and Kezamba stay open (a grove city
+  and a stilt city), which is the variation the original ruling wanted.
