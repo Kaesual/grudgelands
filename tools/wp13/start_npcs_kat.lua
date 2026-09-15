@@ -43,10 +43,14 @@
 --  10. no jump     -- the villager families cannot reach mobs_redo's do_jump.
 --  11. stuck route -- the three-stage patrol rescue, including the user's
 --                     ruling that the teleport happens out of sight only.
---  12. noncombatant -- the round-2 ruling: villagers, elders and vendors carry
---                     the per-target veto and hostiles keep their own
---                     `attack_npcs`, so the watch and the wildlife fight each
---                     other and the civilians are never a target.
+--  12. noncombatant -- the round-2 ruling's half that lives in this fixture:
+--                     the verb, the flag it installs at activation, and the
+--                     declaration on every definition the fixture registers.
+--                     The other half -- a guard is acquirable and the
+--                     registration wrapper narrows nobody's `attack_npcs` --
+--                     needs guard.lua and init.lua, which this fixture
+--                     deliberately does not load, and is measured by the engine
+--                     probe instead.
 --
 -- ROUND 2 (2026-09-15) also adds, inside the states above: the door flip on a
 -- QUEST socket (1b), the spare idle socket that is a wander target and never a
@@ -143,8 +147,12 @@ return function(repo)
 			x = 0, y = 1, z = 24, dir = {x = 0, z = -1}},
 		{id = "plaza_vendor", role = "vendor", kind = "race", x = 7, y = 1,
 			z = -5, dir = {x = -1, z = 0}},
-		{id = "idle_a", role = "idle", tags = {"door"}, x = -16, y = 1, z = 4,
-			dir = {x = -1, z = 0}},
+		-- TWO tags, and `door` is the SECOND. `tags` is a list in the contract:
+		-- the first entry is the one the spoken line reads off, the door rule is
+		-- a statement about any of them, and reading `tags[1]` alone would turn
+		-- the rule off for exactly this shape.
+		{id = "idle_a", role = "idle", tags = {"bench", "door"}, x = -16, y = 1,
+			z = 4, dir = {x = -1, z = 0}},
 		{id = "idle_b", role = "idle", tags = {"bench"}, x = 7, y = 1, z = 1,
 			dir = {x = 1, z = 0}},
 		-- `door` on a QUEST socket: round 1 turned only `idle` sockets round, so
@@ -624,6 +632,11 @@ return function(repo)
 	end
 	check(turned(door_mob._grug_face_yaw, door_authored),
 		"a door socket did not turn its NPC round")
+	-- ...and the LINE still follows the first tag, which is the other half of
+	-- the split: the turn is about every tag, the flavour about the first one.
+	check(door_mob._grug_idle_tag == "bench",
+		"the spoken tag no longer follows the socket's first tag: " ..
+		tostring(door_mob._grug_idle_tag))
 	check(math.abs(bench_mob._grug_face_yaw - bench_authored) < 1e-9,
 		"a bench socket's authored facing was changed")
 	-- ROUND 2: the same rule for the QUEST socket. Round 1 keyed the flip on
@@ -632,7 +645,8 @@ return function(repo)
 	check(elder_mob ~= nil, "the quest socket is empty")
 	check(turned(elder_mob._grug_face_yaw, dir_to_yaw({x = 0, z = 1})),
 		"an elder on a door socket still faces the door")
-	line("door_facing", "door_turned", "bench_kept", "elder_turned")
+	line("door_facing", "door_turned_on_second_tag", "line_keeps_first_tag",
+		"bench_kept", "elder_turned")
 
 	--
 	-- 1d. THE SPARE SOCKET. Nothing is ever placed on it, no marker is written
@@ -1228,31 +1242,45 @@ return function(repo)
 	check(#chained == 1 and chained[1][1] == "static" and
 		chained[1][2] == wrapped and chained[1][3] == 0.5,
 		"the wrapper dropped the definition's own after_activate arguments")
-	-- The shipped civilian families really carry it, and the guard does not: a
-	-- guard is a combatant with an authored post. Only the two grug_mobs
-	-- families are registered inside this fixture -- the vendor lives in
-	-- grug_traders, whose registration calls the same verb, and the probe is
-	-- what shows a hostile ignoring one in the engine.
-	for _, name in ipairs({"grug_mobs:villager_dwarf",
-			"grug_mobs:elder_dwarf"}) do
-		local def = harness.defs[name]
-		check(def ~= nil and def._grug_noncombatant == true,
-			name .. " is not declared a non-combatant")
+	--
+	-- EVERY DEFINITION THIS FIXTURE REGISTERS, and the flag is right on all of
+	-- them. A complete statement over a closed set is worth something; a lookup
+	-- of a name the fixture never registers is not, and the first cut of this
+	-- block had two of those. `harness.defs["grug_mobs:guard_accord"] == nil` is
+	-- always true here (the fixture dofiles patrol/verbs/start_villagers/
+	-- start_npcs and neither guard.lua nor init.lua), and a bare table literal
+	-- never passes through `grug_mobs.register_mob`, so both would have passed
+	-- with the blanket veto restored.
+	--
+	-- THE OTHER TWO HALVES OF THE RULING ARE MEASURED IN THE ENGINE, by the
+	-- probe, because that is where `grug_mobs.register_mob` and guard.lua
+	-- actually run: `event=hostile … attack_npcs=true … state=attack
+	-- target=grug_mobs:guard_accord` is both of them in one line -- the wrapper
+	-- narrowed nobody, and a guard is acquirable and therefore no
+	-- non-combatant -- and the probe fails outright if a hostile reads false or
+	-- if anything holds a civilian as its target.
+	--
+	local registered, flagged = 0, 0
+	for name, def in pairs(harness.defs) do
+		registered = registered + 1
+		local civilian = name:find("villager", 1, true) ~= nil or
+			name:find("elder", 1, true) ~= nil
+		if def._grug_noncombatant == true then flagged = flagged + 1 end
+		check((def._grug_noncombatant == true) == civilian,
+			name .. " carries the wrong non-combatant declaration")
 	end
-	check(harness.defs["grug_mobs:guard_accord"] == nil or
-		harness.defs["grug_mobs:guard_accord"]._grug_noncombatant ~= true,
-		"a guard was declared a non-combatant")
-	-- And the registration wrapper no longer decides anybody's `attack_npcs`:
-	-- a hostile keeps mobs_redo's default (nil here, true in mob_class) and so
-	-- engages the watch, while passive prey keeps the `false` its own verb set.
-	local hostile = {attack_players = true, attack_monsters = false}
-	check(hostile.attack_npcs == nil,
-		"something still narrows a hostile definition's attack_npcs")
+	-- One villager and one elder: the fixture publishes a single start identity.
+	check(registered == 2 and flagged == 2,
+		"the fixture registered " .. registered .. " definitions of which " ..
+		flagged .. " are non-combatants, not 2 of 2")
+	-- And the verb still touches nothing else: passive prey keeps the targeting
+	-- fields its own verb set, which is the one neighbouring rule that could be
+	-- clipped by a wider veto.
 	local prey = grug_mobs.passive_prey({})
 	check(prey.attack_npcs == false and prey.attack_players == false,
 		"passive prey lost its own targeting fields")
 	line("noncombatant", "declared", "installed_on_activate", "chained",
-		"villager_and_elder", "guard_excluded", "hostile_default")
+		"all_" .. registered .. "_defs_correct", "prey_unchanged")
 
 	restore()
 	return table.concat(report)

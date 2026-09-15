@@ -21,11 +21,14 @@ launchers, and `pgrep -af '^luanti.bin --server'` is clean of them afterwards.
 ## The gates
 
 - **Final micro pair byte-identical**, output_sha256
-  `a4edd369c7af6cf8e9c21ec186a3145947d1ad0ca966c4eb4a582417d7768bad` from both
-  interpreters. It was
-  `4f2d2b769578c00bd9947a5904dd4f1635fae0e2503420f990a585f7841cbdf5` in round 1,
-  and 46 rows moved — all of them socket bookkeeping and the two reports this
-  round rewrote: `start_npcs_kat` (the new `spare`, `noncombatant` and
+  `ea8a1732c620a642aadcc83fbf3f88b0bc95b2d75a54cdc2f6ba2cb5cda67cf7` from both
+  interpreters. It was `a4edd369c7af6cf8e9c21ec186a3145947d1ad0ca966c4eb4a582417d7768bad`
+  before the review fold-in; exactly two rows moved there, `door_facing` and
+  `noncombatant`, which are the two report lines the review's test-only items
+  rewrote, and nothing else in the TSV changed. Against round 1's
+  `4f2d2b769578c00bd9947a5904dd4f1635fae0e2503420f990a585f7841cbdf5`, 46 rows
+  moved — all of them socket bookkeeping and the two reports this round
+  rewrote: `start_npcs_kat` (the new `spare`, `noncombatant` and
   `elder_turned` lines, the four new registry refusals, the `census`/`amble`
   rows), `settlement_sockets_kat`'s per-socket rows, the six `wp13_blueprint`
   rows (16 sockets each, 3 spare), `highcourt_core` (75 sockets, 10 spare) and
@@ -51,9 +54,26 @@ launchers, and `pgrep -af '^luanti.bin --server'` is clean of them afterwards.
   `door_facing door_turned bench_kept elder_turned`,
   `amble moved_at_22 spots_3_and_3_of_3 spare_reached`,
   `census hearthpine start 7 7 spare_1`,
-  `noncombatant declared installed_on_activate chained villager_and_elder
-  guard_excluded hostile_default`.
-- **Engine, the six starts** (`npc-probe/`): `errors=0 complete=3`. Every
+  `noncombatant declared installed_on_activate chained all_2_defs_correct
+  prey_unchanged`.
+  The `door_facing` and `noncombatant` rows read differently from the ones the
+  probe ran against, and only those two: the review found that
+  `guard_excluded` / `hostile_default` asserted nothing this fixture can see
+  (it loads neither guard.lua nor init.lua, so the name lookup was `nil == nil`
+  and the hostile table literal never passed through `grug_mobs.register_mob`).
+  Those two words are gone; what replaced them is a complete statement over the
+  definitions the fixture really registers, and the two halves they claimed are
+  measured in the engine by `npc-probe/` instead — `event=hostile …
+  attack_npcs=true … target=grug_mobs:guard_accord` is both of them in one line.
+  `door_facing` changed because its socket now carries `{"bench", "door"}`, so
+  the door rule is measured on a tag that is not the first one.
+- **Engine, the six starts** (`npc-probe/`): `errors=0 complete=3`. The logs are
+  the run of the shipped probe before the review's item 2; that item changed only
+  which position `forceload_free_block` is handed (the one that was requested,
+  not the measured ground) and made the no-ground path abort the case, neither of
+  which the recorded run exercised — it read ground on the first column and both
+  positions fell in one mapblock, which `event=unload … requested=…` now prints
+  on every future run. Every
   settlement logs `guards 3/3 flair 4/4 vendor 1/1 quest 1/1 … pending 0
   spare 3`, i.e. the roster is unchanged at 9 and the three spares carry
   nobody. Boot 1's census is `roster=9 marked=9 live=9 twins=0 spare=3` through

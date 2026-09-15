@@ -1,2 +1,2 @@
-a4edd369c7af6cf8e9c21ec186a3145947d1ad0ca966c4eb4a582417d7768bad  micro-luajit.tsv
-a4edd369c7af6cf8e9c21ec186a3145947d1ad0ca966c4eb4a582417d7768bad  micro-puc51.tsv
+ea8a1732c620a642aadcc83fbf3f88b0bc95b2d75a54cdc2f6ba2cb5cda67cf7  micro-luajit.tsv
+ea8a1732c620a642aadcc83fbf3f88b0bc95b2d75a54cdc2f6ba2cb5cda67cf7  micro-puc51.tsv

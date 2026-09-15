@@ -145,7 +145,10 @@ assert the exact spare population per settlement.
 `door` is a **consumer rule, not a geometric claim**: `start_npcs.lua`'s
 `socket_face_yaw` turns a door-tagged socket's NPC 180° from its authored
 facing, for **every role** (round 1 restricted it to `idle`, which is why all
-seven elders stood with their backs to the street).
+seven elders stood with their backs to the street) and for **any position in
+`tags`**. `tags` is a list: the turn is a statement about any entry, while the
+NPC's spoken line follows `tags[1]`, so `{"bench", "door"}` is a bench spot at a
+door and both halves hold.
 
 The authored `dir` therefore keeps meaning "the feature this socket belongs to",
 and two readings of that are both in use and both legal:

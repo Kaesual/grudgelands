@@ -400,6 +400,16 @@ local HOSTILE = "grug_mobs:wolf"
 local hostiles = {}
 local cleared_socket
 local unloaded_socket, unloaded_home, unloaded_away
+-- THE POSITION ACTUALLY FORCELOADED, kept apart from `unloaded_away`, whose y is
+-- later overwritten with the ground the probe measures. Those two can be five
+-- mapblocks apart, and `forceload_free_block` frees the block containing the
+-- position it is handed: freeing the measured one would release a block nobody
+-- requested and leak the one that was.
+local unloaded_request
+-- Did the unload case get as far as a real NPC on real ground? Everything after
+-- the move is meaningless otherwise, so it is skipped rather than run against a
+-- stale position.
+local unload_ready = false
 
 local function target_name(target)
 	if not target then return "nil" end
@@ -663,11 +673,14 @@ local FULL = {
 	--
 	{at = 342, what = function()
 		-- Generate and load the destination. Eight seconds ahead of the move, so
-		-- the emerge has time even on a cold map.
-		unloaded_away = {x = settlement.anchor.x + FORCE_REACH * 2,
+		-- the emerge has time even on a cold map. This exact position is what
+		-- gets freed again below -- not the measured ground, which may be in
+		-- another block.
+		unloaded_request = {x = settlement.anchor.x + FORCE_REACH * 2,
 			y = settlement.anchor.y, z = settlement.anchor.z}
-		log({"event=away_request", "to=" .. core.pos_to_string(unloaded_away),
-			"ok=" .. tostring(core.forceload_block(unloaded_away, true, -1))})
+		log({"event=away_request",
+			"to=" .. core.pos_to_string(unloaded_request),
+			"ok=" .. tostring(core.forceload_block(unloaded_request, true, -1))})
 	end},
 	{at = 350, what = function()
 		-- The ground of that column, read rather than assumed: the first air
@@ -677,11 +690,11 @@ local FULL = {
 		local ground
 		for y = settlement.anchor.y + 40, settlement.anchor.y - 40, -1 do
 			local here = core.get_node_or_nil(
-				{x = unloaded_away.x, y = y, z = unloaded_away.z})
+				{x = unloaded_request.x, y = y, z = unloaded_request.z})
 			local over = core.get_node_or_nil(
-				{x = unloaded_away.x, y = y + 1, z = unloaded_away.z})
+				{x = unloaded_request.x, y = y + 1, z = unloaded_request.z})
 			local under = core.get_node_or_nil(
-				{x = unloaded_away.x, y = y - 1, z = unloaded_away.z})
+				{x = unloaded_request.x, y = y - 1, z = unloaded_request.z})
 			if here and over and under and here.name == "air" and
 					over.name == "air" and under.name ~= "air" and
 					under.name ~= "ignore" then
@@ -689,12 +702,21 @@ local FULL = {
 				break
 			end
 		end
+		-- NO GROUND IS THE END OF THE CASE, not a reason to carry on with a
+		-- position nothing was measured at. The block that WAS requested is
+		-- released so the run leaks nothing, the failure is logged (which is what
+		-- makes the whole probe run fail), and every later step of this case
+		-- skips on `unload_ready`.
 		if not ground then
+			core.forceload_free_block(unloaded_request, true)
 			fail("the away column never loaded or has no ground at " ..
-				core.pos_to_string(unloaded_away))
+				core.pos_to_string(unloaded_request))
+			log({"event=unload_aborted",
+				"at=" .. core.pos_to_string(unloaded_request)})
 			return
 		end
-		unloaded_away.y = ground
+		unloaded_away = {x = unloaded_request.x, y = ground,
+			z = unloaded_request.z}
 		local npcs = settlement_npcs()
 		for index = 1, #npcs do
 			local entity = npcs[index]
@@ -703,11 +725,15 @@ local FULL = {
 				unloaded_socket = entity._grug_socket
 				unloaded_home = {x = pos.x, y = pos.y, z = pos.z}
 				entity.object:set_pos(unloaded_away)
-				-- AND RELEASE THE BLOCK. Holding it would keep the NPC active,
-				-- which is the opposite of the case under test.
-				core.forceload_free_block(unloaded_away, true)
+				-- AND RELEASE THE BLOCK THAT WAS REQUESTED. Holding it would
+				-- keep the NPC active, which is the opposite of the case under
+				-- test; freeing `unloaded_away` instead would free a block that
+				-- was never forceloaded and leak this one.
+				core.forceload_free_block(unloaded_request, true)
+				unload_ready = true
 				log({"event=unload", "socket=" .. tostring(unloaded_socket),
 					"to=" .. core.pos_to_string(unloaded_away),
+					"requested=" .. core.pos_to_string(unloaded_request),
 					"socket_block_active=" .. tostring(
 						core.compare_block_status(
 							{x = pos.x, y = pos.y, z = pos.z}, "active")),
@@ -716,25 +742,32 @@ local FULL = {
 				return
 			end
 		end
+		core.forceload_free_block(unloaded_request, true)
 		fail("no villager to unload")
+		log({"event=unload_aborted", "at=no_villager"})
 	end},
 	{at = 360, what = function()
+		if not unload_ready then return end
 		-- Eight of nine, and still nine markers: this is the count that must NOT
 		-- become nine again by a fresh NPC being placed on the marked socket.
 		census_line("unloaded", false, 8)
 	end},
 	{at = 385, what = function()
+		if not unload_ready then return end
 		census_line("still_unloaded", false, 8)
 	end},
 	{at = 390, what = function()
+		if not unload_ready then return end
 		-- And it comes back when its block does, which is the other half of the
-		-- same claim.
+		-- same claim. THE NPC's OWN block this time, which is the one that has
+		-- to go active for the object to be in the environment again.
 		log({"event=reload_request", "ok=" ..
 			tostring(core.forceload_block(unloaded_away, true, -1)),
 			"active=" .. tostring(
 				core.compare_block_status(unloaded_away, "active"))})
 	end},
 	{at = 400, what = function()
+		if not unload_ready then return end
 		-- One intermediate reading, for the same reason the strike rule needs
 		-- three passes: a forceload is a REQUEST. `ActiveBlockList::update`
 		-- runs on `active_block_mgmt_interval` (2 s by default) and the block
@@ -755,6 +788,11 @@ local FULL = {
 	-- test is a statement about what happens, not about how fast.
 	--
 	{at = 415, what = function()
+		if not unload_ready then
+			log({"event=complete", "programme=full"})
+			core.request_shutdown("wp13 npc probe done", false, 1)
+			return
+		end
 		-- Back where it belongs FIRST: twice the grid's reach is also outside
 		-- the settlement's own scan radius, and the two reboots should start
 		-- from the ordinary world rather than from this experiment.

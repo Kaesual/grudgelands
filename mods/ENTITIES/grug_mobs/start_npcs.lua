@@ -401,10 +401,21 @@ end
 local FACE_AWAY_TAGS = {door = true}
 local TWO_PI = 2 * math.pi
 
+-- EVERY tag is scanned, not only the first. `tags` is a LIST in the contract and
+-- the first entry is merely the one the spoken line reads off (`_grug_idle_tag`);
+-- a socket authored as `{"bench", "door"}` stands at a door just as much as one
+-- authored the other way round, and reading `tags[1]` alone would silently turn
+-- the rule off for it.
 local function socket_face_yaw(socket)
 	local yaw = socket.yaw
-	local tag = socket.tags and socket.tags[1] or nil
-	if tag and FACE_AWAY_TAGS[tag] then
+	local tags = socket.tags
+	local away = false
+	if tags then
+		for index = 1, #tags do
+			if FACE_AWAY_TAGS[tags[index]] then away = true end
+		end
+	end
+	if away then
 		yaw = yaw + math.pi
 		if yaw >= TWO_PI then
 			yaw = yaw - TWO_PI

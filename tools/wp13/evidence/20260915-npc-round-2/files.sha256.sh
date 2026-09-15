@@ -16,6 +16,7 @@ here="tools/wp13/evidence/20260915-npc-round-2"
 		docs/design/world.md \
 		docs/research/wp13-npc-round-2.md \
 		docs/research/wp13-npc-sockets-contract.md \
+		docs/research/wp13-start-npcs.md \
 		mods/CORE/grug_core/settlement_sockets.lua \
 		mods/ENTITIES/grug_mobs/guard.lua \
 		mods/ENTITIES/grug_mobs/init.lua \

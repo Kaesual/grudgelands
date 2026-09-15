@@ -128,7 +128,7 @@ refused	a duplicate socket id
 second_settlement	one_race	start_wins
 refusals	left_no_state	pass
 cold	7	7	7
-door_facing	door_turned	bench_kept	elder_turned
+door_facing	door_turned_on_second_tag	line_keeps_first_tag	bench_kept	elder_turned
 spare	unplaced	unmarked	ring_3	spots_1_2
 nametags	Vale Dwarf	Dur Brannoc Citizen	Highcourt Elder
 restart	7	7	0
@@ -144,4 +144,4 @@ amble	moved_at_22	spots_3_and_3_of_3	spare_reached	10:-16.0/4.0 20:-16.0/4.0 30:
 amble_blocked	2_targets_in_40s
 no_jump	0	0	model_reproduces_defect
 stuck_route	path_at_20	skip_at_45	quiet_after_3_lines	no_snap_in_sight	snap_out_of_sight_after_backoff
-noncombatant	declared	installed_on_activate	chained	villager_and_elder	guard_excluded	hostile_default
+noncombatant	declared	installed_on_activate	chained	all_2_defs_correct	prey_unchanged

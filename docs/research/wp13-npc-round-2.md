@@ -62,9 +62,13 @@ their authored facing on the door, and the role test left every one of them
 showing the street its back.
 
 The role test is deleted: the turn now follows the **tag**, which is where the
-geometry is described, for every role. The seven quest sockets carry
-`tags = {"door"}`, and any future role placed at a door inherits the turn by
-saying so. Sockets are not identity bytes, so this is a socket-table edit.
+geometry is described, for every role — and for any position in `tags`, not only
+the first. `tags` is a list in the contract; its first entry is the one the
+spoken line reads off, so `{"bench", "door"}` is a bench spot at a door and
+reading `tags[1]` alone would have turned the rule off for exactly that shape.
+The seven quest sockets carry `tags = {"door"}`, and any future role placed at a
+door inherits the turn by saying so. Sockets are not identity bytes, so this is a
+socket-table edit.
 
 Measured, not asserted: both blueprint KATs now check a `quest` socket against
 the finished pad — the tag is present, the authored facing really runs into the
