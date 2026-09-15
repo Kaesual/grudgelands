@@ -89,14 +89,37 @@ local function loader(directory)
 		return out
 	end
 
-	-- The three handles every Lethariel composition builds from, made once per
-	-- caller: `elf` is the city, `pale` is the same city under the civic roof,
-	-- and both carry the four capital roles above.
+	-- THE CIVIC MASONRY, and why the capital handle rebinds it.
+	--
+	-- Every capital part in `wp13/capitals.lua` builds its structure out of
+	-- `castle_wall`, and the elf palette binds that to `castle_stonewall` --
+	-- the same brown rubble wall five other races use. The first render of this
+	-- capital's king's hall was a BROWN CASTLE with pale trim, which is Dur
+	-- Brannoc's material in Lethariel's plan and not the contract's "silverwood
+	-- and marble, tall narrow halls" (section 2.4).
+	--
+	-- So the civic handle binds the pale cut of the same silver sandstone the
+	-- civic roof and the pillars are already made of. Nothing else changes:
+	-- the market square, the houses and the groves keep the plain `elf` handle,
+	-- so the city is silverwood and slate and the CIVIC quarter is the pale
+	-- stone standing in it. The road and the grove edge take the plain handle
+	-- too, so no street cell moves.
+	M.PALE_STONE = {
+		castle_wall = "default:silver_sandstone_brick",
+		castle_wall_stair = "stairs:stair_silver_sandstone_brick",
+		castle_wall_slab = "stairs:slab_silver_sandstone_brick",
+	}
+
+	-- The two handles every Lethariel composition builds from, made once per
+	-- caller: `elf` is the city, `pale` is the civic quarter -- the same
+	-- palette under the pale roof and the pale masonry -- and both carry the
+	-- four capital roles above.
 	function M.handles()
 		local green = M.GREEN
 		return {
 			elf = palettes.new("elf", green),
-			pale = palettes.new("elf", merged(green, M.PALE_ROOF)),
+			pale = palettes.new("elf",
+				merged(green, M.PALE_ROOF, M.PALE_STONE)),
 		}
 	end
 

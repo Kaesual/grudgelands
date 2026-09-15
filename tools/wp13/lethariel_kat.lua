@@ -494,10 +494,22 @@ return function(repo)
 	-- THE OPEN EDGE. Lethariel carries no curtain wall (contract section 4),
 	-- so no cell of the core's own boundary ring may be castle masonry, and
 	-- the ring that is there has to be planted.
-	local castle = palette.maybe("castle_wall")
+	-- The curtain masonry of BOTH handles: the plain palette's and the civic
+	-- one's, which rebinds `castle_wall` to the pale cut of its own silver
+	-- sandstone. Reading one of them would make this rule vacuous the moment a
+	-- handle rebinds the role, which is exactly what happened when this
+	-- capital's civic quarter stopped being brown.
+	local masonry_names = {}
+	for _, handle in ipairs({handles.elf, handles.pale}) do
+		for _, role in ipairs({"castle_wall", "castle_wall_slab",
+				"castle_wall_stair"}) do
+			local name = handle.maybe(role)
+			if name then masonry_names[name] = true end
+		end
+	end
 	local masonry = {}
 	for _, cell in ipairs(core.cells) do
-		if cell.y == 1 and cell.name == castle then
+		if cell.y == 1 and masonry_names[cell.name] then
 			masonry[cell.x .. ":" .. cell.z] = true
 		end
 	end
