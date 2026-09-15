@@ -7,7 +7,7 @@ ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf plac
 ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_workyard (-1819,26,-2533)
 ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_forge_door (-1798,26,-2560)
 ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:elder_dwarf placed at socket hall_quest (-1828,26,-2524)
-ACTION[Server]: [grug_mobs] start npcs dwarf hearthpine: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0
+ACTION[Server]: [grug_mobs] start npcs dwarf hearthpine: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0 spare 3
 ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket gate_west (-4,18,-2493)
 ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket gate_east (4,18,-2493)
 ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket watch_gate (0,18,-2498)
@@ -17,7 +17,7 @@ ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed
 ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_barn (-19,18,-2550)
 ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_smithy (22,18,-2551)
 ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:elder_human placed at socket hall_quest (-11,18,-2542)
-ACTION[Server]: [grug_mobs] start npcs human dawnmere: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0
+ACTION[Server]: [grug_mobs] start npcs human dawnmere: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0 spare 3
 ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket gate_west (1796,22,-2493)
 ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket gate_east (1804,22,-2493)
 ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket watch_gate (1800,22,-2498)
@@ -27,7 +27,7 @@ ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed
 ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_bowyer (1828,22,-2551)
 ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_market (1769,22,-2550)
 ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:elder_elf placed at socket hall_quest (1820,22,-2536)
-ACTION[Server]: [grug_mobs] start npcs elf silverleaf: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0
+ACTION[Server]: [grug_mobs] start npcs elf silverleaf: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0 spare 3
 ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket gate_west (-1804,55,2494)
 ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket gate_east (-1796,55,2494)
 ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket watch_gate (-1800,55,2498)
@@ -37,7 +37,7 @@ ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead pla
 ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_bone_works (-1778,55,2549)
 ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_gate_brazier (-1805,55,2493)
 ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:elder_undead placed at socket hall_quest (-1798,55,2560)
-ACTION[Server]: [grug_mobs] start npcs undead stillgrave: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0
+ACTION[Server]: [grug_mobs] start npcs undead stillgrave: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0 spare 3
 ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket gate_west (-4,28,2499)
 ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket gate_east (4,28,2499)
 ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket watch_gate (0,28,2510)
@@ -47,7 +47,7 @@ ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at
 ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_beast_pen (-25,28,2548)
 ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_armoury_forge (20,28,2548)
 ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:elder_orc placed at socket hall_quest (3,28,2562)
-ACTION[Server]: [grug_mobs] start npcs orc sunscar: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0
+ACTION[Server]: [grug_mobs] start npcs orc sunscar: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0 spare 3
 ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket gate_west (1796,21,2505)
 ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket gate_east (1804,21,2505)
 ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket watch_gate (1800,21,2514)
@@ -57,7 +57,7 @@ ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at
 ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_drying_shed (1783,21,2574)
 ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_smoker (1813,21,2570)
 ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:elder_troll placed at socket hall_quest (1803,21,2567)
-ACTION[Server]: [grug_mobs] start npcs troll kapok: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0
+ACTION[Server]: [grug_mobs] start npcs troll kapok: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0 spare 3
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket door_guard_west (-3,43,-1489)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket door_guard_east (4,43,-1489)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket hall_idle_west (-13,43,-1481)
@@ -100,7 +100,7 @@ ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human place
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket court_idle_yard (34,41,-1480)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket forecourt_idle_west (-6,41,-1497)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket forecourt_idle_east (7,41,-1497)
-ACTION[Server]: [grug_mobs] start npcs human highcourt: guards 12/28 flair 27/100 vendor 2/2 quest 1/2 new 42 pending 90
+ACTION[Server]: [grug_mobs] start npcs human highcourt: guards 12/28 flair 27/92 vendor 2/2 quest 1/2 new 42 pending 82 spare 18
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket throne_guard_west (-7,44,-1471)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket throne_guard_east (7,44,-1471)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket hall_idle_service (-13,43,-1472)
@@ -127,35 +127,12 @@ ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human place
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_watch/market_watch_gate_idle (160,39,-1627)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_grove/market_grove_idle (72,43,-1660)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_grove/market_grove_gate_idle (72,43,-1668)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_grove/market_grove_spare_grove (63,43,-1651)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_orchard/market_orchard_work (116,45,-1660)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_orchard/market_orchard_gate_idle (116,45,-1665)
+ACTION[Server]: [grug_mobs] start npcs human highcourt: guards 19/28 flair 48/92 vendor 2/2 quest 1/2 new 28 pending 54 spare 18
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_store/market_store_gate_idle (160,37,-1668)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_store/market_store_spare_store (167,37,-1651)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket martial_barracks/martial_barracks_post (-132,33,-1428)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_barracks/martial_barracks_muster (-132,33,-1413)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket martial_barracks/martial_barracks_yard (-132,33,-1416)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_barracks/martial_barracks_gate_idle (-132,33,-1431)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket martial_barracks/martial_barracks_post_gate_west (-141,33,-1430)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket martial_barracks/martial_barracks_post_gate_east (-123,33,-1430)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_muster_hall/martial_muster_hall_gate_idle (-176,37,-1429)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_armoury/martial_armoury_gate_idle (-220,39,-1428)
-ACTION[Server]: [grug_mobs] start npcs human highcourt: guards 23/28 flair 55/100 vendor 2/2 quest 1/2 new 39 pending 51
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_stables/martial_stables_groom (-132,39,-1372)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_stables/martial_stables_gate (-132,39,-1380)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_stables/martial_stables_gate_idle (-132,39,-1383)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_drill_yard/martial_drill_yard_gate_idle (-176,37,-1384)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket martial_drill_yard/martial_drill_yard_post_yard_west (-183,37,-1380)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket martial_drill_yard/martial_drill_yard_post_yard_east (-169,37,-1380)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_drill_yard/martial_drill_yard_spare_yard (-182,37,-1370)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_quartermaster/martial_quartermaster_gate_idle (-220,39,-1384)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_wain_shed/martial_wain_shed_gate_idle (-132,33,-1339)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_guard_house/martial_guard_house_gate_idle (-176,43,-1336)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_watch_tower/martial_watch_tower_gate_idle (-220,39,-1337)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket martial_watch_tower/martial_watch_tower_post_tower_foot (-225,39,-1336)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_watch_tower/martial_watch_tower_spare_tower (-215,39,-1327)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket lore_shrine/lore_shrine_altar (132,41,-1387)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:elder_human placed at socket lore_shrine/lore_shrine_quest (132,41,-1397)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:elder_human placed at socket lore_shrine/lore_shrine_quest (132,41,-1402)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket lore_shrine/lore_shrine_watch (132,41,-1401)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket lore_shrine/lore_shrine_gate_idle (132,41,-1401)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket lore_library/lore_library_gate_idle (132,35,-1358)
@@ -165,8 +142,15 @@ ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human place
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket lore_herb_garden/lore_herb_garden_idle_a (176,37,-1351)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket lore_herb_garden/lore_herb_garden_idle_b (176,37,-1345)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket lore_herb_garden/lore_herb_garden_gate_idle (176,37,-1356)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket lore_herb_garden/lore_herb_garden_spare_garden (170,37,-1340)
-ACTION[Server]: [grug_mobs] start npcs human highcourt: guards 27/28 flair 75/100 vendor 2/2 quest 2/2 new 25 pending 26
+ACTION[Server]: [grug_mobs] start npcs human highcourt: guards 20/28 flair 58/92 vendor 2/2 quest 2/2 new 12 pending 42 spare 18
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket martial_barracks/martial_barracks_post (-132,33,-1428)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_barracks/martial_barracks_muster (-132,33,-1413)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket martial_barracks/martial_barracks_yard (-132,33,-1416)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_barracks/martial_barracks_gate_idle (-132,33,-1431)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket martial_barracks/martial_barracks_post_gate_west (-141,33,-1430)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket martial_barracks/martial_barracks_post_gate_east (-123,33,-1430)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_muster_hall/martial_muster_hall_gate_idle (-176,37,-1429)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_armoury/martial_armoury_gate_idle (-220,39,-1428)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket lore_scriptorium/lore_scriptorium_desk_a (132,31,-1308)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket lore_scriptorium/lore_scriptorium_desk_b (132,31,-1300)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket lore_chapter_house/lore_chapter_house_gate_idle (176,27,-1311)
@@ -176,22 +160,31 @@ ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human place
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket lore_cloister_walk/lore_cloister_walk_gate_idle (220,31,-1351)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket lore_quiet_grove/lore_quiet_grove_idle (220,33,-1304)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket lore_quiet_grove/lore_quiet_grove_gate_idle (220,33,-1311)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket lore_quiet_grove/lore_quiet_grove_spare_grove (227,33,-1297)
+ACTION[Server]: [grug_mobs] start npcs human highcourt: guards 24/28 flair 71/92 vendor 2/2 quest 2/2 new 17 pending 25 spare 18
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_stables/martial_stables_groom (-132,39,-1372)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_stables/martial_stables_gate (-132,39,-1380)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_stables/martial_stables_gate_idle (-132,39,-1383)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_drill_yard/martial_drill_yard_gate_idle (-176,37,-1384)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket martial_drill_yard/martial_drill_yard_post_yard_west (-183,37,-1380)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket martial_drill_yard/martial_drill_yard_post_yard_east (-169,37,-1380)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_quartermaster/martial_quartermaster_gate_idle (-220,39,-1384)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_wain_shed/martial_wain_shed_gate_idle (-132,33,-1339)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_guard_house/martial_guard_house_gate_idle (-176,43,-1336)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket martial_watch_tower/martial_watch_tower_gate_idle (-220,39,-1337)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket martial_watch_tower/martial_watch_tower_post_tower_foot (-225,39,-1336)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket homes_tavern/homes_tavern_watch (-48,49,-1585)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket homes_tavern/homes_tavern_gate_idle (-48,49,-1585)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket homes_well/homes_well_idle_a (-48,47,-1635)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket homes_well/homes_well_idle_b (-48,47,-1629)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket homes_well/homes_well_gate_idle (-48,47,-1638)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket homes_well/homes_well_spare_well (-54,47,-1626)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket homes_monument/homes_monument_idle (-48,51,-1676)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket homes_monument/homes_monument_gate_idle (-48,51,-1678)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket homes_monument/homes_monument_spare_square (-42,51,-1677)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket homes_house_gable/homes_house_gable_gate_idle (-84,47,-1620)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket homes_house_hip/homes_house_hip_gate_idle (-84,49,-1657)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket homes_house_lane/homes_house_lane_gate_idle (-84,49,-1693)
-ACTION[Server]: [grug_mobs] start npcs human highcourt: guards 28/28 flair 96/100 vendor 2/2 quest 2/2 new 22 pending 4
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket homes_tenement/homes_tenement_gate_idle (-120,45,-1593)
+ACTION[Server]: [grug_mobs] start npcs human highcourt: guards 28/28 flair 89/92 vendor 2/2 quest 2/2 new 22 pending 3 spare 18
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket homes_bakehouse/homes_bakehouse_gate_idle (-128,41,-1635)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket homes_orchard/homes_orchard_work (-120,47,-1665)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket homes_orchard/homes_orchard_gate_idle (-120,47,-1670)
-ACTION[Server]: [grug_mobs] start npcs human highcourt: guards 28/28 flair 100/100 vendor 2/2 quest 2/2 new 4 pending 0
+ACTION[Server]: [grug_mobs] start npcs human highcourt: guards 28/28 flair 92/92 vendor 2/2 quest 2/2 new 3 pending 0 spare 18

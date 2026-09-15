@@ -43,7 +43,7 @@ grug mod SETGLOBAL writes: 17 (the one global table per mod)
 
 == the five plain-5.1 sweeps, mods/*/grug_* ==
 1 goto/labels: READ THESE
-mods/PLAYER/grug_visuals/wield_geometry.lua:29:--    `core::Transform::buildMatrix`) cannot change the answer. The bone's own
+mods/PLAYER/grug_visuals/wield_geometry.lua:30:--    `core::Transform::buildMatrix`) cannot change the answer. The bone's own
 2 escapes: READ THESE
 mods/ENTITIES/grug_mobs/target_frame.lua:115:			-- UTF-8 written literally: \u{} escapes are LuaJIT-only
 mods/ENTITIES/grug_mobs/levels.lua:78:	-- UTF-8 written literally: \u{} escapes are LuaJIT-only (luanti-lua.md).
@@ -125,7 +125,7 @@ mods/ENTITIES/grug_mobs/golem.lua:166:-- §4 row "Stone/Mesa Golem (elite) | gra
 mods/ENTITIES/grug_mobs/golem.lua:167:-- 1 | any | outer, coast, underground", split by continent-side top node;
 mods/ENTITIES/grug_traders/stock.lua:22:-- §8.2 VERBATIM; "Wood & stone tools / bronze pick | 5-15c / 40c" is the
 mods/ENTITIES/grug_traders/stock.lua:32:-- {item = <name>, price = <copper>, category = "goods" | "tools"}
-mods/ENTITIES/grug_traders/stock.lua:93:-- Bracket catalogs & the hourly rotation (§3.8)
+mods/ENTITIES/grug_traders/stock.lua:98:-- Bracket catalogs & the hourly rotation (§3.8)
 mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua:1678:				out.probe_forward}, "|")
 mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua:6336:							out.probe_digest}, "|")
 mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua:6:AGENTS.md|b12f55731dfee4e050f97ea0c221415fdffd9cef7ded5b0b8b7a3b5c16c4a53b|55978
@@ -278,11 +278,11 @@ mods/PLAYER/grug_abilities/init.lua:1506:	local token = SWING_CAPS_VERSION .. "|
 mods/PLAYER/grug_classes/selection.lua:538:		return true, ("%s %s %s, level %d | Str %d Int %d Dex %d | " ..
 mods/PLAYER/grug_classes/selection.lua:539:			"HP %d/%d, mana %d | melee +%d, spell +%d, crit %.1f%%, dodge %.1f%%"):format(
 mods/PLAYER/grug_classes/init.lua:130:-- level. resource = "mana" | "rage" (HUD/regen lands with WP4).
-mods/PLAYER/grug_factions/init.lua:308:	params = "[<player>] [throng|accord]",
-mods/PLAYER/grug_inventory/pages.lua:243:-- Homepage & nav order: Character first, Bags second, Crafting after.
+mods/PLAYER/grug_factions/init.lua:320:	params = "[<player>] [throng|accord]",
+mods/PLAYER/grug_inventory/pages.lua:252:-- Homepage & nav order: Character first, Bags second, Crafting after.
 mods/PLAYER/grug_inventory/init.lua:1:-- Character screen & bags (WP15, spec: docs/design/inventory_equipment.md).
 mods/PLAYER/grug_inventory/bags.lua:58:-- List setup & rules
-mods/PLAYER/grug_visuals/compose.lua:261:	-- docs/research/luanti-lua.md flags `"|"` as a possible bitwise operator,
+mods/PLAYER/grug_visuals/compose.lua:276:	-- docs/research/luanti-lua.md flags `"|"` as a possible bitwise operator,
 mods/PLAYER/grug_xp/init.lua:99:-- HUD: "Level 12  |  3400 / 12100 XP" bottom center above the hotbar.
 5 sandbox/namespace: READ THESE
 mods/CORE/grug_core/atmosphere_zones.lua:334:-- Sea level is y = 1 (minetest.conf water_level, mirrored in the authored
@@ -303,7 +303,7 @@ tools/wp13/dump_highcourt.lua:181:	os.exit(2)
 
 == the same five sweeps over tools/wp13 (not covered by the mod scope) ==
 1 goto/labels: READ THESE
-tools/wp13/wield_transform_kat.lua:205:-- `core::Transform::buildMatrix` rotates with `quaternion::getMatrix_transposed`.
+tools/wp13/wield_transform_kat.lua:212:-- `core::Transform::buildMatrix` rotates with `quaternion::getMatrix_transposed`.
 2 escapes: clean
 3 5.2+ stdlib: clean
 4 // and bitwise: READ THESE

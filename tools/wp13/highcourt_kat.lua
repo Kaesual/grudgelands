@@ -960,6 +960,16 @@ return function(repo)
 	-- three cells between its two architraves; a deck built one cell too
 	-- wide shows up here as a number that moved.
 	local PLOT_RAISED = {lore_cloister_walk = 45}
+	-- Which plots carry one of their district's two spare wander spots, and
+	-- how many. Declared rather than measured, for the same reason the core
+	-- declares its ten: a spare that quietly stops being one is a wander
+	-- target that has become somebody's permanent doorstep.
+	local PLOT_SPARES = {
+		market_grove = 1, market_store = 1,
+		martial_drill_yard = 1, martial_watch_tower = 1,
+		lore_herb_garden = 1, lore_quiet_grove = 1,
+		homes_well = 1, homes_monument = 1,
+	}
 	local quadrants = dofile(wp13 .. "/highcourt_quadrants.lua")()
 	local districts = dofile(wp13 .. "/highcourt_districts.lua")(wp13)
 	local plot_builder = dofile(wp13 .. "/highcourt_plot.lua")(wp13)
@@ -1178,6 +1188,7 @@ return function(repo)
 		local spec = {}
 		for key, value in pairs(PLOT) do spec[key] = value end
 		spec.raised = PLOT_RAISED[entry.id] or 0
+		spec.spare = PLOT_SPARES[entry.id] or 0
 		-- Every plot publishes the roles its own part publishes, so the
 		-- multiset is read off the plot and only its SHAPE is asserted:
 		-- at least one flair spot, and no role the contract does not name.
@@ -1280,16 +1291,12 @@ return function(repo)
 				socket.role ~= "waypoint",
 				entry.id .. " publishes " .. socket.role ..
 					", which belongs to the core alone")
-			if socket.tags then
-				for _, tag in ipairs(socket.tags) do
-					if tag == "spare" then
-						assert(socket.role == "idle",
-							entry.id .. ": a spare is not an idle spot")
-						assert(socket.spawn == false, entry.id ..
-							": a spare must publish spawn = false")
-						district_spares = district_spares + 1
-					end
-				end
+			-- A spare is `spawn = false` and nothing else -- no tag, the same
+			-- way the core's ten are authored. `check_composition` has already
+			-- held it to the role rule and to every standing test; this only
+			-- counts them per district.
+			if socket.spawn ~= nil then
+				district_spares = district_spares + 1
 			end
 		end
 

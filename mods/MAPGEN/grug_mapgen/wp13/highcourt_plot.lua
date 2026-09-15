@@ -128,15 +128,17 @@ local function loader(directory)
 	end
 
 	-- A SPARE is an idle position a walking NPC may use as a DESTINATION and
-	-- which the placement engine is meant not to staff with an inhabitant of
-	-- its own -- two per district, by the coordinator's brief. The registry of
-	-- `grug_core/settlement_sockets.lua` carries `tags` today and drops a
-	-- field it does not know, so the marker that works NOW is the tag;
-	-- `spawn = false` is published beside it so the NPC lane's own field
-	-- starts working the day that lane lands it, with no second edit here.
+	-- which the placement engine does not staff with an inhabitant of its own
+	-- -- two per district. `spawn = false` is the whole of it, and the registry
+	-- of `grug_core/settlement_sockets.lua` accepts it on an `idle` socket and
+	-- on nothing else.
+	--
+	-- NO TAG, deliberately, and the same rule the core's ten spares follow: a
+	-- tag is what an idle NPC's spoken line reads off, and nobody stands here
+	-- to say anything. A spare is a place to stand.
 	function M.spare(id, x, z, face)
 		return {id = "spare_" .. id, role = "idle", x = x, z = z,
-			face = face or 0, tags = {"spare", "wander"}, spawn = false}
+			face = face or 0, spawn = false}
 	end
 
 	-- Build one plot from its roster row.
@@ -255,11 +257,30 @@ local function loader(directory)
 		-- 6. Sockets: the part's own, plus this plot's waypoint in the
 		-- district loop where the part publishes none of its own.
 		local sockets = {}
+		-- What this plot changes about the sockets its PART published. A
+		-- generator in `capitals.lua` knows its own building and nothing about
+		-- the composition it is built into, so it cannot know which of its
+		-- walls faces a lane or where this plot's path runs; the roster says
+		-- so instead of the library being edited per composition. Keyed by
+		-- socket id, and a function of the plot's own ground rectangle,
+		-- because that is where the answers are.
+		local overrides = {}
+		if type(plot.socket_overrides) == "function" then
+			overrides = plot.socket_overrides(area)
+		end
 		for _, entry in ipairs(points.sockets or {}) do
+			-- `spawn` travels with the socket: a generator that publishes a
+			-- spare must not lose it here, the way the first version of this
+			-- copy would have (`highcourt.lua` carries the same field in the
+			-- core's own copy for the same reason).
+			--
+			local override = overrides[entry.id] or {}
 			sockets[#sockets + 1] = {id = entry.id, role = entry.role,
-				x = entry.x, y = entry.y, z = entry.z, face = entry.face,
+				x = override.x or entry.x, y = override.y or entry.y,
+				z = override.z or entry.z,
+				face = override.face or entry.face,
 				group = entry.group, order = entry.order, kind = entry.kind,
-				tags = entry.tags}
+				spawn = entry.spawn, tags = override.tags or entry.tags}
 		end
 		if plot.order then
 			sockets[#sockets + 1] = {id = plot.id .. "_watch",

@@ -1,7 +1,8 @@
 # WP13: Highcourt's other three districts, and the quadrant permutation
 
-Increment record, 2026-09-15, on `main` at `9e22b0d`. Implements the last open
-point of [wp13-highcourt.md](wp13-highcourt.md) section 9 and point 4 of
+Increment record, 2026-09-15, written on `main` at `9e22b0d` and rebased onto
+`af43f64c` (section 11). Implements the last open point
+of [wp13-highcourt.md](wp13-highcourt.md) section 9 and point 4 of
 [wp13-seam-generalisation.md](wp13-seam-generalisation.md) section 9: the
 martial/garrison, lore/spiritual and residential/cultural districts of the
 capitals contract, and the deterministic permutation that decides which of the
@@ -116,18 +117,19 @@ repeated. All three are half timbered, which is what the contract's
 
 ### 2.5 Sockets
 
-181 in all, up from 95: one king, two vendors, one waypoint, two quest spots,
-19 guard posts, 56 patrol waypoints in **nine** loops and 100 idle spots.
+191 in all, up from 95: one king, two vendors, one waypoint, two quest spots,
+19 guard posts, 56 patrol waypoints in **nine** loops and 110 idle spots, of
+which 18 are spares nobody is placed on (ten in the core, two per district).
 
 Each district publishes exactly **two spare wander spots** -- idle positions a
-walking NPC may use as a destination and which the placement engine is meant
-not to staff with an inhabitant of its own. The registry of
-`grug_core/settlement_sockets.lua` carries `tags` today and drops a field it
-does not know, so the marker that works NOW is `tags = {"spare", "wander"}`;
-`spawn = false` is published beside it so the NPC lane's own field starts
-working the day that lane lands it, with no second edit in the compositions.
-**Until then a spare carries an ordinary villager**, which the engine pass
-confirms (flair 100/100) and which is why the count is two and not ten.
+walking NPC may use as a destination and which the placement engine does not
+staff with an inhabitant of its own. `spawn = false` is the whole of it: the
+registry of `grug_core/settlement_sockets.lua` accepts that field on an `idle`
+socket and on nothing else, and the engine pass confirms the result --
+`flair 92/92 ... spare 18`, so every citizen has somewhere to walk to that is
+not another citizen's doorstep. A spare carries no tag, because a tag is what
+an idle NPC's spoken line reads off and nobody stands on a spare to say
+anything.
 
 No district publishes a `vendor`, a `king` or a `waypoint`: `grug_traders` has
 exactly two vendor families and the core's service court already carries one of
@@ -471,9 +473,9 @@ What changed **after looking at them**:
    WP40's terrain treatment of a capital envelope, not this package's, and it
    is what `built-*.png` shows first. Recorded here for the same reason the
    seam package recorded it.
-2. **A spare wander spot still carries a villager.** `spawn = false` is
-   published and the registry drops it until the NPC lane adds the field; eight
-   sockets across the capital are affected. The tag is there today.
+2. ~~**A spare wander spot still carries a villager.**~~ **Closed by the
+   rebase** (section 11): the NPC lane's registry honours `spawn = false`, and
+   the engine pass places nobody on any of the capital's eighteen spares.
 3. **The south-west quadrant has one lane, not two**, and its outer column of
    three lots is served only by the ring street. Both rivers run through that
    quadrant and its lot grid is the only staggered one; a second lane would
@@ -586,3 +588,50 @@ Seven district lanes, not eight (this record, the evidence README and
 6 699 cells, `homes_well` publishes 5 sockets and `lore_quiet_grove` 4. Every
 other cell and socket count in sections 2.2 to 2.4 was re-read off the KAT and
 is right.
+
+## 11. Rebased onto the playtest-round-2 main (2026-09-15)
+
+Rebased onto `main` at `af43f64c` (the round-2 weapon ladder and NPC fixes)
+with no conflict. What the NPC lane changed under this package, and what this
+package changed to meet it:
+
+- **Spares are a registry field now.** `grug_core/settlement_sockets.lua`
+  accepts `spawn = false` on an `idle` socket and on no other role, and
+  normalises it to a boolean for consumers. This package's eight district
+  spares were already `spawn = false`; what they also carried was
+  `tags = {"spare", "wander"}`, and the NPC lane's rule is that a spare carries
+  NO tag -- a tag is what an idle NPC's spoken line reads off, and nobody
+  stands on a spare to say anything. The tags are gone and the KAT counts
+  spares off `spawn` instead of off a tag, declared per plot the way the raised
+  paving is.
+- **`spawn` travels through the aggregation.** `highcourt_plot.lua` copies a
+  part's sockets field by field, and the list did not include `spawn`; a
+  generator that publishes a spare would have lost it here. `highcourt.lua`
+  carries the same field in the core's own copy for the same reason.
+- **The district's quest-giver stands on the doorstep.** The user's round-2
+  ruling is that an elder shows the street his face, and the NPC lane
+  implements it as a `door` tag the consumer turns the NPC by. The `temple`
+  generator stands its quest socket three nodes inside the nave, which is where
+  a shrine's keeper belongs and not where a quest-giver does, so the lore
+  district moves it onto its own path and tags it. That is `socket_overrides`,
+  the roster's one override of what a part published: a generator in
+  `capitals.lua` cannot know which of its walls this composition puts to a lane.
+
+Re-run on the rebased tree, all green:
+
+| Gate | Result |
+| --- | --- |
+| the interpreter pair over every WP13 fixture | `fcb11639f4f1d11ae16e091cb0c2ed29641acba8ed5dc2e42a8ac85af9becae8`, byte-identical |
+| Highcourt core identity | `187f79e0ba52103818eba53f7ed9c3beadc631682648918301287fa4a7200499`, unchanged |
+| the six start identities | unchanged |
+| whole capital | 311 483 cells, unchanged -- no socket move touches a cell |
+| static gates, fresh-server audit | PASS |
+| the 36 lots on both seeds | every lot dry, inside the skirt, under its own roof |
+| engine, seed 531802985935182545 | `exit=0 errors=0 complete=1`, 66 capital mapchunks, avenue road digest matches the committed value |
+
+The capital publishes **191** sockets now (the core's ten spares and the
+districts' eight, plus the district quest spot), in nine loops, and the engine
+places `guards 28/28 flair 92/92 vendor 2/2 quest 2/2 pending 0 spare 18`:
+**not one of the eighteen spares is staffed**, which is what they are for. The
+new load-time terrain audit of section 10.1 logged nothing, which is the
+correct answer on a seed whose lots were measured.

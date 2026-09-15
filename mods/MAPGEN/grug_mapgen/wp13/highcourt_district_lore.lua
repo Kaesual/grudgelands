@@ -24,8 +24,21 @@ local function loader(directory)
 	local PLOTS = {
 		-- 1. The shrine, on the lot nearest the core: the tallest plot of the
 		-- district, and the one that publishes the district's quest socket.
+		-- The temple generator stands its quest spot three nodes INSIDE the
+		-- nave, which is where a shrine's own keeper belongs and not where a
+		-- quest-giver does: the user's playtest-round-2 ruling is that the
+		-- elder stands on the doorstep and shows the street his face. So this
+		-- plot moves the socket out onto its own path and tags it `door`,
+		-- which is what turns the NPC round (`start_npcs.lua`
+		-- `socket_face_yaw`). Both halves are here rather than in
+		-- `capitals.lua` because the generator cannot know which of its walls
+		-- this composition puts to a lane, nor where this plot's path runs.
 		{id = "lore_shrine", module = "capitals", make = "temple",
 			roof = "slate", order = 1,
+			socket_overrides = function(area)
+				return {lore_shrine_quest = {x = 0, z = area.oz - 2, face = 0,
+					tags = {"door"}}}
+			end,
 			spec = {w = 13, d = 17, wall_h = 6}},
 		-- 2. The library. A hall under slate, the biggest room in the
 		-- district, with shuttered reveals left open so it reads as a place
