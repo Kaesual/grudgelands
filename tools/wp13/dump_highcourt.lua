@@ -16,6 +16,17 @@
 -- ids. The avenue is rendered over the same synthetic terrace profile the KAT
 -- uses, translated so the run starts at y = 0.
 --
+-- `--seed <world seed>` names the world whose quadrant permutation the plot
+-- offsets should come from. WITHOUT IT THE ASSIGNMENT IS THE CANONICAL ONE --
+-- the four roles in authored order -- which is a real assignment that no world
+-- necessarily has, and that is the trap the Highcourt probe fell into: it asked
+-- for it by accident and labelled every dump with a district the map did not
+-- hold. Here it matters only for `capital`, whose picture IS the layout, and is
+-- harmless for `core`, `plot` and `--list`, whose answers do not depend on the
+-- permutation at all -- a plot's cells and its id are its own. The flag is
+-- accepted everywhere anyway, because "harmless today" is how the probe's
+-- version of this started.
+--
 -- Plain Lua 5.1, no engine.
 
 local args = {...}
@@ -28,7 +39,7 @@ if not repo or not what then
 	-- cannot tell from one.
 	io.stderr:write("usage: dump_highcourt.lua <repo> " ..
 		"[core, plot, avenue or capital] [<plot id or world seed>] " ..
-		"[--sockets] [--list]\n")
+		"[--seed <world seed>] [--sockets] [--list]\n")
 	os.exit(2)
 end
 
@@ -36,26 +47,54 @@ local wp13 = repo .. "/mods/MAPGEN/grug_mapgen/wp13"
 local palettes = dofile(wp13 .. "/palette.lua")
 local avenue = dofile(wp13 .. "/avenue.lua")(wp13)
 local highcourt = dofile(wp13 .. "/highcourt.lua")(wp13)
--- All four districts, thirty-six plots. The offsets the resolver hands back
--- are this world's, and there is no world here, so they are the canonical
--- assignment; a render of one plot does not depend on them.
+-- All four districts: thirty-six building plots and sixteen dressings.
 local districts = dofile(wp13 .. "/highcourt_districts.lua")(wp13)
 local quadrants = dofile(wp13 .. "/highcourt_quadrants.lua")()
 
 local want_sockets = false
 local plot_id = nil
+local seed = nil
+local want_list = false
+local expect_seed = false
 for index = 3, #args do
 	local token = args[index]
-	if token == "--sockets" then
+	if expect_seed then
+		seed = token
+		expect_seed = false
+	elseif token == "--sockets" then
 		want_sockets = true
+	elseif token == "--seed" then
+		expect_seed = true
 	elseif token == "--list" then
-		for _, entry in ipairs(districts.resolve()) do
-			io.write(entry.id, "\n")
-		end
-		os.exit(0)
+		want_list = true
 	else
 		plot_id = token
 	end
+end
+if expect_seed then
+	io.stderr:write("--seed takes a world seed\n")
+	os.exit(2)
+end
+
+-- The quadrant seam, in ONE place, so every subject below resolves the plot
+-- list the same way. `capital` also takes the seed as its positional argument,
+-- which is how it was first spelled and what the committed render scripts pass.
+local function resolve()
+	local options = {}
+	local full_seed = seed
+	if full_seed == nil and what == "capital" then full_seed = plot_id end
+	if full_seed ~= nil then
+		local common = dofile(repo .. "/tools/wp40/r6/common.lua")
+		options.full_seed, options.raw_sha256 = full_seed, common.new_sha256()
+	end
+	return districts.resolve(options)
+end
+
+if want_list then
+	for _, entry in ipairs(resolve()) do
+		io.write(entry.id, "\n")
+	end
+	os.exit(0)
 end
 
 local cells, sockets, label
@@ -66,7 +105,7 @@ if what == "core" then
 	label = "core " .. core.schema
 elseif what == "plot" then
 	local found
-	for _, entry in ipairs(districts.resolve()) do
+	for _, entry in ipairs(resolve()) do
 		if entry.id == plot_id then found = entry end
 	end
 	if not found then
@@ -126,14 +165,9 @@ elseif what == "capital" then
 	-- quadrant, how the nine lots of each sit round the ring street's corner,
 	-- and how far out the far lot stands.
 	--
-	-- The seed is the third argument; without one the canonical assignment is
-	-- drawn.
-	local options = {}
-	if plot_id then
-		local common = dofile(repo .. "/tools/wp40/r6/common.lua")
-		options.full_seed, options.raw_sha256 = plot_id, common.new_sha256()
-	end
-	local resolved, assignment = districts.resolve(options)
+	-- The seed is the third argument (or `--seed`); without one the canonical
+	-- assignment is drawn, and the label below says which one it was.
+	local resolved, assignment = resolve()
 	local seen = {}
 	cells = {}
 	local function emit(x, y, z, name, param2)
@@ -153,14 +187,19 @@ elseif what == "capital" then
 				cell.param2)
 		end
 	end
+	-- The whole overlay, in the composition's own run order -- avenues, ring,
+	-- district lanes, curtain wall -- so the plan shows the wall ring and its
+	-- four gates and not just the roads inside it. `emit` keeps the first
+	-- writer of a cell, which is the same first-run-wins arbitration the
+	-- successor applies, so the avenue rides through the gate here too.
 	local road = palettes.new("human")
 	local function flat() return 0 end
-	for _, list in ipairs({highcourt.avenues, highcourt.ring,
-			quadrants.lane_runs()}) do
-		for _, spec in ipairs(list) do
-			for _, cell in ipairs(avenue.run(road, spec, flat).cells) do
-				emit(cell.x, cell.y, cell.z, cell.name, cell.param2)
-			end
+	for _, spec in ipairs(highcourt.overlay_runs(quadrants.lane_runs())) do
+		for _, cell in ipairs(highcourt.overlay_run(avenue, road,
+				{id = spec.id, axis = spec.axis, at = spec.at,
+					from = spec.from, to = spec.to, lamp_phase = spec.from},
+				flat).cells) do
+			emit(cell.x, cell.y, cell.z, cell.name, cell.param2)
 		end
 	end
 	-- The ground everything stands on, so the plan reads as a city on a

@@ -708,9 +708,34 @@ return function(repo)
 	-- sentence the live capitals are held to, on a stub: at grade on the deck.
 	local deck_written = owner(tail, owner_origin(0), owner_origin(anchor.y),
 		owner_origin(DECK.min_z), 200)
+	-- Every name the overlay may write that IS THE ROAD'S SURFACE.
+	--
+	-- An overlay's palette is the set of names its content channel is closed
+	-- over, and it is wider than the carriageway in two ways this section has
+	-- to take out, or it measures the top of the street as something that is
+	-- standing on the street:
+	--
+	--   * AIR. Since Highcourt got a curtain wall the palette contains `air`,
+	--     because `wall.palette_names` declares it: a wall CLEARS, the walk's
+	--     headroom and the gate passage are authored air, and a name the
+	--     channel does not know only fails on the mapchunk that finally needs
+	--     it. An authored hole is not a road surface.
+	--   * THE LAMP STANDARD. A standard is two log posts and a torch, and it
+	--     stands ON the carriageway -- so in a deck column that carries one,
+	--     the highest road-palette cell is the torch three courses over the
+	--     deck, not the paving at it. The rhythm decides which columns those
+	--     are, and the rhythm moves whenever a run's `from` moves: Highcourt's
+	--     avenues reaching past the gate station to 261 for the wall's gate
+	--     tunnel is what first put a standard on this stub's deck.
+	--
+	-- What is left is paving, kerb and tread, which is what "the street stands
+	-- at the route's grade" is a sentence about.
+	local NOT_THE_SURFACE = {["air"] = true, ["default:tree"] = true,
+		["default:torch"] = true, ["default:torch_wall"] = true}
 	local road_names = {}
 	for index = 1, #overlay_blueprint.palette do
-		road_names[overlay_blueprint.palette[index]] = true
+		local name = overlay_blueprint.palette[index]
+		if not NOT_THE_SURFACE[name] then road_names[name] = true end
 	end
 	local deck_columns, deck_top = 0, {}
 	for key, ref in pairs(deck_written) do

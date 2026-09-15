@@ -1,0 +1,26 @@
+== the six start blueprint identities, which this package must not move ==
+dawnmere     cells= 66361 palette= 54 sha=80b3f0fcd3005f5186e528393f171029eb9fcf66ed0674ce321dbe1bc38f748b
+hearthpine   cells= 61932 palette= 41 sha=8233c7bc0fe668991e2afd1de53eaae1ede18cf1893cb8ab37ecb223248d4240
+kapok        cells= 72535 palette= 42 sha=c7aadf6a8f599d0f9213cce26153a62e739f1ff2f7920c3a25c1031b63bc21a5
+silverleaf   cells= 71495 palette= 48 sha=149ca6ebdfea6dac18b9385f7fbaa7bbadf37c400cd5d22422acb184859bba05
+stillgrave   cells= 51641 palette= 44 sha=ed6ddd43946d3909aa4a061e3bfa816d80c3e9b6663f33cfc640ec919f836a34
+sunscar      cells= 57227 palette= 43 sha=8110477c6fc555b32c8bd34834812e7b2adb3c561b68202d050cefd6c686fbc6
+
+== the same six, as the districts package recorded them on main 9e22b0d ==
+dawnmere     cells= 66361 palette= 54 sha=80b3f0fcd3005f5186e528393f171029eb9fcf66ed0674ce321dbe1bc38f748b
+hearthpine   cells= 61932 palette= 41 sha=8233c7bc0fe668991e2afd1de53eaae1ede18cf1893cb8ab37ecb223248d4240
+kapok        cells= 72535 palette= 42 sha=c7aadf6a8f599d0f9213cce26153a62e739f1ff2f7920c3a25c1031b63bc21a5
+silverleaf   cells= 71495 palette= 48 sha=149ca6ebdfea6dac18b9385f7fbaa7bbadf37c400cd5d22422acb184859bba05
+stillgrave   cells= 51641 palette= 44 sha=ed6ddd43946d3909aa4a061e3bfa816d80c3e9b6663f33cfc640ec919f836a34
+sunscar      cells= 57227 palette= 43 sha=8110477c6fc555b32c8bd34834812e7b2adb3c561b68202d050cefd6c686fbc6
+
+== every blueprint identity Highcourt publishes (core first) ==
+core                               anchor      101831  187f79e0ba52103818eba53f7ed9c3beadc631682648918301287fa4a7200499
+plot_market_granary                reference     5715  71a78a27a59a902952161e9537fc2470a737b8ed33b5307e75b65da9fb87125c
+plot_market_stable                 reference     5001  b6d38985abdc98d820aafa79076741591e9e1519879e01b86f221aa276964893
+...
+avenue                             overlay         19  5e09544202cfa811432657ebf6cabb1dc8512b82928de5caa4a124b45c251682
+TOTAL CELLS                        -           376274
+
+core digest, expected 187f79e0ba52103818eba53f7ed9c3beadc631682648918301287fa4a7200499:
+core                               anchor      101831  187f79e0ba52103818eba53f7ed9c3beadc631682648918301287fa4a7200499

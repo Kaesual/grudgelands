@@ -99,11 +99,112 @@ local function loader(directory)
 			end},
 	}
 
+	-- THE DISTRICT'S OWN FILL (playtest round 3): four dressings on the
+	-- quadrant's four fill lots, reaches 11, 11, 8 and 5, on the
+	-- forecourt/feature rule the market district's roster writes down.
+	--
+	-- THE CHAPEL WITH ITS GRAVEYARD IS FILL LOT 1, and it is the one fill row
+	-- of the capital that is a BUILDING. The user's round-3 ruling asked for
+	-- "a chapel with a graveyard in the lore district"; a graveyard is open
+	-- ground and a chapel is not, and both belong to one piece of the city, so
+	-- the row builds the small parish chapel of `buildings.chapel` in the
+	-- middle of the lot and lays the burial ground on the strip behind it,
+	-- inside a low wall. It is NOT the core's chapel repeated: the core
+	-- carries the great chapel with the belfry, and this is the one the
+	-- district buries from.
+	local FILL = {
+		{id = "lore_chapel_yard", module = "buildings", make = "chapel",
+			roof = "slate", margin = 3,
+			spec = {w = 11, d = 13, wall_h = 5, infill = true},
+			decorate = function(buf, palette, area)
+				local dressing = area.dressing
+				dressing.graveyard(buf, palette, area.x0 + 1, area.z1 - 1,
+					area.x1 - 1, area.z1 - 1)
+				dressing.low_wall_line(buf, palette, area.x0, area.z1,
+					area.x1, area.z1)
+				dressing.flower_bed(buf, palette, 2, area.z0, 4, area.z0 + 2)
+				dressing.plant(buf, palette, 4, area.z0 + 1)
+				-- THE GRAVE THE MOURNER STANDS AT. `graveyard` scatters its
+				-- markers on a position hash and leaves some plots open, which
+				-- is what a burial ground looks like and exactly what a socket
+				-- may not depend on: the contract's `pray` feature (section
+				-- 8.1) is the chapel's door, an altar, a candle or a GRAVE
+				-- MARKER, so this row sets one marker unconditionally and the
+				-- socket below faces it from the row in front.
+				dressing.grave(buf, palette, 0, area.z1 - 1, true)
+			end,
+			extra_sockets = function(area)
+				return {
+					plots.work("chapel_pray", "pray", 0, area.z1 - 2, 0),
+					plots.work("chapel_beds", "tend", 5, area.z0 + 1, 3),
+				}
+			end},
+		-- 2. THE PHYSIC FIELD: the district's own ploughed ground, the herb
+		-- rows the herb garden inside the district has no room for, a hedge on
+		-- the field side and the three who work it.
+		{id = "lore_physic_field", yard = {},
+			decorate = function(buf, palette, area)
+				local dressing = area.dressing
+				dressing.crop_rows(buf, palette, -7, -8, 7, 8, "z")
+				dressing.hedge_line(buf, palette, -11, 11, 11, 11, 2)
+				dressing.flower_bed(buf, palette, -11, -9, -9, -7)
+				dressing.flower_bed(buf, palette, 9, -9, 11, -7)
+				dressing.plant(buf, palette, -9, -8)
+				dressing.bench(buf, palette, -3, -10, 0, 3, "x")
+				dressing.crates(buf, palette, 8, -10, 0)
+			end,
+			extra_sockets = function()
+				return {
+					plots.work("physic_west", "farm", -5, -9, 0),
+					plots.work("physic_east", "farm", 5, -9, 0),
+					plots.work("physic_beds", "tend", -8, -8, 3),
+				}
+			end},
+		-- 3. THE SEXTON'S GARDEN: two beds, a dead tree kept for the look of
+		-- the place, and the two who tend them.
+		{id = "lore_sexton_garden", yard = {},
+			decorate = function(buf, palette, area)
+				local dressing = area.dressing
+				dressing.flower_bed(buf, palette, -6, -5, -3, -2)
+				dressing.flower_bed(buf, palette, 3, -5, 6, -2)
+				dressing.plant(buf, palette, -3, -4)
+				dressing.plant(buf, palette, 3, -4)
+				dressing.gravewood(buf, palette, 0, 4, 5)
+				dressing.bench(buf, palette, -3, -7, 0, 2, "x")
+				dressing.crates(buf, palette, 6, -7, 0)
+			end,
+			extra_sockets = function()
+				return {
+					plots.work("beds_west", "tend", -2, -4, 3),
+					plots.work("beds_east", "tend", 2, -4, 1),
+					plots.spare("sexton", 7, -8, 0),
+				}
+			end},
+		-- 4. THE QUIET GREEN inside the lot grid: a columnar tree rather than
+		-- the market's broadleaf, so the two greens do not read as one piece
+		-- of dressing used twice, a bench and the district's second spare.
+		{id = "lore_green", yard = {},
+			decorate = function(buf, palette, area)
+				local dressing = area.dressing
+				dressing.columnar(buf, palette, 0, 2, 6)
+				dressing.bench(buf, palette, -4, -3, 0, 2, "x")
+				dressing.flower_bed(buf, palette, 1, -3, 4, -1)
+			end,
+			extra_sockets = function()
+				return {
+					plots.work("green_bench", "sit", -4, -3, 0, {"bench"}, 2),
+					plots.spare("green", 4, -5, 0),
+				}
+			end},
+	}
+
 	M.lore = plots.district({
 		key = "highcourt_lore",
 		role = "lore_spiritual",
 		patrol_group = WATCH,
 		plots = PLOTS,
+		fill = FILL,
+		fill_reaches = {11, 11, 8, 5},
 	})
 
 	return M

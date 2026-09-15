@@ -7,10 +7,15 @@
 -- place the two meet, and it is what the WP40 capital source asks for its
 -- plot list.
 --
--- `M.resolve(options)` returns the 36 plots in a FIXED order -- district by
--- district in the contract's own role order, plot by plot in roster order --
--- each with the offset from the capital anchor that this world's permutation
--- gives it. The order does not depend on the seed, only the offsets do, which
+-- `M.resolve(options)` returns the 52 plots in a FIXED order -- district by
+-- district in the contract's own role order, the district's nine BUILDING
+-- plots in roster order and then its four FILL plots in roster order -- each
+-- with the offset from the capital anchor that this world's permutation gives
+-- it. The fill plots are the dressings of playtest round 3 (fields, orchards,
+-- pastures, parks, the pond, the chapel yard); they stand on the quadrant's
+-- fill lots and they travel with their DISTRICT, which is why they are here
+-- and not a fifth roster of their own: the lore district's chapel yard belongs
+-- beside the lore district wherever the seed puts it. The order does not depend on the seed, only the offsets do, which
 -- is what keeps the manifest's field order and every blueprint identity
 -- independent of the world: a plot's identity is its cells, and its cells do
 -- not know which quadrant they will stand in.
@@ -47,6 +52,10 @@ local function loader(directory)
 				error("wp13 highcourt: " .. roles[index] ..
 					" does not have one plot per lot", 0)
 			end
+			if #M.districts[index].fill ~= #quadrants.FILL_AUTHORED then
+				error("wp13 highcourt: " .. roles[index] ..
+					" does not have one dressing per fill lot", 0)
+			end
 		end
 	end
 
@@ -64,20 +73,25 @@ local function loader(directory)
 		for index = 1, #M.districts do
 			local district = M.districts[index]
 			local placement = assignment[district.role]
-			for plot_index = 1, #district.plots do
-				local plot = district.plots[plot_index]
-				local lot = placement.lots[plot_index]
-				list[#list + 1] = {
-					id = plot.id,
-					district = district.key,
-					role = district.role,
-					quadrant = placement.quadrant,
-					lot = plot_index,
-					x = lot.x,
-					z = lot.z,
-					build = plot.build,
-				}
+			local function append(plots, lots, kind)
+				for plot_index = 1, #plots do
+					local plot = plots[plot_index]
+					local lot = lots[plot_index]
+					list[#list + 1] = {
+						id = plot.id,
+						district = district.key,
+						role = district.role,
+						quadrant = placement.quadrant,
+						kind = kind,
+						lot = plot_index,
+						x = lot.x,
+						z = lot.z,
+						build = plot.build,
+					}
+				end
 			end
+			append(district.plots, placement.lots, "plot")
+			append(district.fill, placement.fill_lots, "fill")
 		end
 		return list, assignment, permutation
 	end

@@ -162,6 +162,23 @@ local function loader(directory)
 		buf:put(x + 1, 1, z + 2, palette.node("rug"))
 	end
 
+	-- A TRESTLE COUNTER: the shopfront of a profession house (playtest round
+	-- 3). `M.stall` is the market square's four-poster booth with a canopy,
+	-- which needs five nodes by five and overhangs them; a counter is the
+	-- three or four nodes of trestle a butcher, a baker or a smith serves over
+	-- and it stands in the two-node ring a plot leaves round its building.
+	-- Waist high on purpose: the sockets contract's `stall` activity is "a
+	-- counter (any solid node at waist height)", and waist height from a
+	-- socket standing beside it is the socket's own feet course.
+	function M.counter(buf, palette, x, z, len, axis)
+		for step = 0, (len or 3) - 1 do
+			local cx = (axis == "z") and x or x + step
+			local cz = (axis == "z") and z + step or z
+			buf:put(cx, 1, cz, palette.node("table_leg"))
+			buf:put(cx, 2, cz, palette.node("table_top"))
+		end
+	end
+
 	-- An inlaid band of a second paving material, one node wide.
 	function M.inlay(buf, palette, x1, z1, x2, z2, role)
 		local name = palette.node(role or "plaza_edge")
@@ -550,6 +567,25 @@ local function loader(directory)
 		end
 	end
 
+	-- ONE PLANT, ON THE GROUND, WHERE SOMEBODY CAN REACH IT.
+	--
+	-- A raised bed is a kerb of masonry round soil, and the sockets contract
+	-- (section 8.1, 2026-09-15) says a work socket's feature search stops at
+	-- the first solid node on its own course -- so a gardener standing outside
+	-- a bed looks at brick, and the flowers two cells further in do not count.
+	-- That is the right rule (a feature behind a wall is not a feature) and the
+	-- answer is not to weaken it but to put the plant where the hands are: this
+	-- breaks the kerb at one cell and grows something there instead.
+	--
+	-- Returns the node it wrote, so a caller can say which cell the socket is
+	-- for.
+	function M.plant(buf, palette, x, z)
+		local name = palette.maybe("flower") or palette.maybe("crop") or
+			palette.node("grass_tuft")
+		buf:put(x, 1, z, name, parts.place_param2(name))
+		return name
+	end
+
 	-- A gravewood: the bent, mostly bare dead tree of the blight basin.
 	--
 	-- The proportions are decoded from the mod's own assets
@@ -626,6 +662,79 @@ local function loader(directory)
 			end
 		end
 		return set
+	end
+
+	-- A POND: the town water of playtest round 3, dug into the plot's own
+	-- ground course and LINED on five sides, so it is a pond and not a leak.
+	--
+	-- The plot under it has already laid `ground` at y = 0 and `subsoil` at
+	-- y = -1 over its whole rectangle; everything below that is untouched
+	-- terrain, and on a terraced envelope "untouched terrain" is not a promise
+	-- of solid rock at a given depth. So the basin writes its own floor and its
+	-- own walls rather than trusting the ground: the ring one node outside the
+	-- water is carried down as subsoil, and the floor under it is subsoil too.
+	-- The water then stands three courses deep with its surface flush with the
+	-- grass, which is what a pond in a meadow looks like.
+	--
+	-- THE SHAPE IS AN OCTAGON, not the rectangle it is given. A rectangular
+	-- basin with square corners reads as a tank; cutting the four corners back
+	-- by a few cells is the cheapest thing that makes a body of water read as a
+	-- pond, and it costs nothing but the cells it does not write. The cut is a
+	-- quarter of the shorter side, capped at three, so a small garden pool and a
+	-- village pond get the same silhouette at their own sizes.
+	--
+	-- The liner follows the SHAPE and not the rectangle: every column that is
+	-- not water but touches water on one of its eight neighbours is carried
+	-- down, which is what keeps the cut corners lined too.
+	--
+	-- Returns the number of water cells, or 0 when the palette binds no water.
+	function M.pond(buf, palette, x1, z1, x2, z2, depth)
+		local water = palette.maybe("water")
+		if water == nil then return 0 end
+		depth = depth or 3
+		local subsoil = palette.node("subsoil")
+		local shore = palette.maybe("ground_bare") or subsoil
+		local floor = -depth
+		local cut = math.floor(math.min(x2 - x1 + 1, z2 - z1 + 1) / 4)
+		if cut > 3 then cut = 3 end
+		local function wet(x, z)
+			if x < x1 or x > x2 or z < z1 or z > z2 then return false end
+			local ex = math.min(x - x1, x2 - x)
+			local ez = math.min(z - z1, z2 - z)
+			return ex + ez >= cut
+		end
+		for z = z1 - 1, z2 + 1 do
+			for x = x1 - 1, x2 + 1 do
+				if wet(x, z) then
+					buf:put(x, floor - 1, z, subsoil)
+				else
+					local touches = false
+					for dz = -1, 1 do
+						for dx = -1, 1 do
+							if wet(x + dx, z + dz) then touches = true end
+						end
+					end
+					if touches then
+						for y = -1, floor - 1, -1 do
+							buf:put(x, y, z, subsoil)
+						end
+						buf:put(x, 0, z, shore)
+					end
+				end
+			end
+		end
+		local filled = 0
+		for z = z1, z2 do
+			for x = x1, x2 do
+				if wet(x, z) then
+					for y = floor, 0 do
+						buf:put(x, y, z, water)
+						filled = filled + 1
+					end
+				end
+			end
+		end
+		return filled
 	end
 
 	-- A cobweb in a corner nobody sweeps. `grug_decor:xdecor_cobweb` is a

@@ -93,10 +93,41 @@ local function loader(directory)
 				door_index = 4, infill = true}},
 		-- 8. The bakehouse. A workshop, turned, opening in its x- wall for
 		-- the same reason the market's workshop and the armoury do.
+		--
+		-- THE BAKEHOUSE IS THE BAKER'S (playtest round 3). It gets the same
+		-- shopfront the market district's three professions carry: a trestle
+		-- counter on the street row of its own ring, the baker's vendor socket
+		-- at one end of it and a WORK socket at the other.
+		--
+		-- THE ACTIVITY IS `stall`, AND HERE IS WHY IT IS NOT `smith`. The
+		-- sockets contract's closed vocabulary (section 8.2) has no baking
+		-- activity; the nearest candidate is `smith`, whose feature rule
+		-- (section 8.1) is "an anvil or furnace". This palette binds NEITHER
+		-- of those to an oven: its `hearth` is `grug_decor:xdecor_cauldron`
+		-- and its `workbench` is `grug_decor:cottages_anvil`, so a `smith`
+		-- socket at a bakehouse would have to face a blacksmith's anvil to
+		-- satisfy its own rule -- and the KAT would hold it to exactly that.
+		-- `stall` is "a counter (any solid node at waist height)", the
+		-- bakehouse has a counter, and that is the honest reading. The
+		-- hammering loop stays with the smith, who has an anvil.
+		--
+		-- If a later package wants a baker who bakes, the change is a `bake`
+		-- activity in section 8.2 and an oven node in the palette, not a
+		-- socket here pointing at the wrong thing.
 		{id = "homes_bakehouse", module = "buildings", make = "workshop",
 			order = 8, turns = 3,
 			spec = {w = 11, d = 11, wing = 5, wall_h = 4, door_side = "x-",
-				door_index = 6, infill = true}},
+				door_index = 6, infill = true},
+			decorate = function(buf, palette, area)
+				area.dressing.counter(buf, palette, area.x1 - 5,
+					area.z0 + 1, 4, "x")
+			end,
+			extra_sockets = function(area)
+				return {
+					plots.vendor("baker", "baker", area.x1 - 4, area.z0, 0),
+					plots.work("oven", "stall", area.x1 - 2, area.z0, 0),
+				}
+			end},
 		-- 9. The orchard on the district's outer edge, which is what
 		-- Highcourt has instead of a wall. Its generator publishes two
 		-- waypoints (9 and 10), so this row carries no `order`.
@@ -104,11 +135,101 @@ local function loader(directory)
 			spec = {len = 21, d = 13, patrol_group = WATCH, order = 9}},
 	}
 
+	-- THE DISTRICT'S OWN FILL (playtest round 3): four dressings on the
+	-- quadrant's four fill lots, reaches 11, 11, 8 and 5, on the
+	-- forecourt/feature rule the market district's roster writes down. This is
+	-- the district the user's "loose, with fields and gardens" is most
+	-- literally about: the common field the lane feeds itself from, the green
+	-- its geese stand on, the park it walks in, and the kitchen garden between
+	-- two of its cottages.
+	local FILL = {
+		-- 1. THE COMMON FIELD: the ploughed ground of the residential quarter,
+		-- three at work in the furrows, the cart and the hay at the gate.
+		{id = "homes_common_field", yard = {},
+			decorate = function(buf, palette, area)
+				local dressing = area.dressing
+				dressing.crop_rows(buf, palette, -9, -8, 9, 9, "z")
+				dressing.fence_line(buf, palette, -11, 11, 11, 11)
+				dressing.bale_stack(buf, palette, -9, -10, 3)
+				dressing.handcart(buf, palette, 7, -10, "x")
+				dressing.bench(buf, palette, -3, -10, 0, 3, "x")
+			end,
+			extra_sockets = function()
+				return {
+					plots.work("furrow_west", "farm", -6, -9, 0),
+					plots.work("furrow_mid", "farm", 0, -9, 0),
+					plots.work("furrow_east", "farm", 6, -9, 0),
+				}
+			end},
+		-- 2. THE GOOSE GREEN: kept grass inside a rail with a hedge on the
+		-- field side, two standards, a wood pile and beds at the gate, and the
+		-- two who keep it.
+		{id = "homes_goose_green", yard = {},
+			decorate = function(buf, palette, area)
+				local dressing = area.dressing
+				dressing.fence_line(buf, palette, -11, -8, -11, 11)
+				dressing.fence_line(buf, palette, 11, -8, 11, 11)
+				dressing.hedge_line(buf, palette, -11, 11, 11, 11, 2)
+				dressing.undergrowth(buf, palette, -10, -5, 10, 10, 4)
+				dressing.broadleaf(buf, palette, -6, 4, 5)
+				dressing.broadleaf(buf, palette, 6, 4, 5)
+				dressing.wood_pile(buf, palette, -9, -8, 3, "x")
+				dressing.flower_bed(buf, palette, 5, -9, 8, -7)
+				dressing.plant(buf, palette, 6, -9)
+				dressing.bench(buf, palette, -3, -10, 0, 3, "x")
+			end,
+			extra_sockets = function()
+				return {
+					plots.work("green_saw", "chop", -8, -9, 0),
+					plots.work("green_beds", "tend", 6, -10, 0),
+					plots.spare("goose", 10, -11, 0),
+				}
+			end},
+		-- 3. THE LANE PARK: a crossing of paths, benches under two standards,
+		-- beds at the gate, and the two who sit and sweep in it.
+		{id = "homes_lane_park", yard = {},
+			decorate = function(buf, palette, area)
+				local dressing = area.dressing
+				for x = -7, 7 do buf:put(x, 0, 0, palette.node("path")) end
+				for z = -5, 7 do buf:put(0, 0, z, palette.node("path")) end
+				dressing.broadleaf(buf, palette, -5, 4, 5)
+				dressing.broadleaf(buf, palette, 5, 4, 5)
+				dressing.bench(buf, palette, -4, -3, 0, 3, "x")
+				dressing.bench(buf, palette, 2, -3, 0, 3, "x")
+				dressing.flower_bed(buf, palette, -8, -6, -6, -4)
+				dressing.flower_bed(buf, palette, 6, -6, 8, -4)
+			end,
+			extra_sockets = function()
+				return {
+					plots.work("park_bench", "sit", -4, -3, 0, {"bench"}, 2),
+					plots.work("park_sweep", "sweep", 0, -6, 0),
+				}
+			end},
+		-- 4. THE KITCHEN GARDEN between two cottages: two raised beds, a bench
+		-- and the district's second spare.
+		{id = "homes_kitchen_garden", yard = {},
+			decorate = function(buf, palette, area)
+				local dressing = area.dressing
+				dressing.planter(buf, palette, -4, -1, -2, 2)
+				dressing.planter(buf, palette, 2, -1, 4, 2)
+				dressing.plant(buf, palette, -2, 0)
+				dressing.bench(buf, palette, -3, -3, 0, 3, "x")
+			end,
+			extra_sockets = function()
+				return {
+					plots.work("beds", "tend", 0, 0, 3),
+					plots.spare("kitchen", 4, -5, 0),
+				}
+			end},
+	}
+
 	M.homes = plots.district({
 		key = "highcourt_homes",
 		role = "residential_cultural",
 		patrol_group = WATCH,
 		plots = PLOTS,
+		fill = FILL,
+		fill_reaches = {11, 11, 8, 5},
 	})
 
 	return M

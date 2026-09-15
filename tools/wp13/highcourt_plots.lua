@@ -3,11 +3,21 @@
 --     luajit tools/wp13/highcourt_plots.lua <repo> <field-a.tsv> <field-b.tsv>
 --     luajit tools/wp13/highcourt_plots.lua <repo> <field-a.tsv> <field-b.tsv> --derive
 --     luajit tools/wp13/highcourt_plots.lua <repo> <field-a.tsv> <field-b.tsv> --repair
+--     luajit tools/wp13/highcourt_plots.lua <repo> <field-a.tsv> <field-b.tsv> --derive-fill
 --
--- The default run VERIFIES the 36 lots `wp13/highcourt_quadrants.lua` carries
--- and the 36 plots the four districts build, against every rule below, on two
--- worlds at once. `--derive` re-runs the search that produced those lots, so
--- the committed table is re-derivable rather than remembered.
+-- The default run VERIFIES the 36 lots `wp13/highcourt_quadrants.lua` carries,
+-- the 16 FILL LOTS it carries beside them, and the 52 plots the four districts
+-- build, against every rule below, on two worlds at once. `--derive` re-runs
+-- the search that produced the lot grids and `--derive-fill` the one that
+-- produced the fill grids, so both committed tables are re-derivable rather
+-- than remembered.
+--
+-- A FILL LOT (playtest round 3) is a district lot with two differences: it
+-- carries its own reach, because the four fill slots are four deliberately
+-- different sizes, and its lane is 4 rather than 8, because a garden between
+-- two cottages is four nodes of grass. Every other rule below is the same one,
+-- applied to the same two fields, and a fill lot is additionally held clear of
+-- every district lot of its own quadrant.
 --
 -- `--repair` is the mode a TERRAIN change needs, and it is `capital_plots.lua
 -- --assign` for this capital: every lot that still stands keeps its authored
@@ -62,6 +72,7 @@ local field_a = assert(arg[2], "first field TSV required")
 local field_b = assert(arg[3], "second field TSV required")
 local derive = arg[4] == "--derive"
 local repair = arg[4] == "--repair"
+local derive_fill = arg[4] == "--derive-fill"
 
 local wp13 = repo .. "/mods/MAPGEN/grug_mapgen/wp13"
 local avenue = dofile(wp13 .. "/avenue.lua")(wp13)
@@ -69,7 +80,10 @@ local highcourt = dofile(wp13 .. "/highcourt.lua")(wp13)
 local quadrants = dofile(wp13 .. "/highcourt_quadrants.lua")()
 local districts = dofile(wp13 .. "/highcourt_districts.lua")(wp13)
 
+local wall = dofile(wp13 .. "/wall.lua")(wp13)
+
 local LOT = quadrants.LOT
+local FILL = quadrants.FILL
 local ENVELOPE = 250 - LOT.reach - LOT.margin   -- one node clear of the gates
 local CORE = 48                                 -- the core's own +-47 plus a node
 
@@ -125,9 +139,11 @@ local function is_land(field, x, z)
 end
 
 -- The terrain half of the predicate, on ONE world: nil when the position is
--- refused, otherwise the perimeter fall and the footprint rise.
-local function terrain(field, x, z)
-	local reach, margin = LOT.reach, LOT.margin
+-- refused, otherwise the perimeter fall and the footprint rise. `reach` is the
+-- lot's own half-width, which a district lot and a fill lot answer differently.
+local function terrain(field, x, z, reach)
+	local margin = LOT.margin
+	reach = reach or LOT.reach
 	if math.abs(x) + reach + margin > field.reach or
 			math.abs(z) + reach + margin > field.reach then
 		return nil, "envelope"
@@ -156,10 +172,10 @@ local function terrain(field, x, z)
 	return fall, rise
 end
 
-local function both(x, z)
-	local fall_a, rise_a = terrain(a, x, z)
+local function both(x, z, reach)
+	local fall_a, rise_a = terrain(a, x, z, reach)
 	if not fall_a then return nil, "a:" .. tostring(rise_a) end
-	local fall_b, rise_b = terrain(b, x, z)
+	local fall_b, rise_b = terrain(b, x, z, reach)
 	if not fall_b then return nil, "b:" .. tostring(rise_b) end
 	return math.max(fall_a, fall_b), math.max(rise_a, rise_b)
 end
@@ -183,13 +199,27 @@ for _, list in ipairs({highcourt.avenues, highcourt.ring,
 	end
 end
 
+-- The curtain wall, which is a run of the same overlay and is therefore a
+-- place no lot may stand either. It is `wall.HALF` either side of its centre
+-- line rather than the road's verge (playtest round 3).
+for _, run in ipairs(highcourt.wall) do
+	if run.axis == "x" then
+		runs[#runs + 1] = {id = run.id, min_x = run.from, max_x = run.to,
+			min_z = run.at - wall.HALF, max_z = run.at + wall.HALF}
+	else
+		runs[#runs + 1] = {id = run.id, min_z = run.from, max_z = run.to,
+			min_x = run.at - wall.HALF, max_x = run.at + wall.HALF}
+	end
+end
+
 local function overlaps(a1, a2, b1, b2) return a1 <= b2 and b1 <= a2 end
 
 -- Geometry only: everything that can be decided without terrain. `turns` says
 -- which quadrant the lot belongs to, because "inside its own quarter" is the
 -- one rule that is not symmetric in the lot alone.
-local function geometry(x, z, turns, placed)
-	local reach = LOT.reach
+local function geometry(x, z, turns, placed, reach, lane)
+	reach = reach or LOT.reach
+	lane = lane or LOT.lane
 	local min_x, max_x, min_z, max_z = x - reach, x + reach, z - reach, z + reach
 	if min_x < -ENVELOPE - reach or max_x > ENVELOPE + reach or
 			min_z < -ENVELOPE - reach or max_z > ENVELOPE + reach then
@@ -211,11 +241,16 @@ local function geometry(x, z, turns, placed)
 			return false, "street:" .. run.id
 		end
 	end
+	-- A lane between this lot and every one already placed. `other.reach` is
+	-- the other lot's own half-width, so a fill lot measured against a district
+	-- lot is measured against the district lot's 13 and not against its own.
 	for _, other in ipairs(placed or {}) do
-		if overlaps(min_x, max_x, other.x - reach - LOT.lane,
-				other.x + reach + LOT.lane) and
-				overlaps(min_z, max_z, other.z - reach - LOT.lane,
-					other.z + reach + LOT.lane) then
+		local gap = math.max(lane, other.lane or lane)
+		local other_reach = other.reach or LOT.reach
+		if overlaps(min_x, max_x, other.x - other_reach - gap,
+				other.x + other_reach + gap) and
+				overlaps(min_z, max_z, other.z - other_reach - gap,
+					other.z + other_reach + gap) then
 			return false, "lot:" .. other.id
 		end
 	end
@@ -230,6 +265,8 @@ local failures = 0
 io.write("== the 36 lots\n")
 io.write("quadrant\tlot\tx\tz\tverdict\tworst_fall\tworst_rise\n")
 local placed = {}
+local by_quadrant = {}
+for _, name in ipairs(quadrants.QUADRANTS) do by_quadrant[name] = {} end
 for turns = 0, 3 do
 	local name = quadrants.QUADRANTS[turns + 1]
 	for index, lot in ipairs(quadrants.LOTS[name]) do
@@ -249,26 +286,68 @@ for turns = 0, 3 do
 			ok and "legal" or ("ILLEGAL " .. tostring(why)), fall, rise},
 			"\t"), "\n")
 		placed[#placed + 1] = {id = id, x = lot.x, z = lot.z}
+		by_quadrant[name][#by_quadrant[name] + 1] =
+			{id = id, x = lot.x, z = lot.z, reach = LOT.reach, lane = FILL.lane}
 	end
 end
 
-io.write("\n== the 36 plots against the lot envelope\n")
-io.write("plot\tdistrict\tquadrant\tlot\tverdict\tx_reach\tz_reach\tclear\n")
+io.write("\n== the 16 fill lots\n")
+io.write("quadrant\tslot\tx\tz\treach\tverdict\tworst_fall\tworst_rise\n")
+for turns = 0, 3 do
+	local name = quadrants.QUADRANTS[turns + 1]
+	local grid = quadrants.FILL_LOTS[name] or {}
+	if #grid ~= #quadrants.FILL_AUTHORED then
+		io.write(name, "\tALL\t-\t-\t-\tWRONG COUNT ", #grid, "\t-\t-\n")
+		failures = failures + 1
+	end
+	local here = {}
+	for index = 1, #by_quadrant[name] do here[index] = by_quadrant[name][index] end
+	for index, lot in ipairs(grid) do
+		local reach = quadrants.FILL_AUTHORED[index].reach
+		local id = name .. "/fill" .. index
+		local ok, why = geometry(lot.x, lot.z, turns, here, reach, FILL.lane)
+		local fall, rise = "-", "-"
+		if ok then
+			local measured_fall, measured_rise = both(lot.x, lot.z, reach)
+			if measured_fall then
+				fall, rise = measured_fall, measured_rise
+			else
+				ok, why = false, measured_rise
+			end
+		end
+		if not ok then failures = failures + 1 end
+		io.write(table.concat({name, index, lot.x, lot.z, reach,
+			ok and "legal" or ("ILLEGAL " .. tostring(why)), fall, rise},
+			"\t"), "\n")
+		here[#here + 1] = {id = id, x = lot.x, z = lot.z, reach = reach,
+			lane = FILL.lane}
+	end
+end
+
+io.write("\n== every plot against the envelope of the lot it stands on\n")
+io.write("plot\tdistrict\tquadrant\tkind\tlot\tverdict\tx_reach\tz_reach\tclear\n")
 for _, entry in ipairs(districts.resolve()) do
 	local composition = entry.build()
 	local bounds = composition.bounds
 	local x_reach = math.max(math.abs(bounds.min.x), math.abs(bounds.max.x))
 	local z_reach = math.max(math.abs(bounds.min.z), math.abs(bounds.max.z))
 	local clear = composition.clear_to
+	local reach = LOT.reach
+	local floor = LOT.clear
+	if entry.kind == "fill" then
+		reach = quadrants.FILL_AUTHORED[entry.lot].reach
+		floor = FILL.clear
+	end
 	local verdict = "fits"
-	if x_reach > LOT.reach or z_reach > LOT.reach then
+	if x_reach > reach or z_reach > reach then
 		verdict = "WIDER THAN THE LOT"
-	elseif clear < LOT.clear then
+	elseif clear < floor then
 		verdict = "CLEARS TOO LITTLE"
 	end
 	if verdict ~= "fits" then failures = failures + 1 end
-	io.write(table.concat({entry.id, entry.district, entry.quadrant, entry.lot,
-		verdict, x_reach, z_reach, clear}, "\t"), "\n")
+	io.write(table.concat({entry.id, entry.district, entry.quadrant,
+		entry.kind or "plot", entry.lot, verdict, x_reach, z_reach, clear},
+		"\t"), "\n")
 end
 
 ----------------------------------------------------------------------
@@ -400,9 +479,104 @@ if derive then
 	end
 end
 
+----------------------------------------------------------------------
+-- Derive the fill lots
+----------------------------------------------------------------------
+--
+-- The same search as the district grids, with the district lots of the
+-- quadrant already standing: the authored fill layout is rotated into the
+-- quadrant, slid as a whole to the translation that needs the least
+-- correction, and every slot that still does not stand takes the NEAREST
+-- position that does. The objective is the worst move, then the total, then
+-- the translation, for the reason written above the district derivation.
+if derive_fill then
+	io.write("\n== derived fill grids\n")
+	local STEP = 4
+	for turns = 0, 3 do
+		local name = quadrants.QUADRANTS[turns + 1]
+		local district_lots = {}
+		for index, lot in ipairs(quadrants.LOTS[name]) do
+			district_lots[index] = {id = name .. "/" .. index, x = lot.x,
+				z = lot.z, reach = LOT.reach, lane = FILL.lane}
+		end
+		local candidates = {}
+		for slot = 1, #quadrants.FILL_AUTHORED do
+			local reach = quadrants.FILL_AUTHORED[slot].reach
+			if candidates[reach] == nil then
+				local list = {}
+				for z = -236, 236, STEP do
+					for x = -236, 236, STEP do
+						if geometry(x, z, turns, district_lots, reach,
+								FILL.lane) and both(x, z, reach) then
+							list[#list + 1] = {x = x, z = z}
+						end
+					end
+				end
+				candidates[reach] = list
+			end
+		end
+		local best
+		for dz = -64, 64, STEP do
+			for dx = -64, 64, STEP do
+				local here, worst, total = {}, 0, 0
+				local standing = {}
+				for index = 1, #district_lots do standing[index] = district_lots[index] end
+				local ok = true
+				for slot, authored in ipairs(quadrants.FILL_AUTHORED) do
+					local reach = authored.reach
+					local x, z = quadrants.rotate(authored.x + dx,
+						authored.z + dz, turns)
+					local move
+					if geometry(x, z, turns, standing, reach, FILL.lane) and
+							both(x, z, reach) then
+						move = 0
+					else
+						local nearest
+						for _, candidate in ipairs(candidates[reach]) do
+							if geometry(candidate.x, candidate.z, turns,
+									standing, reach, FILL.lane) then
+								local distance = math.abs(candidate.x - x) +
+									math.abs(candidate.z - z)
+								if not nearest or distance < nearest.distance then
+									nearest = {x = candidate.x, z = candidate.z,
+										distance = distance}
+								end
+							end
+						end
+						if not nearest then ok = false break end
+						x, z, move = nearest.x, nearest.z, nearest.distance
+					end
+					here[#here + 1] = {slot = slot, x = x, z = z, move = move,
+						reach = reach}
+					standing[#standing + 1] = {id = "fill" .. slot, x = x, z = z,
+						reach = reach, lane = FILL.lane}
+					if move > worst then worst = move end
+					total = total + move
+				end
+				local shift = math.abs(dx) + math.abs(dz)
+				if ok and (not best or worst < best.worst or
+						(worst == best.worst and (total < best.total or
+							(total == best.total and shift < best.shift)))) then
+					best = {worst = worst, total = total, shift = shift,
+						dx = dx, dz = dz, lots = here}
+				end
+			end
+		end
+		assert(best, "no fill grid exists in " .. name)
+		io.write(string.format("%s: shift dx=%d dz=%d worst move %d, total %d\n",
+			name, best.dx, best.dz, best.worst, best.total))
+		for _, lot in ipairs(best.lots) do
+			local fall, rise = both(lot.x, lot.z, lot.reach)
+			io.write(string.format(
+				"  {x = %d, z = %d},  -- fill %d reach=%d fall=%d rise=%d move=%d\n",
+				lot.x, lot.z, lot.slot, lot.reach, fall, rise, lot.move))
+		end
+	end
+end
+
 if failures > 0 then
 	io.write("\n", failures, " lot(s) or plot(s) stand somewhere they may not\n")
 	os.exit(1)
 end
-io.write("\nevery lot is dry, inside the skirt and under its own roof on both",
-	" worlds, and every plot fits every lot\n")
+io.write("\nevery lot and every fill lot is dry, inside the skirt and under",
+	" its own roof on both worlds, and every plot fits the lot it stands on\n")
