@@ -1,26 +1,26 @@
 ACTION[Server]: GRUG_WP13_LOAD boot=1 event=ready starts=6 window_s=30 settle_s=8
 ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window_open key=dawnmere race=human anchor=(0,17,-2550) blocks=162
 ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window_start key=dawnmere objects=15 mobs=11 npcs=11 guards=3 vendors=1 residents=6 work=2 static_idle=3 walkers=1
-ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window key=dawnmere objects=15 mobs=11 npcs=11 guards=3 vendors=1 residents=6 work=2 static_idle=3 walkers=1 seconds=30.4 steps=336 step_mean_ms=90.42 step_max_ms=91.04 find_path=0 find_path_per_min=0.00 walker_share_pct=16.7
-ACTION[Server]: GRUG_WP13_LOAD boot=1 event=micro key=dawnmere npcs=11 rounds=20 us_total=1248 us_per_npc_second=5.67 us_per_settlement_second=62.40
+ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window key=dawnmere objects=15 mobs=11 npcs=11 guards=3 vendors=1 residents=6 work=2 static_idle=3 walkers=1 seconds=30.3 steps=336 step_mean_ms=90.26 step_max_ms=91.02 find_path=0 find_path_per_min=0.00 walker_share_pct=16.7
+ACTION[Server]: GRUG_WP13_LOAD boot=1 event=micro key=dawnmere npcs=11 rounds=20 us_total=681 us_per_npc_second=3.10 us_per_settlement_second=34.05
 ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window_open key=hearthpine race=dwarf anchor=(-1800,25,-2550) blocks=162
 ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window_start key=hearthpine objects=15 mobs=11 npcs=11 guards=3 vendors=1 residents=6 work=2 static_idle=3 walkers=1
-ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window key=hearthpine objects=15 mobs=11 npcs=11 guards=3 vendors=1 residents=6 work=2 static_idle=3 walkers=1 seconds=30.4 steps=336 step_mean_ms=90.42 step_max_ms=91.06 find_path=0 find_path_per_min=0.00 walker_share_pct=16.7
-ACTION[Server]: GRUG_WP13_LOAD boot=1 event=micro key=hearthpine npcs=11 rounds=20 us_total=431 us_per_npc_second=1.96 us_per_settlement_second=21.55
+ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window key=hearthpine objects=15 mobs=11 npcs=11 guards=3 vendors=1 residents=6 work=2 static_idle=3 walkers=1 seconds=30.3 steps=336 step_mean_ms=90.26 step_max_ms=91.05 find_path=0 find_path_per_min=0.00 walker_share_pct=16.7
+ACTION[Server]: GRUG_WP13_LOAD boot=1 event=micro key=hearthpine npcs=11 rounds=20 us_total=486 us_per_npc_second=2.21 us_per_settlement_second=24.30
 ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window_open key=kapok race=troll anchor=(1800,20,2550) blocks=162
 ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window_start key=kapok objects=15 mobs=11 npcs=11 guards=3 vendors=1 residents=6 work=2 static_idle=3 walkers=1
-ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window key=kapok objects=15 mobs=11 npcs=11 guards=3 vendors=1 residents=6 work=2 static_idle=3 walkers=1 seconds=30.4 steps=336 step_mean_ms=90.44 step_max_ms=91.39 find_path=0 find_path_per_min=0.00 walker_share_pct=16.7
-ACTION[Server]: GRUG_WP13_LOAD boot=1 event=micro key=kapok npcs=11 rounds=20 us_total=620 us_per_npc_second=2.82 us_per_settlement_second=31.00
+ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window key=kapok objects=15 mobs=11 npcs=11 guards=3 vendors=1 residents=6 work=2 static_idle=3 walkers=1 seconds=30.4 steps=336 step_mean_ms=90.33 step_max_ms=91.01 find_path=0 find_path_per_min=0.00 walker_share_pct=16.7
+ACTION[Server]: GRUG_WP13_LOAD boot=1 event=micro key=kapok npcs=11 rounds=20 us_total=443 us_per_npc_second=2.01 us_per_settlement_second=22.15
 ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window_open key=silverleaf race=elf anchor=(1800,21,-2550) blocks=162
 ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window_start key=silverleaf objects=14 mobs=11 npcs=11 guards=3 vendors=1 residents=6 work=2 static_idle=3 walkers=1
-ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window key=silverleaf objects=14 mobs=11 npcs=11 guards=3 vendors=1 residents=6 work=2 static_idle=3 walkers=1 seconds=30.4 steps=336 step_mean_ms=90.42 step_max_ms=91.00 find_path=0 find_path_per_min=0.00 walker_share_pct=16.7
-ACTION[Server]: GRUG_WP13_LOAD boot=1 event=micro key=silverleaf npcs=11 rounds=20 us_total=710 us_per_npc_second=3.23 us_per_settlement_second=35.50
+ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window key=silverleaf objects=14 mobs=11 npcs=11 guards=3 vendors=1 residents=6 work=2 static_idle=3 walkers=1 seconds=30.3 steps=336 step_mean_ms=90.32 step_max_ms=90.96 find_path=0 find_path_per_min=0.00 walker_share_pct=16.7
+ACTION[Server]: GRUG_WP13_LOAD boot=1 event=micro key=silverleaf npcs=11 rounds=20 us_total=566 us_per_npc_second=2.57 us_per_settlement_second=28.30
 ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window_open key=stillgrave race=undead anchor=(-1800,54,2550) blocks=162
 ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window_start key=stillgrave objects=15 mobs=11 npcs=11 guards=3 vendors=1 residents=6 work=2 static_idle=3 walkers=1
-ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window key=stillgrave objects=15 mobs=11 npcs=11 guards=3 vendors=1 residents=6 work=2 static_idle=3 walkers=1 seconds=30.4 steps=336 step_mean_ms=90.38 step_max_ms=93.15 find_path=0 find_path_per_min=0.00 walker_share_pct=16.7
-ACTION[Server]: GRUG_WP13_LOAD boot=1 event=micro key=stillgrave npcs=11 rounds=20 us_total=348 us_per_npc_second=1.58 us_per_settlement_second=17.40
+ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window key=stillgrave objects=15 mobs=11 npcs=11 guards=3 vendors=1 residents=6 work=2 static_idle=3 walkers=1 seconds=30.3 steps=336 step_mean_ms=90.32 step_max_ms=91.05 find_path=0 find_path_per_min=0.00 walker_share_pct=16.7
+ACTION[Server]: GRUG_WP13_LOAD boot=1 event=micro key=stillgrave npcs=11 rounds=20 us_total=340 us_per_npc_second=1.55 us_per_settlement_second=17.00
 ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window_open key=sunscar race=orc anchor=(0,27,2550) blocks=162
 ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window_start key=sunscar objects=16 mobs=11 npcs=11 guards=3 vendors=1 residents=6 work=2 static_idle=3 walkers=1
-ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window key=sunscar objects=16 mobs=11 npcs=11 guards=3 vendors=1 residents=6 work=2 static_idle=3 walkers=1 seconds=30.4 steps=336 step_mean_ms=90.36 step_max_ms=91.04 find_path=0 find_path_per_min=0.00 walker_share_pct=16.7
-ACTION[Server]: GRUG_WP13_LOAD boot=1 event=micro key=sunscar npcs=11 rounds=20 us_total=286 us_per_npc_second=1.30 us_per_settlement_second=14.30
-ACTION[Server]: GRUG_WP13_LOAD boot=1 event=complete starts=6 steps=3217 uptime_s=290.6 find_path_total=7
+ACTION[Server]: GRUG_WP13_LOAD boot=1 event=window key=sunscar objects=16 mobs=11 npcs=11 guards=3 vendors=1 residents=6 work=2 static_idle=3 walkers=1 seconds=30.3 steps=336 step_mean_ms=90.28 step_max_ms=91.67 find_path=0 find_path_per_min=0.00 walker_share_pct=16.7
+ACTION[Server]: GRUG_WP13_LOAD boot=1 event=micro key=sunscar npcs=11 rounds=20 us_total=323 us_per_npc_second=1.47 us_per_settlement_second=16.15
+ACTION[Server]: GRUG_WP13_LOAD boot=1 event=complete starts=6 steps=3217 uptime_s=290.3 find_path_total=4

@@ -54,8 +54,8 @@ Per start, before -> after:
 | of which residents | 4 (all ambling) | 6 (2 work, 3 static idle, 1 walker) |
 | walker share | n/a | 16.7 % |
 | `core.find_path` calls in a 30 s window | 0 | 0 |
-| mean server step | 90.24–90.33 ms | 90.36–90.44 ms |
-| worst server step | 91.00–92.16 ms | 91.00–93.15 ms |
+| mean server step | 90.24–90.33 ms | 90.26–90.33 ms |
+| worst server step | 91.00–92.16 ms | 90.96–91.67 ms |
 
 The mean server step is not by itself a measure of the NPCs: a dedicated server
 runs a FIXED step (`dedicated_server_step`, 0.09 s) and only exceeds it once it
@@ -65,16 +65,57 @@ simulated second inside `core.get_us_time()`:
 
 | | before (9 NPCs) | after (11 NPCs) |
 |---|---|---|
-| per settlement-second | 18.7–39.7 µs | 14.3–62.4 µs |
-| per NPC-second | 2.7–5.7 µs | 1.3–5.7 µs |
+| per settlement-second | 18.7–39.7 µs | 16.2–34.1 µs |
+| per NPC-second | 2.7–5.7 µs | 1.5–3.1 µs |
 
-Both runs are in the tens of microseconds per settlement per simulated second,
-i.e. under a tenth of a percent of one 90 ms server step, and the spread within
-a single run is wider than the difference between the runs — other lanes were
-running their own headless servers during the "after" run (`uptime` load average
-7.7 on 16 cores). The honest reading: **two more NPCs per start cost nothing
-measurable, and no resident of any kind asks the pathfinder.**
+**Two more NPCs per start, and the settlement's whole per-second tick got
+slightly cheaper** — a static resident's tick is a distance test and an
+already-correct animation, where an ambling one walked a ring. Both runs are in
+the tens of microseconds per settlement per simulated second, i.e. under a
+tenth of a percent of one 90 ms server step, so the fair claim is "unchanged
+within noise, in the direction of cheaper", not a speed-up.
 
-`find_path_total` over a whole boot is 3 before and 7 after; those calls happen
+Both numbers above are from runs with no other server competing. An earlier
+"after" run taken while four other lanes had their own headless servers up
+(`uptime` load average 7.7 on 16 cores) read 14.3–62.4 µs — which is what the
+spread of this measurement looks like under contention, and why the final pair
+was taken on a quiet machine.
+
+`find_path_total` over a whole boot is 3 before and 4 after; those calls happen
 outside every measured window, during the preload and the guard placement, and
-`patrol.lua`'s stuck rescue is the only caller a settlement has.
+`patrol.lua`'s stuck rescue is the only caller a settlement has. **No resident
+of either kind ever asks the pathfinder.**
+
+## The behaviour probe
+
+`tools/wp13/run_npc_probe.sh`, three boots on one world, `errors=0 complete=3`.
+The round-3 lines out of `npc-probe.txt`:
+
+```
+event=wander socket=idle_west_door    walker=true  ring=4 distinct=3
+event=wander socket=idle_plaza_bench  walker=false ring=4 distinct=1
+event=wander socket=idle_workyard     walker=false ring=2 distinct=1
+event=wander socket=idle_forge_door   walker=false ring=3 distinct=1
+event=wander_done walkers=1 moved=1 static=3 strayed=0
+
+event=work phase=fresh    socket=work_woodpile activity=chop anim=stand item=default:axe_stone ring=none drift=0.10
+event=work phase=fresh    socket=work_garden   activity=tend anim=stand item=nil              ring=none drift=0.00
+event=work phase=reloaded socket=work_woodpile activity=chop anim=walk  item=default:axe_stone ring=none drift=1.31
+event=work phase=reloaded socket=work_garden   activity=tend anim=stand item=nil              ring=none drift=0.00
+
+event=tag phase=far       family=villager metres=40 want=Vale Dwarf           shown=-
+event=tag phase=near      family=villager metres=20 want=Vale Dwarf           shown=Vale Dwarf
+event=tag phase=far_again family=villager metres=40 want=Vale Dwarf           shown=-
+   ... the same three phases for the elder and the vendor ...
+
+event=profession kind=butcher    entity=true nametag=Butcher    offers=6 brackets=false
+event=profession kind=smith      entity=true nametag=Blacksmith offers=6 brackets=true
+event=profession kind=fishmonger entity=true nametag=Fishmonger offers=4 brackets=false
+event=profession kind=baker      entity=true nametag=Baker      offers=4 brackets=false
+event=profession kind=tailor     entity=true nametag=Tailor     offers=6 brackets=false
+```
+
+The `anim=walk drift=1.31` line on boot 2 is the walk home in progress, not a
+defect: boot 1's own wanderer phase teleports the whole roster forty nodes off
+its sockets, and boot 2 catches that resident on its way back (boot 3 reads
+`anim=stand drift=0.66`, and the fresh-world phase reads 0.10 and 0.00).
