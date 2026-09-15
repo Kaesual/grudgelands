@@ -370,7 +370,11 @@ The KAT's own rows are `gor_drazhak_core`, `gor_drazhak_throne`,
 `0bbf87a7253deadca55951752adde73e82c31cd10878dc64ef6d44af91ad1f5f`, the value
 wave 1 recorded. `highcourt_identities.lua` still totals **376 274** cells;
 `highcourt_kat.lua`, `dur_brannoc_kat.lua`, `library_kat.lua` and
-`blueprint_kat.lua` produce their previous output. This lane changed no shared
+`blueprint_kat.lua` produce output byte-identical to what the SAME KATs produce
+on an archive of `main` at `922bfd92` -- extracted into a scratch tree, the KAT
+run there, the two hashed. `identity.sh` carries those four values and exits
+non-zero if one of them moves, so this is a comparison and not a number
+somebody wrote down from this tree. This lane changed no shared
 module: outside its own files it touched `r7_settlement.lua` (one roster row),
 `final_micro.lua` (one line) and `docs/design/settlements.md`.
 
