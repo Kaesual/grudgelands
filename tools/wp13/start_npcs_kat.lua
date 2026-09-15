@@ -205,10 +205,46 @@ return function(repo)
 	}
 	local ENTITIES = {
 		["grug_mobs:guard_accord"] = true,
+		["grug_mobs:guard_throng"] = true,
 		["grug_mobs:villager_dwarf"] = true,
 		["grug_mobs:elder_dwarf"] = true,
 		["grug_traders:vendor_race_dwarf"] = true,
 	}
+
+	--
+	-- THE SIX REAL COMPOSITIONS (state 19, playtest round 3's review).
+	--
+	-- Everything above this line is a synthetic settlement, which is the right
+	-- shape for the marker, twin and unload states: those are about the ENGINE's
+	-- behaviour and a fixture that had to carry a whole village to express them
+	-- would express them worse. But the 80/20 rule and the bounded ring are
+	-- about the SETTLEMENTS THAT SHIP, and Stillgrave proved that: it passed
+	-- every synthetic state while handing its one walker a ring of ONE, because
+	-- its idle sockets are 27 nodes apart and the radius was a wall.
+	--
+	-- So the last state boots the real placement engine a second time over the
+	-- six starts' own authored socket tables, read out of the same blueprints
+	-- `tools/wp13/blueprint_kat.lua` reads. The anchors are this fixture's own
+	-- -- a socket is anchor-relative and the ring is measured in world space
+	-- against the same anchor, so the real anchors would prove nothing extra --
+	-- and every other stub is the one above.
+	--
+	local START_RACE = {hearthpine = "dwarf", dawnmere = "human",
+		silverleaf = "elf", stillgrave = "undead", sunscar = "orc",
+		kapok = "troll"}
+	local START_ORDER = {"hearthpine", "dawnmere", "silverleaf", "stillgrave",
+		"sunscar", "kapok"}
+	local RACE_FACTION = {human = "accord", dwarf = "accord", elf = "accord",
+		orc = "throng", troll = "throng", undead = "throng"}
+	for _, key in ipairs(START_ORDER) do
+		local race = START_RACE[key]
+		ENTITIES["grug_mobs:villager_" .. race] = true
+		ENTITIES["grug_mobs:elder_" .. race] = true
+		ENTITIES["grug_traders:vendor_race_" .. race] = true
+	end
+
+	-- Filled by state 19; nil means "the synthetic settlement above".
+	local real_settlements = nil
 	-- Whether the capital's own area has been emerged yet. `get_node_or_nil`
 	-- answers nil for a block that is not loaded, which is the gate a capital
 	-- is placed behind.
@@ -408,16 +444,45 @@ return function(repo)
 
 		local grug_core = {}
 		function grug_core.start_identities()
+			if real_settlements then
+				local out = {}
+				for index = 1, #real_settlements do
+					local row = real_settlements[index]
+					out[index] = {race_id = row.race_id,
+						faction_id = row.faction_id,
+						anchor = {x = row.anchor.x, y = row.anchor.y,
+							z = row.anchor.z}}
+				end
+				return out
+			end
 			return {{race_id = "dwarf", faction_id = "accord",
 				anchor = {x = ANCHOR.x, y = ANCHOR.y, z = ANCHOR.z}}}
 		end
 		function grug_core.settlement_socket_settlements()
+			if real_settlements then
+				local out = {}
+				for index = 1, #real_settlements do
+					local row = real_settlements[index]
+					out[index] = {key = row.key, race_id = row.race_id,
+						anchor = {x = row.anchor.x, y = row.anchor.y,
+							z = row.anchor.z}}
+				end
+				return out
+			end
 			return {
 				{key = "hearthpine", race_id = "dwarf",
 					anchor = {x = ANCHOR.x, y = ANCHOR.y, z = ANCHOR.z}},
 				{key = "dur_brannoc", race_id = "dwarf",
 					anchor = {x = CAPITAL.x, y = CAPITAL.y, z = CAPITAL.z}},
 			}
+		end
+		local function real_row(key, race_id)
+			if not real_settlements then return nil end
+			for index = 1, #real_settlements do
+				local row = real_settlements[index]
+				if row.key == key or row.race_id == race_id then return row end
+			end
+			return nil
 		end
 		local function compile(list, anchor)
 			local out = {}
@@ -444,18 +509,36 @@ return function(repo)
 			return out
 		end
 		function grug_core.settlement_sockets(race_id)
+			if real_settlements then
+				local row = real_row(nil, race_id)
+				if not row then return {} end
+				return compile(row.sockets, row.anchor)
+			end
 			if race_id ~= "dwarf" then return {} end
 			return compile(SOCKETS, ANCHOR)
 		end
 		function grug_core.settlement_sockets_at(key)
+			if real_settlements then
+				local row = real_row(key, nil)
+				if not row then return {} end
+				return compile(row.sockets, row.anchor)
+			end
 			if key == "hearthpine" then return compile(SOCKETS, ANCHOR) end
 			if key == "dur_brannoc" then return compile(CAPITAL_SOCKETS, CAPITAL) end
 			return {}
 		end
-		function grug_core.start_anchor()
+		function grug_core.start_anchor(_, race_id)
+			if real_settlements then
+				local row = real_row(nil, race_id)
+				return row and {x = row.anchor.x, y = row.anchor.y,
+					z = row.anchor.z} or nil
+			end
 			return {x = ANCHOR.x, y = ANCHOR.y, z = ANCHOR.z}
 		end
 		function grug_core.capital_anchor()
+			-- In real mode there is no capital, and a published anchor that
+			-- matched a start would make `settlement_kind` answer "capital".
+			if real_settlements then return nil end
 			return {x = CAPITAL.x, y = CAPITAL.y, z = CAPITAL.z}
 		end
 		function grug_core.start_ready() return harness.ready == true end
@@ -504,6 +587,14 @@ return function(repo)
 		-- been emerged; everything else is the loaded start. nil is what the
 		-- engine returns for an unloaded block, and it is the capital's gate.
 		function core_api.get_node_or_nil(pos)
+			-- In real mode every start's envelope is loaded: that programme has
+			-- no capital and nothing is gated behind an emerge.
+			if real_settlements then
+				if pos and pos.y < GROUND_Y then
+					return {name = "default:stone"}
+				end
+				return {name = "air"}
+			end
 			if pos and pos.z > -2000 and not capital_loaded then return nil end
 			if pos and pos.y < GROUND_Y then return {name = "default:stone"} end
 			return {name = "air"}
@@ -574,6 +665,27 @@ return function(repo)
 		-- grug_traders owns the vendor role in the real game.
 		grug_mobs.register_start_socket_role("vendor", function(socket, start)
 			return "grug_traders:vendor_race_" .. start.race_id
+		end)
+		--
+		-- THE RESTYLE HOOK, which exists because `core.add_entity` activates an
+		-- entity synchronously: `after_activate` runs with none of the fields
+		-- `install` is about to write. A profession vendor is DRAWN as the race
+		-- of the settlement it stands in, read off `_grug_start`, so before the
+		-- hook the first butcher in Hearthpine was composed as the Accord
+		-- fallback and stayed human until the first reload (the review of round
+		-- 3 found it). grug_traders is not part of this fixture, so what is
+		-- recorded here is the ORDERING the fix hangs on: the hook is called,
+		-- once per placement, and the fields are already there when it runs.
+		--
+		harness.restyled = {}
+		grug_mobs.register_start_npc_restyle(function(entity)
+			harness.restyled[#harness.restyled + 1] = {
+				name = entity.name,
+				start = entity._grug_start,
+				socket = entity._grug_socket,
+				role = entity._grug_socket_role,
+				yaw = entity._grug_face_yaw,
+			}
 		end)
 		--
 		-- THE NAMETAG PROXIMITY GATE lives in `levels.lua`, which is the level
@@ -1738,6 +1850,125 @@ return function(repo)
 	check(elder._grug_tag_want == "Vale Elder",
 		"update_tag no longer refreshes the desired nametag text")
 	line("tag_gate", table.concat(gated, " "), "once_a_second")
+
+	--
+	-- 19. THE RESTYLE HOOK RUNS AFTER `install` (the review's F2). What it is
+	--     for is `grug_traders`' profession vendors, whose race is a property
+	--     of the SETTLEMENT and therefore unknowable until `_grug_start` is
+	--     written -- and `core.add_entity` activates the entity, and with it
+	--     `after_activate` and the visuals composition, before that happens.
+	--     This fixture does not load grug_traders, so what it holds is the
+	--     ordering the fix hangs on: every placement calls the hook exactly
+	--     once, and the fields are already on the entity when it does.
+	--
+	--     The count is not compared against a literal: this fixture boots
+	--     several times and the last boot placed the start AND the capital, so
+	--     what is asserted is that every recorded call already carried the
+	--     fields -- one missing field is the whole defect.
+	check(#harness.restyled >= SLOTS,
+		"the restyle hook ran " .. #harness.restyled ..
+		" times for at least " .. SLOTS .. " placements")
+	local settlements_restyled = {}
+	for index = 1, #harness.restyled do
+		local row = harness.restyled[index]
+		check(type(row.start) == "string" and row.start ~= "" and
+			type(row.socket) == "string" and row.socket ~= "" and
+			type(row.role) == "string" and type(row.yaw) == "number",
+			"the restyle hook ran before install wrote the placement fields " ..
+			"(" .. tostring(row.name) .. " " .. tostring(row.start) .. "/" ..
+			tostring(row.socket) .. "/" .. tostring(row.role) .. ")")
+		settlements_restyled[row.start] = true
+	end
+	check(settlements_restyled.hearthpine and settlements_restyled.dur_brannoc,
+		"the restyle hook did not run for both settlements")
+	line("restyle_hook", "calls_" .. #harness.restyled,
+		"start_and_capital", "after_install")
+
+	--
+	-- 20. THE SIX REAL COMPOSITIONS. Everything above is a synthetic
+	--     settlement, which is the right shape for the marker, twin and unload
+	--     states. The 80/20 rule and the bounded ring are about the
+	--     settlements that SHIP, and the review found what that difference
+	--     hides: Stillgrave's walker stands at `idle_warden_door`, its nearest
+	--     other idle socket is 27.7 nodes away, and a hard WALK_RADIUS handed
+	--     it a ring of ONE -- `next_spot` then returns the same index for
+	--     ever, so the settlement had no moving resident at all and every
+	--     synthetic state still passed.
+	--
+	--     So the real placement engine is booted a second time over the six
+	--     starts' own authored socket tables, read out of the same blueprints
+	--     `blueprint_kat` reads, and three things are asserted per start: every
+	--     walker's ring has at least two entries, the walker share is inside
+	--     the contract's 10-30 percent band, and every work resident got its
+	--     activity.
+	--
+	local sockets_of = {}
+	for _, key in ipairs(START_ORDER) do
+		local build = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/r7_" ..
+			key .. "_blueprint.lua")
+		local blueprint = build()
+		sockets_of[key] = assert(blueprint.landmarks.sockets,
+			key .. " exports no socket landmarks")
+	end
+	real_settlements = {}
+	for index, key in ipairs(START_ORDER) do
+		local race = START_RACE[key]
+		real_settlements[index] = {key = key, race_id = race,
+			faction_id = RACE_FACTION[race],
+			-- Far enough apart that no settlement's scan radius reaches
+			-- another's; a socket is anchor-relative and the ring is measured
+			-- in world space against the same anchor, so the real anchors would
+			-- prove nothing extra.
+			anchor = {x = index * 4000, y = ANCHOR.y, z = 0},
+			sockets = sockets_of[key]}
+	end
+	world = {storage = {}, objects = {}}
+	boot()
+	become_ready()
+	local rings = {}
+	local worst_ring = nil
+	for index = 1, #real_settlements do
+		local row = real_settlements[index]
+		local walkers, residents, works, min_ring = 0, 0, 0, nil
+		for object_index = 1, #world.objects do
+			local mob = world.objects[object_index].mob
+			if mob._grug_start == row.key then
+				if mob._grug_socket_role == "idle" then
+					residents = residents + 1
+					if mob._grug_walker == true then
+						walkers = walkers + 1
+						local size = #(mob._grug_idle_spots or {})
+						if not min_ring or size < min_ring then
+							min_ring = size
+						end
+						if not worst_ring or size < worst_ring then
+							worst_ring = size
+						end
+						check(size >= 2,
+							row.key .. " gave its walker on " ..
+							tostring(mob._grug_socket) .. " a ring of " ..
+							size .. ": it can never move")
+					end
+				elseif mob._grug_socket_role == "work" then
+					residents = residents + 1
+					works = works + 1
+					check(type(mob._grug_work_activity) == "string",
+						row.key .. " placed a work resident with no activity")
+				end
+			end
+		end
+		check(residents > 0, row.key .. " placed no resident at all")
+		check(walkers > 0, row.key .. " has no walking resident")
+		local share = walkers / residents * 100
+		check(share >= 10 and share <= 30,
+			row.key .. " has a walker share of " ..
+			string.format("%.1f", share) .. " percent of " .. residents ..
+			" residents")
+		rings[#rings + 1] = row.key .. "=" .. walkers .. "/" .. residents ..
+			":work_" .. works .. ":ring_" .. tostring(min_ring)
+	end
+	line("real_starts", table.concat(rings, " "),
+		"min_walker_ring_" .. tostring(worst_ring))
 
 	restore()
 	return table.concat(report)

@@ -214,6 +214,16 @@ local WALKER_EVERY = 5
 -- that stands still, which is a legal outcome and never an empty ring.
 --
 local WALK_RADIUS = 20
+--
+-- HOW SHORT A WALKER'S RING MAY BE. A ring of one is a walker that never
+-- moves (`next_spot` returns the index it was given when the ring is shorter
+-- than two), which is the one outcome the 80/20 rule may not produce -- and
+-- Stillgrave shipped exactly that until the review caught it. Three, so a
+-- walker has two destinations rather than one to bounce off; the top-up in
+-- `bounded_spots` reaches for it and settles for whatever the composition can
+-- actually offer.
+--
+local WALK_MIN_RING = 3
 
 --
 -- Role resolvers. A role with no resolver is a socket nobody stands on
@@ -224,6 +234,30 @@ local WALK_RADIUS = 20
 --   start  — {race_id, faction_id, key, anchor}
 --
 local resolvers = {}
+
+--
+-- WHAT TO RE-APPLY AFTER `install` HAS WRITTEN ITS FIELDS.
+--
+-- `core.add_entity` activates the entity synchronously, so `after_activate`
+-- has already run by the time `install` writes `_grug_start`, `_grug_socket`
+-- and the rest. Two things already exist for exactly that reason -- the
+-- authored facing and the settlement's own name for its people -- and the
+-- review of round 3 found a third: a profession vendor is DRAWN as the race of
+-- the settlement it stands in, resolved from `_grug_start`, so on its first
+-- placement it was composed before that field existed and came out human.
+--
+-- A registry rather than a call into `grug_traders`: this mod may not depend on
+-- that one, and a future family with the same ordering problem says so here
+-- instead of editing `place`.
+--
+local restylers = {}
+
+function grug_mobs.register_start_npc_restyle(fn)
+	if type(fn) ~= "function" then
+		error("grug_mobs.register_start_npc_restyle: function expected", 0)
+	end
+	restylers[#restylers + 1] = fn
+end
 
 function grug_mobs.register_start_socket_role(role, resolver)
 	if type(role) ~= "string" or role == "" or type(resolver) ~= "function" then
@@ -873,17 +907,66 @@ local function bounded_spots(group, home_index, walker)
 		end
 		return out, home_index or 1
 	end
-	local out, index = {}, 1
+	--
+	-- THE RADIUS IS A PREFERENCE, NOT A WALL, and that is the fix for the
+	-- defect the review of this round found: Stillgrave's walker stands at
+	-- `idle_warden_door` and its nearest other idle socket is 27.7 nodes away,
+	-- so a hard radius handed it a ring of ONE -- and `next_spot` returns the
+	-- same index for ever when the ring is shorter than two. The settlement
+	-- shipped with zero moving residents and every other test passed.
+	--
+	-- So the radius decides who is IN by default, and a walker whose ring came
+	-- out shorter than WALK_MIN_RING then takes the nearest eligible spots
+	-- until it reaches that size or the composition runs out. The bound is
+	-- still what shapes an ordinary walker's route -- in five of the six starts
+	-- nothing is topped up at all -- and it can no longer produce a walker with
+	-- nowhere to walk.
+	--
+	-- A STATIC resident is deliberately NOT topped up: a ring of one is a
+	-- resident that stands at its door for the life of the world, which is
+	-- exactly what four residents in five are supposed to do.
+	--
+	local keep = {}
+	local shortfall = {}
 	for position = 1, #group do
-		local spot = group[position]
-		local keep = position == home_index
-		if not keep then
+		if position == home_index then
+			keep[position] = true
+		else
+			local spot = group[position]
 			local dx, dz = spot.x - home.x, spot.z - home.z
-			if dx * dx + dz * dz <= WALK_RADIUS * WALK_RADIUS then
-				keep = walker == true or spot.spare == true
+			local d2 = dx * dx + dz * dz
+			local eligible = walker == true or spot.spare == true
+			if eligible and d2 <= WALK_RADIUS * WALK_RADIUS then
+				keep[position] = true
+			elseif eligible then
+				shortfall[#shortfall + 1] = {position = position, d2 = d2}
 			end
 		end
-		if keep then
+	end
+	local kept = 0
+	for _ in pairs(keep) do kept = kept + 1 end
+	if walker == true and kept < WALK_MIN_RING and #shortfall > 0 then
+		-- Nearest first, and the AUTHORED POSITION breaks a tie: two spots at
+		-- the same distance must not be chosen by table order.
+		table.sort(shortfall, function(a, b)
+			if a.d2 ~= b.d2 then return a.d2 < b.d2 end
+			return a.position < b.position
+		end)
+		for index = 1, #shortfall do
+			if kept >= WALK_MIN_RING then break end
+			keep[shortfall[index].position] = true
+			kept = kept + 1
+		end
+	end
+	--
+	-- Emitted in AUTHORED ORDER whatever order they were chosen in: the amble
+	-- advances by exactly one index, so the ring's order is what spreads the
+	-- residents out, and `_grug_idle_spot` is an index into this list.
+	--
+	local out, index = {}, 1
+	for position = 1, #group do
+		if keep[position] then
+			local spot = group[position]
 			out[#out + 1] = {x = spot.x, y = spot.y, z = spot.z,
 				yaw = spot.yaw, tag = spot.tag, spare = spot.spare}
 			if position == home_index then index = #out end
@@ -1002,6 +1085,12 @@ local function place(row, slot)
 	if grug_mobs.start_npc_retag then
 		grug_mobs.start_npc_retag(entity)
 	end
+	-- And whatever else has to be decided from the fields `install` just wrote
+	-- (see `register_start_npc_restyle`): today that is the profession
+	-- vendors' skin, which follows the settlement and not the entity.
+	for index = 1, #restylers do
+		restylers[index](entity)
+	end
 	-- Claim the socket at once. The families claim on activation, which for THIS
 	-- entity happened before it had a socket at all.
 	grug_mobs.start_npc_claim(entity)
@@ -1117,9 +1206,19 @@ function grug_mobs.start_npc_census()
 		for socket_id, entity in pairs(claims) do
 			if holder_alive(entity, row.key, socket_id) then live = live + 1 end
 		end
-		local marked = 0
+		local marked, owed = 0, 0
 		for slot_index = 1, #row.slots do
-			if row.slots[slot_index].placed then marked = marked + 1 end
+			local slot = row.slots[slot_index]
+			if slot.placed then
+				marked = marked + 1
+			elseif slot.due then
+				-- A socket whose NPC DIED and whose refill has been booked
+				-- (world.md section 4a). It is legitimately empty until the
+				-- slot falls due, which is the one reason a healthy settlement
+				-- may hold fewer NPCs than its roster -- so a consumer can
+				-- subtract it instead of loosening its own assertion.
+				owed = owed + 1
+			end
 		end
 		out[#out + 1] = {key = row.key, race_id = row.race_id, kind = row.kind,
 			roster = #row.slots, marked = marked, live = live,
@@ -1133,7 +1232,9 @@ function grug_mobs.start_npc_census()
 			-- the authored order, so they are properties of the settlement and
 			-- not of who happens to be standing in it right now.
 			residents = row.resident_count,
-			walkers = row.walker_count}
+			walkers = row.walker_count,
+			-- Sockets waiting on a booked respawn (see above).
+			owed = owed}
 	end
 	return out
 end
@@ -1261,7 +1362,7 @@ function grug_mobs.start_post_tick(self, dtime)
 			self._grug_post_z, pos, POST_TICK)
 		if total >= POST_STALL_SNAP and
 				grug_mobs.snap_try(self, pos, self._grug_post_x,
-					self._grug_post_z, POST_TICK) then
+					self._grug_post_z, POST_TICK, POST_STALL_SNAP) then
 			return
 		end
 		if stalled >= POST_STALL_PATH and grug_mobs.path_nudge(self,

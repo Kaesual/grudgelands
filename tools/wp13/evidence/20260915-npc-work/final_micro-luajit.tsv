@@ -213,3 +213,5 @@ work	smith_work_anim	sit_anim	writes_1_in_120s	swing_7_in_30s	no_path	step_vetoe
 animation	stand=0..79 walk=168..187 punch=189..198 work=189..198 sit=81..160	work_speed_10
 activities	smith=work/default:pick_bronze fish=stand/default:stick farm=work/default:shovel_stone chop=work/default:axe_stone tend=stand pray=stand stall=stand sit=sit sweep=walk
 tag_gate	elder=Vale Elder walker=Vale Dwarf work=Vale Dwarf	once_a_second
+restyle_hook	calls_19	start_and_capital	after_install
+real_starts	hearthpine=1/6:work_2:ring_4 dawnmere=1/6:work_2:ring_3 silverleaf=1/6:work_2:ring_4 stillgrave=1/6:work_2:ring_3 sunscar=1/6:work_2:ring_3 kapok=1/6:work_2:ring_5	min_walker_ring_3

@@ -141,6 +141,9 @@ local function census(row)
 	local objects = core.get_objects_inside_radius(row.anchor, CENSUS_RADIUS)
 	local out = {objects = #objects, mobs = 0, npcs = 0, guards = 0,
 		residents = 0, work = 0, static_idle = 0, walkers = 0, vendors = 0,
+		-- The smallest wander ring any walker of this settlement was handed;
+		-- nil when the build under test has no walkers to speak of.
+		min_ring = nil,
 		-- Is this build's placement engine the one that SPLITS residents? The
 		-- same probe is run against the tree before the change to get the
 		-- baseline, and there every resident is an undifferentiated ambler --
@@ -164,6 +167,20 @@ local function census(row)
 						out.work = out.work + 1
 					elseif entity._grug_walker then
 						out.walkers = out.walkers + 1
+						--
+						-- THE SMALLEST RING ANY WALKER OF THIS SETTLEMENT GOT.
+						-- A ring of one is a walker that never moves
+						-- (`next_spot` returns the index it was given when the
+						-- ring is shorter than two), and Stillgrave shipped
+						-- exactly that: its idle sockets are 27 nodes apart and
+						-- WALK_RADIUS was a wall. This probe is the only one
+						-- that visits all six starts, so it is where that claim
+						-- is measured for the five the NPC probe never reaches.
+						--
+						local ring = #(entity._grug_idle_spots or {})
+						if not out.min_ring or ring < out.min_ring then
+							out.min_ring = ring
+						end
 					else
 						out.static_idle = out.static_idle + 1
 					end
@@ -180,7 +197,8 @@ local function census_fields(tag, row, data, extra)
 		"npcs=" .. data.npcs, "guards=" .. data.guards,
 		"vendors=" .. data.vendors, "residents=" .. data.residents,
 		"work=" .. data.work, "static_idle=" .. data.static_idle,
-		"walkers=" .. data.walkers}
+		"walkers=" .. data.walkers,
+		"min_walker_ring=" .. tostring(data.min_ring)}
 	for index = 1, #(extra or {}) do fields[#fields + 1] = extra[index] end
 	log(fields)
 end
@@ -288,6 +306,16 @@ local function report(row)
 		fail(row.key .. " asked the pathfinder " .. window_paths ..
 			" times in a quiet " .. string.format("%.0f", window_time) ..
 			" s window")
+	end
+	--
+	-- EVERY WALKER HAS SOMEWHERE TO WALK. Asserted here because this is the
+	-- only programme that visits all six starts, and the settlement that had
+	-- the defect -- Stillgrave -- is not the one the NPC probe exercises.
+	--
+	if data.split_known and data.walkers > 0 and
+			(data.min_ring == nil or data.min_ring < 2) then
+		fail(row.key .. " handed a walker a ring of " ..
+			tostring(data.min_ring) .. ": it can never move")
 	end
 	if data.split_known and data.residents > 0 and
 			(share < 10 or share > 30) then

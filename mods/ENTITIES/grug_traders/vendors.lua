@@ -198,6 +198,33 @@ local function settlement_race(entity)
 	return race_of_settlement[key]
 end
 
+--
+-- RE-APPLY THE SKIN ONCE THE PLACEMENT HAS SAID WHERE THIS VENDOR STANDS.
+--
+-- `core.add_entity` activates the entity synchronously, so `after_activate`
+-- above -- and with it `grug_visuals.apply_entity` -- has already run by the
+-- time `grug_mobs/start_npcs.lua`'s `install` writes `_grug_start`. For the
+-- six race vendors and the two Quartermasters that is harmless, because their
+-- race is a property of the entity; for a PROFESSION vendor, whose race is a
+-- property of the SETTLEMENT, it meant the first placement composed the Accord
+-- fallback and the butcher stood in Hearthpine as a human until the first
+-- reload. Found by the review of playtest round 3.
+--
+-- Registered into the placement engine's restyle list, which exists for
+-- exactly this class of ordering problem; `apply_entity` compares
+-- `_grug_visual_skin` and does nothing when the composed skin is already
+-- right, so this is free for every vendor that is not a profession.
+--
+function grug_traders.restyle_socket_vendor(entity)
+	if type(entity) ~= "table" then return end
+	local vendor = grug_traders.vendors[entity.name]
+	-- Only the families whose look depends on where they stand.
+	if not vendor or vendor.race or vendor.faction then return end
+	if not core.global_exists("grug_visuals") then return end
+	grug_visuals.apply_entity(entity, {race = settlement_race(entity) or
+		VENDOR_FACTION_RACE.accord})
+end
+
 -- The once-a-second tick a vendor did not have before round 3. It exists for
 -- the nametag gate and does nothing else; `false` stops mobs_redo running the
 -- rest of the step, which for a mob with zero velocities, `stand_chance = 100`
@@ -658,6 +685,17 @@ if type(grug_mobs.register_start_socket_role) == "function" then
 else
 	core.log("error", "[grug_traders] grug_mobs offers no settlement socket role " ..
 		"registry; the settlements get no vendor")
+end
+
+-- The first placement of a profession vendor composes its look before it knows
+-- which settlement it is standing in; this is what fixes that up (see
+-- `grug_traders.restyle_socket_vendor`).
+if type(grug_mobs.register_start_npc_restyle) == "function" then
+	grug_mobs.register_start_npc_restyle(grug_traders.restyle_socket_vendor)
+else
+	core.log("error", "[grug_traders] grug_mobs offers no settlement restyle " ..
+		"registry; a profession vendor wears the wrong race until its first " ..
+		"reload")
 end
 
 -- Last: the capital slots this mod still owns itself, which is every capital

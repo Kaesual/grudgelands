@@ -28,6 +28,9 @@ CHANGED=(
 	tools/wp13/start_npcs_kat.lua
 	tools/wp13/npc_probe/init.lua
 	tools/wp13/npc_load_probe/init.lua
+	mods/ENTITIES/grug_mobs/patrol.lua
+	tools/wp40/quality/vendor_fixture.lua
+	tools/wp40/r7/micro_kat_fixture.lua
 )
 
 echo "== parser and SETGLOBAL on every Lua file this increment changed =="

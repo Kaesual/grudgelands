@@ -74,10 +74,10 @@ ACTION[Main]: [grug_traders] dwarf capital vendors come from the sockets of dur_
 ACTION[Main]: [grug_traders] human capital vendors come from the sockets of highcourt
 ACTION[Main]: [grug_traders] 8 settlements indexed for profession vendor appearance
 ACTION[Main]: [grug_traders] drop audit: 1 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit); their items are audited from the hardcoded FUNCTION_DROPS list
-ACTION[Main]: World at [/tmp/grudgelands-headless.ebTK5f/world]
-ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31432.
+ACTION[Main]: World at [/tmp/grudgelands-headless.UgsWTD/world]
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31440.
 ACTION[Server]: [grug_core] start preload: emerging 6 start areas (128 x 128 nodes each, 2 at a time)
-ACTION[Emerge-0]: [grug_core] start area ready: dwarf (1/6, 15.6 s)
+ACTION[Emerge-0]: [grug_core] start area ready: dwarf (1/6, 15.5 s)
 ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket gate_west (-1804,26,-2491)
 ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket gate_east (-1796,26,-2491)
 ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket watch_gate (-1800,26,-2498)
@@ -92,8 +92,8 @@ ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:elder_dwarf placed 
 ACTION[Server]: [grug_mobs] start npcs dwarf hearthpine: guards 3/3 flair 6/6 vendor 1/1 quest 1/1 new 11 pending 0 spare 3 residents 6 walkers 1
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=ready key=hearthpine race=dwarf anchor=(-1800,25,-2550) sockets=18 programme=full
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=forceload blocks=162
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=ready key=hearthpine roster=11 marked=11 live=0 twins=0 spare=3 strict=false
-ACTION[Emerge-0]: [grug_core] start area ready: human (2/6, 23.6 s)
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=ready key=hearthpine roster=11 marked=11 live=0 twins=0 spare=3 owed=0 strict=false
+ACTION[Emerge-0]: [grug_core] start area ready: human (2/6, 23.4 s)
 ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket gate_west (-4,18,-2493)
 ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket gate_east (4,18,-2493)
 ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket watch_gate (0,18,-2498)
@@ -106,14 +106,14 @@ ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed
 ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket work_green_seat (-5,18,-2535)
 ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:elder_human placed at socket hall_quest (-11,18,-2542)
 ACTION[Server]: [grug_mobs] start npcs human dawnmere: guards 3/3 flair 6/6 vendor 1/1 quest 1/1 new 11 pending 0 spare 3 residents 6 walkers 1
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_plaza_bench spot=1 at=1 spots=4 dwell=336.4 state=stand x=-1793.0 z=-2549.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_forge_door spot=1 at=1 spots=3 dwell=308.4 state=stand x=-1798.0 z=-2560.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_forge_door spot=1 at=1 spots=3 dwell=348.4 state=stand x=-1798.0 z=-2560.0
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_woodpile spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1812.0 z=-2563.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_plaza_bench spot=1 at=1 spots=4 dwell=175.4 state=stand x=-1793.0 z=-2549.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_workyard spot=1 at=1 spots=2 dwell=395.4 state=stand x=-1819.0 z=-2533.0
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_garden spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1819.0 z=-2529.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_workyard spot=1 at=1 spots=2 dwell=277.4 state=stand x=-1819.0 z=-2533.0
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_west_door spot=1 at=1 spots=4 dwell=12.4 state=stand x=-1816.0 z=-2546.0
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=facing socket=hall_quest role=quest tag=door authored=0.000 want=3.142 have=3.142 delta=0.000
-ACTION[Emerge-0]: [grug_core] start area ready: elf (3/6, 28.3 s)
+ACTION[Emerge-0]: [grug_core] start area ready: elf (3/6, 28.4 s)
 ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket gate_west (1796,22,-2493)
 ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket gate_east (1804,22,-2493)
 ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket watch_gate (1800,22,-2498)
@@ -126,7 +126,7 @@ ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed
 ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket work_market (1767,22,-2545)
 ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:elder_elf placed at socket hall_quest (1820,22,-2536)
 ACTION[Server]: [grug_mobs] start npcs elf silverleaf: guards 3/3 flair 6/6 vendor 1/1 quest 1/1 new 11 pending 0 spare 3 residents 6 walkers 1
-ACTION[Emerge-0]: [grug_core] start area ready: undead (4/6, 34.6 s)
+ACTION[Emerge-0]: [grug_core] start area ready: undead (4/6, 34.8 s)
 ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket gate_west (-1804,55,2494)
 ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket gate_east (-1796,55,2494)
 ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket watch_gate (-1800,55,2498)
@@ -139,7 +139,7 @@ ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead pla
 ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket work_blightbed (-1822,55,2542)
 ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:elder_undead placed at socket hall_quest (-1798,55,2560)
 ACTION[Server]: [grug_mobs] start npcs undead stillgrave: guards 3/3 flair 6/6 vendor 1/1 quest 1/1 new 11 pending 0 spare 3 residents 6 walkers 1
-ACTION[Emerge-0]: [grug_core] start area ready: orc (5/6, 43.4 s)
+ACTION[Emerge-0]: [grug_core] start area ready: orc (5/6, 43.8 s)
 ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket gate_west (-4,28,2499)
 ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket gate_east (4,28,2499)
 ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket watch_gate (0,28,2510)
@@ -152,14 +152,14 @@ ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at
 ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket work_acacia (-14,28,2549)
 ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:elder_orc placed at socket hall_quest (3,28,2562)
 ACTION[Server]: [grug_mobs] start npcs orc sunscar: guards 3/3 flair 6/6 vendor 1/1 quest 1/1 new 11 pending 0 spare 3 residents 6 walkers 1
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_west_door spot=3 at=- spots=4 dwell=-1.0 state=walk x=-1812.3 z=-2544.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_plaza_bench spot=1 at=1 spots=4 dwell=316.9 state=stand x=-1793.0 z=-2549.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_forge_door spot=1 at=1 spots=3 dwell=288.9 state=stand x=-1798.0 z=-2560.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_west_door spot=3 at=- spots=4 dwell=-1.0 state=walk x=-1812.4 z=-2544.1
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_plaza_bench spot=1 at=1 spots=4 dwell=155.9 state=stand x=-1793.0 z=-2549.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_forge_door spot=1 at=1 spots=3 dwell=328.9 state=stand x=-1798.0 z=-2560.0
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_woodpile spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1812.0 z=-2563.0
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_garden spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1819.0 z=-2529.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_workyard spot=1 at=1 spots=2 dwell=257.9 state=stand x=-1819.0 z=-2533.0
-ACTION[Emerge-0]: [grug_core] start area ready: troll (6/6, 48.0 s)
-ACTION[Emerge-0]: [grug_core] all 6 start areas ready after 48.0 s
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_workyard spot=1 at=1 spots=2 dwell=375.9 state=stand x=-1819.0 z=-2533.0
+ACTION[Emerge-0]: [grug_core] start area ready: troll (6/6, 48.8 s)
+ACTION[Emerge-0]: [grug_core] all 6 start areas ready after 48.8 s
 ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket gate_west (1796,21,2505)
 ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket gate_east (1804,21,2505)
 ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket watch_gate (1800,21,2514)
@@ -172,76 +172,74 @@ ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at
 ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket work_terrace (1784,21,2574)
 ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:elder_troll placed at socket hall_quest (1803,21,2567)
 ACTION[Server]: [grug_mobs] start npcs troll kapok: guards 3/3 flair 6/6 vendor 1/1 quest 1/1 new 11 pending 0 spare 3 residents 6 walkers 1
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_plaza_bench spot=1 at=1 spots=4 dwell=296.3 state=stand x=-1793.0 z=-2549.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_forge_door spot=1 at=1 spots=3 dwell=268.3 state=stand x=-1798.0 z=-2560.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_plaza_bench spot=1 at=1 spots=4 dwell=135.3 state=stand x=-1793.0 z=-2549.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_forge_door spot=1 at=1 spots=3 dwell=308.3 state=stand x=-1798.0 z=-2560.0
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_woodpile spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1812.0 z=-2563.0
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_garden spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1819.0 z=-2529.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_west_door spot=3 at=3 spots=4 dwell=8.7 state=stand x=-1808.7 z=-2541.5
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_workyard spot=1 at=1 spots=2 dwell=237.3 state=stand x=-1819.0 z=-2533.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_west_door spot=4 at=- spots=4 dwell=-1.0 state=walk x=-1807.6 z=-2550.9
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_plaza_bench spot=1 at=1 spots=4 dwell=276.8 state=stand x=-1793.0 z=-2549.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_west_door spot=3 at=3 spots=4 dwell=19.7 state=stand x=-1808.7 z=-2541.5
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_workyard spot=1 at=1 spots=2 dwell=355.3 state=stand x=-1819.0 z=-2533.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_plaza_bench spot=1 at=1 spots=4 dwell=115.8 state=stand x=-1793.0 z=-2549.0
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_woodpile spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1812.0 z=-2563.0
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_garden spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1819.0 z=-2529.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_workyard spot=1 at=1 spots=2 dwell=217.8 state=stand x=-1819.0 z=-2533.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_forge_door spot=1 at=1 spots=3 dwell=248.8 state=stand x=-1798.0 z=-2560.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_west_door spot=4 at=- spots=4 dwell=-1.0 state=walk x=-1806.2 z=-2555.4
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_plaza_bench spot=1 at=1 spots=4 dwell=256.2 state=stand x=-1793.0 z=-2549.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_west_door spot=3 at=3 spots=4 dwell=0.2 state=stand x=-1808.7 z=-2541.5
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_workyard spot=1 at=1 spots=2 dwell=335.8 state=stand x=-1819.0 z=-2533.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_forge_door spot=1 at=1 spots=3 dwell=288.8 state=stand x=-1798.0 z=-2560.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_west_door spot=4 at=- spots=4 dwell=-1.0 state=walk x=-1806.6 z=-2554.2
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_plaza_bench spot=1 at=1 spots=4 dwell=95.2 state=stand x=-1793.0 z=-2549.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_woodpile spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1812.0 z=-2563.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_garden spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1819.0 z=-2529.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_workyard spot=1 at=1 spots=2 dwell=315.2 state=stand x=-1819.0 z=-2533.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_forge_door spot=1 at=1 spots=3 dwell=268.2 state=stand x=-1798.0 z=-2560.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_west_door spot=4 at=- spots=4 dwell=-1.0 state=walk x=-1806.0 z=-2561.2
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_plaza_bench spot=1 at=1 spots=4 dwell=75.7 state=stand x=-1793.0 z=-2549.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_woodpile spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1812.0 z=-2563.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_garden spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1819.0 z=-2529.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_workyard spot=1 at=1 spots=2 dwell=295.7 state=stand x=-1819.0 z=-2533.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_forge_door spot=1 at=1 spots=3 dwell=248.7 state=stand x=-1798.0 z=-2560.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_plaza_bench spot=1 at=1 spots=4 dwell=55.2 state=stand x=-1793.0 z=-2549.0
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_forge_door spot=1 at=1 spots=3 dwell=228.2 state=stand x=-1798.0 z=-2560.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_workyard spot=1 at=1 spots=2 dwell=197.2 state=stand x=-1819.0 z=-2533.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_garden spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1819.0 z=-2529.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_woodpile spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1812.0 z=-2563.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_plaza_bench spot=1 at=1 spots=4 dwell=236.7 state=stand x=-1793.0 z=-2549.0
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_woodpile spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1812.0 z=-2563.0
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_garden spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1819.0 z=-2529.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_west_door spot=4 at=4 spots=4 dwell=20.0 state=stand x=-1806.0 z=-2562.1
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_workyard spot=1 at=1 spots=2 dwell=177.7 state=stand x=-1819.0 z=-2533.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_west_door spot=4 at=4 spots=4 dwell=36.4 state=stand x=-1806.0 z=-2561.5
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_workyard spot=1 at=1 spots=2 dwell=275.2 state=stand x=-1819.0 z=-2533.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_plaza_bench spot=1 at=1 spots=4 dwell=35.7 state=stand x=-1793.0 z=-2549.0
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_forge_door spot=1 at=1 spots=3 dwell=208.7 state=stand x=-1798.0 z=-2560.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_plaza_bench spot=1 at=1 spots=4 dwell=217.2 state=stand x=-1793.0 z=-2549.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_woodpile spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1812.0 z=-2563.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_garden spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1819.0 z=-2529.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_west_door spot=4 at=4 spots=4 dwell=16.9 state=stand x=-1806.0 z=-2561.5
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_workyard spot=1 at=1 spots=2 dwell=255.7 state=stand x=-1819.0 z=-2533.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_west_door spot=1 at=- spots=4 dwell=-1.0 state=walk x=-1806.0 z=-2561.1
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_plaza_bench spot=1 at=1 spots=4 dwell=16.2 state=stand x=-1793.0 z=-2549.0
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_forge_door spot=1 at=1 spots=3 dwell=189.2 state=stand x=-1798.0 z=-2560.0
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_woodpile spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1812.0 z=-2563.0
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_garden spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1819.0 z=-2529.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_west_door spot=4 at=4 spots=4 dwell=0.5 state=stand x=-1806.0 z=-2562.1
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_workyard spot=1 at=1 spots=2 dwell=158.2 state=stand x=-1819.0 z=-2533.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_west_door spot=1 at=1 spots=4 dwell=-1.0 state=walk x=-1815.3 z=-2547.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_plaza_bench spot=1 at=1 spots=4 dwell=196.6 state=stand x=-1793.0 z=-2549.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_forge_door spot=1 at=1 spots=3 dwell=168.6 state=stand x=-1798.0 z=-2560.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_woodpile spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1812.0 z=-2563.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_garden spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1819.0 z=-2529.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_workyard spot=1 at=1 spots=2 dwell=137.6 state=stand x=-1819.0 z=-2533.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_plaza_bench spot=1 at=1 spots=4 dwell=177.1 state=stand x=-1793.0 z=-2549.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_forge_door spot=1 at=1 spots=3 dwell=149.1 state=stand x=-1798.0 z=-2560.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_woodpile spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1812.0 z=-2563.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_west_door spot=1 at=1 spots=4 dwell=5.5 state=stand x=-1815.8 z=-2546.4
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=work_garden spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1819.0 z=-2529.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_workyard spot=1 at=1 spots=2 dwell=118.1 state=stand x=-1819.0 z=-2533.0
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=ambled key=hearthpine roster=11 marked=11 live=11 twins=0 spare=3 strict=true
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=pos socket=idle_workyard spot=1 at=1 spots=2 dwell=236.2 state=stand x=-1819.0 z=-2533.0
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=ambled key=hearthpine roster=11 marked=11 live=11 twins=0 spare=3 owed=0 strict=true
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=wander socket=idle_plaza_bench walker=false ring=4 distinct=1
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=wander socket=idle_west_door walker=true ring=4 distinct=3
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=wander socket=idle_workyard walker=false ring=2 distinct=1
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=wander socket=idle_forge_door walker=false ring=3 distinct=1
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=wander_done walkers=1 moved=1 static=3 strayed=0
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=moved n=11 nodes=40
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=moved key=hearthpine roster=11 marked=11 live=11 twins=0 spare=3 strict=true
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=beat4 key=hearthpine roster=11 marked=11 live=11 twins=0 spare=3 strict=true
-ACTION[Server]: [grug_mobs] grug_mobs:villager_dwarf was stuck for 90 s and was moved to (-1819,26,-2529) with no player within 48
-ACTION[Server]: [grug_mobs] grug_mobs:guard_accord could not reach its waypoint in 45 s and walks on to the next one
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=beat10 key=hearthpine roster=11 marked=11 live=11 twins=0 spare=3 strict=true
-ACTION[Server]: [grug_mobs] grug_mobs:villager_dwarf was stuck for 90 s and was moved to (-1812,26,-2563) with no player within 48
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=beat16 key=hearthpine roster=11 marked=11 live=11 twins=0 spare=3 strict=true
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=cleared socket=idle_plaza_bench
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=one_strike key=hearthpine roster=11 marked=11 live=10 twins=0 spare=3 strict=false
-ACTION[Server]: [grug_mobs] grug_mobs:guard_accord could not reach its waypoint in 45 s and walks on to the next one
-WARNING[Server]: [grug_mobs] start npcs hearthpine: socket idle_plaza_bench is marked but empty; grug_mobs:villager_dwarf is gone and the slot is queued again
-ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_plaza_bench (-1793,26,-2549)
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=moved key=hearthpine roster=11 marked=11 live=11 twins=0 spare=3 owed=0 strict=true
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=beat4 key=hearthpine roster=11 marked=11 live=11 twins=0 spare=3 owed=0 strict=true
+ACTION[Server]: [grug_mobs] grug_mobs:villager_dwarf was stuck for 30 s and was moved to (-1819,26,-2529) with no player within 48
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=beat10 key=hearthpine roster=11 marked=11 live=11 twins=0 spare=3 owed=0 strict=true
+ACTION[Server]: [grug_mobs] grug_mobs:villager_dwarf was stuck for 30 s and was moved to (-1812,26,-2563) with no player within 48
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=beat16 key=hearthpine roster=11 marked=11 live=11 twins=0 spare=3 owed=0 strict=true
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=cleared socket=work_woodpile
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=one_strike key=hearthpine roster=11 marked=11 live=10 twins=0 spare=3 owed=0 strict=false
+WARNING[Server]: [grug_mobs] start npcs hearthpine: socket work_woodpile is marked but empty; grug_mobs:villager_dwarf is gone and the slot is queued again
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket work_woodpile (-1812,26,-2563)
 ACTION[Server]: [grug_mobs] start npcs dwarf hearthpine: guards 3/3 flair 6/6 vendor 1/1 quest 1/1 new 1 pending 0 spare 3 residents 6 walkers 1
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=refilled key=hearthpine roster=11 marked=11 live=11 twins=0 spare=3 strict=true
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=refill socket=idle_plaza_bench live=11
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=hp phase=fresh socket=watch_gate level=20 tier=normal self_hp_max=115 prop_hp_max=115 health=111 tag=Accord_Guard_[Lv_20]_111/115
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=hp phase=fresh socket=gate_east level=20 tier=normal self_hp_max=115 prop_hp_max=115 health=115 tag=Accord_Guard_[Lv_20]_115/115
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=refilled key=hearthpine roster=11 marked=11 live=11 twins=0 spare=3 owed=0 strict=true
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=refill socket=work_woodpile live=11
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=hp phase=fresh socket=gate_west level=20 tier=normal self_hp_max=115 prop_hp_max=115 health=115 tag=Accord_Guard_[Lv_20]_115/115
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=hp_heal socket=watch_gate before=115 injected_self=nil injected_prop=10 after_self=115 after_prop=115 tag=Accord_Guard_[Lv_20]_111/115
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=work phase=fresh socket=work_woodpile activity=chop anim=stand item=default:axe_stone walker=false ring=none drift=0.10
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=hp phase=fresh socket=gate_east level=20 tier=normal self_hp_max=115 prop_hp_max=115 health=115 tag=Accord_Guard_[Lv_20]_115/115
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=hp phase=fresh socket=watch_gate level=20 tier=normal self_hp_max=115 prop_hp_max=115 health=115 tag=Accord_Guard_[Lv_20]_115/115
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=hp_heal socket=gate_west before=115 injected_self=nil injected_prop=10 after_self=115 after_prop=115 tag=Accord_Guard_[Lv_20]_115/115
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=work phase=fresh socket=work_garden activity=tend anim=stand item=nil walker=false ring=none drift=0.00
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=work phase=fresh socket=work_woodpile activity=chop anim=stand item=nil walker=false ring=none drift=0.00
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=tag phase=far family=villager metres=40 want=Vale Dwarf shown=-
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=tag phase=far family=elder metres=40 want=Vale Elder shown=-
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=tag phase=far family=vendor metres=40 want=Dwarven Quartermaster shown=-
@@ -256,50 +254,69 @@ ACTION[Server]: GRUG_WP13_NPC boot=1 event=profession kind=smith entity=true nam
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=profession kind=fishmonger entity=true nametag=Fishmonger offers=4 brackets=false
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=profession kind=baker entity=true nametag=Baker offers=4 brackets=false
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=profession kind=tailor entity=true nametag=Tailor offers=6 brackets=false
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=hostile_spawn at=at_villager host=grug_mobs:villager_dwarf pos=(-1812,25.5,-2562.8916015625)
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=hostile_spawn at=at_guard host=grug_mobs:guard_accord pos=(-1802.9348144531,25.5,-2490.9577636719)
-ACTION[Server]: LuaEntitySAO "grug_mobs:guard_accord" at (-1802,26,-2491) (id=26, hp=10) punched LuaEntitySAO "grug_mobs:wolf" at (-1801,26,-2491) (id=102, hp=10), damage=0 (handled by Lua)
-ACTION[Server]: [grug_mobs] grug_mobs:guard_accord could not reach its waypoint in 45 s and walks on to the next one
-ACTION[Server]: LuaEntitySAO "grug_mobs:wolf" at (-1799,26,-2491) (id=102, hp=10) punched LuaEntitySAO "grug_mobs:guard_accord" at (-1800,26,-2491) (id=26, hp=10), damage=0 (handled by Lua)
-ACTION[Server]: LuaEntitySAO "grug_mobs:guard_accord" at (-1801,26,-2491) (id=28, hp=10) punched LuaEntitySAO "grug_mobs:wolf" at (-1799,26,-2491) (id=102, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=ring phase=fresh socket=idle_west_door walker=true ring=4
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=ring phase=fresh socket=idle_forge_door walker=false ring=3
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=ring phase=fresh socket=idle_plaza_bench walker=false ring=4
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=ring phase=fresh socket=idle_workyard walker=false ring=2
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=ring_done phase=fresh walkers=1 static=3
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=vendor_skin key=hearthpine race=dwarf before=grug_visuals_skin_human.png after=grug_visuals_skin_dwarf.png want=grug_visuals_skin_dwarf.png
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=hostile_spawn at=at_villager host=grug_mobs:villager_dwarf pos=(-1775.6687011719,26.5,-2550.7434082031)
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=hostile_spawn at=at_guard host=grug_mobs:guard_accord pos=(-1796.93359375,25.5,-2490.8798828125)
+ACTION[Server]: LuaEntitySAO "grug_mobs:guard_accord" at (-1797,26,-2491) (id=26, hp=10) punched LuaEntitySAO "grug_mobs:wolf" at (-1795,26,-2491) (id=103, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: LuaEntitySAO "grug_mobs:wolf" at (-1793,26,-2491) (id=103, hp=10) punched LuaEntitySAO "grug_mobs:guard_accord" at (-1794,26,-2491) (id=26, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: LuaEntitySAO "grug_mobs:guard_accord" at (-1795,26,-2491) (id=28, hp=10) punched LuaEntitySAO "grug_mobs:wolf" at (-1793,26,-2491) (id=103, hp=10), damage=0 (handled by Lua)
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=hostile phase=t3 at=at_villager attack_npcs=true attack_players=true noncombatant=nil state=walk target=nil health=65
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=hostile phase=t3 at=at_guard attack_npcs=true attack_players=true noncombatant=nil state=attack target=grug_mobs:guard_accord health=45
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=guard_target phase=t3 socket=gate_west state=attack target=grug_mobs:wolf
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=guard_target phase=t3 socket=watch_gate state=walk target=nil
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=guard_target phase=t3 socket=gate_east state=attack target=grug_mobs:wolf
-ACTION[Server]: LuaEntitySAO "grug_mobs:guard_accord" at (-1800,26,-2491) (id=26, hp=10) punched LuaEntitySAO "grug_mobs:wolf" at (-1798,26,-2491) (id=102, hp=10), damage=0 (handled by Lua)
-ACTION[Server]: LuaEntitySAO "grug_mobs:wolf" at (-1798,26,-2492) (id=102, hp=10) punched LuaEntitySAO "grug_mobs:guard_accord" at (-1799,26,-2491) (id=26, hp=10), damage=0 (handled by Lua)
-ACTION[Server]: LuaEntitySAO "grug_mobs:guard_accord" at (-1800,26,-2491) (id=28, hp=10) punched LuaEntitySAO "grug_mobs:wolf" at (-1798,26,-2492) (id=102, hp=10), damage=0 (handled by Lua)
-ACTION[Server]: LuaEntitySAO "grug_mobs:guard_accord" at (-1799,26,-2491) (id=26, hp=10) punched LuaEntitySAO "grug_mobs:wolf" at (-1798,26,-2492) (id=102, hp=10), damage=0 (handled by Lua)
-ACTION[Server]: LuaEntitySAO "grug_mobs:wolf" at (-1798,26,-2494) (id=102, hp=10) punched LuaEntitySAO "grug_mobs:guard_accord" at (-1798,26,-2492) (id=26, hp=10), damage=0 (handled by Lua)
-ACTION[Server]: LuaEntitySAO "grug_mobs:guard_accord" at (-1799,26,-2493) (id=28, hp=10) punched LuaEntitySAO "grug_mobs:wolf" at (-1798,26,-2494) (id=102, hp=10), damage=0 (handled by Lua)
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=hostile phase=t6 at=at_villager attack_npcs=true attack_players=true noncombatant=nil state=walk target=nil health=65
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=hostile phase=t6 at=at_guard attack_npcs=true attack_players=true noncombatant=nil state=attack target=grug_mobs:guard_accord health=5
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=guard_target phase=t6 socket=watch_gate state=walk target=nil
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=guard_target phase=t6 socket=gate_west state=attack target=grug_mobs:wolf
+ACTION[Server]: LuaEntitySAO "grug_mobs:guard_accord" at (-1792,26,-2491) (id=26, hp=10) punched LuaEntitySAO "grug_mobs:wolf" at (-1791,26,-2491) (id=103, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: LuaEntitySAO "grug_mobs:wolf" at (-1788,26,-2491) (id=103, hp=10) punched LuaEntitySAO "grug_mobs:guard_accord" at (-1790,26,-2491) (id=26, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: LuaEntitySAO "grug_mobs:guard_accord" at (-1790,26,-2491) (id=28, hp=10) punched LuaEntitySAO "grug_mobs:wolf" at (-1788,26,-2491) (id=103, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: LuaEntitySAO "grug_mobs:guard_accord" at (-1787,26,-2491) (id=26, hp=10) punched LuaEntitySAO "grug_mobs:wolf" at (-1786,26,-2491) (id=103, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=hostile phase=t6 at=at_villager attack_npcs=true attack_players=true noncombatant=nil state=stand target=nil health=65
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=hostile phase=t6 at=at_guard attack_npcs=true attack_players=true noncombatant=nil state=attack target=grug_mobs:guard_accord health=15
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=guard_target phase=t6 socket=gate_east state=attack target=grug_mobs:wolf
-ACTION[Server]: LuaEntitySAO "grug_mobs:guard_accord" at (-1798,26,-2494) (id=26, hp=10) punched LuaEntitySAO "grug_mobs:wolf" at (-1799,26,-2496) (id=102, hp=10), damage=0 (handled by Lua)
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=hostile phase=acquired at=at_villager attack_npcs=true attack_players=true noncombatant=nil state=walk target=nil health=65
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=guard_target phase=t6 socket=gate_west state=attack target=grug_mobs:wolf
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=guard_target phase=t6 socket=watch_gate state=walk target=nil
+ACTION[Server]: LuaEntitySAO "grug_mobs:wolf" at (-1784,26,-2491) (id=103, hp=10) punched LuaEntitySAO "grug_mobs:guard_accord" at (-1785,26,-2491) (id=26, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: LuaEntitySAO "grug_mobs:guard_accord" at (-1786,26,-2491) (id=28, hp=10) punched LuaEntitySAO "grug_mobs:wolf" at (-1784,26,-2491) (id=103, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: LuaEntitySAO "grug_mobs:guard_accord" at (-1785,26,-2491) (id=26, hp=10) punched LuaEntitySAO "grug_mobs:wolf" at (-1784,26,-2491) (id=103, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=hostile phase=acquired at=at_villager attack_npcs=true attack_players=true noncombatant=nil state=stand target=nil health=65
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=hostile phase=acquired at=at_guard state=gone
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=guard_target phase=acquired socket=gate_east state=walk target=nil
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=guard_target phase=acquired socket=gate_west state=walk target=nil
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=guard_target phase=acquired socket=watch_gate state=walk target=nil
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=guard_target phase=acquired socket=gate_east state=stand target=nil
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=guard_target phase=acquired socket=gate_west state=stand target=nil
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=hostile phase=fought at=at_villager attack_npcs=true attack_players=true noncombatant=nil state=stand target=nil health=65
+ACTION[Server]: [grug_mobs] grug_mobs:guard_accord was stuck for 90 s and was moved to (-1804,26,-2491) with no player within 48
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=hostile phase=fought at=at_villager attack_npcs=true attack_players=true noncombatant=nil state=walk target=nil health=65
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=hostile phase=fought at=at_guard state=gone
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=guard_target phase=fought socket=watch_gate state=walk target=nil
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=guard_target phase=fought socket=gate_east state=stand target=nil
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=guard_target phase=fought socket=gate_west state=stand target=nil
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=engagement hostile_held_guard=true guard_held_target=true
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=after_fight key=hearthpine roster=11 marked=11 live=11 twins=0 spare=3 strict=false
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=after_fight key=hearthpine roster=11 marked=11 live=11 twins=0 spare=3 owed=0 strict=false
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=away_request to=(-1672,25,-2550) ok=true
-ACTION[Server]: [grug_mobs] grug_mobs:guard_accord cannot reach any waypoint of its loop; it keeps trying without reporting until it makes progress
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=unload socket=work_woodpile to=(-1672,25,-2550) requested=(-1672,25,-2550) socket_block_active=true npc_block_active=true
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=unloaded key=hearthpine roster=11 marked=11 live=10 twins=0 spare=3 strict=false
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=still_unloaded key=hearthpine roster=11 marked=11 live=10 twins=0 spare=3 strict=false
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=unload socket=idle_west_door to=(-1672,25,-2550) requested=(-1672,25,-2550) socket_block_active=true npc_block_active=true
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=unloaded key=hearthpine roster=11 marked=11 live=10 twins=0 spare=3 owed=0 strict=false
+ACTION[Server]: LuaEntitySAO "grug_mobs:guard_accord" at (-1789,26,-2543) (id=24, hp=10) punched LuaEntitySAO "grug_mobs:wolf" at (-1787,26,-2543) (id=102, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: LuaEntitySAO "grug_mobs:wolf" at (-1785,26,-2542) (id=102, hp=10) punched LuaEntitySAO "grug_mobs:guard_accord" at (-1787,26,-2543) (id=24, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: LuaEntitySAO "grug_mobs:guard_accord" at (-1788,26,-2543) (id=24, hp=10) punched LuaEntitySAO "grug_mobs:wolf" at (-1787,26,-2543) (id=102, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: LuaEntitySAO "grug_mobs:wolf" at (-1784,26,-2542) (id=102, hp=10) punched LuaEntitySAO "grug_mobs:guard_accord" at (-1786,26,-2542) (id=24, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: LuaEntitySAO "grug_mobs:wolf" at (-1786,26,-2542) (id=102, hp=10) punched LuaEntitySAO "grug_mobs:guard_accord" at (-1787,26,-2543) (id=24, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: LuaEntitySAO "grug_mobs:guard_accord" at (-1789,26,-2543) (id=24, hp=10) punched LuaEntitySAO "grug_mobs:wolf" at (-1787,26,-2543) (id=102, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: LuaEntitySAO "grug_mobs:wolf" at (-1785,26,-2542) (id=102, hp=10) punched LuaEntitySAO "grug_mobs:guard_accord" at (-1786,26,-2542) (id=24, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: LuaEntitySAO "grug_mobs:guard_accord" at (-1788,26,-2543) (id=24, hp=10) punched LuaEntitySAO "grug_mobs:wolf" at (-1787,26,-2543) (id=102, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: LuaEntitySAO "grug_mobs:wolf" at (-1784,26,-2542) (id=102, hp=10) punched LuaEntitySAO "grug_mobs:guard_accord" at (-1786,26,-2542) (id=24, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: LuaEntitySAO "grug_mobs:guard_accord" at (-1787,26,-2543) (id=24, hp=10) punched LuaEntitySAO "grug_mobs:wolf" at (-1785,26,-2542) (id=102, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: LuaEntitySAO "grug_mobs:wolf" at (-1783,26,-2541) (id=102, hp=10) punched LuaEntitySAO "grug_mobs:guard_accord" at (-1785,26,-2542) (id=24, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: LuaEntitySAO "grug_mobs:guard_accord" at (-1786,26,-2542) (id=24, hp=10) punched LuaEntitySAO "grug_mobs:wolf" at (-1785,26,-2542) (id=102, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: LuaEntitySAO "grug_mobs:wolf" at (-1782,26,-2541) (id=102, hp=10) punched LuaEntitySAO "grug_mobs:guard_accord" at (-1784,26,-2541) (id=24, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: LuaEntitySAO "grug_mobs:guard_accord" at (-1785,26,-2542) (id=24, hp=10) punched LuaEntitySAO "grug_mobs:wolf" at (-1785,26,-2542) (id=102, hp=10), damage=0 (handled by Lua)
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=still_unloaded key=hearthpine roster=11 marked=11 live=10 twins=0 spare=3 owed=0 strict=false
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=reload_request ok=true active=false
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=reload_wait active=true loaded=true
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=reload_seen back=true active=true
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=reloaded_npc key=hearthpine roster=11 marked=11 live=11 twins=0 spare=3 strict=held
-ACTION[Server]: GRUG_WP13_NPC boot=1 event=unload_done socket=work_woodpile live=11
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=census phase=reloaded_npc key=hearthpine roster=11 marked=11 live=11 twins=0 spare=3 owed=0 strict=held
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=unload_done socket=idle_west_door live=11
 ACTION[Server]: GRUG_WP13_NPC boot=1 event=complete programme=full
 ACTION[Main]: Server: Shutting down

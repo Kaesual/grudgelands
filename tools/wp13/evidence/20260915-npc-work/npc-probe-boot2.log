@@ -74,35 +74,35 @@ ACTION[Main]: [grug_traders] dwarf capital vendors come from the sockets of dur_
 ACTION[Main]: [grug_traders] human capital vendors come from the sockets of highcourt
 ACTION[Main]: [grug_traders] 8 settlements indexed for profession vendor appearance
 ACTION[Main]: [grug_traders] drop audit: 1 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit); their items are audited from the hardcoded FUNCTION_DROPS list
-ACTION[Main]: World at [/tmp/grudgelands-headless.ebTK5f/world]
-ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31432.
+ACTION[Main]: World at [/tmp/grudgelands-headless.UgsWTD/world]
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31440.
 ACTION[Server]: [grug_core] start preload: emerging 6 start areas (128 x 128 nodes each, 2 at a time)
-ACTION[Emerge-0]: [grug_core] start area ready: dwarf (1/6, 9.7 s)
-ACTION[Emerge-0]: [grug_core] start area ready: human (2/6, 9.7 s)
+ACTION[Emerge-0]: [grug_core] start area ready: dwarf (1/6, 10.3 s)
 ACTION[Server]: [grug_mobs] start npcs dwarf hearthpine: guards 3/3 flair 6/6 vendor 1/1 quest 1/1 new 0 pending 0 spare 3 residents 6 walkers 1
+ACTION[Emerge-0]: [grug_core] start area ready: human (2/6, 10.3 s)
+ACTION[Emerge-0]: [grug_core] start area ready: elf (3/6, 10.3 s)
 ACTION[Server]: [grug_mobs] start npcs human dawnmere: guards 3/3 flair 6/6 vendor 1/1 quest 1/1 new 0 pending 0 spare 3 residents 6 walkers 1
-ACTION[Emerge-0]: [grug_core] start area ready: elf (3/6, 9.8 s)
-ACTION[Emerge-0]: [grug_core] start area ready: undead (4/6, 9.8 s)
 ACTION[Server]: [grug_mobs] start npcs elf silverleaf: guards 3/3 flair 6/6 vendor 1/1 quest 1/1 new 0 pending 0 spare 3 residents 6 walkers 1
+ACTION[Emerge-0]: [grug_core] start area ready: undead (4/6, 10.4 s)
+ACTION[Emerge-0]: [grug_core] start area ready: orc (5/6, 10.4 s)
 ACTION[Server]: [grug_mobs] start npcs undead stillgrave: guards 3/3 flair 6/6 vendor 1/1 quest 1/1 new 0 pending 0 spare 3 residents 6 walkers 1
-ACTION[Emerge-0]: [grug_core] start area ready: orc (5/6, 9.9 s)
-ACTION[Emerge-0]: [grug_core] start area ready: troll (6/6, 9.9 s)
-ACTION[Emerge-0]: [grug_core] all 6 start areas ready after 9.9 s
 ACTION[Server]: [grug_mobs] start npcs orc sunscar: guards 3/3 flair 6/6 vendor 1/1 quest 1/1 new 0 pending 0 spare 3 residents 6 walkers 1
+ACTION[Emerge-0]: [grug_core] start area ready: troll (6/6, 10.5 s)
+ACTION[Emerge-0]: [grug_core] all 6 start areas ready after 10.5 s
 ACTION[Server]: [grug_mobs] start npcs troll kapok: guards 3/3 flair 6/6 vendor 1/1 quest 1/1 new 0 pending 0 spare 3 residents 6 walkers 1
 ACTION[Server]: GRUG_WP13_NPC boot=2 event=ready key=hearthpine race=dwarf anchor=(-1800,25,-2550) sockets=18 programme=reload
 ACTION[Server]: GRUG_WP13_NPC boot=2 event=forceload blocks=162
-ACTION[Server]: GRUG_WP13_NPC boot=2 event=census phase=reloaded key=hearthpine roster=11 marked=11 live=11 twins=0 spare=3 strict=held
-ACTION[Server]: GRUG_WP13_NPC boot=2 event=hp phase=reloaded socket=watch_gate level=20 tier=normal self_hp_max=115 prop_hp_max=115 health=111 tag=Accord_Guard_[Lv_20]_111/115
-ACTION[Server]: GRUG_WP13_NPC boot=2 event=hp phase=reloaded socket=gate_west level=20 tier=normal self_hp_max=115 prop_hp_max=115 health=97 tag=Accord_Guard_[Lv_20]_97/115
+ACTION[Server]: GRUG_WP13_NPC boot=2 event=census phase=reloaded key=hearthpine roster=11 marked=11 live=11 twins=0 spare=3 owed=0 strict=held
+ACTION[Server]: GRUG_WP13_NPC boot=2 event=hp phase=reloaded socket=watch_gate level=20 tier=normal self_hp_max=115 prop_hp_max=115 health=73 tag=Accord_Guard_[Lv_20]_73/115
 ACTION[Server]: GRUG_WP13_NPC boot=2 event=hp phase=reloaded socket=gate_east level=20 tier=normal self_hp_max=115 prop_hp_max=115 health=115 tag=Accord_Guard_[Lv_20]_115/115
-ACTION[Server]: GRUG_WP13_NPC boot=2 event=pos socket=work_woodpile spot=nil at=- spots=0 dwell=-1.0 state=walk x=-1812.5 z=-2561.8
-ACTION[Server]: GRUG_WP13_NPC boot=2 event=pos socket=idle_west_door spot=3 at=- spots=4 dwell=-1.0 state=walk x=-1775.7 z=-2545.8
-ACTION[Server]: GRUG_WP13_NPC boot=2 event=pos socket=idle_forge_door spot=2 at=2 spots=3 dwell=193.7 state=stand x=-1793.5 z=-2541.2
-ACTION[Server]: GRUG_WP13_NPC boot=2 event=pos socket=idle_plaza_bench spot=1 at=1 spots=4 dwell=229.0 state=stand x=-1793.0 z=-2549.0
+ACTION[Server]: GRUG_WP13_NPC boot=2 event=hp phase=reloaded socket=gate_west level=20 tier=normal self_hp_max=115 prop_hp_max=115 health=97 tag=Accord_Guard_[Lv_20]_97/115
+ACTION[Server]: GRUG_WP13_NPC boot=2 event=pos socket=idle_forge_door spot=2 at=2 spots=3 dwell=155.0 state=stand x=-1794.0 z=-2541.6
+ACTION[Server]: GRUG_WP13_NPC boot=2 event=pos socket=idle_west_door spot=4 at=- spots=4 dwell=-1.0 state=stand x=-1775.7 z=-2549.8
+ACTION[Server]: GRUG_WP13_NPC boot=2 event=pos socket=idle_plaza_bench spot=1 at=1 spots=4 dwell=9.5 state=stand x=-1794.6 z=-2549.0
+ACTION[Server]: GRUG_WP13_NPC boot=2 event=pos socket=work_woodpile spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1812.0 z=-2563.0
+ACTION[Server]: GRUG_WP13_NPC boot=2 event=pos socket=idle_workyard spot=2 at=2 spots=2 dwell=238.2 state=stand x=-1809.0 z=-2540.3
 ACTION[Server]: GRUG_WP13_NPC boot=2 event=pos socket=work_garden spot=nil at=- spots=0 dwell=-1.0 state=stand x=-1819.0 z=-2529.0
-ACTION[Server]: GRUG_WP13_NPC boot=2 event=pos socket=idle_workyard spot=1 at=1 spots=2 dwell=-0.4 state=stand x=-1817.5 z=-2533.0
-ACTION[Server]: GRUG_WP13_NPC boot=2 event=work phase=reloaded socket=work_woodpile activity=chop anim=walk item=default:axe_stone walker=false ring=none drift=1.31
+ACTION[Server]: GRUG_WP13_NPC boot=2 event=work phase=reloaded socket=work_woodpile activity=chop anim=stand item=default:axe_stone walker=false ring=none drift=0.00
 ACTION[Server]: GRUG_WP13_NPC boot=2 event=work phase=reloaded socket=work_garden activity=tend anim=stand item=nil walker=false ring=none drift=0.00
 ACTION[Server]: GRUG_WP13_NPC boot=2 event=facing socket=hall_quest role=quest tag=door authored=0.000 want=3.142 have=3.142 delta=0.000
 ACTION[Server]: GRUG_WP13_NPC boot=2 event=complete programme=reload

@@ -57,6 +57,15 @@
 --   W3. PROFESSION VENDORS. The five entities of section 8.4 exist and their
 --       shelves survived the load-time item audit with offers on them.
 --
+-- The REVIEW of round 3 added two more:
+--
+--   W4. EVERY WALKER HAS SOMEWHERE TO WALK. A ring of one is a walker that
+--       never moves, and Stillgrave shipped exactly that until WALK_RADIUS
+--       became a preference instead of a wall.
+--   W5. A PROFESSION VENDOR IS DRAWN AS ITS SETTLEMENT'S RACE, which is
+--       decided after `install` and not at activation -- the broken state and
+--       the fix, both on the real entity with the real grug_visuals.
+--
 -- WHY A FORCELOAD AND NOT A FAKE PLAYER: an object exists in the environment
 -- only while its mapblock is ACTIVE, and `ActiveBlockList::update` starts its
 -- new list from the forceloaded set (serverenvironment.cpp), so a forceload
@@ -158,12 +167,16 @@ end
 --
 local function census_line(tag, strict, expect_live)
 	local rows = grug_mobs.start_npc_census()
-	local roster, marked, spare = 0, 0, 0
+	local roster, marked, spare, owed = 0, 0, 0, 0
 	for index = 1, #rows do
 		if rows[index].key == settlement.key then
 			roster = rows[index].roster
 			marked = rows[index].marked
 			spare = rows[index].spare or 0
+			-- Sockets whose NPC died and whose refill has been booked
+			-- (world.md section 4a). The one reason a healthy settlement may
+			-- hold fewer NPCs than its roster.
+			owed = rows[index].owed or 0
 		end
 	end
 	local npcs = settlement_npcs()
@@ -178,7 +191,7 @@ local function census_line(tag, strict, expect_live)
 	end
 	log({"event=census", "phase=" .. tag, "key=" .. settlement.key,
 		"roster=" .. roster, "marked=" .. marked, "live=" .. #npcs,
-		"twins=" .. twins, "spare=" .. spare,
+		"twins=" .. twins, "spare=" .. spare, "owed=" .. owed,
 		"strict=" .. tostring(strict or false)})
 	-- R1. A SPARE SOCKET IS NEVER A HOME. Nothing may be booked on one, in any
 	-- phase, whatever the roster count happens to be.
@@ -228,9 +241,13 @@ local function census_line(tag, strict, expect_live)
 				" differs from marked=" .. marked .. " (roster " .. roster ..
 				")")
 		end
-		if roster - marked > 2 then
-			fail("phase " .. tag .. ": " .. (roster - marked) ..
-				" sockets are owed a refill and the probe placed two hostiles")
+		-- AND THE SHORTFALL IS EXACTLY THE BOOKED REFILLS. The census reports
+		-- how many sockets are waiting on a respawn slot, so this is the full
+		-- claim `strict = true` makes, with the one legitimate exception
+		-- subtracted rather than a tolerance bolted on.
+		if roster - marked ~= owed then
+			fail("phase " .. tag .. ": roster=" .. roster .. " minus marked=" ..
+				marked .. " is not the " .. owed .. " sockets owed a refill")
 		end
 	elseif strict then
 		if #npcs ~= roster then
@@ -585,6 +602,98 @@ local function profession_lines()
 	end
 end
 
+--
+-- EVERY WALKER HAS SOMEWHERE TO WALK (the review of round 3, F1). A ring of
+-- one is a walker that never moves -- `next_spot` returns the index it was
+-- given when the ring is shorter than two -- and Stillgrave shipped exactly
+-- that, because its idle sockets are 27 nodes apart and WALK_RADIUS was a wall
+-- rather than a preference. Read off the entity, in the settlement the engine
+-- actually built, and asserted rather than inspected.
+--
+local function ring_lines(tag)
+	local npcs = settlement_npcs()
+	local walkers, statics = 0, 0
+	for index = 1, #npcs do
+		local entity = npcs[index]
+		if entity._grug_socket_role == "idle" then
+			local size = #(entity._grug_idle_spots or {})
+			local walker = entity._grug_walker == true
+			if walker then walkers = walkers + 1 else statics = statics + 1 end
+			log({"event=ring", "phase=" .. tag,
+				"socket=" .. tostring(entity._grug_socket),
+				"walker=" .. tostring(walker), "ring=" .. size})
+			if walker and size < 2 then
+				fail("the walker on " .. tostring(entity._grug_socket) ..
+					" was handed a ring of " .. size .. ": it can never move")
+			end
+		end
+	end
+	log({"event=ring_done", "phase=" .. tag, "walkers=" .. walkers,
+		"static=" .. statics})
+	if walkers < 1 then
+		fail("the settlement has no walking resident at all")
+	end
+end
+
+--
+-- A PROFESSION VENDOR IS DRAWN AS THE RACE OF ITS SETTLEMENT (the review's F2).
+--
+-- `core.add_entity` activates an entity synchronously, so `after_activate` --
+-- and with it `grug_visuals.apply_entity` -- runs before the placement engine's
+-- `install` writes `_grug_start`, which is the only thing that says which
+-- settlement a profession vendor is standing in. Before the fix the first
+-- butcher in Hearthpine composed the Accord fallback and stayed human until the
+-- first reload.
+--
+-- Reproduced here exactly, on the real entity with the real grug_visuals: place
+-- one with no settlement field (the broken state), read the composed skin, then
+-- write the field `install` writes and call the restyle hook the placement
+-- engine now calls, and read it again. The two must differ, and the second must
+-- be the settlement race's.
+--
+local function vendor_skin_lines()
+	local race = settlement.race_id
+	if not core.global_exists("grug_visuals") then
+		fail("grug_visuals is not loaded; the vendor skin cannot be measured")
+		return
+	end
+	if type(grug_traders.restyle_socket_vendor) ~= "function" then
+		fail("grug_traders offers no restyle for a socket vendor")
+		return
+	end
+	local anchor = settlement.anchor
+	local object = core.add_entity({x = anchor.x, y = anchor.y + 1,
+		z = anchor.z}, "grug_traders:vendor_butcher")
+	if not object then
+		fail("could not place a butcher to measure its skin")
+		return
+	end
+	local entity = object:get_luaentity()
+	if not entity then
+		object:remove()
+		fail("the butcher came up without an entity")
+		return
+	end
+	local before = entity._grug_visual_skin
+	entity._grug_start = settlement.key
+	grug_traders.restyle_socket_vendor(entity)
+	local after = entity._grug_visual_skin
+	local want = grug_visuals.compose({race = race})
+	log({"event=vendor_skin", "key=" .. settlement.key, "race=" .. race,
+		"before=" .. tostring(before), "after=" .. tostring(after),
+		"want=" .. tostring(want and want.textures and want.textures[1])})
+	object:remove()
+	if want and want.textures and after ~= want.textures[1] then
+		fail("a profession vendor in " .. settlement.key ..
+			" is drawn " .. tostring(after) .. " and not " ..
+			tostring(want.textures[1]))
+	end
+	if before == after then
+		fail("the restyle hook changed nothing; either the composition " ..
+			"already knew the settlement or the hook is inert")
+	end
+end
+
 local function hp_lines(tag)
 	local npcs = settlement_npcs()
 	for index = 1, #npcs do
@@ -872,6 +981,10 @@ local FULL = {
 	{at = 296, what = function() work_lines("fresh") end},
 	{at = 297, what = tag_gate_lines},
 	{at = 298, what = profession_lines},
+	{at = 299, what = function()
+		ring_lines("fresh")
+		vendor_skin_lines()
+	end},
 	-- The hostile pass runs LAST, after every census: a wolf that killed a guard
 	-- would free a socket, and the roster count must not have to explain that.
 	{at = 300, what = spawn_hostiles},

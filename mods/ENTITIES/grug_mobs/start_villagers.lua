@@ -593,26 +593,34 @@ local function work_tick(self, dtime)
 	end
 	--
 	-- HOME FIRST, and deliberately BEFORE the "is anybody watching" gate: see
-	-- WORK_SLACK. `sweep` is exempt, because its two-node line IS its home and
-	-- the sweep branch below already walks it.
+	-- WORK_SLACK.
 	--
-	if not activity.sweep then
-		local home_x, home_z = self._grug_work_x, self._grug_work_z
-		local dx = (home_x or pos.x) - pos.x
-		local dz = (home_z or pos.z) - pos.z
-		if dx * dx + dz * dz > WORK_SLACK * WORK_SLACK then
-			local stalled = grug_mobs.stall_clock(self, home_x, home_z, pos,
-				elapsed)
-			if stalled >= WORK_STALL_SNAP and
-					grug_mobs.snap_try(self, pos, home_x, home_z, elapsed) then
-				return false
-			end
-			grug_mobs.walk_toward(self, home_x, home_z, pos)
-			self:set_animation("walk")
+	-- `sweep` is NOT exempt, and the first cut of this made it one on the
+	-- reasoning that its two-node line is its home. The review caught what that
+	-- costs: the sweep branch below sits AFTER the watch gate, so a sweeper
+	-- displaced while nobody was near would stand wherever it was pushed until
+	-- a player walked up to it -- which is precisely the moment it is supposed
+	-- to already be where it belongs. It gets the same walk home with a slack
+	-- that allows for the line it legitimately walks.
+	--
+	local home_x, home_z = self._grug_work_x, self._grug_work_z
+	local slack = WORK_SLACK
+	if activity.sweep then slack = SWEEP_SPAN + WORK_SLACK end
+	local dx = (home_x or pos.x) - pos.x
+	local dz = (home_z or pos.z) - pos.z
+	if dx * dx + dz * dz > slack * slack then
+		local stalled = grug_mobs.stall_clock(self, home_x, home_z, pos,
+			elapsed)
+		if stalled >= WORK_STALL_SNAP and
+				grug_mobs.snap_try(self, pos, home_x, home_z, elapsed,
+					WORK_STALL_SNAP) then
 			return false
 		end
-		grug_mobs.stall_clear(self)
+		grug_mobs.walk_toward(self, home_x, home_z, pos)
+		self:set_animation("walk")
+		return false
 	end
+	grug_mobs.stall_clear(self)
 	if not watched(self, pos) then
 		-- Nobody within 24 nodes: no activity, no swing, no facing. The one
 		-- thing that still happens is STOPPING, and the stand animation goes

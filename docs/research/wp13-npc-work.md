@@ -312,6 +312,22 @@ the microbenchmark: every settlement NPC's `do_custom` called once per
 simulated second inside `core.get_us_time()`, which is exactly the work the
 server does for it.
 
+Per start, before -> after: 9 -> 11 active mobs, 4 -> 6 residents, walker share
+16.7 %, **zero** `core.find_path` calls in a 30-second window either way, mean
+server step 90.24-90.33 -> 90.19-90.27 ms, and the tick 18.70-39.65 ->
+14.95-28.70 us per settlement per simulated second (2.67-5.66 -> 1.36-2.61 us
+per ticking NPC, over 7 and 11 ticking NPCs respectively).
+
+**The defensible claim is that the cost stayed in the same tens-of-microseconds
+band while the settlement gained two residents and four ticking entities**, not
+that it got cheaper: read the windows in order and the trend inside each run is
+as large as the difference between the runs, which is a warm-up artefact of
+measuring the first settlement first. And the number is a FLOOR -- the
+microbenchmark runs with no connected player, so neither the activity animation
+inside the 24-node watch radius nor the nametag gate's property writes are in
+it. Both are bounded by construction and the KAT measures them instead: one
+animation write for 120 s of hammering, six or seven for 30 s of swinging.
+
 The numbers are in `tools/wp13/evidence/20260915-npc-work/`
 (`load-before.txt`, `load-after.txt`).
 
@@ -333,6 +349,69 @@ ranges against `player_api`'s own file, the closed vocabulary and its tools,
 and the gate being reached once a second by all three families). Identical
 output under `luajit` and `tools/bin/lua51`.
 
+## 7.4 What the review found, and what it changed
+
+The independent review of this lane confirmed the work tick, the
+no-pathfinding claim, the animation-write budget, the wield seam, the nametag
+gate, the vendors, the gates and the load numbers, and found seven things.
+Two were real defects:
+
+* **Stillgrave shipped zero moving residents (F1).** `idle_warden_door` is its
+  first `idle` spawn socket, so it hosts the settlement's only walker -- and
+  its nearest other idle socket is 27.7 nodes away, then 28.2, then 39.5. A
+  hard `WALK_RADIUS` handed that walker a ring of ONE, and `next_spot` returns
+  the index it was given when the ring is shorter than two, so the settlement
+  had nobody moving in it at all while every fixture stayed green.
+
+  Fixed in the MECHANISM, not by moving the socket: **the radius is a
+  preference, not a wall.** A walker whose ring comes out shorter than
+  `WALK_MIN_RING` (3) takes the nearest eligible spots until it reaches that
+  size or the composition runs out; five of the six starts top up nothing at
+  all. A static resident is deliberately not topped up -- a ring of one is a
+  resident that stands at its door, which is what four residents in five are
+  for. Asserted now against the SIX REAL COMPOSITIONS in
+  `start_npcs_kat` (state 20 boots the real placement engine over the starts'
+  own authored socket tables) and in the engine probe (`event=ring`).
+
+* **A profession vendor was drawn human on its first placement (F2).**
+  `core.add_entity` activates an entity synchronously, so `after_activate` --
+  and with it the visuals composition -- runs before `install` writes
+  `_grug_start`, which is the only thing that says which settlement a
+  profession vendor is standing in. The facing and the nametag are re-asserted
+  after `install` for exactly this reason; the visual was not.
+
+  The placement engine now carries a small `register_start_npc_restyle`
+  registry, called after `install` next to the retag, and `grug_traders`
+  registers `restyle_socket_vendor` into it. `apply_entity` compares the
+  composed skin, so it is free for every vendor whose race is a property of the
+  entity. The KAT asserts the ordering (the hook sees `_grug_start`,
+  `_grug_socket`, the role and the facing), and the probe reproduces the whole
+  thing on the real entity with the real `grug_visuals`: place a butcher with
+  no settlement field, read the composed skin, write the field and call the
+  hook, read it again -- the two must differ and the second must be the
+  settlement race's.
+
+Three were smaller and are fixed here as well: `patrol.lua`'s snap log said 90
+seconds whatever the caller's timeout was (F5, it takes the timeout as an
+argument now); the probe's post-fight phases had been loosened to a tolerance
+without an observed failure (F7 -- there WAS one, see below, and the claim is
+restored in full by subtracting the census's new `owed` count instead); and
+`sweep` was exempt from the walk home and therefore never came back if it was
+displaced while nobody was watching (F9 -- it now walks home with a slack that
+allows for the two-node line it legitimately walks).
+
+**F7, the observed failure.** The first full probe run of this lane failed
+`reloaded_npc` on boot 1 and `reloaded` on boots 2 and 3 with `live=10
+differs from roster=11`. The cause is in the same log: `socket watch_gate lost
+its guard, refill due at 621` -- one of the probe's own two wolves killed the
+gate patroller, which frees that socket with a 180-360 s respawn slot
+(world.md section 4a), and the two reboots are on the same world and inherit
+the owed slot. It is intermittent (the next run's guard won). Rather than
+tolerate a shortfall, `grug_mobs.start_npc_census` now reports `owed`, the
+number of sockets waiting on a booked refill, and those three phases assert
+`live == marked` AND `roster - marked == owed`, which is the full claim with
+the one legitimate exception named.
+
 ## 8. What the review should look at
 
 * **The `do_custom` veto.** A work resident and an elder now return `false`
@@ -348,6 +427,13 @@ output under `luajit` and `tools/bin/lua51`.
   fifths of the IDLE sockets while the share is measured against ALL residents.
   Nothing asserts it for Highcourt or Dur Brannoc today. Flagged for the
   coordinator rather than fixed here: changing the rule is a contract change.
+* **`WALK_MIN_RING` is the second half of the same question.** The top-up makes
+  a walker's ring at least three where the composition can offer it, so a
+  settlement whose spots are far apart gets a LONGER route than the 20-node
+  bound suggests. Stillgrave is the case: its walker's ring is three, and two
+  of the three are 27 and 28 nodes away. That is the right trade -- a walker
+  with one destination is not a walker -- but it means the bound is a
+  preference and the note above about "short routes" is about the common case.
 * **`grug_visuals.apply_entity` stores an ObjectRef** (`_grug_wield_obj`) on
   the entity. That is the visuals lane's existing design and every guard
   already goes through it; the work residents are simply more users of it.
@@ -365,6 +451,14 @@ output under `luajit` and `tools/bin/lua51`.
   have said so.
 * Profession vendor **sockets** are the Highcourt fill lane's; this lane ships
   the entities and the shelves, and no settlement places one yet.
+* `tools/wp40/quality/final_micro.sh` got further after this lane taught its
+  two vendor stubs the round-2 `noncombatant` verb and the round-3 restyle
+  hook, and its mob stub `mobs.mob_class` (all three gaps predate this lane).
+  It now runs past the trader and mob registration and stops in
+  `tools/wp40/r7/node_semantics_fixture.lua` with `missing override target
+  default:shovel_wood` -- a different pre-existing gap, from the round-2 weapon
+  ladder merge, in a fixture whose own header documents that it cannot resolve
+  the newly vendored mods. That one belongs to the WP40 lane.
 * Renders: the headless server cannot draw a frame, so there is no screenshot
   of a hammering smith. What is documented instead is the exact frame range,
   speed and wielded item per activity (section 2), and the engine probe reads

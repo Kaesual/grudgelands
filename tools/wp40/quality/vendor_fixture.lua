@@ -105,7 +105,13 @@ return function(repo)
 	env.dofile(repo .. "/mods/ENTITIES/mobs/crafts.lua")
 	env.grug_mobs = {ambusher = noop, atlas_textures = function(texture, count)
 		local textures = {}; for i=1,count do textures[i]=texture end; return textures
-	end, register_mob = function(name, def) env.mobs:register_mob(name, def) end}
+	end, register_mob = function(name, def) env.mobs:register_mob(name, def) end,
+		-- The non-combatant verb (WP13 playtest round 2): vendors.lua wraps
+		-- every definition in it, so a stub without it stopped this fixture at
+		-- the first `register_vendor`. A pass-through that sets the flag is
+		-- what the real verb does to a definition; the verb's own behaviour is
+		-- `tools/wp13/start_npcs_kat.lua`'s.
+		noncombatant = function(def) def._grug_noncombatant = true; return def end}
 	env.grug_materials = {natural_groups = function(groups) return groups end}
 	env.grug_traders = {}
 	env.grug_core = {faction_ids = {"accord", "throng"}, factions = {accord={name="Accord"}, throng={name="Throng"}}, capital_anchor = function() return {x=0,y=30,z=0} end}
@@ -125,7 +131,9 @@ return function(repo)
 		assert(api.registered_entities[name].floats == true)
 		vendor_count = vendor_count + 1
 	end
-	assert(vendor_count == 8)
+	-- Two faction Quartermasters, six race vendors and the five profession
+	-- vendors of WP13 playtest round 3 (sockets contract section 8.4).
+	assert(vendor_count == 13)
 	assert(api.is_creative_enabled("builder") and not api.is_creative_enabled("player"))
 	assert(api.registered_nodes["default:torch_wall"].paramtype2 == "wallmounted")
 	assert(api.registered_nodes["stairs:stair_pine_wood"].paramtype2 == "facedir")
