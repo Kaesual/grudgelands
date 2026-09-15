@@ -1,1 +1,1 @@
-ea99c240ab14764b6f760aa29647d1d22598fa0b6f77e0daa2d2c3d4c8dba4cc  gate seed=531802985935182545 overlay_cells=2464 main=19abee02 package=20260915-capital-terrain
+9988e318244a3f8c5e65dfbbad1ae2a7a144e5d85c3c40b75b642baddd2ce10f  gate seed=531802985935182545 overlay_cells=2420 main=658b6763 package=20260915-capital-terrain

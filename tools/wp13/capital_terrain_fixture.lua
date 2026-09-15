@@ -21,27 +21,35 @@
 -- the shape of `tools/wp13/terrain_fixture.lua` and not part of the portable
 -- micro-KAT pair.
 --
--- THE CEILINGS below are MEASUREMENTS, not derivations. They were taken on
--- 2026-09-15 with the step bands in place and rounded up, and what each of them
--- replaced is in the same row. A WP40 terrain change may move them; a change
--- that moves one UP past its ceiling is a capital growing walls again, and
--- re-taking a ceiling is a decision with a number attached, not a silent edit.
+-- THE CEILINGS below are MEASUREMENTS, not derivations, taken on 2026-09-15
+-- with the step bands in place and rounded up. A WP40 terrain change may move
+-- them; a change that moves one UP past its ceiling is a capital growing walls
+-- again, and re-taking a ceiling is a decision with a number attached.
 --
 -- Per mille of the window's own land columns, seed 531802985935182545 then
 -- 8675309, before the bands / after / ceiling:
 --
---     capital_dwarf   (Dur Brannoc) 116  78  85     109  65  75
---     capital_human   (Highcourt)    60   5  15      75  11  20
---     capital_elf     (Lethariel)    42   3  15      50   8  20
---     capital_undead  (Nhal Veyr)    42   2  15      52   5  20
---     capital_orc     (Gor Drazhak)  31   2  15      39   3  20
---     capital_troll   (Kezamba)      91  56  65      97  68  80
+--     capital_dwarf   (Dur Brannoc) 122  81  90    114  66  75
+--     capital_human   (Highcourt)    71   4  10     83   6  10
+--     capital_elf     (Lethariel)    51   4  10     58   9  15
+--     capital_undead  (Nhal Veyr)    49   3  10     58   6  10
+--     capital_orc     (Gor Drazhak)  38   3  10     44   4  10
+--     capital_troll   (Kezamba)     103  62  70    108  74  85
 --
--- The residue that is left is the ground's own. The same +-250 envelope
--- measured on the UNGRADED relief answers 7 per mille at Highcourt and 26 at
--- Dur Brannoc, against 12 and 27 for the shaped one: the dwarf plateau crosses
--- real crags and the troll one a cenote, and a fitting may not be much worse
--- than the rock it stands on. That, and not zero, is what the ceilings say.
+-- WHAT THE RESIDUE IS, AND WHAT IT IS NOT. It is NOT the ground's own rock.
+-- Measured against the UNGRADED relief of the same envelope (+-200, Dur
+-- Brannoc, seed 8675309), 59.5 per cent of the columns that are still
+-- unclimbable sit where the relief itself steps at most one node -- ground a
+-- player could have walked before the fitting shaped it. In the walkable-relief
+-- population alone the residue is 25 per mille.
+--
+-- It is the band on MIXED ground: a gentle pair of columns inside a disc that
+-- is not gentle. The exhaustive one-dimensional sweep in the research note
+-- gives the bound exactly -- where the whole disc moves at most one node per
+-- column the band is 1-Lipschitz, at two nodes per column its worst output step
+-- is 2 for step 2 and 3, and 3 for step 4. Dur Brannoc's and Kezamba's
+-- envelopes carry a lot of two-node ground, which is why their ceilings are an
+-- order above the other four.
 --
 -- Plain Lua 5.1, LuaJIT in practice; no engine, no globals.
 
@@ -68,12 +76,12 @@ local SEEDS = {"531802985935182545", "8675309"}
 -- Per capital, per seed, in unclimbable land columns per thousand land columns
 -- of the +-128 window. Taken 2026-09-15 on the step-band tree.
 local CEILING = {
-	capital_dwarf = {["531802985935182545"] = 85, ["8675309"] = 75},
-	capital_human = {["531802985935182545"] = 15, ["8675309"] = 20},
-	capital_elf = {["531802985935182545"] = 15, ["8675309"] = 20},
-	capital_undead = {["531802985935182545"] = 15, ["8675309"] = 20},
-	capital_orc = {["531802985935182545"] = 15, ["8675309"] = 20},
-	capital_troll = {["531802985935182545"] = 65, ["8675309"] = 80},
+	capital_dwarf = {["531802985935182545"] = 90, ["8675309"] = 75},
+	capital_human = {["531802985935182545"] = 10, ["8675309"] = 10},
+	capital_elf = {["531802985935182545"] = 10, ["8675309"] = 15},
+	capital_undead = {["531802985935182545"] = 10, ["8675309"] = 10},
+	capital_orc = {["531802985935182545"] = 10, ["8675309"] = 10},
+	capital_troll = {["531802985935182545"] = 70, ["8675309"] = 85},
 }
 
 local capitals = {}
@@ -109,16 +117,22 @@ for seed_index = 1, #SEEDS do
 		local capital = capitals[capital_index]
 		local anchor = assert(height.selected_anchor_3d_by_id(capital.id),
 			"capital anchor missing: " .. capital.id)
-		-- One row of the window at a time, so the whole window is never held.
-		-- `land` and `y` are read once per column and reused as the previous
-		-- row, which is what keeps this two passes over the window and not five.
+		-- THREE ROWS AT A TIME, so a column can be asked about all FOUR of its
+		-- neighbours. The first version of this fixture kept two rows and
+		-- therefore never looked at -z: it measured three neighbours out of
+		-- four and its ceilings were taken against that.
+		--
+		-- `y` and the land class are read once per column and carried forward,
+		-- which is what keeps this one pass over the window and not five.
+		local before_y, before_land = nil, nil
 		local previous_y, previous_land = nil, nil
 		local histogram = {0, 0, 0, 0, 0, 0}
 		local land_count, worst, unclimbable = 0, 0, 0
 		for z = -reach, reach + 1 do
-			local row_y, row_land = {}, {}
+			local row_y, row_land = nil, nil
 			if z <= reach then
-				for x = -reach, reach + 1 do
+				row_y, row_land = {}, {}
+				for x = -reach - 1, reach + 1 do
 					local wx, wz = anchor.x + x, anchor.z + z
 					row_y[x] = height.terrain_height_at(wx, wz)
 					row_land[x] = horizontal.water_class_at(wx, wz) == "land"
@@ -135,10 +149,9 @@ for seed_index = 1, #SEEDS do
 							end
 						end
 						consider(previous_y[x + 1], previous_land[x + 1])
-						if x > -reach then
-							consider(previous_y[x - 1], previous_land[x - 1])
-						end
-						if z <= reach then consider(row_y[x], row_land[x]) end
+						consider(previous_y[x - 1], previous_land[x - 1])
+						if row_y then consider(row_y[x], row_land[x]) end
+						if before_y then consider(before_y[x], before_land[x]) end
 						local bucket = climb < 5 and climb + 1 or 6
 						histogram[bucket] = histogram[bucket] + 1
 						if climb > worst then worst = climb end
@@ -146,6 +159,7 @@ for seed_index = 1, #SEEDS do
 					end
 				end
 			end
+			before_y, before_land = previous_y, previous_land
 			previous_y, previous_land = row_y, row_land
 		end
 		local per_mille = land_count > 0 and

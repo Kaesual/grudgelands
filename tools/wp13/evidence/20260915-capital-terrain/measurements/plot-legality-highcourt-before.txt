@@ -17,7 +17,7 @@ northeast	5	176	152	legal	2	2
 northeast	6	176	196	legal	2	6
 northeast	7	220	108	legal	4	4
 northeast	8	220	152	legal	4	4
-northeast	9	216	196	legal	6	2
+northeast	9	220	196	legal	6	2
 northwest	1	-132	80	legal	2	4
 northwest	2	-176	80	legal	4	4
 northwest	3	-220	80	legal	6	4
@@ -25,10 +25,10 @@ northwest	4	-132	124	legal	2	6
 northwest	5	-176	124	legal	4	6
 northwest	6	-220	124	legal	4	6
 northwest	7	-132	168	legal	2	6
-northwest	8	-180	164	legal	6	4
+northwest	8	-180	168	legal	6	4
 northwest	9	-220	168	legal	2	4
 southwest	1	-48	-76	legal	4	4
-southwest	2	-48	-136	legal	3	6
+southwest	2	-48	-132	legal	2	6
 southwest	3	-48	-172	legal	4	4
 southwest	4	-84	-116	legal	6	4
 southwest	5	-84	-152	legal	6	4

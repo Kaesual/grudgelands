@@ -1,0 +1,43 @@
+What is under the residual unclimbable ground: the lattice, or the rock?
+
+new-db-8675309.tsv vs raw-db-8675309.tsv, window +-200
+  land columns 160801, unclimbable after shaping 6683
+  of the unclimbable ones, by the RELIEF's own steepest step there:
+    relief step 0 :    222 ( 3.3%)
+    relief step 1 :   3753 (56.2%)
+    relief step 2 :   2453 (36.7%)
+    relief step 3 :    183 ( 2.7%)
+    relief step >=4 :     72 ( 1.1%)
+  ON RELIEF THAT IS ITSELF WALKABLE (relief step <= 1): 154593 columns, 3975 unclimbable after shaping (25 per mille)
+
+old-db-8675309.tsv vs raw-db-8675309.tsv, window +-200
+  land columns 160801, unclimbable after shaping 6697
+  of the unclimbable ones, by the RELIEF's own steepest step there:
+    relief step 0 :    203 ( 3.0%)
+    relief step 1 :   3848 (57.5%)
+    relief step 2 :   2398 (35.8%)
+    relief step 3 :    176 ( 2.6%)
+    relief step >=4 :     72 ( 1.1%)
+  ON RELIEF THAT IS ITSELF WALKABLE (relief step <= 1): 154593 columns, 4051 unclimbable after shaping (26 per mille)
+
+nl-db-8675309.tsv vs raw-db-8675309.tsv, window +-200
+  land columns 160801, unclimbable after shaping 7114
+  of the unclimbable ones, by the RELIEF's own steepest step there:
+    relief step 0 :    418 ( 5.9%)
+    relief step 1 :   4786 (67.3%)
+    relief step 2 :   1698 (23.9%)
+    relief step 3 :    140 ( 2.0%)
+    relief step >=4 :     72 ( 1.0%)
+  ON RELIEF THAT IS ITSELF WALKABLE (relief step <= 1): 154593 columns, 5204 unclimbable after shaping (33 per mille)
+  (the row above is the SAME tree with the one-step disc limit removed,
+   which is why the limit is kept: 33 per mille against 25)
+
+new-hc-8675309.tsv vs raw-hc-8675309.tsv, window +-200
+  land columns 125037, unclimbable after shaping 897
+  of the unclimbable ones, by the RELIEF's own steepest step there:
+    relief step 0 :    106 (11.8%)
+    relief step 1 :    505 (56.3%)
+    relief step 2 :    276 (30.8%)
+    relief step 3 :      7 ( 0.8%)
+    relief step >=4 :      3 ( 0.3%)
+  ON RELIEF THAT IS ITSELF WALKABLE (relief step <= 1): 124051 columns, 611 unclimbable after shaping (4 per mille)

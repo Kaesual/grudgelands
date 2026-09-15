@@ -287,6 +287,8 @@ tools/wp13/wield_transform_kat.lua:212:-- `core::Transform::buildMatrix` rotates
 2 escapes: clean
 3 5.2+ stdlib: clean
 4 // and bitwise: READ THESE
+tools/wp13/evidence/20260915-capital-terrain/measurements/band-bound.lua:12:--   gentle  the worst |output step| over pairs whose RELIEF step is at most 1.
+tools/wp13/evidence/20260915-capital-terrain/measurements/band-bound.lua:44:io.write("deviation = worst |output - plain terrace|\n\n")
 tools/wp13/evidence/20260914-round-b-terrain/measure/road_shoulder.lua:2:-- rows on the approach, the smallest |dx| at which a biome decoration may host
 5 sandbox/namespace: READ THESE
 tools/wp13/capital_wall.lua:246:	os.exit(1)
@@ -298,6 +300,7 @@ tools/wp13/dump_blueprint.lua:52:	os.exit(1)
 tools/wp13/dump_blueprint.lua:59:		os.exit(1)
 tools/wp13/dump_blueprint.lua:66:	os.exit(1)
 tools/wp13/dump_blueprint.lua:72:	os.exit(1)
+tools/wp13/lane_routes.lua:347:	os.exit(1)
 tools/wp13/highcourt_plots.lua:319:	os.exit(0)
 tools/wp13/highcourt_plots.lua:405:	os.exit(1)
 tools/wp13/dump_highcourt.lua:32:	os.exit(2)

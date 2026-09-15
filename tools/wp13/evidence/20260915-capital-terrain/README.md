@@ -1,7 +1,9 @@
 # WP13 round 3, lane 1: capital terrain
 
 Evidence for [docs/research/wp13-capital-terrain.md](../../../../docs/research/wp13-capital-terrain.md),
-taken on branch `wp13-r3-terrain`, based on `main` at `19abee02`, 2026-09-15.
+taken on branch `wp13-r3-terrain`, rebased onto `main` at `658b6763`
+(after lane 2's floating-bushes fix and lane 3's lane/route crossing rule),
+2026-09-15.
 
 Two playtest findings, both terrain, both WP40's:
 
@@ -39,6 +41,29 @@ The expectation file lives with the lane that last CHANGED the ground, which is
 why `run_highcourt.sh` and `run_capital.sh` now read them from here rather than
 from `20260915-highcourt-districts/` and `20260915-dur-brannoc/`.
 
+## The review round, and what it changed
+
+The first version of this package was reviewed and two of its claims were
+wrong. Both are fixed here and the evidence for both is in
+`measurements/`:
+
+* **The band's quantiser was not translation invariant.** `round_ratio` rounds
+  half away from zero, so for an even divisor the lattice bin around zero is one
+  node narrower than the rest, and the band built on it emitted a two-node step
+  on a plain one-node-per-column ramp for step 2 and step 4.
+  `measurements/band-bound.txt` is the exhaustive one-dimensional sweep that
+  finds it and that proves the fixed operator's bound; `measurements/phase-*`
+  and `measurements/relief-attribution.txt` are the real-capital measurements.
+  Highcourt's worst 4-neighbour rise goes back from 5 to 4 (main's value) and
+  its ±250 residue from 12 to 6 per mille.
+* **The residue is not "the ground's own rock".** Measured column by column
+  against the ungraded relief, 59.5 % of Dur Brannoc's residual unclimbable
+  columns sit where the relief itself steps at most one node. The fixture header
+  and the note say so now.
+
+The fixture also measured only three of a column's four neighbours (never −z);
+it measures four and every ceiling was re-taken against that.
+
 ## What was already red before this lane, and stays that way
 
 Three things this package did NOT break and did NOT fix:
@@ -75,8 +100,10 @@ Every boot went through `tools/wp13/run_highcourt.sh` or
 `tools/wp13/run_capital.sh`: a fresh `mktemp -d` directory as `LUANTI_USER_PATH`
 and as every XDG directory, the log inside it, a `timeout --kill-after`, a kill
 scoped to this run's own world path, and the scratch directory removed on exit.
-Ports 31001-31021 (this lane's block is 31000-31099); the one `main` baseline
-capital boot used 31399 from the round-2 capital block, which was measured free
-first, because `run_capital.sh` on `main` refuses anything outside 31300-31399.
+Ports 31001-31042 (this lane's block is 31000-31099); the one `main` baseline
+capital boot used 31399, which was measured free first, because
+`run_capital.sh` on the pre-rebase `main` still refused anything outside
+31300-31399. That guard is now `31000-31999` on main (lane 3), and this branch
+takes main's side of it unchanged.
 Nothing under the user's personal Flatpak folder was touched and no
 `luanti.bin --server` process belonging to these runs survives them.

@@ -1,28 +1,28 @@
 
 == highcourt 8675309 after ==
-  38368 default:stone
+  39603 default:stone
    9918 default:dirt
    6402 default:river_water_source
    1419 default:gravel
    1293 grug_nodes:dirt_with_forest_litter
    1121 default:dirt_with_grass
-    693 grug_decor:castle_pavement_brick
-    525 default:brick
+    694 grug_decor:castle_pavement_brick
+    523 default:brick
     485 grug_decor:castle_stonewall
-    204 grug_decor:castle_stonewall_stair
+    171 grug_decor:castle_stonewall_stair
     160 default:tree
     124 default:wood
      68 grug_decor:darkage_marble
      62 default:cobble
 
 == dur_brannoc 8675309 after ==
-  76945 default:stone
-  14704 default:gravel
-   1265 grug_decor:castle_stonewall
-    742 grug_decor:castle_pavement_brick
-    436 default:stonebrick
+  76011 default:stone
+  14699 default:gravel
+   1271 grug_decor:castle_stonewall
+    752 grug_decor:castle_pavement_brick
+    434 default:stonebrick
     432 grug_decor:castle_rubble
-    337 grug_decor:castle_stonewall_stair
+    307 grug_decor:castle_stonewall_stair
     144 default:pine_tree
     139 default:pine_wood
     109 default:dirt

@@ -261,6 +261,30 @@ return function(dependencies)
 			reference - feasible_upper)
 	end
 
+	-- THE STEP BAND'S QUANTISER.
+	--
+	-- `round_ratio` rounds half AWAY FROM ZERO, so the bin it puts around zero
+	-- is one node narrower than every other bin for an even divisor: for step 4
+	-- it maps -1, 0 and 1 to the same level while every other level owns four
+	-- values. A terrace lattice with one short bin is not translation
+	-- invariant, and the band built on it is not 1-Lipschitz -- on a plain
+	-- one-node-per-column ramp crossing the reference it emits a two-node step
+	-- for step 2 and step 4 (step 3 is spared because an odd divisor's zero bin
+	-- is already the right width). Widening the disc does not help; only the
+	-- lattice does.
+	--
+	-- `terrace_bin` is round-half-up everywhere, so every bin is exactly `step`
+	-- wide wherever zero happens to fall, and `terrace_middle` is the same
+	-- rounding for the erosion/dilation midpoint, which has the identical
+	-- defect at a capital sitting below y = 0.
+	local function terrace_bin(value, step)
+		return floor_div(2 * value + step, 2 * step)
+	end
+
+	local function terrace_middle(sum)
+		return floor_div(sum + 1, 2)
+	end
+
 	-- THE STEP BAND'S RADIUS, per race terrace step: one column short of the
 	-- riser it has to bridge.
 	--
@@ -1920,14 +1944,14 @@ return function(dependencies)
 			-- asks for.
 			local datum = reference - incoming + relief_at(x, z)
 			local centre = reference +
-				step * round_ratio(relief_at(x, z) - datum, step)
+				step * terrace_bin(relief_at(x, z) - datum, step)
 			local erosion, dilation = centre, centre
 			for dz = -radius, radius do
 				local az = dz < 0 and -dz or dz
 				for dx = -radius, radius do
 					local ax = dx < 0 and -dx or dx
 					local distance = ax > az and ax or az
-					local terrace = reference + step * round_ratio(
+					local terrace = reference + step * terrace_bin(
 						relief_at(x + dx, z + dz) - datum, step)
 					local offset = terrace - centre
 					if offset <= step and offset >= -step then
@@ -1937,7 +1961,7 @@ return function(dependencies)
 					end
 				end
 			end
-			return round_ratio(erosion + dilation, 2)
+			return terrace_middle(erosion + dilation)
 		end
 
 		for anchor_index = 1, #source.anchors do
