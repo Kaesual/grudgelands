@@ -17,17 +17,31 @@ under "Playtest round 1"; this directory holds what the gates printed.
 ## The gates
 
 - **Final micro pair byte-identical**, output_sha256
-  `1f2830bba4d40a33ace40075d6d12e82e7279c365fa589c6ae3d3caefd752730` from both
-  interpreters. It was `871f0d2942f9e1dc73b6a437fa7fa6e86902075cf8f8fefe096538eddab4c4bf`
-  at `70702d2`; the `start_npcs_kat` report is part of the hashed text and this
-  round rewrote it.
-- **Static**: clean, and every hit is pre-existing — but they are not all prose.
-  The `\u{}` note in levels.lua and target_frame.lua and the `|` of §-table
-  quotes and `|x|` notation are comments; sweep 5 over `tools/wp13` reports
-  **fifteen real `os.exit` calls**, in `dump_blueprint.lua`, `dump_highcourt.lua`,
-  `dump_capital_part.lua` and `highcourt_plots.lua`. Those are code. They are
-  standalone command-line tools that never run inside the engine sandbox the
-  sweep is about, and this round neither added nor touched one.
+  `4f2d2b769578c00bd9947a5904dd4f1635fae0e2503420f990a585f7841cbdf5` from both
+  interpreters, rebased onto `d2538b9`. It was
+  `871f0d2942f9e1dc73b6a437fa7fa6e86902075cf8f8fefe096538eddab4c4bf` at
+  `70702d2`, and three groups of rows moved: the `start_npcs_kat` report, which
+  is part of the hashed text and which this round rewrote, plus the
+  `highcourt_throne` row and Highcourt's identity `187f79e0…`, which are main's
+  throne lane and not this one's. The six start identities are unchanged in it,
+  and `start-identities.txt` says so separately.
+- **Static**: clean, and every hit is pre-existing — but they are not all prose,
+  and this round added none of them. Five kinds, in full:
+  1. the `\u{}` note in `levels.lua` and `target_frame.lua` (a comment about the
+     escape, not an escape);
+  2. `|` inside §-table quotes and `|x|` notation, all over `grug_mobs`
+     (comments, read by sweep 4 as a bitwise or);
+  3. `::Transform::` inside C++ symbol names in `grug_visuals/wield_geometry.lua`
+     and `tools/wp13/wield_transform_kat.lua` (comments, read by sweep 1 as a
+     `goto` label; they arrived with main's visuals lane);
+  4. the file name `minetest.conf` in three `grug_core/atmosphere*.lua` comments
+     (read by sweep 5 as the deprecated namespace);
+  5. **fifteen real `os.exit` calls**, in `dump_blueprint.lua`,
+     `dump_highcourt.lua`, `dump_capital_part.lua` and `highcourt_plots.lua`.
+     Those are code, not prose. They are standalone command-line tools that never
+     run inside the engine sandbox the sweep is about, and this round neither
+     added nor touched one.
+
   `check_fresh_server.py` PASS.
 - **Six-start identities**: byte-identical to the committed baseline. This round
   writes no mapgen cell.

@@ -508,26 +508,92 @@ The level and tier are persisted plain fields, so the derived max is a pure
 function of what came back; health is left alone except that a value above the
 max is brought down, so a wounded mob stays wounded across a reload.
 
+### What the review of this round found
+
+The independent review of 2026-09-15 verified all eight fixes and asked for four
+changes. All four are in; the first is the interesting one.
+
+1. **`socket_seeable` guarded the wrong mapblock.** The strike rule asked whether
+   the SOCKET's block was active, and `compare_block_status` answers for the
+   block containing the position it is handed
+   (`ServerEnvironment::getBlockStatus`, serverenvironment.cpp:1159-1172) while
+   `active_block_range` defaults to four blocks = 64 nodes. Highcourt's ring loop
+   spans about a hundred, so a player at the south gate leaves the north-west
+   patroller's own block inactive: no claim, three passes, marker freed, a fresh
+   full-HP guard placed — and the original removing itself on reactivation. The
+   starts are immune (their loops are ≤ 58 nodes across) but a capital is not.
+
+   The engine distinguishes the two cases and we now ask it:
+   `on_deactivate(self, removal)` fires with `removal = false` when a mapblock is
+   unloaded and `true` when the object is removed. The unload case records the
+   position the NPC went out of memory at — a block that is inactive by
+   construction at that moment — and the socket is struck only once **that** block
+   is active again, because an NPC still on disk comes back with its own block. A
+   `/clearobjects` leaves no such record (`mode = "full"` calls no callback at
+   all) and keeps the socket's own block as the whole test. The hook is installed
+   on mobs_redo's shared `mob_class`, which defines none of its own: one hook for
+   all five families, no patch to a vendored file.
+
+   Under it, `start_npc_claim` decides a contest over one socket by **age**
+   (`_grug_placed_at`, stamped by `install`) instead of by which entity activated
+   second. So even a strike that does misfire costs a transient spare and never
+   the wounded original.
+
+2. **A loop nobody can walk is terminal.** After three reported give-ups the mob
+   says once that it is going quiet and keeps trying in silence, and a refused
+   teleport is retried every 10 s instead of on every tick (`snap_try`). With
+   every waypoint unreachable AND a player inside 48 nodes, the first version
+   logged a line and called `get_objects_inside_radius` once a second for as long
+   as the player stood there.
+
+3. **The probe's population assertion was one-sided** — it failed only on
+   `live > roster`, so a run that read `live = 0` passed. Every terminal phase is
+   strict now: `live == roster`, `marked == roster`, and no two NPCs sharing a
+   socket.
+
+4. **Evidence wording and coverage**: the 79/115 wound is marked incidental and
+   no longer implies a pre-fix run that was never made, Highcourt's `new` split is
+   marked as one run's, the README no longer calls fifteen real `os.exit` calls
+   "prose", and `files.sha256(.sh)` freezes the round's bytes. world.md §4 gained
+   the sentence that no mob initiates against NPCs except war-front units, and
+   item 5 above now says plainly what that changes for bandits and mirefolk.
+
+Two notes the review left as information, not changes: `standing_y` takes the
+topmost valid cell within +4 of the mob, so an out-of-sight snap can land on a
+structure above the waypoint; and the 48 nodes are a radius, not line of sight,
+which is the user's ruling as given.
+
 ### Verification
 
 - **KAT pair, byte-identical.** `tools/wp13/start_npcs_kat.lua` now drives four
   production files against the stub engine — `patrol.lua`, `verbs.lua`,
   `start_villagers.lua` and `start_npcs.lua`, in init.lua's own order — through
-  sixteen report rows: the six states it had, plus the door flip and the
-  settlement nametag (items 4 and 7), the wanderer and the twin healing
-  (item 1), the census, the amble and a blocked villager (item 3), the no-jump
-  gate (item 6), the three-stage stuck rescue including the out-of-sight ruling
-  (item 2) and the NPC-targeting verb (item 5). The stub models the engine fact
-  the design hangs off in both directions now: `get_objects_inside_radius` sees
-  only active objects AND `get_pos()` on an object whose block went inactive
-  answers nil. The mobs the behaviour rows drive are the entities the placement
-  engine placed in the same process, so the amble runs on the fields `install`
-  really wrote rather than on a hand-built table.
+  seventeen report rows: the six states it had, plus the door flip and the
+  settlement nametag (items 4 and 7), the wanderer, the out-of-range NPC and the
+  twin healing (item 1 and the review's finding on it), the census, the amble and
+  a blocked villager (item 3), the no-jump gate (item 6), the three-stage stuck
+  rescue including the out-of-sight ruling and its terminal state (item 2) and
+  the NPC-targeting verb (item 5).
+
+  The stub models the whole activation edge, because that is what the design
+  hangs off: an object exists only while its own block is active,
+  `get_objects_inside_radius` and `get_pos()` both answer accordingly,
+  `core.add_entity` creates an ACTIVE object even where no player is, a restart
+  activates only what a player is near, and `on_deactivate` is dispatched with
+  `removal = true` for a removal and `false` for an unload — through mobs_redo's
+  shared `mob_class`, exactly as the engine dispatches it. The `out_of_range` row
+  fails against the pre-fix predicate, which is what makes it a regression test
+  rather than a tautology. The mobs the behaviour rows drive are the entities the
+  placement engine placed in the same process, so the amble runs on the fields
+  `install` really wrote rather than on a hand-built table.
 - **`tools/wp13/final_micro.lua` pair**, LuaJIT and `tools/bin/lua51`,
   `LC_ALL=C`: output_sha256
-  `1f2830bba4d40a33ace40075d6d12e82e7279c365fa589c6ae3d3caefd752730` from both
-  (it was `871f0d29…` before this round; the KAT report is part of the hashed
-  input).
+  `4f2d2b769578c00bd9947a5904dd4f1635fae0e2503420f990a585f7841cbdf5` from both,
+  with this round rebased onto `d2538b9`. Three groups of rows moved against the
+  seam round's `871f0d29…`: this round's own KAT report, and — from main, not
+  from here — the new `highcourt_throne` row and Highcourt's identity
+  (`187f79e0…`), both of which arrived with the throne lane. The six start
+  identities are untouched in it.
 - **Static gates** (`static.txt`): `luac51 -p` per touched file and over the
   whole tree, the SETGLOBAL count (17 grug mod writes, one table per mod), the
   five plain-5.1 sweeps scoped to the touched files, to `mods/*/grug_*` and to
@@ -590,6 +656,15 @@ Boot 1 additionally, in order:
   activation path puts both back to 115 in the same tick. 115 is the level-20
   guard-field value at a start; the user's 945/10 was a capital's level-60 elite,
   which is the same arithmetic on a bigger number.
+- **Item 1, the review's finding.** One villager then moved OUT of the
+  forceloaded grid, so its own mapblock goes inactive while the socket it is
+  booked on stays active — `compare_block_status` answers for the block
+  containing the position it is handed, and those are two different blocks. The
+  probe logs both answers to prove the premise, then asserts the consequence at
+  ten and at forty seconds: `live=8 marked=9`, i.e. the NPC is out of the
+  environment and its marker is untouched. Forceloading its block brings it
+  back and the census returns to 9/9. Against the pre-fix predicate the same
+  state freed the marker and placed a fresh guard.
 - **Item 5.** A wolf two nodes from a villager: `attack_npcs=false`,
   `target=nil` and its full 65 HP at every observation — it never acquires the
   NPC next to it. A wolf two nodes from a guard post, three seconds in:

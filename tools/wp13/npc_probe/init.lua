@@ -105,7 +105,7 @@ end
 -- round found exactly that). It is passed at every terminal phase; the two
 -- phases where a number other than the roster is the point say so themselves.
 --
-local function census_line(tag, strict)
+local function census_line(tag, strict, expect_live)
 	local rows = grug_mobs.start_npc_census()
 	local roster, marked = 0, 0
 	for index = 1, #rows do
@@ -132,6 +132,17 @@ local function census_line(tag, strict)
 	end
 	if twins > 0 then
 		fail(twins .. " NPCs share a socket (" .. tostring(shared) .. ")")
+	end
+	if expect_live then
+		if #npcs ~= expect_live then
+			fail("phase " .. tag .. ": live=" .. #npcs .. " differs from the " ..
+				"expected " .. expect_live)
+		end
+		if marked ~= roster then
+			fail("phase " .. tag .. ": marked=" .. marked .. " differs from " ..
+				"roster=" .. roster .. " -- a marker was freed for an NPC that " ..
+				"is merely unloaded")
+		end
 	end
 	if strict then
 		if #npcs ~= roster then
@@ -224,6 +235,7 @@ end
 local HOSTILE = "grug_mobs:wolf"
 local hostiles = {}
 local cleared_socket
+local unloaded_socket, unloaded_home, unloaded_away
 
 local function target_name(target)
 	if not target then return "nil" end
@@ -402,6 +414,64 @@ local FULL = {
 	{at = 340, what = function()
 		hostile_lines("fought")
 		census_line("after_fight", true)
+	end},
+	--
+	-- THE REVIEW'S FINDING, in the engine. One NPC is moved OUT of the
+	-- forceloaded grid, so its own mapblock goes inactive while the socket it is
+	-- booked on stays active: `compare_block_status` answers for the block
+	-- containing the position it is handed, and the two positions are different
+	-- blocks. The NPC is then not in the environment at all, and the marker must
+	-- survive that -- it is unloaded, not gone.
+	--
+	{at = 345, what = function()
+		local npcs = settlement_npcs()
+		for index = 1, #npcs do
+			local entity = npcs[index]
+			if entity.name:find("villager", 1, true) then
+				local pos = entity.object:get_pos()
+				local away = {x = pos.x + FORCE_REACH + 24, y = pos.y, z = pos.z}
+				unloaded_socket = entity._grug_socket
+				unloaded_home = {x = pos.x, y = pos.y, z = pos.z}
+				unloaded_away = away
+				entity.object:set_pos(away)
+				log({"event=unload", "socket=" .. tostring(unloaded_socket),
+					"to=" .. core.pos_to_string(away),
+					"socket_block_active=" .. tostring(
+						core.compare_block_status(
+							{x = pos.x, y = pos.y, z = pos.z}, "active")),
+					"npc_block_active=" .. tostring(
+						core.compare_block_status(away, "active"))})
+				return
+			end
+		end
+		fail("no villager to unload")
+	end},
+	{at = 355, what = function()
+		-- Eight of nine, and still nine markers: this is the count that must NOT
+		-- become nine again by a fresh NPC being placed on the marked socket.
+		census_line("unloaded", false, 8)
+	end},
+	{at = 385, what = function()
+		census_line("still_unloaded", false, 8)
+	end},
+	{at = 390, what = function()
+		-- And it comes back when its block does, which is the other half of the
+		-- same claim.
+		core.forceload_block(unloaded_away, true, -1)
+	end},
+	{at = 396, what = function()
+		local live = census_line("reloaded_npc", true)
+		local npcs = settlement_npcs()
+		for index = 1, #npcs do
+			if npcs[index]._grug_socket == unloaded_socket then
+				-- Put it back where it belongs, so the two reboots start from
+				-- the ordinary world rather than from this experiment.
+				npcs[index].object:set_pos(unloaded_home)
+			end
+		end
+		core.forceload_free_block(unloaded_away, true)
+		log({"event=unload_done", "socket=" .. tostring(unloaded_socket),
+			"live=" .. live})
 		log({"event=complete", "programme=full"})
 		core.request_shutdown("wp13 npc probe done", false, 1)
 	end},
