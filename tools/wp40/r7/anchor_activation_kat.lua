@@ -204,7 +204,10 @@ local anchor_config = {new = function()
 end}
 -- The fourth WP13 increment turned the successor's single settlement into the
 -- roster list `r7_settlement.lua` publishes, so a settlement config carries its
--- key and `new` returns a tail under the same key.
+-- key and `new` returns a tail under the same key. The 2026-09-15 seam
+-- generalisation added the fourth factory argument: the roster's own key order,
+-- which the successor cross-checks against the configs (contract 2.2.2). One
+-- stub settlement here means a one-key roster order.
 local hearthpine_config = {key = "hearthpine", new = function()
 	return {key = "hearthpine",
 		bind_plan = function() order[#order + 1] = "hearthpine_plan" end,
@@ -216,7 +219,8 @@ local hearthpine_config = {key = "hearthpine", new = function()
 		end, metrics = function() return {} end}
 end}
 local successor = dofile(wp40 .. "/r7_successor.lua")(
-	p9g_config, anchor_config, {hearthpine_config}).new({})
+	p9g_config, anchor_config, {hearthpine_config},
+	{hearthpine_config.key}).new({})
 local composed_context = {write_anchor = function() end,
 	write_hearthpine = function() end}
 for _, key in ipairs({"schema", "plan", "generation", "call_mode", "min_x",

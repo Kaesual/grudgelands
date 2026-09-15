@@ -1,6 +1,19 @@
 -- LuaJIT-only regression for the production R7 manifest constructor. This
 -- intentionally decodes the pinned MTS population and builds the bounded
 -- anchor roster; it is separate from the portable final micro-KAT.
+--
+-- SUPERSEDED, 2026-09-15, and therefore no longer called by
+-- tools/wp40/quality/final_micro.sh. It hard-wires the single Hearthpine
+-- settlement -- `wp40/r7_hearthpine.lua`, the `hearthpine_*` content fields and
+-- the `hearthpine_blueprint` manifest field -- which the seam generalisation
+-- replaced with the roster of `wp40/r7_settlement.lua`; the module it loads no
+-- longer exists. `tools/wp13/seam_kat.lua` builds the real `r7_manifest` from
+-- the roster-derived settlement order and is the successor for that property.
+-- It is kept, not deleted, per the 2026-09-15 "refreeze, do not retire" ruling:
+-- reviving it needs the same WP40-lane follow-up as
+-- `node_semantics_fixture.lua` (the vendored doors/beds/xpanes/wool/vessels/
+-- walls/grug_decor palette), which its `runtime_fixture.lua` dependency also
+-- blocks on today.
 
 local repo = assert(arg[1], "repository root required")
 if arg[2] ~= nil then error("manifest constructor KAT argument population differs", 0) end

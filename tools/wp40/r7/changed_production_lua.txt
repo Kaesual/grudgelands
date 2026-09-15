@@ -22,6 +22,8 @@ mods/CORE/grug_core/atmosphere.lua
 mods/CORE/grug_core/atmosphere_zones.lua
 mods/CORE/grug_core/init.lua
 mods/CORE/grug_core/protection.lua
+mods/CORE/grug_core/settlement_sockets.lua
+mods/CORE/grug_core/starts_preload.lua
 mods/CORE/grug_core/zone_authority.lua
 mods/ENTITIES/grug_mobs/bandit.lua
 mods/ENTITIES/grug_mobs/bear.lua
@@ -49,6 +51,7 @@ mods/ENTITIES/grug_mobs/levels.lua
 mods/ENTITIES/grug_mobs/mirefolk.lua
 mods/ENTITIES/grug_mobs/panther.lua
 mods/ENTITIES/grug_mobs/parrot.lua
+mods/ENTITIES/grug_mobs/patrol.lua
 mods/ENTITIES/grug_mobs/rabbit.lua
 mods/ENTITIES/grug_mobs/ram.lua
 mods/ENTITIES/grug_mobs/rares.lua
@@ -58,6 +61,8 @@ mods/ENTITIES/grug_mobs/skeleton_raider.lua
 mods/ENTITIES/grug_mobs/spawn_policy.lua
 mods/ENTITIES/grug_mobs/spider.lua
 mods/ENTITIES/grug_mobs/stag.lua
+mods/ENTITIES/grug_mobs/start_npcs.lua
+mods/ENTITIES/grug_mobs/start_villagers.lua
 mods/ENTITIES/grug_mobs/wolf.lua
 mods/ENTITIES/grug_mobs/zebra.lua
 mods/ENTITIES/grug_mobs/zombie.lua
@@ -86,10 +91,14 @@ mods/ITEMS/grug_materials/registry.lua
 mods/ITEMS/grug_nodes/init.lua
 mods/ITEMS/grug_trees/init.lua
 mods/MAPGEN/grug_mapgen/init.lua
+mods/MAPGEN/grug_mapgen/wp13/avenue.lua
 mods/MAPGEN/grug_mapgen/wp13/buildings.lua
+mods/MAPGEN/grug_mapgen/wp13/capitals.lua
 mods/MAPGEN/grug_mapgen/wp13/dawnmere.lua
 mods/MAPGEN/grug_mapgen/wp13/dressing.lua
 mods/MAPGEN/grug_mapgen/wp13/hearthpine.lua
+mods/MAPGEN/grug_mapgen/wp13/highcourt.lua
+mods/MAPGEN/grug_mapgen/wp13/highcourt_district.lua
 mods/MAPGEN/grug_mapgen/wp13/interiors.lua
 mods/MAPGEN/grug_mapgen/wp13/kapok.lua
 mods/MAPGEN/grug_mapgen/wp13/layout.lua
@@ -117,6 +126,7 @@ mods/MAPGEN/grug_mapgen/wp40/r7_consumer_payload.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_content.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_dawnmere_blueprint.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_hearthpine_blueprint.lua
+mods/MAPGEN/grug_mapgen/wp40/r7_highcourt_blueprint.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_kapok_blueprint.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_loader.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_manifest.lua
@@ -133,10 +143,15 @@ mods/MAPGEN/grug_mapgen/wp40/r7_sunscar_blueprint.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_template_source.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_wp13_library.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_zone_overlay.lua
+mods/MAPGEN/grug_mapgen/wp40/simple_map.lua
 mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua
 mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua
 mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua
 mods/MAPGEN/grug_mapgen/wp40/zones.lua
 mods/MAPGEN/grug_mapgen/wp43_handoff.lua
+mods/PLAYER/grug_classes/init.lua
 mods/PLAYER/grug_classes/selection.lua
 mods/PLAYER/grug_factions/init.lua
+mods/PLAYER/grug_visuals/apply.lua
+mods/PLAYER/grug_visuals/compose.lua
+mods/PLAYER/grug_visuals/init.lua
