@@ -960,12 +960,31 @@ return function(repo)
 	-- three cells between its two architraves; a deck built one cell too
 	-- wide shows up here as a number that moved.
 	local PLOT_RAISED = {lore_cloister_walk = 45}
-	-- The lot envelope, two nodes inside the contract's plot volume.
-	local LOT_REACH = 13
-	local LOT_CLEAR = 8
-
 	local quadrants = dofile(wp13 .. "/highcourt_quadrants.lua")()
 	local districts = dofile(wp13 .. "/highcourt_districts.lua")(wp13)
+	local plot_builder = dofile(wp13 .. "/highcourt_plot.lua")(wp13)
+
+	-- THE LOT ENVELOPE IS ONE NUMBER SET, TYPED IN TWO FILES.
+	--
+	-- `highcourt_plot.lua` builds to it, `highcourt_quadrants.lua` chose the
+	-- lots against it, and this file checks both -- so a third copy typed here
+	-- would be a KAT that passes while the builder and the grids disagree.
+	-- These four asserts are what binds them; everything below reads the
+	-- modules.
+	local LOT_REACH = quadrants.LOT.reach
+	local LOT_CLEAR = quadrants.LOT.clear
+	assert(plot_builder.REACH == quadrants.LOT.reach,
+		"the plot builder reaches " .. plot_builder.REACH ..
+			" and the lots were chosen for " .. quadrants.LOT.reach)
+	assert(-plot_builder.FLOOR == quadrants.LOT.fall,
+		"the foundation skirt reaches " .. -plot_builder.FLOOR ..
+			" and the lots allow a fall of " .. quadrants.LOT.fall)
+	assert(plot_builder.MIN_CLEAR == quadrants.LOT.clear,
+		"a plot clears at least " .. plot_builder.MIN_CLEAR ..
+			" and the lots were chosen against " .. quadrants.LOT.clear)
+	assert(quadrants.LOT.rise < quadrants.LOT.clear,
+		"a lot may rise " .. quadrants.LOT.rise ..
+			" into an airspace of " .. quadrants.LOT.clear)
 
 	-- 2a. The permutation.
 	--
@@ -1016,6 +1035,19 @@ return function(repo)
 		-- A world's seed is a string of digits, and nothing else is.
 		local refused = pcall(quadrants.permutation, "not a seed", sha)
 		assert(not refused, "the permutation accepted a seed that is not one")
+		-- And a permutation handed in from outside is a bijection or it is
+		-- refused: two roles on one quadrant would put two districts on one
+		-- set of lots and leave a quarter of the capital empty, which nothing
+		-- downstream would notice.
+		assert(quadrants.check_permutation({4, 3, 2, 1}),
+			"the guard refused a permutation")
+		for _, broken in ipairs({{1, 1, 2, 3}, {1, 2, 3}, {1, 2, 3, 5},
+				{1, 2, 3, 0}, {1, 2, 3, "4"}, {1, 2, 3, 4, 1}}) do
+			assert(not pcall(quadrants.check_permutation, broken),
+				"the guard accepted something that is not a permutation")
+			assert(not pcall(quadrants.assign, {permutation = broken}),
+				"assign accepted something that is not a permutation")
+		end
 	end
 
 	-- 2b. The 36 lots.

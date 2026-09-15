@@ -35,11 +35,13 @@ where it used to hand it nine.
 | `tools/wp13/highcourt_identities.lua` | **new**: every blueprint identity the capital publishes, so the core's and the market's are checkable |
 | `tools/wp13/highcourt_probe/init.lua` | `field` mode replaces `scan`; the district assignment and every plot's world position are logged; one dump per district |
 | `tools/wp13/run_highcourt.sh`, `dump_highcourt.lua`, `highcourt_timing.lua`, `seam_kat.lua` | follow the above |
+| `wp40/r7_settlement.lua` | `M.audit_terrain`, the load-time diagnostic of section 10.1, and `clear_to` carried through `prepare` |
+| `wp40/r7_runtime.lua` | the world seed is validated once and handed to every blueprint source; `build` refuses a seed that has moved since; `settlement_terrain_findings` |
+| `wp40/r7_loader.lua` | one warning line per plot whose ground this world does not support |
 
 Not touched: `highcourt.lua` (the civic core, the avenues and the ring street),
 `avenue.lua`, `capitals.lua`, `buildings.lua`, `parts.lua`, `palette.lua`,
-`dressing.lua`, the six start compositions, and every file of the WP40 seam
-except the capital source wrapper.
+`dressing.lua` and the six start compositions.
 
 ## 2. The four districts
 
@@ -84,7 +86,7 @@ publishes more than the one its own watch house generator does.
 | 6 | `lore_chapter_house` | `longhouse` 11 x 13 | 4 862 | 2 |
 | 7 | `lore_almonry` | `cottage` 9 x 11 | 3 360 | 2 |
 | 8 | `lore_cloister_walk` | `colonnade` 15 x 5, marble | 2 841 | 4 |
-| 9 | `lore_quiet_grove` | `grove` 15, columnar | 7 978 | 3 |
+| 9 | `lore_quiet_grove` | `grove` 15, columnar | 7 978 | 4 |
 
 **The chapel with its belfry is in the CORE and is not repeated here.** The
 core's west quarter carries it, which is what the contract's human-capital line
@@ -97,8 +99,8 @@ district's `quest` socket comes from, which is the generator's own.
 
 | Lot | Plot | Part | Cells | Sockets |
 | --- | --- | --- | --- | --- |
-| 1 | `homes_tavern` | `hall` 13 x 15 + trestles, wood pile | 5 567 | 2 |
-| 2 | `homes_well` | `well_court` 11 | 3 210 | 4 |
+| 1 | `homes_tavern` | `hall` 13 x 15 + trestles, wood pile | 6 699 | 2 |
+| 2 | `homes_well` | `well_court` 11 | 3 210 | 5 |
 | 3 | `homes_monument` | `statue_plinth`, marble, on a paved square | 4 077 | 4 |
 | 4 | `homes_house_gable` | `cottage` 9 x 7 | 2 600 | 2 |
 | 5 | `homes_house_hip` | `cottage` 11 x 9, hip | 3 105 | 2 |
@@ -412,7 +414,7 @@ gate seed through a temporary `LUANTI_USER_PATH`, ports 31200-31299:
 | avenue road digest | `db3cf4b304bd6b59…` (1 733 cells) | `e9317dbb2ec2cc84…` (1 719 cells) |
 
 **The built road's digest moved, and this package moved it**: the overlay's run
-list gained the eight district lanes. Both values are recorded in
+list gained the seven district lanes. Both values are recorded in
 `highcourt/avenue-digest-<seed>.txt` with the seed and the `main` commit they
 were taken on, and `run_highcourt.sh` compares against them — a second boot on
 the user seed reproduced the digest exactly. The expectation file lives with the
@@ -477,16 +479,25 @@ What changed **after looking at them**:
    quadrant and its lot grid is the only staggered one; a second lane would
    need the grid to be regular, and no regular nine-lot grid is legal there on
    both seeds.
-4. **The lanes do not reach every lot.** A lane serves the two rows or columns
+4. **A plot is never rotated for the quadrant it lands in.** A plot's cells are
+   its identity and its identity may not depend on the seed, so a composition
+   is built once and only its OFFSET moves; its doorstep path, its gate socket
+   and its front door therefore always face −z. The four quadrants are a
+   quarter turn apart, so in two of them a plot's door faces away from the lane
+   that serves it — the building is reached round the back. Fixing it properly
+   means per-quadrant turned variants with four identities each (144 blueprints
+   instead of 36), or a turn applied by the writer, which the seam has no
+   concept of. Worth a decision before the other five capitals.
+5. **The lanes do not reach every lot.** A lane serves the two rows or columns
    it runs between; the outer row of each grid is reached along the lane rather
    than fronted by it. A second cross per quadrant is possible in the north-east
    and north-west and is a `highcourt_quadrants.lua` change.
-5. **Nothing renders the four districts together as built.** The per-seed
+6. **Nothing renders the four districts together as built.** The per-seed
    capital plan is drawn from the compositions on a flat plane; what the engine
    dumps is the core, one plot per district and the east avenue, because a
    512 × 512 region dump of the finished map is a different order of cost. A
    reviewer who wants the real thing walks it.
-6. **The user has not walked Highcourt**, still. Nothing here is accepted until
+7. **The user has not walked Highcourt**, still. Nothing here is accepted until
    they have; section 9 says where to stand.
 
 ## 9. Where to look, in the client, on seed 531802985935182545
@@ -508,3 +519,70 @@ once reaches all nine.
 
 The single most useful thing to look at first is `renders/capital-531802985935182545.png`,
 which is the whole plan on one page.
+
+## 10. The review round (2026-09-15)
+
+One independent review, verdict "mergeable, no MUST-FIX": four SHOULD-FIX items
+and five wrong numbers in this record. What changed.
+
+### 10.1 A plot on ground nobody measured is diagnosable now
+
+Ten of the 36 lots sit exactly at the limit -- fall 6 or rise 6 -- on the two
+seeds that were measured, and `r7_settlement`'s writer projects a plot from its
+reference column with no water and no fall test of its own. A third seed could
+therefore flood or half-bury a plot in silence.
+
+`r7_settlement.audit_terrain` is the rule, `r7_runtime.settlement_terrain_findings`
+hands it the column authority the sockets are already projected with, and
+`r7_loader` logs one `warning` line per offending plot naming its submerged
+count, its perimeter fall against the skirt and its rise against the airspace
+it cut. **It is a diagnostic and nothing else**: no cell moves, the capital is
+still built, because half a world is not worth refusing over one plot.
+
+What it samples and what it does not: the perimeter exactly, because the
+perimeter is what the skirt carries down and the fall under it is the rule; the
+two-node margin ring exactly, because a plot whose skirt ends one node from the
+water is a building with a moat; the interior on a stride of two, because a
+river or a terrace shoulder is never one column wide and exhaustive would be
+36 000 height queries at every server start for a line nobody reads on a
+healthy world. `seam_kat` drives it over flat dry ground (no findings) and over
+a stub river and cliff (34 of 36 plots named, 15 wet, 33 steep).
+
+### 10.2 The tolerance numbers are bound
+
+`highcourt_plot.lua` builds to `REACH`/`FLOOR`/`MIN_CLEAR` and
+`highcourt_quadrants.lua` chose the lots against `M.LOT.reach`/`fall`/`clear`.
+The KAT had a third copy typed in it, so it could have passed while the builder
+and the grids disagreed. Its literals are gone; four asserts bind the two
+modules instead, including `LOT.rise < LOT.clear`.
+
+### 10.3 The permutation comes from the validated seed
+
+The capital source read `core.get_mapgen_setting("seed")` at module
+construction, while `build` validated its own copy later and `r7_mapgen.lua`
+compares only THAT copy across the two environments -- so the value the offsets
+came from was never the value anything checked. `r7_runtime` validates the seed
+once now, before the roster loop, hands it to every blueprint source, and
+`build` fails if its own validation answers anything else. Main and emerge
+therefore agree about where a district stands exactly when they agree about
+`full_seed`. The capital source refuses a half-seam (a seed without a SHA-256,
+or a seed that is not one) rather than falling back to canonical and placing
+the districts where the other environment did not; `seam_kat` checks all three
+refusals, that a seed moves 27 of 36 plots, and that it changes no plot's cells.
+
+### 10.4 An external permutation is checked
+
+`M.assign` took `options.permutation` on trust. Two roles mapped to one
+quadrant would put two districts on one set of lots and leave a quarter of the
+capital empty, which nothing downstream would notice.
+`M.check_permutation` is the guard and the KAT feeds it six things that are not
+permutations.
+
+### 10.5 Numbers corrected
+
+Seven district lanes, not eight (this record, the evidence README and
+`run_highcourt.sh`); `highcourt_plots.lua` says fifteen street runs, not eight;
+`r7_settlement.lua`'s roster comment says 36 plots, not nine; `homes_tavern` is
+6 699 cells, `homes_well` publishes 5 sockets and `lore_quiet_grove` 4. Every
+other cell and socket count in sections 2.2 to 2.4 was re-read off the KAT and
+is right.

@@ -144,13 +144,33 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	-- 2.2.4): what has to exist at load is the identity the manifest publishes
 	-- and the palette the channel is closed over, and neither of them is a
 	-- 100,000-cell buffer.
+	--
+	-- THE SEED REACHES THE BLUEPRINT SOURCES HERE, AND NOWHERE ELSE.
+	--
+	-- A capital's districts stand in quadrants a permutation of the world seed
+	-- picks (`wp13/highcourt_quadrants.lua`), so the plot OFFSETS are a
+	-- function of the seed even though no identity byte is. That made the
+	-- capital source read the seed for itself, at module construction, while
+	-- `build` validates its own copy later and `r7_mapgen.lua` compares only
+	-- THAT copy across the two environments -- so the value the offsets came
+	-- from was never the value anything checked.
+	--
+	-- It is one value now: validated once, here, handed to every blueprint
+	-- source, and `build` refuses to run if its own validation answers
+	-- anything else. Main and emerge therefore agree about where a district
+	-- stands exactly when they agree about `full_seed`, which is the check
+	-- `r7_mapgen.lua` already makes.
+	local construction_seed = validate_live_scalars()
+	local blueprint_options = {full_seed = construction_seed,
+		raw_sha256 = raw_sha256}
 	local settlements = {}
 	local settlement_palette, settlement_seen = {}, {}
 	local settlement_keys, settlement_order = {}, {}
 	for index = 1, #r7_settlement_module.roster do
 		local profile = r7_settlement_module.roster[index]
-		local source = dofile(wp40_directory .. "/" .. profile.blueprint_file)()
-		if type(source) == "function" then source = source() end
+		local source = dofile(wp40_directory .. "/" .. profile.blueprint_file)(
+			blueprint_options)
+		if type(source) == "function" then source = source(blueprint_options) end
 		local prepared = r7_settlement_module.prepare(profile, source, raw_sha256)
 		settlements[index] = {profile = profile, prepared = prepared}
 		settlement_keys[index] = profile.key
@@ -196,6 +216,13 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			fail("authority/evidence modes overlap")
 		end
 		local full_seed = validate_live_scalars()
+		-- The blueprints were built against `construction_seed`, and a
+		-- capital's district offsets are a function of it. If the live seed
+		-- has moved since, every offset in this environment is stale and the
+		-- cross-environment comparison of `full_seed` would not notice.
+		if full_seed ~= construction_seed then
+			fail("the world seed moved after the blueprints were built")
+		end
 		local content_set = r7_content_factory(core_api, projection, raw_sha256,
 			settlement_palette)
 		local settlement_configs, settlement_identities = {}, {}
@@ -434,6 +461,38 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 				slot = profile.slot, zone_id = profile.zone_id, anchor = anchor,
 				sockets = r7_settlement_module.sockets(row.prepared, anchor,
 					height_at)}
+		end
+		return rows
+	end
+
+	-- Every terrain-relative blueprint whose ground this world does not
+	-- actually support, in roster order. The writer projects a plot from one
+	-- column and asks nothing else about the ground; the positions it is
+	-- handed were chosen against two measured seeds, and a third seed is
+	-- exactly where that runs out. `r7_settlement.audit_terrain` is the rule
+	-- and this only hands it the column authority the sockets already use.
+	function module.settlement_terrain_findings(built)
+		if type(built) ~= "table" or type(built.zones_session) ~= "table" or
+				type(built.zones_session.anchor) ~= "function" or
+				type(built.planner_source) ~= "table" or
+				type(built.planner_source.column_values_at) ~= "function" then
+			fail("settlement terrain authority differs")
+		end
+		local rows = {}
+		for index = 1, #settlements do
+			local row = settlements[index]
+			local profile = row.profile
+			local anchor = built.zones_session.anchor(profile.zone_id, profile.slot)
+			if type(anchor) ~= "table" or anchor.id ~= profile.anchor_id then
+				fail("settlement terrain anchor differs: " .. profile.key)
+			end
+			local findings = r7_settlement_module.audit_terrain(row.prepared,
+				anchor, built.planner_source.column_values_at)
+			for finding_index = 1, #findings do
+				local finding = findings[finding_index]
+				finding.settlement = profile.key
+				rows[#rows + 1] = finding
+			end
 		end
 		return rows
 	end

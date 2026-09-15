@@ -153,7 +153,8 @@ local function both(x, z)
 	return math.max(fall_a, fall_b), math.max(rise_a, rise_b)
 end
 
--- The eight street runs, carriageway plus a verge column either side: that is
+-- The fifteen street runs -- four avenues, four ring sides and seven district
+-- lanes -- carriageway plus a verge column either side: that is
 -- the width the overlay actually writes.
 local runs = {}
 for _, list in ipairs({highcourt.avenues, highcourt.ring,

@@ -44,7 +44,9 @@ INPUTS=(
 	mods/MAPGEN/grug_mapgen/wp40/r7_hearthpine_blueprint.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_highcourt_blueprint.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_kapok_blueprint.lua
+	mods/MAPGEN/grug_mapgen/wp40/r7_loader.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_manifest.lua
+	mods/MAPGEN/grug_mapgen/wp40/r7_runtime.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_silverleaf_blueprint.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_stillgrave_blueprint.lua

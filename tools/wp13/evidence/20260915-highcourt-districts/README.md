@@ -22,7 +22,7 @@ Evidence for `docs/research/wp13-highcourt-districts.md`, taken on `main` at
 `highcourt/avenue-digest-<seed>.txt` is the built road, and WP40 terrain
 changes move the ground the road follows. It is a "look at what moved and say
 why" gate, not a constant. This package moved it on purpose: the avenue
-overlay's run list gained the eight district lanes.
+overlay's run list gained the seven district lanes.
 
 The expectation file lives with the lane that last CHANGED the road, which is
 why `run_highcourt.sh` reads it from here rather than from

@@ -176,8 +176,57 @@ return function(repo)
 			capital_profile = settlement.roster[index]
 		end
 	end
-	local source = dofile(wp40 .. "/" .. capital_profile.blueprint_file)()
+	local capital_file = dofile(wp40 .. "/" .. capital_profile.blueprint_file)
+	local source = capital_file()
 	local prepared = settlement.prepare(capital_profile, source, sha)
+
+	-- THE QUADRANT SEAM IS HANDED IN, NOT READ. `r7_runtime.lua` validates the
+	-- world seed once and passes it here, so the offsets and the `full_seed`
+	-- the two environments compare are the same value. Three properties, and
+	-- the third is the one that matters:
+	--
+	--   * no seam at all is the canonical assignment (every engine-free tool);
+	--   * HALF a seam is refused, rather than silently falling back to
+	--     canonical and putting the districts somewhere the other environment
+	--     did not;
+	--   * a seed changes the offsets and changes NO identity, because a plot's
+	--     cells do not know which quadrant they will stand in.
+	do
+		refuses("a capital source with a seed and no SHA-256", capital_file,
+			{full_seed = "8675309"})
+		refuses("a capital source with a SHA-256 and no seed", capital_file,
+			{raw_sha256 = sha})
+		refuses("a capital source with a seed that is not one", capital_file,
+			{full_seed = "not a seed", raw_sha256 = sha})
+		local seeded = capital_file({full_seed = "8675309", raw_sha256 = sha})
+		local again = capital_file({full_seed = "8675309", raw_sha256 = sha})
+		assert(#seeded.plots == #source.plots,
+			"a seeded capital has a different plot population")
+		local moved, identical = 0, 0
+		for index = 1, #seeded.plots do
+			local canonical_plot, seeded_plot = source.plots[index], seeded.plots[index]
+			assert(canonical_plot.id == seeded_plot.id,
+				"the seed reordered the plot list")
+			assert(seeded_plot.x == again.plots[index].x and
+				seeded_plot.z == again.plots[index].z,
+				"one seed placed the same plot twice over")
+			if canonical_plot.x ~= seeded_plot.x or
+					canonical_plot.z ~= seeded_plot.z then
+				moved = moved + 1
+			end
+			local canonical_cells = canonical_plot.build()
+			local seeded_cells = seeded_plot.build()
+			if canonical_cells.schema == seeded_cells.schema and
+					#canonical_cells.cells == #seeded_cells.cells then
+				identical = identical + 1
+			end
+		end
+		assert(moved > 0, "the seed moved no plot at all")
+		assert(identical == #seeded.plots,
+			"the seed changed a plot's own cells, which are not the seed's")
+		say("quadrants", #seeded.plots, moved, identical,
+			table.concat(seeded.districts.permutation, ","))
+	end
 	local kinds, sha_seen = {}, {}
 	for index = 1, #prepared.blueprints do
 		local blueprint = prepared.blueprints[index]
@@ -281,6 +330,43 @@ return function(repo)
 		prepared, socket_anchor, nil)
 	assert(spare_sockets >= 1, "no spare socket survived the seam")
 	say("sockets", #sockets, plot_sockets, spare_sockets)
+
+	-- THE TERRAIN AUDIT. The writer projects a terrain-relative blueprint from
+	-- one column and asks nothing else about the ground; the positions it is
+	-- handed are legal on the two seeds somebody measured. `audit_terrain` is
+	-- what makes a THIRD seed diagnosable instead of silent, so it is checked
+	-- the way a diagnostic has to be: it says nothing about ground that
+	-- carries the plots, and it names every plot on ground that does not.
+	do
+		local function dry_and_flat() return "land", 1, "z", "b", "r", 40 end
+		assert(#settlement.audit_terrain(prepared, socket_anchor,
+			dry_and_flat) == 0,
+			"the terrain audit complained about flat dry ground")
+		-- A river down the middle of the envelope and a cliff beside it. The
+		-- two are deliberately coarse: what is asserted is that the audit
+		-- finds the plots standing in them, not a particular count.
+		local function river_and_cliff(x, z)
+			local dx, dz = x - socket_anchor.x, z - socket_anchor.z
+			local class = (dx > 100) and "river" or "land"
+			return class, 1, "z", "b", "r", 40 - math.abs(dz)
+		end
+		local findings = settlement.audit_terrain(prepared, socket_anchor,
+			river_and_cliff)
+		assert(#findings > 0, "the terrain audit passed a plot in a river")
+		local wet, steep = 0, 0
+		for index = 1, #findings do
+			local finding = findings[index]
+			assert(type(finding.plot_id) == "string",
+				"a finding does not name its plot")
+			if finding.submerged > 0 then wet = wet + 1 end
+			if finding.fall > finding.skirt then steep = steep + 1 end
+		end
+		assert(wet > 0 and steep > 0,
+			"the terrain audit found no water and no fall on ground that has both")
+		refuses("a terrain audit without a column authority",
+			settlement.audit_terrain, prepared, socket_anchor, nil)
+		say("terrain_audit", #findings, wet, steep)
+	end
 
 	----------------------------------------------------------------------
 	-- 2. The manifest's field order, derived from the roster

@@ -12,13 +12,20 @@
 --     function that turns one run into road.
 --
 -- WHICH DISTRICT STANDS IN WHICH QUADRANT IS THE WORLD SEED'S (the capitals
--- contract, section 2.1). The permutation is `wp13/highcourt_quadrants.lua`;
--- the seed and the SHA-256 it needs are the engine's own, read here because
--- this is the one file of the capital that is allowed to know there is an
--- engine. An engine-free caller -- a fixture, the renderer, the timing
--- harness -- gets the canonical assignment instead, and the KAT is what
--- checks the seeded ones. Nothing in the manifest moves either way: a plot's
--- identity is its cells, and its cells do not know where they will stand.
+-- contract, section 2.1). The permutation is `wp13/highcourt_quadrants.lua`,
+-- and the seed and the SHA-256 it needs are HANDED TO THIS FILE by
+-- `r7_runtime.lua`, which validates the seed once and refuses to build if the
+-- live value has moved since. That is what makes main and emerge agree about
+-- where a district stands exactly when they agree about `full_seed` -- the
+-- comparison `r7_mapgen.lua` already makes. This file reading the setting for
+-- itself was the version where the value the offsets came from was never the
+-- value anything checked.
+--
+-- An engine-free caller -- a fixture, the renderer, the timing harness -- can
+-- pass no options at all and gets the canonical assignment, and the KAT is
+-- what checks the seeded ones. Nothing in the manifest moves either way: a
+-- plot's identity is its cells, and its cells do not know where they will
+-- stand.
 --
 -- Nothing is BUILT here. Every entry carries a builder the seam calls once at
 -- load to hash the blueprint's identity and again, lazily, on the first
@@ -37,32 +44,29 @@ if not here or here == "" then here = core.get_modpath("grug_mapgen") .. "/wp40"
 
 local library = dofile(here .. "/r7_wp13_library.lua")
 
--- The world's own quadrant seam, or nothing. Both environments read the same
--- two engine functions, so main and emerge cannot disagree about where a
--- district stands; where there is no engine at all, `assign` falls back to the
--- canonical order on its own.
-local function world_quadrants()
-	local engine = rawget(_G, "core")
-	if type(engine) ~= "table" or type(engine.sha256) ~= "function" or
-			type(engine.get_mapgen_setting) ~= "function" then
+-- The quadrant seam, exactly as handed over, or nothing at all.
+--
+-- `r7_runtime.lua` passes the validated world seed and the engine's raw
+-- SHA-256. A caller that passes neither is engine-free and gets the canonical
+-- assignment; a caller that passes a half-seam is a defect and is refused
+-- here rather than silently placing the districts somewhere else.
+local function quadrant_options(options)
+	if options == nil then return {} end
+	if type(options) ~= "table" then
+		error("WP13 Highcourt: the blueprint options differ", 0)
+	end
+	if options.full_seed == nil and options.raw_sha256 == nil and
+			options.permutation == nil then
 		return {}
 	end
-	-- A stub `core` -- the one the WP13 socket and NPC fixtures install --
-	-- answers nothing here, and that is a fixture, not a broken world: it
-	-- gets the canonical assignment like any other engine-free caller. A real
-	-- world that could not name its own seed is caught where it matters, in
-	-- `r7_runtime.validate_live_scalars`, which refuses to build at all.
-	local ok, seed = pcall(engine.get_mapgen_setting, "seed")
-	if not ok or type(seed) ~= "string" or not seed:match("^%-?%d+$") then
-		return {}
+	if options.permutation == nil and
+			(type(options.full_seed) ~= "string" or
+				not options.full_seed:match("^%-?%d+$") or
+				type(options.raw_sha256) ~= "function") then
+		error("WP13 Highcourt: the quadrant seam differs", 0)
 	end
-	return {full_seed = seed, raw_sha256 = function(bytes)
-		local digest = engine.sha256(bytes, true)
-		if type(digest) ~= "string" or #digest ~= 32 then
-			error("WP13 Highcourt: core.sha256 raw result differs", 0)
-		end
-		return digest
-	end}
+	return {full_seed = options.full_seed, raw_sha256 = options.raw_sha256,
+		permutation = options.permutation}
 end
 
 return function(options)
@@ -82,7 +86,7 @@ return function(options)
 	-- string is the one each plot publishes, spelled here so the seam can
 	-- compare it after the build instead of trusting it.
 	local resolved, assignment, permutation =
-		districts.resolve(options or world_quadrants())
+		districts.resolve(quadrant_options(options))
 	local plots = {}
 	for index = 1, #resolved do
 		local plot = resolved[index]

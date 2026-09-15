@@ -272,11 +272,35 @@ local function loader()
 	-- Resolve role -> quadrant name. `options.full_seed` and
 	-- `options.raw_sha256` are the explicit seam; with neither, and with no
 	-- engine to ask, the canonical assignment stands.
+	-- A permutation is a bijection of 1..n onto itself, and an external one is
+	-- not trusted to be: two roles mapped to one quadrant would put two
+	-- districts on one set of lots and leave a quarter of the capital empty,
+	-- which is a wrong CITY rather than an error anything downstream would
+	-- catch. `permutation_of_index` produces one by construction; this is for
+	-- everything that does not come from it.
+	function M.check_permutation(permutation)
+		if type(permutation) ~= "table" or #permutation ~= #M.ROLES then
+			error("wp13 highcourt quadrants: the permutation is not " ..
+				#M.ROLES .. " long", 0)
+		end
+		local seen = {}
+		for index = 1, #M.ROLES do
+			local value = permutation[index]
+			if type(value) ~= "number" or value % 1 ~= 0 or value < 1 or
+					value > #M.ROLES or seen[value] then
+				error("wp13 highcourt quadrants: the permutation is not a " ..
+					"bijection at position " .. index, 0)
+			end
+			seen[value] = true
+		end
+		return permutation
+	end
+
 	function M.assign(options)
 		options = options or {}
 		local permutation
 		if options.permutation then
-			permutation = options.permutation
+			permutation = M.check_permutation(options.permutation)
 		elseif options.full_seed and options.raw_sha256 then
 			permutation = M.permutation(options.full_seed, options.raw_sha256)
 		else

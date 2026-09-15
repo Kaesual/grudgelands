@@ -18,6 +18,9 @@ touched=(
 	mods/MAPGEN/grug_mapgen/wp13/highcourt_district_lore.lua
 	mods/MAPGEN/grug_mapgen/wp13/highcourt_district_homes.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_highcourt_blueprint.lua
+	mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua
+	mods/MAPGEN/grug_mapgen/wp40/r7_runtime.lua
+	mods/MAPGEN/grug_mapgen/wp40/r7_loader.lua
 	tools/wp13/highcourt_kat.lua
 	tools/wp13/seam_kat.lua
 	tools/wp13/highcourt_plots.lua

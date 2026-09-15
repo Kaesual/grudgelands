@@ -147,7 +147,7 @@ if [[ "$mode" == "full" ]]; then
 		>"$output/avenue-digest.txt"
 	# The expectation lives with the lane that last CHANGED the road, so a
 	# package that moves it says so by moving this path and recording why. The
-	# districts increment added eight district lanes to the overlay's run list,
+	# districts increment added seven district lanes to the overlay's run list,
 	# which is the last thing to have moved it.
 	expected_file="$repo/tools/wp13/evidence/20260915-highcourt-districts/highcourt/avenue-digest-$seed.txt"
 	if [[ -f "$expected_file" ]]; then
