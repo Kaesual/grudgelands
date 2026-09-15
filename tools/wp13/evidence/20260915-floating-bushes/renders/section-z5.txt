@@ -1,0 +1,12 @@
+z=5, local x 28..41, local y 5..13
+T bush stem  # bush foliage  b blueberry  | trunk  * canopy  , grass/fern  . soil  : gravel  = stone
+BEFORE (main)          AFTER (this lane)
+ 13 |              |    13 |              |
+ 12 |              |    12 |              |
+ 11 |    ###       |    11 |              |
+ 10 |    #T#  bbb  |    10 |    ###       |
+  9 |              |     9 |    #T#  bbb  |
+  8 |............. |     8 |............. |
+  7 |............. |     7 |............. |
+  6 |............. |     6 |............. |
+  5 |============= |     5 |============= |
