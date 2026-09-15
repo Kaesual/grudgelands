@@ -12,8 +12,8 @@
 --
 -- The visible weapon: ONE attached entity per character (contract §1), never a
 -- per-frame update. `visual = "wielditem"` renders the item's own inventory
--- image as the extruded mesh, so a grug_gear weapon arrives already tinted for
--- its bracket and no texture of ours is involved at all.
+-- image as the extruded mesh, so a Bronze Sword arrives drawn bronze and no
+-- texture of ours is involved at all.
 --
 -- The offhand is deliberately absent (contract §1, "offhand later").
 --
@@ -79,7 +79,34 @@ local function drawable(itemname)
 		core.registered_items[itemname] ~= nil
 end
 
-local function spawn_wield(parent, itemname, stature)
+-- WHICH OF THE TWO POSES an item is held in (wield_geometry.lua). The tool pose
+-- is derived from the diagonal sprite convention -- long axis on the image's
+-- anti-diagonal, grip at pixel (3.4, 12.6) -- so it is right only for art drawn
+-- that way. A torch or an apple is an ordinary upright icon with no diagonal
+-- and no grip pixel, and through the tool transform it floats a quarter of a
+-- node in front of the fist, rolled 45 degrees about an axis its art does not
+-- have.
+--
+-- The discriminator is a GROUP, not the item type (project convention, and it
+-- is also the more honest test): these five are exactly the families the
+-- convention covers. Every `default` tool carries one, every grug_gear weapon
+-- carries `sword`/`axe`/`staff` plus `grug_equip_weapon`, and every tool that
+-- is NOT drawn that way -- `mobs:lasso`, `mobs:net`, the ability orbs -- carries
+-- none and gets the upright pose without an exception list. A new weapon family
+-- joins by declaring its group, the same way it joins the weapon slot.
+local DIAGONAL_GROUP = {"sword", "axe", "pickaxe", "shovel", "staff",
+	"grug_equip_weapon"}
+
+local function held_upright(itemname)
+	for _, group in ipairs(DIAGONAL_GROUP) do
+		if core.get_item_group(itemname, group) > 0 then
+			return false
+		end
+	end
+	return true
+end
+
+local function spawn_wield(parent, itemname, stature, upright)
 	local pos = parent:get_pos()
 	if not pos then
 		return nil
@@ -88,7 +115,7 @@ local function spawn_wield(parent, itemname, stature)
 	if not obj then
 		return nil
 	end
-	local wield = wield_transform(stature)
+	local wield = wield_transform(stature, upright)
 	obj:set_properties({textures = {itemname}, visual_size = wield.size})
 	obj:set_attach(parent, WIELD_BONE, wield.pos, wield.rot)
 	return obj
@@ -114,7 +141,16 @@ local function sync_wield(holder, parent, itemname, stature)
 	if obj and not obj:get_pos() then
 		obj = nil -- removed under us (its parent died)
 	end
-	if obj and holder._grug_wield_stature ~= stature then
+	-- Swapping a sword for a torch is not a re-texture: the two are held in
+	-- DIFFERENT poses, and so are two wielders of different stature. Both
+	-- therefore re-attach, which is the only way position, rotation and size
+	-- move together.
+	local upright = false
+	if itemname then
+		upright = held_upright(itemname)
+	end
+	if obj and (holder._grug_wield_stature ~= stature or
+			holder._grug_wield_upright ~= upright) then
 		obj:remove()
 		obj = nil
 	end
@@ -125,6 +161,7 @@ local function sync_wield(holder, parent, itemname, stature)
 		holder._grug_wield_obj = nil
 		holder._grug_wield_item = nil
 		holder._grug_wield_stature = nil
+		holder._grug_wield_upright = nil
 		return
 	end
 	if obj then
@@ -138,9 +175,20 @@ local function sync_wield(holder, parent, itemname, stature)
 	-- entity budget). Leaving both fields nil is what makes the next pass --
 	-- the once-a-second poll below for players, the next equipment change or
 	-- activation otherwise -- try again instead of believing the hand is empty.
-	holder._grug_wield_obj = spawn_wield(parent, itemname, stature)
-	holder._grug_wield_item = holder._grug_wield_obj and itemname or nil
-	holder._grug_wield_stature = holder._grug_wield_obj and stature or nil
+	holder._grug_wield_obj = spawn_wield(parent, itemname, stature, upright)
+	-- Written as a branch, not as `obj and value or nil`: `upright` is a real
+	-- boolean and that idiom turns a legitimate `false` into nil, which the
+	-- compare above would then read as a changed pose and re-attach every
+	-- single poll for every tool in the game.
+	if holder._grug_wield_obj then
+		holder._grug_wield_item = itemname
+		holder._grug_wield_stature = stature
+		holder._grug_wield_upright = upright
+	else
+		holder._grug_wield_item = nil
+		holder._grug_wield_stature = nil
+		holder._grug_wield_upright = nil
+	end
 end
 
 --
@@ -169,7 +217,7 @@ local IRRELEVANT_LIST = {
 }
 
 -- player name -> {key, stature, _grug_wield_obj, _grug_wield_item,
--- _grug_wield_stature}
+-- _grug_wield_stature, _grug_wield_upright}
 local players = {}
 
 local function player_entry(name)

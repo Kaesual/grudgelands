@@ -21,6 +21,7 @@ CHANGED=(
 	mods/PLAYER/grug_visuals/wield_geometry.lua
 	mods/PLAYER/grug_visuals/apply.lua
 	mods/PLAYER/grug_inventory/equipment.lua
+	mods/PLAYER/grug_inventory/pages.lua
 	mods/PLAYER/grug_factions/init.lua
 	mods/ENTITIES/grug_traders/stock.lua
 	tools/wp13/gear_catalogue_kat.lua
@@ -126,45 +127,66 @@ for png in mods/ITEMS/grug_materials/textures/*.png; do
 done
 echo "media rows missing: $missing"
 
-echo "== every inventory_image a grug mod names exists on disk =="
+echo "== every .png literal under mods/*/grug_* resolves to a real file =="
+# Deleting a sprite that another mod still names is invisible on the server: the
+# client reports `generateImagePart` and draws nothing, and the log says nothing
+# at all. That is how WP13 round 2's first pass left the character page's empty
+# weapon-slot ghost pointing at a file the art commit had just removed. The scan
+# is therefore TREE-WIDE over every grug mod, not just the two this lane gives
+# sprites to.
 python3 - <<'PYTHON'
+import glob
 import os
 import re
-import sys
 
-missing = []
-checked = 0
-# The two mods this lane gives stored sprites to. Their `inventory_image`
-# values are plain literals, so a regex is enough and no engine is needed.
-# A literal is resolved against the mod that OWNS its prefix -- `default_*`
-# names are vendored minetest_game media and live in default's own directory,
-# which is exactly how the engine resolves them (one flat media pool).
-OWNERS = {
-    "grug_gear_": "mods/ITEMS/grug_gear/textures",
-    "grug_materials_": "mods/ITEMS/grug_materials/textures",
-    "default_": "mods/BASE/default/textures",
+# Luanti's media pool is flat: every `textures/` (and `models/`) directory of
+# every loaded mod, vendored ones included, resolves a bare file name.
+pool = set()
+for root, _dirs, files in os.walk("mods"):
+    if os.path.basename(root) not in ("textures", "models"):
+        continue
+    for name in files:
+        if name.endswith(".png"):
+            pool.add(name)
+
+# Literals that are NOT file names. Each one is a string-concatenation fragment
+# or a documentation example, verified by hand; the list is explicit so a real
+# miss can never hide behind a pattern.
+WHITELIST = {
+    # `texture .. "_side.png"` -- the tail of a built name, never used alone.
+    "_side.png",
+    # `texture = {"a.png", "b.png"}` in the rares.lua doc comment.
+    "a.png",
+    "b.png",
 }
-for mod, directory in (
-        ("grug_gear", "mods/ITEMS/grug_gear"),
-        ("grug_materials", "mods/ITEMS/grug_materials")):
-    for root, _dirs, files in os.walk(directory):
-        if "textures" in root:
+
+missing = {}
+checked = 0
+for mod in sorted(glob.glob("mods/*/grug_*")):
+    for root, _dirs, files in os.walk(mod):
+        if "textures" in root.split(os.sep):
             continue
-        for name in files:
+        for name in sorted(files):
             if not name.endswith(".lua"):
                 continue
-            body = open(os.path.join(root, name)).read()
-            for literal in re.findall(r'"([A-Za-z0-9_]+\.png)"', body):
-                where = None
-                for prefix, folder in OWNERS.items():
-                    if literal.startswith(prefix):
-                        where = folder
-                if where is None:
-                    missing.append("%s: %s (no owning mod)" % (mod, literal))
-                    continue
-                checked += 1
-                if not os.path.exists(os.path.join(where, literal)):
-                    missing.append("%s: %s" % (mod, literal))
-print("texture literals checked: %d" % checked)
-print("missing: %s" % (", ".join(sorted(set(missing))) or "none"))
+            path = os.path.join(root, name)
+            for number, line in enumerate(open(path), 1):
+                # A literal may carry texture modifiers ("x.png^[multiply:#fff")
+                # or be one half of a composed string, so the file names are
+                # pulled out of the quoted span rather than matched whole.
+                for span in re.findall(r'"([^"\n]*)"', line):
+                    for literal in re.findall(r'[A-Za-z0-9_]+\.png', span):
+                        if literal in WHITELIST:
+                            continue
+                        checked += 1
+                        if literal not in pool:
+                            missing.setdefault(literal, []).append(
+                                "%s:%d" % (path, number))
+print("texture literals checked: %d (whitelisted fragments: %d)"
+      % (checked, len(WHITELIST)))
+if missing:
+    for literal in sorted(missing):
+        print("MISSING %s at %s" % (literal, ", ".join(missing[literal])))
+else:
+    print("missing: none")
 PYTHON

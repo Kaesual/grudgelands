@@ -24,9 +24,9 @@ file. Regenerate with `python3 tools/wp13/gen_weapon_ladder.py`.
 
 | File(s) | Source original | Modification |
 |---|---|---|
-| `grug_materials_tool_ironpick.png`, `..._ironaxe.png`, `..._ironshovel.png` | `default_tool_steelpick/axe/shovel.png` | grey ramp -> dull warm grey |
+| `grug_materials_tool_ironpick.png`, `..._ironaxe.png`, `..._ironshovel.png` | `default_tool_steelpick/axe/shovel.png` | grey ramp -> dark, dull grey, clearly below Steel |
 | `grug_materials_tool_silversteelpick.png`, `..._silversteelaxe.png`, `..._silversteelshovel.png` | same three | grey ramp -> pale blue silver |
-| `grug_materials_tool_embersteelpick.png`, `..._embersteelaxe.png`, `..._embersteelshovel.png` | same three | grey ramp -> dark iron with ember glow |
+| `grug_materials_tool_embersteelpick.png`, `..._embersteelaxe.png`, `..._embersteelshovel.png` | same three | grey ramp -> near-black red body with a bright ember core |
 | `grug_materials_tool_abyssal_steelpick.png`, `..._abyssal_steelaxe.png`, `..._abyssal_steelshovel.png` | same three | grey ramp -> deep violet with cold sheen |
 
 ## Source and license

@@ -545,6 +545,58 @@ function M.run(repo)
 	end
 
 	--
+	-- C3. the second pose: an item that is NOT a diagonal tool sprite
+	--
+	-- A torch, an apple or a bag is an ordinary upright icon. It has no
+	-- diagonal and no grip pixel, so the tool transform would hang it by a
+	-- point its art does not have -- a quarter of a node in front of the fist,
+	-- rolled 45 degrees. `wield_transform(stature, true)` puts its CENTRE in
+	-- the fist standing up instead, and that is what is checked: measured in
+	-- the upright convention (the weapon's ends are the middles of the top and
+	-- bottom edges, its axis the image's +y), the sprite centre lands on the
+	-- fist and the icon's own up points at model up.
+	local upright = wield_transform(1, true)
+	local UPRIGHT_MEASURE = {
+		pos = upright.pos,
+		rot = upright.rot,
+		size = upright.size,
+		grip_fraction_x = upright.grip_fraction_x,
+		grip_fraction_y = upright.grip_fraction_y,
+		ends = {hilt = {0, -0.5}, tip = {0, 0.5}},
+		axis = {0, 1, 0},
+	}
+	local node_item = measure("wp13_wield_upright", UPRIGHT_MEASURE, 0, 1)
+	local centre = node_item.grip
+	check(math.sqrt(centre[1] * centre[1] + centre[2] * centre[2] +
+		centre[3] * centre[3]) <= 0.001,
+		"an upright item's sprite centre is not in the fist")
+	close(node_item.blade[2], 1, 0.002,
+		"an upright item does not stand up (model +y)")
+	close(node_item.flat[2], 0, 0.002,
+		"an upright item's face is not vertical")
+	close(node_item.tip[2], 0.5 * 40 * upright.size.x / 2, 0.002,
+		"an upright item's top edge is not half a sprite above the fist")
+	-- The stature compensation is the same one, and must hold here too.
+	local upright_dwarf = wield_transform(0.90, true)
+	local UPRIGHT_DWARF = {
+		pos = upright_dwarf.pos,
+		rot = upright_dwarf.rot,
+		size = upright_dwarf.size,
+		grip_fraction_x = upright_dwarf.grip_fraction_x,
+		grip_fraction_y = upright_dwarf.grip_fraction_y,
+		ends = UPRIGHT_MEASURE.ends,
+		axis = UPRIGHT_MEASURE.axis,
+	}
+	local dwarf_item = measure("wp13_wield_upright_0.90", UPRIGHT_DWARF, 0, 0.90)
+	for _, field in ipairs({"hilt", "grip", "tip", "blade", "flat"}) do
+		for axis = 1, 3 do
+			close(dwarf_item[field][axis], node_item[field][axis], 0.001,
+				"stature 0.90 moves an upright item's " .. field ..
+				" on axis " .. axis)
+		end
+	end
+
+	--
 	-- D. negative controls
 	--
 	-- D1: the same stature WITHOUT the compensation -- what a 0.90 dwarf

@@ -90,10 +90,12 @@ no staff, and without it a Priest or Mage had no starter weapon of their family.
 
 ### 3. One sprite convention, and the art
 
-Everything a character can hold is now drawn the same way: **16×16, long axis on
-the image's anti-diagonal, grip bottom-left, business end top-right** —
+Every weapon and tool in the game is now drawn the same way: **16×16, long axis
+on the image's anti-diagonal, grip bottom-left, business end top-right** —
 minetest_game's own tool convention, which `default`'s picks, axes, shovels and
-swords already used and which the user asked for.
+swords already used and which the user asked for. (Everything else a character
+can hold — a torch, an apple, a bag — keeps its own upright icon and is held in
+the second pose, §5.)
 
 `tools/wp13/gen_weapon_ladder.py` generates all 37 new sprites deterministically:
 
@@ -118,9 +120,14 @@ Review sheet, all seven families × six materials plus the below-ladder column:
 
 One more consequence of "one convention": `default`'s four shovels declared
 `wield_image = "…^[transformR90"`, and the engine prefers that image for the
-extruded in-hand mesh. A shovel would therefore have hung in the fist rotated 90°
-against everything else, and no single transform could be right for both.
-`overrides.lua` clears the key, so the engine falls back to the inventory image.
+extruded in-hand mesh. The shovels are *in* the tool ladder, so they are held by
+the grip pixel the diagonal convention fixes — and the rotated image moves that
+pixel out from under the fist and lays the shovel across the hand at 90° to
+every sword, axe and pick. `overrides.lua` clears the key so the engine falls
+back to the inventory image. (Plenty of other vendored items declare a
+`wield_image` — the torch, the saplings, the doors, the xpanes, the grasses —
+and none of them matters, because none is a diagonal tool sprite and they are
+held in the upright pose below, which assumes nothing about the image.)
 
 ### 4. The hand transform, re-derived
 
@@ -182,7 +189,20 @@ hanging          hilt 0,0,-1.923   grip 0,0,0   tip 0,0,7.128   blade 0,0,1   fl
 raised 90        hilt 0,-1.923,0   grip 0,0,0   tip 0,7.128,0   blade 0,1,0   flat -1,0,0
 stature 0.90     identical to `hanging` to three decimals
 stature 1.12     identical to `hanging` to three decimals
+upright          hilt 0,-3.200,0   grip 0,0,0   tip 0,3.200,0   up   0,1,0   flat -1,0,0
+upright 0.90     identical to `upright` to three decimals
 ```
+
+One inert sign was fixed under review while this was being re-derived:
+`e2_z` was `-blade_y` where E2 = N × B gives `+blade_y`. It cancels at
+`TILT_UP = 0` and with the grip on the anti-diagonal — i.e. for everything this
+lane ships — and would have been wrong at any other tilt or grip point.
+
+Palettes were retuned after the review looked at the sheet: **Iron** is now a
+distinctly darker, duller grey than Steel (the two were near-identical at 16 px)
+and **Embersteel** is a near-black red body with a bright ember core rather than
+an even warm orange, which sat on top of Bronze's ramp. Bronze is untouched, so
+the byte-for-byte upstream check still anchors the machinery.
 
 ### 5. The display rule
 
@@ -201,8 +221,34 @@ spawn leaves the entry empty instead of recording a state, so the next pass
 tries again. That is the most likely explanation for the one-off "the sword was
 not shown at all" the playtest could not reproduce.
 
-A changed stature re-attaches rather than re-textures (position and size both
-depend on it); only an admin `/race` switch can move it.
+**There are two poses, because there are two kinds of held art** (added in the
+review round). The transform above is derived from the diagonal tool
+convention — the weapon on the image's anti-diagonal, the grip at pixel
+(3.4, 12.6) — and is right only for art drawn that way. The rest of the starter
+kit is not: a torch and an apple are node items rendered as their own upright
+icon, with no diagonal and no grip pixel, and through the tool transform they
+float about a quarter of a node in front of the fist, rolled 45° about an axis
+their art does not have. `wield_transform(stature, true)` is the second pose —
+`pos = HAND` (the centre is the anchor, because an anonymous icon has no better
+point) and `rot = {90, -90, 90}`, i.e. the same x and z with the sprite's own
+built-in angle taken out, so the icon stands up with its face vertical like a
+blade's.
+
+Which pose an item gets is read off a **group**, not off the item type:
+`sword`, `axe`, `pickaxe`, `shovel`, `staff` or `grug_equip_weapon`. Those are
+exactly the families the diagonal convention covers, every `default` tool and
+every grug weapon carries one, and every tool that is *not* drawn that way —
+`mobs:lasso`, `mobs:net`, the ability orbs — carries none and gets the upright
+pose with no exception list. A future weapon family joins by declaring its
+group, the same way it joins the weapon slot.
+
+A changed stature **or a changed pose** re-attaches rather than re-textures
+(position, rotation and size all move together); a sword-for-torch swap is
+therefore one `remove` plus one `add_entity`, not a texture write. The
+book-keeping is written as an explicit branch rather than `obj and value or nil`
+— `upright` is a real boolean and that idiom turns a legitimate `false` into
+nil, which the compare would read as a changed pose and re-attach on every poll
+for every tool in the game.
 
 ### 6. The starter weapon
 
@@ -235,6 +281,26 @@ not registered, or names one the weapon slot would refuse.
 The B6 join hint is untouched and still re-arms rather than firing blind; a
 fresh character no longer reaches it, because its slot is full.
 
+### 7. What the review caught
+
+The first pass deleted `grug_gear_item_sword.png` (weapons went from one sprite
+per family to one per family and material) and missed that
+`grug_inventory/pages.lua` names it for the **empty weapon slot's ghost icon**.
+That is the worst-behaved class of defect in this engine: the client reports
+`generateImagePart` and draws nothing, and the server log says nothing at all.
+The row now names the Steel sword — grey, so it dims cleanly under the ghost's
+`^[multiply:#666666`.
+
+The real fix is the gate. `static.sh` now scans **every `.png` literal under
+`mods/*/grug_*`** against the real media pool (every `textures/` and `models/`
+directory in the tree, because Luanti's media pool is flat), pulling file names
+out of quoted spans so a literal carrying texture modifiers is checked too.
+271 literals; three string-concatenation fragments and doc examples
+(`_side.png`, `a.png`, `b.png`) are whitelisted by name rather than by pattern,
+so a real miss cannot hide behind one. Negative control taken by hand: putting
+the old name back makes the gate print
+`MISSING grug_gear_item_sword.png at mods/PLAYER/grug_inventory/pages.lua:89`.
+
 ## Verification
 
 | Gate | Result |
@@ -244,15 +310,15 @@ fresh character no longer reaches it, because its slot is full.
 | `tools/wp13/character_visuals_kat.lua` | `wp13_cv_result PASS 0` (composition digest `0760993141`, byte-identical to the 2026-09-14 evidence — the armor art and tints did not move) |
 | `tools/wp13/visuals_order_kat.lua` | `wp13_order_result PASS 0` |
 | `tools/wp13/ability_rightclick_kat.lua` | `wp13_rmb_result PASS 0` |
-| all five, LuaJIT vs `tools/bin/lua51` | byte-identical, `sha256 75ee3658…4134510` |
+| all five, LuaJIT vs `tools/bin/lua51` | byte-identical, `sha256 310c88e1…6f9f5115` |
 | `tools/wp13/final_micro.lua` pair | `PASS`, both `output_sha256=4f2d2b76…41cbdf5` |
 | `tools/wp43/materials_test.lua` under both interpreters | passed |
 | `luac51 -p` + `SETGLOBAL` per changed file and tree-wide | pass; one `SETGLOBAL` per mod table, none in the new non-init files |
 | the five plain-5.1 sweeps, scoped and tree-wide | zero hits outside prose (sweep 1's two hits are `core::Transform::buildMatrix` C++ references in comments; the `os.exit` hits under `tools/` are pre-existing and appear in the 2026-09-14 evidence too) |
 | `python3 tools/check_fresh_server.py` | `PASS` |
 | every media file has a `LICENSE-media.md` row; the ladder regenerates byte-identically; the mob/trader icons are unmoved | pass |
-| every `inventory_image` literal in `grug_gear`/`grug_materials` resolves to a file on disk | 36 checked, none missing |
-| one headless boot, `tools/luanti_headless.sh 180` with the probe | `PASS`, 0 ERROR/ModError, 59 WARNING |
+| every `.png` literal under `mods/*/grug_*` resolves to a real file | 271 checked, 3 fragments whitelisted, none missing |
+| one headless boot, `tools/luanti_headless.sh 180` with the probe (port 31023) | `PASS`, 0 ERROR/ModError, 59 WARNING |
 
 The 59 warnings are 57 pre-existing ones (mod-storage backend advice and the
 vendored `stairs` metal-block fuel rows) plus **two new ones of exactly the same
@@ -301,6 +367,11 @@ sprite convention moves, and the generator asserts every sprite honours it.
 - **The tool ladder spans two namespaces** (`default:` T1/T3,
   `grug_materials:` T2/T4/T5/T6). WP29 unifies it; until then
   `grug_pick_tier` is the thing to read.
+- **A tool drawn outside the diagonal convention would be held wrong.** The
+  pose is chosen by group, so `mobs:lasso`, `mobs:net` and `mobs:shears` fall
+  into the upright pose, which is right for the first two and arguable for the
+  shears. Nothing in the tool ladder is affected; a future weapon family must
+  either use the convention or stay out of the five groups.
 - **`_grug_bracket` is still a number.** The armor overlay tint and
   `grug_visuals.index_armor` key off it, which is correct — the tier index is
   not the tier's name — but it means "bracket" survives as a word in the code

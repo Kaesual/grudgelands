@@ -111,10 +111,16 @@ from the side. The pose is not tuned by eye — it is derived from the character
 mesh's own bone tree and the engine's wielditem extrusion, and the derivation
 lives with the numbers in `mods/PLAYER/grug_visuals/wield_geometry.lua`.
 
-That derivation is possible because **every held item in the game is drawn in
-one sprite convention**: 16×16, long axis on the image's diagonal, grip at the
+That derivation is possible because **every weapon and tool in the game is drawn
+in one sprite convention**: 16×16, long axis on the image's diagonal, grip at the
 bottom left — minetest_game's own tool convention. Two conventions would need
 two transforms, and one of them would be wrong.
+
+**An item that is not a weapon or a tool is held upright instead**: a torch, an
+apple, a sapling or a bag is an ordinary icon with no diagonal and no grip, so
+it is held by its centre, standing up, its face vertical like a blade's. The two
+poses are the two kinds of art, and nothing else; which one an item gets is read
+off the sword / axe / pickaxe / shovel / staff families it declares.
 
 **The weapon is the same weapon in every hand.** The attachment inherits the
 wielder's stature (§2), so the entity's size divides it out; a dwarf's sword and

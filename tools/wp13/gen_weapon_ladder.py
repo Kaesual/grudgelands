@@ -69,18 +69,25 @@ MATERIALS = [
     ("bronze", "Bronze", [
         (127, 54, 3), (150, 78, 15), (173, 95, 27),
         (225, 119, 48), (255, 135, 61), (255, 159, 114)]),
+    # Deliberately DARKER and duller than Steel across the whole ramp, not a
+    # warmer version of it: at 16 px a hue difference of a few percent is
+    # invisible and Iron read as Steel (round-2 review).
     ("iron", "Iron", [
-        (92, 88, 84), (126, 121, 115), (144, 138, 131),
-        (186, 179, 170), (202, 195, 186), (226, 220, 212)]),
+        (62, 60, 58), (88, 85, 82), (104, 100, 96),
+        (134, 129, 124), (150, 145, 139), (176, 170, 164)]),
     ("steel", "Steel", [
         (104, 104, 104), (147, 147, 147), (166, 166, 166),
         (220, 220, 220), (234, 234, 234), (255, 255, 255)]),
     ("silversteel", "Silversteel", [
         (108, 124, 142), (146, 164, 184), (166, 184, 204),
         (214, 228, 242), (230, 240, 250), (250, 253, 255)]),
+    # Dark red-orange BODY with a bright ember core, rather than the even warm
+    # orange it had: that ramp sat on top of Bronze's and the two tiers were
+    # hard to tell apart (round-2 review). The bottom four steps are nearly
+    # black-red, so the two bright steps read as heat inside the metal.
     ("embersteel", "Embersteel", [
-        (84, 44, 28), (140, 68, 30), (176, 88, 34),
-        (232, 138, 48), (248, 174, 72), (255, 220, 140)]),
+        (40, 16, 16), (74, 24, 18), (110, 34, 20),
+        (170, 52, 22), (246, 126, 30), (255, 226, 130)]),
     ("abyssal_steel", "Abyssal Steel", [
         (46, 36, 62), (72, 58, 94), (90, 74, 116),
         (136, 116, 166), (164, 144, 194), (212, 196, 234)]),

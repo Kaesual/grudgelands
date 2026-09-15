@@ -184,7 +184,27 @@ local ROOT_HALF = math.sqrt(0.5)
 
 -- The attachment for a parent whose (uniform) stature scale is `stature`.
 -- nil / 0 means "do not compensate" -- the weapon then scales with its wielder.
-function grug_visuals.wield_transform(stature)
+--
+-- `upright = true` asks for the OTHER pose, and there are exactly two because
+-- there are exactly two kinds of held art. Everything above derives the hand
+-- from the diagonal tool convention: the weapon runs along the image's
+-- anti-diagonal and the grip is a specific pixel on it. A torch, an apple, a
+-- sapling or a bag is a node item or a craftitem drawn as an ordinary upright
+-- icon, with no diagonal and no grip pixel -- run through the tool transform it
+-- comes out floating a quarter of a node in front of the fist and rolled 45
+-- degrees, because both the offset and the roll are the sprite diagonal's.
+--
+-- So a non-tool is held the only way an anonymous icon can be: its CENTRE in
+-- the fist (`pos = HAND`, no grip offset -- the image has no privileged point)
+-- and its own up standing up. Asking, in bone-local terms, for
+--
+--   image up (entity +y) -> (0, -1, 0)   = model +y, up
+--   the flat's normal    -> (1, 0, 0)    = model -x, sideways, as the blade's
+--
+-- gives the unique triple **x = 90, y = -90, z = 90** -- the same x and z as
+-- the tool pose, which is the reassuring part: only the sprite's own built-in
+-- angle differs.
+function grug_visuals.wield_transform(stature, upright)
 	local k = tonumber(stature)
 	if not k or k <= 0 then
 		k = 1
@@ -192,14 +212,37 @@ function grug_visuals.wield_transform(stature)
 	local size = SIZE / k
 	local sprite_edge = 40 * size / 2
 
+	if upright then
+		return {
+			bone = BONE,
+			pos = {x = HAND.x, y = HAND.y, z = HAND.z},
+			rot = {x = 90, y = -90, z = 90},
+			size = {x = size, y = size},
+			upright = true,
+			stature = k,
+			base_size = SIZE,
+			tilt_up = TILT_UP,
+			hand = HAND,
+			sprite_edge = sprite_edge,
+			-- The centre IS the anchor: an icon nobody drew a grip into has no
+			-- better point to hang from.
+			grip_fraction_x = 0,
+			grip_fraction_y = 0,
+		}
+	end
+
 	local tilt = TILT_UP * DEG
 	local blade_y = -math.sin(tilt)
 	local blade_z = math.cos(tilt)
 	-- The image's two in-plane axes in bone coordinates (section 7's x and y
 	-- columns), so the position below is read off the same matrix the rotation
 	-- is: image +x -> s*(B - E2), image +y -> s*(B + E2), with
-	-- E2 = (0, -cos t, -sin t).
-	local e2_y, e2_z = -blade_z, -blade_y
+	-- E2 = N x B = (1,0,0) x (0, -sin t, cos t) = (0, -cos t, -sin t).
+	-- In terms of the two numbers above that is (0, -blade_z, blade_y), since
+	-- blade_y is itself -sin t. (This line read `-blade_y` until the round-2
+	-- review: inert at TILT_UP = 0 and with the grip on the anti-diagonal,
+	-- wrong for any other tilt or grip point.)
+	local e2_y, e2_z = -blade_z, blade_y
 	local ux_y = ROOT_HALF * (blade_y - e2_y)
 	local ux_z = ROOT_HALF * (blade_z - e2_z)
 	local uy_y = ROOT_HALF * (blade_y + e2_y)

@@ -88,6 +88,8 @@ wp13_wield_hanging	hand	3.150,7.350,0.000	hilt-hand	0.000,0.000,-1.923	grip-hand
 wp13_wield_raised90	hand	3.150,11.550,4.200	hilt-hand	0.000,-1.923,0.000	grip-hand	0.000,0.000,0.000	tip-hand	0.000,7.128,0.000	blade	0.000,1.000,0.000	flat	-1.000,0.000,0.000
 wp13_wield_stature_0.90	hand	3.150,7.350,0.000	hilt-hand	0.000,0.000,-1.923	grip-hand	0.000,0.000,0.000	tip-hand	0.000,0.000,7.128	blade	0.000,0.000,1.000	flat	-1.000,0.000,0.000
 wp13_wield_stature_1.12	hand	3.150,7.350,0.000	hilt-hand	0.000,0.000,-1.923	grip-hand	0.000,0.000,0.000	tip-hand	0.000,0.000,7.128	blade	0.000,0.000,1.000	flat	-1.000,0.000,0.000
+wp13_wield_upright	hand	3.150,7.350,0.000	hilt-hand	0.000,-3.200,0.000	grip-hand	0.000,0.000,0.000	tip-hand	0.000,3.200,0.000	blade	0.000,1.000,0.000	flat	-1.000,0.000,0.000
+wp13_wield_upright_0.90	hand	3.150,7.350,0.000	hilt-hand	0.000,-3.200,0.000	grip-hand	0.000,0.000,0.000	tip-hand	0.000,3.200,0.000	blade	0.000,1.000,0.000	flat	-1.000,0.000,0.000
 wp13_wield_uncompensated_0.90	hand	3.150,7.350,0.000	hilt-hand	0.000,0.000,-1.731	grip-hand	0.000,0.000,0.000	tip-hand	0.000,0.000,6.415	blade	0.000,0.000,1.000	flat	-1.000,0.000,0.000
 wp13_wield_old_convention	hand	3.150,7.350,0.000	hilt-hand	0.000,3.200,-0.598	grip-hand	0.000,1.840,0.762	tip-hand	0.000,-3.200,5.802	blade	0.000,-0.707,0.707	flat	-1.000,0.000,0.000
 wp13_wield_photographed	hand	3.150,7.350,0.000	hilt-hand	0.000,-1.300,-3.700	grip-hand	0.000,-1.300,-3.012	tip-hand	0.000,-1.300,0.700	blade	0.000,0.000,1.000	flat	0.000,-1.000,0.000

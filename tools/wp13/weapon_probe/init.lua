@@ -101,7 +101,7 @@ core.register_on_mods_loaded(function()
 					if def.wield_image and def.wield_image ~= "" then
 						problems[#problems + 1] = itemname ..
 							" declares a wield_image (" .. def.wield_image ..
-							"), breaking the one held-item convention"
+							"), which the diagonal tool pose cannot hold by its grip"
 					end
 				end
 			end
