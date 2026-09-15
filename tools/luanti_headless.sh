@@ -19,6 +19,11 @@
 #   printed) instead of a fresh temp one, which is how a SECOND boot on the
 #   SAME world is taken: the map, the player and the mod storage of the first
 #   boot are all inside it. A supplied ROOT is never deleted.
+#   PROBE=<dir> stages ONE extra mod directory into the throwaway game copy, for
+#   a disposable engine probe that is never shipped (the pattern
+#   tools/wp13/run_highcourt.sh uses for the capital). It is re-staged on every
+#   boot, a ROOT re-use included, and lands inside the scratch tree like
+#   everything else -- no directory of the repo is written.
 set -euo pipefail
 export LC_ALL=C
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
@@ -62,6 +67,17 @@ cp -a "$repo/game.conf" "$repo/mods" "$game/"
 for f in minetest.conf settingtypes.txt menu textures; do
 	[[ -e "$repo/$f" ]] && cp -a "$repo/$f" "$game/"
 done
+# The optional disposable probe. RESOLVED before use, like ROOT above, and it
+# must be a mod directory: a copy without a mod.conf would be a silent no-op.
+if [[ -n "${PROBE:-}" ]]; then
+	probe="$(realpath -e -- "$PROBE" 2>/dev/null || true)"
+	[[ -n "$probe" && -d "$probe" && -f "$probe/mod.conf" ]] || {
+		echo "PROBE must be a directory containing mod.conf" >&2
+		exit 2
+	}
+	cp -a "$probe" "$game/mods/$(basename "$probe")"
+	echo "staged probe: $(basename "$probe")"
+fi
 printf 'gameid = grudgelands\nbackend = sqlite3\nplayer_backend = sqlite3\nauth_backend = sqlite3\n' >"$world/world.mt"
 printf 'port = %s\nbind_address = 127.0.0.1\nserver_announce = false\n' "$port" >"$root/server.conf"
 if [[ -n "$seed" ]]; then
