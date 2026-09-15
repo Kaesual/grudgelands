@@ -341,6 +341,18 @@ tenth of the open-land control's. Against the contract's "no more than 2× the
 envelope touches every mapchunk on the ring, and four districts of thirteen
 plots touch most of the rest.
 
+**NO CAUSEWAY PARAPET, and that is measured.** Dur Brannoc has one because
+WP40's blend from its flat civic core to the granite terraces falls 44 nodes
+over some forty columns — faster than a road's one-Lipschitz envelope may
+descend — so its east avenue leaves the ground on an eight-to-ten-node
+embankment with nothing at its edge. The undead blend is gentler: the ground
+under the east avenue is 106 at x = 48 and 100 at x = 72, a quarter of a node
+per column against a rate the road can follow exactly. Read back out of the
+FINISHED MAP (`nhal_veyr/embankment.py` over the avenue dump), **every one of
+the 602 carriageway columns outside the core is a single course**: this road
+never leaves its own ground, so there is nothing to rail. The rule Dur Brannoc
+wrote stays available to whoever needs it; this capital does not.
+
 ### (e) Engine
 
 `tools/wp13/run_capital.sh <out> nhal_veyr surface <seed>` on ALL NINE seeds of

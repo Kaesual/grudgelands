@@ -13,13 +13,16 @@ Tree: branch `wp13-w2-nhal-veyr`, based on `main` at `922bfd92`.
 | `terrain/grid-<seed>.tsv` | a 4-node grid of the whole 512 envelope plus its collar, both gate seeds, taken before the capital was on the roster |
 | `terrain/wall-<seed>.tsv` | the ground under the four candidate curtain-wall lines, every column, lane by lane across the wall's thickness |
 | `terrain/probe-<seed>.txt` | the `terrain` probe's own summary: range, worst step and wet columns per line |
-| `terrain/calibration.txt` | how much 4-node sampling understates a relief, measured against the 1-node wall lines of the same dumps: at most one node |
+| `terrain/calibration.txt` | how much 4-node sampling understates a relief, measured against the 1-node wall lines of the same dumps: a fall by at most one node and a rise by at most two |
 | `lot-legality.txt` | the verdict of `tools/wp13/nhal_veyr_plots.lua` on the committed grids: every lot dry, inside the skirt, under its own roof and inside its own quarter on both worlds, and every plot fitting the lot it stands on |
 | `lot-repair.txt` | the `--repair` run the six moved lots came from |
 | `surface_all.sh`, `surface/surface-<seed>.tsv` | the per-plot surface, perimeter fall, rise, submerged columns and margin on ALL NINE seeds of `capital_anchor_fixture.lua` |
+| `surface/audit-summary.tsv` | the same nine seeds in one table: the audit findings of all three capitals, the worst perimeter fall and the submerged count |
 | `surface/audit-<seed>.txt` | the seam's own load-time `audit_terrain` findings for every settlement on that seed, which is the authority the offline predicate is a pre-flight for |
 | `full_runs.sh`, `nhal_veyr/probe-<seed>.txt` | the engine pass: per-mapchunk timings by kind, the socket inventory, the loop inventory, the dump counts and digests |
 | `nhal_veyr/npcs-<seed>.txt` | every placement line of that boot, and the roster summary |
+| `nhal_veyr/embankment.py` / `embankment.txt` | how high the avenue stands above its own ground as BUILT: every carriageway column outside the core is a single course, which is why this capital needs no causeway parapet |
+| `nhal_veyr/errors.txt` | the error-line inventory of the three full passes |
 | `nhal_veyr/harness.sha256` | the probe and runner bytes those passes ran |
 | `errors.sh` | what an engine pass of this capital may log and nothing else: exactly the two unregistered wave-2 vendor lines |
 | `renders.sh`, `renders/*.png` | Nhal Veyr as built in terrain, drawn from the map read-back |
