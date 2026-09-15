@@ -52,10 +52,14 @@ return function(repo)
 			ground_cover = {{"default:fern_1", 665}, {"default:grass_1", 1982}},
 			carts = 0,
 			-- The NPC socket roster of contract section 4, exactly: two gate
-			-- posts, one patrol loop, one race vendor, four idle spots and
-			-- one quest spot.
-			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 4,
+			-- posts, one patrol loop, one race vendor, four idle spots plus
+			-- the three SPARE ones of playtest round 2, and one quest spot.
+			-- `spare` is counted separately because the two say different
+			-- things: `idle` is how many standing positions the settlement
+			-- offers, `spare` how many of them nobody lives on.
+			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 7,
 				quest = 1},
+			spare = 3,
 		},
 		{
 			key = "dawnmere",
@@ -112,10 +116,14 @@ return function(repo)
 			ground_cover = {{"default:grass_4", 756}, {"default:grass_3", 1571}},
 			carts = 3, cart_load = "grug_decor:xdecor_barrel",
 			-- The NPC socket roster of contract section 4, exactly: two gate
-			-- posts, one patrol loop, one race vendor, four idle spots and
-			-- one quest spot.
-			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 4,
+			-- posts, one patrol loop, one race vendor, four idle spots plus
+			-- the three SPARE ones of playtest round 2, and one quest spot.
+			-- `spare` is counted separately because the two say different
+			-- things: `idle` is how many standing positions the settlement
+			-- offers, `spare` how many of them nobody lives on.
+			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 7,
 				quest = 1},
+			spare = 3,
 		},
 		{
 			key = "silverleaf",
@@ -175,10 +183,14 @@ return function(repo)
 			ground_cover = {{"default:fern_2", 849}, {"default:grass_2", 1752}},
 			carts = 0,
 			-- The NPC socket roster of contract section 4, exactly: two gate
-			-- posts, one patrol loop, one race vendor, four idle spots and
-			-- one quest spot.
-			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 4,
+			-- posts, one patrol loop, one race vendor, four idle spots plus
+			-- the three SPARE ones of playtest round 2, and one quest spot.
+			-- `spare` is counted separately because the two say different
+			-- things: `idle` is how many standing positions the settlement
+			-- offers, `spare` how many of them nobody lives on.
+			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 7,
 				quest = 1},
+			spare = 3,
 		},
 		{
 			key = "stillgrave",
@@ -233,10 +245,14 @@ return function(repo)
 			ground_cover = {{"grug_nodes:bone_pile", 359}, {"default:dry_shrub", 612}},
 			carts = 0,
 			-- The NPC socket roster of contract section 4, exactly: two gate
-			-- posts, one patrol loop, one race vendor, four idle spots and
-			-- one quest spot.
-			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 4,
+			-- posts, one patrol loop, one race vendor, four idle spots plus
+			-- the three SPARE ones of playtest round 2, and one quest spot.
+			-- `spare` is counted separately because the two say different
+			-- things: `idle` is how many standing positions the settlement
+			-- offers, `spare` how many of them nobody lives on.
+			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 7,
 				quest = 1},
+			spare = 3,
 		},
 		{
 			key = "sunscar",
@@ -283,10 +299,14 @@ return function(repo)
 			ground_cover = {{"default:dry_shrub", 932}, {"default:dry_grass_3", 899}},
 			carts = 15, cart_load = "stairs:slab_acacia_wood",
 			-- The NPC socket roster of contract section 4, exactly: two gate
-			-- posts, one patrol loop, one race vendor, four idle spots and
-			-- one quest spot.
-			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 4,
+			-- posts, one patrol loop, one race vendor, four idle spots plus
+			-- the three SPARE ones of playtest round 2, and one quest spot.
+			-- `spare` is counted separately because the two say different
+			-- things: `idle` is how many standing positions the settlement
+			-- offers, `spare` how many of them nobody lives on.
+			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 7,
 				quest = 1},
+			spare = 3,
 		},
 		{
 			key = "kapok",
@@ -343,10 +363,14 @@ return function(repo)
 			ground_cover = {{"default:junglegrass", 1129}, {"default:grass_1", 946}},
 			carts = 0,
 			-- The NPC socket roster of contract section 4, exactly: two gate
-			-- posts, one patrol loop, one race vendor, four idle spots and
-			-- one quest spot.
-			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 4,
+			-- posts, one patrol loop, one race vendor, four idle spots plus
+			-- the three SPARE ones of playtest round 2, and one quest spot.
+			-- `spare` is counted separately because the two say different
+			-- things: `idle` is how many standing positions the settlement
+			-- offers, `spare` how many of them nobody lives on.
+			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 7,
 				quest = 1},
+			spare = 3,
 		},
 	}
 
@@ -828,6 +852,7 @@ return function(repo)
 		local sockets = assert(blueprint.landmarks.sockets,
 			"no socket landmarks")
 		local socket_ids, role_count, patrol_groups = {}, {}, {}
+		local spare_count = 0
 		for role in pairs(SOCKET_ROLES) do role_count[role] = 0 end
 		for index, socket in ipairs(sockets) do
 			local where = spec.key .. " socket " .. tostring(socket.id)
@@ -889,6 +914,77 @@ return function(repo)
 						"socket tag differs: " .. where)
 				end
 			end
+			--
+			-- A SPARE SOCKET (playtest round 2): `spawn = false` makes it a
+			-- wander target the amble may use and a home nobody is placed on.
+			-- Every standing test above has already run against it, which is the
+			-- point -- a spare is a real position, not a coordinate. Only an
+			-- `idle` socket may be one, exactly as the runtime registry insists
+			-- (`grug_core/settlement_sockets.lua`), and a spare carries no tag:
+			-- a tag is a feature the NPC standing there talks about.
+			--
+			if socket.spawn ~= nil then
+				assert(socket.spawn == false and socket.role == "idle",
+					"only an idle socket may be spare: " .. where)
+				assert(socket.tags == nil, "a spare socket carries a tag: " ..
+					where)
+				spare_count = spare_count + 1
+			end
+			--
+			-- THE ELDER FACES THE STREET (user ruling, playtest round 2). A
+			-- start's quest socket stands on the hall's doorstep with its
+			-- authored facing INTO the door, and `door` is what makes the
+			-- consumer turn it round (`start_npcs.lua` socket_face_yaw). So
+			-- both halves are measured here rather than believed: the tag is
+			-- present, the authored facing really runs into the building within
+			-- five nodes -- a doorstep is not always the node in front of the
+			-- leaf -- and the cell behind, which is where the elder will
+			-- actually look, is free and is one of the positions the route
+			-- flood reached. Without this a socket that drifted off its
+			-- doorstep in a blueprint edit would silently turn its elder into a
+			-- wall instead of away from one.
+			--
+			-- The test is scoped to `quest` deliberately. `door` is a CONSUMER
+			-- rule ("turn this NPC round"), and the capitals' own gate and
+			-- service sockets use it the other way round -- they stand inside a
+			-- gate looking in, and the turn faces them at the door they are
+			-- about to leave by. Both are legal; only the six elders are the
+			-- ruling.
+			--
+			if socket.role == "quest" then
+				assert(socket.tags and socket.tags[1] == "door",
+					"a start's quest socket is not tagged `door`: " .. where)
+				-- A DOOR LEAF COUNTS AS THE BUILDING here, and nowhere else in
+				-- this file: the route test calls a door passable because a
+				-- player opens it, but a socket that faces one is standing at a
+				-- doorstep looking into a house, which is exactly what the tag
+				-- claims.
+				local function closes(x, y, z)
+					return solid(x, y, z) or LEAF[node(x, y, z)]
+				end
+				-- Five nodes, because a doorstep is not always the node in
+				-- front of the leaf: Sunscar's tusk door opens onto its own
+				-- porch and its socket stands at the far edge of it.
+				local blocked_at
+				for reach = 1, 5 do
+					if blocked_at == nil and closes(socket.x + socket.dir.x * reach,
+							socket.y, socket.z + socket.dir.z * reach) then
+						blocked_at = reach
+					end
+				end
+				assert(blocked_at ~= nil,
+					"a door-tagged socket faces open ground: " .. where)
+				-- And the way the NPC will actually look is open AND somewhere a
+				-- body can be: the cell behind it is free and is one of the
+				-- positions the route flood above reached. "Not solid" alone
+				-- would be satisfied by a walled yard.
+				local bx = socket.x - socket.dir.x
+				local bz = socket.z - socket.dir.z
+				assert(not closes(bx, socket.y, bz) and
+					visited[key(bx, socket.y, bz)],
+					"a door-tagged socket has no open street behind it: " ..
+						where)
+			end
 		end
 		-- Every loop is 4 to 6 waypoints long (contract section 4), numbered
 		-- 1..n without a gap, and no two consecutive waypoints sit inside the
@@ -919,6 +1015,8 @@ return function(repo)
 			assert(spec.sockets[role] ~= nil or seen_count == 0,
 				"undeclared socket role: " .. spec.key .. " " .. role)
 		end
+		assert(spare_count == spec.spare, "spare socket population differs: " ..
+			spec.key .. " is " .. spare_count .. ", not " .. spec.spare)
 
 		-- A second construction cannot depend on table iteration order or RNG.
 		local again = build()
@@ -932,7 +1030,7 @@ return function(repo)
 		report[#report + 1] = table.concat({"wp13_blueprint", spec.key,
 			#blueprint.cells, count, palette_count, lights, oriented,
 			#destinations, #doorways, #rooms, ruins, stems, #queue,
-			#sockets}, "\t") .. "\n"
+			#sockets, spare_count}, "\t") .. "\n"
 	end
 	return table.concat(report)
 end

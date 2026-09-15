@@ -1,7 +1,14 @@
 #!/usr/bin/env bash
-# The settlement-NPC engine pass of WP13 playtest round 1 (2026-09-15): THREE
-# boots on ONE world through `tools/luanti_headless.sh`, with the disposable
-# probe of `tools/wp13/npc_probe` staged into the throwaway game copy.
+# The settlement-NPC engine pass of WP13 playtest rounds 1 and 2 (2026-09-15):
+# THREE boots on ONE world through `tools/luanti_headless.sh`, with the
+# disposable probe of `tools/wp13/npc_probe` staged into the throwaway game
+# copy. Round 2 added four claims to the same three boots (spare sockets never
+# spawn, villagers visit more than one spot, the elder faces the street, and a
+# hostile engages the watch while no mob ever acquires a non-combatant); the
+# programme and its timings are unchanged.
+#
+# PORT: pass one in the band your lane owns (`PORT=31141 run_npc_probe.sh ...`);
+# the launcher's own default is 32800+RANDOM%200.
 #
 #   boot 1  fresh world, the full programme: the amble trace, the wandering-NPC
 #           census over more than twenty heartbeats, the HP tuple and the

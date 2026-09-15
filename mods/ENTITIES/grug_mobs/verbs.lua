@@ -678,40 +678,71 @@ function grug_mobs.passive_prey(def)
 end
 
 --
--- NOBODY HUNTS NPCs (world.md §4: "Ordinary guards attack enemy players and
--- monsters, never arbitrary NPCs (attack_npcs = false). Dedicated war-front
--- soldiers are the scoped exception"; §9 repeats it for world life).
+-- NON-COMBATANT NPCs ARE NEVER A TARGET (user ruling, playtest round 2,
+-- 2026-09-15). This is the round-2 replacement for round 1's blanket
+-- `no_npc_targets`, and the ruling is the reason it is not a wider rule:
 --
--- `attack_npcs` DEFAULTS TO TRUE in mobs_redo's mob_class (api.lua:170) and is
--- read in exactly one place, general_attack's candidate filter
--- (api.lua:1814: `not self.attack_npcs and ent.type == "npc"`). Every hostile
--- family in this mod therefore used to acquire `type = "npc"` entities on sight,
--- which the 2026-09-15 playtest found the ugly end of: a boar stood in front of
--- a village woman hitting her for as long as the player watched, because a
--- settlement NPC cancels every punch and the fight can never end.
+--   * hostiles and guards MAY attack each other. Mutual initiation is fine --
+--     a wolf that walks into a gate picks the guard, the guard picks the wolf,
+--     and both of them can lose. Round 1 removed that by giving every mob
+--     `attack_npcs = false`, which also removed the only NPC-vs-monster fight
+--     the settlements have.
+--   * villagers, elders and vendors are never attacked by ANYTHING. That is
+--     the ugly end the playtest actually found: a boar stood in front of a
+--     village woman hitting her for as long as the player watched, because a
+--     settlement NPC cancels every punch (`do_punch` returns truthy) and the
+--     fight can therefore never end.
+--   * guard vs. guard stays off, across factions included -- guard.lua keeps
+--     its own `attack_npcs = false` (world.md section 4; NPC-vs-NPC war needs
+--     its own design pass).
 --
--- Applied in `grug_mobs.register_mob` for EVERY mob, not per file, because "this
--- one forgot the field" is precisely the failure this replaces -- guard.lua had
--- it, the eighteen hostiles did not. The opt-out is explicit and named after the
--- design's own exception:
+-- SO THE VETO IS A PROPERTY OF THE TARGET, not a narrowing of the attacker.
+-- `attack_npcs` cannot express it: it is one boolean over the whole
+-- `type = "npc"` family (api.lua:1814, the one place it is read), and the
+-- family holds both the guards a hostile may fight and the civilians it may
+-- not. `_grug_noncombatant` splits the family instead, and a GRUG PATCH in
+-- general_attack's own candidate filter drops such an entity before any
+-- distance or line-of-sight work -- the same site and the same shape as the
+-- `_grug_ignore_player` hook the undead night truce already uses, which is
+-- what lets the mob pick the next-closest viable target instead of
+-- re-acquiring the vetoed one forever.
 --
---   `_grug_attack_npcs = true` -- a dedicated war-front unit, whose authored
---   encounter may target the opposing faction's NPC population.
+-- WHY THE FIELD IS INSTALLED AT ACTIVATION AND NOT LEFT IN THE DEF: mobs_redo
+-- copies an EXPLICIT def-field whitelist into the entity prototype
+-- (api.lua:3196ff), so a `_grug_*` def field reaches neither `self` nor
+-- `core.registered_entities[name]` -- AGENTS.md's WP6 runtime-field rule. So
+-- this verb wraps the definition's own `after_activate`, which mob_activate
+-- calls on every activation, and writes the field there. It is a plain
+-- boolean, so it also survives unload/reload inside staticdata; the wrapper is
+-- what makes a mob placed before the first save carry it too.
 --
--- It touches no other targeting field: `attack_players`, `attack_animals` and
--- `attack_monsters` stay exactly as the def wrote them, so retaliation (a
--- punched monster's own `do_attack` in on_punch, api.lua:2979) and guard vs.
--- monster are unaffected. NB `no_acquire` in init.lua is derived from the same
--- four fields AFTER this runs, which is correct: a def that may target nobody at
--- all is one this cannot create -- it only ever narrows `attack_npcs`, and every
--- def whose `attack_players` is false already set `attack_npcs = false` itself
--- (the five passive-prey mobs above, the two settlement families).
+-- The def keeps `_grug_noncombatant = true` as the DECLARATION -- that is what
+-- a reader and `grug_mobs.is_noncombatant` see without an engine -- and the
+-- verb is the single place that turns the declaration into behaviour, so a new
+-- civilian family cannot forget half of it.
 --
-function grug_mobs.no_npc_targets(def)
-	if def._grug_attack_npcs == true then
-		def.attack_npcs = true
-		return def
+function grug_mobs.noncombatant(def)
+	if type(def) ~= "table" then
+		error("grug_mobs.noncombatant: definition differs", 0)
 	end
-	def.attack_npcs = false
+	def._grug_noncombatant = true
+	local inner = def.after_activate
+	-- mob_activate calls `def.after_activate(self, staticdata, def, dtime)`
+	-- (api.lua:3448) -- four arguments, the definition itself third. Forwarded
+	-- verbatim so a wrapped callback sees exactly what an unwrapped one does.
+	def.after_activate = function(self, staticdata, entity_def, dtime)
+		self._grug_noncombatant = true
+		if inner then
+			return inner(self, staticdata, entity_def, dtime)
+		end
+	end
 	return def
+end
+
+-- THE PURE TARGET FILTER the api.lua patch expresses inline, and the one every
+-- other consumer (and the KAT) asks. Deliberately total: anything that is not a
+-- luaentity carrying the flag is a legal target as far as this rule is
+-- concerned, so it can never widen a veto that another rule owns.
+function grug_mobs.is_noncombatant(entity)
+	return type(entity) == "table" and entity._grug_noncombatant == true
 end

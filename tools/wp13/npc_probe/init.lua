@@ -20,6 +20,26 @@
 --      reproduces the broken state on purpose and shows the activation path
 --      healing it.
 --
+-- PLAYTEST ROUND 2 (2026-09-15) adds four, and they are the four the user's
+-- rulings turn on:
+--
+--   R1. SPARE SOCKETS NEVER SPAWN. The settlement's roster is its SPAWN
+--       sockets; every `spawn = false` idle socket is a wander target and
+--       nothing may ever be booked on one. Read out of the map by identity,
+--       like every other census here.
+--   R2. VILLAGERS VISIT MORE THAN ONE SPOT. The spot index of every flair NPC
+--       is collected over the whole three-minute window and each of them has
+--       to have stood at two different ones -- which is only possible at all
+--       because the spares give them somewhere to go.
+--   R3. THE ELDER FACES THE STREET. Its authored socket faces the hall door
+--       (`door` tag); the placement engine turns it round, so the entity's own
+--       yaw must be the socket's plus pi.
+--   R4. MUTUAL COMBAT, AND NOT WITH CIVILIANS. A hostile beside a guard post
+--       engages the watch and the watch engages it -- round 1's blanket
+--       `attack_npcs = false` had made that impossible -- while a hostile
+--       standing two nodes from a villager never acquires it, and no mob in
+--       the settlement ever holds a non-combatant as its target.
+--
 -- WHY A FORCELOAD AND NOT A FAKE PLAYER: an object exists in the environment
 -- only while its mapblock is ACTIVE, and `ActiveBlockList::update` starts its
 -- new list from the forceloaded set (serverenvironment.cpp), so a forceload
@@ -54,14 +74,28 @@ end
 --
 local settlement
 
+-- socket id -> the registry entry, and the subset that is SPARE. Both read
+-- once out of grug_core, which is the authority on what a settlement exports.
+local socket_by_id = {}
+local spare_sockets = {}
+
 local function find_settlement()
 	if settlement then return settlement end
 	local list = grug_core.settlement_socket_settlements()
 	if #list == 0 then return nil end
 	settlement = list[1]
 	settlement.sockets = grug_core.settlement_sockets_at(settlement.key)
+	for index = 1, #settlement.sockets do
+		local socket = settlement.sockets[index]
+		socket_by_id[socket.id] = socket
+		if socket.spawn == false then spare_sockets[socket.id] = true end
+	end
 	return settlement
 end
+
+-- R2. Which idle spots each flair NPC has actually stood at, over the whole
+-- window: socket id -> spot index -> true. Filled by `positions_line`.
+local spots_seen = {}
 
 local function forceload_area(anchor)
 	local blocks = 0
@@ -107,11 +141,12 @@ end
 --
 local function census_line(tag, strict, expect_live)
 	local rows = grug_mobs.start_npc_census()
-	local roster, marked = 0, 0
+	local roster, marked, spare = 0, 0, 0
 	for index = 1, #rows do
 		if rows[index].key == settlement.key then
 			roster = rows[index].roster
 			marked = rows[index].marked
+			spare = rows[index].spare or 0
 		end
 	end
 	local npcs = settlement_npcs()
@@ -126,7 +161,19 @@ local function census_line(tag, strict, expect_live)
 	end
 	log({"event=census", "phase=" .. tag, "key=" .. settlement.key,
 		"roster=" .. roster, "marked=" .. marked, "live=" .. #npcs,
-		"twins=" .. twins, "strict=" .. tostring(strict == true)})
+		"twins=" .. twins, "spare=" .. spare,
+		"strict=" .. tostring(strict == true)})
+	-- R1. A SPARE SOCKET IS NEVER A HOME. Nothing may be booked on one, in any
+	-- phase, whatever the roster count happens to be.
+	if spare < 1 then
+		fail("the settlement publishes no spare idle socket")
+	end
+	for index = 1, #npcs do
+		local socket_id = npcs[index]._grug_socket
+		if socket_id and spare_sockets[socket_id] then
+			fail("an NPC is booked on the spare socket " .. socket_id)
+		end
+	end
 	if #npcs > roster then
 		fail("live=" .. #npcs .. " exceeds roster=" .. roster)
 	end
@@ -157,6 +204,53 @@ local function census_line(tag, strict, expect_live)
 	return #npcs, roster, marked
 end
 
+local SPOT_ARRIVED = 1.6
+
+--
+-- R2. WHERE A VILLAGER IS STANDING, not where it is heading: a target index
+-- proves an intention, an arrival proves a walk. The spots are the ones the
+-- placement engine handed this NPC, spares included.
+--
+-- Sampled once a SECOND from the globalstep rather than at the nine logging
+-- points, because a dwell is 20 to 60 s and a walk between two Hearthpine spots
+-- is about 25 s: a twenty-second sampler can miss a whole visit and would make
+-- this assertion a coin toss instead of a measurement. It is a distance test
+-- over at most a handful of entities, so it costs nothing.
+--
+local function sample_spots()
+	local npcs = settlement_npcs()
+	for index = 1, #npcs do
+		local entity = npcs[index]
+		if entity.name:find("villager", 1, true) then
+			local pos = entity.object and entity.object:get_pos()
+			local spots = entity._grug_idle_spots
+			if pos and spots then
+				for spot_index = 1, #spots do
+					local spot = spots[spot_index]
+					local dx, dz = spot.x - pos.x, spot.z - pos.z
+					if dx * dx + dz * dz <= SPOT_ARRIVED * SPOT_ARRIVED then
+						local socket_id = entity._grug_socket or "?"
+						spots_seen[socket_id] = spots_seen[socket_id] or {}
+						spots_seen[socket_id][spot_index] = true
+					end
+				end
+			end
+		end
+	end
+end
+
+local function standing_at(entity, pos)
+	local spots = entity._grug_idle_spots or {}
+	for spot_index = 1, #spots do
+		local spot = spots[spot_index]
+		local dx, dz = spot.x - pos.x, spot.z - pos.z
+		if dx * dx + dz * dz <= SPOT_ARRIVED * SPOT_ARRIVED then
+			return tostring(spot_index)
+		end
+	end
+	return "-"
+end
+
 local function positions_line()
 	local npcs = settlement_npcs()
 	for index = 1, #npcs do
@@ -166,6 +260,8 @@ local function positions_line()
 			if pos then
 				log({"event=pos", "socket=" .. tostring(entity._grug_socket),
 					"spot=" .. tostring(entity._grug_idle_spot),
+					"at=" .. standing_at(entity, pos),
+					"spots=" .. #(entity._grug_idle_spots or {}),
 					"dwell=" .. string.format("%.1f",
 						tonumber(entity._grug_idle_dwell) or -1),
 					"state=" .. tostring(entity.state),
@@ -174,6 +270,68 @@ local function positions_line()
 			end
 		end
 	end
+end
+
+-- R2's verdict, once, at the end of the amble window.
+local function wander_verdict()
+	local walkers, movers = 0, 0
+	for socket_id, seen in pairs(spots_seen) do
+		local count = 0
+		for _ in pairs(seen) do count = count + 1 end
+		walkers = walkers + 1
+		if count >= 2 then movers = movers + 1 end
+		log({"event=wander", "socket=" .. socket_id, "distinct=" .. count})
+		if count < 2 then
+			fail("the villager on " .. socket_id .. " stood at " .. count ..
+				" idle spot over the whole window")
+		end
+	end
+	log({"event=wander_done", "villagers=" .. walkers, "moved=" .. movers})
+	if walkers < 1 then
+		fail("no villager was traced at an idle spot at all")
+	end
+end
+
+--
+-- R3. THE ELDER FACES THE STREET. Its socket is tagged `door` and its authored
+-- facing is the door, so the placement engine turns it round -- the entity's
+-- yaw must be the socket's plus pi, and that is read off the OBJECT, not off
+-- the field the engine wrote, because what the player sees is the object.
+--
+local TWO_PI = 2 * math.pi
+
+local function facing_lines()
+	local npcs = settlement_npcs()
+	local checked = 0
+	for index = 1, #npcs do
+		local entity = npcs[index]
+		local socket = socket_by_id[entity._grug_socket or ""]
+		-- QUEST SOCKETS ONLY, and that is not a convenience: an elder is the one
+		-- family with no movement at all, so its yaw is the authored rule and
+		-- nothing else. A villager faces whichever idle spot it is standing at
+		-- and a guard faces its post only while it is on it, so neither is a
+		-- statement about the door rule at an arbitrary second.
+		if socket and socket.role == "quest" and entity.object then
+			local tag = socket.tags and socket.tags[1] or "-"
+			local want = socket.yaw
+			if tag == "door" then want = (want + math.pi) % TWO_PI end
+			local have = entity.object:get_yaw() % TWO_PI
+			local delta = math.abs((have - (want % TWO_PI) + math.pi) %
+				TWO_PI - math.pi)
+			log({"event=facing", "socket=" .. socket.id,
+				"role=" .. socket.role, "tag=" .. tag,
+				"authored=" .. string.format("%.3f", socket.yaw % TWO_PI),
+				"want=" .. string.format("%.3f", want % TWO_PI),
+				"have=" .. string.format("%.3f", have),
+				"delta=" .. string.format("%.3f", delta)})
+			if delta > 0.01 then
+				fail("socket " .. socket.id .. " is faced " ..
+					string.format("%.3f", delta) .. " rad away from its rule")
+			end
+			checked = checked + 1
+		end
+	end
+	if checked < 1 then fail("no facing could be checked") end
 end
 
 local function hp_lines(tag)
@@ -223,12 +381,18 @@ local function hp_injection()
 end
 
 --
--- Item 5 in the engine. One wolf beside a villager and one beside a guard post:
---   * NEITHER may acquire an NPC (`attack_npcs = false`, now applied by the
---     registration wrapper to every mob) -- that is the boar standing in front
---     of an invulnerable villager the playtest found;
---   * a guard must still acquire the wolf (`attack_monsters` is untouched);
---   * and the wolf must still hit back once the guard hits it, because on_punch's
+-- R4 in the engine (playtest round 2, the user's ruling). One wolf beside a
+-- villager and one beside a guard post:
+--   * the wolf keeps its own `attack_npcs` -- round 1 forced it to false for
+--     every mob in the game, which also removed the only NPC-vs-monster fight
+--     the settlements have -- so the pair at the gate ENGAGES EACH OTHER;
+--   * neither wolf may ever acquire a NON-COMBATANT (`_grug_noncombatant` on
+--     the villager, the elder and the vendor, vetoed in general_attack's
+--     candidate filter) -- that is the boar standing in front of an
+--     invulnerable villager the playtest found, and the fight that can never
+--     end because a civilian cancels every punch;
+--   * a guard still acquires the wolf (`attack_monsters` is untouched);
+--   * and the wolf still hits back once the guard hits it, because on_punch's
 --     retaliation (api.lua:3208-3213) reads `passive`, `state`, `child` and
 --     ownership and never any `attack_*` field.
 --
@@ -236,6 +400,16 @@ local HOSTILE = "grug_mobs:wolf"
 local hostiles = {}
 local cleared_socket
 local unloaded_socket, unloaded_home, unloaded_away
+-- THE POSITION ACTUALLY FORCELOADED, kept apart from `unloaded_away`, whose y is
+-- later overwritten with the ground the probe measures. Those two can be five
+-- mapblocks apart, and `forceload_free_block` frees the block containing the
+-- position it is handed: freeing the measured one would release a block nobody
+-- requested and leak the one that was.
+local unloaded_request
+-- Did the unload case get as far as a real NPC on real ground? Everything after
+-- the move is meaningless otherwise, so it is skipped rather than run against a
+-- stale position.
+local unload_ready = false
 
 local function target_name(target)
 	if not target then return "nil" end
@@ -278,6 +452,20 @@ local function spawn_hostiles()
 	end
 end
 
+-- Did the guard-side pair ever hold each other as a target? Either direction
+-- counts: the ruling is that they MAY fight, and which of the two saw the other
+-- first is a matter of a tick.
+local engaged_hostile, engaged_guard = false, false
+
+-- Is this target a non-combatant? Asked of the entity, which is where the flag
+-- lives, and not of a name list -- a name list is exactly what a new civilian
+-- family would be missing from.
+local function target_is_civilian(target)
+	if not target or core.is_player(target) then return false end
+	local entity = target:get_luaentity()
+	return grug_mobs.is_noncombatant(entity)
+end
+
 local function hostile_lines(tag)
 	for index = 1, #hostiles do
 		local row = hostiles[index]
@@ -286,27 +474,44 @@ local function hostile_lines(tag)
 			log({"event=hostile", "phase=" .. tag, "at=" .. row.label,
 				"state=gone"})
 		else
+			local target = target_name(entity.attack)
 			log({"event=hostile", "phase=" .. tag, "at=" .. row.label,
 				"attack_npcs=" .. tostring(entity.attack_npcs),
 				"attack_players=" .. tostring(entity.attack_players),
+				"noncombatant=" .. tostring(entity._grug_noncombatant),
 				"state=" .. tostring(entity.state),
-				"target=" .. target_name(entity.attack),
+				"target=" .. target,
 				"health=" .. tostring(entity.health)})
-			if target_name(entity.attack):find("villager", 1, true) or
-					target_name(entity.attack):find("elder", 1, true) or
-					target_name(entity.attack):find("vendor", 1, true) then
-				fail("a hostile mob acquired a settlement NPC")
+			-- R4a. A hostile keeps its own targeting: round 1's blanket veto is
+			-- gone, so this must not read false any more.
+			if entity.attack_npcs == false then
+				fail("a hostile still carries attack_npcs = false, so it can " ..
+					"never fight the watch")
 			end
+			-- R4b. And it may never hold a civilian, by flag and not by name.
+			if target_is_civilian(entity.attack) then
+				fail("a hostile mob acquired a non-combatant settlement NPC (" ..
+					target .. ")")
+			end
+			if target:find("guard", 1, true) then engaged_hostile = true end
 		end
 	end
 	local npcs = settlement_npcs()
 	for index = 1, #npcs do
 		local entity = npcs[index]
 		if entity.name:find("guard", 1, true) then
+			local target = target_name(entity.attack)
 			log({"event=guard_target", "phase=" .. tag,
 				"socket=" .. tostring(entity._grug_socket),
 				"state=" .. tostring(entity.state),
-				"target=" .. target_name(entity.attack)})
+				"target=" .. target})
+			if target ~= "nil" then engaged_guard = true end
+		end
+		-- R4c. NOTHING in the settlement holds a civilian as its target, which
+		-- covers the guards and every other mob this scan reaches, not only the
+		-- two wolves the probe placed.
+		if target_is_civilian(entity.attack) then
+			fail(entity.name .. " acquired a non-combatant settlement NPC")
 		end
 	end
 end
@@ -326,7 +531,12 @@ local FULL = {
 		-- objects.
 		census_line("ready")
 	end},
-	{at = 10, what = function() positions_line() end},
+	{at = 10, what = function()
+		positions_line()
+		-- R3, as early as the roster is activated: an elder placed on a
+		-- door-tagged socket looks at the street.
+		facing_lines()
+	end},
 	{at = 30, what = function() positions_line() end},
 	{at = 50, what = function() positions_line() end},
 	{at = 70, what = function() positions_line() end},
@@ -337,6 +547,8 @@ local FULL = {
 	{at = 170, what = function()
 		positions_line()
 		census_line("ambled", true)
+		-- R2's verdict over the whole 170-second window.
+		wander_verdict()
 	end},
 	{at = 180, what = function()
 		-- Off the socket, and always toward the middle of the forceloaded grid
@@ -413,6 +625,15 @@ local FULL = {
 	{at = 315, what = function() hostile_lines("acquired") end},
 	{at = 340, what = function()
 		hostile_lines("fought")
+		-- R4's verdict: the gate pair really did engage, in at least one
+		-- direction. A guard that killed its wolf outright still counts -- it
+		-- held it as a target on the way there, which every earlier phase logged.
+		log({"event=engagement", "hostile_held_guard=" ..
+			tostring(engaged_hostile), "guard_held_target=" ..
+			tostring(engaged_guard)})
+		if not (engaged_hostile or engaged_guard) then
+			fail("the hostile beside the gate and the watch never engaged")
+		end
 		-- NOT strict: a wolf that kills a guard frees that socket with a
 		-- respawn slot, which is world.md §4a working rather than a defect. The
 		-- invariant that must hold either way is that every marked socket has
@@ -424,53 +645,154 @@ local FULL = {
 		end
 	end},
 	--
-	-- THE REVIEW'S FINDING, in the engine. One NPC is moved OUT of the
-	-- forceloaded grid, so its own mapblock goes inactive while the socket it is
-	-- booked on stays active: `compare_block_status` answers for the block
-	-- containing the position it is handed, and the two positions are different
-	-- blocks. The NPC is then not in the environment at all, and the marker must
-	-- survive that -- it is unloaded, not gone.
+	-- THE REVIEW'S FINDING, in the engine. One NPC is put OUTSIDE the forceloaded
+	-- grid, so its own mapblock goes inactive while the socket it is booked on
+	-- stays active: `compare_block_status` answers for the block containing the
+	-- position it is handed, and the two positions are different blocks. The NPC
+	-- is then not in the environment at all, and the marker must survive that --
+	-- it is unloaded, not gone -- and the NPC must come back when its block does.
 	--
-	{at = 345, what = function()
+	-- THE DESTINATION IS PREPARED FIRST, and round 2 had to learn why. The first
+	-- version teleported the NPC to `its own position + 128` and hoped. That
+	-- volume is 150-odd nodes from the anchor, i.e. outside everything the
+	-- preload and this probe's own grid ever generated, so where the NPC landed
+	-- was whatever the map had there: sometimes generated ground (the case
+	-- passed), sometimes nothing at all -- and an object moved into a block that
+	-- does not exist is not unloaded, it is LOST. Two runs of this round proved
+	-- exactly that: the block read `active=true loaded=true` at the check and the
+	-- NPC was still missing, and the NEXT boot then freed the marker and placed a
+	-- replacement, which is the engine telling us the object was gone rather than
+	-- asleep.
+	--
+	-- So the away point is now a FIXED offset from the anchor (deterministic
+	-- across runs, unlike a wandering villager's position), the block is
+	-- forceloaded -- which generates it -- before anything is moved there, and
+	-- the NPC is put on the ground the probe actually reads out of that column.
+	-- Only then is the forceload released, which is what makes the block go
+	-- inactive and is the state under test.
+	--
+	{at = 342, what = function()
+		-- Generate and load the destination. Eight seconds ahead of the move, so
+		-- the emerge has time even on a cold map. This exact position is what
+		-- gets freed again below -- not the measured ground, which may be in
+		-- another block.
+		unloaded_request = {x = settlement.anchor.x + FORCE_REACH * 2,
+			y = settlement.anchor.y, z = settlement.anchor.z}
+		log({"event=away_request",
+			"to=" .. core.pos_to_string(unloaded_request),
+			"ok=" .. tostring(core.forceload_block(unloaded_request, true, -1))})
+	end},
+	{at = 350, what = function()
+		-- The ground of that column, read rather than assumed: the first air
+		-- node with air above it that stands on something walkable. Searched
+		-- from well above the anchor down to well below it, which is the whole
+		-- range mgv7 can put a surface in around a start.
+		local ground
+		for y = settlement.anchor.y + 40, settlement.anchor.y - 40, -1 do
+			local here = core.get_node_or_nil(
+				{x = unloaded_request.x, y = y, z = unloaded_request.z})
+			local over = core.get_node_or_nil(
+				{x = unloaded_request.x, y = y + 1, z = unloaded_request.z})
+			local under = core.get_node_or_nil(
+				{x = unloaded_request.x, y = y - 1, z = unloaded_request.z})
+			if here and over and under and here.name == "air" and
+					over.name == "air" and under.name ~= "air" and
+					under.name ~= "ignore" then
+				ground = y
+				break
+			end
+		end
+		-- NO GROUND IS THE END OF THE CASE, not a reason to carry on with a
+		-- position nothing was measured at. The block that WAS requested is
+		-- released so the run leaks nothing, the failure is logged (which is what
+		-- makes the whole probe run fail), and every later step of this case
+		-- skips on `unload_ready`.
+		if not ground then
+			core.forceload_free_block(unloaded_request, true)
+			fail("the away column never loaded or has no ground at " ..
+				core.pos_to_string(unloaded_request))
+			log({"event=unload_aborted",
+				"at=" .. core.pos_to_string(unloaded_request)})
+			return
+		end
+		unloaded_away = {x = unloaded_request.x, y = ground,
+			z = unloaded_request.z}
 		local npcs = settlement_npcs()
 		for index = 1, #npcs do
 			local entity = npcs[index]
 			if entity.name:find("villager", 1, true) then
 				local pos = entity.object:get_pos()
-				-- TWICE the grid's reach, and not `FORCE_REACH + 24`: the first
-				-- attempt landed on the last node of the outermost forceloaded
-				-- block and the probe's own `npc_block_active` said so.
-				local away = {x = pos.x + FORCE_REACH * 2, y = pos.y, z = pos.z}
 				unloaded_socket = entity._grug_socket
 				unloaded_home = {x = pos.x, y = pos.y, z = pos.z}
-				unloaded_away = away
-				entity.object:set_pos(away)
+				entity.object:set_pos(unloaded_away)
+				-- AND RELEASE THE BLOCK THAT WAS REQUESTED. Holding it would
+				-- keep the NPC active, which is the opposite of the case under
+				-- test; freeing `unloaded_away` instead would free a block that
+				-- was never forceloaded and leak this one.
+				core.forceload_free_block(unloaded_request, true)
+				unload_ready = true
 				log({"event=unload", "socket=" .. tostring(unloaded_socket),
-					"to=" .. core.pos_to_string(away),
+					"to=" .. core.pos_to_string(unloaded_away),
+					"requested=" .. core.pos_to_string(unloaded_request),
 					"socket_block_active=" .. tostring(
 						core.compare_block_status(
 							{x = pos.x, y = pos.y, z = pos.z}, "active")),
 					"npc_block_active=" .. tostring(
-						core.compare_block_status(away, "active"))})
+						core.compare_block_status(unloaded_away, "active"))})
 				return
 			end
 		end
+		core.forceload_free_block(unloaded_request, true)
 		fail("no villager to unload")
+		log({"event=unload_aborted", "at=no_villager"})
 	end},
-	{at = 355, what = function()
+	{at = 360, what = function()
+		if not unload_ready then return end
 		-- Eight of nine, and still nine markers: this is the count that must NOT
 		-- become nine again by a fresh NPC being placed on the marked socket.
 		census_line("unloaded", false, 8)
 	end},
 	{at = 385, what = function()
+		if not unload_ready then return end
 		census_line("still_unloaded", false, 8)
 	end},
 	{at = 390, what = function()
+		if not unload_ready then return end
 		-- And it comes back when its block does, which is the other half of the
-		-- same claim.
-		core.forceload_block(unloaded_away, true, -1)
+		-- same claim. THE NPC's OWN block this time, which is the one that has
+		-- to go active for the object to be in the environment again.
+		log({"event=reload_request", "ok=" ..
+			tostring(core.forceload_block(unloaded_away, true, -1)),
+			"active=" .. tostring(
+				core.compare_block_status(unloaded_away, "active"))})
 	end},
-	{at = 396, what = function()
+	{at = 400, what = function()
+		if not unload_ready then return end
+		-- One intermediate reading, for the same reason the strike rule needs
+		-- three passes: a forceload is a REQUEST. `ActiveBlockList::update`
+		-- runs on `active_block_mgmt_interval` (2 s by default) and the block
+		-- itself has to come off the disk first, so "the object is back" is not
+		-- a thing that happens in the same step. If the check below ever fails,
+		-- this line says whether the block was the problem or the object.
+		log({"event=reload_wait", "active=" .. tostring(
+			core.compare_block_status(unloaded_away, "active")),
+			"loaded=" .. tostring(
+				core.compare_block_status(unloaded_away, "loaded"))})
+	end},
+	--
+	-- TWENTY-FIVE SECONDS after the forceload, not six. Six was a coin toss: the
+	-- engine has to read the mapblock off the disk and then wait for its own
+	-- active-block management interval before the objects in it are in the
+	-- environment at all, and neither is bounded by anything the probe controls.
+	-- Nothing else in the programme depends on this delay, and the claim under
+	-- test is a statement about what happens, not about how fast.
+	--
+	{at = 415, what = function()
+		if not unload_ready then
+			log({"event=complete", "programme=full"})
+			core.request_shutdown("wp13 npc probe done", false, 1)
+			return
+		end
 		-- Back where it belongs FIRST: twice the grid's reach is also outside
 		-- the settlement's own scan radius, and the two reboots should start
 		-- from the ordinary world rather than from this experiment.
@@ -482,6 +804,9 @@ local FULL = {
 				back = true
 			end
 		end
+		log({"event=reload_seen", "back=" .. tostring(back),
+			"active=" .. tostring(
+				core.compare_block_status(unloaded_away, "active"))})
 		core.forceload_free_block(unloaded_away, true)
 		if not back then
 			fail("the unloaded NPC did not come back with its mapblock")
@@ -502,6 +827,10 @@ local RELOAD = {
 		census_line("reloaded", true)
 		hp_lines("reloaded")
 		positions_line()
+		-- R3 again: mob_activate hands every mob a random yaw, so the authored
+		-- facing has to be re-asserted on every activation. A reboot is the only
+		-- thing that proves it.
+		facing_lines()
 		log({"event=complete", "programme=reload"})
 		core.request_shutdown("wp13 npc probe done", false, 1)
 	end},
@@ -532,6 +861,9 @@ core.register_globalstep(function(dtime)
 			(BOOT == 1 and "full" or "reload")})
 	end
 	clock = clock + elapsed
+	-- R2's sampler, every second of the amble window (boot 1 only; the reload
+	-- boots are twenty seconds long and prove something else).
+	if BOOT == 1 and clock <= 170 then sample_spots() end
 	while next_step <= #programme and programme[next_step].at <= clock do
 		local job = programme[next_step]
 		next_step = next_step + 1

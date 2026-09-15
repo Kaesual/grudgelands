@@ -43,8 +43,18 @@
 --  10. no jump     -- the villager families cannot reach mobs_redo's do_jump.
 --  11. stuck route -- the three-stage patrol rescue, including the user's
 --                     ruling that the teleport happens out of sight only.
---  12. npc targets -- no mob registered through the wrapper hunts NPCs unless
---                     it is a declared war-front unit.
+--  12. noncombatant -- the round-2 ruling's half that lives in this fixture:
+--                     the verb, the flag it installs at activation, and the
+--                     declaration on every definition the fixture registers.
+--                     The other half -- a guard is acquirable and the
+--                     registration wrapper narrows nobody's `attack_npcs` --
+--                     needs guard.lua and init.lua, which this fixture
+--                     deliberately does not load, and is measured by the engine
+--                     probe instead.
+--
+-- ROUND 2 (2026-09-15) also adds, inside the states above: the door flip on a
+-- QUEST socket (1b), the spare idle socket that is a wander target and never a
+-- home (1d, 6, 9), and the census field that reports how many a settlement has.
 --
 -- THE ONE THING THIS STUB MODELS EXACTLY, because the whole design hangs off
 -- it: an object exists in the environment only while its mapblock is ACTIVE, and
@@ -117,6 +127,11 @@ return function(repo)
 			z = 7, dir = {x = -1, z = 0}},
 		{id = "core_idle", role = "idle", tags = {"door"}, x = -8, y = 1, z = 4,
 			dir = {x = 1, z = 0}},
+		-- A SPARE of the CORE composition: a wander target for the core's own
+		-- citizen and for nobody in the district, which is what makes the two
+		-- assertions on `_grug_idle_spots` below say something.
+		{id = "core_spare", role = "idle", spawn = false, x = 4, y = 1, z = 10,
+			dir = {x = -1, z = 0}},
 		-- A district plot's socket, prefixed with its plot id by the seam.
 		{id = "market_granary/market_granary_gate_idle", role = "idle",
 			tags = {"door"}, x = 72, y = 1, z = -40, dir = {x = 0, z = 1}},
@@ -132,12 +147,27 @@ return function(repo)
 			x = 0, y = 1, z = 24, dir = {x = 0, z = -1}},
 		{id = "plaza_vendor", role = "vendor", kind = "race", x = 7, y = 1,
 			z = -5, dir = {x = -1, z = 0}},
-		{id = "idle_a", role = "idle", tags = {"door"}, x = -16, y = 1, z = 4,
-			dir = {x = -1, z = 0}},
+		-- TWO tags, and `door` is the SECOND. `tags` is a list in the contract:
+		-- the first entry is the one the spoken line reads off, the door rule is
+		-- a statement about any of them, and reading `tags[1]` alone would turn
+		-- the rule off for exactly this shape.
+		{id = "idle_a", role = "idle", tags = {"bench", "door"}, x = -16, y = 1,
+			z = 4, dir = {x = -1, z = 0}},
 		{id = "idle_b", role = "idle", tags = {"bench"}, x = 7, y = 1, z = 1,
 			dir = {x = 1, z = 0}},
-		{id = "hall_quest", role = "quest", x = -28, y = 1, z = 26,
-			dir = {x = 0, z = 1}},
+		-- `door` on a QUEST socket: round 1 turned only `idle` sockets round, so
+		-- every Village Elder kept its face in the hall door and its back to the
+		-- street (playtest round 2). The tag describes the GEOMETRY, so the rule
+		-- follows the tag and not the role.
+		{id = "hall_quest", role = "quest", tags = {"door"}, x = -28, y = 1,
+			z = 26, dir = {x = 0, z = 1}},
+		-- A SPARE idle socket: a wander target the amble may use and a home
+		-- nobody is ever placed on (`spawn = false`). Authored LAST on purpose,
+		-- so a spot ring built from a count of the placed sockets instead of
+		-- from the authored order would still pass -- the capital's spare, which
+		-- sits in the middle of its list, is what catches that.
+		{id = "idle_spare", role = "idle", spawn = false, x = -4, y = 1, z = 12,
+			dir = {x = 0, z = -1}},
 	}
 	local ENTITIES = {
 		["grug_mobs:guard_accord"] = true,
@@ -351,6 +381,11 @@ return function(repo)
 					dir = {x = socket.dir.x, z = socket.dir.z},
 					group = socket.group, order = socket.order,
 					kind = socket.kind, tags = socket.tags,
+					-- Normalized exactly as the real registry normalizes it
+					-- (grug_core/settlement_sockets.lua): a consumer reads one
+					-- boolean and never spells "nil means true" itself. The
+					-- registry's own validation is settlement_sockets_kat's.
+					spawn = socket.spawn ~= false,
 					pos = {x = anchor.x + socket.x, y = anchor.y + socket.y,
 						z = anchor.z + socket.z},
 					yaw = dir_to_yaw(socket.dir)}
@@ -567,8 +602,11 @@ return function(repo)
 	--
 	-- 1. Cold: a prepared start with nobody in it is populated in full.
 	--
-	-- Seven of the eight sockets carry an entity: the loop's SECOND waypoint
-	-- is route data, not a standing position (one guard walks the whole loop).
+	-- Seven of the ten sockets carry an entity: the loop's SECOND waypoint is
+	-- route data, not a standing position (one guard walks the whole loop), and
+	-- the SPARE idle socket is a wander target nobody lives on. The roster is
+	-- what is placed, marked, capped and censused -- so a spare must not enter
+	-- any of those counts.
 	local SLOTS = 7
 	boot()
 	check(#world.objects == 0, "something stood there before the first boot")
@@ -594,9 +632,42 @@ return function(repo)
 	end
 	check(turned(door_mob._grug_face_yaw, door_authored),
 		"a door socket did not turn its NPC round")
+	-- ...and the LINE still follows the first tag, which is the other half of
+	-- the split: the turn is about every tag, the flavour about the first one.
+	check(door_mob._grug_idle_tag == "bench",
+		"the spoken tag no longer follows the socket's first tag: " ..
+		tostring(door_mob._grug_idle_tag))
 	check(math.abs(bench_mob._grug_face_yaw - bench_authored) < 1e-9,
 		"a bench socket's authored facing was changed")
-	line("door_facing", "door_turned", "bench_kept")
+	-- ROUND 2: the same rule for the QUEST socket. Round 1 keyed the flip on
+	-- `role == "idle"`, so all seven elders faced their hall door.
+	local elder_mob = entity_at("hall_quest")
+	check(elder_mob ~= nil, "the quest socket is empty")
+	check(turned(elder_mob._grug_face_yaw, dir_to_yaw({x = 0, z = 1})),
+		"an elder on a door socket still faces the door")
+	line("door_facing", "door_turned_on_second_tag", "line_keeps_first_tag",
+		"bench_kept", "elder_turned")
+
+	--
+	-- 1d. THE SPARE SOCKET. Nothing is ever placed on it, no marker is written
+	--     for it, it is no part of the roster -- and it IS part of every
+	--     villager's spot ring, at the index the authored order gives it.
+	--
+	check(entity_at("idle_spare") == nil,
+		"an NPC was placed on a spare idle socket")
+	check(world.storage["startnpc:hearthpine:idle_spare"] ~= "1",
+		"a spare idle socket was marked as placed")
+	local spare_ring = entity_at("idle_a")._grug_idle_spots
+	check(#spare_ring == 3,
+		"the spare socket is not a wander target: " .. #spare_ring .. " spots")
+	check(entity_at("idle_a")._grug_idle_spot == 1 and
+		entity_at("idle_b")._grug_idle_spot == 2,
+		"a villager was pointed at the wrong spot of its own ring")
+	local spare_spot = spare_ring[3]
+	check(math.abs(spare_spot.x - (ANCHOR.x - 4)) < 1e-9 and
+		math.abs(spare_spot.z - (ANCHOR.z + 12)) < 1e-9,
+		"the spare spot is not the authored one")
+	line("spare", "unplaced", "unmarked", "ring_3", "spots_1_2")
 
 	--
 	-- 1c. THE NAMETAG FOLLOWS THE SETTLEMENT. A start keeps its authored
@@ -642,7 +713,8 @@ return function(repo)
 	local seeable = 0
 	for index = 1, #SOCKETS do
 		local socket = SOCKETS[index]
-		local carries = socket.role ~= "guard_patrol" or socket.order == 1
+		local carries = socket.spawn ~= false and
+			(socket.role ~= "guard_patrol" or socket.order == 1)
 		if carries and
 				distance(socket_world_pos(socket), harness.players[1]) <= ACTIVATION then
 			seeable = seeable + 1
@@ -716,6 +788,7 @@ return function(repo)
 		for index = 1, #CAPITAL_SOCKETS do
 			local socket = CAPITAL_SOCKETS[index]
 			local carries = socket.role ~= "king" and socket.role ~= "waypoint" and
+				socket.spawn ~= false and
 				(socket.role ~= "guard_patrol" or socket.order == 1)
 			if carries then count = count + 1 end
 		end
@@ -782,8 +855,13 @@ return function(repo)
 			end
 		end
 	end
-	check(district_spots == 1 and core_spots == 1,
+	-- The core's citizen has its own idle socket AND the core's spare; the
+	-- district plot's has only its own. A spare belongs to the composition that
+	-- authored it, like every other spot.
+	check(district_spots == 1 and core_spots == 2,
 		"a capital villager was given another composition's idle spots")
+	check(entity_at("core_spare") == nil,
+		"the capital placed an NPC on a spare socket")
 	-- And the START beside it is untouched: the two settlements of one race
 	-- keep separate markers, which is why the key and not the race is the
 	-- marker's identity.
@@ -912,8 +990,11 @@ return function(repo)
 	end
 	check(start_row ~= nil and start_row.roster == SLOTS,
 		"the census reports the wrong roster size")
+	check(start_row.spare == 1,
+		"the census does not report the settlement's spare sockets: " ..
+		tostring(start_row.spare))
 	line("census", start_row.key, start_row.kind, start_row.roster,
-		start_row.marked)
+		start_row.marked, "spare_" .. start_row.spare)
 
 	--
 	-- 9. THE AMBLE. Two villagers, each standing on its own idle socket, i.e.
@@ -931,7 +1012,9 @@ return function(repo)
 		"the villager family registered no amble")
 	local ambling = {entity_at("idle_a"), entity_at("idle_b")}
 	check(ambling[1] ~= nil and ambling[2] ~= nil, "the idle sockets are empty")
-	check(#ambling[1]._grug_idle_spots == 2,
+	-- THREE spots for TWO villagers (playtest round 2): the third is the spare,
+	-- and it is what makes a hop possible at all while both homes are occupied.
+	check(#ambling[1]._grug_idle_spots == 3,
 		"a start villager was given " .. #ambling[1]._grug_idle_spots ..
 		" idle spots")
 	-- A player next to both of them, so they are active and can see each other.
@@ -976,12 +1059,20 @@ return function(repo)
 	-- is the first one that walks: `moved_at` is measured after the step.
 	check(moved_at == 22, "the first hop did not happen at second 22 but at " ..
 		tostring(moved_at))
-	check(count_visited(visited[1]) == 2 and count_visited(visited[2]) == 2,
+	check(count_visited(visited[1]) >= 2 and count_visited(visited[2]) >= 2,
 		"a villager never reached another idle spot: " ..
 		count_visited(visited[1]) .. "/" .. count_visited(visited[2]))
+	-- AND THE SPARE IS ONE OF THE SPOTS THEY REACH. Without it two villagers on
+	-- two sockets can only trade places; with it the settlement offers somewhere
+	-- to stand that is not another villager's doorstep, which is the user's own
+	-- item 3.
+	check(visited[1][3] or visited[2][3],
+		"no villager ever reached the spare idle spot")
 	check(ambling[1].state == "stand" or ambling[1].state == "walk",
 		"an ambling villager left the idle states")
-	line("amble", "moved_at_" .. moved_at, "spots_2_of_2",
+	line("amble", "moved_at_" .. moved_at,
+		"spots_" .. count_visited(visited[1]) .. "_and_" ..
+		count_visited(visited[2]) .. "_of_3", "spare_reached",
 		table.concat(trace, " "))
 
 	-- 9b. A BLOCKED villager gives its spot up instead of pushing for ever. With
@@ -1110,23 +1201,86 @@ return function(repo)
 		"no_snap_in_sight", "snap_out_of_sight_after_backoff")
 
 	--
-	-- 12. NOBODY HUNTS NPCs (item 5, world.md section 4). The wrapper's verb,
-	--     applied to every def, with the war-front opt-in as the exception.
+	-- 12. THE NON-COMBATANT VETO (user ruling, playtest round 2, 2026-09-15).
 	--
-	local hostile = {attack_players = true, attack_monsters = false}
-	grug_mobs.no_npc_targets(hostile)
-	check(hostile.attack_npcs == false, "a hostile def may still hunt NPCs")
-	check(hostile.attack_players == true and hostile.attack_monsters == false,
-		"the verb changed a targeting field that is not its own")
-	local soldier = {attack_players = true, _grug_attack_npcs = true}
-	grug_mobs.no_npc_targets(soldier)
-	check(soldier.attack_npcs == true,
-		"a declared war-front unit lost its NPC targets")
+	--     Round 1 gave EVERY mob `attack_npcs = false`, which bought the
+	--     villagers their peace and paid for it with the only NPC-vs-monster
+	--     fight the settlements have. The ruling splits the two: hostiles and
+	--     guards may engage each other, civilians are never a target for
+	--     anything, and guard vs. guard stays off.
+	--
+	--     What is checked here is the PURE FILTER and the verb that feeds it --
+	--     the flag a target carries, the activation path that installs it, and
+	--     the fact that the registration wrapper no longer narrows anybody's
+	--     `attack_npcs`. The api.lua candidate loop that reads the flag is the
+	--     engine's, so the probe is what exercises it.
+	--
+	local civilian = grug_mobs.noncombatant({})
+	check(civilian._grug_noncombatant == true,
+		"the verb did not declare the definition a non-combatant")
+	check(grug_mobs.is_noncombatant({_grug_noncombatant = true}) == true,
+		"the filter does not recognise a non-combatant")
+	check(grug_mobs.is_noncombatant({}) == false and
+		grug_mobs.is_noncombatant(nil) == false and
+		grug_mobs.is_noncombatant("grug_mobs:wolf") == false,
+		"the filter vetoes something that carries no flag")
+	-- The flag reaches the ENTITY, because mobs_redo copies only its own def
+	-- whitelist onto one (api.lua:3196ff) -- so the verb wraps after_activate,
+	-- and it must chain whatever the definition already had there.
+	local chained = {}
+	local wrapped = grug_mobs.noncombatant({
+		after_activate = function(self, staticdata, entity_def, dtime)
+			chained[#chained + 1] = {staticdata, entity_def, dtime}
+		end,
+	})
+	local fresh = {}
+	wrapped.after_activate(fresh, "static", wrapped, 0.5)
+	check(fresh._grug_noncombatant == true,
+		"activation did not install the non-combatant flag on the entity")
+	check(grug_mobs.is_noncombatant(fresh),
+		"an activated non-combatant is not recognised by the filter")
+	check(#chained == 1 and chained[1][1] == "static" and
+		chained[1][2] == wrapped and chained[1][3] == 0.5,
+		"the wrapper dropped the definition's own after_activate arguments")
+	--
+	-- EVERY DEFINITION THIS FIXTURE REGISTERS, and the flag is right on all of
+	-- them. A complete statement over a closed set is worth something; a lookup
+	-- of a name the fixture never registers is not, and the first cut of this
+	-- block had two of those. `harness.defs["grug_mobs:guard_accord"] == nil` is
+	-- always true here (the fixture dofiles patrol/verbs/start_villagers/
+	-- start_npcs and neither guard.lua nor init.lua), and a bare table literal
+	-- never passes through `grug_mobs.register_mob`, so both would have passed
+	-- with the blanket veto restored.
+	--
+	-- THE OTHER TWO HALVES OF THE RULING ARE MEASURED IN THE ENGINE, by the
+	-- probe, because that is where `grug_mobs.register_mob` and guard.lua
+	-- actually run: `event=hostile … attack_npcs=true … state=attack
+	-- target=grug_mobs:guard_accord` is both of them in one line -- the wrapper
+	-- narrowed nobody, and a guard is acquirable and therefore no
+	-- non-combatant -- and the probe fails outright if a hostile reads false or
+	-- if anything holds a civilian as its target.
+	--
+	local registered, flagged = 0, 0
+	for name, def in pairs(harness.defs) do
+		registered = registered + 1
+		local civilian = name:find("villager", 1, true) ~= nil or
+			name:find("elder", 1, true) ~= nil
+		if def._grug_noncombatant == true then flagged = flagged + 1 end
+		check((def._grug_noncombatant == true) == civilian,
+			name .. " carries the wrong non-combatant declaration")
+	end
+	-- One villager and one elder: the fixture publishes a single start identity.
+	check(registered == 2 and flagged == 2,
+		"the fixture registered " .. registered .. " definitions of which " ..
+		flagged .. " are non-combatants, not 2 of 2")
+	-- And the verb still touches nothing else: passive prey keeps the targeting
+	-- fields its own verb set, which is the one neighbouring rule that could be
+	-- clipped by a wider veto.
 	local prey = grug_mobs.passive_prey({})
-	grug_mobs.no_npc_targets(prey)
 	check(prey.attack_npcs == false and prey.attack_players == false,
-		"the verb disturbed passive prey")
-	line("npc_targets", "hostile_false", "warfront_true", "prey_unchanged")
+		"passive prey lost its own targeting fields")
+	line("noncombatant", "declared", "installed_on_activate", "chained",
+		"all_" .. registered .. "_defs_correct", "prey_unchanged")
 
 	restore()
 	return table.concat(report)

@@ -281,7 +281,13 @@ end
 
 local function register_vendor(vendor, texture)
 	grug_traders.vendors[vendor.name] = vendor
-	mobs:register_mob(vendor.name, vendor_def(vendor, texture))
+	-- NON-COMBATANT (user ruling, WP13 playtest round 2, 2026-09-15): nothing in
+	-- the world may acquire a shopkeeper. `attack_npcs = false` above only says
+	-- what a VENDOR attacks; this says what may attack it, and it is the same
+	-- flag the villagers and elders carry (grug_mobs/verbs.lua). It wraps
+	-- `after_activate`, so it must run on the finished definition.
+	mobs:register_mob(vendor.name,
+		grug_mobs.noncombatant(vendor_def(vendor, texture)))
 end
 
 local GUARD_TEXTURE = {

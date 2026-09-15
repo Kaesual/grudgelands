@@ -115,7 +115,8 @@ Decided 2026-09-14.
 - Every start receives a first NPC roster: two gate guards and one patrol,
   the race's own vendor, a few flair NPCs at doors, benches and work areas,
   and a quest-giver shell with a placeholder line. None of this adds quest,
-  storage or profession services.
+  storage or profession services. Since 2026-09-15 a start also publishes
+  three **spare** standing spots that nobody lives on (below).
 - Race appearance (skin, visual-only stature) and visible armor and weapons
   are composed by one function for players and humanoid mobs, see
   [wp13-character-visuals-contract.md](../research/wp13-character-visuals-contract.md).
@@ -185,6 +186,23 @@ Decided 2026-09-15 after the first NPC playtest, and part of that behaviour:
 - **A guard that cannot reach its waypoint keeps patrolling anyway**: it paths
   around the obstacle, then takes the next waypoint, and only if it is still
   stuck and no player is within 48 nodes is it moved there outright.
-- **Hostile creatures ignore settlement NPCs.** Ordinary guards, animals and
-  monsters never target an NPC (world.md §4); only dedicated war-front units may,
-  and none exists yet.
+
+Decided 2026-09-15 after the second NPC playtest (the first one's "hostile
+creatures ignore settlement NPCs" is replaced by the first point here):
+
+- **Hostiles and guards fight each other; non-combatants are never a target.**
+  The watch and the world's monsters may each start a fight with the other, and
+  a guard can lose one. What no mob in the world may ever acquire is a
+  **non-combatant** — a villager, an elder or a vendor. They cancel every punch,
+  so a fight with one can never end, which is exactly what the playtest saw: a
+  boar standing in front of a village woman hitting her for as long as anyone
+  watched. Guard versus guard stays off, across factions included.
+- **An NPC standing at a door faces the street, whatever its role is.** The rule
+  used to reach only the flair villagers, so every Village Elder and the
+  Highcourt Elder stood with its back to the street.
+- **A settlement offers more places to stand than it has people.** Besides the
+  spots its NPCs live on, every settlement publishes a few **spare** ones —
+  three per start, ten in Highcourt's core — that nobody is ever placed on and
+  every villager of that composition may wander to. Without them a settlement's
+  spots and its villagers are the same list, every destination is permanently
+  occupied, and the amble is people trading doorsteps.

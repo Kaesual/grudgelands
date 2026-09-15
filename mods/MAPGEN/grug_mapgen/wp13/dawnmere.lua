@@ -156,8 +156,31 @@ local function loader(directory)
 			z = 0, dir = {x = -1, z = 0}},
 		{id = "idle_smithy", role = "idle", tags = {"fire"}, x = 22, y = 1,
 			z = -1, dir = {x = 1, z = 0}},
-		{id = "hall_quest", role = "quest", x = -11, y = 1, z = 8,
-			dir = {x = 0, z = 1}},
+		-- The elder stands ON the hall's doorstep, so its authored facing is
+		-- the door -- and `door` is what turns the NPC round to the street
+		-- (start_npcs.lua `socket_face_yaw`, playtest round 2).
+		{id = "hall_quest", role = "quest", tags = {"door"}, x = -11, y = 1,
+			z = 8, dir = {x = 0, z = 1}},
+		--
+		-- SPARE IDLE SPOTS (playtest round 2, 2026-09-15). `spawn = false` is
+		-- what makes them wander TARGETS and never homes: the roster places one
+		-- villager per SPAWN socket, and `next_spot` walks every idle socket. With
+		-- exactly as many spots as villagers every spot is always occupied and the
+		-- amble is four people swapping four chairs, which is what the playtest
+		-- saw. Each one is a legal standing position on the finished pad -- feet
+		-- and head air, walkable settlement ground under it, outdoors, reachable
+		-- on foot -- measured by `tools/wp13/blueprint_kat.lua`'s own socket test,
+		-- and no tag, because a spare is a place to stand rather than a feature to
+		-- talk about.
+		-- the brick walk east of the green
+		{id = "idle_spare_1", role = "idle", spawn = false, x = 8,
+			y = 1, z = 7, dir = {x = -1, z = 0}},
+		-- the turf between the cottages
+		{id = "idle_spare_2", role = "idle", spawn = false, x = 4,
+			y = 1, z = -12, dir = {x = 0, z = 1}},
+		-- the cobble of the hall walk
+		{id = "idle_spare_3", role = "idle", spawn = false, x = -5,
+			y = 1, z = 14, dir = {x = 0, z = -1}},
 	}
 
 	return function()

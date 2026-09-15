@@ -238,8 +238,30 @@ local function loader(directory)
 			z = -2, dir = {x = -1, z = 0}},
 		{id = "idle_armoury_forge", role = "idle", tags = {"fire"}, x = 20,
 			y = 1, z = -2, dir = {x = 1, z = 0}},
-		{id = "hall_quest", role = "quest", x = 3, y = 1, z = 12,
-			dir = {x = 0, z = 1}},
+		-- `door`: the elder faces the hall door it stands at, and the consumer
+		-- turns it round to the street (start_npcs.lua `socket_face_yaw`).
+		{id = "hall_quest", role = "quest", tags = {"door"}, x = 3, y = 1,
+			z = 12, dir = {x = 0, z = 1}},
+		--
+		-- SPARE IDLE SPOTS (playtest round 2, 2026-09-15). `spawn = false` is
+		-- what makes them wander TARGETS and never homes: the roster places one
+		-- villager per SPAWN socket, and `next_spot` walks every idle socket. With
+		-- exactly as many spots as villagers every spot is always occupied and the
+		-- amble is four people swapping four chairs, which is what the playtest
+		-- saw. Each one is a legal standing position on the finished pad -- feet
+		-- and head air, walkable settlement ground under it, outdoors, reachable
+		-- on foot -- measured by `tools/wp13/blueprint_kat.lua`'s own socket test,
+		-- and no tag, because a spare is a place to stand rather than a feature to
+		-- talk about.
+		-- the sand west of the muster yard
+		{id = "idle_spare_1", role = "idle", spawn = false, x = -7,
+			y = 1, z = -6, dir = {x = 1, z = 0}},
+		-- the sand south of the muster yard
+		{id = "idle_spare_2", role = "idle", spawn = false, x = 6,
+			y = 1, z = -12, dir = {x = 0, z = 1}},
+		-- the desert cobble by the north lane
+		{id = "idle_spare_3", role = "idle", spawn = false, x = -8,
+			y = 1, z = 14, dir = {x = 0, z = -1}},
 	}
 
 	return function()

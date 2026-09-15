@@ -290,7 +290,10 @@ because nothing died.
   2026-09-15 playtest found a boar standing in front of an invulnerable villager
   hitting her indefinitely at a capital, where "in practice nothing hostile
   reaches them" does not hold. `attack_npcs = false` is now applied by the
-  registration wrapper to every mob (playtest round 1, item 5).
+  registration wrapper to every mob (playtest round 1, item 5). **Round 2
+  narrowed that**: the veto belongs to the civilian (`_grug_noncombatant`), not
+  to every attacker, so the watch and the wildlife fight each other again
+  ([wp13-npc-round-2.md](wp13-npc-round-2.md) §1.1).
 - **A wiped mod storage with a kept map duplicates the roster once.** The
   markers are the primary gate and the scan cannot substitute for them at
   start-ready, where no player is near and `get_objects_inside_radius`
@@ -423,7 +426,20 @@ are not identity bytes, so editing the seven socket tables would have been legal
 too — it would have been ~30 entries and one more thing to get right per new
 settlement.
 
+> **Round 2 widened this.** Keying the turn on `role == "idle"` left all seven
+> `quest` sockets — the six Village Elders and Highcourt's chapel Elder — facing
+> their hall door. The rule now follows the TAG for every role
+> ([wp13-npc-round-2.md](wp13-npc-round-2.md) §1.2).
+
 ### 5. Hostile mobs targeted NPCs
+
+> **Superseded on the same day by playtest round 2**
+> ([wp13-npc-round-2.md](wp13-npc-round-2.md) §1.1, user ruling). The blanket
+> `attack_npcs = false` below is gone: hostiles and guards may fight each other
+> again, and the veto moved onto the target as `_grug_noncombatant`, which only
+> villagers, elders and vendors carry. The rest of this section is the round-1
+> record and its api.lua evidence still holds.
+
 
 `attack_npcs` defaults to **true** in mobs_redo's `mob_class` (api.lua:170) and
 is read in exactly one place, general_attack's candidate filter (api.lua:1814).
@@ -667,7 +683,9 @@ Boot 1 additionally, in order:
   when reading the probe: `FORCE_REACH + 24` put the NPC on the LAST NODE of the
   outermost forceloaded block, the probe's own `npc_block_active` said `true`,
   and the premise did not hold. It is twice the reach now.
-- **Item 5.** A wolf two nodes from a villager: `attack_npcs=false`,
+- **Item 5** (round-1 run; round 2 re-ran the same case with the ruling's
+  behaviour — see `20260915-npc-round-2/npc-probe/`). A wolf two nodes from a
+  villager: `attack_npcs=false`,
   `target=nil` and its full 65 HP at every observation — it never acquires the
   NPC next to it. A wolf two nodes from a guard post, three seconds in:
   `guard … state=attack target=grug_mobs:wolf` and `wolf … state=attack

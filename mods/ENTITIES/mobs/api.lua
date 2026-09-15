@@ -1812,6 +1812,16 @@ function mob_class:general_attack()
 			or (not self.attack_animals and ent.type == "animal")
 			or (not self.attack_monsters and ent.type == "monster")
 			or (not self.attack_npcs and ent.type == "npc")
+			-- GRUG PATCH: per-TARGET non-combatant veto (WP13 playtest round 2,
+			-- user ruling 2026-09-15). `attack_npcs` is one boolean over the
+			-- whole type = "npc" family, and that family holds both the guards a
+			-- hostile MAY fight and the villagers, elders and vendors it may
+			-- never touch. The flag is installed at activation by
+			-- grug_mobs.noncombatant (verbs.lua); filtering here rather than
+			-- with a stop_attack wrapper lets the mob pick the next-closest
+			-- viable target instead of re-acquiring the vetoed one forever --
+			-- the same reason the _grug_ignore_player hook above sits here.
+			or ent._grug_noncombatant
 			or (self.specific_attack and not check_for(ent.name, self.specific_attack)) then
 				objs[n] = nil
 			end

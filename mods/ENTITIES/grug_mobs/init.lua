@@ -340,11 +340,12 @@ local function apply_visual(self, cfg)
 end
 
 function grug_mobs.register_mob(name, def)
-	-- No mob of ours hunts `type = "npc"` entities unless it is a war-front unit
-	-- that says so (world.md §4, verbs.lua's own rationale). FIRST, so the
-	-- `no_acquire` derivation below and mobs:register_mob's field copy both see
-	-- the decided value.
-	grug_mobs.no_npc_targets(def)
+	-- NB no blanket `attack_npcs = false` here any more (user ruling, playtest
+	-- round 2, 2026-09-15). Hostiles and guards may fight each other, so a
+	-- hostile keeps mobs_redo's own default; what a hostile may never touch is a
+	-- NON-COMBATANT settlement NPC, and that veto lives on the target
+	-- (`grug_mobs.noncombatant`, verbs.lua, plus the GRUG PATCH it names in
+	-- general_attack) rather than in a field of every attacker.
 	-- Level/tier config + stat derivation (levels.lua); HP, damage and XP
 	-- are engine-owned from here on, the def must not hand-set them.
 	grug_mobs.register_level_cfg(name, def)

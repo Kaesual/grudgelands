@@ -585,6 +585,7 @@ return function(repo)
 		local sockets = assert(blueprint.landmarks.sockets,
 			label .. " publishes no sockets")
 		local seen, roles, loops = {}, {}, {}
+		local spare_count = 0
 		for _, entry in ipairs(sockets) do
 			assert(type(entry.id) == "string" and entry.id ~= "",
 				label .. " publishes a socket with no id")
@@ -627,6 +628,55 @@ return function(repo)
 				assert(entry.kind == nil, label .. ": socket " .. entry.id ..
 					" carries a vendor family but is no vendor")
 			end
+			--
+			-- A SPARE SOCKET (playtest round 2): a wander target of the amble
+			-- that nobody is placed on. Every standing test above has already
+			-- run against it -- a spare is a real authored position, not a
+			-- coordinate -- and only an `idle` socket may be one, exactly as the
+			-- runtime registry insists (grug_core/settlement_sockets.lua).
+			--
+			if entry.spawn ~= nil then
+				assert(entry.spawn == false and entry.role == "idle",
+					label .. ": only an idle socket may be spare: " .. entry.id)
+				assert(entry.tags == nil, label .. ": the spare socket " ..
+					entry.id .. " carries a tag")
+				spare_count = spare_count + 1
+			end
+			--
+			-- THE ELDER FACES THE STREET (user ruling, playtest round 2). The
+			-- chapel's quest socket stands on the chapel doorstep facing the
+			-- door, and `door` is what makes the consumer turn it round
+			-- (start_npcs.lua socket_face_yaw). Both halves are measured: the
+			-- authored facing runs into the building within five nodes, and the
+			-- cell behind -- where the elder will actually look -- is free and
+			-- is one of the positions the walk above reached.
+			--
+			-- Scoped to `quest`, because `door` is a CONSUMER rule ("turn this
+			-- NPC round") and the capital's own gate and service sockets use it
+			-- the other way round: they stand inside a gate looking in, and the
+			-- turn faces them at the door they are about to leave by.
+			--
+			if entry.role == "quest" then
+				assert(entry.tags and entry.tags[1] == "door",
+					label .. ": the quest socket " .. entry.id ..
+						" is not tagged `door`")
+				local fdx, fdz = parts.facedir_step(entry.face)
+				local closed_at
+				for reach = 1, 5 do
+					if closed_at == nil and
+							not free(entry.x + fdx * reach, entry.y,
+								entry.z + fdz * reach) then
+						closed_at = reach
+					end
+				end
+				assert(closed_at ~= nil, label .. ": the door socket " ..
+					entry.id .. " faces open ground")
+				local bx, bz = entry.x - fdx, entry.z - fdz
+				assert(free(bx, entry.y, bz) and
+					visited[bx .. ":" .. entry.y .. ":" .. bz],
+					label .. ": the door socket " .. entry.id ..
+						" has no open street behind it")
+			end
 		end
 		-- The patrol loops: one group per composition, and its orders are
 		-- 1..n with no gap. A loop with a gap is a walk that teleports.
@@ -658,10 +708,13 @@ return function(repo)
 			assert(spec.roles[role] ~= nil, label ..
 				" publishes an unexpected " .. role .. " socket")
 		end
+		assert(spare_count == (spec.spare or 0), label .. " publishes " ..
+			spare_count .. " spare sockets, not " .. (spec.spare or 0))
 
 		return {cells = #cells, solids = solids, palette = palette_count,
 			lights = lights, doors = #doorways, rooms = #rooms,
-			sockets = #sockets, reachable = #queue, panes = panes,
+			sockets = #sockets, spare = spare_count,
+			reachable = #queue, panes = panes,
 			attached = attached, torches = torches, oriented = oriented,
 			loop = loop_length, node = node, at = at, stand = stand,
 			index = index}
@@ -683,8 +736,12 @@ return function(repo)
 		-- throne, one travel pad for WP17, two vendor families.
 		-- 10 waypoints in the city's own loop and 8 in the four gate
 		-- towers' own two-waypoint watches.
+		-- 30 idle spots the city's citizens live on plus the 10 SPARES of
+		-- playtest round 2, which nobody is placed on and every core citizen
+		-- may wander to.
 		roles = {king = 1, waypoint = 1, quest = 1, vendor = 2,
-			guard_post = 12, guard_patrol = 18, idle = 30},
+			guard_post = 12, guard_patrol = 18, idle = 40},
+		spare = 10,
 	}
 	local core_result = check_composition("highcourt core", core, CORE)
 
@@ -874,8 +931,8 @@ return function(repo)
 
 	say("highcourt_core", core.schema, core_result.cells, core_result.solids,
 		core_result.palette, core_result.lights, core_result.doors,
-		core_result.rooms, core_result.sockets, core_result.loop,
-		core_result.reachable, footings, ground_cells)
+		core_result.rooms, core_result.sockets, core_result.spare,
+		core_result.loop, core_result.reachable, footings, ground_cells)
 
 	-- ------------------------------------------------------------------
 	-- 2. the district plots
