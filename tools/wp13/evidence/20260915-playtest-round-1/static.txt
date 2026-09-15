@@ -1,0 +1,42 @@
+=== luac51 -p on every changed file ===
+parse OK
+
+=== luac51 -p tree-wide (mods, then tools) ===
+mods parse OK
+tools parse OK
+
+=== SETGLOBAL on every changed file (expect one per mod table, none in tools) ===
+-- mods/PLAYER/grug_visuals/wield_geometry.lua
+-- mods/PLAYER/grug_visuals/apply.lua
+-- mods/PLAYER/grug_visuals/init.lua
+	2	[9]	SETGLOBAL	0 -1	; grug_visuals
+-- mods/PLAYER/grug_abilities/init.lua
+	2	[6]	SETGLOBAL	0 -1	; grug_abilities
+-- tools/wp13/wield_transform_kat.lua
+-- tools/wp13/ability_rightclick_kat.lua
+(a file with no line above writes no global)
+
+=== the five plain-5.1 sweeps, scoped to the changed files ===
+-- 1 goto / labels
+mods/PLAYER/grug_visuals/wield_geometry.lua:29:--    `core::Transform::buildMatrix`) cannot change the answer. The bone's own
+tools/wp13/wield_transform_kat.lua:205:-- `core::Transform::buildMatrix` rotates with `quaternion::getMatrix_transposed`.
+-- 2 LuaJIT-only string escapes
+-- 3 5.2+/5.3 stdlib
+-- 4 integer division / bitwise operator syntax
+mods/PLAYER/grug_abilities/init.lua:419:-- Ability registration & item. One tool per ability; the item's `range`
+mods/PLAYER/grug_abilities/init.lua:1411:	return SKIN_VERSION .. "|" .. color .. "|" .. src.inv .. "|" .. src.wield
+mods/PLAYER/grug_abilities/init.lua:1455:	local token = SWING_CAPS_VERSION .. "|" .. string.format("%.17g", interval)
+-- 5 sandbox-blocked calls and the wrong namespace
+
+=== the same five sweeps, tree-wide over mods/*/grug_* (hit counts) ===
+1	(^|[^[:alnum:]_.:])goto[[:space:](]|::[A-Za-z_]+::
+2	\\u\{|\\x[0-9A-Fa-f]|\\z
+0	table\.(unpack|pack|move)|rawlen|coroutine\.isyieldable|math\.(type|tointeger)|utf8\.
+235	[^:/]//|[[:alnum:]_)"] *(&|\||<<|>>) *[[:alnum:]_("]
+3	\brequire[[:space:]]*\(|io\.popen|os\.(execute|exit)|\bminetest\.
+(every hit was read; all are prose in comments -- design-doc table rows
+ carrying '|', C++ Class::method references, and two comments that name
+ the \u{} escape in order to forbid it)
+
+=== tools/check_fresh_server.py ===
+Fresh-server source audit: PASS
