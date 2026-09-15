@@ -88,6 +88,13 @@ blueprints are unchanged by them.
   protected footprint, so a start does not sit in a cleared square. The build
   envelope, its ten-node apron, the road surfaces and every authored volume stay
   clear, and the blend ring's cover matches the surrounding biome.
+- **Vegetation also grows in the protection apron, behind a jagged edge.**
+  Decided 2026-09-15 after the first GUI playtest: hard protection restricts
+  building, not growing, so the ten-node apron carries the same biome cover as
+  the ring outside it, starting at a seed-deterministic jittered boundary a few
+  nodes out from the build envelope rather than on a straight line. The
+  128-node build envelope, the road surfaces and every authored volume stay
+  host-free, and the same world seed always produces the same outline.
 - The transition from the fitted pad to the natural terrain carries a
   **seed-deterministic outward jitter of a few nodes**, so its outline is not an
   exact square. The same world seed always produces the same outline. The
