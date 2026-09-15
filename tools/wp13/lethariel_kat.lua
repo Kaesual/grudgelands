@@ -1085,31 +1085,63 @@ return function(repo)
 		assert(type(piece.bridge) == "table" and piece.bridge.columns > 0,
 			"the north avenue built no bridge")
 		local half = (avenue.WIDTH - 1) / 2
-		local deck_by_column, blocked = {}, 0
+		local deck_by_column, blocked_columns = {}, {}
+		local touched_columns = {}
 		for _, cell in ipairs(piece.cells) do
-			if cell.z >= SPAN_FROM and cell.z <= SPAN_TO and
-					cell.name ~= "air" then
+			if cell.z >= SPAN_FROM and cell.z <= SPAN_TO then
 				local across = cell.x - run.at
 				if math.abs(across) <= half then
-					-- NOT ONE SOLID CELL AT OR UNDER THE WATER on the whole
-					-- carriageway: that is the ruling, as arithmetic.
-					if cell.y <= LAKE then blocked = blocked + 1 end
-					local top = deck_by_column[cell.z]
-					if top == nil or cell.y > top then
-						deck_by_column[cell.z] = cell.y
+					-- AT OR UNDER THE WATER LINE, WHATEVER THE NAME. `air`
+					-- counts here: an air cell at the surface is the writer
+					-- being told to take the water out, which is how the first
+					-- bridge dug a five-wide trench down the middle of the mere.
+					if cell.y <= LAKE then touched_columns[cell.z] = true end
+					if cell.name ~= "air" then
+						if cell.y <= LAKE then
+							blocked_columns[cell.z] = true
+						end
+						local top = deck_by_column[cell.z]
+						if top == nil or cell.y > top then
+							deck_by_column[cell.z] = cell.y
+						end
 					end
 				end
 			end
 		end
-		assert(blocked == 0, "the bridge blocks " .. blocked ..
-			" carriageway cells at or under the water line")
+		-- NOT ONE SOLID CARRIAGEWAY CELL AT OR UNDER THE WATER, except at the
+		-- span's own two end columns. Those take no lift -- they lie flush with
+		-- the road they continue, which is what makes the deck 1-Lipschitz and
+		-- the walk into the city step no more than a node -- so they are the
+		-- bridge's ABUTMENTS and they are two, not three and not the whole
+		-- span. Everything between them is open water, which is the ruling.
+		local blocked = {}
+		for column in pairs(blocked_columns) do blocked[#blocked + 1] = column end
+		table.sort(blocked)
+		assert(#blocked == 2 and blocked[1] == SPAN_FROM and
+			blocked[2] == SPAN_TO,
+			"the bridge blocks " .. #blocked .. " carriageway columns at or " ..
+			"under the water line, and not just its two abutments")
+		-- AND IT WRITES NOTHING AT ALL THERE, air included: the water that
+		-- stands under the deck is the terrain's own and the bridge leaves it
+		-- alone. Same two abutments, for the same reason.
+		local touched = {}
+		for column in pairs(touched_columns) do
+			touched[#touched + 1] = column
+		end
+		table.sort(touched)
+		assert(#touched == 2 and touched[1] == SPAN_FROM and
+			touched[2] == SPAN_TO,
+			"the bridge writes into " .. #touched .. " carriageway columns at " ..
+			"or under the water line, and not just its two abutments")
 		-- The deck is there for every column of the span and never steps more
 		-- than a node.
 		local worst_step = 0
 		for column = SPAN_FROM, SPAN_TO do
 			assert(deck_by_column[column], "the bridge has no deck at " ..
 				column)
-			assert(deck_by_column[column] >= LAKE + bridge.LIFT,
+			local lift = math.min(bridge.LIFT, column - SPAN_FROM,
+				SPAN_TO - column)
+			assert(deck_by_column[column] >= LAKE + lift,
 				"the bridge deck at " .. column .. " is not over the water")
 			if column > SPAN_FROM then
 				local step = math.abs(deck_by_column[column] -

@@ -99,6 +99,20 @@ print("  carriageway columns over the lake: %d" % len(road_wet))
 print("    open water at the surface: %d" % open_)
 print("    solid at the surface:      %d" % blocked)
 
+# AND THE OTHER WAY TO LOSE A LAKE: not paving it but EMPTYING it. A column of
+# the deck's own footprint that holds no water cell at the surface layer is a
+# hole, and a row of them under the deck separates the water either side of the
+# crossing exactly as a causeway would. The first bridge cleared the cell one
+# under the deck unconditionally, which with a lift of one node IS the surface;
+# the fix of 2026-09-16 stops the clear at the surface.
+deck_columns = {(x, z) for (x, y, z), n in cells.items()
+                if n in DECK and -2 <= z <= 2} & road_wet
+holes = sorted(c for c in deck_columns
+               if cells.get((c[0], top, c[1])) is None
+               or cells.get((c[0], top, c[1])) in AIR)
+print("  carriageway deck columns whose surface layer is air (a hole): %d -> %s"
+      % (len(holes), "OK" if not holes else "TRENCH at %s" % holes[:8]))
+
 verge_wet = {c for c in wet_columns if abs(c[1]) == 3}
 piers = 0
 for (x, z) in sorted(verge_wet):
@@ -126,3 +140,7 @@ for cell in surface:
 bodies.sort(reverse=True)
 print("  connected bodies of that surface inside the dump window: %d  sizes %s"
       % (len(bodies), bodies[:8]))
+print("  (the window is the AVENUE CORRIDOR only -- seven lanes plus verges --")
+print("   so a body count here says whether the strip is continuous, not")
+print("   whether the mere is: that is `lethariel_plots.lua --bodies`, which")
+print("   counts the whole 533x533 window and is the ruling's measurement.)")

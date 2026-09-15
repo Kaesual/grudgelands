@@ -24,12 +24,15 @@
 --
 --   1. every cell the road wrote in that column is DROPPED. Over water they are
 --      the causeway, and a causeway is the thing being removed;
---   2. the deck goes at `max(the road's own top cell, water surface + LIFT)` --
---      the road's own one-Lipschitz envelope where that is higher, so the
---      bridge meets the carriageway it continues, and one node over the water
---      everywhere else. Both are 1-Lipschitz in the column, so their maximum
---      is, so the deck never steps more than a node and a step is capped with
---      a tread exactly as the road caps its own;
+--   2. the deck goes at `max(the road's own top cell, water + lift)`. The
+--      water is the LOWEST of the carriageway's own lanes -- at the shore some
+--      of them are dry bank standing above it, and the deck is meant to clear
+--      the water, not the bank -- and the lift RAMPS: nothing at a span's first
+--      and last column, so the bridge starts flush with the road it continues,
+--      then a node a column inwards up to `LIFT`. Every term is 1-Lipschitz in
+--      the column and so is their maximum, so the deck never steps more than a
+--      node, and a step is capped with a tread exactly as the road caps its
+--      own;
 --   3. it is seven lanes wide: the five of the carriageway in the road's own
 --      paving and kerb, and a plank verge either side under a rail, so a walker
 --      cannot step off it;
@@ -149,11 +152,19 @@ local function loader(directory)
 			return y
 		end
 
-		-- Which columns of this piece are over water.
-		local wet = {}
+		-- Which columns of this piece are over water, and HOW FAR EACH IS FROM
+		-- DRY LAND along the run. The distance is what ramps the lift: see
+		-- `deck_of`.
+		local wet, from_shore = {}, {}
 		for index = 1, #spans do
 			local span = spans[index]
-			for p = span[1], span[2] do wet[p] = true end
+			for p = span[1], span[2] do
+				wet[p] = true
+				local reach_in = math.min(p - span[1], span[2] - p)
+				if from_shore[p] == nil or reach_in < from_shore[p] then
+					from_shore[p] = reach_in
+				end
+			end
 		end
 
 		-- The road's own top cell per column, over the carriageway lanes: the
@@ -172,8 +183,27 @@ local function loader(directory)
 		end
 
 		-- THE DECK, as a pure function of the column: the road's own top where
-		-- that is higher, and one node over the water everywhere else. Asked
-		-- for a column's two neighbours as well, so a step can be capped.
+		-- that is higher, and `LIFT` over the water everywhere else. Asked for
+		-- a column's two neighbours as well, so a step can be capped.
+		--
+		-- TWO THINGS HERE ARE CORRECTIONS WITH A MEASUREMENT BEHIND THEM, both
+		-- from the rebase onto Lane R, whose `route_gates.lua` walks a
+		-- traveller from outside the gate into the city and refuses any
+		-- position that climbs more than a node.
+		--
+		--   * THE WATER IS THE MINIMUM over the carriageway's own lanes and not
+		--     the maximum over all seven. A column at the shore has wet lanes
+		--     and dry ones, and the dry bank stands ABOVE the water: taking the
+		--     maximum read the bank, added the lift to that, and put the first
+		--     plank of the bridge two nodes over the road it continues. The
+		--     minimum is the water, which is the thing the deck is meant to
+		--     clear.
+		--   * THE LIFT RAMPS. A span's own first and last columns take no lift
+		--     at all and lie flush with the road, and the lift grows a node a
+		--     column inwards. That is what makes the deck 1-LIPSCHITZ rather
+		--     than nearly so: at the boundary it IS the road, and inside it is
+		--     the road's envelope or the water plus a field that itself never
+		--     changes by more than a node.
 		local deck_memo = {}
 		local function deck_of(p)
 			if deck_memo[p] ~= nil then return deck_memo[p] end
@@ -182,12 +212,14 @@ local function loader(directory)
 				return false
 			end
 			local water
-			for lane = -verge, verge do
+			for lane = -half, half do
 				local x, z = column(p, lane)
 				local y = height(x, z)
-				if water == nil or y > water then water = y end
+				if water == nil or y < water then water = y end
 			end
-			local level = water + M.LIFT
+			local lift = from_shore[p]
+			if lift > M.LIFT then lift = M.LIFT end
+			local level = water + lift
 			local top = road_top[p]
 			if top ~= nil and top > level then level = top end
 			deck_memo[p] = level
@@ -256,8 +288,23 @@ local function loader(directory)
 					-- Nothing of this run's stands between the deck and the
 					-- water on the carriageway lanes; the clear says so rather
 					-- than leaving it to the writer's memory.
+					--
+					-- IT STOPS AT THE SURFACE, and that is the whole point of
+					-- the bridge. The first version cleared `level - 1`
+					-- unconditionally, and with a lift of one node that cell IS
+					-- the water surface: the built map then carried a five-wide
+					-- trench of AIR down the middle of the mere under the deck
+					-- -- not a dam, but not water either, and the lake's
+					-- surface inside the avenue's own corridor came apart into
+					-- two sheets. So the clear runs from one node OVER this
+					-- lane's own surface (the water where the lane is wet, the
+					-- bank where it is dry) up to one under the deck, and is
+					-- empty for a lift of one. The water stays.
 					if math.abs(lane) <= half then
-						buf:clear(x, level - 1, z, x, level - 1, z)
+						local surface_y = height(x, z)
+						if level - 1 > surface_y then
+							buf:clear(x, surface_y + 1, z, x, level - 1, z)
+						end
 					end
 				end
 				-- 3. THE PIERS, on the two verge lanes and nowhere else: the

@@ -10,6 +10,7 @@
 --     luajit tools/wp13/lethariel_plots.lua <repo> --census
 --     luajit tools/wp13/lethariel_plots.lua <repo> --water
 --     luajit tools/wp13/lethariel_plots.lua <repo> --bodies
+--     luajit tools/wp13/lethariel_plots.lua <repo> --routes
 --     luajit tools/wp13/lethariel_plots.lua <repo> --seeds
 --
 -- WHY THIS TOOL READS NO ENGINE DUMP, unlike `highcourt_plots.lua` and
@@ -326,6 +327,136 @@ if mode == "--edge" then
 end
 
 -- ------------------------------------------------------------------
+-- --routes: does THIS capital's road meet Lane R's route ends?
+-- ------------------------------------------------------------------
+--
+-- `tools/wp13/route_gates.lua` asks the same question for all six capitals and
+-- answers it from the CONTRACT's generic avenue -- `avenue.run` over a run from
+-- the core edge at 48 out to 261, in the race's plain palette -- because it was
+-- written while four of the six blueprints did not exist. That is the right
+-- shape for a route-graph gate and the wrong one for this capital, which
+-- differs from the generic run in two ways that matter at exactly this seam:
+--
+--   * its NORTH avenue starts at z = 22, not 48, because the civic pad ends at
+--     the mere;
+--   * its north and east avenues carry a BRIDGE over the mere, whose deck
+--     stands one node above the water the generic run paves at.
+--
+-- So this mode asks the question again of the SHIPPED composition: for each of
+-- the four gate points of `source.capital_gates`, the route's own graded
+-- surface there against the level `capital.overlay_run` actually builds the
+-- centre lane at, and then the walk from sixty-four nodes outside the gate in
+-- to the core edge, one column at a time. Target: step <= 1 at the gate, and no
+-- position on the walk climbing more than a node.
+if mode == "--routes" then
+	local ROUTE_IN, ENTRY_RUN = 48, 64
+	io.write("seed\tside\tgate_x\tgate_z\troute_y\troad_y\tstep\t",
+		"walk_breaks\tworst\n")
+	local failures, steps = 0, {}
+	for _, seed in ipairs(SEEDS) do
+		local horizontal, height, anchor = session(seed)
+		local function walkable(x, z)
+			local terrain_y = height.terrain_height_at(x, z)
+			local water_y = height.water_surface_at(x, z)
+			if type(water_y) == "number" and water_y > terrain_y then
+				return water_y
+			end
+			return terrain_y
+		end
+		local function at(x, z)
+			return walkable(anchor.x + x, anchor.z + z)
+		end
+		-- This capital's own four gates, out of WP40's published table.
+		local gates = {}
+		for index = 1, #source.capital_gates do
+			local row = source.capital_gates[index]
+			if row.position.x == anchor.x + row.outward_x * 256 and
+					row.position.z == anchor.z + row.outward_z * 256 then
+				gates[row.side] = row
+			end
+		end
+		for _, run in ipairs(capital.avenues) do
+			local side = run.id:gsub("^avenue_", "")
+			local gate = gates[side]
+			assert(gate, "no published gate for " .. run.id)
+			local piece = capital.overlay_run(avenue, road_palette, {
+				id = run.id, axis = run.axis, at = run.at, from = run.from,
+				to = run.to, width = avenue.WIDTH,
+				lamp_spacing = avenue.LAMP_SPACING, lamp_phase = run.from,
+				reach = avenue.REACH}, at)
+			-- The BUILT road, read off its own cells: the top of the centre
+			-- lane at every position along the run, in world coordinates.
+			local centre = {}
+			for index = 1, #piece.cells do
+				local cell = piece.cells[index]
+				local lane = (run.axis == "x") and (cell.z - run.at) or
+					(cell.x - run.at)
+				if lane == 0 and cell.name ~= "air" then
+					local p = (run.axis == "x") and cell.x or cell.z
+					if centre[p] == nil or cell.y > centre[p] then
+						centre[p] = cell.y
+					end
+				end
+			end
+			local gate_p = (run.axis == "x") and (gate.position.x - anchor.x) or
+				(gate.position.z - anchor.z)
+			local road_y = centre[gate_p]
+			local kind, surface_y = height.functional_surface_values_at(
+				gate.position.x, gate.position.z)
+			local route_y = surface_y or
+				height.terrain_height_at(gate.position.x, gate.position.z)
+			local step = road_y and math.abs(route_y - road_y) or -1
+			steps[#steps + 1] = step
+			-- THE WALK IN: the route's own surface out where only the route is,
+			-- and the built avenue from the moment this run covers the column.
+			local sign = (gate_p < 0) and -1 or 1
+			local outer = gate_p + sign * ENTRY_RUN
+			local breaks, worst = 0, 0
+			local previous
+			local first, last = outer, sign * ROUTE_IN
+            if sign < 0 then first, last = last, outer end
+			for offset = math.min(first, last), math.max(first, last) do
+				local p = offset
+				local y = centre[p]
+				if y == nil then
+					local x, z
+					if run.axis == "x" then x, z = p, run.at
+					else x, z = run.at, p end
+					y = walkable(anchor.x + x, anchor.z + z)
+				end
+				if previous ~= nil then
+					local climb = math.abs(y - previous)
+					if climb > 1 then
+						breaks = breaks + 1
+						if climb > worst then worst = climb end
+					end
+				end
+				previous = y
+			end
+			local ok = step >= 0 and step <= 1 and breaks == 0
+			if not ok then failures = failures + 1 end
+			io.write(seed, "\t", side, "\t", gate.position.x, "\t",
+				gate.position.z, "\t", route_y, "\t", tostring(road_y),
+				"\t", step, "\t", breaks, "\t", worst,
+				ok and "" or "\tFAULT", "\n")
+		end
+	end
+	local worst_step = steps[1]
+	for index = 2, #steps do
+		if steps[index] > worst_step then worst_step = steps[index] end
+	end
+	io.write("\n", #steps, " gate/seed pairs, worst step ", worst_step,
+		" against a limit of 1\n")
+	if failures > 0 then
+		io.write(failures, " gate(s) do not meet the route end\n")
+		os.exit(1)
+	end
+	io.write("every avenue meets its route end, and the walk in never climbs ",
+		"more than a node\n")
+	os.exit(0)
+end
+
+-- ------------------------------------------------------------------
 -- --water: the wet span of every overlay run, and --bodies: what the
 -- crossings do to the lake
 -- ------------------------------------------------------------------
@@ -467,7 +598,23 @@ if mode == "--bodies" then
 		water_y[z] = row
 	end
 
+	-- TWO WAYS TO LOSE A WATER COLUMN, and the mode counts both.
+	--
+	--   * PAVED: the overlay writes a solid node at or under the water surface.
+	--     That is the causeway, and it is what the ruling of 2026-09-16 was
+	--     about.
+	--   * EMPTIED: the overlay writes AIR there. The engine's writer takes the
+	--     water out just as willingly as it fills it in, so an air cell at the
+	--     surface is a hole in the lake -- and a five-wide row of them down the
+	--     middle of a crossing separates the water to its left from the water
+	--     to its right exactly as a causeway would. The first bridge cleared
+	--     `deck - 1` unconditionally and did this; the built map on seed
+	--     531802985935182545 carried 2172 such cells and its avenue corridor's
+	--     surface came apart into two sheets. A model that only counts solids
+	--     cannot see that, so this one counts air too and the body count below
+	--     is taken over the union.
 	local blocked, blocked_count = {}, 0
+	local emptied, emptied_count = {}, 0
 	local per_run = {}
 	for _, entry in ipairs(overlay_runs()) do
 		local run = entry.run
@@ -479,15 +626,20 @@ if mode == "--bodies" then
 		local own = 0
 		for index = 1, #piece.cells do
 			local cell = piece.cells[index]
-			if cell.name ~= "air" and cell.z >= -WINDOW and cell.z <= WINDOW and
+			if cell.z >= -WINDOW and cell.z <= WINDOW and
 					cell.x >= -WINDOW and cell.x <= WINDOW and
 					wet[cell.z] and wet[cell.z][cell.x] then
 				local level = water_y[cell.z][cell.x]
 				if level ~= nil and cell.y <= level then
-					if not (blocked[cell.z] and blocked[cell.z][cell.x]) then
-						blocked[cell.z] = blocked[cell.z] or {}
-						blocked[cell.z][cell.x] = true
-						blocked_count = blocked_count + 1
+					local into = (cell.name == "air") and emptied or blocked
+					if not (into[cell.z] and into[cell.z][cell.x]) then
+						into[cell.z] = into[cell.z] or {}
+						into[cell.z][cell.x] = true
+						if cell.name == "air" then
+							emptied_count = emptied_count + 1
+						else
+							blocked_count = blocked_count + 1
+						end
 						own = own + 1
 					end
 				end
@@ -495,7 +647,17 @@ if mode == "--bodies" then
 		end
 		if own > 0 then per_run[#per_run + 1] = run.id .. "=" .. own end
 	end
-	local paved, paved_count = blocked, blocked_count
+	local paved, paved_count = {}, 0
+	for z = -WINDOW, WINDOW do
+		for x = -WINDOW, WINDOW do
+			if (blocked[z] and blocked[z][x]) or
+					(emptied[z] and emptied[z][x]) then
+				paved[z] = paved[z] or {}
+				paved[z][x] = true
+				paved_count = paved_count + 1
+			end
+		end
+	end
 
 	local function count_bodies(blocked)
 		local seen, sizes = {}, {}
@@ -538,8 +700,9 @@ if mode == "--bodies" then
 	local after = count_bodies(paved)
 	io.write("seed ", seed, ", window +-", WINDOW, "\n")
 	io.write("planned-water columns: ", total, "\n")
-	io.write("columns the overlay blocks at the water surface: ",
-		paved_count, "\n")
+	io.write("columns the overlay takes out of the water surface: ",
+		paved_count, " (", blocked_count, " paved solid, ", emptied_count,
+		" cleared to air)\n")
 	io.write("per run: ", table.concat(per_run, " "), "\n")
 	local function sizes(list)
 		local text = {}
