@@ -141,6 +141,20 @@ crossing water as a causeway, with a lamp line every eight nodes that survives
 the mapchunk borders. Where an avenue crosses the ring street the avenue runs
 through and the side street yields, and no lamp stands in the crossing road.
 
+A capital has **four districts**, one in each of the quarters the four avenues
+cut the envelope into: market and professions, martial and garrison, lore and
+spiritual, residential and cultural. Each is nine plots on nine lots, and
+**which district stands in which quarter is decided by the world seed**, so two
+worlds put the same capital's garrison in different corners while one world is
+always the same. The lots belong to the quarter, not to the district: any
+district's plot fits any lot, because every lot is ground that has been checked
+to be dry, level enough for the plot's foundation skirt and clear enough under
+the plot's own roof. Each quarter carries one or two **lanes** between its rows
+of plots, running back to the avenue the district is reached from; a lane is a
+street like any other and is paved on whatever ground it finds. Guard posts
+belong to the garrison district, the two traders to the core, and every district
+keeps two spare standing spots its people may walk to.
+
 A capital's buildings are **not built until somebody goes there**: they are
 constructed the first time a mapchunk touches the capital's envelope and
 released again once the map has moved away, so six capitals never sit in memory
@@ -151,7 +165,8 @@ them.
 and populated at startup; a capital is not preloaded, so its roster is placed
 the first time its area is actually emerged or loaded, and its outlying district
 plots fill in as a player walks up to them. A capital carries several patrol
-loops — a city ring and one per gate tower — and each loop gets its own guard,
+loops — a city ring, one per gate tower and one per district — and each loop
+gets its own guard,
 walking that loop and no other; its flair villagers keep to the composition they
 belong to, the core or their own plot, instead of wandering the whole city. Its
 two traders stand on the blueprint's own vendor sockets; the five capitals whose

@@ -935,23 +935,260 @@ return function(repo)
 		core_result.loop, core_result.reachable, footings, ground_cells)
 
 	-- ------------------------------------------------------------------
-	-- 2. the district plots
+	-- 2. the four districts, their lots and the seeded permutation
 	-- ------------------------------------------------------------------
+	--
+	-- The contract's four district roles stand one per quadrant, and which
+	-- role stands where is a permutation of the world seed. Two things follow
+	-- and both are checked here rather than assumed:
+	--
+	--   * a LOT is a lot whichever district takes it, so the geometry (no two
+	--     lots sharing ground, none on a street, in a gate corridor, on the
+	--     core or outside its own quarter) is checked on the 36 LOTS, once,
+	--     independently of any assignment -- which is what makes it true for
+	--     all 24 permutations instead of for the one this run happened to
+	--     build;
+	--   * every plot of every district therefore has to FIT that lot: inside
+	--     +-13 of its origin, clearing at least 8 nodes of airspace.
 	local PLOT = {
 		reach = 15, ymin = -6, ymax = 24, budget = 12000,
 		min_lights = 2, min_doors = 0, loops = 1, raised = 0,
 	}
-	local district = highcourt.district
-	assert(district.role == "market_professions",
-		"the pilot district is not the market and professions one")
-	assert(#district.plots >= 8, "the district has " .. #district.plots ..
-		" plots")
+	-- A plot whose part carries paving with nothing under it declares how
+	-- many such cells it has, exactly, the same way the core declares its
+	-- 298. The cloister walk's is the colonnade's roof deck, spanning the
+	-- three cells between its two architraves; a deck built one cell too
+	-- wide shows up here as a number that moved.
+	local PLOT_RAISED = {lore_cloister_walk = 45}
+	-- Which plots carry one of their district's two spare wander spots, and
+	-- how many. Declared rather than measured, for the same reason the core
+	-- declares its ten: a spare that quietly stops being one is a wander
+	-- target that has become somebody's permanent doorstep.
+	local PLOT_SPARES = {
+		market_grove = 1, market_store = 1,
+		martial_drill_yard = 1, martial_watch_tower = 1,
+		lore_herb_garden = 1, lore_quiet_grove = 1,
+		homes_well = 1, homes_monument = 1,
+	}
+	local quadrants = dofile(wp13 .. "/highcourt_quadrants.lua")()
+	local districts = dofile(wp13 .. "/highcourt_districts.lua")(wp13)
+	local plot_builder = dofile(wp13 .. "/highcourt_plot.lua")(wp13)
+
+	-- THE LOT ENVELOPE IS ONE NUMBER SET, TYPED IN TWO FILES.
+	--
+	-- `highcourt_plot.lua` builds to it, `highcourt_quadrants.lua` chose the
+	-- lots against it, and this file checks both -- so a third copy typed here
+	-- would be a KAT that passes while the builder and the grids disagree.
+	-- These four asserts are what binds them; everything below reads the
+	-- modules.
+	local LOT_REACH = quadrants.LOT.reach
+	local LOT_CLEAR = quadrants.LOT.clear
+	assert(plot_builder.REACH == quadrants.LOT.reach,
+		"the plot builder reaches " .. plot_builder.REACH ..
+			" and the lots were chosen for " .. quadrants.LOT.reach)
+	assert(-plot_builder.FLOOR == quadrants.LOT.fall,
+		"the foundation skirt reaches " .. -plot_builder.FLOOR ..
+			" and the lots allow a fall of " .. quadrants.LOT.fall)
+	assert(plot_builder.MIN_CLEAR == quadrants.LOT.clear,
+		"a plot clears at least " .. plot_builder.MIN_CLEAR ..
+			" and the lots were chosen against " .. quadrants.LOT.clear)
+	assert(quadrants.LOT.rise < quadrants.LOT.clear,
+		"a lot may rise " .. quadrants.LOT.rise ..
+			" into an airspace of " .. quadrants.LOT.clear)
+
+	-- 2a. The permutation.
+	--
+	-- It is arithmetic on a digest, so it is checked as arithmetic: all 24
+	-- indices decode to 24 distinct permutations of four, the canonical
+	-- assignment is the identity one, a seed answers the same thing twice,
+	-- and the two gate seeds and a spread of small ones do not all answer the
+	-- same thing (a permutation that never permutes is the defect this row
+	-- exists to catch).
+	do
+		local seen, count = {}, 0
+		for index = 0, 23 do
+			local permutation = quadrants.permutation_of_index(index)
+			assert(#permutation == 4, "permutation " .. index .. " is not four")
+			local used = {}
+			for position = 1, 4 do
+				local value = permutation[position]
+				assert(value >= 1 and value <= 4 and not used[value],
+					"permutation " .. index .. " is not a permutation")
+				used[value] = true
+			end
+			local key = table.concat(permutation, ",")
+			assert(not seen[key], "two indices decode to " .. key)
+			seen[key] = true
+			count = count + 1
+		end
+		assert(count == 24, "the factorial decode is not onto")
+		local canonical = quadrants.canonical()
+		for position = 1, 4 do
+			assert(canonical[position] == position,
+				"the canonical assignment is not the authored order")
+		end
+		local sha = common.new_sha256()
+		local answers, distinct = {}, 0
+		for _, seed in ipairs({"531802985935182545", "8675309", "0", "1", "2",
+				"3", "12345", "999999999"}) do
+			local first = table.concat(quadrants.permutation(seed, sha), ",")
+			local again = table.concat(quadrants.permutation(seed, sha), ",")
+			assert(first == again, "seed " .. seed .. " is not deterministic")
+			if not answers[first] then
+				answers[first] = true
+				distinct = distinct + 1
+			end
+			say("highcourt_quadrant_permutation", seed, first)
+		end
+		assert(distinct >= 4, "eight seeds produced only " .. distinct ..
+			" assignments; the permutation does not permute")
+		-- A world's seed is a string of digits, and nothing else is.
+		local refused = pcall(quadrants.permutation, "not a seed", sha)
+		assert(not refused, "the permutation accepted a seed that is not one")
+		-- And a permutation handed in from outside is a bijection or it is
+		-- refused: two roles on one quadrant would put two districts on one
+		-- set of lots and leave a quarter of the capital empty, which nothing
+		-- downstream would notice.
+		assert(quadrants.check_permutation({4, 3, 2, 1}),
+			"the guard refused a permutation")
+		for _, broken in ipairs({{1, 1, 2, 3}, {1, 2, 3}, {1, 2, 3, 5},
+				{1, 2, 3, 0}, {1, 2, 3, "4"}, {1, 2, 3, 4, 1}}) do
+			assert(not pcall(quadrants.check_permutation, broken),
+				"the guard accepted something that is not a permutation")
+			assert(not pcall(quadrants.assign, {permutation = broken}),
+				"assign accepted something that is not a permutation")
+		end
+	end
+
+	-- 2b. The 36 lots.
+	do
+		local runs = {}
+		for _, list in ipairs({highcourt.avenues, highcourt.ring,
+				quadrants.lane_runs()}) do
+			for _, spec in ipairs(list) do runs[#runs + 1] = spec end
+		end
+		-- Every lane starts on an avenue, which is what makes a district
+		-- reachable from the city rather than merely near it, and no two runs
+		-- share an id (the overlay's identity is the list of them).
+		local run_ids = {}
+		for _, spec in ipairs(runs) do
+			assert(not run_ids[spec.id], "two street runs are called " .. spec.id)
+			run_ids[spec.id] = true
+		end
+		for _, lane in ipairs(quadrants.lane_runs()) do
+			local met = false
+			for _, spec in ipairs(highcourt.avenues) do
+				-- An avenue and a lane meet where the lane's END lies inside
+				-- the avenue's carriageway.
+				for _, at in ipairs({lane.from, lane.to}) do
+					local x = (lane.axis == "x") and at or lane.at
+					local z = (lane.axis == "x") and lane.at or at
+					local along = (spec.axis == "x") and x or z
+					local across = (spec.axis == "x") and z or x
+					if along >= math.min(spec.from, spec.to) - 2 and
+							along <= math.max(spec.from, spec.to) + 2 and
+							math.abs(across - spec.at) <= 2 then
+						met = true
+					end
+				end
+			end
+			assert(met, lane.id .. " starts on no avenue, so its district is " ..
+				"not reached from the city")
+		end
+		local STREET_HALF = math.floor(avenue.WIDTH / 2) + 1
+		local lots, lot_count = {}, 0
+		for turns = 0, 3 do
+			local name = quadrants.QUADRANTS[turns + 1]
+			local grid = assert(quadrants.LOTS[name],
+				"quadrant " .. tostring(name) .. " has no lots")
+			assert(#grid == #quadrants.AUTHORED,
+				name .. " does not carry one lot per authored lot")
+			for index, lot in ipairs(grid) do
+				local id = name .. "/" .. index
+				local x0, x1 = lot.x - LOT_REACH, lot.x + LOT_REACH
+				local z0, z1 = lot.z - LOT_REACH, lot.z + LOT_REACH
+				-- inside the 512 envelope, one node clear of the gate
+				-- stations at +-256
+				assert(math.max(math.abs(x0), math.abs(x1)) <= 233 and
+					math.max(math.abs(z0), math.abs(z1)) <= 233,
+					id .. " leaves the envelope")
+				-- off the civic core
+				assert(x0 > 48 or x1 < -48 or z0 > 48 or z1 < -48,
+					id .. " stands on the civic core")
+				-- in its OWN quarter: rotated back into the authored
+				-- south-east frame it must be clear of both avenues by the
+				-- quarter's own margin, which is what stops two districts
+				-- meeting in a corner.
+				local qx, qz = quadrants.rotate(lot.x, lot.z, 4 - turns)
+				assert(qx - LOT_REACH >= quadrants.LOT.quarter and
+					qz + LOT_REACH <= -quadrants.LOT.quarter,
+					id .. " leaves its own quarter")
+				-- off every street run, carriageway and verge
+				for _, spec in ipairs(runs) do
+					local along_min = (spec.axis == "x") and x0 or z0
+					local along_max = (spec.axis == "x") and x1 or z1
+					local across_min = (spec.axis == "x") and z0 or x0
+					local across_max = (spec.axis == "x") and z1 or x1
+					local overlap = along_max >= math.min(spec.from, spec.to) and
+						along_min <= math.max(spec.from, spec.to) and
+						across_max >= spec.at - STREET_HALF and
+						across_min <= spec.at + STREET_HALF
+					assert(not overlap, id .. " stands on " .. spec.id)
+				end
+				-- clear of the 32-node gate corridor of every avenue
+				for _, spec in ipairs(highcourt.avenues) do
+					local along_min = (spec.axis == "x") and x0 or z0
+					local along_max = (spec.axis == "x") and x1 or z1
+					local across_min = (spec.axis == "x") and z0 or x0
+					local across_max = (spec.axis == "x") and z1 or x1
+					if along_max >= math.min(spec.from, spec.to) and
+							along_min <= math.max(spec.from, spec.to) then
+						assert(across_min > spec.at + 16 or
+							across_max < spec.at - 16,
+							id .. " reaches into the gate corridor of " .. spec.id)
+					end
+				end
+				-- and a lane between it and every other lot, in every
+				-- quadrant at once
+				for _, other in ipairs(lots) do
+					local apart = (x0 > other.x1 + quadrants.LOT.lane) or
+						(x1 + quadrants.LOT.lane < other.x0) or
+						(z0 > other.z1 + quadrants.LOT.lane) or
+						(z1 + quadrants.LOT.lane < other.z0)
+					assert(apart, id .. " has no lane between it and " .. other.id)
+				end
+				lots[#lots + 1] = {id = id, x0 = x0, x1 = x1, z0 = z0, z1 = z1}
+				lot_count = lot_count + 1
+			end
+		end
+		assert(lot_count == 36, "the capital has " .. lot_count .. " lots")
+		say("highcourt_lots", lot_count, #quadrants.QUADRANTS,
+			#quadrants.AUTHORED, LOT_REACH, quadrants.LOT.lane, #runs,
+			#quadrants.lane_runs())
+	end
+
+	-- 2c. The four districts.
+	local plot_list = districts.resolve()
+	assert(#plot_list == 36, "the capital has " .. #plot_list .. " plots")
+	local seen_schema = {}
+	local posts_by_role = {}
+	local capital_plot_cells, worst_plot, worst_plot_id = 0, 0, "-"
+	for district_index = 1, #districts.districts do
+	local district = districts.districts[district_index]
+	assert(district.role == quadrants.ROLES[district_index],
+		"district " .. district_index .. " is not " ..
+			quadrants.ROLES[district_index])
+	assert(#district.plots == 9, district.key .. " has " ..
+		#district.plots .. " plots")
 	local district_cells, district_loop = 0, {}
+	local district_spares, district_posts = 0, 0
 	local taken = {}
 	for _, entry in ipairs(district.plots) do
 		local plot = entry.build()
 		local spec = {}
 		for key, value in pairs(PLOT) do spec[key] = value end
+		spec.raised = PLOT_RAISED[entry.id] or 0
+		spec.spare = PLOT_SPARES[entry.id] or 0
 		-- Every plot publishes the roles its own part publishes, so the
 		-- multiset is read off the plot and only its SHAPE is asserted:
 		-- at least one flair spot, and no role the contract does not name.
@@ -999,11 +1236,12 @@ return function(repo)
 					end
 					skirted = skirted + 1
 				end
-				-- Up to the plot's own roof and two courses over it, which
-				-- is what the composition clears: checking four courses
-				-- would leave the whole upper half of a plot unasserted,
-				-- and a terrace shoulder stands wherever the terrain does.
-				for y = 1, box.max.y + 2 do
+				-- Up to the airspace the plot SAYS it cleared, which is its
+				-- own roof and two courses over it, or the lot floor of 8
+				-- where that is higher. Reading `bounds.max.y` instead
+				-- would credit the plot with the headroom a lamp post or a
+				-- fruit tree reaches into and never cut.
+				for y = 1, plot.clear_to do
 					assert(result.at(x, y, z) ~= nil, entry.id ..
 						": the airspace at " .. x .. "," .. y .. "," .. z ..
 						" was never cleared, so a terrace shoulder stays " ..
@@ -1014,66 +1252,23 @@ return function(repo)
 		end
 		assert(skirted > 0 and cleared > 0, entry.id .. " has no plot box")
 
-		-- The plot's own offset from the capital anchor keeps it clear of
-		-- the avenue and of every other plot: two plots that overlap in the
-		-- envelope are two plots the writer projects into each other.
-		-- No plot may share a column with another plot or with a STREET.
-		-- The streets are the runs the overlay will pave -- the four gate
-		-- avenues and the four sides of the ring -- and each is five wide,
-		-- so the rule is read off the same specs the overlay is given
-		-- rather than approximated by the square around the anchor, which
-		-- is what let a plot sit on the ring street.
-		local STREET_HALF = math.floor(avenue.WIDTH / 2)
-		local function on_a_street(x, z)
-			local runs = {}
-			for _, spec in ipairs(highcourt.avenues) do
-				runs[#runs + 1] = spec
-			end
-			for _, spec in ipairs(highcourt.ring) do
-				runs[#runs + 1] = spec
-			end
-			for _, spec in ipairs(runs) do
-				local along = (spec.axis == "x") and x or z
-				local across = (spec.axis == "x") and z or x
-				if along >= spec.from - STREET_HALF and
-						along <= spec.to + STREET_HALF and
-						math.abs(across - spec.at) <= STREET_HALF then
-					return spec.id
-				end
-			end
-			return nil
-		end
-		for z = entry.z + plot.bounds.min.z, entry.z + plot.bounds.max.z do
-			for x = entry.x + plot.bounds.min.x, entry.x + plot.bounds.max.x do
-				local key = x .. ":" .. z
-				assert(taken[key] == nil, entry.id .. " overlaps " ..
-					tostring(taken[key]) .. " at " .. key)
-				taken[key] = entry.id
-				local street = on_a_street(x, z)
-				assert(street == nil, entry.id .. " stands on " ..
-					tostring(street) .. " at " .. key)
-			end
-		end
-		-- and no plot reaches into the 32-node gate corridor WP40 keeps
-		-- clear on each axis (`capital_gate_width`), which nothing else in
-		-- the tree enforces.
-		for _, spec in ipairs(highcourt.avenues) do
-			local along_min = (spec.axis == "x") and
-				(entry.x + plot.bounds.min.x) or (entry.z + plot.bounds.min.z)
-			local along_max = (spec.axis == "x") and
-				(entry.x + plot.bounds.max.x) or (entry.z + plot.bounds.max.z)
-			local across_min = (spec.axis == "x") and
-				(entry.z + plot.bounds.min.z) or (entry.x + plot.bounds.min.x)
-			local across_max = (spec.axis == "x") and
-				(entry.z + plot.bounds.max.z) or (entry.x + plot.bounds.max.x)
-			local inside = (along_max >= math.min(spec.from, spec.to)) and
-				(along_min <= math.max(spec.from, spec.to))
-			if inside then
-				assert(across_min > spec.at + 16 or across_max < spec.at - 16,
-					entry.id .. " reaches into the 32-node gate corridor of " ..
-						spec.id)
-			end
-		end
+		-- THE PLOT FITS ITS LOT. Every geometric question about WHERE a
+		-- plot stands is answered on the 36 lots in section 2b, once and for
+		-- every permutation; what is left for the plot is that it fits
+		-- inside the lot envelope those 36 answers were computed for. A plot
+		-- one node wider than +-13 would make every one of them a claim
+		-- about a footprint that is not this one.
+		assert(plot.bounds.min.x >= -LOT_REACH and
+			plot.bounds.max.x <= LOT_REACH and
+			plot.bounds.min.z >= -LOT_REACH and
+			plot.bounds.max.z <= LOT_REACH,
+			entry.id .. " is wider than the lot envelope of +-" .. LOT_REACH)
+		assert(plot.clear_to >= LOT_CLEAR, entry.id .. " clears only " ..
+			tostring(plot.clear_to) .. " nodes of airspace, and a lot may " ..
+			"rise " .. quadrants.LOT.rise .. " under it")
+		assert(not seen_schema[plot.schema],
+			"two plots publish the schema " .. plot.schema)
+		seen_schema[plot.schema] = true
 
 		for _, socket in ipairs(plot.landmarks.sockets) do
 			if socket.role == "guard_patrol" then
@@ -1085,25 +1280,77 @@ return function(repo)
 						socket.order)
 				district_loop[socket.order] = socket.id
 			end
+			if socket.role == "guard_post" then
+				district_posts = district_posts + 1
+			end
+			-- A district publishes no vendor: `grug_traders` has exactly two
+			-- families and the core's service court already carries one of
+			-- each, so a vendor socket here would have the runtime place a
+			-- third trader.
+			assert(socket.role ~= "vendor" and socket.role ~= "king" and
+				socket.role ~= "waypoint",
+				entry.id .. " publishes " .. socket.role ..
+					", which belongs to the core alone")
+			-- A spare is `spawn = false` and nothing else -- no tag, the same
+			-- way the core's ten are authored. `check_composition` has already
+			-- held it to the role rule and to every standing test; this only
+			-- counts them per district.
+			if socket.spawn ~= nil then
+				district_spares = district_spares + 1
+			end
 		end
 
-		say("highcourt_plot", entry.id, entry.x, entry.z, result.cells,
+		if result.cells > worst_plot then
+			worst_plot, worst_plot_id = result.cells, entry.id
+		end
+		say("highcourt_plot", entry.id, result.cells,
 			result.solids, result.palette, result.lights, result.doors,
-			result.rooms, result.sockets, result.reachable)
+			result.rooms, result.sockets, result.reachable, plot.clear_to)
 	end
 	-- The district's loop is one walk, 1..n, across all its plots.
 	local district_length = 0
 	for _ in pairs(district_loop) do district_length = district_length + 1 end
 	for order = 1, district_length do
 		assert(district_loop[order],
-			"the district patrol loop has no waypoint at order " .. order)
+			"the " .. district.key .. " patrol loop has no waypoint at order " ..
+				order)
 	end
-	assert(district_length >= 8, "the district patrol loop is " ..
+	assert(district_length >= 8, "the " .. district.key .. " patrol loop is " ..
 		district_length .. " waypoints long")
 	assert(district_cells <= 12000 * #district.plots,
-		"the district is over its plot budget")
-	say("highcourt_district", district.key, #district.plots, district_cells,
-		district_length)
+		district.key .. " is over its plot budget")
+	-- Two spare wander spots per district, the coordinator's brief.
+	assert(district_spares == 2, district.key .. " publishes " ..
+		district_spares .. " spare wander spots, not two")
+	-- The garrison is where the guard posts are. Not the ONLY place: a
+	-- barracks publishes its own door post wherever it stands, and the
+	-- market's watch house is a barracks. What the contract's "guard posts in
+	-- the martial district" means is therefore that the garrison has them and
+	-- has more of them than anybody else, which is the shape this asserts.
+	posts_by_role[district.role] = district_posts
+	capital_plot_cells = capital_plot_cells + district_cells
+	say("highcourt_district", district.key, district.role, #district.plots,
+		district_cells, district_length, district_spares, district_posts)
+	end
+
+	do
+		local garrison = posts_by_role.martial_garrison or 0
+		assert(garrison >= 5, "the garrison publishes " .. garrison ..
+			" guard posts")
+		for role, count in pairs(posts_by_role) do
+			assert(role == "martial_garrison" or count < garrison,
+				role .. " publishes as many guard posts as the garrison")
+		end
+	end
+
+	-- The whole capital against the contract's section 2.3 budget. The
+	-- overlay is computed per mapchunk and stored nowhere, so what is counted
+	-- is the core plus every plot of every district.
+	assert(capital_plot_cells + core_result.cells <= 400000,
+		"the capital is " .. (capital_plot_cells + core_result.cells) ..
+			" cells, over the 400,000 budget")
+	say("highcourt_capital", core_result.cells, capital_plot_cells,
+		core_result.cells + capital_plot_cells, worst_plot, worst_plot_id)
 
 	-- ------------------------------------------------------------------
 	-- 3. the avenue overlay

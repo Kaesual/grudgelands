@@ -8,6 +8,7 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		error("WP40 R7 loader: " .. message, 0)
 	end
 	if type(core_api) ~= "table" or type(core_api.ipc_set) ~= "function" or
+			type(core_api.log) ~= "function" or
 			type(core_api.register_mapgen_script) ~= "function" or
 			type(mapgen_modpath) ~= "string" or mapgen_modpath == "" or
 			type(materials) ~= "table" or type(gathering) ~= "table" or
@@ -95,6 +96,31 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 	if registered_rows ~= #socket_rows then
 		fail("a settlement was never registered: " .. registered_rows .. " of " ..
 			#socket_rows)
+	end
+
+	-- THE GROUND UNDER THE TERRAIN-RELATIVE BLUEPRINTS, on THIS world.
+	--
+	-- A capital's district plots are placed at positions that were measured
+	-- against two seeds and are legal on both, and the writer projects them
+	-- from one column without a water or a fall test of its own. On a third
+	-- seed a plot can stand in a river or half-buried and nothing says so.
+	-- This is the sentence that says so. It is a WARNING and nothing else: the
+	-- capital is still built, because half a world is not worth refusing over
+	-- one plot, and a diagnosable failure is the whole point.
+	if type(runtime.settlement_terrain_findings) == "function" then
+		local findings = runtime.settlement_terrain_findings(built)
+		for index = 1, #findings do
+			local finding = findings[index]
+			core_api.log("warning", "[grug_mapgen] WP13 " .. finding.settlement ..
+				": the plot " .. tostring(finding.plot_id or finding.id) ..
+				" at offset " .. finding.x .. "," .. finding.z ..
+				" does not stand on this world's ground -- submerged columns " ..
+				finding.submerged .. ", perimeter fall " .. finding.fall ..
+				" against a skirt of " .. finding.skirt .. ", rise " ..
+				finding.rise .. " against a clear of " .. finding.clear ..
+				". Re-run tools/wp13/highcourt_plots.lua against this seed's " ..
+				"field dump.")
+		end
 	end
 
 	local payload = {schema = "grug_wp40_r7_ipc_v1",

@@ -171,9 +171,10 @@ M.roster = {
 		delta_schema = "grug_wp13_kapok_delta_v1",
 	},
 	-- The first capital (contract section 3, third increment): a core in the
-	-- start's shape, nine terrain-relative district plots and the avenue
-	-- overlay, built lazily. `plot_bounds` is the envelope every "reference"
-	-- blueprint of this settlement is held to.
+	-- start's shape, 36 terrain-relative district plots -- four districts of
+	-- nine, one per quadrant -- and the avenue overlay, built lazily.
+	-- `plot_bounds` is the envelope every "reference" blueprint of this
+	-- settlement is held to.
 	{
 		key = "highcourt", label = "Highcourt", race = "human",
 		slot = "capital", bounds = "capital_core", plot_bounds = "capital_plot",
@@ -393,7 +394,13 @@ local function prepare_cells(fail, descriptor, blueprint)
 		identity_bytes = table.concat(bytes),
 		bounds = {min = {x = minimum.x, y = minimum.y, z = minimum.z},
 			max = {x = maximum.x, y = maximum.y, z = maximum.z}},
-		reference = blueprint.reference}
+		reference = blueprint.reference,
+		-- The airspace a terrain-relative composition actually CUT, which is
+		-- not the top of its bounds: a lamp post or a fruit tree written after
+		-- the clear reaches above it. `M.audit_terrain` holds a rise against
+		-- this and falls back to the bounds where a composition does not
+		-- publish one.
+		clear_to = blueprint.clear_to}
 end
 
 -- The canonical identity bytes of an OVERLAY. An overlay has no cells until a
@@ -632,6 +639,95 @@ function M.prepare(profile, source, raw_sha256)
 	table.sort(union, M.less_bytes)
 	return {schema = "grug_wp13_settlement_prepared_v1", profile = profile,
 		blueprints = blueprints, palette = union}
+end
+
+-- WHAT THE GROUND UNDER A TERRAIN-RELATIVE BLUEPRINT ACTUALLY LOOKS LIKE.
+--
+-- A `reference` blueprint is projected from one column's pure final height and
+-- written without a single question about the ground it lands on: the writer
+-- has no water test and no fall test, because the positions it is handed were
+-- chosen against measured terrain (`tools/wp13/highcourt_plots.lua`). That
+-- measurement covers the two gate seeds. A THIRD seed can put a plot in a
+-- river or half-bury it, and today that failure is silent -- it is a building
+-- standing in water in somebody's world and nothing in the log says so.
+--
+-- This is the diagnostic, and it is only a diagnostic: it logs, it changes no
+-- cell, and it is called once per load from the main environment, where the
+-- same `column_values_at` the sockets are projected with is already in hand.
+--
+-- WHAT IT SAMPLES, and why not everything. The PERIMETER is walked exactly,
+-- because the perimeter is what the foundation skirt carries down and the fall
+-- under it is the rule. The two-node margin ring is walked exactly, because a
+-- plot whose skirt ends one node from the water is a building with a moat. The
+-- interior is sampled on a stride of two: it costs a quarter of the queries and
+-- a river or a terrace shoulder is never one column wide. Exhaustive would be
+-- 36 000 height queries at every server start for a warning nobody reads on a
+-- healthy world.
+--
+-- `column_at(x, z)` is `planner_source.column_values_at`: its first return is
+-- the water class and its sixth the final terrain height, so one query answers
+-- both questions.
+function M.audit_terrain(prepared, anchor, column_at, tolerance)
+	if type(prepared) ~= "table" or
+			prepared.schema ~= "grug_wp13_settlement_prepared_v1" then
+		error("WP13 settlement: prepared settlement differs", 0)
+	end
+	if type(column_at) ~= "function" then
+		error("WP13 settlement: column authority differs", 0)
+	end
+	tolerance = tolerance or {}
+	local margin = tolerance.margin or 2
+	local fall_limit = tolerance.fall or 6
+	local findings = {}
+	for index = 1, #prepared.blueprints do
+		local blueprint = prepared.blueprints[index]
+		local descriptor = blueprint.descriptor
+		if descriptor.kind == "reference" then
+			local identity = blueprint.identity
+			local reference = blueprint.reference
+			local origin_x = anchor.x + descriptor.offset.x
+			local origin_z = anchor.z + descriptor.offset.z
+			local class, _, _, _, _, base =
+				column_at(origin_x + reference.x, origin_z + reference.z)
+			local wet = (class ~= "land") and 1 or 0
+			local edge_low, high = base, base
+			local function sample(x, z, edge)
+				local column_class, _, _, _, _, y = column_at(x, z)
+				if column_class ~= "land" then wet = wet + 1 end
+				if type(y) == "number" then
+					if y > high then high = y end
+					if edge and y < edge_low then edge_low = y end
+				end
+			end
+			for z = identity.min_z - margin, identity.max_z + margin do
+				for x = identity.min_x - margin, identity.max_x + margin do
+					local outside = x < identity.min_x or x > identity.max_x or
+						z < identity.min_z or z > identity.max_z
+					local edge = (not outside) and
+						(x == identity.min_x or x == identity.max_x or
+							z == identity.min_z or z == identity.max_z)
+					local interior = (not outside) and (not edge)
+					if outside or edge then
+						sample(origin_x + x, origin_z + z, edge)
+					elseif interior and x % 2 == 0 and z % 2 == 0 then
+						sample(origin_x + x, origin_z + z, false)
+					end
+				end
+			end
+			local fall, rise = base - edge_low, high - base
+			-- The airspace the plot cut, which is what a rise has to fit
+			-- under. A composition that does not publish one is held to the
+			-- top of its own bounds, which is the older and weaker rule.
+			local clear = blueprint.clear_to or identity.max_y
+			if wet > 0 or fall > fall_limit or rise > clear then
+				findings[#findings + 1] = {id = descriptor.id,
+					plot_id = descriptor.plot_id, x = descriptor.offset.x,
+					z = descriptor.offset.z, submerged = wet, fall = fall,
+					rise = rise, clear = clear, skirt = fall_limit}
+			end
+		end
+	end
+	return findings
 end
 
 -- The NPC sockets of a prepared settlement, in blueprint order, ready for
