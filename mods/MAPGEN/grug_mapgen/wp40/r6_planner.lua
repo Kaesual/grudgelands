@@ -275,22 +275,35 @@ local function planner_factory()
 			-- and have no equivalent read-only source scalar, so settlement must still
 			-- verify the final predecessor.
 			local p7_support = surface ~= nil
-			-- A start's own dry grade keeps its biome surface, and that is what a
-			-- biome decoration needs under it. The claim rule cannot decide this:
-			-- `exclude:anchor:anchor_00N:01` covers the start's WHOLE 256-node blend
-			-- envelope, so `not excluded` made this branch unreachable -- every dry
-			-- start grade column is inside that one exclusion -- and left the blend
-			-- ring with no decoration host at all. The "vegetation" purpose skips
-			-- exactly that envelope, plus (playtest round 1) the part of the start's
-			-- 148-node hard square that lies past the jittered treeline in its
-			-- ten-node protection apron, and keeps everything else excluded: the
-			-- 128-node build envelope, the road corridors, water and coast. So the
-			-- pad has no host, the apron has one outside a jagged inner edge, and
-			-- the ring around both does. The extra query runs only after the
-			-- anchor-id match, i.e. only inside those six envelopes.
+			-- A start's or a CAPITAL's own dry grade keeps its biome surface, and
+			-- that is what a biome decoration needs under it. The claim rule cannot
+			-- decide this: `exclude:anchor:anchor_00N:01` covers the anchor's WHOLE
+			-- blend envelope, so `not excluded` made this branch unreachable --
+			-- every dry anchor grade column is inside that one exclusion -- and
+			-- left the blend ring with no decoration host at all. The "vegetation"
+			-- purpose skips exactly that envelope, plus (playtest round 1) the part
+			-- of the start's 148-node hard square that lies past the jittered
+			-- treeline in its ten-node protection apron, and keeps everything else
+			-- excluded: the build envelope, the road corridors, water and coast. So
+			-- the pad has no host, the apron has one outside a jagged inner edge,
+			-- and the ring around both does. The extra query runs only after the
+			-- anchor-id match, i.e. only inside those twelve envelopes.
+			--
+			-- THE CAPITALS JOINED IT IN WP13 ROUND 3 (2026-09-15). A capital
+			-- fitting grades its whole 704-node blend square, so before this every
+			-- capital sat in a 704 x 704 slab of `default:stone` with nothing
+			-- growing on it and all six looked the same. They now keep the surface
+			-- of their own zone's biomes exactly as a start does -- meadow grass at
+			-- Highcourt, coniferous litter and crag gravel at Dur Brannoc, silver
+			-- litter at Lethariel, blight and bone litter at Nhal Veyr, dry grass
+			-- and mesa clay at Gor Drazhak, rainforest and canopy litter at Kezamba
+			-- -- and the DECORATION host follows the same claim rule, so the
+			-- 532-node hard build square where WP13 stamps the city stays host-free
+			-- and the collar around it grows its biome again.
 			local dry_start_grade = functional_kind == "land_grade" and
 				type(functional_feature_id) == "string" and
-				functional_feature_id:match("^anchor_00[1-6]$") ~= nil and
+				(functional_feature_id:match("^anchor_00[1-9]$") ~= nil or
+					functional_feature_id:match("^anchor_01[0-2]$") ~= nil) and
 				not wet and (not excluded or
 					horizontal.static_exclusion_values_at(x, z, "vegetation") == nil)
 			if functional_kind == "anchor_platform" or

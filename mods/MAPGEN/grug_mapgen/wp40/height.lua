@@ -261,9 +261,62 @@ return function(dependencies)
 			reference - feasible_upper)
 	end
 
+	-- THE STEP BAND'S QUANTISER.
+	--
+	-- `round_ratio` rounds half AWAY FROM ZERO, so the bin it puts around zero
+	-- is one node narrower than every other bin for an even divisor: for step 4
+	-- it maps -1, 0 and 1 to the same level while every other level owns four
+	-- values. A terrace lattice with one short bin is not translation
+	-- invariant, and the band built on it is not 1-Lipschitz -- on a plain
+	-- one-node-per-column ramp crossing the reference it emits a two-node step
+	-- for step 2 and step 4 (step 3 is spared because an odd divisor's zero bin
+	-- is already the right width). Widening the disc does not help; only the
+	-- lattice does.
+	--
+	-- `terrace_bin` is round-half-up everywhere, so every bin is exactly `step`
+	-- wide wherever zero happens to fall, and `terrace_middle` is the same
+	-- rounding for the erosion/dilation midpoint, which has the identical
+	-- defect at a capital sitting below y = 0.
+	local function terrace_bin(value, step)
+		return floor_div(2 * value + step, 2 * step)
+	end
+
+	local function terrace_middle(sum)
+		return floor_div(sum + 1, 2)
+	end
+
+	-- THE STEP BAND'S RADIUS, per race terrace step: one column short of the
+	-- riser it has to bridge.
+	--
+	-- A riser of `step` is turned into a band of one-block ground steps by
+	-- taking the arithmetic middle of the terraced field's morphological
+	-- EROSION and DILATION over a Chebyshev disc of this radius (see
+	-- `fitting_grids.band.value`). The middle of two 1-Lipschitz fields is
+	-- 1-Lipschitz, so a disc that reaches across a whole riser is exactly what
+	-- turns that riser into a walkable band, and a disc of radius r spreads it
+	-- over about 2r + 1 columns.
+	--
+	-- `step - 1` and not `ceil(step / 2)`, which is all an ISOLATED riser needs,
+	-- because a capital envelope's risers are not isolated: where the ground
+	-- under the fitting is steep, two terrace levels stand two or three columns
+	-- apart and a disc that only spans one riser leaves the pair a wall.
+	-- Measured over the +-250 envelope of Dur Brannoc, the steepest of the six:
+	-- of its land columns 79.9 and 76.1 per thousand were unclimbable with
+	-- vertical risers, 32.2 and 34.5 with a disc of 2, and 27.4 and 29.8 with
+	-- this one, against 26.5 and 28.7 for the same envelope's UNGRADED relief.
+	-- A wider disc buys almost nothing more and every column of radius costs a
+	-- quadratic number of relief queries.
+	local CAPITAL_BAND_RADIUS = {[2] = 1, [3] = 2, [4] = 3}
+
+	-- `banded` is the stepped terrace of `fitting_grids.band.value`. It is
+	-- OPTIONAL so the frozen scalar cases of `module.quality_geometry_micro_kat`
+	-- keep calling this function with six arguments and keep their old answer:
+	-- the band changes where the terrace lattice is READ, never how the civic
+	-- core, the 32-node civic blend or the cut/fill clamp behave.
 	local function capital_terrace_value(incoming, reference, step,
-			civic_outside, max_cut, max_fill)
-		local terrace = reference + step * round_ratio(incoming - reference, step)
+			civic_outside, max_cut, max_fill, banded)
+		local terrace = banded or
+			reference + step * round_ratio(incoming - reference, step)
 		local shaped = terrace
 		if civic_outside == 0 then
 			shaped = reference
@@ -1811,7 +1864,106 @@ return function(dependencies)
 		local anchor_by_id, fittings, start_fittings, capital_fittings,
 			selected_fittings = {}, {}, {}, {}, {}
 		local start_by_zone, capital_by_zone = {}, {}
-		local fitting_grids = {start = {}, capital = {}, selected = {}}
+		local fitting_grids = {start = {}, capital = {}, selected = {},
+			band = {keys = {}, values = {}}}
+
+		-- THE RELIEF THE CAPITAL STEP BAND IS CUT FROM.
+		--
+		-- The band needs the terrace lattice of a column's NEIGHBOURS, and a
+		-- neighbour's `incoming` is not something the caller of
+		-- `fitting_grade_at` holds: `incoming` is whatever the seam that called
+		-- it had in hand, which at `composed_land_values_at` already carries
+		-- the road and coastal grades. `fitting_grids.band.relief_at` is the
+		-- one field the band can read for a neighbour -- the scalar before any
+		-- grade -- and the band therefore reads it as a SHAPE and not as a
+		-- height: every column of the disc is shifted by the centre column's
+		-- own `incoming - relief`, so the centre keeps exactly the terrace it
+		-- had and the disc describes how the ground runs around it. Without
+		-- that shift the terrace follows the ungraded relief and drops away
+		-- from a graded shoulder -- measured on Dur Brannoc's north-west road
+		-- shoulder, where the grade lifts the ground 10 nodes and the unshifted
+		-- band cut 13 of them back out.
+		--
+		-- It is assigned below, once `scalar_before_nonpath_grades` exists;
+		-- `fitting_grade_at` only ever calls it for a capital column, which is
+		-- long after construction.
+		--
+		-- THE CACHE is a 128 x 128 direct-mapped tile: slot (x mod 128, z mod
+		-- 128), one key array and one value array, 16384 entries. A band of
+		-- radius 3 asks for 49 columns and 48 of them are asked for again by the
+		-- neighbouring columns, so without a cache the band would multiply the
+		-- pre-grade cost of every step-4 capital column by 49. Two columns
+		-- collide only if they are 128 apart on an axis, which no band ever
+		-- spans, and the cache is pure memoisation of a pure function: a hit and
+		-- a miss return the same number, so no digest depends on it.
+		--
+		-- `construct` sits at Lua 5.1's 200-local ceiling the way
+		-- `build_public_session` sits at its 60-upvalue one, so the band's
+		-- relief seam, its two cache arrays and its own function are hung off
+		-- `fitting_grids` -- the one per-construction table that already exists
+		-- for exactly this, the lookup structures the fittings are graded
+		-- through, and that is only ever read by explicit key.
+
+		-- The stepped terrace: the arithmetic middle of the terraced relief
+		-- field's erosion and dilation over a Chebyshev disc.
+		--
+		-- WHY THE MIDDLE, AND NOT THE EROSION OR THE DILATION. Erosion alone
+		-- cuts the band out of the UPPER terrace, dilation alone fills it onto
+		-- the LOWER one; either way one plateau loses `step` columns of flat
+		-- ground and the other keeps all of its own. The middle is CENTRED on
+		-- the old riser: both plateaus give up about `step / 2` columns, the
+		-- band's mean height is the old riser's, and a plot reference column
+		-- therefore moves by at most half of what a one-sided band would move
+		-- it. Plot-carrying ground is what this choice is for.
+		--
+		-- WHY IT IS WALKABLE. Erosion and dilation of any field are each
+		-- 1-Lipschitz under the Chebyshev metric, so their middle changes by at
+		-- most one node between neighbouring columns -- which is the jump
+		-- height. The radius has to reach across a whole riser for that to hold
+		-- at the truncation edge, which is what `CAPITAL_BAND_RADIUS` is.
+		--
+		-- WHY THE DISC IS LIMITED TO ONE STEP. A capital envelope also carries
+		-- NATURAL cliffs, where the terrace lattice jumps by several steps at
+		-- once, and an unlimited middle averages such a cliff away: measured on
+		-- Dur Brannoc's crag at (-1902, -1533) it cut and filled up to 13 nodes
+		-- and turned an 8-node natural wall into a 12-node one. A cliff is not
+		-- a terrace riser and is not this band's business, so a neighbour whose
+		-- terrace is more than one step from the centre's is not in the disc.
+		-- The band then never moves a column further than `step` from the
+		-- terrace it had, and an isolated riser -- every riser the terracing
+		-- itself made -- sees exactly the same disc as before.
+		function fitting_grids.band.value(x, z, incoming, reference, step)
+			local radius = CAPITAL_BAND_RADIUS[step]
+			if radius == nil then fail("capital terrace step has no band radius") end
+			local relief_at = fitting_grids.band.relief_at
+			-- `datum` is what a column's relief has to be measured against for its
+			-- terrace: the fitting's reference, moved by the grade the caller
+			-- already applied to the CENTRE column. Written this way the loop does
+			-- no closure allocation and no subtraction per neighbour, which matters
+			-- because it runs 49 times for every step-4 capital column the writer
+			-- asks for.
+			local datum = reference - incoming + relief_at(x, z)
+			local centre = reference +
+				step * terrace_bin(relief_at(x, z) - datum, step)
+			local erosion, dilation = centre, centre
+			for dz = -radius, radius do
+				local az = dz < 0 and -dz or dz
+				for dx = -radius, radius do
+					local ax = dx < 0 and -dx or dx
+					local distance = ax > az and ax or az
+					local terrace = reference + step * terrace_bin(
+						relief_at(x + dx, z + dz) - datum, step)
+					local offset = terrace - centre
+					if offset <= step and offset >= -step then
+						local low, high = terrace + distance, terrace - distance
+						if low < erosion then erosion = low end
+						if high > dilation then dilation = high end
+					end
+				end
+			end
+			return terrace_middle(erosion + dilation)
+		end
+
 		for anchor_index = 1, #source.anchors do
 			local anchor = source.anchors[anchor_index]
 			anchor_by_id[anchor.id] = anchor
@@ -2104,7 +2256,9 @@ return function(dependencies)
 										fitting.center, profile.civic_width)
 									local shaped = capital_terrace_value(incoming,
 										fitting.reference_y, step, civic_outside,
-										profile.max_cut, profile.max_fill)
+										profile.max_cut, profile.max_fill,
+										fitting_grids.band.value(x, z, incoming,
+											fitting.reference_y, step))
 									return qlerp_integer(incoming, shaped, weight), fitting,
 										civic_outside == 0, weight
 								end
@@ -2267,6 +2421,19 @@ return function(dependencies)
 			local natural = natural_height_at(x, z)
 			return hydrology_scalar_at(x, z, natural, water_class, owner,
 				hydrology_id)
+		end
+
+		function fitting_grids.band.relief_at(x, z)
+			local keys, values = fitting_grids.band.keys, fitting_grids.band.values
+			local slot = (x % 128) * 128 + (z % 128) + 1
+			local key = x * 131072 + z
+			if keys[slot] == key then return values[slot] end
+			local water_class, _, owner, bay_id, hydrology_id =
+				classified_values(x, z)
+			local value = scalar_before_nonpath_grades(x, z, water_class, owner,
+				bay_id, hydrology_id)
+			keys[slot], values[slot] = key, value
+			return value
 		end
 
 		local function scalar_before_paths(x, z)

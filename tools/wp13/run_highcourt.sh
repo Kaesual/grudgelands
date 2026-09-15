@@ -161,10 +161,10 @@ if [[ "$mode" == "full" ]]; then
 	printf '%s  seed=%s avenue_road_cells=%s\n' "$digest" "$seed" "$road_cells" \
 		>"$output/avenue-digest.txt"
 	# The expectation lives with the lane that last CHANGED the road, so a
-	# package that moves it says so by moving this path and recording why. The
-	# districts increment added seven district lanes to the overlay's run list,
-	# which is the last thing to have moved it.
-	expected_file="$repo/tools/wp13/evidence/20260915-highcourt-districts/highcourt/avenue-digest-$seed.txt"
+	# package that moves it says so by moving this path and recording why. WP13
+	# round 3 gave every capital terrace riser a band of one-block ground steps,
+	# which moves the ground the avenue is laid on, so the road moved with it.
+	expected_file="$repo/tools/wp13/evidence/20260915-capital-terrain/highcourt/avenue-digest-$seed.txt"
 	if [[ -f "$expected_file" ]]; then
 		expected="$(awk 'NR==1 {print $1}' "$expected_file")"
 		if [[ "$digest" != "$expected" ]]; then

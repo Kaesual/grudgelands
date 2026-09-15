@@ -1165,6 +1165,23 @@ return function(repo)
 		say("highcourt_lots", lot_count, #quadrants.QUADRANTS,
 			#quadrants.AUTHORED, LOT_REACH, quadrants.LOT.lane, #runs,
 			#quadrants.lane_runs())
+		-- AND WHERE THE THIRTY-SIX ACTUALLY STAND.
+		--
+		-- Everything above is a geometric rule, and a lot that MOVES four nodes
+		-- still keeps every one of them, so until WP13 round 3 the whole fixture
+		-- set answered byte-identically while three lots walked. A lot position
+		-- is a design decision made against measured ground; it may move, but it
+		-- may not move quietly. This row is the grid itself.
+		local grid_rows = {}
+		for turns = 0, 3 do
+			local name = quadrants.QUADRANTS[turns + 1]
+			for index, lot in ipairs(quadrants.LOTS[name]) do
+				grid_rows[#grid_rows + 1] = table.concat({name, index, lot.x,
+					lot.z}, ":")
+			end
+		end
+		say("highcourt_lot_grid", #grid_rows,
+			common.hex(common.new_sha256()(table.concat(grid_rows, "\n"))))
 	end
 
 	-- 2c. The four districts.

@@ -174,7 +174,10 @@ if [[ "$mode" == "full" ]]; then
 		[[ -n "$digest" ]] || continue
 		printf '%s  %s seed=%s overlay_cells=%s\n' "$digest" "$label" "$seed" \
 			"$cells" >>"$output/overlay-digests.txt"
-		expected_file="$repo/tools/wp13/evidence/20260915-dur-brannoc/$key/${label}-digest-$seed.txt"
+		# WP13 round 3 moved the ground under both: the capital terrace risers
+		# became bands of one-block ground steps, so the road and the rampart
+		# that follow the surface moved with it.
+		expected_file="$repo/tools/wp13/evidence/20260915-capital-terrain/$key/${label}-digest-$seed.txt"
 		if [[ -f "$expected_file" ]]; then
 			expected="$(awk 'NR==1 {print $1}' "$expected_file")"
 			if [[ "$digest" != "$expected" ]]; then

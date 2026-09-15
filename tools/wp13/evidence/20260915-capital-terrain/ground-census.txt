@@ -1,0 +1,64 @@
+
+== highcourt 8675309 after ==
+  39603 default:stone
+   9918 default:dirt
+   6402 default:river_water_source
+   1419 default:gravel
+   1293 grug_nodes:dirt_with_forest_litter
+   1121 default:dirt_with_grass
+    694 grug_decor:castle_pavement_brick
+    523 default:brick
+    485 grug_decor:castle_stonewall
+    171 grug_decor:castle_stonewall_stair
+    160 default:tree
+    124 default:wood
+     68 grug_decor:darkage_marble
+     62 default:cobble
+
+== dur_brannoc 8675309 after ==
+  76011 default:stone
+  14699 default:gravel
+   1271 grug_decor:castle_stonewall
+    752 grug_decor:castle_pavement_brick
+    434 default:stonebrick
+    432 grug_decor:castle_rubble
+    307 grug_decor:castle_stonewall_stair
+    144 default:pine_tree
+    139 default:pine_wood
+    109 default:dirt
+     77 default:stone_block
+     56 default:torch
+     27 stairs:slab_stone_block
+     24 default:dirt_with_coniferous_litter
+
+== highcourt 8675309 before ==
+  55325 default:stone
+   6402 default:river_water_source
+   1664 default:dirt
+    736 grug_decor:castle_pavement_brick
+    552 default:brick
+    485 grug_decor:castle_stonewall
+    210 grug_decor:castle_stonewall_stair
+    163 default:gravel
+    160 default:tree
+    124 default:wood
+     68 grug_decor:darkage_marble
+     62 default:cobble
+     61 default:torch
+     36 stairs:slab_wood
+
+== dur_brannoc 8675309 before ==
+  96245 default:stone
+   1342 grug_decor:castle_stonewall
+    981 grug_decor:castle_pavement_brick
+    592 default:stonebrick
+    456 grug_decor:castle_rubble
+    330 grug_decor:castle_stonewall_stair
+    144 default:pine_tree
+    139 default:pine_wood
+    109 default:dirt
+     77 default:stone_block
+     56 default:torch
+     27 stairs:slab_stone_block
+     24 default:dirt_with_coniferous_litter
+     24 default:cobble

@@ -96,6 +96,14 @@ local function loader()
 	-- the terrain of seeds 531802985935182545 and 8675309; the shift each
 	-- grid needed and the plots that had to slide further are the table in
 	-- section 4 of the research note.
+	--
+	-- ONE OF THEM MOVED WITH THE TERRACE STEP BANDS (2026-09-15, WP13 round
+	-- 3): the band turns every terrace riser into one-block steps, which lifts
+	-- about one Highcourt column in nine by a node, and north-west lot 8 then
+	-- stood one node past its skirt (a perimeter fall of 7 against 6 on the
+	-- boundary seed). `highcourt_plots.lua --repair` moved that one four nodes
+	-- to the nearest legal position and left the other thirty-five where they
+	-- were.
 	M.LOTS = {
 		southeast = {
 			{x = 72, z = -72}, {x = 116, z = -72}, {x = 160, z = -72},
@@ -110,7 +118,7 @@ local function loader()
 		northwest = {
 			{x = -132, z = 80}, {x = -176, z = 80}, {x = -220, z = 80},
 			{x = -132, z = 124}, {x = -176, z = 124}, {x = -220, z = 124},
-			{x = -132, z = 168}, {x = -176, z = 168}, {x = -220, z = 168},
+			{x = -132, z = 168}, {x = -180, z = 168}, {x = -220, z = 168},
 		},
 		southwest = {
 			{x = -48, z = -76}, {x = -48, z = -132}, {x = -48, z = -172},

@@ -1134,10 +1134,16 @@ return function(dependencies)
 		if exclusion.recipe_id == "exclude_anchor_blend_v1" then
 			shape.kind="square" shape.center=exclusion.center
 			shape.total_width=exclusion.total_width
-			-- A start's blend envelope is the one claim exclusion that is terrain
-			-- and not settlement ground; `static_exclusion_values_at` can be asked
-			-- to skip it. See the "vegetation" purpose below.
-			shape.start_blend=record.slot_id == "start"
+			-- A start's or a capital's blend envelope is the one claim exclusion
+			-- that is terrain and not settlement ground;
+			-- `static_exclusion_values_at` can be asked to skip it. See the
+			-- "vegetation" purpose below. The CAPITALS joined it in WP13 round 3:
+			-- their own 532-node hard build square is a separate
+			-- `exclude:active:` shape in the same bucket and keeps answering, so
+			-- skipping the 704-node blend envelope grows the collar back without
+			-- putting one host inside the city WP13 stamps.
+			shape.anchor_blend=record.slot_id == "start" or
+				record.slot_id == "capital"
 			local half=math.floor((shape.total_width+1)/2)
 			shape.bounds={min_x=shape.center.x-half,max_x=shape.center.x+half,
 				min_z=shape.center.z-half,max_z=shape.center.z+half}
@@ -1696,12 +1702,12 @@ return function(dependencies)
 			if not candidates then return nil end
 			for index=1,#candidates do
 				local shape=candidates[index]
-				if shape.start_blend and purpose == "vegetation" then
+				if shape.anchor_blend and purpose == "vegetation" then
 					-- Skipped, not returned as "no exclusion": the remaining shapes in
-					-- this bucket still answer, which is what makes the start's own
-					-- 148-node hard core (`exclude:active:hard:anchor_00N`), its route
-					-- corridors, water and coast keep excluding while the blend ring
-					-- around them does not.
+					-- this bucket still answer, which is what makes the anchor's own
+					-- hard core (`exclude:active:hard:anchor_00N` -- 148 nodes for a
+					-- start, 532 for a capital), its route corridors, water and coast
+					-- keep excluding while the blend ring around them does not.
 				elseif shape.start_apron_envelope and purpose == "vegetation" and
 						in_rectangle(x,z,shape.bounds,0) and
 						in_centered_half_open_square(x,z,shape.center,

@@ -122,19 +122,27 @@ return function(repo, planner_repo)
 	assert(repeated == mixed and repeat_budget == mixed_budget and
 		repeat_candidates == mixed_candidates and repeat_digest == mixed_digest,
 		"wet-neighbor scratch reuse differs")
-	-- Compact final-parity witnesses for dry-start grade eligibility. They use
+	-- Compact final-parity witnesses for dry-anchor grade eligibility. They use
 	-- the actual planner with scalar fixtures, never a seed/world population.
+	--
+	-- ANCHORS 1..12, not 1..6, since WP13 round 3: the six CAPITALS keep their
+	-- own biome surface for the same reason the six starts do, because a
+	-- capital fitting grades its whole 704-node blend square and everything
+	-- inside it was `default:stone` before. Anchor 13 and up are ordinary POIs
+	-- and are still refused, and so is `anchor_0010`, which is not an anchor id
+	-- at all -- it is the four-digit typo the predicate has to keep rejecting.
 	if planner_repo == repo then
 		mode, feature_kind = "dry", "land_grade"
-		for index = 1, 6 do
-			feature_id = "anchor_00" .. index
+		for index = 1, 12 do
+			feature_id = string.format("anchor_%03d", index)
 			assert(select(12, fixture.column_values_at(0, 0)) == true,
-				"dry start grade must support its biome surface")
+				"dry start or capital grade must support its biome surface")
 		end
-		for _, id in ipairs({"anchor_007", "anchor_0010", "road_001", "poi_001"}) do
+		for _, id in ipairs({"anchor_013", "anchor_099", "anchor_0010",
+				"road_001", "poi_001"}) do
 			feature_id = id
 			assert(select(12, fixture.column_values_at(0, 0)) == false,
-				"other grade cannot acquire start surface semantics")
+				"other grade cannot acquire anchor surface semantics")
 		end
 		feature_id, excluded = "anchor_001", "fixture_exclusion"
 		assert(select(12, fixture.column_values_at(0, 0)) == false,

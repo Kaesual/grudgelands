@@ -1,0 +1,13 @@
+The seed-0 zones canonical KAT digest, the value the retired R4/R5
+lineage freezes. It had already moved away from the frozen value
+before this lane touched anything.
+
+frozen in the lineage        8b5145180dd8a4a6de01de47cbb8fc4560e2947d78cdb281016d5c3414b9b8aa
+main at 19abee02             ec6dcc315189becbcd083ba31fde941b0ad26d00023f29c39908277d9692a554
+this branch                  9ea1e861e8d7178d9445e5344483348b8797cc5b813687f5177400dd670b5b4d
+
+tools/wp40/run_simple_map_r5.sh, which asserts it, cannot start on
+main either: its preflight refuses the tree with
+  run_simple_map_r5.sh: disabled R5 source contains activation API
+because R7 shipped and enabled the mapgen the R5 preflight still
+expects to be disabled.
