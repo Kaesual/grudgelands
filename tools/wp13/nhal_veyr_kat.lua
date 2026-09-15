@@ -2883,6 +2883,13 @@ return function(repo)
 
 		-- (c) EVERY KERB COLUMN THE ROAD FILLED BY THREE OR MORE IS RAILED,
 		-- and nothing else is.
+		--
+		-- OUTSIDE THE GATE TUNNEL'S OWN BAND. Inside it the road carries its own
+		-- tunnel floor down to the lowest ground of the band -- section (f) --
+		-- so a column's span there is the tunnel's depth and not the road's fill,
+		-- and the rail follows the FILL. Those seven columns are rule (f)'s.
+		local band_low = GATE - wall.HALF
+		local band_high = GATE + wall.HALF
 		local railed, filled = 0, 0
 		for offset = -half, half do
 			for p = spec.from, spec.to do
@@ -2893,7 +2900,15 @@ return function(repo)
 					if rail_at[key] then span = span - 1 end
 					local wants = (math.abs(offset) == half) and
 						span >= RAIL_FILL
-					if wants then filled = filled + 1 end
+					if p >= band_low and p <= band_high then
+						-- Inside the tunnel band a column's span is the TUNNEL'S
+						-- depth and not the road's fill, and the curtain's own
+						-- piers stand either side of the road, so there is NO
+						-- rail there at all. Rule (f) owns these columns.
+						wants = false
+					elseif wants then
+						filled = filled + 1
+					end
 					assert((rail_at[key] ~= nil) == wants,
 						"the column " .. key .. " spans " .. span ..
 							" courses and " ..
@@ -2930,6 +2945,48 @@ return function(repo)
 			" nodes, so the excavation rule is barely tested")
 		assert(piece.cut_max == cut_deepest, "the piece reports a cut of " ..
 			piece.cut_max .. " and cuts " .. cut_deepest)
+
+		-- (f) THE GATE TUNNEL HAS A FLOOR. `wall.lua` cuts its passage as air
+		-- from the column's own lowest ground over the curtain's seven lanes up
+		-- to the deck, on the strength of the avenue filling from the ground
+		-- upward -- which stops being true when the road arrives at the gate
+		-- point's OWN height and that height is above the band's lowest ground.
+		-- The engine's read-back found two courses of air under Nhal Veyr's
+		-- north carriageway at exactly that column; nothing offline could,
+		-- because the road piece is solid and the hole is opened afterwards by
+		-- another run. So the road carries its own tunnel floor, and this is the
+		-- rule that says it does: over the band the curtain clears, every column
+		-- is solid from the band's lowest ground up to the road.
+		local tunnel_floor = ground(band_low)
+		for p = band_low, band_high do
+			if ground(p) < tunnel_floor then tunnel_floor = ground(p) end
+		end
+		local solid = {}
+		for _, cell in ipairs(piece.cells) do
+			if cell.name ~= "air" then
+				solid[cell.x .. ":" .. cell.y .. ":" .. cell.z] = true
+			end
+		end
+		local tunnel_cells = 0
+		for offset = -wall.GATE_PASSAGE, wall.GATE_PASSAGE do
+			for p = band_low, band_high do
+				local top = road_top[offset .. ":" .. p]
+				if top then
+					if rail_at[offset .. ":" .. p] then top = top - 1 end
+					for y = tunnel_floor, top do
+						assert(solid[offset .. ":" .. y .. ":" .. p],
+							"the gate tunnel has air under the carriageway at " ..
+								offset .. ":" .. y .. ":" .. p ..
+								", and its floor is " .. tunnel_floor)
+						tunnel_cells = tunnel_cells + 1
+					end
+				end
+			end
+		end
+		assert(tunnel_cells > 7 * (band_high - band_low + 1),
+			"this profile puts no depth under the gate tunnel, so the floor " ..
+				"rule is untested")
+		assert(piece.tunnel > 0, "the piece reports no tunnel floor at all")
 
 		-- (e) AND A PIECE OF THE RUN IS EXACTLY THAT STRETCH OF THE WHOLE RUN.
 		-- The ramp reads the surface through a cap that depends on ONE extra
@@ -2969,7 +3026,7 @@ return function(repo)
 		end
 		say("nhal_veyr_gate_ramp", piece.gate_at, piece.gate_y, #piece.cells,
 			piece.cut, piece.rail, piece.fill_max, piece.cut_max, worst_step,
-			splits)
+			splits, piece.tunnel, tunnel_floor)
 	end
 
 	return table.concat(report)

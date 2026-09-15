@@ -1367,6 +1367,7 @@ local function loader(directory)
 
 		local half = ((spec.width or avenue.WIDTH) - 1) / 2
 		local STONE = palette.maybe("castle_wall") or palette.node("wall_accent")
+		local PAVING = palette.maybe("castle_paving") or palette.node("plaza")
 		local cut, rail, fill_max, cut_max = 0, 0, 0, 0
 		for index = 1, #order do
 			local entry = order[index]
@@ -1392,17 +1393,78 @@ local function loader(directory)
 					cut = cut + 1
 				end
 			end
-			-- 2. The rail, on the kerb lanes only.
-			if across == half and top - low[entry.key] >= RAIL_FILL then
+			-- 2. The rail, on the kerb lanes only, and NOT inside the gate
+			-- passage: there the curtain's own piers stand either side of the
+			-- road and a kerb course would be masonry in the tunnel mouth.
+			local along_p = axis_along(spec, entry.x, entry.z)
+			local in_tunnel = along_p >= gate_at - wall.HALF and
+				along_p <= gate_at + wall.HALF
+			if across == half and not in_tunnel and
+					top - low[entry.key] >= RAIL_FILL then
 				piece.cells[#piece.cells + 1] = {x = entry.x, y = top + 1,
 					z = entry.z, name = STONE, param2 = 0}
 				rail = rail + 1
 			end
 		end
+		-- 3. THE GATE TUNNEL'S FLOOR, which only a FINISHED MAP shows.
+		--
+		-- `wall.lua` cuts its gate passage as air from the column's own LOWEST
+		-- ground over the curtain's seven lanes up to one course under the deck,
+		-- and it does that on the strength of a comment that the avenue "writes
+		-- its pavement from the GROUND upward" and therefore holds its own road
+		-- up. That is true of a road laid on its own ground -- Highcourt's and
+		-- Dur Brannoc's gate columns are solid from the tunnel floor to the road
+		-- stair, measured -- and it stops being true the moment a road is laid
+		-- ABOVE the lowest ground of that band, which is exactly what arriving
+		-- at the gate point's own height does here: at Nhal Veyr's north gate
+		-- the curtain's tunnel floor is 91 and the road is 94, and the two
+		-- courses between them were air with the carriageway riding over them.
+		--
+		-- No offline check could see it: the road piece is solid, and the hole
+		-- is opened by ANOTHER run afterwards. The engine's own read-back is
+		-- what found it (`evidence/.../nhal_veyr/approach.py`).
+		--
+		-- So the road carries its own tunnel: over the band the curtain clears --
+		-- `wall.HALF` columns either side of the gate point, and
+		-- `wall.GATE_PASSAGE` lanes either side of the centre line, which are the
+		-- curtain's own two numbers and not new ones -- every column is filled
+		-- from the LOWEST ground of that band up to the road. The avenue is the
+		-- first run and wins every cell it and the curtain share, so what it
+		-- writes here is what the map gets.
+		local tunnel = 0
+		local band_low = gate_at - wall.HALF
+		local band_high = gate_at + wall.HALF
+		if spec.from <= band_high and spec.to >= band_low then
+			local floor_of = {}
+			for lane = -wall.GATE_PASSAGE, wall.GATE_PASSAGE do
+				local lowest
+				for p = band_low, band_high do
+					local x, z = axis_column(spec, p, lane)
+					local y = surface(x, z)
+					if lowest == nil or y < lowest then lowest = y end
+				end
+				floor_of[lane] = lowest
+			end
+			for index = 1, #order do
+				local entry = order[index]
+				local p = axis_along(spec, entry.x, entry.z)
+				local lane = axis_across(spec, entry.x, entry.z)
+				local bottom = floor_of[lane]
+				if bottom ~= nil and p >= band_low and p <= band_high then
+					for y = bottom, low[entry.key] - 1 do
+						piece.cells[#piece.cells + 1] = {x = entry.x, y = y,
+							z = entry.z, name = PAVING, param2 = 0}
+						tunnel = tunnel + 1
+					end
+				end
+			end
+		end
+
 		piece.gate_at = gate_at
 		piece.gate_y = gate_y
 		piece.cut = cut
 		piece.rail = rail
+		piece.tunnel = tunnel
 		piece.fill_max = fill_max
 		piece.cut_max = cut_max
 		return piece

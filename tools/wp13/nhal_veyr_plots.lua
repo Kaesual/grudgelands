@@ -478,12 +478,25 @@ do
 			-- And every kerb column the road had to fill by three courses or
 			-- more carries a rail: counted here off the piece's own cells,
 			-- against the count the ramp reports.
+			--
+			-- OUTSIDE THE GATE TUNNEL'S OWN BAND. Over the seven columns the
+			-- curtain clears its passage through, the road carries its own
+			-- TUNNEL FLOOR down to the lowest ground of that band (the engine
+			-- read-back found two courses of air under the north carriageway
+			-- there before it did), so a column's span in the band is the
+			-- tunnel's depth and not the road's fill. The rail follows the
+			-- fill, so the band is excluded here exactly as it is in the KAT's
+			-- rule (c); the KAT's rule (f) is what holds the band.
+			local band_low = gate_at - wall.HALF
+			local band_high = gate_at + wall.HALF
 			local expected_rail = 0
 			for key, high in pairs(top) do
 				local cx, cz = key:match("^(%-?%d+):(%-?%d+)$")
 				cx, cz = tonumber(cx), tonumber(cz)
 				local across = ((run.axis == "x") and cz or cx) - run.at
+				local p = (run.axis == "x") and cx or cz
 				if math.abs(across) == half and
+						not (p >= band_low and p <= band_high) and
 						high - low[key] >= RAIL_FILL then
 					expected_rail = expected_rail + 1
 				end
