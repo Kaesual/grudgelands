@@ -1,0 +1,5 @@
+staged probe: npc_probe
+headless boot: PASS (port 32937, 300 s)
+log: /tmp/grudgelands-headless.QfosoC/server.2.log
+70:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32937.
+kept: /tmp/grudgelands-headless.QfosoC

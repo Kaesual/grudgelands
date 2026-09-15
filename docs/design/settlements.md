@@ -169,3 +169,22 @@ trades exactly as at a capital; the quest shell carries a nametag and one
 placeholder answer. Only guards are mortal: a killed one leaves its post empty
 and the settlement fills that one slot again after three to six minutes, the
 same respawn-slot rhythm outposts use.
+
+Decided 2026-09-15 after the first NPC playtest, and part of that behaviour:
+
+- **A settlement holds exactly its roster.** A slot is occupied by the NPC that
+  is booked on it, wherever in the settlement that NPC currently stands, and a
+  second one on the same slot is removed. An NPC away from its post is never a
+  reason to place another.
+- **People are named after their settlement**, not after their race: a
+  capital's flair NPCs are its own citizens and elders, the six starts keep
+  their authored names.
+- **A villager at a doorstep faces the street**, and villagers walk — they do
+  not jump. One dwells 20 to 60 seconds at a spot, then walks to another spot of
+  the same composition; a spot it cannot reach is given up for another.
+- **A guard that cannot reach its waypoint keeps patrolling anyway**: it paths
+  around the obstacle, then takes the next waypoint, and only if it is still
+  stuck and no player is within 48 nodes is it moved there outright.
+- **Hostile creatures ignore settlement NPCs.** Ordinary guards, animals and
+  monsters never target an NPC (world.md §4); only dedicated war-front units may,
+  and none exists yet.

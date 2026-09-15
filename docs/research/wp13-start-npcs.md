@@ -161,8 +161,12 @@ The collision-box lift `add_mob` performs is kept via
   the existing `grug_mobs.route_tick`; aggro.lua already exempts a route carrier
   from both the leash and the roam cap.
 - **Flair villager**: walks to its current idle socket, stands there facing it
-  for 20–50 s, then picks another, at 1.1 walk velocity. `walk_chance = 0` and
-  `randomly_turn = false` keep mobs_redo's own wander out of it. A right-click
+  for 20–50 s, then picks another, at 1.1 walk velocity (playtest round 1 raised
+  the dwell to 20–60 s, turned a door socket's facing round, and fixed the ring
+  advance that made this paragraph a description of what the code was supposed to
+  do rather than of what it did). `walk_chance = 0` and
+  `randomly_turn = false` keep mobs_redo's own wander out of it — and playtest
+  round 1 found what else `walk_chance = 0` means inside `do_jump`. A right-click
   answers with one line chosen by the tag of the socket it is standing at
   (`door`/`bench`/`work`/`fire`, or the race's default), throttled to one answer
   per two seconds. No formspec.
@@ -282,13 +286,11 @@ because nothing died.
 
 ## Known limits, deliberately accepted
 
-- **Hostile mobs can target a villager.** `attack_npcs` defaults to true in
-  mobs_redo's `mob_class` (api.lua:170), and these families are `type = "npc"`,
-  so a wandering monster may attack one — they are invulnerable, so it would
-  only look odd, never cost an NPC. In practice nothing hostile reaches them:
-  no hostile ABM row may spawn inside a start footprint (wp13-start-preload.md,
-  decision 2) and no authored hostile stands in one. Guards ignore them
-  (`attack_npcs = false` on the guard def).
+- ~~**Hostile mobs can target a villager.**~~ **Not accepted after all** — the
+  2026-09-15 playtest found a boar standing in front of an invulnerable villager
+  hitting her indefinitely at a capital, where "in practice nothing hostile
+  reaches them" does not hold. `attack_npcs = false` is now applied by the
+  registration wrapper to every mob (playtest round 1, item 5).
 - **A wiped mod storage with a kept map duplicates the roster once.** The
   markers are the primary gate and the scan cannot substitute for them at
   start-ready, where no player is near and `get_objects_inside_radius`
@@ -329,6 +331,308 @@ because nothing died.
   the start watch is a third consumer of that rule and is documented in
   `settlements.md` instead.
 
+## Playtest round 1 (2026-09-15)
+
+The user played the six starts and Highcourt in the GUI and found eight defects.
+All eight are fixed in this increment; the numbers are his. Evidence:
+`tools/wp13/evidence/20260915-npc-playtest-1/`.
+
+### 1. Unbounded spawns — the marker was freed for every NPC that walked
+
+`socket_occupied` asked `get_objects_inside_radius(socket, 8)`, i.e. "is my NPC
+standing ON its socket right now". A guard walking its patrol loop and a
+villager ambling between idle spots both answer no, so the heartbeat freed the
+marker and placed a twin — every five seconds, for every NPC that was not at
+home. After a while a start had about fifty guards in it.
+
+Occupancy is now an **identity** question. Each settlement is scanned once per
+heartbeat around its anchor, out to its furthest socket plus `SCAN_MARGIN` = 48
+(the guard leash is 30), and every entity carrying this settlement's key is
+matched to the socket its `_grug_socket` books — wherever it stands
+(`start_npcs.lua` `scan_row`). Four things bound the population, and the marker
+alone did not:
+
+1. the marker, which is still what makes a restart place nothing;
+2. that scan **removes** a second entity found on a socket that is already held,
+   which is what heals a world that already has twins;
+3. `grug_mobs.start_npc_claim`, called by all five families on activation
+   (guard.lua's tick, both flair families' `after_activate`, vendors.lua's), so a
+   twin coming back with its mapblock removes itself at once;
+4. a hard cap in `place`: a settlement already holding as many NPCs as its
+   roster has places nothing more, whatever its markers say. It is deliberately
+   an ASSERTION -- with the claim map keyed per socket and the twin removal of
+   (2), it cannot be reached in a pass where the socket being filled is unheld —
+   and it costs one comparison to have something fire loudly if that keying is
+   ever broken again, which is the defect's own shape.
+
+Freeing a marker also became harder in two ways. It needs the socket's own
+mapblock to be **active** — `core.compare_block_status(pos, "active")`, which is
+the question the old "a player within 24 nodes" was approximating, and which a
+forceload answers as well as a player does — and `FREE_STRIKES` = 3 consecutive
+passes must agree, because one empty answer is not proof that an NPC is gone.
+
+With that, neither trigger asks about players at all any more. What a pass may
+do is decided per socket by the map: loaded allows a placement, active allows a
+free. The old `if #players == 0 then return end` made both the retry and the
+re-check dead code on a server nobody was logged in to — which is also every
+engine probe.
+
+### 2. Stuck patrols
+
+Mostly a consequence of item 1 (groups of twins walking into each other), but a
+route is a direction and not a path, so `patrol.lua` gained a three-stage
+rescue, opt-in per caller (`route_tick(..., rescue)`; the start and capital watch
+passes true, the named rares keep the plain nudge):
+
+| after | stage |
+| --- | --- |
+| 20 s without progress | ask `core.find_path` and steer at its first node |
+| 45 s without progress | give the waypoint up, take the next one |
+| 90 s stuck in total | teleport onto the waypoint — **only** with no player within 48 nodes (the user's ruling) |
+
+Two clocks are what make that an escalation: the skip **lowers** the first one
+(a grace period, not a fresh timeout) and only real progress clears the second.
+The post guard's walk home uses stages 1 and 3 of the same helpers — a post has
+no next waypoint to skip to — and lands exactly on its authored socket.
+
+### 3. Villagers did not wander
+
+The cause was the ring advance, not the timers. It walked the ring looking for a
+**free** spot and fell back to its own index when it found none — and with four
+villagers standing on four spots, every candidate is always taken. So every
+villager re-rolled its dwell where it stood, for ever. The user saw them stand
+in front of their houses and move once (the one time another villager happened
+to be in transit).
+
+The occupancy test may now only ever **skip** a candidate; when all of them are
+taken the villager still advances by one. Advancing in step is what keeps four
+villagers on four sockets spread out, which is what the original comment said
+and what the fallback undid. Alongside it: the dwell is 20–60 s as specified,
+and the dwell in progress when a mapblock activates is capped at 20 s, so the
+wait a player sees on walking in is bounded by that and not by the whole roll. A
+villager that cannot reach its spot for 15 s takes another one instead of
+pushing (it has neither a pathfinder nor, since item 6, a jump).
+
+### 4. Facing at doors
+
+A socket's `dir` is measured at the feature it stands on, which for a doorstep
+means the NPC showed the street its back. The **consumer** turns a door-tagged
+idle socket round (`socket_face_yaw` in `start_npcs.lua`), so the blueprint data
+keeps meaning one thing and no future composition can forget the rule. Sockets
+are not identity bytes, so editing the seven socket tables would have been legal
+too — it would have been ~30 entries and one more thing to get right per new
+settlement.
+
+### 5. Hostile mobs targeted NPCs
+
+`attack_npcs` defaults to **true** in mobs_redo's `mob_class` (api.lua:170) and
+is read in exactly one place, general_attack's candidate filter (api.lua:1814).
+guard.lua set it false; the eighteen hostile families did not, so a boar stood
+in front of an invulnerable villager hitting her for as long as anyone watched.
+
+`grug_mobs.no_npc_targets` (verbs.lua) is now applied by
+`grug_mobs.register_mob` to **every** def, before the `no_acquire` derivation
+and before mobs_redo copies the field. The exception is explicit and named after
+world.md §4's own: `_grug_attack_npcs = true` for a dedicated war-front unit.
+Nothing else changes — `attack_players`, `attack_animals` and `attack_monsters`
+stay as the def wrote them, so guards still fight monsters, and a punched
+monster still retaliates against the guard through on_punch's own
+`do_attack(hitter)` (api.lua:3208-3213), which consults `passive`, `state`,
+`child` and ownership but never any `attack_*` field.
+
+### 6. Perpetual jumping
+
+`walk_chance = 0` means "mobs_redo's own wander is off" to us. Inside
+`do_jump` it means **"this is a jumping mob"**: api.lua:1131 reads
+`if (not blocked and ...) or self.walk_chance == 0`, i.e. the villagers took the
+jump branch unconditionally. `do_jump` runs four times a second from `on_step`
+and skips only a mob whose vertical velocity is non-zero, so every villager
+hopped again the instant it landed, for the whole length of every walk, with
+`jump_height = 4` and the `core.after(0.3, set_acceleration{y = 0})` that
+follows a jump in the same function. In Highcourt's core, where the idle spots
+are further apart, that is most of a villager's life.
+
+Both flair families now carry `jump_height = 0`, which is the gate at
+api.lua:1114 — `do_jump` returns before the jumping-mob clause. `jump` itself is
+not a field mobs_redo reads at all (it is in no def whitelist and nothing in
+api.lua consults it) and is kept `false` only so the def does not claim the
+opposite of what it does. Guards keep `jump_height = 4` and are unaffected: they
+have the default `walk_chance` of 50, so they only jump when there is a solid
+node in front worth hopping onto, and a guard that loops instead of climbing is
+now caught by item 2's rescue.
+
+### 7. Nametags per settlement
+
+There is one villager entity per **race** and it serves that race's start *and*
+its capital, so a name read off the race put "Dawnmere Farmer" in the middle of
+Highcourt. `grug_mobs.settlement_npc_name` answers per settlement: the six
+starts keep the flavour names they shipped with (a race has exactly one start,
+so those are settlement names already) and every other settlement is named after
+itself — "Highcourt Citizen", "Highcourt Elder" — derived from the key, so the
+next capital needs no edit.
+
+The name is resolved once, by the placement, and persists with the entity. It
+needed one extra call: `core.add_entity` activates an entity synchronously, so
+`after_activate` has already run by the time `install` writes the field, and
+`place` therefore re-asserts the nametag (`grug_mobs.start_npc_retag`) exactly
+as it already re-asserts the facing.
+
+### 8. "Elite Accord Guard [Lv 60] 945/10"
+
+`hp_max` is in mobs_redo's `is_property_name` table (api.lua:3297-3301), so
+`mob_activate`'s staticdata loop writes it to the **object** and never back onto
+`self` (api.lua:3327-3332). Two consequences, and the second is the defect:
+
+1. `self.hp_max` is nil for the whole of every activation after the first, so
+   the nametag and aggro.lua's leash heal fall back to the property;
+2. the **next** save therefore carries no `hp_max` at all (`clean_staticdata`
+   serializes the fields that exist), and the activation after *that* keeps
+   `initial_properties.hp_max`, which for a def that sets none is mobs_redo's
+   own default of **10** (api.lua:3647). A level-60 elite then reads 945/10 and
+   its first damage is clamped to 10 by check_for_death's "make sure health
+   isn't higher than max" (api.lua:849).
+
+Two reload cycles, which is why it looked random. Fixed where the maximum is
+owned rather than in the vendored api.lua: `ensure_init` re-derives it on every
+activation that finds the mob already levelled (`reassert_max` in levels.lua).
+The level and tier are persisted plain fields, so the derived max is a pure
+function of what came back; health is left alone except that a value above the
+max is brought down, so a wounded mob stays wounded across a reload.
+
+### Verification
+
+- **KAT pair, byte-identical.** `tools/wp13/start_npcs_kat.lua` now drives four
+  production files against the stub engine — `patrol.lua`, `verbs.lua`,
+  `start_villagers.lua` and `start_npcs.lua`, in init.lua's own order — through
+  sixteen report rows: the six states it had, plus the door flip and the
+  settlement nametag (items 4 and 7), the wanderer and the twin healing
+  (item 1), the census, the amble and a blocked villager (item 3), the no-jump
+  gate (item 6), the three-stage stuck rescue including the out-of-sight ruling
+  (item 2) and the NPC-targeting verb (item 5). The stub models the engine fact
+  the design hangs off in both directions now: `get_objects_inside_radius` sees
+  only active objects AND `get_pos()` on an object whose block went inactive
+  answers nil. The mobs the behaviour rows drive are the entities the placement
+  engine placed in the same process, so the amble runs on the fields `install`
+  really wrote rather than on a hand-built table.
+- **`tools/wp13/final_micro.lua` pair**, LuaJIT and `tools/bin/lua51`,
+  `LC_ALL=C`: output_sha256
+  `1f2830bba4d40a33ace40075d6d12e82e7279c365fa589c6ae3d3caefd752730` from both
+  (it was `871f0d29…` before this round; the KAT report is part of the hashed
+  input).
+- **Static gates** (`static.txt`): `luac51 -p` per touched file and over the
+  whole tree, the SETGLOBAL count (17 grug mod writes, one table per mod), the
+  five plain-5.1 sweeps scoped to the touched files, to `mods/*/grug_*` and to
+  `tools/wp13` — every hit pre-existing prose in a comment — and
+  `check_fresh_server.py` PASS.
+- **Six-start identities unchanged**: `start-identities.txt` is byte-identical
+  to the committed `20260914-capital-parts/start-identity.txt`. This round
+  writes no mapgen cell.
+- **Engine**, `tools/wp13/run_npc_probe.sh` (three boots on ONE world through
+  `tools/luanti_headless.sh`, the disposable probe of `tools/wp13/npc_probe`
+  staged with the launcher's new `PROBE=`): see the table below.
+- **Engine**, `tools/wp13/run_highcourt.sh` once: the capital pass, zero ERROR
+  and zero ModError, its avenue digest unchanged.
+
+### Engine results
+
+`tools/wp13/run_npc_probe.sh`, seed 531802985935182545: three boots on ONE world
+through `tools/luanti_headless.sh`, with the disposable probe of
+`tools/wp13/npc_probe` staged by the launcher's new `PROBE=`. Zero ERROR and zero
+ModError in all three logs.
+
+Every census counts Hearthpine's NPCs **by identity out of the map**
+(`_grug_start` on an activated entity), not out of the placement log, and the
+probe logs an error if that count ever exceeds the roster.
+
+| | boot 1 (fresh world) | boot 2 (same world) | boot 3 (same world) |
+| --- | --- | --- | --- |
+| Hearthpine placement line | `guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0` | `… new 0 pending 0` | `… new 0 pending 0` |
+| all six starts | 54 placements, i.e. the whole roster once (plus one for the socket cleared below) | none | none |
+| census roster/marked/live/twins | 9/9/9/0 | 9/9/9/0 | 9/9/9/0 |
+| guard HP tuple | `self_hp_max=115 prop_hp_max=115`, tag `… 115/115` | the same, and `79/115` for the one the wolf wounded | the same again, still `79/115` |
+
+Boot 1 additionally, in order:
+
+- **Item 3.** `event=pos` every ten seconds for three minutes: all four villagers
+  walk between their idle sockets, dwell there and rotate through the spot
+  indices. Two of them standing next to each other for a while is expected —
+  with four villagers on four sockets every candidate spot is occupied, so the
+  ring advance takes an occupied one, the collision box stops the walker about a
+  node short, and they separate again as their dwells run out. A frozen village
+  was the defect; a pair of villagers standing together is not.
+- **Item 1, the false free.** All nine NPCs moved 40 nodes off their sockets,
+  then sixteen more heartbeats: `live=9 twins=0` at every census and not one
+  "marked but empty" line. Before the fix that state produced one twin per NPC
+  per heartbeat.
+- **Item 1, the real free.** One villager then removed outright (`mobs:remove`,
+  what `/clearobjects` does to a whole settlement). Five seconds later:
+  `marked=9 live=8` — one empty pass is not proof. Twenty-five seconds later:
+  exactly ONE `socket idle_forge_door is marked but empty` warning, exactly one
+  `placed at socket idle_forge_door`, and `live=9` again. This is also where
+  `core.compare_block_status` is exercised against the real engine.
+- **Item 8.** `self_hp_max` and the object property agree at 115 on all three
+  boots. The guard the wolf wounded in boot 1 is the sharper half of that: it
+  comes back as `79/115` on boot 2 and again on boot 3, i.e. a wounded mob stays
+  wounded across two reloads with its maximum intact. Before the fix the same mob
+  read `79/10` on the second reload and its next hit would have been clamped to
+  10. The injection then makes the defect's exact state on purpose
+  (`self.hp_max` nil, the object back on the definition default of 10) and the
+  activation path puts both back to 115 in the same tick. 115 is the level-20
+  guard-field value at a start; the user's 945/10 was a capital's level-60 elite,
+  which is the same arithmetic on a bigger number.
+- **Item 5.** A wolf two nodes from a villager: `attack_npcs=false`,
+  `target=nil` and its full 65 HP at every observation — it never acquires the
+  NPC next to it. A wolf two nodes from a guard post, three seconds in:
+  `guard … state=attack target=grug_mobs:wolf` and `wolf … state=attack
+  target=grug_mobs:guard_accord health=55`, i.e. the guard acquired it and it hit
+  back; 35 HP at six seconds, dead by fifteen.
+
+One artefact of the probe worth knowing when reading `probe.txt`: the `ready`
+census can report `live=0`, because it fires in the same globalstep as the
+forceload while the engine's active-block management runs on its own two-second
+interval. Nothing is activated yet at that instant — which is also exactly why
+the free path cannot misfire there: `compare_block_status` answers "loaded", not
+"active", until the pass that activates the block activates its objects too.
+
+`tools/wp13/run_highcourt.sh` once, on the same seed: zero ERROR, zero ModError
+and the built avenue's digest equal to the committed value for that seed
+(`9d6f0167…`, 1595 road cells). Its NPC line is **better** than the seam round's,
+and for a reason worth recording:
+
+| | seam generalisation (2026-09-15, morning) | this round |
+| --- | --- | --- |
+| Highcourt | `guards 17/19 flair 30/49 vendor 2/2 quest 1/1 new 50 pending 21` | `guards 19/19 flair 49/49 vendor 2/2 quest 1/1 new 12 pending 0` |
+
+The old split between "placed at readiness" and "pending" was explicitly not
+reproducible, because it depended on which mapblocks the emerge sequence happened
+to have loaded when the anchor first answered, and the rest waited for a player
+to walk up. The heartbeat does not wait for a player any more, so every socket
+whose node is loaded is filled on the next beat: 71 of 71, pending 0, on a probe
+with no player in it at all.
+
+### Runtime test for the user (round 1)
+
+Fresh world, seed `531802985935182545`, any race; `tools/sync_to_luanti.sh` first.
+
+1. Stand in a start for five minutes. There are exactly nine NPCs and they stay
+   nine — no growing crowd of guards, and no twin appearing on a spot somebody
+   has just walked away from.
+2. Watch the villagers: within twenty seconds one walks off to another spot at
+   walking pace, and **nothing hops**. The one on a doorstep faces the street.
+3. Follow the patrolling guard round its loop twice. It keeps going; if it ever
+   wedges itself it paths round, then takes the next waypoint, and it is only
+   ever moved outright while you are more than 48 nodes away.
+4. Lure a boar or a wolf into the settlement. It ignores the villagers
+   completely; the guards go for it and it fights them back.
+5. Go to Highcourt. Its villagers are "Highcourt Citizen" and its elder
+   "Highcourt Elder", nobody in it is a "Dawnmere Farmer", and nothing jumps.
+6. Frame an elite guard at a capital (level 60): the health reads `945/945`.
+   Restart the server twice and look again — still `945/945`, and the first hit
+   takes it to 935 rather than to 9.
+7. `/clearobjects` on the arrival plaza, then wait fifteen seconds: the sockets
+   whose mapblocks you are keeping active report "marked but empty" once each and
+   refill once each.
+
 ## User runtime test
 
 Fresh world, seed `531802985935182545`, any race; `tools/sync_to_luanti.sh`
@@ -343,8 +647,10 @@ first.
    front) and keeps going around.
 3. Right-click each of the four villagers. Each answers once with a line that
    fits where it is standing (doorstep, bench, work yard, fire), and a held
-   mouse button does not spam the chat. Watch one for a minute: it walks to
-   another of the four spots at walking pace and stands facing it.
+   mouse button does not spam the chat. Watch one for a minute: within twenty
+   seconds of your arrival it walks to another of the four spots at walking pace
+   — never hopping — and stands facing it. The one at a doorstep looks out into
+   the street, not at the door.
 4. Right-click the elder beside the hall: a nametag and one placeholder line, no
    formspec.
 5. Right-click the Quartermaster on the plaza: the normal trade window, with the
@@ -354,11 +660,10 @@ first.
 7. Leave and rejoin, then restart the server and walk the same settlement: the
    same nine NPCs, in the same places, facing the same way, each wearing its
    race's skin rather than a guard's. None of them is doubled.
-8. `/clearobjects` while standing on the arrival plaza, then wait one
-   heartbeat: the sockets within ~24 nodes of you report "marked but empty" in
-   the log and are filled again; walk to the gate and the posts there fill as
-   you arrive. (This is the one behaviour a headless boot cannot show, because
-   the re-check deliberately runs only where a player makes the mapblock
-   active.)
+8. `/clearobjects` while standing on the arrival plaza, then wait three
+   heartbeats (~15 s): the sockets whose mapblocks you are keeping active report
+   "marked but empty" in the log and are filled again; walk to the gate and the
+   posts there fill as you arrive. Three passes have to agree before a marker is
+   freed, so a guard that is merely away on patrol never triggers it.
 9. Take an enemy-faction character to another race's start: the gate guards
    attack; with an own-faction or a brand-new factionless character they do not.
