@@ -191,6 +191,24 @@ core.register_on_mods_loaded(function()
 	for _, entry in ipairs(grug_traders.stock) do
 		check(entry.item, entry.price)
 	end
+	--
+	-- AND THE PROFESSION SHELVES (WP13 wave 2, 2026-09-15). They were outside
+	-- this audit from the round-3 lane that introduced them: it walked the core
+	-- stock and the bracket catalogs only, so a butcher could have been priced
+	-- into a money loop and nothing would have said so. Twelve shelves is where
+	-- that stopped being theoretical.
+	--
+	-- `pairs` is fine here: `check` only logs, and it logs the item name, so
+	-- the order the shelves are visited in changes nothing a reader diffs.
+	-- stock.lua has already dropped the unregistered entries by the time this
+	-- runs -- both callbacks are `register_on_mods_loaded` and stock.lua's is
+	-- registered first (init.lua dofiles it above this block).
+	--
+	for _, shelf in pairs(grug_traders.profession_stock) do
+		for _, entry in ipairs(shelf) do
+			check(entry.item, entry.price)
+		end
+	end
 	for bracket = 1, #grug_gear.BRACKETS do
 		for _, itemname in ipairs(grug_gear.catalog[bracket].all) do
 			check(itemname, grug_gear.get_price(itemname))

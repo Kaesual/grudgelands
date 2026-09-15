@@ -1,4 +1,4 @@
--- Vendor NPCs: eight entity registrations and their deterministic placement
+-- Vendor NPCs: twenty entity registrations and their deterministic placement
 -- at the six race capitals (world.md §3/§7, economy.md §2).
 --
 -- WHY THE IDENTITY IS IN THE ENTITY NAME
@@ -181,7 +181,7 @@ end
 local VENDOR_FACTION_RACE = {accord = "human", throng = "orc"}
 
 --
--- WHAT RACE A PROFESSION VENDOR IS DRAWN AS (WP13 round 3). The five
+-- WHAT RACE A PROFESSION VENDOR IS DRAWN AS (WP13 round 3). The twelve
 -- professions are ONE entity each and they serve every settlement, so unlike
 -- the six race vendors they carry no race of their own -- a butcher in
 -- Hearthpine is a dwarf and a butcher in Sunscar is an orc. The settlement key
@@ -399,8 +399,9 @@ for index, race_id in ipairs(race_ids) do
 end
 
 --
--- THE FIVE PROFESSION VENDORS (WP13 playtest round 3, sockets contract
--- section 8.4). The user's ruling: a district reads as lived in when it has a
+-- THE PROFESSION VENDORS (WP13 playtest round 3, sockets contract section 8.4;
+-- five shipped then, TWELVE since the wave-2 extension below). The user's
+-- ruling: a district reads as lived in when it has a
 -- butcher with a butcher's house, a smith at a forge and a fishmonger beside
 -- the pond -- so `vendor.kind` grows from {race, general} to also carry these
 -- five, and the structure lanes place their sockets at the matching building.
@@ -418,7 +419,27 @@ end
 -- The salts continue the race vendors' block (RACE_SALT_BASE + 1..6), so no
 -- two vendor kinds share an hourly rotation.
 --
+--
+-- WAVE 2 (2026-09-15) ADDS SEVEN MORE, contract section 8.4's second row:
+-- mason, brewer, bowyer, herbalist, armourer, tanner and embalmer. They are
+-- appended, never interleaved, because the salt is POSITIONAL
+-- (`PROFESSION_SALT_BASE + index`) and re-ordering this list would re-roll
+-- every existing shop's hourly shelf.
+--
+-- WHICH OF THEM SELL THE EQUIPMENT LADDER: the smith, and now the ARMOURER.
+-- Eight of the nine fixed items in a bracket catalog are armour
+-- (`grug_gear`'s four metal and four cloth pieces against one sword), so an
+-- armourer that could not reach the tabs would be an armourer with no armour.
+-- The cost is named rather than hidden: `sells_gear` is one boolean over the
+-- WHOLE catalog (trade.lua), so the armourer's tabs also carry the sword and
+-- the rotating weapon extras. An armour-only tab would be a second view of the
+-- same catalog -- a trade-UI change and a contract question, not this lane's.
+-- items_crafting.md section 3.0.3 is satisfied either way: it forbids a second
+-- ITEM per concept, and two vendors reaching one catalog duplicate nothing
+-- (the race and general Quartermasters already both do).
+--
 local PROFESSION_SALT_BASE = 20
+local GEAR_KINDS = {smith = true, armourer = true}
 -- Ordered, because the salts are positional and must be reproducible across
 -- restarts; the nametag is the shop and not the shopkeeper.
 local PROFESSIONS = {
@@ -427,6 +448,14 @@ local PROFESSIONS = {
 	{kind = "fishmonger", nametag = "Fishmonger"},
 	{kind = "baker", nametag = "Baker"},
 	{kind = "tailor", nametag = "Tailor"},
+	-- Wave 2.
+	{kind = "mason", nametag = "Mason"},
+	{kind = "brewer", nametag = "Brewer"},
+	{kind = "bowyer", nametag = "Bowyer"},
+	{kind = "herbalist", nametag = "Herbalist"},
+	{kind = "armourer", nametag = "Armourer"},
+	{kind = "tanner", nametag = "Tanner"},
+	{kind = "embalmer", nametag = "Embalmer"},
 }
 
 for index, row in ipairs(PROFESSIONS) do
@@ -438,10 +467,9 @@ for index, row in ipairs(PROFESSIONS) do
 		-- The General tab's shelf. `nil` for the two original families, which
 		-- is what makes them keep the level-independent core stock.
 		stock = row.kind,
-		-- Only the smith sells equipment (items_crafting.md §3.0.3: the vendor
-		-- bracket catalog and the base craft ladder are the same items, and a
-		-- baker is not on that ladder).
-		brackets = row.kind == "smith" or nil,
+		-- Only the smith and the armourer sell equipment (see GEAR_KINDS
+		-- above: a baker is not on the ladder at all).
+		brackets = GEAR_KINDS[row.kind] or nil,
 	-- The placeholder skin of a build without grug_visuals. A profession
 	-- vendor has no faction, so it falls back to the Accord guard texture and
 	-- the visuals mod replaces it with the settlement's race at activation.

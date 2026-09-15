@@ -77,13 +77,21 @@ return function(repo)
 
 	local saved = {core = rawget(_G, "core"), grug_core = rawget(_G, "grug_core"),
 		grug_mobs = rawget(_G, "grug_mobs"), mobs = rawget(_G, "mobs"),
-		vector = rawget(_G, "vector")}
+		vector = rawget(_G, "vector"),
+		-- Wave 2: the wield seam and the gear name builder (see GLOBALS in
+		-- `boot`). Saved and restored like every other global this fixture
+		-- installs, so the fixtures that run after it see the environment they
+		-- had.
+		grug_visuals = rawget(_G, "grug_visuals"),
+		grug_gear = rawget(_G, "grug_gear")}
 	local function restore()
 		rawset(_G, "core", saved.core)
 		rawset(_G, "grug_core", saved.grug_core)
 		rawset(_G, "grug_mobs", saved.grug_mobs)
 		rawset(_G, "mobs", saved.mobs)
 		rawset(_G, "vector", saved.vector)
+		rawset(_G, "grug_visuals", saved.grug_visuals)
+		rawset(_G, "grug_gear", saved.grug_gear)
 	end
 	local function fail(message)
 		restore()
@@ -189,6 +197,22 @@ return function(repo)
 			x = 2, y = 1, z = -8, dir = {x = 0, z = -1}},
 		{id = "bench_work", role = "work", activity = "sit", tags = {"bench"},
 			x = 8, y = 1, z = 3, dir = {x = 1, z = 0}},
+		--
+		-- TWO WAVE-2 WORK SOCKETS (contract section 8.2's second table), and
+		-- both of them are here to be measured rather than to be counted:
+		--
+		--   * `shrine_work` carries NO TAG, which is the case the wave-2 line
+		--     rule is about -- an untagged work socket answers with its
+		--     ACTIVITY's line instead of the settlement's `default` one -- and
+		--     `mourn` is the one activity that writes a bone override;
+		--   * `yard_work` is tagged, so it proves the same rule does NOT
+		--     override an authored tag, and `spar` is the one activity that
+		--     wields a grug_gear FAMILY rather than an item string.
+		--
+		{id = "shrine_work", role = "work", activity = "mourn",
+			x = -6, y = 1, z = -14, dir = {x = 0, z = -1}},
+		{id = "yard_work", role = "work", activity = "spar", tags = {"work"},
+			x = 12, y = 1, z = -4, dir = {x = -1, z = 0}},
 		-- `door` on a QUEST socket: round 1 turned only `idle` sockets round, so
 		-- every Village Elder kept its face in the hall door and its back to the
 		-- street (playtest round 2). The tag describes the GEOMETRY, so the rule
@@ -357,6 +381,18 @@ return function(repo)
 			set_properties = function() end,
 			set_yaw = function(_, yaw) mob.yaw = yaw end,
 			get_yaw = function() return mob.yaw or 0 end,
+			-- Luanti >= 5.9's bone override, which is what a `mourn` resident
+			-- bows its head with (start_villagers.lua's MOURN_PITCH). Recorded
+			-- rather than applied: what this fixture can measure is that the
+			-- override is written ONCE per activation, with the mesh's own
+			-- `Head` bone and a RELATIVE rotation -- an absolute one would
+			-- replace the animated pose instead of composing with it. The
+			-- engine probe reads the real property off the real object.
+			set_bone_override = function(_, bone, override)
+				mob.bone_writes = (mob.bone_writes or 0) + 1
+				mob.bone_overrides = mob.bone_overrides or {}
+				mob.bone_overrides[bone] = override
+			end,
 			is_player = function() return false end,
 			remove = function()
 				-- `on_deactivate(self, true)` fires for an ACTIVE object that is
@@ -429,6 +465,37 @@ return function(repo)
 
 		rawset(_G, "vector", {
 			new = function(x, y, z) return {x = x, y = y, z = z} end,
+		})
+
+		--
+		-- The wield seam, as a RECORDER. `grug_visuals.apply_entity` is what
+		-- `start_villagers.lua` hands a work resident's tool -- or, for `spar`,
+		-- a weapon FAMILY and a bracket -- to, and the fixture only has to see
+		-- the spec: composing a texture is the visuals lane's own KAT.
+		-- `_grug_wield_item` is the field the real `apply_entity` writes, so
+		-- the probe and this fixture read the same name.
+		--
+		harness.visuals = {}
+		rawset(_G, "grug_visuals", {
+			apply_entity = function(entity, spec)
+				if type(spec) == "function" then spec = spec(entity) end
+				harness.visuals[entity] = spec
+				entity._grug_wield_item = spec.weapon or
+					(spec.weapon_family and grug_gear.weapon_item(
+						spec.weapon_family, spec.bracket or 1)) or nil
+			end,
+		})
+		-- grug_gear's own naming rule, transcribed (see GLOBALS below):
+		-- `grug_gear:<family>_<metal key of the bracket>`, the six material
+		-- tiers of items_crafting.md section 3.0.3.
+		local METALS = {"bronze", "iron", "steel", "silversteel", "embersteel",
+			"abyssal_steel"}
+		rawset(_G, "grug_gear", {
+			weapon_item = function(family, bracket)
+				local metal = METALS[bracket or 0]
+				if type(family) ~= "string" or not metal then return nil end
+				return "grug_gear:" .. family .. "_" .. metal
+			end,
 		})
 
 		-- `mob_class` is mobs_redo's SHARED entity class, which is where the
@@ -552,11 +619,16 @@ return function(repo)
 			-- Transcribed here INDEPENDENTLY of start_villagers.lua's activity
 			-- table, so a tool renamed on one side and not the other fails the
 			-- startup audit this fixture then reads back.
+			-- The wave-2 row adds no new TOOL name (`mine` reuses the bronze
+			-- pick, `brew` the stick, `carve` the stone axe), and the one
+			-- weapon it adds is resolved through grug_gear's own name builder,
+			-- so the bronze sword is listed here for the audit to find.
 			registered_items = {
 				["default:pick_bronze"] = true,
 				["default:shovel_stone"] = true,
 				["default:axe_stone"] = true,
 				["default:stick"] = true,
+				["grug_gear:sword_bronze"] = true,
 			},
 			registered_nodes = {air = {walkable = false},
 				["default:stone"] = {walkable = true}}}
@@ -570,7 +642,25 @@ return function(repo)
 		function core_api.pos_to_string(pos)
 			return "(" .. pos.x .. "," .. pos.y .. "," .. pos.z .. ")"
 		end
-		function core_api.global_exists() return false end
+		--
+		-- TWO GLOBALS THIS FIXTURE NOW OFFERS (wave 2), and no more: the real
+		-- `core.global_exists` is how `start_villagers.lua` probes an optional
+		-- dependency without tripping strict.lua, and both of the things it
+		-- probes for are things a wave-2 activity needs.
+		--
+		--   * `grug_visuals` -- the wield seam. Stubbed as a RECORDER, so the
+		--     fixture can assert that a `mine` resident is handed its tool and
+		--     a `spar` resident a weapon FAMILY at a bracket. Before this lane
+		--     the fixture answered false and the whole seam was dead code here.
+		--   * `grug_gear` -- the name builder the startup audit resolves that
+		--     family through. Its `weapon_item` is TRANSCRIBED from
+		--     grug_gear's own rule (`grug_gear:<family>_<metal of bracket>`)
+		--     rather than loaded, exactly as `registered_items` above is, so a
+		--     ladder renamed on one side and not the other fails the audit this
+		--     fixture reads back.
+		--
+		local GLOBALS = {grug_visuals = true, grug_gear = true}
+		function core_api.global_exists(name) return GLOBALS[name] == true end
 		function core_api.chat_send_player() end
 		function core_api.dir_to_yaw(dir) return dir_to_yaw(dir) end
 		function core_api.register_on_joinplayer() end
@@ -814,12 +904,13 @@ return function(repo)
 	-- The roster is
 	-- what is placed, marked, capped and censused -- so a spare must not enter
 	-- any of those counts.
-	-- Thirteen of the sixteen sockets carry an entity: the loop's SECOND
+	-- Fifteen of the eighteen sockets carry an entity: the loop's SECOND
 	-- waypoint is route data (one guard walks the whole loop) and the SPARE
 	-- idle socket is a wander target nobody lives on. Round 3 added four idle
-	-- spawn sockets and two `work` sockets to the fixture, which is where six
-	-- of the thirteen come from.
-	local SLOTS = 13
+	-- spawn sockets and two `work` sockets to the fixture, and the wave-2
+	-- vocabulary lane two more `work` sockets (`mourn` and `spar`), which is
+	-- where eight of the fifteen come from.
+	local SLOTS = 15
 	boot()
 	check(#world.objects == 0, "something stood there before the first boot")
 	become_ready()
@@ -1556,10 +1647,13 @@ return function(repo)
 		if rows[index].key == "hearthpine" then split = rows[index] end
 	end
 	check(split ~= nil, "the census lost the start")
-	-- Six idle spawn sockets and two work sockets: eight residents, of whom
-	-- the first and the sixth idle one walk.
-	check(split.residents == 8, "the census counts " ..
-		tostring(split.residents) .. " residents, not 8")
+	-- Six idle spawn sockets and four work sockets: ten residents, of whom
+	-- the first and the sixth idle one walk. (Two of the four work sockets are
+	-- the wave-2 `mourn` and `spar` ones, which is why the share moved from
+	-- 25.0 to 20.0 percent -- both inside the contract's band, and adding work
+	-- sockets is exactly what lowers it.)
+	check(split.residents == 10, "the census counts " ..
+		tostring(split.residents) .. " residents, not 10")
 	check(split.walkers == 2, "the census counts " .. tostring(split.walkers) ..
 		" walkers, not 2")
 	local share = split.walkers / split.residents * 100
@@ -1570,7 +1664,8 @@ return function(repo)
 	-- socket starting with the first, and no `work` socket ever.
 	local walking = {}
 	for _, socket_id in ipairs({"idle_a", "idle_b", "idle_c", "idle_d",
-			"idle_e", "idle_f", "forge_work", "bench_work"}) do
+			"idle_e", "idle_f", "forge_work", "bench_work", "shrine_work",
+			"yard_work"}) do
 		local mob = entity_at(socket_id)
 		check(mob ~= nil, "resident socket " .. socket_id .. " is empty")
 		walking[#walking + 1] = socket_id .. "=" ..
@@ -1583,7 +1678,9 @@ return function(repo)
 		entity_at("idle_d")._grug_walker == false and
 		entity_at("idle_e")._grug_walker == false and
 		entity_at("forge_work")._grug_walker == false and
-		entity_at("bench_work")._grug_walker == false,
+		entity_at("bench_work")._grug_walker == false and
+		entity_at("shrine_work")._grug_walker == false and
+		entity_at("yard_work")._grug_walker == false,
 		"the every-fifth rule picked the wrong residents: " ..
 		table.concat(walking, " "))
 	line("walker_split", "residents_" .. split.residents,
@@ -1779,8 +1876,14 @@ return function(repo)
 	--     than read off the implementation, so an activity that was added to
 	--     the contract and forgotten here fails.
 	--
+	--     WAVE 2 (2026-09-15) added the second table of section 8.2 -- `mine`,
+	--     `brew`, `carve`, `mourn`, `spar` and `forage` -- so the list below is
+	--     fifteen names long and the two shapes neither of the first nine had
+	--     get an assertion of their own: a bowed head and a weapon family.
+	--
 	local VOCABULARY = {"smith", "fish", "farm", "chop", "tend", "pray",
-		"stall", "sit", "sweep"}
+		"stall", "sit", "sweep",
+		"mine", "brew", "carve", "mourn", "spar", "forage"}
 	local ANIMS = {stand = true, walk = true, work = true, sit = true}
 	local implemented = {}
 	for _, name in ipairs(VOCABULARY) do
@@ -1795,18 +1898,116 @@ return function(repo)
 			check(core.registered_items[activity.item] ~= nil,
 				name .. " wields the unregistered " .. activity.item)
 		end
+		-- A weapon FAMILY is resolved through grug_gear's name builder, never
+		-- spelled as an item (items_crafting.md section 3.0.3: the ladder is
+		-- material-named and has no race axis, so "the settlement's tier-1
+		-- weapon" is the T1 rung of a family).
+		if activity.weapon_family then
+			local resolved = grug_gear.weapon_item(activity.weapon_family,
+				activity.bracket or 1)
+			check(type(resolved) == "string" and
+				core.registered_items[resolved] ~= nil,
+				name .. " wields the unregistered " .. tostring(resolved))
+			check(activity.item == nil,
+				name .. " names both an item and a weapon family")
+		end
 		implemented[#implemented + 1] = name .. "=" .. activity.anim ..
-			(activity.item and ("/" .. activity.item) or "")
+			(activity.item and ("/" .. activity.item) or "") ..
+			(activity.weapon_family and
+				("/" .. activity.weapon_family .. "@" ..
+					tostring(activity.bracket)) or "") ..
+			(activity.bow and "/bow" or "")
 	end
-	-- `sweep` is the ONLY activity that moves (contract section 8.2).
+	-- `sweep` is the ONLY activity that moves, and since wave 2 `mourn` is the
+	-- only one that bows (contract section 8.2).
 	for _, name in ipairs(VOCABULARY) do
 		local activity = grug_mobs.start_npc_activity(name)
 		check((activity.sweep == true) == (name == "sweep"),
 			name .. " disagrees with the contract about whether it moves")
+		check((activity.bow == true) == (name == "mourn"),
+			name .. " disagrees with the contract about the bowed head")
 	end
-	check(logged("work activities: 4 wielded tools, all registered") == 1,
+	check(logged("work activities: tools 7, weapon families 1, " ..
+		"all registered") == 1,
 		"the activity tool audit did not report a clean roster")
 	line("activities", table.concat(implemented, " "))
+
+	--
+	-- 17b. THE TWO WAVE-2 SHAPES, on the real residents the placement engine
+	--      put on the two new sockets.
+	--
+	--      The MOURNER bows the mesh's own `Head` bone -- measured off
+	--      `character.b3d`, which carries Head/Body/Arm_Left/Arm_Right/
+	--      Leg_Left/Leg_Right -- with a RELATIVE rotation, so the override
+	--      composes with the stand animation instead of replacing it, and it
+	--      is written exactly ONCE for the life of an activation. (What the
+	--      fixture cannot see is which way a negative pitch tips a head; that
+	--      is the user's own playtest, and start_villagers.lua names the
+	--      evidence for the sign.)
+	--
+	--      The SPARRING resident is handed a weapon FAMILY and a bracket
+	--      rather than an item, and the visuals seam is what resolves it --
+	--      which is the whole reason `grug_mobs` needs no grug_gear
+	--      dependency for it.
+	--
+	local mourner = entity_at("shrine_work")
+	local sparrer = entity_at("yard_work")
+	check(mourner ~= nil and sparrer ~= nil,
+		"the two wave-2 work sockets are empty")
+	-- Ten more seconds of the real tick: it is idempotent, so the write count
+	-- below is a claim about the whole activation and not about one call.
+	harness.players[1] = {x = mourner.pos.x, y = mourner.pos.y,
+		z = mourner.pos.z}
+	for _ = 1, 10 do
+		villager_def.do_custom(mourner, 1)
+		villager_def.do_custom(sparrer, 1)
+	end
+	local override = (mourner.bone_overrides or {})["Head"]
+	check(override ~= nil and override.rotation ~= nil,
+		"the mourner never bowed its head")
+	check(override.rotation.absolute ~= true,
+		"the mourner's head override is absolute and would replace the " ..
+		"stand animation instead of composing with it")
+	check(override.rotation.vec.x < 0 and override.rotation.vec.y == 0 and
+		override.rotation.vec.z == 0,
+		"the mourner's head is rotated on the wrong axes")
+	check(mourner.bone_writes == 1,
+		"the mourner wrote its bone override " ..
+		tostring(mourner.bone_writes) .. " times in one activation, not once")
+	check((sparrer.bone_overrides or {})["Head"] == nil,
+		"an activity other than mourn bowed a head")
+	local spar_spec = harness.visuals[sparrer]
+	check(spar_spec ~= nil and spar_spec.weapon == nil and
+		spar_spec.weapon_family == "sword" and spar_spec.bracket == 1,
+		"the sparring resident was not handed a tier-1 weapon family")
+	check(sparrer._grug_wield_item == "grug_gear:sword_bronze",
+		"the sparring resident holds " ..
+		tostring(sparrer._grug_wield_item) .. " and not the tier-1 sword")
+	--
+	-- AND THE SPOKEN LINE FOLLOWS THE ACTIVITY WHERE NO TAG WAS AUTHORED.
+	-- `shrine_work` carries no `tags` at all, `yard_work` carries `{"work"}`;
+	-- the first must answer with its activity's line and the second with the
+	-- authored tag's, or an untagged workplace would talk about nothing while
+	-- standing at a grave.
+	--
+	check(mourner._grug_idle_tag == "mourn",
+		"an untagged work socket answers with " ..
+		tostring(mourner._grug_idle_tag) .. " and not its activity")
+	check(sparrer._grug_idle_tag == "work",
+		"a tagged work socket lost its authored tag")
+	local lines = {}
+	for _, key in ipairs({"mine", "brew", "carve", "mourn", "spar", "forage",
+			"shade"}) do
+		local text = grug_mobs.start_npc_line("dwarf", key)
+		local fallback = grug_mobs.start_npc_line("dwarf", "no_such_tag")
+		check(type(text) == "string" and text ~= "" and text ~= fallback,
+			"the dwarf has no line of its own for " .. key)
+		lines[#lines + 1] = key
+	end
+	line("wave2_activities", "mourn_bow_writes_" .. mourner.bone_writes,
+		"spar_" .. tostring(sparrer._grug_wield_item),
+		"tag_" .. mourner._grug_idle_tag .. "/" .. sparrer._grug_idle_tag,
+		"lines_" .. table.concat(lines, ","))
 
 	--
 	-- 18. THE NAMETAG PROXIMITY GATE is reached by every peaceful family, once

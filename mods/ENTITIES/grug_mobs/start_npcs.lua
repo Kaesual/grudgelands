@@ -1059,9 +1059,21 @@ local function install(entity, row, slot)
 		entity._grug_work_x = slot.pos.x
 		entity._grug_work_z = slot.pos.z
 		entity._grug_walker = false
+		--
 		-- The spoken line still follows the socket's first tag, exactly as an
-		-- idle socket's does.
-		entity._grug_idle_tag = slot.tag
+		-- idle socket's does -- AND FALLS BACK TO THE ACTIVITY (wave 2), which
+		-- is the only role where there is a second thing to say.
+		--
+		-- Why: `tags` is optional on a `work` socket and an untagged one would
+		-- otherwise answer the settlement's generic `default` line while
+		-- standing at a grave, a cauldron or a rock face. The activity is
+		-- REQUIRED there (contract section 8.1) and names exactly that feature,
+		-- so it is the better key when the author gave none -- and
+		-- `start_villagers.lua`'s LINES carries one per race per activity. A
+		-- tagged socket is unchanged, so every `work` socket on main keeps the
+		-- line it has.
+		--
+		entity._grug_idle_tag = slot.tag or slot.activity
 	end
 end
 

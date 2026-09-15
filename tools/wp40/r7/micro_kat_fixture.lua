@@ -857,10 +857,11 @@ return function(repo, changed_roster_relative, expected_changed_count)
 				return {x = race == "human" and 1 or 2, y = 1, z = 0}
 			end}}, {__index = _G})
 	execute_in_environment("mods/ENTITIES/grug_traders/vendors.lua", trader_environment)
-	-- Two faction Quartermasters, six race vendors and the five profession
-	-- vendors of WP13 playtest round 3 (sockets contract section 8.4). The
-	-- projection SHA below moves with the roster and is derived, not pinned.
-	check(#trader_defs == 13 and trader_steps == 1 and trader_loaded == 2,
+	-- Two faction Quartermasters, six race vendors and the TWELVE profession
+	-- vendors of sockets contract section 8.4 (five from WP13 playtest round 3,
+	-- seven from the wave-2 vocabulary lane). The projection SHA below moves
+	-- with the roster and is derived, not pinned.
+	check(#trader_defs == 20 and trader_steps == 1 and trader_loaded == 2,
 		"trader registration projection differs")
 	table.sort(trader_defs, less_bytes)
 	row("registration/trader_projection_sha256",

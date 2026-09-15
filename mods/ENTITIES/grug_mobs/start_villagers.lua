@@ -42,9 +42,25 @@
 -- is what an amble is (see patrol.lua's header).
 --
 
--- One line per race and idle tag. Deliberately data, not generated: the
+--
+-- One line per race and socket tag. Deliberately data, not generated: the
 -- flavour is the whole point of a flair NPC. `default` answers a socket with
--- no tag, and the quest shell's single placeholder lives in `quest`.
+-- no line of its own, and the quest shell's single placeholder lives in
+-- `quest`.
+--
+-- WHICH KEY A RESIDENT ANSWERS WITH: `tags[1]` of the socket it stands on
+-- (contract section 8.1/section 6), and for a WORK socket with no tag at all
+-- its `activity` (start_npcs.lua's `install`). So a capital lane that authors
+-- `{id = ..., role = "work", activity = "mine"}` without a tag gets the `mine`
+-- line for free, and one that tags it `{"work"}` keeps the generic one. Both
+-- are legal; neither can produce a missing line, because an unknown key falls
+-- back to `default`.
+--
+-- THE FOUR TAGS AUTHORED ON MAIN are `work`, `bench`, `door` and `fire`
+-- (30/25/24/12 sockets across the six starts, Highcourt and Dur Brannoc), plus
+-- one `shade`, which had no line and answered `default` until this lane. The
+-- six added below are the wave-2 activity names of contract section 8.2.
+--
 local LINES = {
 	dwarf = {
 		door = "Mind the step. That stone was laid before my " ..
@@ -52,6 +68,14 @@ local LINES = {
 		bench = "Sit if you like. The bench holds heavier than you.",
 		work = "Everything good in the vale started as ore and stubbornness.",
 		fire = "The forge never goes cold. Someone always owes it a shift.",
+		mine = "The seam runs deeper than the shaft. It always does.",
+		brew = "Two barrels for the hall, one for whoever swung the hammer.",
+		carve = "Stone remembers a careless chisel longer than you will.",
+		mourn = "We cut their names into the wall. That is our kind of grief.",
+		spar = "Blunt the practice blades. Sharp ones teach the wrong lesson.",
+		forage = "The high slopes give mushrooms and little else. " ..
+			"Take the mushrooms.",
+		shade = "Out of the sun. The stone keeps its cool better than we do.",
 		default = "Hearthpine keeps its own counsel. And its own ale.",
 		quest = "There is work in the vale, but not yet written down. " ..
 			"Ask me again when the road is busier.",
@@ -61,6 +85,13 @@ local LINES = {
 		bench = "Long day in the fields. Longer evening, if the ale holds.",
 		work = "Barn is half full and the weather is turning. Story of my life.",
 		fire = "The smithy fire is the warmest thing in Dawnmere.",
+		mine = "Every bucket of ore goes up the road to the capital. Every one.",
+		brew = "Barley in, patience in, ale out. Do not rush the middle part.",
+		carve = "The gatepost has been recut three times. Weather wins in the end.",
+		mourn = "We bury them facing the fields. It seemed right, and it stuck.",
+		spar = "Drill in the morning, harvest after. Both keep you alive.",
+		forage = "The hedgerow is full this year. Mind the thorns.",
+		shade = "Sit out of the sun a while. The work will wait for you.",
 		default = "Fields to the south, road to the north. That is the whole of it.",
 		quest = "The hall keeps a list of things that need doing. " ..
 			"It is blank today. Come back later.",
@@ -70,6 +101,13 @@ local LINES = {
 		bench = "Sit. The leaves will tell you the season faster than I will.",
 		work = "A bow is grown, not carved. Ask me again in a year.",
 		fire = "Lantern light suits the glade better than an open flame.",
+		mine = "We take from the rock slowly. It was here first.",
+		brew = "The cordial wants a season in the dark. Ask again in spring.",
+		carve = "The figure is already in the wood. I only uncover it.",
+		mourn = "We plant rather than bury. The grove is the memory.",
+		spar = "Footwork first. A blade is only as honest as the stance.",
+		forage = "The forest floor feeds anyone who knows where to look.",
+		shade = "The canopy does the work. Stand under it and listen.",
 		default = "The glades stood before the roads. They will outlast them.",
 		quest = "The lore hall has errands for those who wait. " ..
 			"Waiting is the errand, for now.",
@@ -79,6 +117,13 @@ local LINES = {
 		bench = "The council seats are for talking. Fighting happens elsewhere.",
 		work = "The beasts eat first. They only fight hungry once.",
 		fire = "Forge heat, sun heat. Sunscar has no shortage of either.",
+		mine = "Pick, rock, pick. The mountain gives up eventually.",
+		brew = "Strong enough to stand a spear in. That is the measure.",
+		carve = "Every totem in this yard is a name somebody earned.",
+		mourn = "We burn ours and shout the name once. Once is enough.",
+		spar = "Hit me properly or do not waste the morning.",
+		forage = "Roots and dry fruit. The savanna is stingy, but it is honest.",
+		shade = "The sun is a second enemy here. Stand in the shade and live.",
 		default = "Stand straight in the muster yard. The warlord looks out often.",
 		quest = "The warlord gives orders, not chores. None for you today.",
 	},
@@ -87,6 +132,13 @@ local LINES = {
 		bench = "Sit long. River moves. We do not.",
 		work = "Shed is full of fish and patience. Mostly patience.",
 		fire = "Smoke keeps the fish. Smoke keeps the flies. Good smoke.",
+		mine = "Rock is slow. We are slower. We win.",
+		brew = "River water. Root. Time. Good.",
+		carve = "Wood was a tree. Tree was patient. Carve patient.",
+		mourn = "We sit by the water and say nothing. That is the song.",
+		spar = "Hit slow. Learn. Hit slow again.",
+		forage = "Jungle floor gives. Look down more.",
+		shade = "Rain stops here. Sit.",
 		default = "Cradle is old. Trees older. Trolls oldest.",
 		quest = "Spirits speak slow. No words for you yet. Come back.",
 	},
@@ -95,6 +147,13 @@ local LINES = {
 		bench = "The settles are cold. So are we. It suits.",
 		work = "The bone works never runs short of material. Take that as a warning.",
 		fire = "The gate braziers are lit for the living. Warm yourself.",
+		mine = "The shafts under Stillgrave were dug by the living. We kept them.",
+		brew = "It keeps the damp out. Nothing keeps the damp out.",
+		carve = "Names on stone. It is most of the work we have left.",
+		mourn = "We know both sides of this ceremony. Stand quietly.",
+		spar = "We do not tire. That makes us poor teachers and worse opponents.",
+		forage = "The blight grows things. Not all of them should be eaten.",
+		shade = "The sun is no friend of ours. Step under the eaves.",
 		default = "Stillgrave keeps quiet. Do the same and we will get along.",
 		quest = "The chapel records the dead, not the errands. " ..
 			"Nothing for you is written.",
@@ -191,6 +250,34 @@ local SPOT_GIVE_UP = 15
 -- One answer per player per two seconds: on_rightclick fires per click and a
 -- held mouse button is a chat flood otherwise.
 local ANSWER_COOLDOWN = 2
+--
+-- THE MOURNER'S BOWED HEAD (contract section 8.2, wave 2: "stands still, head
+-- bowed if the mesh allows"). MEASURED, not assumed: `character.b3d` carries
+-- the bones `Head`, `Body`, `Arm_Left`, `Arm_Right`, `Leg_Left` and
+-- `Leg_Right` -- read out of the model file itself -- so the mesh does allow
+-- it, and the bow is a bone override rather than a frame range nobody
+-- authored.
+--
+-- RELATIVE, not absolute (`absolute` is the default false): an absolute
+-- override would replace the animated head pose outright, while a relative one
+-- COMPOSES with whatever the stand animation is doing, so the mourner keeps
+-- breathing. Radians, in the model's own coordinate system
+-- (`lua_api.md` set_bone_override).
+--
+-- THE SIGN is the one thing a headless server cannot settle, and it is named
+-- rather than claimed: VoxeLibre's trading piglin -- the same Blockmen-derived
+-- humanoid lineage -- nods DOWN at the trade with a Head rotation of
+-- `(-0.7, 0, 0)` (mobs_mc/piglin.lua:115), which is the evidence for the
+-- negative x here. If the user's playtest shows a mourner looking at the sky,
+-- this constant's sign is the whole fix.
+--
+-- One write per activation and none afterwards, and the API is checked on the
+-- object rather than assumed: `set_bone_override` is Luanti >= 5.9, and an
+-- engine without it simply gets the still stand the contract's "if the mesh
+-- allows" already permits.
+--
+local MOURN_BONE = "Head"
+local MOURN_PITCH = -0.35
 
 --
 -- THE ACTIVITY TABLE (contract section 8.2, which is closed on the NAMES and
@@ -211,6 +298,11 @@ local ANSWER_COOLDOWN = 2
 -- rod-tending of section 8.2, which are a stand pose with an occasional mine
 -- frame rather than a loop.
 --
+-- `bow` is the mourner's head (MOURN_PITCH above), and `weapon_family` plus
+-- `bracket` is the sparring partner's blade -- the one activity that names a
+-- grug_gear FAMILY instead of an item string, for the reason in the table's
+-- own note.
+--
 -- `item` is what the hand holds, through the character-visuals wield seam
 -- (`grug_visuals.apply_entity`'s `weapon` field, the same one a guard's sword
 -- goes through). Only items the game ACTUALLY registers are named -- there is
@@ -219,6 +311,24 @@ local ANSWER_COOLDOWN = 2
 -- section 8.2 explicitly allows. An unregistered name would draw nothing at all
 -- (grug_visuals/apply.lua), so the startup audit at the bottom of this file
 -- reports one instead of leaving an empty hand nobody notices.
+--
+-- WAVE 2 (2026-09-15) added the six race-flavoured activities of the same
+-- section: `mine`, `brew`, `carve`, `mourn`, `spar` and `forage`. Five of them
+-- are the two shapes above -- a `work` loop with a tool, or a stand with an
+-- occasional swing -- and the two that are not say why in their own rows:
+--
+--   * `mourn` is a still stand WITH A BOWED HEAD (see MOURN_PITCH). The
+--     contract asks for the bow "if the mesh allows"; `character.b3d` carries
+--     a `Head` bone, so it does.
+--   * `spar` is the only activity that wields a WEAPON rather than a tool, and
+--     it names a FAMILY instead of an item: `grug_gear`'s ladder is
+--     material-named and has no race axis at all (items_crafting.md section
+--     3.0.3 -- one item per concept, six material tiers, four weapon
+--     families), so "the settlement's tier-1 weapon" resolves to the T1 rung
+--     of a family and nothing here may spell an item string. `grug_mobs` does
+--     not depend on `grug_gear`; `grug_visuals` does, and `weapon_family` plus
+--     `bracket` is exactly the seam a GUARD's sword already goes through
+--     (guard.lua's `_grug_visual`), so the dependency stays where it is.
 --
 local ACTIVITY = {
 	smith = {anim = "work", item = "default:pick_bronze"},
@@ -230,6 +340,13 @@ local ACTIVITY = {
 	stall = {anim = "stand"},
 	sit = {anim = "sit"},
 	sweep = {anim = "walk", sweep = true},
+	-- Wave 2, contract section 8.2's second table.
+	mine = {anim = "work", item = "default:pick_bronze"},
+	brew = {anim = "stand", swing = true, item = "default:stick"},
+	carve = {anim = "work", item = "default:axe_stone"},
+	mourn = {anim = "stand", bow = true},
+	spar = {anim = "work", weapon_family = "sword", bracket = 1},
+	forage = {anim = "stand", swing = true},
 }
 
 function grug_mobs.start_npc_activity(name)
@@ -369,18 +486,56 @@ end
 -- No `write_textures` argument: that exists for grug_mobs' tier tint, which
 -- layers an elite's gold over the pristine list. A villager has no tier.
 --
--- `item` is the wielded tool of a WORK resident (contract section 8.2) and nil
--- for everybody else. It goes through the same `weapon` field of the visuals
--- spec a guard's sword does, so the wield entity, its bone attachment and its
--- transform are the visuals lane's and not a second copy here. Both halves are
--- idempotent -- `apply_entity` skips the texture write while the composed skin
--- is unchanged and `sync_wield` skips while the item is unchanged -- which is
--- what makes calling it from a per-second tick free.
+-- `activity` is the ACTIVITY row of a WORK resident (contract section 8.2) and
+-- nil for everybody else. Its `item` goes through the same `weapon` field of
+-- the visuals spec a guard's sword does, so the wield entity, its bone
+-- attachment and its transform are the visuals lane's and not a second copy
+-- here. Both halves are idempotent -- `apply_entity` skips the texture write
+-- while the composed skin is unchanged and `sync_wield` skips while the item
+-- is unchanged -- which is what makes calling it from a per-second tick free.
 --
-local function apply_race_visual(self, race_id, item)
-	if core.global_exists("grug_visuals") then
-		grug_visuals.apply_entity(self, {race = race_id, weapon = item})
-	end
+-- AND `weapon_family` + `bracket` IS THE SAME SEAM ONE LEVEL UP (wave 2):
+-- `grug_visuals.compose` resolves a family at a bracket through
+-- `grug_gear.weapon_item`, which is where the material ladder's names live. It
+-- is passed on rather than resolved here on purpose -- `grug_mobs` does not
+-- depend on `grug_gear` (mod.conf) and `grug_visuals` does, so resolving it in
+-- this file would be a new dependency for one string.
+--
+local function apply_race_visual(self, race_id, activity)
+	if not core.global_exists("grug_visuals") then return end
+	grug_visuals.apply_entity(self, {race = race_id,
+		weapon = activity and activity.item or nil,
+		weapon_family = activity and activity.weapon_family or nil,
+		-- Only alongside a family: `bracket` also picks an armour grade, and a
+		-- villager has no armour line to grade.
+		bracket = activity and activity.weapon_family and
+			(activity.bracket or 1) or nil})
+end
+
+--
+-- THE MOURNER'S POSE, once per activation (see MOURN_PITCH).
+--
+-- Called from both places a work resident is dressed -- `after_activate` for a
+-- reload, whose staticdata already carries the activity, and the work tick's
+-- own dress block for a fresh placement, where `install` has not run yet when
+-- `after_activate` does. One flag in `self.temp`, which `mob_activate` clears
+-- per activation, so the override is written exactly once whichever path gets
+-- there first.
+--
+-- `object.set_bone_override` is checked rather than assumed (Luanti >= 5.9):
+-- without it the mourner is the still stand the contract already allows, and
+-- nothing logs, because an older engine is not a defect of this table.
+--
+local function apply_pose(self, activity)
+	if not activity or not activity.bow then return end
+	self.temp = self.temp or {}
+	if self.temp.grug_work_posed then return end
+	local object = self.object
+	if not object or not object.set_bone_override then return end
+	self.temp.grug_work_posed = true
+	object:set_bone_override(MOURN_BONE,
+		{rotation = {vec = vector.new(MOURN_PITCH, 0, 0), interpolation = 0,
+			absolute = false}})
 end
 
 --
@@ -634,12 +789,14 @@ local function work_tick(self, dtime)
 		self:set_animation("stand")
 		return false
 	end
-	-- The tool, once per activation. Both halves of `apply_entity` are
-	-- no-ops once the composed skin and the held item are what they should be.
+	-- The tool and the pose, once per activation. Both halves of `apply_entity`
+	-- are no-ops once the composed skin and the held item are what they should
+	-- be, and `apply_pose` writes one bone override or nothing at all.
 	if not temp.grug_work_dressed then
 		temp.grug_work_dressed = true
-		apply_race_visual(self, self._grug_npc_race, activity.item)
+		apply_race_visual(self, self._grug_npc_race, activity)
 	end
+	apply_pose(self, activity)
 	if activity.sweep then
 		local home_x, home_z, far_x, far_z = sweep_ends(self)
 		local to_far = temp.grug_sweep_far == true
@@ -872,10 +1029,11 @@ for index = 1, #identities do
 				-- after `add_entity` activated the entity) and the first work
 				-- tick dresses it instead.
 				local activity = ACTIVITY[self._grug_work_activity]
-				apply_race_visual(self, race_id, activity and activity.item)
+				apply_race_visual(self, race_id, activity)
 				if activity then
 					self.temp = self.temp or {}
 					self.temp.grug_work_dressed = true
+					apply_pose(self, activity)
 				end
 				grug_mobs.face_yaw(self, self._grug_face_yaw)
 			end,
@@ -925,9 +1083,17 @@ end
 -- activity table is not reproducible and a log line that reorders itself is a
 -- log line nobody can diff.
 --
+-- WAVE 2 ADDED THE WEAPON HALF. `spar` names a grug_gear family rather than an
+-- item, so what the audit has to resolve is the family at its bracket -- and it
+-- does that through the global rather than a dependency, because `grug_mobs`
+-- has none on `grug_gear` and `core.global_exists` is the only way to probe a
+-- global without tripping `strict.lua` (docs/research/luanti-lua.md). A missing
+-- `grug_gear` is reported like an unregistered item: it is the same failure for
+-- the player, an empty hand.
 core.register_on_mods_loaded(function()
 	local items = core.registered_items or {}
-	local missing, tools = {}, 0
+	local missing, tools, families = {}, 0, 0
+	local gear = core.global_exists("grug_gear") and grug_gear or nil
 	for name, activity in pairs(ACTIVITY) do
 		if activity.item then
 			tools = tools + 1
@@ -935,10 +1101,22 @@ core.register_on_mods_loaded(function()
 				missing[#missing + 1] = name .. "=" .. activity.item
 			end
 		end
+		if activity.weapon_family then
+			families = families + 1
+			local resolved = gear and gear.weapon_item and
+				gear.weapon_item(activity.weapon_family, activity.bracket or 1)
+			if type(resolved) ~= "string" or not items[resolved] then
+				missing[#missing + 1] = name .. "=" .. activity.weapon_family ..
+					"/" .. tostring(resolved)
+			end
+		end
 	end
 	if #missing == 0 then
-		core.log("action", "[grug_mobs] settlement work activities: " ..
-			tools .. " wielded tools, all registered")
+		-- Counts as labelled fields rather than as English plurals: "1 weapon
+		-- families" is what a naive concatenation says, and this line is
+		-- asserted verbatim by tools/wp13/start_npcs_kat.lua.
+		core.log("action", "[grug_mobs] settlement work activities: tools " ..
+			tools .. ", weapon families " .. families .. ", all registered")
 		return
 	end
 	table.sort(missing)

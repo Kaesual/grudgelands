@@ -73,6 +73,30 @@
 -- impersonated PlayerSAO's side effects on other mods. Everything under test
 -- reads the map, never `core.get_connected_players`.
 --
+-- WAVE 2 (2026-09-15) ADDS A SECOND PROGRAMME, the capital mode the round-3
+-- lane declined to build and left as an open item (wp13-highcourt-fill.md
+-- section 9.4). Its two objections were right and are both answered by making
+-- this a MODE rather than a flag on the start programme:
+--
+--   * the readiness gate. `grug_core.start_ready(race)` is a statement about a
+--     race's START, which for Highcourt is Dawnmere 1 500 nodes away and ready
+--     long before a capital chunk exists. The capital programme does not ask
+--     it at all: it forceloads the capital and waits for the map to answer.
+--   * the scale. A capital has no preload, 256 sockets against a start's
+--     eighteen, and an envelope no single emerge covers -- so the capital
+--     programme forceloads EVERY SOCKET'S OWN BLOCK and holds them, which is
+--     exactly the condition the round-3 evidence found missing when
+--     Highcourt's bakehouse plot never placed anybody.
+--
+-- It displaces nobody, removes nobody and spawns no hostile: it is an
+-- inventory, and the start programme remains the behavioural one.
+--
+-- WHICH PROGRAMME RUNS is read from `mode.lua`, a one-table file the runner
+-- writes into its own staged copy of this directory. `loadfile` inside a mod
+-- directory is what the engine's security sandbox allows
+-- (docs/research/luanti-lua.md), and `tools/luanti_headless.sh` passes no
+-- environment into the Flatpak, so a file is the only way in.
+--
 -- Plain Lua 5.1.
 
 grug_wp13_npc_probe = {}
@@ -80,6 +104,16 @@ grug_wp13_npc_probe = {}
 local storage = core.get_mod_storage()
 local BOOT = (tonumber(storage:get_string("boots")) or 0) + 1
 storage:set_string("boots", tostring(BOOT))
+
+local MODE = {programme = "start", key = nil}
+do
+	local chunk = loadfile(core.get_modpath(core.get_current_modname()) ..
+		"/mode.lua")
+	if chunk then
+		local ok, value = pcall(chunk)
+		if ok and type(value) == "table" then MODE = value end
+	end
+end
 
 local FORCE_REACH = 64 -- nodes each way; the block grid that stays active
 local MOVE_AWAY = 40 -- nodes off the socket, the playtest's own distance
@@ -1213,6 +1247,443 @@ local RELOAD = {
 	end},
 }
 
+--
+-- ============================ THE CAPITAL MODE ============================
+--
+-- One boot, one settlement, no behaviour: it forceloads a capital by KEY,
+-- holds every socket's own mapblock active, waits for the placement engine's
+-- heartbeat, and then inventories what is standing there by role, activity and
+-- vendor kind -- plus, for every socket that carries nobody, the state of the
+-- map under it. That last list is the point: the round-3 evidence found
+-- Highcourt's baker missing and could not say whether the SOCKET, the
+-- PLACEMENT or the PROBE was at fault, because its harness emerged each
+-- mapchunk once and moved on, so the bakehouse plot's ground was unloaded
+-- again by the time the heartbeat reached it.
+--
+-- The CAP on the heartbeat wait, not the wait itself: the settle phase ends as
+-- soon as every socket the settlement owes is marked (see `capital_tick`).
+local CAPITAL_SETTLE = 120
+local CAPITAL_BLOCK_WAIT = 300 -- s the socket blocks get to come up
+-- ...and how long WITHOUT A SINGLE NEW BLOCK the phase waits before it gives
+-- up on the rest. A stall clock rather than the total, for the same reason
+-- every stuck rescue in this game uses one: progress is the thing that says
+-- whether waiting longer can help, and on the first Highcourt run two blocks
+-- of 131 never came up at all while the other 129 were there inside 30 s.
+local CAPITAL_BLOCK_STALL = 60
+local CAPITAL_ANCHOR_WAIT = 240 -- s the anchor column gets to emerge
+local CAPITAL_BATCH = 24 -- socket blocks forceloaded per second
+
+local capital, capital_carriers, capital_reach
+
+-- Does this socket CARRY an entity? The placement engine's own rule
+-- (start_npcs.lua `build_rows`): a spare carries nobody, a patrol loop carries
+-- one guard on its FIRST waypoint, and `king`/`waypoint` have no resolver at
+-- all. Restated here rather than imported because the probe must be able to
+-- disagree with the engine -- the census's `roster` is the cross-check, and
+-- the inventory prints both.
+local CAPITAL_CARRYING_ROLE = {guard_post = true, guard_patrol = true,
+	vendor = true, idle = true, work = true, quest = true}
+
+local function capital_carries(socket)
+	if not CAPITAL_CARRYING_ROLE[socket.role] then return false end
+	if socket.spawn == false then return false end
+	if socket.role == "guard_patrol" and socket.order ~= 1 then return false end
+	return true
+end
+
+local function find_capital()
+	if capital then return capital end
+	local key = MODE.key
+	local list = grug_core.settlement_socket_settlements()
+	for index = 1, #list do
+		if list[index].key == key then
+			capital = list[index]
+			capital.sockets = grug_core.settlement_sockets_at(key)
+			capital_carriers = 0
+			capital_reach = 0
+			for socket_index = 1, #capital.sockets do
+				local socket = capital.sockets[socket_index]
+				socket_by_id[socket.id] = socket
+				if capital_carries(socket) then
+					capital_carriers = capital_carriers + 1
+				end
+				local dx = socket.pos.x - capital.anchor.x
+				local dz = socket.pos.z - capital.anchor.z
+				local reach = math.sqrt(dx * dx + dz * dz)
+				if reach > capital_reach then capital_reach = reach end
+			end
+			return capital
+		end
+	end
+	return nil
+end
+
+-- Every socket's OWN mapblock, forceloaded and HELD for the life of the run.
+-- Deduplicated by block coordinate, because a plot's dozen sockets share two
+-- or three blocks and `forceload_block` counts each call against the limit.
+-- `limit = -1` is what lifts `max_forceloaded_blocks` (16 by default), which a
+-- capital passes several times over.
+local capital_blocks, capital_block_order, capital_block_next = {}, {}, 1
+
+--
+-- AND THE PATROL LOOPS' OWN GROUND, which the first Highcourt run earned. A
+-- socket is where somebody STANDS, and every family in a settlement stands on
+-- one -- except a patrolling guard, which is between two waypoints most of the
+-- time. Holding the waypoints alone left one of Highcourt's nine loop guards
+-- out of memory in a block nobody held, and the inventory then read 180 of 181
+-- with the marker intact, which is the placement engine being right and the
+-- harness being short. So each loop's legs are sampled and their blocks held
+-- too.
+--
+-- Every LEG_STEP nodes: a mapblock is sixteen wide, so eight cannot skip one,
+-- and the y is interpolated because a gate-tower loop climbs.
+--
+local LEG_STEP = 8
+
+local function capital_plan_blocks()
+	local function want(pos)
+		local key = math.floor(pos.x / 16) .. ":" .. math.floor(pos.y / 16) ..
+			":" .. math.floor(pos.z / 16)
+		if capital_blocks[key] then return end
+		capital_blocks[key] = {pos = {x = pos.x, y = pos.y, z = pos.z}}
+		capital_block_order[#capital_block_order + 1] = key
+	end
+	want(capital.anchor)
+	-- Loop id -> waypoint order -> position, exactly as the placement engine
+	-- reads them (`group` and `order` on a `guard_patrol` socket).
+	local loops, loop_order = {}, {}
+	for index = 1, #capital.sockets do
+		local socket = capital.sockets[index]
+		want(socket.pos)
+		if socket.role == "guard_patrol" and socket.group then
+			local loop = loops[socket.group]
+			if not loop then
+				loop = {}
+				loops[socket.group] = loop
+				loop_order[#loop_order + 1] = socket.group
+			end
+			loop[socket.order] = socket.pos
+		end
+	end
+	table.sort(loop_order)
+	local legs = 0
+	for _, group in ipairs(loop_order) do
+		local loop = loops[group]
+		local points = {}
+		for order = 1, 64 do
+			if loop[order] then points[#points + 1] = loop[order] end
+		end
+		for index = 1, #points do
+			-- Closing the ring: the last waypoint walks back to the first.
+			local from = points[index]
+			local to = points[index % #points + 1]
+			local dx, dy, dz = to.x - from.x, to.y - from.y, to.z - from.z
+			local span = math.sqrt(dx * dx + dz * dz)
+			local steps = math.floor(span / LEG_STEP)
+			for step = 1, steps do
+				local t = step / (steps + 1)
+				want({x = from.x + dx * t, y = from.y + dy * t,
+					z = from.z + dz * t})
+			end
+			legs = legs + 1
+		end
+	end
+	return #capital_block_order, legs
+end
+
+local function capital_forceload_batch()
+	local done = 0
+	while capital_block_next <= #capital_block_order and done < CAPITAL_BATCH do
+		local key = capital_block_order[capital_block_next]
+		capital_block_next = capital_block_next + 1
+		local row = capital_blocks[key]
+		row.asked = core.forceload_block(row.pos, true, -1) == true
+		done = done + 1
+	end
+	return capital_block_next > #capital_block_order
+end
+
+-- How many of the planned blocks the map can actually answer for. `loaded` is
+-- the gate a PLACEMENT needs (start_npcs.lua reads `get_node_or_nil`) and
+-- `active` the one a marker needs to be freed, so both are counted -- and they
+-- are NOT the same question, which the first Highcourt run showed: two blocks
+-- of 131 read active while their node still read `ignore`, i.e. the block
+-- existed in the environment as a placeholder and had never been generated.
+--
+-- SO A BLOCK THAT IS ACTIVE BUT NOT GENERATED IS ASKED TO EMERGE, once.
+-- `forceload_block` requests a block; `emerge_area` is the explicit generation
+-- API and is what closes that gap. Throttled like the forceloads, and marked
+-- per block so the request is made once and not once a second.
+local function capital_block_status(emerge_budget)
+	local loaded, active, refused = 0, 0, 0
+	local asked_emerge = 0
+	for index = 1, #capital_block_order do
+		local row = capital_blocks[capital_block_order[index]]
+		-- `asked` is nil while a block is still QUEUED and false only when
+		-- `forceload_block` actually said no. Counting nil as refused made the
+		-- progress lines of the batching phase read as failures.
+		if row.asked == false then refused = refused + 1 end
+		local node = core.get_node_or_nil(row.pos)
+		if node and node.name ~= "ignore" then
+			loaded = loaded + 1
+		elseif row.asked and not row.emerged and emerge_budget and
+				asked_emerge < emerge_budget then
+			row.emerged = true
+			asked_emerge = asked_emerge + 1
+			core.emerge_area(row.pos, row.pos)
+		end
+		if core.compare_block_status(row.pos, "active") == true then
+			active = active + 1
+		end
+	end
+	return loaded, active, refused, asked_emerge
+end
+
+-- The capital's own census row, out of the placement engine rather than out of
+-- the map: roster, markers, live, spare, residents, walkers and owed.
+local function capital_census_row()
+	local rows = grug_mobs.start_npc_census()
+	for index = 1, #rows do
+		if rows[index].key == capital.key then return rows[index] end
+	end
+	return nil
+end
+
+-- Everything of this capital that is standing in the world, by identity.
+-- `capital_reach` is the furthest socket, so the sphere covers the whole
+-- envelope rather than a start's 200.
+local function capital_npcs()
+	local found, by_socket = {}, {}
+	local objects = core.get_objects_inside_radius(capital.anchor,
+		capital_reach + 64)
+	for index = 1, #objects do
+		local entity = objects[index]:get_luaentity()
+		if entity and entity._grug_start == capital.key then
+			found[#found + 1] = entity
+			local socket_id = entity._grug_socket
+			if type(socket_id) == "string" then by_socket[socket_id] = entity end
+		end
+	end
+	return found, by_socket
+end
+
+local function sorted_counts(counts)
+	local names = {}
+	for name in pairs(counts) do names[#names + 1] = name end
+	table.sort(names)
+	local parts = {}
+	for index = 1, #names do
+		parts[#parts + 1] = names[index] .. "=" .. counts[names[index]]
+	end
+	if #parts == 0 then return "-" end
+	return table.concat(parts, ",")
+end
+
+local function capital_inventory()
+	local npcs, by_socket = capital_npcs()
+	local roles, activities, kinds = {}, {}, {}
+	local walkers, residents = 0, 0
+	for index = 1, #npcs do
+		local entity = npcs[index]
+		local role = tostring(entity._grug_socket_role)
+		roles[role] = (roles[role] or 0) + 1
+		if role == "work" then
+			local activity = tostring(entity._grug_work_activity)
+			activities[activity] = (activities[activity] or 0) + 1
+			residents = residents + 1
+		elseif role == "idle" then
+			residents = residents + 1
+			if entity._grug_walker == true then walkers = walkers + 1 end
+		elseif role == "vendor" then
+			local socket = socket_by_id[entity._grug_socket or ""]
+			local kind = socket and tostring(socket.kind) or "?"
+			kinds[kind] = (kinds[kind] or 0) + 1
+		end
+	end
+	local census = capital_census_row()
+	log({"event=capital_inventory", "key=" .. capital.key,
+		"sockets=" .. #capital.sockets, "carriers=" .. capital_carriers,
+		"standing=" .. #npcs,
+		"roster=" .. tostring(census and census.roster),
+		"marked=" .. tostring(census and census.marked),
+		"live=" .. tostring(census and census.live),
+		"owed=" .. tostring(census and census.owed),
+		"spare=" .. tostring(census and census.spare),
+		"residents=" .. residents,
+		"census_residents=" .. tostring(census and census.residents),
+		"walkers=" .. walkers,
+		"census_walkers=" .. tostring(census and census.walkers),
+		"share=" .. (residents > 0 and
+			string.format("%.1f", walkers / residents * 100) or "-"),
+		"roles=" .. sorted_counts(roles),
+		"activities=" .. sorted_counts(activities),
+		"vendor_kinds=" .. sorted_counts(kinds)})
+	--
+	-- AND THE GAPS, which is what this mode exists for. For every socket that
+	-- should carry somebody and has nobody STANDING on it, three answers: the
+	-- map's own state under it, and whether the placement engine's own MARKER
+	-- is set.
+	--
+	-- THOSE ARE TWO DIFFERENT QUESTIONS AND CONFLATING THEM WOULD MAKE THIS
+	-- MODE LIE, which the first Highcourt runs showed. A marked socket with
+	-- nobody visible is an NPC whose mapblock is not active at this instant --
+	-- `start_npcs.lua`'s own `strikeable` rule refuses to free such a marker
+	-- for exactly that reason -- and a PATROLLING guard is the family that
+	-- produces it: it is between waypoints by definition, so its position is
+	-- not a socket and no set of socket blocks can promise to contain it.
+	-- An UNMARKED carrying socket is the real finding: nobody was ever placed
+	-- there, which is the shape of the round-3 baker.
+	--
+	-- The marker is read out of the placement engine's own mod storage, which
+	-- `grug_mobs.storage` publishes, rather than inferred from a count.
+	--
+	local marker_of = grug_mobs.storage
+	local gaps, unmarked = 0, 0
+	for index = 1, #capital.sockets do
+		local socket = capital.sockets[index]
+		if capital_carries(socket) and not by_socket[socket.id] then
+			gaps = gaps + 1
+			local node = core.get_node_or_nil(socket.pos)
+			local marked = marker_of and marker_of:get_string(
+				"startnpc:" .. capital.key .. ":" .. socket.id) == "1"
+			if not marked then unmarked = unmarked + 1 end
+			log({"event=capital_gap", "socket=" .. socket.id,
+				"role=" .. socket.role,
+				"kind=" .. tostring(socket.kind),
+				"activity=" .. tostring(socket.activity),
+				"pos=" .. core.pos_to_string(socket.pos),
+				"node=" .. tostring(node and node.name),
+				"loaded=" .. tostring(node ~= nil and node.name ~= "ignore"),
+				"active=" .. tostring(
+					core.compare_block_status(socket.pos, "active")),
+				"marked=" .. tostring(marked)})
+		end
+	end
+	log({"event=capital_gaps", "n=" .. gaps, "unmarked=" .. unmarked,
+		"of=" .. capital_carriers})
+	--
+	-- THE CLAIM, in the two halves the run can actually make good on.
+	--
+	-- 1. The PLACEMENT filled the capital: every carrying socket is marked,
+	--    less the guard refills world.md section 4a has booked. This is the
+	--    strong one and it is what the round-3 open item asked.
+	-- 2. Nobody is MISSING: a carrying socket with no marker is a socket
+	--    nothing was ever placed on.
+	--
+	-- What is deliberately NOT asserted is `live == roster`: an NPC in an
+	-- inactive mapblock is asleep, not absent, and a patroller can be in one
+	-- whatever this harness holds.
+	--
+	if census and census.marked ~= census.roster - census.owed then
+		fail("the capital marked " .. tostring(census.marked) ..
+			" of a roster of " .. tostring(census.roster) .. " with owed=" ..
+			tostring(census.owed))
+	end
+	if unmarked > 0 then
+		fail(unmarked .. " of " .. capital_carriers ..
+			" carrying sockets have no NPC and no marker")
+	end
+end
+
+--
+-- The capital programme's own stepper. NOT the `at = <second>` table the start
+-- programme uses: a capital's phases are gated on the MAP answering rather
+-- than on a clock, and a fixed schedule would either wait for the worst case
+-- every run or report an empty city on a slow one.
+--
+local capital_phase = "anchor"
+local capital_phase_clock = 0
+-- The block phase's stall clock (CAPITAL_BLOCK_STALL): how many blocks have
+-- ever been loaded, and when that number last moved.
+local capital_loaded_best, capital_loaded_at = -1, 0
+
+local function capital_tick(elapsed)
+	capital_phase_clock = capital_phase_clock + elapsed
+	if capital_phase == "anchor" then
+		-- The anchor column first, so the capital core is emerged and
+		-- `grug_mapgen` has published this settlement's sockets.
+		local node = core.get_node_or_nil(capital.anchor)
+		if node and node.name ~= "ignore" then
+			local blocks, legs = capital_plan_blocks()
+			log({"event=capital_anchor", "after=" ..
+				string.format("%.0f", capital_phase_clock),
+				"node=" .. node.name,
+				"blocks=" .. blocks, "patrol_legs=" .. legs})
+			capital_phase, capital_phase_clock = "blocks", 0
+		elseif capital_phase_clock > CAPITAL_ANCHOR_WAIT then
+			fail("the capital anchor never emerged in " ..
+				CAPITAL_ANCHOR_WAIT .. " s")
+			log({"event=complete", "programme=capital"})
+			core.request_shutdown("wp13 npc capital probe done", false, 1)
+			capital_phase = "done"
+		end
+		return
+	end
+	if capital_phase == "blocks" then
+		local planned = capital_forceload_batch()
+		-- The emerge retry only starts once every forceload has been issued:
+		-- a block that has not been ASKED for yet is not a block that failed
+		-- to generate.
+		local loaded, active, refused, emerged =
+			capital_block_status(planned and CAPITAL_BATCH or nil)
+		-- Throttled to one line every ten seconds plus the transitions: this
+		-- phase can run for minutes on a cold capital and a per-second line
+		-- would bury the inventory it exists to reach.
+		local done = planned and loaded == #capital_block_order
+		if done or not planned or capital_phase_clock % 10 < 1 then
+			log({"event=capital_blocks", "planned=" .. #capital_block_order,
+				"asked=" .. (capital_block_next - 1), "refused=" .. refused,
+				"loaded=" .. loaded, "active=" .. active,
+				"emerged=" .. tostring(emerged),
+				"after=" .. string.format("%.0f", capital_phase_clock)})
+		end
+		if loaded > capital_loaded_best then
+			capital_loaded_best = loaded
+			capital_loaded_at = capital_phase_clock
+		end
+		if done then
+			capital_phase, capital_phase_clock = "settle", 0
+		elseif capital_phase_clock > CAPITAL_BLOCK_WAIT or
+				capital_phase_clock - capital_loaded_at >
+					CAPITAL_BLOCK_STALL then
+			-- Not a failure by itself: the inventory below reports exactly
+			-- which sockets are affected, which is more useful than stopping.
+			log({"event=capital_blocks_timeout", "loaded=" .. loaded,
+				"of=" .. #capital_block_order,
+				"stalled_for=" .. string.format("%.0f",
+					capital_phase_clock - capital_loaded_at)})
+			capital_phase, capital_phase_clock = "settle", 0
+		end
+		return
+	end
+	if capital_phase == "settle" then
+		-- The placement heartbeat is one pass every five seconds
+		-- (start_npcs.lua PLACE_INTERVAL) and a pass fills every socket whose
+		-- node is loaded, so this waits for the ROSTER rather than for a
+		-- clock: as soon as every socket the settlement owes is marked, the
+		-- inventory is taken. CAPITAL_SETTLE is the cap on that wait, not the
+		-- wait itself, so a capital that never fills still reports.
+		local census = capital_census_row()
+		local filled = census ~= nil and
+			census.marked == census.roster - census.owed
+		if filled or capital_phase_clock % 15 < 1 then
+			log({"event=capital_settle",
+				"after=" .. string.format("%.0f", capital_phase_clock),
+				"roster=" .. tostring(census and census.roster),
+				"marked=" .. tostring(census and census.marked),
+				"live=" .. tostring(census and census.live),
+				"filled=" .. tostring(filled)})
+		end
+		if filled or capital_phase_clock >= CAPITAL_SETTLE then
+			capital_inventory()
+			log({"event=complete", "programme=capital"})
+			core.request_shutdown("wp13 npc capital probe done", false, 1)
+			capital_phase = "done"
+		end
+		return
+	end
+end
+
 local programme = BOOT == 1 and FULL or RELOAD
 local next_step = 1
 local clock = 0
@@ -1227,6 +1698,39 @@ core.register_globalstep(function(dtime)
 	-- wall clock the run script's timeout is measured in.
 	local elapsed = accumulator
 	accumulator = 0
+	if MODE.programme == "capital" then
+		if not started then
+			local row = find_capital()
+			if not row then
+				-- A capital registers its sockets at LOAD (grug_mapgen fills
+				-- the registry from every composition in
+				-- `register_on_mods_loaded`), so a key that is still missing
+				-- after a few server seconds is a key nobody publishes rather
+				-- than something to keep waiting for. The grace period is
+				-- there only so a slow first step cannot decide it.
+				clock = clock + elapsed
+				if clock < 10 then return end
+				fail("no settlement is registered under the key " ..
+					tostring(MODE.key))
+				log({"event=complete", "programme=capital"})
+				core.request_shutdown("wp13 npc capital probe done", false, 1)
+				started = true
+				capital_phase = "done"
+				return
+			end
+			started = true
+			log({"event=ready", "key=" .. row.key, "race=" .. row.race_id,
+				"anchor=" .. core.pos_to_string(row.anchor),
+				"sockets=" .. #row.sockets, "carriers=" .. capital_carriers,
+				"reach=" .. string.format("%.0f", capital_reach),
+				"programme=capital"})
+			-- The anchor's own grid, so the core emerges even before the
+			-- per-socket blocks are planned from the registry.
+			log({"event=forceload", "blocks=" .. forceload_area(row.anchor)})
+		end
+		capital_tick(elapsed)
+		return
+	end
 	if not started then
 		local row = find_settlement()
 		if not row then return end
