@@ -18,7 +18,7 @@ So this lane ships:
 | --- | --- |
 | activities | the six of §8.2's second table (`mine`, `brew`, `carve`, `mourn`, `spar`, `forage`) |
 | vendors | the seven entities of §8.4's second row (mason, brewer, bowyer, herbalist, armourer, tanner, embalmer) and their shelves |
-| lines | 43 new race-flavoured lines: seven keys × six races, plus the line-key rule below |
+| lines | **42** new race-flavoured lines (seven keys × six races), plus the line-key rule of §3 |
 | probe | `run_npc_probe.sh`'s new **capital mode**, the open item of `wp13-highcourt-fill.md` §9.4 |
 
 Nothing in `mods/MAPGEN` and nothing in `wp13/*.lua` was touched, so the six
@@ -97,10 +97,12 @@ never an item string, and the resolution happens in `grug_visuals.compose`,
 which owns the `grug_gear` dependency. `grug_mobs` has none (`mod.conf`), and
 acquiring one for a single string would be the wrong trade.
 
-**For the coordinator:** if the user wants a dwarf sparring with a greataxe
-and an elf with a dagger, that is a `docs/design` addition (a race → weapon
-family row) and one table in this file, not a code problem. It is flagged, not
-done.
+**Ruled and accepted** by the coordinator on 2026-09-15 after the review of
+this lane: `spar` uses the fixed sword family. So `docs/design/settlements.md`
+naming the tier-1 sword records a decision rather than leaking an
+implementation choice into design. If the user later wants a dwarf sparring
+with a greataxe and an elf with a dagger, that is a `docs/design` addition (a
+race → weapon family row) plus one table in this file, not a code problem.
 
 ### 2.3 The tool audit grew a weapon half
 
@@ -119,10 +121,10 @@ plurals, so it never has to read "1 weapon families").
 
 ## 3. The spoken line follows the activity where no tag was authored
 
-A resident answers a right-click with `LINES[race][tags[1]]`. Four tags are
-authored across the whole tree today — `work` (30 sockets), `bench` (25),
-`door` (24), `fire` (12) — plus a single `shade`, which had no line and
-answered `default`.
+A resident answers a right-click with `LINES[race][tags[1]]`. Exactly four tag
+names are authored in `mods/` today: `work` (28 sockets), `bench` (23 literal
+plus 4 the Highcourt plot helper passes positionally), `door` (20) and `fire`
+(11).
 
 `tags` is OPTIONAL on a `work` socket while `activity` is REQUIRED (§8.1), so
 an untagged workplace would talk about nothing in particular while standing at
@@ -132,11 +134,51 @@ a grave or a cauldron. One line in `start_npcs.lua`'s `install` fixes that:
 entity._grug_idle_tag = slot.tag or slot.activity
 ```
 
-A tagged socket is unchanged, so every `work` socket on main keeps the line it
-has; an untagged one reaches its activity's line. `LINES` therefore gains the
-six activity names and `shade` for each of the six races — 42 + 1 lines. A key
-nobody authors still falls back to `default`, so a capital lane cannot produce
-a missing line whichever way it tags.
+**This is the intended behaviour and not a compatibility measure** — a smith
+should talk like a smith — and the coordinator ruled it so on 2026-09-15 after
+the review of this lane.
+
+### 3.1 How many sockets it actually affects, measured
+
+The first version of this note said "on main every `work` socket carries a tag,
+so nothing changes today". **That is false and the review caught it.** The tree
+holds 48 `work` sockets and only 16 of them are tagged:
+
+| where | `work` sockets | tagged |
+| --- | ---: | ---: |
+| the six starts (`wp13/<start>.lua`, literal socket tables) | 12 | **12** (`work`, `fire`, `bench`) |
+| Highcourt (`plots.work(id, activity, x, z, face, tags, y)`) | 36 | **4** — the `{"bench"}` `sit` seats; `tags` is the sixth, optional argument and 32 calls omit it |
+| Dur Brannoc | 0 | — |
+
+So **32 of 48 `work` sockets are untagged**, and this line changes what key
+those 32 residents answer with.
+
+It is nevertheless behaviour-neutral **today**, for a narrower and more fragile
+reason than the first version gave: `LINES` gained only the six WAVE-2 activity
+names, and carries **no key for any round-3 activity name** (`chop`, `farm`,
+`fish`, `pray`, `sit`, `smith`, `stall`, `sweep`, `tend`). So
+`_grug_idle_tag = "chop"` still resolves through `race.default`, exactly as
+`_grug_idle_tag = nil` did. `_grug_idle_tag` feeds nothing but the spoken line
+(its only reader is `answer(...)` in `start_villagers.lua`), so there is no
+other surface.
+
+**The forward consequence, stated because it is real:** the first time anybody
+adds a `chop` or a `tend` line for flavour, **32 Highcourt residents change what
+they say** — 7 choppers, 9 tenders, 7 farmers, 3 fishers and the rest. That is
+the point of the rule, not a hazard, but it is a deliberate step and this lane
+does not take it: the nine round-3 activity keys are left absent ON PURPOSE
+(coordinator's ruling, 2026-09-15), so that flavour pass is one visible commit
+rather than a side effect of this one.
+
+`LINES` therefore gains seven keys per race — the six wave-2 activity names and
+`shade` — which is **6 × 7 = 42** new lines. A key nobody authors still falls
+back to `default`, so a capital lane cannot produce a missing line whichever
+way it tags.
+
+`shade` is forward-looking data and **not** a gap this lane closed: the string
+occurs nowhere in `mods/`, and its only occurrences in the tree are as the
+SECOND tag of fixture sockets in two KATs. Only `tags[1]` is ever read, so no
+NPC has ever asked for a `shade` line.
 
 ## 4. The seven profession vendors
 
@@ -194,10 +236,19 @@ already both do. What the round-3 lane's reasoning actually forbade is
 re-listing the ladder on a general SHELF, which is why the armourer's own
 shelf is materials and not a hand-copied ladder.
 
-**The cost is named rather than hidden:** `sells_gear` (`trade.lua`) is one
-boolean over the whole catalogue, so the armourer's tabs also carry the sword
-and the rotating weapon extras. An armour-only tab is a second view of the
-same catalogue — a trade-UI change and a contract question, not this lane's.
+**Ruled and accepted** by the coordinator on 2026-09-15, with the costs named
+rather than hidden. There are two:
+
+* `sells_gear` (`trade.lua`) is one boolean over the whole catalogue, so the
+  armourer's tabs also carry the sword and the rotating weapon extras. An
+  armour-only tab is a second view of the same catalogue — a trade-UI change
+  and a contract question, not this lane's.
+* §8.4 allows one vendor per kind, so **a capital that places both a smith and
+  an armourer has two shops selling the same fixed catalogue.** They are not
+  copies of each other hour to hour — the hourly rotation is seeded per kind
+  (salts 22 and 30), so the two rotating slots differ — but the nine fixed
+  items are the same nine on both counters. That goes on the user's playtest
+  checklist (§10) rather than being assumed desirable.
 
 ### 4.3 The money-loop audit now covers the profession shelves
 
@@ -425,19 +476,37 @@ per simulated second**, 1.96–3.61 µs per ticking NPC over 11 of them, in the
 order dawnmere 33.60, hearthpine 39.70, kapok 28.65, silverleaf 32.40,
 stillgrave 21.60, sunscar 25.05.
 
-**That is higher than round 3's 14.95–28.70 µs and this note does not claim it
-is not.** Two things are measured about it and one is not:
+The first version of this note carried "higher than round 3's 14.95–28.70 µs"
+as an open item. **The independent review retired it by measuring, and this is
+the measurement**: it re-ran the identical bytes with the identical harness on
+the same machine, and the ordering of the settlements inverted.
 
-* the machine was **not idle**: three other WP13 wave-2 lanes were running
-  their own headless capital servers during this window, at load average 4.66
-  on 16 cores (`load/context.txt`). Round 3's numbers were taken without that;
-* round 3's own note already says "read the windows in order and the trend
-  inside each run is as large as the difference between the runs", and the
-  spread inside this run (21.60 to 39.70) is indeed larger than its distance
-  from the old band;
-* **what is NOT measured is a clean before/after on an idle machine.** That is
-  the honest gap, and re-taking it is a ten-minute run somebody with a quiet
-  workstation should do.
+| µs per settlement per simulated second | this lane's run | the review's re-run |
+| --- | ---: | ---: |
+| dawnmere | 33.60 | 41.65 |
+| hearthpine | **39.70** | **17.75** |
+| kapok | 28.65 | 33.75 |
+| silverleaf | 32.40 | 21.00 |
+| stillgrave | 21.60 | 22.15 |
+| sunscar | 25.05 | 19.95 |
+| range / mean | 21.60–39.70 / **30.17** | 17.75–41.65 / **26.04** |
+
+Hearthpine goes from the top of the range to below round 3's own *floor*;
+dawnmere from the middle to the top; the two orderings are essentially
+uncorrelated, and the re-run's mean is the LOWER of the two. The spread inside
+one run is larger than the distance between the runs — which is exactly what
+round 3's own note warned about ("the trend inside each run is as large as the
+difference between the runs"), and what a 20-sample integer microbenchmark
+(`us_total` 833 against 355) can be expected to do on a workstation shared with
+other lanes' engine runs.
+
+**So the observation is noise below the measurement's own resolution and is
+retired rather than carried as an open item.** Re-taking it on a quiet machine
+would buy nothing: the measurement cannot resolve a difference this small.
+
+What held in every window of BOTH runs is the part that is a claim about the
+code: `find_path=0` per window, walker share 16.7 %, 6 residents of whom 1
+walks, the fixed 90.3 ms step.
 
 What the code says, against which the numbers are a sanity check rather than
 the argument: a wave-2 activity adds to the per-second hot path exactly one
@@ -461,29 +530,47 @@ PORT=31620 tools/wp13/run_npc_probe.sh /tmp/npcvocab-capital 531802985935182545 
 PORT=31630 tools/wp13/run_npc_load.sh /tmp/npcvocab-load 531802985935182545
 ```
 
-## 8. What the review should look at
+## 8. What the review found
 
-* **The bone override's sign** (§2.1). It is the one visual claim a headless
-  run cannot settle, and it is one constant.
-* **`spar`'s single family for every race** (§2.2). The contract says "the
-  settlement's" and the brief said "the settlement race's"; this lane read the
-  shipped catalogue rather than invent a race axis, and flagged the difference
-  instead of closing it.
-* **The armourer's bracket tabs** (§4.2) — the one decision taken against a
-  design section rather than derived from it, with the all-or-nothing
-  `sells_gear` cost named.
-* **The line-key fallback** (§3) changes behaviour for exactly the sockets that
-  carry no tag. On main every `work` socket carries one, so nothing changes
-  today; a wave-2 capital that authors an untagged workplace is what it is
-  for.
-* **The capital probe's `capital_carries`** restates one rule from
-  `start_npcs.lua`'s `build_rows` (which sockets carry an entity) rather than
-  importing it. That is deliberate — a probe that shared the engine's opinion
-  could not disagree with it — and the census's own `roster` is the
-  cross-check, printed on the same line.
+The independent review (2026-09-15, against head `90e6f35e`) reproduced every
+gate — the static sweeps byte-identical to the committed `static.txt`, both
+KATs under both interpreters, the final micro pair at `b3aa0177…`, the six
+start identities at `0bbf87a7…`, and its own capital-mode, start-mode and load
+runs, all `errors=0`. It raised **no blocker**. What it did find, and what this
+note now says instead:
+
+* **The line-key justification was false** (§3.1). "On main every `work` socket
+  carries a tag" is wrong: 32 of the tree's 48 do not, because Highcourt's
+  `plots.work(id, activity, x, z, face, tags, y)` takes `tags` as an optional
+  sixth argument and 32 calls omit it. The change is safe today for a narrower
+  reason, now written down, and the forward consequence is stated.
+* **"43 new lines" was 42**, and `shade` was described as a gap this lane
+  closed when it is forward-looking data nothing reads (§3).
+* **The microbenchmark observation was noise** (§6.5). The review's re-run of
+  the identical bytes inverted the ordering of the settlements, so the open
+  item is retired with both runs' numbers rather than carried.
+* **`kat/micro-kat-fixture.txt` could never re-verify**: LuaJIT's traceback
+  ends in an ASLR address, and `sha256sum -c` over `files.sha256` failed on
+  that one file of 52. The address is now replaced with `0xADDRESS` in
+  `kat.sh`, so the capture is reproducible and the manifest checks 52 of 52.
+* **Two of the lane's three flagged decisions were accepted** (the fixed sword
+  family, the armourer's gear tabs) with one cost the note had not named — two
+  shops on one catalogue in a capital that has both a smith and an armourer,
+  now in §4.2 and on the playtest checklist. The third, the bow's sign, is on
+  the checklist too.
+* **The capital probe restates THREE engine rules, not one**, and the note said
+  one: `capital_carries` against `build_rows`' `carries`,
+  `CAPITAL_CARRYING_ROLE` against the six registered resolvers, and the marker
+  key string `"startnpc:<key>:<id>"` against `placed_key`. All three match
+  today and the review checked each. The first two have a cross-check (the
+  census's own `roster`, printed on the same line); the third is a bare string
+  — but if `placed_key` ever changed prefix the probe would report every
+  carrying socket as unmarked and fail loudly, which is the safe direction.
 * **The profession money-loop audit** (§4.3) is a widening of an existing
-  audit, so it now judges five shelves it did not before. All five pass; if a
-  future shelf does not, the error line names the item.
+  audit, so it now judges five shelves it did not before. The review
+  re-computed all twelve shelves independently against the item dump:
+  `entries=62 moneyloops=0 unregistered=0`, and every shared item priced
+  identically on both its shelves.
 
 ## 9. What is open
 
@@ -491,7 +578,12 @@ PORT=31630 tools/wp13/run_npc_load.sh /tmp/npcvocab-load 531802985935182545
   five capital lanes place them; this lane ships the behaviour and proves it
   on the fixture and, for the round-3 vocabulary, in the engine. The capital
   probe is the harness those lanes' sockets will be inventoried with.
+* **The nine round-3 activity keys are deliberately absent from `LINES`**
+  (§3.1). Adding the first one moves 32 Highcourt residents' dialogue, which is
+  a flavour pass somebody should take on purpose.
 * **A race → weapon family mapping** would be a `docs/design` addition (§2.2).
+  The coordinator ACCEPTED the fixed sword family on 2026-09-15, so this is a
+  future enrichment and no longer an open decision.
 * **`tools/wp13/highcourt_kat.lua`'s `VENDOR_KINDS`** lists the five round-3
   kinds only. It is the Highcourt fill lane's file (§8.5) and Highcourt places
   no wave-2 kind, so nothing is broken; a capital lane that places one into
@@ -505,15 +597,57 @@ PORT=31630 tools/wp13/run_npc_load.sh /tmp/npcvocab-load 531802985935182545
   (`#trader_defs == 20`); the check would have raised "trader registration
   projection differs" otherwise. On a checkout with submodules it also has the
   pre-existing `missing override target default:shovel_wood` gap round 3
-  already recorded.
+  already recorded. The gate in `kat.sh` was an assertion about an ABSENCE
+  (a crash before line 859 would also have printed "passed"), so it now prints
+  the `micro_kat_fixture.lua` line numbers the traceback reached — 1074 here,
+  which is past 859.
+* **`tools/wp13/npc_probe/init.lua`'s patrol-leg planner caps a loop at 64
+  waypoints** (`for order = 1, 64`) and would silently truncate a longer one.
+  Highcourt's largest loop is 10, so nothing is affected; left uncommented
+  rather than touched in the fix round, because editing the probe source would
+  invalidate the `harness.sha256` the three engine runs were taken under
+  without a re-run to replace them.
 * **No render of a bowed head or a sparring pair**: a headless server draws no
   frame. What is documented instead is the exact bone, rotation and evidence
   for the sign (§2.1).
-* **The load microbenchmark was taken on a busy machine** (§6.5). A clean
-  before/after pair on a quiet workstation is a ten-minute run and is not in
-  this package.
-* **One of Highcourt's nine loop guards is never visible to the capital probe**
-  at the instant it inventories, because it is walking (§5.1). It is marked,
-  the roster is full, and the probe reports it rather than failing on it — but
-  a mode that wanted to see every NPC would have to hold the whole envelope,
-  not a set of blocks.
+* **`spar`'s facing is inherited, not asserted.** A sparring resident faces its
+  partner through the generic authored-`dir` rule, which is the right answer
+  and needs no new code — but nothing in this lane's KAT reads a sparrer's yaw,
+  so a capital lane that places a PAIR facing the same way would not be caught
+  here. §8.5 gives the feature-under-`dir` check to the placing lane's own KAT;
+  flagged to those lanes.
+* **The capital mode PRINTS its headline numbers and asserts only two of
+  them** (§5.1): the marker count and "no unmarked carrying socket". Residents
+  144, walkers 22, share 15.3 %, work 36 and the seven vendor kinds are report
+  fields. A capital lane using this harness as a gate should know it will not
+  catch a walker-share drift or a vendor kind that stopped being placed while
+  its marker was set — and that `event=capital_gap` lines must never be pinned,
+  because their count varies run to run (see the checklist below).
+
+## 10. For the user's playtest round 4
+
+Three things this package cannot settle from a headless server, in the order
+they are quickest to look at:
+
+1. **Does the mourner bow its head DOWN?** `MOURN_PITCH = -0.35` in
+   `start_villagers.lua`. The mechanics are asserted by the KAT (relative
+   override, x axis only, one write per activation); only the SIGN is
+   unverified, and its evidence is VoxeLibre's trading piglin nodding down at
+   `(-0.7, 0, 0)` on the same humanoid lineage (§2.1). If the mourner is
+   looking at the sky, flipping that one constant is the whole fix. Nothing
+   places a `mourn` socket yet, so this becomes visible when a wave-2 capital
+   lands.
+2. **A capital with both a smith and an armourer has two shops on one
+   catalogue.** §8.4 allows one vendor per kind, and both now carry the gear
+   bracket tabs — with different hourly rotations (salts 22 and 30), so the
+   two shelves genuinely differ hour to hour. That is probably what a capital
+   should feel like, and it is named here rather than discovered: if it reads
+   as a duplicate, the fix is to take `brackets` off the armourer and give it
+   an armour-only view, which is a trade-UI change (§4.2).
+3. **Walking guards are invisible to a snapshot, and that is normal.** The
+   capital probe reported **one** gap on this lane's run and **two** on the
+   review's re-run of the same bytes (`homes_tavern/homes_tavern_watch` both
+   times, plus `lore_shrine/lore_shrine_watch` on the re-run) — always marked,
+   always a patroller, roster always full. That variation is the positive
+   evidence for the run-3 decision not to assert `live == roster`: a capital
+   that showed 181 of 181 standing would be one where nobody was walking.
