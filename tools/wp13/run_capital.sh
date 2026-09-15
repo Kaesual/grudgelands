@@ -151,8 +151,8 @@ set -e
 [[ -f "$engine_log" ]] && cp "$engine_log" "$log"
 [[ -f "$log" ]] || { echo "run_capital: no server log" >&2; exit 1; }
 
-for dump in core plot district fill avenue rampart gate wall surface scan \
-		grid field; do
+for dump in core plot district fill avenue approach rampart gate wall surface \
+		scan grid field; do
 	[[ -f "$world/$key-$dump.tsv" ]] && cp "$world/$key-$dump.tsv" "$output/"
 done
 grep 'GRUG_WP13_CAPITAL' "$log" >"$output/probe.txt" || true

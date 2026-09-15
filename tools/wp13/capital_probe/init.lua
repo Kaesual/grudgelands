@@ -911,6 +911,62 @@ local function finish()
 				max_z = anchor_z + first_fill.z + bounds.max.z + 2}
 		end
 	end
+	-- THE STEEPEST GATE APPROACH, whichever of the four axes it is.
+	--
+	-- The dump above reads the EAST avenue and only the east avenue, which for
+	-- Dur Brannoc and Highcourt is the interesting one and for Nhal Veyr is the
+	-- flat one: the wave-2 review of that capital found its NORTH road standing
+	-- four to seven courses above its ground at the gate point while the east
+	-- road sat on its own ground the whole way, and no north/south/west
+	-- carriageway had ever been read back out of a finished map. So the probe
+	-- picks the axis whose FREE TERRAIN falls furthest over the last thirty
+	-- columns before the gate point and dumps that one too, out to 261 and not
+	-- to 260, because the gate approach is exactly the band the other dump's
+	-- range excludes. On a capital whose four axes are equally calm this is one
+	-- of them chosen arbitrarily and costs a region; on a capital with a steep
+	-- flank it is the region somebody needs.
+	local APPROACH_FROM, APPROACH_TO = 200, 261
+	local axes = {
+		{id = "north", dx = 0, dz = 1}, {id = "south", dx = 0, dz = -1},
+		{id = "east", dx = 1, dz = 0}, {id = "west", dx = -1, dz = 0}}
+	local steepest, steepest_fall
+	for _, axis in ipairs(axes) do
+		local high, low
+		for p = 230, 261 do
+			local y = grug_zones.terrain_height_at(anchor_x + axis.dx * p,
+				anchor_z + axis.dz * p)
+			if high == nil or y > high then high = y end
+			if low == nil or y < low then low = y end
+		end
+		local fall = high - low
+		if steepest_fall == nil or fall > steepest_fall then
+			steepest, steepest_fall = axis, fall
+		end
+	end
+	local app_low, app_high = anchor_y, anchor_y
+	for p = APPROACH_FROM, APPROACH_TO do
+		local y = grug_zones.terrain_height_at(anchor_x + steepest.dx * p,
+			anchor_z + steepest.dz * p)
+		if y < app_low then app_low = y end
+		if y > app_high then app_high = y end
+	end
+	local function approach_span(component)
+		local a = steepest[component] * APPROACH_FROM
+		local b = steepest[component] * APPROACH_TO
+		if a > b then a, b = b, a end
+		if a == 0 and b == 0 then return -12, 12 end
+		return a, b
+	end
+	local app_min_x, app_max_x = approach_span("dx")
+	local app_min_z, app_max_z = approach_span("dz")
+	dump_queue[#dump_queue + 1] = {name = (KEY .. "-approach.tsv"),
+		label = "approach",
+		header = profile.label .. " " .. steepest.id .. " gate approach as " ..
+			"built (the steepest of the four axes, free terrain falling " ..
+			steepest_fall .. " nodes over 230..261), anchor-relative",
+		min_x = anchor_x + app_min_x, max_x = anchor_x + app_max_x,
+		min_y = app_low - 8, max_y = app_high + 8,
+		min_z = anchor_z + app_min_z, max_z = anchor_z + app_max_z}
 	-- A WALLED capital publishes two more regions: a stretch of curtain that
 	-- crosses a terrace step with a turret on it, and its east gate. Neither
 	-- exists for an open capital, so both are added only when the composition
