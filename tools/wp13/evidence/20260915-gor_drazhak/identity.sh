@@ -27,10 +27,12 @@ luajit tools/wp13/gor_drazhak_identities.lua . | tail -3
 
 echo
 echo "== the KATs of the settlements before this one =="
-# The four expected values were taken on an archive of `main` at 922bfd92 --
-# `git archive main ... | tar -x` into a scratch tree, the same KAT run there --
-# so this is a comparison against the tree before this lane and not against a
-# number somebody wrote down from this one.
+# The four expected values were taken on an ARCHIVE OF MAIN extracted into a
+# scratch tree, with the same KAT run there -- so this is a comparison against
+# the tree before this lane and not a number somebody wrote down from this one.
+# Re-verified in the fix round against main at c8050057: all four, the
+# start-identity fixture (0bbf87a7...) and Highcourt's own identity listing
+# (66e2ed00...) are byte-identical on both trees.
 declare -A expect=(
 	[library_kat]=bd4b51ab87f33ebc719c7833f1ff560d6a8d6332d2f8e5691acf7b5af0bcddee
 	[blueprint_kat]=13f7fd7da93cf3a0fb67a8f83c3eb757d83eee36625ebbc82ae8bd535489a30f

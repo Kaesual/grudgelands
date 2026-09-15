@@ -296,6 +296,7 @@ tools/wp13/wield_transform_kat.lua:212:-- `core::Transform::buildMatrix` rotates
 tools/wp13/evidence/20260915-capital-terrain/measurements/band-bound.lua:12:--   gentle  the worst |output step| over pairs whose RELIEF step is at most 1.
 tools/wp13/evidence/20260915-capital-terrain/measurements/band-bound.lua:44:io.write("deviation = worst |output - plain terrace|\n\n")
 tools/wp13/evidence/20260914-round-b-terrain/measure/road_shoulder.lua:2:-- rows on the approach, the smallest |dx| at which a biome decoration may host
+tools/wp13/evidence/20260915-gor_drazhak/surface_check.lua:5:-- The dumps come from `run_capital.sh <out> gor_drazhak surface|full <seed>`,
 5 sandbox/namespace: READ THESE
 tools/wp13/capital_wall.lua:246:	os.exit(1)
 tools/wp13/capital_plots.lua:313:	os.exit(0)
@@ -307,14 +308,16 @@ tools/wp13/dump_blueprint.lua:59:		os.exit(1)
 tools/wp13/dump_blueprint.lua:66:	os.exit(1)
 tools/wp13/dump_blueprint.lua:72:	os.exit(1)
 tools/wp13/lane_routes.lua:347:	os.exit(1)
+tools/wp13/gor_drazhak_rampart.lua:238:	os.exit(1)
 tools/wp13/highcourt_plots.lua:398:	os.exit(0)
 tools/wp13/highcourt_plots.lua:579:	os.exit(1)
-tools/wp13/gor_drazhak_lots.lua:339:	os.exit(1)
+tools/wp13/gor_drazhak_lots.lua:399:	os.exit(1)
 tools/wp13/dump_highcourt.lua:43:	os.exit(2)
 tools/wp13/dump_highcourt.lua:76:	os.exit(2)
 tools/wp13/dump_highcourt.lua:97:	os.exit(0)
 tools/wp13/dump_highcourt.lua:113:		os.exit(2)
 tools/wp13/dump_highcourt.lua:220:	os.exit(2)
+tools/wp13/evidence/20260915-gor_drazhak/surface_check.lua:109:if hard > 0 then os.exit(1) end
 tools/wp13/dump_capital_part.lua:30:	os.exit(2)
 tools/wp13/dump_capital_part.lua:53:			os.exit(2)
 tools/wp13/dump_capital_part.lua:72:	os.exit(2)

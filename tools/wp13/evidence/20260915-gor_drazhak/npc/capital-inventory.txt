@@ -1,0 +1,18 @@
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=ready key=gor_drazhak race=orc anchor=(0,94,1500) sockets=315 carriers=199 reach=293 programme=capital
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=forceload blocks=162
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=capital_anchor after=53 node=grug_decor:castle_pavement_brick blocks=259 patrol_legs=50
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=capital_blocks planned=259 asked=24 refused=0 loaded=59 active=43 emerged=0 after=1
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=capital_blocks planned=259 asked=48 refused=0 loaded=59 active=43 emerged=0 after=2
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=capital_blocks planned=259 asked=72 refused=0 loaded=59 active=47 emerged=0 after=3
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=capital_blocks planned=259 asked=96 refused=0 loaded=74 active=47 emerged=0 after=4
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=capital_blocks planned=259 asked=120 refused=0 loaded=88 active=70 emerged=0 after=5
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=capital_blocks planned=259 asked=144 refused=0 loaded=94 active=70 emerged=0 after=7
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=capital_blocks planned=259 asked=168 refused=0 loaded=99 active=88 emerged=0 after=8
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=capital_blocks planned=259 asked=192 refused=0 loaded=125 active=88 emerged=0 after=9
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=capital_blocks planned=259 asked=216 refused=0 loaded=132 active=128 emerged=0 after=10
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=capital_blocks planned=259 asked=240 refused=0 loaded=135 active=128 emerged=0 after=11
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=capital_blocks planned=259 asked=259 refused=0 loaded=259 active=252 emerged=0 after=21
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=capital_settle after=2 roster=199 marked=199 live=199 filled=true
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=capital_inventory key=gor_drazhak sockets=315 carriers=199 standing=199 roster=199 marked=199 live=199 owed=0 spare=73 residents=160 census_residents=160 walkers=21 census_walkers=21 share=13.1 roles=guard_patrol=9,guard_post=21,idle=104,quest=2,vendor=7,work=56 activities=brew=8,carve=5,chop=6,forage=2,mine=3,mourn=3,pray=2,sit=2,smith=3,spar=8,stall=5,sweep=5,tend=4 vendor_kinds=armourer=1,brewer=1,butcher=1,general=1,race=1,smith=1,tanner=1
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=capital_gaps n=0 unmarked=0 of=199
+ACTION[Server]: GRUG_WP13_NPC boot=1 event=complete programme=capital

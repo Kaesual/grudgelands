@@ -1,5 +1,12 @@
 # WP13: Gor Drazhak, the orc capital
 
+> **Read section 10 first.** An independent review of the first version found
+> one blocker and six should-fixes, all but one of them the same root cause: the
+> coverage the brief asked for (nine fixture seeds) was taken on three. Sections
+> 1-9 are the first version's record and their three-seed numbers stand as
+> history; section 10 is the fix round, and where the two disagree the fix round
+> is what the tree does.
+
 Increment record, 2026-09-15, built against `main` at `922bfd92` ("Extend the
 socket vocabulary for the wave-2 capitals"). It belongs to the capitals
 contract's section 3 step 3, "the other five capitals, one lane each": Dur
@@ -27,7 +34,7 @@ Evidence: `tools/wp13/evidence/20260915-gor_drazhak/`.
 | File | Change |
 | --- | --- |
 | `wp13/orc_palisade.lua` | **new**: the city wall as a STAKE PALISADE ON AN EARTH RAMPART — an overlay with `wall.lua`'s seam and constants and none of its section |
-| `wp13/gor_drazhak_quadrants.lua` | **new**: the city plan — avenues, ring, lanes, rampart runs, and one authored lot grid turned four times with seven measured repairs, plus the seeded quadrant permutation |
+| `wp13/gor_drazhak_quadrants.lua` | **new**: the city plan — avenues, ring, lanes, rampart runs, the corner table the rampart reconciles against, and one authored lot grid turned four times with eighteen measured repairs, plus the seeded quadrant permutation |
 | `wp13/gor_drazhak_plot.lua` | **new**: one district plot in the orc palette, behind a flat deck and a breastwork |
 | `wp13/gor_drazhak_district_market.lua` | **new**: the BAZAAR — nine plots and four fill lots, five profession vendors |
 | `wp13/gor_drazhak_district_martial.lua` | **new**: the WAR YARD — the arena, the drill yard, the beast pen |
@@ -38,7 +45,9 @@ Evidence: `tools/wp13/evidence/20260915-gor_drazhak/`.
 | `wp40/r7_gor_drazhak_blueprint.lua` | **new**: the capital source the seam reads — core, 52 plots, one overlay of twenty runs |
 | `wp40/r7_settlement.lua` | one roster row, after `dur_brannoc`; nothing else |
 | `tools/wp13/gor_drazhak_kat.lua` | **new**: acceptance for the core, every plot, the whole capital's socket contract, the rampart, the work-socket features and the quadrants |
-| `tools/wp13/gor_drazhak_lots.lua` | **new**: derives and verifies the 36 district lots and the 16 fill lots from the terrain grid of three worlds |
+| `tools/wp13/gor_drazhak_lots.lua` | **new**: derives and verifies the 36 district lots and the 16 fill lots from the terrain grid of all nine fixture worlds |
+| `tools/wp13/gor_drazhak_rampart.lua` | **new** (fix round): the rampart's own nine-seed predicate — dry, terrace step, no gap, dry gates and the four corners continuous |
+| `tools/wp13/gor_drazhak_identities.lua` | **new**: the 54 blueprint identities in manifest order |
 | `tools/wp13/final_micro.lua` | one line: the new KAT joins the interpreter pair |
 | `docs/design/settlements.md` | two paragraphs: the palisade variant of a walled capital, and the orc capital's own shape |
 
@@ -111,7 +120,8 @@ gate that verge is a column of the tower.
 
 ## 3. The ground, measured on three worlds
 
-`tools/wp13/run_capital.sh <out> gor_drazhak terrain <seed>` samples every column
+`tools/wp13/run_capital.sh <out> gor_drazhak terrain <seed>` samples every
+column
 of the four candidate rampart lines at ±256, lane by lane across the seven-lane
 thickness, plus the pure final height and the water class of every fourth column
 of the whole 576-node envelope. `tools/wp13/capital_wall.lua` is the predicate
@@ -351,13 +361,16 @@ floor and the airspace it really cut — **plus four sections of its own**:
 
 ```
 WP13 FINAL MICRO PAIR BYTE-IDENTICAL
-b3725124d44226e694663d322b0f427837eff193ce9d6e3ca52160ff50748b72  micro-luajit.tsv
-b3725124d44226e694663d322b0f427837eff193ce9d6e3ca52160ff50748b72  micro-puc51.tsv
+757efd30c445d68ecf24afa7bc5f34f7fec0e242aa74d44679079aab11513303  micro-luajit.tsv
+757efd30c445d68ecf24afa7bc5f34f7fec0e242aa74d44679079aab11513303  micro-puc51.tsv
 ```
 
 That is the whole WP13 fixture set in one process under each interpreter, this
 KAT among them (`final-micro.sh`, with the input set hashed before and after so
-the two runs provably saw the same bytes).
+the two runs provably saw the same bytes). The value above is the FIX ROUND's;
+the first version's was `b3725124...`, and it moved because the corner
+reconciliation, the deeper airspace and the socket trim each change something a
+fixture prints.
 
 The KAT's own rows are `gor_drazhak_core`, `gor_drazhak_throne`,
 `gor_drazhak_district`, `gor_drazhak_sockets`, `gor_drazhak_rampart`,
@@ -534,7 +547,8 @@ whole-envelope field dump in `capital_probe`.**
    Brannoc's turrets are: the walk passes through them, but there is no flight
    up to the fighting floor and nothing stands there. A manned rampart needs a
    flight and a way for an OVERLAY to publish sockets, which the seam does not
-   have — it reads sockets off a prepared blueprint's landmarks and an overlay is
+   have — it reads sockets off a prepared blueprint's landmarks and an overlay
+   is
    prepared from its specification. That is a seam change and belongs to
    whichever lane first wants guards on a wall.
 3. **The rampart's identity is its specification**, and the tower and gate
@@ -566,3 +580,371 @@ landmark, with the guard banner on it — is at **(0, 95, 1500)**. From there:
 
 The four districts stand in the four diagonal quarters; which is which depends
 on the seed (the probe log's `districts=` line says).
+
+## 10. The fix round (2026-09-15, after the independent review)
+
+Rebased onto `main` at `c8050057` (the wave-2 NPC vocabulary: six activities
+animated, seven profession vendors). The review's one blocker and six
+should-fixes are below, each with the measurement that closed it. Evidence:
+`tools/wp13/evidence/20260915-gor_drazhak/` — the `nine/` directory and the
+`fix-round-*` files are this round's.
+
+### 10.1 The blocker: the rampart's walk broke at a corner
+
+**Measured, nine seeds.** `tools/wp13/capital_wall.lua` refuses a corner step of
+three or more because a corner tower's own rampart opening is three courses.
+Sections 3 and 6 of this note ran it on the two gate seeds and reported "zero to
+two nodes". On all nine the raw corner step is:
+
+| seed | worst raw corner step |
+| --- | --- |
+| 531802985935182545 (gate) | 2 |
+| 8675309 (gate) | 2 |
+| **15912857179583385436 (the user's world)** | **4** |
+| 0 | 3 |
+| 1 | 3 |
+| 2 | 3 |
+| 42 | 3 |
+| 12345 | 2 |
+| 999999999 | 3 |
+
+So on six of nine worlds — the user's among them — the walk this note invites a
+player onto stopped at a corner.
+
+**Why.** `E[p]` is the one-Lipschitz envelope of the ground within `reach`
+columns of THIS RUN'S OWN AXIS. The run that arrives at a corner along x and the
+run that arrives along z therefore compute their decks from two different
+neighbourhoods, and nothing made them agree.
+
+**The fix** is `wp13/orc_palisade.lua` section 1b. Each run's plan now names its
+two CORNERS — my column, and the other run's line and column — both runs
+evaluate BOTH raw envelopes there, and both clamp their own column to the
+maximum of the two. Three properties make it sound, and all three are asserted
+rather than argued:
+
+* it is SYMMETRIC: both runs take the same maximum of the same two raw values,
+  so they agree by construction and the step is **zero**, not merely small;
+* it only ever RAISES a deck, so the no-gap guarantee is untouched — a column's
+  fill still starts under its own lowest ground. (The first version of the clamp
+  raised `base` instead of the envelope's floor, which lifted the FOOTING off
+  the ground; the KAT's own no-gap rule caught it on the first run, and `base`
+  and `floor` are two arrays now.)
+* the raise is re-swept, so the walk stays one-Lipschitz and the rise is walked
+  as treads. A raise deeper than the look-around is REFUSED, because that is
+  exactly the condition under which a mapchunk piece that cannot see the corner
+  would disagree with one that can.
+
+**The gates.** `tools/wp13/gor_drazhak_rampart.lua` is new and is this module's
+own nine-seed predicate: `capital_wall.lua` reads exactly two dumps and ignores
+the rest, and it models `wall.lua`'s UNRECONCILED rule, so it is the right gate
+for a masonry curtain and the wrong one here. The new tool reports both numbers
+— the raw step, so the fix can be seen to do something, and the reconciled one,
+which is the gate:
+
+```
+worlds 9   worst raw corner step 4   worst reconciled 0
+every gor_drazhak rampart line is dry, steps no more than a terrace,
+leaves no gap, and its four corners are continuous, on 9 worlds
+```
+
+And `gor_drazhak_kat.lua` section 4g asserts the eight corner meetings equal on
+a synthetic ground that is now genuinely TWO-DIMENSIONAL — terraced along x and
+along z independently, with a shoulder placed inside one run's look-around and
+outside the other's at two corners. The first version's field gave every run the
+same profile as a function of its own axis, which is the one shape that cannot
+expose this defect. **Without section 1b the KAT now fails with
+`wall_west walks at 116 where wall_south walks at 121`**, which is the negative
+test the brief asks a KAT to pass.
+
+### 10.2 Lot legality and the terrain audit, on all nine
+
+Reproduced the review exactly: 21 of 52 lots illegal on nine worlds, and the
+engine's own load-time audit logging 3 findings on seed 2 and 1 on seed 42 (0 on
+the other seven). Two things closed it.
+
+**The rise bound is the plot builder's own floor, less the margin, and is read
+from it.** `tools/wp13/gor_drazhak_lots.lua` repeated Highcourt's `rise <= 6`
+as a literal. The engine's audit refuses a rise greater than the airspace the
+plot really CUT, so the true bound is the least `clear_to` any plot publishes —
+`gor_drazhak_plot.MIN_CLEAR` — less the two-node interchange margin. The tool
+now reads that constant.
+
+**`MIN_CLEAR` goes from 8 to 9**, one course of authored air, **14 630 cells**
+of
+the 400 000 budget. That is not a rounding: on nine worlds one lot of the
+south-west quarter — boxed in by the gate corridor, the ring street and its own
+neighbours — had NO legal position within eighty nodes for a rise of seven, and
+the alternative was moving a house eighty-four nodes out of its district.
+
+**`--repair` serves the most constrained lot first.** Repaired in roster order,
+the first lot of a quarter took the one patch of ground the second could have
+used. Counting each broken lot's candidates once, before any of them moves, and
+serving the scarcest first is what gave every one of them somewhere to go.
+
+**Result, nine worlds:**
+
+| | first version (3 seeds) | fix round (9 seeds) |
+| --- | --- | --- |
+| lot repairs off the pure rotation | 6 + 1 fill | **11 + 7 fill** |
+| lots legal | 52/52 on 3 | **52/52 on 9** |
+| worst perimeter fall / rise | 6 / 8 | **6 / 7** (against skirt 6, clear 9) |
+| `audit_terrain` findings | 0 on 3 | **0 on all 9** |
+| core + plot cells | 355 234 | **369 864** of 400 000 (Highcourt 376 274) |
+
+Seventeen of the eighteen repairs move four to twenty nodes and stay in their
+own row and column. The exception is the south-west quarter's lot 8, which moves
+seventy-two nodes to (−204, −144) and stands in the outer band: that quarter is
+the one the mesa's own back runs through, and that is the honest cost of the
+nine-seed bar.
+
+### 10.3 The work sockets' features
+
+The review found that every `tend` socket passed only because the KAT's feature
+list carried `default:desert_stone_block` — a planter's own kerb, which is
+neither "a plant" nor "a flower" and which, being an opaque full node, is what
+the section 8.1 search stops at. With it removed, four keepers faced a kerb that
+blocked their own course and two faced no plant at all.
+
+The list is transcribed from the contract now, entry by entry, with the
+contract's own words above each one; `smith` lost a cauldron, `mine` lost gravel
+and `pray`/`mourn` lost plain cobble (review N5 — dead entries, but they made
+the KAT read stricter than it was). And the six sockets:
+
+| socket | what changed |
+| --- | --- |
+| `paddock_tend`, `herb_tend_west`, `scrub_tend_west`, `garden_tend_west` | a dry shrub on open ground in front of each, and the socket faces it — a keeper works a plant, not a kerb |
+| `war_beast_pen` `pen_tend` → `pen_muck` | **activity changed to `sweep`**: a beast pen has straw, rails and hay and no plant within three nodes of anywhere a keeper can stand, so `tend` was a label its own ground did not carry. `sweep` needs no feature and describes mucking out exactly. |
+| `warren_weaver` `weaver_rack` | **activity changed to `carve`**: a drying rack is two acacia posts under a beam. §8.2's `carve` feature is "a log, a totem/statue part or a stone block", and the rack's own end post is the first of those on the socket's course. Scraping a hide on its frame is what the socket now says. |
+
+One more the sweep caught on its own: the barrow's `mourn` socket faced the
+burial ground's GATE — a path node — rather than a marker. It faces into the
+ground now, at a grave the composition sets for it rather than one the
+graveyard's hash happened to leave.
+
+### 10.4 The resident band
+
+Coordinator's ruling for all wave-2 capitals: 150 to 170 residents, at most 25
+walkers. The first version had 207 and 31.
+
+Three uniform rules took it there, and none of them moves a cell:
+
+1. **a fill plot's gate spot is a spare, not a resident** (16). A field, a spoil
+   heap or a wood yard has a way in and no doorstep, and standing somebody at
+   the gate of a paddock for the life of the world is a resident spent on
+   nothing. The position stays — a walker may still go there.
+2. **every idle spot on a fill yard is a spare** (23).
+3. **eight plot spots that were a second person at a feature another socket
+   already works** join them — the tannery's second vat, the armourer's second
+   forge, the totem court's second carver, and so on.
+
+| | first version | fix round | Highcourt |
+| --- | --- | --- | --- |
+| idle spawn | 151 | **104** | 108 |
+| work | 56 | **56** | 36 |
+| residents | 207 | **160** | 144 |
+| walkers | 31 | **21** | 22 |
+| walker share | 15.0 % | **13.1 %** | 15.3 % |
+| spare | 26 | **73** | 26 |
+| sockets | 315 | **315** | 256 |
+
+`idle spawn >= work` holds (104 >= 56) and the KAT asserts both it and the
+share.
+The socket COUNT is unchanged because every trim is a conversion: the standing
+positions are all still there, and seventy-three of them are now wander targets
+rather than homes, which is what a walker's ring is made of.
+
+### 10.5 The chunk-edge seed the brief asked for does not exist here
+
+`common.md` asks for an engine pass "on one seed where your capital's anchor
+root lies on a mapchunk edge". **There is none in the nine-seed set**, and that
+is a fact to write down rather than pass over. `luajit
+tools/wp13/capital_anchor_fixture.lua .` on `anchor_011` (Gor Drazhak, (0,
+1500)):
+
+| seed | anchor_y | root_y | root on chunk edge |
+| --- | --- | --- | --- |
+| 531802985935182545 | 94 | 95 | no |
+| 8675309 | 104 | 105 | no |
+| 15912857179583385436 | 128 | 129 | no |
+| 0 | 114 | 115 | no |
+| 1 | 111 | 112 | no |
+| 2 | 98 | 99 | no |
+| 42 | 88 | 89 | no |
+| 12345 | 80 | 81 | no |
+| 999999999 | 84 | 85 | no |
+
+A mapchunk spans `[80k - 32, 80k + 47]`, so an edge is `y = 48, 128, 208`. No
+root lands on one; the set's only `true` is `anchor_008` (Highcourt) on the
+user's world seed. The requirement is vacuous for this capital on this seed set.
+
+The adjacent case DOES arise and was run: on the user's world seed Gor Drazhak's
+anchor itself sits at **y = 128**, a mapchunk's lowest layer, so its SUPPORT is
+the first course of a chunk and its root the second. That seed is one of the
+three `full` passes. `capital_anchor_fixture.lua` is Lane R's and was not
+touched; the seed-set question goes to the coordinator with this table.
+
+### 10.6 Two statements that were not true
+
+* **"the roster placed in full on all three"** (section 6e's table and the
+  evidence README) contradicted this lane's own `timings.txt`: on the user's
+  world seed the first round measured `guards 27/30 flair 169/207 pending 41`.
+  Both now carry the measurement and what `pending` means.
+* **`docs/design/settlements.md`** said only the dwarves and the undead raise a
+  stone curtain. Highcourt has been walled since the round-3 plan (contract §4:
+  "four walled and two open"), so the sentence now names the humans too.
+
+### 10.7 What the fix round measured in the engine
+
+Three `full` passes on the rebased tree, and **`run_capital.sh` returns PASS**:
+Lane N's wave-2 vendor entities exist, so the three ERROR lines section 7
+recorded are gone and every pass is `errors=0`.
+
+| | 531802985935182545 | 8675309 | 15912857179583385436 |
+| --- | --- | --- | --- |
+| ERROR / ModError | 0 | 0 | 0 |
+| sockets registered | 315 | 315 | 315 |
+| roster | `guards 30/30 flair 157/160 vendor 7/7 quest 2/2 pending 3 spare 73` | `guards 30/30 flair 160/160 vendor 7/7 quest 2/2 new 17 pending 0 spare 73 residents 160 walkers 21` | `guards 27/30 flair 101/160 vendor 7/7 quest 2/2 new 10 pending 62 spare 73 residents 160 walkers 21` |
+| residents / walkers | 160 / 21 | 160 / 21 | 160 / 21 |
+| per-mapchunk steady mean | 0.681 s | 0.611 s | 0.710 s |
+| Lethariel control (same treatment, no WP13 cells) | 2.428 s | 2.421 s | 2.172 s |
+| mapchunks in the corpus | 60 | 65 | 112 |
+| worst plot perimeter fall | 6 | 5 | 5 |
+| terrain-audit findings | 0 | 0 | 0 |
+
+`vendor 7/7` is the whole of section 7's first open point closed by somebody
+else's lane, exactly as that section predicted.
+
+**The engine's own inventory agrees, socket for socket.**
+`tools/wp13/run_npc_probe.sh <out> <seed> capital gor_drazhak` -- the capital
+mode Lane N landed with the vocabulary -- forceloads the whole capital, holds
+every socket's mapblock and counts what the placement engine actually put
+there:
+
+```
+capital_blocks    planned=259 asked=259 refused=0 loaded=259 active=252
+capital_settle    roster=199 marked=199 live=199 filled=true
+capital_inventory sockets=315 carriers=199 standing=199 owed=0 spare=73
+                  residents=160 walkers=21 share=13.1
+                  roles=guard_patrol=9,guard_post=21,idle=104,quest=2,
+                        vendor=7,work=56
+                  activities=brew=8,carve=5,chop=6,forage=2,mine=3,mourn=3,
+                             pray=2,sit=2,smith=3,spar=8,stall=5,sweep=5,tend=4
+                  vendor_kinds=armourer,brewer,butcher,general,race,smith,tanner
+capital_gaps      n=0 unmarked=0 of=199
+```
+
+`owed = 0` and `capital_gaps n = 0` are the two that matter: with the whole
+capital held loaded, every socket that is supposed to carry somebody carries
+somebody, and not one of the 315 is empty for a reason the map could give. The
+`tend = 4` is section 10.3's two re-labels; the walker share the engine computes
+for itself, 13.1 %, is the same number the KAT asserts offline.
+
+`pending` again on the user's world seed, and larger (62), for the reason
+section 10.6 records: that world's corpus is 112 mapchunks against the gate
+seeds' 60 and 65 -- the capital sits higher there (anchor y 128 against 94 and
+104), so its envelope spans more chunks and the emerge sequence leaves more of
+the outlying districts' mapblocks unloaded when the probe stops. Nothing is
+refused on any of the three, and the boundary seed places all 160 with
+`pending 0`.
+
+### 10.8 The load measurement
+
+The review asked for one before a resident ruling was possible, and it is
+right that it did: without it "207 is fine" and "207 is too many" are both
+opinions. Two passes give the two halves.
+
+**What a capital's NPCs actually cost, per NPC.**
+`tools/wp13/run_npc_load.sh /tmp/grug-w2-gor-npc-load 531802985935182545` --
+one boot, each of the six starts forceloaded in turn, settled, measured for
+thirty seconds and released. Its `micro` event times the mod-side tick of every
+settlement NPC directly rather than reading the server step, because the step of
+a quiet world reads 90 ms whatever a settlement costs:
+
+| start | NPCs | us per NPC per second | find_path / min | step mean |
+| --- | --- | --- | --- | --- |
+| dawnmere | 11 | 3.24 | 0.00 | 90.26 ms |
+| hearthpine | 11 | 3.29 | 0.00 | 90.25 ms |
+| kapok | 11 | 3.49 | 0.00 | 90.28 ms |
+| silverleaf | 11 | 2.75 | 0.00 | 90.34 ms |
+| stillgrave | 11 | **9.21** | 0.00 | 90.40 ms |
+| **sunscar (the orc start, this race)** | 11 | **2.93** | 0.00 | 90.45 ms |
+
+**`find_path` is ZERO in every window**, which is the number the user's own
+round-3 ruling names as the cost ("path-finding and animated meshes are the
+cost, not the entity count"). A settlement full of standing residents asks the
+path-finder for nothing at all; the only caller a settlement has is the patrol
+module's stuck rescue, and it did not fire in three minutes of measurement
+across six settlements.
+
+**The arithmetic for Gor Drazhak.** 160 residents and 30 guards is 190 NPCs. At
+the orc start's own measured 2.93 us/NPC/s that is **557 us of mod-side work per
+second of server time**; at the worst of the six (Stillgrave's 9.21, whose
+crypt kit costs more per tick) it is 1.75 ms. The server's own step budget is
+90 ms eleven times a second, so the whole capital's residents are **0.06 % of
+it, and 0.20 % at the worst-case rate**. Animated meshes are the other half of
+the ruling and this probe does not separate them from the tick it times; what it
+does say is that the tick is the cost and the tick is small.
+
+**What the capital itself reports.** The capital inventory pass above gives the
+counts with the whole capital held loaded: 199 carriers standing, `owed = 0`,
+`capital_gaps n = 0`, 160 residents, 21 walkers, 13.1 %.
+
+**The honest limit of this measurement.** `run_npc_load.sh` walks the six STARTS
+-- its own `collect_starts` filters a settlement to those whose socket anchor is
+the published start anchor of its race -- so the per-NPC number above is
+measured on eleven-NPC settlements and SCALED to a hundred and ninety, not
+measured at that size. Scaling is sound for a per-entity tick and is not sound
+for anything quadratic; nothing in `start_villagers.lua`'s tick is quadratic,
+but that is a reading of the code and not a measurement. **What the tooling
+wants, and what would settle the world-wide question the review raises: a
+capital subject in `npc_load_probe`, which is one predicate away from the
+capital mode `npc_probe` already has.** That is not this lane's file and is
+reported rather than taken.
+
+
+### 10.9 What the fix round did NOT change
+
+The architecture, the seam, the file ownership and the renders. `wall.lua`,
+`avenue.lua`, `capitals.lua`, `parts.lua`, `palette.lua`, `dressing.lua`,
+`layout.lua`, `interiors.lua`, `roofs.lua`, every `highcourt*` and
+`dur_brannoc*` file and `capital_anchor_fixture.lua` are untouched; outside its
+own files this lane still holds one roster row, one line in `final_micro.lua`
+and three paragraphs in `settlements.md`. The six start identities, Highcourt's
+376 274 cells and the four prior KATs are still byte-identical to `main`'s
+(`identity.sh`, which carries `main`'s own values and exits non-zero if one
+moves).
+
+### 10.9b One more finding, from the refreshed plot gate
+
+`surface.sh` replays the plot rules over the probe's own per-plot dumps, and on
+the boundary seed one row now reads `bone_barrow rise 10 against a clear of 9`
+while the engine's audit reports nothing there. Both are right, and the
+difference is the probe defect the coordinator already has in hand:
+`tools/wp13/capital_probe` builds the blueprint source with NO options, so its
+plot list carries the CANONICAL quadrant assignment while the engine's own
+settlement was built with the SEEDED one. A dump row therefore names a LOT
+correctly and pairs it with the wrong district's plot -- a yard clearing 9
+reported on a lot a hall clearing 13 stands on.
+
+`surface_check.lua` now asserts only what survives that mispairing -- water and
+perimeter fall are properties of the POSITION, and every lot is held to the same
+dry margin and the same six-course skirt whichever plot stands on it -- and
+prints a rise over its row's clear as a row to explain. The authority for a rise
+is `nine/audit-nine-seeds.txt`: zero findings on all nine worlds. This is
+independent confirmation of Lane D's probe bug with a concrete number, not a new
+defect.
+
+### 10.10 Open points this round adds
+
+1. **`tools/wp13/capital_wall.lua` reads two dumps and ignores the rest.** Nine
+   passed to it report on two. It is Lane D's file and this lane did not widen
+   it; `gor_drazhak_rampart.lua` is the nine-seed predicate for this module, and
+   the same gap is the reason the blocker survived the first round.
+2. **The rampart-line dump spans ±264 and the look-around is 40**, so at a
+   corner column (±256) the outermost eight columns of the envelope's window are
+   missing from the offline predicate. The engine is the authority; this is
+   stated in the tool's own header.
+3. **The lot layout is now tuned to nine worlds, and two lots sit on their
+   limit** (worst perimeter fall 6 against a skirt of 6, worst rise 7 against a
+   clear of 9). `gor_drazhak_lots.lua --repair` over fresh grids is the one
+   command that moves them when WP40's terrain does.

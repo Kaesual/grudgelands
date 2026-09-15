@@ -14,12 +14,18 @@
 # grid TSVs themselves are 700 kB each and are not committed, so this script
 # takes their directory as an argument.
 #
-#     legality.sh /tmp/grug-w2-gor-terrain
+#     legality.sh /tmp/grug-w2-gor-t9b
+#
+# SUPERSEDED AS A GATE by `nine.sh`, which asks both questions of all nine
+# fixture seeds and adds the corner rule `capital_wall.lua` cannot express.
+# Kept because Lane D's predicate is the general one and the comparison point:
+# what it measures at a corner is the RAW step, which is the size of the problem
+# `wp13/orc_palisade.lua` section 1b removes.
 set -euo pipefail
 export LC_ALL=C
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd -P)"
 cd "$repo"
-prefix="${1:-/tmp/grug-w2-gor-terrain}"
+prefix="${1:-/tmp/grug-w2-gor-t9b}"
 a="$prefix-531802985935182545"
 b="$prefix-8675309"
 c="$prefix-15912857179583385436"

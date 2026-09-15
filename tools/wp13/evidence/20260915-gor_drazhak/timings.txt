@@ -8,53 +8,44 @@ carries the emerge environment's whole one-time R7 construction and
 is emerged first and not counted.
 
 kind                   chunks    first_s   mean_s  worst_s   best_s
-warm-up (not counted)  1          24.379        -   24.379   24.379   seed 531802985935182545
-Gor Drazhak            60          1.156    0.669    1.156    0.104   seed 531802985935182545
-Lethariel control      8          12.358    2.237   13.386    0.194   seed 531802985935182545
-open land control      3           0.739    0.516    1.029    0.003   seed 531802985935182545
+warm-up (not counted)  1          24.510        -   24.510   24.510   seed 531802985935182545
+Gor Drazhak            60          1.323    0.681    1.323    0.098   seed 531802985935182545
+Lethariel control      8          13.180    2.428   14.621    0.200   seed 531802985935182545
+open land control      3           0.856    0.480    0.956    0.003   seed 531802985935182545
 
-warm-up (not counted)  1          26.023        -   26.023   26.023   seed 8675309
-Gor Drazhak            65          1.247    0.579    1.247    0.112   seed 8675309
-Lethariel control      8          14.318    2.751   17.099    0.105   seed 8675309
-open land control      3           0.681    0.387    0.771    0.003   seed 8675309
+warm-up (not counted)  1          24.086        -   24.086   24.086   seed 8675309
+Gor Drazhak            65          1.024    0.611    1.024    0.101   seed 8675309
+Lethariel control      8          11.897    2.421   15.002    0.092   seed 8675309
+open land control      3           0.914    0.427    0.914    0.006   seed 8675309
 
-warm-up (not counted)  1          23.943        -   23.943   23.943   seed 15912857179583385436
-Gor Drazhak            112         1.237    0.499    1.237    0.128   seed 15912857179583385436
-Lethariel control      8          12.259    2.394   14.811    0.101   seed 15912857179583385436
-open land control      3           0.840    0.399    0.840    0.003   seed 15912857179583385436
+warm-up (not counted)  1          22.529        -   22.529   22.529   seed 15912857179583385436
+Gor Drazhak            112         1.195    0.710    1.557    0.114   seed 15912857179583385436
+Lethariel control      8          11.851    2.172   13.404    0.091   seed 15912857179583385436
+open land control      3           0.783    0.396    0.786    0.006   seed 15912857179583385436
 
 
 Roster, sockets and terrain audit
 --------------------------------------------------------------
 seed 531802985935182545
   sockets registered   315
-  roster               guards 30/30 flair 207/207 vendor 4/4 quest 2/2 new 29 pending 0 spare 26 residents 207 walkers 31
+  roster               guards 30/30 flair 157/160 vendor 7/7 quest 2/2 new 33 pending 3 spare 73 residents 160 walkers 21
   worst plot fall      6 (warren_cook_court), submerged 0
   mapchunks requested  72, completed 72
-  ERROR/ModError lines 3, all of them:
-    [grug_mobs] settlement npcs: gor_drazhak socket bazaar_tannery/bazaar_tannery_vendor_tanner resolves to no registered entity (grug_traders:vendor_tanner)
-    [grug_mobs] settlement npcs: gor_drazhak socket bazaar_brewhouse/bazaar_brewhouse_vendor_brewer resolves to no registered entity (grug_traders:vendor_brewer)
-    [grug_mobs] settlement npcs: gor_drazhak socket bazaar_armourer/bazaar_armourer_vendor_armourer resolves to no registered entity (grug_traders:vendor_armourer)
+  ERROR/ModError lines 0, all of them:
 
 seed 8675309
   sockets registered   315
-  roster               guards 30/30 flair 207/207 vendor 4/4 quest 2/2 new 36 pending 0 spare 26 residents 207 walkers 31
-  worst plot fall      5 (bone_totem_court), submerged 0
+  roster               guards 30/30 flair 160/160 vendor 7/7 quest 2/2 new 17 pending 0 spare 73 residents 160 walkers 21
+  worst plot fall      5 (war_beast_pen), submerged 0
   mapchunks requested  77, completed 77
-  ERROR/ModError lines 3, all of them:
-    [grug_mobs] settlement npcs: gor_drazhak socket bazaar_tannery/bazaar_tannery_vendor_tanner resolves to no registered entity (grug_traders:vendor_tanner)
-    [grug_mobs] settlement npcs: gor_drazhak socket bazaar_brewhouse/bazaar_brewhouse_vendor_brewer resolves to no registered entity (grug_traders:vendor_brewer)
-    [grug_mobs] settlement npcs: gor_drazhak socket bazaar_armourer/bazaar_armourer_vendor_armourer resolves to no registered entity (grug_traders:vendor_armourer)
+  ERROR/ModError lines 0, all of them:
 
 seed 15912857179583385436
   sockets registered   315
-  roster               guards 27/30 flair 169/207 vendor 4/4 quest 2/2 new 38 pending 41 spare 26 residents 207 walkers 31
+  roster               guards 27/30 flair 101/160 vendor 7/7 quest 2/2 new 10 pending 62 spare 73 residents 160 walkers 21
   worst plot fall      5 (bone_quarry), submerged 0
   mapchunks requested  124, completed 124
-  ERROR/ModError lines 3, all of them:
-    [grug_mobs] settlement npcs: gor_drazhak socket bazaar_tannery/bazaar_tannery_vendor_tanner resolves to no registered entity (grug_traders:vendor_tanner)
-    [grug_mobs] settlement npcs: gor_drazhak socket bazaar_brewhouse/bazaar_brewhouse_vendor_brewer resolves to no registered entity (grug_traders:vendor_brewer)
-    [grug_mobs] settlement npcs: gor_drazhak socket bazaar_armourer/bazaar_armourer_vendor_armourer resolves to no registered entity (grug_traders:vendor_armourer)
+  ERROR/ModError lines 0, all of them:
 
 
 The built road, rampart and gate, read back out of the map

@@ -1,0 +1,114 @@
+world	line	wet	worst_step	worst_at	low	high	range	overlap	gate_fall
+1	wall_west	0	3	42	77	102	25	5	2
+1	wall_east	0	1	-235	71	106	35	7	3
+1	wall_south	0	1	-248	74	98	24	7	0
+1	wall_north	0	1	-247	74	85	11	7	0
+2	wall_west	0	2	250	72	104	32	6	0
+2	wall_east	0	1	-258	84	108	24	7	1
+2	wall_south	0	1	-242	76	95	19	7	0
+2	wall_north	0	4	-54	89	120	31	4	0
+3	wall_west	0	1	-238	94	108	14	7	0
+3	wall_east	0	1	-260	99	120	21	7	0
+3	wall_south	0	1	-251	104	130	26	7	0
+3	wall_north	0	2	-53	93	112	19	6	1
+4	wall_west	0	2	250	98	126	28	6	1
+4	wall_east	0	4	42	90	118	28	4	3
+4	wall_south	0	1	-245	98	114	16	7	0
+4	wall_north	0	2	184	87	118	31	6	0
+5	wall_west	0	2	55	83	103	20	6	0
+5	wall_east	0	4	42	80	118	38	4	0
+5	wall_south	0	1	-251	98	127	29	7	0
+5	wall_north	0	3	-41	76	103	27	5	0
+6	wall_west	0	2	250	97	122	25	6	0
+6	wall_east	0	1	-237	89	118	29	7	0
+6	wall_south	0	2	-54	98	106	8	6	0
+6	wall_north	0	1	-250	87	106	19	7	0
+7	wall_west	0	2	250	97	112	15	6	3
+7	wall_east	0	2	261	86	108	22	6	0
+7	wall_south	0	1	-214	84	108	24	7	0
+7	wall_north	0	3	-54	92	100	8	5	0
+8	wall_west	0	1	-259	86	100	14	7	0
+8	wall_east	0	3	42	70	99	29	5	1
+8	wall_south	0	2	-54	92	120	28	6	0
+8	wall_north	0	1	-246	71	88	17	7	0
+9	wall_west	0	1	-253	79	112	33	7	2
+9	wall_east	0	2	55	80	96	16	6	0
+9	wall_south	0	1	-248	77	111	34	7	0
+9	wall_north	0	2	-200	80	100	20	6	0
+
+world	corner	raw_mine	raw_theirs	raw_step	reconciled_step
+1	wall_west/wall_south@-256	98	98	0	0
+1	wall_west/wall_north@256	81	79	2	0
+1	wall_east/wall_south@-256	74	74	0	0
+1	wall_east/wall_north@256	86	85	1	0
+1	wall_south/wall_west@-252	98	98	0	0
+1	wall_south/wall_east@252	74	74	0	0
+1	wall_north/wall_west@-252	79	81	2	0
+1	wall_north/wall_east@252	85	86	1	0
+2	wall_west/wall_south@-256	80	80	0	0
+2	wall_west/wall_north@256	90	89	1	0
+2	wall_east/wall_south@-256	96	95	1	0
+2	wall_east/wall_north@256	99	97	2	0
+2	wall_south/wall_west@-252	80	80	0	0
+2	wall_south/wall_east@252	95	96	1	0
+2	wall_north/wall_west@-252	89	90	1	0
+2	wall_north/wall_east@252	97	99	2	0
+3	wall_west/wall_south@-256	108	112	4	0
+3	wall_west/wall_north@256	96	95	1	0
+3	wall_east/wall_south@-256	104	104	0	0
+3	wall_east/wall_north@256	101	100	1	0
+3	wall_south/wall_west@-252	112	108	4	0
+3	wall_south/wall_east@252	104	104	0	0
+3	wall_north/wall_west@-252	95	96	1	0
+3	wall_north/wall_east@252	100	101	1	0
+4	wall_west/wall_south@-256	98	98	0	0
+4	wall_west/wall_north@256	104	102	2	0
+4	wall_east/wall_south@-256	110	110	0	0
+4	wall_east/wall_north@256	96	93	3	0
+4	wall_south/wall_west@-252	98	98	0	0
+4	wall_south/wall_east@252	110	110	0	0
+4	wall_north/wall_west@-252	102	104	2	0
+4	wall_north/wall_east@252	93	96	3	0
+5	wall_west/wall_south@-256	98	98	0	0
+5	wall_west/wall_north@256	89	86	3	0
+5	wall_east/wall_south@-256	117	118	1	0
+5	wall_east/wall_north@256	86	83	3	0
+5	wall_south/wall_west@-252	98	98	0	0
+5	wall_south/wall_east@252	118	117	1	0
+5	wall_north/wall_west@-252	86	89	3	0
+5	wall_north/wall_east@252	83	86	3	0
+6	wall_west/wall_south@-256	98	98	0	0
+6	wall_west/wall_north@256	101	98	3	0
+6	wall_east/wall_south@-256	106	106	0	0
+6	wall_east/wall_north@256	92	91	1	0
+6	wall_south/wall_west@-252	98	98	0	0
+6	wall_south/wall_east@252	106	106	0	0
+6	wall_north/wall_west@-252	98	101	3	0
+6	wall_north/wall_east@252	91	92	1	0
+7	wall_west/wall_south@-256	110	108	2	0
+7	wall_west/wall_north@256	101	98	3	0
+7	wall_east/wall_south@-256	88	87	1	0
+7	wall_east/wall_north@256	96	95	1	0
+7	wall_south/wall_west@-252	108	110	2	0
+7	wall_south/wall_east@252	87	88	1	0
+7	wall_north/wall_west@-252	98	101	3	0
+7	wall_north/wall_east@252	95	96	1	0
+8	wall_west/wall_south@-256	92	92	0	0
+8	wall_west/wall_north@256	89	87	2	0
+8	wall_east/wall_south@-256	96	96	0	0
+8	wall_east/wall_north@256	73	71	2	0
+8	wall_south/wall_west@-252	92	92	0	0
+8	wall_south/wall_east@252	96	96	0	0
+8	wall_north/wall_west@-252	87	89	2	0
+8	wall_north/wall_east@252	71	73	2	0
+9	wall_west/wall_south@-256	112	111	1	0
+9	wall_west/wall_north@256	83	80	3	0
+9	wall_east/wall_south@-256	80	80	0	0
+9	wall_east/wall_north@256	92	92	0	0
+9	wall_south/wall_west@-252	111	112	1	0
+9	wall_south/wall_east@252	80	80	0	0
+9	wall_north/wall_west@-252	80	83	3	0
+9	wall_north/wall_east@252	92	92	0	0
+
+worlds	9	worst raw corner step	4	worst reconciled	0
+every gor_drazhak rampart line is dry, steps no more than a terrace, leaves no gap, and its four corners are continuous, on 9 worlds
