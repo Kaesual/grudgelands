@@ -22,6 +22,10 @@ headless server at a time, every engine and measurement run under `nice -n 19`.
 | `sweep/` | its output — 18 TSVs and `summary.txt`, the before/after table |
 | `kat/` | `tools/wp13/route_gates_kat.lua` under LuaJIT and PUC 5.1 (identical), and the WP13 micro pair's output under both |
 | `engine/` | the six engine passes: probe lines, overlay digests, error counts, `audit_terrain` counts |
+| `crossings/` | `tools/wp13/lane_routes.lua` before and after: the wave-1 crossing rule has nothing left to do inside a capital (110 spanned columns → 0) and is still green |
+| `static.txt`, `static.sh` | parser, SETGLOBAL, the five plain-5.1 sweeps and the fresh-server audit |
+| `capital_anchor_fixture.tsv` | `tools/wp13/capital_anchor_fixture.lua` over nine seeds, digest `981a0353…` — unchanged |
+| `start-identity.txt` | the six start identities, `0bbf87a7…` — unchanged |
 | `files.sha256` | every source file this lane changed |
 
 ## The numbers

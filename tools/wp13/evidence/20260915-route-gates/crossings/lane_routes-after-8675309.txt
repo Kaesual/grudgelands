@@ -1,0 +1,1 @@
+lane_routes seed=8675309 mode=crossing_rule spanned=0 illegal=0 walk_faults=0 cross_faults=0 cuts=0 cut_faults=0 lamp_faults=0

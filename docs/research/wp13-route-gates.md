@@ -143,7 +143,32 @@ The tool checks the property that follows rather than the count: over all 216
 avenue runs of the sweep, **zero positions are left unpaved and zero climb more
 than one node**. Every wet avenue is a causeway, and every gate is an entrance.
 
-### 3.2 The engine
+### 3.2 The wave-1 crossing rule is now a safeguard
+
+The user's own consequence, measured. `tools/wp13/lane_routes.lua` walks every
+avenue, ring side and district lane of Highcourt and Dur Brannoc and reports
+every column a WP40 bridge deck spans:
+
+| seed | before | after |
+| --- | --- | --- |
+| 531802985935182545 | 110 spanned columns, 49 cut tests | **0** |
+| 8675309 | 1 spanned column | **0** |
+
+Both still exit 0 with zero illegal columns, zero walk faults, zero cross
+faults and zero sunken lamp standards, and on seed 531802985935182545 the
+crossing-rule run and the `--legacy` run (the same roads built with no route
+geometry at all) are now **identical except for the mode label in the header**.
+
+So `wp13/avenue.lua`'s crossing rule, `spec.overhead`, `M.MIN_CLEAR`, the seam's
+`walkable_values` second return and `tools/wp13/lane_crossing_kat.lua` are all
+still correct and all still green -- and inside a capital they no longer have
+anything to do. **They are deliberately not deleted.** The rule is a property
+of the road module, not of the capitals: a start, a village or any future
+overlay run outside a 512 envelope can still meet a deck, `seam_kat`'s
+`route_handoff` band still proves the seam publishes one, and the six KAT cases
+still hold the rule to synthetic profiles no real seed happens to contain.
+
+### 3.3 The engine
 
 `tools/wp13/run_capital.sh`, ports 31000-31099, one server at a time under
 `nice -n 19`:
@@ -169,7 +194,7 @@ Highcourt is cheaper because the four routes no longer grade 7330 columns
 inside its envelope. `core_cells` is identical in both capitals (42163 and
 43075) and `worst_plot_fall` is 6 in both, before and after.
 
-### 3.3 The user's own proof
+### 3.4 The user's own proof
 
 `tools/wp13/evidence/20260915-route-gates/dur-brannoc-south-gate-user-seed.png`
 is the user's finding, before and after, on the user's seed: the road crossing
@@ -306,4 +331,4 @@ Every digest that did **not** move, checked rather than assumed:
 * `tools/wp40/r7/run.sh unit` -- the anchor activation KAT, with its two new
   cases.
 * `tools/wp13/capital_anchor_fixture.lua` -- unchanged digest over nine seeds.
-* The engine table of §3.2.
+* The engine table of §3.3.
