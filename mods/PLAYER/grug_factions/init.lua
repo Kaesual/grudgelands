@@ -10,9 +10,21 @@ local FORMNAME = "grug_factions:select"
 local REOPEN_DELAY = 0.1
 
 -- Starter kit per faction; granted exactly once.
+--
+-- NO WEAPON HERE any more (playtest round 2, 2026-09-15). A character picks its
+-- faction BEFORE its race and class, so this is the one moment at which the
+-- game cannot know whether it is arming a Warrior or a Mage -- and the old
+-- `default:sword_stone` in `main` armed neither of them in the sense that
+-- matters, because the weapon SLOT is the only source of damage and appearance
+-- (inventory_equipment.md §2). The class-keyed grant that replaced it lives in
+-- `grug_inventory/equipment.lua` and writes the slot directly.
+--
+-- The torch stays in `main` on purpose: the offhand is where a carried light
+-- will live one day (combat_stats.md §7), and putting the starter torch there
+-- would silently cost every Priest and Mage their two-handed staff.
 local starter_kits = {
-	accord = {"default:sword_stone", "default:torch 10", "default:apple 10"},
-	throng = {"default:sword_stone", "default:torch 10", "default:apple 10"},
+	accord = {"default:torch 10", "default:apple 10"},
+	throng = {"default:torch 10", "default:apple 10"},
 }
 
 --

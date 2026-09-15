@@ -555,6 +555,136 @@ grug_classes.register_on_class_chosen(function(player)
 end)
 
 --
+-- THE STARTER WEAPON (playtest round 2, 2026-09-15).
+--
+-- It used to be one line of grug_factions' faction kit: every character, of
+-- every class, got a `default:sword_stone` in `main` at the moment it picked a
+-- faction. Two things were wrong with that, and both are rulings now.
+--
+-- 1. **A Priest and a Mage start with a staff, a Warrior with a sword.** The
+--    faction kit cannot express that, because a character has no class yet
+--    when it chooses its faction -- the chain is faction -> race -> class. So
+--    the weapon moved off the faction kit (which keeps the torches and the
+--    apples) and onto the class, here.
+-- 2. **It goes into the WEAPON SLOT, not into the bag.** With the no-fallback
+--    rule (inventory_equipment.md §2) a weapon in `main` drives nothing at all:
+--    no damage, no ability skin, nothing in the character's hand. A brand-new
+--    character was therefore bare-handed and invisible-handed until it found
+--    the Character screen. Writing the slot server-side and going through
+--    `grug_inventory.equipment_changed` is what makes the ability skins
+--    (grug_abilities) and the visible weapon (grug_visuals) follow -- it is the
+--    same notification a manual equip fires.
+--
+-- Exactly once per character, tracked in player meta, so an admin `/class`
+-- switch does not hand out a second weapon and a Warrior who respecs to Mage
+-- keeps the sword he has rather than being given a staff.
+--
+-- Two-handed: the starter staff IS two-handed (grug_gear), so the grant obeys
+-- the same rule the equip filter does and refuses an occupied offhand rather
+-- than creating a state the player could not have reached by hand. Nothing
+-- carries `grug_equip_offhand` today and the starter torch lives in `main`, so
+-- that branch is insurance, not a case.
+--
+local STARTER_WEAPON_KEY = "grug_starter_weapon"
+
+-- Published, because it is content rather than mechanism: the audit below and
+-- `tools/wp13/gear_catalogue_kat.lua`'s engine counterpart read it, and a
+-- later class ships its own line here rather than a second table somewhere.
+grug_inventory.STARTER_WEAPON = {
+	warrior = grug_gear.STARTER_SWORD,
+	mage = grug_gear.STARTER_STAFF,
+	priest = grug_gear.STARTER_STAFF,
+}
+local CLASS_STARTER_WEAPON = grug_inventory.STARTER_WEAPON
+
+-- Put `stack` where it belongs, or into `main` when the slot cannot take it.
+-- Returns "weapon", "main" or nil (nothing anywhere -- a full bag).
+local function place_starter_weapon(player, inv, stack)
+	local free_hands = inv:get_stack(OFFHAND_LIST, 1):is_empty() or
+		grug_inventory.hands_of(stack) < 2
+	if free_hands and inv:get_stack(WEAPON_LIST, 1):is_empty() then
+		inv:set_stack(WEAPON_LIST, 1, stack)
+		return "weapon"
+	end
+	if inv:room_for_item("main", stack) then
+		inv:add_item("main", stack)
+		return "main"
+	end
+	return nil
+end
+
+grug_classes.register_on_class_chosen(function(player, class_id)
+	if not player or not player.is_player or not player:is_player() then
+		return
+	end
+	local meta = player:get_meta()
+	if meta:get_int(STARTER_WEAPON_KEY) == 1 then
+		return
+	end
+	local itemname = CLASS_STARTER_WEAPON[class_id]
+	if not itemname or not core.registered_items[itemname] then
+		return -- a class without a starter weapon stays armed for a later one
+	end
+	local inv = player:get_inventory()
+	if not inv then
+		return
+	end
+	-- The flag is spent only on a character that actually received something,
+	-- for the same reason the join hint below re-arms: a full bag at character
+	-- creation is not the player's fault.
+	local where = place_starter_weapon(player, inv, ItemStack(itemname))
+	if not where then
+		return
+	end
+	meta:set_int(STARTER_WEAPON_KEY, 1)
+	if where == "weapon" then
+		-- Server-side equipment write: caches, stats, ability skins, the
+		-- Character page and the visible weapon all hang off this one call.
+		grug_inventory.equipment_changed(player, WEAPON_LIST)
+	end
+	local def = core.registered_items[itemname]
+	local label = ((def and def.description) or itemname):gsub("\n.*", "")
+	core.chat_send_player(player:get_player_name(), core.colorize("#ffd100",
+		where == "weapon"
+			and ("Your " .. label .. " is equipped in the Weapon slot — your " ..
+				"skills take their damage and their look from it.")
+			or ("Your " .. label .. " is in your inventory; equip it in the " ..
+				"Weapon slot on the Character screen.")))
+end)
+
+-- Startup audit, the grug_traders pattern: one action line when clean, a loud
+-- error otherwise. Every failure it can find is a CONTENT failure that no test
+-- outside the engine sees -- a class added without a starter weapon, a starter
+-- weapon whose item another mod curated away, or one the equip filter would
+-- refuse the moment the grant above wrote it into the slot.
+core.register_on_mods_loaded(function()
+	local report, broken = {}, {}
+	for _, class_id in ipairs(grug_classes.class_ids) do
+		local itemname = CLASS_STARTER_WEAPON[class_id]
+		if not itemname then
+			broken[#broken + 1] = class_id .. " has no starter weapon"
+		elseif not core.registered_items[itemname] then
+			broken[#broken + 1] = class_id .. "'s " .. itemname ..
+				" is not a registered item"
+		elseif core.get_item_group(itemname, slot_group[WEAPON_LIST]) == 0 then
+			broken[#broken + 1] = class_id .. "'s " .. itemname ..
+				" cannot go into the weapon slot"
+		else
+			report[#report + 1] = class_id .. "=" .. itemname ..
+				(grug_inventory.hands_of(itemname) >= 2 and " (2H)" or "")
+		end
+	end
+	if #broken > 0 then
+		table.sort(broken)
+		core.log("error", "[grug_inventory] starter weapons: " ..
+			table.concat(broken, "; "))
+	end
+	table.sort(report)
+	core.log("action", "[grug_inventory] starter weapons: " ..
+		table.concat(report, ", "))
+end)
+
+--
 -- The weapon-slot join hint (weapon-slot design B6).
 --
 -- NO MIGRATION, deliberately: weapons stay perfectly valid `main` items and
@@ -565,16 +695,21 @@ end)
 -- per session: the flag lives in player meta, and a player who reads it and
 -- decides to fight with their fists is not nagged again.
 --
+-- SINCE PLAYTEST ROUND 2 A FRESH CHARACTER NEVER SEES IT: the class-keyed
+-- grant above fills the weapon slot the moment the class is chosen, so
+-- condition 2 below fails and the flag is never spent. The hint survives for
+-- the case it was written for -- a character that has a slot-eligible weapon in
+-- its bag and an empty slot, which is now reached by losing or unequipping one
+-- rather than by being created.
+--
 -- "Once ever" is exactly why the flag must only ever be spent on a character
 -- that can ACT on the hint. The naive version — fire five seconds after join
 -- whenever the slot is empty — burns it on the worst possible case: a
 -- brand-new character is still inside the faction → race → class formspec
--- chain at t = 5 s (grug_factions/init.lua:215-228 opens the first one at
--- t = 1 s), and the starter `default:sword_stone` is only granted inside
--- grug_factions.set_faction, so at that moment the character owns no weapon at
--- all. It would be told to equip something it does not have, while reading a
--- dialog, and would then never be told again — D2 risk 6 with the mitigation
--- switched off.
+-- chain at t = 5 s (grug_factions/init.lua opens the first one at t = 1 s) and
+-- owns nothing at all. It would be told to equip something it does not have,
+-- while reading a dialog, and would then never be told again — D2 risk 6 with
+-- the mitigation switched off.
 --
 -- So the hint RE-ARMS instead of firing, and only goes out when all three of
 -- these hold:
@@ -583,9 +718,8 @@ end)
 --   2. the weapon slot is empty,
 --   3. the character actually OWNS something it could put in there.
 -- Anything else leaves the meta flag untouched, so the next trigger tries
--- again. Triggers are join and "class chosen"; between them they cover the
--- fresh character (fires shortly after it picks its class, with the starter
--- sword already in the bag) and every existing one (fires on the next join).
+-- again. Triggers are join and "class chosen"; between them they cover every
+-- character that owns a weapon it has not equipped.
 -- A character that owns no weapon at all stays armed across sessions until it
 -- buys one — which is the right moment for the advice anyway.
 --
