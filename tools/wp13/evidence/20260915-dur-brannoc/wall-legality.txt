@@ -10,7 +10,7 @@ b	wall_north	0	4	-239	76	96	20	4	0
 
 world	corner	z_run_deck	x_run_deck	step
 a	wall_west/wall_south	103	103	0
-a	wall_west/wall_north	103	103	0
+a	wall_west/wall_north	103	104	1
 a	wall_east/wall_south	107	107	0
 a	wall_east/wall_north	103	103	0
 b	wall_west/wall_south	82	82	0

@@ -60,10 +60,11 @@ local function loader(directory)
 
 	local M = {}
 
-	-- The section. `THICK` is the curtain's own thickness (lanes -2..2),
-	-- `HALF` the outermost lane any piece of this module may write, which is
-	-- the seam's activation band (see the header).
-	M.THICK = 5
+	-- The section. `CURTAIN` is the curtain's own half-thickness -- lanes
+	-- -2..2, five nodes -- and `HALF` the outermost lane any piece of this
+	-- module may write, which is the seam's activation band (see the header).
+	-- Both are read below rather than spelled twice.
+	M.CURTAIN = 2
 	M.HALF = 3
 	-- Courses from the envelope to the wall walk, and courses of footing below
 	-- the lowest ground of a column.
@@ -249,7 +250,7 @@ local function loader(directory)
 
 		-- 3. The curtain, column by column.
 		local pavement, treads, merlons, slits, lamps = 0, 0, 0, 0, 0
-		local outer, inner = 2 * outside, -2 * outside
+		local outer, inner = M.CURTAIN * outside, -M.CURTAIN * outside
 		local STONE, SPOIL = stone(palette), spoil(palette)
 		local PAVING, TREAD = paving(palette), tread(palette)
 		local MARK, MARK_SLAB = mark(palette), mark_slab(palette)
@@ -263,8 +264,10 @@ local function loader(directory)
 				p >= gate - M.GATE_PASSAGE and p <= gate + M.GATE_PASSAGE
 
 			if in_passage then
-				-- THE GATE PASSAGE, five columns wide along the run, which is
-				-- the contract's own gate corridor. No masonry below the walk:
+				-- THE GATE PASSAGE, `2 * GATE_PASSAGE + 1` = seven columns wide
+				-- along the run: the contract's five-wide gate corridor plus the
+				-- two verges its lamp standards stand on. No masonry below the
+				-- walk:
 				-- the tunnel is authored as air through the whole thickness,
 				-- from ONE COURSE ABOVE the column's lowest ground to one
 				-- course under the deck.
@@ -286,15 +289,16 @@ local function loader(directory)
 				-- walk. This is the whole of the no-gap guarantee: the fill
 				-- starts under the column's OWN lowest ground, so a terrace
 				-- step simply makes the next column start lower.
-				for lane = -2, 2 do
+				for lane = -M.CURTAIN, M.CURTAIN do
 					local x, z = column(p, lane)
-					local name = (lane == -2 or lane == 2) and STONE or SPOIL
+					local name = (lane == -M.CURTAIN or lane == M.CURTAIN) and
+						STONE or SPOIL
 					for y = foot, top - 1 do buf:put(x, y, z, name) end
 				end
 				-- A string course of the signature material, three under the
 				-- walk, on both faces: what makes 500 nodes of masonry read as
 				-- a wall and not as a cliff.
-				for _, lane in ipairs({-2, 2}) do
+				for _, lane in ipairs({-M.CURTAIN, M.CURTAIN}) do
 					local x, z = column(p, lane)
 					if top - 3 >= foot then buf:put(x, top - 3, z, MARK) end
 				end
@@ -302,9 +306,9 @@ local function loader(directory)
 
 			-- The deck. Over the passage it is the tunnel's ceiling as well,
 			-- so it is written in both cases.
-			for lane = -2, 2 do
+			for lane = -M.CURTAIN, M.CURTAIN do
 				local x, z = column(p, lane)
-				if lane == -2 or lane == 2 then
+				if lane == -M.CURTAIN or lane == M.CURTAIN then
 					buf:put(x, top, z, STONE)
 				else
 					local before, after = deck(p - 1), deck(p + 1)
@@ -373,7 +377,7 @@ local function loader(directory)
 		local function chamber(centre, half, cross, passage)
 			local first, last = centre - half, centre + half
 			local crown = nil
-            for p = first, last do
+			for p = first, last do
 				if p >= low_end and p <= high_end then
 					local top = deck(p)
 					if crown == nil or top > crown then crown = top end

@@ -1,7 +1,9 @@
 # WP13: Dur Brannoc, the dwarf capital and the first walled one
 
-Increment record, 2026-09-15, written against `main` at `9e22b0d`. It is the
-fourth increment of the capitals contract's section 3 order — the first of
+Increment record, 2026-09-15, rebased onto and re-measured against `main` at
+`7f988a60` (the merge of the round-2 weapon ladder, the round-2 NPC fixes and
+Highcourt's districts 2-4). It is the fourth increment of the capitals
+contract's section 3 order — the first of
 "the other five capitals, one lane each" — and the first capital with a
 **curtain wall** (the user's ruling of 2026-09-14: walls for Dur Brannoc, Nhal
 Veyr and Gor Drazhak; open edges for Highcourt, Lethariel and Kezamba).
@@ -34,6 +36,7 @@ Evidence: `tools/wp13/evidence/20260915-dur-brannoc/`.
 | `tools/wp13/capital_wall.lua` | **new**: whether the real ground under the four wall lines is ground a wall survives |
 | `tools/wp13/capital_timing.lua` | **new**: `highcourt_timing.lua` generalised |
 | `tools/wp13/seam_kat.lua`, `highcourt_timing.lua` | one line each: take the FIRST capital of the roster, not the last |
+| `wp13/dur_brannoc_district.lua` | publishes `clear_to` — the airspace a plot really cut — so `r7_settlement.audit_terrain` holds it to that and not to the top of its bounds |
 | `tools/wp13/final_micro.lua` | the new KAT joins the interpreter pair |
 
 Not touched: the six start compositions, `highcourt.lua`,
@@ -163,15 +166,23 @@ Read out of that:
   lower one's fill starts at most one terrace step below the higher one's, so
   the two faces share `rise + footing − step` = 6 + 2 − 4 = **4** courses. One
   or more is what "no gap" means as arithmetic.
-- **The corner step is zero**, on all four corners of both seeds: where an
-  x-run's walk arrives at a z-run's corner turret, the two runs compute their
-  decks from different neighbourhoods and could disagree, and they do not. The
-  turret's own opening is three courses high, so up to two would still be walked;
-  the tool refuses three.
+- **The corner step is zero at seven of the eight corners and one node at the
+  eighth.** Where an x-run's walk arrives at a z-run's corner turret, the two
+  runs compute their decks from different neighbourhoods and can disagree; on
+  the user seed `wall_north` meets `wall_west`'s turret at deck 104 against 103.
+  The turret's own rampart opening is three courses high, so a one-node step is
+  walked through it; the tool refuses three.
+
+  The first version of this record said zero everywhere, and it was wrong
+  because the TOOL was: `capital_wall.lua` built the envelope over the run's
+  span alone while `wall.lua` builds it over the span plus the look-around
+  either side. Three columns of `wall_west` and one of `wall_north` moved when
+  the window was put back, and the corner step with them. The independent review
+  found it by reading the built decks out of the map.
 
 The cross-thickness fall — the ground's spread across the wall's own seven lanes
-at one column — is at most **4** nodes, on 224 of 2 084 columns on the user seed
-and 419 on the boundary seed. That is a terrace step running diagonally under the
+at one column — is at most **4** nodes, on 230 of the 2 116 columns the terrain
+dump covers on the user seed and 421 on the boundary seed. That is a terrace step running diagonally under the
 wall, and it is why `B` is the minimum over all seven lanes and not the centre
 lane's height.
 
@@ -194,18 +205,27 @@ reaches 6.
 
 | Plot | position | moved from | fall (a / b) | rise | clear |
 | --- | --- | --- | --- | --- | --- |
-| `forge_charcoal` | (56, −72) | (72, −28) | 4 / 4 | 8 | 13 |
+| `forge_charcoal` | (56, −72) | (72, −28) | 4 / 4 | 9 | 13 |
 | `forge_pack_stable` | (56, 60) | (72, 28) | 3 / 3 | 3 | 11 |
 | `forge_smithy` | (116, −28) | — | 0 / 0 | 8 | 11 |
 | `forge_guild_house` | (116, 28) | — | 4 / 4 | 8 | 13 |
 | `forge_quench_court` | (160, −28) | — | 4 / 4 | 4 | 9 |
 | `forge_watch` | (160, 32) | (160, 31) | 4 / 4 | 4 | 12 |
-| `forge_copse` | (112, −88) | (76, −64) | 4 / 4 | 12 | 24 |
-| `forge_ore_yard` | (108, 64) | (76, 64) | 4 / 4 | 8 | 13 |
+| `forge_copse` | (112, −92) | (76, −64) | 4 / 4 | 12 | 24 |
+| `forge_ore_yard` | (112, 64) | (76, 64) | 4 / 4 | 8 | 13 |
 | `forge_store` | (116, −60) | (116, −64) | 4 / 4 | 4 | 12 |
 
 Every plot: zero submerged columns on both seeds, perimeter fall ≤ 4 against a
 skirt of 6, and rise at least two nodes inside its own airspace clear.
+
+`clear` is the airspace the plot really CUT and not the top of its bounds, and
+the difference is not academic: a `grove`'s own authored air reaches y = 24 over
+its trees while the plot's clear over its two-node margin ring stops at its roof.
+The first version of this predicate read the bounds, passed `forge_copse` at
+(112, −88) with a rise of 12 "against 24", and the seam's own load-time
+`audit_terrain` then said out of the engine that the real clear there is 11. The
+tool reads the composition's published `clear_to` now and the copse moved four
+nodes.
 
 ## 5. The core, and the socket table
 
@@ -248,10 +268,22 @@ boundary to do.
 **Six loops**, orders 1..n with no gap in each, which the KAT walks: the city
 ring, one per gate tower, and the district's own.
 
-**The two spare spots** (`citadel_walk_west`, `citadel_walk_north`, tagged
-`walk`) carry no work and no furniture. The NPC lane walks a flair villager from
-one spot of its own composition to another, and a roster with exactly as many
-spots as villagers gives every one of them the same two ends of the same line.
+**The two spare spots** (`citadel_walk_west`, `citadel_walk_north`) carry
+`spawn = false` and no tag, which is the sockets contract's own shape for them
+(playtest round 2, 2026-09-15, and the shape Highcourt's districts settled on).
+The position is real and reaches every consumer; nobody is placed on it. The NPC
+lane walks a flair villager from one spot of its own composition to another, and
+a roster with exactly as many spots as villagers gives every one of them the
+same two ends of the same line.
+
+The first version of this package wrote them as ordinary idle spots with a
+`walk` TAG, which is a description and not a contract: the engine placed a
+villager on each and the settlement was back to two ends of a line. The
+independent review found it in this package's own engine evidence (`flair
+53/53`). `grug_core/settlement_sockets.lua` normalises the field,
+`grug_mobs/start_npcs.lua` counts spares out of the roster and keeps them as
+wander targets, and the KAT's `dur_brannoc_spares` row asserts both halves of
+the arithmetic: 53 idle sockets, 51 of them placed, 2 spare.
 
 ### 5.2 The causeway parapet
 
@@ -303,8 +335,8 @@ gate corridor — **plus two sections of its own**:
 
 ```
 WP13 FINAL MICRO PAIR BYTE-IDENTICAL
-f450d151c59d2a99a8c0dc0c91b54051f3d2471211a52107c0b75f9d4c8e8539  micro-luajit.tsv
-f450d151c59d2a99a8c0dc0c91b54051f3d2471211a52107c0b75f9d4c8e8539  micro-puc51.tsv
+37221ada423b25a03a06851d7532488e5dd59c7b787d1cc5d58429dac22af12b  micro-luajit.tsv
+37221ada423b25a03a06851d7532488e5dd59c7b787d1cc5d58429dac22af12b  micro-puc51.tsv
 ```
 
 That is the whole WP13 fixture set in one process under each interpreter, this
@@ -346,13 +378,19 @@ first).
 | **seam first touch** (core rebuilt, hashed, compared, written) | 231 – 258 ms | 617 – 634 ms | 95 913 |
 
 Against the contract's section 2.3 budget: core **95 914 of 150 000** cells,
-largest plot **8 398 of 12 000**, whole capital including both overlays
-**297 892 of 400 000** written cells. "Builds in a few seconds under LuaJIT when
+largest plot **9 746 of 12 000** (the copse, whose margin ring is cut to the
+top of its own trees), whole capital including both overlays **299 660 of
+400 000** written cells. "Builds in a few seconds under LuaJIT when
 first touched" is 0.23 s, and 0.63 s under the fallback interpreter.
 
-The wall is the biggest single writer — about 147 000 of those 297 892 cells,
-2 084 columns at some 70 cells each — and it is the piece that never sits in
-memory: an overlay has no cells until a mapchunk hands it a surface.
+The wall is the biggest single writer. The overlay is **147 102** of those
+299 660 cells (the total less the core's 95 914 and the district's 56 644), and
+the wall is almost all of it: 2 056 columns of curtain — 523 on each z-run and
+505 on each x-run — at some 67 cells each, plus 32 turrets and four gatehouses.
+The KAT's own `dur_brannoc_wall` row counts 137 860 cells over the same 2 056
+columns, which is the same wall on the fixture's synthetic profile rather than
+on this world's ground. It is also the piece that never sits in memory: an
+overlay has no cells until a mapchunk hands it a surface.
 
 ### (d) Per-mapchunk cost
 
@@ -384,19 +422,26 @@ round a 512 envelope touch every mapchunk on the ring.
 
 `tools/wp13/run_capital.sh <out> dur_brannoc full <seed>`, both gate seeds, one
 cold world each: **0 ERROR and 0 ModError lines**, the capital emerged one
-mapchunk at a time, and the NPC roster placed in full.
+mapchunk at a time, **no finding from the seam's load-time terrain audit**, and
+the NPC roster placed in full.
 
 | | user seed 531802985935182545 | boundary seed 8675309 |
 | --- | --- | --- |
 | sockets registered | 94 | 94 |
-| roster placed | `guards 19/19 flair 53/53 vendor 2/2 quest 1/1` | same |
+| idle sockets / placed / spare | 53 / 51 / 2 | same |
+| roster placed | `guards 19/19 flair 51/51 vendor 2/2 quest 1/1 spare 2` | same |
 | loops | 6 | 6 |
+| terrain-audit findings | 0 | 0 |
 
 Both capital vendors stand on their sockets, so `grug_traders/vendors.lua`
 places none of its own at Dur Brannoc. As at Highcourt, the split between
 "placed at readiness" and "pending" depends on which mapblocks the emerge
 sequence had loaded and is not a gate; what is reproducible is that the roster
 ends complete.
+
+The boundary-seed row is the pass taken before the review round; the user seed
+was re-run on the final tree, which is the one the numbers above come from and
+the one `REBASE.md` records.
 
 Dur Brannoc's core identity is
 `c87bf21b083db8ac55202d9e17ad953aec7721c27dd76f30fff1fd00bedf293f`; its eleven
@@ -477,6 +522,31 @@ Three defects the KAT caught before any render, each worth recording:
 - **The travel plaza had ten slabs hanging over it.** The east colonnade's eaves
   oversail its own footprint by two nodes, and the plaza started where they end.
   The reserved square moved two nodes east.
+
+## 7b. What the rebase onto `7f988a60` changed
+
+This package was written against `main` at `9e22b0d` and rebased onto the three
+lanes that landed first. Four things in it are theirs and not this lane's design:
+
+1. **The blueprint source takes the seam's options.** `r7_runtime.lua` now
+   validates the world seed once and hands every source `{full_seed,
+   raw_sha256}`. Dur Brannoc has one district and no quadrant permutation, so it
+   reads neither — but `r7_dur_brannoc_blueprint.lua` refuses a HALF seam rather
+   than shrugging at it, because a caller that passes one field and not the other
+   has a defect upstream, and the day this capital grows a seeded assignment the
+   refusal is already where it belongs.
+2. **`r7_settlement.audit_terrain` audits every capital plot at load** and logs a
+   warning per submerged or steep one. Dur Brannoc's nine plots are audited too,
+   and the engine pass's log carries no finding for any of them — which is the
+   runtime restatement of section 4's offline verdict, on the same ground.
+   `dur_brannoc_district.lua` publishes `clear_to` so the audit holds a rise
+   against the airspace the plot really cut rather than the top of its bounds.
+3. **The quest socket moves through `socket_overrides`**, the hook
+   `highcourt_plot.lua` gained, rather than through this composition's own
+   `recast`. See section 5 for what it does and why it is not in `capitals.lua`.
+4. **Spares carry `spawn = false` and no tag**, which is the shape lane 3's
+   spares settled on; this package's first version used a `walk` tag and no
+   field, and the engine placed a villager on each.
 
 ## 8. Open points
 

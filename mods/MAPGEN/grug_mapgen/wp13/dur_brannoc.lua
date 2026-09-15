@@ -199,7 +199,26 @@ local function loader(directory)
 			spec = {w = 13, d = 19, wall_h = 7, rise = 5},
 			-- The temple publishes its own quest shell, and a capital has
 			-- exactly one: the composition adds none of its own.
-			},
+			--
+			-- It does MOVE AND RETAG the shell. `capitals.temple` stands it
+			-- three nodes inside its own door, in the nave -- where a shrine's
+			-- own keeper belongs and a quest-giver does not. The user's
+			-- playtest-round-2 ruling is that the elder stands on the doorstep
+			-- and shows the street his face, so this plot puts him one node
+			-- outside the door on the temple walk and tags him `door`, which is
+			-- what turns an NPC round (`grug_mobs/start_npcs.lua`,
+			-- `socket_face_yaw`).
+			--
+			-- Both halves are here and not in `capitals.lua` for the reason
+			-- `highcourt_district_lore.lua` gives at the same socket: the
+			-- generator cannot know which of its walls this composition puts to
+			-- a lane, nor where this plot's path runs. `socket_overrides` is
+			-- lane 3's hook, in the core's own frame -- the pad coordinates
+			-- `parts.stamp` has already resolved.
+			socket_overrides = function(placed)
+				return {ancestor_hall_quest = {x = placed.x + 6,
+					z = placed.z - 1, face = 0, tags = {"door"}}}
+			end},
 
 		-- 7. The forge court, the north-east quarter and this capital's
 		-- signature. The great forge opens in its x- wall, like Dawnmere's
@@ -510,15 +529,32 @@ local function loader(directory)
 					top = a.top, closed = a.closed, id = plot.id,
 				}
 			end
+			-- What this plot changes about the sockets its PART published. A
+			-- generator in `capitals.lua` knows its own building and nothing
+			-- about the composition it is built into, so the roster says so
+			-- instead of the library being edited per composition. Keyed by
+			-- socket id and a function of where the plot was actually placed,
+			-- because that is where the answers are; the same hook
+			-- `highcourt_plot.lua` gives a district plot.
+			local overrides = {}
+			if type(plot.socket_overrides) == "function" then
+				overrides = plot.socket_overrides(placed[plot.id])
+			end
 			for _, entry in ipairs(points.sockets or {}) do
 				local drop = plot.drop and plot.drop[entry.role]
 				if not drop then
 					local recast = plot.recast and plot.recast[entry.role]
+					local override = overrides[entry.id] or {}
 					local out = {id = entry.id, role = entry.role,
-						x = entry.x, y = entry.y, z = entry.z,
-						face = entry.face, group = entry.group,
+						x = override.x or entry.x, y = override.y or entry.y,
+						z = override.z or entry.z,
+						face = override.face or entry.face,
+						group = entry.group,
 						order = entry.order, kind = entry.kind,
-						tags = entry.tags}
+						-- `spawn` travels with the socket: a generator that
+						-- publishes a spare must not lose it here.
+						spawn = entry.spawn,
+						tags = override.tags or entry.tags}
 					if recast then
 						out.role = recast.role
 						out.tags = recast.tags
@@ -790,13 +826,26 @@ local function loader(directory)
 		socket("court_idle_fire", "idle", 35, 1, 39, 0, {tags = {"fire"}})
 		socket("forecourt_idle_west", "idle", -6, 1, 3, 1, {tags = {"bench"}})
 		socket("forecourt_idle_east", "idle", 7, 1, 3, 3, {tags = {"bench"}})
-		-- Two SPARE spots, which carry no work and no furniture: the NPC lane
-		-- walks a flair villager from one spot of its own composition to
-		-- another, and a roster with exactly as many spots as villagers gives
-		-- every one of them the same two ends of the same line. These are the
-		-- slack in that walk.
-		socket("citadel_walk_west", "idle", -23, 1, 20, 0, {tags = {"walk"}})
-		socket("citadel_walk_north", "idle", 20, 1, 30, 2, {tags = {"walk"}})
+		-- Two SPARE spots. `spawn = false` is the sockets contract's own word
+		-- for them (playtest round 2, 2026-09-15): a real authored standing
+		-- position that reaches every consumer and that NOBODY IS PLACED ON, so
+		-- a villager's amble has somewhere to go that is not another villager's
+		-- doorstep. Without them a settlement has exactly as many idle spots as
+		-- idle villagers, every spot is permanently occupied, and the amble is
+		-- four people swapping four chairs.
+		--
+		-- The first version of this composition wrote them as ordinary idle
+		-- spots with a `walk` tag, which is a description and not a contract:
+		-- the engine placed a villager on each of them and the two ends of the
+		-- line were back. `grug_core/settlement_sockets.lua` normalises the
+		-- field, `grug_mobs/start_npcs.lua` counts them out of the roster and
+		-- keeps them as wander targets, and the KAT asserts both.
+		-- No tag. A tag is what the spoken line and the facing rule read
+		-- (`_grug_idle_tag`, `FACE_AWAY_TAGS`), and a spare has neither a line
+		-- nor a door: `spawn = false` is the whole of what it is, which is the
+		-- shape lane 3's spares settled on.
+		socket("citadel_walk_west", "idle", -23, 1, 20, 0, {spawn = false})
+		socket("citadel_walk_north", "idle", 20, 1, 30, 2, {spawn = false})
 
 		-- 13. Pane shapes, settled once over the finished pad.
 		parts.resolve_panes(buf)

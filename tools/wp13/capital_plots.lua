@@ -25,8 +25,20 @@
 --      is where this rule bites: the dwarf granite terrace steps FOUR nodes,
 --      the deepest of the six races, so a plot straddling two steps is
 --      already two thirds of the way through its skirt.
---   3. FITS UNDER ITS OWN ROOF. The rise under the footprint may not exceed
---      the airspace the plot clears, on either seed.
+--   3. FITS UNDER ITS OWN ROOF. The rise may not exceed the airspace the plot
+--      CLEARS, on either seed -- and both halves of that sentence are places
+--      this tool was once wrong. The rise is read off the perimeter, the
+--      two-node margin ring AND every other interior column, which is the
+--      sample `r7_settlement.audit_terrain` takes at load; reading the
+--      perimeter alone missed a shoulder by four nodes. The clear is the
+--      composition's own published `clear_to` and not the top of its bounds;
+--      a grove carries authored air to y = 24 over its trees while its plot
+--      cuts only to its roof, and reading the bounds called that 24.
+--
+--      THE ENGINE-SIDE AUDIT IS THE AUTHORITY. It runs on every boot against
+--      the world that boot has. This tool is the pre-flight that keeps a
+--      composition from reaching one, and it earns that only by asking the
+--      same question.
 --   4. INSIDE THE ENVELOPE, one node clear of the gate stations at +-256.
 --   5. OFF THE CORE, off all four 32-node gate corridors, off every street run
 --      the capital's overlay writes -- avenues, ring street AND, for a walled
@@ -110,8 +122,17 @@ local plots = {}
 for index = 1, #capital.district.plots do
 	local entry = capital.district.plots[index]
 	local composition = entry.build()
+	-- THE AIRSPACE THE PLOT REALLY CUT, which is what `r7_settlement.
+	-- audit_terrain` holds a rise against and is NOT the top of the plot's
+	-- bounds: a plot's own clear stops at its roof, while its bounds also carry
+	-- the authored air a stamped part brings with it over its own footprint
+	-- alone. Reading the bounds is the weaker rule, and this tool used it until
+	-- the load-time audit disagreed with it about `forge_copse` -- whose grove
+	-- carries air to y = 24 over the trees and clears only 11 over the two-node
+	-- margin ring the terrace shoulder actually stands on.
 	plots[index] = {id = entry.id, x = entry.x, z = entry.z,
-		bounds = composition.bounds, clear_to = composition.bounds.max.y}
+		bounds = composition.bounds,
+		clear_to = composition.clear_to or composition.bounds.max.y}
 end
 
 -- Every run the capital's overlay writes, as a rectangle a plot may not touch.

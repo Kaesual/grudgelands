@@ -106,7 +106,26 @@ for _, world in ipairs(worlds) do
 		local wet, worst_step, worst_at = 0, 0, 0
 		local low, high, previous
 		local base = {}
-		for p = spec.from, spec.to do
+		-- THE SAME WINDOW THE MODULE USES, which is the run's own span plus the
+		-- look-around either side (`wall.lua`, section 1: `low_end, high_end =
+		-- from - reach, to + reach`). The first version of this tool built the
+		-- envelope over [from, to] alone and therefore did not compute the deck
+		-- the map actually has: on the user seed that moved three columns of
+		-- `wall_west` and one of `wall_north`, and with them the corner step it
+		-- reports. A tool that models the module has to model all of it.
+		--
+		-- The dump is sampled over a fixed span, so the window is clipped to
+		-- what was measured; the summary columns below still describe the RUN.
+		local window_from = spec.from - wall.REACH
+		local window_to = spec.to + wall.REACH
+		local measured_from, measured_to
+		for p in pairs(columns) do
+			if measured_from == nil or p < measured_from then measured_from = p end
+			if measured_to == nil or p > measured_to then measured_to = p end
+		end
+		if window_from < measured_from then window_from = measured_from end
+		if window_to > measured_to then window_to = measured_to end
+		for p = window_from, window_to do
 			local lanes = columns[p]
 			assert(lanes, "the terrain dump has no column " .. p ..
 				" of line " .. line)
@@ -114,17 +133,21 @@ for _, world in ipairs(worlds) do
 			for lane = -wall.HALF, wall.HALF do
 				local sample = assert(lanes[lane],
 					"the terrain dump has no lane " .. lane .. " at " .. p)
-				if sample.wet then wet = wet + 1 end
+				if sample.wet and p >= spec.from and p <= spec.to then
+					wet = wet + 1
+				end
 				if lowest == nil or sample.y < lowest then lowest = sample.y end
 			end
 			base[p] = lowest
-			if low == nil or lowest < low then low = lowest end
-			if high == nil or lowest > high then high = lowest end
-			if previous ~= nil then
-				local step = math.abs(lowest - previous)
-				if step > worst_step then worst_step, worst_at = step, p end
+			if p >= spec.from and p <= spec.to then
+				if low == nil or lowest < low then low = lowest end
+				if high == nil or lowest > high then high = lowest end
+				if previous ~= nil then
+					local step = math.abs(lowest - previous)
+					if step > worst_step then worst_step, worst_at = step, p end
+				end
+				previous = lowest
 			end
-			previous = lowest
 		end
 
 		-- 3. The overlap of two neighbouring columns' masonry: the lower column
@@ -134,13 +157,14 @@ for _, world in ipairs(worlds) do
 		-- is what "no gap" means as arithmetic.
 		local overlap = wall.RISE + wall.FOOTING - worst_step
 
-		-- 1-Lipschitz envelope of the base, which is what the module builds.
+		-- 1-Lipschitz envelope of the base over the whole window, which is what
+		-- the module builds.
 		local level = {}
-		for p = spec.from, spec.to do level[p] = base[p] end
-		for p = spec.from + 1, spec.to do
+		for p = window_from, window_to do level[p] = base[p] end
+		for p = window_from + 1, window_to do
 			if level[p] < level[p - 1] - 1 then level[p] = level[p - 1] - 1 end
 		end
-		for p = spec.to - 1, spec.from, -1 do
+		for p = window_to - 1, window_from, -1 do
 			if level[p] < level[p + 1] - 1 then level[p] = level[p + 1] - 1 end
 		end
 		decks[world.name][spec.id] = {}
@@ -188,6 +212,11 @@ end
 -- turret, the two decks are computed from different neighbourhoods and can
 -- disagree. The turret's own rampart opening is three courses high, so a step
 -- of one or two is walked through it; more is a step a patrol cannot take.
+--
+-- It is not always zero. With the look-around window the module really uses,
+-- the user seed shows a one-node step where `wall_north` meets `wall_west`'s
+-- corner turret (built decks 104 and 103), which the opening walks. The first
+-- version of this tool reported zero everywhere because it left the window out.
 io.write("\nworld\tcorner\tz_run_deck\tx_run_deck\tstep\n")
 local CORNER_OPENING = 3
 for _, world in ipairs(worlds) do

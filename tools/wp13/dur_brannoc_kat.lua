@@ -586,6 +586,7 @@ return function(repo)
 		local sockets = assert(blueprint.landmarks.sockets,
 			label .. " publishes no sockets")
 		local seen, roles, loops = {}, {}, {}
+		local spares = 0
 		for _, entry in ipairs(sockets) do
 			assert(type(entry.id) == "string" and entry.id ~= "",
 				label .. " publishes a socket with no id")
@@ -593,6 +594,28 @@ return function(repo)
 				label .. " publishes the socket id " .. entry.id .. " twice")
 			seen[entry.id] = true
 			roles[entry.role] = (roles[entry.role] or 0) + 1
+			-- A SPARE SOCKET IS A DESTINATION, NOT A HOME. `spawn = false` is
+			-- the sockets contract's own word (playtest round 2, 2026-09-15):
+			-- the position is real and reaches every consumer, and nobody is
+			-- placed on it, so a villager's amble has somewhere to go that is
+			-- not another villager's doorstep. `grug_core/settlement_sockets.lua`
+			-- refuses the field on any role but `idle`, and so does this: a
+			-- `guard_post` with `spawn = false` is a gate nobody mans, written
+			-- as one word.
+			--
+			-- The first version of this composition wrote its two spares as
+			-- ordinary idle spots with a `walk` TAG, which is a description and
+			-- not a contract -- the engine placed a villager on each of them.
+			-- The tag says what the spot is for; this field is what the
+			-- placement engine reads.
+			if entry.spawn ~= nil then
+				assert(entry.spawn == false, label .. ": socket " .. entry.id ..
+					" carries a spawn field that is not false")
+				assert(entry.role == "idle", label .. ": socket " ..
+					entry.id .. " is a spare " .. entry.role ..
+					", and only an idle socket may be spare")
+				spares = spares + 1
+			end
 			assert(entry.face ~= nil and entry.face >= 0 and entry.face <= 3,
 				label .. ": socket " .. entry.id .. " has no facedir")
 			local dx, dz = parts.facedir_step(entry.face)
@@ -659,13 +682,15 @@ return function(repo)
 			assert(spec.roles[role] ~= nil, label ..
 				" publishes an unexpected " .. role .. " socket")
 		end
+		assert(spares == (spec.spares or 0), label .. " publishes " .. spares ..
+			" spare sockets, not " .. (spec.spares or 0))
 
 		return {cells = #cells, solids = solids, palette = palette_count,
 			lights = lights, doors = #doorways, rooms = #rooms,
 			sockets = #sockets, reachable = #queue, panes = panes,
 			attached = attached, torches = torches, oriented = oriented,
 			loop = loop_length, node = node, at = at, stand = stand,
-			index = index}
+			index = index, spares = spares}
 	end
 
 	-- ------------------------------------------------------------------
@@ -699,6 +724,11 @@ return function(repo)
 		-- same two ends of the same line.
 		roles = {king = 1, waypoint = 1, quest = 1, vendor = 2,
 			guard_post = 12, guard_patrol = 14, idle = 34},
+		-- Two of those 34 idle spots are SPARE, and the roster the runtime
+		-- places is therefore 32 of them. Declared, because an authored spare
+		-- that quietly became an ordinary spot is the exact defect the review
+		-- of this package found.
+		spares = 2,
 	}
 	local core_result = check_composition("dur brannoc core", core, CORE)
 
@@ -893,7 +923,7 @@ return function(repo)
 	say("dur_brannoc_core", core.schema, core_result.cells, core_result.solids,
 		core_result.palette, core_result.lights, core_result.doors,
 		core_result.rooms, core_result.sockets, core_result.loop,
-		core_result.reachable, footings, ground_cells)
+		core_result.reachable, footings, ground_cells, core_result.spares)
 
 	-- ------------------------------------------------------------------
 	-- 2. the district plots
@@ -908,6 +938,13 @@ return function(repo)
 	assert(#district.plots >= 8, "the district has " .. #district.plots ..
 		" plots")
 	local district_cells, district_loop = 0, {}
+	local district_spares, settlement_idle, placed_idle = 0, 0, 0
+	for _, entry in ipairs(core.landmarks.sockets) do
+		if entry.role == "idle" then
+			settlement_idle = settlement_idle + 1
+			if entry.spawn ~= false then placed_idle = placed_idle + 1 end
+		end
+	end
 	local taken = {}
 	for _, entry in ipairs(district.plots) do
 		local plot = entry.build()
@@ -928,8 +965,19 @@ return function(repo)
 		end
 		assert((spec.roles.idle or 0) >= 1,
 			entry.id .. " publishes no flair spot")
+		-- A district plot publishes no spare: the slack in the amble belongs to
+		-- the composition that owns the walk, and a plot's own villager keeps
+		-- to its own plot.
+		spec.spares = 0
+		for _, socket in ipairs(plot.landmarks.sockets) do
+			if socket.role == "idle" then
+				settlement_idle = settlement_idle + 1
+				if socket.spawn ~= false then placed_idle = placed_idle + 1 end
+			end
+		end
 		local result = check_composition("plot " .. entry.id, plot, spec)
 		district_cells = district_cells + result.cells
+		district_spares = district_spares + result.spares
 
 		-- The reference column: inside the plot, and a column the plot
 		-- itself paves, because it is the column whose terrain height the
@@ -978,27 +1026,37 @@ return function(repo)
 		-- The plot's own offset from the capital anchor keeps it clear of
 		-- the avenue and of every other plot: two plots that overlap in the
 		-- envelope are two plots the writer projects into each other.
-		-- No plot may share a column with another plot or with a STREET.
-		-- The streets are the runs the overlay will pave -- the four gate
-		-- avenues and the four sides of the ring -- and each is five wide,
-		-- so the rule is read off the same specs the overlay is given
-		-- rather than approximated by the square around the anchor, which
-		-- is what let a plot sit on the ring street.
+		-- No plot may share a column with another plot or with anything the
+		-- OVERLAY writes. That is the four gate avenues and the four sides of
+		-- the ring, each five wide -- and, for a walled capital, the four sides
+		-- of the CURTAIN, which are `wall.HALF` either side of their centre
+		-- line. The rule is read off the same specs the overlay is given rather
+		-- than approximated by the square around the anchor, which is what let
+		-- a plot sit on the ring street.
+		--
+		-- The wall runs belong here and not only in
+		-- `tools/wp13/capital_plots.lua`: that tool needs two engine scans to
+		-- run at all, so without this row a plot pushed against the curtain
+		-- would be caught only by somebody who had a world to hand.
 		local STREET_HALF = math.floor(avenue.WIDTH / 2)
 		local function on_a_street(x, z)
 			local runs = {}
 			for _, spec in ipairs(capital.avenues) do
-				runs[#runs + 1] = spec
+				runs[#runs + 1] = {spec = spec, half = STREET_HALF}
 			end
 			for _, spec in ipairs(capital.ring) do
-				runs[#runs + 1] = spec
+				runs[#runs + 1] = {spec = spec, half = STREET_HALF}
 			end
-			for _, spec in ipairs(runs) do
+			for _, spec in ipairs(capital.wall) do
+				runs[#runs + 1] = {spec = spec, half = wall.HALF}
+			end
+			for _, run in ipairs(runs) do
+				local spec, half = run.spec, run.half
 				local along = (spec.axis == "x") and x or z
 				local across = (spec.axis == "x") and z or x
-				if along >= spec.from - STREET_HALF and
-						along <= spec.to + STREET_HALF and
-						math.abs(across - spec.at) <= STREET_HALF then
+				if along >= spec.from - half and
+						along <= spec.to + half and
+						math.abs(across - spec.at) <= half then
 					return spec.id
 				end
 			end
@@ -1064,7 +1122,24 @@ return function(repo)
 	assert(district_cells <= 12000 * #district.plots,
 		"the district is over its plot budget")
 	say("dur_brannoc_district", district.key, #district.plots, district_cells,
-		district_length)
+		district_length, district_spares)
+
+	-- THE SETTLEMENT'S SPARES, over the whole of it and not per composition:
+	-- the two the core owns and none anywhere else. A spare is an `idle` socket
+	-- with `spawn = false`, which is the runtime's own word for a wander target
+	-- nobody is placed on, so the roster the engine really places is every idle
+	-- socket MINUS these. The engine pass prints both halves of that arithmetic
+	-- (`spare 2`, and a flair count two short of the idle total); this is the
+	-- composition-side half of the same claim, and it is here rather than only
+	-- there because a composition should not need a world to be checked.
+	assert(core_result.spares + district_spares == 2,
+		"the settlement publishes " .. (core_result.spares + district_spares) ..
+			" spare sockets, not 2")
+	assert(settlement_idle - placed_idle == 2,
+		"the placed idle roster is " .. placed_idle .. " of " ..
+			settlement_idle .. " idle sockets, so the spares are not 2")
+	say("dur_brannoc_spares", core_result.spares, district_spares,
+		settlement_idle, placed_idle)
 
 	-- ------------------------------------------------------------------
 	-- 3. the avenue overlay

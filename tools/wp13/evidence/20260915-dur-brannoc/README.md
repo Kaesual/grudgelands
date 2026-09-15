@@ -11,7 +11,7 @@ Record: [`docs/research/wp13-dur-brannoc.md`](../../../../docs/research/wp13-dur
 | `terrain/wall-<seed>.tsv` | the ground under the four candidate curtain-wall lines, every column, lane by lane across the wall's thickness, both gate seeds |
 | `terrain/grid-<seed>.tsv` | a 4-node grid of the whole 512 envelope plus its collar, both seeds |
 | `terrain/probe-<seed>.txt` | the `terrain` probe's own summary: range, worst step and wet columns per line |
-| `wall-legality.txt` | the verdict of `tools/wp13/capital_wall.lua`: every line dry, stepping no more than a terrace, four courses of face overlap, corner step zero, on both worlds |
+| `wall-legality.txt` | the verdict of `tools/wp13/capital_wall.lua`: every line dry, stepping no more than a terrace, four courses of face overlap on both worlds, and the corner step measured over the same look-around window the wall module uses — zero at seven of the eight corners and one node where `wall_north` meets `wall_west`'s turret on the user seed, which the turret's three-course opening walks |
 | `surface/surface-<seed>.tsv` | the surface and the submerged column count under every district plot footprint, both seeds |
 | `surface/scan-<seed>.tsv` | the full candidate sweep the four plot moves were decided from |
 | `surface/plot-legality.txt` | the verdict of `tools/wp13/capital_plots.lua` on the committed positions |

@@ -99,11 +99,23 @@ local function loader(directory)
 				order = 6}},
 		-- A pine copse rather than a broadleaf grove: this is the Hearthpine
 		-- terrace, and `grove` takes the dressing silhouette it is given.
+		-- MOVED AGAIN, from (112, -88), and by a rule rather than by taste:
+		-- a grove's own authored air reaches y = 24 over the trees, but the
+		-- plot's clear over its two-node margin ring stops at its roof (11),
+		-- and the terrace shoulder at -88 stands 12 above the reference column.
+		-- The seam's load-time `audit_terrain` said so out of the engine before
+		-- `tools/wp13/capital_plots.lua` did -- that tool was reading the top of
+		-- the plot's BOUNDS instead of the airspace it really cut, which is the
+		-- weaker of the two rules and the one this move corrected.
 		{id = "forge_copse", module = "capitals", make = "grove",
-			x = 112, z = -88, order = 7, along = "ring",
+			x = 112, z = -92, order = 7, along = "ring",
 			spec = {size = 15, kind = "tree", height = 8}},
+		-- Four nodes east of (108, 64): with the rise measured the way the
+		-- load-time audit measures it -- the margin ring and the interior, not
+		-- the perimeter alone -- the shoulder there stands 12 against a clear of
+		-- 13, which is legal and one node from not being. 112 is 8 against 13.
 		{id = "forge_ore_yard", module = "capitals", make = "granary",
-			x = 108, z = 64, order = 8, along = "ring",
+			x = 112, z = 64, order = 8, along = "ring",
 			spec = {w = 11, d = 15, wall_h = 5}},
 		-- Door index 4, single leaf, for the roof-post reason above.
 		{id = "forge_store", module = "buildings", make = "longhouse",
@@ -171,7 +183,28 @@ local function loader(directory)
 		-- occupies those cells in the world.
 		buf:fill(x0, -1, z0, x1, -1, z1, palette.node("subsoil"))
 		buf:fill(x0, 0, z0, x1, 0, z1, palette.node("ground"))
-		buf:clear(x0, 1, z0, x1, part.peak + 2, z1)
+		-- THE AIRSPACE THIS PLOT CUTS, over the WHOLE of its ground and not only
+		-- over the part's own footprint. `part.peak + 2` is the right number for
+		-- a building, whose authored air stops just over its ridge; it is the
+		-- wrong one for a GROVE, which carries air to y = 24 over its trees on
+		-- its own 15 x 15 and would leave the two-node margin ring round it cut
+		-- to 11. A terrace shoulder standing in that ring is terrain left inside
+		-- the plot, and `r7_settlement.audit_terrain` said so out of the engine
+		-- about `forge_copse` before anything here did.
+		--
+		-- So the clear is the higher of the two, and the ring is cut to it: 136
+		-- columns times the difference, which for the grove is some 1 800 cells
+		-- and for every other plot in this district is zero, because their parts
+		-- reach no higher than their own roofs.
+		local part_top = part.peak + 2
+		do
+			local order, count = part.buffer:cells()
+			for index = 1, count do
+				if order[index].y > part_top then part_top = order[index].y end
+			end
+		end
+		local clear_to = part_top
+		buf:clear(x0, 1, z0, x1, clear_to, z1)
 		-- 2. The foundation skirt, the perimeter only, down to the contract's
 		-- floor.
 		for y = -1, FLOOR, -1 do
@@ -307,6 +340,12 @@ local function loader(directory)
 			bounds = {min = minp, max = maxp},
 			palette = palette_list,
 			reference = {x = 0, z = 0},
+			-- The airspace this plot actually CUT, which is not the top of its
+			-- bounds: a lamp post or a pine written after the clear reaches
+			-- above it. `r7_settlement.audit_terrain` holds the rise under the
+			-- plot against this number and falls back to the bounds where a
+			-- composition does not publish one, which is the weaker rule.
+			clear_to = clear_to,
 			landmarks = {
 				arrival = {x = 0, y = 1, z = z0 + 2},
 				plot = {min = {x = x0, y = -1, z = z0},

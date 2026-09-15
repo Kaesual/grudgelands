@@ -36,7 +36,29 @@ if not here or here == "" then here = core.get_modpath("grug_mapgen") .. "/wp40"
 
 local library = dofile(here .. "/r7_wp13_library.lua")
 
-return function()
+-- The seam `r7_runtime.lua` hands every blueprint source: the world seed it
+-- validated once and the engine's raw SHA-256. Dur Brannoc has ONE district and
+-- no quadrant permutation, so it reads neither -- but it still refuses a HALF
+-- seam rather than shrugging at it. A caller that passes one field and not the
+-- other has a defect somewhere upstream, and the day this capital grows a
+-- seeded assignment the refusal is already where it belongs. A caller that
+-- passes nothing at all is engine-free (a fixture, the renderer, the timing
+-- harness) and is fine.
+local function check_options(options)
+	if options == nil then return end
+	if type(options) ~= "table" then
+		error("WP13 Dur Brannoc: the blueprint options differ", 0)
+	end
+	if options.full_seed == nil and options.raw_sha256 == nil then return end
+	if type(options.full_seed) ~= "string" or
+			not options.full_seed:match("^%-?%d+$") or
+			type(options.raw_sha256) ~= "function" then
+		error("WP13 Dur Brannoc: the blueprint seam differs", 0)
+	end
+end
+
+return function(options)
+	check_options(options)
 	local path = library.path()
 	local palettes = dofile(path .. "/palette.lua")
 	local avenue = dofile(path .. "/avenue.lua")(path)

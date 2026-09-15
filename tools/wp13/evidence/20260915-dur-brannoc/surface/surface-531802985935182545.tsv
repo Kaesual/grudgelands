@@ -1,10 +1,10 @@
 plot	reference_x	reference_z	reference_y	perimeter_min	perimeter_max	perimeter_fall	perimeter_rise	footprint_min	footprint_max	footprint_fall	footprint_rise	submerged	submerged_margin	reference_wet	clear_to	columns
-forge_charcoal	-1728	-1528	134	125	147	9	13	125	147	9	13	0	0	false	13	357
-forge_pack_stable	-1728	-1472	127	117	145	10	18	117	145	10	18	0	0	false	11	357
+forge_charcoal	-1744	-1572	138	137	147	1	9	137	146	1	8	0	0	false	13	357
+forge_pack_stable	-1744	-1440	146	143	149	3	3	143	149	3	3	0	0	false	11	357
 forge_smithy	-1684	-1528	89	89	97	0	8	89	97	0	8	0	0	false	11	418
 forge_guild_house	-1684	-1472	89	85	97	4	8	85	97	4	8	0	0	false	13	437
-forge_quench_court	-1640	-1528	89	89	93	0	4	89	93	0	4	0	0	false	7	441
-forge_watch	-1640	-1469	85	85	89	0	4	85	89	0	4	0	0	false	12	567
-forge_copse	-1724	-1564	129	117	140	12	11	117	140	12	11	0	0	false	24	361
-forge_ore_yard	-1724	-1436	129	121	140	8	11	121	140	8	11	0	0	false	13	357
-forge_store	-1684	-1564	97	93	101	4	4	93	101	4	4	0	0	false	12	357
+forge_quench_court	-1640	-1528	89	89	93	0	4	89	93	0	4	0	0	false	6	441
+forge_watch	-1640	-1468	85	85	89	0	4	85	89	0	4	0	0	false	12	567
+forge_copse	-1688	-1592	89	89	101	0	12	89	97	0	8	0	0	false	24	361
+forge_ore_yard	-1692	-1436	89	89	101	0	12	89	97	0	8	0	0	false	13	357
+forge_store	-1684	-1560	97	93	101	4	4	93	101	4	4	0	0	false	12	357

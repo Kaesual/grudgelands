@@ -160,6 +160,39 @@ local function wet(x, z)
 	return grug_zones.water_class_at(x, z) ~= "land"
 end
 
+-- THE SAME SAMPLE `r7_settlement.audit_terrain` TAKES, and not a cheaper one.
+--
+-- The fall is read off the PERIMETER, because the perimeter is what the
+-- foundation skirt carries down. The RISE is read off the perimeter, the
+-- outside margin ring AND every other interior column, because a shoulder of
+-- terrace standing anywhere under the plot is terrain left inside the building
+-- -- and the first version of this probe read the rise off the perimeter alone.
+-- The seam's load-time audit then disagreed with the offline predicate about
+-- `forge_copse` by four nodes, which is what a cheaper sample buys.
+local function plot_relief(origin_x, origin_z, bounds, margin, base)
+	local edge_low, high = base, base
+	local function sample(x, z, edge)
+		local y = grug_zones.terrain_height_at(x, z)
+		if y > high then high = y end
+		if edge and y < edge_low then edge_low = y end
+	end
+	for z = bounds.min.z - margin, bounds.max.z + margin do
+		for x = bounds.min.x - margin, bounds.max.x + margin do
+			local outside = x < bounds.min.x or x > bounds.max.x or
+				z < bounds.min.z or z > bounds.max.z
+			local edge = (not outside) and
+				(x == bounds.min.x or x == bounds.max.x or
+					z == bounds.min.z or z == bounds.max.z)
+			if outside or edge then
+				sample(origin_x + x, origin_z + z, edge)
+			elseif x % 2 == 0 and z % 2 == 0 then
+				sample(origin_x + x, origin_z + z, false)
+			end
+		end
+	end
+	return base - edge_low, high - base
+end
+
 local function submerged_count(origin_x, origin_z, bounds, margin)
 	local count = 0
 	for z = bounds.min.z - margin, bounds.max.z + margin do
@@ -271,7 +304,7 @@ local function surface_report()
 		local reference_y = grug_zones.terrain_height_at(origin_x + reference.x,
 			origin_z + reference.z)
 		local min_y, max_y = reference_y, reference_y
-		local edge_min, edge_max, columns = reference_y, reference_y, 0
+		local columns = 0
 		local submerged = 0
 		for z = bounds.min.z, bounds.max.z do
 			for x = bounds.min.x, bounds.max.x do
@@ -279,15 +312,14 @@ local function surface_report()
 				if y < min_y then min_y = y end
 				if y > max_y then max_y = y end
 				if wet(origin_x + x, origin_z + z) then submerged = submerged + 1 end
-				if x == bounds.min.x or x == bounds.max.x or z == bounds.min.z or
-						z == bounds.max.z then
-					if y < edge_min then edge_min = y end
-					if y > edge_max then edge_max = y end
-				end
 				columns = columns + 1
 			end
 		end
-		local fall = reference_y - edge_min
+		local relief_fall, relief_rise = plot_relief(origin_x, origin_z, bounds,
+			PLOT_MARGIN, reference_y)
+		local edge_min = reference_y - relief_fall
+		local edge_max = reference_y + relief_rise
+		local fall = relief_fall
 		if fall > worst_fall then worst_fall, worst_plot = fall, plot.id end
 		if submerged > worst_wet then worst_wet, worst_wet_plot = submerged, plot.id end
 		rows[#rows + 1] = table.concat({plot.id, origin_x + reference.x,
@@ -297,7 +329,7 @@ local function surface_report()
 			submerged,
 			submerged_count(origin_x, origin_z, bounds, PLOT_MARGIN),
 			tostring(wet(origin_x + reference.x, origin_z + reference.z)),
-			bounds.max.y, columns}, "\t") .. "\n"
+			plot.composition.clear_to or bounds.max.y, columns}, "\t") .. "\n"
 	end
 	return table.concat(rows), worst_fall, worst_plot, worst_wet, worst_wet_plot
 end
@@ -321,22 +353,18 @@ local function scan_report()
 				local origin_x, origin_z = anchor_x + x, anchor_z + z
 				local reference_y = grug_zones.terrain_height_at(
 					origin_x + reference.x, origin_z + reference.z)
-				local edge_min, edge_max = reference_y, reference_y
 				local submerged = 0
 				for ez = bounds.min.z, bounds.max.z do
 					for ex = bounds.min.x, bounds.max.x do
 						if wet(origin_x + ex, origin_z + ez) then
 							submerged = submerged + 1
 						end
-						if ex == bounds.min.x or ex == bounds.max.x or
-								ez == bounds.min.z or ez == bounds.max.z then
-							local y = grug_zones.terrain_height_at(origin_x + ex,
-								origin_z + ez)
-							if y < edge_min then edge_min = y end
-							if y > edge_max then edge_max = y end
-						end
 					end
 				end
+				local relief_fall, relief_rise = plot_relief(origin_x, origin_z,
+					bounds, PLOT_MARGIN, reference_y)
+				local edge_min = reference_y - relief_fall
+				local edge_max = reference_y + relief_rise
 				-- The margin ring is only counted when the footprint itself is dry,
 				-- because a wet footprint is already refused and the ring costs
 				-- another 200 queries per candidate.
@@ -348,7 +376,7 @@ local function scan_report()
 					reference_y - edge_min, edge_max - reference_y,
 					submerged, margin,
 					tostring(wet(origin_x + reference.x, origin_z + reference.z)),
-					bounds.max.y}, "\t") .. "\n"
+					plot.composition.clear_to or bounds.max.y}, "\t") .. "\n"
 			end
 		end
 	end
