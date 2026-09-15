@@ -203,7 +203,7 @@ three are:
 | the wet mask and the water surface | `kezamba_water.lua --verify` | one mask, surface y = 65, nine of nine |
 | lot legality (dry, skirt, clear, off the core/corridors/streets, one node clear of each other) | `kezamba_lots.lua check` | **52 of 52 legal, nine of nine** |
 | can a player walk up to every plot | `kezamba_lots.lua walk` | **PASS on nine of nine**: every lot has a side whose kerb face is at most 3 (against a skirt of 6) and whose sixteen-column approach steps at most **1 terrace step (3) a column**; the worst face measured is 3 (`shore_4`) and the worst approach 3 (`shore_7`) |
-| `audit_terrain` findings at load | nine `run_capital.sh full` boots | AUDIT_RESULT |
+| `audit_terrain` findings at load | nine `run_capital.sh full` boots | **0 on nine of nine**, with 0 ERROR and 0 ModError lines and 0 submerged plots |
 
 **Why the core needs no per-seed continuity check and the plots do.** The civic
 core is ANCHOR-RELATIVE and Kezamba's anchor is authored-fixed at y = 66 in every
@@ -229,9 +229,9 @@ and that is what `walk` asks.
 | spare spots | 10 core + 8 district | **11** |
 | patrol loops | one per district plus the ring | **5**, walked 1..n with no gap (9, 14, 14, 17, 11) |
 
-The 13 activities: `brew` 4, `carve` 10, `chop` 6, `farm` 5, `fish` 3,
-`forage` 3, `mourn` 1, `pray` 2, `sit` 8, `smith` 1, `spar` 2, `stall` 2,
-`tend` 7. **52 of the 62 name a feature the KAT can measure**, and every one of
+The 13 activities: `brew` 8, `carve` 13, `chop` 7, `farm` 5, `fish` 3,
+`forage` 3, `mourn` 1, `pray` 2, `sit` 10, `smith` 1, `spar` 2, `stall` 2,
+`tend` 5. **52 of the 62 name a feature the KAT can measure**, and every one of
 those 52 faces it within three nodes with nothing solid in between; the other
 ten are `sit`, which the contract says sits on the ground it stands on.
 
@@ -317,27 +317,57 @@ by the engine — and three comment lines whose prose contains a `|` or a `//`.
 
 `tools/wp13/run_capital.sh <out> kezamba terrain|full <seed>`, port block
 31500-31599, one headless server at a time, every boot under `nice -n 19`.
-Nine `terrain` boots (§1) and four `full` ones, each a cold world.
+**Nine `terrain` boots (§1) and nine `full` ones**, one per fixture seed, each a
+cold world. The runner's own verdict is not the gate here -- it aborts in `full`
+mode for an OPEN capital before printing PASS (§7.8) -- so each boot is read from
+its log: the ERROR and ModError counts, the `event=complete` line, the
+terrain-audit lines and the NPC roster.
 
-| | 531802985935182545 | 8675309 | 15912857179583385436 | 0 |
-| --- | --- | --- | --- | --- |
-| Kezamba mapchunks | 66 | 64 | 66 | 58 |
-| **steady mean** | **0.483 s** | **0.524 s** | **0.504 s** | **0.564 s** |
-| worst | 0.856 s | 0.921 s | 1.123 s | 0.975 s |
-| Lethariel (a capital with no WP13 cells) | 2.356 s | 2.493 s | 2.628 s | 2.552 s |
-| open land / the Dawnmere start | 0.429 s | — | 0.415 s | — |
-| worst plot perimeter fall | 5 | 6 | 5 | 5 |
-| submerged plots | **0** | **0** | **0** | **0** |
-| sockets registered | 262 | 262 | 262 | 262 |
-| terrain-audit findings | 0 | 0 | 0 | 0 |
+| seed | chunks | steady mean | worst | Lethariel control | worst plot fall | submerged | sockets | ERROR lines | audit findings |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `531802985935182545` | 66 | **0.523 s** | 0.951 s | 2.417 s | 5 | 0 | 262 | 0 | 0 |
+| `8675309` | 64 | **0.499 s** | 1.160 s | 2.278 s | 6 | 0 | 262 | 0 | 0 |
+| `15912857179583385436` | 66 | **0.448 s** | 0.825 s | 2.232 s | 5 | 0 | 262 | 0 | 0 |
+| `0` | 58 | **0.637 s** | 1.299 s | 2.720 s | 5 | 0 | 262 | 0 | 0 |
+| `1` | 63 | **0.495 s** | 1.386 s | 4.718 s | 6 | 0 | 262 | 0 | 0 |
+| `2` | 60 | **0.490 s** | 0.861 s | 2.678 s | 5 | 0 | 262 | 0 | 0 |
+| `42` | 67 | **0.521 s** | 0.966 s | 2.792 s | 5 | 0 | 262 | 0 | 0 |
+| `12345` | 66 | **0.563 s** | 0.996 s | 2.501 s | 6 | 0 | 262 | 0 | 0 |
+| `999999999` | 60 | **0.553 s** | 1.112 s | 2.340 s | 6 | 0 | 262 | 0 | 0 |
 
-Against the contract's "no more than 2× the ≈0.5 s Dawnmere chunk":
-**0.48 – 0.56 s**. Lethariel is the honest control — WP40 fits, flattens,
-terraces and protects it exactly like Kezamba and it has no WP13 blueprints at
-all — and **Kezamba's mapchunks are four to five times cheaper than it**,
-sitting at or just above the open-land control. The warm-up mapchunk carries the
-emerge environment's one-time R7 construction (≈24 s) and is emerged first and
-not counted.
+
+steady mean over the nine: 0.448 .. 0.637 s (mean 0.525), against the contract's "no more than 2x the ~0.5 s Dawnmere
+chunk". Lethariel is the honest control -- WP40 fits, flattens, terraces and
+protects it exactly like Kezamba and it has no WP13 blueprints at all -- and
+**Kezamba's mapchunks are four to nine times cheaper than it**. The warm-up
+mapchunk carries the emerge environment's one-time R7 construction (~24 s) and
+is emerged first and not counted.
+
+**Zero ERROR lines, zero ModError lines and zero terrain-audit findings on all
+nine seeds**, and **zero submerged plots on all nine**, with the worst plot
+perimeter fall 5 or 6 against a foundation skirt of 6. The NPC roster is complete
+on every one:
+
+```
+start npcs troll kezamba: guards 18/18 flair 163/163 vendor 7/7 quest 1/1
+  new ... pending 0 spare 11 residents 163 walkers 21
+```
+
+on seven of the nine; on seeds `42` and `12345` the last line reads
+`flair 161/163 ... pending 2`, which is the same thing Dur Brannoc recorded: the
+split between "placed at readiness" and "pending" depends on which mapblocks the
+emerge sequence had loaded when the probe shut the server down, and is not a
+gate. Every seed places all 18 guards, all 7 vendors and the quest shell.
+
+All seven vendor kinds resolve since this lane was rebased onto Lane N
+(`c8050057`, the wave-2 NPC vocabulary). Before that rebase `brewer` and
+`herbalist` had no entity and the log carried the two error lines §8.4 says it
+should ("an error line at placement and an empty socket, never a load failure").
+
+**Build time in the engine**, from the probe's own `build_us`: module load
+17.2 ms, the core 116.4 ms, the 52 plots 230 ms together with `totem_shrine`
+the slowest at 10.6 ms. "Builds in a few seconds under LuaJIT when first
+touched" is 0.36 s for the whole capital.
 
 **Read the absolute numbers against their own control and not against another
 lane's.** These passes ran on a workstation carrying seven WP13 lanes at once.
@@ -439,17 +469,20 @@ outside the envelope and those are the world's.
    ground, and whether the WP40 route on the far side meets that deck cleanly is
    Lane R's question and not one this lane could answer from inside the
    envelope. Worth a look on the user's first walk.
-8. **`run_capital.sh` could not pass a capital with no rampart**, and this lane
-   fixed it with the smallest append rather than working round it (its own
-   commit, and lane D owns the file). The full-mode digest gate greps the log
-   for three labels — avenue, rampart, gate — and two of the three find nothing
-   for an OPEN capital. Under `set -euo pipefail` a command substitution whose
-   pipeline failed is a failed assignment, so the runner exited before its own
-   `[[ -n "$digest" ]] || continue` could do the job it was written to do:
-   Kezamba read FAILED after a pass with zero errors, zero `ModError`s, a
-   complete roster and no terrain-audit finding. `|| true` on the two
-   substitutions, nothing else; a walled capital's three digests are still taken
-   and still compared.
+8. **`run_capital.sh` aborts in `full` mode for an OPEN capital**, and its
+   verdict on Kezamba is that abort and not a failure of this capital. The
+   full-mode digest gate greps the log for three labels — avenue, rampart,
+   gate — and two of the three find nothing where there is no curtain wall;
+   under `set -euo pipefail` a command substitution whose pipeline failed is a
+   failed assignment, so the runner exits before its own
+   `[[ -n "$digest" ]] || continue` can act, after a boot that reported
+   `exit=0 errors=0 complete=1`. Lane E met the same thing independently. The
+   runner is lane D's and lands there; **this lane's engine evidence is judged
+   from the LOG** — the ERROR and ModError counts, the `event=complete` line,
+   the terrain-audit lines and the NPC roster — which is what §6d tabulates.
+   (This lane did patch it with `|| true` on the two substitutions and then
+   reverted that on the coordinator's ruling; the revert commit carries the
+   diagnosis for whoever lands it.)
 9. **No committed overlay digest yet.** `run_capital.sh` compares the built road
    against `tools/wp13/evidence/20260915-capital-terrain/<key>/<label>-digest-
    <seed>.txt`, and Kezamba has none, so its passes say "recorded (no committed

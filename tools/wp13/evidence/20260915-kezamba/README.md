@@ -18,7 +18,8 @@ block 31500–31599, everything under `nice -n 19`, one headless server at a tim
 | `measurements/water-survey.txt` | `kezamba_water.lua --emit`: the nine-seed wet mask, the water surface and the two committed masks |
 | `measurements/core-water.txt` | the same survey at node resolution over the 95 × 95 core, with the per-seed histogram of dry heights |
 | `measurements/lots-check.txt` | `kezamba_lots.lua check`: all 52 lots against the four rules on nine seeds |
-| `engine/` | the `run_capital.sh` passes: nine `terrain` boots and four `full` ones |
+| `measurements/walk.txt` | `kezamba_lots.lua walk`: can a player walk up to every lot, on nine seeds |
+| `engine/` | the `run_capital.sh` passes: nine `terrain` boots and nine `full` ones, one per fixture seed |
 | `renders/` | the capital as BUILT, drawn by `render_blueprint.py` from the TSVs the probe read back out of the finished map |
 
 ## How to re-take it
@@ -27,6 +28,7 @@ block 31500–31599, everything under `nice -n 19`, one headless server at a tim
 # the measurements
 luajit tools/wp13/kezamba_water.lua . --verify
 luajit tools/wp13/kezamba_lots.lua  . check
+luajit tools/wp13/kezamba_lots.lua  . walk
 
 # the KAT, both interpreters
 luajit            -e 'io.write(dofile("tools/wp13/kezamba_kat.lua")("."))'
@@ -49,28 +51,30 @@ WP13_CAPITAL_PORT=31500 \
 tools/wp13/evidence/20260915-kezamba/static.sh
 ```
 
-## The two ERROR lines every full pass carries, and why they are expected
+## How to read the engine passes
 
-```
-ERROR[Main]: [grug_mobs] settlement npcs: kezamba socket
-  shore_market/shore_market_vendor_brewer resolves to no registered entity
-  (grug_traders:vendor_brewer)
-ERROR[Main]: [grug_mobs] settlement npcs: kezamba socket
-  vine_herbalist/vine_herbalist_vendor_herbalist resolves to no registered
-  entity (grug_traders:vendor_herbalist)
-```
+`run_capital.sh` in `full` mode ABORTS for an OPEN capital before printing its
+own PASS: its digest gate greps the log for `avenue`, `rampart` and `gate`, two
+of the three find nothing where there is no curtain wall, and under
+`set -euo pipefail` a command substitution whose pipeline failed ends the script.
+Lane E met the same thing independently and lane D owns the runner.
 
-`brewer` and `herbalist` are two of the seven wave-2 vendor kinds the sockets
-contract's §8.4 added on 2026-09-15, and the contract says in as many words what
-happens before the NPC lane registers their entities: "a kind whose entity the
-traders mod has not registered yet is an error line at placement and an empty
-socket, never a load failure". That is exactly what the log shows, and the same
-pass reports its roster complete — `guards 18/18 flair 175/175 vendor 5/5
-quest 1/1 pending 0 spare 11`.
+So the verdict on each of these boots is read from the LOG and not from the
+runner's exit code, and each `engine/<seed>/` directory carries exactly that:
 
-`run_capital.sh` gates on the ERROR **count** rather than on the content, so it
-calls such a pass FAILED. That is the runner's rule and not this capital's: the
-passes are otherwise complete (`event=complete`, zero `ModError`, no finding
-from the seam's load-time terrain audit). The runner belongs to lane D
-(`tools/wp13/capital_*`), and the note's open points say so rather than this
-lane changing a shared gate to make its own run green.
+* `error-count.txt` / `moderror-count.txt` — both **0** on every seed after this
+  lane was rebased onto Lane N (`c8050057`), which registered the wave-2 vendor
+  entities;
+* `findings.txt` — every ERROR, ModError and WARNING line of the boot, so a
+  terrain-audit finding would be visible; there is none;
+* `probe.txt` — the `event=complete` line with the mapchunk timings, the plot
+  relief, the socket inventory and the read-back digests;
+* `npcs.txt` — the roster line, complete on every seed.
+
+## What the shared files this lane touched are for
+
+`wp40/r7_settlement.lua` gains one roster row, appended last, in its own commit.
+`tools/wp13/final_micro.lua` gains one row, append-only, in the composition's
+commit. Nothing else outside this lane's own files: `tools/wp13/run_capital.sh`
+was patched and then reverted on the coordinator's ruling, and the revert commit
+carries the diagnosis.
