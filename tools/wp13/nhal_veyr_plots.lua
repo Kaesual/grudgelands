@@ -384,10 +384,133 @@ if mode == "--repair" or mode == "--derive" then
 	end
 end
 
-if failures > 0 or plot_failures > 0 then
-	io.write("\n", failures, " lot(s) and ", plot_failures,
-		" plot(s) of nhal_veyr are somewhere they may not be\n")
+-- ---------------------------------------------------------------------------
+-- THE FOUR GATES, on every world
+-- ---------------------------------------------------------------------------
+--
+-- The coordinator's ruling of 2026-09-16, after the review found the north
+-- avenue riding out over its own fill: the avenue ARRIVES AT EACH GATE POINT
+-- -- (ax +- 256, az) and (ax, az +- 256), where Lane R ends its route at
+-- free-terrain height -- AT THE FREE-TERRAIN HEIGHT THERE, descending inside
+-- the envelope at no more than a node a column, railed where the fill under it
+-- reaches three courses, nothing floating.
+--
+-- This runs the SHIPPED code path -- `nhal_veyr.overlay_run`, its gate ramp and
+-- its rail -- over a surface built from each world's terrain grid, and reports
+-- the numbers the ruling names, per gate per world.
+--
+-- THE RESOLUTION CAVEAT, and it bites only some of them. The grid samples every
+-- fourth column, so the ground handed to the road here is a staircase of
+-- four-node treads and the FILL and CUT figures are lower bounds on the real
+-- ones. The STEP AT THE GATE POINT is not an estimate at all: the cap makes it
+-- zero by arithmetic (`wp13/nhal_veyr.lua`, the gate ramp) and this measures
+-- that the code does what the arithmetic says. The real fill profile is read
+-- off the finished map by the engine pass.
+local GATE_REACH = 250
+local gate_failures = 0
+do
+	local palettes = dofile(wp13 .. "/palette.lua")
+	local avenue_module = dofile(wp13 .. "/avenue.lua")(wp13)
+	local road_palette = palettes.new("undead")
+	local RAIL_FILL = 3
+
+	io.write("\nseed\tgate\tgate_terrain_y\tstep_at_gate\tmax_fill" ..
+		"\tmax_cut\trail_columns\tverdict\n")
+	for index = 1, #worlds do
+		local grid = worlds[index]
+		local label = paths[index]:match("terrain%-([^/]+)/") or
+			("world" .. index)
+		-- The grid covers the envelope and its collar, +-288. The road's own
+		-- look-around reaches 40 columns past a run that already ends at 261,
+		-- so the last twenty columns of it fall off the dump; they are the
+		-- collar beyond the capital and the nearest sampled column is the
+		-- honest answer for them.
+		local GRID_EDGE = 288
+		local function clamp(value)
+			if value < -GRID_EDGE then return -GRID_EDGE end
+			if value > GRID_EDGE then return GRID_EDGE end
+			return value
+		end
+		local function surface(x, z)
+			local cell = grid[clamp(snap(x)) .. ":" .. clamp(snap(z))]
+			if cell == nil then
+				error("the grid has no column at " .. x .. "," .. z, 0)
+			end
+			return cell.y
+		end
+		for _, run in ipairs(capital.avenues) do
+			local spec = {id = run.id, axis = run.axis, at = run.at,
+				from = run.from, to = run.to, width = avenue_module.WIDTH,
+				lamp_spacing = avenue_module.LAMP_SPACING,
+				lamp_phase = run.from, reach = avenue_module.REACH}
+			local piece = capital.overlay_run(avenue_module, road_palette,
+				spec, surface)
+			local top, low = {}, {}
+			for cell_index = 1, #piece.cells do
+				local cell = piece.cells[cell_index]
+				if cell.name ~= "air" then
+					local key = cell.x .. ":" .. cell.z
+					if top[key] == nil or cell.y > top[key] then
+						top[key] = cell.y
+					end
+					if low[key] == nil or cell.y < low[key] then
+						low[key] = cell.y
+					end
+				end
+			end
+			local gate_at = piece.gate_at
+			local gx, gz
+			if run.axis == "x" then gx, gz = gate_at, run.at
+			else gx, gz = run.at, gate_at end
+			local gate_terrain = surface(gx, gz)
+			local road_at_gate = top[gx .. ":" .. gz]
+			local step = (road_at_gate or gate_terrain) - gate_terrain
+			-- THE ROAD'S OWN VERDICT ON ITSELF. `fill_max`, `cut_max` and
+			-- `rail` are computed inside the gate ramp over the CARRIAGEWAY
+			-- and BEFORE the rail is written, so what is compared here is the
+			-- road and not the rail standing on it. A verge column carries a
+			-- lamp standard -- a footing, two posts and a torch -- and its top
+			-- stands three courses over its own ground whatever the road does;
+			-- counting it would report an embankment under every lamp in the
+			-- city, which the first version of this section did.
+			local half = (avenue_module.WIDTH - 1) / 2
+			local max_fill, max_cut = piece.fill_max, piece.cut_max
+			-- And every kerb column the road had to fill by three courses or
+			-- more carries a rail: counted here off the piece's own cells,
+			-- against the count the ramp reports.
+			local expected_rail = 0
+			for key, high in pairs(top) do
+				local cx, cz = key:match("^(%-?%d+):(%-?%d+)$")
+				cx, cz = tonumber(cx), tonumber(cz)
+				local across = ((run.axis == "x") and cz or cx) - run.at
+				if math.abs(across) == half and
+						high - low[key] >= RAIL_FILL then
+					expected_rail = expected_rail + 1
+				end
+			end
+			local why
+			if step ~= 0 then
+				why = "the road stands " .. step ..
+					" over the free terrain at the gate point"
+			elseif piece.rail ~= expected_rail then
+				why = piece.rail .. " rail columns where " .. expected_rail ..
+					" kerb columns stand three courses or more over their own"
+			elseif max_fill >= RAIL_FILL and piece.rail == 0 then
+				why = "fill of " .. max_fill .. " courses and no rail"
+			end
+			if why then gate_failures = gate_failures + 1 end
+			io.write(table.concat({label, run.id, gate_terrain, step, max_fill,
+				max_cut, piece.rail, why and ("ILLEGAL " .. why) or "legal"},
+				"\t"), "\n")
+		end
+	end
+end
+
+if failures > 0 or plot_failures > 0 or gate_failures > 0 then
+	io.write("\n", failures, " lot(s), ", plot_failures, " plot(s) and ",
+		gate_failures, " gate(s) of nhal_veyr are somewhere they may not be\n")
 	os.exit(1)
 end
 io.write("\nevery nhal_veyr lot is dry, inside the skirt and under its own ",
-	"roof on every world, and every plot fits the lot it stands on\n")
+	"roof on every world, every plot fits the lot it stands on, and every ",
+	"avenue arrives at its gate point at the free terrain there\n")

@@ -1215,9 +1215,196 @@ local function loader(directory)
 	-- `overhead` rather than handed over and hoped about, because `wall.lua`
 	-- ignoring a field today is not the same promise as this file never giving
 	-- it one. The KAT holds the two to that.
+	-- -------------------------------------------------------------------
+	-- THE GATE RAMP, and why an avenue of this capital needs one
+	-- -------------------------------------------------------------------
+	--
+	-- `avenue.lua` walks a road at the ONE-LIPSCHITZ UPPER ENVELOPE of the
+	-- ground: at or above it everywhere, changing at most a node per column.
+	-- Where the ground falls faster than a node per column the road therefore
+	-- does not follow it down -- it cannot -- and rides out over its own fill.
+	--
+	-- Nhal Veyr's NORTH axis does exactly that. The free terrain on the centre
+	-- line falls from 119 at z = 232 to 87 at z = 260 on the user gate seed --
+	-- 32 nodes over 28 columns, 1.5 to 2.0 a column -- and it falls at that
+	-- rate on ALL NINE seeds of `capital_anchor_fixture.lua`. A one-Lipschitz
+	-- road starting at 119 can be no lower than 91 at 260, so the carriageway
+	-- stands 4 courses above its ground at the gate point on the gate seed and
+	-- 6 on seed 12345, with nothing at its edge. The east, south and west axes
+	-- fall 0 to 3 nodes in total and ride their own ground the whole way, which
+	-- is why the first version of this package measured the east avenue, found
+	-- nothing, and wrote down that there was nothing to find. The independent
+	-- review of 2026-09-16 measured the other three.
+	--
+	-- THE COORDINATOR'S RULING (2026-09-16, the same one Kezamba is built to):
+	-- the avenue ARRIVES AT EACH GATE POINT -- (ax +- 256, az) and
+	-- (ax, az +- 256), which is where Lane R ends its route at free-terrain
+	-- height -- AT THE FREE-TERRAIN HEIGHT THERE, descending inside the
+	-- envelope as a ramp of at most one node per column over as many columns as
+	-- it needs, railed wherever the fill under it reaches Dur Brannoc's three
+	-- courses, and nothing floating.
+	--
+	-- HOW IT IS BUILT WITHOUT TOUCHING `avenue.lua`. The road module is Lane
+	-- R's and is frozen; what this composition owns is the SURFACE it hands it.
+	-- So the ramp is a cap on that surface and nothing else:
+	--
+	--     cap(p) = gate_y + |p - gate_at|      (gate_y = the free terrain at
+	--     capped(x, z) = min(surface(x, z), cap(p))    the gate point)
+	--
+	-- `cap` is itself one-Lipschitz and everywhere at or above `capped`, so the
+	-- road's envelope E -- the LOWEST one-Lipschitz field at or above `capped`
+	-- -- is at or below `cap` everywhere; and at the gate point
+	-- `capped = min(ground, gate_y) = gate_y`, so
+	--
+	--     gate_y <= E(gate_at) <= cap(gate_at) = gate_y.
+	--
+	-- The road arrives at the gate at the free terrain, exactly, by arithmetic
+	-- rather than by measurement -- and it gets there by CUTTING into the
+	-- hillside further in rather than by riding out over fill. Two corrections
+	-- follow from that and are made here:
+	--
+	--   * A CUTTING HAS TO BE EXCAVATED. `avenue.run` fills from the surface it
+	--     was given up to its envelope and writes nothing above; where the cap
+	--     bit, the real hillside stands over the road. Every such column is
+	--     cleared from one course over the road to the natural ground, using
+	--     the natural heights the cap already read -- no second query.
+	--   * WHAT FILL IS LEFT IS RAILED. Past the gate point the ground keeps
+	--     falling and the road can still only descend a node a column, so the
+	--     last few columns under the gatehouse stand on fill. Dur Brannoc's
+	--     rule, unchanged and re-derived from the piece's own cells: a kerb
+	--     column whose cells span three or more courses is a column the road
+	--     had to fill, and one course of citadel masonry on top of it is the
+	--     rail.
+	--
+	-- Both read only the piece's own cells and the surface the piece already
+	-- asked for, so a piece of a run is still exactly that stretch of the whole
+	-- run and the KAT cuts it at every column to prove it.
+	local GATE_POINT = 256
+	-- Three courses of fill, not two: a column standing one or two above its
+	-- own ground is a terrace stair, and a rail on every tread would turn the
+	-- ordinary road into a trench. Three is an embankment. Dur Brannoc's own
+	-- number, and its reasoning.
+	local RAIL_FILL = 3
+
+	local function axis_column(spec, p, offset)
+		if spec.axis == "x" then return p, spec.at + offset end
+		return spec.at + offset, p
+	end
+	local function axis_along(spec, x, z)
+		if spec.axis == "x" then return x end
+		return z
+	end
+	-- The lane a column stands in, signed: 0 is the centre line, +-half the
+	-- kerbs, +-(half + 1) the verges the lamp standards stand on.
+	local function axis_across(spec, x, z)
+		if spec.axis == "x" then return z - spec.at end
+		return x - spec.at
+	end
+
+	-- Which end of a RUN carries a gate station, by the run's own id, or nil
+	-- for a run that has none: the ring street and the eight district lanes
+	-- never leave the envelope, so they are handed to the road module
+	-- untouched.
+	--
+	-- BY ITS ID AND NOT BY ITS SPAN, and the KAT's own split test is what said
+	-- so. The successor calls a run once per mapchunk with `from`/`to` clipped
+	-- to that chunk, so a PIECE of the north avenue two hundred nodes inside
+	-- the envelope has neither end of its run in it -- and the first version of
+	-- this table asked the spec where it ended, lost the gate, and built that
+	-- piece with no cap on it. The two halves of one run then disagreed about
+	-- the road forty columns from the join, which is exactly the chunk seam the
+	-- road module's whole design exists to make impossible.
+	local GATE_OF = {}
+	for _, run in ipairs(M.avenues) do
+		if run.to >= GATE_POINT then
+			GATE_OF[run.id] = GATE_POINT
+		elseif run.from <= -GATE_POINT then
+			GATE_OF[run.id] = -GATE_POINT
+		end
+	end
+
+	local function gate_road(avenue, palette, spec, surface)
+		local gate_at = GATE_OF[spec.id]
+		if gate_at == nil then return avenue.run(palette, spec, surface) end
+		local gx, gz = axis_column(spec, gate_at, 0)
+		local gate_y = surface(gx, gz)
+		if type(gate_y) ~= "number" or gate_y % 1 ~= 0 then
+			error("wp13 nhal veyr: the surface at the gate point of " ..
+				tostring(spec.id) .. " is " .. tostring(gate_y) ..
+				", not a node height", 0)
+		end
+		-- The natural height of every column the road reads, memoised as it is
+		-- read, so the cutting and the rail below cost no query of their own.
+		local natural = {}
+		local function capped(x, z)
+			local y = surface(x, z)
+			natural[x .. ":" .. z] = y
+			local cap = gate_y + math.abs(axis_along(spec, x, z) - gate_at)
+			if y > cap then return cap end
+			return y
+		end
+		local piece = avenue.run(palette, spec, capped)
+
+		-- The piece's own columns: the lowest and highest cell of each.
+		local low, high, order = {}, {}, {}
+		for index = 1, #piece.cells do
+			local cell = piece.cells[index]
+			local key = cell.x .. ":" .. cell.z
+			if low[key] == nil then
+				low[key], high[key] = cell.y, cell.y
+				order[#order + 1] = {key = key, x = cell.x, z = cell.z}
+			else
+				if cell.y < low[key] then low[key] = cell.y end
+				if cell.y > high[key] then high[key] = cell.y end
+			end
+		end
+
+		local half = ((spec.width or avenue.WIDTH) - 1) / 2
+		local STONE = palette.maybe("castle_wall") or palette.node("wall_accent")
+		local cut, rail, fill_max, cut_max = 0, 0, 0, 0
+		for index = 1, #order do
+			local entry = order[index]
+			local top = high[entry.key]
+			local ground = natural[entry.key]
+			local across = math.abs(axis_across(spec, entry.x, entry.z))
+			-- What this column cost, measured BEFORE either addition below, so
+			-- the numbers a tool reads are the road's and not the rail's. The
+			-- carriageway only: a VERGE column carries a lamp standard -- a
+			-- footing, two posts and a torch -- and its top stands three
+			-- courses over its own ground whatever the road does.
+			if across <= half and ground ~= nil then
+				if top - ground > fill_max then fill_max = top - ground end
+				if ground - top > cut_max then cut_max = ground - top end
+			end
+			-- 1. The cutting: the hillside standing over a road the cap put
+			-- below it. `natural` is the RAW surface, so this is the excavation
+			-- and nothing more.
+			if ground ~= nil and ground > top then
+				for y = top + 1, ground do
+					piece.cells[#piece.cells + 1] = {x = entry.x, y = y,
+						z = entry.z, name = parts.AIR, param2 = 0}
+					cut = cut + 1
+				end
+			end
+			-- 2. The rail, on the kerb lanes only.
+			if across == half and top - low[entry.key] >= RAIL_FILL then
+				piece.cells[#piece.cells + 1] = {x = entry.x, y = top + 1,
+					z = entry.z, name = STONE, param2 = 0}
+				rail = rail + 1
+			end
+		end
+		piece.gate_at = gate_at
+		piece.gate_y = gate_y
+		piece.cut = cut
+		piece.rail = rail
+		piece.fill_max = fill_max
+		piece.cut_max = cut_max
+		return piece
+	end
+
 	function M.overlay_run(avenue, palette, spec, surface)
 		local plan = M.wall_plan[spec.id]
-		if not plan then return avenue.run(palette, spec, surface) end
+		if not plan then return gate_road(avenue, palette, spec, surface) end
 		return wall.run(palette, {
 			id = spec.id, axis = spec.axis, at = spec.at,
 			from = spec.from, to = spec.to, width = spec.width,

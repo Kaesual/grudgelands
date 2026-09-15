@@ -2737,5 +2737,201 @@ return function(repo)
 	say("nhal_veyr_avenue_built", digest_runs,
 		common.hex(common.new_sha256()(table.concat(digest_rows, "\n"))))
 
+	----------------------------------------------------------------------
+	-- 7. THE GATE RAMP
+	----------------------------------------------------------------------
+	--
+	-- The coordinator's ruling of 2026-09-16: an avenue ARRIVES AT ITS GATE
+	-- POINT -- (ax +- 256, az), (ax, az +- 256), which is where Lane R ends its
+	-- route at free-terrain height -- AT THE FREE TERRAIN THERE, descending
+	-- inside the envelope at no more than a node a column, railed where the
+	-- fill under it reaches three courses, nothing floating.
+	--
+	-- `avenue.lua` walks a road at the one-Lipschitz UPPER envelope of the
+	-- ground and therefore cannot follow a slope that falls faster than a node
+	-- a column: it rides out over its own fill instead, which is what this
+	-- capital's north axis does on all nine seeds and what the independent
+	-- review of 2026-09-16 found. The composition's answer is a CAP on the
+	-- surface it hands the road module -- `min(ground, gate_y + |p - gate_at|)`
+	-- -- and the two corrections that follow from it, the cutting and the rail
+	-- (`wp13/nhal_veyr.lua`, the gate ramp).
+	--
+	-- This section holds the rule to a synthetic profile that falls TWO nodes a
+	-- column into the gate, which is the shape of the real north axis and
+	-- steeper than any of the other three.
+	do
+		local GATE = 256
+		local RAIL_FILL = 3
+		-- A plateau at 120 inland, falling TWO A COLUMN from 232 to 64 at 260,
+		-- then flat: the shape of this capital's real north axis and steeper
+		-- than any of the other three, continuous so that what the rules are
+		-- tested against is the slope and not a cliff in the fixture.
+		local function ground(p)
+			if p <= 232 then return 120 end
+			if p >= 260 then return 64 end
+			return 120 - 2 * (p - 232)
+		end
+		local function surface(x, z)
+			return ground(z)
+		end
+		local spec = {id = "avenue_north", axis = "z", at = 0, from = 48,
+			to = 261, width = avenue.WIDTH,
+			lamp_spacing = avenue.LAMP_SPACING, lamp_phase = 48,
+			reach = avenue.REACH}
+		local piece = capital.overlay_run(avenue, undead, spec, surface)
+		assert(piece.gate_at == GATE, "the north avenue's gate point is " ..
+			tostring(piece.gate_at) .. ", not " .. GATE)
+		assert(piece.gate_y == ground(GATE),
+			"the ramp anchored on " .. tostring(piece.gate_y) ..
+				" and the free terrain at the gate point is " .. ground(GATE))
+
+		-- The road's own surface per column, and the rail cells apart from it.
+		local STONE = undead.maybe("castle_wall") or undead.node("wall_accent")
+		local road_top, road_low, rail_at, air_at = {}, {}, {}, {}
+		for _, cell in ipairs(piece.cells) do
+			local key = cell.x .. ":" .. cell.z
+			if cell.name == "air" then
+				air_at[cell.x .. ":" .. cell.y .. ":" .. cell.z] = true
+			else
+				if road_top[key] == nil or cell.y > road_top[key] then
+					road_top[key] = cell.y
+				end
+				if road_low[key] == nil or cell.y < road_low[key] then
+					road_low[key] = cell.y
+				end
+			end
+		end
+		-- The rail sits one course over its kerb column, so the road's own top
+		-- there is one lower. Both are needed, and both are derived here rather
+		-- than trusted from the piece's own counters.
+		for _, cell in ipairs(piece.cells) do
+			if cell.name == STONE then
+				local key = cell.x .. ":" .. cell.z
+				if cell.y == road_top[key] then rail_at[key] = cell.y end
+			end
+		end
+
+		local half = (avenue.WIDTH - 1) / 2
+		-- (a) THE ROAD ARRIVES AT THE GATE AT THE FREE TERRAIN, on every lane.
+		for offset = -half, half do
+			local key = offset .. ":" .. GATE
+			local top = assert(road_top[key],
+				"the carriageway has no cell at the gate point on lane " ..
+					offset)
+			assert(top == ground(GATE), "lane " .. offset ..
+				" arrives at the gate point at " .. top ..
+				", and the free terrain there is " .. ground(GATE))
+		end
+
+		-- (b) AND IT DESCENDS A NODE A COLUMN AT MOST, the whole way.
+		local worst_step = 0
+		for offset = -half, half do
+			for p = spec.from, spec.to - 1 do
+				local here = road_top[offset .. ":" .. p]
+				local next_one = road_top[offset .. ":" .. (p + 1)]
+				if here and next_one then
+					if rail_at[offset .. ":" .. p] then here = here - 1 end
+					if rail_at[offset .. ":" .. (p + 1)] then
+						next_one = next_one - 1
+					end
+					local rise = math.abs(here - next_one)
+					if rise > worst_step then worst_step = rise end
+				end
+			end
+		end
+		assert(worst_step <= 1, "the ramp steps " .. worst_step ..
+			" nodes between two columns")
+
+		-- (c) EVERY KERB COLUMN THE ROAD FILLED BY THREE OR MORE IS RAILED,
+		-- and nothing else is.
+		local railed, filled = 0, 0
+		for offset = -half, half do
+			for p = spec.from, spec.to do
+				local key = offset .. ":" .. p
+				local top, low = road_top[key], road_low[key]
+				if top and low then
+					local span = top - low
+					if rail_at[key] then span = span - 1 end
+					local wants = (math.abs(offset) == half) and
+						span >= RAIL_FILL
+					if wants then filled = filled + 1 end
+					assert((rail_at[key] ~= nil) == wants,
+						"the column " .. key .. " spans " .. span ..
+							" courses and " ..
+							(rail_at[key] and "carries" or "carries no") ..
+							" rail")
+					if rail_at[key] then railed = railed + 1 end
+				end
+			end
+		end
+		assert(filled > 0,
+			"this profile fills no kerb column, so the rail rule is untested")
+		assert(railed == piece.rail, "the piece reports " .. piece.rail ..
+			" rails and writes " .. railed)
+
+		-- (d) THE CUTTING IS COMPLETE: wherever the cap put the road below the
+		-- hillside, every cell between the road and the natural ground is air.
+		local cut_deepest = 0
+		for offset = -half, half do
+			for p = spec.from, spec.to do
+				local key = offset .. ":" .. p
+				local top = road_top[key]
+				if top and ground(p) > top then
+					local depth = ground(p) - top
+					if depth > cut_deepest then cut_deepest = depth end
+					for y = top + 1, ground(p) do
+						assert(air_at[offset .. ":" .. y .. ":" .. p],
+							"the cutting at " .. key ..
+								" leaves the hillside at y " .. y)
+					end
+				end
+			end
+		end
+		assert(cut_deepest >= 3, "this profile cuts " .. cut_deepest ..
+			" nodes, so the excavation rule is barely tested")
+		assert(piece.cut_max == cut_deepest, "the piece reports a cut of " ..
+			piece.cut_max .. " and cuts " .. cut_deepest)
+
+		-- (e) AND A PIECE OF THE RUN IS EXACTLY THAT STRETCH OF THE WHOLE RUN.
+		-- The ramp reads the surface through a cap that depends on ONE extra
+		-- query at the gate column and on nothing else, so cutting the run in
+		-- two must reproduce it cell for cell -- which is the property the
+		-- successor's per-mapchunk call rests on.
+		local whole = {}
+		for _, cell in ipairs(piece.cells) do
+			whole[cell.x .. ":" .. cell.y .. ":" .. cell.z] =
+				cell.name .. "/" .. (cell.param2 or 0)
+		end
+		local splits = 0
+		for _, cut in ipairs({120, 200, 244, 255}) do
+			local count = 0
+			for _, half_spec in ipairs({
+					{from = spec.from, to = cut},
+					{from = cut + 1, to = spec.to}}) do
+				local part = capital.overlay_run(avenue, undead,
+					{id = spec.id, axis = spec.axis, at = spec.at,
+						from = half_spec.from, to = half_spec.to,
+						width = spec.width, lamp_spacing = spec.lamp_spacing,
+						lamp_phase = spec.lamp_phase, reach = spec.reach},
+					surface)
+				for _, cell in ipairs(part.cells) do
+					local key = cell.x .. ":" .. cell.y .. ":" .. cell.z
+					local value = cell.name .. "/" .. (cell.param2 or 0)
+					assert(whole[key] == value, "the piece cut at " .. cut ..
+						" writes " .. value .. " at " .. key ..
+						" and the whole run writes " .. tostring(whole[key]))
+					count = count + 1
+				end
+			end
+			assert(count == #piece.cells, "the two pieces cut at " .. cut ..
+				" carry " .. count .. " cells and the whole run " ..
+				#piece.cells)
+			splits = splits + 1
+		end
+		say("nhal_veyr_gate_ramp", piece.gate_at, piece.gate_y, #piece.cells,
+			piece.cut, piece.rail, piece.fill_max, piece.cut_max, worst_step,
+			splits)
+	end
+
 	return table.concat(report)
 end
