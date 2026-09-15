@@ -416,7 +416,7 @@ and that is what `walk` asks.
 | measure | Highcourt (wave 1) | Kezamba |
 | --- | --- | --- |
 | districts / plots / fill lots | 4 / 36 / 16 | 4 / 36 / 16 |
-| cells | 376 274 of 400 000 | **317 978 of 400 000** (core 68 038, plots 249 940) |
+| cells | 376 274 of 400 000 | **319 499 of 400 000** (core 69 559, plots 249 940) |
 | largest single plot | 10 451 of 12 000 | **11 820** (`totem_shrine`) of 12 000 |
 | sockets | 256 | **262** |
 | work sockets | 36, over 9 activities | **62**, over **13** activities |
