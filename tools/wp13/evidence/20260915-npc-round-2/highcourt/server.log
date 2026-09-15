@@ -1,0 +1,293 @@
+
+
+-------------
+  Separator
+-------------
+
+WARNING[Main]: /!\ You are using the old mod storage files backend. This backend is deprecated and may be removed in a future release /!\
+WARNING[Main]: Switching to SQLite3 is advised, please read https://docs.luanti.org/for-server-hosts/database-backends.
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copper_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tin_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronze_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steel_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:gold_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:goldblock'])
+WARNING[Main]: No craft recipe known for output 'default:stone_with_mese'
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal_fragment'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:meselamp'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_acacia_wood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_junglewood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_pine_wood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_aspen_wood'])
+WARNING[Main]: No craft recipe known for output 'default:stone_with_diamond'
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamondblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sign_wall_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:ladder_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_goldblock'])
+ACTION[Main]: [grug_gear] 6 bracket catalogs: 24 weapons + 48 armor pieces
+ACTION[Main]: [grug_materials] registry audit passed: 6 tiers, 15 resources, 12 processed forms, 6 race regions
+ACTION[Main]: [grug_visuals] 48 armor pieces indexed for overlays, 2 art lines x 4 slots
+ACTION[Main]: [grug_traders] human capital vendors come from the sockets of highcourt
+ACTION[Main]: [grug_traders] drop audit: 1 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit); their items are audited from the hardcoded FUNCTION_DROPS list
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=start engine=5.17.0 seed=531802985935182545 manifest=f19c5cdccd27c75e882d050360f01651139b1ffe8ac0b203eb27a14b53bb1624 sockets_registered=201 anchor=0,40,-1500 mode=full build_us=module_load=12789,core=133158,plot_market_granary=7158,plot_market_stable=5839,plot_market_workshop=7090,plot_market_counting_house=7721,plot_market_well=3199,plot_market_watch=8554,plot_market_grove=7698,plot_market_orchard=5594,plot_market_store=5072
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build_time module_load=12789
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build_time core=133158
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build_time plot_market_granary=7158
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build_time plot_market_stable=5839
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build_time plot_market_workshop=7090
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build_time plot_market_counting_house=7721
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build_time plot_market_well=3199
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build_time plot_market_watch=8554
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build_time plot_market_grove=7698
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build_time plot_market_orchard=5594
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build_time plot_market_store=5072
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket sockets=105
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket role_guard_patrol=28
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket role_guard_post=13
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket role_idle=59
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket role_king=1
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket role_quest=1
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket role_vendor=2
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket role_waypoint=1
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket loops=6
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket loop_highcourt_gate_east_tower=2
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket loop_highcourt_gate_north_tower=2
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket loop_highcourt_gate_south_tower=2
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket loop_highcourt_gate_west_tower=2
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket loop_highcourt_market_watch=10
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket loop_highcourt_watch=10
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=corpus mapchunks=47
+ACTION[Main]: World at [/tmp/grudgelands-wp13-highcourt.JK5KZR/world]
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31151.
+ACTION[Server]: [grug_core] start preload: emerging 6 start areas (128 x 128 nodes each, 2 at a time)
+ACTION[Emerge-0]: [grug_core] start area ready: dwarf (1/6, 14.3 s)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket gate_west (-1804,26,-2491)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket gate_east (-1796,26,-2491)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket watch_gate (-1800,26,-2498)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_traders:vendor_race_dwarf placed at socket plaza_vendor (-1793,26,-2555)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_west_door (-1816,26,-2546)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_plaza_bench (-1793,26,-2549)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_workyard (-1819,26,-2533)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_forge_door (-1798,26,-2560)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:elder_dwarf placed at socket hall_quest (-1828,26,-2524)
+ACTION[Server]: [grug_mobs] start npcs dwarf hearthpine: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0 spare 3
+ACTION[Emerge-0]: [grug_core] start area ready: human (2/6, 21.7 s)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket gate_west (-4,18,-2493)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket gate_east (4,18,-2493)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket watch_gate (0,18,-2498)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_traders:vendor_race_human placed at socket green_vendor (6,18,-2554)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_cottage_door (10,18,-2566)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_green_bench (-6,18,-2543)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_barn (-19,18,-2550)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_smithy (22,18,-2551)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:elder_human placed at socket hall_quest (-11,18,-2542)
+ACTION[Server]: [grug_mobs] start npcs human dawnmere: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0 spare 3
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=warmup mapchunk=1488:48:688 kind=warmup elapsed_us=21472815
+ACTION[Emerge-0]: [grug_core] start area ready: elf (3/6, 27.2 s)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket gate_west (1796,22,-2493)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket gate_east (1804,22,-2493)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket watch_gate (1800,22,-2498)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_traders:vendor_race_elf placed at socket court_vendor (1807,22,-2554)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_shrine_door (1779,22,-2534)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_court_bench (1793,22,-2545)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_bowyer (1828,22,-2551)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_market (1769,22,-2550)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:elder_elf placed at socket hall_quest (1820,22,-2536)
+ACTION[Server]: [grug_mobs] start npcs elf silverleaf: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0 spare 3
+ACTION[Emerge-0]: [grug_core] start area ready: undead (4/6, 33.6 s)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket gate_west (-1804,55,2494)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket gate_east (-1796,55,2494)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket watch_gate (-1800,55,2498)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_traders:vendor_race_undead placed at socket court_vendor (-1793,55,2545)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_warden_door (-1813,55,2582)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_court_settle (-1810,55,2554)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_bone_works (-1778,55,2549)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_gate_brazier (-1805,55,2493)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:elder_undead placed at socket hall_quest (-1798,55,2560)
+ACTION[Server]: [grug_mobs] start npcs undead stillgrave: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0 spare 3
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=control_capital_lethariel mapchunk=1728:-32:-1552 kind=control_capital elapsed_us=11671779
+ACTION[Emerge-0]: [grug_core] start area ready: orc (5/6, 42.7 s)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket gate_west (-4,28,2499)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket gate_east (4,28,2499)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket watch_gate (0,28,2510)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_traders:vendor_race_orc placed at socket yard_vendor (8,28,2545)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_tusk_door (-11,28,2528)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_council_seat (-3,28,2558)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_beast_pen (-25,28,2548)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_armoury_forge (20,28,2548)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:elder_orc placed at socket hall_quest (3,28,2562)
+ACTION[Server]: [grug_mobs] start npcs orc sunscar: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0 spare 3
+ACTION[Emerge-0]: [grug_core] start area ready: troll (6/6, 47.6 s)
+ACTION[Emerge-0]: [grug_core] all 6 start areas ready after 47.6 s
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket gate_west (1796,21,2505)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket gate_east (1804,21,2505)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket watch_gate (1800,21,2514)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_traders:vendor_race_troll placed at socket clearing_vendor (1807,21,2546)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_lodge_door (1798,21,2567)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_terrace_settle (1788,21,2577)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_drying_shed (1783,21,2574)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_smoker (1813,21,2570)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:elder_troll placed at socket hall_quest (1803,21,2567)
+ACTION[Server]: [grug_mobs] start npcs troll kapok: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0 spare 3
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=control_capital_lethariel mapchunk=1808:-32:-1552 kind=control_capital elapsed_us=13975984
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=control_capital_lethariel mapchunk=1728:48:-1552 kind=control_capital elapsed_us=447916
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=control_capital_lethariel mapchunk=1808:48:-1552 kind=control_capital elapsed_us=181422
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=control_capital_lethariel mapchunk=1728:-32:-1472 kind=control_capital elapsed_us=558388
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=control_capital_lethariel mapchunk=1808:-32:-1472 kind=control_capital elapsed_us=472597
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=control_capital_lethariel mapchunk=1728:48:-1472 kind=control_capital elapsed_us=177651
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=control_capital_lethariel mapchunk=1808:48:-1472 kind=control_capital elapsed_us=181069
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=core mapchunk=-112:-32:-1552 kind=capital elapsed_us=1026419
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=core mapchunk=-32:-32:-1552 kind=capital elapsed_us=604753
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=core mapchunk=-112:48:-1552 kind=capital elapsed_us=194114
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=core mapchunk=-32:48:-1552 kind=capital elapsed_us=154539
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=core mapchunk=-112:-32:-1472 kind=capital elapsed_us=704229
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=core mapchunk=-32:-32:-1472 kind=capital elapsed_us=555168
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=core mapchunk=-112:48:-1472 kind=capital elapsed_us=146528
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=core mapchunk=-32:48:-1472 kind=capital elapsed_us=163620
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=plot_market_granary mapchunk=48:-32:-1552 kind=capital elapsed_us=614426
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=plot_market_granary mapchunk=48:48:-1552 kind=capital elapsed_us=174850
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket throne_guard_west (-7,44,-1471)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket throne_guard_east (7,44,-1471)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket door_guard_west (-3,43,-1489)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket door_guard_east (4,43,-1489)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket hall_idle_west (-13,43,-1481)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket hall_idle_east (13,43,-1481)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket hall_idle_service (-13,43,-1472)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket gate_south_post_west (-2,41,-1546)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket gate_south_post_east (2,41,-1546)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket gate_south_deck (0,52,-1544)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket gate_south_idle_west (-5,41,-1543)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket gate_south_idle_east (5,41,-1543)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket gate_west_post_west (-46,41,-1498)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket gate_west_post_east (-46,41,-1502)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket gate_west_deck (-44,52,-1500)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket gate_west_idle_west (-43,41,-1495)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket gate_west_idle_east (-43,41,-1505)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket gate_north_post_west (2,41,-1454)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket gate_north_post_east (-2,41,-1454)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket gate_north_deck (0,52,-1456)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket gate_north_idle_west (5,41,-1457)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket gate_north_idle_east (-5,41,-1457)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket gate_east_post_west (46,41,-1502)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket gate_east_post_east (46,41,-1498)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket gate_east_deck (44,52,-1500)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket gate_east_idle_west (43,41,-1505)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket gate_east_idle_east (43,41,-1495)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_booth_1 (-31,41,-1528)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_booth_2 (-17,41,-1528)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_booth_3 (-31,41,-1510)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_booth_4 (-17,41,-1510)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_idle_west (-33,41,-1526)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_idle_east (-15,41,-1512)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket colonnade_west_idle_a (-8,41,-1509)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket colonnade_west_idle_b (-6,41,-1519)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket colonnade_east_idle_a (7,41,-1519)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket colonnade_east_idle_b (5,41,-1509)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket statue_idle (16,41,-1511)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket well_court_idle_a (-41,41,-1490)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket well_court_idle_b (-41,41,-1484)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket orchard_east_work (18,41,-1540)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket orchard_east_street_a (26,41,-1535)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket orchard_west_work (-35,41,-1540)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_traders:vendor_race_human placed at socket vendor_race (42,41,-1493)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_traders:vendor_general_accord placed at socket vendor_general (42,41,-1487)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:elder_human placed at socket chapel_quest (-22,41,-1473)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket court_idle_well (44,41,-1473)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket court_idle_yard (34,41,-1480)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket forecourt_idle_west (-6,41,-1497)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket forecourt_idle_east (7,41,-1497)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_granary/market_granary_work (72,47,-1524)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket market_granary/market_granary_watch (72,47,-1536)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_granary/market_granary_gate_idle (72,47,-1536)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_stable/market_stable_gate (72,36,-1475)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_stable/market_stable_gate_idle (72,36,-1478)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_workshop/market_workshop_gate_idle (116,45,-1536)
+ACTION[Server]: [grug_mobs] start npcs human highcourt: guards 18/19 flair 35/49 vendor 2/2 quest 1/1 new 56 pending 15 spare 10
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=plot_market_stable mapchunk=48:-32:-1472 kind=capital elapsed_us=684047
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=plot_market_counting_house mapchunk=128:-32:-1552 kind=capital elapsed_us=784022
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=plot_market_counting_house mapchunk=208:-32:-1552 kind=capital elapsed_us=753643
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=plot_market_counting_house mapchunk=128:-32:-1472 kind=capital elapsed_us=663657
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=plot_market_counting_house mapchunk=208:-32:-1472 kind=capital elapsed_us=649586
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=plot_market_well mapchunk=128:-32:-1632 kind=capital elapsed_us=743864
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_stable/market_stable_groom (72,36,-1469)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_counting_house/market_counting_house_desk_a (200,35,-1476)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_counting_house/market_counting_house_desk_b (200,35,-1468)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_counting_house/market_counting_house_gate_idle (200,35,-1481)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_well/market_well_idle_a (160,37,-1555)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_well/market_well_idle_b (160,37,-1549)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_well/market_well_gate_idle (160,37,-1560)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket market_watch/market_watch_post (160,35,-1432)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_watch/market_watch_muster (160,35,-1417)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_watch/market_watch_gate_idle (160,35,-1435)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_orchard/market_orchard_work (56,42,-1440)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_orchard/market_orchard_gate_idle (56,42,-1445)
+ACTION[Server]: [grug_mobs] start npcs human highcourt: guards 19/19 flair 46/49 vendor 2/2 quest 1/1 new 12 pending 3 spare 10
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=plot_market_grove mapchunk=48:-32:-1632 kind=capital elapsed_us=716835
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=plot_market_grove mapchunk=48:48:-1632 kind=capital elapsed_us=186868
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=plot_market_orchard mapchunk=48:48:-1472 kind=capital elapsed_us=252022
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_south mapchunk=-32:-32:-1792 kind=capital elapsed_us=1034699
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_south mapchunk=-32:48:-1792 kind=capital elapsed_us=259369
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_south mapchunk=-32:-32:-1712 kind=capital elapsed_us=726886
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_south mapchunk=-32:48:-1712 kind=capital elapsed_us=225071
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_south mapchunk=-32:-32:-1632 kind=capital elapsed_us=712117
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_south mapchunk=-32:48:-1632 kind=capital elapsed_us=205893
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_north mapchunk=-32:-32:-1392 kind=capital elapsed_us=861915
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_grove/market_grove_idle (76,39,-1564)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_grove/market_grove_gate_idle (76,39,-1572)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_store/market_store_gate_idle (116,43,-1572)
+ACTION[Server]: [grug_mobs] start npcs human highcourt: guards 19/19 flair 49/49 vendor 2/2 quest 1/1 new 3 pending 0 spare 10
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_north mapchunk=-32:-32:-1312 kind=capital elapsed_us=787402
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_west mapchunk=-272:-32:-1552 kind=capital elapsed_us=754761
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_west mapchunk=-192:-32:-1552 kind=capital elapsed_us=690689
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_west mapchunk=-272:48:-1552 kind=capital elapsed_us=102650
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_west mapchunk=-192:48:-1552 kind=capital elapsed_us=98390
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_east mapchunk=128:48:-1552 kind=capital elapsed_us=420361
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_east mapchunk=208:48:-1552 kind=capital elapsed_us=327257
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_ring_west mapchunk=-112:-32:-1632 kind=capital elapsed_us=937153
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_ring_west mapchunk=-112:48:-1632 kind=capital elapsed_us=225642
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=control_open_land mapchunk=848:-32:848 kind=control elapsed_us=787220
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=control_open_land_far mapchunk=1168:48:768 kind=control elapsed_us=1183071
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=control_dawnmere_start mapchunk=-32:-32:-2592 kind=control elapsed_us=2765
+ACTION[Server]: GRUG_WP13_HIGHCOURT event=dump file=highcourt-core.tsv cells=43075 ignored=0 road_cells=6248 road_digest=45986ff5f64aab9e7debb2102221082649bba44daee8fa22e9203762b1427c65
+ACTION[Server]: GRUG_WP13_HIGHCOURT event=dump file=highcourt-plot.tsv cells=5760 ignored=0 road_cells=287 road_digest=19f891ba73f25b3934fede78a7081625bc080d8e3f419a348162741ffd78e523
+ACTION[Server]: GRUG_WP13_HIGHCOURT event=dump file=highcourt-avenue.tsv cells=79752 ignored=0 road_cells=1595 road_digest=9d6f0167f043f8993edef2a44b60afd37a530e07691ccff9c600b37bd93640a2
+ACTION[Server]: GRUG_WP13_HIGHCOURT event=complete mode=full requested=47 completed=47 warmup_chunks=1 warmup_total_us=21472815 warmup_first_us=21472815 warmup_worst_us=21472815 warmup_best_us=21472815 capital_chunks=35 capital_total_us=18143445 capital_first_us=1026419 capital_worst_us=1034699 capital_best_us=98390 capital_steady_mean_us=503441 control_capital_chunks=8 control_capital_total_us=27666806 control_capital_first_us=11671779 control_capital_worst_us=13975984 control_capital_best_us=177651 control_capital_steady_mean_us=2285003 control_chunks=3 control_total_us=1973056 control_first_us=787220 control_worst_us=1183071 control_best_us=2765 control_steady_mean_us=592918 core_cells=43075 core_ignored=0 core_road_cells=6248 plot_cells=5760 plot_ignored=0 plot_road_cells=287 avenue_cells=79752 avenue_ignored=0 avenue_road_cells=1595 avenue_road_digest=9d6f0167f043f8993edef2a44b60afd37a530e07691ccff9c600b37bd93640a2 worst_plot_fall=4 worst_plot=market_granary worst_plot_submerged=0 worst_submerged_plot=- sockets=105 role_guard_patrol=28 role_guard_post=13 role_idle=59 role_king=1 role_quest=1 role_vendor=2 role_waypoint=1 loops=6 loop_highcourt_gate_east_tower=2 loop_highcourt_gate_north_tower=2 loop_highcourt_gate_south_tower=2 loop_highcourt_gate_west_tower=2 loop_highcourt_market_watch=10 loop_highcourt_watch=10
+ACTION[Main]: Server: Shutting down
