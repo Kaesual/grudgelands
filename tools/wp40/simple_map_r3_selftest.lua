@@ -94,7 +94,8 @@ local validator = dofile(repo .. "/tools/wp40/simple_map_r3_validate.lua")(commo
 validator.validate_api(mock, offline.raw_sha256)
 validator.validate_evidence(mock, {
 	relief_profiles = {}, landmarks = {}, anchors = {}, hard_protection = {},
-	anchor_profiles = {}, zones = {}, route_stations = {}, crossing_interfaces = {},
+	anchor_profiles = {}, zones = {}, route_stations = {}, capital_gates = {},
+	crossing_interfaces = {},
 	routes = {}, poi_spurs = {}, island_routes = {}, hydrology = {},
 	hydrology_interfaces = {}, coastal_housing_cores = {}, island_landings = {},
 })
@@ -143,7 +144,8 @@ function mock.functional_surface_values_at(x)
 end
 local causeway_source = {
 	relief_profiles = {}, landmarks = {}, anchors = {}, hard_protection = {},
-	anchor_profiles = {}, zones = {}, route_stations = {}, crossing_interfaces = {},
+	anchor_profiles = {}, zones = {}, route_stations = {}, capital_gates = {},
+	crossing_interfaces = {},
 	routes = {},
 	poi_spurs = {{id = "poi_spur_045"}}, island_routes = {}, hydrology = {},
 	hydrology_interfaces = {}, coastal_housing_cores = {}, island_landings = {},

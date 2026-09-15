@@ -1,1 +1,1 @@
-38c4f36208906ac80965515aa3f5d50ab270d0c81dba4b627a1a5e86c659c920  gate seed=8675309 overlay_cells=2472 main=658b6763 package=20260915-capital-terrain
+27ea04eff662c81e4b7d10f9bd4020f060f819451f5a7c1856ac4118dd13897f  gate seed=8675309 overlay_cells=2541 main=922bfd92 package=20260915-route-gates

@@ -304,8 +304,21 @@ return function(canonical, raw_sha256, settlement_order)
 			local family = index <= 6 and "capital" or
 				(index <= 30 and "outpost" or "bandit")
 			local ref = family == "bandit" and 1 or 2
+			-- WHAT GRADES A CAPITAL ANCHOR'S OWN COLUMN. It used to be a ROUTE:
+			-- a capital anchor sits on its zone hub and every route that named
+			-- that zone ran to the hub, so `route_002`, `route_005`, ... were
+			-- written across the middle of the city and the anchor column
+			-- carried the first of them. Playtest round 4 ruled the routes back
+			-- to the gates on the envelope edge (`source/simple_map.lua`,
+			-- `CAPITAL_GATE_SIDES`), so nothing but the capital's own fitting
+			-- reaches the anchor column any more and the feature is the fitting's
+			-- id, which is the anchor's.
+			--
+			-- This is the only field of the roster row that moves, and it moves
+			-- the roster digest with it. A POI anchor is unchanged: its spur
+			-- still ends on it.
 			local expected_feature = numeric <= 12 and
-				string.format("route_%03d", (numeric - 7) * 3 + 2) or
+				string.format("anchor_%03d", numeric) or
 				string.format("poi_spur_%03d", numeric)
 			if type(row) ~= "table" or row.numeric_id ~= numeric or
 					row.id ~= string.format("anchor_%03d", numeric) or

@@ -70,6 +70,71 @@ decisions are the coordinator's and are open to the user's correction.
   market square, barracks, temple/shrine,
   library, granary, stable, well, statue plinth, gatehouse.
 
+### 2.1.1 Routes and gates
+
+Playtest round 4, 2026-09-15. In Dur Brannoc the incoming WP40 route is cut by
+the curtain wall at (-1847,-1756) while the gate stands at (-1801,-1756) --
+anchor (-1800,-1500), so the south gate is at `z = anchor.z - 256` on the
+avenue's centre line. The star-shaped anchor-bound routes predate the cities.
+**The user's ruling: every incoming route ends at a planned point of the city
+boundary (a gate) and no longer runs into the interior; inside, the WP13 streets
+take over.** The consequence the user drew and the coordinator confirmed: no
+WP40 bridge decks inside the 512 envelope any more (decks come from routes), so
+the wave-1 lane-crossing rule ([wp13-lane-routes.md](wp13-lane-routes.md),
+`wp13/avenue.lua`'s `spec.overhead`) becomes a safeguard, not a feature, inside
+capitals.
+
+What that means for a capital blueprint, and what a capital lane may rely on:
+
+- **The four gate points, and WHICH TABLE A WP13 BLUEPRINT READS.** WP40 has two
+  authored sources and both carry the same twenty-four coordinates:
+  - `mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua`, `source.capital_gates`
+    — twenty-four rows, `(ax +- 256, az)` and `(ax, az +- 256)` derived from
+    `capital_core` (512 square), each also a ROUTE STATION of its own,
+    `station:<zone id>:gate_<side>`, kind `gate`. **This is the live mapgen's
+    source** (`grug_mapgen/init.lua` loads it) and it is what a capital route
+    now ends at, so **this is the one a WP13 blueprint reads.**
+  - `mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua` — the retired
+    exact-topology catalog the T2 compiler reads, which has carried the same
+    twenty-four points since before wave 2 as stations
+    `station:<zone id>:capital_<side>`, kind `capital_gate`, gate ref
+    `capital:<side>`. `wp13/highcourt.lua`'s "the gate stations sit at +-256 on
+    each axis (WP40)" refers to these.
+
+  Neither is derived from the other — the catalog is frozen input to a different
+  pipeline — so `tools/wp13/route_gates_kat.lua` asserts the two agree point for
+  point (`route_gate_catalog_agreement`). If one ever moves, that is where it
+  says so. A capital's own avenue geometry stays where it is:
+  `wp13/highcourt.lua` and `wp13/dur_brannoc.lua` author the same numbers, a run
+  out to 261 so the road crosses the whole seven-node curtain, and the gate
+  passage is 13 nodes wide, centred on the anchor's own axis.
+- **Exactly four routes reach a capital, one per side**, so no gate is shared
+  and no tie-break is needed. Each of them ends AT its gate point and enters it
+  dead straight along the axis for the last 144 nodes, which is the whole leg
+  from the gate to that route's own authored via pin.
+- **A route grades nothing inside the envelope** except the 15 columns of its
+  own seven-wide end cap, which reach three nodes in, lie inside the curtain's
+  thickness under the gate passage, and are paved over by the avenue. So a gate
+  passage must stay at least 7 nodes wide and centred on the anchor's axis, or
+  route pavement shows inside the curtain.
+- **The first ten columns inside each gate are the capital's to terrace.** The
+  route's flat end cap gives the anchor fitting fewer columns to meet a hillside
+  in, and the raw ground step over the eight columns inside a gate went from a
+  worst of 3 to a worst of 9 across six capitals and nine seeds (Kezamba's south
+  gate; 5 on the user's world). The paved avenue itself is unaffected -- its
+  one-Lipschitz envelope ramps over it -- but a plot, a rampart footing or a
+  lamp standard set there is not.
+- **A capital's own fitting must reach its four gates.** The avenue's envelope
+  will not rescue a plateau that stops short: Nhal Veyr's stops twelve nodes
+  inside its north envelope edge and leaves a step of up to 6 and a walk break
+  of up to 7 at that gate on five of the nine fixture seeds.
+  `tools/wp13/route_gates.lua <repo> <seed> --strict` is the acceptance check
+  (gate step <= 1, entry breaks = 0, on all nine seeds).
+- **The road arrives at the gate's own ground.** A capital's hub station used to
+  carry the anchor's platform height because the hub IS the anchor column; a
+  gate station is a free-terrain junction instead, so the route meets the height
+  the avenue will pave at that same column.
+
 ### 2.2 Seam generalisation (mechanical, one package before any capital)
 
 1. Roster entries carry `slot` (start, capital, village_1, outpost_1…) and

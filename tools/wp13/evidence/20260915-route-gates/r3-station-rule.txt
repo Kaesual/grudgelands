@@ -1,0 +1,46 @@
+WP40 simple-map R3 harness selftest passed
+WP40 simple-map R3 harness selftest passed
+r3_parallel_start preflight preflight-a seed_index=1
+r3_parallel_start preflight preflight-a seed_index=2
+r3_parallel_start preflight preflight-a seed_index=3
+r3_parallel_start preflight preflight-a seed_index=4
+v1e_r3_preflight	construct	0
+/usr/bin/luajit: WP40 simple-map R3 validation: anchor reference rule differs at anchor_001
+stack traceback:
+	[C]: in function 'error'
+	...g-w2-routes/r3work/tools/wp40/simple_map_r3_validate.lua:139: in function 'fail'
+	...g-w2-routes/r3work/tools/wp40/simple_map_r3_validate.lua:427: in function 'validate_station_anchor_evidence'
+	...g-w2-routes/r3work/tools/wp40/simple_map_r3_validate.lua:1256: in function 'validate_evidence'
+	...routes/r3work/tools/wp40/simple_map_v1e_r3_preflight.lua:137: in function 'build_seed'
+	...routes/r3work/tools/wp40/simple_map_v1e_r3_preflight.lua:273: in main chunk
+	[C]: at 0x55a965e7eb00
+v1e_r3_preflight	construct	1
+/usr/bin/luajit: WP40 simple-map R3 validation: anchor reference rule differs at anchor_001
+stack traceback:
+	[C]: in function 'error'
+	...g-w2-routes/r3work/tools/wp40/simple_map_r3_validate.lua:139: in function 'fail'
+	...g-w2-routes/r3work/tools/wp40/simple_map_r3_validate.lua:427: in function 'validate_station_anchor_evidence'
+	...g-w2-routes/r3work/tools/wp40/simple_map_r3_validate.lua:1256: in function 'validate_evidence'
+	...routes/r3work/tools/wp40/simple_map_v1e_r3_preflight.lua:137: in function 'build_seed'
+	...routes/r3work/tools/wp40/simple_map_v1e_r3_preflight.lua:273: in main chunk
+	[C]: at 0x561c572fcb00
+v1e_r3_preflight	construct	9223372036854775808
+/usr/bin/luajit: WP40 simple-map R3 validation: anchor reference rule differs at anchor_001
+stack traceback:
+	[C]: in function 'error'
+	...g-w2-routes/r3work/tools/wp40/simple_map_r3_validate.lua:139: in function 'fail'
+	...g-w2-routes/r3work/tools/wp40/simple_map_r3_validate.lua:427: in function 'validate_station_anchor_evidence'
+	...g-w2-routes/r3work/tools/wp40/simple_map_r3_validate.lua:1256: in function 'validate_evidence'
+	...routes/r3work/tools/wp40/simple_map_v1e_r3_preflight.lua:137: in function 'build_seed'
+	...routes/r3work/tools/wp40/simple_map_v1e_r3_preflight.lua:273: in main chunk
+	[C]: at 0x555c887e3b00
+v1e_r3_preflight	construct	18446744073709551615
+/usr/bin/luajit: WP40 simple-map R3 validation: anchor reference rule differs at anchor_001
+stack traceback:
+	[C]: in function 'error'
+	...g-w2-routes/r3work/tools/wp40/simple_map_r3_validate.lua:139: in function 'fail'
+	...g-w2-routes/r3work/tools/wp40/simple_map_r3_validate.lua:427: in function 'validate_station_anchor_evidence'
+	...g-w2-routes/r3work/tools/wp40/simple_map_r3_validate.lua:1256: in function 'validate_evidence'
+	...routes/r3work/tools/wp40/simple_map_v1e_r3_preflight.lua:137: in function 'build_seed'
+	...routes/r3work/tools/wp40/simple_map_v1e_r3_preflight.lua:273: in main chunk
+	[C]: at 0x55d351075b00

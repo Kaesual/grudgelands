@@ -135,3 +135,36 @@ capital boot used 31399, which was measured free first, because
 takes main's side of it unchanged.
 Nothing under the user's personal Flatpak folder was touched and no
 `luanti.bin --server` process belonging to these runs survives them.
+
+
+---
+
+## Drift note, 2026-09-16 — WP13 wave 2, lane R (route gates)
+
+`files.sha256` in this package was **fully green on main `c8050057`** and now
+has **nine red rows**. All nine are lane R's
+(`docs/research/wp13-route-gates.md`), and none of them means this package's own
+measurements were wrong; they mean the tree moved under a manifest that records
+what this package measured on the day it shipped. The manifest is deliberately
+left as that record rather than re-stamped.
+
+Three source files lane R changed:
+
+* `mods/MAPGEN/grug_mapgen/wp40/height.lua` — a capital's four gate stations are
+  free-terrain junctions;
+* `mods/MAPGEN/grug_mapgen/wp40/simple_map.lua` — the compiled gate validation;
+* `mods/MAPGEN/grug_mapgen/wp40/r7_anchor_activation.lua` — an anchor may stand
+  on natural ground.
+
+Six expectation files lane R **re-froze**, which is what this package's own
+runner compares against, so they had to move with the value:
+
+* `dur_brannoc/avenue-digest-{531802985935182545,8675309}.txt`
+* `dur_brannoc/rampart-digest-{531802985935182545,8675309}.txt`
+* `dur_brannoc/gate-digest-{531802985935182545,8675309}.txt`
+
+Each now carries `package=20260915-route-gates` in its header, and lane R's
+evidence records the re-run that produced it. The built diff behind the six is
+confined to local x 248-260, where the incoming road now arrives at the gate,
+and to subsurface fill turning from the route's engineered stone back into
+natural dirt and gravel. No blueprint cell moved and `core_cells` is identical.

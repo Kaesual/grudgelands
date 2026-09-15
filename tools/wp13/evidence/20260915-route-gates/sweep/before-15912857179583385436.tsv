@@ -1,0 +1,269 @@
+kind	seed	fields...
+approach	15912857179583385436	elandor_dur_brannoc	route_002	b	south	-1800	-1756	-1800	-1500	256	0
+FAULT	15912857179583385436	route	elandor_dur_brannoc route_002 ends 256 from its south gate
+approach	15912857179583385436	elandor_dur_brannoc	route_003	a	north	-1800	-1244	-1800	-1500	256	0
+FAULT	15912857179583385436	route	elandor_dur_brannoc route_003 ends 256 from its north gate
+approach	15912857179583385436	elandor_highcourt	route_005	b	south	0	-1756	0	-1500	256	0
+FAULT	15912857179583385436	route	elandor_highcourt route_005 ends 256 from its south gate
+approach	15912857179583385436	elandor_highcourt	route_006	a	north	0	-1244	0	-1500	256	0
+FAULT	15912857179583385436	route	elandor_highcourt route_006 ends 256 from its north gate
+approach	15912857179583385436	elandor_lethariel	route_008	b	south	1800	-1756	1800	-1500	256	0
+FAULT	15912857179583385436	route	elandor_lethariel route_008 ends 256 from its south gate
+approach	15912857179583385436	elandor_lethariel	route_009	a	north	1800	-1244	1800	-1500	256	0
+FAULT	15912857179583385436	route	elandor_lethariel route_009 ends 256 from its north gate
+approach	15912857179583385436	kragmar_nhal_veyr	route_011	b	north	-1800	1756	-1800	1500	256	0
+FAULT	15912857179583385436	route	kragmar_nhal_veyr route_011 ends 256 from its north gate
+approach	15912857179583385436	kragmar_nhal_veyr	route_012	a	south	-1800	1244	-1800	1500	256	0
+FAULT	15912857179583385436	route	kragmar_nhal_veyr route_012 ends 256 from its south gate
+approach	15912857179583385436	kragmar_gor_drazhak	route_014	b	north	0	1756	0	1500	256	0
+FAULT	15912857179583385436	route	kragmar_gor_drazhak route_014 ends 256 from its north gate
+approach	15912857179583385436	kragmar_gor_drazhak	route_015	a	south	0	1244	0	1500	256	0
+FAULT	15912857179583385436	route	kragmar_gor_drazhak route_015 ends 256 from its south gate
+approach	15912857179583385436	kragmar_kezamba	route_017	b	north	1800	1756	1800	1500	256	0
+FAULT	15912857179583385436	route	kragmar_kezamba route_017 ends 256 from its north gate
+approach	15912857179583385436	kragmar_kezamba	route_018	a	south	1800	1244	1800	1500	256	0
+FAULT	15912857179583385436	route	kragmar_kezamba route_018 ends 256 from its south gate
+approach	15912857179583385436	elandor_dur_brannoc	route_019	b	west	-2056	-1500	-1800	-1500	256	0
+FAULT	15912857179583385436	route	elandor_dur_brannoc route_019 ends 256 from its west gate
+approach	15912857179583385436	elandor_dur_brannoc	route_020	a	east	-1544	-1500	-1800	-1500	256	0
+FAULT	15912857179583385436	route	elandor_dur_brannoc route_020 ends 256 from its east gate
+approach	15912857179583385436	elandor_highcourt	route_021	b	west	-256	-1500	0	-1500	256	0
+FAULT	15912857179583385436	route	elandor_highcourt route_021 ends 256 from its west gate
+approach	15912857179583385436	elandor_highcourt	route_022	a	east	256	-1500	0	-1500	256	0
+FAULT	15912857179583385436	route	elandor_highcourt route_022 ends 256 from its east gate
+approach	15912857179583385436	elandor_lethariel	route_023	b	west	1544	-1500	1800	-1500	256	0
+FAULT	15912857179583385436	route	elandor_lethariel route_023 ends 256 from its west gate
+approach	15912857179583385436	elandor_lethariel	route_024	a	east	2056	-1500	1800	-1500	256	0
+FAULT	15912857179583385436	route	elandor_lethariel route_024 ends 256 from its east gate
+approach	15912857179583385436	kragmar_nhal_veyr	route_025	b	west	-2056	1500	-1800	1500	256	0
+FAULT	15912857179583385436	route	kragmar_nhal_veyr route_025 ends 256 from its west gate
+approach	15912857179583385436	kragmar_nhal_veyr	route_026	a	east	-1544	1500	-1800	1500	256	0
+FAULT	15912857179583385436	route	kragmar_nhal_veyr route_026 ends 256 from its east gate
+approach	15912857179583385436	kragmar_gor_drazhak	route_027	b	west	-256	1500	0	1500	256	0
+FAULT	15912857179583385436	route	kragmar_gor_drazhak route_027 ends 256 from its west gate
+approach	15912857179583385436	kragmar_gor_drazhak	route_028	a	east	256	1500	0	1500	256	0
+FAULT	15912857179583385436	route	kragmar_gor_drazhak route_028 ends 256 from its east gate
+approach	15912857179583385436	kragmar_kezamba	route_029	b	west	1544	1500	1800	1500	256	0
+FAULT	15912857179583385436	route	kragmar_kezamba route_029 ends 256 from its west gate
+approach	15912857179583385436	kragmar_kezamba	route_030	a	east	2056	1500	1800	1500	256	0
+FAULT	15912857179583385436	route	kragmar_kezamba route_030 ends 256 from its east gate
+stray	15912857179583385436	elandor_dur_brannoc	route_002	-1851	-1755	-51	-255
+stray	15912857179583385436	elandor_dur_brannoc	route_002	-1850	-1755	-50	-255
+stray	15912857179583385436	elandor_dur_brannoc	route_002	-1849	-1755	-49	-255
+stray	15912857179583385436	elandor_dur_brannoc	route_002	-1848	-1755	-48	-255
+stray	15912857179583385436	elandor_dur_brannoc	route_002	-1847	-1755	-47	-255
+stray	15912857179583385436	elandor_dur_brannoc	route_002	-1846	-1755	-46	-255
+stray	15912857179583385436	elandor_dur_brannoc	route_002	-1845	-1755	-45	-255
+stray	15912857179583385436	elandor_dur_brannoc	route_002	-1851	-1754	-51	-254
+interior_feature	15912857179583385436	elandor_dur_brannoc	route_002	1835
+interior_feature	15912857179583385436	elandor_dur_brannoc	route_003	1834
+interior_feature	15912857179583385436	elandor_dur_brannoc	route_019	1824
+interior_feature	15912857179583385436	elandor_dur_brannoc	route_020	1837
+end_cap	15912857179583385436	elandor_dur_brannoc	west	0	15
+end_cap	15912857179583385436	elandor_dur_brannoc	east	0	15
+end_cap	15912857179583385436	elandor_dur_brannoc	south	0	15
+end_cap	15912857179583385436	elandor_dur_brannoc	north	0	15
+interior	15912857179583385436	elandor_dur_brannoc	band	54934	7330	0	0	7330	0
+FAULT	15912857179583385436	route	elandor_dur_brannoc grades 7330 road column(s) inside its envelope outside the gates' end caps
+avenue	15912857179583385436	elandor_dur_brannoc	west	1070	0	0	0
+gate	15912857179583385436	elandor_dur_brannoc	west	-2056	-1500	land_grade	119	anchor_007	119	119	0
+entry	15912857179583385436	elandor_dur_brannoc	west	325	48	0	0	nil
+inside	15912857179583385436	elandor_dur_brannoc	west	8	1	255
+avenue	15912857179583385436	elandor_dur_brannoc	east	1070	0	0	0
+gate	15912857179583385436	elandor_dur_brannoc	east	-1544	-1500	land_grade	106	anchor_007	106	106	0
+entry	15912857179583385436	elandor_dur_brannoc	east	325	48	0	0	nil
+inside	15912857179583385436	elandor_dur_brannoc	east	8	0	nil
+avenue	15912857179583385436	elandor_dur_brannoc	south	1070	0	0	0
+gate	15912857179583385436	elandor_dur_brannoc	south	-1800	-1756	land_grade	106	anchor_007	106	106	0
+entry	15912857179583385436	elandor_dur_brannoc	south	325	48	2	2	323
+FAULT	15912857179583385436	city	elandor_dur_brannoc south entry breaks 2 time(s), worst 2 at 323
+inside	15912857179583385436	elandor_dur_brannoc	south	8	0	nil
+avenue	15912857179583385436	elandor_dur_brannoc	north	1070	0	0	0
+gate	15912857179583385436	elandor_dur_brannoc	north	-1800	-1244	land_grade	126	anchor_007	126	126	0
+entry	15912857179583385436	elandor_dur_brannoc	north	325	48	0	0	nil
+inside	15912857179583385436	elandor_dur_brannoc	north	8	0	nil
+stray	15912857179583385436	elandor_highcourt	route_005	-51	-1755	-51	-255
+stray	15912857179583385436	elandor_highcourt	route_005	-50	-1755	-50	-255
+stray	15912857179583385436	elandor_highcourt	route_005	-49	-1755	-49	-255
+stray	15912857179583385436	elandor_highcourt	route_005	-48	-1755	-48	-255
+stray	15912857179583385436	elandor_highcourt	route_005	-47	-1755	-47	-255
+stray	15912857179583385436	elandor_highcourt	route_005	-46	-1755	-46	-255
+stray	15912857179583385436	elandor_highcourt	route_005	-45	-1755	-45	-255
+stray	15912857179583385436	elandor_highcourt	route_005	-51	-1754	-51	-254
+interior_feature	15912857179583385436	elandor_highcourt	route_005	1840
+interior_feature	15912857179583385436	elandor_highcourt	route_006	1829
+interior_feature	15912857179583385436	elandor_highcourt	route_021	1824
+interior_feature	15912857179583385436	elandor_highcourt	route_022	1837
+end_cap	15912857179583385436	elandor_highcourt	west	0	15
+end_cap	15912857179583385436	elandor_highcourt	east	0	15
+end_cap	15912857179583385436	elandor_highcourt	south	0	15
+end_cap	15912857179583385436	elandor_highcourt	north	0	15
+interior	15912857179583385436	elandor_highcourt	band	54934	7330	0	1210	7330	0
+FAULT	15912857179583385436	route	elandor_highcourt grades 7330 road column(s) inside its envelope outside the gates' end caps
+FAULT	15912857179583385436	route	elandor_highcourt carries 1210 bridge-deck column(s) inside its envelope
+avenue	15912857179583385436	elandor_highcourt	west	1070	303	0	0
+gate	15912857179583385436	elandor_highcourt	west	-256	-1500	land_grade	30	anchor_008	30	30	0
+entry	15912857179583385436	elandor_highcourt	west	325	48	0	0	nil
+inside	15912857179583385436	elandor_highcourt	west	8	1	254
+avenue	15912857179583385436	elandor_highcourt	east	1070	313	0	0
+gate	15912857179583385436	elandor_highcourt	east	256	-1500	land_grade	33	anchor_008	33	33	0
+entry	15912857179583385436	elandor_highcourt	east	325	48	1	2	303
+FAULT	15912857179583385436	city	elandor_highcourt east entry breaks 1 time(s), worst 2 at 303
+inside	15912857179583385436	elandor_highcourt	east	8	1	250
+avenue	15912857179583385436	elandor_highcourt	south	1070	0	0	0
+gate	15912857179583385436	elandor_highcourt	south	0	-1756	land_grade	37	anchor_008	37	37	0
+entry	15912857179583385436	elandor_highcourt	south	325	48	1	2	271
+FAULT	15912857179583385436	city	elandor_highcourt south entry breaks 1 time(s), worst 2 at 271
+inside	15912857179583385436	elandor_highcourt	south	8	0	nil
+avenue	15912857179583385436	elandor_highcourt	north	1070	455	0	0
+gate	15912857179583385436	elandor_highcourt	north	0	-1244	land_grade	35	anchor_008	35	35	0
+entry	15912857179583385436	elandor_highcourt	north	325	48	0	0	nil
+inside	15912857179583385436	elandor_highcourt	north	8	1	253
+stray	15912857179583385436	elandor_lethariel	route_008	1845	-1755	45	-255
+stray	15912857179583385436	elandor_lethariel	route_008	1846	-1755	46	-255
+stray	15912857179583385436	elandor_lethariel	route_008	1847	-1755	47	-255
+stray	15912857179583385436	elandor_lethariel	route_008	1848	-1755	48	-255
+stray	15912857179583385436	elandor_lethariel	route_008	1849	-1755	49	-255
+stray	15912857179583385436	elandor_lethariel	route_008	1850	-1755	50	-255
+stray	15912857179583385436	elandor_lethariel	route_008	1851	-1755	51	-255
+stray	15912857179583385436	elandor_lethariel	route_008	1845	-1754	45	-254
+interior_feature	15912857179583385436	elandor_lethariel	route_008	1835
+interior_feature	15912857179583385436	elandor_lethariel	route_009	1834
+interior_feature	15912857179583385436	elandor_lethariel	route_023	1827
+interior_feature	15912857179583385436	elandor_lethariel	route_024	1827
+end_cap	15912857179583385436	elandor_lethariel	west	0	15
+end_cap	15912857179583385436	elandor_lethariel	east	0	15
+end_cap	15912857179583385436	elandor_lethariel	south	0	15
+end_cap	15912857179583385436	elandor_lethariel	north	0	15
+interior	15912857179583385436	elandor_lethariel	band	54351	7323	0	434	7323	0
+FAULT	15912857179583385436	route	elandor_lethariel grades 7323 road column(s) inside its envelope outside the gates' end caps
+FAULT	15912857179583385436	route	elandor_lethariel carries 434 bridge-deck column(s) inside its envelope
+avenue	15912857179583385436	elandor_lethariel	west	1070	0	0	0
+gate	15912857179583385436	elandor_lethariel	west	1544	-1500	land_grade	33	anchor_009	33	33	0
+entry	15912857179583385436	elandor_lethariel	west	325	48	0	0	nil
+inside	15912857179583385436	elandor_lethariel	west	8	1	252
+avenue	15912857179583385436	elandor_lethariel	east	1070	368	0	0
+gate	15912857179583385436	elandor_lethariel	east	2056	-1500	nil	nil	nil	37	37	0
+entry	15912857179583385436	elandor_lethariel	east	325	48	0	0	nil
+inside	15912857179583385436	elandor_lethariel	east	8	1	254
+avenue	15912857179583385436	elandor_lethariel	south	1070	0	0	0
+gate	15912857179583385436	elandor_lethariel	south	1800	-1756	land_grade	54	anchor_009	54	54	0
+entry	15912857179583385436	elandor_lethariel	south	325	48	0	0	nil
+inside	15912857179583385436	elandor_lethariel	south	8	1	254
+avenue	15912857179583385436	elandor_lethariel	north	1070	549	0	0
+gate	15912857179583385436	elandor_lethariel	north	1800	-1244	land_grade	41	anchor_009	41	41	0
+entry	15912857179583385436	elandor_lethariel	north	325	48	0	0	nil
+inside	15912857179583385436	elandor_lethariel	north	8	1	255
+stray	15912857179583385436	kragmar_nhal_veyr	route_011	-1851	1755	-51	255
+stray	15912857179583385436	kragmar_nhal_veyr	route_011	-1850	1755	-50	255
+stray	15912857179583385436	kragmar_nhal_veyr	route_011	-1849	1755	-49	255
+stray	15912857179583385436	kragmar_nhal_veyr	route_011	-1848	1755	-48	255
+stray	15912857179583385436	kragmar_nhal_veyr	route_011	-1847	1755	-47	255
+stray	15912857179583385436	kragmar_nhal_veyr	route_011	-1846	1755	-46	255
+stray	15912857179583385436	kragmar_nhal_veyr	route_011	-1845	1755	-45	255
+stray	15912857179583385436	kragmar_nhal_veyr	route_011	-1851	1754	-51	254
+interior_feature	15912857179583385436	kragmar_nhal_veyr	route_011	1840
+interior_feature	15912857179583385436	kragmar_nhal_veyr	route_012	1829
+interior_feature	15912857179583385436	kragmar_nhal_veyr	route_025	1834
+interior_feature	15912857179583385436	kragmar_nhal_veyr	route_026	1827
+end_cap	15912857179583385436	kragmar_nhal_veyr	west	0	15
+end_cap	15912857179583385436	kragmar_nhal_veyr	east	0	15
+end_cap	15912857179583385436	kragmar_nhal_veyr	south	0	15
+end_cap	15912857179583385436	kragmar_nhal_veyr	north	0	15
+interior	15912857179583385436	kragmar_nhal_veyr	band	54934	7330	0	0	7330	0
+FAULT	15912857179583385436	route	kragmar_nhal_veyr grades 7330 road column(s) inside its envelope outside the gates' end caps
+avenue	15912857179583385436	kragmar_nhal_veyr	west	1070	0	0	0
+gate	15912857179583385436	kragmar_nhal_veyr	west	-2056	1500	land_grade	108	anchor_010	108	108	0
+entry	15912857179583385436	kragmar_nhal_veyr	west	325	48	1	2	307
+FAULT	15912857179583385436	city	kragmar_nhal_veyr west entry breaks 1 time(s), worst 2 at 307
+inside	15912857179583385436	kragmar_nhal_veyr	west	8	1	255
+avenue	15912857179583385436	kragmar_nhal_veyr	east	1070	0	0	0
+gate	15912857179583385436	kragmar_nhal_veyr	east	-1544	1500	land_grade	89	anchor_010	89	89	0
+entry	15912857179583385436	kragmar_nhal_veyr	east	325	48	0	0	nil
+inside	15912857179583385436	kragmar_nhal_veyr	east	8	1	251
+avenue	15912857179583385436	kragmar_nhal_veyr	south	1070	0	0	0
+gate	15912857179583385436	kragmar_nhal_veyr	south	-1800	1244	land_grade	110	anchor_010	110	110	0
+entry	15912857179583385436	kragmar_nhal_veyr	south	325	48	0	0	nil
+inside	15912857179583385436	kragmar_nhal_veyr	south	8	1	250
+avenue	15912857179583385436	kragmar_nhal_veyr	north	1070	0	0	0
+gate	15912857179583385436	kragmar_nhal_veyr	north	-1800	1756	nil	nil	nil	72	72	0
+entry	15912857179583385436	kragmar_nhal_veyr	north	325	48	17	3	287
+FAULT	15912857179583385436	city	kragmar_nhal_veyr north entry breaks 17 time(s), worst 3 at 287
+inside	15912857179583385436	kragmar_nhal_veyr	north	8	1	255
+stray	15912857179583385436	kragmar_gor_drazhak	route_014	-51	1755	-51	255
+stray	15912857179583385436	kragmar_gor_drazhak	route_014	-50	1755	-50	255
+stray	15912857179583385436	kragmar_gor_drazhak	route_014	-49	1755	-49	255
+stray	15912857179583385436	kragmar_gor_drazhak	route_014	-48	1755	-48	255
+stray	15912857179583385436	kragmar_gor_drazhak	route_014	-47	1755	-47	255
+stray	15912857179583385436	kragmar_gor_drazhak	route_014	-46	1755	-46	255
+stray	15912857179583385436	kragmar_gor_drazhak	route_014	-45	1755	-45	255
+stray	15912857179583385436	kragmar_gor_drazhak	route_014	-51	1754	-51	254
+interior_feature	15912857179583385436	kragmar_gor_drazhak	route_014	1830
+interior_feature	15912857179583385436	kragmar_gor_drazhak	route_015	1839
+interior_feature	15912857179583385436	kragmar_gor_drazhak	route_027	1824
+interior_feature	15912857179583385436	kragmar_gor_drazhak	route_028	1837
+end_cap	15912857179583385436	kragmar_gor_drazhak	west	0	15
+end_cap	15912857179583385436	kragmar_gor_drazhak	east	0	15
+end_cap	15912857179583385436	kragmar_gor_drazhak	south	0	15
+end_cap	15912857179583385436	kragmar_gor_drazhak	north	0	15
+interior	15912857179583385436	kragmar_gor_drazhak	band	54934	7330	0	0	7330	0
+FAULT	15912857179583385436	route	kragmar_gor_drazhak grades 7330 road column(s) inside its envelope outside the gates' end caps
+avenue	15912857179583385436	kragmar_gor_drazhak	west	1070	0	0	0
+gate	15912857179583385436	kragmar_gor_drazhak	west	-256	1500	land_grade	104	anchor_011	104	104	0
+entry	15912857179583385436	kragmar_gor_drazhak	west	325	48	0	0	nil
+inside	15912857179583385436	kragmar_gor_drazhak	west	8	0	nil
+avenue	15912857179583385436	kragmar_gor_drazhak	east	1070	0	0	0
+gate	15912857179583385436	kragmar_gor_drazhak	east	256	1500	land_grade	113	anchor_011	113	113	0
+entry	15912857179583385436	kragmar_gor_drazhak	east	325	48	0	0	nil
+inside	15912857179583385436	kragmar_gor_drazhak	east	8	1	254
+avenue	15912857179583385436	kragmar_gor_drazhak	south	1070	0	0	0
+gate	15912857179583385436	kragmar_gor_drazhak	south	0	1244	land_grade	124	anchor_011	124	124	0
+entry	15912857179583385436	kragmar_gor_drazhak	south	325	48	0	0	nil
+inside	15912857179583385436	kragmar_gor_drazhak	south	8	0	nil
+avenue	15912857179583385436	kragmar_gor_drazhak	north	1070	0	0	0
+gate	15912857179583385436	kragmar_gor_drazhak	north	0	1756	land_grade	112	anchor_011	112	112	0
+entry	15912857179583385436	kragmar_gor_drazhak	north	325	48	1	2	321
+FAULT	15912857179583385436	city	kragmar_gor_drazhak north entry breaks 1 time(s), worst 2 at 321
+inside	15912857179583385436	kragmar_gor_drazhak	north	8	1	252
+stray	15912857179583385436	kragmar_kezamba	route_017	1749	1755	-51	255
+stray	15912857179583385436	kragmar_kezamba	route_017	1750	1755	-50	255
+stray	15912857179583385436	kragmar_kezamba	route_017	1751	1755	-49	255
+stray	15912857179583385436	kragmar_kezamba	route_017	1752	1755	-48	255
+stray	15912857179583385436	kragmar_kezamba	route_017	1753	1755	-47	255
+stray	15912857179583385436	kragmar_kezamba	route_017	1754	1755	-46	255
+stray	15912857179583385436	kragmar_kezamba	route_017	1755	1755	-45	255
+stray	15912857179583385436	kragmar_kezamba	route_017	1749	1754	-51	254
+interior_feature	15912857179583385436	kragmar_kezamba	route_017	1830
+interior_feature	15912857179583385436	kragmar_kezamba	route_018	1839
+interior_feature	15912857179583385436	kragmar_kezamba	route_029	1824
+interior_feature	15912857179583385436	kragmar_kezamba	route_030	1837
+end_cap	15912857179583385436	kragmar_kezamba	west	0	15
+end_cap	15912857179583385436	kragmar_kezamba	east	0	15
+end_cap	15912857179583385436	kragmar_kezamba	south	0	15
+end_cap	15912857179583385436	kragmar_kezamba	north	0	15
+interior	15912857179583385436	kragmar_kezamba	band	54934	7330	0	0	7330	0
+FAULT	15912857179583385436	route	kragmar_kezamba grades 7330 road column(s) inside its envelope outside the gates' end caps
+avenue	15912857179583385436	kragmar_kezamba	west	1070	0	0	0
+gate	15912857179583385436	kragmar_kezamba	west	1544	1500	land_grade	37	anchor_012	37	54	17
+FAULT	15912857179583385436	city	kragmar_kezamba west gate steps 17 between route grade and avenue road
+entry	15912857179583385436	kragmar_kezamba	west	325	48	21	20	261
+FAULT	15912857179583385436	city	kragmar_kezamba west entry breaks 21 time(s), worst 20 at 261
+inside	15912857179583385436	kragmar_kezamba	west	8	1	255
+avenue	15912857179583385436	kragmar_kezamba	east	1070	499	0	0
+gate	15912857179583385436	kragmar_kezamba	east	2056	1500	land_grade	44	anchor_012	44	54	10
+FAULT	15912857179583385436	city	kragmar_kezamba east gate steps 10 between route grade and avenue road
+entry	15912857179583385436	kragmar_kezamba	east	325	48	23	14	261
+FAULT	15912857179583385436	city	kragmar_kezamba east entry breaks 23 time(s), worst 14 at 261
+inside	15912857179583385436	kragmar_kezamba	east	8	1	254
+avenue	15912857179583385436	kragmar_kezamba	south	1070	0	0	0
+gate	15912857179583385436	kragmar_kezamba	south	1800	1244	land_grade	75	anchor_012	75	79	4
+FAULT	15912857179583385436	city	kragmar_kezamba south gate steps 4 between route grade and avenue road
+entry	15912857179583385436	kragmar_kezamba	south	325	48	1	2	263
+FAULT	15912857179583385436	city	kragmar_kezamba south entry breaks 1 time(s), worst 2 at 263
+inside	15912857179583385436	kragmar_kezamba	south	8	3	255
+avenue	15912857179583385436	kragmar_kezamba	north	1070	467	0	0
+gate	15912857179583385436	kragmar_kezamba	north	1800	1756	land_grade	74	anchor_012	74	74	0
+entry	15912857179583385436	kragmar_kezamba	north	325	48	1	2	316
+FAULT	15912857179583385436	city	kragmar_kezamba north entry breaks 1 time(s), worst 2 at 316
+inside	15912857179583385436	kragmar_kezamba	north	8	1	255
+summary	15912857179583385436	band	route	24	0	32	13

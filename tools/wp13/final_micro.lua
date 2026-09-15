@@ -42,6 +42,12 @@ rows[#rows + 1] = dofile(repo .. "/tools/wp13/dur_brannoc_kat.lua")(repo)
 -- crossing rule is a property of the module, held to synthetic profiles the
 -- real gate seeds do not all happen to contain.
 rows[#rows + 1] = dofile(repo .. "/tools/wp13/lane_crossing_kat.lua")(repo)
+-- Where a WP40 route STOPS. Playtest round 4 ruled that an incoming route ends
+-- at a gate on the city boundary and no longer runs into the interior; this is
+-- that sentence held against the compiled layout, which is the same on every
+-- world. Its terrain half needs a seed and lives in
+-- `tools/wp13/route_gates.lua`.
+rows[#rows + 1] = dofile(repo .. "/tools/wp13/route_gates_kat.lua")(repo)
 -- The settlement seam itself: roster-derived manifest order, bounds per slot,
 -- several blueprints per settlement, the terrain-relative projection against a
 -- stub height function, and lazy build/release (contract section 2.2).

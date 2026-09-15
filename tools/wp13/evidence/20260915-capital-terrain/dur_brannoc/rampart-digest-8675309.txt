@@ -1,1 +1,1 @@
-13ed6dfb45e9734ea29401541d12d4fcb6ff4e4ad01fe936d03bd8f8a3c6d660  rampart seed=8675309 overlay_cells=9077 main=658b6763 package=20260915-capital-terrain
+6ca991b41ffce2bc5f8744a8c3e74bd97b696511168e77a85c989280b067dedf  rampart seed=8675309 overlay_cells=9138 main=922bfd92 package=20260915-route-gates

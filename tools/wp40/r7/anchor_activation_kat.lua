@@ -88,7 +88,16 @@ local function rejected_tuple(family, support_override, root_override, tuple_dri
 		local row = by_column[x .. "/" .. z]
 		if row and row.family == family and y == row.y then
 			local values = {66, 0, 0, 0, 0, 0, 0}
-			if support_override then values[support_override[1]] = support_override[2] end
+			-- One {index, value} pair, or a list of them: a support that is
+			-- natural ground carries BOTH an opcode and the material in `aux`,
+			-- and one field at a time cannot express that.
+			if support_override then
+				local pairs_list = type(support_override[1]) == "table" and
+					support_override or {support_override}
+				for pair_index = 1, #pairs_list do
+					values[pairs_list[pair_index][1]] = pairs_list[pair_index][2]
+				end
+			end
 			return unpack(values, 1, 7)
 		elseif row and row.family == family and y == row.y + 1 then
 			local values = {0, 0, 0, 0, 0, 0, 0}
@@ -107,6 +116,18 @@ for _, family in ipairs({"capital", "outpost", "bandit"}) do
 	}) do
 		check(not rejected_tuple(family, support_case), support_case[3] .. " " ..
 			family .. " support was accepted")
+	end
+	-- WHAT AN ANCHOR MAY STAND ON, the other half. Playtest round 4 ruled the
+	-- WP40 routes back to the capital gates, and the six capital anchor columns
+	-- that those routes used to cross are ordinary ground again: R6 writes them
+	-- with one of its two SURFACE opcodes, 3 (shore) or 4 (top), carrying the
+	-- material in `aux`. Both are accepted, which is the same rule
+	-- `r6_settlement.lua` already applies to a cultural root's support. The
+	-- refusals above still bite: a decoration (opcode 12) and an `aux` with no
+	-- opcode at all are both rejected.
+	for _, natural in ipairs({{{4, 3}, {7, 19456}}, {{4, 4}, {7, 19456}}}) do
+		check(rejected_tuple(family, natural), "a biome-surface " .. family ..
+			" support was refused")
 	end
 	for _, root_case in ipairs({
 		{1, 66, "CID"}, {2, 1, "param2"}, {3, 1, "occupancy"},

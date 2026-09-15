@@ -2526,6 +2526,64 @@ return function(dependencies)
 		end
 
 		local route_station_target, route_station_junction, station_evidence = {}, {}, {}
+		-- THE CAPITAL GATE STATIONS (WP13 playtest round 4, 2026-09-15: an
+		-- incoming route ends at a planned point of the city boundary and no
+		-- longer runs into the interior).
+		--
+		-- A capital's hub station carries the anchor's own platform height,
+		-- because the hub IS the anchor column: a route that ended there had to
+		-- arrive at the level the city stands on. A GATE is 256 nodes out, on the
+		-- edge of the 512 envelope, where the capital fitting has already run out
+		-- of cut and fill and the ground is whatever the blend left. Pinning a
+		-- gate to the anchor's platform height would make the road build an
+		-- embankment the whole height of the plateau and then drop off a cliff
+		-- just inside the wall -- measured at Dur Brannoc's west gate on seed
+		-- 531802985935182545 before this was written: 97 at the gate turned into
+		-- 149, a 52-node fill, and the fitted ground was back at 97 four columns
+		-- further in (local 252: 149, 251: 145, 250: 129, 249: 105, 248: 97).
+		--
+		-- So a gate station is a FREE TERRAIN junction: `junction_target` with no
+		-- fixed height takes `scalar_before_paths`, which is the fitted and
+		-- blended ground the WP13 avenue will pave at that same column. The road
+		-- arrives at the height the gate actually has.
+		--
+		-- The junction's owner is the zone the gate column CLASSIFIES into and
+		-- not the capital's own zone: `junction_target` asserts the two agree,
+		-- and 256 nodes out through a warped boundary is far enough that they
+		-- need not.
+		--
+		-- `route_station_target` and `route_station_junction` are keyed by ZONE
+		-- INDEX for a hub and by STATION ID for a gate. One pair of tables rather
+		-- than two: `height.lua` stands at Lua 5.1's 200-local ceiling for this
+		-- function and two more names do not fit.
+		for gate_index = 1, #source.capital_gates do
+			local gate = source.capital_gates[gate_index]
+			local _, _, gate_owner = classified_values(gate.position.x,
+				gate.position.z)
+			local target, record = junction_target(gate_owner, gate.position, nil,
+				nil, nil, station_lower[gate_owner], station_upper[gate_owner])
+			route_station_target[gate.id] = target
+			route_station_junction[gate.id] = record
+			-- `hub_water` is MEASURED and not assumed. No capital gate column is
+			-- planned water on any of the nine fixture seeds, but a value that is
+			-- right today by hard-coding is wrong tomorrow by construction, and
+			-- `junction_target` above would have taken the water-clearance branch
+			-- had it been.
+			local gate_water_class = classified_values(gate.position.x,
+				gate.position.z)
+			station_evidence[#source.zones + gate_index] = {id = gate.id,
+				kind = "gate",
+				zone_id = source.zones[gate.zone_numeric_id].id,
+				zone_numeric_id = gate.zone_numeric_id,
+				capital_gate_side = gate.side,
+				capital_gate_owner_zone_numeric_id = gate_owner,
+				primary_profile_id =
+					profile_by_id[source.zones[gate.zone_numeric_id].primary_relief_id].id,
+				zone_station_y = zone_station_y[gate_owner],
+				hub_x = gate.position.x, hub_z = gate.position.z,
+				hub_target_y = target,
+				hub_water = gate_water_class == "planned_water"}
+		end
 		for zone_index = 1, #source.zones do
 			local zone = source.zones[zone_index]
 			local primary = profile_by_id[zone.primary_relief_id]
@@ -2566,6 +2624,7 @@ return function(dependencies)
 				station_lower[zone_index], station_upper[zone_index])
 			route_station_target[zone_index] = target
 			station_evidence[zone_index] = {id = source.route_stations[zone_index].id,
+				kind = "hub",
 				zone_id = zone.id,
 				zone_numeric_id = zone_index,
 				primary_profile_id = primary.id,
@@ -2576,6 +2635,23 @@ return function(dependencies)
 				hub_target_y = target, hub_water = hub_water,
 				hub_clearance_y = clearance_y,
 				capital_anchor_id = capital and capital.id or nil}
+		end
+
+		-- A route endpoint reads the STATION THE SOURCE PINNED IT TO, so the
+		-- compiled centreline and the graded path cannot drift apart: a hub for
+		-- an ordinary zone, a capital gate for one of the twenty-four. Hubs are
+		-- registered under their id beside their zone index so that the lookup
+		-- below is one table and not two.
+		for zone_index = 1, #source.zones do
+			local hub = source.route_stations[zone_index]
+			-- Positional, and therefore asserted: `route_stations[zone_index]` is
+			-- that zone's hub only because the gates are appended after the hubs.
+			if hub == nil or hub.kind ~= "hub" or
+					hub.zone_numeric_id ~= zone_index then
+				fail("route station " .. zone_index .. " is not its zone's hub")
+			end
+			route_station_target[hub.id] = route_station_target[zone_index]
+			route_station_junction[hub.id] = route_station_junction[zone_index]
 		end
 
 		local paths, path_by_id = {}, {}
@@ -2637,12 +2713,17 @@ return function(dependencies)
 				route.surface_width, route.corridor_width, route.zone_a,
 				route.zone_b, narrow_prefix)
 			path.source_route = route
-			add_pin(path, 1, route_station_target[route.zone_a], "endpoint_a",
+			if route_station_target[route.station_a_id] == nil or
+					route_station_target[route.station_b_id] == nil then
+				fail("route station is unknown at " .. route.id)
+			end
+			add_pin(path, 1, route_station_target[route.station_a_id], "endpoint_a",
 				source.zones[route.zone_a].id)
-			note_junction_use(route_station_junction[route.zone_a], path, 1)
-			add_pin(path, #path.axis, route_station_target[route.zone_b],
+			note_junction_use(route_station_junction[route.station_a_id], path, 1)
+			add_pin(path, #path.axis, route_station_target[route.station_b_id],
 				"endpoint_b", source.zones[route.zone_b].id)
-			note_junction_use(route_station_junction[route.zone_b], path, #path.axis)
+			note_junction_use(route_station_junction[route.station_b_id], path,
+				#path.axis)
 		end
 
 		local trail_template = {bandit_home = true, bandit_frontier = true,
