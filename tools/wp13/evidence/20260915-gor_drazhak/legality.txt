@@ -1,0 +1,80 @@
+== the ground under the four rampart lines, two gate seeds ==
+world	line	wet	worst_step	worst_step_at	low	high	range	overlap	gate_fall
+a	wall_west	0	3	42	77	102	25	5	2
+a	wall_east	0	1	-235	71	106	35	7	3
+a	wall_south	0	1	-248	74	98	24	7	0
+a	wall_north	0	1	-247	74	85	11	7	0
+b	wall_west	0	2	250	72	104	32	6	0
+b	wall_east	0	1	-258	84	108	24	7	1
+b	wall_south	0	1	-242	76	95	19	7	0
+b	wall_north	0	4	-54	89	120	31	4	3
+
+world	corner	z_run_deck	x_run_deck	step
+a	wall_west/wall_south	104	104	0
+a	wall_west/wall_north	87	85	2
+a	wall_east/wall_south	80	80	0
+a	wall_east/wall_north	92	91	1
+b	wall_west/wall_south	86	86	0
+b	wall_west/wall_north	96	95	1
+b	wall_east/wall_south	102	101	1
+b	wall_east/wall_north	105	103	2
+
+every gor_drazhak wall line is dry, steps no more than a terrace, and leaves no gap on either world
+
+== the 36 district lots and the 16 fill lots, three worlds ==
+kind	quadrant	lot	x	z	verdict	worst_fall	worst_rise
+lot	southeast	1	72	-72	legal	3	6
+lot	southeast	2	116	-68	legal	4	2
+lot	southeast	3	160	-72	legal	4	4
+lot	southeast	4	68	-116	legal	4	4
+lot	southeast	5	116	-116	legal	5	3
+lot	southeast	6	160	-116	legal	4	7
+lot	southeast	7	72	-164	legal	4	4
+lot	southeast	8	116	-164	legal	6	1
+lot	southeast	9	160	-160	legal	4	5
+fill	southeast	1	212	-104	legal	4	4
+fill	southeast	2	104	-208	legal	4	3
+fill	southeast	3	200	-204	legal	6	3
+fill	southeast	4	94	-160	legal	4	4
+lot	northeast	1	72	72	legal	4	1
+lot	northeast	2	72	116	legal	3	5
+lot	northeast	3	72	160	legal	4	1
+lot	northeast	4	116	52	legal	5	6
+lot	northeast	5	116	116	legal	5	4
+lot	northeast	6	116	160	legal	4	3
+lot	northeast	7	160	72	legal	3	4
+lot	northeast	8	160	116	legal	5	4
+lot	northeast	9	160	160	legal	3	4
+fill	northeast	1	104	208	legal	5	4
+fill	northeast	2	208	104	legal	4	3
+fill	northeast	3	200	200	legal	5	3
+fill	northeast	4	160	94	legal	4	4
+lot	northwest	1	-72	72	legal	4	5
+lot	northwest	2	-116	72	legal	5	4
+lot	northwest	3	-160	72	legal	2	7
+lot	northwest	4	-72	116	legal	5	6
+lot	northwest	5	-116	116	legal	3	4
+lot	northwest	6	-160	116	legal	4	4
+lot	northwest	7	-68	160	legal	4	7
+lot	northwest	8	-116	160	legal	5	4
+lot	northwest	9	-160	160	legal	1	3
+fill	northwest	1	-208	104	legal	5	6
+fill	northwest	2	-104	204	legal	3	1
+fill	northwest	3	-200	196	legal	4	4
+fill	northwest	4	-94	160	legal	6	6
+lot	southwest	1	-76	-72	legal	4	3
+lot	southwest	2	-72	-116	legal	4	4
+lot	southwest	3	-72	-160	legal	6	3
+lot	southwest	4	-116	-72	legal	5	6
+lot	southwest	5	-112	-112	legal	4	5
+lot	southwest	6	-116	-160	legal	4	1
+lot	southwest	7	-160	-68	legal	4	3
+lot	southwest	8	-204	-144	legal	5	4
+lot	southwest	9	-160	-168	legal	4	7
+fill	southwest	1	-104	-208	legal	6	6
+fill	southwest	2	-212	-104	legal	5	4
+fill	southwest	3	-204	-200	legal	1	3
+fill	southwest	4	-168	-94	legal	6	6
+
+seeds	3	clear	9
+every gor_drazhak lot is dry, stands inside its skirt and fits under its own roof, on 3 worlds

@@ -1,0 +1,75 @@
+WP13 Gor Drazhak: the engine pass, three worlds
+==============================================================
+
+Per-mapchunk cost. The corpus is the mapchunks the capital's
+blueprints, avenues, lanes and rampart actually touch, derived from
+the real geometry, plus three kinds of control. The warm-up chunk
+carries the emerge environment's whole one-time R7 construction and
+is emerged first and not counted.
+
+kind                   chunks    first_s   mean_s  worst_s   best_s
+warm-up (not counted)  1          24.510        -   24.510   24.510   seed 531802985935182545
+Gor Drazhak            60          1.323    0.681    1.323    0.098   seed 531802985935182545
+Lethariel control      8          13.180    2.428   14.621    0.200   seed 531802985935182545
+open land control      3           0.856    0.480    0.956    0.003   seed 531802985935182545
+
+warm-up (not counted)  1          24.086        -   24.086   24.086   seed 8675309
+Gor Drazhak            65          1.024    0.611    1.024    0.101   seed 8675309
+Lethariel control      8          11.897    2.421   15.002    0.092   seed 8675309
+open land control      3           0.914    0.427    0.914    0.006   seed 8675309
+
+warm-up (not counted)  1          22.529        -   22.529   22.529   seed 15912857179583385436
+Gor Drazhak            112         1.195    0.710    1.557    0.114   seed 15912857179583385436
+Lethariel control      8          11.851    2.172   13.404    0.091   seed 15912857179583385436
+open land control      3           0.783    0.396    0.786    0.006   seed 15912857179583385436
+
+
+Roster, sockets and terrain audit
+--------------------------------------------------------------
+seed 531802985935182545
+  sockets registered   315
+  roster               guards 30/30 flair 157/160 vendor 7/7 quest 2/2 new 33 pending 3 spare 73 residents 160 walkers 21
+  worst plot fall      6 (warren_cook_court), submerged 0
+  mapchunks requested  72, completed 72
+  ERROR/ModError lines 0, all of them:
+
+seed 8675309
+  sockets registered   315
+  roster               guards 30/30 flair 160/160 vendor 7/7 quest 2/2 new 17 pending 0 spare 73 residents 160 walkers 21
+  worst plot fall      5 (war_beast_pen), submerged 0
+  mapchunks requested  77, completed 77
+  ERROR/ModError lines 0, all of them:
+
+seed 15912857179583385436
+  sockets registered   315
+  roster               guards 27/30 flair 101/160 vendor 7/7 quest 2/2 new 10 pending 62 spare 73 residents 160 walkers 21
+  worst plot fall      5 (bone_quarry), submerged 0
+  mapchunks requested  124, completed 124
+  ERROR/ModError lines 0, all of them:
+
+
+The built road, rampart and gate, read back out of the map
+--------------------------------------------------------------
+An overlay's manifest identity is its SPECIFICATION -- it has no
+cells until a surface arrives -- so nothing else in the tree hashes
+what the road and the rampart actually built. These are the probe's
+own read-back digests, one file each in gor_drazhak/.
+
+  b39bc0e4aeb0477c903e8d2604cff71ff47c888118cb932909c74e727456ad25  core seed=531802985935182545 overlay_cells=24615
+  7f5793e774635feb7a32d9e86a23d79739f20cd31655164b9368f479b6f1ae17  plot seed=531802985935182545 overlay_cells=4506
+  0b1e0035e4d985139d84305727fb23f9f03d9cd04b7712cd2087c7e93f4fa076  avenue seed=531802985935182545 overlay_cells=15213
+  84ac218564f606890b2c414aac7425dc5cb4c7fbd705618490a3ec61cac29b83  rampart seed=531802985935182545 overlay_cells=10585
+  ac7bb4de7f5dc07205de913f33b9c45f658aebf916f21781510b5210b0eb455b  gate seed=531802985935182545 overlay_cells=2719
+
+  7af0c84e9a014a5ee5029adf1bf00ae3a780f699dbb65d1959d4cbebfdbbe3ba  core seed=8675309 overlay_cells=27530
+  bb24c97312e786b5890b80772a398cb6fbbdd7d7e62aba6a11c078e2dcfaa177  plot seed=8675309 overlay_cells=4134
+  4a933ecad478cf84deaf52f65a0085154575c33c69e3e56e4040228bed93e017  avenue seed=8675309 overlay_cells=17953
+  063a5acbfff8923be570cd7a5f47234d7e9ff4f856a2b335c6d24a71ec7128c1  rampart seed=8675309 overlay_cells=11991
+  f88a29b6764d9b752ecaabf286b43b1cc6872e20fceb1168114cd2ef6424e56d  gate seed=8675309 overlay_cells=4626
+
+  de4f39bc108649a08c43edc45379d0238ca03dfa2394f508b640baf65f659cdc  core seed=15912857179583385436 overlay_cells=25983
+  d566a4e684e1296bd16dea5ee7fc177a20e5eef5ec9f4546f83cec9cdef116a4  plot seed=15912857179583385436 overlay_cells=1474
+  95aca55088a7bf3accf55b3bd745c405f0c4d852a3affa2c9ab0789feaf01347  avenue seed=15912857179583385436 overlay_cells=4363
+  51bb9734cee990e2eb5a84808a3338a5e3a03760c569394348e7b1836e5ca58c  rampart seed=15912857179583385436 overlay_cells=11562
+  b417444076a9e63b22a8bc93865f3f3b820a0550e9ddc4f408923e833cc29749  gate seed=15912857179583385436 overlay_cells=3593
+

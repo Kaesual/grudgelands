@@ -226,6 +226,34 @@ M.roster = {
 		-- crossing stays five wide.
 		reserve_anchor_root = true,
 	},
+	-- The third capital, and the second WALLED one. Its city wall is not a
+	-- curtain: the capitals contract's section 2.4 orc line is "palisade and
+	-- earthworks", so the four rampart runs are `wp13/orc_palisade.lua` -- a
+	-- stake stockade on a dug bank -- in the same overlay as the roads, on the
+	-- same seam and the same constants `wp13/wall.lua` uses. Twenty runs: four
+	-- avenues, four sides of the ring street, eight district lanes and the four
+	-- sides of the rampart.
+	{
+		key = "gor_drazhak", label = "Gor Drazhak", race = "orc",
+		slot = "capital", bounds = "capital_core", plot_bounds = "capital_plot",
+		lazy = true,
+		zone_id = "kragmar_gor_drazhak",
+		anchor_id = "anchor_011", numeric_id = 11, x = 0, z = 1500,
+		blueprint_file = "r7_gor_drazhak_blueprint.lua",
+		blueprint_schema = "grug_wp13_gor_drazhak_core_v1",
+		identity_schema = "grug_wp13_gor_drazhak_core_identity_v1",
+		config_schema = "grug_wp13_gor_drazhak_config_v1",
+		ledger_schema = "grug_wp13_gor_drazhak_ledger_v1",
+		metrics_schema = "grug_wp13_gor_drazhak_metrics_v1",
+		delta_schema = "grug_wp13_gor_drazhak_delta_v1",
+		-- Same reservation as Highcourt's and Dur Brannoc's, for the same
+		-- reason: the anchor writer puts one `grug_nodes:guard_banner` at
+		-- (x, y + 1, z) of every capital anchor and runs BEFORE the settlement
+		-- writer, and this core has air at exactly that cell -- the crossing of
+		-- the two great avenues. The banner is `walkable = false`, so a
+		-- five-wide gate road crossing stays five wide.
+		reserve_anchor_root = true,
+	},
 }
 
 -- ASCII byte order. Lua's `<` on strings is `strcoll`, so under a locale that

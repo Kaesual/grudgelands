@@ -1,0 +1,18 @@
+531802985935182545     route_faults=0 city_faults=2  gor_drazhak_faults=0
+8675309                route_faults=0 city_faults=2  gor_drazhak_faults=0
+15912857179583385436   route_faults=0 city_faults=0  gor_drazhak_faults=0
+0                      route_faults=0 city_faults=0  gor_drazhak_faults=0
+1                      route_faults=0 city_faults=0  gor_drazhak_faults=0
+2                      route_faults=0 city_faults=2  gor_drazhak_faults=0
+42                     route_faults=0 city_faults=1  gor_drazhak_faults=0
+12345                  route_faults=0 city_faults=2  gor_drazhak_faults=0
+999999999              route_faults=0 city_faults=0  gor_drazhak_faults=0
+
+== the raw ground step inside Gor Drazhak's own gates, nine seeds ==
+   (Lane R note section 3.1 hands the first ten columns to the capital)
+   east   worst step 3
+   north  worst step 2
+   south  worst step 1
+   west   worst step 3
+
+gor_drazhak route-gate faults over nine seeds: 0

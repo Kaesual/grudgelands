@@ -1,0 +1,14 @@
+the two interpreters saw the same bytes
+WP13 FINAL MICRO PAIR BYTE-IDENTICAL
+d9b7a41ffa56ca7bdf781fb599cad75b6ced40203fb804aa88bcb3199bd4e8a2  /home/jan/projects/grudgelands/.claude/worktrees/agent-a3c707d653d085597/tools/wp13/evidence/20260915-gor_drazhak/final-micro/micro-luajit.tsv
+d9b7a41ffa56ca7bdf781fb599cad75b6ced40203fb804aa88bcb3199bd4e8a2  /home/jan/projects/grudgelands/.claude/worktrees/agent-a3c707d653d085597/tools/wp13/evidence/20260915-gor_drazhak/final-micro/micro-puc51.tsv
+
+== this capital's own rows ==
+gor_drazhak_core	94582	34024	150	379	549	150	20	79	240	119	4	4	6	10	264	90
+gor_drazhak_throne	0	6	32	0	-1
+gor_drazhak_district	52	275282	369864	bone_spirit_hall	11820
+gor_drazhak_sockets	315	56	7	177	104	73	21	50	9	160	21	brew,carve,chop,forage,mine,mourn,pray,sit,smith,spar,stall,sweep,tend	armourer,brewer,butcher,general,race,smith,tanner
+gor_drazhak_rampart	4	2056	173396	2056	129	129	196	51	ba4fda32655daa89a232ccb9f6f6ce3e110e534f725e1a7a43ff8e84099655b8
+gor_drazhak_avenue	18872	300
+gor_drazhak_work	56	49	13
+gor_drazhak_quadrants	52	11	7	11	7	3412

@@ -1,0 +1,178 @@
+kind	seed	fields...
+approach	42	elandor_dur_brannoc	route_002	b	south	-1800	-1756	-1800	-1756	0	144
+approach	42	elandor_dur_brannoc	route_003	a	north	-1800	-1244	-1800	-1244	0	144
+approach	42	elandor_highcourt	route_005	b	south	0	-1756	0	-1756	0	144
+approach	42	elandor_highcourt	route_006	a	north	0	-1244	0	-1244	0	144
+approach	42	elandor_lethariel	route_008	b	south	1800	-1756	1800	-1756	0	144
+approach	42	elandor_lethariel	route_009	a	north	1800	-1244	1800	-1244	0	144
+approach	42	kragmar_nhal_veyr	route_011	b	north	-1800	1756	-1800	1756	0	144
+approach	42	kragmar_nhal_veyr	route_012	a	south	-1800	1244	-1800	1244	0	144
+approach	42	kragmar_gor_drazhak	route_014	b	north	0	1756	0	1756	0	144
+approach	42	kragmar_gor_drazhak	route_015	a	south	0	1244	0	1244	0	144
+approach	42	kragmar_kezamba	route_017	b	north	1800	1756	1800	1756	0	144
+approach	42	kragmar_kezamba	route_018	a	south	1800	1244	1800	1244	0	144
+approach	42	elandor_dur_brannoc	route_019	b	west	-2056	-1500	-2056	-1500	0	144
+approach	42	elandor_dur_brannoc	route_020	a	east	-1544	-1500	-1544	-1500	0	144
+approach	42	elandor_highcourt	route_021	b	west	-256	-1500	-256	-1500	0	144
+approach	42	elandor_highcourt	route_022	a	east	256	-1500	256	-1500	0	144
+approach	42	elandor_lethariel	route_023	b	west	1544	-1500	1544	-1500	0	144
+approach	42	elandor_lethariel	route_024	a	east	2056	-1500	2056	-1500	0	144
+approach	42	kragmar_nhal_veyr	route_025	b	west	-2056	1500	-2056	1500	0	144
+approach	42	kragmar_nhal_veyr	route_026	a	east	-1544	1500	-1544	1500	0	144
+approach	42	kragmar_gor_drazhak	route_027	b	west	-256	1500	-256	1500	0	144
+approach	42	kragmar_gor_drazhak	route_028	a	east	256	1500	256	1500	0	144
+approach	42	kragmar_kezamba	route_029	b	west	1544	1500	1544	1500	0	144
+approach	42	kragmar_kezamba	route_030	a	east	2056	1500	2056	1500	0	144
+interior_feature	42	elandor_dur_brannoc	route_002	15
+interior_feature	42	elandor_dur_brannoc	route_003	15
+interior_feature	42	elandor_dur_brannoc	route_019	15
+interior_feature	42	elandor_dur_brannoc	route_020	15
+end_cap	42	elandor_dur_brannoc	west	15	15
+end_cap	42	elandor_dur_brannoc	east	15	15
+end_cap	42	elandor_dur_brannoc	south	15	15
+end_cap	42	elandor_dur_brannoc	north	15	15
+interior	42	elandor_dur_brannoc	band	4704	60	0	0	0	15
+avenue	42	elandor_dur_brannoc	west	1070	0	0	0
+gate	42	elandor_dur_brannoc	west	-2056	-1500	land_grade	90	route_019	90	90	0
+entry	42	elandor_dur_brannoc	west	325	48	0	0	nil
+inside	42	elandor_dur_brannoc	west	8	0	nil
+avenue	42	elandor_dur_brannoc	east	1070	0	0	0
+gate	42	elandor_dur_brannoc	east	-1544	-1500	land_grade	98	route_020	98	98	0
+entry	42	elandor_dur_brannoc	east	325	48	0	0	nil
+inside	42	elandor_dur_brannoc	east	8	2	249
+avenue	42	elandor_dur_brannoc	south	1070	0	0	0
+gate	42	elandor_dur_brannoc	south	-1800	-1756	land_grade	118	route_002	118	118	0
+entry	42	elandor_dur_brannoc	south	325	48	0	0	nil
+inside	42	elandor_dur_brannoc	south	8	0	nil
+avenue	42	elandor_dur_brannoc	north	1070	0	0	0
+gate	42	elandor_dur_brannoc	north	-1800	-1244	land_grade	91	route_003	91	91	0
+entry	42	elandor_dur_brannoc	north	325	48	0	0	nil
+inside	42	elandor_dur_brannoc	north	8	1	251
+interior_feature	42	elandor_highcourt	route_005	15
+interior_feature	42	elandor_highcourt	route_006	15
+interior_feature	42	elandor_highcourt	route_021	15
+interior_feature	42	elandor_highcourt	route_022	15
+end_cap	42	elandor_highcourt	west	15	15
+end_cap	42	elandor_highcourt	east	15	15
+end_cap	42	elandor_highcourt	south	15	15
+end_cap	42	elandor_highcourt	north	15	15
+interior	42	elandor_highcourt	band	4704	60	0	0	0	15
+avenue	42	elandor_highcourt	west	1070	303	0	0
+gate	42	elandor_highcourt	west	-256	-1500	land_grade	48	route_021	48	48	0
+entry	42	elandor_highcourt	west	325	48	0	0	nil
+inside	42	elandor_highcourt	west	8	1	252
+avenue	42	elandor_highcourt	east	1070	313	0	0
+gate	42	elandor_highcourt	east	256	-1500	land_grade	52	route_022	52	52	0
+entry	42	elandor_highcourt	east	325	48	0	0	nil
+inside	42	elandor_highcourt	east	8	0	nil
+avenue	42	elandor_highcourt	south	1070	0	0	0
+gate	42	elandor_highcourt	south	0	-1756	land_grade	42	route_005	42	42	0
+entry	42	elandor_highcourt	south	325	48	0	0	nil
+inside	42	elandor_highcourt	south	8	0	nil
+avenue	42	elandor_highcourt	north	1070	455	0	0
+gate	42	elandor_highcourt	north	0	-1244	land_grade	44	route_006	44	44	0
+entry	42	elandor_highcourt	north	325	48	0	0	nil
+inside	42	elandor_highcourt	north	8	1	251
+interior_feature	42	elandor_lethariel	route_008	15
+interior_feature	42	elandor_lethariel	route_009	15
+interior_feature	42	elandor_lethariel	route_023	15
+interior_feature	42	elandor_lethariel	route_024	15
+end_cap	42	elandor_lethariel	west	15	15
+end_cap	42	elandor_lethariel	east	15	15
+end_cap	42	elandor_lethariel	south	15	15
+end_cap	42	elandor_lethariel	north	15	15
+interior	42	elandor_lethariel	band	4704	60	0	0	0	15
+avenue	42	elandor_lethariel	west	1070	0	0	0
+gate	42	elandor_lethariel	west	1544	-1500	land_grade	27	route_023	27	27	0
+entry	42	elandor_lethariel	west	325	48	0	0	nil
+inside	42	elandor_lethariel	west	8	2	249
+avenue	42	elandor_lethariel	east	1070	368	0	0
+gate	42	elandor_lethariel	east	2056	-1500	land_grade	39	route_024	39	39	0
+entry	42	elandor_lethariel	east	325	48	0	0	nil
+inside	42	elandor_lethariel	east	8	2	249
+avenue	42	elandor_lethariel	south	1070	0	0	0
+gate	42	elandor_lethariel	south	1800	-1756	land_grade	54	route_008	54	54	0
+entry	42	elandor_lethariel	south	325	48	0	0	nil
+inside	42	elandor_lethariel	south	8	2	250
+avenue	42	elandor_lethariel	north	1070	549	0	0
+gate	42	elandor_lethariel	north	1800	-1244	land_grade	56	route_009	56	56	0
+entry	42	elandor_lethariel	north	325	48	0	0	nil
+inside	42	elandor_lethariel	north	8	6	249
+interior_feature	42	kragmar_nhal_veyr	route_011	15
+interior_feature	42	kragmar_nhal_veyr	route_012	15
+interior_feature	42	kragmar_nhal_veyr	route_025	15
+interior_feature	42	kragmar_nhal_veyr	route_026	15
+end_cap	42	kragmar_nhal_veyr	west	15	15
+end_cap	42	kragmar_nhal_veyr	east	15	15
+end_cap	42	kragmar_nhal_veyr	south	15	15
+end_cap	42	kragmar_nhal_veyr	north	15	15
+interior	42	kragmar_nhal_veyr	band	4704	60	0	0	0	15
+avenue	42	kragmar_nhal_veyr	west	1070	0	0	0
+gate	42	kragmar_nhal_veyr	west	-2056	1500	land_grade	92	route_025	92	92	0
+entry	42	kragmar_nhal_veyr	west	325	48	0	0	nil
+inside	42	kragmar_nhal_veyr	west	8	0	nil
+avenue	42	kragmar_nhal_veyr	east	1070	0	0	0
+gate	42	kragmar_nhal_veyr	east	-1544	1500	land_grade	105	route_026	105	105	0
+entry	42	kragmar_nhal_veyr	east	325	48	0	0	nil
+inside	42	kragmar_nhal_veyr	east	8	1	250
+avenue	42	kragmar_nhal_veyr	south	1070	0	0	0
+gate	42	kragmar_nhal_veyr	south	-1800	1244	land_grade	98	route_012	98	98	0
+entry	42	kragmar_nhal_veyr	south	325	48	0	0	nil
+inside	42	kragmar_nhal_veyr	south	8	0	nil
+avenue	42	kragmar_nhal_veyr	north	1070	0	0	0
+gate	42	kragmar_nhal_veyr	north	-1800	1756	land_grade	77	route_011	77	78	1
+entry	42	kragmar_nhal_veyr	north	325	48	1	2	261
+FAULT	42	city	kragmar_nhal_veyr north entry breaks 1 time(s), worst 2 at 261
+inside	42	kragmar_nhal_veyr	north	8	4	249
+interior_feature	42	kragmar_gor_drazhak	route_014	15
+interior_feature	42	kragmar_gor_drazhak	route_015	15
+interior_feature	42	kragmar_gor_drazhak	route_027	15
+interior_feature	42	kragmar_gor_drazhak	route_028	15
+end_cap	42	kragmar_gor_drazhak	west	15	15
+end_cap	42	kragmar_gor_drazhak	east	15	15
+end_cap	42	kragmar_gor_drazhak	south	15	15
+end_cap	42	kragmar_gor_drazhak	north	15	15
+interior	42	kragmar_gor_drazhak	band	4704	60	0	0	0	15
+avenue	42	kragmar_gor_drazhak	west	1070	0	0	0
+gate	42	kragmar_gor_drazhak	west	-256	1500	land_grade	107	route_027	107	107	0
+entry	42	kragmar_gor_drazhak	west	325	48	0	0	nil
+inside	42	kragmar_gor_drazhak	west	8	2	249
+avenue	42	kragmar_gor_drazhak	east	1070	0	0	0
+gate	42	kragmar_gor_drazhak	east	256	1500	land_grade	104	route_028	104	104	0
+entry	42	kragmar_gor_drazhak	east	325	48	0	0	nil
+inside	42	kragmar_gor_drazhak	east	8	0	nil
+avenue	42	kragmar_gor_drazhak	south	1070	0	0	0
+gate	42	kragmar_gor_drazhak	south	0	1244	land_grade	92	route_015	92	92	0
+entry	42	kragmar_gor_drazhak	south	325	48	0	0	nil
+inside	42	kragmar_gor_drazhak	south	8	0	nil
+avenue	42	kragmar_gor_drazhak	north	1070	0	0	0
+gate	42	kragmar_gor_drazhak	north	0	1756	land_grade	92	route_014	92	92	0
+entry	42	kragmar_gor_drazhak	north	325	48	0	0	nil
+inside	42	kragmar_gor_drazhak	north	8	0	nil
+interior_feature	42	kragmar_kezamba	route_017	15
+interior_feature	42	kragmar_kezamba	route_018	15
+interior_feature	42	kragmar_kezamba	route_029	15
+interior_feature	42	kragmar_kezamba	route_030	15
+end_cap	42	kragmar_kezamba	west	15	15
+end_cap	42	kragmar_kezamba	east	15	15
+end_cap	42	kragmar_kezamba	south	15	15
+end_cap	42	kragmar_kezamba	north	15	15
+interior	42	kragmar_kezamba	band	4704	60	0	0	0	15
+avenue	42	kragmar_kezamba	west	1070	0	0	0
+gate	42	kragmar_kezamba	west	1544	1500	land_grade	39	route_029	39	39	0
+entry	42	kragmar_kezamba	west	325	48	0	0	nil
+inside	42	kragmar_kezamba	west	8	0	nil
+avenue	42	kragmar_kezamba	east	1070	499	0	0
+gate	42	kragmar_kezamba	east	2056	1500	land_grade	43	route_030	43	43	0
+entry	42	kragmar_kezamba	east	325	48	0	0	nil
+inside	42	kragmar_kezamba	east	8	0	nil
+avenue	42	kragmar_kezamba	south	1070	0	0	0
+gate	42	kragmar_kezamba	south	1800	1244	land_grade	84	route_018	84	84	0
+entry	42	kragmar_kezamba	south	325	48	0	0	nil
+inside	42	kragmar_kezamba	south	8	6	250
+avenue	42	kragmar_kezamba	north	1070	467	0	0
+gate	42	kragmar_kezamba	north	1800	1756	land_grade	80	route_017	80	80	0
+entry	42	kragmar_kezamba	north	325	48	0	0	nil
+inside	42	kragmar_kezamba	north	8	2	249
+summary	42	band	strict	24	0	0	1
+route_gates seed=42 mode=strict route_faults=0 city_faults=1 exit=1

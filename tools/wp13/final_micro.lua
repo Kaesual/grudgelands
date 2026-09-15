@@ -37,6 +37,13 @@ rows[#rows + 1] = dofile(repo .. "/tools/wp13/highcourt_kat.lua")(repo)
 -- Highcourt's for its core, its nine plots and its avenues, plus the four
 -- curtain-wall rules only a wall needs (`dur_brannoc_kat.lua` section 4).
 rows[#rows + 1] = dofile(repo .. "/tools/wp13/dur_brannoc_kat.lua")(repo)
+-- The third capital, the second walled one and the first with four districts
+-- of its own: the same acceptance again for its core and its 52 plots, plus
+-- the rampart rules of `gor_drazhak_kat.lua` section 4 -- a stake palisade on
+-- an earth bank obeys `wall.lua`'s seam and constants and none of its
+-- section -- the work-socket feature rule of section 6 and the quadrant rules
+-- of section 7.
+rows[#rows + 1] = dofile(repo .. "/tools/wp13/gor_drazhak_kat.lua")(repo)
 -- What a capital's street does where a WP40 route passes over it. It belongs
 -- to neither capital: `wp13/avenue.lua` is the road of both of them, and the
 -- crossing rule is a property of the module, held to synthetic profiles the
