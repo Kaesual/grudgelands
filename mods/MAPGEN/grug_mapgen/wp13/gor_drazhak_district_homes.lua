@@ -96,7 +96,7 @@ local function loader(directory)
 				return {
 					plots.idle("lodge_step", area.x0 + 4, area.z1 - 2, 2,
 						{"door"}),
-					plots.spare("round_lodge", area.x1 - 2, area.z0 + 2, 0),
+					plots.spare("round_lodge", area.x1 - 1, area.z1 - 4, 3),
 				}
 			end},
 
@@ -125,11 +125,11 @@ local function loader(directory)
 			end,
 			extra_sockets = function()
 				return {
-					plots.work("cook_oven_west", "brew", -5, 2, 2),
+					plots.work("cook_oven_west", "brew", -5, 2, 0),
 					plots.idle("cook_oven_east", 4, 2, 2, {"work"}),
 					plots.work("cook_counter", "stall", -2, -4, 0),
-					plots.idle("cook_bench", -2, 7, 2, {"bench"}),
-					plots.spare("cook_court", 8, -8, 0),
+					plots.idle("cook_bench", -2, 7, 2, {"bench"}, 2),
+					plots.spare("cook_court", 10, -6, 0),
 				}
 			end},
 
@@ -172,7 +172,7 @@ local function loader(directory)
 			extra_sockets = function(area)
 				return {
 					plots.work("bone_house_saw", "chop", area.x1 - 3,
-						area.z1 - 3, 2),
+						area.z1 - 3, 0),
 					plots.spare("house_bone", area.x0 + 2, area.z0 + 2, 0),
 				}
 			end},
@@ -195,7 +195,7 @@ local function loader(directory)
 			extra_sockets = function(area)
 				return {
 					plots.work("weaver_counter", "stall", area.x1 - 4,
-						area.z1 - 3, 2),
+						area.z1 - 3, 0),
 					plots.work("weaver_rack", "tend", area.x0 + 5,
 						area.z1 - 2, 2),
 				}
@@ -207,13 +207,15 @@ local function loader(directory)
 			spec = {w = 11, d = 15, wall_h = 5},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
-				dressing.bale_stack(buf, palette, area.x0 + 2, area.z1 - 2, 3)
+				dressing.counter(buf, palette, area.x0 + 2, area.z1 - 2, 3,
+					"x")
+				dressing.bale_stack(buf, palette, area.x0 + 6, area.z1 - 2, 3)
 				dressing.crates(buf, palette, area.x1 - 2, area.z1 - 2, 2)
 			end,
 			extra_sockets = function(area)
 				return {
 					plots.work("warren_store_stall", "stall", area.x0 + 3,
-						area.z1 - 3, 2),
+						area.z1 - 1, 2),
 				}
 			end},
 
@@ -242,7 +244,7 @@ local function loader(directory)
 			end,
 			extra_sockets = function()
 				return {
-					plots.work("story_brew", "brew", 0, -2, 2),
+					plots.work("story_brew", "brew", 0, -2, 0),
 					plots.work("story_seat_west", "sit", -3, -3, 0,
 						{"bench"}, 2),
 					plots.idle("story_seat_east", 3, 3, 2, {"bench"}, 2),
@@ -272,7 +274,7 @@ local function loader(directory)
 			end,
 			extra_sockets = function()
 				return {
-					plots.work("clan_ground_brew", "brew", 0, 1, 2),
+					plots.work("clan_ground_brew", "brew", 0, 1, 0),
 					plots.idle("clan_ground_forage", -6, -5, 2, {"work"}),
 					plots.spare("clan_ground", 10, -11, 0),
 				}
@@ -290,19 +292,21 @@ local function loader(directory)
 					dressing.planter(buf, palette, bed[1], bed[2], bed[3],
 						bed[4])
 				end
-				for _, herb in ipairs({{-7, 2}, {-1, 2}, {5, 2}, {-7, 8},
-						{-1, 8}, {5, 8}}) do
-					dressing.plant(buf, palette, herb[1], herb[2])
-				end
+				-- No `dressing.plant` over the beds: `dressing.planter` ALREADY
+				-- sows every cell inside its own kerb -- soil at the ground
+				-- course and a tuft or a fern above it -- so a second call there
+				-- overwrites the soil with a tuft and leaves the first one
+				-- standing on a plant, which is an attached node with no
+				-- support.
 				dressing.undergrowth(buf, palette, -10, -8, 10, -2, 5)
 				dressing.bench(buf, palette, -3, -10, 0, 3, "x")
 			end,
 			extra_sockets = function()
 				return {
-					plots.work("garden_tend_west", "tend", -7, 1, 2),
-					plots.idle("garden_tend_east", 5, 1, 2, {"work"}),
+					plots.work("garden_tend_west", "tend", -7, -1, 0),
+					plots.idle("garden_tend_east", 5, -1, 0, {"work"}),
 					plots.idle("garden_forage", -1, -3, 0, {"work"}),
-					plots.idle("garden_bench", -2, -10, 0, {"bench"}),
+					plots.idle("garden_bench", -2, -10, 0, {"bench"}, 2),
 				}
 			end},
 
@@ -333,13 +337,14 @@ local function loader(directory)
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.acacia(buf, palette, 0, 2, 5)
+				buf:put(0, 1, 0, palette.node("undergrowth"))
 				dressing.bench(buf, palette, -4, -3, 0, 2, "x")
 				dressing.crates(buf, palette, 3, -3, 0)
 			end,
 			extra_sockets = function()
 				return {
 					plots.idle("green_seat", -4, -3, 0, {"bench"}, 2),
-					plots.work("green_forage", "forage", 0, -1, 2),
+					plots.work("green_forage", "forage", 0, -1, 0),
 					plots.spare("warren_green", 4, -5, 0),
 				}
 			end},

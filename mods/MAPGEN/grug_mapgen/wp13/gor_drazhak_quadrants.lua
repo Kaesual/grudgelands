@@ -76,11 +76,26 @@ local function loader()
 
 	-- A quarter turn, and the point a south-east-frame position lands on after
 	-- `turns` of them.
+	-- NEGATING A ZERO IS NOT A NO-OP IN LUA 5.1. A quarter turn is a pair of
+	-- negations, and `-0` is a distinct value that concatenates as "-0": a run
+	-- whose span ends at `-0` writes its last column at x = -0, and every
+	-- consumer that keys a cell by `x .. ":" .. y .. ":" .. z` -- the
+	-- successor's cross-run arbitration among them -- then fails to see it as
+	-- the same cell as the avenue's own x = 0. The integration fixture is what
+	-- found it: the north avenue and the north-east spine both claimed one
+	-- column of ground and neither yielded, because their keys differed by a
+	-- minus sign. `parts.lua` carries the same normalisation for the same
+	-- reason.
+	local function unsign(value)
+		if value == 0 then return 0 end
+		return value
+	end
+
 	function M.rotate(x, z, turns)
 		for _ = 1, (turns % 4) do
-			x, z = -z, x
+			x, z = unsign(-z), x
 		end
-		return x, z
+		return unsign(x), unsign(z)
 	end
 
 	-- A RUN turned the same way. A run is a line segment on an axis: axis "z"
@@ -92,12 +107,13 @@ local function loader()
 		local axis, at, from, to = run.axis, run.at, run.from, run.to
 		for _ = 1, (turns % 4) do
 			if axis == "z" then
-				axis, at, from, to = "x", at, -to, -from
+				axis, at, from, to = "x", at, unsign(-to), unsign(-from)
 			else
-				axis, at, from, to = "z", -at, from, to
+				axis, at, from, to = "z", unsign(-at), from, to
 			end
 		end
-		return {id = run.id, axis = axis, at = at, from = from, to = to}
+		return {id = run.id, axis = axis, at = unsign(at),
+			from = unsign(from), to = unsign(to)}
 	end
 
 	----------------------------------------------------------------------

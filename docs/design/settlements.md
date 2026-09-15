@@ -218,6 +218,30 @@ slag yard, mushroom beds grown in the lee of the wall, goat pens and brewing
 courts. Its trades are a smith, a mason, an armourer, an embalmer, a butcher, a
 brewer and a baker, beside the two travelling traders every capital's core has.
 
+**Not every wall is masonry.** Added 2026-09-15 with the third capital, Gor
+Drazhak. What a walled capital has on its envelope edge is decided by the race
+that built it: the dwarves and the undead raise a stone curtain, and the orcs
+raise a **stake palisade on an earth rampart** -- a dug bank thrown up round the
+whole city with a stockade of sharpened acacia on its outer crest, a timber
+fighting walk along the top, a log breastwork on the city side and a timber
+tower every sixty-four nodes with a stake crown on it. It follows the terraces
+and lets the avenue through its gates exactly as a curtain does, and it is the
+same thing to walk on; it simply is not made of stone. Gor Drazhak's own civic
+precinct repeats the section at a quarter of the height -- two courses of beaten
+earth with a stake every other node -- so the city wall and the citadel wall
+read as one piece of engineering.
+
+**The orc capital's own shape.** Its roofs are flat decks behind crenellated
+breastworks rather than ridges, which is what its skyline is recognised by from
+a hundred nodes away; its civic buildings are banded red sandstone where its
+dwellings are adobe; and its four quarters are a bazaar of five trades (a
+butcher, a tanner, a brewer, an armourer and a smith, each standing at the work
+he sells), a war yard round a sunken fighting arena, a quarter of bone halls
+with a totem court, a burial barrow and a quarry face cut into the mesa, and a
+warren of clan lodges round a cook court and a story fire. In front of the
+warlord's hall stands a raised **fighting platform** with its own breastwork,
+its own stair and two guard posts on it.
+
 Shipped behaviour of that first roster: each start's eleven NPCs are placed once
 its area is prepared at server start, from the sockets alone, and stay for the
 life of the world. Two faction guards hold their authored gate posts, returning

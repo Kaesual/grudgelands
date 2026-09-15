@@ -33,10 +33,16 @@ local function loader(directory)
 		{id = "bone_spirit_hall", module = "capitals", make = "temple",
 			order = 1, handle = "ors",
 			spec = {w = 13, d = 19, wall_h = 7, rise = 5},
+			-- ONE NODE IN FROM THE PLOT EDGE, not two. A plot's ground
+			-- rectangle is the part's own extent grown by the margin, so
+			-- `x0 + 2` is exactly the column the part's EAVE stands in: a totem
+			-- there caps itself with a roof slab under the temple's own roof
+			-- stair, which is a bottom slab carrying masonry and the one shape
+			-- rule this library has held every composition to since round A.
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
-				dressing.totem(buf, palette, area.x0 + 2, area.z0 + 3, 5)
-				dressing.totem(buf, palette, area.x1 - 2, area.z0 + 3, 5)
+				dressing.totem(buf, palette, area.x0 + 1, area.z0 + 3, 5)
+				dressing.totem(buf, palette, area.x1 - 1, area.z0 + 3, 5)
 			end,
 			socket_overrides = function(area)
 				return {bone_spirit_hall_quest = {x = 0, z = area.oz - 1,
@@ -44,7 +50,7 @@ local function loader(directory)
 			end,
 			extra_sockets = function(area)
 				return {
-					plots.work("hall_pray", "pray", 2, area.oz - 1, 2),
+					plots.work("hall_pray", "pray", 0, area.oz - 2, 0),
 					plots.idle("hall_step", -2, area.oz - 1, 2, {"door"}),
 				}
 			end},
@@ -77,7 +83,7 @@ local function loader(directory)
 					plots.work("totem_carve_west", "carve", -5, -6, 3),
 					plots.idle("totem_carve_east", 5, 6, 1, {"work"}),
 					plots.idle("totem_pray", 0, -2, 2, {"work"}),
-					plots.idle("totem_bench", -2, -10, 0, {"bench"}),
+					plots.idle("totem_bench", -2, -10, 0, {"bench"}, 2),
 					plots.spare("totem_court", 8, -8, 0),
 				}
 			end},
@@ -128,10 +134,10 @@ local function loader(directory)
 			end,
 			extra_sockets = function()
 				return {
-					plots.work("quarry_face_west", "mine", -6, 1, 2),
-					plots.work("quarry_face_east", "mine", 5, 1, 2),
+					plots.work("quarry_face_west", "mine", -6, 1, 0),
+					plots.work("quarry_face_east", "mine", 5, 1, 0),
 					plots.work("quarry_haul", "sweep", -2, -6, 0),
-					plots.idle("quarry_saw", -9, -8, 0, {"work"}),
+					plots.idle("quarry_saw", -9, -6, 0, {"work"}),
 				}
 			end},
 
@@ -167,14 +173,18 @@ local function loader(directory)
 					area.x0 + 3, area.z1 - 1)
 				dressing.planter(buf, palette, area.x1 - 3, area.z1 - 3,
 					area.x1 - 1, area.z1 - 1)
-				dressing.plant(buf, palette, area.x0 + 2, area.z1 - 2)
-				dressing.plant(buf, palette, area.x1 - 2, area.z1 - 2)
+				-- No `dressing.plant` over the beds: `dressing.planter` ALREADY
+				-- sows every cell inside its own kerb -- soil at the ground
+				-- course and a tuft or a fern above it -- so a second call there
+				-- overwrites the soil with a tuft and leaves the first one
+				-- standing on a plant, which is an attached node with no
+				-- support.
 				dressing.crates(buf, palette, area.x1 - 2, area.z0 + 3, 2)
 			end,
 			extra_sockets = function(area)
 				return {
 					plots.work("herb_tend_west", "tend", area.x0 + 2,
-						area.z1 - 4, 2),
+						area.z1 - 4, 0),
 					plots.idle("herb_tend_east", area.x1 - 2,
 						area.z1 - 4, 2, {"work"}),
 				}
@@ -202,8 +212,11 @@ local function loader(directory)
 			parapet = {y = 6},
 			spec = {w = 11, d = 9, wall_h = 4, roof = "flat_deck",
 				infill = true, fancy_bed = true},
+			-- Clear of the deck ring for the same reason the spirit hall's
+			-- totems are clear of the temple's eave: the breastwork stands on
+			-- the column at `x1 - 2`, and it is written BEFORE the dressing.
 			decorate = function(buf, palette, area)
-				area.dressing.totem(buf, palette, area.x1 - 2, area.z1 - 2, 4)
+				area.dressing.totem(buf, palette, area.x1 - 1, area.z1 - 4, 4)
 			end,
 			extra_sockets = function(area)
 				return {
@@ -244,13 +257,14 @@ local function loader(directory)
 				local dressing = area.dressing
 				dressing.low_wall_line(buf, palette, -11, 11, 11, 11)
 				dressing.graveyard(buf, palette, -9, -4, 9, 9)
+				dressing.grave(buf, palette, -2, -4, true)
 				dressing.undergrowth(buf, palette, -10, -8, 10, 10, 4)
 				dressing.totem(buf, palette, 0, -8, 5)
 				dressing.bench(buf, palette, -3, -10, 0, 3, "x")
 			end,
 			extra_sockets = function()
 				return {
-					plots.work("ancestor_mourn", "mourn", -2, -4, 2),
+					plots.work("ancestor_mourn", "mourn", -2, -6, 0),
 					plots.idle("ancestor_forage", 6, -6, 2, {"work"}),
 					plots.spare("ancestor_field", 9, -9, 0),
 				}
@@ -268,19 +282,21 @@ local function loader(directory)
 					dressing.planter(buf, palette, bed[1], bed[2], bed[3],
 						bed[4])
 				end
-				for _, herb in ipairs({{-7, 0}, {-1, 0}, {5, 0}, {-7, 6},
-						{-1, 6}, {5, 6}}) do
-					dressing.plant(buf, palette, herb[1], herb[2])
-				end
+				-- No `dressing.plant` over the beds: `dressing.planter` ALREADY
+				-- sows every cell inside its own kerb -- soil at the ground
+				-- course and a tuft or a fern above it -- so a second call there
+				-- overwrites the soil with a tuft and leaves the first one
+				-- standing on a plant, which is an attached node with no
+				-- support.
 				dressing.undergrowth(buf, palette, -10, -8, 10, -4, 5)
 				dressing.bench(buf, palette, -3, -10, 0, 3, "x")
 			end,
 			extra_sockets = function()
 				return {
-					plots.work("scrub_tend_west", "tend", -7, -1, 2),
-					plots.idle("scrub_tend_east", 5, -1, 2, {"work"}),
+					plots.work("scrub_tend_west", "tend", -7, -3, 0),
+					plots.idle("scrub_tend_east", 5, -3, 0, {"work"}),
 					plots.idle("scrub_forage", -1, -5, 0, {"work"}),
-					plots.idle("scrub_bench", -2, -10, 0, {"bench"}),
+					plots.idle("scrub_bench", -2, -10, 0, {"bench"}, 2),
 				}
 			end},
 
@@ -292,12 +308,12 @@ local function loader(directory)
 				dressing.rock_terrace(buf, palette, -8, 5, 8, 8, 4)
 				dressing.rubble_heap(buf, palette, -4, 1, 3)
 				dressing.rubble_heap(buf, palette, 4, 2, 2)
-				dressing.handcart(buf, palette, 0, -5, "x")
+				dressing.handcart(buf, palette, 3, -5, "x")
 				dressing.undergrowth(buf, palette, -8, -8, 8, 0, 6)
 			end,
 			extra_sockets = function()
 				return {
-					plots.work("shelf_mine", "mine", -2, 4, 2),
+					plots.work("shelf_mine", "mine", -2, 4, 0),
 					plots.idle("shelf_haul", 0, -4, 0, {"work"}),
 				}
 			end},
@@ -315,9 +331,9 @@ local function loader(directory)
 			end,
 			extra_sockets = function()
 				return {
-					plots.work("candle_mourn", "mourn", 0, -1, 2),
+					plots.work("candle_mourn", "mourn", 0, -1, 0),
 					plots.idle("candle_seat", -2, -2, 0, {"bench"}, 2),
-					plots.spare("candle_court", 4, -4, 0),
+					plots.spare("candle_court", 3, 3, 0),
 				}
 			end},
 	}

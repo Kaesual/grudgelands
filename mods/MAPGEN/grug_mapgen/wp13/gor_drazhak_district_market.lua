@@ -32,8 +32,15 @@ local function loader(directory)
 		{id = "bazaar_butcher", module = "buildings", make = "workshop",
 			order = 1, handle = "ors",
 			parapet = {y = 7},
+			-- THE DOOR OPENS IN THE x- WALL, like Dawnmere's smithy and like
+			-- every other workshop in this capital. The `workshop` interior kit
+			-- stands three cauldrons and two workbenches along the whole inner
+			-- run of the z- gable, so a door anywhere in that wall but its two
+			-- outermost cells opens onto a cauldron with a torch over it --
+			-- which is what the first version of this roster did, at index 5
+			-- and then again at index 4.
 			spec = {w = 11, d = 13, wing = 7, wall_h = 5, roof = "flat_deck",
-				door_side = "z-", door_index = 5, infill = true},
+				door_side = "x-", door_index = 6, infill = true},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.drying_rack(buf, palette, area.x0 + 2, area.z1 - 3,
@@ -90,8 +97,15 @@ local function loader(directory)
 		{id = "bazaar_brewhouse", module = "buildings", make = "workshop",
 			order = 3, margin = 3,
 			parapet = {y = 7},
+			-- THE DOOR OPENS IN THE x- WALL, like Dawnmere's smithy and like
+			-- every other workshop in this capital. The `workshop` interior kit
+			-- stands three cauldrons and two workbenches along the whole inner
+			-- run of the z- gable, so a door anywhere in that wall but its two
+			-- outermost cells opens onto a cauldron with a torch over it --
+			-- which is what the first version of this roster did, at index 5
+			-- and then again at index 4.
 			spec = {w = 11, d = 13, wing = 7, wall_h = 5, roof = "flat_deck",
-				door_side = "z-", door_index = 5, infill = true},
+				door_side = "x-", door_index = 6, infill = true},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				for _, vat in ipairs({{area.x0 + 2, area.z1 - 2},
@@ -188,7 +202,7 @@ local function loader(directory)
 			extra_sockets = function(area)
 				return {
 					plots.work("store_counter", "stall", area.x1 - 3,
-						area.z1 - 3, 2),
+						area.z1 - 3, 0),
 				}
 			end},
 
@@ -234,9 +248,9 @@ local function loader(directory)
 			extra_sockets = function(area)
 				return {
 					plots.work("carver_post", "carve", area.x0 + 3,
-						area.z1 - 3, 2),
+						area.z1 - 3, 0),
 					plots.idle("carver_bench", area.x1 - 4, area.z1 - 2, 0,
-						{"bench"}),
+						{"bench"}, 2),
 				}
 			end},
 
@@ -299,7 +313,7 @@ local function loader(directory)
 				return {
 					plots.work("dry_rake", "sweep", 0, -6, 0),
 					plots.idle("dry_forage", -6, 5, 2, {"work"}),
-					plots.idle("dry_bench", -2, -10, 0, {"bench"}),
+					plots.idle("dry_bench", -2, -10, 0, {"bench"}, 2),
 				}
 			end},
 
@@ -335,7 +349,7 @@ local function loader(directory)
 			end,
 			extra_sockets = function()
 				return {
-					plots.work("fire_brew", "brew", 0, -1, 2),
+					plots.work("fire_brew", "brew", 0, -1, 0),
 					plots.idle("fire_seat", -2, -2, 0, {"bench"}, 2),
 				}
 			end},

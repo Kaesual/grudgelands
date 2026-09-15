@@ -968,13 +968,13 @@ local function loader(directory)
 		socket("court_work_fire", "work", 37, 1, 19, 0, {activity = "brew"})
 		socket("court_work_rack", "work", 26, 1, 39, 0, {activity = "sweep"})
 		socket("court_idle_store", "idle", 36, 1, 20, 3, {tags = {"work"}})
-		socket("court_idle_wain", "idle", 39, 1, 31, 1, {tags = {"work"}})
+		socket("court_idle_wain", "idle", 37, 1, 31, 1, {tags = {"work"}})
 		socket("court_idle_fire", "idle", 23, 1, 17, 1, {tags = {"fire"}})
 		socket("court_idle_bench", "idle", 43, 1, 37, 1, {tags = {"bench"}})
 		socket("forecourt_idle_west", "idle", -9, 1, 3, 1, {tags = {"door"}})
-		socket("forecourt_idle_east", "idle", 9, 1, 3, 3, {tags = {"door"}})
+		socket("forecourt_idle_east", "idle", 3, 1, 4, 3, {tags = {"door"}})
 		socket("crossing_idle_west", "idle", -5, 1, -4, 0, {tags = {"bench"}})
-		socket("crossing_idle_east", "idle", 5, 1, 4, 2, {tags = {"bench"}})
+		socket("crossing_idle_east", "idle", 5, 1, -4, 2, {tags = {"bench"}})
 		-- SPARE SPOTS. `spawn = false` is the sockets contract's own word for
 		-- them (playtest round 2, 2026-09-15): a real authored standing position
 		-- that reaches every consumer and that NOBODY IS PLACED ON, so a
@@ -982,7 +982,7 @@ local function loader(directory)
 		-- doorstep. No tag: a tag is what the spoken line and the facing rule
 		-- read, and a spare has neither a line nor a door.
 		socket("precinct_walk_west", "idle", -26, 1, 20, 0, {spawn = false})
-		socket("precinct_walk_north", "idle", 16, 1, 34, 2, {spawn = false})
+		socket("precinct_walk_north", "idle", -19, 1, 30, 2, {spawn = false})
 		socket("precinct_walk_south", "idle", -14, 1, -30, 0, {spawn = false})
 		socket("precinct_walk_east", "idle", 33, 1, -24, 2, {spawn = false})
 		socket("precinct_walk_court", "idle", 34, 1, 29, 0, {spawn = false})

@@ -82,8 +82,8 @@ local function loader(directory)
 					dressing.standard(buf, palette, mast[1], mast[2], 5)
 				end
 				dressing.drill_post(buf, palette, 0, 7, 3)
-				dressing.bench(buf, palette, -3, -10, 0, 3, "x")
-				dressing.bench(buf, palette, 1, 10, 2, 3, "x")
+				dressing.bench(buf, palette, -3, -8, 0, 3, "x")
+				dressing.bench(buf, palette, 1, 8, 2, 3, "x")
 			end,
 			extra_sockets = function()
 				return {
@@ -92,7 +92,7 @@ local function loader(directory)
 					plots.work("arena_east_a", "spar", 1, 2, 1),
 					plots.work("arena_east_b", "spar", 3, 2, 3),
 					plots.idle("arena_dummy", 0, 5, 2, {"work"}),
-					plots.idle("arena_bench", -2, -10, 0, {"bench"}),
+					plots.idle("arena_bench", -2, -8, 0, {"bench"}, 2),
 					plots.spare("arena", 8, -8, 0),
 				}
 			end},
@@ -189,7 +189,7 @@ local function loader(directory)
 			extra_sockets = function(area)
 				return {
 					plots.work("quarter_counter", "stall", area.x1 - 3,
-						area.z1 - 3, 2),
+						area.z1 - 1, 2),
 				}
 			end},
 
@@ -321,7 +321,7 @@ local function loader(directory)
 			end,
 			extra_sockets = function()
 				return {
-					plots.work("guard_fire_brew", "brew", 0, 0, 2),
+					plots.work("guard_fire_brew", "brew", 0, 0, 0),
 					plots.idle("guard_fire_seat", -4, -3, 0,
 						{"bench"}, 2),
 					plots.spare("guard_fire", 4, -5, 0),
