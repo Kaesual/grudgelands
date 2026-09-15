@@ -16,6 +16,22 @@ Branch `wp13-r3-npc-work`, based on main `19abee02`. The change is described in
 | `load-before.txt`, `load-after.txt` | the engine load probe, on the tree before the change and on the finished tree |
 | `npc-probe.txt` | the three-boot behaviour probe's own lines |
 | `npc-probe-boot1.log`, `npc-probe-boot2.log`, `npc-probe-boot3.log` | its server logs |
+| `render-work-sockets.sh`, `renders/` | one textured render per `work` socket, centred on the socket, cut away at y = 3 |
+
+## What the renders are, and are not
+
+`tools/wp13/render_blueprint.py` draws NODES. It cannot draw an entity, let
+alone an animated one, so there is no screenshot of a smith swinging a hammer
+anywhere in here and there is no headless path that could produce one: the
+server has no renderer and the animation only exists on a client.
+
+What the twelve renders show is the other half of the question — **where each
+worker stands and what it is facing**. Sunscar's `work_forge` is the clearest:
+the cutaway shows the open-sided armoury shelter with its anvil, and the socket
+is the cell immediately south of it. The animation itself is documented by
+frame range, speed and wielded item in `docs/research/wp13-npc-work.md` section
+2, and the engine probe reads back the animation mobs_redo actually wrote onto
+each work resident's object (`event=work ... anim=...`).
 
 ## How to reproduce
 
