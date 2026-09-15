@@ -1,0 +1,73 @@
+# One headless boot on the candidate bytes: tools/luanti_headless.sh 180 (KEEP=1).
+# The launcher stages the game into a fresh temp directory and points
+# LUANTI_USER_PATH and all three XDG dirs at it, so the user's personal
+# Luanti folder was never read or written; pgrep -f '^luanti' was empty after.
+
+log lines: 139
+ERROR|ModError: 0
+WARNING: 57
+
+== the listening line ==
+70:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32924.
+
+== grug_visuals / grug_abilities startup lines ==
+66:ACTION[Main]: [grug_visuals] 48 armor pieces indexed for overlays, 2 art lines x 4 slots
+
+== every distinct WARNING, with counts (all pre-existing) ==
+      1 Switching to SQLite3 is advised, please read https://docs.luanti.org/for-server-hosts/database-backends.
+      1 No craft recipe matches input (type: fuel, items: ['stairs:stair_tinblock'])
+      1 No craft recipe matches input (type: fuel, items: ['stairs:stair_steelblock'])
+      1 No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_tinblock'])
+      1 No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_steelblock'])
+      1 No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_goldblock'])
+      1 No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_copperblock'])
+      1 No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_bronzeblock'])
+      1 No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_tinblock'])
+      1 No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_steelblock'])
+      1 No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_goldblock'])
+      1 No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_copperblock'])
+      1 No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_bronzeblock'])
+      1 No craft recipe matches input (type: fuel, items: ['stairs:stair_goldblock'])
+      1 No craft recipe matches input (type: fuel, items: ['stairs:stair_copperblock'])
+      1 No craft recipe matches input (type: fuel, items: ['stairs:stair_bronzeblock'])
+      1 No craft recipe matches input (type: fuel, items: ['stairs:slab_tinblock'])
+      1 No craft recipe matches input (type: fuel, items: ['stairs:slab_steelblock'])
+      1 No craft recipe matches input (type: fuel, items: ['stairs:slab_goldblock'])
+      1 No craft recipe matches input (type: fuel, items: ['stairs:slab_copperblock'])
+      1 No craft recipe matches input (type: fuel, items: ['stairs:slab_bronzeblock'])
+      1 No craft recipe matches input (type: fuel, items: ['default:tinblock'])
+      1 No craft recipe matches input (type: fuel, items: ['default:tin_ingot'])
+      1 No craft recipe matches input (type: fuel, items: ['default:sword_mese'])
+      1 No craft recipe matches input (type: fuel, items: ['default:sword_diamond'])
+      1 No craft recipe matches input (type: fuel, items: ['default:stone_with_mese'])
+      1 No craft recipe matches input (type: fuel, items: ['default:stone_with_diamond'])
+      1 No craft recipe matches input (type: fuel, items: ['default:steelblock'])
+      1 No craft recipe matches input (type: fuel, items: ['default:steel_ingot'])
+      1 No craft recipe matches input (type: fuel, items: ['default:sign_wall_steel'])
+      1 No craft recipe matches input (type: fuel, items: ['default:shovel_mese'])
+      1 No craft recipe matches input (type: fuel, items: ['default:shovel_diamond'])
+      1 No craft recipe matches input (type: fuel, items: ['default:pick_mese'])
+      1 No craft recipe matches input (type: fuel, items: ['default:pick_diamond'])
+      1 No craft recipe matches input (type: fuel, items: ['default:meselamp'])
+      1 No craft recipe matches input (type: fuel, items: ['default:mese_post_light_pine_wood'])
+      1 No craft recipe matches input (type: fuel, items: ['default:mese_post_light_junglewood'])
+      1 No craft recipe matches input (type: fuel, items: ['default:mese_post_light_aspen_wood'])
+      1 No craft recipe matches input (type: fuel, items: ['default:mese_post_light_acacia_wood'])
+      1 No craft recipe matches input (type: fuel, items: ['default:mese_post_light'])
+      1 No craft recipe matches input (type: fuel, items: ['default:mese_crystal_fragment'])
+      1 No craft recipe matches input (type: fuel, items: ['default:mese_crystal'])
+      1 No craft recipe matches input (type: fuel, items: ['default:mese'])
+      1 No craft recipe matches input (type: fuel, items: ['default:ladder_steel'])
+      1 No craft recipe matches input (type: fuel, items: ['default:goldblock'])
+      1 No craft recipe matches input (type: fuel, items: ['default:gold_ingot'])
+      1 No craft recipe matches input (type: fuel, items: ['default:diamondblock'])
+      1 No craft recipe matches input (type: fuel, items: ['default:diamond'])
+      1 No craft recipe matches input (type: fuel, items: ['default:copperblock'])
+      1 No craft recipe matches input (type: fuel, items: ['default:copper_ingot'])
+      1 No craft recipe matches input (type: fuel, items: ['default:bronzeblock'])
+      1 No craft recipe matches input (type: fuel, items: ['default:bronze_ingot'])
+      1 No craft recipe matches input (type: fuel, items: ['default:axe_mese'])
+      1 No craft recipe matches input (type: fuel, items: ['default:axe_diamond'])
+      1 No craft recipe known for output 'default:stone_with_mese'
+      1 No craft recipe known for output 'default:stone_with_diamond'
+      1 /!\ You are using the old mod storage files backend. This backend is deprecated and may be removed in a future release /!\
