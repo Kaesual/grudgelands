@@ -503,6 +503,19 @@ def node_boxes(shape, param2, conn):
     if shape == "bed":
         return [(rot_box((0.0, 0.0, 0.0, 1.0, 0.44, 1.0), fd), "crop")]
 
+    if shape == "chair":
+        # The one nodebox whose ORIENTATION is the point of the picture: WP13
+        # seats a king on it, and a chair drawn as a generic box cannot show
+        # which way he looks. Two boxes are enough for that -- the seat and the
+        # back -- taken from the real pixel box of `grug_decor:xdecor_chair`
+        # (mods/ITEMS/grug_decor/xdecor.lua): the seat slab is pixels
+        # y 6..8 over z 3..11, the two back posts and the panel stand at
+        # z 11..13, so the BACK is the node's own +Z side and turns with
+        # facedir like a stair's raised half.
+        seat = rot_box((0.1875, 0.375, 0.1875, 0.8125, 0.5, 0.6875), fd)
+        back = rot_box((0.1875, 0.0, 0.6875, 0.8125, 1.0, 0.8125), fd)
+        return [(seat, "crop"), (back, "crop")]
+
     if shape == "nodebox":
         return [((0.08, 0.0, 0.08, 0.92, 0.9, 0.92), "crop")]
 

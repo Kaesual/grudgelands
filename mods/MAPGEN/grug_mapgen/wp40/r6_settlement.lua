@@ -392,13 +392,15 @@ local function settlement_factory()
 		-- `purpose` is the exclusion-set selector of
 		-- `simple_map.lua`'s `static_exclusion_values_at`. Everything that claims,
 		-- reserves or censuses ground passes nil and gets the full territory rule.
-		-- Biome DECORATIONS pass "vegetation", which skips exactly the six start
-		-- anchors' 256-node blend envelopes: that ring is terrain, not settlement
-		-- ground, and a bare ring made every start read as a cut-out square in the
-		-- user's playtest. Every other exclusion still refuses there -- the start's
-		-- own 148-node hard core, the road corridors, planned water and the coast
-		-- projection -- so the pad, its ten-node apron, the blueprint volume and
-		-- the road surfaces stay clear.
+		-- Biome DECORATIONS pass "vegetation", which skips the six start anchors'
+		-- 256-node blend envelopes -- that ring is terrain, not settlement ground,
+		-- and a bare ring made every start read as a cut-out square in the user's
+		-- first playtest -- and, since playtest round 1, the part of each start's
+		-- 148-node hard square that lies past the jittered treeline in its
+		-- ten-node protection apron. Every other exclusion still refuses there:
+		-- the 128-node build envelope, the road corridors, planned water and the
+		-- coast projection, so the pad, the blueprint volume and the road surfaces
+		-- stay clear.
 		local function exclusion_reason(x, z, purpose)
 			local _, id = horizontal.static_exclusion_values_at(x, z, purpose)
 			if not id then return nil end

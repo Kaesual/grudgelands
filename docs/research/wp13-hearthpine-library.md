@@ -1,10 +1,11 @@
 # WP13: building library and Hearthpine rebuild (third increment)
 
 Status: implemented, independently reviewed and fix-rounded on 2026-09-14;
-the user's first GUI playtest of the six starts produced the round-A fix
-round recorded below, which is not reviewed yet. Classification: non-trivial
-(architecture, raw node semantics, vendored code, licences, test gates).
-WP13 remains in progress.
+the user's first GUI playtest of the six starts produced the round-A and round-B
+fix rounds recorded below, and the 2026-09-15 playtest produced the apron-
+vegetation round at the end of this document, which is not reviewed yet.
+Classification: non-trivial (architecture, raw node semantics, vendored code,
+licences, test gates). WP13 remains in progress.
 
 ## Why
 
@@ -364,6 +365,78 @@ second bow point and updates `pinned_point_index`, the graded-segment population
 and the records. Blueprints
 byte-identical, six per-start engine digests unchanged, the WP13 final micro pair
 `758c3e8c5facc9eb…` — main's own value, unmoved by this round.
+
+## Playtest round 1: apron vegetation, 2026-09-15
+
+Round B named its own next lever and left it alone: *"after finding 2 the most
+visible square around a start is the treeline on the 148-node protection
+square … softening that outline is the next lever if the user still sees an
+edge."* The user's next GUI playtest saw exactly that — an eleven-node bare ring
+around every start, the ten-node protection apron plus the pad edge.
+
+**User ruling:** hard protection restricts BUILDING, not growing. Vegetation may
+grow inside the apron, with a **jagged** inner edge so the treeline does not read
+as a square; only the pad (the 128-node build envelope) and the road surfaces
+stay clear. Recorded in [settlements.md](../design/settlements.md), "Start
+surroundings".
+
+**What it took.** Round B taught `static_exclusion_values_at` a `purpose` and
+made `"vegetation"` skip one shape, the start's 256-node blend envelope. It now
+skips a second, and only part of it: a start's own hard square
+(`exclude:active:hard:anchor_00N`, the 148 × 148 of `world.md` §2 R1) steps
+aside on a column that lies past a jittered inner boundary. The boundary sits at
+`1 + offset(x, z)` nodes outside the half-open 128 square with `offset` in
+0 .. 5, from one seed-derived value-noise lattice per start — period 16,
+bilinear with smootherstep, memoised per corner because the query runs per
+column and a corner costs a SHA-256. It is the round-B pad-edge lattice's
+sibling, not the same lattice: the pad edge lives in `height.lua`, which
+CONSUMES the horizontal session, so a shared lattice would have been a cycle.
+
+Three design details are load-bearing, and each is the arithmetic rather than a
+promise:
+
+- **Excess 0 is refused unconditionally.** "Never into the build envelope" is
+  therefore a property of the test and not of the amplitude. Measured: 0 columns
+  of the 128 square open to vegetation, on all six starts and both gate seeds.
+- **The amplitude is checked against the apron's own depth at compile time**
+  (`apron >= amplitude + 1`, a `fail()` otherwise), so the outermost apron ring
+  always hosts and a future source edit that narrows the apron stops
+  construction instead of quietly producing a bare ring again.
+- **The envelope width is not written down twice.** It is resolved through the
+  hard record's own anchor to the START anchor profile's `fitting_width`, the
+  same 128 the height fitting keeps flat.
+- **Skipping, not short-circuiting**, exactly as in round B: the road corridor
+  that crosses the apron is another shape in the same bucket and still answers,
+  so the carriageway keeps its ±8 clear corridor where the new hosts are.
+
+**Measured.** Per ray of all four sides (512 rays per start), the treeline's
+inner radius spreads over excess 1 … 6 with a different distribution per start
+and per seed; 17 rays per start never open, which is exactly the gate road's
+16-wide claim corridor. Per column, 3,862–4,457 of each start's 5,520 apron
+columns (148² − 128²) now host and 0 of its 16,384 envelope columns do. Beside
+the gate road, inside the apron, the first hosting column is at lateral distance
+9 — the same ±8 shoulder the rest of that road has, and every approach and
+ordinary-stretch row is byte-identical to `main`. In the engine, both seeds,
+forward and reverse owner order, cold and disk: the six per-start digests and
+the combined `206a86a057b0b6ed…` are round A's, and the apron cover field beside
+them moved from `0/588` to 7–123 per start. That the digest CAN hold is not
+luck: `engine_cases.lua` hashes `blueprint.cells` read back out of the map —
+the authored volume and nothing else — while the apron, ring and wild cover
+counts are separate fields on the same line.
+
+`height.lua` is untouched by this round, and `terrain_fixture.lua` over 5 seeds
+× 6 starts is byte-identical to round B's: no fitted height, spawn height, road
+pin or pad-edge jitter offset moved.
+
+One rule for the library: **a protection rule and a vegetation rule are not the
+same rule even when one square expresses both.** Round B narrowed the
+suppression it knew about and left the harder one standing, and said so; the
+next lane had to narrow the second one. When a single compiled shape carries two
+meanings, expect to split it again.
+
+Evidence: `tools/wp13/evidence/20260915-apron-and-throne/`. The same lane
+carried a second, unrelated playtest item — Highcourt's throne facing the wall —
+recorded in [wp13-capital-library.md](wp13-capital-library.md) §5b.
 
 ## User runtime test
 

@@ -536,8 +536,21 @@ local function loader(directory)
 			end
 		end
 		buf:put(centre, dais_top + 4, throne_z + 1, mark_slab(palette))
+		-- The seat LOOKS DOWN THE CARPET at the great door, so the king's back
+		-- is to the screen behind him. Both nodes this can bind carry their
+		-- backrest on their own +Z side -- the chair's two tall posts and back
+		-- panel sit at z 11..13 of its pixel box, a stair-seat's raised half is
+		-- its +Z half -- and a facedir node's +Z side looks along
+		-- `facedir_to_dir(param2)`, so the param2 that makes a seat look at
+		-- `face` is `(face + 2) % 4`. That is exactly `parts.seat`'s rule. What
+		-- stood here before was a bare literal 2 -- the same number the king
+		-- socket below carries, but as a param2 rather than a facing, so it put
+		-- the backrest between the king and his hall and the first GUI playtest
+		-- saw a throne facing the wall.
+		local throne_look = 2 -- -Z, the great door at z 0
 		buf:put(centre, dais_top + 1, throne_z,
-			palette.maybe("throne") or palette.node("seat"), 2)
+			palette.maybe("throne") or palette.node("seat"),
+			(throne_look + 2) % 4)
 		for _, x in ipairs({centre - 2, centre + 2}) do
 			column(buf, palette, x, dais_top + 1, dais_top + 4, throne_z)
 		end

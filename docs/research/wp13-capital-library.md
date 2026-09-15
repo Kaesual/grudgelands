@@ -2,7 +2,9 @@
 
 Status: implemented and fix-rounded 2026-09-14; one independent review
 (verdict: merge after fixes), whose 2 Medium, 5 Low and 3 judgement calls are
-recorded in section 3b. Not re-reviewed. Lane: "Capital parts",
+recorded in section 3b. Not re-reviewed. The user's 2026-09-15 GUI playtest of
+Highcourt added the throne-orientation fix of section 5b, also not reviewed yet.
+Lane: "Capital parts",
 implementing Claude Opus, coordinator Claude Fable (policy "Day-to-day
 routing rule"). This is the increment record for
 `mods/MAPGEN/grug_mapgen/wp13/capitals.lua`, the capital-scale half of the
@@ -430,6 +432,52 @@ f3a38c47a3a94715ae318beca0d8f45bb8f395e807f286a7ed261f6a053b343e  micro-puc51.ts
 ```
 
 `files.sha256` is the frozen-byte manifest of every input and every artefact.
+
+## 5b. Playtest round 1 (2026-09-15): the throne faced the wall
+
+The user's GUI playtest of Highcourt found the king's hall's chair turned
+round: the backrest stood between the king and his hall instead of behind him.
+`king_hall` wrote the **king socket's own facedir** into the seat.
+
+Both nodes the `throne` role can bind carry their back on their own **+Z**
+side -- `grug_decor:xdecor_chair`'s two tall posts and its back panel sit at
+pixels z 11..13, and the degraded binding is a stair-seat whose raised half is
+its +Z half -- and a facedir node's +Z side looks along
+`core.facedir_to_dir(param2)`. So a seat that LOOKS at `face` carries
+`(face + 2) % 4`, which is exactly what `parts.seat` writes and what the
+socket's own facing needed converting to. `king_hall` now names the direction
+(`throne_look = 2`, the great door at local z 0) and does that arithmetic. One
+cell moved in the whole hall: `15,6,24` from param2 2 to param2 0.
+
+Two things came out of the round beyond the one literal:
+
+- **`highcourt_kat.lua` now asserts the orientation**, derived from its own
+  direction model rather than from `parts.seat`'s arithmetic: the seat's look
+  direction is the opposite of its +Z side, it must equal the king socket's own
+  facing, and that shared direction must be -z, the great door. It publishes a
+  `highcourt_throne` row. Setting the literal back to the rejected value fails
+  the fixture.
+- **`render_blueprint.py` could not show the defect.** It drew every
+  `nodebox` -- the chair included -- as one generic inset box, so the review
+  loop's own pictures were blind to the thing the user saw from the ground. The
+  renderer now knows a `chair` shape (seat plus back, turned with the facedir)
+  and `extract_tiles.py` classifies the chair as one, so `node_tiles.json` was
+  regenerated through its own generator rather than hand-edited. That
+  regeneration also picked up 14 `grug_visuals` texture index rows that had
+  landed on `main` with the character-visuals lane; they are index rows only and
+  change no node definition. The before/after pair is in
+  `tools/wp13/evidence/20260915-apron-and-throne/renders/`, with an orientation
+  reference picture beside it that makes the view's axes readable off the
+  picture itself.
+
+What this costs: **Highcourt's core identity SHA-256 moves**, and with it the
+settlement-level one, because a blueprint identity covers every cell's param2:
+`90eae871e24a1247...` becomes `187f79e0ba521038...`. Its population (101,831
+cells in the core, 169,150 in the settlement) and all nine district plot SHAs,
+the avenue overlay SHA and the six START blueprint SHAs are unchanged.
+`tools/wp13/run_highcourt.sh`'s avenue digest is unaffected -- it hashes the
+road the map actually has, which no chair touches -- and re-measured to the same
+`9d6f0167f043f899...` on seed 531802985935182545, 0 ERROR and 0 ModError.
 
 ## 6. What the composition lane needs to know
 

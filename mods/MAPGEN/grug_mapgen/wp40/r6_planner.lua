@@ -281,11 +281,13 @@ local function planner_factory()
 			-- envelope, so `not excluded` made this branch unreachable -- every dry
 			-- start grade column is inside that one exclusion -- and left the blend
 			-- ring with no decoration host at all. The "vegetation" purpose skips
-			-- exactly that envelope and keeps the start's 148-node hard core, the
-			-- road corridors, water and coast excluded, so the pad and its apron
-			-- still have no host while the ring around them does. The extra query
-			-- runs only after the anchor-id match, i.e. only inside those six
-			-- envelopes.
+			-- exactly that envelope, plus (playtest round 1) the part of the start's
+			-- 148-node hard square that lies past the jittered treeline in its
+			-- ten-node protection apron, and keeps everything else excluded: the
+			-- 128-node build envelope, the road corridors, water and coast. So the
+			-- pad has no host, the apron has one outside a jagged inner edge, and
+			-- the ring around both does. The extra query runs only after the
+			-- anchor-id match, i.e. only inside those six envelopes.
 			local dry_start_grade = functional_kind == "land_grade" and
 				type(functional_feature_id) == "string" and
 				functional_feature_id:match("^anchor_00[1-6]$") ~= nil and

@@ -15,6 +15,28 @@ return function(dependencies)
 		"WP40 simple map SHA-256 dependency missing")
 	local Q = 65536
 	local OWNER_SCALE = 256
+	-- WP13 playtest round 1 (2026-09-15), the jagged treeline.
+	--
+	-- Round B let biome decorations back into the 256-node blend ring, and the
+	-- user still saw an eleven-node bare ring around every start: the ten-node
+	-- protection apron plus the pad edge. The ruling is that hard protection
+	-- restricts BUILDING, not growing, so vegetation may enter the apron -- with
+	-- a JAGGED inner edge, so the treeline does not read as a square. Only the
+	-- 128-node build envelope (the pad, which the blueprint occupies) and the
+	-- road surfaces stay host-free, and those are two different rules: the pad
+	-- is this carve's own lower bound, the roads are their own corridor
+	-- exclusions, which are never carved.
+	--
+	-- The boundary is `1 + offset(x, z)` nodes outside the 128 square, with
+	-- `offset` in 0 .. START_APRON_AMPLITUDE from one seed-derived value-noise
+	-- lattice per start (smootherstepped, so the outline undulates instead of
+	-- dithering). Zero excess is refused unconditionally, which is what makes
+	-- "never into the envelope" a property of the arithmetic and not of the
+	-- amplitude; the amplitude is checked against the apron's own depth below,
+	-- so the outermost apron ring always hosts.
+	local START_APRON_AMPLITUDE = 5
+	local START_APRON_PERIOD = 16
+	local START_APRON_DOMAIN = "start-apron-vegetation-v1"
 	local MAX_SAFE = 9007199254740991
 	local GEOMETRY_LIMIT = 8192
 
@@ -72,6 +94,23 @@ return function(dependencies)
 		local x2,z2=2*x,2*z
 		return x2 >= 2*center.x-width and x2 < 2*center.x+width and
 			z2 >= 2*center.z-width and z2 < 2*center.z+width
+	end
+
+	-- How far a column lies OUTSIDE a centred half-open square, in nodes: 0
+	-- inside it, 1 on the first ring around it, and so on.
+	--
+	-- For an EVEN total width this is the exact complement of
+	-- `in_centered_half_open_square` above -- both mean center-half ..
+	-- center+half-1 -- so the two cannot disagree about which edge is closed.
+	-- For an odd width they do not agree: that function doubles the coordinates
+	-- to carry the half node, and this one would truncate it. The only caller
+	-- is the start apron carve, whose envelope width is checked even at compile
+	-- time (`envelope % 2 ~= 0` is a `fail()`), so the odd case cannot arrive.
+	local function half_open_square_excess(x,z,center,total_width)
+		local half=total_width/2
+		local min_x,max_x=center.x-half,center.x+half-1
+		local min_z,max_z=center.z-half,center.z+half-1
+		return math.max(0,min_x-x,x-max_x,min_z-z,z-max_z)
 	end
 
 	local function in_ellipse(x, z, row, expansion)
@@ -1130,6 +1169,39 @@ return function(dependencies)
 				max_z=feature_bounds[record].max_z+extra}
 		elseif exclusion.recipe_id == "exclude_active_core_v1" then
 			local recipe=hard_recipe_by_id[record.recipe_id]
+			-- A START's hard square is the 148 x 148 of world.md section 2 R1: the
+			-- 128-node build envelope plus its ten-node apron. Protection there
+			-- restricts BUILDING, and the user ruled on 2026-09-15 that it must not
+			-- also stop things GROWING, so this one shape can be asked to step
+			-- aside for a vegetation query in the apron band. See
+			-- `start_apron_vegetation` below. No other hard recipe is marked: the
+			-- capital square is 532 wide and its own apron rule has not been
+			-- decided.
+			--
+			-- The build envelope is not written down twice: it is the START anchor
+			-- profile's own `fitting_width`, the same number the height fitting
+			-- keeps flat, resolved through this record's anchor. The apron depth is
+			-- what the hard recipe adds on top of it, and it has to leave room for
+			-- the jitter plus at least one ring that always hosts -- otherwise the
+			-- carve either reaches the envelope or cannot bite at all, and both are
+			-- a source error rather than a runtime surprise.
+			if record.recipe_id == "hard_start_core_v1" then
+				local anchor=exclusion_source_by_id[record.source_anchor_id]
+				local profile
+				for profile_index=1,#source.anchor_profiles do
+					if source.anchor_profiles[profile_index].id == anchor.template_id then
+						profile=source.anchor_profiles[profile_index]
+					end
+				end
+				if not profile then fail("start hard core has no anchor profile") end
+				local envelope=profile.fitting_width
+				local apron=(recipe.total_width-envelope)/2
+				if envelope % 2 ~= 0 or apron % 1 ~= 0 or
+						apron < START_APRON_AMPLITUDE+1 then
+					fail("start apron cannot carry a jittered treeline")
+				end
+				shape.start_apron_envelope=envelope
+			end
 			if recipe.shape == "polyline_corridor" then
 				shape.kind="polyline" shape.total_width=recipe.total_width
 				shape.paths={}
@@ -1572,6 +1644,51 @@ return function(dependencies)
 				fixed=fixed or nil,civic_water=civic_water or nil}
 		end
 
+		-- The jagged inner treeline of a start's protection apron. One lattice per
+		-- start, memoised per corner on demand: the query runs per column, and a
+		-- corner costs one SHA-256, so precomputing a box or re-hashing per column
+		-- would both be wrong for the same reason.
+		local apron_lattices={}
+		local function apron_corner(cache,id,ix,iz)
+			local row=cache[iz]
+			if not row then row={} cache[iz]=row end
+			local value=row[ix]
+			if value == nil then
+				value=hash.signed_noise(START_APRON_DOMAIN,id,{ix,iz},0,0)
+				row[ix]=value
+			end
+			return value
+		end
+		-- 0 .. START_APRON_AMPLITUDE at (x, z), the same value for the same world
+		-- seed for ever, a different one on another seed.
+		local function apron_offset(shape,x,z)
+			local cache=apron_lattices[shape.id]
+			if not cache then cache={} apron_lattices[shape.id]=cache end
+			local ix=deterministic.floor_div(x,START_APRON_PERIOD)
+			local iz=deterministic.floor_div(z,START_APRON_PERIOD)
+			local tx=deterministic.smootherstep(deterministic.qfrom_ratio(
+				x-ix*START_APRON_PERIOD,START_APRON_PERIOD))
+			local tz=deterministic.smootherstep(deterministic.qfrom_ratio(
+				z-iz*START_APRON_PERIOD,START_APRON_PERIOD))
+			local value=deterministic.qlerp(
+				deterministic.qlerp(apron_corner(cache,shape.id,ix,iz),
+					apron_corner(cache,shape.id,ix+1,iz),tx),
+				deterministic.qlerp(apron_corner(cache,shape.id,ix,iz+1),
+					apron_corner(cache,shape.id,ix+1,iz+1),tx),tz)
+			return deterministic.round_ratio(
+				(deterministic.clamp(value,-Q,Q)+Q)*START_APRON_AMPLITUDE,2*Q)
+		end
+		-- True when this start's hard square must let a VEGETATION query through
+		-- at (x, z): the column is far enough outside the 128-node build envelope
+		-- to be past the jittered boundary. Every other purpose, and every column
+		-- of the envelope itself, is refused.
+		local function start_apron_vegetation(shape,x,z)
+			local excess=half_open_square_excess(x,z,shape.center,
+				shape.start_apron_envelope)
+			if excess == 0 then return false end
+			return excess >= 1+apron_offset(shape,x,z)
+		end
+
 		local function static_exclusion_values_at(x,z,purpose)
 			local grid_row=exclusion_grid[deterministic.floor_div(z,exclusion_cell)]
 			local candidates=grid_row and
@@ -1585,6 +1702,15 @@ return function(dependencies)
 					-- 148-node hard core (`exclude:active:hard:anchor_00N`), its route
 					-- corridors, water and coast keep excluding while the blend ring
 					-- around them does not.
+				elseif shape.start_apron_envelope and purpose == "vegetation" and
+						in_rectangle(x,z,shape.bounds,0) and
+						in_centered_half_open_square(x,z,shape.center,
+							shape.total_width,0) and
+						start_apron_vegetation(shape,x,z) then
+					-- Skipped for the same reason and in the same way: the road
+					-- corridors that cross the apron are other shapes in this bucket and
+					-- still answer, so the carriageway and its clear corridor keep their
+					-- host-free shoulder.
 				elseif in_rectangle(x,z,shape.bounds,0) then
 					local member=false
 					if shape.kind == "square" then
@@ -1767,12 +1893,22 @@ return function(dependencies)
 		end
 
 		-- `purpose` selects which compiled claim exclusions the caller is subject
-		-- to. nil is the territory rule and answers all of them. "vegetation"
-		-- skips the six START anchors' blend envelopes, because the 256-node blend
-		-- ring is terrain and not settlement ground: a bare ring made every start
-		-- read as a cut-out square in the user's playtest. Every other exclusion
-		-- still answers there, so the 148-node hard start core, the road
-		-- corridors, planned water and the coast projection stay clear.
+		-- to. nil is the territory rule and answers all of them, so every claim,
+		-- reservation and census consumer is unaffected by everything below.
+		--
+		-- "vegetation" skips two things and only two, both of them a start's:
+		--
+		--  * the six START anchors' 256-node blend envelopes, because that ring is
+		--    terrain and not settlement ground -- a bare ring made every start
+		--    read as a cut-out square in the user's first playtest (round B);
+		--  * the part of a start's 148-node hard square that lies past the
+		--    jittered treeline in its ten-node protection apron -- protection
+		--    restricts building, not growing (playtest round 1, 2026-09-15).
+		--
+		-- Everything else still answers, including the 128-node build envelope
+		-- itself, the road corridors that cross the apron, planned water and the
+		-- coast projection, so the pad, the blueprint volume and every road
+		-- surface stay host-free.
 		function session.static_exclusion_values_at(x,z,purpose)
 			integer(x,"static exclusion query x")
 			integer(z,"static exclusion query z")

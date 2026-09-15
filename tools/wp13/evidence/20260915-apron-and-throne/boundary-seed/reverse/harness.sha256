@@ -1,0 +1,9 @@
+7cdcbe6e70cdbad4754b361552cb54cb0251389f14b69591f4677483c4f9c756  /home/jan/projects/grudgelands/.claude/worktrees/agent-a05cca46124649650/tools/wp40/profile/run.sh
+9ca5e7a638a759974b2f87dc042750002cb6b92cf7e2fc555109bbbc168bdd57  /home/jan/projects/grudgelands/.claude/worktrees/agent-a05cca46124649650/tools/wp40/profile/patch_snapshot.sh
+0ba88e60faccb0920ee4afaa46cdccfc651e4e57c084997b8801f94301860279  /home/jan/projects/grudgelands/.claude/worktrees/agent-a05cca46124649650/tools/wp40/profile/instrument-mapgen.patch
+d421be54c41a8e254c82dbca21442f19e9f4ed6ebfc033b4efe6df3104e42929  /home/jan/projects/grudgelands/.claude/worktrees/agent-a05cca46124649650/tools/wp40/profile/probe/init.lua
+d7468fe42d87bf37a0c7a8b316e5466d5dec6b40df93cc0606985451e609a603  /tmp/grug-wp13-round-1-boundary-seed/reverse.lua
+2b12ec9f4cee943e5854180c37a1404d822e5d8fb02b982c3533f27a52f39ba2  /home/jan/projects/grudgelands/.claude/worktrees/agent-a05cca46124649650/tools/wp40/profile/probe/mod.conf
+825ca51d2432caf16cd556167b1955e5bc4465bac65c5ee399db6b36d8eddb44  /home/jan/projects/grudgelands/.claude/worktrees/agent-a05cca46124649650/tools/wp40/profile/summarize_callbacks.awk
+0f34a2a7bc116e99ba77518bda87b7961e23897ae23b53c96851bdb5f121b8b6  /home/jan/projects/grudgelands/.claude/worktrees/agent-a05cca46124649650/tools/wp40/profile/patch_settlement_stages.sh
+55fd50f4224f0f500e58dd5ca7b69f7f2cce3146d5aba8e70d02d350b2169eed  /home/jan/projects/grudgelands/.claude/worktrees/agent-a05cca46124649650/tools/wp40/profile/instrument-settlement-stages.patch

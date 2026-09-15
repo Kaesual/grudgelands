@@ -964,9 +964,12 @@ MANUAL_OVERRIDES = {
     # `xdecor.lua` builds that through the same `tex()` helper, so the chair
     # arrived with a definition and no texture at all and rendered as flat
     # colour.
+    # `chair`, not the generic `nodebox`: WP13 seats a king on this one and a
+    # generic box cannot show which way he looks. The renderer draws the seat
+    # and the back, and turns them with the facedir.
     "grug_decor:xdecor_chair": {
         "tiles": ["grug_decor_xdecor_xdecor_wood.png"],
-        "drawtype": "nodebox", "paramtype2": "facedir"},
+        "drawtype": "nodebox", "paramtype2": "facedir", "shape": "chair"},
 }
 
 # Last-resort flat colours for names that resolve to no texture at all.

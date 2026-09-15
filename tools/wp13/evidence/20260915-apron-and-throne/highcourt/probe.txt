@@ -1,0 +1,80 @@
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=start engine=5.17.0 seed=531802985935182545 manifest=f19c5cdccd27c75e882d050360f01651139b1ffe8ac0b203eb27a14b53bb1624 sockets_registered=173 anchor=0,40,-1500 mode=full build_us=module_load=13437,core=142590,plot_market_granary=8762,plot_market_stable=6985,plot_market_workshop=9298,plot_market_counting_house=9436,plot_market_well=5083,plot_market_watch=13090,plot_market_grove=10833,plot_market_orchard=8118,plot_market_store=6632
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build_time module_load=13437
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build_time core=142590
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build_time plot_market_granary=8762
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build_time plot_market_stable=6985
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build_time plot_market_workshop=9298
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build_time plot_market_counting_house=9436
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build_time plot_market_well=5083
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build_time plot_market_watch=13090
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build_time plot_market_grove=10833
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build_time plot_market_orchard=8118
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=build_time plot_market_store=6632
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket sockets=95
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket role_guard_patrol=28
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket role_guard_post=13
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket role_idle=49
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket role_king=1
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket role_quest=1
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket role_vendor=2
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket role_waypoint=1
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket loops=6
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket loop_highcourt_gate_east_tower=2
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket loop_highcourt_gate_north_tower=2
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket loop_highcourt_gate_south_tower=2
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket loop_highcourt_gate_west_tower=2
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket loop_highcourt_market_watch=10
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=socket loop_highcourt_watch=10
+ACTION[Main]: GRUG_WP13_HIGHCOURT event=corpus mapchunks=47
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=warmup mapchunk=1488:48:688 kind=warmup elapsed_us=21391571
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=control_capital_lethariel mapchunk=1728:-32:-1552 kind=control_capital elapsed_us=11074779
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=control_capital_lethariel mapchunk=1808:-32:-1552 kind=control_capital elapsed_us=12884072
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=control_capital_lethariel mapchunk=1728:48:-1552 kind=control_capital elapsed_us=460141
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=control_capital_lethariel mapchunk=1808:48:-1552 kind=control_capital elapsed_us=216371
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=control_capital_lethariel mapchunk=1728:-32:-1472 kind=control_capital elapsed_us=583151
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=control_capital_lethariel mapchunk=1808:-32:-1472 kind=control_capital elapsed_us=498815
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=control_capital_lethariel mapchunk=1728:48:-1472 kind=control_capital elapsed_us=186532
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=control_capital_lethariel mapchunk=1808:48:-1472 kind=control_capital elapsed_us=202300
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=core mapchunk=-112:-32:-1552 kind=capital elapsed_us=1620787
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=core mapchunk=-32:-32:-1552 kind=capital elapsed_us=566131
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=core mapchunk=-112:48:-1552 kind=capital elapsed_us=178382
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=core mapchunk=-32:48:-1552 kind=capital elapsed_us=155453
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=core mapchunk=-112:-32:-1472 kind=capital elapsed_us=706588
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=core mapchunk=-32:-32:-1472 kind=capital elapsed_us=531309
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=core mapchunk=-112:48:-1472 kind=capital elapsed_us=143918
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=core mapchunk=-32:48:-1472 kind=capital elapsed_us=155230
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=plot_market_granary mapchunk=48:-32:-1552 kind=capital elapsed_us=582204
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=plot_market_granary mapchunk=48:48:-1552 kind=capital elapsed_us=193341
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=plot_market_stable mapchunk=48:-32:-1472 kind=capital elapsed_us=565227
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=plot_market_counting_house mapchunk=128:-32:-1552 kind=capital elapsed_us=640968
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=plot_market_counting_house mapchunk=208:-32:-1552 kind=capital elapsed_us=596572
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=plot_market_counting_house mapchunk=128:-32:-1472 kind=capital elapsed_us=515505
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=plot_market_counting_house mapchunk=208:-32:-1472 kind=capital elapsed_us=480295
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=plot_market_well mapchunk=128:-32:-1632 kind=capital elapsed_us=576613
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=plot_market_grove mapchunk=48:-32:-1632 kind=capital elapsed_us=550060
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=plot_market_grove mapchunk=48:48:-1632 kind=capital elapsed_us=223461
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=plot_market_orchard mapchunk=48:48:-1472 kind=capital elapsed_us=255208
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_south mapchunk=-32:-32:-1792 kind=capital elapsed_us=859706
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_south mapchunk=-32:48:-1792 kind=capital elapsed_us=277704
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_south mapchunk=-32:-32:-1712 kind=capital elapsed_us=543298
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_south mapchunk=-32:48:-1712 kind=capital elapsed_us=224689
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_south mapchunk=-32:-32:-1632 kind=capital elapsed_us=514938
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_south mapchunk=-32:48:-1632 kind=capital elapsed_us=216590
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_north mapchunk=-32:-32:-1392 kind=capital elapsed_us=718114
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_north mapchunk=-32:-32:-1312 kind=capital elapsed_us=633602
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_west mapchunk=-272:-32:-1552 kind=capital elapsed_us=670326
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_west mapchunk=-192:-32:-1552 kind=capital elapsed_us=603090
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_west mapchunk=-272:48:-1552 kind=capital elapsed_us=106072
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_west mapchunk=-192:48:-1552 kind=capital elapsed_us=101369
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_east mapchunk=128:48:-1552 kind=capital elapsed_us=422262
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_avenue_east mapchunk=208:48:-1552 kind=capital elapsed_us=336153
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_ring_west mapchunk=-112:-32:-1632 kind=capital elapsed_us=690833
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=run_ring_west mapchunk=-112:48:-1632 kind=capital elapsed_us=229674
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=control_open_land mapchunk=848:-32:848 kind=control elapsed_us=755949
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=control_open_land_far mapchunk=1168:48:768 kind=control elapsed_us=793007
+ACTION[Emerge-0]: GRUG_WP13_HIGHCOURT event=mapchunk case=control_dawnmere_start mapchunk=-32:-32:-2592 kind=control elapsed_us=2770
+ACTION[Server]: GRUG_WP13_HIGHCOURT event=dump file=highcourt-core.tsv cells=43075 ignored=0 road_cells=6248 road_digest=45986ff5f64aab9e7debb2102221082649bba44daee8fa22e9203762b1427c65
+ACTION[Server]: GRUG_WP13_HIGHCOURT event=dump file=highcourt-plot.tsv cells=5760 ignored=0 road_cells=287 road_digest=19f891ba73f25b3934fede78a7081625bc080d8e3f419a348162741ffd78e523
+ACTION[Server]: GRUG_WP13_HIGHCOURT event=dump file=highcourt-avenue.tsv cells=79752 ignored=0 road_cells=1595 road_digest=9d6f0167f043f8993edef2a44b60afd37a530e07691ccff9c600b37bd93640a2
+ACTION[Server]: GRUG_WP13_HIGHCOURT event=complete mode=full requested=47 completed=47 warmup_chunks=1 warmup_total_us=21391571 warmup_first_us=21391571 warmup_worst_us=21391571 warmup_best_us=21391571 capital_chunks=35 capital_total_us=16385672 capital_first_us=1620787 capital_worst_us=1620787 capital_best_us=101369 capital_steady_mean_us=434261 control_capital_chunks=8 control_capital_total_us=26106161 control_capital_first_us=11074779 control_capital_worst_us=12884072 control_capital_best_us=186532 control_capital_steady_mean_us=2147340 control_chunks=3 control_total_us=1551726 control_first_us=755949 control_worst_us=793007 control_best_us=2770 control_steady_mean_us=397888 core_cells=43075 core_ignored=0 core_road_cells=6248 plot_cells=5760 plot_ignored=0 plot_road_cells=287 avenue_cells=79752 avenue_ignored=0 avenue_road_cells=1595 avenue_road_digest=9d6f0167f043f8993edef2a44b60afd37a530e07691ccff9c600b37bd93640a2 worst_plot_fall=4 worst_plot=market_granary worst_plot_submerged=0 worst_submerged_plot=- sockets=95 role_guard_patrol=28 role_guard_post=13 role_idle=49 role_king=1 role_quest=1 role_vendor=2 role_waypoint=1 loops=6 loop_highcourt_gate_east_tower=2 loop_highcourt_gate_north_tower=2 loop_highcourt_gate_south_tower=2 loop_highcourt_gate_west_tower=2 loop_highcourt_market_watch=10 loop_highcourt_watch=10

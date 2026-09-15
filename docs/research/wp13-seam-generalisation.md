@@ -410,13 +410,27 @@ defect in this package**: `socket_occupied` still compared the race where
 twin on every heartbeat. Fixed, with the reason in the comment.
 
 `final-micro.sh`: one LuaJIT process and one PUC 5.1 process over the frozen
-inputs, hashed before and after, running every WP13 fixture:
+inputs, hashed before and after, running every WP13 fixture. The value below is
+the one the committed `final-micro/digests.txt` carries, which is `main`'s own
+value after this package's own review fix round (`691b0e9`); the line the
+record first printed, `c4a93a7d5ec0f65a…`, was this package's pre-fix-round
+value and was not updated with the files:
 
 ```
 WP13 FINAL MICRO PAIR BYTE-IDENTICAL
-c4a93a7d5ec0f65ae59dd22cbf5eaabd873ef0f7f107398d52917fcf9d0ac394  micro-luajit.tsv
-c4a93a7d5ec0f65ae59dd22cbf5eaabd873ef0f7f107398d52917fcf9d0ac394  micro-puc51.tsv
+871f0d2942f9e1dc73b6a437fa7fa6e86902075cf8f8fefe096538eddab4c4bf  micro-luajit.tsv
+871f0d2942f9e1dc73b6a437fa7fa6e86902075cf8f8fefe096538eddab4c4bf  micro-puc51.tsv
 ```
+
+**Superseded on 2026-09-15 by playtest round 1.** The user's GUI playtest found
+the king's hall throne turned round, and the one-cell fix moves Highcourt's core
+identity (and with it the settlement-level one) from
+`90eae871e24a1247…` to `187f79e0ba521038…`, and the micro pair to
+`fdf1f8669ad139fd56c16921bd43b91e6efdc989599031ac7e80b0a5b736a764`. The nine
+district plot SHAs, the avenue overlay SHA, all six start SHAs, the populations
+and `run_highcourt.sh`'s avenue digest `9d6f0167f043f899…` are unchanged. See
+[wp13-capital-library.md](wp13-capital-library.md) section 5b and
+`tools/wp13/evidence/20260915-apron-and-throne/`.
 
 ### (b) The six starts are byte-identical
 
