@@ -205,7 +205,7 @@ measurements, none of them guessed:
 | the shoulder joint is at model (3.15, 11.55, 0) and the arm reaches 5.25 units past it; the fist is the bottom 2.1 units, centre at bone y **4.2** | the mesh vertices weighted to `Arm_Right` (model y 6.3..12.6) and the 12 skin pixels that cover them |
 | **model +z is forward** | the head quad whose UV rectangle is the skin's face (pixels 8..16 × 8..16 — the rectangle that carries the two eye pixels) has the geometric normal +z; the back-of-head quad (24..32) has -z |
 | a `wielditem`'s image runs u along the entity's local +x and v along local **-y**, on an edge of `40 · visual_size / 2` model units | `createExtrusionMesh`, `src/client/wieldmesh.cpp:43`, and the `visual_size / 2` scale in `content_cao.cpp:756` |
-| every grug_gear weapon sprite is handle-at-the-bottom, long axis vertical; row 13 of 16 is the middle of the sword's and the greataxe's grip | the four PNGs (sword grip rows 11–15 with the crossguard at 9–10, greataxe shaft 11–15, dagger grip 10–13, staff shaft to 15) |
+| every grug_gear weapon sprite is handle-at-the-bottom, long axis vertical; row 13 of 16 is the middle of the sword's and the greataxe's grip, whose **centre** is `v = 13.5/16`, i.e. `GRIP_FRACTION = 0.5 − 13.5/16 = −5.5/16` of a sprite edge below the sprite's centre | the four PNGs (sword grip rows 11–15 with the crossguard at 9–10, greataxe shaft 11–15, dagger grip 10–13, staff shaft to 15) |
 
 `set_attach`'s rotation is Irrlicht Euler degrees applied as `Rz·Ry·Rx`,
 right-handed about the **bone's** axes (`matrix4::setRotationRadians`, used by
@@ -215,7 +215,7 @@ guard = down-forward and flat = sideways gives the unique triple
 in the fist" and is not free. With `t = 15`:
 
 ```
-pos = {x = 0, y = 3.844, z = 1.328}    rot = {x = 90, y = -15, z = 90}
+pos = {x = 0, y = 3.809, z = 1.461}    rot = {x = 90, y = -15, z = 90}
 size = {x = 0.22, y = 0.22}            (unchanged)
 ```
 
@@ -228,8 +228,8 @@ re-implements the engine's attachment maths independently:
 wp13_wield_bone      Arm_Right  3.150,11.550,0.000  x->-1,0,0  y->0,-1,0  z->0,0,1
 wp13_wield_arm       model_y 6.300..12.600  reach 5.250  fist_centre_bone_y 4.200
 wp13_wield_face      uv 8..16x8..16  normal 0.000,0.000,1.000
-wp13_wield_hanging   hilt-hand 0,-0.214,-0.797  grip-hand 0,0,0  tip-hand 0,0.925,3.453   blade 0,0.259,0.966  flat -1,0,0
-wp13_wield_raised90  hilt-hand 0,-0.797, 0.214  grip-hand 0,0,0  tip-hand 0,3.453,-0.925  blade 0,0.966,-0.259 flat -1,0,0
+wp13_wield_hanging   hilt-hand 0,-0.178,-0.664  grip-hand 0,0,0  tip-hand 0,0.961,3.586   blade 0,0.259,0.966  flat -1,0,0
+wp13_wield_raised90  hilt-hand 0,-0.664, 0.178  grip-hand 0,0,0  tip-hand 0,3.586,-0.961  blade 0,0.966,-0.259 flat -1,0,0
 ```
 
 and, as its **negative control**, the same maths on the numbers the user
@@ -244,11 +244,26 @@ picture. A fixture that cannot reproduce the reported defect has not modelled
 the engine, so that row is what makes the fix trustworthy without a client.
 
 The arm-raised case is not arbitrary either: both the walk and the mine
-animation move this bone about its own local x (`character.b3d` `KEYS` for
-`Arm_Right`: the walk frames sit ±32° off the hanging rest pose, mine frame 191
-sits 109° off it), and a **positive** rotation about bone-local x raises the arm
-forward. The grip stays in the fist through the whole swing because it is the
+animation move this bone about its own local x. Measured off `character.b3d`'s
+`KEYS` for `Arm_Right`, relative to the hanging rest pose, the walk frames
+(168…187) span **−34.9°…+34.2°** and the mine frames (189…198) peak at
+**+114.1°** and **+109.4°** (frames 190 and 191, then swinging back), with at
+most 0.101 of the rotation axis off bone-local x. A **positive** rotation about
+that axis raises the arm forward, which is why the fixture's raised pose is
+`+90`. The grip stays in the fist through the whole swing because it is the
 bone's frame that moves.
+
+**Those two figures carry a caveat the rest of the derivation does not.** An
+animated `KEYS` quaternion is a general rotation, so the *sign* of the angle
+depends on which quaternion-to-matrix convention the engine uses: under
+Irrlicht's transposed one — `core::Transform::buildMatrix` calls
+`quaternion::getMatrix_transposed` — the mine swing is +114° and forward; under
+the ordinary convention it would read −114°. The **rest frame** is immune to
+that, because `Ry(180)` and `Rx(180)` are symmetric matrices, and the rest frame
+is what the position and rotation are derived from. The animation figures are
+prose in the fixture's comment, not something it computes; they were measured
+independently by this lane and by the reviewer, agreeing under the transposed
+convention.
 
 ### 2. Right-click with a skill in hand did not open doors
 
@@ -277,19 +292,47 @@ exactly as they are.
 opens the door"), implemented on both kinds of ability item:
 
 - `on_place` — the node the client did point at: hand the click to its
-  `on_rightclick`, unless sneaking. This is builtin's own rule
-  (`builtin/game/item.lua:337-347`) written out, so it is one readable thing
-  instead of an inherited default and a fixture can drive it.
+  `on_rightclick`, unless sneaking and unless out of hand reach. This is
+  builtin's own rule (`builtin/game/item.lua:337-347`) written out, so it is one
+  readable thing instead of an inherited default and a fixture can drive it.
 - `on_secondary_use` — the client pointed at nothing, which includes the
   blocking case: one server ray from `grug_core.combat_eye_pos` along the look
   direction, **first node only** (reaching past the node in front of the player
   would be an exploit), then the same pass-through.
 - **Sneak keeps the skill.** Sneak + right-click does what right-click did
   before, so a skill bound to it later still works while pointing at a door.
-- **Hand reach, not skill range.** The ray is capped at 4 m, the engine's
-  default item range (`lua_api.md:10455`) and exactly what every swing skill
-  declares — a 20 m Fireball must not flip a lever across a courtyard.
+- **Hand reach, not skill range, on BOTH callbacks.** 4 m, the engine's default
+  item range (`lua_api.md:10455`) and exactly what every swing skill declares —
+  a 20 m Fireball must not flip a lever across a courtyard. `on_place` needs a
+  check of its own and did not have one in the first draft: a cast item has no
+  blocking pointabilities and a `range` of up to 20 (plus the elf's +5 in stack
+  meta), so the client happily points a door across a courtyard and hands it
+  over. The distance is measured from the eye to the **nearest point of the
+  node's cube**, because a client `pointed_thing` carries no intersection point
+  and measuring to the centre would refuse nodes the bare hand reaches.
+- **An object click stays the object's.** `on_secondary_use` is *not* only the
+  "pointing at air" callback: `INTERACT_PLACE` on an object calls
+  `item_OnSecondaryUse` too, immediately **before** `pointed_object->rightClick`
+  (`serverpackethandler.cpp:1192-1208`), and `lua_api.md:10587` only says "when
+  not pointing at a node". The first draft ignored `pointed_thing` there and
+  rayed for a node regardless, so right-clicking a vendor would have opened the
+  shop **and** fired the `on_rightclick` of the first node behind him — a chest
+  opening server-side, a door swinging. A type guard now returns before anything
+  else happens, the eye position included.
 - The cast path is untouched: `try_cast` is unreachable from either callback.
+
+**What it does not reach, deliberately.** Only a node whose *definition* carries
+`on_rightclick` can be handed a click: in the whole shipped registry that is 40
+nodes — every wood/steel/glass/obsidian-glass door, every fence gate, the
+trapdoors (plus the xpanes steel-bar door and trapdoor) and the four chest
+states. A node whose right-click is instead the engine's **node meta formspec** —
+`default:sign_wall_wood`, `default:bookshelf`, `vessels:shelf`, `beds:bed_bottom`,
+`default:furnace` — has no Lua callback to call. The client opens those itself
+off `meta:get_string("formspec")` and answers them on a separate
+`NODEMETA_FIELDS` packet that only a client-opened form can send, so
+`core.show_formspec` is not an equivalent (it would show the form and drop every
+field, and would break a sign's text entry outright). With a *swing* skill
+wielded those nodes stay unopenable; §2b says so rather than promising them.
 
 `tools/wp13/ability_rightclick_kat.lua` loads the **real**
 `grug_abilities/init.lua` under a stub engine (`setfenv`, with `dofile` stubbed
@@ -300,23 +343,35 @@ nine cases each. The door definition is the **real** `doors:door_wood_a` from
 recorder, and the stub ray hands its hits over **far-to-near** on purpose,
 because the engine's Raycast order is not line-of-sight order either:
 
-| case | on_rightclick | casts |
-| --- | --- | --- |
-| `on_place` door | 1 | 0 |
-| `on_place` plain node | 0 | 0 |
-| `on_place` door, sneaking | 0 | 0 |
-| `on_secondary_use` door in front | 1 | 0 |
-| `on_secondary_use` plain node in front | 0 | 0 |
-| `on_secondary_use` door, sneaking | 0 | 0 |
-| `on_secondary_use` nothing in front | 0 | 0 |
-| `on_secondary_use` door at 6 m | 0 | 0 |
-| `on_secondary_use` door behind a wall | 0 | 0 |
-| `on_use` (LMB) on a plain node, cast item | — | 1 |
+| case | on_rightclick | casts | eye asked | ray |
+| --- | --- | --- | --- | --- |
+| `on_place` door at 1.5 m | 1 | 0 | 1 | — |
+| `on_place` plain node | 0 | 0 | 1 | — |
+| `on_place` door, sneaking | 0 | 0 | 0 | — |
+| `on_place` door at 5.5 m | 0 | 0 | 1 | — |
+| `on_secondary_use` door in front | 1 | 0 | 1 | 4 m |
+| `on_secondary_use` plain node in front | 0 | 0 | 1 | 4 m |
+| `on_secondary_use` door, sneaking | 0 | 0 | 0 | — |
+| `on_secondary_use` nothing in front | 0 | 0 | 1 | 4 m |
+| `on_secondary_use` door at 6 m | 0 | 0 | 1 | 4 m |
+| `on_secondary_use` door behind a wall | 0 | 0 | 1 | 4 m |
+| `on_secondary_use` **object** pointed, door behind | 0 | 0 | 0 | — |
+| `on_secondary_use` object pointed, sneaking | 0 | 0 | 0 | — |
+| `on_use` (LMB) on a plain node, cast item | — | 1 | — | — |
+
+The last two columns are what makes "nothing happened" mean something: every
+case asserts how often the shipped code asked `grug_core.combat_eye_pos` for a
+position and whether it cast a ray at all, so a gate that never ran cannot pass
+by standing next to a door.
 
 `wp13_rmb_blocking` is the mechanism row and the second negative control: it
 matches the real door's real groups against the real pointabilities table and
-names `oddly_breakable_by_hand`. Deleting the two `tool_def` lines makes the
-fixture report `wp13_rmb_result FAIL 78`.
+names `oddly_breakable_by_hand`. Three more negative controls were taken by
+hand on the candidate tree and are why each guard is known to be load-bearing:
+deleting the two `tool_def` lines gives `FAIL 106`; neutering the object type
+guard gives `FAIL 6`, both object cases reporting `called on_rightclick 1 times,
+expected 0` — the reported defect, reproduced; and neutering the `on_place`
+reach test gives `FAIL 8`, with `place_door_far` opening a door 5.5 m away.
 
 ### Verification
 
@@ -324,7 +379,7 @@ fixture report `wp13_rmb_result FAIL 78`.
 | --- | --- |
 | `wield_transform_kat`, `ability_rightclick_kat`, `character_visuals_kat`, `visuals_order_kat` under LuaJIT and `tools/bin/lua51` | all `PASS 0`, byte-identical (`sha256 94034472…341f7a48`) |
 | `luac51 -p` on every changed file and tree-wide; `SETGLOBAL` | pass; one `SETGLOBAL` per mod table, none in the new files |
-| the five plain-5.1 sweeps, scoped and tree-wide | zero hits outside prose (the new ones are two `core::Transform::buildMatrix` C++ references) |
+| the five plain-5.1 sweeps, scoped and tree-wide | zero hits outside prose (the new ones are `core::Transform::buildMatrix`-style C++ references in comments) |
 | `tools/check_fresh_server.py` | PASS |
 | one headless boot, `tools/luanti_headless.sh 180` | PASS, 0 ERROR/ModError, 57 WARNING — every one pre-existing (mod-storage backend advice, and the vendored `stairs` metal-block fuel rows) |
 
@@ -338,9 +393,17 @@ fixture report `wp13_rmb_result FAIL 78`.
   the first version, and it is a *length* as much as a size: raising it moves
   the position too, which is why `wield_geometry.lua` computes the position from
   it. If the sword reads as a dagger in the client, that constant is the fix.
-- `classes.md` §2c still ends with "the weapon is **not** shown on the character
-  model in third person" — WP13 shipped exactly that the day before, so the
-  sentence is stale. Left for the owner of §2c rather than edited from this lane.
+- **The third-person camera looks down the blade.** With the flat vertical the
+  blade lies in the sagittal plane, so the default over-the-shoulder camera sees
+  it edge-on and the silhouette is thin from exactly the angle the player uses
+  most. `rot.z` is the single constant that trades that against a flat-held
+  blade (90 = flat vertical as shipped, 0 = flat horizontal as the first version
+  had it); a value in between reads as a canted carry. Worth one look in the
+  client before deciding.
+- Node-meta-formspec nodes (signs, bookshelf, vessels shelf, bed, furnace) stay
+  unopenable while a *swing* skill is wielded — see "What it does not reach"
+  above. The clean fix is an engine-side one; the workaround is any other hotbar
+  slot.
 
 ## Open points
 

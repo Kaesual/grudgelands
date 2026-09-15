@@ -401,10 +401,20 @@ function M.run(repo)
 	-- C. the printed check: sprite points in the bone's frame and in model space
 	--
 
-	-- `pose` rotates the bone about its own local x, which is how both the walk
-	-- and the mine animation move this arm (character.b3d KEYS, Arm_Right: the
-	-- walk frames sit at +-32 degrees off the hanging rest pose, and mine frame
-	-- 191 is 109 degrees off it). Positive raises the arm FORWARD.
+	-- `raise` rotates the bone about its own local x, which is how both the walk
+	-- and the mine animation move this arm: measured off character.b3d's KEYS
+	-- for Arm_Right, relative to the hanging rest pose, the walk frames
+	-- (168..187) span -34.9 .. +34.2 degrees about bone-local x and the mine
+	-- frames (189..198) peak at +114.1 / +109.4 (frames 190 and 191) with at
+	-- most 0.101 of the rotation axis off x. Positive raises the arm FORWARD.
+	--
+	-- Those two figures are NOT computed here, and they carry a caveat the rest
+	-- of this fixture does not: an animated KEYS quaternion is a general
+	-- rotation, so its SIGN depends on which quaternion-to-matrix convention the
+	-- engine uses -- under Irrlicht's transposed one (`buildMatrix` calls
+	-- `getMatrix_transposed`) the mine swing is +114 and forward; under the
+	-- ordinary one it would be -114. The rest frame checked above is immune to
+	-- that, because Ry(180) and Rx(180) are symmetric matrices.
 	local function measure(label, pos, rot, raise)
 		local frame = arm_rot
 		if raise ~= 0 then

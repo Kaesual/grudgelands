@@ -61,8 +61,9 @@
 --    sword grip rows 11..15 (crossguard 9..10), greataxe shaft rows 11..15,
 --    dagger grip rows 10..13, staff shaft down to row 15. Row 13 of 16 is the
 --    middle of the sword's and the greataxe's grip and one row below the
---    dagger's, which makes the single shared offset
---    `GRIP_FRACTION = -5/16` of a sprite edge below the sprite's centre.
+--    dagger's. Image v runs 0 at the top edge to 1 at the bottom, so that row's
+--    CENTRE is v = 13.5/16 and the sprite-local offset from the centre is
+--    `GRIP_FRACTION = 0.5 - 13.5/16 = -5.5/16` of a sprite edge.
 --
 -- 7. THE ROTATION. `set_attach`'s rotation is Irrlicht Euler degrees applied as
 --    Rz(z) * Ry(y) * Rx(x), right-handed about the BONE's axes
@@ -87,11 +88,17 @@
 --      pos = HAND - (GRIP_FRACTION * SPRITE_EDGE) * blade_direction
 --
 --    which puts the grip centre exactly in the fist and leaves the pommel
---    0.8 units behind it.
+--    0.7 units behind it.
 --
 -- The printed check (`tools/wp13/wield_transform_kat.lua`), arm hanging,
--- offsets from the fist: hilt (0, -0.214, -0.797), grip (0, 0, 0),
--- tip (0, +0.925, +3.453), blade direction (0, 0.259, 0.966).
+-- offsets from the fist: hilt (0, -0.178, -0.664), grip (0, 0, 0),
+-- tip (0, +0.961, +3.586), blade direction (0, 0.259, 0.966).
+--
+-- One thing this cannot decide without a client: with the flat vertical the
+-- blade lies in the sagittal plane, so the default over-the-shoulder camera sees
+-- it edge-on. `rot.z` is the constant that trades that against a flat-held blade
+-- (90 as shipped, 0 for horizontal); it is NOT free of the rest -- changing it
+-- rolls the blade about its own axis and leaves the grip where it is.
 --
 
 -- The bone the entity hangs off.
@@ -111,7 +118,7 @@ local HAND = {x = 0, y = 4.2, z = 0}
 
 -- Sprite geometry (sections 5 and 6).
 local SPRITE_EDGE = 40 * SIZE / 2
-local GRIP_FRACTION = -5 / 16
+local GRIP_FRACTION = -5.5 / 16
 
 local blade_y = -math.sin(TILT_UP * math.pi / 180)
 local blade_z = math.cos(TILT_UP * math.pi / 180)

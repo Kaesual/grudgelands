@@ -334,16 +334,34 @@ end
 -- us -- writing it out makes the rule one readable thing instead of an
 -- inherited default, and lets the fixture drive it.
 --
--- Two bounds keep this from becoming a second targeting system:
+-- WHAT THIS REACHES is exactly "a node whose definition has an
+-- `on_rightclick`": every door, gate and trapdoor, and the chests. A node whose
+-- right-click is the engine's NODEMETA FORMSPEC path instead (signs, bookshelf,
+-- the vessels shelf, beds, the furnace) is NOT reachable and is not attempted:
+-- the client opens those itself off `meta:get_string("formspec")` and answers
+-- fields on a separate NODEMETA_FIELDS packet that only a client-opened form
+-- can send, so `core.show_formspec` is not an equivalent -- it would show the
+-- form and then drop every field. With a swing skill wielded such a node stays
+-- unopenable; `classes.md` §2b says so rather than promising it.
+--
+-- Three bounds keep this from becoming a second targeting system:
 --
 --   * SNEAK KEEPS THE SKILL. Builtin's own placement rule is
 --     "on_rightclick unless sneaking" (builtin/game/item.lua:337-347); holding
 --     sneak therefore keeps whatever right-click meant before, so a skill bound
 --     to it later still works while pointing at a door.
---   * HAND REACH, not skill range. A 20 m Fireball must not flip a lever across
---     a courtyard, so the server ray is capped at the engine's own default item
---     range (4, lua_api.md:10455) -- which is also exactly what every swing
---     skill declares.
+--   * HAND REACH, not skill range, on BOTH callbacks. A 20 m Fireball must not
+--     flip a lever across a courtyard, so the node has to be within the
+--     engine's own default item range (4, lua_api.md:10455) -- which is also
+--     exactly what every swing skill declares. `on_place` needs this check of
+--     its own: a cast item has no blocking pointabilities and its `range` is up
+--     to 20 (plus the elf's +5 in stack meta), so the client happily points a
+--     door across a courtyard and hands it to `on_place`.
+--   * ONLY WHEN NOTHING WAS POINTED. `on_secondary_use` is not only the
+--     "pointing at air" callback: INTERACT_PLACE on an OBJECT calls it too,
+--     before `pointed_object->rightClick` (serverpackethandler.cpp:1192-1208).
+--     Without the type guard, right-clicking a vendor would open the shop AND
+--     fire the `on_rightclick` of the first node behind him.
 --
 -- Nothing here touches the cast path: `try_cast` is not reachable from either
 -- callback.
@@ -368,10 +386,38 @@ local function sneaking(player)
 	return control ~= nil and control.sneak == true
 end
 
--- The client DID point at a node: this is builtin's placement rule, spelled out.
+-- Is `pos` within hand reach of `player`'s eye? Measured to the NEAREST POINT OF
+-- THE NODE'S CUBE, not to its centre: the engine's own range test runs against
+-- the selection box's intersection point, and a client's `pointed_thing` carries
+-- no intersection point, so measuring to the centre would refuse nodes the bare
+-- hand reaches. This is the generous side of the same bound, never the strict
+-- one.
+local function within_hand_reach(player, pos)
+	local eye = grug_core.combat_eye_pos(player)
+	if not eye or not pos then
+		return false
+	end
+	local function clamp(value, centre)
+		if value < centre - 0.5 then
+			return centre - 0.5
+		elseif value > centre + 0.5 then
+			return centre + 0.5
+		end
+		return value
+	end
+	local nearest = vector.new(clamp(eye.x, pos.x), clamp(eye.y, pos.y),
+		clamp(eye.z, pos.z))
+	return vector.distance(eye, nearest) <= NODE_INTERACT_RANGE
+end
+
+-- The client DID point at a node: builtin's placement rule, spelled out, plus
+-- the hand-reach bound builtin does not have.
 local function ability_on_place(itemstack, placer, pointed_thing)
 	if not placer or not pointed_thing or pointed_thing.type ~= "node" or
 			sneaking(placer) then
+		return itemstack
+	end
+	if not within_hand_reach(placer, pointed_thing.under) then
 		return itemstack
 	end
 	return pass_to_node(pointed_thing.under, placer, itemstack, pointed_thing) or
@@ -383,6 +429,11 @@ end
 -- front of the player would be an exploit, so a first hit without an
 -- `on_rightclick` ends the attempt.
 local function ability_on_secondary_use(itemstack, user, pointed_thing)
+	-- An OBJECT click arrives here too (see the header): the engine is about to
+	-- run that object's own right-click, so this callback must do nothing at all.
+	if pointed_thing and pointed_thing.type ~= "nothing" then
+		return itemstack
+	end
 	if not user or not user.is_player or not user:is_player() or
 			sneaking(user) then
 		return itemstack
@@ -394,9 +445,9 @@ local function ability_on_secondary_use(itemstack, user, pointed_thing)
 	end
 	local destination = vector.add(origin,
 		vector.multiply(vector.normalize(look), NODE_INTERACT_RANGE))
-	-- `objects = false`: an entity's right-click is the engine's business and it
-	-- is still pointable with a skill in hand, so this path only ever runs when
-	-- no object was hit either. Liquids stay excluded, like a hand click.
+	-- `objects = false`: an object hit cannot reach this line any more (the type
+	-- guard above returned), and the engine owns an entity's right-click anyway.
+	-- Liquids stay excluded, like a hand click.
 	local nearest, nearest_distance
 	for pointed in core.raycast(origin, destination, false, false) do
 		if pointed.type == "node" then

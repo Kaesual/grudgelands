@@ -23,9 +23,9 @@ tools/wp13/wield_transform_kat.lua:205:-- `core::Transform::buildMatrix` rotates
 -- 2 LuaJIT-only string escapes
 -- 3 5.2+/5.3 stdlib
 -- 4 integer division / bitwise operator syntax
-mods/PLAYER/grug_abilities/init.lua:419:-- Ability registration & item. One tool per ability; the item's `range`
-mods/PLAYER/grug_abilities/init.lua:1411:	return SKIN_VERSION .. "|" .. color .. "|" .. src.inv .. "|" .. src.wield
-mods/PLAYER/grug_abilities/init.lua:1455:	local token = SWING_CAPS_VERSION .. "|" .. string.format("%.17g", interval)
+mods/PLAYER/grug_abilities/init.lua:470:-- Ability registration & item. One tool per ability; the item's `range`
+mods/PLAYER/grug_abilities/init.lua:1462:	return SKIN_VERSION .. "|" .. color .. "|" .. src.inv .. "|" .. src.wield
+mods/PLAYER/grug_abilities/init.lua:1506:	local token = SWING_CAPS_VERSION .. "|" .. string.format("%.17g", interval)
 -- 5 sandbox-blocked calls and the wrong namespace
 
 === the same five sweeps, tree-wide over mods/*/grug_* (hit counts) ===

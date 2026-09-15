@@ -20,10 +20,21 @@
 --   B  THE RULE. The real `mods/PLAYER/grug_abilities/init.lua` is loaded under
 --      a stub engine, the real `grug_abilities.register_ability` registers one
 --      swing and one cast ability, and the `on_place`/`on_secondary_use`
---      closures the engine would get are driven through nine cases.
+--      closures the engine would get are driven through twelve cases. Two of
+--      them are the OBJECT case: `on_secondary_use` is also what
+--      INTERACT_PLACE on an object calls, immediately before the engine runs
+--      that object's own right-click (serverpackethandler.cpp:1192-1208), so
+--      right-clicking a vendor must not fire the `on_rightclick` of the chest
+--      behind him. Two more are the reach cases, because the hand-reach bound
+--      is needed on `on_place` as well: a cast item has no blocking
+--      pointabilities and a range of up to 20.
 --   C  THE CAST PATH IS UNTOUCHED. `grug_abilities.try_cast` is replaced by a
 --      counter: every right-click case must leave it at zero, and the cast
 --      item's `on_use` must still reach it.
+--
+-- Every case also asserts HOW OFTEN the code asked for the eye position and
+-- whether it cast a ray at all, because "the door 1.5 m away opened" does not
+-- show that a gate ran, and "nothing happened" does not show why.
 --
 -- Plain Lua 5.1, no engine.
 --
@@ -137,7 +148,10 @@ local function load_abilities(repo, nodes, world)
 	end
 
 	local grug_core = stub_table({})
+	-- Counted, because "the door 1.5 m away opened" says nothing about whether
+	-- the hand-reach gate ran at all.
 	function grug_core.combat_eye_pos(player)
+		world.eye_calls = (world.eye_calls or 0) + 1
 		return player and player._eye or nil
 	end
 
@@ -330,42 +344,56 @@ function M.run(repo)
 		return {type = "node", under = pos, above = pos}
 	end
 
+	-- `dist` is the eye-to-node-cube distance the case is built around (the eye
+	-- is at (0, 1.5, 0) and a node's cube is its centre +-0.5), `eye` how often
+	-- the shipped code must ask for the eye position -- one per reach test or
+	-- ray origin, zero when a guard returns first -- and `ray` whether the 4 m
+	-- server ray must have been cast.
 	local CASES = {
 		{name = "place_door", sneak = false, call = "on_place",
 			pointed = node_pointed({x = 0, y = 1, z = 2}),
 			node = {pos = {x = 0, y = 1, z = 2}, name = DOOR},
-			rightclick = 1},
+			dist = 1.5, eye = 1, rightclick = 1},
 		{name = "place_plain", sneak = false, call = "on_place",
 			pointed = node_pointed({x = 0, y = 1, z = 2}),
 			node = {pos = {x = 0, y = 1, z = 2}, name = PLAIN},
-			rightclick = 0},
+			dist = 1.5, eye = 1, rightclick = 0},
 		{name = "place_door_sneak", sneak = true, call = "on_place",
 			pointed = node_pointed({x = 0, y = 1, z = 2}),
 			node = {pos = {x = 0, y = 1, z = 2}, name = DOOR},
-			rightclick = 0},
+			dist = 1.5, eye = 0, rightclick = 0},
+		-- HAND REACH ON `on_place` TOO. A cast item has no blocking
+		-- pointabilities and a range of up to 20 (plus the elf's +5), so without
+		-- this bound the client points a door across a courtyard and builtin's
+		-- inherited rule would open it.
+		{name = "place_door_far", sneak = false, call = "on_place",
+			pointed = node_pointed({x = 0, y = 1, z = 6}),
+			node = {pos = {x = 0, y = 1, z = 6}, name = DOOR},
+			dist = 5.5, eye = 1, rightclick = 0},
 		{name = "activate_door", sneak = false, call = "on_secondary_use",
 			pointed = {type = "nothing"},
 			node = {pos = {x = 0, y = 1, z = 2}, name = DOOR},
 			hits = {{pos = {x = 0, y = 1, z = 2}, distance = 2}},
-			rightclick = 1},
+			eye = 1, ray = true, rightclick = 1},
 		{name = "activate_plain", sneak = false, call = "on_secondary_use",
 			pointed = {type = "nothing"},
 			node = {pos = {x = 0, y = 1, z = 2}, name = PLAIN},
 			hits = {{pos = {x = 0, y = 1, z = 2}, distance = 2}},
-			rightclick = 0},
+			eye = 1, ray = true, rightclick = 0},
 		{name = "activate_door_sneak", sneak = true, call = "on_secondary_use",
 			pointed = {type = "nothing"},
 			node = {pos = {x = 0, y = 1, z = 2}, name = DOOR},
 			hits = {{pos = {x = 0, y = 1, z = 2}, distance = 2}},
-			rightclick = 0},
+			eye = 0, rightclick = 0},
 		{name = "activate_empty", sneak = false, call = "on_secondary_use",
-			pointed = {type = "nothing"}, hits = {}, rightclick = 0},
+			pointed = {type = "nothing"}, hits = {},
+			eye = 1, ray = true, rightclick = 0},
 		-- Out of hand reach: the door is 6 m away, the ray is capped at 4.
 		{name = "activate_door_far", sneak = false, call = "on_secondary_use",
 			pointed = {type = "nothing"},
 			node = {pos = {x = 0, y = 1, z = 6}, name = DOOR},
 			hits = {{pos = {x = 0, y = 1, z = 6}, distance = 6}},
-			rightclick = 0},
+			eye = 1, ray = true, rightclick = 0},
 		-- No reaching through: a wall in front of the door ends the attempt,
 		-- and the iterator hands the DOOR over first to make sure of it.
 		{name = "activate_door_behind_wall", sneak = false,
@@ -374,7 +402,25 @@ function M.run(repo)
 			extra = {pos = {x = 0, y = 1, z = 1}, name = PLAIN},
 			hits = {{pos = {x = 0, y = 1, z = 1}, distance = 1},
 				{pos = {x = 0, y = 1, z = 3}, distance = 3}},
-			rightclick = 0},
+			eye = 1, ray = true, rightclick = 0},
+		-- THE OBJECT CASE. `on_secondary_use` is not only the "pointing at air"
+		-- callback: INTERACT_PLACE on an OBJECT calls it too, immediately before
+		-- the engine runs that object's own right-click
+		-- (serverpackethandler.cpp:1192-1208). Right-clicking a vendor must open
+		-- the shop and nothing else -- not the chest standing behind him. The
+		-- type guard has to return before the eye is even asked for.
+		{name = "activate_object_door_behind", sneak = false,
+			call = "on_secondary_use", pointed = {type = "object"},
+			node = {pos = {x = 0, y = 1, z = 2}, name = DOOR},
+			hits = {{pos = {x = 0, y = 1, z = 2}, distance = 2}},
+			eye = 0, rightclick = 0},
+		-- The same guard, with sneak off the table: an object click never
+		-- reaches the node path however the player holds the keys.
+		{name = "activate_object_sneak", sneak = true,
+			call = "on_secondary_use", pointed = {type = "object"},
+			node = {pos = {x = 0, y = 1, z = 2}, name = DOOR},
+			hits = {{pos = {x = 0, y = 1, z = 2}, distance = 2}},
+			eye = 0, rightclick = 0},
 	}
 
 	local KINDS = {{"swing", swing}, {"cast", cast}}
@@ -390,6 +436,7 @@ function M.run(repo)
 			end
 			world.hits = case.hits or {}
 			world.reach, world.objects, world.liquids = nil, nil, nil
+			world.eye_calls = 0
 			recorded = {}
 			casts = 0
 			cast_calls = 0
@@ -399,9 +446,12 @@ function M.run(repo)
 				case.pointed)
 			check(ok, label .. "/" .. case.name .. " raised " .. tostring(result))
 			row("wp13_rmb_case", label, case.call, case.name,
+				"pointed", tostring(case.pointed and case.pointed.type),
+				"node_dist", tostring(case.dist),
 				"rightclick", #recorded, "casts", casts + cast_calls,
 				"returned", tostring(result),
-				"reach", tostring(world.reach))
+				"eye_calls", world.eye_calls, "ray_reach",
+				tostring(world.reach))
 			check(#recorded == case.rightclick, label .. "/" .. case.name ..
 				" called on_rightclick " .. #recorded .. " times, expected " ..
 				case.rightclick)
@@ -421,13 +471,22 @@ function M.run(repo)
 				check(hit and hit.pointed ~= nil, label .. "/" .. case.name ..
 					" passed no pointed_thing to on_rightclick")
 			end
-			if case.call == "on_secondary_use" and not case.sneak then
+			-- The eye count is what proves a GATE ran rather than a lucky
+			-- distance: an on_place case must have measured hand reach, and an
+			-- object or sneak case must have returned before asking at all.
+			check(world.eye_calls == case.eye, label .. "/" .. case.name ..
+				" asked for the eye position " .. world.eye_calls ..
+				" times, expected " .. case.eye)
+			if case.ray then
 				check(world.reach == 4, label .. "/" .. case.name ..
 					" rayed " .. tostring(world.reach) ..
 					" m instead of the 4 m hand reach")
 				check(world.objects == false and world.liquids == false,
 					label .. "/" .. case.name ..
 					" asked the ray for objects or liquids")
+			else
+				check(world.reach == nil, label .. "/" .. case.name ..
+					" cast a server ray it should not have cast")
 			end
 		end
 	end

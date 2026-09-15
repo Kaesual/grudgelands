@@ -1,32 +1,38 @@
 wp13_wield_bone	Arm_Right	3.150,11.550,0.000	x->-1.000,0.000,0.000	y->0.000,-1.000,0.000	z->0.000,0.000,1.000
 wp13_wield_arm	model_y	6.300..12.600	reach	5.250	fist_centre_bone_y	4.200
 wp13_wield_face	uv	8..16x8..16	normal	0.000,0.000,1.000
-wp13_wield_numbers	pos	0.000,3.844,1.328	rot	90.000,-15.000,90.000	size	0.220,0.220
-wp13_wield_hanging	hand	3.150,7.350,0.000	hilt-hand	0.000,-0.214,-0.797	grip-hand	0.000,0.000,0.000	tip-hand	0.000,0.925,3.453	blade	0.000,0.259,0.966	flat	-1.000,0.000,0.000
-wp13_wield_raised90	hand	3.150,11.550,4.200	hilt-hand	0.000,-0.797,0.214	grip-hand	0.000,0.000,0.000	tip-hand	0.000,3.453,-0.925	blade	0.000,0.966,-0.259	flat	-1.000,0.000,0.000
-wp13_wield_old_hanging	hand	3.150,7.350,0.000	hilt-hand	0.000,-1.300,-3.700	grip-hand	0.000,-1.300,-2.875	tip-hand	0.000,-1.300,0.700	blade	0.000,0.000,1.000	flat	0.000,-1.000,0.000
-wp13_wield_old_raised90	hand	3.150,11.550,4.200	hilt-hand	0.000,-3.700,1.300	grip-hand	0.000,-2.875,1.300	tip-hand	0.000,0.700,1.300	blade	0.000,1.000,0.000	flat	0.000,0.000,1.000
+wp13_wield_numbers	pos	0.000,3.809,1.461	rot	90.000,-15.000,90.000	size	0.220,0.220
+wp13_wield_hanging	hand	3.150,7.350,0.000	hilt-hand	0.000,-0.178,-0.664	grip-hand	0.000,0.000,0.000	tip-hand	0.000,0.961,3.586	blade	0.000,0.259,0.966	flat	-1.000,0.000,0.000
+wp13_wield_raised90	hand	3.150,11.550,4.200	hilt-hand	0.000,-0.664,0.178	grip-hand	0.000,0.000,0.000	tip-hand	0.000,3.586,-0.961	blade	0.000,0.966,-0.259	flat	-1.000,0.000,0.000
+wp13_wield_old_hanging	hand	3.150,7.350,0.000	hilt-hand	0.000,-1.300,-3.700	grip-hand	0.000,-1.300,-3.012	tip-hand	0.000,-1.300,0.700	blade	0.000,0.000,1.000	flat	0.000,-1.000,0.000
+wp13_wield_old_raised90	hand	3.150,11.550,4.200	hilt-hand	0.000,-3.700,1.300	grip-hand	0.000,-3.013,1.300	tip-hand	0.000,0.700,1.300	blade	0.000,1.000,0.000	flat	0.000,0.000,1.000
 wp13_wield_result	PASS	0
 wp13_rmb_registry	780	interactive	40
 wp13_rmb_blocking	doors:door_wood_a	oddly_breakable_by_hand	swing_on_use	nil	cast_on_use	function
-wp13_rmb_case	swing	on_place	place_door	rightclick	1	casts	0	returned	grug_abilities:kat_swing	reach	nil
-wp13_rmb_case	swing	on_place	place_plain	rightclick	0	casts	0	returned	grug_abilities:kat_swing	reach	nil
-wp13_rmb_case	swing	on_place	place_door_sneak	rightclick	0	casts	0	returned	grug_abilities:kat_swing	reach	nil
-wp13_rmb_case	swing	on_secondary_use	activate_door	rightclick	1	casts	0	returned	grug_abilities:kat_swing	reach	4
-wp13_rmb_case	swing	on_secondary_use	activate_plain	rightclick	0	casts	0	returned	grug_abilities:kat_swing	reach	4
-wp13_rmb_case	swing	on_secondary_use	activate_door_sneak	rightclick	0	casts	0	returned	grug_abilities:kat_swing	reach	nil
-wp13_rmb_case	swing	on_secondary_use	activate_empty	rightclick	0	casts	0	returned	grug_abilities:kat_swing	reach	4
-wp13_rmb_case	swing	on_secondary_use	activate_door_far	rightclick	0	casts	0	returned	grug_abilities:kat_swing	reach	4
-wp13_rmb_case	swing	on_secondary_use	activate_door_behind_wall	rightclick	0	casts	0	returned	grug_abilities:kat_swing	reach	4
-wp13_rmb_case	cast	on_place	place_door	rightclick	1	casts	0	returned	grug_abilities:kat_cast	reach	nil
-wp13_rmb_case	cast	on_place	place_plain	rightclick	0	casts	0	returned	grug_abilities:kat_cast	reach	nil
-wp13_rmb_case	cast	on_place	place_door_sneak	rightclick	0	casts	0	returned	grug_abilities:kat_cast	reach	nil
-wp13_rmb_case	cast	on_secondary_use	activate_door	rightclick	1	casts	0	returned	grug_abilities:kat_cast	reach	4
-wp13_rmb_case	cast	on_secondary_use	activate_plain	rightclick	0	casts	0	returned	grug_abilities:kat_cast	reach	4
-wp13_rmb_case	cast	on_secondary_use	activate_door_sneak	rightclick	0	casts	0	returned	grug_abilities:kat_cast	reach	nil
-wp13_rmb_case	cast	on_secondary_use	activate_empty	rightclick	0	casts	0	returned	grug_abilities:kat_cast	reach	4
-wp13_rmb_case	cast	on_secondary_use	activate_door_far	rightclick	0	casts	0	returned	grug_abilities:kat_cast	reach	4
-wp13_rmb_case	cast	on_secondary_use	activate_door_behind_wall	rightclick	0	casts	0	returned	grug_abilities:kat_cast	reach	4
+wp13_rmb_case	swing	on_place	place_door	pointed	node	node_dist	1.5	rightclick	1	casts	0	returned	grug_abilities:kat_swing	eye_calls	1	ray_reach	nil
+wp13_rmb_case	swing	on_place	place_plain	pointed	node	node_dist	1.5	rightclick	0	casts	0	returned	grug_abilities:kat_swing	eye_calls	1	ray_reach	nil
+wp13_rmb_case	swing	on_place	place_door_sneak	pointed	node	node_dist	1.5	rightclick	0	casts	0	returned	grug_abilities:kat_swing	eye_calls	0	ray_reach	nil
+wp13_rmb_case	swing	on_place	place_door_far	pointed	node	node_dist	5.5	rightclick	0	casts	0	returned	grug_abilities:kat_swing	eye_calls	1	ray_reach	nil
+wp13_rmb_case	swing	on_secondary_use	activate_door	pointed	nothing	node_dist	nil	rightclick	1	casts	0	returned	grug_abilities:kat_swing	eye_calls	1	ray_reach	4
+wp13_rmb_case	swing	on_secondary_use	activate_plain	pointed	nothing	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_swing	eye_calls	1	ray_reach	4
+wp13_rmb_case	swing	on_secondary_use	activate_door_sneak	pointed	nothing	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_swing	eye_calls	0	ray_reach	nil
+wp13_rmb_case	swing	on_secondary_use	activate_empty	pointed	nothing	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_swing	eye_calls	1	ray_reach	4
+wp13_rmb_case	swing	on_secondary_use	activate_door_far	pointed	nothing	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_swing	eye_calls	1	ray_reach	4
+wp13_rmb_case	swing	on_secondary_use	activate_door_behind_wall	pointed	nothing	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_swing	eye_calls	1	ray_reach	4
+wp13_rmb_case	swing	on_secondary_use	activate_object_door_behind	pointed	object	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_swing	eye_calls	0	ray_reach	nil
+wp13_rmb_case	swing	on_secondary_use	activate_object_sneak	pointed	object	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_swing	eye_calls	0	ray_reach	nil
+wp13_rmb_case	cast	on_place	place_door	pointed	node	node_dist	1.5	rightclick	1	casts	0	returned	grug_abilities:kat_cast	eye_calls	1	ray_reach	nil
+wp13_rmb_case	cast	on_place	place_plain	pointed	node	node_dist	1.5	rightclick	0	casts	0	returned	grug_abilities:kat_cast	eye_calls	1	ray_reach	nil
+wp13_rmb_case	cast	on_place	place_door_sneak	pointed	node	node_dist	1.5	rightclick	0	casts	0	returned	grug_abilities:kat_cast	eye_calls	0	ray_reach	nil
+wp13_rmb_case	cast	on_place	place_door_far	pointed	node	node_dist	5.5	rightclick	0	casts	0	returned	grug_abilities:kat_cast	eye_calls	1	ray_reach	nil
+wp13_rmb_case	cast	on_secondary_use	activate_door	pointed	nothing	node_dist	nil	rightclick	1	casts	0	returned	grug_abilities:kat_cast	eye_calls	1	ray_reach	4
+wp13_rmb_case	cast	on_secondary_use	activate_plain	pointed	nothing	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_cast	eye_calls	1	ray_reach	4
+wp13_rmb_case	cast	on_secondary_use	activate_door_sneak	pointed	nothing	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_cast	eye_calls	0	ray_reach	nil
+wp13_rmb_case	cast	on_secondary_use	activate_empty	pointed	nothing	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_cast	eye_calls	1	ray_reach	4
+wp13_rmb_case	cast	on_secondary_use	activate_door_far	pointed	nothing	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_cast	eye_calls	1	ray_reach	4
+wp13_rmb_case	cast	on_secondary_use	activate_door_behind_wall	pointed	nothing	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_cast	eye_calls	1	ray_reach	4
+wp13_rmb_case	cast	on_secondary_use	activate_object_door_behind	pointed	object	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_cast	eye_calls	0	ray_reach	nil
+wp13_rmb_case	cast	on_secondary_use	activate_object_sneak	pointed	object	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_cast	eye_calls	0	ray_reach	nil
 wp13_rmb_on_use	casts	1
 wp13_rmb_result	PASS	0
 wp13_cv_inputs	6	2	4	6	dwarf,elf,human,orc,troll,undead	cloth,metal	head,chest,legs,feet	#8a7f6a,#a89478,#c0b088,#d8cc9a,#e8dcb0,#ffffff

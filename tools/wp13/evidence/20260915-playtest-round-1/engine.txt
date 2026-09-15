@@ -8,7 +8,7 @@ ERROR|ModError: 0
 WARNING: 57
 
 == the listening line ==
-70:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32884.
+70:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32924.
 
 == grug_visuals / grug_abilities startup lines ==
 66:ACTION[Main]: [grug_visuals] 48 armor pieces indexed for overlays, 2 art lines x 4 slots

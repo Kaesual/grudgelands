@@ -129,18 +129,34 @@ behavior.
 
 ### Right-click with a skill in hand opens the door
 
-Decided 2026-09-15 (playtest round 1). **A skill in hand never costs the
-player an interaction.** Right-click with an ability item wielded goes to the
-pointed node's own `on_rightclick` — doors, trapdoors, gates, chests, signs,
-every interactive node — for both kinds of skill, and it does so even when the
-skill's own pointabilities hide that node from the client (a wooden door is
-`oddly_breakable_by_hand`, which a swing skill declares `"blocking"`, so the
-client reports "pointing at nothing"; the server then re-finds the node itself).
-Two bounds: **sneak + right-click keeps whatever right-click otherwise means**,
-so a skill may still be bound to it later while pointing at a door, and the
-pass-through reaches **hand distance only** (4 m, the engine's default item
-range) — a 20 m Fireball must not flip a lever across a courtyard. Right-click
-has never cast and still does not; casting stays on `on_use`.
+Decided 2026-09-15 (playtest round 1). **A skill in hand never costs the player
+a door.** Right-click with an ability item wielded goes to the pointed node's own
+`on_rightclick` — **every door, gate and trapdoor, and the chests**, i.e. exactly
+the nodes whose definition carries that callback — for both kinds of skill, and
+it does so even when the skill's own pointabilities hide that node from the
+client (a wooden door is `oddly_breakable_by_hand`, which a swing skill declares
+`"blocking"`, so the client reports "pointing at nothing"; the server then
+re-finds the node itself).
+
+Three bounds:
+
+- **Sneak + right-click keeps whatever right-click otherwise means**, so a skill
+  may still be bound to it later while pointing at a door.
+- **Hand distance only** — 4 m, the engine's default item range — on both
+  callbacks, so a 20 m Fireball cannot flip a lever across a courtyard.
+- **An object click stays the object's.** Right-clicking a vendor opens the shop
+  and nothing else; the node behind him is not touched.
+
+Right-click has never cast and still does not; casting stays on `on_use`.
+
+**Not covered, deliberately:** a node whose right-click is the engine's *node
+meta formspec* and which has no `on_rightclick` at all — signs, the bookshelf,
+the vessels shelf, beds, the furnace. The client opens those itself and answers
+them on a packet only a client-opened form can send, so with a *swing* skill
+wielded (the only case where the client reports nothing) they stay unopenable:
+switch to any other hotbar slot. This is a limitation of the blocking
+pointabilities, not of the rule above, and it is written down rather than
+promised away.
 
 ### Rules for swing skills
 
@@ -371,10 +387,12 @@ color, and the tinted orb becomes the no-weapon fallback.
   helper, a different backdrop texture per ability, and the color coding
   becomes redundant. Not in WP38.
 - Still deferred: the alternative composition (weapon art plus a tinted
-  border/halo overlay) — it needs art, not a redesign. And the weapon is
-  **not** shown on the character model in third person; the engine draws
-  the wield item in first person only, and putting it on the model needs
-  the multiskin layering `inventory_equipment.md` §1 parks in Phase 3.
+  border/halo overlay) — it needs art, not a redesign. The weapon **is** shown
+  on the character model in third person since WP13 (2026-09-14): one attached
+  `wielditem` entity on the right-hand bone, held hilt-in-fist with the blade
+  forward (`character_visuals.md` §4). That did not need the multiskin layering
+  `inventory_equipment.md` §1 parks in Phase 3, which is still what a *layered*
+  weapon texture would need.
 
 ## 3. Warrior (Rage)
 
