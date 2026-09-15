@@ -168,7 +168,8 @@ local function loader()
 	-- reach of each slot:
 	--
 	--   1. the east outer band, between the lot grid and the curtain -- this is
-	--      where the contract's "orchards inside the wall ring" stand;
+	--      where the orchard belt of the contract's section 2.4 stands, and
+	--      since the round-3 plan it stands inside the ring;
 	--   2. the south outer band, the field belt;
 	--   3. the outer corner of the quarter, a paddock;
 	--   4. the garden strip in the gap between two columns of the lot grid,

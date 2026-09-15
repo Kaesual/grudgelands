@@ -208,10 +208,11 @@ local function loader(directory)
 				}
 			end},
 		--
-		-- 2. THE ORCHARD INSIDE THE WALL RING, which is the contract's own
-		-- line for the human capital (section 2.4) and the reason fill lot 1
-		-- of every quadrant stands in the outer band, between the lot grid and
-		-- the curtain. Three rows of standards over kept grass, a hedge on the
+		-- 2. THE ORCHARD BELT, which the contract's section 2.4 asks the human
+		-- capital for, on the outer-band fill lot -- so since the round-3 plan
+		-- put a curtain on the envelope edge, it stands inside the ring. That
+		-- band is why fill lot 1 of every quadrant is where it is: between the
+		-- lot grid and the wall. Three rows of standards over kept grass, a hedge on the
 		-- field side, physic beds and a wood pile at the head of it, and the
 		-- three who work it: two tending, one at the pile.
 		{id = "market_orchard_close", yard = {},

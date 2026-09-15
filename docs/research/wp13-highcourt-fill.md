@@ -156,8 +156,9 @@ zero submerged on both.
 ### 3.4 What the sixteen dressings are
 
 Slot 1 of every quadrant is the outer-band lot between the grid and the curtain,
-which is where the contract's "orchards inside the wall ring" stand. Slot 4 is
-the garden-sized one and the only fill lot INSIDE the lot grid.
+which is where the orchard belt §2.4 asks the human capital for stands — and,
+since the round-3 plan put a wall on the envelope edge, inside the ring. Slot 4
+is the garden-sized one and the only fill lot INSIDE the lot grid.
 
 | District | 1 (reach 11) | 2 (reach 11) | 3 (reach 8) | 4 (reach 5) |
 | --- | --- | --- | --- | --- |
