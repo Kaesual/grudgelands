@@ -65,8 +65,9 @@ local crossing = core.settings:get("grug_wp13_probe_crossing")
 local function fail(message)
 	error("grug_wp13_highcourt_probe: " .. message, 0)
 end
-if mode ~= "surface" and mode ~= "full" and mode ~= "field" then
-	fail("mode must be surface, field or full")
+if mode ~= "surface" and mode ~= "full" and mode ~= "field" and
+		mode ~= "edge" then
+	fail("mode must be surface, field, edge or full")
 end
 local crossing_boxes = {}
 if crossing ~= nil and crossing ~= "" then
@@ -807,6 +808,62 @@ core.register_on_mods_loaded(function()
 			"worst_submerged_plot=" .. worst_wet_plot})
 		finished = true
 		core.request_shutdown("WP13 Highcourt surface probe complete", false, 0.2)
+		return
+	end
+	-- THE EMERGE ORDER GATE.
+	--
+	-- An anchor writes its content at anchor.y + 1 and needs solid ground at
+	-- anchor.y. A mapchunk is 80 nodes tall and offset by -32, so a root can
+	-- land on a chunk's LOWEST layer, and then the support is one node down in
+	-- the chunk below. Which of the two the engine generates first is the
+	-- emerge order, and a player teleporting in from above gets the upper one
+	-- first -- the case the user hit on seed 15912857179583385436, where
+	-- Highcourt's anchor is at y 47 with its root at 48.
+	--
+	-- The ordinary corpus walks y upward, so it always generates the support's
+	-- chunk first and can never see it. This mode emerges, for every one of the
+	-- six capitals, the ROOT's chunk first and the SUPPORT's chunk second.
+	if mode == "edge" then
+		resolved = {}
+		local seen = {}
+		local races = {"human", "dwarf", "elf", "undead", "orc", "troll"}
+		local factions = {human = "accord", dwarf = "accord", elf = "accord",
+			undead = "throng", orc = "throng", troll = "throng"}
+		for index = 1, #races do
+			local race = races[index]
+			local capital = grug_core.capital_anchor(factions[race], race)
+			if type(capital) ~= "table" then
+				fail("capital anchor differs for " .. race)
+			end
+			local root_chunk = chunk_origin(capital.y + 1)
+			local support_chunk = chunk_origin(capital.y)
+			for _, y in ipairs({root_chunk, support_chunk}) do
+				local key = chunk_origin(capital.x) .. ":" .. y .. ":" ..
+					chunk_origin(capital.z)
+				if not seen[key] then
+					seen[key] = true
+					resolved[#resolved + 1] = {id = "anchor_" .. race,
+						kind = "anchor_order", key = key,
+						x = chunk_origin(capital.x), y = y,
+						z = chunk_origin(capital.z)}
+				end
+			end
+			log({"event=anchor_order", "race=" .. race,
+				"anchor=" .. capital.x .. "," .. capital.y .. "," .. capital.z,
+				"root_chunk_y=" .. root_chunk,
+				"support_chunk_y=" .. support_chunk,
+				"root_on_chunk_edge=" ..
+					tostring(root_chunk ~= support_chunk)})
+		end
+		log({"event=corpus", "mapchunks=" .. #resolved, "mode=edge"})
+		core.after(1, run_next)
+		core.after(timeout_seconds, function()
+			if not finished then
+				log({"event=timeout", "current=" .. current,
+					"completed=" .. completed})
+				core.request_shutdown("WP13 Highcourt probe timeout", false, 0)
+			end
+		end)
 		return
 	end
 	resolved = corpus()

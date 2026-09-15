@@ -1,9 +1,8 @@
 # WP13 round 3, lane 1: capital terrain
 
 Evidence for [docs/research/wp13-capital-terrain.md](../../../../docs/research/wp13-capital-terrain.md),
-taken on branch `wp13-r3-terrain`, rebased onto `main` at `658b6763`
-(after lane 2's floating-bushes fix and lane 3's lane/route crossing rule),
-2026-09-15.
+taken on branch `wp13-r3-terrain`, rebased onto `main` at `e4880e7d`
+(all five round-3 lanes merged), 2026-09-15.
 
 Two playtest findings, both terrain, both WP40's:
 
@@ -40,6 +39,35 @@ curtain wall are laid on moved with it.
 The expectation file lives with the lane that last CHANGED the ground, which is
 why `run_highcourt.sh` and `run_capital.sh` now read them from here rather than
 from `20260915-highcourt-districts/` and `20260915-dur-brannoc/`.
+
+## The anchor activation crash on seed 15912857179583385436
+
+A user's fresh world crashed on teleport to (0, 50, -1500) with
+`fail_anchor_activation: anchor settled support differs at anchor_008
+actual=126/0/0/0/0/0/0`. The cause, the fix and the two gates are section 5 of
+the research note. In short: Highcourt's anchor is at y 47 on that seed, so its
+root at 48 is exactly a mapchunk's lowest layer and its support at 47 is in the
+chunk below; the activation check read that support out of the one-node halo,
+which carries our column only if the lower chunk generated first, and a player
+arriving from above makes the upper one first.
+
+**It is not this lane's.** The anchor y on that seed is 47 at `19abee02` too,
+before the step band existed, and the band cannot reach the anchor column at all
+(`civic_outside` is 0 there, so the fitting returns its reference). The check has
+read the halo since it was written.
+
+| Path | What |
+| --- | --- |
+| `measurements/anchor-edge.txt` | the nine-seed anchor census: every capital's anchor y, root y, the chunk each lands in, and whether the root is on a chunk edge |
+| `final-micro/capital-anchor.tsv` | the same as the fixture emits it, with its digest |
+| `engine/edge-*/` | `run_highcourt.sh <out> edge <seed>`, the new probe mode that emerges every capital's ROOT chunk before its SUPPORT chunk |
+
+The reproduction: on `main` at e4880e7d the edge mode fails at mapchunk
+`-32:48:-1552` — the Highcourt root chunk — and on this branch it passes. Both
+gate seeds pass the edge mode too, and they pass it for a reason worth writing
+down: on neither of them does any capital anchor's root land on a chunk edge, so
+they could never have caught this. That is why the offline fixture asserts the
+seed set still contains one that does.
 
 ## The review round, and what it changed
 
@@ -100,7 +128,7 @@ Every boot went through `tools/wp13/run_highcourt.sh` or
 `tools/wp13/run_capital.sh`: a fresh `mktemp -d` directory as `LUANTI_USER_PATH`
 and as every XDG directory, the log inside it, a `timeout --kill-after`, a kill
 scoped to this run's own world path, and the scratch directory removed on exit.
-Ports 31001-31042 (this lane's block is 31000-31099); the one `main` baseline
+Ports 31001-31074 (this lane's block is 31000-31099); the one `main` baseline
 capital boot used 31399, which was measured free first, because
 `run_capital.sh` on the pre-rebase `main` still refused anything outside
 31300-31399. That guard is now `31000-31999` on main (lane 3), and this branch

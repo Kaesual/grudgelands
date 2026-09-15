@@ -13,9 +13,12 @@ cd "$repo"
 		mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua \
 		mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua \
 		mods/MAPGEN/grug_mapgen/wp40/simple_map.lua \
+		mods/MAPGEN/grug_mapgen/wp40/r7_anchor_activation.lua \
+		tools/wp13/capital_anchor_fixture.lua \
 		tools/wp13/capital_terrain_fixture.lua \
 		tools/wp13/highcourt_kat.lua \
 		tools/wp13/highcourt_plots.lua \
+		tools/wp13/highcourt_probe/init.lua \
 		tools/wp13/render_terraces.py \
 		tools/wp13/run_capital.sh \
 		tools/wp13/run_highcourt.sh \

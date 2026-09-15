@@ -4,10 +4,13 @@ mods/MAPGEN/grug_mapgen/wp40/simple_map.lua                    parse=PASS setglo
 mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua                    parse=PASS setglobal=0
 mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua                 parse=PASS setglobal=0
 mods/MAPGEN/grug_mapgen/wp13/highcourt_quadrants.lua           parse=PASS setglobal=0
+mods/MAPGEN/grug_mapgen/wp40/r7_anchor_activation.lua          parse=PASS setglobal=0
+tools/wp13/capital_anchor_fixture.lua                          parse=PASS setglobal=0
 tools/wp13/capital_terrain_fixture.lua                         parse=PASS setglobal=0
 tools/wp13/highcourt_plots.lua                                 parse=PASS setglobal=0
 tools/wp13/highcourt_kat.lua                                   parse=PASS setglobal=0
 tools/wp40/planner_throughput/fixture.lua                      parse=PASS setglobal=0
+tools/wp13/highcourt_probe/init.lua                            parse=PASS setglobal=1
 
 == luac51 -p, whole mods and tools trees ==
 all Lua parses under plain 5.1
@@ -301,12 +304,13 @@ tools/wp13/dump_blueprint.lua:59:		os.exit(1)
 tools/wp13/dump_blueprint.lua:66:	os.exit(1)
 tools/wp13/dump_blueprint.lua:72:	os.exit(1)
 tools/wp13/lane_routes.lua:347:	os.exit(1)
-tools/wp13/highcourt_plots.lua:319:	os.exit(0)
-tools/wp13/highcourt_plots.lua:405:	os.exit(1)
-tools/wp13/dump_highcourt.lua:32:	os.exit(2)
-tools/wp13/dump_highcourt.lua:55:		os.exit(0)
-tools/wp13/dump_highcourt.lua:74:		os.exit(2)
-tools/wp13/dump_highcourt.lua:181:	os.exit(2)
+tools/wp13/highcourt_plots.lua:398:	os.exit(0)
+tools/wp13/highcourt_plots.lua:579:	os.exit(1)
+tools/wp13/dump_highcourt.lua:43:	os.exit(2)
+tools/wp13/dump_highcourt.lua:76:	os.exit(2)
+tools/wp13/dump_highcourt.lua:97:	os.exit(0)
+tools/wp13/dump_highcourt.lua:113:		os.exit(2)
+tools/wp13/dump_highcourt.lua:220:	os.exit(2)
 tools/wp13/dump_capital_part.lua:30:	os.exit(2)
 tools/wp13/dump_capital_part.lua:53:			os.exit(2)
 tools/wp13/dump_capital_part.lua:72:	os.exit(2)

@@ -1,0 +1,13 @@
+anchor_order race=human anchor=0,47,-1500 root_chunk_y=48 support_chunk_y=-32 root_on_chunk_edge=true
+anchor_order race=dwarf anchor=-1800,134,-1500 root_chunk_y=128 support_chunk_y=128 root_on_chunk_edge=false
+anchor_order race=elf anchor=1800,36,-1500 root_chunk_y=-32 support_chunk_y=-32 root_on_chunk_edge=false
+anchor_order race=undead anchor=-1800,107,1500 root_chunk_y=48 support_chunk_y=48 root_on_chunk_edge=false
+anchor_order race=orc anchor=0,128,1500 root_chunk_y=128 support_chunk_y=128 root_on_chunk_edge=false
+anchor_order race=troll anchor=1800,66,1500 root_chunk_y=48 support_chunk_y=48 root_on_chunk_edge=false
+anchor_order elapsed_us=22533993
+anchor_order elapsed_us=11798938
+anchor_order elapsed_us=14458584
+anchor_order elapsed_us=819908
+anchor_order elapsed_us=844562
+anchor_order elapsed_us=606185
+anchor_order elapsed_us=637522

@@ -14,22 +14,26 @@
 # directory, the log inside it, a `timeout --kill-after`, only this run's own
 # server killed, and nothing under the personal Flatpak folder touched.
 #
-# Usage: run_highcourt.sh OUTPUT_DIR [surface|field|full] [SEED]
+# Usage: run_highcourt.sh OUTPUT_DIR [surface|field|edge|full] [SEED]
 #   OUTPUT_DIR  absolute, must not exist; receives the log, the dumps and the
 #               per-mapchunk timings.
+#   edge        emerges every capital anchor's ROOT chunk before its SUPPORT
+#               chunk, which is the emerge order a player teleporting in from
+#               above produces and the one the ordinary corpus never makes.
 set -euo pipefail
 export LC_ALL=C
 
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
-output="${1:?usage: run_highcourt.sh OUTPUT_DIR [surface|field|full] [SEED]}"
+output="${1:?usage: run_highcourt.sh OUTPUT_DIR [surface|field|edge|full] [SEED]}"
 mode="${2:-full}"
 seed="${3:-531802985935182545}"
 [[ "$output" = /* && ! -e "$output" ]] || {
 	echo "run_highcourt: OUTPUT_DIR must be an absent absolute path" >&2
 	exit 2
 }
-[[ "$mode" == "surface" || "$mode" == "field" || "$mode" == "full" ]] || {
-	echo "run_highcourt: mode must be surface, field or full" >&2
+[[ "$mode" == "surface" || "$mode" == "field" || "$mode" == "full" ||
+		"$mode" == "edge" ]] || {
+	echo "run_highcourt: mode must be surface, field, edge or full" >&2
 	exit 2
 }
 [[ "$seed" =~ ^(0|[1-9][0-9]*)$ ]] || {

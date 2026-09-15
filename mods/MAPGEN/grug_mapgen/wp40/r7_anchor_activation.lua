@@ -32,6 +32,12 @@ return function(roster_factory, anchor_content)
 			fail("air authority differs")
 		end
 		local bound_plan, bound_generation, active = false, 0, false
+		-- THE MAPCHUNK THIS TRANSACTION OWNS, which is not the same box as
+		-- `context.inside_owner`. That one also answers true for the
+		-- authenticated one-node halo around the chunk, and the halo belongs to
+		-- a NEIGHBOURING chunk: its bytes are ours only if that chunk has
+		-- already generated. See the support check in `settle`.
+		local bound_min_y, bound_max_y = 0, -1
 		local metrics = {plan_calls = 0, settle_calls = 0, replay_calls = 0,
 			written = 0}
 		local tail = {}
@@ -50,6 +56,7 @@ return function(roster_factory, anchor_content)
 				end
 			end
 			bound_plan, bound_generation = plan, generation
+			bound_min_y, bound_max_y = minp.y, maxp.y
 			metrics.plan_calls = metrics.plan_calls + 1
 		end
 		function tail.settle(self, context)
@@ -79,35 +86,65 @@ return function(roster_factory, anchor_content)
 								hard_foundation ~= row.hard_foundation then
 							fail("anchor column authority differs at " .. row.id)
 						end
-						-- A root on the owner's lower Y edge may have its support in the
-						-- authenticated one-node halo. The settlement context deliberately
-						-- exposes that halo read-only, so validate the real settled tuple
-						-- instead of inventing an out-of-owner placeholder.
-						local support_cid, support_param2, support_occupancy, support_opcode,
-							support_feature, support_interface, support_aux =
-								context.settled_at(row.x, row.y, row.z)
-						local class_id, _, liquid_kind =
-							production.r5.classify(support_cid, support_param2)
-						local solid = class_id == 2 or class_id == 6 or class_id == 7 or
-							class_id == 10 or class_id == 11
-						local support_ok = support_cid ~= air_cid and
-							support_cid ~= production.ignore_cid and liquid_kind == 0 and solid and
-							support_occupancy == 0 and
-							support_opcode == 0 and support_feature == 0 and
-							support_interface == 0 and support_aux == 0
-						if not support_ok then
-							fail("anchor settled support differs at " .. row.id .. " actual=" ..
-								table.concat({support_cid,
-									support_param2, support_occupancy, support_opcode,
-									support_feature, support_interface, support_aux}, "/"))
+						-- THE SUPPORT, and why it is only asserted when we own it.
+						--
+						-- A root on the owner's lower Y edge has its support one node
+						-- below, in the mapchunk BENEATH this one. `inside_owner` answers
+						-- true there -- the settlement context exposes the authenticated
+						-- one-node halo read-only -- but the halo carries OUR column only
+						-- if that lower chunk has already generated. Which of the two
+						-- generates first is the engine's emerge order, and a player who
+						-- teleports in from above gets the upper one first.
+						--
+						-- That is the crash the user hit on seed 15912857179583385436,
+						-- where Highcourt's anchor sits at y 47 with its root at 48, which
+						-- is exactly a chunk's lowest layer (chunks span 80 nodes offset
+						-- by -32). The check read air out of an ungenerated halo and
+						-- failed the whole mapgen transaction. Both gate seeds put that
+						-- anchor's root mid-chunk, which is why two seeds never saw it.
+						--
+						-- The COLUMN AUTHORITY above is the guarantee that survives emerge
+						-- order: it has already verified this column's terrain height,
+						-- functional kind, functional y, feature and foundation against
+						-- the planner, and the chunk that owns the support writes its
+						-- surface from that same plan whenever it generates. So the
+						-- settled bytes are asserted where this transaction writes them
+						-- and trusted from the plan where it does not.
+						local support_owned = row.y >= bound_min_y and row.y <= bound_max_y
+						if support_owned then
+							local support_cid, support_param2, support_occupancy,
+								support_opcode, support_feature, support_interface,
+								support_aux = context.settled_at(row.x, row.y, row.z)
+							local class_id, _, liquid_kind =
+								production.r5.classify(support_cid, support_param2)
+							local solid = class_id == 2 or class_id == 6 or class_id == 7 or
+								class_id == 10 or class_id == 11
+							local support_ok = support_cid ~= air_cid and
+								support_cid ~= production.ignore_cid and liquid_kind == 0 and
+								solid and support_occupancy == 0 and
+								support_opcode == 0 and support_feature == 0 and
+								support_interface == 0 and support_aux == 0
+							if not support_ok then
+								fail("anchor settled support differs at " .. row.id ..
+									" actual=" .. table.concat({support_cid,
+										support_param2, support_occupancy, support_opcode,
+										support_feature, support_interface, support_aux}, "/"))
+							end
 						end
-						local prior_cid, prior_param2, prior_occupancy, prior_opcode,
-							prior_feature, prior_interface, prior_aux =
-								context.settled_at(row.x, root_y, row.z)
-						if prior_cid ~= air_cid or prior_param2 ~= 0 or
-								prior_occupancy ~= 0 or prior_opcode ~= 0 or
-								prior_feature ~= 0 or prior_interface ~= 0 or prior_aux ~= 0 then
-							fail("anchor root is not empty at " .. row.id)
+						-- The root cell itself, under the same rule: a root that lies in
+						-- the halo rather than in this chunk is the neighbouring chunk's
+						-- to clear, and reading it here would depend on emerge order the
+						-- same way.
+						if root_y >= bound_min_y and root_y <= bound_max_y then
+							local prior_cid, prior_param2, prior_occupancy, prior_opcode,
+								prior_feature, prior_interface, prior_aux =
+									context.settled_at(row.x, root_y, row.z)
+							if prior_cid ~= air_cid or prior_param2 ~= 0 or
+									prior_occupancy ~= 0 or prior_opcode ~= 0 or
+									prior_feature ~= 0 or prior_interface ~= 0 or
+									prior_aux ~= 0 then
+								fail("anchor root is not empty at " .. row.id)
+							end
 						end
 						local cid, _, _, param2 = anchor_content.resolve_anchor(row.content_ref, 0)
 						context.write_anchor(row.x, root_y, row.z, cid, param2,
