@@ -30,7 +30,9 @@
 --   R2. VILLAGERS VISIT MORE THAN ONE SPOT. The spot index of every flair NPC
 --       is collected over the whole three-minute window and each of them has
 --       to have stood at two different ones -- which is only possible at all
---       because the spares give them somewhere to go.
+--       because the spares give them somewhere to go. ROUND 3 SPLIT THIS IN
+--       TWO (see `wander_verdict`): only a WALKER has to reach a second spot,
+--       and a static resident must reach none.
 --   R3. THE ELDER FACES THE STREET. Its authored socket faces the hall door
 --       (`door` tag); the placement engine turns it round, so the entity's own
 --       yaw must be the socket's plus pi.
@@ -39,6 +41,21 @@
 --       `attack_npcs = false` had made that impossible -- while a hostile
 --       standing two nodes from a villager never acquires it, and no mob in
 --       the settlement ever holds a non-combatant as its target.
+--
+-- PLAYTEST ROUND 3 (2026-09-15) adds three more, the user's rulings of that
+-- round (sockets contract section 8):
+--
+--   W1. WORK RESIDENTS. A `work` socket produces a resident that stands ON it
+--       with no wander ring, carrying the activity the socket names and the
+--       animation and tool that activity means -- on a fresh world and again
+--       after a reboot, because the activity lives in staticdata while the
+--       animation and the wield entity are re-applied on activation.
+--   W2. THE NAMETAG PROXIMITY GATE. The villager, elder and vendor families
+--       write no nametag property at 40 m and the right one at 20 m. The
+--       property is read off the real object; only the distance source is
+--       substituted, because a headless server has no connected player.
+--   W3. PROFESSION VENDORS. The five entities of section 8.4 exist and their
+--       shelves survived the load-time item audit with offers on them.
 --
 -- WHY A FORCELOAD AND NOT A FAKE PLAYER: an object exists in the environment
 -- only while its mapblock is ACTIVE, and `ActiveBlockList::update` starts its
@@ -230,8 +247,18 @@ local function sample_spots()
 					local dx, dz = spot.x - pos.x, spot.z - pos.z
 					if dx * dx + dz * dz <= SPOT_ARRIVED * SPOT_ARRIVED then
 						local socket_id = entity._grug_socket or "?"
-						spots_seen[socket_id] = spots_seen[socket_id] or {}
-						spots_seen[socket_id][spot_index] = true
+						local row = spots_seen[socket_id]
+						if not row then
+							-- WHICH SIDE OF THE 80/20 SPLIT this resident is on
+							-- (playtest round 3). Recorded here, with the
+							-- sample, because the verdict below asks a
+							-- different question of a walker than of a static
+							-- resident and a name cannot tell them apart.
+							row = {walker = entity._grug_walker == true,
+								seen = {}, spots = #spots}
+							spots_seen[socket_id] = row
+						end
+						row.seen[spot_index] = true
 					end
 				end
 			end
@@ -272,23 +299,53 @@ local function positions_line()
 	end
 end
 
--- R2's verdict, once, at the end of the amble window.
+--
+-- R2's verdict, once, at the end of the amble window -- and since playtest
+-- round 3 it asks TWO questions instead of one, because "every villager wanders"
+-- stopped being the rule. The user's 80/20 ruling (contract section 8.3) makes
+-- about one resident in five a walker and the rest static, so:
+--
+--   * a WALKER has to have stood at two different spots over the window. That
+--     is round 2's claim, unchanged, applied to the people it is now about.
+--   * a STATIC idle resident has to have stood at exactly ONE -- its own. Its
+--     dwell is three to seven minutes and the window is 170 seconds, so a
+--     second spot in that time is a static resident behaving like a walker,
+--     which is the defect this half is here to catch.
+--
+-- Work residents never appear here at all: they carry no spot ring, and
+-- `sample_spots` therefore never records one.
+--
 local function wander_verdict()
-	local walkers, movers = 0, 0
-	for socket_id, seen in pairs(spots_seen) do
+	local walkers, movers, statics, strayed = 0, 0, 0, 0
+	for socket_id, row in pairs(spots_seen) do
 		local count = 0
-		for _ in pairs(seen) do count = count + 1 end
-		walkers = walkers + 1
-		if count >= 2 then movers = movers + 1 end
-		log({"event=wander", "socket=" .. socket_id, "distinct=" .. count})
-		if count < 2 then
-			fail("the villager on " .. socket_id .. " stood at " .. count ..
-				" idle spot over the whole window")
+		for _ in pairs(row.seen) do count = count + 1 end
+		log({"event=wander", "socket=" .. socket_id,
+			"walker=" .. tostring(row.walker), "ring=" .. row.spots,
+			"distinct=" .. count})
+		if row.walker then
+			walkers = walkers + 1
+			if count >= 2 then movers = movers + 1 end
+			if count < 2 then
+				fail("the walker on " .. socket_id .. " stood at " .. count ..
+					" idle spot over the whole window")
+			end
+		else
+			statics = statics + 1
+			if count > 1 then
+				strayed = strayed + 1
+				fail("the static resident on " .. socket_id .. " stood at " ..
+					count .. " idle spots inside its own dwell")
+			end
 		end
 	end
-	log({"event=wander_done", "villagers=" .. walkers, "moved=" .. movers})
+	log({"event=wander_done", "walkers=" .. walkers, "moved=" .. movers,
+		"static=" .. statics, "strayed=" .. strayed})
 	if walkers < 1 then
-		fail("no villager was traced at an idle spot at all")
+		fail("the settlement has no walking resident at all")
+	end
+	if statics < 1 then
+		fail("the settlement has no static idle resident at all")
 	end
 end
 
@@ -332,6 +389,164 @@ local function facing_lines()
 		end
 	end
 	if checked < 1 then fail("no facing could be checked") end
+end
+
+--
+-- WORK RESIDENTS (playtest round 3, contract sections 8.1 and 8.2). What only
+-- the engine can answer: the socket really produced a resident, it is standing
+-- ON the socket rather than somewhere near it, mobs_redo really put the
+-- activity's animation on the object, and it is holding the activity's tool.
+--
+-- `animation_current` is mobs_redo's own record of what it last wrote
+-- (api.lua:464) and `_grug_wield_item` is grug_visuals' record of what the
+-- attached wielditem entity is showing, so both are read off the entity rather
+-- than guessed from the definition.
+--
+local function work_lines(tag)
+	local npcs = settlement_npcs()
+	local seen = 0
+	for index = 1, #npcs do
+		local entity = npcs[index]
+		if entity._grug_socket_role == "work" then
+			seen = seen + 1
+			local socket = socket_by_id[entity._grug_socket or ""]
+			local pos = entity.object and entity.object:get_pos()
+			local drift = -1
+			if pos and socket then
+				local dx = pos.x - socket.pos.x
+				local dz = pos.z - socket.pos.z
+				drift = math.sqrt(dx * dx + dz * dz)
+			end
+			log({"event=work", "phase=" .. tag,
+				"socket=" .. tostring(entity._grug_socket),
+				"activity=" .. tostring(entity._grug_work_activity),
+				"anim=" .. tostring(entity.animation_current),
+				"item=" .. tostring(entity._grug_wield_item),
+				"walker=" .. tostring(entity._grug_walker),
+				"ring=" .. tostring(entity._grug_idle_spots and
+					#entity._grug_idle_spots or "none"),
+				"drift=" .. string.format("%.2f", drift)})
+			if entity._grug_work_activity == nil then
+				fail("the resident on work socket " ..
+					tostring(entity._grug_socket) .. " has no activity")
+			end
+			if entity._grug_idle_spots ~= nil then
+				fail("the resident on work socket " ..
+					tostring(entity._grug_socket) .. " was handed a wander ring")
+			end
+			-- A work resident never leaves its socket. One node of slack for
+			-- the collision-box lift `place_on_ground` applies and for the
+			-- engine's own settling.
+			if drift < 0 or drift > 1.5 then
+				fail("the resident on work socket " ..
+					tostring(entity._grug_socket) .. " is " ..
+					string.format("%.2f", drift) .. " nodes off it")
+			end
+		end
+	end
+	if seen < 1 then
+		fail("the settlement placed nobody on a work socket")
+	end
+end
+
+--
+-- THE NAMETAG PROXIMITY GATE (the user's second round-3 finding). A villager,
+-- an elder and a vendor used to write a static nametag property once, and the
+-- engine has no distance cull of its own -- so their names rendered out to the
+-- ~128 m object-send range while a guard's disappeared at thirty.
+--
+-- WHAT IS MEASURED HERE IS THE PROPERTY, on the real object: empty at 40 m,
+-- the name at 20 m, and back to empty at 40 m. What is SUBSTITUTED is the
+-- distance source: a headless server has no client to connect and therefore no
+-- connected player, so `grug_mobs.nearest_player_d2` -- which the gate calls
+-- through the table for exactly this reason -- is swapped for a constant while
+-- the three ticks run and put back afterwards. Everything else, including the
+-- hysteresis and the single write per flip, is the shipped code.
+--
+local function tag_gate_lines()
+	local npcs = settlement_npcs()
+	local subjects = {}
+	for index = 1, #npcs do
+		local entity = npcs[index]
+		local family
+		if entity.name:find("villager", 1, true) then family = "villager"
+		elseif entity.name:find("elder", 1, true) then family = "elder"
+		elseif entity.name:find("vendor", 1, true) then family = "vendor" end
+		if family and not subjects[family] then subjects[family] = entity end
+	end
+	local order = {"villager", "elder", "vendor"}
+	for _, family in ipairs(order) do
+		if not subjects[family] then
+			fail("no " .. family .. " to measure the nametag gate on")
+			return
+		end
+	end
+	local real = grug_mobs.nearest_player_d2
+	local function at_distance(metres)
+		grug_mobs.nearest_player_d2 = function() return metres * metres end
+		for _, family in ipairs(order) do
+			local entity = subjects[family]
+			-- One second of the entity's OWN tick, which is where every one of
+			-- the three families reaches the gate.
+			if entity.do_custom then entity:do_custom(1) end
+		end
+	end
+	local function read(metres, phase)
+		local ok = true
+		for _, family in ipairs(order) do
+			local entity = subjects[family]
+			local props = entity.object and entity.object:get_properties()
+			local shown = props and props.nametag or ""
+			local want = entity._grug_tag_want or "?"
+			log({"event=tag", "phase=" .. phase, "family=" .. family,
+				"metres=" .. metres, "want=" .. tostring(want),
+				"shown=" .. (shown == "" and "-" or shown)})
+			if phase == "near" and shown ~= want then
+				fail("the " .. family .. " shows no nametag at " .. metres ..
+					" m")
+				ok = false
+			elseif phase ~= "near" and shown ~= "" then
+				fail("the " .. family .. " still shows a nametag at " ..
+					metres .. " m")
+				ok = false
+			end
+		end
+		return ok
+	end
+	at_distance(40)
+	read(40, "far")
+	at_distance(20)
+	read(20, "near")
+	at_distance(40)
+	read(40, "far_again")
+	grug_mobs.nearest_player_d2 = real
+end
+
+--
+-- PROFESSION VENDORS (contract section 8.4). The six starts carry no
+-- profession socket -- the Highcourt fill lane places those -- so what the
+-- engine can say here is that the five entities exist and that their shelves
+-- survived the load-time audit with something on them. A shelf that lost every
+-- offer to an unregistered item is a shopkeeper with an empty counter.
+--
+local function profession_lines()
+	local kinds = {"butcher", "smith", "fishmonger", "baker", "tailor"}
+	for _, kind in ipairs(kinds) do
+		local name = "grug_traders:vendor_" .. kind
+		local vendor = grug_traders.get_vendor(name)
+		local shelf = grug_traders.profession_stock[kind]
+		log({"event=profession", "kind=" .. kind,
+			"entity=" .. tostring(core.registered_entities[name] ~= nil),
+			"nametag=" .. tostring(vendor and vendor.nametag),
+			"offers=" .. tostring(shelf and #shelf),
+			"brackets=" .. tostring(vendor and vendor.brackets == true)})
+		if not core.registered_entities[name] then
+			fail("no entity for the profession vendor " .. kind)
+		end
+		if not shelf or #shelf < 1 then
+			fail("the " .. kind .. " shelf is empty")
+		end
+	end
 end
 
 local function hp_lines(tag)
@@ -613,6 +828,10 @@ local FULL = {
 		hp_lines("fresh")
 		hp_injection()
 	end},
+	-- Playtest round 3, all before the wolves arrive: a fight moves people.
+	{at = 296, what = function() work_lines("fresh") end},
+	{at = 297, what = tag_gate_lines},
+	{at = 298, what = profession_lines},
 	-- The hostile pass runs LAST, after every census: a wolf that killed a guard
 	-- would free a socket, and the roster count must not have to explain that.
 	{at = 300, what = spawn_hostiles},
@@ -827,6 +1046,11 @@ local RELOAD = {
 		census_line("reloaded", true)
 		hp_lines("reloaded")
 		positions_line()
+		-- A work resident has to come back onto its socket with its activity
+		-- and its tool: the activity is a plain field in staticdata and the
+		-- animation and the wield entity are re-applied on activation, which is
+		-- exactly the kind of thing only a reboot proves.
+		work_lines("reloaded")
 		-- R3 again: mob_activate hands every mob a random yaw, so the authored
 		-- facing has to be re-asserted on every activation. A reboot is the only
 		-- thing that proves it.
