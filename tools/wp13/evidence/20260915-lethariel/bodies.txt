@@ -1,0 +1,8 @@
+seed 531802985935182545, window +-266
+planned-water columns: 39161
+columns the overlay blocks at the water surface: 128
+per run: avenue_north=33 avenue_east=19 ring_east=16 ring_north=32 lane_northeast_shore=22 lane_northwest_cross=6
+bodies BEFORE: 2  sizes 38527 634
+bodies AFTER:  2  sizes 38399 634
+
+every water body is still one body after the crossings

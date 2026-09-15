@@ -1,6 +1,7 @@
 == parser and SETGLOBAL on every Lua file this increment changed ==
 mods/MAPGEN/grug_mapgen/wp13/elf_parts.lua parser PASS; SETGLOBAL [0]
 mods/MAPGEN/grug_mapgen/wp13/elf_grove.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/elf_bridge.lua parser PASS; SETGLOBAL [0]
 mods/MAPGEN/grug_mapgen/wp13/lethariel.lua parser PASS; SETGLOBAL [0]
 mods/MAPGEN/grug_mapgen/wp13/lethariel_plot.lua parser PASS; SETGLOBAL [0]
 mods/MAPGEN/grug_mapgen/wp13/lethariel_quadrants.lua parser PASS; SETGLOBAL [0]
@@ -18,15 +19,23 @@ SWEEP 1
 SWEEP 2
 SWEEP 3
 SWEEP 4
-tools/wp13/lethariel_plots.lua:307:		local text = table.concat(rows, "|")
+tools/wp13/lethariel_plots.lua:314:		local text = table.concat(rows, "|")
+tools/wp13/lethariel_plots.lua:408:		local joined = table.concat(rows, "|")
 SWEEP 5
-tools/wp13/lethariel_plots.lua:253:		os.exit(1)
-tools/wp13/lethariel_plots.lua:256:	os.exit(0)
-tools/wp13/lethariel_plots.lua:315:	if failures > 0 then os.exit(1) end
-tools/wp13/lethariel_plots.lua:318:	os.exit(0)
-tools/wp13/lethariel_plots.lua:401:	os.exit(0)
-tools/wp13/lethariel_plots.lua:416:	os.exit(0)
-tools/wp13/lethariel_plots.lua:461:	os.exit(1)
+tools/wp13/lethariel_plots.lua:260:		os.exit(1)
+tools/wp13/lethariel_plots.lua:263:	os.exit(0)
+tools/wp13/lethariel_plots.lua:322:	if failures > 0 then os.exit(1) end
+tools/wp13/lethariel_plots.lua:325:	os.exit(0)
+tools/wp13/lethariel_plots.lua:415:	if failures > 0 then os.exit(1) end
+tools/wp13/lethariel_plots.lua:418:	os.exit(0)
+tools/wp13/lethariel_plots.lua:554:		os.exit(1)
+tools/wp13/lethariel_plots.lua:557:	os.exit(0)
+tools/wp13/lethariel_plots.lua:655:		os.exit(1)
+tools/wp13/lethariel_plots.lua:658:	os.exit(0)
+tools/wp13/lethariel_plots.lua:689:	os.exit(0)
+tools/wp13/lethariel_plots.lua:772:	os.exit(0)
+tools/wp13/lethariel_plots.lua:803:	os.exit(0)
+tools/wp13/lethariel_plots.lua:848:	os.exit(1)
 SWEEPS DONE (no output above a SWEEP line means zero hits)
 == the same five sweeps over all of mods/*/grug_* and tools ==
 SWEEP 1
@@ -297,7 +306,8 @@ tools/wp40/resource_sampling/writer_fixture.lua:242:			"\ntrace=", table.concat(
 tools/wp13/evidence/20260915-capital-terrain/measurements/band-bound.lua:12:--   gentle  the worst |output step| over pairs whose RELIEF step is at most 1.
 tools/wp13/evidence/20260915-capital-terrain/measurements/band-bound.lua:44:io.write("deviation = worst |output - plain terrace|\n\n")
 tools/wp13/evidence/20260914-round-b-terrain/measure/road_shoulder.lua:2:-- rows on the approach, the smallest |dx| at which a biome decoration may host
-tools/wp13/lethariel_plots.lua:307:		local text = table.concat(rows, "|")
+tools/wp13/lethariel_plots.lua:314:		local text = table.concat(rows, "|")
+tools/wp13/lethariel_plots.lua:408:		local joined = table.concat(rows, "|")
 SWEEP 5
 mods/CORE/grug_core/atmosphere_zones.lua:334:-- Sea level is y = 1 (minetest.conf water_level, mirrored in the authored
 mods/CORE/grug_core/atmosphere.lua:10:-- the game-directory minetest.conf merely shifts client defaults for a locally
@@ -383,13 +393,20 @@ tools/wp13/dump_highcourt.lua:220:	os.exit(2)
 tools/wp13/dump_capital_part.lua:30:	os.exit(2)
 tools/wp13/dump_capital_part.lua:53:			os.exit(2)
 tools/wp13/dump_capital_part.lua:72:	os.exit(2)
-tools/wp13/lethariel_plots.lua:253:		os.exit(1)
-tools/wp13/lethariel_plots.lua:256:	os.exit(0)
-tools/wp13/lethariel_plots.lua:315:	if failures > 0 then os.exit(1) end
-tools/wp13/lethariel_plots.lua:318:	os.exit(0)
-tools/wp13/lethariel_plots.lua:401:	os.exit(0)
-tools/wp13/lethariel_plots.lua:416:	os.exit(0)
-tools/wp13/lethariel_plots.lua:461:	os.exit(1)
+tools/wp13/lethariel_plots.lua:260:		os.exit(1)
+tools/wp13/lethariel_plots.lua:263:	os.exit(0)
+tools/wp13/lethariel_plots.lua:322:	if failures > 0 then os.exit(1) end
+tools/wp13/lethariel_plots.lua:325:	os.exit(0)
+tools/wp13/lethariel_plots.lua:415:	if failures > 0 then os.exit(1) end
+tools/wp13/lethariel_plots.lua:418:	os.exit(0)
+tools/wp13/lethariel_plots.lua:554:		os.exit(1)
+tools/wp13/lethariel_plots.lua:557:	os.exit(0)
+tools/wp13/lethariel_plots.lua:655:		os.exit(1)
+tools/wp13/lethariel_plots.lua:658:	os.exit(0)
+tools/wp13/lethariel_plots.lua:689:	os.exit(0)
+tools/wp13/lethariel_plots.lua:772:	os.exit(0)
+tools/wp13/lethariel_plots.lua:803:	os.exit(0)
+tools/wp13/lethariel_plots.lua:848:	os.exit(1)
 SWEEPS DONE (no output above a SWEEP line means zero hits)
 == fresh server check ==
 Fresh-server source audit: PASS

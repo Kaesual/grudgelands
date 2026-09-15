@@ -59,6 +59,7 @@ local function loader(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 	local elf = dofile(directory .. "/elf_parts.lua")(directory)
 	local grove = dofile(directory .. "/elf_grove.lua")(directory)
+	local bridge = dofile(directory .. "/elf_bridge.lua")(directory)
 	local districts = dofile(directory .. "/lethariel_districts.lua")(directory)
 
 	local M = {}
@@ -357,6 +358,32 @@ local function loader(directory)
 		{id = "ring_east", axis = "z", at = 96, from = -96, to = 96},
 		{id = "ring_south", axis = "x", at = -96, from = -96, to = 96},
 		{id = "ring_north", axis = "x", at = 96, from = -96, to = 96},
+	}
+
+	-- WHERE A ROAD RUN CROSSES THE MERE, and it is why this capital has a
+	-- bridge module at all.
+	--
+	-- The seam hands a road the WATER surface where water stands rather than
+	-- the bed under it, so `avenue.lua` lays a solid CAUSEWAY at the water
+	-- line. That is right for Highcourt's rivers and wrong here: measured by
+	-- `tools/wp13/lethariel_plots.lua --bodies`, the mere is ONE body of 38 527
+	-- columns and the six road runs that cross it paved 2 410 of them, cutting
+	-- it into SIX lakes -- the north avenue alone shearing a two-thousand-column
+	-- bay off the main water. The independent review of 2026-09-16 found it and
+	-- the coordinator ruled that a water body stays one body.
+	--
+	-- These are the columns each run crosses water on, over the seven lanes of
+	-- its own band, measured by `--water` and identical on all nine fixture
+	-- seeds -- a planned water body is a property of the static world plan and
+	-- not of the seed. `wp13/elf_bridge.lua` turns exactly these columns into a
+	-- deck on piers with the water continuous beneath.
+	M.water_plan = {
+		avenue_north = {{22, 159}},
+		avenue_east = {{151, 228}},
+		ring_east = {{35, 96}},
+		ring_north = {{-26, 96}},
+		lane_northeast_shore = {{52, 148}},
+		lane_northwest_cross = {{-25, 0}},
 	}
 
 	-- THE GROVE EDGE, on the four edges of the 512 envelope, and the four
@@ -1055,7 +1082,8 @@ local function loader(directory)
 	function M.overlay_names(avenue, palette)
 		local seen, list = {}, {}
 		for _, source in ipairs({avenue.palette_names(palette),
-				grove.palette_names(palette)}) do
+				grove.palette_names(palette),
+				bridge.palette_names(palette)}) do
 			for index = 1, #source do
 				local name = source[index]
 				if not seen[name] then
@@ -1083,7 +1111,14 @@ local function loader(directory)
 	-- over and hoped about.
 	function M.overlay_run(avenue, palette, spec, surface)
 		local plan = M.edge_plan[spec.id]
-		if not plan then return avenue.run(palette, spec, surface) end
+		if not plan then
+			-- A ROAD RUN, and where it crosses the mere a BRIDGE. The road
+			-- module is handed the spec untouched -- including the seam's
+			-- `overhead`, because a road's job is to be walkable end to end --
+			-- and the bridge is a pure post-process on the piece it returns.
+			return bridge.span(palette, spec, surface,
+				avenue.run(palette, spec, surface), M.water_plan[spec.id])
+		end
 		return grove.run(palette, {
 			id = spec.id, axis = spec.axis, at = spec.at,
 			from = spec.from, to = spec.to, width = spec.width,

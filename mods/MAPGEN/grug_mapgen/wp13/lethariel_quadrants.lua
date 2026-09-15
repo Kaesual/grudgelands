@@ -18,9 +18,11 @@
 -- the same lot envelope every other capital's lots are held to (dry footprint
 -- and margin, perimeter fall at most the skirt, rise under the airspace the
 -- plot clears, clear of the core, the gate corridors and every street run,
--- inside its own quarter, a lane clear of its neighbours) on BOTH gate seeds,
--- the north-east quarter carries exactly THREE lots. The other three carry
--- nine each with room to spare. `tools/wp13/lethariel_plots.lua` is the
+-- inside its own quarter, a lane clear of its neighbours) on ALL NINE SEEDS of
+-- `tools/wp13/capital_anchor_fixture.lua`, the north-east quarter carries
+-- exactly THREE lots. The other three carry nine each with room to spare.
+-- `tools/wp13/lethariel_plots.lua --census` counts the legal positions per
+-- quarter and section 3.1 of the research note is its output. `tools/wp13/lethariel_plots.lua` is the
 -- predicate and section 3 of docs/research/wp13-lethariel.md the measurement.
 --
 -- So four interchangeable quarters do not exist here, and the honest

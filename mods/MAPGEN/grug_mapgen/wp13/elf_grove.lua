@@ -42,6 +42,11 @@
 --     contract's five-wide carriageway is three nodes either side of the
 --     centre line, so `M.HALF` is 3 and every piece of this module is held to
 --     it.
+--   * A THRESHOLD CLEARS THE ROAD, not the ground. `avenue.lua` walks its deck
+--     on a one-Lipschitz envelope over forty columns, so on climbing ground the
+--     road stands well above the ground beside it; a lintel set from the ground
+--     lands on the carriageway. The threshold reads the same envelope from the
+--     same callback (`road_level`) and keeps `M.CLEAR` blocks of air over it.
 --   * THE BELT STOPS AT THE WATER. A run may carry `plan.water`, the spans of
 --     itself that stand over a planned water body; nothing is written there,
 --     because a hedge floating on a lake is not an edge and the lake already
@@ -75,6 +80,12 @@ local function loader(directory)
 	M.RISE = 7
 	-- The corner grove.
 	M.CORNER_HALF = 6
+	-- The air a threshold leaves over the ROAD it spans. It is
+	-- `avenue.MIN_CLEAR` and the KAT asserts the two are the same number:
+	-- this module may not depend on the road module (the seam builds them
+	-- side by side), but a lintel that left less air than the road's own rule
+	-- asks for would be a gate a player cannot walk through.
+	M.CLEAR = 3
 	-- How far beyond a piece the ground is read. The same number and the same
 	-- argument as `avenue.REACH`; this module needs only eight of it (the gate
 	-- zone) but takes what the seam offers.
@@ -169,9 +180,16 @@ local function loader(directory)
 		local inside = -outside
 		local phase = spec.lamp_phase or from
 		local reach = spec.reach or M.REACH
-		if reach < M.GATE_HALF then
-			error("wp13 elf grove: the look-around is shorter than a " ..
-				"threshold", 0)
+		-- TWICE the gate zone, not once. `level_of` reads the ground over
+		-- `centre +- GATE_HALF` for a gate whose centre may itself lie
+		-- `GATE_HALF` outside this piece, so the real requirement is
+		-- `2 * GATE_HALF`; the first version asked for one and was one factor
+		-- short of the property it was guarding. With `avenue.REACH = 40` it
+		-- holds either way, but a smaller reach would have made two pieces
+		-- disagree about a lintel's level.
+		if reach < 2 * M.GATE_HALF then
+			error("wp13 elf grove: the look-around is shorter than two " ..
+				"thresholds", 0)
 		end
 		local buf = parts.buffer()
 		local queries = 0
@@ -229,18 +247,54 @@ local function loader(directory)
 			for p = span[1], span[2] do wet[p] = true end
 		end
 
+		-- THE ROAD'S OWN WALKING LEVEL AT A GATE POINT, which is not the
+		-- ground there, and which the first version of this module never
+		-- asked for.
+		--
+		-- `avenue.lua` does not lay its deck on the local ground: it lays it on
+		-- the ONE-LIPSCHITZ UPPER ENVELOPE of the surface over `reach`
+		-- columns -- "the lowest height field everywhere at or above the
+		-- surface that never changes by more than a node between two
+		-- columns". On ground that climbs towards the envelope line the deck
+		-- therefore stands several nodes above the ground a threshold would
+		-- measure. The independent review measured what that cost: five of the
+		-- thirty-six gate/seed pairs had less air over the carriageway than the
+		-- road's own `MIN_CLEAR`, and on fixture seed 42 the north gate --
+		-- the exact column Lane R ends a route at -- was ROOFED SHUT, marble
+		-- laid one node over the deck.
+		--
+		-- So the threshold reads the same envelope the road reads, from the
+		-- same surface callback, and the two cannot drift apart. The road runs
+		-- ACROSS this run, so its axis is this run's LANE axis: the envelope is
+		-- taken over `lane +- reach` at the gate point's own seven positions
+		-- along this run, and the maximum over those positions rather than one
+		-- of them puts the lintel at or above the deck on every lane of the
+		-- carriageway, which is the side of the rounding a lintel wants to be
+		-- on. Kezamba's gate module reached the same answer from the same
+		-- render.
+		local function road_level(centre)
+			local best
+			for step = -M.HALF, M.HALF do
+				for lane = -reach, reach do
+					local x, z = column(centre + step, lane)
+					local lifted = height(x, z) - math.abs(lane)
+					if best == nil or lifted > best then best = lifted end
+				end
+			end
+			return best
+		end
+
 		-- THE LEVEL A THRESHOLD SPRINGS FROM: one level for the whole gate
 		-- zone, so its pillars and its lintel are one piece of architecture
 		-- and not a staircase, and high enough that the road under it is a
-		-- road everywhere.
+		-- road everywhere. Three rules, and the level is the highest of them:
 		--
-		-- `lowest + RISE` alone is not enough, and the KAT is what said so: on
-		-- ground that climbs across the zone the arch springs from the low end
-		-- and comes down to meet the high end, and at the high end the lintel
-		-- stood four courses over the carriageway -- head height for a player
-		-- two nodes tall. So the level is the HIGHER of the two rules: seven
-		-- over the lowest ground, and four over the highest, which is the
-		-- three blocks of air `avenue.MIN_CLEAR` asks for plus the deck.
+		--   * seven courses over the lowest ground of the zone, which is what
+		--     makes it an arch rather than a doorway;
+		--   * four over the highest ground of the zone, so the threshold's own
+		--     pillars clear their own footing at both ends;
+		--   * `M.CLEAR + 1` over the ROAD's walking level, so the carriageway
+		--     under it keeps the air the road module itself insists on.
 		local gate_level = {}
 		local function level_of(centre)
 			if gate_level[centre] then return gate_level[centre] end
@@ -256,6 +310,8 @@ local function loader(directory)
 			end
 			local level = lowest + M.RISE
 			if highest + 4 > level then level = highest + 4 end
+			local road = road_level(centre)
+			if road + M.CLEAR + 1 > level then level = road + M.CLEAR + 1 end
 			gate_level[centre] = level
 			return level
 		end
@@ -317,7 +373,19 @@ local function loader(directory)
 						if (dq ~= 0 or dlane ~= 0) and
 								math.abs(lane + dlane) <= M.HALF then
 							local x, z = column(p, lane + dlane)
-							buf:put(x, y, z, CROWN)
+							-- A CROWN NEVER EATS A TRUNK. In the corner grove
+							-- two standards stand in one column on lanes +-1,
+							-- and the second one's crown reaches the first
+							-- one's stem: two cells of that stem came out as
+							-- leaves. The independent review found it, and the
+							-- answer is one test rather than an ordering rule,
+							-- because the two standards are written in the same
+							-- pass and a neighbouring column's crown can arrive
+							-- before its own trunk does.
+							local here = buf:at(x, y, z)
+							if here == nil or here.name ~= LOG then
+								buf:put(x, y, z, CROWN)
+							end
 						end
 					end
 				end
@@ -433,7 +501,17 @@ local function loader(directory)
 
 		-- The standards, column by column: every column of this piece asks
 		-- every standard within two of it what it puts here.
+		--
+		-- A WET COLUMN ASKS NOTHING. `standard_lanes` already refuses to put a
+		-- standard IN the water, but a crown reaches two columns and a dry
+		-- standard beside the span would have hung leaves over the mere. On the
+		-- committed west span the nearest dry standards happen to be three
+		-- columns clear, so nothing landed there -- the independent review
+		-- pointed out that "the belt stops at the water" was therefore true by
+		-- arithmetic accident and not by construction. It is by construction
+		-- now.
 		for p = from, to do
+			if not wet[p] then
 			for p0 = p - 2, p + 2 do
 				local carried = standard_lanes[p0]
 				if carried ~= nil then
@@ -442,6 +520,7 @@ local function loader(directory)
 						standard_column(p, p0, lane, lane_ground[p0][lane])
 					end
 				end
+			end
 			end
 		end
 
@@ -458,9 +537,24 @@ local function loader(directory)
 		-- run's carriageway is dropped). This run plants none of that kind, so
 		-- the list is empty and its own lantern count travels beside it under
 		-- its own name.
+		-- What every threshold in this piece decided, so the KAT and the
+		-- measurement tool can hold the built gate to the rule instead of
+		-- re-deriving it: the road's walking level, the lintel, and the air
+		-- between them.
+		local gates = {}
+		for index = 1, #(plan.gates or {}) do
+			local centre = plan.gates[index]
+			if gate_level[centre] ~= nil then
+				local road = road_level(centre)
+				gates[#gates + 1] = {gate = centre, road = road,
+					lintel = gate_level[centre],
+					air = gate_level[centre] - road - 1}
+			end
+		end
+
 		return {id = spec.id, cells = cells, lamps = {}, hedges = hedges,
 			standards = standards, lanterns = lamps, thresholds = thresholds,
-			columns = to - from + 1, queries = queries}
+			gates = gates, columns = to - from + 1, queries = queries}
 	end
 
 	return M

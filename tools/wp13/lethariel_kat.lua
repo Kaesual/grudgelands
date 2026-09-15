@@ -41,6 +41,7 @@ return function(repo)
 	local quadrants = dofile(wp13 .. "/lethariel_quadrants.lua")()
 	local districts = dofile(wp13 .. "/lethariel_districts.lua")(wp13)
 	local grove = dofile(wp13 .. "/elf_grove.lua")(wp13)
+	local bridge = dofile(wp13 .. "/elf_bridge.lua")(wp13)
 	local elf = dofile(wp13 .. "/elf_parts.lua")(wp13)
 	local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 	local registry = dofile(repo .. "/tools/wp13/stub_registry.lua")
@@ -950,10 +951,20 @@ return function(repo)
 			" differs at " .. key)
 	end
 
-	-- The road itself: pavement at the surface, a walkable climb over every
-	-- terrace joint, and no height query the caller did not answer.
+	-- The road itself: pavement at the surface and a walkable climb over every
+	-- terrace joint. THE WEST AVENUE and not the east one, because this
+	-- synthetic profile is a staircase and not a lake: the east avenue carries
+	-- a committed water span, the bridge trusts that span, and a bridge told
+	-- that a terrace is a lake lifts its deck by the terrace step. The west
+	-- avenue crosses no water on any seed, so it is the run that tests the
+	-- ROAD. The bridge's own continuity is section 7, over a profile that is
+	-- flat where the water plan says water.
+	local road_run = capital.avenues[3]
+	assert(road_run.id == "avenue_west" and
+		capital.water_plan[road_run.id] == nil,
+		"the dry test avenue moved")
 	local road = capital.overlay_run(avenue, palette,
-		run_spec(capital.avenues[4]), surface)
+		run_spec(road_run), surface)
 	local deck = {}
 	for _, cell in ipairs(road.cells) do
 		if cell.z == 0 then
@@ -962,14 +973,215 @@ return function(repo)
 		end
 	end
 	local worst_step = 0
-	for x = capital.avenues[4].from + 1, capital.avenues[4].to do
+	for x = road_run.from + 1, road_run.to do
 		if deck[x] and deck[x - 1] then
 			local step = math.abs(deck[x] - deck[x - 1])
 			if step > worst_step then worst_step = step end
 		end
 	end
-	assert(worst_step <= 1, "the east avenue steps " .. worst_step ..
+	assert(worst_step <= 1, "the west avenue steps " .. worst_step ..
 		" nodes in one column")
+
+	-- ------------------------------------------------------------------
+	-- 6. THE THRESHOLD OVER THE ROAD, and 7. THE BRIDGE OVER THE WATER
+	-- ------------------------------------------------------------------
+	--
+	-- Section 5's passage test compares the lintel with the BARE GROUND, and
+	-- that is exactly the hole the independent review of 2026-09-16 walked
+	-- through: `avenue.lua` walks its deck on a one-Lipschitz envelope over
+	-- forty columns, so on climbing ground the road stands well above the
+	-- ground beside it and a lintel set from the ground lands on the
+	-- carriageway. On fixture seed 42 the north gate was roofed shut.
+	--
+	-- This section builds the ROAD and the THRESHOLD over the SAME climbing
+	-- profile and compares the lintel with the road's own top cell.
+	assert(grove.CLEAR == avenue.MIN_CLEAR, "the grove edge's clearance (" ..
+		grove.CLEAR .. ") is not the road's own (" .. avenue.MIN_CLEAR .. ")")
+
+	local gate_rows = {}
+	do
+		-- A profile that climbs hard towards the envelope line on one axis and
+		-- is flat across it: the shape that made the ground and the road
+		-- disagree on the real seeds.
+		local function climbing(x, z)
+			local along = math.max(math.abs(x), math.abs(z))
+			return 40 + math.floor(along / 2)
+		end
+		for index = 1, #capital.edge do
+			local run = capital.edge[index]
+			local plan = capital.edge_plan[run.id]
+			-- The avenue that crosses this edge run at its gate.
+			local crossing
+			for other = 1, #capital.avenues do
+				local candidate = capital.avenues[other]
+				if candidate.axis ~= run.axis and run.at >= candidate.from and
+						run.at <= candidate.to then
+					crossing = candidate
+				end
+			end
+			assert(crossing, run.id .. " crosses no avenue")
+			local road = capital.overlay_run(avenue, palette,
+				run_spec(crossing, run.at, run.at), climbing)
+			local deck_top
+			for _, cell in ipairs(road.cells) do
+				local across = (crossing.axis == "x") and
+					(cell.z - crossing.at) or (cell.x - crossing.at)
+				if math.abs(across) <= (avenue.WIDTH - 1) / 2 and
+						cell.name ~= "air" and
+						(deck_top == nil or cell.y > deck_top) then
+					deck_top = cell.y
+				end
+			end
+			assert(deck_top, run.id .. ": the road built no deck at its gate")
+			local piece = capital.overlay_run(avenue, palette,
+				run_spec(run, -grove.GATE_HALF, grove.GATE_HALF), climbing)
+			local gate = (piece.gates or {})[1]
+			assert(gate, run.id .. " published no threshold")
+			local air = gate.lintel - deck_top - 1
+			assert(air >= grove.CLEAR, run.id ..
+				": the threshold leaves " .. air .. " blocks of air over a " ..
+				"deck at " .. deck_top .. " (lintel " .. gate.lintel ..
+				"), fewer than the road's own " .. grove.CLEAR)
+			-- And nothing of the threshold's own stands in the carriageway.
+			for _, cell in ipairs(piece.cells) do
+				local along = (run.axis == "x") and cell.x or cell.z
+				local across = (run.axis == "x") and (cell.z - run.at) or
+					(cell.x - run.at)
+				if math.abs(along) <= grove.GATE_PASSAGE and
+						math.abs(across) <= (avenue.WIDTH - 1) / 2 and
+						cell.y > deck_top and cell.y <= deck_top + grove.CLEAR then
+					assert(cell.name == "air", run.id ..
+						": the threshold puts " .. cell.name ..
+						" in the road's own headroom at " .. cell.x .. "," ..
+						cell.y .. "," .. cell.z)
+				end
+			end
+			gate_rows[#gate_rows + 1] = run.id .. ":" .. deck_top .. ":" ..
+				gate.lintel .. ":" .. air
+		end
+	end
+
+	-- 7. THE BRIDGE. A water body stays ONE body (the coordinator's ruling of
+	-- 2026-09-16): where a road run crosses the mere it runs as a deck on
+	-- piers with the water continuous beneath, and the whole carriageway is
+	-- open water underneath.
+	local bridge_row
+	do
+		-- A lake: the seam hands a road the WATER surface where water stands,
+		-- so a flat plateau over the span IS the water surface as far as the
+		-- overlay is concerned. Outside it the ground climbs away.
+		local LAKE, SPAN_FROM, SPAN_TO = 40, 22, 159
+		local function lake(x, z)
+			if z >= SPAN_FROM and z <= SPAN_TO then return LAKE end
+			if z < SPAN_FROM then return LAKE + (SPAN_FROM - z) end
+			return LAKE + (z - SPAN_TO)
+		end
+		local run = capital.avenues[2]
+		assert(run.id == "avenue_north", "the north avenue moved")
+		local spans = capital.water_plan[run.id]
+		assert(spans and spans[1][1] == SPAN_FROM and spans[1][2] == SPAN_TO,
+			"the north avenue's committed water span moved")
+		local piece = capital.overlay_run(avenue, palette, run_spec(run), lake)
+		assert(type(piece.bridge) == "table" and piece.bridge.columns > 0,
+			"the north avenue built no bridge")
+		local half = (avenue.WIDTH - 1) / 2
+		local deck_by_column, blocked = {}, 0
+		for _, cell in ipairs(piece.cells) do
+			if cell.z >= SPAN_FROM and cell.z <= SPAN_TO and
+					cell.name ~= "air" then
+				local across = cell.x - run.at
+				if math.abs(across) <= half then
+					-- NOT ONE SOLID CELL AT OR UNDER THE WATER on the whole
+					-- carriageway: that is the ruling, as arithmetic.
+					if cell.y <= LAKE then blocked = blocked + 1 end
+					local top = deck_by_column[cell.z]
+					if top == nil or cell.y > top then
+						deck_by_column[cell.z] = cell.y
+					end
+				end
+			end
+		end
+		assert(blocked == 0, "the bridge blocks " .. blocked ..
+			" carriageway cells at or under the water line")
+		-- The deck is there for every column of the span and never steps more
+		-- than a node.
+		local worst_step = 0
+		for column = SPAN_FROM, SPAN_TO do
+			assert(deck_by_column[column], "the bridge has no deck at " ..
+				column)
+			assert(deck_by_column[column] >= LAKE + bridge.LIFT,
+				"the bridge deck at " .. column .. " is not over the water")
+			if column > SPAN_FROM then
+				local step = math.abs(deck_by_column[column] -
+					deck_by_column[column - 1])
+				if step > worst_step then worst_step = step end
+			end
+		end
+		assert(worst_step <= 1, "the bridge deck steps " .. worst_step ..
+			" nodes in one column")
+		-- AND THE SHORE STEP, which is the one a walker takes onto the bridge.
+		-- The profile outside the span rises a node a column, which is what a
+		-- real bank does, and the road's own envelope carries the last dry
+		-- column; the deck may not stand more than a node above it.
+		local shore = {}
+		for _, cell in ipairs(piece.cells) do
+			if cell.name ~= "air" and math.abs(cell.x - run.at) <= half then
+				if cell.z == SPAN_FROM - 1 or cell.z == SPAN_TO + 1 then
+					local top = shore[cell.z]
+					if top == nil or cell.y > top then shore[cell.z] = cell.y end
+				end
+			end
+		end
+		local banks = 0
+		for _, edge in ipairs({{SPAN_FROM - 1, SPAN_FROM},
+				{SPAN_TO + 1, SPAN_TO}}) do
+			local bank, deck_column = shore[edge[1]], deck_by_column[edge[2]]
+			-- The north run STARTS at its own span (the civic quay is its
+			-- south bank and belongs to the core), so only the banks that lie
+			-- inside the run are its to answer for.
+			if edge[1] >= run.from and edge[1] <= run.to then
+			assert(bank and deck_column, "the bridge has no bank at " ..
+				edge[1])
+			assert(math.abs(deck_column - bank) <= 1,
+				"the step from the bank at " .. edge[1] .. " (" .. bank ..
+					") onto the bridge (" .. deck_column .. ") is " ..
+					math.abs(deck_column - bank) .. " nodes")
+			banks = banks + 1
+			end
+		end
+		assert(banks >= 1, "the bridge has no bank inside its own run")
+		-- A PIECE OF A RUN IS EXACTLY THAT STRETCH OF THE WHOLE RUN, over the
+		-- bridge as well: cut a stretch of the span at every column and
+		-- compare the union with the whole.
+		local whole = capital.overlay_run(avenue, palette,
+			run_spec(run, 60, 120), lake)
+		local union, union_count = {}, 0
+		for column = 60, 120 do
+			local cut = capital.overlay_run(avenue, palette,
+				run_spec(run, column, column), lake)
+			for _, cell in ipairs(cut.cells) do
+				local key = cell.x .. ":" .. cell.y .. ":" .. cell.z
+				if union[key] == nil then
+					union[key] = cell.name
+					union_count = union_count + 1
+				else
+					assert(union[key] == cell.name,
+						"two one-column pieces of the bridge disagree at " ..
+							key)
+				end
+			end
+		end
+		assert(union_count == #whole.cells, "the cut union of the bridge has " ..
+			union_count .. " cells against the whole's " .. #whole.cells)
+		for _, cell in ipairs(whole.cells) do
+			local key = cell.x .. ":" .. cell.y .. ":" .. cell.z
+			assert(union[key] == cell.name, "the cut union of the bridge " ..
+				"differs at " .. key)
+		end
+		bridge_row = table.concat({piece.bridge.columns, piece.bridge.piers,
+			piece.bridge.lanterns, piece.bridge.dropped, worst_step,
+			union_count}, ":")
+	end
 
 	local digest = common.hex(common.new_sha256()(
 		table.concat(digest_parts, "\n")))
@@ -977,6 +1189,9 @@ return function(repo)
 		#names, worst_step, union_count, digest)
 	say("lethariel_edge", grove.HALF, grove.BELT, grove.HEDGE,
 		grove.GATE_PASSAGE, grove.RISE, table.concat(edge_rows, ","))
+	say("lethariel_gates", grove.CLEAR, table.concat(gate_rows, ","))
+	say("lethariel_bridge", bridge.LIFT, bridge.PIER, bridge.PIER_DEPTH,
+		bridge.LAMP, bridge_row)
 
 	return table.concat(report)
 end

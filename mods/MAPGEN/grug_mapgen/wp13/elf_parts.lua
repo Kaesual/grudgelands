@@ -16,9 +16,6 @@
 --     the handle rather than editing the shared palette: the six start
 --     blueprints are frozen and `palettes.new(race, overrides)` is the seam
 --     that exists for exactly this.
---   * `M.threshold` -- what an OPEN capital has instead of a gatehouse. A pair
---     of marble pillars carrying a lintel, a lantern on each, and the road
---     running between them: the thing Lane R's four route ends arrive at.
 --   * `M.tree_platform` -- a silverwood standard carrying a railed deck and a
 --     small hall on it. The WP40 profile of this capital is a TERRACED GROVE
 --     and this is the one piece that says so from a distance.
@@ -26,6 +23,14 @@
 --     work socket needs a feature for (sockets contract section 8.1: the
 --     socket stands OUTSIDE and the altar, candle or grave marker stands
 --     within three nodes under its `dir`).
+--
+-- There is deliberately NO THRESHOLD part either, and it is the same lesson
+-- twice. This file carried one -- a pair of marble pillars with a lintel --
+-- while the threshold that actually ships is `elf_grove.lua`'s own inline code
+-- at the four envelope gates, because a threshold has to read the ROAD's
+-- walking level and only the edge overlay has the surface callback that says
+-- what that is. Eighty-three lines nothing called, advertised in the note as if
+-- they shipped. The independent review found it; it is gone.
 --
 -- There is deliberately NO fishing-stage part. The first version of this file
 -- had one -- a plank deck on posts reaching out over its own basin -- and the
@@ -230,90 +235,7 @@ local function loader(directory)
 	end
 
 	-- ------------------------------------------------------------------
-	-- 1. The threshold: what an open capital has instead of a gate
-	-- ------------------------------------------------------------------
-
-	-- Two marble pillars either side of the road, a lintel across them, a
-	-- lantern hung under it and a paved landing between. Lethariel carries no
-	-- curtain wall (contract section 4), so this is the whole of what marks
-	-- the four gate points Lane R ends its routes at: a threshold you walk
-	-- through, not a gate you are let through.
-	--
-	-- Extent: 9 x 5 (x across the road, z along it), y 0..(rise + 2).
-	function M.threshold(palette, spec)
-		local rise = spec.rise or 6
-		local w, d = 9, 5
-		local buf = parts.buffer()
-		local lights, sockets = {}, {}
-		if rise < 4 then error("wp13 elf parts: threshold too low", 0) end
-
-		buf:clear(0, 1, 0, w - 1, rise + 3, d - 1)
-		buf:fill(0, 0, 0, w - 1, 0, d - 1, paving(palette))
-		dressing.inlay(buf, palette, 0, 0, w - 1, d - 1, "plaza_edge")
-
-		-- The two pillars, on the verge columns of a five-wide carriageway.
-		for _, x in ipairs({1, w - 2}) do
-			for _, z in ipairs({1, d - 2}) do
-				buf:fill(x, 1, z, x, 1, z, mark(palette))
-				pillar(palette, buf, x, 2, rise - 1, z)
-				buf:put(x, rise, z, mark(palette))
-			end
-			-- The head of each pair, carried across its own two pillars.
-			buf:put(x, rise + 1, 1, mark_slab(palette))
-			buf:put(x, rise + 1, d - 2, mark_slab(palette))
-		end
-		-- The lintel: one course of the signature material from pillar to
-		-- pillar on both faces, with the crown slab over it.
-		local beams = 0
-		for x = 1, w - 2 do
-			for _, z in ipairs({1, d - 2}) do
-				if x > 1 and x < w - 2 then
-					buf:put(x, rise, z, mark(palette))
-					beams = beams + 1
-				end
-				buf:put(x, rise + 1, z, mark_slab(palette))
-			end
-		end
-		-- A lantern under the middle of each face.
-		local lit = 0
-		for _, z in ipairs({1, d - 2}) do
-			if parts.hanging_light(buf, palette, math.floor(w / 2), rise - 1, z)
-					~= false then
-				lights[#lights + 1] = {x = math.floor(w / 2), y = rise - 1,
-					z = z}
-				lit = lit + 1
-			end
-		end
-		-- The two standing stones outside the pillars, which is what turns a
-		-- gateway into a threshold: something to walk past before you walk
-		-- through.
-		for _, x in ipairs({0, w - 1}) do
-			for _, z in ipairs({0, d - 1}) do
-				buf:put(x, 1, z, mark(palette))
-				buf:put(x, 2, z, mark_slab(palette))
-			end
-		end
-
-		local id = spec.id or "threshold"
-		local centre = math.floor(w / 2)
-		if spec.patrol_group then
-			socket(sockets, id .. "_watch_a", "guard_patrol", 2, 1, 0,
-				0, {group = spec.patrol_group, order = spec.order or 1})
-			socket(sockets, id .. "_watch_b", "guard_patrol", w - 3, 1, d - 1,
-				2, {group = spec.patrol_group, order = (spec.order or 1) + 1})
-		end
-		socket(sockets, id .. "_post", "guard_post", centre - 2, 1, d - 1, 2)
-		socket(sockets, id .. "_idle", "idle", centre + 2, 1, d - 1, 2,
-			{tags = {"door"}})
-
-		return finish(buf, w, d, top_of(buf), {
-			doors = {}, lights = lights, sockets = sockets,
-			inside = {}, room_corner = {},
-		}, {lanterns = lit, lintel = beams})
-	end
-
-	-- ------------------------------------------------------------------
-	-- 2. The tree platform
+	-- 1. The tree platform
 	-- ------------------------------------------------------------------
 
 	-- A silverwood standard with a railed deck round its stem and a small
@@ -452,7 +374,7 @@ local function loader(directory)
 	end
 
 	-- ------------------------------------------------------------------
-	-- 3. The shrine
+	-- 2. The shrine
 	-- ------------------------------------------------------------------
 
 	-- An open marble shrine: four pillars on a stepped podium, an architrave

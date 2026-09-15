@@ -4,6 +4,7 @@
 ## The three files this package CHANGES against c8050057
 docs/design/settlements.md
 docs/research/wp13-lethariel.md
+mods/MAPGEN/grug_mapgen/wp13/elf_bridge.lua
 mods/MAPGEN/grug_mapgen/wp13/elf_grove.lua
 mods/MAPGEN/grug_mapgen/wp13/elf_parts.lua
 mods/MAPGEN/grug_mapgen/wp13/lethariel.lua
@@ -13,21 +14,35 @@ mods/MAPGEN/grug_mapgen/wp13/lethariel_quadrants.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_lethariel_blueprint.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua
 tools/wp13/evidence/20260915-lethariel/README.md
+tools/wp13/evidence/20260915-lethariel/audit-nine-seeds.txt
+tools/wp13/evidence/20260915-lethariel/bodies.txt
+tools/wp13/evidence/20260915-lethariel/built-map-42.txt
+tools/wp13/evidence/20260915-lethariel/built-map-531802985935182545.txt
+tools/wp13/evidence/20260915-lethariel/built-map-7.txt
+tools/wp13/evidence/20260915-lethariel/census.txt
 tools/wp13/evidence/20260915-lethariel/edge.txt
 tools/wp13/evidence/20260915-lethariel/files.sha256
+tools/wp13/evidence/20260915-lethariel/gates.txt
 tools/wp13/evidence/20260915-lethariel/identity.txt
 tools/wp13/evidence/20260915-lethariel/kat.txt
 tools/wp13/evidence/20260915-lethariel/lots.txt
+tools/wp13/evidence/20260915-lethariel/mapcheck.py
 tools/wp13/evidence/20260915-lethariel/micro-luajit.tsv
 tools/wp13/evidence/20260915-lethariel/micro-puc51.tsv
 tools/wp13/evidence/20260915-lethariel/npcs-531802985935182545.txt
+tools/wp13/evidence/20260915-lethariel/overlay-digests-531802985935182545.txt
 tools/wp13/evidence/20260915-lethariel/probe-15912857179583385436.txt
+tools/wp13/evidence/20260915-lethariel/probe-42.txt
 tools/wp13/evidence/20260915-lethariel/probe-531802985935182545.txt
+tools/wp13/evidence/20260915-lethariel/probe-7.txt
 tools/wp13/evidence/20260915-lethariel/probe-8675309.txt
 tools/wp13/evidence/20260915-lethariel/renders/avenue.png
+tools/wp13/evidence/20260915-lethariel/renders/bridge-piers.png
+tools/wp13/evidence/20260915-lethariel/renders/bridge.png
 tools/wp13/evidence/20260915-lethariel/renders/core-night.png
 tools/wp13/evidence/20260915-lethariel/renders/core-overview.png
 tools/wp13/evidence/20260915-lethariel/renders/core-sw.png
+tools/wp13/evidence/20260915-lethariel/renders/gate-east.png
 tools/wp13/evidence/20260915-lethariel/renders/kings-hall.png
 tools/wp13/evidence/20260915-lethariel/renders/plot.png
 tools/wp13/evidence/20260915-lethariel/renders/quay.png
@@ -39,13 +54,12 @@ tools/wp13/evidence/20260915-lethariel/seeds.txt
 tools/wp13/evidence/20260915-lethariel/shore.txt
 tools/wp13/evidence/20260915-lethariel/static.sh
 tools/wp13/evidence/20260915-lethariel/static.txt
+tools/wp13/evidence/20260915-lethariel/water.txt
 tools/wp13/final_micro.lua
 tools/wp13/lethariel_kat.lua
 tools/wp13/lethariel_plots.lua
 
 ## The files it ADDS
-tools/wp13/evidence/20260915-lethariel/audit-nine-seeds.txt
-tools/wp13/evidence/20260915-lethariel/overlay-digests-531802985935182545.txt
 
 ## No shared WP13 library file, and no Highcourt or Dur Brannoc file,
 ## is among either list.
@@ -131,7 +145,7 @@ dur_brannoc_forge_copse/reference/c4f56543a5984305f20489f09edd0ccd28d1a926b03ed8
 dur_brannoc_forge_ore_yard/reference/ca760f88e67f0c7d5c22c724afa08cadb15e0b2b41dd3b69d34838d77c1ae18b/5715
 dur_brannoc_forge_store/reference/5633f26336bcd184760e1768dca27ba750902d4e33ad8faa9ffcf2bf85d1361a/5358
 dur_brannoc_avenue/overlay/e2aeef747567f4e52068ba44228f3931a3b7fee57f5b0c508c990180402f2f57
-lethariel/999a22c949b5a34bc4a42b735703c90623de9689f4c7974e7281334a504ac9c9/354491/112/1/45/26
+lethariel/999a22c949b5a34bc4a42b735703c90623de9689f4c7974e7281334a504ac9c9/359197/112/1/45/26
 lethariel_core/anchor/999a22c949b5a34bc4a42b735703c90623de9689f4c7974e7281334a504ac9c9/91332
 lethariel_market_granary/reference/d0a7d785ce7e883297ea957c3588f1fde5a5354c4da05d1047b0dfe11fe1de96/5715
 lethariel_market_stable/reference/44f311d6001e0641919a83965a6d350bf796691644cdc77facdb1dc492d1ee46/5001
@@ -177,5 +191,5 @@ lethariel_homes_gardens/reference/13526c758f8530dc6f1b272efe95de81220e036c2f9065
 lethariel_homes_singing_grove/reference/595a27bce753399da005d1798308d92f9c34c62dc83a3d4d26aaae7e6f1f5a9f/5780
 lethariel_homes_yard/reference/c6a55ba81cdc1fda440c715f457b12f612255fcb21e6e112174ad397e376de27/3210
 lethariel_homes_green/reference/3923bf8e1ac3bd07b20533065ed097e5f8cd0017440ff032247a42a9d0a106b2/1410
-lethariel_avenue/overlay/50ed81b8f6461638d81e210ad51c692a6ff0206bbfcc7aa45a89f1c13a37e616
+lethariel_avenue/overlay/a5111f8b7c26a9f401c83a7c62cb02b956ae0724e6cef629a7edbaddbe3cb9fa
 composed/9/193

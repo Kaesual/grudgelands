@@ -6,6 +6,10 @@
 --     luajit tools/wp13/lethariel_plots.lua <repo> --derive-fill
 --     luajit tools/wp13/lethariel_plots.lua <repo> --shore
 --     luajit tools/wp13/lethariel_plots.lua <repo> --edge
+--     luajit tools/wp13/lethariel_plots.lua <repo> --gates
+--     luajit tools/wp13/lethariel_plots.lua <repo> --census
+--     luajit tools/wp13/lethariel_plots.lua <repo> --water
+--     luajit tools/wp13/lethariel_plots.lua <repo> --bodies
 --     luajit tools/wp13/lethariel_plots.lua <repo> --seeds
 --
 -- WHY THIS TOOL READS NO ENGINE DUMP, unlike `highcourt_plots.lua` and
@@ -72,6 +76,9 @@ local avenue = dofile(wp13 .. "/avenue.lua")(wp13)
 local grove = dofile(wp13 .. "/elf_grove.lua")(wp13)
 local capital = dofile(wp13 .. "/lethariel.lua")(wp13)
 local quadrants = dofile(wp13 .. "/lethariel_quadrants.lua")()
+local elf_parts = dofile(wp13 .. "/elf_parts.lua")(wp13)
+-- The same handle `r7_lethariel_blueprint.lua` gives the overlay.
+local road_palette = elf_parts.handles().elf
 
 local source = dofile(wp40 .. "/source/simple_map.lua")
 local schemas = dofile(wp40 .. "/schemas.lua")
@@ -319,6 +326,370 @@ if mode == "--edge" then
 end
 
 -- ------------------------------------------------------------------
+-- --water: the wet span of every overlay run, and --bodies: what the
+-- crossings do to the lake
+-- ------------------------------------------------------------------
+--
+-- A WATER BODY STAYS ONE BODY (the coordinator's ruling of 2026-09-16, after
+-- the independent review measured that six road runs paving 3 336 of the mere's
+-- columns cut it into six lakes). `--water` emits the spans every run crosses,
+-- which is the table `wp13/lethariel.lua` commits and `wp13/elf_bridge.lua`
+-- reads; `--bodies` is the property itself, counted by flood fill over the
+-- planner's own water class with the runs' paved columns knocked out.
+--
+-- Both are seed-independent by construction and checked to be: a planned water
+-- body is a property of the static world plan.
+
+local GROVE_HALF = grove.HALF
+local ROAD_HALF = (avenue.WIDTH - 1) / 2 + 1
+
+-- Every run of the overlay, with the half-width of the band it may write in.
+local function overlay_runs()
+	local list = {}
+	for _, group in ipairs({capital.avenues, capital.ring,
+			quadrants.lane_runs()}) do
+		for index = 1, #group do
+			list[#list + 1] = {run = group[index], half = ROAD_HALF,
+				kind = "road"}
+		end
+	end
+	for index = 1, #capital.edge do
+		list[#list + 1] = {run = capital.edge[index], half = GROVE_HALF,
+			kind = "edge"}
+	end
+	return list
+end
+
+-- The columns a run's band covers, as (x, z) pairs.
+local function run_columns(entry, visit)
+	local run, half = entry.run, entry.half
+	for p = run.from, run.to do
+		for lane = -half, half do
+			if run.axis == "x" then visit(p, run.at + lane)
+			else visit(run.at + lane, p) end
+		end
+	end
+end
+
+if mode == "--water" then
+	io.write("seed\trun\tkind\tspans\n")
+	local first, failures = nil, 0
+	for _, seed in ipairs(SEEDS) do
+		local horizontal, _, anchor = session(seed)
+		local rows = {}
+		for _, entry in ipairs(overlay_runs()) do
+			local run, half = entry.run, entry.half
+			local spans, open = {}, nil
+			for p = run.from, run.to do
+				local wet = false
+				for lane = -half, half do
+					local x, z
+					if run.axis == "x" then x, z = p, run.at + lane
+					else x, z = run.at + lane, p end
+					if horizontal.water_class_at(anchor.x + x, anchor.z + z)
+							~= "land" then
+						wet = true
+					end
+				end
+				if wet and open == nil then open = p end
+				if not wet and open ~= nil then
+					spans[#spans + 1] = "{" .. open .. ", " .. (p - 1) .. "}"
+					open = nil
+				end
+			end
+			if open ~= nil then
+				spans[#spans + 1] = "{" .. open .. ", " .. run.to .. "}"
+			end
+			local text = table.concat(spans, ", ")
+			rows[#rows + 1] = run.id .. "=" .. text
+			io.write(seed, "\t", run.id, "\t", entry.kind, "\t",
+				(text == "") and "-" or text, "\n")
+		end
+		local joined = table.concat(rows, "|")
+		if first == nil then first = joined
+		elseif first ~= joined then
+			io.write("FAIL\tthe water plan differs on seed ", seed, "\n")
+			failures = failures + 1
+		end
+	end
+	if failures > 0 then os.exit(1) end
+	io.write("\nevery run's wet spans are the same on all ", #SEEDS,
+		" seeds\n")
+	os.exit(0)
+end
+
+if mode == "--bodies" then
+	local seed = arg[3] or SEEDS[1]
+	local horizontal, height, anchor = session(seed)
+	local WINDOW = SPAN
+	local wet = {}
+	local total = 0
+	for z = -WINDOW, WINDOW do
+		local row = {}
+		for x = -WINDOW, WINDOW do
+			if horizontal.water_class_at(anchor.x + x, anchor.z + z)
+					~= "land" then
+				row[x] = true
+				total = total + 1
+			end
+		end
+		wet[z] = row
+	end
+
+	-- WHICH OF THOSE COLUMNS THE OVERLAY ACTUALLY BLOCKS, asked of the
+	-- SHIPPED composition and not of a model of it: every run is built over
+	-- this world's real surface and a column counts as blocked when the
+	-- overlay writes a solid cell at or below that column's own water surface.
+	-- A bridge deck one node over the water blocks nothing; a pier does, and a
+	-- causeway blocks every column it covers.
+	local function walkable_surface(x, z)
+		local y = height.terrain_height_at(x, z)
+		if horizontal.water_class_at(x, z) ~= "land" then
+			local water = height.water_surface_at(x, z)
+			if type(water) == "number" and water > y then return water, water end
+			return y, y
+		end
+		return y, nil
+	end
+	local function at(x, z)
+		local y = walkable_surface(anchor.x + x, anchor.z + z)
+		return y
+	end
+	local water_y = {}
+	for z = -WINDOW, WINDOW do
+		local row = {}
+		for x = -WINDOW, WINDOW do
+			if wet[z] and wet[z][x] then
+				local _, w = walkable_surface(anchor.x + x, anchor.z + z)
+				row[x] = w
+			end
+		end
+		water_y[z] = row
+	end
+
+	local blocked, blocked_count = {}, 0
+	local per_run = {}
+	for _, entry in ipairs(overlay_runs()) do
+		local run = entry.run
+		local piece = capital.overlay_run(avenue, road_palette, {
+			id = run.id, axis = run.axis, at = run.at, from = run.from,
+			to = run.to, width = avenue.WIDTH,
+			lamp_spacing = avenue.LAMP_SPACING, lamp_phase = run.from,
+			reach = avenue.REACH}, at)
+		local own = 0
+		for index = 1, #piece.cells do
+			local cell = piece.cells[index]
+			if cell.name ~= "air" and cell.z >= -WINDOW and cell.z <= WINDOW and
+					cell.x >= -WINDOW and cell.x <= WINDOW and
+					wet[cell.z] and wet[cell.z][cell.x] then
+				local level = water_y[cell.z][cell.x]
+				if level ~= nil and cell.y <= level then
+					if not (blocked[cell.z] and blocked[cell.z][cell.x]) then
+						blocked[cell.z] = blocked[cell.z] or {}
+						blocked[cell.z][cell.x] = true
+						blocked_count = blocked_count + 1
+						own = own + 1
+					end
+				end
+			end
+		end
+		if own > 0 then per_run[#per_run + 1] = run.id .. "=" .. own end
+	end
+	local paved, paved_count = blocked, blocked_count
+
+	local function count_bodies(blocked)
+		local seen, sizes = {}, {}
+		for z = -WINDOW, WINDOW do
+			for x = -WINDOW, WINDOW do
+				local open = wet[z] and wet[z][x] and
+					not (blocked and blocked[z] and blocked[z][x])
+				if open and not (seen[z] and seen[z][x]) then
+					local size, stack = 0, {{x, z}}
+					seen[z] = seen[z] or {}
+					seen[z][x] = true
+					while #stack > 0 do
+						local cell = table.remove(stack)
+						size = size + 1
+						local cx, cz = cell[1], cell[2]
+						for _, step in ipairs({{1, 0}, {-1, 0}, {0, 1},
+								{0, -1}}) do
+							local nx, nz = cx + step[1], cz + step[2]
+							if nz >= -WINDOW and nz <= WINDOW and
+									nx >= -WINDOW and nx <= WINDOW and
+									wet[nz] and wet[nz][nx] and
+									not (blocked and blocked[nz] and
+										blocked[nz][nx]) and
+									not (seen[nz] and seen[nz][nx]) then
+								seen[nz] = seen[nz] or {}
+								seen[nz][nx] = true
+								stack[#stack + 1] = {nx, nz}
+							end
+						end
+					end
+					sizes[#sizes + 1] = size
+				end
+			end
+		end
+		table.sort(sizes, function(a, b) return a > b end)
+		return sizes
+	end
+
+	local before = count_bodies(nil)
+	local after = count_bodies(paved)
+	io.write("seed ", seed, ", window +-", WINDOW, "\n")
+	io.write("planned-water columns: ", total, "\n")
+	io.write("columns the overlay blocks at the water surface: ",
+		paved_count, "\n")
+	io.write("per run: ", table.concat(per_run, " "), "\n")
+	local function sizes(list)
+		local text = {}
+		for index = 1, math.min(#list, 10) do text[index] = list[index] end
+		return table.concat(text, " ")
+	end
+	io.write("bodies BEFORE: ", #before, "  sizes ", sizes(before), "\n")
+	io.write("bodies AFTER:  ", #after, "  sizes ", sizes(after), "\n")
+	if #after ~= #before then
+		io.write("\nthe crossings split the water: ", #before, " -> ", #after,
+			"\n")
+		os.exit(1)
+	end
+	io.write("\nevery water body is still one body after the crossings\n")
+	os.exit(0)
+end
+
+-- ------------------------------------------------------------------
+-- --gates: the air a threshold leaves over the road it spans
+-- ------------------------------------------------------------------
+--
+-- THE ONE PLACE LANE E AND LANE R MEET. Lane R ends each of its four routes at
+-- a gate point, and the grove edge stands a marble arch over exactly that
+-- column. `avenue.lua` walks its deck on a one-Lipschitz envelope over forty
+-- columns, so on climbing ground the road stands above the ground beside it and
+-- an arch set from the ground lands on the carriageway. The independent review
+-- of 2026-09-16 measured five of these thirty-six pairs under the road's own
+-- `MIN_CLEAR` and one of them -- fixture seed 42, north gate -- sealed shut.
+--
+-- This mode is what keeps that fixed: it drives the SHIPPED `avenue.run` and
+-- the SHIPPED `elf_grove.run` over the real height session of every fixture
+-- seed and reports, for each of the four gates, the road's top cell, the
+-- lintel, and the air between them.
+if mode == "--gates" then
+	local avenue_module = avenue
+	io.write("seed\trun\tdeck_top\tlintel\tair\tverdict\n")
+	local failures, values = 0, {}
+	for _, seed in ipairs(SEEDS) do
+		local horizontal, height, anchor = session(seed)
+		local function surface(x, z)
+			local y = height.terrain_height_at(x, z)
+			local class = horizontal.water_class_at(x, z)
+			if class ~= "land" then
+				-- The seam hands a road the WATER surface where water stands,
+				-- not the bed under it (`r7_settlement.lua`,
+				-- `walkable_values`), and the grove has to be told the same
+				-- story or the two measure different worlds.
+				local water = height.water_surface_at and
+					height.water_surface_at(x, z)
+				if type(water) == "number" and water > y then y = water end
+			end
+			return y
+		end
+		local function at(x, z) return surface(anchor.x + x, anchor.z + z) end
+		for index = 1, #capital.edge do
+			local run = capital.edge[index]
+			local plan = capital.edge_plan[run.id]
+			local crossing
+			for other = 1, #capital.avenues do
+				local avenue_run = capital.avenues[other]
+				if avenue_run.axis ~= run.axis then
+					local column = run.at
+					if column >= avenue_run.from and column <= avenue_run.to then
+						crossing = avenue_run
+					end
+				end
+			end
+			assert(crossing, run.id .. " crosses no avenue")
+			-- The ROAD, as `avenue.lua` builds it, one column wide at the gate.
+			local road = avenue_module.run(road_palette, {
+				id = crossing.id, axis = crossing.axis, at = crossing.at,
+				from = run.at, to = run.at, width = avenue_module.WIDTH,
+				lamp_spacing = avenue_module.LAMP_SPACING,
+				lamp_phase = crossing.from, reach = avenue_module.REACH}, at)
+			local deck_top
+			for cell = 1, #road.cells do
+				local one = road.cells[cell]
+				local across = (crossing.axis == "x") and
+					(one.z - crossing.at) or (one.x - crossing.at)
+				if math.abs(across) <= (avenue_module.WIDTH - 1) / 2 and
+						one.name ~= "air" and
+						(deck_top == nil or one.y > deck_top) then
+					deck_top = one.y
+				end
+			end
+			-- The THRESHOLD, as `elf_grove.lua` builds it, over the gate zone.
+			local piece = grove.run(road_palette, {
+				id = run.id, axis = run.axis, at = run.at,
+				from = -grove.GATE_HALF, to = grove.GATE_HALF,
+				width = avenue_module.WIDTH,
+				lamp_spacing = avenue_module.LAMP_SPACING,
+				lamp_phase = run.from, reach = avenue_module.REACH},
+				at, plan)
+			local gate = piece.gates[1]
+			assert(gate, run.id .. " built no threshold")
+			local air = gate.lintel - deck_top - 1
+			local ok = air >= grove.CLEAR
+			if not ok then failures = failures + 1 end
+			values[#values + 1] = air
+			io.write(seed, "\t", run.id, "\t", deck_top, "\t", gate.lintel,
+				"\t", air, "\t", ok and "ok" or "TOO LOW", "\n")
+		end
+	end
+	local worst = values[1]
+	for index = 2, #values do
+		if values[index] < worst then worst = values[index] end
+	end
+	io.write("\n", #values, " gate/seed pairs, worst air ", worst,
+		" against MIN_CLEAR ", grove.CLEAR, "\n")
+	if failures > 0 then
+		io.write(failures, " threshold(s) leave less air than the road's own ",
+			"rule asks for\n")
+		os.exit(1)
+	end
+	io.write("every threshold clears the road it spans on every seed\n")
+	os.exit(0)
+end
+
+-- ------------------------------------------------------------------
+-- --census: how many positions each quarter offers at all
+-- ------------------------------------------------------------------
+--
+-- `--derive` is a nudge search and says nothing about how much room a quarter
+-- has. This counts it: every position on a four-node grid that passes the whole
+-- predicate, per quarter, at a given reach. It is what section 3.1 of the
+-- research note quotes, and it exists because the first version of that table
+-- came from a throwaway script nobody could re-run.
+if mode == "--census" then
+	local reach = tonumber(arg[3] or "11")
+	local worlds = fields(SEEDS)
+	io.write("# reach ", reach, ", ", #SEEDS, " seeds, 4-node grid\n")
+	io.write("quadrant\tlegal_positions\n")
+	for index = 1, #quadrants.QUADRANTS do
+		local name = quadrants.QUADRANTS[index]
+		local turns = index - 1
+		local legal = 0
+		for z = -240, 240, 4 do
+			for x = -240, 240, 4 do
+				if geometry(x, z, turns, reach, LOT.lane, nil) and
+						terrain(worlds, x, z, reach, LOT.margin) then
+					legal = legal + 1
+				end
+			end
+		end
+		io.write(name, "\t", legal, "\n")
+	end
+	os.exit(0)
+end
+
+-- ------------------------------------------------------------------
 -- --derive / --derive-fill: re-run the searches
 -- ------------------------------------------------------------------
 if mode == "--derive" or mode == "--derive-fill" then
@@ -404,14 +775,30 @@ end
 -- ------------------------------------------------------------------
 -- --seeds: the anchor and the terrace of every seed
 -- ------------------------------------------------------------------
+-- SEEDS OUTSIDE THE FIXTURE SET that put this capital's anchor root on a
+-- mapchunk edge. A root lands on a chunk's lowest layer exactly when
+-- `anchor_y = 47 (mod 80)`, and no seed of `capital_anchor_fixture.lua` does
+-- that for anchor_009 -- the independent review of 2026-09-16 went looking and
+-- found seed 7. It is not added to the fixture (that roster is Lane R's); it is
+-- named here, and this capital's engine evidence carries a full pass on it.
+local EDGE_SEEDS = {"7"}
+
 if mode == "--seeds" then
-	io.write("seed\tanchor_y\troot_y\troot_on_chunk_edge\n")
-	for _, seed in ipairs(SEEDS) do
+	io.write("seed\tanchor_y\troot_y\troot_on_chunk_edge\tset\n")
+	local list = {}
+	for index = 1, #SEEDS do list[index] = SEEDS[index] end
+	for index = 1, #EDGE_SEEDS do list[#list + 1] = EDGE_SEEDS[index] end
+	for _, seed in ipairs(list) do
 		local _, _, anchor = session(seed)
 		local root = anchor.y + 1
 		local origin = math.floor((root + 32) / 80) * 80 - 32
+		local fixture = false
+		for index = 1, #SEEDS do
+			if SEEDS[index] == seed then fixture = true end
+		end
 		io.write(seed, "\t", anchor.y, "\t", root, "\t",
-			tostring(root == origin), "\n")
+			tostring(root == origin), "\t",
+			fixture and "fixture" or "edge-coverage", "\n")
 	end
 	os.exit(0)
 end

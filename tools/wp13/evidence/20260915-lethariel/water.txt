@@ -1,0 +1,174 @@
+seed	run	kind	spans
+531802985935182545	avenue_south	road	-
+531802985935182545	avenue_north	road	{22, 159}
+531802985935182545	avenue_west	road	-
+531802985935182545	avenue_east	road	{151, 228}
+531802985935182545	ring_west	road	-
+531802985935182545	ring_east	road	{35, 96}
+531802985935182545	ring_south	road	-
+531802985935182545	ring_north	road	{-26, 96}
+531802985935182545	lane_southeast_spine	road	-
+531802985935182545	lane_southeast_cross	road	-
+531802985935182545	lane_northeast_shore	road	{52, 148}
+531802985935182545	lane_northwest_spine	road	-
+531802985935182545	lane_northwest_cross	road	{-25, 0}
+531802985935182545	lane_southwest_spine	road	-
+531802985935182545	lane_southwest_cross	road	-
+531802985935182545	edge_west	edge	{-143, -80}
+531802985935182545	edge_east	edge	-
+531802985935182545	edge_south	edge	-
+531802985935182545	edge_north	edge	-
+8675309	avenue_south	road	-
+8675309	avenue_north	road	{22, 159}
+8675309	avenue_west	road	-
+8675309	avenue_east	road	{151, 228}
+8675309	ring_west	road	-
+8675309	ring_east	road	{35, 96}
+8675309	ring_south	road	-
+8675309	ring_north	road	{-26, 96}
+8675309	lane_southeast_spine	road	-
+8675309	lane_southeast_cross	road	-
+8675309	lane_northeast_shore	road	{52, 148}
+8675309	lane_northwest_spine	road	-
+8675309	lane_northwest_cross	road	{-25, 0}
+8675309	lane_southwest_spine	road	-
+8675309	lane_southwest_cross	road	-
+8675309	edge_west	edge	{-143, -80}
+8675309	edge_east	edge	-
+8675309	edge_south	edge	-
+8675309	edge_north	edge	-
+15912857179583385436	avenue_south	road	-
+15912857179583385436	avenue_north	road	{22, 159}
+15912857179583385436	avenue_west	road	-
+15912857179583385436	avenue_east	road	{151, 228}
+15912857179583385436	ring_west	road	-
+15912857179583385436	ring_east	road	{35, 96}
+15912857179583385436	ring_south	road	-
+15912857179583385436	ring_north	road	{-26, 96}
+15912857179583385436	lane_southeast_spine	road	-
+15912857179583385436	lane_southeast_cross	road	-
+15912857179583385436	lane_northeast_shore	road	{52, 148}
+15912857179583385436	lane_northwest_spine	road	-
+15912857179583385436	lane_northwest_cross	road	{-25, 0}
+15912857179583385436	lane_southwest_spine	road	-
+15912857179583385436	lane_southwest_cross	road	-
+15912857179583385436	edge_west	edge	{-143, -80}
+15912857179583385436	edge_east	edge	-
+15912857179583385436	edge_south	edge	-
+15912857179583385436	edge_north	edge	-
+0	avenue_south	road	-
+0	avenue_north	road	{22, 159}
+0	avenue_west	road	-
+0	avenue_east	road	{151, 228}
+0	ring_west	road	-
+0	ring_east	road	{35, 96}
+0	ring_south	road	-
+0	ring_north	road	{-26, 96}
+0	lane_southeast_spine	road	-
+0	lane_southeast_cross	road	-
+0	lane_northeast_shore	road	{52, 148}
+0	lane_northwest_spine	road	-
+0	lane_northwest_cross	road	{-25, 0}
+0	lane_southwest_spine	road	-
+0	lane_southwest_cross	road	-
+0	edge_west	edge	{-143, -80}
+0	edge_east	edge	-
+0	edge_south	edge	-
+0	edge_north	edge	-
+1	avenue_south	road	-
+1	avenue_north	road	{22, 159}
+1	avenue_west	road	-
+1	avenue_east	road	{151, 228}
+1	ring_west	road	-
+1	ring_east	road	{35, 96}
+1	ring_south	road	-
+1	ring_north	road	{-26, 96}
+1	lane_southeast_spine	road	-
+1	lane_southeast_cross	road	-
+1	lane_northeast_shore	road	{52, 148}
+1	lane_northwest_spine	road	-
+1	lane_northwest_cross	road	{-25, 0}
+1	lane_southwest_spine	road	-
+1	lane_southwest_cross	road	-
+1	edge_west	edge	{-143, -80}
+1	edge_east	edge	-
+1	edge_south	edge	-
+1	edge_north	edge	-
+2	avenue_south	road	-
+2	avenue_north	road	{22, 159}
+2	avenue_west	road	-
+2	avenue_east	road	{151, 228}
+2	ring_west	road	-
+2	ring_east	road	{35, 96}
+2	ring_south	road	-
+2	ring_north	road	{-26, 96}
+2	lane_southeast_spine	road	-
+2	lane_southeast_cross	road	-
+2	lane_northeast_shore	road	{52, 148}
+2	lane_northwest_spine	road	-
+2	lane_northwest_cross	road	{-25, 0}
+2	lane_southwest_spine	road	-
+2	lane_southwest_cross	road	-
+2	edge_west	edge	{-143, -80}
+2	edge_east	edge	-
+2	edge_south	edge	-
+2	edge_north	edge	-
+42	avenue_south	road	-
+42	avenue_north	road	{22, 159}
+42	avenue_west	road	-
+42	avenue_east	road	{151, 228}
+42	ring_west	road	-
+42	ring_east	road	{35, 96}
+42	ring_south	road	-
+42	ring_north	road	{-26, 96}
+42	lane_southeast_spine	road	-
+42	lane_southeast_cross	road	-
+42	lane_northeast_shore	road	{52, 148}
+42	lane_northwest_spine	road	-
+42	lane_northwest_cross	road	{-25, 0}
+42	lane_southwest_spine	road	-
+42	lane_southwest_cross	road	-
+42	edge_west	edge	{-143, -80}
+42	edge_east	edge	-
+42	edge_south	edge	-
+42	edge_north	edge	-
+12345	avenue_south	road	-
+12345	avenue_north	road	{22, 159}
+12345	avenue_west	road	-
+12345	avenue_east	road	{151, 228}
+12345	ring_west	road	-
+12345	ring_east	road	{35, 96}
+12345	ring_south	road	-
+12345	ring_north	road	{-26, 96}
+12345	lane_southeast_spine	road	-
+12345	lane_southeast_cross	road	-
+12345	lane_northeast_shore	road	{52, 148}
+12345	lane_northwest_spine	road	-
+12345	lane_northwest_cross	road	{-25, 0}
+12345	lane_southwest_spine	road	-
+12345	lane_southwest_cross	road	-
+12345	edge_west	edge	{-143, -80}
+12345	edge_east	edge	-
+12345	edge_south	edge	-
+12345	edge_north	edge	-
+999999999	avenue_south	road	-
+999999999	avenue_north	road	{22, 159}
+999999999	avenue_west	road	-
+999999999	avenue_east	road	{151, 228}
+999999999	ring_west	road	-
+999999999	ring_east	road	{35, 96}
+999999999	ring_south	road	-
+999999999	ring_north	road	{-26, 96}
+999999999	lane_southeast_spine	road	-
+999999999	lane_southeast_cross	road	-
+999999999	lane_northeast_shore	road	{52, 148}
+999999999	lane_northwest_spine	road	-
+999999999	lane_northwest_cross	road	{-25, 0}
+999999999	lane_southwest_spine	road	-
+999999999	lane_southwest_cross	road	-
+999999999	edge_west	edge	{-143, -80}
+999999999	edge_east	edge	-
+999999999	edge_south	edge	-
+999999999	edge_north	edge	-
+
+every run's wet spans are the same on all 9 seeds

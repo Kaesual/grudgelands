@@ -22,14 +22,25 @@ measured against is [wp13-highcourt-fill.md](wp13-highcourt-fill.md) and
 [wp13-highcourt-districts.md](wp13-highcourt-districts.md); the recipe for
 adding a capital is [wp13-dur-brannoc.md](wp13-dur-brannoc.md).
 
+**Fix round, 2026-09-16.** An independent review found one blocker and two
+should-fixes, and all three are in the tree: the threshold's lintel could sit on
+the avenue's deck and on one seed sealed a gate shut (section 4 rule 3); a
+threshold generator that shipped in no composition (deleted); and the road
+causeways damming the mere into six lakes (section 4b, the bridge). Six smaller
+findings went with them — a crown that could overwrite a trunk, a crown that
+could reach over the water, a piece-independence guard one factor short, a
+legal-position table nobody could reproduce, two stale comments and a pair of
+miscounts in the prose. Each is named where it is fixed.
+
 Evidence: `tools/wp13/evidence/20260915-lethariel/`.
 
 ## 1. What shipped
 
 | File | Change |
 | --- | --- |
-| `wp13/elf_parts.lua` | **new**: the two capital palette handles this race needed — the four green roles (hedge, water, tilled soil, crop) and the pale civic masonry — and three parts no library had: the **threshold**, the **tree platform** and the **shrine** |
-| `wp13/elf_grove.lua` | **new**: the GROVE EDGE, an open capital's boundary as an overlay — `wall.lua`'s place in the composition with the masonry taken out of it |
+| `wp13/elf_parts.lua` | **new**: the two capital palette handles this race needed — the four green roles (hedge, water, tilled soil, crop) and the pale civic masonry — and two parts no library had: the **tree platform** and the **shrine** |
+| `wp13/elf_grove.lua` | **new**: the GROVE EDGE, an open capital's boundary as an overlay — `wall.lua`'s place in the composition with the masonry taken out of it — and the four THRESHOLDS on the gate axes |
+| `wp13/elf_bridge.lua` | **new**: the road over the mere as a deck on piers, so a water body stays ONE body (section 4b) |
 | `wp13/lethariel.lua` | **new**: the 96 × 96 civic core, the avenue, ring and edge run specifications, the overlay dispatch and the committed shore of the mere |
 | `wp13/lethariel_plot.lua` | **new**: the plot builder, `highcourt_plot.lua`'s job for this race |
 | `wp13/lethariel_quadrants.lua` | **new**: the lot grids, the fill lots, the district lanes and the permutation over **three** quarters |
@@ -81,15 +92,13 @@ everything the core lays is masked against it, and the city meets the water with
 a **marble quay** instead: a promenade three wide that follows the diagonal,
 kerbed on the water side and lit from its own landward row.
 
-**The avenues need no code at all.** The seam hands a road the WATER surface
-where water stands rather than the bed under it
+**The avenues cross it, and how they cross it is section 4b.** The seam hands a
+road the WATER surface where water stands rather than the bed under it
 (`r7_settlement.lua`, `walkable_values`, the rule Highcourt's river bought), so
-`avenue.lua` builds a solid CAUSEWAY at the water line. The north avenue crosses
-the mere as one, and so does the east avenue where the lake's southern arm
-reaches it. Over the seven-lane band of each run between the core edge and the
-gate station (z or x 48..261, 1 498 lane-columns each): **768 of the north run's
-and 517 of the east run's stand over planned water**, and none of the south's or
-the west's.
+`avenue.lua` builds a solid CAUSEWAY at the water line. That is the right answer
+for Highcourt's rivers and the wrong one here, and the first version of this
+package shipped it: **six road runs crossing the mere dammed it into six
+lakes**. What ships now is a bridge on piers.
 
 Two consequences the composition had to author rather than inherit:
 
@@ -116,19 +125,25 @@ assumes four quarters a district can be moved BETWEEN. Held to the same lot
 envelope every other capital's lots are held to — dry footprint and margin,
 perimeter fall at most the skirt, rise under the airspace the plot clears, clear
 of the core, the gate corridors and every street run, inside its own quarter, a
-lane clear of its neighbours — a greedy packing of Lethariel's four quarters
-gives, at Highcourt's own reach of 13:
+lane clear of its neighbours — the quarters are not comparable.
+`tools/wp13/lethariel_plots.lua --census [reach]` counts every position on a
+four-node grid that passes the whole predicate on all nine seeds:
 
-| quarter | legal positions on a 4-node grid | greedy packing |
-| --- | --- | --- |
-| south-east | 1 297 | 26 |
-| north-west | 1 313 | 26 |
-| south-west | 1 448 | 28 |
-| **north-east** | **110** | **3** |
+| reach | south-east | **north-east** | north-west | south-west |
+| --- | --- | --- | --- | --- |
+| 13 (Highcourt's) | 536 | **50** | 545 | 666 |
+| 11 (this capital's) | 858 | **77** | 825 | 924 |
 
-At reach 11 the north-east rises to 7 packed and to **3 once the quarter rule is
-applied**, and the other three still carry nine each with room to spare. Four
-interchangeable quarters do not exist at this capital.
+An order of magnitude, whichever reach is asked. A greedy packing at reach 11
+puts three lots in the north-east and twenty-six to twenty-eight in each of the
+others. Four interchangeable quarters do not exist at this capital.
+
+An earlier draft of this note quoted 1 297 / 110 / 1 313 / 1 448, taken with a
+throwaway script over the two gate seeds. The independent review could not
+reproduce them and said so; the numbers above come from a committed mode of the
+committed predicate and anyone can re-run them. The qualitative claim — and with
+it the 30/14 shortfall against Highcourt's 36/16, and the fixed mere precinct —
+survived the correction unchanged, which is the point of having asked.
 
 **The design decision** — this lane's, not a user ruling and not contract text:
 
@@ -200,26 +215,65 @@ Three rules it is held to, and two of them the KAT found:
    column asks every standard within two of it. The KAT cuts a 121-column
    stretch at every single column and compares the union with the whole, cell
    for cell.
-3. **The arch clears the road at both ends of its own zone.** A threshold
-   springs from one level so it is one piece of architecture, and the first
-   version took that level as `lowest + 7`. On ground that climbs across the
-   zone the lintel then came down to four courses over the carriageway at the
-   high end — head height. The level is the HIGHER of `lowest + 7` and
-   `highest + 4` now, and the KAT asserts `avenue.MIN_CLEAR` of air under it at
-   every column of the passage.
+3. **The arch clears the ROAD, not the ground.** This is the package's one
+   blocker, found by the independent review of 2026-09-16, and it is worth the
+   space because the mistake was a whole class of mistake and not a number.
+
+   A threshold springs from one level so that it is one piece of architecture.
+   The first two versions took that level from the GROUND: `lowest + 7`, then
+   `max(lowest + 7, highest + 4)`. But `avenue.lua` does not lay its deck on the
+   ground. It lays it on the ONE-LIPSCHITZ UPPER ENVELOPE of the surface over
+   `REACH = 40` columns, so on ground that climbs towards the envelope line the
+   road is already several nodes up when it reaches the gate. Measured over all
+   four gates on all nine fixture seeds, driving the shipped `avenue.run` and
+   the shipped `elf_grove.run` against WP40's own height session: **five of the
+   thirty-six gate/seed pairs had less air over the carriageway than the road's
+   own `MIN_CLEAR` of three, and on fixture seed 42 the north gate was ROOFED
+   SHUT** — marble laid one node over the deck, across the whole five-wide
+   carriageway, at exactly the column Lane R ends a route at.
+
+   The threshold reads the same envelope the road reads now, from the same
+   surface callback: the greatest `surface(q) − |centre − q|` within the
+   look-around, over the seven positions of the gate point, taken along the
+   ROAD's axis — which is this run's LANE axis, because the road crosses it.
+   Kezamba's gate module reached the same answer from the same kind of render.
+   The level is the highest of three rules: `lowest + RISE`, `highest + 4` and
+   `road + MIN_CLEAR + 1`.
+
+   **Two gates now measure it.** `tools/wp13/lethariel_kat.lua` section 6 builds
+   the ROAD and the THRESHOLD over the same CLIMBING profile and compares the
+   lintel with the road's top cell — the old section compared it with bare
+   ground, which is why nothing was red; and
+   `tools/wp13/lethariel_plots.lua --gates` re-measures all thirty-six pairs
+   against the real height session (`evidence/gates.txt`). Worst air after the
+   fix: **3**, which is `MIN_CLEAR` exactly; none below.
 
 **THE BELT HAS NO WALK, and that is why it needs no walk-continuity gate.** A
 curtain wall's hard property is that its rampart is walkable end to end over
 stepped ground, which is what `wall.lua`'s one-Lipschitz envelope buys and what
 a corner-tower step can break. This belt is a hedge and a line of trees standing
 on the ground, each column written from its OWN lane's ground, so there is
-nothing to walk and nothing to step. The one piece with a level of its own is a
-threshold, and it clears the road by construction rather than by luck: its level
-is `max(lowest + 7, highest + 4)` over its own sixteen-column zone, so every
-column of the passage has at least `highest + 4 − (its own ground) ≥ 4` — the
-avenue's own `MIN_CLEAR` of three blocks of air, plus the deck — on any terrain
-whatever. The KAT asserts it on a synthetic profile that steps three nodes per
-terrace, which is this race's step.
+nothing to walk and nothing to step.
+
+The one piece with a level of its own is a threshold, and what it has to clear
+is the ROAD. The clearance is therefore MEASURED and not argued: thirty-six
+gate/seed pairs, `evidence/gates.txt`, worst 3 against a `MIN_CLEAR` of 3.
+
+| seed | west | east | south | north |
+| --- | --- | --- | --- | --- |
+| 531802985935182545 | 6 | 6 | 3 | 5 |
+| 8675309 | 6 | 4 | 3 | 4 |
+| 15912857179583385436 | 6 | 4 | 3 | 5 |
+| 0 | 6 | 4 | 3 | 4 |
+| 1 | 5 | 4 | 3 | 3 |
+| 2 | 6 | 3 | 4 | 4 |
+| 42 | 5 | 5 | 3 | **3** |
+| 12345 | 5 | 3 | 3 | 3 |
+| 999999999 | 4 | 4 | 5 | 3 |
+
+The bold 3 is seed 42's north gate, which before the fix was air **0** — the
+gate sealed shut. An earlier draft of this note claimed the clearance held "on
+any terrain whatever"; it did not, and the claim is gone.
 
 **The belt stops at the water.** A run carries the spans of itself that stand
 over planned water and writes nothing there, because a hedge floating on a lake
@@ -227,6 +281,79 @@ is not an edge and the lake already is one. Measured by
 `lethariel_plots.lua --edge` over the seven lanes of each line: the west line
 has one span, `z −143..−80`, the other three have none, and the answer is
 identical on all nine seeds.
+
+That used to be true by arithmetic accident. The standards are refused in wet
+columns, but a standard's CROWN reaches two columns, and the column pass that
+emits crowns ran over every column of a piece including the wet ones — so a dry
+standard one or two columns from a span's end would have hung leaves over the
+lake. On the committed west span the nearest dry standards happen to be three
+columns clear, which is why nothing landed there and the KAT passed. The
+independent review pointed it out; the column pass skips wet columns now, and
+the property is a rule rather than a coincidence.
+
+## 4b. THE BRIDGE: a water body stays one body
+
+**The measurement first.** `tools/wp13/lethariel_plots.lua --bodies` floods the
+planner's own water class over the ±266 window and counts connected bodies, then
+counts them again with every column the overlay blocks at or below its water
+surface knocked out. On the first version:
+
+```
+planned-water columns in +-266 = 39161
+bodies BEFORE the roads: 2   sizes 38527 634    (the mere, and a separate pond)
+columns the road runs pave:  2410
+bodies AFTER  the roads: 7   sizes 26700 4954 2060 972 799 634 632
+```
+
+Six road runs cross the mere — the north and east avenues, the north and east
+sides of the ring street, the mere precinct's shore walk and one north-west lane
+— and between them they cut the lake into six. The north avenue alone sheared a
+two-thousand-column bay off the main water. The independent review of 2026-09-16
+measured it; **the coordinator's ruling is that a water body stays one body**,
+and that where an avenue crosses water it runs as a bridge with the water
+continuous beneath. Kezamba had just done the same thing with junglewood on
+basalt piers.
+
+**What ships.** `wp13/elf_bridge.lua` is a pure post-process on the piece
+`avenue.run` returns. For every column the committed water plan calls wet:
+
+| piece | what it is |
+| --- | --- |
+| the causeway | DROPPED — every cell the road wrote in that column, the verge's lamp standard included, because it stood on the water |
+| the deck | `max(the road's own top cell, water surface + 1)`: the road's own one-Lipschitz envelope where that is higher, so the bridge meets the carriageway it continues, and one node over the water everywhere else |
+| its width | seven lanes — the five of the carriageway in the road's own paving and kerb, and a plank verge either side under a **rail**, so a walker cannot step off into the mere |
+| the piers | marble, on the two VERGE lanes and nowhere else, every 8 columns, reaching 4 nodes under the water surface |
+| the lanterns | one on the deck every 16 columns, because the road's own standards went with the causeway |
+
+**The piers are on the verge on purpose.** It is the whole of why the lake stays
+one lake: the five-wide carriageway is open water underneath, along the run and
+across it, so the water flows under the bridge and past every pier. The blocked
+columns are the piers alone.
+
+```
+columns the overlay blocks at the water surface: 128
+per run: avenue_north=33 avenue_east=19 ring_east=16 ring_north=32
+         lane_northeast_shore=22 lane_northwest_cross=6
+bodies BEFORE: 2  sizes 38527 634
+bodies AFTER:  2  sizes 38399 634
+```
+
+**One body before, one body after.** The mere loses 128 of its 38 527 columns to
+piers and stays a single sheet of water a boat can cross.
+
+**Why a committed water plan and not a water query.** An overlay is handed
+`surface(x, z)` and nothing else — there is no water predicate at that seam, and
+inventing one would be a second authority for where the lake is. The spans are
+measured from WP40's own `water_class_at` by `--water`, which also proves they
+are identical on all nine fixture seeds, and they live in `M.water_plan` beside
+the runs they belong to. `evidence/water.txt` is that measurement.
+
+**Three KAT rules hold it** (`lethariel_kat.lua` section 7, over a synthetic
+lake): not one solid cell at or under the water line on the whole carriageway;
+the deck present for every column of the span, over the water, never stepping
+more than a node, and no more than a node from the bank it lands on; and the
+span cut at every column with the union compared to the whole, cell for cell —
+the piece-independence property the seam needs.
 
 ## 5. The core, and the socket table
 
@@ -348,18 +475,29 @@ arithmetic, per plot the reference column, the skirt to −6, the published
   street run, the quarter rule and the lane, plus every plot inside the lot it
   stands on;
 - **the permutation**: all six indices are distinct bijections, the fixed role
-  never moves, and three seeds reproduce themselves.
+  never moves, and three seeds reproduce themselves;
+- **the threshold over the road** (section 6, added by the fix round): the ROAD
+  and the THRESHOLD built over one CLIMBING profile, the lintel compared with
+  the road's own top cell, `MIN_CLEAR` asserted, and nothing of the threshold's
+  in the road's headroom. `grove.CLEAR == avenue.MIN_CLEAR` is asserted too, so
+  the two modules cannot drift apart on the number itself;
+- **the bridge over the water** (section 7): over a synthetic lake, not one
+  solid cell at or under the water line on the whole carriageway; a deck for
+  every column of the span, over the water, never stepping more than a node and
+  never more than a node from the bank it lands on; and the span cut at every
+  column with the union compared to the whole.
 
 ```
 WP13 FINAL MICRO PAIR BYTE-IDENTICAL
-c7268068f12b54487bf30339533bfbbcd62087df5b9b5502be07d901de8a7006  micro-luajit.tsv
-c7268068f12b54487bf30339533bfbbcd62087df5b9b5502be07d901de8a7006  micro-puc51.tsv
+bb519f2bc2611230dd2f3e7395ac07c46b1bc131050dd9bdf8c0e7db13b2c2f7  micro-luajit.tsv
+bb519f2bc2611230dd2f3e7395ac07c46b1bc131050dd9bdf8c0e7db13b2c2f7  micro-puc51.tsv
 ```
 
 That is the whole WP13 fixture set in one process under each interpreter, this
 KAT among them. Its own rows are `lethariel_core`, `lethariel_district`,
 `lethariel_sockets`, `lethariel_activities`, `lethariel_lots`,
-`lethariel_overlay` and `lethariel_edge`.
+`lethariel_overlay`, `lethariel_edge`, `lethariel_gates` and
+`lethariel_bridge` — the last two added by the fix round of 2026-09-16.
 
 ### (b) The six starts, Highcourt and Dur Brannoc are untouched
 
@@ -381,8 +519,8 @@ green inside the micro pair on this tree.
 | --- | --- |
 | core | 91 332 of the contract's 150 000 |
 | 44 plots | 219 253, largest 7 978 of 12 000 |
-| overlay on the KAT's synthetic terrace | 47 941 (road 19 828, grove edge 28 113) |
-| **whole capital** | **358 526 of 400 000** |
+| overlay on the KAT's synthetic terrace | 52 671 (road and bridges 24 558, grove edge 28 113) |
+| **whole capital** | **363 256 of 400 000** |
 
 Engine-side build times, from the probe's own `build_us` on gate seed
 531802985935182545: module load 17.5 ms, the core 126.2 ms, the 44 plots 460.6
@@ -462,6 +600,43 @@ different plot, because they draw different permutations and a district in a
 different quarter is a different set of chunks. On every one of them the fall
 stays inside the skirt and no plot has a wet column.
 
+**THE FIX ROUND'S OWN THREE PASSES** (2026-09-16, on the tree that ships): the
+gate seed again, **seed 42** — whose north gate the review found sealed — and
+**seed 7**, the edge-coverage seed whose anchor root lands on a mapchunk's
+lowest layer. All three `exit=0 errors=0 complete=1`, zero Lethariel audit
+findings, 253 sockets, 8 loops, no submerged plot:
+
+| | 531802985935182545 | 42 | 7 |
+| --- | --- | --- | --- |
+| mapchunks | 112 / 112 | 104 / 104 | **114 / 114** |
+| steady mean | 0.53 s | 0.52 s | 0.50 s |
+| worst plot fall (skirt 6) | 6 `market_fountain` | 5 `mere_walk` | 5 `homes_longhouse` |
+
+**And the BUILT MAP answers the two questions the fix round exists for**
+(`evidence/mapcheck.py` over the probe's own read-back dump,
+`evidence/built-map-<seed>.txt`):
+
+```
+== the east threshold, x = 256, seed 531802985935182545 ==
+  the road's deck at the gate: y = 50
+  the threshold's pillars: 6 columns, top course y = 56
+  the lintel one course over them:  y = 57
+  air over the carriageway: 6  (MIN_CLEAR 3) -> OK
+
+== the mere in the avenue dump ==
+  carriageway columns over the lake: 368
+    open water at the surface: 285
+    solid at the surface:        0
+  verge columns over the lake: 149, of which 19 carry a pier
+  connected bodies of that surface: 1
+```
+
+The deck at 50 and the lintel at 57 are exactly what the offline model predicts
+for this gate and seed, which is the model's own validation; the dump's ceiling
+is one node under the lintel course, so the pillars' top is what the map itself
+shows. **Not one solid cell stands on the carriageway at the water line, and
+the lake under the bridge is one sheet.**
+
 **THE AUDIT FINDINGS THOSE BOOTS DID CARRY ARE OTHER CAPITALS'.** Twelve of
 them, over six of the nine seeds: eleven Highcourt plots and one Dur Brannoc
 plot that "do not stand on this world's ground" — a perimeter fall of up to 14
@@ -510,27 +685,33 @@ beside it already carry:
 
 ## 7. Open points
 
-1. **`run_capital.sh`'s digest gate aborts for a capital with no rampart and no
-   gate**, which is what an OPEN capital is. In `full` mode it walks
+1. **`run_capital.sh:170` aborts for a capital with no rampart and no gate**,
+   which is what an OPEN capital is. In `full` mode it walks
    `for label in avenue rampart gate` and assigns
-   `digest="$(grep -o "${label}_road_digest=..." | ...)"`. Lethariel's probe
-   publishes `core`, `plot` and `avenue` and no rampart or gate, so the second
-   iteration's `grep` finds nothing, exits 1, and under the script's own
-   `set -euo pipefail` the failing command substitution ends the run — after the
-   avenue digest has been recorded and before the final `PASS` line. Every pass
-   in section 6(e) therefore exits 1 on a boot whose own report is
-   `exit=0 errors=0 complete=1` with zero warnings; `overlay-digests.txt` in
-   this package's evidence holds the values the run did produce.
 
-   It is a one-line fix in a file this lane does not own (`|| true` on the two
-   substitutions, or a probe-published label list), and Kezamba — the other open
-   capital — will hit it next.
+   ```sh
+   digest="$(grep -o "${label}_road_digest=[0-9a-f]*" "$log" | tail -1 | cut -d= -f2)"
+   ```
 
-   The gate's OTHER half is now fine: before the rebase onto `c8050057` the same
-   passes also carried four `resolves to no registered entity` ERROR lines for
-   the wave-2 vendor kinds, which the sockets contract's section 8.4 sanctions
-   and the runner's `grep -c ERROR` could not tell from a defect. The NPC
-   vocabulary lane registered those entities and the count is zero now.
+   Under the script's own `set -euo pipefail` the assignment takes the
+   PIPELINE's status; `grep` returns 1 when it matches nothing; so the shell
+   exits **before** the `[[ -n "$digest" ]] || continue` guard on line 174 can
+   fire. Lethariel's probe publishes `core`, `plot` and `avenue` and no rampart
+   or gate, so the run ends after the avenue digest and before the final `PASS`
+   line, on a boot whose own report is `exit=0 errors=0 complete=1` with zero
+   warnings and zero audit findings. `surface` mode never reaches the loop and
+   does print PASS.
+
+   The independent review reproduced it, Kezamba met it independently, and Lane
+   D is fixing it. One line: `|| true` inside both substitutions, or a
+   probe-published label list. Every `full` row of section 6(e) is judged from
+   its own log for that reason.
+
+   The gate's OTHER half is fine: before the rebase onto `c8050057` the same
+   passes carried four `resolves to no registered entity` ERROR lines for the
+   wave-2 vendor kinds, which the sockets contract's section 8.4 sanctions and
+   the runner's `grep -c ERROR` could not tell from a defect. The NPC vocabulary
+   lane registered those entities and the count is zero now.
 2. **`capital_plots.lua` and `capital_probe` cannot express a four-district
    capital.** The first reads `capital.district.plots` (one district) and the
    second's `scan` mode sweeps `x 52..204, z −96..96`, which is the quadrant Dur
@@ -539,20 +720,29 @@ beside it already carry:
    not closed** — Lane D owns those files. The shape this lane suggests is the
    one it used: read `wp40/height.lua` and `wp40/simple_map.lua` directly, as
    `capital_terrain_fixture.lua` already does, and take every seed.
-3. **The other capitals' lots have never been measured on more than two seeds.**
-   Section 3.3 is a finding about the method, not only about this capital.
-4. **NO FIXTURE SEED PUTS LETHARIEL'S ANCHOR ROOT ON A MAPCHUNK EDGE**, and
-   the number is the test: a root lands on a chunk's lowest layer exactly when
-   `anchor_y ≡ 47 (mod 80)`. Over the nine seeds of
+3. **The other capitals' lots have never been measured on more than two seeds,
+   and twelve of them are illegal.** This capital's nine-seed engine sweep says
+   so from the other capitals' own load-time audit, and the independent review
+   reproduced it: **eleven Highcourt plots and one Dur Brannoc plot** "do not
+   stand on this world's ground" on six of the nine fixture seeds — perimeter
+   falls of 7, 8, 8, 10, 10, 10, 12 and 14 against a skirt of 6, and a rise of
+   10 against a clear of 8. The worst is seed 999999999, which alone carries six
+   Highcourt findings and the Dur Brannoc one.
+   `evidence/audit-nine-seeds.txt` lists every line with its numbers. Both
+   capitals need a nine-seed lot pass of their own; section 3.3 is the method
+   finding behind it, and `lethariel_plots.lua --derive` is the shape such a
+   pass can take.
+4. **The edge-coverage seed is 7, and it is clean.** A root lands on a chunk's
+   lowest layer exactly when `anchor_y ≡ 47 (mod 80)`. Over the nine seeds of
    `capital_anchor_fixture.lua`, anchor_009's `anchor_y` is **41, 36, 36, 42,
-   53, 36, 36, 36, 39** — not one of them is 47 or 127, and the fixture's own
-   `root_on_chunk_edge` column says `false` for every one
-   (`evidence/seeds.txt`). Highcourt is the capital that has such a seed
-   (anchor_y 47 on 15912857179583385436), which is what the anchor-activation
-   fix was written for. So the brief's fourth engine seed does not exist for
-   this capital; the nine-seed engine sweep above is what stands in its place.
-   Whether such a seed exists at all outside the fixture set is a search nobody
-   has run.
+   53, 36, 36, 36, 39** — not one of them qualifies, so the brief's fourth
+   engine seed does not exist inside the fixture set. The independent review of
+   2026-09-16 went looking outside it and found **seed 7: `anchor_y` 47, root
+   48, a mapchunk's lowest layer** (13, 777777, 4242424242 and 99 also give
+   roots on or near one). `tools/wp13/lethariel_plots.lua --seeds` lists it
+   beside the nine as the edge-coverage seed and this package carries a full
+   engine pass on it (section 6(e)). It is deliberately NOT added to
+   `capital_anchor_fixture.lua`: that roster is Lane R's.
 5. **The mere's shore is committed data.** A blueprint is a fixed cell list
    built once at load with no world to ask, so the wedge is a table and
    `lethariel_plots.lua --shore` is what keeps it honest. The day WP40 moves
@@ -572,7 +762,20 @@ beside it already carry:
    and nothing here reads a route cell. If the rebase moves the ground under a
    lot anyway, `luajit tools/wp13/lethariel_plots.lua .` says which, and
    `--derive` and `--derive-fill` re-take the two tables.
-9. **The user has not walked Lethariel.** Nothing here is accepted until they
+9. **Two things the review's eye caught that this lane did NOT change, because
+   changing them is a design decision and not a defect.** (a) The core's three
+   inner gatehouses are crenellated masonry towers and they dominate
+   `core-overview.png`: the city can read as a pale CASTLE rather than an elven
+   grove city, which is close to what section 2.4's "no curtain wall,
+   colonnades, groves between plots" steers away from. The contract's own
+   section 2.1 lists `gatehouse` among a capital's parts and every capital so
+   far has them, so replacing them with something lighter — a colonnaded gate,
+   a pair of bough towers — wants a ruling rather than a commit. (b)
+   `plot.png` is one small house alone on a wide terrace, with no grove, hedge
+   or lantern round it; that is one sample of forty-four, and it is the
+   "far less finished" complaint Dur Brannoc drew. Both are for the user's eye
+   at the playtest.
+10. **The user has not walked Lethariel.** Nothing here is accepted until they
    have. On seed 531802985935182545 the crossing of the two great avenues — the
    `arrival` landmark, with the guard banner on it — is at **(1800, 42, −1500)**.
    Walk NORTH from it: the quay is twenty nodes on, and the causeway leaves the

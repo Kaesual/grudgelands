@@ -12,7 +12,12 @@ Everything here was taken on branch `wp13-w2-lethariel`, based on `main` at
 | `lots.txt` | all 44 lots against the lot predicate on ALL NINE seeds | `luajit tools/wp13/lethariel_plots.lua .` |
 | `shore.txt` | the mere: the water columns of the civic pad and the zero the composition writes on, on all nine seeds | `luajit tools/wp13/lethariel_plots.lua . --shore` |
 | `edge.txt` | the grove edge's water spans, per run and per seed | `luajit tools/wp13/lethariel_plots.lua . --edge` |
-| `seeds.txt` | the anchor and the root of anchor_009 on the nine seeds, and whether a root lands on a mapchunk edge | `luajit tools/wp13/lethariel_plots.lua . --seeds` |
+| `gates.txt` | **the fix round's headline**: the air each of the four thresholds leaves over the ROAD it spans, on all nine seeds — 36 values, worst 3 against a `MIN_CLEAR` of 3 | `luajit tools/wp13/lethariel_plots.lua . --gates` |
+| `water.txt` | the wet span of every overlay run, per seed; the table `wp13/lethariel.lua` commits | `luajit tools/wp13/lethariel_plots.lua . --water` |
+| `bodies.txt` | **the other headline**: the mere's connected bodies before and after the crossings — 2 and 2 | `luajit tools/wp13/lethariel_plots.lua . --bodies` |
+| `census.txt` | legal lot positions per quarter, at both reaches, on nine seeds; section 3.1 of the note | `luajit tools/wp13/lethariel_plots.lua . --census [reach]` |
+| `mapcheck.py`, `built-map-<seed>.txt` | what the BUILT MAP says about the east threshold's clearance and the water under the bridge | `python3 .../mapcheck.py <run output dir>` |
+| `seeds.txt` | the anchor and the root of anchor_009 on the nine fixture seeds AND on seed 7, the edge-coverage seed whose root does land on a mapchunk's lowest layer | `luajit tools/wp13/lethariel_plots.lua . --seeds` |
 | `identity.txt` | the files this package changed against `main`, and the identity digests of every settlement the integration fixture prints | `git diff --name-only 922bfd92` and `luajit -e 'io.write(dofile("tools/wp13/integration_fixture.lua")("."))'` |
 | `files.sha256` | the sources this package added or changed | `sha256sum` over the list in `identity.txt` |
 | `probe-<seed>.txt` | the engine pass's own log lines: build times, per-mapchunk timings, the socket inventory and the read-back digests | `tools/wp13/run_capital.sh <out> lethariel full <seed>` |
@@ -32,7 +37,9 @@ Everything here was taken on branch `wp13-w2-lethariel`, based on `main` at
 | `kings-hall.png` | the Hall of the Silver Boughs and the throne approach |
 | `sacred-grove.png` | the standing silverwood inside the civic core, with the shrine on its walk |
 | `plot.png` | one district plot as built on its own terrace |
-| `avenue.png` | **the picture this package exists for**: the north avenue leaves the civic core, walks down the terraces and runs out across the mere as a lamp-lit causeway to the far shore |
+| `avenue.png` | **the picture this package exists for**: the north avenue leaves the civic core, walks down the terraces and runs out across the mere |
+| `bridge.png`, `bridge-piers.png` | the road over the mere as it ships: a railed deck on marble piers with the lake flowing under the whole carriageway |
+| `gate-east.png` | the east threshold — six marble pillars and the road running clear between them. The probe's dump box ends one node under the lintel course, so the pillars' top is what the picture shows; `built-map-531802985935182545.txt` has the number |
 
 ## Nine seeds
 

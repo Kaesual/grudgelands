@@ -12,6 +12,7 @@ LUAC="$repo/tools/bin/luac51"
 CHANGED=(
 	mods/MAPGEN/grug_mapgen/wp13/elf_parts.lua
 	mods/MAPGEN/grug_mapgen/wp13/elf_grove.lua
+	mods/MAPGEN/grug_mapgen/wp13/elf_bridge.lua
 	mods/MAPGEN/grug_mapgen/wp13/lethariel.lua
 	mods/MAPGEN/grug_mapgen/wp13/lethariel_plot.lua
 	mods/MAPGEN/grug_mapgen/wp13/lethariel_quadrants.lua
