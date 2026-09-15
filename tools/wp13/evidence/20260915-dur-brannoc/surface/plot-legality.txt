@@ -1,0 +1,12 @@
+plot	x	z	verdict	worst_fall	worst_rise	submerged_a	submerged_b
+forge_charcoal	56	-72	legal	4	9	0	0
+forge_pack_stable	56	60	legal	3	3	0	0
+forge_smithy	116	-28	legal	0	8	0	0
+forge_guild_house	116	28	legal	4	8	0	0
+forge_quench_court	160	-28	legal	4	4	0	0
+forge_watch	160	32	legal	4	4	0	0
+forge_copse	112	-92	legal	4	12	0	0
+forge_ore_yard	112	64	legal	4	8	0	0
+forge_store	116	-60	legal	4	4	0	0
+
+every dur_brannoc district plot is dry, inside the skirt and under its own roof on both worlds

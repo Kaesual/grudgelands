@@ -169,8 +169,23 @@ loops — a city ring, one per gate tower and one per district — and each loop
 gets its own guard,
 walking that loop and no other; its flair villagers keep to the composition they
 belong to, the core or their own plot, instead of wandering the whole city. Its
-two traders stand on the blueprint's own vendor sockets; the five capitals whose
+two traders stand on the blueprint's own vendor sockets; the capitals whose
 cores have not been built yet keep their fixed vendor offsets until they are.
+
+**Walled capitals.** Decided 2026-09-15 with the second capital, Dur Brannoc.
+Three of the six are walled (Dur Brannoc, Nhal Veyr, Gor Drazhak) and three are
+open. A curtain wall runs along all four edges of the capital's 512 envelope,
+with a turret every 64 nodes, a turret at each corner and a gatehouse on each of
+the four gate axes, and the avenue runs through its gate passage. It has no
+fixed cells either: like the avenues, it is computed per mapchunk from the
+ground the map actually has, so it follows the terraces instead of cutting
+through them — its walk steps down half a node at a time and its masonry starts
+under each column's own ground, which is what makes a wall on stepped terrain
+have no gap in it. The wall carries no NPCs of its own; a walled capital's
+garrison is the four gatehouses of its civic core, exactly as an open one's is.
+Where a capital's avenue has to leave the ground — the blend from the flat civic
+core to the terraces can fall faster than a road may descend — the raised
+stretch carries a masonry rail on both kerbs.
 
 Shipped behaviour of that first roster: each start's nine NPCs are placed once
 its area is prepared at server start, from the sockets alone, and stay for the

@@ -131,9 +131,18 @@ stone block).
 ## 3. Increment order
 
 1. Seam generalisation (§2.2) with Hearthpine and Dawnmere byte-identical.
+   **Shipped 2026-09-15**, [wp13-seam-generalisation.md](wp13-seam-generalisation.md).
 2. Highcourt core + one district + its four avenues as the pilot capital;
    measure build time and per-chunk cost; user playtest.
+   **Shipped 2026-09-14/15**, [wp13-highcourt.md](wp13-highcourt.md).
 3. The other five capitals, one lane each, after the pilot's fix round.
+   **Dur Brannoc shipped 2026-09-15** — the first WALLED capital, so it also
+   owns the curtain wall's representation in the seam:
+   [wp13-dur-brannoc.md](wp13-dur-brannoc.md). Its answer, which the four
+   remaining capitals inherit, is that a curtain wall is an **overlay** and
+   shares its capital's one overlay blueprint with the avenues, because the
+   cross-run arbitration that lets a road through a gate only exists inside one
+   overlay. Nhal Veyr and Gor Drazhak are the other two walled ones.
 4. Villages (12), then outposts/camps, then mining/apex/mirefolk dressing.
 
 ## 4. User rulings
