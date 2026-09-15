@@ -126,8 +126,38 @@ rules follow, and all three are in the KAT:
 
 Measured populations of the finished core: 6 107 pad columns, 2 645 lagoon,
 273 ravine, 367 boardwalk cells, 53 piers, 80 quay stones, 60 bridge cells,
-4 totem posts, **5 emergent kapoks and 7 jungle trees** (the contract's "emergent
-trees kept" as a number the KAT holds a floor under), 54 sockets, 68 038 cells.
+25 gorge-rim rails, 4 totem posts, **5 emergent kapoks and 7 jungle trees**,
+54 sockets, 68 028 cells.
+
+### 3a. "Emergent trees kept", and what that can honestly mean here
+
+The contract's troll row ends "emergent trees kept" and the brief asks for the
+count inside the envelope **before and after**. The after is measurable and the
+before is not with the tools this tree has, so the honest version of the claim is
+the arithmetic rather than a number nobody took. The independent review of
+2026-09-16 was right to call the first version of this paragraph a different
+claim from the one the contract makes.
+
+* **What the composition writes on.** The core lays ground on 6 107 of its 9 025
+  columns and leaves 2 918 to the lake and the gorge; the 52 plots' ground
+  rectangles are 32 116 columns; the overlay's eight seven-lane bands are 11 256.
+  That is **49 479 of the envelope's 263 169 columns, 18.8 %**, and it is an
+  upper bound, because the bands overlap the core and each other. **At least
+  81.2 % of the envelope is never touched, and WP40's own emergents there stand
+  exactly as the mapgen placed them.** That is the whole of what "kept" can mean
+  for a settlement that writes cells.
+* **What the composition plants.** Inside its own footprint it puts back 5
+  emergent kapoks and 7 jungle trees in the core — a floor of 4 emergents is a
+  build error, which is the number the KAT holds — plus the groves and totem rows
+  of the fill lots. The built core carries **3 000 tree cells**, 1 708
+  `default:jungletree` and 1 292 `default:jungleleaves`, read back out of the
+  finished map.
+* **What is NOT measured.** How many of WP40's own trees stood on those 49 479
+  columns before the settlement was written. That needs the same seed emerged
+  with the capital absent from the roster, and `run_capital.sh` has no mode for
+  it (lane D's `field` mode, announced for its round, is what would do it). The
+  claim "kept" is therefore made about the 81.2 % and not about the whole
+  envelope, and this note does not call the twelve planted trees a preservation.
 
 ## 3c. The gate ramp: how the avenues come down to the ground Lane R hands them
 
@@ -352,14 +382,17 @@ could break and does not.
 The whole WP13 fixture set in one process under each interpreter:
 
 ```
-WP13 final micro PASS interpreter=luajit output_sha256=a15f5630…
-WP13 final micro PASS interpreter=puc51  output_sha256=a15f5630…
+WP13 final micro PASS interpreter=luajit output_sha256=f9e8976d…
+WP13 final micro PASS interpreter=puc51  output_sha256=f9e8976d…
 ```
 
-The pair moved from `46b4dea6…` when this lane was rebased onto Lane N
-(`c8050057`). **The delta is Lane N's, not this lane's**: the branch's TSV
-differs from a `git archive` of `c8050057` only by the three Kezamba rows, which
-the independent review measured.
+The digest has moved twice and each move is accounted for. `46b4dea6…` was the
+pre-rebase value; `a15f5630…` is what the rebase onto Lane N (`c8050057`, the
+wave-2 NPC vocabulary) produced, and **that delta is Lane N's, not this lane's**
+— the independent review measured the branch's TSV against an archive of
+`c8050057` and found it differs only by the three Kezamba rows. `f9e8976d…` is
+this fix round: the KAT gained the avenue-obstruction rule, the occlusion half of
+the `fish` test and a tighter `smith` set, so its own row changed.
 
 ### (b) The six starts are byte-identical
 
@@ -476,9 +509,17 @@ evidence (`engine/full-<seed>/probe.txt`) over the nine seeds:
 
 | | value |
 | --- | --- |
-| `core_road_digest` | **`0dd25587001b13b55e4a2377b247124e106c44cbe7b8e579e7cefe7161a964b0` on all nine** |
+| `core_road_digest` | one value on all nine seeds |
 | `plot_road_digest` | **seven distinct values over nine seeds** |
-| `avenue_road_digest` | one per seed; `c75fd1c07535c4264ff481bb94bbb46c52aa25834ad4ca9ac33338311eb44595` with 110 727 cells on `531802985935182545` |
+| `avenue_road_digest` | one per seed |
+
+At the head of this branch, on seed `531802985935182545`:
+`core_road_digest = 0d6e6eea619c53db5899c5aa93e4f8c6e45bdcaa253633b7887201e955a63bcb`,
+`avenue_road_digest = f91542ccf9a5b17b677d3908f967d481030795d7ca5d34e03650d63eb19d6e2d`
+with 110 388 cells. The nine-seed table of §6d was taken before the fix round of
+2026-09-16 and its timings and counts still hold — the core moved by the six
+cells B1's rail change took out of it and the avenue by the gate ramp — but the
+three digests it recorded belong to the pre-fix tree and are superseded by these.
 
 **The CORE builds to the same bytes on every seed; the plots follow the world,
 as they must.** The core is anchor-relative and Kezamba's civic reference is
@@ -495,6 +536,42 @@ That review also found the earlier §6e quoting avenue numbers
 do not reproduce. They were taken from a scratch run that the causeway-rail
 commit then superseded and never re-recorded. The values above are the committed
 ones, and the review reproduced them independently.
+
+### (f) The fix round of 2026-09-16, proved in the built map
+
+One full engine pass on `531802985935182545` at this branch's head:
+`exit=0 errors=0 complete=1`, **0 ERROR, 0 ModError, 0 terrain-audit findings**,
+`worst_plot_fall=5 worst_plot_submerged=0`, `sockets=262`, steady mean
+**0.467 s** against a Lethariel control of 2.390 s (5.1x), roster
+`guards 18/18 flair 163/163 vendor 7/7 quest 1/1 pending 0 spare 11`.
+
+`evidence/20260915-kezamba/engine/built-map-proof.txt` reads the two blockers
+out of that pass's own dumps:
+
+```
+== B1: the east and north avenue ends, the two courses a walker occupies
+  east  x=47 lane -2  y1..2 = [(1, 'default:fence_junglewood')]  clear
+  east  x=47 lane -1  y1..2 = (nothing)                          clear
+  east  x=47 lane +0  y1..2 = (nothing)                          clear
+  east  x=47 lane +1  y1..2 = (nothing)                          clear
+  east  x=47 lane +2  y1..2 = [(1, 'default:fence_junglewood')]  clear
+  ... the north end reads the same ...
+  centre three lanes obstructed: 0
+
+== B2: the east gate, from the avenue dump
+  x=248 z=0  top solid y=-14  castle_stonewall_stair
+  x=249 z=0  top solid y=-15  castle_stonewall_stair
+  ...one node a column...
+  x=256 z=0  top solid y=-22  castle_pavement_brick     <- the gate point
+  x=258 z=0  top solid y=-21  dirt_with_canopy_litter   <- free terrain
+
+  the verge at z=+3, where the threshold's post stands:
+  x=253 -19   x=254 -20   x=255 -21   x=256 -22   (it comes down with the road)
+```
+
+Before the fix the same columns read a fence across all five lanes at `x = 47`,
+a road at `y = -6` and terrain at `y = -21` one column outside it, and the
+verge's kerbs and posts at `-6` with nothing between them and the ground.
 
 ## 7. Open points
 

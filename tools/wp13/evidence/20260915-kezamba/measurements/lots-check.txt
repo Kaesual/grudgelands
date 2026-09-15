@@ -1,3 +1,4 @@
+kezamba_mask	core_wet	2645	disagreements	0	seeds	9
 kind	lot	kind2	x	z	reach	fall	rise	wet	verdict
 kezamba_lot	shore_1	plot	124	-112	13	6	6	0	ok
 kezamba_lot	shore_2	plot	156	-112	13	6	8	0	ok

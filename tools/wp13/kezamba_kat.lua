@@ -120,7 +120,12 @@ return function(repo)
 	-- it say so.
 	feature_set("farm", {"crop_soil", "crop", "planter_soil", "ground_patch",
 		"ground_straw"}, {"farming:soil_wet"})
-	feature_set("chop", {"tree_log", "post", "beam"}, {})
+	-- `chop` IS A LOG OR A TREE (§8.1). `post` and `beam` came out of the set
+	-- after the independent review of 2026-09-16 pointed out that this lane had
+	-- already argued, in §5, why a drying rack's posts are not something to
+	-- chop -- and then left them in. Every `chop` socket of this capital faces a
+	-- `dressing.wood_pile`, which is `tree_log`.
+	feature_set("chop", {"tree_log"}, {})
 	-- `tend` IS A PLANT OR A FLOWER AND NOTHING ELSE (§8.1). The first version
 	-- of this set also accepted `planter` and `planter_soil` -- the masonry kerb
 	-- and the soil of a raised bed -- which is how a gardener came to face a
@@ -141,13 +146,21 @@ return function(repo)
 	--   forage "a mushroom, a bush, a plant, a vine or leaves"
 	--   mine   "a stone, ore or cobble node at head or chest height"
 	feature_set("brew", {"hearth", "storage", "workbench"}, {})
-	feature_set("carve", {"tree_log", "post", "signature", "plaza_edge"}, {})
-	feature_set("mourn", {"low_wall", "light_post", "stepping", "signature"},
-		{})
+	-- `carve` is "a log, a totem/statue part or a stone block". `plaza_edge` is
+	-- a road kerb and is out; `post` and `signature` stay, because
+	-- `dressing.totem` builds its posts out of exactly those two.
+	feature_set("carve", {"tree_log", "post", "signature"}, {})
+	-- `mourn` is "a grave marker, a coffin or a candle". `signature` is a plain
+	-- basalt block and is out; `dressing.grave` sets its marker on a flagstone
+	-- out of `low_wall` and `stepping`, and a candle is the palette's light.
+	feature_set("mourn", {"low_wall", "light_post", "stepping"}, {})
 	feature_set("spar", {"fence", "fence_rail", "post"},
 		{"wool:white", "wool:grey"})
+	-- `forage` is "a mushroom, a bush, a plant, a vine or leaves". `planter_soil`
+	-- is soil, which is the very thing this lane removed from `tend` and then
+	-- left here; the review found it.
 	feature_set("forage", {"undergrowth", "fern", "grass_tuft", "flower",
-		"flower_alt", "tree_leaves", "hedge", "planter_soil"}, {})
+		"flower_alt", "tree_leaves", "hedge"}, {})
 	feature_set("mine", {"wall_accent", "foundation", "rubble", "signature"},
 		{})
 

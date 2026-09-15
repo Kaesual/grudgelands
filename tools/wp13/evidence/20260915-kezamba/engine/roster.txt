@@ -34,11 +34,11 @@ ACTION[Server]: [grug_mobs] start npcs troll kezamba: guards 11/18 flair 93/163 
 ACTION[Server]: [grug_mobs] start npcs troll kezamba: guards 17/18 flair 133/163 vendor 7/7 quest 1/1 new 46 pending 31 spare 11 residents 163 walkers 21
 ACTION[Server]: [grug_mobs] start npcs troll kezamba: guards 18/18 flair 161/163 vendor 7/7 quest 1/1 new 29 pending 2 spare 11 residents 163 walkers 21
 ACTION[Server]: [grug_mobs] start npcs troll kapok: guards 3/3 flair 6/6 vendor 1/1 quest 1/1 new 11 pending 0 spare 3 residents 6 walkers 1
-ACTION[Server]: [grug_mobs] start npcs troll kezamba: guards 10/18 flair 49/163 vendor 5/7 quest 1/1 new 65 pending 124 spare 11 residents 163 walkers 21
-ACTION[Server]: [grug_mobs] start npcs troll kezamba: guards 10/18 flair 70/163 vendor 6/7 quest 1/1 new 22 pending 102 spare 11 residents 163 walkers 21
-ACTION[Server]: [grug_mobs] start npcs troll kezamba: guards 11/18 flair 95/163 vendor 7/7 quest 1/1 new 27 pending 75 spare 11 residents 163 walkers 21
-ACTION[Server]: [grug_mobs] start npcs troll kezamba: guards 17/18 flair 133/163 vendor 7/7 quest 1/1 new 44 pending 31 spare 11 residents 163 walkers 21
-ACTION[Server]: [grug_mobs] start npcs troll kezamba: guards 18/18 flair 163/163 vendor 7/7 quest 1/1 new 31 pending 0 spare 11 residents 163 walkers 21
+ACTION[Server]: [grug_mobs] start npcs troll kezamba: guards 10/18 flair 68/163 vendor 6/7 quest 1/1 new 85 pending 104 spare 11 residents 163 walkers 21
+ACTION[Server]: [grug_mobs] start npcs troll kezamba: guards 11/18 flair 93/163 vendor 7/7 quest 1/1 new 27 pending 77 spare 11 residents 163 walkers 21
+ACTION[Server]: [grug_mobs] start npcs troll kezamba: guards 17/18 flair 133/163 vendor 7/7 quest 1/1 new 46 pending 31 spare 11 residents 163 walkers 21
+ACTION[Server]: [grug_mobs] start npcs troll kezamba: guards 18/18 flair 161/163 vendor 7/7 quest 1/1 new 29 pending 2 spare 11 residents 163 walkers 21
+ACTION[Server]: [grug_mobs] start npcs troll kezamba: guards 18/18 flair 163/163 vendor 7/7 quest 1/1 new 2 pending 0 spare 11 residents 163 walkers 21
 ACTION[Server]: [grug_mobs] start npcs troll kapok: guards 3/3 flair 6/6 vendor 1/1 quest 1/1 new 11 pending 0 spare 3 residents 6 walkers 1
 ACTION[Server]: [grug_mobs] start npcs troll kezamba: guards 7/18 flair 31/163 vendor 3/7 quest 1/1 new 42 pending 147 spare 11 residents 163 walkers 21
 ACTION[Server]: [grug_mobs] start npcs troll kezamba: guards 10/18 flair 68/163 vendor 6/7 quest 1/1 new 43 pending 104 spare 11 residents 163 walkers 21
