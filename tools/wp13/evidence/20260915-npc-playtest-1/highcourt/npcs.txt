@@ -111,13 +111,11 @@ ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human place
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_granary/market_granary_work (72,47,-1524)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:guard_accord placed at socket market_granary/market_granary_watch (72,47,-1536)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_granary/market_granary_gate_idle (72,47,-1536)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_stable/market_stable_groom (72,36,-1469)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_stable/market_stable_gate (72,36,-1475)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_stable/market_stable_gate_idle (72,36,-1478)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_workshop/market_workshop_gate_idle (116,45,-1536)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_orchard/market_orchard_work (56,42,-1440)
-ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_orchard/market_orchard_gate_idle (56,42,-1445)
-ACTION[Server]: [grug_mobs] start npcs human highcourt: guards 18/19 flair 38/49 vendor 2/2 quest 1/1 new 59 pending 12
+ACTION[Server]: [grug_mobs] start npcs human highcourt: guards 18/19 flair 35/49 vendor 2/2 quest 1/1 new 56 pending 15
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_stable/market_stable_groom (72,36,-1469)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_counting_house/market_counting_house_desk_a (200,35,-1476)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_counting_house/market_counting_house_desk_b (200,35,-1468)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_counting_house/market_counting_house_gate_idle (200,35,-1481)
@@ -129,5 +127,7 @@ ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human place
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_watch/market_watch_gate_idle (160,35,-1435)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_grove/market_grove_idle (76,39,-1564)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_grove/market_grove_gate_idle (76,39,-1572)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_orchard/market_orchard_work (56,42,-1440)
+ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_orchard/market_orchard_gate_idle (56,42,-1445)
 ACTION[Server]: [grug_mobs] start npcs highcourt: grug_mobs:villager_human placed at socket market_store/market_store_gate_idle (116,43,-1572)
-ACTION[Server]: [grug_mobs] start npcs human highcourt: guards 19/19 flair 49/49 vendor 2/2 quest 1/1 new 12 pending 0
+ACTION[Server]: [grug_mobs] start npcs human highcourt: guards 19/19 flair 49/49 vendor 2/2 quest 1/1 new 15 pending 0

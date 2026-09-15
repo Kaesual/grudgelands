@@ -154,7 +154,7 @@ local function census_line(tag, strict, expect_live)
 				"roster=" .. roster)
 		end
 	end
-	return #npcs, roster
+	return #npcs, roster, marked
 end
 
 local function positions_line()
@@ -413,7 +413,15 @@ local FULL = {
 	{at = 315, what = function() hostile_lines("acquired") end},
 	{at = 340, what = function()
 		hostile_lines("fought")
-		census_line("after_fight", true)
+		-- NOT strict: a wolf that kills a guard frees that socket with a
+		-- respawn slot, which is world.md §4a working rather than a defect. The
+		-- invariant that must hold either way is that every marked socket has
+		-- its NPC and nothing else stands around.
+		local live, roster, marked = census_line("after_fight")
+		if live ~= marked then
+			fail("after the fight live=" .. live .. " differs from marked=" ..
+				marked .. " (roster " .. roster .. ")")
+		end
 	end},
 	--
 	-- THE REVIEW'S FINDING, in the engine. One NPC is moved OUT of the
@@ -429,7 +437,10 @@ local FULL = {
 			local entity = npcs[index]
 			if entity.name:find("villager", 1, true) then
 				local pos = entity.object:get_pos()
-				local away = {x = pos.x + FORCE_REACH + 24, y = pos.y, z = pos.z}
+				-- TWICE the grid's reach, and not `FORCE_REACH + 24`: the first
+				-- attempt landed on the last node of the outermost forceloaded
+				-- block and the probe's own `npc_block_active` said so.
+				local away = {x = pos.x + FORCE_REACH * 2, y = pos.y, z = pos.z}
 				unloaded_socket = entity._grug_socket
 				unloaded_home = {x = pos.x, y = pos.y, z = pos.z}
 				unloaded_away = away
@@ -460,16 +471,22 @@ local FULL = {
 		core.forceload_block(unloaded_away, true, -1)
 	end},
 	{at = 396, what = function()
-		local live = census_line("reloaded_npc", true)
+		-- Back where it belongs FIRST: twice the grid's reach is also outside
+		-- the settlement's own scan radius, and the two reboots should start
+		-- from the ordinary world rather than from this experiment.
+		local back = false
 		local npcs = settlement_npcs()
 		for index = 1, #npcs do
 			if npcs[index]._grug_socket == unloaded_socket then
-				-- Put it back where it belongs, so the two reboots start from
-				-- the ordinary world rather than from this experiment.
 				npcs[index].object:set_pos(unloaded_home)
+				back = true
 			end
 		end
 		core.forceload_free_block(unloaded_away, true)
+		if not back then
+			fail("the unloaded NPC did not come back with its mapblock")
+		end
+		local live = census_line("reloaded_npc", true)
 		log({"event=unload_done", "socket=" .. tostring(unloaded_socket),
 			"live=" .. live})
 		log({"event=complete", "programme=full"})

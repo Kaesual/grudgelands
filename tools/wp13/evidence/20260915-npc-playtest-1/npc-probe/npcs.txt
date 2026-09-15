@@ -58,8 +58,8 @@ ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at
 ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_smoker (1813,21,2570)
 ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:elder_troll placed at socket hall_quest (1803,21,2567)
 ACTION[Server]: [grug_mobs] start npcs troll kapok: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0
-WARNING[Server]: [grug_mobs] start npcs hearthpine: socket idle_forge_door is marked but empty; grug_mobs:villager_dwarf is gone and the slot is queued again
-ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_forge_door (-1798,26,-2560)
+WARNING[Server]: [grug_mobs] start npcs hearthpine: socket idle_plaza_bench is marked but empty; grug_mobs:villager_dwarf is gone and the slot is queued again
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_plaza_bench (-1793,26,-2549)
 ACTION[Server]: [grug_mobs] start npcs dwarf hearthpine: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 1 pending 0
 ACTION[Server]: [grug_mobs] start npcs dwarf hearthpine: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 0 pending 0
 ACTION[Server]: [grug_mobs] start npcs human dawnmere: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 0 pending 0

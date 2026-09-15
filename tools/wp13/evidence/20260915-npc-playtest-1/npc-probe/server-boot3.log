@@ -66,31 +66,31 @@ ACTION[Main]: [grug_materials] registry audit passed: 6 tiers, 15 resources, 12 
 ACTION[Main]: [grug_visuals] 48 armor pieces indexed for overlays, 2 art lines x 4 slots
 ACTION[Main]: [grug_traders] human capital vendors come from the sockets of highcourt
 ACTION[Main]: [grug_traders] drop audit: 1 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit); their items are audited from the hardcoded FUNCTION_DROPS list
-ACTION[Main]: World at [/tmp/grudgelands-headless.QfosoC/world]
-ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32958.
+ACTION[Main]: World at [/tmp/grudgelands-headless.LejZFw/world]
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:32849.
 ACTION[Server]: [grug_core] start preload: emerging 6 start areas (128 x 128 nodes each, 2 at a time)
 ACTION[Emerge-0]: [grug_core] start area ready: dwarf (1/6, 9.4 s)
-ACTION[Server]: [grug_mobs] start npcs dwarf hearthpine: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 0 pending 0
 ACTION[Emerge-0]: [grug_core] start area ready: human (2/6, 9.4 s)
-ACTION[Emerge-0]: [grug_core] start area ready: elf (3/6, 9.4 s)
+ACTION[Server]: [grug_mobs] start npcs dwarf hearthpine: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 0 pending 0
 ACTION[Server]: [grug_mobs] start npcs human dawnmere: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 0 pending 0
-ACTION[Server]: [grug_mobs] start npcs elf silverleaf: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 0 pending 0
+ACTION[Emerge-0]: [grug_core] start area ready: elf (3/6, 9.5 s)
 ACTION[Emerge-0]: [grug_core] start area ready: undead (4/6, 9.5 s)
-ACTION[Emerge-0]: [grug_core] start area ready: orc (5/6, 9.5 s)
+ACTION[Server]: [grug_mobs] start npcs elf silverleaf: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 0 pending 0
 ACTION[Server]: [grug_mobs] start npcs undead stillgrave: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 0 pending 0
-ACTION[Server]: [grug_mobs] start npcs orc sunscar: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 0 pending 0
+ACTION[Emerge-0]: [grug_core] start area ready: orc (5/6, 9.6 s)
 ACTION[Emerge-0]: [grug_core] start area ready: troll (6/6, 9.6 s)
 ACTION[Emerge-0]: [grug_core] all 6 start areas ready after 9.6 s
+ACTION[Server]: [grug_mobs] start npcs orc sunscar: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 0 pending 0
 ACTION[Server]: [grug_mobs] start npcs troll kapok: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 0 pending 0
 ACTION[Server]: GRUG_WP13_NPC boot=3 event=ready key=hearthpine race=dwarf anchor=(-1800,25,-2550) sockets=13 programme=reload
 ACTION[Server]: GRUG_WP13_NPC boot=3 event=forceload blocks=162
-ACTION[Server]: GRUG_WP13_NPC boot=3 event=census phase=reloaded key=hearthpine roster=9 marked=9 live=9 twins=0
-ACTION[Server]: GRUG_WP13_NPC boot=3 event=hp phase=reloaded socket=gate_west level=20 tier=normal self_hp_max=115 prop_hp_max=115 health=115 tag=Accord_Guard_[Lv_20]_115/115
-ACTION[Server]: GRUG_WP13_NPC boot=3 event=hp phase=reloaded socket=watch_gate level=20 tier=normal self_hp_max=115 prop_hp_max=115 health=79 tag=Accord_Guard_[Lv_20]_79/115
-ACTION[Server]: GRUG_WP13_NPC boot=3 event=hp phase=reloaded socket=gate_east level=20 tier=normal self_hp_max=115 prop_hp_max=115 health=115 tag=Accord_Guard_[Lv_20]_115/115
-ACTION[Server]: GRUG_WP13_NPC boot=3 event=pos socket=idle_forge_door spot=3 dwell=-1.0 state=walk x=-1801.0 z=-2543.9
-ACTION[Server]: GRUG_WP13_NPC boot=3 event=pos socket=idle_workyard spot=3 dwell=-1.0 state=walk x=-1818.7 z=-2536.8
-ACTION[Server]: GRUG_WP13_NPC boot=3 event=pos socket=idle_plaza_bench spot=4 dwell=10.2 state=stand x=-1798.3 z=-2559.5
-ACTION[Server]: GRUG_WP13_NPC boot=3 event=pos socket=idle_west_door spot=1 dwell=-1.0 state=walk x=-1826.3 z=-2541.5
+ACTION[Server]: GRUG_WP13_NPC boot=3 event=census phase=reloaded key=hearthpine roster=9 marked=9 live=9 twins=0 strict=true
+ACTION[Server]: GRUG_WP13_NPC boot=3 event=hp phase=reloaded socket=watch_gate level=20 tier=normal self_hp_max=115 prop_hp_max=115 health=111 tag=Accord_Guard_[Lv_20]_111/115
+ACTION[Server]: GRUG_WP13_NPC boot=3 event=hp phase=reloaded socket=gate_east level=20 tier=normal self_hp_max=115 prop_hp_max=115 health=109 tag=Accord_Guard_[Lv_20]_109/115
+ACTION[Server]: GRUG_WP13_NPC boot=3 event=hp phase=reloaded socket=gate_west level=20 tier=normal self_hp_max=115 prop_hp_max=115 health=109 tag=Accord_Guard_[Lv_20]_109/115
+ACTION[Server]: GRUG_WP13_NPC boot=3 event=pos socket=idle_workyard spot=2 dwell=-1.0 state=walk x=-1775.7 z=-2546.9
+ACTION[Server]: GRUG_WP13_NPC boot=3 event=pos socket=idle_west_door spot=1 dwell=-1.0 state=walk x=-1769.7 z=-2550.8
+ACTION[Server]: GRUG_WP13_NPC boot=3 event=pos socket=idle_plaza_bench spot=1 dwell=-1.0 state=stand x=-1817.7 z=-2533.2
+ACTION[Server]: GRUG_WP13_NPC boot=3 event=pos socket=idle_forge_door spot=1 dwell=-1.0 state=walk x=-1803.8 z=-2555.9
 ACTION[Server]: GRUG_WP13_NPC boot=3 event=complete programme=reload
 ACTION[Main]: Server: Shutting down

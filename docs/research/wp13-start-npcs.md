@@ -624,7 +624,7 @@ probe logs an error if that count ever exceeds the roster.
 | Hearthpine placement line | `guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0` | `… new 0 pending 0` | `… new 0 pending 0` |
 | all six starts | 54 placements, i.e. the whole roster once (plus one for the socket cleared below) | none | none |
 | census roster/marked/live/twins | 9/9/9/0 | 9/9/9/0 | 9/9/9/0 |
-| guard HP tuple | `self_hp_max=115 prop_hp_max=115`, tag `… 115/115` | the same, and `79/115` for the one the wolf wounded | the same again, still `79/115` |
+| guard HP tuple | `self_hp_max=115 prop_hp_max=115` | the same, with the wounds the wolf left (`109/115`, `111/115`) | the same again, same wounds |
 
 Boot 1 additionally, in order:
 
@@ -646,25 +646,27 @@ Boot 1 additionally, in order:
   `placed at socket idle_forge_door`, and `live=9` again. This is also where
   `core.compare_block_status` is exercised against the real engine.
 - **Item 8.** `self_hp_max` and the object property agree at 115 on all three
-  boots. Incidentally — the wolf below wounded one of them — the `watch_gate`
-  guard comes back as `79/115` on boot 2 and again on boot 3: **a wound survives
-  two reloads with the maximum intact.** That is the tuple the lost `hp_max`
-  corrupts, by the two-save sequence described above; this round did not run the
-  pre-fix code to watch it corrupt, and the number is incidental rather than
-  arranged. The injection instead makes the defect's exact state on purpose
+  boots. Incidentally — the wolf below wounded two of the guards — they come back
+  as `109/115` and `111/115` on boot 2 and again on boot 3: **a wound survives two
+  reloads with the maximum intact.** That is the tuple the lost `hp_max` corrupts,
+  by the two-save sequence described above; this round did not run the pre-fix
+  code to watch it corrupt, and the wounds are incidental rather than arranged.
+  The injection instead makes the defect's exact state on purpose
   (`self.hp_max` nil, the object back on the definition default of 10) and the
   activation path puts both back to 115 in the same tick. 115 is the level-20
   guard-field value at a start; the user's 945/10 was a capital's level-60 elite,
   which is the same arithmetic on a bigger number.
-- **Item 1, the review's finding.** One villager then moved OUT of the
-  forceloaded grid, so its own mapblock goes inactive while the socket it is
-  booked on stays active — `compare_block_status` answers for the block
-  containing the position it is handed, and those are two different blocks. The
-  probe logs both answers to prove the premise, then asserts the consequence at
-  ten and at forty seconds: `live=8 marked=9`, i.e. the NPC is out of the
-  environment and its marker is untouched. Forceloading its block brings it
-  back and the census returns to 9/9. Against the pre-fix predicate the same
-  state freed the marker and placed a fresh guard.
+- **Item 1, the review's finding**, last of the boot-1 programme. One villager
+  moved OUT of the forceloaded grid, so its own mapblock goes inactive while the
+  socket it is booked on stays active. The probe logs both answers to prove the
+  premise — `socket_block_active=true npc_block_active=false` — and then asserts
+  the consequence twice, ten and forty seconds later:
+  `roster=9 marked=9 live=8`, i.e. the NPC is out of the environment and its
+  marker is untouched. Forceloading its own block brings it back and the census
+  returns to `9/9/9`. The first attempt at this case is worth keeping in mind
+  when reading the probe: `FORCE_REACH + 24` put the NPC on the LAST NODE of the
+  outermost forceloaded block, the probe's own `npc_block_active` said `true`,
+  and the premise did not hold. It is twice the reach now.
 - **Item 5.** A wolf two nodes from a villager: `attack_npcs=false`,
   `target=nil` and its full 65 HP at every observation — it never acquires the
   NPC next to it. A wolf two nodes from a guard post, three seconds in:
@@ -686,9 +688,9 @@ and for a reason worth recording:
 
 | | seam generalisation (2026-09-15, morning) | this round |
 | --- | --- | --- |
-| Highcourt | `guards 17/19 flair 30/49 vendor 2/2 quest 1/1 new 50 pending 21` | `guards 19/19 flair 49/49 vendor 2/2 quest 1/1 new 12 pending 0` |
+| Highcourt | `guards 17/19 flair 30/49 vendor 2/2 quest 1/1 new 50 pending 21` | `guards 19/19 flair 49/49 vendor 2/2 quest 1/1 new 15 pending 0` |
 
-**Neither `new` number is a gate**, and `new 12` is this one run's split: both
+**Neither `new` number is a gate**, and `new 15` is this one run's split: both
 depend on which mapblocks the emerge sequence happened to have loaded when the
 anchor first answered, exactly as the seam round said of its own. The right-hand
 column is the reproducible part and the point — **pending 0**. The heartbeat does

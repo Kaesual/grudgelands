@@ -12,7 +12,7 @@ under "Playtest round 1"; this directory holds what the gates printed.
 | `kat.txt` | the `start_npcs_kat` report on its own, which is the part of the micro TSV this round rewrote |
 | `start-identities.txt` | the six start blueprint identity digests, to be diffed against `20260914-capital-parts/start-identity.txt` |
 | `npc-probe/` | `tools/wp13/run_npc_probe.sh`: three boots on ONE world through `tools/luanti_headless.sh` with the disposable probe of `tools/wp13/npc_probe` |
-| `highcourt/` | `tools/wp13/run_highcourt.sh` once, the capital's own pass |
+| `highcourt/` | `tools/wp13/run_highcourt.sh` once, the capital's own pass: zero ERROR, the committed avenue digest, and `guards 19/19 flair 49/49 vendor 2/2 quest 1/1 new 15 pending 0` — 71 of 71 sockets filled with no player in the world. The `new`/`pending` split of a single run is not a gate; `pending 0` is the part that is |
 
 ## The gates
 
@@ -67,11 +67,15 @@ Reading `npc-probe/probe.txt`:
 - `phase=one_strike … live=8` and then `phase=refilled … live=9`, with exactly
   one `is marked but empty` warning in `npcs.txt`, is the other half: a marker
   whose NPC is really gone is freed — but only after three passes agree.
+- `event=unload` … `socket_block_active=true npc_block_active=false`, then two
+  censuses reading `marked=9 live=8` and a third reading `9/9` once the NPC's own
+  block is forceloaded, is the review's finding: the socket's mapblock being
+  active says nothing about the NPC's.
 - `event=pos` is the item-3 trace.
-- `event=hp` / `event=hp_heal` are item 8. The `watch_gate` guard reads `79/115`
-  on both reboots: wounded by the wolf on boot 1, and the wound survives two
-  reloads with its maximum intact, which is the state the defect turned into
-  `79/10`.
+- `event=hp` / `event=hp_heal` are item 8. Two guards read `109/115` and
+  `111/115` on both reboots: wounded by the wolf on boot 1, and the wounds
+  survive two reloads with the maximum intact. `hp_heal` is the injection that
+  makes the defect's state on purpose and watches the activation path undo it.
 - `event=hostile` is item 5: the wolf beside the villager keeps `target=nil` and
   65 HP, the wolf beside the guard is attacked by it and attacks back.
 - The `ready` census can read `live=0`. It fires in the same globalstep as the
