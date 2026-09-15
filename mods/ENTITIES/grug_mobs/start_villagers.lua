@@ -28,9 +28,12 @@
 -- environmental damage source is switched off separately, because those
 -- bypass on_punch.
 --
--- GUARDS IGNORE THEM: `attack_npcs = false` in guard.lua already means no
--- guard ever acquires a `type = "npc"` entity, so a villager needs nothing of
--- its own for that; and these definitions attack nothing at all.
+-- NOBODY TOUCHES THEM: both families are NON-COMBATANTS
+-- (`grug_mobs.noncombatant`, verbs.lua), so general_attack's candidate filter
+-- drops them for every mob in the world -- guards, whose own
+-- `attack_npcs = false` would have covered them anyway, and hostiles, which
+-- since the round-2 ruling DO acquire guards. These definitions attack nothing
+-- at all in return.
 --
 -- Movement is owned by `start_npcs.lua` (the ambling tick below reads the
 -- fields it installs). `walk_chance = 0` and `randomly_turn = false` are what
@@ -481,7 +484,13 @@ local function npc_def(race_id, faction_id, nametag, extra)
 		end,
 	}
 	for field, value in pairs(extra) do def[field] = value end
-	return def
+	-- NON-COMBATANT (user ruling, playtest round 2, 2026-09-15): nothing in the
+	-- world may acquire a villager or an elder. The four `attack_*` fields above
+	-- only say what THIS NPC attacks; this says what may attack IT, which is the
+	-- half round 1 expressed by giving every hostile `attack_npcs = false` -- and
+	-- that also stopped hostiles from ever fighting a guard. LAST, because it
+	-- wraps `after_activate`, which `extra` may have just supplied.
+	return grug_mobs.noncombatant(def)
 end
 
 --

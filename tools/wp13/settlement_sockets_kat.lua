@@ -68,8 +68,15 @@ return function(repo)
 			dir = {x = -1, z = 0}},
 		{id = "bench", role = "idle", tags = {"bench", "shade"}, x = 7, y = 1,
 			z = 1, dir = {x = 1, z = 0}},
-		{id = "hall", role = "quest", x = -28, y = 1, z = 26,
+		{id = "hall", role = "quest", tags = {"door"}, x = -28, y = 1, z = 26,
 			dir = {x = 0, z = 1}},
+		-- A SPARE idle socket (playtest round 2): a real authored standing
+		-- position that nobody is ever placed on. The registry stores and
+		-- publishes it like any other socket -- who may stand where is the
+		-- placement engine's question, not the registry's -- and normalizes the
+		-- field to a boolean so no consumer has to spell "nil means true".
+		{id = "spare", role = "idle", spawn = false, x = -4, y = 1, z = 12,
+			dir = {x = 0, z = -1}},
 	}
 
 	local count = grug_core.register_settlement_sockets("hearthpine", "dwarf",
@@ -96,9 +103,12 @@ return function(repo)
 			entry.z == source.z, "local coordinates differ: " .. entry.id)
 		check(entry.dir.x == source.dir.x and entry.dir.z == source.dir.z,
 			"facing differs: " .. entry.id)
+		check(entry.spawn == (source.spawn ~= false),
+			"the spawn flag differs: " .. entry.id)
 		line("socket", entry.id, entry.role, tostring(entry.group),
 			tostring(entry.order), tostring(entry.kind),
 			entry.tags and table.concat(entry.tags, ",") or "-",
+			"spawn_" .. tostring(entry.spawn),
 			entry.pos.x, entry.pos.y, entry.pos.z,
 			string.format("%.6f", entry.yaw))
 	end
@@ -210,6 +220,12 @@ return function(repo)
 		one({role = "vendor", kind = "fence"}))
 	refuses("a kind on a non-vendor socket", "kapok", "elf", ANCHOR,
 		one({kind = "race"}))
+	refuses("a truthy spawn flag", "kapok", "elf", ANCHOR, one({spawn = true}))
+	refuses("a numeric spawn flag", "kapok", "elf", ANCHOR, one({spawn = 0}))
+	refuses("a spare guard post", "kapok", "elf", ANCHOR,
+		one({role = "guard_post", spawn = false}))
+	refuses("a spare vendor", "kapok", "elf", ANCHOR,
+		one({role = "vendor", kind = "race", spawn = false}))
 	refuses("an empty tag list", "kapok", "elf", ANCHOR, one({tags = {}}))
 	refuses("a numeric tag", "kapok", "elf", ANCHOR, one({tags = {7}}))
 	local duplicate = one({})

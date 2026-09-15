@@ -59,11 +59,14 @@
 --     does not butcher rabbits.
 --   * attack_npcs = false: never guard vs. guard, not even across factions.
 --     (Enemy guards ignoring each other is a deliberate simplification for
---     the MVP; NPC-vs-NPC war would need its own design pass.) Since the
---     2026-09-15 playtest this is no longer a per-def choice at all --
---     `grug_mobs.register_mob` applies it to EVERY mob (verbs.lua's
---     `no_npc_targets`, world.md §4) and the field is kept here only because
---     this def is where the rule is documented.
+--     the MVP; NPC-vs-NPC war would need its own design pass.) This is again
+--     a PER-DEF choice, and it is this def's: playtest round 1 applied it to
+--     every mob through `grug_mobs.register_mob`, which also stopped every
+--     hostile from ever fighting a guard, and the user's round-2 ruling
+--     (2026-09-15) reversed that. A hostile now keeps mobs_redo's default and
+--     engages the watch; what nothing may touch is a NON-COMBATANT settlement
+--     NPC, and that veto is a property of the villager, the elder and the
+--     vendor (`grug_mobs.noncombatant`, verbs.lua), not of the attacker.
 --   * owner stays "" — nobody owns a guard, and mobs_redo's owner checks
 --     (general_attack, follow) must never match a real player name.
 --

@@ -85,6 +85,26 @@ local function compile(settlement_key, anchor, socket, seen)
 	elseif socket.kind ~= nil then
 		fail(where .. ": only a vendor carries a kind")
 	end
+	--
+	-- A SPARE SOCKET IS A DESTINATION, NOT A HOME (playtest round 2,
+	-- 2026-09-15). `spawn = false` says "nobody is placed here"; the socket is
+	-- still a real authored standing position and still reaches every consumer,
+	-- so a villager's amble has somewhere to go that is not another villager's
+	-- doorstep. Without spares a settlement has exactly as many idle spots as
+	-- idle NPCs, every spot is permanently occupied, and the amble is four
+	-- people swapping four chairs.
+	--
+	-- Only `idle` may carry it, and that restriction is the loud half: a
+	-- `guard_post` with `spawn = false` is a gate nobody mans, written as one
+	-- word, and it would read as authored intent rather than as the defect it
+	-- is. A future role that wants spares says so here.
+	--
+	if socket.spawn ~= nil then
+		if socket.spawn ~= false then fail(where .. ": spawn differs") end
+		if socket.role ~= "idle" then
+			fail(where .. ": only an idle socket may be spare")
+		end
+	end
 	local tags
 	if socket.tags ~= nil then
 		if type(socket.tags) ~= "table" or #socket.tags < 1 then
@@ -101,6 +121,9 @@ local function compile(settlement_key, anchor, socket, seen)
 		id = id, role = socket.role, x = x, y = y, z = z,
 		dir_x = dir.x, dir_z = dir.z,
 		group = socket.group, order = socket.order, kind = socket.kind,
+		-- Normalized to a boolean here, so a consumer reads one field and
+		-- never has to spell "nil means true" itself.
+		spawn = socket.spawn ~= false,
 		tags = tags,
 		-- World space, decided here and nowhere else.
 		wx = anchor.x + x, wy = anchor.y + y, wz = anchor.z + z,
@@ -119,6 +142,7 @@ local function copy_entry(entry)
 		x = entry.x, y = entry.y, z = entry.z,
 		dir = {x = entry.dir_x, z = entry.dir_z},
 		group = entry.group, order = entry.order, kind = entry.kind,
+		spawn = entry.spawn,
 		tags = tags,
 		pos = vector.new(entry.wx, entry.wy, entry.wz),
 		yaw = entry.yaw,

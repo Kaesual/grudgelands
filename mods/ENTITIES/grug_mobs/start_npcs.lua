@@ -7,7 +7,10 @@
 -- moving a guard post is a blueprint edit and nothing here changes:
 --   guard_post    a faction guard holding an authored post
 --   guard_patrol  ONE guard per LOOP, walking that loop's waypoints
---   idle          flair villagers (start_villagers.lua)
+--   idle          flair villagers (start_villagers.lua). An idle socket with
+--                 `spawn = false` is a SPARE: a wander target of the amble that
+--                 nobody is ever placed on, so a settlement offers more places
+--                 to stand than it has people (playtest round 2).
 --   quest         the quest shell (start_villagers.lua)
 --   vendor        resolved by grug_traders, which owns vendors
 --   king          nothing yet (the encounter is a later work package)
@@ -372,18 +375,28 @@ local function composition_of(socket_id)
 end
 
 --
--- AN IDLE SOCKET AT A DOOR FACES AWAY FROM IT (playtest round 1, 2026-09-15).
+-- A SOCKET AT A DOOR FACES AWAY FROM IT (playtest round 1, generalized in round
+-- 2, 2026-09-15).
 --
 -- A socket's `dir` is measured at the feature it stands on -- that is what the
--- blueprint authored and what every other role wants -- but a villager on a
--- doorstep whose face is the door shows the street its back, which is what the
--- player walking up the street actually sees. So the CONSUMER turns a
--- door-tagged idle socket round; the blueprint data keeps meaning one thing, and
--- no future composition can forget the rule.
+-- blueprint authored and what every other role wants -- but an NPC on a doorstep
+-- whose face is the door shows the street its back, which is what the player
+-- walking up the street actually sees. So the CONSUMER turns a door-tagged
+-- socket round; the blueprint data keeps meaning one thing, and no future
+-- composition can forget the rule.
 --
--- Sockets are not identity bytes, so editing the seven socket tables instead
--- would have been legal -- but it would be seven files, ~30 entries and one more
--- thing to get right per new settlement.
+-- ROUND 1 RESTRICTED THIS TO `idle` AND THAT WAS THE DEFECT ROUND 2 FOUND: all
+-- seven quest sockets (the six Village Elders and Highcourt's chapel Elder)
+-- stand on a doorstep facing the door, and the role test left every one of them
+-- with its back to the street. The rule belongs to the TAG, which is where the
+-- geometry is described, not to the role, which is what the NPC does; the seven
+-- quest sockets now carry `door` and any future role placed at a door inherits
+-- the turn by saying so.
+--
+-- Sockets are not identity bytes, so editing the seven socket tables to author
+-- the reversed facing instead would have been legal -- but it would be seven
+-- files, ~40 entries and one more thing to get right per new settlement, and the
+-- authored `dir` would then no longer mean "the feature this socket belongs to".
 --
 local FACE_AWAY_TAGS = {door = true}
 local TWO_PI = 2 * math.pi
@@ -391,7 +404,7 @@ local TWO_PI = 2 * math.pi
 local function socket_face_yaw(socket)
 	local yaw = socket.yaw
 	local tag = socket.tags and socket.tags[1] or nil
-	if socket.role == "idle" and tag and FACE_AWAY_TAGS[tag] then
+	if tag and FACE_AWAY_TAGS[tag] then
 		yaw = yaw + math.pi
 		if yaw >= TWO_PI then
 			yaw = yaw - TWO_PI
@@ -456,13 +469,15 @@ local function build_rows()
 			local row = {race_id = record.race_id, faction_id = faction_id,
 				key = record.key, kind = kind, anchor = record.anchor,
 				slots = {}, by_socket = {}, pending = 0, idle_groups = {},
-				patrols = {}, totals = {}, placed_count = {},
+				patrols = {}, totals = {}, placed_count = {}, spare_count = 0,
 				scan_radius = SCAN_MARGIN}
 			-- The patrol loops and the idle spots first: both are read by every
 			-- entity the row places, so they are built before the slots. A loop
 			-- is named by its waypoints' `group`, which is how a capital carries
 			-- six of them without this file knowing there are six.
 			local loops, loop_order = {}, {}
+			-- socket id -> its place in its composition's spot ring.
+			local spot_index = {}
 			for _, socket in ipairs(sockets) do
 					-- The identity scan's radius: every socket this settlement has --
 					-- patrol waypoints included, because that is where its guard
@@ -492,6 +507,14 @@ local function build_rows()
 					loop.by_order[socket.order] = socket
 					if socket.order > loop.size then loop.size = socket.order end
 				elseif socket.role == "idle" then
+					-- EVERY idle socket is a wander target, spare ones included:
+					-- `spawn = false` decides who is PLACED (the second pass
+					-- below), never where a villager may walk. The index a spot
+					-- gets here is the index `_grug_idle_spot` means, so it is
+					-- recorded here as well -- deriving it from a count of the
+					-- placed sockets instead is what would silently point every
+					-- villager at the wrong spot the moment a spare sits in front
+					-- of it in the authored order.
 					local group = composition_of(socket.id)
 					local spots = row.idle_groups[group]
 					if not spots then
@@ -503,6 +526,10 @@ local function build_rows()
 						yaw = socket_face_yaw(socket),
 						tag = socket.tags and socket.tags[1] or nil,
 					}
+					spot_index[socket.id] = #spots
+					if socket.spawn == false then
+						row.spare_count = row.spare_count + 1
+					end
 				end
 			end
 			for _, group in ipairs(loop_order) do
@@ -520,12 +547,15 @@ local function build_rows()
 				row.totals[FAMILY_ORDER[family_index]] = 0
 				row.placed_count[FAMILY_ORDER[family_index]] = 0
 			end
-			local idle_index = {}
 			for _, socket in ipairs(sockets) do
 				local resolver = resolvers[socket.role]
 				-- A patrol loop carries ONE guard, booked on its first
-				-- waypoint; the rest of the loop is route data.
-				local carries = resolver ~= nil and
+				-- waypoint; the rest of the loop is route data. A SPARE socket
+				-- carries nobody at all (`spawn = false`): it is a destination
+				-- the amble may use and never a home, so the roster -- and with
+				-- it every marker, the hard cap and every census -- counts only
+				-- the sockets something is actually placed on.
+				local carries = resolver ~= nil and socket.spawn ~= false and
 					(socket.role ~= "guard_patrol" or socket.order == 1)
 				if carries then
 					local entity = resolver(socket, settlement)
@@ -537,9 +567,6 @@ local function build_rows()
 							tostring(entity) .. ")")
 					else
 						local group = composition_of(socket.id)
-						if socket.role == "idle" then
-							idle_index[group] = (idle_index[group] or 0) + 1
-						end
 						local slot = {
 							id = socket.id, role = socket.role, entity = entity,
 							family = FAMILY[socket.role] or "flair",
@@ -548,7 +575,7 @@ local function build_rows()
 								z = socket.pos.z},
 							yaw = socket_face_yaw(socket),
 							tag = socket.tags and socket.tags[1] or nil,
-							idle_index = socket.role == "idle" and idle_index[group] or nil,
+							idle_index = spot_index[socket.id],
 							placed = storage:get_string(
 								placed_key(record.key, socket.id)) == "1",
 						}
@@ -947,7 +974,11 @@ function grug_mobs.start_npc_census()
 			if row.slots[slot_index].placed then marked = marked + 1 end
 		end
 		out[#out + 1] = {key = row.key, race_id = row.race_id, kind = row.kind,
-			roster = #row.slots, marked = marked, live = live}
+			roster = #row.slots, marked = marked, live = live,
+			-- Idle sockets nothing is ever placed on (`spawn = false`): wander
+			-- targets, so they are part of what the settlement OFFERS and no
+			-- part of what it HOLDS. The probe reads both.
+			spare = row.spare_count}
 	end
 	return out
 end
@@ -962,7 +993,7 @@ local function log_row(row, new)
 	end
 	core.log("action", "[grug_mobs] start npcs " .. row.race_id .. " " ..
 		row.key .. ": " .. table.concat(parts, " ") .. " new " .. new ..
-		" pending " .. row.pending)
+		" pending " .. row.pending .. " spare " .. row.spare_count)
 end
 
 --

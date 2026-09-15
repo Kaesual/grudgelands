@@ -560,7 +560,7 @@ local function loader(directory)
 						x = entry.x, y = entry.y, z = entry.z,
 						face = entry.face, group = entry.group,
 						order = entry.order, kind = entry.kind,
-						tags = entry.tags}
+						spawn = entry.spawn, tags = entry.tags}
 					if recast then
 						out.role = recast.role
 						out.tags = recast.tags
@@ -844,7 +844,10 @@ local function loader(directory)
 			socket(booth.id, "vendor", booth.x + 1, 1, booth.z - 1, 0,
 				{kind = booth.kind})
 		end
-		socket("chapel_quest", "quest", -22, 1, 27, 3)
+		-- `door`: the elder stands on the chapel's doorstep and its authored
+		-- facing is the door, so the consumer turns it round to the west lane
+		-- (start_npcs.lua `socket_face_yaw`, playtest round 2).
+		socket("chapel_quest", "quest", -22, 1, 27, 3, {tags = {"door"}})
 		socket("travel_waypoint", "waypoint",
 			math.floor((PLAZA.x1 + PLAZA.x2) / 2), 1,
 			math.floor((PLAZA.z1 + PLAZA.z2) / 2), 0)
@@ -856,6 +859,34 @@ local function loader(directory)
 		socket("court_idle_yard", "idle", 34, 1, 20, 0, {tags = {"work"}})
 		socket("forecourt_idle_west", "idle", -6, 1, 3, 1, {tags = {"bench"}})
 		socket("forecourt_idle_east", "idle", 7, 1, 3, 3, {tags = {"bench"}})
+		--
+		-- THE CORE'S SPARE IDLE SPOTS (playtest round 2, 2026-09-15).
+		-- `spawn = false` is what makes them wander TARGETS and never homes: the
+		-- roster places one citizen per SPAWN socket and `next_spot` walks every
+		-- idle socket, so a city whose spots and citizens are the same thirty
+		-- has an amble in which every destination is permanently taken. Ten
+		-- spares along the avenues and courts is what gives the crowd somewhere
+		-- to go. They are core sockets, so a villager wandering the core reaches
+		-- them and a district plot's citizen keeps to its plot.
+		--
+		-- Each one is a legal standing position on the finished pad -- feet and
+		-- head air, the core's own paving or turf under it, outdoors, reachable
+		-- on foot from the south gate -- measured with `highcourt_kat.lua`'s own
+		-- socket test, and at least 8 nodes from every authored socket. No tag:
+		-- a spare is a place to stand, not a feature to talk about.
+		local function spare(id, x, z, face)
+			socket(id, "idle", x, 1, z, face, {spawn = false})
+		end
+		spare("core_spare_crossing_east", 12, -4, 3)
+		spare("core_spare_crossing_west", -13, -1, 1)
+		spare("core_spare_hall_green", 19, 13, 3)
+		spare("core_spare_market_walk", -15, -20, 0)
+		spare("core_spare_approach", 2, -26, 0)
+		spare("core_spare_west_lane", -21, 16, 1)
+		spare("core_spare_east_avenue", 30, -2, 3)
+		spare("core_spare_west_avenue", -31, 0, 1)
+		spare("core_spare_north_court", 17, 31, 2)
+		spare("core_spare_plaza_south", 30, -20, 3)
 
 		-- 12. Pane shapes, settled once over the finished pad, for the
 		-- reason written in `parts.resolve_panes`.

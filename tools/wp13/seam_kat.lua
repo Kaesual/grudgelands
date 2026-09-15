@@ -263,9 +263,14 @@ return function(repo)
 	-- Landmarks survive the cell release, because the NPC sockets are in them.
 	local socket_anchor = {x = capital_profile.x, y = 40, z = capital_profile.z}
 	local sockets = settlement.sockets(prepared, socket_anchor, stub_height)
-	local ids, plot_sockets = {}, 0
+	local ids, plot_sockets, spare_sockets = {}, 0, 0
 	for index = 1, #sockets do
 		local socket = sockets[index]
+		-- The SPARE flag has to cross the seam untouched: it is what tells the
+		-- placement engine this authored position is a wander target and not a
+		-- home (playtest round 2), and a seam that dropped it would quietly put
+		-- a citizen on every one of them.
+		if socket.spawn == false then spare_sockets = spare_sockets + 1 end
 		assert(not ids[socket.id], "two sockets of one settlement share an id: " ..
 			socket.id)
 		ids[socket.id] = true
@@ -274,7 +279,8 @@ return function(repo)
 	assert(plot_sockets >= 1, "no plot socket was prefixed with its plot id")
 	refuses("a plot socket set without a height query", settlement.sockets,
 		prepared, socket_anchor, nil)
-	say("sockets", #sockets, plot_sockets)
+	assert(spare_sockets >= 1, "no spare socket survived the seam")
+	say("sockets", #sockets, plot_sockets, spare_sockets)
 
 	----------------------------------------------------------------------
 	-- 2. The manifest's field order, derived from the roster
