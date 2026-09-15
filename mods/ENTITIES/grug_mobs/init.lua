@@ -340,6 +340,11 @@ local function apply_visual(self, cfg)
 end
 
 function grug_mobs.register_mob(name, def)
+	-- No mob of ours hunts `type = "npc"` entities unless it is a war-front unit
+	-- that says so (world.md §4, verbs.lua's own rationale). FIRST, so the
+	-- `no_acquire` derivation below and mobs:register_mob's field copy both see
+	-- the decided value.
+	grug_mobs.no_npc_targets(def)
 	-- Level/tier config + stat derivation (levels.lua); HP, damage and XP
 	-- are engine-owned from here on, the def must not hand-set them.
 	grug_mobs.register_level_cfg(name, def)
