@@ -22,7 +22,7 @@ SWEEP 2
 SWEEP 3
 SWEEP 4
 SWEEP 5
-tools/wp13/nhal_veyr_plots.lua:354:	os.exit(1)
+tools/wp13/nhal_veyr_plots.lua:357:	os.exit(1)
 SWEEPS DONE (no output above a SWEEP line means zero hits)
 == the same five sweeps over all of mods/*/grug_* and tools ==
 SWEEP 1
@@ -359,7 +359,7 @@ tools/wp40/t2_partition_test.lua:28:	local status, reason, code = os.execute("sh
 tools/wp40/t2_extreme_conformance_preflight.lua:32:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
 tools/wp40/t2_extreme_conformance_verify.lua:62:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
 tools/wp13/capital_wall.lua:246:	os.exit(1)
-tools/wp13/nhal_veyr_plots.lua:354:	os.exit(1)
+tools/wp13/nhal_veyr_plots.lua:357:	os.exit(1)
 tools/wp13/capital_plots.lua:313:	os.exit(0)
 tools/wp13/capital_plots.lua:349:	os.exit(1)
 tools/wp13/dump_blueprint.lua:18:	os.exit(2)
