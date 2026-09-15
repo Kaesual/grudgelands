@@ -91,6 +91,13 @@ WP13 fixtures; registration and param2 legality are covered by the library
 KAT's registry scan and by the live engine runs. Teaching the WP40 fixture the
 new mods is a WP40-lane follow-up.
 
+2026-09-15, WP40 lane: the R7 source audit was refrozen to today's `main` and
+`quality/final_micro.sh` was repointed off the dead `manifest_constructor_kat`
+onto `tools/wp13/final_micro.lua` (`tools/wp40/r7/README.md`, "Refreeze of
+2026-09-15"); the fixture follow-up above is still open and is now the single
+remaining blocker of the R7 micro body — the roster's union palette is 178 node
+names, of which 58 are `grug_decor` and 34 `stairs`.
+
 ## Zone atmosphere (same day, separate lane)
 
 `mods/CORE/grug_core/atmosphere_zones.lua`: ten moods (six race regions,

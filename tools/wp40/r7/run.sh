@@ -186,11 +186,30 @@ static_gates() {
 		echo "WP40 R7 runner: Lua 5.1 operator sweep could not run" >&2
 		return 1
 	}
+	# The deprecated-alias sweep is its own step because the game's own default
+	# settings file is literally named minetest.conf: naming that file in a
+	# comment is not a `minetest.*` call.  Exclude exactly that literal instead
+	# of rewriting the comments, and keep an explicit status check so a
+	# missing/broken rg cannot report success without running.
+	local alias_raw="$scratch/minetest-alias-sweep.txt" alias_status=0
+	rg -n '\bminetest\.' "${all_lua[@]}" >"$alias_raw" || alias_status=$?
+	[[ "$alias_status" -le 1 ]] || {
+		echo "WP40 R7 runner: deprecated minetest alias sweep could not run" >&2
+		return 1
+	}
+	local -a alias_hits
+	mapfile -t alias_hits < <(rg -v '\bminetest\.conf\b' "$alias_raw" || true)
+	rm -f -- "$alias_raw"
+	[[ "${#alias_hits[@]}" -eq 0 ]] || {
+		printf '%s\n' "${alias_hits[@]}" >&2
+		echo "WP40 R7 runner: deprecated minetest.* alias sweep failed" >&2
+		return 1
+	}
 	if rg -n '(^|[^[:alnum:]_.:])goto[[:space:](]|::[A-Za-z_]+::' "${all_lua[@]}" ||
 			rg -n '\\u\{|\\x[0-9A-Fa-f]|\\z' "${all_lua[@]}" | \
 				rg -v '^[^:]+:[0-9]+:[[:space:]]*--' ||
 			rg -n 'table\.(unpack|pack|move)|rawlen|coroutine\.isyieldable|math\.(type|tointeger)|utf8\.' "${all_lua[@]}" ||
-			rg -n 'io\.popen|os\.(execute|exit)|\bminetest\.' "${all_lua[@]}" ||
+			rg -n 'io\.popen|os\.(execute|exit)' "${all_lua[@]}" ||
 			rg -n '(^|[^[:alnum:]_.])require[[:space:]]*\(' "${production_lua[@]}" ||
 			rg -n '^[[:space:]]*(local[[:space:]]+[A-Za-z_][A-Za-z0-9_]*[[:space:]]*=[[:space:]]*)?require[[:space:]]*\(' "${tool_lua[@]}"; then
 		echo "WP40 R7 runner: Lua 5.1 source sweep failed" >&2

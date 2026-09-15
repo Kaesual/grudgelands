@@ -10,7 +10,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local saved_dofile = dofile
 	changed_roster_relative = changed_roster_relative or
 		"tools/wp40/r7/changed_production_lua.txt"
-	expected_changed_count = expected_changed_count or 77
+	expected_changed_count = expected_changed_count or 157
 	if type(changed_roster_relative) ~= "string" or
 		changed_roster_relative:sub(1, 1) == "/" or
 		changed_roster_relative:find("..", 1, true) or
@@ -345,10 +345,12 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		anchors = {schema = "grug_wp40_r7_anchor_content_v1"},
 		anchor_digest = string.rep("9", 64),
 		anchor_semantic_digest = string.rep("a", 64),
-		hearthpine = {schema = "grug_wp13_hearthpine_content_v1",
+		-- The 2026-09-15 seam generalisation replaced the single Hearthpine
+		-- channel with ONE union settlement channel for the whole roster.
+		settlement = {schema = "grug_wp13_settlement_content_v1",
 			content_names = {"air"}},
-		hearthpine_digest = string.rep("b", 64),
-		hearthpine_semantic_digest = string.rep("c", 64),
+		settlement_digest = string.rep("b", 64),
+		settlement_semantic_digest = string.rep("c", 64),
 		accepted_r6_rows = function() return {} end,
 	}
 	local runtime_manifest_module = {}
@@ -363,6 +365,39 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	end
 	local runtime_r6_manifest = {schema = "micro_r6_manifest",
 		r5_manifest_values = {}}
+	-- The 2026-09-15 seam generalisation made r7_runtime walk the WP13
+	-- settlement roster at LOAD time: it prepares every profile's blueprints,
+	-- unions their palettes, derives the manifest's settlement order and hands
+	-- the successor the roster's key order. One stub settlement drives that
+	-- control flow here; the authentic roster identity, bounds and blueprint
+	-- order are covered by tools/wp13/seam_kat.lua under both interpreters.
+	local runtime_settlement_profile = {key = "micro", label = "Micro",
+		slot = "start", bounds = "start", anchor_id = "anchor_001",
+		blueprint_file = "r7_hearthpine_blueprint.lua",
+		delta_schema = "grug_wp13_micro_delta_v1"}
+	local runtime_settlement_prepared = {
+		schema = "grug_wp13_settlement_prepared_v1",
+		profile = runtime_settlement_profile, palette = {"air"},
+		blueprints = {{descriptor = {id = "micro", prefix = "micro",
+			kind = "anchor",
+			identity_schema = "grug_wp13_micro_blueprint_identity_v1",
+			bounds = {min = {x = 0, y = 0, z = 0},
+				max = {x = 0, y = 0, z = 0}}}}}}
+	local runtime_settlement_module = {
+		roster = {runtime_settlement_profile}, less_bytes = less_bytes}
+	function runtime_settlement_module.prepare(profile, source, hash)
+		check(profile == runtime_settlement_profile and type(source) == "table" and
+			type(hash) == "function", "runtime settlement prepare seam differs")
+		return runtime_settlement_prepared
+	end
+	function runtime_settlement_module.config(prepared, content, hash)
+		check(prepared == runtime_settlement_prepared and
+			content == runtime_content_set.settlement and
+			type(hash) == "function", "runtime settlement config seam differs")
+		return {key = runtime_settlement_profile.key,
+			identities = {{schema = "micro_blueprint_identity"}},
+			new = function() return {key = runtime_settlement_profile.key} end}
+	end
 	local function runtime_stub_dofile(path)
 		if path:match("/r7_hearthpine_blueprint%.lua$") then
 			return function() return {palette = {"air"}} end
@@ -397,12 +432,8 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		if path:match("/r7_anchor_activation%.lua$") then
 			return function() return {schema = "micro_anchor_config"} end
 		end
-		if path:match("/r7_hearthpine%.lua$") then
-			return function() return {identity = {
-				schema = "grug_wp13_hearthpine_blueprint_identity_v1",
-				sha256 = string.rep("d", 64), cell_count = 1,
-				min_x = 0, min_y = 0, min_z = 0, max_x = 0, max_y = 0, max_z = 0}}
-			end
+		if path:match("/r7_settlement%.lua$") then
+			return runtime_settlement_module
 		end
 		if path:match("/r7_successor%.lua$") then
 			return function() return {schema = "grug_wp40_r7_successor_config_v1"} end
@@ -500,9 +531,12 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		"mods/MAPGEN/grug_mapgen/wp40/r7_anchor_activation.lua",
 		"mods/MAPGEN/grug_mapgen/wp40/r7_anchor_roster.lua",
 		"mods/MAPGEN/grug_mapgen/wp40/r7_consumer_payload.lua",
-		"mods/MAPGEN/grug_mapgen/wp40/r7_hearthpine.lua",
 		"mods/MAPGEN/grug_mapgen/wp40/r7_loader.lua",
 		"mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua", -- replaced below by full env run
+		-- Replaces the deleted r7_hearthpine.lua: the roster module the seam
+		-- generalisation put in its place.  r7_runtime sees a closed stub of it
+		-- above, so this is where the real pure chunk executes.
+		"mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua",
 		"mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua",
 		"mods/MAPGEN/grug_mapgen/wp40/r7_template_source.lua",
 		"mods/MAPGEN/grug_mapgen/wp40/r7_zone_overlay.lua",
@@ -622,11 +656,32 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	end
 	function mobs_api.add_mob() return nil end
 	function mobs_api.add_eatable() end
+	-- The WP13 round-A start NPCs derive their race roster from the world
+	-- authority's published start identities, never a hand-kept list, so the
+	-- stub authority has to publish all six starts in START_ORDER.
+	local mob_start_identities = {
+		{race_id = "dwarf", faction_id = "accord"},
+		{race_id = "human", faction_id = "accord"},
+		{race_id = "elf", faction_id = "accord"},
+		{race_id = "undead", faction_id = "throng"},
+		{race_id = "orc", faction_id = "throng"},
+		{race_id = "troll", faction_id = "throng"},
+	}
 	local mob_environment = setmetatable({core = mob_core, minetest = mob_core,
 		mobs = mobs_api, grug_core = {
 			zone_authority_installed = function() return true end,
 			get_player_faction = function() return "accord" end,
 			get_race_perk = function() return nil end,
+			start_identities = function()
+				local result = {}
+				for index = 1, #mob_start_identities do
+					local row = mob_start_identities[index]
+					result[index] = {race_id = row.race_id,
+						faction_id = row.faction_id,
+						anchor = {x = 0, y = 0, z = 0}}
+				end
+				return result
+			end,
 			outpost_at = function(pos)
 				return pos.outpost_faction and {faction = pos.outpost_faction} or nil
 			end,
