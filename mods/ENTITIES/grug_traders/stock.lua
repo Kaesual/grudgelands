@@ -309,3 +309,145 @@ function grug_traders.bracket_label(bracket)
 	end
 	return br.min_level .. "-" .. br.max_level
 end
+
+--
+-- PROFESSION SHELVES (WP13 playtest round 3, sockets contract section 8.4).
+--
+-- `vendor.kind` grew from {race, general} to also carry butcher, smith,
+-- fishmonger, baker and tailor. A profession vendor is an ordinary trader with
+-- ONE difference: its General tab is its own shelf instead of the
+-- level-independent core stock above. Everything else -- the money, the sell
+-- side, the buy-back prices, the formspec -- is the same code, and the two
+-- original families are untouched.
+--
+-- WHAT IS ON THEM is bounded by section 8.4: items the game ALREADY registers.
+-- No profession invents an item, because an item nobody registered renders as
+-- an "unknown item" button in the trade formspec and is buyable (the warning
+-- above this block, from WP7). The audit at the bottom of this file is what
+-- enforces that at load rather than in a player's hand: a shelf entry whose
+-- item is not registered is DROPPED from the shelf and reported as an error.
+--
+-- The SMITH additionally keeps the bracket tabs, so its shelf is the metal and
+-- the below-ladder tools while the gear ladder itself comes from `grug_gear`'s
+-- own catalog (items_crafting.md section 3.0.3: the vendor bracket catalog and
+-- the base craft ladder are the same items, so a smith that listed them again
+-- would be a second copy of the ladder). The other four sell no equipment and
+-- carry no bracket tab at all.
+--
+-- Prices are in COPPER (economy.md section 1) and sit above the
+-- `_grug_sell_price` the same items carry as loot, so buying from a profession
+-- vendor and selling it back is a loss, exactly as it is at the two original
+-- families.
+--
+grug_traders.profession_stock = {}
+
+local function profession_shelf(kind, entries)
+	assert(type(kind) == "string" and kind ~= "",
+		"grug_traders profession shelf: kind missing")
+	assert(grug_traders.profession_stock[kind] == nil,
+		"grug_traders profession shelf: " .. kind .. " already has a shelf")
+	local shelf = {}
+	for index = 1, #entries do
+		local row = entries[index]
+		local price = tonumber(row[2])
+		assert(type(row[1]) == "string" and row[1] ~= "" and price and
+			price > 0 and price == math.floor(price),
+			"grug_traders profession shelf: " .. kind .. " entry " .. index ..
+			" differs")
+		shelf[index] = {item = row[1], price = price,
+			category = row[3] or "goods"}
+	end
+	grug_traders.profession_stock[kind] = shelf
+	return shelf
+end
+
+-- The butcher: meat and the hides that come off the same animal
+-- (biomes_mobs.md section 6's base-material map, which is where every one of
+-- these items comes from).
+profession_shelf("butcher", {
+	{"mobs:meat_raw", 4},
+	{"mobs:meat", 9},
+	{"mobs:leather", 8},
+	{"grug_mobs:light_leather", 6},
+	{"grug_mobs:heavy_leather", 16},
+	{"grug_mobs:boar_tusk", 5},
+})
+
+-- The fishmonger: the catch and what comes out of the water with it.
+profession_shelf("fishmonger", {
+	{"grug_mobs:raw_fish", 5},
+	{"grug_mobs:scaled_hide", 16},
+	{"grug_mobs:croc_tooth", 13},
+	{"grug_gathering:stormkelp", 6},
+})
+
+-- The baker: what the fields and the forest floor give (WP33's gathering
+-- catalog). No bread: there is no bread item, and section 8.4 builds a shelf
+-- from items the game already registers.
+profession_shelf("baker", {
+	{"grug_gathering:corn", 3},
+	{"grug_gathering:potato", 3},
+	{"grug_gathering:melon", 4},
+	{"grug_gathering:mushroom", 3},
+})
+
+-- The tailor: the cloth line of biomes_mobs.md section 6, plus the two wools
+-- an ordinary settlement would actually have on a bolt.
+profession_shelf("tailor", {
+	{"grug_mobs:linen_scrap", 3},
+	{"grug_mobs:linen_cloth", 8},
+	{"grug_mobs:heavy_cloth", 13},
+	{"grug_mobs:spider_silk", 13},
+	{"wool:white", 6},
+	{"wool:brown", 6},
+})
+
+-- The smith: bars and the below-ladder tools. The LADDER is the bracket tabs
+-- this one vendor keeps (see the note above), not a list here.
+profession_shelf("smith", {
+	{"grug_materials:bronze_bar", 7},
+	{"grug_materials:iron_bar", 14},
+	{"grug_materials:steel_bar", 26},
+	{"default:pick_bronze", 40, "tools"},
+	{"default:axe_bronze", 36, "tools"},
+	{"default:shovel_bronze", 32, "tools"},
+})
+
+--
+-- The audit. An unregistered item is dropped from its shelf and reported; a
+-- clean roster reports itself, so a check nobody sees the result of does not
+-- become a check nobody notices breaking (the pattern this mod's other audits
+-- established).
+--
+core.register_on_mods_loaded(function()
+	local kinds, offers, dropped = 0, 0, {}
+	local names = {}
+	for kind in pairs(grug_traders.profession_stock) do
+		names[#names + 1] = kind
+	end
+	-- Sorted: `pairs` order over the shelf table is not reproducible and a log
+	-- line that reorders itself is a log line nobody can diff.
+	table.sort(names)
+	for _, kind in ipairs(names) do
+		local shelf = grug_traders.profession_stock[kind]
+		local kept = {}
+		for index = 1, #shelf do
+			local entry = shelf[index]
+			if core.registered_items[entry.item] then
+				kept[#kept + 1] = entry
+			else
+				dropped[#dropped + 1] = kind .. "=" .. entry.item
+			end
+		end
+		grug_traders.profession_stock[kind] = kept
+		kinds = kinds + 1
+		offers = offers + #kept
+	end
+	if #dropped == 0 then
+		core.log("action", "[grug_traders] " .. kinds ..
+			" profession shelves, " .. offers .. " offers, all registered")
+		return
+	end
+	core.log("error", "[grug_traders] profession shelves name items nobody " ..
+		"registered; those offers are dropped: " .. table.concat(dropped, " "))
+end)

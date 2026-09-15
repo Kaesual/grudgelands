@@ -159,7 +159,7 @@ end
 -- refusal -- a player inside SNAP_PLAYER_RANGE, or a column with nowhere to
 -- stand -- is retried only every SNAP_RETRY seconds.
 --
-function grug_mobs.snap_try(self, pos, x, z, elapsed)
+function grug_mobs.snap_try(self, pos, x, z, elapsed, after)
 	self.temp = self.temp or {}
 	local t = self.temp
 	local wait = (t.grug_snap_wait or 0) - (elapsed or 0)
@@ -167,7 +167,7 @@ function grug_mobs.snap_try(self, pos, x, z, elapsed)
 		t.grug_snap_wait = wait
 		return false
 	end
-	if grug_mobs.snap_to(self, pos, x, z) then
+	if grug_mobs.snap_to(self, pos, x, z, after) then
 		t.grug_snap_wait = nil
 		return true
 	end
@@ -271,7 +271,12 @@ end
 -- player is within SNAP_PLAYER_RANGE, and refuses when the column has nowhere
 -- to stand.
 --
-function grug_mobs.snap_to(self, pos, x, z)
+-- `after` is the caller's own timeout, for the log line only. It is a
+-- parameter rather than the module's `STALL_SNAP` because the callers do not
+-- share one: the route and the guard post snap after 90 s, a work resident
+-- walking back to its socket after 30 s (start_villagers.lua), and a log line
+-- that always said 90 was a log line that lied about two of the three.
+function grug_mobs.snap_to(self, pos, x, z, after)
 	if not grug_mobs.unwatched(pos, SNAP_PLAYER_RANGE) then
 		return false
 	end
@@ -283,7 +288,8 @@ function grug_mobs.snap_to(self, pos, x, z)
 	grug_mobs.place_on_ground(self.object, to)
 	grug_mobs.stall_clear(self)
 	core.log("action", "[grug_mobs] " .. self.name .. " was stuck for " ..
-		STALL_SNAP .. " s and was moved to " .. core.pos_to_string(to) ..
+		(after or STALL_SNAP) .. " s and was moved to " ..
+		core.pos_to_string(to) ..
 		" with no player within " .. SNAP_PLAYER_RANGE)
 	return true
 end
@@ -343,7 +349,8 @@ function grug_mobs.route_tick(self, dtime, points, wp_holder, wp_key, rescue)
 	end
 	local stalled, total = grug_mobs.stall_clock(self, pt.x, pt.z, pos, elapsed)
 	if total >= STALL_SNAP and
-			grug_mobs.snap_try(self, pos, pt.x, pt.z, elapsed) then
+			grug_mobs.snap_try(self, pos, pt.x, pt.z, elapsed,
+				STALL_SNAP) then
 		return
 	end
 	if stalled >= STALL_SKIP then

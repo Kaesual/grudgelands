@@ -238,6 +238,19 @@ local function loader(directory)
 			z = -2, dir = {x = -1, z = 0}},
 		{id = "idle_armoury_forge", role = "idle", tags = {"fire"}, x = 20,
 			y = 1, z = -2, dir = {x = 1, z = 0}},
+		--
+		-- WORKPLACES (playtest round 3, contract section 8.1). A `work` socket
+		-- is a spawn socket like an `idle` one and its resident never leaves
+		-- it. Both stand at features the camp already has, so no cell moves.
+		--
+		-- A SMITH at the open anvil west of the yard -- the one anvil in the
+		-- six starts that stands outdoors, which is what a `work` socket needs
+		-- (a socket is never inside a room) -- and a woodcutter at the acacia
+		-- on the north lane.
+		{id = "work_forge", role = "work", activity = "smith", tags = {"fire"},
+			x = -34, y = 1, z = 2, dir = {x = 0, z = -1}},
+		{id = "work_acacia", role = "work", activity = "chop", tags = {"work"},
+			x = -14, y = 1, z = -1, dir = {x = 0, z = -1}},
 		-- `door`: the elder faces the hall door it stands at, and the consumer
 		-- turns it round to the street (start_npcs.lua `socket_face_yaw`).
 		{id = "hall_quest", role = "quest", tags = {"door"}, x = 3, y = 1,

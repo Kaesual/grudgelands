@@ -159,27 +159,104 @@ end
 -- into staticdata, so it must be re-installed on every activation; the "did we
 -- already write it" flag lives in self.temp, which mob_activate resets per
 -- activation exactly like the object's nametag property.
+--
+-- ROUND 3 PUT IT BEHIND THE PROXIMITY GATE (WP13 playtest, 2026-09-15). The
+-- write used to happen once, here, and the engine has no distance cull of its
+-- own -- so a shopkeeper's name rendered out to the ~128 m object-send range
+-- while a guard's disappeared at thirty, which is the clutter the user
+-- reported. The DESIRED text is now a plain string field and the only writer of
+-- the property is `grug_mobs.plain_tag_gate_tick`, from this family's own
+-- once-a-second tick: one write per state flip, none while nobody is near.
+-- mobs_redo's `update_tag` calls therefore refresh the text and touch nothing.
+--
 local function install_nametag(self, text)
+	self._grug_tag_want = text
 	self.update_tag = function(s)
-		local obj = s.object
-		if not obj or not s.temp or s.temp.grug_tag_set then
-			return
-		end
-		s.temp.grug_tag_set = true
-		obj:set_properties({nametag = text, nametag_color = "#ffffff"})
+		s._grug_tag_want = text
 	end
-	self:update_tag()
 end
 
 -- The race a faction Quartermaster is drawn as. Only the two general vendors
 -- need it; a race vendor carries its own `race` field.
 local VENDOR_FACTION_RACE = {accord = "human", throng = "orc"}
 
+--
+-- WHAT RACE A PROFESSION VENDOR IS DRAWN AS (WP13 round 3). The five
+-- professions are ONE entity each and they serve every settlement, so unlike
+-- the six race vendors they carry no race of their own -- a butcher in
+-- Hearthpine is a dwarf and a butcher in Sunscar is an orc. The settlement key
+-- the placement engine wrote on the entity is what answers, through the socket
+-- registry, which is the only authority on which race a settlement belongs to.
+-- Built once at mods_loaded, because the registry is filled by grug_mapgen at
+-- load and a capital adds to it later.
+--
+local race_of_settlement = {}
+
+local function settlement_race(entity)
+	local key = entity and entity._grug_start
+	if type(key) ~= "string" then return nil end
+	return race_of_settlement[key]
+end
+
+--
+-- RE-APPLY THE SKIN ONCE THE PLACEMENT HAS SAID WHERE THIS VENDOR STANDS.
+--
+-- `core.add_entity` activates the entity synchronously, so `after_activate`
+-- above -- and with it `grug_visuals.apply_entity` -- has already run by the
+-- time `grug_mobs/start_npcs.lua`'s `install` writes `_grug_start`. For the
+-- six race vendors and the two Quartermasters that is harmless, because their
+-- race is a property of the entity; for a PROFESSION vendor, whose race is a
+-- property of the SETTLEMENT, it meant the first placement composed the Accord
+-- fallback and the butcher stood in Hearthpine as a human until the first
+-- reload. Found by the review of playtest round 3.
+--
+-- Registered into the placement engine's restyle list, which exists for
+-- exactly this class of ordering problem; `apply_entity` compares
+-- `_grug_visual_skin` and does nothing when the composed skin is already
+-- right, so this is free for every vendor that is not a profession.
+--
+function grug_traders.restyle_socket_vendor(entity)
+	if type(entity) ~= "table" then return end
+	local vendor = grug_traders.vendors[entity.name]
+	-- Only the families whose look depends on where they stand.
+	if not vendor or vendor.race or vendor.faction then return end
+	if not core.global_exists("grug_visuals") then return end
+	grug_visuals.apply_entity(entity, {race = settlement_race(entity) or
+		VENDOR_FACTION_RACE.accord})
+end
+
+-- The once-a-second tick a vendor did not have before round 3. It exists for
+-- the nametag gate and does nothing else; `false` stops mobs_redo running the
+-- rest of the step, which for a mob with zero velocities, `stand_chance = 100`
+-- and no targeting was already a no-op and is now not even walked through.
+local TAG_TICK = 1
+
+local function vendor_tick(self, dtime)
+	self.temp = self.temp or {}
+	local temp = self.temp
+	temp.grug_tag_acc = (temp.grug_tag_acc or 0) + dtime
+	if temp.grug_tag_acc < TAG_TICK then return false end
+	temp.grug_tag_acc = 0
+	local gate = grug_mobs.plain_tag_gate_tick
+	if gate then gate(self, self._grug_tag_want) end
+	return false
+end
+
 local function vendor_def(vendor, texture)
-	local visual = {race = vendor.race or VENDOR_FACTION_RACE[vendor.faction]}
+	local fixed_race = vendor.race or VENDOR_FACTION_RACE[vendor.faction]
+	-- A FUNCTION, not a table, for the professions: `apply_entity` accepts a
+	-- spec builder precisely so a look can depend on the entity it is applied
+	-- to (grug_visuals/apply.lua `mob_visual`), and a profession vendor's race
+	-- is a property of where it is standing.
+	local visual = fixed_race and {race = fixed_race} or function(entity)
+		return {race = settlement_race(entity) or
+			VENDOR_FACTION_RACE.accord}
+	end
 	return {
 		description = vendor.nametag,
-		nametag = vendor.nametag,
+		-- NO `nametag` FIELD any more (round 3). mobs_redo copies it onto the
+		-- object at activation, which would put the tag back on screen at 128 m
+		-- on every reload until the gate's first tick took it off again.
 		type = "npc",
 		passive = true,
 		-- Permanent: see the header. `type = "npc"` already exempts the mob
@@ -250,6 +327,9 @@ local function vendor_def(vendor, texture)
 			return true
 		end,
 
+		-- The per-second slot the nametag gate needs.
+		do_custom = vendor_tick,
+
 		after_activate = function(self)
 			install_nametag(self, vendor.nametag)
 			-- Vendors are registered through plain mobs:register_mob (they must
@@ -316,6 +396,56 @@ for index, race_id in ipairs(race_ids) do
 		nametag = (RACE_ADJECTIVE[race_id] or def.name) .. " Quartermaster",
 		salt = RACE_SALT_BASE + index,
 	}, GUARD_TEXTURE[def.faction])
+end
+
+--
+-- THE FIVE PROFESSION VENDORS (WP13 playtest round 3, sockets contract
+-- section 8.4). The user's ruling: a district reads as lived in when it has a
+-- butcher with a butcher's house, a smith at a forge and a fishmonger beside
+-- the pond -- so `vendor.kind` grows from {race, general} to also carry these
+-- five, and the structure lanes place their sockets at the matching building.
+--
+-- ONE ENTITY PER PROFESSION, not one per race: a profession is not a faction
+-- perk and not a race perk, it is a shop. So a profession vendor
+--   * serves EVERYBODY -- it carries neither `faction` nor `race`, which is
+--     exactly what `can_trade` and `has_discount` already read, so both keep
+--     working without a line of change;
+--   * is DRAWN as the race of the settlement it stands in (`settlement_race`
+--     above), because one butcher entity serves Hearthpine and Sunscar;
+--   * offers its own shelf on the General tab (`stock.lua`'s
+--     `profession_stock`), and only the smith keeps the gear bracket tabs.
+--
+-- The salts continue the race vendors' block (RACE_SALT_BASE + 1..6), so no
+-- two vendor kinds share an hourly rotation.
+--
+local PROFESSION_SALT_BASE = 20
+-- Ordered, because the salts are positional and must be reproducible across
+-- restarts; the nametag is the shop and not the shopkeeper.
+local PROFESSIONS = {
+	{kind = "butcher", nametag = "Butcher"},
+	{kind = "smith", nametag = "Blacksmith"},
+	{kind = "fishmonger", nametag = "Fishmonger"},
+	{kind = "baker", nametag = "Baker"},
+	{kind = "tailor", nametag = "Tailor"},
+}
+
+for index, row in ipairs(PROFESSIONS) do
+	register_vendor({
+		name = "grug_traders:vendor_" .. row.kind,
+		kind = row.kind,
+		nametag = row.nametag,
+		salt = PROFESSION_SALT_BASE + index,
+		-- The General tab's shelf. `nil` for the two original families, which
+		-- is what makes them keep the level-independent core stock.
+		stock = row.kind,
+		-- Only the smith sells equipment (items_crafting.md §3.0.3: the vendor
+		-- bracket catalog and the base craft ladder are the same items, and a
+		-- baker is not on that ladder).
+		brackets = row.kind == "smith" or nil,
+	-- The placeholder skin of a build without grug_visuals. A profession
+	-- vendor has no faction, so it falls back to the Accord guard texture and
+	-- the visuals mod replaces it with the settlement's race at activation.
+	}, GUARD_TEXTURE.accord)
 end
 
 --
@@ -541,16 +671,46 @@ if type(grug_mobs.register_start_socket_role) == "function" then
 		if socket.kind == "general" then
 			return "grug_traders:vendor_general_" .. settlement.faction_id
 		end
-		-- The race-exclusive vendor of world.md §7 -- the start roster's own
-		-- kind, and the same entity the race's capital gets.
-		return "grug_traders:vendor_race_" .. settlement.race_id
+		if socket.kind == "race" then
+			-- The race-exclusive vendor of world.md §7 -- the start roster's
+			-- own kind, and the same entity the race's capital gets.
+			return "grug_traders:vendor_race_" .. settlement.race_id
+		end
+		-- A PROFESSION (contract section 8.4). The registry has already
+		-- refused any kind outside the closed set, so a name built from it is
+		-- a name this mod registered -- and the placement engine reports an
+		-- unregistered entity loudly if that ever stops being true.
+		return "grug_traders:vendor_" .. socket.kind
 	end)
 else
 	core.log("error", "[grug_traders] grug_mobs offers no settlement socket role " ..
 		"registry; the settlements get no vendor")
 end
 
+-- The first placement of a profession vendor composes its look before it knows
+-- which settlement it is standing in; this is what fixes that up (see
+-- `grug_traders.restyle_socket_vendor`).
+if type(grug_mobs.register_start_npc_restyle) == "function" then
+	grug_mobs.register_start_npc_restyle(grug_traders.restyle_socket_vendor)
+else
+	core.log("error", "[grug_traders] grug_mobs offers no settlement restyle " ..
+		"registry; a profession vendor wears the wrong race until its first " ..
+		"reload")
+end
+
 -- Last: the capital slots this mod still owns itself, which is every capital
 -- whose core has not landed. It has to run after grug_mapgen published its
 -- socket sets, and `register_on_mods_loaded` is where that is guaranteed.
 core.register_on_mods_loaded(build_slots)
+
+-- Settlement key -> race, for the profession vendors' skin (see
+-- `settlement_race`). Same trigger and same reason as `build_slots` above: the
+-- socket registry is filled by grug_mapgen at load.
+core.register_on_mods_loaded(function()
+	local settlements = grug_core.settlement_socket_settlements()
+	for index = 1, #settlements do
+		race_of_settlement[settlements[index].key] = settlements[index].race_id
+	end
+	core.log("action", "[grug_traders] " .. #settlements ..
+		" settlements indexed for profession vendor appearance")
+end)

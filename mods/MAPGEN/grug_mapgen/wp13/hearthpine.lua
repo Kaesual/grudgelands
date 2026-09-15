@@ -118,6 +118,26 @@ local function loader(directory)
 			z = 17, dir = {x = -1, z = 0}},
 		{id = "idle_forge_door", role = "idle", tags = {"fire"}, x = 2, y = 1,
 			z = -10, dir = {x = 0, z = -1}},
+		--
+		-- WORKPLACES (playtest round 3, contract section 8.1). A `work` socket
+		-- is a spawn socket like an `idle` one and its resident never leaves
+		-- it: it stands there, faces the feature its `dir` names and plays the
+		-- animation its `activity` names. Both of these are at features the
+		-- vale ALREADY has -- there is no new cell, so the settlement identity
+		-- is untouched -- and `tools/wp13/blueprint_kat.lua` measures the
+		-- feature under the facing as well as every standing rule.
+		--
+		-- A woodcutter at the pines above the lane, and a gardener at the tufts
+		-- beside the workyard.
+		{id = "work_woodpile", role = "work", activity = "chop",
+			tags = {"work"}, x = -12, y = 1, z = -13, dir = {x = 0, z = -1}},
+		-- The tuft is the node in FRONT of the socket, not two nodes behind a
+		-- pine trunk: the first version of this socket stood at (-19, 14)
+		-- looking east at a trunk with grass behind it, which passed the
+		-- feature test until that test learned to stop at an obstruction, and
+		-- in the engine was a gardener who could not walk back to its own spot.
+		{id = "work_garden", role = "work", activity = "tend", tags = {"work"},
+			x = -19, y = 1, z = 21, dir = {x = 1, z = 0}},
 		-- `door`: the elder faces the hall door it stands at, and the consumer
 		-- turns it round to the street (start_npcs.lua `socket_face_yaw`).
 		{id = "hall_quest", role = "quest", tags = {"door"}, x = -28, y = 1,

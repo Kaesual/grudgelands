@@ -295,6 +295,82 @@ function grug_mobs.tag_gate_tick(self)
 end
 
 --
+-- THE SAME GATE FOR A PEACEFUL NPC (WP13 playtest round 3, 2026-09-15).
+--
+-- The user's finding: a villager's, an elder's or a vendor's nametag was
+-- readable from the far side of a settlement while a guard's or a wolf's
+-- disappeared at thirty metres, so a busy district was a wall of floating
+-- names. The cause was not a different range but the ABSENCE of one: those
+-- three families write a static nametag property once at activation, and the
+-- engine has no distance cull of its own -- every active object's tag renders
+-- out to the ~128 m object-send range. The combat families were culled here and
+-- they were the only ones.
+--
+-- So the gate is offered to a caller that has no `tag_text` of its own: the
+-- text is a plain string the caller owns, and everything else -- the 25/30 m
+-- hysteresis band, the cached player snapshot above, exactly one
+-- `set_properties` per state flip and none in between -- is shared with the
+-- combat gate rather than re-derived beside it.
+--
+-- `temp.grug_tag_shown` is what is actually APPLIED and `temp.grug_tag_text`
+-- what was last written, both runtime-only: a freshly activated mob starts out
+-- hidden, which is also the truth for its fresh object (the nametag property
+-- of a definition that declares none is ""). A caller whose desired text
+-- changes while the tag is hidden -- `grug_mobs.start_npc_retag` renaming a
+-- capital's citizen -- costs nothing until the gate opens, and the rising edge
+-- writes whatever the text is by then.
+--
+function grug_mobs.plain_tag_gate_tick(self, text)
+	local obj = self.object
+	local t = self.temp
+	if not obj or not t or type(text) ~= "string" or text == "" then
+		return
+	end
+	local shown = t.grug_tag_shown == true
+	local pos = obj:get_pos()
+	-- Through the table and not through the local above, so an engine probe can
+	-- substitute the distance source: a headless server has no client to
+	-- connect and therefore no connected player, while the property write this
+	-- function makes is exactly the thing that has to be measured.
+	local d2 = pos and grug_mobs.nearest_player_d2(pos)
+	local visible
+	if not d2 then
+		visible = false -- nobody connected
+	elseif d2 < TAG_SHOW_D2 then
+		visible = true
+	elseif d2 > TAG_HIDE_D2 then
+		visible = false
+	else
+		visible = shown -- inside the hysteresis band: keep the state
+	end
+	if visible == shown then
+		-- No flip. A text change still has to land while the tag is on screen,
+		-- and must not be written while it is not.
+		if visible and t.grug_tag_text ~= text then
+			t.grug_tag_text = text
+			obj:set_properties({nametag = text, nametag_color = "#ffffff"})
+		end
+		return
+	end
+	t.grug_tag_shown = visible
+	if visible then
+		t.grug_tag_text = text
+		obj:set_properties({nametag = text, nametag_color = "#ffffff"})
+	else
+		t.grug_tag_text = nil
+		-- An empty nametag removes the tag for non-player objects
+		-- (lua_api.md:10110).
+		obj:set_properties({nametag = ""})
+	end
+end
+
+-- The cached-snapshot distance, published for the gate above and for the
+-- "is anybody watching" test of the settlement work animations
+-- (start_villagers.lua). One shared snapshot, refreshed once a second for the
+-- whole mob population, is the point of it.
+grug_mobs.nearest_player_d2 = nearest_player_d2
+
+--
 -- Stat application
 --
 

@@ -110,13 +110,19 @@ Decided 2026-09-14.
   and capitals; the faction veto stays the one rule. They ignore own-faction
   and factionless players and fight hostile mobs.
 - Blueprints export named sockets (guard post, patrol loop, vendor, idle,
-  quest, king, waypoint) that runtime mods read through one registry, see
-  [wp13-npc-sockets-contract.md](../research/wp13-npc-sockets-contract.md).
+  work, quest, king, waypoint) that runtime mods read through one registry,
+  see [wp13-npc-sockets-contract.md](../research/wp13-npc-sockets-contract.md).
 - Every start receives a first NPC roster: two gate guards and one patrol,
-  the race's own vendor, a few flair NPCs at doors, benches and work areas,
-  and a quest-giver shell with a placeholder line. None of this adds quest,
-  storage or profession services. Since 2026-09-15 a start also publishes
-  three **spare** standing spots that nobody lives on (below).
+  the race's own vendor, residents at doors, benches, work areas and
+  **workplaces**, and a quest-giver shell with a placeholder line. Since
+  2026-09-15 a start also publishes three **spare** standing spots that nobody
+  lives on (below).
+- **A settlement offers no quest and no storage services**, and a vendor is
+  the only trade there is. Since playtest round 3 a settlement may hold a
+  PROFESSION vendor -- butcher, smith, fishmonger, baker, tailor -- but that is
+  a shop with its own shelf, not the crafting-profession system of
+  [professions.md](professions.md): nothing there is taught, levelled or
+  unlocked in a settlement.
 - Race appearance (skin, visual-only stature) and visible armor and weapons
   are composed by one function for players and humanoid mobs, see
   [wp13-character-visuals-contract.md](../research/wp13-character-visuals-contract.md).
@@ -187,19 +193,18 @@ Where a capital's avenue has to leave the ground — the blend from the flat civ
 core to the terraces can fall faster than a road may descend — the raised
 stretch carries a masonry rail on both kerbs.
 
-Shipped behaviour of that first roster: each start's nine NPCs are placed once
+Shipped behaviour of that first roster: each start's eleven NPCs are placed once
 its area is prepared at server start, from the sockets alone, and stay for the
 life of the world. Two faction guards hold their authored gate posts, returning
 to them and facing their authored direction whenever they are not fighting, and
 one more guard walks the authored five-waypoint loop; they take their level from
 the guard field and their targeting is unchanged, so the faction veto above is
-still the single rule. Four flair villagers occupy the idle spots, amble between
-them at walking pace, stand facing each spot and answer a right-click with one
-short race-flavoured line; the race's own vendor stands on the vendor socket and
-trades exactly as at a capital; the quest shell carries a nametag and one
-placeholder answer. Only guards are mortal: a killed one leaves its post empty
-and the settlement fills that one slot again after three to six minutes, the
-same respawn-slot rhythm outposts use.
+still the single rule. Six residents occupy the idle and work sockets (see the
+80/20 rule below); the race's own vendor stands on the vendor socket and trades
+exactly as at a capital; the quest shell carries a nametag and one placeholder
+answer. Only guards are mortal: a killed one leaves its post empty and the
+settlement fills that one slot again after three to six minutes, the same
+respawn-slot rhythm outposts use.
 
 Decided 2026-09-15 after the first NPC playtest, and part of that behaviour:
 
@@ -211,8 +216,8 @@ Decided 2026-09-15 after the first NPC playtest, and part of that behaviour:
   capital's flair NPCs are its own citizens and elders, the six starts keep
   their authored names.
 - **A villager at a doorstep faces the street**, and villagers walk — they do
-  not jump. One dwells 20 to 60 seconds at a spot, then walks to another spot of
-  the same composition; a spot it cannot reach is given up for another.
+  not jump. A walker dwells 20 to 60 seconds at a spot, then walks to another
+  spot of the same composition; a spot it cannot reach is given up for another.
 - **A guard that cannot reach its waypoint keeps patrolling anyway**: it paths
   around the obstacle, then takes the next waypoint, and only if it is still
   stuck and no player is within 48 nodes is it moved there outright.
@@ -236,3 +241,34 @@ creatures ignore settlement NPCs" is replaced by the first point here):
   every villager of that composition may wander to. Without them a settlement's
   spots and its villagers are the same list, every destination is permanently
   occupied, and the amble is people trading doorsteps.
+
+Decided 2026-09-15 after the third NPC playtest ("nobody does anything, and I
+want lived-in settlements without paying for it in server load"):
+
+- **Four residents in five work; one in five walks.** A resident on a **work**
+  socket never leaves it: it faces the feature the socket names, plays that
+  activity's animation and holds its tool — a smith at an anvil, a farmer in a
+  field, a woodcutter at a tree, somebody sitting on a bench. The split is
+  decided by the placement engine and nothing about it is authored: among a
+  settlement's resident sockets in authored order, every fifth `idle` one hosts
+  a walker and everybody else stands still. A static resident keeps at most a
+  rare short hop to a spare spot near it.
+- **A walker's route is short.** Twenty nodes around its own socket, which is
+  two to four destinations in a start rather than a march across the
+  settlement. Where a settlement's spots are further apart than that, the
+  walker takes the nearest ones anyway: a walker with one destination is a
+  walker that never moves.
+- **The load is the point.** Path-finding and animated meshes are what a
+  settlement costs, not the head count. A static resident asks the pathfinder
+  nothing at all, writes its animation once per change, and does nothing
+  whatsoever while no player is within 24 nodes.
+- **Profession vendors.** A district reads as lived in when the butcher's house
+  has a butcher in it, so a `vendor` socket may name one of five professions —
+  butcher, smith, fishmonger, baker, tailor. Each has a shelf of its own trade
+  and serves everybody (no faction and no race restriction, and therefore no
+  kinship discount); only the smith also sells the equipment ladder. The six
+  starts keep their single race vendor.
+- **A peaceful NPC's nametag is culled like a guard's.** Villagers, elders and
+  vendors used to render their name out to the engine's whole object-send
+  range, which made a busy district a wall of floating text; they now use the
+  25/30 m proximity gate the combat families already had.

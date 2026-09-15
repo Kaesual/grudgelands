@@ -155,6 +155,40 @@ return function(repo)
 			z = 4, dir = {x = -1, z = 0}},
 		{id = "idle_b", role = "idle", tags = {"bench"}, x = 7, y = 1, z = 1,
 			dir = {x = 1, z = 0}},
+		--
+		-- FOUR MORE IDLE SPAWN SOCKETS (playtest round 3): the 80/20 rule of
+		-- contract section 8.3 counts `idle` spawn sockets in authored order
+		-- and makes every FIFTH of them -- starting with the first -- a walker,
+		-- so a fixture with two of them could never tell "the first" from
+		-- "every fifth". With six, the walkers are the first and the sixth, and
+		-- a rule that lost its stride would show up as one walker or as three.
+		--
+		-- Their positions are deliberate as well: c, e and f sit inside
+		-- WALK_RADIUS of the walker at idle_a and b and d do not, which is what
+		-- makes the bounded ring below a measurement rather than a copy of the
+		-- whole composition.
+		--
+		{id = "idle_c", role = "idle", tags = {"work"}, x = -10, y = 1, z = 8,
+			dir = {x = -1, z = 0}},
+		{id = "idle_d", role = "idle", x = 10, y = 1, z = 6,
+			dir = {x = 1, z = 0}},
+		{id = "idle_e", role = "idle", x = -14, y = 1, z = 14,
+			dir = {x = 0, z = 1}},
+		{id = "idle_f", role = "idle", x = -18, y = 1, z = 8,
+			dir = {x = -1, z = 0}},
+		--
+		-- TWO WORK SOCKETS (contract section 8.1). A `work` socket is a spawn
+		-- socket like an `idle` one -- it is in the roster, it carries a marker
+		-- and it is censused -- and its resident never walks: no ring, no
+		-- dwell, no give-up clock. `activity` is required and comes from the
+		-- closed vocabulary of section 8.2; the registry is what rejects a
+		-- typo, and this fixture compiles sockets itself, so what it proves is
+		-- what the PLACEMENT ENGINE does with a valid one.
+		--
+		{id = "forge_work", role = "work", activity = "smith", tags = {"fire"},
+			x = 2, y = 1, z = -8, dir = {x = 0, z = -1}},
+		{id = "bench_work", role = "work", activity = "sit", tags = {"bench"},
+			x = 8, y = 1, z = 3, dir = {x = 1, z = 0}},
 		-- `door` on a QUEST socket: round 1 turned only `idle` sockets round, so
 		-- every Village Elder kept its face in the hall door and its back to the
 		-- street (playtest round 2). The tag describes the GEOMETRY, so the rule
@@ -171,10 +205,46 @@ return function(repo)
 	}
 	local ENTITIES = {
 		["grug_mobs:guard_accord"] = true,
+		["grug_mobs:guard_throng"] = true,
 		["grug_mobs:villager_dwarf"] = true,
 		["grug_mobs:elder_dwarf"] = true,
 		["grug_traders:vendor_race_dwarf"] = true,
 	}
+
+	--
+	-- THE SIX REAL COMPOSITIONS (state 19, playtest round 3's review).
+	--
+	-- Everything above this line is a synthetic settlement, which is the right
+	-- shape for the marker, twin and unload states: those are about the ENGINE's
+	-- behaviour and a fixture that had to carry a whole village to express them
+	-- would express them worse. But the 80/20 rule and the bounded ring are
+	-- about the SETTLEMENTS THAT SHIP, and Stillgrave proved that: it passed
+	-- every synthetic state while handing its one walker a ring of ONE, because
+	-- its idle sockets are 27 nodes apart and the radius was a wall.
+	--
+	-- So the last state boots the real placement engine a second time over the
+	-- six starts' own authored socket tables, read out of the same blueprints
+	-- `tools/wp13/blueprint_kat.lua` reads. The anchors are this fixture's own
+	-- -- a socket is anchor-relative and the ring is measured in world space
+	-- against the same anchor, so the real anchors would prove nothing extra --
+	-- and every other stub is the one above.
+	--
+	local START_RACE = {hearthpine = "dwarf", dawnmere = "human",
+		silverleaf = "elf", stillgrave = "undead", sunscar = "orc",
+		kapok = "troll"}
+	local START_ORDER = {"hearthpine", "dawnmere", "silverleaf", "stillgrave",
+		"sunscar", "kapok"}
+	local RACE_FACTION = {human = "accord", dwarf = "accord", elf = "accord",
+		orc = "throng", troll = "throng", undead = "throng"}
+	for _, key in ipairs(START_ORDER) do
+		local race = START_RACE[key]
+		ENTITIES["grug_mobs:villager_" .. race] = true
+		ENTITIES["grug_mobs:elder_" .. race] = true
+		ENTITIES["grug_traders:vendor_race_" .. race] = true
+	end
+
+	-- Filled by state 19; nil means "the synthetic settlement above".
+	local real_settlements = nil
 	-- Whether the capital's own area has been emerged yet. `get_node_or_nil`
 	-- answers nil for a block that is not loaded, which is the gate a capital
 	-- is placed behind.
@@ -313,7 +383,20 @@ return function(repo)
 		end
 		function mob:set_velocity(value) self.velocity = value end
 		function mob:set_yaw(yaw) self.yaw = yaw end
-		function mob:set_animation() end
+		--
+		-- mobs_redo's own `set_animation` semantics, modelled exactly, because
+		-- "one property write per change" is a claim of the work tick and a
+		-- stub that counted every call would make it unmeasurable: api.lua:461
+		-- returns without touching the object when the animation asked for is
+		-- already the current one. `animation_writes` is therefore the number
+		-- of CHANGES, which is what costs a client resend.
+		--
+		function mob:set_animation(anim, force)
+			if anim == nil then return end
+			if anim == self.animation_current and not force then return end
+			self.animation_current = anim
+			self.animation_writes = (self.animation_writes or 0) + 1
+		end
 		return mob
 	end
 
@@ -361,16 +444,45 @@ return function(repo)
 
 		local grug_core = {}
 		function grug_core.start_identities()
+			if real_settlements then
+				local out = {}
+				for index = 1, #real_settlements do
+					local row = real_settlements[index]
+					out[index] = {race_id = row.race_id,
+						faction_id = row.faction_id,
+						anchor = {x = row.anchor.x, y = row.anchor.y,
+							z = row.anchor.z}}
+				end
+				return out
+			end
 			return {{race_id = "dwarf", faction_id = "accord",
 				anchor = {x = ANCHOR.x, y = ANCHOR.y, z = ANCHOR.z}}}
 		end
 		function grug_core.settlement_socket_settlements()
+			if real_settlements then
+				local out = {}
+				for index = 1, #real_settlements do
+					local row = real_settlements[index]
+					out[index] = {key = row.key, race_id = row.race_id,
+						anchor = {x = row.anchor.x, y = row.anchor.y,
+							z = row.anchor.z}}
+				end
+				return out
+			end
 			return {
 				{key = "hearthpine", race_id = "dwarf",
 					anchor = {x = ANCHOR.x, y = ANCHOR.y, z = ANCHOR.z}},
 				{key = "dur_brannoc", race_id = "dwarf",
 					anchor = {x = CAPITAL.x, y = CAPITAL.y, z = CAPITAL.z}},
 			}
+		end
+		local function real_row(key, race_id)
+			if not real_settlements then return nil end
+			for index = 1, #real_settlements do
+				local row = real_settlements[index]
+				if row.key == key or row.race_id == race_id then return row end
+			end
+			return nil
 		end
 		local function compile(list, anchor)
 			local out = {}
@@ -381,6 +493,10 @@ return function(repo)
 					dir = {x = socket.dir.x, z = socket.dir.z},
 					group = socket.group, order = socket.order,
 					kind = socket.kind, tags = socket.tags,
+					-- Contract section 8.1; the registry validates it against
+					-- the closed vocabulary before a consumer ever sees it
+					-- (settlement_sockets_kat covers that half).
+					activity = socket.activity,
 					-- Normalized exactly as the real registry normalizes it
 					-- (grug_core/settlement_sockets.lua): a consumer reads one
 					-- boolean and never spells "nil means true" itself. The
@@ -393,18 +509,36 @@ return function(repo)
 			return out
 		end
 		function grug_core.settlement_sockets(race_id)
+			if real_settlements then
+				local row = real_row(nil, race_id)
+				if not row then return {} end
+				return compile(row.sockets, row.anchor)
+			end
 			if race_id ~= "dwarf" then return {} end
 			return compile(SOCKETS, ANCHOR)
 		end
 		function grug_core.settlement_sockets_at(key)
+			if real_settlements then
+				local row = real_row(key, nil)
+				if not row then return {} end
+				return compile(row.sockets, row.anchor)
+			end
 			if key == "hearthpine" then return compile(SOCKETS, ANCHOR) end
 			if key == "dur_brannoc" then return compile(CAPITAL_SOCKETS, CAPITAL) end
 			return {}
 		end
-		function grug_core.start_anchor()
+		function grug_core.start_anchor(_, race_id)
+			if real_settlements then
+				local row = real_row(nil, race_id)
+				return row and {x = row.anchor.x, y = row.anchor.y,
+					z = row.anchor.z} or nil
+			end
 			return {x = ANCHOR.x, y = ANCHOR.y, z = ANCHOR.z}
 		end
 		function grug_core.capital_anchor()
+			-- In real mode there is no capital, and a published anchor that
+			-- matched a start would make `settlement_kind` answer "capital".
+			if real_settlements then return nil end
 			return {x = CAPITAL.x, y = CAPITAL.y, z = CAPITAL.z}
 		end
 		function grug_core.start_ready() return harness.ready == true end
@@ -414,6 +548,16 @@ return function(repo)
 		rawset(_G, "grug_core", grug_core)
 
 		local core_api = {registered_entities = ENTITIES,
+			-- The items a work resident may be handed (contract section 8.2).
+			-- Transcribed here INDEPENDENTLY of start_villagers.lua's activity
+			-- table, so a tool renamed on one side and not the other fails the
+			-- startup audit this fixture then reads back.
+			registered_items = {
+				["default:pick_bronze"] = true,
+				["default:shovel_stone"] = true,
+				["default:axe_stone"] = true,
+				["default:stick"] = true,
+			},
 			registered_nodes = {air = {walkable = false},
 				["default:stone"] = {walkable = true}}}
 		function core_api.log(level, message)
@@ -443,6 +587,14 @@ return function(repo)
 		-- been emerged; everything else is the loaded start. nil is what the
 		-- engine returns for an unloaded block, and it is the capital's gate.
 		function core_api.get_node_or_nil(pos)
+			-- In real mode every start's envelope is loaded: that programme has
+			-- no capital and nothing is gated behind an emerge.
+			if real_settlements then
+				if pos and pos.y < GROUND_Y then
+					return {name = "default:stone"}
+				end
+				return {name = "air"}
+			end
 			if pos and pos.z > -2000 and not capital_loaded then return nil end
 			if pos and pos.y < GROUND_Y then return {name = "default:stone"} end
 			return {name = "air"}
@@ -514,6 +666,63 @@ return function(repo)
 		grug_mobs.register_start_socket_role("vendor", function(socket, start)
 			return "grug_traders:vendor_race_" .. start.race_id
 		end)
+		--
+		-- THE RESTYLE HOOK, which exists because `core.add_entity` activates an
+		-- entity synchronously: `after_activate` runs with none of the fields
+		-- `install` is about to write. A profession vendor is DRAWN as the race
+		-- of the settlement it stands in, read off `_grug_start`, so before the
+		-- hook the first butcher in Hearthpine was composed as the Accord
+		-- fallback and stayed human until the first reload (the review of round
+		-- 3 found it). grug_traders is not part of this fixture, so what is
+		-- recorded here is the ORDERING the fix hangs on: the hook is called,
+		-- once per placement, and the fields are already there when it runs.
+		--
+		harness.restyled = {}
+		grug_mobs.register_start_npc_restyle(function(entity)
+			harness.restyled[#harness.restyled + 1] = {
+				name = entity.name,
+				start = entity._grug_start,
+				socket = entity._grug_socket,
+				role = entity._grug_socket_role,
+				yaw = entity._grug_face_yaw,
+			}
+		end)
+		--
+		-- THE NAMETAG PROXIMITY GATE lives in `levels.lua`, which is the level
+		-- and XP engine and is deliberately not part of this fixture -- a
+		-- settlement NPC has no level to want it for. What this fixture owns is
+		-- the CALL: every peaceful family has to reach the gate once a second
+		-- with the text it wants shown, which is what the round-3 finding was
+		-- about (a static property write that the engine renders out to 128 m).
+		-- So the gate is recorded here and the property write itself is
+		-- measured in the engine, by the NPC probe.
+		--
+		--
+		-- The cached-player distance `levels.lua` publishes. The work tick asks
+		-- it "is anybody close enough for this animation to be worth playing",
+		-- the same question the vendor presence poll asks, and without it here
+		-- the fixture could not tell the two halves of the tick apart: the walk
+		-- home runs whatever the answer is, the animation does not.
+		--
+		function grug_mobs.nearest_player_d2(pos)
+			local best
+			for index = 1, #harness.players do
+				local player = harness.players[index]
+				local dx = pos.x - player.x
+				local dy = pos.y - player.y
+				local dz = pos.z - player.z
+				local d2 = dx * dx + dy * dy + dz * dz
+				if not best or d2 < best then best = d2 end
+			end
+			return best
+		end
+		harness.gate = {}
+		function grug_mobs.plain_tag_gate_tick(entity, text)
+			local row = harness.gate[entity] or {calls = 0}
+			row.calls = row.calls + 1
+			row.text = text
+			harness.gate[entity] = row
+		end
 		local face_yaw = grug_mobs.face_yaw
 		grug_mobs.face_yaw = function(self, yaw)
 			if type(yaw) == "number" then harness.yaws = harness.yaws + 1 end
@@ -602,12 +811,15 @@ return function(repo)
 	--
 	-- 1. Cold: a prepared start with nobody in it is populated in full.
 	--
-	-- Seven of the ten sockets carry an entity: the loop's SECOND waypoint is
-	-- route data, not a standing position (one guard walks the whole loop), and
-	-- the SPARE idle socket is a wander target nobody lives on. The roster is
+	-- The roster is
 	-- what is placed, marked, capped and censused -- so a spare must not enter
 	-- any of those counts.
-	local SLOTS = 7
+	-- Thirteen of the sixteen sockets carry an entity: the loop's SECOND
+	-- waypoint is route data (one guard walks the whole loop) and the SPARE
+	-- idle socket is a wander target nobody lives on. Round 3 added four idle
+	-- spawn sockets and two `work` sockets to the fixture, which is where six
+	-- of the thirteen come from.
+	local SLOTS = 13
 	boot()
 	check(#world.objects == 0, "something stood there before the first boot")
 	become_ready()
@@ -657,17 +869,37 @@ return function(repo)
 		"an NPC was placed on a spare idle socket")
 	check(world.storage["startnpc:hearthpine:idle_spare"] ~= "1",
 		"a spare idle socket was marked as placed")
+	--
+	-- ROUND 3 BOUNDED THE RING (contract section 8.3), so "the spare is a
+	-- wander target" is now a statement about the ring a resident is HANDED,
+	-- not about the whole composition. The walker at idle_a keeps the four idle
+	-- sockets within WALK_RADIUS = 20 of it -- idle_c, idle_e, idle_f and the
+	-- spare -- and drops idle_b (23.0 nodes) and idle_d (26.1); the spare is
+	-- the LAST of those five, because the ring keeps the authored order.
+	--
 	local spare_ring = entity_at("idle_a")._grug_idle_spots
-	check(#spare_ring == 3,
-		"the spare socket is not a wander target: " .. #spare_ring .. " spots")
-	check(entity_at("idle_a")._grug_idle_spot == 1 and
-		entity_at("idle_b")._grug_idle_spot == 2,
-		"a villager was pointed at the wrong spot of its own ring")
-	local spare_spot = spare_ring[3]
+	check(#spare_ring == 5,
+		"the walker's bounded ring differs: " .. #spare_ring .. " spots")
+	check(entity_at("idle_a")._grug_idle_spot == 1,
+		"the walker was not re-based onto its own bounded ring")
+	local spare_spot = spare_ring[5]
 	check(math.abs(spare_spot.x - (ANCHOR.x - 4)) < 1e-9 and
 		math.abs(spare_spot.z - (ANCHOR.z + 12)) < 1e-9,
 		"the spare spot is not the authored one")
-	line("spare", "unplaced", "unmarked", "ring_3", "spots_1_2")
+	check(spare_spot.spare == true, "the ring does not know its spare")
+	--
+	-- AND A STATIC RESIDENT'S RING IS THE SPARES AND NOTHING ELSE. idle_b is
+	-- the second idle spawn socket, so it is static: its ring is itself plus
+	-- the one spare within the radius, which is what makes its rare hop a hop
+	-- to a place nobody lives rather than a trade of doorsteps.
+	--
+	local static_ring = entity_at("idle_b")._grug_idle_spots
+	check(#static_ring == 2 and static_ring[2].spare == true,
+		"a static resident's ring is not its socket plus the spares: " ..
+		#static_ring)
+	check(entity_at("idle_b")._grug_idle_spot == 1,
+		"a static resident was pointed away from its own socket")
+	line("spare", "unplaced", "unmarked", "walker_ring_5", "static_ring_2")
 
 	--
 	-- 1c. THE NAMETAG FOLLOWS THE SETTLEMENT. A start keeps its authored
@@ -997,8 +1229,9 @@ return function(repo)
 		start_row.marked, "spare_" .. start_row.spare)
 
 	--
-	-- 9. THE AMBLE. Two villagers, each standing on its own idle socket, i.e.
-	--    the state in which EVERY candidate spot is occupied. Both must move.
+	-- 9. THE AMBLE, which since round 3 is what a WALKER does and nobody else.
+	--    The two of them stand on their own sockets, i.e. the state in which
+	--    every candidate home is occupied. Both must move.
 	--
 	-- This is the second half of the 2026-09-15 playtest: the first version
 	-- walked the ring looking for a free spot and fell back to its own when it
@@ -1010,12 +1243,16 @@ return function(repo)
 	local villager_def = harness.defs["grug_mobs:villager_dwarf"]
 	check(villager_def ~= nil and villager_def.do_custom ~= nil,
 		"the villager family registered no amble")
-	local ambling = {entity_at("idle_a"), entity_at("idle_b")}
+	local ambling = {entity_at("idle_a"), entity_at("idle_f")}
 	check(ambling[1] ~= nil and ambling[2] ~= nil, "the idle sockets are empty")
-	-- THREE spots for TWO villagers (playtest round 2): the third is the spare,
-	-- and it is what makes a hop possible at all while both homes are occupied.
-	check(#ambling[1]._grug_idle_spots == 3,
-		"a start villager was given " .. #ambling[1]._grug_idle_spots ..
+	check(ambling[1]._grug_walker == true and ambling[2]._grug_walker == true,
+		"the every-fifth rule did not make the first and the sixth idle " ..
+		"spawn socket walkers")
+	-- FIVE spots each (playtest round 3): their own socket, the three idle
+	-- sockets within WALK_RADIUS and the spare. The spare is what makes a hop
+	-- possible at all while every home is occupied.
+	check(#ambling[1]._grug_idle_spots == 5,
+		"a start walker was given " .. #ambling[1]._grug_idle_spots ..
 		" idle spots")
 	-- A player next to both of them, so they are active and can see each other.
 	harness.players = {{x = ambling[1].pos.x, y = ambling[1].pos.y,
@@ -1066,13 +1303,27 @@ return function(repo)
 	-- two sockets can only trade places; with it the settlement offers somewhere
 	-- to stand that is not another villager's doorstep, which is the user's own
 	-- item 3.
-	check(visited[1][3] or visited[2][3],
-		"no villager ever reached the spare idle spot")
+	--
+	-- Found by the SPARE FLAG and not by a fixed index: round 3 bounds the ring
+	-- per walker, so the spare's place in it is a property of where that walker
+	-- lives, and an index written here would be a second, silently wrong copy
+	-- of `bounded_spots`.
+	--
+	local reached_spare = false
+	for index = 1, 2 do
+		local spots = ambling[index]._grug_idle_spots
+		for spot_index = 1, #spots do
+			if spots[spot_index].spare and visited[index][spot_index] then
+				reached_spare = true
+			end
+		end
+	end
+	check(reached_spare, "no walker ever reached the spare idle spot")
 	check(ambling[1].state == "stand" or ambling[1].state == "walk",
 		"an ambling villager left the idle states")
 	line("amble", "moved_at_" .. moved_at,
 		"spots_" .. count_visited(visited[1]) .. "_and_" ..
-		count_visited(visited[2]) .. "_of_3", "spare_reached",
+		count_visited(visited[2]) .. "_of_5", "spare_reached",
 		table.concat(trace, " "))
 
 	-- 9b. A BLOCKED villager gives its spot up instead of pushing for ever. With
@@ -1094,8 +1345,14 @@ return function(repo)
 	-- expired dwell adds a third depends on where the amble above left it).
 	check(changes >= 2, "a blocked villager kept pushing at the same spot (" ..
 		changes .. " changes in 40 s)")
+	-- THE COUNT ITSELF MAY NOT REACH THE REPORT. Two give-ups are guaranteed
+	-- (one per SPOT_GIVE_UP window); whether the expired dwell adds a third
+	-- depends on where the amble above left the dwell, which is a `math.random`
+	-- roll -- and the two interpreters do not share an RNG. The header's rule
+	-- for this fixture is that only facts that are the same on both are
+	-- reported, so the assertion keeps the number and the line does not.
 	blocked.blocked = false
-	line("amble_blocked", changes .. "_targets_in_40s")
+	line("amble_blocked", "at_least_2_targets_in_40s")
 
 	--
 	-- 10. NO JUMP. mobs_redo's `do_jump` treats `walk_chance == 0` as "this is a
@@ -1281,6 +1538,437 @@ return function(repo)
 		"passive prey lost its own targeting fields")
 	line("noncombatant", "declared", "installed_on_activate", "chained",
 		"all_" .. registered .. "_defs_correct", "prey_unchanged")
+
+	--
+	-- 13. THE 80/20 SPLIT (contract section 8.3, user ruling of playtest round
+	--     3). Deterministic, taken over the `idle` SPAWN sockets in authored
+	--     order, and reported per settlement by the census the load probe and
+	--     the engine probe both read.
+	--
+	--     The share is asserted against the contract's own band -- between 10
+	--     and 30 percent of RESIDENTS -- so a composition that turned every
+	--     resident into a static worker (zero walkers) fails here rather than
+	--     shipping as a lifeless district.
+	--
+	local rows = grug_mobs.start_npc_census()
+	local split
+	for index = 1, #rows do
+		if rows[index].key == "hearthpine" then split = rows[index] end
+	end
+	check(split ~= nil, "the census lost the start")
+	-- Six idle spawn sockets and two work sockets: eight residents, of whom
+	-- the first and the sixth idle one walk.
+	check(split.residents == 8, "the census counts " ..
+		tostring(split.residents) .. " residents, not 8")
+	check(split.walkers == 2, "the census counts " .. tostring(split.walkers) ..
+		" walkers, not 2")
+	local share = split.walkers / split.residents * 100
+	check(share >= 10 and share <= 30,
+		"the walker share is " .. string.format("%.1f", share) ..
+		" percent, outside the contract's 10 to 30")
+	-- WHICH residents walk, by socket and not by count: every fifth idle spawn
+	-- socket starting with the first, and no `work` socket ever.
+	local walking = {}
+	for _, socket_id in ipairs({"idle_a", "idle_b", "idle_c", "idle_d",
+			"idle_e", "idle_f", "forge_work", "bench_work"}) do
+		local mob = entity_at(socket_id)
+		check(mob ~= nil, "resident socket " .. socket_id .. " is empty")
+		walking[#walking + 1] = socket_id .. "=" ..
+			tostring(mob._grug_walker == true)
+	end
+	check(entity_at("idle_a")._grug_walker == true and
+		entity_at("idle_f")._grug_walker == true and
+		entity_at("idle_b")._grug_walker == false and
+		entity_at("idle_c")._grug_walker == false and
+		entity_at("idle_d")._grug_walker == false and
+		entity_at("idle_e")._grug_walker == false and
+		entity_at("forge_work")._grug_walker == false and
+		entity_at("bench_work")._grug_walker == false,
+		"the every-fifth rule picked the wrong residents: " ..
+		table.concat(walking, " "))
+	line("walker_split", "residents_" .. split.residents,
+		"walkers_" .. split.walkers,
+		"share_" .. string.format("%.1f", share), table.concat(walking, " "))
+
+	--
+	-- 14. A STATIC IDLE RESIDENT DOES NOT WALK. A hundred and fifty seconds is
+	--     seven times the walker's whole first dwell and still BELOW
+	--     STATIC_DWELL_MIN = 180, so the claim is deterministic on both
+	--     interpreters: whatever `math.random` rolled for this resident's dwell
+	--     it is at least 180, and nothing may move inside the window. (The
+	--     first-activation dwell cap is a walker's, for exactly this reason.)
+	--
+	local static = entity_at("idle_c")
+	local static_origin = {x = static.pos.x, z = static.pos.z}
+	for _ = 1, 150 do
+		villager_def.do_custom(static, 1)
+		advance(static, 1)
+	end
+	check(static.pos.x == static_origin.x and static.pos.z == static_origin.z,
+		"a static idle resident walked away from its socket")
+	check(static.state == "stand", "a static idle resident left the stand state")
+	line("static_idle", "still_after_150s", "state_" .. static.state)
+
+	--
+	-- 15. THE WORK RESIDENT (contract sections 8.1 and 8.2).
+	--
+	--     What is asserted is exactly what the user's constraint is about: it
+	--     stands on its socket, it faces the authored direction, it plays its
+	--     activity's animation, it changes that animation only when the
+	--     activity changes, it never asks the pathfinder, and it vetoes the
+	--     rest of mobs_redo's step (`do_custom` returning exactly false), which
+	--     is what stops `do_states` overwriting the animation once a second.
+	--
+	local smith = entity_at("forge_work")
+	local sitter = entity_at("bench_work")
+	-- A PLAYER BESIDE THEM, and the engine's block management run once, because
+	-- an animation nobody can see is deliberately not played at all (the work
+	-- tick's own "only while watched" rule, modelled on the vendor presence
+	-- poll) and an object whose block is inactive has no position to work from.
+	harness.players = {{x = smith.pos.x, y = smith.pos.y, z = smith.pos.z}}
+	settle_activation()
+	check(smith._grug_work_activity == "smith" and
+		sitter._grug_work_activity == "sit",
+		"a work resident did not receive its socket's activity")
+	check(smith._grug_idle_spots == nil and sitter._grug_idle_spots == nil,
+		"a work resident was handed a wander ring")
+	check(smith._grug_socket_role == "work",
+		"the placement engine did not publish the socket role")
+	local paths_before = harness.paths
+	local smith_origin = {x = smith.pos.x, z = smith.pos.z}
+	local vetoed = 0
+	for _ = 1, 120 do
+		if villager_def.do_custom(smith, 1) == false then vetoed = vetoed + 1 end
+		villager_def.do_custom(sitter, 1)
+		advance(smith, 1)
+		advance(sitter, 1)
+	end
+	check(vetoed == 120,
+		"a work resident let mobs_redo run the rest of its step " ..
+		vetoed .. " times in 120")
+	check(smith.pos.x == smith_origin.x and smith.pos.z == smith_origin.z,
+		"a work resident left its socket")
+	check(harness.paths == paths_before,
+		"a work resident asked the pathfinder " ..
+		(harness.paths - paths_before) .. " times in 120 seconds")
+	check(smith.animation_current == "work",
+		"the smith is not playing the work animation but " ..
+		tostring(smith.animation_current))
+	check(sitter.animation_current == "sit",
+		"the bench resident is not sitting but " ..
+		tostring(sitter.animation_current))
+	-- ONE ANIMATION WRITE for two minutes of hammering: mobs_redo's own
+	-- set_animation writes nothing when the animation is already the one asked
+	-- for, and nothing else in the work tick touches it.
+	check(smith.animation_writes == 1,
+		"the smith wrote its animation " .. tostring(smith.animation_writes) ..
+		" times in 120 seconds")
+	check(math.abs(smith.yaw - dir_to_yaw({x = 0, z = -1})) < 1e-9,
+		"a work resident does not face its authored direction")
+	--
+	-- AND THE SWING IS TWO WRITES PER TEN SECONDS, not one per second. `fish`
+	-- and `tend` stand with an occasional swing, which is the one activity
+	-- shape that changes animation at all while it is being watched.
+	--
+	sitter._grug_work_activity = "tend"
+	sitter.animation_writes = 0
+	sitter.temp.grug_swing = 0
+	for _ = 1, 30 do villager_def.do_custom(sitter, 1) end
+	check(sitter.animation_writes >= 5 and sitter.animation_writes <= 7,
+		"an occasional swing wrote its animation " ..
+		sitter.animation_writes .. " times in 30 seconds, not six")
+	--
+	-- AND A DISPLACED WORK RESIDENT WALKS BACK. Things move an NPC -- a
+	-- knockback, an admin teleport, an engine probe -- and a static resident
+	-- that stayed where it was pushed would stand in the middle of a field for
+	-- the life of the world. The round-3 engine probe found exactly that by
+	-- moving the whole roster forty nodes: the walkers came home and the
+	-- workers did not.
+	--
+	-- WITHOUT A PATHFINDER, which is the contract's rule for a static resident,
+	-- and without the "is anybody watching" gate, because the correction has to
+	-- have happened before the player arrives.
+	--
+	sitter._grug_work_activity = "sit"
+	local pushed = entity_at("forge_work")
+	local home = {x = pushed._grug_work_x, z = pushed._grug_work_z}
+	pushed.pos.x = home.x + 8
+	pushed.pos.z = home.z + 6
+	-- A player 40 nodes away: inside the engine's activation radius, so the
+	-- entity is in the environment and ticking, and OUTSIDE the work tick's own
+	-- 24-node watch radius, so nothing about the animation may run. That band
+	-- is exactly where a displaced resident has to correct itself.
+	harness.players = {{x = pushed.pos.x + 40, y = pushed.pos.y,
+		z = pushed.pos.z}}
+	settle_activation()
+	local paths_home = harness.paths
+	local walked = 0
+	for second = 1, 60 do
+		villager_def.do_custom(pushed, 1)
+		advance(pushed, 1)
+		local dx, dz = pushed.pos.x - home.x, pushed.pos.z - home.z
+		if walked == 0 and dx * dx + dz * dz <= 1.2 * 1.2 then
+			walked = second
+		end
+	end
+	check(walked > 0, "a displaced work resident never came home")
+	check(harness.paths == paths_home,
+		"the walk home asked the pathfinder " ..
+		(harness.paths - paths_home) .. " times")
+	-- HOME AND STANDING, not home and still jogging: out of the watch radius
+	-- the tick plays no activity, and the one thing it does on arrival is stop.
+	check(pushed.animation_current == "stand",
+		"a work resident that came home out of sight is animated " ..
+		tostring(pushed.animation_current))
+	-- And it goes back to work the moment somebody is close enough to see it.
+	harness.players = {{x = pushed.pos.x, y = pushed.pos.y, z = pushed.pos.z}}
+	villager_def.do_custom(pushed, 1)
+	check(pushed.animation_current == "work",
+		"a work resident did not resume its activity when watched: " ..
+		tostring(pushed.animation_current))
+	line("work", "smith_work_anim", "sit_anim", "writes_1_in_120s",
+		"swing_" .. sitter.animation_writes .. "_in_30s", "no_path",
+		"step_vetoed_" .. vetoed, "home_at_" .. walked .. "s_unwatched",
+		"resumed_when_watched")
+
+	--
+	-- 16. THE ANIMATION RANGES ARE THE MESH'S OWN, read out of the file that
+	--     registers `character.b3d` rather than transcribed from a note. A
+	--     wrong range is a villager stuck in a frame nobody authored, and it is
+	--     invisible to every other test here.
+	--
+	local model_file = assert(io.open(repo ..
+		"/mods/BASE/player_api/init.lua", "r"))
+	local model_source = model_file:read("*a")
+	model_file:close()
+	local function model_range(name)
+		local from, to = model_source:match(name ..
+			"%s*=%s*{x%s*=%s*(%-?%d+),%s*y%s*=%s*(%-?%d+)")
+		return tonumber(from), tonumber(to)
+	end
+	local anim = villager_def.animation
+	local checks = {
+		{"stand", "stand", anim.stand_start, anim.stand_end},
+		{"walk", "walk", anim.walk_start, anim.walk_end},
+		{"mine", "punch", anim.punch_start, anim.punch_end},
+		{"mine", "work", anim.work_start, anim.work_end},
+		{"sit", "sit", anim.sit_start, anim.sit_end},
+	}
+	local ranges = {}
+	for _, row in ipairs(checks) do
+		local from, to = model_range(row[1])
+		check(from ~= nil and to ~= nil,
+			"player_api registers no " .. row[1] .. " range")
+		check(row[3] == from and row[4] == to,
+			"the villager's " .. row[2] .. " animation is " ..
+			tostring(row[3]) .. ".." .. tostring(row[4]) ..
+			" and the mesh's " .. row[1] .. " is " .. from .. ".." .. to)
+		ranges[#ranges + 1] = row[2] .. "=" .. from .. ".." .. to
+	end
+	-- The work swing is deliberately SLOWER than a punch: the same frames at a
+	-- third of the speed is what reads as work rather than as a fight.
+	check(anim.work_speed < anim.punch_speed,
+		"the work swing is not slower than a punch")
+	line("animation", table.concat(ranges, " "),
+		"work_speed_" .. anim.work_speed)
+
+	--
+	-- 17. EVERY ACTIVITY OF THE CLOSED VOCABULARY IS IMPLEMENTED, and every
+	--     tool it names is an item the game registers. The vocabulary is the
+	--     registry's (contract section 8.2) and it is transcribed here rather
+	--     than read off the implementation, so an activity that was added to
+	--     the contract and forgotten here fails.
+	--
+	local VOCABULARY = {"smith", "fish", "farm", "chop", "tend", "pray",
+		"stall", "sit", "sweep"}
+	local ANIMS = {stand = true, walk = true, work = true, sit = true}
+	local implemented = {}
+	for _, name in ipairs(VOCABULARY) do
+		local activity = grug_mobs.start_npc_activity(name)
+		check(activity ~= nil, "no behaviour for the activity " .. name)
+		check(ANIMS[activity.anim] == true,
+			name .. " plays an animation the definition does not carry: " ..
+			tostring(activity.anim))
+		check(anim[activity.anim .. "_start"] ~= nil,
+			name .. " names an animation the villager definition lacks")
+		if activity.item then
+			check(core.registered_items[activity.item] ~= nil,
+				name .. " wields the unregistered " .. activity.item)
+		end
+		implemented[#implemented + 1] = name .. "=" .. activity.anim ..
+			(activity.item and ("/" .. activity.item) or "")
+	end
+	-- `sweep` is the ONLY activity that moves (contract section 8.2).
+	for _, name in ipairs(VOCABULARY) do
+		local activity = grug_mobs.start_npc_activity(name)
+		check((activity.sweep == true) == (name == "sweep"),
+			name .. " disagrees with the contract about whether it moves")
+	end
+	check(logged("work activities: 4 wielded tools, all registered") == 1,
+		"the activity tool audit did not report a clean roster")
+	line("activities", table.concat(implemented, " "))
+
+	--
+	-- 18. THE NAMETAG PROXIMITY GATE is reached by every peaceful family, once
+	--     a second, with the name that family wants shown (playtest round 3).
+	--     The property write itself is the engine's and is measured by the NPC
+	--     probe; what can only be measured here is that the villager's amble,
+	--     the work tick and the elder's own tick all go through the gate
+	--     instead of writing a static tag at activation.
+	--
+	local elder_def = harness.defs["grug_mobs:elder_dwarf"]
+	check(elder_def.do_custom ~= nil, "the quest shell has no tick to gate on")
+	local elder = entity_at("hall_quest")
+	local walker_npc = entity_at("idle_a")
+	local before = {}
+	for _, mob in ipairs({elder, walker_npc, smith}) do
+		before[mob] = (harness.gate[mob] and harness.gate[mob].calls) or 0
+	end
+	for _ = 1, 10 do
+		elder_def.do_custom(elder, 1)
+		villager_def.do_custom(walker_npc, 1)
+		villager_def.do_custom(smith, 1)
+	end
+	local gated = {}
+	for _, row in ipairs({{"elder", elder, "Vale Elder"},
+			{"walker", walker_npc, "Vale Dwarf"},
+			{"work", smith, "Vale Dwarf"}}) do
+		local seen = harness.gate[row[2]]
+		check(seen ~= nil and seen.calls - before[row[2]] == 10,
+			"the " .. row[1] .. " reached the nametag gate " ..
+			tostring(seen and seen.calls - before[row[2]]) ..
+			" times in ten seconds, not ten")
+		check(seen.text == row[3],
+			"the " .. row[1] .. " asked the gate to show " ..
+			tostring(seen.text) .. " and not " .. row[3])
+		gated[#gated + 1] = row[1] .. "=" .. seen.text
+	end
+	-- And NOTHING writes the property at activation any more: the desired text
+	-- is a plain field, and mobs_redo's own update_tag only refreshes it.
+	elder._grug_tag_want = nil
+	elder:update_tag()
+	check(elder._grug_tag_want == "Vale Elder",
+		"update_tag no longer refreshes the desired nametag text")
+	line("tag_gate", table.concat(gated, " "), "once_a_second")
+
+	--
+	-- 19. THE RESTYLE HOOK RUNS AFTER `install` (the review's F2). What it is
+	--     for is `grug_traders`' profession vendors, whose race is a property
+	--     of the SETTLEMENT and therefore unknowable until `_grug_start` is
+	--     written -- and `core.add_entity` activates the entity, and with it
+	--     `after_activate` and the visuals composition, before that happens.
+	--     This fixture does not load grug_traders, so what it holds is the
+	--     ordering the fix hangs on: every placement calls the hook exactly
+	--     once, and the fields are already on the entity when it does.
+	--
+	--     The count is not compared against a literal: this fixture boots
+	--     several times and the last boot placed the start AND the capital, so
+	--     what is asserted is that every recorded call already carried the
+	--     fields -- one missing field is the whole defect.
+	check(#harness.restyled >= SLOTS,
+		"the restyle hook ran " .. #harness.restyled ..
+		" times for at least " .. SLOTS .. " placements")
+	local settlements_restyled = {}
+	for index = 1, #harness.restyled do
+		local row = harness.restyled[index]
+		check(type(row.start) == "string" and row.start ~= "" and
+			type(row.socket) == "string" and row.socket ~= "" and
+			type(row.role) == "string" and type(row.yaw) == "number",
+			"the restyle hook ran before install wrote the placement fields " ..
+			"(" .. tostring(row.name) .. " " .. tostring(row.start) .. "/" ..
+			tostring(row.socket) .. "/" .. tostring(row.role) .. ")")
+		settlements_restyled[row.start] = true
+	end
+	check(settlements_restyled.hearthpine and settlements_restyled.dur_brannoc,
+		"the restyle hook did not run for both settlements")
+	line("restyle_hook", "calls_" .. #harness.restyled,
+		"start_and_capital", "after_install")
+
+	--
+	-- 20. THE SIX REAL COMPOSITIONS. Everything above is a synthetic
+	--     settlement, which is the right shape for the marker, twin and unload
+	--     states. The 80/20 rule and the bounded ring are about the
+	--     settlements that SHIP, and the review found what that difference
+	--     hides: Stillgrave's walker stands at `idle_warden_door`, its nearest
+	--     other idle socket is 27.7 nodes away, and a hard WALK_RADIUS handed
+	--     it a ring of ONE -- `next_spot` then returns the same index for
+	--     ever, so the settlement had no moving resident at all and every
+	--     synthetic state still passed.
+	--
+	--     So the real placement engine is booted a second time over the six
+	--     starts' own authored socket tables, read out of the same blueprints
+	--     `blueprint_kat` reads, and three things are asserted per start: every
+	--     walker's ring has at least two entries, the walker share is inside
+	--     the contract's 10-30 percent band, and every work resident got its
+	--     activity.
+	--
+	local sockets_of = {}
+	for _, key in ipairs(START_ORDER) do
+		local build = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/r7_" ..
+			key .. "_blueprint.lua")
+		local blueprint = build()
+		sockets_of[key] = assert(blueprint.landmarks.sockets,
+			key .. " exports no socket landmarks")
+	end
+	real_settlements = {}
+	for index, key in ipairs(START_ORDER) do
+		local race = START_RACE[key]
+		real_settlements[index] = {key = key, race_id = race,
+			faction_id = RACE_FACTION[race],
+			-- Far enough apart that no settlement's scan radius reaches
+			-- another's; a socket is anchor-relative and the ring is measured
+			-- in world space against the same anchor, so the real anchors would
+			-- prove nothing extra.
+			anchor = {x = index * 4000, y = ANCHOR.y, z = 0},
+			sockets = sockets_of[key]}
+	end
+	world = {storage = {}, objects = {}}
+	boot()
+	become_ready()
+	local rings = {}
+	local worst_ring = nil
+	for index = 1, #real_settlements do
+		local row = real_settlements[index]
+		local walkers, residents, works, min_ring = 0, 0, 0, nil
+		for object_index = 1, #world.objects do
+			local mob = world.objects[object_index].mob
+			if mob._grug_start == row.key then
+				if mob._grug_socket_role == "idle" then
+					residents = residents + 1
+					if mob._grug_walker == true then
+						walkers = walkers + 1
+						local size = #(mob._grug_idle_spots or {})
+						if not min_ring or size < min_ring then
+							min_ring = size
+						end
+						if not worst_ring or size < worst_ring then
+							worst_ring = size
+						end
+						check(size >= 2,
+							row.key .. " gave its walker on " ..
+							tostring(mob._grug_socket) .. " a ring of " ..
+							size .. ": it can never move")
+					end
+				elseif mob._grug_socket_role == "work" then
+					residents = residents + 1
+					works = works + 1
+					check(type(mob._grug_work_activity) == "string",
+						row.key .. " placed a work resident with no activity")
+				end
+			end
+		end
+		check(residents > 0, row.key .. " placed no resident at all")
+		check(walkers > 0, row.key .. " has no walking resident")
+		local share = walkers / residents * 100
+		check(share >= 10 and share <= 30,
+			row.key .. " has a walker share of " ..
+			string.format("%.1f", share) .. " percent of " .. residents ..
+			" residents")
+		rings[#rings + 1] = row.key .. "=" .. walkers .. "/" .. residents ..
+			":work_" .. works .. ":ring_" .. tostring(min_ring)
+	end
+	line("real_starts", table.concat(rings, " "),
+		"min_walker_ring_" .. tostring(worst_ring))
 
 	restore()
 	return table.concat(report)

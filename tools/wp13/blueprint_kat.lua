@@ -58,8 +58,17 @@ return function(repo)
 			-- things: `idle` is how many standing positions the settlement
 			-- offers, `spare` how many of them nobody lives on.
 			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 7,
-				quest = 1},
+				quest = 1, work = 2},
 			spare = 3,
+			-- The feature vocabulary of the `work` sockets this start carries
+			-- (contract section 8.1): the nodes the activity named by a socket
+			-- expects to find where its `dir` points. Per start, because the
+			-- vocabularies differ -- a pine log is not an acacia log.
+			features = {
+				chop = {["default:pine_tree"] = true},
+				tend = {["default:grass_1"] = true, ["default:fern_1"] = true,
+					["default:fern_2"] = true},
+			},
 		},
 		{
 			key = "dawnmere",
@@ -122,8 +131,12 @@ return function(repo)
 			-- things: `idle` is how many standing positions the settlement
 			-- offers, `spare` how many of them nobody lives on.
 			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 7,
-				quest = 1},
+				quest = 1, work = 2},
 			spare = 3,
+			-- `sit` needs no feature (section 8.1), so only the field is named.
+			features = {
+				farm = {["grug_nodes:tilled_soil"] = true},
+			},
 		},
 		{
 			key = "silverleaf",
@@ -189,8 +202,18 @@ return function(repo)
 			-- things: `idle` is how many standing positions the settlement
 			-- offers, `spare` how many of them nobody lives on.
 			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 7,
-				quest = 1},
+				quest = 1, work = 2},
 			spare = 3,
+			features = {
+				tend = {["grug_decor:xdecor_potted_viola"] = true,
+					["grug_decor:xdecor_potted_dandelion_white"] = true,
+					["default:fern_2"] = true, ["default:grass_2"] = true},
+				-- A counter is "any solid node at waist height" in section
+				-- 8.1; here it is the covered market's own slate.
+				stall = {["grug_decor:darkage_slate_brick"] = true,
+					["grug_decor:darkage_marble"] = true,
+					["grug_decor:darkage_serpentine"] = true},
+			},
 		},
 		{
 			key = "stillgrave",
@@ -251,8 +274,12 @@ return function(repo)
 			-- things: `idle` is how many standing positions the settlement
 			-- offers, `spare` how many of them nobody lives on.
 			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 7,
-				quest = 1},
+				quest = 1, work = 2},
 			spare = 3,
+			features = {
+				chop = {["grug_trees:gravewood_tree"] = true},
+				tend = {["default:dry_shrub"] = true},
+			},
 		},
 		{
 			key = "sunscar",
@@ -305,8 +332,13 @@ return function(repo)
 			-- things: `idle` is how many standing positions the settlement
 			-- offers, `spare` how many of them nobody lives on.
 			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 7,
-				quest = 1},
+				quest = 1, work = 2},
 			spare = 3,
+			features = {
+				smith = {["grug_decor:cottages_anvil"] = true,
+					["grug_decor:xdecor_cauldron"] = true},
+				chop = {["default:acacia_tree"] = true},
+			},
 		},
 		{
 			key = "kapok",
@@ -369,8 +401,11 @@ return function(repo)
 			-- things: `idle` is how many standing positions the settlement
 			-- offers, `spare` how many of them nobody lives on.
 			sockets = {guard_post = 2, guard_patrol = 5, vendor = 1, idle = 7,
-				quest = 1},
+				quest = 1, work = 2},
 			spare = 3,
+			features = {
+				chop = {["default:jungletree"] = true},
+			},
 		},
 	}
 
@@ -846,7 +881,42 @@ return function(repo)
 		-- retyped has to move a number somebody re-derives, not disappear.
 		local SOCKET_ROLES = {guard_post = true, guard_patrol = true,
 			vendor = true, idle = true, quest = true, king = true,
-			waypoint = true}
+			waypoint = true, work = true}
+		--
+		-- THE ACTIVITY VOCABULARY of contract section 8.2, closed, and the
+		-- FEATURE each activity expects to find where its socket's `dir` points
+		-- (section 8.1). Transcribed here rather than read out of the registry,
+		-- because a fixture that read the implementation's own list could not
+		-- notice one of them going missing.
+		--
+		-- The node families are per start, because the vocabularies differ --
+		-- a pine log is not an acacia log -- so an activity names a MATCHER and
+		-- the start's spec names the nodes. A start that uses an activity its
+		-- spec has no feature list for is a build error here, which is what
+		-- stops a `fish` socket being authored into a settlement that has no
+		-- water in its cells (no blueprint does: the cell loop above refuses
+		-- every water and lava name outright).
+		--
+		local ACTIVITIES = {smith = true, fish = true, farm = true,
+			chop = true, tend = true, pray = true, stall = true, sit = true,
+			sweep = true}
+		-- The two activities section 8.1 exempts from the feature test: `sit`
+		-- sits on the ground it stands on, and `sweep` walks a line beside its
+		-- socket rather than working at anything.
+		local NO_FEATURE = {sit = true, sweep = true}
+		-- How far along `dir` the feature may stand (section 8.1: "within
+		-- three nodes").
+		local FEATURE_REACH = 3
+		--
+		-- WHICH COURSES the feature may stand on, relative to the socket's own
+		-- feet cell. Body and head for everything a worker works AT -- an anvil
+		-- is a floor node at the feet course and a counter or a branch is
+		-- higher -- and the GROUND course for `farm`, because a field is what
+		-- you stand on and not what you stand in front of: Dawnmere's tilled
+		-- soil is the y = 0 course under the air the farmer looks across.
+		--
+		local FEATURE_LEVELS = {farm = {-1, 0}}
+		local FEATURE_LEVELS_DEFAULT = {0, 1}
 		local AXIS_DIRS = {["0:1"] = true, ["0:-1"] = true, ["1:0"] = true,
 			["-1:0"] = true}
 		local sockets = assert(blueprint.landmarks.sockets,
@@ -905,6 +975,66 @@ return function(repo)
 					"vendor socket kind differs: " .. where)
 			else
 				assert(socket.kind == nil, "only a vendor carries a kind: " .. where)
+			end
+			--
+			-- A WORK SOCKET (contract section 8.1, playtest round 3). It obeys
+			-- every rule an `idle` socket obeys -- feet and head air, walkable
+			-- ground, outside every room, reachable on foot, all already
+			-- asserted above -- and adds two of its own: it NAMES its activity
+			-- out of the closed vocabulary, and the FEATURE that activity works
+			-- at really stands where the socket looks.
+			--
+			-- The second half is the one that matters: `dir` means "the thing
+			-- this socket belongs to" for every role, and a smith whose anvil
+			-- moved three nodes in a building edit is a smith hammering the
+			-- air. Nothing else in this file would notice.
+			--
+			if socket.role == "work" then
+				assert(ACTIVITIES[socket.activity],
+					"work socket activity differs: " .. where .. " (" ..
+					tostring(socket.activity) .. ")")
+				if not NO_FEATURE[socket.activity] then
+					local wanted = spec.features and
+						spec.features[socket.activity]
+					assert(type(wanted) == "table",
+						spec.key .. " has no feature vocabulary for the " ..
+						"activity " .. socket.activity .. ": " .. where)
+					local levels = FEATURE_LEVELS[socket.activity] or
+						FEATURE_LEVELS_DEFAULT
+					--
+					-- THE SEARCH STOPS AT THE FIRST OBSTRUCTION, and that is
+					-- not a detail: without it a socket that stares at a tree
+					-- trunk one node away passes because there is grass behind
+					-- the trunk. Hearthpine's first `work_garden` was exactly
+					-- that, and it showed up in the engine as a resident that
+					-- could not walk home because the trunk was in the way.
+					-- The obstruction is tested at the socket's OWN course --
+					-- the cell a body would walk through -- and only after the
+					-- feature test at that reach, so a counter or an anvil is
+					-- still found at the reach it stands at.
+					--
+					local found
+					for reach = 1, FEATURE_REACH do
+						local x = socket.x + socket.dir.x * reach
+						local z = socket.z + socket.dir.z * reach
+						for dy = levels[1], levels[2] do
+							local name = node(x, socket.y + dy, z)
+							if found == nil and wanted[name] then
+								found = name .. "@" .. reach
+							end
+						end
+						if found ~= nil or solid(x, socket.y, z) then
+							break
+						end
+					end
+					assert(found ~= nil,
+						"a work socket looks at no " .. socket.activity ..
+						" feature within " .. FEATURE_REACH .. " nodes: " ..
+						where)
+				end
+			else
+				assert(socket.activity == nil,
+					"only a work socket carries an activity: " .. where)
 			end
 			if socket.tags ~= nil then
 				assert(type(socket.tags) == "table" and #socket.tags >= 1,

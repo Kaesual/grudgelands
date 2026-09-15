@@ -656,6 +656,12 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	end
 	function mobs_api.add_mob() return nil end
 	function mobs_api.add_eatable() end
+	-- mobs_redo's SHARED entity class. `grug_mobs/start_npcs.lua` installs its
+	-- `on_deactivate` hook on it -- the engine looks that callback up on the
+	-- entity and reaches the class through its metatable -- so a stub without
+	-- the table stops this fixture at that line. Present since WP13 playtest
+	-- round 2; found when the vendor stub below stopped hiding it.
+	mobs_api.mob_class = mobs_api.mob_class or {}
 	-- The WP13 round-A start NPCs derive their race roster from the world
 	-- authority's published start identities, never a hand-kept list, so the
 	-- stub authority has to publish all six starts in START_ORDER.
@@ -834,14 +840,27 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			get_race = function() return "human" end},
 		grug_factions = {get_faction = function() return "accord" end,
 			display_name = function(value) return value end},
-		grug_mobs = {add_mob = function() return nil end},
+		-- `noncombatant` is the round-2 verb every vendor definition is wrapped
+		-- in and `register_start_npc_restyle` the round-3 ordering hook the
+		-- profession vendors register into; both are pass-throughs here,
+		-- because what this fixture measures is the vendor REGISTRATION and not
+		-- either mechanism (tools/wp13/start_npcs_kat.lua owns those).
+		grug_mobs = {add_mob = function() return nil end,
+			noncombatant = function(def)
+				def._grug_noncombatant = true
+				return def
+			end,
+			register_start_npc_restyle = function() end},
 		grug_core = {faction_ids = {"accord", "throng"},
 			factions = {accord = {name = "Accord"}, throng = {name = "Throng"}},
 			capital_anchor = function(_, race)
 				return {x = race == "human" and 1 or 2, y = 1, z = 0}
 			end}}, {__index = _G})
 	execute_in_environment("mods/ENTITIES/grug_traders/vendors.lua", trader_environment)
-	check(#trader_defs == 8 and trader_steps == 1 and trader_loaded == 1,
+	-- Two faction Quartermasters, six race vendors and the five profession
+	-- vendors of WP13 playtest round 3 (sockets contract section 8.4). The
+	-- projection SHA below moves with the roster and is derived, not pinned.
+	check(#trader_defs == 13 and trader_steps == 1 and trader_loaded == 2,
 		"trader registration projection differs")
 	table.sort(trader_defs, less_bytes)
 	row("registration/trader_projection_sha256",
