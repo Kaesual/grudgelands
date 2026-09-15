@@ -12,6 +12,20 @@ tsv="$here/renders/tsv"
 out="$here/renders"
 render() { python3 tools/wp13/render_blueprint.py "$@" --quiet; }
 
+# THE WHOLE CAPITAL ON ONE PLANE, which is the picture a reader compares
+# densities with -- Highcourt's evidence has the same one
+# (`20260915-highcourt-districts/renders/capital-<seed>.png`) and the
+# city-common table's "Highcourt standard" is not a number anybody can see.
+# Drawn from the COMPOSITION on flat ground, not from the map: the terraces are
+# not in it, and that is what makes it readable as a plan.
+echo "== the whole capital, per gate seed =="
+for seed in 531802985935182545 8675309; do
+	luajit tools/wp13/dump_capital_plan.lua "$repo" dur_brannoc "$seed" \
+		>"$tsv/capital-$seed.tsv"
+	render "$tsv/capital-$seed.tsv" -o "$out/capital-$seed.png" --scale 4 \
+		--max-pixels 6000
+done
+
 # THE FOUR DISTRICTS are what this package exists for, so the district band and
 # the fill dressing come first: a quarter with lanes and buildings either side,
 # and the open ground between the quarters.
@@ -31,4 +45,9 @@ render "$tsv/dur_brannoc-core.tsv" -o "$out/core-overview.png" --view ne \
 # road runs through.
 render "$tsv/dur_brannoc-avenue.tsv" -o "$out/avenue-east.png" --view ne
 render "$tsv/dur_brannoc-gate.tsv" -o "$out/gatehouse.png" --view ne
+
+# The two plan TSVs are tens of megabytes and are re-derived in seconds by the
+# loop above; the read-back dumps are the ones worth committing, because they
+# are what an engine boot produced.
+rm -f "$tsv/capital-"*.tsv
 ls -la "$out"/*.png

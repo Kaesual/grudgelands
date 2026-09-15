@@ -176,11 +176,18 @@ local function loader(directory)
 			decorate = function(buf, palette, area)
 				shop_counter(buf, palette, area)
 			end,
+			-- NO VENDOR HERE. The `mason` kind stood at this counter until the
+			-- review of 2026-09-15, and a longhouse store is not a mason's
+			-- building: the sockets contract's section 8.4 puts a profession
+			-- vendor at the building of its profession, and this quarter's
+			-- mason works at the carvers' bench in the lore district. Inventing
+			-- a kind for the store instead -- `tanner`, `herbalist` -- would be
+			-- the same mistake spelled differently, so the store keeps the
+			-- keeper who works its counter and sells nothing of its own.
 			extra_sockets = function(area)
 				return {
 					plots.work("store_counter", "stall", area.x1 - 2,
 						area.z0, 0),
-					shop_vendor("mason", "mason", area),
 				}
 			end},
 	}

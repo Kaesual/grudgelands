@@ -333,6 +333,13 @@ end
 -- One line per z row: the row's z, then the heights for x = -reach..reach
 -- separated by spaces, then the same number of `0`/`1` land flags as one
 -- string. About a megabyte per seed, re-derivable by a reviewer in one boot.
+--
+-- THE REACH IS +-250 AND NOT +-256: the field covers the 512 envelope less its
+-- three outermost columns on each side, which is where the curtain wall stands
+-- and where no lot may be in any case (`capital_lots.lua` refuses one past 236).
+-- A lot placed beyond 250 would silently have no field under it, so the number
+-- is stated here rather than described as "the whole envelope", which is what
+-- the first version of this comment and of `run_capital.sh`'s header said.
 local FIELD_REACH = 250
 local function field_report()
 	local rows = {"# grug_wp13_capital_field_v1 key=" .. KEY .. " reach=" ..

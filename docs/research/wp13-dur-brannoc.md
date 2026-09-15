@@ -666,9 +666,24 @@ lot grid now) and what is new is their work. The district's role name changed
 from `martial_craft` to the contract's `market_professions`, and its patrol
 group `dur_brannoc_forge_watch` did not.
 
-Two socket ids of the wave-1 district DID change, and both were positions rather
-than inhabitants: the two `spare` spots the old roster published are gone and
-seven new spares stand in their place across the four districts (section 13).
+**NO SOCKET ID CHANGED AND NONE WAS REMOVED.** The first version of this
+section claimed two did; the independent review of 2026-09-15 enumerated every
+published socket of the whole settlement on `922bfd92` and on this branch, with
+the full field set (`id, role, activity, kind, group, spawn, dir, face, x, y, z,
+tags`), and measured:
+
+```
+main 922bfd92: 94 sockets      this branch: 269 sockets
+ids removed (in main, not here): 0
+ids added:                     175
+rows whose role/dir/offsets/tags changed among the 94 survivors: 0
+```
+
+Main's only two spares are the CORE's `citadel_walk_north` and
+`citadel_walk_west`, and both survive byte-identical; the wave-1 DISTRICT
+published no spares at all, which is what the wrong claim had confused them
+with. The result is stronger than what was claimed: the upgrade is purely
+additive to the socket registry.
 
 ### 11.1 The lot grids
 
@@ -795,7 +810,7 @@ rule found it before any render did.
 | `king` | 1 | the core's throne |
 | `waypoint` | 1 | the core's travel plaza, reserved for WP17 |
 | `quest` | 2 | the core's hall of the ancestors and the lore district's hall of record, both published by `capitals.temple` |
-| `vendor` | 9 | `race` and `general` in the core's forge court; `smith` and `mason` in the forge district; `armourer` in the garrison; `embalmer` in the lore quarter; `butcher`, `brewer` and `baker` in the terraces |
+| `vendor` | 9 | `race` and `general` in the core's forge court; `smith` at the forge district's smithy; `armourer` at the garrison's armoury; `mason` at the lore quarter's carvers' bench and `embalmer` at its memory hall; `butcher` at the terraces' market arcade, `brewer` at its brewhouse and `baker` at its bakehouse |
 | `guard_post` | 19 | twelve in the core, seven in the garrison district |
 | `guard_patrol` | 50 | the core's city ring (6), the four gate towers (2 each), and one loop per district (9 each) |
 | `work` | 58 | thirteen distinct activities |
@@ -818,13 +833,25 @@ sockets, so the NPC lane's rule -- every fifth idle spawn socket walks -- gives
 22 walkers of 164 residents, **13.4 %**, inside the contract's 10-30 % band.
 Highcourt is 22 of 144, 15.3 %.
 
-**FOUR OF THE NINE VENDOR KINDS HAVE NO ENTITY YET.** `mason`, `armourer`,
-`embalmer` and `brewer` are wave-2 kinds of the sockets contract's section 8.4
-and the NPC vocabulary lane owns their entities; until that lands the placement
-engine logs one error line per socket and leaves it empty, which is what the
-contract says it should do. The engine pass counts those lines separately
-(`pending_vendor_kinds=4`) rather than folding them into its gate, and the five
-registered kinds are placed: `vendor 5/5`.
+**EVERY KIND IS PLACED.** The four wave-2 kinds (`mason`, `armourer`,
+`embalmer`, `brewer`) had no entity while this package was first written, and
+the engine pass then logged one error line per socket and left it empty -- which
+is what the sockets contract's section 8.4 says should happen. The wave-2 NPC
+vocabulary lane registered all seven wave-2 kinds in `c8050057`, this package is
+rebased onto it, and the engine pass now reports `vendor 9/9` with no error
+line. The exemption `run_capital.sh` carried for those lines is gone with them.
+
+**AND THE TWO THAT WERE AT THE WRONG BUILDING ARE NOT ANY MORE.** The first
+version of this roster gave the `embalmer` kind to the socket at the CARVERS'
+bench -- whose id, whose comment and whose building all said mason -- and gave
+`mason` to an ordinary longhouse store in the forge quarter. Section 8.4 is
+explicit ("the structure lane places its socket at the matching building"), and
+the KAT's family rule cannot see it because at most one of each kind was still
+true. The independent review found it. The mason stands at the carvers' bench
+now, the embalmer at the memory hall where the roll of the dead is read, and the
+forge quarter's store sells nothing of its own: a longhouse store matches no
+profession kind, and inventing one for it would be the same mistake spelled
+differently.
 
 ## 14. Budgets and cost
 
@@ -856,18 +883,18 @@ capital keeps 33 131 in hand.
 `timing.sh` / `timing.txt`, three runs each, `os.clock` CPU milliseconds, with
 Highcourt's own row on the same tree beside it.
 
-| Subject | Dur Brannoc LuaJIT | Dur Brannoc PUC 5.1 | Highcourt LuaJIT |
-| --- | --- | --- | --- |
-| module load | 34.3 - 35.5 ms | 46.0 - 47.0 ms | 14.4 ms |
-| core | 113.7 - 124.7 ms | 354.5 - 370.9 ms | 120.6 ms |
-| all 52 plots | 261.7 - 279.0 ms | 726.1 - 762.6 ms | 255.9 ms |
-| one 209-node avenue run | 1.22 - 1.29 ms | 2.51 - 2.56 ms | 1.74 ms |
-| **seam prepare** (54 blueprints built, hashed, released) | 707.8 - 752.2 ms | 1 960 - 2 054 ms | 778.9 ms |
-| **seam first touch** (core rebuilt, hashed, compared, written) | 214.6 - 294.7 ms | 737.0 - 749.7 ms | 229.2 ms |
+See `timing.txt` for the three runs per interpreter this table summarises, and
+Highcourt's own row on the same tree beside them. Under LuaJIT: module load
+33 - 35 ms, the core 105 - 108 ms, all 52 plots 240 - 248 ms, one 209-node
+avenue run 1.16 - 1.17 ms, the **seam prepare** (54 blueprints built, hashed and
+released) 667 - 721 ms, and the **seam first touch** (the core rebuilt, hashed,
+compared and written) 194 - 195 ms. Under the engine's bundled PUC 5.1 build the
+same six are roughly three times that.
 
-"Builds in a few seconds under LuaJIT when first touched" is 0.21 - 0.29 s, and
-0.74 s under the fallback interpreter. Fifty-four blueprints, exactly as many as
-Highcourt.
+"Builds in a few seconds under LuaJIT when first touched" is 0.20 s, and 0.7 s
+under the fallback interpreter. Fifty-four blueprints, exactly as many as
+Highcourt, whose seam prepare on the same tree is 779 ms and whose first touch
+is 229 ms.
 
 ### 14.3 Per-mapchunk cost
 
@@ -878,14 +905,17 @@ R7 construction and is not counted.
 | Kind | user gate seed | boundary seed | the user's world seed |
 | --- | --- | --- | --- |
 | Dur Brannoc mapchunks | 108 | 108 | 111 |
-| **steady mean** | **0.583 s** | **0.581 s** | **0.621 s** |
-| worst | 1.142 s | 1.076 s | 1.316 s |
-| Lethariel (a capital with no WP13 cells) | 2.35 s | 2.41 s | 2.44 s |
-| open land / the Dawnmere start | 0.64 s | 0.44 s | 0.37 s |
+| **steady mean** | **0.575 s** | **0.584 s** | **0.694 s** |
+| worst | 1.312 s | 1.084 s | 1.455 s |
+| Lethariel (a capital with no WP13 cells) | 2.24 s | 2.65 s | 2.33 s |
+| open land / the Dawnmere start | 0.59 s | 0.42 s | 0.48 s |
 
 Against the contract's "no more than 2x the ~0.5 s Dawnmere chunk": 0.58 -
-0.62 s against a limit of 1.0 s, and beside an open-land control on the same
-boot that costs 0.37 - 0.64 s. Highcourt's own numbers on the same rule are 0.53
+0.69 s against a limit of 1.0 s, and beside an open-land control on the same
+boot that costs 0.42 - 0.59 s. The numbers move by a tenth of a second between
+runs of the same seed depending on what else the workstation is doing -- the
+independent review's own contended run measured 0.72 s with six other lanes on
+the box -- so the margin to the limit is real but not large. Highcourt's own numbers on the same rule are 0.53
 and 0.57 s. Wave 1's Dur Brannoc was 0.43 - 0.45 s over 85 mapchunks; the three
 new districts cost some 0.15 s a chunk and 23 more chunks, and the capital's
 mapchunks are still four times cheaper than the Lethariel control, which WP40
@@ -931,18 +961,51 @@ parapet -- and adds five sections of its own:
 
 ```
 WP13 FINAL MICRO PAIR BYTE-IDENTICAL
-5f97f38e3d851ddafeca7f376ad65b540efb1d23c65d98a8d4429edb94caf140  micro-luajit.tsv
-5f97f38e3d851ddafeca7f376ad65b540efb1d23c65d98a8d4429edb94caf140  micro-puc51.tsv
+52abde66534e074f9c5bf9e88829da4c83b3e458d3b548b352765998fc164d85  micro-luajit.tsv
+52abde66534e074f9c5bf9e88829da4c83b3e458d3b548b352765998fc164d85  micro-puc51.tsv
 ```
 
 That is the whole WP13 fixture set in one process under each interpreter
 (`final-micro.sh`, with the inputs hashed before and after); this KAT alone
-produces `db08ebfa505e64cf66427ba910b0a81c91f94aaa42c8ffb0d7659f2c8f753ef3`
+produces `36b366288f7017832e790be4cf9bec54c388861b3a0ee727dc9f6b214fa52ee9`
 under both. The KAT's own rows
 are `dur_brannoc_core`, `dur_brannoc_throne`, `dur_brannoc_quadrants`, 52
 `dur_brannoc_plot` rows, four `dur_brannoc_district` rows, `dur_brannoc_spares`,
 `dur_brannoc_trades`, `dur_brannoc_gate_points`, `dur_brannoc_avenue`,
 `dur_brannoc_avenue_built`, `dur_brannoc_wall` and `dur_brannoc_causeway`.
+
+### (a2) Does the KAT defend what it advertises? The mutation suite
+
+A KAT that claims to catch a moved piece of dressing is worth what a MUTATION
+says about it, and the independent review of 2026-09-15 proved this one did not
+for `mine`: it deleted the ore yard's rock face and the KAT stayed GREEN. The
+reason was a node set that read the contract's "a stone, ore or cobble node" as
+a list of palette roles and so named `plaza`, `plaza_edge`, `path`, `foundation`,
+`signature` and `wall_accent` -- six roles that bind exactly three nodes in the
+dwarf palette, all three of them what a plot paves its own ground, kerb and
+doorstep with -- combined with a search window that reached `dy = -1`, the
+ground course the miner stands on. The rule was satisfied by the floor.
+
+Two narrowings, and the second is the load-bearing one: the `mine` set keeps
+only masonry no plot paves with (`castle_wall`, `castle_rubble`, `rubble`, plus
+the engine's real stone and ore names for a capital that ever writes one), and
+the `mine` SEARCH runs at `dy = 0..1` -- the contract's own "at head or chest
+height". `carve` lost `foundation`, `plaza_edge` and `wall_accent`, which the
+contract does not name, and `pray` lost `signature` for the same reason.
+
+`mutation.sh` / `mutation.txt` is that proof, kept and re-runnable. It copies
+the tree into a scratch directory -- never the worktree -- deletes one authored
+feature at a time and asserts the KAT turns RED, with the unmutated tree
+asserted GREEN first so an unrelated failure cannot pass it by accident:
+
+```
+unmutated                                    GREEN as expected
+mine: forge_ore_yard rock face removed       RED   as expected
+mine: forge_ore_court face and mouth removed RED   as expected
+carve: deep_carvers blocks removed           RED   as expected
+brew: terrace_brewhouse vats removed         RED   as expected
+MUTATION SUITE PASS: every deleted feature turns the KAT red
+```
 
 ### (b) What did not move
 
@@ -955,12 +1018,25 @@ wave 1: `8233c7bc…` (hearthpine), `80b3f0fc…` (dawnmere), `149ca6eb…`
 **Highcourt's 54 blueprint identities are unchanged**, core `187f79e0…` and total
 376 274 cells included (`tools/wp13/highcourt_identities.lua`), and
 `library_kat`, `blueprint_kat` and `highcourt_kat` produce the same bytes they
-did before. This package changed no shared module: the three files it touched
-outside its own are `r7_settlement.lua` (a comment on its own roster row),
-`tools/wp13/capital_plots.lua` and `tools/wp13/capital_timing.lua` (each gained a
-branch that reads a four-district roster as well as a one-district one, so every
-capital that has not grown its other three districts is measured exactly as
-before).
+did before. **No shared COMPOSITION module moved**: nothing in `capitals.lua`,
+`buildings.lua`, `parts.lua`, `palette.lua`, `dressing.lua`, `layout.lua`,
+`interiors.lua`, `roofs.lua`, `avenue.lua`, `wall.lua` or any `highcourt*.lua`
+file changed, which is what the six start identities and Highcourt's 54 prove.
+
+**Five shared files outside this capital's own were touched, and two of them
+changed BEHAVIOUR.** The first version of this section listed three and called
+them all inert, which contradicted section 16 on the same page:
+
+| File | What | Behaviour |
+| --- | --- | --- |
+| `wp40/r7_settlement.lua` | a comment on this capital's own roster row | none |
+| `tools/wp13/capital_plots.lua` | a branch that reads a four-district roster as well as a one-district one, and the lanes in its street list | additive; a single-district capital is measured exactly as before |
+| `tools/wp13/capital_timing.lua` | the same branch, plus one appended column | additive |
+| `tools/wp13/capital_probe/init.lua` | two new modes, two new dump regions -- **and the blueprint source is now loaded with the world's own quadrant seam instead of with no options at all** | CHANGED for every multi-district capital: its dumps and surface rows were labelled with the canonical district assignment while the map held the seeded one (section 16.4) |
+| `tools/wp13/run_capital.sh` | the two new modes, the two new dumps, the `field` header -- **and the read-back digest loop no longer aborts on a capital that publishes no rampart and no gate** | CHANGED: an OPEN capital's clean boot used to die in that loop under `set -euo pipefail` before printing PASS (section 16.5) |
+
+Every capital lane copies the probe and the runner into its headless game, so
+both changes reach all of them; section 16 says what each is for.
 
 **Dur Brannoc's own identities moved where they had to.** The core is unchanged
 (`c87bf21b…`, 95 914 cells) and so are the nine wave-1 plots' cells; what is new
@@ -972,19 +1048,35 @@ of twelve.
 
 `tools/wp13/run_capital.sh <out> dur_brannoc full <seed>`, three cold worlds --
 both gate seeds and the user's own world seed 15912857179583385436: **0 ERROR and
-0 ModError lines** beyond the four pending vendor kinds, the capital emerged one
-mapchunk at a time, **no finding from the seam's load-time terrain audit on any
-of the three**, and the NPC roster filled.
+0 ModError lines**, the capital emerged one mapchunk at a time, **no finding
+from the seam's load-time terrain audit on any of the three**, and the NPC
+roster all but filled.
+
+"All but", and only on one of the three: on the boundary seed and on the user's
+own world seed the roster ends **complete** (`flair 164/164 … pending 0`); on
+the user gate seed that run ended at `flair 145/164 … pending 19`. The probe
+shuts the server down as soon as its mapchunk corpus is walked and the placement
+engine fills a settlement as its mapblocks load, so how far it gets depends on
+the emerge order and is not a gate. The first version of this table quoted a
+line that occurs nowhere in the evidence -- an early `guards 27/28` spliced onto
+a later `flair 160/164` -- which is exactly the kind of number a reader cannot
+check. The lines above are the ones in the files.
+What is reproducible is that the counts climb monotonically and that nothing is
+refused; the split between placed and pending depends on which mapblocks the
+emerge sequence had reached and is not a gate. The first version of this table
+quoted a line that occurs nowhere in the evidence -- an early `guards 27/28`
+spliced onto a later `flair 160/164` -- which is exactly the kind of number a
+reader cannot check. The line above is the one in the file.
 
 | | user gate seed | boundary seed | user's world seed |
 | --- | --- | --- | --- |
 | sockets registered | 269 | 269 | 269 |
 | idle / placed / spare | 129 / 106 / 23 | same | same |
-| roster | `guards 27/28 flair 160/164 vendor 5/5 quest 2/2 spare 23 residents 164 walkers 22` | same shape | same shape |
+| roster, last line of `npcs.txt` | `guards 28/28 flair 145/164 vendor 9/9 quest 2/2 new 36 pending 19 spare 23 residents 164 walkers 22` | `guards 28/28 flair 164/164 vendor 9/9 quest 2/2 new 35 pending 0 spare 23 residents 164 walkers 22` | same as the boundary seed |
 | loops | 9 | 9 | 9 |
 | terrain-audit findings | 0 | 0 | 0 |
-| pending vendor kinds | 4 | 4 | 4 |
 | worst perimeter fall of any plot, measured in the engine | 5 (`forge_watch`) | 6 (`forge_ore_court`) | 6 (`garrison_pack_pen`) |
+| vendor kinds placed | 9/9 | 9/9 | 9/9 |
 | submerged columns under any plot | 0 | 0 | 0 |
 
 **The built road, rampart and gate are digested** and compared against the
@@ -1084,20 +1176,47 @@ capital lanes can use them:
    `tools/wp13/highcourt_probe/` has since the districts increment, and it logs
    the assignment it was given (`event=districts`). A single-district capital
    passes the same two fields and ignores them, so nothing changes for a lane
-   whose capital has one district.
+   whose capital has one district. A lane whose capital HAS districts and which
+   took plot dumps, surface rows or renders before this merge must re-derive
+   them: the labels on those were the canonical assignment. Its blueprint source
+   must also tolerate `{full_seed, raw_sha256}`, which Dur Brannoc's and
+   Highcourt's `quadrant_options` pattern does.
+5. **`run_capital.sh full` used to abort on an OPEN capital.** The probe adds
+   the `rampart` and `gate` dump regions only when the composition authors a
+   curtain wall, so on Lethariel or Kezamba the runner's read-back digest loop
+   finds neither -- and under `set -euo pipefail` a command substitution whose
+   pipeline ends in a failed `grep` takes the whole script down, after a clean
+   boot and before PASS is printed. Lanes E and T hit it. Each lookup is allowed
+   to find nothing now and a label with no digest is skipped with a line saying
+   so. There is no open capital on this branch to boot, so the fix is proved at
+   the shell level against the SHIPPED BYTES:
+   `tools/wp13/evidence/20260915-dur-brannoc-upgrade/open-capital-digest.sh`
+   cuts the loop out of `run_capital.sh` with `sed`, runs it under the same
+   `set -euo pipefail` against a synthetic walled log and a synthetic open one,
+   and asserts that both complete -- and that the same loop with this package's
+   two guards removed aborts on the open one, which is the defect it fixes.
+6. **The error gate is strict again.** Between 2026-09-15 and the NPC
+   vocabulary lane landing, `run_capital.sh` subtracted the placement engine's
+   "resolves to no registered entity" line from its error count and reported it
+   as `pending_vendor_kinds`. All seven wave-2 kinds are registered now, so the
+   exemption has nothing left to excuse and would only ever swallow a genuinely
+   mistyped kind in a future capital. It is gone.
 
 A capital lane that wants them publishes `quadrants` and `districts` on its
 composition and runs `run_capital.sh <out> <key> field <seed>` once per seed.
 
 ## 17. Open points
 
-1. **Four vendor kinds have no entity.** `mason`, `armourer`, `embalmer` and
-   `brewer` are wave-2 kinds and the NPC vocabulary lane owns their entities;
-   until that lands the four sockets are empty and the placement engine logs one
-   line each. `run_capital.sh` counts those lines as `pending_vendor_kinds`
-   rather than as errors, and that exemption is written against the placement
-   engine's exact sentence -- nothing else can slip through it. When the entities
-   land the count goes to zero on its own and the line can be removed.
+1. **THE USER'S EXISTING DUR BRANNOC SAVE IS STALE.** Socket ids are stable
+   (section 11), but id stability protects the REGISTRY, not the world: every
+   wave-1 plot moved 100 to 200 nodes onto the quadrant lot grid --
+   `forge_charcoal` from (56, -72) to (120, -120), `forge_smithy` from
+   (116, -28) to (200, -112), `forge_store` from (116, -60) to (200, -208)
+   under the canonical assignment, and further still on a world whose
+   permutation gives the forge quarter another quadrant -- so in an already
+   generated world the wave-1 buildings stay where the map wrote them while the
+   socket registry points at the new grid. **A playtest of this capital needs a FRESH world.** This is true of
+   every wave-2 capital lane, not only this one.
 2. **`tools/wp13/capital_timing.lua` builds its avenue in the DWARF palette
    whatever capital it is given** (`palettes.new("dwarf")`, a literal). That is
    wrong for Highcourt and for the three capitals still being built, and it is
@@ -1111,20 +1230,42 @@ composition and runs `run_capital.sh <out> <key> field <seed>` once per seed.
    the terraces still read as bare grey cut stone, the overlay's manifest field
    prefix is still `dur_brannoc_avenue` although it now carries lanes and a wall
    as well, and the wall's identity is still its specification.
-4. **The eight district lanes moved the east avenue's read-back digest** by 116
-   cells on both gate seeds, which is the two spine lanes ending on the avenue
-   inside its dump band. The three expectation files are updated. Nothing else
-   about the road moved: the rampart and the gate digests matched byte for byte.
-5. **No seed of the nine puts this capital's anchor root on a mapchunk edge**, so
+4. **The eight district lanes moved the east avenue's read-back digest** by
+   exactly 116 cells on both gate seeds, which is the two spine lanes at x = 138
+   ending on the avenue inside its dump band. The identical delta on two
+   different terrains is what says the move is geometry and not ground; the
+   exact 116 is corroborated (the reviewer attributed 114 to 124 of the 6 048
+   cells to those lanes, the spread depending on whether the avenue's own kerb
+   row at |z| = 3 counts as pre-existing) rather than derived, and a dump taken
+   on `922bfd92` at the same seed would settle it. It was not taken. The three
+   expectation files are updated; nothing else about the road moved, and the
+   rampart and gate digests matched byte for byte.
+5. **THE EAST GATE POINT LANDS INSIDE THE GATE TUNNEL, which Lane R needs to
+   know.** `(ax + 256, az)` is paved and walkable -- the reviewer read the built
+   column back: castle paving at the road surface, four nodes of headroom, and
+   the gate tunnel's ceiling above it -- but the curtain's own centre line is
+   also at 256, so a route whose last cell is the gate point ends UNDER the arch
+   rather than in the open. The KAT's `dur_brannoc_gate_points` row is a
+   specification check; only the east axis is read back out of a map.
+6. **THE ORE COURT READS SPARSE, and so does the quarter's colour.**
+   `renders/fill-ore-court.png` is a large bare apron with a rock face, a mine
+   mouth, two ore heaps, a crate, a handcart and a bench on it; the independent
+   review's words were "it is sparser than that". The quarter is grey cut stone
+   where Highcourt's is green with red kerbs, which is open point 3 above. Both
+   are left as they are for the user's first look, because look and feel is the
+   one thing a measurement cannot settle and the user proposes the fixes.
+   `renders/capital-<seed>.png` is the picture to judge the density by, and it
+   is the same picture Highcourt's own evidence carries.
+7. **No seed of the nine puts this capital's anchor root on a mapchunk edge**, so
    the `edge` gate is run on the seed where Highcourt's is. If the seed set ever
    grows, a seed with `anchor_y = 47 mod 80` at (-1800, -1500) would exercise the
    dwarf capital's own case directly.
-6. **The north-west quarter stands 44 nodes closer to the citadel** than the
+8. **The north-west quarter stands 44 nodes closer to the citadel** than the
    other three because that is where its ground is (section 11.1). It is a
    measured answer and it is also a visible asymmetry; if the user dislikes it,
    `lots.sh --derive` with the ranking's third tie-break changed to prefer the
    authored radius would move it back at the cost of longer individual moves.
-7. **The user has not walked the upgraded capital.** Nothing here is accepted
+9. **The user has not walked the upgraded capital.** Nothing here is accepted
    until they have. On seed 531802985935182545 the crossing of the two great
    avenues -- the `arrival` landmark with the guard banner on it -- is still at
    (-1800, 150, -1500). The four quarters are the four diagonals; walk out of any

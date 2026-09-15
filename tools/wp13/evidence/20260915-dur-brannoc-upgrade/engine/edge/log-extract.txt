@@ -1,7 +1,3 @@
-ERROR[Main]: [grug_mobs] settlement npcs: dur_brannoc socket forge_store/forge_store_vendor_mason resolves to no registered entity (grug_traders:vendor_mason)
-ERROR[Main]: [grug_mobs] settlement npcs: dur_brannoc socket garrison_armoury/garrison_armoury_vendor_armourer resolves to no registered entity (grug_traders:vendor_armourer)
-ERROR[Main]: [grug_mobs] settlement npcs: dur_brannoc socket deep_carvers/deep_carvers_vendor_deep_mason_stall resolves to no registered entity (grug_traders:vendor_embalmer)
-ERROR[Main]: [grug_mobs] settlement npcs: dur_brannoc socket terrace_brewhouse/terrace_brewhouse_vendor_brewer resolves to no registered entity (grug_traders:vendor_brewer)
 ACTION[Main]: GRUG_WP13_CAPITAL event=anchor_order race=human anchor=0,47,-1500 root_chunk_y=48 support_chunk_y=-32 root_on_chunk_edge=true
 ACTION[Main]: GRUG_WP13_CAPITAL event=anchor_order race=dwarf anchor=-1800,134,-1500 root_chunk_y=128 support_chunk_y=128 root_on_chunk_edge=false
 ACTION[Main]: GRUG_WP13_CAPITAL event=anchor_order race=elf anchor=1800,36,-1500 root_chunk_y=-32 support_chunk_y=-32 root_on_chunk_edge=false
@@ -9,11 +5,11 @@ ACTION[Main]: GRUG_WP13_CAPITAL event=anchor_order race=undead anchor=-1800,107,
 ACTION[Main]: GRUG_WP13_CAPITAL event=anchor_order race=orc anchor=0,128,1500 root_chunk_y=128 support_chunk_y=128 root_on_chunk_edge=false
 ACTION[Main]: GRUG_WP13_CAPITAL event=anchor_order race=troll anchor=1800,66,1500 root_chunk_y=48 support_chunk_y=48 root_on_chunk_edge=false
 ACTION[Main]: GRUG_WP13_CAPITAL event=corpus mapchunks=7 mode=edge
-ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=anchor_human mapchunk=-32:48:-1552 kind=anchor_order elapsed_us=23521504
-ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=anchor_human mapchunk=-32:-32:-1552 kind=anchor_order elapsed_us=12866294
-ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=anchor_dwarf mapchunk=-1872:128:-1552 kind=anchor_order elapsed_us=14417863
-ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=anchor_elf mapchunk=1728:-32:-1552 kind=anchor_order elapsed_us=997981
-ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=anchor_undead mapchunk=-1872:48:1488 kind=anchor_order elapsed_us=982144
-ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=anchor_orc mapchunk=-32:128:1488 kind=anchor_order elapsed_us=725143
-ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=anchor_troll mapchunk=1728:48:1488 kind=anchor_order elapsed_us=720039
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=anchor_human mapchunk=-32:48:-1552 kind=anchor_order elapsed_us=22572102
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=anchor_human mapchunk=-32:-32:-1552 kind=anchor_order elapsed_us=12515845
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=anchor_dwarf mapchunk=-1872:128:-1552 kind=anchor_order elapsed_us=13934398
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=anchor_elf mapchunk=1728:-32:-1552 kind=anchor_order elapsed_us=891982
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=anchor_undead mapchunk=-1872:48:1488 kind=anchor_order elapsed_us=947117
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=anchor_orc mapchunk=-32:128:1488 kind=anchor_order elapsed_us=652430
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=anchor_troll mapchunk=1728:48:1488 kind=anchor_order elapsed_us=656629
 ACTION[Server]: GRUG_WP13_CAPITAL event=complete mode=edge requested=7 completed=7 warmup_chunks=0 warmup_total_us=0 warmup_first_us=0 warmup_worst_us=0 warmup_best_us=0 capital_chunks=0 capital_total_us=0 capital_first_us=0 capital_worst_us=0 capital_best_us=0 control_capital_chunks=0 control_capital_total_us=0 control_capital_first_us=0 control_capital_worst_us=0 control_capital_best_us=0 control_chunks=0 control_total_us=0 control_first_us=0 control_worst_us=0 control_best_us=0

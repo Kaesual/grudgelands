@@ -33,10 +33,14 @@
 # generalised from `tools/wp13/run_highcourt.sh` so that every capital lane has
 # them without the pilot capital's runner:
 #   field       the pure final height and the land/water class of every column
-#               of the 512 envelope, dumped ONCE per seed, which is what the
-#               offline lot predicate `tools/wp13/capital_lots.lua` reads. It
-#               replaces the per-plot candidate sweep of `scan` for any capital
-#               with more than one district.
+#               within +-250 of the capital anchor -- the 512 envelope less the
+#               three outermost columns on each side, which is where the
+#               curtain wall stands and where no lot may be -- dumped ONCE per
+#               seed. It is what the offline lot predicate
+#               `tools/wp13/capital_lots.lua` reads, and it replaces the
+#               per-plot candidate sweep of `scan` for any capital with more
+#               than one district. A lot placed beyond 250 would have no field
+#               under it; the predicate refuses one at 236 already.
 #   edge        emerges every capital anchor's ROOT chunk before its SUPPORT
 #               chunk, which is the emerge order a player teleporting in from
 #               above produces and the one the ordinary corpus can never see.
@@ -156,21 +160,20 @@ grep 'start npcs' "$log" >"$output/npcs.txt" || true
 grep -c 'ERROR' "$log" >"$output/error-count.txt" || echo 0 >"$output/error-count.txt"
 grep -c 'ModError' "$log" >"$output/moderror-count.txt" || echo 0 >"$output/moderror-count.txt"
 
-# A VENDOR KIND THE TRADERS MOD HAS NOT REGISTERED YET is a documented
-# condition and not a defect (docs/research/wp13-npc-sockets-contract.md section
-# 8.4: "a kind whose entity the traders mod has not registered yet is an error
-# line at placement and an empty socket, never a load failure"). The wave-2
-# capital lanes place the wave-2 kinds before the NPC vocabulary lane registers
-# their entities, so the line appears on purpose; it is counted and printed
-# separately rather than folded into the gate. The pattern is exact -- the
-# placement engine's own sentence, with a `grug_traders:vendor_*` name in it --
-# so nothing else can slip through it.
-vendor_pending='settlement npcs: .* resolves to no registered entity (grug_traders:vendor_'
-pending_vendors="$(grep -c "$vendor_pending" "$log" || true)"
-errors="$(grep 'ERROR\|ModError' "$log" | grep -vc "$vendor_pending" || true)"
+# EVERY ERROR LINE IS AN ERROR AGAIN. Between 2026-09-15 and the wave-2 NPC
+# vocabulary landing, this gate subtracted the placement engine's "resolves to
+# no registered entity (grug_traders:vendor_*)" line and reported it as
+# `pending_vendor_kinds`: the capital lanes were placing the seven wave-2 vendor
+# kinds before the lane that registers their entities had merged, and the
+# sockets contract's section 8.4 calls that "an error line at placement and an
+# empty socket, never a load failure". All seven kinds are registered now
+# (`grug_traders/vendors.lua`), so the exemption has nothing left to excuse and
+# would only ever swallow a genuinely mistyped kind in a future capital. It is
+# gone; a vendor kind with no entity fails this gate again.
+errors="$(grep -c 'ERROR\|ModError' "$log" || true)"
 complete="$(grep -c 'GRUG_WP13_CAPITAL event=complete' "$log" || true)"
-printf 'exit=%s errors=%s pending_vendor_kinds=%s complete=%s log=%s\n' \
-	"$status" "$errors" "$pending_vendors" "$complete" "$log"
+printf 'exit=%s errors=%s complete=%s log=%s\n' \
+	"$status" "$errors" "$complete" "$log"
 [[ "$errors" -eq 0 && "$complete" -ge 1 ]] || {
 	echo "WP13 capital pass FAILED; inspect $log" >&2
 	exit 1
@@ -189,15 +192,27 @@ printf 'exit=%s errors=%s pending_vendor_kinds=%s complete=%s log=%s\n' \
 # therefore these values: it is a "look at what moved" gate, not a
 # frozen-forever constant, and the expectation file says which seed and which
 # main commit it was taken on.
+# AN OPEN CAPITAL PUBLISHES NO RAMPART AND NO GATE, and that is not a failure.
+# The probe adds those two dump regions only when the composition authors a
+# curtain wall (Highcourt, Dur Brannoc, Nhal Veyr and Gor Drazhak do; Lethariel
+# and Kezamba do not), so on an open capital the two `grep -o` calls below match
+# nothing. Under `set -euo pipefail` a command substitution whose pipeline ends
+# in a failed `grep` takes the whole script down -- which is what Lanes E and T
+# hit: a clean boot aborted here before ever printing PASS. Each lookup is
+# therefore explicitly allowed to find nothing, and a label with no digest is
+# skipped with a line saying so.
 if [[ "$mode" == "full" ]]; then
 	: >"$output/overlay-digests.txt"
 	status_digest=0
 	for label in avenue rampart gate; do
-		digest="$(grep -o "${label}_road_digest=[0-9a-f]*" "$log" | tail -1 |
-			cut -d= -f2)"
-		cells="$(grep -o "${label}_road_cells=[0-9]*" "$log" | tail -1 |
-			cut -d= -f2)"
-		[[ -n "$digest" ]] || continue
+		digest="$( { grep -o "${label}_road_digest=[0-9a-f]*" "$log" || true; } |
+			tail -1 | cut -d= -f2)"
+		cells="$( { grep -o "${label}_road_cells=[0-9]*" "$log" || true; } |
+			tail -1 | cut -d= -f2)"
+		if [[ -z "$digest" ]]; then
+			echo "$label: this capital publishes no such overlay region"
+			continue
+		fi
 		printf '%s  %s seed=%s overlay_cells=%s\n' "$digest" "$label" "$seed" \
 			"$cells" >>"$output/overlay-digests.txt"
 		# WP13 round 3 moved the ground under both: the capital terrace risers

@@ -130,6 +130,16 @@ end
 -- `tools/wp13/capital_lots.lua` is the four-district predicate proper: it asks
 -- the same questions of the LOTS rather than of the plots standing on them, and
 -- it takes as many worlds as it is given rather than two.
+-- THE OFFSETS ARE THE CANONICAL ASSIGNMENT'S, NOT A SEED'S, and for this tool
+-- that is deliberate rather than a defect: `resolve()` is called with no
+-- options, so the roles take the quadrants in authored order. Every VERDICT
+-- below is unaffected, because the SET of lot positions does not depend on the
+-- permutation -- every quadrant is always occupied by exactly one district --
+-- but the per-plot rows name the district the canonical assignment puts on a
+-- lot and not the one this or that world would. A reader comparing these rows
+-- with an engine dump must know that. (`capital_probe` had the same call and
+-- for it it WAS a defect, because its dumps are of a real world; it passes the
+-- seam now.)
 local function plot_list()
 	if type(capital.districts) == "table" and
 			type(capital.districts.resolve) == "function" then

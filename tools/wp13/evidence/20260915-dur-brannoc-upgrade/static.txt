@@ -14,11 +14,21 @@ tools/wp13/capital_lots.lua parser PASS; SETGLOBAL [0]
 tools/wp13/capital_plots.lua parser PASS; SETGLOBAL [0]
 tools/wp13/capital_timing.lua parser PASS; SETGLOBAL [0]
 tools/wp13/capital_probe/init.lua parser PASS; SETGLOBAL [1]
+tools/wp13/dump_capital_plan.lua parser PASS; SETGLOBAL [0]
 == whole tree parses ==
 mods/*/grug_* parser PASS
 tools parser PASS
-== the shell this increment changed parses ==
+== every shell script this increment changed or added parses ==
 tools/wp13/run_capital.sh bash -n PASS
+tools/wp13/evidence/20260915-dur-brannoc-upgrade/static.sh bash -n PASS
+tools/wp13/evidence/20260915-dur-brannoc-upgrade/identity.sh bash -n PASS
+tools/wp13/evidence/20260915-dur-brannoc-upgrade/timing.sh bash -n PASS
+tools/wp13/evidence/20260915-dur-brannoc-upgrade/lots.sh bash -n PASS
+tools/wp13/evidence/20260915-dur-brannoc-upgrade/renders.sh bash -n PASS
+tools/wp13/evidence/20260915-dur-brannoc-upgrade/mutation.sh bash -n PASS
+tools/wp13/evidence/20260915-dur-brannoc-upgrade/open-capital-digest.sh bash -n PASS
+tools/wp13/evidence/20260915-dur-brannoc-upgrade/final-micro.sh bash -n PASS
+tools/wp13/evidence/20260915-dur-brannoc-upgrade/files.sha256.sh bash -n PASS
 == five plain-5.1 sweeps, scoped to the Lua this increment changed ==
 SWEEP 1
 SWEEP 2
@@ -27,8 +37,8 @@ SWEEP 4
 SWEEP 5
 tools/wp13/capital_lots.lua:414:	os.exit(0)
 tools/wp13/capital_lots.lua:594:	os.exit(1)
-tools/wp13/capital_plots.lua:347:	os.exit(0)
-tools/wp13/capital_plots.lua:383:	os.exit(1)
+tools/wp13/capital_plots.lua:357:	os.exit(0)
+tools/wp13/capital_plots.lua:393:	os.exit(1)
 SWEEPS DONE (no output above a SWEEP line means zero hits)
 == the same five sweeps over all of mods/*/grug_* and tools ==
 SWEEP 1
@@ -364,8 +374,8 @@ tools/wp40/t2_partition_test.lua:28:	local status, reason, code = os.execute("sh
 tools/wp40/t2_extreme_conformance_preflight.lua:32:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
 tools/wp40/t2_extreme_conformance_verify.lua:62:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
 tools/wp13/capital_wall.lua:246:	os.exit(1)
-tools/wp13/capital_plots.lua:347:	os.exit(0)
-tools/wp13/capital_plots.lua:383:	os.exit(1)
+tools/wp13/capital_plots.lua:357:	os.exit(0)
+tools/wp13/capital_plots.lua:393:	os.exit(1)
 tools/wp13/capital_lots.lua:414:	os.exit(0)
 tools/wp13/capital_lots.lua:594:	os.exit(1)
 tools/wp13/dump_blueprint.lua:18:	os.exit(2)

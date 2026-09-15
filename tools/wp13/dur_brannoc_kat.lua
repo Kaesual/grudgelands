@@ -204,8 +204,13 @@ return function(repo)
 	feature_set("tend", {"flower", "flower_alt", "hedge", "hedge_stem",
 		"undergrowth", "grass_tuft", "fern", "crop", "tree_leaves",
 		"planter_soil"}, {})
+	-- `pray` is "an altar, a candle or a grave marker" and NOT `signature`.
+	-- The first version of this set carried it, and in the dwarf palette
+	-- `signature` is `default:stone_block`, which is also `plaza` and
+	-- `foundation` -- that is, the node every plot's own ground course and
+	-- skirt are built from. A rule satisfied by the floor is not a rule.
 	feature_set("pray", {"light_post", "light_wall", "light_indoor",
-		"low_wall", "signature"},
+		"low_wall"},
 		{"doors:door_wood", "doors:door_wood_a", "doors:door_wood_b"})
 	-- WAVE 2 (contract section 8.2, the six race-flavoured activities). Each
 	-- set is the contract's own sentence read against the dwarf palette:
@@ -214,15 +219,46 @@ return function(repo)
 	--   `carve`  "a log, a totem/statue part or a stone block";
 	--   `mourn`  "a grave marker, a coffin or a candle";
 	--   `forage` "a mushroom, a bush, a plant, a vine or leaves".
-	feature_set("mine", {"castle_wall", "castle_rubble", "foundation",
-		"plaza", "plaza_edge", "path", "rubble", "signature", "wall_accent"},
-		{})
+	--
+	-- WHAT THE PAVING ROLES ARE NOT ALLOWED TO SATISFY, and how that was
+	-- found. The first version of the `mine` set named `plaza`, `plaza_edge`,
+	-- `path`, `foundation`, `signature` and `wall_accent` beside the masonry --
+	-- reading the contract's "a stone, ore or cobble node" as a node list. In
+	-- the dwarf palette those six roles bind exactly three nodes
+	-- (`default:stone_block`, `default:stonebrick`, `default:cobble`) and all
+	-- three are what a plot paves its own ground, kerb and doorstep with, so
+	-- the check was satisfied by the floor under the miner's feet. The
+	-- independent review proved it by deleting the ore yard's rock face and
+	-- watching this KAT stay green (2026-09-15).
+	--
+	-- Two things are narrowed because of it, and the second is the load-bearing
+	-- one: the SET keeps only masonry no plot paves with, and the SEARCH for
+	-- `mine` runs at `dy = 0..1` -- the contract's own "at head or chest
+	-- height" -- so the ground course a socket stands on can never answer for
+	-- it. The mutation is re-run as part of this package's evidence.
+	feature_set("mine", {"castle_wall", "castle_rubble", "rubble"},
+		{"default:stone", "default:desert_stone", "default:cobble_ore",
+			"default:stone_with_coal", "default:stone_with_iron",
+			"default:stone_with_copper", "default:stone_with_tin",
+			"default:stone_with_gold", "default:stone_with_mese",
+			"default:stone_with_diamond"})
 	feature_set("brew", {"hearth", "storage"}, {})
+	-- `carve` IS allowed the signature block -- "a log, a totem/statue part or
+	-- a stone block" is the contract's own wording and the mason's banker is
+	-- made of it -- but not the paving roles the contract does not name, for
+	-- the reason written above `mine`.
 	feature_set("carve", {"tree_log", "signature", "signature_stair",
-		"signature_slab", "foundation", "plaza_edge", "wall_accent"}, {})
+		"signature_slab"}, {})
 	feature_set("mourn", {"low_wall", "light_post", "light_wall"}, {})
 	feature_set("forage", {"undergrowth", "fern", "grass_tuft", "tree_leaves",
 		"flower", "planter_soil", "crop"}, {})
+	-- The height band the feature search runs over, per activity. The general
+	-- rule is the socket's own course and one either side, which is what
+	-- `highcourt_kat.lua` uses and what section 8.1's "within three nodes"
+	-- leaves open; `mine` is the one activity the contract gives a height for
+	-- ("at head or chest height"), and it gets it.
+	local FEATURE_LOW, FEATURE_HIGH = {}, {}
+	FEATURE_LOW.mine, FEATURE_HIGH.mine = 0, 1
 
 	-- Nodes an ordinary walk passes through. Everything else counts as solid,
 	-- which keeps the route check conservative; a door counts as passable
@@ -786,12 +822,14 @@ return function(repo)
 					-- first, so a cauldron or a rock face -- which is itself
 					-- solid -- still counts at the range it stands at.
 					--
+					local low = FEATURE_LOW[entry.activity] or -1
+					local high = FEATURE_HIGH[entry.activity] or 1
 					local found, blocked = nil, false
 					for reach = 1, 3 do
 						local fx = entry.x + wdx * reach
 						local fz = entry.z + wdz * reach
 						if not blocked then
-							for dy = -1, 1 do
+							for dy = low, high do
 								local cell = at(fx, entry.y + dy, fz)
 								if found == nil and cell and
 										wanted[cell.name] then

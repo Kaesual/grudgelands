@@ -1,0 +1,21 @@
+== the shipped loop ==
+walled capital, three regions                        rc=0 as expected
+    avenue overlay digest recorded (no committed value for seed 531802985935182545 yet)
+    rampart overlay digest recorded (no committed value for seed 531802985935182545 yet)
+    gate overlay digest recorded (no committed value for seed 531802985935182545 yet)
+    LOOP COMPLETED status_digest=0
+OPEN capital, avenue only                            rc=0 as expected
+    avenue overlay digest recorded (no committed value for seed 531802985935182545 yet)
+    rampart: this capital publishes no such overlay region
+    gate: this capital publishes no such overlay region
+    LOOP COMPLETED status_digest=0
+
+== the same loop with this package's two guards removed ==
+walled capital, three regions                        rc=0 as expected
+    avenue overlay digest recorded (no committed value for seed 531802985935182545 yet)
+    rampart overlay digest recorded (no committed value for seed 531802985935182545 yet)
+    gate overlay digest recorded (no committed value for seed 531802985935182545 yet)
+    LOOP COMPLETED status_digest=0
+    OPEN capital, avenue only                    ABORTS, which is the defect
+
+OPEN-CAPITAL DIGEST TEST PASS

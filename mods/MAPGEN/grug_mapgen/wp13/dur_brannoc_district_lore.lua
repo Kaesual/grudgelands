@@ -68,17 +68,30 @@ local function loader(directory)
 				}
 			end},
 		-- 3. The memory hall, under slate: the long room the roll of the dead
-		-- is read in, with the barrow markers on its own apron.
+		-- is read in, with the barrow markers on its own apron -- and, since the
+		-- review of 2026-09-15, THE EMBALMER'S COUNTER.
+		--
+		-- The sockets contract's section 8.4 says a profession vendor's socket
+		-- stands at the matching building, and the first version of this roster
+		-- broke that rule twice over: it gave the `embalmer` kind to the socket
+		-- at the CARVERS' bench (whose id, comment and building all said mason)
+		-- and the `mason` kind to an ordinary longhouse store in the forge
+		-- quarter. The kinds are where they belong now: the mason at the
+		-- carvers' (plot 4), the embalmer here, and the forge quarter's store
+		-- sells through its own smith.
 		{id = "deep_memory_hall", module = "buildings", make = "hall",
 			roof = "slate", order = 3,
 			spec = {w = 15, d = 17, wall_h = 5, infill = true},
 			decorate = function(buf, palette, area)
 				area.dwarf.barrow_line(buf, palette, area.x0 + 2, area.z0 + 1,
 					3, "x", true)
+				shop_counter(buf, palette, area)
 			end,
 			extra_sockets = function(area)
 				return {
 					plots.work("memory_vigil", "mourn", area.x0 + 2,
+						area.z0, 0),
+					plots.vendor("deep_embalmer", "embalmer", area.x1 - 4,
 						area.z0, 0),
 				}
 			end},
@@ -98,7 +111,7 @@ local function loader(directory)
 				return {
 					plots.work("carver_blocks", "carve", area.x0 + 2,
 						area.z0, 0),
-					plots.vendor("deep_mason_stall", "embalmer", area.x1 - 4,
+					plots.vendor("deep_mason_stall", "mason", area.x1 - 4,
 						area.z0, 0),
 				}
 			end},

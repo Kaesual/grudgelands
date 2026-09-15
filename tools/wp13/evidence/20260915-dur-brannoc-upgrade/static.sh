@@ -25,6 +25,7 @@ CHANGED=(
 	tools/wp13/capital_plots.lua
 	tools/wp13/capital_timing.lua
 	tools/wp13/capital_probe/init.lua
+	tools/wp13/dump_capital_plan.lua
 )
 
 echo "== parser and SETGLOBAL on every Lua file this increment changed =="
@@ -43,8 +44,19 @@ find mods -name '*.lua' -path 'mods/*/grug_*' -print0 |
 find tools -name '*.lua' -print0 | xargs -0 "$LUAC" -p &&
 	echo "tools parser PASS"
 
-echo "== the shell this increment changed parses =="
-bash -n tools/wp13/run_capital.sh && echo "tools/wp13/run_capital.sh bash -n PASS"
+echo "== every shell script this increment changed or added parses =="
+for script in tools/wp13/run_capital.sh \
+		tools/wp13/evidence/20260915-dur-brannoc-upgrade/static.sh \
+		tools/wp13/evidence/20260915-dur-brannoc-upgrade/identity.sh \
+		tools/wp13/evidence/20260915-dur-brannoc-upgrade/timing.sh \
+		tools/wp13/evidence/20260915-dur-brannoc-upgrade/lots.sh \
+		tools/wp13/evidence/20260915-dur-brannoc-upgrade/renders.sh \
+		tools/wp13/evidence/20260915-dur-brannoc-upgrade/mutation.sh \
+		tools/wp13/evidence/20260915-dur-brannoc-upgrade/open-capital-digest.sh \
+		tools/wp13/evidence/20260915-dur-brannoc-upgrade/final-micro.sh \
+		tools/wp13/evidence/20260915-dur-brannoc-upgrade/files.sha256.sh; do
+	bash -n "$script" && echo "$script bash -n PASS"
+done
 
 sweeps() {
 	local index=1
