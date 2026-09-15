@@ -20,7 +20,7 @@ the route in one-block ground steps and crosses at grade.
 | `crossings/`, `measure.txt` | every column a bridge deck spans on both gate seeds, before and after, plus the run-by-run parity against the base commit | `./measure.sh <base checkout>` |
 | `kat/` | the crossing KAT under both interpreters | `luajit -e 'io.write(dofile("tools/wp13/lane_crossing_kat.lua")("."))'` |
 | `engine/<when>-<seed>/` | one isolated headless boot per (seed, code state): the probe log, the error counts, the terrain-audit warning count, the avenue road digest, and the crossing regions read back out of the finished map | see below |
-| `walk.txt` | the crossings as a walk — the topmost road node of every column along each centre line, out of those dumps | `./walk.sh` |
+| `walk.txt` | the crossings as a walk — the topmost road node of every column along each centre line, and the lamp standards on the ring_north verges before and after, out of those dumps | `./walk.sh` |
 | `renders/` | 16 pictures: each crossing, whole and cut, before and after | `./renders.sh <before A> <after A> <before B> <after B>` |
 | `files.sha256` | the frozen-byte manifest of every input and every artefact | `./files.sha256.sh` |
 
@@ -59,6 +59,7 @@ the control — it must NOT move.
 | at grade after | 72 | 1 |
 | passing under after | 38 | 0 |
 | overlay runs byte-identical to the base commit's | 21 of 23 | 22 of 23 |
+| lamp standards lighting from under the road they light | 0 | 0 |
 | piece cuts checked against the whole run | 49 | 3 |
 | cut differences | 0 | 0 |
 
@@ -70,6 +71,6 @@ is byte-identical throughout.
 Every boot went through `tools/wp13/run_highcourt.sh`: a fresh `mktemp -d`
 directory as `LUANTI_USER_PATH` and as every XDG directory, the log inside it,
 a `timeout --kill-after`, a kill scoped to this run's own world path, and the
-scratch directory removed on exit. Ports 31210-31215. Nothing under the user's
+scratch directory removed on exit. Ports 31210-31217 (the `after-*` pair was re-run on 31216/31217 after the review's lamp fix). Nothing under the user's
 personal Flatpak folder was touched, and no `luanti.bin --server` process
 belonging to these runs survives them.

@@ -427,12 +427,40 @@ return function(repo)
 	-- per session per plot" a statement about the plot's own column rather than
 	-- about a total that several callers share.
 	local probe_columns = {}
+	-- A WP40 BRIDGE DECK OVER THE CAPITAL'S OWN STREET, in the stub.
+	--
+	-- The overlay is handed its ground AND the route geometry over it by this
+	-- seam, out of one `column_values_at` (`wp40/r7_settlement.lua`,
+	-- `walkable_values`). A stub that answered only six values could never
+	-- report a deck, so the handoff had no engine-free gate at all: cutting it
+	-- left every KAT green and only the live seeds noticed.
+	--
+	-- This band crosses the FIRST overlay run, far enough from the core and
+	-- the plots that nothing else in this file sees it, at a level the road
+	-- cannot pass under (the stub ground here is 40 to 44 and a deck's
+	-- underside is one below its surface, so 46 leaves nothing walkable). The
+	-- overlay must therefore climb onto it -- section "the overlay meets a
+	-- route" below is that assertion.
+	local DECK = {min_x = -4, max_x = 4, min_z = -1602, max_z = -1598, y = 46}
+	local function stub_deck(x, z)
+		if x >= DECK.min_x and x <= DECK.max_x and
+				z >= DECK.min_z and z <= DECK.max_z then
+			return DECK.y
+		end
+		return nil
+	end
 	local planner_source = {}
 	function planner_source.column_values_at(x, z)
 		height_calls = height_calls + 1
 		local key = x .. ":" .. z
 		probe_columns[key] = (probe_columns[key] or 0) + 1
-		return "land", 1, "zone", "biome", "region", stub_height(x, z)
+		-- The tuple the live planner source publishes, as far as the seam
+		-- reads it: water class, zone, biome, race, the final height, the
+		-- water surface, the classified hydrology and its depth, then the
+		-- FUNCTIONAL kind and height -- which is where a bridge deck lives.
+		return "land", 1, "zone", "biome", "region", stub_height(x, z),
+			nil, nil, nil,
+			stub_deck(x, z) and "bridge_deck" or nil, stub_deck(x, z)
 	end
 	local anchor = {id = capital_profile.anchor_id,
 		numeric_id = capital_profile.numeric_id, x = capital_profile.x, y = 40,
@@ -663,6 +691,56 @@ return function(repo)
 		owner_origin(anchor.z), 1)
 	assert(calls == 1, "the drifting composition was not rebuilt exactly once")
 	say("drift", "refused")
+
+	----------------------------------------------------------------------
+	-- The overlay meets a route: the seam's route handoff
+	----------------------------------------------------------------------
+	-- `wp13/avenue.lua` owns the crossing rule and `tools/wp13/
+	-- lane_crossing_kat.lua` owns its properties, driving the module directly.
+	-- What NEITHER of them can see is the HANDOFF: the seam reading the
+	-- functional kind and height out of `column_values_at` and putting them in
+	-- the run's spec. Cut that one field and both stay green, because a road
+	-- with no route geometry is a perfectly good road -- it is only wrong in a
+	-- world that has bridges in it.
+	--
+	-- So this drives the real successor over the stub's deck band and asks the
+	-- WRITTEN CELLS whether the street climbed onto it. It is the same
+	-- sentence the live capitals are held to, on a stub: at grade on the deck.
+	local deck_written = owner(tail, owner_origin(0), owner_origin(anchor.y),
+		owner_origin(DECK.min_z), 200)
+	local road_names = {}
+	for index = 1, #overlay_blueprint.palette do
+		road_names[overlay_blueprint.palette[index]] = true
+	end
+	local deck_columns, deck_top = 0, {}
+	for key, ref in pairs(deck_written) do
+		local x, y, z = key:match("^(%-?%d+)/(%-?%d+)/(%-?%d+)$")
+		x, y, z = tonumber(x), tonumber(y), tonumber(z)
+		if road_names[union[ref]] and stub_deck(x, z) ~= nil then
+			local column = x .. "/" .. z
+			if deck_top[column] == nil then
+				deck_columns = deck_columns + 1
+				deck_top[column] = y
+			elseif y > deck_top[column] then
+				deck_top[column] = y
+			end
+		end
+	end
+	assert(deck_columns > 0,
+		"the seam wrote no road at all over the stub's deck band; the overlay " ..
+		"run this section relies on no longer crosses it")
+	for column, top in pairs(deck_top) do
+		assert(top == DECK.y, "the street stands at " .. top .. " in the column " ..
+			column .. ", not at the route's grade " .. DECK.y ..
+			" -- the seam's route handoff is gone")
+	end
+	-- And the ground under it is still the stub's, i.e. the deck did not leak
+	-- into the height the plots are projected from.
+	assert(stub_deck(DECK.min_x - 1, DECK.min_z) == nil and
+		select(6, planner_source.column_values_at(DECK.min_x, DECK.min_z)) ==
+			stub_height(DECK.min_x, DECK.min_z),
+		"the stub deck changed the final height it stands over")
+	say("route_handoff", deck_columns, DECK.y)
 
 	----------------------------------------------------------------------
 	-- The overlay: per mapchunk, and the union of the pieces is the whole run

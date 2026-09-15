@@ -78,12 +78,32 @@ local function loader(directory)
 	-- and torch above its own footing, so a verge with three blocks of air is
 	-- exactly a verge that can still be lit.
 	M.MIN_CLEAR = 3
-	-- How many times the crossing rule may raise the profile before the run
-	-- refuses. Each pass raises at least one column onto a deck it never
-	-- leaves again, so the fixed point is reached in at most one pass per deck
-	-- column of the lane; this bound exists to turn a rule that did not
-	-- converge into a loud failure instead of a hung mapchunk.
-	local RAISE_PASSES = 64
+	-- HOW MANY PASSES THE CROSSING RULE MAY TAKE, and what is actually known
+	-- about that.
+	--
+	-- PROVED: the iteration terminates. It only ever raises a column's ground,
+	-- and it never raises one above the highest deck in the window, so it is
+	-- monotone and bounded and cannot run forever.
+	--
+	-- NOT PROVED: a tight pass count. What decides it is the SHAPE of the deck.
+	-- A LEVEL deck settles at once -- every column of it conflicts in the same
+	-- pass and is raised in the same pass -- and a second pass only picks up
+	-- the neighbours the first one lifted into it. A deck that CLIMBS one node
+	-- per column does not: the far end of it clears the road until the raise
+	-- has walked towards it, so such a deck takes on the order of one pass per
+	-- two columns of its span. Every WP40 deck is level (`wp40/planner.lua`
+	-- writes one `functional_y` per crossing run and the planner pins it), so
+	-- the climbing case is unreachable today and the measured capitals settle
+	-- in one or two passes -- but the bound may not assume that, because a
+	-- bound that is wrong aborts a mapchunk instead of catching a bug.
+	--
+	-- So the bound is derived from the run's own window: one pass per column
+	-- of it, plus a margin. That is above the worst shape a deck inside the
+	-- window can have, and it still turns a rule that did not converge into a
+	-- loud failure rather than a hung mapchunk.
+	local function raise_pass_limit(low_end, high_end)
+		return (high_end - low_end) + 2
+	end
 
 	-- The avenue vocabulary, each with its fallback into the start
 	-- vocabulary, exactly as `capitals.lua` resolves the same roles: the
@@ -265,8 +285,17 @@ local function loader(directory)
 		-- down the middle of it. A crossing is a crossing of the whole road,
 		-- so the decision is taken per POSITION along the run and applied to
 		-- every lane of that position.
+		--
+		-- Each lane keeps `bare`, the envelope of its UNTOUCHED ground -- the
+		-- road this module would have built with no route geometry at all.
+		-- The difference between that and the settled level is exactly the
+		-- stretch the crossing rule moved, ramps included, and the LAMPS need
+		-- it: a standard is not part of the carriageway and has no envelope of
+		-- its own, so without it a verge beside a crossing keeps its
+		-- river-level ground and the standard ends up under the road.
 		local function resolve_profiles(low_end, high_end, lanes)
-			for pass = 0, RAISE_PASSES do
+			local limit = raise_pass_limit(low_end, high_end)
+			for pass = 0, limit do
 				for index = 1, #lanes do
 					local lane = lanes[index]
 					local ground, level = lane.ground, lane.level
@@ -276,6 +305,13 @@ local function loader(directory)
 					end
 					for p = high_end - 1, low_end, -1 do
 						if level[p] < level[p + 1] - 1 then level[p] = level[p + 1] - 1 end
+					end
+					-- The first pass runs on ground nothing has raised yet, so
+					-- its envelope IS the bare road.
+					if pass == 0 then
+						local bare = {}
+						for p = low_end, high_end do bare[p] = level[p] end
+						lane.bare = bare
 					end
 				end
 				local raised = false
@@ -308,7 +344,7 @@ local function loader(directory)
 				if not raised then return pass end
 			end
 			error("wp13 avenue: the crossing rule did not settle in " ..
-				RAISE_PASSES .. " passes", 0)
+				limit .. " passes", 0)
 		end
 
 		-- 1. The carriageway, lane by lane.
@@ -364,6 +400,9 @@ local function loader(directory)
 			lanes[#lanes + 1] = lane
 		end
 		local raise_passes = resolve_profiles(low_end, high_end, lanes)
+		-- The kerb lane a verge stands beside, per verge, so a standard can be
+		-- carried at the level of the road it lights.
+		local kerb_lane = {[-half - 1] = lanes[1], [half + 1] = lanes[#lanes]}
 		for lane_index = 1, #lanes do
 			local lane = lanes[lane_index]
 			local offset = lane.offset
@@ -454,6 +493,27 @@ local function loader(directory)
 					local d = deck_at(x, z)
 					if d ~= nil and y < d and y > d - M.MIN_CLEAR - 2 then
 						y = d
+					end
+					-- AND IT COMES UP WITH THE ROAD. The test above is the
+					-- verge column's OWN clearance, and that is not enough: a
+					-- bridge narrower than the road spans the carriageway and
+					-- not the verge, so the verge keeps its river-level ground
+					-- and the standard ends up five or six nodes under the
+					-- crossing beside it -- post, torch and all, standing in
+					-- the water against the abutment. Four standards of the
+					-- user seed did exactly that before this rule.
+					--
+					-- So wherever the crossing rule MOVED the road -- the
+					-- crossing itself and the ramps up to it, which is exactly
+					-- where the kerb lane stands above the bare road it would
+					-- otherwise have been -- the verge is carried with it. A
+					-- standard beside an ordinary terrace climb still stands on
+					-- its own ground, because there the two levels agree and
+					-- this does nothing.
+					local beside = kerb_lane[offset]
+					if beside.level[p] > beside.bare[p] and
+							beside.level[p] > y then
+						y = beside.level[p]
 					end
 					buf:put(x, y, z, kerb(palette))
 					buf:put(x, y + 1, z, palette.node("post"))

@@ -1,5 +1,5 @@
 # grug_wp13_lane_routes_v1 seed=531802985935182545 mode=crossing_rule min_clear=3
-# spanned_columns=110 illegal=0 walk_faults=0 cross_faults=0 cuts=49 cut_faults=0
+# spanned_columns=110 illegal=0 walk_faults=0 cross_faults=0 cuts=49 cut_faults=0 lamp_faults=0
 capital	run	lane	x	road_y	z	natural_y	deck_y	clear	verdict
 highcourt	ring_west	0	-96	35	-1469	35	40	3	under_clear
 highcourt	ring_west	1	-95	35	-1469	35	40	3	under_clear

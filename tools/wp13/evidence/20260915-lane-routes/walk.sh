@@ -63,6 +63,22 @@ echo "-- is one course on the deck."
 awk -F'\t' '$0 !~ /^#/ && $1 == -31 && $3 == 95 && $2 > -9' \
 	"$here/engine/after-A/highcourt-crossing-1.tsv" | sort -t$'\t' -k2,2n
 echo
+echo "== the standards on the ring_north crossing's two verges, out of the map =="
+echo "-- Before, four of them were under the road they light. The road at the"
+echo "-- crossing is y 1 and on its ramps y 0 and -1 (see the walk above), and a"
+echo "-- standard's light sits three courses over its footing."
+lamps() {
+	awk -F'\t' -v dump="$1" '
+		$0 !~ /^#/ && ($3 == 93 || $3 == 99) && $4 ~ /torch/ {
+			printf "  (%s, %s) light at y %s\n", $1, $3, $2
+		}' "$1" | sort
+}
+echo "-- BEFORE"
+lamps "$here/engine/before-A/highcourt-crossing-1.tsv"
+echo "-- AFTER"
+lamps "$here/engine/after-A/highcourt-crossing-1.tsv"
+
+echo
 echo "-- seed 531802985935182545, x = -96, z = 35: the pass-under, AFTER."
 echo "-- Road at -5, three blocks of air, support at -1, deck at 0."
 awk -F'\t' '$0 !~ /^#/ && $1 == -96 && $3 == 35 && $2 > -9' \

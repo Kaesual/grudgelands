@@ -5,6 +5,7 @@ tools/wp13/lane_crossing_kat.lua parser PASS; SETGLOBAL [0]
 tools/wp13/lane_routes.lua parser PASS; SETGLOBAL [0]
 tools/wp13/final_micro.lua parser PASS; SETGLOBAL [0]
 tools/wp13/highcourt_probe/init.lua parser PASS; SETGLOBAL [1]
+tools/wp13/seam_kat.lua parser PASS; SETGLOBAL [0]
 == whole tree parses ==
 mods/*/grug_* parser PASS
 tools parser PASS
@@ -14,7 +15,7 @@ SWEEP 2
 SWEEP 3
 SWEEP 4
 SWEEP 5
-tools/wp13/lane_routes.lua:310:	os.exit(1)
+tools/wp13/lane_routes.lua:347:	os.exit(1)
 SWEEPS DONE (no output above a SWEEP line means zero hits)
 == the same five sweeps over all of mods/*/grug_* and tools ==
 SWEEP 1
@@ -357,7 +358,7 @@ tools/wp13/dump_blueprint.lua:52:	os.exit(1)
 tools/wp13/dump_blueprint.lua:59:		os.exit(1)
 tools/wp13/dump_blueprint.lua:66:	os.exit(1)
 tools/wp13/dump_blueprint.lua:72:	os.exit(1)
-tools/wp13/lane_routes.lua:310:	os.exit(1)
+tools/wp13/lane_routes.lua:347:	os.exit(1)
 tools/wp13/highcourt_plots.lua:346:	os.exit(1)
 tools/wp13/dump_highcourt.lua:32:	os.exit(2)
 tools/wp13/dump_highcourt.lua:55:		os.exit(0)
@@ -374,15 +375,17 @@ lane_crossing_cleared	55	55
 lane_crossing_playtest	55	55
 lane_crossing_fixed_point	25	25	0	2
 lane_crossing_narrow	21	21
+lane_crossing_carriageway_only	125	8	0
 lane_crossing_verge	4
 lane_crossing_monotone	0
 lane_crossing_digest	763	0a8947f2494e80b309d86b3bd4f0e05e54e3af9b293b4497a0ca2239bf14d2d6
-lane_crossing_cases	6	min_clear	3
+lane_crossing_cases	7	min_clear	3
 lane_crossing_cleared	55	55
 lane_crossing_playtest	55	55
 lane_crossing_fixed_point	25	25	0	2
 lane_crossing_narrow	21	21
+lane_crossing_carriageway_only	125	8	0
 lane_crossing_verge	4
 lane_crossing_monotone	0
 lane_crossing_digest	763	0a8947f2494e80b309d86b3bd4f0e05e54e3af9b293b4497a0ca2239bf14d2d6
-lane_crossing_cases	6	min_clear	3
+lane_crossing_cases	7	min_clear	3

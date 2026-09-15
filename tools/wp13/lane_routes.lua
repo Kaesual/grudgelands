@@ -173,6 +173,7 @@ local function run_spec(capital, run, cut_from, cut_to)
 end
 
 local walk_faults, cross_faults, cut_faults, cuts = 0, 0, 0, 0
+local lamp_faults = 0
 for _, capital in ipairs(CAPITALS) do
 	local palette = palettes.new(capital.race)
 	for _, run in ipairs(capital.runs) do
@@ -224,6 +225,41 @@ for _, capital in ipairs(CAPITALS) do
 					walk_faults = walk_faults + 1
 					io.stderr:write("step of " .. (next_one - here) .. " in " ..
 						run.id .. " lane " .. lane .. " at " .. p .. "\n")
+				end
+			end
+		end
+		-- NO STANDARD IS BURIED BY THE CROSSING IT LIGHTS. A lamp's light sits
+		-- three courses over its footing, and at a crossing the carriageway
+		-- beside it can be six nodes up, so a verge that did not come with the
+		-- road leaves the whole standard under the surface -- in the water,
+		-- against the abutment. Checked only where a deck is within the
+		-- carriageway's reach of the lamp, because a standard beside an
+		-- ordinary terrace climb legitimately stands on its own lower ground.
+		for _, lamp in ipairs(whole.lamps) do
+			local p = (run.axis == "x") and lamp.x or lamp.z
+			local near = false
+			for step = -8, 8 do
+				for lane = -HALF, HALF do
+					local x, z
+					if run.axis == "x" then x, z = p + step, whole.at + lane
+					else x, z = whole.at + lane, p + step end
+					if deck(x, z) ~= nil then near = true break end
+				end
+				if near then break end
+			end
+			if near then
+				local road = nil
+				for lane = -HALF, HALF do
+					local value = top[p .. ":" .. lane]
+					if value ~= nil and (road == nil or value > road) then
+						road = value
+					end
+				end
+				if road ~= nil and lamp.y < road then
+					lamp_faults = lamp_faults + 1
+					io.stderr:write("the standard at " .. lamp.x .. "," .. lamp.z ..
+						" lights from " .. lamp.y .. ", under the road at " ..
+						road .. " (" .. run.id .. ")\n")
 				end
 			end
 		end
@@ -283,7 +319,8 @@ local out = {"# grug_wp13_lane_routes_v1 seed=" .. seed .. " mode=" ..
 	avenue.MIN_CLEAR .. "\n",
 	"# spanned_columns=" .. spanned .. " illegal=" .. illegal ..
 		" walk_faults=" .. walk_faults .. " cross_faults=" .. cross_faults ..
-		" cuts=" .. cuts .. " cut_faults=" .. cut_faults .. "\n",
+		" cuts=" .. cuts .. " cut_faults=" .. cut_faults ..
+		" lamp_faults=" .. lamp_faults .. "\n",
 	"capital\trun\tlane\tx\troad_y\tz\tnatural_y\tdeck_y\tclear\tverdict\n"}
 for index = 1, #rows do out[#out + 1] = rows[index] .. "\n" end
 local keys = {}
@@ -304,8 +341,8 @@ io.stderr:write("lane_routes seed=" .. seed .. " mode=" ..
 	(legacy and "legacy" or "crossing_rule") .. " spanned=" .. spanned ..
 	" illegal=" .. illegal .. " walk_faults=" .. walk_faults ..
 	" cross_faults=" .. cross_faults .. " cuts=" .. cuts ..
-	" cut_faults=" .. cut_faults .. "\n")
+	" cut_faults=" .. cut_faults .. " lamp_faults=" .. lamp_faults .. "\n")
 if illegal > 0 or walk_faults > 0 or cut_faults > 0 or
-		(cross_faults > 0 and not legacy) then
+		((cross_faults > 0 or lamp_faults > 0) and not legacy) then
 	os.exit(1)
 end

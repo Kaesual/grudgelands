@@ -326,6 +326,7 @@ return function(repo)
 		end
 	end
 	assert(standards > 0, "the verge case raised no standard at all")
+
 	local ample = build(SPAN, flat, function(x, z)
 		if x >= -8 and x <= 8 then return 35 + CLEAR + 2 end
 		return nil
@@ -338,7 +339,53 @@ return function(repo)
 	say("lane_crossing_verge", standards)
 
 	----------------------------------------------------------------------
-	-- 6. THE RULE NEVER LOWERS THE ROAD, on any of the profiles above: it is
+	-- 6. A BRIDGE THAT SPANS THE CARRIAGEWAY AND NOT THE VERGE, which is the
+	--    case the verge's OWN clearance cannot see: the verge has open sky
+	--    over it and every reason to stay on its river-level ground, while
+	--    the road beside it has climbed six nodes onto the deck. Four
+	--    standards of the user seed stood in the water under the crossing
+	--    they were meant to light before this rule. A standard here is
+	--    carried at the road's own walking level -- on the crossing AND on
+	--    its ramps, which is where the lamp rhythm actually puts them.
+	----------------------------------------------------------------------
+	local function carriage_only_deck(x, z)
+		if x >= -12 and x <= 12 and z >= -HALF and z <= HALF then return 38 end
+		return nil
+	end
+	local sunken = build(SPAN, flat, carriage_only_deck)
+	spanned, joined, passed = verify("carriageway-only deck", sunken, flat,
+		carriage_only_deck)
+	assert(passed == 0 and joined == spanned,
+		"the carriageway-only crossing did not join")
+	local carried = profile(sunken)
+	local carried_standards, buried = 0, 0
+	for _, lamp in ipairs(sunken.lamps) do
+		assert(math.abs(lamp.z) == HALF + 1, "a standard left its verge")
+		assert(carriage_only_deck(lamp.x, lamp.z) == nil,
+			"the case put a deck over the verge after all")
+		local road = nil
+		for z = -HALF, HALF do
+			local value = carried.top[lamp.x .. ":" .. z]
+			if road == nil or value > road then road = value end
+		end
+		if road > flat() then
+			carried_standards = carried_standards + 1
+			-- The FOOTING at the road's level, not merely the light above it:
+			-- a standard whose footing is under the carriageway is a post
+			-- buried in the abutment.
+			assert(lamp.y - 3 == road, "a standard beside the crossing foots at " ..
+				(lamp.y - 3) .. ", not at the road's level " .. road)
+		end
+		if lamp.y < road then buried = buried + 1 end
+	end
+	assert(carried_standards > 0,
+		"the carriageway-only case lit nothing over the crossing")
+	assert(buried == 0, buried .. " standards are under the road they light")
+	cases = cases + 1
+	say("lane_crossing_carriageway_only", spanned, carried_standards, buried)
+
+	----------------------------------------------------------------------
+	-- 7. THE RULE NEVER LOWERS THE ROAD, on any of the profiles above: it is
 	--    a rule about getting out from under something, so a column of the
 	--    road with route geometry is never below the same column without it.
 	----------------------------------------------------------------------
@@ -356,7 +403,7 @@ return function(repo)
 	say("lane_crossing_monotone", lowered)
 
 	----------------------------------------------------------------------
-	-- 7. Determinism, and a digest of the built crossing so a silent change
+	-- 8. Determinism, and a digest of the built crossing so a silent change
 	--    to the rule shows up as a moved value rather than as nothing.
 	----------------------------------------------------------------------
 	same_cells("determinism", crossed, build(SPAN, flat, low_deck))
@@ -368,7 +415,7 @@ return function(repo)
 	say("lane_crossing_digest", #crossed.cells,
 		common.hex(common.new_sha256()(table.concat(rows, "\n"))))
 
-	assert(cases == 6, "a crossing case was lost")
+	assert(cases == 7, "a crossing case was lost")
 	say("lane_crossing_cases", cases, "min_clear", CLEAR)
 	return table.concat(report)
 end

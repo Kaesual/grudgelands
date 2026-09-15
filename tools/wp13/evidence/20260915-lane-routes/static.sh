@@ -16,6 +16,7 @@ CHANGED=(
 	tools/wp13/lane_routes.lua
 	tools/wp13/final_micro.lua
 	tools/wp13/highcourt_probe/init.lua
+	tools/wp13/seam_kat.lua
 )
 
 echo "== parser and SETGLOBAL on every Lua file this increment changed =="

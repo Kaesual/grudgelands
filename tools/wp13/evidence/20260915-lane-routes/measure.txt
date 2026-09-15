@@ -1,20 +1,21 @@
 == seed 531802985935182545, the road before this lane ==
-lane_routes seed=531802985935182545 mode=legacy spanned=110 illegal=17 walk_faults=0 cross_faults=0 cuts=0 cut_faults=0
+the standard at -32,-1401 lights from 38, under the road at 40 (ring_north)
+lane_routes seed=531802985935182545 mode=legacy spanned=110 illegal=17 walk_faults=0 cross_faults=0 cuts=0 cut_faults=0 lamp_faults=1
   (exit non-zero: illegal columns, which is the defect this lane fixes)
 == seed 531802985935182545, the road with the crossing rule ==
-lane_routes seed=531802985935182545 mode=crossing_rule spanned=110 illegal=0 walk_faults=0 cross_faults=0 cuts=49 cut_faults=0
+lane_routes seed=531802985935182545 mode=crossing_rule spanned=110 illegal=0 walk_faults=0 cross_faults=0 cuts=49 cut_faults=0 lamp_faults=0
 == seed 8675309, the road before this lane ==
-lane_routes seed=8675309 mode=legacy spanned=1 illegal=1 walk_faults=0 cross_faults=0 cuts=0 cut_faults=0
+lane_routes seed=8675309 mode=legacy spanned=1 illegal=1 walk_faults=0 cross_faults=0 cuts=0 cut_faults=0 lamp_faults=0
   (exit non-zero: illegal columns, which is the defect this lane fixes)
 == seed 8675309, the road with the crossing rule ==
-lane_routes seed=8675309 mode=crossing_rule spanned=1 illegal=0 walk_faults=0 cross_faults=0 cuts=3 cut_faults=0
+lane_routes seed=8675309 mode=crossing_rule spanned=1 illegal=0 walk_faults=0 cross_faults=0 cuts=3 cut_faults=0 lamp_faults=0
 
 == seed 531802985935182545, against the base commit's road ==
 seed=531802985935182545 runs_unchanged=21 runs_moved=2
 run	cells_differing	before	after
-highcourt/ring_north	250	1283	1373
-highcourt/lane_northwest_cross	231	1576	1721
+highcourt/ring_north	278	1283	1373
+highcourt/lane_northwest_cross	247	1576	1721
 == seed 8675309, against the base commit's road ==
 seed=8675309 runs_unchanged=22 runs_moved=1
 run	cells_differing	before	after
-highcourt/ring_north	13	1224	1229
+highcourt/ring_north	19	1224	1229

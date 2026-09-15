@@ -281,6 +281,33 @@ along	road_top	node
 -31	0	95	default:stone	0
 -31	1	95	grug_decor:castle_pavement_brick	0
 
+== the standards on the ring_north crossing's two verges, out of the map ==
+-- Before, four of them were under the road they light. The road at the
+-- crossing is y 1 and on its ramps y 0 and -1 (see the walk above), and a
+-- standard's light sits three courses over its footing.
+-- BEFORE
+  (-24, 93) light at y -3
+  (-24, 99) light at y -1
+  (-32, 93) light at y 3
+  (-32, 99) light at y -2
+  (-40, 93) light at y -2
+  (-40, 99) light at y -2
+  (-48, 93) light at y -2
+  (-48, 99) light at y -2
+  (-56, 93) light at y -2
+  (-56, 99) light at y -2
+-- AFTER
+  (-24, 93) light at y -3
+  (-24, 99) light at y -1
+  (-32, 93) light at y 4
+  (-32, 99) light at y 4
+  (-40, 93) light at y 3
+  (-40, 99) light at y 3
+  (-48, 93) light at y -2
+  (-48, 99) light at y -2
+  (-56, 93) light at y -2
+  (-56, 99) light at y -2
+
 -- seed 531802985935182545, x = -96, z = 35: the pass-under, AFTER.
 -- Road at -5, three blocks of air, support at -1, deck at 0.
 -96	-8	35	default:stone	0

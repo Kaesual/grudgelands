@@ -119,7 +119,18 @@ whole road.
 
 The verge is held to the same threshold without an envelope, because a lamp
 standard is a footing and three courses: a verge that cannot clear the deck
-carries its standard on the deck instead.
+carries its standard on the deck instead. That alone is not enough, and the
+first round of this lane got it wrong: a bridge narrower than the road spans
+the carriageway and NOT the verge, so the verge has open sky, keeps its
+river-level ground, and the standard ends up five or six nodes under the
+crossing it is meant to light — in the water against the abutment. Four
+standards of the user seed did exactly that. So a verge is also carried with
+the road wherever the crossing rule MOVED the road: each lane keeps `bare`,
+the envelope of its untouched ground, and where the kerb lane's settled level
+stands above its bare one — the crossing and its ramps, and nothing else — the
+standard beside it comes up to that level. Beside an ordinary terrace climb
+the two agree and the rule does nothing, so a standard there still stands on
+its own ground, as before.
 
 `wp40/r7_settlement.lua` is the other file: `walkable_height` became
 `walkable_values`, returning the surface and the deck out of one
@@ -176,9 +187,9 @@ move:
 
 | seed | run | cells before | cells after | cells differing |
 | --- | --- | --- | --- | --- |
-| 531802985935182545 | `ring_north` | 1283 | 1373 | 250 |
-| 531802985935182545 | `lane_northwest_cross` | 1576 | 1721 | 231 |
-| 8675309 | `ring_north` | 1224 | 1229 | 13 |
+| 531802985935182545 | `ring_north` | 1283 | 1373 | 278 |
+| 531802985935182545 | `lane_northwest_cross` | 1576 | 1721 | 247 |
+| 8675309 | `ring_north` | 1224 | 1229 | 19 |
 
 Dur Brannoc's twelve overlay runs are unchanged on both seeds, and so are all
 four Highcourt avenues.
@@ -208,7 +219,12 @@ does not.
 * a run cut in two at a crossing is, cell for cell, the run built whole: 49
   cuts on seed 531802985935182545 and 3 on seed 8675309, zero differences. A
   piece that could not see the deck would climb differently, and a mapchunk
-  border is exactly where that would leave a wall.
+  border is exactly where that would leave a wall;
+* no lamp standard near a deck lights from below the road beside it — zero
+  faults on both seeds. With the verge coupling disabled the same check
+  reports the four standards the review found, at anchor-relative (-40, 93),
+  (-40, 99), (-32, 99) and (-46, 143), each lighting from 38 under a road at
+  40 or 41.
 
 ## 6. The engine
 
@@ -232,7 +248,7 @@ holds the thousand.
 
 ## 7. The KAT
 
-`tools/wp13/lane_crossing_kat.lua`, six cases, both interpreters, identical
+`tools/wp13/lane_crossing_kat.lua`, seven cases, both interpreters, identical
 output:
 
 1. no route geometry, and a deck the road already clears, are the same road;
@@ -245,19 +261,38 @@ output:
 4. a bridge narrower than the carriageway: every lane at the same grade, the
    carried lanes standing on the deck, the outer lanes solid from their own
    ground;
-5. the verge: a standard that cannot clear the deck is carried on it, one that
+5. a bridge that spans the CARRIAGEWAY AND NOT THE VERGE — the case the
+   verge's own clearance cannot see: every standard over the crossing and its
+   ramps foots at the road's own level, none under it;
+6. the verge: a standard that cannot clear the deck is carried on it, one that
    can stays on its own ground;
-6. the rule never lowers the road, on any of those profiles.
+7. the rule never lowers the road, on any of those profiles.
+
+And one more gate outside this file. `tools/wp13/seam_kat.lua` now answers
+`column_values_at` with a bridge-deck band over the first overlay run and
+asserts, from the CELLS THE SUCCESSOR WROTE, that the street stands at the
+deck's grade. That is the seam HANDOFF, which neither the crossing KAT (it
+drives the module directly) nor the crossing tool (it answers the seam's
+queries itself) can see: with `overhead` cut at `r7_settlement.lua` both stay
+green, because a road with no route geometry is a perfectly good road — it is
+only wrong in a world with bridges in it.
 
 Every case also cuts its run at the crossing and checks the pieces against the
 whole, and the built crossing is digested so a silent change shows as a moved
 value.
 
-It bites: with the rule disabled at its seam (`local overhead = nil` in place
-of `spec.overhead`), the KAT fails in `verify` on the playtest case rather
-than passing quietly. `tools/wp13/lane_routes.lua` is the same gate against
-real terrain — it exits non-zero on an illegal column, which is why the
-`--legacy` half of `measure.sh` reports a non-zero exit on both gate seeds.
+Every one of them bites, checked by mutation:
+
+| mutation | what reddens |
+| --- | --- |
+| `local overhead = nil` in place of `spec.overhead` (`avenue.lua`) | `lane_crossing_kat` in `verify`, on the playtest case |
+| the verge coupling disabled (`avenue.lua`) | `lane_crossing_kat` case 5; `lane_routes.lua` reports the four sunken standards |
+| `overhead = nil` in the run spec (`r7_settlement.lua`) | `seam_kat` on `route_handoff` |
+
+`tools/wp13/lane_routes.lua` is the same gate against real terrain — it exits
+non-zero on an illegal column, a sunken standard, a broken lane or a cut that
+differs, which is why the `--legacy` half of `measure.sh` reports a non-zero
+exit on both gate seeds.
 
 ## 8. What a review should look at
 
@@ -268,16 +303,23 @@ real terrain — it exits non-zero on an illegal column, which is why the
 * **The road-wide decision.** It is the deliberate departure from per-lane
   profiling (section 4). The alternative — per lane — was measured and it
   splits the street.
+* **The pass bound.** The iteration is proved to terminate (monotone and
+  bounded by the highest deck in the window); the PASS COUNT is not proved.
+  A level deck settles in one pass and a second only picks up the neighbours
+  it lifted; a deck that climbed a node per column would take on the order of
+  one pass per two columns. Every WP40 deck is level, so that shape is
+  unreachable today — but the bound may not assume it, so it is derived from
+  the run's own window (one pass per column plus a margin) rather than being
+  a constant that a long climbing deck would trip.
 * **`reach`.** The envelope's look-around is 40 columns, justified by WP40's
   own cut-24/fill-16 terracing. A raise adds at most the height of a deck over
   its water, and on the gate seeds that never exceeded the terrain amplitude
   the 40 already covers — which is what the 52 cut tests measure. It is
   measured, not proved.
-* **A lamp beside a raised crossing** stands on its own verge, which can now
-  be several nodes below the carriageway beside it. Nothing breaks (the
-  standard is solid and its footing is written), but it is buried. It was
-  already possible beside a terrace; the crossing makes it likelier. Left
-  alone deliberately: the fix belongs to whoever revisits the lamp rhythm.
+* **The verge coupling.** A standard beside a crossing now comes up with the
+  road; beside an ordinary terrace climb it still does not. That asymmetry is
+  deliberate — the terrace behaviour is the module's own and predates this
+  lane — but it is the seam between two rules and worth a look.
 
 ## 9. Open
 
@@ -299,3 +341,27 @@ real terrain — it exits non-zero on an illegal column, which is why the
 * Only bridge decks create overhead today. If WP40 ever gains another spanning
   structure, `walkable_values` in `wp40/r7_settlement.lua` is the one place
   that decides what counts.
+* **Only OVERLAY runs get the rule, and that is not every street a capital
+  has.** The overlay is the four avenues, the four ring-street sides, the
+  seven district lanes and (Dur Brannoc) the curtain wall. It is NOT:
+  * the core's own streets and lanes — `wp13/highcourt.lua` lines 107-149 and
+    Dur Brannoc's equivalent are cells of the ANCHOR blueprint, authored flat
+    against the fitted anchor and written without any knowledge of a deck;
+  * the plot-internal paths and doorstep walks — `wp13/highcourt_plot.lua`
+    lines 208-224 — which are cells of a REFERENCE blueprint, projected from
+    one column of their own plot.
+
+  Neither can meet a bridge on the two gate seeds: a capital core stands on
+  its own levelled pad and the lots are held clear of water, so no deck spans
+  either. On a third seed that is an assumption, not a measurement. If one
+  ever does, the fix is not to teach a cell list about decks — it is to move
+  the plot, which is what `tools/wp13/highcourt_plots.lua` and the
+  `audit_terrain` warning exist for.
+* **Dur Brannoc's causeway rail is untested against a crossing.**
+  `wp13/dur_brannoc.lua`'s `rail()` adds a course of masonry to every kerb
+  column the road had to FILL by three or more, which is how its east avenue
+  gets a parapet on its embankment. A crossing ramp is exactly such a fill, so
+  a seed that gave Dur Brannoc a bridge over one of its twelve runs would grow
+  a parapet along the ramp and, at the crossing itself, along the kerb lanes
+  standing on the deck. That is probably the right look and it is certainly
+  not measured: neither gate seed puts a deck over a Dur Brannoc run.
