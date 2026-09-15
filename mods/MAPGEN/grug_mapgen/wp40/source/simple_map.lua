@@ -216,6 +216,88 @@ for index = 1, #source.zones do
 		zone_numeric_id=index,kind="hub",position=point(row.hub.x,row.hub.z)}
 end
 
+-- THE CAPITAL GATES. Playtest round 4 (2026-09-15) ruled that every incoming
+-- route ends at a planned point of the city boundary -- a gate -- and no
+-- longer runs into the interior; inside, the WP13 streets take over.
+--
+-- The six capital anchors sit ON their zone hub (asserted against
+-- `anchor_rows` below, the way the start gate run is), so a route that names a
+-- capital zone used to be graded straight through the 512-node build envelope
+-- and out the far side. At Dur Brannoc that put the incoming road through the
+-- curtain wall at (-1847,-1756), 47 nodes west of the wall's own gate at
+-- (-1801,-1756): a road cut in half by masonry and a gate that leads nowhere.
+--
+-- A capital's build envelope is `capital_core`, 512 by 512 on the anchor, and
+-- WP13 opens one gate in the middle of each of its four edges, on the centre
+-- line of the avenue that runs out to it (`wp13/highcourt.lua`: "the gate
+-- stations sit at +-256 on each axis"). So the four gate points are
+-- (ax +- 256, az) and (ax, az +- 256), and they are ROUTE STATIONS: a route
+-- ending at one genuinely ends there, which is what keeps the compiled
+-- centreline, its claim exclusion `exclude:route:<id>` and its ingress
+-- corridor describing the same road.
+--
+-- Two facts of the authored graph make the rest of this simple, and both are
+-- asserted below rather than assumed:
+--
+--   * each capital is reached by EXACTLY FOUR routes, one per side, so no two
+--     of them want the same gate;
+--   * each of those routes' authored via pin lies ON that gate's axis, 144
+--     nodes outside the envelope. The final stretch into the gate is
+--     therefore the whole leg -- 144 nodes, dead straight, normal to the wall
+--     it passes through -- with no easing to author and no bow to bound.
+--
+-- Luanti's +z is north.
+local CAPITAL_GATE_SIDES = {
+	{id="west",dx=-1,dz=0},{id="east",dx=1,dz=0},
+	{id="south",dx=0,dz=-1},{id="north",dx=0,dz=1},
+}
+local CAPITAL_GATE_OFFSET = source.capital_core.width_x/2
+assert(CAPITAL_GATE_OFFSET == source.capital_core.width_z/2 and
+	CAPITAL_GATE_OFFSET % 1 == 0,"WP40 capital envelope is not a square")
+-- The zones that carry a capital anchor, checked against `anchor_rows` below
+-- because the routes are compiled before those rows are read.
+local CAPITAL_GATE_ZONES = {[3]=true,[8]=true,[13]=true,[19]=true,[24]=true,
+	[29]=true}
+local CAPITAL_GATE_APPROACH = 144
+
+source.capital_gates = {}
+local capital_gate_by_zone = {}
+for zone_index = 1, #source.zones do
+	if CAPITAL_GATE_ZONES[zone_index] then
+		local hub = source.zones[zone_index].hub
+		local by_side = {}
+		for side_index = 1, #CAPITAL_GATE_SIDES do
+			local side = CAPITAL_GATE_SIDES[side_index]
+			local gate = {
+				id=("station:%s:gate_%s"):format(source.zones[zone_index].id,side.id),
+				zone_numeric_id=zone_index,kind="gate",side=side.id,
+				axis=side.dx ~= 0 and "x" or "z",outward_x=side.dx,outward_z=side.dz,
+				position=point(hub.x+side.dx*CAPITAL_GATE_OFFSET,
+					hub.z+side.dz*CAPITAL_GATE_OFFSET)}
+			source.capital_gates[#source.capital_gates+1]=gate
+			source.route_stations[#source.route_stations+1]={id=gate.id,
+				zone_numeric_id=zone_index,kind="gate",
+				position=point(gate.position.x,gate.position.z)}
+			by_side[side.id]=gate
+		end
+		capital_gate_by_zone[zone_index]=by_side
+	end
+end
+
+-- Which gate a route takes is decided by the side it approaches from, and that
+-- is read off the OTHER endpoint's hub: the twenty-four capital routes all run
+-- on one of the two axes away from the capital.
+local function capital_gate_for(capital_zone_index, other_zone_index)
+	local hub = source.zones[capital_zone_index].hub
+	local other = source.zones[other_zone_index].hub
+	local dx, dz = other.x-hub.x, other.z-hub.z
+	assert(dx ~= 0 or dz ~= 0,"WP40 capital route has a coincident endpoint")
+	local side
+	if math.abs(dx) > math.abs(dz) then side = dx < 0 and "west" or "east"
+	else side = dz < 0 and "south" or "north" end
+	return capital_gate_by_zone[capital_zone_index][side]
+end
+
 source.routes = {}
 local function round_div(numerator,denominator)
 	if numerator < 0 then
@@ -300,7 +382,8 @@ end
 -- (the gate point, the two eased vertices and the kept bow point), so its
 -- authored crossing pin sits at centreline[6] rather than centreline[4].
 local START_GATE_PINNED_POINT_INDEX = 6
-local function curved_route(a,via,b,class,index,gate_sign)
+local function curved_route(a,via,b,class,index,gate_sign,straight_first,
+		straight_last)
 	local result={}
 	local amplitude=source.route_curve.amplitude_by_class[class]
 	local pins={a}
@@ -311,12 +394,24 @@ local function curved_route(a,via,b,class,index,gate_sign)
 	for extra_index=1,#extras do pins[#pins+1]=extras[extra_index] end
 	pins[#pins+1]=b
 	local first_leg_end
-	for leg=1,#pins-1 do
+	local leg_count=#pins-1
+	for leg=1,leg_count do
 		local sign=((index*37+leg*17)%11)<5 and -1 or 1
+		-- A CAPITAL'S GATE LEG IS DEAD STRAIGHT. It is the same bowed leg with
+		-- the amplitude taken out, and that is the whole of the change: the leg
+		-- still contributes its three points, so the centreline keeps its length,
+		-- `pinned_point_index` keeps its value and every authored crossing pin
+		-- keeps its index. Nothing had to be eased into it, because the gate and
+		-- the leg's own via pin are already collinear on the gate's axis (the
+		-- assertion in the route loop below).
+		local leg_amplitude=amplitude
+		if (leg == 1 and straight_first) or (leg == leg_count and straight_last) then
+			leg_amplitude=0
+		end
 		if leg == 1 and gate_sign then
 			append_gate_leg(result,pins[1],pins[2],amplitude,sign,gate_sign)
 		else
-			append_bowed_leg(result,pins[leg],pins[leg+1],amplitude,sign,leg==1)
+			append_bowed_leg(result,pins[leg],pins[leg+1],leg_amplitude,sign,leg==1)
 		end
 		if leg == 1 then first_leg_end=#result end
 	end
@@ -339,8 +434,34 @@ for index = 1, #route_rows do
 	elseif START_GATE_ZONES[row[2]] then
 		assert(false,"WP40 start route reaches its start as endpoint b")
 	end
-	local centreline,pinned_point_index=curved_route(a.hub,via,b.hub,row[3],index,
-		gate_sign)
+	-- THE CAPITAL GATE. A route that names a capital zone ends at that side's
+	-- gate on the 512 envelope instead of at the hub in the middle of the city,
+	-- and the leg into it is straight. Everything the endpoint feeds -- the
+	-- station it pins to, the compiled centreline, the claim exclusion and the
+	-- ingress corridor -- follows from these two lines.
+	local gate_a = CAPITAL_GATE_ZONES[row[1]] and capital_gate_for(row[1],row[2])
+	local gate_b = CAPITAL_GATE_ZONES[row[2]] and capital_gate_for(row[2],row[1])
+	assert(not (gate_a and gate_b),
+		"WP40 route runs from one capital gate to another")
+	assert(not (gate_sign and (gate_a or gate_b)),
+		"WP40 route is both a start gate route and a capital gate route")
+	local from_point = gate_a and gate_a.position or a.hub
+	local to_point = gate_b and gate_b.position or b.hub
+	-- The gate and the leg's own via pin lie on the gate's axis, 144 nodes
+	-- apart, so the straight leg IS the whole approach: no easing, no bow to
+	-- bound, and the road enters the gate normal to the wall it passes through.
+	local gate = gate_a or gate_b
+	if gate then
+		local on_x = gate.axis == "x"
+		local along = on_x and (via.x-gate.position.x) or (via.z-gate.position.z)
+		local across = on_x and (via.z-gate.position.z) or (via.x-gate.position.x)
+		assert(across == 0 and
+			along*(on_x and gate.outward_x or gate.outward_z) ==
+				CAPITAL_GATE_APPROACH,
+			"WP40 capital gate approach is not the authored straight run")
+	end
+	local centreline,pinned_point_index=curved_route(from_point,via,to_point,
+		row[3],index,gate_sign,gate_a ~= nil,gate_b ~= nil)
 	assert(pinned_point_index ==
 		(gate_sign and START_GATE_PINNED_POINT_INDEX or 4),
 		"WP40 route pinned point index differs from the curve policy")
@@ -352,6 +473,19 @@ for index = 1, #route_rows do
 		assert(pinned.x == via.x and pinned.z == via.z,
 			"WP40 start route crossing pin moved")
 	end
+	-- A capital route's centreline must not enter the envelope at all, which is
+	-- the ruling's own sentence and is checked here against the POINTS rather
+	-- than trusted from the construction. Every segment of a straight gate leg
+	-- is axial, so a point outside is a segment outside.
+	if gate then
+		local hub = source.zones[gate.zone_numeric_id].hub
+		for point_index=1,#centreline do
+			local sample=centreline[point_index]
+			assert(math.abs(sample.x-hub.x) >= CAPITAL_GATE_OFFSET or
+				math.abs(sample.z-hub.z) >= CAPITAL_GATE_OFFSET,
+				"WP40 capital route point lies inside the build envelope")
+		end
+	end
 	source.routes[index] = {
 		numeric_id=index,id=("route_%03d"):format(index),zone_a=row[1],zone_b=row[2],
 		class=row[3],kind=row[3] == "trail" and "trail" or "road",
@@ -359,8 +493,8 @@ for index = 1, #route_rows do
 		corridor_width=profile.corridor_width,provisional=false,
 		curve_policy_id=source.route_curve.id,
 		pinned_point_index=pinned_point_index,
-		station_a_id=source.route_stations[row[1]].id,
-		station_b_id=source.route_stations[row[2]].id,
+		station_a_id=gate_a and gate_a.id or source.route_stations[row[1]].id,
+		station_b_id=gate_b and gate_b.id or source.route_stations[row[2]].id,
 		centreline=centreline,
 	}
 end
@@ -572,6 +706,44 @@ end
 for zone_numeric_id in pairs(START_GATE_ZONES) do
 	assert(start_gate_seen[zone_numeric_id],
 		"WP40 gate-axis zone carries no start anchor")
+end
+-- The capital gates above are authored against `CAPITAL_GATE_ZONES` and assume
+-- the capital anchor sits on the zone hub, for exactly the reason the start
+-- gate run does: the routes are compiled before these rows are read.
+local capital_gate_seen = {}
+for index = 1, #source.anchors do
+	local anchor = source.anchors[index]
+	if anchor.slot_id == "capital" then
+		local hub = source.zones[anchor.zone_numeric_id].hub
+		assert(CAPITAL_GATE_ZONES[anchor.zone_numeric_id] and
+			not capital_gate_seen[anchor.zone_numeric_id] and
+			anchor.position.x == hub.x and anchor.position.z == hub.z,
+			"WP40 capital anchor is not the gated zone hub")
+		capital_gate_seen[anchor.zone_numeric_id] = true
+	end
+end
+for zone_numeric_id in pairs(CAPITAL_GATE_ZONES) do
+	assert(capital_gate_seen[zone_numeric_id],
+		"WP40 gated zone carries no capital anchor")
+	-- FOUR routes reach a capital, one per side, so every gate is taken and no
+	-- two routes want the same one. That is a fact of the authored graph and
+	-- the reason the gate assignment needs no tie-break; if a route is ever
+	-- added or moved, this is where it stops being true.
+	local taken = {}
+	local reaching = 0
+	for route_index = 1, #source.routes do
+		local route = source.routes[route_index]
+		if route.zone_a == zone_numeric_id or route.zone_b == zone_numeric_id then
+			reaching = reaching + 1
+			local gate = capital_gate_for(zone_numeric_id,
+				route.zone_a == zone_numeric_id and route.zone_b or route.zone_a)
+			assert(not taken[gate.side],
+				"WP40 capital gate is claimed by two routes: " .. gate.id)
+			taken[gate.side] = true
+		end
+	end
+	assert(reaching == #CAPITAL_GATE_SIDES,
+		"WP40 capital is reached by " .. reaching .. " routes, not one per gate")
 end
 
 source.poi_spurs = {}

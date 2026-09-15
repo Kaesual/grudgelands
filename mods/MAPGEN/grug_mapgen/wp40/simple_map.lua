@@ -383,7 +383,8 @@ return function(dependencies)
 			zones=38,land_primitives=14,bays=4,islands=2,channels=2,routes=57,
 			crossing_interfaces=9,boat_paths=4,
 			island_landings=4,
-			route_stations=38,island_routes=8,housing_masks=10,
+			-- 38 zone hubs plus the four gates of each of the six capitals.
+			route_stations=62,capital_gates=24,island_routes=8,housing_masks=10,
 			coastal_housing_cores=4,
 			capital_ingresses=6,
 			anchors=100,poi_spurs=74,apex_sockets=24,region_resources=6,
@@ -565,11 +566,70 @@ return function(dependencies)
 		local station_ids={}
 		for index=1,#source.route_stations do
 			local row=source.route_stations[index]
-			if station_ids[row.id] or not source.zones[row.zone_numeric_id] then
+			if station_ids[row.id] or not source.zones[row.zone_numeric_id] or
+					(row.kind ~= "hub" and row.kind ~= "gate") then
 				fail("route station identity/reference differs at " .. index)
 			end
 			validate_point(row.position,"route station")
 			station_ids[row.id]=row
+		end
+		-- THE CAPITAL GATES (playtest round 4: an incoming route ends at a
+		-- planned point of the city boundary and no longer runs into the
+		-- interior). The four gate points of a capital are the middle of the
+		-- four edges of its 512 build envelope, on the avenue centre lines, and
+		-- each is a route station in its own right. Checked here so that the
+		-- compiled artefact carries the definition and not only the source.
+		local gate_half=source.capital_core.width_x/2
+		local capital_gate_ids,capital_gate_sides={},{}
+		local capital_zone_gate_counts={}
+		if gate_half ~= source.capital_core.width_z/2 or
+				integer(gate_half,"capital gate half width") <= 0 then
+			fail("capital envelope is not a square")
+		end
+		for index=1,#source.capital_gates do
+			local row=source.capital_gates[index]
+			local zone=source.zones[row.zone_numeric_id]
+			local station=station_ids[row.id]
+			local side_key=tostring(row.zone_numeric_id)..":"..tostring(row.side)
+			local expected_x=zone and zone.hub.x+row.outward_x*gate_half
+			local expected_z=zone and zone.hub.z+row.outward_z*gate_half
+			validate_point(row.position,"capital gate")
+			if capital_gate_ids[row.id] or capital_gate_sides[side_key] or
+					not zone or not station or station.kind ~= "gate" or
+					station.zone_numeric_id ~= row.zone_numeric_id or
+					station.position.x ~= row.position.x or
+					station.position.z ~= row.position.z or
+					row.kind ~= "gate" or
+					math.abs(row.outward_x)+math.abs(row.outward_z) ~= 1 or
+					row.axis ~= (row.outward_x ~= 0 and "x" or "z") or
+					row.position.x ~= expected_x or row.position.z ~= expected_z then
+				fail("capital gate identity/geometry differs at " .. index)
+			end
+			capital_gate_ids[row.id]=row
+			capital_gate_sides[side_key]=row
+			capital_zone_gate_counts[row.zone_numeric_id]=
+				(capital_zone_gate_counts[row.zone_numeric_id] or 0)+1
+		end
+		local capital_zone_ids,capital_zone_count={},0
+		for index=1,#source.anchors do
+			local anchor=source.anchors[index]
+			if anchor.slot_id == "capital" then
+				local zone=source.zones[anchor.zone_numeric_id]
+				if not zone or capital_zone_ids[anchor.zone_numeric_id] or
+						anchor.position.x ~= zone.hub.x or
+						anchor.position.z ~= zone.hub.z or
+						capital_zone_gate_counts[anchor.zone_numeric_id] ~= 4 then
+					fail("capital anchor is not a four-gated zone hub at " .. index)
+				end
+				capital_zone_ids[anchor.zone_numeric_id]=true
+				capital_zone_count=capital_zone_count+1
+			end
+		end
+		if capital_zone_count ~= 6 then fail("capital zone count differs") end
+		for zone_numeric_id in pairs(capital_zone_gate_counts) do
+			if not capital_zone_ids[zone_numeric_id] then
+				fail("capital gate belongs to a zone with no capital anchor")
+			end
 		end
 		if source.route_curve.id ~= "bounded_pinned_curve_v1" or
 				source.route_curve.points_per_leg ~= 3 or
@@ -628,6 +688,43 @@ return function(dependencies)
 			if first.x ~= station_a.position.x or first.z ~= station_a.position.z or
 					last.x ~= station_b.position.x or last.z ~= station_b.position.z then
 				fail("route endpoint pin differs at " .. index)
+			end
+			-- THE RULING, read off the compiled centreline. A route that names a
+			-- capital zone pins to that capital's GATE and not to its hub; the
+			-- gate it takes is the side it approaches from; the final stretch is
+			-- axial; and NO point of it lies strictly inside the build envelope.
+			-- The last of those is the sentence the playtest asked for, and it is
+			-- checked against the points rather than trusted from the way they
+			-- were built.
+			for _, which in ipairs({"a","b"}) do
+				local zone_numeric_id=which == "a" and row.zone_a or row.zone_b
+				if capital_zone_ids[zone_numeric_id] then
+					local zone=source.zones[zone_numeric_id]
+					local other=source.zones[which == "a" and row.zone_b or row.zone_a]
+					local dx,dz=other.hub.x-zone.hub.x,other.hub.z-zone.hub.z
+					local side
+					if math.abs(dx) > math.abs(dz) then side=dx < 0 and "west" or "east"
+					else side=dz < 0 and "south" or "north" end
+					local gate=capital_gate_sides[zone_numeric_id..":"..side]
+					local station=which == "a" and station_a or station_b
+					local terminal=which == "a" and first or last
+					local neighbour=which == "a" and row.centreline[2] or
+						row.centreline[#row.centreline-1]
+					if not gate or not station or station.id ~= gate.id or
+							terminal.x ~= gate.position.x or
+							terminal.z ~= gate.position.z or
+							(gate.axis == "x" and neighbour.z ~= gate.position.z) or
+							(gate.axis == "z" and neighbour.x ~= gate.position.x) then
+						fail("capital route gate pin differs at " .. index)
+					end
+					for point_index=1,#row.centreline do
+						local sample=row.centreline[point_index]
+						if math.abs(sample.x-zone.hub.x) < gate_half and
+								math.abs(sample.z-zone.hub.z) < gate_half then
+							fail("capital route enters the build envelope at " .. index)
+						end
+					end
+				end
 			end
 			route_ids[row.id] = true
 			route_by_id[row.id]=row
