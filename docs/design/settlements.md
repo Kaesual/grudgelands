@@ -217,6 +217,27 @@ keeps: an ore court with a mine mouth cut into a rock face, charcoal clamps, a
 slag yard, mushroom beds grown in the lee of the wall, goat pens and brewing
 courts. Its trades are a smith, a mason, an armourer, an embalmer, a butcher, a
 brewer and a baker, beside the two travelling traders every capital's core has.
+**Open capitals, and the one that stands on a lake.** Decided 2026-09-15 with
+the third capital, Lethariel. An open capital has no curtain: its envelope edge
+is a planted belt — two clipped rows of its own wood with kept turf between
+them, a standard every dozen nodes, a lantern every thirty-two and a thicker
+grove at each corner — and each of its four gate points is a **threshold**:
+three pairs of marble pillars carrying a lintel over the road, so you walk
+through a way in rather than being let through a gate. The lintel is set from
+the height the ROAD is walked at and not from the ground beside it, so it
+always leaves a walker headroom. Like a wall it has no fixed cells and is
+computed per mapchunk from the ground the map has, and where the belt reaches
+water it simply stops, because the water already is an edge.
+
+Lethariel also shows what happens when the map does not give a capital four
+usable quarters. A lake lies inside its 512 envelope — it fills more than half
+the north-east quarter and reaches into the civic core itself — so that quarter
+carries three plots where the other three carry nine. The city is built round
+it: the **lore and spiritual district is the mere precinct** and stands in that
+quarter and nowhere else, the other three districts are still dealt out by the
+world seed, the civic core stops at the water's edge and meets it with a marble
+quay, and the north avenue crosses the lake as a causeway to a threshold on the
+far shore.
 
 **Not every wall is masonry.** Added 2026-09-15 with the third capital, Gor
 Drazhak. What a walled capital has on its envelope edge is decided by the race

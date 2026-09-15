@@ -254,6 +254,38 @@ M.roster = {
 		-- five-wide gate road crossing stays five wide.
 		reserve_anchor_root = true,
 	},
+	-- The fourth capital, and the second OPEN one (the user's ruling of
+	-- 2026-09-14: open edges for Highcourt, Lethariel and Kezamba; the
+	-- round-3 plan later moved Highcourt to the walled side and left Lethariel
+	-- and Kezamba open). Its overlay carries nineteen runs -- four avenues,
+	-- four sides of the ring street, seven district lanes and the four sides of
+	-- the GROVE EDGE, which is what an open capital has where a walled one has
+	-- a curtain (`r7_lethariel_blueprint.lua`).
+	--
+	-- It is also the only capital whose 96 x 96 civic core is not a full pad:
+	-- WP40 leaves a planned lake inside it, and the composition writes nothing
+	-- over the water rather than hanging a slab of turf thirteen nodes above
+	-- it. See `wp13/lethariel.lua`.
+	{
+		key = "lethariel", label = "Lethariel", race = "elf",
+		slot = "capital", bounds = "capital_core", plot_bounds = "capital_plot",
+		lazy = true,
+		zone_id = "elandor_lethariel",
+		anchor_id = "anchor_009", numeric_id = 9, x = 1800, z = -1500,
+		blueprint_file = "r7_lethariel_blueprint.lua",
+		blueprint_schema = "grug_wp13_lethariel_core_v1",
+		identity_schema = "grug_wp13_lethariel_core_identity_v1",
+		config_schema = "grug_wp13_lethariel_config_v1",
+		ledger_schema = "grug_wp13_lethariel_ledger_v1",
+		metrics_schema = "grug_wp13_lethariel_metrics_v1",
+		delta_schema = "grug_wp13_lethariel_delta_v1",
+		-- Same reservation as Highcourt's and Dur Brannoc's, for the same
+		-- reason: the anchor writer puts one `grug_nodes:guard_banner` at
+		-- (x, y + 1, z) of every capital anchor and runs BEFORE the settlement
+		-- writer, and this core has air at exactly that cell -- the crossing of
+		-- the two great avenues.
+		reserve_anchor_root = true,
+	},
 }
 
 -- ASCII byte order. Lua's `<` on strings is `strcoll`, so under a locale that

@@ -48,6 +48,12 @@ rows[#rows + 1] = dofile(repo .. "/tools/wp13/gor_drazhak_kat.lua")(repo)
 -- to neither capital: `wp13/avenue.lua` is the road of both of them, and the
 -- crossing rule is a property of the module, held to synthetic profiles the
 -- real gate seeds do not all happen to contain.
+-- The third capital, the second OPEN one and the only one with a lake inside
+-- its civic core: the same acceptance as Highcourt's for its core, its 44
+-- plots and its avenues, plus the three rules only this capital has -- the
+-- mere, the grove edge and a permutation over three quarters rather than four
+-- (`lethariel_kat.lua`).
+rows[#rows + 1] = dofile(repo .. "/tools/wp13/lethariel_kat.lua")(repo)
 rows[#rows + 1] = dofile(repo .. "/tools/wp13/lane_crossing_kat.lua")(repo)
 -- Where a WP40 route STOPS. Playtest round 4 ruled that an incoming route ends
 -- at a gate on the city boundary and no longer runs into the interior; this is

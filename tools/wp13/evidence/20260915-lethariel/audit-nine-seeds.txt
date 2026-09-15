@@ -1,0 +1,41 @@
+# The seam's load-time audit_terrain, on all nine seeds of
+# tools/wp13/capital_anchor_fixture.lua.
+#
+# full    on the two gate seeds and the user's seed
+# surface on the other six -- a cold boot each, which is what runs
+#         the audit and samples every plot on that world
+#
+# Taken on branch wp13-w2-lethariel, rebased onto main c8050057.
+
+seed                   mode     rc   errors  complete worst plot / submerged / lethariel findings
+531802985935182545     full     0    0       1        worst_plot_fall=6 worst_plot=market_fountain worst_plot_submerged=0 findings=0
+8675309                full     0    0       1        worst_plot_fall=5 worst_plot=market_fountain worst_plot_submerged=0 findings=0
+15912857179583385436   full     0    0       1        worst_plot_fall=6 worst_plot=market_paddock worst_plot_submerged=0 findings=0
+0                      surface  0    0       1        worst_plot_fall=6 worst_plot=martial_woodyard worst_plot_submerged=0 findings=0
+1                      surface  0    0       1        worst_plot_fall=6 worst_plot=market_paddock worst_plot_submerged=0 findings=0
+2                      surface  0    0       1        worst_plot_fall=5 worst_plot=market_close worst_plot_submerged=0 findings=0
+42                     surface  0    0       1        worst_plot_fall=5 worst_plot=mere_walk worst_plot_submerged=0 findings=0
+12345                  surface  0    0       1        worst_plot_fall=4 worst_plot=market_close worst_plot_submerged=0 findings=0
+999999999              surface  0    0       1        worst_plot_fall=6 worst_plot=mere_lore_hall worst_plot_submerged=0 findings=0
+
+Every seed: exit 0, no error line, complete, no plot submerged, and
+the worst perimeter fall inside the foundation skirt of 6.
+
+## The audit findings these boots DID carry are other capitals'
+
+Lethariel has none on any seed. Highcourt and Dur Brannoc do, on
+seeds their own lanes never measured -- their lots were derived on
+the two gate seeds. Reported, not fixed: they are not this lane's.
+
+seed 15912857179583385436: WP13 highcourt: the plot martial_wood_yard at offset -196,-212 does not stand on this world's ground -- submerged columns 0, perimeter fall 0 against a skirt of 6, rise 10 against a clear of 8
+seed 0: WP13 highcourt: the plot homes_kitchen_garden at offset -144,-104 does not stand on this world's ground -- submerged columns 0, perimeter fall 8 against a skirt of 6, rise 3 against a clear of 8
+seed 2: WP13 highcourt: the plot lore_sexton_garden at offset -196,-212 does not stand on this world's ground -- submerged columns 0, perimeter fall 8 against a skirt of 6, rise 0 against a clear of 8
+seed 42: WP13 highcourt: the plot martial_barracks at offset 132,108 does not stand on this world's ground -- submerged columns 0, perimeter fall 7 against a skirt of 6, rise 3 against a clear of 13
+seed 12345: WP13 highcourt: the plot lore_sexton_garden at offset -196,-212 does not stand on this world's ground -- submerged columns 0, perimeter fall 7 against a skirt of 6, rise 1 against a clear of 8
+seed 999999999: WP13 highcourt: the plot market_green at offset 140,84 does not stand on this world's ground -- submerged columns 0, perimeter fall 12 against a skirt of 6, rise 0 against a clear of 8
+seed 999999999: WP13 highcourt: the plot martial_muster_field at offset -88,-220 does not stand on this world's ground -- submerged columns 0, perimeter fall 10 against a skirt of 6, rise 4 against a clear of 8
+seed 999999999: WP13 highcourt: the plot martial_remount_pasture at offset -220,-116 does not stand on this world's ground -- submerged columns 0, perimeter fall 10 against a skirt of 6, rise 0 against a clear of 8
+seed 999999999: WP13 highcourt: the plot martial_wood_yard at offset -196,-212 does not stand on this world's ground -- submerged columns 0, perimeter fall 14 against a skirt of 6, rise 4 against a clear of 8
+seed 999999999: WP13 highcourt: the plot martial_green at offset -144,-104 does not stand on this world's ground -- submerged columns 0, perimeter fall 8 against a skirt of 6, rise 5 against a clear of 8
+seed 999999999: WP13 highcourt: the plot homes_kitchen_garden at offset -80,132 does not stand on this world's ground -- submerged columns 0, perimeter fall 10 against a skirt of 6, rise 2 against a clear of 8
+seed 999999999: WP13 dur_brannoc: the plot forge_pack_stable at offset 56,60 does not stand on this world's ground -- submerged columns 0, perimeter fall 7 against a skirt of 6, rise 4 against a clear of 11
