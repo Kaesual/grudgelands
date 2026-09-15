@@ -1,10 +1,10 @@
-before seed=531802985935182545 exit=1 seconds=18
+before seed=531802985935182545 exit=1 seconds=17
 before seed=8675309 exit=1 seconds=17
 before seed=15912857179583385436 exit=1 seconds=17
-before seed=0 exit=1 seconds=15
+before seed=0 exit=1 seconds=18
 before seed=1 exit=1 seconds=17
-before seed=2 exit=1 seconds=16
-before seed=42 exit=1 seconds=18
-before seed=12345 exit=1 seconds=17
+before seed=2 exit=1 seconds=17
+before seed=42 exit=1 seconds=17
+before seed=12345 exit=1 seconds=18
 before seed=999999999 exit=1 seconds=16
 before DONE

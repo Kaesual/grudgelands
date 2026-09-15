@@ -42,6 +42,7 @@ Six capitals × the nine seeds of `tools/wp13/capital_anchor_fixture.lua`
 | entry runs with a walk break | 84 of 216, 616 breaks, worst 30 | **5 of 216, 5 breaks, worst 7** |
 | water columns under the four avenues | 26586 over 63 wet runs | unchanged |
 | avenue positions unpaved / climbing more than a node | 0 / 0 | 0 / 0 |
+| worst ground step in the eight columns inside a gate | 3 | 9 (Kezamba's hillside south gate, two seeds; the limit is 12) |
 
 The 60 remaining route columns per capital are the road's own seven-wide end
 cap at the gate, three nodes deep, inside the curtain's thickness and paved

@@ -56,16 +56,20 @@ FAULT	531802985935182545	elandor_dur_brannoc grades 7330 route column(s) inside 
 avenue	531802985935182545	elandor_dur_brannoc	west	1070	0	0	0
 gate	531802985935182545	elandor_dur_brannoc	west	-2056	-1500	land_grade	97	anchor_007	97	97	0
 entry	531802985935182545	elandor_dur_brannoc	west	325	48	0	0	nil
+inside	531802985935182545	elandor_dur_brannoc	west	8	0	nil
 avenue	531802985935182545	elandor_dur_brannoc	east	1070	0	0	0
 gate	531802985935182545	elandor_dur_brannoc	east	-1544	-1500	land_grade	93	anchor_007	93	93	0
 entry	531802985935182545	elandor_dur_brannoc	east	325	48	0	0	nil
+inside	531802985935182545	elandor_dur_brannoc	east	8	1	253
 avenue	531802985935182545	elandor_dur_brannoc	south	1070	0	0	0
 gate	531802985935182545	elandor_dur_brannoc	south	-1800	-1756	land_grade	99	anchor_007	99	99	0
 entry	531802985935182545	elandor_dur_brannoc	south	325	48	1	2	309
 FAULT	531802985935182545	elandor_dur_brannoc south entry breaks 1 time(s), worst 2 at 309
+inside	531802985935182545	elandor_dur_brannoc	south	8	1	253
 avenue	531802985935182545	elandor_dur_brannoc	north	1070	0	0	0
 gate	531802985935182545	elandor_dur_brannoc	north	-1800	-1244	land_grade	97	anchor_007	97	97	0
 entry	531802985935182545	elandor_dur_brannoc	north	325	48	0	0	nil
+inside	531802985935182545	elandor_dur_brannoc	north	8	0	nil
 interior_feature	531802985935182545	elandor_highcourt	route_005	1840
 interior_feature	531802985935182545	elandor_highcourt	route_006	1829
 interior_feature	531802985935182545	elandor_highcourt	route_021	1824
@@ -76,17 +80,21 @@ FAULT	531802985935182545	elandor_highcourt carries 1159 bridge-deck column(s) in
 avenue	531802985935182545	elandor_highcourt	west	1070	303	0	0
 gate	531802985935182545	elandor_highcourt	west	-256	-1500	land_grade	32	anchor_008	32	32	0
 entry	531802985935182545	elandor_highcourt	west	325	48	0	0	nil
+inside	531802985935182545	elandor_highcourt	west	8	1	252
 avenue	531802985935182545	elandor_highcourt	east	1070	313	0	0
 gate	531802985935182545	elandor_highcourt	east	256	-1500	land_grade	33	anchor_008	33	33	0
 entry	531802985935182545	elandor_highcourt	east	325	48	6	2	314
 FAULT	531802985935182545	elandor_highcourt east entry breaks 6 time(s), worst 2 at 314
+inside	531802985935182545	elandor_highcourt	east	8	1	252
 avenue	531802985935182545	elandor_highcourt	south	1070	0	0	0
 gate	531802985935182545	elandor_highcourt	south	0	-1756	land_grade	46	anchor_008	46	46	0
 entry	531802985935182545	elandor_highcourt	south	325	48	0	0	nil
+inside	531802985935182545	elandor_highcourt	south	8	1	254
 avenue	531802985935182545	elandor_highcourt	north	1070	455	0	0
 gate	531802985935182545	elandor_highcourt	north	0	-1244	land_grade	24	anchor_008	24	24	0
 entry	531802985935182545	elandor_highcourt	north	325	48	1	2	303
 FAULT	531802985935182545	elandor_highcourt north entry breaks 1 time(s), worst 2 at 303
+inside	531802985935182545	elandor_highcourt	north	8	2	248
 interior_feature	531802985935182545	elandor_lethariel	route_008	1835
 interior_feature	531802985935182545	elandor_lethariel	route_009	1834
 interior_feature	531802985935182545	elandor_lethariel	route_023	1827
@@ -97,17 +105,21 @@ FAULT	531802985935182545	elandor_lethariel carries 436 bridge-deck column(s) ins
 avenue	531802985935182545	elandor_lethariel	west	1070	0	0	0
 gate	531802985935182545	elandor_lethariel	west	1544	-1500	land_grade	35	anchor_009	35	35	0
 entry	531802985935182545	elandor_lethariel	west	325	48	0	0	nil
+inside	531802985935182545	elandor_lethariel	west	8	0	nil
 avenue	531802985935182545	elandor_lethariel	east	1070	368	0	0
 gate	531802985935182545	elandor_lethariel	east	2056	-1500	nil	nil	nil	50	50	0
 entry	531802985935182545	elandor_lethariel	east	325	48	3	2	295
 FAULT	531802985935182545	elandor_lethariel east entry breaks 3 time(s), worst 2 at 295
+inside	531802985935182545	elandor_lethariel	east	8	0	nil
 avenue	531802985935182545	elandor_lethariel	south	1070	0	0	0
 gate	531802985935182545	elandor_lethariel	south	1800	-1756	land_grade	54	anchor_009	54	54	0
 entry	531802985935182545	elandor_lethariel	south	325	48	1	2	271
 FAULT	531802985935182545	elandor_lethariel south entry breaks 1 time(s), worst 2 at 271
+inside	531802985935182545	elandor_lethariel	south	8	1	254
 avenue	531802985935182545	elandor_lethariel	north	1070	549	0	0
 gate	531802985935182545	elandor_lethariel	north	1800	-1244	land_grade	48	anchor_009	48	48	0
 entry	531802985935182545	elandor_lethariel	north	325	48	0	0	nil
+inside	531802985935182545	elandor_lethariel	north	8	2	249
 interior_feature	531802985935182545	kragmar_nhal_veyr	route_011	1840
 interior_feature	531802985935182545	kragmar_nhal_veyr	route_012	1829
 interior_feature	531802985935182545	kragmar_nhal_veyr	route_025	1834
@@ -118,17 +130,21 @@ avenue	531802985935182545	kragmar_nhal_veyr	west	1070	0	0	0
 gate	531802985935182545	kragmar_nhal_veyr	west	-2056	1500	land_grade	109	anchor_010	109	109	0
 entry	531802985935182545	kragmar_nhal_veyr	west	325	48	14	2	311
 FAULT	531802985935182545	kragmar_nhal_veyr west entry breaks 14 time(s), worst 2 at 311
+inside	531802985935182545	kragmar_nhal_veyr	west	8	0	nil
 avenue	531802985935182545	kragmar_nhal_veyr	east	1070	0	0	0
 gate	531802985935182545	kragmar_nhal_veyr	east	-1544	1500	land_grade	95	anchor_010	95	95	0
 entry	531802985935182545	kragmar_nhal_veyr	east	325	48	0	0	nil
+inside	531802985935182545	kragmar_nhal_veyr	east	8	1	248
 avenue	531802985935182545	kragmar_nhal_veyr	south	1070	0	0	0
 gate	531802985935182545	kragmar_nhal_veyr	south	-1800	1244	land_grade	97	anchor_010	97	97	0
 entry	531802985935182545	kragmar_nhal_veyr	south	325	48	0	0	nil
+inside	531802985935182545	kragmar_nhal_veyr	south	8	0	nil
 avenue	531802985935182545	kragmar_nhal_veyr	north	1070	0	0	0
 gate	531802985935182545	kragmar_nhal_veyr	north	-1800	1756	nil	nil	nil	94	98	4
 FAULT	531802985935182545	kragmar_nhal_veyr north gate steps 4 between route grade and avenue road
 entry	531802985935182545	kragmar_nhal_veyr	north	325	48	30	9	261
 FAULT	531802985935182545	kragmar_nhal_veyr north entry breaks 30 time(s), worst 9 at 261
+inside	531802985935182545	kragmar_nhal_veyr	north	8	3	255
 interior_feature	531802985935182545	kragmar_gor_drazhak	route_014	1830
 interior_feature	531802985935182545	kragmar_gor_drazhak	route_015	1839
 interior_feature	531802985935182545	kragmar_gor_drazhak	route_027	1824
@@ -138,16 +154,20 @@ FAULT	531802985935182545	kragmar_gor_drazhak grades 7330 route column(s) inside 
 avenue	531802985935182545	kragmar_gor_drazhak	west	1070	0	0	0
 gate	531802985935182545	kragmar_gor_drazhak	west	-256	1500	land_grade	102	anchor_011	102	102	0
 entry	531802985935182545	kragmar_gor_drazhak	west	325	48	0	0	nil
+inside	531802985935182545	kragmar_gor_drazhak	west	8	1	249
 avenue	531802985935182545	kragmar_gor_drazhak	east	1070	0	0	0
 gate	531802985935182545	kragmar_gor_drazhak	east	256	1500	land_grade	103	anchor_011	103	103	0
 entry	531802985935182545	kragmar_gor_drazhak	east	325	48	0	0	nil
+inside	531802985935182545	kragmar_gor_drazhak	east	8	1	250
 avenue	531802985935182545	kragmar_gor_drazhak	south	1070	0	0	0
 gate	531802985935182545	kragmar_gor_drazhak	south	0	1244	land_grade	90	anchor_011	90	90	0
 entry	531802985935182545	kragmar_gor_drazhak	south	325	48	0	0	nil
+inside	531802985935182545	kragmar_gor_drazhak	south	8	0	nil
 avenue	531802985935182545	kragmar_gor_drazhak	north	1070	0	0	0
 gate	531802985935182545	kragmar_gor_drazhak	north	0	1756	land_grade	82	anchor_011	82	82	0
 entry	531802985935182545	kragmar_gor_drazhak	north	325	48	1	2	315
 FAULT	531802985935182545	kragmar_gor_drazhak north entry breaks 1 time(s), worst 2 at 315
+inside	531802985935182545	kragmar_gor_drazhak	north	8	0	nil
 interior_feature	531802985935182545	kragmar_kezamba	route_017	1830
 interior_feature	531802985935182545	kragmar_kezamba	route_018	1839
 interior_feature	531802985935182545	kragmar_kezamba	route_029	1824
@@ -159,17 +179,21 @@ gate	531802985935182545	kragmar_kezamba	west	1544	1500	land_grade	37	anchor_012	
 FAULT	531802985935182545	kragmar_kezamba west gate steps 18 between route grade and avenue road
 entry	531802985935182545	kragmar_kezamba	west	325	48	21	21	261
 FAULT	531802985935182545	kragmar_kezamba west entry breaks 21 time(s), worst 21 at 261
+inside	531802985935182545	kragmar_kezamba	west	8	1	252
 avenue	531802985935182545	kragmar_kezamba	east	1070	499	0	0
 gate	531802985935182545	kragmar_kezamba	east	2056	1500	land_grade	44	anchor_012	44	63	19
 FAULT	531802985935182545	kragmar_kezamba east gate steps 19 between route grade and avenue road
 entry	531802985935182545	kragmar_kezamba	east	325	48	25	21	261
 FAULT	531802985935182545	kragmar_kezamba east entry breaks 25 time(s), worst 21 at 261
+inside	531802985935182545	kragmar_kezamba	east	8	1	255
 avenue	531802985935182545	kragmar_kezamba	south	1070	0	0	0
 gate	531802985935182545	kragmar_kezamba	south	1800	1244	land_grade	76	anchor_012	76	79	3
 FAULT	531802985935182545	kragmar_kezamba south gate steps 3 between route grade and avenue road
 entry	531802985935182545	kragmar_kezamba	south	325	48	0	0	nil
+inside	531802985935182545	kragmar_kezamba	south	8	3	250
 avenue	531802985935182545	kragmar_kezamba	north	1070	467	0	0
 gate	531802985935182545	kragmar_kezamba	north	1800	1756	land_grade	90	anchor_012	90	90	0
 entry	531802985935182545	kragmar_kezamba	north	325	48	2	2	276
 FAULT	531802985935182545	kragmar_kezamba north entry breaks 2 time(s), worst 2 at 276
+inside	531802985935182545	kragmar_kezamba	north	8	2	253
 summary	531802985935182545	band	24	0	47

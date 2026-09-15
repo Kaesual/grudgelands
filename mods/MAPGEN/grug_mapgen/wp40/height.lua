@@ -2537,10 +2537,10 @@ return function(dependencies)
 		-- of cut and fill and the ground is whatever the blend left. Pinning a
 		-- gate to the anchor's platform height would make the road build an
 		-- embankment the whole height of the plateau and then drop off a cliff
-		-- one node inside the wall -- measured at Dur Brannoc on seed
+		-- just inside the wall -- measured at Dur Brannoc's west gate on seed
 		-- 531802985935182545 before this was written: 97 at the gate turned into
-		-- 149, a 52-node fill, with the fitted ground back at 97 four columns
-		-- further in.
+		-- 149, a 52-node fill, and the fitted ground was back at 97 four columns
+		-- further in (local 252: 149, 251: 145, 250: 129, 249: 105, 248: 97).
 		--
 		-- So a gate station is a FREE TERRAIN junction: `junction_target` with no
 		-- fixed height takes `scalar_before_paths`, which is the fitted and

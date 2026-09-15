@@ -62,6 +62,13 @@ for tag in before after; do
 		awk -F'\t' '{w+=$6; if($6>0)wet++; miss+=$7; jump+=$8; n++}
 			END {print "runs="n" wet="wet+0" water_columns="w+0" unpaved="miss+0" steps="jump+0}'
 done
+echo "== the worst ground step in the eight columns inside each gate =="
+for tag in before after; do
+	printf '%s\t' "$tag"
+	cat "$out/$tag"-*.tsv | grep -E "^inside" |
+		awk -F'\t' '{if($6>m)m=$6; if($6>12)bad++; n++}
+			END {print "rows="n" over_twelve="bad+0" max="m+0}'
+done
 echo "== what is left, after, by capital and side =="
 cat "$out"/after-*.tsv | grep -E "^entry" | awk -F'\t' '$7>0 {print $3"\t"$4}' |
 	sort | uniq -c

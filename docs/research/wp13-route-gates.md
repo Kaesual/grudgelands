@@ -84,7 +84,7 @@ ground the WP13 avenue will pave at that same column. The junction's owner is
 the zone the gate column classifies into and not the capital's own zone --
 `junction_target` asserts the two agree and 256 nodes out through a warped
 boundary is far enough that they need not. With that, the same profile is flat:
-97 at local 240 through 257, then the road descends one node per column.
+97 from local 240 through 257, and then the road follows the ground down.
 
 `route_station_target` and `route_station_junction` are keyed by ZONE INDEX for
 a hub and by STATION ID for a gate, in one pair of tables rather than two,
@@ -94,7 +94,7 @@ ceiling and two more names do not fit (`luac51 -p` says so).
 ## 3. The measurements
 
 `tools/wp13/route_gates.lua <repo> <seed> [out.tsv] [--full]` builds WP40's
-height session offline (ten seconds, no engine) and answers six questions per
+height session offline (ten seconds, no engine) and answers seven questions per
 capital and seed. The sweep below is all six capitals on the nine seeds of
 `tools/wp13/capital_anchor_fixture.lua`, run once on main 922bfd92 and once on
 this branch.
@@ -108,8 +108,9 @@ this branch.
 | entry runs with a walk break, 64 nodes outside the avenue in to the core | 84 of 216, 616 breaks, worst 30 | **5 of 216, 5 breaks, worst 7** |
 | water columns under the four avenues | 26586 over 63 wet runs | 26586 over 63 wet runs (unchanged) |
 | avenue positions left unpaved / climbing more than a node | 0 / 0 | 0 / 0 |
+| worst ground step in the eight columns inside a gate | 3 | 9 |
 
-Reading the two that are not zero:
+Reading the three that are not zero:
 
 * **60 route columns per capital** is 15 per route: the road is seven wide and
   ends AT the gate, so its own end cap rounds three nodes past the terminal
@@ -121,6 +122,13 @@ Reading the two that are not zero:
 * **All five remaining walk breaks and all four remaining gate steps are Nhal
   Veyr's north gate**, on five of the nine seeds, and they are a fact about
   that capital's terrain rather than about the routes (§5).
+* **The worst ground step inside a gate goes from 3 to 9**, and it is Kezamba's
+  south gate on two of the nine seeds. That gate stands on ground climbing
+  three nodes a column, and the route's flat end cap gives the fitting fewer
+  columns to meet it in; the road over it is still continuous (the entry check
+  passes at Kezamba's south gate on every seed). The check exists because the
+  first version of this lane built a 24-node wall at Dur Brannoc's four gates,
+  and 12 -- three terrace rises -- is where the two are told apart.
 
 `--full` scans all 261121 columns of an envelope instead of a band around the
 route polylines. The two agree exactly (seed 531802985935182545, all six
@@ -312,6 +320,10 @@ Every digest that did **not** move, checked rather than assumed:
   widened. The precedent is `r6_settlement.lua`'s own `wrong_support`; the KAT
   carries both the two new accepting cases and the nine refusing ones it
   already had.
+* **`route_gates.lua`'s `inside` check and its limit of 12.** It is the one
+  threshold in this lane that is a judgement rather than a ruling, and §3
+  carries both numbers it sits between: 9 (Kezamba's hillside, measured) and 24
+  (the embankment, from the mutation test).
 * **The re-frozen built-road digests.** Four files, two capitals, two seeds.
   The diff behind them was inspected and is confined to the gate band (local x
   248-260, where the road now arrives) and to subsurface fill material turning

@@ -18,7 +18,7 @@
 -- city boundary -- a gate -- and no longer runs into the interior; inside, the
 -- WP13 streets take over.
 --
--- So this tool answers five questions per capital and seed, offline, out of
+-- So this tool answers seven questions per capital and seed, offline, out of
 -- the same pure WP40 height session `tools/wp13/lane_routes.lua` and
 -- `tools/wp13/capital_anchor_fixture.lua` build (no engine, no world):
 --
@@ -50,6 +50,14 @@
 --      where only the route is and the built avenue where the overlay covers
 --      the column. Every step of more than one node is a place a player has to
 --      jump, and a gate you jump into is not a gate.
+--   7. IS THE GROUND JUST INSIDE THE GATE STILL GROUND? The road's own
+--      one-Lipschitz envelope smooths question 6 over a cliff it is standing
+--      on, so this reads the TERRAIN over the eight columns inside the gate --
+--      the curtain's width and its footing -- and refuses a step of more than
+--      twice a capital's largest terrace rise. The first version of this lane
+--      pinned the gate to the anchor's platform height and built a 52-node
+--      embankment with a 24-node wall four columns inside the gate; question 6
+--      walked up it quite happily.
 --
 -- THE SCAN. A route can only grade columns within its corridor of the
 -- centreline, so the interior count walks a band around every route and spur
@@ -395,13 +403,12 @@ for _, capital in ipairs(capitals) do
 
 		-- The built road, read back off its own cells: the top cell of the
 		-- CENTRE lane at every position along the run.
-		local centre, low = {}, {}
+		local centre = {}
 		for _, cell in ipairs(piece.cells) do
 			local lane = axis == "x" and (cell.z - piece.at) or (cell.x - piece.at)
 			if lane == 0 then
 				local p = axis == "x" and cell.x or cell.z
 				if centre[p] == nil or cell.y > centre[p] then centre[p] = cell.y end
-				if low[p] == nil or cell.y < low[p] then low[p] = cell.y end
 			end
 		end
 
@@ -490,6 +497,49 @@ for _, capital in ipairs(capitals) do
 		if breaks ~= 0 then
 			fault(("%s %s entry breaks %d time(s), worst %d at %s"):format(
 				capital.key, side.id, breaks, worst, tostring(worst_at)))
+		end
+
+		-- THE GROUND JUST INSIDE THE GATE, which the entry walk above cannot
+		-- see. `wp13/avenue.lua`'s one-Lipschitz envelope smooths the ROAD over
+		-- anything, so a road is walkable over a cliff it is standing on -- and
+		-- the first version of this lane built exactly that: pinning the gate
+		-- station to the anchor's platform height raised Dur Brannoc's west gate
+		-- from 97 to 149 and left the fitted ground back at 97 four columns
+		-- inside the wall.
+		--
+		-- So this reads the TERRAIN along the avenue's centre line over the
+		-- eight columns immediately inside the gate -- the width of the curtain
+		-- plus its footing, which is where a fill at the gate has to land -- and
+		-- reports the worst single step. Deeper inside the envelope the terrain
+		-- is the capital fitting's own business: a river bank at Highcourt's
+		-- north gate steps 6 some twenty-seven columns in and always has.
+		--
+		-- The limit is THREE TIMES a capital's largest terrace rise (4, from
+		-- `source/simple_map.lua`'s six capital anchor profiles), which is where
+		-- the two things this has to tell apart actually sit. A capital on a
+		-- hillside makes a lip of its own: Kezamba's south gate stands on ground
+		-- climbing three nodes a column, and the route's flat end cap gives it a
+		-- 9 on two of the nine fixture seeds -- steep, walkable (the entry check
+		-- above passes there on every seed) and the capital's terrain rather
+		-- than its road. The embankment this exists to catch is 24.
+		local INSIDE_RUN, TERRACE_STEP = 8, 12
+		local ground_worst, ground_at = 0, nil
+		local ground_previous
+		for inward = 0, INSIDE_RUN do
+			local along = HALF - inward
+			local x = axis == "x" and (capital.x + sign * along) or capital.x
+			local z = axis == "x" and capital.z or (capital.z + sign * along)
+			local y = height.terrain_height_at(x, z)
+			if ground_previous ~= nil and math.abs(y - ground_previous) > ground_worst then
+				ground_worst, ground_at = math.abs(y - ground_previous), along
+			end
+			ground_previous = y
+		end
+		emit("inside", seed, capital.key, side.id, INSIDE_RUN, ground_worst,
+			tostring(ground_at))
+		if ground_worst > TERRACE_STEP then
+			fault(("%s %s ground steps %d at %s just inside the gate"):format(
+				capital.key, side.id, ground_worst, tostring(ground_at)))
 		end
 	end
 end

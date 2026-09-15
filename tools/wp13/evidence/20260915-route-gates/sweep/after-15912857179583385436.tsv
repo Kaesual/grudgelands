@@ -32,15 +32,19 @@ FAULT	15912857179583385436	elandor_dur_brannoc grades 60 route column(s) inside 
 avenue	15912857179583385436	elandor_dur_brannoc	west	1070	0	0	0
 gate	15912857179583385436	elandor_dur_brannoc	west	-2056	-1500	land_grade	119	route_019	119	119	0
 entry	15912857179583385436	elandor_dur_brannoc	west	325	48	0	0	nil
+inside	15912857179583385436	elandor_dur_brannoc	west	8	4	249
 avenue	15912857179583385436	elandor_dur_brannoc	east	1070	0	0	0
 gate	15912857179583385436	elandor_dur_brannoc	east	-1544	-1500	land_grade	106	route_020	106	106	0
 entry	15912857179583385436	elandor_dur_brannoc	east	325	48	0	0	nil
+inside	15912857179583385436	elandor_dur_brannoc	east	8	0	nil
 avenue	15912857179583385436	elandor_dur_brannoc	south	1070	0	0	0
 gate	15912857179583385436	elandor_dur_brannoc	south	-1800	-1756	land_grade	106	route_002	106	106	0
 entry	15912857179583385436	elandor_dur_brannoc	south	325	48	0	0	nil
+inside	15912857179583385436	elandor_dur_brannoc	south	8	1	251
 avenue	15912857179583385436	elandor_dur_brannoc	north	1070	0	0	0
 gate	15912857179583385436	elandor_dur_brannoc	north	-1800	-1244	land_grade	126	route_003	126	126	0
 entry	15912857179583385436	elandor_dur_brannoc	north	325	48	0	0	nil
+inside	15912857179583385436	elandor_dur_brannoc	north	8	0	nil
 interior_feature	15912857179583385436	elandor_highcourt	route_005	15
 interior_feature	15912857179583385436	elandor_highcourt	route_006	15
 interior_feature	15912857179583385436	elandor_highcourt	route_021	15
@@ -50,15 +54,19 @@ FAULT	15912857179583385436	elandor_highcourt grades 60 route column(s) inside it
 avenue	15912857179583385436	elandor_highcourt	west	1070	303	0	0
 gate	15912857179583385436	elandor_highcourt	west	-256	-1500	land_grade	30	route_021	30	30	0
 entry	15912857179583385436	elandor_highcourt	west	325	48	0	0	nil
+inside	15912857179583385436	elandor_highcourt	west	8	1	252
 avenue	15912857179583385436	elandor_highcourt	east	1070	313	0	0
 gate	15912857179583385436	elandor_highcourt	east	256	-1500	land_grade	33	route_022	33	33	0
 entry	15912857179583385436	elandor_highcourt	east	325	48	0	0	nil
+inside	15912857179583385436	elandor_highcourt	east	8	1	250
 avenue	15912857179583385436	elandor_highcourt	south	1070	0	0	0
 gate	15912857179583385436	elandor_highcourt	south	0	-1756	land_grade	37	route_005	37	37	0
 entry	15912857179583385436	elandor_highcourt	south	325	48	0	0	nil
+inside	15912857179583385436	elandor_highcourt	south	8	1	252
 avenue	15912857179583385436	elandor_highcourt	north	1070	455	0	0
 gate	15912857179583385436	elandor_highcourt	north	0	-1244	land_grade	35	route_006	35	35	0
 entry	15912857179583385436	elandor_highcourt	north	325	48	0	0	nil
+inside	15912857179583385436	elandor_highcourt	north	8	2	249
 interior_feature	15912857179583385436	elandor_lethariel	route_008	15
 interior_feature	15912857179583385436	elandor_lethariel	route_009	15
 interior_feature	15912857179583385436	elandor_lethariel	route_023	15
@@ -68,15 +76,19 @@ FAULT	15912857179583385436	elandor_lethariel grades 60 route column(s) inside it
 avenue	15912857179583385436	elandor_lethariel	west	1070	0	0	0
 gate	15912857179583385436	elandor_lethariel	west	1544	-1500	land_grade	33	route_023	33	33	0
 entry	15912857179583385436	elandor_lethariel	west	325	48	0	0	nil
+inside	15912857179583385436	elandor_lethariel	west	8	2	249
 avenue	15912857179583385436	elandor_lethariel	east	1070	368	0	0
 gate	15912857179583385436	elandor_lethariel	east	2056	-1500	land_grade	37	route_024	37	37	0
 entry	15912857179583385436	elandor_lethariel	east	325	48	0	0	nil
+inside	15912857179583385436	elandor_lethariel	east	8	1	252
 avenue	15912857179583385436	elandor_lethariel	south	1070	0	0	0
 gate	15912857179583385436	elandor_lethariel	south	1800	-1756	land_grade	54	route_008	54	54	0
 entry	15912857179583385436	elandor_lethariel	south	325	48	0	0	nil
+inside	15912857179583385436	elandor_lethariel	south	8	3	249
 avenue	15912857179583385436	elandor_lethariel	north	1070	549	0	0
 gate	15912857179583385436	elandor_lethariel	north	1800	-1244	land_grade	41	route_009	41	41	0
 entry	15912857179583385436	elandor_lethariel	north	325	48	0	0	nil
+inside	15912857179583385436	elandor_lethariel	north	8	2	250
 interior_feature	15912857179583385436	kragmar_nhal_veyr	route_011	15
 interior_feature	15912857179583385436	kragmar_nhal_veyr	route_012	15
 interior_feature	15912857179583385436	kragmar_nhal_veyr	route_025	15
@@ -86,15 +98,19 @@ FAULT	15912857179583385436	kragmar_nhal_veyr grades 60 route column(s) inside it
 avenue	15912857179583385436	kragmar_nhal_veyr	west	1070	0	0	0
 gate	15912857179583385436	kragmar_nhal_veyr	west	-2056	1500	land_grade	108	route_025	108	108	0
 entry	15912857179583385436	kragmar_nhal_veyr	west	325	48	0	0	nil
+inside	15912857179583385436	kragmar_nhal_veyr	west	8	1	250
 avenue	15912857179583385436	kragmar_nhal_veyr	east	1070	0	0	0
 gate	15912857179583385436	kragmar_nhal_veyr	east	-1544	1500	land_grade	89	route_026	89	89	0
 entry	15912857179583385436	kragmar_nhal_veyr	east	325	48	0	0	nil
+inside	15912857179583385436	kragmar_nhal_veyr	east	8	2	249
 avenue	15912857179583385436	kragmar_nhal_veyr	south	1070	0	0	0
 gate	15912857179583385436	kragmar_nhal_veyr	south	-1800	1244	land_grade	110	route_012	110	110	0
 entry	15912857179583385436	kragmar_nhal_veyr	south	325	48	0	0	nil
+inside	15912857179583385436	kragmar_nhal_veyr	south	8	1	249
 avenue	15912857179583385436	kragmar_nhal_veyr	north	1070	0	0	0
 gate	15912857179583385436	kragmar_nhal_veyr	north	-1800	1756	land_grade	72	route_011	72	72	0
 entry	15912857179583385436	kragmar_nhal_veyr	north	325	48	0	0	nil
+inside	15912857179583385436	kragmar_nhal_veyr	north	8	3	250
 interior_feature	15912857179583385436	kragmar_gor_drazhak	route_014	15
 interior_feature	15912857179583385436	kragmar_gor_drazhak	route_015	15
 interior_feature	15912857179583385436	kragmar_gor_drazhak	route_027	15
@@ -104,15 +120,19 @@ FAULT	15912857179583385436	kragmar_gor_drazhak grades 60 route column(s) inside 
 avenue	15912857179583385436	kragmar_gor_drazhak	west	1070	0	0	0
 gate	15912857179583385436	kragmar_gor_drazhak	west	-256	1500	land_grade	104	route_027	104	104	0
 entry	15912857179583385436	kragmar_gor_drazhak	west	325	48	0	0	nil
+inside	15912857179583385436	kragmar_gor_drazhak	west	8	0	nil
 avenue	15912857179583385436	kragmar_gor_drazhak	east	1070	0	0	0
 gate	15912857179583385436	kragmar_gor_drazhak	east	256	1500	land_grade	113	route_028	113	113	0
 entry	15912857179583385436	kragmar_gor_drazhak	east	325	48	0	0	nil
+inside	15912857179583385436	kragmar_gor_drazhak	east	8	3	249
 avenue	15912857179583385436	kragmar_gor_drazhak	south	1070	0	0	0
 gate	15912857179583385436	kragmar_gor_drazhak	south	0	1244	land_grade	124	route_015	124	124	0
 entry	15912857179583385436	kragmar_gor_drazhak	south	325	48	0	0	nil
+inside	15912857179583385436	kragmar_gor_drazhak	south	8	0	nil
 avenue	15912857179583385436	kragmar_gor_drazhak	north	1070	0	0	0
 gate	15912857179583385436	kragmar_gor_drazhak	north	0	1756	land_grade	112	route_014	112	112	0
 entry	15912857179583385436	kragmar_gor_drazhak	north	325	48	0	0	nil
+inside	15912857179583385436	kragmar_gor_drazhak	north	8	1	249
 interior_feature	15912857179583385436	kragmar_kezamba	route_017	15
 interior_feature	15912857179583385436	kragmar_kezamba	route_018	15
 interior_feature	15912857179583385436	kragmar_kezamba	route_029	15
@@ -122,13 +142,17 @@ FAULT	15912857179583385436	kragmar_kezamba grades 60 route column(s) inside its 
 avenue	15912857179583385436	kragmar_kezamba	west	1070	0	0	0
 gate	15912857179583385436	kragmar_kezamba	west	1544	1500	land_grade	37	route_029	37	37	0
 entry	15912857179583385436	kragmar_kezamba	west	325	48	0	0	nil
+inside	15912857179583385436	kragmar_kezamba	west	8	1	252
 avenue	15912857179583385436	kragmar_kezamba	east	1070	499	0	0
 gate	15912857179583385436	kragmar_kezamba	east	2056	1500	land_grade	44	route_030	44	44	0
 entry	15912857179583385436	kragmar_kezamba	east	325	48	0	0	nil
+inside	15912857179583385436	kragmar_kezamba	east	8	1	252
 avenue	15912857179583385436	kragmar_kezamba	south	1070	0	0	0
 gate	15912857179583385436	kragmar_kezamba	south	1800	1244	land_grade	75	route_018	75	75	0
 entry	15912857179583385436	kragmar_kezamba	south	325	48	0	0	nil
+inside	15912857179583385436	kragmar_kezamba	south	8	5	250
 avenue	15912857179583385436	kragmar_kezamba	north	1070	467	0	0
 gate	15912857179583385436	kragmar_kezamba	north	1800	1756	land_grade	74	route_017	74	74	0
 entry	15912857179583385436	kragmar_kezamba	north	325	48	0	0	nil
+inside	15912857179583385436	kragmar_kezamba	north	8	3	249
 summary	15912857179583385436	band	24	0	6
