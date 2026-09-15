@@ -461,8 +461,11 @@ Two things came out of the round beyond the one literal:
   `nodebox` -- the chair included -- as one generic inset box, so the review
   loop's own pictures were blind to the thing the user saw from the ground. The
   renderer now knows a `chair` shape (seat plus back, turned with the facedir)
-  and `extract_tiles.py` classifies the chair as one, so the regenerated
-  `node_tiles.json` keeps it. The before/after pair is in
+  and `extract_tiles.py` classifies the chair as one, so `node_tiles.json` was
+  regenerated through its own generator rather than hand-edited. That
+  regeneration also picked up 14 `grug_visuals` texture index rows that had
+  landed on `main` with the character-visuals lane; they are index rows only and
+  change no node definition. The before/after pair is in
   `tools/wp13/evidence/20260915-apron-and-throne/renders/`, with an orientation
   reference picture beside it that makes the view's axes readable off the
   picture itself.

@@ -97,9 +97,15 @@ return function(dependencies)
 	end
 
 	-- How far a column lies OUTSIDE a centred half-open square, in nodes: 0
-	-- inside it, 1 on the first ring around it, and so on. Same square as
-	-- `in_centered_half_open_square` above, so the two cannot disagree about
-	-- which edge is closed -- an even width reaches center-half .. center+half-1.
+	-- inside it, 1 on the first ring around it, and so on.
+	--
+	-- For an EVEN total width this is the exact complement of
+	-- `in_centered_half_open_square` above -- both mean center-half ..
+	-- center+half-1 -- so the two cannot disagree about which edge is closed.
+	-- For an odd width they do not agree: that function doubles the coordinates
+	-- to carry the half node, and this one would truncate it. The only caller
+	-- is the start apron carve, whose envelope width is checked even at compile
+	-- time (`envelope % 2 ~= 0` is a `fail()`), so the odd case cannot arrive.
 	local function half_open_square_excess(x,z,center,total_width)
 		local half=total_width/2
 		local min_x,max_x=center.x-half,center.x+half-1

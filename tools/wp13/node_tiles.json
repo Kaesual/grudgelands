@@ -2442,11 +2442,11 @@
   "grug_decor:xdecor_chair": {
    "drawtype": "nodebox",
    "paramtype2": "facedir",
-   "shape": "chair",
    "source": "MANUAL_OVERRIDES",
    "tiles": [
     "grug_decor_xdecor_xdecor_wood.png"
-   ]
+   ],
+   "shape": "chair"
   },
   "grug_decor:xdecor_cobweb": {
    "drawtype": "plantlike",
@@ -4901,6 +4901,20 @@
   "grug_trees_silverwood_tree.png": "mods/ITEMS/grug_trees/textures/grug_trees_silverwood_tree.png",
   "grug_trees_silverwood_tree_top.png": "mods/ITEMS/grug_trees/textures/grug_trees_silverwood_tree_top.png",
   "grug_trees_silverwood_wood.png": "mods/ITEMS/grug_trees/textures/grug_trees_silverwood_wood.png",
+  "grug_visuals_cloth_chest.png": "mods/PLAYER/grug_visuals/textures/grug_visuals_cloth_chest.png",
+  "grug_visuals_cloth_feet.png": "mods/PLAYER/grug_visuals/textures/grug_visuals_cloth_feet.png",
+  "grug_visuals_cloth_head.png": "mods/PLAYER/grug_visuals/textures/grug_visuals_cloth_head.png",
+  "grug_visuals_cloth_legs.png": "mods/PLAYER/grug_visuals/textures/grug_visuals_cloth_legs.png",
+  "grug_visuals_metal_chest.png": "mods/PLAYER/grug_visuals/textures/grug_visuals_metal_chest.png",
+  "grug_visuals_metal_feet.png": "mods/PLAYER/grug_visuals/textures/grug_visuals_metal_feet.png",
+  "grug_visuals_metal_head.png": "mods/PLAYER/grug_visuals/textures/grug_visuals_metal_head.png",
+  "grug_visuals_metal_legs.png": "mods/PLAYER/grug_visuals/textures/grug_visuals_metal_legs.png",
+  "grug_visuals_skin_dwarf.png": "mods/PLAYER/grug_visuals/textures/grug_visuals_skin_dwarf.png",
+  "grug_visuals_skin_elf.png": "mods/PLAYER/grug_visuals/textures/grug_visuals_skin_elf.png",
+  "grug_visuals_skin_human.png": "mods/PLAYER/grug_visuals/textures/grug_visuals_skin_human.png",
+  "grug_visuals_skin_orc.png": "mods/PLAYER/grug_visuals/textures/grug_visuals_skin_orc.png",
+  "grug_visuals_skin_troll.png": "mods/PLAYER/grug_visuals/textures/grug_visuals_skin_troll.png",
+  "grug_visuals_skin_undead.png": "mods/PLAYER/grug_visuals/textures/grug_visuals_skin_undead.png",
   "gui_formbg.png": "mods/BASE/default/textures/gui_formbg.png",
   "gui_furnace_arrow_bg.png": "mods/BASE/default/textures/gui_furnace_arrow_bg.png",
   "gui_furnace_arrow_fg.png": "mods/BASE/default/textures/gui_furnace_arrow_fg.png",

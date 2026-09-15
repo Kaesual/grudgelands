@@ -780,14 +780,23 @@ return function(repo)
 	-- from FACEDIR_DIR here rather than from `parts.seat`'s `(face + 2) % 4`,
 	-- which is the arithmetic under test, and compared against the king
 	-- socket's own facing so the two cannot drift apart.
-	local throne_cell
+	--
+	-- The window is searched exhaustively and the seat must be ALONE in it: with
+	-- two chairs beside the king the orientation test below would silently be
+	-- about whichever one the loop happened to end on.
+	local throne_cell, throne_count = nil, 0
 	for dz = -2, 2 do
 		for dx = -1, 1 do
 			local cell = core_result.at(king.x + dx, king.y, king.z + dz)
-			if cell and cell.name == THRONE then throne_cell = cell end
+			if cell and cell.name == THRONE then
+				throne_cell = cell
+				throne_count = throne_count + 1
+			end
 		end
 	end
 	assert(throne_cell, "the throne is not a cell of the core")
+	assert(throne_count == 1, "the king socket has " .. throne_count ..
+		" thrones within reach, so none of them is THE throne")
 	local back = assert(FACEDIR_DIR[throne_cell.param2],
 		"the throne carries a param2 outside the upright facedir family")
 	-- `0 - 0` is a NEGATIVE zero in a double and prints as "-0", which would put

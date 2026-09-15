@@ -208,8 +208,20 @@ the fixture.
 `render_blueprint.py` drew every `nodebox` — the chair included — as one generic
 inset box, so the review loop's own pictures were blind to the thing the user
 saw from the ground. It now knows a `chair` shape (seat plus back, turned with
-the facedir) and `extract_tiles.py` classifies the chair as one, so a
-regenerated `node_tiles.json` keeps it. `renders/`:
+the facedir) and `extract_tiles.py` classifies the chair as one.
+
+`node_tiles.json` says "generated … do not hand edit" in its own header, so it
+was **regenerated through `extract_tiles.py`** rather than patched by hand
+(`--root mods --root reference_projects/minetest_game/mods`, which is the root
+pair the committed file already names). Beside the chair's `shape`, the
+regeneration adds **14 `grug_visuals` texture index rows** —
+`grug_visuals_{cloth,metal}_{chest,feet,head,legs}.png` and the six
+`grug_visuals_skin_*.png` — which landed on `main` with the character-visuals
+lane and no regeneration had picked up since. They are index rows only: no node
+definition changes (`node value diffs: 0`, key order identical, no texture path
+changed), and nothing under `mods/PLAYER/grug_visuals/` is touched.
+
+`renders/`:
 
 | File | What it shows |
 | --- | --- |
