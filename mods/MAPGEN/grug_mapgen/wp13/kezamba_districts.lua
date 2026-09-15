@@ -391,11 +391,14 @@ local function loader(directory)
 					door_index = 6, infill = true},
 				decorate = function(buf, palette, area)
 					shopfront(buf, palette, area)
-					-- The anvil stands on the FEATURE row, z0 + 3, like every
-					-- other feature in this capital: the worker stands on
-					-- z0 + 2 and looks into it.
-					buf:put(area.x0 + 1, 1, area.z0 + 3,
-						palette.node("workbench"))
+					-- THE FORGE, on the FEATURE row z0 + 3, like every other
+					-- feature in this capital: the worker stands on z0 + 2 and
+					-- looks into it. `default:furnace` and not the palette's
+					-- `workbench`, which for the troll palette is
+					-- `grug_decor:cottages_tub` -- §8.1 asks a `smith` for "an
+					-- anvil or furnace" and a washtub is neither, which is what
+					-- the independent review of 2026-09-16 found here.
+					buf:put(area.x0 + 1, 1, area.z0 + 3, "default:furnace")
 				end,
 				extra_sockets = function(area)
 					return {work("anvil", "smith", area.x0 + 1, area.z0 + 2, 0),

@@ -218,9 +218,15 @@ slag yard, mushroom beds grown in the lee of the wall, goat pens and brewing
 courts. Its trades are a smith, a mason, an armourer, an embalmer, a butcher, a
 brewer and a baker, beside the two travelling traders every capital's core has.
 
-**Open capitals, and the one with a lake in it.** Decided 2026-09-15 with the
-third capital, Kezamba. Two of the six have no wall at all — Lethariel and
-Kezamba — and what an open capital has where a walled one has a gatehouse is a
+**Open capitals, and the one with a lake in it.** The SPLIT is the user's ruling
+of 2026-09-14 (three walled, three open; the round-3 plan later moved Highcourt
+across, leaving Lethariel and Kezamba). Everything below it — what an open
+capital puts at its gate points, and how a capital with a lake in its core is
+laid out — is the third capital's own lane, 2026-09-15/16, and is open to the
+user's correction like any other design.
+
+Two of the six have no wall at all — Lethariel and Kezamba — and what an open
+capital has where a walled one has a gatehouse is a
 **threshold** at each of its four gate points: two carved posts with a beam
 across the road and a light on each of them, so a traveller arriving on the
 long-distance route can see that they have arrived somewhere. Like the wall and

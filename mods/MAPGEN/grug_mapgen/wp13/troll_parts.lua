@@ -321,6 +321,28 @@ local function loader(directory)
 		-- 8. The walkway off the z+ face, and the ropes and lanterns under the
 		-- deck that are the whole reason the troll palette binds them.
 		dressing.walkway(buf, palette, mid_x, last_z + 1, spur, "z", deck)
+		-- THE SPUR'S OWN END. `dressing.walkway` rails only the columns strictly
+		-- inside its run (`step > 1 and step < len - 2`), which for a six-node
+		-- spur is two of them: the last two columns and the whole open head are
+		-- bare, five courses above a lake ten or more nodes deep. No socket
+		-- stands there, so no NPC falls; the player does. The shared routine is
+		-- left alone -- Kapok Cradle's identity is frozen on its output -- and
+		-- this composition caps its own spur.
+		local spur_rail = 0
+		do
+			local head = last_z + spur
+			for step = spur - 3, spur - 1 do
+				local z = last_z + 1 + step
+				for _, side in ipairs({-1, 1}) do
+					buf:put(mid_x + side, deck + 1, z, RAIL)
+					spur_rail = spur_rail + 1
+				end
+			end
+			for side = -1, 1 do
+				buf:put(mid_x + side, deck + 1, head, RAIL)
+				spur_rail = spur_rail + 1
+			end
+		end
 		local lanterns = 0
 		for _, spot in ipairs({{3, base + 3}, {last_x - 3, last_z - 3},
 				{3, last_z - 3}, {last_x - 3, base + 3}}) do
@@ -361,7 +383,7 @@ local function loader(directory)
 			inside = inside,
 			room_corner = room,
 		}, {piers = piers, lanterns = lanterns, ropes = ropes,
-			land_rows = deck})
+			land_rows = deck, spur_rail = spur_rail})
 	end
 
 	-- ------------------------------------------------------------------

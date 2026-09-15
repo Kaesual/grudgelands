@@ -125,45 +125,32 @@ local function loader(directory)
 			return y
 		end
 
-		-- 1. THE BASE: the height the ROAD is walked at over the gate point, which
-		-- is not the ground there.
+		-- 1. THE BASE: the terrain at the gate point's own centre column, which
+		-- is where Lane R ends its route and -- since `wp13/kezamba_ramp.lua`
+		-- landed -- where the avenue arrives.
 		--
-		-- Two corrections are folded into this one number, and each had a render
-		-- behind it.
-		--
-		-- The first version took the highest GROUND over the gate point plus six
-		-- columns either way and carried every column of its seven-lane band up
+		-- Three versions of this number are worth keeping, because each was a
+		-- render. The first took the highest GROUND over the gate point plus six
+		-- columns either way and carried every column of the seven-lane band up
 		-- to it, so where the road descends the "threshold" came out as a solid
-		-- wall of masonry across it. A gate a traveller cannot see through is not
-		-- a gate, and nothing is filled up to anything now.
+		-- wall of masonry across it; a gate a traveller cannot see through is
+		-- not a gate, and nothing is filled up to anything now. The second took
+		-- the highest ground over the gate point alone and buried its own posts,
+		-- because `avenue.lua` was walking the road sixteen nodes above that
+		-- ground. The third read `avenue.lua`'s own one-Lipschitz envelope and
+		-- followed the road up onto the embankment -- correct against the road
+		-- of the day, and the road of the day was the defect: the independent
+		-- review measured the avenue arriving up to 26 nodes over the terrain
+		-- Lane R hands it, on a sheer face, with these posts floating on top.
 		--
-		-- The second version took the highest ground over the gate point alone --
-		-- and buried its own posts. `avenue.lua` walks its road at the
-		-- ONE-LIPSCHITZ UPPER ENVELOPE of the surface, "the lowest height field
-		-- that is everywhere at or above the surface and never changes by more
-		-- than a node between two columns", and at Kezamba's east gate the
-		-- terrain outside the envelope climbs 40 nodes in 32 columns, so the road
-		-- is already 16 nodes above the ground when it reaches the gate point.
-		-- Posts standing on the ground there stand at the foot of an embankment
-		-- the road runs over.
-		--
-		-- So the base is that same envelope, evaluated at the gate point: the
-		-- greatest `surface(q) - |centre - q|` within the look-around, over all
-		-- seven lanes. Taking the maximum over the lanes rather than one lane's
-		-- own envelope puts the lintel at or above the road on every lane, which
-		-- is the side of the rounding a lintel wants to be on. It is the same
-		-- rule read from the same callback the road reads, so the two cannot
-		-- drift apart; and it is computed from a window every piece of this short
-		-- run contains, so every piece gets the same number and the lintel stays
-		-- level.
-		local reach = spec.reach or M.REACH
+		-- With the ramp in the run list the road comes down, so the threshold
+		-- reads the one number both of them agree on: the terrain at the gate
+		-- point's centre column. It is a function of one column, so every piece
+		-- computes the same one and the lintel is level.
 		local base
-		for lane = -M.HALF, M.HALF do
-			for q = centre - reach, centre + reach do
-				local x, z = column(q, lane)
-				local lifted = height(x, z) - math.abs(centre - q)
-				if base == nil or lifted > base then base = lifted end
-			end
+		do
+			local x, z = column(centre, 0)
+			base = height(x, z)
 		end
 
 		-- 2. The marker course: the gate point's own row of the carriageway, in

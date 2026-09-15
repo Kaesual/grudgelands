@@ -129,6 +129,76 @@ Measured populations of the finished core: 6 107 pad columns, 2 645 lagoon,
 4 totem posts, **5 emergent kapoks and 7 jungle trees** (the contract's "emergent
 trees kept" as a number the KAT holds a floor under), 54 sockets, 68 038 cells.
 
+## 3c. The gate ramp: how the avenues come down to the ground Lane R hands them
+
+`wp13/kezamba_ramp.lua`, and it is this package's second blocker fix.
+
+**What was wrong.** `avenue.lua` walks its road at the ONE-LIPSCHITZ UPPER
+ENVELOPE of the surface over a forty-column look-around. Outside Kezamba's
+envelope the terrain climbs fast — 40 nodes in 32 columns beyond the east gate on
+seed 531802985935182545 — so the envelope lifted the road INSIDE the envelope to
+meet ground OUTSIDE it, and the run then stopped at the gate point. The
+independent review of 2026-09-16 measured all four gates on all nine seeds: the
+road arrived up to **26 nodes above the terrain**, as a sheer face with nothing
+beyond it, and the threshold's posts and kerbs floated on the same level. The
+first version of this note reported that for one gate on one seed and called it
+the road module working; it was four gates on nine seeds, and the west gate was
+as bad on the user's own world.
+
+**The ruling** (coordinator, 2026-09-16): the avenue arrives at each gate point
+at the terrain height there — where Lane R ends its route — descending inside the
+envelope at most a node a column, with nothing floating.
+
+**The rule**, and it is one line:
+
+    T(p) = min( D(p), g + |p - gate| )
+
+`D(p)` is the road's own deck at column `p`, read back off the piece `avenue.run`
+just returned rather than re-derived; `g` is the terrain at the gate point's
+centre column. `T` is the minimum of two functions that each change by at most a
+node per column, so `T` does too, and it is nowhere above the road the module
+built. Where `T < D` the column is REBUILT: air from `T` upward so nothing of the
+old road is left hanging, basalt from the column's own terrain up to `T` so
+nothing of the ramp floats, a tread where the level steps, a rail on both kerbs,
+and the verge standards carried down to the road they light — which also takes
+care of the review's note N5, the standards that stood fifteen nodes under the
+carriageway.
+
+It reads nothing but the piece and the surface callback the seam already hands
+over, so a piece of a run is still exactly that stretch of the whole run, and the
+KAT's cut-at-every-column union test proves it. A drop deeper than the
+forty-column look-around would be a ramp a piece could not compute and is refused
+rather than silently stepped.
+
+**`avenue.lua` was not touched.** It is Lane R's and the shared road of three
+capitals, and the same instrument gives Highcourt at most +4 and Dur Brannoc +2
+over the same seeds — this is Kezamba's terrain, not the road's defect.
+
+### The measurement: four gates, nine seeds, step / ramp columns / drop
+
+    luajit tools/wp13/kezamba_lots.lua <repo> gates
+
+| seed | south | north | west | east |
+| --- | --- | --- | --- | --- |
+| `531802985935182545` | 0 / 2 / 3 | 0 / 1 / 1 | 0 / 8 / 16 | 0 / 8 / 16 |
+| `8675309` | 0 / 6 / 12 | 0 / 1 / 1 | 0 / 1 / 1 | 0 / 14 / 27 |
+| `15912857179583385436` | 0 / 2 / 4 | 0 / 0 / 0 | 0 / 8 / 16 | 0 / 5 / 9 |
+| `0` | 0 / 1 / 1 | 0 / 1 / 1 | 0 / 5 / 9 | 0 / 0 / 0 |
+| `1` | 0 / 2 / 4 | 0 / 0 / 0 | 0 / 4 / 8 | 0 / 6 / 11 |
+| `2` | 0 / 1 / 1 | 0 / 0 / 0 | 0 / 4 / 8 | 0 / 2 / 2 |
+| `42` | 0 / 4 / 7 | 0 / 1 / 1 | 0 / 0 / 0 | 0 / 4 / 7 |
+| `12345` | 0 / 7 / 13 | 0 / 0 / 0 | 0 / 2 / 3 | 0 / 2 / 3 |
+| `999999999` | 0 / 1 / 1 | 0 / 0 / 0 | 0 / 0 / 0 | 0 / 1 / 1 |
+
+**Step 0 on 36 of 36**, and **0 floating cells on 36 of 36**. The longest descent
+is 14 columns for 27 nodes (east gate, seed 8675309); the shortest is none at
+all, where the road already arrives on the ground. The two counts the measurement
+reports beside `floating` are the cells that rest on something the piece does not
+contain and legitimately so: `on_water`, the causeway over the cenote, which the
+seam hands the road the water's surface for on purpose; and `on_deck`, a column a
+WP40 route bridge spans, which `avenue.lua`'s crossing rule deliberately does not
+fill up to.
+
 ## 3b. The gate threshold: what an open capital has instead of a gatehouse
 
 `wp13/kezamba_gate.lua`, and it is the first of its kind in the tree. WP40 pins a
@@ -282,9 +352,14 @@ could break and does not.
 The whole WP13 fixture set in one process under each interpreter:
 
 ```
-WP13 final micro PASS interpreter=luajit output_sha256=46b4dea6…
-WP13 final micro PASS interpreter=puc51  output_sha256=46b4dea6…
+WP13 final micro PASS interpreter=luajit output_sha256=a15f5630…
+WP13 final micro PASS interpreter=puc51  output_sha256=a15f5630…
 ```
+
+The pair moved from `46b4dea6…` when this lane was rebased onto Lane N
+(`c8050057`). **The delta is Lane N's, not this lane's**: the branch's TSV
+differs from a `git archive` of `c8050057` only by the three Kezamba rows, which
+the independent review measured.
 
 ### (b) The six starts are byte-identical
 
@@ -394,31 +469,32 @@ The passes after the rebase carry **zero** errors.
 the slowest at 10.6 ms. "Builds in a few seconds under LuaJIT when first
 touched" is 0.36 s for the whole capital.
 
-### (e) The causeway rail moved forty cells and nothing else
+### (e) What the engine reads back, and what is invariant across the seeds
 
-The rail of §5 landed after the four passes above, so the two gate/user seeds
-were re-run on the final tree. What moved is exactly what should have:
+The probe digests what it reads back out of the finished map. From the committed
+evidence (`engine/full-<seed>/probe.txt`) over the nine seeds:
 
-| | before | after |
-| --- | --- | --- |
-| `core_road_digest` | `0dd25587…` | `0dd25587…` |
-| `plot_road_digest` | `3d54b4a6…` | `3d54b4a6…` |
-| `avenue_road_digest` | `ffbae1b7…` | `c7aef663…` |
-| avenue cells read back | 110 753 | **110 793** |
+| | value |
+| --- | --- |
+| `core_road_digest` | **`0dd25587001b13b55e4a2377b247124e106c44cbe7b8e579e7cefe7161a964b0` on all nine** |
+| `plot_road_digest` | **seven distinct values over nine seeds** |
+| `avenue_road_digest` | one per seed; `c75fd1c07535c4264ff481bb94bbb46c52aa25834ad4ca9ac33338311eb44595` with 110 727 cells on `531802985935182545` |
 
-Forty cells, all of them railing on kerb columns the road had to fill by three
-courses or more — the embankment where the east avenue leaves the cenote and
-runs down WP40's blend to the terraces. The core and the 52 plots are untouched,
-which is what an overlay-only change has to look like.
+**The CORE builds to the same bytes on every seed; the plots follow the world,
+as they must.** The core is anchor-relative and Kezamba's civic reference is
+authored-fixed at y = 66 in every world (§1), so its cells land at the same
+heights everywhere — which is also why its boardwalks, its stilt-hall flight, its
+quay and its gorge bridge need no per-seed continuity check. A district plot is
+projected from a reference column whose height the world decides, so its
+read-back digest moves with the world; that is the reference-projection working.
+An earlier version of this note claimed both were invariant and the independent
+review of 2026-09-16 refuted it from this package's own evidence.
 
-**The core and every plot build to the same bytes on every seed.** The probe
-digests what it reads back out of the finished map, and
-`core_road_digest = 0dd25587…` and `plot_road_digest = 3d54b4a6…` are identical
-on all four worlds. That is not luck: Kezamba's civic reference is
-authored-fixed at y = 66 in every world (§1), so its anchor-relative core lands
-at the same height, and the lake it is built round is the same mask. The
-AVENUE digest does move between seeds, because the road follows the terraces
-outside the envelope and those are the world's.
+That review also found the earlier §6e quoting avenue numbers
+(`ffbae1b7…`/110 753 → `c7aef663…`/110 793) that appear in no committed log and
+do not reproduce. They were taken from a scratch run that the causeway-rail
+commit then superseded and never re-recorded. The values above are the committed
+ones, and the review reproduced them independently.
 
 ## 7. Open points
 
@@ -444,7 +520,17 @@ outside the envelope and those are the world's.
    the fitted height that is exactly right, and at Kezamba the measurement says
    6 192 of 6 380 dry columns are. The other 188 are the ravine, which the
    composition leaves alone.
-5. **The basalt roof family is unreachable.** `grug_decor` registers the full
+5. **THE KING'S HALL IS THE WEAKEST THING IN THE RENDERS.** The independent
+   review read it as "a red-brick manor with a timber roof" rather than a troll
+   hall, and it was right: `capitals.king_hall` dresses itself in the CAPITAL
+   vocabulary (`castle_paving`, `castle_wall`, `signature`), so the basalt handle
+   rebinding `wall` alone changed nothing the eye sees. Four more rebindings now
+   put the hall, its turrets and its podium in the same rock its platform is made
+   of — `castle_wall`, `castle_wall_stair`, `castle_wall_slab` and
+   `castle_paving` to the `darkage_basalt` family, all of them shapes
+   `wp13/parts.lua`'s `SHAPED` table carries. What is still timber is the ROOF,
+   and that is the gap below.
+6. **The basalt roof family is unreachable.** `grug_decor` registers the full
    four-shape family for basalt, but `wp13/parts.lua`'s `SHAPED` table — the
    library's one list of the nodes that may carry a facedir — carries only
    `darkage_basalt_stair` and `darkage_basalt_slab`, not the inner and outer
@@ -453,23 +539,20 @@ outside the envelope and those are the world's.
    and not this lane's, so Kezamba's civic buildings wear basalt walls under
    their own timber roofs, which is the better building anyway (§2.4 is a
    statement about what a hall stands ON). Two names in `SHAPED` would open it.
-6. **The four districts do not move with the world seed**, unlike Highcourt's.
+7. **The four districts do not move with the world seed**, unlike Highcourt's.
    §4 above says why. A later package that wants variation here has the room for
    it: the lots are searched and could be re-searched per seed, at the cost of
    a per-seed lot derivation the manifest would have to be independent of.
-7. **The east avenue arrives at its gate sixteen nodes above the ground, and
-   that is `avenue.lua` working.** The road walks at the one-Lipschitz upper
-   envelope of the surface, and outside Kezamba's envelope the terrain climbs
-   40 nodes in 32 columns (y 44 at x = +256, y 84 at x = +288, seed
-   531802985935182545), which the module's 40-column look-around reads. So the
-   road starts the hill inside the envelope and reaches the gate point on an
-   embankment. The causeway rail of §5 is what such a stretch needs and now has,
-   and the gate threshold reads the same envelope so it stands over the road
-   rather than under it — but the embankment's FLANKS are still bare cut
-   ground, and whether the WP40 route on the far side meets that deck cleanly is
-   Lane R's question and not one this lane could answer from inside the
-   envelope. Worth a look on the user's first walk.
-8. **`run_capital.sh` aborts in `full` mode for an OPEN capital**, and its
+8. **The gate ramps are the lane's own answer to `avenue.lua`'s envelope, and
+   the seam it needs from Lane R is a number this lane does not have.** The road
+   comes down to the terrain at each gate point (§3c) and the measurement is
+   zero on 36 of 36 gate-seed pairs, but what it comes down TO is the free
+   terrain at that column, read through the seam's own surface callback. Lane R
+   states that is where its route ends; this lane could not check that from
+   inside the envelope, because Lane R's branch is not in this tree. If R's
+   junction is ever not free terrain, `wp13/kezamba_ramp.lua`'s `M.gate_level`
+   is the one function to change, and nothing else moves.
+9. **`run_capital.sh` aborts in `full` mode for an OPEN capital**, and its
    verdict on Kezamba is that abort and not a failure of this capital. The
    full-mode digest gate greps the log for three labels — avenue, rampart,
    gate — and two of the three find nothing where there is no curtain wall;
@@ -483,13 +566,13 @@ outside the envelope and those are the world's.
    (This lane did patch it with `|| true` on the two substitutions and then
    reverted that on the coordinator's ruling; the revert commit carries the
    diagnosis for whoever lands it.)
-9. **No committed overlay digest yet.** `run_capital.sh` compares the built road
+10. **No committed overlay digest yet.** `run_capital.sh` compares the built road
    against `tools/wp13/evidence/20260915-capital-terrain/<key>/<label>-digest-
    <seed>.txt`, and Kezamba has none, so its passes say "recorded (no committed
    value for seed … yet)". Freezing one is a decision with a number attached and
    belongs with the coordinator's merge, because the avenue digest moves with
    Lane R's route ends; the KAT's own overlay digest is the gate meanwhile.
-10. **The user has not walked Kezamba.** Nothing here is accepted until they have.
+11. **The user has not walked Kezamba.** Nothing here is accepted until they have.
    On seed 531802985935182545 the crossing of the two great avenues — the
    `arrival` landmark, with the guard banner on it — is at **(1800, 67, 1500)**.
    Walk EAST from it: the avenue runs eighteen nodes of boardwalk-on-pad and then

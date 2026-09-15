@@ -2,6 +2,7 @@
 --
 --     luajit tools/wp13/kezamba_lots.lua <repo> check
 --     luajit tools/wp13/kezamba_lots.lua <repo> walk
+--     luajit tools/wp13/kezamba_lots.lua <repo> gates
 --     luajit tools/wp13/kezamba_lots.lua <repo> sweep <reach> [<count>]
 --     luajit tools/wp13/kezamba_lots.lua <repo> map
 --
@@ -374,6 +375,174 @@ if mode == "walk" then
 	os.exit(0)
 end
 
+-- `gates`: WHERE EACH AVENUE ARRIVES AT ITS GATE POINT, ON ALL NINE SEEDS.
+--
+-- The independent review of 2026-09-16 measured the road arriving up to 26 nodes
+-- above the terrain Lane R hands it, on a sheer face, with the threshold's posts
+-- floating on top (blocker B2). The coordinator's ruling is that the avenue
+-- arrives at the terrain height there, descending inside the envelope at most a
+-- node a column, with nothing floating. `wp13/kezamba_ramp.lua` is the rule;
+-- this is the measurement, and it is a gate rather than a note because the
+-- terrain outside the envelope is WP40's and moves for WP40's reasons.
+--
+-- It runs the real modules -- `wp13/avenue.lua`'s own `M.run` and the ramp on
+-- top of it -- against the seam's own surface rule, which is why it can be
+-- trusted to agree with the built map: `r7_settlement.lua` hands an overlay the
+-- WALKABLE surface of a column, "the ground, or the water standing on it where
+-- there is any", and that is exactly what `walkable` below returns.
+--
+-- Per gate and seed it reports:
+--   step        the road's level at the gate point minus the terrain there.
+--               The ruling's target is 0, and anything over 1 is a face.
+--   ramp        how many columns the descent took.
+--   drop        how far it came down over them.
+--   floating    cells of the piece with nothing under them. Target 0.
+if mode == "gates" then
+	local wp13dir = repo .. "/mods/MAPGEN/grug_mapgen/wp13"
+	local avenue = dofile(wp13dir .. "/avenue.lua")(wp13dir)
+	local palettes = dofile(wp13dir .. "/palette.lua")
+	local kezamba = dofile(wp13dir .. "/kezamba.lua")(wp13dir)
+	local road = palettes.new("troll")
+	local STEP_CEILING = 1
+
+	io.write("kind\tseed\trun\tgate\tterrain\troad\tstep\tramp",
+		"\tdrop\tfloating\ton_water/on_deck\tcells\n")
+	local worst_step, worst_run, worst_seed = 0, "-", "-"
+	local worst_float, float_run = 0, "-"
+	for index = 1, #sessions do
+		local session = sessions[index]
+		-- THE SEAM'S OWN SURFACE RULE, mirrored: the ground, or the water
+		-- standing on it. `r7_settlement.lua` builds an overlay's surface this
+		-- way and `wp13/avenue.lua` is written against it.
+		local cache = {}
+		local function walkable(x, z)
+			local key = x * 8192 + z
+			local hit = cache[key]
+			if hit == nil then
+				local wx, wz = session.anchor.x + x, session.anchor.z + z
+				local terrain = session.height.terrain_height_at(wx, wz)
+				local wet = session.horizontal.water_class_at(wx, wz) ~= "land"
+				local water = wet and session.height.water_surface_at(wx, wz)
+					or nil
+				if type(water) == "number" and water > terrain then
+					hit = {surface = water, terrain = terrain}
+				else
+					hit = {surface = terrain, terrain = terrain}
+				end
+				cache[key] = hit
+			end
+			return hit
+		end
+		local function surface(x, z) return walkable(x, z).surface end
+
+		for _, run in ipairs(kezamba.avenues) do
+			local plan = kezamba.avenue_plan[run.id]
+			local spec = {id = run.id, axis = run.axis, at = run.at,
+				from = run.from, to = run.to, width = avenue.WIDTH,
+				lamp_spacing = avenue.LAMP_SPACING, lamp_phase = run.from,
+				reach = avenue.REACH}
+			local ok, piece = pcall(kezamba.overlay_run, avenue, road, spec,
+				surface)
+			if not ok then
+				io.write(table.concat({"kezamba_gate", session.seed, run.id,
+					plan.gate, "-", "-", "REFUSED", "-", "-", "-",
+					tostring(piece)}, "\t"), "\n")
+				worst_step = 99
+			else
+				local dx = (run.axis == "x") and 1 or 0
+				local function column(q, lane)
+					if dx == 1 then return q, run.at + lane end
+					return run.at + lane, q
+				end
+				-- The road's level at the gate point: the topmost cell of the
+				-- carriageway there.
+				local gx, gz = column(plan.gate, 0)
+				local level
+				local occupied = {}
+				for cell_index = 1, #piece.cells do
+					local cell = piece.cells[cell_index]
+					if cell.name ~= "air" then
+						occupied[cell.x .. ":" .. cell.y .. ":" .. cell.z] = true
+						if cell.x == gx and cell.z == gz and
+								(level == nil or cell.y > level) then
+							level = cell.y
+						end
+					end
+				end
+				local ground = walkable(gx, gz).terrain
+				local step = level and math.abs(level - ground) or 99
+				-- FLOATING CELLS: a cell of the piece whose own column has
+				-- nothing under it -- neither the ground nor another cell of
+				-- the piece. This is the half of the ruling that says the ramp
+				-- may not be a shelf.
+				--
+				-- TWO COLUMNS ARE EXEMPT, and both are the seam's own design
+				-- rather than this lane's:
+				--
+				--   * a column of the CENOTE. `r7_settlement.lua` hands an
+				--     overlay the water's surface where there is water, on
+				--     purpose -- "the result is a solid causeway across the
+				--     water and not paving floating on it" -- and the lake
+				--     itself is what the deck rests on. Counting those would
+				--     call every boardwalk column a defect.
+				--   * a column a WP40 ROUTE BRIDGE spans. `avenue.lua`'s
+				--     crossing rule stands the road on the route's own deck and
+				--     deliberately does not fill up to it ("the bridge carries
+				--     the road, so the road does not fill the river up to it,
+				--     which would be a dam with a street on top"). The deck is
+				--     WP40's and is not in this piece.
+				local spanned = {}
+				for cross = 1, #(piece.crossings or {}) do
+					local row = piece.crossings[cross]
+					spanned[row.x .. ":" .. row.z] = true
+				end
+				local floating, on_water, on_deck = 0, 0, 0
+				for cell_index = 1, #piece.cells do
+					local cell = piece.cells[cell_index]
+					if cell.name ~= "air" then
+						local here = walkable(cell.x, cell.z)
+						local unsupported = cell.y - 1 > here.terrain and
+							not occupied[cell.x .. ":" .. (cell.y - 1) ..
+								":" .. cell.z]
+						if unsupported then
+							if here.surface > here.terrain then
+								on_water = on_water + 1
+							elseif spanned[cell.x .. ":" .. cell.z] then
+								on_deck = on_deck + 1
+							else
+								floating = floating + 1
+							end
+						end
+					end
+				end
+				io.write(table.concat({"kezamba_gate", session.seed, run.id,
+					plan.gate, ground, level or "-", step,
+					piece.ramp_columns or 0, piece.ramp_drop or 0, floating,
+					on_water .. "/" .. on_deck, #piece.cells}, "\t"), "\n")
+				if step > worst_step then
+					worst_step, worst_run, worst_seed = step, run.id,
+						session.seed
+				end
+				if floating > worst_float then
+					worst_float, float_run = floating, run.id .. "@" ..
+						session.seed
+				end
+			end
+		end
+	end
+	io.write("kezamba_gates_worst\tstep\t", worst_step, "\t", worst_run,
+		"\t", worst_seed, "\tfloating\t", worst_float, "\t", float_run,
+		"\tceiling\t", STEP_CEILING, "\n")
+	if worst_step > STEP_CEILING or worst_float > 0 then
+		io.write("kezamba_gates FAIL: an avenue does not reach its gate\n")
+		os.exit(1)
+	end
+	io.write("kezamba_gates PASS: every avenue arrives at its gate point ",
+		"within ", STEP_CEILING, " node of the terrain with nothing floating, ",
+		"on all ", #SEEDS, " seeds\n")
+	os.exit(0)
+end
+
 if mode == "probe" then
 	local reach = tonumber(arg[5] or "13")
 	local x, z = tonumber(arg[3]), tonumber(arg[4])
@@ -402,7 +571,47 @@ if mode == "map" then
 	os.exit(0)
 end
 
--- `check`: the authored lots of `wp13/kezamba_lots.lua`.
+-- `check`: the authored lots of `wp13/kezamba_lots.lua` -- AND THE COMMITTED
+-- MASK ITSELF.
+--
+-- The mask is verified here and not only by `kezamba_water.lua --verify`
+-- because of what the independent review of 2026-09-16 found: the KAT asserts
+-- the mask's published counts, its disjointness and its one-node relation to the
+-- reference, all of which are the module against itself, and nothing that RUNS
+-- ever asked the planner whether the lake is still where the module says. A WP40
+-- change that moved the cenote would therefore leave every gate green while the
+-- composition wrote ground into water and air over it -- the one failure this
+-- whole package exists to avoid.
+--
+-- `check` already builds the nine planner sessions this needs, so the
+-- verification is free here and nowhere else. It is the gate; the note and the
+-- tool headers say so.
+do
+	local committed = dofile(wp13 .. "/kezamba_lagoon.lua")()
+	local bad, wet_core = 0, 0
+	for index = 1, #sessions do
+		local session = sessions[index]
+		for z = -committed.REACH, committed.REACH do
+			for x = -committed.REACH, committed.REACH do
+				local cell = column(session, x, z)
+				if cell.wet then
+					if index == 1 then wet_core = wet_core + 1 end
+					if not committed.lagoon(x, z) then bad = bad + 1 end
+				elseif committed.lagoon(x, z) then
+					bad = bad + 1
+				end
+			end
+		end
+		if session.anchor.y ~= committed.REFERENCE_Y then bad = bad + 1 end
+	end
+	io.write("kezamba_mask\tcore_wet\t", wet_core, "\tdisagreements\t", bad,
+		"\tseeds\t", #sessions, "\n")
+	if bad ~= 0 then
+		io.write("kezamba_lots FAIL: the committed lagoon mask is not the map\n")
+		os.exit(1)
+	end
+end
+
 io.write("kind\tlot\tkind2\tx\tz\treach\tfall\trise\twet\tverdict\n")
 local failures = 0
 local seen = {}

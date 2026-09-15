@@ -46,9 +46,26 @@ local function loader()
 	-- edit. A timber roof on a basalt wall is also the better building: the
 	-- contract's troll row is "stilt halls on BASALT PLATFORMS", which is a
 	-- statement about what a hall stands on, not about what it is roofed with.
+	-- THE CASTLE ROLES GO WITH IT. The independent review of 2026-09-16 read
+	-- the king's hall as "a red-brick manor with a timber roof", and the brick
+	-- is `grug_decor:castle_pavement_brick` and `castle_stonewall`:
+	-- `capitals.king_hall` dresses itself in the CAPITAL vocabulary, not in
+	-- `wall`, so rebinding the wall alone changed nothing the eye sees. These
+	-- four rebindings put the hall, its turrets and its podium in the same rock
+	-- its platform is made of.
+	--
+	-- Only shapes `wp13/parts.lua`'s `SHAPED` table carries may be bound: it
+	-- lists `darkage_basalt_stair` and `darkage_basalt_slab` and NOT the inner
+	-- and outer corners, so the single stairs and slabs of the castle kit are
+	-- safe and the roof family (which the rasteriser turns corners with) stays
+	-- timber. That is the same limit §7.5 of the note records.
 	M.BASALT = {
 		wall = "grug_decor:darkage_basalt",
 		wall_accent = "grug_decor:darkage_basalt_brick",
+		castle_wall = "grug_decor:darkage_basalt",
+		castle_wall_stair = "grug_decor:darkage_basalt_stair",
+		castle_wall_slab = "grug_decor:darkage_basalt_slab",
+		castle_paving = "grug_decor:darkage_basalt_brick",
 	}
 
 	-- The water handle, for the fill's own basins.

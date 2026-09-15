@@ -64,6 +64,7 @@ local function loader(directory)
 	local handles = dofile(directory .. "/troll_palette.lua")()
 	local mask = dofile(directory .. "/kezamba_lagoon.lua")()
 	local gates = dofile(directory .. "/kezamba_gate.lua")(directory)
+	local ramp = dofile(directory .. "/kezamba_ramp.lua")(directory)
 
 	local M = {}
 
@@ -81,31 +82,31 @@ local function loader(directory)
 	-- construction time, because a lane laid across a 26-node gorge is a lane
 	-- hanging in the air.
 	local STREETS = {
-		{-2, -RADIUS, 2, -3, "avenue"},
-		{-2, 3, 2, RADIUS, "avenue"},
-		{-RADIUS, -2, -3, 2, "avenue"},
-		{3, -2, RADIUS, 2, "avenue"},
+		{-2, -RADIUS, 2, -3, "avenue", "z"},
+		{-2, 3, 2, RADIUS, "avenue", "z"},
+		{-RADIUS, -2, -3, 2, "avenue", "x"},
+		{3, -2, RADIUS, 2, "avenue", "x"},
 		-- The crossing itself.
 		{-2, -2, 2, 2, "avenue"},
 		-- The king's forecourt, a strip along the hall's west front off the
 		-- south avenue's east kerb.
-		{3, -40, 5, -22, "lane"},
+		{3, -40, 5, -22, "lane", "z"},
 		-- The market walk, from the crossing west to the travel plaza. It runs
 		-- at z -20..-16 and not further south because the RAVINE reaches z =
 		-- -21: a lane one node south of here would be a lane over a gorge, and
 		-- the composition refuses one.
-		{-31, -20, -3, -16, "lane"},
-		{-32, -20, -30, -16, "lane"},
+		{-31, -20, -3, -16, "lane", "x"},
+		{-32, -20, -30, -16, "lane", "z"},
 		-- The quay walk, north along the lake's west bank, and its two links
 		-- back to the avenues.
-		{-20, 6, -16, 44, "lane"},
-		{-16, 6, -3, 10, "lane"},
-		{-16, 32, -3, 36, "lane"},
+		{-20, 6, -16, 44, "lane", "z"},
+		{-16, 6, -3, 10, "lane", "x"},
+		{-16, 32, -3, 36, "lane", "x"},
 		-- The east quarter's lanes.
-		{24, -22, 44, -18, "lane"},
-		{36, -30, 40, -22, "lane"},
+		{24, -22, 44, -18, "lane", "x"},
+		{36, -30, 40, -22, "lane", "z"},
 		-- The west quarter's lane, from the west avenue to the shrine walk.
-		{-44, 6, -40, 24, "lane"},
+		{-44, 6, -40, 24, "lane", "z"},
 	}
 
 	-- The plot roster. `make` is the generator, `module` the library it comes
@@ -241,6 +242,14 @@ local function loader(directory)
 		gate_west = {centre = -GATE_OUT}, gate_east = {centre = GATE_OUT},
 	}
 
+	-- WHERE EACH AVENUE HAS TO COME DOWN TO. The gate point is the run's OUTER
+	-- end, and `wp13/kezamba_ramp.lua` brings the road to the terrain there at
+	-- most one node a column. The ring street has no gate and no ramp.
+	M.avenue_plan = {
+		avenue_south = {gate = -GATE_OUT}, avenue_north = {gate = GATE_OUT},
+		avenue_west = {gate = -GATE_OUT}, avenue_east = {gate = GATE_OUT},
+	}
+
 	function M.core()
 		local timber = palettes.new("troll")
 		local basalt = palettes.new("troll", handles.BASALT)
@@ -319,8 +328,26 @@ local function loader(directory)
 		-- tried to reach it would leave the authorized volume. What the player
 		-- sees is a leg going into the water, which is what a stilt is.
 		local boardwalk, piers = 0, 0
-		local function street(x1, z1, x2, z2, kind)
-			local name = (kind == "avenue") and DECK or DECK
+		-- A RAIL BELONGS ON A FLANK AND NEVER ON AN END.
+		--
+		-- The first version of this routine railed every column of the run's
+		-- whole bounding box, and the east and north avenues END over open
+		-- water -- so the rail was laid straight ACROSS the carriageway at
+		-- x = 47 and z = 47. `default:fence_*` is walkable with a raised
+		-- collision box precisely so it cannot be jumped, and either side of
+		-- the deck is cenote, so the road was closed at exactly the point the
+		-- research note sends the player. The KAT checked the deck and not the
+		-- obstruction and stayed green; it checks both now.
+		--
+		-- `along` is the run's own axis, so a flank is a constant in the OTHER
+		-- coordinate and an end is a constant in `along`. The crossing carries
+		-- no rail at all, which is what `along = nil` means here.
+		local function flank(along, x, z, x1, z1, x2, z2)
+			if along == "x" then return z == z1 or z == z2 end
+			if along == "z" then return x == x1 or x == x2 end
+			return false
+		end
+		local function street(x1, z1, x2, z2, kind, along)
 			for z = z1, z2 do
 				for x = x1, x2 do
 					if mask.ravine(x, z) then
@@ -328,8 +355,9 @@ local function loader(directory)
 							" crosses the ravine", 0)
 					end
 					local edge = (x == x1 or x == x2 or z == z1 or z == z2)
+					local side = flank(along, x, z, x1, z1, x2, z2)
 					if mask.lagoon(x, z) then
-						buf:put(x, 0, z, name)
+						buf:put(x, 0, z, DECK)
 						claim_water(x, 0, z)
 						boardwalk = boardwalk + 1
 						if ((x + z) % 3 == 0) and edge then
@@ -339,21 +367,22 @@ local function loader(directory)
 							end
 							piers = piers + 1
 						end
-						if edge and kind == "avenue" then
+						if side and kind == "avenue" then
 							buf:put(x, 1, z, RAIL)
 							claim_water(x, 1, z)
 						end
 					else
-						buf:put(x, 0, z, name)
+						buf:put(x, 0, z, DECK)
 						buf:clear(x, 1, z, x, 5, z)
 					end
 				end
 			end
-			-- The kerb: a signature band down both flanks of an avenue.
+			-- The kerb: a signature band down both FLANKS of an avenue, and not
+			-- across its ends, for the reason the rail is not.
 			if kind == "avenue" then
 				for z = z1, z2 do
 					for x = x1, x2 do
-						if (x == x1 or x == x2 or z == z1 or z == z2) and
+						if flank(along, x, z, x1, z1, x2, z2) and
 								not mask.lagoon(x, z) then
 							buf:put(x, 0, z, KERB)
 						end
@@ -362,7 +391,7 @@ local function loader(directory)
 			end
 		end
 		for _, run in ipairs(STREETS) do
-			street(run[1], run[2], run[3], run[4], run[5])
+			street(run[1], run[2], run[3], run[4], run[5], run[6])
 		end
 
 		-- 3. THE TRAVEL PLAZA reserved for WP17: paving, two kerb rings and
@@ -550,24 +579,6 @@ local function loader(directory)
 		-- 6. THE RAVINE: a rope-and-post rail along its rim, and ONE plank
 		-- footbridge over it at its narrowest, which is where it leaves the pad
 		-- on its way north-east.
-		local rim = 0
-		for z = -RADIUS, RADIUS do
-			for x = -RADIUS, RADIUS do
-				if not mask.ravine(x, z) and not mask.lagoon(x, z) then
-					local beside = false
-					for _, step in ipairs({{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) do
-						if mask.ravine(x + step[1], z + step[2]) then
-							beside = true
-						end
-					end
-					if beside and layout.free(buf, x, z, 3) and
-							layout.natural(buf, x, z) and (x + z) % 2 == 0 then
-						buf:put(x, 1, z, RAIL)
-						rim = rim + 1
-					end
-				end
-			end
-		end
 		local bridge = 0
 		do
 			local z = -22
@@ -594,6 +605,24 @@ local function loader(directory)
 			end
 		end
 
+		local rim = 0
+		for z = -RADIUS, RADIUS do
+			for x = -RADIUS, RADIUS do
+				if not mask.ravine(x, z) and not mask.lagoon(x, z) then
+					local beside = false
+					for _, step in ipairs({{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) do
+						if mask.ravine(x + step[1], z + step[2]) then
+							beside = true
+						end
+					end
+					if beside and layout.free(buf, x, z, 3) and
+							layout.natural(buf, x, z) and (x + z) % 2 == 0 then
+						buf:put(x, 1, z, RAIL)
+						rim = rim + 1
+					end
+				end
+			end
+		end
 		-- 7. The quay's own props: the two royal booths in the trade shed's
 		-- apron, drying racks on the shore walk and crates on the landing.
 		local VENDORS = {
@@ -800,7 +829,11 @@ local function loader(directory)
 		-- THE THREE ANGLERS, on shore columns of the committed mask, each
 		-- looking east into the cenote. Every one of them has open water within
 		-- three nodes of where it looks, which the KAT re-measures.
-		for index, spot in ipairs({{-5, 20}, {-9, 26}, {-13, 32}}) do
+		-- The third angler stood at (-13, 32) and looked straight into one of
+		-- the moot house's own legs -- open water at reach two, a jungletree at
+		-- reach one. (-11, 28) is the last pad column of its own row, so the
+		-- cenote is at reach one and nothing stands between.
+		for index, spot in ipairs({{-5, 20}, {-9, 26}, {-11, 28}}) do
 			socket("cenote_fish_" .. index, "work", spot[1], 1, spot[2], 1,
 				{activity = "fish"})
 		end
@@ -1009,7 +1042,8 @@ local function loader(directory)
 	function M.overlay_names(avenue, palette)
 		local seen, list = {}, {}
 		for _, source in ipairs({avenue.palette_names(palette),
-				gates.palette_names(palette), {palette.node("railing")}}) do
+				gates.palette_names(palette), ramp.palette_names(palette),
+				{palette.node("railing")}}) do
 			for index = 1, #source do
 				local name = source[index]
 				if not seen[name] then
@@ -1060,13 +1094,22 @@ local function loader(directory)
 		end
 		local half = (width - 1) / 2
 		local kerb_a, kerb_b = spec.at - half, spec.at + half
-		local low, high, order = {}, {}, {}
+		local name = palette.node("railing")
+		local low, high, order, railed = {}, {}, {}, {}
 		for index = 1, #piece.cells do
 			local cell = piece.cells[index]
 			local across = (spec.axis == "x") and cell.z or cell.x
 			if across == kerb_a or across == kerb_b then
 				local key = cell.x .. ":" .. cell.z
-				if high[key] == nil then
+				-- A COLUMN THE GATE RAMP ALREADY RAILED IS LEFT ALONE, and its
+				-- own rail is not counted as part of the kerb's span. Without
+				-- both halves this routine measured the rail as the top of the
+				-- column and stacked a second one on it -- a fence standing on
+				-- a fence, two per ramp column, which is what the four-gate
+				-- measurement counts as floating.
+				if cell.name == name then
+					railed[key] = true
+				elseif high[key] == nil then
 					low[key], high[key] = cell.y, cell.y
 					order[#order + 1] = {key = key, x = cell.x, z = cell.z}
 				else
@@ -1075,12 +1118,12 @@ local function loader(directory)
 				end
 			end
 		end
-		local name = palette.node("railing")
 		local added, over_water = 0, 0
 		for index = 1, #order do
 			local column = order[index]
 			local wet = mask.lagoon(column.x, column.z)
-			if wet or high[column.key] - low[column.key] >= RAIL_FILL then
+			if not railed[column.key] and
+					(wet or high[column.key] - low[column.key] >= RAIL_FILL) then
 				piece.cells[#piece.cells + 1] = {x = column.x,
 					y = high[column.key] + 1, z = column.z, name = name,
 					param2 = 0}
@@ -1094,10 +1137,22 @@ local function loader(directory)
 		return piece
 	end
 
+	-- One run, dispatched by its own id, in the order the pieces are built:
+	-- the road first, then the GATE RAMP that brings it down to the terrain at
+	-- its gate point, then the rail on whatever is left standing over water or
+	-- on fill. The threshold runs are a different kind of run and take none of
+	-- the three.
 	function M.overlay_run(avenue, palette, spec, surface)
-		local plan = M.gate_plan[spec.id]
-		if plan then return gates.run(palette, spec, surface, plan) end
-		return lake_rail(palette, spec, avenue.run(palette, spec, surface))
+		local threshold = M.gate_plan[spec.id]
+		if threshold then
+			return gates.run(palette, spec, surface, threshold)
+		end
+		local piece = avenue.run(palette, spec, surface)
+		local approach = M.avenue_plan[spec.id]
+		if approach then
+			piece = ramp.run(palette, spec, surface, piece, approach)
+		end
+		return lake_rail(palette, spec, piece)
 	end
 
 	return M

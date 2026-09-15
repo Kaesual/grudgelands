@@ -99,8 +99,19 @@ return function(repo)
 		for _, name in ipairs(extra or {}) do set[name] = true end
 		FEATURE[activity] = set
 	end
-	feature_set("smith", {"workbench", "hearth"},
-		{"default:furnace", "default:furnace_active"})
+	-- `smith` IS AN ANVIL OR A FURNACE (§8.1), and neither is a palette role
+	-- this game binds everywhere. The first version of this set read the
+	-- palette's `workbench` and `hearth`, which for the troll palette are
+	-- `grug_decor:cottages_tub` and `grug_decor:xdecor_cauldron` -- a washtub
+	-- and a cooking pot -- so the one smith of this capital passed its own rule
+	-- facing a tub. That is the same defect as `tend` accepting soil, caught by
+	-- the independent review of 2026-09-16 instead of by this lane, and the
+	-- answer is the same: name what the contract names, and put one in front of
+	-- the socket. `cottages_anvil` is here because it is what the human palette
+	-- binds `workbench` to and the rule should travel.
+	feature_set("smith", {},
+		{"default:furnace", "default:furnace_active",
+			"grug_decor:cottages_anvil"})
 	-- `farm` is "a farmland or crop node", and the TROLL PALETTE BINDS NEITHER
 	-- `crop` NOR `crop_soil`: `dressing.crop_rows` falls back to the mud
 	-- furrow of `ground_patch` and `planter_soil`, which is what a field in a
@@ -299,24 +310,40 @@ return function(repo)
 					entry.id .. " is spare, and only an idle socket may be")
 				local wanted = FEATURE[entry.activity]
 				if entry.activity == "fish" then
-					-- SECTION 8.1's `fish` RULE, ANSWERED AGAINST THE MAP.
+					-- SECTION 8.1's `fish` RULE, ANSWERED AGAINST THE MAP --
+					-- AND WITH ITS OCCLUSION HALF KEPT.
+					--
 					-- The contract wants "a water node" under `dir` within
 					-- three nodes and reads blueprint cells for it. Kezamba's
 					-- water is WP40's authored cenote, which no blueprint cell
-					-- can be, so the same claim is made against the committed
-					-- mask -- and it is a stronger claim, because the mask was
-					-- measured on nine seeds and a blueprint cell is measured
-					-- on none.
-					local found = false
+					-- can be, so the WATER half of the claim is made against
+					-- the committed mask -- a stronger instrument, measured on
+					-- nine seeds where a blueprint cell is measured on none.
+					--
+					-- The first version of this branch stopped there, and the
+					-- independent review of 2026-09-16 found the cost: one of
+					-- the three anglers faced the stilt hall's own leg at reach
+					-- one and the lake at reach two, and passed. §8.1's other
+					-- half -- "the feature search stops at the first solid node
+					-- on the socket's own course" -- is not the mask's to
+					-- weaken, so it is asked here of the composition's cells
+					-- exactly as it is for every other activity.
+					local found, blocked = false, false
 					for reach = 1, 3 do
-						if mask.lagoon(entry.x + dx * reach,
-								entry.z + dz * reach) then
-							found = true
+						if not blocked and not found then
+							if mask.lagoon(entry.x + dx * reach,
+									entry.z + dz * reach) then
+								found = true
+							elseif solid_name((cell_at(entry.x + dx * reach,
+									entry.y, entry.z + dz * reach) or {}).name)
+									then
+								blocked = true
+							end
 						end
 					end
 					assert(found, label .. ": the angler " .. entry.id ..
-						" faces no open cenote within three nodes of " ..
-						entry.x .. "," .. entry.z)
+						" faces no open cenote within three unobstructed " ..
+						"nodes of " .. entry.x .. "," .. entry.z)
 					work_features = work_features + 1
 				elseif wanted then
 					-- THE SEARCH STOPS AT THE FIRST SOLID NODE ON THE SOCKET'S
@@ -452,6 +479,48 @@ return function(repo)
 					" stands in the lake and is neither deck, pier nor rail")
 				if cell.name == DECK and cell.y == 0 then
 					deck_columns[cell.x .. ":" .. cell.z] = true
+				end
+			end
+		end
+
+		-- RULE 2a: NOTHING OF THE COMPOSITION OBSTRUCTS AN AVENUE.
+		--
+		-- The first version of this KAT checked that every carriageway column
+		-- over water carries a DECK and stopped there, and the independent
+		-- review of 2026-09-16 found what that misses: the street routine
+		-- railed the run's whole bounding box, so a junglewood fence was laid
+		-- straight across the east and north avenues at their far ends, where
+		-- both stand over open cenote and a walker cannot go round.
+		-- `default:fence_*` is walkable with a raised collision box precisely so
+		-- it cannot be jumped, so the road was closed at exactly the point the
+		-- research note sends the player. A deck is not enough: the two courses
+		-- a walker occupies have to be free as well.
+		local CORE_REACH = mask.REACH
+		local AVENUE_RUNS = {
+			{axis = "x", at = 0, from = -CORE_REACH, to = CORE_REACH},
+			{axis = "z", at = 0, from = -CORE_REACH, to = CORE_REACH},
+		}
+		local obstruction = 0
+		for _, run in ipairs(AVENUE_RUNS) do
+			-- THE CENTRE THREE LANES, and not all five. The two kerb lanes of
+			-- an avenue carry its rail where it crosses the cenote, which is
+			-- what a boardwalk five nodes over a lake needs and what
+			-- `dressing.walkway` does with its own three-wide deck. What may
+			-- never be railed is the walk itself.
+			for p = run.from, run.to do
+				for lane = -1, 1 do
+					local x, z
+					if run.axis == "x" then x, z = p, run.at + lane
+					else x, z = run.at + lane, p end
+					for level = 1, 2 do
+						local cell = cell_at(x, level, z)
+						if cell ~= nil and cell.name ~= parts.AIR then
+							error("kezamba core: the avenue carriageway at " ..
+								x .. "," .. level .. "," .. z ..
+								" is obstructed by " .. cell.name, 0)
+						end
+						obstruction = obstruction + 1
+					end
 				end
 			end
 		end

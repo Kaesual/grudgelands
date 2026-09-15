@@ -16,6 +16,7 @@ CHANGED=(
 	mods/MAPGEN/grug_mapgen/wp13/kezamba_lagoon.lua
 	mods/MAPGEN/grug_mapgen/wp13/kezamba_lots.lua
 	mods/MAPGEN/grug_mapgen/wp13/kezamba_plot.lua
+	mods/MAPGEN/grug_mapgen/wp13/kezamba_ramp.lua
 	mods/MAPGEN/grug_mapgen/wp13/troll_palette.lua
 	mods/MAPGEN/grug_mapgen/wp13/troll_parts.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_kezamba_blueprint.lua
