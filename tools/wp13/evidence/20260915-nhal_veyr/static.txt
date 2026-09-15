@@ -13,6 +13,12 @@ mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua parser PASS; SETGLOBAL [0]
 tools/wp13/nhal_veyr_kat.lua parser PASS; SETGLOBAL [0]
 tools/wp13/nhal_veyr_plots.lua parser PASS; SETGLOBAL [0]
 tools/wp13/final_micro.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/wall.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/highcourt.lua parser PASS; SETGLOBAL [0]
+mods/MAPGEN/grug_mapgen/wp13/dur_brannoc.lua parser PASS; SETGLOBAL [0]
+tools/wp13/capital_wall.lua parser PASS; SETGLOBAL [0]
+tools/wp13/capital_probe/init.lua parser PASS; SETGLOBAL [1]
+tools/wp13/route_gates.lua parser PASS; SETGLOBAL [0]
 == whole tree parses ==
 mods/*/grug_* parser PASS
 tools parser PASS
@@ -21,8 +27,11 @@ SWEEP 1
 SWEEP 2
 SWEEP 3
 SWEEP 4
+mods/MAPGEN/grug_mapgen/wp13/nhal_veyr.lua:1286:	--     cap(p) = gate_y + |p - gate_at|      (gate_y = the free terrain at
 SWEEP 5
-tools/wp13/nhal_veyr_plots.lua:390:	os.exit(1)
+tools/wp13/nhal_veyr_plots.lua:525:	os.exit(1)
+tools/wp13/capital_wall.lua:313:	os.exit(1)
+tools/wp13/route_gates.lua:721:os.exit(gated == 0 and 0 or 1)
 SWEEPS DONE (no output above a SWEEP line means zero hits)
 == the same five sweeps over all of mods/*/grug_* and tools ==
 SWEEP 1
@@ -256,7 +265,8 @@ mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:478:		string.format("%.0f", blob.y_ma
 mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:487:		rows[#rows + 1] = "stratum|" .. definition.name .. "|ore=" ..
 mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:488:			definition.ore .. "|wherein=default:stone|clust_scarcity=1|y_min=" ..
 mods/MAPGEN/grug_mapgen/wp40/r7_native.lua:489:			string.format("%.0f", definition.y_min) .. "|y_max=" ..
-mods/MAPGEN/grug_mapgen/wp13/dur_brannoc_district.lua:64:		-- 44 nodes between |x| 60 and |x| 104 on the user seed, so the four
+mods/MAPGEN/grug_mapgen/wp40/simple_map.lua:722:					-- open envelope is |d| < gate_half, so the closed box this
+mods/MAPGEN/grug_mapgen/wp13/nhal_veyr.lua:1286:	--     cap(p) = gate_y + |p - gate_at|      (gate_y = the free terrain at
 mods/PLAYER/grug_abilities/init.lua:470:-- Ability registration & item. One tool per ability; the item's `range`
 mods/PLAYER/grug_abilities/init.lua:1462:	return SKIN_VERSION .. "|" .. color .. "|" .. src.inv .. "|" .. src.wield
 mods/PLAYER/grug_abilities/init.lua:1506:	local token = SWING_CAPS_VERSION .. "|" .. string.format("%.17g", interval)
@@ -290,6 +300,7 @@ tools/wp40/t2_extreme_verify_shard.lua:14:		not value:find("//", 1, true), "unsa
 tools/wp40/t2_census_merge.lua:29:		not value:find("//", 1, true), "unsafe " .. label)
 tools/wp40/t2_census_merge.lua:1610:					" | v2: " .. tostring(base[index])
 tools/wp40/resource_sampling/writer_fixture.lua:242:			"\ntrace=", table.concat(snapshot.trace, "|"), "\n"})
+tools/wp13/route_gates_kat.lua:242:	-- The open envelope is |dx| < HALF and |dz| < HALF, so the closed box the
 tools/wp13/evidence/20260915-capital-terrain/measurements/band-bound.lua:12:--   gentle  the worst |output step| over pairs whose RELIEF step is at most 1.
 tools/wp13/evidence/20260915-capital-terrain/measurements/band-bound.lua:44:io.write("deviation = worst |output - plain terrace|\n\n")
 tools/wp13/evidence/20260914-round-b-terrain/measure/road_shoulder.lua:2:-- rows on the approach, the smallest |dx| at which a biome decoration may host
@@ -358,10 +369,13 @@ tools/wp40/t2_extreme_gate_check.lua:41:	local status, reason, code = os.execute
 tools/wp40/t2_partition_test.lua:28:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
 tools/wp40/t2_extreme_conformance_preflight.lua:32:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
 tools/wp40/t2_extreme_conformance_verify.lua:62:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
-tools/wp13/capital_wall.lua:246:	os.exit(1)
-tools/wp13/nhal_veyr_plots.lua:390:	os.exit(1)
-tools/wp13/capital_plots.lua:313:	os.exit(0)
-tools/wp13/capital_plots.lua:349:	os.exit(1)
+tools/wp13/capital_wall.lua:313:	os.exit(1)
+tools/wp13/route_gates.lua:721:os.exit(gated == 0 and 0 or 1)
+tools/wp13/nhal_veyr_plots.lua:525:	os.exit(1)
+tools/wp13/capital_plots.lua:357:	os.exit(0)
+tools/wp13/capital_plots.lua:393:	os.exit(1)
+tools/wp13/capital_lots.lua:414:	os.exit(0)
+tools/wp13/capital_lots.lua:594:	os.exit(1)
 tools/wp13/dump_blueprint.lua:18:	os.exit(2)
 tools/wp13/dump_blueprint.lua:46:	os.exit(1)
 tools/wp13/dump_blueprint.lua:52:	os.exit(1)

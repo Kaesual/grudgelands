@@ -25,7 +25,12 @@ here="tools/wp13/evidence/20260915-nhal_veyr"
 		tools/wp13/nhal_veyr_plots.lua \
 		tools/wp13/final_micro.lua \
 		docs/research/wp13-nhal_veyr.md \
-		docs/design/settlements.md
+		docs/design/settlements.md \
+		mods/MAPGEN/grug_mapgen/wp13/wall.lua \
+		mods/MAPGEN/grug_mapgen/wp13/highcourt.lua \
+		mods/MAPGEN/grug_mapgen/wp13/dur_brannoc.lua \
+		tools/wp13/capital_wall.lua \
+		tools/wp13/route_gates.lua
 
 	echo "== the shared library this increment did NOT change"
 	sha256sum \
@@ -38,7 +43,6 @@ here="tools/wp13/evidence/20260915-nhal_veyr"
 		mods/MAPGEN/grug_mapgen/wp13/layout.lua \
 		mods/MAPGEN/grug_mapgen/wp13/roofs.lua \
 		mods/MAPGEN/grug_mapgen/wp13/avenue.lua \
-		mods/MAPGEN/grug_mapgen/wp13/wall.lua \
 		mods/MAPGEN/grug_mapgen/wp13/highcourt_plot.lua \
 		mods/MAPGEN/grug_mapgen/wp13/highcourt_quadrants.lua
 

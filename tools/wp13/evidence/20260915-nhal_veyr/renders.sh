@@ -46,4 +46,41 @@ render "$tsv/nhal_veyr-rampart.tsv" -o "$out/wall-terrace-sw.png" --view sw
 render "$tsv/nhal_veyr-gate.tsv" -o "$out/gatehouse.png" --view ne
 render "$tsv/nhal_veyr-gate.tsv" -o "$out/gatehouse-night.png" --view ne --light
 
+# THE WHOLE CAPITAL ON ONE PLANE, which is the only picture that answers "how
+# dense is this city" by eye. `tools/wp13/dump_capital_plan.lua` lays the core,
+# all 52 plots at the offsets THIS WORLD'S permutation gives them, and every
+# overlay run -- avenues, ring, the eight lanes, the curtain and its four gates
+# -- on flat ground, so the terraces are out of the way and the plan is the
+# subject. The seed is passed, so the quarters are labelled with the assignment
+# the map really has and not the canonical one.
+luajit tools/wp13/dump_capital_plan.lua . nhal_veyr 531802985935182545 \
+	>"$tsv/nhal_veyr-plan.tsv"
+render "$tsv/nhal_veyr-plan.tsv" -o "$out/capital-plan.png" --view ne --scale 2
+render "$tsv/nhal_veyr-plan.tsv" -o "$out/capital-plan-night.png" --view ne \
+	--scale 2 --light
+
+# THE NORTH GATE APPROACH, read back out of the finished map: the axis whose
+# ground falls fastest, out to the gate point at 261, which is the stretch the
+# wave-2 review found the road standing over. `<key>-approach.tsv` is the region
+# `capital_probe` added for it.
+if [[ -f "$tsv/nhal_veyr-approach.tsv" ]]; then
+	render "$tsv/nhal_veyr-approach.tsv" -o "$out/gate-approach.png" --view ne
+	render "$tsv/nhal_veyr-approach.tsv" -o "$out/gate-approach-sw.png" --view sw
+	render "$tsv/nhal_veyr-approach.tsv" -o "$out/gate-approach-night.png" \
+		--view ne --light
+fi
+
+# A CORNER OF THE CURTAIN ON ITS REAL GROUND, where two runs' walks meet: the
+# picture that goes with `wall.lua` section 1b. The probe's rampart dump is the
+# east curtain either side of the anchor and carries no corner, so this one is
+# built offline out of the same WP40 height session the corner proof uses
+# (`corners/wall_cells.lua`) and cut to the north-east corner.
+luajit "$here/corners/wall_cells.lua" . 531802985935182545 nhal_veyr \
+	"$tsv/nhal_veyr-curtain.tsv"
+awk -F'\t' 'NR > 1 && $2 >= 225 && $2 <= 262 && $4 >= 225 && $4 <= 262 \
+	{ print $2 "\t" $3 "\t" $4 "\t" $5 "\t" $6 }' \
+	"$tsv/nhal_veyr-curtain.tsv" >"$tsv/nhal_veyr-corner.tsv"
+rm -f "$tsv/nhal_veyr-curtain.tsv"
+render "$tsv/nhal_veyr-corner.tsv" -o "$out/wall-corner.png" --view sw --scale 8
+
 ls -la "$out"/*.png

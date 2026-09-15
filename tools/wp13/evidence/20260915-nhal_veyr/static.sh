@@ -24,6 +24,12 @@ CHANGED=(
 	tools/wp13/nhal_veyr_kat.lua
 	tools/wp13/nhal_veyr_plots.lua
 	tools/wp13/final_micro.lua
+	mods/MAPGEN/grug_mapgen/wp13/wall.lua
+	mods/MAPGEN/grug_mapgen/wp13/highcourt.lua
+	mods/MAPGEN/grug_mapgen/wp13/dur_brannoc.lua
+	tools/wp13/capital_wall.lua
+	tools/wp13/capital_probe/init.lua
+	tools/wp13/route_gates.lua
 )
 
 echo "== parser and SETGLOBAL on every Lua file this increment changed =="

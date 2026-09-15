@@ -353,17 +353,36 @@ local function loader(directory)
 		{id = "wall_north", axis = "x", at = WALL_AT,
 			from = -WALL_SIDE, to = WALL_SIDE},
 	}
+	-- `corners` is the pair of places each run's walk MEETS another run's, and
+	-- it is what `wall.lua` section 1b reconciles. A z-run meets an x-run at its
+	-- own corner turret's centre column (+-256); the x-run meets it four columns
+	-- earlier, at its own end (+-252), which is where its walk stops and the
+	-- turret's city-face opening begins. Each entry names MY column and the
+	-- other run's line and column, and both runs of a pair name the same two
+	-- places -- which is what lets them agree on a datum without either knowing
+	-- the other exists.
+	local function corner(p, axis, at, other_p)
+		return {p = p, axis = axis, at = at, other_p = other_p}
+	end
 	M.wall_plan = {
 		wall_west = {outside = -1, gates = {0},
 			towers = turret_list({-WALL_AT, WALL_AT}),
-			cross_towers = {-WALL_AT, WALL_AT}},
+			cross_towers = {-WALL_AT, WALL_AT},
+			corners = {corner(-WALL_AT, "x", -WALL_AT, -WALL_SIDE),
+				corner(WALL_AT, "x", WALL_AT, -WALL_SIDE)}},
 		wall_east = {outside = 1, gates = {0},
 			towers = turret_list({-WALL_AT, WALL_AT}),
-			cross_towers = {-WALL_AT, WALL_AT}},
+			cross_towers = {-WALL_AT, WALL_AT},
+			corners = {corner(-WALL_AT, "x", -WALL_AT, WALL_SIDE),
+				corner(WALL_AT, "x", WALL_AT, WALL_SIDE)}},
 		wall_south = {outside = -1, gates = {0}, towers = turret_list(),
-			cross_towers = {}},
+			cross_towers = {},
+			corners = {corner(-WALL_SIDE, "z", -WALL_AT, -WALL_AT),
+				corner(WALL_SIDE, "z", WALL_AT, -WALL_AT)}},
 		wall_north = {outside = 1, gates = {0}, towers = turret_list(),
-			cross_towers = {}},
+			cross_towers = {},
+			corners = {corner(-WALL_SIDE, "z", -WALL_AT, WALL_AT),
+				corner(WALL_SIDE, "z", WALL_AT, WALL_AT)}},
 	}
 
 	-- The four districts and their 36 + 16 plots, resolved against this

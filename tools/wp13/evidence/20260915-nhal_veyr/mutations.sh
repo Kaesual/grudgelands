@@ -14,6 +14,18 @@
 #      one course down -- and RED after it.
 #   3. MOVE THE ALTAR'S VOTIVE LIGHTS UP ONE COURSE, out of the window the
 #      contract gives a resident. Green before, red after.
+#   4. DISARM THE CURTAIN WALL'S CORNER CLAMP (`wp13/wall.lua` section 1b): the
+#      corners are still visited and counted, but the datum is not applied. The
+#      KAT's own shouldered ground then shows the defect the wave-2 review
+#      found -- two runs' walks meeting six nodes apart through a three-course
+#      opening -- and rule (f) goes red. This is the "red without the fix" the
+#      coordinator asked the corner commit to carry.
+#   5. TAKE THE GATE TUNNEL'S FLOOR AWAY (`wp13/nhal_veyr.lua`'s `gate_road`
+#      section 3): the road arrives at the gate point at the free terrain there,
+#      which can stand above the lowest ground of the band the curtain clears,
+#      and then the curtain's passage leaves air under the carriageway. The
+#      engine's read-back is what found that; the KAT's rule (f) is what holds
+#      it now, and this is the mutation that says so.
 set -uo pipefail
 export LC_ALL=C
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd -P)"
@@ -88,9 +100,44 @@ open(p, "w").write(s.replace(old, new, 1))
 PY
 }
 
+disarm_corner_clamp() {
+	local tree="$1"
+	python3 - "$tree" <<'PY2'
+import sys
+p = sys.argv[1] + "/mods/MAPGEN/grug_mapgen/wp13/wall.lua"
+s = open(p).read()
+old = """				if datum > floor[corner.p] then
+					floor[corner.p] = datum
+					level = envelope(floor)
+				end
+"""
+assert old in s, "the corner clamp moved"
+open(p, "w").write(s.replace(old, "", 1))
+PY2
+}
+
+drop_tunnel_floor() {
+	local tree="$1"
+	python3 - "$tree" <<'PY3'
+import sys
+p = sys.argv[1] + "/mods/MAPGEN/grug_mapgen/wp13/nhal_veyr.lua"
+s = open(p).read()
+old = """					for y = bottom, low[entry.key] - 1 do
+						piece.cells[#piece.cells + 1] = {x = entry.x, y = y,
+							z = entry.z, name = PAVING, param2 = 0}
+						tunnel = tunnel + 1
+					end
+"""
+assert old in s, "the gate tunnel's floor moved"
+open(p, "w").write(s.replace(old, "", 1))
+PY3
+}
+
 printf '== the tree as it ships\n'
 if run_kat "$repo"; then echo "shipped tree           KAT GREEN (exit 0)"; fi
 printf '== mutations\n'
 mutate drop_quarry_face drop_quarry_face
 mutate pray_to_mine pray_to_mine
 mutate raise_altar_lights raise_altar_lights
+mutate disarm_corner_clamp disarm_corner_clamp
+mutate drop_tunnel_floor drop_tunnel_floor

@@ -2453,12 +2453,23 @@ return function(repo)
 			id .. " reaches into the corner turret of the run it meets")
 	end
 
-	-- The synthetic ground the four runs are built over: the undead plateau's
-	-- own two-node terraces, a flat reach, two steps one column apart and a
-	-- cross fall across the wall's own thickness, which is what a river bank
-	-- inside the envelope does to it.
-	local function wall_ground(p)
-		local y = 60
+	-- The synthetic ground the four runs are built over, and it is TWO
+	-- DIMENSIONAL, which the first version of this section was not.
+	--
+	-- It used to be one profile per run, evaluated along that run's own axis.
+	-- That is enough for the five rules above -- every one of them is a question
+	-- about a single run -- and it is not enough for the sixth, which is the
+	-- question the wave-2 review asked: `wall.lua` section 1b reads the ground
+	-- under the OTHER run at a shared corner, and a per-run profile would answer
+	-- that query with this run's own axis and therefore with a fiction.
+	--
+	-- `wall_terrace` is the old profile with its base taken out, so along any
+	-- one of the four lines the ground is still the undead plateau's two-node
+	-- terraces with a flat reach and two steps one column apart. The terrace
+	-- offsets are all zero below -150, so the west and south lines at -256 see
+	-- exactly the profile the first version gave them.
+	local function wall_terrace(p)
+		local y = 0
 		if p > -150 then y = y - 2 end
 		if p > -70 then y = y - 2 end
 		if p > -69 then y = y - 2 end
@@ -2467,24 +2478,96 @@ return function(repo)
 		if p > 160 then y = y - 2 end
 		return y
 	end
-	local function wall_surface(axis, at)
-		return function(x, z)
-			local p, lane
-			if axis == "x" then p, lane = x, z - at else p, lane = z, x - at end
-			local y = wall_ground(p)
-			if lane >= 2 and p > -20 and p < 60 then y = y - 2 end
-			return y
+	-- THE SHOULDERS THAT BREAK TWO CORNERS, which is what makes this fixture a
+	-- test of section 1b and not a decoration.
+	--
+	-- A shoulder is a patch of raised ground that stands INSIDE one run's
+	-- look-around of a shared corner and OUTSIDE the other's. A run's window at
+	-- a corner is `+-reach` columns ALONG its own axis over its own seven lanes
+	-- ACROSS, so a patch four columns off the x-run's lanes is invisible to the
+	-- x-run and six columns from the z-run's corner column is very visible to
+	-- the z-run. Its height must exceed its distance from the corner or the
+	-- envelope's one-node-per-column decay swallows it: twelve at six columns
+	-- raises the z-run's deck there by six, and the x-run's by nothing.
+	--
+	--   * south-west: `wall_west` (z-run, corner column z = -256) against
+	--     `wall_south` (x-run, corner column x = -252). The patch sits at
+	--     z = -250..-246, clear of `wall_south`'s lanes z = -259..-253.
+	--   * north-east: `wall_east` (corner column z = 256) against `wall_north`
+	--     (corner column x = 252), the same shape turned.
+	--
+	-- The other two corners carry no shoulder and must stay at zero, which is
+	-- what says the fixture breaks what it means to break and nothing else.
+	local SHOULDER = 12
+	local function wall_shoulder(x, z)
+		if x >= -259 and x <= -253 and z >= -250 and z <= -246 then
+			return SHOULDER
 		end
+		if x >= 253 and x <= 259 and z >= 246 and z <= 250 then
+			return SHOULDER
+		end
+		return 0
 	end
+	-- The cross fall across each line's own thickness over one stretch, which is
+	-- what a river bank inside the envelope does to a wall. Spelled per line
+	-- because "the outer two lanes" is a statement about a run and this function
+	-- is a statement about the world.
+	local function wall_cross_fall(x, z)
+		if z > -20 and z < 60 and ((x >= -254 and x <= -253) or
+				(x >= 258 and x <= 259)) then
+			return -2
+		end
+		if x > -20 and x < 60 and ((z >= -254 and z <= -253) or
+				(z >= 258 and z <= 259)) then
+			return -2
+		end
+		return 0
+	end
+	local function wall_height(x, z)
+		return 60 + wall_terrace(x) + wall_terrace(z) +
+			wall_cross_fall(x, z) + wall_shoulder(x, z)
+	end
+	-- The lowest ground under a column's own seven lanes, which is what the
+	-- module measures its footing down from.
+	local function wall_base(axis, at, p)
+		local lowest
+		for lane = -WALL_LANES, WALL_LANES do
+			local x, z
+			if axis == "x" then x, z = p, at + lane else x, z = at + lane, p end
+			local y = wall_height(x, z)
+			if lowest == nil or y < lowest then lowest = y end
+		end
+		return lowest
+	end
+	-- The RAW one-Lipschitz envelope of one line at one column -- the deck
+	-- section 1b clamps, before it clamps it. The corner assertion below uses it
+	-- to prove the two shoulders really do split the two runs apart, so the
+	-- fixture cannot quietly stop testing anything.
+	local function wall_raw_level(axis, at, column, reach)
+		local floor = {}
+		for q = column - reach, column + reach do
+			floor[q] = wall_base(axis, at, q)
+		end
+		for q = column - reach + 1, column + reach do
+			if floor[q] < floor[q - 1] - 1 then floor[q] = floor[q - 1] - 1 end
+		end
+		for q = column + reach - 1, column - reach, -1 do
+			if floor[q] < floor[q + 1] - 1 then floor[q] = floor[q + 1] - 1 end
+		end
+		return floor[column]
+	end
+
 
 	local WALL_NAMES = {}
 	for _, name in ipairs(wall.palette_names(undead)) do WALL_NAMES[name] = true end
 
 	local wall_digest_rows, wall_cells, wall_columns = {}, 0, 0
 	local wall_gaps, wall_steps, wall_passage = 0, 0, 0
+	-- The walk of every run, column by column, kept for rule (f) below.
+	local wall_walk, wall_corner_calls = {}, {}
 	for _, spec in ipairs(capital.wall) do
 		local plan = capital.wall_plan[spec.id]
-		local wsurface = wall_surface(spec.axis, spec.at)
+		local wsurface = wall_height
 		local piece = wall.run(undead, {id = spec.id, axis = spec.axis,
 			at = spec.at, from = spec.from, to = spec.to, width = avenue.WIDTH,
 			lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.from,
@@ -2527,13 +2610,16 @@ return function(repo)
 
 		local gate_from, gate_to = -wall.GATE_PASSAGE, wall.GATE_PASSAGE
 		local previous_deck
+		wall_walk[spec.id] = {}
+		wall_corner_calls[spec.id] = piece.corners
 		for p = spec.from, spec.to do
 			local deck = deck_of(p)
 			assert(deck, spec.id .. ": the column " .. p .. " has no walk at all")
+			wall_walk[spec.id][p] = deck
 			local in_gate = p >= gate_from and p <= gate_to
 			if in_gate then
 				for lane = -WALL_LANES, WALL_LANES do
-					for y = wall_ground(p) + 1, deck - 1 do
+					for y = wall_base(spec.axis, spec.at, p) + 1, deck - 1 do
 						local name = at_cell[p .. ":" .. lane .. ":" .. y]
 						assert(name == nil or name == parts.AIR,
 							spec.id .. ": the gate passage at " .. p .. "," ..
@@ -2578,12 +2664,81 @@ return function(repo)
 	assert(wall_steps >= 12, "the test profile did not exercise the walk: " ..
 		wall_steps .. " one-node steps")
 
+	-- (f) THE FOUR RUNS AGREE AT THE CORNERS -- `wall.lua` section 1b.
+	--
+	-- Where an x-run's walk arrives at a z-run's corner turret the two decks are
+	-- computed from two different neighbourhoods, and before section 1b they
+	-- disagreed: 24 of 64 corner measurements over Nhal Veyr's nine fixture
+	-- seeds stepped three nodes or more through a three-course opening and the
+	-- worst stepped nine (`tools/wp13/capital_wall.lua`). The fix clamps both
+	-- runs to the maximum of the two RAW envelopes, which is symmetric, so the
+	-- step is not merely small -- IT IS ZERO -- and that is what is asserted.
+	--
+	-- The z-run meets the x-run at its own corner turret's centre column
+	-- (+-256); the x-run's walk stops four columns earlier at its own end
+	-- (+-252), where the turret's city-face opening is. Same pairing as the
+	-- terrain predicate's section 5, so the two tools cannot drift apart.
+	--
+	-- AND THE FIXTURE IS PROVED TO BITE. For each corner the two RAW envelopes
+	-- are computed here as well, and the south-west and north-east corners --
+	-- the two the shoulders straddle -- must disagree by at least the turret's
+	-- own three-course opening, while the other two must agree exactly. Without
+	-- section 1b the assertion above goes red with the raw difference; with it,
+	-- this second assertion is what says the shoulders are still there.
+	local CORNER_OPENING = 3
+	local wall_corner_rows, wall_corners_split = {}, 0
+	for _, along in ipairs({{"wall_west", -256}, {"wall_east", 256}}) do
+		for _, across in ipairs({{"wall_south", -256}, {"wall_north", 256}}) do
+			local turret_p = across[2]
+			local arriving_p = along[2] - (along[2] > 0 and WALL_LANES + 1 or
+				-(WALL_LANES + 1))
+			local turret = assert(wall_walk[along[1]][turret_p],
+				along[1] .. " has no walk at its corner column " .. turret_p)
+			local arriving = assert(wall_walk[across[1]][arriving_p],
+				across[1] .. " has no walk at its corner column " .. arriving_p)
+			local step = math.abs(turret - arriving)
+			local raw_z = wall_raw_level("z", along[2], turret_p, avenue.REACH)
+			local raw_x = wall_raw_level("x", across[2], arriving_p, avenue.REACH)
+			local split = math.abs(raw_z - raw_x)
+			local shouldered = (along[1] == "wall_west" and
+					across[1] == "wall_south") or
+				(along[1] == "wall_east" and across[1] == "wall_north")
+			assert(step == 0, along[1] .. "/" .. across[1] ..
+				": the walk steps " .. step .. " nodes at the corner (" ..
+				turret .. " against " .. arriving .. "), and the corner " ..
+				"reconciliation promises zero")
+			if shouldered then
+				assert(split >= CORNER_OPENING, along[1] .. "/" .. across[1] ..
+					": the raw envelopes differ by only " .. split ..
+					" nodes, so the shoulder no longer breaks this corner " ..
+					"and the fixture has stopped testing section 1b")
+				wall_corners_split = wall_corners_split + 1
+			else
+				assert(split == 0, along[1] .. "/" .. across[1] ..
+					": the raw envelopes differ by " .. split ..
+					" nodes on a corner the fixture carries no shoulder at")
+			end
+			wall_corner_rows[#wall_corner_rows + 1] = table.concat(
+				{along[1], across[1], turret, arriving, step, raw_z, raw_x,
+					split}, ":")
+		end
+	end
+	assert(wall_corners_split == 2, "the fixture breaks " ..
+		wall_corners_split .. " corners, not the two it authors shoulders for")
+	-- Both z-runs see both of their corners; the x-runs stop at +-252 and their
+	-- window reaches +-292, so they see both of theirs too. Four runs, two
+	-- corners each.
+	for _, id in ipairs({"wall_west", "wall_east", "wall_south", "wall_north"}) do
+		assert(wall_corner_calls[id] == 2, id .. " reconciled " ..
+			tostring(wall_corner_calls[id]) .. " corners, not two")
+	end
+
 	-- (e) a piece of a run is exactly that stretch of the whole run.
 	local cut_spec = {id = "wall_east", axis = "z", at = 256, from = -40,
 		to = 40, width = avenue.WIDTH, lamp_spacing = avenue.LAMP_SPACING,
 		lamp_phase = -40, reach = avenue.REACH}
 	local cut_plan = capital.wall_plan.wall_east
-	local cut_surface = wall_surface("z", 256)
+	local cut_surface = wall_height
 	local whole_wall = wall.run(undead, cut_spec, cut_surface, cut_plan)
 	local whole_index = {}
 	for _, cell in ipairs(whole_wall.cells) do
@@ -2640,7 +2795,7 @@ return function(repo)
 		local lift_calls = 0
 		local function lifting_overhead(x, z)
 			lift_calls = lift_calls + 1
-			return wall_ground(cut_spec.axis == "x" and x or z) + 2
+			return wall_height(x, z) + 2
 		end
 		local plain = wall.run(undead, cut_spec, cut_surface, cut_plan)
 		local through = capital.overlay_run(avenue, undead, {
@@ -2710,6 +2865,8 @@ return function(repo)
 		end
 	end
 
+	say("nhal_veyr_wall_corners", wall_corners_split,
+		table.concat(wall_corner_rows, " "))
 	say("nhal_veyr_wall", #capital.wall, wall_columns, wall_cells,
 		wall_steps, wall_passage, wall_splits, lamps_in_gate,
 		common.hex(common.new_sha256()(table.concat(wall_digest_rows, "\n"))))

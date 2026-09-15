@@ -3,12 +3,19 @@
 #
 # Digests every shipped WP13 fixture output in ONE tree, so two trees can be
 # compared byte for byte. Run it against this worktree and against a
-# `git archive` of `main` at c8050057 and the two columns must be identical:
+# `git archive` of `main` at f5583e13 and the two columns must be identical:
 # the six start blueprint identities, the shared library, the six starts'
 # acceptance, the pilot capital's and the dwarf capital's.
 #
+# The corner reconciliation of `wall.lua` section 1b does NOT move
+# `highcourt_kat` or `dur_brannoc_kat`: their synthetic wall profiles are one
+# dimensional per run, so their corners already agreed and the clamp finds
+# nothing to do there -- which also means those two fixtures could not have
+# caught the defect, and `nhal_veyr_kat.lua`'s shouldered ground is the first
+# that can.
+#
 #     bash tools/wp13/evidence/20260915-nhal_veyr/identity.sh .
-#     git archive c8050057 | tar -x -C /tmp/main-ref
+#     git archive f5583e13 | tar -x -C /tmp/main-ref
 #     cp -a tools/bin /tmp/main-ref/tools/
 #     bash tools/wp13/evidence/20260915-nhal_veyr/identity.sh /tmp/main-ref
 set -euo pipefail

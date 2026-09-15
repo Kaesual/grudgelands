@@ -1,0 +1,8 @@
+axis=north  anchor_y=106  carriageway columns=78
+worst step along the centre lane: 0 node(s)
+
+p	lane	top(abs)	free(abs)	step	fill	rail
+
+columns with a known free terrain: 0
+
+the road steps at most one node a column, arrives at the gate point at the free terrain there, stands on its own ground, and is railed wherever it stands three courses above it

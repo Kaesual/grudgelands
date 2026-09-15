@@ -188,11 +188,18 @@ fixed cells either: like the avenues, it is computed per mapchunk from the
 ground the map actually has, so it follows the terraces instead of cutting
 through them — its walk steps down half a node at a time and its masonry starts
 under each column's own ground, which is what makes a wall on stepped terrain
-have no gap in it. The wall carries no NPCs of its own; a walled capital's
+have no gap in it. Where two sides meet at a corner turret the two runs
+would each compute the walk from their own axis and land at different heights, so
+each side is told where its corners are and both clamp them to the same datum:
+the walk round the circuit has no step at a corner at all, on any world. The wall carries no NPCs of its own; a walled capital's
 garrison is the four gatehouses of its civic core, exactly as an open one's is.
 Where a capital's avenue has to leave the ground — the blend from the flat civic
 core to the terraces can fall faster than a road may descend — the raised
-stretch carries a masonry rail on both kerbs.
+stretch carries a masonry rail on both kerbs. And an avenue ARRIVES AT ITS GATE
+at the height of the ground there, whatever the ground between does: it descends
+inside the envelope as a stair of at most one node a column, cutting into the
+hillside where it has to, so the long-distance road outside and the city street
+inside meet level. A gate you have to jump into is not a gate.
 
 **Between the plots.** Decided 2026-09-15 with the round-3 playtest: a quarter
 of nine buildings in a 512 envelope is empty, so each quarter carries four more

@@ -32,9 +32,14 @@
 --   4. THE GATE IS DRY AND FLAT. The seven passage columns of each gate carry
 --      the road, so they are checked for water and for their own fall.
 --   5. THE CORNER STEP. The two runs that meet at a corner compute their decks
---      from different neighbourhoods, so the walk can have a step where they
---      meet. It is measured -- here, on the real ground, on both seeds -- and
---      reported, because nothing in the composition can see it.
+--      from different neighbourhoods of THEIR OWN axis, so the walk used to have
+--      a step where they meet: 24 of 64 measurements over Nhal Veyr's nine
+--      fixture seeds were three nodes or more, through a turret opening three
+--      courses high, and the worst was nine. `wp13/wall.lua` section 1b now
+--      clamps both runs at a shared corner to the same datum, and because that
+--      clamp is symmetric the step is ZERO by construction. This is therefore a
+--      GATE and not a number somebody reads: any non-zero step here is a
+--      regression in the reconciliation or in a capital's `corners` table.
 --
 -- Plain Lua 5.1.
 
@@ -97,8 +102,13 @@ end
 io.write("world\tline\twet\tworst_step\tworst_step_at\tlow\thigh\trange" ..
 	"\toverlap\tgate_fall\n")
 local decks = {}
+-- The RAW envelope of each line -- what the module computes before section 1b's
+-- corner clamp -- kept per world so the clamp below can read the other run's.
+local raw, floors, windows = {}, {}, {}
 for _, world in ipairs(worlds) do
 	decks[world.name] = {}
+	raw[world.name], floors[world.name] = {}, {}
+	windows[world.name] = {}
 	for _, spec in ipairs(capital.wall) do
 		local line = assert(LINE_OF[spec.id], "no terrain line for " .. spec.id)
 		local columns = assert(world.rows[line],
@@ -167,10 +177,9 @@ for _, world in ipairs(worlds) do
 		for p = window_to - 1, window_from, -1 do
 			if level[p] < level[p + 1] - 1 then level[p] = level[p + 1] - 1 end
 		end
-		decks[world.name][spec.id] = {}
-		for p = spec.from, spec.to do
-			decks[world.name][spec.id][p] = level[p] + wall.RISE
-		end
+		raw[world.name][spec.id] = level
+		floors[world.name][spec.id] = base
+		windows[world.name][spec.id] = {from = window_from, to = window_to}
 
 		-- 4. The gate, which is also the road.
 		local gate_low, gate_high
@@ -206,17 +215,75 @@ for _, world in ipairs(worlds) do
 		io.write(table.concat({world.name, spec.id, wet, worst_step, worst_at,
 			low, high, high - low, overlap, gate_high - gate_low}, "\t"), "\n")
 	end
+
+	-- THE CORNER CLAMP, section 1b of `wall.lua`, modelled here as well.
+	--
+	-- This tool does not call the module: it reads two terrain dumps and
+	-- reproduces the rule, which is what lets it ask about ground no capital is
+	-- standing on yet. That means every part of the rule has to be here, and the
+	-- corner clamp is now part of it: each corner names my column and the other
+	-- run's line and column, both runs clamp to the maximum of the two RAW
+	-- envelopes, and both re-sweep. Because the clamp is symmetric the step
+	-- below is zero by construction on ground where the module can compute it at
+	-- all -- which is exactly what makes section 5 a standing gate rather than a
+	-- measurement somebody reads.
+	--
+	-- A run whose plan authors no corner is left alone, so an open capital and
+	-- any fixture keep the unreconciled deck.
+	local SPEC_OF = {}
+	for _, spec in ipairs(capital.wall) do
+		SPEC_OF[spec.axis .. ":" .. spec.at] = spec.id
+	end
+	for _, spec in ipairs(capital.wall) do
+		local window = windows[world.name][spec.id]
+		local base = floors[world.name][spec.id]
+		local level = raw[world.name][spec.id]
+		local plan = (capital.wall_plan or {})[spec.id] or {}
+		local floor = {}
+		for p = window.from, window.to do floor[p] = base[p] end
+		local function sweep()
+			local out = {}
+			for p = window.from, window.to do out[p] = floor[p] end
+			for p = window.from + 1, window.to do
+				if out[p] < out[p - 1] - 1 then out[p] = out[p - 1] - 1 end
+			end
+			for p = window.to - 1, window.from, -1 do
+				if out[p] < out[p + 1] - 1 then out[p] = out[p + 1] - 1 end
+			end
+			return out
+		end
+		for _, corner in ipairs(plan.corners or {}) do
+			local other = assert(SPEC_OF[corner.axis .. ":" .. corner.at],
+				"no wall run on " .. corner.axis .. " at " .. corner.at)
+			local theirs = raw[world.name][other][corner.other_p]
+			if theirs ~= nil and corner.p >= window.from and
+					corner.p <= window.to then
+				local datum = level[corner.p]
+				if theirs > datum then datum = theirs end
+				if datum > floor[corner.p] then
+					floor[corner.p] = datum
+					level = sweep()
+				end
+			end
+		end
+		decks[world.name][spec.id] = {}
+		for p = spec.from, spec.to do
+			decks[world.name][spec.id][p] = level[p] + wall.RISE
+		end
+	end
 end
 
 -- 5. The corner step: where an x-run's walk arrives at the z-run's corner
--- turret, the two decks are computed from different neighbourhoods and can
--- disagree. The turret's own rampart opening is three courses high, so a step
--- of one or two is walked through it; more is a step a patrol cannot take.
+-- turret, the two runs' decks meet. `wall.lua` section 1b clamps both to the
+-- same datum, so the step here is ZERO and this is a gate: a turret's city-face
+-- opening is three courses, so a step of two or less would be walked through it
+-- and three or more is a walk that stops.
 --
--- It is not always zero. With the look-around window the module really uses,
--- the user seed shows a one-node step where `wall_north` meets `wall_west`'s
--- corner turret (built decks 104 and 103), which the opening walks. The first
--- version of this tool reported zero everywhere because it left the window out.
+-- It was NOT zero before that fix, and the record of what it cost is worth
+-- keeping: over Nhal Veyr's nine fixture seeds this predicate reported 24 of 64
+-- corners at three or more and the worst at nine nodes, Highcourt 2 and Dur
+-- Brannoc 1 on the two gate seeds. The rule was the module's and the severity
+-- the ground's, which is why the fix is in `wall.lua` and not in a composition.
 io.write("\nworld\tcorner\tz_run_deck\tx_run_deck\tstep\n")
 local CORNER_OPENING = 3
 for _, world in ipairs(worlds) do
