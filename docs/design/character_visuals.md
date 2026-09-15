@@ -83,6 +83,13 @@ removed when the hands are empty. Guards carry a sword, bandits a dagger, and a
 player carries whatever is in the weapon slot — the same item that is the single
 source of melee damage.
 
+It is held the way a weapon is held: **the grip in the fist, the blade pointing
+forward and slightly up, its flat vertical** so the silhouette reads from the
+side (decided 2026-09-15, playtest round 1). The pose is not tuned by eye — it
+is derived from the character mesh's own bone tree and the engine's wielditem
+extrusion, and the derivation lives with the numbers in
+`mods/PLAYER/grug_visuals/wield_geometry.lua`.
+
 One entity per character, never more. The **offhand is not drawn yet**; shields
 arrive with the offhand work.
 

@@ -19,19 +19,16 @@
 --
 local WIELD_ENTITY = "grug_visuals:wield"
 
--- `character.b3d` carries the bones Body / Head / Arm_Left / Arm_Right /
--- Leg_Right / Leg_Left (read out of the mesh itself, not guessed). The arm
--- bone sits at the SHOULDER, 6.3 model units above the hand, and its own
--- rotation flips y and z -- hence a positive y and a negative z here for
--- "down the arm and slightly forward".
---
--- FIRST VERSION, tuned by eye against the geometry and NOT verified in a
--- client: the visuals lane cannot see the model. These five numbers are the
--- one place to adjust it (docs/design/character_visuals.md, "Open points").
-local WIELD_BONE = "Arm_Right"
-local WIELD_POS = {x = 0, y = 5.5, z = -1.5}
-local WIELD_ROT = {x = -90, y = 180, z = 0}
-local WIELD_SIZE = {x = 0.22, y = 0.22}
+-- The hand attachment. Bone, position, rotation and size are DERIVED in
+-- `wield_geometry.lua` from `character.b3d`'s own bone tree, the skin's UV
+-- layout and the engine's wielditem extrusion -- that file carries the whole
+-- derivation and is the one place to adjust the look. Nothing here may hold a
+-- second copy of a number.
+local WIELD = grug_visuals.WIELD
+local WIELD_BONE = WIELD.bone
+local WIELD_POS = WIELD.pos
+local WIELD_ROT = WIELD.rot
+local WIELD_SIZE = WIELD.size
 
 -- How often an orphaned wield entity notices that its character is gone.
 -- Luanti DETACHES the children of a removed object instead of removing them,
