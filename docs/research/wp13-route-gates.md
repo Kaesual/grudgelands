@@ -61,8 +61,22 @@ So the change in `source/simple_map.lua` is small:
 3. `simple_map.lua` (the compiled artefact) validates all of it: the gate
    geometry against `capital_core`, four gates per capital against the capital
    anchors, each capital route's station and terminal against its side's gate,
-   the last leg axial, and **no centreline point strictly inside any envelope**
-   -- the ruling's own sentence, checked against the points.
+   the last leg axial, and **no centreline SEGMENT entering any envelope** --
+   the ruling's own sentence.
+
+   A segment test and not a points test, because two points can both lie
+   outside a square and the chord between them still cut its corner. The first
+   version of this lane argued that away ("every segment of a capital's gate
+   leg is axial, so a point outside is a segment outside"); the review of
+   2026-09-16 pointed out that an argument is not a check, and a slab clip is
+   eight comparisons. The clip runs against the CLOSED box
+   `[-255, 255]` on both axes, because the envelope the ruling names is the
+   OPEN one (`|d| < 256`) and a segment that only touches the edge at exactly
+   ±256 is at a gate. Both `route_gates_kat.lua` and the compiled validator do
+   it; the KAT reports `route_gate_interior_segments 472 0`, and the clip was
+   checked against a synthetic corner-cutting chord, `(-400,-100)→(100,400)`
+   about an envelope at the origin, which a points test passes and this
+   catches.
 
 ### 2.1 The height, which is the half that is not geometry
 
@@ -93,11 +107,28 @@ ceiling and two more names do not fit (`luac51 -p` says so).
 
 ## 3. The measurements
 
-`tools/wp13/route_gates.lua <repo> <seed> [out.tsv] [--full]` builds WP40's
-height session offline (ten seconds, no engine) and answers seven questions per
-capital and seed. The sweep below is all six capitals on the nine seeds of
-`tools/wp13/capital_anchor_fixture.lua`, run once on main 922bfd92 and once on
-this branch.
+`tools/wp13/route_gates.lua <repo> <seed> [out.tsv] [--full] [--strict]` builds
+WP40's height session offline (ten seconds, no engine) and answers seven
+questions per capital and seed. The sweep below is all six capitals on the nine
+seeds of `tools/wp13/capital_anchor_fixture.lua`, run once on main `c8050057`
+and once on this branch.
+
+**Two classes of fault, and what the exit status gates.** Questions 1 to 3 are
+the ROUTE GRAPH's and this lane owns them: a road that does not end at its gate,
+a road that grades the city's interior beyond its own end cap, a deck over the
+city, a gate two roads want. Any of those exits 1. Questions 4 to 7 are a
+CAPITAL's terrain and blueprint — the step where the route hands over to the
+avenue, the walk in from the field, the ground just inside the curtain, the
+avenue's own continuity — which the route graph can improve but cannot repair;
+they are always reported and counted and enter the exit status only under
+`--strict`. **On this branch the default mode exits 0 on all nine seeds**
+(`route_faults=0`), and `--strict` exits 1 on five of them, all of them Nhal
+Veyr's north gate (§5).
+
+The first version of this tool put both in one status and therefore exited 1 on
+every seed of its own branch, over end caps it had itself declared correct. A
+gate that is red by construction teaches people to ignore it; the review of
+2026-09-16 said so and this is the repair.
 
 | measurement | before | after |
 | --- | --- | --- |
@@ -119,23 +150,66 @@ Reading the three that are not zero:
   and the avenue -- which runs out to 261 and is written by the settlement
   successor after WP40 -- paves over them. Zero is only reachable by ending the
   road short of the gate, which is the thing the ruling forbids.
+
+  So the tool asserts the SHAPE rather than the count it happened to measure
+  (`end_cap_gate`): a route column inside an envelope must belong to the route
+  that takes one of that capital's gates, sit on that gate's inward side, and
+  lie at most 3 nodes in and at most `3 - (inward - 1)` off the gate's own
+  centre line. Anything else is a STRAY and a route fault, and the per-gate
+  count may not exceed 15 either. Mutation-tested both ways: against main the
+  same check reports 7330 strays per capital, and narrowing the accepted depth
+  by one turns the cap's outermost row into six strays.
 * **All five remaining walk breaks and all four remaining gate steps are Nhal
   Veyr's north gate**, on five of the nine seeds, and they are a fact about
   that capital's terrain rather than about the routes (§5).
-* **The worst ground step inside a gate goes from 3 to 9**, and it is Kezamba's
-  south gate on two of the nine seeds. That gate stands on ground climbing
-  three nodes a column, and the route's flat end cap gives the fitting fewer
-  columns to meet it in; the road over it is still continuous (the entry check
-  passes at Kezamba's south gate on every seed). The check exists because the
-  first version of this lane built a 24-node wall at Dur Brannoc's four gates,
-  and 12 -- three terrace rises -- is where the two are told apart.
+* **The worst ground step inside a gate goes from 3 to 9** -- see §3.2, which
+  is a task for the capital lanes and not a fault of this tool.
 
 `--full` scans all 261121 columns of an envelope instead of a band around the
 route polylines. The two agree exactly (seed 531802985935182545, all six
 capitals: 7330/7330/7323/7330/7330/7330 route columns and 0/1159/436/0/0/0 deck
 columns either way), which is what licenses the band.
 
-### 3.1 Water under the avenues, and why it is not a fault
+### 3.1 The first ten columns inside each gate are the capital's to terrace
+
+This is the one place the route change made the world WORSE, and it is handed
+over rather than argued away.
+
+`route_gates.lua`'s `inside` row reads the RAW TERRAIN along the avenue's centre
+line over the eight columns immediately inside the gate -- the curtain's own
+width and its footing. Across six capitals and nine seeds the worst single step
+there was **3 before this lane and 9 after**. The cause is the lane's own doing:
+the route now ends flat at the gate, which gives the anchor fitting fewer
+columns to meet a hillside in.
+
+Worst step per capital and side, over the nine seeds (blank = 2 or less):
+
+| capital | west | east | south | north |
+| --- | --- | --- | --- | --- |
+| Dur Brannoc | 4 | 3 | 3 | 3 |
+| Highcourt | 3 | 3 | — | 3 |
+| Lethariel | 3 | 3 | 3 | **6** |
+| Nhal Veyr | 3 | 3 | 3 | 5 |
+| Gor Drazhak | 3 | 3 | — | 3 |
+| Kezamba | 3 | 3 | **9** | 5 |
+
+On the user's own world (seed 15912857179583385436) the only values above 2 are
+Dur Brannoc west 4, Kezamba south 5, Kezamba north 3, Lethariel south 3, Nhal
+Veyr north 3 and Gor Drazhak east 3.
+
+**The paved avenue is not affected**: its one-Lipschitz envelope ramps over the
+step, and the `entry` walk has zero breaks at every one of those gates on every
+seed. What IS affected is anything a capital sets in the ground beside the road
+there -- a plot, a rampart footing, a lamp standard, a hedge. So: the first ten
+columns inside each gate belong to the capital's own terracing, and the contract
+says so in §2.1.1.
+
+The tool's limit of 12 is a judgement and the note says where it sits: 9 is the
+measured hillside at Kezamba, 24 is the embankment the first version of this
+lane built at all four of Dur Brannoc's gates (`local 252: 149, 251: 145,
+250: 129, 249: 105, 248: 97`), and 12 is three terrace rises, between them.
+
+### 3.2 Water under the avenues, and why it is not a fault
 
 With no route inside the envelope there is no WP40 bridge inside it either, so
 the four avenues carry themselves. Seven of the twenty-four avenue runs stand
@@ -151,7 +225,7 @@ The tool checks the property that follows rather than the count: over all 216
 avenue runs of the sweep, **zero positions are left unpaved and zero climb more
 than one node**. Every wet avenue is a causeway, and every gate is an entrance.
 
-### 3.2 The wave-1 crossing rule is now a safeguard
+### 3.3 The wave-1 crossing rule is now a safeguard
 
 The user's own consequence, measured. `tools/wp13/lane_routes.lua` walks every
 avenue, ring side and district lane of Highcourt and Dur Brannoc and reports
@@ -176,7 +250,7 @@ overlay run outside a 512 envelope can still meet a deck, `seam_kat`'s
 `route_handoff` band still proves the seam publishes one, and the six KAT cases
 still hold the rule to synthetic profiles no real seed happens to contain.
 
-### 3.3 The engine
+### 3.4 The engine
 
 `tools/wp13/run_capital.sh`, ports 31000-31099, one server at a time under
 `nice -n 19`:
@@ -202,7 +276,7 @@ Highcourt is cheaper because the four routes no longer grade 7330 columns
 inside its envelope. `core_cells` is identical in both capitals (42163 and
 43075) and `worst_plot_fall` is 6 in both, before and after.
 
-### 3.4 The user's own proof
+### 3.5 The user's own proof
 
 `tools/wp13/evidence/20260915-route-gates/dur-brannoc-south-gate-user-seed.png`
 is the user's finding, before and after, on the user's seed: the road crossing
@@ -246,7 +320,8 @@ The engine pass found both, and neither is optional.
 | `anchor_roster_sha256`, and with it the per-seed R7 mapgen manifest (dur_brannoc, seed 531802985935182545) | `f6c633a0…` | `a02a3816…` | a capital anchor's functional feature is its own fitting |
 | Dur Brannoc built avenue / rampart / gate, both gate seeds | see the files | re-frozen in `tools/wp13/evidence/20260915-capital-terrain/dur_brannoc/` | the road now arrives at the gate; the diff is confined to local x 248-260 plus subsurface fill material |
 | Highcourt built east avenue, both gate seeds | see the files | re-frozen in `tools/wp13/evidence/20260915-highcourt-fill/highcourt/` | same |
-| WP13 micro pair output | `8e2ca809…` | `641e868b…` | the new `route_gates_kat` row |
+| WP13 micro pair output (on main `922bfd92`) | `8e2ca809…` | `641e868b…` | the new `route_gates_kat` row |
+| WP13 micro pair output (rebased onto main `c8050057`, which carries lane N) | `a8dc1348…` | `9ffa92ce…` | lane N's own rows plus this lane's; the value to compare against after the rebase |
 
 Every digest that did **not** move, checked rather than assumed:
 
@@ -258,21 +333,92 @@ Every digest that did **not** move, checked rather than assumed:
   added KAT row, and `tools/wp13/highcourt_identities.lua` is untouched;
 * `core_cells` at both capitals in the engine.
 
+### 4.2 The R3 evidence validator, and five failures that stand in front of it
+
+`height.lua` now writes 24 gate rows into `station_evidence`.
+`tools/wp40/simple_map_r3_validate.lua`'s station rule validated that array as
+ONE ROW PER ZONE — `row.id` against `source.route_stations[row.zone_numeric_id]`,
+`hub_x`/`hub_z` against the zone's hub, and a duplicate-zone refusal — and a
+gate row fails all three: its id is not its zone's hub's, its coordinates are
+the gate's, and four of them share one zone.
+
+So the rule now has two branches. A `kind = "hub"` row is held to exactly what
+it always was (and `station_by_zone`, which the anchor rule downstream reads,
+still collects hubs only). A `kind = "gate"` row is checked against
+`source.capital_gates`: the id must name a published gate, the zone must be
+that gate's, `capital_gate_side` must match, `hub_x`/`hub_z` must BE the gate's
+position, and the population must be exactly 24. Both evidence kinds now carry
+an explicit `kind` field rather than being told apart by position.
+
+`hub_water` on a gate row is **measured** (`classified_values` at the gate
+column) and no longer hard-coded `false`. No capital gate is planned water on
+any of the nine fixture seeds, which is why the hard-coded value was right
+today and would have been wrong by construction the day one was.
+
+**What this could be exercised against, and what it could not.** The R3/R4/R5
+acceptance harness cannot reach the station rule at all today, and has not been
+able to for some time. Walking outward from it:
+
+| layer | state |
+| --- | --- |
+| the accepted-artefact freeze over `source/simple_map.lua` (`simple_map_r3_common.lua`) | **red on main `c8050057`** — `WP40 simple-map R3 harness: accepted R2 input changed`, reproduced against a `git archive` of main, so this lane did not break it |
+| `common.HEIGHT_SCHEMA` = `…height_v1` vs `height.lua`'s `…height_v5` | pre-existing mismatch |
+| the landmark mask/owner/extrema rule at `hearthpine_bowl` | pre-existing mismatch |
+| `source_cut_fill_limits_consumed`: the validator wants `false`, `height.lua` publishes `true` | pre-existing mismatch |
+| the dry non-capital hub target at `station:elandor_hearthpine_vale:hub` | pre-existing mismatch |
+| **the station rule's gate branch** | **reached and green** |
+
+With those five bypassed in a scratch copy under `/tmp` (never committed, and
+re-stamping the R2 artefact is not this lane's call), the station loop completes
+all 62 rows — 38 hubs and 24 gates — and the population check, and the harness
+moves on to the anchor rule, which fails for a sixth pre-existing reason at
+`anchor_001`. Mutated the other way, by writing `hub_x = gate.position.x + 1`
+into the gate evidence, the new branch fails loudly:
+`capital gate station rule differs at station:elandor_dur_brannoc:gate_west`.
+
+The selftest path is not scratch-only: `tools/wp40/simple_map_r3_selftest.lua`'s
+two synthetic sources gained `capital_gates = {}` and the harness reports
+`WP40 simple-map R3 harness selftest passed` under both interpreters.
+
+So this is not a claim that R3 is green. It is a claim that the station rule
+will be correct for whoever revives it, instead of being a sixth thing they
+have to discover.
+
 ## 5. What is open, and whose it is
 
-* **Nhal Veyr's north gate.** Five of the nine seeds leave one step of 2 to 7
-  nodes at local 261, the avenue's own outer end, where the WP13 road stops and
-  the WP40 road takes over. The cause is Nhal Veyr's terrain and not its
-  routes: the capital's fitted plateau stops twelve nodes short of its own
-  north envelope edge (seed 531802985935182545: local 248 is at 106, 252 at
+* **Nhal Veyr's north gate — handed to the Nhal Veyr capital lane (lane U).**
+  This is the only `--strict` fault left on the branch, and here are its
+  numbers so that lane does not have to re-measure them. `kragmar_nhal_veyr`,
+  north gate, anchor (-1800,1500), gate point (-1800,1756):
+
+  | seed | gate step (target ≤ 1) | entry walk breaks | worst break | at local |
+  | --- | --- | --- | --- | --- |
+  | 12345 | **6** | 1 | **7** | 261 |
+  | 531802985935182545 | 4 | 1 | 5 | 261 |
+  | 8675309 | 2 | 1 | 3 | 261 |
+  | 2 | 2 | 1 | 3 | 261 |
+  | 42 | 1 | 1 | 2 | 261 |
+  | 0, 1, 999999999, **15912857179583385436 (the user's world)** | 0 | 0 | — | — |
+
+  Every break is at local 261, the avenue's own outer end, where the WP13 road
+  stops and the WP40 road takes over. A 6-node step is not walkable — a player
+  climbs one node — so on seed 12345 that gate cannot be entered from the north
+  road.
+
+  The cause is Nhal Veyr's terrain and not its routes: the capital's fitted
+  plateau stops twelve nodes inside its own north envelope edge (seed
+  531802985935182545: local 248 at 106, 249 at 103, 250 at 98, 251 at 95, 252 at
   94), and `wp13/avenue.lua`'s one-Lipschitz envelope carries the plateau's
-  level eight columns out past that drop while the route arrives at the ground.
-  Before this lane the same gate had 30 breaks with a worst of 9 on that seed,
-  so this is a 30 → 1 improvement and not a regression, but it is not zero.
-  The fix belongs to whoever owns Nhal Veyr's terrain -- the capital's own
-  fitting should reach its four gates -- or to its wall, which could ramp the
-  five nodes between the curtain and the field. **Not this lane's to fix**, and
-  named here so it is not lost.
+  level eight columns out past that drop while the route arrives at the ground
+  the gate actually has. Before this lane the same gate had 30 breaks with a
+  worst of 9 on seed 531802985935182545, so this is a 30 → 1 improvement, not a
+  regression — but it is not zero.
+
+  **The fix is the capital's, two ways to take it:** its own fitting reaching
+  its four gates, or its curtain ramping the five nodes between the wall and
+  the field. The acceptance check is
+  `luajit tools/wp13/route_gates.lua <repo> <seed> --strict` on all nine
+  fixture seeds: `gate` step ≤ 1 and `entry` breaks = 0.
 * **`capital_ingresses`' `route_ids` are not the routes that reach a capital.**
   `ingress_dur_brannoc` names route_003 and route_043; route_043 runs from zone
   5 to zone 34 and never touches Dur Brannoc. Read as a two-hop chain it is the
@@ -280,8 +426,10 @@ Every digest that did **not** move, checked rather than assumed:
   protect and is what the 128-wide `hard_capital_ingress_corridor_v1` does.
   This lane left the field alone; the corridors rebuild from the new
   centrelines automatically, so each now stops at its gate. The KAT checks the
-  consequence: no ingress corridor covers its capital's anchor column any more,
-  and each covers exactly one gate.
+  consequence, and the consequence is worth stating plainly: **the hard corridor
+  now protects ONE of a capital's four gates** — the one its own named route
+  ends at — and the other three approaches are ordinary land outside the
+  532-wide apron. It no longer covers any capital's anchor column.
 
   **What it protects, measured.** Within 400 nodes of each capital anchor the
   corridor's footprint goes from 59951 columns to 25086. Of the 40285 columns
@@ -316,6 +464,19 @@ Every digest that did **not** move, checked rather than assumed:
   asserts the two agree. That is the right call for a junction 256 nodes out
   through a warped boundary, and it means a gate junction can belong to a
   neighbouring zone. Nothing in the sweep failed on it, on nine seeds.
+* **Two authored sources carry the same twenty-four gate points**, and neither
+  is derived from the other: `source/simple_map.lua`'s `source.capital_gates`
+  (the live mapgen's, kind `gate`) and `source/catalog.lua`'s `capital_gate`
+  stations (the T2 compiler's, and what `wp13/highcourt.lua:360` cites). This
+  lane may not edit the catalog -- it is frozen input to a different pipeline --
+  so the KAT asserts the two agree point for point
+  (`route_gate_catalog_agreement 24 24`) and the contract's §2.1.1 names both
+  and says which one a WP13 blueprint reads. That was the review's SHOULD-FIX 2.
+* **The R3 evidence validator's station rule** now has a `gate` branch
+  (`tools/wp40/simple_map_r3_validate.lua`), because the 24 gate rows this lane
+  adds to `station_evidence` would otherwise fail all three of its hub rules
+  (id, `hub_x`/`hub_z`, one row per zone). See §4.2 for what that could and
+  could not be exercised against.
 * **The activation support rule** (§4). It is the one safety check this lane
   widened. The precedent is `r6_settlement.lua`'s own `wrong_support`; the KAT
   carries both the two new accepting cases and the nine refusing ones it
@@ -343,4 +504,4 @@ Every digest that did **not** move, checked rather than assumed:
 * `tools/wp40/r7/run.sh unit` -- the anchor activation KAT, with its two new
   cases.
 * `tools/wp13/capital_anchor_fixture.lua` -- unchanged digest over nine seeds.
-* The engine table of §3.3.
+* The engine table of §3.4.

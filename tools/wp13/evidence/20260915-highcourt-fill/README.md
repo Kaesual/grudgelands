@@ -49,3 +49,28 @@ bash tools/wp13/evidence/20260915-highcourt-fill/files.sha256.sh
 | per-mapchunk | steady mean 0.53 s (user seed) / 0.57 s (boundary), against a 2 × 0.5 s limit |
 | the six start identities | unchanged |
 | Highcourt core digest | unchanged at `187f79e0…` |
+
+
+---
+
+## Drift note, 2026-09-16 — WP13 wave 2, lane R (route gates)
+
+`files.sha256` in this package has **nine red rows**; **five of them were
+already red on main `c8050057`** before lane R existed
+(`mods/CORE/grug_core/settlement_sockets.lua`,
+`tools/wp13/highcourt_probe/init.lua`, `tools/wp13/run_highcourt.sh`,
+`tools/wp13/settlement_sockets_kat.lua`, `tools/wp13/start_npcs_kat.lua` — later
+wave-1 and wave-2 lanes moved those). The four lane R added
+(`docs/research/wp13-route-gates.md`) are:
+
+* `mods/MAPGEN/grug_mapgen/wp40/r7_manifest.lua` — a capital anchor's functional
+  feature is its own fitting now that no route reaches it;
+* `tools/wp13/final_micro.lua` — one appended KAT row;
+* `highcourt/avenue-digest-{531802985935182545,8675309}.txt` — **re-frozen**,
+  because `tools/wp13/run_highcourt.sh` compares the built east avenue against
+  them and the incoming road now arrives at the east gate. Both carry
+  `package=20260915-route-gates`; the built diff is the gate band and
+  subsurface fill material, `core_cells` is unchanged, and both engine passes
+  are green with zero `audit_terrain` warnings.
+
+The manifest is left as this package's own record rather than re-stamped.

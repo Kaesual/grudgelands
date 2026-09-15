@@ -201,6 +201,7 @@ route_gate	station:kragmar_kezamba:gate_west	1544	1500	west
 route_gate	station:kragmar_kezamba:gate_east	2056	1500	east
 route_gate	station:kragmar_kezamba:gate_south	1800	1244	south
 route_gate	station:kragmar_kezamba:gate_north	1800	1756	north
+route_gate_catalog_agreement	24	24
 route_gate_approach	route_002	station:elandor_dur_brannoc:gate_south	b	144
 route_gate_approach	route_003	station:elandor_dur_brannoc:gate_north	a	144
 route_gate_approach	route_005	station:elandor_highcourt:gate_south	b	144
@@ -225,7 +226,7 @@ route_gate_approach	route_027	station:kragmar_gor_drazhak:gate_west	b	144
 route_gate_approach	route_028	station:kragmar_gor_drazhak:gate_east	a	144
 route_gate_approach	route_029	station:kragmar_kezamba:gate_west	b	144
 route_gate_approach	route_030	station:kragmar_kezamba:gate_east	a	144
-route_gate_interior_points	0
+route_gate_interior_segments	472	0
 route_gate_start_routes	6	e57867fba1ef10e2c4625a5ee273a79fd8034caacd6dfd2b802f2b3144fe8989
 route_gate_all_routes	57	5f8f6443cf513007486ffc3a905b3f72e6ce0dbdc60c39ff4ed6a73139511a54
 route_gate_ingress	ingress_dur_brannoc	anchor_007	2	128	1
@@ -281,29 +282,30 @@ second_settlement	one_race	start_wins
 refusals	left_no_state	pass
 vocabulary_activity	smith,fish,farm,chop,tend,pray,stall,sit,sweep,mine,brew,carve,mourn,spar,forage
 vocabulary_kind	race,general,butcher,smith,fishmonger,baker,tailor,mason,brewer,bowyer,herbalist,armourer,tanner,embalmer
-cold	13	13	13
+cold	15	15	15
 door_facing	door_turned_on_second_tag	line_keeps_first_tag	bench_kept	elder_turned
 spare	unplaced	unmarked	walker_ring_5	static_ring_2
 nametags	Vale Dwarf	Dur Brannoc Citizen	Highcourt Elder
-restart	13	13	0
+restart	15	15	0
 lost_entities	11	11	11
 death_respawn	not_before_due	refilled_after_window
 second_gate	no_twin	marker_restored
 capital	6	6	2	loops_separate	markers_separate
-wanderer	19	19	19	10_heartbeats
-out_of_range	19	19	no_strike
-twins	20	19	claim_refused
-census	hearthpine	start	13	13	spare_1
+wanderer	21	21	21	10_heartbeats
+out_of_range	21	21	no_strike
+twins	22	21	claim_refused
+census	hearthpine	start	15	15	spare_1
 amble	moved_at_22	spots_4_and_4_of_5	spare_reached	10:-16.0/4.0 20:-16.0/4.0 30:-7.8/9.5 40:-5.0/11.3 50:-5.0/11.3 60:-5.0/11.3
 amble_blocked	at_least_2_targets_in_40s
 no_jump	0	0	model_reproduces_defect
 stuck_route	path_at_20	skip_at_45	quiet_after_3_lines	no_snap_in_sight	snap_out_of_sight_after_backoff
 noncombatant	declared	installed_on_activate	chained	all_2_defs_correct	prey_unchanged
-walker_split	residents_8	walkers_2	share_25.0	idle_a=true idle_b=false idle_c=false idle_d=false idle_e=false idle_f=true forge_work=false bench_work=false
+walker_split	residents_10	walkers_2	share_20.0	idle_a=true idle_b=false idle_c=false idle_d=false idle_e=false idle_f=true forge_work=false bench_work=false shrine_work=false yard_work=false
 static_idle	still_after_150s	state_stand
 work	smith_work_anim	sit_anim	writes_1_in_120s	swing_7_in_30s	no_path	step_vetoed_120	home_at_9s_unwatched	resumed_when_watched
 animation	stand=0..79 walk=168..187 punch=189..198 work=189..198 sit=81..160	work_speed_10
-activities	smith=work/default:pick_bronze fish=stand/default:stick farm=work/default:shovel_stone chop=work/default:axe_stone tend=stand pray=stand stall=stand sit=sit sweep=walk
+activities	smith=work/default:pick_bronze fish=stand/default:stick farm=work/default:shovel_stone chop=work/default:axe_stone tend=stand pray=stand stall=stand sit=sit sweep=walk mine=work/default:pick_bronze brew=stand/default:stick carve=work/default:axe_stone mourn=stand/bow spar=work/sword@1 forage=stand
+wave2_activities	mourn_bow_writes_1	spar_grug_gear:sword_bronze	tag_mourn/work	lines_mine,brew,carve,mourn,spar,forage,shade
 tag_gate	elder=Vale Elder walker=Vale Dwarf work=Vale Dwarf	once_a_second
-restyle_hook	calls_19	start_and_capital	after_install
+restyle_hook	calls_21	start_and_capital	after_install
 real_starts	hearthpine=1/6:work_2:ring_4 dawnmere=1/6:work_2:ring_3 silverleaf=1/6:work_2:ring_4 stillgrave=1/6:work_2:ring_3 sunscar=1/6:work_2:ring_3 kapok=1/6:work_2:ring_5	min_walker_ring_3

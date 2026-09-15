@@ -27,8 +27,11 @@ interior_feature	1	elandor_dur_brannoc	route_002	15
 interior_feature	1	elandor_dur_brannoc	route_003	15
 interior_feature	1	elandor_dur_brannoc	route_019	15
 interior_feature	1	elandor_dur_brannoc	route_020	15
-interior	1	elandor_dur_brannoc	band	4704	60	0	0
-FAULT	1	elandor_dur_brannoc grades 60 route column(s) inside its envelope
+end_cap	1	elandor_dur_brannoc	west	15	15
+end_cap	1	elandor_dur_brannoc	east	15	15
+end_cap	1	elandor_dur_brannoc	south	15	15
+end_cap	1	elandor_dur_brannoc	north	15	15
+interior	1	elandor_dur_brannoc	band	4704	60	0	0	0	15
 avenue	1	elandor_dur_brannoc	west	1070	0	0	0
 gate	1	elandor_dur_brannoc	west	-2056	-1500	land_grade	87	route_019	87	87	0
 entry	1	elandor_dur_brannoc	west	325	48	0	0	nil
@@ -49,8 +52,11 @@ interior_feature	1	elandor_highcourt	route_005	15
 interior_feature	1	elandor_highcourt	route_006	15
 interior_feature	1	elandor_highcourt	route_021	15
 interior_feature	1	elandor_highcourt	route_022	15
-interior	1	elandor_highcourt	band	4704	60	0	0
-FAULT	1	elandor_highcourt grades 60 route column(s) inside its envelope
+end_cap	1	elandor_highcourt	west	15	15
+end_cap	1	elandor_highcourt	east	15	15
+end_cap	1	elandor_highcourt	south	15	15
+end_cap	1	elandor_highcourt	north	15	15
+interior	1	elandor_highcourt	band	4704	60	0	0	0	15
 avenue	1	elandor_highcourt	west	1070	303	0	0
 gate	1	elandor_highcourt	west	-256	-1500	land_grade	38	route_021	38	38	0
 entry	1	elandor_highcourt	west	325	48	0	0	nil
@@ -71,8 +77,11 @@ interior_feature	1	elandor_lethariel	route_008	15
 interior_feature	1	elandor_lethariel	route_009	15
 interior_feature	1	elandor_lethariel	route_023	15
 interior_feature	1	elandor_lethariel	route_024	15
-interior	1	elandor_lethariel	band	4704	60	0	0
-FAULT	1	elandor_lethariel grades 60 route column(s) inside its envelope
+end_cap	1	elandor_lethariel	west	15	15
+end_cap	1	elandor_lethariel	east	15	15
+end_cap	1	elandor_lethariel	south	15	15
+end_cap	1	elandor_lethariel	north	15	15
+interior	1	elandor_lethariel	band	4704	60	0	0	0	15
 avenue	1	elandor_lethariel	west	1070	0	0	0
 gate	1	elandor_lethariel	west	1544	-1500	land_grade	44	route_023	44	44	0
 entry	1	elandor_lethariel	west	325	48	0	0	nil
@@ -93,8 +102,11 @@ interior_feature	1	kragmar_nhal_veyr	route_011	15
 interior_feature	1	kragmar_nhal_veyr	route_012	15
 interior_feature	1	kragmar_nhal_veyr	route_025	15
 interior_feature	1	kragmar_nhal_veyr	route_026	15
-interior	1	kragmar_nhal_veyr	band	4704	60	0	0
-FAULT	1	kragmar_nhal_veyr grades 60 route column(s) inside its envelope
+end_cap	1	kragmar_nhal_veyr	west	15	15
+end_cap	1	kragmar_nhal_veyr	east	15	15
+end_cap	1	kragmar_nhal_veyr	south	15	15
+end_cap	1	kragmar_nhal_veyr	north	15	15
+interior	1	kragmar_nhal_veyr	band	4704	60	0	0	0	15
 avenue	1	kragmar_nhal_veyr	west	1070	0	0	0
 gate	1	kragmar_nhal_veyr	west	-2056	1500	land_grade	104	route_025	104	104	0
 entry	1	kragmar_nhal_veyr	west	325	48	0	0	nil
@@ -115,8 +127,11 @@ interior_feature	1	kragmar_gor_drazhak	route_014	15
 interior_feature	1	kragmar_gor_drazhak	route_015	15
 interior_feature	1	kragmar_gor_drazhak	route_027	15
 interior_feature	1	kragmar_gor_drazhak	route_028	15
-interior	1	kragmar_gor_drazhak	band	4704	60	0	0
-FAULT	1	kragmar_gor_drazhak grades 60 route column(s) inside its envelope
+end_cap	1	kragmar_gor_drazhak	west	15	15
+end_cap	1	kragmar_gor_drazhak	east	15	15
+end_cap	1	kragmar_gor_drazhak	south	15	15
+end_cap	1	kragmar_gor_drazhak	north	15	15
+interior	1	kragmar_gor_drazhak	band	4704	60	0	0	0	15
 avenue	1	kragmar_gor_drazhak	west	1070	0	0	0
 gate	1	kragmar_gor_drazhak	west	-256	1500	land_grade	95	route_027	95	95	0
 entry	1	kragmar_gor_drazhak	west	325	48	0	0	nil
@@ -137,8 +152,11 @@ interior_feature	1	kragmar_kezamba	route_017	15
 interior_feature	1	kragmar_kezamba	route_018	15
 interior_feature	1	kragmar_kezamba	route_029	15
 interior_feature	1	kragmar_kezamba	route_030	15
-interior	1	kragmar_kezamba	band	4704	60	0	0
-FAULT	1	kragmar_kezamba grades 60 route column(s) inside its envelope
+end_cap	1	kragmar_kezamba	west	15	15
+end_cap	1	kragmar_kezamba	east	15	15
+end_cap	1	kragmar_kezamba	south	15	15
+end_cap	1	kragmar_kezamba	north	15	15
+interior	1	kragmar_kezamba	band	4704	60	0	0	0	15
 avenue	1	kragmar_kezamba	west	1070	0	0	0
 gate	1	kragmar_kezamba	west	1544	1500	land_grade	33	route_029	33	33	0
 entry	1	kragmar_kezamba	west	325	48	0	0	nil
@@ -155,4 +173,4 @@ avenue	1	kragmar_kezamba	north	1070	467	0	0
 gate	1	kragmar_kezamba	north	1800	1756	land_grade	71	route_017	71	71	0
 entry	1	kragmar_kezamba	north	325	48	0	0	nil
 inside	1	kragmar_kezamba	north	8	3	249
-summary	1	band	24	0	6
+summary	1	band	route	24	0	0	0

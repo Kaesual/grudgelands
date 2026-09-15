@@ -22,6 +22,7 @@ route_gate	station:kragmar_kezamba:gate_west	1544	1500	west
 route_gate	station:kragmar_kezamba:gate_east	2056	1500	east
 route_gate	station:kragmar_kezamba:gate_south	1800	1244	south
 route_gate	station:kragmar_kezamba:gate_north	1800	1756	north
+route_gate_catalog_agreement	24	24
 route_gate_approach	route_002	station:elandor_dur_brannoc:gate_south	b	144
 route_gate_approach	route_003	station:elandor_dur_brannoc:gate_north	a	144
 route_gate_approach	route_005	station:elandor_highcourt:gate_south	b	144
@@ -46,7 +47,7 @@ route_gate_approach	route_027	station:kragmar_gor_drazhak:gate_west	b	144
 route_gate_approach	route_028	station:kragmar_gor_drazhak:gate_east	a	144
 route_gate_approach	route_029	station:kragmar_kezamba:gate_west	b	144
 route_gate_approach	route_030	station:kragmar_kezamba:gate_east	a	144
-route_gate_interior_points	0
+route_gate_interior_segments	472	0
 route_gate_start_routes	6	e57867fba1ef10e2c4625a5ee273a79fd8034caacd6dfd2b802f2b3144fe8989
 route_gate_all_routes	57	5f8f6443cf513007486ffc3a905b3f72e6ce0dbdc60c39ff4ed6a73139511a54
 route_gate_ingress	ingress_dur_brannoc	anchor_007	2	128	1

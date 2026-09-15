@@ -12,7 +12,11 @@ CHANGED=(
 	mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua
 	mods/MAPGEN/grug_mapgen/wp40/simple_map.lua
 	mods/MAPGEN/grug_mapgen/wp40/height.lua
+	mods/MAPGEN/grug_mapgen/wp40/r7_manifest.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_anchor_activation.lua
+	tools/wp40/r7/anchor_activation_kat.lua
+	tools/wp40/simple_map_r3_validate.lua
+	tools/wp40/simple_map_r3_selftest.lua
 	tools/wp13/route_gates.lua
 	tools/wp13/route_gates_kat.lua
 	tools/wp13/final_micro.lua

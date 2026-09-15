@@ -7,8 +7,14 @@ interior; inside, the WP13 streets take over.**
 What shipped and why is [docs/research/wp13-route-gates.md](../../../../docs/research/wp13-route-gates.md);
 the ruling is folded into the capitals contract as §2.1.1.
 
-Base: main `922bfd92`. Branch: `wp13-w2-routes`. Ports 31000-31099, one
-headless server at a time, every engine and measurement run under `nice -n 19`.
+Base: main `c8050057` (rebased from `922bfd92` after the review of
+2026-09-16). Branch: `wp13-w2-routes`. Ports 31000-31099, one headless server at
+a time, every engine and measurement run under `nice -n 19`.
+
+`tools/wp13/route_gates.lua` **exits 0 on all nine seeds** in its default mode
+(`sweep/after-progress.txt`): that mode gates the ROUTE GRAPH, which is this
+lane's. `--strict` adds the capital-terrain questions and exits 1 on five of the
+nine, all of them Nhal Veyr's north gate, which is lane U's (research note §5).
 
 ## What is here
 
@@ -26,6 +32,9 @@ headless server at a time, every engine and measurement run under `nice -n 19`.
 | `static.txt`, `static.sh` | parser, SETGLOBAL, the five plain-5.1 sweeps and the fresh-server audit |
 | `capital_anchor_fixture.tsv` | `tools/wp13/capital_anchor_fixture.lua` over nine seeds, digest `981a0353…` — unchanged |
 | `start-identity.txt` | the six start identities, `0bbf87a7…` — unchanged |
+| `r3-freeze-red-on-main.txt` | the R3 accepted-artefact freeze failing on a `git archive` of main `c8050057`, before this lane |
+| `r3-station-rule.txt` | the station rule reached in a scratch copy: all 62 rows, 38 hubs and 24 gates, accepted |
+| `r3-station-rule-mutation.txt` | the same with a deliberately wrong gate row — `capital gate station rule differs at station:elandor_dur_brannoc:gate_west` |
 | `files.sha256` | every source file this lane changed |
 
 ## The numbers
@@ -43,6 +52,7 @@ Six capitals × the nine seeds of `tools/wp13/capital_anchor_fixture.lua`
 | water columns under the four avenues | 26586 over 63 wet runs | unchanged |
 | avenue positions unpaved / climbing more than a node | 0 / 0 | 0 / 0 |
 | worst ground step in the eight columns inside a gate | 3 | 9 (Kezamba's hillside south gate, two seeds; the limit is 12) |
+| `route_gates.lua` exit status, default mode, nine seeds | 1 on every seed | **0 on every seed** |
 
 The 60 remaining route columns per capital are the road's own seven-wide end
 cap at the gate, three nodes deep, inside the curtain's thickness and paved
@@ -78,6 +88,11 @@ Per-mapchunk cost, the capital's own chunks, steady mean, same host:
     # tools/wp13/route_gates.lua copied in)
     bash tools/wp13/evidence/20260915-route-gates/measure.sh \
         BEFORE_REPO . /tmp/grug-route-gates
+
+    # the route-graph gate: exit 0 on all nine seeds
+    luajit tools/wp13/route_gates.lua "$PWD" <seed>
+    # a capital lane's own acceptance check: gate step <= 1, entry breaks = 0
+    luajit tools/wp13/route_gates.lua "$PWD" <seed> --strict
 
     # the KAT, both interpreters, byte-identical
     luajit -e 'io.write(dofile("tools/wp13/route_gates_kat.lua")("."))'

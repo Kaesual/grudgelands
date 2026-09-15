@@ -1,0 +1,14 @@
+/usr/bin/luajit: WP40 simple-map R3 harness: accepted R2 input changed: mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua
+stack traceback:
+	[C]: in function 'error'
+	...grug-w2-routes/base2/tools/wp40/simple_map_r3_common.lua:21: in function 'fail'
+	...grug-w2-routes/base2/tools/wp40/simple_map_r3_common.lua:212: in function 'verify_r2'
+	...ug-w2-routes/base2/tools/wp40/simple_map_r3_selftest.lua:23: in main chunk
+	[C]: at 0x55d28a1b0b00
+/tmp/grug-w2-routes/base2/tools/bin/lua51: WP40 simple-map R3 harness: accepted R2 input changed: mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua
+stack traceback:
+	[C]: in function 'error'
+	...-w2-routes/base2/tools/wp40/simple_map_r3_common.lua:21: in function 'fail'
+	...-w2-routes/base2/tools/wp40/simple_map_r3_common.lua:212: in function 'verify_r2'
+	...2-routes/base2/tools/wp40/simple_map_r3_selftest.lua:23: in main chunk
+	[C]: ?
