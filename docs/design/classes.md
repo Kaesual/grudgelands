@@ -127,6 +127,21 @@ that. Future ranged auto-attacks may arm their own ranged procs, but equipping a
 bow or wand does not replace Fireball's decided directional-projectile
 behavior.
 
+### Right-click with a skill in hand opens the door
+
+Decided 2026-09-15 (playtest round 1). **A skill in hand never costs the
+player an interaction.** Right-click with an ability item wielded goes to the
+pointed node's own `on_rightclick` — doors, trapdoors, gates, chests, signs,
+every interactive node — for both kinds of skill, and it does so even when the
+skill's own pointabilities hide that node from the client (a wooden door is
+`oddly_breakable_by_hand`, which a swing skill declares `"blocking"`, so the
+client reports "pointing at nothing"; the server then re-finds the node itself).
+Two bounds: **sneak + right-click keeps whatever right-click otherwise means**,
+so a skill may still be bound to it later while pointing at a door, and the
+pass-through reaches **hand distance only** (4 m, the engine's default item
+range) — a 20 m Fireball must not flip a lever across a courtyard. Right-click
+has never cast and still does not; casting stays on `on_use`.
+
 ### Rules for swing skills
 
 - **A skill never makes you slower or weaker than the bare weapon.** Every

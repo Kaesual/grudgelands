@@ -314,6 +314,108 @@ local function watch_wield()
 end
 
 --
+-- RIGHT-CLICK PASS-THROUGH (playtest round 1, decided 2026-09-15).
+--
+-- With a skill in hand a door would not open. The cause is NOT that a cast
+-- consumed the click -- no ability item has ever had an `on_place` or an
+-- `on_secondary_use`, and casting lives on `on_use`/LMB. It is the swing items'
+-- own `pointabilities` above: `doors:door_wood_*` carries
+-- `oddly_breakable_by_hand`, so with Strike, Mighty Blow or Hamstring selected
+-- the door is `"blocking"` -- the ray stops on it and the client reports
+-- POINTEDTHING_NOTHING (src/environment.cpp:276). Right-click on nothing sends
+-- INTERACT_ACTIVATE (src/client/game.cpp:2803-2923), which reaches
+-- `on_secondary_use`, never `on_place`. The same is true of the wooden
+-- trapdoor, every fence gate, chests and signs.
+--
+-- So the repair is exactly there: `on_secondary_use` re-finds the node the
+-- client refused to hand over and passes the click to its `on_rightclick`.
+-- `on_place` is defined for the same rule on the nodes that ARE pointable (a
+-- steel door is only `cracky`), which is what `core.item_place` already did for
+-- us -- writing it out makes the rule one readable thing instead of an
+-- inherited default, and lets the fixture drive it.
+--
+-- Two bounds keep this from becoming a second targeting system:
+--
+--   * SNEAK KEEPS THE SKILL. Builtin's own placement rule is
+--     "on_rightclick unless sneaking" (builtin/game/item.lua:337-347); holding
+--     sneak therefore keeps whatever right-click meant before, so a skill bound
+--     to it later still works while pointing at a door.
+--   * HAND REACH, not skill range. A 20 m Fireball must not flip a lever across
+--     a courtyard, so the server ray is capped at the engine's own default item
+--     range (4, lua_api.md:10455) -- which is also exactly what every swing
+--     skill declares.
+--
+-- Nothing here touches the cast path: `try_cast` is not reachable from either
+-- callback.
+--
+local NODE_INTERACT_RANGE = 4
+
+-- Hand the click to the node's own `on_rightclick`, or answer nil when the node
+-- has none (the caller then does nothing at all -- a right-click that hits a
+-- plain wall is not an error and must not become one).
+local function pass_to_node(pos, clicker, itemstack, pointed_thing)
+	local node = pos and core.get_node_or_nil(pos)
+	local def = node and core.registered_nodes[node.name]
+	if not def or not def.on_rightclick then
+		return nil
+	end
+	return def.on_rightclick(pos, node, clicker, itemstack, pointed_thing) or
+		itemstack
+end
+
+local function sneaking(player)
+	local control = player.get_player_control and player:get_player_control()
+	return control ~= nil and control.sneak == true
+end
+
+-- The client DID point at a node: this is builtin's placement rule, spelled out.
+local function ability_on_place(itemstack, placer, pointed_thing)
+	if not placer or not pointed_thing or pointed_thing.type ~= "node" or
+			sneaking(placer) then
+		return itemstack
+	end
+	return pass_to_node(pointed_thing.under, placer, itemstack, pointed_thing) or
+		itemstack
+end
+
+-- The client pointed at NOTHING -- including the "blocking" case a swing item's
+-- pointabilities create. One ray, first node only: reaching past the node in
+-- front of the player would be an exploit, so a first hit without an
+-- `on_rightclick` ends the attempt.
+local function ability_on_secondary_use(itemstack, user, pointed_thing)
+	if not user or not user.is_player or not user:is_player() or
+			sneaking(user) then
+		return itemstack
+	end
+	local origin = grug_core.combat_eye_pos(user)
+	local look = user:get_look_dir()
+	if not origin or not look then
+		return itemstack
+	end
+	local destination = vector.add(origin,
+		vector.multiply(vector.normalize(look), NODE_INTERACT_RANGE))
+	-- `objects = false`: an entity's right-click is the engine's business and it
+	-- is still pointable with a skill in hand, so this path only ever runs when
+	-- no object was hit either. Liquids stay excluded, like a hand click.
+	local nearest, nearest_distance
+	for pointed in core.raycast(origin, destination, false, false) do
+		if pointed.type == "node" then
+			-- Raycast order is not line-of-sight order (see grug_core's
+			-- combat_ray note), so compare the real intersection distances.
+			local point = pointed.intersection_point
+			local distance = point and vector.distance(origin, point) or math.huge
+			if not nearest_distance or distance < nearest_distance then
+				nearest, nearest_distance = pointed, distance
+			end
+		end
+	end
+	if not nearest then
+		return itemstack
+	end
+	return pass_to_node(nearest.under, user, itemstack, nearest) or itemstack
+end
+
+--
 -- Ability registration & item. One tool per ability; the item's `range`
 -- doubles as the targeting range (pointed_thing works up to it), the wear
 -- bar displays the running cooldown.
@@ -394,6 +496,11 @@ function grug_abilities.register_ability(def)
 		on_drop = function(itemstack)
 			return itemstack -- ability items cannot be dropped
 		end,
+		-- Right-click never cast and still does not; both callbacks only hand
+		-- the click on to an interactive node (see the block above this
+		-- function).
+		on_place = ability_on_place,
+		on_secondary_use = ability_on_secondary_use,
 	}
 	if def.kind == "swing" then
 		-- Empty groupcaps remove this tool's explicit dig capabilities, but the
