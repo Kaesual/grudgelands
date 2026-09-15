@@ -118,8 +118,7 @@ local function loader(directory)
 				return {
 					plots.work("armoury_anvil", "smith", area.x0 + 3,
 						area.z1 - 2, 2),
-					plots.idle("armoury_forge", area.x0 + 5,
-						area.z1 - 2, 2, {"work"}),
+					plots.spare("armoury_forge", area.x0 + 5, area.z1 - 2, 2),
 				}
 			end},
 
@@ -138,7 +137,12 @@ local function loader(directory)
 			end,
 			extra_sockets = function(area)
 				return {
-					plots.work("pen_tend", "tend", area.x0 + 2,
+					-- MUCKING OUT, not tending: a beast pen has straw, rails
+					-- and hay in it and no plant within three nodes of
+					-- anywhere a keeper can stand, so `tend` was a label its
+					-- own ground did not carry. `sweep` is the one activity
+					-- that needs no feature and the one that describes this.
+					plots.work("pen_muck", "sweep", area.x0 + 2,
 						area.z1 - 2, 0),
 					plots.guard_post("pen", area.x1 - 2, area.z0 + 3, 0),
 				}
@@ -262,9 +266,9 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("muster_rake", "sweep", 0, -9, 0),
-					plots.idle("muster_saw", -8, -9, 0, {"work"}),
-					plots.idle("muster_spar_a", -3, 4, 1, {"work"}),
-					plots.idle("muster_spar_b", -1, 4, 3, {"work"}),
+					plots.spare("muster_saw", -8, -9, 0),
+					plots.spare("muster_spar_a", -3, 4, 1),
+					plots.spare("muster_spar_b", -1, 4, 3),
 				}
 			end},
 
@@ -282,11 +286,19 @@ local function loader(directory)
 				dressing.handcart(buf, palette, 3, -8, "x")
 				dressing.planter(buf, palette, 5, -8, 8, -6)
 				dressing.bench(buf, palette, -3, -10, 0, 3, "x")
+				-- A SHRUB THE KEEPER ACTUALLY WORKS. `dressing.planter`'s own
+				-- kerb is an opaque full node, and the sockets contract's
+				-- section 8.1 feature search stops at the first of those on the
+				-- socket's own course -- so a keeper standing outside a bed
+				-- never sees the planting inside it, and the KAT only passed
+				-- because its `tend` list carried the kerb's own stone. The
+				-- kerb is not "a plant or a flower"; this is.
+				buf:put(6, 1, -9, palette.node("undergrowth"))
 			end,
 			extra_sockets = function()
 				return {
-					plots.work("paddock_tend", "tend", 6, -9, 0),
-					plots.idle("paddock_forage", -6, -4, 2, {"work"}),
+					plots.work("paddock_tend", "tend", 6, -10, 0),
+					plots.spare("paddock_forage", -6, -4, 2),
 					plots.spare("paddock", 10, -11, 0),
 				}
 			end},
@@ -306,7 +318,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("saw_west", "chop", -4, -6, 0),
-					plots.idle("saw_east", 4, -6, 0, {"work"}),
+					plots.spare("saw_east", 4, -6, 0),
 				}
 			end},
 
@@ -322,8 +334,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("guard_fire_brew", "brew", 0, 0, 0),
-					plots.idle("guard_fire_seat", -4, -3, 0,
-						{"bench"}, 2),
+					plots.spare("guard_fire_seat", -4, -3, 0, 2),
 					plots.spare("guard_fire", 4, -5, 0),
 				}
 			end},

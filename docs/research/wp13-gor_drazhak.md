@@ -441,13 +441,26 @@ load-time terrain audit**, and the NPC roster placed in full.
 | | 531802985935182545 | 8675309 | 15912857179583385436 |
 | --- | --- | --- | --- |
 | sockets registered | 315 | 315 | 315 |
-| roster placed | `guards 30/30 flair 207/207 vendor 4/4 quest 2/2 pending 0 spare 26` | same | same |
+| roster placed | `guards 30/30 flair 207/207 vendor 4/4 quest 2/2 pending 0 spare 26` | `guards 30/30 flair 207/207 pending 0` | **`guards 27/30 flair 169/207 pending 41`** |
 | residents / walkers | 207 / 31 | 207 / 31 | 207 / 31 |
 | loops | 9 | 9 | 9 |
 | worst plot perimeter fall | 6 (`warren_cook_court`) | 5 (`bone_totem_court`) | 5 (`bone_quarry`) |
 | submerged plot columns | 0 | 0 | 0 |
 | terrain-audit findings | 0 | 0 | 0 |
 | ERROR / ModError lines | 3 | 3 | 3 |
+
+**`pending 41` ON THE USER'S OWN WORLD SEED, and the first version of this
+table said `same` there.** It is benign and it is not the same: a settlement's
+roster is filled INCREMENTALLY, and `grug_mobs/start_npcs.lua` counts a slot as
+pending when the socket's own mapblock was not loaded at the moment its turn in
+the heartbeat came. The probe's corpus emerges a capital one mapchunk at a time
+and then stops, so which of the four districts is resident at the end depends on
+which mapblocks that sequence happened to leave loaded -- Highcourt's own
+package records the same thing ("the split between placed at readiness and
+pending depends on which mapblocks the emerge sequence had loaded and is not a
+gate"). What IS a gate is that nothing is refused: `new 38 pending 41` with no
+error line means 41 slots are waiting for their ground, not rejected by it. The
+row now carries the measurement instead of the summary.
 
 `vendor 4/4` and not 7/7 is section 7: three of the seven kinds have no entity
 in `grug_traders` yet, so three sockets stay empty and each logs one line. Those

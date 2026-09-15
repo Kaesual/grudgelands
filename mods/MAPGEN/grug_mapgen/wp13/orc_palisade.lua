@@ -19,7 +19,8 @@
 --
 --   * the same run specification (`axis`, `at`, `from`, `to`, `lamp_phase`,
 --     `reach`) and the same authored `plan` (`outside`, `towers`,
---     `cross_towers`, `gates`);
+--     `cross_towers`, `gates`), plus one field of its own, `corners`, which
+--     is where this run's walk meets another run's (section 1b);
 --   * the same one-Lipschitz envelope rule, so a piece of a run is exactly
 --     that stretch of the whole run and the successor may call it per
 --     mapchunk;
@@ -185,7 +186,7 @@ local function loader(directory)
 		-- the body stands on: the berm, the inner slope and a tower's own
 		-- projecting face all reach the outermost lanes.
 		local low_end, high_end = from - reach, to + reach
-		local base, level = {}, {}
+		local base = {}
 		for p = low_end, high_end do
 			local lowest
 			for lane = -M.HALF, M.HALF do
@@ -194,13 +195,118 @@ local function loader(directory)
 				if lowest == nil or y < lowest then lowest = y end
 			end
 			base[p] = lowest
-			level[p] = lowest
 		end
-		for p = low_end + 1, high_end do
-			if level[p] < level[p - 1] - 1 then level[p] = level[p - 1] - 1 end
+		-- The one-Lipschitz upper envelope of `base`, as a function of the
+		-- floor it is given, because the corner reconciliation below raises
+		-- that floor at one column and sweeps again.
+		local function envelope(floor)
+			local out = {}
+			for p = low_end, high_end do out[p] = floor[p] end
+			for p = low_end + 1, high_end do
+				if out[p] < out[p - 1] - 1 then out[p] = out[p - 1] - 1 end
+			end
+			for p = high_end - 1, low_end, -1 do
+				if out[p] < out[p + 1] - 1 then out[p] = out[p + 1] - 1 end
+			end
+			return out
 		end
-		for p = high_end - 1, low_end, -1 do
-			if level[p] < level[p + 1] - 1 then level[p] = level[p + 1] - 1 end
+		-- `base` is the TRUE lowest ground of a column and never moves: it is
+		-- what the footing is measured from and what the gate passage is
+		-- cleared from. `floor` is the envelope's input, and the corner
+		-- reconciliation below raises it at one column. Conflating the two --
+		-- which the first version of that reconciliation did -- raises the
+		-- footing off the ground and opens the gap the whole module exists to
+		-- make impossible; the KAT's no-gap rule caught it on the first run.
+		local floor = {}
+		for p = low_end, high_end do floor[p] = base[p] end
+		local level = envelope(floor)
+
+		-- 1b. THE CORNERS, where two runs' walks meet and would otherwise
+		-- disagree.
+		--
+		-- `E[p]` is the upper envelope of the ground within `reach` COLUMNS OF
+		-- THIS RUN'S OWN AXIS, so the run that arrives at a corner along x and
+		-- the run that arrives along z compute their decks from two different
+		-- neighbourhoods and land at two different heights. The corner tower's
+		-- own opening is three courses, so a disagreement of three or more is a
+		-- walk that stops there -- and it happened on six of the nine fixture
+		-- seeds, four nodes on the user's own world. (The nine-seed sweep that
+		-- found it is `tools/wp13/gor_drazhak_rampart.lua`; the first version of
+		-- this module was measured on two seeds and passed.)
+		--
+		-- The fix is a datum both runs can compute and neither can disagree
+		-- with: each corner names MY column and the OTHER run's line and
+		-- column, both runs evaluate BOTH raw envelopes there, and both clamp
+		-- their own column to the MAXIMUM of the two. Three properties make
+		-- that sound:
+		--
+		--   * it is SYMMETRIC -- both runs take the same max of the same two
+		--     raw values, so they agree by construction and the corner step is
+		--     zero rather than small;
+		--   * it only ever RAISES a deck, so the no-gap guarantee is untouched:
+		--     a column's fill still starts under its own lowest ground;
+		--   * the raise is re-swept, so the walk stays one-Lipschitz and the
+		--     rise is walked as treads over the columns leading up to it.
+		--
+		-- The other run's envelope is reproduced by sampling its own seven
+		-- lanes over +-`reach` of its column. That is exact: a column's
+		-- influence on the envelope decays by one node per column, and ground
+		-- more than `reach` = 40 columns away would have to stand 40 nodes
+		-- higher than the corner to reach it, which WP40's cut 24 / fill 16
+		-- capital envelope cannot produce.
+		local function foreign_level(axis, at_line, at_column)
+			local dxa, dza = axis_steps(axis)
+			local floor = {}
+			for q = at_column - reach, at_column + reach do
+				local lowest
+				for lane = -M.HALF, M.HALF do
+					local x, z
+					if dxa == 1 then
+						x, z = q, at_line + lane
+					else
+						x, z = at_line + lane, q
+					end
+					local y = height(x, z)
+					if lowest == nil or y < lowest then lowest = y end
+				end
+				floor[q] = lowest
+			end
+			for q = at_column - reach + 1, at_column + reach do
+				if floor[q] < floor[q - 1] - 1 then floor[q] = floor[q - 1] - 1 end
+			end
+			for q = at_column + reach - 1, at_column - reach, -1 do
+				if floor[q] < floor[q + 1] - 1 then floor[q] = floor[q + 1] - 1 end
+			end
+			return floor[at_column]
+		end
+
+		local corners = 0
+		for index = 1, #(plan.corners or {}) do
+			local corner = plan.corners[index]
+			if corner.p >= low_end and corner.p <= high_end then
+				local theirs = foreign_level(corner.axis, corner.at,
+					corner.other_p)
+				local datum = level[corner.p]
+				if theirs > datum then datum = theirs end
+				-- A PIECE THAT CANNOT SEE THE CORNER MUST NOT BE CHANGED BY IT.
+				-- The clamp's influence decays by one node per column, so it
+				-- reaches `datum - E[corner]` columns; a piece whose window
+				-- excludes the corner is at least `reach` columns from it. The
+				-- two are consistent exactly while the raise is no deeper than
+				-- the look-around, and this is the line that says so rather
+				-- than a comment hoping it.
+				if datum - level[corner.p] > reach then
+					error("wp13 orc palisade: the corner at " .. corner.p ..
+						" asks for a " .. (datum - level[corner.p]) ..
+						"-node raise, deeper than the " .. reach ..
+						"-column look-around", 0)
+				end
+				if datum > floor[corner.p] then
+					floor[corner.p] = datum
+					level = envelope(floor)
+				end
+				corners = corners + 1
+			end
 		end
 		local function deck(p) return level[p] + M.RISE end
 
@@ -234,6 +340,10 @@ local function loader(directory)
 		local PAVING, MARK = paving(palette), mark(palette)
 		local berm_lane, stockade_lane = M.HALF * outside, M.BODY * outside
 		local inner_edge, slope_lane = -M.BODY * outside, -M.HALF * outside
+		-- Hoisted: the column loop below runs 2 056 times per whole run on the
+		-- module that is this capital's biggest per-mapchunk writer, and a
+		-- table literal inside it is 2 056 allocations for two numbers.
+		local bank_lanes = {berm_lane, slope_lane}
 		local boards, treads, stakes, braziers, bank = 0, 0, 0, 0, 0
 
 		for p = from, to do
@@ -276,7 +386,8 @@ local function loader(directory)
 				end
 				-- The berm and the inner slope: dug earth to `BANK` courses
 				-- over the envelope, beaten bare on top, and open sky above.
-				for _, lane in ipairs({berm_lane, slope_lane}) do
+				for bank_index = 1, 2 do
+					local lane = bank_lanes[bank_index]
 					local x, z = column(p, lane)
 					local crest = base[p] + M.BANK
 					for y = foot, crest - 1 do buf:put(x, y, z, EARTH) end
@@ -464,7 +575,7 @@ local function loader(directory)
 			-- empty and the arbitration has nothing to do.
 			lamps = {},
 			boards = boards, treads = treads, stakes = stakes,
-			braziers = braziers, bank_columns = bank,
+			braziers = braziers, bank_columns = bank, corners = corners,
 			columns = to - from + 1, queries = queries,
 		}
 	end

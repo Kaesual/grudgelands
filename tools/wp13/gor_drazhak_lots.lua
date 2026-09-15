@@ -60,8 +60,17 @@ local quadrants = dofile(wp13 .. "/gor_drazhak_quadrants.lua")()
 
 local STEP = 4                -- the grid dump's own resolution
 local SKIRT = 6
-local RISE = 6
-local CLEAR = 8
+-- THE RISE BOUND IS THE PLOT BUILDER'S OWN FLOOR, LESS THE MARGIN, and it is
+-- read from that module rather than repeated here. The engine's load-time
+-- audit refuses a rise greater than the airspace the plot really cut, so the
+-- true bound is the least `clear_to` any of the 52 plots publishes -- which is
+-- `gor_drazhak_plot.MIN_CLEAR`, because every plot clears at least that. The
+-- two nodes are the interchange margin Highcourt's lot rule carries for the
+-- same reason: any district's plot has to fit any lot.
+local CLEAR = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp13/" ..
+	"gor_drazhak_plot.lua")(repo .. "/mods/MAPGEN/grug_mapgen/wp13").MIN_CLEAR
+local MARGIN_RISE = 2
+local RISE = CLEAR - MARGIN_RISE
 local GATE_CORRIDOR = 16      -- half of WP40's 32-node gate corridor
 local ENVELOPE = 250
 local CORE = 48
@@ -268,6 +277,10 @@ local function in_quarter(name, x, z, reach)
 end
 
 local repair = (arg[#arg] == "--repair")
+-- How far a repair may look. 48 and not the 40 of the three-seed round: nine
+-- worlds intersected leave less legal ground than three did.
+local SEARCH = 48
+
 local failures = 0
 io.write("kind\tquadrant\tlot\tx\tz\tverdict\tworst_fall\tworst_rise\n")
 local proposals = {}
@@ -278,6 +291,17 @@ for q = 1, #quadrants.QUADRANTS do
 		if not in_quarter(name, x, z, reach) then return "quarter" end
 		return nil
 	end
+	local function legal_at(index, x, z)
+		local box = boxes[index]
+		if not geometry(x, z, box.reach, box.lane, boxes, index, block) then
+			return false
+		end
+		return terrain(x, z)
+	end
+
+	-- Which of this quarter's lots are illegal, measured before any of them
+	-- moves.
+	local broken, verdict = {}, {}
 	for index = 1, #boxes do
 		local box = boxes[index]
 		local ok, why = geometry(box.x, box.z, box.reach, box.lane, boxes,
@@ -288,43 +312,79 @@ for q = 1, #quadrants.QUADRANTS do
 			ok, why, measured_fall, measured_rise = terrain(box.x, box.z)
 			fall, rise = measured_fall or "-", measured_rise or "-"
 		end
+		verdict[index] = {ok = ok, why = why, fall = fall, rise = rise}
 		if not ok then
 			failures = failures + 1
-			if repair then
-				-- The NEAREST legal position, not the flattest: the authored
-				-- layout is a design, and sorting on flatness alone is what put
-				-- two Highcourt plots in a river.
-				local best
-				for dz = -40, 40, STEP do
-					for dx = -40, 40, STEP do
-						local x, z = box.x + dx, box.z + dz
-						if geometry(x, z, box.reach, box.lane, boxes, index,
-								block) and terrain(x, z) then
-							local distance = math.abs(dx) + math.abs(dz)
-							if not best or distance < best.distance then
-								local _, _, f, r = terrain(x, z)
-								best = {x = x, z = z, distance = distance,
-									fall = f, rise = r}
-							end
+			broken[#broken + 1] = index
+		end
+	end
+
+	if repair and #broken > 0 then
+		-- THE MOST CONSTRAINED LOT MOVES FIRST, and that is not a refinement.
+		-- Repaired in roster order, the first lot of the south-west quarter took
+		-- the one patch of ground the second could have used, and the second then
+		-- had no home at all inside the whole search. Counting each broken lot's
+		-- candidates once -- against the positions everything holds BEFORE any of
+		-- them moves -- and serving the scarcest first costs one extra sweep and
+		-- gives every one of them somewhere to go.
+		local room = {}
+		for _, index in ipairs(broken) do
+			local box = boxes[index]
+			local count = 0
+			for dz = -SEARCH, SEARCH, STEP do
+				for dx = -SEARCH, SEARCH, STEP do
+					if legal_at(index, box.x + dx, box.z + dz) then
+						count = count + 1
+					end
+				end
+			end
+			room[index] = count
+		end
+		table.sort(broken, function(a, b)
+			if room[a] ~= room[b] then return room[a] < room[b] end
+			return a < b
+		end)
+
+		for _, index in ipairs(broken) do
+			local box = boxes[index]
+			-- The NEAREST legal position, not the flattest: the authored layout
+			-- is a design, and sorting on flatness alone is what put two
+			-- Highcourt plots in a river.
+			local best
+			for dz = -SEARCH, SEARCH, STEP do
+				for dx = -SEARCH, SEARCH, STEP do
+					local x, z = box.x + dx, box.z + dz
+					if legal_at(index, x, z) then
+						local distance = math.abs(dx) + math.abs(dz)
+						if not best or distance < best.distance then
+							local _, _, f, r = terrain(x, z)
+							best = {x = x, z = z, distance = distance,
+								fall = f, rise = r}
 						end
 					end
 				end
-				if best then
-					proposals[#proposals + 1] = string.format(
-						"%-22s %s %d  %5d,%5d -> %5d,%5d  (move %d, fall %d, rise %d)",
-						name, box.kind, box.index, box.x, box.z, best.x, best.z,
-						best.distance, best.fall, best.rise)
-					box.x, box.z = best.x, best.z
-				else
-					proposals[#proposals + 1] = string.format(
-						"%-22s %s %d  %5d,%5d -> NO LEGAL POSITION WITHIN 40",
-						name, box.kind, box.index, box.x, box.z)
-				end
+			end
+			if best then
+				proposals[#proposals + 1] = string.format(
+					"%-10s %-4s %d  %5d,%5d -> %5d,%5d  (room %3d, move %2d, " ..
+					"fall %d, rise %d)", name, box.kind, box.index, box.x,
+					box.z, best.x, best.z, room[index], best.distance,
+					best.fall, best.rise)
+				box.x, box.z = best.x, best.z
+			else
+				proposals[#proposals + 1] = string.format(
+					"%-10s %-4s %d  %5d,%5d -> NO LEGAL POSITION WITHIN %d",
+					name, box.kind, box.index, box.x, box.z, SEARCH)
 			end
 		end
+	end
+
+	for index = 1, #boxes do
+		local box = boxes[index]
+		local row = verdict[index]
 		io.write(table.concat({box.kind, name, box.index, box.x, box.z,
-			ok and "legal" or ("ILLEGAL " .. tostring(why)),
-			fall, rise}, "\t"), "\n")
+			row.ok and "legal" or ("ILLEGAL " .. tostring(row.why)),
+			row.fall, row.rise}, "\t"), "\n")
 	end
 end
 

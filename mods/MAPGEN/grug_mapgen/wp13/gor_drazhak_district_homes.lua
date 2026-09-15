@@ -126,7 +126,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("cook_oven_west", "brew", -5, 2, 0),
-					plots.idle("cook_oven_east", 4, 2, 2, {"work"}),
+					plots.spare("cook_oven_east", 4, 2, 2),
 					plots.work("cook_counter", "stall", -2, -4, 0),
 					plots.idle("cook_bench", -2, 7, 2, {"bench"}, 2),
 					plots.spare("cook_court", 10, -6, 0),
@@ -196,7 +196,13 @@ local function loader(directory)
 				return {
 					plots.work("weaver_counter", "stall", area.x1 - 4,
 						area.z1 - 3, 0),
-					plots.work("weaver_rack", "tend", area.x0 + 5,
+					-- SCRAPING A HIDE ON ITS FRAME, not tending: a drying rack
+					-- is two acacia posts under a beam and there is no plant on
+					-- this plot at all, so `tend` was a label its own ground
+					-- did not carry. `carve`'s feature is "a log, a
+					-- totem/statue part or a stone block", and the rack's own
+					-- end post is the first of those on this socket's course.
+					plots.work("weaver_rack", "carve", area.x0 + 3,
 						area.z1 - 2, 2),
 				}
 			end},
@@ -275,7 +281,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("clan_ground_brew", "brew", 0, 1, 0),
-					plots.idle("clan_ground_forage", -6, -5, 2, {"work"}),
+					plots.spare("clan_ground_forage", -6, -5, 2),
 					plots.spare("clan_ground", 10, -11, 0),
 				}
 			end},
@@ -300,13 +306,21 @@ local function loader(directory)
 				-- support.
 				dressing.undergrowth(buf, palette, -10, -8, 10, -2, 5)
 				dressing.bench(buf, palette, -3, -10, 0, 3, "x")
+				-- A SHRUB THE KEEPER ACTUALLY WORKS. `dressing.planter`'s own
+				-- kerb is an opaque full node, and the sockets contract's
+				-- section 8.1 feature search stops at the first of those on the
+				-- socket's own course -- so a keeper standing outside a bed
+				-- never sees the planting inside it, and the KAT only passed
+				-- because its `tend` list carried the kerb's own stone. The
+				-- kerb is not "a plant or a flower"; this is.
+				buf:put(-7, 1, -1, palette.node("undergrowth"))
 			end,
 			extra_sockets = function()
 				return {
-					plots.work("garden_tend_west", "tend", -7, -1, 0),
-					plots.idle("garden_tend_east", 5, -1, 0, {"work"}),
-					plots.idle("garden_forage", -1, -3, 0, {"work"}),
-					plots.idle("garden_bench", -2, -10, 0, {"bench"}, 2),
+					plots.work("garden_tend_west", "tend", -6, -1, 3),
+					plots.spare("garden_tend_east", 5, -1, 0),
+					plots.spare("garden_forage", -1, -3, 0),
+					plots.spare("garden_bench", -2, -10, 0, 2),
 				}
 			end},
 
@@ -326,7 +340,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("fuel_saw_west", "chop", -4, -5, 0),
-					plots.idle("fuel_saw_east", 4, -5, 0, {"work"}),
+					plots.spare("fuel_saw_east", 4, -5, 0),
 					plots.spare("fuel_yard", 7, 7, 2),
 				}
 			end},
@@ -343,7 +357,7 @@ local function loader(directory)
 			end,
 			extra_sockets = function()
 				return {
-					plots.idle("green_seat", -4, -3, 0, {"bench"}, 2),
+					plots.spare("green_seat", -4, -3, 0, 2),
 					plots.work("green_forage", "forage", 0, -1, 0),
 					plots.spare("warren_green", 4, -5, 0),
 				}

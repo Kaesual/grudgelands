@@ -181,17 +181,37 @@ local function loader()
 	}
 	-- `outside` says which lane sign faces the field, which is what turns the
 	-- berm, the stockade and the stake crest outward.
+	--
+	-- `corners` is the pair of places each run's walk MEETS another run's, and
+	-- it is what `orc_palisade.lua` section 1b reconciles. A z-run meets an
+	-- x-run at its own corner tower's centre column (+-256); the x-run meets it
+	-- four columns earlier, at its own end (+-252), which is where its walk
+	-- stops and the tower's city-face opening begins. Each entry names MY
+	-- column and the other run's line and column, and both runs of a pair name
+	-- the same two places, which is what lets them agree on a datum without
+	-- knowing about each other.
+	local function corner(p, axis, at, other_p)
+		return {p = p, axis = axis, at = at, other_p = other_p}
+	end
 	M.WALL_PLAN = {
 		wall_west = {outside = -1, gates = {0},
 			towers = tower_list({-WALL_AT, WALL_AT}),
-			cross_towers = {-WALL_AT, WALL_AT}},
+			cross_towers = {-WALL_AT, WALL_AT},
+			corners = {corner(-WALL_AT, "x", -WALL_AT, -WALL_SIDE),
+				corner(WALL_AT, "x", WALL_AT, -WALL_SIDE)}},
 		wall_east = {outside = 1, gates = {0},
 			towers = tower_list({-WALL_AT, WALL_AT}),
-			cross_towers = {-WALL_AT, WALL_AT}},
+			cross_towers = {-WALL_AT, WALL_AT},
+			corners = {corner(-WALL_AT, "x", -WALL_AT, WALL_SIDE),
+				corner(WALL_AT, "x", WALL_AT, WALL_SIDE)}},
 		wall_south = {outside = -1, gates = {0}, towers = tower_list(),
-			cross_towers = {}},
+			cross_towers = {},
+			corners = {corner(-WALL_SIDE, "z", -WALL_AT, -WALL_AT),
+				corner(WALL_SIDE, "z", WALL_AT, -WALL_AT)}},
 		wall_north = {outside = 1, gates = {0}, towers = tower_list(),
-			cross_towers = {}},
+			cross_towers = {},
+			corners = {corner(-WALL_SIDE, "z", -WALL_AT, WALL_AT),
+				corner(WALL_SIDE, "z", WALL_AT, WALL_AT)}},
 	}
 
 	-- THE DISTRICT LANES. A lane is an ordinary `avenue.lua` run, so it costs
@@ -273,38 +293,56 @@ local function loader()
 		{x = 94, z = -160, reach = 5},
 	}
 
-	-- THE SEVEN LOTS THAT DO NOT TAKE THE TURN.
+	-- THE EIGHTEEN LOTS THAT DO NOT TAKE THE TURN.
 	--
-	-- One grid turned four times is where the layout starts, not where it
-	-- ends: the ground under a turned lot is not the ground under its original,
-	-- and seven of the fifty-two land on a terrace shoulder that rises more
-	-- than the plot's own airspace clears, or fall further than the skirt
-	-- reaches. `tools/wp13/gor_drazhak_lots.lua --repair` measured them on
-	-- three worlds and moved each to the NEAREST legal position -- nearest and
+	-- One grid turned four times is where the layout starts, not where it ends:
+	-- the ground under a turned lot is not the ground under its original, and
+	-- eighteen of the fifty-two land on a shoulder that rises more than the
+	-- plot's own airspace clears, or fall further than the skirt reaches.
+	-- `tools/wp13/gor_drazhak_lots.lua --repair` measured them on ALL NINE
+	-- fixture seeds and moved each to the NEAREST legal position -- nearest and
 	-- not flattest, because the layout is a design and sorting on flatness is
-	-- what put two Highcourt plots in a river. Five moved four nodes and two
-	-- moved eight; every other lot stands exactly where the turn put it.
+	-- what put two Highcourt plots in a river.
 	--
-	-- Each row is {quadrant, lot index, x, z, what it was and why it moved}.
+	-- NINE SEEDS AND NOT THREE, and the difference is the whole of this table's
+	-- second version. Measured on the two gate seeds and the user's world, the
+	-- turn needed seven repairs; measured on all nine, it needs eighteen, and
+	-- the seven were not a subset -- three of them were repairs to ground that
+	-- only three worlds made bad. A layout tuned to three worlds is a layout
+	-- tuned to nothing.
+	--
+	-- Seventeen of the eighteen move four to twenty nodes and stay in their own
+	-- row and column of the grid. The exception is the south-west quarter's
+	-- lot 8, which moves seventy-two to (-204, -144): that quarter is the one
+	-- the mesa's own back runs through, its nine lots are boxed in by the gate
+	-- corridor, the ring street and each other, and the nearest ground that
+	-- carries a lot on all nine worlds is in the outer band. It stands in line
+	-- with lot 9 and fill 2 rather than in its own column, and that is the
+	-- honest cost of the nine-seed bar.
+	--
+	-- Each row is {quadrant, lot index, x, z}.
 	M.LOT_REPAIRS = {
-		-- rise 7 against a clear of 8 minus the two-node margin: the mesa's
-		-- east shoulder inside the rampart.
-		{"southeast", 6, 160, -112},
-		-- fall 7 against a skirt of 6 on the boundary seed.
+		{"northeast", 4, 116, 52},
+		{"northwest", 7, -68, 160},
+		{"southeast", 2, 116, -68},
+		{"southeast", 4, 68, -116},
+		{"southeast", 7, 72, -164},
 		{"southeast", 8, 116, -164},
-		-- rise 7, the same shoulder turned twice.
-		{"northwest", 3, -160, 68},
-		-- rise 8: the north-west outer row sits on the step band.
-		{"northwest", 7, -72, 164},
-		-- rise 7 and rise 8: the south-west outer column runs up the mesa's
-		-- own back, and eight nodes out is the first ground that carries a lot.
-		{"southwest", 8, -168, -116},
-		{"southwest", 9, -168, -160},
+		{"southwest", 1, -76, -72},
+		{"southwest", 5, -112, -112},
+		{"southwest", 7, -160, -68},
+		{"southwest", 8, -204, -144},
+		{"southwest", 9, -160, -168},
 	}
 	-- The same, for the fill lots.
 	M.FILL_REPAIRS = {
-		-- fall 7 on the corner of the south-east quarter.
+		{"northwest", 2, -104, 204},
+		{"northwest", 3, -200, 196},
+		{"southeast", 1, 212, -104},
 		{"southeast", 3, 200, -204},
+		{"southwest", 2, -212, -104},
+		{"southwest", 3, -204, -200},
+		{"southwest", 4, -168, -94},
 	}
 
 	-- The nine lots and the four fill lots of each quadrant, DERIVED from the

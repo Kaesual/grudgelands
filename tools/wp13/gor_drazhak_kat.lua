@@ -26,8 +26,8 @@
 --   * section 6, THE WORK SOCKETS. The sockets contract's section 8.1 says a
 --     `work` socket faces the feature its activity works, within three nodes,
 --     and section 8.5 says the placing lane's own KAT checks it. Gor Drazhak
---     places thirteen of the fifteen activities, including five of the six
---     wave-2 ones, so this is where that rule is measured.
+--     places thirteen of the fifteen activities, including ALL SIX wave-2
+--     ones, so this is where that rule is measured.
 --   * section 7, THE QUADRANTS. One authored lot grid turned four times, with
 --     seven measured repairs; the KAT holds every lot inside its own quarter
 --     and off every street run, and walks the seeded permutation.
@@ -676,28 +676,54 @@ return function(repo)
 			id .. " reaches into the corner tower of the run it meets")
 	end
 
-	-- The synthetic ground: a terraced profile carrying every feature the
-	-- measured ground at Gor Drazhak has (the research note's section 3) --
-	-- flat reaches, four-node steps down and up, two steps one column apart,
-	-- and a cross fall across the rampart's own thickness.
-	local function wall_ground(p)
+	-- THE SYNTHETIC GROUND IS TWO-DIMENSIONAL, and it has to be.
+	--
+	-- The first version of this fixture gave every run the same profile as a
+	-- function of its own axis, which is exactly the shape that CANNOT expose
+	-- the corner defect: the two runs that meet at a corner then sample the
+	-- same numbers and agree by accident. The real mesa does not, and the
+	-- nine-seed sweep found the two runs' walks four nodes apart at one corner
+	-- on the user's own world seed.
+	--
+	-- So the field below terraces along x and along z INDEPENDENTLY, with
+	-- different step positions on the two axes and a cross fall over one
+	-- stretch, which puts every corner between two different staircases.
+	local function wall_field(x, z)
 		local y = 110
-		if p > -140 then y = y - 4 end
-		if p > -60 then y = y - 4 end
-		if p > -59 then y = y - 4 end
-		if p > 20 then y = y + 4 end
-		if p > 90 then y = y - 4 end
-		if p > 150 then y = y - 4 end
+		if x > -200 then y = y - 4 end
+		if x > -100 then y = y - 4 end
+		if x > -99 then y = y - 4 end
+		if x > 40 then y = y + 4 end
+		if x > 150 then y = y - 4 end
+		if z > -230 then y = y + 4 end
+		if z > -60 then y = y - 4 end
+		if z > 20 then y = y - 4 end
+		if z > 90 then y = y + 4 end
+		if z > 200 then y = y - 4 end
+		-- A cross fall over one stretch of the east run's own thickness.
+		if x > 250 and z > -20 and z < 60 then y = y - 4 end
+		-- TWO SHOULDERS PLACED TO BREAK THE CORNERS, one each way. A terraced
+		-- field alone is not enough to make two perpendicular runs disagree --
+		-- a shoulder has to stand inside ONE run's look-around and outside the
+		-- other's, which is exactly the shape the real mesa has and the first
+		-- version of this fixture did not:
+		--
+		--   * on the east run's own seven lanes, four columns short of the
+		--     north-east corner tower, so the Z run's envelope is raised there
+		--     and the X run's (whose lanes are z 253..259) is not;
+		--   * on the south run's own seven lanes, three columns short of its
+		--     west end, so the X run's envelope is raised and the Z run's
+		--     (whose lanes are x -259..-253) is not.
+		--
+		-- Without `orc_palisade.lua` section 1b the two corners then differ by
+		-- four and five nodes and section 4g goes red, which is the point.
+		if x > 252 and x < 260 and z > 245 and z < 253 then y = y + 8 end
+		if x > -250 and x < -242 and z > -260 and z < -252 then y = y + 8 end
 		return y
 	end
-	local function wall_surface(axis, at)
-		return function(x, z)
-			local p, lane
-			if axis == "x" then p, lane = x, z - at else p, lane = z, x - at end
-			local y = wall_ground(p)
-			if lane >= 2 and p > -20 and p < 60 then y = y - 4 end
-			return y
-		end
+	local function wall_ground(p) return p end
+	local function wall_surface()
+		return wall_field
 	end
 
 	local WALL_NAMES = {}
@@ -708,9 +734,12 @@ return function(repo)
 	local wall_digest_rows, wall_cells, wall_columns = {}, 0, 0
 	local wall_gaps, wall_steps, wall_treads, wall_passage = 0, 0, 0, 0
 	local wall_stakes = 0
+	-- Every run's walk height, column by column, read back out of the cells it
+	-- wrote. Section 4g compares the four corners out of this.
+	local walk_of = {}
 	for _, spec in ipairs(capital.wall) do
 		local plan = capital.wall_plan[spec.id]
-		local surface = wall_surface(spec.axis, spec.at)
+		local surface = wall_surface()
 		local piece = palisade.run(orc, {id = spec.id, axis = spec.axis,
 			at = spec.at, from = spec.from, to = spec.to, width = avenue.WIDTH,
 			lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.from,
@@ -757,16 +786,24 @@ return function(repo)
 		local gate_from, gate_to = -palisade.GATE_PASSAGE,
 			palisade.GATE_PASSAGE
 		local previous_deck
+		walk_of[spec.id] = {}
 		for p = spec.from, spec.to do
 			local deck = deck_of(p)
 			assert(deck, spec.id .. ": the column " .. p ..
 				" has no walk at all")
+			walk_of[spec.id][p] = deck
 			local in_gate = p >= gate_from and p <= gate_to
 			if in_gate then
 				-- (d) THE GATE IS OPEN: no fill under the walk anywhere across
 				-- the thickness.
 				for lane = -WALL_LANES, WALL_LANES do
-					for y = wall_ground(p) + 1, deck - 1 do
+					local gx, gz
+					if spec.axis == "x" then
+						gx, gz = p, spec.at + lane
+					else
+						gx, gz = spec.at + lane, p
+					end
+					for y = wall_field(gx, gz) + 1, deck - 1 do
 						local name = at_cell[p .. ":" .. lane .. ":" .. y]
 						assert(name == nil or name == parts.AIR,
 							spec.id .. ": the gate passage at " .. p .. "," ..
@@ -827,15 +864,55 @@ return function(repo)
 	assert(wall_stakes >= 2000, "the stockade carries only " .. wall_stakes ..
 		" stakes over four runs")
 
+	-- (g) THE FOUR CORNERS AGREE, which is what makes the walk one circuit
+	-- rather than four stretches.
+	--
+	-- A z-run's walk arrives at its own corner tower's centre column and an
+	-- x-run's stops four columns earlier, at the tower's city-face opening.
+	-- The two compute their envelopes from two different neighbourhoods, so
+	-- without the reconciliation of `orc_palisade.lua` section 1b they land at
+	-- two different heights -- and the tower's opening is three courses, so a
+	-- disagreement of three is a walk that stops there. This asserts the step
+	-- is ZERO, which the reconciliation makes it by construction; on the
+	-- authored profile above, which is deliberately different along x and along
+	-- z, the raw envelopes differ and the clamp is what closes them.
+	local corner_steps = {}
+	for _, spec in ipairs(capital.wall) do
+		for _, corner in ipairs(capital.wall_plan[spec.id].corners or {}) do
+			local other
+			for _, peer in ipairs(capital.wall) do
+				if peer.axis == corner.axis and peer.at == corner.at then
+					other = peer.id
+				end
+			end
+			assert(other, spec.id .. ": the corner at " .. corner.p ..
+				" names no run of this capital")
+			local mine = walk_of[spec.id][corner.p]
+			local theirs = walk_of[other][corner.other_p]
+			assert(mine and theirs, spec.id .. "/" .. other ..
+				": a corner column carries no walk")
+			assert(mine == theirs, spec.id .. " walks at " .. mine ..
+				" where " .. other .. " walks at " .. theirs ..
+				" (corner " .. corner.p .. ")")
+			corner_steps[#corner_steps + 1] = math.abs(mine - theirs)
+		end
+	end
+	assert(#corner_steps == 8, "the four corners are named " ..
+		#corner_steps .. " times, not eight")
+
 	-- (e) A PIECE OF A RUN IS EXACTLY THAT STRETCH OF THE WHOLE RUN: the
 	-- rampart is cut at every column of a representative stretch and the union
 	-- of the two pieces compared with the whole, cell for cell. That is what
 	-- lets the successor call it per mapchunk.
-	local cut_spec = {id = "wall_east", axis = "z", at = 256, from = -40,
-		to = 60, width = avenue.WIDTH, lamp_spacing = avenue.LAMP_SPACING,
-		lamp_phase = -40, reach = avenue.REACH}
+	-- The stretch is chosen to CROSS A CORNER (z = 256 on the east run): the
+	-- reconciliation of section 1b raises one column of the envelope, and this
+	-- is what proves that raise is a property of the surface and not of where
+	-- the mapchunk border happened to fall.
+	local cut_spec = {id = "wall_east", axis = "z", at = 256, from = 210,
+		to = 261, width = avenue.WIDTH, lamp_spacing = avenue.LAMP_SPACING,
+		lamp_phase = 210, reach = avenue.REACH}
 	local cut_plan = capital.wall_plan.wall_east
-	local cut_surface = wall_surface("z", 256)
+	local cut_surface = wall_surface()
 	local whole_wall = palisade.run(orc, cut_spec, cut_surface, cut_plan)
 	local whole_index = {}
 	for _, cell in ipairs(whole_wall.cells) do

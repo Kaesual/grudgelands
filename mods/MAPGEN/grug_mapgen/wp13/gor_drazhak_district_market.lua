@@ -85,8 +85,7 @@ local function loader(directory)
 						area.z1 - 2, 2),
 					plots.work("tan_vat_west", "brew", area.x0 + 3,
 						area.z1 - 2, 2),
-					plots.idle("tan_vat_east", area.x0 + 7,
-						area.z1 - 2, 2, {"work"}),
+					plots.spare("tan_vat_east", area.x0 + 7, area.z1 - 2, 2),
 				}
 			end},
 
@@ -158,8 +157,7 @@ local function loader(directory)
 						area.z0 + 4, 1),
 					plots.work("armour_anvil", "smith", area.x1 - 4,
 						area.z0 + 3, 1),
-					plots.idle("armour_forge", area.x1 - 4,
-						area.z0 + 7, 1, {"work"}),
+					plots.spare("armour_forge", area.x1 - 4, area.z0 + 7, 1),
 				}
 			end},
 
@@ -291,7 +289,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("pen_saw", "chop", -8, -9, 0),
-					plots.idle("pen_forage", -6, -4, 2, {"work"}),
+					plots.spare("pen_forage", -6, -4, 2),
 					plots.spare("stock_pen", 10, -11, 0),
 				}
 			end},
@@ -312,8 +310,8 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("dry_rake", "sweep", 0, -6, 0),
-					plots.idle("dry_forage", -6, 5, 2, {"work"}),
-					plots.idle("dry_bench", -2, -10, 0, {"bench"}, 2),
+					plots.spare("dry_forage", -6, 5, 2),
+					plots.spare("dry_bench", -2, -10, 0, 2),
 				}
 			end},
 
@@ -331,7 +329,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("spoil_pick", "forage", -4, -1, 2),
-					plots.idle("spoil_saw", -6, -5, 0, {"work"}),
+					plots.spare("spoil_saw", -6, -5, 0),
 					plots.spare("spoil", 6, 6, 2),
 				}
 			end},
@@ -350,7 +348,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("fire_brew", "brew", 0, -1, 0),
-					plots.idle("fire_seat", -2, -2, 0, {"bench"}, 2),
+					plots.spare("fire_seat", -2, -2, 0, 2),
 				}
 			end},
 	}

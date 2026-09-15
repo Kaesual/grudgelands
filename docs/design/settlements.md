@@ -220,9 +220,10 @@ brewer and a baker, beside the two travelling traders every capital's core has.
 
 **Not every wall is masonry.** Added 2026-09-15 with the third capital, Gor
 Drazhak. What a walled capital has on its envelope edge is decided by the race
-that built it: the dwarves and the undead raise a stone curtain, and the orcs
-raise a **stake palisade on an earth rampart** -- a dug bank thrown up round the
-whole city with a stockade of sharpened acacia on its outer crest, a timber
+that built it: the dwarves, the humans and the undead raise a stone curtain,
+and the orcs raise a **stake palisade on an earth rampart** -- a dug bank
+thrown up round the whole city with a stockade of sharpened acacia on its outer
+crest, a timber
 fighting walk along the top, a log breastwork on the city side and a timber
 tower every sixty-four nodes with a stake crown on it. It follows the terraces
 and lets the avenue through its gates exactly as a curtain does, and it is the

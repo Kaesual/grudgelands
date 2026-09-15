@@ -81,7 +81,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("totem_carve_west", "carve", -5, -6, 3),
-					plots.idle("totem_carve_east", 5, 6, 1, {"work"}),
+					plots.spare("totem_carve_east", 5, 6, 1),
 					plots.idle("totem_pray", 0, -2, 2, {"work"}),
 					plots.idle("totem_bench", -2, -10, 0, {"bench"}, 2),
 					plots.spare("totem_court", 8, -8, 0),
@@ -100,13 +100,19 @@ local function loader(directory)
 				dressing.low_wall_line(buf, palette, 11, -6, 11, 11)
 				for x = -1, 1 do buf:put(x, 1, -6, palette.node("path")) end
 				dressing.graveyard(buf, palette, -9, -4, 9, 9)
+				-- The scatter leaves a third of its cells open on a hash, so
+				-- the mourner gets a marker of his own rather than the nearest
+				-- one it happened to set -- and he faces INTO the ground rather
+				-- than back out through its gate, which is a path node and what
+				-- the first version of this socket looked at.
+				dressing.grave(buf, palette, 0, -3, true)
 				dressing.totem(buf, palette, -9, -8, 5)
 				dressing.totem(buf, palette, 9, -8, 5)
 				dressing.undergrowth(buf, palette, -10, -4, 10, 9, 7)
 			end,
 			extra_sockets = function()
 				return {
-					plots.work("barrow_mourn", "mourn", 0, -4, 2),
+					plots.work("barrow_mourn", "mourn", 0, -4, 0),
 					plots.idle("barrow_keep", -6, -4, 2, {"work"}),
 					plots.work("barrow_pray", "pray", 6, -4, 2),
 					plots.spare("barrow", 0, -9, 2),
@@ -137,7 +143,7 @@ local function loader(directory)
 					plots.work("quarry_face_west", "mine", -6, 1, 0),
 					plots.work("quarry_face_east", "mine", 5, 1, 0),
 					plots.work("quarry_haul", "sweep", -2, -6, 0),
-					plots.idle("quarry_saw", -9, -6, 0, {"work"}),
+					plots.spare("quarry_saw", -9, -6, 0),
 				}
 			end},
 
@@ -180,13 +186,21 @@ local function loader(directory)
 				-- standing on a plant, which is an attached node with no
 				-- support.
 				dressing.crates(buf, palette, area.x1 - 2, area.z0 + 3, 2)
+				-- A SHRUB THE KEEPER ACTUALLY WORKS. `dressing.planter`'s own
+				-- kerb is an opaque full node, and the sockets contract's
+				-- section 8.1 feature search stops at the first of those on the
+				-- socket's own course -- so a keeper standing outside a bed
+				-- never sees the planting inside it, and the KAT only passed
+				-- because its `tend` list carried the kerb's own stone. The
+				-- kerb is not "a plant or a flower"; this is.
+				buf:put(area.x0 + 1, 1, area.z1 - 4,
+					palette.node("undergrowth"))
 			end,
 			extra_sockets = function(area)
 				return {
 					plots.work("herb_tend_west", "tend", area.x0 + 2,
-						area.z1 - 4, 0),
-					plots.idle("herb_tend_east", area.x1 - 2,
-						area.z1 - 4, 2, {"work"}),
+						area.z1 - 4, 3),
+					plots.spare("herb_tend_east", area.x1 - 2, area.z1 - 4, 2),
 				}
 			end},
 
@@ -201,8 +215,7 @@ local function loader(directory)
 			end,
 			extra_sockets = function(area)
 				return {
-					plots.idle("bone_store_carve", area.x0 + 3,
-						area.z1 - 2, 3, {"work"}),
+					plots.spare("bone_store_carve", area.x0 + 3, area.z1 - 2, 3),
 				}
 			end},
 
@@ -265,7 +278,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("ancestor_mourn", "mourn", -2, -6, 0),
-					plots.idle("ancestor_forage", 6, -6, 2, {"work"}),
+					plots.spare("ancestor_forage", 6, -6, 2),
 					plots.spare("ancestor_field", 9, -9, 0),
 				}
 			end},
@@ -290,13 +303,21 @@ local function loader(directory)
 				-- support.
 				dressing.undergrowth(buf, palette, -10, -8, 10, -4, 5)
 				dressing.bench(buf, palette, -3, -10, 0, 3, "x")
+				-- A SHRUB THE KEEPER ACTUALLY WORKS. `dressing.planter`'s own
+				-- kerb is an opaque full node, and the sockets contract's
+				-- section 8.1 feature search stops at the first of those on the
+				-- socket's own course -- so a keeper standing outside a bed
+				-- never sees the planting inside it, and the KAT only passed
+				-- because its `tend` list carried the kerb's own stone. The
+				-- kerb is not "a plant or a flower"; this is.
+				buf:put(-7, 1, -3, palette.node("undergrowth"))
 			end,
 			extra_sockets = function()
 				return {
-					plots.work("scrub_tend_west", "tend", -7, -3, 0),
-					plots.idle("scrub_tend_east", 5, -3, 0, {"work"}),
-					plots.idle("scrub_forage", -1, -5, 0, {"work"}),
-					plots.idle("scrub_bench", -2, -10, 0, {"bench"}, 2),
+					plots.work("scrub_tend_west", "tend", -6, -3, 3),
+					plots.spare("scrub_tend_east", 5, -3, 0),
+					plots.spare("scrub_forage", -1, -5, 0),
+					plots.spare("scrub_bench", -2, -10, 0, 2),
 				}
 			end},
 
@@ -314,7 +335,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("shelf_mine", "mine", -2, 4, 0),
-					plots.idle("shelf_haul", 0, -4, 0, {"work"}),
+					plots.spare("shelf_haul", 0, -4, 0),
 				}
 			end},
 
@@ -332,7 +353,7 @@ local function loader(directory)
 			extra_sockets = function()
 				return {
 					plots.work("candle_mourn", "mourn", 0, -1, 0),
-					plots.idle("candle_seat", -2, -2, 0, {"bench"}, 2),
+					plots.spare("candle_seat", -2, -2, 0, 2),
 					plots.spare("candle_court", 3, 3, 0),
 				}
 			end},

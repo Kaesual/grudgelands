@@ -57,10 +57,22 @@ local function loader(directory)
 
 	M.REACH = 13
 	M.FLOOR = -6
-	-- The LEAST airspace a plot clears, whatever its own roof needs: a lot may
-	-- rise 6 nodes under a plot, and a part whose deck is four courses up would
-	-- have cleared 6 and stood with a shoulder of mesa in its doorway.
-	M.MIN_CLEAR = 8
+	-- The LEAST airspace a plot clears, whatever its own roof needs, and the
+	-- number the whole lot rule is written against: a lot may rise
+	-- `MIN_CLEAR - 2` nodes under a plot (`tools/wp13/gor_drazhak_lots.lua`
+	-- reads this constant rather than repeating it), so a part whose deck is
+	-- four courses up still stands clear of the shoulder the mesa puts in its
+	-- doorway.
+	--
+	-- NINE AND NOT EIGHT, which is the nine-seed sweep's doing. Eight is
+	-- Highcourt's, and it makes the lot rule "rise at most 6"; on three worlds
+	-- that placed all 52 lots, and on nine it left one lot of the south-west
+	-- quarter -- boxed in by the gate corridor, the ring street and its own
+	-- neighbours -- with no legal position within eighty nodes, for a rise of
+	-- SEVEN. One more course of authored air is 14 630 cells of the capital's
+	-- 400 000 budget and it buys that lot its own ground back, which is a
+	-- better trade than moving a house eighty-four nodes out of its district.
+	M.MIN_CLEAR = 9
 
 	-- THE SECOND PALETTE HANDLE. Adobe is the orc signature and is already the
 	-- `wall` binding, so a capital building made grander by a richer wall
@@ -120,8 +132,8 @@ local function loader(directory)
 	-- which the placement engine does not staff with an inhabitant of its own.
 	-- `spawn = false` is the whole of it. NO TAG, deliberately: a tag is what an
 	-- idle NPC's spoken line reads off, and nobody stands here to say anything.
-	function M.spare(id, x, z, face)
-		return {id = "spare_" .. id, role = "idle", x = x, z = z,
+	function M.spare(id, x, z, face, y)
+		return {id = "spare_" .. id, role = "idle", x = x, y = y or 1, z = z,
 			face = face or 0, spawn = false}
 	end
 
@@ -369,8 +381,23 @@ local function loader(directory)
 		-- path: the plots built from `buildings.lua` publish no socket of their
 		-- own, and a district of nine plots with four inhabited ones is not a
 		-- district anybody lives in.
-		sockets[#sockets + 1] = {id = plot.id .. "_gate_idle", role = "idle",
-			x = 0, y = 1, z = z0 + 2, face = 0, tags = {"door"}}
+		--
+		-- A FILL PLOT'S IS A SPARE, not a resident. A field, a spoil heap or a
+		-- wood yard has a way in but no doorstep, and standing somebody at the
+		-- gate of a paddock for the life of the world is a resident spent on
+		-- nothing. `spawn = false` keeps the position -- it is still somewhere
+		-- a walker may go -- and takes the person off it, which is sixteen of
+		-- the forty-seven this capital shed to reach the coordinator's
+		-- 150..170 resident band (2026-09-15).
+		if plot.fill then
+			sockets[#sockets + 1] = {id = plot.id .. "_gate_spare",
+				role = "idle", x = 0, y = 1, z = z0 + 2, face = 0,
+				spawn = false}
+		else
+			sockets[#sockets + 1] = {id = plot.id .. "_gate_idle",
+				role = "idle", x = 0, y = 1, z = z0 + 2, face = 0,
+				tags = {"door"}}
+		end
 		if type(plot.extra_sockets) == "function" then
 			for _, entry in ipairs(plot.extra_sockets(area)) do
 				sockets[#sockets + 1] = {id = plot.id .. "_" .. entry.id,
@@ -504,6 +531,7 @@ local function loader(directory)
 				-- and a nil reach there is a comparison against nothing.
 				local reach = yard_reaches and yard_reaches[index] or M.REACH
 				plot.reach = reach
+				plot.fill = (yard_reaches ~= nil)
 				if plot.yard then plot.yard.reach = reach end
 				into[index] = {
 					id = plot.id,
