@@ -255,13 +255,19 @@ return function(repo)
 		 {id = "anvil", role = "work", activity = "smith", x = 3, y = 1, z = 4,
 			dir = {x = 1, z = 0}, tags = {"work"}},
 		 {id = "butcher", role = "vendor", kind = "butcher", x = -3, y = 1,
-			z = 4, dir = {x = 0, z = 1}}})
-	check(capital_count == 3, "capital registration count differs")
+			z = 4, dir = {x = 0, z = 1}},
+		 -- The wave-2 vocabulary (contract section 8.2/8.4, 2026-09-15): a
+		 -- race-specific activity and a race-specific profession.
+		 {id = "ore_face", role = "work", activity = "mine", x = 5, y = 1,
+			z = -4, dir = {x = 0, z = -1}},
+		 {id = "mason", role = "vendor", kind = "mason", x = -5, y = 1,
+			z = -4, dir = {x = 0, z = 1}}})
+	check(capital_count == 5, "capital registration count differs")
 	local start_again = grug_core.settlement_sockets("dwarf")
 	check(#start_again == #SOCKETS and start_again[1].id == "gate_west",
 		"the capital displaced the race's start sockets")
 	local capital = grug_core.settlement_sockets_at("dwarf_capital")
-	check(#capital == 3 and capital[1].id == "throne" and
+	check(#capital == 5 and capital[1].id == "throne" and
 		capital[1].role == "king" and capital[1].pos.y == CAPITAL.y + 1,
 		"the capital's own key does not answer")
 	check(capital[2].role == "work" and capital[2].activity == "smith" and
@@ -270,7 +276,9 @@ return function(repo)
 	check(capital[1].activity == nil and capital[3].activity == nil,
 		"an activity leaked onto a non-work socket")
 	check(capital[3].kind == "butcher", "the profession vendor lost its kind")
-	line("work_and_profession", "smith", "butcher")
+	check(capital[4].activity == "mine" and capital[5].kind == "mason",
+		"the wave-2 vocabulary is not accepted")
+	line("work_and_profession", "smith", "butcher", "mine", "mason")
 	check(#grug_core.settlement_socket_settlements() == 2,
 		"the settlement roster lost the capital")
 	line("second_settlement", "one_race", "start_wins")
@@ -283,6 +291,35 @@ return function(repo)
 	check(#grug_core.settlement_socket_settlements() == 2,
 		"a refused registration reached the settlement roster")
 	line("refusals", "left_no_state", "pass")
+
+	-- The whole closed vocabulary, so a row that appears or disappears in the
+	-- registry shows up here as a changed line rather than as a silent accept.
+	for _, row in ipairs({
+		{"activity", {"smith", "fish", "farm", "chop", "tend", "pray",
+			"stall", "sit", "sweep", "mine", "brew", "carve", "mourn", "spar",
+			"forage"}},
+		{"kind", {"race", "general", "butcher", "smith", "fishmonger",
+			"baker", "tailor", "mason", "brewer", "bowyer", "herbalist",
+			"armourer", "tanner", "embalmer"}}}) do
+		local label, words = row[1], row[2]
+		for index = 1, #words do
+			local socket
+			if label == "activity" then
+				socket = {id = "v" .. index, role = "work", activity = words[index],
+					x = index, y = 1, z = 9, dir = {x = 0, z = 1}}
+			else
+				socket = {id = "v" .. index, role = "vendor", kind = words[index],
+					x = index, y = 1, z = 9, dir = {x = 0, z = 1}}
+			end
+			local ok = pcall(grug_core.register_settlement_sockets,
+				"vocab_" .. label .. index, "dwarf", {x = 100 * index, y = 10,
+				z = 9000 + index}, {socket})
+			check(ok, "the " .. label .. " " .. words[index] .. " is refused")
+		end
+		line("vocabulary_" .. label, table.concat(words, ","))
+	end
+	check(#grug_core.settlement_socket_settlements() == 2 + 15 + 14,
+		"the vocabulary settlements did not all register")
 
 	restore()
 	return table.concat(report)

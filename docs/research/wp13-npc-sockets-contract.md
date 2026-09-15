@@ -224,9 +224,27 @@ resident is placed on it, the roster counts it) and it carries
 | `sit` | sitting pose (the player mesh's sit frames 81..160) | nothing |
 | `sweep` | walks a two-node line back and forth beside the socket | nothing |
 
+Wave 2 (2026-09-15, the four remaining capitals and the Dur Brannoc upgrade;
+the user's plan, vocabulary proposed by the coordinator and open to pruning)
+adds six race-flavoured activities. The feature each expects under `dir`
+within three nodes, checked by the placing lane's KAT exactly as §8.1 does:
+
+| activity | what the resident does | feature under `dir` | wielded item (NPC lane) |
+|---|---|---|---|
+| `mine` | swings a pick at a rock face on a slow loop | a stone, ore or cobble node at head or chest height | pick |
+| `brew` | stirs, occasional punch swing | a cauldron, barrel or a cooking pot node | nothing or a ladle-like stick |
+| `carve` | chisels, punch animation on a slow loop | a log, a totem/statue part or a stone block | axe or pick |
+| `mourn` | stands still, head bowed if the mesh allows | a grave marker, a coffin or a candle | nothing |
+| `spar` | swings a weapon on a slow loop at a partner | another `spar` socket or a training dummy (a fence post or a wool node) | the settlement's tier-1 weapon |
+| `forage` | crouch-free stand, occasional punch (picking) | a mushroom, a bush, a plant, a vine or leaves | nothing |
+
 The exact animation choice is the NPC lane's; this table is the contract on
 NAMES and on the feature each name expects. `sweep` is the only activity that
-moves, and it stays within two nodes of its socket.
+moves, and it stays within two nodes of its socket. An activity the NPC mod
+does not animate yet is a resident standing still at its workplace
+(`start_villagers.lua` returns no work tick for it), never a load error, so a
+structure lane may author the wave-2 names before the NPC lane's animations
+land.
 
 ### 8.3 Walkers and the 80/20 split
 
@@ -256,7 +274,10 @@ nearest spots until there are two, so no walker is ever handed a ring of one
 ### 8.4 Profession vendors
 
 `vendor.kind` grows from `{race, general}` to
-`{race, general, butcher, smith, fishmonger, baker, tailor}`. A profession
+`{race, general, butcher, smith, fishmonger, baker, tailor}`, and in wave 2
+(2026-09-15) further by `{mason, brewer, bowyer, herbalist, armourer, tanner,
+embalmer}`; a kind whose entity the traders mod has not registered yet is an
+error line at placement and an empty socket, never a load failure. A profession
 vendor is a trader with a stock table of its profession (the NPC lane owns
 the tables, `grug_traders`) and the structure lane places its socket at the
 matching building (a butcher's socket at the butcher's counter). A capital
@@ -276,3 +297,8 @@ extends to every kind); the six starts keep their single `race` vendor.
   the NPC lane (`grug_mobs/start_villagers.lua`, `start_npcs.lua`).
 - Profession stock tables and the vendor entities: the NPC lane
   (`grug_traders`); the Highcourt fill lane places the sockets.
+- Wave 2: the registry rows of the six activities and seven kinds above are
+  landed by the coordinator before the lanes start (as in wave 1); each
+  capital lane's own KAT checks the feature-under-`dir` rule for the
+  activities it places; the NPC vocabulary lane (`grug_mobs`, `grug_traders`)
+  owns their animations, wield items, stock tables and entities.

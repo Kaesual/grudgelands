@@ -31,12 +31,20 @@
 
 local ROLES = {guard_post = true, guard_patrol = true, vendor = true,
 	idle = true, quest = true, king = true, waypoint = true, work = true}
--- Contract section 8.4: the two vendor families plus the professions.
+-- Contract section 8.4: the two vendor families plus the professions. The
+-- second row is the wave-2 extension (2026-09-15, the four remaining capitals
+-- and the Dur Brannoc upgrade); the entity behind each kind is grug_traders'.
 local VENDOR_KINDS = {race = true, general = true, butcher = true,
-	smith = true, fishmonger = true, baker = true, tailor = true}
+	smith = true, fishmonger = true, baker = true, tailor = true,
+	mason = true, brewer = true, bowyer = true, herbalist = true,
+	armourer = true, tanner = true, embalmer = true}
 -- Contract section 8.2: the closed activity vocabulary of a `work` socket.
+-- The second row is the wave-2 extension; an activity the NPC mod does not
+-- animate yet is a resident standing still at its workplace, never an error.
 local ACTIVITIES = {smith = true, fish = true, farm = true, chop = true,
-	tend = true, pray = true, stall = true, sit = true, sweep = true}
+	tend = true, pray = true, stall = true, sit = true, sweep = true,
+	mine = true, brew = true, carve = true, mourn = true, spar = true,
+	forage = true}
 
 -- settlement_key -> record; race_id -> the same record; registration order.
 local by_key = {}
