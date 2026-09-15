@@ -162,7 +162,7 @@ Reading the three that are not zero:
 * **All five remaining walk breaks and all four remaining gate steps are Nhal
   Veyr's north gate**, on five of the nine seeds, and they are a fact about
   that capital's terrain rather than about the routes (§5).
-* **The worst ground step inside a gate goes from 3 to 9** -- see §3.2, which
+* **The worst ground step inside a gate goes from 3 to 9** -- see §3.1, which
   is a task for the capital lanes and not a fault of this tool.
 
 `--full` scans all 261121 columns of an envelope instead of a band around the
@@ -448,7 +448,7 @@ have to discover.
   overwritten; leaving it is a choice, not an oversight.
 * **A route that is added or moved.** The KAT's "exactly four routes, one per
   gate" assertion is what stops a future route from silently taking a gate that
-  already has a road, and the "no point inside an envelope" assertion is what
+  already has a road, and the "no segment enters an envelope" clip is what
   stops one from being drawn through a city. Both fail loudly.
 
 ## 6. What a review should look at
@@ -497,10 +497,13 @@ have to discover.
   interpreters, byte-identical output (`641e868b…`): the twenty-four gate
   points derived independently of the table that publishes them, one route per
   gate with no collision, the 144-node straight approach, not one route or spur
-  point strictly inside any envelope, the six start route centrelines frozen,
-  and the ingress corridors clear of the anchor columns.
-* `tools/wp13/route_gates.lua <repo> <seed>` exits non-zero on any of its six
-  faults, so the terrain half is a gate too.
+  segment entering any envelope, the two authored gate tables agreeing point for
+  point, the six start route centrelines frozen, and the ingress corridors clear
+  of the anchor columns.
+* `tools/wp13/route_gates.lua <repo> <seed>` — the terrain half. Its default
+  mode gates the ROUTE GRAPH and exits 0 on all nine fixture seeds; `--strict`
+  adds the capital-terrain questions and is a capital lane's own acceptance
+  check (§3, §5).
 * `tools/wp40/r7/run.sh unit` -- the anchor activation KAT, with its two new
   cases.
 * `tools/wp13/capital_anchor_fixture.lua` -- unchanged digest over nine seeds.
