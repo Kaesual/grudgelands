@@ -585,6 +585,25 @@ return function(repo)
 		-- So the gate is recorded here and the property write itself is
 		-- measured in the engine, by the NPC probe.
 		--
+		--
+		-- The cached-player distance `levels.lua` publishes. The work tick asks
+		-- it "is anybody close enough for this animation to be worth playing",
+		-- the same question the vendor presence poll asks, and without it here
+		-- the fixture could not tell the two halves of the tick apart: the walk
+		-- home runs whatever the answer is, the animation does not.
+		--
+		function grug_mobs.nearest_player_d2(pos)
+			local best
+			for index = 1, #harness.players do
+				local player = harness.players[index]
+				local dx = pos.x - player.x
+				local dy = pos.y - player.y
+				local dz = pos.z - player.z
+				local d2 = dx * dx + dy * dy + dz * dz
+				if not best or d2 < best then best = d2 end
+			end
+			return best
+		end
 		harness.gate = {}
 		function grug_mobs.plain_tag_gate_tick(entity, text)
 			local row = harness.gate[entity] or {calls = 0}
@@ -1546,9 +1565,59 @@ return function(repo)
 	check(sitter.animation_writes >= 5 and sitter.animation_writes <= 7,
 		"an occasional swing wrote its animation " ..
 		sitter.animation_writes .. " times in 30 seconds, not six")
+	--
+	-- AND A DISPLACED WORK RESIDENT WALKS BACK. Things move an NPC -- a
+	-- knockback, an admin teleport, an engine probe -- and a static resident
+	-- that stayed where it was pushed would stand in the middle of a field for
+	-- the life of the world. The round-3 engine probe found exactly that by
+	-- moving the whole roster forty nodes: the walkers came home and the
+	-- workers did not.
+	--
+	-- WITHOUT A PATHFINDER, which is the contract's rule for a static resident,
+	-- and without the "is anybody watching" gate, because the correction has to
+	-- have happened before the player arrives.
+	--
+	sitter._grug_work_activity = "sit"
+	local pushed = entity_at("forge_work")
+	local home = {x = pushed._grug_work_x, z = pushed._grug_work_z}
+	pushed.pos.x = home.x + 8
+	pushed.pos.z = home.z + 6
+	-- A player 40 nodes away: inside the engine's activation radius, so the
+	-- entity is in the environment and ticking, and OUTSIDE the work tick's own
+	-- 24-node watch radius, so nothing about the animation may run. That band
+	-- is exactly where a displaced resident has to correct itself.
+	harness.players = {{x = pushed.pos.x + 40, y = pushed.pos.y,
+		z = pushed.pos.z}}
+	settle_activation()
+	local paths_home = harness.paths
+	local walked = 0
+	for second = 1, 60 do
+		villager_def.do_custom(pushed, 1)
+		advance(pushed, 1)
+		local dx, dz = pushed.pos.x - home.x, pushed.pos.z - home.z
+		if walked == 0 and dx * dx + dz * dz <= 1.2 * 1.2 then
+			walked = second
+		end
+	end
+	check(walked > 0, "a displaced work resident never came home")
+	check(harness.paths == paths_home,
+		"the walk home asked the pathfinder " ..
+		(harness.paths - paths_home) .. " times")
+	-- HOME AND STANDING, not home and still jogging: out of the watch radius
+	-- the tick plays no activity, and the one thing it does on arrival is stop.
+	check(pushed.animation_current == "stand",
+		"a work resident that came home out of sight is animated " ..
+		tostring(pushed.animation_current))
+	-- And it goes back to work the moment somebody is close enough to see it.
+	harness.players = {{x = pushed.pos.x, y = pushed.pos.y, z = pushed.pos.z}}
+	villager_def.do_custom(pushed, 1)
+	check(pushed.animation_current == "work",
+		"a work resident did not resume its activity when watched: " ..
+		tostring(pushed.animation_current))
 	line("work", "smith_work_anim", "sit_anim", "writes_1_in_120s",
 		"swing_" .. sitter.animation_writes .. "_in_30s", "no_path",
-		"step_vetoed_" .. vetoed)
+		"step_vetoed_" .. vetoed, "home_at_" .. walked .. "s_unwatched",
+		"resumed_when_watched")
 
 	--
 	-- 16. THE ANIMATION RANGES ARE THE MESH'S OWN, read out of the file that

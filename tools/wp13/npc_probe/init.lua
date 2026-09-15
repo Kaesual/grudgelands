@@ -221,6 +221,18 @@ local function census_line(tag, strict, expect_live)
 	return #npcs, roster, marked
 end
 
+-- The settlement's roster size, out of the placement engine's own census. Used
+-- where a phase expects "one fewer than the roster": the roster grows whenever
+-- a composition gains a socket, and a literal written here goes stale silently
+-- (round 3 added two `work` sockets per start).
+local function roster_size()
+	local rows = grug_mobs.start_npc_census()
+	for index = 1, #rows do
+		if rows[index].key == settlement.key then return rows[index].roster end
+	end
+	return 0
+end
+
 local SPOT_ARRIVED = 1.6
 
 --
@@ -807,12 +819,16 @@ local FULL = {
 		fail("no villager to clear")
 	end},
 	{at = 270, what = function()
-		-- One heartbeat later: still nine markers and only eight NPCs, because
-		-- three passes have to agree before a marker is freed. The one phase
-		-- whose whole point is a count OTHER than the roster, hence not strict.
-		local live = census_line("one_strike")
-		if live ~= 8 then
-			fail("the cleared villager is still counted: live=" .. live)
+		-- One heartbeat later: every marker still standing and one NPC fewer,
+		-- because three passes have to agree before a marker is freed. The one
+		-- phase whose whole point is a count OTHER than the roster, hence not
+		-- strict -- and the count is ROSTER MINUS ONE rather than a literal,
+		-- because the roster grows whenever a composition gains a socket (round
+		-- 3 added two `work` sockets per start and this read 8 against 10).
+		local live, roster = census_line("one_strike")
+		if live ~= roster - 1 then
+			fail("the cleared villager is still counted: live=" .. live ..
+				" of a roster of " .. roster)
 		end
 	end},
 	{at = 290, what = function()
@@ -969,11 +985,11 @@ local FULL = {
 		if not unload_ready then return end
 		-- Eight of nine, and still nine markers: this is the count that must NOT
 		-- become nine again by a fresh NPC being placed on the marked socket.
-		census_line("unloaded", false, 8)
+		census_line("unloaded", false, roster_size() - 1)
 	end},
 	{at = 385, what = function()
 		if not unload_ready then return end
-		census_line("still_unloaded", false, 8)
+		census_line("still_unloaded", false, roster_size() - 1)
 	end},
 	{at = 390, what = function()
 		if not unload_ready then return end

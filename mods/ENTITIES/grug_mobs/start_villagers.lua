@@ -156,6 +156,29 @@ local SWING_ON, SWING_PERIOD = 2, 10
 -- and is walked at the ordinary pace, with no path-finding of any kind.
 local SWEEP_SPAN = 2
 local SWEEP_ARRIVED = 0.6
+--
+-- HOW FAR OFF ITS SOCKET a work resident may be before it walks back, and how
+-- long it may fail to get there before it is put there.
+--
+-- A static resident is defined by standing on its socket, and things move an
+-- NPC: a knockback, an admin teleport, an engine probe. Without this it would
+-- stand wherever it was pushed for the life of the world -- which the WP13
+-- round-3 engine probe found by moving the whole roster forty nodes and
+-- watching the walkers come home while the workers did not.
+--
+-- The walk home is `walk_toward` and NOTHING else: no pathfinder, which is the
+-- contract's own rule for a static resident (section 8.3), and it is the one
+-- part of the tick that is NOT gated on a player being near -- a resident
+-- stranded in the middle of a field is exactly what a player walking up would
+-- see, so the correction has to have happened before they arrive. It costs one
+-- squared distance per second, and a walk only in the rare case.
+--
+-- The last resort is patrol.lua's third stage, the out-of-sight snap (the
+-- user's round-1 ruling: a teleport never happens where anyone can watch it),
+-- with the same ninety seconds the guard post allows.
+--
+local WORK_SLACK = 1.2
+local WORK_STALL_SNAP = 90
 -- Seconds of no measurable progress toward a spot after which the villager
 -- gives that spot up and takes another (patrol.lua's stall clock). Short,
 -- because the usual obstacle is another villager and the usual fix is to go
@@ -564,8 +587,39 @@ local function work_tick(self, dtime)
 	if self.attack or (self.state ~= "stand" and self.state ~= "walk") then
 		return false
 	end
+	--
+	-- HOME FIRST, and deliberately BEFORE the "is anybody watching" gate: see
+	-- WORK_SLACK. `sweep` is exempt, because its two-node line IS its home and
+	-- the sweep branch below already walks it.
+	--
+	if not activity.sweep then
+		local home_x, home_z = self._grug_work_x, self._grug_work_z
+		local dx = (home_x or pos.x) - pos.x
+		local dz = (home_z or pos.z) - pos.z
+		if dx * dx + dz * dz > WORK_SLACK * WORK_SLACK then
+			local _, total = grug_mobs.stall_clock(self, home_x, home_z, pos,
+				elapsed)
+			if total >= WORK_STALL_SNAP and
+					grug_mobs.snap_try(self, pos, home_x, home_z, elapsed) then
+				return false
+			end
+			grug_mobs.walk_toward(self, home_x, home_z, pos)
+			self:set_animation("walk")
+			return false
+		end
+		grug_mobs.stall_clear(self)
+	end
 	if not watched(self, pos) then
+		-- Nobody within 24 nodes: no activity, no swing, no facing. The one
+		-- thing that still happens is STOPPING, and the stand animation goes
+		-- with it -- a resident that had just walked home would otherwise jog
+		-- on the spot for anyone watching from between the 24-node watch radius
+		-- and the engine's much wider object-send range. `set_animation` writes
+		-- nothing when the animation is already the one asked for, so a
+		-- resident standing quietly out of range costs zero property writes.
 		if (self.velocity or 0) ~= 0 then self:set_velocity(0) end
+		self.state = "stand"
+		self:set_animation("stand")
 		return false
 	end
 	-- The tool, once per activation. Both halves of `apply_entity` are
