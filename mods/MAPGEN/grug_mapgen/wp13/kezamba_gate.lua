@@ -11,10 +11,14 @@
 -- arrived somewhere.
 --
 -- So each gate point carries a THRESHOLD: two totem posts on the verges with a
--- junglewood lintel across the road between them, a wall torch on each post and
--- a band of basalt paving under the whole thing. It is Kezamba's answer to a
--- gatehouse and it is the contract's own troll vocabulary -- "junglewood
--- walkways, totem posts" -- rather than a new idea.
+-- junglewood lintel across the road between them, a wall torch on the inner face
+-- of each post and one marker course of basalt laid flush into the road under
+-- it. It is Kezamba'''s answer to a gatehouse and it is the contract'''s own troll
+-- vocabulary -- "junglewood walkways, totem posts" -- rather than a new idea.
+--
+-- IT RAISES NO GROUND. See the base rule in `M.run`: a threshold that levelled
+-- its own apron came out as a wall across a descending road, and the fix was to
+-- stop writing ground at all.
 --
 -- WHY IT IS AN OVERLAY RUN AND NOT A BLUEPRINT. Same three reasons the curtain
 -- wall is one (`wp13/wall.lua`): an anchor blueprint is bounded at +-47 and the
@@ -42,18 +46,15 @@ local function loader(directory)
 	-- The threshold's own numbers.
 	M.HALF = 3                 -- the seam's activation band
 	M.RISE = 5                 -- courses of post over the road
-	M.PAVE_HALF = 6            -- how far along the axis the paving band runs
+	M.PAVE_HALF = 1            -- how far along the axis the marker course runs
+
 	M.REACH = 40               -- the look-around, `avenue.REACH`
 
 	local function signature(palette)
 		return palette.maybe("signature") or palette.node("foundation")
 	end
-	local function paving(palette)
-		return palette.maybe("castle_paving") or palette.node("plaza")
-	end
-
 	function M.palette_names(palette)
-		local names = {parts.AIR, signature(palette), paving(palette),
+		local names = {parts.AIR, signature(palette),
 			palette.node("post"), palette.node("beam"),
 			palette.node("plaza_edge"), palette.node("roof_slab"),
 			palette.node("light_wall")}
@@ -89,11 +90,10 @@ local function loader(directory)
 	-- the whole run.
 	--
 	-- THE LINTEL IS LEVEL, and that is why the base height is taken over the
-	-- WHOLE threshold and not over the piece: two halves of one gate computed
-	-- from two windows would meet at a step. The window every piece reads is
-	-- `centre +- PAVE_HALF` across all seven lanes, which lies inside
-	-- `from - reach .. to + reach` for any piece of a run this short, so every
-	-- piece computes the same number from the same columns.
+	-- GATE POINT'''s own seven lanes and not over the piece: two halves of one
+	-- gate computed from two different windows would meet at a step. Those seven
+	-- columns lie inside `from - reach .. to + reach` for every piece of a run
+	-- this short, so every piece computes the same number from the same columns.
 	function M.run(palette, spec, surface, plan)
 		if type(surface) ~= "function" then
 			error("wp13 kezamba gate: a run needs a surface callback", 0)
@@ -125,47 +125,58 @@ local function loader(directory)
 			return y
 		end
 
-		-- 1. The base: the highest ground under the whole threshold, so the
-		-- lintel clears the road at every column of it.
+		-- 1. THE BASE: the highest ground under the gate point's own seven lanes.
+		--
+		-- It is taken over ONE position along the axis and not over the whole
+		-- threshold, and that is a correction with a render behind it. The
+		-- first version read the maximum over `centre +- PAVE_HALF` and then
+		-- carried every column of the band UP to it, so that where the road
+		-- descends -- which at Kezamba's east gate it does, steeply, off the
+		-- blend to the terraces -- the "threshold" came out as a solid wall of
+		-- masonry across the road several courses high. A gate a traveller
+		-- cannot see through is not a gate.
+		--
+		-- What replaces it writes NO GROUND AT ALL. The road under the
+		-- threshold is the avenue's, which runs first and wins its own cells by
+		-- the successor's first-run-wins arbitration; this run contributes the
+		-- two posts on the verges, the lintel over the carriageway and one
+		-- marker course in the road, and nothing else. Every piece computes the
+		-- same base from the same seven columns, so the lintel is level.
 		local base
-		for p = centre - M.PAVE_HALF, centre + M.PAVE_HALF do
-			for lane = -M.HALF, M.HALF do
-				local x, z = column(p, lane)
-				local y = height(x, z)
-				if base == nil or y > base then base = y end
-			end
+		for lane = -M.HALF, M.HALF do
+			local x, z = column(centre, lane)
+			local y = height(x, z)
+			if base == nil or y > base then base = y end
 		end
 
-		-- 2. The paving band and the kerb, only over the columns of THIS piece.
-		local PAVE = paving(palette)
-		local KERB = palette.node("plaza_edge")
+		-- 2. The marker course: the gate point's own row of the carriageway, in
+		-- the signature rock, laid at each column's own surface so it is flush
+		-- with the road rather than a step in it. Only the columns of THIS
+		-- piece, and only where the avenue has not already claimed the cell --
+		-- which the successor decides, not this run.
 		local MARK = signature(palette)
+		local KERB = palette.node("plaza_edge")
 		local POST = palette.node("post")
 		local BEAM = palette.node("beam")
 		local paved, posts, lintel = 0, 0, 0
-		local first = math.max(from, centre - M.PAVE_HALF)
-		local last = math.min(to, centre + M.PAVE_HALF)
+		local first = math.max(from, centre - 1)
+		local last = math.min(to, centre + 1)
 		for p = first, last do
 			for lane = -M.HALF, M.HALF do
 				local x, z = column(p, lane)
 				local ground = height(x, z)
-				-- Carry the band up to the base so the threshold stands on one
-				-- level apron rather than following every terrace tread.
-				for y = ground, base do
-					buf:put(x, y, z, (lane == -M.HALF or lane == M.HALF) and
-						KERB or PAVE)
-				end
-				if p == centre then buf:put(x, base, z, MARK) end
-				buf:clear(x, base + 1, z, x, base + M.RISE + 2, z)
+				buf:put(x, ground, z,
+					(lane == -M.HALF or lane == M.HALF) and KERB or MARK)
+				buf:clear(x, ground + 1, z, x, base + M.RISE + 2, z)
 				paved = paved + 1
 			end
 		end
 
-		-- 3. The two totem posts, on the verges at the gate point itself, and
-		-- the lintel between them.
-		for _, lane in ipairs({-M.HALF, M.HALF}) do
-			local x, z = column(centre, lane)
-			if centre >= from and centre <= to then
+		-- 3. The two totem posts on the verges at the gate point itself, and
+		-- the junglewood lintel between them.
+		if centre >= from and centre <= to then
+			for _, lane in ipairs({-M.HALF, M.HALF}) do
+				local x, z = column(centre, lane)
 				for step = 1, M.RISE do
 					buf:put(x, base + step, z,
 						(step % 3 == 0) and KERB or POST)
@@ -173,8 +184,6 @@ local function loader(directory)
 				buf:put(x, base + M.RISE + 1, z, palette.node("roof_slab"))
 				posts = posts + 1
 			end
-		end
-		if centre >= from and centre <= to then
 			for lane = -M.HALF + 1, M.HALF - 1 do
 				local x, z = column(centre, lane)
 				buf:put(x, base + M.RISE, z, BEAM)
