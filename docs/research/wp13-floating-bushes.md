@@ -162,6 +162,42 @@ step in a sloped column while the cell it is anchored on rests on soil. Luanti's
 own placement does the same, the number barely moves between before and after
 (23 → 22, 60 → 37), and it is reported beside the gate rather than inside it.
 
+### The price: 8-20 % fewer bushes, accepted for now
+
+Lowering a template also lowers the box the writer clearance-tests, and a
+three-by-three bush pays for it. The same censuses that prove the floating count
+zero also show the surviving population, and it is smaller
+(`base-*.tsv` against `fix-*.tsv`, the `names=` field, counts summed over all
+four bands):
+
+| start | node | user seed | boundary seed |
+| --- | --- | --- | --- |
+| Hearthpine | `pine_bush_stem` | 544 → 456 (−16.2 %) | 590 → 483 (−18.1 %) |
+| Hearthpine | `blueberry_bush_leaves_with_berries` | 596 → 551 (−7.6 %) | 545 → 442 (−18.9 %) |
+| Dawnmere | `bush_stem`, outside the pad | 357 → 286 (−19.9 %) | 271 → 226 (−16.6 %) |
+| Sunscar | `acacia_bush_stem` | 351 → 301 (−14.2 %) | 319 → 276 (−13.5 %) |
+
+Dawnmere's 216 authored `bush_stem` nodes inside the settlement pad are 216
+before and after on both seeds, so no blueprint lost a bush; the loss is
+entirely in the R6 decoration pass. Silverleaf, Stillgrave and Kapok have no
+bush template and their whole census rows are byte-identical before and after,
+which is the control: only the five records whose `min_y` moved lose anything.
+
+The mechanism is read from the code, not measured: `r6_settlement.lua` takes
+`min_fy = template.min_y` (~2209) for the decoration's occupancy box, so the
+bush's leaf ring is now clearance-tested at `root_y` instead of `root_y + 1`.
+The clearance loop (~2292-2305) rejects the WHOLE decoration with
+`insufficient_clearance` as soon as ONE included cell meets a node that is
+neither air nor natural vegetation. On rising ground an outer column of the
+three-by-three patch has its surface at `root_y`, so the bush is refused where
+before its leaf ring cleared the slope by the very node that made it float.
+Luanti has no such rule: it clips that one node and places the rest.
+
+**Decision (coordinator, 2026-09-15): accept the loss.** A bush missing from a
+slope is invisible; a bush hovering over flat ground is what the user
+photographed. The alternative is named in section 8 and deliberately not
+implemented here.
+
 ## 6. Frozen expectations this lane moves
 
 | digest | before | after | why |
@@ -169,10 +205,18 @@ own placement does the same, the number barely moves between before and after
 | `r7_manifest.frozen.decoded_templates` | `ab77c5efa9587823…` | `3734b3e2e3203c61…` | five of twenty-one decoded template records move `min_y`/`max_y` by one |
 | `r7_manifest.SOURCE_PROJECTION_SHA256` | `de79b1fe983d8b5a…` | `8735e5f7af1c6331…` | the roll-up over the six limbs, of which only `decoded_templates` moved |
 
-The other five limbs — `r6_catalog`, `accepted_r6_content`, `wp43_projection`,
-`cultural`, `consumer_payload` — were read back from the engine and are
-unchanged. Without the update the game does not boot at all
-(`WP40 R7 manifest: frozen source projection differs`), which is how the
+Stated precisely, because the short version sounds wider than it is: the
+`frozen` source projection is a table of twelve fields — a schema string and
+eleven digests. SIX of them carry a literal pin next to them in
+`r7_manifest.lua` (`r6_catalog`, `accepted_r6_content`, `decoded_templates`,
+`wp43_projection`, `cultural`, `consumer_payload`), and five of those six were
+read back out of the engine on this tree and are the values already in the file.
+The remaining five digests — `production_semantics`, `p9g_semantics`,
+`native_noise`, `native_allowlist`, `gathering` — have no literal of their own
+and are covered only by the roll-up `graph_digest(frozen)`; that the roll-up
+matches is the whole evidence that they did not move. Without the update the
+game does not boot at all
+(`WP40 R7 manifest: frozen source projection differs`), which is how both
 constants were found.
 
 **Unchanged and verified so:** the six start blueprint identities
@@ -194,6 +238,14 @@ pre-fix tree).
 - **`tools/wp40/quality/final_micro.sh`** and the R7 integration KAT need the
   `reference_projects/luanti` submodule, which an agent worktree does not
   initialise.
+- **`tools/wp40/r6/common.lua`'s PUC-5.1 SHA-256 fallback** shelled out to
+  `sha256sum` through a scratch file named from `os.time()` and a per-closure
+  counter, so two PUC processes started in the same second — the interpreter
+  pair, or two lanes running in parallel — collided on the name and one of them
+  failed with `sha256sum failed`. One line here gives the name a per-process
+  nonce (a table address; `io.popen` is forbidden by the sweeps). Reported by
+  the reviewer, fixed because it is one line, and both SHA-256 KAT vectors plus
+  four concurrent 200-digest processes were re-run to prove it.
 - **`emergent_jungle_tree` is authored four nodes below the anchor**
   (`offset_y_minus_4`), which puts its bottom four slices inside the ground,
   where the writer's clearance test refuses them. It is very likely never placed
@@ -202,7 +254,20 @@ pre-fix tree).
   therefore one node taller than Luanti's own placement would make it. It does
   not float and it is not this lane's defect.
 
-## 8. What the review should look at
+## 8. What the review should look at, and what a later round could do
+
+**The named follow-up: per-cell clipping in the writer.** The 8-20 % of bushes
+section 5 measures away are lost because `r6_settlement`'s clearance loop is
+all-or-nothing — one included cell inside terrain refuses the whole decoration.
+Luanti clips that cell and places the rest. The alternative for a later round is
+therefore to CLIP rather than refuse: a non-`force_place` cell of a template
+that meets terrain is dropped from the placement instead of failing it, and only
+a `force_place` cell still refuses. That would restore the density and keep the
+anchor. It is deliberately NOT implemented here, because it is a semantics
+change in the writer, not a geometry fix: it moves every decoration digest in
+the world, it needs its own before/after census, and it wants a rule for how
+much of a decoration may be clipped before it is not worth placing. It is a
+round of its own.
 
 1. `rotate_record`'s new anchor loop reads the POST-replacement cell names
    (`replacement_for` runs in `base_record`), which is deliberate: a replacement
@@ -212,10 +277,17 @@ pre-fix tree).
    owner-clipping test in `r6_settlement` reach one node lower. That reserves the
    ground node under a bush against another decoration and can clip a bush at an
    owner floor. Both are conservative; neither was measured separately.
-3. The census's neighbour rule (`patch_overhang`) excuses an unsupported root
+3. **`tools/wp13/decoration_anchor_kat.lua` is a regression guard, not a design
+   guard.** It asserts that the catalog as it stands is ground-anchored; it
+   cannot catch a schematic ADDED with an air base, because adding one means
+   adding its `air_base` to the KAT's own `SHAPES` table, after which the
+   assertion is satisfied by construction. Nor does it cover
+   `offset_y_minus_4`, which bypasses the air-base consumption entirely. A
+   future template with both would need a new case.
+4. The census's neighbour rule (`patch_overhang`) excuses an unsupported root
    next to a supported one of the same name. For one-column decorations there is
    no such neighbour, so the gate is unweakened there — but it is a judgement
    call, and the baseline numbers were taken with it in place too.
-4. The probe's tile edges: the neighbour rule may read into a tile that is no
+5. The probe's tile edges: the neighbour rule may read into a tile that is no
    longer loaded, in which case an overhang is counted as floating. That can only
    over-count, never under-count, and the after-runs are 0.

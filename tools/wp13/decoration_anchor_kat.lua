@@ -28,6 +28,13 @@
 -- interpreters therefore run the identical assertion, and one of them proves
 -- the frozen table against the bytes.
 --
+-- SCOPE: this is a REGRESSION guard, not a design guard. It asserts that the
+-- catalog as it stands is ground-anchored, and it cannot catch a schematic
+-- ADDED with an air base -- adding one means adding its `air_base` to `SHAPES`
+-- below, after which the assertion is satisfied by construction. Nor does it
+-- cover `offset_y_minus_4`, which bypasses the air-base consumption entirely.
+-- A future template that wanted either would need a new case here.
+--
 -- Run from the repo root, under both interpreters:
 --     luajit -e 'io.write(dofile("tools/wp13/decoration_anchor_kat.lua")("."))'
 --     tools/bin/lua51 -e 'io.write(dofile("tools/wp13/decoration_anchor_kat.lua")("."))'

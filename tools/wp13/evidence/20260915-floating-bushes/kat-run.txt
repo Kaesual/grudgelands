@@ -1,0 +1,12 @@
+decoration_anchor_kat luajit exit=0
+decoration_anchor_kat puc51 exit=0
+decoration_anchor_kat: interpreters agree
+six start identities: byte-identical to the recorded set
+WP13 final micro PASS interpreter=luajit output_sha256=0ed042f95db997bd8f5bfcfde37adce2da9c9e88ebf31cd9b14ae690dadb1028
+WP13 final micro PASS interpreter=puc51 output_sha256=0ed042f95db997bd8f5bfcfde37adce2da9c9e88ebf31cd9b14ae690dadb1028
+WP13 final micro pair: byte-identical
+0ed042f95db997bd8f5bfcfde37adce2da9c9e88ebf31cd9b14ae690dadb1028  /tmp/claude-1000/-home-jan-projects-grudgelands/88b11b8e-1bc0-449b-b428-2465f67bb80e/scratchpad/katrun2/final-micro-luajit.tsv
+seam_kat exit=0
+seam_kat: byte-identical under both interpreters
+
+[exited with code 0]

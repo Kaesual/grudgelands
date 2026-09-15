@@ -28,16 +28,26 @@ pristine="$out/pristine"
 mkdir -p "$pristine"
 cp -a "$repo/mods" "$repo/tools" "$repo/game.conf" "$repo/minetest.conf" \
 	"$repo/settingtypes.txt" "$pristine/"
-git -C "$repo" show \
-	"$base:mods/MAPGEN/grug_mapgen/wp40/r6_templates.lua" \
-	>"$pristine/mods/MAPGEN/grug_mapgen/wp40/r6_templates.lua"
+# BOTH production files go back, not just the one that carries the fix.
+# `r7_manifest.lua` pins `decoded_templates` and the source-projection roll-up,
+# and those two digests are derived from the template records `r6_templates.lua`
+# builds; a tree with the new pins and the old expander refuses to load at all
+# ("WP40 R7 manifest: frozen source projection differs"), so a baseline half
+# that reverted only the expander could never boot. The first version of this
+# script did exactly that and was caught in review.
+REVERT=(
+	mods/MAPGEN/grug_mapgen/wp40/r6_templates.lua
+	mods/MAPGEN/grug_mapgen/wp40/r7_manifest.lua
+)
+for file in "${REVERT[@]}"; do
+	git -C "$repo" show "$base:$file" >"$pristine/$file"
+	diff -q "$repo/$file" "$pristine/$file" && {
+		echo "engine.sh: $file is unchanged against $base -- wrong base commit?" >&2
+		exit 1
+	}
+done
 diff -rq "$repo/tools/wp13/bush_probe" "$pristine/tools/wp13/bush_probe"
-echo "pristine tree: only r6_templates.lua differs from this one"
-diff -q "$repo/mods/MAPGEN/grug_mapgen/wp40/r6_templates.lua" \
-	"$pristine/mods/MAPGEN/grug_mapgen/wp40/r6_templates.lua" && {
-	echo "engine.sh: the pristine copy is identical -- wrong base commit?" >&2
-	exit 1
-}
+echo "pristine tree: the two WP40 production files differ from this one, the probe does not"
 
 run() {
 	local tree="$1" dir="$2" seed="$3" port="$4" baseline="$5"

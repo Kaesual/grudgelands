@@ -1,6 +1,7 @@
 == parser and SETGLOBAL on every Lua file this increment changed ==
 mods/MAPGEN/grug_mapgen/wp40/r6_templates.lua parser PASS; SETGLOBAL [0]
 mods/MAPGEN/grug_mapgen/wp40/r7_manifest.lua parser PASS; SETGLOBAL [0]
+tools/wp40/r6/common.lua parser PASS; SETGLOBAL [0]
 tools/wp13/decoration_anchor_kat.lua parser PASS; SETGLOBAL [0]
 tools/wp13/bush_probe/init.lua parser PASS; SETGLOBAL [0]
 == whole tree parses ==
@@ -12,6 +13,7 @@ SWEEP 2
 SWEEP 3
 SWEEP 4
 SWEEP 5
+tools/wp40/r6/common.lua:45:			local status = os.execute("sha256sum " .. base .. ".bin > " .. base .. ".txt")
 SWEEPS DONE (no output above a SWEEP line means zero hits)
 == the same five sweeps over all of mods/*/grug_* and tools ==
 SWEEP 1
@@ -312,7 +314,7 @@ tools/wp40/t2_extreme_merge.lua:57:	local status, reason, code = os.execute("sha
 tools/wp40/t2_extreme_merge.lua:106:local status, reason, code = os.execute("python3 " .. repo ..
 tools/wp40/t2_extreme_conformance_test.lua:39:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
 tools/wp40/t2_extreme_conformance_test.lua:648:	local status, reason, code = os.execute(command)
-tools/wp40/r6/common.lua:38:			local status = os.execute("sha256sum " .. base .. ".bin > " .. base .. ".txt")
+tools/wp40/r6/common.lua:45:			local status = os.execute("sha256sum " .. base .. ".bin > " .. base .. ".txt")
 tools/wp40/t2_s1_authority_test.lua:30:	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
 tools/wp40/quality/terrain_life_fixture.lua:18:	local ok, why, code = os.execute("sha256sum " .. input .. " > " .. digest)
 tools/wp40/t2_s11_acceptance_check.lua:376:	os.exit(0)

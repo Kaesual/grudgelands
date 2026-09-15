@@ -29,11 +29,18 @@ end
 function common.new_sha256()
 	local ok, ffi = pcall(require, "ffi")
 	if not ok then
+		-- `os.time()` has one-second resolution, so two PUC processes started in
+		-- the same second -- which is exactly what the interpreter pair and the
+		-- parallel lane runners do -- picked the same scratch name and raced each
+		-- other into "sha256sum failed". A table's address is unique per process
+		-- and is the only per-process identity plain 5.1 can read without a
+		-- subprocess of its own.
+		local nonce = tostring({}):gsub("[^%w]", "")
 		local counter = 0
 		return function(bytes)
 			counter = counter + 1
 			local base = "/tmp/grudgelands-wp40-r6-sha-" ..
-				tostring(os.time()) .. "-" .. tostring(counter)
+				tostring(os.time()) .. "-" .. nonce .. "-" .. tostring(counter)
 			common.write_file(base .. ".bin", bytes)
 			local status = os.execute("sha256sum " .. base .. ".bin > " .. base .. ".txt")
 			if status ~= 0 and status ~= true then fail("sha256sum failed") end

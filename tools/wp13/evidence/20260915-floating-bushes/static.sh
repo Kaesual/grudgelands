@@ -12,6 +12,7 @@ LUAC="${WP13_LUAC:-$repo/tools/bin/luac51}"
 CHANGED=(
 	mods/MAPGEN/grug_mapgen/wp40/r6_templates.lua
 	mods/MAPGEN/grug_mapgen/wp40/r7_manifest.lua
+	tools/wp40/r6/common.lua
 	tools/wp13/decoration_anchor_kat.lua
 	tools/wp13/bush_probe/init.lua
 )

@@ -64,6 +64,17 @@ Three facts fall out of the per-name rows in `base-user.tsv`:
 Every simple decoration — grass, ferns, dry grass, dry shrub, bone piles — was
 already 0 of tens of thousands. The defect is specific to templates.
 
+**The price, measured from the same censuses and accepted by the coordinator on
+2026-09-15:** 8-20 % fewer bushes world-wide, because lowering a template also
+lowers the box the writer clearance-tests and `r6_settlement` refuses a whole
+decoration where Luanti would clip one cell. `pine_bush_stem` 544 → 456,
+`blueberry…berries` 596 → 551, Dawnmere `bush_stem` outside the pad 357 → 286,
+`acacia_bush_stem` 351 → 301 on the user seed; the boundary seed and the
+mechanism are in section 5 of the research note, and the follow-up that would
+give the density back is named in section 8 and deliberately not implemented.
+Dawnmere's 216 authored pad bushes are 216 before and after, and the three
+starts without a bush template have byte-identical census rows.
+
 ## The cause, in one sentence
 
 Luanti places a schematic decoration with its `y = 0` slice ON the surface node
@@ -81,12 +92,12 @@ catalog row changed.
 
 | Gate | Result |
 | --- | --- |
-| `luac51 -p` + SETGLOBAL, changed files | PASS, 4 files, 0 globals each |
+| `luac51 -p` + SETGLOBAL, changed files | PASS, 5 files, 0 globals each |
 | `luac51 -p`, tree-wide (`mods/*/grug_*`, `tools`) | PASS |
-| five plain-5.1 sweeps, changed files | zero hits |
-| five sweeps, `mods/*/grug_*` and `tools` | only the pre-existing hits `main` already carries |
+| five plain-5.1 sweeps, changed files | one hit, the `os.execute("sha256sum …")` that `tools/wp40/r6/common.lua` already carried on `main` and that this lane does not touch |
+| five sweeps, `mods/*/grug_*` and `tools` | byte-identical to `main`'s own hits (`sweeps.sh`, `sweeps-main.txt`) — this lane adds none |
 | `tools/check_fresh_server.py` | `Fresh-server source audit: PASS` |
-| `tools/wp13/decoration_anchor_kat.lua`, both interpreters | PASS, identical (`kat-luajit.txt`, `kat-puc51.txt`) |
+| `tools/wp13/decoration_anchor_kat.lua`, both interpreters | PASS, all 27 assertion rows identical — the 21 `row` and 6 `rule` lines (`kat-luajit.txt`, `kat-puc51.txt`). The 17 `asset` lines and the summary differ in one word each, `decoded` under LuaJIT against `frozen` under PUC 5.1, which is the provenance of `air_base` and not an assertion; `kat.sh` normalises exactly that word before it compares |
 | six start identities | byte-identical to `20260914-capital-parts/start-identity.txt` |
 | `tools/wp13/final_micro.lua` pair | `0ed042f95db997bd…`, identical under both interpreters AND identical to the same run on the pre-fix tree |
 | `tools/wp13/seam_kat.lua` | PASS, byte-identical under both interpreters |
@@ -128,7 +139,13 @@ bash tools/wp13/evidence/20260915-floating-bushes/engine.sh <absent absolute dir
 
 `engine.sh` builds the pristine-`main` half itself and runs all four censuses in
 parallel on ports 31130/31140/31150/31160 (this lane's block); the recorded run
-took about twelve minutes of wall time. The renders come from the probe's own
+took about twelve minutes of wall time. It reverts BOTH WP40 production files
+this lane changed: reverting only `r6_templates.lua` leaves the new digest pins
+in `r7_manifest.lua`, and such a tree refuses to load at all. The first version
+of the script did that and was caught in review; the corrected baseline tree was
+re-run on the user seed and reproduces the committed census exactly — 1,811
+floating, Hearthpine 1,103, every per-name and per-band count identical, only
+the wall-clock field differs (`base-user-engine-sh-recheck.{log,tsv}`). The renders come from the probe's own
 render mode:
 
 ```sh
@@ -150,5 +167,8 @@ python3 tools/wp13/evidence/20260915-floating-bushes/section.py \
 | `engine.sh`, `base-*.{log,tsv}`, `fix-*.{log,tsv}`, `probe-*.txt` | the engine census, before and after, both seeds |
 | `renders/` | the world dumps, the textured renders and the ASCII section |
 | `wp40-r7-unit.txt` | `tools/wp40/r7/run.sh unit` on this tree |
+| — | `tools/wp40/r6/common.lua` also carries a one-line fix reported by the reviewer: its PUC-5.1 SHA-256 fallback named its scratch file from `os.time()` alone, so two processes started in the same second collided; the name now carries a per-process nonce |
 | `wp40-r6-micro-kat-*.txt` | the pre-existing red KAT, before and after |
+| `sha-race.txt` | the PUC-5.1 SHA-256 fallback: both KAT vectors, and four concurrent processes of 200 digests each |
+| `base-user-engine-sh-recheck.{log,tsv}` | the user-seed baseline re-run on the corrected `engine.sh` pristine tree |
 | `sweeps.sh`, `sweeps-main.txt` | the tree-wide sweep hits of `main` itself, which this lane's are byte-identical to |
