@@ -88,11 +88,25 @@ local function guard_tick(self, dtime)
 			grug_mobs.set_tier(self, "elite")
 		end
 	end
+	-- A SOCKET GUARD CLAIMS ITS SOCKET, once per activation: a twin standing on
+	-- a socket somebody else already holds removes itself rather than joining
+	-- the watch (start_npcs.lua's claim registry, playtest round 1 — a world
+	-- that lost markers had ~50 guards in one start). Nothing else in this tick
+	-- may run for a mob that is about to be removed.
+	self.temp = self.temp or {}
+	if self._grug_start and not self.temp.grug_socket_claimed then
+		self.temp.grug_socket_claimed = true
+		if not grug_mobs.start_npc_claim(self) then
+			return
+		end
+	end
 	-- Ambient outpost patrol (world.md §4). Only the camp's designated
 	-- patroller carries the route; every other guard holds its post.
+	-- `rescue` is on: a guard walking an authored loop through a settlement is
+	-- exactly the mob the stuck rescue was written for (patrol.lua).
 	local route = self._grug_patrol_route
 	if route then
-		grug_mobs.route_tick(self, dtime, route.points, route, "wp")
+		grug_mobs.route_tick(self, dtime, route.points, route, "wp", true)
 	end
 	-- A START SETTLEMENT's post guard holds its authored socket and faces its
 	-- authored direction while idle (start_npcs.lua, WP13). An outpost guard
