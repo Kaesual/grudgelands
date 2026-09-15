@@ -1,0 +1,551 @@
+# WP13: Gor Drazhak, the orc capital
+
+Increment record, 2026-09-15, built against `main` at `922bfd92` ("Extend the
+socket vocabulary for the wave-2 capitals"). It belongs to the capitals
+contract's section 3 step 3, "the other five capitals, one lane each": Dur
+Brannoc went first and the remaining four are wave 2, built in parallel lanes,
+of which this is one. It is the **second WALLED capital** and the **second with
+four districts**.
+
+Contracts implemented:
+[wp13-capitals-pois-contract.md](wp13-capitals-pois-contract.md) (2.1 what a
+capital is, 2.3 the budgets, 2.4 the orc column of the race table, 4 the rulings
+on the king's hall, the sockets and the walls) and
+[wp13-npc-sockets-contract.md](wp13-npc-sockets-contract.md) (2 the socket
+field, 8 work sockets, profession vendors and the 80/20 rule, including the
+wave-2 vocabulary). The seam it plugs into is
+[wp13-seam-generalisation.md](wp13-seam-generalisation.md); the patterns it
+follows are [wp13-highcourt.md](wp13-highcourt.md),
+[wp13-highcourt-districts.md](wp13-highcourt-districts.md),
+[wp13-highcourt-fill.md](wp13-highcourt-fill.md) and
+[wp13-dur-brannoc.md](wp13-dur-brannoc.md).
+
+Evidence: `tools/wp13/evidence/20260915-gor_drazhak/`.
+
+## 1. What shipped
+
+| File | Change |
+| --- | --- |
+| `wp13/orc_palisade.lua` | **new**: the city wall as a STAKE PALISADE ON AN EARTH RAMPART — an overlay with `wall.lua`'s seam and constants and none of its section |
+| `wp13/gor_drazhak_quadrants.lua` | **new**: the city plan — avenues, ring, lanes, rampart runs, and one authored lot grid turned four times with seven measured repairs, plus the seeded quadrant permutation |
+| `wp13/gor_drazhak_plot.lua` | **new**: one district plot in the orc palette, behind a flat deck and a breastwork |
+| `wp13/gor_drazhak_district_market.lua` | **new**: the BAZAAR — nine plots and four fill lots, five profession vendors |
+| `wp13/gor_drazhak_district_martial.lua` | **new**: the WAR YARD — the arena, the drill yard, the beast pen |
+| `wp13/gor_drazhak_district_lore.lua` | **new**: the BONE HALLS — the spirit hall, the totem court, the barrow, the quarry face |
+| `wp13/gor_drazhak_district_homes.lua` | **new**: the WARRENS — clan lodges, the cook court, the story fire, and this roster's own round-lodge generator |
+| `wp13/gor_drazhak_districts.lua` | **new**: the 52 plots in a fixed order with this world's offsets |
+| `wp13/gor_drazhak.lua` | **new**: the 96 × 96 civic core, the fighting platform, the muster court, the precinct bank and stockade, and the overlay dispatch |
+| `wp40/r7_gor_drazhak_blueprint.lua` | **new**: the capital source the seam reads — core, 52 plots, one overlay of twenty runs |
+| `wp40/r7_settlement.lua` | one roster row, after `dur_brannoc`; nothing else |
+| `tools/wp13/gor_drazhak_kat.lua` | **new**: acceptance for the core, every plot, the whole capital's socket contract, the rampart, the work-socket features and the quadrants |
+| `tools/wp13/gor_drazhak_lots.lua` | **new**: derives and verifies the 36 district lots and the 16 fill lots from the terrain grid of three worlds |
+| `tools/wp13/final_micro.lua` | one line: the new KAT joins the interpreter pair |
+| `docs/design/settlements.md` | two paragraphs: the palisade variant of a walled capital, and the orc capital's own shape |
+
+Not touched: the six start compositions, `highcourt*.lua`, `dur_brannoc*.lua`,
+`wall.lua`, `avenue.lua`, `capitals.lua`, `buildings.lua`, `parts.lua`,
+`palette.lua`, `dressing.lua`, `layout.lua`, `interiors.lua`, `roofs.lua`, and
+every WP40 file but the roster row and the new blueprint source. Section 6 (b)
+carries the proof.
+
+## 2. The wall: why it is not `wall.lua`, and what it shares with it
+
+**Decision: Gor Drazhak's city wall is a NEW overlay module,
+`wp13/orc_palisade.lua`, on `wall.lua`'s seam and constants.**
+
+The contract's section 2.4 orc line is
+
+> "Gor Drazhak | orc | mesa shelf, step 4 | adobe flat roofs with parapets,
+> ors-stone base courses, **palisade and earthworks**, warlord hall with
+> fighting platform"
+
+and section 4 makes it one of the three walled capitals. `wp13/wall.lua` builds
+the other kind of wall: a five-thick masonry curtain, rubble-cored, with a
+crenellated parapet, loopholes and merlon caps. Rebinding its `castle_wall` role
+to acacia would have produced a five-thick SOLID TIMBER curtain with
+crenellations — a wooden castle, which is neither a palisade nor an earthwork.
+The contract names a different piece of architecture, so this is a different
+module.
+
+What it is NOT is a different SEAM. Everything `wall.lua` promises the
+successor, this promises in the same words:
+
+* the same run specification (`axis`, `at`, `from`, `to`, `lamp_phase`,
+  `reach`) and the same authored `plan` (`outside`, `towers`, `cross_towers`,
+  `gates`);
+* the same one-Lipschitz envelope rule, so a piece of a run is exactly that
+  stretch of the whole run;
+* the same `HALF` = 3 activation band, `RISE` = 6, `FOOTING` = 2, `REACH` = 40
+  and `GATE_PASSAGE` = 3. **The KAT asserts those five equal to `wall.lua`'s**
+  rather than leaving it to a comment, and it has to: `tools/wp13/
+  capital_wall.lua` loads its constants from `wall.lua` and measures the ground
+  under THESE runs, so the day one of them moves the measurement is of the
+  wrong rule.
+
+### 2.1 The section, from the field inward
+
+With `o` the outward lane sign and `D` the walk at `E + RISE`:
+
+| lane | what stands there |
+| --- | --- |
+| 3·o | the OUTER BERM: dug earth from the footing to three courses over the envelope, beaten bare on top |
+| 2·o | the STOCKADE: an ors-stone base course from the footing to one under the walk, then three or four courses of acacia stakes, every one sharpened, with a brazier in place of a point every sixteen columns |
+| 1·o, 0, 1·i | the RAMPART BODY: rammed earth to one under the walk, and the walk itself — a three-wide timber fighting platform, treaded wherever it steps |
+| 2·i | the body's inner edge: earth, a log kerb at the walk and a rail above it |
+| 3·i | the INNER SLOPE: earth to three courses, beaten bare — the back of the bank |
+
+**No gap is possible**, for `wall.lua`'s reason exactly: every column is filled
+from `B[p] − FOOTING`, at or below every one of that column's own seven ground
+samples, up to its own `D[p]`, and `D` is the one-Lipschitz upper envelope of
+`B` plus `RISE`. A terrace step makes the next column start lower and the face
+becomes a staircase of bank and stake, never a hole.
+
+The towers are timber: seven across, eleven along, rising six courses over the
+walk, with the rampart passing THROUGH them (a three-wide, three-high opening in
+each end face), a plank fighting floor and a log breastwork with a sharpened
+stake every other node. The four gate towers are the same piece at fifteen along
+with a seven-column passage clear from the road to the underside of the walk.
+Seven and not five for the reason Dur Brannoc records: the avenue's lamp
+standards stand on the verge, one node outside the carriageway, and inside a
+gate that verge is a column of the tower.
+
+## 3. The ground, measured on three worlds
+
+`tools/wp13/run_capital.sh <out> gor_drazhak terrain <seed>` samples every column
+of the four candidate rampart lines at ±256, lane by lane across the seven-lane
+thickness, plus the pure final height and the water class of every fourth column
+of the whole 576-node envelope. `tools/wp13/capital_wall.lua` is the predicate
+over two of those dumps.
+
+WP40 fits Gor Drazhak's anchor at **(0, 94, 1500)** on the first gate seed,
+**(0, 104, 1500)** on the boundary seed and **(0, 128, 1500)** on the user's
+world seed.
+
+| seed | line | wet columns | worst step | low | high | range | face overlap | gate fall |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 531802985935182545 | west | 0 | 3 | 77 | 102 | 25 | 5 | 2 |
+| | east | 0 | 1 | 71 | 106 | 35 | 7 | 3 |
+| | south | 0 | 1 | 74 | 98 | 24 | 7 | 0 |
+| | north | 0 | 1 | 74 | 85 | 11 | 7 | 0 |
+| 8675309 | west | 0 | 2 | 72 | 104 | 32 | 6 | 0 |
+| | east | 0 | 1 | 84 | 108 | 24 | 7 | 1 |
+| | south | 0 | 1 | 76 | 95 | 19 | 7 | 0 |
+| | north | 0 | **4** | 89 | 120 | 31 | 4 | 3 |
+
+Read out of that:
+
+* **No rampart line is ever water**, on any of the three worlds — and neither is
+  anything else in this envelope (section 4).
+* **The ground never steps more than four nodes** between two columns, which is
+  the race terrace step of the contract's section 1, and the tool refuses
+  anything deeper. Most steps are ONE node: the round-3 terrace step bands turn
+  every riser into a band of one-block steps, and the four-node step on the
+  boundary seed's north line is the only place the raw terrace shows through.
+* **The face overlap is four to seven courses.** Two neighbouring columns of
+  bank are each filled from their own ground minus the footing to their own
+  deck, and the lower one's fill starts at most one terrace step below the
+  higher one's, so the two faces share `rise + footing − step` courses. Four is
+  the worst case and one or more is what "no gap" means as arithmetic.
+* **The corner step is zero to two nodes** across the eight corners of the two
+  worlds. Where an x-run's walk arrives at a z-run's corner tower the two runs
+  compute their decks from different neighbourhoods and can disagree; the
+  tower's own rampart opening is three courses high, so a two-node step is
+  walked through it, and the tool refuses three.
+
+## 4. Where the lots stand, and the one thing that differs most from Highcourt
+
+**Gor Drazhak's envelope has no water in it.** That is measured, not assumed:
+21 025 sampled columns per world -- every fourth column of the square out to
++-288, which is the 512 envelope and its whole collar -- on three worlds,
+`wet = 0` for all 63 075 of them, and zero wet columns on all four rampart
+lines lane by lane besides. The pilot capital is the
+opposite case — WP40 runs two rivers through Highcourt's envelope, and its own
+quadrant module records that the set of positions dry in all four rotations is a
+handful of columns, so it carries four separately authored lot grids and its
+south-west quadrant slid four of its nine lots by up to 32 nodes.
+
+A mesa shelf is dry ground, so the implementation Highcourt could not have is
+available here: **one authored 3 × 3 lot grid, turned a quarter at a time**.
+`M.LOTS` and `M.FILL_LOTS` are DERIVED from `M.AUTHORED` and `M.FILL_AUTHORED`
+by `M.rotate` at load rather than typed out per quadrant, so there is nothing to
+remember and nothing to drift.
+
+**Seven of the fifty-two lots do not take the turn**, and that is the honest
+half of the same story: the ground under a turned lot is not the ground under
+its original. `tools/wp13/gor_drazhak_lots.lua --repair` measured them on three
+worlds and moved each to the NEAREST legal position — nearest and not flattest,
+because the layout is a design and sorting on flatness is what put two Highcourt
+plots in a river.
+
+| quadrant | lot | from | to | why it moved |
+| --- | --- | --- | --- | --- |
+| southeast | 6 | (160, −116) | (160, −112) | rise 7 against a clear of 8 |
+| southeast | 8 | (116, −160) | (116, −164) | fall 7 against a skirt of 6 |
+| southeast | fill 3 | (200, −200) | (200, −204) | fall 7 |
+| northwest | 3 | (−160, 72) | (−160, 68) | rise 7 |
+| northwest | 7 | (−72, 160) | (−72, 164) | rise 8 |
+| southwest | 8 | (−160, −116) | (−168, −116) | rise 7 |
+| southwest | 9 | (−160, −160) | (−168, −160) | rise 8 |
+
+Five moved four nodes and two moved eight; the other forty-five stand exactly
+where the turn put them.
+
+### 4.1 The plots as the engine sees them
+
+The lot tool reads the terrain grid at a quarter of its resolution and is
+therefore a DERIVATION instrument, not the gate. The gate is
+`run_capital.sh <out> gor_drazhak surface <seed>`, which samples every plot
+column by column at its real position with the same `grug_zones.
+terrain_height_at` the load-time `r7_settlement.audit_terrain` uses — and the
+audit itself, which runs on every boot.
+
+**52 plots × 3 worlds = 156 rows, 0 illegal.** Worst perimeter fall **6**
+against a foundation skirt of 6 (`warren_cook_court`); worst rise **8** against
+an airspace clear of 8 (`bone_barrow`); zero submerged columns, zero wet
+margins, zero wet reference columns. The engine's own terrain audit logged no
+finding for any plot on any of the three worlds.
+
+Both worst cases sit exactly ON their limit rather than inside it. That is worth
+stating because it is where the next WP40 terrain change will bite first:
+`gor_drazhak_lots.lua --repair` is the one command that moves them, and section
+8 records it as an open point.
+
+## 5. The core, the districts and the socket table
+
+### 5.1 The core
+
+96 × 96, bounds x/z [−47, 47] and y [−2, 31] inside the contract's [−2, 40],
+flat at y = 0 by construction, **94 582 cells of the 150 000 budget**. Two
+palette handles: the orc palette, and the same palette with `wall` rebound to
+`grug_decor:darkage_ors_block` — the contract's "ors-stone base courses" carried
+up the whole wall of a building meant to read as the warlord's and not as a
+dwelling.
+
+| Quarter | What stands there |
+| --- | --- |
+| North, z 9..35 | the **warlord hall**: the library's basilica on its podium, great door on the axis, throne at the north end, built in ors block; the composition lays its nave floor in banded courses with four braziers |
+| The forecourt, x 4..14 | the **fighting platform**: a raised ors-stone court four courses up, its own breastwork on the merlon rhythm the whole city uses, one flight off its east flank, a brazier at each corner and two guard posts on the deck. Beside the door and not across it — the first version stood on the axis and made the throne approach a four-node wall |
+| North-east, x 22..45 | the **muster court**, this capital's signature quarter: a floor of beaten red sand with the two royal booths, a rank of six drill posts, three weapon racks, two war wains, five standards, two fires and the crates and benches of a host that has stopped moving |
+| West | the **cistern court** (a mesa shelf has no standing water anywhere in its envelope, so the city's water is a tank), the **skull hall** — the library's temple, which carries the capital's first quest shell — and a dwelling |
+| South-west | the **great bazaar square** (25 × 25 round a stepped cross) and a dwelling |
+| South-centre | the two **colonnades** flanking the approach and the warlord's **statue** |
+| South-east | the **travel plaza** reserved for WP17, the **war council house** and two dwellings |
+| The boundary | no hedge and no citadel parapet: a **bank and stockade**, two courses of dug earth beaten flat with a sharpened stake every other node, walked round the whole pad, and a timber-crowned **tower at each corner** — the outer rampart's own section at a quarter of its height |
+
+Eighteen plots, 240 columns of bank carrying 119 stakes, four corner towers,
+four deck breastworks, six acacias, ten rock outcrops, 264 cells of platform.
+
+**Six acacias and not twelve pine stands.** That is a measurement and not a
+shortfall: a flat-crowned acacia needs seven nodes of clear ground and ten of
+clear air, and after four avenues, the muster court, the bazaar square, the
+plaza and eighteen plots there are six such places left inside a 96-node orc
+precinct. What fills the ground between the quarters here is the shelf itself —
+ten rock outcrops of the mesa's own stone, on which nothing grows because every
+column below their cap is rock — and dry scrub.
+
+### 5.2 The four districts
+
+Four districts of nine plots and four fill dressings each, in the contract's own
+role order, assigned to quadrants by the world seed:
+
+| District | Role | What it is |
+| --- | --- | --- |
+| the **bazaar** | market and professions | butcher row with hanging racks over a chopping block, tannery with its vats, grog house, armourer, smith, store house, wain yard, carver, trader's house; fill: stock pen, drying floor, spoil heap, fire court |
+| the **war yard** | martial and garrison | barracks, the ARENA (a sunken sand floor inside a stepped ors bank with a gate at each end), armoury, beast pen, drill yard, quartermaster, wain shed, war chief's house, watch tower; fill: muster field, remount paddock, wood yard, guard fire |
+| the **bone halls** | lore and spiritual | spirit hall (the second quest shell), totem court of nine posts, burial barrow, QUARRY FACE cut into the mesa, bone reader's hall, herb house, ancestor store, shaman's house, ash court; fill: ancestor field, scrub garden, spoil shelf, candle court |
+| the **warrens** | residential and cultural | clan longhouse, chief's round lodge, cook court with four communal ovens, three clan dwellings, weaver's shed, store lodge, story fire; fill: clan ground, dry garden, fuel yard, green |
+
+52 plots, **260 652 cells**, largest `bone_spirit_hall` at 11 820 of the 12 000
+per-plot budget. **Core plus plots: 355 234 of the contract's 400 000**, against
+Highcourt's measured 376 274 (101 831 + 274 443).
+
+### 5.3 The socket table
+
+The capital publishes **315 sockets**, against Highcourt's 256.
+
+| Role | Gor Drazhak | Highcourt |
+| --- | --- | --- |
+| `king` | 1 | 1 |
+| `waypoint` | 1 | 1 |
+| `quest` | 2 | 2 |
+| `vendor` | 7 | 7 |
+| `guard_post` | 21 | 19 |
+| `guard_patrol` | 50 (nine loops) | 56 |
+| `idle` | 177 (151 spawn, 26 spare) | 134 (108 spawn, 26 spare) |
+| `work` | 56 | 36 |
+| **residents / walkers** | **207 / 31 (15.0 %)** | 144 / 22 (15.3 %) |
+
+Every loop's orders are 1..n with no gap and no repeat; no socket id is
+published twice; every socket is a real standing position on the finished
+composition (feet and head air, walkable ground under it), which the KAT
+measures rather than assumes.
+
+**The seven vendor kinds**, one of each, which is the whole of the capital's
+allowance: `race` and `general` at the two royal booths of the muster court, and
+`butcher`, `tanner`, `brewer`, `armourer` and `smith` in the bazaar, each
+standing at the trade it sells. Three of those five have no entity in
+`grug_traders` yet — see section 7.
+
+**Thirteen of the fifteen activities** in the sockets contract's section 8.2,
+including **all six of the wave-2 ones**: `mine` at the quarry face and the
+spoil shelf, `brew` at the tan vats, the grog vats, the cook ovens and the fire
+courts, `carve` at the totem posts and the bone reader's desk, `mourn` at the
+barrow and the candle court, `spar` in the arena and the drill yard, `forage` on
+the open ground. Only `farm` and `fish` are absent, and both for the same
+measured reason: the orc palette binds neither `crop`/`crop_soil` nor `water`,
+because a mesa shelf grows nothing in furrows and holds no standing water.
+
+**Gor Drazhak carries more people than Highcourt** — 207 residents against 144,
+44 % more — and that is a deviation from the standard this lane made
+deliberately and reports rather than hides. The walker SHARE, which is what the
+sockets contract's section 8.3 actually bounds, is 15.0 % against Highcourt's
+15.3 %, comfortably inside the 10–30 % band, and the arithmetic that keeps it
+there is the rule the contract states: 151 idle spawn sockets against 56 work
+sockets. The cost the user's ruling names is path-finding and animated meshes;
+this capital's is 31 walkers against Highcourt's 22. **If the coordinator wants
+the resident count at the Highcourt standard, the cheap knob is the four
+district rosters' `extra_sockets`: converting twenty tagged idle spots to
+`plots.spare` drops twenty residents and four walkers without moving a cell.**
+The first version of these rosters had 88 work sockets against 76 idle spawn
+ones — a 9.8 % walker share, below the band — and the trim to 52 district work
+sockets is what brought it inside.
+
+## 6. Verification
+
+### (a) The KAT, both interpreters
+
+`tools/wp13/gor_drazhak_kat.lua` is the acceptance of `highcourt_kat.lua` and
+`dur_brannoc_kat.lua` for this capital — envelope and budget, canonical unique
+cells in canonical order, the byte-sorted palette, every emitted name registered
+and not retired, `parts.lua`'s three authored tables against the real registry
+in both directions, the two shape rules, every attached node on the support its
+rating names, every torch on an opaque full node, every doorway passable with a
+walkable step on both sides, every socket a standing position, the flat ground
+course, the two great avenues walkable end to end, the king on his throne
+looking down his own approach, the fighting platform's deck and its flight, and
+per plot the lot envelope, the reference column, the skirt at the contract's
+floor and the airspace it really cut — **plus four sections of its own**:
+
+* **section 3, the socket contract over the WHOLE capital**: the role multiset,
+  one vendor per kind, every loop walked 1..n, spares carrying `spawn = false`
+  and no tag, and the 80/20 arithmetic of section 8.3 as an assertion.
+* **section 4, the rampart**: the five constants asserted EQUAL to `wall.lua`'s;
+  every cell of every piece inside the seam's activation band; no gap between
+  the footing and the walk in any column of any of the four runs; the walk never
+  changing by more than a node and every change a tread; the gate passage clear
+  through the whole thickness; the piece cut at every column of a representative
+  hundred-column stretch with the union compared to the whole, cell for cell;
+  and the digest of the built cells, because an overlay's manifest identity is
+  its SPECIFICATION and would not move if every node of the rampart did.
+* **section 6, the work sockets**: the feature-under-`dir` rule of the sockets
+  contract's section 8.1, for every one of the 50 activities that name a
+  feature, with the search stopping at the first opaque node on the socket's own
+  course so a feature behind a wall does not count. `sit` and `sweep` name none;
+  a `spar` socket's feature is its partner.
+* **section 7, the quadrants**: every lot inside the envelope, off the core, off
+  the four gate corridors, off all twenty street runs, inside its own quarter
+  and a lane's width clear of every other lot of that quarter; the seeded
+  permutation a bijection on all nine fixture seeds and not constant; the
+  canonical assignment the authored order; and every repair naming a lot the
+  turn really put somewhere else.
+
+```
+WP13 FINAL MICRO PAIR BYTE-IDENTICAL
+b3725124d44226e694663d322b0f427837eff193ce9d6e3ca52160ff50748b72  micro-luajit.tsv
+b3725124d44226e694663d322b0f427837eff193ce9d6e3ca52160ff50748b72  micro-puc51.tsv
+```
+
+That is the whole WP13 fixture set in one process under each interpreter, this
+KAT among them (`final-micro.sh`, with the input set hashed before and after so
+the two runs provably saw the same bytes).
+
+The KAT's own rows are `gor_drazhak_core`, `gor_drazhak_throne`,
+`gor_drazhak_district`, `gor_drazhak_sockets`, `gor_drazhak_rampart`,
+`gor_drazhak_avenue`, `gor_drazhak_work` and `gor_drazhak_quadrants`.
+
+### (b) The six starts, Highcourt and Dur Brannoc are unchanged
+
+`identity.txt`: the six start identity digests are unchanged and
+`start_identity.lua`'s whole output still hashes to
+`0bbf87a7253deadca55951752adde73e82c31cd10878dc64ef6d44af91ad1f5f`, the value
+wave 1 recorded. `highcourt_identities.lua` still totals **376 274** cells;
+`highcourt_kat.lua`, `dur_brannoc_kat.lua`, `library_kat.lua` and
+`blueprint_kat.lua` produce their previous output. This lane changed no shared
+module: outside its own files it touched `r7_settlement.lua` (one roster row),
+`final_micro.lua` (one line) and `docs/design/settlements.md`.
+
+`r7_manifest.lua` needed no re-freeze: since the seam generalisation its
+`FIELD_ORDER` and `SETTLEMENT_ORDER` are DERIVED from the roster, so a new
+roster row extends them by construction. `seam_kat.lua` needed no new row for
+the same reason — it reads the roster and now reports nine settlements, three of
+them capitals.
+
+### (c) Build time and budget
+
+From the engine's own `build_us` on three worlds (`probe.txt`): module load
+33.6–33.8 ms, the core 132–345 ms, the largest plot (`bone_spirit_hall`)
+14.4–16.0 ms, the smallest (`warren_green`) 0.9–4.7 ms, all 52 plots together
+about 300 ms. Against the contract's section 2.3 "builds in a few seconds under
+LuaJIT when first touched": the whole capital's blueprints are half a second.
+
+Cells: core **94 582 of 150 000**, largest plot **11 820 of 12 000**, whole
+capital **355 234 of 400 000**.
+
+The rampart is the biggest single writer and never sits in memory: an overlay
+has no cells until a mapchunk hands it a surface. On the KAT's synthetic
+terraced profile the four runs write **172 402 cells over 2 056 columns** (84 a
+column), against Dur Brannoc's curtain at 137 860 over the same 2 056. The
+difference is the earthwork: a bank is seven lanes of fill where a curtain is
+five.
+
+### (d) Per-mapchunk cost
+
+`gor_drazhak/probe-<seed>.txt` and `timings.txt`, one boot per seed. The corpus
+is the mapchunks the capital's blueprints, avenues, lanes and rampart actually
+touch, derived from the real geometry, plus three kinds of control. The warm-up
+mapchunk carries the emerge environment's whole one-time R7 construction, which
+is why it is emerged first and not counted.
+
+| Kind | chunks | first | steady mean | worst | best |
+| --- | --- | --- | --- | --- | --- |
+| warm-up (not counted) | 1 | 23.9 – 26.0 s | — | — | — |
+| **Gor Drazhak**, 531802985935182545 | 60 | 1.16 s | **0.669 s** | 1.16 s | 0.10 s |
+| **Gor Drazhak**, 8675309 | 65 | 1.25 s | **0.579 s** | 1.25 s | 0.11 s |
+| **Gor Drazhak**, 15912857179583385436 | 112 | 1.24 s | **0.499 s** | 1.24 s | 0.13 s |
+| Lethariel (a capital with no WP13 cells) | 8 | 12.3 – 14.3 s | 2.24 / 2.75 / 2.39 s | 17.1 s | 0.10 s |
+| open land / the Dawnmere start | 3 | 0.68 – 0.84 s | 0.52 / 0.39 / 0.40 s | 1.03 s | 0.003 s |
+
+Lethariel is the honest control: WP40 fits, flattens, terraces and protects it
+exactly like Gor Drazhak and it has no WP13 blueprints at all. **Gor Drazhak's
+mapchunks are four to five times cheaper than that control's**, and against the
+contract's "no more than 2× the ~0.5 s Dawnmere chunk" — that is 1.0 s — the
+three steady means are 0.50, 0.58 and 0.67 s.
+
+They are higher than Dur Brannoc's 0.43 – 0.45 s, and the reason is the two
+things this capital has that it does not: twenty overlay runs against twelve
+(eight district lanes), and a rampart whose section is seven lanes of bank where
+a curtain is five. 112 mapchunks on the user's seed against Dur Brannoc's 85 is
+the same fact from the other side — four districts in four quarters touch more
+of the envelope than one district does.
+
+### (e) Engine
+
+`tools/wp13/run_capital.sh <out> gor_drazhak full <seed>`, three cold worlds:
+the capital emerged one mapchunk at a time, **no finding from the seam's
+load-time terrain audit**, and the NPC roster placed in full.
+
+| | 531802985935182545 | 8675309 | 15912857179583385436 |
+| --- | --- | --- | --- |
+| sockets registered | 315 | 315 | 315 |
+| roster placed | `guards 30/30 flair 207/207 vendor 4/4 quest 2/2 pending 0 spare 26` | same | same |
+| residents / walkers | 207 / 31 | 207 / 31 | 207 / 31 |
+| loops | 9 | 9 | 9 |
+| worst plot perimeter fall | 6 (`warren_cook_court`) | 5 (`bone_totem_court`) | 5 (`bone_quarry`) |
+| submerged plot columns | 0 | 0 | 0 |
+| terrain-audit findings | 0 | 0 | 0 |
+| ERROR / ModError lines | 3 | 3 | 3 |
+
+`vendor 4/4` and not 7/7 is section 7: three of the seven kinds have no entity
+in `grug_traders` yet, so three sockets stay empty and each logs one line. Those
+three lines are the only ERROR lines in any of the three logs
+(`gor_drazhak/errors-<seed>.txt` is the complete listing), and they are why
+`run_capital.sh` reports FAILED for a pass that is otherwise clean.
+
+**The built road, rampart and gate are digested.** The probe reads five regions
+back out of the finished map — the core, one district plot, an avenue over the
+terraces, a stretch of rampart crossing a terrace step with a tower on it, and a
+gate — and hashes each over its own node names. The fifteen values are in
+`gor_drazhak/*-digest-<seed>.txt`. They are not frozen forever: WP40 terrain
+changes move the ground the road and the rampart follow, so the gate is "look at
+what moved and say why", and each file names its seed.
+
+Gor Drazhak's core identity is
+`8853176bdcc231f2aa73b9cbfdfd010148064639658c945da7998e850edff10e`; its 54
+blueprints carry 54 distinct identity SHAs, which
+`tools/wp13/gor_drazhak_identities.lua` prints in roster order.
+
+### (f) Static gates
+
+`static.txt`: `tools/bin/luac51 -p` on every file this package touched, the
+SETGLOBAL count (zero globals), the five plain-5.1 sweeps and
+`check_fresh_server.py`.
+
+## 7. What is NOT this lane's to fix
+
+**Three of the seven vendor kinds have no entity.** `grug_traders` registers
+`race`, `general`, `butcher`, `smith`, `fishmonger`, `baker` and `tailor`; the
+wave-2 kinds `mason`, `brewer`, `bowyer`, `herbalist`, `armourer`, `tanner` and
+`embalmer` are in the socket REGISTRY (`grug_core/settlement_sockets.lua`) but
+have no entity yet. The sockets contract's section 8.4 says exactly what happens
+then — "a kind whose entity the traders mod has not registered yet is an error
+line at placement and an empty socket, never a load failure" — and that is what
+happens: three ERROR lines per boot, one each for `vendor_tanner`,
+`vendor_brewer` and `vendor_armourer`, and three empty sockets.
+
+**The consequence for the gate is this lane's to report.**
+`tools/wp13/run_capital.sh` fails a pass whose log carries any ERROR line, so it
+cannot return PASS for Gor Drazhak until the NPC vocabulary lane registers those
+three entities. Every pass in the evidence directory therefore carries
+`errors=3`, and `gor_drazhak/errors-<seed>.txt` is the complete list of ERROR
+and ModError lines in each log -- those three and nothing else.
+Dropping the three kinds would make the gate green and would take the three
+trades the contract's orc line is built round out of the bazaar, so this lane
+did not.
+
+**A generic gap in the capital tooling, reported before it was worked round.**
+Lane D's `tools/wp13/capital_plots.lua` is the general lot predicate for a
+capital whose plots are ONE district: it reads `capital.district.plots` and the
+ground out of `run_capital.sh … scan`, whose sweep covers one quadrant band
+(x 52..204, z −96..96). A four-district capital has neither shape.
+`highcourt_plots.lua` is the four-district predicate and is hard-wired to the
+pilot capital's quadrant module and to its own `field` probe mode, which the
+generic probe does not have. This lane wrote `tools/wp13/gor_drazhak_lots.lua`
+against the generic `terrain` mode's whole-envelope grid rather than widening
+either of those two files. **What the tooling wants, for the two remaining
+four-district capitals: a four-district lot predicate keyed by settlement, and a
+whole-envelope field dump in `capital_probe`.**
+
+## 8. Open points
+
+1. **Two plots sit exactly on their limit.** `warren_cook_court`'s perimeter
+   fall is 6 against a skirt of 6 and `bone_barrow`'s rise is 8 against a clear
+   of 8, on the worst of the three worlds. Both are legal and the engine's own
+   audit passes them; both are where the next WP40 terrain change will bite
+   first. `luajit tools/wp13/gor_drazhak_lots.lua . <grid-a> <grid-b> <grid-c>
+   --repair` is the one command that moves them.
+2. **The rampart's towers are closed boxes above the walk**, exactly as Dur
+   Brannoc's turrets are: the walk passes through them, but there is no flight
+   up to the fighting floor and nothing stands there. A manned rampart needs a
+   flight and a way for an OVERLAY to publish sockets, which the seam does not
+   have — it reads sockets off a prepared blueprint's landmarks and an overlay is
+   prepared from its specification. That is a seam change and belongs to
+   whichever lane first wants guards on a wall.
+3. **The rampart's identity is its specification**, and the tower and gate
+   positions are not in it — they are derived in the composition from the run
+   extents, so moving a tower moves no manifest SHA. What catches it is the
+   KAT's built-cell digest and the engine pass's read-back digest, the same
+   arrangement the avenue has.
+4. **Gor Drazhak carries 207 residents against Highcourt's 144.** Section 5.3
+   has the numbers, the reasoning and the one-line knob.
+5. **The user has not walked Gor Drazhak.** Nothing here is accepted until they
+   have. Section 9 says where to stand.
+
+## 9. Where to walk in
+
+On seed 531802985935182545 the crossing of the two great avenues — the `arrival`
+landmark, with the guard banner on it — is at **(0, 95, 1500)**. From there:
+
+* north up the approach to the **warlord hall**, with the **fighting platform**
+  on the right of the forecourt: climb its east flight and look back down the
+  avenue;
+* east into the **muster court**, which is the quarter this capital is meant to
+  be recognised by: red sand, a rank of drill posts, the war wains, the
+  standards and the two royal booths;
+* out of any gate and 209 nodes on to the **rampart**: an earth bank with a
+  stockade of sharpened acacia on its crest, a plank walk along the top, a
+  brazier every sixteen paces and a timber tower every sixty-four nodes. The
+  east gate is at (256, ~90, 1500); walk the walk north to the corner tower and
+  look back over the city.
+
+The four districts stand in the four diagonal quarters; which is which depends
+on the seed (the probe log's `districts=` line says).

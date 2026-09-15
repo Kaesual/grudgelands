@@ -298,16 +298,11 @@ local function loader(directory)
 	M.quadrants = quadrants
 	M.districts = districts
 
-	-- The 52 district plots for this world. The capital source calls it once
-	-- with the seam's options; everything engine-free calls it with none and
-	-- gets the canonical assignment.
-	function M.district_plots(options)
-		return districts.resolve(options)
-	end
-
-	-- `capital_plots.lua` and the renderer expect `capital.district.plots`: a
-	-- flat list of `{id, x, z, build}`. This capital's is the canonical
-	-- assignment's, which is the one every engine-free tool sees.
+	-- `tools/wp13/capital_plots.lua`, the KAT and the renderer expect
+	-- `capital.district.plots`: a flat list of `{id, x, z, build}`. This
+	-- capital's is the CANONICAL assignment's, which is the one every
+	-- engine-free caller sees; a world with a seed asks `M.districts.resolve`
+	-- for its own (`wp40/r7_gor_drazhak_blueprint.lua`).
 	M.district = {plots = districts.resolve()}
 
 	-- THE BREASTWORK over a finished flat deck: the ring of low wall with a

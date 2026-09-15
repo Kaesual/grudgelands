@@ -1,0 +1,3 @@
+ERROR[Main]: [grug_mobs] settlement npcs: gor_drazhak socket bazaar_tannery/bazaar_tannery_vendor_tanner resolves to no registered entity (grug_traders:vendor_tanner)
+ERROR[Main]: [grug_mobs] settlement npcs: gor_drazhak socket bazaar_brewhouse/bazaar_brewhouse_vendor_brewer resolves to no registered entity (grug_traders:vendor_brewer)
+ERROR[Main]: [grug_mobs] settlement npcs: gor_drazhak socket bazaar_armourer/bazaar_armourer_vendor_armourer resolves to no registered entity (grug_traders:vendor_armourer)
