@@ -1,13 +1,14 @@
 --
--- WHERE THE VISIBLE WEAPON SITS IN THE RIGHT HAND -- the five numbers, and the
+-- WHERE THE VISIBLE WEAPON SITS IN THE RIGHT HAND -- the numbers, and the
 -- derivation they come out of. Nothing else in the game may hold a copy.
 --
--- Playtest round 1 (2026-09-15) replaced the first, eyeballed version: the user
--- photographed a guard from behind and the sword's TIP was in the hand with the
--- HILT sticking straight out backwards. The old numbers
--- (pos = {0, 5.5, -1.5}, rot = {-90, 180, 0}) put the sprite's CENTRE 1.5 units
--- behind the fist, which is exactly that picture -- the derivation below
--- reproduces it to three decimals, which is why it is trusted for the fix.
+-- Third version. Round 1 (2026-09-15) fixed a sword held by the tip; this one
+-- (playtest round 2, same day) follows the two rulings that came out of seeing
+-- it in a client -- **the blade points straight forward, 90 degrees to the arm
+-- (tilt 0)**, and **the weapon is the same weapon on every race** -- and the
+-- one change under it: since the whole game now uses minetest_game's DIAGONAL
+-- sprite convention (grip bottom-left, tip top-right) instead of the vertical
+-- one grug_gear used to, the sprite's long axis is no longer its local +y.
 --
 -- Pure Lua, no engine: `tools/wp13/wield_transform_kat.lua` loads this very
 -- file and re-derives the geometry independently.
@@ -53,92 +54,181 @@
 --    entity's local +x and image v along local -y (so image TOP is local +y),
 --    0.1 thick in z, then scales it by 40 (`WIELD_SCALE_FACTOR_EXTRUDED`) and
 --    by `visual_size / 2` (content_cao.cpp:756). One sprite edge is therefore
---    `40 * size / 2` model units long and the image's up direction is the
---    entity's +y.
+--    `40 * size / 2` model units long.
 --
--- 6. WHERE THE GRIP IS IN THE IMAGE. Every grug_gear weapon sprite is drawn
---    handle-at-the-bottom, business-end-at-the-top, long axis vertical:
---    sword grip rows 11..15 (crossguard 9..10), greataxe shaft rows 11..15,
---    dagger grip rows 10..13, staff shaft down to row 15. Row 13 of 16 is the
---    middle of the sword's and the greataxe's grip and one row below the
---    dagger's. Image v runs 0 at the top edge to 1 at the bottom, so that row's
---    CENTRE is v = 13.5/16 and the sprite-local offset from the centre is
---    `GRIP_FRACTION = 0.5 - 13.5/16 = -5.5/16` of a sprite edge.
+-- 6. WHERE THE GRIP IS IN THE IMAGE -- and this is what changed. Every held
+--    item in the game is now drawn in ONE convention: 16x16, long axis on the
+--    image's ANTI-DIAGONAL, grip bottom-left, business end top-right. That is
+--    minetest_game's own tool convention (`default_tool_steelsword.png` and
+--    the three tool families), it is what `tools/wp13/gen_weapon_ladder.py`
+--    generates every sword, dagger, greataxe, staff, pick, axe and shovel in,
+--    and it is why there is still exactly ONE transform.
+--
+--    The fist sits at image pixel (3.4, 12.6), measured as the centroid of the
+--    WOODEN handle pixels of `default_tool_steelsword.png` -- the eleven
+--    non-grey pixels at (3,10) (3,11) (4,11) (2..5,12) (1..3,13) (2,14), whose
+--    pixel centres average to (3.41, 12.59). The generator asserts that every
+--    sprite it writes has an opaque pixel there.
+--
+--    In the entity's own frame (image u along +x, image v along -y, origin at
+--    the sprite's centre) that point is
+--
+--      GRIP = ((u/16 - 0.5) * EDGE, (0.5 - v/16) * EDGE, 0)
+--           = (-0.2875 * EDGE, -0.2875 * EDGE, 0)
+--
+--    -- equal in both components, because (3.4, 12.6) lies on the image's
+--    anti-diagonal, i.e. exactly on the weapon's own long axis. The offset is
+--    therefore purely along the blade, which is what makes a pommel stick out
+--    behind the fist rather than out of its side.
 --
 -- 7. THE ROTATION. `set_attach`'s rotation is Irrlicht Euler degrees applied as
 --    Rz(z) * Ry(y) * Rx(x), right-handed about the BONE's axes
 --    (`matrix4::setRotationRadians`, used by `GenericCAO::updateAttachments`,
---    content_cao.cpp:1468). With a tilt of `t` degrees above level we want, in
---    bone-local terms:
+--    content_cao.cpp:1468). The sprite's long axis is the image anti-diagonal,
+--    i.e. the entity-local direction (1, 1, 0)/sqrt(2). Asking, in bone-local
+--    terms, for
 --
---      entity +y (the blade)  -> (0, -sin t,  cos t)  = forward, t above level
---      entity +x (the guard)  -> (0,  cos t,  sin t)  = down-forward
---      entity +z (the flat)   -> (1, 0, 0)            = model -x, sideways
+--      the blade      -> (0, -sin t, cos t)   forward, t degrees above level
+--      the flat's     -> (1, 0, 0)            model -x: the flat faces
+--      normal                                 sideways, so the blade's broad
+--                                             face stands vertical
 --
---    The flat facing sideways is what makes the blade read as VERTICAL (the
---    crossguard, which lies in the plane of the flat, then stands upright);
---    the old numbers had it facing straight down, i.e. the blade held flat.
---    The unique Euler triple for those three columns is
---    **x = 90, y = -t, z = 90** -- the old orientation turned 90 degrees about
---    its own long axis, plus the tilt.
+--    fixes the whole rotation, and the unique Euler triple that produces it is
+--
+--      **x = 90, y = -(45 + t), z = 90**
+--
+--    The 45 is the sprite's own built-in diagonal; the previous, vertically
+--    drawn sprites were the t = 0 case of the same formula with the 45 absent.
+--    (Derivation: with s = sin45 = cos45, the images of the entity's basis
+--    vectors are x -> s*(B - E2), y -> s*(B + E2), z -> (1,0,0), where
+--    B = (0,-sin t, cos t) and E2 = (1,0,0) x B = (0,-cos t,-sin t). Reading
+--    the standard Rz*Ry*Rx form off those three columns gives -sin y =
+--    s*(cos t + sin t) = sin(45 + t), sin x = 1 and sin z = 1.)
 --
 -- 8. THE POSITION is then forced, not tuned: the entity's origin is the
 --    sprite's centre, so
 --
---      pos = HAND - (GRIP_FRACTION * SPRITE_EDGE) * blade_direction
+--      pos = HAND - R * GRIP
 --
---    which puts the grip centre exactly in the fist and leaves the pommel
---    0.7 units behind it.
+--    which puts the grip exactly in the fist. With the grip on the long axis
+--    this collapses to a pure offset along the blade.
 --
--- The printed check (`tools/wp13/wield_transform_kat.lua`), arm hanging,
--- offsets from the fist: hilt (0, -0.178, -0.664), grip (0, 0, 0),
--- tip (0, +0.961, +3.586), blade direction (0, 0.259, 0.966).
+-- 9. STATURE. `set_attach` parents the entity's matrix node to the parent's
+--    JOINT NODE (content_cao.cpp:1462-1470), and the parent's own
+--    `visual_size` is on the animated mesh node above that joint
+--    (content_cao.cpp:705). So the absolute transform of the sprite is
 --
--- One thing this cannot decide without a client: with the flat vertical the
--- blade lies in the sagittal plane, so the default over-the-shoulder camera sees
--- it edge-on. `rot.z` is the constant that trades that against a flat-held blade
--- (90 as shipped, 0 for horizontal); it is NOT free of the rest -- changing it
--- rolls the blade about its own axis and leaves the grip where it is.
+--      S_parent * T(pos) * R(rot) * S_child
+--
+--    Both the attachment position and the sprite's geometry therefore get
+--    S_parent. The position half is harmless -- S_parent is linear, so
+--    S_parent(HAND - R*GRIP) still lands on S_parent(HAND), the real fist of
+--    the scaled model. The GEOMETRY half is not: with a non-uniform S_parent
+--    the sprite is stretched along one model axis and squashed along another,
+--    and because this sprite's long axis is a DIAGONAL of its own quad, that
+--    stretch tilts the blade and changes its length. That is the defect the
+--    player reported -- the same sword reading longer, thinner and tipped down
+--    on a player, while the 1:1-scaled guards looked right.
+--
+--    It cannot be cancelled by the child's `visual_size`. Cancelling needs
+--    S_child = SIZE * R^-1 * S_parent^-1 * R to be DIAGONAL, and with this R
+--    that holds only when the parent's y scale equals its horizontal scale.
+--    So the fix is upstream of here and lives in `compose.lua`: **race stature
+--    is now one scalar per race**, not an (x, y, z) triple. With S_parent =
+--    k * I the cancellation is exact and trivial --
+--
+--      size = SIZE / k
+--
+--    -- and the position, computed from that size, follows. The weapon is then
+--    the same absolute weapon in every hand. Feed `stature` = nil (mobs) and
+--    nothing is compensated: a mob's scale is its real size, and an elite
+--    guard twice the height should carry a sword twice the size.
+--
+-- The printed check is `tools/wp13/wield_transform_kat.lua`.
+--
+-- THE TWO TASTE VALUES, both in this file and nowhere else: `SIZE` (how big
+-- the weapon is) and `TILT_UP` (how far above level the blade rides, 0 = the
+-- ruling's "straight forward, 90 degrees to the arm"). `GRIP` is measurement,
+-- not taste, and moves only if the sprite convention moves.
 --
 
 -- The bone the entity hangs off.
 local BONE = "Arm_Right"
 
--- visual_size of the wielditem entity. It is a LENGTH as much as a size: it
--- scales SPRITE_EDGE below and therefore moves the position too, which is why
--- the position is computed rather than written down.
-local SIZE = 0.22
+-- The sprite's edge length as a fraction of a node, before any stature
+-- compensation. 0.32 is playtest round 2's ruling (~150% of round 1's 0.22);
+-- at 16 px that is 6.4 model units across the square, so the blade itself --
+-- the anti-diagonal of the sprite -- reads about 8 units long against a 6.3
+-- unit arm.
+local SIZE = 0.32
 
--- Degrees the blade rides above level. "Slightly up": 15 keeps the tip clear
--- of the leg on a hanging arm without reading as a salute.
-local TILT_UP = 15
+-- Degrees the blade rides above level. 0 = straight forward, at a right angle
+-- to the hanging arm (playtest round 2).
+local TILT_UP = 0
 
 -- Centre of the fist, in bone-local units (section 4).
 local HAND = {x = 0, y = 4.2, z = 0}
 
--- Sprite geometry (sections 5 and 6).
-local SPRITE_EDGE = 40 * SIZE / 2
-local GRIP_FRACTION = -5.5 / 16
+-- Where the fist grips the sprite, in image pixels of the shared 16x16
+-- convention (section 6).
+local GRIP_U, GRIP_V = 3.4, 12.6
+local SPRITE_PIXELS = 16
 
-local blade_y = -math.sin(TILT_UP * math.pi / 180)
-local blade_z = math.cos(TILT_UP * math.pi / 180)
-local grip = GRIP_FRACTION * SPRITE_EDGE
+-- Image-space fractions of one sprite edge, measured from the sprite's centre:
+-- +x is image right, +y is image UP (the entity's own +y).
+local GRIP_FRACTION_X = GRIP_U / SPRITE_PIXELS - 0.5
+local GRIP_FRACTION_Y = 0.5 - GRIP_V / SPRITE_PIXELS
 
--- Read-only. `apply.lua` is the only consumer in the game; the KAT reads it so
--- the fixture and the engine can never be checking different numbers.
-grug_visuals.WIELD = {
-	bone = BONE,
-	pos = {
-		x = HAND.x,
-		y = HAND.y - grip * blade_y,
-		z = HAND.z - grip * blade_z,
-	},
-	rot = {x = 90, y = -TILT_UP, z = 90},
-	size = {x = SIZE, y = SIZE},
-	-- The inputs, published for the fixture and for the next round of
-	-- eyeballing: change one of these, not the results above.
-	tilt_up = TILT_UP,
-	hand = HAND,
-	sprite_edge = SPRITE_EDGE,
-	grip_fraction = GRIP_FRACTION,
-}
+local DEG = math.pi / 180
+local ROOT_HALF = math.sqrt(0.5)
+
+-- The attachment for a parent whose (uniform) stature scale is `stature`.
+-- nil / 0 means "do not compensate" -- the weapon then scales with its wielder.
+function grug_visuals.wield_transform(stature)
+	local k = tonumber(stature)
+	if not k or k <= 0 then
+		k = 1
+	end
+	local size = SIZE / k
+	local sprite_edge = 40 * size / 2
+
+	local tilt = TILT_UP * DEG
+	local blade_y = -math.sin(tilt)
+	local blade_z = math.cos(tilt)
+	-- The image's two in-plane axes in bone coordinates (section 7's x and y
+	-- columns), so the position below is read off the same matrix the rotation
+	-- is: image +x -> s*(B - E2), image +y -> s*(B + E2), with
+	-- E2 = (0, -cos t, -sin t).
+	local e2_y, e2_z = -blade_z, -blade_y
+	local ux_y = ROOT_HALF * (blade_y - e2_y)
+	local ux_z = ROOT_HALF * (blade_z - e2_z)
+	local uy_y = ROOT_HALF * (blade_y + e2_y)
+	local uy_z = ROOT_HALF * (blade_z + e2_z)
+
+	local gx = GRIP_FRACTION_X * sprite_edge
+	local gy = GRIP_FRACTION_Y * sprite_edge
+
+	return {
+		bone = BONE,
+		pos = {
+			x = HAND.x,
+			y = HAND.y - (gx * ux_y + gy * uy_y),
+			z = HAND.z - (gx * ux_z + gy * uy_z),
+		},
+		rot = {x = 90, y = -(45 + TILT_UP), z = 90},
+		size = {x = size, y = size},
+		-- The inputs, published for the fixture and for the next round of
+		-- eyeballing: change one of these, not the results above.
+		stature = k,
+		base_size = SIZE,
+		tilt_up = TILT_UP,
+		hand = HAND,
+		sprite_edge = sprite_edge,
+		grip_fraction_x = GRIP_FRACTION_X,
+		grip_fraction_y = GRIP_FRACTION_Y,
+	}
+end
+
+-- The uncompensated attachment (a 1:1 wielder), kept as a named value because
+-- the fixture and every reader want one concrete set of numbers to look at.
+grug_visuals.WIELD = grug_visuals.wield_transform(1)

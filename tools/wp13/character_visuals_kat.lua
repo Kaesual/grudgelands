@@ -283,9 +283,15 @@ function M.body(repo, V)
 
 	-- One concrete round trip through the real catalog: a full metal set of
 	-- bracket 3 named by ITEM, not by shorthand.
+	-- Names come from grug_gear's own accessor, never concatenated here: since
+	-- the WP13 round-2 merge an item is called after its MATERIAL, and a
+	-- fixture holding its own spelling would be checking a name that no longer
+	-- has to exist.
 	local by_item = V.compose({race = "dwarf", armor = {
-		head = "grug_gear:head_metal_b3", chest = "grug_gear:chest_metal_b3",
-		legs = "grug_gear:legs_metal_b3", feet = "grug_gear:feet_metal_b3"}})
+		head = gear.armor_item("head", "metal", 3),
+		chest = gear.armor_item("chest", "metal", 3),
+		legs = gear.armor_item("legs", "metal", 3),
+		feet = gear.armor_item("feet", "metal", 3)}})
 	local by_line_spec = V.compose({race = "dwarf", armor_line = "metal",
 		bracket = 3})
 	check(by_item.textures[1] == by_line_spec.textures[1],
@@ -294,9 +300,9 @@ function M.body(repo, V)
 
 	-- `torso` is the contract's spelling of `chest`.
 	local torso = V.compose({race = "dwarf",
-		armor = {torso = "grug_gear:chest_metal_b3"}})
+		armor = {torso = gear.armor_item("chest", "metal", 3)}})
 	local chest = V.compose({race = "dwarf",
-		armor = {chest = "grug_gear:chest_metal_b3"}})
+		armor = {chest = gear.armor_item("chest", "metal", 3)}})
 	check(torso == chest, "armor.torso is not armor.chest")
 
 	-- 3+4+5. the whole matrix, in a fixed order, hashed into one digest
@@ -331,7 +337,7 @@ function M.body(repo, V)
 				-- the same set named per item, where the catalog has one
 				for _, slot in ipairs(slots) do
 					compose_case({race = race, armor = {[slot] =
-						"grug_gear:" .. slot .. "_" .. line .. "_b" .. bracket}})
+						gear.armor_item(slot, line, bracket)}})
 				end
 				-- 6. stature never depends on gear
 				local bare = V.compose({race = race})
@@ -363,10 +369,11 @@ function M.body(repo, V)
 	check(replay_ok, "replay produced a non-string")
 
 	-- Two INDEPENDENTLY BUILT equal specs must hit the same cache entry.
+	local staff_t2 = gear.weapon_item("staff", 2)
 	local first = V.compose({race = "elf", armor_line = "cloth", bracket = 2,
-		weapon = "grug_gear:staff_b2"})
+		weapon = staff_t2})
 	local second = V.compose({race = "elf", armor_line = "cloth", bracket = 2,
-		weapon = "grug_gear:staff_b2"})
+		weapon = staff_t2})
 	check(first == second, "compose is not cached by key (different tables)")
 	check(first.key == second.key, "compose keys differ for equal specs")
 
@@ -374,7 +381,7 @@ function M.body(repo, V)
 	local by_level = V.compose({race = "elf", armor_line = "cloth", level = 17,
 		weapon_family = "staff"})
 	check(by_level == first,
-		"level 17 did not resolve to bracket 2 / staff_b2")
+		"level 17 did not resolve to bracket 2 / " .. tostring(staff_t2))
 
 	local cache_after = 0
 	for _ in pairs(V.cache) do
@@ -462,13 +469,14 @@ function M.body(repo, V)
 	-- weapons
 	local unarmed = V.compose({race = "orc"})
 	check(unarmed.weapon == nil, "a bare spec produced a weapon")
-	local armed = V.compose({race = "orc", weapon = "grug_gear:sword_b1"})
-	check(armed.weapon == "grug_gear:sword_b1", "weapon not passed through")
+	local sword_t1 = gear.weapon_item("sword", 1)
+	local armed = V.compose({race = "orc", weapon = sword_t1})
+	check(armed.weapon == sword_t1, "weapon not passed through")
 	check(armed.textures[1] == unarmed.textures[1],
 		"the weapon changed the skin")
 	local family = V.compose({race = "orc", weapon_family = "sword",
 		level = 55})
-	check(family.weapon == "grug_gear:sword_b6",
+	check(family.weapon == gear.weapon_item("sword", 6),
 		"weapon_family at level 55 is not the sixth bracket")
 	check(gear.get_price(family.weapon) ~= nil,
 		"weapon_family built a name grug_gear never registered")
