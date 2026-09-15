@@ -440,6 +440,15 @@ monster still retaliates against the guard through on_punch's own
 `do_attack(hitter)` (api.lua:3208-3213), which consults `passive`, `state`,
 `child` and ownership but never any `attack_*` field.
 
+**It does change who starts a guard-versus-monster fight, and that is
+deliberate.** A guard is `type = "npc"`, so bandits, mirefolk and every other
+hostile family used to acquire one on sight; from now on they do not. Guards
+still acquire them (`attack_monsters = true`) and a monster a guard hits fights
+back for as long as the fight lasts, so a bandit camp beside an outpost no longer
+walks into the watch on its own — the watch is what opens hostilities. That is
+world.md §4's "ordinary guards attack enemy players and monsters, never arbitrary
+NPCs", read from the other side.
+
 ### 6. Perpetual jumping
 
 `walk_chance = 0` means "mobs_redo's own wander is off" to us. Inside
@@ -571,11 +580,12 @@ Boot 1 additionally, in order:
   `placed at socket idle_forge_door`, and `live=9` again. This is also where
   `core.compare_block_status` is exercised against the real engine.
 - **Item 8.** `self_hp_max` and the object property agree at 115 on all three
-  boots. The guard the wolf wounded in boot 1 is the sharper half of that: it
-  comes back as `79/115` on boot 2 and again on boot 3, i.e. a wounded mob stays
-  wounded across two reloads with its maximum intact. Before the fix the same mob
-  read `79/10` on the second reload and its next hit would have been clamped to
-  10. The injection then makes the defect's exact state on purpose
+  boots. Incidentally — the wolf below wounded one of them — the `watch_gate`
+  guard comes back as `79/115` on boot 2 and again on boot 3: **a wound survives
+  two reloads with the maximum intact.** That is the tuple the lost `hp_max`
+  corrupts, by the two-save sequence described above; this round did not run the
+  pre-fix code to watch it corrupt, and the number is incidental rather than
+  arranged. The injection instead makes the defect's exact state on purpose
   (`self.hp_max` nil, the object back on the definition default of 10) and the
   activation path puts both back to 115 in the same tick. 115 is the level-20
   guard-field value at a start; the user's 945/10 was a capital's level-60 elite,
@@ -603,12 +613,13 @@ and for a reason worth recording:
 | --- | --- | --- |
 | Highcourt | `guards 17/19 flair 30/49 vendor 2/2 quest 1/1 new 50 pending 21` | `guards 19/19 flair 49/49 vendor 2/2 quest 1/1 new 12 pending 0` |
 
-The old split between "placed at readiness" and "pending" was explicitly not
-reproducible, because it depended on which mapblocks the emerge sequence happened
-to have loaded when the anchor first answered, and the rest waited for a player
-to walk up. The heartbeat does not wait for a player any more, so every socket
-whose node is loaded is filled on the next beat: 71 of 71, pending 0, on a probe
-with no player in it at all.
+**Neither `new` number is a gate**, and `new 12` is this one run's split: both
+depend on which mapblocks the emerge sequence happened to have loaded when the
+anchor first answered, exactly as the seam round said of its own. The right-hand
+column is the reproducible part and the point — **pending 0**. The heartbeat does
+not wait for a player any more, so every socket whose node is loaded is filled on
+the next beat instead of waiting for somebody to walk up to it, and this probe
+has no player in it at all.
 
 ### Runtime test for the user (round 1)
 

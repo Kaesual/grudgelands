@@ -113,6 +113,14 @@
 --   Plus the hard cap in `place`: a settlement already holding as many NPCs as
 --   its roster has places nothing more, whatever its markers say.
 --
+--   AND THE CONTEST BETWEEN TWO NPCs ON ONE SOCKET IS DECIDED BY AGE, never by
+--   which of them activated second (`placed_at`). That is what makes even a
+--   misfired strike cheap: the fresh replacement is the one that goes, and the
+--   original keeps its wound, its dwell and its place in the loop.
+--
+--   WHOSE MAPBLOCK HAS TO BE ACTIVE is a separate question from where the socket
+--   is, and the review of this round caught it: see `strikeable`.
+--
 --   Guards are the one family that must come back after a death, so their
 --   marker is cleared from `on_die` together with a due time; nothing else
 --   here is mortal (every other family cancels every punch).
@@ -234,14 +242,23 @@ local function holder_alive(entity, key, socket_id)
 		entity.object:get_pos() ~= nil
 end
 
--- Squared distance from an NPC to the socket it is booked on; a huge number
--- when it cannot be asked, so an entity whose object has gone is never the one
--- that is kept.
-local function socket_distance2(entity, slot)
-	local pos = entity.object and entity.object:get_pos()
-	if not pos then return math.huge end
-	local dx, dy, dz = pos.x - slot.pos.x, pos.y - slot.pos.y, pos.z - slot.pos.z
-	return dx * dx + dy * dy + dz * dz
+--
+-- WHICH OF TWO NPCs ON ONE SOCKET IS THE ORIGINAL: the one placed first.
+--
+-- `_grug_placed_at` is the gametime `install` stamped on it, a plain number, so
+-- it survives unload/reload with the mob. An entity without one (nothing this
+-- engine placed) counts as the newest, which keeps every contest decided in
+-- favour of a real placement.
+--
+-- Age and not distance-to-socket, because what is at stake is STATE: the older
+-- NPC is the one carrying the wound, the dwell and the position in its patrol
+-- loop, and a fresh full-HP replacement standing on the socket must never be the
+-- one that survives.
+--
+local function placed_at(entity)
+	local stamp = entity and entity._grug_placed_at
+	if type(stamp) ~= "number" then return math.huge end
+	return stamp
 end
 
 local function claims_of(key)
@@ -260,10 +277,14 @@ end
 -- else.
 --
 -- One socket is ONE lease. Two entities booked on it can only come from a world
--- that lost a marker while its NPC lived -- exactly the state the pre-fix
--- heartbeat produced in bulk -- so the newcomer goes rather than joining the
--- watch. That is what heals such a world: each twin removes itself the moment
--- its mapblock activates.
+-- that lost a marker while its NPC lived, so one of them goes -- and it is
+-- always the YOUNGER one (`placed_at` above), never whichever happened to
+-- activate second. That is what heals such a world without throwing a wounded
+-- guard away, and it is why a strike that does misfire costs a transient spare
+-- and no state.
+--
+-- Returns false when the CALLER has removed itself, in which case its activation
+-- must do nothing else.
 --
 function grug_mobs.start_npc_claim(entity)
 	if type(entity) ~= "table" then
@@ -277,6 +298,17 @@ function grug_mobs.start_npc_claim(entity)
 	local other = slots[socket_id]
 	if other ~= nil and other ~= entity and
 			holder_alive(other, key, socket_id) then
+		if placed_at(entity) < placed_at(other) then
+			-- The arrival is the original; the sitting holder is the spare.
+			core.log("warning", "[grug_mobs] start npcs " .. key ..
+				": the newer " .. tostring(other.name) .. " on socket " ..
+				socket_id .. " gave way to the one that was placed first")
+			if other.object then
+				mobs:remove(other, true)
+			end
+			slots[socket_id] = entity
+			return true
+		end
 		core.log("warning", "[grug_mobs] start npcs " .. key .. ": a second " ..
 			tostring(entity.name) .. " activated on socket " .. socket_id ..
 			" and removed itself")
@@ -316,6 +348,10 @@ end
 local function mark_free(row, slot, due)
 	slot.placed = false
 	slot.due = due
+	-- The next NPC on this socket is a different one, so whatever the last one
+	-- was doing when it went out of memory is no longer interesting
+	-- (see `strikeable`).
+	slot.away_x = nil
 	storage:set_string(placed_key(row.key, slot.id), "")
 	storage:set_string(due_key(row.key, slot.id), due and tostring(due) or "")
 	row.pending = row.pending + 1
@@ -568,19 +604,21 @@ local function scan_row(row)
 				local first = claims[socket_id]
 				if first == nil then
 					claims[socket_id] = entity
+					-- Seen alive, so it is not away with an unloaded mapblock.
+					slot.away_x = nil
 					total = total + 1
 				elseif first ~= entity then
-					-- One socket is one lease. Whichever of the two is FURTHER
-					-- from it goes, so the heal leaves the guard that is
-					-- actually standing at the post rather than a coin toss on
-					-- scan order. `mobs:remove` rather than `object:remove` for
-					-- mobs_redo's own active-mob bookkeeping.
+					-- One socket is one lease, and the YOUNGER of the two goes
+					-- (`placed_at`): a fresh replacement must never displace the
+					-- NPC that carries the wound and the route. `mobs:remove`
+					-- rather than `object:remove` for mobs_redo's own active-mob
+					-- bookkeeping.
 					local keep, drop = first, entity
-					if socket_distance2(entity, slot) <
-							socket_distance2(first, slot) then
+					if placed_at(entity) < placed_at(first) then
 						keep, drop = entity, first
 					end
 					claims[socket_id] = keep
+					slot.away_x = nil
 					core.log("warning", "[grug_mobs] start npcs " .. row.key ..
 						": a second " .. entity.name ..
 						" was booked on socket " .. socket_id ..
@@ -620,6 +658,80 @@ local function socket_seeable(pos)
 	return core.compare_block_status(pos, "active") == true
 end
 
+--
+-- MAY THIS PASS STRIKE A MARKED SOCKET THAT NOTHING HOLDS?
+--
+-- THE SOCKET'S OWN MAPBLOCK BEING ACTIVE IS NECESSARY AND NOT SUFFICIENT, and
+-- reading it as sufficient was a defect of its own, found by the review of this
+-- round (2026-09-15). `compare_block_status` answers for the block containing the
+-- position it is handed (`ServerEnvironment::getBlockStatus`,
+-- serverenvironment.cpp:1159-1172) and `active_block_range` defaults to four
+-- mapblocks = 64 nodes, while Highcourt's ring loop spans about a hundred: a
+-- player at the south gate leaves the north-west patroller's OWN block inactive.
+-- Its object is then not in the environment at all -- `get_pos()` nil, so no
+-- claim -- while the socket it is booked on is active, and striking on that alone
+-- replaces a guard that is merely out of range.
+--
+-- The engine says which of the two it is, so we do not have to guess:
+-- `on_deactivate(self, removal)` distinguishes "removed" from "its mapblock was
+-- unloaded" (lua_api.md: object callbacks). The unload case records WHERE the NPC
+-- went out of memory -- a position whose block is inactive by construction at
+-- that moment -- and the socket is then struck only once THAT block is active
+-- again, because an NPC still on disk comes back with its own block. An NPC we
+-- have no such record for is one the engine never told us about, which is the
+-- `/clearobjects` case (`mode = "full"` deliberately calls no callback), and
+-- there the socket's own block is the whole test.
+--
+-- `start_npc_claim`'s age rule is the backstop under all of it: if a strike ever
+-- does misfire, the fresh replacement is the entity that goes.
+--
+local function strikeable(slot)
+	if not socket_seeable(slot.pos) then
+		return false
+	end
+	if slot.away_x == nil then
+		return true
+	end
+	return socket_seeable({x = slot.away_x, y = slot.away_y, z = slot.away_z})
+end
+
+--
+-- The deactivation record above. Installed on mobs_redo's SHARED mob class,
+-- which is what makes it one hook for all five families and no patch to a
+-- vendored file: mobs_redo defines no `on_deactivate` at all, and the engine
+-- looks the callback up on the entity's table, which reaches `mob_class` through
+-- its metatable (api.lua `mob_class_meta`). Chained anyway, so a later
+-- mobs_redo that grows one keeps it.
+--
+local function track_deactivation(entity, removal)
+	local key, socket_id = entity._grug_start, entity._grug_socket
+	if type(key) ~= "string" or type(socket_id) ~= "string" then
+		return
+	end
+	local row = by_key[key]
+	local slot = row and row.by_socket[socket_id]
+	if not slot or claims_of(key)[socket_id] ~= entity then
+		return -- not this socket's holder (a spare on its way out)
+	end
+	if removal then
+		-- Gone for good: the marker may be freed on the ordinary strike rule.
+		slot.away_x = nil
+		return
+	end
+	local pos = entity.object and entity.object:get_pos()
+	if pos then
+		slot.away_x, slot.away_y, slot.away_z = pos.x, pos.y, pos.z
+	end
+end
+
+local old_on_deactivate = mobs.mob_class.on_deactivate
+mobs.mob_class.on_deactivate = function(self, removal)
+	track_deactivation(self, removal)
+	if old_on_deactivate then
+		return old_on_deactivate(self, removal)
+	end
+end
+
 local function copy_spots(spots)
 	local out = {}
 	for index = 1, #spots do
@@ -639,6 +751,10 @@ local function install(entity, row, slot)
 	-- already reads.
 	entity._grug_start = row.key
 	entity._grug_socket = slot.id
+	-- When this NPC was placed, so a contest over one socket can be decided by
+	-- age instead of by which of the two activated second (`placed_at`). Plain
+	-- number, so it survives unload/reload with the mob.
+	entity._grug_placed_at = core.get_gametime()
 	-- THE NAMETAG FOLLOWS THE SETTLEMENT, NOT THE RACE (playtest round 1): one
 	-- villager entity serves a race's start AND its capital, so a name that
 	-- hangs on the race put "Dawnmere Farmer" in the middle of Highcourt. The
@@ -714,6 +830,7 @@ local function place(row, slot)
 	-- Claim the socket at once. The families claim on activation, which for THIS
 	-- entity happened before it had a socket at all.
 	grug_mobs.start_npc_claim(entity)
+	slot.away_x = nil
 	return true
 end
 
@@ -759,7 +876,7 @@ local function serve(row)
 		if slot.placed then
 			if occupied then
 				slot.strikes = 0
-			elseif socket_seeable(slot.pos) then
+			elseif strikeable(slot) then
 				slot.strikes = (slot.strikes or 0) + 1
 				if slot.strikes >= FREE_STRIKES then
 					core.log("warning", "[grug_mobs] start npcs " .. row.key ..
@@ -955,8 +1072,8 @@ function grug_mobs.start_post_tick(self, dtime)
 		local stalled, total = grug_mobs.stall_clock(self, self._grug_post_x,
 			self._grug_post_z, pos, POST_TICK)
 		if total >= POST_STALL_SNAP and
-				grug_mobs.snap_to(self, pos, self._grug_post_x,
-					self._grug_post_z) then
+				grug_mobs.snap_try(self, pos, self._grug_post_x,
+					self._grug_post_z, POST_TICK) then
 			return
 		end
 		if stalled >= POST_STALL_PATH and grug_mobs.path_nudge(self,

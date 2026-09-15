@@ -97,7 +97,15 @@ local function settlement_npcs()
 	return found
 end
 
-local function census_line(tag)
+--
+-- `strict` asserts the whole population property and not just half of it: the
+-- count must EQUAL the roster, no two NPCs may share a socket, and every socket
+-- that carries a marker must have exactly one holder. The first version only
+-- failed on live > roster, so a run that read live = 0 passed (the review of this
+-- round found exactly that). It is passed at every terminal phase; the two
+-- phases where a number other than the roster is the point say so themselves.
+--
+local function census_line(tag, strict)
 	local rows = grug_mobs.start_npc_census()
 	local roster, marked = 0, 0
 	for index = 1, #rows do
@@ -107,17 +115,33 @@ local function census_line(tag)
 		end
 	end
 	local npcs = settlement_npcs()
-	local by_socket, twins = {}, 0
+	local by_socket, twins, shared = {}, 0, nil
 	for index = 1, #npcs do
 		local id = npcs[index]._grug_socket or "?"
-		if by_socket[id] then twins = twins + 1 end
+		if by_socket[id] then
+			twins = twins + 1
+			shared = id
+		end
 		by_socket[id] = true
 	end
 	log({"event=census", "phase=" .. tag, "key=" .. settlement.key,
 		"roster=" .. roster, "marked=" .. marked, "live=" .. #npcs,
-		"twins=" .. twins})
+		"twins=" .. twins, "strict=" .. tostring(strict == true)})
 	if #npcs > roster then
 		fail("live=" .. #npcs .. " exceeds roster=" .. roster)
+	end
+	if twins > 0 then
+		fail(twins .. " NPCs share a socket (" .. tostring(shared) .. ")")
+	end
+	if strict then
+		if #npcs ~= roster then
+			fail("phase " .. tag .. ": live=" .. #npcs .. " differs from " ..
+				"roster=" .. roster)
+		end
+		if marked ~= roster then
+			fail("phase " .. tag .. ": marked=" .. marked .. " differs from " ..
+				"roster=" .. roster)
+		end
 	end
 	return #npcs, roster
 end
@@ -282,6 +306,12 @@ end
 local FULL = {
 	{at = 0, what = function()
 		log({"event=forceload", "blocks=" .. forceload_area(settlement.anchor)})
+		-- NOT strict: the forceload is registered in this globalstep and the
+		-- engine's active-block management runs on its own two-second interval,
+		-- so nothing it just asked for is activated yet. That is also why the
+		-- free path cannot misfire here -- `compare_block_status` answers
+		-- "loaded" until the pass that activates the block activates its
+		-- objects.
 		census_line("ready")
 	end},
 	{at = 10, what = function() positions_line() end},
@@ -294,7 +324,7 @@ local FULL = {
 	{at = 150, what = function() positions_line() end},
 	{at = 170, what = function()
 		positions_line()
-		census_line("ambled")
+		census_line("ambled", true)
 	end},
 	{at = 180, what = function()
 		-- Off the socket, and always toward the middle of the forceloaded grid
@@ -313,11 +343,11 @@ local FULL = {
 			end
 		end
 		log({"event=moved", "n=" .. moved, "nodes=" .. MOVE_AWAY})
-		census_line("moved")
+		census_line("moved", true)
 	end},
-	{at = 200, what = function() census_line("beat4") end},
-	{at = 230, what = function() census_line("beat10") end},
-	{at = 260, what = function() census_line("beat16") end},
+	{at = 200, what = function() census_line("beat4", true) end},
+	{at = 230, what = function() census_line("beat10", true) end},
+	{at = 260, what = function() census_line("beat16", true) end},
 	{at = 265, what = function()
 		-- THE OTHER HALF OF ITEM 1: a marker whose NPC is really gone must be
 		-- freed and refilled. One villager is removed outright -- what
@@ -339,14 +369,15 @@ local FULL = {
 	end},
 	{at = 270, what = function()
 		-- One heartbeat later: still nine markers and only eight NPCs, because
-		-- three passes have to agree before a marker is freed.
+		-- three passes have to agree before a marker is freed. The one phase
+		-- whose whole point is a count OTHER than the roster, hence not strict.
 		local live = census_line("one_strike")
 		if live ~= 8 then
 			fail("the cleared villager is still counted: live=" .. live)
 		end
 	end},
 	{at = 290, what = function()
-		local live, roster = census_line("refilled")
+		local live, roster = census_line("refilled", true)
 		if live ~= roster then
 			fail("the cleared socket was not refilled: live=" .. live ..
 				" of " .. roster)
@@ -370,7 +401,7 @@ local FULL = {
 	{at = 315, what = function() hostile_lines("acquired") end},
 	{at = 340, what = function()
 		hostile_lines("fought")
-		census_line("after_fight")
+		census_line("after_fight", true)
 		log({"event=complete", "programme=full"})
 		core.request_shutdown("wp13 npc probe done", false, 1)
 	end},
@@ -381,7 +412,7 @@ local RELOAD = {
 		log({"event=forceload", "blocks=" .. forceload_area(settlement.anchor)})
 	end},
 	{at = 20, what = function()
-		census_line("reloaded")
+		census_line("reloaded", true)
 		hp_lines("reloaded")
 		positions_line()
 		log({"event=complete", "programme=reload"})

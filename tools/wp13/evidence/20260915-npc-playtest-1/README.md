@@ -21,10 +21,14 @@ under "Playtest round 1"; this directory holds what the gates printed.
   interpreters. It was `871f0d2942f9e1dc73b6a437fa7fa6e86902075cf8f8fefe096538eddab4c4bf`
   at `70702d2`; the `start_npcs_kat` report is part of the hashed text and this
   round rewrote it.
-- **Static**: clean. Every sweep hit is pre-existing prose inside a comment (the
-  `\u{}` note in levels.lua and target_frame.lua, `|` inside §-table quotes and
-  `|x|` notation, and the `os.exit` calls of the standalone dump tools, which do
-  not run inside the engine sandbox). `check_fresh_server.py` PASS.
+- **Static**: clean, and every hit is pre-existing — but they are not all prose.
+  The `\u{}` note in levels.lua and target_frame.lua and the `|` of §-table
+  quotes and `|x|` notation are comments; sweep 5 over `tools/wp13` reports
+  **fifteen real `os.exit` calls**, in `dump_blueprint.lua`, `dump_highcourt.lua`,
+  `dump_capital_part.lua` and `highcourt_plots.lua`. Those are code. They are
+  standalone command-line tools that never run inside the engine sandbox the
+  sweep is about, and this round neither added nor touched one.
+  `check_fresh_server.py` PASS.
 - **Six-start identities**: byte-identical to the committed baseline. This round
   writes no mapgen cell.
 - **Engine**: see `npc-probe/probe.txt` and `highcourt/`.

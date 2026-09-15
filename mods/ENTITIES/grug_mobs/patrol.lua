@@ -102,6 +102,14 @@ local STALL_SKIP = 45 -- s without progress: give this waypoint up
 local STALL_SNAP = 90 -- s stuck in total: teleport, out of sight only
 local SNAP_PLAYER_RANGE = 48 -- nodes; the user's "out of sight" radius
 local PATH_SEARCH = 24 -- nodes of core.find_path search distance
+-- A LOOP NOBODY CAN WALK IS A TERMINAL STATE, not something to report for ever.
+-- After QUIET_AFTER give-ups the mob keeps trying in silence, and a refused
+-- teleport is retried every SNAP_RETRY seconds instead of on every tick: with
+-- every waypoint unreachable AND a player inside SNAP_PLAYER_RANGE, the
+-- unthrottled version logged one line and called `get_objects_inside_radius`
+-- once a second for as long as the player stood there.
+local SNAP_RETRY = 10 -- s between out-of-sight attempts once one was refused
+local QUIET_AFTER = 4 -- give-up cycles before the log goes quiet
 
 --
 -- How long this mob has made no measurable progress toward (x, z). Returns the
@@ -133,8 +141,9 @@ function grug_mobs.stall_clock(self, x, z, pos, elapsed)
 	return t.grug_stall, t.grug_stall_total
 end
 
--- Forget both clocks: the mob arrived, or something else took the movement
--- over. A fight is not a stall.
+-- Forget both clocks AND the terminal state: the mob arrived, or something else
+-- took the movement over. A fight is not a stall, and a mob that has just made
+-- progress is allowed to report its next problem out loud again.
 function grug_mobs.stall_clear(self)
 	local t = self.temp
 	if not t then
@@ -142,6 +151,45 @@ function grug_mobs.stall_clear(self)
 	end
 	t.grug_stall, t.grug_stall_total, t.grug_stall_d2 = nil, nil, nil
 	t.grug_stall_x, t.grug_stall_z = nil, nil
+	t.grug_stall_cycles, t.grug_snap_wait = nil, nil
+end
+
+--
+-- Stage 3 with a back-off. The first attempt runs the moment the mob is due; a
+-- refusal -- a player inside SNAP_PLAYER_RANGE, or a column with nowhere to
+-- stand -- is retried only every SNAP_RETRY seconds.
+--
+function grug_mobs.snap_try(self, pos, x, z, elapsed)
+	self.temp = self.temp or {}
+	local t = self.temp
+	local wait = (t.grug_snap_wait or 0) - (elapsed or 0)
+	if wait > 0 then
+		t.grug_snap_wait = wait
+		return false
+	end
+	if grug_mobs.snap_to(self, pos, x, z) then
+		t.grug_snap_wait = nil
+		return true
+	end
+	t.grug_snap_wait = SNAP_RETRY
+	return false
+end
+
+-- One give-up, counted. Reports the first QUIET_AFTER - 1 of them, then says
+-- once that it is going quiet, then says nothing until something clears the
+-- clocks (arrival, a fight, an unload).
+local function report_give_up(self)
+	local t = self.temp
+	t.grug_stall_cycles = (t.grug_stall_cycles or 0) + 1
+	if t.grug_stall_cycles < QUIET_AFTER then
+		core.log("action", "[grug_mobs] " .. self.name ..
+			" could not reach its waypoint in " .. STALL_SKIP ..
+			" s and walks on to the next one")
+	elseif t.grug_stall_cycles == QUIET_AFTER then
+		core.log("action", "[grug_mobs] " .. self.name ..
+			" cannot reach any waypoint of its loop; it keeps trying without" ..
+			" reporting until it makes progress")
+	end
 end
 
 -- Lower the skip clock without clearing the total one (stage 2).
@@ -294,7 +342,8 @@ function grug_mobs.route_tick(self, dtime, points, wp_holder, wp_key, rescue)
 		return
 	end
 	local stalled, total = grug_mobs.stall_clock(self, pt.x, pt.z, pos, elapsed)
-	if total >= STALL_SNAP and grug_mobs.snap_to(self, pos, pt.x, pt.z) then
+	if total >= STALL_SNAP and
+			grug_mobs.snap_try(self, pos, pt.x, pt.z, elapsed) then
 		return
 	end
 	if stalled >= STALL_SKIP then
@@ -303,9 +352,7 @@ function grug_mobs.route_tick(self, dtime, points, wp_holder, wp_key, rescue)
 		pt = points[idx]
 		stall_grace(self)
 		stalled = STALL_PATH
-		core.log("action", "[grug_mobs] " .. self.name ..
-			" could not reach its waypoint in " .. STALL_SKIP ..
-			" s and walks on to the next one")
+		report_give_up(self)
 	end
 	if stalled >= STALL_PATH and grug_mobs.path_nudge(self, pt.x, pt.z, pos) then
 		return

@@ -26,9 +26,17 @@
 --                     over ten heartbeats: the count stays at the roster. The
 --                     old position-based occupancy test freed the marker and
 --                     placed a twin every single heartbeat.
+--   7b. out of range -- THE REVIEW'S FINDING on the same item. The NPC's OWN
+--                     mapblock is inactive while the socket's is active, which is
+--                     the north-west patroller of a capital ring loop while a
+--                     player stands at the south gate: `compare_block_status`
+--                     answers for the block containing the position it is handed,
+--                     and `active_block_range` is 64 nodes against a ~100-node
+--                     loop. Nothing may be struck and nothing may be placed.
 --   8. twin        -- a world that already has twins heals: the second entity
---                     booked on a socket is removed, and one that activates
---                     later removes itself.
+--                     booked on a socket is removed, the YOUNGER one goes
+--                     whichever way round the two arrive, and one that activates
+--                     onto a held socket removes itself.
 --   9. amble       -- a villager walks to another idle socket and dwells there.
 --                     The old ring advance deadlocked as soon as every spot was
 --                     occupied, which is always, so nobody ever moved.
@@ -182,6 +190,8 @@ return function(repo)
 	-- point. `blocked` is the fixture saying "this mob cannot move at all",
 	-- which is what the stuck rescue is about.
 	--
+	local deactivate
+
 	local function advance(mob, seconds)
 		if mob.blocked or mob.state ~= "walk" or (mob.velocity or 0) <= 0 then
 			return
@@ -199,6 +209,24 @@ return function(repo)
 		end
 	end
 
+	-- The engine's own `on_deactivate` dispatch: it is a field on the entity's
+	-- table, reached through mobs_redo's shared `mob_class` metatable, and it is
+	-- called with `removal = true` for an object being removed and `false` for an
+	-- object whose mapblock is being unloaded. Never called for an object that
+	-- was not active in the first place.
+	function deactivate(mob, removal)
+		if mob.removed or not mob.was_active then
+			return
+		end
+		local mobs_api = rawget(_G, "mobs")
+		local hook = mobs_api and mobs_api.mob_class and
+			mobs_api.mob_class.on_deactivate
+		-- The hook runs BEFORE the object stops existing, which is what lets it
+		-- read the position the NPC went out of memory at.
+		if hook then hook(mob, removal) end
+		mob.was_active = false
+	end
+
 	-- A stub mob: the methods `walk_toward`, `face_yaw` and the two families'
 	-- own ticks call on `self`, plus the object handle the placement engine and
 	-- the claim registry hold.
@@ -214,8 +242,10 @@ return function(repo)
 		object = {
 			get_pos = function()
 				-- AN OBJECT EXISTS ONLY WHILE ITS BLOCK IS ACTIVE. This is the
-				-- one engine fact the whole placement design hangs off.
-				if mob.removed or not activated(mob.pos) then return nil end
+				-- one engine fact the whole placement design hangs off. It is
+				-- still true DURING `on_deactivate`, which is called while the
+				-- object is alive ("about to get removed or unloaded").
+				if mob.removed or not mob.was_active then return nil end
 				return {x = mob.pos.x, y = mob.pos.y, z = mob.pos.z}
 			end,
 			set_pos = function(_, p)
@@ -229,6 +259,10 @@ return function(repo)
 			get_yaw = function() return mob.yaw or 0 end,
 			is_player = function() return false end,
 			remove = function()
+				-- `on_deactivate(self, true)` fires for an ACTIVE object that is
+				-- removed (lua_api.md), which is what tells the placement engine
+				-- this socket is really empty rather than merely out of range.
+				deactivate(mob, true)
 				mob.removed = true
 				for index = 1, #world.objects do
 					if world.objects[index].mob == mob then
@@ -243,6 +277,7 @@ return function(repo)
 			end,
 		}
 		mob.object = object
+		mob.was_active = true
 		function mob:yaw_to_pos(target)
 			self.walk_target = {x = target.x, z = target.z}
 		end
@@ -257,6 +292,13 @@ return function(repo)
 	local function boot()
 		harness = {players = {}, logs = {}, globalsteps = {}, mods_loaded = {},
 			after = {}, clock = 1000, yaws = 0, defs = {}, paths = 0}
+		-- A restart activates the objects of the blocks that are active, and no
+		-- others; the previous session's `on_deactivate` handler died with its
+		-- Lua environment, so nothing is dispatched here.
+		for index = 1, #world.objects do
+			local mob = world.objects[index].mob
+			mob.was_active = activated(mob.pos)
+		end
 
 		local storage = {}
 		function storage:get_string(key) return world.storage[key] or "" end
@@ -276,7 +318,11 @@ return function(repo)
 			new = function(x, y, z) return {x = x, y = y, z = z} end,
 		})
 
-		local mobs_api = {}
+		-- `mob_class` is mobs_redo's SHARED entity class, which is where the
+		-- placement engine installs its `on_deactivate` hook -- the engine looks
+		-- that callback up on the entity's table and reaches the class through
+		-- its metatable.
+		local mobs_api = {mob_class = {}}
 		function mobs_api.register_mob(_, name, def) harness.defs[name] = def end
 		-- mobs_redo's own public removal (api.lua:789), which is what the
 		-- placement engine uses so the active-mob bookkeeping stays right.
@@ -384,7 +430,7 @@ return function(repo)
 			end
 			for index = 1, #world.objects do
 				local object = world.objects[index]
-				if activated(object.mob.pos) and
+				if object.mob.was_active and
 						distance(object.mob.pos, pos) <= radius then
 					out[#out + 1] = object.mob.object
 				end
@@ -444,8 +490,24 @@ return function(repo)
 		for index = 1, #queued do queued[index]() end
 	end
 
+	-- What the engine's active-block management does between steps: an object
+	-- whose block has gone inactive is deactivated (and is then invisible to
+	-- every query), one whose block came back is active again.
+	local function settle_activation()
+		for index = 1, #world.objects do
+			local mob = world.objects[index].mob
+			local now_active = activated(mob.pos)
+			if mob.was_active and not now_active then
+				deactivate(mob, false)
+			elseif now_active then
+				mob.was_active = true
+			end
+		end
+	end
+
 	local function step(seconds)
 		harness.clock = harness.clock + seconds
+		settle_activation()
 		for index = 1, #harness.globalsteps do
 			harness.globalsteps[index](seconds)
 		end
@@ -455,6 +517,10 @@ return function(repo)
 	end
 
 	local function become_ready()
+		-- Whatever the fixture has just changed about where the players are has
+		-- already reached the engine's block management by the time a readiness
+		-- pass runs.
+		settle_activation()
 		harness.ready = true
 		if harness.progress then harness.progress(1, 1, false) end
 		local queued = harness.after
@@ -476,6 +542,18 @@ return function(repo)
 			if harness.logs[index]:find(needle, 1, true) then count = count + 1 end
 		end
 		return count
+	end
+
+	-- Does the placement engine's own claim registry hold this socket right now?
+	-- Asked through the census, which is its only public view.
+	local function claims_hold(socket_id)
+		for index = 1, #world.objects do
+			local mob = world.objects[index].mob
+			if mob._grug_socket == socket_id and mob.object:get_pos() then
+				return true
+			end
+		end
+		return false
 	end
 
 	local function entity_at(socket_id)
@@ -729,6 +807,10 @@ return function(repo)
 	check(wanderer ~= nil, "the patrol guard was not placed")
 	local socket_pos = socket_world_pos(SOCKETS[3])
 	harness.players = {{x = socket_pos.x, y = socket_pos.y, z = socket_pos.z}}
+	-- The player arrives first, which is what activates the blocks and the NPCs
+	-- standing in them; then the NPC walks off its socket without leaving the
+	-- activated area, which is a patrol.
+	step(5)
 	wanderer.pos.x = wanderer.pos.x + 40
 	check(distance(wanderer.pos, socket_pos) > PRESENCE_RADIUS_BEFORE,
 		"the wanderer must stand outside the old presence radius")
@@ -745,6 +827,49 @@ return function(repo)
 	check(logged("is marked but empty") == freed_before,
 		"a wandering NPC was reported gone")
 	line("wanderer", objects_before, #world.objects, markers(), "10_heartbeats")
+
+	--
+	-- 7b. THE NPC'S OWN MAPBLOCK IS INACTIVE while its socket's is active.
+	--
+	-- The engine answers `compare_block_status` for the block containing the
+	-- position it is handed (`ServerEnvironment::getBlockStatus`), and
+	-- `active_block_range` reaches 64 nodes, so a capital's ring patroller can be
+	-- outside the activated area while the socket it is booked on is inside it.
+	-- Its object is then not in the environment at all -- `get_pos()` nil, no
+	-- claim -- and striking on the socket's block alone would replace a guard
+	-- that is merely out of range.
+	--
+	local far = entity_at("gate_east")
+	check(far ~= nil, "no guard stands on the east post")
+	local far_socket = socket_world_pos(SOCKETS[2])
+	-- The player stands ON the socket, so its block is active; the NPC is moved
+	-- to 100 nodes away, so its own block is not.
+	harness.players = {{x = far_socket.x, y = far_socket.y, z = far_socket.z}}
+	-- One pass with the guard still in range, so the fixture has SEEN it there:
+	-- that is what `strikeable` remembers.
+	step(5)
+	check(claims_hold("gate_east"), "the fixture never saw the east guard")
+	far.pos.x = far.pos.x + 100
+	local before_far = #world.objects
+	local freed_far = logged("is marked but empty")
+	-- One pass for the engine's block management to notice, exactly as the
+	-- engine does it: the object stays in the environment until then.
+	step(5)
+	check(far.object:get_pos() == nil,
+		"the fixture's far NPC must be outside the activation radius")
+	check(core.compare_block_status(far_socket, "active") == true,
+		"the fixture's socket must still be active")
+	for _ = 1, 10 do step(5) end
+	check(#world.objects == before_far,
+		"an out-of-range NPC was replaced: " .. #world.objects .. " instead of " ..
+		before_far)
+	check(logged("is marked but empty") == freed_far,
+		"an out-of-range NPC's marker was freed")
+	check(world.storage["startnpc:hearthpine:gate_east"] == "1",
+		"an out-of-range NPC lost its marker")
+	line("out_of_range", before_far, #world.objects, "no_strike")
+	-- Bring it back for the twin case below.
+	far.pos.x = far.pos.x - 100
 
 	--
 	-- 8. A world that ALREADY has twins heals, both ways round: the heartbeat
@@ -939,29 +1064,50 @@ return function(repo)
 	check(route.wp == 2, "stage 2 never gave the unreachable waypoint up")
 	check(logged("walks on to the next one") >= 1, "stage 2 was not reported")
 	local stuck_pos = {x = stuck.pos.x, y = stuck.pos.y, z = stuck.pos.z}
-	run_route(50)
+	-- Two minutes of a loop nobody can walk, with a player standing on the mob:
+	-- the give-ups keep coming but the LOG goes quiet after QUIET_AFTER of them,
+	-- and the refused teleport is retried on a back-off rather than every tick.
+	run_route(120)
 	check(stuck.pos.x == stuck_pos.x and stuck.pos.z == stuck_pos.z,
 		"a stuck guard was teleported while a player was watching it")
 	check(logged("with no player within") == 0,
 		"the out-of-sight teleport ran with a player in sight")
+	local reported = logged("walks on to the next one")
+	check(reported == 3, "the give-up log did not go quiet after three lines: " ..
+		reported)
+	check(logged("keeps trying without") == 1,
+		"the mob never said it was going quiet")
+	run_route(60)
+	check(logged("walks on to the next one") == reported and
+		logged("keeps trying without") == 1,
+		"a mob that had gone quiet started reporting again")
 	-- The player walks off to 50 nodes: past the 48 the ruling names, still
 	-- inside the activation radius, so the mob is ticking and unwatched at once.
 	-- (An empty player list would deactivate the mapblock and stop the tick
 	-- altogether, which is the engine's behaviour and not what is under test.)
 	harness.players = {{x = stuck.pos.x + 50, y = stuck.pos.y, z = stuck.pos.z}}
-	local target = route_points[route.wp]
-	-- ONE tick: the snap lands the guard on its waypoint, and the tick after
-	-- that legitimately reads it as arrived and takes the next one.
+	-- The teleport is due, but the back-off holds it for up to SNAP_RETRY
+	-- seconds after the refusal that happened while the player was watching.
 	run_route(1)
+	check(stuck.pos.x == stuck_pos.x and stuck.pos.z == stuck_pos.z,
+		"the refused teleport was retried on the very next tick")
+	run_route(10)
 	check(stuck.pos.x ~= stuck_pos.x or stuck.pos.z ~= stuck_pos.z,
 		"a stuck guard with nobody watching was not moved")
 	check(logged("with no player within") >= 1,
 		"the out-of-sight teleport was not reported")
-	check(math.abs(stuck.pos.x - target.x) < 1e-9 and
-		math.abs(stuck.pos.z - target.z) < 1e-9,
-		"the snap did not land on the waypoint the guard could not reach")
-	line("stuck_route", "path_at_20", "skip_at_45", "no_snap_in_sight",
-		"snap_out_of_sight")
+	-- On A waypoint of its own loop, not merely somewhere else: which one is
+	-- whichever it was heading for when the back-off let the snap through.
+	local landed = false
+	for index = 1, #route_points do
+		if math.abs(stuck.pos.x - route_points[index].x) < 1e-9 and
+				math.abs(stuck.pos.z - route_points[index].z) < 1e-9 then
+			landed = true
+		end
+	end
+	check(landed, "the snap did not land on a waypoint of the loop")
+	line("stuck_route", "path_at_20", "skip_at_45", "quiet_after_3_lines",
+		"no_snap_in_sight", "snap_out_of_sight_after_backoff")
 
 	--
 	-- 12. NOBODY HUNTS NPCs (item 5, world.md section 4). The wrapper's verb,
