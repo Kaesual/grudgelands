@@ -79,6 +79,11 @@ local steps, dtime_sum, dtime_max = 0, 0, 0
 local starts = {}
 
 local function collect_starts()
+	-- REBUILT from scratch on every call. This runs once a second until every
+	-- start reports ready, and appending to the same list instead made the
+	-- first attempt report 282 starts -- 47 polls times six -- and then measure
+	-- Dawnmere forty-seven times over.
+	starts = {}
 	local identities = grug_core.start_identities()
 	local faction_of = {}
 	for index = 1, #identities do
@@ -209,6 +214,47 @@ local function measure(row, clock)
 	phase, phase_at = PHASE_MEASURE, clock + WINDOW
 end
 
+--
+-- THE MICROBENCHMARK, and why the server step alone does not answer the
+-- question. A dedicated server runs a FIXED step (`dedicated_server_step`,
+-- 0.09 s by default) and only exceeds it once it cannot keep up, so the mean
+-- step of a quiet world reads 90 ms whatever the settlement costs: it says
+-- "there is headroom", which is worth knowing and is not a measurement of the
+-- NPCs.
+--
+-- So the mod-side tick is timed directly: every settlement NPC's `do_custom`
+-- is called once with dtime = 1, which is exactly the work the server does for
+-- that NPC in one second (each of these families throttles itself on a
+-- one-second accumulator), around `core.get_us_time()`. The side effects are
+-- the side effects of one ordinary simulated second and it runs at the END of
+-- the window, after every census.
+--
+local function micro_line(row)
+	local objects = core.get_objects_inside_radius(row.anchor, CENSUS_RADIUS)
+	local npcs = {}
+	for index = 1, #objects do
+		local entity = objects[index]:get_luaentity()
+		if entity and entity._grug_start == row.key and entity.do_custom then
+			npcs[#npcs + 1] = entity
+		end
+	end
+	local rounds = 20
+	local started = core.get_us_time()
+	for _ = 1, rounds do
+		for index = 1, #npcs do
+			local entity = npcs[index]
+			entity:do_custom(1)
+		end
+	end
+	local spent = core.get_us_time() - started
+	log({"event=micro", "key=" .. row.key, "npcs=" .. #npcs,
+		"rounds=" .. rounds, "us_total=" .. spent,
+		"us_per_npc_second=" .. string.format("%.2f",
+			(#npcs > 0 and rounds > 0) and (spent / rounds / #npcs) or 0),
+		"us_per_settlement_second=" .. string.format("%.2f",
+			rounds > 0 and (spent / rounds) or 0)})
+end
+
 local function report(row)
 	local data = census(row)
 	local window_steps = steps - mark.steps
@@ -249,6 +295,7 @@ local function report(row)
 			string.format("%.1f", share) .. " percent of " .. data.residents ..
 			" residents")
 	end
+	micro_line(row)
 	forceload_area(row.anchor, false)
 	phase = PHASE_REPORT
 end
