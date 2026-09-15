@@ -1,12 +1,33 @@
 # Media Origin & Licenses (grug_materials)
 
-**This mod ships no media files of its own.** It has no `textures/` or
-`sounds/` directory. Its registrations either use vendored minetest_game media
-unchanged, generate a tinted derivative at runtime with Luanti texture
-modifiers, or copy a vendored node definition under a canonical name.
+**Twelve stored files since WP13's round-2 tool ladder (§0 below); everything
+else is a runtime registration.** Apart from those, the mod's registrations
+use vendored minetest_game media unchanged, generate a tinted derivative at
+runtime with Luanti texture modifiers, or copy a vendored node definition under
+a canonical name.
 
-This is therefore an attribution inventory for runtime registrations, not a
-file inventory.
+This is therefore an attribution inventory for runtime registrations plus one
+small file inventory, not a pure file inventory.
+
+## 0. Stored tool sprites — CC BY-SA 3.0 Unported
+
+The four metal tiers `default` never had (`tools.lua`) need their own icons.
+Each is `default_tool_steel<family>.png` with its grey ramp mapped through a
+per-material lookup table and its wooden handle pixels copied unchanged --
+exactly the recolouring minetest_game itself used to turn its steel sword into
+its bronze one (`tools/wp13/gen_weapon_ladder.py` reproduces
+`default_tool_bronzesword.png` byte for byte as its own self-check).
+
+They are therefore **derivative works of minetest_game's CC BY-SA 3.0 tool art
+and stay under that licence**, with the same attribution as the rest of this
+file. Regenerate with `python3 tools/wp13/gen_weapon_ladder.py`.
+
+| File(s) | Source original | Modification |
+|---|---|---|
+| `grug_materials_tool_ironpick.png`, `..._ironaxe.png`, `..._ironshovel.png` | `default_tool_steelpick/axe/shovel.png` | grey ramp -> dull warm grey |
+| `grug_materials_tool_silversteelpick.png`, `..._silversteelaxe.png`, `..._silversteelshovel.png` | same three | grey ramp -> pale blue silver |
+| `grug_materials_tool_embersteelpick.png`, `..._embersteelaxe.png`, `..._embersteelshovel.png` | same three | grey ramp -> dark iron with ember glow |
+| `grug_materials_tool_abyssal_steelpick.png`, `..._abyssal_steelaxe.png`, `..._abyssal_steelshovel.png` | same three | grey ramp -> deep violet with cold sheen |
 
 ## Source and license
 
