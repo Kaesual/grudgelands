@@ -235,10 +235,8 @@ local function loader(directory)
 			{id = "shore_vineyard", yard = {}, order = 11,
 				decorate = vine_terrace,
 				extra_sockets = function(area)
-					return {work("vine_a", "tend", area.x0 + 3, area.z0 + 2, 0),
+					return {work("vine_a", "tend", area.x0 + 2, area.z0 + 2, 0),
 						work("vine_b", "forage", area.x1 - 2, area.z0 + 2, 0),
-						{id = "vine_idle", role = "idle", x = area.x0 + 1,
-							z = area.z0 + 2, face = 0, tags = {"work"}},
 						spare("vineyard", area.x1 - 1, area.z0 + 2, 0)}
 				end},
 			{id = "shore_gardens", yard = {}, order = 12, decorate = crop_field,
@@ -248,21 +246,18 @@ local function loader(directory)
 						work("garden_b", "farm", area.x1 - 3, area.z0 + 2, 0),
 						{id = "garden_idle", role = "idle", x = area.x0 + 1,
 							z = area.z0 + 2, face = 0, tags = {"work"}},
-						{id = "garden_idle_b", role = "idle", x = area.x1 - 1,
-							z = area.z0 + 2, face = 0, tags = {"work"}}}
+}
 				end},
 			{id = "shore_logyard", yard = {}, order = 13, decorate = log_yard,
 				extra_sockets = function(area)
 					return {work("log_a", "chop", area.x0 + 2, area.z0 + 2, 0),
-						{id = "log_idle", role = "idle", x = area.x1 - 2,
-							z = area.z0 + 2, face = 0, tags = {"work"}}}
+}
 				end},
 			{id = "shore_green", yard = {}, order = 14, decorate = green,
 				extra_sockets = function(area)
 					return {work("green_sit", "sit", area.x0 + 3,
 							area.z0 + 3, 0, {"bench"}, 2),
-						{id = "green_idle", role = "idle", x = area.x1 - 2,
-							z = area.z0 + 2, face = 0, tags = {"bench"}}}
+}
 				end},
 		},
 	}
@@ -303,6 +298,13 @@ local function loader(directory)
 					shopfront(buf, palette, area)
 					area.dressing.flower_bed(buf, palette, area.x0 + 1,
 						area.z1 - 4, area.x1 - 1, area.z1 - 1)
+					-- ONE PLANT ON THE KERB LINE. A raised bed is masonry round
+					-- soil, and §8.1's search stops at the first solid node on
+					-- the socket's own course, so a gardener standing outside
+					-- one looks at brick. `dressing.plant` breaks the kerb at
+					-- one cell and grows something there, which is what the
+					-- herbalist tends.
+					area.dressing.plant(buf, palette, area.x0 + 2, area.z1 - 4)
 				end,
 				extra_sockets = function(area)
 					return {vendor("herbalist", "herbalist", area.x0 + 4,
@@ -336,18 +338,15 @@ local function loader(directory)
 						work("common_b", "farm", area.x1 - 3, area.z0 + 2, 0),
 						{id = "common_idle", role = "idle", x = area.x0 + 1,
 							z = area.z0 + 2, face = 0, tags = {"work"}},
-						{id = "common_idle_b", role = "idle", x = area.x1 - 1,
-							z = area.z0 + 2, face = 0, tags = {"work"}}}
+}
 				end},
 			{id = "vine_terraces", yard = {}, order = 12,
 				decorate = vine_terrace,
 				extra_sockets = function(area)
-					return {work("terrace_a", "tend", area.x0 + 3,
+					return {work("terrace_a", "tend", area.x0 + 2,
 							area.z0 + 2, 0),
 						work("terrace_b", "forage", area.x1 - 2,
 							area.z0 + 2, 0),
-						{id = "terrace_idle", role = "idle", x = area.x0 + 1,
-							z = area.z0 + 2, face = 0, tags = {"work"}},
 						spare("terraces", area.x1 - 1, area.z0 + 2, 0)}
 				end},
 			{id = "vine_park", yard = {}, order = 13, decorate = green,
@@ -361,8 +360,7 @@ local function loader(directory)
 				extra_sockets = function(area)
 					return {work("kitchen", "farm", area.x0 + 2,
 							area.z0 + 2, 0),
-						{id = "kitchen_idle", role = "idle", x = area.x1 - 2,
-							z = area.z0 + 2, face = 0, tags = {"work"}}}
+}
 				end},
 		},
 	}
@@ -440,21 +438,18 @@ local function loader(directory)
 						work("spar_b", "spar", area.x1 - 3, area.z0 + 2, 0),
 						{id = "muster_idle", role = "idle", x = area.x0 + 1,
 							z = area.z0 + 2, face = 0, tags = {"work"}},
-						{id = "muster_idle_b", role = "idle", x = area.x1 - 1,
-							z = area.z0 + 2, face = 0, tags = {"work"}}}
+}
 				end},
 			{id = "canopy_pasture", yard = {}, order = 15, decorate = pasture,
 				extra_sockets = function(area)
 					return {work("pasture", "tend", area.x0 + 3,
 							area.z0 + 2, 0),
-						{id = "pasture_idle", role = "idle", x = area.x1 - 2,
-							z = area.z0 + 2, face = 0, tags = {"work"}}}
+}
 				end},
 			{id = "canopy_woodyard", yard = {}, order = 16, decorate = log_yard,
 				extra_sockets = function(area)
 					return {work("wood_a", "chop", area.x0 + 2, area.z0 + 2, 0),
-						{id = "wood_idle", role = "idle", x = area.x1 - 2,
-							z = area.z0 + 2, face = 0, tags = {"work"}}}
+}
 				end},
 			{id = "canopy_green", yard = {}, order = 17, decorate = green,
 				extra_sockets = function(area)
@@ -527,15 +522,13 @@ local function loader(directory)
 							area.z0 + 2, 0),
 						{id = "graves_idle", role = "idle", x = area.x0 + 1,
 							z = area.z0 + 2, face = 0, tags = {"work"}},
-						{id = "graves_idle_b", role = "idle", x = area.x1 - 1,
-							z = area.z0 + 2, face = 0, tags = {"work"}}}
+}
 				end},
 			{id = "totem_posts", yard = {}, order = 9, decorate = totem_row,
 				extra_sockets = function(area)
 					return {work("post_carve", "carve", area.x0 + 3,
 							area.z0 + 3, 0),
-						{id = "posts_idle", role = "idle", x = area.x1 - 2,
-							z = area.z0 + 2, face = 0, tags = {"work"}}}
+}
 				end},
 			{id = "totem_grove", yard = {}, order = 10, decorate = grove,
 				extra_sockets = function(area)

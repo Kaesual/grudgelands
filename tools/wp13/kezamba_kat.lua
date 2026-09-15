@@ -110,9 +110,14 @@ return function(repo)
 	feature_set("farm", {"crop_soil", "crop", "planter_soil", "ground_patch",
 		"ground_straw"}, {"farming:soil_wet"})
 	feature_set("chop", {"tree_log", "post", "beam"}, {})
+	-- `tend` IS A PLANT OR A FLOWER AND NOTHING ELSE (§8.1). The first version
+	-- of this set also accepted `planter` and `planter_soil` -- the masonry kerb
+	-- and the soil of a raised bed -- which is how a gardener came to face a
+	-- brick and pass. Soil is not a plant; the composition grows something in
+	-- the cell the socket looks at instead (`dressing.plant`, which breaks the
+	-- kerb at one cell for exactly this reason).
 	feature_set("tend", {"flower", "flower_alt", "hedge", "hedge_stem",
-		"undergrowth", "grass_tuft", "fern", "crop", "tree_leaves",
-		"planter_soil", "planter"}, {})
+		"undergrowth", "grass_tuft", "fern", "crop", "tree_leaves"}, {})
 	feature_set("pray", {"light_post", "light_wall", "light_indoor",
 		"low_wall", "signature", "hearth"}, {})
 	-- The six wave-2 activities of section 8.2. Each set is the contract's own
@@ -692,6 +697,16 @@ return function(repo)
 			string.format("%.1f", share) .. " per cent, outside the band")
 		assert((counts.spare or 0) >= 4, "kezamba sockets: " ..
 			tostring(counts.spare) .. " spare spots, and an amble needs room")
+		-- THE COORDINATOR'''S WAVE-2 BAND (2026-09-15, after the first two
+		-- capital reviews): 150 to 170 residents and at most 25 walkers per
+		-- capital, against Highcourt'''s 144 / 22 as the reference. It is a
+		-- SERVER-LOAD number -- path-finding and animated meshes are the cost --
+		-- so it is asserted here rather than counted by eye, and a roster edit
+		-- that walks out of it goes red.
+		assert(residents >= 150 and residents <= 170, "kezamba sockets: " ..
+			residents .. " residents, outside the wave-2 band of 150 to 170")
+		assert(walkers <= 25, "kezamba sockets: " .. walkers ..
+			" walkers, over the wave-2 ceiling of 25")
 
 		local role_names = {}
 		for role in pairs(counts) do role_names[#role_names + 1] = role end

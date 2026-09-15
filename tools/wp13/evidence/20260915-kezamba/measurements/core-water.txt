@@ -1,0 +1,78 @@
+kind	seed	anchor_x	anchor_y	anchor_z	columns	wet	wet_core	terrain_low	terrain_high	surface_low	surface_high	mask_sha256
+kezamba_water	531802985935182545	1800	66	1500	9025	2645	2645	53	66	65	65	23a34df395bca651d15956f1268f23efe42e463c712aae04ce2d57a19cc17106
+kezamba_core_dry_heights	531802985935182545	58x2,59x5,60x7,61x8,62x7,63x8,64x7,65x9,66x6327	off_reference	53
+-- the lagoon, one line per z, as inclusive x runs:
+lagoon_run	-7	39..47
+lagoon_run	-6	34..47
+lagoon_run	-5	31..47
+lagoon_run	-4	28..47
+lagoon_run	-3	25..47
+lagoon_run	-2	23..47
+lagoon_run	-1	20..47
+lagoon_run	0	18..47
+lagoon_run	1	17..47
+lagoon_run	2	15..47
+lagoon_run	3	13..47
+lagoon_run	4	12..47
+lagoon_run	5	11..47
+lagoon_run	6	9..47
+lagoon_run	7	8..47
+lagoon_run	8	7..47
+lagoon_run	9	6..47
+lagoon_run	10	4..47
+lagoon_run	11	3..47
+lagoon_run	12	2..47
+lagoon_run	13	1..47
+lagoon_run	14	0..47
+lagoon_run	15	0..47
+lagoon_run	16	-1..47
+lagoon_run	17	-2..47
+lagoon_run	18	-3..47
+lagoon_run	19	-4..47
+lagoon_run	20	-4..47
+lagoon_run	21	-5..47
+lagoon_run	22	-6..47
+lagoon_run	23	-7..47
+lagoon_run	24	-7..47
+lagoon_run	25	-8..47
+lagoon_run	26	-8..47
+lagoon_run	27	-9..47
+lagoon_run	28	-10..47
+lagoon_run	29	-10..47
+lagoon_run	30	-11..47
+lagoon_run	31	-11..47
+lagoon_run	32	-11..47
+lagoon_run	33	-12..47
+lagoon_run	34	-12..47
+lagoon_run	35	-13..47
+lagoon_run	36	-13..47
+lagoon_run	37	-13..47
+lagoon_run	38	-14..47
+lagoon_run	39	-14..47
+lagoon_run	40	-14..47
+lagoon_run	41	-15..47
+lagoon_run	42	-15..47
+lagoon_run	43	-15..47
+lagoon_run	44	-16..47
+lagoon_run	45	-16..47
+lagoon_run	46	-16..47
+lagoon_run	47	-16..47
+kezamba_water	8675309	1800	66	1500	9025	2645	2645	51	66	65	65	23a34df395bca651d15956f1268f23efe42e463c712aae04ce2d57a19cc17106
+kezamba_core_dry_heights	8675309	51x2,52x5,53x7,54x8,55x7,56x8,57x7,58x7,59x8,60x7,61x8,62x8,63x7,64x7,65x10,66x6274	off_reference	106
+kezamba_water	15912857179583385436	1800	66	1500	9025	2645	2645	51	66	65	65	23a34df395bca651d15956f1268f23efe42e463c712aae04ce2d57a19cc17106
+kezamba_core_dry_heights	15912857179583385436	53x2,54x5,55x7,56x8,57x7,58x8,59x7,60x7,61x8,62x7,63x8,64x8,65x9,66x6289	off_reference	91
+kezamba_water	0	1800	66	1500	9025	2645	2645	40	66	65	65	23a34df395bca651d15956f1268f23efe42e463c712aae04ce2d57a19cc17106
+kezamba_core_dry_heights	0	40x2,41x5,42x7,43x8,44x7,45x8,46x7,47x7,48x8,49x7,50x8,51x8,52x7,53x7,54x8,55x7,56x8,57x7,58x7,59x8,60x7,61x8,62x7,63x7,64x8,65x10,66x6192	off_reference	188
+kezamba_water	1	1800	66	1500	9025	2645	2645	50	66	65	65	23a34df395bca651d15956f1268f23efe42e463c712aae04ce2d57a19cc17106
+kezamba_core_dry_heights	1	50x2,51x5,52x7,53x8,54x7,55x8,56x7,57x7,58x8,59x7,60x8,61x8,62x7,63x7,64x8,65x9,66x6267	off_reference	113
+kezamba_water	2	1800	66	1500	9025	2645	2645	44	66	65	65	23a34df395bca651d15956f1268f23efe42e463c712aae04ce2d57a19cc17106
+kezamba_core_dry_heights	2	44x2,45x5,46x7,47x8,48x7,49x8,50x7,51x7,52x8,53x7,54x8,55x8,56x7,57x7,58x8,59x7,60x8,61x7,62x7,63x8,64x7,65x10,66x6222	off_reference	158
+kezamba_water	42	1800	66	1500	9025	2645	2645	52	66	65	65	23a34df395bca651d15956f1268f23efe42e463c712aae04ce2d57a19cc17106
+kezamba_core_dry_heights	42	53x2,54x5,55x7,56x8,57x7,58x8,59x7,60x7,61x8,62x7,63x8,64x8,65x9,66x6289	off_reference	91
+kezamba_water	12345	1800	66	1500	9025	2645	2645	51	66	65	65	23a34df395bca651d15956f1268f23efe42e463c712aae04ce2d57a19cc17106
+kezamba_core_dry_heights	12345	55x2,56x5,57x7,58x8,59x7,60x8,61x7,62x7,63x8,64x7,65x10,66x6304	off_reference	76
+kezamba_water	999999999	1800	66	1500	9025	2645	2645	48	66	65	65	23a34df395bca651d15956f1268f23efe42e463c712aae04ce2d57a19cc17106
+kezamba_core_dry_heights	999999999	48x2,49x5,50x7,51x8,52x7,53x8,54x7,55x7,56x8,57x7,58x8,59x8,60x7,61x7,62x8,63x7,64x8,65x9,66x6252	off_reference	128
+kezamba_water_surfaces	65x23805
+kezamba_water_mask_seeds	9	mismatch	0
+kezamba_water PASS: one wet mask on all 9 seeds
