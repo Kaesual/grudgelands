@@ -260,44 +260,82 @@ return function(common)
 		local profile_by_id = maps_by_id(source.relief_profiles)
 		local station_rows = require_array(evidence, "stations", #source.route_stations)
 		require_id_coverage(station_rows, source.route_stations, "stations")
+		-- TWO KINDS OF STATION since WP13 playtest round 4, 2026-09-15: the 38
+		-- zone HUBS this rule has always described, and the 24 capital GATES on
+		-- the envelope edges that the routes now end at
+		-- (`source/simple_map.lua`, `source.capital_gates`). They are checked
+		-- apart because almost nothing about them is the same: a gate's `hub_x`
+		-- and `hub_z` are the GATE's coordinates and not its zone's hub, its id
+		-- is not `source.route_stations[zone_numeric_id]`'s, and four of them
+		-- share one zone. `station_by_zone` therefore collects hubs only, which
+		-- is what the anchor rule below wants.
 		local station_by_zone = {}
+		local gate_by_id = {}
+		for index = 1, #source.capital_gates do
+			gate_by_id[source.capital_gates[index].id] = source.capital_gates[index]
+		end
+		local gate_rows = 0
 		for index = 1, #station_rows do
 			local row = station_rows[index]
-			integer_fields(row, {"zone_numeric_id", "primary_min_above_water",
-				"primary_max_above_water", "zone_station_y", "hub_x", "hub_z",
-				"hub_target_y"}, "station")
-			local zone = source.zones[row.zone_numeric_id]
-			local station = source.route_stations[row.zone_numeric_id]
-			local profile = zone and profile_by_id[zone.primary_relief_id] or nil
-			if not zone or not station or not profile or row.id ~= station.id or
-					station.zone_numeric_id ~= row.zone_numeric_id or
-					row.primary_profile_id ~= profile.id or
-					row.primary_min_above_water ~= profile.min_above_water or
-					row.primary_max_above_water ~= profile.max_above_water or
-					row.zone_station_y ~= common.WATER_LEVEL + profile.min_above_water or
-					row.hub_x ~= zone.hub.x or row.hub_z ~= zone.hub.z or
-					type(row.hub_water) ~= "boolean" then
-				fail("station/reference rule differs at " .. tostring(row.id))
-			end
-			if station_by_zone[row.zone_numeric_id] then
-				fail("duplicate station zone " .. row.zone_numeric_id)
-			end
-			station_by_zone[row.zone_numeric_id] = row
-			if row.hub_water then
-				if row.capital_anchor_id ~= nil then
-					fail("capital hub is planned water at " .. row.id)
+			if row.kind == "gate" then
+				gate_rows = gate_rows + 1
+				integer_fields(row, {"zone_numeric_id", "zone_station_y", "hub_x",
+					"hub_z", "hub_target_y",
+					"capital_gate_owner_zone_numeric_id"}, "capital gate station")
+				local gate = gate_by_id[row.id]
+				local zone = source.zones[row.zone_numeric_id]
+				local profile = zone and profile_by_id[zone.primary_relief_id] or nil
+				if not gate or not zone or not profile or
+						gate.zone_numeric_id ~= row.zone_numeric_id or
+						row.capital_gate_side ~= gate.side or
+						row.hub_x ~= gate.position.x or row.hub_z ~= gate.position.z or
+						row.primary_profile_id ~= profile.id or
+						not source.zones[row.capital_gate_owner_zone_numeric_id] or
+						type(row.hub_water) ~= "boolean" or
+						row.hub_clearance_y ~= nil or row.capital_anchor_id ~= nil then
+					fail("capital gate station rule differs at " .. tostring(row.id))
 				end
-				common.safe_integer(row.hub_clearance_y, "station hub clearance")
-				if row.hub_target_y ~= math.max(row.zone_station_y,
-						row.hub_clearance_y + 1) then
-					fail("planned-water hub target differs at " .. row.id)
+			else
+				integer_fields(row, {"zone_numeric_id", "primary_min_above_water",
+					"primary_max_above_water", "zone_station_y", "hub_x", "hub_z",
+					"hub_target_y"}, "station")
+				local zone = source.zones[row.zone_numeric_id]
+				local station = source.route_stations[row.zone_numeric_id]
+				local profile = zone and profile_by_id[zone.primary_relief_id] or nil
+				if not zone or not station or not profile or row.kind ~= "hub" or
+						row.id ~= station.id or
+						station.zone_numeric_id ~= row.zone_numeric_id or
+						row.primary_profile_id ~= profile.id or
+						row.primary_min_above_water ~= profile.min_above_water or
+						row.primary_max_above_water ~= profile.max_above_water or
+						row.zone_station_y ~= common.WATER_LEVEL + profile.min_above_water or
+						row.hub_x ~= zone.hub.x or row.hub_z ~= zone.hub.z or
+						type(row.hub_water) ~= "boolean" then
+					fail("station/reference rule differs at " .. tostring(row.id))
 				end
-			elseif row.hub_clearance_y ~= nil then
-				fail("dry station carries a clearance datum at " .. row.id)
-			elseif row.capital_anchor_id == nil and
-					row.hub_target_y ~= row.zone_station_y then
-				fail("dry non-capital hub target differs at " .. row.id)
+				if station_by_zone[row.zone_numeric_id] then
+					fail("duplicate station zone " .. row.zone_numeric_id)
+				end
+				station_by_zone[row.zone_numeric_id] = row
+				if row.hub_water then
+					if row.capital_anchor_id ~= nil then
+						fail("capital hub is planned water at " .. row.id)
+					end
+					common.safe_integer(row.hub_clearance_y, "station hub clearance")
+					if row.hub_target_y ~= math.max(row.zone_station_y,
+							row.hub_clearance_y + 1) then
+						fail("planned-water hub target differs at " .. row.id)
+					end
+				elseif row.hub_clearance_y ~= nil then
+					fail("dry station carries a clearance datum at " .. row.id)
+				elseif row.capital_anchor_id == nil and
+						row.hub_target_y ~= row.zone_station_y then
+					fail("dry non-capital hub target differs at " .. row.id)
+				end
 			end
+		end
+		if gate_rows ~= #source.capital_gates then
+			fail("capital gate station population differs")
 		end
 
 		local anchors = require_array(evidence, "anchors", #source.anchors)

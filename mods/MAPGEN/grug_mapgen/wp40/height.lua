@@ -2564,7 +2564,15 @@ return function(dependencies)
 				nil, nil, station_lower[gate_owner], station_upper[gate_owner])
 			route_station_target[gate.id] = target
 			route_station_junction[gate.id] = record
+			-- `hub_water` is MEASURED and not assumed. No capital gate column is
+			-- planned water on any of the nine fixture seeds, but a value that is
+			-- right today by hard-coding is wrong tomorrow by construction, and
+			-- `junction_target` above would have taken the water-clearance branch
+			-- had it been.
+			local gate_water_class = classified_values(gate.position.x,
+				gate.position.z)
 			station_evidence[#source.zones + gate_index] = {id = gate.id,
+				kind = "gate",
 				zone_id = source.zones[gate.zone_numeric_id].id,
 				zone_numeric_id = gate.zone_numeric_id,
 				capital_gate_side = gate.side,
@@ -2573,7 +2581,8 @@ return function(dependencies)
 					profile_by_id[source.zones[gate.zone_numeric_id].primary_relief_id].id,
 				zone_station_y = zone_station_y[gate_owner],
 				hub_x = gate.position.x, hub_z = gate.position.z,
-				hub_target_y = target, hub_water = false}
+				hub_target_y = target,
+				hub_water = gate_water_class == "planned_water"}
 		end
 		for zone_index = 1, #source.zones do
 			local zone = source.zones[zone_index]
@@ -2615,6 +2624,7 @@ return function(dependencies)
 				station_lower[zone_index], station_upper[zone_index])
 			route_station_target[zone_index] = target
 			station_evidence[zone_index] = {id = source.route_stations[zone_index].id,
+				kind = "hub",
 				zone_id = zone.id,
 				zone_numeric_id = zone_index,
 				primary_profile_id = primary.id,
@@ -2633,10 +2643,15 @@ return function(dependencies)
 		-- registered under their id beside their zone index so that the lookup
 		-- below is one table and not two.
 		for zone_index = 1, #source.zones do
-			route_station_target[source.route_stations[zone_index].id] =
-				route_station_target[zone_index]
-			route_station_junction[source.route_stations[zone_index].id] =
-				route_station_junction[zone_index]
+			local hub = source.route_stations[zone_index]
+			-- Positional, and therefore asserted: `route_stations[zone_index]` is
+			-- that zone's hub only because the gates are appended after the hubs.
+			if hub == nil or hub.kind ~= "hub" or
+					hub.zone_numeric_id ~= zone_index then
+				fail("route station " .. zone_index .. " is not its zone's hub")
+			end
+			route_station_target[hub.id] = route_station_target[zone_index]
+			route_station_junction[hub.id] = route_station_junction[zone_index]
 		end
 
 		local paths, path_by_id = {}, {}

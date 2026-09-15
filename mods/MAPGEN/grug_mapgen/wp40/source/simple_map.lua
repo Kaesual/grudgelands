@@ -284,6 +284,14 @@ for zone_index = 1, #source.zones do
 	end
 end
 
+local function hub_station_id(zone_index)
+	local station=source.route_stations[zone_index]
+	assert(station and station.kind == "hub" and
+		station.zone_numeric_id == zone_index,
+		"WP40 route station " .. zone_index .. " is not its zone's hub")
+	return station.id
+end
+
 -- Which gate a route takes is decided by the side it approaches from, and that
 -- is read off the OTHER endpoint's hub: the twenty-four capital routes all run
 -- on one of the two axes away from the capital.
@@ -493,8 +501,12 @@ for index = 1, #route_rows do
 		corridor_width=profile.corridor_width,provisional=false,
 		curve_policy_id=source.route_curve.id,
 		pinned_point_index=pinned_point_index,
-		station_a_id=gate_a and gate_a.id or source.route_stations[row[1]].id,
-		station_b_id=gate_b and gate_b.id or source.route_stations[row[2]].id,
+		-- `route_stations[zone_index]` is that zone's HUB only because the
+		-- twenty-four gates are appended after the thirty-eight hubs. Correct
+		-- today, silently wrong the day anything inserts a station earlier, so
+		-- it is asserted and not assumed.
+		station_a_id=gate_a and gate_a.id or hub_station_id(row[1]),
+		station_b_id=gate_b and gate_b.id or hub_station_id(row[2]),
 		centreline=centreline,
 	}
 end
