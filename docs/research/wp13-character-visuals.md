@@ -385,6 +385,15 @@ reach test gives `FAIL 8`, with `place_door_far` opening a door 5.5 m away.
 
 ### Still open after this round
 
+**All four of the following were answered by playtest round 2 on the same day —
+[wp13-weapon-ladder.md](wp13-weapon-ladder.md) is the record.** The pose was
+seen in a client and re-derived for the one diagonal sprite convention the whole
+game now uses (`TILT_UP` is 0, `rot.y` carries the sprite's own 45), `SIZE` went
+from 0.22 to 0.32, and the race statures became one scalar each because a
+non-uniform parent scale shears an attached diagonal sprite. Read the list below
+as the questions, not as the current answers.
+
+
 - **The pose is derived, not seen.** Everything above is geometry; nobody in
   this lane can open a client. `TILT_UP` (15°) is the one taste value, and it is
   one constant in `wield_geometry.lua`.
