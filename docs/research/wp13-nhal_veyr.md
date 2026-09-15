@@ -82,7 +82,14 @@ candidate wall lines column by column across the wall's own thickness, plus a
 capital is on the roster, which is the only way to measure a capital that does
 not exist yet.
 
-WP40 fits Nhal Veyr's anchor at **(−1800, 106, 1500)** on the user seed and
+**WHAT THE THREE NAMED SEEDS ARE CALLED HERE**, because an earlier draft of this
+record used "the user seed" for two of them. `531802985935182545` is **the gate
+seed** (`common.md`'s first gate seed, the one this package's single-pass proofs
+use); `8675309` is **the boundary seed** (the second gate seed); and
+`15912857179583385436` is **the user's world seed**. The other six of the nine
+are named by their number.
+
+WP40 fits Nhal Veyr's anchor at **(−1800, 106, 1500)** on the gate seed and
 **(−1800, 100, 1500)** on the boundary seed.
 
 | seed | line | wet columns | worst step | low | high | range |
@@ -119,8 +126,10 @@ Read out of that:
 lines is ground the module's rules were written for, and one of its five
 questions is the one the wave-2 review asked every walled capital for: **where
 an x-run's walk arrives at a z-run's CORNER TURRET, how far does it step?** The
-turret's own rampart opening is three courses, so a step of three or less is
-walked through it and anything more is a break in the circuit.
+turret's own rampart opening is three courses, so a step of **two or less** is
+walked through a three-course opening and anything more is a break in the
+circuit. That is what the predicate asserts: it fails at `step >= 3`
+(`capital_wall.lua`'s `CORNER_OPENING`), not at more than three.
 
 `wall_all.sh` runs the predicate over the nine seeds as eight consecutive
 pairs, 64 corner measurements in all:
@@ -129,10 +138,13 @@ pairs, 64 corner measurements in all:
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | corners | 16 | 12 | 12 | 4 | 4 | 9 | 5 | 2 |
 
-**Twenty of the sixty-four step more than the undead terrace step of three, and
-the worst steps nine nodes.** On the two gate seeds alone, two of the four
-corners break: `wall_east`/`wall_north` steps 7 on the user seed and 5 on the
-boundary seed. The rampart of this capital is not a continuous circuit.
+**TWENTY-FOUR of the sixty-four fail the predicate** — every step of 3 or more,
+which is 4 + 4 + 9 + 5 + 2 = 24 — **and the worst steps nine nodes.** (The first
+draft of this section said twenty; it had counted only the steps ABOVE three and
+so undercounted its own re-run by four. The re-run itself reports 24 findings.)
+On the two gate seeds alone, two of the four corners break:
+`wall_east`/`wall_north` steps 7 on the gate seed and 5 on the boundary seed.
+The rampart of this capital is not a continuous circuit.
 
 **It is the module's mechanism and this capital's ground.** Measured the same
 way on the same two gate seeds (`wall-across-capitals.txt`):
@@ -261,7 +273,9 @@ and the walker share is the sockets contract's section 8.3 arithmetic,
 against 52 work sockets is comfortably the "at least one idle spawn socket per
 work socket" the contract asks for.
 
-**The activities placed**, all fifteen counted by the KAT:
+**The activities placed.** The KAT counts all FIFTEEN activity names the socket
+contract knows and prints every one of them, which is why three zeroes stand in
+the line below; TWELVE of the fifteen are actually placed:
 
 ```
 brew=3 carve=5 chop=1 forage=2 mine=2 mourn=11 pray=9
@@ -375,9 +389,9 @@ the real geometry, plus three kinds of control.
 | Kind | chunks | steady mean | worst | best |
 | --- | --- | --- | --- | --- |
 | warm-up (not counted) | 1 | — | ~25 s | — |
-| **Nhal Veyr**, user/gate seed 531802985935182545 | 80 | **0.57 s** | 1.38 s | 0.12 s |
-| **Nhal Veyr**, boundary seed 8675309 | 69 | **0.81 s** | 1.33 s | 0.10 s |
-| **Nhal Veyr**, the user's world seed | 73 | **0.63 s** | 1.40 s | 0.10 s |
+| **Nhal Veyr**, the gate seed 531802985935182545 | 80 | **0.57 s** | 1.38 s | 0.12 s |
+| **Nhal Veyr**, the boundary seed 8675309 | 69 | **0.81 s** | 1.33 s | 0.10 s |
+| **Nhal Veyr**, the user's world seed 15912857179583385436 | 73 | **0.63 s** | 1.40 s | 0.10 s |
 | Lethariel (a capital with no WP13 cells) | 8 | 2.44 / 2.77 / 2.57 s | 14.6 / 17.3 / 16.0 s | — |
 | open land and the Dawnmere start | 3 | 0.51 / 0.42 / 0.50 s | 1.01 / 0.83 / 0.99 s | — |
 
@@ -392,17 +406,56 @@ more than 2× the ~0.5 s Dawnmere chunk": 0.57 – 0.81 s.
 512 envelope touches every mapchunk on the ring, and four districts of thirteen
 plots touch most of the rest.
 
-**NO CAUSEWAY PARAPET, and that is measured.** Dur Brannoc has one because
-WP40's blend from its flat civic core to the granite terraces falls 44 nodes
-over some forty columns — faster than a road's one-Lipschitz envelope may
-descend — so its east avenue leaves the ground on an eight-to-ten-node
-embankment with nothing at its edge. The undead blend is gentler: the ground
-under the east avenue is 106 at x = 48 and 100 at x = 72, a quarter of a node
-per column against a rate the road can follow exactly. Read back out of the
-FINISHED MAP (`nhal_veyr/embankment.py` over the avenue dump), **every one of
-the 602 carriageway columns outside the core is a single course**: this road
-never leaves its own ground, so there is nothing to rail. The rule Dur Brannoc
-wrote stays available to whoever needs it; this capital does not.
+**THE NORTH AVENUE DID LEAVE ITS GROUND, and the first draft of this section
+said otherwise.** What that draft claimed — "no causeway parapet, and that is
+measured" — was measured on the EAST avenue only, and only out to column 240,
+by the span of paving names in the finished map. It is wrong about the capital.
+The independent review of 2026-09-16 found the north avenue standing 4 to 7
+courses above its ground at the gate point on the gate seed and 6 to 10 on seed
+12345, with nothing at its edge, on all nine seeds.
+
+The reason is `avenue.lua`'s own contract and not a bug in it: a road walks the
+ONE-LIPSCHITZ UPPER ENVELOPE of the ground, so where the ground falls faster
+than a node a column the road cannot follow it down. Nhal Veyr's north centre
+line falls 1.5 to 2.0 nodes a column from z = 232 to z = 261 — the east, south
+and west lines fall 0 to 3 nodes in total and ride their own ground the whole
+way, which is what the first draft saw and generalised from.
+
+The fix is in this capital and not in Lane R's module: `gate_road` in
+`nhal_veyr.lua` hands `avenue.run` the free surface CAPPED by a cone of slope
+one rising back from the free height at the gate point, so the envelope the road
+walks arrives at the gate at the free terrain and steps at most a node a column
+the whole way down; where the natural ground then stands above the road the
+piece cuts it to air, and a kerb course of dungeon stone rails the two verge
+lanes wherever the carriageway's fill reaches three courses (Dur Brannoc's
+threshold). Section 7 of the KAT holds the mechanism, including the proof that a
+mapchunk piece caps exactly as the whole run does.
+
+**ALL FOUR GATES ON ALL NINE SEEDS** (`nhal_veyr_plots.lua`'s gate section,
+`lot-legality.txt`). `gate_y` is the free terrain at the gate point; `step` is
+how far the road's top course stands from it there; `fill` and `cut` are the
+deepest course count under and above the carriageway; `rail` is the number of
+railed kerb columns.
+
+| seed | south gate_y / step / fill / cut / rail | north | west | east |
+| --- | --- | --- | --- | --- |
+| 531802985935182545 | 97 / 0 / 2 / 0 / 0 | 94 / 0 / **6** / 5 / **8** | 109 / 0 / 1 / 0 / 0 | 95 / 0 / 2 / 0 / 0 |
+| 8675309 | 76 / 0 / 2 / 0 / 0 | 85 / 0 / **5** / 3 / **5** | 102 / 0 / 2 / 0 / 0 | 83 / 0 / 2 / 2 / 0 |
+| 15912857179583385436 | 110 / 0 / 2 / 0 / 0 | 72 / 0 / **4** / 1 / **5** | 108 / 0 / 2 / 0 / 0 | 89 / 0 / 2 / 0 / 0 |
+| 0 | 99 / 0 / 2 / 0 / 0 | 63 / 0 / **3** / 1 / **2** | 94 / 0 / 2 / 0 / 0 | 111 / 0 / 2 / 0 / 0 |
+| 1 | 118 / 0 / 2 / 0 / 0 | 78 / 0 / **5** / 1 / **5** | 104 / 0 / 2 / 0 / 0 | 114 / 0 / 2 / 0 / 0 |
+| 2 | 102 / 0 / 2 / 0 / 0 | 69 / 0 / **5** / 3 / **5** | 86 / 0 / **3** / 0 / **1** | 102 / 0 / 1 / 0 / 0 |
+| 42 | 98 / 0 / 2 / 0 / 0 | 77 / 0 / **4** / 2 / **5** | 92 / 0 / 1 / 0 / 0 | 105 / 0 / 2 / 0 / 0 |
+| 12345 | 103 / 0 / 1 / 0 / 0 | 105 / 0 / **7** / 7 / **8** | 116 / 0 / 2 / 2 / 0 | 126 / 0 / 2 / 0 / 0 |
+| 999999999 | 84 / 0 / 2 / 0 / 0 | 67 / 0 / **3** / 1 / **3** | 90 / 0 / 1 / 0 / 0 | 99 / 0 / 1 / 0 / 0 |
+
+**The step at the gate point is 0 in all thirty-six.** The road meets Lane R's
+route at exactly the height the route ends at, everywhere. Fill of 1 or 2 is
+the road's own two-course bed on its own ground and carries no rail, which is
+the same threshold Dur Brannoc uses; every row whose fill reaches three is
+railed, and the two that need it most — the north gate on the gate seed and on
+seed 12345 — carry rails the whole width of the descent. Nothing floats: the
+predicate checks column by column that no carriageway cell has air under it.
 
 ### (e) Engine
 
@@ -539,9 +592,9 @@ And one the SEAM caught, which is the one worth the most:
 ## 8. Open points
 
 1. **THE CURTAIN WALL'S CORNERS BREAK, and the fix is in `wall.lua`.** Section
-   3a: twenty of sixty-four corner measurements over the nine seeds step more
-   than the undead terrace step of three, and the worst steps nine nodes, so the
-   rampart is not a continuous circuit. The mechanism is the module's -- two
+   3a: twenty-four of sixty-four corner measurements over the nine seeds step
+   three nodes or more through a three-course opening, and the worst steps nine
+   nodes, so the rampart is not a continuous circuit. The mechanism is the module's -- two
    perpendicular one-Lipschitz envelopes meeting at a corner, each smoothed over
    its own axis -- and the reason it shows here and not at Dur Brannoc is this
    capital's ground, which ranges 47 to 52 nodes along a wall line against Dur

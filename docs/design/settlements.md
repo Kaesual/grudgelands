@@ -318,10 +318,11 @@ unchanged.
 It is also the first capital to place the WAVE-2 activities of the NPC socket
 contract: its residents mourn at grave markers, pray at candles, tend the
 blight that grows over the graves, carve bone, brew wax, mine a quarry face,
-spar in the drill yards and forage the vines on a yard wall. Two of its six
-profession vendors — the embalmer and the herbalist — have no trader entity
-yet; the socket stands empty and the server logs one line, which is what the
-socket contract says an unregistered vendor kind does.
+spar in the drill yards and forage the vines on a yard wall. All six of its
+profession vendors stand and trade: the embalmer and the herbalist, which the
+first draft of this section recorded as having no entity, were registered with
+the other five wave-2 kinds (`grug_traders/vendors.lua`, `stock.lua`), and the
+embalmer's shelf is the undead capital's own trade.
 
 Shipped behaviour of that first roster: each start's eleven NPCs are placed once
 its area is prepared at server start, from the sockets alone, and stay for the

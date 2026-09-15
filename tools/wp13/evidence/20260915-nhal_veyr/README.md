@@ -24,7 +24,7 @@ Tree: branch `wp13-w2-nhal-veyr`, rebased onto `main` at `c8050057`.
 | `surface/audit-<seed>.txt` | the seam's own load-time `audit_terrain` findings for every settlement on that seed, which is the authority the offline predicate is a pre-flight for |
 | `full_runs.sh`, `nhal_veyr/probe-<seed>.txt` | the engine pass: per-mapchunk timings by kind, the socket inventory, the loop inventory, the dump counts and digests |
 | `nhal_veyr/npcs-<seed>.txt` | every placement line of that boot, and the roster summary |
-| `nhal_veyr/embankment.py` / `embankment.txt` | how high the avenue stands above its own ground as BUILT: every carriageway column outside the core is a single course, which is why this capital needs no causeway parapet |
+| `nhal_veyr/approach.py` / `approach.txt` | how high the avenue stands above its own ground AS BUILT, on the steepest of the four axes and out to the gate point at 261 — the span of every cell in a carriageway column, the road top against the FREE TERRAIN at the gate, the rail, and a hole check. It replaces `embankment.py`, which read the east avenue only, clipped at 240, and counted paving courses instead of fill; the review of 2026-09-16 was right that it could not see the case it was quoted for |
 | `nhal_veyr/errors.txt` | the error-line inventory of the three full passes |
 | `nhal_veyr/harness.sha256` | the probe and runner bytes those passes ran |
 | `errors.sh` | what an engine pass of this capital may log: nothing. It allowed two until the rebase onto Lane N's wave-2 vendor entities (`c8050057`) |
@@ -64,9 +64,11 @@ bash tools/wp13/evidence/20260915-nhal_veyr/renders.sh
 
 `wall-legality.txt`. `tools/wp13/capital_wall.lua` over the nine seeds says the
 ground under all four curtain lines is dry and never steps more than a terrace
-— and that **the walk BREAKS at the corners**: twenty of sixty-four corner
-measurements step more than the undead terrace step of three and the worst
-steps nine nodes, where a corner turret's rampart opening is three courses.
+— and that **the walk BREAKS at the corners**: twenty-four of sixty-four corner
+measurements step three nodes or more, which is what the predicate fails at
+(`CORNER_OPENING = 3`: a step of two or less is what a three-course opening
+walks), and the worst steps nine nodes. The run reports 24 findings; an earlier
+draft of this line said twenty, having counted only the steps above three.
 `wall-across-capitals.txt` is the same predicate on Dur Brannoc and Highcourt
 over the two gate seeds, which is what says the mechanism is `wall.lua`'s and
 the severity is this capital's ground. The record's open point 1 carries the
