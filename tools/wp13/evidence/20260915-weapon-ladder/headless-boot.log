@@ -1,0 +1,158 @@
+
+
+-------------
+  Separator
+-------------
+
+WARNING[Main]: /!\ You are using the old mod storage files backend. This backend is deprecated and may be removed in a future release /!\
+WARNING[Main]: Switching to SQLite3 is advised, please read https://docs.luanti.org/for-server-hosts/database-backends.
+ACTION[Main]: [grug_materials] 12 tools completing the six-tier pick/axe/shovel ladder
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:pick_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:shovel_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:axe_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_bronze'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sword_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copper_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tin_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronze_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steel_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:gold_ingot'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:goldblock'])
+WARNING[Main]: No craft recipe known for output 'default:stone_with_mese'
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_crystal_fragment'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:meselamp'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_acacia_wood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_junglewood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_pine_wood'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:mese_post_light_aspen_wood'])
+WARNING[Main]: No craft recipe known for output 'default:stone_with_diamond'
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:stone_with_diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamond'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:diamondblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:sign_wall_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['default:ladder_steel'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_steelblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_tinblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_copperblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_bronzeblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_inner_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:stair_outer_goldblock'])
+WARNING[Main]: No craft recipe matches input (type: fuel, items: ['stairs:slab_goldblock'])
+ACTION[Main]: [grug_gear] 6 bracket catalogs: 24 weapons + 48 armor pieces
+ACTION[Main]: [grug_materials] registry audit passed: 6 tiers, 15 resources, 12 processed forms, 6 race regions
+ACTION[Main]: [grug_visuals] 48 armor pieces indexed for overlays, 2 art lines x 4 slots
+ACTION[Main]: [grug_inventory] starter weapons: mage=grug_gear:staff_wood (2H), priest=grug_gear:staff_wood (2H), warrior=default:sword_stone
+ACTION[Main]: [probe] weapons T1: Bronze Sword [grug_gear_item_sword_bronze.png], Bronze Dagger [grug_gear_item_dagger_bronze.png], Bronze Greataxe [grug_gear_item_greataxe_bronze.png], Bronze Staff [grug_gear_item_staff_bronze.png]
+ACTION[Main]: [probe] weapons T2: Iron Sword [grug_gear_item_sword_iron.png], Iron Dagger [grug_gear_item_dagger_iron.png], Iron Greataxe [grug_gear_item_greataxe_iron.png], Iron Staff [grug_gear_item_staff_iron.png]
+ACTION[Main]: [probe] weapons T3: Steel Sword [grug_gear_item_sword_steel.png], Steel Dagger [grug_gear_item_dagger_steel.png], Steel Greataxe [grug_gear_item_greataxe_steel.png], Steel Staff [grug_gear_item_staff_steel.png]
+ACTION[Main]: [probe] weapons T4: Silversteel Sword [grug_gear_item_sword_silversteel.png], Silversteel Dagger [grug_gear_item_dagger_silversteel.png], Silversteel Greataxe [grug_gear_item_greataxe_silversteel.png], Silversteel Staff [grug_gear_item_staff_silversteel.png]
+ACTION[Main]: [probe] weapons T5: Embersteel Sword [grug_gear_item_sword_embersteel.png], Embersteel Dagger [grug_gear_item_dagger_embersteel.png], Embersteel Greataxe [grug_gear_item_greataxe_embersteel.png], Embersteel Staff [grug_gear_item_staff_embersteel.png]
+ACTION[Main]: [probe] weapons T6: Abyssal Steel Sword [grug_gear_item_sword_abyssal_steel.png], Abyssal Steel Dagger [grug_gear_item_dagger_abyssal_steel.png], Abyssal Steel Greataxe [grug_gear_item_greataxe_abyssal_steel.png], Abyssal Steel Staff [grug_gear_item_staff_abyssal_steel.png]
+ACTION[Main]: [probe] starter: Wooden Staff [grug_gear_item_staff_wood.png], hands 2
+ACTION[Main]: [probe] tools: default:pick_bronze(T1) default:axe_bronze default:shovel_bronze grug_materials:pick_iron(T2) grug_materials:axe_iron grug_materials:shovel_iron default:pick_steel(T3) default:axe_steel default:shovel_steel grug_materials:pick_silversteel(T4) grug_materials:axe_silversteel grug_materials:shovel_silversteel grug_materials:pick_embersteel(T5) grug_materials:axe_embersteel grug_materials:shovel_embersteel grug_materials:pick_abyssal_steel(T6) grug_materials:axe_abyssal_steel grug_materials:shovel_abyssal_steel
+ACTION[Main]: [probe] retired: default:sword_bronze/steel gone, wood/stone kept
+ACTION[Main]: [probe] starter weapons: warrior=default:sword_stone mage=grug_gear:staff_wood priest=grug_gear:staff_wood
+ACTION[Main]: [probe] wield pos 0.000,4.200,2.602 rot 90,-45,90 size 0.320
+ACTION[Main]: [probe] wield dwarf stature 0.90 -> size 0.3556 (absolute 0.3200)
+ACTION[Main]: [probe] wield human stature 1.00 -> size 0.3200 (absolute 0.3200)
+ACTION[Main]: [probe] wield troll stature 1.12 -> size 0.2857 (absolute 0.3200)
+ACTION[Main]: [probe] PROBE PASS: no missing texture, no stray registration
+ACTION[Main]: [grug_traders] human capital vendors come from the sockets of highcourt
+ACTION[Main]: [grug_traders] drop audit: 1 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit); their items are audited from the hardcoded FUNCTION_DROPS list
+ACTION[Main]: World at [/tmp/grudgelands-headless.ddtvwk/world]
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31017.
+ACTION[Server]: [grug_core] start preload: emerging 6 start areas (128 x 128 nodes each, 2 at a time)
+ACTION[Emerge-0]: [grug_core] start area ready: dwarf (1/6, 13.2 s)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket gate_west (-1804,22,-2491)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket gate_east (-1796,22,-2491)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket watch_gate (-1800,22,-2498)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_traders:vendor_race_dwarf placed at socket plaza_vendor (-1793,22,-2555)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_west_door (-1816,22,-2546)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_plaza_bench (-1793,22,-2549)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_workyard (-1819,22,-2533)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_forge_door (-1798,22,-2560)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:elder_dwarf placed at socket hall_quest (-1828,22,-2524)
+ACTION[Server]: [grug_mobs] start npcs dwarf hearthpine: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0
+ACTION[Emerge-0]: [grug_core] start area ready: human (2/6, 20.5 s)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket gate_west (-4,25,-2493)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket gate_east (4,25,-2493)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket watch_gate (0,25,-2498)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_traders:vendor_race_human placed at socket green_vendor (6,25,-2554)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_cottage_door (10,25,-2566)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_green_bench (-6,25,-2543)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_barn (-19,25,-2550)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_smithy (22,25,-2551)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:elder_human placed at socket hall_quest (-11,25,-2542)
+ACTION[Server]: [grug_mobs] start npcs human dawnmere: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0
+ACTION[Emerge-0]: [grug_core] start area ready: elf (3/6, 25.5 s)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket gate_west (1796,30,-2493)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket gate_east (1804,30,-2493)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket watch_gate (1800,30,-2498)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_traders:vendor_race_elf placed at socket court_vendor (1807,30,-2554)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_shrine_door (1779,30,-2534)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_court_bench (1793,30,-2545)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_bowyer (1828,30,-2551)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_market (1769,30,-2550)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:elder_elf placed at socket hall_quest (1820,30,-2536)
+ACTION[Server]: [grug_mobs] start npcs elf silverleaf: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0
+ACTION[Emerge-0]: [grug_core] start area ready: undead (4/6, 32.0 s)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket gate_west (-1804,60,2494)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket gate_east (-1796,60,2494)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket watch_gate (-1800,60,2498)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_traders:vendor_race_undead placed at socket court_vendor (-1793,60,2545)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_warden_door (-1813,60,2582)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_court_settle (-1810,60,2554)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_bone_works (-1778,60,2549)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_gate_brazier (-1805,60,2493)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:elder_undead placed at socket hall_quest (-1798,60,2560)
+ACTION[Server]: [grug_mobs] start npcs undead stillgrave: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0
+ACTION[Emerge-0]: [grug_core] start area ready: orc (5/6, 40.2 s)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket gate_west (-4,34,2499)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket gate_east (4,34,2499)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket watch_gate (0,34,2510)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_traders:vendor_race_orc placed at socket yard_vendor (8,34,2545)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_tusk_door (-11,34,2528)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_council_seat (-3,34,2558)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_beast_pen (-25,34,2548)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_armoury_forge (20,34,2548)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:elder_orc placed at socket hall_quest (3,34,2562)
+ACTION[Server]: [grug_mobs] start npcs orc sunscar: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0
+ACTION[Emerge-0]: [grug_core] start area ready: troll (6/6, 44.5 s)
+ACTION[Emerge-0]: [grug_core] all 6 start areas ready after 44.5 s
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket gate_west (1796,13,2505)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket gate_east (1804,13,2505)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket watch_gate (1800,13,2514)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_traders:vendor_race_troll placed at socket clearing_vendor (1807,13,2546)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_lodge_door (1798,13,2567)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_terrace_settle (1788,13,2577)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_drying_shed (1783,13,2574)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_smoker (1813,13,2570)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:elder_troll placed at socket hall_quest (1803,13,2567)
+ACTION[Server]: [grug_mobs] start npcs troll kapok: guards 3/3 flair 4/4 vendor 1/1 quest 1/1 new 9 pending 0
+ACTION[Main]: Server: Shutting down

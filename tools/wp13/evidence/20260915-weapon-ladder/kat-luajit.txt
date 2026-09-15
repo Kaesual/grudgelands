@@ -1,0 +1,135 @@
+wp13_gear_metals	Bronze,Iron,Steel,Silversteel,Embersteel,Abyssal Steel
+wp13_gear_cloth	Patch,Woven,Heavy,Silkweave,Silk,Stormweave
+wp13_gear_leather	Light,Cured,Heavy,Scaled,Sleek,Nightscale
+wp13_gear_item	grug_gear:sword_bronze	Bronze Sword	3	5
+wp13_gear_item	grug_gear:dagger_bronze	Bronze Dagger	3	4
+wp13_gear_item	grug_gear:greataxe_bronze	Bronze Greataxe	3	8
+wp13_gear_item	grug_gear:staff_bronze	Bronze Staff	3	6
+wp13_gear_item	grug_gear:head_metal_bronze	Bronze Helm	3	2
+wp13_gear_item	grug_gear:chest_metal_bronze	Bronze Chestplate	3	3
+wp13_gear_item	grug_gear:legs_metal_bronze	Bronze Greaves	3	2
+wp13_gear_item	grug_gear:feet_metal_bronze	Bronze Sabatons	3	1
+wp13_gear_item	grug_gear:head_cloth_patch	Patch Cowl	3	1
+wp13_gear_item	grug_gear:chest_cloth_patch	Patch Robe	3	1
+wp13_gear_item	grug_gear:legs_cloth_patch	Patch Leggings	3	1
+wp13_gear_item	grug_gear:feet_cloth_patch	Patch Slippers	3	1
+wp13_gear_item	grug_gear:sword_iron	Iron Sword	10	8
+wp13_gear_item	grug_gear:dagger_iron	Iron Dagger	10	6
+wp13_gear_item	grug_gear:greataxe_iron	Iron Greataxe	10	12
+wp13_gear_item	grug_gear:staff_iron	Iron Staff	10	10
+wp13_gear_item	grug_gear:head_metal_iron	Iron Helm	10	3
+wp13_gear_item	grug_gear:chest_metal_iron	Iron Chestplate	10	5
+wp13_gear_item	grug_gear:legs_metal_iron	Iron Greaves	10	4
+wp13_gear_item	grug_gear:feet_metal_iron	Iron Sabatons	10	2
+wp13_gear_item	grug_gear:head_cloth_woven	Woven Cowl	10	1
+wp13_gear_item	grug_gear:chest_cloth_woven	Woven Robe	10	2
+wp13_gear_item	grug_gear:legs_cloth_woven	Woven Leggings	10	1
+wp13_gear_item	grug_gear:feet_cloth_woven	Woven Slippers	10	1
+wp13_gear_item	grug_gear:sword_steel	Steel Sword	20	11
+wp13_gear_item	grug_gear:dagger_steel	Steel Dagger	20	8
+wp13_gear_item	grug_gear:greataxe_steel	Steel Greataxe	20	17
+wp13_gear_item	grug_gear:staff_steel	Steel Staff	20	13
+wp13_gear_item	grug_gear:head_metal_steel	Steel Helm	20	5
+wp13_gear_item	grug_gear:chest_metal_steel	Steel Chestplate	20	8
+wp13_gear_item	grug_gear:legs_metal_steel	Steel Greaves	20	6
+wp13_gear_item	grug_gear:feet_metal_steel	Steel Sabatons	20	4
+wp13_gear_item	grug_gear:head_cloth_heavy	Heavy Cowl	20	1
+wp13_gear_item	grug_gear:chest_cloth_heavy	Heavy Robe	20	2
+wp13_gear_item	grug_gear:legs_cloth_heavy	Heavy Leggings	20	2
+wp13_gear_item	grug_gear:feet_cloth_heavy	Heavy Slippers	20	1
+wp13_gear_item	grug_gear:sword_silversteel	Silversteel Sword	30	15
+wp13_gear_item	grug_gear:dagger_silversteel	Silversteel Dagger	30	11
+wp13_gear_item	grug_gear:greataxe_silversteel	Silversteel Greataxe	30	23
+wp13_gear_item	grug_gear:staff_silversteel	Silversteel Staff	30	18
+wp13_gear_item	grug_gear:head_metal_silversteel	Silversteel Helm	30	7
+wp13_gear_item	grug_gear:chest_metal_silversteel	Silversteel Chestplate	30	11
+wp13_gear_item	grug_gear:legs_metal_silversteel	Silversteel Greaves	30	9
+wp13_gear_item	grug_gear:feet_metal_silversteel	Silversteel Sabatons	30	5
+wp13_gear_item	grug_gear:head_cloth_silkweave	Silkweave Cowl	30	2
+wp13_gear_item	grug_gear:chest_cloth_silkweave	Silkweave Robe	30	3
+wp13_gear_item	grug_gear:legs_cloth_silkweave	Silkweave Leggings	30	2
+wp13_gear_item	grug_gear:feet_cloth_silkweave	Silkweave Slippers	30	1
+wp13_gear_item	grug_gear:sword_embersteel	Embersteel Sword	40	18
+wp13_gear_item	grug_gear:dagger_embersteel	Embersteel Dagger	40	13
+wp13_gear_item	grug_gear:greataxe_embersteel	Embersteel Greataxe	40	27
+wp13_gear_item	grug_gear:staff_embersteel	Embersteel Staff	40	22
+wp13_gear_item	grug_gear:head_metal_embersteel	Embersteel Helm	40	9
+wp13_gear_item	grug_gear:chest_metal_embersteel	Embersteel Chestplate	40	14
+wp13_gear_item	grug_gear:legs_metal_embersteel	Embersteel Greaves	40	11
+wp13_gear_item	grug_gear:feet_metal_embersteel	Embersteel Sabatons	40	6
+wp13_gear_item	grug_gear:head_cloth_silk	Silk Cowl	40	2
+wp13_gear_item	grug_gear:chest_cloth_silk	Silk Robe	40	4
+wp13_gear_item	grug_gear:legs_cloth_silk	Silk Leggings	40	3
+wp13_gear_item	grug_gear:feet_cloth_silk	Silk Slippers	40	2
+wp13_gear_item	grug_gear:sword_abyssal_steel	Abyssal Steel Sword	50	22
+wp13_gear_item	grug_gear:dagger_abyssal_steel	Abyssal Steel Dagger	50	15
+wp13_gear_item	grug_gear:greataxe_abyssal_steel	Abyssal Steel Greataxe	50	33
+wp13_gear_item	grug_gear:staff_abyssal_steel	Abyssal Steel Staff	50	26
+wp13_gear_item	grug_gear:head_metal_abyssal_steel	Abyssal Steel Helm	50	11
+wp13_gear_item	grug_gear:chest_metal_abyssal_steel	Abyssal Steel Chestplate	50	17
+wp13_gear_item	grug_gear:legs_metal_abyssal_steel	Abyssal Steel Greaves	50	13
+wp13_gear_item	grug_gear:feet_metal_abyssal_steel	Abyssal Steel Sabatons	50	8
+wp13_gear_item	grug_gear:head_cloth_stormweave	Stormweave Cowl	50	3
+wp13_gear_item	grug_gear:chest_cloth_stormweave	Stormweave Robe	50	5
+wp13_gear_item	grug_gear:legs_cloth_stormweave	Stormweave Leggings	50	4
+wp13_gear_item	grug_gear:feet_cloth_stormweave	Stormweave Slippers	50	2
+wp13_gear_count	72
+wp13_gear_starter	grug_gear:staff_wood	Wooden Staff	default:sword_stone
+wp13_gear_adjectives	0
+wp13_gear_duplicates	0
+wp13_gear_vendored	default:axe_bronze,default:axe_steel,default:axe_stone,default:axe_wood,default:sword_stone,default:sword_wood	not	default:sword_bronze,default:sword_steel
+wp13_gear_prices	3:50/40/25 10:70/56/35 20:98/78/49 30:137/110/69 40:192/154/96 50:269/215/134
+wp13_gear_result	PASS	0
+wp13_wield_bone	Arm_Right	3.150,11.550,0.000	x->-1.000,0.000,0.000	y->0.000,-1.000,0.000	z->0.000,0.000,1.000
+wp13_wield_arm	model_y	6.300..12.600	reach	5.250	fist_centre_bone_y	4.200
+wp13_wield_face	uv	8..16x8..16	normal	0.000,0.000,1.000
+wp13_wield_numbers	pos	0.000,4.200,2.602	rot	90.000,-45.000,90.000	size	0.320,0.320
+wp13_wield_hanging	hand	3.150,7.350,0.000	hilt-hand	0.000,0.000,-1.923	grip-hand	0.000,0.000,0.000	tip-hand	0.000,0.000,7.128	blade	0.000,0.000,1.000	flat	-1.000,0.000,0.000
+wp13_wield_raised90	hand	3.150,11.550,4.200	hilt-hand	0.000,-1.923,0.000	grip-hand	0.000,0.000,0.000	tip-hand	0.000,7.128,0.000	blade	0.000,1.000,0.000	flat	-1.000,0.000,0.000
+wp13_wield_stature_0.90	hand	3.150,7.350,0.000	hilt-hand	0.000,0.000,-1.923	grip-hand	0.000,0.000,0.000	tip-hand	0.000,0.000,7.128	blade	0.000,0.000,1.000	flat	-1.000,0.000,0.000
+wp13_wield_stature_1.12	hand	3.150,7.350,0.000	hilt-hand	0.000,0.000,-1.923	grip-hand	0.000,0.000,0.000	tip-hand	0.000,0.000,7.128	blade	0.000,0.000,1.000	flat	-1.000,0.000,0.000
+wp13_wield_uncompensated_0.90	hand	3.150,7.350,0.000	hilt-hand	0.000,0.000,-1.731	grip-hand	0.000,0.000,0.000	tip-hand	0.000,0.000,6.415	blade	0.000,0.000,1.000	flat	-1.000,0.000,0.000
+wp13_wield_old_convention	hand	3.150,7.350,0.000	hilt-hand	0.000,3.200,-0.598	grip-hand	0.000,1.840,0.762	tip-hand	0.000,-3.200,5.802	blade	0.000,-0.707,0.707	flat	-1.000,0.000,0.000
+wp13_wield_photographed	hand	3.150,7.350,0.000	hilt-hand	0.000,-1.300,-3.700	grip-hand	0.000,-1.300,-3.012	tip-hand	0.000,-1.300,0.700	blade	0.000,0.000,1.000	flat	0.000,-1.000,0.000
+wp13_wield_result	PASS	0
+wp13_cv_inputs	6	2	4	6	dwarf,elf,human,orc,troll,undead	cloth,metal	head,chest,legs,feet	#8a7f6a,#a89478,#c0b088,#d8cc9a,#e8dcb0,#ffffff
+wp13_cv_index	48	cloth=24,metal=24	chest=12,feet=12,head=12,legs=12
+wp13_cv_roundtrip	grug_visuals_skin_dwarf.png^(grug_visuals_metal_head.png^[multiply:#c0b088)^(grug_visuals_metal_chest.png^[multiply:#c0b088)^(grug_visuals_metal_legs.png^[multiply:#c0b088)^(grug_visuals_metal_feet.png^[multiply:#c0b088)
+wp13_cv_matrix	366	366	365	0760993141
+wp13_cv_shapecheck	4	[multiply outside a group;unbalanced '(';unbalanced ')';trailing backslash
+wp13_cv_textures	14	0	grug_visuals_cloth_chest.png,grug_visuals_cloth_feet.png,grug_visuals_cloth_head.png,grug_visuals_cloth_legs.png,grug_visuals_metal_chest.png,grug_visuals_metal_feet.png,grug_visuals_metal_head.png,grug_visuals_metal_legs.png,grug_visuals_skin_dwarf.png,grug_visuals_skin_elf.png,grug_visuals_skin_human.png,grug_visuals_skin_orc.png,grug_visuals_skin_troll.png,grug_visuals_skin_undead.png
+wp13_cv_stature	0.85	1.12	dwarf=0.90/0.90/0.90,elf=1.06/1.06/1.06,human=1.00/1.00/1.00,orc=1.08/1.08/1.08,troll=1.12/1.12/1.12,undead=0.94/0.94/0.94
+wp13_cv_fallback	human;grug_visuals_skin_human.png;-;-;-;-;-	1	grug_mobs_mirefolk.png	nil
+wp13_cv_weapon	nil	grug_gear:sword_bronze	grug_gear:sword_abyssal_steel
+wp13_cv_result	PASS	0
+wp13_order_graph	31	0	27	28	29	31
+wp13_order_callbacks	grug_visuals,grug_inventory_page
+wp13_order_result	PASS	0
+wp13_rmb_registry	780	interactive	40
+wp13_rmb_blocking	doors:door_wood_a	oddly_breakable_by_hand	swing_on_use	nil	cast_on_use	function
+wp13_rmb_case	swing	on_place	place_door	pointed	node	node_dist	1.5	rightclick	1	casts	0	returned	grug_abilities:kat_swing	eye_calls	1	ray_reach	nil
+wp13_rmb_case	swing	on_place	place_plain	pointed	node	node_dist	1.5	rightclick	0	casts	0	returned	grug_abilities:kat_swing	eye_calls	1	ray_reach	nil
+wp13_rmb_case	swing	on_place	place_door_sneak	pointed	node	node_dist	1.5	rightclick	0	casts	0	returned	grug_abilities:kat_swing	eye_calls	0	ray_reach	nil
+wp13_rmb_case	swing	on_place	place_door_far	pointed	node	node_dist	5.5	rightclick	0	casts	0	returned	grug_abilities:kat_swing	eye_calls	1	ray_reach	nil
+wp13_rmb_case	swing	on_secondary_use	activate_door	pointed	nothing	node_dist	nil	rightclick	1	casts	0	returned	grug_abilities:kat_swing	eye_calls	1	ray_reach	4
+wp13_rmb_case	swing	on_secondary_use	activate_plain	pointed	nothing	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_swing	eye_calls	1	ray_reach	4
+wp13_rmb_case	swing	on_secondary_use	activate_door_sneak	pointed	nothing	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_swing	eye_calls	0	ray_reach	nil
+wp13_rmb_case	swing	on_secondary_use	activate_empty	pointed	nothing	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_swing	eye_calls	1	ray_reach	4
+wp13_rmb_case	swing	on_secondary_use	activate_door_far	pointed	nothing	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_swing	eye_calls	1	ray_reach	4
+wp13_rmb_case	swing	on_secondary_use	activate_door_behind_wall	pointed	nothing	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_swing	eye_calls	1	ray_reach	4
+wp13_rmb_case	swing	on_secondary_use	activate_object_door_behind	pointed	object	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_swing	eye_calls	0	ray_reach	nil
+wp13_rmb_case	swing	on_secondary_use	activate_object_sneak	pointed	object	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_swing	eye_calls	0	ray_reach	nil
+wp13_rmb_case	cast	on_place	place_door	pointed	node	node_dist	1.5	rightclick	1	casts	0	returned	grug_abilities:kat_cast	eye_calls	1	ray_reach	nil
+wp13_rmb_case	cast	on_place	place_plain	pointed	node	node_dist	1.5	rightclick	0	casts	0	returned	grug_abilities:kat_cast	eye_calls	1	ray_reach	nil
+wp13_rmb_case	cast	on_place	place_door_sneak	pointed	node	node_dist	1.5	rightclick	0	casts	0	returned	grug_abilities:kat_cast	eye_calls	0	ray_reach	nil
+wp13_rmb_case	cast	on_place	place_door_far	pointed	node	node_dist	5.5	rightclick	0	casts	0	returned	grug_abilities:kat_cast	eye_calls	1	ray_reach	nil
+wp13_rmb_case	cast	on_secondary_use	activate_door	pointed	nothing	node_dist	nil	rightclick	1	casts	0	returned	grug_abilities:kat_cast	eye_calls	1	ray_reach	4
+wp13_rmb_case	cast	on_secondary_use	activate_plain	pointed	nothing	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_cast	eye_calls	1	ray_reach	4
+wp13_rmb_case	cast	on_secondary_use	activate_door_sneak	pointed	nothing	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_cast	eye_calls	0	ray_reach	nil
+wp13_rmb_case	cast	on_secondary_use	activate_empty	pointed	nothing	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_cast	eye_calls	1	ray_reach	4
+wp13_rmb_case	cast	on_secondary_use	activate_door_far	pointed	nothing	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_cast	eye_calls	1	ray_reach	4
+wp13_rmb_case	cast	on_secondary_use	activate_door_behind_wall	pointed	nothing	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_cast	eye_calls	1	ray_reach	4
+wp13_rmb_case	cast	on_secondary_use	activate_object_door_behind	pointed	object	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_cast	eye_calls	0	ray_reach	nil
+wp13_rmb_case	cast	on_secondary_use	activate_object_sneak	pointed	object	node_dist	nil	rightclick	0	casts	0	returned	grug_abilities:kat_cast	eye_calls	0	ray_reach	nil
+wp13_rmb_on_use	casts	1
+wp13_rmb_result	PASS	0

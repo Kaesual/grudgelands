@@ -34,17 +34,28 @@ readable at a distance before anything else about the character is:
 
 ## 2. Stature is visual only
 
-Each race carries a **visual scale** between 0.85 and 1.12 — dwarves and orcs
-broader and lower, elves and trolls taller, humans the 1.0 reference:
+Each race carries **one visual scale** between 0.85 and 1.12 — the same number
+in all three axes — with trolls and orcs the largest and dwarves the smallest:
 
-| Race | x / y / z |
+| Race | scale |
 | --- | --- |
-| Human | 1.00 / 1.00 / 1.00 |
-| Dwarf | 1.10 / 0.88 / 1.10 |
-| Elf | 0.94 / 1.06 / 0.94 |
-| Undead | 0.90 / 1.00 / 0.90 |
-| Orc | 1.12 / 0.98 / 1.12 |
-| Troll | 1.10 / 1.12 / 1.10 |
+| Human | 1.00 |
+| Dwarf | 0.90 |
+| Elf | 1.06 |
+| Undead | 0.94 |
+| Orc | 1.08 |
+| Troll | 1.12 |
+
+**It is one scalar, not an (x, y, z) triple** (decided 2026-09-15, playtest
+round 2). The first version made dwarves and orcs *broader and lower*
+(1.10 / 0.88 and 1.12 / 0.98), which reads better on a body — but a
+non-uniform scale is inherited by whatever is attached to the character, in
+model axes and after that attachment's own rotation. On the weapon in the hand
+(§4) that is a shear: the blade comes out longer, thinner and tilted, and no
+size on the weapon can cancel it while a race's vertical and horizontal scales
+differ. So the anisotropy went and the **body shape belongs to the skin art**,
+which the engine cannot shear. The derivation is in
+`mods/PLAYER/grug_visuals/wield_geometry.lua`.
 
 **The collision box and the eye height never change.** Stature is a look, not a
 rule: every race walks through the two-node doors of its own houses, takes the
@@ -61,34 +72,55 @@ Two armor lines ship — **cloth** and **metal**, the two `grug_gear` registers 
 and each has one overlay per slot: head, chest, legs, feet. Leather borrows the
 cloth cut until its own art exists, because it has no wearer before the Rogue.
 
-An overlay is drawn once, in the **highest bracket's** colour, and the six
-brackets are one tint apart: the same six colours the vendor item icons use, so
-a Crude helm looks Crude on the icon and on the head. A character therefore
-shows exactly what it is wearing, per slot, at the bracket it bought.
+An overlay is drawn once in its tier's colour, and the six tiers are one tint
+apart: the same six colours the armor item icons use, so a Bronze helm looks
+bronze on the icon and on the head. A character therefore shows exactly what it
+is wearing, per slot, at the tier it bought.
 
-NPCs that have no inventory wear a **whole line at one bracket** instead:
+NPCs that have no inventory wear a **whole line at one tier** instead:
 
 | NPC | Wears |
 | --- | --- |
-| Faction guard | metal line at the bracket its own level buys — the elite city watch (60+) is the sixth, "Grand" bracket by construction |
-| Bandit | cloth line at the bracket its camp's level buys |
+| Faction guard | metal line at the tier its own level buys — the elite city watch (60+) is the sixth, Abyssal Steel tier by construction |
+| Bandit | cloth line at the tier its camp's level buys |
 | Vendor | no armor: race dress, so a shopkeeper never reads as a guard |
 | Mirefolk | its own fish-folk skin, no armor |
 
 ## 4. The weapon in hand
 
 A character with a weapon **holds it**: one attached entity on the right-hand
-bone, showing the weapon's own item art, updated when the weapon changes and
-removed when the hands are empty. Guards carry a sword, bandits a dagger, and a
-player carries whatever is in the weapon slot — the same item that is the single
-source of melee damage.
+bone, showing the item's own art, updated when what it holds changes and removed
+when the hands are empty. Guards carry a sword and bandits a dagger.
 
-It is held the way a weapon is held: **the grip in the fist, the blade pointing
-forward and slightly up, its flat vertical** so the silhouette reads from the
-side (decided 2026-09-15, playtest round 1). The pose is not tuned by eye — it
-is derived from the character mesh's own bone tree and the engine's wielditem
-extrusion, and the derivation lives with the numbers in
-`mods/PLAYER/grug_visuals/wield_geometry.lua`.
+**What a player is shown holding** (decided 2026-09-15, playtest round 2) is
+read off the hotbar, in three cases:
+
+1. a **skill** in hand shows the **equipped weapon** — a skill is an orb wearing
+   that weapon's art and takes its damage from the weapon slot, so the hand
+   shows the weapon;
+2. **any other item** in hand shows that item — a pickaxe is a pickaxe, a torch
+   is a torch;
+3. an **empty hand** shows nothing.
+
+So the weapon slot is the single source of *damage*, but it is not automatically
+what the character is carrying: a player who selects a shovel sees a shovel.
+
+It is held the way a weapon is held: **the grip in the fist, the blade straight
+forward at a right angle to the arm, its flat vertical** so the silhouette reads
+from the side. The pose is not tuned by eye — it is derived from the character
+mesh's own bone tree and the engine's wielditem extrusion, and the derivation
+lives with the numbers in `mods/PLAYER/grug_visuals/wield_geometry.lua`.
+
+That derivation is possible because **every held item in the game is drawn in
+one sprite convention**: 16×16, long axis on the image's diagonal, grip at the
+bottom left — minetest_game's own tool convention. Two conventions would need
+two transforms, and one of them would be wrong.
+
+**The weapon is the same weapon in every hand.** The attachment inherits the
+wielder's stature (§2), so the entity's size divides it out; a dwarf's sword and
+a troll's sword are the same object. A humanoid *mob* is deliberately not
+compensated: its scale is its real size, and a giant's weapon should be a
+giant's weapon.
 
 One entity per character, never more. The **offhand is not drawn yet**; shields
 arrive with the offhand work.
@@ -108,6 +140,11 @@ arrive with the offhand work.
 - **The composed look is written before anything reads it back.** The Character
   page draws the character's live appearance, so appearance is composed first
   and the page refreshed second; there is exactly one page refresh.
+- The hotbar selection has no server-side change hook, so §4's display rule is
+  driven by **one throttled poll, once a second per player**, on top of the
+  equipment-change callback. That poll is also the retry for an attachment the
+  engine refused (no loaded block yet, an entity budget) — a weapon that failed
+  to appear reappears on the next pass instead of staying invisible.
 
 The state of the implementation — what is already tuned and what still needs a
 look in the client — lives in the increment record,

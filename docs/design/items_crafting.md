@@ -577,11 +577,24 @@ from `grug_gear`. Consequences, all binding:
   items**, and they are **material-named** — Bronze Sword, Iron
   Chestplate, Steel Greaves — never bracket-named. The 72 items WP7
   shipped under the adjectives *Crude / Plain / Tempered / Reinforced /
-  Superior / Grand* merge into that one ladder. The **rename plus merge with
-  the tool ladder is planned work, not a defect**; no old-stack migration is
-  implemented during fresh-server development. The
-  generator, the six bracket catalogs, the prices and the ilvl anchors of
-  §3.8/§8.2 are untouched by it.
+  Superior / Grand* merge into that one ladder. **Shipped 2026-09-15**
+  (WP13 playtest round 2): the exact names are below, the generator, the six
+  bracket catalogs, the prices and the ilvl anchors of §3.8/§8.2 are
+  unchanged by the rename, and no old-stack migration was implemented
+  (fresh-server development).
+
+  | Line | T1 | T2 | T3 | T4 | T5 | T6 |
+  |---|---|---|---|---|---|---|
+  | Weapons and metal armor (§3.0.1's metals) | Bronze | Iron | Steel | Silversteel | Embersteel | Abyssal Steel |
+  | Cloth armor (§3.5's bolt grades) | Patch | Woven | Heavy | Silkweave | Silk | Stormweave |
+  | Leather armor (§3.4's grades; named, not yet registered) | Light | Cured | Heavy | Scaled | Sleek | Nightscale |
+
+  Nouns are Sword / Dagger / Greataxe / Staff, Helm / Chestplate / Greaves /
+  Sabatons (metal), Cowl / Robe / Leggings / Slippers (cloth) and Hood /
+  Jerkin / Pants / Boots (leather) — so the catalogue reads *Abyssal Steel
+  Greataxe*, *Silkweave Cowl*, *Iron Helm*. Itemstrings follow the same
+  ladder (`grug_gear:sword_bronze`, `grug_gear:head_cloth_silkweave`); the
+  full list is pinned by `tools/wp13/gear_catalogue_kat.lua`.
 - **Everyone can craft the base items of every material tier** — tools,
   weapons, armor. This is the deliberate "Minecraft feel", and it is what
   makes mining and smelting worth doing for a player with no crafting
@@ -594,6 +607,26 @@ from `grug_gear`. Consequences, all binding:
   (that is `pick`/`shovel`/`axe`/`sword` × mese, diamond in
   `mods/BASE/default/tools.lua` — twelve registrations to drop, plus
   their craft recipes).
+  **State 2026-09-15**, after WP13's round-2 merge. **Swords** are complete and
+  live entirely in `grug_gear`: `default:sword_wood` and `default:sword_stone`
+  remain as the below-ladder starters and `default:sword_bronze`/`_steel` are
+  unregistered by the curation list, next to the mese and diamond tiers.
+  **Pick, axe and shovel** are complete at all six tiers: `default`'s Bronze is
+  T1 and its Steel is T3 (the mapping `grug_materials/overrides.lua` already
+  encoded through `grug_pick_tier`), and Iron, Silversteel, Embersteel and
+  Abyssal Steel are registered by `grug_materials/tools.lua`. Iron gets tools
+  because Iron is a full tier here — it owns a depth band, a pick tier and a
+  real bar item — so skipping it would leave §3.0.4's T2 row without a pick.
+  The four new tiers carry **no craft recipe**, exactly like the surviving
+  Steel pick: WP26 owns the bar recipes and WP29 the final tool catalog, and
+  handing the deep picks a recipe would move the progression gate. A `default`
+  axe stays a one-handed hatchet and a mining tool; the two-handed ×1.5 Greataxe
+  is the weapon family (`inventory_equipment.md` §2).
+  **The caster starter is new**: `default` ships no staff, so
+  `grug_gear:staff_wood` (Wooden Staff, two-handed, 5 damage at 1.4 s) is the
+  stone sword's below-ladder equivalent for Priests and Mages. Like the wood and
+  stone swords it carries no ilvl and no level requirement, and a vendor sells
+  it at the same 15 c.
 - **Armor base recipes must be created.** `default` has **no armor at
   all**. Shapes adapted from LotT `lottarmor` (closer fit) or VoxeLibre
   `mcl_armor` — sources and licences in §1.2 — with our bar costs from
