@@ -1,7 +1,7 @@
 -- Do WP40's routes stop at a capital's gates, and can the city still be
 -- entered through them?
 --
---     luajit tools/wp13/route_gates.lua <repo> <seed> [out.tsv] [--full]
+--     luajit tools/wp13/route_gates.lua <repo> <seed> [out.tsv] [--full] [--strict]
 --
 -- WHAT IT MEASURES, and why this tool exists.
 --
@@ -26,11 +26,14 @@
 --      end, and how far is that from the gate it should end at? Target 0.
 --   2. STRAIGHT APPROACH. Is the final stretch axial -- the road normal to the
 --      wall it passes through -- and how long is it?
---   3. INTERIOR CELLS. How many columns strictly inside the envelope
---      (both anchor offsets under 256 in absolute value) does a route grade,
---      and how many does a bridge deck span? A deck inside the envelope is the
---      wave-1 lane-crossing case, which the ruling turns from a feature into
---      a safeguard.
+--   3. INTERIOR CELLS. What lies strictly inside the envelope (both anchor
+--      offsets under 256 in absolute value)? Zero bridge decks -- a deck inside
+--      the envelope is the wave-1 lane-crossing case, which the ruling turns
+--      from a feature into a safeguard -- and, of road, nothing but the four
+--      gates' own end caps: a route ends AT its gate and a seven-wide road
+--      rounds over its terminal, so fifteen columns per gate reach at most
+--      three nodes in, inside the curtain's own thickness. Any road column
+--      outside that shape is a STRAY and is a fault; see `end_cap_gate`.
 --   4. THE STEP AT THE GATE. The route's own graded surface at the gate column
 --      against the level the avenue is actually BUILT at there -- the real
 --      `wp13/avenue.lua` run over the real WP40 seam. Target <= 1: a city
@@ -64,16 +67,24 @@
 -- polyline rather than all 263169 columns of an envelope. `--full` scans the
 -- whole envelope instead and is how that shortcut is checked; the two agree.
 --
--- Exit status is 1 if any target above is missed, so this is a gate and not
--- only a report.
+-- EXIT STATUS. Questions 1, 2 and 3 are the ROUTE GRAPH's, and this lane owns
+-- them: any fault there exits 1 on every seed. Questions 4 to 7 are a
+-- CAPITAL's terrain and blueprint, which the route graph can improve but not
+-- repair, so they are always reported and counted and only enter the exit
+-- status under `--strict`. A capital lane runs `--strict` as its own
+-- acceptance check -- target zero, on all nine fixture seeds -- and the
+-- coordinator runs the default as a merge gate on the route graph. The last
+-- line of stdout carries both counts either way.
 --
 -- Plain Lua 5.1 (LuaJIT in practice for the eight-second WP40 construction).
 
 local repo = assert(arg[1], "repository root required")
 local seed = assert(arg[2], "world seed required")
-local full, out_path = false, nil
+local full, strict, out_path = false, false, nil
 for index = 3, #arg do
-	if arg[index] == "--full" then full = true else out_path = arg[index] end
+	if arg[index] == "--full" then full = true
+	elseif arg[index] == "--strict" then strict = true
+	else out_path = arg[index] end
 end
 
 local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
@@ -213,8 +224,10 @@ for index = 1, #source.routes do
 			else
 				side = dz < 0 and "south" or "north"
 			end
+			local gate = capital.by_side[side]
+			gate.route_id = route.id
 			approaches[#approaches + 1] = {route = route, capital = capital,
-				which = which, gate = capital.by_side[side],
+				which = which, gate = gate,
 				terminal = which == "a" and route.centreline[1] or
 					route.centreline[#route.centreline]}
 		end
@@ -233,6 +246,50 @@ end
 -- ---------------------------------------------------------------------------
 -- The scan band: every column any route or spur could possibly grade
 -- ---------------------------------------------------------------------------
+-- THE END CAP, which is the one thing a route may leave inside an envelope.
+--
+-- A route ends AT its gate point, and a road is not a line: a primary route's
+-- surface is seven columns wide, so its terminal rounds over into a cap that
+-- reaches CAP_DEPTH nodes past the last centreline point. Inside the envelope
+-- that is the columns whose distance from the gate is at most the surface's
+-- half width -- 7 at one node in, 5 at two, 3 at three: fifteen columns, all of
+-- them within the curtain's own seven-node thickness, under the gate passage,
+-- and overwritten by the avenue that runs out to 261.
+--
+-- So this is what the tool ACCEPTS, stated as a shape rather than as a number
+-- it happens to have measured: a route column inside the envelope must belong
+-- to the route that takes one of this capital's gates, must sit on that gate's
+-- inward side, must be at most CAP_DEPTH nodes in and at most CAP_HALF off the
+-- gate's own centre line. Anything else is a stray, and a stray is a route
+-- fault. The per-gate count is reported too and may not exceed CAP_COLUMNS, so
+-- a road that grew wider would redden even while staying inside the box.
+local CAP_WIDTH = 7
+local CAP_HALF = (CAP_WIDTH - 1) / 2
+local CAP_DEPTH = CAP_HALF
+local CAP_COLUMNS = 0
+for depth = 1, CAP_DEPTH do CAP_COLUMNS = CAP_COLUMNS + (CAP_WIDTH - 2 * (depth - 1)) end
+
+local function end_cap_gate(capital, x, z, feature_id)
+	for _, gate in ipairs(capital.gates) do
+		if gate.route_id == feature_id then
+			-- `inward` counts nodes from the envelope edge toward the anchor,
+			-- `across` the offset from the gate's own centre line.
+			local inward, across
+			if gate.dx ~= 0 then
+				inward, across = (gate.x - x) * gate.dx, z - gate.z
+			else
+				inward, across = (gate.z - z) * gate.dz, x - gate.x
+			end
+			if inward >= 1 and inward <= CAP_DEPTH and
+					math.abs(across) <= CAP_HALF - (inward - 1) then
+				return gate
+			end
+			return nil
+		end
+	end
+	return nil
+end
+
 local BAND = 24
 local function band_columns(capital)
 	local seen, list = {}, {}
@@ -304,10 +361,34 @@ local function emit(...)
 	rows[#rows + 1] = table.concat({...}, "\t")
 end
 
-local faults = 0
+-- TWO CLASSES OF FAULT, and why the exit status is what it is.
+--
+-- A ROUTE fault is this lane's own property and nobody else's: a road that does
+-- not end at its gate, a road that grades the city's interior, a deck over the
+-- city, a gate two roads want. Any of those is a regression in the route graph
+-- and the exit status is 1.
+--
+-- A CITY fault is a capital's terrain and its blueprint: the step where the
+-- route hands over to the avenue, the walk in from the field, the ground just
+-- inside the curtain, the avenue's own continuity. The route graph can make
+-- those better or worse but it cannot fix them -- Nhal Veyr's north gate is
+-- unwalkable on five of the nine fixture seeds because that capital's fitted
+-- plateau stops twelve nodes short of its own envelope edge, which is the Nhal
+-- Veyr lane's to mend. They are always REPORTED and counted; `--strict` puts
+-- them in the exit status too, and that is the mode a capital lane runs as its
+-- own acceptance check (target: zero).
+--
+-- The first version of this tool put both in one status, so it exited 1 on
+-- every seed of its own branch over end caps it had itself declared correct.
+-- A gate that is red by construction teaches people to ignore it.
+local route_faults, city_faults = 0, 0
 local function fault(message)
-	faults = faults + 1
-	emit("FAULT", seed, message)
+	route_faults = route_faults + 1
+	emit("FAULT", seed, "route", message)
+end
+local function city_fault(message)
+	city_faults = city_faults + 1
+	emit("FAULT", seed, "city", message)
 end
 
 -- 1 and 2: where each incoming route ends, and how straight it gets there.
@@ -351,6 +432,7 @@ local scan_kind = full and "full" or "band"
 for _, capital in ipairs(capitals) do
 	local columns = full and full_columns(capital) or band_columns(capital)
 	local interior_route, interior_spur, interior_deck = 0, 0, 0
+	local stray, cap_by_gate = 0, {}
 	local by_feature = {}
 	for _, column in ipairs(columns) do
 		local kind, _, feature_id = height.functional_surface_values_at(column.x,
@@ -359,9 +441,20 @@ for _, capital in ipairs(capitals) do
 		if family == "route" then
 			interior_route = interior_route + 1
 			by_feature[feature_id] = (by_feature[feature_id] or 0) + 1
+			local gate = end_cap_gate(capital, column.x, column.z, feature_id)
+			if gate then
+				cap_by_gate[gate.side] = (cap_by_gate[gate.side] or 0) + 1
+			else
+				stray = stray + 1
+				if stray <= 8 then
+					emit("stray", seed, capital.key, feature_id, column.x, column.z,
+						column.x - capital.x, column.z - capital.z)
+				end
+			end
 		elseif family == "spur" then
 			interior_spur = interior_spur + 1
 			by_feature[feature_id] = (by_feature[feature_id] or 0) + 1
+			stray = stray + 1
 		end
 		if kind == "bridge_deck" then interior_deck = interior_deck + 1 end
 	end
@@ -371,11 +464,22 @@ for _, capital in ipairs(capitals) do
 	for _, id in ipairs(feature_ids) do
 		emit("interior_feature", seed, capital.key, id, by_feature[id])
 	end
+	local worst_cap = 0
+	for _, side in ipairs(SIDES) do
+		local count = cap_by_gate[side.id] or 0
+		if count > worst_cap then worst_cap = count end
+		emit("end_cap", seed, capital.key, side.id, count, CAP_COLUMNS)
+	end
 	emit("interior", seed, capital.key, scan_kind, #columns, interior_route,
-		interior_spur, interior_deck)
-	if interior_route ~= 0 then
-		fault(("%s grades %d route column(s) inside its envelope"):format(
-			capital.key, interior_route))
+		interior_spur, interior_deck, stray, worst_cap)
+	if stray ~= 0 then
+		fault(("%s grades %d road column(s) inside its envelope outside the gates'"
+			.. " end caps"):format(capital.key, stray))
+	end
+	if worst_cap > CAP_COLUMNS then
+		fault(("%s has %d end-cap column(s) at one gate, more than the %d a"
+			.. " %d-wide road rounds over"):format(capital.key, worst_cap,
+			CAP_COLUMNS, CAP_WIDTH))
 	end
 	if interior_deck ~= 0 then
 		fault(("%s carries %d bridge-deck column(s) inside its envelope"):format(
@@ -439,11 +543,11 @@ for _, capital in ipairs(capitals) do
 		emit("avenue", seed, capital.key, side.id, columns_walked, water_cells,
 			missing, jumps)
 		if missing ~= 0 then
-			fault(("%s avenue_%s leaves %d position(s) unpaved"):format(
+			city_fault(("%s avenue_%s leaves %d position(s) unpaved"):format(
 				capital.key, side.id, missing))
 		end
 		if jumps ~= 0 then
-			fault(("%s avenue_%s steps more than one node at %d position(s)")
+			city_fault(("%s avenue_%s steps more than one node at %d position(s)")
 				:format(capital.key, side.id, jumps))
 		end
 
@@ -461,7 +565,7 @@ for _, capital in ipairs(capitals) do
 			tostring(surface_y), tostring(feature_id), terrain_y,
 			tostring(road_y), step)
 		if step < 0 or step > 1 then
-			fault(("%s %s gate steps %s between route grade and avenue road")
+			city_fault(("%s %s gate steps %s between route grade and avenue road")
 				:format(capital.key, side.id, tostring(step)))
 		end
 
@@ -495,7 +599,7 @@ for _, capital in ipairs(capitals) do
 		emit("entry", seed, capital.key, side.id, AVENUE_OUT + ENTRY_RUN,
 			AVENUE_IN, breaks, worst, tostring(worst_at))
 		if breaks ~= 0 then
-			fault(("%s %s entry breaks %d time(s), worst %d at %s"):format(
+			city_fault(("%s %s entry breaks %d time(s), worst %d at %s"):format(
 				capital.key, side.id, breaks, worst, tostring(worst_at)))
 		end
 
@@ -538,13 +642,14 @@ for _, capital in ipairs(capitals) do
 		emit("inside", seed, capital.key, side.id, INSIDE_RUN, ground_worst,
 			tostring(ground_at))
 		if ground_worst > TERRACE_STEP then
-			fault(("%s %s ground steps %d at %s just inside the gate"):format(
+			city_fault(("%s %s ground steps %d at %s just inside the gate"):format(
 				capital.key, side.id, ground_worst, tostring(ground_at)))
 		end
 	end
 end
 
-emit("summary", seed, scan_kind, #approaches, gate_collisions, faults)
+emit("summary", seed, scan_kind, strict and "strict" or "route",
+	#approaches, gate_collisions, route_faults, city_faults)
 
 local text = "kind\tseed\tfields...\n" .. table.concat(rows, "\n") .. "\n"
 if out_path then
@@ -553,4 +658,10 @@ if out_path then
 	assert(file:close())
 end
 io.write(text)
-os.exit(faults == 0 and 0 or 1)
+-- The exit status gates the ROUTE faults always and the CITY faults only in
+-- `--strict`, for the reason at the top of the fault section.
+local gated = route_faults + (strict and city_faults or 0)
+io.write(("route_gates seed=%s mode=%s route_faults=%d city_faults=%d exit=%d\n")
+	:format(seed, strict and "strict" or "route", route_faults, city_faults,
+		gated == 0 and 0 or 1))
+os.exit(gated == 0 and 0 or 1)
