@@ -740,10 +740,16 @@ local function loader(directory)
 					buf:put(spot[1], 1, spot[2], undead.node("hearth"))
 				end)
 		end
+		-- The embalmers' slab line: DUNGEON STONE and not the signature
+		-- obsidian brick, for the reason the vigil district's own slab records.
+		-- `signature` and `foundation` are the same node in this palette and
+		-- between them they are the footing of every building in the city, so a
+		-- `carve` feature set that accepted them would let any wall base read as
+		-- a carver's block (the review of 2026-09-16).
 		for _, spot in ipairs({{26, 23}, {28, 23}, {36, 23}, {38, 23}}) do
 			paved_prop("slab", spot[1], spot[2], spot[1], spot[2],
 				function()
-					buf:put(spot[1], 1, spot[2], SIGNATURE)
+					buf:put(spot[1], 1, spot[2], STONE)
 				end)
 		end
 		for _, seat in ipairs({{44, 36, 0, "z"}, {22, 28, 1, "z"}}) do

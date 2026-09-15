@@ -223,8 +223,16 @@ return function(repo)
 	-- `low_wall` is the grave marker (`dressing.grave` sets one on a flagstone)
 	-- and the door family is the palette's `door` prefix, which `palette.node`
 	-- refuses to hand out as a family base, so the two door shapes are named.
+	--
+	-- `signature` IS NOT IN IT, for the reason `mine` lost its paving roles.
+	-- It is `default:obsidianbrick`, which is also this palette's `foundation`
+	-- -- the footing course of every building in the city -- so an altar set
+	-- carrying it lets any wall base read as an altar, and the review found
+	-- eight of the nine `pray` sockets resolving to exactly that. What this
+	-- capital prays at is a candle or a grave marker, which is the contract's
+	-- own list and what every one of those sockets was authored to face.
 	feature_set("pray", {"light_post", "light_wall", "light_indoor",
-		"low_wall", "signature"},
+		"low_wall"},
 		{"doors:door_steel", "doors:door_steel_a", "doors:door_steel_b",
 			"doors:door_steel_c", "doors:door_steel_d"})
 
@@ -233,20 +241,33 @@ return function(repo)
 	-- names, resolved through this palette's roles wherever the contract names
 	-- a thing a palette binds, and spelled by name where it does not.
 	--
-	-- `mine`: "a stone, ore or cobble node at head or chest height". This
+	-- `mine`: "a stone, ore or cobble node AT HEAD OR CHEST HEIGHT". This
 	-- palette's `foundation` is obsidian brick and its `castle_wall` is dungeon
 	-- stone; the bone rampart's quarry face is two courses of the former.
-	feature_set("mine", {"foundation", "castle_wall", "path", "plaza",
-		"castle_paving", "rubble", "castle_rubble", "signature"},
-		{"default:stone", "default:cobble", "default:mossycobble",
-			"default:desert_stone"})
+	--
+	-- THE PAVING ROLES ARE NOT IN IT, and the review of 2026-09-16 is why. The
+	-- first version of this set carried `path`, `plaza`, `castle_paving`,
+	-- `rubble` and `signature` beside them, on the reasoning that a cobble is a
+	-- cobble -- and in this palette `castle_paving` is the stone every court in
+	-- the city is laid in and `signature` is the same obsidian brick as
+	-- `foundation`. Retyping one `pray` socket of the PAVED pyre court to
+	-- `mine` left the KAT green, satisfied by the court's own floor one course
+	-- under the miner's feet. A quarry face is what this activity names; a
+	-- floor is not one.
+	-- What is left is ROCK and only rock -- the country cobble the bone
+	-- rampart's quarry face is cut in, and its neighbours. Neither
+	-- `foundation` nor `signature` is here, and neither is `castle_wall`: the
+	-- curtain and every crypt wall in the city are dungeon stone, so a set
+	-- carrying it would let a miner face the outside of a building.
+	feature_set("mine", {},
+		{"default:cobble", "default:stone", "default:mossycobble",
+			"default:desert_stone", "default:desert_cobble"})
 	-- `brew`: "a cauldron, barrel or a cooking pot". `hearth` IS the xdecor
 	-- cauldron in this palette and `storage` is its barrel.
 	feature_set("brew", {"hearth", "storage"}, {})
 	-- `carve`: "a log, a totem/statue part or a stone block". The gravewood
 	-- stack, the embalmer's obsidian slab and the citadel's own masonry.
-	feature_set("carve", {"tree_log", "post", "beam", "signature",
-		"castle_wall", "foundation"}, {})
+	feature_set("carve", {"tree_log", "post", "beam", "castle_wall"}, {})
 	-- `mourn`: "a grave marker, a coffin or a candle". `low_wall` is the marker
 	-- `dressing.grave` sets on its flagstone and the three light roles are the
 	-- candles; this palette binds no coffin node, and a role that does not
@@ -257,8 +278,14 @@ return function(repo)
 	-- wool node)". The dummy half is a name set; the socket half cannot be --
 	-- it is a question about the socket list and not about the cells -- so it
 	-- is answered beside the feature search, where the list is in hand.
-	feature_set("spar", {"fence", "fence_rail", "post", "rug", "rug_accent"},
-		{})
+	-- `tree_log` is in it beside `post`, and that is the review's N3: this
+	-- palette binds the two to the same gravewood node, so the muster field's
+	-- three sockets passed by a coincidence of the palette --
+	-- `dressing.drill_post` builds its post out of `tree_log`, and a palette
+	-- that bound the two differently would have turned this rule red on a
+	-- correct composition.
+	feature_set("spar", {"fence", "fence_rail", "post", "tree_log", "rug",
+		"rug_accent"}, {})
 	-- `forage`: "a mushroom, a bush, a plant, a vine or leaves". `ivy` is the
 	-- vine and `tree_leaves` the leaves; the bone piles of `undergrowth` are
 	-- NOT in it, because a bone pile is none of the five and a rule that
@@ -888,12 +915,24 @@ return function(repo)
 					-- examined first, so a counter or an anvil -- which is
 					-- itself solid -- still counts at the range it stands at.
 					--
+					-- AND IT LOOKS AT THE RESIDENT'S OWN COURSE AND THE ONE
+					-- ABOVE IT, not at the floor under its feet. `entry.y` is
+					-- the feet cell, so `dy = -1` is the ground -- and the
+					-- contract says "at head or chest height" for `mine` and
+					-- names a candle, a marker, an anvil, a pot for the rest,
+					-- none of which is a floor. The review of 2026-09-16 proved
+					-- what the looser window bought by retyping one `pray`
+					-- socket of the paved pyre court to `mine`: the KAT stayed
+					-- green, satisfied by the court's own paving one course
+					-- down. Nothing this capital ships needed that course --
+					-- the same review's mutation of the quarry face turns the
+					-- rule red with the window as it is now.
 					local found, blocked = nil, false
 					for reach = 1, 3 do
 						local fx = entry.x + wdx * reach
 						local fz = entry.z + wdz * reach
 						if not blocked then
-							for dy = -1, 1 do
+							for dy = 0, 1 do
 								local cell = at(fx, entry.y + dy, fz)
 								if found == nil and cell and wanted[cell.name] then
 									found = cell.name

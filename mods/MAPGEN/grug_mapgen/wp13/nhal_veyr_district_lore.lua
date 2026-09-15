@@ -38,17 +38,22 @@ local function loader(directory)
 			spec = {w = 13, d = 17, wall_h = 6}},
 		--
 		-- 3. THE EMBALMER'S HOUSE, and the city's `embalmer` vendor. The
-		-- preparing slab on the apron is a block of the palette's own
-		-- signature -- obsidian brick -- which is what the wave-2 `carve`
-		-- activity names ("a log, a totem/statue part or a STONE BLOCK"). The
-		-- workshop opens in its x- wall and the plot is turned, for the reason
-		-- every workshop in this capital is.
+		-- preparing slab on the apron is a block of DUNGEON STONE, which is
+		-- what the wave-2 `carve` activity names ("a log, a totem/statue part
+		-- or a STONE BLOCK") -- and dungeon stone rather than the palette's
+		-- `signature`, because that role and `foundation` are the same obsidian
+		-- brick and between them they are the footing of every building in the
+		-- city; a `carve` set carrying them would let any wall base read as a
+		-- carver's block (the review of 2026-09-16). The workshop opens in its
+		-- x- wall and the plot is turned, for the reason every workshop in this
+		-- capital is.
 		{id = "vigil_embalmer", module = "buildings", make = "workshop",
 			order = 3, turns = 3,
 			spec = {w = 11, d = 13, wing = 7, wall_h = 5, door_side = "x-",
 				door_index = 6, infill = true},
 			decorate = function(buf, palette, area)
-				buf:put(area.x0 + 3, 1, area.z0 + 1, palette.node("signature"))
+				buf:put(area.x0 + 3, 1, area.z0 + 1,
+					palette.node("castle_wall"))
 				shop_counter(buf, palette, area)
 			end,
 			extra_sockets = function(area)

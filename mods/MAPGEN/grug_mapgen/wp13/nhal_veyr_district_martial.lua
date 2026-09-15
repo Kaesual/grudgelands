@@ -16,7 +16,12 @@
 -- is "another `spar` socket or a training dummy (a fence post or a wool
 -- node)". Both readings are used: the drill yard's pair face each other across
 -- two nodes, and the muster field's three each face a drill post -- which
--- `dressing.drill_post` builds out of the palette's own `fence`.
+-- `dressing.drill_post` builds out of the palette's own `tree_log`, the
+-- gravewood. (The first version of this comment said `fence`, which is what a
+-- drill post looks like and not what the dressing writes; the review of
+-- 2026-09-16 read the routine, and the KAT's `spar` set carries both roles
+-- now, because this palette happens to bind them to one node and another
+-- palette would not.)
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
@@ -188,16 +193,29 @@ local function loader(directory)
 				-- version of this row.
 				dressing.blight_flora(buf, palette, -10, -8, 10, -6, 7, 2, 2)
 				dressing.blight_flora(buf, palette, -10, -2, 10, 3, 7, 2, 2)
-				-- The quarry face: two courses of masonry standing clear, so
-				-- the miner's pick meets stone at chest height.
-				for x = -7, -3 do
-					for y = 1, 2 do
-						buf:put(x, y, -3, palette.node("foundation"))
-					end
-				end
-				for x = 3, 7 do
-					for y = 1, 2 do
-						buf:put(x, y, -3, palette.node("foundation"))
+				-- THE QUARRY FACE: two courses of RAW STONE standing clear, so
+				-- the miner's pick meets rock at chest height.
+				--
+				-- `default:cobble` by name and not the palette's `foundation`,
+				-- which is what the first version used. The review of
+				-- 2026-09-16 is the reason: `foundation` is obsidian brick, and
+				-- so is `signature`, and between them they are the footing
+				-- course of every building and the inlay of every court in this
+				-- city -- so a `mine` feature set that accepted them let any
+				-- masonry in the capital read as a rock face. A quarry is cut
+				-- into the ground and what a pick meets there is country rock,
+				-- which nothing else in this capital is built of.
+				--
+				-- Cobble and not `default:stone`: the library's own authored
+				-- tables (`parts.PANE_CONNECTS`, `parts.FULL_SOLID`) carry
+				-- cobble and not bare stone, and the KAT holds every emitted
+				-- name to those in both directions. Teaching them a node is a
+				-- `parts.lua` change and `parts.lua` is not this lane's.
+				for _, span in ipairs({{-7, -3}, {3, 7}}) do
+					for x = span[1], span[2] do
+						for y = 1, 2 do
+							buf:put(x, y, -3, "default:cobble")
+						end
 					end
 				end
 				dressing.rubble_heap(buf, palette, -8, -5, 2)
