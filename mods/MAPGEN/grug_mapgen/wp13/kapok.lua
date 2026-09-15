@@ -179,6 +179,21 @@ local function loader(directory)
 			y = 1, z = 24, dir = {x = -1, z = 0}},
 		{id = "idle_smoker", role = "idle", tags = {"fire"}, x = 13, y = 1,
 			z = 20, dir = {x = 1, z = 0}},
+		--
+		-- WORKPLACES (playtest round 3, contract section 8.1). A `work` socket
+		-- is a spawn socket like an `idle` one and its resident never leaves
+		-- it. Both stand at features the cradle already has, so no cell moves.
+		--
+		-- A woodcutter at the jungle edge west of the lodge, and a troll
+		-- sitting out the rain on the terrace. NOT `fish`: the activity wants a
+		-- water node within three nodes of the socket, and a blueprint contains
+		-- no water at all (blueprint_kat refuses every water and lava cell) --
+		-- the river is generated terrain outside the pad, so a fishing socket
+		-- would be authored against something the composition cannot promise.
+		{id = "work_jungle", role = "work", activity = "chop", tags = {"work"},
+			x = -29, y = 1, z = 13, dir = {x = 0, z = 1}},
+		{id = "work_terrace", role = "work", activity = "sit",
+			tags = {"bench"}, x = -16, y = 1, z = 24, dir = {x = 1, z = 0}},
 		-- `door`: the elder faces the hall door it stands at, and the consumer
 		-- turns it round to the street (start_npcs.lua `socket_face_yaw`).
 		{id = "hall_quest", role = "quest", tags = {"door"}, x = 3, y = 1,

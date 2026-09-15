@@ -165,6 +165,17 @@ local function loader(directory)
 		-- glade keeps outdoors; this is its fireside.
 		{id = "idle_market", role = "idle", tags = {"fire"}, x = -31, y = 1,
 			z = 0, dir = {x = -1, z = 0}},
+		--
+		-- WORKPLACES (playtest round 3, contract section 8.1). A `work` socket
+		-- is a spawn socket like an `idle` one and its resident never leaves
+		-- it. Both stand at features the glade already has, so no cell moves.
+		--
+		-- A gardener at the court's planters, and a stall keeper at the covered
+		-- market's own slate counter.
+		{id = "work_planters", role = "work", activity = "tend",
+			tags = {"work"}, x = 9, y = 1, z = 10, dir = {x = 0, z = 1}},
+		{id = "work_market", role = "work", activity = "stall", tags = {"work"},
+			x = -33, y = 1, z = 5, dir = {x = 0, z = -1}},
 		-- `door`: the elder faces the hall door it stands at, and the consumer
 		-- turns it round to the street (start_npcs.lua `socket_face_yaw`).
 		{id = "hall_quest", role = "quest", tags = {"door"}, x = 20, y = 1,

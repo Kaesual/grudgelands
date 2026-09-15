@@ -65,16 +65,43 @@ end
 -- `discount` is the has_discount boolean, resolved ONCE by the caller: it is
 -- two player-meta reads, and resolving it per entry would run it ~12 times
 -- per render and again per click.
+--
+-- WHICH SHELF THE GENERAL TAB SHOWS (WP13 round 3, sockets contract section
+-- 8.4). A PROFESSION vendor carries `stock`, the key of its own shelf in
+-- `grug_traders.profession_stock`; the two original families carry none and
+-- keep the level-independent core stock, unchanged. The audit in stock.lua has
+-- already dropped any entry whose item is not registered, so nothing here can
+-- render an "unknown item" button.
+--
+local function general_shelf(vendor)
+	local kind = vendor and vendor.stock
+	if kind then
+		return grug_traders.profession_stock[kind] or {}
+	end
+	return grug_traders.stock
+end
+
+-- Does this vendor sell equipment at all? Only the two original families and
+-- the smith do (items_crafting.md §3.0.3: the bracket catalog IS the base
+-- craft ladder, and a baker is not on it).
+local function sells_gear(vendor)
+	return vendor ~= nil and (vendor.stock == nil or vendor.brackets == true)
+end
+grug_traders.sells_gear = sells_gear
+
 local function current_offer(player, session, vendor, discount)
 	local offer = {}
 	if session.tab == "general" then
-		for _, entry in ipairs(grug_traders.stock) do
+		for _, entry in ipairs(general_shelf(vendor)) do
 			offer[#offer + 1] = {
 				item = entry.item,
 				base = entry.price,
 				price = grug_traders.apply_discount(entry.price, discount),
 			}
 		end
+		return offer
+	end
+	if not sells_gear(vendor) then
 		return offer
 	end
 	local bracket = tonumber(session.tab)
@@ -144,6 +171,12 @@ local function render_buy(parts, player, session, vendor, discount)
 	-- has unlocked (items_crafting.md §3.8: own bracket and every one below).
 	local max_bracket = grug_traders.max_bracket(player)
 	local tabs = {{id = "general", label = "General"}}
+	-- A profession vendor other than the smith shows ONE tab: it sells no
+	-- equipment, and a row of bracket buttons that all answer "nothing on this
+	-- shelf" is worse than no row at all.
+	if not sells_gear(vendor) then
+		max_bracket = 0
+	end
 	for b = 1, max_bracket do
 		tabs[#tabs + 1] = {id = tostring(b), label = grug_traders.bracket_label(b)}
 	end
@@ -332,7 +365,12 @@ local function validate(player)
 	if session.tab ~= "general" then
 		local bracket = tonumber(session.tab)
 		if not bracket or bracket < 1 or
-				bracket > grug_traders.max_bracket(player) then
+				bracket > grug_traders.max_bracket(player) or
+				-- ... or a bracket tab at a vendor that has none at all: a
+				-- client may submit any field name it likes, so the tab a
+				-- session is ON is validated here and not only where the
+				-- buttons are drawn (WP13 round 3's profession vendors).
+				not sells_gear(vendor) then
 			session.tab = "general"
 		end
 	end

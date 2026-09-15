@@ -181,6 +181,17 @@ local function loader(directory)
 		-- arrival sees; this spot stands at the western one.
 		{id = "idle_gate_brazier", role = "idle", tags = {"fire"}, x = -5,
 			y = 1, z = -57, dir = {x = 0, z = -1}},
+		--
+		-- WORKPLACES (playtest round 3, contract section 8.1). A `work` socket
+		-- is a spawn socket like an `idle` one and its resident never leaves
+		-- it. Both stand at features the hollow already has, so no cell moves.
+		--
+		-- A woodcutter at the gravewood beside the lane, and somebody working
+		-- the blighted bed west of the court.
+		{id = "work_gravewood", role = "work", activity = "chop",
+			tags = {"work"}, x = 10, y = 1, z = -6, dir = {x = -1, z = 0}},
+		{id = "work_blightbed", role = "work", activity = "tend",
+			tags = {"work"}, x = -22, y = 1, z = -8, dir = {x = 0, z = 1}},
 		-- `door`: the elder faces the hall door it stands at, and the consumer
 		-- turns it round to the street (start_npcs.lua `socket_face_yaw`).
 		{id = "hall_quest", role = "quest", tags = {"door"}, x = 2, y = 1,
