@@ -236,8 +236,8 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 *Last updated: 2026-09-16. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
 
-**Shipped (20 of 49 work packages):** WP0–WP4, WP6, WP7, WP15, WP18,
-WP19, WP25, WP26, WP33, WP35, WP36, WP38, WP39, WP40, WP43 and WP45 provide the
+**Shipped (20 of 49 work packages):** WP0–WP4, WP6, WP7, WP15, WP18, WP19,
+WP25, WP26, WP33, WP35, WP36, WP38, WP39, WP40, WP43 and WP45 provide the
 playable foundation: three classes, combat, mobs, equipment/bags, currency,
 canonical materials, gathering and the named-zone world. New characters remain
 protected behind character creation until the server has prepared all six
@@ -290,15 +290,16 @@ open ground -- a field, a pasture, a yard, a green -- and which district stands
 in which quarter is decided by the world seed. Every street in every capital
 now follows one rule: a flat cross profile, a levelled plateau where two
 streets cross, open air and pillars under a street raised three nodes or more,
-and a railed timber bridge wherever one crosses water. Their people stay put rather
-than mill about: most residents keep to one spot, one in four works a craft
-with its own animation (smith, fisher, farmer, miner, brewer, carver, mourner,
-sparring pair, forager), and only a minority walk a short ring -- in Highcourt,
-36 workplaces and 22 walkers among 144 residents. A district reads as lived in
-because a butcher's house has a butcher in it -- twelve profession shops in
-all. WP13's round-2 merge also shipped the **one weapon ladder**: vendor gear
-and the base craft ladder are now the same material-named items (Bronze Sword,
-Silkweave Cowl), merged with `default`'s tool ladder.
+and a railed bridge, in that race's own palette, wherever one crosses water.
+Their people stay put rather than mill about: most residents keep to one spot,
+one in four works a craft with its own animation (smith, fisher, farmer, miner,
+brewer, carver, mourner, sparring pair, forager), and only a minority walk a
+short ring -- in Highcourt, 36 workplaces and 22 walkers among 144 residents.
+A district reads as lived in because a butcher's house has a butcher in it --
+twelve profession shops in all. WP13's round-2 merge also shipped the **one
+weapon ladder**: vendor gear and the base craft ladder are now the same
+material-named items (Bronze Sword, Silkweave Cowl), merged with `default`'s
+tool ladder.
 
 **Every start and every capital still awaits the user's GUI playtest**, and
 the rest of WP13's 100-anchor roster is unbuilt: twelve villages (two of them
@@ -308,11 +309,12 @@ rare-route pads. The mirefolk camps, clash anchors and dragon arenas are
 dressing only here -- WP42 and WP23 own what happens in them -- and the apex
 camps' twelve renewable sockets are WP34's. The six kings and their royal
 guards are unbuilt too.
+
 **Fishing** arrived with the same round: `grug_fishing` adds a craftable rod
 that lasts 64 catches, a furnace-cooked fish and one catch table for the whole
 world — right-click water, wait a few seconds, and the water gives something
-back. Kezamba's anglers work its cenote, and its fields grow papyrus and vines
-rather than bare ground.
+back. Kezamba's anglers work its cenote, its fields grow papyrus in tilled
+furrows, and its two vineyards are planted beds rather than bare kerbs.
 
 **WP26 is shipped** (2026-09-16): a new `grug_smelting` mod adds the two-slot
 dual furnace next to the ordinary one, the five lump-to-bar smelts, the five
