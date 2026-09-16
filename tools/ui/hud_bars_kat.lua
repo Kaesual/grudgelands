@@ -259,6 +259,11 @@ local function load_abilities(repo, layout, class_of)
 	function grug_classes.get_race_perk()
 		return nil
 	end
+	-- WP11 phase 1 (round 4) reads a talent bonus in the hpchange logger
+	-- and the 0.5 s pass; the stub table's noop would return nil there.
+	function grug_classes.get_talent_bonus()
+		return 0
+	end
 
 	local env = {
 		core = core_stub,
