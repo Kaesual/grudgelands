@@ -623,11 +623,14 @@ return function(repo)
 			-- pick, `brew` the stick, `carve` the stone axe), and the one
 			-- weapon it adds is resolved through grug_gear's own name builder,
 			-- so the bronze sword is listed here for the audit to find.
+			-- WAVE 3 (playtest round 5): `fish` no longer wields a stick but
+			-- the real `grug_fishing:rod`; `brew` still stirs with the stick.
 			registered_items = {
 				["default:pick_bronze"] = true,
 				["default:shovel_stone"] = true,
 				["default:axe_stone"] = true,
 				["default:stick"] = true,
+				["grug_fishing:rod"] = true,
 				["grug_gear:sword_bronze"] = true,
 			},
 			registered_nodes = {air = {walkable = false},
