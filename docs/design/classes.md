@@ -461,7 +461,7 @@ moves into the talent tree.
 | Smite | 4 | 2 s | Current-crosshair 20 m hit with no enemy-memory fallback: 4 + spell power damage. Solo viability. |
 | Flash Heal | 8 | 4 s | Heals 8 + 2×spell power. Targets the pointed ally (15 m), otherwise self. Threat: 0.5× effective healing (WP6). |
 | Power Word: Shield | 8 | 10 s | Absorb shield on ally/self: soaks 8 + 2×spell power damage, lasts 15 s or until consumed. |
-| Renew *(talent)* | 6 | 8 s | Heal over time: 3 + spell power every 3 s for 12 s. Unlocked via the Holy tree (WP11). |
+| Renew *(talent)* | 6 | 8 s | Heal over time: 3 + spell power every 3 s for 12 s. Unlocked via the Mercy tree (WP11). |
 
 ## 6. Explicitly deferred
 
