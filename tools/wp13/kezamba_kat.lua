@@ -1003,7 +1003,70 @@ return function(repo)
 	end
 
 	-- ------------------------------------------------------------------
-	-- 6. the roster row
+	-- 6. THE BASALT ROOF, and the two corners it needs
+	-- ------------------------------------------------------------------
+	--
+	-- The wave-2 lane could not roof a basalt building in basalt:
+	-- `roofs.raster` turns a hip with `roof_stair_outer` and a valley with
+	-- `roof_stair_inner`, and `wp13/parts.lua`'s SHAPED table carried neither
+	-- basalt corner, so binding the family failed at construction time with
+	-- "has no paramtype2". The corners are in SHAPED since 2026-09-16 and the
+	-- BASALT handle binds the whole family.
+	--
+	-- Two things are asserted, and they fail for two different regressions.
+	-- The ROLES: every one of the five roof roles of this handle resolves to a
+	-- basalt name, and each of the four shaped ones is a node `parts.shaped`
+	-- will let a part turn -- so dropping either corner out of SHAPED fails
+	-- here before any part is built. The CELLS: the core actually emits basalt
+	-- corner pieces and no junglewood roof shape under this handle -- so
+	-- unbinding the roof family in `troll_palette.lua` fails here even though
+	-- the roles would still resolve.
+	do
+		local handles = dofile(wp13 .. "/troll_palette.lua")()
+		local basalt = palettes.new("troll", handles.BASALT)
+		local roof_roles = {"roof_stair", "roof_stair_outer",
+			"roof_stair_inner", "roof_slab", "roof_ridge"}
+		local roof_names = {}
+		for _, role in ipairs(roof_roles) do
+			local name = basalt.node(role)
+			assert(name == "grug_decor:darkage_basalt" or
+				name:sub(1, 26) == "grug_decor:darkage_basalt_",
+				"kezamba basalt roof: " .. role .. " is bound to " .. name ..
+					", which is not basalt")
+			-- `roof_ridge` is the family's full cube and carries no facedir;
+			-- the other four are shapes and a part may only turn a shape
+			-- `parts.shaped` knows. Dropping either corner out of parts.lua's
+			-- SHAPED table fails right here, before anything is built.
+			if role ~= "roof_ridge" then
+				assert(parts.shaped(name), "kezamba basalt roof: " .. role ..
+					" is bound to " .. name ..
+					", which parts.lua will not let a part turn")
+			end
+			roof_names[#roof_names + 1] = name
+		end
+		-- AND THE CELLS, counted out of the finished core rather than out of a
+		-- part, because that is what the map gets. A basalt corner piece is the
+		-- signature of a rastered basalt roof and of nothing else: no wall, no
+		-- paving, no castle role and no furniture in this palette is bound to
+		-- an inner or an outer stair, so a core with none of them has no basalt
+		-- roof in it. Unbinding the roof family in `troll_palette.lua` fails
+		-- here even though the five roles would still resolve to something.
+		local counts = {}
+		for _, cell in ipairs(core.cells) do
+			counts[cell.name] = (counts[cell.name] or 0) + 1
+		end
+		local outer = counts["grug_decor:darkage_basalt_stair_outer"] or 0
+		local inner = counts["grug_decor:darkage_basalt_stair_inner"] or 0
+		assert(outer + inner > 0, "kezamba basalt roof: the core writes no " ..
+			"basalt corner piece, so no basalt roof was rastered")
+		say("basalt_roof", outer, inner,
+			counts["grug_decor:darkage_basalt_stair"] or 0,
+			counts["grug_decor:darkage_basalt_slab"] or 0,
+			table.concat(roof_names, "+"))
+	end
+
+	-- ------------------------------------------------------------------
+	-- 7. the roster row
 	-- ------------------------------------------------------------------
 
 	-- THE ROW IS AFTER THE CAPITALS IT WAS MERGED AFTER, which is what the

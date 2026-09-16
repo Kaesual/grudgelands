@@ -14,12 +14,11 @@
 --   * `TIMBER` is the plain troll palette -- junglewood walls, basalt footings,
 --     rainforest litter -- and is what the houses, the yards and the streets
 --     are built from.
---   * `BASALT` rebinds the WALL and the roof to stone, for the four civic
---     buildings that stand on the cenote's shore. The contract's troll row is
---     "stilt halls on BASALT platforms": the platform is basalt and the hall on
---     it is timber, but the king's hall, the shrine and the moot are the
---     buildings the platform idea is about and they carry the rock up into
---     their walls.
+--   * `BASALT` rebinds the WALL, the castle vocabulary and, since 2026-09-16,
+--     the ROOF to stone. Two buildings carry it -- the king's hall and the moot
+--     house -- and they are the pair the contract's troll row is about: "stilt
+--     halls on BASALT platforms". The platform is basalt and so, now, is what
+--     stands on it.
 --   * `WATER` adds the one optional role the troll palette has never needed:
 --     `default:river_water_source`, for the two authored basins of the fill.
 --     It is river water and not ordinary water for the reason the Highcourt
@@ -32,33 +31,46 @@
 local function loader()
 	local M = {}
 
-	-- The civic handle: basalt WALLS under the capital's ordinary junglewood
-	-- roof.
+	-- The civic handle: basalt walls, and since 2026-09-16 a BASALT ROOF over
+	-- them.
 	--
-	-- THE ROOF STAYS TIMBER, and that is a decision with a measurement behind
-	-- it rather than a taste. `grug_decor` registers the full four-shape family
-	-- for basalt, but `wp13/parts.lua`'s own `SHAPED` table -- the library's
-	-- one written-down list of the nodes that may carry a facedir -- lists only
-	-- `darkage_basalt_stair` and `darkage_basalt_slab`, not the inner and outer
-	-- corners the roof rasteriser needs for a hip or a gable end. Binding the
-	-- basalt roof family therefore fails at construction time with "has no
-	-- paramtype2", and `parts.lua` is the shared library this lane may not
-	-- edit. A timber roof on a basalt wall is also the better building: the
-	-- contract's troll row is "stilt halls on BASALT PLATFORMS", which is a
-	-- statement about what a hall stands on, not about what it is roofed with.
-	-- THE CASTLE ROLES GO WITH IT. The independent review of 2026-09-16 read
-	-- the king's hall as "a red-brick manor with a timber roof", and the brick
-	-- is `grug_decor:castle_pavement_brick` and `castle_stonewall`:
+	-- THE CASTLE ROLES ARE PART OF IT. The independent review of 2026-09-16
+	-- read the king's hall as "a red-brick manor with a timber roof", and the
+	-- brick is `grug_decor:castle_pavement_brick` and `castle_stonewall`:
 	-- `capitals.king_hall` dresses itself in the CAPITAL vocabulary, not in
-	-- `wall`, so rebinding the wall alone changed nothing the eye sees. These
+	-- `wall`, so rebinding the wall alone changed nothing the eye sees. Those
 	-- four rebindings put the hall, its turrets and its podium in the same rock
 	-- its platform is made of.
 	--
-	-- Only shapes `wp13/parts.lua`'s `SHAPED` table carries may be bound: it
-	-- lists `darkage_basalt_stair` and `darkage_basalt_slab` and NOT the inner
-	-- and outer corners, so the single stairs and slabs of the castle kit are
-	-- safe and the roof family (which the rasteriser turns corners with) stays
-	-- timber. That is the same limit §7.5 of the note records.
+	-- THE ROOF USED TO STAY TIMBER, and the reason was mechanical rather than a
+	-- taste. `roofs.raster` turns a hip with `roof_stair_outer` and a valley
+	-- with `roof_stair_inner`, and `wp13/parts.lua`'s SHAPED table -- the
+	-- library's one written-down list of the nodes that may carry a facedir --
+	-- carried the straight basalt stair and the basalt slab but not the two
+	-- corners, so binding the basalt roof family failed at construction time
+	-- with "has no paramtype2". `grug_decor` had registered all four shapes
+	-- since the darkage import (`mods/ITEMS/grug_decor/darkage.lua` runs every
+	-- name of its `shaped` list through `register_shapes`); only the library's
+	-- list was short. The wave-3 polish lane added the two corner names to
+	-- SHAPED, append-only and in its own commit, so the family can be bound now
+	-- and is.
+	--
+	-- What that changes, measured on the king's hall (23 x 23, rise 6, this
+	-- handle, 22937 cells before and after): 600 straight stairs, 12 outer
+	-- stairs and 27 slabs swap junglewood for basalt, and the hall stops being
+	-- the one building in Kezamba whose roof disagrees with its walls. The six
+	-- junglewood stairs that remain are the `seat` role, which is furniture.
+	-- This hall's roof has no valley and no flat cap, so `roof_stair_inner` and
+	-- `roof_ridge` are bound and not emitted by it; they are bound anyway
+	-- because `roofs.raster` reads all four off the palette, and any L-shaped
+	-- or flat-capped basalt roof after this one needs them.
+	--
+	-- THE CONTRACT'S TROLL ROW is "stilt halls on basalt platforms, junglewood
+	-- walkways, totem posts, cauldron courts, emergent trees kept" (capitals
+	-- contract section 2.4). The walkways, the lanes, the aprons and every
+	-- house outside this handle stay junglewood: only the two buildings that
+	-- carry the handle are rock all the way up, which is what makes them read
+	-- as the civic pair.
 	M.BASALT = {
 		wall = "grug_decor:darkage_basalt",
 		wall_accent = "grug_decor:darkage_basalt_brick",
@@ -66,6 +78,11 @@ local function loader()
 		castle_wall_stair = "grug_decor:darkage_basalt_stair",
 		castle_wall_slab = "grug_decor:darkage_basalt_slab",
 		castle_paving = "grug_decor:darkage_basalt_brick",
+		roof_stair = "grug_decor:darkage_basalt_stair",
+		roof_stair_outer = "grug_decor:darkage_basalt_stair_outer",
+		roof_stair_inner = "grug_decor:darkage_basalt_stair_inner",
+		roof_slab = "grug_decor:darkage_basalt_slab",
+		roof_ridge = "grug_decor:darkage_basalt",
 	}
 
 	-- The water handle, for the fill's own basins.
