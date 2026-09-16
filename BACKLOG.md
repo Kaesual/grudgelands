@@ -196,6 +196,9 @@ by explicit user decision on 2026-09-13; they are not passed or waived gates.
 - Confirm native and actual fallback-engine startup/generation/restart on that
   candidate, reusing evidence only where unchanged inputs justify it. The
   accepted 2026-09-13 browser test has no visible build ID; do not invent one.
+- Set ContentDB's **AI-generated media flag** on the package page (content
+  policy §4.3): `menu/icon.png` is a Z-Image render, credited in
+  `menu/LICENSE-media.md` (added 2026-09-16).
 
 Contract and evidence boundary: [R8](docs/research/wp40-simple-map-r8-contract.md)
 and [WP40 completion](docs/research/wp40-completion.md). This is a development-WP
