@@ -204,10 +204,15 @@ in the game still comes from a crafter or a boss.
   what every profession does to its own refined items
   (`items_crafting.md` §6b), not a seventh profession that would take a
   cut of all six.
-- **The bow foundation has no current consumer.** Its item path and profession
-  ownership are fixed (`items_crafting.md` §9), but no current or committed
-  class uses a bow baseline. Bows, arrows and quivers therefore remain an
-  inactive Phase-2 substrate rather than player-facing recipes.
+- **The bow foundation has a consumer now, and it is still not built.** Its
+  item path and profession ownership are fixed (`items_crafting.md` §9), and
+  since 2026-09-16 there is a class that needs it: the **Scout**, whose base
+  kit opens with a bow shot ([scout.md](scout.md) §2, user rulings 7 and 12 of
+  `skill_trees.md` §5, work package **WP-Scout**). Nothing changes for the six
+  professions — bows stay a Woodcarver product and the quiver stays
+  Leatherworker — and bows, arrows and quivers remain an inactive substrate
+  until that package builds them; what has ended is the "no consumer"
+  reasoning for leaving them there.
 - Cultural finishing is the scalable race/profession hook
   (`items_crafting.md` §4): a crafter applies only their own culture's fixed
   effects to families their profession owns, while finished stacks remain
