@@ -17,6 +17,14 @@ Detailed quest catalogs are authored with WP8/WP9.
 
 Levels must keep delivering *decisions and buttons*, not just stats:
 
+**The trees themselves are proposed, not decided.**
+[skill_trees.md](skill_trees.md) (PROPOSAL 2026-09-16) builds two trees per
+class on the cadence below, shows that 20 points against 30 ranks is exactly
+two thirds, and lists every talent and capstone. It also asks the two
+questions this section leaves open: whether `combat_stats.md`'s "1 skill
+point per level" or the cadence below is the rule, and how "9 of 10 talents
+are numeric" can hold when each of the two trees carries a capstone.
+
 - **1 talent point every 3 levels** (20 points total at 60); talent
   trees hold 2 trees × 5 talents × 3 ranks = 30 ranks per class — you
   can fill two thirds: real choices, no full clear (WP11).
