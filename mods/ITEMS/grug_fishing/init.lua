@@ -44,7 +44,10 @@ local REEL_RANGE = 8
 local SCAN_INTERVAL = 0.5
 
 -- A rod lasts 64 catches. Nothing else wears it: casting is free, and only the
--- water actually giving something back spends a use.
+-- water actually giving something back spends a use. Breaking needs no code of
+-- ours -- `ItemStack::addWear` CLEARS the stack when the next step would pass
+-- 65535 (src/inventory.cpp:358) -- and the catch is handed over before the wear
+-- is paid, so the last one still lands.
 local ROD_USES = 64
 local ROD_WEAR = math.floor(65535 / ROD_USES)
 

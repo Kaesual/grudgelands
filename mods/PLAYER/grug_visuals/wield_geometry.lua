@@ -190,8 +190,10 @@
 --    which the mirror fixes point by point, so `R * GRIP` is the same vector.
 --
 --    This is a statement about ART, not about items, so it is dispatched by
---    GROUP in `apply.lua` (`axe`) exactly as the diagonal/upright split is, and
---    it reaches the player's own axe through the same seam as an NPC's.
+--    GROUP (`axe`) exactly as the diagonal/upright split is -- both tables are
+--    a few lines below, because they ARE the convention and a fixture with no
+--    engine has to be able to read them -- and it reaches the player's own axe
+--    through the same seam as an NPC's.
 --
 -- The printed check is `tools/wp13/wield_transform_kat.lua`.
 --
