@@ -137,8 +137,9 @@ function grug_money.take(player, copper)
 end
 
 --
--- HUD: the money line sits below the XP line (-110) and the class
--- resource line (-135). No z_index, same as those two elements.
+-- HUD: the money line sits on the "money" row of grug_core.hud_layout,
+-- between the skill-name line and the XP line. No z_index, same as those two
+-- elements. The offset used to be a hard-coded pixel number here.
 --
 
 local hud_ids = {}
@@ -151,14 +152,11 @@ hud_update = function(player)
 end
 
 core.register_on_joinplayer(function(player)
-	hud_ids[player:get_player_name()] = player:hud_add({
-		type = "text",
-		position = {x = 0.5, y = 1},
-		offset = {x = 0, y = -85},
-		alignment = {x = 0, y = 0},
-		number = 0xffd966,
-		text = grug_money.format(grug_money.get(player)),
-	})
+	hud_ids[player:get_player_name()] = player:hud_add(
+		grug_core.hud_layout.text_element("money", {
+			number = 0xffd966,
+			text = grug_money.format(grug_money.get(player)),
+		}))
 end)
 
 core.register_on_leaveplayer(function(player)
