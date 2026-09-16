@@ -19,10 +19,14 @@ before WP13/WP33 author new surface content.
 - Mob level ALWAYS comes from `grug_core.mob_level_at(pos)`: named-zone
   surface level plus the independent depth axis (`combat_stats.md` §3).
   Biome labels never hand-set a mob's level.
-- **Migration note:** until WP40, the running game still uses the retired
-  radial field and the old ring vocabulary printed in §1/§4. Those tables must
-  stay internally consistent with the shipped spawn code, but they are not the
-  placement brief for new structures, quests or gathering nodes.
+- **Migration note (updated 2026-09-16):** WP40 shipped on 2026-09-13 and the
+  radial field is gone with it — `_grug_spawn_zones` and
+  `grug_mapgen/biomes.lua` no longer exist, and the spawn code reads
+  `grug_zones.*` (`grug_mobs/spawn_policy.lua`). The ring tables in §1/§4 are
+  therefore a **historical record of the retired WP18/WP36 map**, not a
+  description of running behaviour and not the placement brief for new
+  structures, quests or gathering nodes. Re-cutting §1/§4 onto the 38 named
+  zones is still outstanding work.
 - Stats derived, never hand-rolled: **HP = 15+5L, dmg = 2+0.4L,
   XP = 10L**; elite armor 80 (×3 HP, ×1.8 dmg, ×4 XP), rare armor 70
   (×5 / ×2.2 / ×6). Speeds: aggressive 4.4, heartland hunters 4.6
@@ -306,7 +310,7 @@ Every "12 seeds" figure in this section and in §1.4 was **re-measured
 deterministic list in `tools/biomecheck/crossseed.py`, Throng land, step 20 —
 because three different post-values for the deep jungle had been written into
 three places. The set above is the one that holds;
-`grug_mapgen/biomes.lua` carries the same numbers.
+`grug_mapgen/biomes.lua` carried the same numbers (file retired with WP40 R7).
 
 Result, this world's seed (`tools/biomecheck`, step 10): eligible-visual
 monopoly **60.9 % → 42.8 %** of Throng land, rainforest-litter-only
