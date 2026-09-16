@@ -81,7 +81,8 @@ end
 --   default:iron_lump   3c  ore lump, top of the band
 -- Canonical Iron Bar is owned by grug_materials and carries its 3c price on
 -- the item definition. It is not worth more than the Iron Lump consumed by
--- the temporary upstream furnace recipe, so smelting cannot print money.
+-- WP26's cooking recipe (`grug_smelting`), so smelting cannot print money --
+-- and the craft audit below re-proves exactly that at every start.
 -- Rough Diamond is owned by grug_materials and therefore carries its 3c
 -- `_grug_sell_price` on the canonical item definition instead of this foreign
 -- override table.
@@ -317,3 +318,8 @@ core.register_on_mods_loaded(function()
 		craft_check(itemname)
 	end
 end)
+
+-- WP26 extends audit 3 to the dual furnace. `dualfurn` recipes are not engine
+-- recipes, so the walk above cannot see them; `audit_alloys.lua` runs the same
+-- §3.8 judgement over `grug_smelting.RECIPES` when that mod is present.
+dofile(modpath .. "/audit_alloys.lua")
