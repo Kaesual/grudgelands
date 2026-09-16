@@ -2377,7 +2377,12 @@ are deleted; no Dowsing Rod or Gem Detector is sold or crafted.
   target remains approximately 3,000 combat events per ordinary item and
   6,000 for a refined item; exact prices participate in the reliable-net-
   income measurement rather than using the retired flat formula.
-- **Respec:** repeatable at the class trainer and rising with level.
+- **Respec:** repeatable **in the talent UI, with no class trainer and no
+  NPC** (ruling 4 of 2026-09-16, `skill_trees.md` §5). It costs **five
+  minutes of measured reliable net solo income** at the character's bracket,
+  rounded by §8.1's money axis and `economy.md` §4.1, and **the first respec
+  of a character is free** (ruling 22). Retires "repeatable at the class
+  trainer and rising with level".
 - Job supplies, vendor consumables and profession-helper fees provide the
   ordinary steady drain.
 
