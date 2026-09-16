@@ -637,6 +637,19 @@ function M.run(repo)
 		-- because it is also a weapon-slot item.
 		{"grug_gear:greataxe_steel", {axe = 1, grug_equip_weapon = 1},
 			POSE.edge_down},
+		-- THE THIRD AXE FAMILY (found by the review of 2026-09-16, which
+		-- pointed out that nothing measured it): `grug_materials/tools.lua`
+		-- registers four more hatchets on top of `default`'s ladder, with the
+		-- same two groups a greataxe carries. Their sprites are byte-for-byte
+		-- the same geometry as `default`'s -- `sprite_axis.py` measures all
+		-- four at 26.3 % overlap, 28 pixels moved -- but that is a fact about
+		-- today's art, so the mapping is asserted rather than inherited.
+		{"grug_materials:axe_iron", {axe = 1, grug_equip_weapon = 1},
+			POSE.edge_down},
+		{"grug_materials:axe_abyssal_steel", {axe = 1, grug_equip_weapon = 1},
+			POSE.edge_down},
+		{"grug_materials:pick_iron", {pickaxe = 1}, POSE.tool},
+		{"grug_materials:shovel_embersteel", {shovel = 1}, POSE.tool},
 		-- The fishing rod (playtest round 5): VoxeLibre's sprite is drawn on
 		-- the same anti-diagonal with the grip at the bottom-left, so it is a
 		-- DIAGONAL tool and not an upright icon -- which is exactly the defect
@@ -693,8 +706,10 @@ function M.run(repo)
 	-- A torch, an apple or a bag is an ordinary upright icon. It has no
 	-- diagonal and no grip pixel, so the tool transform would hang it by a
 	-- point its art does not have -- a quarter of a node in front of the fist,
-	-- rolled 45 degrees. `wield_transform(stature, true)` puts its CENTRE in
-	-- the fist standing up instead, and that is what is checked: measured in
+	-- rolled 45 degrees. `wield_transform(stature, POSE.upright)` puts its
+	-- CENTRE in the fist standing up instead, and that is what is checked --
+	-- the second argument was a BOOLEAN until playtest round 5 turned the two
+	-- poses into three, and nothing may print the old call any more. Measured in
 	-- the upright convention (the weapon's ends are the middles of the top and
 	-- bottom edges, its axis the image's +y), the sprite centre lands on the
 	-- fist and the icon's own up points at model up.

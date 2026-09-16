@@ -156,19 +156,27 @@
 --    than assumed. Mirror a sprite about its own long axis -- exactly what
 --    rolling it 180 degrees does in the world -- and compare silhouettes:
 --
---      default_tool_steelsword / _steelpick / _steelshovel   100.0% overlap
+--      default_tool_*sword / *pick / *shovel                 100.0% overlap
+--      grug_materials_tool_*pick / *shovel                   100.0% overlap
 --      grug_gear_item_sword_* / _dagger_*                    100.0% overlap
 --      default_stick                                         100.0% overlap
---      default_tool_steelaxe                                  26.3% overlap
+--      default_tool_*axe                                      26.3% overlap
+--      grug_materials_tool_*axe                               26.3% overlap
 --      grug_gear_item_greataxe_*                              17.4% overlap
 --      grug_gear_item_staff_*                                 34.5% overlap
 --
+--    39 of the 63 sprites a character can hold are invariant; the tool counts
+--    are printed by the script rather than quoted here, because the first
+--    write-up of this section quoted a hand count and got it wrong.
+--
 --    A sword, a dagger, a pick, a shovel and a stick are drawn ON their own
 --    long axis and cannot tell the two rolls apart. An AXE cannot be drawn that
---    way: its bit is a wide edge mounted ACROSS the end of the haft, and both
---    axe families in the game (minetest_game's four and the generator's six
---    greataxes) draw it on the image's up-left side -- so through the section-7
---    roll the cutting edge ends up pointing at the sky.
+--    way: its bit is a wide edge mounted ACROSS the end of the haft, and all
+--    THREE axe families in the game -- minetest_game's four surviving hatchets,
+--    `grug_materials`' four deep-tier ones (tools.lua, `groups = {axe = 1,
+--    grug_equip_weapon = 1}`) and the generator's six greataxes, fourteen items
+--    -- draw it on the image's up-left side, so through the section-7 roll the
+--    cutting edge ends up pointing at the sky.
 --
 --    Which way it SHOULD point is not taste either, because this arm swings.
 --    The `work` activity and every dig run `character.b3d`'s mine frames, which
@@ -318,8 +326,16 @@ function grug_visuals.wield_transform(stature, pose)
 	end
 	local size = SIZE / k
 	local sprite_edge = 40 * size / 2
-	if pose ~= POSE.edge_down and pose ~= POSE.upright then
+	-- LOUD, not lenient. The second argument was a BOOLEAN before playtest
+	-- round 5 (`true` meant upright), and a stale `true` coerced to the default
+	-- would hand back the TOOL pose -- the sprite a quarter of a node in front
+	-- of the fist and rolled 45 degrees, silently, for as long as nobody looked.
+	-- nil stays legal and means `tool`; anything else is a caller bug.
+	if pose == nil then
 		pose = POSE.tool
+	elseif pose ~= POSE.tool and pose ~= POSE.edge_down and
+			pose ~= POSE.upright then
+		error("grug_visuals.wield_transform: unknown pose " .. tostring(pose), 2)
 	end
 
 	if pose == POSE.upright then

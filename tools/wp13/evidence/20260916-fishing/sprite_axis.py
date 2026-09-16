@@ -35,9 +35,17 @@ ALPHA = 32
 DEFAULT_TEX = os.path.join(REPO, "mods", "BASE", "default", "textures")
 GEAR_TEX = os.path.join(REPO, "mods", "ITEMS", "grug_gear", "textures")
 FISHING_TEX = os.path.join(REPO, "mods", "ITEMS", "grug_fishing", "textures")
+MATERIALS_TEX = os.path.join(REPO, "mods", "ITEMS", "grug_materials",
+                             "textures")
 
 MATERIALS = ("bronze", "iron", "steel", "silversteel", "embersteel",
              "abyssal_steel")
+
+# The four tiers `grug_materials/tools.lua` adds on top of `default`'s ladder.
+# They are the THIRD axe family and they carry `axe = 1`, so they take the
+# rolled pose too -- which is exactly why they have to be measured here and not
+# assumed to match `default`'s by shared ancestry.
+DEEP_TIERS = ("iron", "silversteel", "embersteel", "abyssal_steel")
 
 
 def held_sprites():
@@ -56,6 +64,16 @@ def held_sprites():
         rows.append(("default:axe_" + metal, "EDGE_DOWN",
                      os.path.join(DEFAULT_TEX,
                                   "default_tool_%saxe.png" % metal)))
+    for tier in DEEP_TIERS:
+        rows.append(("grug_materials:pick_" + tier, "tool",
+                     os.path.join(MATERIALS_TEX,
+                                  "grug_materials_tool_%spick.png" % tier)))
+        rows.append(("grug_materials:shovel_" + tier, "tool",
+                     os.path.join(MATERIALS_TEX,
+                                  "grug_materials_tool_%sshovel.png" % tier)))
+        rows.append(("grug_materials:axe_" + tier, "EDGE_DOWN",
+                     os.path.join(MATERIALS_TEX,
+                                  "grug_materials_tool_%saxe.png" % tier)))
     for family, pose in (("sword", "tool"), ("dagger", "tool"),
                          ("staff", "tool"), ("greataxe", "EDGE_DOWN")):
         for metal in MATERIALS:
@@ -105,12 +123,17 @@ def main():
     print("%-34s %-9s %6s %8s %8s %6s %s"
           % ("item", "pose", "opaque", "centroid", "mirror%", "moved", "grip"))
     complaints = 0
+    total_rows = 0
+    invariant = 0
     for name, pose, path in held_sprites():
         if not os.path.exists(path):
             print("%-34s %-9s MISSING %s" % (name, pose, path))
             complaints += 1
             continue
         row = measure(path)
+        total_rows += 1
+        if row["moved"] == 0:
+            invariant += 1
         print("%-34s %-9s %6d %+8.2f %8.1f %6d %s"
               % (name, pose, row["opaque"], row["centroid"], row["overlap"],
                  row["moved"], "yes" if row["grip"] else "NO"))
@@ -133,6 +156,10 @@ def main():
             print("    ^ symmetric about its long axis, so the rolled pose "
                   "buys nothing")
             complaints += 1
+    # COUNTED, never hand-counted: the review of 2026-09-16 found the note
+    # quoting "26 sprites" for what was then 31 rows.
+    print("rows: %d   invariant under the roll (100.0%%): %d   moved by it: %d"
+          % (total_rows, invariant, total_rows - invariant))
     print("complaints: %d" % complaints)
     return 1 if complaints else 0
 
