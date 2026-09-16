@@ -98,7 +98,29 @@ local height = height_factory({source = source, canonical = canonical,
 local palettes = dofile(wp13 .. "/palette.lua")
 local elf_parts = dofile(wp13 .. "/elf_parts.lua")(wp13)
 local avenue = dofile(wp13 .. "/avenue.lua")(wp13)
-local street_plan = dofile(wp13 .. "/street_plan.lua")(wp13)
+-- THE JUNCTION PLAN COMES FROM THE TREE BEING MEASURED where that tree has one,
+-- and from THIS tool's own tree where it does not. That second case is the whole
+-- point of the fallback: the before half of this measurement is taken against a
+-- checkout that predates `wp13/street_plan.lua`, and the junctions of a capital
+-- are a function of its run RECTANGLES alone -- static, seed-free and identical
+-- either way -- so asking the same question of both trees is exact rather than
+-- approximate. What differs between the trees is the ROAD, which is what is
+-- being measured.
+local street_plan
+do
+	local ok, loaded = pcall(function()
+		return dofile(wp13 .. "/street_plan.lua")(wp13)
+	end)
+	if ok then
+		street_plan = loaded
+	else
+		local self = arg[0]:match("^(.*)/tools/wp13/[^/]+$") or "."
+		local mine = self .. "/mods/MAPGEN/grug_mapgen/wp13"
+		street_plan = dofile(mine .. "/street_plan.lua")(mine)
+		io.stderr:write("street_geometry: " .. wp13 ..
+			" carries no street_plan.lua; using " .. mine .. "\n")
+	end
+end
 local settlement = dofile(wp40 .. "/r7_settlement.lua")
 
 -- The six capitals of the roster, each with the palette handle its own
@@ -196,8 +218,6 @@ for _, key in ipairs(KEYS) do
 		local TREAD = palette.maybe("castle_wall_stair") or
 			palette.node("roof_stair")
 		local ROAD_NAME = {[PAVING] = true, [KERB] = true, [TREAD] = true}
-		local PIER = palette.maybe("signature") or palette.node("wall_accent")
-		local RAIL = palette.maybe("railing")
 
 		local function local_surface(x, z)
 			return walkable(anchor_x + x, anchor_z + z)
@@ -379,6 +399,15 @@ for _, key in ipairs(KEYS) do
 			local dx = (spec.axis == "x") and 1 or 0
 			local stats = new_stats()
 			stats.queries = piece.queries or 0
+			-- THE PIERS AND THE RAILS ARE THE RUN'S OWN COUNTS and not a count
+			-- of cells by NAME: a race may bind its kerb out of the same
+			-- masonry a pier is built from (the undead palette does), so a name
+			-- sweep would count half the carriageway as piers. The run
+			-- publishes what it built.
+			if type(piece.street) == "table" then
+				stats.piers = piece.street.piers or 0
+				stats.rails = piece.street.rails or 0
+			end
 			local cells_by_column = {}
 			for i = 1, #piece.cells do
 				local cell = piece.cells[i]
@@ -392,8 +421,6 @@ for _, key in ipairs(KEYS) do
 					cells_by_column[key_column] = list
 				end
 				list[#list + 1] = cell
-				if cell.name == PIER then stats.piers = stats.piers + 1 end
-				if RAIL and cell.name == RAIL then stats.rails = stats.rails + 1 end
 				local _ = cell
 			end
 			for p = spec.from, spec.to do
