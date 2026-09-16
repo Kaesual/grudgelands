@@ -334,10 +334,19 @@ return function(dependencies)
 	--     core, nor more than one terrace step below the lake's own dry rim per
 	--     column of distance from the lake's edge.
 	--
-	-- Both cones are `constant - step * (a distance that changes by about one
-	-- per column)`, so each is about `step`-Lipschitz, and the shaped value is
-	-- their MAXIMUM with the clamped terrace -- `max` of fields is bounded by
-	-- the worst of them, so the apron adds no step of its own beyond `step`.
+	-- Both cones are `constant - step * a DISTANCE`, and both distances are
+	-- 1-Lipschitz on the integer lattice by CONSTRUCTION: `civic_outside` is a
+	-- Chebyshev excess, and the lake cone's is a minimum of distances to the
+	-- reach's sample discs (see `fitting_grids.apron.value`, which also records
+	-- the two earlier formulations the independent review of 2026-09-16
+	-- measured out and what each of them cost). So each cone is exactly
+	-- `step`-Lipschitz, and the shaped value is their MAXIMUM with the clamped
+	-- terrace -- `max` of fields steps by at most the worst of them -- so the
+	-- apron adds no face of its own beyond `step`.
+	-- `tools/wp13/kezamba_water.lua --walls` gates both halves of that rather
+	-- than leaving it asserted: the cone's own worst 4-neighbour step, and the
+	-- over-step faces in the SHIPPED field that the apron is the binding
+	-- constraint on.
 	-- Each cone dies where it falls below the ground it is drawn over, which is
 	-- what makes it a SKIRT of about `(fall / step)` columns and not a plateau:
 	-- the fall is 20 to 30 nodes, so the skirt is seven to ten columns wide.
@@ -347,12 +356,65 @@ return function(dependencies)
 	-- five other capital shapes and the frozen scalar cases of
 	-- `module.quality_geometry_micro_kat` pass nothing, reach none of this code
 	-- and keep their answer to the byte.
-	local CAPITAL_APRON_SHAPE = "cenote_terrace"
+	-- ONE TABLE AND NOT FOUR LOCALS. `construct` below sits at Lua 5.1's
+	-- 60-UPVALUE ceiling the way it sits at the 200-local one, and every
+	-- module local this apron names from inside it costs one of those: four
+	-- constants would not compile. The values are the four paragraphs above.
+	local CAPITAL_APRON = {shape = "cenote_terrace"}
 
-	-- The two columns `water_banks.protect` already holds at the water floor.
-	-- The lake cone starts stepping down only beyond them, so the apron meets
-	-- that rim instead of cutting a fresh face into its outer edge.
-	local CAPITAL_APRON_SHORE_HOLD = 2
+	-- HOW WIDE THE APRON HOLDS THE WATER FLOOR before it starts stepping down,
+	-- and it is a measurement of `water_banks.protect` and not a taste.
+	--
+	-- `protect` lifts every land column within TWO Manhattan steps of planned
+	-- water to that water's floor, and it does so whatever this apron says. So
+	-- a cone that had already stepped below the water floor at such a column
+	-- would leave `protect`'s own ring standing over it -- a fresh face at the
+	-- exact shore this whole change exists to flatten. The cone therefore has
+	-- to be at or above the floor on every column `protect` can touch, and two
+	-- is how far that reaches.
+	--
+	-- It is two and not more because the cone's disc set is DENSE (see
+	-- `CAPITAL_APRON.spacing`): measured over this cenote, no column of
+	-- the mask stands outside every disc at all, and a land column in
+	-- `protect`'s ring stands at most 2 outside. On the four authored samples
+	-- alone those numbers are 5 and 6, which would have forced a hold of six
+	-- and four more columns of flat rim than the shore needs.
+	CAPITAL_APRON.hold = 2
+
+	-- HOW FINELY THE REACH IS SAMPLED INTO DISCS, and why the cone is built out
+	-- of discs at all.
+	--
+	-- The cone needs "how far outside the lake is this column", and the only
+	-- form of that answer which is 1-Lipschitz by CONSTRUCTION -- rather than by
+	-- an argument that turned out to be false, twice, see
+	-- `fitting_grids.apron.value` -- is a minimum of distances to discs. The
+	-- mask (`simple_map.lua`'s `bay_member`) is the union of the centreline's
+	-- own sample discs AND the tapered capsules between them, so four authored
+	-- samples under-cover it; interpolating extra samples along each segment
+	-- closes that gap with more discs, and a disc is still a disc.
+	--
+	-- Sixteen is measured. The worst distance from a mask column to the nearest
+	-- disc, over this cenote's 30 354 wet columns:
+	--
+	--     spacing        authored only   32   16    8    4
+	--     mask column         5           1    0    0    0
+	--     protect ring        6           3    2    2    2
+	--
+	-- so sixteen is the coarsest spacing at which the discs cover the mask
+	-- completely and the hold above can stay at `protect`'s own two. It turns
+	-- this cenote's four samples into fourteen discs.
+	CAPITAL_APRON.spacing = 16
+
+	-- WHERE A DISC STOPS BEING ASKED, and why that cannot be a second pruning
+	-- cliff like the one the review found. At `half_width + this` the cone from
+	-- that disc stands at `water_y + 1 - step * (64 - 2)` = 186 nodes below the
+	-- lake's rim, which for this capital is y -120: below `WATER_LEVEL - 24`,
+	-- the value the height session itself returns for a column outside the map.
+	-- A disc that far away can never be the maximum, so skipping it changes no
+	-- answer -- which is exactly what the earlier `maximum_half +
+	-- bank_blend_width` window did NOT guarantee, because at the wide end of a
+	-- tapered segment it cut off nine columns outside the water.
+	CAPITAL_APRON.reach = 64
 
 	-- `banded` is the stepped terrace of `fitting_grids.band.value`. It is
 	-- OPTIONAL so the frozen scalar cases of `module.quality_geometry_micro_kat`
@@ -1914,7 +1976,7 @@ return function(dependencies)
 			selected_fittings = {}, {}, {}, {}, {}
 		local start_by_zone, capital_by_zone = {}, {}
 		local fitting_grids = {start = {}, capital = {}, selected = {},
-			band = {keys = {}, values = {}}, apron = {}}
+			band = {keys = {}, values = {}}, apron = {discs = {}}}
 
 		-- THE RELIEF THE CAPITAL STEP BAND IS CUT FROM.
 		--
@@ -2019,57 +2081,132 @@ return function(dependencies)
 		-- It is hung off `fitting_grids` for the reason `band` is -- `construct`
 		-- sits at Lua 5.1's 200-local ceiling -- and it is only ever called for
 		-- a land column of a capital whose profile names
-		-- `CAPITAL_APRON_SHAPE`, which is one capital in the roster.
+		-- `CAPITAL_APRON.shape`, which is one capital in the roster.
 		--
-		-- THE LAKE CONE SCANS EVERY SEGMENT AND NOT THE NEAREST ONE, and that
-		-- is a measurement and not a preference. `nearest_hydrology_segment`
-		-- answers with the segment whose CENTRELINE is closest, which is not
-		-- the segment whose EDGE is closest when a reach tapers: at
-		-- (1864, 1634), five columns off this cenote's south shore, the closest
-		-- centreline is the narrow first segment 62 columns away behind a
-		-- half-width of 49 (13 columns outside it) while the wide second
-		-- segment is 72 away behind a half-width of 70 -- two columns outside,
-		-- which is where the water actually is. The first version of this
-		-- function asked `nearest_hydrology_segment` and the lake rim kept its
-		-- 29-node wall. The mask itself (`simple_map.lua`'s `bay_member`) is
-		-- the UNION of the segment capsules, so the distance outside it is the
-		-- MINIMUM over the segments, which is what this loop takes.
+		-- THE LAKE CONE MEASURES ITS DISTANCE TO THE REACH'S SAMPLE DISCS, and
+		-- that is what makes the Lipschitz claim above a construction rather
+		-- than a hope. The first two versions of this function did it
+		-- differently and the independent review of 2026-09-16 measured both
+		-- out:
 		--
-		-- The window costs nothing: a segment is a candidate only within
-		-- `max(half_width) + bank_blend_width` of its centreline, sixteen
-		-- columns past the reach's own edge, and a cone of `step` from the
-		-- water floor has fallen below any ground this delta carries long
-		-- before that. `hydrology_half_width` is the same interpolation the
-		-- bank blend uses, and `point_segment_ratio`'s endpoint branches with
-		-- it give exactly `bay_member`'s end discs.
+		--   1. `nearest_hydrology_segment` answers with the segment whose
+		--      CENTRELINE is closest, which is not the segment whose EDGE is
+		--      closest when a reach tapers. At (1864, 1634), five columns off
+		--      this cenote's south shore, the closest centreline is the narrow
+		--      first segment 62 columns away behind a half-width of 49 --
+		--      thirteen columns outside it -- while the wide second segment is
+		--      72 away behind a half-width of 70, two columns outside, which is
+		--      where the water actually is. The lake rim kept its 29-node wall.
+		--   2. Taking the MINIMUM over the candidate segments fixed that, and
+		--      left two of its own. A segment leaves the candidate set at
+		--      `max(half_width) + bank_blend_width` of its centreline, and at
+		--      the WIDE end of a tapered segment that cut-off still sits nine
+		--      columns outside the water, so the cone fell off a cliff of its
+		--      own when a segment was pruned. And `hydrology_half_width`
+		--      interpolates along the segment, so it carries the reach's taper
+		--      gradient (0.460 and 0.401 on this cenote's first and third
+		--      segments) on top of the distance's own 1. Measured exhaustively
+		--      over the capsule window, the cone's own worst 4-neighbour step
+		--      was **54 nodes** -- eighteen terrace steps -- and it leaked into
+		--      the shipped field as up to a 6-node face (9 on seed 0) that the
+		--      ground had not had before.
+		--
+		-- A DISTANCE TO A DISC IS A REAL DISTANCE. `isqrt(dx*dx + dz*dz) - r`
+		-- is 1-Lipschitz on the integer lattice (the true distance is, and an
+		-- integer floor of a 1-Lipschitz function moves by at most one), the
+		-- MINIMUM of finitely many 1-Lipschitz functions is 1-Lipschitz, and
+		-- `max(0, D - hold)` and a multiplication by `step` keep it that way.
+		-- So this cone is exactly `step`-Lipschitz, with no pruning to fall off
+		-- and no interpolation to carry a gradient. Measured the same way as
+		-- the two above: **worst own 4-neighbour step 3 over 99 193 columns,
+		-- with no exception**, and `tools/wp13/kezamba_water.lua --walls` gates
+		-- it.
+		--
+		-- WHAT THE DISCS MISS, and why they are densified until they miss
+		-- nothing. The mask is the union of the AUTHORED sample discs and the
+		-- tapered capsules between them, and on the four authored samples alone
+		-- the capsules add a sliver of 291 of the mask's 30 354 columns
+		-- (0.96 %) that no disc covers -- enough to force the shore hold to six
+		-- and lay four more columns of flat rim than the water needs.
+		-- `CAPITAL_APRON.spacing` interpolates extra samples along each
+		-- segment until the discs cover the mask completely (measured: zero
+		-- mask columns outside every disc, at a spacing of sixteen), and an
+		-- interpolated disc is as much a disc as an authored one, so the
+		-- Lipschitz property is untouched.
 		--
 		-- Neither cone can raise a WATER column: `fitting_grade_at` reaches
 		-- this only on the land branch, and a capital never grades planned
 		-- water at all. The wet mask, the water surface and the civic
 		-- reference are therefore untouched by construction.
+		--
+		-- The disc list is built once per owning zone, on the first column that
+		-- asks for it, and is empty for a zone with no wet reach of its own --
+		-- which is every zone but this one, and the loop below then does
+		-- nothing.
 		function fitting_grids.apron.value(x, z, owner, reference, step,
 				civic_outside)
 			local floor_y = reference - step * civic_outside
-			local candidates = bucket_at(hydro_grid, x, z)
-			if not candidates then return floor_y end
-			for index = 1, #candidates do
-				local segment = candidates[index]
-				local reach = segment.reach
-				if reach.zone_numeric_id == owner and reach.profile.depth > 0 then
-					local numerator, denominator = point_segment_ratio(x, z,
-						segment.a, segment.b)
-					if numerator <= segment.maximum_half * segment.maximum_half *
-							denominator then
-						local outside = deterministic.isqrt(math.floor(
-							numerator / denominator)) -
-							hydrology_half_width(segment, x, z)
-						if outside < CAPITAL_APRON_SHORE_HOLD then
-							outside = CAPITAL_APRON_SHORE_HOLD
+			local discs = fitting_grids.apron.discs[owner]
+			if discs == nil then
+				discs = {}
+				for index = 1, #source.hydrology do
+					local row = source.hydrology[index]
+					local record = hydrology_by_id[row.id]
+					if record and record.zone_numeric_id == owner and
+							record.profile.depth > 0 then
+						local line = row.centreline
+						for point = 1, #line do
+							local sample = line[point]
+							discs[#discs + 1] = {x = sample.x, z = sample.z,
+								half_width = sample.half_width,
+								rim = record.water_y + 1,
+								limit = sample.half_width +
+									CAPITAL_APRON.reach}
+							-- The interpolated samples of this segment, evenly
+							-- spaced and rounded the way every other authored
+							-- interpolation in this file is.
+							local next_sample = line[point + 1]
+							if next_sample then
+								local vx = next_sample.x - sample.x
+								local vz = next_sample.z - sample.z
+								local length = deterministic.isqrt(
+									vx * vx + vz * vz)
+								local parts = floor_div(length +
+									CAPITAL_APRON.spacing - 1,
+									CAPITAL_APRON.spacing)
+								for part = 1, parts - 1 do
+									local half = sample.half_width +
+										round_ratio((next_sample.half_width -
+											sample.half_width) * part, parts)
+									discs[#discs + 1] = {
+										x = sample.x +
+											round_ratio(vx * part, parts),
+										z = sample.z +
+											round_ratio(vz * part, parts),
+										half_width = half,
+										rim = record.water_y + 1,
+										limit = half +
+											CAPITAL_APRON.reach}
+								end
+							end
 						end
-						local from_water = reach.water_y + 1 -
-							step * (outside - CAPITAL_APRON_SHORE_HOLD)
-						if from_water > floor_y then floor_y = from_water end
 					end
+				end
+				fitting_grids.apron.discs[owner] = discs
+			end
+			for index = 1, #discs do
+				local disc = discs[index]
+				local dx, dz = x - disc.x, z - disc.z
+				local square = dx * dx + dz * dz
+				if square <= disc.limit * disc.limit then
+					local outside = deterministic.isqrt(square) -
+						disc.half_width
+					if outside < CAPITAL_APRON.hold then
+						outside = CAPITAL_APRON.hold
+					end
+					local from_water = disc.rim -
+						step * (outside - CAPITAL_APRON.hold)
+					if from_water > floor_y then floor_y = from_water end
 				end
 			end
 			return floor_y
@@ -2371,7 +2508,7 @@ return function(dependencies)
 									-- whose last is nil and take the same code path
 									-- they took before it existed.
 									local apron
-									if profile.shape == CAPITAL_APRON_SHAPE and
+									if profile.shape == CAPITAL_APRON.shape and
 											civic_outside > 0 then
 										apron = fitting_grids.apron.value(x, z, owner,
 											fitting.reference_y, step, civic_outside)
