@@ -26,9 +26,11 @@ the zone name; this increment introduces no separate town name.
   does not introduce profession, storage, quest, innkeeper or travel services.
   The functional systems and their NPCs retain their own work packages.
 
-The other five starts, all capitals and the rest of WP13 remain separate
-increments. The first settlement receives focused visual and walkability
-playtests before its architecture is extended to other places.
+The first settlement received focused visual and walkability playtests before
+its architecture was extended to other places. That extension has since
+happened: the other five starts landed on 2026-09-14 and all six capitals by
+2026-09-16 ("Capitals in the world" below). Villages, outposts, camps and the
+kings are the rest of WP13.
 
 ## Hearthpine expansion and ground integration
 
@@ -176,12 +178,18 @@ loops — a city ring, one per gate tower and one per district — and each loop
 gets its own guard,
 walking that loop and no other; its flair villagers keep to the composition they
 belong to, the core or their own plot, instead of wandering the whole city. Its
-two traders stand on the blueprint's own vendor sockets; the capitals whose
-cores have not been built yet keep their fixed vendor offsets until they are.
+two traders stand on the blueprint's own vendor sockets. (The fixed vendor
+offsets of `grug_traders/vendors.lua` are the fallback for a capital whose core
+has not been built; since 2026-09-16 all six cores export their two sockets, so
+no capital uses the offsets any more.)
 
 **Walled capitals.** Decided 2026-09-15 with the second capital, Dur Brannoc.
-Three of the six are walled (Dur Brannoc, Nhal Veyr, Gor Drazhak) and three are
-open. A curtain wall runs along all four edges of the capital's 512 envelope,
+The user's ruling of 2026-09-14 made three of the six walled (Dur Brannoc,
+Nhal Veyr, Gor Drazhak) and three open; the round-3 plan then moved Highcourt
+across, so the split is **four walled and two open** and the two open ones are
+Lethariel and Kezamba (the provenance is below, and in
+[wp13-capitals-pois-contract.md](../research/wp13-capitals-pois-contract.md)
+section 4). A curtain wall runs along all four edges of the capital's 512 envelope,
 with a turret every 64 nodes, a turret at each corner and a gatehouse on each of
 the four gate axes, and the avenue runs through its gate passage. It has no
 fixed cells either: like the avenues, it is computed per mapchunk from the
