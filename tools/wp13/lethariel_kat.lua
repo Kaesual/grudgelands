@@ -1215,6 +1215,74 @@ return function(repo)
 			union_count}, ":")
 	end
 
+	-- ------------------------------------------------------------------
+	-- 8. THE BOUGH HOUSE'S FLIGHT, at every rotation
+	-- ------------------------------------------------------------------
+	--
+	-- Playtest 5, screenshot 8: "the stair treads at the tree house / raised
+	-- watch post are rotated 180 degrees". They were: `elf_parts.tree_platform`
+	-- wrote its treads at param2 0 while the flight climbs towards z-.
+	--
+	-- The rule this asserts is the one `wp13/parts.lua`'s header states -- a
+	-- stair's raised half lies toward `facedir_to_dir(param2)` -- applied to a
+	-- flight: from one tread to the next the walker moves one column
+	-- horizontally and one course up, so every tread must be raised toward the
+	-- NEXT tread's column. That is a property of the built flight and not of a
+	-- constant, so it holds at all four rotations and stays true if the part is
+	-- ever re-authored to climb some other way. Written at param2 0 again it
+	-- fails on the first tread.
+	local flight_rows = {}
+	for _, deck in ipairs({6, 7}) do
+		for turns = 0, 3 do
+			local part = elf.tree_platform(palette,
+				{size = 11, deck = deck, wall_h = 3, id = "kat_bough"})
+			local buf = parts.buffer()
+			parts.stamp(buf, part, 0, 0, 0, turns)
+			local order, count = buf:cells()
+			-- The treads: every shaped cell of the marble stair the part uses
+			-- for its flight. The deck floor, the rail and the hall are other
+			-- nodes, and the shrine is a different part, so this picks out the
+			-- flight and nothing else.
+			local tread_name = palette.maybe("signature_stair") or
+				palette.node("roof_stair")
+			assert(parts.shaped(tread_name), "the bough house's tread " ..
+				tread_name .. " is not a shaped node")
+			local treads = {}
+			for step = 1, count do
+				local cell = order[step]
+				if cell.name == tread_name then treads[#treads + 1] = cell end
+			end
+			assert(#treads == deck, "the bough house at turn " .. turns ..
+				" has " .. #treads .. " treads and not " .. deck)
+			table.sort(treads, function(a, b) return a.y < b.y end)
+			for step = 1, #treads - 1 do
+				local here, next_tread = treads[step], treads[step + 1]
+				assert(next_tread.y == here.y + 1,
+					"the bough house's flight steps " ..
+						(next_tread.y - here.y) .. " courses at tread " .. step)
+				local dx = next_tread.x - here.x
+				local dz = next_tread.z - here.z
+				assert(math.abs(dx) + math.abs(dz) == 1,
+					"the bough house's flight moves " .. dx .. "," .. dz ..
+						" between treads " .. step .. " and " .. (step + 1))
+				local want = parts.step_facedir(dx, dz)
+				assert(here.param2 == want, "the bough house's tread " ..
+					step .. " at turn " .. turns .. " carries param2 " ..
+					here.param2 .. " and is raised away from the climb; the " ..
+					"flight rises towards " .. dx .. "," .. dz ..
+					", which is param2 " .. want)
+			end
+			-- The HEAD tread has no next tread, and the flight is straight, so
+			-- it keeps the same facing as the one below it.
+			assert(treads[#treads].param2 == treads[#treads - 1].param2,
+				"the bough house's head tread at turn " .. turns ..
+					" faces away from the rest of the flight")
+			flight_rows[#flight_rows + 1] = deck .. ":" .. turns .. ":" ..
+				treads[1].param2 .. ":" .. #treads
+		end
+	end
+	say("lethariel_flight", table.concat(flight_rows, ","))
+
 	local digest = common.hex(common.new_sha256()(
 		table.concat(digest_parts, "\n")))
 	say("lethariel_overlay", #runs, overlay_cells, road_cells, edge_cells,

@@ -104,25 +104,57 @@ local function loader()
 	-- boundary seed). `highcourt_plots.lua --repair` moved that one four nodes
 	-- to the nearest legal position and left the other thirty-five where they
 	-- were.
+	--
+	-- AND SIX MORE MOVED ON NINE WORLDS (2026-09-16, WP13 wave 3). Every
+	-- verification above was taken on TWO worlds, because that is all
+	-- `highcourt_plots.lua` takes, and wave 1 had already learned that two are
+	-- not enough: a lot legal on the two gate seeds can be illegal on the
+	-- user's own. `tools/wp13/capital_lots.lua` asks the same question of as
+	-- many worlds as it is given, and on the nine of
+	-- `tools/wp13/capital_anchor_fixture.lua` six of these thirty-six lots
+	-- stood somewhere they may not -- one over its rise, five over their fall
+	-- or rise, none of them on a world this table had ever been checked
+	-- against:
+	--
+	-- THE SEED COLUMN BELOW IS AN INDEX, RESOLVED. `capital_lots.lua` reports
+	-- "ILLEGAL <n>:<rule>:<value>", and `<n>` is the position of the field dump
+	-- in the argument list, which is the order of
+	-- `tools/wp13/capital_anchor_fixture.lua`'s SEEDS -- so 1 is the gate seed,
+	-- 4 is seed 0, 7 is 42, 8 is 12345 and 9 is 999999999. The first version of
+	-- this comment read those indices as seeds and named six of the thirteen
+	-- rows wrong; the independent review of 2026-09-16 caught it against this
+	-- lane's own `audit-terrain-before.txt`, which records the same lots under
+	-- the right seeds.
+	--
+	--   southeast 5   z -116 -> -116, x 116 -> 112   (rise 8 on seed 0)
+	--   northeast 1   z  108 ->  112                 (fall 8 on seed 42)
+	--   northwest 1   z   80 ->   84                 (rise 7 on seed 999999999)
+	--   northwest 2   z   80 ->   76                 (rise 7 on seed 42)
+	--   northwest 8   z  168 ->  164                 (rise 8 on seed 12345)
+	--   southwest 6   z -188 -> -196                 (rise 7 on seed 0)
+	--
+	-- Five moved four nodes and one eight; the other thirty kept the position
+	-- they were authored at, which is what `--repair` is for. The measurement
+	-- is `tools/wp13/evidence/20260916-polish/measurements/`.
 	M.LOTS = {
 		southeast = {
 			{x = 72, z = -72}, {x = 116, z = -72}, {x = 160, z = -72},
-			{x = 72, z = -116}, {x = 116, z = -116}, {x = 160, z = -116},
+			{x = 72, z = -116}, {x = 112, z = -116}, {x = 160, z = -116},
 			{x = 72, z = -160}, {x = 116, z = -160}, {x = 160, z = -160},
 		},
 		northeast = {
-			{x = 132, z = 108}, {x = 132, z = 152}, {x = 132, z = 196},
+			{x = 132, z = 112}, {x = 132, z = 152}, {x = 132, z = 196},
 			{x = 176, z = 108}, {x = 176, z = 152}, {x = 176, z = 196},
 			{x = 220, z = 108}, {x = 220, z = 152}, {x = 220, z = 196},
 		},
 		northwest = {
-			{x = -132, z = 80}, {x = -176, z = 80}, {x = -220, z = 80},
+			{x = -132, z = 84}, {x = -176, z = 76}, {x = -220, z = 80},
 			{x = -132, z = 124}, {x = -176, z = 124}, {x = -220, z = 124},
-			{x = -132, z = 168}, {x = -180, z = 168}, {x = -220, z = 168},
+			{x = -132, z = 168}, {x = -180, z = 164}, {x = -220, z = 168},
 		},
 		southwest = {
 			{x = -48, z = -76}, {x = -48, z = -132}, {x = -48, z = -172},
-			{x = -84, z = -116}, {x = -84, z = -152}, {x = -84, z = -188},
+			{x = -84, z = -116}, {x = -84, z = -152}, {x = -84, z = -196},
 			{x = -120, z = -84}, {x = -128, z = -128}, {x = -120, z = -164},
 		},
 	}
@@ -187,6 +219,37 @@ local function loader()
 	-- against the terrain of seeds 531802985935182545 and 8675309
 	-- (`--derive-fill` reproduces this table); section 4 of
 	-- docs/research/wp13-highcourt-fill.md is the measurement.
+	--
+	-- SEVEN OF THE SIXTEEN MOVED ON NINE WORLDS (2026-09-16, WP13 wave 3), for
+	-- the reason written over `M.LOTS` above: two worlds were what the tool of
+	-- the day took, and six of these sixteen were illegal on one of the other
+	-- seven. The seventh move is a CASCADE and not a terrain finding: north-west
+	-- DISTRICT LOT 2 moved from -176,80 to -176,76, i.e. toward this fill lot,
+	-- and north-west fill 1 at -180,48 then stood inside its lane
+	-- (`ILLEGAL lot:northwest/2` when it is put back on the repaired grid).
+	-- That is why `--repair` repairs the fill grid after the district grid and
+	-- against the district lots AS THEY NOW STAND.
+	--
+	-- The seed column is the resolved index, for the reason written over
+	-- `M.LOTS` above.
+	--
+	--   southeast   nothing moved
+	--   northeast 4   x 140 -> 144                (fall 12 on seed 999999999)
+	--   northwest 1   z  48 ->  44, move 4        (cascade: lane to lot 2)
+	--   northwest 4   x -80 -> -84                (fall 10 on seed 999999999)
+	--   southwest 1   -88,-220 -> -68,-228, move 28  (fall 7 on seed 2)
+	--   southwest 2   x -220 -> -224              (fall 10 on seed 999999999)
+	--   southwest 3   z -212 -> -220, move 8      (rise 9 on seed 15912857...)
+	--   southwest 4   -144,-104 -> -116,-60, move 72 (fall 8 on seed 0)
+	--
+	-- SOUTH-WEST FILL 4 WALKED 72 NODES, and that is worth a reader's eye
+	-- rather than a silent table edit. It is the garden strip inside the lot
+	-- grid, the smallest of the four slots, and the south-west is the quadrant
+	-- both rivers run through: with the nine district lots of that quadrant
+	-- standing and a four-node lane round each of them, the nearest column that
+	-- carries a five-reach pad on all nine worlds is that far away. It is still
+	-- a garden inside the same quarter; it is no longer between the same two
+	-- columns of the grid.
 	M.FILL_LOTS = {
 		southeast = {
 			{x = 208, z = -128}, {x = 104, z = -232},
@@ -194,15 +257,15 @@ local function loader()
 		},
 		northeast = {
 			{x = 76, z = 204}, {x = 180, z = 76},
-			{x = 172, z = 224}, {x = 140, z = 84},
+			{x = 172, z = 224}, {x = 144, z = 84},
 		},
 		northwest = {
-			{x = -180, z = 48}, {x = -76, z = 180},
-			{x = -172, z = 196}, {x = -80, z = 132},
+			{x = -180, z = 44}, {x = -76, z = 180},
+			{x = -172, z = 196}, {x = -84, z = 132},
 		},
 		southwest = {
-			{x = -88, z = -220}, {x = -220, z = -116},
-			{x = -196, z = -212}, {x = -144, z = -104},
+			{x = -68, z = -228}, {x = -224, z = -116},
+			{x = -196, z = -220}, {x = -116, z = -60},
 		},
 	}
 

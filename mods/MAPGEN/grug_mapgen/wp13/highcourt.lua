@@ -62,9 +62,33 @@ local function loader(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 	local wall = dofile(directory .. "/wall.lua")(directory)
-	local district = dofile(directory .. "/highcourt_district.lua")(directory)
+	-- The district roster, and through it the quadrant module. This is
+	-- `wp13/dur_brannoc.lua`'s shape, and Highcourt was the one four-district
+	-- capital that did not have it.
+	local districts = dofile(directory .. "/highcourt_districts.lua")(directory)
 
 	local M = {}
+
+	-- The four quadrants' lot grids and the seeded permutation that hands one
+	-- grid to one district (`highcourt_quadrants.lua`). Published here for the
+	-- reason `wp13/dur_brannoc.lua` publishes its own: that is where every
+	-- consumer looks for a capital's geometry, and a capital that does not
+	-- publish it is refused by `tools/wp13/capital_lots.lua` -- the NINE-SEED
+	-- lot predicate. The pilot capital was the one capital that could only be
+	-- measured two worlds at a time (`tools/wp13/highcourt_plots.lua` takes two
+	-- field dumps), which is exactly the gap wave 1 found the hard way: a lot
+	-- legal on the two gate seeds was illegal on the user's own.
+	--
+	-- IT IS THE ROSTER'S OWN INSTANCE and not a second `dofile` of the module.
+	-- The first version of this line loaded `highcourt_quadrants.lua` again, so
+	-- `highcourt.quadrants` and `highcourt_districts.quadrants` were two
+	-- separate tables of the same data -- harmless while every consumer only
+	-- reads them, and a trap for the first one that does not. The independent
+	-- review of 2026-09-16 raised it. Taking the roster instead ALSO removes a
+	-- duplicate rather than adding one: `highcourt_district.lua` used to be
+	-- loaded once here and once inside the roster, and `M.district` below is
+	-- now the roster's own market district, the same table it always was.
+	M.quadrants = districts.quadrants
 
 	local RADIUS = 47
 	local SCHEMA = "grug_wp13_highcourt_core_v1"
@@ -533,7 +557,11 @@ local function loader(directory)
 		}, surface, plan)
 	end
 
-	M.district = district.market
+	-- The market district, which is `districts.districts[1]` by the roster's own
+	-- role order (`highcourt_quadrants.ROLES[1] == "market_professions"`, and
+	-- the roster asserts that at load). It is the same table `district.market`
+	-- was.
+	M.district = districts.districts[1]
 
 	function M.core()
 		local human = palettes.new("human")

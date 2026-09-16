@@ -1,0 +1,21 @@
+seed 531802985935182545  audit_terrain_findings=0
+seed 8675309  audit_terrain_findings=0
+seed 15912857179583385436  audit_terrain_findings=1
+    WP13 highcourt: the plot martial_wood_yard at offset -196,-212 does not stand on this world's ground -- submerged columns 0, perimeter fall 0 against a skirt of 6, rise 10 against a clear of 8.
+seed 0  audit_terrain_findings=1
+    WP13 highcourt: the plot homes_kitchen_garden at offset -144,-104 does not stand on this world's ground -- submerged columns 0, perimeter fall 8 against a skirt of 6, rise 3 against a clear of 8.
+seed 1  audit_terrain_findings=0
+seed 2  audit_terrain_findings=1
+    WP13 highcourt: the plot lore_sexton_garden at offset -196,-212 does not stand on this world's ground -- submerged columns 0, perimeter fall 8 against a skirt of 6, rise 0 against a clear of 8.
+seed 42  audit_terrain_findings=1
+    WP13 highcourt: the plot martial_barracks at offset 132,108 does not stand on this world's ground -- submerged columns 0, perimeter fall 7 against a skirt of 6, rise 3 against a clear of 13.
+seed 12345  audit_terrain_findings=1
+    WP13 highcourt: the plot lore_sexton_garden at offset -196,-212 does not stand on this world's ground -- submerged columns 0, perimeter fall 7 against a skirt of 6, rise 1 against a clear of 8.
+seed 999999999  audit_terrain_findings=6
+    WP13 highcourt: the plot market_green at offset 140,84 does not stand on this world's ground -- submerged columns 0, perimeter fall 12 against a skirt of 6, rise 0 against a clear of 8.
+    WP13 highcourt: the plot martial_muster_field at offset -88,-220 does not stand on this world's ground -- submerged columns 0, perimeter fall 10 against a skirt of 6, rise 4 against a clear of 8.
+    WP13 highcourt: the plot martial_remount_pasture at offset -220,-116 does not stand on this world's ground -- submerged columns 0, perimeter fall 10 against a skirt of 6, rise 0 against a clear of 8.
+    WP13 highcourt: the plot martial_wood_yard at offset -196,-212 does not stand on this world's ground -- submerged columns 0, perimeter fall 14 against a skirt of 6, rise 4 against a clear of 8.
+    WP13 highcourt: the plot martial_green at offset -144,-104 does not stand on this world's ground -- submerged columns 0, perimeter fall 8 against a skirt of 6, rise 5 against a clear of 8.
+    WP13 highcourt: the plot homes_kitchen_garden at offset -80,132 does not stand on this world's ground -- submerged columns 0, perimeter fall 10 against a skirt of 6, rise 2 against a clear of 8.
+BEFORE total_findings=11

@@ -1,0 +1,45 @@
+registered	hearthpine	dwarf	8
+socket	gate_west	guard_post	nil	nil	nil	-	spawn_true	-1804	38	-2491	-0.000000
+socket	gate_east	guard_post	nil	nil	nil	-	spawn_true	-1796	38	-2491	-3.141593
+socket	watch_a	guard_patrol	vale	1	nil	-	spawn_true	-1800	38	-2498	-1.570796
+socket	watch_b	guard_patrol	vale	2	nil	-	spawn_true	-1800	39	-2526	1.570796
+socket	market	vendor	nil	nil	race	-	spawn_true	-1793	38	-2555	1.570796
+socket	bench	idle	nil	nil	nil	bench,shade	spawn_true	-1793	38	-2549	-1.570796
+socket	hall	quest	nil	nil	nil	door	spawn_true	-1828	38	-2524	-0.000000
+socket	spare	idle	nil	nil	nil	-	spawn_false	-1804	38	-2538	-3.141593
+yaw	axis_facings	pass
+copies	queries_and_source	pass
+queries	by_key_and_missing	pass
+refused	a second registration of one settlement
+refused	an empty settlement key
+refused	an empty race id
+refused	a fractional anchor
+refused	a missing socket list
+refused	an unknown role
+refused	a fractional coordinate
+refused	a diagonal facing
+refused	a zero facing
+refused	a missing facing
+refused	an empty socket id
+refused	a patrol waypoint without a loop
+refused	a patrol waypoint without an order
+refused	a loop on a non-patrol socket
+refused	a vendor without a kind
+refused	an unknown vendor kind
+refused	a kind on a non-vendor socket
+refused	a truthy spawn flag
+refused	a numeric spawn flag
+refused	a spare guard post
+refused	a spare vendor
+refused	a work socket without an activity
+refused	an unknown work activity
+refused	an activity on a non-work socket
+refused	a spare work socket
+refused	an empty tag list
+refused	a numeric tag
+refused	a duplicate socket id
+work_and_profession	smith	butcher	mine	mason
+second_settlement	one_race	start_wins
+refusals	left_no_state	pass
+vocabulary_activity	smith,fish,farm,chop,tend,pray,stall,sit,sweep,mine,brew,carve,mourn,spar,forage
+vocabulary_kind	race,general,butcher,smith,fishmonger,baker,tailor,mason,brewer,bowyer,herbalist,armourer,tanner,embalmer

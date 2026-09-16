@@ -1,0 +1,58 @@
+route_gate	station:elandor_dur_brannoc:gate_west	-2056	-1500	west
+route_gate	station:elandor_dur_brannoc:gate_east	-1544	-1500	east
+route_gate	station:elandor_dur_brannoc:gate_south	-1800	-1756	south
+route_gate	station:elandor_dur_brannoc:gate_north	-1800	-1244	north
+route_gate	station:elandor_highcourt:gate_west	-256	-1500	west
+route_gate	station:elandor_highcourt:gate_east	256	-1500	east
+route_gate	station:elandor_highcourt:gate_south	0	-1756	south
+route_gate	station:elandor_highcourt:gate_north	0	-1244	north
+route_gate	station:elandor_lethariel:gate_west	1544	-1500	west
+route_gate	station:elandor_lethariel:gate_east	2056	-1500	east
+route_gate	station:elandor_lethariel:gate_south	1800	-1756	south
+route_gate	station:elandor_lethariel:gate_north	1800	-1244	north
+route_gate	station:kragmar_nhal_veyr:gate_west	-2056	1500	west
+route_gate	station:kragmar_nhal_veyr:gate_east	-1544	1500	east
+route_gate	station:kragmar_nhal_veyr:gate_south	-1800	1244	south
+route_gate	station:kragmar_nhal_veyr:gate_north	-1800	1756	north
+route_gate	station:kragmar_gor_drazhak:gate_west	-256	1500	west
+route_gate	station:kragmar_gor_drazhak:gate_east	256	1500	east
+route_gate	station:kragmar_gor_drazhak:gate_south	0	1244	south
+route_gate	station:kragmar_gor_drazhak:gate_north	0	1756	north
+route_gate	station:kragmar_kezamba:gate_west	1544	1500	west
+route_gate	station:kragmar_kezamba:gate_east	2056	1500	east
+route_gate	station:kragmar_kezamba:gate_south	1800	1244	south
+route_gate	station:kragmar_kezamba:gate_north	1800	1756	north
+route_gate_catalog_agreement	24	24
+route_gate_approach	route_002	station:elandor_dur_brannoc:gate_south	b	144
+route_gate_approach	route_003	station:elandor_dur_brannoc:gate_north	a	144
+route_gate_approach	route_005	station:elandor_highcourt:gate_south	b	144
+route_gate_approach	route_006	station:elandor_highcourt:gate_north	a	144
+route_gate_approach	route_008	station:elandor_lethariel:gate_south	b	144
+route_gate_approach	route_009	station:elandor_lethariel:gate_north	a	144
+route_gate_approach	route_011	station:kragmar_nhal_veyr:gate_north	b	144
+route_gate_approach	route_012	station:kragmar_nhal_veyr:gate_south	a	144
+route_gate_approach	route_014	station:kragmar_gor_drazhak:gate_north	b	144
+route_gate_approach	route_015	station:kragmar_gor_drazhak:gate_south	a	144
+route_gate_approach	route_017	station:kragmar_kezamba:gate_north	b	144
+route_gate_approach	route_018	station:kragmar_kezamba:gate_south	a	144
+route_gate_approach	route_019	station:elandor_dur_brannoc:gate_west	b	144
+route_gate_approach	route_020	station:elandor_dur_brannoc:gate_east	a	144
+route_gate_approach	route_021	station:elandor_highcourt:gate_west	b	144
+route_gate_approach	route_022	station:elandor_highcourt:gate_east	a	144
+route_gate_approach	route_023	station:elandor_lethariel:gate_west	b	144
+route_gate_approach	route_024	station:elandor_lethariel:gate_east	a	144
+route_gate_approach	route_025	station:kragmar_nhal_veyr:gate_west	b	144
+route_gate_approach	route_026	station:kragmar_nhal_veyr:gate_east	a	144
+route_gate_approach	route_027	station:kragmar_gor_drazhak:gate_west	b	144
+route_gate_approach	route_028	station:kragmar_gor_drazhak:gate_east	a	144
+route_gate_approach	route_029	station:kragmar_kezamba:gate_west	b	144
+route_gate_approach	route_030	station:kragmar_kezamba:gate_east	a	144
+route_gate_interior_segments	472	0
+route_gate_start_routes	6	e57867fba1ef10e2c4625a5ee273a79fd8034caacd6dfd2b802f2b3144fe8989
+route_gate_all_routes	57	5f8f6443cf513007486ffc3a905b3f72e6ce0dbdc60c39ff4ed6a73139511a54
+route_gate_ingress	ingress_dur_brannoc	anchor_007	2	128	1
+route_gate_ingress	ingress_highcourt	anchor_008	2	128	1
+route_gate_ingress	ingress_lethariel	anchor_009	2	128	1
+route_gate_ingress	ingress_nhal_veyr	anchor_010	2	128	1
+route_gate_ingress	ingress_gor_drazhak	anchor_011	2	128	1
+route_gate_ingress	ingress_kezamba	anchor_012	2	128	1

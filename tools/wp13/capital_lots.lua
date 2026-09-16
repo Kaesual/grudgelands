@@ -379,6 +379,10 @@ if repair then
 	io.write("\n== repaired grids\n")
 	local STEP = 4
 	local moved = 0
+	-- The repaired district grid per quadrant, kept for the fill pass below:
+	-- a fill lot's lane is measured against the district lots as they NOW
+	-- stand, not as they were authored.
+	local repaired = {}
 	for turns = 0, 3 do
 		local name = quadrants.QUADRANTS[turns + 1]
 		local here, rows = {}, {}
@@ -409,8 +413,69 @@ if repair then
 		end
 		io.write(name, ":\n")
 		for index = 1, #rows do io.write(rows[index], "\n") end
+		repaired[name] = here
 	end
 	io.write(moved, " lot(s) moved\n")
+
+	-- AND THE FILL GRID, with the repaired district lots already standing.
+	--
+	-- `--repair` used to stop at the 36 district lots, and the wave-3 nine-seed
+	-- re-measurement is what made that a gap rather than a scope: six of
+	-- Highcourt's twelve illegal positions are FILL lots, and `--derive-fill`
+	-- is the wrong answer for them for the reason the header gives about
+	-- `--derive` -- it slides the whole quadrant's grid to the best
+	-- translation, which is right when a grid is being invented and wrong when
+	-- the ground under a finished city has moved by a node.
+	--
+	-- Same rule as above, one difference: a fill lot carries its OWN reach (the
+	-- four slots are four deliberately different sizes) and its own lane, and it
+	-- is measured against the district lots of its quadrant as they now stand,
+	-- not as they were authored. So this runs after the district pass and reads
+	-- `repaired`.
+	io.write("\n== repaired fill grids\n")
+	local fill_moved = 0
+	for turns = 0, 3 do
+		local name = quadrants.QUADRANTS[turns + 1]
+		local here, rows = {}, {}
+		for index = 1, #(repaired[name] or {}) do
+			local lot = repaired[name][index]
+			here[#here + 1] = {id = name .. "/" .. index, x = lot.x, z = lot.z,
+				reach = LOT.reach, lane = FILL.lane}
+		end
+		local grid = quadrants.FILL_LOTS[name] or {}
+		for index, lot in ipairs(grid) do
+			local reach = quadrants.FILL_AUTHORED[index].reach
+			local x, z, move = lot.x, lot.z, 0
+			if not (geometry(x, z, turns, here, reach, FILL.lane) and
+					every(x, z, reach)) then
+				local nearest
+				for cz = -236, 236, STEP do
+					for cx = -236, 236, STEP do
+						if geometry(cx, cz, turns, here, reach, FILL.lane) and
+								every(cx, cz, reach) then
+							local distance = math.abs(cx - lot.x) +
+								math.abs(cz - lot.z)
+							if not nearest or distance < nearest.distance then
+								nearest = {x = cx, z = cz, distance = distance}
+							end
+						end
+					end
+				end
+				assert(nearest, "no legal home for " .. name .. " fill " .. index)
+				x, z, move = nearest.x, nearest.z, nearest.distance
+				fill_moved = fill_moved + 1
+			end
+			here[#here + 1] = {id = name .. "/fill" .. index, x = x, z = z,
+				reach = reach, lane = FILL.lane}
+			local fall, rise = every(x, z, reach)
+			rows[index] = string.format(
+				"  {x = %d, z = %d},  -- fill %d reach=%d fall=%d rise=%d move=%d",
+				x, z, index, reach, fall, rise, move)
+		end
+		io.write(name, ":\n")
+		for index = 1, #rows do io.write(rows[index], "\n") end
+	end
+	io.write(fill_moved, " fill lot(s) moved\n")
 	os.exit(0)
 end
 

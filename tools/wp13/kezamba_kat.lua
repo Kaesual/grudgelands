@@ -55,6 +55,14 @@ return function(repo)
 	local settlement = dofile(wp40 .. "/r7_settlement.lua")
 	local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 	local sha256 = common.new_sha256()
+	-- The real node registry, loaded engine-free under a stub `core` exactly
+	-- the way `library_kat` and `lethariel_kat` load it. Section 6 needs it:
+	-- `library_kat` proves `parts.shaped` equal to the registry only for names
+	-- a composition EMITS, and the two basalt corners this lane added to the
+	-- SHAPED table are deliberately not emitted, so without a registry here
+	-- they would carry no gate at all.
+	local registry = dofile(repo .. "/tools/wp13/stub_registry.lua")
+	local world = registry.load(repo)
 
 	local report = {}
 	local function say(...)
@@ -1003,7 +1011,124 @@ return function(repo)
 	end
 
 	-- ------------------------------------------------------------------
-	-- 6. the roster row
+	-- 6. THE ROOF FAMILY, and the library gap that used to decide it
+	-- ------------------------------------------------------------------
+	--
+	-- `roofs.raster` turns a hip with `roof_stair_outer` and a valley with
+	-- `roof_stair_inner`, so a roof family that a composition may bind has to
+	-- carry all four shapes AND all four have to be nodes `parts.shaped` will
+	-- let a part turn -- `Buffer:put` refuses a param2 on any other name with
+	-- "has no paramtype2". Until 2026-09-16 `wp13/parts.lua`'s SHAPED table
+	-- carried the straight basalt stair and the basalt slab but NOT the two
+	-- corners, so the BASALT handle could not have a basalt roof even though
+	-- `grug_decor` registers all four shapes. That is a LIBRARY GAP and it is
+	-- closed; which family this capital actually roofs with is a separate,
+	-- look-and-feel question, and the answer (2026-09-16, lane and independent
+	-- review agreeing, and the contract's troll row naming junglewood) is
+	-- TIMBER. This section therefore asserts the gap is closed and the bound
+	-- family is complete, which holds whichever way that question is answered.
+	--
+	-- Three things are asserted and they fail for three different regressions.
+	do
+		local handles = dofile(wp13 .. "/troll_palette.lua")()
+		local basalt = palettes.new("troll", handles.BASALT)
+		local roof_roles = {"roof_stair", "roof_stair_outer",
+			"roof_stair_inner", "roof_slab", "roof_ridge"}
+
+		-- (a) THE LIBRARY GAP IS CLOSED. All four basalt shapes are nodes the
+		-- library may give a facedir to, and `parts.shaped` agrees with the
+		-- REGISTRY about each of them in both directions. `library_kat` proves
+		-- that equality only for names a composition actually emits, and this
+		-- capital no longer emits the two corners, so without this the SHAPED
+		-- entries would have no gate at all. Dropping either corner from
+		-- SHAPED fails here.
+		local basalt_family = {"grug_decor:darkage_basalt_stair",
+			"grug_decor:darkage_basalt_stair_inner",
+			"grug_decor:darkage_basalt_stair_outer",
+			"grug_decor:darkage_basalt_slab"}
+		for _, name in ipairs(basalt_family) do
+			local def = world.nodes[name]
+			assert(def, "kezamba roof family: " .. name .. " is not registered")
+			assert(def.paramtype2 == "facedir", "kezamba roof family: " ..
+				name .. " is " .. tostring(def.paramtype2) .. ", not facedir")
+			local groups = (type(def.groups) == "table") and def.groups or {}
+			local shaped = (groups.slab or 0) > 0 or (groups.stair or 0) > 0
+			assert(shaped, "kezamba roof family: the registry does not call " ..
+				name .. " a stair or a slab")
+			assert(parts.shaped(name) == shaped, "kezamba roof family: " ..
+				"parts.shaped disagrees with the registry for " .. name ..
+				"; the basalt roof cannot be bound while it does")
+		end
+
+		-- (b) THE BOUND FAMILY IS COMPLETE, whichever it is. Every one of the
+		-- five roof roles of this handle resolves, the four shaped ones are
+		-- shapes the library may turn, and all five come from ONE family --
+		-- half a family bound is the defect this catches, and it is the defect
+		-- that a partial basalt binding would be.
+		--
+		-- The family of a name is the MATERIAL with its shape taken off. The
+		-- `stairs` mod puts the shape in front of the material
+		-- (`stairs:stair_outer_junglewood`) and `grug_decor.register_shapes`
+		-- puts it behind (`grug_decor:darkage_basalt_stair_outer`), and the
+		-- full cube of either carries no shape at all
+		-- (`default:junglewood`, `grug_decor:darkage_basalt`), so both
+		-- spellings and the cube have to reduce to the same word.
+		local function roof_family_of(name)
+			local modname, rest = name:match("^([a-z_]+):(.*)$")
+			assert(rest, "kezamba roof family: " .. name .. " is not a node name")
+			if modname == "stairs" then
+				rest = rest:gsub("^stair_inner_", ""):gsub("^stair_outer_", "")
+				rest = rest:gsub("^stair_", ""):gsub("^slab_", "")
+			else
+				rest = rest:gsub("_stair_inner$", ""):gsub("_stair_outer$", "")
+				rest = rest:gsub("_stair$", ""):gsub("_slab$", "")
+			end
+			return rest
+		end
+		local roof_names, family = {}, nil
+		for _, role in ipairs(roof_roles) do
+			local name = basalt.node(role)
+			if role ~= "roof_ridge" then
+				assert(parts.shaped(name), "kezamba roof family: " .. role ..
+					" is bound to " .. name ..
+					", which parts.lua will not let a part turn")
+			end
+			-- The family is the name with its shape suffix taken off:
+			-- `stairs:stair_outer_junglewood` and `stairs:slab_junglewood` are
+			-- both `junglewood`; `grug_decor:darkage_basalt_stair_inner` and
+			-- `grug_decor:darkage_basalt` are both `grug_decor:darkage_basalt`.
+			local here = roof_family_of(name)
+			if family == nil then family = here end
+			assert(here == family, "kezamba roof family: " .. role ..
+				" is bound to " .. name .. ", which is " .. here ..
+				" and not " .. family .. "; a roof may not mix two families")
+			roof_names[#roof_names + 1] = name
+		end
+
+		-- (c) AND THE CORNERS ARE ACTUALLY WRITTEN. Counted out of the finished
+		-- core rather than out of a part, because that is what the map gets: a
+		-- roof that never rasters a corner is a roof whose corner shapes were
+		-- never exercised, and this capital's hipped roofs do raster them. A
+		-- binding that dropped `roof_stair_outer` to something the rasteriser
+		-- cannot turn fails at construction; a binding that quietly stopped
+		-- producing corners fails here.
+		local counts = {}
+		for _, cell in ipairs(core.cells) do
+			counts[cell.name] = (counts[cell.name] or 0) + 1
+		end
+		local outer = counts[basalt.node("roof_stair_outer")] or 0
+		local inner = counts[basalt.node("roof_stair_inner")] or 0
+		assert(outer + inner > 0, "kezamba roof family: the core writes no " ..
+			"corner piece of the bound roof family, so no hip or valley was " ..
+			"rastered")
+		say("roof_family", family, outer, inner,
+			counts[basalt.node("roof_stair")] or 0,
+			counts[basalt.node("roof_slab")] or 0,
+			table.concat(roof_names, "+"))
+	end
+
+	-- ------------------------------------------------------------------
+	-- 7. the roster row
 	-- ------------------------------------------------------------------
 
 	-- THE ROW IS AFTER THE CAPITALS IT WAS MERGED AFTER, which is what the
