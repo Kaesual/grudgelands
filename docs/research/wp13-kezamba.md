@@ -1025,6 +1025,21 @@ move are Kezamba's own. `measurements/capital-fields-before.txt` and
 * `tools/wp13/capital_terrain_fixture.lua`: ten of its twelve rows byte-identical
   (five capitals x two gate seeds), the two Kezamba rows moved as §8.5 records.
 
+**`tools/wp40/quality/final_micro.lua` WAS ALREADY RED ON MAIN, and this lane
+did not touch what it fails on.** It stops at
+`tools/wp40/r7/node_semantics_fixture.lua`'s `missing override target
+default:shovel_wood`, which is `grug_materials` overriding an item the
+node-semantics harness never registers; run against the untouched `f37a0c5b`
+checkout it stops at the same assertion with the same message. Every data line
+the two runs print before that point is identical
+(`kat/wp40-quality-final-micro-main.txt` and `-branch.txt`). The part of that
+runner a CAPITAL TERRAIN CHANGE moves -- `quality_geometry_micro_kat.lua`, which
+it calls last -- runs standalone and is byte-identical, which is the check that
+matters here. The same fixture passes on its own
+(`dofile("tools/wp43/fresh_server_fixture.lua")(<absolute repo>)` -> `result
+pass`), so the defect is in-process ordering inside that runner and belongs to
+the lane that owns it.
+
 ### 8.7 The one lot the terrain moved, and why `repair` and not `pack`
 
 `kezamba_lots.lua check` went red on exactly one of the 52: `totem_f2`, reach 11
