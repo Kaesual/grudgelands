@@ -163,10 +163,10 @@ in the code rather than inferred from an empty grep.
 | Claim | Where | Check |
 |---|---|---|
 | The three fishing rows: rod recipe, 64 catches, cooked fish, prices | `items_crafting.md:1267-1269` | `grug_fishing/init.lua:62-140`: 3 sticks + 2 `grug_mobs:spider_silk` in two mirrored shapes, `ROD_USES = 64`, `cooking` from `grug_mobs:raw_fish` cooktime 5, no `_grug_sell_price` on either item |
-| One catch table, 78 % fish / 12 % stick / 10 % papyrus | `items_crafting.md:1271-1276` | `grug_fishing/catch.lua:29-33`; the weights sum to 100 and `table_for(pos)` is the only accessor |
+| One catch table, 78 % fish / 12 % stick / 10 % papyrus | `items_crafting.md:1271-1276` | `grug_fishing/catch.lua:29-33`; the weights sum to 100, and `table_for(pos)` is the only accessor for the *table selection* — `WORLD_CATCH` and `CATCH_TOTAL` are exported too and are read by `init.lua:200,292,302` and `tools/wp13/fishing_kat.lua:304`, but nothing outside `catch.lua` names the local `WORLD` |
 | The five alloys, the node pair and the T-arrangement station recipe | `items_crafting.md` §3.0.2 | `grug_smelting/recipes.lua:28-110`, row for row, `grug_smelting:dual_furnace`/`_active` |
 | Twelve storage pack/unpack pairs | §3.0.2, `wp26-implementation.md` | MEASURED: `PROCESSED_MATERIALS` has twelve rows (`registry.lua:208-250`) |
-| *"Three startup audits in `grug_traders/init.lua`"* | `AGENTS.md:702-712` | still three: `audit_alloys.lua` **extends audit 3**, it does not add a fourth (`grug_traders/init.lua:322-325`) |
+| *"Three startup audits in `grug_traders/init.lua`"* | `AGENTS.md:715-723` | still three: `audit_alloys.lua` **extends audit 3**, it does not add a fourth (`grug_traders/init.lua:322-325`) |
 | *"40 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`"* | `AGENTS.md:521` | `grep -c 'GRUG PATCH' …` → 40, unchanged by wave 3 |
 | Three wield poses and the families that pick them | `character_visuals.md:108-138` | `wield_geometry.lua:275-296`: `EDGE_DOWN_GROUP = {"axe"}` is checked first and `DIAGONAL_GROUP` carries `fishing_rod`; its seventh entry, `grug_equip_weapon`, is the weapon slot's group and not an art family |
 | Every stored texture has a licence row | all thirteen `LICENSE-media.md` | MEASURED by script over `mods/*/grug_*/textures`: nothing unaccounted for once the wildcard rows (`…_dagger_<material>.png (6)`, `…_ironaxe.png`) are resolved. `grug_fishing` (1 file, CC BY-SA 4.0, carrying licensing.md §3.2's five fields) and `grug_smelting` (2 files, CC BY-SA 3.0 derivatives of the vendored furnace fronts, no `lottblocks` art) are complete |
@@ -178,17 +178,27 @@ in the code rather than inferred from an empty grep.
 
 ### 3.1 A fishing rod lengthens every interaction, not just the cast
 
-MEASURED in the code, UNMEASURED in play. `grug_fishing:rod` sets `range = 8`
-(`init.lua:68`) so that an angler can fish from the bank rather than from
-inside the pond. An item definition's `range` sets the wielder's **whole**
-interaction distance while that item is held, so with the rod in hand a player
-opens a door, a chest or a vendor formspec from 8 nodes instead of the usual 4.
+MEASURED in the code, UNMEASURED in play. `grug_fishing:rod` sets
+`range = REEL_RANGE` (`init.lua:67`, the constant `= 8` at `:43`) so that an
+angler can fish from the bank rather than from inside the pond. An item
+definition's `range` is *"range of node **and object** pointing that is possible
+with this item held"* (`lua_api.md:10455`), so with the rod in hand a player
+opens a door or a chest from 8 nodes instead of the usual 4.
 [wp13-fishing.md](wp13-fishing.md) records it as a known side effect of a
 number chosen for water. It is not a defect and it is in no design document.
-Either it is fine — the rod is a niche item and 8 nodes is not an exploit — or
-the cast should carry its own range and the item should not, which is code and
-nobody's this round. The comparison that makes it small: every ability orb
-already sets `range`, and `grug_abilities`' kits run 4, 8, 12 and 20.
+
+**The vendor case is narrower than "you can trade from 8 nodes."**
+`grug_traders.open` (`trade.lua:316-336`) checks no distance at all, so the
+form *opens* at 8 — but `TRADE_RANGE = 6` (`:30`) and every subsequent formspec
+action re-validates against the stored position and closes the form beyond it
+(`:353-357`), so **no trade can be made from 8 nodes**. What the rod buys is an
+opened window, not a transaction.
+
+So either this is fine — the rod is a niche item, 8 nodes is not an exploit and
+the trade range already holds — or the cast should carry its own range and the
+item should not, which is code and nobody's this round. The comparison that
+makes it small: every ability orb already sets `range`, and `grug_abilities`'
+kits run 4, 8, 12 and 20.
 
 ### 3.2 The rod lands 65 catches and every document says 64
 
@@ -203,9 +213,10 @@ pass reads off a design doc and then disbelieves in the engine.
 
 ### 3.3 Six relative links that do not resolve, none of them fixable here
 
-MEASURED by walking every `](*.md)` link in every Markdown file outside
-`reference_projects/` (the script is in §5): all but six resolve, and all six
-predate wave 3.
+MEASURED by walking every relative Markdown link in every `.md` file outside
+`reference_projects/` and `.claude/` (the script is in §5; it must skip
+`.claude/worktrees/`, or every parallel lane's copy of the repo is counted
+again). All but six resolve, and all six predate wave 3.
 
 | File | Link | Why |
 |---|---|---|
@@ -238,7 +249,7 @@ at `70dda602`.
 | Task | What | Verified | Done |
 |---|---|---|---|
 | 1 | The 4.4 > 4.0 pillar holds **except** for named long-cooldown skills; Sprint is the first at +25 % / 10 s / 300 s; the Swiftness Draught's +8 % stays | Rulings 10 and 29 quoted from `skill_trees.md` §5.1 | One added paragraph in `mounts.md` §3.1 and one added bullet in `combat_stats.md` §3, each in its own commit and touching nothing else in those paragraphs, so the mob-pressure lane's edits to the same text merge |
-| 3 | Retire the class trainer | `grep -rn -i trainer mods/ --include=*.lua` is **empty**: neither a class nor a job trainer exists in code, so this is design-only | `economy.md:92`, `items_crafting.md:2380` and `world.md:408` rewritten on rulings 4 and 22; `post-wp40-readiness.md` got a **dated pointer at the top** (its trainer row is in §2.1, not the §4 that §7's line number lands in); `progression.md:54-56`'s "corrected separately" pointer closed |
+| 3 | Retire the class trainer | `grep -rn -i trainer mods/ --include=*.lua` is **empty**: neither a class nor a job trainer exists in code, so this is design-only | `economy.md:92`, `items_crafting.md:2380` and `world.md:408` rewritten on rulings 4 and 22; `post-wp40-readiness.md` got a **dated pointer at the top**, because a research note is a dated record (`:81` is its §2.1 "Civic services" row on `dfb32cd5` and on `70dda602`, exactly as §7 cites it); `progression.md:54-56`'s "corrected separately" pointer closed |
 | 5 (doc half) | "Holy tree" → Mercy | `grep -n Holy docs/design/classes.md` → one hit, `:464`, the Renew row | `classes.md`; `kits.lua:650` is code and the WP11 lane's |
 | 6 | The `mcl_bows` media line | Read in the source repo as AGENTS.md requires. `reference_projects/` is empty in a worktree, so `mcl_bows/README.txt` was read in the main checkout at the pinned VoxeLibre commit: `mcl_bows_bow_shoot.ogg` CC0, `mcl_bows_hit_other.ogg` CC0, `mcl_bows_hit_player.ogg` **CC BY 3.0** | `items_crafting.md:2425-2426`: **one** attribution-requiring sound and not two, CC BY-SA 4.0 is the *texture* licence, and the code is dual-licensed LGPL 3.0 **or** GPL 3.0 |
 | 7 (doc half) | `mounts.md:165`'s api.lua citation | `grep -n "get_attach() or self.attack" mods/ENTITIES/mobs/api.lua` → **2531** (its comment is 2530), not 2525-2526 | `mounts.md`; the two `grug_mobs` code comments are the mob-pressure lane's |
@@ -292,24 +303,28 @@ grep -n "get_attach() or self.attack" mods/ENTITIES/mobs/api.lua
 ```
 
 Section 3.3's link walk, kept separate because it is the one check that reads
-every Markdown file in the repository:
+every Markdown file in the repository. Run from the repository root; it prints
+exactly the six rows §3.3 tabulates. Two exclusions are load-bearing:
+`.claude/worktrees/` holds every parallel lane's copy of the repo, and a target
+containing `*` is this note quoting its own regex, not a link.
 
 ```python
 import io, os, re
+LINK = re.compile(r'\]\(([^)#\s]+\.md)(#[^)]*)?\)')
 for root, dirs, files in os.walk('.'):
-    if '.git' in root or 'reference_projects' in root:
-        continue
+    dirs[:] = [d for d in dirs if d not in ('.git', '.claude', 'reference_projects')]
     for name in files:
         if not name.endswith('.md'):
             continue
         path = os.path.join(root, name)
         text = io.open(path, encoding='utf-8').read()
-        for m in re.finditer(r'\]\(([^)#\s]+\.md)(#[^)]*)?\)', text):
-            if m.group(1).startswith('http'):
+        for m in LINK.finditer(text):
+            link = m.group(1)
+            if link.startswith('http') or '*' in link:
                 continue
-            target = os.path.normpath(os.path.join(root, m.group(1)))
+            target = os.path.normpath(os.path.join(root, link))
             if not os.path.exists(target):
-                print('broken:', path, '->', m.group(1))
+                print('broken:', path, '->', link)
 ```
 
 ## 6. Deliberately not touched
@@ -324,6 +339,15 @@ lanes); `wp13-street-geometry.md` (the streets lane). The edits this lane did
 make to `mounts.md` §3.1, `combat_stats.md` §3 and `classes.md` §6 are each an
 **addition in its own commit** that changes no number and no sentence those
 lanes own.
+
+**`ROADMAP.md`'s WP11 bullet is the WP11 lane's line, not this one's.** This
+lane rewrote it, the independent review caught it, and it is now back to main's
+text plus a single sentence — *"Design revision 2 landed 2026-09-16
+(`docs/design/skill_trees.md`); implementation phase 1 is in progress."* — that
+says nothing about how much of WP11 is built, because that lane is building
+some of it this round and owns the answer. The **WP-Scout / WP-HUD / WP-Speed**
+bullet directly beneath it is this lane's and stays: no lane claims those three
+rows, and they are what keeps the roadmap's roster level with `BACKLOG.md`'s.
 
 Research notes were not rewritten — they are dated records. One got a dated
 pointer (`post-wp40-readiness.md`, §4 task 3) because a user ruling retired a
