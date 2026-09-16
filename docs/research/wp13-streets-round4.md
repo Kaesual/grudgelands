@@ -215,8 +215,9 @@ the same offsets; only the run rectangles moved.
 
 ### 4.1 The cause
 
-Wave 3 left this open: Highcourt's `corner` region — the largest any capital
-publishes, 49 572 cells over four boxes — came back with 12 000 and 14 125
+Wave 3 left this open: Highcourt's `corner` region — 49 572 cells over four
+boxes, which wave 3 called the largest any capital publishes and which this
+round measured against Nhal Veyr's 66 091 — came back with 12 000 and 14 125
 `ignore` nodes on two passes of four, on an idle machine
 ([wp13-street-geometry.md](wp13-street-geometry.md) §9). `run_capital.sh` grew a
 guard that refuses to compare such a digest ("re-take the pass; do NOT re-freeze
@@ -276,8 +277,8 @@ one pass in the campaign needed a second retry, and `emerge_trouble` was 0
 throughout — the emerge itself never errored, which rules out the other
 hypothesis.
 
-**Two Nhal Veyr passes** on 531802985935182545, whose `corner` region is
-larger still at **66 091 cells**: `corner_ignored = 0` on both, cell counts
+**Two Nhal Veyr passes** on 531802985935182545, whose `corner` region is the
+tree's largest at **66 091 cells**: `corner_ignored = 0` on both, cell counts
 identical, one retry on the second pass (`corner_held` 144 against 120), no
 emerge trouble. Its `rampart`, `corner` and `gate` digests match the committed
 values on both passes.
