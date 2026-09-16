@@ -459,6 +459,18 @@ default:sword_diamond              tool          71    -0.00    100.0      0 yes
 default:pick_diamond               tool          65    -0.00    100.0      0 yes
 default:shovel_diamond             tool          65    -0.00    100.0      0 yes
 default:axe_diamond                EDGE_DOWN     48    +0.49     26.3     28 yes
+grug_materials:pick_iron           tool          65    -0.00    100.0      0 yes
+grug_materials:shovel_iron         tool          65    -0.00    100.0      0 yes
+grug_materials:axe_iron            EDGE_DOWN     48    +0.49     26.3     28 yes
+grug_materials:pick_silversteel    tool          65    -0.00    100.0      0 yes
+grug_materials:shovel_silversteel  tool          65    -0.00    100.0      0 yes
+grug_materials:axe_silversteel     EDGE_DOWN     48    +0.49     26.3     28 yes
+grug_materials:pick_embersteel     tool          65    -0.00    100.0      0 yes
+grug_materials:shovel_embersteel   tool          65    -0.00    100.0      0 yes
+grug_materials:axe_embersteel      EDGE_DOWN     48    +0.49     26.3     28 yes
+grug_materials:pick_abyssal_steel  tool          65    -0.00    100.0      0 yes
+grug_materials:shovel_abyssal_steel tool          65    -0.00    100.0      0 yes
+grug_materials:axe_abyssal_steel   EDGE_DOWN     48    +0.49     26.3     28 yes
 grug_gear:sword_bronze             tool          71    -0.00    100.0      0 yes
 grug_gear:sword_iron               tool          71    -0.00    100.0      0 yes
 grug_gear:sword_steel              tool          71    -0.00    100.0      0 yes
@@ -494,4 +506,5 @@ grug_gear:staff_wood               tool          37    +0.48     34.5     18 yes
 grug_fishing:rod                   tool          63    -0.86     40.0     27 yes
     - off-axis by 27 pixels; in the tool pose its mass rides down (deliberate: the line has to hang down)
 default:stick (upright pose)       upright       34    -0.00    100.0      0 yes
+rows: 63   invariant under the roll (100.0%): 39   moved by it: 24
 complaints: 0

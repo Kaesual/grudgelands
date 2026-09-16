@@ -1,7 +1,9 @@
 # WP13 playtest round 5 — the axe in the hand, the rod, and fish
 
-Increment record for wave 3's lane F. Base: `main` at `f37a0c5b` ("Freeze the
-Dur Brannoc corner digest on the gate seed"). Evidence:
+Increment record for wave 3's lane F. Written against `main` `f37a0c5b`
+("Freeze the Dur Brannoc corner digest on the gate seed") and **rebased onto
+`ed11781f`** (the WP26 dual-furnace merge) after the independent review; every
+gate below was re-run there. Evidence:
 [`tools/wp13/evidence/20260916-fishing/`](../../tools/wp13/evidence/20260916-fishing/).
 
 Three user rulings from playtest 5 (2026-09-16) built it:

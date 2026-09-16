@@ -15,6 +15,10 @@ wp13_wield_pose	grug_gear:sword_steel	tool
 wp13_wield_pose	grug_gear:dagger_steel	tool
 wp13_wield_pose	grug_gear:staff_steel	tool
 wp13_wield_pose	grug_gear:greataxe_steel	edge_down
+wp13_wield_pose	grug_materials:axe_iron	edge_down
+wp13_wield_pose	grug_materials:axe_abyssal_steel	edge_down
+wp13_wield_pose	grug_materials:pick_iron	tool
+wp13_wield_pose	grug_materials:shovel_embersteel	tool
 wp13_wield_pose	grug_fishing:rod	tool
 wp13_wield_pose	default:stick	upright
 wp13_wield_pose	default:torch	upright

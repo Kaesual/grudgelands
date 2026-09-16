@@ -2,7 +2,8 @@
 
 Increment record:
 [`docs/research/wp13-fishing.md`](../../../../docs/research/wp13-fishing.md).
-Base: `main` at `f37a0c5b`. Branch: `wp13-w3-fishing`.
+Base: `main` at `ed11781f` (the WP26 merge; rebased there from `f37a0c5b` after the
+independent review). Branch: `wp13-w3-fishing`.
 
 | File | What it is |
 |---|---|
@@ -10,9 +11,9 @@ Base: `main` at `f37a0c5b`. Branch: `wp13-w3-fishing`.
 | `render_wield.py` | the renderer. It reads the attachment out of the REAL `wield_geometry.lua` through `luajit` (no number transcribed) and maps every sprite pixel through the same bone/attachment maths the fixture checks. The body behind it is schematic, from `character.b3d`'s own model numbers; the weapon is not. |
 | `sprite_axis.py` | the measurement the whole axe argument rests on: for every held sprite, the opaque grip pixel, the signed centroid offset from the long axis, and the silhouette overlap with its own mirror about that axis — i.e. how much of it the new roll can move at all. |
 | `static.sh`, `static.txt` | parser + `SETGLOBAL` per changed file and tree-wide, the five plain-5.1 sweeps scoped and tree-wide, `check_fresh_server.py`, the `LICENSE-media.md` row check for the shipped PNG, the imported sprite's sha256, and `sprite_axis.py`. |
-| `kats.sh`, `kat-luajit.txt`, `kat-puc51.txt` | the four WP13 fixtures this increment touches — wield transform, fishing, character visuals, start NPCs — in one fixed order, once under each interpreter. **Byte-identical**, sha256 `f01537d4…c8f86d86`. |
+| `kats.sh`, `kat-luajit.txt`, `kat-puc51.txt` | the four WP13 fixtures this increment touches — wield transform, fishing, character visuals, start NPCs — in one fixed order, once under each interpreter. **Byte-identical**, sha256 `7a42540a…89ff58b8`. |
 | `mutations.sh`, `mutations.txt` | twelve deliberate breakages and what each fixture says. Eleven go red; **M2 is expected to pass and says so**, because it flips a sign that `TILT_UP = 0` makes inert. |
-| `headless-boot.log` | one `tools/luanti_headless.sh 200` boot on port 31210 with `probe/` staged. Zero `ERROR`/`ModError`. The `[fishprobe]` lines carry the registrations, the poses, the recipes and the catch table **out of the live engine registry**, so "the KAT says so" and "the server agrees" are two statements. |
+| `headless-boot.log` | one `tools/luanti_headless.sh 200` boot on port 31210 with `probe/` staged, re-taken on the rebased tree so `grug_smelting` is loaded next to this mod. Zero `ERROR`/`ModError`. The `[fishprobe]` lines carry the registrations, the poses, the recipes and the catch table **out of the live engine registry**, so "the KAT says so" and "the server agrees" are two statements. |
 | `probe/` | the disposable probe mod staged for that one boot and never shipped. |
 | `npc-probe/` | `tools/wp13/run_npc_probe.sh` in `start` mode, three boots on one world at gate seed `531802985935182545`, port 31215. Two notes on it are below. |
 | `headless-boot-angler.log`, `headless-boot-angler-reload.log` | the angler in the world: two boots on ONE world (the second through `ROOT=`), with the probe forceloading Kezamba's three `fish` sockets and reading the wield entity back off the villagers standing on them. |
@@ -115,11 +116,18 @@ and nothing after, and both temp directories were removed.
   record carries the whole correction — an earlier draft of it blamed
   `add_entity` and proposed a per-tick patch; that diagnosis was wrong and the
   patch is withdrawn.
-* **Engine**: `headless boot: PASS`, zero `ERROR`/`ModError`; 62 `WARNING`
+* **Engine** (re-taken after the rebase, so WP26's `grug_smelting` is loaded
+  alongside): `headless boot: PASS`, zero `ERROR`/`ModError`; 61 `WARNING`
   lines, all of them the pre-existing `No craft recipe matches input (type:
-  fuel, …)` chatter and the deprecated-mod-storage notice — none from
-  `grug_fishing`, `grug_visuals` or `grug_mobs`. The three `grug_traders`
-  startup audits print clean.
+  fuel, …)` chatter, the deprecated-mod-storage notice and two seed-dependent
+  `grug_mapgen` plot-placement warnings (this boot takes a random seed) — none
+  from `grug_fishing`, `grug_visuals` or `grug_mobs`. The `grug_traders` startup
+  audits print clean, including WP26's new `audit_alloys.lua`, and
+  `[grug_smelting] recipe audit passed: 5 cooking, 5 dualfurn, 12 storage pairs,
+  1 station` sits next to `[grug_fishing] 3 catch entries`. The cooked fish's
+  own `cooking` recipe still resolves in the engine's registry
+  (`[fishprobe] recipe grug_fishing:cooked_fish #1 method=cooking
+  items=grug_mobs:raw_fish`).
 * **Unchanged**: the six start identities (`0bbf87a7…91ad1f5f`) and Highcourt's
   blueprint digests (`66e2ed00…b9998f79`) are byte-identical to `main`;
   `bash tools/wp40/r7/run.sh unit` PASS.
