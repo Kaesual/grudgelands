@@ -6,10 +6,10 @@
 -- explicitly ("the actual burst is roster-side: small view_range + high
 -- run_velocity"). Hence the deliberately short view_range 6 below: the croc
 -- lies motionless until something is almost on top of it and only then
--- accelerates to 4.4. A normal 12-16 view_range would turn the ambush into
+-- accelerates to 4.6. A normal 12-16 view_range would turn the ambush into
 -- an ordinary charge from across the swamp.
 --
--- WATER DECISION (the one deviation from §3.1's speed column "4.4 (5.0 in
+-- WATER DECISION (the one deviation from §3.1's speed column "4.6 (5.0 in
 -- water)") — read api.lua before "fixing" this:
 --   * mobs_redo has exactly ONE amphibious knob, `fly = true` + `fly_in =
 --     {water}`, which is what upstream animalworld uses. It is NOT usable
@@ -24,7 +24,7 @@
 --     walk_velocity/run_velocity and restores them from _grug_speed_base).
 --     Two owners of the same two fields is exactly the bug class the WP6
 --     notes warn about.
---   * MVP therefore: ONE speed, 4.4 on land and in water, plus `floats` so
+--   * MVP therefore: ONE speed, 4.6 on land and in water, plus `floats` so
 --     the mob swims at the surface instead of sinking (api.lua:2464). The
 --     5.0-in-water bonus is dropped, NOT postponed silently — a later WP can
 --     add it once one owner for the speed fields exists.
@@ -48,10 +48,10 @@ local crocodile = {
 	group_attack = false,
 	pathfinding = 1,
 
-	-- §3.1 speed column: 4.4 (aggressive baseline, §0). See the water note in
+	-- §3.1 speed column: 4.6 (aggressive baseline, §0). See the water note in
 	-- the header for the missing 5.0.
 	walk_velocity = 1,
-	run_velocity = 4.4,
+	run_velocity = 4.6,
 	jump = true,
 	jump_height = 4,
 	stepheight = 1.1,

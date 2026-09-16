@@ -26,7 +26,8 @@ grug_mobs.register_mob("grug_mobs:zombie", {
 
 	walk_velocity = 1,
 	-- Aggressive-mob speed (combat_stats.md §3), a notch under the boar's
-	-- 4.4 but still above the player's 4.0.
+	-- 4.6 (the aggressive band since 2026-09-16) but still above the
+	-- player's 4.0.
 	run_velocity = 4.2,
 	jump = true,
 	stepheight = 1.1,

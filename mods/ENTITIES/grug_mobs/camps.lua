@@ -181,9 +181,18 @@ grug_mobs.registered_camp_types = {}
 --   respawn_*     — the refill interval of ONE slot (world.md §4a: "either an
 --                   exact duration or a min-max range rolled per refill").
 --                   respawn_exact wins when set; the range is the default.
+--   variant       an optional SECOND family for this camp, rolled per slot
+--                 (1 in `variant_chance`). It shares the camp's head count
+--                 and its refill slots -- the camp is still "3-5 per camp"
+--                 (biomes_mobs.md §4), it is simply not all of one kind. Used
+--                 by the bandit camp for the Bandit Archer, so ruling 3's
+--                 "more ranged mobs" costs no spawn budget at all.
+--   variant_chance  1 in N, default 3.
 function grug_mobs.register_camp_type(id, def)
 	grug_mobs.registered_camp_types[id] = {
 		mob = def.mob,
+		variant = def.variant,
+		variant_chance = def.variant_chance or 3,
 		count_min = def.count_min or 3,
 		count_max = def.count_max or 5,
 		radius = def.radius or 12,
@@ -193,6 +202,13 @@ function grug_mobs.register_camp_type(id, def)
 		respawn_min = def.respawn_min or RESPAWN_MIN,
 		respawn_max = def.respawn_max or RESPAWN_MAX,
 	}
+end
+
+-- Both families of a camp count against ONE head count. Counting only
+-- `cfg.mob` would make every archer invisible to the refill and the camp
+-- would grow without limit.
+local function camp_member(cfg, name)
+	return name == cfg.mob or (cfg.variant ~= nil and name == cfg.variant)
 end
 
 -- The two anchor nodes, by name. BANNER_NODE is needed as a value (not only
@@ -261,7 +277,7 @@ local function count_camp_mobs(pos, cfg)
 	local objs = core.get_objects_inside_radius(pos, cfg.radius + COUNT_MARGIN)
 	for i = 1, #objs do
 		local ent = objs[i]:get_luaentity()
-		if ent and ent.name == cfg.mob and (ent.health or 0) > 0
+		if ent and camp_member(cfg, ent.name) and (ent.health or 0) > 0
 				and same_pos(ent._grug_camp_pos, pos) then
 			n = n + 1
 		end
@@ -364,7 +380,14 @@ local function spawn_one(pos, meta, cfg, living)
 	-- collisionbox y-lift the ABM spawner does and add_mob does not (init.lua)
 	-- — a camp family with a negative box floor would otherwise stand sunk
 	-- into the ground.
-	local ent = grug_mobs.add_mob(spot, {name = cfg.mob, ignore_count = true})
+	-- Which of the camp's families this slot becomes. Rolled per SLOT, not
+	-- per camp, so a camp is a mix and a refill can change the mix -- the
+	-- same shape as the bandit's own per-mob race roll (bandit.lua).
+	local name = cfg.mob
+	if cfg.variant and math.random(cfg.variant_chance) == 1 then
+		name = cfg.variant
+	end
+	local ent = grug_mobs.add_mob(spot, {name = name, ignore_count = true})
 	if not ent then
 		return false
 	end
@@ -766,8 +789,18 @@ end
 -- swamp pool (§3.1 "camps at swamp pools").
 --
 
+-- The bandit camp is the game's only INNER-ring source of a ranged enemy
+-- (biomes_mobs.md §3.1, user ruling 3 of 2026-09-16). One slot in three is an
+-- archer, and the roll is per slot and INDEPENDENT: the expected mix of a
+-- five-bandit camp is between one and two archers, and an all-archer camp is
+-- rare rather than impossible (1 in 27 at three slots, 1 in 243 at five).
+-- Deliberately not a quota — a quota would need the camp to remember which
+-- slots it has filled, and a refill would then have to re-roll against a head
+-- count it cannot see for unloaded members.
 grug_mobs.register_camp_type("bandit", {
 	mob = "grug_mobs:bandit",
+	variant = "grug_mobs:bandit_archer",
+	variant_chance = 3,
 	count_min = 3,
 	count_max = 5,
 	radius = 12,

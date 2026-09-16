@@ -34,7 +34,7 @@ local raider = {
 	-- opens in the RANGED phase and mobs_redo then alternates
 	-- dogshoot_count_max seconds of shooting with dogshoot_count2_max seconds
 	-- of melee (10 vs 3 = "mostly ranged"); a target inside `reach` forces
-	-- melee regardless (api.lua:2249).
+	-- melee regardless (api.lua:2366).
 	arrow = "grug_mobs:arrow_entity",
 	arrow_override = grug_mobs.stamp_arrow_damage,
 	shoot_interval = 2.5,

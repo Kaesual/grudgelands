@@ -1,0 +1,48 @@
+== boot before (port 31203, seed 15912857179583385436)
+   api.lua sha256 b3cd6ebf874a6f8afee9115e5a3bb96dfc1c14be91bc8b643073def2d4a07784
+   wall 97 s
+-- before --
+arena x=3000 y=260 z=3000 run=80 half_z=8 mob=grug_mobs:boar window_s=10 target_speed=4
+starts ready=0 of=6 t=1.1
+starts ready=1 of=6 t=18.4
+starts ready=2 of=6 t=26.0
+starts ready=3 of=6 t=30.3
+starts ready=4 of=6 t=36.8
+starts ready=5 of=6 t=45.4
+starts ready=6 of=6 t=49.8
+forceload blocks=96
+arena_loaded t=50.8
+platform nodes=1513
+mob=grug_mobs:boar level=1 reach=2 punch_interval=1 run_velocity=4.6 damage=2.4 attack_type=dogfight
+cadence scenario=receding punches=1 window_s=10.01 per_10s=1.00 gap_min=2.31 gap_max=2.70 gap_mean=2.50 steps=111 step_mean=0.0902 target_lost=0 dtime_max=0.091
+mob=grug_mobs:boar level=1 reach=2 punch_interval=1 run_velocity=4.6 damage=2.4 attack_type=dogfight
+cadence scenario=standing punches=10 window_s=10.01 per_10s=9.99 gap_min=1.66 gap_max=1.66 gap_mean=1.66 steps=111 step_mean=0.0902 target_lost=0 dtime_max=0.091
+cadence complete
+== boot after (port 31203, seed 15912857179583385436)
+   api.lua sha256 066b0988268f7d06f6b34e4bb3e3d49455dbdd7af57427aeeea212874d5c1be3
+   wall 98 s
+-- after --
+arena x=3000 y=260 z=3000 run=80 half_z=8 mob=grug_mobs:boar window_s=10 target_speed=4
+starts ready=0 of=6 t=1.1
+starts ready=1 of=6 t=19.5
+starts ready=2 of=6 t=27.0
+starts ready=3 of=6 t=31.4
+starts ready=4 of=6 t=37.9
+starts ready=5 of=6 t=45.4
+starts ready=6 of=6 t=49.8
+forceload blocks=96
+arena_loaded t=50.9
+platform nodes=1513
+mob=grug_mobs:boar level=1 reach=2 punch_interval=1 run_velocity=4.6 damage=2.4 attack_type=dogfight
+cadence scenario=receding punches=10 window_s=10.01 per_10s=9.99 gap_min=1.49 gap_max=1.87 gap_mean=1.67 steps=111 step_mean=0.0902 target_lost=0 dtime_max=0.091
+mob=grug_mobs:boar level=1 reach=2 punch_interval=1 run_velocity=4.6 damage=2.4 attack_type=dogfight
+cadence scenario=standing punches=10 window_s=10.01 per_10s=9.99 gap_min=0.90 gap_max=0.90 gap_mean=0.90 steps=111 step_mean=0.0902 target_lost=0 dtime_max=0.091
+cadence complete
+
+== punches per 10 s ==
+before  cadence scenario=receding punches=1 window_s=10.01 per_10s=1.00 gap_min=2.31 gap_max=2.70 gap_mean=2.50 steps=111 step_mean=0.0902 target_lost=0 dtime_max=0.091
+before  cadence scenario=standing punches=10 window_s=10.01 per_10s=9.99 gap_min=1.66 gap_max=1.66 gap_mean=1.66 steps=111 step_mean=0.0902 target_lost=0 dtime_max=0.091
+after   cadence scenario=receding punches=10 window_s=10.01 per_10s=9.99 gap_min=1.49 gap_max=1.87 gap_mean=1.67 steps=111 step_mean=0.0902 target_lost=0 dtime_max=0.091
+after   cadence scenario=standing punches=10 window_s=10.01 per_10s=9.99 gap_min=0.90 gap_max=0.90 gap_mean=0.90 steps=111 step_mean=0.0902 target_lost=0 dtime_max=0.091
+
+1772672 luanti.bin --server --gameid grudgelands --world /tmp/grudgelands-wp13-capital.h60laX/world --config /tmp/grudgelands-wp13-capital.h60laX/server.conf --logfile /tmp/grudgelands-wp13-capital.h60laX/server.log --log-timestamp none --color never

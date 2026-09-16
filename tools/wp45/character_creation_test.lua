@@ -55,6 +55,7 @@ core = {
 	log = function() end,
 	check_player_privs = function() return true end,
 	get_player_by_name = function(name) return online[name] end,
+	is_player = function(object) return object ~= nil and online[object.name] ~= nil end,
 	register_chatcommand = function(name, def) chatcommands[name] = def end,
 	register_on_punchplayer = function() end,
 	register_on_newplayer = function(fn)
@@ -379,6 +380,12 @@ end
 grug_xp = {get_level = function() return 1 end}
 
 dofile(repo .. "/mods/CORE/grug_core/starts_preload.lua")
+-- The creation freeze is an exclusive hold on the movement aggregator
+-- (ruling 11, 2026-09-16), which is grug_core's business and the game's only
+-- writer of physics_override -- so the real file is loaded here rather than
+-- stubbed, and this test covers the freeze THROUGH it.
+grug_core.mono_time = function() return clock / 1e6 end
+dofile(repo .. "/mods/CORE/grug_core/movement.lua")
 dofile(repo .. "/mods/PLAYER/grug_classes/selection.lua")
 
 -- A later dependent mod resets old slows on join. The after(0) creation pass
@@ -547,9 +554,19 @@ assert_equal(fresh.teleports, 1, "one final teleport")
 assert_equal(fresh.pos.x, 10, "fresh spawn x")
 assert_equal(fresh.pos.y, 31, "fresh spawn y")
 assert_equal(fresh.pos.z, -900, "fresh spawn z")
-assert_equal(fresh.physics.speed, 1.25, "restore speed")
-assert_equal(fresh.physics.jump, 0.9, "restore jump")
-assert_equal(fresh.physics.gravity, 0.8, "restore gravity")
+-- NO SNAPSHOT RESTORE (ruling 11, 2026-09-16, skill_trees.md §3.9). The
+-- freeze used to capture speed/jump/gravity when creation began and write
+-- them back here; a slow running at that moment was captured and restored
+-- permanently, long after the aggregator believed it had expired. Releasing
+-- the exclusive hold now hands the player back to what the aggregator says,
+-- which for a character with no effects is the 1/1/1 baseline -- so the
+-- 1.25/0.9/0.8 this player was constructed with is deliberately NOT restored.
+-- Gravity is handed back as exactly 1, and axes the aggregator never touches
+-- (speed_climb) are still untouched, because set_physics_override is a
+-- partial update.
+assert_equal(fresh.physics.speed, 1, "release to the aggregator baseline")
+assert_equal(fresh.physics.jump, 1, "release jump to the baseline")
+assert_equal(fresh.physics.gravity, 1, "gravity handed back as exactly 1")
 assert_equal(fresh.physics.speed_climb, 1.5, "preserve unrelated physics")
 assert_equal(fresh.armor.immortal, nil, "restore immortality")
 assert_equal(fresh.armor.custom, 7, "preserve armor group")

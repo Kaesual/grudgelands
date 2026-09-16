@@ -1,0 +1,5 @@
+staged probe: cadence_probe
+headless boot: PASS (port 31203, 420 s)
+log: /tmp/grudgelands-headless.dHNI98/server.log
+85:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31203.
+kept: /tmp/grudgelands-headless.dHNI98

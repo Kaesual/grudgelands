@@ -1,0 +1,6 @@
+api_fragments	accumulator_above_reach_test	cap	reach_gate	contact_distance
+standing_10s	before	9	after	9	step	0.09	interval	1	effective	1.08
+receding_10s	before	0	after	9	worst_gap	2.000	reach	2
+backlog	chase_10s_then_arrive	1
+no_reset_out_of_reach	ok
+wp11_mob_cadence	PASS	mutation	0

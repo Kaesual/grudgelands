@@ -1,0 +1,17 @@
+arena x=3200 y=260 z=3200 archer=grug_mobs:bandit_archer window_s=15 shot_range=12
+roster registered=55 dogfight=42 dogshoot=5 none=8
+view_ranges grug_mobs:bandit=14 grug_mobs:bandit_archer=16 grug_mobs:bear=12 grug_mobs:blightfang_wolf=14 grug_mobs:boar=10 grug_mobs:bog_fowl=8 grug_mobs:bog_ooze=10 grug_mobs:bone_weevil=8 grug_mobs:carrion_crow=8 grug_mobs:cave_bat=8 grug_mobs:cave_crawler=8 grug_mobs:crag_eagle=16 grug_mobs:crocodile=6 grug_mobs:elder_dwarf=4 grug_mobs:elder_elf=4 grug_mobs:elder_human=4 grug_mobs:elder_orc=4 grug_mobs:elder_troll=4 grug_mobs:elder_undead=4 grug_mobs:gaunt_stag=12 grug_mobs:giant_spider=12 grug_mobs:guard_accord=14 grug_mobs:guard_throng=14 grug_mobs:gull=8 grug_mobs:hare=8 grug_mobs:hyena=14 grug_mobs:jungle_ape=12 grug_mobs:jungle_boar=10 grug_mobs:jungle_lynx=14 grug_mobs:jungle_spider=12 grug_mobs:kraken=20 grug_mobs:mesa_golem=16 grug_mobs:mirefolk=12 grug_mobs:mountain_ram=10 grug_mobs:pale_spider=12 grug_mobs:panther=12 grug_mobs:parrot=8 grug_mobs:plague_boar=10 grug_mobs:plaguehide_bear=12 grug_mobs:rabbit=8 grug_mobs:serpent=10 grug_mobs:skeleton_archer=16 grug_mobs:skeleton_raider=16 grug_mobs:stag=12 grug_mobs:stone_golem=16 grug_mobs:villager_dwarf=4 grug_mobs:villager_elf=4 grug_mobs:villager_human=4 grug_mobs:villager_orc=4 grug_mobs:villager_troll=4 grug_mobs:villager_undead=4 grug_mobs:vulture=16 grug_mobs:wolf=14 grug_mobs:zebra=14 grug_mobs:zombie=14
+roster rule_ok dogshoot=16 melee<=16 exempt=grug_mobs:kraken (aquatic, own open-sea leash)
+camp mob=grug_mobs:bandit variant=grug_mobs:bandit_archer variant_chance=3 count=3-5 radius=12
+starts ready=0 of=6 t=1.1
+starts ready=1 of=6 t=19.5
+starts ready=2 of=6 t=26.0
+starts ready=3 of=6 t=31.4
+starts ready=4 of=6 t=37.9
+starts ready=5 of=6 t=47.6
+starts ready=6 of=6 t=51.9
+forceload blocks=60
+arena_loaded t=53.0
+platform nodes=833
+ranged archer=grug_mobs:bandit_archer level=1 damage=2.4 attack_type=dogshoot view_range=16 shoot_interval=2.5 window_s=15.07 arrows=3 hits=3 final_dist=0.81
+ranged complete

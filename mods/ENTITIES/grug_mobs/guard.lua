@@ -188,7 +188,7 @@ local function guard_def(faction, description, texture)
 		owner = "",
 
 		walk_velocity = 1.2,
-		run_velocity = 4.4, -- aggressive-mob speed (biomes_mobs §0)
+		run_velocity = 4.6, -- aggressive-mob speed (biomes_mobs §0)
 		jump = true,
 		jump_height = 4,
 		stepheight = 1.1,

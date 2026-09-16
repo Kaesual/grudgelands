@@ -307,23 +307,48 @@ Normal tier at level L:
   consequence, not the definition. The tier is what owns all four critter
   properties; a mob def never hand-writes any of them (§3.0 for the field
   name and the one engine trap).
-- **Speed**: aggressive mobs `run_velocity` **4.4** (player: 4.0) —
+- **Speed**: aggressive mobs `run_velocity` **4.6** (player: 4.0) —
   evading must never be trivially easy; harmless critters 3.4; heartland
   hunters 4.6, partly with ranged attacks (`dogshoot`). The deep-sea Kraken
   Guard at **8.8** is the one documented exception: it holds the same 1.1×
   margin over the 8 nodes/s improved boat (`boats.md` §5,
   `biomes_mobs.md` §3).
-- **The 4.4 > 4.0 inequality holds except for named, long-cooldown skills**
+  **4.4 → 4.6 decided 2026-09-16** (user ruling 2, "mobs should be a bit
+  faster"), at all **13** definition sites that carried 4.4. The aggressive
+  band and the heartland hunters therefore collapse into one number; the
+  zombie stays at its own 4.2 (a shambling undead is deliberately the slow
+  one) and the critters stay at 3.4. The margin over the player goes from
+  **0.4 to 0.6 nodes/s**, +50 %, and everything built on that margin moves
+  with it: the Swiftness Draught's arithmetic (`items_crafting.md` §10 P4,
+  4.0 × 1.08 = 4.32, now 0.28 below the mob instead of 0.08), the 25 m soft
+  de-aggro and the 45 m / 40 m chase rules of §4, and the Mage's kiting
+  budget — one Frost Nova buys ~21 m of lead, and losing it again takes
+  **~53 s at 4.4 but ~35 s at 4.6** (`classes.md`: "kiting IS the Mage
+  fantasy here"). This is the smallest change that respects the pillar,
+  because 4.6 is a value two families already used.
+- **The 4.6 > 4.0 inequality holds except for named, long-cooldown skills**
   (`skill_trees.md` §5, ruling 10 of 2026-09-16): "skills may explicitly
   **break the base inequalities** (mob 4.4 > player 4.0, stat caps, roots)…
   The rule: **the bigger the break, the stronger the limit**, usually cooldown
-  or duration." The first one is the Scout's **Sprint** — **+25 % for 10 s on
-  a 300 s cooldown** (ruling 29, `scout.md` §2) — which puts a sprinting
-  player at **5.0** against 4.4 for ten seconds in every five minutes. Nothing
-  permanent or cheap is covered: the Swiftness Draught stays at **+8 % for
-  15 s** (4.0 × 1.08 = 4.32 < 4.4, `items_crafting.md` §3.6/§10 P4) and a
+  or duration." *(The ruling is quoted verbatim and says 4.4 because the band
+  moved to 4.6 on the same day, in ruling 2 above; the numbers derived from it
+  below are stated against the shipped 4.6.)* The first one is the Scout's
+  **Sprint** — **+25 % for 10 s on a 300 s cooldown** (ruling 29,
+  `scout.md` §2) — which puts a sprinting player at **5.0** against 4.6 for
+  ten seconds in every five minutes. Nothing permanent or cheap is covered:
+  the Swiftness Draught stays at **+8 % for 15 s**
+  (4.0 × 1.08 = 4.32 < 4.6, `items_crafting.md` §3.6/§10 P4) and a
   mount pays for its permanent 6–10 nodes/s with the damage dismount
   (`mounts.md` §3.1).
+- **View range follows the attack type** (decided 2026-09-16, user ruling 3):
+  a **`dogshoot` family sees 16 m**, a **melee family 10–14 m by habitat**.
+  The full per-mob table and the habitat reasons are `biomes_mobs.md` §3.1;
+  **16 is the ceiling for a land mob**, because §4's 45 m chase give-up and
+  40 m leash both depend on a mob keeping a target it can no longer see. The
+  same ruling asks for more ranged families: the first is the **Bandit
+  Archer**, one slot in three of the existing bandit camp, which takes the
+  registered ranged roster from **4 of 43 to 5 of 44** and is the first ranged
+  enemy a player meets in the inner ring.
 - Pacing property: ~**20 same-level mob kills per level** (XP=10L vs.
   quadratic level curve); quests supply the rest.
 - **Gray kills award no XP**: a mob at level ≤ killer level − 10 gives 0
@@ -360,7 +385,8 @@ Normal tier at level L:
 - WP1 retune (**done with WP6**): boar = L1 (HP 20, dmg 2, XP 10),
   zombie = L3 (HP 30, dmg 3, XP 30), **and speed to spec** (boar/zombie
   `run_velocity` 4.4/4.2 — was 3.4/2.6, shipped slow on purpose until
-  the soft de-aggro above landed in the same WP).
+  the soft de-aggro above landed in the same WP; the boar moved on to the
+  band's 4.6 in 2026-09-16's raise, the zombie kept its 4.2).
 - **Level floors** (`_grug_min_level`): a mob whose family belongs to a
   later zone keeps its floor even where the field reads lower — zombie 3,
   wolf/hyena/jungle lynx 10, guard 20. The floor is also the fallback
@@ -481,24 +507,39 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   while the target is inside reach; the only condition an attack still
   carries is being in reach at the moment the cadence is due. Fleeing costs
   HP — it is not a free escape from a fight already lost.
-  *Rationale, because the defect is invisible on paper*: vendored mobs_redo
-  zeroes the mob's velocity as soon as the target is inside `reach`
-  (`mods/ENTITIES/mobs/api.lua:2493`) while `punch_timer` accumulates **only
-  in that same branch** (`:2495-2497`; default interval 1 s at `:3768`). A
-  receding target leaves reach after one server step, so the timer gains one
-  step while the mob loses the ground the target covered in it. Worked at the
+  **Shipped 2026-09-16** as one vendored `api.lua` patch (the mob-pressure
+  round; user ruling 1 of that day restated the same rule in one sentence:
+  "melee mobs must deal damage IMMEDIATELY when their attack is ready and they
+  are within reach"). Where it now lives, against the patched tree:
+  `mods/ENTITIES/mobs/api.lua:2368-2403` advances `punch_timer` at the top of
+  the dogfight branch and caps the backlog at one; `:2535-2564` replaces the
+  unconditional velocity zero with a run up to a contact distance of
+  `reach × 0.6`; `:2567-2618` lands the punch, with the in-reach and
+  line-of-sight tests at the site of the punch rather than at the site of the
+  clock. `punch_interval` is still the mobs_redo default of 1 s (`:3847`) and
+  `reach` is untouched.
+  *Rationale, because the defect was invisible on paper*: vendored mobs_redo
+  zeroed the mob's velocity as soon as the target was inside `reach`
+  (`api.lua:2498` before the patch — the number this file carried,
+  `:2493`, had drifted) while `punch_timer` accumulated **only in that same
+  branch** (`:2500-2502` before the patch, printed here as `:2495-2497`;
+  default interval 1 s at `:3771`, printed as `:3768`). A receding target
+  left reach after one server step, so the timer gained one step while the mob
+  lost the ground the target covered in it. Worked at the
   **dedicated-server default** `dedicated_server_step = 0.09`
   (`reference_projects/luanti/src/defaultsettings.cpp:498`; the setting is
-  configurable and a singleplayer session does not use it, so this is the
-  shape of the defect rather than a measurement): the timer gains 0.09 s while
-  the mob loses ~0.36 m that it needs ~0.9 s to re-close at its
+  configurable and a singleplayer session does not use it, so this was the
+  shape of the defect rather than a measurement): the timer gained 0.09 s while
+  the mob lost ~0.36 m that it needed ~0.9 s to re-close at its
   0.4 nodes/s margin — roughly **one landed hit per ten seconds** instead of
-  one per second. Raising `reach` cannot repair this (a stopped mob always
+  one per second. Raising `reach` could not repair this (a stopped mob always
   leaves its own radius, whatever the radius) and would silently widen the
   elite/rare telegraph cone, which is `reach + 1.5` (§3), and make
-  `dogshoot` mobs switch to melee earlier. The fix is one vendored api.lua
-  patch; because it changes every mob's feel, the WP that ships it owes a
-  runtime test.
+  `dogshoot` mobs switch to melee earlier (that switch is `api.lua:2366`).
+  Because it changes every mob's feel, the patch shipped with the runtime test
+  this paragraph demanded — a headless probe counting landed punches per 10 s
+  against a receding and a standing target, before and after
+  (`docs/research/mob-pressure.md`).
 
 Group trinity: a good group = **tank + healer + 1–2 damage dealers**;
 class kits must support this (Warrior: threat/taunt tools, Priest:

@@ -31,8 +31,11 @@
 --
 -- All entity-side countdowns live in `self.temp` and tick inside do_custom
 -- — never core.after, a mob can die or unload mid-timer (levels.lua note).
--- core.after IS used for the two PLAYER-side effects, where the entity
--- cannot help: those re-fetch the player BY NAME on every callback.
+-- core.after IS used for the one PLAYER-side effect that still owns a timer,
+-- the poison chain, where the entity cannot help: it re-fetches the player BY
+-- NAME on every callback. The player slow lost its core.after chain when it
+-- moved to the grug_core movement aggregator (ruling 11), which expires
+-- entries off a monotonic clock instead.
 --
 
 --
@@ -98,89 +101,66 @@ end
 --
 
 --
--- OWNERSHIP CLAIM for player physics_override.speed
+-- MOB WEBS AND SNARES GO THROUGH THE grug_core MOVEMENT AGGREGATOR
 --
--- This file and grug_abilities/kits.lua (PvP Frost Nova / Hamstring) are
--- the ONLY writers of a player's speed multiplier in the game. They are
--- two independent owners today: each keeps its own name-keyed record and
--- each restores to speed = 1 when its own effect ends, so an overlapping
--- mob web + player snare can end early (the first restore lifts both).
--- Both windows are <= 7 s and the overlap needs a spider and a PvP caster
--- on the same victim at the same moment, so this is an accepted MVP
--- caveat, NOT an unnoticed bug — the fix is one shared owner in grug_core
--- and it is deliberately out of scope for WP6-T3 (it would rewrite the
--- staged root->slow chain in grug_abilities).
+-- This file is no longer an owner of `physics_override`. Ruling 11
+-- (2026-09-16, skill_trees.md §3.9): "effects overlap freely with
+-- independent durations; the design is one central aggregator in grug_core
+-- where each system registers a named modifier with its own duration".
+-- grug_core/movement.lua is that aggregator and the game's only writer of
+-- the field; the previous three-writer arrangement (this file, the PvP snare
+-- chain in grug_abilities/kits.lua and the character-creation freeze in
+-- grug_classes/selection.lua) is gone, and with it the bug it carried: each
+-- writer restored to `speed = 1` when its own effect ended, so the first
+-- restore lifted every overlapping effect.
 --
--- We only ever write `speed`; `jump` is left alone, so a mob web can never
--- lift a PvP jump root (set_physics_override is a partial update,
--- l_object.cpp:1900ff).
+-- A web is registered under ONE name, "mob_web", so two spiders refresh one
+-- entry rather than stacking into a standstill; a PvP snare is a different
+-- name and therefore adds up with it, which is the ruling. `jump` is still
+-- untouched here (the delta is 0), so a mob web still cannot lift a PvP jump
+-- root -- that property now falls out of per-axis addition instead of out of
+-- a partial engine update.
 --
 
--- player name -> {factor = n, expiry = mono seconds, gen = n}
-local player_slows = {}
+local WEB_MODIFIER = "mob_web"
 
 -- player name -> generation counter for RUNNING poison chains (see
--- grug_mobs.poison_player). Same ownership hygiene as the slow's `gen` above,
--- one level up: a poison is a chain of core.after callbacks that only knows
--- the victim by NAME, so after a relog it would happily keep ticking on the
--- fresh session. Bumping the counter on leaveplayer orphans every in-flight
--- chain for that name — i.e. logging out dispels poison.
+-- grug_mobs.poison_player): a poison is a chain of core.after callbacks that
+-- only knows the victim by NAME, so after a relog it would happily keep
+-- ticking on the fresh session. Bumping the counter on leaveplayer orphans
+-- every in-flight chain for that name -- i.e. logging out dispels poison.
+-- (The slow needs no such counter any more: the aggregator expires entries
+-- off a monotonic clock read at use time, so there is no timer to orphan.)
 local poison_gen = {}
 
 -- Slow a player to `factor` (0.6 = 40% slower) for `duration` seconds.
--- Stacking mirrors grug_mobs.slow's mob-side semantics: the STRONGER
--- factor and the LONGER remaining duration win, so a second, weaker web
--- can never lift a stronger snare or cut it short.
+-- Stacking against ANOTHER WEB is unchanged and stays here rather than in
+-- the aggregator, because it is this family's policy and not a combination
+-- rule: the STRONGER factor and the LONGER remaining duration win, so a
+-- second, weaker web can never lift a stronger snare or cut it short.
 --
--- The restore runs on core.after with a generation counter: only the
--- callback whose generation is still the current one restores, so a
--- re-application silently orphans the older timer. The player is re-fetched
--- BY NAME and nil-checked — an ObjectRef captured here would be invalid
--- after a relog.
+-- `factor` is an absolute multiplier in the callers (spider.lua passes 0.6);
+-- the aggregator takes fractional deltas, hence `factor - 1`.
 function grug_mobs.slow_player(player, duration, factor)
 	if not player or not core.is_player(player) then
 		return
 	end
-	local name = player:get_player_name()
-	local now = grug_core.mono_time()
-	local rec = player_slows[name]
-	if rec and rec.expiry > now then
-		factor = math.min(rec.factor, factor)
-		duration = math.max(rec.expiry - now, duration)
+	local running = grug_core.get_move_modifier(player, WEB_MODIFIER)
+	if running then
+		factor = math.min(1 + running.speed, factor)
+		duration = math.max(running.remaining or 0, duration)
 	end
-	local gen = ((rec and rec.gen) or 0) + 1
-	player_slows[name] = {factor = factor, expiry = now + duration, gen = gen}
-	player:set_physics_override({speed = factor})
-	core.after(duration, function()
-		local cur = player_slows[name]
-		-- Superseded (stronger/longer slow), or cleared by leave/join:
-		-- that owner restores, not us. Prevents the double restore that
-		-- would otherwise fire after a relog inside the window.
-		if not cur or cur.gen ~= gen then
-			return
-		end
-		player_slows[name] = nil
-		local p = core.get_player_by_name(name)
-		if not p then
-			return
-		end
-		p:set_physics_override({speed = 1})
-	end)
+	grug_core.set_move_modifier(player, WEB_MODIFIER,
+		{speed = factor - 1}, duration)
 end
 
 -- A relog inside a slow window must leave neither a permanently slowed
--- player nor a stale timer that later restores over a fresh effect.
--- Physics overrides are not persisted by the engine, so the join reset is
--- a cheap belt-and-braces write; dropping the record first invalidates any
--- in-flight core.after (generation mismatch above).
-core.register_on_joinplayer(function(player)
-	player_slows[player:get_player_name()] = nil
-	player:set_physics_override({speed = 1})
-end)
+-- player nor a stale record. The aggregator's own joinplayer handler drops
+-- the whole record (physics overrides are not persisted by the engine), so
+-- there is nothing left for this file to reset.
 
 core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
-	player_slows[name] = nil
 	-- Cancel every running poison chain for this name (see poison_gen).
 	poison_gen[name] = (poison_gen[name] or 0) + 1
 end)

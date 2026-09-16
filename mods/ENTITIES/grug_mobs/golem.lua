@@ -64,7 +64,7 @@ local function golem_def(description, texture)
 		-- dogshoot_switch = 1 opens in the RANGED phase, then mobs_redo
 		-- alternates dogshoot_count_max seconds of shooting with
 		-- dogshoot_count2_max seconds of melee — 10 vs 3 is "mostly ranged",
-		-- and a target inside `reach` forces melee regardless (api.lua:2249).
+		-- and a target inside `reach` forces melee regardless (api.lua:2366).
 		arrow = "grug_mobs:rock_entity",
 		arrow_override = grug_mobs.stamp_arrow_damage,
 		shoot_interval = 3,
@@ -81,7 +81,7 @@ local function golem_def(description, texture)
 		dogshoot_count2_max = 3,
 
 		-- §3.1 speed column: 3.0. SPEC EXCEPTION, noted here on purpose —
-		-- this is the one aggressive family below the 4.4 baseline of §0.
+		-- this is the one aggressive family below the 4.6 baseline of §0.
 		-- It is deliberate: a golem is meant to be outrun, which is why it
 		-- throws rocks. No _grug_soft_deaggro opt-out either — the 25 m rule
 		-- drops a chaser to walk speed, and walk 1 vs run 3.0 is exactly the
@@ -110,7 +110,15 @@ local function golem_def(description, texture)
 		--     pits it would have to step-climb back out of (stepheight 1.1) is
 		--     worth more than two nodes of chase.
 		fear_height = 4,
-		view_range = 14,
+		-- 14 -> 16 (2026-09-16, user ruling 3): a `dogshoot` family sees 16
+		-- and a melee family 10-14 by habitat, and the golem was the one
+		-- ranged mob in the roster that did not follow its own rule -- the
+		-- skeleton archer and raider already carry 16 with that reason in
+		-- their comments (biomes_mobs.md §3.1, combat_stats.md §3). 16 is the
+		-- ceiling for a land mob, not a step toward more: the 45 m chase
+		-- give-up and the 40 m leash of combat_stats.md §4 both need the mob
+		-- to keep a target it can no longer see.
+		view_range = 16,
 
 		visual = "mesh",
 		mesh = "grug_mobs_stone_golem.b3d",

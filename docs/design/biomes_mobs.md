@@ -29,7 +29,8 @@ before WP13/WP33 author new surface content.
   zones is still outstanding work.
 - Stats derived, never hand-rolled: **HP = 15+5L, dmg = 2+0.4L,
   XP = 10L**; elite armor 80 (×3 HP, ×1.8 dmg, ×4 XP), rare armor 70
-  (×5 / ×2.2 / ×6). Speeds: aggressive 4.4, heartland hunters 4.6
+  (×5 / ×2.2 / ×6). Speeds: aggressive **4.6** (4.4 until 2026-09-16,
+  user ruling 2), heartland hunters 4.6
   (partly `dogshoot`), critters 3.4. One behavior verb per family;
   elites **and rares** telegraph (2 s wind-up, combat_stats §3); named
   rares broadcast.
@@ -980,23 +981,43 @@ what makes the war coast worth walking by day.
 
 ### 3.1 Families by biome group
 
+**View range follows the attack type** (decided 2026-09-16, user ruling 3:
+"more ranged mobs, with a larger view range than melee mobs, so ranged players
+and the Mage take damage sooner"):
+
+- a **`dogshoot` family sees 16 m** — it shoots, so it needs to see further
+  than a brawler. Skeleton Archer, Skeleton Raider, Stone/Mesa Golem and the
+  Bandit Archer all carry it.
+- a **melee family sees 10–14 m by habitat** — 14 in the open (bandit, guard,
+  hyena, jungle lynx, wolf, zebra, zombie), 12 where cover or a late-noticing
+  temperament says so (bear, panther, mirefolk, stag, spider, jungle ape), 10
+  low to the ground or at the village belt (boar and its tints, bog ooze, ram,
+  serpent). The critters see 8; the Crocodile's 6 and the Crag Eagle's 16 keep
+  their own documented reasons, and the aquatic Kraken's 20 is outside the
+  comparison.
+- **16 is the CEILING for a land mob, not a direction of travel.**
+  `combat_stats.md` §4 gives up a chase at 45 m and leashes at 40, and both
+  rules exist because the mob keeps a target it can no longer see; a
+  `view_range` above 16 starts eating into them.
+
 **Settled biomes, all six (core + inner, L1–25):**
 
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
-| Boar (exists; per-biome tint: Plague Boar in blight, Jungle Boar east) | charges — a mid-range **rush**: the stalker impulse flattened horizontally, triggered at 4–10 m with an 8 s cooldown | day | 4.4 (WP6 retune) | meat 1/1 ×1–2; light leather 1/2 `[leather]`; tusk 1/3 | grug_mobs_boar.b3d (have) |
+| Boar (exists; per-biome tint: Plague Boar in blight, Jungle Boar east) | charges — a mid-range **rush**: the stalker impulse flattened horizontally, triggered at 4–10 m with an 8 s cooldown | day | 4.6 (WP6 retune to 4.4, band raise 2026-09-16) | meat 1/1 ×1–2; light leather 1/2 `[leather]`; tusk 1/3 | grug_mobs_boar.b3d (have) |
 | Rabbit/Hare (tints) | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only | mobs_mc_rabbit |
 | Zombie (exists) | never leashes | night (in grug_blight: 24 h — Undead identity) | 4.2 | zombie flesh 1/1; linen scrap 1/2; steel ingot 1/10 | mobs_mc_zombie (have) |
-| Bandit (camp humanoid; two fixed camps per race region) | defends camp (leashes to camp, group) | 24 h | 4.4 | linen cloth 1/1 ×1–2 (home camp) / heavy cloth (frontier camp); copper coins | character.b3d + bandit skins (LotT-derived) |
+| Bandit (camp humanoid; two fixed camps per race region) | defends camp (leashes to camp, group) | 24 h | 4.6 | linen cloth 1/1 ×1–2 (home camp) / heavy cloth (frontier camp); copper coins | character.b3d + bandit skins (LotT-derived) |
+| **Bandit Archer** (added 2026-09-16, ruling 3) — the same camp, one slot in three | dogshoot (ranged); view range **16** | 24 h | **4.0 walk**, like the Skeleton Archer: an archer keeps its distance rather than sprinting | the Bandit's table **plus arrows 1/3** | character.b3d + the same bandit skins; the Skeleton Archer's arrow entity, no new art |
 
 **Forest pair — grug_deep_forest (A) ↔ grug_bone_forest (T)** (outer,
 25–60; Throng names in parentheses, same drop tables):
 
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
-| Wolf (Blightfang Wolf) — also inner pine-hills/meadows patches from L10 | hunts in packs; flees low, returns with pack | 24 h | 4.4 | meat 1/1; leather 1/2 `[leather]`; fang 1/3 | mobs_mc_wolf (+tint) |
-| Bear (Plaguehide Bear) — elite variant "Elder" ×1.6 scale, rolled **1 in 10 at spawn** | territorial (guards radius ~20 m, short chase) | day | 4.4 | meat 1/1 ×2; heavy leather 1/2 `[leather]`; bear claw 1/4 | mobs_mc_polarbear retexture |
-| Giant Spider (tints per biome; also jungle, caves) | webs (hit applies 40% slow 3 s) | night | 4.4 | spider silk 1/1 ×1–2; venom gland 1/6 | mobs_monster spider |
+| Wolf (Blightfang Wolf) — also inner pine-hills/meadows patches from L10 | hunts in packs; flees low, returns with pack | 24 h | 4.6 | meat 1/1; leather 1/2 `[leather]`; fang 1/3 | mobs_mc_wolf (+tint) |
+| Bear (Plaguehide Bear) — elite variant "Elder" ×1.6 scale, rolled **1 in 10 at spawn** | territorial (guards radius ~20 m, short chase) | day | 4.6 | meat 1/1 ×2; heavy leather 1/2 `[leather]`; bear claw 1/4 | mobs_mc_polarbear retexture |
+| Giant Spider (tints per biome; also jungle, caves) | webs (hit applies 40% slow 3 s) | night | 4.6 | spider silk 1/1 ×1–2; venom gland 1/6 | mobs_monster spider |
 | Stag (Gaunt Stag) | grazes (**passive prey**, §3.0: no aggro, retaliates) | day | 3.4 | meat 1/1 ×2; leather 1/2 `[leather]` | animalia reindeer (asset harvest) |
 | Skeleton Archer — bone forest + war coast only | dogshoot (ranged) | night | 4.0 walk | bone 1/1; linen scrap 1/2; arrows | mobs_mc_skeleton |
 | **Bone Weevil** — bone forest **and blight** (the two "creepy" biomes; one entity name, one `aoc` budget, per-biome tint stamped at spawn) | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only | mobs_mc_silverfish, bone-pale + blight tints |
@@ -1008,7 +1029,7 @@ what makes the war coast worth walking by day.
 | Crag Eagle (Vulture) | dive-bombs — a real **flier** (`fly` in air) on `dogfight`, whose vertical tracking drives it down onto a grounded target and back up: that IS the swoop, and it needs no projectile asset | day | 4.6 heartland | sharp feather 1/1 ×1–2; meat 1/2 | animalworld eagle (+tint) |
 | Stone Golem (Mesa Golem) — **elite** (armor 80, telegraphed slam) | hurls rocks (dogshoot) | 24 h | 3.0 | stone core 1/1; iron lump 1/2; gem 1/8 | mobs_monster stone monster |
 | Mountain Ram | grazes (**passive prey**, §3.0) | day | 3.4 | meat 1/1; **heavy** leather 1/4 `[leather]` — the ram is the crags' heavy-leather source, which is why it is prey and not a critter | mobs_mc sheepfur retexture |
-| Hyena — savanna+badlands (Throng's wolf-mirror, wolf drop table) | hunts in packs | 24 h | 4.4 | wolf table | animalworld hyena |
+| Hyena — savanna+badlands (Throng's wolf-mirror, wolf drop table) | hunts in packs | 24 h | 4.6 | wolf table | animalworld hyena |
 
 The Ram's Throng mirror, the **Dust Hare**, is not a badlands critter of
 its own: it is the dust-tinted variant of the settled Rabbit/Hare row
@@ -1038,20 +1059,20 @@ coast, 38–60) + grug_jungle_edge inner (10–25):
 
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
-| **Jungle Lynx** (the Raptor slot) — jungle_edge from L10, deep jungle | hunts in packs (wolf drop table) | day | 4.4 | meat 1/1; leather 1/2 `[leather]`; raptor claw 1/3 (item id kept) | big-cat retint of the panther mesh — the §8.2 fallback was **executed**: the paleotest velociraptor's media license could not be verified per file |
+| **Jungle Lynx** (the Raptor slot) — jungle_edge from L10, deep jungle | hunts in packs (wolf drop table) | day | 4.6 | meat 1/1; leather 1/2 `[leather]`; raptor claw 1/3 (item id kept) | big-cat retint of the panther mesh — the §8.2 fallback was **executed**: the paleotest velociraptor's media license could not be verified per file |
 | Panther | stalks (silent approach, pounce burst) | night | 4.6 heartland | meat 1/1; leather 1/2 `[leather]`; sleek pelt 1/4 | animalworld leopard retint |
-| Serpent | poisons (hit applies 1 dmg/2 s, 6 s) | day | 4.4 | scaled hide 1/2 `[leather]`; venom sac 1/3 (alchemy reagent) | animalworld cobra |
-| Jungle Ape — elite variant "Silverback" (bear-mirror: bear drop table), rolled **1 in 10 at spawn** | territorial (radius ~20 m) | day | 4.4 | meat ×2; heavy leather 1/2 `[leather]`; ape hair 1/4 | animalworld monkey upscaled |
-| Giant Spider (jungle tint) | webs | night | 4.4 | spider table | mobs_monster spider |
+| Serpent | poisons (hit applies 1 dmg/2 s, 6 s) | day | 4.6 | scaled hide 1/2 `[leather]`; venom sac 1/3 (alchemy reagent) | animalworld cobra |
+| Jungle Ape — elite variant "Silverback" (bear-mirror: bear drop table), rolled **1 in 10 at spawn** | territorial (radius ~20 m) | day | 4.6 | meat ×2; heavy leather 1/2 `[leather]`; ape hair 1/4 | animalworld monkey upscaled |
+| Giant Spider (jungle tint) | webs | night | 4.6 | spider table | mobs_monster spider |
 | Parrot — jungle_edge critter | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only (feather moved to the bird-of-prey table) | mobs_mc_parrot |
 
 **grug_swamp (universal, 25–45):**
 
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
-| Crocodile | ambushes (lurks still, burst on approach) | 24 h | **4.4, one speed** — the water bonus is dropped (see §4) | scaled hide 1/1 `[leather]`; meat; croc tooth 1/3 | animalworld crocodile |
+| Crocodile | ambushes (lurks still, burst on approach) | 24 h | **4.6, one speed** — the water bonus is dropped (see §4) | scaled hide 1/1 `[leather]`; meat; croc tooth 1/3 | animalworld crocodile |
 | Bog Ooze | engulfs (slow tank: touch damage aura, **flat 2 damage**, radius 2 — the one hand-written damage number in the roster; its melee is level-scaled as usual) | 24 h | 2.6 | slime gel 1/1 ×1–2 (alchemy reagent); vendor trash | mobs_mc_slime retint |
-| Mirefolk (fish-folk humanoid, camps at swamp pools; the "murloc memory") | swarms (camp group aggro, all rush at once) | 24 h | 4.4 | linen cloth 1/2; fish 1/1; shiny scale 1/4 | character.b3d small scale + custom skin (2D work) — decided: include |
+| Mirefolk (fish-folk humanoid, camps at swamp pools; the "murloc memory") | swarms (camp group aggro, all rush at once) | 24 h | 4.6 | linen cloth 1/2; fish 1/1; shiny scale 1/4 | character.b3d small scale + custom skin (2D work) — decided: include |
 | **Bog Fowl** — the swamp critter; universal biome, so the one new critter both continents share | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only (**not** its upstream's feather) | mobs_mc_chicken, marsh tint |
 
 **grug_beach / strait (L1–5 neutral — attack only when provoked):**
@@ -1086,8 +1107,11 @@ below are the rationale for each choice, not the authority for it:
 - **`run_velocity` 8.8** (shipped: 5). The improved boat does 8 nodes/s
   (`boats.md` §5), so the guard keeps exactly the 1.1× margin that
   `combat_stats.md` §3's speed pillar gives an ordinary mob over a walking
-  player (4.4 against 4.0). It is the one documented exception to that
-  section's 3.4–4.6 speed band.
+  player (4.6 against 4.0 since 2026-09-16; it was 4.4 when this paragraph
+  was written, and 8.8 is derived from the boat, not from the mob band, so
+  the number is unchanged). It is the one documented exception to that
+  section's 3.4–4.6 speed band, which the same ruling collapsed to a single
+  aggressive value.
 - **`view_range` 40** (shipped: 20) — the same 40 m that is already the
   threat-validity and leash radius of `combat_stats.md` §4, so the guard
   notices a boat before the boat is past it. Large, deliberately not unfair.
@@ -1325,6 +1349,16 @@ re-run against the new values once the change ships.
 | Kraken Guard | ocean water surface, open sea only (own check) | 60 | 12000 | 1 | any | (outside continents) |
 | Bandits / Mirefolk | **no ABM** — camp anchor with **respawn slots** (world.md §4a): max 3–5, one refill per 120–300 s, dormant catch-up | — | — | 3–5 per camp | — | camp pos |
 | Named rares | **no ABM** — scheduled spawner, 2–4 h respawn, broadcast | — | — | 1 | — | fixed routes |
+
+**The Bandit Archer costs no spawn budget** (2026-09-16). It has no row of its
+own: the bandit camp's slot roll picks it **1 in 3** per slot, so the camp is
+still the 3–5 of the Bandits/Mirefolk row above and simply not all of one
+kind. Both families count against that one head count
+(`grug_mobs/camps.lua`), which is why an archer can never make a camp grow.
+It is also why ruling 3's "more ranged mobs" reaches the INNER ring, where the
+four pre-existing ranged mobs — Skeleton Archer, Skeleton Raider, Stone Golem,
+Mesa Golem — never went: before this, a player met no ranged enemy at all
+below roughly level 25.
 
 Row notes:
 - **Crocodile spawns on mud only.** "Water at mud" is not expressible:

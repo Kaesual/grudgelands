@@ -603,6 +603,7 @@ dofile(modpath .. "/gull.lua")
 dofile(modpath .. "/carrion_crow.lua")
 dofile(modpath .. "/skeleton_raider.lua")
 dofile(modpath .. "/bandit.lua")
+dofile(modpath .. "/bandit_archer.lua")
 dofile(modpath .. "/mirefolk.lua")
 -- Faction guards + military outposts (world.md §4, WP6/T8): guard.lua must
 -- come before camps.lua, which names the two guard mobs in its camp types.

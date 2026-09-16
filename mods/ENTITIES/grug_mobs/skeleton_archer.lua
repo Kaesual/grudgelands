@@ -62,7 +62,7 @@ local skeleton = {
 	-- mobs_redo alternates: dogshoot_count_max seconds shooting, then
 	-- dogshoot_count2_max seconds of melee (api.lua dogswitch). 10 vs 3 is
 	-- "mostly ranged"; independently of the timer mobs_redo forces melee
-	-- whenever the target is within `reach` (api.lua:2249), which is the
+	-- whenever the target is within `reach` (api.lua:2366), which is the
 	-- "melee when cornered" half.
 	arrow = "grug_mobs:arrow_entity",
 	arrow_override = grug_mobs.stamp_arrow_damage,

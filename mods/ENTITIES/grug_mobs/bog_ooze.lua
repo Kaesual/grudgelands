@@ -28,7 +28,7 @@ local bog_ooze = {
 	group_attack = false,
 	pathfinding = 1,
 
-	-- §3.1 speed column: 2.6. SPEC EXCEPTION against the 4.4 aggressive
+	-- §3.1 speed column: 2.6. SPEC EXCEPTION against the 4.6 aggressive
 	-- baseline of §0, noted here on purpose — the second one in the game
 	-- after the golem's 3.0 (golem.lua). It is the whole point of the family:
 	-- a "slow tank" whose damage comes from standing next to it, so walking

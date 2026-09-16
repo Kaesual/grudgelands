@@ -16,7 +16,7 @@ local boar = {
 	walk_velocity = 1,
 	-- Aggressive-mob speed (combat_stats.md §3): faster than the player's
 	-- 4.0, so running away is a decision, not a reflex.
-	run_velocity = 4.4,
+	run_velocity = 4.6,
 	jump = true,
 	jump_height = 4,
 	stepheight = 1.1,

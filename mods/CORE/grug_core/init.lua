@@ -55,3 +55,9 @@ dofile(modpath .. "/protection.lua")
 dofile(modpath .. "/combat_debug.lua")
 dofile(modpath .. "/combat_ray.lua")
 dofile(modpath .. "/combat.lua")
+-- After combat.lua: the aggregator reads grug_core.mono_time() (one clock for
+-- every combat timer, see there). It is the ONLY writer of a player's
+-- physics_override in the game -- grug_mobs, grug_abilities and grug_classes
+-- all go through its named modifiers, root flag and exclusive hold
+-- (skill_trees.md §3.9, rulings 11 and 26).
+dofile(modpath .. "/movement.lua")
