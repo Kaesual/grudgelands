@@ -175,7 +175,17 @@ miss. Individual skill charges and resources replace the retired global
 cooldown.
 
 [Progression](docs/design/progression.md) targets level 60 in roughly 10–20
-played hours, with one talent point every three levels and active capstones.
+played hours, with **one talent point every two levels** — thirty by level 60,
+exactly one whole tree — and new active skills from a tree's keystones and its
+capstone.
+
+The trees those points are spent in are still a proposal:
+[skill_trees.md](docs/design/skill_trees.md) gives every class two trees of
+two chains, thirty ranks each, and lists all sixty-four talents; a fourth
+class, the [Scout](docs/design/scout.md) — leather, a bow, a blade and the
+game's only stealth — is designed there too, planned now and built later.
+Both files carry a **PROPOSAL** banner and one shared list of open decisions
+for the user; nothing in them is implemented.
 Death returns a player to their race's starting settlement with inventory
 intact; the decided PvE penalty removes 25% of current-level XP progress
 without de-leveling, while a death authoritatively attributed to an eligible
