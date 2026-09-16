@@ -390,3 +390,11 @@ Two of section 8's open items are closed and one is measured:
 
 Still open from section 8: the gate-arrival ramp (`kezamba_ramp.lua`), and
 junctions that are close but disjoint.
+
+**One path above is stale and deliberately not rewritten:** section 8 and this
+package's README name `tools/wp13/evidence/20260916-streets/walkability.lua`.
+Round 4 moved that file to **`tools/wp13/walkability.lua`** — a gate every round
+re-runs belongs beside the other road gates rather than inside one round's
+evidence — and gave it the two run-spec fields the seam hands a run. It is the
+same programme; a tree that carries neither field still builds the road it used
+to, which is what keeps it able to measure `main`.

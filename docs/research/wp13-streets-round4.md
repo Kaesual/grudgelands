@@ -338,7 +338,11 @@ has. This lane did not change patrol routes, guard behaviour or the wall walk;
 the one thing it changed that a guard can stand on is the verge furniture, and
 removing a rail from the middle of a street can only help a stuck guard.
 
-<!--ENGINE-NPC-->
+This lane did not re-measure it: the workstation carried four other round-4
+lanes and two to four other headless servers throughout, and a `find_path`
+count in a quiet window measured on a busy host says nothing wave 3's own
+record does not already say with the same caveat. **It stays open, with wave
+3's numbers and wave 3's suspect.**
 
 ---
 
@@ -368,7 +372,14 @@ removing a rail from the middle of a street can only help a stuck guard.
    only a clean box; a region that cannot be read whole still reaches the gate
    with a non-zero `_ignored` and still fails the pass.
 5. **The KAT's own coverage.** Four new mutations (`mutation.py` in this
-   round's evidence) plus the eleven of wave 3, all red.
+   round's evidence) plus the eleven of wave 3, all red. Two of the four are
+   deliberately NOT "turn the rule off": each narrows the clearance so that
+   exactly one of the two shapes §11 builds keeps its rail, which is what says
+   the section holds the butt joint and the crossing separately.
+6. **Chunk independence of the new input.** §11(d) cuts the crossing's own
+   avenue at every one of its 96 interior columns and compares the union of the
+   two pieces with the whole, cell for cell — the invariant the module lives
+   inside, re-checked for a rule that reads a new per-position table.
 
 ---
 
@@ -387,7 +398,35 @@ removing a rail from the middle of a street can only help a stuck guard.
 
 ---
 
-## 9. Files
+## 9. What to look at in a FRESH world
+
+A capital's streets are mapgen, so an existing world keeps the old ones: this
+needs a **new world**, and the user's own seed `15912857179583385436` is the one
+the findings were made in.
+
+1. **Lethariel ~1900,−1400** — the north-east ring corner over the mere, where
+   the two bridge ends meet. The rail of each should now stop at the other
+   street's kerb; the square itself is open on both sides; the parapet on the
+   OUTSIDE of the corner — the water side — is still there.
+2. **Lethariel ~1700,−1400** — the north-west corner. There should be ONE
+   street here, not two two nodes apart, and no leftover paving beside it. The
+   ring's west side now carries on north as the district lane and the seam
+   between them is inside the corner plateau, so there is no step.
+3. **Kezamba ~1800,1595** — the crossing over water. All four arms should open
+   into the square with the full carriageway, not through a one-node gap, and
+   the square should carry no rail, post or pillar.
+4. **Any street corner in any capital** — the rule is every capital's, so
+   Highcourt's ring corners, Dur Brannoc's gate crossings and Gor Drazhak's
+   lanes got it too. What should NOT have happened: a gap in a bridge parapet
+   anywhere except where a street joins, or a stretch of bridge deck with
+   nothing to walk on.
+5. **The lamps.** 414 standards of 4444 are gone — every one of them stood in
+   the middle of a joining street. The remaining rhythm should read the same
+   walking down a street; a crossing simply has no standard in it.
+
+---
+
+## 10. Files
 
 | file | what changed |
 | --- | --- |
@@ -401,5 +440,11 @@ removing a rail from the middle of a street can only help a stuck guard.
 | `tools/wp13/street_kat.lua` | §11 (the verge clearance) and §8 as an assertion |
 | `tools/wp13/walkability.lua` | **moved** out of wave 3's evidence directory; the two run-spec fields |
 | `tools/wp13/lethariel_kat.lua`, `kezamba_lots.lua`, `integration_fixture.lua` | the same two run-spec fields, so the offline road is the road the engine writes |
+
+`tools/wp13/lane_routes.lua` is deliberately NOT in that list: it builds its
+runs in WORLD coordinates, where a span in the run's own coordinates would mean
+something else, and what it measures is the CARRIAGEWAY — the verge clearance
+cannot move a cell it reads. Its gate is green on all nine seeds
+(`illegal=0 walk_faults=0 cross_faults=0 lamp_faults=0`).
 | `tools/wp13/evidence/20260916-streets/mutation.py` | one anchor re-indented — the verge block gained a level |
 | `tools/wp13/evidence/20260916-streets-r4/` | the evidence |
