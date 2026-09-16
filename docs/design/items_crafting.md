@@ -2427,8 +2427,12 @@ are derived only after those rates are measured; the retired fixed
 
 ## 9. Bow and arrow item foundation (inactive Phase-2 substrate)
 
-Item path (source: `mcl_bows`, code LGPL 3.0 ✓, media CC BY-SA 4.0 +
-2 attribution sounds; port ≈ 1000 lines incl. `vl_projectile`, §1.2):
+Item path (source: `mcl_bows`, code **LGPL 3.0 or GPL 3.0** — VoxeLibre
+dual-licences every mod, `LEGAL.md:25-28`, and both are on `AGENTS.md`'s
+permitted list ✓; media: **textures CC BY-SA 4.0**, sounds **two CC0** plus
+**one CC BY 3.0** (`mcl_bows_hit_player.ogg`, tim.kahn) — so exactly **one**
+attribution-requiring sound, not two; port ≈ 1000 lines incl.
+`vl_projectile`, §1.2):
 
 - **Bow family on the weapon curve**: full-charge damage = the 1H curve
   (8/13/19/24 at ilvl 12/27/42/57) at 25 m range, charge 0.5 s (mcl
