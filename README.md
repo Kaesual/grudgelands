@@ -270,18 +270,24 @@ instead of a wall and a lore precinct on a lake), **Kezamba** (troll, boardwalks
 on basalt piers round a cenote) and **Nhal Veyr** (undead, grave fields and a
 walk-in mausoleum). Each has four districts of nine plots plus four pieces of
 open ground -- a field, a pasture, a yard, a green -- and which district stands
-in which quarter is decided by the world seed. Their people work rather than
-mill about: four residents in five stand at a workplace with an activity
-animation (smith, fisher, farmer, miner, brewer, carver, mourner, sparring
-pair, forager), one in five walks a short ring, and a district reads as lived
-in because a butcher's house has a butcher in it -- twelve profession shops in
+in which quarter is decided by the world seed. Their people stay put rather
+than mill about: most residents keep to one spot, one in four works a craft
+with its own animation (smith, fisher, farmer, miner, brewer, carver, mourner,
+sparring pair, forager), and only a minority walk a short ring -- in Highcourt,
+36 workplaces and 22 walkers among 144 residents. A district reads as lived in
+because a butcher's house has a butcher in it -- twelve profession shops in
 all. WP13's round-2 merge also shipped the **one weapon ladder**: vendor gear
 and the base craft ladder are now the same material-named items (Bronze Sword,
 Silkweave Cowl), merged with `default`'s tool ladder.
 
 **Every start and every capital still awaits the user's GUI playtest**, and
-the twelve villages, the outposts, bandit and mining camps, the two apex camps
-and the six kings with their royal guards remain later work.
+the rest of WP13's 100-anchor roster is unbuilt: twelve villages (two of them
+with a shipwright's plot), 24 outposts, 12 bandit camps, 6 mining camps, 4
+mirefolk camps, 16 clash anchors, 2 dragon arenas, 2 apex camps and 10
+rare-route pads. The mirefolk camps, clash anchors and dragon arenas are
+dressing only here -- WP42 and WP23 own what happens in them -- and the apex
+camps' twelve renewable sockets are WP34's. The six kings and their royal
+guards are unbuilt too.
 WP5, WP26, WP44, WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind
 shipped prerequisites. WP34 still needs structures and economy.
 
