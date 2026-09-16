@@ -7,6 +7,7 @@
 --     luajit tools/wp13/kezamba_water.lua <repo> --emit      -- the mask module
 --     luajit tools/wp13/kezamba_water.lua <repo> --verify    -- against the tree
 --     luajit tools/wp13/kezamba_water.lua <repo> --field <field.tsv>
+--     luajit tools/wp13/kezamba_water.lua <repo> --walls [<reach>]
 --
 -- WHAT THIS IS FOR.
 --
@@ -51,6 +52,7 @@
 local repo = assert(arg[1], "repository root required")
 local want_map, csv_dir, core_only, emit, verify = false, nil, false, false, false
 local field_path = nil
+local walls, walls_reach = false, 250
 do
 	local index = 2
 	while arg[index] do
@@ -59,6 +61,12 @@ do
 		elseif option == "--core" then core_only = true
 		elseif option == "--emit" then emit = true; core_only = true
 		elseif option == "--verify" then verify = true; core_only = true
+		elseif option == "--walls" then
+			walls = true
+			if arg[index + 1] and arg[index + 1]:match("^%d+$") then
+				index = index + 1
+				walls_reach = tonumber(arg[index])
+			end
 		elseif option == "--field" then
 			index = index + 1
 			field_path = assert(arg[index], "--field needs a field TSV")
@@ -154,6 +162,150 @@ end
 -- and compares it, column by column, with the mask this package COMMITTED. A
 -- disagreement means the committed lagoon is not the lake the world has, which
 -- is the one failure mode a purely offline fixture cannot see.
+-- `--walls`: THE WALL THE PLAYTEST FOUND, AS A NUMBER, ON ALL NINE SEEDS.
+--
+-- Playtest 5 (2026-09-16, user): "The capital core in Kezamba stands on an
+-- unnatural plateau, the terrain has no natural course there."
+--
+-- `tools/wp13/capital_terrain_fixture.lua` measures CLIMBS -- how much of a
+-- capital's ground has a neighbour more than a jump above it -- which is the
+-- right instrument for a terrace riser and the wrong one for this: a pad that
+-- ends in a twenty-node face has exactly ONE unclimbable column per edge
+-- column and reads as a rounding error in a per-mille figure. What the user
+-- saw is the DROP, and the two numbers below are it:
+--
+--   * `perimeter`  the step between a column on the civic core's own edge and
+--                  the column one outside it, over all 384 of them. The core
+--                  is flat at the fitted reference by contract and the ground
+--                  outside it is whatever `capital_terrace_value` leaves, so
+--                  this is the height of the pad's own face. It measured 17 to
+--                  28 nodes over the nine seeds before `wp40/height.lua`'s
+--                  `cenote_terrace` apron and is the terrace step afterwards.
+--   * `land_land`  the worst fall between any two 4-adjacent LAND columns in
+--                  the envelope, which catches the second wall of the same
+--                  cause: the cenote's own rim, held at the water floor by
+--                  `water_banks.protect` with the graded delta 20 to 30 nodes
+--                  below it one column away.
+--
+-- Land against WATER is reported and not gated. The cenote's bed is
+-- `water_y - varied_depth(deep_cenote.depth)` -- a flat-bottomed bowl with a
+-- twelve-node side -- and that side is the `deep_cenote` HYDRO PROFILE's, not
+-- the `cenote_terrace` shape's. It is entirely below the water surface, it did
+-- not move in either direction here, and section 7 of
+-- `docs/research/wp13-kezamba.md` carries it as an open point.
+--
+-- THE CEILINGS ARE MEASUREMENTS. `PERIMETER_CEILING` is the race's own terrace
+-- step, which is the user's ruling turned into a number and is not a tuning
+-- knob. `WALL_CEILING` is the worst `land_land` fall measured on the nine
+-- seeds with the apron in (8 to 11) with headroom; a change that pushes it
+-- past this is a capital growing walls again and is a decision with a number
+-- attached.
+if walls then
+	local PERIMETER_CEILING = 3      -- the troll terrace step
+	local WALL_CEILING = 14
+	local CORE_LOW, CORE_HIGH = -CORE - 1, CORE   -- the half-open [-48, 47]
+	local failures = 0
+	io.write("kind\tseed\treach\tland\tperimeter_min\tperimeter_max",
+		"\tperimeter_mean_x100\tworst_land_land\tat\tover_step",
+		"\tworst_land_water\n")
+	for seed_index = 1, #SEEDS do
+		local seed = SEEDS[seed_index]
+		local horizontal = horizontal_factory({source = source,
+			schemas = schemas, canonical = canonical,
+			deterministic = deterministic, raw_sha256 = raw_sha256}).new(seed)
+		local height = height_factory({source = source, canonical = canonical,
+			deterministic = deterministic, raw_sha256 = raw_sha256,
+			horizontal_session = horizontal,
+			coupled_grade = coupled_grade}).new_runtime(seed)
+		local anchor = height.selected_anchor_3d_by_id(ANCHOR_ID)
+		if type(anchor) ~= "table" then
+			error("kezamba walls: the capital anchor is absent", 0)
+		end
+		-- One pass over the window, heights and land class read once per
+		-- column: the whole +-250 envelope is 251 001 columns and every one of
+		-- them is asked about by four neighbours.
+		local ys, land = {}, {}
+		for z = -walls_reach - 1, walls_reach + 1 do
+			local row_y, row_land = {}, {}
+			for x = -walls_reach - 1, walls_reach + 1 do
+				local wx, wz = anchor.x + x, anchor.z + z
+				row_y[x] = height.terrain_height_at(wx, wz)
+				row_land[x] = horizontal.water_class_at(wx, wz) == "land"
+			end
+			ys[z], land[z] = row_y, row_land
+		end
+		local land_columns, over_step = 0, 0
+		local worst_land, worst_at, worst_water = 0, "-", 0
+		for z = -walls_reach, walls_reach do
+			for x = -walls_reach, walls_reach do
+				if land[z][x] then
+					land_columns = land_columns + 1
+					local here = ys[z][x]
+					for side = 1, 4 do
+						local nx, nz = x, z
+						if side == 1 then nx = x + 1
+						elseif side == 2 then nx = x - 1
+						elseif side == 3 then nz = z + 1
+						else nz = z - 1 end
+						local drop = here - ys[nz][nx]
+						if land[nz][nx] then
+							if drop > PERIMETER_CEILING then
+								over_step = over_step + 1
+							end
+							if drop > worst_land then
+								worst_land, worst_at = drop, x .. "," .. z
+							end
+						elseif drop > worst_water then
+							worst_water = drop
+						end
+					end
+				end
+			end
+		end
+		-- The civic core's own face: every edge column against the column one
+		-- step outside it, all four sides.
+		local low, high, total = 9999, -9999, 0
+		for at = CORE_LOW, CORE_HIGH do
+			local steps = {ys[CORE_LOW][at] - ys[CORE_LOW - 1][at],
+				ys[CORE_HIGH][at] - ys[CORE_HIGH + 1][at],
+				ys[at][CORE_LOW] - ys[at][CORE_LOW - 1],
+				ys[at][CORE_HIGH] - ys[at][CORE_HIGH + 1]}
+			for index = 1, 4 do
+				local step = steps[index]
+				total = total + step
+				if step < low then low = step end
+				if step > high then high = step end
+			end
+		end
+		local count = 4 * (CORE_HIGH - CORE_LOW + 1)
+		io.write(table.concat({"kezamba_walls", seed, walls_reach,
+			land_columns, low, high,
+			math.floor(total * 100 / count), worst_land, worst_at, over_step,
+			worst_water}, "\t"), "\n")
+		if high > PERIMETER_CEILING then
+			failures = failures + 1
+			io.write("FAIL\tthe civic pad on ", seed, " ends in a face of ",
+				high, " nodes against the terrace step of ",
+				PERIMETER_CEILING, "\n")
+		end
+		if worst_land > WALL_CEILING then
+			failures = failures + 1
+			io.write("FAIL\ta land wall of ", worst_land, " nodes at ",
+				worst_at, " on ", seed, " against a ceiling of ",
+				WALL_CEILING, "\n")
+		end
+	end
+	if failures ~= 0 then
+		io.write("kezamba_walls FAIL: ", failures,
+			" wall measurement(s) past their ceiling\n")
+		os.exit(1)
+	end
+	io.write("kezamba_walls PASS: the civic pad steps down at the terrace ",
+		"step and no land wall exceeds ", WALL_CEILING, " nodes, on all ",
+		#SEEDS, " seeds\n")
+	os.exit(0)
+end
+
 if field_path then
 	local mask = dofile(wp13 .. "/kezamba_lagoon.lua")()
 	local heights, land, reach = {}, {}, nil

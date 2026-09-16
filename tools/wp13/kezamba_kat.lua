@@ -52,6 +52,12 @@ return function(repo)
 	local kezamba = dofile(wp13 .. "/kezamba.lua")(wp13)
 	local districts = dofile(wp13 .. "/kezamba_districts.lua")(wp13)
 	local mask = dofile(wp13 .. "/kezamba_lagoon.lua")()
+	-- The capital's palette HANDLES, for the crop roles the base troll palette
+	-- does not bind. `kezamba_plot.lua` gives the three crop fields
+	-- `handle = "crop"`, so the nodes those fields are made of are not
+	-- reachable through `palettes.new("troll")` and the feature sets below
+	-- have to name them from the handle itself.
+	local handles = dofile(wp13 .. "/troll_palette.lua")()
 	local settlement = dofile(wp40 .. "/r7_settlement.lua")
 	local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 	local sha256 = common.new_sha256()
@@ -123,14 +129,22 @@ return function(repo)
 	feature_set("smith", {},
 		{"default:furnace", "default:furnace_active",
 			"grug_decor:cottages_anvil"})
-	-- `farm` is "a farmland or crop node", and the TROLL PALETTE BINDS NEITHER
-	-- `crop` NOR `crop_soil`: `dressing.crop_rows` falls back to the mud
-	-- furrow of `ground_patch` and `planter_soil`, which is what a field in a
-	-- flooded basin is and what the farmer at Kezamba actually hoes. Reading
-	-- the rule off the palette rather than off a fixed name list is what lets
-	-- it say so.
-	feature_set("farm", {"crop_soil", "crop", "planter_soil", "ground_patch",
-		"ground_straw"}, {"farming:soil_wet"})
+	-- `farm` IS "A FARMLAND OR CROP NODE" (section 8.1), and until playtest 5
+	-- the answer at Kezamba was neither. The troll race table binds no `crop`
+	-- and no `crop_soil`, so `dressing.crop_rows` fell back to `ground_patch`
+	-- and `planter_soil` -- both `grug_nodes:mud` for this race -- and the
+	-- three fields were a rectangle of bare mud that grew nothing, which the
+	-- first version of this note argued was "what a field in a flooded basin
+	-- is". The user disagreed ("Fields in Kezamba grow 'Mossy Stone'? That
+	-- cannot be right.") and was right: a field has to read as a field.
+	-- `wp13/troll_palette.lua`'s `M.CROP` now binds tilled soil and papyrus,
+	-- and the two names come out of THAT handle, because the fields are the
+	-- only plots that carry it. The mud pair stays in the set: nothing in the
+	-- capital relies on it any more, and leaving it would hide a field that
+	-- lost its handle -- so it does not stay, and section 6c is the count that
+	-- makes sure the reeds are really there.
+	feature_set("farm", {"crop_soil", "crop", "ground_straw"},
+		{handles.CROP.crop_soil, handles.CROP.crop, "farming:soil_wet"})
 	-- `chop` IS A LOG OR A TREE (§8.1). `post` and `beam` came out of the set
 	-- after the independent review of 2026-09-16 pointed out that this lane had
 	-- already argued, in §5, why a drying rack's posts are not something to
@@ -144,7 +158,8 @@ return function(repo)
 	-- the cell the socket looks at instead (`dressing.plant`, which breaks the
 	-- kerb at one cell for exactly this reason).
 	feature_set("tend", {"flower", "flower_alt", "hedge", "hedge_stem",
-		"undergrowth", "grass_tuft", "fern", "crop", "tree_leaves"}, {})
+		"undergrowth", "grass_tuft", "fern", "crop", "tree_leaves"},
+		{handles.CROP.crop})
 	feature_set("pray", {"light_post", "light_wall", "light_indoor",
 		"low_wall", "signature", "hearth"}, {})
 	-- The six wave-2 activities of section 8.2. Each set is the contract's own
@@ -245,7 +260,7 @@ return function(repo)
 	for _, name in ipairs({"default:torch", "default:torch_wall",
 			"default:grass_1", "default:grass_3", "default:grass_4",
 			"default:fern_1", "default:junglegrass", "doors:hidden",
-			"default:jungleleaves"}) do
+			"default:jungleleaves", "default:papyrus"}) do
 		PASSABLE[name] = true
 	end
 	local function solid_name(name)
@@ -635,6 +650,40 @@ return function(repo)
 			" plots and not the Highcourt standard's 52")
 		local by_district, seen_id = {}, {}
 		local occupied = {}
+		-- WHAT COUNTS AS GROWN, and what counts as paved. `GROWN` is every
+		-- node this capital's plots put in the air over soil, taken from the
+		-- palette's own roles plus the crop handle -- naming the nodes by hand
+		-- would pass a field that quietly lost its palette. `PAVED` is the
+		-- `planter` role, which for the troll palette is
+		-- `default:mossycobble`: the kerb of a raised bed, and the whole of
+		-- what a bed one row deep is made of.
+		local GROWN, PAVED = {}, timber.node("planter")
+		for _, role in ipairs({"crop", "undergrowth", "grass_tuft", "fern",
+				"flower", "flower_alt", "hedge"}) do
+			local name = timber.maybe(role)
+			if name then GROWN[name] = true end
+		end
+		-- The handle has to BIND, and the message has to say so: without this
+		-- the mutation that empties `M.CROP` crashes on a nil table index
+		-- instead of naming the defect.
+		assert(type(handles.CROP.crop) == "string" and
+			type(handles.CROP.crop_soil) == "string",
+			"kezamba crops: wp13/troll_palette.lua's M.CROP binds no crop " ..
+			"and no crop_soil, so dressing.crop_rows falls back to the mud " ..
+			"pair and the fields grow nothing")
+		GROWN[handles.CROP.crop] = true
+		-- The three CROP FIELDS and the floor each has to clear. A field is
+		-- `dressing.crop_rows` over the yard behind its forecourt, which plants
+		-- every second row; the smallest of the three is `vine_kitchen`, whose
+		-- yard is a reach-5 lot. The floors are the measured counts less a
+		-- quarter, so a field that loses its crop handle (0) or half its rows
+		-- turns this red while an ordinary lot move does not.
+		local FIELD = {shore_gardens = 140, vine_common = 140,
+			vine_kitchen = 20}
+		-- The two RAISED-BED gardens, which are `dressing.planter` and read as
+		-- stone the moment a bed is shallower than three rows.
+		local GARDEN = {shore_vineyard = true, vine_terraces = true}
+		local crop_row = {}
 		for index = 1, #resolved do
 			local entry = resolved[index]
 			assert(not seen_id[entry.id],
@@ -727,6 +776,32 @@ return function(repo)
 
 			check_sockets("kezamba plot " .. entry.id, composition.cells,
 				composition.landmarks.sockets, false)
+
+			-- 2c. WHAT A FIELD GROWS (playtest 5, 2026-09-16, user: "Fields in
+			-- Kezamba grow 'Mossy Stone'? That cannot be right."). Two
+			-- different plots read as stone and each for its own reason, so
+			-- each gets its own count here rather than one rule that would
+			-- pass on the average of the two.
+			local grown, paved = 0, 0
+			for cell_index = 1, #composition.cells do
+				local name = composition.cells[cell_index].name
+				if GROWN[name] then grown = grown + 1
+				elseif name == PAVED then paved = paved + 1 end
+			end
+			crop_row[#crop_row + 1] = entry.id .. "=" .. grown .. "/" .. paved
+			if FIELD[entry.id] then
+				assert(grown >= FIELD[entry.id],
+					"kezamba crops: the field " .. entry.id .. " grows " ..
+					grown .. " plants, and a field that grows fewer than " ..
+					FIELD[entry.id] .. " is the mud rectangle of playtest 5")
+			end
+			if GARDEN[entry.id] then
+				assert(grown > paved, "kezamba crops: the garden " ..
+					entry.id .. " lays " .. paved ..
+					" cells of the palette's `planter` (" .. PAVED ..
+					") against " .. grown ..
+					" planted ones, which is a field of stone")
+			end
 		end
 		local keys = {}
 		for key in pairs(by_district) do keys[#keys + 1] = key end
@@ -737,6 +812,18 @@ return function(repo)
 		end
 		say("plots", #resolved, plot_cells, largest, largest_id,
 			table.concat(row, ","))
+		-- The five plots the playtest finding is about, as grown/paved cells.
+		local field_row = {}
+		for _, id in ipairs({"shore_gardens", "shore_vineyard", "vine_common",
+				"vine_kitchen", "vine_terraces"}) do
+			for index = 1, #crop_row do
+				if crop_row[index]:sub(1, #id + 1) == id .. "=" then
+					field_row[#field_row + 1] = crop_row[index]
+				end
+			end
+		end
+		say("crops", handles.CROP.crop, handles.CROP.crop_soil,
+			table.concat(field_row, ","))
 	end
 
 	-- ------------------------------------------------------------------
