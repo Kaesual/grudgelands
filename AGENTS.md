@@ -265,7 +265,10 @@ current state). It is **derived, never authoritative**:
 - Registered names are always `modname:name`; `:foo:bar` overrides a
   foreign registration (requires a dependency).
 - We use modpacks (folders with `modpack.conf`) for grouping like
-  VoxeLibre: `CORE/`, `PLAYER/`, `ENTITIES/`, `ITEMS/`, `MAPGEN/`, `HUD/`.
+  VoxeLibre. The six that exist are `BASE/` (vendored upstream mods),
+  `CORE/`, `PLAYER/`, `ENTITIES/`, `ITEMS/` and `MAPGEN/`; there is no
+  `HUD/` modpack — the XP bar and the other HUD elements live in their
+  owning mod.
 
 ## Project conventions
 
@@ -681,10 +684,19 @@ Details + line numbers in [docs/research/](docs/research/).
     `type = "npc"` is what makes them permanent (it exempts them from
     all three mobs_redo removal paths); a **truthy `do_punch` return**
     is what makes them invulnerable (the api.lua precedence gotcha
-    above). Placement is a throttled globalstep against fixed capital
-    offsets — **no mapgen change**, so existing worlds get vendors too;
-    the presence gate must stay inside the object-activation radius or
-    duplicates spawn forever.
+    above). WP7's placement was a throttled globalstep against fixed capital
+    offsets, whose presence gate must stay inside the object-activation
+    radius or duplicates spawn forever. **Since WP13 that is only the
+    fallback**: a settlement's vendors stand on the `vendor` sockets its
+    blueprint exports (`grug_core/settlement_sockets.lua`, placed by
+    `grug_mobs/start_npcs.lua`), and the offsets serve only a capital whose
+    core has not been built — an empty set since all six cores landed.
+    `grug_traders/vendors.lua` reads which capitals are socketed from the
+    registry, never from a hard-coded list. The twelve **profession shop**
+    vendors (butcher, smith, fishmonger, baker, tailor, mason, brewer,
+    bowyer, herbalist, armourer, tanner, embalmer) are socket-only, carry no
+    race of their own — the settlement key answers that — and only `smith`
+    and `armourer` reach the gear-bracket tabs.
   - **Rotation is deterministic**: seed = `floor(os.time()/3600)` +
     per-vendor salt + bracket, fed into **`PcgRandom`** — never
     `math.random`/`table.shuffle`, whose sequence depends on what else
@@ -714,45 +726,39 @@ Details + line numbers in [docs/research/](docs/research/).
   stages from VoxeLibre `mcl_events` (`cond_start/on_step/cond_complete`),
   quest log as a formspec, state in player meta, quest givers via NPC
   `on_rightclick`, HUD `waypoint` elements for quest targets.
-- **Mapgen/biomes** (decided in WP2, reworked in WP18): engine biomes on
-  mapgen v7, territory/race-region confinement via the biome definition's
-  `min_pos`/`max_pos` cuboids (works on x/z, not just y!). **20 biome
-  registrations** = 13 band biomes (12 mirrored bands plus `grug_crags`'
-  alpine cap `grug_crags_snowy`) + 3 extra slabs — the 2 extra
-  `grug_deep_forest` ones (the only band that needs a hole in the middle of
-  its cuboid for the 2026-08-08 capital-guarantee carve) and
-  `grug_badlands_east`, WP36's Throng mirror of `grug_deep_forest_east` —
-  + the 4 universal ones. The centre
-  band was split into slabs the same way and rolled back the same day —
-  read the D4 note before re-proposing it.
-  See `docs/design/biomes_mobs.md` §1.3; every band is authored ONCE in
-  Throng coordinates and registered mirrored at z=0 (`register_mirrored`
-  in `grug_mapgen/biomes.lua`; the universal swamp/beach/ocean/underground
-  are registered once — a biome name may exist only once); the cuboids
-  overlap widely (101–450 nodes in x, up to 500 in z)
-  and inside an overlap the heat/humidity voronoi picks per position —
-  that IS the settled/wild patch mosaic. `grug_mapgen` owns all
-  biome/ore/decoration registrations; default's
-  `register_biomes/ores/decorations` are NOT called (see tail of
-  `mods/BASE/default/mapgen.lua`); it also overrides the v7 terrain and
-  the climate noise params (`override_meta = true` → **existing worlds get
-  seams; test mapgen work on a FRESH world**).
-  **Landmine**: ore/decoration defs whose `biomes` names don't resolve
-  are silently unrestricted (world-wide) — never register ores/decos
-  against biome names that might not exist. `game.conf` pins
-  `allowed_mapgens = v7`.
-  **Registration order is a tool, not trivia**: in mgv7 a mapchunk runs
-  caves (`mapgen_v7.cpp:335`) → ores (`:355`) → dungeons (`:359`), and
-  inside the ore stage the ores run in **registration order**, each
-  converting only nodes that still match its `wherein`. That is the whole
-  mechanism behind the six rock strata (`grug_mapgen/ores.lua`): an
-  `ore_type = "stratum"` registered LAST with `wherein = "default:stone"`
-  takes exactly the nodes no other ore claimed — so not one vein's
-  `wherein` had to change — and, running after the caves, it also
-  converts the already-carved cave walls, which therefore inherit their
-  stratum for free. A `register_on_generated` VoxelManip pass would have
-  got neither of those for free. (Dungeons run after the ores, so dungeon
-  walls are *not* stratum rock — accepted.)
+- **Mapgen/biomes.** The **WP40 R7 pipeline is the only mapgen owner** since
+  the production cutover: `mods/MAPGEN/grug_mapgen/init.lua` is nine lines and
+  loads `wp40/r7_loader.lua`, whose header says it plainly — "Legacy
+  biome/ore/decoration/ocean/structure loaders are deliberately absent".
+  `grug_mapgen/biomes.lua`, `ores.lua`, `decorations.lua`, `geometry.lua`,
+  `ocean_mask.lua`, `ocean_mask_mapgen.lua` and `structures.lua` **no longer
+  exist**, and neither do `register_mirrored`, `column_cap`, `clean_shell`,
+  `_grug_spawn_zones` or the `grug_core.*camp_platform*` family. Do not write
+  code or a brief against them; `docs/design/world_zones.md` §§8–14 and
+  `docs/research/wp40-completion.md` are the current contract, and
+  `docs/design/biomes_mobs.md` §1/§4 keep the retired WP18/WP36 tables as a
+  labelled historical record only.
+  What R7 registers, and what that costs you: **zero Lua biomes and zero Lua
+  decorations**. One mapgen script (`core.register_mapgen_script`,
+  `wp40/r7_mapgen.lua`), one `register_on_generated` VM transaction, and a
+  six-record native ore allowlist in `wp40/r7_native.lua`. `game.conf` pins
+  `allowed_mapgens = v7`; `default`'s own `register_biomes/ores/decorations`
+  stay uncalled (GRUG PATCH at the tail of `mods/BASE/default/mapgen.lua`),
+  because an ore or decoration whose `biomes` names do not resolve is silently
+  unrestricted world-wide. The v7 terrain and climate noise params are
+  overridden from `r7_native.lua` (`core.set_mapgen_setting_noiseparams`) —
+  **test mapgen work on a FRESH world**, an existing one gets seams.
+  **Registration order is still a tool, not trivia**: in mgv7 a mapchunk runs
+  caves (`mapgen_v7.cpp:335`) → ores (`:355`) → dungeons (`:359`), and inside
+  the ore stage the ores run in **registration order**, each converting only
+  nodes that still match its `wherein`. That is the whole mechanism behind the
+  rock strata, which now live as five native `ore_type = "stratum"` records in
+  `wp40/r7_native.lua` (slate/basalt/granite/emberrock/abyssal_rock under
+  `default:stone`'s own band): registered last against `default:stone`, they
+  take exactly the nodes no other ore claimed, and — running after the caves —
+  they convert the already-carved cave walls too, so those inherit their
+  stratum for free. (Dungeons run after the ores, so dungeon walls are *not*
+  stratum rock — accepted.)
   **Landmine since WP25: `default:stone` no longer exists below −100.**
   Every node whitelist, every `wherein`/`place_on` and every mob spawn
   `nodes` list that means "underground rock" has to carry
@@ -760,89 +766,30 @@ Details + line numbers in [docs/research/](docs/research/).
   sliver. WP25 repaired exactly that on four cave spawn rows (zombie,
   giant spider, stone + mesa golem); `default:stone` itself carries
   `grug_stratum = 1`, so the group alone is the complete predicate.
-  The two things biomes cannot express live in VoxelManip passes, and
-  since WP36 in **two different Lua environments** — the split is the
-  rule, not a detail: a pass that only needs the chunk belongs in the
-  **mapgen env** (`core.register_mapgen_script`), a pass that needs
-  `grug_core`, mod storage or the POI registry cannot go there at all
-  and stays in `register_on_generated` in the main env.
-  **Everything in the following ocean-mask/capital paragraph describes the
-  shipped WP18/WP36 map, not the target surface design.** WP40 replaces its
-  radial rings, rectangular coast ownership and mandatory strait with the
-  named-zone graph in `docs/design/world_zones.md`; do not place new permanent
-  content against the legacy coordinates.
-  The **continent ocean mask** is the first kind
-  (`grug_mapgen/ocean_mask_mapgen.lua`; two mirrored continent
-  rectangles; a coast noise insets them by 0..150 nodes INWARD only — so
-  the strait is guaranteed by construction, not by luck — surface cap +
-  flood outside, taper inward, box fast path skips inland/deep chunks;
-  it carves up to **`emax.y`**, not `maxp.y`, because the engine places
-  decorations up to the emerged top edge — `mg_decoration.cpp:424` — and
-  clamping to `maxp.y` is what left floating tree crowns over the water).
-  Its geometry (`column_cap`, a pure function of x/z) lives in
-  `grug_mapgen/geometry.lua`, which **both** environments `dofile`; the
-  continent rectangle itself comes from `grug_core` and reaches the
-  mapgen env via `core.ipc_set` — never copy those constants.
-  A `run_at_every_load` LBM in `grug_mapgen/ocean_mask.lua` heals worlds
-  generated before that fix. `column_cap` being (x, z)-pure is what makes
-  it idempotent; what makes it *safe* is the carved-column discriminator —
-  it cuts only where the map still shows the mask's own signature (biome
-  ground at the cap, air/liquid directly above), because `column_cap`
-  knows where the mask cuts but not whether it cut, and an unconditional
-  sweep would decapitate every legal coastal tree in the band. **The same
-  discriminator gates `clean_shell` in the mapgen pass**, so its residuals
-  are not LBM-only, and it is *not* free of false positives: on the
-  `h == cap` contour a column legitimately carrying a neighbouring tree's
-  crown reads as carved and loses it. The four residual classes — which
-  one is "overflow survives" and which one is "legal terrain is cut" —
-  are enumerated in `ocean_mask.lua`'s header; keep that list honest.
-  The **six race-capital camp platforms** are the second kind
-  (`grug_mapgen/structures.lua`, with the outposts and bandit camps).
-  **Exactly ONE decider, the answer is ALWAYS persisted, and a caller that
-  finds the height undecided FORCES the decision instead of inventing one**
-  (WP36 — before it, `get_spawn_pos` silently substituted the
-  `CAMP_PLATFORM_Y` minimum and wrote nothing down, so the same capital read
-  y 8 in one session and y 36 in the next). The ladder, in order:
-  `core.get_spawn_level` at the anchor − 2 (mgv7 refuses anything above
-  y 17, in a river or in water, so it answers nil at many capitals) → a
-  footprint heightmap median in `grug_mapgen` → `probe_platform_y`, a
-  main-env VoxelManip ground probe over the finished map. All three measure
-  the **same** footprint, `grug_core.CAMP_SAMPLE_RADIUS` — two fallbacks
-  measuring two different areas would be two different answers again.
-  `grug_core.get_camp_platform_y` reads, `set_camp_platform_y` writes
-  (first writer wins, per race id in mod storage), and
-  **`grug_core.request_camp_platform`** is what a caller uses when the
-  answer is missing: it emerges the footprint (idempotent, bounded per
-  session), and its completion callback falls back to the probe — which is
-  the only decider that can see a footprint whose surface sits exactly on a
-  **mapchunk y edge**, the case no heightmap can report and the WP18
-  deadlock that was never actually closed. A staggered startup sweep
-  requests all six so an unvisited capital cannot leave the protection rules
-  answering from their own fallback. Two invariants the review had to add:
-  **a decided height is not a built platform** — `build_camp` only runs from
-  `register_on_generated`, so whenever the probe decides, the chunks are
-  already on disk and `grug_core.ensure_camp_platform_built` (stub in
-  `grug_core`, implemented in `grug_mapgen`) has to build it from the
-  finished map — and **an uncertain measurement persists nothing**, because
-  a graceful shutdown fires every queued emerge callback with
-  `EMERGE_CANCELLED` while the env and mod storage are still alive, and
-  first-writer-wins would make a half-generated reading permanent.
-  NEVER decide a platform y from the mapchunk heightmap alone: it exists per
-  chunk, so the value and the build order become chunk-order-dependent and
-  can deadlock. Current WP18 zone/level queries:
-  `grug_core.territory_at` (accord/throng/ocean), `zone_at`
-  (underground/ocean/strait/war_coast/coast/core/inner/outer — the
-  `_grug_spawn_zones` vocabulary), `difficulty_at`, `mob_level_at`
-  (radial field + war-coast/strait caps + depth axis), `guard_level_at`
-  (inverse field, elite in the core — WP6 consumes it) and `open_sea_at`.
-  LotT trick: biome signature nodes drive mob spawns via a node whitelist
-  — those tops live in `grug_nodes` (blight_dirt, bone/forest/silver
-  litter, mesa_clay, mud) and exist FOR the trick; `_grug_spawn_zones`
-  (and the generic `_grug_spawn_check`) do the current ring gating on top.
-  WP40 preserves central lookup APIs and the independent depth floor, but
-  replaces the surface vocabulary with stable named-zone ids, authored
-  adjacency and zone-owned biome palettes.
-  **WP40 target contract (decided 2026-08-11):** exactly **38** land zones in
+  **Two Lua environments, and the split is the rule, not a detail**: a pass
+  that only needs the chunk belongs in the **mapgen env**
+  (`core.register_mapgen_script`), a pass that needs `grug_core`, mod storage
+  or the settlement/socket registries cannot go there at all and stays in
+  `register_on_generated` in the main env. Constants cross via `core.ipc_set`;
+  never copy them.
+  **Current zone/level queries** (published by `grug_core/zone_authority.lua`,
+  which is also the sole publisher of the `grug_zones` global — it refuses to
+  install if something else already published it): `grug_core.territory_at`,
+  `zone_at`, `mob_level_at`, `guard_level_at`, `open_sea_at`,
+  `surface_level_at`, `start_position`, `start_anchor`, `capital_anchor`,
+  `world_protected_for_faction`. `grug_core.difficulty_at` is **gone** — the
+  difficulty field survives only inside WP40's own compatibility layer.
+  Gameplay consumers read the richer surface off `grug_zones` directly
+  (`biome_at`, `id_at`, `faction_at`, `race_region_at`, `pvp_rule_at`,
+  `water_class_at`, `territory_rule_at`, `surface_mob_level_at`) and **never**
+  the engine biomemap, because the authored surface pass — not climate
+  competition — owns logical biome identity.
+  LotT trick: biome signature nodes drive mob spawns via a node whitelist —
+  those tops live in `grug_nodes` (blight_dirt, bone/forest/silver litter,
+  mesa_clay, mud) and exist FOR the trick; the generic `_grug_spawn_check`
+  and `grug_mobs/spawn_policy.lua` do the gating on top, against `grug_zones`.
+  **The WP40 world contract is SHIPPED** (decided 2026-08-11, delivered
+  2026-09-13): exactly **38** land zones in
   `docs/design/world_zones.md` §§8–9, each with one `race_region`; six
   start/home/capital chains, every ordinary level-31–60 zone contested, and
   two level-60 dragon endpoints. The hybrid-v7
@@ -852,9 +799,7 @@ Details + line numbers in [docs/research/](docs/research/).
   camp shells, tents, fences and battlefield dressing remain mutable but
   claim-excluded; only bounded functional anchors, irreplaceable route pieces
   and renewable-resource sockets receive hard protection.
-  Gameplay consumers use `grug_zones.biome_at`, never the engine biomemap,
-  because the authored surface pass—not climate competition—owns logical
-  biome identity. Material design owns the complete `race_region` mapping of
+  Material design owns the complete `race_region` mapping of
   G1, G2, cultural material and signature wood; map code stores only the
   region identity and placement data needed to consume that mapping. Each
   endpoint apex camp has exactly 12 renewable sockets, two per gem. Both
