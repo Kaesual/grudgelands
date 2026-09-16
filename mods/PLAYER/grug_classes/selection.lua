@@ -591,7 +591,12 @@ local function register_set_command(cmd, setter, getter_def, is_id)
 	})
 end
 
-register_set_command("class", grug_classes.set_class, grug_classes.get_class_def,
-	function(id) return grug_classes.registered_classes[id] ~= nil end)
+-- `/class` is DELIBERATELY not registered (ruling 20, 2026-09-16,
+-- skill_trees.md §1.4/§3.10): class changing is removed from the game
+-- entirely, admins included, because equipment would otherwise have to be
+-- resolved on every switch. A respec re-spends talents; nothing changes a
+-- character's class. The helper above keeps its `cmd == "class"` branch: it
+-- is the creation-session path, and only the registration is what ruling 20
+-- removes. `/race` is untouched.
 register_set_command("race", grug_classes.set_race, grug_classes.get_race_def,
 	function(id) return grug_classes.registered_races[id] ~= nil end)

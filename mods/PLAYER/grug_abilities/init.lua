@@ -61,6 +61,26 @@ end
 
 local hud_update -- forward
 
+--
+-- The rage ledger (classes.md §3). Ruling 25 of 2026-09-16 answers the user's
+-- "in combat the resource is effectively unlimited" finding with option (b) --
+-- lower the income and add decay: a landed full swing grants 8 instead of 12,
+-- a hit taken 3 instead of 4, and rage bleeds 5/s (it was 2/s) while
+-- grug_core.in_combat is false. The numbers are named here because five swing
+-- sites and one hit-taken site share them, and the talents Stoke and Spite add
+-- to them (skill_trees.md §2.1/§2.2).
+--
+grug_abilities.RAGE_PER_SWING = 8
+grug_abilities.RAGE_PER_HIT_TAKEN = 3
+grug_abilities.RAGE_DECAY_PER_SECOND = 5
+
+-- Rage for one landed full swing, Stoke included. Every proportional site
+-- scales THIS value by its native packet fraction.
+local function swing_rage(player)
+	return grug_abilities.RAGE_PER_SWING
+		+ grug_classes.get_talent_bonus(player, "rage_per_swing_add")
+end
+
 function grug_abilities.add_rage(player, amount)
 	if resource_of(player) ~= "rage" then
 		return
@@ -167,8 +187,17 @@ end
 -- reach further -- Fireball and Smite at 20 m, Flash Heal / Power Word: Shield /
 -- Renew at 15 m, Charge at 12 m, Taunt at 8 m, and the two self-centred Mage
 -- spells -- keeps the perk, because it is granted by the ABSENCE of the flag.
+--
+-- A talent that re-tunes a RANGE cannot be written at the kit table's `range`
+-- field: that field is evaluated once at load time with no player in scope
+-- (skill_trees.md §3.2). `def.range_talent` names the effect key instead, and
+-- the read happens here, the one place both the engine's pointing reach (via
+-- sync_kit's per-stack meta override) and the lock fallback go through.
 function grug_abilities.get_range(player, def)
 	local base = def.range or 4
+	if def.range_talent then
+		base = base + grug_classes.get_talent_bonus(player, def.range_talent)
+	end
 	if def.melee then
 		return base
 	end
@@ -665,6 +694,24 @@ function grug_abilities.ready(player, id)
 	return not rec or core.get_us_time() >= rec.expiry
 end
 
+-- The cooldown this player's cast actually earns. Same reason as get_range
+-- above: `cooldown` in a kit table is a load-time constant with no player in
+-- scope, so the four talents that shorten one (Grudge, Onset, Quick Step,
+-- Swift Word -- skill_trees.md §3.2) are read HERE, at the one
+-- arm_cooldown(user, def, def.cooldown) call the game has. Without a ranked
+-- talent this returns def.cooldown exactly.
+function grug_abilities.effective_cooldown(player, def)
+	local cooldown = def.cooldown or 0
+	if def.cooldown_talent then
+		cooldown = cooldown
+			- grug_classes.get_talent_bonus(player, def.cooldown_talent)
+		if cooldown < 0 then
+			cooldown = 0
+		end
+	end
+	return cooldown
+end
+
 -- Start (or restart) an ability's cooldown. `duration` <= 0 is "no cooldown"
 -- and stores nothing at all, so a free ability never enters the ticker.
 -- Every remaining user is a cast skill and displays its wear bar.
@@ -907,7 +954,14 @@ local function prepare_authoritative_swing(player, target, fraction, token)
 		})
 		context.proc = selected
 		context.extra_damage = amount - normal_damage
+		-- Affront (skill_trees.md §2.1) raises a TANK multiplier only; a proc
+		-- that carries none stays at ×1. The cast side of the same talent is
+		-- in grug_core/combat.lua's deal_ability_damage.
 		context.threat_mult = threat_mult or 1
+		if context.threat_mult ~= 1 then
+			context.threat_mult = context.threat_mult
+				+ grug_classes.get_talent_bonus(player, "threat_mult_add")
+		end
 		context.post = post
 	end
 	return context
@@ -936,7 +990,7 @@ local function finish_authoritative_swing(context, result)
 	end
 	if not context.proc then
 		if result.grant_rage then
-			grug_abilities.add_rage(context.player, 12)
+			grug_abilities.add_rage(context.player, swing_rage(context.player))
 		end
 		return false
 	end
@@ -947,7 +1001,7 @@ local function finish_authoritative_swing(context, result)
 		core.log("error", "[grug_abilities] authoritative proc lost its " ..
 			"affordable resource before commit: " .. context.proc.id)
 		if result.grant_rage then
-			grug_abilities.add_rage(context.player, 12)
+			grug_abilities.add_rage(context.player, swing_rage(context.player))
 		end
 		return false
 	end
@@ -960,10 +1014,10 @@ local function finish_authoritative_swing(context, result)
 		context.post()
 	end
 	-- Pay the proc before granting the swing's rage. At the 100 cap this keeps
-	-- the landed swing's +12 instead of silently discarding it before Mighty
+	-- the landed swing's grant instead of silently discarding it before Mighty
 	-- Blow's cost opens room in the pool.
 	if result.grant_rage then
-		grug_abilities.add_rage(context.player, 12)
+		grug_abilities.add_rage(context.player, swing_rage(context.player))
 	end
 	return true
 end
@@ -1230,7 +1284,8 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 		return
 	end
 	spend(user, def.cost)
-	grug_abilities.arm_cooldown(user, def, def.cooldown)
+	grug_abilities.arm_cooldown(user, def,
+		grug_abilities.effective_cooldown(user, def))
 end
 
 --
@@ -1772,10 +1827,14 @@ end
 local function sync_kit(player)
 	local class = grug_classes.get_class(player)
 	local name = player:get_player_name()
-	-- Join, class pick and class SWITCH all land here. A class switch wipes
-	-- runtime cooldowns, charges, targets and the attack clock before re-granting.
-	-- Wiping the charges makes the new kit start fully charged: no record
-	-- IS the charged state (see the charge timers section).
+	-- Join and the class pick at character creation land here; the third
+	-- entry path, a class SWITCH, cannot occur any more (ruling 20 of
+	-- 2026-09-16, skill_trees.md §1.4/§3.10, removed class changing from the
+	-- game for admins too). WP11's respec becomes the second re-granting
+	-- caller: it has to take back a talent-granted button. Either way this
+	-- wipes runtime cooldowns, charges, targets and the attack clock before
+	-- re-granting, and wiping the charges makes the kit start fully charged:
+	-- no record IS the charged state (see the charge timers section).
 	clear_swing_progress(player)
 	targets[name] = nil
 	cooldowns[name] = {}
@@ -1912,7 +1971,7 @@ grug_core.register_on_player_hit_mob(function(player, mob_ent, damage, applied, 
 		return
 	end
 	if landed then
-		grug_abilities.add_rage(player, 12 * (fraction or 1))
+		grug_abilities.add_rage(player, swing_rage(player) * (fraction or 1))
 	end
 end)
 
@@ -2094,9 +2153,9 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 		landed = player:get_hp() < hp_before
 	end
 	if landed and applied >= 1 and committed_fraction > 0 then
-		-- Across any number of bank-only packets this integrates to +12 per
-		-- total native tool/fist swing fraction 1.
-		grug_abilities.add_rage(hitter, 12 * committed_fraction)
+		-- Across any number of bank-only packets this integrates to one full
+		-- swing's rage per total native tool/fist swing fraction 1.
+		grug_abilities.add_rage(hitter, swing_rage(hitter) * committed_fraction)
 	end
 	-- The engine's own damage is suppressed on the hostile path ALWAYS —
 	-- even when nothing landed (applied 0, absorbed, dodged): the
@@ -2106,8 +2165,9 @@ end)
 
 core.register_on_player_hpchange(function(player, hp_change, reason)
 	if hp_change < 0 and reason.type == "punch" then
-		grug_abilities.add_rage(player, 4
-			+ (grug_classes.get_race_perk(player, "rage_per_hit_taken_bonus") or 0))
+		grug_abilities.add_rage(player, grug_abilities.RAGE_PER_HIT_TAKEN
+			+ (grug_classes.get_race_perk(player, "rage_per_hit_taken_bonus") or 0)
+			+ grug_classes.get_talent_bonus(player, "rage_per_hit_taken_add"))
 	end
 end, false)
 
@@ -2199,7 +2259,10 @@ core.register_globalstep(function(dtime)
 			-- yet); WP21's HP regen must consume the same perk.
 			local rate
 			if grug_core.in_combat(player) then
-				rate = 0.005
+				-- Cold Focus (skill_trees.md §2.4) raises the in-combat rate
+				-- from 0.5%/s in tenths of a percentage point; 0 without it.
+				rate = 0.005 + 0.01 * grug_classes.get_talent_bonus(player,
+					"combat_mana_regen_add")
 			else
 				rate = 0.02
 					* (grug_classes.get_race_perk(player, "ooc_regen_mult") or 1)
@@ -2214,7 +2277,8 @@ core.register_globalstep(function(dtime)
 		elseif res == "rage" and not grug_core.in_combat(player) then
 			local cur = rage[name] or 0
 			if cur > 0 then
-				local new = math.max(0, cur - 2 * elapsed)
+				local new = math.max(0, cur
+					- grug_abilities.RAGE_DECAY_PER_SECOND * elapsed)
 				rage[name] = new
 				if math.floor(new) ~= math.floor(cur) then
 					hud_update(player)

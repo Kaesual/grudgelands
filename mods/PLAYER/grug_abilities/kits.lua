@@ -297,6 +297,10 @@ grug_abilities.register_ability({
 	color = "#e8c85a",
 	cost = {},
 	cooldown = 10,
+	-- Onset (skill_trees.md §2.2). The field names the effect key; the read
+	-- itself is grug_abilities.effective_cooldown, because `cooldown` here is
+	-- evaluated once at load time with no player in scope (§3.2).
+	cooldown_talent = "charge_cooldown_sub",
 	range = 12,
 	cast = function(user, pointed, def)
 		local target = current_enemy_target(user, def)
@@ -339,19 +343,30 @@ grug_abilities.register_ability({
 	-- (about every other swing at +12 rage per landed hit).
 	proc_swing = function(user, target, ctx)
 		local tpos = target:get_pos() -- before the punch (lethal invalidates refs)
-		return math.floor(ctx.weapon_damage * 1.5) + ctx.melee_bonus, 3,
+		-- Heavy Hand (skill_trees.md §2.2): +0.05 weapon-damage multiplier per
+		-- rank; 1.5 exactly without it. Broadstroke's cleave is lane X3's.
+		local mult = 1.5 + 0.05 * grug_classes.get_talent_bonus(user,
+			"mighty_blow_multiplier_add")
+		return math.floor(ctx.weapon_damage * mult) + ctx.melee_bonus, 3,
 			function() burst(tpos, "mobs_blood.png", 6) end
 	end,
 })
 
 -- The control tool (kit tuning 2026-08-06): in an engine where mobs
 -- outrun players, the snare is the Warrior's identity.
+--
+-- TALENT-GATED since ruling 19 (2026-09-16, skill_trees.md §2.2/§3.4): every
+-- class starts with Strike plus three, so Hamstring leaves the Warrior's base
+-- kit and returns as Ruin's new-skill keystone. Until lane X3 wires the grant,
+-- NO Warrior has it -- the same predicate that has kept Renew out of the kit
+-- since WP19 keeps this one out too.
 grug_abilities.register_ability({
 	id = "hamstring",
 	kind = "swing",
 	class = "warrior",
 	name = "Hamstring",
-	description = "A landed swing cripples: slows the enemy by 50% for 5 s. Charges over 6 s.",
+	talent_gated = true,
+	description = "A landed swing cripples: slows the enemy by 50% for 5 s. Charges over 6 s.\nUnlocked via talents.",
 	color = "#a8324e",
 	charge = 6,
 	cost = {rage = 10},
@@ -385,6 +400,7 @@ grug_abilities.register_ability({
 	color = "#e07b39",
 	cost = {},
 	cooldown = 8,
+	cooldown_talent = "taunt_cooldown_sub", -- Grudge (skill_trees.md §2.1)
 	range = 8,
 	cast = function(user, pointed, def)
 		local target = current_enemy_target(user, def)
@@ -444,6 +460,10 @@ grug_abilities.register_ability({
 	cost = {mana = 8},
 	cooldown = 0,
 	range = 20,
+	-- Far Cast (skill_trees.md §2.3) re-tunes a RANGE, so it cannot live in
+	-- the field above: get_range reads this key per player, and sync_kit's
+	-- per-stack `range` meta override follows it (§3.2).
+	range_talent = "fireball_range_add",
 	cast = function(user)
 		local origin = grug_core.combat_eye_pos(user)
 		local direction = user:get_look_dir()
@@ -454,8 +474,15 @@ grug_abilities.register_ability({
 			owner = user,
 			origin = origin,
 			direction = direction,
+			-- The FLIGHT half of Far Cast. grug_projectiles prefers
+			-- params.max_distance over the registered one (init.lua:195), and
+			-- the registration's 20 is a load-time constant.
+			max_distance = 20 + grug_classes.get_talent_bonus(user,
+				"fireball_range_add"),
 			data = {
-				damage = 6 + grug_classes.get_spell_power_bonus(user),
+				-- Tinder (skill_trees.md §2.3). Brand's splash is lane X3's.
+				damage = 6 + grug_classes.get_spell_power_bonus(user)
+					+ grug_classes.get_talent_bonus(user, "fireball_damage_add"),
 			},
 		})
 		if not spawned then
@@ -487,13 +514,20 @@ grug_abilities.register_ability({
 	range = 4,
 	cast = function(user)
 		local pos = user:get_pos()
+		-- Deep Chill and Hoarfrost (skill_trees.md §2.4); 0 each without the
+		-- talent, so the shipped 4 s root and 3 s slow are exact. Frostbind's
+		-- ranged origin and Rimebite's damage are lane X3's.
+		local root_time = 4 + grug_classes.get_talent_bonus(user,
+			"frost_nova_root_add")
+		local slow_time = 3 + grug_classes.get_talent_bonus(user,
+			"frost_nova_slow_add")
 		for _, obj in ipairs(core.get_objects_inside_radius(pos, 5)) do
 			if obj ~= user then
 				if obj:is_player() then
 					if grug_factions.hostile(user, obj) then
 						apply_player_speed_stages(obj, {
-							{speed = 0.1, jump = 0.3, time = 4},
-							{speed = 0.5, time = 3},
+							{speed = 0.1, jump = 0.3, time = root_time},
+							{speed = 0.5, time = slow_time},
 						})
 						burst(obj:get_pos(), "mobs_bubble_particle.png^[multiply:#88ccff", 8)
 					end
@@ -501,8 +535,9 @@ grug_abilities.register_ability({
 					local ent = mob_ent(obj)
 					if ent and not (ent._grug_faction and
 							ent._grug_faction == grug_factions.get_faction(user)) then
-						grug_mobs.root(ent, 4)
-						grug_mobs.slow(ent, 3, 0.5) -- queued: starts after the root
+						grug_mobs.root(ent, root_time)
+						-- queued: starts after the root
+						grug_mobs.slow(ent, slow_time, 0.5)
 						burst(obj:get_pos(), "mobs_bubble_particle.png^[multiply:#88ccff", 8)
 					end
 				end
@@ -524,13 +559,17 @@ grug_abilities.register_ability({
 	color = "#b06aff",
 	cost = {mana = 8},
 	cooldown = 15,
+	cooldown_talent = "blink_cooldown_sub", -- Quick Step (skill_trees.md §2.4)
 	range = 4,
 	cast = function(user)
 		local eye_height = user:get_properties().eye_height or 1.5
 		local from = user:get_pos()
 		local eye = vector.offset(from, 0, eye_height, 0)
 		local dir = user:get_look_dir()
-		local dest_eye = vector.add(eye, vector.multiply(dir, 10))
+		-- Far Step (skill_trees.md §2.4); 10 m exactly without the talent.
+		local distance = 10 + grug_classes.get_talent_bonus(user,
+			"blink_distance_add")
+		local dest_eye = vector.add(eye, vector.multiply(dir, distance))
 		local ray = core.raycast(eye, dest_eye, false, false)
 		local hit = ray:next()
 		if hit and hit.type == "node" then
@@ -579,6 +618,7 @@ grug_abilities.register_ability({
 	color = "#ffd97a",
 	cost = {mana = 4},
 	cooldown = 2,
+	cooldown_talent = "smite_cooldown_sub", -- Swift Word (skill_trees.md §2.6)
 	range = 20,
 	cast = function(user, pointed, def)
 		local target = current_enemy_target(user, def)
@@ -587,8 +627,15 @@ grug_abilities.register_ability({
 		end
 		beam(user, target, "default_item_smoke.png^[multiply:#ffe9a0")
 		burst(target:get_pos(), "default_item_smoke.png^[multiply:#ffe9a0")
-		grug_core.deal_ability_damage(user, target,
-			4 + grug_classes.get_spell_power_bonus(user))
+		-- Sharpened Word, and Warded Wrath while an absorb is up
+		-- (skill_trees.md §2.6). Recompense's absorb is lane X3's.
+		local damage = 4 + grug_classes.get_spell_power_bonus(user)
+			+ grug_classes.get_talent_bonus(user, "smite_damage_add")
+		if grug_core.get_absorb(user) > 0 then
+			damage = damage + grug_classes.get_talent_bonus(user,
+				"smite_damage_while_shielded_add")
+		end
+		grug_core.deal_ability_damage(user, target, damage)
 		return true
 	end,
 })
@@ -609,8 +656,10 @@ grug_abilities.register_ability({
 		if target:get_hp() <= 0 then
 			return false, "Target is dead."
 		end
+		-- Gentle Hand (skill_trees.md §2.5); Hearten's splash is lane X3's.
 		grug_core.heal_player(user, target,
-			8 + 2 * grug_classes.get_spell_power_bonus(user))
+			8 + 2 * grug_classes.get_spell_power_bonus(user)
+			+ grug_classes.get_talent_bonus(user, "flash_heal_add"))
 		burst(target:get_pos(), "mobs_heart_particle.png", 8)
 		return true
 	end,
@@ -636,8 +685,13 @@ grug_abilities.register_ability({
 		if target:get_hp() <= 0 then
 			return false, "Target is dead."
 		end
+		-- Warding Faith and Second Skin (skill_trees.md §2.5); 0 each without
+		-- the talent, so the shipped absorb and its 15 s are exact. Turn
+		-- Aside's dodge window is lane X3's.
 		grug_core.set_absorb(target,
-			8 + 2 * grug_classes.get_spell_power_bonus(user), 15)
+			8 + 2 * grug_classes.get_spell_power_bonus(user)
+			+ grug_classes.get_talent_bonus(user, "shield_absorb_add"),
+			15 + grug_classes.get_talent_bonus(user, "shield_duration_add"))
 		burst(target:get_pos(), "default_item_smoke.png^[multiply:#ffe9a0", 8)
 		return true
 	end,
@@ -647,7 +701,8 @@ grug_abilities.register_ability({
 local renews = {}
 
 -- Talent-gated (kit tuning 2026-08-06): stays registered, but sync_kit
--- does not grant it — the Holy tree unlocks it in WP11.
+-- does not grant it — the Priest's Mercy tree unlocks it in WP11, where Renew
+-- is the Balm chain's keystone (skill_trees.md §2.5).
 grug_abilities.register_ability({
 	id = "renew",
 	class = "priest",
