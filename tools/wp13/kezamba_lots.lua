@@ -289,6 +289,14 @@ end
 if mode == "repair" then
 	-- The fill reaches `pack` uses, largest first: a repair may drop to a
 	-- smaller one and never grows a lot.
+	--
+	-- A BUILDING PLOT NEVER SHRINKS. Its yard is not empty -- a building is
+	-- projected into it and `kezamba_plot.build` measures the part against the
+	-- reach -- so a smaller reach would either refuse at construction or leave
+	-- the composition wider than the lot the predicate measured, which is the
+	-- rule `kezamba_kat.lua` asserts ("is wider than the lot it was measured
+	-- on"). Only a `fill` lot, whose yard IS its reach, may take a smaller size;
+	-- a building plot moves or the repair says it could not.
 	local REACH_LADDER = {13, 11, 8, 5}
 	local all = lots.all()
 	local function clashes_with_others(id, x, z, reach)
@@ -317,7 +325,8 @@ if mode == "repair" then
 			local best
 			for ladder = 1, #REACH_LADDER do
 				local reach = REACH_LADDER[ladder]
-				if reach <= lot.reach then
+				if reach == lot.reach or
+						(reach < lot.reach and lot.kind == "fill") then
 					for radius = 0, 64, 2 do
 						for dz = -radius, radius, 2 do
 							local dx_span = radius - math.abs(dz)
