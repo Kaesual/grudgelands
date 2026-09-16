@@ -176,12 +176,13 @@ cooldown.
 
 [Progression](docs/design/progression.md) targets level 60 in roughly 10–20
 played hours, with **one talent point every two levels** — thirty by level 60,
-exactly one whole tree — and new active skills from a tree's keystones and its
-capstone.
+enough to fill one whole tree — and a new active skill from a tree's
+keystone.
 
 The trees those points are spent in are still a proposal:
 [skill_trees.md](docs/design/skill_trees.md) gives every class two trees of
-two chains, thirty ranks each, and lists all sixty-four talents. A tree's
+two chains, twenty-eight ranks each, and lists all sixty-four talents. A
+tree's
 keystone either adds one new button or **replaces** one the player already
 has, so no build ever carries more than two extra keys, and nine talents
 deliberately break a cap or a control rule — each paying for it with a stated

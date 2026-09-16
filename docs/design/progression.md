@@ -28,27 +28,32 @@ The three bullets below were rewritten on **2026-09-16** by the user's
 rulings; the superseded text is named in `skill_trees.md` §5.2.
 
 - **1 talent point every 2 levels, the first at level 2** (30 points total
-  at 60); a talent tree holds about **30 ranks**, so a class holds about 60 —
-  you can fill **one whole tree** or spread over both with one prioritised,
-  and a full tree is never forced (WP11). *(Supersedes "1 talent point every
+  at 60); a talent tree holds **28 ranks**, so a class holds 56 — you can fill
+  **one whole tree** (28 of the 30 points) or spread over both with one
+  prioritised, and a full tree is never forced (WP11). *(Supersedes "1 talent point every
   3 levels (20 points total at 60); 2 trees × 5 talents × 3 ranks".)*
 - Each tree carries **two playstyle directions (chains)**, rank counts vary
   **3-5** by talent strength, and dependencies are of both kinds: points
   spent in the tree, and hard chains. Per tree: **two keystones and one
-  capstone**, and the capstone hangs on its own chain. **Per tree at most ONE
-  keystone adds a new active "main skill"** (user ruling 2026-09-16); the
-  other keystone and the capstone **improve or replace** a button the player
-  already has, so no build carries more than two extra hotbar keys. The new
-  skill is the "new ability every ~10 levels" beat (e.g. Renew, the Priest
-  healing tree's keystone). *(Supersedes "9 of 10 talents are numeric
+  capstone**, and the capstone hangs on its own chain and has **one rank**.
+  **Per tree at most ONE keystone adds a new active "main skill"** (user
+  rulings 2026-09-16); the other keystone and the capstone **improve or
+  replace** a button the player already has, so no build carries more than two
+  extra hotbar keys. The new skill is the "new ability every ~10 levels" beat
+  (e.g. Renew, the Priest healing tree's keystone). **A character reaches
+  exactly one capstone**: it costs 21 of the 30 points in a single tree, which
+  is level 42, and two would cost 42. *(Supersedes "9 of 10 talents are numeric
   modifiers; exactly one capstone per tree, unlocked at 8+ points in that
   tree, and every capstone is a NEW active main skill".)*
 - **New skills come only from the tree**; the base kit granted at class
   choice stays, and talents improve its numbers. **Respec for money in the
-  talent UI — there is no class trainer and no NPC**; the price is open
-  decision `skill_trees.md` §6.8. *(Supersedes "Respec at the class trainer
+  talent UI — there is no class trainer and no NPC**; the price is **five
+  minutes of measured reliable net solo income** at the character's bracket
+  (`economy.md` §3/§4.1), and **the first respec of a character is free**. A
+  respec is a **full reset**, and **class change is removed from the game
+  entirely, for admins too**. *(Supersedes "Respec at the class trainer
   for gold". `economy.md` §4, `items_crafting.md` §8.3 and `world.md` §1 still
-  name a class trainer and are corrected separately — `skill_trees.md` §6.9.)*
+  name a class trainer and are corrected separately — `skill_trees.md` §7.)*
 - **Level 20 — first Claim Stone:** a short introduction from the passive,
   invulnerable Housing Steward unlocks the first free owner-bound Claim Stone.
   It may be placed only in the authored level-11–30 housing zones and starts

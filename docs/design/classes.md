@@ -18,8 +18,13 @@ Renew among them, as §5 already decided. A **fourth class, the Scout**
 ([scout.md](scout.md)), is proposed in the same pass: leather armour, a bow
 and a blade, planned now and implemented later. Both files carry one shared
 list of open decisions. Nothing in this file changes until those are
-answered — except that, when WP11 lands, the numbers in the §3-§5 tables
-become the **untalented base** values.
+answered — except for two things WP11 changes outright. The numbers in the
+§3-§5 tables become the **untalented base** values; and by the user's ruling
+of 2026-09-16 the **Warrior's base kit drops to three abilities** (Charge,
+Mighty Blow, Taunt), so that every class starts with Strike plus three:
+**Hamstring leaves §3's table and returns as a talent**, the keystone of the
+Warrior's Ruin tree. The same ruling removes **class changing** from the game
+entirely, admins included.
 
 Core principles:
 
