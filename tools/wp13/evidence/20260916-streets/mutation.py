@@ -17,18 +17,16 @@ MUTANTS = [
 					KERB or PAVING
 				local top = level[p] - ((offset < 0) and 1 or 0)"""),
     ("ruling 2 -- a junction level taken from this run alone",
-     """				for member = 1, #junction.members do
-					local other = junction.members[member]
-					names[member] = other.id
-					local across = other_envelope(other)
-					if across ~= nil and (best == nil or across > best) then
-						best = across
-					end
-				end""",
-     """				for member = 1, #junction.members do
-					local other = junction.members[member]
-					names[member] = other.id
-				end"""),
+     """					for member = 1, #junction.members do
+						local other = junction.members[member]
+						local across = other_envelope(other)
+						if across ~= nil and (best == nil or across > best) then
+							best = across
+						end
+					end""",
+     """					for member = 1, #junction.members do
+						local _ = junction.members[member]
+					end"""),
     ("ruling 3 -- a standard back on the ground beside the street",
      """					if is_lamp then
 						buf:put(x, top + 1, z, palette.node("post"))""",

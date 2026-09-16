@@ -35,9 +35,10 @@
 -- MEASURED, on all six capitals (tools/wp13/street_geometry.lua): there are
 -- twenty of them, and they are two different things.
 --
---   * SIXTEEN BUTT JOINTS -- one continuous lane authored as two runs meeting
+--   * FOURTEEN BUTT JOINTS -- one continuous lane authored as two runs meeting
 --     end to end, sharing exactly one column (Dur Brannoc, Gor Drazhak, Nhal
---     Veyr, four each, and two of Lethariel's). Those need nothing: the road's
+--     Veyr, four each, and two of Lethariel's -- twelve plus two). Those need
+--     nothing: the road's
 --     level at a column depends on the ground within `reach` of it, both runs
 --     read that same ground, and both therefore walk the shared column at the
 --     same height.
@@ -231,17 +232,84 @@ local function loader(directory)
 		return by_id, overlaps
 	end
 
-	-- The same list, attached to COPIES of the run specs so the composition's
+	-- WHERE A STREET PASSES THROUGH SOMETHING THAT IS NOT A STREET.
+	--
+	-- A capital's overlay carries runs that are not roads: the curtain wall, the
+	-- orc palisade, the grove edge, Kezamba's gate cones. A road runs THROUGH
+	-- them, at a gate, and inside that passage the authored structure owns the
+	-- lanes either side of the carriageway -- which is why the kerb parapets
+	-- this lane replaced each carried the sentence "a kerb course would be
+	-- masonry in the tunnel mouth".
+	--
+	-- The shared verge rule has to know the same thing, so it is derived here
+	-- from the same rectangles the junctions are: `barriers` is a list of
+	-- `{runs = <the non-street runs>, half = <that module's own HALF>}`, and the
+	-- answer is, per street, the spans along it that a barrier's band covers.
+	-- `wp13/avenue.lua` writes no plank, no rail and no pillar there -- a lamp
+	-- standard still stands, because a standard is not a walk.
+	--
+	-- MEASURED: four cells, at `gate - HALF` on the north avenue of Nhal Veyr
+	-- (both gate seeds) and of Highcourt (the 531802985935182545 seed). Every
+	-- other barrier band in the six capitals is a position the road walks on its
+	-- own ground, where the verge writes nothing anyway.
+	function M.barrier_spans(streets, barriers, width)
+		width = width or M.WIDTH
+		local half = (width - 1) / 2
+		local by_id = {}
+		for index = 1, #streets do by_id[streets[index].id] = {} end
+		for _, group in ipairs(barriers or {}) do
+			local reach = group.half
+			if type(reach) ~= "number" or reach < 0 then
+				error("wp13 street plan: a barrier has no half-width", 0)
+			end
+			for _, barrier in ipairs(group.runs or {}) do
+				for _, street in ipairs(streets) do
+					if street.axis ~= barrier.axis then
+						local low = barrier.at - reach
+						local high = barrier.at + reach
+						-- The barrier's band crosses this street only where the
+						-- street's own carriageway lies inside the barrier's
+						-- span, and the span it covers is the band itself,
+						-- clipped to the street's run.
+						local across_low = street.at - half
+						local across_high = street.at + half
+						if barrier.from <= across_high and
+								barrier.to >= across_low then
+							if low < street.from then low = street.from end
+							if high > street.to then high = street.to end
+							if low <= high then
+								local list = by_id[street.id]
+								list[#list + 1] = {low, high}
+							end
+						end
+					end
+				end
+			end
+		end
+		for _, list in pairs(by_id) do
+			table.sort(list, function(p, q)
+				if p[1] ~= q[1] then return p[1] < q[1] end
+				return p[2] < q[2]
+			end)
+		end
+		return by_id
+	end
+
+	-- The same lists, attached to COPIES of the run specs so the composition's
 	-- own authored tables are never mutated: two worlds in one process must not
 	-- be able to see each other's junctions.
-	function M.attach(runs, width)
-		local junctions = M.junctions(runs, width or M.WIDTH)
+	function M.attach(runs, width, barriers)
+		width = width or M.WIDTH
+		local junctions = M.junctions(runs, width)
+		local passages = M.barrier_spans(runs, barriers, width)
 		local out = {}
 		for index = 1, #runs do
 			local run = runs[index]
 			local copy = {}
 			for name, value in pairs(run) do copy[name] = value end
 			copy.junctions = junctions[run.id]
+			local spans = passages[run.id]
+			copy.plain_verge = (spans and #spans > 0) and spans or nil
 			out[index] = copy
 		end
 		return out

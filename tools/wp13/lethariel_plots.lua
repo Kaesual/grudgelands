@@ -77,6 +77,14 @@ local avenue = dofile(wp13 .. "/avenue.lua")(wp13)
 local grove = dofile(wp13 .. "/elf_grove.lua")(wp13)
 local capital = dofile(wp13 .. "/lethariel.lua")(wp13)
 local quadrants = dofile(wp13 .. "/lethariel_quadrants.lua")()
+
+-- THE JUNCTION SQUARES the composition attaches in `overlay_runs`, by run id.
+-- A plateau where two streets cross is part of the road's own geometry since
+-- 2026-09-16, so a run built without them is not the run the seam builds.
+local attached_junctions = {}
+for _, entry in ipairs(capital.overlay_runs(quadrants.lane_runs())) do
+	attached_junctions[entry.id] = entry.junctions
+end
 local elf_parts = dofile(wp13 .. "/elf_parts.lua")(wp13)
 -- The same handle `r7_lethariel_blueprint.lua` gives the overlay.
 local road_palette = elf_parts.handles().elf
@@ -366,6 +374,17 @@ if mode == "--routes" then
 		local function at(x, z)
 			return walkable(anchor.x + x, anchor.z + z)
 		end
+		-- AND THE SEAM'S OWN WATER QUERY. Since 2026-09-16
+		-- `wp40/r7_settlement.lua` publishes whether a column is water as a
+		-- third value of `walkable_values` and `wp13/avenue.lua` bridges a wet
+		-- column instead of paving a causeway across it. A tool that hands the
+		-- road only the surface builds the road this capital stopped building.
+		local function wet_at(x, z)
+			local wx, wz = anchor.x + x, anchor.z + z
+			local terrain_y = height.terrain_height_at(wx, wz)
+			local water_y = height.water_surface_at(wx, wz)
+			return type(water_y) == "number" and water_y > terrain_y
+		end
 		-- This capital's own four gates, out of WP40's published table.
 		local gates = {}
 		for index = 1, #source.capital_gates do
@@ -383,7 +402,8 @@ if mode == "--routes" then
 				id = run.id, axis = run.axis, at = run.at, from = run.from,
 				to = run.to, width = avenue.WIDTH,
 				lamp_spacing = avenue.LAMP_SPACING, lamp_phase = run.from,
-				reach = avenue.REACH}, at)
+				reach = avenue.REACH, wet = wet_at,
+				junctions = attached_junctions[run.id]}, at)
 			-- The BUILT road, read off its own cells: the top of the centre
 			-- lane at every position along the run, in world coordinates.
 			local centre = {}
@@ -586,6 +606,14 @@ if mode == "--bodies" then
 		local y = walkable_surface(anchor.x + x, anchor.z + z)
 		return y
 	end
+	-- AND WHETHER THE COLUMN IS WATER, which is the query the seam publishes
+	-- and the road bridges on. Before it was passed here this mode built the
+	-- pre-2026-09-16 CAUSEWAY and reported the mere cut into seven lakes -- a
+	-- property of the road the tool built and not of the one the capital does.
+	local function wet_at(x, z)
+		local _, w = walkable_surface(anchor.x + x, anchor.z + z)
+		return w ~= nil
+	end
 	local water_y = {}
 	for z = -WINDOW, WINDOW do
 		local row = {}
@@ -622,7 +650,8 @@ if mode == "--bodies" then
 			id = run.id, axis = run.axis, at = run.at, from = run.from,
 			to = run.to, width = avenue.WIDTH,
 			lamp_spacing = avenue.LAMP_SPACING, lamp_phase = run.from,
-			reach = avenue.REACH}, at)
+			reach = avenue.REACH, wet = wet_at,
+			junctions = attached_junctions[run.id]}, at)
 		local own = 0
 		for index = 1, #piece.cells do
 			local cell = piece.cells[index]

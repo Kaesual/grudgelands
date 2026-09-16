@@ -70,13 +70,33 @@ already inside the overlay's identity bytes.
     J = max over every run standing in the square of
         that run's BARE one-Lipschitz envelope over the square
 
-computed from the same `surface` callback, over the same `reach` window, by the
-same two sweeps. Two runs that never see each other therefore compute the
-identical J. It is applied as a **ground floor**, and that is what makes the
-approaches right for free: raising the square's ground to J lifts the envelope on
-both sides a node at a time, and over the square the envelope is J exactly —
-every column of it is at J, and no column outside it can push one above J,
-because J is already at or above the bare envelope there.
+computed from the same `surface` callback and the same two sweeps. It is applied
+as a **ground floor**, and that is what makes the approaches right for free:
+raising the square's ground to J lifts the envelope on both sides a node at a
+time, and over the square the envelope is J exactly — every column of it is at J,
+and no column outside it can push one above J, because J is already at or above
+the bare envelope there.
+
+**THE TWO RUNS AGREEING IS MEASURED, NOT CONSTRUCTED**, and the independent
+review of 2026-09-16 was right to say so. The windows are not identical: a run's
+own contribution is `bare[p]`, the envelope over its whole piece window
+`[from − reach, to + reach]`, while every other member's contribution is an
+envelope over `square ± reach`. The first is wider, so a run's self-contribution
+can only be ≥ what another run computes for it; nothing forces them equal. What
+makes them equal is that a column outside `square ± reach` is more than `reach`
+away and would have to stand more than `reach` nodes above everything between it
+and the square to bind — which WP40's terracing (cut 24, fill 16) cannot produce,
+and which is the same assumption `reach` itself rests on.
+
+So it is held by measurement: the reviewer's own probe reads every run's
+published `plateaus` and compares the y each member computed for the same group —
+**plateau_disagree = 0 on all six capitals × four seeds**, 8–19 junction groups
+per capital. `tools/wp13/street_kat.lua` §9 holds the same property on a profile
+built to break it: the ground is flat under the square and a ridge stands
+eighteen columns away on the crossing run's axis, so the plateau's height can
+only come from the other run's envelope reaching over that distance. Clip that
+window to the square — the mutation the review ran — and the two runs disagree by
+2 nodes and the KAT goes red.
 
 Two details the measurement forced:
 
@@ -141,8 +161,23 @@ rail on every tread would turn the ordinary road into a trench.
 rule put **on a WP40 route's deck** is filled and not pillared: a route's bridge
 may be narrower than the carriageway, and the outer lanes are then an abutment
 that has to be solid, or the road beside the deck hangs in the air with the
-route's own piers under the middle of it and nothing under the edges. That is the
-0..5 solid columns a seed in the table above.
+route's own piers under the middle of it and nothing under the edges.
+
+**That exception has NO real-terrain coverage, and the 0..5 solid columns in the
+table above are something else.** Both halves of that sentence are the
+independent review's and both are measured:
+
+* `tools/wp13/lane_routes.lua` reports `spanned = 0` on every one of the nine
+  fixture seeds, on this branch and on `main` alike: **no WP40 route deck crosses
+  a street of any capital on any fixture seed**. The `on_deck` branch of the fill
+  rule is therefore exercised by `lane_crossing_kat.lua` §4's synthetic profiles
+  and by nothing else.
+* The 0..5 columns that are raised ≥ MIN_CLEAR and still solid are **Nhal Veyr's
+  gate-tunnel floor**: all of them are the five lanes of one position, `p = 253`
+  on `avenue_north`, which is `gate_at − wall.HALF` — the first column of the
+  band `nhal_veyr.lua`'s own "THE GATE TUNNEL'S FLOOR" fills from the band's
+  lowest ground up to the road. There is no deck within ±3 lanes of any of them.
+  `nhal_veyr_kat.lua` §(c) excludes exactly that band for exactly that reason.
 
 ## 6. What this cost
 
@@ -156,6 +191,12 @@ unchanged on both trees:
 | --- | --- | --- |
 | all six capitals' whole street network | 108.1 ms | 154.2 ms (+43 %) |
 | `surface` calls | 125 844 | 250 352 (+99 %) |
+
+A junction whose square lies outside the piece's own window is skipped
+altogether — its floor could only ever be written at columns the piece does not
+contain — and that is where most of the query count went: the seam's own
+`height_cache` row in `tools/wp13/seam_kat.lua` falls from **4274 to 1739** calls
+for the same fixture.
 
 That is the **whole** network of a capital in 17..30 ms, spread by the seam over
 the ~108 mapchunks the capital occupies, against a measured capital mapchunk of
@@ -180,20 +221,63 @@ runs both read is paid for once there and twice in the bench.
 3. **The verge query memo.** `verge_surface` is what keeps the "one query per
    column" property the capital KATs assert; a second call site that read a verge
    without it would break that assertion rather than pass silently.
-4. **The KAT's own coverage.** Five mutations, one per ruling, each caught by that
-   ruling's own section — `tools/wp13/evidence/20260916-streets/mutation.txt`.
+4. **The KAT's own coverage.** Eleven mutations: five of the lane's own, one per
+   ruling (`mutation.txt`), and the six the independent review wrote against it
+   (`mutation-review.txt`), including the junction window, the off-centre square
+   and the pier rhythm. All eleven go red, each on the section that owns the
+   rule.
+5. **The three gates that had to learn the viaduct rule**, because a column with
+   open air under it is the ruling and not a defect:
+   `tools/wp13/lane_crossing_kat.lua`, `tools/wp13/lane_routes.lua` and
+   `tools/wp13/kezamba_lots.lua gates`. Each allows the third case only where
+   `top − ground >= MIN_CLEAR`, so a cell hanging over ground the road did not
+   raise is still a defect.
 
 ## 8. What is open
 
-* **Lethariel's district lanes overlap its ring street.** Six pairs, up to 97
-  columns each, three of the five lanes of each the same columns: `ring_west` at
-  x = −96 and `lane_northwest_spine` at x = −98 are two streets two nodes apart,
-  which is one street. That is a composition defect and not a street-geometry
-  one — moving a lane's centre line moves the plots that stand along it — so it
-  is **measured, pinned and reported, not fixed here**
-  (`street_kat.lua` section 8 pins the inventory; the other sixteen parallel
-  overlaps in the tree are butt joints of one column, where two collinear runs
-  meet end to end, and those need nothing).
+* **Lethariel's district lanes overlap its ring street — ESCALATED to the
+  coordinator, with the number.** Six pairs, up to 97 columns each, three of the
+  five lanes of each the same columns: `ring_west` at x = −96 and
+  `lane_northwest_spine` at x = −98 are two streets two nodes apart, which is one
+  street.
+
+  What that costs is now measured rather than described.
+  `tools/wp13/evidence/20260916-streets/walkability.lua` builds each capital's
+  road the way the seam does — every street run in the composition's own order,
+  first run wins a shared cell — and counts **neighbouring road columns whose
+  walking level differs by two or more**, which is a step no player can climb:
+
+  | seed | highcourt | dur_brannoc | gor_drazhak | lethariel | kezamba | nhal_veyr |
+  | --- | --- | --- | --- | --- | --- | --- |
+  | 8675309, main | 16 | 613 | 0 | 20 | 70 | 2 |
+  | 8675309, **branch** | 0 | 0 | 0 | **3** | 0 | 0 |
+  | 531802985935182545, main | 24 | 656 | 0 | 20 | 18 | 4 |
+  | 531802985935182545, **branch** | 0 | 0 | 0 | **11** | 0 | 0 |
+  | user's seed, main | 8 | 8 | 8 | 1 | 56 | 2 |
+  | user's seed, **branch** | 0 | 0 | 0 | **7** | 0 | 0 |
+  | 999999999, main | 88 | 153 | 0 | 64 | 67 | 5 |
+  | 999999999, **branch** | 0 | 0 | 0 | **3** | 0 | 0 |
+
+  Dur Brannoc goes from 613–656 unwalkable pairs, worst step 12 and 18 nodes, to
+  zero. **Every residual in the six capitals is at Lethariel's lane/ring
+  overlap**, worst step 2, e.g. `1895,−1583 (ring_east, y = 28)` beside
+  `1896,−1583 (lane_southeast_spine, y = 30)`.
+
+  The per-run view is a regression in isolation and is recorded as one: on `main`
+  the two parallel runs agreed on 288–291 of their 291 shared columns, because a
+  per-lane envelope gives the same answer to whichever run owns the column; on
+  this branch the road-wide envelope makes them disagree on up to 129 of 291, by
+  up to 2 nodes. First-run-wins arbitration hides most of it, which is why the
+  built count is 3–11 and not 129. It is the right trade — 20 → 3 on the same
+  seed — but **Lethariel is the capital whose bridge the user praised and it is
+  now the only one of the six with a step in it.**
+
+  Moving a lane's centre line moves the plots that stand along it, so it is not
+  this lane's to do: it is **pinned** (`street_kat.lua` §8 holds the overlap
+  inventory) and handed over. The other fourteen parallel overlaps in the tree
+  are butt joints of one column, where two collinear runs meet end to end, and
+  those need nothing (14 butt joints + 6 side-by-side = the 20 the KAT's
+  inventory row counts).
 * **The gate-arrival ramp is still Kezamba's alone.** `kezamba_ramp.lua` brings an
   avenue down to its gate point at free-terrain height (contract §2.1.1); the
   other five capitals rely on their terrain being gentler there, and Nhal Veyr

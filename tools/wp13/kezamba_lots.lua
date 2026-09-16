@@ -396,7 +396,13 @@ end
 --               The ruling's target is 0, and anything over 1 is a face.
 --   ramp        how many columns the descent took.
 --   drop        how far it came down over them.
---   floating    cells of the piece with nothing under them. Target 0.
+--   floating    cells of the piece with nothing under them and no reason to
+--               have none. Target 0.
+--   on_water/on_deck/on_pillars
+--               the three exempt kinds: a boardwalk over the cenote, a column
+--               standing on a WP40 route's deck, and a VIADUCT column the road
+--               raised MIN_CLEAR or more, whose open air is playtest 5's
+--               ruling 4 and not a defect.
 if mode == "gates" then
 	local wp13dir = repo .. "/mods/MAPGEN/grug_mapgen/wp13"
 	local avenue = dofile(wp13dir .. "/avenue.lua")(wp13dir)
@@ -406,7 +412,7 @@ if mode == "gates" then
 	local STEP_CEILING = 1
 
 	io.write("kind\tseed\trun\tgate\tterrain\troad\tstep\tramp",
-		"\tdrop\tfloating\ton_water/on_deck\tcells\n")
+		"\tdrop\tfloating\ton_water/on_deck/on_pillars\tcells\n")
 	local worst_step, worst_run, worst_seed = 0, "-", "-"
 	local worst_float, float_run = 0, "-"
 	for index = 1, #sessions do
@@ -434,13 +440,34 @@ if mode == "gates" then
 			return hit
 		end
 		local function surface(x, z) return walkable(x, z).surface end
+		-- AND THE SEAM'S OWN WATER QUERY beside it. Since 2026-09-16 the seam
+		-- publishes whether a column is water as a third value of
+		-- `walkable_values`, and `wp13/avenue.lua` bridges a wet column instead
+		-- of paving a causeway across it. A tool that handed the road only the
+		-- surface would be measuring a road nobody builds -- over Kezamba's own
+		-- cenote, the one this gate is about.
+		local function wet_at(x, z)
+			local here = walkable(x, z)
+			return here.surface > here.terrain
+		end
 
-		for _, run in ipairs(kezamba.avenues) do
+		-- THE RUNS AS THE SEAM HANDS THEM OVER, which since 2026-09-16 means
+		-- carrying the JUNCTION SQUARES the composition attached in
+		-- `overlay_runs`: a plateau where two streets cross is part of the
+		-- road's own geometry, and an avenue built without them is not the
+		-- avenue that arrives at the gate.
+		local attached = {}
+		for _, entry in ipairs(kezamba.overlay_runs()) do
+			attached[entry.id] = entry
+		end
+		for _, authored in ipairs(kezamba.avenues) do
+			local run = attached[authored.id] or authored
 			local plan = kezamba.avenue_plan[run.id]
 			local spec = {id = run.id, axis = run.axis, at = run.at,
 				from = run.from, to = run.to, width = avenue.WIDTH,
 				lamp_spacing = avenue.LAMP_SPACING, lamp_phase = run.from,
-				reach = avenue.REACH}
+				reach = avenue.REACH, wet = wet_at,
+				junctions = run.junctions}
 			local ok, piece = pcall(kezamba.overlay_run, avenue, road, spec,
 				surface)
 			if not ok then
@@ -491,15 +518,43 @@ if mode == "gates" then
 				--     the road, so the road does not fill the river up to it,
 				--     which would be a dam with a street on top"). The deck is
 				--     WP40's and is not in this piece.
+				--   * a column of a VIADUCT, and this one is the user's ruling
+				--     of 2026-09-16 rather than the seam's design: "streets
+				--     raised artificially must stand on SUPPORT PILLARS with
+				--     open air beneath, so the street is not a wall and a player
+				--     can walk under it". A column the road walks `MIN_CLEAR` or
+				--     more above its own ground carries the deck course, the
+				--     plank verge, its rail and a pillar every `avenue.PIER`
+				--     columns, and NOTHING else -- the air under it is the whole
+				--     point. The exemption is bounded by exactly that test, so a
+				--     cell hanging over ground the road did NOT raise is still a
+				--     defect: measured on seed 8675309 before the exemption,
+				--     100 % of the 509 cells this gate flagged stood on a column
+				--     raised at least MIN_CLEAR (the independent review of
+				--     2026-09-16, `kzfloat.lua`).
 				local spanned = {}
 				for cross = 1, #(piece.crossings or {}) do
 					local row = piece.crossings[cross]
 					spanned[row.x .. ":" .. row.z] = true
 				end
-				local floating, on_water, on_deck = 0, 0, 0
+				-- The road's own walking level per column, which is what the
+				-- viaduct test is taken against: the topmost cell of the piece
+				-- in that column.
+				local column_top = {}
 				for cell_index = 1, #piece.cells do
 					local cell = piece.cells[cell_index]
 					if cell.name ~= "air" then
+						local key = cell.x .. ":" .. cell.z
+						if column_top[key] == nil or cell.y > column_top[key] then
+							column_top[key] = cell.y
+						end
+					end
+				end
+				local floating, on_water, on_deck, on_pillars = 0, 0, 0, 0
+				for cell_index = 1, #piece.cells do
+					local cell = piece.cells[cell_index]
+					if cell.name ~= "air" then
+						local key = cell.x .. ":" .. cell.z
 						local here = walkable(cell.x, cell.z)
 						local unsupported = cell.y - 1 > here.terrain and
 							not occupied[cell.x .. ":" .. (cell.y - 1) ..
@@ -507,8 +562,12 @@ if mode == "gates" then
 						if unsupported then
 							if here.surface > here.terrain then
 								on_water = on_water + 1
-							elseif spanned[cell.x .. ":" .. cell.z] then
+							elseif spanned[key] then
 								on_deck = on_deck + 1
+							elseif column_top[key] ~= nil and
+									column_top[key] - here.terrain >=
+										avenue.MIN_CLEAR then
+								on_pillars = on_pillars + 1
 							else
 								floating = floating + 1
 							end
@@ -518,7 +577,8 @@ if mode == "gates" then
 				io.write(table.concat({"kezamba_gate", session.seed, run.id,
 					plan.gate, ground, level or "-", step,
 					piece.ramp_columns or 0, piece.ramp_drop or 0, floating,
-					on_water .. "/" .. on_deck, #piece.cells}, "\t"), "\n")
+					on_water .. "/" .. on_deck .. "/" .. on_pillars,
+					#piece.cells}, "\t"), "\n")
 				if step > worst_step then
 					worst_step, worst_run, worst_seed = step, run.id,
 						session.seed

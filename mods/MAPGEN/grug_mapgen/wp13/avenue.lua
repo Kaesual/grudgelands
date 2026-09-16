@@ -248,6 +248,11 @@ local function loader(directory)
 	--                 on the column; see THE BRIDGE below
 	--   junctions     optional, from `wp13/street_plan.lua`; see THE JUNCTION
 	--                 PLATEAU below
+	--   plain_verge   optional, from the same module: spans along the run where
+	--                 the verge writes no plank, rail or pillar because an
+	--                 authored structure owns those lanes there -- a gate
+	--                 passage through a curtain wall, a palisade, a grove
+	--                 threshold or a gate cone
 	--
 	-- `surface(x, z)` returns the y of the topmost terrain node of that
 	-- column -- the water surface where water stands on it, which is what the
@@ -462,20 +467,29 @@ local function loader(directory)
 			end
 			for index = 1, #junctions do
 				local junction = junctions[index]
+				-- A JUNCTION OUTSIDE THIS PIECE'S WINDOW COSTS NOTHING. The
+				-- floor is only ever read at `[junction.low, junction.high]`,
+				-- so a square with no column inside `[low_end, high_end]`
+				-- cannot reach this piece at all -- not even through the
+				-- envelope, which only spreads a floor that was written. The
+				-- reads it would have cost were the bulk of this rule's query
+				-- count.
 				local best
-				for p = junction.low, junction.high do
-					local here = bare[p]
-					if here ~= nil and (best == nil or here > best) then
-						best = here
+				if junction.high < low_end or junction.low > high_end then
+					best = nil
+				else
+					for p = junction.low, junction.high do
+						local here = bare[p]
+						if here ~= nil and (best == nil or here > best) then
+							best = here
+						end
 					end
-				end
-				local names = {}
-				for member = 1, #junction.members do
-					local other = junction.members[member]
-					names[member] = other.id
-					local across = other_envelope(other)
-					if across ~= nil and (best == nil or across > best) then
-						best = across
+					for member = 1, #junction.members do
+						local other = junction.members[member]
+						local across = other_envelope(other)
+						if across ~= nil and (best == nil or across > best) then
+							best = across
+						end
 					end
 				end
 				if best ~= nil then
@@ -483,6 +497,10 @@ local function loader(directory)
 						if floor[p] == nil or best > floor[p] then
 							floor[p] = best
 						end
+					end
+					local names = {}
+					for member = 1, #junction.members do
+						names[member] = junction.members[member].id
 					end
 					plateaus[#plateaus + 1] = {id = table.concat(names, "+"),
 						low = junction.low, high = junction.high, y = best}
@@ -693,6 +711,16 @@ local function loader(directory)
 		-- position, a pier rhythm or a lamp -- so the two lanes outside the
 		-- carriageway cost the run a query per cell and not a query per column
 		-- of the whole window.
+		-- WHERE THE VERGE YIELDS, per position: inside a barrier's gate passage
+		-- the authored structure owns the lanes beside the carriageway, and a
+		-- plank walk with a fence on it would be timber in the tunnel mouth.
+		-- The kerb parapets this rule replaced each said so in their own
+		-- capital; the shared rule is told by `wp13/street_plan.lua`. A lamp
+		-- standard is exempt -- it is not a walk, and the rhythm is the run's.
+		local plain_verge = {}
+		for _, span in ipairs(spec.plain_verge or {}) do
+			for p = span[1], span[2] do plain_verge[p] = true end
+		end
 		local verge_ground = {}
 		local function verge_surface(p, offset)
 			local key = p .. ":" .. offset
@@ -707,7 +735,7 @@ local function loader(directory)
 		for p = from, to do
 			local is_lamp = ((p - phase) % spacing == 0)
 			local is_pier = ((p - phase) % M.PIER == 0)
-			if spanned_at[p] or is_lamp then
+			if (spanned_at[p] and not plain_verge[p]) or is_lamp then
 				for _, offset in ipairs({-verge, verge}) do
 					local top = verge_level[p]
 					local x, z = column(p, offset)
@@ -736,7 +764,7 @@ local function loader(directory)
 							top > verge_deck - M.MIN_CLEAR - 2 then
 						top = verge_deck
 					end
-					if spanned_at[p] then
+					if spanned_at[p] and not plain_verge[p] then
 						-- The plank walk a player cannot step off, and its rail
 						-- -- except where a lamp standard takes the rail's cell.
 						buf:put(x, top, z, PLANK)
@@ -750,8 +778,11 @@ local function loader(directory)
 							piers = piers + 1
 						end
 					else
-						-- On the ground the standard gets its own footing in
-						-- the kerb's material, and the verge is carried up to
+						-- On the ground -- and inside a gate passage, where the
+						-- plank walk yields but a standard on the rhythm still
+						-- needs something to stand on -- the standard gets its
+						-- own footing in the kerb's material, and the verge is
+						-- carried up to
 						-- the road where the road stands above it: a standard
 						-- is not part of the carriageway and has no envelope of
 						-- its own, and ruling 3 is that it stands on the

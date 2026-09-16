@@ -27,7 +27,7 @@ SWEEP 3
 SWEEP 4
 mods/MAPGEN/grug_mapgen/wp13/gor_drazhak.lua:11:--     "Gor Drazhak | orc | mesa shelf, step 4 | adobe flat roofs with
 mods/MAPGEN/grug_mapgen/wp13/kezamba.lua:11:-- is an answer to it: "Kezamba | troll | stilted cenote terrace, step 3 | stilt
-mods/MAPGEN/grug_mapgen/wp13/nhal_veyr.lua:1299:	--     cap(p) = gate_y + |p - gate_at|      (gate_y = the free terrain at
+mods/MAPGEN/grug_mapgen/wp13/nhal_veyr.lua:1306:	--     cap(p) = gate_y + |p - gate_at|      (gate_y = the free terrain at
 SWEEP 5
 SWEEPS DONE (no output above a SWEEP line means zero hits)
 == the same five sweeps over all of mods/*/grug_* and tools ==
@@ -266,7 +266,7 @@ mods/MAPGEN/grug_mapgen/wp40/simple_map.lua:722:					-- open envelope is |d| < g
 mods/MAPGEN/grug_mapgen/wp13/troll_parts.lua:19:-- row, quoted): "stilted cenote terrace, step 3 | stilt halls on basalt
 mods/MAPGEN/grug_mapgen/wp13/gor_drazhak.lua:11:--     "Gor Drazhak | orc | mesa shelf, step 4 | adobe flat roofs with
 mods/MAPGEN/grug_mapgen/wp13/kezamba.lua:11:-- is an answer to it: "Kezamba | troll | stilted cenote terrace, step 3 | stilt
-mods/MAPGEN/grug_mapgen/wp13/nhal_veyr.lua:1299:	--     cap(p) = gate_y + |p - gate_at|      (gate_y = the free terrain at
+mods/MAPGEN/grug_mapgen/wp13/nhal_veyr.lua:1306:	--     cap(p) = gate_y + |p - gate_at|      (gate_y = the free terrain at
 mods/PLAYER/grug_abilities/init.lua:470:-- Ability registration & item. One tool per ability; the item's `range`
 mods/PLAYER/grug_abilities/init.lua:1462:	return SKIN_VERSION .. "|" .. color .. "|" .. src.inv .. "|" .. src.wield
 mods/PLAYER/grug_abilities/init.lua:1506:	local token = SWING_CAPS_VERSION .. "|" .. string.format("%.17g", interval)
@@ -307,8 +307,8 @@ tools/wp13/evidence/20260915-capital-terrain/measurements/band-bound.lua:12:--  
 tools/wp13/evidence/20260915-capital-terrain/measurements/band-bound.lua:44:io.write("deviation = worst |output - plain terrace|\n\n")
 tools/wp13/evidence/20260914-round-b-terrain/measure/road_shoulder.lua:2:-- rows on the approach, the smallest |dx| at which a biome decoration may host
 tools/wp13/evidence/20260915-gor_drazhak/surface_check.lua:5:-- The dumps come from `run_capital.sh <out> gor_drazhak surface|full <seed>`,
-tools/wp13/lethariel_plots.lua:315:		local text = table.concat(rows, "|")
-tools/wp13/lethariel_plots.lua:539:		local joined = table.concat(rows, "|")
+tools/wp13/lethariel_plots.lua:323:		local text = table.concat(rows, "|")
+tools/wp13/lethariel_plots.lua:559:		local joined = table.concat(rows, "|")
 SWEEP 5
 mods/CORE/grug_core/atmosphere_zones.lua:334:-- Sea level is y = 1 (minetest.conf water_level, mirrored in the authored
 mods/CORE/grug_core/atmosphere.lua:10:-- the game-directory minetest.conf merely shifts client defaults for a locally
@@ -394,18 +394,18 @@ tools/wp13/dump_blueprint.lua:52:	os.exit(1)
 tools/wp13/dump_blueprint.lua:59:		os.exit(1)
 tools/wp13/dump_blueprint.lua:66:	os.exit(1)
 tools/wp13/dump_blueprint.lua:72:	os.exit(1)
-tools/wp13/lane_routes.lua:347:	os.exit(1)
+tools/wp13/lane_routes.lua:389:	os.exit(1)
 tools/wp13/gor_drazhak_rampart.lua:238:	os.exit(1)
 tools/wp13/kezamba_lots.lua:187:	os.exit(0)
 tools/wp13/kezamba_lots.lua:256:	os.exit(0)
 tools/wp13/kezamba_lots.lua:370:		os.exit(1)
 tools/wp13/kezamba_lots.lua:375:	os.exit(0)
-tools/wp13/kezamba_lots.lua:538:		os.exit(1)
-tools/wp13/kezamba_lots.lua:543:	os.exit(0)
-tools/wp13/kezamba_lots.lua:554:	os.exit(0)
-tools/wp13/kezamba_lots.lua:571:	os.exit(0)
-tools/wp13/kezamba_lots.lua:634:		os.exit(1)
-tools/wp13/kezamba_lots.lua:665:	os.exit(1)
+tools/wp13/kezamba_lots.lua:598:		os.exit(1)
+tools/wp13/kezamba_lots.lua:603:	os.exit(0)
+tools/wp13/kezamba_lots.lua:614:	os.exit(0)
+tools/wp13/kezamba_lots.lua:631:	os.exit(0)
+tools/wp13/kezamba_lots.lua:694:		os.exit(1)
+tools/wp13/kezamba_lots.lua:725:	os.exit(1)
 tools/wp13/highcourt_plots.lua:398:	os.exit(0)
 tools/wp13/highcourt_plots.lua:579:	os.exit(1)
 tools/wp13/gor_drazhak_lots.lua:399:	os.exit(1)
@@ -418,22 +418,22 @@ tools/wp13/evidence/20260915-gor_drazhak/surface_check.lua:109:if hard > 0 then 
 tools/wp13/dump_capital_part.lua:30:	os.exit(2)
 tools/wp13/dump_capital_part.lua:53:			os.exit(2)
 tools/wp13/dump_capital_part.lua:72:	os.exit(2)
-tools/wp13/lethariel_plots.lua:261:		os.exit(1)
-tools/wp13/lethariel_plots.lua:264:	os.exit(0)
-tools/wp13/lethariel_plots.lua:323:	if failures > 0 then os.exit(1) end
-tools/wp13/lethariel_plots.lua:326:	os.exit(0)
-tools/wp13/lethariel_plots.lua:452:		os.exit(1)
-tools/wp13/lethariel_plots.lua:456:	os.exit(0)
-tools/wp13/lethariel_plots.lua:546:	if failures > 0 then os.exit(1) end
-tools/wp13/lethariel_plots.lua:549:	os.exit(0)
-tools/wp13/lethariel_plots.lua:717:		os.exit(1)
-tools/wp13/lethariel_plots.lua:720:	os.exit(0)
-tools/wp13/lethariel_plots.lua:818:		os.exit(1)
-tools/wp13/lethariel_plots.lua:821:	os.exit(0)
-tools/wp13/lethariel_plots.lua:852:	os.exit(0)
-tools/wp13/lethariel_plots.lua:935:	os.exit(0)
-tools/wp13/lethariel_plots.lua:966:	os.exit(0)
-tools/wp13/lethariel_plots.lua:1011:	os.exit(1)
+tools/wp13/lethariel_plots.lua:269:		os.exit(1)
+tools/wp13/lethariel_plots.lua:272:	os.exit(0)
+tools/wp13/lethariel_plots.lua:331:	if failures > 0 then os.exit(1) end
+tools/wp13/lethariel_plots.lua:334:	os.exit(0)
+tools/wp13/lethariel_plots.lua:472:		os.exit(1)
+tools/wp13/lethariel_plots.lua:476:	os.exit(0)
+tools/wp13/lethariel_plots.lua:566:	if failures > 0 then os.exit(1) end
+tools/wp13/lethariel_plots.lua:569:	os.exit(0)
+tools/wp13/lethariel_plots.lua:746:		os.exit(1)
+tools/wp13/lethariel_plots.lua:749:	os.exit(0)
+tools/wp13/lethariel_plots.lua:847:		os.exit(1)
+tools/wp13/lethariel_plots.lua:850:	os.exit(0)
+tools/wp13/lethariel_plots.lua:881:	os.exit(0)
+tools/wp13/lethariel_plots.lua:964:	os.exit(0)
+tools/wp13/lethariel_plots.lua:995:	os.exit(0)
+tools/wp13/lethariel_plots.lua:1040:	os.exit(1)
 SWEEPS DONE (no output above a SWEEP line means zero hits)
 == fresh server check ==
 Fresh-server source audit: PASS

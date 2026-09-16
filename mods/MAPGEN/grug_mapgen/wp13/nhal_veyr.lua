@@ -1218,7 +1218,14 @@ local function loader(directory)
 		for _, list in ipairs({M.avenues, M.ring, lanes or {}}) do
 			for index = 1, #list do streets[#streets + 1] = list[index] end
 		end
-		local runs = street_plan.attach(streets)
+		-- AND THE GATE PASSAGES, for the same reason and out of the same
+		-- rectangles: a street runs THROUGH the structure that is not a street,
+		-- and inside that passage the structure owns the lanes either side of
+		-- the carriageway. `wp13/avenue.lua` writes no plank walk, no rail and
+		-- no pillar there, which is the sentence the per-capital kerb parapets
+		-- this rule replaced each carried in their own words.
+		local runs = street_plan.attach(streets, nil,
+			{{runs = M.wall, half = wall.HALF}})
 		for index = 1, #M.wall do runs[#runs + 1] = M.wall[index] end
 		return runs
 	end

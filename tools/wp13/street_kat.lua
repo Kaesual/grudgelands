@@ -604,6 +604,26 @@ return function(repo)
 				assert(#attached == #list, key .. ": the run " .. id ..
 					" carries " .. #attached ..
 					" junctions and the plan computes " .. #list)
+				-- AND THE RANGES, not only the count. The compositions call
+				-- `street_plan.attach` without a width, so the squares come
+				-- from `avenue.WIDTH`; the seam's identity argument rests on
+				-- the width the capital DECLARES. They are the same number
+				-- today and this is what says so -- a capital that ever
+				-- declared another carriageway would get squares of the wrong
+				-- size, and a count test would not see it.
+				for index = 1, #list do
+					local mine, theirs = list[index], attached[index]
+					assert(mine.low == theirs.low and mine.high == theirs.high,
+						key .. ": the run " .. id .. " carries the square " ..
+						theirs.low .. ".." .. theirs.high ..
+						" and the plan computes " .. mine.low .. ".." ..
+						mine.high .. " at the declared width " ..
+						source.overlay.width)
+					assert(#mine.members == #theirs.members, key ..
+						": the run " .. id .. " carries " .. #theirs.members ..
+						" members of the square at " .. theirs.low ..
+						" and the plan computes " .. #mine.members)
+				end
 			end
 			assert(records == computed, key .. ": the composition attached " ..
 				records .. " junction records and the plan computes " ..
@@ -637,7 +657,166 @@ return function(repo)
 			common.hex(common.new_sha256()(table.concat(rows, "\n"))))
 	end
 
-	assert(cases == 8, "a street case was lost")
+	----------------------------------------------------------------------
+	-- 9. WHERE THE PLATEAU SITS, AND HOW FAR EACH RUN LOOKS TO AGREE ON IT.
+	--
+	-- Sections 3 and 4 hold the plateau FLAT and hold the two runs to the same
+	-- y. Neither notices two things that would break the rule in the built
+	-- world, and the independent review of 2026-09-16 mutated both to prove it:
+	--
+	--   * the floor applied ONE COLUMN OFF-CENTRE. On a monotone slope the
+	--     highest column of a square is its own end, so the envelope puts the
+	--     level back where it belongs and nothing moves.
+	--   * the other run's window CLIPPED TO THE SQUARE. The research note says
+	--     that clamp is exactly what seed 999999999 needed at Highcourt's
+	--     north-west ring corner, and the KAT was green without it.
+	--
+	-- One profile catches both, and it is built to: the ground is FLAT under
+	-- the square, and a RIDGE stands on the crossing run's axis eighteen columns
+	-- away -- inside `reach`, far outside the square. The plateau's height can
+	-- then only come from the other run's envelope reaching over that distance,
+	-- so a clipped window computes a different J and the two runs disagree; and
+	-- the level over the square comes from the FLOOR and not from the ground
+	-- under it, so a floor one column off leaves the square's first column a
+	-- node low.
+	----------------------------------------------------------------------
+	local RIDGE_FROM, RIDGE_TO, RIDGE_Y, PLAIN_Y = 20, 30, 60, 40
+	local function ridge(x, z)
+		-- The ridge stands on the crossing run's axis (along z), well beyond
+		-- the junction square, and the rest of the world is flat.
+		if z >= RIDGE_FROM and z <= RIDGE_TO then return RIDGE_Y end
+		return PLAIN_Y
+	end
+	do
+		local plan = street_plan.junctions(CROSS_RUNS, avenue.WIDTH)
+		local palette = handles.orc
+		local levels, plateau_y, square = {}, nil, nil
+		for _, spec in ipairs(CROSS_RUNS) do
+			local piece = run_of(palette, spec, ridge, nil, plan[spec.id])
+			assert(#piece.plateaus == 1, spec.id .. " built " ..
+				#piece.plateaus .. " plateaus, not one")
+			if plateau_y == nil then
+				plateau_y = piece.plateaus[1].y
+				square = plan[spec.id][1]
+			end
+			-- THE TWO RUNS AGREE, and only the full window makes them: the
+			-- ridge is 18 columns past the square, so a run that read the other
+			-- one's ground over the square alone would answer PLAIN_Y here and
+			-- the run that owns the ridge would answer more.
+			assert(piece.plateaus[1].y == plateau_y, spec.id ..
+				" levels the shared square at " .. piece.plateaus[1].y ..
+				" and the other run at " .. plateau_y ..
+				": the two windows differ")
+			levels[spec.id] = walking(palette, spec, piece)
+		end
+		-- The ridge really does reach, or the case proves nothing.
+		local reached = RIDGE_Y - (RIDGE_FROM - HALF)
+		assert(plateau_y > PLAIN_Y, "the ridge did not lift the plateau (" ..
+			plateau_y .. " against the flat " .. PLAIN_Y .. ")")
+		assert(plateau_y == reached, "the plateau stands at " .. plateau_y ..
+			", not at the ridge's own reach " .. reached)
+		-- THE PLATEAU IS THE SQUARE AND NOT A COLUMN BESIDE IT: every column of
+		-- the square walks at `plateau_y`, and the two columns just outside it
+		-- walk strictly lower, because the ground there is flat and the only
+		-- thing lifting anything is the floor.
+		for _, spec in ipairs(CROSS_RUNS) do
+			local level = levels[spec.id]
+			for p = square.low, square.high do
+				local low, high = flat_row(level, p)
+				assert(low == plateau_y and high == plateau_y, spec.id ..
+					" walks the square column " .. p .. " at " ..
+					tostring(low) .. ".." .. tostring(high) ..
+					", not at the plateau " .. plateau_y)
+			end
+			-- ON THE FLAT RUN ONLY. The ridge stands on the OTHER run's own
+			-- axis, so that run legitimately climbs towards it and its columns
+			-- beyond the square are higher than the plateau by their own
+			-- ground. The run across the flat has nothing but the floor to
+			-- lift it, so its square is exactly `width` columns long and the
+			-- two beside it are a node lower -- which is what a floor applied
+			-- one column off-centre breaks.
+			if spec.axis == "x" then
+				for _, outside in ipairs({square.low - 1, square.high + 1}) do
+					local _, here = flat_row(level, outside)
+					assert(here ~= nil, spec.id .. " has no road at " .. outside)
+					assert(here == plateau_y - 1, spec.id ..
+						" walks the column " .. outside ..
+						" -- one outside its square " .. square.low .. ".." ..
+						square.high .. " -- at " .. here .. " and not at " ..
+						(plateau_y - 1) .. ": the floor is not on the square")
+				end
+			end
+		end
+		cases = cases + 1
+		say("street_plateau_window", plateau_y, square.low, square.high,
+			RIDGE_FROM - HALF)
+	end
+
+	----------------------------------------------------------------------
+	-- 10. THE PILLAR RHYTHM, AND THE STANDARD THAT STANDS ON ONE.
+	--
+	-- `M.PIER` is the rhythm of the pillars under a bridge and a viaduct, and
+	-- it is deliberately the lamp rhythm as well, "so a standard on a bridge or
+	-- a viaduct stands on a pier rather than beside one" (`avenue.lua`). The
+	-- review doubled `M.PIER` to 16 and no section noticed: half the standards
+	-- on Lethariel's own bridge would then be three courses of post on a plank
+	-- with open water under it.
+	--
+	-- So the property is the sentence itself -- every standard over water or
+	-- over air stands on a pillar -- plus the rhythm read off the cells.
+	----------------------------------------------------------------------
+	do
+		local checked, standards = 0, 0
+		for _, race in ipairs(RACES) do
+			local palette = handles[race]
+			local spec = {id = "rhythm", axis = "x", at = 0,
+				from = -48, to = 48}
+			local piece = run_of(palette, spec, lake, lake_wet)
+			local PIER = palette.maybe("signature") or
+				palette.node("wall_accent")
+			local PLANK = palette.node("floor")
+			local written = {}
+			local pier_at = {}
+			for _, cell in ipairs(piece.cells) do
+				written[cell.x .. ":" .. cell.y .. ":" .. cell.z] = cell.name
+				if cell.name == PIER and math.abs(cell.z) == VERGE then
+					pier_at[cell.x] = true
+				end
+			end
+			-- Every pillar position is on the rhythm, and every position on the
+			-- rhythm inside the span carries one.
+			for p = WET_FROM, WET_TO do
+				local wanted = ((p - spec.from) % avenue.PIER == 0)
+				assert((pier_at[p] and true or false) == wanted, race ..
+					": the column " .. p .. " " ..
+					(pier_at[p] and "carries" or "carries no") ..
+					" pillar, and the rhythm of " .. avenue.PIER ..
+					" says it should " .. (wanted and "" or "not ") .. "have one")
+				checked = checked + 1
+			end
+			-- AND EVERY STANDARD OVER THE WATER STANDS ON ONE.
+			for _, lamp in ipairs(piece.lamps) do
+				if lamp.x >= WET_FROM and lamp.x <= WET_TO then
+					local foot = lamp.y - 3
+					assert(written[lamp.x .. ":" .. foot .. ":" .. lamp.z] ==
+						PLANK, race .. ": a standard at " .. lamp.x ..
+						" does not foot on the plank walk")
+					assert(written[lamp.x .. ":" .. (foot - 1) .. ":" ..
+						lamp.z] == PIER, race .. ": the standard at " ..
+						lamp.x .. " has no pillar under its plank -- the pier " ..
+						"rhythm (" .. avenue.PIER .. ") has left the lamp " ..
+						"rhythm (" .. avenue.LAMP_SPACING .. ")")
+					standards = standards + 1
+				end
+			end
+		end
+		assert(standards > 0, "no standard of this bridge is over the water")
+		cases = cases + 1
+		say("street_pier_rhythm", avenue.PIER, avenue.LAMP_SPACING, checked,
+			standards)
+	end
+
+	assert(cases == 10, "a street case was lost")
 	say("street_cases", cases, "width", avenue.WIDTH, "min_clear", CLEAR,
 		"lift", avenue.LIFT, "pier", avenue.PIER)
 	return table.concat(report)
