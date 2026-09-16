@@ -182,17 +182,13 @@ if [[ "$mode" == "full" ]]; then
 		cut -d= -f2)"
 	printf '%s  seed=%s avenue_road_cells=%s\n' "$digest" "$seed" "$road_cells" \
 		>"$output/avenue-digest.txt"
-	# The expectation lives with the lane that last CHANGED the road, so a
-	# package that moves it says so by moving this path and recording why.
-	# Three of round 3's lanes moved it and this is the last of them: the
-	# terrace lane gave every capital riser a band of one-block ground steps,
-	# which moves the ground the avenue is laid on; the route lane made a run
-	# ramp to route grade under a low bridge deck; and this lane ran the four
-	# avenues out to 261 so the road rides through the curtain's gate tunnel,
-	# and put the curtain's own vocabulary into the overlay's palette, so the
-	# gatehouse masonry inside the avenue's dump region is digested with the
-	# road it lets through.
-	expected_file="$repo/tools/wp13/evidence/20260915-highcourt-fill/highcourt/avenue-digest-$seed.txt"
+	# ONE expectation per seed, the same file run_capital.sh reads for every
+	# capital. Until wave 3 this runner read a second copy under
+	# 20260915-highcourt-fill/, so a lane that re-froze one path left the
+	# other stale and the gate went red on a clean pass (the polish and
+	# street lanes of 2026-09-16 both hit it). The copy is gone; a package
+	# that moves the road re-freezes this path and records why.
+	expected_file="$repo/tools/wp13/evidence/20260915-capital-terrain/highcourt/avenue-digest-$seed.txt"
 	if [[ -f "$expected_file" ]]; then
 		expected="$(awk 'NR==1 {print $1}' "$expected_file")"
 		if [[ "$digest" != "$expected" ]]; then
