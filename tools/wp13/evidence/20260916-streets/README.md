@@ -22,8 +22,10 @@ water in every capital and every race palette.
 | `mutation.py`, `mutation.txt` | **the KAT's own proof**: each of the five rulings broken in `avenue.lua` on purpose, and the section of `street_kat.lua` that goes red for it | `python3 tools/wp13/evidence/20260916-streets/mutation.py .` |
 | `overlay_bench.lua`, `bench.txt` | what the new rules cost: every street run of every capital over one synthetic terraced surface, timed, on both trees | `luajit tools/wp13/evidence/20260916-streets/overlay_bench.lua . after` and the same against a `main` checkout |
 | `engine/<key>-<mode>-<seed>/` | the engine passes: the runner's own stdout, the probe lines, the NPC placement lines and the read-back overlay digests | `WP13_CAPITAL_PORT=31010 tools/wp13/run_capital.sh <out> <key> <mode> <seed>` |
-| `identity.txt` | the files this branch changed against `f37a0c5b`, the six start identities against `main`'s own, and Highcourt's blueprint digests | `identity.sh` |
+| `identity.txt`, `identity.sh` | the files this branch changed against `f37a0c5b`, the six start identities against `main`'s own, Highcourt's blueprint digests, the re-frozen digests and every settlement identity the integration fixture prints | `bash .../identity.sh . /path/to/main` |
 | `static.sh`, `static.txt` | parser, SETGLOBAL, the five plain-5.1 sweeps and the fresh-server audit | `bash tools/wp13/evidence/20260916-streets/static.sh <repo>` |
+| `lane-routes.txt` | the route-crossing gate on all nine seeds: `illegal=0 walk_faults=0 cross_faults=0 lamp_faults=0` everywhere | `luajit tools/wp13/lane_routes.lua . <seed> out.tsv` |
+| `refreeze.sh` | what re-froze the seventeen built-geometry digests, from the engine passes and from nothing else | `bash tools/wp13/evidence/20260916-streets/refreeze.sh . <engine root>` |
 | `street_dump.lua`, `renders.sh`, `renders/` | the three pictures playtest 5 asked for, before and after | `bash tools/wp13/evidence/20260916-streets/renders.sh /path/to/main` |
 
 ## The headline numbers
