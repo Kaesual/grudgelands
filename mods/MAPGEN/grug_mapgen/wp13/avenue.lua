@@ -722,7 +722,17 @@ local function loader(directory)
 					-- exactly when it has `MIN_CLEAR` blocks of air -- the same
 					-- threshold the carriageway is held to -- and a verge that
 					-- has not got it carries its standard over the deck instead.
-					if is_lamp and verge_deck ~= nil and top < verge_deck and
+					-- Only on the GROUND. A spanned position's verge is a plank
+					-- walk with a rail and piers under it, and lifting one
+					-- standard's stretch of it onto a route deck would put a
+					-- step in the walk; a position under a deck it cannot clear
+					-- has been raised onto that deck by the crossing rule long
+					-- before it can be spanned, so the two cases do not meet in
+					-- the six capitals -- which is measured rather than assumed
+					-- (`street_geometry.lua`, junction and crossing rows clean
+					-- on nine seeds).
+					if is_lamp and not spanned_at[p] and verge_deck ~= nil and
+							top < verge_deck and
 							top > verge_deck - M.MIN_CLEAR - 2 then
 						top = verge_deck
 					end
