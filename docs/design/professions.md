@@ -193,6 +193,13 @@ in the game still comes from a crafter or a boss.
   Woodcarver product (`items_crafting.md` §3.6a, §9) and the quiver stays
   Leatherworker, so there is nothing left for a Bowyer to own. The
   Leatherworker is not split.
+  *A settlement shop called a bowyer is not this.* Since 2026-09-15 a
+  settlement may hold one of twelve **profession shop vendors** — butcher,
+  smith, fishmonger, baker, tailor, mason, brewer, bowyer, herbalist,
+  armourer, tanner, embalmer (`settlements.md`, "Settlement NPCs and guard
+  targeting"). Those are shopkeepers with a shelf of their trade; nothing is
+  taught, levelled or unlocked at one, and the six crafting professions of §2
+  are unaffected by which shops a city has.
 - **Enchanter as a separate profession is dropped too**: enchanting is
   what every profession does to its own refined items
   (`items_crafting.md` §6b), not a seventh profession that would take a

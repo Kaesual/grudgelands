@@ -182,8 +182,33 @@ the goal-level view.
   only when somebody goes there. Its 71 NPCs arrive with the place rather
   than at server start, and its two royal traders stand on the blueprint's
   own sockets. The six starts are byte-identical, engine digests included
-  (`docs/research/wp13-seam-generalisation.md`). The other three districts,
-  the remaining five capitals and the king content are still open.
+  (`docs/research/wp13-seam-generalisation.md`).
+  **All six capitals stand** since 2026-09-16; every record named below is a
+  note in `docs/research/`. Highcourt's other three
+  districts and the seeded quadrant permutation landed first
+  (`wp13-highcourt-districts.md`), then its wall ring, fill and trades
+  (`wp13-highcourt-fill.md`); the wave-2 lanes added Dur Brannoc (dwarf),
+  Gor Drazhak (orc), Lethariel (elf), Kezamba (troll) and Nhal Veyr
+  (undead), each with four districts of nine plots plus four pieces of open
+  fill ground, its own envelope edge — a stone curtain for the four walled
+  capitals, a stake palisade on an earth rampart for Gor Drazhak, a planted
+  belt with thresholds for the two open ones — and its own trades
+  (`wp13-dur-brannoc.md`, `wp13-gor_drazhak.md`, `wp13-lethariel.md`,
+  `wp13-kezamba.md`, `wp13-nhal_veyr.md`). Alongside them: the terrace step
+  bands and per-race capital ground (`wp13-capital-terrain.md`), the one
+  material-named weapon ladder of `items_crafting.md` §3.0.3
+  (`wp13-weapon-ladder.md`), the NPC work/activity vocabulary, the twelve
+  profession shop vendors and the 80/20 walker split (`wp13-npc-work.md`,
+  `wp13-npc-vocabulary.md`), and the user's routes-end-at-the-gate ruling
+  (`wp13-route-gates.md`). **Still open in WP13:** the user's GUI playtest
+  of the six capitals; the whole remainder of the contract's 100-anchor POI
+  roster (`wp13-capitals-pois-contract.md` §2.5) — 12 villages, two of them
+  with a shipwright's plot and display boat, 24 outposts, 12 bandit camps, 6
+  mining camps, 4 mirefolk camps, 16 clash anchors, 2 dragon arenas, 2 apex
+  camps and 10 rare-route pads, where the mirefolk camps, clash anchors and
+  dragon arenas are WP13 dressing only and WP42/WP23 own their encounters;
+  and the six kings with their royal guards — no king entity exists yet, only
+  the `king` socket in every capital core.
 - [x] WP33: gathering plants, signature woods and cultural sources on final
   zone/race-region ownership; accepted with WP40 R7 on 2026-09-02.
 - [ ] WP34: deep spawn pressure, corrected depth-level curve, camp-only

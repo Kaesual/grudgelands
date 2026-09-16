@@ -413,12 +413,15 @@ The ordinary contested deep rule resumes at y = −701 even below a capital.
   `biomes_mobs.md` §5; elven capital = treehouses). Mechanical race perks hang
   on individual vendors (§7).
 
-### Current WP18/WP36 capital anchors
+### Historical: the WP18/WP36 capital anchors (retired 2026-09-13)
 
-The running map still places the six placeholder platforms at x = 0/±550,
-z = ±900 and uses them as spawn points. Its following carve guarantee is an
-implementation record until WP40/WP13 replace the platforms; it does not
-constrain the new city-zone geometry.
+**None of this is running code any more.** WP40 R7 replaced it: the six
+capitals sit in their own named zones, spawns come from
+`grug_core.start_position`, and `grug_mapgen/structures.lua` -- the file that
+built the placeholder platforms -- no longer exists. The block below is kept
+because the biome-guarantee argument is worth re-reading before anyone
+re-proposes climate tuning, not because it describes the map. It placed six
+platforms at x = 0/±550, z = ±900 and used them as spawn points.
 
 **"In the race's own biome" is a guarantee, not a hope (decided
 2026-08-08).** It used to be neither enforced nor true: on a random
@@ -468,10 +471,12 @@ capital meadows, undead and troll savanna. What ships now:
   case, and the cost would be six more registrations plus their deco
   lists.
 
-The shipped platform watch remains level 60 and continues to use its guard
-banner until the real cities land. The target king/royal-guard binding, reset,
-death and group-respawn rules are decided in `world_zones.md` §12 and replace
-the generic future-bodyguard placeholder below.
+The capital watch remains level 60 and still uses its guard banner; the six
+WP13 cities stand around it since 2026-09-16 (`settlements.md`, "Capitals in
+the world"). The king/royal-guard binding, reset, death and group-respawn
+rules are decided in `world_zones.md` §12 and replace the generic
+future-bodyguard placeholder below; **no king entity is implemented yet** --
+every capital core authors a `king` socket and nothing stands on it.
 
 ## 4. Outposts & patrols
 
@@ -987,9 +992,10 @@ local compositions need not mirror.
 - Dedicated fort, camp and clash-point slots in contested war-front zones.
 - Dragon lairs only at the contested level-60 ocean endpoints (§4b).
 
-WP18/WP6 currently provide 24 ring-derived outpost anchors and 12 bandit
-camps. These stay live until WP40 proves and installs the replacement zone
-budget; WP13 then turns the reserved slots into real structures.
+The 24 outpost anchors and 12 bandit camps are live, and since WP40 R7 they
+are no longer ring-derived: R7 authenticates all 24 anchors from the zone
+graph (`grug_mobs/camps.lua`, `grug_core.outpost_at`). WP13 still owes the
+real structures on those reserved slots.
 
 Life measures (cheap on a voxel budget): named NPCs with one-liner barks,
 visible patrols, light/smoke details and a quest board per village. Ordinary

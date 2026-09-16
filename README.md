@@ -218,7 +218,7 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
 
-*Last updated: 2026-09-15. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-09-16. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
 
 **Shipped (19 of 46 work packages):** WP0–WP4, WP6, WP7, WP15, WP18,
@@ -240,47 +240,54 @@ mount and deep-content decisions live in [the crafting/mount TODO](TODO-design-c
 and [the depth TODO](TODO-design-depth.md); the [boat contract](docs/design/boats.md)
 and [PvP-death XP exemption](docs/design/progression.md) are already decided.
 
-**In progress:** WP13 has built **all six start settlements**. They share one
-reusable building library with per-race palettes -- small dense houses with
-doors, pane windows, stair roofs, furnished interiors and exterior dressing
--- and each start is a different settlement out of it: a dwarf craft village
-in a pine clearing, a human farming hamlet on a green, an elf glade under
-columnar silverwoods, an undead hollow round two walled burial grounds, an
-orc war camp behind a stake palisade, and a troll stilt village on
-boardwalks over a basin. The package also adds a server-side atmosphere
-layer (shadows, bloom, saturation, waving) with per-zone fog, sky and light,
-seven vendored minetest_game building mods, a curated 333-node decorative kit
-from castle_masonry, cottages, darkage and xdecor-libre, and a textured
-isometric renderer used to review buildings before playtests. The last four
-starts were built in parallel lanes, merged onto one branch and given one
-combined review-fix round; native checks, interpreter parity and independent
-reviews are green. Two round-A playtest rulings also shipped here: the six
-start areas are emerged once at server start (6/6 in 42.6 s on a fresh
-world) and no hostile mob spawns inside their protected footprints.
-A ninth increment adds the **capital parts library**: eighteen more
-generators -- a basilica king's hall with a throne room, a chainable curtain
-wall with corner towers and gatehouses for the three walled races, a market
-square, colonnade, temple, barracks, scriptorium, granary, stable and statue,
-and hedge, grove, stilt and water edge pieces for the three open ones -- plus
-the named standing positions (king, vendors, guard posts, patrol loops) a
-later NPC package will place characters into. None of it is wired into a
-settlement yet. A tenth increment composes the first capital out of them:
-**Highcourt**, the human city -- a 96 x 96 civic core with the king's hall on
-its podium, four gate houses, a market square, colonnades, a chapel with a
-belfry, a service court with the two royal traders and a travel plaza held
-empty for the waypoint package, a market and professions district of nine
-plots that level themselves onto terraced ground, and gate avenues computed
-from the terrain rather than authored as cells. An eleventh increment puts
-that city **into the world**: the settlement seam now lets one place own many
-buildings of different kinds, levels each district plot onto the ground under
-its own middle, lays the avenues down the terraces and across the river as the
-map is generated, and builds the whole capital only when somebody actually
-goes there. Highcourt's seventy-one inhabitants -- gate guards, six separate
-watch patrols, market villagers, the two royal traders -- arrive with the place
-rather than at server start. The six starts come out byte-for-byte unchanged.
-**Every start still awaits the user's GUI playtest**, Highcourt has not been
-walked either, and the remaining capitals, villages,
-outposts, camps and functional settlement services remain later work.
+**In progress:** WP13 has built **all six start settlements and all six
+capitals**. The starts share one reusable building library with per-race
+palettes -- small dense houses with doors, pane windows, stair roofs,
+furnished interiors and exterior dressing -- and each is a different
+settlement out of it: a dwarf craft village in a pine clearing, a human
+farming hamlet on a green, an elf glade under columnar silverwoods, an undead
+hollow round two walled burial grounds, an orc war camp behind a stake
+palisade, and a troll stilt village on boardwalks over a basin. The package
+also adds a server-side atmosphere layer (shadows, bloom, saturation, waving)
+with per-zone fog, sky and light, seven vendored minetest_game building mods,
+a curated 333-node decorative kit from castle_masonry, cottages, darkage and
+xdecor-libre, and a textured isometric renderer used to review buildings
+before playtests. The six start areas are emerged once at server start and no
+hostile mob spawns inside their protected footprints.
+
+The capitals were built out of the same library plus eighteen capital parts --
+a basilica king's hall with a throne room, curtain wall, corner tower and
+gatehouse, market square, colonnade, temple, barracks, scriptorium, granary,
+stable, statue, and hedge, grove, stilt and water edge pieces. **Highcourt**
+(human) was the pilot and put the seam in place: a settlement owns several
+blueprints, a district plot levels itself onto the ground under its own
+reference column, the avenues and the city wall are computed per mapchunk from
+the ground the map actually has, and a capital's buildings are constructed only
+when somebody goes there. Then came **Dur Brannoc** (dwarf, stair streets down
+forty-four nodes of hillside), **Gor Drazhak** (orc, a stake palisade on an
+earth rampart and a sunken fighting arena), **Lethariel** (elf, a planted belt
+instead of a wall and a lore precinct on a lake), **Kezamba** (troll, boardwalks
+on basalt piers round a cenote) and **Nhal Veyr** (undead, grave fields and a
+walk-in mausoleum). Each has four districts of nine plots plus four pieces of
+open ground -- a field, a pasture, a yard, a green -- and which district stands
+in which quarter is decided by the world seed. Their people stay put rather
+than mill about: most residents keep to one spot, one in four works a craft
+with its own animation (smith, fisher, farmer, miner, brewer, carver, mourner,
+sparring pair, forager), and only a minority walk a short ring -- in Highcourt,
+36 workplaces and 22 walkers among 144 residents. A district reads as lived in
+because a butcher's house has a butcher in it -- twelve profession shops in
+all. WP13's round-2 merge also shipped the **one weapon ladder**: vendor gear
+and the base craft ladder are now the same material-named items (Bronze Sword,
+Silkweave Cowl), merged with `default`'s tool ladder.
+
+**Every start and every capital still awaits the user's GUI playtest**, and
+the rest of WP13's 100-anchor roster is unbuilt: twelve villages (two of them
+with a shipwright's plot), 24 outposts, 12 bandit camps, 6 mining camps, 4
+mirefolk camps, 16 clash anchors, 2 dragon arenas, 2 apex camps and 10
+rare-route pads. The mirefolk camps, clash anchors and dragon arenas are
+dressing only here -- WP42 and WP23 own what happens in them -- and the apex
+camps' twelve renewable sockets are WP34's. The six kings and their royal
+guards are unbuilt too.
 WP5, WP26, WP44, WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind
 shipped prerequisites. WP34 still needs structures and economy.
 
