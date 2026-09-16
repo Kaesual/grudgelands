@@ -154,8 +154,8 @@ the goal-level view.
   all three dependencies are shipped and the executable card is
   [docs/research/wp5-task-card.md](docs/research/wp5-task-card.md). WP10 is
   design-unblocked (A1/A3/A4/A5/E21 decided 2026-08-13, incl. the revised
-  food-restore buff model and the buff/debuff icon framework); it still
-  follows WP26/WP33/WP43/WP44.
+  food-restore buff model and the buff/debuff icon framework); with WP26 ticked
+  above it now follows WP44 alone, since WP33 and WP43 are shipped too.
 - [ ] **WP13 — in progress:** final starts, capitals, settlements, camps,
   kings/guards and both all-six-gem apex camps on shipped WP40 geometry and
   WP43 materials. **All six start settlements are built** (2026-09-14) on one
