@@ -574,11 +574,23 @@ return function(repo)
 	-- seed and is the same on every world. Two things are pinned: how many
 	-- junctions each capital has, and every PARALLEL OVERLAP -- two streets
 	-- running side by side rather than crossing, which is not a junction and
-	-- which `wp13/street_plan.lua` refuses to level. Lethariel has six of
-	-- those, where a district lane at +-98 runs alongside the ring street at
-	-- +-96 for up to 97 columns and three of the five lanes of each are the
-	-- same columns; that is a composition defect and not a street-geometry one,
-	-- and it is pinned here so it cannot spread quietly.
+	-- which `wp13/street_plan.lua` refuses to level.
+	--
+	-- THE INVENTORY IS TWELVE BUTT JOINTS AND NOTHING ELSE since round 4
+	-- (2026-09-16). Wave 3 pinned twenty: fourteen butt joints (two runs of one
+	-- continuous lane sharing exactly one column, which need nothing) and six
+	-- SIDE-BY-SIDE stretches, all Lethariel's, where a district lane at +-98 ran
+	-- alongside the ring street at +-96 for up to 97 columns. The user walked
+	-- into one of those in playtest 6 -- "two streets overlay each other with a
+	-- 2-node offset across the walking direction; the last one written wins and
+	-- artefacts of the overwritten street remain" -- and they were the only
+	-- unwalkable steps left in the six capitals. Each of those lanes now stands
+	-- on the ring's OWN centre line and starts one column past the ring run it
+	-- continues, so the two are collinear, share no column and are pinned to one
+	-- y by the ring corner's plateau. Lethariel's own two lane/lane butt joints
+	-- went with them: the ring street now stands between the two halves that
+	-- used to meet at 0. A capital that grows a side-by-side pair again turns
+	-- this row red rather than growing one quietly.
 	----------------------------------------------------------------------
 	do
 		local KEYS = {"highcourt", "dur_brannoc", "gor_drazhak", "lethariel",

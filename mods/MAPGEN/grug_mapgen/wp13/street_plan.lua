@@ -32,23 +32,25 @@
 -- returned separately as `overlaps`, with the rectangle they share, and
 -- `tools/wp13/street_kat.lua` pins the inventory.
 --
--- MEASURED, on all six capitals (tools/wp13/street_geometry.lua): there are
--- twenty of them, and they are two different things.
+-- MEASURED, on all six capitals (tools/wp13/street_geometry.lua): since round 4
+-- (2026-09-16) there are TWELVE, and every one of them is the same thing.
 --
---   * FOURTEEN BUTT JOINTS -- one continuous lane authored as two runs meeting
---     end to end, sharing exactly one column (Dur Brannoc, Gor Drazhak, Nhal
---     Veyr, four each, and two of Lethariel's -- twelve plus two). Those need
---     nothing: the road's
---     level at a column depends on the ground within `reach` of it, both runs
---     read that same ground, and both therefore walk the shared column at the
---     same height.
---   * SIX SIDE-BY-SIDE STRETCHES, all of them Lethariel's, where a district
---     lane at +-98 runs alongside the ring street at +-96 for up to 97 columns
---     and three of the five lanes of each are the same columns. That is a
---     composition defect and not a street-geometry one -- two streets two nodes
---     apart are one street -- and moving a lane's centre line moves the plots
---     that stand along it, which belongs to the lane that owns them. It is
---     measured and reported rather than papered over here.
+--   * TWELVE BUTT JOINTS -- one continuous lane authored as two runs meeting
+--     end to end, sharing exactly one column (Dur Brannoc, Gor Drazhak and Nhal
+--     Veyr, four each). Those need nothing: the road's level at a column
+--     depends on the ground within `reach` of it, both runs read that same
+--     ground, and both therefore walk the shared column at the same height.
+--   * NO SIDE-BY-SIDE STRETCH. Wave 3 measured six of them, all Lethariel's,
+--     where a district lane at +-98 ran alongside the ring street at +-96 for
+--     up to 97 columns and three of the five lanes of each were the same
+--     columns -- which the user then walked into ("two streets overlay each
+--     other with a 2-node offset across the walking direction", playtest 6).
+--     Round 4 put each of those lanes on the RING'S OWN centre line, starting
+--     one column past the ring run it continues, so the pair is collinear,
+--     shares nothing, and is pinned to one y by the ring corner's own plateau
+--     (`wp13/lethariel_quadrants.lua`, THE DISTRICT LANES). Lethariel's two
+--     lane/lane butt joints went with them: the ring now stands between the
+--     two halves that used to meet at 0.
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
