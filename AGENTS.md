@@ -633,9 +633,15 @@ Details + line numbers in [docs/research/](docs/research/).
     their canonical derivative aliases. Upstream
     `default:steel_ingot` means smelted iron and therefore migrates to
     `grug_materials:iron_bar`, not the canonical Steel Bar. WP26 owns all
-    furnace/alloy/storage recipes, WP10 owns gem processing, and WP29 owns
-    the final gear catalog; WP43 deliberately registers none of those recipe
-    families.
+    furnace/alloy/storage recipes — **shipped 2026-09-16** as
+    `mods/ITEMS/grug_smelting`: the `grug_smelting:dual_furnace` node pair
+    with two material slots plus fuel, the five single-input smelts, the five
+    alloys and the twelve storage pack/unpack pairs derived from
+    `PROCESSED_MATERIALS`, with `grug_smelting.RECIPES` as the public read
+    surface (the engine cannot see a `dualfurn` recipe, so `grug_traders`'
+    anti-loop audit walks that table instead). WP10 owns gem processing, and
+    WP29 owns the final gear catalog; WP43 deliberately registers none of
+    those recipe families.
 - **Traders/gold** (shipped with WP7; `docs/design/economy.md`,
   `items_crafting.md` §3.8/§8.2, `world.md` §7). **WP7 patterns
   (binding):**
