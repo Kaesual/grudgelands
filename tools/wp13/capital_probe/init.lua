@@ -599,27 +599,37 @@ if overlay then
 	for index = 1, #overlay.names do road_names[overlay.names[index]] = true end
 end
 
-local function dump(name, min_x, max_x, min_y, max_y, min_z, max_z, header)
+-- A dump region is a LIST OF BOXES, not one box. Every region but one is a
+-- single box and is normalised into a one-element list at queue time; the
+-- corner region is four boxes, because the four places two wall runs meet are
+-- the four corners of a 512 envelope and one box around all of them is the
+-- envelope. The rows and the digest run over the boxes in order, so a
+-- multi-box region is one file and one expectation.
+local function dump(name, boxes, header)
 	local file = assert(io.open(worldpath .. "/" .. name, "wb"))
 	file:write("# ", header, "\n")
 	file:write("# anchor ", anchor_x, ",", anchor_y, ",", anchor_z, "\n")
 	local written, ignored = 0, 0
 	local road, road_rows = 0, {}
-	for z = min_z, max_z do
-		for y = min_y, max_y do
-			for x = min_x, max_x do
-				local node = core.get_node({x = x, y = y, z = z})
-				if node.name == "ignore" then
-					ignored = ignored + 1
-				elseif node.name ~= "air" then
-					file:write(x - anchor_x, "\t", y - anchor_y, "\t", z - anchor_z,
-						"\t", node.name, "\t", node.param2 or 0, "\n")
-					written = written + 1
-					if road_names[node.name] then
-						road = road + 1
-						road_rows[#road_rows + 1] = table.concat({x - anchor_x,
-							y - anchor_y, z - anchor_z, node.name,
-							node.param2 or 0}, ":")
+	for index = 1, #boxes do
+		local box = boxes[index]
+		for z = box.min_z, box.max_z do
+			for y = box.min_y, box.max_y do
+				for x = box.min_x, box.max_x do
+					local node = core.get_node({x = x, y = y, z = z})
+					if node.name == "ignore" then
+						ignored = ignored + 1
+					elseif node.name ~= "air" then
+						file:write(x - anchor_x, "\t", y - anchor_y, "\t",
+							z - anchor_z, "\t", node.name, "\t",
+							node.param2 or 0, "\n")
+						written = written + 1
+						if road_names[node.name] then
+							road = road + 1
+							road_rows[#road_rows + 1] = table.concat(
+								{x - anchor_x, y - anchor_y, z - anchor_z,
+									node.name, node.param2 or 0}, ":")
+						end
 					end
 				end
 			end
@@ -698,8 +708,8 @@ local run_dumps
 
 local function dump_done()
 	local spec = dump_queue[dump_index]
-	local written, ignored, road, digest = dump(spec.name, spec.min_x, spec.max_x,
-		spec.min_y, spec.max_y, spec.min_z, spec.max_z, spec.header)
+	local written, ignored, road, digest = dump(spec.name, spec.boxes,
+		spec.header)
 	dump_results[#dump_results + 1] = {label = spec.label, written = written,
 		ignored = ignored, road = road,
 		-- Every dump publishes the digest of the OVERLAY cells it read back out
@@ -776,14 +786,29 @@ local function report_complete()
 	core.request_shutdown("WP13 capital probe complete", false, 0.2)
 end
 
+-- Each BOX of a region is emerged in turn and the region is read once they all
+-- are. A region's boxes are emerged one after another rather than together
+-- because `core.emerge_area` takes one rectangle, and because the four corner
+-- boxes of a capital are 500 nodes apart: one rectangle round them is the whole
+-- envelope and this probe would emerge it to read four turrets.
+local dump_box = 0
 run_dumps = function()
-	dump_index = dump_index + 1
 	local spec = dump_queue[dump_index]
-	if not spec then return report_complete() end
-	core.emerge_area({x = spec.min_x, y = spec.min_y, z = spec.min_z},
-		{x = spec.max_x, y = spec.max_y, z = spec.max_z},
+	if spec == nil or dump_box >= #spec.boxes then
+		dump_index = dump_index + 1
+		spec = dump_queue[dump_index]
+		if not spec then return report_complete() end
+		dump_box = 0
+	end
+	dump_box = dump_box + 1
+	local last = (dump_box >= #spec.boxes)
+	local box = spec.boxes[dump_box]
+	core.emerge_area({x = box.min_x, y = box.min_y, z = box.min_z},
+		{x = box.max_x, y = box.max_y, z = box.max_z},
 		function(_, _, calls_remaining)
-			if calls_remaining == 0 then core.after(0, dump_done) end
+			if calls_remaining == 0 then
+				core.after(0, last and dump_done or run_dumps)
+			end
 		end)
 end
 
@@ -997,6 +1022,62 @@ local function finish()
 			min_x = anchor_x + WALL_AT - 24, max_x = anchor_x + WALL_AT + 10,
 			min_y = gate_low - 6, max_y = gate_high + 26,
 			min_z = anchor_z - 20, max_z = anchor_z + 20}
+	end
+	-- THE FOUR CORNERS OF THE CURTAIN, which is where two wall runs meet and
+	-- until the review of 2026-09-16 nothing in the tree could look.
+	--
+	-- `wall.lua` section 1b reconciles the two decks at a shared corner, and
+	-- every artefact that could have gated it is blind: the rampart region is
+	-- the east curtain either side of the anchor (z -80..80), the gate region is
+	-- the gate (z -20..20), and a corner is at +-256. So a regression in the seam
+	-- -- `plan.corners` dropped from a capital, say -- would leave every
+	-- committed digest and every KAT green. This region is the gate that closes
+	-- that: four boxes, one per corner, in one file with one digest.
+	--
+	-- +-12 of each corner column covers, on every one of the four: the z-run's
+	-- corner TURRET (centred on +-256, eleven columns along and seven across),
+	-- the x-run's last columns up to its own end at +-252 with its own seven
+	-- lanes, and a margin either side. It does not reach the nearest ordinary
+	-- turret at +-192, so what is in it is corner and nothing else.
+	if wall_lines then
+		local CORNER, CORNER_PAD = WALL_AT, 12
+		local corner_boxes = {}
+		for _, sx in ipairs({-1, 1}) do
+			for _, sz in ipairs({-1, 1}) do
+				local cx, cz = sx * CORNER, sz * CORNER
+				local low, high = anchor_y, anchor_y
+				for x = cx - CORNER_PAD, cx + CORNER_PAD, 2 do
+					for z = cz - CORNER_PAD, cz + CORNER_PAD, 2 do
+						local y = grug_zones.terrain_height_at(anchor_x + x,
+							anchor_z + z)
+						if y < low then low = y end
+						if y > high then high = y end
+					end
+				end
+				corner_boxes[#corner_boxes + 1] = {
+					min_x = anchor_x + cx - CORNER_PAD,
+					max_x = anchor_x + cx + CORNER_PAD,
+					min_y = low - 6, max_y = high + 24,
+					min_z = anchor_z + cz - CORNER_PAD,
+					max_z = anchor_z + cz + CORNER_PAD}
+			end
+		end
+		dump_queue[#dump_queue + 1] = {name = (KEY .. "-corner.tsv"),
+			label = "corner",
+			header = profile.label .. " the four curtain corners as built, " ..
+				"+-" .. CORNER_PAD .. " of each corner column, anchor-relative",
+			boxes = corner_boxes}
+	end
+	-- Every region above names ONE box in the fields it always named; the corner
+	-- region names four. Normalising here keeps every author of a region free to
+	-- write the simple form.
+	for index = 1, #dump_queue do
+		local spec = dump_queue[index]
+		if spec.boxes == nil then
+			spec.boxes = {{min_x = spec.min_x, max_x = spec.max_x,
+				min_y = spec.min_y, max_y = spec.max_y,
+				min_z = spec.min_z, max_z = spec.max_z}}
+		end
 	end
 	run_dumps()
 end

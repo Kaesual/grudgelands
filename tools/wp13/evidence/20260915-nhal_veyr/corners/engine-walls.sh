@@ -10,6 +10,12 @@ before="${2:?usage: engine-walls.sh AFTER_TREE BEFORE_TREE OUT_DIR}"
 out="${3:?usage: engine-walls.sh AFTER_TREE BEFORE_TREE OUT_DIR}"
 mkdir -p "$out"
 port=31350
+# A HARNESS THAT PIPES A GATE THROUGH `tail` CANNOT FAIL. `run_capital.sh` exits
+# 1 on a digest drift, and the first version of this function ended the pipeline
+# with `tail -25`, so the status it saw was `tail`'s and every run reported 0.
+# The review of 2026-09-16 hit that; `PIPESTATUS[0]` is what the runner actually
+# returned, and it is carried out of the function and remembered.
+run_status=0
 run() {   # run <tree> <label> <runner...>
 	local tree="$1"; shift
 	local label="$1"; shift
@@ -19,6 +25,10 @@ run() {   # run <tree> <label> <runner...>
 	( cd "$tree" && WP13_CAPITAL_PORT="$port" HIGHCOURT_PORT="$port" \
 		WP13_HIGHCOURT_PORT="$port" nice -n 19 "$@" ) 2>&1 |
 		tail -25
+	local status="${PIPESTATUS[0]}"
+	printf '%s runner exit=%s\n' "$label" "$status"
+	[[ "$status" -eq 0 ]] || run_status=1
+	return "$status"
 }
 for seed in 531802985935182545 8675309; do
 	run "$before" "before-dur_brannoc-$seed" \
@@ -53,3 +63,5 @@ for seed in 531802985935182545 8675309; do
 		fi
 	done
 done
+printf 'runner exit status over every pass: %s\n' "$run_status"
+exit "$run_status"

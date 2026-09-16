@@ -32,10 +32,21 @@ repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd -P)"
 scratch="$(mktemp -d /tmp/grug-nv-mutation.XXXXXX)"
 trap 'rm -rf -- "$scratch"' EXIT
 
+# EVERY BYTE THIS SCRIPT WRITES GOES INTO `$scratch`, THE CONTROL RUN'S STDERR
+# INCLUDED. The first version put the KAT's stderr in the tree it was running
+# against, and the control run runs against the REPOSITORY -- so a script whose
+# own header says it never touches the tree dropped a `kat.err` at the repository
+# root every time anybody ran it, and once that file had been committed (empty,
+# so the working tree still looked clean) nothing noticed. The independent review
+# of 2026-09-16 found it.
 run_kat() {
+	local err="$scratch/$(basename "$1").err"
 	( cd "$1" && luajit -e \
 		"io.write(dofile('tools/wp13/nhal_veyr_kat.lua')('.'))" \
-		>/dev/null 2>"$1/kat.err" )
+		>/dev/null 2>"$err" )
+	local status=$?
+	last_err="$err"
+	return "$status"
 }
 
 mutate() {
@@ -50,7 +61,7 @@ mutate() {
 		printf '%-24s KAT GREEN (exit 0)\n' "$name"
 	else
 		printf '%-24s KAT RED: %s\n' "$name" \
-			"$(head -1 "$tree/kat.err" | cut -c1-160)"
+			"$(head -1 "$last_err" | cut -c1-160)"
 	fi
 }
 

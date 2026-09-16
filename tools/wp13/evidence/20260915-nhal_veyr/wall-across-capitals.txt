@@ -1,3 +1,13 @@
+### PRE-FIX. Taken on `main` at `f5583e13`, BEFORE `wp13/wall.lua` section 1b.
+###
+### This is the measurement the corner finding rests on and it is kept exactly as
+### it was taken: Dur Brannoc's corners step 1,1,0,0 and 0,0,1,0, Highcourt's
+### 2,2,2,2 and 1,0,1,2, and the run ends "10 wall finding(s) on highcourt".
+### RE-RUNNING THE SAME PREDICATE ON THIS TREE GIVES 0 EVERYWHERE, on both
+### capitals and both gate seeds -- `corners/cell-diff.txt` is the after side,
+### read off the built curtains rather than the terrain dumps, and the record's
+### section 3b carries both columns. Do not mistake this file for a current one.
+###
 === dur_brannoc seed 531802985935182545 (port 31340)
 WP13 capital pass PASS: dur_brannoc terrain /tmp/grug-w2-cmp/terrain-dur_brannoc-531802985935182545
 === dur_brannoc seed 8675309 (port 31341)

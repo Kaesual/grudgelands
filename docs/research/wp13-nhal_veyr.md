@@ -242,15 +242,19 @@ cells and nowhere else. It is proved twice.
 whole out of the real WP40 height session, before (`main` at `f5583e13`) against
 after, on both gate seeds:
 
-| capital | seed | changed cell lines | runs that moved | columns that moved |
+| capital | seed | changed cells | columns | worst distance from a corner |
 | --- | --- | --- | --- | --- |
-| Dur Brannoc | 531802985935182545 | 112 | `wall_south`, `wall_north` | -252, -251 |
-| Dur Brannoc | 8675309 | 27 | `wall_south` | 252 |
-| Highcourt | 531802985935182545 | 802 | `wall_south`, `wall_north` | ±250 ... ±252, and 234-249 on `wall_north` |
-| Highcourt | 8675309 | 184 | `wall_south`, `wall_north` | ±252, 249-251 |
+| Dur Brannoc | 531802985935182545 | 112 | 2 + 2 | 1 |
+| Dur Brannoc | 8675309 | 27 | 1 | 0 |
+| Highcourt | 531802985935182545 | 802 | 22 + 5 | 18 |
+| Highcourt | 8675309 | 184 | 4 + 2 | 3 |
 
 Every changed cell is within the look-around window of a corner column of its own
-run's axis; not one lies outside. **Neither capital's z-runs moved at all** —
+run's axis; **the worst is 18 columns of a look-around of 40**, and not one lies
+outside. (`classify.py` used to print the column range instead, which for a run
+that moved at both of its corners reads `-252..252` and looks like a
+five-hundred-column spread; it prints the count, the worst distance and the
+contracted column set now, which is what the question wants. Review note N1.) **Neither capital's z-runs moved at all** —
 `wall_west` and `wall_east` are byte-identical on both seeds, on both capitals —
 which is the clamp's "only ever raises" property showing up as evidence: at every
 one of these corners the z-run already held the maximum and the x-run rose to
@@ -324,7 +328,15 @@ red with "wall_west/wall_south: the walk steps 6 nodes at the corner".
 
 **And nothing else moved.** `identity.sh` on this tree against an export of
 `main` at `f5583e13`: the six start blueprint identities, `library_kat`,
-`blueprint_kat`, `highcourt_kat` and `dur_brannoc_kat` are byte-identical. The two
+`blueprint_kat`, `highcourt_kat` and `dur_brannoc_kat` are byte-identical.
+
+**That equality is NOT evidence about the corners, and is not offered as any.**
+A blueprint identity is frozen over the SPECIFICATION of an overlay -- the runs,
+the carriageway, the palette -- and `wall_plan` is not in it, for the same reason
+section 8 point 7 gives about the turret and gate positions. An identity that
+moved would mean something; an identity that did not move means the seam was not
+asked. What measures the corner change is the cell diff above and the engine
+region section 6 (g) adds. The two
 pilot capitals' own KATs build their walls over synthetic profiles whose corners
 already agreed, so the clamp finds nothing to do there — which is worth knowing,
 because it means those two KATs could not have caught this defect and the
@@ -904,7 +916,7 @@ And one the SEAM caught, which is the one worth the most:
    disagreement to find. `nhal_veyr_kat.lua`'s shouldered two-dimensional ground
    is the first fixture that does, and if the wall module keeps growing shared
    rules, the pilot KATs should grow the same kind of ground.
-1a. **THREE FILES OF OTHER LANES WERE TOUCHED, each with the smallest change
+1a. **FOUR FILES OF OTHER LANES WERE TOUCHED, each with the smallest change
    that answered a finding, and each is reported here because the owner has to
    see it.**
    * `wp13/wall.lua` — Lane R's road module's sibling and the shared wall,
@@ -917,6 +929,12 @@ And one the SEAM caught, which is the one worth the most:
      approaches, out to 261. No existing dump, digest, mode or log line changes.
      The reason is section 6 (d): the probe read the east avenue and only the
      east avenue, and the north one was the broken one.
+   * `tools/wp13/capital_wall.lua` — Dur Brannoc's (`39ac1e28`, `124a4051`).
+     It MODELS the wall rule rather than calling it, which is what lets it ask
+     about ground no capital stands on yet, so section 1b had to be modelled
+     there too or its corner rule would have gone on reporting the unreconciled
+     step. Same clamp, same pairing, and its section 5 changes from a number
+     somebody reads into a gate.
    * `tools/wp13/route_gates.lua` — Lane R's. The four avenues it builds now go
      through the capital's own `M.overlay_run` where the capital exists, and
      through `avenue.run` where it does not. Its question 4 measures exactly the

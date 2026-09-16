@@ -258,7 +258,13 @@ for _, world in ipairs(worlds) do
 			local theirs = raw[world.name][other][corner.other_p]
 			if theirs ~= nil and corner.p >= window.from and
 					corner.p <= window.to then
-				local datum = level[corner.p]
+				-- The RAW envelope on both sides of the max, exactly as the
+				-- module takes it: `raw[...][spec.id]` is the pre-clamp sweep and
+				-- `level` is the running one, and reading the running one would
+				-- make a second corner's datum depend on the order the two were
+				-- visited in. The module keeps its own `raw_level` copy for the
+				-- same reason.
+				local datum = raw[world.name][spec.id][corner.p]
 				if theirs > datum then datum = theirs end
 				if datum > floor[corner.p] then
 					floor[corner.p] = datum

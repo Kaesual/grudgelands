@@ -151,8 +151,8 @@ set -e
 [[ -f "$engine_log" ]] && cp "$engine_log" "$log"
 [[ -f "$log" ]] || { echo "run_capital: no server log" >&2; exit 1; }
 
-for dump in core plot district fill avenue approach rampart gate wall surface \
-		scan grid field; do
+for dump in core plot district fill avenue approach rampart corner gate wall \
+		surface scan grid field; do
 	[[ -f "$world/$key-$dump.tsv" ]] && cp "$world/$key-$dump.tsv" "$output/"
 done
 grep 'GRUG_WP13_CAPITAL' "$log" >"$output/probe.txt" || true
@@ -204,7 +204,13 @@ printf 'exit=%s errors=%s complete=%s log=%s\n' \
 if [[ "$mode" == "full" ]]; then
 	: >"$output/overlay-digests.txt"
 	status_digest=0
-	for label in avenue rampart gate; do
+	# `corner` is the region the wave-2 review asked for: the four places two
+	# wall runs meet, which `wall.lua` section 1b reconciles and which NO OTHER
+	# REGION CONTAINS -- the rampart region is the east curtain either side of
+	# the anchor and the gate region is the gate, so a regression in the corner
+	# seam used to leave every committed digest green. A walled capital publishes
+	# it; an open one does not, and the loop below says so rather than failing.
+	for label in avenue rampart corner gate; do
 		digest="$( { grep -o "${label}_road_digest=[0-9a-f]*" "$log" || true; } |
 			tail -1 | cut -d= -f2)"
 		cells="$( { grep -o "${label}_road_cells=[0-9]*" "$log" || true; } |

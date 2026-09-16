@@ -251,6 +251,16 @@ local function loader(directory)
 		local floor = {}
 		for p = low_end, high_end do floor[p] = base[p] end
 		local level = envelope(floor)
+		-- The RAW envelope, kept: section 1b's symmetry argument is about the
+		-- envelope BEFORE any clamp, and applying one corner then reading the
+		-- next one's datum off the swept result would make the second corner's
+		-- datum depend on the order the two were visited in. It cannot bite here
+		-- -- a run's two corners are 504 columns apart and a raise is capped at
+		-- `reach` = 40 -- but a rule that is sound only because of a number
+		-- somewhere else is a rule the next reader has to re-derive, so both the
+		-- datum and the guard below read this copy and the question does not
+		-- arise. (The review of 2026-09-16, note N5.)
+		local raw_level = envelope(floor)
 
 		-- 1b. THE CORNERS, where two runs' walks meet and would otherwise
 		-- disagree.
@@ -276,8 +286,10 @@ local function loader(directory)
 		-- that sound:
 		--
 		--   * it is SYMMETRIC -- both runs take the same max of the same two raw
-		--     values, so they agree by construction and the corner step is zero
-		--     rather than merely small. (Re-sweeping cannot spoil that: with the
+		--     values (`raw_level`, kept before any clamp, so the order two
+		--     corners of one run are visited in cannot matter), so they agree by
+		--     construction and the corner step is zero rather than merely small.
+		--     (Re-sweeping cannot spoil that: with the
 		--     floor raised to `datum` at column `c`, the swept value at `c` is
 		--     `max(datum, max over r ~= c of floor[r] - |c - r|)`, and that
 		--     second term is at most the RAW envelope at `c`, which is at most
@@ -325,7 +337,7 @@ local function loader(directory)
 			if corner.p >= low_end and corner.p <= high_end then
 				local theirs = foreign_level(corner.axis, corner.at,
 					corner.other_p)
-				local datum = level[corner.p]
+				local datum = raw_level[corner.p]
 				if theirs > datum then datum = theirs end
 				-- A PIECE THAT CANNOT SEE THE CORNER MUST NOT BE CHANGED BY IT,
 				-- or a piece of a run stops being that stretch of the whole run
@@ -336,9 +348,32 @@ local function loader(directory)
 				-- consistent exactly while the raise is no deeper than the
 				-- look-around, and this is the line that says so rather than a
 				-- comment hoping it.
-				if datum - level[corner.p] > reach then
+				--
+				-- AND IT IS A LOAD ERROR RATHER THAN A FAIL-SOFT, WHICH IS
+				-- DELIBERATE. `r7_settlement.lua` calls an overlay bare -- there
+				-- is no `pcall` anywhere on that path -- so this raises a
+				-- ModError during world generation, and the obvious "kinder"
+				-- alternative is to clamp the raise to `reach` and carry on.
+				-- THAT WOULD BE WORSE THAN NO FIX AT ALL. Each run tests the
+				-- raise against ITS OWN envelope, and the two envelopes at a
+				-- corner are exactly the pair that disagree, so a depth that
+				-- trips the test for one run need not trip it for the other: one
+				-- run would refuse and the other apply, the two would no longer
+				-- take the same datum, and the corner step would be the DIFFERENCE
+				-- of two different clamps instead of zero. Symmetry is the whole
+				-- of the rule; anything that can break it asymmetrically has to
+				-- stop the build. If this ever fires, the fix is a wider look-
+				-- around (which costs queries and changes every deck) or a corner
+				-- turret that carries a flight -- not a softer guard here.
+				--
+				-- Headroom, measured (the review of 2026-09-16 and section 3b of
+				-- the record): the deepest raise any capital has asked for is 2
+				-- (Highcourt, both gate seeds), Dur Brannoc asks 1, and Nhal
+				-- Veyr's worst PRE-fix corner split over nine seeds was 9 --
+				-- against a look-around of 40.
+				if datum - raw_level[corner.p] > reach then
 					error("wp13 wall: the corner at " .. corner.p ..
-						" asks for a " .. (datum - level[corner.p]) ..
+						" asks for a " .. (datum - raw_level[corner.p]) ..
 						"-node raise, deeper than the " .. reach ..
 						"-column look-around", 0)
 				end
