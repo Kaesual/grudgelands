@@ -126,58 +126,56 @@ end
 -- Root/slow effects (Frost Nova, Hamstring). Mobs: grug_mobs.root/slow —
 -- restore runs as a reload-safe countdown inside the mob's do_custom (a
 -- core.after timer here once persisted permanently-immobile mobs into the
--- world file). Players (PvP): a staged physics override — stages run in
--- sequence (e.g. root, then slow), a newer effect replaces the running one
--- via the token, and physics overrides reset on rejoin so a relog inside
--- the window cannot stick. MVP caveat: the override clobbers other speed
--- modifiers — fine while none exist.
+-- world file). Players (PvP): named modifiers on the grug_core movement
+-- aggregator (ruling 11, 2026-09-16; skill_trees.md §3.9).
+--
+-- The staged chain this used to be is gone. It wrote `physics_override`
+-- directly, walked its stages on a core.after chain and restored to
+-- `{speed = 1, jump = 1}` after the last one — which clobbered every other
+-- speed modifier in the game, and was the reason the old comment here said
+-- "MVP caveat: the override clobbers other speed modifiers — fine while none
+-- exist". Ruling 11 ends that: each stage is now its own NAMED modifier with
+-- its OWN duration, they overlap freely, and the aggregator adds them per
+-- axis under one clamp (ruling 26: `clamp(1 + Sum, 0.1, 1.5)`).
+--
+-- The shipped numbers are unchanged, and the arithmetic is worth writing out
+-- because the overlap is what preserves them. Frost Nova's stages are
+-- `{speed = 0.1, jump = 0.3, time = 4}` then `{speed = 0.5, time = 3}`:
+--   * stage 1 registers speed -0.9 / jump -0.7 for 4 s,
+--   * stage 2 registers speed -0.5 / jump 0 for 4+3 = 7 s (its duration runs
+--     from NOW to the END of its window, so it overlaps stage 1),
+--   * t < 4 s: speed = clamp(1 - 0.9 - 0.5) = 0.1, jump = 1 - 0.7 = 0.3,
+--   * 4 s <= t < 7 s: speed = 1 - 0.5 = 0.5, jump = 1.
+-- Both are exactly what the old chain wrote, and the clamp floor (0.1) is
+-- the same number the design already used for the root stage.
+--
+-- The old "a stronger snare stage is running; keep it" guard is gone with
+-- the chain, and nothing is lost: a Hamstring cast into a running Frost Nova
+-- now ADDS -0.5 to the sum, which is already clamped at 0.1, so it still
+-- cannot lift the ally's root. Effects overlapping freely is the ruling.
+--
+-- A relog inside the window still clears the effect (physics overrides are
+-- not persisted, and the aggregator drops the record on join) — the accepted
+-- MVP caveat is unchanged, and reconnecting takes longer than any current
+-- effect.
 --
 
-local speed_fx = {} -- player name -> {speed = n, expiry = us} of the active stage
-
--- stages: list of {speed = n, jump = n, time = seconds}; restores to 1/1
--- after the last stage. A new effect replaces the running one UNLESS the
--- currently active stage is stronger (lower speed) — a Hamstring must not
--- lift an ally's Frost Nova root. Chain ownership is tracked by record
--- identity (not a counter), so orphaned core.after chains from before a
--- relog can never hijack a later effect.
-local function apply_player_speed_stages(target, stages)
-	local name = target:get_player_name()
-	local active = speed_fx[name]
-	if active and core.get_us_time() < active.expiry
-			and active.speed < stages[1].speed then
-		return -- a stronger snare stage is running; keep it
+-- stages: list of {speed = n, jump = n, time = seconds} — ABSOLUTE
+-- multipliers, as the design writes them. `id` names the effect; stage i > 1
+-- is registered as `id .. "_" .. i` so the stages of ONE cast overlap each
+-- other but a second cast of the SAME ability refreshes rather than stacks.
+local function apply_player_speed_stages(target, stages, id)
+	local elapsed = 0
+	for index = 1, #stages do
+		local stage = stages[index]
+		local name = index == 1 and id or (id .. "_" .. index)
+		elapsed = elapsed + stage.time
+		grug_core.set_move_modifier(target, name, {
+			speed = stage.speed - 1,
+			jump = (stage.jump or 1) - 1,
+		}, elapsed)
 	end
-	local rec = {}
-	speed_fx[name] = rec
-	local run
-	run = function(i)
-		local p = core.get_player_by_name(name)
-		if not p or speed_fx[name] ~= rec then
-			return -- left, or a newer effect took over
-		end
-		local stage = stages[i]
-		if not stage then
-			p:set_physics_override({speed = 1, jump = 1})
-			speed_fx[name] = nil
-			return
-		end
-		rec.speed = stage.speed
-		rec.expiry = core.get_us_time() + stage.time * 1e6
-		p:set_physics_override({speed = stage.speed, jump = stage.jump or 1})
-		core.after(stage.time, function()
-			run(i + 1)
-		end)
-	end
-	run(1)
 end
-
--- NB physics overrides are not persisted: a relog inside the window
--- clears the root/slow. Accepted MVP caveat — reconnecting takes longer
--- than any current effect (max 7 s), so it is no practical escape.
-core.register_on_leaveplayer(function(player)
-	speed_fx[player:get_player_name()] = nil
-end)
 
 --
 -- Universal authoritative swing (classes.md §2b, combat_stats.md §2).
@@ -391,7 +389,8 @@ grug_abilities.register_ability({
 			if ent then
 				grug_mobs.slow(ent, 5, 0.5)
 			elseif target:get_hp() > 0 then
-				apply_player_speed_stages(target, {{speed = 0.5, time = 5}})
+				apply_player_speed_stages(target, {{speed = 0.5, time = 5}},
+					"hamstring")
 			end
 			burst(tpos, "mobs_blood.png", 4)
 		end
@@ -535,7 +534,7 @@ grug_abilities.register_ability({
 						apply_player_speed_stages(obj, {
 							{speed = 0.1, jump = 0.3, time = root_time},
 							{speed = 0.5, time = slow_time},
-						})
+						}, "frost_nova")
 						burst(obj:get_pos(), "mobs_bubble_particle.png^[multiply:#88ccff", 8)
 					end
 				else

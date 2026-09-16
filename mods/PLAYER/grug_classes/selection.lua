@@ -35,6 +35,11 @@ local function character_complete(player)
 		grug_classes.get_class(player) ~= nil
 end
 
+-- The name this file holds the movement aggregator under. One name, released
+-- exactly (grug_core/movement.lua): holds are counted, so an unbalanced
+-- release can never free a player another holder is still freezing.
+local MOVEMENT_HOLD = "class_creation"
+
 local function stop_velocity(player)
 	local velocity = player:get_velocity()
 	if velocity and (velocity.x ~= 0 or velocity.y ~= 0 or velocity.z ~= 0) then
@@ -46,11 +51,14 @@ local function stop_velocity(player)
 	end
 end
 
+-- The creation freeze is an EXCLUSIVE HOLD on the grug_core movement
+-- aggregator (ruling 11, 2026-09-16; skill_trees.md §3.9), not a physics
+-- write of its own. `hold_movement` is idempotent AND re-asserting: it
+-- compares against the player's live override and rewrites it on a mismatch,
+-- which is exactly the watchdog this function used to be -- some later mod
+-- may write the field after join, and a frozen player must not drift loose.
 local function reassert_player_lock(player)
-	local physics = player:get_physics_override() or {}
-	if physics.speed ~= 0 or physics.jump ~= 0 or physics.gravity ~= 0 then
-		player:set_physics_override({speed = 0, jump = 0, gravity = 0})
-	end
+	grug_core.hold_movement(player, MOVEMENT_HOLD)
 	stop_velocity(player)
 	local armor = copy_table(player:get_armor_groups())
 	if armor.immortal ~= 1 then
@@ -66,16 +74,15 @@ local function lock_player(player)
 	local name = player:get_player_name()
 	local session = creation_sessions[name]
 	if not session then
-		local physics = player:get_physics_override() or {}
 		local armor = player:get_armor_groups() or {}
-		session = {
-			physics = {
-				speed = physics.speed or 1,
-				jump = physics.jump or 1,
-				gravity = physics.gravity or 1,
-			},
-			previous_immortal = armor.immortal,
-		}
+		-- NO PHYSICS SNAPSHOT. The old code captured speed/jump/gravity here
+		-- and wrote them back in release_player, which meant a slow running
+		-- at the moment creation began was captured and restored PERMANENTLY
+		-- after the aggregator believed it had expired -- the precise bug
+		-- class ruling 11 exists to end (skill_trees.md §3.9). Releasing the
+		-- hold hands the player back to whatever the aggregator says at that
+		-- moment, which for a fresh character is the 1/1/1 baseline.
+		session = {previous_immortal = armor.immortal}
 		creation_sessions[name] = session
 	end
 	reassert_player_lock(player)
@@ -88,7 +95,7 @@ local function release_player(player, session)
 		return false
 	end
 	stop_velocity(player)
-	player:set_physics_override(session.physics)
+	grug_core.release_movement(player, MOVEMENT_HOLD)
 	local armor = copy_table(player:get_armor_groups())
 	armor.immortal = session.previous_immortal
 	player:set_armor_groups(armor)
