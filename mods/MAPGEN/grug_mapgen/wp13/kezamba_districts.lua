@@ -266,6 +266,7 @@ local function loader(directory)
 		fill = {
 			{id = "shore_vineyard", yard = {}, order = 11,
 				decorate = vine_terrace,
+				handle = "vine",
 				extra_sockets = function(area)
 					return {work("vine_a", "tend", area.x0 + 2, area.z0 + 2, 0),
 						work("vine_b", "forage", area.x1 - 2, area.z0 + 2, 0),
@@ -376,6 +377,7 @@ local function loader(directory)
 				end},
 			{id = "vine_terraces", yard = {}, order = 12,
 				decorate = vine_terrace,
+				handle = "vine",
 				extra_sockets = function(area)
 					return {work("terrace_a", "tend", area.x0 + 2,
 							area.z0 + 2, 0),

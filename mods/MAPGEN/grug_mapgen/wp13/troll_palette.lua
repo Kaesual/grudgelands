@@ -134,6 +134,36 @@ local function loader()
 		crop = "default:papyrus",
 	}
 
+	-- THE VINE HANDLE: what a raised bed grows.
+	--
+	-- `dressing.planter` is the shared library's raised bed and it fills its
+	-- interior from two fixed ROLES -- `fern` for one cell in three and
+	-- `grass_tuft` for the rest -- which for the troll race are
+	-- `default:fern_1` and `default:grass_1`. So the first version of the crop
+	-- round left `shore_vineyard` and `vine_terraces` growing wild grass in mud
+	-- and the independent review of 2026-09-16 called it "the weaker half of
+	-- the crop answer": the stone was gone, but a plot named a vineyard was a
+	-- weed patch.
+	--
+	-- Rebinding the two roles for THESE TWO PLOTS ONLY is the whole fix, and it
+	-- needs no change to the shared dressing. `default:junglegrass` is the tall
+	-- leafy growth of this race's own jungle, it is what the troll palette
+	-- already binds `undergrowth` to, it is registered by `default`
+	-- (`nodes.lua:1450`) and carries no callback bulk placement skips, and the
+	-- KAT's `tend` and `forage` feature sets already accept it through
+	-- `undergrowth` -- so the two garden sockets keep facing something the
+	-- sockets contract calls a plant.
+	--
+	-- BOTH roles, not one. A bed of a single crop reads as cultivation and a
+	-- mix of two wild species reads as the weed patch the review named; the
+	-- alternation `dressing.planter` does between them is variety a hedgerow
+	-- wants and a vineyard does not. The FIELDS keep papyrus (`M.CROP`), so the
+	-- two kinds of planted ground still read apart from one another.
+	M.VINE = {
+		fern = "default:junglegrass",
+		grass_tuft = "default:junglegrass",
+	}
+
 	-- Both at once, for a civic building that also owns a basin.
 	function M.merged(...)
 		local out = {}
