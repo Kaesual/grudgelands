@@ -478,10 +478,32 @@ function M.run(repo)
 		local tip = relative(sprite(ends.tip[1], ends.tip[2]))
 		local blade = apply(frame, apply(attach, axis))
 		local flat = apply(frame, apply(attach, {0, 0, 1}))
+		-- WHICH SIDE OF THE LONG AXIS the sprite's other half is on: the image's
+		-- up-left direction, the one an axe draws its bit into
+		-- (wield_geometry.lua section 10). Every other family in the ladder is
+		-- symmetric about the long axis and cannot see it; the axe can.
+		local head = apply(frame, apply(attach,
+			attachment.head or {-ROOT_HALF, ROOT_HALF, 0}))
 		row(label, "hand", vec(hand), "hilt-hand", vec(hilt), "grip-hand",
 			vec(grip), "tip-hand", vec(tip), "blade", vec(blade), "flat",
-			vec(flat))
-		return {hilt = hilt, grip = grip, tip = tip, blade = blade, flat = flat}
+			vec(flat), "head", vec(head))
+		return {hilt = hilt, grip = grip, tip = tip, blade = blade,
+			flat = flat, head = head}
+	end
+
+	-- THE DOWNSTROKE. `raise` above turns the arm about bone-local x, and the
+	-- bone's own x is model -x whatever the raise is, so the chop -- the arm
+	-- coming back DOWN -- is an angular velocity along model +x. The velocity
+	-- of anything out along the blade is then that cross the blade, and a tool
+	-- whose working edge LEADS is one whose head direction has a positive
+	-- component along it. This is the whole acceptance for section 10, and it is
+	-- measured rather than eyeballed because the lane cannot open a client.
+	local function leads(measured)
+		local b = measured.blade
+		-- (1,0,0) x b
+		local v = {0, -b[3], b[2]}
+		return measured.head[1] * v[1] + measured.head[2] * v[2] +
+			measured.head[3] * v[3]
 	end
 
 	local hanging = measure("wp13_wield_hanging", wield, 0, 1)
@@ -526,6 +548,127 @@ function M.run(repo)
 	check(raised.tip[2] > 3, "the raised arm's tip is not above the fist")
 
 	--
+	-- C1b. THE AXE POSE (playtest round 5, 2026-09-16: "the axe blades of the
+	-- Dur Brannoc residents point the wrong way")
+	--
+	-- The tool pose above fixes the long axis and leaves the roll about it to
+	-- one Euler triple, and that triple puts the image's up-left half -- where
+	-- both axe families draw the bit -- at model UP. Follow it through the mine
+	-- swing and the poll leads, not the edge. `POSE.edge_down` is the same
+	-- transform rolled 180 degrees about the blade; what has to hold is that
+	-- NOTHING BUT that roll moves (same hilt, same grip, same tip, same blade,
+	-- same size) and that the head then leads the downstroke at both arm angles.
+	local POSE = geometry.POSE
+	check(type(POSE) == "table" and POSE.tool == "tool" and
+		POSE.edge_down == "edge_down" and POSE.upright == "upright",
+		GEOMETRY .. " does not publish the three pose names")
+	local axe_hanging = measure("wp13_wield_axe_hanging",
+		wield_transform(1, POSE.edge_down), 0, 1)
+	local axe_raised = measure("wp13_wield_axe_raised90",
+		wield_transform(1, POSE.edge_down), 90, 1)
+	for _, case in ipairs({{"hanging", hanging, axe_hanging},
+			{"raised", raised, axe_raised}}) do
+		for _, field in ipairs({"hilt", "grip", "tip", "blade"}) do
+			for axis = 1, 3 do
+				close(case[3][field][axis], case[2][field][axis], 0.001,
+					"the axe pose moves the " .. field .. " on axis " .. axis ..
+					" with the arm " .. case[1])
+			end
+		end
+		-- The roll is a roll: the sprite's own face turns over, which is the one
+		-- thing that MUST differ.
+		for axis = 1, 3 do
+			close(case[3].flat[axis], -case[2].flat[axis], 0.001,
+				"the axe pose does not turn the sprite's face over on axis " ..
+				axis .. " with the arm " .. case[1])
+			close(case[3].head[axis], -case[2].head[axis], 0.001,
+				"the axe pose does not put the head on the other side of the " ..
+				"haft on axis " .. axis .. " with the arm " .. case[1])
+		end
+		check(leads(case[3]) > 0.99, "the axe's edge does not lead the chop " ..
+			"with the arm " .. case[1] .. " (" .. num(leads(case[3])) .. ")")
+		-- ...and the control, which is the shipped-before-round-5 behaviour:
+		-- the same axe sprite in the plain tool pose trails by exactly as much.
+		check(leads(case[2]) < -0.99, "the tool pose does not reproduce the " ..
+			"reported defect with the arm " .. case[1] .. " (" ..
+			num(leads(case[2])) .. ") -- the control checks nothing")
+	end
+	-- The size is the size: a rolled sprite is the same sprite.
+	local axe_transform = wield_transform(1, POSE.edge_down)
+	close(axe_transform.size.x, wield.size.x, 1e-9,
+		"the axe pose changes the sprite size")
+	close(axe_transform.pos.z, wield.pos.z, 1e-9,
+		"the axe pose moves the attachment along the blade")
+	check(axe_transform.rot.z == -wield.rot.z,
+		"the axe pose's z is not the tool pose's negated (" ..
+		num(axe_transform.rot.z) .. ")")
+	-- The stature compensation is one mechanism, not one per pose.
+	local axe_dwarf = measure("wp13_wield_axe_0.90",
+		wield_transform(0.90, POSE.edge_down), 0, 0.90)
+	for _, field in ipairs({"hilt", "grip", "tip", "blade", "flat", "head"}) do
+		for axis = 1, 3 do
+			close(axe_dwarf[field][axis], axe_hanging[field][axis], 0.001,
+				"stature 0.90 moves the axe pose's " .. field ..
+				" on axis " .. axis)
+		end
+	end
+
+	--
+	-- C1c. WHICH POSE EACH FAMILY ASKS FOR
+	--
+	-- The three transforms above are only half of the convention; the other half
+	-- is the group -> pose mapping, and it lives in the same file so that this
+	-- fixture can read it without an engine. The corpus is every held family the
+	-- game actually has, written as the groups its real definitions carry
+	-- (`mods/BASE/default/tools.lua`, `mods/ITEMS/grug_gear/init.lua`,
+	-- `mods/ITEMS/grug_fishing/init.lua`, `mods/PLAYER/grug_abilities`).
+	local POSE_CASES = {
+		{"default:sword_steel", {sword = 1}, POSE.tool},
+		{"default:pick_bronze", {pickaxe = 1}, POSE.tool},
+		{"default:shovel_stone", {shovel = 1}, POSE.tool},
+		{"default:axe_stone", {axe = 1}, POSE.edge_down},
+		{"grug_gear:sword_steel", {sword = 1, grug_equip_weapon = 1},
+			POSE.tool},
+		{"grug_gear:dagger_steel", {sword = 1, grug_equip_weapon = 1},
+			POSE.tool},
+		{"grug_gear:staff_steel", {staff = 1, grug_equip_weapon = 1},
+			POSE.tool},
+		-- The one that must NOT fall through to the plain tool pose just
+		-- because it is also a weapon-slot item.
+		{"grug_gear:greataxe_steel", {axe = 1, grug_equip_weapon = 1},
+			POSE.edge_down},
+		-- The fishing rod (playtest round 5): VoxeLibre's sprite is drawn on
+		-- the same anti-diagonal with the grip at the bottom-left, so it is a
+		-- DIAGONAL tool and not an upright icon -- which is exactly the defect
+		-- the player reported, an angler's stick sitting in the middle of the
+		-- hand. Its line hangs off the down-right side of the image, and the
+		-- plain tool pose is the one that hangs it downwards.
+		{"grug_fishing:rod", {fishing_rod = 1, tool = 1}, POSE.tool},
+		-- Anonymous icons: no declared family, no diagonal, no grip pixel.
+		{"default:stick", {}, POSE.upright},
+		{"default:torch", {torch = 1, attached_node = 1}, POSE.upright},
+		{"grug_mobs:raw_fish", {food_fish_raw = 1}, POSE.upright},
+		{"grug_abilities:strike", {grug_ability = 1}, POSE.upright},
+	}
+	local function group_of(itemname, group)
+		for _, case in ipairs(POSE_CASES) do
+			if case[1] == itemname then
+				return case[2][group] or 0
+			end
+		end
+		return 0
+	end
+	local pose_for = geometry.pose_for
+	check(type(pose_for) == "function",
+		GEOMETRY .. " does not publish pose_for")
+	for _, case in ipairs(POSE_CASES) do
+		local got = pose_for and pose_for(case[1], group_of)
+		row("wp13_wield_pose", case[1], tostring(got))
+		check(got == case[3], case[1] .. " is held " .. tostring(got) ..
+			", not " .. case[3])
+	end
+
+	--
 	-- C2. the same weapon in every hand (playtest round 2's second ruling)
 	--
 	-- Race stature is now one scalar per race (compose.lua), and
@@ -555,7 +698,7 @@ function M.run(repo)
 	-- the upright convention (the weapon's ends are the middles of the top and
 	-- bottom edges, its axis the image's +y), the sprite centre lands on the
 	-- fist and the icon's own up points at model up.
-	local upright = wield_transform(1, true)
+	local upright = wield_transform(1, POSE.upright)
 	local UPRIGHT_MEASURE = {
 		pos = upright.pos,
 		rot = upright.rot,
@@ -577,7 +720,7 @@ function M.run(repo)
 	close(node_item.tip[2], 0.5 * 40 * upright.size.x / 2, 0.002,
 		"an upright item's top edge is not half a sprite above the fist")
 	-- The stature compensation is the same one, and must hold here too.
-	local upright_dwarf = wield_transform(0.90, true)
+	local upright_dwarf = wield_transform(0.90, POSE.upright)
 	local UPRIGHT_DWARF = {
 		pos = upright_dwarf.pos,
 		rot = upright_dwarf.rot,

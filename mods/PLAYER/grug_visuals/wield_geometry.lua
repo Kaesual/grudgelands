@@ -144,6 +144,55 @@
 --    nothing is compensated: a mob's scale is its real size, and an elite
 --    guard twice the height should carry a sword twice the size.
 --
+-- 10. WHICH SIDE OF THE HAFT THE HEAD IS ON -- playtest round 5, 2026-09-16,
+--    "the axe blades of the Dur Brannoc residents point the wrong way".
+--
+--    Sections 6 and 7 fix the sprite's LONG axis and leave its ROLL about that
+--    axis to the single triple in section 7. That roll decides where the half
+--    of the sprite that is not on the anti-diagonal ends up: the image's
+--    up-left direction maps to bone (0, -1, 0), i.e. model +y, straight UP.
+--
+--    For most of the ladder this is unobservable, and that is measured rather
+--    than assumed. Mirror a sprite about its own long axis -- exactly what
+--    rolling it 180 degrees does in the world -- and compare silhouettes:
+--
+--      default_tool_steelsword / _steelpick / _steelshovel   100.0% overlap
+--      grug_gear_item_sword_* / _dagger_*                    100.0% overlap
+--      default_stick                                         100.0% overlap
+--      default_tool_steelaxe                                  26.3% overlap
+--      grug_gear_item_greataxe_*                              17.4% overlap
+--      grug_gear_item_staff_*                                 34.5% overlap
+--
+--    A sword, a dagger, a pick, a shovel and a stick are drawn ON their own
+--    long axis and cannot tell the two rolls apart. An AXE cannot be drawn that
+--    way: its bit is a wide edge mounted ACROSS the end of the haft, and both
+--    axe families in the game (minetest_game's four and the generator's six
+--    greataxes) draw it on the image's up-left side -- so through the section-7
+--    roll the cutting edge ends up pointing at the sky.
+--
+--    Which way it SHOULD point is not taste either, because this arm swings.
+--    The `work` activity and every dig run `character.b3d`'s mine frames, which
+--    rotate Arm_Right about its own local x (the fixture measures +114 degrees
+--    at the peak, forward); the sprite's plane is the y-z plane, i.e. exactly
+--    the plane the arm swings in. Follow the head through the downstroke: with
+--    the head on the up side it is the axe's POLL that leads and the edge that
+--    trails. Mirror it and the edge leads, which is what an axe is.
+--
+--    So the axe family gets the SAME transform rolled 180 degrees about the
+--    blade. That roll is the entity-local map x <-> y, z -> -z, and composing
+--    it into section 7's matrix gives, again uniquely,
+--
+--      **x = 90, y = -(45 - t), z = -90**
+--
+--    -- the sprite's own 45 changing sign against the tilt, because the mirror
+--    negates the in-plane roll while leaving the long axis where it was. The
+--    POSITION does not move at all: the grip pixel lies on the anti-diagonal,
+--    which the mirror fixes point by point, so `R * GRIP` is the same vector.
+--
+--    This is a statement about ART, not about items, so it is dispatched by
+--    GROUP in `apply.lua` (`axe`) exactly as the diagonal/upright split is, and
+--    it reaches the player's own axe through the same seam as an NPC's.
+--
 -- The printed check is `tools/wp13/wield_transform_kat.lua`.
 --
 -- THE TWO TASTE VALUES, both in this file and nowhere else: `SIZE` (how big
@@ -182,17 +231,73 @@ local GRIP_FRACTION_Y = 0.5 - GRIP_V / SPRITE_PIXELS
 local DEG = math.pi / 180
 local ROOT_HALF = math.sqrt(0.5)
 
+-- The three poses, and nothing else may name one. `POSE.tool` is the diagonal
+-- tool convention of sections 6 and 7; `POSE.edge_down` is that same transform
+-- rolled 180 degrees about the blade for art whose working edge is drawn off
+-- the long axis (section 10); `POSE.upright` is the anonymous-icon pose below.
+local POSE = {
+	tool = "tool",
+	edge_down = "edge_down",
+	upright = "upright",
+}
+grug_visuals.POSE = POSE
+
+-- WHICH POSE A PIECE OF ART ASKS FOR, by GROUP (project convention: dispatch
+-- on groups, never on a name list). It lives here rather than next to the
+-- engine code because it IS the sprite convention -- the same statement
+-- sections 6, 7 and 10 make, in the vocabulary an item definition can carry --
+-- and because a fixture with no engine has to be able to read it.
+--
+-- `DIAGONAL` is every family drawn in the diagonal tool convention: each
+-- `default` tool carries one of the first four, every grug_gear weapon carries
+-- `sword`/`axe`/`staff` plus `grug_equip_weapon`, and the fishing rod carries
+-- `fishing_rod` -- VoxeLibre draws that sprite on the same anti-diagonal with
+-- the grip at the bottom-left, with the LINE and bobber hanging off the
+-- down-right side, so the plain tool pose is what makes the line hang down.
+-- A new family joins by declaring its group, the same way it joins the weapon
+-- slot; anything that declares none -- `mobs:lasso`, a torch, an apple, an
+-- ability orb -- is an anonymous icon and gets `POSE.upright` with no
+-- exception list.
+--
+-- `EDGE_DOWN` is the subset of those whose working edge is drawn OFF the long
+-- axis and therefore has a side (section 10). It is checked first, so a
+-- greataxe -- `axe` and `grug_equip_weapon` -- lands in the rolled pose.
+local DIAGONAL_GROUP = {"sword", "axe", "pickaxe", "shovel", "staff",
+	"fishing_rod", "grug_equip_weapon"}
+local EDGE_DOWN_GROUP = {"axe"}
+grug_visuals.DIAGONAL_GROUP = DIAGONAL_GROUP
+grug_visuals.EDGE_DOWN_GROUP = EDGE_DOWN_GROUP
+
+-- `group_value(itemname, group)` is `core.get_item_group` in the engine and a
+-- table lookup in the fixture. Passed in rather than closed over so that the
+-- once-a-second wield poll allocates nothing.
+function grug_visuals.pose_for(itemname, group_value)
+	for _, group in ipairs(EDGE_DOWN_GROUP) do
+		if (group_value(itemname, group) or 0) > 0 then
+			return POSE.edge_down
+		end
+	end
+	for _, group in ipairs(DIAGONAL_GROUP) do
+		if (group_value(itemname, group) or 0) > 0 then
+			return POSE.tool
+		end
+	end
+	return POSE.upright
+end
+
 -- The attachment for a parent whose (uniform) stature scale is `stature`.
 -- nil / 0 means "do not compensate" -- the weapon then scales with its wielder.
 --
--- `upright = true` asks for the OTHER pose, and there are exactly two because
--- there are exactly two kinds of held art. Everything above derives the hand
--- from the diagonal tool convention: the weapon runs along the image's
--- anti-diagonal and the grip is a specific pixel on it. A torch, an apple, a
--- sapling or a bag is a node item or a craftitem drawn as an ordinary upright
--- icon, with no diagonal and no grip pixel -- run through the tool transform it
--- comes out floating a quarter of a node in front of the fist and rolled 45
--- degrees, because both the offset and the roll are the sprite diagonal's.
+-- `pose` is one of `grug_visuals.POSE`; nil means `tool`. There are exactly
+-- three because there are exactly three kinds of held art. Sections 6 and 7
+-- derive the hand from the diagonal tool convention: the weapon runs along the
+-- image's anti-diagonal and the grip is a specific pixel on it. Section 10 adds
+-- the roll for the one family that cannot be drawn on that diagonal. A torch,
+-- an apple, a sapling or a bag is neither: it is a node item or a craftitem
+-- drawn as an ordinary upright icon, with no diagonal and no grip pixel -- run
+-- through the tool transform it comes out floating a quarter of a node in front
+-- of the fist and rolled 45 degrees, because both the offset and the roll are
+-- the sprite diagonal's.
 --
 -- So a non-tool is held the only way an anonymous icon can be: its CENTRE in
 -- the fist (`pos = HAND`, no grip offset -- the image has no privileged point)
@@ -204,21 +309,24 @@ local ROOT_HALF = math.sqrt(0.5)
 -- gives the unique triple **x = 90, y = -90, z = 90** -- the same x and z as
 -- the tool pose, which is the reassuring part: only the sprite's own built-in
 -- angle differs.
-function grug_visuals.wield_transform(stature, upright)
+function grug_visuals.wield_transform(stature, pose)
 	local k = tonumber(stature)
 	if not k or k <= 0 then
 		k = 1
 	end
 	local size = SIZE / k
 	local sprite_edge = 40 * size / 2
+	if pose ~= POSE.edge_down and pose ~= POSE.upright then
+		pose = POSE.tool
+	end
 
-	if upright then
+	if pose == POSE.upright then
 		return {
 			bone = BONE,
 			pos = {x = HAND.x, y = HAND.y, z = HAND.z},
 			rot = {x = 90, y = -90, z = 90},
 			size = {x = size, y = size},
-			upright = true,
+			pose = pose,
 			stature = k,
 			base_size = SIZE,
 			tilt_up = TILT_UP,
@@ -248,6 +356,24 @@ function grug_visuals.wield_transform(stature, upright)
 	local uy_y = ROOT_HALF * (blade_y + e2_y)
 	local uy_z = ROOT_HALF * (blade_z + e2_z)
 
+	-- Section 10's roll is the entity-local map x <-> y, z -> -z, so in bone
+	-- coordinates it simply SWAPS the two in-plane axes above. Writing it that
+	-- way rather than reusing the tool position is not decoration: with the grip
+	-- on the anti-diagonal (gx == gy) the two agree exactly, and the day a
+	-- sprite convention moves the grip off it they would not.
+	local ax_y, ax_z, ay_y, ay_z = ux_y, ux_z, uy_y, uy_z
+	-- The unique Euler triple for the rolled pose is x = 90, y = -(45 - t),
+	-- z = -90: the mirror leaves the long axis (and therefore the tilt) where it
+	-- was but negates the in-plane roll, which is why the TILT sign flips with
+	-- the z rather than the 45 doing so.
+	local tilt_sign = 1
+	local spin = 90
+	if pose == POSE.edge_down then
+		ax_y, ax_z, ay_y, ay_z = uy_y, uy_z, ux_y, ux_z
+		tilt_sign = -1
+		spin = -90
+	end
+
 	local gx = GRIP_FRACTION_X * sprite_edge
 	local gy = GRIP_FRACTION_Y * sprite_edge
 
@@ -255,11 +381,12 @@ function grug_visuals.wield_transform(stature, upright)
 		bone = BONE,
 		pos = {
 			x = HAND.x,
-			y = HAND.y - (gx * ux_y + gy * uy_y),
-			z = HAND.z - (gx * ux_z + gy * uy_z),
+			y = HAND.y - (gx * ax_y + gy * ay_y),
+			z = HAND.z - (gx * ax_z + gy * ay_z),
 		},
-		rot = {x = 90, y = -(45 + TILT_UP), z = 90},
+		rot = {x = 90, y = -(45 + tilt_sign * TILT_UP), z = spin},
 		size = {x = size, y = size},
+		pose = pose,
 		-- The inputs, published for the fixture and for the next round of
 		-- eyeballing: change one of these, not the results above.
 		stature = k,
