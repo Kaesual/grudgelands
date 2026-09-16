@@ -1,0 +1,644 @@
+-- Acceptance for the STREET RULE of `wp13/avenue.lua` and
+-- `wp13/street_plan.lua`: the five things the user ruled about a capital's
+-- streets in playtest 5 (2026-09-16), as properties, on synthetic profiles,
+-- with no terrain and no engine.
+--
+-- THE RULINGS, and the section of this file that holds each of them:
+--
+--   1. "Streets follow the terrain exactly, a wild mix of stairs and
+--      orthogonal one-block jumps." WANTED: every block ACROSS the walking
+--      direction on ONE y, and the profile ALONG the run climbing at most one
+--      node per column.                                       -- section 1
+--   2. "The connecting street must be raised artificially at the junction."
+--      WANTED: every junction is a SQUARE PLATEAU on one y, and every run
+--      arriving at it meets that y with steps of at most one per column.
+--                                                             -- sections 3, 4
+--   3. The lamp posts followed the ground. WANTED: they stand beside the
+--      street on the STREET's actual height profile.           -- section 2
+--   4. Streets raised artificially on steep slopes stand on SUPPORT PILLARS
+--      with open air beneath; solid fill only where the raise is small.
+--                                                             -- section 5
+--   5. Piers, rails and deck lanterns wherever ANY capital's street crosses
+--      water, and the water body stays ONE body.              -- section 6
+--
+-- AND THE INVARIANT NONE OF THEM MAY COST: a piece of a run is exactly that
+-- stretch of the whole run, because the successor emerges a street one
+-- mapchunk at a time. Section 7 cuts every run of every case at EVERY column
+-- and compares the union with the whole, which is the strongest form of that
+-- test the brief asks for.
+--
+-- `tools/wp13/street_geometry.lua` measures the same rulings against the real
+-- WP40 terrain of all six capitals on all nine fixture seeds, which is what
+-- says how much the rules changed. THIS file is the property, and it turns red
+-- on profiles no seed happens to contain.
+--
+-- Plain Lua 5.1; the same bytes must run under LuaJIT and PUC 5.1.
+
+return function(repo)
+	local wp13 = repo .. "/mods/MAPGEN/grug_mapgen/wp13"
+	local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
+	local palettes = dofile(wp13 .. "/palette.lua")
+	local avenue = dofile(wp13 .. "/avenue.lua")(wp13)
+	local street_plan = dofile(wp13 .. "/street_plan.lua")(wp13)
+	local common = dofile(repo .. "/tools/wp40/r6/common.lua")
+
+	local report = {}
+	local function say(...)
+		report[#report + 1] = table.concat({...}, "\t") .. "\n"
+	end
+
+	local HALF = (avenue.WIDTH - 1) / 2
+	local VERGE = HALF + 1
+	local CLEAR = avenue.MIN_CLEAR
+
+	-- One palette per race, because ruling 5 is "in every other city where it
+	-- is missing": a bridge that only the elf palette can name is a bridge five
+	-- capitals do not get.
+	local RACES = {"human", "dwarf", "elf", "orc", "troll", "undead"}
+	local handles = {}
+	for _, race in ipairs(RACES) do handles[race] = palettes.new(race) end
+
+	local function run_of(palette, spec, ground, wet, junctions, decks)
+		return avenue.run(palette, {id = spec.id or "kat", axis = spec.axis or "x",
+			at = spec.at or 0, from = spec.from, to = spec.to,
+			width = avenue.WIDTH, lamp_spacing = avenue.LAMP_SPACING,
+			lamp_phase = spec.lamp_phase or spec.from, reach = avenue.REACH,
+			wet = wet, junctions = junctions, overhead = decks}, ground)
+	end
+
+	-- The walking level of a piece, per position along its own axis and per
+	-- lane, read off the CELLS and not off the rule: the topmost cell of a
+	-- carriageway column whose name is one of the road's own three surfaces.
+	local function walking(palette, spec, piece)
+		local dx = (spec.axis == "x") and 1 or 0
+		local PAVING = palette.maybe("castle_paving") or palette.node("plaza")
+		local KERB = palette.node("plaza_edge")
+		local TREAD = palette.maybe("castle_wall_stair") or
+			palette.node("roof_stair")
+		local road = {[PAVING] = true, [KERB] = true, [TREAD] = true}
+		local level = {}
+		for _, cell in ipairs(piece.cells) do
+			if road[cell.name] then
+				local p = (dx == 1) and cell.x or cell.z
+				local lane = ((dx == 1) and cell.z or cell.x) - spec.at
+				if lane >= -HALF and lane <= HALF then
+					local row = level[p]
+					if row == nil then
+						row = {}
+						level[p] = row
+					end
+					if row[lane] == nil or cell.y > row[lane] then
+						row[lane] = cell.y
+					end
+				end
+			end
+		end
+		return level
+	end
+
+	local function flat_row(level, p)
+		local row = level[p]
+		if row == nil then return nil, nil end
+		local low, high
+		for lane = -HALF, HALF do
+			local y = row[lane]
+			if y then
+				if low == nil or y < low then low = y end
+				if high == nil or y > high then high = y end
+			end
+		end
+		return low, high
+	end
+
+	local cases = 0
+
+	----------------------------------------------------------------------
+	-- 1. RULING 1: ONE CROSS PROFILE PER POSITION, AND ONE STEP PER COLUMN.
+	--
+	-- The profile has CROSS FALL in it -- the road's own lanes stand at five
+	-- different heights -- which is exactly what the per-lane envelope this
+	-- replaced followed and what the user saw as "a wild mix of stairs and
+	-- orthogonal one-block jumps". A diagonal terrace joint is in it too, so
+	-- the joint reaches the five lanes in five different columns.
+	----------------------------------------------------------------------
+	local function diagonal(x, z)
+		-- Two terraces, the joint running across the road at 45 degrees, plus
+		-- one node of cross fall per lane.
+		local height = 20
+		if x + z >= 0 then height = 24 end
+		if x + z >= 40 then height = 27 end
+		return height - z
+	end
+	local SPAN = {from = -48, to = 48}
+	do
+		local worst_spread, worst_step, positions = 0, 0, 0
+		for _, race in ipairs(RACES) do
+			local palette = handles[race]
+			local spec = {id = "cross", axis = "x", at = 0,
+				from = SPAN.from, to = SPAN.to}
+			local piece = run_of(palette, spec, diagonal)
+			local level = walking(palette, spec, piece)
+			local previous
+			for p = SPAN.from, SPAN.to do
+				local low, high = flat_row(level, p)
+				assert(low and high, race ..
+					": the run has no walking cell at " .. p)
+				for lane = -HALF, HALF do
+					assert(level[p][lane], race .. ": the lane " .. lane ..
+						" of position " .. p .. " carries no road")
+				end
+				if high - low > worst_spread then worst_spread = high - low end
+				assert(high == low, race .. ": the cross profile at " .. p ..
+					" spreads " .. (high - low) .. " nodes")
+				if previous then
+					local step = high - previous
+					if step < 0 then step = -step end
+					if step > worst_step then worst_step = step end
+					assert(step <= 1, race .. ": the road steps " .. step ..
+						" nodes between " .. (p - 1) .. " and " .. p)
+				end
+				previous = high
+				positions = positions + 1
+			end
+		end
+		assert(worst_step == 1,
+			"this profile never made the road climb, so the rule is untested")
+		cases = cases + 1
+		say("street_cross_profile", positions, worst_spread, worst_step)
+	end
+
+	----------------------------------------------------------------------
+	-- 2. RULING 3: A LAMP STANDS ON THE STREET'S PROFILE.
+	--
+	-- Same diagonal profile, whose verge columns stand at a different height
+	-- from the road beside them at every lamp of the run -- which is the case
+	-- that used to put 1222 of the six capitals' 4343 standards off the road.
+	----------------------------------------------------------------------
+	do
+		local standards, off_ground = 0, 0
+		for _, race in ipairs(RACES) do
+			local palette = handles[race]
+			local spec = {id = "lamps", axis = "x", at = 0,
+				from = SPAN.from, to = SPAN.to}
+			local piece = run_of(palette, spec, diagonal)
+			local level = walking(palette, spec, piece)
+			for _, lamp in ipairs(piece.lamps) do
+				standards = standards + 1
+				assert(math.abs(lamp.z) == VERGE,
+					race .. ": a standard left its verge")
+				local _, high = flat_row(level, lamp.x)
+				assert(high, race .. ": a standard stands beside no road")
+				assert(lamp.y - 3 == high, race .. ": a standard foots at " ..
+					(lamp.y - 3) .. " and the street beside it stands at " ..
+					high)
+				if lamp.y - 3 ~= diagonal(lamp.x, lamp.z) then
+					off_ground = off_ground + 1
+				end
+			end
+		end
+		assert(standards > 0, "the rhythm lit nothing")
+		assert(off_ground > 0, "no standard on this profile had to leave the " ..
+			"ground, so the ruling is untested")
+		cases = cases + 1
+		say("street_lamps", standards, off_ground)
+	end
+
+	----------------------------------------------------------------------
+	-- 3. RULING 2: THE JUNCTION PLATEAU, on a slope.
+	--
+	-- Two runs crossing at the origin of a ground that falls a node a column
+	-- along both axes, so the two runs reach the square at two different
+	-- heights and the square is exactly the place the user found unwalkable.
+	----------------------------------------------------------------------
+	local function slope(x, z)
+		return 60 - math.floor(x / 2) - math.floor(z / 3)
+	end
+	local CROSS_RUNS = {
+		{id = "avenue", axis = "x", at = 0, from = -60, to = 60},
+		{id = "lane", axis = "z", at = 0, from = -60, to = 60},
+	}
+	do
+		local plan = street_plan.junctions(CROSS_RUNS, avenue.WIDTH)
+		assert(#plan.avenue == 1 and #plan.lane == 1,
+			"the two crossing runs produced " .. #plan.avenue .. " and " ..
+				#plan.lane .. " junctions, not one each")
+		local palette = handles.human
+		local levels, plateau_y = {}, nil
+		for _, spec in ipairs(CROSS_RUNS) do
+			local piece = run_of(palette, spec, slope, nil, plan[spec.id])
+			assert(#piece.plateaus == 1,
+				spec.id .. " built " .. #piece.plateaus .. " plateaus, not one")
+			if plateau_y == nil then plateau_y = piece.plateaus[1].y end
+			assert(piece.plateaus[1].y == plateau_y,
+				"the two runs level the same square at " .. plateau_y ..
+					" and " .. piece.plateaus[1].y)
+			levels[spec.id] = walking(palette, spec, piece)
+		end
+		-- THE SQUARE IS ONE y IN BOTH RUNS' OWN CELLS.
+		for _, spec in ipairs(CROSS_RUNS) do
+			local level = levels[spec.id]
+			for p = -HALF, HALF do
+				local low, high = flat_row(level, p)
+				assert(low == plateau_y and high == plateau_y,
+					spec.id .. " walks the junction column " .. p .. " at " ..
+						tostring(low) .. ".." .. tostring(high) ..
+						", not at the plateau " .. plateau_y)
+			end
+		end
+		-- AND BOTH RUNS ARRIVE AT IT A NODE A COLUMN, all the way out.
+		local worst_step = 0
+		for _, spec in ipairs(CROSS_RUNS) do
+			local level = levels[spec.id]
+			for p = spec.from + 1, spec.to do
+				local _, here = flat_row(level, p)
+				local _, before = flat_row(level, p - 1)
+				if here and before then
+					local step = here - before
+					if step < 0 then step = -step end
+					if step > worst_step then worst_step = step end
+					assert(step <= 1, spec.id .. " steps " .. step ..
+						" nodes between " .. (p - 1) .. " and " .. p)
+				end
+			end
+		end
+		-- THE PLATEAU IS ARTIFICIAL: it stands above the ground it levels,
+		-- which is the whole of "raised artificially at the junction".
+		local lifted = 0
+		for x = -HALF, HALF do
+			for z = -HALF, HALF do
+				if plateau_y > slope(x, z) then lifted = lifted + 1 end
+			end
+		end
+		assert(lifted > 0, "this slope needed no raise, so the ruling is " ..
+			"untested")
+		cases = cases + 1
+		say("street_junction", plateau_y, lifted, worst_step)
+	end
+
+	----------------------------------------------------------------------
+	-- 4. THREE STREETS IN ONE PLACE. Two squares that share a column are ONE
+	--    junction: taken as independent pairs they take two different levels
+	--    and the shared columns then leave the lower square a node out of
+	--    true. Lethariel's east avenue, its ring street and a district lane do
+	--    exactly this on the gate seed.
+	----------------------------------------------------------------------
+	local TRIPLE_RUNS = {
+		{id = "avenue", axis = "x", at = 0, from = -60, to = 60},
+		{id = "ring", axis = "z", at = 0, from = -60, to = 60},
+		{id = "lane", axis = "z", at = 2, from = -60, to = 60},
+	}
+	do
+		local plan, overlaps = street_plan.junctions(TRIPLE_RUNS, avenue.WIDTH)
+		assert(#overlaps == 1 and overlaps[1].one == "ring" and
+			overlaps[1].two == "lane",
+			"the two parallel runs were not reported as an overlap")
+		assert(#plan.avenue == 1, "the avenue's two squares were not merged " ..
+			"into one junction (" .. #plan.avenue .. ")")
+		assert(#plan.avenue[1].members == 2,
+			"the merged junction carries " .. #plan.avenue[1].members ..
+				" other runs, not two")
+		local palette = handles.dwarf
+		local level_y, levels = nil, {}
+		for _, spec in ipairs(TRIPLE_RUNS) do
+			local piece = run_of(palette, spec, slope, nil, plan[spec.id])
+			assert(#piece.plateaus == 1, spec.id .. " built " ..
+				#piece.plateaus .. " plateaus, not one")
+			if level_y == nil then level_y = piece.plateaus[1].y end
+			assert(piece.plateaus[1].y == level_y, spec.id ..
+				" levels the shared square at " .. piece.plateaus[1].y ..
+				" and another run at " .. level_y)
+			levels[spec.id] = walking(palette, spec, piece)
+		end
+		-- The merged square on the avenue's own axis, every column at one y.
+		local low_p, high_p = plan.avenue[1].low, plan.avenue[1].high
+		assert(high_p - low_p >= avenue.WIDTH,
+			"the merge did not widen the avenue's square (" .. low_p .. ".." ..
+				high_p .. ")")
+		for p = low_p, high_p do
+			local low, high = flat_row(levels.avenue, p)
+			assert(low == level_y and high == level_y,
+				"the merged plateau column " .. p .. " walks at " ..
+					tostring(low) .. ".." .. tostring(high) .. ", not " ..
+					level_y)
+		end
+		cases = cases + 1
+		say("street_junction_group", level_y, low_p, high_p, #overlaps)
+	end
+
+	----------------------------------------------------------------------
+	-- 5. RULING 4: THE VIADUCT. A raise of `MIN_CLEAR` or more stands on
+	--    pillars with open air under it; a smaller raise is still solid
+	--    ground. Both halves are checked, in every race's palette, because a
+	--    rule that only fires for one of them is not a rule.
+	----------------------------------------------------------------------
+	local function cliff(x, z)
+		-- Flat, then a fall of two nodes a column -- faster than a road may
+		-- descend, so the road leaves the ground -- and then flat again.
+		local height = 60
+		if x > 0 and x <= 20 then height = 60 - 2 * x end
+		if x > 20 then height = 20 end
+		return height
+	end
+	do
+		local solid_total, open_total, pillars_total, rails_total = 0, 0, 0, 0
+		local worst_clear
+		for _, race in ipairs(RACES) do
+			local palette = handles[race]
+			local spec = {id = "viaduct", axis = "x", at = 0,
+				from = -40, to = 60}
+			local piece = run_of(palette, spec, cliff)
+			local level = walking(palette, spec, piece)
+			local written = {}
+			for _, cell in ipairs(piece.cells) do
+				written[cell.x .. ":" .. cell.y .. ":" .. cell.z] = cell.name
+			end
+			local solid, open = 0, 0
+			for p = spec.from, spec.to do
+				local _, top = flat_row(level, p)
+				assert(top, race .. ": no road at " .. p)
+				for lane = -HALF, HALF do
+					local ground = cliff(p, lane)
+					local raise = top - ground
+					local key = p .. ":" .. ground .. ":" .. lane
+					if raise >= CLEAR then
+						assert(written[key] == nil, race .. ": the column " ..
+							p .. "," .. lane .. " is raised " .. raise ..
+							" and still filled at its own ground: a wall, " ..
+							"not a viaduct")
+						open = open + 1
+						local clear = raise - 1
+						if worst_clear == nil or clear < worst_clear then
+							worst_clear = clear
+						end
+					elseif raise > 0 then
+						for y = ground, top do
+							assert(written[p .. ":" .. y .. ":" .. lane],
+								race .. ": the column " .. p .. "," .. lane ..
+								" is raised only " .. raise ..
+								" and has a hole at " .. y)
+						end
+						solid = solid + 1
+					end
+				end
+			end
+			assert(solid > 0 and open > 0, race ..
+				": this profile exercised only one of fill and viaduct (" ..
+				solid .. " solid, " .. open .. " open)")
+			assert(piece.street.piers > 0, race .. ": the viaduct has no pillars")
+			assert(piece.street.rails > 0, race .. ": the viaduct has no rail")
+			-- Every pillar and every rail on a VERGE lane, never in the
+			-- carriageway, and the rail one course over the road.
+			local RAIL = palette.node("railing")
+			for _, cell in ipairs(piece.cells) do
+				if cell.name == RAIL then
+					assert(math.abs(cell.z) == VERGE, race ..
+						": a rail stands at lane " .. cell.z)
+					local _, top = flat_row(level, cell.x)
+					assert(top and cell.y == top + 1, race ..
+						": a rail at " .. cell.x .. " stands at " .. cell.y ..
+						", not one course over the road at " .. tostring(top))
+				end
+			end
+			solid_total = solid_total + solid
+			open_total = open_total + open
+			pillars_total = pillars_total + piece.street.piers
+			rails_total = rails_total + piece.street.rails
+		end
+		-- A PLAYER IS TWO NODES TALL, and that is the whole of "so a player can
+		-- walk under it": the threshold is chosen so that the thinnest viaduct
+		-- still has room for one.
+		assert(worst_clear >= 2, "a viaduct column leaves " .. worst_clear ..
+			" nodes of air")
+		cases = cases + 1
+		say("street_viaduct", solid_total, open_total, pillars_total,
+			rails_total, worst_clear, CLEAR)
+	end
+
+	----------------------------------------------------------------------
+	-- 6. RULING 5: THE BRIDGE, in every race's palette.
+	--
+	-- A water body stays ONE body: over a wet column the road writes a deck and
+	-- NOTHING at or under the water line -- along the run and across it -- and
+	-- the piers stand on the two verge lanes so the whole carriageway is open
+	-- water underneath.
+	----------------------------------------------------------------------
+	local WATER, WET_FROM, WET_TO = 40, -20, 20
+	local function lake(x, z)
+		-- The seam hands a road the WATER surface where water stands, so the
+		-- span itself is flat at the water line and the banks climb away.
+		if x >= WET_FROM and x <= WET_TO then return WATER end
+		if x < WET_FROM then return WATER + (WET_FROM - x) end
+		return WATER + (x - WET_TO)
+	end
+	local function lake_wet(x, z)
+		return x >= WET_FROM and x <= WET_TO
+	end
+	do
+		local decks, piers, rails, touched_total = 0, 0, 0, 0
+		for _, race in ipairs(RACES) do
+			local palette = handles[race]
+			local spec = {id = "bridge", axis = "x", at = 0,
+				from = -48, to = 48}
+			local piece = run_of(palette, spec, lake, lake_wet)
+			local level = walking(palette, spec, piece)
+			assert(piece.street.bridged == (WET_TO - WET_FROM + 1), race ..
+				": the run bridged " .. piece.street.bridged ..
+				" positions of " .. (WET_TO - WET_FROM + 1))
+			assert(piece.street.piers > 0, race .. ": the bridge has no piers")
+			assert(piece.street.rails > 0, race .. ": the bridge has no rails")
+			-- NOTHING AT OR UNDER THE WATER LINE ON THE CARRIAGEWAY, air
+			-- included: an air cell at the surface is the writer being told to
+			-- take the water out, which would cut the body in two just as a
+			-- causeway does.
+			local touched = 0
+			for _, cell in ipairs(piece.cells) do
+				if math.abs(cell.z) <= HALF and cell.x >= WET_FROM and
+						cell.x <= WET_TO and cell.y <= WATER then
+					touched = touched + 1
+				end
+			end
+			assert(touched == 0, race .. ": the bridge writes into " ..
+				touched .. " carriageway cells at or under the water line")
+			touched_total = touched_total + touched
+			-- The deck stands over the water for every wet column, and never
+			-- steps more than a node -- the shore included, which is the step
+			-- a walker takes onto the bridge.
+			for p = spec.from + 1, spec.to do
+				local _, here = flat_row(level, p)
+				local _, before = flat_row(level, p - 1)
+				assert(here, race .. ": no deck at " .. p)
+				if p >= WET_FROM and p <= WET_TO then
+					assert(here >= WATER + avenue.LIFT, race ..
+						": the deck at " .. p .. " stands at " .. here ..
+						", not over the water at " .. WATER)
+					decks = decks + 1
+				end
+				local step = here - before
+				if step < 0 then step = -step end
+				assert(step <= 1, race .. ": the deck steps " .. step ..
+					" nodes between " .. (p - 1) .. " and " .. p)
+			end
+			-- The piers stand on the verge lanes and reach into the bed.
+			local PIER = palette.maybe("signature") or palette.node("wall_accent")
+			local deep = 0
+			for _, cell in ipairs(piece.cells) do
+				if cell.name == PIER and math.abs(cell.z) == VERGE and
+						cell.x >= WET_FROM and cell.x <= WET_TO then
+					if cell.y < WATER then deep = deep + 1 end
+				end
+			end
+			assert(deep > 0, race ..
+				": no pier of this bridge reaches under the water")
+			piers = piers + piece.street.piers
+			rails = rails + piece.street.rails
+		end
+		cases = cases + 1
+		say("street_bridge", decks, piers, rails, touched_total, avenue.LIFT,
+			avenue.PIER, avenue.PIER_DEPTH)
+	end
+
+	----------------------------------------------------------------------
+	-- 7. A PIECE OF A RUN IS EXACTLY THAT STRETCH OF THE WHOLE RUN, cut at
+	--    EVERY column of every case above. This is the invariant the whole
+	--    module exists inside: the successor emerges a street one mapchunk at
+	--    a time, and a rule that needs the whole run is a rule that builds a
+	--    different road on a chunk border.
+	----------------------------------------------------------------------
+	do
+		local CASES = {
+			{label = "cross", ground = diagonal, wet = nil,
+				spec = {id = "cross", axis = "x", at = 0, from = -20, to = 20}},
+			{label = "viaduct", ground = cliff, wet = nil,
+				spec = {id = "viaduct", axis = "x", at = 0, from = -10, to = 30}},
+			{label = "bridge", ground = lake, wet = lake_wet,
+				spec = {id = "bridge", axis = "x", at = 0, from = -30, to = 30}},
+			{label = "junction", ground = slope, wet = nil,
+				spec = {id = "avenue", axis = "x", at = 0, from = -30, to = 30},
+				junctions = street_plan.junctions(CROSS_RUNS,
+					avenue.WIDTH).avenue},
+		}
+		local palette = handles.troll
+		local splits = 0
+		for _, case in ipairs(CASES) do
+			local spec = case.spec
+			local whole = run_of(palette, spec, case.ground, case.wet,
+				case.junctions)
+			local expected = {}
+			for _, cell in ipairs(whole.cells) do
+				expected[cell.x .. ":" .. cell.y .. ":" .. cell.z] =
+					cell.name .. ":" .. (cell.param2 or 0)
+			end
+			for cut = spec.from, spec.to - 1 do
+				local union, count = {}, 0
+				for _, part in ipairs({{spec.from, cut}, {cut + 1, spec.to}}) do
+					local piece = run_of(palette,
+						{id = spec.id, axis = spec.axis, at = spec.at,
+							from = part[1], to = part[2],
+							lamp_phase = spec.from}, case.ground, case.wet,
+						case.junctions)
+					for _, cell in ipairs(piece.cells) do
+						local key = cell.x .. ":" .. cell.y .. ":" .. cell.z
+						local value = cell.name .. ":" .. (cell.param2 or 0)
+						assert(expected[key] == value, case.label ..
+							": the piece cut at " .. cut .. " writes " ..
+							value .. " at " .. key ..
+							", which the whole run does not")
+						if union[key] == nil then
+							union[key] = value
+							count = count + 1
+						end
+					end
+				end
+				assert(count == #whole.cells, case.label ..
+					": the two pieces cut at " .. cut .. " carry " .. count ..
+					" cells, the whole run " .. #whole.cells)
+				splits = splits + 1
+			end
+		end
+		cases = cases + 1
+		say("street_pieces", #CASES, splits)
+	end
+
+	----------------------------------------------------------------------
+	-- 8. THE SIX CAPITALS' OWN JUNCTION INVENTORY, pinned.
+	--
+	-- Computed from the run RECTANGLES alone, so it needs no terrain and no
+	-- seed and is the same on every world. Two things are pinned: how many
+	-- junctions each capital has, and every PARALLEL OVERLAP -- two streets
+	-- running side by side rather than crossing, which is not a junction and
+	-- which `wp13/street_plan.lua` refuses to level. Lethariel has six of
+	-- those, where a district lane at +-98 runs alongside the ring street at
+	-- +-96 for up to 97 columns and three of the five lanes of each are the
+	-- same columns; that is a composition defect and not a street-geometry one,
+	-- and it is pinned here so it cannot spread quietly.
+	----------------------------------------------------------------------
+	do
+		local KEYS = {"highcourt", "dur_brannoc", "gor_drazhak", "lethariel",
+			"kezamba", "nhal_veyr"}
+		local rows = {}
+		for _, key in ipairs(KEYS) do
+			local source = dofile(wp40 .. "/r7_" .. key .. "_blueprint.lua")()
+			local streets, records = {}, 0
+			for _, run in ipairs(source.overlay.runs) do
+				if not (run.id:match("^wall_") or run.id:match("^edge_") or
+						run.id:match("^gate_")) then
+					streets[#streets + 1] = run
+					-- Every street run of a capital carries the junctions its
+					-- own composition attached, which is what the seam hands
+					-- the road. A street with none would be a street the plan
+					-- forgot.
+					records = records + #(run.junctions or {})
+				end
+			end
+			local plan, overlaps = street_plan.junctions(streets,
+				source.overlay.width)
+			local computed = 0
+			for id, list in pairs(plan) do
+				computed = computed + #list
+				local attached
+				for _, run in ipairs(streets) do
+					if run.id == id then attached = run.junctions end
+				end
+				assert(attached ~= nil, key .. ": the run " .. id ..
+					" reached the seam with no junction list at all")
+				assert(#attached == #list, key .. ": the run " .. id ..
+					" carries " .. #attached ..
+					" junctions and the plan computes " .. #list)
+			end
+			assert(records == computed, key .. ": the composition attached " ..
+				records .. " junction records and the plan computes " ..
+				computed)
+			local parallel = {}
+			for _, pair in ipairs(overlaps) do
+				local depth
+				-- How deep the overlap runs ALONG the two parallel runs: one
+				-- column is a butt joint (one continuous lane authored as two
+				-- runs) and needs nothing; more is a shared stretch of street.
+				local one
+				for _, run in ipairs(streets) do
+					if run.id == pair.one then one = run end
+				end
+				if one.axis == "x" then
+					depth = pair.max_x - pair.min_x + 1
+				else
+					depth = pair.max_z - pair.min_z + 1
+				end
+				parallel[#parallel + 1] = pair.one .. "/" .. pair.two .. "/" ..
+					depth
+			end
+			table.sort(parallel)
+			rows[#rows + 1] = key .. ":" .. #streets .. ":" .. computed ..
+				":" .. #overlaps
+			say("street_capital", key, #streets, computed, #overlaps,
+				table.concat(parallel, ","))
+		end
+		cases = cases + 1
+		say("street_inventory",
+			common.hex(common.new_sha256()(table.concat(rows, "\n"))))
+	end
+
+	assert(cases == 8, "a street case was lost")
+	say("street_cases", cases, "width", avenue.WIDTH, "min_clear", CLEAR,
+		"lift", avenue.LIFT, "pier", avenue.PIER)
+	return table.concat(report)
+end

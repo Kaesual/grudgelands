@@ -79,9 +79,13 @@ return function(repo)
 	end
 
 	-- THE PROPERTY, in one place. Every carriageway column of a run:
-	--   1. is one unbroken stack, standing on the ground it was read from or
-	--      on the deck that carries it -- nothing the road writes hangs in the
-	--      air, which is what an abutment beside a narrow bridge is for;
+	--   1. is one unbroken stack, standing on the ground it was read from, on
+	--      the deck that carries it, or -- since playtest 5's ruling 4
+	--      (2026-09-16) -- on nothing at all, because a column raised
+	--      `MIN_CLEAR` or more is a VIADUCT whose own ground is deliberately
+	--      left as open air so a player can walk under the street. A column
+	--      that is not a viaduct still stands on its ground or its deck, which
+	--      is what an abutment beside a narrow bridge is for;
 	--   2. is walkable to its neighbour along the run, one node at a time, so
 	--      the road never dead ends;
 	--   3. passes under a deck with at least CLEAR blocks of air or stands at
@@ -99,10 +103,12 @@ return function(repo)
 			end
 			local deck_y = decks and decks(column.x, column.z) or nil
 			local natural = ground(column.x, column.z)
-			assert(built.low[key] == natural or built.low[key] == deck_y,
+			assert(built.low[key] == natural or built.low[key] == deck_y or
+					built.top[key] - natural >= avenue.MIN_CLEAR,
 				label .. ": the column " .. key .. " starts at " ..
 					built.low[key] .. ", neither its ground " .. natural ..
-					" nor a deck " .. tostring(deck_y))
+					", nor a deck " .. tostring(deck_y) ..
+					", nor a viaduct raised " .. (built.top[key] - natural))
 			if deck_y ~= nil then
 				spanned = spanned + 1
 				local road = built.top[key]

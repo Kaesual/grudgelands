@@ -981,15 +981,26 @@ return function(repo)
 		end
 	end
 
-	-- The road on a profile that falls two nodes per column, which is what the
-	-- blend band does and what the rail exists for.
+	-- THE VIADUCT on a profile that falls two nodes per column, which is what
+	-- the blend band does and what the pillars and the rail exist for.
+	--
+	-- This capital used to add a parapet of its own to the piece the road
+	-- module returned. Playtest 5 (2026-09-16) ruled that a street raised
+	-- artificially may not be a wall at all: it stands on PILLARS with open air
+	-- beneath, and its plank walk and rail stand on the two VERGE lanes rather
+	-- than on the carriageway's outermost one. The road module does it for every
+	-- capital now, so what is checked here is that the orc capital gets it.
 	local function ramp_surface(x, z)
 		local p = (math.abs(x) > math.abs(z)) and math.abs(x) or math.abs(z)
 		if p <= 48 then return 120 end
 		if p >= 88 then return 120 - 80 end
 		return 120 - 2 * (p - 48)
 	end
-	local rail_cells, rail_columns, road_cells = 0, 0, 0
+	local rail_cells, pillar_cells, road_cells, open_columns = 0, 0, 0, 0
+	local half = (avenue.WIDTH - 1) / 2
+	local verge = half + 1
+	local RAIL = orc.node("railing")
+	local PILLAR = orc.maybe("signature") or orc.node("wall_accent")
 	for _, spec in ipairs({capital.avenues[4], capital.avenues[1]}) do
 		local piece = capital.overlay_run(avenue, orc,
 			{id = spec.id, axis = spec.axis, at = spec.at, from = spec.from,
@@ -997,31 +1008,48 @@ return function(repo)
 				lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.from,
 				reach = avenue.REACH}, ramp_surface)
 		road_cells = road_cells + #piece.cells
-		rail_cells = rail_cells + (piece.rail or 0)
-		-- Every rail cell stands on a KERB lane, never in the carriageway, and
-		-- one course over the road it rails.
-		local half = (avenue.WIDTH - 1) / 2
-		local column_top = {}
+		rail_cells = rail_cells + piece.street.rails
+		pillar_cells = pillar_cells + piece.street.piers
+		-- Every rail and every pillar stands on a VERGE lane, never in the
+		-- carriageway, and every raised carriageway column is open at the
+		-- ground.
+		local index, top_of = {}, {}
 		for _, cell in ipairs(piece.cells) do
-			local key = cell.x .. ":" .. cell.z
-			if column_top[key] == nil or cell.y > column_top[key] then
-				column_top[key] = cell.y
+			index[cell.x .. ":" .. cell.y .. ":" .. cell.z] = true
+			local along = (spec.axis == "x") and cell.x or cell.z
+			local across = ((spec.axis == "x") and cell.z or cell.x) - spec.at
+			if math.abs(across) <= half then
+				if top_of[along] == nil or cell.y > top_of[along] then
+					top_of[along] = cell.y
+				end
+			end
+			if cell.name == RAIL or cell.name == PILLAR then
+				assert(math.abs(across) == verge, "a " .. cell.name ..
+					" stands at lane " .. across .. ", not on a verge")
 			end
 		end
-		local name = orc.maybe("wall_infill") or orc.node("foundation")
-		for _, cell in ipairs(piece.cells) do
-			if cell.name == name then
-				local across = (spec.axis == "x") and cell.z or cell.x
-				if across == spec.at - half or across == spec.at + half then
-					rail_columns = rail_columns + 1
+		for p = spec.from, spec.to do
+			for lane = -half, half do
+				local x, z
+				if spec.axis == "x" then x, z = p, spec.at + lane
+				else x, z = spec.at + lane, p end
+				local ground = ramp_surface(x, z)
+				if top_of[p] ~= nil and top_of[p] - ground >= avenue.MIN_CLEAR then
+					assert(not index[x .. ":" .. ground .. ":" .. z],
+						"the column " .. x .. "," .. z .. " is raised " ..
+							(top_of[p] - ground) ..
+							" and still filled: a wall, not a viaduct")
+					open_columns = open_columns + 1
 				end
 			end
 		end
 	end
-	assert(rail_cells > 0, "the causeway rail never fired on a profile that " ..
+	assert(rail_cells > 0, "the viaduct rail never fired on a profile that " ..
 		"falls two nodes per column")
-	assert(rail_columns >= rail_cells, "a rail cell stands off the kerb")
-	say("gor_drazhak_avenue", road_cells, rail_cells)
+	assert(pillar_cells > 0, "the viaduct stands on no pillars")
+	assert(open_columns > 0, "no column of this profile is a viaduct")
+	say("gor_drazhak_avenue", road_cells, rail_cells, pillar_cells,
+		open_columns)
 
 	-- ------------------------------------------------------------------
 	-- 6. THE WORK SOCKETS AND THEIR FEATURES (sockets contract section 8.1)

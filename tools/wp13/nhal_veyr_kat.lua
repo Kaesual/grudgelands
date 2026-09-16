@@ -2164,21 +2164,56 @@ return function(repo)
 			", outside its own carriageway and verges")
 		columns = columns + 1
 	end
+	-- THE CARRIAGEWAY IS READ IN FULL AND THE VERGE ONLY WHERE SOMETHING
+	-- STANDS ON IT. The first half is the window that makes the overlay chunk
+	-- independent and is exact; the second half is the rule since playtest 5:
+	-- a verge carries a lamp standard, and over a bridged or a raised span it
+	-- also carries the plank walk, its rail and the pillars under it, so the
+	-- positions read are exactly the positions written. Counting them off the
+	-- CELLS rather than off a formula is what keeps this a measurement of the
+	-- road that was built.
+	local verge_written = {}
+	local verge_positions = 0
+	for _, cell in ipairs(run.cells) do
+		local across = (avenue_spec.axis == "x") and cell.z or cell.x
+		local along = (avenue_spec.axis == "x") and cell.x or cell.z
+		if math.abs(across - avenue_spec.at) == (avenue.WIDTH - 1) / 2 + 1 then
+			local key = along .. ":" .. across
+			if not verge_written[key] then
+				verge_written[key] = true
+				verge_positions = verge_positions + 1
+			end
+		end
+	end
+	local carriageway = (avenue_spec.to - avenue_spec.from +
+		2 * avenue.REACH + 1) * avenue.WIDTH
+	local wanted_columns = carriageway + verge_positions
+	assert(columns == wanted_columns and run.queries == wanted_columns,
+		"the avenue queried " .. columns .. " columns and reported " ..
+			run.queries .. ", not the " .. wanted_columns ..
+			" its carriageway window and its written verge need")
 	local lamp_positions = 0
 	for p = avenue_spec.from, avenue_spec.to do
 		if (p - avenue_spec.lamp_phase) % avenue.LAMP_SPACING == 0 then
 			lamp_positions = lamp_positions + 1
 		end
 	end
-	local wanted_columns = (avenue_spec.to - avenue_spec.from +
-		2 * avenue.REACH + 1) * avenue.WIDTH + 2 * lamp_positions
-	assert(columns == wanted_columns and run.queries == wanted_columns,
-		"the avenue queried " .. columns .. " columns and reported " ..
-			run.queries .. ", not the " .. wanted_columns ..
-			" its carriageway, window and lamp rhythm need")
+	assert(verge_positions >= 2 * lamp_positions,
+		"the avenue read " .. verge_positions .. " verge columns, fewer than " ..
+			"the " .. (2 * lamp_positions) .. " its lamp rhythm alone needs")
 
-	-- (b) The road lies ON the ground: a cell at every column's surface, and
-	-- nothing under it.
+	-- (b) WHAT THE ROAD STANDS ON, and this is where playtest 5's ruling 4
+	-- replaced the older sentence. The road used to have to lie ON the ground:
+	-- a cell at every column's own surface. Since 2026-09-16 a column raised
+	-- `MIN_CLEAR` or more above its ground is a VIADUCT and its own surface is
+	-- deliberately left as open air, so what is checked is the pair of rules
+	-- that replaced it:
+	--
+	--   * nothing is written under a column's own surface, ever;
+	--   * a carriageway column raised by less than `MIN_CLEAR` is SOLID from
+	--     its own surface up to the road, which is the terrace stair;
+	--   * a carriageway column raised by `MIN_CLEAR` or more carries the road
+	--     and nothing else, so a player walks under it.
 	local index = {}
 	for _, cell in ipairs(run.cells) do
 		index[cell.x .. ":" .. cell.y .. ":" .. cell.z] = cell
@@ -2186,12 +2221,54 @@ return function(repo)
 			"the avenue writes " .. cell.name .. " at " .. cell.y ..
 				", under the surface of its own column")
 	end
+	local road_level, solid_columns, open_columns = {}, 0, 0
 	for x = avenue_spec.from, avenue_spec.to do
 		for z = -2, 2 do
-			assert(index[x .. ":" .. surface(x, z) .. ":" .. z],
-				"the avenue leaves the column " .. x .. "," .. z ..
-					" unpaved at its surface")
+			local top
+			for y = surface(x, z), surface(x, z) + 64 do
+				if index[x .. ":" .. y .. ":" .. z] then top = y end
+			end
+			assert(top, "the avenue leaves the column " .. x .. "," .. z ..
+				" with no road over it at all")
+			if road_level[x] == nil or top > road_level[x] then
+				road_level[x] = top
+			end
+			local raise = top - surface(x, z)
+			if raise < avenue.MIN_CLEAR then
+				for y = surface(x, z), top do
+					assert(index[x .. ":" .. y .. ":" .. z],
+						"the avenue left a hole under the column " .. x ..
+							"," .. z .. " it raised only " .. raise)
+				end
+				solid_columns = solid_columns + 1
+			else
+				assert(not index[x .. ":" .. surface(x, z) .. ":" .. z],
+					"the avenue filled the column " .. x .. "," .. z ..
+						" it raised " .. raise .. ": a wall, not a viaduct")
+				open_columns = open_columns + 1
+			end
 		end
+	end
+	assert(solid_columns > 0 and open_columns > 0,
+		"the pilot profile exercised only one of fill and viaduct (" ..
+			solid_columns .. " solid, " .. open_columns .. " open)")
+	-- One cross profile per position of the run, which is ruling 1.
+	for x = avenue_spec.from, avenue_spec.to do
+		for z = -2, 2 do
+			local top
+			for y = surface(x, z), road_level[x] do
+				if index[x .. ":" .. y .. ":" .. z] then top = y end
+			end
+			assert(top == road_level[x], "the avenue walks the column " .. x ..
+				"," .. z .. " at " .. tostring(top) .. " and its own row at " ..
+				road_level[x] .. ": the cross profile is not flat")
+		end
+	end
+	for x = avenue_spec.from, avenue_spec.to - 1 do
+		local delta = road_level[x + 1] - road_level[x]
+		if delta < 0 then delta = -delta end
+		assert(delta <= 1, "the avenue steps " .. delta ..
+			" nodes between " .. x .. " and " .. (x + 1))
 	end
 
 	-- (c) Every lane walkable end to end.
@@ -2204,8 +2281,15 @@ return function(repo)
 	local lamp_columns = {}
 	for _, lamp in ipairs(run.lamps) do
 		assert(math.abs(lamp.z) == 3, "a lamp stands on the carriageway")
-		assert(lamp.y == surface(lamp.x, lamp.z) + 3,
-			"a lamp is not carried on its own column's surface")
+		-- RULING 3 (playtest 5, 2026-09-16): a standard stands beside the street
+		-- on the STREET's own height profile and not on the ground beside it.
+		-- Before the ruling a lamp took the verge column's own surface, which
+		-- on a terrace joint or a viaduct put it a node or six below the road
+		-- it lights; 1222 of the six capitals' 4343 standards did exactly that
+		-- (tools/wp13/street_geometry.lua, `lamps_off`).
+		assert(lamp.y == road_level[lamp.x] + 3,
+			"a lamp stands at " .. (lamp.y - 3) .. " and the street beside it " ..
+				"at " .. road_level[lamp.x] .. ": not on the street's profile")
 		assert(LIGHT[index[lamp.x .. ":" .. lamp.y .. ":" .. lamp.z].name],
 			"a lamp landmark is not a light")
 		-- EVERY STANDARD STANDS ON ITS OWN FOOTING, written by the run itself.
@@ -3038,47 +3122,61 @@ return function(repo)
 		assert(worst_step <= 1, "the ramp steps " .. worst_step ..
 			" nodes between two columns")
 
-		-- (c) EVERY KERB COLUMN THE ROAD FILLED BY THREE OR MORE IS RAILED,
-		-- and nothing else is.
+		-- (c) THE VIADUCT AND ITS RAIL ARE THE ROAD MODULE'S.
 		--
+		-- This capital used to rail a kerb column the road had filled by three
+		-- or more courses. Playtest 5 (2026-09-16) ruled that such a column may
+		-- not be FILLED at all: it stands on pillars with open air beneath, and
+		-- its plank walk and rail stand on the two VERGE lanes and not on the
+		-- carriageway's outermost one. So what is held here is the road
+		-- module's rule, on this capital's own gate profile:
+		--
+		--   * every carriageway column raised by `MIN_CLEAR` or more is OPEN at
+		--     its own ground;
+		--   * every rail cell stands on a verge, one course over the road;
+		--   * and the piece's own counts agree with its cells.
+		-- The rail is checked by NAME and the pillars by the piece's own count.
+		-- The undead palette binds its kerb out of the same masonry a pillar is
+		-- built from, so a name test for a pillar would also match every kerb
+		-- cell of the carriageway; the rail's node is the road's only one.
+		local RAIL = undead.node("railing")
+		local verge = half + 1
+		local railed, open_columns = 0, 0
+		for _, cell in ipairs(piece.cells) do
+			local along = (spec.axis == "x") and cell.x or cell.z
+			local across = ((spec.axis == "x") and cell.z or cell.x) - spec.at
+			if cell.name == RAIL then
+				assert(math.abs(across) == verge, "a rail stands at lane " ..
+					across .. ", not on a verge")
+				local top = road_top[0 .. ":" .. along]
+				assert(top and cell.y == top + 1, "a rail at " .. along ..
+					" stands at " .. cell.y .. ", not one course over the road")
+				railed = railed + 1
+			end
+		end
 		-- OUTSIDE THE GATE TUNNEL'S OWN BAND. Inside it the road carries its own
 		-- tunnel floor down to the lowest ground of the band -- section (f) --
-		-- so a column's span there is the tunnel's depth and not the road's fill,
-		-- and the rail follows the FILL. Those seven columns are rule (f)'s.
+		-- so those columns are solid by this capital's own rule and not by the
+		-- road module's, and they are rule (f)'s to check.
 		local band_low = GATE - wall.HALF
 		local band_high = GATE + wall.HALF
-		local railed, filled = 0, 0
 		for offset = -half, half do
 			for p = spec.from, spec.to do
 				local key = offset .. ":" .. p
-				local top, low = road_top[key], road_low[key]
-				if top and low then
-					local span = top - low
-					if rail_at[key] then span = span - 1 end
-					local wants = (math.abs(offset) == half) and
-						span >= RAIL_FILL
-					if p >= band_low and p <= band_high then
-						-- Inside the tunnel band a column's span is the TUNNEL'S
-						-- depth and not the road's fill, and the curtain's own
-						-- piers stand either side of the road, so there is NO
-						-- rail there at all. Rule (f) owns these columns.
-						wants = false
-					elseif wants then
-						filled = filled + 1
-					end
-					assert((rail_at[key] ~= nil) == wants,
-						"the column " .. key .. " spans " .. span ..
-							" courses and " ..
-							(rail_at[key] and "carries" or "carries no") ..
-							" rail")
-					if rail_at[key] then railed = railed + 1 end
+				local top = road_top[key]
+				if p >= band_low and p <= band_high then top = nil end
+				if top and top - ground(p) >= avenue.MIN_CLEAR then
+					assert(road_low[key] > ground(p),
+						"the column " .. key .. " is raised " ..
+							(top - ground(p)) ..
+							" and still filled to its own ground")
+					open_columns = open_columns + 1
 				end
 			end
 		end
-		assert(filled > 0,
-			"this profile fills no kerb column, so the rail rule is untested")
-		assert(railed == piece.rail, "the piece reports " .. piece.rail ..
-			" rails and writes " .. railed)
+		assert(railed == piece.street.rails, "the piece reports " ..
+			piece.street.rails .. " rails and writes " .. railed)
+		assert(piece.street.piers >= 0, "the piece reports no pillar count")
 
 		-- (d) THE CUTTING IS COMPLETE: wherever the cap put the road below the
 		-- hillside, every cell between the road and the natural ground is air.
