@@ -92,6 +92,48 @@ local function loader()
 	-- The water handle, for the fill's own basins.
 	M.WATER = {water = "default:river_water_source"}
 
+	-- THE CROP HANDLE, and the playtest finding it answers.
+	--
+	-- Playtest 5 (2026-09-16, user): "Fields in Kezamba grow 'Mossy Stone'?
+	-- That cannot be right."
+	--
+	-- Two separate things made that true and neither of them was a crop.
+	-- `dressing.crop_rows` falls back to `ground_patch` and `planter_soil` for
+	-- a race that binds neither `crop_soil` nor `crop`, and for the troll
+	-- palette BOTH of those are `grug_nodes:mud`: the three crop fields were
+	-- a rectangle of bare mud with nothing growing in it at all. And
+	-- `dressing.planter` kerbs a bed in `planter`, which for this palette is
+	-- `default:mossycobble`, so `kezamba_districts.lua`'s one-row terraces --
+	-- a bed of depth one is all kerb and no interior -- laid eight solid rows
+	-- of mossy cobble across each vineyard. That is the stone the user saw,
+	-- and §3 of the districts file is where it is fixed; this handle is the
+	-- other half.
+	--
+	-- `crop` IS PAPYRUS, which is a reed and is what a troll basin grows.
+	-- It is registered by `default` (`mods/BASE/default/nodes.lua`), it is
+	-- already in `wp40/r7_content.lua`'s accepted content rows so the content
+	-- channel resolves it without a new name, and it carries none of the
+	-- `META_FIELDS` a VoxelManip-written cell cannot serve (its only callback
+	-- is `after_dig_node`, which runs on dig).
+	--
+	-- `crop_soil` IS TILLED SOIL, for the reason the human palette records and
+	-- for a second one this race adds. The first: `grug_nodes:tilled_soil`
+	-- carries no `spreading_dirt_type` and is not named by default's "Grass
+	-- spread" ABM, so a field stays a field. The second: default's "Grow
+	-- papyrus" ABM lifts a reed to four nodes only when the node UNDER it is
+	-- one of the six `default:dirt*` surfaces (`default/functions.lua`,
+	-- `grow_papyrus`) -- tilled soil is not one of them, so these rows stay
+	-- the one course the blueprint drew and the field the KAT measured is the
+	-- field the player walks past a week later. Mud would have been the
+	-- prettier furrow for a flooded basin and it is what `ground_patch`
+	-- already lays everywhere else; it is not bound here because it is the
+	-- role the fallback used, and the whole point is that a FIELD must read
+	-- differently from the ground beside it.
+	M.CROP = {
+		crop_soil = "grug_nodes:tilled_soil",
+		crop = "default:papyrus",
+	}
+
 	-- Both at once, for a civic building that also owns a basin.
 	function M.merged(...)
 		local out = {}
