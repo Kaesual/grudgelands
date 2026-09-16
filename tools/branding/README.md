@@ -19,7 +19,7 @@ MASK=mask_hand.png ./make_icons.sh grudgelands_icon.png /tmp/grudgelands-icons
 magick compare -metric AE /tmp/grudgelands-icons/plain_96.png ../../menu/icon.png null:
 ```
 
-The compare prints `0`: the pixels are identical. The files are not
+The compare prints `0 (0)`: the pixels are identical. The files are not
 byte-identical because ImageMagick writes the run's time into the PNG
 (`tIME`, `date:*` text chunks). Verified on 2026-09-16 for `plain_96` and
 `plain_512` (signature `cfa4e1b6…` and `fab9e7ca…`).
@@ -33,6 +33,8 @@ contrast; `menu/icon.png` is the plain variant, the default choice.
 ## Package size
 
 The source render is 1.6 MB and, like everything in the repository, would ship
-in the ContentDB package. If it should stay out of the package, a
-`.gitattributes` `export-ignore` line is the mechanism; whether ContentDB
-honours it has not been verified, so nothing is set here.
+in the ContentDB package (tools/ as a whole is already over 300 MB, so the
+render is not the deciding item). If it should stay out of the package, an
+`export-ignore` line in the existing `.gitattributes` is the mechanism;
+whether ContentDB honours it has not been verified, so none is set. What of
+`tools/` and `docs/research/` ships at all is a release-time decision.
