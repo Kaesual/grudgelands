@@ -66,6 +66,7 @@ local function loader(directory)
 	-- `wp13/dur_brannoc.lua`'s shape, and Highcourt was the one four-district
 	-- capital that did not have it.
 	local districts = dofile(directory .. "/highcourt_districts.lua")(directory)
+	local street_plan = dofile(directory .. "/street_plan.lua")(directory)
 
 	local M = {}
 
@@ -496,10 +497,22 @@ local function loader(directory)
 	-- reaching for `highcourt_quadrants.lua`: the core composition knows about
 	-- the streets it authored itself and about nothing else.
 	function M.overlay_runs(lanes)
-		local runs = {}
-		for _, list in ipairs({M.avenues, M.ring, lanes or {}, M.wall}) do
-			for index = 1, #list do runs[#runs + 1] = list[index] end
+		-- THE JUNCTION PLATEAUS are attached here, and here is the only
+		-- place they can be. A plateau is a property of TWO street runs, and
+		-- only the composition knows which of its overlay runs ARE streets:
+		-- the curtain wall is an overlay run too, and a road passing through
+		-- its gate is not a crossroads. `wp13/street_plan.lua` turns the
+		-- street rectangles -- which are static, and are what the overlay's
+		-- identity is already hashed from -- into the squares they share, and
+		-- `wp13/avenue.lua` gives each square its height from the two runs'
+		-- own ground. The runs that are not streets are appended afterwards
+		-- and carry no junctions at all.
+		local streets = {}
+		for _, list in ipairs({M.avenues, M.ring, lanes or {}}) do
+			for index = 1, #list do streets[#streets + 1] = list[index] end
 		end
+		local runs = street_plan.attach(streets)
+		for index = 1, #M.wall do runs[#runs + 1] = M.wall[index] end
 		return runs
 	end
 

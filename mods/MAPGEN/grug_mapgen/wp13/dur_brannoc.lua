@@ -60,6 +60,7 @@ local function loader(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 	local wall = dofile(directory .. "/wall.lua")(directory)
 	local districts = dofile(directory .. "/dur_brannoc_districts.lua")(directory)
+	local street_plan = dofile(directory .. "/street_plan.lua")(directory)
 
 	local M = {}
 
@@ -1019,10 +1020,22 @@ local function loader(directory)
 	-- and BEFORE the wall: a lane yields the cells of the great road it meets,
 	-- and the wall yields the cells of every road it lets through its gate.
 	function M.overlay_runs(lanes)
-		local runs = {}
-		for _, list in ipairs({M.avenues, M.ring, lanes or {}, M.wall}) do
-			for index = 1, #list do runs[#runs + 1] = list[index] end
+		-- THE JUNCTION PLATEAUS are attached here, and here is the only
+		-- place they can be. A plateau is a property of TWO street runs, and
+		-- only the composition knows which of its overlay runs ARE streets:
+		-- the curtain wall is an overlay run too, and a road passing through
+		-- its gate is not a crossroads. `wp13/street_plan.lua` turns the
+		-- street rectangles -- which are static, and are what the overlay's
+		-- identity is already hashed from -- into the squares they share, and
+		-- `wp13/avenue.lua` gives each square its height from the two runs'
+		-- own ground. The runs that are not streets are appended afterwards
+		-- and carry no junctions at all.
+		local streets = {}
+		for _, list in ipairs({M.avenues, M.ring, lanes or {}}) do
+			for index = 1, #list do streets[#streets + 1] = list[index] end
 		end
+		local runs = street_plan.attach(streets)
+		for index = 1, #M.wall do runs[#runs + 1] = M.wall[index] end
 		return runs
 	end
 
@@ -1046,69 +1059,22 @@ local function loader(directory)
 		return list
 	end
 
-	-- THE CAUSEWAY PARAPET.
+	-- THE CAUSEWAY PARAPET IS THE ROAD MODULE'S NOW.
 	--
-	-- WP40 blends the flat civic core down to the granite terraces over some
-	-- forty nodes, and on that stretch the ground falls two nodes per column
-	-- while the road's one-Lipschitz envelope may fall only one: the east
-	-- avenue therefore leaves the ground and runs out of the citadel on an
-	-- embankment eight to ten nodes high. That is a fine thing to look at and a
-	-- bad thing to walk beside, and the first engine pass of this package is
-	-- where it was seen (the renders of section 7).
+	-- This composition used to add one course of masonry on a kerb column the
+	-- road had had to FILL by three or more courses: an embankment out of the
+	-- blend band is a fine thing to look at and a bad thing to walk beside, and
+	-- `wp13/avenue.lua` was the shared road of capitals whose built roads were
+	-- frozen against it, so the parapet went here.
 	--
-	-- `avenue.lua` is NOT where the fix goes. It is the shared road module and
-	-- Highcourt's built road is frozen against it, so a kerb rail written there
-	-- would move a capital this lane may not touch. It goes here instead, as a
-	-- pure function of the piece the road module just returned:
-	--
-	--   * the two KERB lanes are the road's outermost, at `at +- half`;
-	--   * a kerb column whose cells span two or more courses is a column the
-	--     road had to FILL, which is exactly where the drop is;
-	--   * one course of citadel masonry on top of it is the rail.
-	--
-	-- It reads only the piece's own cells, and a piece of a run is exactly that
-	-- stretch of the whole run, so the rail is chunk-independent for the same
-	-- reason the road under it is.
-	-- Three courses of fill, not two: a column that stands one or two above its
-	-- own ground is a terrace stair, and a rail on every tread would turn the
-	-- ordinary road into a trench. Three is an embankment.
-	local RAIL_FILL = 3
-	local function rail(palette, spec, piece)
-		local width = spec.width
-		if type(width) ~= "number" or width % 2 ~= 1 then
-			error("wp13 dur brannoc: the overlay run has no carriageway", 0)
-		end
-		local half = (width - 1) / 2
-		local kerb_a, kerb_b = spec.at - half, spec.at + half
-		local low, high, order = {}, {}, {}
-		for index = 1, #piece.cells do
-			local cell = piece.cells[index]
-			local across = (spec.axis == "x") and cell.z or cell.x
-			if across == kerb_a or across == kerb_b then
-				local key = cell.x .. ":" .. cell.z
-				if low[key] == nil then
-					low[key], high[key] = cell.y, cell.y
-					order[#order + 1] = {key = key, x = cell.x, z = cell.z}
-				else
-					if cell.y < low[key] then low[key] = cell.y end
-					if cell.y > high[key] then high[key] = cell.y end
-				end
-			end
-		end
-		local name = palette.maybe("castle_wall") or palette.node("wall_accent")
-		local added = 0
-		for index = 1, #order do
-			local column = order[index]
-			if high[column.key] - low[column.key] >= RAIL_FILL then
-				piece.cells[#piece.cells + 1] = {x = column.x,
-					y = high[column.key] + 1, z = column.z, name = name,
-					param2 = 0}
-				added = added + 1
-			end
-		end
-		piece.rail = added
-		return piece
-	end
+	-- Playtest 5 (2026-09-16) settled that the other way round. A street raised
+	-- three or more nodes above its own ground is no longer FILLED at all -- it
+	-- is a viaduct on pillars with air under it, and it carries a plank walk and
+	-- a rail on the two VERGE lanes, outside the carriageway rather than on its
+	-- outermost lane. Every capital gets it, in its own palette, from one rule.
+	-- A kerb column of a raised span now has a single cell in it, so the test
+	-- this routine ran could never fire again; it is gone rather than left to
+	-- read as a parapet that is not there.
 
 	-- One run, dispatched by its own id. A wall run carries authored geometry
 	-- the seam's overlay spec has no field for -- which side is the field,
@@ -1118,7 +1084,7 @@ local function loader(directory)
 	function M.overlay_run(avenue, palette, spec, surface)
 		local plan = M.wall_plan[spec.id]
 		if plan then return wall.run(palette, spec, surface, plan) end
-		return rail(palette, spec, avenue.run(palette, spec, surface))
+		return avenue.run(palette, spec, surface)
 	end
 
 	return M

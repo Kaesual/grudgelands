@@ -71,6 +71,7 @@ local function loader(directory)
 	local mask = dofile(directory .. "/kezamba_lagoon.lua")()
 	local gates = dofile(directory .. "/kezamba_gate.lua")(directory)
 	local ramp = dofile(directory .. "/kezamba_ramp.lua")(directory)
+	local street_plan = dofile(directory .. "/street_plan.lua")(directory)
 
 	local M = {}
 
@@ -1037,10 +1038,22 @@ local function loader(directory)
 	-- reads this order, so the road wins the cells of its own carriageway where
 	-- it passes between a threshold's posts.
 	function M.overlay_runs()
-		local runs = {}
-		for _, list in ipairs({M.avenues, M.ring, M.gates}) do
-			for index = 1, #list do runs[#runs + 1] = list[index] end
+		-- THE JUNCTION PLATEAUS are attached here, and here is the only
+		-- place they can be. A plateau is a property of TWO street runs, and
+		-- only the composition knows which of its overlay runs ARE streets:
+		-- the curtain wall is an overlay run too, and a road passing through
+		-- its gate is not a crossroads. `wp13/street_plan.lua` turns the
+		-- street rectangles -- which are static, and are what the overlay's
+		-- identity is already hashed from -- into the squares they share, and
+		-- `wp13/avenue.lua` gives each square its height from the two runs'
+		-- own ground. The runs that are not streets are appended afterwards
+		-- and carry no junctions at all.
+		local streets = {}
+		for _, list in ipairs({M.avenues, M.ring}) do
+			for index = 1, #list do streets[#streets + 1] = list[index] end
 		end
+		local runs = street_plan.attach(streets)
+		for index = 1, #M.gates do runs[#runs + 1] = M.gates[index] end
 		return runs
 	end
 
@@ -1065,86 +1078,22 @@ local function loader(directory)
 		return list
 	end
 
-	-- THE LAKE RAIL AND THE CAUSEWAY RAIL, which are one rule with two halves.
+	-- THE LAKE RAIL AND THE CAUSEWAY PARAPET ARE THE ROAD MODULE'S NOW.
 	--
-	-- The seam hands an overlay the WALKABLE surface of a column, which over
-	-- water is the water's own surface (`r7_settlement.lua`), so the east and
-	-- north avenues cross the cenote as a solid causeway one node over it. That
-	-- is the right geometry and the wrong picture for a troll capital: what
-	-- belongs there is a railed timber walk. And where the road leaves the lake
-	-- it runs down the blend from the flat civic pad to the terraces, which
-	-- falls faster than a one-Lipschitz road may descend, so the avenue leaves
-	-- the ground on an embankment with nothing at its edge -- the same thing the
-	-- first engine pass of Dur Brannoc found and the seam package called "the
-	-- causeway has no parapet".
+	-- This composition used to rail a kerb column that stood inside the
+	-- committed lagoon mask or that the road had had to FILL by three or more
+	-- courses: a causeway over the cenote wanted a railed timber walk, and an
+	-- embankment out of the blend band wanted a parapet, and `wp13/avenue.lua`
+	-- was the shared road of capitals whose built roads were frozen against it.
 	--
-	-- `avenue.lua` is NOT where either goes: it is the shared road module and
-	-- Highcourt's and Dur Brannoc's built roads are frozen against it. Both go
-	-- here, as a pure function of the piece the road module just returned and of
-	-- the COMMITTED LAKE MASK:
-	--
-	--   * the two KERB lanes are the road's outermost, at `at +- half`;
-	--   * a kerb column inside the mask is a column of road standing on the
-	--     cenote, and gets a rail;
-	--   * a kerb column whose cells span `RAIL_FILL` or more courses is a column
-	--     the road had to FILL, which is exactly where the drop is, and gets one
-	--     too. Three courses and not two, for Dur Brannoc's reason: a column one
-	--     or two above its own ground is a terrace stair, and a rail on every
-	--     tread would turn the ordinary road into a trench.
-	--
-	-- Both inputs are chunk-independent -- a piece of a run is exactly that
-	-- stretch of the whole run, and the mask is a constant -- so the rail is
-	-- too, which is what the KAT's cut-at-every-column test proves.
-	local RAIL_FILL = 3
-	local function lake_rail(palette, spec, piece)
-		local width = spec.width
-		if type(width) ~= "number" or width % 2 ~= 1 then
-			error("wp13 kezamba: the overlay run has no carriageway", 0)
-		end
-		local half = (width - 1) / 2
-		local kerb_a, kerb_b = spec.at - half, spec.at + half
-		local name = palette.node("railing")
-		local low, high, order, railed = {}, {}, {}, {}
-		for index = 1, #piece.cells do
-			local cell = piece.cells[index]
-			local across = (spec.axis == "x") and cell.z or cell.x
-			if across == kerb_a or across == kerb_b then
-				local key = cell.x .. ":" .. cell.z
-				-- A COLUMN THE GATE RAMP ALREADY RAILED IS LEFT ALONE, and its
-				-- own rail is not counted as part of the kerb's span. Without
-				-- both halves this routine measured the rail as the top of the
-				-- column and stacked a second one on it -- a fence standing on
-				-- a fence, two per ramp column, which is what the four-gate
-				-- measurement counts as floating.
-				if cell.name == name then
-					railed[key] = true
-				elseif high[key] == nil then
-					low[key], high[key] = cell.y, cell.y
-					order[#order + 1] = {key = key, x = cell.x, z = cell.z}
-				else
-					if cell.y < low[key] then low[key] = cell.y end
-					if cell.y > high[key] then high[key] = cell.y end
-				end
-			end
-		end
-		local added, over_water = 0, 0
-		for index = 1, #order do
-			local column = order[index]
-			local wet = mask.lagoon(column.x, column.z)
-			if not railed[column.key] and
-					(wet or high[column.key] - low[column.key] >= RAIL_FILL) then
-				piece.cells[#piece.cells + 1] = {x = column.x,
-					y = high[column.key] + 1, z = column.z, name = name,
-					param2 = 0}
-				added = added + 1
-				if wet then over_water = over_water + 1 end
-			end
-		end
-		piece.rail = added
-		piece.rail_over_water = over_water
-		piece.rail_fill = RAIL_FILL
-		return piece
-	end
+	-- Playtest 5 (2026-09-16) settled that the other way round. A street over
+	-- water is a BRIDGE in every capital now -- a deck on piers with the water
+	-- continuous under it -- and a street raised three or more nodes above its
+	-- own ground is a VIADUCT on pillars; both carry a plank walk and a rail on
+	-- the two VERGE lanes, outside the carriageway rather than on its outermost
+	-- lane, which is where a rail on a kerb used to stand. The mask is not
+	-- needed either: the seam publishes whether a column is water
+	-- (`wp40/r7_settlement.lua`, `walkable_values`).
 
 	-- One run, dispatched by its own id, in the order the pieces are built:
 	-- the road first, then the GATE RAMP that brings it down to the terrain at
@@ -1161,7 +1110,7 @@ local function loader(directory)
 		if approach then
 			piece = ramp.run(palette, spec, surface, piece, approach)
 		end
-		return lake_rail(palette, spec, piece)
+		return piece
 	end
 
 	return M
