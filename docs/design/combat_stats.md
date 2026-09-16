@@ -313,6 +313,17 @@ Normal tier at level L:
   Guard at **8.8** is the one documented exception: it holds the same 1.1×
   margin over the 8 nodes/s improved boat (`boats.md` §5,
   `biomes_mobs.md` §3).
+- **The 4.4 > 4.0 inequality holds except for named, long-cooldown skills**
+  (`skill_trees.md` §5, ruling 10 of 2026-09-16): "skills may explicitly
+  **break the base inequalities** (mob 4.4 > player 4.0, stat caps, roots)…
+  The rule: **the bigger the break, the stronger the limit**, usually cooldown
+  or duration." The first one is the Scout's **Sprint** — **+25 % for 10 s on
+  a 300 s cooldown** (ruling 29, `scout.md` §2) — which puts a sprinting
+  player at **5.0** against 4.4 for ten seconds in every five minutes. Nothing
+  permanent or cheap is covered: the Swiftness Draught stays at **+8 % for
+  15 s** (4.0 × 1.08 = 4.32 < 4.4, `items_crafting.md` §3.6/§10 P4) and a
+  mount pays for its permanent 6–10 nodes/s with the damage dismount
+  (`mounts.md` §3.1).
 - Pacing property: ~**20 same-level mob kills per level** (XP=10L vs.
   quadratic level curve); quests supply the rest.
 - **Gray kills award no XP**: a mob at level ≤ killer level − 10 gives 0
