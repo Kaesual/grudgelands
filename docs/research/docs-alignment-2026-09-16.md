@@ -23,10 +23,14 @@ against `mods/` and `tools/` and against `git log --since=2026-09-01`.
 | (a) doc says planned, code has it | 4 | 0 | 0 |
 | (b) doc says shipped, code lacks it | 3 | 0 | 0 |
 | (c) two docs contradict | 2 | 0 | 0 |
-| (d) stale numbers, paths, names, status boxes | 11 | 2 | 0 |
+| (d) stale numbers, paths, names, status boxes | 12 | 3 | 0 |
 | (e) code behaviour nobody documented | 1 | 1 | 0 |
 | verified correct (checked, left alone) | — | — | 9 |
-| **total** | **21** | **3** | **9** |
+| **total** | **22** | **4** | **9** |
+
+Updated 2026-09-16 after the independent review (`review-A.md`): two of its
+findings are folded in below — §1 row (d)12 and §3.4 — and its verdict on the
+AGENTS.md rewrite ("no BLOCKER, no SHOULD-FIX") is recorded in §5.
 
 Five findings carry a measurement rather than a citation; they are marked
 MEASURED. Three FOR-THE-USER rows are marked UNMEASURED and say so.
@@ -80,7 +84,7 @@ API list with the current one, each name checked against
 placeholder platforms at x = 0/±550, z = ±900 and uses them as spawn points."*
 It does not. The builder (`grug_mapgen/structures.lua`) is gone, and the spawn
 comes from `grug_core.start_position` (`grug_core/zone_authority.lua:487`, read
-by `grug_classes/selection.lua:259`). **Corrected**: the block is relabelled
+by `grug_factions/init.lua:162`, `:192` and `:298`). **Corrected**: the block is relabelled
 historical and kept, because its 2026-08-08 biome-guarantee argument is worth
 re-reading before anyone proposes climate tuning again.
 
@@ -161,6 +165,7 @@ zones is still outstanding, rather than hide that in a status word (see §3).
 | 8 | `docs/design/README.md` | `settlements.md` is the only design document missing from the index table | Row added |
 | 9 | `docs/design/README.md:33` | `biomes_mobs.md` status *"target surface pending WP40"* | WP40 shipped; the outstanding §1/§4 re-cut named instead |
 | 10 | `AGENTS.md:268` | modpack list names `HUD/`, which does not exist, and omits `BASE/`, which does (`ls mods/`) | Corrected to the six that exist |
+| 12 | `ROADMAP.md`, `BACKLOG.md`, `README.md` (this lane's own first pass) | The three "still open in WP13" lists read as exhaustive and left out 32 anchors — 4 mirefolk camps, 16 clash anchors, 2 dragon arenas, 10 rare-route pads — all WP13's per `wp13-capitals-pois-contract.md:28-31` and `:191-193`; the ten `rare_route` rows are live at `wp40/source/simple_map.lua:681-690` | All three lists carry the whole 100-anchor roster, with the WP42/WP23/WP34 boundaries on it. Found by the review, not by the sweep |
 | 11 | `AGENTS.md:684-687` | WP7's vendor rule: *"Placement is a throttled globalstep against fixed capital offsets — **no mapgen change**, so existing worlds get vendors too"* | Two problems: WP13 moved vendors onto blueprint `vendor` sockets and all six cores now export them, so the offsets serve nobody; and "existing worlds" is the reasoning fresh-server mode retired. Described as the fallback it now is, with the twelve shop kinds named |
 
 ### (e) Code behaviour the docs did not carry
@@ -243,6 +248,36 @@ rules and not per-capital counts, which is probably right; but nothing in
 load statement. Whether a per-capital roster size belongs in the design docs, in
 BACKLOG, or nowhere is the user's call.
 
+### 3.4 `wp13-npc-work.md` summarises the 80/20 ruling as workplace vs walker
+
+MEASURED, and the reason this note has a §3.4 at all: this lane's own first
+README pass repeated the error, and the independent review caught it.
+
+`wp13-npc-work.md:18-19` summarises the round-3 ruling as *"residents are about
+80 % static at a workplace with an activity animation and about 20 % walkers on
+short routes"*. The contract it implements says something different:
+`wp13-npc-sockets-contract.md` §8.3 splits **static vs walker**, not
+**workplace vs walker** — *"every fifth `idle` spawn socket … hosts a walker;
+every `work` socket and every other `idle` socket hosts a static resident"*.
+The two are not the same statement, and the shipped code follows the contract:
+
+```
+highcourt_work  36  144  108  chop=7,farm=7,fish=3,pray=1,sit=5,
+                              smith=1,stall=1,sweep=2,tend=9
+```
+
+36 workplaces among 144 residents is **one in four**, not four in five; 108 are
+static `idle` residents with no workplace and no activity animation; walkers are
+`ceil(108/5) = 22`, i.e. 15.3 %, the contract's own figure. So "about 80 %
+static" is right and "at a workplace" is the part that is not.
+
+Not corrected here — the note is a dated record of what shipped on 2026-09-15
+and the brief forbids rewriting one. It is listed because it is the upstream of
+a front-page error: the README sentence was copied from it, and the next person
+to summarise settlement life will copy it again. Either the note gets a dated
+status line at its top, or §8.3's wording is what future summaries are pointed
+at. The user's or the coordinator's call.
+
 ## 4. Deliberately not touched
 
 Other wave-3 lanes own these in parallel and this lane reported rather than
@@ -255,7 +290,22 @@ Research notes were not rewritten — they are dated records — and none needed
 status pointer at its top: every WP13 note read was accurate for the date it
 carries.
 
-## 5. What a review should look at
+## 5. The independent review
+
+`review-A.md`, read-only, range `f37a0c5b..e9b469fe`, re-running both KATs
+itself. Verdict **MERGEABLE, no commit dropped**; the AGENTS.md rewrite — the
+one change flagged as blocker-capable — came back **"no BLOCKER, no
+SHOULD-FIX"**, with every removed symbol confirmed absent and every added claim
+confirmed against the code. It found no FIXED row whose correction was itself
+wrong, and no row that should have been FOR THE USER.
+
+Its two substantive findings are folded in above: the README work/walker
+sentence (§3.4) and the incomplete open lists ((d)12). Its NITs are addressed
+too — the wrong `start_position` consumer in this note, five missing names in
+the AGENTS.md API list, and the `emax.y` decoration lesson, which is kept
+because the engine behaviour outlives the ocean mask that taught it.
+
+## 5b. What a further review should look at
 
 - The AGENTS.md mapgen rewrite is the one change with real risk of losing
   knowledge. It deletes 128 lines. The question to ask is not "is the new text
@@ -270,7 +320,7 @@ carries.
 
 ## 6. Open
 
-- The five §3.1 obligations, and §3.2's contract number, need the user's or the
-  coordinator's decision.
+- The five §3.1 obligations, §3.2's contract number and §3.4's note wording
+  need the user's or the coordinator's decision.
 - `biomes_mobs.md` §1/§4 remain the retired WP18/WP36 ring tables, now labelled
   as such. Re-cutting them onto the 38 named zones is real work with no owner.
