@@ -21,4 +21,8 @@ sha256sum \
 	tools/wp13/evidence/20260915-capital-terrain/highcourt/rampart-digest-531802985935182545.txt \
 	tools/wp13/evidence/20260915-capital-terrain/highcourt/corner-digest-531802985935182545.txt \
 	tools/wp13/evidence/20260915-capital-terrain/highcourt/gate-digest-531802985935182545.txt \
+	tools/wp13/evidence/20260915-capital-terrain/highcourt/avenue-digest-8675309.txt \
+	tools/wp13/evidence/20260915-capital-terrain/highcourt/rampart-digest-8675309.txt \
+	tools/wp13/evidence/20260915-capital-terrain/highcourt/corner-digest-8675309.txt \
+	tools/wp13/evidence/20260915-capital-terrain/highcourt/gate-digest-8675309.txt \
 	docs/research/wp13-polish-wave3.md

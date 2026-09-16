@@ -227,8 +227,8 @@ lethariel_homes_singing_grove/reference/595a27bce753399da005d1798308d92f9c34c62d
 lethariel_homes_yard/reference/c6a55ba81cdc1fda440c715f457b12f612255fcb21e6e112174ad397e376de27/3210
 lethariel_homes_green/reference/3923bf8e1ac3bd07b20533065ed097e5f8cd0017440ff032247a42a9d0a106b2/1410
 lethariel_avenue/overlay/a5111f8b7c26a9f401c83a7c62cb02b956ae0724e6cef629a7edbaddbe3cb9fa
-kezamba/ef258e33b9e62cefaf4baabf0df2fd1340baa872519f36b0b8be3bcfa487165a/330505/128/1/53/26
-kezamba_core/anchor/ef258e33b9e62cefaf4baabf0df2fd1340baa872519f36b0b8be3bcfa487165a/69559
+kezamba/dc32c0d2c32bb20908cd31cd999e70bc6d58a16c279a35d66e9ca084c0e5ecdf/330505/128/1/53/26
+kezamba_core/anchor/dc32c0d2c32bb20908cd31cd999e70bc6d58a16c279a35d66e9ca084c0e5ecdf/69559
 kezamba_shore_market/reference/5136e102a3eac1c2733b436747a6a34b132919af3c69eb98a67f6ce46179f744/3970
 kezamba_shore_butcher/reference/c4f496ed898ef619602baf5614c5ffd5d4f63142caeab64bdd60edaef06f3780/5824
 kezamba_shore_tailor/reference/ba1648d63083587a98681c257184ff6150f381592992ee68382bf86ade1c042a/4077
@@ -337,7 +337,7 @@ nhal_veyr_homes_blight_garden/reference/a6e763a4363a616f76d64aa732e632b28365f9ec
 nhal_veyr_homes_candle_court/reference/98df57b04c2b157012f4aece7f3b8f596f7d1a7b598ccfa6c197752188a035a4/3210
 nhal_veyr_homes_green/reference/1ed7757793d5d5a9295e75e4df7437204af8a22ad82a3bc558b2c21899d387c3/1410
 nhal_veyr_avenue/overlay/7003e8f4d93a9d045b9ba80843962672b316336148eb73e14f751a10f8083337
-composed/12/213
+composed/12/212
 == Highcourt's blueprint identities (must be byte-identical to main:
    the lot POSITIONS moved, and a plot's identity is its own cells) ==
 core                               anchor      101831  187f79e0ba52103818eba53f7ed9c3beadc631682648918301287fa4a7200499

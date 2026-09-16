@@ -1,11 +1,23 @@
 # WP13 wave 3, Lane P: polish and carried-over items
 
-Branch `wp13-w3-polish`, base main `f37a0c5b` ("Freeze the Dur Brannoc corner
-digest on the gate seed", the wave-2 merge with six capitals). Six small,
-independent items, one commit each. Written 2026-09-16.
+Branch `wp13-w3-polish`, rebased onto main `ed11781f` ("Merge WP26: the dual
+furnace and the universal alloy chain", which touches no WP13 file); written
+against `f37a0c5b`, the wave-2 merge with six capitals, and every digest
+comparison below is against that tree. Six small, independent items, one commit
+each, plus a fix round. Written 2026-09-16.
 
 Everything below is measured. A claim with no number beside it is marked
 unmeasured.
+
+**The fix round (2026-09-16, after the independent review)** did five things,
+and each is recorded where it belongs rather than in a changelog: it closed
+Highcourt's gate on the second gate seed (§4.2); it reverted the basalt roof
+and rewrote its KAT section to gate the library fix instead (§2.1); it
+corrected six wrong seed attributions and one wrong cascade neighbour in §3.4
+and in two source comments; it restated the NPC-load claim as a spread rather
+than a single-run coincidence (§5); and it gave `highcourt.lua` the roster's own
+quadrant instance instead of a second `dofile` of it (§3.2). The review's own
+measurements are cited where they are used.
 
 ---
 
@@ -58,7 +70,17 @@ staircase.
 
 ---
 
-## 2. The basalt roof of Kezamba's civic pair (`bb689ba8`, `f6a5e8b1`)
+## 2. The basalt roof corners of Kezamba's civic pair (`bb689ba8`, `f6a5e8b1`, and the fix round's revert)
+
+**Outcome first, because the item ended somewhere other than where it started.**
+The LIBRARY GAP is closed and stays closed: `wp13/parts.lua` now lets a part
+write the basalt inner and outer stairs, so a basalt roof CAN be bound. The
+capital does not bind one: the variant was built, rendered and read the same way
+by the lane and by the independent review -- an undifferentiated dark mass with
+no silhouette -- and the capitals contract's troll row names the wood outright,
+so the roof stays junglewood and the fix round reverted the five `roof_*` lines.
+The castle-role rebinding of `f6a5e8b1` stays. It is one table away and the
+cost is written down below; the renders are in the evidence for the user.
 
 The wave-2 Kezamba lane wrote the reason down in `wp13/troll_palette.lua`
 itself: `roofs.raster` turns a hip with `roof_stair_outer` and a valley with
@@ -97,29 +119,64 @@ the handle is untouched, and the twelve `stairs:stair_inner_junglewood`
 elsewhere in the city stay put. This hall's roof has no valley and no flat cap,
 so `roof_stair_inner` and `roof_ridge` are bound and not emitted by it.
 
-**Digests that move**: `kezamba` / `kezamba_core` `dc32c0d2…` -> `ef258e33…`
-(69559 cells, unchanged), and the integration fixture's shared R7 content
-channel grows from 212 to 213 names because
-`grug_decor:darkage_basalt_stair_outer` is now written by a composition. The
-engine pass then registered it without complaint (errors=0).
+**Digests, while the basalt roof was bound**: `kezamba` / `kezamba_core`
+`dc32c0d2…` -> `ef258e33…` (69559 cells, unchanged), and the integration
+fixture's shared R7 content channel grows from 212 to 213 names because
+`grug_decor:darkage_basalt_stair_outer` is then written by a composition. The
+engine pass registered it without complaint (errors=0), which is the evidence
+that the two node names are real and reach every mapchunk.
 
 With the SHAPED entry ALONE and nothing else, `integration_fixture` is
 byte-identical -- which is what "append-only" means here.
 
-**The gate** is `kezamba_kat` section 6, and it fails for two different
-regressions. The ROLES half asserts all five roof roles of the handle resolve
-to basalt and that each of the four shaped ones is a name `parts.shaped` will
-let a part turn, so dropping either corner out of SHAPED fails before anything
-is built. The CELLS half asserts the finished core writes basalt corner pieces,
-which only a rastered basalt roof can produce. Both mutations were run and both
-go red.
+### 2.1 The roof is timber again, and the decision is recorded rather than hidden
 
-**FOR THE USER, and this is a look-and-feel call rather than a measurement.**
-The renders are
-`renders/kings-hall-{before,after}.png`. The all-basalt hall reads as one dark
-mass where the timber roof gave it a second material. The change is one table
-in `troll_palette.lua` and is trivially reversible if the brown roof was the
-better building.
+Both renders were made (`renders/kings-hall-{before,after}.png`) and both the
+lane and the independent review of 2026-09-16 read them the same way:
+`kings-hall-after.png` puts roof, walls, turrets, podium and plinth in one
+basalt texture and the building loses its silhouette; `kings-hall-before.png`
+reads as a building -- dark stone body, brown roof, legible ridge and eaves. The
+capitals contract's troll row names the material outright ("stilt halls on
+basalt platforms, **junglewood** walkways, totem posts, cauldron courts,
+emergent trees kept", section 2.4), so the timber roof is what the contract asks
+for rather than a compromise. **The fix round therefore reverted the five
+`roof_*` lines of `troll_palette.BASALT` and kept everything else.**
+
+With that revert, Kezamba's digest returns to main's `dc32c0d2…` and the content
+channel to 212 names, so **the only settlement digests this lane moves are the
+three Lethariel ones of section 1.** Measured after the revert:
+`integration_fixture` is byte-identical to the tree that carried item 1 alone.
+
+**THE HONEST COST OF TURNING IT ON**, because the first version of this note
+said "one table" and the review measured that to be wrong: it is the five lines
+in `troll_palette.BASALT` **and** `kezamba_kat` section 6, which would have to
+go back to asserting an all-basalt roof, **and** the comment beside the table.
+The Kezamba core digest moves to `ef258e33…`. The `parts.lua` SHAPED entries
+stay either way -- they close a real library gap and, on their own, move
+nothing.
+
+**The gate** is `kezamba_kat` section 6, rewritten in the fix round to assert
+what holds for EITHER binding, in three parts that fail for three different
+regressions:
+
+* **(a) the library gap is closed** -- all four `grug_decor:darkage_basalt_*`
+  shapes are registered, carry `paramtype2 = "facedir"` and `group:stair`/`slab`,
+  and `parts.shaped` agrees with the registry about each in both directions.
+  This is the only gate the two new SHAPED entries have: `library_kat` proves
+  that equality only for names a composition EMITS, and this capital no longer
+  emits them. Dropping either corner from SHAPED fails here.
+* **(b) the bound family is complete** -- all five roof roles resolve, the four
+  shaped ones are shapes the library may turn, and all five reduce to ONE
+  material (the `stairs` mod puts the shape in front of the material and
+  `grug_decor` behind it, and the full cube carries none, so the check
+  normalises all three spellings). Half a family bound is the defect, and a
+  partial basalt binding is exactly that defect.
+* **(c) the corners are actually written** -- the finished core emits the corner
+  pieces of whichever family is bound (24 `stairs:stair_outer_junglewood` today),
+  so a roof that stopped rastering hips goes red.
+
+Mutations run and red: dropping `darkage_basalt_stair_outer` from SHAPED (a);
+binding `roof_stair_outer` to a name from another family (b).
 
 ---
 
@@ -158,9 +215,21 @@ it was the one capital restricted to `tools/wp13/highcourt_plots.lua`, which
 takes exactly two. That is the gap wave 1 had already found the hard way and
 then left open for this capital.
 
-`460ab861` publishes it -- one line, mirroring `wp13/dur_brannoc.lua`, of a
-pure module `highcourt_districts.lua` already loads. `integration_fixture`,
-`highcourt_identities` and the start identities are byte-identical across it.
+`460ab861` publishes it, mirroring `wp13/dur_brannoc.lua`. Its first version
+`dofile`d `highcourt_quadrants.lua` a second time, so `highcourt.quadrants` and
+`highcourt_districts.quadrants` were two separate tables of the same data --
+harmless while every consumer reads them, and the independent review was right
+to flag it. The fix round takes the ROSTER's instance instead
+(`local districts = dofile(".../highcourt_districts.lua")(directory)`), which is
+exactly `dur_brannoc.lua`'s shape and **removes** a duplicate rather than adding
+one: `highcourt_district.lua` used to be loaded once in `highcourt.lua` and once
+inside the roster, and `M.district` is now the roster's own market district --
+the same table it always was, `districts.districts[1]`, whose role the roster
+asserts at load.
+
+Digest-neutral either way, measured: `integration_fixture`,
+`highcourt_identities` and the six start identities are byte-identical across
+both versions of this change.
 
 ### 3.3 `--repair` had to learn the fill grid
 
@@ -178,21 +247,44 @@ moves happens only because the district lot beside it moved first.
 Thirty of thirty-six district lots and nine of sixteen fill lots keep the
 position they were authored at.
 
+**The seed column is a RESOLVED INDEX, and the first version of this table got
+six of the thirteen rows wrong.** `capital_lots.lua` reports
+`ILLEGAL <n>:<rule>:<value>`, and `<n>` is the position of the field dump in
+the argument list -- which is the order of `tools/wp13/capital_anchor_fixture.lua`'s
+`SEEDS = {531802985935182545, 8675309, 15912857179583385436, 0, 1, 2, 42,
+12345, 999999999}`. So 4 is seed 0, 7 is 42, 8 is 12345, 9 is 999999999. Those
+indices were first written down as if they were seeds. The independent review
+of 2026-09-16 caught it, and this lane's own `audit-terrain-before.txt`
+contradicts the old table on two of the six rows -- it records
+`homes_kitchen_garden at -144,-104` under **seed 0** and `martial_barracks at
+132,108` under **seed 42**. The counts, the moves and the repair were always
+right; only the seed column was wrong, and it was wrong in two source comments
+as well, which is why it mattered.
+
 | kind | lot | from | to | why |
 |---|---|---|---|---|
-| district | southeast 5 | 116,-116 | 112,-116 | rise 8 on seed 42 |
-| district | northeast 1 | 132,108 | 132,112 | fall 8 on seed 12345 |
+| district | southeast 5 | 116,-116 | 112,-116 | rise 8 on seed 0 |
+| district | northeast 1 | 132,108 | 132,112 | fall 8 on seed 42 |
 | district | northwest 1 | -132,80 | -132,84 | rise 7 on seed 999999999 |
-| district | northwest 2 | -176,80 | -176,76 | rise 7 on seed 12345 |
-| district | northwest 8 | -180,168 | -180,164 | rise 8 on seed 999999999 |
-| district | southwest 6 | -84,-188 | -84,-196 | rise 7 on seed 42 |
+| district | northwest 2 | -176,80 | -176,76 | rise 7 on seed 42 |
+| district | northwest 8 | -180,168 | -180,164 | rise 8 on seed 12345 |
+| district | southwest 6 | -84,-188 | -84,-196 | rise 7 on seed 0 |
 | fill | northeast 4 | 140,84 | 144,84 | fall 12 on seed 999999999 |
-| fill | northwest 1 | -180,48 | -180,44 | cascade: lane to the moved lot 3 |
+| fill | northwest 1 | -180,48 | -180,44 | cascade: lane to the moved district lot **2** |
 | fill | northwest 4 | -80,132 | -84,132 | fall 10 on seed 999999999 |
 | fill | southwest 1 | -88,-220 | -68,-228 | fall 7 on seed 2 (move 28) |
 | fill | southwest 2 | -220,-116 | -224,-116 | fall 10 on seed 999999999 |
 | fill | southwest 3 | -196,-212 | -196,-220 | rise 9 on the user's seed |
-| fill | southwest 4 | -144,-104 | -116,-60 | fall 8 on seed 42 (move 72) |
+| fill | southwest 4 | -144,-104 | -116,-60 | fall 8 on seed 0 (move 72) |
+
+**The cascade is north-west district lot 2, not lot 3.** Lot 2 moved from
+`-176,80` to `-176,76` -- toward the fill lot -- and north-west fill 1 at
+`-180,48` (reach 11) then stood inside its four-node lane: the blocking band of
+a reach-13 district lot at z 76 is z 59..93, and the fill lot's own band reaches
+z 59, so they touch. At the old z 80 the band was 63..97 and they did not. Lot
+3 sits at `-220,80` and its x band (-237..-203) never reaches the fill lot's
+(-191..-169), so it could not have been the cause. Put the fill lot back on the
+repaired grid and the predicate says `ILLEGAL lot:northwest/2`.
 
 **South-west fill 4 walked 72 nodes** and a reviewer should look at it. It is
 the garden strip inside the lot grid, the smallest of the four slots, in the
@@ -253,8 +345,35 @@ leaving the capital's own gate red: avenue `0619c8eb…` (3656 cells, was
 `99f48984…`/1610 pre-wall), rampart `2f2f4fce…` (9103), corner `44adce15…`
 (7378), gate `1a010165…` (2479).
 
-**Still open**: `highcourt/avenue-digest-8675309.txt` is stale for the same
-reason and is NOT re-frozen -- this lane took no pass on that seed (see §7).
+### 4.2 And the second seed, closed in the fix round
+
+`highcourt/avenue-digest-8675309.txt` was stale for exactly the same pre-wall
+reason (`8383b298… main=658b6763`, 1609 cells) and the first pass of this lane
+left the gate red on that seed. The fix round closed it with its own engine
+pass on port 31310 (exit=0, errors=0, complete=1):
+
+| region | frozen value | cells |
+|---|---|---|
+| avenue | `fde348c9d5855952604dcd0cfd7c3b9e4758742994692d69ea910e3ccea5a6c4` | 3300 |
+| rampart | `17bb7223e853c79dd2ed3844d5cf27f2aa91811f8ddf19114116efba65628a06` | 9059 |
+| corner | `cc6da1b72127eb8bd0eaeedb0b9f7fa5eeb713379b01cce8510e695237c8bb12` | 7127 |
+| gate | `65ed2219c2f06c00fbc2f238b003d280c5382a5a81158b0a26f1f13073e94c8b` | 2429 |
+
+**Three independent engine passes agree on the avenue value.** `fde348c9…` was
+already committed on main a day earlier in the OTHER Highcourt expectation
+directory, `20260915-highcourt-fill/highcourt/avenue-digest-8675309.txt`
+(`main=922bfd92 package=20260915-route-gates`); the independent review measured
+it again; and this lane measured it a third time on its own port. A second pass
+after the freeze is green on all four regions
+(`engine/highcourt-8675309/run-green-after-freeze.txt`).
+
+**A structural defect this uncovers, and it is nobody's lane**: Highcourt's
+avenue digest has TWO expectation files under two paths, read by two different
+runners -- `run_capital.sh` reads `20260915-capital-terrain/highcourt/`,
+`run_highcourt.sh` reads `20260915-highcourt-fill/highcourt/`. That duplication
+is exactly how one copy sat a day out of date while the other was correct, on
+both seeds, and it will happen again after Lane S. One path, or one runner,
+would be better.
 
 ---
 
@@ -294,25 +413,56 @@ Highcourt, the first capital measured this way:
 | mean server step | 90.26-90.30 ms | 90.53 ms |
 | worst server step | ~91.0 ms | 91.07 ms |
 | tick, per settlement-second | 11.80-30.70 µs | 459.40 µs |
-| tick, per ticking NPC | 1.07-2.79 µs | **2.78 µs** |
-| `find_path` in 30 s | 0 | **30** |
+| tick, per ticking NPC | 1.07-2.79 µs | 2.78 µs |
+| `find_path` in 30 s | 0 | 30 |
 
-**The answer is that the tick is linear and the per-NPC cost is a start's**:
-2.78 µs against a start's worst of 2.79, with the settlement total fifteen
-times a start's because the population is. The server step does not move, which
-is what it always says -- a dedicated server runs a fixed 0.09 s step.
+**THE CLAIM, RESTATED AFTER THE REVIEW, because one run is not a measurement.**
+The first version of this section concluded "the per-NPC cost is a start's:
+2.78 µs against a start's worst of 2.79". That pairing is a coincidence of a
+single run on a shared host. The independent review ran the same programme twice
+more -- once on the branch, once with this lane's harness staged into a pristine
+`f37a0c5b` tree -- and measured **1.58 µs** and **4.10 µs** per ticking NPC for
+Highcourt, with one start in its main run at **10.65 µs**. Across the three runs
+the starts span roughly 1.07-10.65 µs and Highcourt 1.58-4.10 µs.
 
-### 5.1 Two findings the run was not looking for, neither this lane's to fix
+So the defensible finding is that **the per-NPC tick cost stays WITHIN THE
+SPREAD of a start's rather than growing with population**, while the settlement
+total scales with the population because the work is per NPC. What reproduces
+across all three runs, and is the real result:
 
-1. **`min_walker_ring=1` at Highcourt.** At least one of its 21 walkers was
-   handed a wander ring of ONE spot, and a ring of one is a walker that never
-   moves (`next_spot` returns the index it was given). That is the Stillgrave
-   defect of round 3, in a capital. The probe fails the run on it, which is why
-   the runner reports FAILED with errors=1 -- the probe doing its job. It
-   belongs to whoever owns the socket placement.
-2. **`find_path=30` in a quiet 30.4 s window** (59.18 a minute). A start's is
-   zero. The only caller a settlement has is `patrol.lua`'s stuck rescue, so
-   something in a capital's twenty guards is getting stuck.
+* the **server step does not move** -- 90.51-90.57 ms mean and 91.05-91.07 ms
+  worst for Highcourt, against ~90.3 / ~91.0 for a start. That is also what it
+  always says: a dedicated server runs a fixed 0.09 s step and only exceeds it
+  once it cannot keep up;
+* the **walker share holds** -- 15.0-15.4 % against a start's 16.7 %, inside the
+  sockets contract's 10-30 %;
+* `marked == roster` (181/181) every time, so the window measures a fully
+  populated capital.
+
+The single-run µs numbers should be read as an order of magnitude and nothing
+finer; the host was carrying six other wave-3 lanes throughout.
+
+### 5.1 Two findings the run was not looking for, and BOTH ARE PRE-EXISTING
+
+The review settled the ownership question by staging this lane's harness into a
+pristine `f37a0c5b` tree and running it there: **both findings reproduce on
+unmodified main**, so neither is caused by the lot moves.
+
+1. **`min_walker_ring=1` at Highcourt**, on main and on the branch. At least one
+   of its 21 walkers was handed a wander ring of ONE spot, and a ring of one is
+   a walker that never moves (`next_spot` returns the index it was given). That
+   is the Stillgrave defect of round 3, in a capital, and `bounded_spots` in
+   `mods/ENTITIES/grug_mobs/start_npcs.lua` tops a ring up to `WALK_MIN_RING`
+   only when its shortfall is non-empty -- a ring of 1 means the composition
+   offers exactly one eligible spot, which moving a lot cannot change. The probe
+   fails the run on it, which is why the runner reports FAILED with errors=1 --
+   the probe doing its job. It belongs to whoever owns the socket placement.
+2. **A non-zero `find_path` in a quiet window**: 30 in this lane's run (59.18 a
+   minute), 21 in each of the review's two (41.4 a minute), including the one on
+   unmodified main. A start's is zero. The finding is "of the order of 40-60 a
+   minute", not a specific count. The only caller a settlement has is
+   `patrol.lua`'s stuck rescue, so something in a capital's twenty guards is
+   getting stuck.
 
 ---
 
@@ -367,27 +517,51 @@ problem says so.
 
 ## 7. What the review should look at, and what is open
 
+**For the USER, and it is the only decision in this lane that is not a
+measurement:** the basalt-roof render pair, `renders/kings-hall-{before,after}.png`
+(§2.1). The lane and the independent review both preferred the timber roof and
+the contract names junglewood, so the shipped state is timber; §2.1 records
+exactly what turning basalt on costs.
+
 **Look at:**
 
-1. The **`troll_palette` basalt roof** (§2). It is a look-and-feel decision the
-   brief asked for, the renders are in the evidence, and reverting it is one
-   table.
-2. **South-west fill 4's 72-node move** (§3.4). The repair rule is "nearest
+1. **South-west fill 4's 72-node move** (§3.4). The repair rule is "nearest
    legal position" and that is what nine worlds leave; whether a garden that
    far from its authored gap is still the right piece is a design call.
-3. **Highcourt's re-frozen avenue digest** (§4.1). This lane re-froze an
-   expectation it did not own, because the alternative was leaving the pilot
-   capital's engine gate red. The provenance argument is in the commit message
-   and is checkable with two `git merge-base` calls.
-4. The **census discriminators** (§6), which are the whole value of the tool.
+2. **Highcourt's re-frozen digests on both seeds** (§4.1, §4.2). This lane
+   re-froze expectations it did not author, because the alternative was leaving
+   the pilot capital's engine gate red on both gate seeds. Independently
+   confirmed: the review reproduced all four gate-seed values on a pristine
+   `f37a0c5b` tree, and the 8675309 avenue value was already committed under
+   another path a day earlier.
+3. The **census discriminators** (§6), which are the whole value of the tool.
 
 **Open, and not this lane's:**
 
-* `highcourt/avenue-digest-8675309.txt` is stale (§4.1). The next Highcourt
-  pass on that seed fails until somebody re-freezes it.
-* `min_walker_ring=1` and `find_path=30` at Highcourt (§5.1).
+* **Lane S will move most of what this lane froze.** It owns `avenue.lua`, so
+  Highcourt's `avenue` (both seeds) and almost certainly `gate` move again, and
+  `rampart` should be re-measured; the two `corner` files are the ones that
+  should survive and that would actually catch a wall-seam regression.
+* **Highcourt's avenue digest lives in two files under two paths** (§4.2), read
+  by two different runners. That is how both copies went stale.
+* **`min_walker_ring=1` and a non-zero `find_path`** at Highcourt (§5.1), both
+  reproduced on unmodified main by the independent review.
+* `lethariel_kat`'s own `lethariel_core` identity row does not carry param2, so
+  the ENGINE identity moved with item 1 while that KAT row did not. Section 8 of
+  that KAT is currently the only guard against a facing regression.
+* `capital_lots.lua`'s district REPAIR pass pushes `{id, x, z}` into `placed`
+  while the VERIFY pass pushes `{…, reach, lane}`, so the two use different lane
+  gaps. Pre-existing; this lane's new fill pass uses the verify shape.
+* The census's street band samples the bounding box's diagonal rather than the
+  run. Harmless for a road, not what the comment says.
 * Nothing in this lane touched `avenue.lua`, bridges, lamps, Kezamba terrain or
   crops, or `grug_mobs`.
+
+**Two files this lane changed that its brief did not list**, named here because
+the common brief asks for it: `wp13/troll_palette.lua` (the brief said
+`troll_parts.lua`; the roof and castle bindings live here and in no other
+wave-3 lane's ownership) and `wp13/highcourt.lua` (one functional line, its own
+commit). Both are digest-neutral in the shipped state.
 
 **A host condition worth recording.** `/tmp` on this workstation is a 30 GB
 tmpfs mounted with `usrquota`, and the user's hard quota is 23966 MB. With
@@ -396,8 +570,8 @@ lane's engine work: the headless server then aborts with
 `"Failed to commit SQLite3 transaction: disk I/O error"` or `"Failed to save
 block: disk I/O error"` and `run_capital.sh` reports `exit=134 errors=3
 complete=0`. That is what it looks like, and it is not a code defect. This lane
-freed its own scratch and re-ran; the second Highcourt seed (§4.1) is the one
-measurement it cost.
+freed its own scratch and re-ran; it cost the 8675309 pass, which the fix round
+then took (§4.2).
 
 ---
 

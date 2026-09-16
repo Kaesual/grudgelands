@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 # Every WP13 KAT this lane can move, under BOTH interpreters, with the two
 # outputs compared byte for byte.
+#
+# `OUT=<dir>` writes the per-KAT outputs somewhere else. The default is this
+# evidence directory, which is fine for the lane that owns it and is a trap for
+# a READ-ONLY REVIEWER: running it in place modifies the repository. The
+# independent review of 2026-09-16 hit exactly that and asked for the override.
 set -uo pipefail
 export LC_ALL=C
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd -P)"
 cd "$repo"
-out="$repo/tools/wp13/evidence/20260916-polish/kat"
+out="${OUT:-$repo/tools/wp13/evidence/20260916-polish/kat}"
 mkdir -p "$out"
 
 run() {
@@ -30,14 +35,15 @@ for name in lethariel_kat kezamba_kat gor_drazhak_kat highcourt_kat \
 	fi
 done
 
-echo "== the mutation this lane's two new KAT sections exist for =="
-echo "(run by hand; both were run on 2026-09-16 and both go red)"
+echo "== the mutations this lane's two new KAT sections exist for =="
+echo "(run by hand; all were run on 2026-09-16 and all go red)"
 echo "  1. elf_parts.tree_platform tread param2 2 -> 0"
 echo "     lethariel_kat: \"the bough house's tread 1 at turn 0 carries param2 0\""
-echo "  2. troll_palette BASALT roof_stair_outer -> stairs:stair_outer_junglewood"
-echo "     kezamba_kat: \"roof_stair_outer is bound to ..., which is not basalt\""
-echo "  3. parts.lua SHAPED loses grug_decor:darkage_basalt_stair_outer"
-echo "     kezamba_kat: \"wp13 parts: ... has no paramtype2\" at construction"
+echo "  2. parts.lua SHAPED loses grug_decor:darkage_basalt_stair_outer"
+echo "     kezamba_kat 6a: \"parts.shaped disagrees with the registry for ...\""
+echo "     (and, while a basalt roof is bound, \"has no paramtype2\" at construction)"
+echo "  3. troll_palette BASALT roof_stair_outer -> a name of another family"
+echo "     kezamba_kat 6b: \"... is <other> and not <family>; a roof may not mix\""
 
 echo "== wp40 r7 unit =="
 bash tools/wp40/r7/run.sh unit 2>&1 | tail -3

@@ -1,8 +1,8 @@
 PASS lethariel_kat luajit  1307 bytes
 PASS lethariel_kat puc51  1307 bytes
      lethariel_kat: LuaJIT and PUC 5.1 byte-identical
-PASS kezamba_kat luajit  993 bytes
-PASS kezamba_kat puc51  993 bytes
+PASS kezamba_kat luajit  966 bytes
+PASS kezamba_kat puc51  966 bytes
      kezamba_kat: LuaJIT and PUC 5.1 byte-identical
 PASS gor_drazhak_kat luajit  557 bytes
 PASS gor_drazhak_kat puc51  557 bytes
@@ -34,14 +34,15 @@ PASS settlement_sockets_kat puc51  1918 bytes
 PASS lane_crossing_kat luajit  330 bytes
 PASS lane_crossing_kat puc51  330 bytes
      lane_crossing_kat: LuaJIT and PUC 5.1 byte-identical
-== the mutation this lane's two new KAT sections exist for ==
-(run by hand; both were run on 2026-09-16 and both go red)
+== the mutations this lane's two new KAT sections exist for ==
+(run by hand; all were run on 2026-09-16 and all go red)
   1. elf_parts.tree_platform tread param2 2 -> 0
      lethariel_kat: "the bough house's tread 1 at turn 0 carries param2 0"
-  2. troll_palette BASALT roof_stair_outer -> stairs:stair_outer_junglewood
-     kezamba_kat: "roof_stair_outer is bound to ..., which is not basalt"
-  3. parts.lua SHAPED loses grug_decor:darkage_basalt_stair_outer
-     kezamba_kat: "wp13 parts: ... has no paramtype2" at construction
+  2. parts.lua SHAPED loses grug_decor:darkage_basalt_stair_outer
+     kezamba_kat 6a: "parts.shaped disagrees with the registry for ..."
+     (and, while a basalt roof is bound, "has no paramtype2" at construction)
+  3. troll_palette BASALT roof_stair_outer -> a name of another family
+     kezamba_kat 6b: "... is <other> and not <family>; a roof may not mix"
 == wp40 r7 unit ==
 harvest_cases	pass
 R7_CONSUMER_KAT_V1	PASS

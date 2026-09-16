@@ -1,10 +1,14 @@
 # WP13 wave 3, Lane P: polish -- evidence
 
-Branch `wp13-w3-polish`, base main `f37a0c5b`. The note is
+Branch `wp13-w3-polish`, rebased onto main `ed11781f`; every digest comparison
+is against `f37a0c5b`, the wave-2 merge. The note is
 [docs/research/wp13-polish-wave3.md](../../../../docs/research/wp13-polish-wave3.md).
 
 Every script here resolves the repository from its own path and may be run from
-anywhere; everything runs with `LC_ALL=C`.
+anywhere; everything runs with `LC_ALL=C`. `kat.sh` and `final-micro.sh` write
+their per-run outputs into this directory by default and take **`OUT=<dir>`** to
+write somewhere else — a read-only reviewer should use it, because
+`final-micro.sh` `rm -rf`s its output directory before writing.
 
 ## The gates
 
@@ -13,7 +17,7 @@ anywhere; everything runs with `LC_ALL=C`.
 | `static.sh` | `static.txt` | `luac51 -p` and the SETGLOBAL count on every file this lane changed, the whole `mods/*/grug_*` and `tools` trees parsing under plain 5.1, the five plain-5.1 sweeps scoped and then tree-wide, `bash -n` on the changed shell, and `check_fresh_server.py`. The only scoped sweep hits are `os.exit` in two standalone CLIs (`capital_lots.lua`, `dump_part.lua`) -- the pattern every WP13 CLI has carried since the renderer landed, neither ever loaded by the engine. |
 | `kat.sh` | `kat.txt`, `kat/` | The twelve WP13 KATs under LuaJIT and again under `tools/bin/lua51`, each pair compared byte for byte, plus `tools/wp40/r7/run.sh unit`. It also names the three mutations this lane's two new KAT sections exist for; all three were run by hand on 2026-09-16 and all three go red. |
 | `identity.sh` | `identity.txt` | The six start identities against main's, every settlement identity the integration fixture prints, and Highcourt's blueprint identities. |
-| `final-micro.sh` | `final-micro.txt`, `final-micro/` | Every WP13 fixture in one process under LuaJIT and again under PUC 5.1, with the input set hashed before and after and the two outputs compared. Pair digest `3ce0b29cf99bde046defc047ee34be2b0e05e27803f4c54ce2d0bab07e43cbb3`. |
+| `final-micro.sh` | `final-micro.txt`, `final-micro/` | Every WP13 fixture in one process under LuaJIT and again under PUC 5.1, with the input set hashed before and after and the two outputs compared. Pair digest `165d50acb073befd7415f8e8c90e5024c7cb75c0b4a5872ccdf55fe5369280ae`. |
 
 ## The measurements
 
@@ -25,7 +29,7 @@ anywhere; everything runs with `LC_ALL=C`.
 | `measurements/dur_brannoc-lots-nine.txt` | Dur Brannoc on the same nine worlds: zero refused. The wave-2 log's "1 lot" does not reproduce. |
 | `measurements/audit-terrain-before.txt` | the ENGINE's own load-time `r7_settlement.audit_terrain`, nine cold boots on the nine seeds, before the repair: 11 findings on 6 seeds, all Highcourt. |
 | `measurements/audit-terrain-after.txt` | the same nine boots after: `AUDIT DONE total_findings=0`. |
-| `measurements/kings-hall-nodes-{before,after}.txt` | every node name of `capitals.king_hall` under the BASALT handle, counted, before and after the basalt roof. |
+| `measurements/kings-hall-nodes-{before,after}.txt` | every node name of `capitals.king_hall` under the BASALT handle, counted, with the junglewood roof (`before`, which is what SHIPS) and with the basalt one (`after`, the variant that was built, rendered and then reverted — see the note's §2.1). |
 | `measurements/tree-census-highcourt.txt` | the tree census: 52 plots, 4954 trunks, 0 wild; 15 street runs, 0 trunks. |
 | `measurements/tree-census-lethariel.txt` | 44 plots, 3286 trunks, 0 wild; 15 street runs, 0 trunks. |
 | `measurements/tree-census-lethariel-with-edge-belt.txt` | the FIRST Lethariel run, before `edge_` runs were excluded: 4269 canopied trunks along the grove edge, every one the composition's own silverwood. Kept because it is why the exclusion exists. |
@@ -39,7 +43,8 @@ One headless server at a time, port 31310, through `tools/wp13/run_capital.sh`.
 | `engine/full-passes.txt` | Gor Drazhak and Kezamba, `full`, gate seed. Both PASS. Gor Drazhak's three committed digests match and its corner is recorded for the first time; Kezamba publishes no rampart, gate or corner region at all. |
 | `engine/gor_drazhak/` | its overlay digests, its probe lines and the corner TSV the frozen digest was taken from. |
 | `engine/kezamba/` | its overlay digests (avenue only) and probe lines. |
-| `engine/highcourt/` | the pass that found the stale avenue expectation and from which all four Highcourt regions are now frozen. |
+| `engine/highcourt/` | the gate-seed pass that found the stale avenue expectation and from which all four Highcourt regions are now frozen. |
+| `engine/highcourt-8675309/` | the same on the SECOND gate seed, closed in the fix round: `run-red-before-freeze.txt` is the pass that measured the four values against a stale expectation, `run-green-after-freeze.txt` the pass after, with all four regions matching. |
 | `engine/lethariel/` | the census pass. |
 | `npc/load-with-capital.txt` | `run_npc_load.sh … highcourt`: six start windows and one capital window, with the microbenchmark per settlement. |
 | `npc/errors.txt` | the one error line, and it is a FINDING and not a defect of this lane: "highcourt handed a walker a ring of 1: it can never move". |
@@ -49,7 +54,7 @@ One headless server at a time, port 31310, through `tools/wp13/run_capital.sh`.
 | file | what it shows |
 |---|---|
 | `renders/bough-{before,after}.png` | Lethariel's bough house. Before: the flight's treads face the wrong way and the run reads as a flush face. After: a staircase. |
-| `renders/kings-hall-{before,after}.png` | Kezamba's king's hall under the BASALT handle, with the junglewood roof and with the basalt one. **The user's call.** |
+| `renders/kings-hall-{before,after}.png` | Kezamba's king's hall under the BASALT handle, with the junglewood roof (`before`, **what ships**) and with the basalt one (`after`). Both are kept deliberately: this is **the user's look-and-feel call**, the lane and the independent review both read the all-basalt hall as an undifferentiated dark mass with no silhouette, and the note's §2.1 records exactly what turning it back on costs. |
 | `renders/gor_drazhak-corner.png` | the four curtain corners the frozen digest covers, 500 nodes apart, which is why the picture is mostly empty. |
 | `renders/highcourt-lots-{before,after}.png` | the whole Highcourt plan on a flat plane, with the lot grid before and after the repair. |
 

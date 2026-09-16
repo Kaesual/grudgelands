@@ -3,11 +3,16 @@
 # process under LuaJIT and again under the engine's bundled PUC 5.1 build, with
 # the input set hashed before and after and the two outputs compared byte for
 # byte (docs/research/luanti-lua.md, "Interpreter and test strategy").
+#
+# `OUT=<dir>` writes the pair somewhere else; the default is this evidence
+# directory, and this script `rm -rf`s it before writing, which a READ-ONLY
+# REVIEWER must not be made to do to the repository. Same override, same reason,
+# as `kat.sh`.
 set -uo pipefail
 export LC_ALL=C
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd -P)"
 cd "$repo"
-out="$repo/tools/wp13/evidence/20260916-polish/final-micro"
+out="${OUT:-$repo/tools/wp13/evidence/20260916-polish/final-micro}"
 rm -rf -- "$out"
 mkdir -p "$out"
 
