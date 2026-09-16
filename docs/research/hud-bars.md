@@ -145,8 +145,11 @@ Before, at `dfb32cd5` (six Lua elements plus two builtin statbars):
 | error flash | text | `position.y = 0.35` | `grug_abilities` |
 | weapon-ready reticle | image | `position.y = 0.5` | `grug_abilities` |
 
-After (fourteen Lua elements, no builtin statbars) — read back through
-`hud_get` inside the real engine, `tools/ui/evidence/20260916-hud-bars/engine-probe.log`:
+After (fourteen Lua elements, no builtin statbars) — the definitions the
+shipped join callbacks built while running inside the real engine, read back
+through the probe's own **fake player** (a headless server has no real one,
+so the engine's `read_hud_element` never sees them):
+`tools/ui/evidence/20260916-hud-bars/engine-probe.log`.
 
 | Element | Type | Offset | z |
 |---|---|---|---|
@@ -183,11 +186,18 @@ opportunities per second per player** exist at all, before and after.
 | Warrior rage decaying out of combat (2 rage/s) | 4/s | **≤ 4/s** — label 2/s, fill 2/s (3.6 px/s) |
 | One hit point lost | 1 packet (builtin `hud_change(id, "number", …)` per health event, `builtin/game/hud.lua:177-179`) | **2 packets** (measured: `scale` + `text`) |
 | A landed swing (+12 rage) | 2 packets | **≤ 2 packets** |
+| Submerged, breath **not** moving | 0/s | **0/s** (measured: 0 writes over 4 passes) |
+| One breath point lost | 1 packet (builtin bubbles, `builtin/game/hud.lua:199, 216-217`) | **2 packets** |
+| Going under / surfacing (the row appears / disappears) | 1 packet | **4 / 3 packets, once** |
 
-So the steady-state worst case is **unchanged at 4 packets/s per player**,
-and the colour write that used to go out twice a second without ever
-changing is gone. Damage costs **one packet more per hit** than the builtin
-statbar did, and that packet is what buys the exact number.
+So for **the row the old element was** — the resource row — the
+steady-state worst case is unchanged at 4 packets/s per player, and the
+colour write that used to go out twice a second without ever changing is
+gone. Damage costs one packet more per hit than the builtin statbar did, and
+a drowning player about twice what the bubbles cost; both buy the exact
+number. Adding the rows up honestly: a Mage regenerating, drowning **and**
+being hit peaks near 6-8 packets/s. All of it is event-driven and bounded,
+none of it is per-tick, and an idle player still costs 0.
 
 ### 4.3 The resolution claim, stated honestly
 
@@ -259,9 +269,12 @@ loads with the new `grug_core` module in it, `grug_core.hud_layout` inside
 the real engine is the same table the fixture asserts, and the **shipped**
 join callbacks of `grug_abilities`, `grug_xp` and `grug_money` — picked out
 by `core.callback_origins` (`builtin/common/register.lua:6`), so the faction
-and class dialogues of the other mods do not run — hand the engine the
-fourteen element definitions of §4.1, with `healthbar = false` and
-`breathbar = false`.
+and class dialogues of the other mods do not run — build the fourteen
+element definitions of §4.1, with `healthbar = false` and
+`breathbar = false`. Those definitions are read back from the probe's own
+fake player table; with no client there is no real player, so the engine's
+own `read_hud_element` never validates them. **The element definitions
+themselves are gated by the playtest, not by this probe.**
 
 One detail worth keeping: the probe's fake player joins at 325 HP and the
 life bar comes out `30 / 30`, because `grug_classes.apply_stats` runs
@@ -287,10 +300,15 @@ this lane's base `dfb32cd5` and is exact there (the card was written at
 
 - The prediction in §3.3 and its lifetime. It is correct for every path that
   goes through `setHP`, but it is a *prediction*: if the engine clamps the
-  change differently (an `immortal` armor group, an `hp_max` that shrank in
-  the same step) the bar is wrong for up to 0.5 s. Whether that window is
-  acceptable, or whether the HUD logger should instead be registered last,
-  is a judgement call.
+  change differently (an `immortal` armor group — this game sets one during
+  class selection — or an `hp_max` that moved without an HP change, which
+  `apply_stats` does) the bar is wrong until the next shared pass. That bound
+  is **0.5 s plus one server step**, not 0.5 s: the pass fires on the first
+  step with `acc >= 0.5`, and a step is often 0.09 s, so ~0.6 s. Whether that
+  window is acceptable, or whether the HUD logger should instead be
+  registered last, is a judgement call — but registering last does not remove
+  the need to predict (`get_hp()` is stale in *every* logger) and it would
+  break again the day someone registers a logger after `grug_abilities`.
 - The one line added at the end of `grug_abilities`' shared 0.5 s pass. It
   is inside a loop lane W1 also edits (rage tuning); it was put at the end
   of the body, as far from the rage branch as possible, and it is the only
@@ -318,6 +336,22 @@ this lane's base `dfb32cd5` and is exact there (the card was written at
   With eight slots at the default setting it does not wrap at any ordinary
   resolution, and Lua cannot query the condition; it is recorded, not
   handled.
+- **The −62 baseline assumes the hotbar images this game sets.** It is the
+  top of the hotbar *background box*, which exists only because
+  `mods/BASE/default/init.lua:42-43` calls `hud_set_hotbar_image` and
+  `hud_set_hotbar_selected_image`. The selected-slot image bleeds
+  `2 × m_padding` = 8 px above the item rect and so reaches **−64** — exactly
+  where the secondary bar's bottom edge is. They **abut with 0 px**; they do
+  not overlap. Whether touching looks right is a playtest question, and the
+  number would be 2 px too generous for a game that sets no hotbar image.
+- **A fifth HUD writer is still outside the table.** `grug_mobs`' target
+  frame (`mods/ENTITIES/grug_mobs/target_frame.lua:155-162`) is a text
+  element at `position.y = 0` with a literal `offset {x = 0, y = 40}`. It is
+  top-centre and cannot collide with the bottom column, but it means
+  `classes.md` §1's "no mod carries its own offset" is about **this column**,
+  and §4.1's "six Lua elements before" counts the column plus the two
+  anchors, not every HUD element in the game. That file belongs to another
+  lane; extending `layout.anchors` to it is later work.
 - **The reserved breath row** leaves a 20 px gap between the life bar and
   the skill-name line whenever the player is not short of air. That is the
   price of "nothing jumps"; the alternative is a row that appears and pushes

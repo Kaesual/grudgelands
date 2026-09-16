@@ -185,7 +185,7 @@ end
 -- exact numbers. The builtin heart and bubble statbars are switched off on
 -- join, in the same commit that added these -- half hearts are the
 -- approximation the ruling rejects, and a 325 HP Warrior
--- (`combat_stats.md` section 2) is 16 HP per half heart.
+-- (`combat_stats.md` section 2) is 16.25 HP per half heart.
 --
 -- `hud_change` sends a packet whether the value changed or not
 -- (`src/script/lua_api/l_object.cpp:2026` still carries the "FIXME: only

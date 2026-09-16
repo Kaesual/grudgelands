@@ -17,7 +17,7 @@ hud_bars_failure	a Mage joins without a full mana bar
 hud_bars_failure	a Warrior at full health does not draw a full life bar
 hud_bars_failure	breath: a partial value drew a full, empty or impossible bar
 -- restored
-== MUTATION: one hit point of 325 reads as an empty bar (mods/CORE/grug_core/hud_layout.lua)
+== MUTATION: one point of a 384-mana pool reads as an empty bar (mods/CORE/grug_core/hud_layout.lua)
 hud_bars_result	FAIL	2
 hud_bars_failure	1 of 384 mana reads as empty
 hud_bars_failure	mage_mana: a partial value drew a full, empty or impossible bar

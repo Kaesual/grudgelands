@@ -73,9 +73,12 @@ mutate "a full bar draws wider than the bar" \
 		return width + 1
 	end'
 
-# 4. The guard that keeps the last hit point visible is removed -- the exact
-#    failure mode the user rejected, one step finer than half hearts.
-mutate "one hit point of 325 reads as an empty bar" \
+# 4. The guard that keeps the last point visible is removed -- the exact
+#    failure mode the user rejected, one step finer than half hearts. At 180
+#    px the rounding alone still leaves 1 px for 1 of 325 hit points, so what
+#    this actually catches is the DEEPEST pool in the game: the level-60
+#    Mage's 384 mana (combat_stats.md section 2). That is the honest label.
+mutate "one point of a 384-mana pool reads as an empty bar" \
 	mods/CORE/grug_core/hud_layout.lua \
 	'	if px < layout.MIN_FILL then
 		px = layout.MIN_FILL

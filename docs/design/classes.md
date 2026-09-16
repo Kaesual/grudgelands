@@ -87,11 +87,13 @@ Core principles:
   (mana `0x4a9bd8`, rage `0xc41e3a`), with the exact numbers written inside
   the bar. The life bar sits directly above it in the same style, and the
   builtin half-heart statbars are off: half hearts were rejected as "an ugly
-  approximation", and at 325 HP the engine's ten hearts are 16 HP apiece. A
+  approximation", and at 325 HP one of the engine's ten hearts is 32.5 HP
+  (16.25 HP per half heart, which is the step it actually draws). A
   character who has not picked a class yet keeps the secondary row reserved
   and empty, so nothing moves when the class arrives. The column the bars
-  belong to is owned by `grug_core/hud_layout.lua`; no mod carries its own
-  offset. Details and what is still open: `docs/research/hud-bars.md`.
+  belong to is owned by `grug_core/hud_layout.lua`; no mod carries an offset
+  of its own **into that column**. Details and what is still open:
+  `docs/research/hud-bars.md`.
 
 ## 2. Damage pipeline (grug_core)
 
