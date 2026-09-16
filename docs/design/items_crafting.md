@@ -2427,6 +2427,13 @@ are derived only after those rates are measured; the retired fixed
 
 ## 9. Bow and arrow item foundation (inactive Phase-2 substrate)
 
+**Its consumer exists on paper since 2026-09-16**: the Scout's base kit opens
+with a bow shot ([scout.md](scout.md) §2, rulings 7 and 12 of
+[skill_trees.md](skill_trees.md) §5) and the arrow is **ballistic** — gravity
+and a draw-time impulse, while Fireball stays straight (`combat_stats.md`
+§2, `classes.md` §2b). Nothing below changes for it, and nothing below is
+built: WP-Scout's bow lane is the package that would build it.
+
 Item path (source: `mcl_bows`, code **LGPL 3.0 or GPL 3.0** — VoxeLibre
 dual-licences every mod, `LEGAL.md:25-28`, and both are on `AGENTS.md`'s
 permitted list ✓; media: **textures CC BY-SA 4.0**, sounds **two CC0** plus
