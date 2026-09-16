@@ -278,8 +278,64 @@ fix.
 
 ---
 
+## 4b. Prerequisite this lane owns: the speed aggregator (user ruling, 2026-09-16)
+
+Not one of the three rulings above, but the same session decided it and **this
+lane is its owner**, because this lane is the one that has to stop zeroing a
+mob's velocity while its attack clock runs (§2) and because the WP11 talent
+work needs it too (`docs/design/skill_trees.md` §3.9).
+
+> **Ruling (user, 2026-09-16):** effects overlap freely with independent
+> durations; the design is **one central aggregator in `grug_core`** where
+> each system registers a **named modifier with its own duration**; a **root
+> is a hard flag** (speed 0 regardless of modifiers), never a "−1000 %";
+> **mounts stay outside** the aggregator.
+
+Why it cannot wait. `mods/ENTITIES/grug_mobs/verbs.lua:100-118` says it in its
+own words: there are **two independent owners** of `physics_override.speed` —
+mob webs (`verbs.lua:140-169`) and the ability snare chain
+(`mods/PLAYER/grug_abilities/kits.lua:144-175`) — each name-keyed, each
+restoring to `speed = 1` when its own effect ends, "so an overlapping mob web
++ player snare can end early (the first restore lifts both)… an accepted MVP
+caveat, NOT an unnoticed bug — **the fix is one shared owner in `grug_core`**".
+`mounts.md:128-133` and `boats.md:113-117` both lean on that count being two
+and both state that a mount's speed is the entity's velocity, so mounts add no
+third owner and stay outside — which the ruling preserves exactly.
+
+The shape:
+
+```lua
+grug_core.set_speed_modifier(player, "mob_web", -0.40, 7)   -- named, own duration
+grug_core.set_speed_modifier(player, "sprint",   0.25, 10)
+grug_core.clear_speed_modifier(player, "sprint")
+grug_core.set_root(player, 3)            -- hard flag: speed 0 for 3 s
+grug_core.set_speed_immunity(player, 8)  -- discards negatives and roots
+```
+
+**Recommended combination rule: additive percentages, then one clamp** —
+`speed = clamp(1 + Σ modifier, 0.1, 1.5)`, with a root or an immunity taking
+precedence over the sum. Additive rather than multiplicative because the
+shipped numbers already read as absolute speeds (`kits.lua:372` sets
+`speed = 0.5`), because two slows multiplying to 0.25 is a stacking rule
+nobody has decided, and because a sum is the only form in which a KAT can
+state one invariant instead of enumerating application orders.
+
+**Size: roughly 100 lines** — a per-player table of named entries with
+expiries, one accumulator, the two existing writers migrated onto it, the
+join/leave reset `verbs.lua:176-186` already performs, and a KAT covering
+overlap, expiry, root precedence and immunity. It is pure Lua with no engine
+dependency, so the KAT carries it and no runtime test is owed for the
+aggregator itself — unlike the api.lua patch of §2.
+
+**Order within the lane: the aggregator first, the api.lua patch second.**
+They are independent in code, but §3's speed question cannot be answered
+honestly until slows and sprints stop cancelling each other, and the WP11
+talents that depend on it (`skill_trees.md` §3.9) are blocked until it lands.
+
 ## 5. What this lane owes
 
+- The **speed aggregator** of §4b, ~100 lines in `grug_core`, with its own
+  KAT — and it lands first, because WP11's talent work is blocked on it.
 - One GRUG PATCH in `mods/ENTITIES/mobs/api.lua` (§2), with the patch comment
   in the house style and the line-number drift in `combat_stats.md` §4
   corrected in the same commit.
