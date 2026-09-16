@@ -291,41 +291,71 @@ work needs it too (`docs/design/skill_trees.md` §3.9).
 > is a hard flag** (speed 0 regardless of modifiers), never a "−1000 %";
 > **mounts stay outside** the aggregator.
 
-Why it cannot wait. `mods/ENTITIES/grug_mobs/verbs.lua:100-118` says it in its
-own words: there are **two independent owners** of `physics_override.speed` —
-mob webs (`verbs.lua:140-169`) and the ability snare chain
-(`mods/PLAYER/grug_abilities/kits.lua:144-175`) — each name-keyed, each
-restoring to `speed = 1` when its own effect ends, "so an overlapping mob web
-+ player snare can end early (the first restore lifts both)… an accepted MVP
-caveat, NOT an unnoticed bug — **the fix is one shared owner in `grug_core`**".
-`mounts.md:128-133` and `boats.md:113-117` both lean on that count being two
-and both state that a mount's speed is the entity's velocity, so mounts add no
-third owner and stay outside — which the ruling preserves exactly.
+Why it cannot wait, and **measured rather than inherited**.
+`mods/ENTITIES/grug_mobs/verbs.lua:100-118` says there are two owners of
+`physics_override.speed`, and `mounts.md:128-133` and `boats.md:113-117` both
+repeat that count. `grep -rn set_physics_override mods/` finds **three**:
+
+| Writer | Lines | What it writes |
+|---|---|---|
+| mob webs / snares | `grug_mobs/verbs.lua:153`, `:167`, `:178` | `{speed = factor}`, `{speed = 1}` to restore, and a join reset |
+| the ability root/slow chain | `grug_abilities/kits.lua:161`, `:167` | `{speed = 1, jump = 1}` and `{speed = stage.speed, jump = stage.jump or 1}` |
+| **character creation** | `grug_classes/selection.lua:52`, `:91` | `{speed = 0, jump = 0, gravity = 0}`, restored from a **snapshot** at `:91` |
+
+The third is the one both comments miss and the worst for an aggregator:
+`reassert_player_lock` (`selection.lua:49-53`) re-asserts the freeze whenever
+it sees the override drift, so it fights any other writer; and
+`release_player` (`:91`) restores `session.physics`, a snapshot taken when
+creation began — so a slow running at that moment is captured and written back
+permanently after the aggregator believes it expired. That is precisely the
+bug class the ruling exists to end, and it does not go away unless this writer
+migrates too.
+
+**Speed and jump, not speed alone.** The shipped roots are speed+jump pairs
+(`kits.lua:495` is `{speed = 0.1, jump = 0.3, time = 4}`, applied at `:167`),
+while `verbs.lua:114-116` deliberately never touches `jump` so that "a mob web
+can never lift a PvP jump root". An aggregator that owns only `speed` cannot
+absorb the roots it is meant to replace. **Gravity stays outside**: its only
+writer is `selection.lua:52`'s spawn freeze, which migrates as one named
+exclusive hold rather than as a modifier.
 
 The shape:
 
 ```lua
-grug_core.set_speed_modifier(player, "mob_web", -0.40, 7)   -- named, own duration
-grug_core.set_speed_modifier(player, "sprint",   0.25, 10)
-grug_core.clear_speed_modifier(player, "sprint")
-grug_core.set_root(player, 3)            -- hard flag: speed 0 for 3 s
-grug_core.set_speed_immunity(player, 8)  -- discards negatives and roots
+grug_core.set_move_modifier(player, "mob_web", {speed = -0.40}, 7)
+grug_core.set_move_modifier(player, "sprint",  {speed =  0.25}, 10)
+grug_core.clear_move_modifier(player, "sprint")
+grug_core.set_root(player, 3)             -- hard flag: speed 0, jump 0
+grug_core.set_move_immunity(player, 8)    -- discards negatives and roots
+grug_core.hold_movement(player, "class_creation")  -- exclusive, releases exactly
 ```
 
-**Recommended combination rule: additive percentages, then one clamp** —
-`speed = clamp(1 + Σ modifier, 0.1, 1.5)`, with a root or an immunity taking
-precedence over the sum. Additive rather than multiplicative because the
-shipped numbers already read as absolute speeds (`kits.lua:372` sets
+**Recommended combination rule: additive percentages per axis, then one
+clamp** — `clamp(1 + Σ, 0.1, 1.5)` for speed and for jump, with a root or an
+exclusive hold taking precedence. Additive rather than multiplicative because
+the shipped numbers already read as absolute speeds (`kits.lua:372` sets
 `speed = 0.5`), because two slows multiplying to 0.25 is a stacking rule
 nobody has decided, and because a sum is the only form in which a KAT can
 state one invariant instead of enumerating application orders.
 
-**Size: roughly 100 lines** — a per-player table of named entries with
-expiries, one accumulator, the two existing writers migrated onto it, the
-join/leave reset `verbs.lua:176-186` already performs, and a KAT covering
-overlap, expiry, root precedence and immunity. It is pure Lua with no engine
-dependency, so the KAT carries it and no runtime test is owed for the
-aggregator itself — unlike the api.lua patch of §2.
+**Size, honestly split.** The **core** is roughly **100 lines** — a per-player
+table of named entries with expiries, one accumulator per axis, the root flag,
+the immunity, the exclusive hold, and the join/leave reset `verbs.lua:176-179`
+already performs. **The migrations are extra**, and this is where the previous
+estimate was short:
+
+| Piece | Work |
+|---|---|
+| aggregator core (speed + jump, root, immunity, hold) | ~100 lines, new |
+| migrate `grug_mobs/verbs.lua`'s slow chain (~95 lines today) | rewrite down to calls |
+| migrate `grug_abilities/kits.lua`'s staged root/slow (~59 lines today) | rewrite; the staged `root → slow` becomes two named modifiers with different durations, which is what it always wanted to be |
+| migrate `grug_classes/selection.lua`'s freeze and snapshot | becomes `hold_movement`; the snapshot restore disappears |
+| KAT | overlap, expiry, root precedence, immunity, hold, and a no-effect baseline per axis |
+
+It is pure Lua with no engine dependency, so the KAT carries it and no runtime
+test is owed for the aggregator itself — unlike the api.lua patch of §2. The
+**migrations** do owe one, because they change how every slow in the game
+feels.
 
 **Order within the lane: the aggregator first, the api.lua patch second.**
 They are independent in code, but §3's speed question cannot be answered

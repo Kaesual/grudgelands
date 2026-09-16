@@ -43,12 +43,17 @@ Two ways to draw a bar, and one call to get the builtin one out of the way.
   visible, and it must be paired with the replacement in the same commit or
   the player has no health display at all.
 
-**Engine-behaviour caveat, per `AGENTS.md:136`:** every claim in this section
-is about API shape, not about measured rendering. Whoever ships this owes the
-usual verification — the statbar half-icon rule and the exact `hud_set_flags`
-field names must be read out of the engine source in
-`reference_projects/luanti` (not checked out in this worktree) or tested on a
-headless server before the lane commits to them.
+**Both claims above are verified against the engine source, not assumed.**
+`reference_projects/luanti/src/client/hud.cpp:660-765` (`Hud::drawStatbar`)
+draws `for (s32 i = 0; i < count / 2; i++)` full icons and then
+`if (count % 2 == 1)` one half icon — so one unit of `number` is **half an
+icon**, the default hearts are 2 HP each, and a 325-HP Warrior would need 163
+icons. `reference_projects/luanti/doc/lua_api.md:9337-9344` lists `healthbar`
+and `breathbar` among the `hud_set_flags` fields. (The nine
+`reference_projects/` trees are registered submodules; a worktree does not
+populate them, so these were read from the main checkout — the independent
+review of 2026-09-16 did so at the pinned commit
+`df04879066de6eb94ca43996822a6dfacc74feca`.)
 
 ## 3. Where this game already draws HUD elements
 
@@ -124,10 +129,14 @@ precedent for "a continuous value shown exactly rather than in steps", and the
 same 2/s packet-cost reasoning in `classes.md:302-304` applies to any bar that
 updates per tick.
 
-The three vendored trees in `reference_projects/` (`Lord-of-the-Test`,
-`animalia`, `animalworld`) are the only third-party Lua in reach of this
-worktree and should be grepped for `hud_add` before anyone writes new bar
-code.
+What **is** in reach: `reference_projects/` registers **nine** trees —
+`animalia`, `animalworld`, `Lord-of-the-Test`, `luanti`, `minetest_game`,
+`mobs_monster`, `mobs_redo`, `protector`, `VoxeLibre`. **VoxeLibre** is the
+strongest reference for exactly this problem (it replaces the default HUD
+wholesale and draws its own bars) and `minetest_game` is the simplest; both
+should be grepped for `hud_add` before anyone writes new bar code. They are
+submodules, so they are populated in the main checkout rather than in a
+worktree.
 
 ## 7. Commands that reproduce every citation here
 
