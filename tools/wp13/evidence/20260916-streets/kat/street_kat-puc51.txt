@@ -12,4 +12,6 @@ street_capital	lethariel	15	30	8	lane_northwest_spine/lane_southwest_spine/1,lan
 street_capital	kezamba	8	16	0	
 street_capital	nhal_veyr	16	36	4	lane_northeast_spine/lane_northwest_cross/1,lane_northwest_spine/lane_southwest_cross/1,lane_southeast_cross/lane_southwest_spine/1,lane_southeast_spine/lane_northeast_cross/1
 street_inventory	56ac697b29f6ea014651c3a2c34639f9b54f7aaa1312f465faad8f6fb7acb3cd
-street_cases	8	width	5	min_clear	3	lift	1	pier	8
+street_plateau_window	42	-2	2	18
+street_pier_rhythm	8	8	246	60
+street_cases	10	width	5	min_clear	3	lift	1	pier	8

@@ -1,6 +1,8 @@
 # WP13 — one street rule for all six capitals (2026-09-16)
 
-Wave 3, Lane S. Branch `wp13-w3-streets`, off `main` at `f37a0c5b`.
+Wave 3, Lane S. Branch `wp13-w3-streets`, rebased onto `main` at `70dda602`
+(Lanes A, X, C, F and P merged); written against `f37a0c5b`, the wave-2 merge
+with six capitals, and re-measured whole on the rebased tree.
 
 Playtest 5 walked Dur Brannoc and Lethariel and made five rulings about what a
 capital's streets are. Every one of them is now a rule of `wp13/avenue.lua`, the
@@ -286,6 +288,10 @@ runs both read is paid for once there and twice in the bench.
   per-capital post-processes. Not done here; it is a separate rule from the five
   rulings.
 * **Junctions that are close but disjoint** — see §3.
+* **Highcourt's `corner` region cannot be read reliably** (§9): two of four
+  passes lost a quarter of it to unloaded mapblocks. The gate now names the
+  condition; making the read reliable belongs to the lane that owns
+  `capital_probe`'s corner region.
 
 ## 9. The digests that moved
 
@@ -313,6 +319,29 @@ Every one of the seventeen was re-frozen from a clean engine pass of this branch
 afterwards reported `avenue`, `rampart` and `gate` matching the committed values
 — which is also this package's determinism check on the engine side.
 
+**After the rebase onto `70dda602`** ten more passes re-verified all 28 frozen
+values on the merged tree: **24 confirmed unchanged and 4 moved** — Highcourt's
+`rampart` and `gate` on both gate seeds, which Lane P froze before this lane's
+road moved the cells inside those two regions, exactly as the independent review
+predicted. Both Highcourt passes were then re-run and report all four regions
+matching.
+
+### And the corner read-back is flaky — the gate now says so instead of blaming the road
+
+Highcourt's `corner` region is the largest any capital publishes (49 572 cells),
+and on **two of four** passes of seed 8675309, on an idle machine with no other
+server running, it came back with 12 000 and 14 125 `ignore` nodes in it: the
+engine had unloaded part of the region before the probe read it, which
+`capital_probe`'s own header warns of. `run_capital.sh` compared the digest
+anyway, so an unloaded read was indistinguishable from a moved road — and would
+have cost a lane a merge.
+
+It now reads `<label>_ignored` beside the digest and fails with its own message
+("re-take the pass; do NOT re-freeze this digest") rather than comparing. The two
+clean reads both give `cc6da1b7…`, the committed value. **The emerge-and-read
+order of that region is Lane P's and is not fixed here** — this lane only stops
+the gate from mis-reporting it.
+
 ## 10. Files
 
 | file | what changed |
@@ -323,6 +352,8 @@ afterwards reported `avenue`, `rampart` and `gate` matching the committed values
 | `mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua` | append-only: `wet(x, z)` at the overlay seam, and the junctions travelling with a run |
 | the six compositions | append-only: the junction attachment in `overlay_runs`; the four private kerb parapets and Lethariel's water plan removed |
 | `tools/wp13/street_geometry.lua` | **new** — the measurement |
-| `tools/wp13/street_kat.lua` | **new** — the property, eight sections, both interpreters |
+| `tools/wp13/street_kat.lua` | **new** — the property, ten sections, both interpreters |
+| `tools/wp13/kezamba_lots.lua`, `tools/wp13/lethariel_plots.lua`, `tools/wp13/lane_routes.lua` | the three road gates that still asked for solid ground under a viaduct, and the two that were building a causeway because nobody handed them the seam's `wet(x, z)` |
+| `tools/wp13/run_capital.sh` | the digest gate refuses a region that came back with `ignore` nodes in it instead of comparing it |
 | six existing KATs + the integration fixture | they asserted the road this replaces |
-| `tools/wp13/evidence/20260916-streets/` | the evidence |
+| `tools/wp13/evidence/20260916-streets/` | the evidence, including `gates.sh` (every road gate as a gate), `walkability.lua` (the headline number) and the eleven mutations |

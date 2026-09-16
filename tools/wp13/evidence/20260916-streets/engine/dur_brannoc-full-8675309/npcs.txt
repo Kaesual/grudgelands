@@ -125,7 +125,6 @@ ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed 
 ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket bough_east_foot (1839,37,-1515)
 ACTION[Server]: [grug_mobs] start npcs lethariel: grug_traders:vendor_race_elf placed at socket vendor_race (1817,37,-1525)
 ACTION[Server]: [grug_mobs] start npcs lethariel: grug_traders:vendor_general_accord placed at socket vendor_general (1824,37,-1525)
-ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket quay_idle_west (1777,37,-1472)
 ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket grove_idle_walk (1822,37,-1491)
 ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket grove_idle_shrine (1818,37,-1489)
 ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket market_idle_walk (1812,37,-1524)
@@ -133,9 +132,7 @@ ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed 
 ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket shore_work_pile (1813,37,-1487)
 ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket shore_work_beds (1809,37,-1484)
 ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket shore_work_stone (1813,37,-1484)
-ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:guard_accord placed at socket homes_terrace_west/homes_terrace_west_watch (1728,32,-1429)
-ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket homes_terrace_west/homes_terrace_west_gate_idle (1728,32,-1429)
-ACTION[Server]: [grug_mobs] start npcs elf lethariel: guards 15/22 flair 46/159 vendor 2/9 quest 1/2 new 31 pending 128 spare 24 residents 159 walkers 22
+ACTION[Server]: [grug_mobs] start npcs elf lethariel: guards 14/22 flair 44/159 vendor 2/9 quest 1/2 new 28 pending 131 spare 24 residents 159 walkers 22
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket throne_guard_west (-1807,144,-1471)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket throne_guard_east (-1793,144,-1471)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket door_guard_west (-1803,143,-1489)
@@ -188,6 +185,12 @@ ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf pla
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket court_idle_fire (-1765,141,-1461)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forecourt_idle_west (-1806,141,-1497)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forecourt_idle_east (-1793,141,-1497)
+ACTION[Server]: [grug_mobs] start npcs dwarf dur_brannoc: guards 17/28 flair 32/164 vendor 2/9 quest 1/2 new 52 pending 151 spare 23 residents 164 walkers 22
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket quay_idle_west (1777,37,-1472)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket quay_idle_east (1823,37,-1472)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:guard_accord placed at socket homes_terrace_west/homes_terrace_west_watch (1728,32,-1429)
+ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket homes_terrace_west/homes_terrace_west_gate_idle (1728,32,-1429)
+ACTION[Server]: [grug_mobs] start npcs elf lethariel: guards 15/22 flair 47/159 vendor 2/9 quest 1/2 new 4 pending 127 spare 24 residents 159 walkers 22
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_charcoal/forge_charcoal_work (-1680,105,-1616)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket forge_charcoal/forge_charcoal_watch (-1680,105,-1628)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_charcoal/forge_charcoal_gate_idle (-1680,105,-1628)
@@ -197,9 +200,6 @@ ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf pla
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_pack_stable/forge_pack_stable_gate (-1644,109,-1615)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_pack_stable/forge_pack_stable_gate_idle (-1644,109,-1618)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_pack_stable/forge_pack_stable_work_stable_tend (-1651,109,-1620)
-ACTION[Server]: [grug_mobs] start npcs dwarf dur_brannoc: guards 18/28 flair 40/164 vendor 2/9 quest 1/2 new 61 pending 142 spare 23 residents 164 walkers 22
-ACTION[Server]: [grug_mobs] start npcs lethariel: grug_mobs:villager_elf placed at socket quay_idle_east (1823,37,-1472)
-ACTION[Server]: [grug_mobs] start npcs elf lethariel: guards 15/22 flair 47/159 vendor 2/9 quest 1/2 new 1 pending 127 spare 24 residents 159 walkers 22
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_smithy/forge_smithy_gate_idle (-1600,109,-1620)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_smithy/forge_smithy_work_anvil (-1606,109,-1622)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_traders:vendor_smith placed at socket forge_smithy/forge_smithy_vendor_smith (-1595,109,-1622)
@@ -226,26 +226,26 @@ ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf pla
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_ore_court/forge_ore_court_work_court_face (-1575,112,-1608)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_ore_court/forge_ore_court_work_court_adit (-1563,112,-1608)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_ore_court/forge_ore_court_work_court_spoil (-1577,112,-1608)
-ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_charcoal_field/forge_charcoal_field_gate_idle (-1720,93,-1741)
-ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_charcoal_field/forge_charcoal_field_work_field_west (-1726,93,-1732)
-ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_charcoal_field/forge_charcoal_field_work_field_east (-1716,93,-1732)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_slag_yard/forge_slag_yard_gate_idle (-1572,105,-1738)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_slag_yard/forge_slag_yard_work_slag_banker (-1569,105,-1736)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_slag_yard/forge_slag_yard_work_slag_blocks (-1574,105,-1735)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_green/forge_green_gate_idle (-1638,105,-1735)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_green/forge_green_work_green_bench (-1642,106,-1735)
+ACTION[Server]: [grug_mobs] start npcs dwarf dur_brannoc: guards 19/28 flair 69/164 vendor 3/9 quest 1/2 new 40 pending 111 spare 23 residents 164 walkers 22
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_charcoal_field/forge_charcoal_field_gate_idle (-1720,93,-1741)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_charcoal_field/forge_charcoal_field_work_field_west (-1726,93,-1732)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket forge_charcoal_field/forge_charcoal_field_work_field_east (-1716,93,-1732)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket garrison_barracks/garrison_barracks_post (-1684,97,-1400)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_barracks/garrison_barracks_muster (-1684,97,-1385)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket garrison_barracks/garrison_barracks_yard (-1684,97,-1388)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_barracks/garrison_barracks_gate_idle (-1684,97,-1403)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket garrison_barracks/garrison_barracks_post_gate_west (-1693,97,-1402)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket garrison_barracks/garrison_barracks_post_gate_east (-1675,97,-1402)
-ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_drill_yard/garrison_drill_yard_gate_idle (-1644,97,-1396)
-ACTION[Server]: [grug_mobs] start npcs dwarf dur_brannoc: guards 22/28 flair 74/164 vendor 3/9 quest 1/2 new 39 pending 103 spare 23 residents 164 walkers 22
-ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_barracks/garrison_barracks_muster (-1684,97,-1385)
-ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket garrison_barracks/garrison_barracks_yard (-1684,97,-1388)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_muster_hall/garrison_muster_hall_gate_idle (-1680,93,-1353)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_armoury/garrison_armoury_gate_idle (-1684,89,-1304)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_armoury/garrison_armoury_work_armoury_anvil (-1691,89,-1306)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_traders:vendor_armourer placed at socket garrison_armoury/garrison_armoury_vendor_armourer (-1678,89,-1306)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_drill_yard/garrison_drill_yard_gate_idle (-1644,97,-1396)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket garrison_drill_yard/garrison_drill_yard_post_yard_west (-1651,97,-1392)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket garrison_drill_yard/garrison_drill_yard_post_yard_east (-1637,97,-1392)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_drill_yard/garrison_drill_yard_work_yard_spar_west (-1652,97,-1381)
@@ -272,6 +272,7 @@ ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf pla
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_wood_yard/garrison_wood_yard_work_saw_east (-1564,89,-1274)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_green/garrison_green_gate_idle (-1568,91,-1321)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket garrison_green/garrison_green_work_green_bench (-1572,92,-1321)
+ACTION[Server]: [grug_mobs] start npcs dwarf dur_brannoc: guards 26/28 flair 101/164 vendor 4/9 quest 1/2 new 40 pending 71 spare 23 residents 164 walkers 22
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_hall_of_record/deep_hall_of_record_altar (-1920,85,-1423)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:elder_dwarf placed at socket deep_hall_of_record/deep_hall_of_record_quest (-1920,85,-1433)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord placed at socket deep_hall_of_record/deep_hall_of_record_watch (-1920,85,-1437)
@@ -287,7 +288,6 @@ ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_traders:vendor_embalmer
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_carvers/deep_carvers_gate_idle (-1920,85,-1396)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_carvers/deep_carvers_work_carver_blocks (-1928,85,-1398)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_traders:vendor_mason placed at socket deep_carvers/deep_carvers_vendor_deep_mason_stall (-1914,85,-1398)
-ACTION[Server]: [grug_mobs] start npcs dwarf dur_brannoc: guards 27/28 flair 112/164 vendor 6/9 quest 2/2 new 47 pending 56 spare 23 residents 164 walkers 22
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_lantern_court/deep_lantern_court_idle_a (-1964,89,-1387)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_lantern_court/deep_lantern_court_idle_b (-1964,89,-1381)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_lantern_court/deep_lantern_court_gate_idle (-1964,89,-1392)
@@ -304,6 +304,7 @@ ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf pla
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_barrow_terrace/deep_barrow_terrace_gate_idle (-1920,85,-1277)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_barrow_terrace/deep_barrow_terrace_work_terrace_vigil (-1928,85,-1267)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_barrow_terrace/deep_barrow_terrace_work_terrace_rake (-1921,85,-1270)
+ACTION[Server]: [grug_mobs] start npcs dwarf dur_brannoc: guards 27/28 flair 128/164 vendor 6/9 quest 2/2 new 31 pending 40 spare 23 residents 164 walkers 22
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_markers_yard/deep_markers_yard_gate_idle (-2032,93,-1274)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_markers_yard/deep_markers_yard_work_yard_banker_west (-2036,93,-1271)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket deep_markers_yard/deep_markers_yard_work_yard_banker_east (-2029,93,-1271)
@@ -315,7 +316,6 @@ ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:guard_accord place
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_market/terrace_market_gate_idle (-1916,79,-1623)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_market/terrace_market_work_market_stall (-1908,79,-1625)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_traders:vendor_butcher placed at socket terrace_market/terrace_market_vendor_butcher (-1910,79,-1625)
-ACTION[Server]: [grug_mobs] start npcs dwarf dur_brannoc: guards 28/28 flair 137/164 vendor 7/9 quest 2/2 new 27 pending 29 spare 23 residents 164 walkers 22
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_brewhouse/terrace_brewhouse_gate_idle (-1916,89,-1672)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_brewhouse/terrace_brewhouse_work_brewhouse_vats (-1924,89,-1674)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_traders:vendor_brewer placed at socket terrace_brewhouse/terrace_brewhouse_vendor_brewer (-1910,89,-1674)
@@ -329,10 +329,8 @@ ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf pla
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_well_court/terrace_well_court_idle_b (-1960,81,-1661)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_well_court/terrace_well_court_gate_idle (-1960,81,-1672)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_well_court/terrace_well_court_work_well_bench (-1961,82,-1656)
-ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_long_house/terrace_long_house_gate_idle (-1960,77,-1717)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_cottage_west/terrace_cottage_west_gate_idle (-2004,84,-1625)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_cottage_east/terrace_cottage_east_gate_idle (-2004,81,-1670)
-ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_watch/terrace_watch_gate_idle (-2004,81,-1717)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_kitchen_garden/terrace_kitchen_garden_gate_idle (-1884,85,-1717)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_kitchen_garden/terrace_kitchen_garden_work_garden_beds_west (-1890,85,-1706)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_kitchen_garden/terrace_kitchen_garden_work_garden_beds_east (-1878,85,-1706)
@@ -341,8 +339,11 @@ ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf pla
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_goat_pasture/terrace_goat_pasture_work_pasture_trough (-2026,81,-1585)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_goat_pasture/terrace_goat_pasture_work_pasture_bed (-2025,81,-1597)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_brew_court/terrace_brew_court_gate_idle (-2032,85,-1710)
-ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_brew_court/terrace_brew_court_work_court_vats_north (-2037,85,-1702)
-ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_brew_court/terrace_brew_court_work_court_vats_south (-2033,85,-1706)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_green/terrace_green_gate_idle (-2028,83,-1659)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_green/terrace_green_work_green_bench (-2032,84,-1659)
-ACTION[Server]: [grug_mobs] start npcs dwarf dur_brannoc: guards 28/28 flair 164/164 vendor 9/9 quest 2/2 new 29 pending 0 spare 23 residents 164 walkers 22
+ACTION[Server]: [grug_mobs] start npcs dwarf dur_brannoc: guards 28/28 flair 160/164 vendor 9/9 quest 2/2 new 36 pending 4 spare 23 residents 164 walkers 22
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_long_house/terrace_long_house_gate_idle (-1960,77,-1717)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_watch/terrace_watch_gate_idle (-2004,81,-1717)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_brew_court/terrace_brew_court_work_court_vats_north (-2037,85,-1702)
+ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_brew_court/terrace_brew_court_work_court_vats_south (-2033,85,-1706)
+ACTION[Server]: [grug_mobs] start npcs dwarf dur_brannoc: guards 28/28 flair 164/164 vendor 9/9 quest 2/2 new 4 pending 0 spare 23 residents 164 walkers 22

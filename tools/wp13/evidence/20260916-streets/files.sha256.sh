@@ -5,7 +5,7 @@ set -euo pipefail
 export LC_ALL=C
 repo="${1:?usage: files.sha256.sh REPO}"
 cd "$repo"
-git diff --name-only --diff-filter=d f37a0c5b -- \
+git diff --name-only --diff-filter=d 70dda602 -- \
 	mods/MAPGEN/grug_mapgen/wp13 mods/MAPGEN/grug_mapgen/wp40 \
 	tools/wp13 docs/research |
 	grep -v '^tools/wp13/evidence/20260916-streets/' |

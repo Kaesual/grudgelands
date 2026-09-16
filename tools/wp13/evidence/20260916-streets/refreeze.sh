@@ -13,7 +13,7 @@ set -euo pipefail
 export LC_ALL=C
 repo="${1:?usage: refreeze.sh REPO ENGINE_ROOT}"
 root="${2:?usage: refreeze.sh REPO ENGINE_ROOT}"
-main_commit="${3:-f37a0c5b}"
+main_commit="${3:-70dda602}"
 package="20260916-streets"
 frozen="$repo/tools/wp13/evidence/20260915-capital-terrain"
 
@@ -32,16 +32,23 @@ for pass in "$root"/*-full-*; do
 		[[ -f "$target" ]] || continue
 		cells="${cells#overlay_cells=}"
 		old="$(awk 'NR==1 {print $1}' "$target")"
-		if [[ "$old" == "$digest" ]]; then
-			kept=$((kept + 1))
-			continue
-		fi
+		# THE FILE IS REWRITTEN EITHER WAY, because its provenance line is part
+		# of the evidence: it says which tree the value was taken on, and every
+		# one of these was taken on THIS one. What is reported is whether the
+		# DIGEST moved.
 		printf '%s  %s seed=%s overlay_cells=%s main=%s package=%s\n' \
 			"$digest" "$label" "$seed" "$cells" "$main_commit" "$package" \
 			>"$target"
-		printf 're-froze %-12s %-8s %-22s %s\n' "$key" "$label" "$seed" "$digest"
-		moved=$((moved + 1))
+		if [[ "$old" == "$digest" ]]; then
+			printf 'confirmed %-12s %-8s %-22s %s\n' "$key" "$label" "$seed" \
+				"$digest"
+			kept=$((kept + 1))
+		else
+			printf 're-froze  %-12s %-8s %-22s %s (was %s)\n' "$key" "$label" \
+				"$seed" "$digest" "${old:0:16}"
+			moved=$((moved + 1))
+		fi
 	done < <(sed 's/  */ /g' "$pass/overlay-digests.txt" |
 		awk '{print $1, $2, $3, $4}')
 done
-printf '%d digests re-frozen, %d already matched\n' "$moved" "$kept"
+printf '%d digests moved, %d confirmed unchanged\n' "$moved" "$kept"

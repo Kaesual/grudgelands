@@ -338,13 +338,13 @@ ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf pla
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_kitchen_garden/terrace_kitchen_garden_work_garden_beds_west (-2040,119,-1350)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_kitchen_garden/terrace_kitchen_garden_work_garden_beds_east (-2028,119,-1350)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_kitchen_garden/terrace_kitchen_garden_work_garden_planter (-2040,119,-1356)
+ACTION[Server]: [grug_mobs] start npcs dwarf dur_brannoc: guards 28/28 flair 156/164 vendor 9/9 quest 2/2 new 27 pending 8 spare 23 residents 164 walkers 22
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_goat_pasture/terrace_goat_pasture_gate_idle (-1920,123,-1277)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_goat_pasture/terrace_goat_pasture_work_pasture_trough (-1928,123,-1265)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_goat_pasture/terrace_goat_pasture_work_pasture_bed (-1927,123,-1277)
-ACTION[Server]: [grug_mobs] start npcs dwarf dur_brannoc: guards 28/28 flair 159/164 vendor 9/9 quest 2/2 new 30 pending 5 spare 23 residents 164 walkers 22
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_brew_court/terrace_brew_court_gate_idle (-2032,126,-1274)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_brew_court/terrace_brew_court_work_court_vats_north (-2037,126,-1266)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_brew_court/terrace_brew_court_work_court_vats_south (-2033,126,-1270)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_green/terrace_green_gate_idle (-1984,127,-1271)
 ACTION[Server]: [grug_mobs] start npcs dur_brannoc: grug_mobs:villager_dwarf placed at socket terrace_green/terrace_green_work_green_bench (-1988,128,-1271)
-ACTION[Server]: [grug_mobs] start npcs dwarf dur_brannoc: guards 28/28 flair 164/164 vendor 9/9 quest 2/2 new 5 pending 0 spare 23 residents 164 walkers 22
+ACTION[Server]: [grug_mobs] start npcs dwarf dur_brannoc: guards 28/28 flair 164/164 vendor 9/9 quest 2/2 new 8 pending 0 spare 23 residents 164 walkers 22

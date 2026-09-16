@@ -2,9 +2,11 @@
 
 The increment record is
 [docs/research/wp13-street-geometry.md](../../../../docs/research/wp13-street-geometry.md).
-Everything here was taken on branch `wp13-w3-streets`, off `main` at
-**`f37a0c5b`** ("Freeze the Dur Brannoc corner digest on the gate seed", the
-wave-2 merge with six capitals).
+Everything here was taken on branch `wp13-w3-streets`, rebased onto `main` at
+**`70dda602`** ("Merge Lane P: Lethariel stairs, basalt corner stairs, Highcourt
+lots on nine seeds, corner digests, capital probes"). It was first taken on
+`f37a0c5b`, the wave-2 merge with six capitals, and re-taken whole after the
+rebase and after the independent review's fix round.
 
 Wave 3, Lane S: the five rulings of playtest 5 (2026-09-16) about a capital's
 streets, as rules of `wp13/avenue.lua` — a flat cross profile, junction
@@ -82,4 +84,25 @@ built-geometry digests `run_capital.sh` gates on.
   regions moved because the ROAD cells inside them moved — the avenue is the
   first run and wins every cell it and the curtain share. `wall.lua` itself is
   untouched and its own KAT row is byte-identical (`kat/dur_brannoc_kat-*.txt`,
-  the `dur_brannoc_wall` row). The `corner` digests did not move at all.
+  the `dur_brannoc_wall` row). **No `corner` digest moved**, on either tree.
+* **After the rebase onto `70dda602`**, ten fresh passes re-verified all 28
+  frozen values: **24 confirmed unchanged, 4 moved** — Highcourt's `rampart` and
+  `gate` on both gate seeds, which Lane P had frozen before this lane's road
+  moved the cells inside those two regions. That is exactly what the independent
+  review predicted (its section 5). Re-runs of both Highcourt passes afterwards
+  report all four regions matching.
+
+## The corner read-back is flaky, and the gate now says so
+
+Highcourt's `corner` region is the largest any capital publishes (49 572 cells),
+and on **two of four** passes of seed 8675309 — on an idle machine, load average
+1.0, no other server running — it came back with 12 000 and 14 125 `ignore`
+nodes in it: the server had unloaded part of the region before the probe read it
+(`capital_probe`'s own header warns of exactly this). `run_capital.sh` compared
+the digest anyway, so an unloaded read looked identical to a moved road.
+
+It now reads `<label>_ignored` beside the digest and fails the pass with its own
+message — "re-take the pass; do NOT re-freeze this digest" — instead of
+comparing. The two clean reads (`corner_ignored=0`) both produce
+`cc6da1b7…`, which is the committed value. The emerge/read order of that region
+is Lane P's and is **not fixed here**.

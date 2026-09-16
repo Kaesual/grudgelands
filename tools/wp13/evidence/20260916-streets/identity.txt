@@ -1,4 +1,5 @@
-== the files this branch changed against f37a0c5b ==
+== the files this branch changed against 70dda602 ==
+A	docs/research/wp13-street-geometry.md
 M	mods/MAPGEN/grug_mapgen/wp13/avenue.lua
 M	mods/MAPGEN/grug_mapgen/wp13/dur_brannoc.lua
 D	mods/MAPGEN/grug_mapgen/wp13/elf_bridge.lua
@@ -13,27 +14,208 @@ M	tools/wp13/dur_brannoc_kat.lua
 M	tools/wp13/evidence/20260915-capital-terrain/dur_brannoc/avenue-digest-15912857179583385436.txt
 M	tools/wp13/evidence/20260915-capital-terrain/dur_brannoc/avenue-digest-531802985935182545.txt
 M	tools/wp13/evidence/20260915-capital-terrain/dur_brannoc/avenue-digest-8675309.txt
+M	tools/wp13/evidence/20260915-capital-terrain/dur_brannoc/corner-digest-531802985935182545.txt
+M	tools/wp13/evidence/20260915-capital-terrain/dur_brannoc/gate-digest-15912857179583385436.txt
 M	tools/wp13/evidence/20260915-capital-terrain/dur_brannoc/gate-digest-531802985935182545.txt
 M	tools/wp13/evidence/20260915-capital-terrain/dur_brannoc/gate-digest-8675309.txt
+M	tools/wp13/evidence/20260915-capital-terrain/dur_brannoc/rampart-digest-15912857179583385436.txt
 M	tools/wp13/evidence/20260915-capital-terrain/dur_brannoc/rampart-digest-531802985935182545.txt
 M	tools/wp13/evidence/20260915-capital-terrain/dur_brannoc/rampart-digest-8675309.txt
 M	tools/wp13/evidence/20260915-capital-terrain/gor_drazhak/avenue-digest-531802985935182545.txt
+M	tools/wp13/evidence/20260915-capital-terrain/gor_drazhak/corner-digest-531802985935182545.txt
 M	tools/wp13/evidence/20260915-capital-terrain/gor_drazhak/gate-digest-531802985935182545.txt
 M	tools/wp13/evidence/20260915-capital-terrain/gor_drazhak/rampart-digest-531802985935182545.txt
 M	tools/wp13/evidence/20260915-capital-terrain/highcourt/avenue-digest-531802985935182545.txt
 M	tools/wp13/evidence/20260915-capital-terrain/highcourt/avenue-digest-8675309.txt
+M	tools/wp13/evidence/20260915-capital-terrain/highcourt/corner-digest-531802985935182545.txt
+M	tools/wp13/evidence/20260915-capital-terrain/highcourt/corner-digest-8675309.txt
+M	tools/wp13/evidence/20260915-capital-terrain/highcourt/gate-digest-531802985935182545.txt
+M	tools/wp13/evidence/20260915-capital-terrain/highcourt/gate-digest-8675309.txt
+M	tools/wp13/evidence/20260915-capital-terrain/highcourt/rampart-digest-531802985935182545.txt
+M	tools/wp13/evidence/20260915-capital-terrain/highcourt/rampart-digest-8675309.txt
 M	tools/wp13/evidence/20260915-capital-terrain/kezamba/avenue-digest-531802985935182545.txt
 M	tools/wp13/evidence/20260915-capital-terrain/lethariel/avenue-digest-531802985935182545.txt
 M	tools/wp13/evidence/20260915-capital-terrain/nhal_veyr/avenue-digest-531802985935182545.txt
+M	tools/wp13/evidence/20260915-capital-terrain/nhal_veyr/corner-digest-531802985935182545.txt
 M	tools/wp13/evidence/20260915-capital-terrain/nhal_veyr/gate-digest-531802985935182545.txt
 M	tools/wp13/evidence/20260915-capital-terrain/nhal_veyr/rampart-digest-531802985935182545.txt
+A	tools/wp13/evidence/20260916-streets/README.md
+A	tools/wp13/evidence/20260916-streets/bench.txt
+A	tools/wp13/evidence/20260916-streets/engine/dur_brannoc-full-15912857179583385436/error-count.txt
+A	tools/wp13/evidence/20260916-streets/engine/dur_brannoc-full-15912857179583385436/harness.sha256
+A	tools/wp13/evidence/20260916-streets/engine/dur_brannoc-full-15912857179583385436/moderror-count.txt
+A	tools/wp13/evidence/20260916-streets/engine/dur_brannoc-full-15912857179583385436/npcs.txt
+A	tools/wp13/evidence/20260916-streets/engine/dur_brannoc-full-15912857179583385436/overlay-digests.txt
+A	tools/wp13/evidence/20260916-streets/engine/dur_brannoc-full-15912857179583385436/probe.txt
+A	tools/wp13/evidence/20260916-streets/engine/dur_brannoc-full-15912857179583385436/runner.txt
+A	tools/wp13/evidence/20260916-streets/engine/dur_brannoc-full-531802985935182545/error-count.txt
+A	tools/wp13/evidence/20260916-streets/engine/dur_brannoc-full-531802985935182545/harness.sha256
+A	tools/wp13/evidence/20260916-streets/engine/dur_brannoc-full-531802985935182545/moderror-count.txt
+A	tools/wp13/evidence/20260916-streets/engine/dur_brannoc-full-531802985935182545/npcs.txt
+A	tools/wp13/evidence/20260916-streets/engine/dur_brannoc-full-531802985935182545/overlay-digests.txt
+A	tools/wp13/evidence/20260916-streets/engine/dur_brannoc-full-531802985935182545/probe.txt
+A	tools/wp13/evidence/20260916-streets/engine/dur_brannoc-full-8675309/error-count.txt
+A	tools/wp13/evidence/20260916-streets/engine/dur_brannoc-full-8675309/harness.sha256
+A	tools/wp13/evidence/20260916-streets/engine/dur_brannoc-full-8675309/moderror-count.txt
+A	tools/wp13/evidence/20260916-streets/engine/dur_brannoc-full-8675309/npcs.txt
+A	tools/wp13/evidence/20260916-streets/engine/dur_brannoc-full-8675309/overlay-digests.txt
+A	tools/wp13/evidence/20260916-streets/engine/dur_brannoc-full-8675309/probe.txt
+A	tools/wp13/evidence/20260916-streets/engine/dur_brannoc-full-8675309/runner.txt
+A	tools/wp13/evidence/20260916-streets/engine/gor_drazhak-full-531802985935182545/error-count.txt
+A	tools/wp13/evidence/20260916-streets/engine/gor_drazhak-full-531802985935182545/harness.sha256
+A	tools/wp13/evidence/20260916-streets/engine/gor_drazhak-full-531802985935182545/moderror-count.txt
+A	tools/wp13/evidence/20260916-streets/engine/gor_drazhak-full-531802985935182545/npcs.txt
+A	tools/wp13/evidence/20260916-streets/engine/gor_drazhak-full-531802985935182545/overlay-digests.txt
+A	tools/wp13/evidence/20260916-streets/engine/gor_drazhak-full-531802985935182545/probe.txt
+A	tools/wp13/evidence/20260916-streets/engine/gor_drazhak-full-531802985935182545/runner.txt
+A	tools/wp13/evidence/20260916-streets/engine/highcourt-full-531802985935182545/error-count.txt
+A	tools/wp13/evidence/20260916-streets/engine/highcourt-full-531802985935182545/harness.sha256
+A	tools/wp13/evidence/20260916-streets/engine/highcourt-full-531802985935182545/moderror-count.txt
+A	tools/wp13/evidence/20260916-streets/engine/highcourt-full-531802985935182545/npcs.txt
+A	tools/wp13/evidence/20260916-streets/engine/highcourt-full-531802985935182545/overlay-digests.txt
+A	tools/wp13/evidence/20260916-streets/engine/highcourt-full-531802985935182545/probe.txt
+A	tools/wp13/evidence/20260916-streets/engine/highcourt-full-531802985935182545/runner.txt
+A	tools/wp13/evidence/20260916-streets/engine/highcourt-full-8675309/error-count.txt
+A	tools/wp13/evidence/20260916-streets/engine/highcourt-full-8675309/harness.sha256
+A	tools/wp13/evidence/20260916-streets/engine/highcourt-full-8675309/moderror-count.txt
+A	tools/wp13/evidence/20260916-streets/engine/highcourt-full-8675309/npcs.txt
+A	tools/wp13/evidence/20260916-streets/engine/highcourt-full-8675309/overlay-digests.txt
+A	tools/wp13/evidence/20260916-streets/engine/highcourt-full-8675309/probe.txt
+A	tools/wp13/evidence/20260916-streets/engine/highcourt-full-8675309/runner.txt
+A	tools/wp13/evidence/20260916-streets/engine/kezamba-full-531802985935182545/error-count.txt
+A	tools/wp13/evidence/20260916-streets/engine/kezamba-full-531802985935182545/harness.sha256
+A	tools/wp13/evidence/20260916-streets/engine/kezamba-full-531802985935182545/moderror-count.txt
+A	tools/wp13/evidence/20260916-streets/engine/kezamba-full-531802985935182545/npcs.txt
+A	tools/wp13/evidence/20260916-streets/engine/kezamba-full-531802985935182545/overlay-digests.txt
+A	tools/wp13/evidence/20260916-streets/engine/kezamba-full-531802985935182545/probe.txt
+A	tools/wp13/evidence/20260916-streets/engine/kezamba-full-531802985935182545/runner.txt
+A	tools/wp13/evidence/20260916-streets/engine/lethariel-full-15912857179583385436/error-count.txt
+A	tools/wp13/evidence/20260916-streets/engine/lethariel-full-15912857179583385436/harness.sha256
+A	tools/wp13/evidence/20260916-streets/engine/lethariel-full-15912857179583385436/moderror-count.txt
+A	tools/wp13/evidence/20260916-streets/engine/lethariel-full-15912857179583385436/npcs.txt
+A	tools/wp13/evidence/20260916-streets/engine/lethariel-full-15912857179583385436/overlay-digests.txt
+A	tools/wp13/evidence/20260916-streets/engine/lethariel-full-15912857179583385436/probe.txt
+A	tools/wp13/evidence/20260916-streets/engine/lethariel-full-15912857179583385436/runner.txt
+A	tools/wp13/evidence/20260916-streets/engine/lethariel-full-531802985935182545/error-count.txt
+A	tools/wp13/evidence/20260916-streets/engine/lethariel-full-531802985935182545/harness.sha256
+A	tools/wp13/evidence/20260916-streets/engine/lethariel-full-531802985935182545/moderror-count.txt
+A	tools/wp13/evidence/20260916-streets/engine/lethariel-full-531802985935182545/npcs.txt
+A	tools/wp13/evidence/20260916-streets/engine/lethariel-full-531802985935182545/overlay-digests.txt
+A	tools/wp13/evidence/20260916-streets/engine/lethariel-full-531802985935182545/probe.txt
+A	tools/wp13/evidence/20260916-streets/engine/lethariel-full-531802985935182545/runner.txt
+A	tools/wp13/evidence/20260916-streets/engine/nhal_veyr-full-531802985935182545/error-count.txt
+A	tools/wp13/evidence/20260916-streets/engine/nhal_veyr-full-531802985935182545/harness.sha256
+A	tools/wp13/evidence/20260916-streets/engine/nhal_veyr-full-531802985935182545/moderror-count.txt
+A	tools/wp13/evidence/20260916-streets/engine/nhal_veyr-full-531802985935182545/npcs.txt
+A	tools/wp13/evidence/20260916-streets/engine/nhal_veyr-full-531802985935182545/overlay-digests.txt
+A	tools/wp13/evidence/20260916-streets/engine/nhal_veyr-full-531802985935182545/probe.txt
+A	tools/wp13/evidence/20260916-streets/engine/nhal_veyr-full-531802985935182545/runner.txt
+A	tools/wp13/evidence/20260916-streets/files.sha256
+A	tools/wp13/evidence/20260916-streets/files.sha256.sh
+A	tools/wp13/evidence/20260916-streets/gates.sh
+A	tools/wp13/evidence/20260916-streets/gates.txt
+A	tools/wp13/evidence/20260916-streets/identity.sh
+A	tools/wp13/evidence/20260916-streets/identity.txt
+A	tools/wp13/evidence/20260916-streets/kat/blueprint_kat-luajit.txt
+A	tools/wp13/evidence/20260916-streets/kat/blueprint_kat-puc51.txt
+A	tools/wp13/evidence/20260916-streets/kat/dur_brannoc_kat-luajit.txt
+A	tools/wp13/evidence/20260916-streets/kat/dur_brannoc_kat-puc51.txt
+A	tools/wp13/evidence/20260916-streets/kat/gor_drazhak_kat-luajit.txt
+A	tools/wp13/evidence/20260916-streets/kat/gor_drazhak_kat-puc51.txt
+A	tools/wp13/evidence/20260916-streets/kat/highcourt_kat-luajit.txt
+A	tools/wp13/evidence/20260916-streets/kat/highcourt_kat-puc51.txt
+A	tools/wp13/evidence/20260916-streets/kat/integration_fixture-luajit.txt
+A	tools/wp13/evidence/20260916-streets/kat/integration_fixture-puc51.txt
+A	tools/wp13/evidence/20260916-streets/kat/kezamba_kat-luajit.txt
+A	tools/wp13/evidence/20260916-streets/kat/kezamba_kat-puc51.txt
+A	tools/wp13/evidence/20260916-streets/kat/lane_crossing_kat-luajit.txt
+A	tools/wp13/evidence/20260916-streets/kat/lane_crossing_kat-puc51.txt
+A	tools/wp13/evidence/20260916-streets/kat/lethariel_kat-luajit.txt
+A	tools/wp13/evidence/20260916-streets/kat/lethariel_kat-puc51.txt
+A	tools/wp13/evidence/20260916-streets/kat/library_kat-luajit.txt
+A	tools/wp13/evidence/20260916-streets/kat/library_kat-puc51.txt
+A	tools/wp13/evidence/20260916-streets/kat/nhal_veyr_kat-luajit.txt
+A	tools/wp13/evidence/20260916-streets/kat/nhal_veyr_kat-puc51.txt
+A	tools/wp13/evidence/20260916-streets/kat/route_gates_kat-luajit.txt
+A	tools/wp13/evidence/20260916-streets/kat/route_gates_kat-puc51.txt
+A	tools/wp13/evidence/20260916-streets/kat/seam_kat-luajit.txt
+A	tools/wp13/evidence/20260916-streets/kat/seam_kat-puc51.txt
+A	tools/wp13/evidence/20260916-streets/kat/street_kat-luajit.txt
+A	tools/wp13/evidence/20260916-streets/kat/street_kat-puc51.txt
+A	tools/wp13/evidence/20260916-streets/lane-routes.txt
+A	tools/wp13/evidence/20260916-streets/measurements/after-0.log
+A	tools/wp13/evidence/20260916-streets/measurements/after-0.tsv
+A	tools/wp13/evidence/20260916-streets/measurements/after-1.log
+A	tools/wp13/evidence/20260916-streets/measurements/after-1.tsv
+A	tools/wp13/evidence/20260916-streets/measurements/after-12345.log
+A	tools/wp13/evidence/20260916-streets/measurements/after-12345.tsv
+A	tools/wp13/evidence/20260916-streets/measurements/after-15912857179583385436.log
+A	tools/wp13/evidence/20260916-streets/measurements/after-15912857179583385436.tsv
+A	tools/wp13/evidence/20260916-streets/measurements/after-2.log
+A	tools/wp13/evidence/20260916-streets/measurements/after-2.tsv
+A	tools/wp13/evidence/20260916-streets/measurements/after-42.log
+A	tools/wp13/evidence/20260916-streets/measurements/after-42.tsv
+A	tools/wp13/evidence/20260916-streets/measurements/after-531802985935182545.log
+A	tools/wp13/evidence/20260916-streets/measurements/after-531802985935182545.tsv
+A	tools/wp13/evidence/20260916-streets/measurements/after-8675309.log
+A	tools/wp13/evidence/20260916-streets/measurements/after-8675309.tsv
+A	tools/wp13/evidence/20260916-streets/measurements/after-999999999.log
+A	tools/wp13/evidence/20260916-streets/measurements/after-999999999.tsv
+A	tools/wp13/evidence/20260916-streets/measurements/before-0.log
+A	tools/wp13/evidence/20260916-streets/measurements/before-0.tsv
+A	tools/wp13/evidence/20260916-streets/measurements/before-1.log
+A	tools/wp13/evidence/20260916-streets/measurements/before-1.tsv
+A	tools/wp13/evidence/20260916-streets/measurements/before-12345.log
+A	tools/wp13/evidence/20260916-streets/measurements/before-12345.tsv
+A	tools/wp13/evidence/20260916-streets/measurements/before-15912857179583385436.log
+A	tools/wp13/evidence/20260916-streets/measurements/before-15912857179583385436.tsv
+A	tools/wp13/evidence/20260916-streets/measurements/before-2.log
+A	tools/wp13/evidence/20260916-streets/measurements/before-2.tsv
+A	tools/wp13/evidence/20260916-streets/measurements/before-42.log
+A	tools/wp13/evidence/20260916-streets/measurements/before-42.tsv
+A	tools/wp13/evidence/20260916-streets/measurements/before-531802985935182545.log
+A	tools/wp13/evidence/20260916-streets/measurements/before-531802985935182545.tsv
+A	tools/wp13/evidence/20260916-streets/measurements/before-8675309.log
+A	tools/wp13/evidence/20260916-streets/measurements/before-8675309.tsv
+A	tools/wp13/evidence/20260916-streets/measurements/before-999999999.log
+A	tools/wp13/evidence/20260916-streets/measurements/before-999999999.tsv
+A	tools/wp13/evidence/20260916-streets/micro-luajit.tsv
+A	tools/wp13/evidence/20260916-streets/micro-puc51.tsv
+A	tools/wp13/evidence/20260916-streets/mutation-review.py
+A	tools/wp13/evidence/20260916-streets/mutation-review.txt
+A	tools/wp13/evidence/20260916-streets/mutation.py
+A	tools/wp13/evidence/20260916-streets/mutation.txt
+A	tools/wp13/evidence/20260916-streets/overlay_bench.lua
+A	tools/wp13/evidence/20260916-streets/refreeze.sh
+A	tools/wp13/evidence/20260916-streets/renders.sh
+A	tools/wp13/evidence/20260916-streets/renders/after-dur_brannoc-lane-on-the-slope.png
+A	tools/wp13/evidence/20260916-streets/renders/after-highcourt-river-crossing.png
+A	tools/wp13/evidence/20260916-streets/renders/after-lethariel-ring-corner-1894--1405.png
+A	tools/wp13/evidence/20260916-streets/renders/before-dur_brannoc-lane-on-the-slope.png
+A	tools/wp13/evidence/20260916-streets/renders/before-highcourt-river-crossing.png
+A	tools/wp13/evidence/20260916-streets/renders/before-lethariel-ring-corner-1894--1405.png
+A	tools/wp13/evidence/20260916-streets/renders/tsv/after-dur_brannoc-lane-on-the-slope-8675309.tsv
+A	tools/wp13/evidence/20260916-streets/renders/tsv/after-highcourt-river-crossing-8675309.tsv
+A	tools/wp13/evidence/20260916-streets/renders/tsv/after-lethariel-ring-corner-1894--1405-8675309.tsv
+A	tools/wp13/evidence/20260916-streets/renders/tsv/before-dur_brannoc-lane-on-the-slope-8675309.tsv
+A	tools/wp13/evidence/20260916-streets/renders/tsv/before-highcourt-river-crossing-8675309.tsv
+A	tools/wp13/evidence/20260916-streets/renders/tsv/before-lethariel-ring-corner-1894--1405-8675309.tsv
+A	tools/wp13/evidence/20260916-streets/static.sh
+A	tools/wp13/evidence/20260916-streets/static.txt
+A	tools/wp13/evidence/20260916-streets/street_dump.lua
+A	tools/wp13/evidence/20260916-streets/walkability.lua
+A	tools/wp13/evidence/20260916-streets/walkability.txt
 M	tools/wp13/final_micro.lua
 M	tools/wp13/gor_drazhak_kat.lua
 M	tools/wp13/highcourt_kat.lua
 M	tools/wp13/integration_fixture.lua
+M	tools/wp13/kezamba_lots.lua
 M	tools/wp13/lane_crossing_kat.lua
+M	tools/wp13/lane_routes.lua
 M	tools/wp13/lethariel_kat.lua
+M	tools/wp13/lethariel_plots.lua
 M	tools/wp13/nhal_veyr_kat.lua
+M	tools/wp13/run_capital.sh
 A	tools/wp13/street_geometry.lua
 A	tools/wp13/street_kat.lua
 
@@ -51,21 +233,32 @@ branch 0bbf87a7253deadca55951752adde73e82c31cd10878dc64ef6d44af91ad1f5f  -
  .../dur_brannoc/avenue-digest-15912857179583385436.txt                  | 2 +-
  .../dur_brannoc/avenue-digest-531802985935182545.txt                    | 2 +-
  .../20260915-capital-terrain/dur_brannoc/avenue-digest-8675309.txt      | 2 +-
+ .../dur_brannoc/corner-digest-531802985935182545.txt                    | 2 +-
+ .../dur_brannoc/gate-digest-15912857179583385436.txt                    | 2 +-
  .../dur_brannoc/gate-digest-531802985935182545.txt                      | 2 +-
  .../20260915-capital-terrain/dur_brannoc/gate-digest-8675309.txt        | 2 +-
+ .../dur_brannoc/rampart-digest-15912857179583385436.txt                 | 2 +-
  .../dur_brannoc/rampart-digest-531802985935182545.txt                   | 2 +-
  .../20260915-capital-terrain/dur_brannoc/rampart-digest-8675309.txt     | 2 +-
  .../gor_drazhak/avenue-digest-531802985935182545.txt                    | 2 +-
+ .../gor_drazhak/corner-digest-531802985935182545.txt                    | 2 +-
  .../gor_drazhak/gate-digest-531802985935182545.txt                      | 2 +-
  .../gor_drazhak/rampart-digest-531802985935182545.txt                   | 2 +-
  .../highcourt/avenue-digest-531802985935182545.txt                      | 2 +-
  .../20260915-capital-terrain/highcourt/avenue-digest-8675309.txt        | 2 +-
+ .../highcourt/corner-digest-531802985935182545.txt                      | 2 +-
+ .../20260915-capital-terrain/highcourt/corner-digest-8675309.txt        | 2 +-
+ .../highcourt/gate-digest-531802985935182545.txt                        | 2 +-
+ .../evidence/20260915-capital-terrain/highcourt/gate-digest-8675309.txt | 2 +-
+ .../highcourt/rampart-digest-531802985935182545.txt                     | 2 +-
+ .../20260915-capital-terrain/highcourt/rampart-digest-8675309.txt       | 2 +-
  .../kezamba/avenue-digest-531802985935182545.txt                        | 2 +-
  .../lethariel/avenue-digest-531802985935182545.txt                      | 2 +-
  .../nhal_veyr/avenue-digest-531802985935182545.txt                      | 2 +-
+ .../nhal_veyr/corner-digest-531802985935182545.txt                      | 2 +-
  .../nhal_veyr/gate-digest-531802985935182545.txt                        | 2 +-
  .../nhal_veyr/rampart-digest-531802985935182545.txt                     | 2 +-
- 17 files changed, 17 insertions(+), 17 deletions(-)
+ 28 files changed, 28 insertions(+), 28 deletions(-)
 
 == every settlement identity the integration fixture prints, main against
 == this branch: one token per line so the comparison is readable ==
@@ -86,9 +279,9 @@ branch 0bbf87a7253deadca55951752adde73e82c31cd10878dc64ef6d44af91ad1f5f  -
 > dur_brannoc_avenue/overlay/22d9947a6afca6c27bda296ad66cc5fe408f60074f329a8c28de96b8c94ca5c7
 > gor_drazhak/8853176bdcc231f2aa73b9cbfdfd010148064639658c945da7998e850edff10e/563031/112/1/53/19
 178c178
-< lethariel/999a22c949b5a34bc4a42b735703c90623de9689f4c7974e7281334a504ac9c9/356712/112/1/45/26
+< lethariel/25ad47a8d3ec002ecdbd50bbe5111a1abf6ee6a5aa6158b34b4a459a857379e2/356712/112/1/45/26
 ---
-> lethariel/999a22c949b5a34bc4a42b735703c90623de9689f4c7974e7281334a504ac9c9/354539/112/1/45/26
+> lethariel/25ad47a8d3ec002ecdbd50bbe5111a1abf6ee6a5aa6158b34b4a459a857379e2/354539/112/1/45/26
 225c225
 < kezamba/dc32c0d2c32bb20908cd31cd999e70bc6d58a16c279a35d66e9ca084c0e5ecdf/330505/128/1/53/26
 ---

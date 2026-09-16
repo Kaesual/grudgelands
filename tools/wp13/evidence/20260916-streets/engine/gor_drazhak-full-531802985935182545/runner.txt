@@ -1,11 +1,6 @@
-exit=0 errors=0 complete=1 log=/tmp/grug-w3-streets-engine/gor_drazhak-full-531802985935182545/server.log
-WP13 gor_drazhak: the built avenue moved.
-  now      b93337ec736e0ff0238b624d714723da346dd1427429d8746eb416d030a6b51d
-  expected 303a5ab40de3e22ab35b2ba48b34c6a0479d021b2b8d937bbe242ba27037628f (/home/jan/projects/grudgelands/.claude/worktrees/agent-a4db17bfc00ad1ab1/tools/wp13/evidence/20260915-capital-terrain/gor_drazhak/avenue-digest-531802985935182545.txt)
-WP13 gor_drazhak: the built rampart moved.
-  now      6a3d9219d83fa9b95c0ca3aaa3dff7bd665e4dc82e4e8ff6a8e2bdea6a477ac5
-  expected 6589b4e41eb733011abb1bd0cca72b757fedf1e1b42bd12c77c70d03b5b22f90 (/home/jan/projects/grudgelands/.claude/worktrees/agent-a4db17bfc00ad1ab1/tools/wp13/evidence/20260915-capital-terrain/gor_drazhak/rampart-digest-531802985935182545.txt)
-corner overlay digest recorded (no committed value for seed 531802985935182545 yet)
-WP13 gor_drazhak: the built gate moved.
-  now      be849e63731c737cf531bc1b2c8fdac265a2c18f342804cc25dae1a34148895f
-  expected e008bb2cd8b88e3b332ffb5d97af6a2bca9cb8b24bebc46bbdf7ce5c5b9f047e (/home/jan/projects/grudgelands/.claude/worktrees/agent-a4db17bfc00ad1ab1/tools/wp13/evidence/20260915-capital-terrain/gor_drazhak/gate-digest-531802985935182545.txt)
+exit=0 errors=0 complete=1 log=/tmp/grug-w3-streets-reb/gor_drazhak-full-531802985935182545/server.log
+avenue overlay digest matches the committed value
+rampart overlay digest matches the committed value
+corner overlay digest matches the committed value
+gate overlay digest matches the committed value
+WP13 capital pass PASS: gor_drazhak full /tmp/grug-w3-streets-reb/gor_drazhak-full-531802985935182545

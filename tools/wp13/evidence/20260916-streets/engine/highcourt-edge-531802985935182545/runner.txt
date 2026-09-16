@@ -1,2 +1,0 @@
-exit=0 errors=0 complete=1 log=/tmp/grug-w3-streets-engine/highcourt-edge-531802985935182545/server.log
-WP13 capital pass PASS: highcourt edge /tmp/grug-w3-streets-engine/highcourt-edge-531802985935182545

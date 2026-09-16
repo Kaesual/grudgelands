@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # What this lane moved and what it did not.
 #
-#   identity.sh <this tree> <a main checkout at f37a0c5b>
+#   identity.sh <this tree> <a main checkout at 70dda602>
 set -uo pipefail
 export LC_ALL=C
 here="${1:?usage: identity.sh THIS_TREE MAIN_TREE}"
 main="${2:?usage: identity.sh THIS_TREE MAIN_TREE}"
 cd "$here"
 
-echo "== the files this branch changed against f37a0c5b =="
-git diff --name-status f37a0c5b
+echo "== the files this branch changed against 70dda602 =="
+git diff --name-status 70dda602
 
 echo
 echo "== the six start identities: main's own, then this branch's =="
@@ -27,7 +27,7 @@ rm -f /tmp/hc-main.$$.txt /tmp/hc-branch.$$.txt
 
 echo
 echo "== the frozen built-geometry digests this lane re-froze =="
-git diff --stat f37a0c5b -- tools/wp13/evidence/20260915-capital-terrain
+git diff --stat 70dda602 -- tools/wp13/evidence/20260915-capital-terrain
 
 echo
 echo "== every settlement identity the integration fixture prints, main against"

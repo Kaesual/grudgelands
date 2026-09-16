@@ -1,11 +1,6 @@
-exit=0 errors=0 complete=1 log=/tmp/grug-w3-streets-engine/nhal_veyr-full-531802985935182545/server.log
-WP13 nhal_veyr: the built avenue moved.
-  now      bde0dc8cbe7b4ca34ba2a8f768e22f564474d6b820c1ccd112d6ae247cd8b284
-  expected 8b24c456423dcff2a7ebe8ff8d54ab81aaffd6e037834f3eb65a4e0bb05700fb (/home/jan/projects/grudgelands/.claude/worktrees/agent-a4db17bfc00ad1ab1/tools/wp13/evidence/20260915-capital-terrain/nhal_veyr/avenue-digest-531802985935182545.txt)
-WP13 nhal_veyr: the built rampart moved.
-  now      317799719955dcd8903c35429d7d375675a6bfbf28166468e99522f2077e652a
-  expected 424ab4aed118550ceb097dbe7cb71a47929099479cbc732d464b2445c61b0cd7 (/home/jan/projects/grudgelands/.claude/worktrees/agent-a4db17bfc00ad1ab1/tools/wp13/evidence/20260915-capital-terrain/nhal_veyr/rampart-digest-531802985935182545.txt)
+exit=0 errors=0 complete=1 log=/tmp/grug-w3-streets-reb/nhal_veyr-full-531802985935182545/server.log
+avenue overlay digest matches the committed value
+rampart overlay digest matches the committed value
 corner overlay digest matches the committed value
-WP13 nhal_veyr: the built gate moved.
-  now      46a73b86f858cbf19de55975ad8c2dac9f280d3a08568a9124bf4e1cacae9cf9
-  expected 194294d3dde59dacf8cd30a49c4323229be7fca32efbb33718473f0490dd236a (/home/jan/projects/grudgelands/.claude/worktrees/agent-a4db17bfc00ad1ab1/tools/wp13/evidence/20260915-capital-terrain/nhal_veyr/gate-digest-531802985935182545.txt)
+gate overlay digest matches the committed value
+WP13 capital pass PASS: nhal_veyr full /tmp/grug-w3-streets-reb/nhal_veyr-full-531802985935182545
