@@ -66,6 +66,21 @@ local function loader(directory)
 
 	local M = {}
 
+	-- The four quadrants' lot grids and the seeded permutation that hands one
+	-- grid to one district (`highcourt_quadrants.lua`). Published here for the
+	-- reason `wp13/dur_brannoc.lua` publishes its own: that is where every
+	-- consumer looks for a capital's geometry, and a capital that does not
+	-- publish it is refused by `tools/wp13/capital_lots.lua` -- the NINE-SEED
+	-- lot predicate. The pilot capital was the one capital that could only be
+	-- measured two worlds at a time (`tools/wp13/highcourt_plots.lua` takes two
+	-- field dumps), which is exactly the gap wave 1 found the hard way: a lot
+	-- legal on the two gate seeds was illegal on the user's own.
+	--
+	-- The module is PURE and is already loaded by `highcourt_districts.lua`
+	-- beside this file, so this adds a table lookup and no work: it changes no
+	-- cell, no socket and no digest.
+	M.quadrants = dofile(directory .. "/highcourt_quadrants.lua")()
+
 	local RADIUS = 47
 	local SCHEMA = "grug_wp13_highcourt_core_v1"
 
