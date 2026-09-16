@@ -116,6 +116,17 @@ cp -a "$repo/tools/wp13/capital_probe" "$game/mods/grug_wp13_capital_probe"
 
 printf 'gameid = grudgelands\nbackend = sqlite3\nplayer_backend = sqlite3\nauth_backend = sqlite3\n' \
 	>"$world/world.mt"
+# THE PROBE HOLDS THE MAPBLOCKS OF A DUMP BOX WHILE IT READS THEM (round 4,
+# 2026-09-16). A node read loads nothing -- the engine answers "ignore" for a
+# block that is not resident -- so capital_probe force-holds a box between its
+# emerge and its read and releases it straight afterwards. The engine's default
+# budget is 16 blocks and Highcourt's district region is several hundred, so
+# max_forceloaded_blocks below is raised for this disposable world. The blocks
+# are in memory already (the probe has just emerged them); the hold is
+# bookkeeping and not a second copy.
+#
+# NOTHING IN THIS HEREDOC MAY CARRY A BACKTICK: the delimiter is unquoted so
+# that the settings can interpolate, which means the shell would run it.
 cat >"$root/server.conf" <<CONF
 port = $port
 bind_address = 127.0.0.1
@@ -123,13 +134,6 @@ server_announce = false
 secure.enable_security = true
 fixed_map_seed = $seed
 num_emerge_threads = 1
-# THE PROBE HOLDS THE MAPBLOCKS OF A DUMP BOX WHILE IT READS THEM (round 4,
-# 2026-09-16). `core.get_node` loads nothing -- it answers `ignore` for a block
-# that is not resident -- so `capital_probe` force-holds a box between its
-# emerge and its read and releases it afterwards. The engine's default budget is
-# 16 blocks and Highcourt's district region is several hundred, so the budget is
-# raised for this disposable world. The blocks are in memory already (the probe
-# just emerged them); the hold is bookkeeping, not a second copy.
 max_forceloaded_blocks = 4096
 grug_wp13_probe_key = $key
 grug_wp13_probe_mode = $mode

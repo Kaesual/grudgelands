@@ -1049,7 +1049,8 @@ local run_dumps
 
 local function dump_done()
 	local spec = dump_queue[dump_index]
-	local written, ignored, road, digest = dump_close(spec.state)
+	local state = spec.state
+	local written, ignored, road, digest = dump_close(state)
 	spec.state = nil
 	dump_results[#dump_results + 1] = {label = spec.label, written = written,
 		ignored = ignored, road = road,
@@ -1058,8 +1059,8 @@ local function dump_done()
 		-- the emerge callbacks that came back errored or cancelled, and the
 		-- boxes that had to be taken again. A pass with `held` > 0 and
 		-- everything else 0 is the read working as designed.
-		held = spec.state.held, unheld = spec.state.unheld,
-		trouble = spec.state.trouble, retries = spec.state.retries,
+		held = state.held, unheld = state.unheld,
+		trouble = state.trouble, retries = state.retries,
 		-- Every dump publishes the digest of the OVERLAY cells it read back out
 		-- of the finished map, not only the road's. Dur Brannoc's overlay
 		-- carries the curtain wall as well, and nothing else in the tree hashes
