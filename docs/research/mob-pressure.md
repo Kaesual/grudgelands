@@ -79,6 +79,15 @@ Things a consumer needs to know and cannot guess:
   "stronger and longer wins" implements that policy in its own file, not in
   the aggregator — `grug_mobs.slow_player` is the worked example, and
   `get_move_modifier` exists for exactly that.
+- **A second `set_root` keeps the LATER expiry** (coordinator decision,
+  2026-09-16, after the round-4 review). `rec.root = math.max(rec.root or 0,
+  now + duration)`: a 1 s root cast onto a running 5 s root leaves 5 s, and a
+  4 s root onto a running 1 s root extends it to 4. The root carries **no
+  name** on purpose — it is one flag, not a set — so "the longest wins" is the
+  only rule that can give the guarantee the staged `kits.lua` chain used to
+  give by hand, "a Hamstring must not lift an ally's Frost Nova root".
+  `clear_root` still lifts it outright, and immunity still discards it. This
+  is the rule WP11's Tendon Cut and Pinning Shot land on.
 - **Durations are seconds from the call**, expiry is evaluated on
   `grug_core.mono_time()` at use time. There is no `core.after` chain to
   orphan and no generation counter; a relog drops the whole record.
@@ -96,6 +105,14 @@ Things a consumer needs to know and cannot guess:
 - **Mobs are not players.** Mob roots and slows keep their own reload-safe
   countdowns in `grug_mobs` (`grug_mobs.root`/`slow`), ticked inside
   `do_custom` because a mob can unload mid-timer.
+- **A read is free and a steady state is silent.** `get_move_state`,
+  `is_movement_held` and `get_move_modifier` never create a record, so a
+  per-step HUD consumer asking about a player with no effects costs nothing
+  and leaves nothing behind; the engine write is skipped whenever the resolved
+  speed, jump *and* gravity equal what was last written, so an exclusive hold
+  writes once when it starts and once when it releases rather than once per
+  throttled step. Both are asserted in the KAT's write-economy section, and
+  both were review findings (6 and 7).
 
 ### What the migrations preserved, exactly
 
@@ -150,6 +167,12 @@ Three mutations, each of which must go red:
 | 1 | multiplicative combination | `web -40% + sprint +25% is additive: expected 0.85, got 0.35` |
 | 2 | root written as a −1000 % modifier | `a root is speed 0 regardless of modifiers: expected 0, got 0.1` |
 | 3 | snapshot restore left in the hold | `one holder released, the other still holds: expected 0, got 0.6` |
+| 4 | a second `set_root` replacing instead of keeping the later expiry | `a 1 s root cut a running 5 s root short; a second root must keep the later expiry: expected 0, got 1.5` |
+
+The write-economy section bites on its own too: reverting only the
+gravity-aware skip makes it report `a running hold wrote 10 unchanged
+override(s) over ten steps`, and reverting only the read-only `peek` makes it
+report `reading a clean player's state caused 5 engine write(s)`.
 
 **No runtime test is owed for the aggregator itself** — it is pure Lua with no
 engine dependency, and the KAT carries it. The *migrations* do owe one,
@@ -447,7 +470,16 @@ optional second and third candidates, and the `dogshoot_switch` /
 4. **The removed snapshot in `selection.lua`.** The WP45 regression asserted
    the old behaviour and was re-taken in its own commit
    (`tools/wp45/character_creation_test.lua`); that file belongs to no lane.
-5. **`bandit.lua` became a builder.** The registration is
+5. **The in-reach run branch has no `at_cliff` guard** (review finding 8),
+   while the chase branch it mirrors does. `on_step`'s own cliff stop runs
+   every 0.25 s and *before* `do_states` in the same step, so `do_states`
+   overwrites it: a mob 1.2–2.8 m from a target on a ledge can now run off it
+   where upstream stood still. `fear_height` and fall damage absorb it, so it
+   is cosmetic-to-annoying rather than a break, and it was left alone
+   deliberately — adding the guard would re-introduce exactly the standstill
+   the patch removes whenever `at_cliff` fires on flat ground near a target.
+   Worth a playtest look and a decision of its own.
+6. **`bandit.lua` became a builder.** The registration is
    `grug_mobs.register_mob("grug_mobs:bandit", grug_mobs.bandit_def("Bandit"))`
    and every caller gets a fresh table.
 
@@ -468,7 +500,13 @@ optional second and third candidates, and the `dogshoot_switch` /
   left alone.
 - **The aggregator has no consumer for `set_move_immunity` yet.** It exists
   because WP11's Hold Ground and Shake Loose are specified against it; nothing
-  calls it, so only the KAT exercises it.
+  calls it, so only the KAT exercises it. The same is true of `set_root`,
+  which is why its "longest wins" rule above was decided before a caller
+  exists rather than after.
+- **An expiry reaches the ENGINE up to one `STEP_INTERVAL` plus one server
+  step late** (measured by the review at 0.54 s for a 0.5 s modifier at a
+  0.09 s step). The logic is never late — every read prunes at use time — but
+  a future effect shorter than ~0.2 s would want a smaller `STEP_INTERVAL`.
 - **The speed raise is unmeasured as a change in feel.** §3's table is
   arithmetic from shipped durations.
 - The card's optional ranged candidates and the `dogshoot` ratio knob.

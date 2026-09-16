@@ -175,8 +175,13 @@ local function write(player, rec, force)
 	-- while a hold runs and nil again the moment gravity 1 is handed back,
 	-- so a settled player holds no state at all.
 	local owned = (gravity ~= nil and gravity ~= 1) and gravity or nil
+	-- The skip compares the RESOLVED values, gravity included, against what
+	-- was last written. Comparing `gravity == nil` instead would never skip
+	-- while a hold runs -- the hold resolves gravity to 0 on every call --
+	-- and the throttled globalstep below would then re-send an unchanged
+	-- override every 0.1 s for the whole of character creation.
 	if not force and last.speed == speed and last.jump == jump
-			and gravity == nil then
+			and owned == last.gravity then
 		return speed, jump
 	end
 	if force then
@@ -212,6 +217,19 @@ local function resolve(player)
 	return name, record(name)
 end
 
+-- The read-only counterpart: it never CREATES a record, so a query on a
+-- player who carries no effect leaves no state behind. Without it a per-step
+-- HUD consumer asking `get_move_state` would mint an empty record on every
+-- step, and the globalstep would write a redundant {speed = 1, jump = 1} out
+-- before dropping it again -- one engine write per 0.1 s, for a read.
+local function peek(player)
+	if not player or not core.is_player(player) then
+		return nil, nil
+	end
+	local name = player:get_player_name()
+	return name, state[name]
+end
+
 --
 -- Public API
 --
@@ -240,9 +258,9 @@ function grug_core.set_move_modifier(player, name, effect, duration)
 end
 
 function grug_core.clear_move_modifier(player, name)
-	local pname, rec = resolve(player)
-	if not pname or not name then
-		return
+	local pname, rec = peek(player)
+	if not pname or not name or not rec then
+		return -- no record is already "cleared"; do not mint one to say so
 	end
 	rec.mods[name] = nil
 	settle(player, pname, rec)
@@ -254,8 +272,8 @@ end
 -- than pushing a stacking policy into the aggregator (grug_mobs.slow_player
 -- is the one such caller today).
 function grug_core.get_move_modifier(player, name)
-	local pname, rec = resolve(player)
-	if not pname or not name then
+	local pname, rec = peek(player)
+	if not pname or not name or not rec then
 		return nil
 	end
 	local t = now()
@@ -274,6 +292,16 @@ end
 -- The hard flag of ruling 11: speed 0 and jump 0 for `duration` seconds,
 -- regardless of every modifier. Refused outright while a root/slow immunity
 -- runs.
+--
+-- A SECOND root KEEPS THE LATER EXPIRY (coordinator decision, 2026-09-16,
+-- after the round-4 review): a shorter root can never cut a longer one short.
+-- That is the same policy the named modifiers follow through
+-- `grug_mobs.slow_player`'s merge, and it is what the staged chain in
+-- `kits.lua` used to guarantee by hand ("a Hamstring must not lift an ally's
+-- Frost Nova root"). The root is unnamed on purpose -- it is one flag, not a
+-- set -- so "the longest wins" is the only rule that can express that
+-- guarantee here. `prune` has already dropped an expired root, so the max is
+-- taken against a live expiry or nothing.
 function grug_core.set_root(player, duration)
 	local pname, rec = resolve(player)
 	if not pname then
@@ -284,14 +312,15 @@ function grug_core.set_root(player, duration)
 	if rec.immune then
 		return false -- immune: the root is discarded, not queued
 	end
-	rec.root = t + (duration or 0)
+	local expiry = t + (duration or 0)
+	rec.root = math.max(rec.root or 0, expiry)
 	settle(player, pname, rec)
 	return true
 end
 
 function grug_core.clear_root(player)
-	local pname, rec = resolve(player)
-	if not pname then
+	local pname, rec = peek(player)
+	if not pname or not rec then
 		return
 	end
 	rec.root = nil
@@ -313,8 +342,8 @@ function grug_core.set_move_immunity(player, duration)
 end
 
 function grug_core.clear_move_immunity(player)
-	local pname, rec = resolve(player)
-	if not pname then
+	local pname, rec = peek(player)
+	if not pname or not rec then
 		return
 	end
 	rec.immune = nil
@@ -341,8 +370,8 @@ function grug_core.hold_movement(player, name)
 end
 
 function grug_core.release_movement(player, name)
-	local pname, rec = resolve(player)
-	if not pname or not name then
+	local pname, rec = peek(player)
+	if not pname or not name or not rec then
 		return
 	end
 	if rec.holds[name] then
@@ -356,8 +385,8 @@ function grug_core.release_movement(player, name)
 end
 
 function grug_core.is_movement_held(player, name)
-	local pname, rec = resolve(player)
-	if not pname then
+	local pname, rec = peek(player)
+	if not pname or not rec then
 		return false
 	end
 	if name then
@@ -369,9 +398,14 @@ end
 -- Introspection for KATs, HUDs and diagnostics. Never returns nil for a
 -- connected player: with no effects at all the baseline is 1/1.
 function grug_core.get_move_state(player)
-	local pname, rec = resolve(player)
+	local pname, rec = peek(player)
 	if not pname then
 		return nil
+	end
+	if not rec then
+		-- No record is the baseline, spelled out rather than constructed.
+		return {speed = 1, jump = 1, rooted = false, immune = false,
+			held = false, modifiers = 0}
 	end
 	local t = now()
 	prune(rec, t)
@@ -393,8 +427,8 @@ end
 -- Drop every effect and write the baseline back. Used by the join reset and
 -- available to anything that has to clean a player up (death, admin).
 function grug_core.clear_movement(player)
-	local pname, rec = resolve(player)
-	if not pname then
+	local pname, rec = peek(player)
+	if not pname or not rec then
 		return
 	end
 	rec.mods = {}
@@ -410,9 +444,9 @@ end
 -- code that knows something else may have written the field. One engine
 -- read, and a write only on a mismatch.
 function grug_core.reassert_movement(player)
-	local pname, rec = resolve(player)
-	if not pname then
-		return
+	local pname, rec = peek(player)
+	if not pname or not rec then
+		return -- nothing is being asserted, so there is nothing to re-assert
 	end
 	write(player, rec, true)
 end

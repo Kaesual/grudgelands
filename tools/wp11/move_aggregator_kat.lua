@@ -13,7 +13,9 @@
 --      at its own value. No entry expires because another one did.
 --   4. ROOT IS A HARD FLAG, not a "-1000 %": speed 0 and jump 0 regardless
 --      of a running +50 % sprint, and the sprint is still there underneath
---      when the root ends.
+--      when the root ends. A SECOND root keeps the LATER expiry, so a short
+--      root can never cut a long one short (coordinator decision 2026-09-16,
+--      the same policy the named modifiers follow).
 --   5. IMMUNITY discards roots and negative modifiers, keeps positives, and
 --      an inert slow still expires on its own clock.
 --   6. THE EXCLUSIVE HOLD outranks root and sum, counts holders, releases
@@ -43,7 +45,8 @@
 --     tools/bin/lua51 -e 'io.write(dofile("tools/wp11/move_aggregator_kat.lua")("."))'
 --
 -- MUTATION=1 multiplicative combination, =2 root as -1000 %, =3 snapshot
--- restore in the hold. Each must make this KAT fail.
+-- restore in the hold, =4 a second `set_root` replacing unconditionally
+-- instead of keeping the later expiry. Each must make this KAT fail.
 
 return function(repo)
 	repo = repo or "."
@@ -158,6 +161,14 @@ return function(repo)
 				{speed = -10, jump = -10}, duration)
 			return true
 		end
+	elseif mutation == 4 then
+		-- The pre-review behaviour: a second root replaces unconditionally,
+		-- so a 1 s root cuts a running 5 s root short.
+		local real = grug_core.set_root
+		grug_core.set_root = function(player, duration)
+			grug_core.clear_root(player)
+			return real(player, duration)
+		end
 	elseif mutation == 3 then
 		-- The snapshot restore left in the exclusive hold.
 		local real_hold, real_release =
@@ -256,7 +267,30 @@ return function(repo)
 	advance(3.5)
 	near(p.physics.speed, 1.5,
 		"the sprint must still be running when the root ends")
-	say("root", "hard_flag", "ok")
+
+	-- A SECOND root keeps the LATER expiry. `set_root` carries no name -- it
+	-- is one flag, not a set -- so "the longest wins" is the only rule that
+	-- can give the guarantee the staged kits.lua chain used to give by hand:
+	-- a Hamstring must not lift an ally's Frost Nova root. The sprint is
+	-- refreshed to outlive the whole block, so every reading below is the
+	-- root's doing and not an expiry elsewhere.
+	grug_core.set_move_modifier(p, "sprint", {speed = 0.50}, 30)
+	grug_core.set_root(p, 5)
+	grug_core.set_root(p, 1) -- shorter, and later: it must NOT truncate
+	advance(3)
+	near(p.physics.speed, 0,
+		"a 1 s root cut a running 5 s root short; a second root must keep " ..
+		"the later expiry")
+	advance(2.5)
+	near(p.physics.speed, 1.5, "the 5 s root ends on its own clock")
+	-- ... and a LONGER second root does extend it, which is the same rule.
+	grug_core.set_root(p, 1)
+	grug_core.set_root(p, 4)
+	advance(2)
+	near(p.physics.speed, 0, "a longer second root must extend the first")
+	grug_core.clear_root(p)
+	near(p.physics.speed, 1.5, "clear_root lifts it regardless")
+	say("root", "hard_flag", "longest_wins", "ok")
 
 	--
 	-- 5. Immunity: roots and negatives discarded, positives kept.
@@ -432,7 +466,42 @@ return function(repo)
 	want(quiet.writes == after_set + 1,
 		"the expiry did not reach the engine in exactly one write")
 	near(quiet.physics.speed, 1, "expiry restores the baseline")
-	say("writes", "one_per_change", after_set + 1)
+
+	-- A HOLD is not an exception to that. The hold resolves gravity to 0 on
+	-- every call, so a skip test written against "no gravity in this write"
+	-- would never fire and the throttled globalstep would re-send an
+	-- unchanged override for the whole of character creation.
+	local frozen = new_player("frozen")
+	grug_core.hold_movement(frozen, "class_creation")
+	local after_hold = frozen.writes
+	for _ = 1, 10 do
+		advance(0.2)
+	end
+	want(frozen.writes == after_hold,
+		"a running hold wrote " .. (frozen.writes - after_hold) ..
+		" unchanged override(s) over ten steps; it must write none")
+	grug_core.release_movement(frozen, "class_creation")
+	want(frozen.writes == after_hold + 1,
+		"the release did not reach the engine in exactly one write")
+	near(frozen.physics.gravity, 1, "gravity handed back as exactly 1")
+
+	-- A READ must not mint a record. Without that, a per-step HUD consumer
+	-- asking for the move state would make the globalstep write a redundant
+	-- {speed = 1, jump = 1} every 0.1 s, for ever, on a player with no
+	-- effects at all.
+	local watched = new_player("watched")
+	for _ = 1, 5 do
+		local view = grug_core.get_move_state(watched)
+		near(view.speed, 1, "a clean player reads as the baseline")
+		want(grug_core.is_movement_held(watched) == false, "not held")
+		want(grug_core.get_move_modifier(watched, "sprint") == nil,
+			"no modifier")
+		advance(0.2)
+	end
+	want(watched.writes == 0,
+		"reading a clean player's state caused " .. watched.writes ..
+		" engine write(s); it must cause none")
+	say("writes", "one_per_change", after_set + 1, "hold_quiet", "reads_free")
 
 	say("wp11_move_aggregator", "PASS", "mutation", mutation)
 	end)
