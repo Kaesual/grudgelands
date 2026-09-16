@@ -142,11 +142,9 @@ the goal-level view.
   and re-run the spawn-budget audit.
 - [ ] **WP11 / WP14 / WP20 / WP21 / WP8:** skill trees, live offhand/carried
   light, parties, recovery/rest and the quest framework are independently
-  ready behind their shipped prerequisites. **WP11's design landed on
-  2026-09-16** as [skill_trees.md](docs/design/skill_trees.md) revision 2 —
-  two trees of twenty-eight ranks per class, one point every two levels, one
-  reachable capstone — answered by the user across six rounds of rulings and
-  still carrying its PROPOSAL banner; nothing of it is implemented.
+  ready behind their shipped prerequisites. Design revision 2 landed 2026-09-16
+  ([skill_trees.md](docs/design/skill_trees.md)); implementation phase 1 is in
+  progress.
 - [ ] **WP-Scout / WP-HUD / WP-Speed:** the three work packages those rulings
   created, all open and all specced (`BACKLOG.md`): the fourth class
   ([scout.md](docs/design/scout.md) — leather, bow and blade, no stealth in
