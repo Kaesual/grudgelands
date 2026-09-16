@@ -1,130 +1,187 @@
 # Skill Trees (Talents) — WP11
 
-**PROPOSAL 2026-09-16, NOT DECIDED.** This file is a complete proposal for
-WP11, written so the user can decide it in one pass. Nothing here is
-implemented, nothing in `mods/` was changed for it, and no other design file
-was altered beyond a one-paragraph pointer in
-[classes.md](classes.md) and [progression.md](progression.md).
+**PROPOSAL, revision 2 (2026-09-16), NOT DECIDED.** Revision 1 (2026-09-16)
+built two trees of five talents per class on a 20-point budget. The user's
+rulings of **2026-09-16** (§5) replace the budget, the tree size, the tier
+shape, the capstone rule and the respec seam, and add a fourth class. This
+revision rebuilds the proposal on those rulings. Nothing here is implemented,
+and nothing in `mods/` was changed for it.
 
-The decided frame this proposal must fit is not restated as new design; it is
-quoted where it binds:
+Companion files written with this revision:
 
-- `progression.md` §2: "**1 talent point every 3 levels** (20 points total at
-  60); talent trees hold 2 trees x 5 talents x 3 ranks = 30 ranks per class —
-  you can fill two thirds: real choices, no full clear (WP11)"; "**exactly one
-  capstone per tree**, unlocked at 8+ points in that tree, and **every capstone
-  is a NEW active 'main skill'**"; "**Respec at the class trainer for gold**,
-  price rising with level".
-- `classes.md` core principles: "new active 'main skills' come from talent
-  capstones (WP11, progression.md) — talents otherwise improve existing buttons
-  rather than adding many new ones".
-- `classes.md` §5: "Renew *(talent)* ... Unlocked via the Holy tree (WP11)".
-- `economy.md` §4: "**Talent respec:** repeatable at the class trainer, rising
-  with level".
-- `AGENTS.md` layering: `docs/design/` holds *decided* design with no open
-  questions. This file carries an open-decisions section (§5) because the lane
-  brief asked for the proposal and its decisions in one deliverable; §5.1 is
-  the decision about where the open questions should live once the rest is
-  settled.
+- [scout.md](scout.md) — the fourth class (Scout): kit, armour, bow, the
+  conflicts its stealth and sprint have with shipped systems, and the lane
+  cut. Its two trees live here in §2.7/§2.8 so that all four classes' talent
+  tables stay in one place under one arithmetic.
+- `docs/research/mob-pressure-task-card.md` — the melee-pressure and
+  ranged-mob task card of the same session. Not part of WP11; it is named
+  here because the Scout's kiting and stealth read on top of it.
 
-Everything this proposal says about the code today is a `file:line` citation
-into the tree at `f37a0c5b`.
+The decided frame this proposal must fit is quoted where it binds. Where a
+user ruling of 2026-09-16 **supersedes** a decided sentence, the sentence is
+named with its file and line and the correction is made in that file's own
+commit (§5.3).
+
+- `classes.md` core principles (`:50-52`): "Three to four abilities per class
+  in the MVP; **new active 'main skills' come from talent capstones** (WP11,
+  progression.md) — talents otherwise improve existing buttons rather than
+  adding many new ones." **Ruling 3 widens this**: new skills now come from
+  keystones as well as capstones, and ruling 4 makes the tree their *only*
+  source.
+- `classes.md` §5 (`:455`): "Renew *(talent)* … Unlocked via the Holy tree
+  (WP11)." Still true; Renew is the Mercy tree's first keystone (§2.5).
+- `economy.md` §4 (`:92`): "**Talent respec:** repeatable at the class
+  trainer, rising with level". **Ruling 4 supersedes the location**: there is
+  no class trainer. `economy.md:92` and `items_crafting.md` §8.3 (`:2380`)
+  are *not* this lane's files and still carry the retired seam — see §6.9.
+- `AGENTS.md:66-71`: `docs/design/` holds *decided* design with no open
+  questions. This file carries an open-decisions section (§6) because the
+  lane brief asked for the proposal and its decisions in one deliverable;
+  §6.1 is the decision about where the open questions should live.
+- `AGENTS.md:844`: "Never copy WoW assets/names 1:1 — Blizzard IP. Own
+  assets, own names with a recognizable character." Ruling 5 makes this
+  binding for every talent name; §2.11 is the audit.
+
+Everything this proposal says about the code is a `file:line` citation into
+the tree at **`70dda602`**, re-resolved after this file was written.
 
 ---
 
 ## 1. The shape
 
-### 1.1 Trees per class
+### 1.1 Four classes, two trees, two chains per tree
 
-The three shipped classes are Warrior, Mage and Priest
-(`mods/PLAYER/grug_classes/init.lua:136`, `:146`, `:156`). No class is
-invented. Each gets two trees, and each tree is derived from what the class's
-shipped kit already does, so a tree is a direction the player already feels:
+Three classes ship (`grug_classes/init.lua:136`, `:146`, `:156`); the fourth,
+**Scout**, is planned now and implemented later (ruling 7,
+[scout.md](scout.md)). Each class gets two trees, and — new in revision 2 —
+**each tree holds two rough playstyle directions, called chains** (ruling 2).
+A chain is a straight line of four talents: two numeric, then a keystone,
+then either the capstone or a finisher.
 
-| Class | Tree | What it is | Derived from |
+| Class | Tree | Direction | Chain A | Chain B |
+|---|---|---|---|---|
+| Warrior | **Bulwark** | take hits and hold attention | **Wall** — mitigation | **Anvil** — threat and control |
+| Warrior | **Ruin** | spend rage for damage | **Hammer** — big hits | **Lash** — crit and snare |
+| Mage | **Ember** | fire damage | **Blaze** — single target | **Cinder** — area and reach |
+| Mage | **Rime** | control and survival | **Frost** — roots and slows | **Ward** — mana, escape, absorb |
+| Priest | **Mercy** | keeping others up | **Balm** — direct and over-time heals | **Aegis** — absorbs and avoidance |
+| Priest | **Reckoning** | solo damage and self-sufficiency | **Word** — the Smite line | **Wrath** — crit and self-repair |
+| Scout | **Quarry** | the bow | **Draw** — shot power | **Ranging** — reach, ammo, movement |
+| Scout | **Veil** | the blade and the shadow | **Blade** — melee damage | **Shadow** — avoidance and stealth |
+
+Tree names are unchanged from revision 1 by ruling 5 ("Tree names as proposed
+stay"). Ruin, Rime and Reckoning are known collisions with WoW talent names
+and the user has kept them deliberately; **talent** names are a different
+matter and §2.11 audits every one of them. The Scout's two tree names are new
+and §6.7 is their decision.
+
+`progression.md` §2 and `classes.md` §5 call the Priest healing tree "the
+**Holy** tree" in three places, the third of which is a code comment
+(`progression.md:34`, `classes.md:455`,
+`mods/PLAYER/grug_abilities/kits.lua:650`). **Mercy** is the same tree
+renamed; the rename has to reach all three (§6.6).
+
+### 1.2 Tiers, gates and hard chains
+
+Both dependency kinds ruling 2 asks for are used:
+
+- A **tier gate** is points already spent *in that tree* (not in that tier).
+- A **hard chain** is "all ranks in the talent above it, in the same chain".
+
+| Tier | Contents | Tier gate (points in this tree) | Hard chain |
 |---|---|---|---|
-| Warrior | **Bulwark** | take hits and hold attention | Taunt, the x3 tank threat of `classes.md` §3, armor rank 3 (`init.lua:143`) |
-| Warrior | **Ruin** | spend rage for damage and control | Mighty Blow (`kits.lua:320`), Hamstring (`kits.lua:349`) |
-| Mage | **Ember** | direct fire damage | Fireball (`kits.lua:436`) |
-| Mage | **Rime** | control, distance, staying alive | Frost Nova (`kits.lua:477`), Blink (`kits.lua:517`) |
-| Priest | **Mercy** | keeping others up | Flash Heal (`kits.lua:596`), Power Word: Shield (`kits.lua:623`), Renew (`kits.lua:651`) |
-| Priest | **Reckoning** | solo damage and self-sufficiency | Smite (`kits.lua:572`) |
+| 1 | one entry talent per chain, **5 ranks** | 0 | — |
+| 2 | one talent per chain, **4 ranks** | 5 | tier-1 talent of the same chain at 5/5 |
+| 3 | one **keystone** per chain, **3 ranks** | 12 | tier-2 talent of the same chain at 4/4 |
+| 4 | the **capstone** on its chain, a finisher on the other, **3 ranks** each | 20 | tier-3 talent of the same chain at 3/3 |
 
-Every tree name here is a proposal, and **naming is not settled**:
-`AGENTS.md:893` says "Never copy WoW assets/names 1:1", and several of the
-names in this file — trees and talents both — are ordinary English words that
-WoW also uses for talents. §5.6 lists them and is the decision.
-`progression.md` §2 and `classes.md` §5 currently call the Priest healing tree
-"the **Holy** tree"; **Mercy** is the same tree, renamed, and that rename is
-part of the same decision.
+Rank counts vary by talent strength exactly as ruling 2 asks: **5 / 4 / 3 / 3**
+down a chain. The weakest per-rank talent carries the most ranks; keystone and
+capstone carry three, so rank 1 grants the thing and ranks 2 and 3 improve it.
 
-### 1.2 Tiers and prerequisites inside a tree
+Per tree that is **8 talents and 15 + 15 = 30 ranks**; per class **16 talents
+and 60 ranks**.
 
-Each tree holds five talents in three tiers:
+The two gate kinds interact deliberately:
 
-| Tier | Talents | Unlocked at | Contents |
+- The tier-2 gate (5) is exactly the cost of maxing a tier-1 talent, so a
+  player who commits to one chain opens tier 2 at the moment the hard chain
+  lets them through it. No dead point.
+- The tier-3 gate (12) is **three more than a single chain costs**
+  (5 + 4 = 9), so a keystone cannot be rushed on one chain alone: three
+  points have to go into the tree's other direction first. That is what makes
+  a tree read as a tree rather than as two unrelated ladders.
+- The tier-4 gate (20) is **eight more than a chain's first three talents**
+  (5 + 4 + 3 = 12), so a capstone needs most of the other chain as well.
+
+### 1.3 Points, and the arithmetic (rulings 1 and 2)
+
+- **One point every two levels, the first at level 2**: levels 2, 4, 6, …, 60.
+  The point count at level L is `floor(L / 2)`; at level 60 that is
+  **30 points**.
+- **Ranks per tree: 30. Ranks per class: 60.** `30 / 60` is **exactly one
+  half** of a class's ranks and **exactly one whole tree**.
+- **A full tree costs 30 points = level 60**, so a "pure" build finishes its
+  tree with the last point the game hands out — and a full tree is never
+  forced: every split is legal.
+- Ruling 1's "two thirds was a rough guideline, slight deviation is fine" is
+  what this uses: the fraction is now one half of the class, or one tree of
+  two.
+
+Worked reachability, per tree, counting points **in that tree**:
+
+| Milestone | Cost in the tree | Total points | Character level |
 |---|---|---|---|
-| 1 | 2 | 0 points in this tree | the two entry modifiers |
-| 2 | 2 | **3 points** in this tree | the two stronger modifiers |
-| 3 | 1 | **8 points** in this tree | the capstone: a new active main skill |
+| tier-1 talent maxed (5/5) | 5 | 5 | 10 |
+| tier-2 talent maxed (4/4) | 9 | 9 | 18 |
+| **first keystone**, rank 1 | 9 on the chain + 3 in the other chain (gate 12) + 1 | 13 | **26** |
+| first keystone maxed (3/3) | 15 | 15 | 30 |
+| **second keystone**, rank 1 (same tree) | both chains through tier 2 (18) + 1 + 1 | 20 | **40** |
+| **capstone**, rank 1 | its chain to 12 + 8 elsewhere in the tree (gate 20) + 1 | 21 | **42** |
+| capstone maxed (3/3) | 23 | 23 | **46** |
+| **the whole tree** | 30 | 30 | **60** |
 
-- The gate is **points already spent in that tree**, not in that tier, which
-  is the only prerequisite rule the proposal has. There are no per-talent
-  arrows: with five talents, arrows add bookkeeping and no decision.
-- The 8-point gate on tier 3 is `progression.md` §2 verbatim.
-- Every talent has **3 ranks**, the capstone included (rank 1 grants the
-  ability; ranks 2 and 3 improve it). That is what makes the class total
-  2 x 5 x 3 = **30 ranks** come out exactly as `progression.md` §2 states; see
-  open decision §5.4 for the alternative.
+What the common splits buy:
 
-### 1.3 Points, and the arithmetic of "two thirds fillable"
+| Split | What it reaches |
+|---|---|
+| **30 / 0** (pure) | both keystones, the capstone and every rank of one tree — three new buttons where the capstone is a skill |
+| **23 / 7** | one chain complete through its capstone; the other tree's entry talent maxed plus two |
+| **21 / 9** | capstone rank 1 plus one maxed keystone; no keystone in the second tree |
+| **20 / 10** | **both** keystones of the prioritised tree at rank 1 (both chains through tier 2 = 18, then one point in each keystone); the second tree gets a maxed tier-1 and most of a tier-2 |
+| **15 / 15** | one complete chain, keystone included, in **each** tree — two new buttons, one per tree |
+| **13 / 13** (+4 spare) | one keystone in each tree at rank 1, four points free |
 
-- One point at **every level divisible by 3**: levels 3, 6, 9, ..., 60.
-  Point count at level L is `floor(L / 3)`; at level 60 that is
-  **20 points**. Levels 1 and 2 grant none, so the first decision arrives at
-  level 3.
-- Ranks available per class: 2 trees x 5 talents x 3 ranks = **30**.
-- **20 / 30 = 2/3 exactly.** A character at 60 has spent two thirds of the
-  ranks in their class and can never hold all of them.
-- One tree alone costs 5 x 3 = **15** ranks, so a 20-point character can fill
-  one tree completely and still has 5 points for the other; filling both would
-  need 30. "No full clear" holds in the class, not in the tree.
-- Capstone reachability: the first capstone rank costs 8 points of
-  prerequisite plus itself = **9 points in that tree** = level 27. Two
-  capstones cost 9 + 9 = **18 <= 20**, so a level-60 character can hold both
-  new main skills, with 2 points left over — the second lands at level 54.
-  Whether that is wanted is open decision §5.5.
-- XP loss never de-levels (`progression.md` §3, and `grug_xp` clamps the loss
-  to the level floor, `mods/PLAYER/grug_xp/init.lua:85-96`), so a point is
-  never taken back by dying.
+**No build can hold more than three new active skills.** Four keystones cost
+20 + 20 = 40 > 30; three from two trees cost 20 + 13 = 33 > 30. The maximum is
+one tree's two keystones plus its capstone, reachable only at 30/0. §6.11 is
+the hotbar decision that follows.
 
-### 1.4 Respec
+XP loss never de-levels (`progression.md` §3; `grug_xp` clamps the loss to the
+level floor, `mods/PLAYER/grug_xp/init.lua:85-96`), so a point is never taken
+back by dying.
 
-- **Where:** the class trainer, per `progression.md` §2 and `economy.md` §4.
-  No class-trainer NPC exists yet: `world.md:408` says capitals hold class
-  trainers, but `docs/research/wp13-npc-sockets-contract.md` §8.4 lists
-  `vendor.kind` as `{race, general, butcher, smith, fishmonger, baker, tailor}`
-  plus the wave-2 kinds, with **no `trainer` kind**. See open decision §5.8.
-- **What:** a respec sets every rank to 0 and returns all earned points. The
-  proposal has no partial (single-tree) respec — one button, one price, no
-  argument about which half was refunded.
-- **Price:** `economy.md` §3 forbids a stale fixed copper table and requires
-  time-priced sinks to derive their ledger amount from **measured reliable net
-  solo income**, exactly as mount pacing (§4.2) and claim upgrades (§4.1) do.
-  The proposal therefore prices a respec as **5 minutes of reliable net solo
-  income at the character's own level bracket**, rounded by §4.1's rule (the
-  coarsest denomination in `1s / 25c / 5c / 1c` whose nearest multiple stays
-  within 5% of the target, exact midpoints upward). Because bracket income
-  rises on the same approximate x2.5 tier index as everything else
-  (`economy.md` §3), the price "rises with level" without a hand-written
-  table, and WP44 calibrates the six numbers with every other measured sink.
-- **The first respec of a character is free.** It is the safety net for a
-  mis-clicked first point at level 3, when the character has no money at all.
-  Open decision §5.7 carries both halves of this.
+### 1.4 Respec (ruling 4)
+
+- **Where: in the talent UI itself. There is no class trainer and no NPC.**
+  Ruling 4 is explicit. This retires revision 1's open decision about a
+  trainer NPC entirely and supersedes the location half of `progression.md`
+  §2 (`:36-37`) and `economy.md` §4 (`:92`). The consequence to accept:
+  `world.md:408`'s class trainers lose their stated purpose, and
+  `docs/research/wp13-npc-sockets-contract.md` §8.4 never needs a `trainer`
+  vendor kind.
+- **What:** a respec sets every rank to 0 and returns all 30 points. No
+  partial or single-tree respec — one button, one price.
+- **Price:** ruling 4 records the user as "against money" while money is still
+  what the decided docs name as the sink. `BACKLOG.md:539-540` carries the
+  only number written down anywhere: "the **respec price** (§8.3, **5c ×
+  level, min 25c**) has no consumer yet — `grug_money.take` is the API it
+  will call" (`mods/PLAYER/grug_money/init.lua:122`). §6.8 puts the price to
+  the user with three options, including keeping that formula.
 - **A class switch is not a respec.** `/class` is an admin command
-  (`selection.lua:554-596`) and already wipes kit state through `sync_kit`
-  (`grug_abilities/init.lua:1772-1780`); it clears all talents and returns all
-  points, free.
+  (`grug_classes/selection.lua:554-596`) and already wipes kit state through
+  `sync_kit` (`grug_abilities/init.lua:1772-1780`); it clears all talents and
+  returns all points, free. Four shipped comments assume the opposite — §6.10.
 
 ---
 
@@ -132,148 +189,280 @@ Each tree holds five talents in three tiers:
 
 Reading the tables:
 
+- **Chain** is the direction inside the tree (§1.1); **Tier** carries its
+  gate from §1.2, and every talent below tier 1 additionally needs all ranks
+  of the talent above it in its own chain.
+- **Ranks** is the number of ranks and the per-rank progression.
 - **Effect** is written in the vocabulary of `combat_stats.md` §1/§2/§4 —
-  armor percent, crit chance, rage, mana, spell power, threat. **One effect in
-  the whole proposal needs a stat the game does not have**: the Warrior tank
-  capstone Stand Fast, which is why it carries two variants and its own open
-  decision (§5.13). Everything else, Unyielding included, is an existing
-  term.
-- **Modifies** names the shipped line the rank changes, or says "new ability".
-- **Key** is the effect key of the data model in §3.2. Three ranks are always
-  written `a / b / c`.
-- Caps are never lifted by a talent: crit stays capped at 30%, dodge at 30%,
-  armor at 60% (`combat_stats.md` §2; the clamps live at
-  `grug_classes/stats.lua:45`, `:49` and `grug_core/combat.lua:38`).
+  armor percent, crit chance, dodge chance, max HP, max mana, rage, spell
+  power, threat, absorb, root and slow duration. **No talent introduces a new
+  mitigation term.** Three capstones deliberately exceed a cap for a bounded
+  time, which is exactly what ruling 6 allows and §6.5 puts to the user.
+- **Modifies** names the shipped line the rank changes, or "new skill"
+  (keystone) / "new effect" (capstone). **A kit table's `cooldown`, `charge`,
+  `range` and `max_distance` fields are evaluated once at load time with no
+  player in scope**, so talents that re-tune those hook the central
+  per-player site instead — §3.2 lists the three of them.
+- **Key** is the effect key of the data model in §3.2.
 
 ### 2.1 Warrior — Bulwark
 
-| # | Talent | Tier | Ranks 1/2/3 | Modifies | Key |
-|---|---|---|---|---|---|
-| 1 | **Iron Discipline** | 1 | +2 / +4 / +6 armor percent (still capped at 60) | `grug_inventory/equipment.lua:479` (the `get_armor_percent` override) | `armor_percent_add` |
-| 2 | **Battle Hunger** | 1 | +1 / +2 / +3 rage per hit taken (on top of the base 4) | `grug_abilities/init.lua:2109-2110`, beside the orc perk | `rage_per_hit_taken_add` |
-| 3 | **Grudge** | 2 | Taunt cooldown 8 s -> 7 / 6 / 5 s | `grug_abilities/init.lua:1233` — the one `arm_cooldown(user, def, def.cooldown)` call, **not** the `cooldown = 8` constant at `kits.lua:387` | `taunt_cooldown_sub` |
-| 4 | **Unyielding** | 2 | while at or below 30% max HP, **+4 / +8 / +12 armor percent** — the same stat Iron Discipline adds, under the same 60% cap, so it introduces no new mitigation term | `grug_inventory/equipment.lua:479` | `armor_percent_add_low_hp` |
-| 5 | **Stand Fast** *(capstone)* | 3 | **new ability** (cast): 25 rage, 60 s cooldown, self. **Two variants — open decision §5.13.** *(A)* damage taken -25% / -30% / -35% for 8 s, a mitigation term `combat_stats.md` §2 does not have; *(B)* a self-absorb of `20 / 30 / 40 + 2 x floor(Str/10)` for 8 s, built entirely from shipped machinery | *(A)* a new step in the central hp-change modifier; *(B)* `grug_core.set_absorb` (`grug_core/combat.lua:1012`) | — |
+| # | Talent | Chain | Tier | Ranks | Effect | Modifies | Key |
+|---|---|---|---|---|---|---|---|
+| 1 | **Ironbound** | Wall | 1 | 5 | +1 / 2 / 3 / 4 / 5 armor percent, still under the 60 % cap | `grug_inventory/equipment.lua:479` (`get_armor_percent`) | `armor_percent_add` |
+| 2 | **Thick Hide** | Wall | 2 | 4 | max HP +3 / 6 / 9 / 12 | `grug_classes/stats.lua:20` | `max_hp_add` |
+| 3 | **Hold Ground** *(keystone)* | Wall | 3 | 3 | **new skill** (cast): 25 rage, 60 s cooldown, self; absorbs `20 / 30 / 40 + 2 × floor(Str/10)` for 8 s | new; `grug_core.set_absorb` (`grug_core/combat.lua:1012`) | — |
+| 4 | **Unbroken** *(capstone)* | Wall | 4 | 3 | **new effect**, no hotbar key: the first time in 180 s that a hit would take the Warrior below 20 % max HP, armor percent +10 / 15 / 20 for 8 s **and the armor cap rises to 70 / 75 / 80 %** for those 8 s | the two clamps, `grug_inventory/equipment.lua:480` and `grug_core/combat.lua:38`, plus the central hp-change modifier that observes the threshold | `armor_cap_override` |
+| 5 | **Spite** | Anvil | 1 | 5 | +1 / 2 / 3 / 4 / 5 rage per hit taken (on top of the base 4) | `grug_abilities/init.lua:2109-2110`, beside the orc perk | `rage_per_hit_taken_add` |
+| 6 | **Affront** | Anvil | 2 | 4 | tank-ability threat multiplier ×3 → ×3.25 / 3.5 / 3.75 / 4.0 | `grug_core/combat.lua:963` (`local mult = opts.threat_mult or 1`) | `threat_mult_add` |
+| 7 | **Bellow** *(keystone)* | Anvil | 3 | 3 | **new skill** (cast): 15 rage, 20 s cooldown, no target; every hostile mob within 6 / 8 / 10 m is forced onto the Warrior for 3 s | new; the Taunt body (`kits.lua:389-404`, `grug_core.taunt`) run over the radius loop of `kits.lua:490` | — |
+| 8 | **Grudge** | Anvil | 4 | 3 | Taunt cooldown 8 s → 7 / 6 / 5 s | `grug_abilities/init.lua:1233`, the one `arm_cooldown(user, def, def.cooldown)` call — **not** `kits.lua:387` | `taunt_cooldown_sub` |
 
-Stand Fast takes the Warrior's **sixth** hotbar slot. The Warrior kit is the
-game's largest: universal Strike (`kits.lua:268`) plus **four** class abilities
-— Charge (`:291`), Mighty Blow (`:321`), Hamstring (`:350`), Taunt (`:380`),
-the four rows of `classes.md:415-418` — already occupy keys 1-5 of the eight
-`classes.md` §2b reserves. Both Warrior capstones therefore reach key 7. That
-is the hotbar cost open decision §5.11 asks the user to accept, and it is
-tighter than the Mage's and the Priest's, who hold three class abilities each
-and end at key 6.
+**Hold Ground replaces revision 1's "Stand Fast".** Revision 1 put a
+percentage damage-reduction window to the user as its own open decision,
+because `combat_stats.md` §2 (`:53-76`) knows exactly one physical mitigation
+term — armor points, 1 point = 1 %, hard cap 60 % — plus the Warding Draught
+and the absorb shield, resolved in that order. Ruling 6 answers the question
+from the other side: a capstone may exceed a cap, time-limited. So the
+mitigation *keystone* is built from the shipped absorb and the *capstone*
+(Unbroken) is the one thing that lifts the armor cap, for 8 seconds, once
+every three minutes. No fourth mitigation term is created anywhere.
+
+Named consequence: there is **one absorb per player and a new one replaces
+the old** (`grug_core/combat.lua:1003-1012`), so a Priest's Power Word:
+Shield cast onto the Warrior overwrites Hold Ground and vice versa. This is
+the same collision revision 1 recorded for the Mage; §6.12 asks whether a
+second absorb slot for self-cast tank cooldowns is worth building.
 
 ### 2.2 Warrior — Ruin
 
-| # | Talent | Tier | Ranks 1/2/3 | Modifies | Key |
-|---|---|---|---|---|---|
-| 1 | **Heavy Hand** | 1 | Mighty Blow 1.5x -> 1.6 / 1.7 / 1.8x weapon damage | `kits.lua:342` | `mighty_blow_multiplier_add` |
-| 2 | **Bloodrush** | 1 | +1 / +2 / +3 rage per landed authoritative swing (base 12) | `grug_abilities/init.lua:939`, `:950` and `:966` | `rage_per_swing_add` |
-| 3 | **Cruel Edge** | 2 | +1 / +2 / +3 percentage points crit chance (cap 30% holds) | `grug_classes/stats.lua:44-46` | `crit_chance_add` |
-| 4 | **Cripple** | 2 | Hamstring charge 6 s -> 5.5 / 5.0 / 4.5 s | `grug_abilities/init.lua:718` — the one line that arms a charge, **not** the `charge = 6` constant at `kits.lua:356` | `hamstring_charge_sub` |
-| 5 | **Reaving Strike** *(capstone)* | 3 | **new ability** (swing): 30 rage, 10 s charge; on a landed swing `floor(weapon damage x 2.0 / 2.25 / 2.5) + melee bonus` on the target and half of that, rounded down, on every other hostile within 3 m; x3 threat | new; `proc_swing` shape of `kits.lua:340-344`, radius loop of `kits.lua:490` | — |
+| # | Talent | Chain | Tier | Ranks | Effect | Modifies | Key |
+|---|---|---|---|---|---|---|---|
+| 1 | **Heavy Hand** | Hammer | 1 | 5 | Mighty Blow ×1.5 → ×1.55 / 1.60 / 1.65 / 1.70 / 1.75 weapon damage | `kits.lua:342` | `mighty_blow_multiplier_add` |
+| 2 | **Stoke** | Hammer | 2 | 4 | +1 / 2 / 3 / 4 rage per landed authoritative swing (base 12) | `grug_abilities/init.lua:939`, `:950`, `:966` | `rage_per_swing_add` |
+| 3 | **Broadstroke** *(keystone)* | Hammer | 3 | 3 | **new skill** (swing): 30 rage, 10 s charge; on a landed swing `floor(weapon damage × 2.0 / 2.25 / 2.5) + melee bonus` on the target and half of that, rounded down, on every other hostile within 3 m; ×3 threat | new; the `proc_swing` shape of `kits.lua:340-344` plus the radius loop of `kits.lua:490` | — |
+| 4 | **Ruination** *(capstone)* | Hammer | 4 | 3 | **new skill** (cast): 40 rage, 90 s cooldown, self, 10 s; crit chance +15 / 20 / 25 percentage points **and the crit cap rises to 45 / 50 / 55 %** for those 10 s | `grug_classes/stats.lua:45` and its `math.min(0.30, …)` | `crit_cap_override` |
+| 5 | **Keen Edge** | Lash | 1 | 5 | +1 / 2 / 3 / 4 / 5 percentage points crit chance (30 % cap holds) | `grug_classes/stats.lua:45` | `crit_chance_add` |
+| 6 | **Hobble** | Lash | 2 | 4 | Hamstring charge 6 s → 5.5 / 5.0 / 4.5 / 4.0 s | `grug_abilities/init.lua:718`, the one line that arms a charge — **not** `kits.lua:356` | `hamstring_charge_sub` |
+| 7 | **Pin** *(keystone)* | Lash | 3 | 3 | **new skill** (cast): 15 rage, 25 s cooldown, 8 m; roots the pointed hostile for 2 / 2.5 / 3 s | new; the root machinery of `kits.lua:495` (players) and `:504` (mobs) | — |
+| 8 | **Deadweight** | Lash | 4 | 3 | Hamstring's 50 % slow lasts 5 s → 6 / 7 / 8 s | `kits.lua:370` (mobs) and `:372` (players) | `hamstring_slow_add` |
 
-Reaving Strike is the game's first melee cleave. It is a swing skill, so it
-costs no new timing machinery: it rides the authoritative swing exactly as
-Mighty Blow does (`classes.md` §2b), and its charge keeps it off every swing.
+Broadstroke is the game's first melee cleave and needs no new timing
+machinery: it rides the authoritative swing exactly as Mighty Blow does
+(`classes.md` §2b), and its charge keeps it off every swing. Charge
+(`kits.lua:291`) remains the one shipped ability no talent touches — a
+deliberate gap, and an obvious hook for a later third Warrior direction.
 
 ### 2.3 Mage — Ember
 
-| # | Talent | Tier | Ranks 1/2/3 | Modifies | Key |
-|---|---|---|---|---|---|
-| 1 | **Kindling** | 1 | Fireball damage `6 + spell power` -> `+1 / +2 / +3` | `kits.lua:458` | `fireball_damage_add` |
-| 2 | **Far Cast** | 1 | Fireball maximum distance 20 m -> 22 / 24 / 26 m | two per-player reads, neither at a registration constant: flight at the `grug_projectiles.spawn` call (`kits.lua:453-460`), which already honours `params.max_distance` over the registered default (`grug_projectiles/init.lua:195`); targeting reach in `grug_abilities.get_range` (`init.lua:170-177`), the twin of the elf `ability_range_bonus` perk, whose item-meta override `sync_kit` already refreshes (`init.lua:1827-1831`) | `fireball_range_add` |
-| 3 | **Scorching Focus** | 2 | +1 / +2 / +3 percentage points crit chance | `grug_classes/stats.lua:44-46` | `crit_chance_add` |
-| 4 | **Deep Well** | 2 | max mana +5% / +10% / +15% | `grug_classes/stats.lua:25-31` | `max_mana_percent_add` |
-| 5 | **Cinderfall** *(capstone)* | 3 | **new ability** (cast): 12 mana, 10 s cooldown, 20 m; a burst at the first thing the crosshair ray meets, dealing `5 / 7 / 9 + spell power` to every hostile within 3 m of it | new; `grug_core.combat_ray` (`kits.lua:58`) plus the radius loop of `kits.lua:490` | — |
+| # | Talent | Chain | Tier | Ranks | Effect | Modifies | Key |
+|---|---|---|---|---|---|---|---|
+| 1 | **Tinder** | Blaze | 1 | 5 | Fireball `6 + spell power` → `+1 / 2 / 3 / 4 / 5` | `kits.lua:458` | `fireball_damage_add` |
+| 2 | **Firebrand** | Blaze | 2 | 4 | +1 / 2 / 3 / 4 percentage points crit chance | `grug_classes/stats.lua:45` | `crit_chance_add` |
+| 3 | **Brand** *(keystone)* | Blaze | 3 | 3 | **new skill** (cast): 15 mana, 8 s cooldown, 25 m; a straight projectile dealing `10 / 13 / 16 + 2 × spell power` to the first hostile | new; the projectile registration shape of `kits.lua:411-435` and the spawn call of `:453-460` | — |
+| 4 | **Pyre** *(capstone)* | Blaze | 4 | 3 | **new skill** (cast): 25 mana, 60 s cooldown, self, 10 s; while it runs Fireball costs 4 mana instead of 8 and deals `+3 / 5 / 7` | `grug_abilities/init.lua:1232` (`spend(user, def.cost)`) and `kits.lua:458` | `pyre_window` |
+| 5 | **Deep Well** | Cinder | 1 | 5 | max mana +3 / 6 / 9 / 12 / 15 % | `grug_classes/stats.lua:30` | `max_mana_percent_add` |
+| 6 | **Far Cast** | Cinder | 2 | 4 | Fireball maximum distance 20 m → 21.5 / 23 / 24.5 / 26 m | two per-player reads, neither at a registration constant: the spawn call (`kits.lua:453-460`, since `grug_projectiles/init.lua:195` prefers `params.max_distance` over the registered `:413`), and targeting reach in `grug_abilities.get_range` (`init.lua:170-177`), whose item-meta override `sync_kit` already refreshes (`init.lua:1827-1831`) | `fireball_range_add` |
+| 7 | **Cinderfall** *(keystone)* | Cinder | 3 | 3 | **new skill** (cast): 12 mana, 10 s cooldown, 20 m; a burst at the first thing the crosshair ray meets, dealing `5 / 7 / 9 + spell power` to every hostile within 3 m of it | new; `grug_core.combat_ray` (`kits.lua:58`) plus the radius loop of `kits.lua:490` | — |
+| 8 | **Ashfall** | Cinder | 4 | 3 | Cinderfall's radius 3 m → 4 / 5 / 6 m | the new Cinderfall registration | `cinderfall_radius_add` |
 
-Cinderfall is the game's first area damage spell and is deliberately the Mage's
-answer to a pack, which Frost Nova can only delay.
+Fireball's flight is not silently eaten by the longer range: `lifetime = 2`
+(`kits.lua:420`) at `speed = 20` (`:412`) allows 40 m.
 
 ### 2.4 Mage — Rime
 
-| # | Talent | Tier | Ranks 1/2/3 | Modifies | Key |
-|---|---|---|---|---|---|
-| 1 | **Deep Chill** | 1 | Frost Nova root 4 s -> 4.5 / 5.0 / 5.5 s | `kits.lua:495` (players) and `:504` (mobs) | `frost_nova_root_add` |
-| 2 | **Quick Step** | 1 | Blink cooldown 15 s -> 13 / 11 / 9 s | `grug_abilities/init.lua:1233` (the shared `arm_cooldown` call), **not** `kits.lua:526` | `blink_cooldown_sub` |
-| 3 | **Hoarfrost** | 2 | Frost Nova follow-up slow 3 s -> 4 / 5 / 6 s (the 50% stays) | `kits.lua:496` and `:505` | `frost_nova_slow_add` |
-| 4 | **Cold Focus** | 2 | in-combat mana regeneration 0.5%/s -> 0.7 / 0.9 / 1.1%/s | `grug_abilities/init.lua:2202` | `combat_mana_regen_add` |
-| 5 | **Glacial Ward** *(capstone)* | 3 | **new ability** (cast): 10 mana, 30 s cooldown, self only; absorbs `10 / 15 / 20 + 2 x spell power` damage for 10 s | new; `grug_core.set_absorb` (`grug_core/combat.lua:1012`) | — |
+| # | Talent | Chain | Tier | Ranks | Effect | Modifies | Key |
+|---|---|---|---|---|---|---|---|
+| 1 | **Deep Chill** | Frost | 1 | 5 | Frost Nova root 4 s → 4.2 / 4.4 / 4.6 / 4.8 / 5.0 s | `kits.lua:495` (players) and `:504` (mobs) | `frost_nova_root_add` |
+| 2 | **Hoarfrost** | Frost | 2 | 4 | Frost Nova follow-up slow 3 s → 4 / 5 / 6 / 7 s (the 50 % stays) | `kits.lua:496` and `:505` | `frost_nova_slow_add` |
+| 3 | **Frostbind** *(keystone)* | Frost | 3 | 3 | **new skill** (cast): 12 mana, 20 s cooldown, 20 m; roots the pointed hostile for 3 / 4 / 5 s | new; the same root machinery as `kits.lua:495` / `:504` | — |
+| 4 | **Rimebite** *(capstone)* | Frost | 4 | 3 | **new effect**, no hotbar key: Frost Nova and Frostbind also deal `3 / 5 / 7 + floor(spell power / 2)` damage when the root lands | `kits.lua:495-505` and the new Frostbind | `control_damage_add` |
+| 5 | **Cold Focus** | Ward | 1 | 5 | in-combat mana regeneration 0.5 %/s → 0.6 / 0.7 / 0.8 / 0.9 / 1.0 %/s | `grug_abilities/init.lua:2202` | `combat_mana_regen_add` |
+| 6 | **Quick Step** | Ward | 2 | 4 | Blink cooldown 15 s → 13.5 / 12 / 10.5 / 9 s | `grug_abilities/init.lua:1233` — **not** `kits.lua:526` | `blink_cooldown_sub` |
+| 7 | **Glacial Ward** *(keystone)* | Ward | 3 | 3 | **new skill** (cast): 10 mana, 30 s cooldown, self; absorbs `10 / 15 / 20 + 2 × spell power` for 10 s | new; `grug_core.set_absorb` (`grug_core/combat.lua:1012`) | — |
+| 8 | **Far Step** | Ward | 4 | 3 | Blink distance 10 m → 12 / 14 / 16 m | `kits.lua:533` (inside the cast body, player in scope) | `blink_distance_add` |
 
-Named consequence, not a defect to discover later: there is **one absorb per
-player** and a new one replaces the old (`grug_core/combat.lua:1003-1012`), so
-a Priest's Power Word: Shield and a Mage's own Glacial Ward overwrite each
-other. The proposal accepts that rather than building shield stacking.
+Same named consequence as §2.1: one absorb per player, a new one replaces the
+old (`grug_core/combat.lua:1003-1012`). A Mage's Glacial Ward and a Priest's
+Power Word: Shield overwrite each other.
 
 ### 2.5 Priest — Mercy
 
-| # | Talent | Tier | Ranks 1/2/3 | Modifies | Key |
-|---|---|---|---|---|---|
-| 1 | **Gentle Hand** | 1 | Flash Heal `8 + 2 x spell power` -> `+1 / +2 / +3` | `kits.lua:613` | `flash_heal_add` |
-| 2 | **Warding Faith** | 1 | Power Word: Shield absorb -> `+2 / +4 / +6` | `kits.lua:640` | `shield_absorb_add` |
-| 3 | **Quiet Steps** | 2 | heal threat factor 0.5 -> 0.4 / 0.3 / 0.2 (`combat_stats.md` §4) | `grug_core/combat.lua:241` via `add_heal_threat` (`:404`) | `heal_threat_factor_sub` |
-| 4 | **Meditation** | 2 | max mana +5% / +10% / +15% | `grug_classes/stats.lua:25-31` | `max_mana_percent_add` |
-| 5 | **Renew** *(capstone)* | 3 | **the already-registered ability** (`kits.lua:651-677`), granted at rank 1 exactly as `classes.md` §5 specifies (6 mana, 8 s cooldown, `3 + spell power` every 3 s for 12 s); ranks 2 and 3 raise the tick to `4` and `5 + spell power` | `kits.lua:671`; the grant gate is `talent_gated = true` at `kits.lua:656` | `renew_tick_add` |
+| # | Talent | Chain | Tier | Ranks | Effect | Modifies | Key |
+|---|---|---|---|---|---|---|---|
+| 1 | **Gentle Hand** | Balm | 1 | 5 | Flash Heal `8 + 2 × spell power` → `+1 / 2 / 3 / 4 / 5` | `kits.lua:613` | `flash_heal_add` |
+| 2 | **Quiet Steps** | Balm | 2 | 4 | heal threat factor 0.5 → 0.45 / 0.40 / 0.35 / 0.30 (`combat_stats.md` §4) | `grug_core/combat.lua:241`, read at `:417` inside `add_heal_threat` (`:404`) | `heal_threat_factor_sub` |
+| 3 | **Renew** *(keystone)* | Balm | 3 | 3 | **the already-registered ability** (`kits.lua:651-677`), granted at rank 1 exactly as `classes.md` §5 specifies (6 mana, 8 s cooldown, `3 + spell power` every 3 s for 12 s); ranks 2 and 3 raise the tick to `4` and `5 + spell power` | `kits.lua:671`; the grant gate is `talent_gated = true` at `kits.lua:656` | `renew_tick_add` |
+| 4 | **Hearten** *(capstone)* | Balm | 4 | 3 | **new skill** (cast): 20 mana, 30 s cooldown; heals the Priest and every ally within 10 m for `6 / 9 / 12 + spell power` | new; `grug_core.heal_player` (`grug_core/combat.lua:984`) over the radius loop of `kits.lua:490` | — |
+| 5 | **Warding Faith** | Aegis | 1 | 5 | Power Word: Shield absorb `+1 / 2 / 3 / 4 / 5` | `kits.lua:640` | `shield_absorb_add` |
+| 6 | **Deep Reserve** | Aegis | 2 | 4 | max mana +3 / 6 / 9 / 12 % | `grug_classes/stats.lua:30` | `max_mana_percent_add` |
+| 7 | **Turn Aside** *(keystone)* | Aegis | 3 | 3 | **new skill** (cast): 10 mana, 25 s cooldown, self; dodge chance +10 / 15 / 20 percentage points for 6 s, **inside** the 30 % cap | new; `grug_classes/stats.lua:49` | `dodge_chance_window` |
+| 8 | **Second Skin** | Aegis | 4 | 3 | Power Word: Shield lasts 15 s → 18 / 21 / 24 s | `kits.lua:640` (the `15` argument) | `shield_duration_add` |
 
-Renew is kept as the Priest healing capstone, as `classes.md` §5 and
-`progression.md` §2 already decided. It is the one capstone that needs no new
-ability code at all — only the grant gate of §3.4.
+Renew is the Mercy tree's **keystone**, not its capstone. `progression.md` §2
+(`:34-35`) calls it "the Priest Holy capstone"; ruling 3 re-cuts what a
+capstone is, and the correction is made in `progression.md`'s own commit
+(§5.3). `classes.md:455`'s sentence ("Unlocked via the Holy tree (WP11)")
+stays true apart from the tree's name.
 
 ### 2.6 Priest — Reckoning
 
-| # | Talent | Tier | Ranks 1/2/3 | Modifies | Key |
-|---|---|---|---|---|---|
-| 1 | **Sharpened Word** | 1 | Smite `4 + spell power` -> `+1 / +2 / +3` | `kits.lua:591` | `smite_damage_add` |
-| 2 | **Swift Word** | 1 | Smite cooldown 2 s -> 1.8 / 1.6 / 1.4 s | `grug_abilities/init.lua:1233` (the shared `arm_cooldown` call), **not** `kits.lua:581` | `smite_cooldown_sub` |
-| 3 | **Warded Wrath** | 2 | while the Priest carries an absorb shield, Smite deals `+1 / +2 / +3` | `kits.lua:591`, gated on `grug_core.get_absorb(user) > 0` (`grug_core/combat.lua:1020`) | `smite_damage_while_shielded_add` |
-| 4 | **Zealous Mind** | 2 | +1 / +2 / +3 percentage points crit chance | `grug_classes/stats.lua:44-46` | `crit_chance_add` |
-| 5 | **Word of Ruin** *(capstone)* | 3 | **new ability** (cast): 8 mana, 12 s cooldown, 20 m; `6 / 8 / 10 + spell power` damage and heals the Priest for 50% of the damage actually dealt | new; `grug_core.deal_ability_damage` returns the post-crit, post-dodge amount (`grug_core/combat.lua:970`), healed back with `grug_core.heal_player(..., {no_crit = true})` (`:977-981`, `:984`) so one crit is not counted twice | — |
+| # | Talent | Chain | Tier | Ranks | Effect | Modifies | Key |
+|---|---|---|---|---|---|---|---|
+| 1 | **Sharpened Word** | Word | 1 | 5 | Smite `4 + spell power` → `+1 / 2 / 3 / 4 / 5` | `kits.lua:591` | `smite_damage_add` |
+| 2 | **Swift Word** | Word | 2 | 4 | Smite cooldown 2 s → 1.85 / 1.7 / 1.55 / 1.4 s | `grug_abilities/init.lua:1233` — **not** `kits.lua:581` | `smite_cooldown_sub` |
+| 3 | **Word of Ruin** *(keystone)* | Word | 3 | 3 | **new skill** (cast): 8 mana, 12 s cooldown, 20 m; `6 / 8 / 10 + spell power` damage, healing the Priest for 50 % of it | new; `grug_core.deal_ability_damage` returns the post-crit amount (`grug_core/combat.lua:970`), healed back with `grug_core.heal_player(…, {no_crit = true})` (`:977-981`, `:984`) | — |
+| 4 | **Last Word** *(capstone)* | Word | 4 | 3 | **new skill** (cast): 25 mana, 60 s cooldown, 20 m; `20 / 26 / 32 + 3 × spell power` on the pointed hostile and half of that on every other hostile within 3 m | new; `grug_core.deal_ability_damage` plus the radius loop of `kits.lua:490` | — |
+| 5 | **Fervour** | Wrath | 1 | 5 | +1 / 2 / 3 / 4 / 5 percentage points crit chance | `grug_classes/stats.lua:45` | `crit_chance_add` |
+| 6 | **Warded Wrath** | Wrath | 2 | 4 | while the Priest carries an absorb shield, Smite deals `+1 / 2 / 3 / 4` | `kits.lua:591`, gated on `grug_core.get_absorb(user) > 0` (`grug_core/combat.lua:1020`) | `smite_damage_while_shielded_add` |
+| 7 | **Recompense** *(keystone)* | Wrath | 3 | 3 | **new skill** (cast): 12 mana, 25 s cooldown, self; heals the Priest for `12 / 16 / 20 + 2 × spell power` and grants an absorb of half that for 10 s | new; `grug_core.heal_player` (`:984`) and `grug_core.set_absorb` (`:1012`) | — |
+| 8 | **Hardened** | Wrath | 4 | 3 | max HP +4 / 8 / 12 | `grug_classes/stats.lua:20` | `max_hp_add` |
 
-Word of Ruin is the Priest's solo-viability capstone and the counterpart to
-Mercy's group capstone. The `no_crit` flag exists for exactly this class of
-derived heal (`grug_core/combat.lua:977-981`).
+Word of Ruin's drain is specified as "50 % of the damage dealt **before the
+target's armor**": `deal_ability_damage` returns the amount the ability
+published, taken before the central modifier applies armor (`:36-42`) and the
+absorb shield (`:1003-1030`) to a *player* target. Against a mob it is exactly
+what landed; against an armoured PvP target a post-mitigation promise would be
+one the pipeline cannot keep.
 
-One bound to state rather than let an implementer discover: that return value
-is the amount the ability *published*, taken before the central modifier
-applies armor (`:38`) and the absorb shield (`:1003-1030`) to a **player**
-target. Against a mob it is what landed and the drain is exact; against an
-armoured PvP target it over-heals by the mitigated share. This proposal
-therefore specifies the drain as "50% of the damage dealt **before the
-target's armor**" rather than promising a post-mitigation figure the pipeline
-does not publish.
+### 2.7 Scout — Quarry (planned, not implemented)
 
-### 2.7 Count
+The Scout's kit, resource, armour and bow are [scout.md](scout.md); the two
+trees are here so that §1.3's arithmetic and §2.11's name audit cover all four
+classes. Every "Modifies" cell in §2.7 and §2.8 would say **new**, because
+none of the code exists yet, so the column is dropped.
 
-Per class: 10 talents, of which **8 are numeric modifiers and 2 are
-capstones**, 30 ranks. Across three classes: 30 talents, 90 ranks, 24 numeric
-talents over 21 distinct effect keys (`crit_chance_add` is used by all three
-classes, `max_mana_percent_add` by two), and 6 capstones of which one (Renew)
-already exists in code. `progression.md` §2's "9 of 10 talents are numeric
-modifiers" does not survive "exactly one capstone per tree" — that is open
-decision §5.3.
+| # | Talent | Chain | Tier | Ranks | Effect | Key |
+|---|---|---|---|---|---|---|
+| 1 | **Strong Draw** | Draw | 1 | 5 | Loose damage `+1 / 2 / 3 / 4 / 5` | `loose_damage_add` |
+| 2 | **Hawk-Eyed** | Draw | 2 | 4 | +1 / 2 / 3 / 4 percentage points crit chance | `crit_chance_add` |
+| 3 | **Twin Shot** *(keystone)* | Draw | 3 | 3 | **new skill** (cast): 25 focus, 10 s cooldown, 25 m, costs 2 arrows; two arrows in succession, each for the Loose amount `+0 / 1 / 2` | — |
+| 4 | **Longshot** *(capstone)* | Draw | 4 | 3 | **new skill** (cast): 30 focus, 60 s cooldown, **45 m**; one arrow for `2.0 / 2.3 / 2.6 ×` the bow's full-charge damage plus the ranged bonus — the longest reach in the game | — |
+| 5 | **Quiver** | Ranging | 1 | 5 | Loose's arrow is not consumed 10 / 20 / 30 / 40 / 50 % of the time | `arrow_refund_chance` |
+| 6 | **Long Reach** | Ranging | 2 | 4 | Loose range 25 m → 27 / 29 / 31 / 33 m | `loose_range_add` |
+| 7 | **Sprint** *(keystone)* | Ranging | 3 | 3 | **new skill** (cast): 20 focus, 45 s cooldown, self; movement speed +8 / 9 / 10 % for 10 s. **The percentage is an open decision (§6.13): it is the one number the whole mob-speed pillar is built on** | `sprint_speed_window` |
+| 8 | **Sure Footing** | Ranging | 4 | 3 | +1 / 2 / 3 percentage points dodge chance | `dodge_chance_add` |
 
-### 2.8 Two consequences of touching shipped numbers
+### 2.8 Scout — Veil (planned, not implemented)
+
+| # | Talent | Chain | Tier | Ranks | Effect | Key |
+|---|---|---|---|---|---|---|
+| 1 | **Fine Edge** | Blade | 1 | 5 | Gut ×1.4 → ×1.45 / 1.50 / 1.55 / 1.60 / 1.65 weapon damage | `gut_multiplier_add` |
+| 2 | **Deep Focus** | Blade | 2 | 4 | Gut costs 25 focus → 22 / 19 / 16 / 13 | `gut_cost_sub` |
+| 3 | **Opening** *(keystone)* | Blade | 3 | 3 | **new skill** (swing): 30 focus, 12 s charge; on a landed swing taken from **behind** the target (a yaw comparison, no new state), `floor(weapon damage × 2.2 / 2.5 / 2.8) + melee bonus` | — |
+| 4 | **Follow Through** | Blade | 4 | 3 | Opening's charge 12 s → 10 / 8 / 6 s | `opening_charge_sub` |
+| 5 | **Light Step** | Shadow | 1 | 5 | +1 / 2 / 3 / 4 / 5 percentage points dodge chance | `dodge_chance_add` |
+| 6 | **Slip Away** | Shadow | 2 | 4 | Slip's cooldown 20 s → 17 / 14 / 11 / 8 s | `slip_cooldown_sub` |
+| 7 | **Sidestep** *(keystone)* | Shadow | 3 | 3 | **new skill** (cast): 15 focus, 30 s cooldown, self; dodge chance +15 / 20 / 25 percentage points for 4 s, **inside** the 30 % cap — the "timed dodge window" of ruling 7 | `dodge_chance_window` |
+| 8 | **Unseen** *(capstone)* | Shadow | 4 | 3 | **new skill** (cast): 30 focus, 120 / 100 / 80 s cooldown, self; invisibility for 10 / 15 / 20 s at **60 % movement speed**, broken by dealing or taking damage or casting a hostile ability, with a per-tick detection roll. **Gate exception: 26 points in Veil, not 20** | `invisibility_window` |
+
+**Unseen's gate is the one deviation from §1.2's uniform tier-4 gate**, and it
+is deliberate: ruling 7 says invisibility is "reachable only by a 'pure'
+build". At 26 points in Veil a Scout has at most 4 points left for Quarry;
+rank 1 arrives at 27 points in-tree (**level 54**) and rank 3 at 29
+(**level 58**). §6.14 asks whether a capstone may raise its own gate at all.
+
+The detection roll, the speed penalty, the mobs_redo seam and the guard case
+are specified in [scout.md](scout.md) §5; their numbers are open decision
+§6.15.
+
+### 2.9 Count
+
+| | Per tree | Per class | All four classes |
+|---|---|---|---|
+| Talents | 8 | 16 | **64** |
+| Ranks | 30 | 60 | **240** |
+| Numeric talents | 5 | 10 | **40** |
+| Keystones (always a new skill) | 2 | 4 | **16** |
+| Capstones | 1 | 2 | **8** |
+| …of which are skills | — | — | **6** (Ruination, Pyre, Hearten, Last Word, Longshot, Unseen) |
+| …of which are effects with no hotbar key | — | — | **2** (Unbroken, Rimebite) |
+
+New ability registrations: 16 keystones + 6 skill capstones = **22**, of which
+**one already exists in code** (Renew, `kits.lua:651-677`) and **8 belong to
+the unimplemented Scout**. WP11 therefore registers **13 new abilities** for
+the three shipped classes. That is the single largest change in scope from
+revision 1, which registered five, and §4 re-sizes the lanes for it.
+
+Distinct effect keys: **31**. Five are shared across classes
+(`crit_chance_add` by all four, `max_mana_percent_add` by Mage and Priest,
+`max_hp_add` by Warrior and Priest, `dodge_chance_add` and
+`dodge_chance_window` by Priest and Scout).
+
+`progression.md` §2's "**9 of 10 talents are numeric modifiers**" does not
+survive rulings 2 and 3 in any reading: a tree of 8 talents carries 5 numeric,
+2 keystones and 1 capstone. §5.3 corrects the sentence.
+
+### 2.10 Two consequences of touching shipped numbers
 
 **The decided ability tables become *base* values.** `classes.md` §§3-5 state
-their numbers flatly: Mighty Blow is "exactly floor(weapon damage x 1.5)"
-(`classes.md:416`), Hamstring charges 6 s (`:417`), Taunt runs 8 s (`:418`),
-Frost Nova roots 4 s then slows 3 s (`:437`), Smite has a 2 s cooldown
-(`:452`), and the 2026-08-06 kit-tuning note reasons from "+12 rage per
-auto-hit" (`:408`, `:421`). Fourteen talents re-tune exactly these. Nothing forbids
+their numbers flatly: Mighty Blow is "exactly floor(weapon damage × 1.5)"
+(`classes.md:416`), Hamstring charges 6 s and slows for 5 s (`:417`), Taunt
+runs 8 s (`:418`), Frost Nova roots 4 s then slows 3 s (`:437`), Blink
+teleports 10 m (`:438`), Smite has a 2 s cooldown (`:452`), Flash Heal heals
+`8 + 2 × spell power` (`:453`), Power Word: Shield lasts 15 s (`:454`), and
+the 2026-08-06 kit-tuning note reasons from "+12 rage per auto-hit" (`:409`,
+`:421`). **Eighteen talents re-tune exactly these numbers.** Nothing forbids
 it — improving existing buttons is what `classes.md:50-52` says talents are
-for — but when WP11 lands, those tables are the **unspecced baseline** and
-`classes.md` needs that word, or the next reader will treat a talented Taunt
-as a bug.
+for — but when WP11 lands those tables are the **untalented baseline**, and
+`classes.md` needs that word or the next reader will file a talented Taunt as
+a bug.
 
-**Charge is the one shipped ability no talent touches.** §1.1 derives the
-trees from what each kit already does, and the Warrior's engage tool
-(`kits.lua:291`) is the gap: its 10 s cooldown, 12 m reach, 3 damage and
-15 rage are all untouched by Bulwark and Ruin. That is a deliberate omission
-rather than an oversight — the two Warrior trees are about holding a fight and
-about spending rage, and a talent that only shortens the approach improves
-neither — but a later round that wants a third Warrior direction has an
-obvious, unused hook sitting there.
+**Three capstones exceed a cap on purpose.** Unbroken raises the armor cap to
+80 % for 8 s and Ruination raises the crit cap to 55 % for 10 s, while the two
+dodge keystones (Turn Aside, Sidestep) deliberately stay **inside** the 30 %
+cap because they are keystones, not capstones. `combat_stats.md:98-102`
+currently states that "values above a cap remain present on their stacks but
+have no further combat effect" and that "there is no automatic overflow
+conversion or cap raise". Ruling 6 is what permits the exception; §6.5 is
+where the user confirms it. If the answer is no, Unbroken becomes flat armor
+inside 60 % and Ruination becomes a rage-and-damage window instead.
+
+### 2.11 Name audit (ruling 5)
+
+Ruling 5: "TALENT names must not remind of WoW — rename every talent the
+review flagged (Ruin/Rime/Reckoning stay as TREE names; Meditation, Kindling,
+Cripple as talent names go) and check the rest."
+
+Renamed in this revision:
+
+| Revision 1 | Revision 2 | Why |
+|---|---|---|
+| Meditation | **Deep Reserve** | Classic Priest Discipline talent, same 5/10/15 ranks |
+| Kindling | **Tinder** | Fire Mage talent |
+| Cripple | **Hobble** | Warlock spell |
+| Iron Discipline | **Ironbound** | "Discipline" and "Iron Will" both read as WoW class terms |
+| Battle Hunger | **Spite** | "Battle" + noun is the WoW warrior naming shape |
+| Bloodrush | **Stoke** | too close to Bloodthirst / Blood Rush |
+| Reaving Strike | **Broadstroke** | "…Strike" is the WoW ability suffix |
+| Stand Fast | **Hold Ground** (keystone) + **Unbroken** (capstone) | "Last Stand" / "Stand Fast" read as warrior cooldown names |
+| Scorching Focus | **Firebrand** | "Scorch" is a Fire Mage spell |
+| Zealous Mind | **Fervour** | "Zeal" is a Paladin/Priest term in WoW |
+
+Every talent name in §§2.1-2.8, checked against the author's own knowledge of
+WoW (not verifiable inside this repo, so stated with confidence rather than as
+fact):
+
+- **No collision the author is aware of:** Ironbound, Thick Hide, Hold
+  Ground, Unbroken, Spite, Affront, Bellow, Grudge, Heavy Hand, Stoke,
+  Broadstroke, Ruination, Keen Edge, Hobble, Pin, Deadweight, Tinder,
+  Firebrand, Brand, Pyre, Deep Well, Far Cast, Cinderfall, Ashfall, Deep
+  Chill, Hoarfrost, Frostbind, Rimebite, Cold Focus, Quick Step, Glacial
+  Ward, Far Step, Gentle Hand, Quiet Steps, Hearten, Warding Faith, Deep
+  Reserve, Turn Aside, Second Skin, Sharpened Word, Swift Word, Word of Ruin,
+  Last Word, Fervour, Warded Wrath, Recompense, Hardened, Strong Draw,
+  Hawk-Eyed, Twin Shot, Longshot, Long Reach, Sure Footing, Fine Edge, Deep
+  Focus, Follow Through, Light Step, Slip Away, Sidestep, Unseen.
+- **Deliberately kept by ruling 5 (tree names):** Ruin, Rime, Reckoning.
+- **Renew** keeps its name: it is already registered and already named in two
+  decided files, so it belongs to the pre-existing group with the nine shipped
+  ability names (Power Word: Shield, Frost Nova, Flash Heal, Blink, Hamstring,
+  Charge, Smite, Taunt, Renew) that ruling 5 does not reopen.
+- **Watch-list, flagged and not renamed:** *Sprint* is an ordinary English
+  word and also a Rogue ability in WoW; *Quiver* is an ordinary noun and a
+  Hunter aura in some expansions; *Opening* is generic but sits next to WoW's
+  "opener" vocabulary. Clean alternatives if the user wants them: **Break
+  Away**, **Full Quiver**, **First Cut**.
 
 ---
 
@@ -286,10 +475,9 @@ New file **`mods/PLAYER/grug_classes/talents.lua`**, loaded from the existing
 `perks.lua`. `grug_classes` is the right owner for three reasons that already
 hold in the tree: it owns the class registry (`init.lua:11-18`) and its def
 comment already reserves room for "skill trees (WP11)" (`init.lua:7-8`); it
-already owns the per-player derived stats every numeric talent touches
-(`stats.lua`); and it is a dependency of both `grug_inventory` and
-`grug_abilities` (`stats.lua:79-82`), so both can read talents without a new
-dependency edge.
+owns the per-player derived stats every numeric talent touches (`stats.lua`);
+and it is a dependency of both `grug_inventory` and `grug_abilities`
+(`stats.lua:79-82`), so both read talents without a new dependency edge.
 
 **Reading needs no new edge; the UI and the respec do.**
 `grug_classes/mod.conf` depends on `grug_core`, `grug_factions` and `grug_xp`
@@ -297,36 +485,45 @@ only. The Talents page of §3.5 needs **`sfinv`** (today a dependency of
 `grug_inventory` alone) and the respec transaction of §1.4 needs
 **`grug_money`** (`grug_money.take`, `mods/PLAYER/grug_money/init.lua:122`).
 Both are one-line `mod.conf` additions with a load-order consequence, and
-lane X4 owns them — they are named here so nobody discovers them mid-lane.
+lane X4 owns them.
 
 Registration mirrors `register_class` (`init.lua:14`):
 
 ```lua
 grug_classes.register_tree({
     id = "bulwark", class = "warrior", name = "Bulwark",
-    description = "Take the hits and hold their attention.",
+    chains = {"wall", "anvil"},          -- exactly two, ruling 2
+    capstone_chain = "wall",             -- which chain carries the capstone
 })
 
 grug_classes.register_talent({
-    id = "iron_discipline", tree = "bulwark", tier = 1, name = "Iron Discipline",
-    description = "Armor +2% per rank.",
-    effects = {armor_percent_add = {2, 4, 6}},   -- one value per rank
+    id = "ironbound", tree = "bulwark", chain = "wall", tier = 1,
+    name = "Ironbound", description = "Armor +1% per rank.",
+    effects = {armor_percent_add = {1, 2, 3, 4, 5}},  -- one value per rank
 })
 
 grug_classes.register_talent({
-    id = "stand_fast", tree = "bulwark", tier = 3, name = "Stand Fast",
-    capstone = true,                             -- exactly one per tree
-    ability = "stand_fast",                      -- the grug_abilities id it grants
-    effects = {stand_fast_reduction = {25, 30, 35}},
+    id = "hold_ground", tree = "bulwark", chain = "wall", tier = 3,
+    keystone = true,                     -- exactly one per chain, tier 3
+    ability = "hold_ground",             -- the grug_abilities id it grants
+    effects = {hold_ground_absorb = {20, 30, 40}},
+})
+
+grug_classes.register_talent({
+    id = "unbroken", tree = "bulwark", chain = "wall", tier = 4,
+    capstone = true,                     -- exactly one per TREE, on its chain
+    effects = {armor_percent_add_low_hp = {10, 15, 20},
+               armor_cap_override = {70, 75, 80}},
 })
 ```
 
-`register_talent` asserts the shape at load time, the way
-`register_ability` does (`grug_abilities/init.lua:475-510`): tier in 1..3,
-three values per effect list, exactly one capstone per tree in tier 3, five
-talents per tree, two trees per class, and every effect key present in the
-closed vocabulary table. A typo is a startup failure, never a silently inert
-talent.
+`register_talent` asserts the shape at load time the way `register_ability`
+does (`grug_abilities/init.lua:475-510`): tier in 1..4, rank counts 5/4/3/3
+by tier, chain belongs to the tree, exactly two chains per tree, exactly one
+keystone per chain in tier 3, exactly one capstone per tree in tier 4 and on
+a declared chain, eight talents per tree, two trees per class, and every
+effect key present in the closed vocabulary table. A typo is a startup
+failure, never a silently inert talent.
 
 ### 3.2 The one hook
 
@@ -343,509 +540,587 @@ It is the deliberate twin of `grug_classes.get_race_perk`
 grug_core.get_talent_bonus = grug_classes.get_talent_bonus
 ```
 
-Every numeric talent in §2 is one call to this function at the site the
-table's **Modifies** column names, and nothing else. **The site is not always
-in `kits.lua`.** A kit table's `cooldown`, `charge`, `range` and
-`max_distance` fields are evaluated **once at load time**, with no player in
-scope: a per-player read written there would change the number for everybody.
-Five talents therefore hook the central per-player site instead, and each of
-those sites already exists and is already the single one of its kind:
+Every numeric talent in §2 is one call to this function at the site its
+**Modifies** column names, and nothing else. **The site is not always in
+`kits.lua`.** A kit table's `cooldown`, `charge`, `range` and `max_distance`
+fields are evaluated **once at load time**, with no player in scope: a
+per-player read written there would change the number for everybody. Six
+talents therefore hook a central per-player site instead, and each of those
+sites already exists and is already the only one of its kind:
 
 | Talent | The constant it re-tunes | Where the read goes |
 |---|---|---|
-| Grudge, Quick Step, Swift Word | `cooldown` in the ability def | `grug_abilities/init.lua:1233`, the sole `arm_cooldown(user, def, def.cooldown)` call |
-| Cripple | `charge` in the ability def | `grug_abilities/init.lua:718`, the sole line that arms a charge timer |
-| Far Cast | `max_distance` in the projectile registration and `range` in the ability def | the spawn call (`kits.lua:453-460`), since `grug_projectiles/init.lua:195` prefers `params.max_distance`; and `grug_abilities.get_range` (`init.lua:170-177`) for reach |
+| Grudge, Quick Step, Swift Word (+ Scout: Slip Away) | `cooldown` in the ability def | `grug_abilities/init.lua:1233`, the sole `arm_cooldown(user, def, def.cooldown)` call |
+| Hobble (+ Scout: Follow Through) | `charge` in the ability def | `grug_abilities/init.lua:718`, the sole line that arms a charge timer |
+| Far Cast (+ Scout: Long Reach) | `max_distance` in the projectile registration (`kits.lua:413`) and `range` in the ability def (`:446`) | flight: the spawn call (`kits.lua:453-460`), since `grug_projectiles/init.lua:195` prefers `params.max_distance`; targeting reach: `grug_abilities.get_range` (`init.lua:170-177`), the twin of the elf `ability_range_bonus` perk, whose item-meta override `sync_kit` already refreshes (`init.lua:1827-1831`) |
+| Deep Focus (Scout) | `cost` in the ability def | `grug_abilities/init.lua:1232`, the sole `spend(user, def.cost)` call |
 
-The other nineteen numeric talents do sit at the line their table names, each
-inside a function body with the player in scope. Two worked examples:
+Every other numeric talent sits at the line its table names, inside a function
+body with the player in scope. Two worked examples:
 
 ```lua
 -- grug_classes/stats.lua:45 today (the body of the function at :44)
 return math.min(0.30, 0.05 + 0.001 * grug_classes.get_attributes(player).dex)
--- with talents (the 30% cap of combat_stats.md §2 still binds)
-return math.min(0.30, 0.05 + 0.001 * grug_classes.get_attributes(player).dex
+-- with talents, cap-aware (§6.5)
+local cap = math.max(0.30,
+    0.01 * grug_classes.get_talent_bonus(player, "crit_cap_override"))
+return math.min(cap, 0.05 + 0.001 * grug_classes.get_attributes(player).dex
     + 0.01 * grug_classes.get_talent_bonus(player, "crit_chance_add"))
 
 -- kits.lua:342 today
 return math.floor(ctx.weapon_damage * 1.5) + ctx.melee_bonus, 3, ...
 -- with talents
-local mult = 1.5 + 0.1 * grug_classes.get_talent_bonus(user, "mighty_blow_multiplier_add")
+local mult = 1.5 + 0.05 * grug_classes.get_talent_bonus(user, "mighty_blow_multiplier_add")
 return math.floor(ctx.weapon_damage * mult) + ctx.melee_bonus, 3, ...
 ```
 
 A second, smaller accessor answers unlock questions:
 
 ```lua
--- 0..3; used by the kit grant and the UI, never by a numeric consumer.
+-- 0..5; used by the kit grant, the gates and the UI, never by a numeric consumer.
 function grug_classes.talent_rank(player, talent_id)
 ```
 
-There is no third seam. A talent that cannot be expressed as "one key, summed,
-read at one site" does not belong in this proposal's first round — and exactly
-one candidate fails that test, Stand Fast's variant (A), which is why §5.13
-puts it to the user instead of smuggling it in as a table row.
+**Timed windows are the one new shape revision 2 adds.** Six talents are not
+a constant summed bonus but a bounded window: Ruination, Pyre, Turn Aside,
+Sidestep, Sprint and Unseen, plus Unbroken's triggered window. They are not a
+third seam — `get_talent_bonus` returns 0 for a window key that is not
+running — but they need one small per-player expiry table of the shape
+`grug_core`'s absorbs already use (`grug_core/combat.lua:1010-1017`), owned by
+`talents.lua` and cleared on leave, death, respec and class change. That table
+is the single place a window lives; nothing else in the design needs state.
 
 ### 3.3 Persistence
 
-- One player-meta **string** key, `grug_classes:talents`, holding
-  `id=rank` pairs separated by commas: `iron_discipline=2,grudge=1`. The same
-  store class and race already use (`grug_classes/init.lua:3-4`, `:76`,
-  `:113`); a string keeps it to one key instead of thirty, and it stays
-  human-readable for `/talents` debugging.
+- One player-meta **string** key, `grug_classes:talents`, holding `id=rank`
+  pairs separated by commas: `ironbound=4,grudge=1`. The same store class and
+  race already use (`grug_classes/init.lua:3-4`, `:76`, `:113`); a string
+  keeps it to one key instead of sixty-four, and it stays human-readable for
+  `/talents` debugging.
 - Parsed once per join into a per-player runtime cache (the pattern of
   `grug_abilities`' runtime tables, `init.lua:22-38`), invalidated on spend,
   respec, class change and leave.
 - **The read path validates, it does not trust.** Unknown ids are dropped,
-  ranks are clamped to the talent's rank count, a rank whose tier gate is not
-  met is dropped, and the total spent is clamped to `floor(level / 3)`. A
+  ranks are clamped to the talent's own rank count, a rank whose tier gate or
+  hard chain is not satisfied is dropped **together with everything below it
+  in its chain**, and the total spent is clamped to `floor(level / 2)`. A
   hand-edited meta string therefore cannot buy a capstone at level 4.
 - Nothing else is persisted. Points available are always derived
-  (`floor(grug_xp.get_level(player) / 3)`, `grug_xp/init.lua:48`), never
+  (`floor(grug_xp.get_level(player) / 2)`, `grug_xp/init.lua:48`), never
   stored, so the two can never disagree.
 
-### 3.4 Granting a capstone ability
+### 3.4 Granting a keystone or capstone ability
 
-The capstones are ordinary `grug_abilities` registrations with
-`talent_gated = true`, exactly like Renew today (`kits.lua:656`). **Three**
-existing sites test that flag, and the file itself states they must never
-disagree (`grug_abilities/init.lua:1705-1710`):
+Keystone and skill-capstone abilities are ordinary `grug_abilities`
+registrations with `talent_gated = true`, exactly like Renew today
+(`kits.lua:656`). **Three** existing sites test that flag, and the file itself
+states they must never disagree (`grug_abilities/init.lua:1705-1710`):
 
 - `kit_of(class)` drops every `talent_gated` def in both of its loops, the
   universal one (`init.lua:1719`) and the class one (`:1724`). It becomes
   `kit_of(class, player)` and keeps a gated def when
   `grug_classes.talent_rank(player, def.talent) > 0`.
 - The purge branch in `sync_kit` (`init.lua:1808-1810`) uses the same
-  predicate, or a granted capstone would be destroyed on the next sync.
+  predicate, or a granted skill would be destroyed on the next sync.
 
 `kit_of` has exactly one caller (`init.lua:1858`) and the grant loop passes
 its index straight to `grant_at`, so a def's position in that list **is** its
 hotbar key.
 
-**The base kit's keys are safe; a capstone's key is not, unless the grant
-rule changes.** Registering the capstones after the class section keeps every
-base ability at the key it has today — the concern the file's own comment
-raises at `init.lua:1712-1715`. But Renew is *not* appended: it is already the
-fourth entry of `by_class["priest"]` (`kits.lua:651`, after Smite `:572`,
-Flash Heal `:596` and Power Word: Shield `:623`). A Priest who unlocks Word of
-Ruin first receives it at key 5; unlocking Renew afterwards puts Renew at
-index 5 in `kit_of`, and `grant_at` (`init.lua:1731-1770`) moves the occupant
-aside — the capstone the player already learned changes key.
+**The base kit's keys are safe; a talent skill's key is not, unless the grant
+rule changes.** Registering the new abilities after the class section keeps
+every base ability at the key it has today — the concern the file's own
+comment raises at `init.lua:1712-1715`. But Renew is *not* appended: it is
+already the fourth entry of `by_class["priest"]` (`kits.lua:651`, after Smite
+`:572`, Flash Heal `:596` and Power Word: Shield `:623`). A Priest who unlocks
+Word of Ruin first receives it at key 5; unlocking Renew afterwards puts Renew
+at index 5 in `kit_of`, and `grant_at` (`init.lua:1731-1770`) moves the
+occupant aside — the skill the player already learned changes key. With up to
+three talent skills per build this is no longer a corner case.
 
-The fix is one rule for lane X3, and it is the rule that makes the guarantee
-true for every class: **a capstone is granted into the first free slot after
-the base kit, in unlock order, not at its `kit_of` index.** Base positions
-stay index-addressed as today; only gated defs are appended. The cheaper
-alternative is to state the guarantee for the base kit alone and accept that a
-second capstone may move the first one's key — worse, because it breaks a
-muscle-memory key at exactly the moment the player is learning a new button.
+The fix is one rule for the capstone lane: **a talent-granted ability is
+placed in the first free slot after the base kit, in unlock order, not at its
+`kit_of` index.** Base positions stay index-addressed as today; only gated
+defs are appended.
 
-Counts: a Warrior with both capstones fills keys **1-7** of 8 (Strike plus
-four class abilities, §2.1); a Mage or Priest fills 1-6.
-
-Re-granting is driven by a new callback that mirrors
-`register_on_class_chosen` (`grug_classes/init.lua:68`, consumed at
-`grug_abilities/init.lua:1881`):
+Re-granting is driven by a new callback mirroring `register_on_class_chosen`
+(`grug_classes/init.lua:68`, consumed at `grug_abilities/init.lua:1881`):
 
 ```lua
 grug_classes.register_on_talents_changed(function(player) sync_kit(player) end)
 ```
 
 It fires on every spend and on respec. Nothing else in `grug_abilities`
-changes for the capstones.
+changes for the grants.
+
+**Hotbar budget** (`classes.md` §2b reserves keys 1-8):
+
+| Class | Base kit | Max talent skills | Worst case |
+|---|---|---|---|
+| Warrior | Strike + 4 (`kits.lua:268`, `:291`, `:321`, `:350`, `:380`; `classes.md:415-418`) = 5 | 3 (pure Ruin: Broadstroke, Pin, Ruination) | **8 of 8** |
+| Warrior, pure Bulwark | 5 | 2 (Hold Ground, Bellow — Unbroken has no key) | 7 of 8 |
+| Mage | Strike + 3 = 4 | 3 (pure Ember) / 2 (pure Rime, Rimebite has no key) | 7 of 8 |
+| Priest | Strike + 3 = 4 | 3 | 7 of 8 |
+| Scout | Strike + 3 = 4 | 3 | 7 of 8 |
+
+A pure-Ruin Warrior fills **every** key, and `classes.md:462` already parks
+"Warrior shield abilities → after WP14 (offhand/shields)" as the next claim on
+them. §6.11 is that decision.
 
 ### 3.5 UI
 
-A third `sfinv` page beside Character and Bags
-(`grug_inventory/pages.lua:192`, `:233`), registered from a new
-`grug_classes/talents_ui.lua` so the page lives with the data it shows and
-`grug_inventory` keeps its two pages. This costs the `sfinv` dependency edge
-named in §3.1. sfinv uses legacy coordinates and the content area spans about
-y 0.3-5.0 (`pages.lua:1-2`).
+A third `sfinv` page beside Character and Bags (`grug_inventory/pages.lua:192`,
+`:233`), registered from a new `grug_classes/talents_ui.lua` so the page lives
+with the data it shows and `grug_inventory` keeps its two pages. This costs
+the `sfinv` dependency edge of §3.1. sfinv uses legacy coordinates and the
+content area spans about y 0.3-5.0 (`pages.lua:1-2`).
+
+Revision 1's layout drew five talents per tree in three tiers. Revision 2 has
+**eight talents per tree in two chains and four tiers**, which is a two-column
+chain layout per tree and four rows — sixteen buttons for the class, plus the
+per-tree point counters, the gate labels and the description line. That fits
+the sfinv area only if the two trees are **tabbed rather than side by side**:
 
 ```
 +---------------------------------------------------------------+
 | Character | Bags | Talents |                        (sfinv tabs)
 +---------------------------------------------------------------+
-| Warrior     Points left: 4         [ Respec -- at a trainer ]  |
+| Warrior      [ BULWARK 21 ] [ Ruin 9 ]      Points left: 0     |
+|                                            [ Respec  --  1s25c]|
+|      WALL                       ANVIL                          |
+| T1 | Ironbound      5/5 |   | Spite          5/5 |             |
+| T2 | Thick Hide     4/4 |   | Affront        3/4 |     (>=5)   |
+| T3 | Hold Ground *  3/3 |   | Bellow *       0/3 |     (>=12)  |
+| T4 | Unbroken **    1/3 |   | Grudge         0/3 |     (>=20)  |
 |                                                               |
-|   BULWARK  (7)                  RUIN  (9)                     |
-|   +-------------------+         +-------------------+         |
-| T1| Iron Discipline 3/3|        | Heavy Hand     3/3|         |
-|   | Battle Hunger   2/3|        | Bloodrush      0/3|         |
-|   +-------------------+         +-------------------+         |
-| T2| Grudge          2/3|        | Cruel Edge     3/3|   (>=3) |
-|   | Unyielding      0/3|        | Cripple        2/3|         |
-|   +-------------------+         +-------------------+         |
-| T3| Stand Fast      0/3|        | Reaving Strike 1/3|   (>=8) |
-|   |  locked: 7/8 pts  |         +-------------------+         |
-|   +-------------------+                                       |
-|                                                               |
-| Cruel Edge -- rank 3/3: +3% crit chance. Next rank: maxed.    |
+| Unbroken -- rank 1/3: below 20% HP, +10% armor and the armor  |
+| cap rises to 70% for 8 s. Next rank: +15%, cap 75%.           |
 +---------------------------------------------------------------+
 ```
 
-- Each talent is one `button` whose label is `Name  r/3`; a locked tier's
-  buttons are rendered as plain labels (no click target) with the gate spelled
-  out ("needs 8 points in Bulwark").
-- Clicking a talent selects it and writes the one-line explanation at the
-  bottom (current rank, next rank, what it changes). Clicking the selected
-  talent again spends a point, so the page needs no separate "+" column and no
-  confirmation dialog.
-- `Points left` is the whole budget display; the per-tree number in the header
-  is what the tier gates read.
-- The Respec button is present but **disabled outside a class trainer's
-  range**, with the reason in its label — the price and the transaction belong
-  to the trainer dialog (§1.4, open decision §5.8).
-- No new texture is needed. Signature talent icons are a later art pass, the
-  same way `classes.md` §2c parks signature ability icons.
+- `*` marks a keystone, `**` the capstone; a locked talent is a plain label
+  (no click target) with its reason spelled out ("needs 12 points in Bulwark"
+  or "needs Thick Hide 4/4").
+- Clicking a talent selects it and writes the one-line explanation; clicking
+  the selected talent again spends a point, so the page needs no "+" column
+  and no confirmation dialog.
+- The **Respec button lives here** (ruling 4) with its price in the label and
+  a confirmation dialog, since there is no NPC to host the transaction.
+- No new texture is needed; signature talent icons are a later art pass, the
+  way `classes.md` §2c parks signature ability icons.
 
 ### 3.6 Level-up flow
 
 `grug_classes` already registers on the level-change callback
-(`grug_classes/stats.lua:90-93`, the callback itself at
-`grug_xp/init.lua:34`). The same registration gains the talent line:
+(`grug_classes/stats.lua:90-93`, the callback itself at `grug_xp/init.lua:34`).
+The same registration gains the talent line:
 
 ```lua
 -- old_level is nil on join (grug_xp/init.lua:32-33), which is why
 -- stats.lua:91-92 already guards it. Arithmetic on nil here would error
 -- on every single join.
 if old_level ~= nil and
-        math.floor(new_level / 3) > math.floor(old_level / 3) then
+        math.floor(new_level / 2) > math.floor(old_level / 2) then
 ```
 
 On that condition, send one chat line under the existing "Reached level N!"
-(`grug_xp/init.lua:62-64`):
-
-```
-Talent point available (2 unspent) -- open your inventory, Talents tab.
-```
-
-No new globalstep, no new HUD element, no new packet: a level-up is already a
-chat event.
+(`grug_xp/init.lua:62-64`). No new globalstep, no new HUD element, no new
+packet.
 
 ### 3.7 The KAT
 
-`tools/wp13/talent_tree_kat.lua` (or `tools/wp11/`), plain Lua 5.1 under a
-stub registry, in the shape of `tools/wp13/ability_rightclick_kat.lua:1-45` —
-it loads the **real** `talents.lua` and the real `register_talent`, and runs
-under both interpreters with identical output, as the common lane rules
-require. Seven groups, each of which can go red on its own:
+`tools/wp11/talent_tree_kat.lua`, plain Lua 5.1 under a stub registry, in the
+shape of `tools/wp13/ability_rightclick_kat.lua:1-45` — it loads the **real**
+`talents.lua` and the real `register_talent`, and runs under both interpreters
+with identical output. Eight groups, each able to go red on its own:
 
-1. **Shape.** Every class has exactly 2 trees, every tree 5 talents in tiers
-   2/2/1, every talent 3 ranks, exactly one capstone per tree and it is in
-   tier 3. Totals: 30 ranks per class.
-2. **Arithmetic.** `floor(60/3) == 20`; `20/30` is two thirds; one tree costs
-   15; both capstones cost 9 + 9 = 18 <= 20; two full trees cost 30 > 20.
-   This is the row that goes red if anyone re-tunes the cadence without
+1. **Shape.** Every class has exactly 2 trees; every tree 8 talents in two
+   chains of 4; ranks 5/4/3/3 by tier; exactly one keystone per chain in
+   tier 3; exactly one capstone per tree, in tier 4, on a declared chain.
+   Totals: 30 ranks per tree, 60 per class.
+2. **Arithmetic.** `floor(60/2) == 30`; one tree costs 30; `30/60` is one
+   half; the milestone table of §1.3 reproduces exactly (13 / 20 / 21 / 23 /
+   30 points in a tree); two full trees cost 60 > 30; no build holds four
+   keystones. This row goes red if anyone re-tunes the cadence without
    re-tuning the trees.
-3. **Spend rules**, driven as a table of cases: a tier-2 rank with 2 points in
-   the tree is refused; the capstone with 7 is refused and with 8 accepted; a
-   4th rank is refused; a spend with 0 points left is refused; a spend at
-   level 2 is refused.
-4. **Persistence round trip.** Serialize -> parse -> identical; and forged
-   meta (`unknown_id=2,stand_fast=9`) is dropped and clamped rather than
-   honoured.
+3. **Spend rules**, as a table of cases: a tier-2 rank with 4 points in the
+   tree is refused and with 5 accepted; a tier-3 rank with 11 refused, 12
+   accepted; tier 4 with 19 refused, 20 accepted; a tier-2 rank whose
+   tier-1 chain talent is at 4/5 is refused; a sixth rank refused; a spend
+   with 0 points left refused; a spend at level 1 refused; **Unseen refused
+   at 25 points in Veil and accepted at 26** (§2.8's exception).
+4. **Persistence round trip.** Serialize → parse → identical; forged meta
+   (`unknown_id=2,unseen=9`) is dropped and clamped; a forged mid-chain rank
+   drops everything below it in that chain.
 5. **Effect-key coverage.** Every key in the closed vocabulary is read by at
-   least one consumer source file, and every `effects` key used by a talent is
-   in the vocabulary. This is the row that goes red when a talent is added
-   whose modifier nothing applies — the failure mode a numeric talent system
-   has.
-6. **Cap invariants.** With every crit talent at rank 3 on a level-60
-   character, `get_crit_chance` still returns <= 0.30; with the armor talents
-   (Iron Discipline and, below 30% HP, Unyielding) at rank 3 on 60% gear,
-   `get_armor_percent` still returns <= 60.
-7. **The shared central seams stay neutral without talents.** The five talents
-   that hook `arm_cooldown` (`init.lua:1233`), the charge arming line (`:718`)
-   and `get_range` (`:170-177`) sit on paths every ability of every class runs
-   through. One case per seam with **no talent ranked** must reproduce today's
-   value exactly — Taunt 8 s, Blink 15 s, Smite 2 s, Hamstring 6 s, Fireball
-   20 m, and an elf's Fireball still 25 m — so a talent read can never quietly
-   re-tune an untalented character.
+   least one consumer source file, and every `effects` key a talent uses is in
+   the vocabulary. This is the row that goes red when a talent is added whose
+   modifier nothing applies — the failure mode a numeric talent system has.
+6. **Cap invariants.** With every crit talent at rank 5 on a level-60
+   character and **no** window running, `get_crit_chance` still returns
+   ≤ 0.30; with every dodge talent maxed, `get_dodge_chance` ≤ 0.30; with the
+   armor talents maxed on 60 % gear, `get_armor_percent` ≤ 60. **With
+   Ruination running, and only then,** crit may reach 0.55; **with Unbroken
+   running, and only then,** armor may reach 80.
+7. **Window lifecycle.** Every timed window returns 0 before it starts and
+   after it expires, and respec, class change, death and leave clear it.
+8. **The shared central seams stay neutral without talents.** The six talents
+   that hook `arm_cooldown` (`init.lua:1233`), the charge line (`:718`), the
+   spend line (`:1232`) and `get_range` (`:170-177`) sit on paths every
+   ability of every class runs through. One case per seam with **no talent
+   ranked** must reproduce today's value exactly — Taunt 8 s, Blink 15 s,
+   Smite 2 s, Hamstring 6 s, Fireball 8 mana and 20 m, and an elf's Fireball
+   still 25 m.
 
 **Mutation proof** the review should demand: revert the one line of
-`stats.lua:45` that adds `crit_chance_add` and group 5 must go red; raise a
-talent to 4 ranks and group 1 must go red; make the `arm_cooldown` read
-default to 1 instead of 0 and group 7 must go red.
+`stats.lua:45` that adds `crit_chance_add` and group 5 goes red; give a
+tier-1 talent 6 ranks and group 1 goes red; make the `arm_cooldown` read
+default to 1 instead of 0 and group 8 goes red; let a window key leak past its
+expiry and group 7 goes red.
 
 ### 3.8 What changes where
 
 | File | Change | Size |
 |---|---|---|
-| `grug_classes/talents.lua` | **new** — registry, the 30 talents, spend/respec, persistence, the two accessors | large |
-| `grug_classes/talents_ui.lua` | **new** — the sfinv page | medium |
+| `grug_classes/talents.lua` | **new** — registry, the 32 talents of the three shipped classes, spend/respec, persistence, window table, the two accessors | large |
+| `grug_classes/talents_ui.lua` | **new** — the sfinv page of §3.5 | medium |
 | `grug_classes/init.lua:210-213` | two `dofile` lines | 2 lines |
-| `grug_classes/mod.conf` | two dependency edges: `sfinv` (the page) and `grug_money` (the respec) — §3.1 | 1 line |
-| `grug_classes/stats.lua:25,45,90` | three talent reads (max mana, crit, the level-up line with the `old_level ~= nil` guard of §3.6) | small |
-| `grug_abilities/kits.lua:342,453-460,458,495,496,504,505,591,613,640,671` | one talent read per numeric talent whose number lives **inside a function body**: Heavy Hand, Far Cast's spawn call, Kindling, Deep Chill, Hoarfrost, Sharpened Word, Gentle Hand, Warding Faith, Renew's tick. Plus Warded Wrath's shield gate at `:591` and five new capstone registrations | medium |
-| `grug_abilities/init.lua:170-177,718,1233` | the three **central per-player seams** the load-time constants forced us to (§3.2): `get_range` for Far Cast's reach, the charge arming line for Cripple, the one `arm_cooldown` call for Grudge, Quick Step and Swift Word | small |
-| `grug_abilities/init.lua:1719,1724,1808,1858,2109,2202,939` | the capstone grant predicate (three `talent_gated` sites, one predicate) and the append-after-base-kit grant rule of §3.4; rage per hit taken; in-combat mana regen; rage per swing | small |
-| `grug_inventory/equipment.lua:479` | Iron Discipline and Unyielding, both inside the existing 60% clamp | 1-2 lines |
-| `grug_core/combat.lua:241` | heal threat factor (Quiet Steps) | 1 line |
-| `grug_core/combat.lua`, central hp-change modifier | **only if open decision §5.13 picks Stand Fast variant (A)**: a new timed mitigation window with two entry points (`combat_stats.md:63-73` splits authoritative swings from the modifier) and an amendment to `combat_stats.md` §2. Variant (B) needs none of this. | **medium, and conditional** |
-| `tools/wp13/talent_tree_kat.lua` | **new** — §3.7 | medium |
-| `docs/design/classes.md`, `progression.md`, `combat_stats.md`, `README.md` | pointer paragraphs, "base value" wording on the §3-§5 ability tables (§2.8), and the design-tour row (`AGENTS.md:84-86`) | small |
+| `grug_classes/mod.conf` | two dependency edges: `sfinv` and `grug_money` | 1 line |
+| `grug_classes/stats.lua:20,30,45,49,90` | five talent reads (max HP, max mana, crit + crit-cap, dodge, the level-up line with the `old_level ~= nil` guard) | small |
+| `grug_abilities/kits.lua:342,370,372,453-460,458,495,496,504,505,533,591,613,640,671` | one talent read per numeric talent whose number lives inside a function body, plus Warded Wrath's shield gate at `:591` | medium |
+| `grug_abilities/init.lua:170-177,718,1232,1233` | the four **central per-player seams** the load-time constants force (§3.2) | small |
+| `grug_abilities/init.lua:939,950,966,1719,1724,1808,1858,2109,2202` | rage per swing; the grant predicate at the three `talent_gated` sites; the append-after-base-kit rule; rage per hit taken; in-combat mana regen | small |
+| `grug_abilities/kits.lua` (new section) | **13 new ability registrations** for the three shipped classes (§2.9) | **large** |
+| `grug_inventory/equipment.lua:479-480` | Ironbound and Unbroken, and the cap override | small |
+| `grug_core/combat.lua:38,241,963` | armor cap override; heal threat factor; the threat multiplier | small |
+| `tools/wp11/talent_tree_kat.lua` | **new** — §3.7 | medium |
+| `docs/design/classes.md`, `progression.md`, `combat_stats.md`, `economy.md`, `items_crafting.md`, `README.md` | the "base value" wording of §2.10, the retired class-trainer respec seam (§6.9) and the design-tour row (`AGENTS.md:84-86`) | small |
 
 ---
 
 ## 4. Implementation lanes
 
-Four lanes, in dependency order. Lanes 2 and 3 can run in parallel once lane 1
-has landed; lane 4 needs lane 1 only.
+Revision 1 cut WP11 into four lanes on the assumption of five new abilities.
+With **13** (§2.9) the capstone work no longer fits one lane, so the cut is
+five, in dependency order. Lanes X2, X3a and X3b can run in parallel once X1
+has landed; X4 needs X1 only.
 
 | Lane | Scope | Depends on | Size |
 |---|---|---|---|
-| **X1 — the model** | `talents.lua`: registry, the 30 registrations (data only, no consumer), points, spend/respec rules, persistence with the validating read path, `get_talent_bonus` / `talent_rank`, the `on_talents_changed` callback, and the whole KAT of §3.7 except group 5's consumer half. Ships with **zero gameplay effect** — every talent is inert. | — | M |
-| **X2 — the numeric consumers** | The 24 numeric talents at the sites of the §3.8 table, across `kits.lua`, `stats.lua`, `grug_abilities/init.lua`, `grug_inventory/equipment.lua` and `grug_core/combat.lua`. **Nineteen are a one-line read where the table says; five (Grudge, Quick Step, Swift Word, Cripple, Far Cast) hook the three central per-player seams of §3.2 instead, because their kit numbers are load-time constants.** Those five are shared-path edits that every ability's cooldown, charge or reach runs through, so each needs its own no-talent regression case in the KAT — that is what keeps this lane M rather than S. Completes KAT group 5 and adds group 6. Touches shared files, so it is one lane and not split by class. | X1 | M |
-| **X3 — the capstones** | Five new ability registrations (Stand Fast, Reaving Strike, Cinderfall, Glacial Ward, Word of Ruin), Renew's rank scaling, the grant predicate at the three `talent_gated` sites, the append-after-base-kit grant rule of §3.4, and an engine probe per capstone. This is the only lane with new combat behaviour. **Size depends on open decision §5.13**: L as scoped, and L+ if Stand Fast variant (A) is chosen, which adds a new mitigation window with two pipeline entry points and a `combat_stats.md` §2 amendment. | X1 | L |
-| **X4 — UI, level-up and respec** | The sfinv Talents page, the two `mod.conf` edges of §3.1, the level-up chat line with its `old_level ~= nil` guard, the respec transaction against `grug_money.take`, and the class-trainer seam of open decision §5.8. | X1 | S-M |
+| **X1 — the model** | `talents.lua`: registry, the 32 registrations (data only, no consumer), points, the two gate kinds, spend/respec rules, persistence with the validating read path, the window table, `get_talent_bonus` / `talent_rank`, the `on_talents_changed` callback, and the whole KAT of §3.7 except group 5's consumer half. Ships with **zero gameplay effect** — every talent is inert. | — | M |
+| **X2 — the numeric consumers** | The 30 numeric talents of the three shipped classes at the sites of the §3.8 table. **Twenty-four are a one-line read where the table says; six hook the four central per-player seams of §3.2**, and each of those needs its own no-talent regression case (KAT group 8). Completes KAT groups 5 and 6. Touches shared files, so it is one lane and not split by class. | X1 | M |
+| **X3a — keystones** | Eight new ability registrations (Hold Ground, Bellow, Broadstroke, Pin, Brand, Cinderfall, Frostbind, Glacial Ward), Renew's rank scaling, the grant predicate at the three `talent_gated` sites and the append-after-base-kit rule of §3.4, plus an engine probe per ability. | X1 | L |
+| **X3b — capstones** | Five new ability registrations (Ruination, Pyre, Hearten, Last Word) plus the two no-key effects (Unbroken, Rimebite), the two **cap-override** paths (`stats.lua:45`, `equipment.lua:480` and `combat.lua:38`) and the `combat_stats.md` §2 amendment they need. **Only starts once §6.5 is answered**; if the answer is "caps hold", it shrinks to M. | X1, §6.5 | L |
+| **X4 — UI, level-up and respec** | The sfinv Talents page of §3.5, the two `mod.conf` edges, the level-up chat line with its `old_level ~= nil` guard, the respec transaction against `grug_money.take`, the price of §6.8, and the raw-vs-effective display `combat_stats.md:98-102` requires. | X1 | M |
 
-X3 is the only lane that owes a runtime test on a headless server; X1, X2 and
-X4 are provable with the KAT plus one probe each.
+X3a and X3b are the only lanes that owe a runtime test on a headless server;
+X1, X2 and X4 are provable with the KAT plus one probe each.
+
+The Scout's own lanes are [scout.md](scout.md) §7 and are **not** part of
+WP11: they need the talent machinery (X1-X4) first.
 
 ---
 
-## 5. Open decisions for the user
+## 5. Decided 2026-09-16 (the user's rulings)
 
-Numbered for the reply. Each carries both defensible options and a
-recommendation; none of them is decided here.
+These are the user's decisions of 2026-09-16, recorded as the binding frame
+for this revision. Each is followed by what it replaced.
 
-**5.1 — Where this proposal lives while it is open.**
+### 5.1 The rulings
+
+1. **Talent points.** One point every 2 levels, the first at level 2 → **30
+   points at level 60**. "Two thirds" was a rough guideline; slight deviation
+   is fine. *(Built into §1.3.)*
+2. **Tree size.** About **30 ranks per tree** (≈60 per class), so a player can
+   fill one tree completely **or** spread over both with one prioritised. A
+   full tree is **not** forced. Each tree contains **two rough playstyle
+   directions (chains)**. Dependencies of both kinds: level/points gating
+   **and** hard chains ("all ranks in A before B"). Rank counts vary **3-5**
+   by talent strength; no need to invent more talents to reach 30 — vary
+   ranks. *(Built into §1.1, §1.2; the chain is 5/4/3/3.)*
+3. **Keystones and capstones.** Per tree: **two keystones and one capstone**.
+   A keystone is a **new active skill** at a chain/tier boundary; the capstone
+   is the **top talent of the tree** — a skill or a strong effect, and **not
+   every capstone is a skill**. The capstone hangs on **its direction's
+   chain**, not on the whole tree. *(Built into §1.2, §2; six capstones are
+   skills and two are effects.)*
+4. **No class trainer.** New skills come **only** from the tree; the base kit
+   at class choice stays. Damage and effect improvements of skills come from
+   the tree too. **Respec for money, in the talent UI, no NPC.** *(Built into
+   §1.4, §3.5. The user is recorded as "against money" as the respec's price
+   shape — see §6.8.)*
+5. **Names.** Tree names as proposed stay (Bulwark/Ruin, Ember/Rime,
+   Mercy/Reckoning). **Talent** names must not remind of WoW — rename every
+   talent the review flagged (Meditation, Kindling, Cripple) and check the
+   rest. *(Done in §2.11.)*
+6. **Caps** *(coordinator proposal, not a user ruling)*: talents work within
+   the `combat_stats.md` caps (30 % crit, 30 % dodge, 60 % armor); **only
+   capstones may exceed a cap, time-limited**. *(Used by §2.1 and §2.2; it is
+   open decision §6.5 and needs the user's yes.)*
+7. **A fourth class, "Scout"** (the user's chosen name), leather armour,
+   planned now and implemented later: two trees, ranged (bow) and melee
+   (rogue-like). **No poison** — "no new combat mechanic"; the rogue direction
+   uses existing stats: timed dodge windows, crit chance, cripple/slow,
+   escape/retreat moves, traps if cheap. **Invisibility is the capstone of the
+   melee tree, reachable only by a "pure" build.** *(§2.7, §2.8,
+   [scout.md](scout.md).)*
+8. **Invisibility rules** (2026-09-16, second set): combat **breaks** it
+   (dealing or taking damage, casting a hostile ability); there is a
+   **detection chance** even while invisible when very close to a mob; mobs
+   and guards of a **higher level than the player** have a markedly higher
+   detection chance — "no level-40 player sneaks past a level-60 mob or
+   guard"; invisibility **significantly reduces movement speed**.
+   *([scout.md](scout.md) §5; numbers are §6.15.)*
+9. **Sprint** (2026-09-16, second set): a new talent idea for the rogue
+   direction or for both leather trees — about **10 s of markedly increased
+   movement speed**. *(§2.7 as the Ranging keystone; the percentage is §6.13,
+   and it collides with a decided pillar — see scout.md §6.)*
+
+### 5.2 What each ruling replaced
+
+| Ruling | Replaces |
+|---|---|
+| 1 | `progression.md:28-30` "1 talent point every 3 levels (20 points total at 60)" **and** `combat_stats.md:13-15` "1 skill point per level". Revision 1's open decision about which one won is closed: **neither**. |
+| 2 | `progression.md:29-30` "2 trees × 5 talents × 3 ranks = 30 ranks per class — you can fill two thirds" and `BACKLOG.md:34`'s repetition of it |
+| 3 | `progression.md:31-35` "9 of 10 talents are numeric modifiers; exactly one capstone per tree, unlocked at 8+ points in that tree, and every capstone is a NEW active main skill" |
+| 4 | `progression.md:36-37` and `economy.md:92` "Respec at the class trainer", `items_crafting.md:2380`, and `world.md:408`'s class trainers as a purpose |
+| 5 | revision 1's naming open decision, for talents |
+| 7 | `classes.md:466-478` "**Poison → arrives with the Rogue in Phase 2**" — the Phase-2 Rogue is **superseded by the Scout**, and with it the poison plan |
+
+### 5.3 Where each correction is made
+
+One commit per file, this lane's files only:
+
+| File | Correction |
+|---|---|
+| `docs/design/progression.md` | §2's cadence, tree-size and capstone bullets; the respec location; the pointer paragraph |
+| `docs/design/combat_stats.md` | `:13-15`'s "1 skill point per level" |
+| `docs/design/classes.md` | the pointer paragraph; `:466-478`'s Phase-2 Rogue marked superseded by the Scout |
+| `BACKLOG.md` | the WP11 row and the `:539-540` respec-price note |
+
+**Not this lane's files, and therefore still wrong after this lane**:
+`economy.md:92`, `items_crafting.md:2380` and `world.md:408` still send the
+player to a class trainer. §6.9 carries them.
+
+---
+
+## 6. Open decisions for the user
+
+Numbered for the reply. Each carries the options and a recommendation; none of
+them is decided here.
+
+**6.1 — Where this proposal lives while it is open.**
 `AGENTS.md:66-71` reserves `docs/design/` for decided design with no open
-questions, and puts open questions in a root `TODO-<topic>.md` that is folded
-in and deleted on decision. This file is in `docs/design/` because the lane
-brief named that path.
-*(a)* Keep it here with the PROPOSAL banner, and strip §5 when it is decided.
-*(b)* Move §§1-4 to `TODO-design-skill-trees.md` now and create
-`docs/design/skill_trees.md` only on the decision.
-**Recommendation: (a)** — one file, one review, and the banner is unambiguous;
-the layering rule is satisfied the moment §5 is answered and removed.
+questions and puts open questions in a root `TODO-<topic>.md` that is folded
+in and deleted on decision. This file and `scout.md` are in `docs/design/`
+because the lane brief named that path.
+*(a)* Keep both here with the PROPOSAL banner and strip §6 when it is decided.
+*(b)* Move §§1-5 to `TODO-design-skill-trees.md` now.
+**Recommendation: (a)** — one file, one review, the banner is unambiguous, and
+the layering rule is satisfied the moment §6 is answered and removed.
 
-**5.2 — The point cadence contradicts itself across two decided files.**
-`combat_stats.md:14` says "skills are acquired and improved through the class
-skill tree (**1 skill point per level**)"; `progression.md` §2's first bullet
-(`:28` on this branch, `:20` on `main`) says "**1 talent point every 3
-levels** (20 points total at 60)". At 1/level a character has 59
-points against 30 ranks and fills everything twice over, which destroys "two
-thirds fillable".
-*(a)* `progression.md` wins; correct `combat_stats.md:14`.
-*(b)* `combat_stats.md` wins; re-cut the trees to roughly 90 ranks.
-**Recommendation: (a)** — the whole 20/30 arithmetic and the capstone gate at
-8 points are built on it, and `combat_stats.md:14` reads like a pre-2026-08-06
-leftover in a "core principles" list rather than a specification.
+**6.2 — WP11 now registers thirteen new abilities. Is that one work package?**
+Ruling 3 makes every keystone a new active skill, so the three shipped classes
+gain 8 keystones + 5 skill capstones (§2.9) against revision 1's five. That is
+the biggest cost change in this revision and it is not a design question but a
+scoping one.
+*(a)* WP11 ships all of it, in the five lanes of §4.
+*(b)* WP11 ships X1, X2, X3a and X4 — model, numerics, the **eight keystones**
+and the UI — and the six capstones become WP11b, after the first playtest of
+the trees. Every tree is then fully playable to 20 points in it, which is
+level 40, and the capstone beat (level 42-46) lands one WP later.
+**Recommendation: (b)** — the capstones are the only part that needs the cap
+decision (§6.5), the only part with no shipped machinery to lean on, and the
+only part a player cannot see before level 42. Splitting there costs nothing
+and halves the first delivery.
 
-**5.3 — "9 of 10 talents are numeric" versus "one capstone per tree".**
-`progression.md` §2's second bullet (`:31-33` here, `:23-25` on `main`) says
-both, and per class they cannot both hold: 2 trees
-x 5 talents = 10 talents, of which 2 are capstones, so it is 8 numeric and 2
-capstones. `BACKLOG.md`'s WP11 row repeats the same phrase as "9 numeric
-talents + 1 capstone per tree", which would mean 10 talents per *tree*.
-*(a)* Restate as "eight numeric talents and two capstones per class".
-*(b)* Keep 9 numeric by making one tree's tier-3 slot a numeric talent and
-giving the class only one capstone — which contradicts "exactly one capstone
-per tree".
-**Recommendation: (a)**, a wording fix in `progression.md` and `BACKLOG.md`.
-
-**5.4 — Does the capstone have three ranks?**
-30 ranks per class is only exact if all five talents have three ranks,
-capstone included.
-*(a)* Capstone has 3 ranks: rank 1 grants the ability, 2 and 3 improve it
-(this proposal).
-*(b)* Capstone has 1 rank and one numeric talent in the tree gets 5 ranks, so
-the tree still holds 15.
-**Recommendation: (a)** — it keeps "x 3 ranks" literally true for every
-talent, and a capstone the player can keep investing in is a better level-50s
-reward than one that is finished the moment it arrives.
-
-**5.5 — May a level-60 character hold both capstones?**
-At the decided 8-point gate, two capstones cost 9 + 9 = 18 of 20 points, so
-yes, with 2 points to spare. That is two new main skills by level 60 (at
-levels 27 and 54).
-*(a)* Keep 8. Both capstones are reachable; the cost is that a both-capstones
-build has only 2 points of numeric depth left, which is a real trade.
-*(b)* Raise the gate to 11 points in-tree, which makes 11 + 11 = 22 > 20 and
-guarantees exactly one new main skill per character.
-**Recommendation: (a)** — it is the number `progression.md` §2 already
-decided, and "the second capstone at level 54" is a good late beat on a curve
-that otherwise stops giving new buttons after level 27.
-
-**5.6 — Names: the proposal's own are not all clean either.**
-`AGENTS.md:893` says "Never copy WoW assets/names 1:1 — Blizzard IP. Own
-assets, own names". Three separate groups are in scope:
-
-1. **"Holy tree"** — the decided docs already carry a WoW priest tree name, in
-   **three** places, the third of which is code: `progression.md:34` (`:26` on
-   `main`), `classes.md:455` (`:448` on `main`) and the comment
-   `mods/PLAYER/grug_abilities/kits.lua:650` ("the Holy tree unlocks it in
-   WP11"). A rename has to reach all three.
-2. **Names this proposal invents that WoW also uses for talents.** These are
-   ordinary English words, so the case is weaker than a phrase like "Power
-   Word: Shield" — but they are 1:1 matches, and a rename costs nothing at
-   proposal stage. Flagged to the best of the author's knowledge, not verified
-   against a WoW source in this repo:
-
-   | Proposed here | Also a WoW talent/spell name |
-   |---|---|
-   | **Ruin** (Warrior tree) | Classic Warlock Destruction talent |
-   | **Rime** (Mage tree) | Frost Death Knight proc/talent |
-   | **Reckoning** (Priest tree) | Classic Paladin Protection talent |
-   | **Meditation** (Mercy #4) | Classic Priest Discipline talent — and this proposal gives it the same 5/10/15 ranks |
-   | **Kindling** (Ember #1) | Fire Mage talent |
-   | **Cripple** (Ruin #4) | Warlock spell |
-
-   Bulwark, Ember and Mercy, and the remaining talent names, have no such
-   match the author is aware of.
-3. **Nine *shipped* ability names** are already in position 2's situation
-   (Power Word: Shield, Frost Nova, Flash Heal, Blink, Hamstring, Charge,
-   Smite, Taunt, Renew). Pre-existing, outside WP11, flagged only.
-
-*(a)* Rename the six in group 2 along with "Holy tree", before any of this is
-built and while the cost is one edit per name.
-*(b)* Accept ordinary English words that happen to collide, and rename only
-the unambiguous carry-over ("Holy tree").
-**Recommendation: (a)** for group 2 and the "Holy tree", because a rename is
-free now and expensive once a player has learned the word; group 3 stays a
-separate question for a later pass.
-
-**5.7 — Respec price shape.**
-`economy.md` §4 and `progression.md` §2 say "for gold, rising with level" and
-name no number, and `economy.md` §3 forbids a stale fixed table. **One number
-does survive on the page**: `BACKLOG.md:537-538` still reads "the **respec
-price** (§8.3, 5c x level, min 25c) has no consumer yet — `grug_money.take` is
-the API it will call". `items_crafting.md` §8.3 (`:2341`) has since been
-rewritten to "repeatable at the class trainer and rising with level", so the
-formula is a leftover of the retired flat pricing — but it is still written
-down, and whichever option is chosen should retire it explicitly rather than
-leave two prices in the repo. (The `grug_money.take` half is correct and is
-what lane X4 calls; it exists at `mods/PLAYER/grug_money/init.lua:122`.)
-*(a)* 5 minutes of measured reliable net solo income at the character's
-bracket, first respec free (this proposal).
-*(b)* The same per-bracket base, but doubling with each respec inside a
-rolling window, so serial re-specs are a real sink.
-**Recommendation: (a)** — "rising with level" is what the two decided files
-say, and (b) adds a timer and a counter to persist for a sink that is not yet
-measured. Sub-question inside (a): should the first respec really be free?
-Recommended yes, because the first point is spent at level 3 by a character
-with no money.
-
-**5.8 — The class trainer does not exist.**
-`world.md:408` says capitals hold class trainers, `progression.md` §2 puts the
-respec there, and `docs/research/wp13-npc-sockets-contract.md` §8.4's
-`vendor.kind` list has no `trainer` kind, so there is no NPC and no socket.
-*(a)* WP11 ships the talent system with an admin/debug `/respec` only, and a
-later WP13 lane adds the `trainer` kind, the socket in each capital and the
-dialog.
-*(b)* WP11 also ships the trainer NPC, which means it takes on
-`grug_traders`-shaped work and a socket vocabulary change owned by WP13.
-**Recommendation: (a)** — it keeps WP11 inside `grug_classes`/`grug_abilities`
-and does not make a talent system wait on capital content. The consequence to
-accept: until that lane lands, respec is not purchasable and the gold sink of
-`economy.md` §4 is not yet live.
-
-**5.9 — Talents on an admin level drop.**
+**6.3 — Talents on an admin level drop.**
 `/xp` can lower a level (`grug_xp/init.lua:142-162`), after which spent ranks
-can exceed `floor(level/3)`.
-*(a)* Block further spending until the level catches up, and leave the
-existing ranks alone.
-*(b)* Auto-refund the excess ranks, cheapest-tier first.
-**Recommendation: (a)** — (b) would silently unspend a player's choices for an
-admin action, and the validating read path of §3.3 already prevents the state
-from being reachable by anything but an admin.
+can exceed `floor(level / 2)`.
+*(a)* Block further spending until the level catches up and leave existing
+ranks alone.
+*(b)* Auto-refund the excess ranks, cheapest tier first.
+**Recommendation: (a)** — (b) silently unspends a player's choices for an
+admin action, and the validating read path of §3.3 already keeps the state
+unreachable by anything but an admin.
 
-**5.10 — Are talents wiped by a class switch, and is a respec a class change?**
-`/class` is admin-only and already wipes kit state through `sync_kit`. §1.4
-says a class switch clears all talents and returns all points, and that a
-respec is *not* a class change — but **four shipped comments assume the
-opposite**, namely that WP11's respec is what finally makes the class-change
-unequip path player-reachable: `grug_inventory/equipment.lua:57` ("later WP11
-respec"), `:501` ("Admin-only today, player-reachable with WP11's respec"),
-`:579` ("a Warrior who respecs to Mage") and `grug_core/combat.lua:110`
-("WP11's respec unequipping what the new class may not wear").
-*(a)* A respec re-spends talents only; a class switch clears them and returns
-all points, free. The four comments are then **wrong on the day WP11 lands**
-and must be corrected in the same WP, and `equipment.lua:501`'s promise that
-the path becomes player-reachable stays unkept until some later WP offers a
-paid class change.
-*(b)* The class trainer sells a class change as well, which keeps all four
-comments true and gives the unequip path its first real user.
+**6.4 — The Scout's resource, and what feeds a bow's damage.**
+Neither is decided anywhere. `classes.md` §1 knows two resources (rage, mana)
+and `combat_stats.md` §1 gives Dexterity only crit and dodge, so a bow has no
+damage attribute today.
+*(a)* The Scout uses **Focus**, a rage-shaped 0-100 pool generated by landed
+hits — the same shipped machinery (`grug_abilities.add_rage`, the HUD) under a
+different name and colour — and bow damage is `weapon damage + floor(Dex/10)`
+through a new `grug_classes.get_ranged_bonus` beside `get_melee_bonus`
+(`stats.lua:34-36`), which is one accessor and an addition to
+`combat_stats.md` §2.
+*(b)* A third, time-regenerating resource (energy) and Str-fed bow damage.
+**Recommendation: (a)** — (b) is a new resource system and a bow that scales
+off Strength reads wrong on a leather class; (a) adds one accessor and one
+sentence to a decided file. It does need the user's yes, because it puts a
+third damage term into `combat_stats.md` §2.
+
+**6.5 — May a capstone exceed a cap, time-limited?** *(ruling 6 is a
+coordinator proposal and needs confirmation.)*
+`combat_stats.md:98-102` says values above a cap "have no further combat
+effect" and that "there is no automatic overflow conversion or cap raise".
+Two capstones in §2 are built on the exception: Unbroken (armor cap 60 → 80 %
+for 8 s, once per 3 min) and Ruination (crit cap 30 → 55 % for 10 s).
+*(a)* Accept ruling 6: talents respect the caps, **capstones alone** may
+exceed one, always for a bounded time, always written into `combat_stats.md`
+§2 with the number.
+*(b)* Caps hold absolutely. Unbroken becomes flat armor inside 60 % — which
+gives a plate Warrior already at the cap nothing at all, the one class it
+exists for — and Ruination becomes a rage/damage window instead.
+**Recommendation: (a)**, with the constraint written down: a cap override is a
+capstone-only, time-limited, single-source value, never additive with a second
+override, and the Character page shows the raised cap while it runs
+(`combat_stats.md:98-102` already requires effective **and** raw). Whichever
+way it goes, this decision gates lane X3b.
+
+**6.6 — The "Holy tree" rename has three sites, one of them code.**
+`progression.md:34`, `classes.md:455` and the comment
+`mods/PLAYER/grug_abilities/kits.lua:650` ("the Holy tree unlocks it in
+WP11"). Mercy is the same tree.
+*(a)* Rename all three when the decision lands.
+*(b)* Keep "Holy" as the tree name and drop "Mercy".
+**Recommendation: (a)** — ruling 5 keeps the proposed tree names, and "Holy
+tree" is the one unambiguous 1:1 carry-over of a WoW tree name in the repo.
+
+**6.7 — The Scout's two tree names.**
+The coordinator suggested **Hunt / Veil**. This proposal uses **Quarry /
+Veil**, because "The Hunt" is a Demon Hunter ability in WoW while "Quarry"
+(the hunted thing) has no collision the author is aware of.
+*(a)* **Quarry / Veil** (used throughout §2.7, §2.8 and scout.md).
+*(b)* **Hunt / Veil** (the coordinator's pair).
+*(c)* **Hunt / Shroud** as the alternative pair.
+**Recommendation: (a)** — same shape as Bulwark/Ruin and Ember/Rime, and the
+one of the three with no WoW echo.
+
+**6.8 — The respec price, when the respec has no NPC.**
+Ruling 4 puts the respec in the talent UI and records the user as "against
+money". `BACKLOG.md:539-540` carries the only number in the repo: 5c × level,
+min 25c, spent through `grug_money.take`
+(`mods/PLAYER/grug_money/init.lua:122`). `economy.md` §3 forbids a stale fixed
+copper table and requires time-priced sinks to derive from measured reliable
+net solo income.
+*(a)* **Keep `BACKLOG.md`'s formula** — 5c × level, minimum 25c — as the
+shipped number, and let WP44 recalibrate it with every other sink. Simplest,
+and it retires the leftover by using it.
+*(b)* **Measured**: five minutes of reliable net solo income at the
+character's bracket, rounded by `economy.md` §4.1's rule. Correct by
+`economy.md` §3, but it cannot be priced until WP44 measures the brackets.
+*(c)* **Free, with a cooldown** (one respec per N hours), which is what "the
+user is against money" reads like at face value. No sink, no `grug_money`
+edge, one timestamp in player meta.
+**Recommendation: (a) now, (b) at WP44** — it gives WP11 a number today and
+the economy its rule later. But (c) is the honest reading of "against money"
+and should be put to the user explicitly: if respec is meant to be free, the
+`grug_money` dependency edge of §3.1 disappears and `economy.md` §4 loses a
+sink it currently counts on.
+
+**6.9 — Three decided files outside this lane still send the player to a
+class trainer.**
+`economy.md:92`, `items_crafting.md:2380` and `world.md:408`. Ruling 4 retired
+the trainer; this lane may not edit those files.
+*(a)* A follow-up docs commit (the wave's docs-alignment lane) corrects all
+three in one pass.
+*(b)* They are corrected when WP11 ships.
+**Recommendation: (a)** — three sentences, and until then the repo states two
+different respec locations.
+
+**6.10 — Is a respec a class change? Four shipped comments say yes.**
+`grug_inventory/equipment.lua:57` ("later WP11 respec"), `:501` ("Admin-only
+today, **player-reachable with WP11's respec**"), `:579` ("a Warrior who
+respecs to Mage") and `grug_core/combat.lua:110` ("WP11's respec unequipping
+what the new class may not wear") all assume WP11's respec is what makes the
+class-change unequip path player-reachable. §1.4 says the opposite.
+*(a)* A respec re-spends talents only; a class switch stays admin-only. The
+four comments are **wrong on the day WP11 lands** and must be corrected in the
+same WP, and `equipment.lua:501`'s promise stays unkept.
+*(b)* The talent UI also sells a class change, which keeps all four comments
+true and gives the unequip path its first real user.
 **Recommendation: (a)** — a talent respec and a class change are different
-products and `progression.md` §2 only bought the first; but (a) is only
-honest if the four comments are corrected with it, so that correction belongs
-in WP11's scope either way.
+products; but (a) is only honest if those four comments are corrected with it,
+so that correction belongs in WP11's scope either way.
 
-**5.11 — The Warrior runs out of hotbar first.**
-`classes.md` §2b's "rotation is the hotbar" assumes keys 1-8. The Warrior kit
-is the largest: Strike plus **four** class abilities (`classes.md:415-418`)
-already occupy 1-5, so two capstones put him at **7 of 8** — one free key —
-while a Mage or Priest ends at 6 with two free. The next claim on those keys
-is already written down: `classes.md:462` parks "Warrior shield abilities →
-after WP14 (offhand/shields)", and `register_ability` already carries the
-`slot = "offhand"` plumbing for them (`grug_abilities/init.lua:501-510`). One
-key is not enough for a shield *set*.
-*(a)* Accept 7 of 8 now and let WP14 decide then — it may ship a single shield
-ability, or the hotbar may grow a second row by the time it lands.
-*(b)* Give the Warrior's trees one capstone between them instead of one each,
-which is decision 5.5(b) arriving by another route and costs the Warrior the
-level-54 beat every other class keeps.
-*(c)* Accept 7 of 8 and write into `classes.md` §6 that WP14's Warrior shield
-work has exactly one hotbar key, so it is designed against that budget from
-the start.
-**Recommendation: (c)** — it costs nothing today, keeps both capstones, and
-hands WP14 the constraint instead of the surprise.
+**6.11 — A pure-Ruin Warrior fills all eight hotbar keys.**
+§3.4's table: Strike plus four class abilities is five keys, and three talent
+skills make eight. `classes.md:462` parks "Warrior shield abilities → after
+WP14 (offhand/shields)" as the next claim on those keys, and
+`register_ability` already carries the `slot = "offhand"` plumbing
+(`grug_abilities/init.lua:501-510`).
+*(a)* Accept 8 of 8 and let WP14 decide then.
+*(b)* Make one Warrior keystone a no-key effect the way Unbroken and Rimebite
+are, so the worst case is 7 of 8. Pin is the candidate.
+*(c)* Accept 8 of 8 **and** write into `classes.md` §6 that WP14's Warrior
+shield work has **zero** free hotbar keys and must therefore live on the
+offhand slot or replace an existing button.
+**Recommendation: (c) plus (b)** — (b) costs one keystone its button and buys
+back the margin for every other class too; (c) hands WP14 the constraint
+instead of the surprise.
 
-**5.12 — Should any talent be allowed to lift a cap?**
-Every numeric talent in §2 is written to respect the 30% crit, 30% dodge and
-60% armor caps of `combat_stats.md` §2.
-*(a)* Caps hold for talents exactly as they hold for gear; a capped
-character's crit talent is dead weight and the Character page shows "raw" like
-it does for gear (`combat_stats.md` §2).
-*(b)* Talent points count outside the cap, which makes them strictly better
-than gear at 60.
-**Recommendation: (a)** — `combat_stats.md` §2 states that "values above a cap
-remain present on their stacks but have no further combat effect" and that
-"there is no automatic overflow conversion or cap raise", and a talent
-exception would be the first one. Whichever way it goes, the same paragraph
-requires the Character page to show **effective and raw** ("`Armor 60% (67%
-raw)`"), so a talent's contribution has to reach the raw figure too — one more
-consumer for `get_talent_bonus` in lane X4, not a free consequence of (a).
+**6.12 — One absorb per player, and now three sources.**
+`grug_core/combat.lua:1003-1012`: one shield per player, a new one replaces
+the old. Power Word: Shield (base kit), Glacial Ward (Mage keystone), Hold
+Ground (Warrior keystone) and Recompense (Priest keystone) all write it, so a
+healer shielding the tank **deletes the tank's own cooldown**.
+*(a)* Accept and document it as a known interaction.
+*(b)* Give `grug_core` a second absorb slot reserved for **self-cast** sources,
+soaked after the first. Two numbers instead of one in one file, and it makes a
+tank cooldown reliable.
+**Recommendation: (b)** — with four writers the collision stops being a corner
+case; it is roughly twenty lines in `combat.lua` and it removes the worst
+feel-bug in the design.
 
-**5.13 — Stand Fast needs a mitigation term the game does not have.**
-Every other talent in §2 is written in an existing stat. The Warrior tank
-capstone is the one that cannot be: `combat_stats.md` §2 (`:53-76`) knows
-exactly **one** physical mitigation term — armor points, 1 point = 1%
-reduction, hard cap 60% — plus the target-race Warding Draught and the absorb
-shield, resolved in that order (dodge -> armor -> ward -> absorb). A "damage
-taken -30% for 8 s" window is a fourth term, and it is why Unyielding was
-rewritten as flat armor percent (§2.1) while the capstone was not: a capstone
-that merely adds armor gives a plate Warrior already at the 60% cap **nothing
-at all**, which is the one class it exists for.
+**6.13 — Sprint's percentage is the one number the mob game is built on.**
+`mounts.md:173-190` states the pillar outright: aggressive mobs run 4.4
+against a player's 4.0 (`combat_stats.md:304-309`), and the 25 m soft
+de-aggro, the 45 m chase give-up and the 40 m leash all assume the mob can
+close. It is why the **Swiftness Draught is capped at +8 % for 15 s**
+(`items_crafting.md` §10 P4: 4.0 × 1.08 = 4.32 < 4.4) and why a mount dismounts
+on any damage. A "markedly increased movement speed" for 10 s (ruling 9) is
+above that ceiling by construction.
+*(a)* **+8 / 9 / 10 %** — rank 3 reaches exactly 4.4, the mob speed, and never
+passes it. Honest to the pillar; arguably not "markedly".
+*(b)* **+25 % for 10 s** (5.0 nodes/s), a deliberate, bounded pillar
+exception: for ten seconds the Scout outruns every aggressive mob. It must
+then be written into `combat_stats.md` §3 and `mounts.md` as the second
+exception beside the Kraken Guard, and every consequence the mounts rule lists
+applies for those ten seconds.
+*(c)* **+25 % but out of combat only**, refused while the `in_combat` window
+runs (`grug_core.in_combat`, used at `grug_abilities/init.lua:2201`) — a
+travel tool, not an escape tool, and the pillar is untouched.
+**Recommendation: (c)** — it delivers the "markedly faster" feel the ruling
+asks for without touching the one inequality the mob game rests on. If the
+user wants it in combat, (b) is the honest form and needs the two design docs
+amended in the same WP; (a) is the only option that changes nothing and is
+also the one nobody will feel.
 
-*(A)* **Add the term.** A timed percentage reduction, resolved with armor.
-Costs: an amendment to `combat_stats.md` §2's resolution order; a timed
-per-player state with an expiry, i.e. the shape of `combat.lua:1010-1030`, not
-§3.2's "one key, read at one line"; and **two** entry points, because
-`combat_stats.md:63-73` has authoritative swings resolve armor on the full
-swing before entering the central modifier. It also multiplies rather than
-adds: a 60%-armor Warrior under rank-3 Stand Fast takes `0.40 x 0.65 = 0.26`
-of the hit, i.e. **74% total mitigation**, above the documented 60% ceiling by
-a second factor rather than by lifting the cap. If that number is wanted, it
-should be written into `combat_stats.md` deliberately, not arrive as a side
-effect of a talent.
+**6.14 — May a capstone raise its own tier gate?**
+Unseen is gated at **26** points in Veil instead of §1.2's uniform 20, because
+ruling 7 says invisibility must need a "pure" build.
+*(a)* Allow a per-talent gate override, used exactly once and asserted by
+`register_talent`.
+*(b)* Keep the gate uniform at 20 and make Unseen "pure" another way — for
+example by requiring **both** Veil keystones at 3/3 (a double hard chain),
+which costs 5+4+3 + 5+4+3 = 24 points in Veil and leaves 6 for Quarry.
+**Recommendation: (b)** — it reaches the same place with the dependency kind
+ruling 2 already names, keeps one gate rule for the whole system, and gives
+the KAT one invariant instead of two.
 
-*(B)* **Use the shield that exists.** Stand Fast becomes a self-absorb of
-`20 / 30 / 40 + 2 x floor(Str/10)` for 8 s through `grug_core.set_absorb`
-(`grug_core/combat.lua:1012`). No new stat, no new pipeline entry, no
-`combat_stats.md` amendment, and it scales with the tank's own attribute. The
-cost is that it reads as a smaller wall than a percentage, and it collides
-with the one-absorb-per-player rule (`combat.lua:1003-1012`) — a Priest's
-Power Word: Shield on the tank would replace it, which is exactly backwards
-for a tank cooldown.
-
-**Recommendation: (A), decided deliberately** — a tank capstone whose whole
-job is surviving a burst has to work at the armor cap, and (B)'s collision
-with the healer's own shield is worse than a fourth mitigation term. But (A)
-is a change to `combat_stats.md` §2 and to `grug_core`'s damage pipeline, not
-a talent: it belongs in the lane plan as its own item (§4 sizes X3 as L+ for
-it) and it needs the user's yes, not an implementer's. If the answer is no,
-(B) ships and the Priest-overwrites-the-tank case is documented as a known
-interaction.
+**6.15 — Invisibility's numbers.**
+The mechanism is [scout.md](scout.md) §5; the numbers are:
+detection radius band (proposed **3 m always-detect / 3-8 m rolled / beyond
+8 m never**), base roll per tick (proposed **10 % per second inside the
+band**), the level term (proposed **+5 percentage points per level the
+mob/guard is above the Scout, no bonus below**), tick rate (proposed **1 Hz**,
+on the existing mob step rather than a new globalstep), and the movement
+penalty (proposed **×0.6 speed**, ruling 8's "significantly reduces").
+*(a)* Ship the proposed numbers and tune them in a playtest.
+*(b)* Decide them now.
+**Recommendation: (a)**, with the level term as the one number that is not a
+tuning knob: ruling 8's "no level-40 player sneaks past a level-60 mob or
+guard" means a 20-level gap must be a near-certain detection, and +5 points
+per level reaches 100 % at exactly 20 levels. That is the number to keep even
+if the others move.
