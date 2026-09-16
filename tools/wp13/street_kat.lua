@@ -21,6 +21,14 @@
 --   5. Piers, rails and deck lanterns wherever ANY capital's street crosses
 --      water, and the water body stays ONE body.              -- section 6
 --
+-- AND ONE MORE THAT THE PLAYTEST AFTER THEM ADDED (2026-09-16, round 4):
+--
+--   6. "Railings, fences, verge posts and pillars end at the crossing square;
+--      the plateau square is rail-free towards every street that joins it."
+--      WANTED: no cell of a run's verge inside another run's carriageway, the
+--      parapet kept where nothing joins, and the deck continuous across the
+--      handover.                                              -- section 11
+--
 -- AND THE INVARIANT NONE OF THEM MAY COST: a piece of a run is exactly that
 -- stretch of the whole run, because the successor emerges a street one
 -- mapchunk at a time. Section 7 cuts every run of every case at EVERY column
@@ -816,7 +824,211 @@ return function(repo)
 			standards)
 	end
 
-	assert(cases == 10, "a street case was lost")
+	----------------------------------------------------------------------
+	-- 11. THE VERGE ENDS AT THE JOINING STREET (playtest 6, 2026-09-16).
+	--
+	-- A verge lane is one node OUTSIDE its own carriageway, so at a crossing,
+	-- at a corner and at a T-joint it runs straight ACROSS the road that
+	-- joins. The user walked into two of them in one session:
+	--
+	--   * Lethariel ~1900,-1400 -- the north-east ring corner over the mere,
+	--     where `ring_east` ends at z = 96 and `ring_north` at x = 96: "two
+	--     street ends meet on a bridge over water; the rail of each protrudes
+	--     into the other street";
+	--   * Kezamba ~1800,1595 -- `avenue_north` crossing `ring_north` over
+	--     water: "the side rails leave only a one-node gap into the crossing".
+	--
+	-- The ruling: "railings, fences, verge posts and pillars end at the
+	-- crossing square; the plateau square is rail-free towards every street
+	-- that joins it", and the deck itself stays continuous.
+	--
+	-- Both shapes are built here over a POND, so every position of both runs
+	-- is a bridge and the verge carries plank, rail and pillar the whole way --
+	-- which is the case that has furniture to put in the wrong place. Three
+	-- things are asserted, and the second is what stops the rule from being
+	-- "write no verge at all":
+	--
+	--   (a) no cell on a verge lane stands inside another run's carriageway;
+	--   (b) the parapet on the OUTSIDE of the corner, where no street joins,
+	--       is still there -- the clearance is per SIDE;
+	--   (c) every column the verge handed over is paved by the run that joins,
+	--       at the same walking level, so the deck is continuous and a player
+	--       walks from either street into the square and out again.
+	----------------------------------------------------------------------
+	local POND, POND_EDGE = 40, 24
+	local function pond(x, z)
+		local dx = 0
+		if x < -POND_EDGE then dx = -POND_EDGE - x end
+		if x > POND_EDGE then dx = x - POND_EDGE end
+		local dz = 0
+		if z < -POND_EDGE then dz = -POND_EDGE - z end
+		if z > POND_EDGE then dz = z - POND_EDGE end
+		return POND + ((dx > dz) and dx or dz)
+	end
+	local function pond_wet(x, z)
+		return x >= -POND_EDGE and x <= POND_EDGE and
+			z >= -POND_EDGE and z <= POND_EDGE
+	end
+	-- A CROSSING in the middle of the pond, and a CORNER whose two runs END on
+	-- each other at (20, 20) -- the shape of Lethariel's ring corner.
+	local VERGE_CASES = {
+		{name = "crossing", runs = {
+			{id = "avenue", axis = "x", at = 0, from = -48, to = 48},
+			{id = "lane", axis = "z", at = 0, from = -48, to = 48}}},
+		{name = "corner", runs = {
+			{id = "ring_east", axis = "z", at = 20, from = -48, to = 20},
+			{id = "ring_north", axis = "x", at = 20, from = -48, to = 20}}},
+	}
+	do
+		local palette = handles.elf
+		local RAIL = palette.node("railing")
+		local PAVING = palette.maybe("castle_paving") or palette.node("plaza")
+		local KERB = palette.node("plaza_edge")
+		local TREAD = palette.maybe("castle_wall_stair") or
+			palette.node("roof_stair")
+		local PLANK = palette.node("floor")
+		local ROAD = {[PAVING] = true, [KERB] = true, [TREAD] = true}
+		local intruded, cleared_total, kept_outside, handed_over = 0, 0, 0, 0
+		for _, case in ipairs(VERGE_CASES) do
+			local attached = street_plan.attach(case.runs, avenue.WIDTH)
+			-- The same runs WITHOUT the clearance, so the case proves the rule
+			-- fires rather than that the geometry had no furniture in it.
+			local bare_pieces, pieces = {}, {}
+			local rect = {}
+			for _, spec in ipairs(attached) do
+				local piece = avenue.run(palette, {id = spec.id,
+					axis = spec.axis, at = spec.at, from = spec.from,
+					to = spec.to, width = avenue.WIDTH,
+					lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.from,
+					reach = avenue.REACH, wet = pond_wet,
+					junctions = spec.junctions,
+					clear_verge = spec.clear_verge}, pond)
+				local bare = avenue.run(palette, {id = spec.id,
+					axis = spec.axis, at = spec.at, from = spec.from,
+					to = spec.to, width = avenue.WIDTH,
+					lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.from,
+					reach = avenue.REACH, wet = pond_wet,
+					junctions = spec.junctions}, pond)
+				pieces[spec.id] = piece
+				bare_pieces[spec.id] = bare
+				if spec.axis == "x" then
+					rect[spec.id] = {min_x = spec.from, max_x = spec.to,
+						min_z = spec.at - HALF, max_z = spec.at + HALF}
+				else
+					rect[spec.id] = {min_z = spec.from, max_z = spec.to,
+						min_x = spec.at - HALF, max_x = spec.at + HALF}
+				end
+			end
+			local function in_other_road(id, x, z)
+				for other_id, box in pairs(rect) do
+					if other_id ~= id and x >= box.min_x and x <= box.max_x and
+							z >= box.min_z and z <= box.max_z then
+						return true
+					end
+				end
+				return false
+			end
+			local function verge_cells_in_road(source)
+				local count = 0
+				for _, spec in ipairs(attached) do
+					local dx = (spec.axis == "x") and 1 or 0
+					for _, cell in ipairs(source[spec.id].cells) do
+						local lane = ((dx == 1) and cell.z or cell.x) - spec.at
+						if (lane == -VERGE or lane == VERGE) and
+								in_other_road(spec.id, cell.x, cell.z) then
+							count = count + 1
+						end
+					end
+				end
+				return count
+			end
+			-- (a) NOTHING OF THE VERGE STANDS IN THE OTHER ROAD any more, and
+			-- the same geometry without the rule has plenty.
+			local before = verge_cells_in_road(bare_pieces)
+			local after = verge_cells_in_road(pieces)
+			assert(before > 0, case.name ..
+				": this case has no verge furniture in the joining road at " ..
+				"all, so the rule is untested")
+			assert(after == 0, case.name .. ": " .. after .. " of " .. before ..
+				" verge cells still stand inside the joining street's " ..
+				"carriageway")
+			intruded = intruded + before
+			cleared_total = cleared_total + (before - after)
+			-- (b) AND THE PARAPET OUTSIDE THE CORNER SURVIVES. `ring_east`'s
+			-- x+ verge is outside `ring_north`'s span, so nothing joins there
+			-- and the rail has to stay; a clearance that blanked both sides of
+			-- a position would leave a hole in the bridge parapet.
+			if case.name == "corner" then
+				local kept = 0
+				for _, cell in ipairs(pieces.ring_east.cells) do
+					if cell.name == RAIL and cell.x == 20 + VERGE and
+							cell.z >= 18 and cell.z <= 20 then
+						kept = kept + 1
+					end
+				end
+				assert(kept == 3, "the corner's outer parapet carries " ..
+					kept .. " of its three rail cells")
+				kept_outside = kept_outside + kept
+			end
+			-- (c) THE DECK IS CONTINUOUS. Every column either run writes a
+			-- walking surface on -- carriageway and verge alike -- is read the
+			-- way the seam reads it (the highest cell that is not furniture),
+			-- and every column the verge handed over has to be paved by the
+			-- run that joins, no more than a node from a neighbour's level.
+			local top = {}
+			for _, spec in ipairs(attached) do
+				local dx = (spec.axis == "x") and 1 or 0
+				for _, cell in ipairs(pieces[spec.id].cells) do
+					local lane = ((dx == 1) and cell.z or cell.x) - spec.at
+					if (ROAD[cell.name] or cell.name == PLANK) and
+							lane >= -VERGE and lane <= VERGE then
+						local key = cell.x .. ":" .. cell.z
+						if top[key] == nil or cell.y > top[key] then
+							top[key] = cell.y
+						end
+					end
+				end
+			end
+			for _, spec in ipairs(attached) do
+				local dx = (spec.axis == "x") and 1 or 0
+				for _, side in ipairs({-VERGE, VERGE}) do
+					for p = spec.from, spec.to do
+						local x, z
+						if dx == 1 then x, z = p, spec.at + side
+						else x, z = spec.at + side, p end
+						if in_other_road(spec.id, x, z) then
+							assert(top[x .. ":" .. z] ~= nil, case.name ..
+								": the column " .. x .. "," .. z ..
+								" gave up its verge and nothing paved it")
+							handed_over = handed_over + 1
+						end
+					end
+				end
+			end
+			-- AND NO STEP APPEARED WHERE THE HANDOVER HAPPENS.
+			local worst = 0
+			for key, y in pairs(top) do
+				local x, z = key:match("^(-?%d+):(-?%d+)$")
+				x, z = tonumber(x), tonumber(z)
+				for _, step in ipairs({{1, 0}, {0, 1}}) do
+					local other = top[(x + step[1]) .. ":" .. (z + step[2])]
+					if other then
+						local delta = y - other
+						if delta < 0 then delta = -delta end
+						if delta > worst then worst = delta end
+					end
+				end
+			end
+			assert(worst <= 1, case.name ..
+				": the joined road steps " .. worst .. " nodes somewhere")
+		end
+		assert(cleared_total > 0, "the clearance removed nothing")
+		cases = cases + 1
+		say("street_verge_clearance", intruded, cleared_total, kept_outside,
+			handed_over)
+	end
+
+	assert(cases == 11, "a street case was lost")
 	say("street_cases", cases, "width", avenue.WIDTH, "min_clear", CLEAR,
 		"lift", avenue.LIFT, "pier", avenue.PIER)
 	return table.concat(report)

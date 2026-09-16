@@ -578,7 +578,8 @@ if mode == "gates" then
 				from = run.from, to = run.to, width = avenue.WIDTH,
 				lamp_spacing = avenue.LAMP_SPACING, lamp_phase = run.from,
 				reach = avenue.REACH, wet = wet_at,
-				junctions = run.junctions}
+				junctions = run.junctions, plain_verge = run.plain_verge,
+				clear_verge = run.clear_verge}
 			local ok, piece = pcall(kezamba.overlay_run, avenue, road, spec,
 				surface)
 			if not ok then

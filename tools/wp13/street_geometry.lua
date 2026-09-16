@@ -41,6 +41,15 @@
 --   lamps            lamp standards, and `lamps_off` how many of them have
 --                    their footing at a height the road beside them does not
 --                    stand at. Ruling 3 wants 0.
+--   verge_in_road    cells a run writes on one of its two VERGE lanes whose
+--                    column lies inside ANOTHER street run's carriageway --
+--                    the rail, the plank, the pillar or the lamp standard the
+--                    playtest-6 user found standing in the middle of the
+--                    street that joins. Round 4 wants 0.
+--   plateau_rail     of those, the RAIL cells that stand at a position inside
+--                    one of the run's own junction squares: the parapet that
+--                    closes the plateau square off towards a joining run.
+--                    Round 4 wants 0.
 --   queries          `surface` calls, which is what the timing gate pays for.
 --
 -- HOW THE WALKING LEVEL IS READ. The topmost cell of a carriageway column
@@ -176,7 +185,7 @@ local function new_stats()
 		junc_spread = 0, junc_step = 0, raised = 0, raise_max = 0,
 		walled = 0, solid = 0, wet = 0, piers = 0, rails = 0,
 		lamps = 0, lamps_off = 0, queries = 0, pillars = 0, junctions = 0,
-		overlaps = 0}
+		overlaps = 0, verge_in_road = 0, plateau_rail = 0}
 end
 
 local function fold(into, from)
@@ -194,7 +203,8 @@ end
 local COLUMNS = {"columns", "spread", "step", "lane_step", "junctions",
 	"overlaps",
 	"junc_spread", "junc_step", "raised", "raise_max", "walled", "solid",
-	"pillars", "wet", "piers", "rails", "lamps", "lamps_off", "queries"}
+	"pillars", "wet", "piers", "rails", "lamps", "lamps_off",
+	"verge_in_road", "plateau_rail", "queries"}
 
 local rows = {}
 local function emit(row)
@@ -241,7 +251,9 @@ for _, key in ipairs(KEYS) do
 					lamp_spacing = blueprint.overlay.lamp_spacing,
 					lamp_phase = run.from, reach = blueprint.overlay.reach,
 					overhead = local_overhead, wet = local_wet,
-					junctions = run.junctions}
+					junctions = run.junctions,
+					plain_verge = run.plain_verge,
+					clear_verge = run.clear_verge}
 				pieces[run.id] = blueprint.overlay.run(spec, local_surface)
 				specs[#specs + 1] = spec
 			end
@@ -333,6 +345,44 @@ for _, key in ipairs(KEYS) do
 			end
 		end
 
+		-- THE VERGE FURNITURE THAT STANDS IN ANOTHER STREET (round 4, goal A).
+		--
+		-- A run's two VERGE lanes sit one node outside its carriageway, and at
+		-- a crossing, a corner or a T-joint they run straight across the road
+		-- that joins: playtest 6 found "the rail of each protrudes into the
+		-- other street" on a Lethariel bridge and "the side rails leave only a
+		-- one-node gap into the crossing" at Kezamba. So the number is the
+		-- cells a run writes on a verge lane whose COLUMN lies inside another
+		-- street run's own carriageway rectangle -- rail, plank, pillar, kerb
+		-- footing and lamp standard alike, because every one of them is
+		-- something standing in the middle of the joining street.
+		local cap_half = (blueprint.overlay.width - 1) / 2
+		local cap_verge = cap_half + 1
+		local RAIL_NAME = palette.node("railing")
+		local carriageway = {}
+		for _, spec in ipairs(specs) do
+			if spec.axis == "x" then
+				carriageway[#carriageway + 1] = {id = spec.id,
+					min_x = spec.from, max_x = spec.to,
+					min_z = spec.at - cap_half, max_z = spec.at + cap_half}
+			else
+				carriageway[#carriageway + 1] = {id = spec.id,
+					min_z = spec.from, max_z = spec.to,
+					min_x = spec.at - cap_half, max_x = spec.at + cap_half}
+			end
+		end
+		-- Which OTHER run's road a column stands in, or nil.
+		local function road_over(id, x, z)
+			for i = 1, #carriageway do
+				local rect = carriageway[i]
+				if rect.id ~= id and x >= rect.min_x and x <= rect.max_x and
+						z >= rect.min_z and z <= rect.max_z then
+					return rect.id
+				end
+			end
+			return nil
+		end
+
 		local capital_stats = new_stats()
 		local junction_stats = {spread = 0, step = 0}
 		for _, junction in ipairs(junctions) do
@@ -408,12 +458,27 @@ for _, key in ipairs(KEYS) do
 				stats.piers = piece.street.piers or 0
 				stats.rails = piece.street.rails or 0
 			end
+			-- The positions this run's own junction squares cover, so a rail
+			-- that closes a plateau off can be told from a rail out on the
+			-- open run.
+			local in_square = {}
+			for _, record in ipairs(junction_map[spec.id] or {}) do
+				for p = record.low, record.high do in_square[p] = true end
+			end
 			local cells_by_column = {}
 			for i = 1, #piece.cells do
 				local cell = piece.cells[i]
 				local p = (dx == 1) and cell.x or cell.z
 				local lane = (dx == 1) and (cell.z - spec.at) or
 					(cell.x - spec.at)
+				if lane == -cap_verge or lane == cap_verge then
+					if road_over(spec.id, cell.x, cell.z) then
+						stats.verge_in_road = stats.verge_in_road + 1
+						if cell.name == RAIL_NAME and in_square[p] then
+							stats.plateau_rail = stats.plateau_rail + 1
+						end
+					end
+				end
 				local key_column = p .. ":" .. lane
 				local list = cells_by_column[key_column]
 				if list == nil then
@@ -539,11 +604,13 @@ for _, key in ipairs(KEYS) do
 		fold(totals, capital_stats)
 		io.stderr:write(string.format(
 			"%-12s seed %s  spread %d  step %d  junc %d/%d  walled %d " ..
-			"(solid %d)  wet %d  lamps_off %d/%d\n",
+			"(solid %d)  wet %d  lamps_off %d/%d  verge_in_road %d " ..
+			"plateau_rail %d\n",
 			key, seed, capital_stats.spread, capital_stats.step,
 			capital_stats.junc_spread, capital_stats.junc_step,
 			capital_stats.walled, capital_stats.solid, capital_stats.wet,
-			capital_stats.lamps_off, capital_stats.lamps))
+			capital_stats.lamps_off, capital_stats.lamps,
+			capital_stats.verge_in_road, capital_stats.plateau_rail))
 	end
 end
 
@@ -561,8 +628,9 @@ end
 io.stderr:write(string.format(
 	"TOTAL seed %s  spread %d  step %d  lane_step %d  junc %d/%d  " ..
 	"raised %d (max %d) walled %d solid %d pillars %d  wet %d piers %d " ..
-	"rails %d  lamps %d off %d\n",
+	"rails %d  lamps %d off %d  verge_in_road %d plateau_rail %d\n",
 	seed, totals.spread, totals.step, totals.lane_step, totals.junc_spread,
 	totals.junc_step, totals.raised, totals.raise_max, totals.walled,
 	totals.solid, totals.pillars, totals.wet, totals.piers, totals.rails,
-	totals.lamps, totals.lamps_off))
+	totals.lamps, totals.lamps_off, totals.verge_in_road,
+	totals.plateau_rail))

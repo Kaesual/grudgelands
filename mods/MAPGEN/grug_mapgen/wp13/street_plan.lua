@@ -295,6 +295,117 @@ local function loader(directory)
 		return by_id
 	end
 
+	-- WHERE A RUN'S VERGE STANDS IN THE MIDDLE OF ANOTHER RUN'S ROAD.
+	--
+	-- A street's two VERGE lanes are one node outside its carriageway, and
+	-- that is where `wp13/avenue.lua` writes the plank walk, the rail, the
+	-- pillars and the lamp standards. At a crossing, at a corner and at a
+	-- T-joint those two lanes run straight ACROSS the road that joins, so the
+	-- furniture of one street stands in the carriageway of the other. Playtest
+	-- 6 (2026-09-16) walked into three of them:
+	--
+	--   * Lethariel's north-east ring corner, where `ring_east` ends at
+	--     z = 96 and `ring_north` ends at x = 96 over the mere: "two street
+	--     ends meet on a bridge over water; the rail of each protrudes into
+	--     the other street";
+	--   * Kezamba's north crossing, where `avenue_north` crosses `ring_north`
+	--     over water: "the side rails leave only a one-node gap into the
+	--     crossing";
+	--
+	-- and the ruling is that "railings, fences, verge posts and pillars end at
+	-- the crossing square; the plateau square is rail-free towards every street
+	-- that joins it".
+	--
+	-- WHY IT IS A RECTANGLE QUESTION AND NOT A PLATEAU QUESTION. The plateau
+	-- square is the two carriageways' intersection; the verge lane is one node
+	-- OUTSIDE the carriageway, so the cells at issue are beside the square and
+	-- not in it, and at a corner only ONE of the two verge lanes is in the
+	-- other road at all. What decides it exactly is the column: a verge cell
+	-- has to go where its own column is inside another street's carriageway,
+	-- and it may stay where it is not -- which keeps the parapet on the
+	-- OUTSIDE of a corner, where nothing joins.
+	--
+	-- THE DECK STAYS CONTINUOUS, and that is the other half of the ruling: the
+	-- cell the verge gives up is by construction a cell the other run PAVES, at
+	-- the plateau's own y, so the walk is not interrupted -- it is handed over.
+	--
+	-- Returns, per street id, a sorted list of `{low, high, side}` spans, where
+	-- `side` is -1 or +1 in the same hand `avenue.lua` counts its lanes in: the
+	-- verge lane at `at + side * (half + 1)`.
+	--
+	-- STREETS ONLY. The curtain wall, the palisade, the grove edge and the gate
+	-- cones are not roads and a street does not yield its rail to them; where a
+	-- street runs THROUGH one, `barrier_spans` above is the rule.
+	function M.verge_clearance(streets, width)
+		width = width or M.WIDTH
+		if type(width) ~= "number" or width % 2 ~= 1 or width < 3 then
+			error("wp13 street plan: the width " .. tostring(width) ..
+				" is not an odd carriageway", 0)
+		end
+		local half = (width - 1) / 2
+		local verge = half + 1
+		local by_id = {}
+		for index = 1, #streets do by_id[streets[index].id] = {} end
+		for _, street in ipairs(streets) do
+			local list = by_id[street.id]
+			for _, side in ipairs({-1, 1}) do
+				local line = street.at + side * verge
+				local spans = {}
+				for _, other in ipairs(streets) do
+					if other.id ~= street.id then
+						local low, high
+						if other.axis == street.axis then
+							-- A PARALLEL run: its carriageway covers this verge
+							-- lane over its whole span, or not at all.
+							if line >= other.at - half and
+									line <= other.at + half then
+								low, high = other.from, other.to
+							end
+						else
+							-- A CROSSING run: its carriageway covers this verge
+							-- lane only where the lane is inside its span, and
+							-- then over its own width.
+							if line >= other.from and line <= other.to then
+								low, high = other.at - half, other.at + half
+							end
+						end
+						if low ~= nil then
+							if low < street.from then low = street.from end
+							if high > street.to then high = street.to end
+							if low <= high then
+								spans[#spans + 1] = {low, high}
+							end
+						end
+					end
+				end
+				table.sort(spans, function(p, q)
+					if p[1] ~= q[1] then return p[1] < q[1] end
+					return p[2] < q[2]
+				end)
+				-- Merged, so the list a run is handed does not depend on how
+				-- many other runs happen to cover the same stretch.
+				local open
+				for index = 1, #spans do
+					local span = spans[index]
+					if open ~= nil and span[1] <= open[2] + 1 then
+						if span[2] > open[2] then open[2] = span[2] end
+					else
+						open = {span[1], span[2], side}
+						list[#list + 1] = open
+					end
+				end
+			end
+		end
+		for _, list in pairs(by_id) do
+			table.sort(list, function(p, q)
+				if p[3] ~= q[3] then return p[3] < q[3] end
+				if p[1] ~= q[1] then return p[1] < q[1] end
+				return p[2] < q[2]
+			end)
+		end
+		return by_id
+	end
+
 	-- The same lists, attached to COPIES of the run specs so the composition's
 	-- own authored tables are never mutated: two worlds in one process must not
 	-- be able to see each other's junctions.
@@ -302,6 +413,7 @@ local function loader(directory)
 		width = width or M.WIDTH
 		local junctions = M.junctions(runs, width)
 		local passages = M.barrier_spans(runs, barriers, width)
+		local clearances = M.verge_clearance(runs, width)
 		local out = {}
 		for index = 1, #runs do
 			local run = runs[index]
@@ -310,6 +422,8 @@ local function loader(directory)
 			copy.junctions = junctions[run.id]
 			local spans = passages[run.id]
 			copy.plain_verge = (spans and #spans > 0) and spans or nil
+			local clear = clearances[run.id]
+			copy.clear_verge = (clear and #clear > 0) and clear or nil
 			out[index] = copy
 		end
 		return out
