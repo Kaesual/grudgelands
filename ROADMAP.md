@@ -142,7 +142,18 @@ the goal-level view.
   and re-run the spawn-budget audit.
 - [ ] **WP11 / WP14 / WP20 / WP21 / WP8:** skill trees, live offhand/carried
   light, parties, recovery/rest and the quest framework are independently
-  ready behind their shipped prerequisites.
+  ready behind their shipped prerequisites. **WP11's design landed on
+  2026-09-16** as [skill_trees.md](docs/design/skill_trees.md) revision 2 —
+  two trees of twenty-eight ranks per class, one point every two levels, one
+  reachable capstone — answered by the user across six rounds of rulings and
+  still carrying its PROPOSAL banner; nothing of it is implemented.
+- [ ] **WP-Scout / WP-HUD / WP-Speed:** the three work packages those rulings
+  created, all open and all specced (`BACKLOG.md`): the fourth class
+  ([scout.md](docs/design/scout.md) — leather, bow and blade, no stealth in
+  v1), the point-accurate LIFE and mana-or-rage bars that replace the builtin
+  heart statbars, and the `grug_core` **movement aggregator** that gives
+  speed and jump one owner. WP-Speed is a prerequisite for WP11's Hold Ground
+  and for the Scout's Sprint.
 
 ### Dependent world and item loop
 
@@ -206,7 +217,17 @@ the goal-level view.
   (`wp13-weapon-ladder.md`), the NPC work/activity vocabulary, the twelve
   profession shop vendors and the 80/20 walker split (`wp13-npc-work.md`,
   `wp13-npc-vocabulary.md`), and the user's routes-end-at-the-gate ruling
-  (`wp13-route-gates.md`). **Still open in WP13:** the user's GUI playtest
+  (`wp13-route-gates.md`). Wave 3 (2026-09-16) then answered playtest 5 with
+  **one street rule for all six capitals** — a flat cross profile, junction
+  plateaus computed identically by both runs, deck-on-pillars where a street
+  stands three or more nodes above the ground, and a railed **bridge**
+  wherever a street crosses water (`wp13-street-geometry.md`) — with
+  **Kezamba's** pad edge terraced down to its lake instead of walled off and
+  its fields given something to grow (`wp13-kezamba.md`), thirteen Highcourt
+  lots moved onto ground nine worlds accept plus the basalt roof corners
+  (`wp13-polish-wave3.md`), and **fishing**: a rod, a cooked fish and one
+  world-wide catch table in the new `mods/ITEMS/grug_fishing`
+  (`wp13-fishing.md`). **Still open in WP13:** the user's GUI playtest
   of the six capitals; the whole remainder of the contract's 100-anchor POI
   roster (`wp13-capitals-pois-contract.md` §2.5) — 12 villages, two of them
   with a shipwright's plot and display boat, 24 outposts, 12 bandit camps, 6
