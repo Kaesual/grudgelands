@@ -116,12 +116,22 @@ local function loader()
 	-- or rise, none of them on a world this table had ever been checked
 	-- against:
 	--
-	--   southeast 5   z -116 -> -116, x 116 -> 112   (rise 8 on seed 42)
-	--   northeast 1   z  108 ->  112                 (fall 8 on seed 12345)
+	-- THE SEED COLUMN BELOW IS AN INDEX, RESOLVED. `capital_lots.lua` reports
+	-- "ILLEGAL <n>:<rule>:<value>", and `<n>` is the position of the field dump
+	-- in the argument list, which is the order of
+	-- `tools/wp13/capital_anchor_fixture.lua`'s SEEDS -- so 1 is the gate seed,
+	-- 4 is seed 0, 7 is 42, 8 is 12345 and 9 is 999999999. The first version of
+	-- this comment read those indices as seeds and named six of the thirteen
+	-- rows wrong; the independent review of 2026-09-16 caught it against this
+	-- lane's own `audit-terrain-before.txt`, which records the same lots under
+	-- the right seeds.
+	--
+	--   southeast 5   z -116 -> -116, x 116 -> 112   (rise 8 on seed 0)
+	--   northeast 1   z  108 ->  112                 (fall 8 on seed 42)
 	--   northwest 1   z   80 ->   84                 (rise 7 on seed 999999999)
-	--   northwest 2   z   80 ->   76                 (rise 7 on seed 12345)
-	--   northwest 8   z  168 ->  164                 (rise 8 on seed 999999999)
-	--   southwest 6   z -188 -> -196                 (rise 7 on seed 42)
+	--   northwest 2   z   80 ->   76                 (rise 7 on seed 42)
+	--   northwest 8   z  168 ->  164                 (rise 8 on seed 12345)
+	--   southwest 6   z -188 -> -196                 (rise 7 on seed 0)
 	--
 	-- Five moved four nodes and one eight; the other thirty kept the position
 	-- they were authored at, which is what `--repair` is for. The measurement
@@ -213,20 +223,24 @@ local function loader()
 	-- SEVEN OF THE SIXTEEN MOVED ON NINE WORLDS (2026-09-16, WP13 wave 3), for
 	-- the reason written over `M.LOTS` above: two worlds were what the tool of
 	-- the day took, and six of these sixteen were illegal on one of the other
-	-- seven. The seventh move is a CASCADE and not a terrain finding -- the six
-	-- district lots that moved took the lane clearance with them, and north-west
-	-- fill 1 stood in the new gap -- which is why `--repair` repairs the fill
-	-- grid after the district grid and against the district lots as they now
-	-- stand.
+	-- seven. The seventh move is a CASCADE and not a terrain finding: north-west
+	-- DISTRICT LOT 2 moved from -176,80 to -176,76, i.e. toward this fill lot,
+	-- and north-west fill 1 at -180,48 then stood inside its lane
+	-- (`ILLEGAL lot:northwest/2` when it is put back on the repaired grid).
+	-- That is why `--repair` repairs the fill grid after the district grid and
+	-- against the district lots AS THEY NOW STAND.
+	--
+	-- The seed column is the resolved index, for the reason written over
+	-- `M.LOTS` above.
 	--
 	--   southeast   nothing moved
 	--   northeast 4   x 140 -> 144                (fall 12 on seed 999999999)
-	--   northwest 1   z  48 ->  44, move 4        (cascade: lane to lot 3)
+	--   northwest 1   z  48 ->  44, move 4        (cascade: lane to lot 2)
 	--   northwest 4   x -80 -> -84                (fall 10 on seed 999999999)
 	--   southwest 1   -88,-220 -> -68,-228, move 28  (fall 7 on seed 2)
 	--   southwest 2   x -220 -> -224              (fall 10 on seed 999999999)
 	--   southwest 3   z -212 -> -220, move 8      (rise 9 on seed 15912857...)
-	--   southwest 4   -144,-104 -> -116,-60, move 72 (fall 8 on seed 42)
+	--   southwest 4   -144,-104 -> -116,-60, move 72 (fall 8 on seed 0)
 	--
 	-- SOUTH-WEST FILL 4 WALKED 72 NODES, and that is worth a reader's eye
 	-- rather than a silent table edit. It is the garden strip inside the lot
