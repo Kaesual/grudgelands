@@ -26,7 +26,6 @@ local rage = {} -- player name -> current rage (fractional)
 -- ticker needs the value THIS cast used to draw a fraction of it.
 local cooldowns = {}
 local targets = {} -- player name -> {enemy = rec, ally = rec}; rec = {obj, expiry}
-local resource_huds = {} -- player name -> hud id
 local flash_huds = {} -- player name -> {id = hud id, token = n}
 local ready_reticle_huds = {} -- player name -> {id = hud id, visible = bool}
 -- Skill-name line (classes.md §2c) and the throttled wield watcher that feeds
@@ -177,29 +176,149 @@ function grug_abilities.get_range(player, def)
 end
 
 --
--- HUD: resource line above the XP line (mana blue / rage red) and a
--- short-lived error flash top center ("Not enough mana", "No target", ...).
+-- HUD: the three thin bars directly above the hotbar (user ruling
+-- 2026-09-16, docs/research/hud-bars.md) and a short-lived error flash top
+-- center ("Not enough mana", "No target", ...).
+--
+-- Each bar is three elements: a dark track, a coloured foreground whose
+-- `scale.x` IS its drawn width in pixels, and a centred label carrying the
+-- exact numbers. The builtin heart and bubble statbars are switched off on
+-- join, in the same commit that added these -- half hearts are the
+-- approximation the ruling rejects, and a 325 HP Warrior
+-- (`combat_stats.md` section 2) is 16 HP per half heart.
+--
+-- `hud_change` sends a packet whether the value changed or not
+-- (`src/script/lua_api/l_object.cpp:2026` still carries the "FIXME: only
+-- send when actually changed"), so EVERY write below is gated on the drawn
+-- value and the drawn value is quantized to whole pixels by
+-- `grug_core.hud_layout.bar_fill`.
 --
 
+-- player name -> {life = rec, secondary = rec, breath = rec}, where rec is
+-- {track_id, fill_id, label_id} plus the last drawn track texture, fill
+-- colour, fill width and label.
+local bar_huds = {}
+
+-- The secondary resource as a bar: value, maximum, colour. Nothing (a
+-- character with no class yet) returns nil, which reserves the row without
+-- drawing in it.
 local function hud_state(player)
+	local layout = grug_core.hud_layout
 	local res = resource_of(player)
 	if res == "mana" then
-		return ("Mana %d / %d"):format(grug_abilities.get_mana(player),
-			grug_classes.get_max_mana(player)), 0x4a9bd8
+		return grug_abilities.get_mana(player),
+			grug_classes.get_max_mana(player), layout.COLOR.mana
 	elseif res == "rage" then
-		return ("Rage %d / 100"):format(grug_abilities.get_rage(player)), 0xc41e3a
+		return grug_abilities.get_rage(player), 100, layout.COLOR.rage
 	end
-	return "", 0xffffff
+	return nil, nil, nil
 end
 
-hud_update = function(player)
-	local id = resource_huds[player:get_player_name()]
-	if not id then
+-- One bar. `maximum` nil or 0 blanks the row; the row keeps its space.
+local function draw_bar(player, name, row, value, maximum, color)
+	local recs = bar_huds[name]
+	local rec = recs and recs[row]
+	if not rec then
 		return
 	end
-	local text, color = hud_state(player)
-	player:hud_change(id, "text", text)
-	player:hud_change(id, "number", color)
+	local layout = grug_core.hud_layout
+	local shown = type(maximum) == "number" and maximum > 0
+	local track = layout.bar_texture(shown and layout.COLOR.track or nil)
+	local width = shown and layout.bar_fill(value, maximum) or 0
+	local label = shown and ("%d / %d"):format(value, maximum) or ""
+	if rec.track ~= track then
+		rec.track = track
+		player:hud_change(rec.track_id, "text", track)
+	end
+	if shown and rec.color ~= color then
+		rec.color = color
+		player:hud_change(rec.fill_id, "text", layout.bar_texture(color))
+	end
+	if rec.width ~= width then
+		rec.width = width
+		player:hud_change(rec.fill_id, "scale",
+			{x = width, y = layout.BAR_HEIGHT})
+	end
+	if rec.label ~= label then
+		rec.label = label
+		player:hud_change(rec.label_id, "text", label)
+	end
+end
+
+-- player name -> the hit points the engine is ABOUT to store.
+--
+-- A non-modifier `register_on_player_hpchange` callback runs BEFORE the
+-- engine stores the new value: `setHP` calls the loggers and only then
+-- assigns `m_hp` (`src/server/player_sao.cpp:519-535`,
+-- `builtin/game/register.lua:560`), so `get_hp()` inside such a callback --
+-- and inside anything a LATER logger calls, the rage hook included -- is
+-- still the OLD hit points. The prediction outlives the callback for that
+-- reason and is dropped by the next shared pass, which reads the value the
+-- engine really stored.
+local predicted_hp = {}
+
+-- `authoritative` is what the 0.5 s pass passes: the engine has stored
+-- whatever it was going to store, so the prediction goes and the real hit
+-- points are read.
+hud_update = function(player, authoritative)
+	local name = player:get_player_name()
+	if not bar_huds[name] then
+		return
+	end
+	if authoritative then
+		predicted_hp[name] = nil
+	end
+	local layout = grug_core.hud_layout
+	-- One properties read for both hp_max and breath_max.
+	local props = player:get_properties()
+
+	local max_hp = props.hp_max or 0
+	local hp = predicted_hp[name] or player:get_hp()
+	hp = math.max(0, math.min(max_hp, hp))
+	draw_bar(player, name, "life", hp, max_hp, layout.COLOR.life)
+
+	local value, maximum, color = hud_state(player)
+	draw_bar(player, name, "secondary", value or 0, maximum, color)
+
+	-- Breath is the one value with no change callback in the Lua API, so it
+	-- rides the shared pass. Builtin's own rule for showing the bubbles is
+	-- "breath is not full" (`builtin/game/hud.lua:207-209`); the bar uses
+	-- the same one, which also covers the refill after surfacing.
+	local max_breath = props.breath_max or 0
+	local breath = player:get_breath()
+	if max_breath > 0 and breath < max_breath then
+		draw_bar(player, name, "breath", breath, max_breath,
+			layout.COLOR.breath)
+	else
+		draw_bar(player, name, "breath", 0, nil, nil)
+	end
+end
+
+-- Immediate life-bar feedback. Registered separately from the rage logger so
+-- that the HUD and the resource rules stay independently editable.
+core.register_on_player_hpchange(function(player, hp_change, reason)
+	predicted_hp[player:get_player_name()] = player:get_hp() + hp_change
+	hud_update(player)
+end, false)
+
+local function add_bar(player, row)
+	local layout = grug_core.hud_layout
+	return {
+		-- Track, foreground, label: explicit z_index because elements that
+		-- share one are drawn in an arbitrary order (lua_api.md "z_index").
+		track_id = player:hud_add(layout.bar_element(row,
+			layout.BAR_WIDTH, nil, 0)),
+		fill_id = player:hud_add(layout.bar_element(row, 0, nil, 1)),
+		label_id = player:hud_add(layout.text_element(row, {
+			number = layout.COLOR.text,
+			text = "",
+			z_index = 2,
+		})),
+		track = "",
+		color = nil,
+		width = 0,
+		label = "",
+	}
 end
 
 function grug_abilities.flash(player, msg)
@@ -2278,6 +2397,13 @@ core.register_globalstep(function(dtime)
 				end
 			end
 		end
+		-- The HUD bars ride this existing pass rather than a second
+		-- globalstep (AGENTS.md's throttling rule). It is what makes the
+		-- breath bar possible at all -- breath has no change callback in the
+		-- Lua API -- and it is the authority that corrects the hit-point
+		-- prediction the hpchange logger draws. Every write inside is gated
+		-- on the drawn value, so an unchanged player costs zero packets.
+		hud_update(player, true)
 	end
 end)
 
@@ -2287,39 +2413,23 @@ end)
 
 core.register_on_joinplayer(function(player)
 	local name = player:get_player_name()
-	resource_huds[name] = player:hud_add({
-		type = "text",
-		position = {x = 0.5, y = 1},
-		offset = {x = 0, y = -135},
-		alignment = {x = 0, y = 0},
-		number = 0xffffff,
-		text = "",
-	})
-	flash_huds[name] = {token = 0, id = player:hud_add({
-		type = "text",
-		position = {x = 0.5, y = 0.35},
-		offset = {x = 0, y = 0},
-		alignment = {x = 0, y = 0},
-		number = 0xff4444,
-		text = "",
-	})}
-	skillname_huds[name] = {token = 0, id = player:hud_add({
-		type = "text",
-		position = {x = 0.5, y = 1},
-		offset = {x = 0, y = -70},
-		alignment = {x = 0, y = 0},
-		number = 0xffffff,
-		text = "",
-	})}
-	ready_reticle_huds[name] = {visible = false, id = player:hud_add({
-		type = "image",
-		position = {x = 0.5, y = 0.5},
-		offset = {x = 0, y = 0},
-		alignment = {x = 0, y = 0},
-		scale = {x = 1, y = 1},
-		text = "",
-		z_index = 1,
-	})}
+	local layout = grug_core.hud_layout
+	-- The replacement and the removal in one place: the ruling of 2026-09-16
+	-- rejects the half-heart statbars, and the bubbles go with them because
+	-- `hud_set_flags` is the only call that hides either. Doing this AFTER
+	-- the bars exist means the player is never without a health display.
+	bar_huds[name] = {
+		life = add_bar(player, "life"),
+		secondary = add_bar(player, "secondary"),
+		breath = add_bar(player, "breath"),
+	}
+	player:hud_set_flags({healthbar = false, breathbar = false})
+	flash_huds[name] = {token = 0, id = player:hud_add(
+		layout.text_element("flash", {number = 0xff4444, text = ""}))}
+	skillname_huds[name] = {token = 0, id = player:hud_add(
+		layout.text_element("skill", {number = 0xffffff, text = ""}))}
+	ready_reticle_huds[name] = {visible = false, id = player:hud_add(
+		layout.image_element("reticle", {text = "", z_index = 1}))}
 	rage[name] = 0
 	refill_mana(player)
 	sync_kit(player)
@@ -2365,7 +2475,8 @@ core.register_on_leaveplayer(function(player)
 	wear_steps[name] = nil
 	charge_steps[name] = nil
 	slot_cache[name] = nil
-	resource_huds[name] = nil
+	bar_huds[name] = nil
+	predicted_hp[name] = nil
 	flash_huds[name] = nil
 	skillname_huds[name] = nil
 	ready_reticle_huds[name] = nil
