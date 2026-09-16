@@ -1,0 +1,22 @@
+# What the whole street network of each capital costs, over one
+# synthetic terraced surface, on both trees. See overlay_bench.lua.
+
+## this branch
+capital	after_ms	cells	queries	runs
+highcourt	26.2	26523	40193	15
+dur_brannoc	29.1	27491	45872	16
+gor_drazhak	23.8	25525	44368	16
+lethariel	27.9	25854	56095	15
+kezamba	16.7	14307	19464	8
+nhal_veyr	30.4	25747	44360	16
+TOTAL	154.2	-	250352	-
+
+## main at f37a0c5b
+capital	before_ms	cells	queries	runs
+highcourt	16.4	20902	22369	15
+dur_brannoc	18.4	22742	24244	16
+gor_drazhak	17.5	20961	22820	16
+lethariel	24.1	22976	21935	15
+kezamba	11.0	11810	11656	8
+nhal_veyr	20.8	21032	22820	16
+TOTAL	108.1	-	125844	-

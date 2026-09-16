@@ -1,0 +1,7 @@
+exit=0 errors=0 complete=1 log=/tmp/grug-w3-streets-engine/highcourt-full-8675309/server.log
+WP13 highcourt: the built avenue moved.
+  now      46ab2c74205f88438cef03567f5656bc10fd0b6d3582bc4fd040dcb09736e181
+  expected 8383b2983fdbb612997c290b2d01dbee90131a0208bdd81fbe4deb0a159fba1f (/home/jan/projects/grudgelands/.claude/worktrees/agent-a4db17bfc00ad1ab1/tools/wp13/evidence/20260915-capital-terrain/highcourt/avenue-digest-8675309.txt)
+rampart overlay digest recorded (no committed value for seed 8675309 yet)
+corner overlay digest recorded (no committed value for seed 8675309 yet)
+gate overlay digest recorded (no committed value for seed 8675309 yet)

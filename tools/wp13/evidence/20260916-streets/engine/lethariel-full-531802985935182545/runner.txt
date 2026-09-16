@@ -1,0 +1,7 @@
+exit=0 errors=0 complete=1 log=/tmp/grug-w3-streets-engine/lethariel-full-531802985935182545/server.log
+WP13 lethariel: the built avenue moved.
+  now      f62eb73410de56b722a9be4409a29b4b6ec2cabda27cb43994bd68c6ca16fa5c
+  expected a89db8dbcb8422b6158b4448831245768267247363c4629513f3c3f726a75059 (/home/jan/projects/grudgelands/.claude/worktrees/agent-a4db17bfc00ad1ab1/tools/wp13/evidence/20260915-capital-terrain/lethariel/avenue-digest-531802985935182545.txt)
+rampart: this capital publishes no such overlay region
+corner: this capital publishes no such overlay region
+gate: this capital publishes no such overlay region

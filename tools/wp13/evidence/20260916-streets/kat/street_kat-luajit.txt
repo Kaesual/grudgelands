@@ -1,0 +1,15 @@
+street_cross_profile	582	0	1
+street_lamps	156	150
+street_junction	62	21	1
+street_junction_group	62	-2	4	1
+street_viaduct	120	1050	48	372	2	3
+street_bridge	246	60	432	0	1	8	4
+street_pieces	4	200
+street_capital	highcourt	15	38	0	
+street_capital	dur_brannoc	16	36	4	lane_northeast_cross/lane_northwest_cross/1,lane_northwest_spine/lane_southwest_spine/1,lane_southeast_cross/lane_southwest_cross/1,lane_southeast_spine/lane_northeast_spine/1
+street_capital	gor_drazhak	16	36	4	lane_cross_southeast/lane_spine_southwest/1,lane_spine_northeast/lane_cross_northwest/1,lane_spine_northwest/lane_cross_southwest/1,lane_spine_southeast/lane_cross_northeast/1
+street_capital	lethariel	15	30	8	lane_northwest_spine/lane_southwest_spine/1,lane_southeast_cross/lane_southwest_cross/1,ring_east/lane_southeast_spine/97,ring_north/lane_northwest_cross/97,ring_south/lane_southeast_cross/97,ring_south/lane_southwest_cross/97,ring_west/lane_northwest_spine/97,ring_west/lane_southwest_spine/97
+street_capital	kezamba	8	16	0	
+street_capital	nhal_veyr	16	36	4	lane_northeast_spine/lane_northwest_cross/1,lane_northwest_spine/lane_southwest_cross/1,lane_southeast_cross/lane_southwest_spine/1,lane_southeast_spine/lane_northeast_cross/1
+street_inventory	56ac697b29f6ea014651c3a2c34639f9b54f7aaa1312f465faad8f6fb7acb3cd
+street_cases	8	width	5	min_clear	3	lift	1	pier	8
