@@ -4,6 +4,13 @@ WP13 wave 3, lane A. The user's request: *"One lane could check the work-package
 planning so far and compare the current state of the code with the docs, so docs
 and WP planning do not go stale and stay in sync."*
 
+> **Pointer, 2026-09-16 (not a rewrite).** This sweep compared the docs against
+> the **wave-2** code and merged at `b4fa6042`; seven lanes merged after it the
+> same day. A second pass covers exactly that gap —
+> [docs-alignment-2026-09-16-r4.md](docs-alignment-2026-09-16-r4.md) — which
+> also records that none of the three FOR-THE-USER items in §3 below has been
+> answered yet. Everything else here stands as the record of its own date.
+
 Baseline: `main` at `f37a0c5b` ("Freeze the Dur Brannoc corner digest on the gate
 seed"), the wave-2 merge with six starts and six capitals. **Every line number
 below is the number on that baseline**, before this lane's own commits moved
