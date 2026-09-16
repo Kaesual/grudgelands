@@ -1,6 +1,6 @@
 -- Canonical registrations cloned from vendored storage-material node shapes.
--- This file intentionally adds no recipe: WP26 owns material processing and
--- storage recipes.
+-- This file intentionally adds no recipe: material processing and storage
+-- recipes are owned by `grug_smelting` (WP26, shipped 2026-09-16).
 
 local function register_derivative(derivative)
 	local source = core.registered_nodes[derivative.source]

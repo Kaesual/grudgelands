@@ -1,10 +1,17 @@
 # WP26 Task Card — Two-Slot Furnace and the Universal Alloy Chain
 
-Status: **Executable task card, authored 2026-08-13 (WP40-independent
-design round). WP26 is buildable today: WP43 ✅ shipped every item, node
-and API this card consumes.** Nothing here reopens a decided rule; the
-recipe table is [`items_crafting.md`](../design/items_crafting.md)
-§3.0.2 verbatim, resolved to exact itemstrings.
+Status: **✅ IMPLEMENTED 2026-09-16** (WP13 wave 3, lane C) as
+`mods/ITEMS/grug_smelting` plus the `grug_traders` audit extension. What
+shipped, the measurements, the card-vs-code deltas and what is still open are
+in [`wp26-implementation.md`](wp26-implementation.md); evidence in
+`tools/wp26/evidence/20260916/`. The card below is kept verbatim as the
+authored contract the implementation was judged against.
+
+Authored 2026-08-13 (WP40-independent design round); WP26 was buildable
+then because WP43 ✅ had shipped every item, node and API this card consumes.
+Nothing here reopens a decided rule; the recipe table is
+[`items_crafting.md`](../design/items_crafting.md) §3.0.2 verbatim, resolved
+to exact itemstrings.
 
 ## 1. Scope and non-goals
 

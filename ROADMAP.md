@@ -127,8 +127,14 @@ the goal-level view.
 
 ### Next prerequisite roots
 
-- [ ] **WP26 — Universal bars and furnace:** implement the dual-input furnace
-  and the six-tier alloy chain against WP43's shipped canonical registry.
+- [x] **WP26 — Universal bars and furnace:** the dual-input furnace and the
+  six-tier alloy chain are implemented against WP43's shipped canonical
+  registry (2026-09-16). `mods/ITEMS/grug_smelting` ships the ported two-slot
+  station, the five single-input smelts, the five alloys, the twelve storage
+  pack/unpack pairs and the station's own T1 craft recipe, and extends
+  `grug_traders`' anti-loop audit to the alloy chain the engine cannot see.
+  Details: [WP26 implementation](docs/research/wp26-implementation.md). The
+  user's ~10-minute runtime test plan (task card §8) is still open.
 - [ ] **WP44 — Economy Rebase:** migrate the Common-price axis, 5% buy-back
   and Income Ledger against the final material ids; calibrate exact Claim
   Stone and mount costs.
@@ -148,8 +154,8 @@ the goal-level view.
   all three dependencies are shipped and the executable card is
   [docs/research/wp5-task-card.md](docs/research/wp5-task-card.md). WP10 is
   design-unblocked (A1/A3/A4/A5/E21 decided 2026-08-13, incl. the revised
-  food-restore buff model and the buff/debuff icon framework); it still
-  follows WP26/WP33/WP43/WP44.
+  food-restore buff model and the buff/debuff icon framework); with WP26 ticked
+  above it now follows WP44 alone, since WP33 and WP43 are shipped too.
 - [ ] **WP13 — in progress:** final starts, capitals, settlements, camps,
   kings/guards and both all-six-gem apex camps on shipped WP40 geometry and
   WP43 materials. **All six start settlements are built** (2026-09-14) on one

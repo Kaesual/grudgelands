@@ -200,7 +200,9 @@ function grug_materials.resource_node(key)
 end
 
 -- Universal processed forms. Recipes are deliberately not part of this
--- registry: WP26 owns smelting/alloying and WP10 owns cut-gem storage. `item`
+-- registry: smelting, alloying and the twelve storage pack/unpack pairs live
+-- in `grug_smelting` (WP26, shipped 2026-09-16), which derives the storage
+-- family from the table below, and WP10 still owns cut-gem storage. `item`
 -- is the nine-unit storage input; bars also publish the more specific
 -- `bar_item` field consumed by tier/equipment code.
 grug_materials.PROCESSED_MATERIALS = {

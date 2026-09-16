@@ -1,0 +1,29 @@
+== BASELINE (must be green) ==
+wp26_captured_mods_loaded_callbacks	2
+
+== MUTATION: an alloy consumes a regional gem (gate 5) ==
+luajit: wp26 smelting: grug_materials:steel_bar consumes grug_materials:iron_bar + grug_materials:rough_garnet, not grug_materials:iron_bar + default:coal_lump
+
+== MUTATION: one storage pair is missing (gate 1 / §3.4) ==
+luajit: wp26 smelting: nine grug_materials:gold_bar do not pack into grug_materials:gold_block
+
+== MUTATION: the timer consumes only the first input (gate 3) ==
+luajit: wp26 smelting: grug_materials:bronze_bar did not consume exactly one of each input
+
+== MUTATION: the fuel slot accepts a non-fuel (gate 2) ==
+luajit: wp26 smelting: the fuel slot accepted an Iron Bar
+
+== MUTATION: an alloy output is missing (gate 1 / §3.3) ==
+luajit: wp26 smelting: 4 dualfurn recipes, not 5
+
+== MUTATION: src_time is carried into a shorter recipe (review finding 1) ==
+luajit: wp26 smelting: the swapped-in Bronze finished instantly on 5 s of SOMEONE ELSE'S progress: grug_materials:bronze_bar
+
+== MUTATION: a non-fuel leftover is written back into the fuel slot (finding 6) ==
+luajit: wp26 smelting: the burnt flask's leftover is sitting in the fuel slot, where it blocks every future refuel
+
+== MUTATION: the refuel does not consume the fuel stack (finding 3 coverage) ==
+luajit: wp26 smelting: 30 bars burnt 0 Coal, not the 3 that 120 s of cooking costs
+
+== RESTORED (must be green again) ==
+wp26_captured_mods_loaded_callbacks	2

@@ -288,8 +288,14 @@ rare-route pads. The mirefolk camps, clash anchors and dragon arenas are
 dressing only here -- WP42 and WP23 own what happens in them -- and the apex
 camps' twelve renewable sockets are WP34's. The six kings and their royal
 guards are unbuilt too.
-WP5, WP26, WP44, WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind
-shipped prerequisites. WP34 still needs structures and economy.
+**WP26 is shipped** (2026-09-16): a new `grug_smelting` mod adds the two-slot
+dual furnace next to the ordinary one, the five lump-to-bar smelts, the five
+alloys of the Bronze-to-Abyssal-Steel ladder, the twelve storage pack/unpack
+pairs and the furnace's own T1 recipe, with the trader audit extended to the
+alloy chain the engine itself cannot see. It still awaits the user's own
+~10-minute runtime test. WP5, WP44, WP37, WP11, WP14, WP20, WP21 and WP8 are
+also ready behind shipped prerequisites. WP34 still needs structures and
+economy.
 
 **Release boundary:** WP40 is completed as development work; it does not declare
 our first public release or end fresh-server mode. Current-candidate resource

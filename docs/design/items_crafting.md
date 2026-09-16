@@ -530,6 +530,10 @@ contested route to the missing G2 must exist before the level-60 islands.
   drop substitution pressure.
 
 Crafted material blocks are storage/building nodes, never natural resources.
+**The pack/unpack recipes shipped 2026-09-16** (WP26): all twelve processed
+rows, 9 ↔ 1, both directions, derived from `grug_materials.PROCESSED_MATERIALS`
+so the Gold Block and the two resource-form blocks are covered by construction.
+Rough gems and cut-gem blocks remain WP10's and still have no recipe.
 They have no harvest tier, any real pick recovers them wherever territory
 permission allows, and they always drop themselves. Mapgen never places a
 craftable nine-unit storage block. Citrine, Garnet, Jade, Diamond, Sapphire and
@@ -543,6 +547,13 @@ The Gold Block specifically packs from 9 Gold Ingots and unpacks to the same
 purchase token; no claim upgrade or universal progression step requires it.
 
 #### 3.0.2 Alloys and the two-slot furnace
+
+**Shipped 2026-09-16** (WP26, `mods/ITEMS/grug_smelting`): both smelting
+nodes, the five single-input smelts, the five alloys below, the storage
+pack/unpack pairs of §3.0.1 and the station's own craft recipe are registered
+and audited at every server start. Cook durations are WP26 runtime calibration
+and are deliberately not frozen here; see
+[`wp26-implementation.md`](../research/wp26-implementation.md).
 
 Two smelting nodes. The **normal furnace** does single-input smelting;
 the **dual furnace** (ported from LotT, §1.1) does two-input alloys.
@@ -566,6 +577,9 @@ alloy's two metals — **2 Copper Bars and 1 Tin Bar** in LotT's T-arrangement
 (one Copper Bar centered on top; Copper Bar, furnace, Tin Bar across the
 bottom row). The alloy station is therefore strictly T1-accessible and is
 built after the normal furnace, never before it (decided 2026-08-13).
+Shipped 2026-09-16 as the node pair `grug_smelting:dual_furnace` /
+`grug_smelting:dual_furnace_active`, following `default:furnace`'s naming
+rather than LotT's `_inactive` suffix.
 
 #### 3.0.3 One item per concept — NO duplicates (binding)
 

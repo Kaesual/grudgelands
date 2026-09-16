@@ -1,0 +1,22 @@
+ACTION[Main]: [grug_materials] registry audit passed: 6 tiers, 15 resources, 12 processed forms, 6 race regions
+ACTION[Main]: [grug_smelting] recipe audit passed: 5 cooking, 5 dualfurn, 12 storage pairs, 1 station
+ACTION[Main]: [grug_traders] drop audit: 1 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit); their items are audited from the hardcoded FUNCTION_DROPS list
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31401.
+ACTION[Emerge-0]: [probe] forceloaded (8,104,8), placing three dual furnaces
+ACTION[Server]: [probe] placed A_bronze at (8,104,8): 'grug_materials:copper_bar 3' + 'grug_materials:tin_bar 3' + fuel 'default:coal_lump 9'
+ACTION[Server]: [probe] placed B_coal_is_only_fuel at (10,104,8): 'grug_materials:iron_bar 3' + '' + fuel 'default:coal_lump 9'
+ACTION[Server]: [probe] placed C_coal_is_a_material at (12,104,8): 'grug_materials:iron_bar 3' + 'default:coal_lump 3' + fuel 'default:coal_lump 9'
+ACTION[Server]: [probe] placed D_midcook_swap at (14,104,8): Iron Bar + mined Coal, to be swapped to Copper + Tin at t+4 s
+ACTION[Server]: [probe] case A_bronze: first output after 4 s -- grug_materials:bronze_bar x1, inputs left 2/2, node grug_smelting:dual_furnace_active
+ACTION[Server]: [probe] D_midcook_swap: swapped both material slots at t+4 s; output held 0 item(s) at that moment
+ACTION[Server]: [probe] case C_coal_is_a_material: first output after 6 s -- grug_materials:steel_bar x1, inputs left 2/2, node grug_smelting:dual_furnace_active
+ACTION[Server]: [probe] D_midcook_swap PASS: nothing new for 3 s after the swap
+ACTION[Server]: [probe] D_midcook_swap: 3 grug_materials:bronze_bar after the swap, inputs left 0/0
+ACTION[Server]: [probe] case A_bronze MEASURED: grug_materials:bronze_bar after 4 s wall clock; registered cook time 4 s
+ACTION[Server]: [probe] case B_coal_is_only_fuel PASS: nothing after 45 s, 3 Iron Bar(s) still in slot 1
+ACTION[Server]: [probe] case C_coal_is_a_material MEASURED: grug_materials:steel_bar after 6 s wall clock; registered cook time 6 s
+ACTION[Server]: [probe] audit negative test: 'grug_materials:iron_bar' x9 is worth 27c at the vendor but its dualfurn recipe consumes only 4c worth of priced inputs (mobs:leather, mobs:meat_raw) — items_crafting.md §3.8 anti-loop rule
+ACTION[Server]: [probe] audit over 5 shipped dualfurn recipes: 0 finding(s)
+ACTION[Server]: [probe] station recipe: 2 Copper Bars + 1 Tin Bar + a furnace -> grug_smelting:dual_furnace
+ACTION[Server]: [probe] normal furnace: default:copper_lump -> grug_materials:copper_bar in 3 s
+ACTION[Server]: [probe] PROBE PASS: the dual furnace smelts, the fuel slot is not a material slot, and the anti-loop walk fires
