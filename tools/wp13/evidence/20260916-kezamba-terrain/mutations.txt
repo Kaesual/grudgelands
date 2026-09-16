@@ -1,0 +1,11 @@
+== M1: the three crop fields lose their crop handle ==
+luajit: tools/wp13/kezamba_kat.lua:402: kezamba plot shore_gardens: the work socket shore_gardens_work_garden_a does farm but faces no farm feature within three nodes of -8,1,-9
+stack traceback:
+
+== M2: a raised bed is one row deep again ==
+luajit: tools/wp13/kezamba_kat.lua:791: kezamba crops: the garden shore_vineyard lays 145 cells of the palette's `planter` (default:mossycobble) against 2 planted ones, which is a field of stone
+stack traceback:
+
+== M3: the palette binds no crop again ==
+luajit: tools/wp13/kezamba_kat.lua:661: kezamba crops: wp13/troll_palette.lua's M.CROP binds no crop and no crop_soil, so dressing.crop_rows falls back to the mud pair and the fields grow nothing
+stack traceback:

@@ -1,0 +1,8 @@
+exit=0 errors=0 complete=1 log=/tmp/grug-w3-K-full-user/server.log
+avenue overlay digest recorded (no committed value for seed 15912857179583385436 yet)
+rampart: this capital publishes no such overlay region
+corner: this capital publishes no such overlay region
+gate: this capital publishes no such overlay region
+WP13 capital pass PASS: kezamba full /tmp/grug-w3-K-full-user
+engine.sh mode=full seed=15912857179583385436 exit=0 seconds=114
+no server on 31100

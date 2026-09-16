@@ -1,0 +1,11 @@
+kind	seed	reach	land	perimeter_min	perimeter_max	perimeter_mean_x100	worst_land_land	at	over_step	worst_land_water
+kezamba_walls	531802985935182545	250	220647	-1	3	195	8	-32,72	98	16
+kezamba_walls	8675309	250	220647	-1	3	197	10	78,-17	308	15
+kezamba_walls	15912857179583385436	250	220647	-1	3	195	10	197,66	217	15
+kezamba_walls	0	250	220647	0	3	198	9	179,6	1278	16
+kezamba_walls	1	250	220647	-1	3	197	10	116,149	492	15
+kezamba_walls	2	250	220647	-1	3	196	9	119,149	966	14
+kezamba_walls	42	250	220647	-1	3	196	8	2,-250	113	15
+kezamba_walls	12345	250	220647	-1	3	196	11	-1,-250	408	14
+kezamba_walls	999999999	250	220647	-1	3	195	10	194,59	297	15
+kezamba_walls PASS: the civic pad steps down at the terrace step and no land wall exceeds 14 nodes, on all 9 seeds

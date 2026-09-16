@@ -1,0 +1,2 @@
+kezamba_field	reach=250	core_wet=2645	core_disagreements=0	envelope_wet_engine=30354	envelope_wet_mask=30354	envelope_disagreements=0	dry_y=66..66	ravine_y=9999..-9999	wet_y=53..55	reference_y=66	water_surface_y=65
+kezamba_field PASS: the engine's own field agrees with the committed mask on every one of the 251001 columns it covers

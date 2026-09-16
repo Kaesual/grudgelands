@@ -1,0 +1,29 @@
+kind	seed	reach	land	perimeter_min	perimeter_max	perimeter_mean_x100	worst_land_land	at	over_step	worst_land_water
+kezamba_walls	531802985935182545	250	220647	-1	17	786	29	70,134	505	16
+FAIL	the civic pad on 531802985935182545 ends in a face of 17 nodes against the terrace step of 3
+FAIL	a land wall of 29 nodes at 70,134 on 531802985935182545 against a ceiling of 14
+kezamba_walls	8675309	250	220647	-1	21	1002	27	78,136	895	15
+FAIL	the civic pad on 8675309 ends in a face of 21 nodes against the terrace step of 3
+FAIL	a land wall of 27 nodes at 78,136 on 8675309 against a ceiling of 14
+kezamba_walls	15912857179583385436	250	220647	-1	19	920	29	66,134	702	15
+FAIL	the civic pad on 15912857179583385436 ends in a face of 19 nodes against the terrace step of 3
+FAIL	a land wall of 29 nodes at 66,134 on 15912857179583385436 against a ceiling of 14
+kezamba_walls	0	250	220647	0	28	1500	39	78,136	2678	16
+FAIL	the civic pad on 0 ends in a face of 28 nodes against the terrace step of 3
+FAIL	a land wall of 39 nodes at 78,136 on 0 against a ceiling of 14
+kezamba_walls	1	250	220647	-1	23	966	35	67,134	996	15
+FAIL	the civic pad on 1 ends in a face of 23 nodes against the terrace step of 3
+FAIL	a land wall of 35 nodes at 67,134 on 1 against a ceiling of 14
+kezamba_walls	2	250	220647	-1	27	1185	38	78,136	2096	14
+FAIL	the civic pad on 2 ends in a face of 27 nodes against the terrace step of 3
+FAIL	a land wall of 38 nodes at 78,136 on 2 against a ceiling of 14
+kezamba_walls	42	250	220647	-1	19	991	27	78,136	575	15
+FAIL	the civic pad on 42 ends in a face of 19 nodes against the terrace step of 3
+FAIL	a land wall of 27 nodes at 78,136 on 42 against a ceiling of 14
+kezamba_walls	12345	250	220647	-1	18	864	34	66,134	936	14
+FAIL	the civic pad on 12345 ends in a face of 18 nodes against the terrace step of 3
+FAIL	a land wall of 34 nodes at 66,134 on 12345 against a ceiling of 14
+kezamba_walls	999999999	250	220647	-1	19	989	31	66,134	874	15
+FAIL	the civic pad on 999999999 ends in a face of 19 nodes against the terrace step of 3
+FAIL	a land wall of 31 nodes at 66,134 on 999999999 against a ceiling of 14
+kezamba_walls FAIL: 18 wall measurement(s) past their ceiling
