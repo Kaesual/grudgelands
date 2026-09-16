@@ -12,6 +12,10 @@ local function say(...)
 	core.log("action", "[fishprobe] " .. table.concat({...}, " "))
 end
 
+-- Captured HERE and not inside a callback: `core.get_current_modname()` only
+-- answers while a mod is loading and returns nil from `on_mods_loaded`.
+local MODPATH = core.get_modpath(core.get_current_modname())
+
 core.register_on_mods_loaded(function()
 	--
 	-- 1. THE ITEMS, as the engine registered them.
@@ -114,9 +118,36 @@ end)
 -- wield entity's item and its pose -- rather than inferring them from the
 -- ACTIVITY table it already printed above.
 --
+--
+-- THE WATCH GATE, and the one switch this probe has.
+--
+-- `start_villagers.lua`'s work tick reaches its dressing block only past
+-- `watched(self, pos)`, which asks `grug_mobs.nearest_player_d2` -- and that
+-- returns nil with nobody connected (levels.lua: `visible = false -- nobody
+-- connected`). A headless boot has no player, so on a FRESH world the dressing
+-- block is never reached at all and every work resident stands empty-handed
+-- whatever the wield seam does.
+--
+-- That is a property of the PROBE, not of the game, and the only honest way to
+-- show it is to remove the one difference. `unwatch.lua` is NOT shipped in this
+-- directory: the runner copies the probe to a scratch path and writes the file
+-- in beside it for the second boot of the pair, so the same probe produces both
+-- halves of the experiment and the shipped bytes never carry the override.
+--
+local watch_override = false
+
+local function load_unwatch()
+	local chunk = loadfile(MODPATH .. "/unwatch.lua")
+	if not chunk then
+		return false
+	end
+	chunk()
+	return true
+end
+
 local ANGLER_SETTLEMENTS = {"kapok", "kezamba"}
 local FORCE_REACH = 32
-local DEADLINE = 420
+local DEADLINE = 200
 local REPORT_EVERY = 10
 
 local function forceload_area(anchor)
@@ -137,6 +168,8 @@ end
 local targets = {}
 
 core.register_on_mods_loaded(function()
+	watch_override = load_unwatch()
+	say("watch_override", tostring(watch_override))
 	for _, key in ipairs(ANGLER_SETTLEMENTS) do
 		local sockets = grug_core.settlement_sockets_at(key) or {}
 		for _, socket in ipairs(sockets) do
@@ -209,7 +242,9 @@ core.register_globalstep(function(dtime)
 			end
 		end
 	end
-	say("wait", "t=" .. math.floor(elapsed), "pending=" .. pending)
+	say("wait", "t=" .. math.floor(elapsed), "pending=" .. pending,
+		"players=" .. #core.get_connected_players(),
+		"watch_override=" .. tostring(watch_override))
 	if pending == 0 or elapsed >= DEADLINE then
 		for _, target in ipairs(targets) do
 			if not resolved[target.id] then

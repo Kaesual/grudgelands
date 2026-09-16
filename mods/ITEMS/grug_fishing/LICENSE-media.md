@@ -24,9 +24,13 @@ indication of whether we changed it.
   <https://www.planetminecraft.com/texture_pack/131pixel-perfection/>
 * Licence: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 
-| File | Upstream | Author chain | Modifications |
-|---|---|---|---|
-| `grug_fishing_rod.png` | `= textures/mcl_fishing_fishing_rod.png` (used by `mods/ITEMS/mcl_fishing/init.lua`) | XSSheep | **none** — byte-identical copy, renamed. sha256 `c1298c45d084302cec4aa32d0c3caeb973c1ec1291442f29bdb2bc880e37eb3d` |
+The row below carries the five fields `docs/research/licensing.md` §3.2 asks
+for — file, author, source URL, licence, modified? — rather than leaving the
+licence and the URL to the header above it.
+
+| File | Author | Source URL | Licence | Modified? |
+|---|---|---|---|---|
+| `grug_fishing_rod.png` | XSSheep (Pixel Perfection), via VoxeLibre | <https://git.minetest.land/VoxeLibre/VoxeLibre/src/commit/c2dbc520ff4e1637072d33b06c3a2404e0f08df7/textures/mcl_fishing_fishing_rod.png> (used by `mods/ITEMS/mcl_fishing/init.lua`) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | **No** — byte-identical copy, renamed only. sha256 `c1298c45d084302cec4aa32d0c3caeb973c1ec1291442f29bdb2bc880e37eb3d` |
 
 The sprite is kept unmodified on purpose: it is already drawn in this game's
 one held-item convention — long axis on the image's anti-diagonal, grip at the

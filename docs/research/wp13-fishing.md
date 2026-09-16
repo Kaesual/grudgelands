@@ -25,8 +25,8 @@ The wield convention (round 2, `mods/PLAYER/grug_visuals/wield_geometry.lua`)
 fixes a held sprite's LONG axis — the image's anti-diagonal through the grip
 pixel (3.4, 12.6) — and leaves the ROLL about that axis to one Euler triple,
 `x = 90, y = -(45 + t), z = 90`. That triple maps the image's **up-left** side
-to model **up**. Both axe families draw the bit on the up-left side, so through
-it the cutting edge points at the sky.
+to model **up**. All three axe families draw the bit on the up-left side, so
+through it the cutting edge points at the sky.
 
 That the roll is otherwise invisible is not an assumption; it is measured by
 `tools/wp13/evidence/20260916-fishing/sprite_axis.py`, which mirrors every held
@@ -36,16 +36,35 @@ compares silhouettes:
 | sprite family | silhouette overlap under the roll | pixels that move |
 |---|---|---|
 | `default_tool_*sword` (6), `*pick` (6), `*shovel` (6) | **100.0 %** | 0 |
+| `grug_materials_tool_*pick` (4), `*shovel` (4) | **100.0 %** | 0 |
 | `grug_gear_item_sword_*` (6), `_dagger_*` (6) | **100.0 %** | 0 |
 | `default_stick` | **100.0 %** | 0 |
 | `grug_gear_item_staff_*` (7) | 34.5 % | 18 |
 | `grug_fishing_rod` | 40.0 % | 27 |
 | `default_tool_*axe` (6) | **26.3 %** | 28 |
+| `grug_materials_tool_*axe` (4) | **26.3 %** | 28 |
 | `grug_gear_item_greataxe_*` (6) | **17.4 %** | 38 |
+
+**39 of the 63** sprites a character can hold are invariant; `sprite_axis.py`
+prints those two counts itself, because the first version of this section quoted
+a hand count ("26 sprites") and got it wrong.
 
 So a sword, a dagger, a pick, a shovel and a stick **cannot tell the two rolls
 apart** — the round-2 sword the user approved is provably untouched by this
-change — while an axe's whole head moves.
+change — while an axe's whole head moves. (Stronger still, and checked by the
+review: the `tool` and `upright` branches of `wield_transform` return bitwise
+identical `pos`/`rot`/`size` before and after this lane at four statures, so
+nothing outside the axe family moves by a single float.)
+
+**There are THREE axe families, not two.** Besides minetest_game's four
+surviving hatchets and the generator's six greataxes,
+`mods/ITEMS/grug_materials/tools.lua` registers
+`grug_materials:axe_{iron,silversteel,embersteel,abyssal_steel}` with
+`groups = {axe = 1, grug_equip_weapon = 1}`. They take the rolled pose too, and
+they were measured by nothing until the review of 2026-09-16 pointed it out:
+they are now four rows in `sprite_axis.py`'s corpus (26.3 %, 28 px moved, the
+same geometry as `default`'s) and four rows in the KAT's `POSE_CASES`. Fourteen
+items in all.
 
 ### 1.2 Why "up" is the wrong side, and not a matter of taste
 
@@ -214,12 +233,14 @@ One mod, `mods/ITEMS/grug_fishing`, one global, two files.
 | the axe pose is the tool pose rolled, and only rolled | `tools/wp13/wield_transform_kat.lua` section C1b: hilt, grip, tip and blade identical to three decimals at two arm angles; `flat` and `head` exactly negated; size and position unchanged; `rot.z` negated |
 | the edge leads the chop, and did not before | the same section's `leads()` dot product: **+1** after, **−1** before (kept as the control) |
 | which items are in which pose | `wp13_wield_pose` rows for 13 real items, driven through the shipped `grug_visuals.pose_for`; and the same 8 classes re-read out of the live engine registry in `headless-boot.log` |
-| the roll cannot move a sword, dagger, pick, shovel or stick | `sprite_axis.py`, 100.0 % silhouette overlap on all 26 of them |
+| the roll cannot move a sword, dagger, pick, shovel or stick | `sprite_axis.py`, 100.0 % silhouette overlap on **39 of 63** held sprites, counted by the script itself |
+| all three axe families take the rolled pose | `sprite_axis.py` measures `grug_materials`' four axes alongside `default`'s and the greataxes; `wp13_wield_pose` asserts the mapping for `grug_materials:axe_iron` and `_abyssal_steel` (and their pick/shovel siblings staying `tool`) |
 | the rod is in the game's sprite convention | `sprite_axis.py`: opaque grip pixel, centroid −0.86 (line on the down side) |
 | the catch table and the bite | `tools/wp13/fishing_kat.lua` sections A and B: weights exhaustively enumerated (every roll 0..99 lands on exactly its entry's weight), both continents, both ends of the wait, clamping |
 | the mechanic | the same fixture's section D drives the **real** `on_place` closure and the **real** globalstep through nine cases (lands / reeled in / walked off / rod away / water gone / dry land / full pack / junk roll / left the server), with "one tick before the bite" as the negative control |
 | the registrations are what the fixture says | `headless-boot.log`, one clean boot, zero `ERROR`/`ModError`, `[fishprobe]` lines carrying groups, recipes, poses and the catch table straight out of the engine |
-| an angler really holds the rod | `headless-boot-angler-reload.log`: all three Kezamba `fish` sockets, `wield_item=grug_fishing:rod wield_pose=tool wield_entity=true`. §6a is why it takes the reload boot and not the fresh one |
+| an angler really holds the rod | `headless-boot-angler-reload.log`: all three Kezamba `fish` sockets, `wield_item=grug_fishing:rod wield_pose=tool wield_entity=true`; and `watch-gate-B-unwatched.log`, where a **fresh** world does the same as soon as the probe stops being the only thing in the way. §6a |
+| the fresh-world empty hands are the probe, not the game | `watch_gate.sh`: two boots, two fresh worlds, one variable (`grug_mobs.nearest_player_d2`). A: three anglers empty for 200 s. B: all three holding the rod at t=60. No shipped byte patched |
 | nothing else moved | the six start identities and Highcourt's blueprint digests re-run and compared to main; `tools/wp40/r7/run.sh unit` PASS |
 
 Both KATs are byte-identical under LuaJIT and `tools/bin/lua51`
@@ -237,6 +258,12 @@ purpose.
   sign error would hide.
 * **`EDGE_DOWN` before `DIAGONAL`.** If the order is ever swapped, every axe
   silently returns to the old pose and only the `wp13_wield_pose` rows notice.
+  (The review tried exactly that mutation; it bites.)
+* **A NEW axe sprite is not automatically right.** The rolled pose is correct
+  for today's fourteen axes because all three families happen to draw the bit on
+  the same side — measured, not assumed. A future axe drawn the other way would
+  take the pose and be wrong, and only `sprite_axis.py`'s centroid column would
+  say so.
 * **One known blind spot, written down rather than papered over.** The rolled
   pose's `tilt_sign` decides how it treats `TILT_UP`, and `TILT_UP` is **0** —
   so the sign is inert for every byte this lane ships and no fixture can see
@@ -256,49 +283,134 @@ purpose.
   checked against §3.8's anti-loop rule and against the front-only gate
   ingredients.
 
-## 6a. One thing found and NOT fixed here
+### Five exact numbers and decisions, recorded because the review asked for them
 
-**A work resident is dressed exactly once per activation, and on a fresh world
-that is too early.** `start_villagers.lua`'s work tick guards the call with
+* **The rod lasts 65 catches, not 64.** `ROD_WEAR = floor(65535/64) = 1023`;
+  after 64 catches wear is 65472 and `ItemStack::addWear` clears only when the
+  next step would exceed 65535 — the 65th. The constant is named `ROD_USES = 64`
+  and the audit line says `rod 64 uses`, which is the engine's own `uses = N`
+  convention, so the rod wears exactly like every other tool in the game. The
+  off-by-one is real and cosmetic; it is written down rather than "fixed" into
+  disagreeing with every other tool.
+* **`range = 8` is not only a casting range.** An item definition's `range` sets
+  the wielder's whole interaction distance while that item is held, so with the
+  rod in hand a player can right-click a door, a chest or a vendor from 8 nodes
+  instead of the usual 4. That is a side effect of a number chosen for water and
+  a reviewer should know it exists — but it is **not new and not the rod's
+  alone**, and one claim of the review needs correcting here: the rod is *not*
+  the only item in the game that sets `range`. Every ability orb does
+  (`grug_abilities/init.lua:544`, `range = def.range or 4`), and
+  `grug_abilities/kits.lua` runs 4, 8, 12 and **20** — Fireball already extends
+  a player's interaction reach two and a half times further than this rod, by
+  design (AGENTS.md: "item `range` = targeting range"). So the rod joins an
+  existing pattern at its low end. Server-side consumers that care re-validate
+  distance themselves (the trade formspec does, on every action).
+* **There is deliberately no `is_protected` check on a cast.** The game has real
+  faction protection (`grug_core/protection.lua`, honoured by
+  `grug_materials/mining.lua`), and fishing does not go through it: fishing
+  changes no node, so there is nothing for the protection rule to guard.
+  Fishing in an enemy capital's cenote is therefore allowed. If the design ever
+  wants it blocked, the check goes in `cast_or_reel` and nowhere else.
+* **Fishing is a small, unaudited vendor faucet, and that is for WP10/economy to
+  price.** A rod costs 3 sticks + 2 Spider Silk and yields ≈ 65 × 78 % ≈ 51 raw
+  fish at 2c ≈ **102c** of vendor value. `grug_traders` audit 3 correctly does
+  not fire — it walks craft/cook recipes, and this is a gathering faucet like
+  mining, not a loop — but the number belongs on record next to the other
+  income figures of `items_crafting.md` §8.1.
+* **The sprite counts are printed, not hand-counted.** The first write-up of
+  §1.1 said "26 sprites"; `sprite_axis.py` now ends with a counted line
+  (`rows: 63   invariant under the roll (100.0%): 39   moved by it: 24`) so the
+  number in a note can always be copied from a run.
+
+## 6a. The empty-handed anglers are a PROBE ARTEFACT — corrected 2026-09-16
+
+**The first version of this section was wrong, and the correction matters more
+than the observation.** It blamed a failed `add_entity` inside `sync_wield`
+plus the one-shot `grug_work_dressed` flag, and proposed a per-tick
+`apply_race_visual` for every work resident in the game. The independent review
+rejected that diagnosis; measuring it settled the question, and the proposed
+patch is **withdrawn**.
+
+### The observation
+
+On a **fresh** headless world all three Kezamba `fish` sockets carry a
+`grug_mobs:villager_troll` with `activity=fish` and an **empty hand** at every
+sample (`headless-boot-angler.log`: 180 s; the reviewer's own boot: 420 s). The
+**same world rebooted** through `ROOT=` gives all three
+`wield_item=grug_fishing:rod wield_pose=tool wield_entity=true` twenty seconds
+in (`headless-boot-angler-reload.log`).
+
+### The cause
+
+`work_tick` reaches its dressing block only past the watch gate
+(`start_villagers.lua:786`):
 
 ```lua
-if not temp.grug_work_dressed then
-    temp.grug_work_dressed = true
-    apply_race_visual(self, self._grug_npc_race, activity)
+if not watched(self, pos) then
+    …
+    return false
 end
+-- The tool and the pose, once per activation.
+if not temp.grug_work_dressed then …
 ```
 
-`sync_wield`'s `add_entity` can fail (no loaded block at the parent's position
-yet, an entity budget) and then deliberately leaves its fields empty **so that
-the next pass retries** — but for a mob there is no next pass, because the
-one-shot flag has already been set. The retry the comment promises exists only
-for players, who have the once-a-second poll.
+and `watched` asks `grug_mobs.nearest_player_d2`, which returns **nil when
+nobody is connected** — `levels.lua`'s own comment for the same call says
+`visible = false -- nobody connected`. A headless boot has no player, so the
+gate is false on every tick and the dressing block is **never reached at all**.
+The wield seam is not involved.
 
-Measured, twice, and it is **pre-existing — this lane did not cause it**:
+### The controlled experiment
 
-* `npc-probe/probe.txt`, the three-boot start programme: the `chop` resident
-  reads `item=nil` on boot 1 **and** boot 2 and only `item=default:axe_stone`
-  on boot 3. That is `default:axe_stone`, a tool no lane touched.
-* `headless-boot-angler.log`: on a **fresh** world all three Kezamba anglers are
-  found, alive, with `activity=fish`, and report `wield_item=nil
-  wield_entity=false` at every 10 s sample for 180 s.
-  `headless-boot-angler-reload.log` is the **same world rebooted** through
-  `ROOT=`, where all three read `wield_item=grug_fishing:rod wield_pose=tool
-  wield_entity=true` twenty seconds in.
+`watch_gate.sh` runs two boots, each on its own fresh world, differing in
+exactly one thing: the second stages an `unwatch.lua` next to the probe that
+replaces `grug_mobs.nearest_player_d2` with a function answering 0. No shipped
+byte is patched — `watched` reads that field off the global table on every
+call — and the probe prints `players=` and `watch_override=` on every sample so
+the two halves cannot be confused.
 
-It is `start_villagers.lua`'s to fix and this lane owns only that file's
-ACTIVITY items, so it is reported rather than patched. The fix is small — drop
-the flag and let the idempotent call run every tick, or clear the flag when
-`_grug_wield_item` came back nil — but it is a behaviour change to the NPC
-tick, and that belongs to whoever owns it.
+```
+A-watched    watch_override false   players=0   3 anglers, wield_item=nil for the whole window
+B-unwatched  watch_override true    players=0   3 anglers, wield_item=grug_fishing:rod wield_pose=tool
+```
+
+One variable, two outcomes. Two further corroborations, both in this lane's own
+evidence and both pointed out by the review:
+
+* `npc-probe/probe.txt` shows the `chop` resident with **`anim=stand`** on the
+  fresh boot, not `anim=work`. The animation is set *after* the same gate, so a
+  failing `add_entity` could not explain it.
+* The failure is **100 % uniform** — three anglers, every sample, every work
+  resident of the start programme. An `add_entity` race would be sporadic.
+
+The reload half is the other branch: `after_activate` dresses unconditionally
+when `_grug_work_activity` is already in staticdata, and it runs whether or not
+anyone is watching.
+
+### What follows
+
+* **Nothing ships differently, and no lane needs to fix anything.** A player who
+  can see an angler is by definition within the 24-node watch radius, so the
+  gate is true and the resident is dressed on the next work tick. The user will
+  not see empty hands; a headless probe always will.
+* The **one-shot flag remains a latent risk** — if `spawn_wield` ever failed on
+  the single dressing tick there would be no retry for a mob, only for players
+  (who have the once-a-second poll). That path is **unmeasured**: this lane
+  never observed it, because the gate stopped the tick before it could.
+  Narrow, self-healing on the next unload/reload, and not worth a behaviour
+  change to the NPC tick on this evidence.
+* **What to do with a headless probe of NPC appearance**: stage an
+  `unwatch.lua`, or the probe will keep reporting a defect the game does not
+  have.
 
 ## 7. What is open
 
-* **`docs/design/character_visuals.md` §4 still says there are two poses** and
-  that "which one an item gets is read off the sword / axe / pickaxe / shovel /
-  staff families it declares". There are three now, and the family list has
-  gained `fishing_rod`. That file is the docs-alignment lane's; this lane did
-  not touch it.
+*(The two stale documents this list used to name are now fixed here:
+`docs/design/character_visuals.md` §4 describes three poses and the
+`fishing_rod` family, and `docs/research/wp13-weapon-ladder.md` carries a dated
+status pointer rather than a rewritten record — it is the round-2 record and
+stays as written.)*
+
 * **Per-zone fishing tables** (the user's "later"): the seam is
   `grug_fishing.table_for(pos)` and it is the only thing that needs to change.
 * **More fish species.** One species is what the cooking ladder needs today;

@@ -118,9 +118,24 @@ two transforms, and one of them would be wrong.
 
 **An item that is not a weapon or a tool is held upright instead**: a torch, an
 apple, a sapling or a bag is an ordinary icon with no diagonal and no grip, so
-it is held by its centre, standing up, its face vertical like a blade's. The two
-poses are the two kinds of art, and nothing else; which one an item gets is read
-off the sword / axe / pickaxe / shovel / staff families it declares.
+it is held by its centre, standing up, its face vertical like a blade's.
+
+**An axe is held edge-down** (decided 2026-09-16, playtest round 5: "the axe
+blades of the Dur Brannoc residents point the wrong way"). The convention above
+fixes a sprite's long axis and leaves the *roll* about it free, and an axe is
+the one family whose art cannot sit on that axis: its bit is a wide edge across
+the end of the haft, drawn to one side. Held in the plain tool pose that side
+points at the sky and the axe chops with its back. The axe pose is the same
+transform rolled half a turn about the blade, so that the **cutting edge leads
+the swing** — nothing else about the weapon moves, and a sword, dagger, pick,
+shovel or rod cannot tell the two rolls apart at all (their art is symmetric
+about the axis, measured).
+
+So there are **three poses, and they are the three kinds of art**: the diagonal
+tool, the diagonal tool whose working edge has a side, and the anonymous icon.
+Which one an item gets is read off the families it declares — sword / axe /
+pickaxe / shovel / staff / fishing rod, with the axe family taking the rolled
+pose.
 
 **The weapon is the same weapon in every hand.** The attachment inherits the
 wielder's stature (§2), so the entity's size divides it out; a dwarf's sword and

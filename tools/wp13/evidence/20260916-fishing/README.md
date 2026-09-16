@@ -11,24 +11,27 @@ Base: `main` at `f37a0c5b`. Branch: `wp13-w3-fishing`.
 | `sprite_axis.py` | the measurement the whole axe argument rests on: for every held sprite, the opaque grip pixel, the signed centroid offset from the long axis, and the silhouette overlap with its own mirror about that axis — i.e. how much of it the new roll can move at all. |
 | `static.sh`, `static.txt` | parser + `SETGLOBAL` per changed file and tree-wide, the five plain-5.1 sweeps scoped and tree-wide, `check_fresh_server.py`, the `LICENSE-media.md` row check for the shipped PNG, the imported sprite's sha256, and `sprite_axis.py`. |
 | `kats.sh`, `kat-luajit.txt`, `kat-puc51.txt` | the four WP13 fixtures this increment touches — wield transform, fishing, character visuals, start NPCs — in one fixed order, once under each interpreter. **Byte-identical**, sha256 `f01537d4…c8f86d86`. |
-| `mutations.sh`, `mutations.txt` | eleven deliberate breakages and what each fixture says. Ten go red; **M2 is expected to pass and says so**, because it flips a sign that `TILT_UP = 0` makes inert. |
+| `mutations.sh`, `mutations.txt` | twelve deliberate breakages and what each fixture says. Eleven go red; **M2 is expected to pass and says so**, because it flips a sign that `TILT_UP = 0` makes inert. |
 | `headless-boot.log` | one `tools/luanti_headless.sh 200` boot on port 31210 with `probe/` staged. Zero `ERROR`/`ModError`. The `[fishprobe]` lines carry the registrations, the poses, the recipes and the catch table **out of the live engine registry**, so "the KAT says so" and "the server agrees" are two statements. |
 | `probe/` | the disposable probe mod staged for that one boot and never shipped. |
 | `npc-probe/` | `tools/wp13/run_npc_probe.sh` in `start` mode, three boots on one world at gate seed `531802985935182545`, port 31215. Two notes on it are below. |
 | `headless-boot-angler.log`, `headless-boot-angler-reload.log` | the angler in the world: two boots on ONE world (the second through `ROOT=`), with the probe forceloading Kezamba's three `fish` sockets and reading the wield entity back off the villagers standing on them. |
+| `watch_gate.sh`, `watch-gate.txt`, `watch-gate-A-watched.log`, `watch-gate-B-unwatched.log` | the controlled experiment behind §6a of the increment record: two boots on two fresh worlds, differing in exactly one thing — the second replaces `grug_mobs.nearest_player_d2` from the probe, which is the only reason a headless boot's work residents are never dressed. No shipped byte is patched. |
 | `identities.txt` | the six start identity digests and Highcourt's blueprint digests, this branch against `main`. |
 | `final-micro.txt` | `tools/wp13/final_micro.lua` under both interpreters, and the one-line diff against `main`'s output. |
 | `files.sha256` | every file above plus every changed source. |
 
 ### Two notes on the `npc-probe/` run
 
-* **It does not show an angler, and cannot.** `npc_probe`'s start programme
+* **It does not show an angler, and could not have.** `npc_probe`'s start programme
   inventories `grug_core.settlement_socket_settlements()[1]` — Hearthpine, the
   dwarf start (`probe.txt`, `event=ready key=hearthpine`) — and the only
   `activity = "fish"` sockets in the game are Kezamba's three cenote anglers.
   That is why this lane staged a probe of its own for the angler. What the run
   *does* carry is the `chop` resident holding `item=default:axe_stone` on
-  boot 3, i.e. the axe seam working end to end in an engine.
+  boot 3, i.e. the axe seam working end to end in an engine — and the
+  `anim=stand` on its fresh boot, which is one of the two corroborations that
+  the watch gate, not the wield seam, is what a headless boot is looking at.
 * **Boot 1 died on the environment, not on the game**: three `ERROR` lines,
   all of them `Failed to save block: disk I/O error`. `/tmp` is a 30 GB tmpfs
   and stood at 80 % with seven wave-3 lanes writing worlds into it. Boots 2 and
@@ -57,6 +60,10 @@ python3 tools/wp13/evidence/20260916-fishing/render_wield.py \
 and two engine passes, both through `tools/luanti_headless.sh`:
 
 ```sh
+# the watch-gate experiment (watch-gate.txt and its two logs)
+PORT=31210 BUDGET=240 tools/wp13/evidence/20260916-fishing/watch_gate.sh \
+  /tmp/grug-w3-fishing-watch
+
 # the registry pass (headless-boot.log)
 PORT=31210 KEEP=1 PROBE=tools/wp13/evidence/20260916-fishing/probe \
   nice -n 19 tools/luanti_headless.sh 200
@@ -91,18 +98,23 @@ and nothing after, and both temp directories were removed.
   (`core::Transform::buildMatrix` in two comments) plus the pre-existing wp40
   tooling; fresh-server audit PASS; the one shipped PNG carries its
   `LICENSE-media.md` row.
-* **Sprite measurement**: 26 of the held sprites — every sword, dagger, pick and
-  shovel, and the stick — are **100.0 %** invariant under the new roll, so the
-  round-2 sword cannot have changed; the roll moves 28 pixels of an axe and 38
-  of a greataxe.
+* **Sprite measurement**: of the **63** sprites a character can hold, **39** are
+  **100.0 %** invariant under the new roll — every sword, dagger, pick and
+  shovel of all three ladders, plus the stick — so the round-2 sword cannot have
+  changed; the roll moves 28 pixels of an axe (all three axe families) and 38 of
+  a greataxe. The counts are printed by the script, not hand-counted.
 * **The angler**: on a FRESH world all three Kezamba `fish` sockets carry a
   `grug_mobs:villager_troll` with `activity=fish` and an **empty hand** at every
-  sample for 180 s; the same world rebooted gives all three
-  `wield_item=grug_fishing:rod wield_pose=tool wield_entity=true` 20 s in. That
-  split is a pre-existing one-shot in `start_villagers.lua` and is written up in
-  §6a of the increment record — it is not this lane's to fix and is not caused
-  by it (the `chop` resident's `default:axe_stone` behaves identically in
-  `npc-probe/probe.txt`).
+  sample; the same world rebooted gives all three
+  `wield_item=grug_fishing:rod wield_pose=tool wield_entity=true` 20 s in.
+  **That split is a probe artefact, not a defect**, and `watch-gate.txt` is the
+  one-variable experiment that says so: a headless boot has no player, so
+  `watched()` in `start_villagers.lua` is false on every tick and the dressing
+  block is never reached at all. Override `grug_mobs.nearest_player_d2` from the
+  probe and the same fresh world dresses the anglers. §6a of the increment
+  record carries the whole correction — an earlier draft of it blamed
+  `add_entity` and proposed a per-tick patch; that diagnosis was wrong and the
+  patch is withdrawn.
 * **Engine**: `headless boot: PASS`, zero `ERROR`/`ModError`; 62 `WARNING`
   lines, all of them the pre-existing `No craft recipe matches input (type:
   fuel, …)` chatter and the deprecated-mod-storage notice — none from

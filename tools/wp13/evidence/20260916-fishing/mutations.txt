@@ -19,9 +19,11 @@ wp13_wield_result	PASS	0
 
 == M3 no family asks for the rolled pose
 -- mutation: sed 's/^local EDGE_DOWN_GROUP = {"axe"}$/local EDGE_DOWN_GROUP = {}/' mods/PLAYER/grug_visuals/wield_geometry.lua
-wp13_wield_result	FAIL	2
+wp13_wield_result	FAIL	4
 wp13_wield_failure	default:axe_stone is held tool, not edge_down
 wp13_wield_failure	grug_gear:greataxe_steel is held tool, not edge_down
+wp13_wield_failure	grug_materials:axe_abyssal_steel is held tool, not edge_down
+wp13_wield_failure	grug_materials:axe_iron is held tool, not edge_down
 
 == M4 the rod is not a diagonal tool any more
 -- mutation: sed 's/"fishing_rod", "grug_equip_weapon"}/"grug_equip_weapon"}/' mods/PLAYER/grug_visuals/wield_geometry.lua
@@ -50,6 +52,11 @@ wp13_fishing_failure	table_for is not the same table at (900,12,-700) -- fish av
 -- mutation: sed 's/^local REEL_RANGE = 8$/local REEL_RANGE = 100000/' mods/ITEMS/grug_fishing/init.lua
 wp13_fishing_result	FAIL	1
 wp13_fishing_failure	the line held from 200 nodes away
+
+== M8b a cast lands on dry land too
+-- mutation: sed 's/^\tif not pos or not is_water(pos) then$/\tif not pos then/' mods/ITEMS/grug_fishing/init.lua
+wp13_fishing_result	FAIL	1
+wp13_fishing_failure	a cast at stone still drew a bite roll
 
 == M9 the rod cannot point at water
 -- mutation: sed 's/^\tliquids_pointable = true,$/\tliquids_pointable = false,/' mods/ITEMS/grug_fishing/init.lua
