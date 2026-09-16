@@ -308,13 +308,61 @@ return function(dependencies)
 	-- quadratic number of relief queries.
 	local CAPITAL_BAND_RADIUS = {[2] = 1, [3] = 2, [4] = 3}
 
+	-- THE APRON, and the ONE capital shape that asks for it.
+	--
+	-- `capital_terrace_value`'s cut/fill clamp is applied OUTSIDE the civic
+	-- core and not inside it, so wherever the fitted reference stands further
+	-- above the natural ground than `max_fill`, the civic pad ends in a
+	-- VERTICAL FACE: the last core column is the reference and the first column
+	-- outside it is `natural + max_fill`. On five of the six capitals that face
+	-- is zero nodes tall on both gate seeds, because their reference is a
+	-- median of their own core's natural ground. Kezamba's is not: its civic
+	-- reference is raised to clear the authored `hydro_kezamba_cenote`
+	-- (`capital_..._water_min`), the lake stands twenty to thirty nodes above
+	-- the wetland delta around it, and the pad therefore measured a face of 17
+	-- to 28 nodes over the nine fixture seeds -- with the same thing happening
+	-- a second time round the lake itself, where `water_banks.protect` holds a
+	-- two-column rim at the water floor and the graded ground beside it falls
+	-- to the natural relief in one column (worst 4-neighbour drop 27 to 39).
+	--
+	-- Playtest 5 (2026-09-16, user): "The capital core in Kezamba stands on an
+	-- unnatural plateau, the terrain has no natural course there." The apron is
+	-- the answer, and it is exactly one rule:
+	--
+	--     the graded land of this capital may not stand more than one TERRACE
+	--     STEP below the civic reference per column of distance from the civic
+	--     core, nor more than one terrace step below the lake's own dry rim per
+	--     column of distance from the lake's edge.
+	--
+	-- Both cones are `constant - step * (a distance that changes by about one
+	-- per column)`, so each is about `step`-Lipschitz, and the shaped value is
+	-- their MAXIMUM with the clamped terrace -- `max` of fields is bounded by
+	-- the worst of them, so the apron adds no step of its own beyond `step`.
+	-- Each cone dies where it falls below the ground it is drawn over, which is
+	-- what makes it a SKIRT of about `(fall / step)` columns and not a plateau:
+	-- the fall is 20 to 30 nodes, so the skirt is seven to ten columns wide.
+	--
+	-- It is SHAPE-GUARDED. `capital_terrace_value` takes `apron` as an eighth
+	-- OPTIONAL argument for the same reason it takes `banded` as a seventh: the
+	-- five other capital shapes and the frozen scalar cases of
+	-- `module.quality_geometry_micro_kat` pass nothing, reach none of this code
+	-- and keep their answer to the byte.
+	local CAPITAL_APRON_SHAPE = "cenote_terrace"
+
+	-- The two columns `water_banks.protect` already holds at the water floor.
+	-- The lake cone starts stepping down only beyond them, so the apron meets
+	-- that rim instead of cutting a fresh face into its outer edge.
+	local CAPITAL_APRON_SHORE_HOLD = 2
+
 	-- `banded` is the stepped terrace of `fitting_grids.band.value`. It is
 	-- OPTIONAL so the frozen scalar cases of `module.quality_geometry_micro_kat`
 	-- keep calling this function with six arguments and keep their old answer:
 	-- the band changes where the terrace lattice is READ, never how the civic
-	-- core, the 32-node civic blend or the cut/fill clamp behave.
+	-- core, the 32-node civic blend or the cut/fill clamp behave. `apron` is
+	-- OPTIONAL for the same reason and is the floor described above; it is nil
+	-- for every capital shape but `cenote_terrace`.
 	local function capital_terrace_value(incoming, reference, step,
-			civic_outside, max_cut, max_fill, banded)
+			civic_outside, max_cut, max_fill, banded, apron)
 		local terrace = banded or
 			reference + step * round_ratio(incoming - reference, step)
 		local shaped = terrace
@@ -326,6 +374,7 @@ return function(dependencies)
 		end
 		if civic_outside > 0 then
 			shaped = clamp(shaped, incoming - max_cut, incoming + max_fill)
+			if apron ~= nil and apron > shaped then shaped = apron end
 		end
 		return shaped
 	end
@@ -1865,7 +1914,7 @@ return function(dependencies)
 			selected_fittings = {}, {}, {}, {}, {}
 		local start_by_zone, capital_by_zone = {}, {}
 		local fitting_grids = {start = {}, capital = {}, selected = {},
-			band = {keys = {}, values = {}}}
+			band = {keys = {}, values = {}}, apron = {}}
 
 		-- THE RELIEF THE CAPITAL STEP BAND IS CUT FROM.
 		--
@@ -1962,6 +2011,68 @@ return function(dependencies)
 				end
 			end
 			return terrace_middle(erosion + dilation)
+		end
+
+		-- THE APRON FLOOR of the `cenote_terrace` capital: the higher of the
+		-- two cones described above `capital_terrace_value`.
+		--
+		-- It is hung off `fitting_grids` for the reason `band` is -- `construct`
+		-- sits at Lua 5.1's 200-local ceiling -- and it is only ever called for
+		-- a land column of a capital whose profile names
+		-- `CAPITAL_APRON_SHAPE`, which is one capital in the roster.
+		--
+		-- THE LAKE CONE SCANS EVERY SEGMENT AND NOT THE NEAREST ONE, and that
+		-- is a measurement and not a preference. `nearest_hydrology_segment`
+		-- answers with the segment whose CENTRELINE is closest, which is not
+		-- the segment whose EDGE is closest when a reach tapers: at
+		-- (1864, 1634), five columns off this cenote's south shore, the closest
+		-- centreline is the narrow first segment 62 columns away behind a
+		-- half-width of 49 (13 columns outside it) while the wide second
+		-- segment is 72 away behind a half-width of 70 -- two columns outside,
+		-- which is where the water actually is. The first version of this
+		-- function asked `nearest_hydrology_segment` and the lake rim kept its
+		-- 29-node wall. The mask itself (`simple_map.lua`'s `bay_member`) is
+		-- the UNION of the segment capsules, so the distance outside it is the
+		-- MINIMUM over the segments, which is what this loop takes.
+		--
+		-- The window costs nothing: a segment is a candidate only within
+		-- `max(half_width) + bank_blend_width` of its centreline, sixteen
+		-- columns past the reach's own edge, and a cone of `step` from the
+		-- water floor has fallen below any ground this delta carries long
+		-- before that. `hydrology_half_width` is the same interpolation the
+		-- bank blend uses, and `point_segment_ratio`'s endpoint branches with
+		-- it give exactly `bay_member`'s end discs.
+		--
+		-- Neither cone can raise a WATER column: `fitting_grade_at` reaches
+		-- this only on the land branch, and a capital never grades planned
+		-- water at all. The wet mask, the water surface and the civic
+		-- reference are therefore untouched by construction.
+		function fitting_grids.apron.value(x, z, owner, reference, step,
+				civic_outside)
+			local floor_y = reference - step * civic_outside
+			local candidates = bucket_at(hydro_grid, x, z)
+			if not candidates then return floor_y end
+			for index = 1, #candidates do
+				local segment = candidates[index]
+				local reach = segment.reach
+				if reach.zone_numeric_id == owner and reach.profile.depth > 0 then
+					local numerator, denominator = point_segment_ratio(x, z,
+						segment.a, segment.b)
+					if numerator <= segment.maximum_half * segment.maximum_half *
+							denominator then
+						local outside = deterministic.isqrt(math.floor(
+							numerator / denominator)) -
+							hydrology_half_width(segment, x, z)
+						if outside < CAPITAL_APRON_SHORE_HOLD then
+							outside = CAPITAL_APRON_SHORE_HOLD
+						end
+						local from_water = reach.water_y + 1 -
+							step * (outside - CAPITAL_APRON_SHORE_HOLD)
+						if from_water > floor_y then floor_y = from_water end
+					end
+				end
+			end
+			return floor_y
 		end
 
 		for anchor_index = 1, #source.anchors do
@@ -2254,11 +2365,22 @@ return function(dependencies)
 									local step = profile.terrace_step
 									local civic_outside = half_open_square_excess(x, z,
 										fitting.center, profile.civic_width)
+									-- The apron is asked for only by the shape that
+									-- has one, so the other five capitals reach
+									-- `capital_terrace_value` with eight arguments
+									-- whose last is nil and take the same code path
+									-- they took before it existed.
+									local apron
+									if profile.shape == CAPITAL_APRON_SHAPE and
+											civic_outside > 0 then
+										apron = fitting_grids.apron.value(x, z, owner,
+											fitting.reference_y, step, civic_outside)
+									end
 									local shaped = capital_terrace_value(incoming,
 										fitting.reference_y, step, civic_outside,
 										profile.max_cut, profile.max_fill,
 										fitting_grids.band.value(x, z, incoming,
-											fitting.reference_y, step))
+											fitting.reference_y, step), apron)
 									return qlerp_integer(incoming, shaped, weight), fitting,
 										civic_outside == 0, weight
 								end
