@@ -522,9 +522,12 @@ function M.run(repo)
 		return "caught=" .. #player._added .. " chat=" .. #harness.chat
 	end)
 
-	-- D3. WALKED OFF.
+	-- D3. WALKED OFF. Two rolls are queued although a correct run draws only
+	-- the bite: a mutation that lets the line hold would otherwise run the
+	-- queue dry and CRASH the fixture instead of failing it, and a crash is a
+	-- worse answer than a red row. The same is true of D4 and D5.
 	case("walked_off", function()
-		harness.rolls = {0}
+		harness.rolls = {0, 0}
 		harness.roll_at = 0
 		local player = new_player(harness, "wanderer", {x = 10, y = 4, z = 9},
 			fresh_rod())
@@ -537,7 +540,7 @@ function M.run(repo)
 
 	-- D4. ROD PUT AWAY.
 	case("rod_away", function()
-		harness.rolls = {0}
+		harness.rolls = {0, 0}
 		harness.roll_at = 0
 		local player = new_player(harness, "swapper", {x = 10, y = 4, z = 9},
 			fresh_rod())
@@ -550,7 +553,7 @@ function M.run(repo)
 
 	-- D5. THE POND DRAINED.
 	case("water_gone", function()
-		harness.rolls = {0}
+		harness.rolls = {0, 0}
 		harness.roll_at = 0
 		local player = new_player(harness, "drainer", {x = 10, y = 4, z = 9},
 			fresh_rod())
