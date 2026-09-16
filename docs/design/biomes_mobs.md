@@ -1344,16 +1344,17 @@ re-run against the new values once the change ships.
 | Reef Lurker (elite crab) — *deferred (§8.3)* | sand | 30 | 6000 | 1 | any | coast |
 | Kraken Guard | ocean water surface, open sea only (own check) | 60 | 12000 | 1 | any | (outside continents) |
 | Bandits / Mirefolk | **no ABM** — camp anchor with **respawn slots** (world.md §4a): max 3–5, one refill per 120–300 s, dormant catch-up | — | — | 3–5 per camp | — | camp pos |
+| Named rares | **no ABM** — scheduled spawner, 2–4 h respawn, broadcast | — | — | 1 | — | fixed routes |
 
 **The Bandit Archer costs no spawn budget** (2026-09-16). It has no row of its
-own: the bandit camp's slot roll picks it **1 in 3**, so the camp is still the
-3–5 of the row above and simply not all of one kind. Both families count
-against that one head count (`grug_mobs/camps.lua`), which is why an archer
-can never make a camp grow. It is also why ruling 3's "more ranged mobs"
-reaches the INNER ring, where the four pre-existing ranged mobs — Skeleton
-Archer, Skeleton Raider, Stone Golem, Mesa Golem — never went: before this,
-a player met no ranged enemy at all below roughly level 25.
-| Named rares | **no ABM** — scheduled spawner, 2–4 h respawn, broadcast | — | — | 1 | — | fixed routes |
+own: the bandit camp's slot roll picks it **1 in 3** per slot, so the camp is
+still the 3–5 of the Bandits/Mirefolk row above and simply not all of one
+kind. Both families count against that one head count
+(`grug_mobs/camps.lua`), which is why an archer can never make a camp grow.
+It is also why ruling 3's "more ranged mobs" reaches the INNER ring, where the
+four pre-existing ranged mobs — Skeleton Archer, Skeleton Raider, Stone Golem,
+Mesa Golem — never went: before this, a player met no ranged enemy at all
+below roughly level 25.
 
 Row notes:
 - **Crocodile spawns on mud only.** "Water at mud" is not expressible:

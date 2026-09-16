@@ -791,8 +791,12 @@ end
 
 -- The bandit camp is the game's only INNER-ring source of a ranged enemy
 -- (biomes_mobs.md §3.1, user ruling 3 of 2026-09-16). One slot in three is an
--- archer, rolled per slot: a five-bandit camp is most often three or four
--- brawlers and one or two archers, and never all archers.
+-- archer, and the roll is per slot and INDEPENDENT: the expected mix of a
+-- five-bandit camp is between one and two archers, and an all-archer camp is
+-- rare rather than impossible (1 in 27 at three slots, 1 in 243 at five).
+-- Deliberately not a quota — a quota would need the camp to remember which
+-- slots it has filled, and a refill would then have to re-roll against a head
+-- count it cannot see for unloaded members.
 grug_mobs.register_camp_type("bandit", {
 	mob = "grug_mobs:bandit",
 	variant = "grug_mobs:bandit_archer",

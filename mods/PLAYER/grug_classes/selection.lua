@@ -505,9 +505,14 @@ core.register_on_joinplayer(function(player)
 		return
 	end
 	local name = player:get_player_name()
-	-- Run after every mod's join callback. grug_mobs deliberately resets a
-	-- stale slow to speed=1 later in load order; this reasserts the creation
-	-- lock before the first ordinary server step.
+	-- Run after every mod's join callback, and reassert the creation lock
+	-- before the first ordinary server step. The reason used to be grug_mobs'
+	-- own join reset, which wrote speed = 1 later in load order; that handler
+	-- is gone with the movement aggregator (ruling 11), and the aggregator's
+	-- own join handler runs FIRST because every consumer declares
+	-- `depends = grug_core`. The re-lock stays anyway: this is a watchdog, and
+	-- a later mod may still write the field after join -- which is exactly
+	-- what `hold_movement` re-asserts against.
 	core.after(0, function()
 		local p = core.get_player_by_name(name)
 		if p and not character_complete(p) then

@@ -494,12 +494,12 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   round; user ruling 1 of that day restated the same rule in one sentence:
   "melee mobs must deal damage IMMEDIATELY when their attack is ready and they
   are within reach"). Where it now lives, against the patched tree:
-  `mods/ENTITIES/mobs/api.lua:2368-2395` advances `punch_timer` at the top of
-  the dogfight branch and caps the backlog at one; `:2527-2556` replaces the
+  `mods/ENTITIES/mobs/api.lua:2368-2403` advances `punch_timer` at the top of
+  the dogfight branch and caps the backlog at one; `:2535-2564` replaces the
   unconditional velocity zero with a run up to a contact distance of
-  `reach × 0.6`; `:2559-2610` lands the punch, with the in-reach and
+  `reach × 0.6`; `:2567-2618` lands the punch, with the in-reach and
   line-of-sight tests at the site of the punch rather than at the site of the
-  clock. `punch_interval` is still the mobs_redo default of 1 s (`:3839`) and
+  clock. `punch_interval` is still the mobs_redo default of 1 s (`:3847`) and
   `reach` is untouched.
   *Rationale, because the defect was invisible on paper*: vendored mobs_redo
   zeroed the mob's velocity as soon as the target was inside `reach`

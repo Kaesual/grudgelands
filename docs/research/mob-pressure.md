@@ -171,14 +171,14 @@ patch was never written.
 Three GRUG PATCH markers in `mods/ENTITIES/mobs/api.lua`, 40 → 43
 (`grep -c "GRUG PATCH" mods/ENTITIES/mobs/api.lua`):
 
-1. **`:2368-2395`** — `punch_timer` accumulates at the top of the dogfight
+1. **`:2368-2403`** — `punch_timer` accumulates at the top of the dogfight
    branch, above the `dist > reach` test, on every tick with a live target.
    The backlog is capped at one `punch_interval`, the rule the player's own
    swing clock already follows (`combat_stats.md:153`).
-2. **`:2527-2556`** — the in-reach branch no longer zeroes the velocity
+2. **`:2535-2564`** — the in-reach branch no longer zeroes the velocity
    unconditionally. The mob runs down to a contact distance of
    `reach × 0.6` and stops there.
-3. **`:2559-2610`** — the punch sits outside both branches and carries the
+3. **`:2567-2618`** — the punch sits outside both branches and carries the
    in-reach and line-of-sight tests at the site of the punch. A cadence that
    comes due out of reach is **not** reset, so the hit lands on the first tick
    reach is regained. Everything from the timer reset down is upstream's own
@@ -187,6 +187,14 @@ Three GRUG PATCH markers in `mods/ENTITIES/mobs/api.lua`, 40 → 43
 `reach` is untouched, for the three reasons the decided text gives: it cannot
 repair the defect, it widens the elite/rare telegraph cone (`reach + 1.5`) and
 it makes `dogshoot` mobs switch to melee earlier.
+
+**One consequence worth naming.** `punch_timer` is never cleared outside the
+punch, so the banked swing survives not only a chase but a wall, a lost target
+and a target switch: **every re-engagement opens with an immediate hit.** The
+cap keeps that at exactly one hit however long the interruption lasted, and it
+is the literal reading of ruling 1 — "damage IMMEDIATELY when the attack is
+ready and the target is in reach" — but it means a mob you break away from and
+then meet again does not give you a free second.
 
 **Why a fixed contact distance and not "keep running while the distance is
 increasing".** The card offers both. A per-tick distance derivative oscillates

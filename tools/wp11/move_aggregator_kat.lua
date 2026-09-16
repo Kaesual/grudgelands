@@ -266,7 +266,7 @@ return function(repo)
 		"a root was accepted while immune")
 	near(p.physics.speed, 1.5, "immunity keeps the player's own sprint")
 	grug_core.set_move_modifier(p, "mob_web", {speed = -0.40}, 4)
-	near(p.physics.speed, 1.5, "a slow landed while immune is not inert")
+	near(p.physics.speed, 1.5, "a slow landed while immune must be inert")
 	-- An immunity applied ON TOP of a running root drops it.
 	grug_core.clear_move_immunity(p)
 	grug_core.set_root(p, 5)

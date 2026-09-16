@@ -2388,6 +2388,14 @@ function mob_class:do_states(dtime)
 			-- swing clock already follows (combat_stats.md:153, "lag never
 			-- replays a backlog"): a mob that chased for ten seconds lands one
 			-- hit on arrival, not ten.
+			--
+			-- NB the banked swing is never cleared outside the punch, so it
+			-- also survives losing the target, a wall and a target switch:
+			-- every RE-engagement opens with an immediate hit. That follows
+			-- from ruling 1 ("damage IMMEDIATELY when the attack is ready and
+			-- the target is in reach") and the cap keeps it at exactly one
+			-- hit, however long the interruption lasted — but it is a
+			-- consequence worth naming rather than discovering.
 			self.punch_timer = (self.punch_timer or 0) + dtime
 
 			if self.punch_timer > self.punch_interval then
