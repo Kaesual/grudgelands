@@ -1,1 +1,1 @@
-27ea04eff662c81e4b7d10f9bd4020f060f819451f5a7c1856ac4118dd13897f  gate seed=8675309 overlay_cells=2541 main=922bfd92 package=20260915-route-gates
+7390c51b361d6b9bdf01cd2d170646ca0a2a59762b4bd7c0fd64255fa2a93bfe  gate seed=8675309 overlay_cells=2579 main=70dda602 package=20260916-streets

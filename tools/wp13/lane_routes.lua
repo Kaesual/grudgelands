@@ -85,6 +85,26 @@ local CAPITALS = {
 		runs = concat_lists(dur_brannoc.avenues, dur_brannoc.ring)},
 }
 
+-- THE JUNCTION SQUARES, in WORLD coordinates, because that is the frame this
+-- tool builds its runs in. `wp13/street_plan.lua` derives them from the run
+-- rectangles alone, so shifting the rectangles by the capital's anchor and
+-- asking again gives exactly the squares the composition attached in its own
+-- frame -- and a run built without them is not the run the seam builds.
+local street_plan = dofile(wp13 .. "/street_plan.lua")(wp13)
+for _, capital in ipairs(CAPITALS) do
+	local world_runs = {}
+	for index = 1, #capital.runs do
+		local run = capital.runs[index]
+		local along = (run.axis == "x") and capital.x or capital.z
+		local across = (run.axis == "x") and capital.z or capital.x
+		world_runs[index] = {id = run.id, axis = run.axis,
+			at = across + run.at, from = along + run.from,
+			to = along + run.to}
+	end
+	capital.junctions = street_plan.junctions(world_runs, avenue.WIDTH)
+end
+
+
 -- THE SEAM, offline. These are the two queries `wp40/r7_settlement.lua` hands
 -- the overlay in the engine, answered from the same pure height session:
 -- the walkable surface of a column (the ground, or the water standing on it)
@@ -99,6 +119,16 @@ local function deck(x, z)
 	local kind, functional_y = height.functional_surface_values_at(x, z)
 	if kind ~= "bridge_deck" then return nil end
 	return functional_y
+end
+-- THE THIRD QUERY THE SEAM PUBLISHES: whether the column is water. Since
+-- 2026-09-16 `wp13/avenue.lua` bridges a wet column instead of paving a
+-- causeway across it, and Highcourt's avenues cross three rivers, so a tool
+-- that handed the road only the surface would be measuring a road nobody
+-- builds.
+local function wet(x, z)
+	local terrain_y = height.terrain_height_at(x, z)
+	local water_y = height.water_surface_at(x, z)
+	return type(water_y) == "number" and water_y > terrain_y
 end
 
 -- The verdict is read off the BUILT ROAD and not off the rule that built it:
@@ -116,7 +146,8 @@ for _, capital in ipairs(CAPITALS) do
 		local piece = avenue.run(palette, {id = run.id, axis = run.axis,
 			at = across + run.at, from = along + run.from, to = along + run.to,
 			lamp_phase = along + run.from,
-			overhead = (not legacy) and deck or nil}, walkable)
+			overhead = (not legacy) and deck or nil,
+			wet = wet, junctions = capital.junctions[run.id]}, walkable)
 		local top, order = {}, {}
 		for _, cell in ipairs(piece.cells) do
 			local lane = (run.axis == "x") and (cell.z - piece.at) or
@@ -169,7 +200,8 @@ local function run_spec(capital, run, cut_from, cut_to)
 	return {id = run.id, axis = run.axis, at = across + run.at,
 		from = cut_from or (along + run.from), to = cut_to or (along + run.to),
 		lamp_phase = along + run.from,
-		overhead = (not legacy) and deck or nil}
+		overhead = (not legacy) and deck or nil,
+		wet = wet, junctions = capital.junctions[run.id]}
 end
 
 local walk_faults, cross_faults, cut_faults, cuts = 0, 0, 0, 0
@@ -195,10 +227,13 @@ for _, capital in ipairs(CAPITALS) do
 				stack[key][cell.y] = true
 			end
 		end
-		-- NOTHING THE ROAD WRITES HANGS IN THE AIR. Every carriageway column
-		-- is one unbroken stack, and it starts on the ground it was read from
-		-- or on the deck that carries it -- which is the abutment question a
-		-- bridge narrower than the carriageway asks.
+		-- NOTHING THE ROAD WRITES HANGS IN THE AIR, except deliberately.
+		-- Every carriageway column is one unbroken stack, and it starts on the
+		-- ground it was read from, on the deck that carries it -- which is the
+		-- abutment question a bridge narrower than the carriageway asks -- or,
+		-- since playtest 5's ruling 4 (2026-09-16), on NOTHING AT ALL, because a
+		-- column raised `MIN_CLEAR` or more is a VIADUCT whose own ground is
+		-- left as open air so a player can walk under the street.
 		for _, column in ipairs(order) do
 			local key = column.key
 			for y = low[key], top[key] do
@@ -210,12 +245,19 @@ for _, capital in ipairs(CAPITALS) do
 			end
 			local ground_y = walkable(column.x, column.z)
 			local deck_y = deck(column.x, column.z)
-			if low[key] ~= ground_y and low[key] ~= deck_y then
+			-- A WET COLUMN IS A BRIDGE, and a bridge deck stands over the
+			-- water on piers by the ruling of 2026-09-16: nothing under it is
+			-- the point, the same way nothing under a viaduct is. Highcourt's
+			-- avenues cross three rivers, which is 2811 columns of this.
+			if not wet(column.x, column.z) and
+					low[key] ~= ground_y and low[key] ~= deck_y and
+					top[key] - ground_y < avenue.MIN_CLEAR then
 				walk_faults = walk_faults + 1
 				io.stderr:write("the column " .. column.x .. "," .. column.z ..
 					" of " .. run.id .. " starts at " .. low[key] ..
-					", neither its ground " .. ground_y .. " nor a deck " ..
-					tostring(deck_y) .. "\n")
+					", neither its ground " .. ground_y .. ", nor a deck " ..
+					tostring(deck_y) .. ", nor a viaduct raised " ..
+					(top[key] - ground_y) .. "\n")
 			end
 		end
 		for lane = -HALF, HALF do

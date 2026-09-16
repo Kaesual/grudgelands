@@ -66,6 +66,7 @@ local function loader(directory)
 	-- `wp13/dur_brannoc.lua`'s shape, and Highcourt was the one four-district
 	-- capital that did not have it.
 	local districts = dofile(directory .. "/highcourt_districts.lua")(directory)
+	local street_plan = dofile(directory .. "/street_plan.lua")(directory)
 
 	local M = {}
 
@@ -496,10 +497,29 @@ local function loader(directory)
 	-- reaching for `highcourt_quadrants.lua`: the core composition knows about
 	-- the streets it authored itself and about nothing else.
 	function M.overlay_runs(lanes)
-		local runs = {}
-		for _, list in ipairs({M.avenues, M.ring, lanes or {}, M.wall}) do
-			for index = 1, #list do runs[#runs + 1] = list[index] end
+		-- THE JUNCTION PLATEAUS are attached here, and here is the only
+		-- place they can be. A plateau is a property of TWO street runs, and
+		-- only the composition knows which of its overlay runs ARE streets:
+		-- the curtain wall is an overlay run too, and a road passing through
+		-- its gate is not a crossroads. `wp13/street_plan.lua` turns the
+		-- street rectangles -- which are static, and are what the overlay's
+		-- identity is already hashed from -- into the squares they share, and
+		-- `wp13/avenue.lua` gives each square its height from the two runs'
+		-- own ground. The runs that are not streets are appended afterwards
+		-- and carry no junctions at all.
+		local streets = {}
+		for _, list in ipairs({M.avenues, M.ring, lanes or {}}) do
+			for index = 1, #list do streets[#streets + 1] = list[index] end
 		end
+		-- AND THE GATE PASSAGES, for the same reason and out of the same
+		-- rectangles: a street runs THROUGH the structure that is not a street,
+		-- and inside that passage the structure owns the lanes either side of
+		-- the carriageway. `wp13/avenue.lua` writes no plank walk, no rail and
+		-- no pillar there, which is the sentence the per-capital kerb parapets
+		-- this rule replaced each carried in their own words.
+		local runs = street_plan.attach(streets, nil,
+			{{runs = M.wall, half = wall.HALF}})
+		for index = 1, #M.wall do runs[#runs + 1] = M.wall[index] end
 		return runs
 	end
 

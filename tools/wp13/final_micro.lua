@@ -68,6 +68,12 @@ rows[#rows + 1] = dofile(repo .. "/tools/wp13/nhal_veyr_kat.lua")(repo)
 -- (`lethariel_kat.lua`).
 rows[#rows + 1] = dofile(repo .. "/tools/wp13/lethariel_kat.lua")(repo)
 rows[#rows + 1] = dofile(repo .. "/tools/wp13/lane_crossing_kat.lua")(repo)
+-- The STREET rule of all six capitals, which is what `avenue.lua` became after
+-- playtest 5 (2026-09-16): a flat cross profile, a junction plateau, a lamp on
+-- the street's own level, a viaduct on pillars and a bridge over water. It runs
+-- after the six capital fixtures because it asks the six compositions for their
+-- junction inventory and is therefore cheaper once their loaders are warm.
+rows[#rows + 1] = dofile(repo .. "/tools/wp13/street_kat.lua")(repo)
 -- Where a WP40 route STOPS. Playtest round 4 ruled that an incoming route ends
 -- at a gate on the city boundary and no longer runs into the interior; this is
 -- that sentence held against the compiled layout, which is the same on every

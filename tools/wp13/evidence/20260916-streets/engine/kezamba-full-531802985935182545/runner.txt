@@ -1,0 +1,6 @@
+exit=0 errors=0 complete=1 log=/tmp/grug-w3-streets-reb/kezamba-full-531802985935182545/server.log
+avenue overlay digest matches the committed value
+rampart: this capital publishes no such overlay region
+corner: this capital publishes no such overlay region
+gate: this capital publishes no such overlay region
+WP13 capital pass PASS: kezamba full /tmp/grug-w3-streets-reb/kezamba-full-531802985935182545

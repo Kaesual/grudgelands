@@ -41,7 +41,6 @@ return function(repo)
 	local quadrants = dofile(wp13 .. "/lethariel_quadrants.lua")()
 	local districts = dofile(wp13 .. "/lethariel_districts.lua")(wp13)
 	local grove = dofile(wp13 .. "/elf_grove.lua")(wp13)
-	local bridge = dofile(wp13 .. "/elf_bridge.lua")(wp13)
 	local elf = dofile(wp13 .. "/elf_parts.lua")(wp13)
 	local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 	local registry = dofile(repo .. "/tools/wp13/stub_registry.lua")
@@ -847,11 +846,12 @@ return function(repo)
 			"the overlay palette is not in byte order at " .. name)
 	end
 
-	local function run_spec(run, from, to)
+	local function run_spec(run, from, to, wet)
 		return {id = run.id, axis = run.axis, at = run.at,
 			from = from or run.from, to = to or run.to,
 			width = avenue.WIDTH, lamp_spacing = avenue.LAMP_SPACING,
-			lamp_phase = run.from, reach = avenue.REACH}
+			lamp_phase = run.from, reach = avenue.REACH, wet = wet,
+			junctions = run.junctions}
 	end
 
 	local overlay_cells, road_cells, edge_cells = 0, 0, 0
@@ -951,18 +951,14 @@ return function(repo)
 			" differs at " .. key)
 	end
 
-	-- The road itself: pavement at the surface and a walkable climb over every
-	-- terrace joint. THE WEST AVENUE and not the east one, because this
-	-- synthetic profile is a staircase and not a lake: the east avenue carries
-	-- a committed water span, the bridge trusts that span, and a bridge told
-	-- that a terrace is a lake lifts its deck by the terrace step. The west
-	-- avenue crosses no water on any seed, so it is the run that tests the
-	-- ROAD. The bridge's own continuity is section 7, over a profile that is
-	-- flat where the water plan says water.
-	local road_run = capital.avenues[3]
-	assert(road_run.id == "avenue_west" and
-		capital.water_plan[road_run.id] == nil,
-		"the dry test avenue moved")
+	-- The road itself: a walkable climb over every terrace joint. THE WEST
+	-- AVENUE, over a synthetic staircase and with NO water predicate at all, so
+	-- this section measures the road and section 7 measures the bridge.
+	local road_run
+	for _, candidate in ipairs(runs) do
+		if candidate.id == "avenue_west" then road_run = candidate end
+	end
+	assert(road_run, "the dry test avenue moved")
 	local road = capital.overlay_run(avenue, palette,
 		run_spec(road_run), surface)
 	local deck = {}
@@ -1076,14 +1072,29 @@ return function(repo)
 			if z < SPAN_FROM then return LAKE + (SPAN_FROM - z) end
 			return LAKE + (z - SPAN_TO)
 		end
-		local run = capital.avenues[2]
-		assert(run.id == "avenue_north", "the north avenue moved")
-		local spans = capital.water_plan[run.id]
-		assert(spans and spans[1][1] == SPAN_FROM and spans[1][2] == SPAN_TO,
-			"the north avenue's committed water span moved")
-		local piece = capital.overlay_run(avenue, palette, run_spec(run), lake)
-		assert(type(piece.bridge) == "table" and piece.bridge.columns > 0,
+		-- WHERE THE WATER IS is the SEAM's answer now, not a span table this
+		-- capital measured once: `wp40/r7_settlement.lua` publishes whether a
+		-- column is water out of the same plan it publishes the ground from,
+		-- and `wp13/avenue.lua` bridges every capital's water out of it. The
+		-- run list carries no `water_plan` any more, so the KAT hands the road
+		-- the same predicate the seam would.
+		local run
+		for _, candidate in ipairs(runs) do
+			if candidate.id == "avenue_north" then run = candidate end
+		end
+		assert(run and run.id == "avenue_north", "the north avenue moved")
+		assert(capital.water_plan == nil,
+			"the composition still carries a committed water span table")
+		local function wet(x, z)
+			return z >= SPAN_FROM and z <= SPAN_TO
+		end
+		local piece = capital.overlay_run(avenue, palette,
+			run_spec(run, nil, nil, wet), lake)
+		assert(type(piece.street) == "table" and piece.street.bridged > 0,
 			"the north avenue built no bridge")
+		assert(piece.street.piers > 0 and piece.street.rails > 0,
+			"the bridge has no piers (" .. piece.street.piers ..
+				") or no rails (" .. piece.street.rails .. ")")
 		local half = (avenue.WIDTH - 1) / 2
 		local deck_by_column, blocked_columns = {}, {}
 		local touched_columns = {}
@@ -1114,13 +1125,20 @@ return function(repo)
 		-- the walk into the city step no more than a node -- so they are the
 		-- bridge's ABUTMENTS and they are two, not three and not the whole
 		-- span. Everything between them is open water, which is the ruling.
+		--
+		-- AND SINCE THE LIFT NO LONGER RAMPS, not even the abutments. The elf
+		-- bridge module used to take no lift at a span's own first and last
+		-- column so that the deck stayed flush with the road; the road's level
+		-- is now the one-Lipschitz envelope of a field that already carries
+		-- `water + LIFT`, and the maximum of two one-Lipschitz fields is
+		-- one-Lipschitz, so the deck is flush at the shore by construction and
+		-- stands over the water everywhere. Zero, not two.
 		local blocked = {}
 		for column in pairs(blocked_columns) do blocked[#blocked + 1] = column end
 		table.sort(blocked)
-		assert(#blocked == 2 and blocked[1] == SPAN_FROM and
-			blocked[2] == SPAN_TO,
+		assert(#blocked == 0,
 			"the bridge blocks " .. #blocked .. " carriageway columns at or " ..
-			"under the water line, and not just its two abutments")
+			"under the water line")
 		-- AND IT WRITES NOTHING AT ALL THERE, air included: the water that
 		-- stands under the deck is the terrain's own and the bridge leaves it
 		-- alone. Same two abutments, for the same reason.
@@ -1129,19 +1147,16 @@ return function(repo)
 			touched[#touched + 1] = column
 		end
 		table.sort(touched)
-		assert(#touched == 2 and touched[1] == SPAN_FROM and
-			touched[2] == SPAN_TO,
+		assert(#touched == 0,
 			"the bridge writes into " .. #touched .. " carriageway columns at " ..
-			"or under the water line, and not just its two abutments")
+			"or under the water line")
 		-- The deck is there for every column of the span and never steps more
 		-- than a node.
 		local worst_step = 0
 		for column = SPAN_FROM, SPAN_TO do
 			assert(deck_by_column[column], "the bridge has no deck at " ..
 				column)
-			local lift = math.min(bridge.LIFT, column - SPAN_FROM,
-				SPAN_TO - column)
-			assert(deck_by_column[column] >= LAKE + lift,
+			assert(deck_by_column[column] >= LAKE + avenue.LIFT,
 				"the bridge deck at " .. column .. " is not over the water")
 			if column > SPAN_FROM then
 				local step = math.abs(deck_by_column[column] -
@@ -1186,11 +1201,11 @@ return function(repo)
 		-- bridge as well: cut a stretch of the span at every column and
 		-- compare the union with the whole.
 		local whole = capital.overlay_run(avenue, palette,
-			run_spec(run, 60, 120), lake)
+			run_spec(run, 60, 120, wet), lake)
 		local union, union_count = {}, 0
 		for column = 60, 120 do
 			local cut = capital.overlay_run(avenue, palette,
-				run_spec(run, column, column), lake)
+				run_spec(run, column, column, wet), lake)
 			for _, cell in ipairs(cut.cells) do
 				local key = cell.x .. ":" .. cell.y .. ":" .. cell.z
 				if union[key] == nil then
@@ -1210,8 +1225,8 @@ return function(repo)
 			assert(union[key] == cell.name, "the cut union of the bridge " ..
 				"differs at " .. key)
 		end
-		bridge_row = table.concat({piece.bridge.columns, piece.bridge.piers,
-			piece.bridge.lanterns, piece.bridge.dropped, worst_step,
+		bridge_row = table.concat({piece.street.bridged, piece.street.piers,
+			piece.street.rails, piece.street.spans, worst_step,
 			union_count}, ":")
 	end
 
@@ -1290,8 +1305,8 @@ return function(repo)
 	say("lethariel_edge", grove.HALF, grove.BELT, grove.HEDGE,
 		grove.GATE_PASSAGE, grove.RISE, table.concat(edge_rows, ","))
 	say("lethariel_gates", grove.CLEAR, table.concat(gate_rows, ","))
-	say("lethariel_bridge", bridge.LIFT, bridge.PIER, bridge.PIER_DEPTH,
-		bridge.LAMP, bridge_row)
+	say("lethariel_bridge", avenue.LIFT, avenue.PIER, avenue.PIER_DEPTH,
+		avenue.LAMP_SPACING, bridge_row)
 
 	return table.concat(report)
 end

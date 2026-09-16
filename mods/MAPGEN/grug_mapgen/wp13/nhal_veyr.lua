@@ -66,6 +66,7 @@ local function loader(directory)
 	local wall = dofile(directory .. "/wall.lua")(directory)
 	local plots = dofile(directory .. "/nhal_veyr_plot.lua")(directory)
 	local districts = dofile(directory .. "/nhal_veyr_districts.lua")(directory)
+	local street_plan = dofile(directory .. "/street_plan.lua")(directory)
 
 	local M = {}
 
@@ -1203,10 +1204,29 @@ local function loader(directory)
 	-- reaching for `nhal_veyr_quadrants.lua`: the core composition knows about
 	-- the streets it authored itself and about nothing else.
 	function M.overlay_runs(lanes)
-		local runs = {}
-		for _, list in ipairs({M.avenues, M.ring, lanes or {}, M.wall}) do
-			for index = 1, #list do runs[#runs + 1] = list[index] end
+		-- THE JUNCTION PLATEAUS are attached here, and here is the only
+		-- place they can be. A plateau is a property of TWO street runs, and
+		-- only the composition knows which of its overlay runs ARE streets:
+		-- the curtain wall is an overlay run too, and a road passing through
+		-- its gate is not a crossroads. `wp13/street_plan.lua` turns the
+		-- street rectangles -- which are static, and are what the overlay's
+		-- identity is already hashed from -- into the squares they share, and
+		-- `wp13/avenue.lua` gives each square its height from the two runs'
+		-- own ground. The runs that are not streets are appended afterwards
+		-- and carry no junctions at all.
+		local streets = {}
+		for _, list in ipairs({M.avenues, M.ring, lanes or {}}) do
+			for index = 1, #list do streets[#streets + 1] = list[index] end
 		end
+		-- AND THE GATE PASSAGES, for the same reason and out of the same
+		-- rectangles: a street runs THROUGH the structure that is not a street,
+		-- and inside that passage the structure owns the lanes either side of
+		-- the carriageway. `wp13/avenue.lua` writes no plank walk, no rail and
+		-- no pillar there, which is the sentence the per-capital kerb parapets
+		-- this rule replaced each carried in their own words.
+		local runs = street_plan.attach(streets, nil,
+			{{runs = M.wall, half = wall.HALF}})
+		for index = 1, #M.wall do runs[#runs + 1] = M.wall[index] end
 		return runs
 	end
 
@@ -1319,7 +1339,6 @@ local function loader(directory)
 	-- own ground is a terrace stair, and a rail on every tread would turn the
 	-- ordinary road into a trench. Three is an embankment. Dur Brannoc's own
 	-- number, and its reasoning.
-	local RAIL_FILL = 3
 
 	local function axis_column(spec, p, offset)
 		if spec.axis == "x" then return p, spec.at + offset end
@@ -1395,7 +1414,6 @@ local function loader(directory)
 		end
 
 		local half = ((spec.width or avenue.WIDTH) - 1) / 2
-		local STONE = palette.maybe("castle_wall") or palette.node("wall_accent")
 		local PAVING = palette.maybe("castle_paving") or palette.node("plaza")
 		local cut, rail, fill_max, cut_max = 0, 0, 0, 0
 		for index = 1, #order do
@@ -1422,18 +1440,14 @@ local function loader(directory)
 					cut = cut + 1
 				end
 			end
-			-- 2. The rail, on the kerb lanes only, and NOT inside the gate
-			-- passage: there the curtain's own piers stand either side of the
-			-- road and a kerb course would be masonry in the tunnel mouth.
-			local along_p = axis_along(spec, entry.x, entry.z)
-			local in_tunnel = along_p >= gate_at - wall.HALF and
-				along_p <= gate_at + wall.HALF
-			if across == half and not in_tunnel and
-					top - low[entry.key] >= RAIL_FILL then
-				piece.cells[#piece.cells + 1] = {x = entry.x, y = top + 1,
-					z = entry.z, name = STONE, param2 = 0}
-				rail = rail + 1
-			end
+			-- 2. THE RAIL IS THE ROAD MODULE'S NOW. A kerb course on a column
+			-- the road had filled by three or more was this capital's parapet;
+			-- since playtest 5 (2026-09-16) such a column is not filled at all
+			-- but carried on pillars, and `wp13/avenue.lua` rails the two VERGE
+			-- lanes of every raised or bridged span in every capital -- outside
+			-- the carriageway, where a rail belongs, and not on its outermost
+			-- lane. What is left here is this capital's own gate geometry: the
+			-- cap, the cutting and the tunnel floor.
 		end
 		-- 3. THE GATE TUNNEL'S FLOOR, which only a FINISHED MAP shows.
 		--

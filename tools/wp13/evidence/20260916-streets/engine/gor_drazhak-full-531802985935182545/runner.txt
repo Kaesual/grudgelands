@@ -1,0 +1,6 @@
+exit=0 errors=0 complete=1 log=/tmp/grug-w3-streets-reb/gor_drazhak-full-531802985935182545/server.log
+avenue overlay digest matches the committed value
+rampart overlay digest matches the committed value
+corner overlay digest matches the committed value
+gate overlay digest matches the committed value
+WP13 capital pass PASS: gor_drazhak full /tmp/grug-w3-streets-reb/gor_drazhak-full-531802985935182545

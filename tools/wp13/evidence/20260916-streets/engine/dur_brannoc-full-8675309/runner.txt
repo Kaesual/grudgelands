@@ -1,0 +1,6 @@
+exit=0 errors=0 complete=1 log=/tmp/grug-w3-streets-reb/dur_brannoc-full-8675309/server.log
+avenue overlay digest matches the committed value
+rampart overlay digest matches the committed value
+corner overlay digest recorded (no committed value for seed 8675309 yet)
+gate overlay digest matches the committed value
+WP13 capital pass PASS: dur_brannoc full /tmp/grug-w3-streets-reb/dur_brannoc-full-8675309

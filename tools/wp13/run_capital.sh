@@ -219,6 +219,30 @@ if [[ "$mode" == "full" ]]; then
 			echo "$label: this capital publishes no such overlay region"
 			continue
 		fi
+		# A DIGEST TAKEN OFF A REGION THAT WAS PARTLY UNLOADED IS NOT A DIGEST.
+		#
+		# The probe's own header says it: the server unloads mapblocks when no
+		# player is near, and a region read after that comes back as `ignore`.
+		# The probe counts them, and until now this gate compared the value
+		# anyway -- so an unloaded read looked exactly like a moved road.
+		#
+		# MEASURED, 2026-09-16: two passes of Highcourt on seed 8675309 on the
+		# SAME tree, one with `corner_ignored=0` (49 572 cells read,
+		# `cc6da1b7...`) and one with `corner_ignored=12000` (45 016 cells,
+		# `f1f96a37...`). The first is the road; the second is a read that lost
+		# a quarter of its region. Highcourt's corner is the largest region any
+		# capital publishes, which is why it is the one that shows it.
+		#
+		# So a region with anything ignored fails the pass with its own message
+		# instead of being compared: re-take it, do not re-freeze it.
+		ignored="$( { grep -o "${label}_ignored=[0-9]*" "$log" || true; } |
+			tail -1 | cut -d= -f2)"
+		if [[ -n "$ignored" && "$ignored" != "0" ]]; then
+			printf 'WP13 %s: the %s region came back with %s ignore nodes in it -- the map was partly unloaded before the probe read it.\n  Re-take the pass; do NOT re-freeze this digest.\n' \
+				"$key" "$label" "$ignored" >&2
+			status_digest=1
+			continue
+		fi
 		printf '%s  %s seed=%s overlay_cells=%s\n' "$digest" "$label" "$seed" \
 			"$cells" >>"$output/overlay-digests.txt"
 		# WP13 round 3 moved the ground under both: the capital terrace risers

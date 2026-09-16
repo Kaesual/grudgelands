@@ -135,10 +135,16 @@ return function(repo)
 				local taken = {}
 				for run_index = 1, #blueprint.runs do
 					local run = blueprint.runs[run_index]
+					-- The junction squares travel with the run exactly as the
+					-- seam hands them over (`wp40/r7_settlement.lua`): a plateau
+					-- where two streets cross is part of the road's own geometry,
+					-- so a fixture that left them out would be comparing the
+					-- settlement against a road nobody builds.
 					local piece = blueprint.run({id = run.id, axis = run.axis,
 						at = run.at, from = run.from, to = run.to,
 						width = blueprint.width, lamp_spacing = blueprint.lamp_spacing,
-						lamp_phase = run.from, reach = blueprint.reach},
+						lamp_phase = run.from, reach = blueprint.reach,
+						junctions = run.junctions},
 						function(x, z)
 							return stub_height(anchor.x + x, anchor.z + z)
 						end)

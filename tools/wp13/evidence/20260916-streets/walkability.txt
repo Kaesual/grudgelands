@@ -1,0 +1,63 @@
+# Neighbouring road columns whose walking level differs by 2 or more,
+# over the whole capital as the seam writes it (first run wins).
+# See walkability.lua. main = 70dda602, branch = this tree.
+
+## seed 8675309 -- main
+COMPOSITE highcourt    seed 8675309                unwalkable_pairs=16    worst=2  -97,-1413(ring_west,y=37) vs -96,-1413(ring_west,y=35)
+COMPOSITE dur_brannoc  seed 8675309                unwalkable_pairs=613   worst=12  -1898,-1503(ring_west,y=92) vs -1898,-1502(avenue_west,y=104)
+COMPOSITE gor_drazhak  seed 8675309                unwalkable_pairs=0     worst=0  
+COMPOSITE lethariel    seed 8675309                unwalkable_pairs=20    worst=2  1938,-1499(avenue_east,y=28) vs 1938,-1498(avenue_east,y=30)
+COMPOSITE kezamba      seed 8675309                unwalkable_pairs=70    worst=2  1959,1501(avenue_east,y=61) vs 1959,1502(avenue_east,y=63)
+COMPOSITE nhal_veyr    seed 8675309                unwalkable_pairs=2     worst=2  -1802,1752(avenue_north,y=90) vs -1802,1753(avenue_north,y=88)
+## seed 8675309 -- branch
+COMPOSITE highcourt    seed 8675309                unwalkable_pairs=0     worst=0  
+COMPOSITE dur_brannoc  seed 8675309                unwalkable_pairs=0     worst=0  
+COMPOSITE gor_drazhak  seed 8675309                unwalkable_pairs=0     worst=0  
+COMPOSITE lethariel    seed 8675309                unwalkable_pairs=3     worst=2  1895,-1565(ring_east,y=25) vs 1896,-1565(lane_southeast_spine,y=27)
+COMPOSITE kezamba      seed 8675309                unwalkable_pairs=0     worst=0  
+COMPOSITE nhal_veyr    seed 8675309                unwalkable_pairs=0     worst=0  
+
+## seed 531802985935182545 -- main
+COMPOSITE highcourt    seed 531802985935182545     unwalkable_pairs=24    worst=2  1,-1251(avenue_north,y=29) vs 2,-1251(avenue_north,y=31)
+COMPOSITE dur_brannoc  seed 531802985935182545     unwalkable_pairs=656   worst=18  -1897,-1406(ring_west,y=106) vs -1896,-1406(ring_north,y=124)
+COMPOSITE gor_drazhak  seed 531802985935182545     unwalkable_pairs=0     worst=0  
+COMPOSITE lethariel    seed 531802985935182545     unwalkable_pairs=20    worst=2  1801,-1251(avenue_north,y=46) vs 1802,-1251(avenue_north,y=44)
+COMPOSITE kezamba      seed 531802985935182545     unwalkable_pairs=18    worst=2  1958,1499(avenue_east,y=61) vs 1958,1500(avenue_east,y=63)
+COMPOSITE nhal_veyr    seed 531802985935182545     unwalkable_pairs=4     worst=2  -1802,1752(avenue_north,y=99) vs -1802,1753(avenue_north,y=97)
+## seed 531802985935182545 -- branch
+COMPOSITE highcourt    seed 531802985935182545     unwalkable_pairs=0     worst=0  
+COMPOSITE dur_brannoc  seed 531802985935182545     unwalkable_pairs=0     worst=0  
+COMPOSITE gor_drazhak  seed 531802985935182545     unwalkable_pairs=0     worst=0  
+COMPOSITE lethariel    seed 531802985935182545     unwalkable_pairs=11    worst=2  1724,-1402(ring_north,y=35) vs 1724,-1401(lane_northwest_cross,y=33)
+COMPOSITE kezamba      seed 531802985935182545     unwalkable_pairs=0     worst=0  
+COMPOSITE nhal_veyr    seed 531802985935182545     unwalkable_pairs=0     worst=0  
+
+## seed 15912857179583385436 -- main
+COMPOSITE highcourt    seed 15912857179583385436   unwalkable_pairs=8     worst=2  96,-1465(ring_east,y=41) vs 97,-1465(ring_east,y=39)
+COMPOSITE dur_brannoc  seed 15912857179583385436   unwalkable_pairs=8     worst=2  -1747,-1637(lane_southeast_cross,y=119) vs -1747,-1636(lane_southeast_cross,y=121)
+COMPOSITE gor_drazhak  seed 15912857179583385436   unwalkable_pairs=8     worst=3  251,1498(avenue_east,y=116) vs 251,1499(avenue_east,y=113)
+COMPOSITE lethariel    seed 15912857179583385436   unwalkable_pairs=1     worst=2  1994,-1318(lane_northeast_shore,y=37) vs 1994,-1317(lane_northeast_shore,y=39)
+COMPOSITE kezamba      seed 15912857179583385436   unwalkable_pairs=56    worst=2  1953,1498(avenue_east,y=63) vs 1953,1499(avenue_east,y=65)
+COMPOSITE nhal_veyr    seed 15912857179583385436   unwalkable_pairs=2     worst=2  -1798,1752(avenue_north,y=76) vs -1798,1753(avenue_north,y=74)
+## seed 15912857179583385436 -- branch
+COMPOSITE highcourt    seed 15912857179583385436   unwalkable_pairs=0     worst=0  
+COMPOSITE dur_brannoc  seed 15912857179583385436   unwalkable_pairs=0     worst=0  
+COMPOSITE gor_drazhak  seed 15912857179583385436   unwalkable_pairs=0     worst=0  
+COMPOSITE lethariel    seed 15912857179583385436   unwalkable_pairs=7     worst=2  1704,-1460(lane_northwest_spine,y=30) vs 1705,-1460(ring_west,y=28)
+COMPOSITE kezamba      seed 15912857179583385436   unwalkable_pairs=0     worst=0  
+COMPOSITE nhal_veyr    seed 15912857179583385436   unwalkable_pairs=0     worst=0  
+
+## seed 999999999 -- main
+COMPOSITE highcourt    seed 999999999              unwalkable_pairs=88    worst=3  -96,-1407(ring_west,y=37) vs -96,-1406(ring_north,y=40)
+COMPOSITE dur_brannoc  seed 999999999              unwalkable_pairs=153   worst=5  -1706,-1503(ring_east,y=107) vs -1706,-1502(avenue_east,y=112)
+COMPOSITE gor_drazhak  seed 999999999              unwalkable_pairs=0     worst=0  
+COMPOSITE lethariel    seed 999999999              unwalkable_pairs=64    worst=3  1837,-1318(lane_northeast_shore,y=42) vs 1837,-1317(lane_northeast_shore,y=45)
+COMPOSITE kezamba      seed 999999999              unwalkable_pairs=67    worst=2  1955,1498(avenue_east,y=61) vs 1955,1499(avenue_east,y=63)
+COMPOSITE nhal_veyr    seed 999999999              unwalkable_pairs=5     worst=2  -1799,1750(avenue_north,y=72) vs -1798,1750(avenue_north,y=74)
+## seed 999999999 -- branch
+COMPOSITE highcourt    seed 999999999              unwalkable_pairs=0     worst=0  
+COMPOSITE dur_brannoc  seed 999999999              unwalkable_pairs=0     worst=0  
+COMPOSITE gor_drazhak  seed 999999999              unwalkable_pairs=0     worst=0  
+COMPOSITE lethariel    seed 999999999              unwalkable_pairs=3     worst=2  1895,-1510(ring_east,y=46) vs 1896,-1510(lane_southeast_spine,y=48)
+COMPOSITE kezamba      seed 999999999              unwalkable_pairs=0     worst=0  
+COMPOSITE nhal_veyr    seed 999999999              unwalkable_pairs=0     worst=0  

@@ -609,8 +609,15 @@ local function prepare_overlay(fail, descriptor, overlay)
 		else
 			stretch(run.at - half, run.at + half, run.from, run.to)
 		end
+		-- THE JUNCTION SQUARES, and the spans where a street passes through an
+		-- authored structure, travel with the run and are NOT hashed -- which is
+		-- exact rather than lax: `wp13/street_plan.lua` derives both from the
+		-- run rectangles and the carriageway width alone, and every one of those
+		-- rectangles is in the identity bytes already. A change to any of them
+		-- moves the identity; nothing else can move a junction or a passage.
 		runs[index] = {id = run.id, axis = run.axis, at = run.at,
-			from = run.from, to = run.to}
+			from = run.from, to = run.to, junctions = run.junctions,
+			plain_verge = run.plain_verge}
 		bytes[#bytes + 1] = table.concat({"run", index, run.id, run.axis,
 			run.at, run.from, run.to}, "\t") .. "\n"
 	end
@@ -1080,11 +1087,19 @@ function M.config(prepared, content, raw_sha256)
 				end
 				deck_y = functional_y
 			end
+			-- THE THIRD VALUE IS WHETHER THIS COLUMN IS WATER, and it is read
+			-- off the same plan the first two are. An overlay run needs it
+			-- because the surface it is handed over a river IS the river: a
+			-- street that filled up to it would be a dam with a road on top,
+			-- and the ruling of 2026-09-16 is that a water body stays one body
+			-- and a street over water is a bridge on piers. Lethariel used to
+			-- carry a hand-measured span table for exactly this; the plan knew
+			-- all along, and one more return value is what it took to ask it.
 			if type(water_y) == "number" and water_y % 1 == 0 and
 					water_y > terrain_y then
-				return water_y, deck_y
+				return water_y, deck_y, true
 			end
-			return terrain_y, deck_y
+			return terrain_y, deck_y, false
 		end
 
 		local metrics = {plan_calls = 0, settle_calls = 0, replay_calls = 0,
@@ -1112,6 +1127,9 @@ function M.config(prepared, content, raw_sha256)
 				-- the crossing rule costs no extra column.
 				state.ground = {}
 				state.deck = {}
+				-- The same memo for "is this column water", filled by the same
+				-- query and in the same pass, so a bridge costs no extra column.
+				state.wet = {}
 				state.runs = {}
 				for run_index = 1, #blueprint.runs do
 					local run = blueprint.runs[run_index]
@@ -1303,7 +1321,7 @@ function M.config(prepared, content, raw_sha256)
 				local state = states[index]
 				if state.active and state.descriptor.kind == "overlay" then
 					local blueprint = state.blueprint
-					local ground, decks = state.ground, state.deck
+					local ground, decks, wets = state.ground, state.deck, state.wet
 					-- One query fills both memos. `decks` distinguishes "not
 					-- asked yet" (nil) from "nothing spans this column"
 					-- (`false`), so a column with no bridge over it is still
@@ -1313,10 +1331,11 @@ function M.config(prepared, content, raw_sha256)
 						local value = ground[key]
 						if value == nil then
 							metrics.height_calls = metrics.height_calls + 1
-							local deck_y
-							value, deck_y = walkable_values(x, z)
+							local deck_y, soaked
+							value, deck_y, soaked = walkable_values(x, z)
 							ground[key] = value
 							decks[key] = deck_y or false
+							wets[key] = soaked and true or false
 						end
 						return key, value
 					end
@@ -1332,6 +1351,14 @@ function M.config(prepared, content, raw_sha256)
 						local deck_y = decks[key]
 						if deck_y == false then return nil end
 						return deck_y
+					end
+					-- WHERE THE CAPITAL'S OWN WATER IS, for the run that has to
+					-- bridge it. The same memo, the same pass and the same
+					-- purity as the two queries above: a column, a yes or a no,
+					-- and no state.
+					local function local_wet(x, z)
+						local key = read(anchor.x + x, anchor.z + z)
+						return wets[key]
 					end
 					-- CROSS-RUN ARBITRATION, and the successor is the only thing that
 					-- can do it: `avenue.run` is a pure function of ONE run and knows
@@ -1387,7 +1414,13 @@ function M.config(prepared, content, raw_sha256)
 									-- built before there was a crossing rule, which
 									-- is what every engine-free fixture still asks
 									-- for.
-									overhead = local_overhead},
+									overhead = local_overhead,
+									-- The capital's own water, and the squares
+									-- this run shares with another street; see
+									-- `wp13/avenue.lua`.
+									wet = local_wet,
+									junctions = run.junctions,
+									plain_verge = run.plain_verge},
 									local_surface)
 								-- Rule 2: the standards this run may not raise, by the
 								-- three cells each of them occupies (post, post, torch,

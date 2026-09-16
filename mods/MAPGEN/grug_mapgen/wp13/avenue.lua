@@ -1,5 +1,6 @@
--- WP13 capital avenues: the surface overlay that carries a gate road across
--- terraced ground.
+-- WP13 capital streets: the surface overlay that carries every road of a
+-- capital across terraced ground, over its own water and past the roads it
+-- crosses.
 --
 -- The capitals contract (docs/research/wp13-capitals-pois-contract.md section
 -- 2.1) gives a capital four avenues from the core edge to the four gate
@@ -17,6 +18,33 @@
 -- of road and nothing else. It queries no height of its own, reads no engine
 -- and keeps no state; two calls with the same arguments produce the identical
 -- cell list.
+--
+-- WHAT PLAYTEST 5 (2026-09-16) FOUND, and what this module now is
+-- ---------------------------------------------------------------
+-- The user walked Dur Brannoc and Lethariel and made five rulings about the
+-- streets. Every one of them is a rule of this module now, because a street
+-- rule that lives in a capital is a street rule five capitals do not have.
+--
+--   1. "Streets follow the terrain exactly, a wild mix of stairs and
+--      orthogonal one-block jumps." The road is now walked at ONE level per
+--      position: the cross profile of a column of the run is flat, and the
+--      profile along the run climbs at most a node per column. The earlier
+--      version profiled every LANE on its own, which is why a terrace joint
+--      crossing the road at an angle left a five-lane staircase across the
+--      carriageway -- measured before this change at a cross-profile spread of
+--      up to 8 nodes (tools/wp13/street_geometry.lua).
+--   2. "The connecting street must be raised artificially at the junction."
+--      A junction is a SQUARE PLATEAU on one y and both runs arrive at it at
+--      one node a column. See THE JUNCTION PLATEAU.
+--   3. The lamp standards followed the ground and stood below or above the
+--      road they light. They stand on the ROAD's level now.
+--   4. A street raised on a steep slope was a solid wall. A raise of
+--      `MIN_CLEAR` or more now stands on PILLARS with open air under it, and
+--      only a small raise is still solid ground. See THE VIADUCT.
+--   5. Lethariel's piers, rails and deck lanterns over water: "super, I want
+--      that in Highcourt (and every other city where it is missing)." Every
+--      street of every capital that stands over water is a BRIDGE now, in that
+--      race's own palette. See THE BRIDGE.
 --
 -- Where the contract's sentence is not enough
 -- -------------------------------------------
@@ -45,10 +73,13 @@
 -- and on nothing else, which is what makes a piece of the run equal to that
 -- stretch of the whole.
 --
--- Every lane of the road is profiled on its own, because a terrace joint
--- crossing the road at an angle arrives at the five lanes in five different
--- columns; a per-lane envelope follows it, a road-wide one would step where
--- the ground does not.
+-- THE GROUND THE ENVELOPE IS TAKEN OF IS THE WHOLE CARRIAGEWAY'S, and that is
+-- ruling 1. The earlier version took one envelope per lane so that a terrace
+-- joint arriving at the five lanes in five different columns was followed
+-- exactly; the user's answer is that a street is not meant to follow a joint,
+-- it is meant to be walked. So the road's ground at a position is the HIGHEST
+-- of its lanes' -- the road is cut into a slope, not laid over it -- and one
+-- envelope of that field is the level of every lane of that position.
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
@@ -78,6 +109,18 @@ local function loader(directory)
 	-- and torch above its own footing, so a verge with three blocks of air is
 	-- exactly a verge that can still be lit.
 	M.MIN_CLEAR = 3
+
+	-- A DECK STANDS ONE NODE OVER THE WATER, and not two: the shore step a
+	-- walker takes onto a bridge is exactly that number, and a player jumps
+	-- one node. Lethariel's bridge module chose it and the measurement kept it.
+	M.LIFT = 1
+	-- A PIER EVERY EIGHT COLUMNS, reaching four nodes under the water surface,
+	-- which is Lethariel's own rhythm and depth. It is also the lamp rhythm, so
+	-- a standard on a bridge or a viaduct stands on a pier rather than beside
+	-- one.
+	M.PIER = 8
+	M.PIER_DEPTH = 4
+
 	-- HOW MANY PASSES THE CROSSING RULE MAY TAKE, and what is actually known
 	-- about that.
 	--
@@ -105,10 +148,17 @@ local function loader(directory)
 		return (high_end - low_end) + 2
 	end
 
-	-- The avenue vocabulary, each with its fallback into the start
+	-- The street vocabulary, each with its fallback into the start
 	-- vocabulary, exactly as `capitals.lua` resolves the same roles: the
 	-- capital roles are optional and a palette that has not been given them
 	-- still builds a road.
+	--
+	-- `plank`, `railing`, `post` and `pier` are the BRIDGE vocabulary, and all
+	-- four of them are required palette roles of every race (`palette.lua`,
+	-- `M.required`) except `signature`, which falls back to `wall_accent` the
+	-- way every other capital part resolves it. That is why a bridge needs no
+	-- new binding in any race: the elf bridge this generalises was already
+	-- written out of roles the other five bind too.
 	local function paving(palette)
 		return palette.maybe("castle_paving") or palette.node("plaza")
 	end
@@ -117,6 +167,15 @@ local function loader(directory)
 	end
 	local function tread(palette)
 		return palette.maybe("castle_wall_stair") or palette.node("roof_stair")
+	end
+	local function plank(palette)
+		return palette.node("floor")
+	end
+	local function railing(palette)
+		return palette.node("railing")
+	end
+	local function pier(palette)
+		return palette.maybe("signature") or palette.node("wall_accent")
 	end
 
 	-- Every node name a run may write, in ASCII byte order and without
@@ -129,13 +188,13 @@ local function loader(directory)
 	-- the channel does not know would only fail on the mapchunk that finally
 	-- needs it.
 	--
-	-- Derived from the same four resolvers the run itself uses plus the two
-	-- names the standard is built from, so a change to any of them cannot
-	-- leave this list behind.
+	-- Derived from the same resolvers the run itself uses plus the two names
+	-- the standard is built from, so a change to any of them cannot leave this
+	-- list behind.
 	function M.palette_names(palette)
 		local names, seen, list = {paving(palette), kerb(palette),
-			tread(palette), palette.node("post"),
-			palette.node("light_post")}, {}, {}
+			tread(palette), plank(palette), railing(palette), pier(palette),
+			palette.node("post"), palette.node("light_post")}, {}, {}
 		for index = 1, #names do
 			local name = names[index]
 			if type(name) ~= "string" or name == "" then
@@ -156,7 +215,22 @@ local function loader(directory)
 		error("wp13 avenue: unknown axis " .. tostring(axis), 0)
 	end
 
-	-- One run of avenue.
+	-- The one-Lipschitz upper envelope of `field` over `[low, high]`, in place
+	-- into `into`: the lowest height field that is everywhere at or above
+	-- `field` and never changes by more than a node between two columns. Two
+	-- sweeps are enough because the constraint is local and symmetric.
+	local function envelope(field, into, low, high)
+		for p = low, high do into[p] = field[p] end
+		for p = low + 1, high do
+			if into[p] < into[p - 1] - 1 then into[p] = into[p - 1] - 1 end
+		end
+		for p = high - 1, low, -1 do
+			if into[p] < into[p + 1] - 1 then into[p] = into[p + 1] - 1 end
+		end
+		return into
+	end
+
+	-- One run of street.
 	--
 	-- `spec`:
 	--   axis          "x" or "z", the direction the road runs
@@ -170,16 +244,25 @@ local function loader(directory)
 	--                 what keeps one lamp line across a chunk border
 	--   id            a label carried into the returned table
 	--   overhead      optional `overhead(x, z)`; see THE CROSSING RULE below
+	--   wet           optional `wet(x, z)` -> true where planned water stands
+	--                 on the column; see THE BRIDGE below
+	--   junctions     optional, from `wp13/street_plan.lua`; see THE JUNCTION
+	--                 PLATEAU below
+	--   plain_verge   optional, from the same module: spans along the run where
+	--                 the verge writes no plank, rail or pillar because an
+	--                 authored structure owns those lanes there -- a gate
+	--                 passage through a curtain wall, a palisade, a grove
+	--                 threshold or a gate cone
 	--
 	-- `surface(x, z)` returns the y of the topmost terrain node of that
-	-- column. It is called exactly once per column this run touches and is
-	-- the ONLY source of ground height in here.
+	-- column -- the water surface where water stands on it, which is what the
+	-- seam hands an overlay. It is the ONLY source of ground height in here.
 	--
-	-- Returns `{cells, lamps, pavement, treads, risers, columns, queries,
-	-- overhead_queries, crossings}`: `cells` is the canonical cell list (z,
+	-- Returns `{cells, lamps, ...}`: `cells` is the canonical cell list (z,
 	-- then y, then x) a writer can project directly, `lamps` the lamp
-	-- positions for a lighting landmark, `crossings` one row per column that
-	-- a deck spans, and the counts are what the KAT holds the run to.
+	-- positions for a lighting landmark, `crossings` one row per column that a
+	-- WP40 deck spans, `plateaus` one row per junction and `street` the counts
+	-- the KAT holds the run to.
 	function M.run(palette, spec, surface)
 		if type(surface) ~= "function" then
 			error("wp13 avenue: a run needs a surface callback", 0)
@@ -187,6 +270,10 @@ local function loader(directory)
 		local overhead = spec.overhead
 		if overhead ~= nil and type(overhead) ~= "function" then
 			error("wp13 avenue: the overhead seam is not a callback", 0)
+		end
+		local wet_at = spec.wet
+		if wet_at ~= nil and type(wet_at) ~= "function" then
+			error("wp13 avenue: the water seam is not a callback", 0)
 		end
 		local dx, dz = axis_steps(spec.axis)
 		local from, to = spec.from, spec.to
@@ -199,12 +286,15 @@ local function loader(directory)
 				" is not an odd carriageway", 0)
 		end
 		local half = (width - 1) / 2
+		local verge = half + 1
 		local spacing = spec.lamp_spacing or M.LAMP_SPACING
 		local phase = spec.lamp_phase or from
 		local at = spec.at
+		local reach = spec.reach or M.REACH
 		local buf = parts.buffer()
 		local lamps = {}
 		local crossings = {}
+		local plateaus = {}
 		local queries, overhead_queries = 0, 0
 
 		-- The column (x, z) of position `p` along the run, `offset` lanes to
@@ -224,6 +314,10 @@ local function loader(directory)
 			end
 			return y
 		end
+		local function wetness(x, z)
+			if not wet_at then return false end
+			return wet_at(x, z) and true or false
+		end
 
 		-- The walking surface of whatever spans this column, or nil where
 		-- nothing does. Asked exactly once per column, like the ground.
@@ -239,9 +333,185 @@ local function loader(directory)
 			return y
 		end
 
-		-- THE CROSSING RULE.
+		-- ------------------------------------------------------------------
+		-- 1. THE ROAD'S OWN GROUND, one number per position.
 		--
-		-- A road of this module and a WP40 route are two different things
+		-- `natural` keeps every lane's surface, because the fill under the
+		-- road and the foot of a pillar stand on the lane's own ground.
+		-- `carry` is what the envelope is taken of: the highest of the lanes,
+		-- plus the LIFT over a lane that stands in water, so that a wet
+		-- position is walked one node clear of the water rather than paved
+		-- into it.
+		--
+		-- THE BRIDGE, and why a lift of one node is all it takes. The seam
+		-- hands a road the WATER surface where water stands rather than the bed
+		-- under it, so the first version of this module laid a solid CAUSEWAY
+		-- at the water line -- which on Lethariel cut a 38 527-column mere into
+		-- six lakes and on Highcourt dammed three rivers. The ruling is that a
+		-- water body stays ONE body. A wet position therefore gets a DECK and
+		-- no fill: the water passes under the road, along the run and across
+		-- it, and piers on the two verge lanes carry the deck.
+		--
+		-- Lethariel's bridge module ramped the lift from nothing at the shore
+		-- to one node inside the span, so that the deck stayed one-Lipschitz
+		-- and flush with the road it continues. That needed the whole span --
+		-- which is why that capital had to commit a measured water mask. It is
+		-- not needed: `carry` is the maximum of the lane surfaces and of
+		-- `water + LIFT`, and the maximum of two one-Lipschitz fields is
+		-- one-Lipschitz, so the envelope of `carry` is flush with the road at
+		-- the shore by construction. A wet column is then a PER-COLUMN
+		-- question, the mask goes away, and every capital's water is the seam's
+		-- own `wet(x, z)` instead of a number somebody measured once.
+		local low_end, high_end = from - reach, to + reach
+		local natural, wetlane, decklane = {}, {}, {}
+		local carry, level, bare = {}, {}, {}
+		for offset = -half, half do
+			natural[offset], wetlane[offset], decklane[offset] = {}, {}, {}
+		end
+		for p = low_end, high_end do
+			local top
+			for offset = -half, half do
+				local x, z = column(p, offset)
+				local y = height(x, z)
+				local soaked = wetness(x, z)
+				natural[offset][p] = y
+				wetlane[offset][p] = soaked
+				decklane[offset][p] = deck_at(x, z)
+				local carried = soaked and (y + M.LIFT) or y
+				if top == nil or carried > top then top = carried end
+			end
+			carry[p] = top
+		end
+		envelope(carry, bare, low_end, high_end)
+
+		-- ------------------------------------------------------------------
+		-- 2. THE JUNCTION PLATEAU (ruling 2).
+		--
+		-- Where two streets cross, the square they share is one y and both runs
+		-- arrive at it a node a column. The level of that square has to be the
+		-- SAME NUMBER for both runs -- they are built by two separate calls
+		-- that never see each other -- so it is defined symmetrically:
+		--
+		--     J = max( this run's bare envelope over the square,
+		--              the other run's bare envelope over the square )
+		--
+		-- over EVERY run that stands in the square, and nothing else.
+		-- `wp13/street_plan.lua` hands each run the squares it shares and which
+		-- stretch of each other run they are -- three streets can meet in one
+		-- place, and two squares sharing a column are one junction, which is
+		-- that module's own header; the other runs' bare envelopes are computed
+		-- here from the same `surface` callback, over the same `reach` window,
+		-- by the same two sweeps. Every member therefore computes the
+		-- identical J.
+		--
+		-- IT IS THEN APPLIED AS A GROUND FLOOR and not as an override, which is
+		-- what makes the approaches right for free: raising the square's ground
+		-- to J lifts the one-Lipschitz envelope on both sides a node at a time,
+		-- which is exactly "raised artificially at the junction", and the
+		-- envelope over the square is then J exactly -- every column of the
+		-- square is at J and no column outside it can push a column of the
+		-- square above J, because J is already at or above the bare envelope
+		-- there.
+		--
+		-- THE WINDOW IS BOUNDED, which is what keeps a piece of a run equal to
+		-- that stretch of the whole: J reads the ground of both runs within
+		-- `reach` of the square and of nothing else, and the square is a
+		-- function of the two run rectangles, which are static.
+		--
+		-- WHAT IS NOT PROVED, and is measured instead: two junctions on ONE run
+		-- that are closer to each other than the difference of their plateau
+		-- levels would each lift the other's square, and the higher one would
+		-- leave the lower one a node or two above J. The plateaus of all six
+		-- capitals are measured flat on all nine fixture seeds
+		-- (tools/wp13/street_geometry.lua, `junc_spread` 0), and
+		-- `tools/wp13/street_kat.lua` section 3 is what goes red if a
+		-- composition ever authors two crossings that close together.
+		local junctions = spec.junctions
+		local floor = {}
+		if junctions and #junctions > 0 then
+			-- The other run's bare envelope, over the window of ITS OWN axis
+			-- that can still reach the square. Its lanes are read here and
+			-- nowhere else; the square's own columns are read twice, once for
+			-- each run, which is the price of two runs agreeing without talking.
+			local function other_envelope(other)
+				local odx = (other.axis == "x") and 1 or 0
+				-- The window is the other run's OWN look-around and is not
+				-- clipped to its span: a run reads `reach` columns beyond both
+				-- its ends, so clipping here would compute a different envelope
+				-- from the one that run computes for itself, and the two sides
+				-- of a junction at the very end of a run would then disagree by
+				-- a node. Seed 999999999 disagreed by exactly that at
+				-- Highcourt's north-west ring corner before this line lost its
+				-- clamp.
+				local low = other.low - reach
+				local high = other.high + reach
+				local field, out = {}, {}
+				for q = low, high do
+					local top
+					for offset = -half, half do
+						local x, z
+						if odx == 1 then x, z = q, other.at + offset
+						else x, z = other.at + offset, q end
+						local y = height(x, z)
+						local carried = wetness(x, z) and (y + M.LIFT) or y
+						if top == nil or carried > top then top = carried end
+					end
+					field[q] = top
+				end
+				envelope(field, out, low, high)
+				local best
+				for q = other.low, other.high do
+					if best == nil or out[q] > best then best = out[q] end
+				end
+				return best
+			end
+			for index = 1, #junctions do
+				local junction = junctions[index]
+				-- A JUNCTION OUTSIDE THIS PIECE'S WINDOW COSTS NOTHING. The
+				-- floor is only ever read at `[junction.low, junction.high]`,
+				-- so a square with no column inside `[low_end, high_end]`
+				-- cannot reach this piece at all -- not even through the
+				-- envelope, which only spreads a floor that was written. The
+				-- reads it would have cost were the bulk of this rule's query
+				-- count.
+				local best
+				if junction.high < low_end or junction.low > high_end then
+					best = nil
+				else
+					for p = junction.low, junction.high do
+						local here = bare[p]
+						if here ~= nil and (best == nil or here > best) then
+							best = here
+						end
+					end
+					for member = 1, #junction.members do
+						local other = junction.members[member]
+						local across = other_envelope(other)
+						if across ~= nil and (best == nil or across > best) then
+							best = across
+						end
+					end
+				end
+				if best ~= nil then
+					for p = junction.low, junction.high do
+						if floor[p] == nil or best > floor[p] then
+							floor[p] = best
+						end
+					end
+					local names = {}
+					for member = 1, #junction.members do
+						names[member] = junction.members[member].id
+					end
+					plateaus[#plateaus + 1] = {id = table.concat(names, "+"),
+						low = junction.low, high = junction.high, y = best}
+				end
+			end
+		end
+
+		-- ------------------------------------------------------------------
+		-- 3. THE CROSSING RULE.
+		--
+		-- A street of this module and a WP40 route are two different things
 		-- built by two different authorities, and where the route crosses the
 		-- capital on a bridge the two meet in the air: the deck's underside
 		-- passes over the street. The playtest found the case this leaves --
@@ -253,273 +523,287 @@ local function loader(directory)
 		-- cannot, the road CLIMBS ONTO, so the street joins the route's own
 		-- surface and carries on down the far side.
 		--
-		-- It is expressed as a change of the column's GROUND and nothing
-		-- else, which is what makes it one rule rather than a special case:
-		--
-		--   * the road stands on the deck instead of on the river bed, so it
-		--     writes one paving cell at the deck and does NOT fill the
-		--     bridge's own airspace from the water up -- a lane that filled
-		--     would be a dam with a road on it;
-		--   * the one-Lipschitz envelope above does the rest by itself. A
-		--     raised column lifts its neighbours a node at a time, on BOTH
-		--     sides, which is exactly the "raised in one-block ground steps
-		--     up to route grade, and crosses at grade" the ruling asks for,
-		--     built out of the climb the road already uses for a terrace.
+		-- It is expressed as a change of the position's GROUND and nothing
+		-- else, which is what makes it one rule rather than a special case: the
+		-- one-Lipschitz envelope does the rest by itself, lifting the
+		-- neighbours a node at a time on both sides, which is the "raised in
+		-- one-block ground steps up to route grade, and crosses at grade" the
+		-- ruling asks for, built out of the climb the road already uses for a
+		-- terrace.
 		--
 		-- IT IS A FIXED POINT, because the test is against the road's WALKING
 		-- level and not against the raw ground: a column with five blocks of
 		-- air under the deck can still be lifted into it by a terrace forty
 		-- columns away. Raising a column can only raise the envelope, and a
 		-- raised column is never lowered, so the iteration is monotone and
-		-- stops. The two gate seeds settle in one pass (a single crossing) and
-		-- two (a crossing whose raise pulls its neighbours into the deck as
-		-- well).
+		-- stops.
 		--
-		-- AND IT IS DECIDED ACROSS THE WHOLE CARRIAGEWAY, which is the one
-		-- place this rule does NOT follow the per-lane profiling above. A
-		-- lane is profiled on its own because a terrace crossing the road at
-		-- an angle reaches the five lanes in five different columns and the
-		-- difference is a node or two. A bridge is not a terrace: its deck is
-		-- six nodes over the water, and a road that sent three lanes over the
-		-- bridge and left two under it would be a street with a six-node wall
-		-- down the middle of it. A crossing is a crossing of the whole road,
-		-- so the decision is taken per POSITION along the run and applied to
-		-- every lane of that position.
-		--
-		-- Each lane keeps `bare`, the envelope of its UNTOUCHED ground -- the
-		-- road this module would have built with no route geometry at all.
-		-- The difference between that and the settled level is exactly the
-		-- stretch the crossing rule moved, ramps included, and the LAMPS need
-		-- it: a standard is not part of the carriageway and has no envelope of
-		-- its own, so without it a verge beside a crossing keeps its
-		-- river-level ground and the standard ends up under the road.
-		local function resolve_profiles(low_end, high_end, lanes)
+		-- AND IT IS DECIDED ACROSS THE WHOLE CARRIAGEWAY. A bridge is not a
+		-- terrace: its deck is six nodes over the water, and a road that sent
+		-- three lanes over the bridge and left two under it would be a street
+		-- with a six-node wall down the middle of it. Since ruling 1 the whole
+		-- carriageway is one profile anyway, so this is now the only shape the
+		-- rule can have.
+		local ground = {}
+		for p = low_end, high_end do
+			local base = carry[p]
+			local raised = floor[p]
+			if raised ~= nil and raised > base then base = raised end
+			ground[p] = base
+		end
+		local raise_passes = 0
+		do
 			local limit = raise_pass_limit(low_end, high_end)
+			local settled = false
 			for pass = 0, limit do
-				for index = 1, #lanes do
-					local lane = lanes[index]
-					local ground, level = lane.ground, lane.level
-					for p = low_end, high_end do level[p] = ground[p] end
-					for p = low_end + 1, high_end do
-						if level[p] < level[p - 1] - 1 then level[p] = level[p - 1] - 1 end
-					end
-					for p = high_end - 1, low_end, -1 do
-						if level[p] < level[p + 1] - 1 then level[p] = level[p + 1] - 1 end
-					end
-					-- The first pass runs on ground nothing has raised yet, so
-					-- its envelope IS the bare road.
-					if pass == 0 then
-						local bare = {}
-						for p = low_end, high_end do bare[p] = level[p] end
-						lane.bare = bare
-					end
-				end
-				local raised = false
+				envelope(ground, level, low_end, high_end)
+				local moved = false
 				for p = low_end, high_end do
-					-- The grade this position has to reach: the highest deck any
-					-- lane of it cannot pass under. `d - 1` is the deck's
-					-- underside and the air over the road is
-					-- `d - 1 - level[p] - 1`, so "fewer than MIN_CLEAR" reads
-					-- `level[p] > d - MIN_CLEAR - 2`.
 					local target
-					for index = 1, #lanes do
-						local lane = lanes[index]
-						local d = lane.deck[p]
-						if d ~= nil and lane.ground[p] < d and
-								lane.level[p] > d - M.MIN_CLEAR - 2 and
+					for offset = -half, half do
+						local d = decklane[offset][p]
+						-- `d - 1` is the deck's underside and the air over the
+						-- road is `d - 1 - level[p] - 1`, so "fewer than
+						-- MIN_CLEAR" reads `level[p] > d - MIN_CLEAR - 2`.
+						if d ~= nil and ground[p] < d and
+								level[p] > d - M.MIN_CLEAR - 2 and
 								(target == nil or d > target) then
 							target = d
 						end
 					end
-					if target ~= nil then
-						for index = 1, #lanes do
-							local lane = lanes[index]
-							if lane.ground[p] < target then
-								lane.ground[p] = target
-								raised = true
-							end
+					if target ~= nil and ground[p] < target then
+						ground[p] = target
+						moved = true
+					end
+				end
+				if not moved then
+					raise_passes = pass
+					settled = true
+					break
+				end
+			end
+			if not settled then
+				error("wp13 avenue: the crossing rule did not settle in " ..
+					raise_pass_limit(low_end, high_end) .. " passes", 0)
+			end
+		end
+
+		-- ------------------------------------------------------------------
+		-- 4. THE CELLS.
+		--
+		-- One position at a time, and every lane of it at the same `level[p]`.
+		--
+		-- WHAT CARRIES THE ROAD, and this is ruling 4. A position standing at
+		-- most `MIN_CLEAR - 1` nodes above its own ground is FILLED, because a
+		-- terrace stair on fill is a road and not a wall. A position standing
+		-- `MIN_CLEAR` or more above it -- or over water -- is a VIADUCT: the
+		-- deck course and nothing under it but pillars every `PIER` columns on
+		-- the two verge lanes, so a player walks under the street instead of
+		-- into it and the water under a bridge stays one body. `MIN_CLEAR` is
+		-- the threshold because that is the number this module already uses for
+		-- "a road fits under this": a raise of 3 leaves `raise - 1` = 2 nodes
+		-- of air under the deck, which is exactly a player, and every raise
+		-- above it leaves MIN_CLEAR or more.
+		--
+		-- The decision is per LANE and not per position, because a street cut
+		-- into a hillside is high over the valley and level with the bank on
+		-- the other side: the uphill lanes are filled and are the viaduct's own
+		-- abutment, and the downhill lanes stand on pillars.
+		local PAVING, KERB, TREAD = paving(palette), kerb(palette), tread(palette)
+		local PLANK, RAIL, PIER = plank(palette), railing(palette), pier(palette)
+		local pavement, treads, risers = 0, 0, 0
+		local spans, piers, rails, bridged = 0, 0, 0, 0
+		local raised_columns = 0
+		local verge_level, spanned_at = {}, {}
+		for p = from, to do
+			local top = level[p]
+			-- A run asked for with no look-around at all has no neighbour
+			-- outside its own span; such a column is walked as its own level.
+			local before = level[p - 1] or top
+			local after = level[p + 1] or top
+			local step = (top > before) or (top > after)
+			-- A position is SPANNED where any of its lanes stands `MIN_CLEAR`
+			-- or more above its own ground, and WET where any of them stands in
+			-- water. Either way the verge carries a plank walk and a rail, and
+			-- pillars carry the lot.
+			--
+			-- EXCEPT WHERE A WP40 DECK CARRIES THE POSITION. A route's bridge
+			-- may be narrower than the carriageway, and then the outer lanes
+			-- have an ABUTMENT to build: the deck carries three lanes at its own
+			-- height and the other two must be solid up to it, or the road
+			-- beside the deck hangs in the air with the route's own piers under
+			-- the middle of it and nothing under the edges. So a position the
+			-- crossing rule put ON a deck is filled, not pillared --
+			-- `tools/wp13/lane_crossing_kat.lua` section 4 is the case, and it
+			-- is the one place the viaduct rule yields to another authority's
+			-- geometry.
+			local wet_here, span_here, on_deck = false, false, false
+			for offset = -half, half do
+				if wetlane[offset][p] then wet_here = true end
+				if top - natural[offset][p] >= M.MIN_CLEAR then span_here = true end
+				local d = decklane[offset][p]
+				if d ~= nil and top >= d then on_deck = true end
+			end
+			local spanned = wet_here or (span_here and not on_deck)
+			spanned_at[p] = spanned
+			verge_level[p] = top
+			if spanned then spans = spans + 1 end
+			if wet_here then bridged = bridged + 1 end
+			for offset = -half, half do
+				local x, z = column(p, offset)
+				local surface_name = (offset == -half or offset == half) and
+					KERB or PAVING
+				-- WHAT THE COLUMN STANDS ON. Ordinarily the ground it was read
+				-- from. A column the crossing rule raised stands on the DECK
+				-- where it has one -- the route's bridge carries the road, so
+				-- the road does not fill the river up to it -- and on its own
+				-- ground where it has not, because a deck narrower than the
+				-- carriageway leaves the outer lanes an abutment to build.
+				local base = natural[offset][p]
+				local spanned_by = decklane[offset][p]
+				if spanned_by ~= nil and ground[p] > base and
+						spanned_by >= base and spanned_by <= top then
+					base = spanned_by
+				end
+				local raise = top - base
+				if raise > 0 then raised_columns = raised_columns + 1 end
+				if raise > 0 and not wetlane[offset][p] and
+						(raise < M.MIN_CLEAR or on_deck) then
+					for y = base, top - 1 do
+						buf:put(x, y, z, surface_name)
+						if y == base then
+							pavement = pavement + 1
+						else
+							risers = risers + 1
 						end
 					end
 				end
-				if not raised then return pass end
-			end
-			error("wp13 avenue: the crossing rule did not settle in " ..
-				limit .. " passes", 0)
-		end
-
-		-- 1. The carriageway, lane by lane.
-		--
-		-- The road's walking level is the ONE-LIPSCHITZ UPPER ENVELOPE of the
-		-- lane's own surface: the lowest height field that is everywhere at or
-		-- above the ground and never changes by more than one node between two
-		-- columns. A column whose envelope stands above its ground is filled up
-		-- to one course below it and capped with a tread; a column whose
-		-- envelope is higher than a neighbour's is a step and is capped with a
-		-- tread too, because a one-node change is walked as two half nodes --
-		-- the tread's own lower half and its raised half -- and a full cube
-		-- there would be a node to jump.
-		--
-		-- That single rule replaces the per-joint flights the first version
-		-- built, and it is what makes the road work where those did not:
-		--
-		--   * a rise of `h` still climbs over `h` columns, one half node at a
-		--     time, which is the contract's stair per terrace rise generalised
-		--     to the two-, three- and four-node race terrace steps;
-		--   * TWO JOINTS CLOSER THAN THEIR FLIGHTS no longer fight over the
-		--     columns between them. The envelope simply rises earlier: the
-		--     profile 0, 0, 2, 4 is walked as 1, 2, 3, 4 and the road leaves
-		--     the ground where it has to, instead of leaving a wall the
-		--     per-joint version could not reach back over;
-		--   * and it is CHUNK INDEPENDENT. The envelope of a column depends on
-		--     the ground within `reach` columns of it and on nothing else, so
-		--     the profile is read that far beyond both ends of the piece and
-		--     the union of the pieces is the whole run, cell for cell.
-		--
-		-- `reach` is the distance a terrace can still raise the envelope here.
-		-- WP40 terraces the capital envelope within cut 24 and fill 16, so no
-		-- column further than 40 away can lift this one: the influence of a
-		-- column decays by exactly one node per column of distance. A caller
-		-- that knows its own terrain is flatter may pass a smaller `reach`.
-		local reach = spec.reach or M.REACH
-		local low_end, high_end = from - reach, to + reach
-		local pavement, treads, risers = 0, 0, 0
-		-- The ground and the route geometry of every lane, read in the same
-		-- order as before -- lane by lane, column by column, once each -- and
-		-- then resolved together, because the crossing rule is a rule about
-		-- the whole carriageway.
-		local lanes = {}
-		for offset = -half, half do
-			local lane = {offset = offset, ground = {}, level = {},
-				deck = {}, natural = {}}
-			for p = low_end, high_end do
-				local x, z = column(p, offset)
-				lane.ground[p] = height(x, z)
-				lane.natural[p] = lane.ground[p]
-				lane.deck[p] = deck_at(x, z)
-			end
-			lanes[#lanes + 1] = lane
-		end
-		local raise_passes = resolve_profiles(low_end, high_end, lanes)
-		-- The kerb lane a verge stands beside, per verge, so a standard can be
-		-- carried at the level of the road it lights.
-		local kerb_lane = {[-half - 1] = lanes[1], [half + 1] = lanes[#lanes]}
-		for lane_index = 1, #lanes do
-			local lane = lanes[lane_index]
-			local offset = lane.offset
-			local ground, level, deck, natural =
-				lane.ground, lane.level, lane.deck, lane.natural
-			local surface_name = (offset == -half or offset == half) and
-				kerb(palette) or paving(palette)
-			for p = from, to do
-				local x, z = column(p, offset)
-				local top = level[p]
-				-- WHAT THE COLUMN STANDS ON.
-				--
-				-- Ordinarily the ground it was read from. A column the
-				-- crossing rule raised stands on the DECK where it has one --
-				-- the bridge carries the road, so the road does not fill the
-				-- river up to it, which would be a dam with a street on top --
-				-- and on its own ground where it has not, because a bridge
-				-- narrower than the carriageway leaves the outer lanes an
-				-- abutment to build, and an abutment is solid or the road
-				-- beside the deck hangs in the air.
-				local base = natural[p]
-				local spanned = deck[p]
-				if spanned ~= nil and ground[p] > base and spanned >= base and
-						spanned <= ground[p] then
-					base = spanned
-				end
-				for y = base, top - 1 do
-					buf:put(x, y, z, surface_name)
-					if y == base then
-						pavement = pavement + 1
-					else
-						risers = risers + 1
-					end
-				end
-				local before, after = level[p - 1], level[p + 1]
-				if top > before or top > after then
-					-- A step. The raised half faces the higher neighbour, which is
-					-- the way a walker climbs it; a column higher than both is
-					-- walked over either half, so the run's own direction decides.
+				if step then
+					-- A one-node change is walked as the two halves of a stair.
+					-- The raised half faces the higher neighbour, which is the
+					-- way a walker climbs it; a column higher than both is
+					-- walked over either half, so the run's own direction
+					-- decides.
 					local sign = (after >= before) and 1 or -1
-					parts.stair(buf, x, top, z, tread(palette),
+					parts.stair(buf, x, top, z, TREAD,
 						parts.step_facedir(dx * sign, dz * sign))
 					treads = treads + 1
 				else
 					buf:put(x, top, z, surface_name)
+					if raise <= 0 then pavement = pavement + 1 end
 				end
-				if top == base then pavement = pavement + 1 end
 				-- What the crossing rule decided here, so a KAT and the
 				-- measurement tool can hold the built road to the ruling
 				-- instead of re-deriving it from the cells.
-				if spanned ~= nil then
+				if spanned_by ~= nil then
 					crossings[#crossings + 1] = {x = x, y = top, z = z,
-						lane = offset, deck_y = spanned, natural = natural[p],
-						base = base, clear = spanned - top - 2,
-						at_grade = (top >= spanned) and true or false}
+						lane = offset, deck_y = spanned_by,
+						natural = natural[offset][p], base = base,
+						clear = spanned_by - top - 2,
+						at_grade = (top >= spanned_by) and true or false}
 				end
 			end
 		end
 
-		-- 2. The lamps: a standard on each verge, one node outside the
-		-- carriageway, every `spacing` nodes. The verge column carries the
-		-- lamp at its OWN surface, so a standard beside a terrace joint
-		-- stands on the ground it is next to and not on the road's level.
+		-- 5. THE VERGE: the plank walk, the rail, the pillars and the lamps.
 		--
-		-- EVERY STANDARD GETS ITS OWN FOOTING, at the verge column's surface and
-		-- in the kerb's material. On ordinary ground that cell is already solid
-		-- and the footing is a paving stone under the post; over water it is the
-		-- only thing between the post and the river. The run cannot tell the two
-		-- apart -- it is a pure function of one surface number and knows nothing
-		-- about water -- so it lays the footing unconditionally, which is both
-		-- correct and cheaper than a rule with a case in it.
-		--
-		-- This is not hypothetical: the first engine pass of the WP13 seam took
-		-- Highcourt's east avenue across a river as a causeway, and sixteen
-		-- standards stood in the water with nothing under them.
-		--
-		-- THE CROSSING RULE REACHES THE VERGE TOO, and here it needs no
-		-- envelope: a standard is its footing and three courses over it, so a
-		-- verge under a deck has room for one exactly when it has `MIN_CLEAR`
-		-- blocks of air -- the same threshold the carriageway is held to. A
-		-- verge that has not got it carries its standard on the deck instead,
-		-- which is where the road beside it now runs.
+		-- A verge lane is read only where something stands on it -- a spanned
+		-- position, a pier rhythm or a lamp -- so the two lanes outside the
+		-- carriageway cost the run a query per cell and not a query per column
+		-- of the whole window.
+		-- WHERE THE VERGE YIELDS, per position: inside a barrier's gate passage
+		-- the authored structure owns the lanes beside the carriageway, and a
+		-- plank walk with a fence on it would be timber in the tunnel mouth.
+		-- The kerb parapets this rule replaced each said so in their own
+		-- capital; the shared rule is told by `wp13/street_plan.lua`. A lamp
+		-- standard is exempt -- it is not a walk, and the rhythm is the run's.
+		local plain_verge = {}
+		for _, span in ipairs(spec.plain_verge or {}) do
+			for p = span[1], span[2] do plain_verge[p] = true end
+		end
+		local verge_ground = {}
+		local function verge_surface(p, offset)
+			local key = p .. ":" .. offset
+			local y = verge_ground[key]
+			if y == nil then
+				local x, z = column(p, offset)
+				y = {height(x, z), wetness(x, z), deck_at(x, z)}
+				verge_ground[key] = y
+			end
+			return y[1], y[2], y[3]
+		end
 		for p = from, to do
-			if (p - phase) % spacing == 0 then
-				for _, offset in ipairs({-half - 1, half + 1}) do
+			local is_lamp = ((p - phase) % spacing == 0)
+			local is_pier = ((p - phase) % M.PIER == 0)
+			if (spanned_at[p] and not plain_verge[p]) or is_lamp then
+				for _, offset in ipairs({-verge, verge}) do
+					local top = verge_level[p]
 					local x, z = column(p, offset)
-					local y = height(x, z)
-					local d = deck_at(x, z)
-					if d ~= nil and y < d and y > d - M.MIN_CLEAR - 2 then
-						y = d
+					local foot, soaked, verge_deck = verge_surface(p, offset)
+					-- A STANDARD UNDER A DECK IT CANNOT CLEAR GOES ON THE DECK.
+					-- Ruling 3 puts a lamp on the street's own profile, and a
+					-- WP40 route may bridge the VERGE while leaving the
+					-- carriageway beside it three blocks of air: the street
+					-- passes under unchanged and its standard would be three
+					-- courses of post inside the deck. A standard is its footing
+					-- and three courses over it, so a verge has room for one
+					-- exactly when it has `MIN_CLEAR` blocks of air -- the same
+					-- threshold the carriageway is held to -- and a verge that
+					-- has not got it carries its standard over the deck instead.
+					-- Only on the GROUND. A spanned position's verge is a plank
+					-- walk with a rail and piers under it, and lifting one
+					-- standard's stretch of it onto a route deck would put a
+					-- step in the walk; a position under a deck it cannot clear
+					-- has been raised onto that deck by the crossing rule long
+					-- before it can be spanned, so the two cases do not meet in
+					-- the six capitals -- which is measured rather than assumed
+					-- (`street_geometry.lua`, junction and crossing rows clean
+					-- on nine seeds).
+					if is_lamp and not spanned_at[p] and verge_deck ~= nil and
+							top < verge_deck and
+							top > verge_deck - M.MIN_CLEAR - 2 then
+						top = verge_deck
 					end
-					-- AND IT COMES UP WITH THE ROAD. The test above is the
-					-- verge column's OWN clearance, and that is not enough: a
-					-- bridge narrower than the road spans the carriageway and
-					-- not the verge, so the verge keeps its river-level ground
-					-- and the standard ends up five or six nodes under the
-					-- crossing beside it -- post, torch and all, standing in
-					-- the water against the abutment. Four standards of the
-					-- user seed did exactly that before this rule.
-					--
-					-- So wherever the crossing rule MOVED the road -- the
-					-- crossing itself and the ramps up to it, which is exactly
-					-- where the kerb lane stands above the bare road it would
-					-- otherwise have been -- the verge is carried with it. A
-					-- standard beside an ordinary terrace climb still stands on
-					-- its own ground, because there the two levels agree and
-					-- this does nothing.
-					local beside = kerb_lane[offset]
-					if beside.level[p] > beside.bare[p] and
-							beside.level[p] > y then
-						y = beside.level[p]
+					if spanned_at[p] and not plain_verge[p] then
+						-- The plank walk a player cannot step off, and its rail
+						-- -- except where a lamp standard takes the rail's cell.
+						buf:put(x, top, z, PLANK)
+						if not is_lamp then
+							buf:put(x, top + 1, z, RAIL)
+							rails = rails + 1
+						end
+						if is_pier then
+							local bottom = soaked and (foot - M.PIER_DEPTH) or foot
+							for y = bottom, top - 1 do buf:put(x, y, z, PIER) end
+							piers = piers + 1
+						end
+					else
+						-- On the ground -- and inside a gate passage, where the
+						-- plank walk yields but a standard on the rhythm still
+						-- needs something to stand on -- the standard gets its
+						-- own footing in the kerb's material, and the verge is
+						-- carried up to
+						-- the road where the road stands above it: a standard
+						-- is not part of the carriageway and has no envelope of
+						-- its own, and ruling 3 is that it stands on the
+						-- STREET's profile and not on the ground beside it.
+						--
+						-- EVERY STANDARD GETS ITS OWN FOOTING. On ordinary
+						-- ground that cell is already solid and the footing is
+						-- a paving stone under the post; over water it is the
+						-- only thing between the post and the river. The first
+						-- engine pass of the WP13 seam took Highcourt's east
+						-- avenue across a river as a causeway and sixteen
+						-- standards stood in the water with nothing under them.
+						local bottom = (foot < top) and foot or top
+						for y = bottom, top do buf:put(x, y, z, KERB) end
 					end
-					buf:put(x, y, z, kerb(palette))
-					buf:put(x, y + 1, z, palette.node("post"))
-					buf:put(x, y + 2, z, palette.node("post"))
-					parts.floor_torch(buf, palette, x, y + 3, z)
-					lamps[#lamps + 1] = {x = x, y = y + 3, z = z}
+					if is_lamp then
+						buf:put(x, top + 1, z, palette.node("post"))
+						buf:put(x, top + 2, z, palette.node("post"))
+						parts.floor_torch(buf, palette, x, top + 3, z)
+						lamps[#lamps + 1] = {x = x, y = top + 3, z = z}
+					end
 				end
 			end
 		end
@@ -537,7 +821,10 @@ local function loader(directory)
 			width = width, cells = cells, lamps = lamps,
 			pavement = pavement, treads = treads, risers = risers,
 			crossings = crossings, raise_passes = raise_passes,
-			overhead_queries = overhead_queries,
+			overhead_queries = overhead_queries, plateaus = plateaus,
+			street = {spans = spans, piers = piers, rails = rails,
+				bridged = bridged, raised = raised_columns,
+				plateaus = #plateaus},
 			columns = (to - from + 1) * width, queries = queries,
 		}
 	end

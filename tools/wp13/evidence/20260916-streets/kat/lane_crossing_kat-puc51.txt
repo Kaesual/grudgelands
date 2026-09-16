@@ -1,0 +1,9 @@
+lane_crossing_cleared	55	55
+lane_crossing_playtest	55	55
+lane_crossing_fixed_point	25	25	0	2
+lane_crossing_narrow	21	21
+lane_crossing_verge	4
+lane_crossing_carriageway_only	125	8	0
+lane_crossing_monotone	0
+lane_crossing_digest	775	d819c8d70e173be32f5200e01b6f4ca27fec931e784b17b246cf15498f150388
+lane_crossing_cases	7	min_clear	3
