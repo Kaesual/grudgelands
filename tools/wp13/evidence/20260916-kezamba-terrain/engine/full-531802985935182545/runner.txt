@@ -1,8 +1,8 @@
-WP13 kezamba: the built avenue moved.
-  now      cdadbafc7b87bb445b762fbfac3859c466d7d6a07a1d2238ed46fa7eb01236b1
-  expected 4f2fb544ff4f514aeb078053278f21bb88284f855b2e06554f0e053e9cdf9fbe (/home/jan/projects/grudgelands/.claude/worktrees/agent-a3971e83368bcab82/tools/wp13/evidence/20260915-capital-terrain/kezamba/avenue-digest-531802985935182545.txt)
+exit=0 errors=0 complete=1 log=/tmp/grug-w3-K-r5-confirm/server.log
+avenue overlay digest matches the committed value
 rampart: this capital publishes no such overlay region
 corner: this capital publishes no such overlay region
 gate: this capital publishes no such overlay region
-engine.sh mode=full seed=531802985935182545 exit=1 seconds=117
+WP13 capital pass PASS: kezamba full /tmp/grug-w3-K-r5-confirm
+engine.sh mode=full seed=531802985935182545 exit=0 seconds=114
 no server on 31100

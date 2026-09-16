@@ -49,8 +49,9 @@ kezamba_lot	totem_5	plot	-64	184	13	6	6	0	ok
 kezamba_lot	totem_6	plot	-46	152	13	6	7	0	ok
 kezamba_lot	totem_7	plot	-100	184	13	6	6	0	ok
 kezamba_lot	totem_f1	fill	32	214	11	6	6	0	ok
-kezamba_lot	totem_f2	fill	60	158	8	3	6	0	ok
+kezamba_lot	totem_f2	fill	60	158	5	3	3	0	ok
 kezamba_lot	totem_f3	fill	56	210	8	3	4	0	ok
 kezamba_lot	totem_f4	fill	32	160	5	3	6	0	ok
 kezamba_lots	52	failures	0
 kezamba_lots PASS: every authored lot is legal on all 9 seeds
+exit=0

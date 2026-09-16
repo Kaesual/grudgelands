@@ -14,7 +14,7 @@ kezamba_gate	15912857179583385436	avenue_east	256	44	44	0	0	0	0	525/0	2396
 kezamba_gate	0	avenue_south	-256	72	72	0	0	0	0	0/0	4819
 kezamba_gate	0	avenue_north	256	52	52	0	0	0	0	491/0	4627
 kezamba_gate	0	avenue_west	-256	27	27	0	0	0	0	0/0	2892
-kezamba_gate	0	avenue_east	256	21	21	0	0	0	0	525/0	4053
+kezamba_gate	0	avenue_east	256	21	21	0	0	0	0	525/0	4030
 kezamba_gate	1	avenue_south	-256	72	72	0	0	0	0	0/0	3055
 kezamba_gate	1	avenue_north	256	71	71	0	0	0	0	491/0	3921
 kezamba_gate	1	avenue_west	-256	33	33	0	0	0	0	0/0	1582
@@ -37,3 +37,4 @@ kezamba_gate	999999999	avenue_west	-256	27	27	0	0	0	0	0/0	2100
 kezamba_gate	999999999	avenue_east	256	34	34	0	0	0	0	525/0	2981
 kezamba_gates_worst	step	0	-	-	floating	0	-	ceiling	1
 kezamba_gates PASS: every avenue arrives at its gate point within 1 node of the terrain with nothing floating, on all 9 seeds
+exit=0

@@ -9,3 +9,20 @@ stack traceback:
 == M3: the palette binds no crop again ==
 luajit: tools/wp13/kezamba_kat.lua:661: kezamba crops: wp13/troll_palette.lua's M.CROP binds no crop and no crop_soil, so dressing.crop_rows falls back to the mud pair and the fields grow nothing
 stack traceback:
+== M4: `height.lua` stops densifying the discs while the gate keeps its own copy
+   (the drift detector: the shipped ground drops below the floor the gate computes)
+kezamba_apron_cone	columns	77397	worst_own_step	3	at	1782,1448	ceiling	3	live_prune_edges	0
+FAIL	1420 column(s) on 531802985935182545 stand below this file's copy of the apron floor, which a `max` cannot do: the copy has drifted from wp40/height.lua
+FAIL	1888 column(s) on 8675309 stand below this file's copy of the apron floor, which a `max` cannot do: the copy has drifted from wp40/height.lua
+FAIL	1692 column(s) on 15912857179583385436 stand below this file's copy of the apron floor, which a `max` cannot do: the copy has drifted from wp40/height.lua
+FAIL	2894 column(s) on 0 stand below this file's copy of the apron floor, which a `max` cannot do: the copy has drifted from wp40/height.lua
+FAIL	1930 column(s) on 1 stand below this file's copy of the apron floor, which a `max` cannot do: the copy has drifted from wp40/height.lua
+
+== M5: the disc window shrinks until pruning bites ==
+kezamba_apron_cone	columns	36454	worst_own_step	3	at	1910,1483	ceiling	3	live_prune_edges	659
+FAIL	659 column(s) lose their last disc while the cone still stands above -23, which is a pruning cliff and not an inert window
+FAIL	the apron is the binding constraint on the high side of 129 over-step faces on 531802985935182545 against a ceiling of 9
+FAIL	a land wall of 15 nodes at 56,139 on 531802985935182545 against a ceiling of 14
+FAIL	the apron is the binding constraint on the high side of 232 over-step faces on 8675309 against a ceiling of 9
+FAIL	a land wall of 23 nodes at 179,19 on 8675309 against a ceiling of 14
+
