@@ -79,34 +79,15 @@ local function drawable(itemname)
 		core.registered_items[itemname] ~= nil
 end
 
--- WHICH OF THE TWO POSES an item is held in (wield_geometry.lua). The tool pose
--- is derived from the diagonal sprite convention -- long axis on the image's
--- anti-diagonal, grip at pixel (3.4, 12.6) -- so it is right only for art drawn
--- that way. A torch or an apple is an ordinary upright icon with no diagonal
--- and no grip pixel, and through the tool transform it floats a quarter of a
--- node in front of the fist, rolled 45 degrees about an axis its art does not
--- have.
---
--- The discriminator is a GROUP, not the item type (project convention, and it
--- is also the more honest test): these five are exactly the families the
--- convention covers. Every `default` tool carries one, every grug_gear weapon
--- carries `sword`/`axe`/`staff` plus `grug_equip_weapon`, and every tool that
--- is NOT drawn that way -- `mobs:lasso`, `mobs:net`, the ability orbs -- carries
--- none and gets the upright pose without an exception list. A new weapon family
--- joins by declaring its group, the same way it joins the weapon slot.
-local DIAGONAL_GROUP = {"sword", "axe", "pickaxe", "shovel", "staff",
-	"grug_equip_weapon"}
+-- WHICH OF THE THREE POSES an item is held in. The tables and the rule are in
+-- `wield_geometry.lua` next to the derivation they belong to -- they ARE the
+-- sprite convention -- and that is also what lets `wield_transform_kat.lua`
+-- check the mapping without an engine. All this file owns is the lookup that
+-- turns an item name into a group value, which is the half that needs one.
+local pose_for = grug_visuals.pose_for
+local get_item_group = core.get_item_group
 
-local function held_upright(itemname)
-	for _, group in ipairs(DIAGONAL_GROUP) do
-		if core.get_item_group(itemname, group) > 0 then
-			return false
-		end
-	end
-	return true
-end
-
-local function spawn_wield(parent, itemname, stature, upright)
+local function spawn_wield(parent, itemname, stature, pose)
 	local pos = parent:get_pos()
 	if not pos then
 		return nil
@@ -115,7 +96,7 @@ local function spawn_wield(parent, itemname, stature, upright)
 	if not obj then
 		return nil
 	end
-	local wield = wield_transform(stature, upright)
+	local wield = wield_transform(stature, pose)
 	obj:set_properties({textures = {itemname}, visual_size = wield.size})
 	obj:set_attach(parent, WIELD_BONE, wield.pos, wield.rot)
 	return obj
@@ -145,12 +126,12 @@ local function sync_wield(holder, parent, itemname, stature)
 	-- DIFFERENT poses, and so are two wielders of different stature. Both
 	-- therefore re-attach, which is the only way position, rotation and size
 	-- move together.
-	local upright = false
+	local pose = nil
 	if itemname then
-		upright = held_upright(itemname)
+		pose = pose_for(itemname, get_item_group)
 	end
 	if obj and (holder._grug_wield_stature ~= stature or
-			holder._grug_wield_upright ~= upright) then
+			holder._grug_wield_pose ~= pose) then
 		obj:remove()
 		obj = nil
 	end
@@ -161,7 +142,7 @@ local function sync_wield(holder, parent, itemname, stature)
 		holder._grug_wield_obj = nil
 		holder._grug_wield_item = nil
 		holder._grug_wield_stature = nil
-		holder._grug_wield_upright = nil
+		holder._grug_wield_pose = nil
 		return
 	end
 	if obj then
@@ -175,19 +156,18 @@ local function sync_wield(holder, parent, itemname, stature)
 	-- entity budget). Leaving both fields nil is what makes the next pass --
 	-- the once-a-second poll below for players, the next equipment change or
 	-- activation otherwise -- try again instead of believing the hand is empty.
-	holder._grug_wield_obj = spawn_wield(parent, itemname, stature, upright)
-	-- Written as a branch, not as `obj and value or nil`: `upright` is a real
-	-- boolean and that idiom turns a legitimate `false` into nil, which the
-	-- compare above would then read as a changed pose and re-attach every
-	-- single poll for every tool in the game.
+	holder._grug_wield_obj = spawn_wield(parent, itemname, stature, pose)
+	-- Written as a branch, not as `obj and value or nil`: a failed spawn must
+	-- leave every one of the three fields empty, so that the next pass retries
+	-- instead of believing the pose it never attached is the pose on show.
 	if holder._grug_wield_obj then
 		holder._grug_wield_item = itemname
 		holder._grug_wield_stature = stature
-		holder._grug_wield_upright = upright
+		holder._grug_wield_pose = pose
 	else
 		holder._grug_wield_item = nil
 		holder._grug_wield_stature = nil
-		holder._grug_wield_upright = nil
+		holder._grug_wield_pose = nil
 	end
 end
 
@@ -217,7 +197,7 @@ local IRRELEVANT_LIST = {
 }
 
 -- player name -> {key, stature, _grug_wield_obj, _grug_wield_item,
--- _grug_wield_stature, _grug_wield_upright}
+-- _grug_wield_stature, _grug_wield_pose}
 local players = {}
 
 local function player_entry(name)

@@ -1,0 +1,14 @@
+== A-watched
+ACTION[Main]: [fishprobe] watch_override false
+angler kezamba cenote_fish_1 NO ROD IN HAND within 200s
+angler kezamba cenote_fish_2 NO ROD IN HAND within 200s
+angler kezamba cenote_fish_3 NO ROD IN HAND within 200s
+ACTION[Server]: [fishprobe] wait t=200 pending=3 players=0 watch_override=false
+ERROR+ModError lines: 0
+== B-unwatched
+ACTION[Main]: [fishprobe] watch_override true
+angler kezamba cenote_fish_1 t=60 entity=grug_mobs:villager_troll activity=fish wield_item=grug_fishing:rod wield_pose=tool wield_entity=true
+angler kezamba cenote_fish_2 t=60 entity=grug_mobs:villager_troll activity=fish wield_item=grug_fishing:rod wield_pose=tool wield_entity=true
+angler kezamba cenote_fish_3 t=60 entity=grug_mobs:villager_troll activity=fish wield_item=grug_fishing:rod wield_pose=tool wield_entity=true
+ACTION[Server]: [fishprobe] wait t=60 pending=0 players=0 watch_override=true
+ERROR+ModError lines: 0

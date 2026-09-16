@@ -307,8 +307,16 @@ local MOURN_PITCH = -0.35
 -- (`grug_visuals.apply_entity`'s `weapon` field, the same one a guard's sword
 -- goes through). Only items the game ACTUALLY registers are named -- there is
 -- no farming mod and therefore no hoe, so the field hand carries the stone
--- shovel, which is the closest tool this vocabulary has; a rod is the stick
--- section 8.2 explicitly allows. An unregistered name would draw nothing at all
+-- shovel, which is the closest tool this vocabulary has. The ANGLER no longer
+-- carries the stick section 8.2 allowed as a stand-in: playtest round 5 ruled
+-- that "the fishing rods of anglers sit in the middle of the hand, and they are
+-- sticks", so `fish` now names the real `grug_fishing:rod` -- which is also
+-- what moves it out of the anonymous-icon pose (a stick has no declared family
+-- and is therefore held by its centre) and into the diagonal tool pose that
+-- puts the grip in the fist. `grug_mobs` gains no dependency for it: this
+-- field is a string the visuals seam resolves at draw time, and the audit at
+-- the bottom of this file is what notices if the mod ever goes away.
+-- An unregistered name would draw nothing at all
 -- (grug_visuals/apply.lua), so the startup audit at the bottom of this file
 -- reports one instead of leaving an empty hand nobody notices.
 --
@@ -332,7 +340,7 @@ local MOURN_PITCH = -0.35
 --
 local ACTIVITY = {
 	smith = {anim = "work", item = "default:pick_bronze"},
-	fish = {anim = "stand", swing = true, item = "default:stick"},
+	fish = {anim = "stand", swing = true, item = "grug_fishing:rod"},
 	farm = {anim = "work", item = "default:shovel_stone"},
 	chop = {anim = "work", item = "default:axe_stone"},
 	tend = {anim = "stand", swing = true},

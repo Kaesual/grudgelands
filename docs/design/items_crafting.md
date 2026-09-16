@@ -1251,6 +1251,30 @@ Neither of these costs a main profession slot (professions.md §1).
   compete — food never works in combat. One restore value per **group**,
   not per dish. The worked "potatoes with boar steak" example is the T1
   Hearty Stew at 20%; its old 30% reading predates this table.
+
+  **Where the fish comes from, and the T1 dish — shipped 2026-09-16**
+  (WP13 playtest round 5; `docs/research/wp13-fishing.md`). The ladder above
+  named "fish" before anything produced one outside a Mirefolk drop. Fishing
+  is now a second source for that same item, and the T1 **Cooked Fish** exists
+  as the plain furnace dish the cooking ladder always listed. The three rows
+  below are the shipped items and nothing more: **the T4 Marshbloom Chowder,
+  the T5 Salt-Crusted Fish, the restore percentages and Well Fed remain WP10's
+  to build**, and the cooked fish deliberately carries no food buff until it
+  does.
+
+  | Item | Itemstring | How it is obtained | Effect | Vendor price |
+  |---|---|---|---|---|
+  | Fishing Rod | `grug_fishing:rod` | crafted: 3 × stick + 2 × Spider Silk (the game's only string-class material); 64 catches | no dig, no damage; right-click water to cast | none (not a mob drop) |
+  | Raw Fish | `grug_mobs:raw_fish` | Mirefolk drop (WP6) **and, since this round, fishing** | eaten raw like `mobs:meat_raw` | 2c (unchanged) |
+  | Cooked Fish | `grug_fishing:cooked_fish` | furnace, `cooking` recipe from Raw Fish, cooktime 5 | eaten like `mobs:meat` (the cooked-meat value); **no Well Fed yet** | none, exactly as `mobs:meat` — so §3.8's anti-loop rule has nothing to judge |
+
+  **One catch table for the whole world, per the round-5 ruling** ("fish
+  availability shall be identical on both continents, distributed over the
+  zones"): 78 % fish, 12 % stick, 10 % papyrus, with per-zone tables left as a
+  named seam for later. The junk is deliberately worthless and deliberately
+  **not** Stormkelp: that is the front-only T5 gate above, and a world-wide
+  fishing source for it would put the ingredient in every pond.
+
 - **First Aid** (trainer, free): Linen/Heavy/Silk Bandage — channel
   6 s (damage interrupts), restores 15%/30%/45% HP, then 30 s
   "recently bandaged". Cloth competes with Tailoring demand — intended.

@@ -8,6 +8,24 @@ Evidence: `tools/wp13/evidence/20260915-weapon-ladder/`.
 
 Base: `main` at `9e22b0d`.
 
+> **Status, 2026-09-16 — superseded in one place.** This is the record of
+> playtest round 2 and stays as written. Playtest round 5 turned the **two**
+> poses this note describes into **three** and changed the shape of the call
+> that selects them, so the paragraph beginning *"There are two poses"* below
+> no longer describes the shipped code:
+>
+> * there is a third pose, `POSE.edge_down` — the tool transform rolled half a
+>   turn about the blade, for the axe family, so the cutting edge leads the
+>   swing;
+> * `wield_transform(stature, true)` **no longer means upright**. The second
+>   argument is now one of `grug_visuals.POSE` (`"tool"` / `"edge_down"` /
+>   `"upright"`, `nil` = tool) and an unrecognised value raises;
+> * the group list gained `fishing_rod`, and `axe` is matched **first**, into
+>   the rolled pose.
+>
+> Current record: [wp13-fishing.md](wp13-fishing.md) §1; current numbers:
+> `mods/PLAYER/grug_visuals/wield_geometry.lua` section 10.
+
 ## Why
 
 Three findings from the user's GUI playtest on 2026-09-15.

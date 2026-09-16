@@ -1,0 +1,77 @@
+baseline
+wp13_wield_result	PASS	0
+wp13_fishing_result	PASS	0
+
+== M1 the axe pose is no longer a roll (spin stays +90)
+-- mutation: sed 's/^\t\tspin = -90$/\t\tspin = 90/' mods/PLAYER/grug_visuals/wield_geometry.lua
+wp13_wield_result	FAIL	7
+wp13_wield_failure	the axe pose does not put the head on the other side of the haft on axis 2 with the arm hanging (1.000 vs -1.000)
+wp13_wield_failure	the axe pose does not put the head on the other side of the haft on axis 3 with the arm raised (-1.000 vs 1.000)
+wp13_wield_failure	the axe pose does not turn the sprite's face over on axis 1 with the arm hanging (-1.000 vs 1.000)
+wp13_wield_failure	the axe pose does not turn the sprite's face over on axis 1 with the arm raised (-1.000 vs 1.000)
+wp13_wield_failure	the axe pose's z is not the tool pose's negated (90.000)
+wp13_wield_failure	the axe's edge does not lead the chop with the arm hanging (-1.000)
+wp13_wield_failure	the axe's edge does not lead the chop with the arm raised (-1.000)
+
+== M2 the rolled pose ignores the tilt (EXPECTED PASS: TILT_UP is 0)
+-- mutation: sed 's/^\t\ttilt_sign = -1$/\t\ttilt_sign = 1/' mods/PLAYER/grug_visuals/wield_geometry.lua
+wp13_wield_result	PASS	0
+
+== M3 no family asks for the rolled pose
+-- mutation: sed 's/^local EDGE_DOWN_GROUP = {"axe"}$/local EDGE_DOWN_GROUP = {}/' mods/PLAYER/grug_visuals/wield_geometry.lua
+wp13_wield_result	FAIL	4
+wp13_wield_failure	default:axe_stone is held tool, not edge_down
+wp13_wield_failure	grug_gear:greataxe_steel is held tool, not edge_down
+wp13_wield_failure	grug_materials:axe_abyssal_steel is held tool, not edge_down
+wp13_wield_failure	grug_materials:axe_iron is held tool, not edge_down
+
+== M4 the rod is not a diagonal tool any more
+-- mutation: sed 's/"fishing_rod", "grug_equip_weapon"}/"grug_equip_weapon"}/' mods/PLAYER/grug_visuals/wield_geometry.lua
+wp13_wield_result	FAIL	1
+wp13_wield_failure	grug_fishing:rod is held upright, not tool
+
+== M5 the catch weights no longer sum to 100
+-- mutation: sed 's/count = 1, weight = 78}/count = 1, weight = 77}/' mods/ITEMS/grug_fishing/catch.lua
+wp13_fishing_result	FAIL	1
+wp13_fishing_failure	the weights are documented as percent but sum to 99
+
+== M6 the bite is instant
+-- mutation: sed 's/^local MIN_WAIT = 3$/local MIN_WAIT = 0/' mods/ITEMS/grug_fishing/catch.lua
+wp13_fishing_result	FAIL	1
+wp13_fishing_failure	the bite is instant
+
+== M7 a second table is handed out on the other continent
+-- mutation: sed 's/^\treturn WORLD$/\tif pos and pos.z < 0 then return {WORLD[1]} end\n\treturn WORLD/' mods/ITEMS/grug_fishing/catch.lua
+wp13_fishing_result	FAIL	4
+wp13_fishing_failure	table_for is not the same table at (-1200,4,-2500) -- fish availability must be identical on both continents
+wp13_fishing_failure	table_for is not the same table at (-30000,240,-30000) -- fish availability must be identical on both continents
+wp13_fishing_failure	table_for is not the same table at (5,62,-5) -- fish availability must be identical on both continents
+wp13_fishing_failure	table_for is not the same table at (900,12,-700) -- fish availability must be identical on both continents
+
+== M8 an angler may wander away from the line
+-- mutation: sed 's/^local REEL_RANGE = 8$/local REEL_RANGE = 100000/' mods/ITEMS/grug_fishing/init.lua
+wp13_fishing_result	FAIL	1
+wp13_fishing_failure	the line held from 200 nodes away
+
+== M8b a cast lands on dry land too
+-- mutation: sed 's/^\tif not pos or not is_water(pos) then$/\tif not pos then/' mods/ITEMS/grug_fishing/init.lua
+wp13_fishing_result	FAIL	1
+wp13_fishing_failure	a cast at stone still drew a bite roll
+
+== M9 the rod cannot point at water
+-- mutation: sed 's/^\tliquids_pointable = true,$/\tliquids_pointable = false,/' mods/ITEMS/grug_fishing/init.lua
+wp13_fishing_result	FAIL	1
+wp13_fishing_failure	the rod cannot point at water (default:water_source is pointable = false)
+
+== M10 the catch is handed out without reading the clock
+-- mutation: sed 's/^\t\tif clock >= cast.due then$/\t\tif true then/' mods/ITEMS/grug_fishing/init.lua
+wp13_fishing_result	FAIL	1
+wp13_fishing_failure	the catch arrived before the bite -- the clock is not being read
+
+== M11 a full pack silently eats the catch
+-- mutation: sed 's/^\t\tcore.add_item(player:get_pos(), left)$/\t\tleft = left/' mods/ITEMS/grug_fishing/init.lua
+wp13_fishing_result	FAIL	1
+wp13_fishing_failure	a catch into a full pack was lost instead of dropped
+
+== tree restored ==
+(no lines above means byte-identical to the commit)
