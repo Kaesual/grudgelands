@@ -35,11 +35,12 @@ rulings; the superseded text is named in `skill_trees.md` §5.2.
 - Each tree carries **two playstyle directions (chains)**, rank counts vary
   **3-5** by talent strength, and dependencies are of both kinds: points
   spent in the tree, and hard chains. Per tree: **two keystones and one
-  capstone**. A keystone is a **new active "main skill"** at a chain
-  boundary; the capstone is the tree's top talent and hangs on its own chain
-  — a skill **or** a strong effect, since not every capstone is a skill. That
-  is the "new ability every ~10 levels" beat (e.g. Renew, the first keystone
-  of the Priest's healing tree). *(Supersedes "9 of 10 talents are numeric
+  capstone**, and the capstone hangs on its own chain. **Per tree at most ONE
+  keystone adds a new active "main skill"** (user ruling 2026-09-16); the
+  other keystone and the capstone **improve or replace** a button the player
+  already has, so no build carries more than two extra hotbar keys. The new
+  skill is the "new ability every ~10 levels" beat (e.g. Renew, the Priest
+  healing tree's keystone). *(Supersedes "9 of 10 talents are numeric
   modifiers; exactly one capstone per tree, unlocked at 8+ points in that
   tree, and every capstone is a NEW active main skill".)*
 - **New skills come only from the tree**; the base kit granted at class
