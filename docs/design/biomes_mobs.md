@@ -706,7 +706,7 @@ farming system are one later package.
 | grug_blight | gravewood (knotted dead branches, sparse grey leaf remnants) sparse | grey grass tufts, bone piles (deco); gravemoss `[herb T1]` | fireflies/wisp particles optional |
 | grug_bone_forest | gravewood dense (fill 0.015), bone piles | mushrooms `[food found-only]`; dragonweed `[herb T2]` | shares deep-forest drop tables (§3.2) |
 | grug_jungle_edge | jungle_tree.mts (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[spice T1]` | |
-| grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025); papyrus lives in the adjacent swamp/shore band (v7 has no water above sea level, so the jungle cuboids at y ≥ 4 cannot host waterside papyrus) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]` — **level-51–60 zones only** (§2 tightening 2026-08-13); wild melon `[food]` | same flora, roster and target ground: `grug_nodes:dirt_with_canopy_litter`. The shipped WP36 fringe still uses rainforest litter only until WP40 replaces the legacy biome registrations. Existing decorations name both nodes during that migration |
+| grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025); papyrus lives in the adjacent swamp/shore band (v7 has no water above sea level, so the jungle cuboids at y ≥ 4 cannot host waterside papyrus) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]` — **level-51–60 zones only** (§2 tightening 2026-08-13); wild melon `[food]` | same flora, roster and ground: `grug_nodes:dirt_with_canopy_litter`, shipped as the fringe's top node by WP40 R7 (`r7_r6_manifest.lua`); only `grug_jungle_edge` still uses rainforest litter |
 | grug_swamp | papyrus_on_dirt, dead bush; willow-ish gravewood retint optional | reeds, waterlilies; marshbloom `[spice T2]`; mushrooms `[food found-only]` | shallow water pools (mud floor) |
 | grug_beach | — | shells (deco); rock salt crust on coast-zone beaches `[food found-only]` | Stormkelp uses the cross-biome dry-shore predicate below, not a beach-only row. |
 | war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided); decoration set ships with WP13's schematic pass |
@@ -1607,8 +1607,10 @@ and 5 record what WP6 then actually shipped.
 4. **Jungle fringe reuses the deep Troll jungle nodes 1:1** on the Accord
    side (max drop symmetry, zero new assets). Since 2026-08-11 this names
    `grug_deep_jungle` explicitly: target top
-   `grug_nodes:dirt_with_canopy_litter`. The shipped WP36 legacy registration
-   remains on rainforest litter until WP40's replacement pass.
+   `grug_nodes:dirt_with_canopy_litter`. **Done with WP40 R7**: the manifest row
+   `grug_jungle_fringe|grug_nodes:dirt_with_canopy_litter`
+   (`grug_mapgen/wp40/r7_r6_manifest.lua`) is the shipped ground, and the
+   fringe's jungle trees and junglegrass place on it.
 5. **The boar's "charges"** is implemented as a **mid-range rush**, not
    a wind-up gallop: the same impulse the panther's pounce uses,
    flattened horizontally, fired at 4–10 m with an 8 s cooldown. One
