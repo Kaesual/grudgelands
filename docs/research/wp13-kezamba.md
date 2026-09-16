@@ -1154,6 +1154,16 @@ Three `full` boots -- both gate seeds and the user's world seed -- and one
 163 walkers 21` on all three, and `WP13 capital pass PASS: kezamba full` on all
 three.
 
+**One load-time terrain-audit finding on the user's seed, and it is
+HIGHCOURT'S.** `WP13 highcourt: the plot martial_wood_yard at offset -196,-212
+... rise 10 against a clear of 8` -- which is, word for word, the round-1
+playtest finding `tools/wp13/capital_lots.lua`'s own header records as the
+reason that tool exists. It cannot be this lane's: Highcourt's whole +-250
+terrain field is byte-identical on that seed (§8.6), and the apron is guarded on
+`cenote_terrace`. Kezamba's own count is **0 on all three seeds**, and it is
+carried here because a warning in this lane's log deserves a sentence rather
+than a filter.
+
 **THE BUILT CORE DID NOT MOVE, and that is the strongest single number in this
 section.** `core_road_digest` -- the probe's SHA-256 over the 6 611 road cells
 it reads back out of the finished map inside the civic core -- is

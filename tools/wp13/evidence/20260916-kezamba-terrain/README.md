@@ -94,9 +94,17 @@ showed no process on this block after every one.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `531802985935182545` | full | 66 | 0.474 s | 2.494 s | 5 | 262 | 0 | 0 | 0 |
 | `8675309` | full | 64 | 0.516 s | 2.599 s | 6 | 262 | 0 | 0 | 0 |
-| `15912857179583385436` | full | 66 | 0.453 s | 2.349 s | 5 | 262 | 0 | 0 | 0 |
+| `15912857179583385436` | full | 66 | 0.453 s | 2.349 s | 5 | 262 | 0 | 0 | 0 (1 Highcourt's, below) |
 | `531802985935182545` | field | - | - | - | - | - | 0 | 0 | - |
 | `8675309` | field | - | - | - | - | - | 0 | 0 | - |
+
+`engine/full-15912857179583385436/findings.txt` carries the one load-time
+terrain-audit warning any of these boots produced, and it is HIGHCOURT'S
+`martial_wood_yard` -- the round-1 playtest finding
+`tools/wp13/capital_lots.lua`'s own header records, on the seed it was found on.
+Highcourt's whole terrain field is byte-identical on that seed
+(`measurements/capital-fields-*.txt`), so it is not this lane's. Kezamba's own
+count is 0 on all three.
 
 `core_road_digest = eafdce922db68f98366c0da49823bfe9bb1e81d63328b6d2315a748af0203056`
 on all three, which is the value section 6d of the research note recorded before
