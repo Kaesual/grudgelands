@@ -80,10 +80,10 @@ ACTION[Main]: [grug_traders] troll capital vendors come from the sockets of keza
 ACTION[Main]: [grug_traders] undead capital vendors come from the sockets of nhal_veyr
 ACTION[Main]: [grug_traders] 12 settlements indexed for profession vendor appearance
 ACTION[Main]: [grug_traders] drop audit: 1 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:bandit); their items are audited from the hardcoded FUNCTION_DROPS list
-ACTION[Main]: World at [/tmp/grudgelands-headless.6dxgIM/world]
-ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31404.
+ACTION[Main]: World at [/tmp/grudgelands-headless.SNAJpS/world]
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31402.
 ACTION[Server]: [grug_core] start preload: emerging 6 start areas (128 x 128 nodes each, 2 at a time)
-ACTION[Emerge-0]: [grug_core] start area ready: dwarf (1/6, 19.2 s)
+ACTION[Emerge-0]: [grug_core] start area ready: dwarf (1/6, 18.3 s)
 ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket gate_west (-1804,26,-2491)
 ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket gate_east (-1796,26,-2491)
 ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket watch_gate (-1800,26,-2498)
@@ -96,7 +96,7 @@ ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf plac
 ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket work_garden (-1819,26,-2529)
 ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:elder_dwarf placed at socket hall_quest (-1828,26,-2524)
 ACTION[Server]: [grug_mobs] start npcs dwarf hearthpine: guards 3/3 flair 6/6 vendor 1/1 quest 1/1 new 11 pending 0 spare 3 residents 6 walkers 1
-ACTION[Emerge-0]: [grug_core] start area ready: human (2/6, 27.0 s)
+ACTION[Emerge-0]: [grug_core] start area ready: human (2/6, 24.8 s)
 ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket gate_west (-4,23,-2493)
 ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket gate_east (4,23,-2493)
 ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket watch_gate (0,23,-2498)
@@ -109,7 +109,7 @@ ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed
 ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket work_green_seat (-5,23,-2535)
 ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:elder_human placed at socket hall_quest (-11,23,-2542)
 ACTION[Server]: [grug_mobs] start npcs human dawnmere: guards 3/3 flair 6/6 vendor 1/1 quest 1/1 new 11 pending 0 spare 3 residents 6 walkers 1
-ACTION[Emerge-0]: [grug_core] start area ready: elf (3/6, 33.1 s)
+ACTION[Emerge-0]: [grug_core] start area ready: elf (3/6, 29.4 s)
 ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket gate_west (1796,35,-2493)
 ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket gate_east (1804,35,-2493)
 ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket watch_gate (1800,35,-2498)
@@ -122,7 +122,7 @@ ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed
 ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket work_market (1767,35,-2545)
 ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:elder_elf placed at socket hall_quest (1820,35,-2536)
 ACTION[Server]: [grug_mobs] start npcs elf silverleaf: guards 3/3 flair 6/6 vendor 1/1 quest 1/1 new 11 pending 0 spare 3 residents 6 walkers 1
-ACTION[Emerge-0]: [grug_core] start area ready: undead (4/6, 40.9 s)
+ACTION[Emerge-0]: [grug_core] start area ready: undead (4/6, 35.4 s)
 ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket gate_west (-1804,58,2494)
 ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket gate_east (-1796,58,2494)
 ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket watch_gate (-1800,58,2498)

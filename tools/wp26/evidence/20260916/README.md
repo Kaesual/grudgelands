@@ -15,7 +15,7 @@ Everything here was produced from the lane worktree on branch
 | Static gates | `bash tools/wp26/evidence/20260916/static.sh` | `static.out.txt`, exit 0 |
 | Fresh-server audit | `python3 tools/check_fresh_server.py` | PASS (inside `static.out.txt`) |
 | In-engine smelt probe | `PROBE=tools/wp26/smelt_probe PORT=31401 tools/luanti_headless.sh 110` | `logs/probe.31401.log` — PROBE PASS |
-| Clean boot, user seed | `SEED=15912857179583385436 PORT=31404 tools/luanti_headless.sh 60` | `logs/boot.userseed.with-smelting.log` — PASS, 0 errors |
+| Clean boot, user seed | `SEED=15912857179583385436 PORT=31402 tools/luanti_headless.sh 60` | `logs/boot.userseed.with-smelting.log` — PASS, 0 errors (re-run on the rebased tree; warning set still identical to the no-mod baseline) |
 | Same boot without the mod | `SEED=15912857179583385436 PORT=31405 …` | `logs/boot.userseed.without-smelting.log` — PASS, 0 errors |
 | WP13 start identities | `luajit tools/wp13/evidence/20260914-capital-parts/start_identity.lua . \| sha256sum` | `0bbf87a7253deadca55951752adde73e82c31cd10878dc64ef6d44af91ad1f5f`, unchanged from main |
 | Highcourt blueprint digests | `luajit tools/wp13/highcourt_identities.lua .` | output sha256 `66e2ed00fc77d1c422d1a03428481114705a6b29a44b3aa241ada42cb9998f79`, unchanged from main |
@@ -129,9 +129,9 @@ regenerate the textures themselves with
 
 ## Ports and processes
 
-Ports used: 31401 (probe), 31402/31403 (random-seed boot pair), 31404/31405
-(user-seed boot pair) and 31406 (a final boot on the committed tree, which
-reproduced the user-seed baseline warning set exactly and zero errors). No
+Ports used: 31401 (probe, re-run after the fix round), 31402 (the user-seed
+boot on the rebased tree), 31403/31404/31405/31406 (the earlier boot pairs,
+whose logs are archived here). No
 process of this lane's port block 31400–31499 was left running; the
 `luanti.bin` process without `--server` on this workstation is the user's own
 GUI client and was never touched.
