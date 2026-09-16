@@ -609,15 +609,17 @@ local function prepare_overlay(fail, descriptor, overlay)
 		else
 			stretch(run.at - half, run.at + half, run.from, run.to)
 		end
-		-- THE JUNCTION SQUARES, and the spans where a street passes through an
-		-- authored structure, travel with the run and are NOT hashed -- which is
-		-- exact rather than lax: `wp13/street_plan.lua` derives both from the
-		-- run rectangles and the carriageway width alone, and every one of those
-		-- rectangles is in the identity bytes already. A change to any of them
-		-- moves the identity; nothing else can move a junction or a passage.
+		-- THE JUNCTION SQUARES, the spans where a street passes through an
+		-- authored structure, and the verge lanes that stand inside another
+		-- street's carriageway travel with the run and are NOT hashed -- which
+		-- is exact rather than lax: `wp13/street_plan.lua` derives all three
+		-- from the run rectangles and the carriageway width alone, and every one
+		-- of those rectangles is in the identity bytes already. A change to any
+		-- of them moves the identity; nothing else can move a junction, a
+		-- passage or a verge clearance.
 		runs[index] = {id = run.id, axis = run.axis, at = run.at,
 			from = run.from, to = run.to, junctions = run.junctions,
-			plain_verge = run.plain_verge}
+			plain_verge = run.plain_verge, clear_verge = run.clear_verge}
 		bytes[#bytes + 1] = table.concat({"run", index, run.id, run.axis,
 			run.at, run.from, run.to}, "\t") .. "\n"
 	end
@@ -1420,7 +1422,8 @@ function M.config(prepared, content, raw_sha256)
 									-- `wp13/avenue.lua`.
 									wet = local_wet,
 									junctions = run.junctions,
-									plain_verge = run.plain_verge},
+									plain_verge = run.plain_verge,
+									clear_verge = run.clear_verge},
 									local_surface)
 								-- Rule 2: the standards this run may not raise, by the
 								-- three cells each of them occupies (post, post, torch,

@@ -1,0 +1,7 @@
+exit=0 errors=0 complete=1 log=/tmp/grug-w4-G/eng/dur_brannoc-full-8675309/server.log
+WP13 dur_brannoc: the built avenue moved.
+  now      916e90cc971ee86ee9cc0fc2f88356a4a35ea1dc4afb918e097ce66f304aadac
+  expected 0bc3555e4f14798c1a6f8aa5d8f3a2b61ed150c2626601671e55f51a647ac420 (/home/jan/projects/grudgelands/.claude/worktrees/agent-a72ec4c633f00efbc/tools/wp13/evidence/20260915-capital-terrain/dur_brannoc/avenue-digest-8675309.txt)
+rampart overlay digest matches the committed value
+corner overlay digest recorded (no committed value for seed 8675309 yet)
+gate overlay digest matches the committed value

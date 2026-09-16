@@ -1,0 +1,6 @@
+COMPOSITE highcourt    seed 8675309                unwalkable_pairs=0     worst=0  
+COMPOSITE dur_brannoc  seed 8675309                unwalkable_pairs=0     worst=0  
+COMPOSITE gor_drazhak  seed 8675309                unwalkable_pairs=0     worst=0  
+COMPOSITE lethariel    seed 8675309                unwalkable_pairs=0     worst=0  
+COMPOSITE kezamba      seed 8675309                unwalkable_pairs=0     worst=0  
+COMPOSITE nhal_veyr    seed 8675309                unwalkable_pairs=0     worst=0  

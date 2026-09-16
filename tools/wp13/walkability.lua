@@ -1,9 +1,13 @@
 -- THE HEADLINE RESULT OF LANE S, and the independent reviewer's own tool
--- (2026-09-16), committed here unchanged but for this header because the number
--- it produces is the one that says whether the rulings worked.
+-- (2026-09-16). Round 4 (2026-09-16) moved it out of that lane's evidence
+-- directory into the tool directory, unchanged but for this header and for the
+-- two run-spec fields the seam hands a run (`plain_verge`, `clear_verge`):
+-- the number it produces is the one that says whether the rulings worked, and
+-- a gate that is re-run every round belongs beside the other road gates rather
+-- than inside one round's evidence. It needs a WP40 height session per seed,
+-- so it is a LuaJIT gate and not a section of the portable street KAT.
 --
---     luajit tools/wp13/evidence/20260916-streets/walkability.lua \
---         <repo> <seed> [<capital key>]
+--     luajit tools/wp13/walkability.lua <repo> <seed> [<capital key>]
 --
 -- It builds a capital's road the way the SEAM does -- every street run in the
 -- composition's own order, first run wins a shared cell -- and then counts
@@ -87,7 +91,9 @@ for _, key in ipairs(KEYS) do
 					width = blueprint.overlay.width,
 					lamp_spacing = blueprint.overlay.lamp_spacing,
 					lamp_phase = run.from, reach = blueprint.overlay.reach,
-					overhead = over, wet = wet, junctions = run.junctions}
+					overhead = over, wet = wet, junctions = run.junctions,
+					plain_verge = run.plain_verge,
+					clear_verge = run.clear_verge}
 				local piece = blueprint.overlay.run(spec, surf)
 				local dx = (spec.axis == "x") and 1 or 0
 				for _, c in ipairs(piece.cells) do

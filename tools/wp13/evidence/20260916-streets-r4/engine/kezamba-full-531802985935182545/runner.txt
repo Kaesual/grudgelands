@@ -1,0 +1,7 @@
+exit=0 errors=0 complete=1 log=/tmp/grug-w4-G/eng/kezamba-full-531802985935182545/server.log
+WP13 kezamba: the built avenue moved.
+  now      d021d645432a42f41325188c542ff081856e1c9965f54681d9fd668ebba5635d
+  expected a0cc1bdfd18bfbb3f92ae4e10c7c3ef4c8d4df4765050b0e11e6afb7d4e8ab5a (/home/jan/projects/grudgelands/.claude/worktrees/agent-a72ec4c633f00efbc/tools/wp13/evidence/20260915-capital-terrain/kezamba/avenue-digest-531802985935182545.txt)
+rampart: this capital publishes no such overlay region
+corner: this capital publishes no such overlay region
+gate: this capital publishes no such overlay region

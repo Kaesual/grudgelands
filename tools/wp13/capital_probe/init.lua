@@ -608,36 +608,50 @@ end
 -- envelope. The rows and the digest run over the boxes in order, so a multi-box
 -- region is one file and one expectation.
 --
--- EACH BOX IS READ THE MOMENT IT IS EMERGED, and that is the whole reason this
--- is three functions and not one. The header of the dump queue below says it:
--- the server unloads mapblocks when no player is near, so a box emerged three
--- boxes ago is not still in memory. The first version of the corner region
--- emerged all four and then read all four, and read 56 125 `ignore` nodes
--- against 39 529 real ones -- the three earlier corners had gone. So `open`
--- writes the header, `read_box` appends one box's rows while that box is fresh,
--- and `close` digests what was written.
+-- EACH BOX IS EMERGED, HELD, READ AND RELEASED ON ITS OWN, and that is the
+-- whole reason this is five functions and not one. The header of the dump queue
+-- below says the first half of it: the server unloads mapblocks when no player
+-- is near, so a box emerged three boxes ago is not still in memory. The first
+-- version of the corner region emerged all four and then read all four, and
+-- read 56 125 `ignore` nodes against 39 529 real ones -- the three earlier
+-- corners had gone. The second half is round 4's (see THE MAPBLOCKS OF A BOX
+-- below): emerging a box does not keep it, so a box is force-held while it is
+-- read and a box that still comes back with anything ignored is read again.
+-- So `open` writes the header, `scan_box` reads one held box into a buffer,
+-- `commit_box` puts a clean buffer into the file and the digest, and `close`
+-- digests what was written.
 local function dump_open(name, header)
 	local file = assert(io.open(worldpath .. "/" .. name, "wb"))
 	file:write("# ", header, "\n")
 	file:write("# anchor ", anchor_x, ",", anchor_y, ",", anchor_z, "\n")
-	return {file = file, written = 0, ignored = 0, road = 0, rows = {}}
+	return {file = file, written = 0, ignored = 0, road = 0, rows = {},
+		retries = 0, trouble = 0, held = 0, unheld = 0}
 end
 
-local function dump_read_box(state, box)
+-- ONE BOX, READ INTO A BUFFER AND NOT STRAIGHT INTO THE FILE.
+--
+-- A box that comes back with `ignore` nodes in it is re-emerged and read
+-- again (see `dump_attempt`), and a half-read box must never reach the file or
+-- the digest. So a read produces a buffer and `dump_commit_box` is what puts
+-- it into either. The largest region any capital publishes is Highcourt's
+-- district region at ~195 000 written cells, which is a table this process can
+-- hold for the length of one read.
+local function dump_scan_box(box)
+	local out = {written = 0, ignored = 0, road = 0, lines = {}, rows = {}}
 	for z = box.min_z, box.max_z do
 		for y = box.min_y, box.max_y do
 			for x = box.min_x, box.max_x do
 				local node = core.get_node({x = x, y = y, z = z})
 				if node.name == "ignore" then
-					state.ignored = state.ignored + 1
+					out.ignored = out.ignored + 1
 				elseif node.name ~= "air" then
-					state.file:write(x - anchor_x, "\t", y - anchor_y, "\t",
-						z - anchor_z, "\t", node.name, "\t",
-						node.param2 or 0, "\n")
-					state.written = state.written + 1
+					out.lines[#out.lines + 1] = table.concat(
+						{x - anchor_x, y - anchor_y, z - anchor_z, node.name,
+							node.param2 or 0}, "\t")
+					out.written = out.written + 1
 					if road_names[node.name] then
-						state.road = state.road + 1
-						state.rows[#state.rows + 1] = table.concat(
+						out.road = out.road + 1
+						out.rows[#out.rows + 1] = table.concat(
 							{x - anchor_x, y - anchor_y, z - anchor_z,
 								node.name, node.param2 or 0}, ":")
 					end
@@ -645,12 +659,99 @@ local function dump_read_box(state, box)
 			end
 		end
 	end
+	return out
+end
+
+local function dump_commit_box(state, out)
+	if #out.lines > 0 then
+		state.file:write(table.concat(out.lines, "\n"), "\n")
+	end
+	state.written = state.written + out.written
+	state.ignored = state.ignored + out.ignored
+	state.road = state.road + out.road
+	for index = 1, #out.rows do
+		state.rows[#state.rows + 1] = out.rows[index]
+	end
 end
 
 local function dump_close(state)
 	assert(state.file:close())
 	return state.written, state.ignored, state.road,
 		core.sha256(table.concat(state.rows, "\n"), false)
+end
+
+-- THE MAPBLOCKS OF A BOX, HELD IN MEMORY WHILE IT IS READ (round 4,
+-- 2026-09-16).
+--
+-- `core.get_node` does not load anything: it answers `ignore` for a block that
+-- is not resident, and emerging a box is not the same as keeping it. Highcourt
+-- publishes the largest region of any capital (49 572 cells over four corner
+-- boxes) and on two passes of four it came back with 12 000 and 14 125 `ignore`
+-- nodes in it on an idle machine -- so `run_capital.sh` grew a guard that
+-- refuses to compare such a digest, and the guard has been firing on a read
+-- that was nobody's bug but this probe's.
+--
+-- WHAT IS MEASURED TO WORK IS THE RE-READ, and that sentence is this way round
+-- because the independent review of 2026-09-16 measured it: in its own
+-- Highcourt pass the corner box came back with `corner_held = 126` AND
+-- `ignored = 12000` on attempt 1, and the SECOND attempt is what read it whole.
+-- Over 171 region reads of this lane's campaign plus three passes of the
+-- review's, no measurement anywhere shows the hold preventing an `ignore`.
+-- So: a box that comes back with anything ignored is re-emerged and read again,
+-- and that is the fix.
+--
+-- THE HOLD IS INSURANCE AND IS UNPROVEN. A transient forceload is the engine's
+-- own "keep this block in memory" -- released explicitly, never written to the
+-- world -- but `core.forceload_block` loads asynchronously and cannot make a
+-- block resident inside the same server step, and a block cannot be unloaded
+-- mid-step either, so on the one path this code takes it may be doing nothing
+-- at all. It is kept because it costs a table of block positions and because it
+-- is the only thing that would help if the read ever grew a step boundary
+-- inside it; it is not what the passes credit.
+--
+-- The block span of a box is small (a corner box is 25 x ~20 x 25, at most
+-- 3 x 3 x 3 mapblocks) but the engine's default budget is 16 blocks, so
+-- `tools/wp13/run_capital.sh` -- the ONLY runner that stages this probe --
+-- raises `max_forceloaded_blocks` for its own disposable world.
+-- `tools/wp13/run_highcourt.sh` stages a different probe
+-- (`tools/wp13/highcourt_probe`), which still carries the pre-round-4
+-- emerge-then-read-a-step-later loop with no outcome check and no re-read. That
+-- is recorded as open in `docs/research/wp13-streets-round4.md` section 8 and
+-- is not fixed here.
+--
+-- The emerge OUTCOME is checked as well, rather than assumed; the log publishes
+-- `_held`, `_unheld`, `_emerge_trouble` and `_retries` per region, so a pass
+-- says which of the three did the work instead of leaving it to be guessed at.
+local BLOCK = 16
+local function block_span(box)
+	return math.floor(box.min_x / BLOCK), math.floor(box.max_x / BLOCK),
+		math.floor(box.min_y / BLOCK), math.floor(box.max_y / BLOCK),
+		math.floor(box.min_z / BLOCK), math.floor(box.max_z / BLOCK)
+end
+
+local function hold_box(state, box)
+	local held = {}
+	local x0, x1, y0, y1, z0, z1 = block_span(box)
+	for bx = x0, x1 do
+		for by = y0, y1 do
+			for bz = z0, z1 do
+				local pos = {x = bx * BLOCK, y = by * BLOCK, z = bz * BLOCK}
+				if core.forceload_block(pos, true) then
+					held[#held + 1] = pos
+					state.held = state.held + 1
+				else
+					state.unheld = state.unheld + 1
+				end
+			end
+		end
+	end
+	return held
+end
+
+local function release_box(held)
+	for index = 1, #held do
+		core.forceload_free_block(held[index], true)
+	end
 end
 
 --
@@ -968,10 +1069,18 @@ local run_dumps
 
 local function dump_done()
 	local spec = dump_queue[dump_index]
-	local written, ignored, road, digest = dump_close(spec.state)
+	local state = spec.state
+	local written, ignored, road, digest = dump_close(state)
 	spec.state = nil
 	dump_results[#dump_results + 1] = {label = spec.label, written = written,
 		ignored = ignored, road = road,
+		-- What it took to read the region whole: the mapblocks held in memory
+		-- while it was read, the ones the engine's forceload budget refused,
+		-- the emerge callbacks that came back errored or cancelled, and the
+		-- boxes that had to be taken again. A pass with `held` > 0 and
+		-- everything else 0 is the read working as designed.
+		held = state.held, unheld = state.unheld,
+		trouble = state.trouble, retries = state.retries,
 		-- Every dump publishes the digest of the OVERLAY cells it read back out
 		-- of the finished map, not only the road's. Dur Brannoc's overlay
 		-- carries the curtain wall as well, and nothing else in the tree hashes
@@ -980,7 +1089,12 @@ local function dump_done()
 		-- every capital rampart in silence.
 		digest = digest}
 	log({"event=dump", "file=" .. spec.name, "cells=" .. written,
-		"ignored=" .. ignored, "road_cells=" .. road, "road_digest=" .. digest})
+		"ignored=" .. ignored, "road_cells=" .. road,
+		"held=" .. dump_results[#dump_results].held,
+		"unheld=" .. dump_results[#dump_results].unheld,
+		"emerge_trouble=" .. dump_results[#dump_results].trouble,
+		"retries=" .. dump_results[#dump_results].retries,
+		"road_digest=" .. digest})
 	core.after(0, run_dumps)
 end
 
@@ -1020,6 +1134,10 @@ local function report_complete()
 		local row = dump_results[index]
 		parts[#parts + 1] = row.label .. "_cells=" .. row.written
 		parts[#parts + 1] = row.label .. "_ignored=" .. row.ignored
+		parts[#parts + 1] = row.label .. "_held=" .. row.held
+		parts[#parts + 1] = row.label .. "_unheld=" .. row.unheld
+		parts[#parts + 1] = row.label .. "_emerge_trouble=" .. row.trouble
+		parts[#parts + 1] = row.label .. "_retries=" .. row.retries
 		parts[#parts + 1] = row.label .. "_road_cells=" .. row.road
 		if row.digest then
 			parts[#parts + 1] = row.label .. "_road_digest=" .. row.digest
@@ -1048,12 +1166,59 @@ local function report_complete()
 	core.request_shutdown("WP13 capital probe complete", false, 0.2)
 end
 
--- Each BOX of a region is emerged in turn and the region is read once they all
--- are. A region's boxes are emerged one after another rather than together
--- because `core.emerge_area` takes one rectangle, and because the four corner
--- boxes of a capital are 500 nodes apart: one rectangle round them is the whole
--- envelope and this probe would emerge it to read four turrets.
+-- Each BOX of a region is emerged, held, read and released in turn, and the
+-- region is closed once they all are. A region's boxes are emerged one after
+-- another rather than together because `core.emerge_area` takes one rectangle,
+-- and because the four corner boxes of a capital are 500 nodes apart: one
+-- rectangle round them is the whole envelope and this probe would emerge it to
+-- read four turrets.
+--
+-- A BOX IS READ UNTIL IT COMES BACK WHOLE, at most `DUMP_ATTEMPTS` times. The
+-- emerge outcome is CHECKED and not assumed -- an errored or cancelled block
+-- still decrements the callback's own counter, so the first version of this
+-- loop could not tell a finished box from a half-finished one -- and a read
+-- that still finds anything ignored is thrown away and taken again. That is
+-- why `dump_scan_box` buffers: a half-read box may not reach the file or the
+-- digest.
+local DUMP_ATTEMPTS = 4
 local dump_box = 0
+local dump_attempt
+
+dump_attempt = function(spec, box, last, attempt)
+	local trouble = 0
+	core.emerge_area({x = box.min_x, y = box.min_y, z = box.min_z},
+		{x = box.max_x, y = box.max_y, z = box.max_z},
+		function(_, action, calls_remaining)
+			if action == core.EMERGE_ERRORED or
+					action == core.EMERGE_CANCELLED then
+				trouble = trouble + 1
+			end
+			if calls_remaining == 0 then
+				core.after(0, function()
+					local state = spec.state
+					state.trouble = state.trouble + trouble
+					-- HELD, READ, RELEASED -- in that order and in one step, so
+					-- nothing between the hold and the read can unload a block.
+					local held = hold_box(state, box)
+					local out = dump_scan_box(box)
+					release_box(held)
+					if (out.ignored > 0 or trouble > 0) and
+							attempt < DUMP_ATTEMPTS then
+						state.retries = state.retries + 1
+						log({"event=dump_retry", "file=" .. spec.name,
+							"box=" .. dump_box, "attempt=" .. attempt,
+							"ignored=" .. out.ignored,
+							"emerge_trouble=" .. trouble})
+						return dump_attempt(spec, box, last, attempt + 1)
+					end
+					dump_commit_box(state, out)
+					if last then return dump_done() end
+					return run_dumps()
+				end)
+			end
+		end)
+end
+
 run_dumps = function()
 	local spec = dump_queue[dump_index]
 	if spec == nil or dump_box >= #spec.boxes then
@@ -1065,19 +1230,7 @@ run_dumps = function()
 	end
 	dump_box = dump_box + 1
 	local last = (dump_box >= #spec.boxes)
-	local box = spec.boxes[dump_box]
-	core.emerge_area({x = box.min_x, y = box.min_y, z = box.min_z},
-		{x = box.max_x, y = box.max_y, z = box.max_z},
-		function(_, _, calls_remaining)
-			if calls_remaining == 0 then
-				core.after(0, function()
-					-- READ IT NOW, while this box is the one that just arrived.
-					dump_read_box(spec.state, box)
-					if last then return dump_done() end
-					return run_dumps()
-				end)
-			end
-		end)
+	dump_attempt(spec, spec.boxes[dump_box], last, 1)
 end
 
 local function finish()

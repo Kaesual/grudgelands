@@ -238,38 +238,91 @@ local function loader()
 	-- the same way the great avenues do.
 	--
 	-- Every lane runs down the middle of a gap between two rows or columns of
-	-- lots and STARTS ON AN AVENUE. They belong to the QUADRANT and not to the
-	-- district standing in it, so the list is the same on every world and the
-	-- overlay's identity does not depend on the seed.
+	-- lots. They belong to the QUADRANT and not to the district standing in
+	-- it, so the list is the same on every world and the overlay's identity
+	-- does not depend on the seed.
+	--
+	-- EACH LANE IS THE RING STREET CARRYING ON PAST ITS OWN CORNER, and that
+	-- is the round-4 fix (2026-09-16).
+	--
+	-- The first version ran every lane at +-98 from the avenue at 0 out to
+	-- +-190, which put six of them ALONGSIDE the ring street at +-96 for 97
+	-- columns each, three of the five lanes of one being three of the five
+	-- lanes of the other. Two streets two nodes apart are one street, and the
+	-- user walked into exactly that in playtest 6: "at ~1700,-1400, in +x and
+	-- in -z, two streets overlay each other with a 2-node offset across the
+	-- walking direction; the last one written wins and artefacts of the
+	-- overwritten street remain." It cost the only unwalkable steps left in the
+	-- six capitals -- 3, 7 and 11 pairs on the fixture seeds
+	-- (`docs/research/wp13-street-geometry.md` section 8), because the
+	-- road-wide envelope gives two runs two answers for the same column and
+	-- first-run-wins picks one of them.
+	--
+	-- So a lane now stands on the RING'S OWN CENTRE LINE and begins one column
+	-- past the end of the ring run it continues. Three things follow, and all
+	-- three are what the ruling asks for:
+	--
+	--   * the lane and the ring are COLLINEAR and share no column, so there is
+	--     no side-by-side stretch left and nothing to arbitrate;
+	--   * the lane meets the PERPENDICULAR ring run at the corner, which is an
+	--     ordinary junction, so the corner's plateau covers the ring's last
+	--     columns AND the lane's first ones and the two are pinned to one y --
+	--     a collinear seam with a plateau under it cannot step;
+	--   * the two lanes of a quadrant meet the two ring sides at the SAME
+	--     corner, so each ring corner is one four-way junction group rather
+	--     than four places two streets happen to pass.
+	--
+	-- What it costs: the stretch of lane that ran inside the ring is gone,
+	-- because the ring was already there -- and the lane no longer touches an
+	-- avenue directly. It reaches every avenue through the ring, which is what
+	-- the ring is for.
 	--
 	-- The MERE has ONE lane and it is a SHORE WALK: the three lots of the lore
 	-- district stand on the far shelf, the ring street at 96 is under water on
-	-- that side, and the only way to them is along the north shore. Its run
-	-- crosses the head of the lake, which `avenue.lua` builds as a causeway
-	-- (the seam hands a road the WATER surface where water stands, not the bed
-	-- under it -- `r7_settlement.lua`, `walkable_values`).
+	-- that side, and the only way to them is along the north shore. It is the
+	-- one lane that was never beside a ring run, so it is unchanged: it starts
+	-- on the north avenue and crosses the head of the lake, which
+	-- `avenue.lua` bridges (the seam hands a road the WATER surface where
+	-- water stands, not the bed under it -- `r7_settlement.lua`,
+	-- `walkable_values`).
+	-- PUBLISHED, so a gate can hold them. `M.RING_AT` is the ring street's own
+	-- centre line and duplicates the `at` of `lethariel.lua`'s four ring runs;
+	-- it cannot be read from there without a cycle (that file loads this one),
+	-- so `tools/wp13/street_kat.lua` section 8 asserts the two are equal and
+	-- the literal cannot drift.
+	M.RING_AT = 96
+	M.LANE_END = 190
+	-- ONE PAST THE RING RUN'S OWN LAST COLUMN, so the two are collinear
+	-- NEIGHBOURS and not collinear overlappers: no column between them is
+	-- unpaved, and the ring corner's junction group covers the ring's last
+	-- columns and the lane's first ones alike, which is what pins the seam to
+	-- one y. Section 8 of the street KAT holds both halves of that sentence for
+	-- every capital, and the round-4 mutation that pulls the lane away from the
+	-- ring turns it red.
+	M.LANE_START = M.RING_AT + 1
+	local RING_AT, LANE_END, LANE_START = M.RING_AT, M.LANE_END, M.LANE_START
 	M.LANES = {
 		southeast = {
-			{id = "lane_southeast_spine", axis = "z", at = 98,
-				from = -190, to = 0},
-			{id = "lane_southeast_cross", axis = "x", at = -98,
-				from = 0, to = 190},
+			{id = "lane_southeast_spine", axis = "z", at = RING_AT,
+				from = -LANE_END, to = -LANE_START},
+			{id = "lane_southeast_cross", axis = "x", at = -RING_AT,
+				from = LANE_START, to = LANE_END},
 		},
 		northeast = {
 			{id = "lane_northeast_shore", axis = "x", at = 184,
 				from = 0, to = 232},
 		},
 		northwest = {
-			{id = "lane_northwest_spine", axis = "z", at = -98,
-				from = 0, to = 190},
-			{id = "lane_northwest_cross", axis = "x", at = 98,
-				from = -190, to = 0},
+			{id = "lane_northwest_spine", axis = "z", at = -RING_AT,
+				from = LANE_START, to = LANE_END},
+			{id = "lane_northwest_cross", axis = "x", at = RING_AT,
+				from = -LANE_END, to = -LANE_START},
 		},
 		southwest = {
-			{id = "lane_southwest_spine", axis = "z", at = -98,
-				from = -190, to = 0},
-			{id = "lane_southwest_cross", axis = "x", at = -98,
-				from = -190, to = 0},
+			{id = "lane_southwest_spine", axis = "z", at = -RING_AT,
+				from = -LANE_END, to = -LANE_START},
+			{id = "lane_southwest_cross", axis = "x", at = -RING_AT,
+				from = -LANE_END, to = -LANE_START},
 		},
 	}
 

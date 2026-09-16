@@ -1,0 +1,601 @@
+# WP13 — the streets after playtest 6 (2026-09-16)
+
+Round 4, Lane G. Branch `wp13-r4-streets`, on `main` at `dfb32cd5` (the wave-3
+merge: one street rule for all six capitals — road-wide envelope, junction
+plateaus, viaducts on pillars, bridges over water).
+
+Playtest 6 walked Lethariel and Kezamba in a fresh world on the user's own seed
+`15912857179583385436` and said "otherwise looks really good, very satisfied".
+It made three findings, all of them about the same two things: what stands on a
+street's VERGE where another street joins, and two of Lethariel's streets being
+one street.
+
+The record of the rule set itself is
+[wp13-street-geometry.md](wp13-street-geometry.md); this is the round that
+closed two of its "what is open" items and measured a third.
+
+---
+
+## 1. The findings, and what each one is now
+
+| # | The user's words (2026-09-16) | The answer |
+| --- | --- | --- |
+| 1 | Lethariel ~1900,−1400: "two street ENDS meet on a bridge over water; the rail of each protrudes into the other street." | The north-east ring corner over the mere. A verge lane is one node OUTSIDE its own carriageway, so at a corner it runs across the road that joins. `street_plan.verge_clearance` now names those cells and `avenue.run` writes nothing on them. §2 |
+| 2 | Lethariel ~1700,−1400: "in +x and in −z, two streets overlay each other with a 2-node offset across the walking direction; the last one written wins and artefacts of the overwritten street remain." | The six side-by-side pairs wave 3 pinned and escalated. Each district lane now stands on the RING's own centre line and starts one column past the ring run it continues. §3 |
+| 3 | Kezamba ~1800,1595: "at a street CROSSING over water the side rails leave only a one-node gap into the crossing — the same pattern as 1 with four ends. Wanted: railings, fences, verge posts and pillars end at the crossing square; the plateau square is rail-free towards every street that joins it." | The same rule as 1. The crossing of `avenue_north` and `ring_north` over water. §2 |
+
+Nothing else about the street rule changed: the five rulings of playtest 5 are
+untouched and their eleven mutations are still red (§7).
+
+---
+
+## 2. The verge ends at the street that joins it
+
+### 2.1 What was wrong, in one sentence
+
+`avenue.lua` writes the plank walk, the rail, the pillars and the lamp
+standards on the two lanes one node outside its own carriageway. At a crossing,
+at a corner and at a T-joint those two lanes lie INSIDE the other street's
+carriageway — so every one of those things stood in the middle of the road that
+joins. Over water, where a street is a bridge and the verge carries a rail at
+every column, that is a fence across the junction, which is what the user saw
+twice.
+
+### 2.2 The rule
+
+`wp13/street_plan.lua` gains `M.verge_clearance(streets, width)`. Per run and
+per SIDE it answers the spans along the run where that verge lane lies inside
+another street run's carriageway rectangle, merged. `M.attach` hands it to the
+run as `clear_verge`, beside the junction squares and the barrier passages, and
+all three travel the same way: derived from the run rectangles and the
+carriageway width alone, so they are static, seed-free and already covered by
+the overlay's identity bytes.
+
+`avenue.run` writes NOTHING on a verge lane the answer names — no plank, no
+rail, no pillar, no kerb footing, no standard.
+
+Three properties make it the ruling and not "write less verge":
+
+* **Per SIDE.** At a corner only one of the two verge lanes is inside the other
+  road. The parapet on the OUTSIDE of the corner, where nothing joins, stays.
+* **The deck stays continuous.** The cell the verge gives up is by construction
+  a cell the joining run PAVES, at the plateau's own y. The walk is handed over,
+  not interrupted.
+* **It is a column question, not a plateau question.** The plateau square is
+  the two carriageways' intersection; a verge lane is beside it. What decides is
+  the verge cell's own column.
+
+### 2.3 What the numbers say
+
+`tools/wp13/street_geometry.lua` gained two columns, both read off the cells
+the overlay writes:
+
+* `verge_in_road` — cells a run writes on one of its two verge lanes whose
+  column lies inside another street run's carriageway;
+* `plateau_rail` — **a breakdown of that number and not a second gate**: it is
+  computed strictly inside the same branch, so it is a subset of `verge_in_road`
+  by construction and no regression can move it without moving `verge_in_road`
+  first. It says how many of the intruding cells were rails closing a plateau
+  square, which is the half of the user's finding that reads as a fence.
+
+Six capitals × nine fixture seeds:
+
+| seed | `verge_in_road` before | after | `plateau_rail` before | after |
+| --- | --- | --- | --- | --- |
+| 531802985935182545 | 2662 | **0** | 228 | **0** |
+| 8675309 | 2508 | **0** | 208 | **0** |
+| 15912857179583385436 | 2490 | **0** | 195 | **0** |
+| 0 | 2617 | **0** | 236 | **0** |
+| 1 | 2405 | **0** | 177 | **0** |
+| 2 | 2469 | **0** | 183 | **0** |
+| 42 | 2417 | **0** | 172 | **0** |
+| 12345 | 2695 | **0** | 228 | **0** |
+| 999999999 | 2540 | **0** | 190 | **0** |
+
+Per capital on the gate seed 8675309, `verge_in_road` before → after:
+Highcourt 379 → 0, Dur Brannoc 409 → 0, Gor Drazhak 280 → 0, Lethariel 940 → 0,
+Kezamba 236 → 0, Nhal Veyr 264 → 0.
+
+What it costs in furniture, same nine seeds: **414 of 4444 lamp standards**
+(4444 → 4030 on every seed, because the lamp rhythm and the run rectangles are
+both seed-free) and 3–6 % of the rails (e.g. 5112 → 4848 on the gate seed).
+**410 of those 414 stood in another street; the other 4 went with the shorter
+Lethariel lanes of §3** — measured by the independent review by building
+`main`'s old lane list against this branch's clearance: Lethariel keeps 597
+standards that way and 593 with both changes. Nothing else moved: cross-profile
+spread stays 0, worst step 1, `junc_spread` 0, `junc_step` 1 and `lamps_off` 0
+on all nine seeds.
+
+### 2.4 The successor's own lamp rule is still there, and still earns its place
+
+`wp40/r7_settlement.lua`'s cross-run arbitration rule 2 drops a lamp standard
+whose verge cell is inside another RUN's carriageway. It is not the same rule:
+it sees every run of the overlay, the curtain wall and the gate cones included,
+and the road module is handed only the street rectangles. So it stays, and the
+seam KAT's `overlay` row measures the change: **10 standards dropped → 2**.
+The eight that went are the street-against-street cases the module no longer
+emits; the two that remain are a street against something that is not a street.
+
+---
+
+## 3. Lethariel's six pairs of parallel streets
+
+### 3.1 What was wrong
+
+Wave 3 measured six side-by-side stretches, all Lethariel's: a district lane at
+±98 running alongside a ring side at ±96 for 97 columns each, three of the five
+lanes of one being three of the five lanes of the other
+([wp13-street-geometry.md](wp13-street-geometry.md) §8, first bullet). Two
+streets two nodes apart are one street; the road-wide envelope gives the two
+runs two answers for a shared column, the seam's first-run-wins arbitration
+picks one, and the other's cells stay where the winner did not cover them. It
+was the only unwalkable step left in the six capitals.
+
+### 3.2 The change
+
+Each of the six lanes is now **the ring street carrying on past its own
+corner**: it stands on the ring's centre line (±96, not ±98) and begins one
+column past the end of the ring run it continues (±97, not 0). The `northeast`
+quadrant's shore walk was never beside a ring run and is unchanged.
+
+Three things follow:
+
+* the lane and the ring are **collinear and share no column**, so there is
+  nothing to arbitrate;
+* the lane meets the **perpendicular** ring run at the corner, which is an
+  ordinary junction — so the corner's plateau covers the ring's last columns AND
+  the lane's first ones and pins both to one y. A collinear seam with a plateau
+  under it cannot step;
+* the two lanes of a quadrant meet the two ring sides at the same corner, so
+  each ring corner is **one four-way junction group**.
+
+Lethariel's own two lane/lane butt joints went with the change: the ring street
+now stands between the two halves that used to meet at 0.
+
+### 3.3 What the numbers say
+
+**Walkability** — `tools/wp13/walkability.lua` (moved this round out of wave
+3's evidence directory into the tool directory) builds each capital's road the
+way the seam does and counts neighbouring road columns whose walking level
+differs by two or more. Six capitals × nine seeds; every capital but Lethariel
+is 0 on both trees.
+
+| seed | Lethariel, `main` dfb32cd5 | Lethariel, branch |
+| --- | --- | --- |
+| 531802985935182545 | 11 | **0** |
+| 8675309 | 3 | **0** |
+| 15912857179583385436 | 7 | **0** |
+| 0 | 7 | **0** |
+| 1 | 3 | **0** |
+| 2 | 14 | **0** |
+| 42 | 3 | **0** |
+| 12345 | 6 | **0** |
+| 999999999 | 3 | **0** |
+
+**All 54 capital/seed pairs are now 0, worst step 0.** The worst step on main
+was 2 on every seed, and every example it printed was a lane/ring pair:
+`1704,−1460 (lane_northwest_spine, y=30)` beside `1705,−1460 (ring_west, y=28)`
+on the user's own seed.
+
+**The lots** — `luajit tools/wp13/lethariel_plots.lua .` re-derives every
+district and fill lot of all four quadrants on all nine seeds against the run
+rectangles: **0 illegal lots**, "every Lethariel lot is dry, inside the skirt
+and under its own roof on all 9 seeds". The lane band moved two nodes towards
+the ±72/±124 lot columns and still clears them by ten.
+
+**The inventory** — `street_kat.lua` §8: Lethariel 15 street runs, 24 junction
+records, **0 parallel overlaps** (it was 15/30/8). Tree-wide the inventory is
+now **12 butt joints and no side-by-side pair** (it was 14 and 6): Dur Brannoc,
+Gor Drazhak and Nhal Veyr keep four each, Lethariel has none left.
+
+That is two fewer butt joints than the brief projected. The brief expected the
+six side-by-side pairs to become nothing and Lethariel's two lane/lane butt
+joints to survive; they did not, because the two spine lanes that used to meet
+at z = 0 are now at opposite ends of the ring side that runs between them.
+
+**And §8 is an assertion now, not a row somebody reads.** It pins the
+inventory as a property: a parallel overlap must be two COLLINEAR runs sharing
+exactly one column. A composition that grows a side-by-side pair again turns the
+KAT red instead of changing a digest.
+
+**That was only half of it, and the independent review of 2026-09-16 found the
+other half missing.** The overlap rule only looks at the direction where two
+streets share TOO MUCH; `walkability.lua` cannot see a GAP at all, because a gap
+has no neighbouring road columns to step between. The review moved every
+district lane twenty columns off the ring end it continues — five streets left
+hanging in the fields — and **every gate in the tree stayed green**. §8 now
+carries two more rules, both composition-agnostic:
+
+1. **A street nobody can reach is not a street.** Every run must share at least
+   one carriageway column with another run: one junction group, or one parallel
+   overlap. Measured: 0 lonely runs in all six capitals; the review's mutation
+   makes six of Lethariel's fifteen lonely at once, which is what turns it red.
+2. **A collinear seam is adjacent and pinned.** Two runs on one centre line that
+   do NOT share a column, and whose nearer ends lie within a road's half-width
+   plus one, must be exactly adjacent (a larger gap is a stretch of centre line
+   nobody paves) and both ends must lie in ONE junction group (or nothing pins
+   the two envelopes to the same y). Measured: six such seams in the tree, all
+   Lethariel's ring corners, all adjacent and all pinned; the other five
+   capitals have none, because their collinear pairs share their end column and
+   a butt joint needs nothing.
+
+The true branch of the pinning test runs on real data on every KAT run; the
+false branch does not, so §8 also answers it both ways on two runs built for it.
+And `M.RING_AT` is published by `lethariel_quadrants.lua` and asserted equal to
+the `at` of all four of `lethariel.lua`'s ring runs — the quadrant file cannot
+read that one without a cycle, so the literal is coupled by the gate instead.
+Four goal-B mutations, all red: the lane back beside the ring at ±98, the lane
+twenty columns away, the lane one column short of the ring end, and `RING_AT`
+itself drifted.
+
+### 3.4 What it cost
+
+Per-mapchunk time, Lethariel, gate seed 531802985935182545, `run_capital.sh
+full` on both trees (wave 3's own engine record against this branch's):
+
+| | wave 3 | branch |
+| --- | --- | --- |
+| capital mapchunks | 100 | 100 |
+| steady mean | 534 547 µs | 551 612 µs |
+| worst | 974 915 µs | 1 167 292 µs |
+
++3.2 % on the mean. **It is an upper bound and not a clean measurement**: the
+workstation was carrying four other round-4 lanes and at least two other
+headless servers throughout, and wave 3's own record carries the same caveat.
+The re-derived plots cost nothing by construction — they are the same plots on
+the same offsets; only the run rectangles moved.
+
+---
+
+## 4. The corner read-back (`capital_probe`)
+
+### 4.1 The cause
+
+Wave 3 left this open: Highcourt's `corner` region — 49 572 cells over four
+boxes, which wave 3 called the largest any capital publishes and which this
+round measured against Nhal Veyr's 66 091 — came back with 12 000 and 14 125
+`ignore` nodes on two passes of four, on an idle machine
+([wp13-street-geometry.md](wp13-street-geometry.md) §9). `run_capital.sh` grew a
+guard that refuses to compare such a digest ("re-take the pass; do NOT re-freeze
+this digest"), and the guard has been firing on a read that was the probe's own.
+
+A node read loads nothing: the engine answers `ignore` for a mapblock that is
+not resident, and **emerging a box is not the same as keeping it**. The probe
+emerged each box and read it one server step later, and between those two
+moments nothing held the blocks. Two further holes were in the same loop: an
+errored or cancelled emerge still decrements the callback's own counter, so a
+half-finished box looked finished; and a box that came back short was written
+into the file and the digest anyway.
+
+### 4.2 The fix
+
+* **Re-read — and this is the fix.** A box that comes back with anything
+  ignored, or with an errored emerge, is thrown away and taken again, up to four
+  times. That is why the read now buffers: a half-read box may reach neither the
+  file nor the digest.
+* **Checked.** The emerge outcome is read, not assumed.
+* **Held — insurance, and unproven.** Every mapblock of a box is force-held
+  (transient) between its emerge and its read and released straight afterwards.
+  `run_capital.sh` raises `max_forceloaded_blocks` for its disposable probe
+  world, because the engine's default is 16 and Highcourt's district region is
+  several hundred blocks. The blocks are in memory already; the hold is
+  bookkeeping and not a second copy.
+
+**The order of that list is the measurement and not the design intent**, and the
+independent review of 2026-09-16 is what turned it round. In its own Highcourt
+pass the corner box came back with `corner_held = 126` **and** `ignored = 12000`
+on attempt 1, and the second attempt read it whole. Over this lane's 171 region
+reads and the review's three further passes, **no measurement anywhere shows the
+hold preventing an `ignore`** — which is what you would expect, because
+`core.forceload_block` loads asynchronously and cannot make a block resident
+inside the same server step, and a block cannot be unloaded mid-step either. The
+hold is kept because it costs a table of block positions and is the only thing
+that would help if the read ever grew a step boundary inside it. The re-read is
+what the passes credit.
+
+**`run_capital.sh` is the only runner this touches.** It is the only one that
+stages `capital_probe`; `run_highcourt.sh` stages `tools/wp13/highcourt_probe`,
+which still carries the pre-round-4 emerge-then-read-a-step-later loop with no
+outcome check and no re-read. That is §8's third open item.
+
+Every region publishes `<label>_held`, `_unheld`, `_emerge_trouble` and
+`_retries` beside `_ignored`, so a pass says which of the three did the work.
+**The guard in `run_capital.sh` is unchanged** — it is correct, it just has
+nothing left to refuse.
+
+### 4.3 What the numbers say
+
+**Four consecutive `run_capital.sh full` passes of Highcourt on seed 8675309**,
+on the branch, one server at a time on a workstation also carrying four other
+round-4 lanes:
+
+| pass | `corner_cells` | `corner_ignored` | `corner_held` | `corner_retries` | `corner_emerge_trouble` |
+| --- | --- | --- | --- | --- | --- |
+| a | 49 572 | **0** | 96 | 0 | 0 |
+| b | 49 572 | **0** | 126 | **1** | 0 |
+| c | 49 572 | **0** | 96 | 0 | 0 |
+| d | 49 572 | **0** | 96 | 0 | 0 |
+
+Every region of every pass reads the identical cell count — core 43 075, plot
+7253, avenue 63 866, district 195 126, approach 21 866, rampart 29 674, gate
+11 910, corner 49 572 — and every one has `ignored = 0`. The four `avenue`
+digests are the same value, which is this package's determinism check on the
+engine side, and `rampart`, `corner` and `gate` match the values committed
+before this round on all four.
+
+**Pass b is the interesting one.** One corner box came back short even with its
+blocks held, and the retry read it whole: `corner_retries = 1`, `held` 126
+instead of 96 (the box was held twice), `ignored` 0. So the hold alone would not
+have been enough on that pass, and the belt-and-braces is not decoration. Not
+one pass in the campaign needed a second retry, and `emerge_trouble` was 0
+throughout — the emerge itself never errored, which rules out the other
+hypothesis.
+
+**Two Nhal Veyr passes** on 531802985935182545, whose `corner` region is the
+tree's largest at **66 091 cells**: `corner_ignored = 0` on both, cell counts
+identical, one retry on the second pass (`corner_held` 144 against 120), no
+emerge trouble. Its `rampart`, `corner` and `gate` digests match the committed
+values on both passes.
+
+So the brief's gate is met, and the campaign as a whole says it more strongly:
+over **21 `run_capital.sh full` passes and 171 region reads**, `_ignored` is
+**0 every single time** and `_emerge_trouble` is 0 every single time; the
+`run_capital.sh` "re-take the pass" branch did not fire once — on a workstation
+that was NOT idle. Three reads of the 171 needed one retry each
+(`engine/region-reads.txt`): Highcourt's and Nhal Veyr's `corner`, and one of
+Gor Drazhak's `rampart`. So the hold is not sufficient on its own and the
+re-read is not decoration; each of the two fires on its own cases and neither
+has ever needed a third attempt.
+
+---
+
+## 5. Highcourt's walker ring and `find_path` (goal D)
+
+### 5.1 `min_walker_ring=1` — the cause, and it is not street or lot geometry
+
+Wave 3 escalated it and proved it pre-existing
+(`docs/research/wp13-polish-wave3.md` §5.1): at least one of Highcourt's
+walkers is handed a wander ring of ONE spot, and a ring of one is a walker that
+never moves. This lane was asked to find the cause and to fix it if it turned
+out to be geometry.
+
+It is not. `tools/wp13/evidence/20260916-streets-r4/walker_ring.lua` replays,
+with no engine and no world, the two rules of
+`mods/ENTITIES/grug_mobs/start_npcs.lua` that decide a ring — the 80/20 split
+(every fifth `idle` spawn socket in authored order hosts a walker) and
+`bounded_spots` (a walker's ring is the idle sockets of ITS OWN COMPOSITION
+within `WALK_RADIUS` = 20, topped up to `WALK_MIN_RING` = 3 "from whatever the
+composition can actually offer"). It reads the three constants out of the
+production file rather than retyping them.
+
+| capital | sockets | idle spawn | walkers | worst ring | the walker | its composition's idle sockets |
+| --- | --- | --- | --- | --- | --- | --- |
+| highcourt | 256 | 108 | 22 | **1** | `market_workshop/market_workshop_gate_idle` | **1** |
+| dur_brannoc | 269 | 106 | 22 | **1** | `forge_store/forge_store_gate_idle` | **1** |
+| gor_drazhak | 315 | 104 | 21 | 2 | `bazaar_brewhouse/bazaar_brewhouse_idle_grog_bench` | 2 |
+| lethariel | 253 | 106 | 22 | **1** | `martial_lodge/martial_lodge_gate_idle` | **1** |
+| kezamba | 262 | 101 | 21 | **1** | `shore_house/shore_house_gate_idle` | **1** |
+| nhal_veyr | 274 | 116 | 24 | **1** | `market_grave_field/market_grave_field_gate_idle` | **1** |
+
+**The cause, in one sentence: a composition that publishes exactly ONE idle
+socket has nothing to top a ring up from, and the every-fifth counter lands on
+it.** Five of the six capitals have one, not just Highcourt — Highcourt is
+simply the one a probe was pointed at. Moving a street or a lot cannot change
+it; what can is either a second idle socket in those compositions or a top-up
+that may reach outside the composition.
+
+**Not this lane's, and named rather than left as "something is wrong at
+Highcourt":** it belongs to whoever owns the socket placement of those plots
+(`wp13/*_plot.lua` / `*_districts.lua` rosters) or to the walker rule in
+`grug_mobs/start_npcs.lua`. The probe already fails a capital pass on it, which
+is why a `full` pass of a capital with the defect reports `errors=1`.
+
+### 5.2 The non-zero `find_path` — measured, still open
+
+Wave 3 measured 21–30 `core.find_path` calls in a 30-second capital window
+(41–59 a minute) against zero at a start, on `main` and on its own branch
+alike, and named `patrol.lua`'s stuck rescue as the only caller a settlement
+has. This lane did not change patrol routes, guard behaviour or the wall walk;
+the one thing it changed that a guard can stand on is the verge furniture, and
+removing a rail from the middle of a street can only help a stuck guard.
+
+It was re-measured once on this branch —
+`PORT=31030 tools/wp13/run_npc_load.sh <out> 15912857179583385436 highcourt`,
+seven 30-second windows, the six starts and then Highcourt:
+
+| subject | step mean | `find_path` in 30 s | per minute | walker share | `min_walker_ring` |
+| --- | --- | --- | --- | --- | --- |
+| all six starts | 90.26–90.29 ms | **0** | 0.00 | 16.7 % | 3 |
+| highcourt | 90.56 ms | **72** | 141.97 | 15.0 % | **1** |
+
+Two things and one caveat.
+
+* **`min_walker_ring = 1` reproduces on the branch**, which is what §5.1's
+  offline replay predicted for exactly one socket — the probe fails the run on
+  it ("highcourt handed a walker a ring of 1: it can never move"), which is the
+  probe doing its job and the only reason that run reports `errors=1`.
+* **`find_path` is still non-zero at a capital and still zero at every start.**
+  It is 141.97 a minute here against wave 3's 41–59; the run also reported
+  `marked=175 roster=181 reason=stalled waited_s=78`, so six NPCs had not even
+  been placed when the window opened.
+* **The caveat is the host.** This measurement was taken while the workstation
+  carried four other round-4 lanes, two to four other headless servers and the
+  user's own GUI client. A stuck-rescue count is a function of how often a mob
+  fails to make progress, which contention produces directly, so the number is
+  an UPPER bound and is not comparable with wave 3's. What it does say is the
+  qualitative thing wave 3 said: a start has none and a capital has some.
+
+**It stays open, with wave 3's suspect** (`patrol.lua`'s stuck rescue, the only
+caller a settlement has) **and a clean-host measurement still owed.**
+
+---
+
+## 6. The digests that moved
+
+An overlay's manifest identity is its SPECIFICATION and not its cells, so the
+only two things this lane can move are overlay identity rows and the
+built-geometry digests `run_capital.sh` gates on.
+
+**The fix round after the independent review moved nothing built.** Its only
+non-tool edits are `lethariel_quadrants.lua` publishing the two constants it
+already had (same values) and one stray comment line removed from `avenue.lua`;
+`street_geometry.lua`'s output on 531802985935182545 is byte-identical to the
+committed `after-*.tsv` and `after-*.log`, and thirteen of the fourteen KAT
+outputs — `lethariel_kat`'s built-overlay digest included — are byte-identical
+to the ones committed before it. The fourteenth is `street_kat`, whose
+`street_inventory` DIGEST is also unchanged (`167ce4af…`): the line simply gained
+`collinear_seams 6`. `final_micro` moves that one row and nothing else, so its
+whole-report digest goes `1a55b65a…` → `a074c585…`. **No engine pass was
+re-taken and no frozen digest moved.**
+
+**One overlay identity: `lethariel_avenue`.** Its run rectangles changed
+(§3.2), and the overlay identity is hashed from exactly those. `a5111f8b…` →
+`ad65e634…`. The other five capitals' overlay identities are byte-identical:
+the verge clearance is derived from the rectangles and is deliberately not
+hashed, like the junction squares and the barrier passages beside it. Every
+other identity in the tree — every core, plot, dressing and settlement root,
+and the six START identities — is byte-identical to `main`'s
+(`identity.txt`; `final_micro` moves seven rows out of 478, all of them named
+in §7 of this record).
+
+**Nine frozen built-geometry digests, all of them `avenue`** (`refreeze.txt`,
+`9 digests moved, 19 confirmed unchanged`):
+
+| capital | seed | was | now |
+| --- | --- | --- | --- |
+| highcourt | 531802985935182545 | `44e552bc…` | `1d0e2868…` |
+| highcourt | 8675309 | `46ab2c74…` | `a0dc9ee0…` |
+| dur_brannoc | 531802985935182545 | `1f98738e…` | `1e35beca…` |
+| dur_brannoc | 8675309 | `0bc3555e…` | `916e90cc…` |
+| dur_brannoc | 15912857179583385436 | `dfbd07dd…` | `daf0c268…` |
+| gor_drazhak | 531802985935182545 | `b93337ec…` | `b5d947a6…` |
+| lethariel | 531802985935182545 | `f62eb734…` | `a0d99054…` |
+| kezamba | 531802985935182545 | `a0cc1bdf…` | `d021d645…` |
+| nhal_veyr | 531802985935182545 | `bde0dc8c…` | `6a8a2158…` |
+
+**And nineteen confirmed unchanged**: every `rampart`, `corner` and `gate`
+digest of every capital and seed that has one. That is the shape the change
+predicts — the verge furniture the clearance removes stands at junctions inside
+the city, and those three regions are the curtain wall at ±256 — and it is
+measured rather than assumed.
+
+Every one of the nine was re-frozen from a clean pass of this branch
+(`errors=0 complete=1`, `<label>_ignored=0` on every region), and **a second
+pass of all six capitals on the gate seed afterwards passed the gate outright**
+— `rc=0`, "avenue overlay digest matches the committed value", and the rampart,
+corner and gate rows matching beside it. That is this package's determinism
+check on the engine side. For Highcourt on 8675309 and Nhal Veyr on
+531802985935182545 there are four and two passes respectively and all of them
+agree (§4.3).
+
+---
+
+## 7. What a reviewer should look at
+
+1. **`street_plan.verge_clearance`'s two branches.** A parallel run covers a
+   verge lane over its whole span or not at all; a crossing run covers it over
+   its own width where the lane is inside its span. Both are clipped to the
+   street's own span and merged. The side is the hand `avenue.lua` counts lanes
+   in — get it backwards and the rule takes the parapet where nothing joins and
+   leaves it where a street does, which is mutation 3 of `mutation.py`.
+2. **That the deck really is continuous.** §11(c) of the KAT asserts it on the
+   synthetic pond; the real-terrain claim rests on `walkability.lua` being 0 on
+   all 54 capital/seed pairs, which reads the road as the seam writes it and
+   would see a hole.
+3. **Lethariel's corners.** Each is now one four-way junction group; the
+   plateau's symmetry argument (§3 of wp13-street-geometry.md) is what makes the
+   collinear seam between a ring side and its lane safe, and `junc_spread` 0 on
+   nine seeds is what says it holds.
+4. **The probe's retry loop.** It is bounded (four attempts) and it commits
+   only a clean box; a region that cannot be read whole still reaches the gate
+   with a non-zero `_ignored` and still fails the pass.
+5. **The KAT's own coverage.** Seven new mutations (`mutation.py` in this
+   round's evidence) plus the eleven of wave 3, all red — including the
+   independent review's own, which pulls every district lane twenty columns off
+   the ring end it continues and which nothing in the tree caught before §8's
+   reachability rule. Two of the four are
+   deliberately NOT "turn the rule off": each narrows the clearance so that
+   exactly one of the two shapes §11 builds keeps its rail, which is what says
+   the section holds the butt joint and the crossing separately.
+6. **Chunk independence of the new input.** §11(d) cuts the crossing's own
+   avenue at every one of its 96 interior columns and compares the union of the
+   two pieces with the whole, cell for cell — the invariant the module lives
+   inside, re-checked for a rule that reads a new per-position table.
+
+---
+
+## 8. What is open
+
+* **`min_walker_ring=1` in five of the six capitals — NOT this lane's, with a
+  name attached.** See §5.
+* **A non-zero `find_path` in a quiet capital window.** See §5.
+* **`run_highcourt.sh`'s own probe still has the old read loop.**
+  `tools/wp13/highcourt_probe` emerges a dump box and reads it a server step
+  later with no hold, no emerge-outcome check and no re-read — the defect goal C
+  fixed in `capital_probe`. It has not shown the failure (its regions are
+  smaller and it publishes no `corner`), and goal C names `capital_probe`, so it
+  is recorded rather than fixed here.
+* **The gate-arrival ramp is still Kezamba's alone.** Goal E of this lane's
+  brief, optional and not started:
+  `T(p) = min(D(p), g + |p − gate|)` out of `kezamba_ramp.lua` and Nhal Veyr's
+  `gate_road` and into `avenue.lua` would retire two per-capital
+  post-processes.
+* **Junctions that are close but disjoint** — unchanged from wave 3 §3:
+  measured flat on nine seeds, not proved.
+
+---
+
+## 9. What to look at in a FRESH world
+
+A capital's streets are mapgen, so an existing world keeps the old ones: this
+needs a **new world**, and the user's own seed `15912857179583385436` is the one
+the findings were made in.
+
+1. **Lethariel ~1900,−1400** — the north-east ring corner over the mere, where
+   the two bridge ends meet. The rail of each should now stop at the other
+   street's kerb; the square itself is open on both sides; the parapet on the
+   OUTSIDE of the corner — the water side — is still there.
+2. **Lethariel ~1700,−1400** — the north-west corner. There should be ONE
+   street here, not two two nodes apart, and no leftover paving beside it. The
+   ring's west side now carries on north as the district lane and the seam
+   between them is inside the corner plateau, so there is no step.
+3. **Kezamba ~1800,1595** — the crossing over water. All four arms should open
+   into the square with the full carriageway, not through a one-node gap, and
+   the square should carry no rail, post or pillar.
+4. **Any street corner in any capital** — the rule is every capital's, so
+   Highcourt's ring corners, Dur Brannoc's gate crossings and Gor Drazhak's
+   lanes got it too. What should NOT have happened: a gap in a bridge parapet
+   anywhere except where a street joins, or a stretch of bridge deck with
+   nothing to walk on.
+5. **The lamps.** 414 standards of 4444 are gone: 410 of them stood in the
+   middle of a joining street and 4 went with Lethariel's shortened lanes. The
+   remaining rhythm should read the same walking down a street; a crossing
+   simply has no standard in it.
+
+---
+
+## 10. Files
+
+| file | what changed |
+| --- | --- |
+| `mods/MAPGEN/grug_mapgen/wp13/street_plan.lua` | `verge_clearance`, attached by `attach`; the inventory header |
+| `mods/MAPGEN/grug_mapgen/wp13/avenue.lua` | the `clear_verge` spans, consumed per side in the verge pass |
+| `mods/MAPGEN/grug_mapgen/wp13/lethariel_quadrants.lua` | the six district lanes on the ring's own centre lines |
+| `mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua` | append-only: `clear_verge` on the prepared run and on the spec the successor hands `avenue.run` |
+| `tools/wp13/capital_probe/init.lua` | the dump read: hold, check, re-read, commit; four new counters per region |
+| `tools/wp13/run_capital.sh` | `max_forceloaded_blocks` for the probe's world |
+| `tools/wp13/street_geometry.lua` | `verge_in_road` and `plateau_rail` |
+| `tools/wp13/street_kat.lua` | §11 (the verge clearance) and §8 as an assertion |
+| `tools/wp13/walkability.lua` | **moved** out of wave 3's evidence directory; the two run-spec fields |
+| `tools/wp13/lethariel_kat.lua`, `kezamba_lots.lua`, `integration_fixture.lua` | the same two run-spec fields, so the offline road is the road the engine writes |
+| `tools/wp13/evidence/20260916-streets/mutation.py` | one anchor re-indented — the verge block gained a level |
+| `tools/wp13/evidence/20260916-streets-r4/` | the evidence |
+
+`tools/wp13/lane_routes.lua` is deliberately NOT in that list, and the reason is
+**that it measures the CARRIAGEWAY** — not the coordinate system, which was this
+record's first answer and was wrong: it already hands `street_plan.junctions`
+world-coordinate runs and would take `verge_clearance` the same way. The
+isolation is not quite total either: its `lamp_faults` check reads the run's own
+lamp list, which the clearance does change. The direction is safe — a missing
+standard can only invent a fault, never hide one — and the gate is green on all
+nine seeds (`illegal=0 walk_faults=0 cross_faults=0 lamp_faults=0`).

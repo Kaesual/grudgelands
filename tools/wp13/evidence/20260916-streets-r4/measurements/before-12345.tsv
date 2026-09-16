@@ -1,0 +1,7 @@
+capital	run	columns	spread	step	lane_step	junctions	overlaps	junc_spread	junc_step	raised	raise_max	walled	solid	pillars	wet	piers	rails	lamps	lamps_off	verge_in_road	plateau_rail	queries
+highcourt	*	3115	0	1	1	19	0	0	1	4554	3	8	0	8	2811	158	1044	794	0	376	52	39413
+dur_brannoc	*	3396	0	1	1	16	4	0	1	6917	23	3510	0	3510	0	252	1738	864	0	563	80	46142
+gor_drazhak	*	3124	0	1	1	16	4	0	1	3241	3	74	0	74	0	20	120	800	0	268	10	43100
+lethariel	*	3033	0	1	1	9	8	0	1	4907	3	20	0	20	2528	134	934	770	0	970	28	55079
+kezamba	*	1608	0	1	1	8	0	0	1	4071	35	1070	0	1070	2136	162	1160	416	0	220	36	19536
+nhal_veyr	*	3124	0	1	1	16	4	0	1	3546	4	104	3	101	0	22	132	800	0	298	22	43112

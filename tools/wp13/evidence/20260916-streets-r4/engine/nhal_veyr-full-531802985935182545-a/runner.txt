@@ -1,0 +1,7 @@
+exit=0 errors=0 complete=1 log=/tmp/grug-w4-G/eng/nhal_veyr-full-531802985935182545-a/server.log
+WP13 nhal_veyr: the built avenue moved.
+  now      6a8a2158a82e96a8f648b0c62f7c91d2080303096bf9ad72fb24b48432f89966
+  expected bde0dc8cbe7b4ca34ba2a8f768e22f564474d6b820c1ccd112d6ae247cd8b284 (/home/jan/projects/grudgelands/.claude/worktrees/agent-a72ec4c633f00efbc/tools/wp13/evidence/20260915-capital-terrain/nhal_veyr/avenue-digest-531802985935182545.txt)
+rampart overlay digest matches the committed value
+corner overlay digest matches the committed value
+gate overlay digest matches the committed value

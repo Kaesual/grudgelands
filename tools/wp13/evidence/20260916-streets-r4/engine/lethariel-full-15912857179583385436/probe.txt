@@ -1,0 +1,176 @@
+ACTION[Main]: GRUG_WP13_CAPITAL event=districts lore_spiritual=northeast market_professions=southwest martial_garrison=northwest residential_cultural=southeast permutation=3,2,1
+ACTION[Main]: GRUG_WP13_CAPITAL event=start engine=5.17.0 seed=15912857179583385436 manifest=47ed78a5c066a18ef4363ade94dcda5a555eec2a8ec407911bb72ad87a95e81e sockets_registered=1737 anchor=1800,36,-1500 mode=full build_us=module_load=17587,core=152668,plot_market_granary=41097,plot_market_stable=35070,plot_market_bowyer=53605,plot_market_weaver=66146,plot_market_fountain=8802,plot_market_watch=7350,plot_market_grove=7506,plot_market_orchard=5901,plot_market_bakehouse=6145,plot_market_gardens=4255,plot_market_close=4030,plot_market_paddock=2053,plot_market_green=858,plot_martial_barracks=7198,plot_martial_armoury=7685,plot_martial_tower=3835,plot_martial_hall=7593,plot_martial_stable=6243,plot_martial_store=6024,plot_martial_grove=7610,plot_martial_lodge=3715,plot_martial_bough=3522,plot_martial_lawn=3577,plot_martial_butts=3413,plot_martial_woodyard=1812,plot_martial_mess=787,plot_mere_shrine=2187,plot_mere_lore_hall=7351,plot_mere_mourning=7019,plot_mere_stages=2243,plot_mere_walk=786,plot_homes_terrace_west=3196,plot_homes_terrace_east=3026,plot_homes_longhouse=5447,plot_homes_brewhouse=6208,plot_homes_carver=6808,plot_homes_feast_hall=6819,plot_homes_bough=2966,plot_homes_court=2754,plot_homes_grove=6767,plot_homes_gardens=3484,plot_homes_singing_grove=3557,plot_homes_yard=1780,plot_homes_green=752
+ACTION[Main]: GRUG_WP13_CAPITAL event=build
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time module_load=17587
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time core=152668
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_market_granary=41097
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_market_stable=35070
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_market_bowyer=53605
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_market_weaver=66146
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_market_fountain=8802
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_market_watch=7350
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_market_grove=7506
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_market_orchard=5901
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_market_bakehouse=6145
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_market_gardens=4255
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_market_close=4030
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_market_paddock=2053
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_market_green=858
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_martial_barracks=7198
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_martial_armoury=7685
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_martial_tower=3835
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_martial_hall=7593
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_martial_stable=6243
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_martial_store=6024
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_martial_grove=7610
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_martial_lodge=3715
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_martial_bough=3522
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_martial_lawn=3577
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_martial_butts=3413
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_martial_woodyard=1812
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_martial_mess=787
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_mere_shrine=2187
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_mere_lore_hall=7351
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_mere_mourning=7019
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_mere_stages=2243
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_mere_walk=786
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_homes_terrace_west=3196
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_homes_terrace_east=3026
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_homes_longhouse=5447
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_homes_brewhouse=6208
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_homes_carver=6808
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_homes_feast_hall=6819
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_homes_bough=2966
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_homes_court=2754
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_homes_grove=6767
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_homes_gardens=3484
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_homes_singing_grove=3557
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_homes_yard=1780
+ACTION[Main]: GRUG_WP13_CAPITAL event=build_time plot_homes_green=752
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket sockets=253
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_guard_patrol=43
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_guard_post=14
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_idle=130
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_king=1
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_quest=2
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_vendor=9
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_waypoint=1
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket role_work=53
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loops=8
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loop_lethariel_gate_east_tower=2
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loop_lethariel_gate_south_tower=2
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loop_lethariel_gate_west_tower=2
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loop_lethariel_homes_watch=9
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loop_lethariel_market_watch=10
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loop_lethariel_martial_watch=9
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loop_lethariel_mere_watch=3
+ACTION[Main]: GRUG_WP13_CAPITAL event=socket loop_lethariel_watch=6
+ACTION[Main]: GRUG_WP13_CAPITAL event=corpus mapchunks=102
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=warmup mapchunk=1488:48:688 kind=warmup elapsed_us=24874711
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1728:-32:-1552 kind=control_capital elapsed_us=13268784
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1808:-32:-1552 kind=control_capital elapsed_us=14655114
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1728:48:-1552 kind=control_capital elapsed_us=504775
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1808:48:-1552 kind=control_capital elapsed_us=176775
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1728:-32:-1472 kind=control_capital elapsed_us=653761
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1808:-32:-1472 kind=control_capital elapsed_us=566402
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1728:48:-1472 kind=control_capital elapsed_us=162980
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_capital_lethariel mapchunk=1808:48:-1472 kind=control_capital elapsed_us=158572
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_market_granary mapchunk=1648:-32:-1632 kind=capital elapsed_us=788343
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_market_granary mapchunk=1728:-32:-1632 kind=capital elapsed_us=516528
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_market_bowyer mapchunk=1648:-32:-1712 kind=capital elapsed_us=655152
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_market_bowyer mapchunk=1728:-32:-1712 kind=capital elapsed_us=544607
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_market_grove mapchunk=1568:-32:-1632 kind=capital elapsed_us=680687
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_market_grove mapchunk=1568:48:-1632 kind=capital elapsed_us=154557
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_market_bakehouse mapchunk=1568:-32:-1712 kind=capital elapsed_us=523940
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_market_gardens mapchunk=1648:-32:-1792 kind=capital elapsed_us=839507
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_market_paddock mapchunk=1568:-32:-1792 kind=capital elapsed_us=651444
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_martial_barracks mapchunk=1648:-32:-1472 kind=capital elapsed_us=732969
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_martial_tower mapchunk=1568:-32:-1472 kind=capital elapsed_us=611149
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_martial_tower mapchunk=1568:48:-1472 kind=capital elapsed_us=148122
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_martial_hall mapchunk=1648:-32:-1392 kind=capital elapsed_us=655959
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_martial_hall mapchunk=1728:-32:-1392 kind=capital elapsed_us=626895
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_martial_store mapchunk=1568:-32:-1392 kind=capital elapsed_us=557487
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_martial_grove mapchunk=1648:48:-1392 kind=capital elapsed_us=117564
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_martial_grove mapchunk=1728:48:-1392 kind=capital elapsed_us=116088
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_martial_butts mapchunk=1648:-32:-1312 kind=capital elapsed_us=643282
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_martial_woodyard mapchunk=1568:48:-1312 kind=capital elapsed_us=461274
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_mere_shrine mapchunk=1808:-32:-1312 kind=capital elapsed_us=727933
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_mere_lore_hall mapchunk=1968:48:-1312 kind=capital elapsed_us=665035
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_mere_walk mapchunk=1888:-32:-1312 kind=capital elapsed_us=529727
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_mere_walk mapchunk=1888:48:-1312 kind=capital elapsed_us=263940
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_homes_terrace_west mapchunk=1808:-32:-1632 kind=capital elapsed_us=751731
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_homes_terrace_east mapchunk=1888:-32:-1632 kind=capital elapsed_us=642493
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_homes_longhouse mapchunk=1968:-32:-1632 kind=capital elapsed_us=644249
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_homes_longhouse mapchunk=1968:48:-1632 kind=capital elapsed_us=188895
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_homes_brewhouse mapchunk=1808:-32:-1712 kind=capital elapsed_us=624328
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_homes_feast_hall mapchunk=1888:-32:-1712 kind=capital elapsed_us=534960
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_homes_feast_hall mapchunk=1968:-32:-1712 kind=capital elapsed_us=540484
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_homes_feast_hall mapchunk=1888:48:-1712 kind=capital elapsed_us=115369
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_homes_feast_hall mapchunk=1968:48:-1712 kind=capital elapsed_us=275463
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_homes_feast_hall mapchunk=1888:48:-1632 kind=capital elapsed_us=118381
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_homes_singing_grove mapchunk=1808:-32:-1792 kind=capital elapsed_us=866022
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_homes_singing_grove mapchunk=1888:-32:-1792 kind=capital elapsed_us=742531
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=plot_homes_yard mapchunk=1968:48:-1792 kind=capital elapsed_us=499937
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_south mapchunk=1728:-32:-1792 kind=capital elapsed_us=808028
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_south mapchunk=1728:48:-1792 kind=capital elapsed_us=283958
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_south mapchunk=1728:48:-1712 kind=capital elapsed_us=340934
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_south mapchunk=1728:48:-1632 kind=capital elapsed_us=403101
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_north mapchunk=1728:-32:-1312 kind=capital elapsed_us=790444
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_west mapchunk=1488:-32:-1552 kind=capital elapsed_us=839128
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_west mapchunk=1568:-32:-1552 kind=capital elapsed_us=619049
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_west mapchunk=1648:-32:-1552 kind=capital elapsed_us=594584
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_east mapchunk=1888:-32:-1552 kind=capital elapsed_us=788014
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_east mapchunk=1968:-32:-1552 kind=capital elapsed_us=657193
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_avenue_east mapchunk=2048:-32:-1552 kind=capital elapsed_us=931802
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_ring_east mapchunk=1888:-32:-1472 kind=capital elapsed_us=524004
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_lane_northeast_shore mapchunk=1808:-32:-1392 kind=capital elapsed_us=669543
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_lane_northeast_shore mapchunk=1888:-32:-1392 kind=capital elapsed_us=595705
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_lane_northeast_shore mapchunk=1968:-32:-1392 kind=capital elapsed_us=639533
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_lane_northeast_shore mapchunk=1808:48:-1392 kind=capital elapsed_us=105104
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_lane_northeast_shore mapchunk=1888:48:-1392 kind=capital elapsed_us=104516
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_lane_northeast_shore mapchunk=1968:48:-1392 kind=capital elapsed_us=211923
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_west mapchunk=1488:-32:-1792 kind=capital elapsed_us=782615
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_west mapchunk=1488:48:-1792 kind=capital elapsed_us=312584
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_west mapchunk=1488:-32:-1712 kind=capital elapsed_us=616321
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_west mapchunk=1488:48:-1712 kind=capital elapsed_us=191053
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_west mapchunk=1488:-32:-1632 kind=capital elapsed_us=825005
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_west mapchunk=1488:48:-1632 kind=capital elapsed_us=146745
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_west mapchunk=1488:48:-1552 kind=capital elapsed_us=512983
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_west mapchunk=1488:-32:-1472 kind=capital elapsed_us=738588
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_west mapchunk=1488:48:-1472 kind=capital elapsed_us=226064
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_west mapchunk=1488:-32:-1392 kind=capital elapsed_us=666765
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_west mapchunk=1488:48:-1392 kind=capital elapsed_us=285916
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_west mapchunk=1488:-32:-1312 kind=capital elapsed_us=587971
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_west mapchunk=1488:48:-1312 kind=capital elapsed_us=363452
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_east mapchunk=2048:-32:-1792 kind=capital elapsed_us=1057543
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_east mapchunk=2048:48:-1792 kind=capital elapsed_us=567524
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_east mapchunk=2048:-32:-1712 kind=capital elapsed_us=943927
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_east mapchunk=2048:48:-1712 kind=capital elapsed_us=354014
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_east mapchunk=2048:-32:-1632 kind=capital elapsed_us=993125
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_east mapchunk=2048:48:-1632 kind=capital elapsed_us=304965
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_east mapchunk=2048:48:-1552 kind=capital elapsed_us=474683
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_east mapchunk=2048:-32:-1472 kind=capital elapsed_us=943209
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_east mapchunk=2048:48:-1472 kind=capital elapsed_us=312188
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_east mapchunk=2048:-32:-1392 kind=capital elapsed_us=756766
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_east mapchunk=2048:48:-1392 kind=capital elapsed_us=316765
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_east mapchunk=2048:-32:-1312 kind=capital elapsed_us=736313
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_east mapchunk=2048:48:-1312 kind=capital elapsed_us=336021
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_south mapchunk=1968:-32:-1792 kind=capital elapsed_us=834099
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_south mapchunk=1568:48:-1792 kind=capital elapsed_us=577690
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_south mapchunk=1648:48:-1792 kind=capital elapsed_us=524014
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_south mapchunk=1808:48:-1792 kind=capital elapsed_us=674049
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_south mapchunk=1888:48:-1792 kind=capital elapsed_us=496938
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_north mapchunk=1568:-32:-1312 kind=capital elapsed_us=669595
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_north mapchunk=1968:-32:-1312 kind=capital elapsed_us=731420
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_north mapchunk=1648:48:-1312 kind=capital elapsed_us=550183
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_north mapchunk=1728:48:-1312 kind=capital elapsed_us=492188
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=run_edge_north mapchunk=1808:48:-1312 kind=capital elapsed_us=488932
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_open_land mapchunk=848:-32:848 kind=control elapsed_us=900079
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_open_land_far mapchunk=1168:128:768 kind=control elapsed_us=906546
+ACTION[Emerge-0]: GRUG_WP13_CAPITAL event=mapchunk case=control_dawnmere_start mapchunk=-32:-32:-2592 kind=control elapsed_us=2731
+ACTION[Server]: GRUG_WP13_CAPITAL event=dump file=lethariel-core.tsv cells=42605 ignored=0 road_cells=16926 held=147 unheld=0 emerge_trouble=0 retries=0 road_digest=c65c0ce8cb4e7bb39f209aa712c6e25b0ff0f0f0fe0c6373068a0240dae82938
+ACTION[Server]: GRUG_WP13_CAPITAL event=dump file=lethariel-plot.tsv cells=7764 ignored=0 road_cells=1151 held=27 unheld=0 emerge_trouble=0 retries=0 road_digest=e47b93378d190a9c95513b7b618bdc1147b39b3473d8dd69017cc2696f052d8e
+ACTION[Server]: GRUG_WP13_CAPITAL event=dump file=lethariel-avenue.tsv cells=93500 ignored=0 road_cells=3155 held=84 unheld=0 emerge_trouble=0 retries=0 road_digest=bee006b80635ff9f85d37cece4945601e76bc11a95dbab8572aba09d163d6b59
+ACTION[Server]: GRUG_WP13_CAPITAL event=dump file=lethariel-district.tsv cells=209963 ignored=0 road_cells=12501 held=256 unheld=0 emerge_trouble=0 retries=0 road_digest=fd96cfc8e1ebb39e742cc45d280a04a6eed43801dd7c5a6dcd7fd75a7a3932d4
+ACTION[Server]: GRUG_WP13_CAPITAL event=dump file=lethariel-approach.tsv cells=27346 ignored=0 road_cells=816 held=45 unheld=0 emerge_trouble=0 retries=0 road_digest=9b54043e2e28996d297296008cd13b5314009db39d19c330d889e537558028fa
+ACTION[Server]: GRUG_WP13_CAPITAL event=complete mode=full requested=102 completed=102 warmup_chunks=1 warmup_total_us=24874711 warmup_first_us=24874711 warmup_worst_us=24874711 warmup_best_us=24874711 capital_chunks=90 capital_total_us=49055808 capital_first_us=788343 capital_worst_us=1057543 capital_best_us=104516 capital_steady_mean_us=542331 control_capital_chunks=8 control_capital_total_us=30147163 control_capital_first_us=13268784 control_capital_worst_us=14655114 control_capital_best_us=158572 control_capital_steady_mean_us=2411197 control_chunks=3 control_total_us=1809356 control_first_us=900079 control_worst_us=906546 control_best_us=2731 control_steady_mean_us=454638 core_cells=42605 core_ignored=0 core_held=147 core_unheld=0 core_emerge_trouble=0 core_retries=0 core_road_cells=16926 core_road_digest=c65c0ce8cb4e7bb39f209aa712c6e25b0ff0f0f0fe0c6373068a0240dae82938 plot_cells=7764 plot_ignored=0 plot_held=27 plot_unheld=0 plot_emerge_trouble=0 plot_retries=0 plot_road_cells=1151 plot_road_digest=e47b93378d190a9c95513b7b618bdc1147b39b3473d8dd69017cc2696f052d8e avenue_cells=93500 avenue_ignored=0 avenue_held=84 avenue_unheld=0 avenue_emerge_trouble=0 avenue_retries=0 avenue_road_cells=3155 avenue_road_digest=bee006b80635ff9f85d37cece4945601e76bc11a95dbab8572aba09d163d6b59 district_cells=209963 district_ignored=0 district_held=256 district_unheld=0 district_emerge_trouble=0 district_retries=0 district_road_cells=12501 district_road_digest=fd96cfc8e1ebb39e742cc45d280a04a6eed43801dd7c5a6dcd7fd75a7a3932d4 approach_cells=27346 approach_ignored=0 approach_held=45 approach_unheld=0 approach_emerge_trouble=0 approach_retries=0 approach_road_cells=816 approach_road_digest=9b54043e2e28996d297296008cd13b5314009db39d19c330d889e537558028fa worst_plot_fall=6 worst_plot=homes_yard worst_plot_submerged=0 worst_submerged_plot=- sockets=253 role_guard_patrol=43 role_guard_post=14 role_idle=130 role_king=1 role_quest=2 role_vendor=9 role_waypoint=1 role_work=53 loops=8 loop_lethariel_gate_east_tower=2 loop_lethariel_gate_south_tower=2 loop_lethariel_gate_west_tower=2 loop_lethariel_homes_watch=9 loop_lethariel_market_watch=10 loop_lethariel_martial_watch=9 loop_lethariel_mere_watch=3 loop_lethariel_watch=6 trees_avenue_regions=4 trees_avenue_trunks=0 trees_avenue_wild=0 trees_avenue_canopy=0 trees_avenue_leaves=0 trees_avenue_worst=0 trees_avenue_worst_id=- trees_lane_regions=7 trees_lane_trunks=0 trees_lane_wild=0 trees_lane_canopy=0 trees_lane_leaves=0 trees_lane_worst=0 trees_lane_worst_id=- trees_plot_regions=44 trees_plot_trunks=3286 trees_plot_wild=0 trees_plot_canopy=0 trees_plot_leaves=5454 trees_plot_worst=0 trees_plot_worst_id=- trees_ring_regions=4 trees_ring_trunks=0 trees_ring_wild=0 trees_ring_canopy=0 trees_ring_leaves=0 trees_ring_worst=0 trees_ring_worst_id=- trees_found_total=0

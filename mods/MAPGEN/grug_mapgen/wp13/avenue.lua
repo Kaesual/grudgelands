@@ -253,6 +253,10 @@ local function loader(directory)
 	--                 authored structure owns those lanes there -- a gate
 	--                 passage through a curtain wall, a palisade, a grove
 	--                 threshold or a gate cone
+	--   clear_verge   optional, from the same module: `{low, high, side}` spans
+	--                 where the verge lane on that side stands inside ANOTHER
+	--                 street's carriageway and therefore writes NOTHING AT ALL;
+	--                 see THE VERGE ENDS AT THE JOINING STREET below
 	--
 	-- `surface(x, z)` returns the y of the topmost terrain node of that
 	-- column -- the water surface where water stands on it, which is what the
@@ -717,9 +721,45 @@ local function loader(directory)
 		-- The kerb parapets this rule replaced each said so in their own
 		-- capital; the shared rule is told by `wp13/street_plan.lua`. A lamp
 		-- standard is exempt -- it is not a walk, and the rhythm is the run's.
+		--
+		-- THE VERGE ENDS AT THE JOINING STREET (playtest 6, 2026-09-16).
+		--
+		-- A verge lane is one node OUTSIDE this run's carriageway, and at a
+		-- crossing, at a corner and at a T-joint that lane runs straight across
+		-- the road that joins -- so a rail on it is a fence across the other
+		-- street. The user walked into three of them: Lethariel's north-east
+		-- ring corner over the mere ("two street ends meet on a bridge over
+		-- water; the rail of each protrudes into the other street"), the
+		-- lane/ring pair beside it, and Kezamba's north crossing over water
+		-- ("the side rails leave only a one-node gap into the crossing"). The
+		-- ruling is that "railings, fences, verge posts and pillars end at the
+		-- crossing square; the plateau square is rail-free towards every street
+		-- that joins it".
+		--
+		-- So where `wp13/street_plan.lua` says a verge lane stands inside
+		-- another street's carriageway, that lane writes NOTHING at that
+		-- position -- no plank, no rail, no pillar, no kerb footing and no
+		-- standard. THE DECK STAYS CONTINUOUS because the cell given up is a
+		-- cell the OTHER run paves, at the same plateau y; and the clearance is
+		-- per SIDE, so the parapet on the OUTSIDE of a corner -- where nothing
+		-- joins -- stays exactly where it was.
+		--
+		-- IT IS NOT THE PLATEAU SQUARE ITSELF. The square is the two
+		-- carriageways' intersection and a verge lane is beside it, so what
+		-- decides is the verge CELL's own column and nothing else; at a corner
+		-- only one of the two lanes is in the other road at all.
 		local plain_verge = {}
 		for _, span in ipairs(spec.plain_verge or {}) do
 			for p = span[1], span[2] do plain_verge[p] = true end
+		end
+		local clear_verge = {}
+		clear_verge[-1], clear_verge[1] = {}, {}
+		for _, span in ipairs(spec.clear_verge or {}) do
+			local side = span[3]
+			if side ~= -1 and side ~= 1 then
+				error("wp13 avenue: a verge clearance carries no side", 0)
+			end
+			for p = span[1], span[2] do clear_verge[side][p] = true end
 		end
 		local verge_ground = {}
 		local function verge_surface(p, offset)
@@ -737,72 +777,75 @@ local function loader(directory)
 			local is_pier = ((p - phase) % M.PIER == 0)
 			if (spanned_at[p] and not plain_verge[p]) or is_lamp then
 				for _, offset in ipairs({-verge, verge}) do
-					local top = verge_level[p]
-					local x, z = column(p, offset)
-					local foot, soaked, verge_deck = verge_surface(p, offset)
-					-- A STANDARD UNDER A DECK IT CANNOT CLEAR GOES ON THE DECK.
-					-- Ruling 3 puts a lamp on the street's own profile, and a
-					-- WP40 route may bridge the VERGE while leaving the
-					-- carriageway beside it three blocks of air: the street
-					-- passes under unchanged and its standard would be three
-					-- courses of post inside the deck. A standard is its footing
-					-- and three courses over it, so a verge has room for one
-					-- exactly when it has `MIN_CLEAR` blocks of air -- the same
-					-- threshold the carriageway is held to -- and a verge that
-					-- has not got it carries its standard over the deck instead.
-					-- Only on the GROUND. A spanned position's verge is a plank
-					-- walk with a rail and piers under it, and lifting one
-					-- standard's stretch of it onto a route deck would put a
-					-- step in the walk; a position under a deck it cannot clear
-					-- has been raised onto that deck by the crossing rule long
-					-- before it can be spanned, so the two cases do not meet in
-					-- the six capitals -- which is measured rather than assumed
-					-- (`street_geometry.lua`, junction and crossing rows clean
-					-- on nine seeds).
-					if is_lamp and not spanned_at[p] and verge_deck ~= nil and
-							top < verge_deck and
-							top > verge_deck - M.MIN_CLEAR - 2 then
-						top = verge_deck
-					end
-					if spanned_at[p] and not plain_verge[p] then
-						-- The plank walk a player cannot step off, and its rail
-						-- -- except where a lamp standard takes the rail's cell.
-						buf:put(x, top, z, PLANK)
-						if not is_lamp then
-							buf:put(x, top + 1, z, RAIL)
-							rails = rails + 1
+					local side = (offset < 0) and -1 or 1
+					if not clear_verge[side][p] then
+						local top = verge_level[p]
+						local x, z = column(p, offset)
+						local foot, soaked, verge_deck = verge_surface(p, offset)
+						-- A STANDARD UNDER A DECK IT CANNOT CLEAR GOES ON THE DECK.
+						-- Ruling 3 puts a lamp on the street's own profile, and a
+						-- WP40 route may bridge the VERGE while leaving the
+						-- carriageway beside it three blocks of air: the street
+						-- passes under unchanged and its standard would be three
+						-- courses of post inside the deck. A standard is its footing
+						-- and three courses over it, so a verge has room for one
+						-- exactly when it has `MIN_CLEAR` blocks of air -- the same
+						-- threshold the carriageway is held to -- and a verge that
+						-- has not got it carries its standard over the deck instead.
+						-- Only on the GROUND. A spanned position's verge is a plank
+						-- walk with a rail and piers under it, and lifting one
+						-- standard's stretch of it onto a route deck would put a
+						-- step in the walk; a position under a deck it cannot clear
+						-- has been raised onto that deck by the crossing rule long
+						-- before it can be spanned, so the two cases do not meet in
+						-- the six capitals -- which is measured rather than assumed
+						-- (`street_geometry.lua`, junction and crossing rows clean
+						-- on nine seeds).
+						if is_lamp and not spanned_at[p] and verge_deck ~= nil and
+								top < verge_deck and
+								top > verge_deck - M.MIN_CLEAR - 2 then
+							top = verge_deck
 						end
-						if is_pier then
-							local bottom = soaked and (foot - M.PIER_DEPTH) or foot
-							for y = bottom, top - 1 do buf:put(x, y, z, PIER) end
-							piers = piers + 1
+						if spanned_at[p] and not plain_verge[p] then
+							-- The plank walk a player cannot step off, and its rail
+							-- -- except where a lamp standard takes the rail's cell.
+							buf:put(x, top, z, PLANK)
+							if not is_lamp then
+								buf:put(x, top + 1, z, RAIL)
+								rails = rails + 1
+							end
+							if is_pier then
+								local bottom = soaked and (foot - M.PIER_DEPTH) or foot
+								for y = bottom, top - 1 do buf:put(x, y, z, PIER) end
+								piers = piers + 1
+							end
+						else
+							-- On the ground -- and inside a gate passage, where the
+							-- plank walk yields but a standard on the rhythm still
+							-- needs something to stand on -- the standard gets its
+							-- own footing in the kerb's material, and the verge is
+							-- carried up to
+							-- the road where the road stands above it: a standard
+							-- is not part of the carriageway and has no envelope of
+							-- its own, and ruling 3 is that it stands on the
+							-- STREET's profile and not on the ground beside it.
+							--
+							-- EVERY STANDARD GETS ITS OWN FOOTING. On ordinary
+							-- ground that cell is already solid and the footing is
+							-- a paving stone under the post; over water it is the
+							-- only thing between the post and the river. The first
+							-- engine pass of the WP13 seam took Highcourt's east
+							-- avenue across a river as a causeway and sixteen
+							-- standards stood in the water with nothing under them.
+							local bottom = (foot < top) and foot or top
+							for y = bottom, top do buf:put(x, y, z, KERB) end
 						end
-					else
-						-- On the ground -- and inside a gate passage, where the
-						-- plank walk yields but a standard on the rhythm still
-						-- needs something to stand on -- the standard gets its
-						-- own footing in the kerb's material, and the verge is
-						-- carried up to
-						-- the road where the road stands above it: a standard
-						-- is not part of the carriageway and has no envelope of
-						-- its own, and ruling 3 is that it stands on the
-						-- STREET's profile and not on the ground beside it.
-						--
-						-- EVERY STANDARD GETS ITS OWN FOOTING. On ordinary
-						-- ground that cell is already solid and the footing is
-						-- a paving stone under the post; over water it is the
-						-- only thing between the post and the river. The first
-						-- engine pass of the WP13 seam took Highcourt's east
-						-- avenue across a river as a causeway and sixteen
-						-- standards stood in the water with nothing under them.
-						local bottom = (foot < top) and foot or top
-						for y = bottom, top do buf:put(x, y, z, KERB) end
-					end
-					if is_lamp then
-						buf:put(x, top + 1, z, palette.node("post"))
-						buf:put(x, top + 2, z, palette.node("post"))
-						parts.floor_torch(buf, palette, x, top + 3, z)
-						lamps[#lamps + 1] = {x = x, y = top + 3, z = z}
+						if is_lamp then
+							buf:put(x, top + 1, z, palette.node("post"))
+							buf:put(x, top + 2, z, palette.node("post"))
+							parts.floor_torch(buf, palette, x, top + 3, z)
+							lamps[#lamps + 1] = {x = x, y = top + 3, z = z}
+						end
 					end
 				end
 			end

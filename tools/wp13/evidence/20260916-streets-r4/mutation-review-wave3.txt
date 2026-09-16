@@ -1,0 +1,13 @@
+RED         A. the junction square applied ONE COLUMN OFF-CENTRE
+            luajit: tools/wp13/street_kat.lua:761: avenue walks the square column -2 at 41..41, not at the plateau 42
+RED         B. the pillar rhythm doubled (PIER 8 -> 16)
+            luajit: tools/wp13/street_kat.lua:839: human: the standard at -8 has no pillar under its plank -- the pier rhythm (16) has left the lamp rhythm (8)
+RED         C. piers never reach under the water (PIER_DEPTH 4 -> 0)
+            luajit: tools/wp13/street_kat.lua:498: human: no pier of this bridge reaches under the water
+RED         D. the junction square is a RECTANGLE: only half the width levelled
+            luajit: tools/wp13/street_kat.lua:250: avenue walks the junction column 2 at 61..61, not at the plateau 62
+RED         E. two squares sharing a column are NOT merged
+            luajit: tools/wp13/street_kat.lua:303: the avenue's two squares were not merged into one junction (2)
+RED         F. the other run's window clipped to the square (no reach)
+            luajit: tools/wp13/street_kat.lua:741: lane levels the shared square at 42 and the other run at 40: the two windows differ
+mutations not caught: 0

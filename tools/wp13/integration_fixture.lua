@@ -144,7 +144,9 @@ return function(repo)
 						at = run.at, from = run.from, to = run.to,
 						width = blueprint.width, lamp_spacing = blueprint.lamp_spacing,
 						lamp_phase = run.from, reach = blueprint.reach,
-						junctions = run.junctions},
+						junctions = run.junctions,
+						plain_verge = run.plain_verge,
+						clear_verge = run.clear_verge},
 						function(x, z)
 							return stub_height(anchor.x + x, anchor.z + z)
 						end)

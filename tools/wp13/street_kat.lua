@@ -21,6 +21,14 @@
 --   5. Piers, rails and deck lanterns wherever ANY capital's street crosses
 --      water, and the water body stays ONE body.              -- section 6
 --
+-- AND ONE MORE THAT THE PLAYTEST AFTER THEM ADDED (2026-09-16, round 4):
+--
+--   6. "Railings, fences, verge posts and pillars end at the crossing square;
+--      the plateau square is rail-free towards every street that joins it."
+--      WANTED: no cell of a run's verge inside another run's carriageway, the
+--      parapet kept where nothing joins, and the deck continuous across the
+--      handover.                                              -- section 11
+--
 -- AND THE INVARIANT NONE OF THEM MAY COST: a piece of a run is exactly that
 -- stretch of the whole run, because the successor emerges a street one
 -- mapchunk at a time. Section 7 cuts every run of every case at EVERY column
@@ -566,16 +574,48 @@ return function(repo)
 	-- seed and is the same on every world. Two things are pinned: how many
 	-- junctions each capital has, and every PARALLEL OVERLAP -- two streets
 	-- running side by side rather than crossing, which is not a junction and
-	-- which `wp13/street_plan.lua` refuses to level. Lethariel has six of
-	-- those, where a district lane at +-98 runs alongside the ring street at
-	-- +-96 for up to 97 columns and three of the five lanes of each are the
-	-- same columns; that is a composition defect and not a street-geometry one,
-	-- and it is pinned here so it cannot spread quietly.
+	-- which `wp13/street_plan.lua` refuses to level.
+	--
+	-- THE INVENTORY IS TWELVE BUTT JOINTS AND NOTHING ELSE since round 4
+	-- (2026-09-16). Wave 3 pinned twenty: fourteen butt joints (two runs of one
+	-- continuous lane sharing exactly one column, which need nothing) and six
+	-- SIDE-BY-SIDE stretches, all Lethariel's, where a district lane at +-98 ran
+	-- alongside the ring street at +-96 for up to 97 columns. The user walked
+	-- into one of those in playtest 6 -- "two streets overlay each other with a
+	-- 2-node offset across the walking direction; the last one written wins and
+	-- artefacts of the overwritten street remain" -- and they were the only
+	-- unwalkable steps left in the six capitals. Each of those lanes now stands
+	-- on the ring's OWN centre line and starts one column past the ring run it
+	-- continues, so the two are collinear, share no column and are pinned to one
+	-- y by the ring corner's plateau. Lethariel's own two lane/lane butt joints
+	-- went with them: the ring street now stands between the two halves that
+	-- used to meet at 0. A capital that grows a side-by-side pair again turns
+	-- this row red rather than growing one quietly.
 	----------------------------------------------------------------------
+	-- Do the two ends of a collinear seam lie in ONE junction group? A group is
+	-- published per run, so the question is asked of one side and answered by
+	-- the other's presence in its members: a record of `one` whose range covers
+	-- `one`'s end column and whose member list carries `two` with ITS end column
+	-- inside the range that member row publishes.
+	local function seam_pinned(plan, one, two, mine, theirs)
+		for _, record in ipairs(plan[one.id] or {}) do
+			if record.low <= mine and mine <= record.high then
+				for _, member in ipairs(record.members) do
+					if member.id == two.id and member.low <= theirs and
+							theirs <= member.high then
+						return true
+					end
+				end
+			end
+		end
+		return false
+	end
 	do
 		local KEYS = {"highcourt", "dur_brannoc", "gor_drazhak", "lethariel",
 			"kezamba", "nhal_veyr"}
 		local rows = {}
+		local half = HALF
+		local collinear_seams = 0
 		for _, key in ipairs(KEYS) do
 			local source = dofile(wp40 .. "/r7_" .. key .. "_blueprint.lua")()
 			local streets, records = {}, 0
@@ -634,27 +674,174 @@ return function(repo)
 				-- How deep the overlap runs ALONG the two parallel runs: one
 				-- column is a butt joint (one continuous lane authored as two
 				-- runs) and needs nothing; more is a shared stretch of street.
-				local one
+				local one, two
 				for _, run in ipairs(streets) do
 					if run.id == pair.one then one = run end
+					if run.id == pair.two then two = run end
 				end
+				assert(one and two, key .. ": the plan reports an overlap of " ..
+					pair.one .. " and " .. pair.two ..
+					", and the run list carries no such pair")
 				if one.axis == "x" then
 					depth = pair.max_x - pair.min_x + 1
 				else
 					depth = pair.max_z - pair.min_z + 1
 				end
+				-- THE PIN, and it is an assertion since round 4 (2026-09-16)
+				-- rather than a row somebody reads. A parallel overlap is
+				-- allowed to be ONE thing: two COLLINEAR runs of one continuous
+				-- lane sharing exactly their end column. Anything else is two
+				-- streets in one place -- the defect the user walked into at
+				-- Lethariel in playtest 6 -- and a composition may not grow one
+				-- again.
+				assert(one.at == two.at, key .. ": " .. pair.one .. " at " ..
+					one.at .. " and " .. pair.two .. " at " .. two.at ..
+					" run side by side rather than end to end -- two streets " ..
+					"that share columns and no centre line are one street")
+				assert(depth == 1, key .. ": " .. pair.one .. " and " ..
+					pair.two .. " share " .. depth ..
+					" columns of carriageway; a butt joint shares exactly one")
 				parallel[#parallel + 1] = pair.one .. "/" .. pair.two .. "/" ..
 					depth
 			end
+			-- EVERY STREET IS REACHABLE, AND EVERY CLOSE COLLINEAR SEAM IS
+			-- PINNED. The independent review of 2026-09-16 found that round 4's
+			-- own invariant was held by nothing: it moved Lethariel's district
+			-- lanes twenty columns off the ring ends they continue -- five
+			-- streets left hanging in the fields with a 19-column hole in front
+			-- of each -- and every gate in the tree stayed green. The overlap
+			-- rule above only looks at the direction where two streets share
+			-- TOO MUCH; `walkability.lua` cannot see a GAP at all, because a
+			-- gap has no neighbouring road columns to step between.
+			--
+			-- Two rules, both composition-agnostic, so a capital that grows the
+			-- shape later inherits them:
+			--
+			--   1. A STREET NOBODY CAN REACH IS NOT A STREET. Every run must
+			--      share at least one carriageway column with another run --
+			--      that is, appear in at least one junction group or in one
+			--      parallel overlap. Measured: 0 lonely runs in all six
+			--      capitals; the review's mutation makes six of Lethariel's
+			--      fifteen lonely at once.
+			--   2. A COLLINEAR SEAM IS ADJACENT AND PINNED. Two runs on one
+			--      centre line that do NOT share a column, and whose nearer
+			--      ends are within a road's half-width plus one of each other,
+			--      are a seam a walker crosses: they must be EXACTLY adjacent
+			--      (a larger gap is a stretch of ring or lane nobody paves) and
+			--      both ends must lie in ONE junction group (or nothing pins
+			--      the two envelopes to the same y, which is the step the user
+			--      walked into in playtest 6). Measured: six such seams in the
+			--      tree, all Lethariel's ring corners, all adjacent and all
+			--      pinned; the other five capitals have none, because their
+			--      collinear pairs SHARE their end column and a butt joint
+			--      needs nothing (wave 3, `street_plan.lua`).
+			local touched = {}
+			for _, pair in ipairs(overlaps) do
+				touched[pair.one] = true
+				touched[pair.two] = true
+			end
+			for id, list in pairs(plan) do
+				if #list > 0 then touched[id] = true end
+			end
+			for _, run in ipairs(streets) do
+				assert(touched[run.id], key .. ": the street " .. run.id ..
+					" shares no carriageway column with any other street -- " ..
+					"it is a road nobody can reach")
+			end
+			local seams = 0
+			for a = 1, #streets do
+				for b = a + 1, #streets do
+					local one, two = streets[a], streets[b]
+					if one.axis == two.axis and one.at == two.at then
+						-- The nearer pair of ends, and the columns between
+						-- them. A shared column is not a seam: it is the butt
+						-- joint the rule above already holds.
+						local gap, mine, theirs
+						if two.from > one.to then
+							gap, mine, theirs = two.from - one.to, one.to, two.from
+						elseif one.from > two.to then
+							gap, mine, theirs = one.from - two.to, one.from, two.to
+						end
+						if gap ~= nil and gap <= half + 1 then
+							seams = seams + 1
+							assert(gap == 1, key .. ": " .. one.id .. " ends at "
+								.. mine .. " and " .. two.id .. " begins at " ..
+								theirs .. " on the same centre line, leaving " ..
+								(gap - 1) .. " column(s) neither of them paves")
+							assert(seam_pinned(plan, one, two, mine, theirs),
+								key .. ": " .. one.id .. " and " .. two.id ..
+								" meet end to end at " .. mine .. "/" ..
+								theirs .. " on one centre line and no " ..
+								"junction group covers both ends -- nothing " ..
+								"pins the two envelopes to the same y")
+						end
+					end
+				end
+			end
+			collinear_seams = collinear_seams + seams
 			table.sort(parallel)
 			rows[#rows + 1] = key .. ":" .. #streets .. ":" .. computed ..
 				":" .. #overlaps
 			say("street_capital", key, #streets, computed, #overlaps,
 				table.concat(parallel, ","))
 		end
+		-- AND THE PINNING TEST ITSELF ANSWERS BOTH WAYS, on two runs built for
+		-- it. Every collinear seam in the six capitals IS pinned, so the false
+		-- branch of `seam_pinned` is never taken on real data and would be an
+		-- assertion nothing exercises; these two cases take it.
+		do
+			local ALONE = {
+				{id = "ring", axis = "z", at = 0, from = -40, to = 0},
+				{id = "lane", axis = "z", at = 0, from = 1, to = 40},
+			}
+			local lonely_plan = street_plan.junctions(ALONE, avenue.WIDTH)
+			assert(not seam_pinned(lonely_plan, ALONE[1], ALONE[2], 0, 1),
+				"two collinear runs with nothing crossing them were reported " ..
+				"as pinned by a junction group")
+			local JOINED = {
+				{id = "ring", axis = "z", at = 0, from = -40, to = 0},
+				{id = "lane", axis = "z", at = 0, from = 1, to = 40},
+				{id = "cross", axis = "x", at = 0, from = -40, to = 40},
+			}
+			local joined_plan = street_plan.junctions(JOINED, avenue.WIDTH)
+			assert(seam_pinned(joined_plan, JOINED[1], JOINED[2], 0, 1),
+				"a collinear seam with a street crossing it was not reported " ..
+				"as pinned")
+		end
+		-- AND THE LITERAL THE LANES STAND ON IS THE RING'S OWN. Lethariel's
+		-- quadrant file cannot read `lethariel.lua` (that file loads this one),
+		-- so the centre line it carries is a second copy of the same number.
+		-- This is what stops the two drifting apart in silence.
+		do
+			local quadrants = dofile(wp13 .. "/lethariel_quadrants.lua")()
+			local capital = dofile(wp13 .. "/lethariel.lua")(wp13)
+			assert(type(quadrants.RING_AT) == "number",
+				"lethariel_quadrants publishes no RING_AT for a gate to hold")
+			for _, run in ipairs(capital.ring) do
+				local magnitude = (run.at < 0) and -run.at or run.at
+				assert(magnitude == quadrants.RING_AT, "lethariel: the ring " ..
+					"run " .. run.id .. " stands at " .. run.at ..
+					" and the district lanes are built against RING_AT " ..
+					quadrants.RING_AT)
+			end
+			assert(quadrants.LANE_START == quadrants.RING_AT + 1,
+				"lethariel: the district lanes start at " ..
+				quadrants.LANE_START .. " and the ring street ends at " ..
+				quadrants.RING_AT .. ": they are no longer collinear neighbours")
+			-- Every lane that stands on a ring centre line, counted, so the
+			-- case cannot pass by having none.
+			local on_ring = 0
+			for _, run in ipairs(quadrants.lane_runs()) do
+				local magnitude = (run.at < 0) and -run.at or run.at
+				if magnitude == quadrants.RING_AT then on_ring = on_ring + 1 end
+			end
+			assert(on_ring == 6, "lethariel: " .. on_ring ..
+				" district lanes stand on a ring centre line, not six")
+		end
 		cases = cases + 1
 		say("street_inventory",
-			common.hex(common.new_sha256()(table.concat(rows, "\n"))))
+			common.hex(common.new_sha256()(table.concat(rows, "\n"))),
+			"collinear_seams", collinear_seams)
 	end
 
 	----------------------------------------------------------------------
@@ -816,7 +1003,260 @@ return function(repo)
 			standards)
 	end
 
-	assert(cases == 10, "a street case was lost")
+	----------------------------------------------------------------------
+	-- 11. THE VERGE ENDS AT THE JOINING STREET (playtest 6, 2026-09-16).
+	--
+	-- A verge lane is one node OUTSIDE its own carriageway, so at a crossing,
+	-- at a corner and at a T-joint it runs straight ACROSS the road that
+	-- joins. The user walked into two of them in one session:
+	--
+	--   * Lethariel ~1900,-1400 -- the north-east ring corner over the mere,
+	--     where `ring_east` ends at z = 96 and `ring_north` at x = 96: "two
+	--     street ends meet on a bridge over water; the rail of each protrudes
+	--     into the other street";
+	--   * Kezamba ~1800,1595 -- `avenue_north` crossing `ring_north` over
+	--     water: "the side rails leave only a one-node gap into the crossing".
+	--
+	-- The ruling: "railings, fences, verge posts and pillars end at the
+	-- crossing square; the plateau square is rail-free towards every street
+	-- that joins it", and the deck itself stays continuous.
+	--
+	-- Both shapes are built here over a POND, so every position of both runs
+	-- is a bridge and the verge carries plank, rail and pillar the whole way --
+	-- which is the case that has furniture to put in the wrong place. Three
+	-- things are asserted, and the second is what stops the rule from being
+	-- "write no verge at all":
+	--
+	--   (a) no cell on a verge lane stands inside another run's carriageway;
+	--   (b) the parapet on the OUTSIDE of the corner, where no street joins,
+	--       is still there -- the clearance is per SIDE;
+	--   (c) every column the verge handed over is paved by the run that joins,
+	--       at the same walking level, so the deck is continuous and a player
+	--       walks from either street into the square and out again.
+	----------------------------------------------------------------------
+	local POND, POND_EDGE = 40, 24
+	local function pond(x, z)
+		local dx = 0
+		if x < -POND_EDGE then dx = -POND_EDGE - x end
+		if x > POND_EDGE then dx = x - POND_EDGE end
+		local dz = 0
+		if z < -POND_EDGE then dz = -POND_EDGE - z end
+		if z > POND_EDGE then dz = z - POND_EDGE end
+		return POND + ((dx > dz) and dx or dz)
+	end
+	local function pond_wet(x, z)
+		return x >= -POND_EDGE and x <= POND_EDGE and
+			z >= -POND_EDGE and z <= POND_EDGE
+	end
+	-- A CROSSING in the middle of the pond, and a CORNER whose two runs END on
+	-- each other at (20, 20) -- the shape of Lethariel's ring corner.
+	local VERGE_CASES = {
+		{name = "crossing", runs = {
+			{id = "avenue", axis = "x", at = 0, from = -48, to = 48},
+			{id = "lane", axis = "z", at = 0, from = -48, to = 48}}},
+		{name = "corner", runs = {
+			{id = "ring_east", axis = "z", at = 20, from = -48, to = 20},
+			{id = "ring_north", axis = "x", at = 20, from = -48, to = 20}}},
+	}
+	do
+		local palette = handles.elf
+		local RAIL = palette.node("railing")
+		local PAVING = palette.maybe("castle_paving") or palette.node("plaza")
+		local KERB = palette.node("plaza_edge")
+		local TREAD = palette.maybe("castle_wall_stair") or
+			palette.node("roof_stair")
+		local PLANK = palette.node("floor")
+		local ROAD = {[PAVING] = true, [KERB] = true, [TREAD] = true}
+		local intruded, cleared_total, kept_outside, handed_over = 0, 0, 0, 0
+		for _, case in ipairs(VERGE_CASES) do
+			local attached = street_plan.attach(case.runs, avenue.WIDTH)
+			-- The same runs WITHOUT the clearance, so the case proves the rule
+			-- fires rather than that the geometry had no furniture in it.
+			local bare_pieces, pieces = {}, {}
+			local rect = {}
+			for _, spec in ipairs(attached) do
+				local piece = avenue.run(palette, {id = spec.id,
+					axis = spec.axis, at = spec.at, from = spec.from,
+					to = spec.to, width = avenue.WIDTH,
+					lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.from,
+					reach = avenue.REACH, wet = pond_wet,
+					junctions = spec.junctions,
+					clear_verge = spec.clear_verge}, pond)
+				local bare = avenue.run(palette, {id = spec.id,
+					axis = spec.axis, at = spec.at, from = spec.from,
+					to = spec.to, width = avenue.WIDTH,
+					lamp_spacing = avenue.LAMP_SPACING, lamp_phase = spec.from,
+					reach = avenue.REACH, wet = pond_wet,
+					junctions = spec.junctions}, pond)
+				pieces[spec.id] = piece
+				bare_pieces[spec.id] = bare
+				if spec.axis == "x" then
+					rect[spec.id] = {min_x = spec.from, max_x = spec.to,
+						min_z = spec.at - HALF, max_z = spec.at + HALF}
+				else
+					rect[spec.id] = {min_z = spec.from, max_z = spec.to,
+						min_x = spec.at - HALF, max_x = spec.at + HALF}
+				end
+			end
+			local function in_other_road(id, x, z)
+				for other_id, box in pairs(rect) do
+					if other_id ~= id and x >= box.min_x and x <= box.max_x and
+							z >= box.min_z and z <= box.max_z then
+						return true
+					end
+				end
+				return false
+			end
+			local function verge_cells_in_road(source)
+				local count = 0
+				for _, spec in ipairs(attached) do
+					local dx = (spec.axis == "x") and 1 or 0
+					for _, cell in ipairs(source[spec.id].cells) do
+						local lane = ((dx == 1) and cell.z or cell.x) - spec.at
+						if (lane == -VERGE or lane == VERGE) and
+								in_other_road(spec.id, cell.x, cell.z) then
+							count = count + 1
+						end
+					end
+				end
+				return count
+			end
+			-- (a) NOTHING OF THE VERGE STANDS IN THE OTHER ROAD any more, and
+			-- the same geometry without the rule has plenty.
+			local before = verge_cells_in_road(bare_pieces)
+			local after = verge_cells_in_road(pieces)
+			assert(before > 0, case.name ..
+				": this case has no verge furniture in the joining road at " ..
+				"all, so the rule is untested")
+			assert(after == 0, case.name .. ": " .. after .. " of " .. before ..
+				" verge cells still stand inside the joining street's " ..
+				"carriageway")
+			intruded = intruded + before
+			cleared_total = cleared_total + (before - after)
+			-- (b) AND THE PARAPET OUTSIDE THE CORNER SURVIVES. `ring_east`'s
+			-- x+ verge is outside `ring_north`'s span, so nothing joins there
+			-- and the rail has to stay; a clearance that blanked both sides of
+			-- a position would leave a hole in the bridge parapet.
+			if case.name == "corner" then
+				local kept = 0
+				for _, cell in ipairs(pieces.ring_east.cells) do
+					if cell.name == RAIL and cell.x == 20 + VERGE and
+							cell.z >= 18 and cell.z <= 20 then
+						kept = kept + 1
+					end
+				end
+				assert(kept == 3, "the corner's outer parapet carries " ..
+					kept .. " of its three rail cells")
+				kept_outside = kept_outside + kept
+			end
+			-- (c) THE DECK IS CONTINUOUS. Every column either run writes a
+			-- walking surface on -- carriageway and verge alike -- is read the
+			-- way the seam reads it (the highest cell that is not furniture),
+			-- and every column the verge handed over has to be paved by the
+			-- run that joins, no more than a node from a neighbour's level.
+			local top = {}
+			for _, spec in ipairs(attached) do
+				local dx = (spec.axis == "x") and 1 or 0
+				for _, cell in ipairs(pieces[spec.id].cells) do
+					local lane = ((dx == 1) and cell.z or cell.x) - spec.at
+					if (ROAD[cell.name] or cell.name == PLANK) and
+							lane >= -VERGE and lane <= VERGE then
+						local key = cell.x .. ":" .. cell.z
+						if top[key] == nil or cell.y > top[key] then
+							top[key] = cell.y
+						end
+					end
+				end
+			end
+			for _, spec in ipairs(attached) do
+				local dx = (spec.axis == "x") and 1 or 0
+				for _, side in ipairs({-VERGE, VERGE}) do
+					for p = spec.from, spec.to do
+						local x, z
+						if dx == 1 then x, z = p, spec.at + side
+						else x, z = spec.at + side, p end
+						if in_other_road(spec.id, x, z) then
+							assert(top[x .. ":" .. z] ~= nil, case.name ..
+								": the column " .. x .. "," .. z ..
+								" gave up its verge and nothing paved it")
+							handed_over = handed_over + 1
+						end
+					end
+				end
+			end
+			-- AND NO STEP APPEARED WHERE THE HANDOVER HAPPENS.
+			local worst = 0
+			for key, y in pairs(top) do
+				local x, z = key:match("^(-?%d+):(-?%d+)$")
+				x, z = tonumber(x), tonumber(z)
+				for _, step in ipairs({{1, 0}, {0, 1}}) do
+					local other = top[(x + step[1]) .. ":" .. (z + step[2])]
+					if other then
+						local delta = y - other
+						if delta < 0 then delta = -delta end
+						if delta > worst then worst = delta end
+					end
+				end
+			end
+			assert(worst <= 1, case.name ..
+				": the joined road steps " .. worst .. " nodes somewhere")
+		end
+		assert(cleared_total > 0, "the clearance removed nothing")
+		-- (d) AND A PIECE OF SUCH A RUN IS STILL EXACTLY THAT STRETCH OF IT.
+		-- Section 7 cuts the cases it was written for; the clearance is a new
+		-- per-position input and a successor emerges a street one mapchunk at a
+		-- time, so the crossing's own avenue is cut at EVERY column here and the
+		-- union of the two pieces compared with the whole.
+		local splits = 0
+		do
+			local runs = street_plan.attach(VERGE_CASES[1].runs, avenue.WIDTH)
+			local spec
+			for _, entry in ipairs(runs) do
+				if entry.id == "avenue" then spec = entry end
+			end
+			local function build(from, to)
+				return avenue.run(palette, {id = spec.id, axis = spec.axis,
+					at = spec.at, from = from, to = to, width = avenue.WIDTH,
+					lamp_spacing = avenue.LAMP_SPACING,
+					lamp_phase = spec.from, reach = avenue.REACH,
+					wet = pond_wet, junctions = spec.junctions,
+					clear_verge = spec.clear_verge}, pond)
+			end
+			local whole = build(spec.from, spec.to)
+			local expected = {}
+			for _, cell in ipairs(whole.cells) do
+				expected[cell.x .. ":" .. cell.y .. ":" .. cell.z] =
+					cell.name .. ":" .. (cell.param2 or 0)
+			end
+			for cut = spec.from, spec.to - 1 do
+				local union, count = {}, 0
+				for _, part in ipairs({{spec.from, cut}, {cut + 1, spec.to}}) do
+					local piece = build(part[1], part[2])
+					for _, cell in ipairs(piece.cells) do
+						local key = cell.x .. ":" .. cell.y .. ":" .. cell.z
+						local value = cell.name .. ":" .. (cell.param2 or 0)
+						assert(expected[key] == value,
+							"the cleared piece cut at " .. cut .. " writes " ..
+							value .. " at " .. key ..
+							", which the whole run does not")
+						if union[key] == nil then
+							union[key] = value
+							count = count + 1
+						end
+					end
+				end
+				assert(count == #whole.cells, "the two cleared pieces cut at " ..
+					cut .. " carry " .. count .. " cells, the whole run " ..
+					#whole.cells)
+				splits = splits + 1
+			end
+		end
+		cases = cases + 1
+		say("street_verge_clearance", intruded, cleared_total, kept_outside,
+			handed_over, splits)
+	end
+
+	assert(cases == 11, "a street case was lost")
 	say("street_cases", cases, "width", avenue.WIDTH, "min_clear", CLEAR,
 		"lift", avenue.LIFT, "pier", avenue.PIER)
 	return table.concat(report)

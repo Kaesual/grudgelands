@@ -1,0 +1,7 @@
+exit=0 errors=0 complete=1 log=/tmp/grug-w4-G/eng/highcourt-full-8675309-a/server.log
+WP13 highcourt: the built avenue moved.
+  now      a0dc9ee0024abbe3faa08405009948adef460efb2a9eaae5935a559c43a8d2fe
+  expected 46ab2c74205f88438cef03567f5656bc10fd0b6d3582bc4fd040dcb09736e181 (/home/jan/projects/grudgelands/.claude/worktrees/agent-a72ec4c633f00efbc/tools/wp13/evidence/20260915-capital-terrain/highcourt/avenue-digest-8675309.txt)
+rampart overlay digest matches the committed value
+corner overlay digest matches the committed value
+gate overlay digest matches the committed value
