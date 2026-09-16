@@ -324,6 +324,15 @@ Normal tier at level L:
   15 s** (4.0 × 1.08 = 4.32 < 4.4, `items_crafting.md` §3.6/§10 P4) and a
   mount pays for its permanent 6–10 nodes/s with the damage dismount
   (`mounts.md` §3.1).
+- **View range follows the attack type** (decided 2026-09-16, user ruling 3):
+  a **`dogshoot` family sees 16 m**, a **melee family 10–14 m by habitat**.
+  The full per-mob table and the habitat reasons are `biomes_mobs.md` §3.1;
+  **16 is the ceiling for a land mob**, because §4's 45 m chase give-up and
+  40 m leash both depend on a mob keeping a target it can no longer see. The
+  same ruling asks for more ranged families: the first is the **Bandit
+  Archer**, one slot in three of the existing bandit camp, which takes the
+  registered ranged roster from **4 of 43 to 5 of 44** and is the first ranged
+  enemy a player meets in the inner ring.
 - Pacing property: ~**20 same-level mob kills per level** (XP=10L vs.
   quadratic level curve); quests supply the rest.
 - **Gray kills award no XP**: a mob at level ≤ killer level − 10 gives 0

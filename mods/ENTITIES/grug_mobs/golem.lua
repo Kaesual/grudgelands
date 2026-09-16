@@ -110,7 +110,15 @@ local function golem_def(description, texture)
 		--     pits it would have to step-climb back out of (stepheight 1.1) is
 		--     worth more than two nodes of chase.
 		fear_height = 4,
-		view_range = 14,
+		-- 14 -> 16 (2026-09-16, user ruling 3): a `dogshoot` family sees 16
+		-- and a melee family 10-14 by habitat, and the golem was the one
+		-- ranged mob in the roster that did not follow its own rule -- the
+		-- skeleton archer and raider already carry 16 with that reason in
+		-- their comments (biomes_mobs.md §3.1, combat_stats.md §3). 16 is the
+		-- ceiling for a land mob, not a step toward more: the 45 m chase
+		-- give-up and the 40 m leash of combat_stats.md §4 both need the mob
+		-- to keep a target it can no longer see.
+		view_range = 16,
 
 		visual = "mesh",
 		mesh = "grug_mobs_stone_golem.b3d",

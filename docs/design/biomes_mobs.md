@@ -980,6 +980,25 @@ what makes the war coast worth walking by day.
 
 ### 3.1 Families by biome group
 
+**View range follows the attack type** (decided 2026-09-16, user ruling 3:
+"more ranged mobs, with a larger view range than melee mobs, so ranged players
+and the Mage take damage sooner"):
+
+- a **`dogshoot` family sees 16 m** — it shoots, so it needs to see further
+  than a brawler. Skeleton Archer, Skeleton Raider, Stone/Mesa Golem and the
+  Bandit Archer all carry it.
+- a **melee family sees 10–14 m by habitat** — 14 in the open (bandit, guard,
+  hyena, jungle lynx, wolf, zebra, zombie), 12 where cover or a late-noticing
+  temperament says so (bear, panther, mirefolk, stag, spider, jungle ape), 10
+  low to the ground or at the village belt (boar and its tints, bog ooze, ram,
+  serpent). The critters see 8; the Crocodile's 6 and the Crag Eagle's 16 keep
+  their own documented reasons, and the aquatic Kraken's 20 is outside the
+  comparison.
+- **16 is the CEILING for a land mob, not a direction of travel.**
+  `combat_stats.md` §4 gives up a chase at 45 m and leashes at 40, and both
+  rules exist because the mob keeps a target it can no longer see; a
+  `view_range` above 16 starts eating into them.
+
 **Settled biomes, all six (core + inner, L1–25):**
 
 | Mob | Verb | Day/Night | Speed | Drops | Model |
@@ -988,6 +1007,7 @@ what makes the war coast worth walking by day.
 | Rabbit/Hare (tints) | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only | mobs_mc_rabbit |
 | Zombie (exists) | never leashes | night (in grug_blight: 24 h — Undead identity) | 4.2 | zombie flesh 1/1; linen scrap 1/2; steel ingot 1/10 | mobs_mc_zombie (have) |
 | Bandit (camp humanoid; two fixed camps per race region) | defends camp (leashes to camp, group) | 24 h | 4.4 | linen cloth 1/1 ×1–2 (home camp) / heavy cloth (frontier camp); copper coins | character.b3d + bandit skins (LotT-derived) |
+| **Bandit Archer** (added 2026-09-16, ruling 3) — the same camp, one slot in three | dogshoot (ranged); view range **16** | 24 h | **4.0 walk**, like the Skeleton Archer: an archer keeps its distance rather than sprinting | the Bandit's table **plus arrows 1/3** | character.b3d + the same bandit skins; the Skeleton Archer's arrow entity, no new art |
 
 **Forest pair — grug_deep_forest (A) ↔ grug_bone_forest (T)** (outer,
 25–60; Throng names in parentheses, same drop tables):
@@ -1324,6 +1344,15 @@ re-run against the new values once the change ships.
 | Reef Lurker (elite crab) — *deferred (§8.3)* | sand | 30 | 6000 | 1 | any | coast |
 | Kraken Guard | ocean water surface, open sea only (own check) | 60 | 12000 | 1 | any | (outside continents) |
 | Bandits / Mirefolk | **no ABM** — camp anchor with **respawn slots** (world.md §4a): max 3–5, one refill per 120–300 s, dormant catch-up | — | — | 3–5 per camp | — | camp pos |
+
+**The Bandit Archer costs no spawn budget** (2026-09-16). It has no row of its
+own: the bandit camp's slot roll picks it **1 in 3**, so the camp is still the
+3–5 of the row above and simply not all of one kind. Both families count
+against that one head count (`grug_mobs/camps.lua`), which is why an archer
+can never make a camp grow. It is also why ruling 3's "more ranged mobs"
+reaches the INNER ring, where the four pre-existing ranged mobs — Skeleton
+Archer, Skeleton Raider, Stone Golem, Mesa Golem — never went: before this,
+a player met no ranged enemy at all below roughly level 25.
 | Named rares | **no ABM** — scheduled spawner, 2–4 h respawn, broadcast | — | — | 1 | — | fixed routes |
 
 Row notes:
