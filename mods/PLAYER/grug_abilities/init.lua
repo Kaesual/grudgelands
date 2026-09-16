@@ -1945,10 +1945,11 @@ grug_classes.register_on_class_chosen(function(player, class_id)
 end)
 
 --
--- Rage generation (classes.md §1, WP38): one accepted authoritative ability
--- swing grants +12 through finish_authoritative_swing. Native input packets
--- never reach this accepted hook. Ordinary tools/fists retain proportional
--- +12 × fraction because their client punch packets still use the fractional
+-- Rage generation (classes.md §1/§3, WP38): one accepted authoritative
+-- ability swing grants RAGE_PER_SWING through finish_authoritative_swing.
+-- Native input packets never reach this accepted hook. Ordinary
+-- tools/fists retain a proportional share of the same value because their
+-- client punch packets still use the fractional
 -- melee accumulator. An accepted hit also refreshes the enemy lock; immunity
 -- and sub-1 non-accumulated damage are not landed hits.
 --

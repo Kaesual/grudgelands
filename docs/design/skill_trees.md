@@ -4,8 +4,18 @@
 built two trees of five talents per class on a 20-point budget. The user's
 rulings of **2026-09-16** (§5) replace the budget, the tree size, the tier
 shape, the capstone rule and the respec seam, and add a fourth class. This
-revision rebuilds the proposal on those rulings. Nothing here is implemented,
-and nothing in `mods/` was changed for it.
+revision rebuilds the proposal on those rulings.
+
+**Status, 2026-09-16: lanes X1 and X2 of §4 are implemented** (round 4, lane
+W1) — `mods/PLAYER/grug_classes/talents.lua` with the 48 talents of the three
+shipped classes, the point budget, both gate kinds, the spend/respec rules,
+the validating persistence path, the window table and the two accessors, plus
+the thirty numeric consumers of §3.8 and the code halves of rulings 19, 20 and
+25 and of §7 task 5. Lanes X3 and X4 are still open, so every keystone,
+capstone, cap override and the sfinv page of §3.5 are unimplemented; the
+interim interface is the chat commands `/talents`, `/talent <id>` and
+`/respec`, which X4 removes. What shipped, what it measured and what is open:
+`docs/research/wp11-talents-phase1.md`.
 
 Companion files written with this revision:
 

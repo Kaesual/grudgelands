@@ -304,7 +304,7 @@ local function make_player(name, class, level, perks)
 	return player
 end
 
-function M.run(repo)
+local function run_checks(repo)
 	repo = repo or "."
 	local out, failures = {}, {}
 	local function row(...)
@@ -595,6 +595,16 @@ function M.run(repo)
 		"an unknown talent id is dropped")
 	equal(classes.talent_points_spent(unknown), 3,
 		"an unknown talent id costs no points")
+	-- The same forgery with NO real id beside it: an unknown id must not be
+	-- quietly attached to some other talent either, which is the failure mode
+	-- a lookup with a fallback would have.
+	local unknown_only = forged("unknownonly", "warrior", 60, "not_a_talent=4")
+	equal(classes.talent_points_spent(unknown_only), 0,
+		"a meta string of nothing but an unknown id spends nothing")
+	for _, id in ipairs(classes.talent_ids) do
+		equal(classes.talent_rank(unknown_only, id), 0,
+			"an unknown id must not land on talent " .. id)
+	end
 	local over = forged("over", "warrior", 60,
 		"ironbound=5,weathered=4,hold_ground=3,spite=5,affront=3,ruination=9")
 	equal(classes.talent_rank(over, "ruination"), 0,
@@ -905,13 +915,29 @@ function M.run(repo)
 		check(clock.commands[name] ~= nil,
 			"interim chat command /" .. name .. " is not registered")
 		if clock.commands[name] then
-			check(clock.commands[name].privs == nil,
+			-- builtin normalizes a missing `privs` to an empty table
+			-- (builtin/game/chat.lua), which the engine probe sees and this
+			-- stub does not; accept both spellings of "no privilege".
+			check(next(clock.commands[name].privs or {}) == nil,
 				"/" .. name .. " must not be admin-only while it is the " ..
 				"only talent interface")
 		end
 	end
 
 	return finish()
+end
+
+-- A fixture that RAISES has not passed. Turning the error into one ordinary
+-- failure row keeps the caller's contract (a string ending in a result line)
+-- and keeps a broken mutation from printing a stack trace instead of a
+-- verdict.
+function M.run(repo)
+	local ok, result = pcall(run_checks, repo)
+	if ok then
+		return result
+	end
+	return "wp11_talents_failure\tthe fixture raised: " ..
+		tostring(result) .. "\nwp11_talents_result\tFAIL\t1\n"
 end
 
 return function(repo)

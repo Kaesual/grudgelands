@@ -269,7 +269,11 @@ local strike_def = {
 	kind = "swing",
 	universal = true, -- every class, and a character with no class yet (E1)
 	name = "Strike",
-	description = "A full melee swing with your equipped weapon. Hold LMB and keep a hostile in your crosshair; the shared weapon clock prevents click spam. Generates 12 rage when it lands.",
+	-- The rage number is COMPOSED from the ledger constant rather than
+	-- written out: this string is the one place a player reads it, and a
+	-- second copy of a tuning number is a second thing to forget.
+	description = "A full melee swing with your equipped weapon. Hold LMB and keep a hostile in your crosshair; the shared weapon clock prevents click spam. Generates " .. grug_abilities.RAGE_PER_SWING ..
+		" rage when it lands.",
 	-- Bone white, deliberately neutral (E8): the four class colours carry the
 	-- ability identities and a fifth colour would compete with them. With an
 	-- empty weapon slot the item falls back to this orb, which reads correctly
@@ -319,8 +323,10 @@ grug_abilities.register_ability({
 	end,
 })
 
--- The rage dump (kit tuning 2026-08-06): no own cooldown — at +12 rage
--- per auto-hit a cooldown left the Warrior permanently rage-capped.
+-- The rage dump (kit tuning 2026-08-06): no own cooldown — at the rage
+-- income of the day a cooldown left the Warrior permanently rage-capped.
+-- Ruling 25 (2026-09-16) lowered that income to 8 per landed swing, so
+-- this now procs about every fourth swing rather than every other one.
 grug_abilities.register_ability({
 	id = "mighty_blow",
 	kind = "swing",
@@ -340,7 +346,8 @@ grug_abilities.register_ability({
 	range = 4,
 	-- The proc REPLACES the plain hit (classes.md §3): floor(weapon x 1.5) +
 	-- melee bonus, x3 threat. No charge timer -- the rage cost IS the limiter
-	-- (about every other swing at +12 rage per landed hit).
+	-- (about every fourth swing at the ruling-25 income of +8 per landed
+	-- hit; it was every other swing at the old +12).
 	proc_swing = function(user, target, ctx)
 		local tpos = target:get_pos() -- before the punch (lethal invalidates refs)
 		-- Heavy Hand (skill_trees.md §2.2): +0.05 weapon-damage multiplier per

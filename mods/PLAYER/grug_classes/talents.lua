@@ -783,14 +783,22 @@ local function parse(player)
 	-- Pre-summed bonuses, so the consumers on the damage pipeline pay one
 	-- table index. Windowed talents are kept apart: their contribution
 	-- depends on a clock, so it cannot live in a cached sum.
+	--
+	-- Summed in REGISTRATION order, not in `pairs` order: no effect key has
+	-- two contributors on one character today (the three shared keys are
+	-- shared across classes, never inside one), but a float sum whose order
+	-- depends on a hash is a defect waiting for the day one does.
 	local static, windowed = {}, {}
-	for id, rank in pairs(ranks) do
-		local def = grug_classes.registered_talents[id]
-		if def.window then
-			windowed[#windowed + 1] = def
-		else
-			for key, values in pairs(def.effects) do
-				static[key] = (static[key] or 0) + values[rank]
+	for _, id in ipairs(grug_classes.talent_ids) do
+		local rank = ranks[id]
+		if rank then
+			local def = grug_classes.registered_talents[id]
+			if def.window then
+				windowed[#windowed + 1] = def
+			else
+				for key, values in pairs(def.effects) do
+					static[key] = (static[key] or 0) + values[rank]
+				end
 			end
 		end
 	end
@@ -1033,6 +1041,14 @@ core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
 	cache[name] = nil
 	windows[name] = nil
+end)
+
+-- A character's FIRST class pick at creation is not a class change (ruling 20
+-- removed those), but it does decide which talents are the character's at all,
+-- and the parsed cache may already exist from a read taken before it. One
+-- invalidation is cheaper than reasoning about whether such a read can happen.
+grug_classes.register_on_class_chosen(function(player)
+	cache[player:get_player_name()] = nil
 end)
 
 core.register_on_dieplayer(function(player)
