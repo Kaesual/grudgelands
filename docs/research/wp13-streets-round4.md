@@ -441,11 +441,11 @@ the findings were made in.
 | `tools/wp13/street_kat.lua` | §11 (the verge clearance) and §8 as an assertion |
 | `tools/wp13/walkability.lua` | **moved** out of wave 3's evidence directory; the two run-spec fields |
 | `tools/wp13/lethariel_kat.lua`, `kezamba_lots.lua`, `integration_fixture.lua` | the same two run-spec fields, so the offline road is the road the engine writes |
+| `tools/wp13/evidence/20260916-streets/mutation.py` | one anchor re-indented — the verge block gained a level |
+| `tools/wp13/evidence/20260916-streets-r4/` | the evidence |
 
 `tools/wp13/lane_routes.lua` is deliberately NOT in that list: it builds its
 runs in WORLD coordinates, where a span in the run's own coordinates would mean
 something else, and what it measures is the CARRIAGEWAY — the verge clearance
 cannot move a cell it reads. Its gate is green on all nine seeds
 (`illegal=0 walk_faults=0 cross_faults=0 lamp_faults=0`).
-| `tools/wp13/evidence/20260916-streets/mutation.py` | one anchor re-indented — the verge block gained a level |
-| `tools/wp13/evidence/20260916-streets-r4/` | the evidence |
