@@ -127,10 +127,14 @@ arbitrary fixed-price wall.
   the inventory throughout.
 - **Mount speed is the entity's velocity, never
   `physics_override.speed`.** That follows from the attachment above and
-  it matters: `physics_override.speed` already has two declared owners
-  (mob webs in `mods/ENTITIES/grug_mobs/verbs.lua:100-118` and the PvP
-  snare chain in `mods/PLAYER/grug_abilities/kits.lua`). Riding adds no
-  third owner and can never collide with a slow.
+  it matters: since the movement aggregator landed (ruling 11, 2026-09-16,
+  `skill_trees.md` §3.9) `physics_override` has exactly **one** owner,
+  `mods/CORE/grug_core/movement.lua` — mob webs, the PvP snare chain and the
+  character-creation freeze all register named modifiers there. Riding adds
+  no writer at all and can never collide with a slow, which is why the ruling
+  says **mounts stay outside the aggregator**. *(Before that change there were
+  three writers, not the two this paragraph used to name; the third was
+  `grug_classes/selection.lua`'s freeze.)*
 - **A mount carries no level, no XP, no threat and no aggro.** It is not
   registered through `grug_mobs.register_mob` — that wrapper *is* the
   level/XP engine (AGENTS.md, WP6 patterns) and would give a horse a

@@ -111,8 +111,10 @@ craftable only with the Improved Boat unlock.
   level 30. Rowing therefore never beats walking and the improved boat
   matches, but never exceeds, its land contemporary.
 - **Speed is the boat entity's velocity, never `physics_override.speed`** —
-  the same rule and the same reason as `mounts.md` §3: that field already has
-  two owners (mob webs and the PvP snare) and must not gain a third.
+  the same rule and the same reason as `mounts.md` §3: that field has exactly
+  one owner, the `grug_core` movement aggregator (ruling 11, 2026-09-16), and
+  must not gain a second. *(This sentence used to say "two owners"; there were
+  in fact three until the aggregator absorbed them.)*
 - The player attaches to the boat, steers with the ordinary movement
   controls, and accelerates and brakes rather than snapping to top speed.
 - Boats move on water only. They have no currents to fight, no fuel and no
