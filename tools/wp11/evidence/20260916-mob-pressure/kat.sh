@@ -28,13 +28,19 @@ cmp "$out/cadence-luajit.txt" "$out/cadence-puc51.txt" &&
 	echo "cadence IDENTICAL"
 
 echo "== mutations: each must FAIL =="
+# The aggregator has four (=4 is the root replacement rule the round-4 review
+# found); the cadence has three.
 : >"$out/mutations.txt"
-for m in 1 2 3; do
+for m in 1 2 3 4; do
 	{
 		echo "--- aggregator MUTATION=$m"
 		MUTATION=$m luajit -e \
 			'io.write(dofile("tools/wp11/move_aggregator_kat.lua")("."))' 2>&1 |
 			head -1
+	} >>"$out/mutations.txt"
+done
+for m in 1 2 3; do
+	{
 		echo "--- cadence MUTATION=$m"
 		MUTATION=$m luajit -e \
 			'io.write(dofile("tools/wp11/mob_cadence_kat.lua")("."))' 2>&1 |
@@ -44,6 +50,17 @@ done
 cat "$out/mutations.txt"
 
 echo "== suites this lane's files are loaded by =="
+# THREE of these are RED on main ba831caf itself, before this branch is
+# involved, and the lane's note records the A/B that shows it:
+#   * wp45 character_creation -- Lane W1 removed the `/class` chatcommand
+#     (ruling 20) and the test still calls `chatcommands.class.func`;
+#   * wp39 combat_integration -- Lane H's HUD reads `grug_core.hud_layout`,
+#     which that test's stub does not provide;
+#   * wp39 projectile -- Lane W1's rage tuning renamed/removed
+#     `RAGE_PER_SWING`, which kits.lua's own description string still reads.
+# They are printed, not hidden: swapping this branch's selection.lua,
+# kits.lua, grug_core/init.lua and the wp45 test for main's own versions
+# reproduces all three failures unchanged.
 {
 	bash tools/wp45/run.sh
 	WP45_LUA_BIN=tools/bin/lua51 bash tools/wp45/run.sh
@@ -52,6 +69,15 @@ echo "== suites this lane's files are loaded by =="
 	luajit -e 'io.write(dofile("tools/wp13/start_npcs_kat.lua")("."))' | tail -1
 } >"$out/suites.txt" 2>&1
 cat "$out/suites.txt"
+
+echo "== the two main-side suites this branch must not break =="
+{
+	luajit -e 'io.write(dofile("tools/wp11/talent_tree_kat.lua")("."))' | tail -1
+	tools/bin/lua51 -e 'io.write(dofile("tools/wp11/talent_tree_kat.lua")("."))' | tail -1
+	luajit -e 'io.write(dofile("tools/ui/hud_bars_kat.lua")("."))' | tail -1
+	tools/bin/lua51 -e 'io.write(dofile("tools/ui/hud_bars_kat.lua")("."))' | tail -1
+} >"$out/neighbour-suites.txt" 2>&1
+cat "$out/neighbour-suites.txt"
 
 echo "== final micro pair (this lane touches no mapgen file) =="
 # final_micro refuses to overwrite its own output on purpose, so a re-run

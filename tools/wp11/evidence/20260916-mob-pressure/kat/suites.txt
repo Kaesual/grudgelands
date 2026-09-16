@@ -1,9 +1,21 @@
-wp45_character_creation_v3|emerge_requests=20|fresh_teleports=1|prefetched_teleports=1|rejoin_teleports=1|class_sets=7|chats=19
-wp45_starts_preload_v1|cold_requests=6|max_concurrent=2|cancel_retries=1|permanent_failures=1|restart_from_disk=6|callback_reentry=0
-wp45_start_footprint_v1|starts=6|hostile_refused=54|hostile_accepted=36
-wp45_character_creation_v3|emerge_requests=20|fresh_teleports=1|prefetched_teleports=1|rejoin_teleports=1|class_sets=7|chats=19
-wp45_starts_preload_v1|cold_requests=6|max_concurrent=2|cancel_retries=1|permanent_failures=1|restart_from_disk=6|callback_reentry=0
-wp45_start_footprint_v1|starts=6|hostile_refused=54|hostile_accepted=36
-combat_integration_test: ok
-projectile_test: ok
+luajit: ...a299497cbb461c5f1/tools/wp45/character_creation_test.lua:645: attempt to index field 'class' (a nil value)
+stack traceback:
+	...a299497cbb461c5f1/tools/wp45/character_creation_test.lua:645: in main chunk
+	[C]: at 0x55c9793fbb00
+tools/bin/lua51: ...497cbb461c5f1/tools/wp45/character_creation_test.lua:645: attempt to index field 'class' (a nil value)
+stack traceback:
+	...497cbb461c5f1/tools/wp45/character_creation_test.lua:645: in main chunk
+	[C]: ?
+luajit: ./mods/PLAYER/grug_abilities/init.lua:338: attempt to index local 'layout' (a nil value)
+stack traceback:
+	./mods/PLAYER/grug_abilities/init.lua:338: in function 'add_bar'
+	./mods/PLAYER/grug_abilities/init.lua:2487: in function 'fn'
+	tools/wp39/combat_integration_test.lua:448: in main chunk
+	[C]: at 0x563cd580ab00
+luajit: ./mods/PLAYER/grug_abilities/kits.lua:274: attempt to concatenate field 'RAGE_PER_SWING' (a nil value)
+stack traceback:
+	./mods/PLAYER/grug_abilities/kits.lua:274: in main chunk
+	[C]: in function 'dofile'
+	tools/wp39/projectile_test.lua:601: in main chunk
+	[C]: at 0x5647ebcdcb00
 real_starts	hearthpine=1/6:work_2:ring_4 dawnmere=1/6:work_2:ring_3 silverleaf=1/6:work_2:ring_4 stillgrave=1/6:work_2:ring_3 sunscar=1/6:work_2:ring_3 kapok=1/6:work_2:ring_5	min_walker_ring_3

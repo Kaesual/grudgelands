@@ -510,6 +510,18 @@ optional second and third candidates, and the `dogshoot_switch` /
 - **The speed raise is unmeasured as a change in feel.** §3's table is
   arithmetic from shipped durations.
 - The card's optional ranged candidates and the `dogshoot` ratio knob.
+- **Three suites are red on main `ba831caf` itself and this lane did not
+  break them** — `wp45/character_creation_test.lua` (Lane W1's `/class`
+  removal against a test that still calls the command),
+  `wp39/combat_integration_test.lua` (Lane H's HUD reads
+  `grug_core.hud_layout`, which that test's stub lacks) and
+  `wp39/projectile_test.lua` (Lane W1's rage tuning against `kits.lua`'s
+  description string reading `RAGE_PER_SWING`). Swapping this branch's four
+  files for main's own reproduces all three; the A/B is in the evidence
+  README. They belong to the lanes that made those changes.
+- **Review finding 8, left as shipped:** the in-reach run branch has no
+  `at_cliff` guard, so a mob 1.2–2.8 m from a target on a ledge can run off
+  it. See §5 item 5 for why adding the guard is not obviously right.
 
 ## 7. What the user should playtest, in a FRESH world
 

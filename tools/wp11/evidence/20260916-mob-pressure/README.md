@@ -1,6 +1,8 @@
 # Mob pressure — evidence (round 4, 2026-09-16)
 
-Branch `wp11-r4-mob-pressure`, base `dfb32cd5`. The implementation note is
+Branch `wp11-r4-mob-pressure`, rebased onto main `ba831caf` (originally cut
+from `dfb32cd5`). Everything in this directory was re-taken on the rebased
+tree. The implementation note is
 [`docs/research/mob-pressure.md`](../../../../docs/research/mob-pressure.md);
 this directory is what it cites.
 
@@ -9,11 +11,12 @@ this directory is what it cites.
 | path | what it is |
 |---|---|
 | `static.sh` / `static.txt` | parser + SETGLOBAL per changed file and tree-wide, the five plain-5.1 sweeps (scoped and tree-wide), the fresh-server audit, the WP40 R7 unit suite, and every census the note quotes |
-| `kat.sh` / `kat.txt` | both KATs under LuaJIT **and** PUC 5.1 with a byte-identity check, the six mutations, the three suites this lane's files are loaded by, and the final-micro pair |
+| `kat.sh` / `kat.txt` | both KATs under LuaJIT **and** PUC 5.1 with a byte-identity check, the **seven** mutations (four aggregator, three cadence), the suites this lane's files are loaded by, the two main-side KATs it must not break, and the final-micro pair |
 | `kat/` | the KAT outputs themselves, the mutation lines, `suites.txt`, and the final-micro TSVs with `micro-pair.sha256` |
 | `engine/cadence-at-4.4/` | the runtime test of `combat_stats.md` §4, taken with the aggressive band still at 4.4 — the cadence patch **alone** |
 | `engine/cadence-at-4.6/` | the same test on the shipped tree, with the band at 4.6 |
 | `engine/ranged/` | the Bandit Archer boot: roster census, camp config, and the archer shooting |
+| `engine/cadence-rebased/` | one boot of the **after** case on the tree rebased onto main `ba831caf` — the numbers do not move |
 | `files.sha256` | the sources this lane changed, as committed |
 
 `files.sha256`, `static.txt`, `kat.txt` and the `cadence-at-4.6` boot all
@@ -40,6 +43,7 @@ them, `target_lost` 0:
 |---|---|---|---|---|
 | 4.4 | **1** | **10** | 10 | 10 |
 | 4.6 | **1** | **10** | 10 | 10 |
+| 4.6, rebased onto `ba831caf` | — | **10** | — | 10 |
 
 Mob-to-target gap, receding: **2.31–2.70 m before** (outside its own reach of
 2) against **1.49–1.87 m after**. The speed raise on its own changes the
@@ -81,6 +85,28 @@ written. Timings recorded here: ~110 s per cadence boot (of which ~55 s is
 and ~100 s for the ranged boot. All engine work ran under `nice -n 19` on
 ports 31201–31203, one server at a time, and `pgrep -af 'luanti.bin --server'`
 showed nothing on that block afterwards.
+
+## Three suites that are RED on main itself
+
+`kat.txt`'s "suites this lane's files are loaded by" section prints three
+failures, and none of them belongs to this branch. Replacing this branch's
+`grug_classes/selection.lua`, `grug_abilities/kits.lua`,
+`grug_core/init.lua` and `tools/wp45/character_creation_test.lua` with
+**main `ba831caf`'s own versions** (and deleting `movement.lua`) reproduces
+all three unchanged:
+
+| suite | error | whose |
+|---|---|---|
+| `wp45/character_creation_test.lua` | `attempt to index field 'class'` | Lane W1 removed the `/class` chatcommand (ruling 20); the test still calls `chatcommands.class.func` |
+| `wp39/combat_integration_test.lua` | `grug_abilities/init.lua:338: attempt to index local 'layout'` | Lane H's HUD reads `grug_core.hud_layout`; that test's stub does not provide it |
+| `wp39/projectile_test.lua` | `kits.lua: attempt to concatenate field 'RAGE_PER_SWING'` | Lane W1's rage tuning; the description string still reads the old field |
+
+The A/B is `git show ba831caf:<path> > <path>` for those four files, run, then
+`git checkout HEAD -- <paths>`. `wp13/start_npcs_kat.lua` still passes, and so
+do the two main-side KATs this branch could plausibly have broken —
+`tools/wp11/talent_tree_kat.lua` and `tools/ui/hud_bars_kat.lua` — under both
+interpreters, with this lane's `kits.lua` and `selection.lua` underneath
+(`neighbour-suites.txt`).
 
 ## Two things the sweeps print that are not this lane's
 

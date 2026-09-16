@@ -31,10 +31,10 @@ mods/ENTITIES/mobs/api.lua:632:-- update nametag & infotext
 mods/ENTITIES/mobs/api.lua:1449:-- are we able to dig & drop a node?
 mods/ENTITIES/mobs/api.lua:2028:-- dogshoot attack switch & counter function
 mods/ENTITIES/mobs/api.lua:2047:-- stop attack & reset vars
-mods/ENTITIES/mobs/api.lua:2663:-- falling & fall damage
-mods/ENTITIES/mobs/api.lua:2716:-- deal damage & effects when mob punched
-mods/ENTITIES/mobs/api.lua:3527:-- handle mob lifetimer & expiration
-mods/ENTITIES/mobs/api.lua:4831:	-- sneak & right-click mob to show what it eats/follows
+mods/ENTITIES/mobs/api.lua:2671:-- falling & fall damage
+mods/ENTITIES/mobs/api.lua:2724:-- deal damage & effects when mob punched
+mods/ENTITIES/mobs/api.lua:3535:-- handle mob lifetimer & expiration
+mods/ENTITIES/mobs/api.lua:4839:	-- sneak & right-click mob to show what it eats/follows
 mods/ENTITIES/grug_mobs/bandit.lua:2:-- humanoid; camps placed by §1.4, inner+outer, both continents) | defends
 mods/ENTITIES/grug_mobs/bandit.lua:3:-- camp (leashes to camp, group) | 24 h | 4.6 | linen cloth 1/1 x1-2 (inner
 mods/ENTITIES/grug_mobs/bandit.lua:142:			-- this: "Linen cloth | 10-30 | bandit camps", "Heavy cloth | 25-45 |
@@ -43,11 +43,11 @@ mods/ENTITIES/grug_mobs/golem.lua:174:-- §4 row "Stone/Mesa Golem (elite) | gra
 mods/ENTITIES/grug_mobs/golem.lua:175:-- 1 | any | outer, coast, underground", split by continent-side top node;
 mods/ENTITIES/grug_mobs/init.lua:41:--   def._grug_tier        — "normal" (default) | "elite" | "rare"
 mods/ENTITIES/grug_mobs/skeleton_raider.lua:7:-- boar/zombie/bandit/skeleton | identical biomes both sides | identical" —
-mods/PLAYER/grug_classes/selection.lua:545:		return true, ("%s %s %s, level %d | Str %d Int %d Dex %d | " ..
-mods/PLAYER/grug_classes/selection.lua:546:			"HP %d/%d, mana %d | melee +%d, spell +%d, crit %.1f%%, dodge %.1f%%"):format(
+mods/PLAYER/grug_classes/selection.lua:550:		return true, ("%s %s %s, level %d | Str %d Int %d Dex %d | " ..
+mods/PLAYER/grug_classes/selection.lua:551:			"HP %d/%d, mana %d | melee +%d, spell +%d, crit %.1f%%, dodge %.1f%%"):format(
 tools/wp45/character_creation_test.lua:736:}, "|"))
 SWEEP 5
-mods/ENTITIES/mobs/api.lua:4416:	if mobs_griefing and not minetest.is_protected(pos, "") then
+mods/ENTITIES/mobs/api.lua:4424:	if mobs_griefing and not minetest.is_protected(pos, "") then
 SWEEPS DONE (no output above a SWEEP line means zero hits)
 == the same five sweeps over all of mods/*/grug_* and tools ==
 SWEEP 1
@@ -286,18 +286,18 @@ mods/MAPGEN/grug_mapgen/wp13/troll_parts.lua:19:-- row, quoted): "stilted cenote
 mods/MAPGEN/grug_mapgen/wp13/gor_drazhak.lua:11:--     "Gor Drazhak | orc | mesa shelf, step 4 | adobe flat roofs with
 mods/MAPGEN/grug_mapgen/wp13/kezamba.lua:11:-- is an answer to it: "Kezamba | troll | stilted cenote terrace, step 3 | stilt
 mods/MAPGEN/grug_mapgen/wp13/nhal_veyr.lua:1306:	--     cap(p) = gate_y + |p - gate_at|      (gate_y = the free terrain at
-mods/PLAYER/grug_abilities/init.lua:470:-- Ability registration & item. One tool per ability; the item's `range`
-mods/PLAYER/grug_abilities/init.lua:1462:	return SKIN_VERSION .. "|" .. color .. "|" .. src.inv .. "|" .. src.wield
-mods/PLAYER/grug_abilities/init.lua:1506:	local token = SWING_CAPS_VERSION .. "|" .. string.format("%.17g", interval)
-mods/PLAYER/grug_classes/selection.lua:545:		return true, ("%s %s %s, level %d | Str %d Int %d Dex %d | " ..
-mods/PLAYER/grug_classes/selection.lua:546:			"HP %d/%d, mana %d | melee +%d, spell +%d, crit %.1f%%, dodge %.1f%%"):format(
+mods/PLAYER/grug_abilities/init.lua:618:-- Ability registration & item. One tool per ability; the item's `range`
+mods/PLAYER/grug_abilities/init.lua:1636:	return SKIN_VERSION .. "|" .. color .. "|" .. src.inv .. "|" .. src.wield
+mods/PLAYER/grug_abilities/init.lua:1680:	local token = SWING_CAPS_VERSION .. "|" .. string.format("%.17g", interval)
+mods/PLAYER/grug_classes/selection.lua:550:		return true, ("%s %s %s, level %d | Str %d Int %d Dex %d | " ..
+mods/PLAYER/grug_classes/selection.lua:551:			"HP %d/%d, mana %d | melee +%d, spell +%d, crit %.1f%%, dodge %.1f%%"):format(
 mods/PLAYER/grug_classes/init.lua:130:-- level. resource = "mana" | "rage" (HUD/regen lands with WP4).
 mods/PLAYER/grug_factions/init.lua:320:	params = "[<player>] [throng|accord]",
 mods/PLAYER/grug_inventory/pages.lua:252:-- Homepage & nav order: Character first, Bags second, Crafting after.
 mods/PLAYER/grug_inventory/init.lua:1:-- Character screen & bags (WP15, spec: docs/design/inventory_equipment.md).
 mods/PLAYER/grug_inventory/bags.lua:58:-- List setup & rules
 mods/PLAYER/grug_visuals/compose.lua:276:	-- docs/research/luanti-lua.md flags `"|"` as a possible bitwise operator,
-mods/PLAYER/grug_xp/init.lua:99:-- HUD: "Level 12  |  3400 / 12100 XP" bottom center above the hotbar.
+mods/PLAYER/grug_xp/init.lua:99:-- HUD: "Level 12  |  3400 / 12100 XP" bottom center. Which row of the
 tools/wp45/starts_preload_kat.lua:64:			harness.logs[#harness.logs + 1] = level .. "|" .. message
 tools/wp45/starts_preload_kat.lua:295:}, "|"))
 tools/wp45/start_footprint_kat.lua:167:}, "|"))
@@ -475,7 +475,7 @@ harvest_cases	pass
 R7_CONSUMER_KAT_V1	PASS
 WP40 R7 anchor activation KAT PASS roots=42 protected_columns=36
 == physics_override has exactly one call site ==
-mods/CORE/grug_core/movement.lua:194:	player:set_physics_override(override)
+mods/CORE/grug_core/movement.lua:199:	player:set_physics_override(override)
 == attack_type census ==
 dogshoot sites: 4
 dogfight sites: 20
