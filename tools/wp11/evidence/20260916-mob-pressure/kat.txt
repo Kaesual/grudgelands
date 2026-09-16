@@ -1,0 +1,35 @@
+aggregator-luajit exit=0
+aggregator-puc51 exit=0
+cadence-luajit exit=0
+cadence-puc51 exit=0
+== the two interpreters agree, byte for byte ==
+aggregator IDENTICAL
+cadence IDENTICAL
+== mutations: each must FAIL ==
+--- aggregator MUTATION=1
+luajit: wp11 move aggregator: web -40% + sprint +25% is additive: expected 0.85, got 0.35
+--- cadence MUTATION=1
+luajit: wp11 mob cadence: a target receding at walk speed took 0 hits in 10 s against a standing target's 9 -- ruling 1 asks for the same rate
+--- aggregator MUTATION=2
+luajit: wp11 move aggregator: a root is speed 0 regardless of modifiers: expected 0, got 0.1
+--- cadence MUTATION=2
+luajit: wp11 mob cadence: after a long chase the timer reads 9.99, not the one banked attack the cap allows
+--- aggregator MUTATION=3
+luajit: wp11 move aggregator: one holder released, the other still holds: expected 0, got 0.6
+--- cadence MUTATION=3
+luajit: wp11 mob cadence: after a long chase the timer reads 0.27, not the one banked attack the cap allows
+== suites this lane's files are loaded by ==
+wp45_character_creation_v3|emerge_requests=20|fresh_teleports=1|prefetched_teleports=1|rejoin_teleports=1|class_sets=7|chats=19
+wp45_starts_preload_v1|cold_requests=6|max_concurrent=2|cancel_retries=1|permanent_failures=1|restart_from_disk=6|callback_reentry=0
+wp45_start_footprint_v1|starts=6|hostile_refused=54|hostile_accepted=36
+wp45_character_creation_v3|emerge_requests=20|fresh_teleports=1|prefetched_teleports=1|rejoin_teleports=1|class_sets=7|chats=19
+wp45_starts_preload_v1|cold_requests=6|max_concurrent=2|cancel_retries=1|permanent_failures=1|restart_from_disk=6|callback_reentry=0
+wp45_start_footprint_v1|starts=6|hostile_refused=54|hostile_accepted=36
+combat_integration_test: ok
+projectile_test: ok
+real_starts	hearthpine=1/6:work_2:ring_4 dawnmere=1/6:work_2:ring_3 silverleaf=1/6:work_2:ring_4 stillgrave=1/6:work_2:ring_3 sunscar=1/6:work_2:ring_3 kapok=1/6:work_2:ring_5	min_walker_ring_3
+== final micro pair (this lane touches no mapgen file) ==
+WP13 final micro PASS interpreter=luajit output_sha256=4d41e72a8980389f6dad96341bb20443f9ddc903eb1450930149c63ac9952484
+WP13 final micro PASS interpreter=puc51 output_sha256=4d41e72a8980389f6dad96341bb20443f9ddc903eb1450930149c63ac9952484
+4d41e72a8980389f6dad96341bb20443f9ddc903eb1450930149c63ac9952484  /home/jan/projects/grudgelands/.claude/worktrees/agent-a299497cbb461c5f1/tools/wp11/evidence/20260916-mob-pressure/kat/final-micro-luajit.tsv
+4d41e72a8980389f6dad96341bb20443f9ddc903eb1450930149c63ac9952484  /home/jan/projects/grudgelands/.claude/worktrees/agent-a299497cbb461c5f1/tools/wp11/evidence/20260916-mob-pressure/kat/final-micro-puc51.tsv

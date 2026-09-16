@@ -1,0 +1,11 @@
+baseline	1	1	writes	0
+additive	0.85	1
+clamp	low	0.1	high	1.5
+expiry	independent	ok
+root	hard_flag	ok
+immunity	discards_root_and_negatives	ok
+hold	exclusive_counted_no_snapshot	ok
+lifecycle	join_leave_reset	ok
+callers	web_frost_nova_hamstring	ok
+writes	one_per_change	2
+wp11_move_aggregator	PASS	mutation	0

@@ -1,5 +1,26 @@
 # Mob pressure — task card (2026-09-16)
 
+> **STATUS 2026-09-16 — SHIPPED.** This card was executed by the round-4
+> mob-pressure lane. What landed, and where to read it:
+> [`docs/research/mob-pressure.md`](mob-pressure.md) is the implementation
+> note with every measurement and its command. §4b's aggregator is
+> `mods/CORE/grug_core/movement.lua` and `grep -rn set_physics_override mods/`
+> now finds one call site. §2's cadence patch is three GRUG PATCH markers in
+> `mods/ENTITIES/mobs/api.lua` (40 → 43), and the runtime test it owes was
+> taken: punches per 10 s against a target receding at walk speed go from
+> **1 to 10**, against a standing target stay at **10**. §3's speed raise
+> 4.4 → 4.6 landed at all 13 sites as **one separate commit**, so it can be
+> dropped if the user's playtest says the cadence fix alone is enough. §4's
+> view-range rule is written into `biomes_mobs.md` §3.1 and
+> `combat_stats.md` §3, the golem moved 14 → 16, and the **Bandit Archer**
+> is the new ranged family — 5 registered ranged mobs of 44, and the first
+> one a player meets in the inner ring. The mirefolk spitter and the
+> harpy/crow of §4.2 were not taken.
+>
+> Everything below is the card as written before the work, kept as the
+> record of what was measured at `70dda602`; every line number it cites was
+> re-verified against `dfb32cd5` and all of them still held.
+
 **A task card, not an implementation.** No code was written, no engine was
 run. Written by the WP11 skill-tree lane because the Scout's kiting and
 stealth read on top of it ([`docs/design/scout.md`](../design/scout.md) §6.3),

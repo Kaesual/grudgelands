@@ -1,0 +1,9 @@
+wp45_character_creation_v3|emerge_requests=20|fresh_teleports=1|prefetched_teleports=1|rejoin_teleports=1|class_sets=7|chats=19
+wp45_starts_preload_v1|cold_requests=6|max_concurrent=2|cancel_retries=1|permanent_failures=1|restart_from_disk=6|callback_reentry=0
+wp45_start_footprint_v1|starts=6|hostile_refused=54|hostile_accepted=36
+wp45_character_creation_v3|emerge_requests=20|fresh_teleports=1|prefetched_teleports=1|rejoin_teleports=1|class_sets=7|chats=19
+wp45_starts_preload_v1|cold_requests=6|max_concurrent=2|cancel_retries=1|permanent_failures=1|restart_from_disk=6|callback_reentry=0
+wp45_start_footprint_v1|starts=6|hostile_refused=54|hostile_accepted=36
+combat_integration_test: ok
+projectile_test: ok
+real_starts	hearthpine=1/6:work_2:ring_4 dawnmere=1/6:work_2:ring_3 silverleaf=1/6:work_2:ring_4 stillgrave=1/6:work_2:ring_3 sunscar=1/6:work_2:ring_3 kapok=1/6:work_2:ring_5	min_walker_ring_3

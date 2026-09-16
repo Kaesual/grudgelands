@@ -1,0 +1,16 @@
+arena x=3000 y=260 z=3000 run=80 half_z=8 mob=grug_mobs:boar window_s=10 target_speed=4
+starts ready=0 of=6 t=1.1
+starts ready=1 of=6 t=19.5
+starts ready=2 of=6 t=26.0
+starts ready=3 of=6 t=31.4
+starts ready=4 of=6 t=36.8
+starts ready=5 of=6 t=45.4
+starts ready=6 of=6 t=49.8
+forceload blocks=96
+arena_loaded t=50.8
+platform nodes=1513
+mob=grug_mobs:boar level=1 reach=2 punch_interval=1 run_velocity=4.4 damage=2.4 attack_type=dogfight
+cadence scenario=receding punches=1 window_s=10.02 per_10s=1.00 gap_min=2.34 gap_max=2.70 gap_mean=2.52 steps=111 step_mean=0.0902 target_lost=0 dtime_max=0.091
+mob=grug_mobs:boar level=1 reach=2 punch_interval=1 run_velocity=4.4 damage=2.4 attack_type=dogfight
+cadence scenario=standing punches=10 window_s=10.02 per_10s=9.98 gap_min=1.68 gap_max=1.68 gap_mean=1.68 steps=111 step_mean=0.0902 target_lost=0 dtime_max=0.091
+cadence complete
