@@ -1,0 +1,253 @@
+-- WHERE A CAPITAL'S STREETS MEET EACH OTHER.
+--
+-- `wp13/avenue.lua` is a pure function of ONE run and knows nothing about the
+-- road it crosses. That is what makes it emergeable per mapchunk, and it is
+-- also why playtest 5 found what it found: at a crossing on a slope the two
+-- runs walk at two different heights, the successor's first-run-wins
+-- arbitration hands the square to whichever run was authored first, and the
+-- other one arrives at a wall. The user's ruling of 2026-09-16 is that
+--
+--     "the connecting street must be raised artificially at the junction" --
+--     every junction is a SQUARE PLATEAU on one y, and every run arriving at
+--     it meets that y with steps of at most one node per column.
+--
+-- A plateau is a property of TWO runs, so somebody has to know both. This
+-- module is that somebody, and it knows nothing else: it takes a capital's
+-- street runs -- the rectangles, not the ground -- and answers, for each run,
+-- the squares it shares with another street and which stretch of the other run
+-- those squares are. `avenue.run` then computes the plateau's HEIGHT itself,
+-- from the two runs' ground, by the rule its own header states.
+--
+-- WHY THE RECTANGLES AND NOT THE HEIGHTS. A run list is static: it is the same
+-- on every world and every seed, it is what the overlay's identity is already
+-- hashed from (`wp40/r7_settlement.lua`, `prepare_overlay`), and it is
+-- therefore free to compute and safe to compute anywhere. The heights are the
+-- seed's, and they stay where the road is.
+--
+-- WHAT COUNTS AS A JUNCTION. Two street runs whose CARRIAGEWAYS -- the `width`
+-- lanes either run paves, not the verges beside them -- share at least one
+-- column, and which cross at a right angle. Two PARALLEL runs that overlap are
+-- not a crossing: they share a stretch of road, and a plateau over such a
+-- stretch would flatten a whole street rather than level a square. They are
+-- returned separately as `overlaps`, with the rectangle they share, and
+-- `tools/wp13/street_kat.lua` pins the inventory.
+--
+-- MEASURED, on all six capitals (tools/wp13/street_geometry.lua): there are
+-- twenty of them, and they are two different things.
+--
+--   * SIXTEEN BUTT JOINTS -- one continuous lane authored as two runs meeting
+--     end to end, sharing exactly one column (Dur Brannoc, Gor Drazhak, Nhal
+--     Veyr, four each, and two of Lethariel's). Those need nothing: the road's
+--     level at a column depends on the ground within `reach` of it, both runs
+--     read that same ground, and both therefore walk the shared column at the
+--     same height.
+--   * SIX SIDE-BY-SIDE STRETCHES, all of them Lethariel's, where a district
+--     lane at +-98 runs alongside the ring street at +-96 for up to 97 columns
+--     and three of the five lanes of each are the same columns. That is a
+--     composition defect and not a street-geometry one -- two streets two nodes
+--     apart are one street -- and moving a lane's centre line moves the plots
+--     that stand along it, which belongs to the lane that owns them. It is
+--     measured and reported rather than papered over here.
+--
+-- Plain Lua 5.1, pure, no engine calls, no globals.
+
+local function loader(directory)
+	local avenue = dofile(directory .. "/avenue.lua")(directory)
+
+	local M = {}
+
+	-- The carriageway a junction is measured over is the road's own, so the
+	-- default comes from the road module rather than from a number spelled
+	-- twice.
+	M.WIDTH = avenue.WIDTH
+
+	local function band(run, half)
+		if run.axis == "x" then
+			return run.from, run.to, run.at - half, run.at + half
+		end
+		return run.at - half, run.at + half, run.from, run.to
+	end
+
+	-- The junctions of a street run list, as `{[run id] = {junction, ...}}`.
+	--
+	-- A junction record carries the square in EVERY participating run's own
+	-- coordinates:
+	--
+	--   low, high        the positions of the square along THIS run's axis
+	--   members          one row per OTHER run of the same junction:
+	--                    {id, axis, at, from, to, low, high}, the last two
+	--                    being the positions of the same square along ITS axis
+	--
+	-- so a run can compute the plateau's height from the profiles of everybody
+	-- who stands in it, without ever being handed a height.
+	--
+	-- WHY A RECORD IS A GROUP AND NOT A PAIR. Three streets can meet in one
+	-- place: Lethariel's east avenue crosses the ring street at 94..98 and a
+	-- district lane at 96..100, and those two squares SHARE three columns. Taken
+	-- as two independent pairs they get two different levels -- measured on the
+	-- gate seed, 22 and 23 -- and the shared columns then take the higher one,
+	-- which leaves the ring street's own square a node out of true. So squares
+	-- that share a column on any one run are one junction: they are merged into
+	-- the smallest range covering them, on every run that stands in them, and
+	-- every member computes the maximum over the same set of profiles and
+	-- therefore the same number.
+	function M.junctions(runs, width)
+		if type(runs) ~= "table" then
+			error("wp13 street plan: no run list", 0)
+		end
+		width = width or M.WIDTH
+		if type(width) ~= "number" or width % 2 ~= 1 or width < 3 then
+			error("wp13 street plan: the width " .. tostring(width) ..
+				" is not an odd carriageway", 0)
+		end
+		local half = (width - 1) / 2
+		local index_of, overlaps = {}, {}
+		for index = 1, #runs do
+			local run = runs[index]
+			if type(run) ~= "table" or type(run.id) ~= "string" or
+					(run.axis ~= "x" and run.axis ~= "z") or
+					type(run.at) ~= "number" or type(run.from) ~= "number" or
+					type(run.to) ~= "number" then
+				error("wp13 street plan: run " .. index .. " is not a run", 0)
+			end
+			if index_of[run.id] then
+				error("wp13 street plan: two runs called " .. run.id, 0)
+			end
+			index_of[run.id] = index
+		end
+
+		-- 1. Every crossing, as a pair of ranges -- one per run, in that run's
+		-- own coordinates.
+		local squares = {}
+		for a = 1, #runs do
+			for b = a + 1, #runs do
+				local one, two = runs[a], runs[b]
+				local ax0, ax1, az0, az1 = band(one, half)
+				local bx0, bx1, bz0, bz1 = band(two, half)
+				local min_x = (ax0 > bx0) and ax0 or bx0
+				local max_x = (ax1 < bx1) and ax1 or bx1
+				local min_z = (az0 > bz0) and az0 or bz0
+				local max_z = (az1 < bz1) and az1 or bz1
+				if min_x <= max_x and min_z <= max_z then
+					if one.axis == two.axis then
+						overlaps[#overlaps + 1] = {one = one.id, two = two.id,
+							min_x = min_x, max_x = max_x,
+							min_z = min_z, max_z = max_z}
+					else
+						local range = {}
+						for _, run in ipairs({one, two}) do
+							if run.axis == "x" then
+								range[run.id] = {min_x, max_x}
+							else
+								range[run.id] = {min_z, max_z}
+							end
+						end
+						squares[#squares + 1] = {ids = {one.id, two.id},
+							range = range}
+					end
+				end
+			end
+		end
+
+		-- 2. Two squares that share a column on ANY one run are one junction.
+		-- Union-find over the squares, joined through the runs they touch.
+		local parent = {}
+		for index = 1, #squares do parent[index] = index end
+		local function root(index)
+			while parent[index] ~= index do
+				parent[index] = parent[parent[index]]
+				index = parent[index]
+			end
+			return index
+		end
+		local function join(one, two)
+			local a, b = root(one), root(two)
+			if a ~= b then parent[a] = b end
+		end
+		for a = 1, #squares do
+			for b = a + 1, #squares do
+				local shared = false
+				for id, range in pairs(squares[a].range) do
+					local other = squares[b].range[id]
+					if other and range[1] <= other[2] and other[1] <= range[2] then
+						shared = true
+					end
+				end
+				if shared then join(a, b) end
+			end
+		end
+
+		-- 3. One record per run per group, over the merged range.
+		local groups = {}
+		for index = 1, #squares do
+			local key = root(index)
+			local group = groups[key]
+			if group == nil then
+				group = {order = {}, range = {}}
+				groups[key] = group
+			end
+			for id, range in pairs(squares[index].range) do
+				local merged = group.range[id]
+				if merged == nil then
+					group.range[id] = {range[1], range[2]}
+					group.order[#group.order + 1] = id
+				else
+					if range[1] < merged[1] then merged[1] = range[1] end
+					if range[2] > merged[2] then merged[2] = range[2] end
+				end
+			end
+		end
+		local by_id = {}
+		for index = 1, #runs do by_id[runs[index].id] = {} end
+		for _, group in pairs(groups) do
+			table.sort(group.order, function(p, q)
+				return index_of[p] < index_of[q]
+			end)
+			for _, id in ipairs(group.order) do
+				local mine = group.range[id]
+				local members = {}
+				for _, other_id in ipairs(group.order) do
+					if other_id ~= id then
+						local run = runs[index_of[other_id]]
+						local range = group.range[other_id]
+						members[#members + 1] = {id = run.id, axis = run.axis,
+							at = run.at, from = run.from, to = run.to,
+							low = range[1], high = range[2]}
+					end
+				end
+				local list = by_id[id]
+				list[#list + 1] = {low = mine[1], high = mine[2],
+					members = members}
+			end
+		end
+		-- Sorted by their own position, so the list a run is handed does not
+		-- depend on the order the pairs happened to be found in.
+		for _, list in pairs(by_id) do
+			table.sort(list, function(p, q)
+				if p.low ~= q.low then return p.low < q.low end
+				return p.high < q.high
+			end)
+		end
+		return by_id, overlaps
+	end
+
+	-- The same list, attached to COPIES of the run specs so the composition's
+	-- own authored tables are never mutated: two worlds in one process must not
+	-- be able to see each other's junctions.
+	function M.attach(runs, width)
+		local junctions = M.junctions(runs, width or M.WIDTH)
+		local out = {}
+		for index = 1, #runs do
+			local run = runs[index]
+			local copy = {}
+			for name, value in pairs(run) do copy[name] = value end
+			copy.junctions = junctions[run.id]
+			out[index] = copy
+		end
+		return out
+	end
+
+	return M
+end
+
+return loader
