@@ -21,7 +21,11 @@ export LC_ALL=C
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd -P)"
 seed="${1:-531802985935182545}"
 out="${WP13_REFREEZE_OUT:-/tmp/grug-w3-K-refreeze-$seed}"
+# THE PORT IS THE CALLER'S. Lane K's own block is 31100-31199 and that is the
+# default only so this runs out of the box on the lane's branch; whoever runs it
+# after the Lane S rebase is on their own block and sets WP13_CAPITAL_PORT.
 export WP13_CAPITAL_PORT="${WP13_CAPITAL_PORT:-31100}"
+echo "refreeze: seed $seed on port $WP13_CAPITAL_PORT"
 
 rm -rf "$out"
 # `|| true`: the runner exits non-zero exactly when the digest differs, which is
@@ -40,7 +44,17 @@ grep -q 'does not stand on this world' "$out/server.log" &&
 
 line="$(grep '^[0-9a-f]\{64\}  avenue ' "$out/overlay-digests.txt")"
 [[ -n "$line" ]] || { echo "refreeze: the pass recorded no avenue digest" >&2; exit 1; }
-main="$(git -C "$repo" rev-parse --short HEAD)"
+# `main=` IS THE MERGE BASE and not this branch's head, which is what the older
+# digest files in this tree mean by the field and what the next reader needs:
+# the mainline commit the value was taken against. `git merge-base` falls back
+# to the head only when there is no `main` to compare with (a detached CI
+# checkout), and says so.
+base="$(git -C "$repo" merge-base HEAD main 2>/dev/null || true)"
+if [[ -n "$base" ]]; then
+	main="$(git -C "$repo" rev-parse --short "$base")"
+else
+	main="$(git -C "$repo" rev-parse --short HEAD)-nomergebase"
+fi
 target="$repo/tools/wp13/evidence/20260915-capital-terrain/kezamba/avenue-digest-$seed.txt"
 printf '%s main=%s package=%s\n' "$line" "$main" \
 	"$(git -C "$repo" rev-parse --abbrev-ref HEAD)" >"$target"
