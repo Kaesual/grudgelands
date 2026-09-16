@@ -1257,18 +1257,19 @@ a **material tier** (§3.0.1), and the items in it are the base items
 everybody can craft. Two consequences, and nothing else in this section
 changes:
 
-- **The items are material-named**, never bracket-named. The shipped
+- **The items are material-named**, never bracket-named. The old
   adjective naming — *Crude / Plain / Tempered / Reinforced / Superior /
-  Grand* over the six brackets — is replaced by the material the item is
+  Grand* over the six brackets — was replaced by the material the item is
   actually made of: **metal items take the lead metal** of §3.0.1
   (Bronze Sword, Iron Helm, Steel Chestplate, Silversteel Greaves,
   Embersteel Sabatons, Abyssal Steel Greataxe), **cloth items take their
   bolt grade** and **leather items their leather grade** (§3.4/§3.5) —
-  Linen Robe, Silkweave Cowl. The slot nouns are unchanged (Helm /
+  Patch Robe, Silkweave Cowl. The slot nouns are unchanged (Helm /
   Chestplate / Greaves / Sabatons, Cowl / Robe / Leggings / Slippers),
   and so are the generator, the prices, the ilvl anchors and the bracket
-  boundaries. This is a rename plus the merge with `default`'s tool
-  ladder — planned work, not a defect.
+  boundaries. **Shipped 2026-09-15** with WP13's round-2 merge, together
+  with the merge into `default`'s tool ladder; the exact ladder is §3.0.3's
+  table and `grug_gear.MATERIALS`.
 - **Selling a base item is not selling "the low tier of crafting".** It
   is selling the same item a crafter starts from. What a vendor can never
   sell is a **refined** or **enchanted** item (§6b) — that is the whole
