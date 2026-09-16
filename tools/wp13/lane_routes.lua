@@ -195,10 +195,13 @@ for _, capital in ipairs(CAPITALS) do
 				stack[key][cell.y] = true
 			end
 		end
-		-- NOTHING THE ROAD WRITES HANGS IN THE AIR. Every carriageway column
-		-- is one unbroken stack, and it starts on the ground it was read from
-		-- or on the deck that carries it -- which is the abutment question a
-		-- bridge narrower than the carriageway asks.
+		-- NOTHING THE ROAD WRITES HANGS IN THE AIR, except deliberately.
+		-- Every carriageway column is one unbroken stack, and it starts on the
+		-- ground it was read from, on the deck that carries it -- which is the
+		-- abutment question a bridge narrower than the carriageway asks -- or,
+		-- since playtest 5's ruling 4 (2026-09-16), on NOTHING AT ALL, because a
+		-- column raised `MIN_CLEAR` or more is a VIADUCT whose own ground is
+		-- left as open air so a player can walk under the street.
 		for _, column in ipairs(order) do
 			local key = column.key
 			for y = low[key], top[key] do
@@ -210,12 +213,14 @@ for _, capital in ipairs(CAPITALS) do
 			end
 			local ground_y = walkable(column.x, column.z)
 			local deck_y = deck(column.x, column.z)
-			if low[key] ~= ground_y and low[key] ~= deck_y then
+			if low[key] ~= ground_y and low[key] ~= deck_y and
+					top[key] - ground_y < avenue.MIN_CLEAR then
 				walk_faults = walk_faults + 1
 				io.stderr:write("the column " .. column.x .. "," .. column.z ..
 					" of " .. run.id .. " starts at " .. low[key] ..
-					", neither its ground " .. ground_y .. " nor a deck " ..
-					tostring(deck_y) .. "\n")
+					", neither its ground " .. ground_y .. ", nor a deck " ..
+					tostring(deck_y) .. ", nor a viaduct raised " ..
+					(top[key] - ground_y) .. "\n")
 			end
 		end
 		for lane = -HALF, HALF do
