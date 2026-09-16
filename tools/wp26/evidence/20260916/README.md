@@ -2,7 +2,7 @@
 
 Everything here was produced from the lane worktree on branch
 `wp13-w3-wp26-furnace`, with `LC_ALL=C`, every engine run through
-`tools/luanti_headless.sh` under `nice -n 19` on ports 31401–31405.
+`tools/luanti_headless.sh` under `nice -n 19` on ports 31401–31406.
 `files.sha256` pins the sources these results belong to.
 
 ## What was run
@@ -101,6 +101,8 @@ regenerate the textures themselves with
 ## Ports and processes
 
 Ports used: 31401 (probe), 31402/31403 (random-seed boot pair), 31404/31405
-(user-seed boot pair). Every run ended with `pgrep -af '^luanti.bin --server'`
-empty; the `luanti.bin` process without `--server` on this workstation is the
-user's own GUI client and was never touched.
+(user-seed boot pair) and 31406 (a final boot on the committed tree, which
+reproduced the user-seed baseline warning set exactly and zero errors). No
+process of this lane's port block 31400–31499 was left running; the
+`luanti.bin` process without `--server` on this workstation is the user's own
+GUI client and was never touched.
