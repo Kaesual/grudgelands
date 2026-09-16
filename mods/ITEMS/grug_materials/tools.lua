@@ -24,8 +24,9 @@
 -- what any consumer reads.
 --
 -- NO RECIPES, on purpose. `default:pick_steel` is already a non-craftable
--- verification tool (content_curation.lua) and none of the four new bars has a
--- furnace recipe either (WP26 owns those, WP29 the tool catalog). Handing the
+-- verification tool (content_curation.lua) and no TOOL registered here has a
+-- craft recipe (WP29 owns the tool catalog; the four new BARS do have their
+-- smelting recipes since WP26 shipped `grug_smelting`). Handing the
 -- deep picks a recipe here would move the progression gate, which is not this
 -- lane's business; these registrations complete the LADDER, not the economy.
 --

@@ -83,7 +83,8 @@ for _, resource in ipairs(grug_materials.RESOURCES) do
 end
 
 -- Canonical processed/storage concepts. No recipes are registered here;
--- WP26 owns furnace/alloy outputs and the storage recipe families.
+-- `grug_smelting` owns the furnace/alloy outputs and the storage recipe
+-- families (WP26, shipped 2026-09-16).
 local PROCESSED_VISUALS = {
 	copper = {"default_copper_ingot.png", "default_copper_block.png"},
 	tin = {"default_tin_ingot.png", "default_tin_block.png"},
