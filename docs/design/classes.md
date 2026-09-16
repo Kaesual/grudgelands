@@ -11,11 +11,15 @@ Attribute/derived-stat formulas: `combat_stats.md` §1/§2; threat values:
 `combat_stats.md` §4.
 
 **The WP11 side of these kits is proposed, not decided.**
-[skill_trees.md](skill_trees.md) (PROPOSAL 2026-09-16) carries two trees per
-class derived from the kits below, the 30 talents that improve their numbers,
-the capstones that add new main skills — Renew among them, as §5 already
-decided — and the open decisions the user still has to answer. Nothing in
-this file changes until those are answered.
+[skill_trees.md](skill_trees.md) (PROPOSAL, revision 2, 2026-09-16) carries
+two trees per class derived from the kits below, the talents that improve
+their numbers, and the keystones and capstones that add new main skills —
+Renew among them, as §5 already decided. A **fourth class, the Scout**
+([scout.md](scout.md)), is proposed in the same pass: leather armour, a bow
+and a blade, planned now and implemented later. Both files carry one shared
+list of open decisions. Nothing in this file changes until those are
+answered — except that, when WP11 lands, the numbers in the §3-§5 tables
+become the **untalented base** values.
 
 Core principles:
 
@@ -463,12 +467,20 @@ moves into the talent tree.
 - Buffs/auras (e.g. Battle Shout) and party frames → with skill trees
   (WP11) or later. (Power Word: Shield moved into the base kit with the
   WP19 kit tuning, §5.)
-- **Poison → arrives with the Rogue in Phase 2** (noted 2026-08-08).
-  Poison is intended as the **Rogue's signature damage type** — the
-  damage-over-time channel §2's pipeline does not have yet — and the
-  Rogue is the Phase 2 class (ROADMAP; `professions.md` §2 already
-  builds the leather line for it). **Until then there is no poison
-  stat**: it appears in no `combat_stats.md` §2 formula, in no
+- **Poison → SUPERSEDED 2026-09-16.** The Phase-2 Rogue this bullet was
+  written for is replaced by the **Scout** ([scout.md](scout.md)), and the
+  user's ruling of 2026-09-16 is explicit that the Scout has **no poison**:
+  "no new combat mechanic". Its rogue-like melee tree is built from existing
+  stats only — timed dodge windows, crit chance, slows, escape moves and
+  stealth. There is therefore **no planned owner for a player poison stat at
+  all**, and the paragraph below stands unchanged as the description of what
+  exists today. The retired text: *"Poison → arrives with the Rogue in Phase
+  2 (noted 2026-08-08). Poison is intended as the Rogue's signature damage
+  type — the damage-over-time channel §2's pipeline does not have yet — and
+  the Rogue is the Phase 2 class (ROADMAP; `professions.md` §2 already builds
+  the leather line for it)."* The leather line still has its wearer; it is the
+  Scout. **There is no poison stat**: it appears in no `combat_stats.md` §2
+  formula, in no
   `items_crafting.md` §6.2 enchant pool and in no §6.3 roll range, so
   nothing may carry "+poison" — not an affix word, not a trinket, not a
   drop. What exists today is poison as a **mob** effect only (the
