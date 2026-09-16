@@ -1,0 +1,15 @@
+hud_bars_geometry	bar_width	180	bar_height	16	min_fill	2
+hud_bars_resolution	hp_max	325	at_324	178	at_1	2	full	180
+hud_bars_sweep	warrior_hp	max	325	order_faults	0	bound_faults	0
+hud_bars_sweep	mage_mana	max	384	order_faults	0	bound_faults	0
+hud_bars_sweep	rage	max	100	order_faults	0	bound_faults	0
+hud_bars_sweep	breath	max	10	order_faults	0	bound_faults	0
+hud_bars_half	30=90 75=89 175=89 325=90
+hud_bars_rows	secondary=-80..-64 life=-100..-84 breath=-120..-104 skill=-142..-122 money=-164..-144 xp=-186..-166
+hud_bars_sources	stale_offsets	0
+hud_bars_elements	life=2+1 secondary=2+1 breath=2+1
+hud_bars_idle_packets	0	over	4 ticks
+hud_bars_one_point	scale_writes	1	text_writes	1	total	2
+hud_bars_hpchange_loggers	2
+hud_bars_prediction	expected	125	drawn	125
+hud_bars_result	PASS	0

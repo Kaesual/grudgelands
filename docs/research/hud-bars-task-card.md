@@ -1,5 +1,15 @@
 # HUD bars — task card (2026-09-16)
 
+> **STATUS 2026-09-16: TAKEN AND SHIPPED** by round 4's lane H. What this
+> card recommended is what was built — three image bars, the four offsets
+> replaced by one table in `grug_core/hud_layout.lua`, `hud_set_flags` in
+> the same commit. The four open questions of §5 were answered by the round-4
+> **coordinator** (not by the user) and are recorded, labelled as such, in
+> **[hud-bars.md](hud-bars.md)**, which is the current document; this card
+> stays as the analysis it was. Every `file:line` below is still resolved
+> against `70dda602` and the §3 table is therefore **historical**: those four
+> offsets no longer exist.
+
 **A task card, not an implementation.** No code was written and no engine was
 run. Written by the WP11 skill-tree lane because the user's ruling arrived in
 the same session; it belongs to **no work package yet** and is not part of

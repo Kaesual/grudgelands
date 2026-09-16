@@ -96,7 +96,9 @@ core.register_on_dieplayer(function(player)
 end)
 
 --
--- HUD: "Level 12  |  3400 / 12100 XP" bottom center above the hotbar.
+-- HUD: "Level 12  |  3400 / 12100 XP" bottom center. Which row of the
+-- bottom-centre column it lands on is grug_core.hud_layout's business, not
+-- this mod's -- the offset used to be a hard-coded pixel number here.
 --
 
 local hud_ids = {}
@@ -120,14 +122,11 @@ hud_update = function(player)
 end
 
 core.register_on_joinplayer(function(player)
-	hud_ids[player:get_player_name()] = player:hud_add({
-		type = "text",
-		position = {x = 0.5, y = 1},
-		offset = {x = 0, y = -110},
-		alignment = {x = 0, y = 0},
-		number = 0xffd100,
-		text = hud_text(player),
-	})
+	hud_ids[player:get_player_name()] = player:hud_add(
+		grug_core.hud_layout.text_element("xp", {
+			number = 0xffd100,
+			text = hud_text(player),
+		}))
 	run_level_callbacks(player, nil, grug_xp.get_level(player))
 end)
 
