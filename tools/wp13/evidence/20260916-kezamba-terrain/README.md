@@ -68,12 +68,13 @@ bash tools/wp13/evidence/20260916-kezamba-terrain/refreeze_avenue.sh [SEED]
 | `measurements/lots-gates-after.txt` | all four gates on nine seeds: step 0, nothing floating, `kezamba_ramp` rebuilds nothing |
 | `measurements/lots-repair.txt` | the one lot the terrain moved, and where `repair` put it |
 | `measurements/totem-f2-candidates-*.txt` | why it had to shrink: twelve legal reach-11 centres in the whole totem band, the same twelve before the apron, 39 at reach 8 |
-| `mutations.txt` | three crop mutations, each with the assertion that fires |
+| `mutations.txt` | the three crop mutations, each with the assertion that fires; the fourth (the apron itself) is `measurements/walls-before-9-seeds.txt` |
 | `kat/` | the KAT under both interpreters (identical), the `--walls` run, the interpreter pair |
 | `engine/full-<seed>/` | three `full` boots: both gate seeds and the user's world seed |
-| `engine/field-531802985935182545/` | the `field` boot, the committed mask cross-check, and the proof that the engine's own height field equals the offline planner's to the byte |
+| `engine/field-<seed>/` | the two `field` boots, the committed mask cross-check, and the proof that the engine's own height field equals the offline planner's to the byte |
 | `renders/` | the plateau from above before beside after, the west pad edge in section, and the two fields with their real node textures |
 | `static/static.txt` | parser, SETGLOBAL, the five plain-5.1 sweeps, the fresh-server audit |
+| `measurements/capital-lots-refusal.txt` | `tools/wp13/capital_lots.lua` refuses this capital by design -- "the composition of kezamba publishes no quadrants module", because its districts are pinned to the ground rather than permuted with the seed. `kezamba_lots.lua` is its predicate and asks the same four questions on nine seeds instead of two |
 | `capital_fields.lua` | the per-capital field digest tool (see above) |
 | `refreeze_avenue.sh` | one command that re-takes the avenue digest from a clean engine pass |
 | `static.sh` | the static gates |
@@ -95,6 +96,7 @@ showed no process on this block after every one.
 | `8675309` | full | 64 | 0.516 s | 2.599 s | 6 | 262 | 0 | 0 | 0 |
 | `15912857179583385436` | full | 66 | 0.453 s | 2.349 s | 5 | 262 | 0 | 0 | 0 |
 | `531802985935182545` | field | - | - | - | - | - | 0 | 0 | - |
+| `8675309` | field | - | - | - | - | - | 0 | 0 | - |
 
 `core_road_digest = eafdce922db68f98366c0da49823bfe9bb1e81d63328b6d2315a748af0203056`
 on all three, which is the value section 6d of the research note recorded before

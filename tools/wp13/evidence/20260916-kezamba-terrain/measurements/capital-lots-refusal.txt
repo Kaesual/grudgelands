@@ -1,0 +1,5 @@
+luajit: tools/wp13/capital_lots.lua:86: the composition of kezamba publishes no quadrants module
+stack traceback:
+	[C]: in function 'assert'
+	tools/wp13/capital_lots.lua:86: in main chunk
+	[C]: at 0x55a564712b00
