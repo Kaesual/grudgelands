@@ -1,0 +1,1 @@
+ERROR[Server]: GRUG_WP13_LOAD boot=1 event=fail highcourt handed a walker a ring of 1: it can never move
