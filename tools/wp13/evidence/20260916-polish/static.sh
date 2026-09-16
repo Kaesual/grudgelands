@@ -17,16 +17,17 @@ CHANGED=(
 	mods/MAPGEN/grug_mapgen/wp13/elf_parts.lua
 	mods/MAPGEN/grug_mapgen/wp13/parts.lua
 	mods/MAPGEN/grug_mapgen/wp13/troll_palette.lua
-	mods/MAPGEN/grug_mapgen/wp13/highcourt_district_homes.lua
-	mods/MAPGEN/grug_mapgen/wp13/highcourt_district_lore.lua
-	mods/MAPGEN/grug_mapgen/wp13/highcourt_district_martial.lua
-	mods/MAPGEN/grug_mapgen/wp13/dur_brannoc_district_homes.lua
+	mods/MAPGEN/grug_mapgen/wp13/highcourt.lua
+	mods/MAPGEN/grug_mapgen/wp13/highcourt_quadrants.lua
 	tools/wp13/lethariel_kat.lua
 	tools/wp13/kezamba_kat.lua
-	tools/wp13/highcourt_identities.lua
+	tools/wp13/capital_lots.lua
 	tools/wp13/capital_probe/init.lua
 	tools/wp13/npc_load_probe/init.lua
 	tools/wp13/evidence/20260916-polish/dump_part.lua
+)
+SHELL_CHANGED=(
+	tools/wp13/run_npc_load.sh
 )
 
 echo "== parser and SETGLOBAL on every Lua file this increment changed =="
@@ -65,6 +66,11 @@ sweeps "${CHANGED[@]}"
 
 echo "== the same five sweeps over all of mods/*/grug_* and tools =="
 sweeps mods/*/grug_* tools
+
+echo "== the shell this increment changed parses =="
+for file in "${SHELL_CHANGED[@]}"; do
+	if bash -n "$file"; then echo "$file bash -n PASS"; else echo "$file bash -n FAIL"; fi
+done
 
 echo "== fresh server check =="
 python3 tools/check_fresh_server.py

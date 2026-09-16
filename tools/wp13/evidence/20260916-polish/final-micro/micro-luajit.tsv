@@ -1,0 +1,461 @@
+rotate_param2	facedir+upsidedown+wallmounted	pass
+rotate_footprint	bijective	pass
+palette	6	88	retirement_sources	2	names	207
+palette_static	207	registry_nodes	780
+roofs	hip_corners+cross_gable_valleys	16
+rotation	cottage	23	1	5	90
+determinism	cottage	1331
+guards	param2_kind	pass
+pane_set	parts+registry	780	panes	6
+byte_order	parts+r7_settlement	441	pass
+frozen_flora	vale_undergrowth	callers	1
+wild_soil	9	of	23	natural_ground	authored_excluded	pass
+registry	hearthpine	40	kinds	40	place_param2	1723	plain_cubes	41646
+ground_cover	hearthpine	default:fern_1	665	default:grass_1	1982
+shapes	hearthpine	free_slabs	516	upside_down	0
+panes	hearthpine	glazed	266	connected	6
+torch_support	hearthpine	74	opaque_full	pass
+grounded	hearthpine	35442	no_detached_cell	pass
+registry	dawnmere	53	kinds	53	place_param2	1510	plain_cubes	40676
+ground_cover	dawnmere	default:grass_4	756	default:grass_3	1571
+shapes	dawnmere	free_slabs	474	upside_down	0
+panes	dawnmere	glazed	264	connected	2
+torch_support	dawnmere	98	opaque_full	pass
+grounded	dawnmere	36483	no_detached_cell	pass
+registry	silverleaf	47	kinds	47	place_param2	1480	plain_cubes	48676
+ground_cover	silverleaf	default:fern_2	849	default:grass_2	1752
+shapes	silverleaf	free_slabs	423	upside_down	1
+panes	silverleaf	glazed	258	connected	16
+torch_support	silverleaf	93	opaque_full	pass
+grounded	silverleaf	36497	no_detached_cell	pass
+registry	stillgrave	43	kinds	43	place_param2	1974	plain_cubes	34202
+ground_cover	stillgrave	grug_nodes:bone_pile	359	default:dry_shrub	612
+shapes	stillgrave	free_slabs	326	upside_down	0
+panes	stillgrave	glazed	140	connected	0
+torch_support	stillgrave	78	opaque_full	pass
+grounded	stillgrave	34719	no_detached_cell	pass
+registry	sunscar	42	kinds	42	place_param2	3704	plain_cubes	40490
+ground_cover	sunscar	default:dry_shrub	932	default:dry_grass_3	899
+shapes	sunscar	free_slabs	69	upside_down	0
+panes	sunscar	glazed	228	connected	14
+torch_support	sunscar	112	opaque_full	pass
+grounded	sunscar	37708	no_detached_cell	pass
+registry	kapok	41	kinds	41	place_param2	2846	plain_cubes	45863
+ground_cover	kapok	default:junglegrass	1129	default:grass_1	946
+shapes	kapok	free_slabs	517	upside_down	0
+panes	kapok	open	0	connected	0
+torch_support	kapok	87	opaque_full	pass
+grounded	kapok	36626	no_detached_cell	pass
+panes_connected_corpus	38
+capital	king_hall	core	dwarf=8693,elf=8693,human=8693,orc=8693,troll=8693,undead=8693
+capital	wall_segment	plot	dwarf=386,elf=386,human=386,orc=386,troll=386,undead=386
+capital	wall_segment_stair	plot	dwarf=544,elf=544,human=544,orc=544,troll=544,undead=544
+capital	wall_tower	plot	dwarf=780,elf=780,human=780,orc=780,troll=780,undead=780
+capital	gatehouse	plot	dwarf=899,elf=899,human=899,orc=899,troll=899,undead=899
+capital	colonnade	plot	dwarf=344,elf=344,human=344,orc=344,troll=344,undead=344
+capital	market_square	plot	dwarf=919,elf=919,human=919,orc=919,troll=919,undead=919
+capital	well_court	plot	dwarf=155,elf=155,human=155,orc=155,troll=155,undead=155
+capital	statue_plinth	plot	dwarf=157,elf=157,human=157,orc=157,troll=157,undead=157
+capital	barracks	plot	dwarf=1233,elf=1233,human=1233,orc=1233,troll=1233,undead=1233
+capital	temple	plot	dwarf=1186,elf=1186,human=1183,orc=1183,troll=1186,undead=1183
+capital	scriptorium	plot	dwarf=1089,elf=1089,human=1073,orc=1073,troll=1089,undead=1073
+capital	granary	plot	dwarf=810,elf=810,human=810,orc=810,troll=810,undead=810
+capital	stable	plot	dwarf=749,elf=749,human=757,orc=757,troll=757,undead=749
+capital	orchard_edge	plot	dwarf=727,elf=727,human=782,orc=728,troll=727,undead=727
+capital	grove	plot	dwarf=516,elf=516,human=516,orc=516,troll=516,undead=516
+capital	stilt_platform	plot	dwarf=643,elf=643,human=643,orc=643,troll=645,undead=643
+capital	water_channel	plot	dwarf=524,elf=524,human=524,orc=524,troll=524,undead=524
+capital_total	18	parts	122149	cells	330	sockets
+capital_degrade	11	roles_stripped	18	parts
+wp13_blueprint	hearthpine	61932	46389	41	74	1232	9	10	10	0	180	15588	18	3
+wp13_blueprint	dawnmere	66361	44440	54	98	1467	9	12	10	0	27	15410	18	3
+wp13_blueprint	silverleaf	71495	53191	48	113	1350	9	11	10	0	109	15631	18	3
+wp13_blueprint	stillgrave	51641	37717	44	78	1292	5	7	8	2	74	15672	18	3
+wp13_blueprint	sunscar	57227	44102	43	112	1352	10	10	11	0	48	15957	18	3
+wp13_blueprint	kapok	72535	51967	42	87	837	8	9	9	0	110	16094	18	3
+highcourt_throne	0	2	0,-1	great_door
+highcourt_core	grug_wp13_highcourt_core_v1	101831	34533	57	155	21	15	75	10	18	7885	9509	9025
+highcourt_quadrant_permutation	531802985935182545	1,3,2,4
+highcourt_quadrant_permutation	8675309	1,3,4,2
+highcourt_quadrant_permutation	0	3,2,1,4
+highcourt_quadrant_permutation	1	1,4,2,3
+highcourt_quadrant_permutation	2	3,1,4,2
+highcourt_quadrant_permutation	3	4,2,3,1
+highcourt_quadrant_permutation	12345	1,3,4,2
+highcourt_quadrant_permutation	999999999	2,4,1,3
+highcourt_lots	36	4	9	13	8	15	7
+highcourt_lot_grid	36	1571d5ad2f0f3992a38de7dd13e24f387b0462a4f86e25e77f02b2dff8059e84
+highcourt_fill_lots	16	4	4	11	8	5
+highcourt_fill_grid	16	bfde610f96eab3fd2929a8d81e89ff228bd77b05bcbfcdb71b6c125daf8a9a9f
+highcourt_plot	market_granary	plot	5715	1672	19	8	2	1	3	0	0	913	13
+highcourt_plot	market_stable	plot	5001	1619	20	8	2	1	4	0	0	913	11
+highcourt_plot	market_workshop	plot	5824	1860	25	14	2	2	4	1	1	903	11
+highcourt_plot	market_counting_house	plot	6955	2081	22	8	1	1	6	1	0	905	13
+highcourt_plot	market_well	plot	4862	1713	16	3	0	0	4	0	0	953	8
+highcourt_plot	market_watch	plot	8398	2445	25	9	2	1	4	0	0	892	12
+highcourt_plot	market_grove	plot	9274	1722	11	4	0	0	4	0	0	952	12
+highcourt_plot	market_orchard	plot	7080	1810	15	4	0	0	4	0	0	935	11
+highcourt_plot	market_store	plot	5358	1687	19	6	1	1	5	1	1	910	12
+highcourt_plot	market_pond	fill	6274	2241	16	2	0	0	5	3	3	828	8
+highcourt_plot	market_orchard_close	fill	5790	2567	18	2	0	0	4	3	3	920	8
+highcourt_plot	market_gardens	fill	3210	1015	13	2	0	0	4	2	2	941	8
+highcourt_plot	market_green	fill	1415	557	11	2	0	0	3	1	0	960	8
+highcourt_district	highcourt_market	market_professions	9	75156	10	4	1
+highcourt_plot	martial_barracks	plot	9795	2724	25	9	2	1	6	0	0	888	13
+highcourt_plot	martial_muster_hall	plot	6699	2071	26	11	2	1	2	0	0	900	11
+highcourt_plot	martial_armoury	plot	6416	2005	25	14	2	2	2	0	0	898	11
+highcourt_plot	martial_stables	plot	5567	1795	20	8	2	1	4	0	0	909	11
+highcourt_plot	martial_drill_yard	plot	7456	1755	21	11	1	1	5	0	0	965	14
+highcourt_plot	martial_quartermaster	plot	5966	1855	20	6	1	1	2	0	0	904	12
+highcourt_plot	martial_wain_shed	plot	5207	1619	17	4	0	1	2	0	0	926	9
+highcourt_plot	martial_guard_house	plot	2711	1003	26	7	1	1	2	0	0	927	9
+highcourt_plot	martial_watch_tower	plot	3880	1164	19	9	1	1	4	0	0	974	14
+highcourt_plot	martial_muster_field	fill	5730	1577	11	4	0	0	3	2	1	947	8
+highcourt_plot	martial_remount_pasture	fill	5730	1714	19	2	0	0	4	2	2	954	8
+highcourt_plot	martial_wood_yard	fill	3210	940	10	2	0	0	3	2	2	948	8
+highcourt_plot	martial_green	fill	1415	545	10	2	0	0	3	1	0	958	8
+highcourt_district	highcourt_martial	martial_garrison	9	69782	9	4	6
+highcourt_plot	lore_shrine	plot	10451	2033	25	11	2	1	4	0	0	905	21
+highcourt_plot	lore_library	plot	7790	2294	26	11	2	1	2	0	0	896	12
+highcourt_plot	lore_scriptorium	plot	7665	2261	20	8	1	1	4	0	0	900	13
+highcourt_plot	lore_archive	plot	6764	1902	20	8	2	1	3	0	0	909	14
+highcourt_plot	lore_herb_garden	plot	4862	1789	18	3	0	0	5	0	0	953	8
+highcourt_plot	lore_chapter_house	plot	4862	1536	19	6	1	1	2	0	0	913	12
+highcourt_plot	lore_almonry	plot	3360	1175	25	7	1	1	2	0	0	923	10
+highcourt_plot	lore_cloister_walk	plot	2841	996	16	8	0	0	4	0	0	943	9
+highcourt_plot	lore_quiet_grove	plot	7978	1615	11	4	0	0	4	0	0	913	11
+highcourt_plot	lore_chapel_yard	fill	5567	1673	26	10	2	1	3	2	2	917	11
+highcourt_plot	lore_physic_field	fill	5730	1694	15	2	0	0	4	3	3	937	8
+highcourt_plot	lore_sexton_garden	fill	3210	964	13	2	0	0	4	2	2	957	8
+highcourt_plot	lore_green	fill	1410	568	11	2	0	0	3	1	0	936	8
+highcourt_district	highcourt_lore	lore_spiritual	9	72490	9	4	0
+highcourt_plot	homes_tavern	plot	6699	1978	24	11	2	1	2	0	0	905	11
+highcourt_plot	homes_well	plot	3210	941	13	3	0	0	5	0	0	957	8
+highcourt_plot	homes_monument	plot	4077	990	14	6	0	0	4	0	0	956	11
+highcourt_plot	homes_house_gable	plot	2600	915	25	7	1	1	2	0	0	931	10
+highcourt_plot	homes_house_hip	plot	3105	1133	26	7	1	1	2	0	0	923	9
+highcourt_plot	homes_house_lane	plot	2980	1045	25	7	1	1	2	0	0	927	10
+highcourt_plot	homes_tenement	plot	5854	1820	19	6	1	1	2	0	0	905	12
+highcourt_plot	homes_bakehouse	plot	4430	1519	25	14	2	2	4	1	1	907	10
+highcourt_plot	homes_orchard	plot	7960	1978	15	4	0	0	4	0	0	935	11
+highcourt_plot	homes_common_field	fill	5730	1700	13	2	0	0	4	3	3	958	8
+highcourt_plot	homes_goose_green	fill	5740	1890	17	2	0	0	4	2	2	954	8
+highcourt_plot	homes_lane_park	fill	3220	1092	10	2	0	0	3	2	0	959	8
+highcourt_plot	homes_kitchen_garden	fill	1410	479	11	2	0	0	3	1	1	959	8
+highcourt_district	highcourt_homes	residential_cultural	9	57015	10	4	0
+highcourt_sockets	256	guard_patrol=56,guard_post=19,idle=134,king=1,quest=2,spare=26,vendor=7,waypoint=1,work=36
+highcourt_work	36	144	108	chop=7,farm=7,fish=3,pray=1,sit=5,smith=1,stall=1,sweep=2,tend=9
+highcourt_vendors	7	baker=1,butcher=1,fishmonger=1,general=1,race=1,smith=1,tailor=1
+highcourt_capital	101831	274443	376274	10451	lore_shrine
+highcourt_avenue	639	485	45	20	26	911	50	8	5	160	1825
+highcourt_wall_crossing	5331	0	499	498	405	827
+highcourt_wall	4	2056	137580	64	196	80	4	dc08f3e76f8012201f4eb0f904caa6d0d80af59d366bc52263b5f2cc407bf7b5
+highcourt_avenue_built	2	c20565c7fc6c671d5c9956a434d74b0878b03dcd170d680bd792716f0bc8ef4c
+dur_brannoc_throne	0	2	0,-1	great_door
+dur_brannoc_core	grug_wp13_dur_brannoc_core_v1	95914	33621	51	144	20	14	65	14	7852	9509	9025	2
+dur_brannoc_quadrants	4	4	9	4	8	0	9
+dur_brannoc_plot	forge_charcoal	dur_brannoc_forge	plot	1	120	-120	5715	1674	17	8	2	1	5	681	2
+dur_brannoc_plot	forge_pack_stable	dur_brannoc_forge	plot	2	156	-112	5001	1613	20	8	2	1	6	681	1
+dur_brannoc_plot	forge_smithy	dur_brannoc_forge	plot	3	200	-112	5824	1860	26	14	2	2	4	671	1
+dur_brannoc_plot	forge_guild_house	dur_brannoc_forge	plot	4	112	-164	6955	2089	21	8	1	1	5	672	1
+dur_brannoc_plot	forge_quench_court	dur_brannoc_forge	plot	5	156	-164	4810	1486	17	3	0	0	6	685	1
+dur_brannoc_plot	forge_watch	dur_brannoc_forge	plot	6	200	-164	8398	2445	25	9	2	1	4	660	0
+dur_brannoc_plot	forge_copse	dur_brannoc_forge	plot	7	112	-212	9746	1300	12	4	0	0	4	720	1
+dur_brannoc_plot	forge_ore_yard	dur_brannoc_forge	plot	8	156	-208	5715	1680	18	8	2	1	5	677	1
+dur_brannoc_plot	forge_store	dur_brannoc_forge	plot	9	200	-208	5358	1686	19	6	1	1	3	678	1
+dur_brannoc_plot	forge_ore_court	dur_brannoc_forge	fill	1	232	-116	5730	1608	14	2	0	0	5	513	3
+dur_brannoc_plot	forge_charcoal_field	dur_brannoc_forge	fill	2	80	-232	5730	1601	12	2	0	0	4	517	2
+dur_brannoc_plot	forge_slag_yard	dur_brannoc_forge	fill	3	228	-232	3210	921	12	2	0	0	3	282	2
+dur_brannoc_plot	forge_green	dur_brannoc_forge	fill	4	162	-232	1410	478	11	2	0	0	3	106	1
+dur_brannoc_plot	garrison_barracks	dur_brannoc_garrison	plot	1	116	108	9795	2724	25	9	2	1	6	656	0
+dur_brannoc_plot	garrison_muster_hall	dur_brannoc_garrison	plot	2	120	156	6699	2071	26	11	2	1	2	668	0
+dur_brannoc_plot	garrison_armoury	dur_brannoc_garrison	plot	3	116	204	6416	2014	26	14	2	2	4	667	1
+dur_brannoc_plot	garrison_drill_yard	dur_brannoc_garrison	plot	4	156	112	7456	1746	22	11	1	1	7	736	2
+dur_brannoc_plot	garrison_stable	dur_brannoc_garrison	plot	5	156	156	5567	1787	20	8	2	1	5	677	1
+dur_brannoc_plot	garrison_quartermaster	dur_brannoc_garrison	plot	6	156	200	5966	1855	20	6	1	1	2	672	0
+dur_brannoc_plot	garrison_wain_shed	dur_brannoc_garrison	plot	7	204	112	5207	1608	17	4	0	1	3	698	1
+dur_brannoc_plot	garrison_serjeant	dur_brannoc_garrison	plot	8	204	156	2711	1003	26	7	1	1	2	695	0
+dur_brannoc_plot	garrison_watch_tower	dur_brannoc_garrison	plot	9	204	204	3880	1164	20	9	1	1	4	742	0
+dur_brannoc_plot	garrison_muster_field	dur_brannoc_garrison	fill	1	116	234	5730	1573	12	4	0	0	4	517	3
+dur_brannoc_plot	garrison_pack_pen	dur_brannoc_garrison	fill	2	234	116	5730	1645	14	2	0	0	4	524	2
+dur_brannoc_plot	garrison_wood_yard	dur_brannoc_garrison	fill	3	232	232	3210	940	11	2	0	0	3	276	2
+dur_brannoc_plot	garrison_green	dur_brannoc_garrison	fill	4	232	182	1410	478	11	2	0	0	3	106	1
+dur_brannoc_plot	deep_hall_of_record	dur_brannoc_deep	plot	1	-120	72	10451	2038	24	12	2	1	5	670	1
+dur_brannoc_plot	deep_scriptorium	dur_brannoc_deep	plot	2	-164	72	6955	2089	21	8	1	1	5	672	1
+dur_brannoc_plot	deep_memory_hall	dur_brannoc_deep	plot	3	-208	72	6699	2084	27	11	2	1	4	667	1
+dur_brannoc_plot	deep_carvers	dur_brannoc_deep	plot	4	-120	112	6416	2019	26	14	2	2	4	668	1
+dur_brannoc_plot	deep_lantern_court	dur_brannoc_deep	plot	5	-164	116	4810	1486	17	3	0	0	6	685	1
+dur_brannoc_plot	deep_archive	dur_brannoc_deep	plot	6	-208	116	5966	1855	20	6	1	1	2	672	0
+dur_brannoc_plot	deep_keeper	dur_brannoc_deep	plot	7	-120	156	2711	1003	26	7	1	1	2	695	0
+dur_brannoc_plot	deep_lamp_store	dur_brannoc_deep	plot	8	-164	160	5207	1605	17	4	0	1	3	698	1
+dur_brannoc_plot	deep_watch	dur_brannoc_deep	plot	9	-204	160	3880	1164	20	9	1	1	3	742	0
+dur_brannoc_plot	deep_mushroom_garden	dur_brannoc_deep	fill	1	-234	148	5730	1717	16	2	0	0	5	505	3
+dur_brannoc_plot	deep_barrow_terrace	dur_brannoc_deep	fill	2	-120	232	5730	1600	10	2	0	0	4	499	2
+dur_brannoc_plot	deep_markers_yard	dur_brannoc_deep	fill	3	-232	232	3210	924	12	2	0	0	3	281	2
+dur_brannoc_plot	deep_green	dur_brannoc_deep	fill	4	-184	232	1410	478	11	2	0	0	3	106	1
+dur_brannoc_plot	terrace_market	dur_brannoc_terraces	plot	1	-116	-120	2841	1004	18	8	0	0	7	712	1
+dur_brannoc_plot	terrace_brewhouse	dur_brannoc_terraces	plot	2	-116	-164	6416	2017	26	14	2	2	4	665	1
+dur_brannoc_plot	terrace_alehouse	dur_brannoc_terraces	plot	3	-116	-208	5567	1759	26	11	2	1	4	677	2
+dur_brannoc_plot	terrace_bakehouse	dur_brannoc_terraces	plot	4	-164	-120	5824	1859	26	14	2	2	4	671	1
+dur_brannoc_plot	terrace_well_court	dur_brannoc_terraces	plot	5	-160	-164	4810	1486	17	3	0	0	6	685	1
+dur_brannoc_plot	terrace_long_house	dur_brannoc_terraces	plot	6	-160	-208	6518	2009	20	6	1	1	2	668	0
+dur_brannoc_plot	terrace_cottage_west	dur_brannoc_terraces	plot	7	-204	-120	3105	1133	26	7	1	1	2	691	0
+dur_brannoc_plot	terrace_cottage_east	dur_brannoc_terraces	plot	8	-204	-164	3360	1163	26	7	1	1	2	691	0
+dur_brannoc_plot	terrace_watch	dur_brannoc_terraces	plot	9	-204	-212	3880	1164	20	9	1	1	3	742	0
+dur_brannoc_plot	terrace_kitchen_garden	dur_brannoc_terraces	fill	1	-84	-208	5730	1697	15	2	0	0	5	526	3
+dur_brannoc_plot	terrace_goat_pasture	dur_brannoc_terraces	fill	2	-218	-88	5730	1650	15	2	0	0	4	527	2
+dur_brannoc_plot	terrace_brew_court	dur_brannoc_terraces	fill	3	-232	-204	3210	920	12	2	0	0	3	280	2
+dur_brannoc_plot	terrace_green	dur_brannoc_terraces	fill	4	-228	-156	1410	478	11	2	0	0	3	106	1
+dur_brannoc_district	dur_brannoc_forge	market_professions	9	4	9
+dur_brannoc_district	dur_brannoc_garrison	martial_garrison	9	4	9
+dur_brannoc_district	dur_brannoc_deep	lore_spiritual	9	4	9
+dur_brannoc_district	dur_brannoc_terraces	residential_cultural	9	4	9
+dur_brannoc_spares	2	21	129	106
+dur_brannoc_trades	9	58	13	45	45	366869	164	22
+dur_brannoc_gate_points	4	4	256	-48	261
+dur_brannoc_avenue	639	485	45	20	26	911	50	8	5	160	1825
+dur_brannoc_avenue_built	2	92136b649de649b5f44dc4157390de2da9cf2b7a864061d32d6d427bbe364a97
+dur_brannoc_wall	4	2056	137860	128	128	196	100	4	3e74ab7c07ed94d9efd792aabd4361eef73e74bc362a6a5c29f9c106d4d00346
+dur_brannoc_causeway	1605	1647	42	152
+gor_drazhak_core	94582	34024	150	379	549	150	20	79	240	119	4	4	6	10	264	90
+gor_drazhak_throne	0	6	32	0	-1
+gor_drazhak_district	52	275282	369864	bone_spirit_hall	11820
+gor_drazhak_sockets	315	56	7	177	104	73	21	50	9	160	21	brew,carve,chop,forage,mine,mourn,pray,sit,smith,spar,stall,sweep,tend	armourer,brewer,butcher,general,race,smith,tanner
+gor_drazhak_rampart	4	2056	173396	2056	129	129	196	51	ba4fda32655daa89a232ccb9f6f6ce3e110e534f725e1a7a43ff8e84099655b8
+gor_drazhak_avenue	18872	300
+gor_drazhak_work	56	49	13
+gor_drazhak_quadrants	52	11	7	11	7	3412
+wp13_kezamba	basalt_roof/12/0/731/172/grug_decor:darkage_basalt_stair+grug_decor:darkage_basalt_stair_outer+grug_decor:darkage_basalt_stair_inner+grug_decor:darkage_basalt_slab+grug_decor:darkage_basalt budget/69559/249940/319499/400000 core/69559/51/54/6380/2645/0/367/53/80/0/7/2182/315 mask/30354/0/120/66/65 overlay/12/11/avenue_south=1326,avenue_north=1607,avenue_west=1326,avenue_east=1640,ring_west=1223,ring_east=1454,ring_south=1223,ring_north=1498,gate_south=168,gate_north=168,gate_west=168,gate_east=168/3369caec589539d4955d190198890b154639230e91e238170189d9c3adc5bf07 plots/52/249940/11820/totem_shrine/canopy=15,shore=13,totem=11,vine=13 roster/anchor_012/12/kragmar_kezamba/capital_core/capital_plot sockets/guard_patrol=65,guard_post=13,idle=112,king=1,quest=1,spare=11,vendor=7,waypoint=1,work=62/163/21/12.9/52/brewer,butcher,fishmonger,general,herbalist,race,tailor/kezamba_canopy_watch=17,kezamba_shore_watch=14,kezamba_totem_watch=11,kezamba_vine_watch=14,kezamba_watch=9
+nhal_veyr_tend_features	2
+nhal_veyr_forage_features	3
+nhal_veyr_throne	0	2	0,-1	great_door
+nhal_veyr_core	grug_wp13_nhal_veyr_core_v1	97494	34605	48	144	20	15	76	10	14	7996	9509	9025
+nhal_veyr_quadrant_permutation	531802985935182545	4,2,3,1
+nhal_veyr_quadrant_permutation	8675309	3,1,2,4
+nhal_veyr_quadrant_permutation	0	2,4,1,3
+nhal_veyr_quadrant_permutation	1	4,1,3,2
+nhal_veyr_quadrant_permutation	2	4,2,1,3
+nhal_veyr_quadrant_permutation	3	2,4,1,3
+nhal_veyr_quadrant_permutation	12345	2,1,4,3
+nhal_veyr_quadrant_permutation	999999999	2,1,3,4
+nhal_veyr_lots	36	4	9	13	8	16	8
+nhal_veyr_lot_grid	36	78044c6143e256efd09eb0b1baf54fba526cc188d68f4b93ed4f8d3f8de5c0d1
+nhal_veyr_fill_lots	16	4	4	11	8	5
+nhal_veyr_fill_grid	16	1c58d0527f8abc6e2db02b8812d917284db692fe66c72400b7d4f44fc1d034e3
+nhal_veyr_plot	market_bone_store	plot	5715	1672	18	8	2	1	3	0	0	909	13
+nhal_veyr_plot	market_cart_yard	plot	5001	1611	18	8	2	1	4	0	0	909	11
+nhal_veyr_plot	market_bonesmith	plot	5824	1860	25	14	2	2	4	1	1	901	11
+nhal_veyr_plot	market_shroud_house	plot	6955	2081	22	8	1	1	6	1	0	901	13
+nhal_veyr_plot	market_cistern	plot	4814	1405	16	3	0	0	4	0	0	952	8
+nhal_veyr_plot	market_watch	plot	8398	2445	25	9	2	1	4	0	0	890	12
+nhal_veyr_plot	market_copse	plot	8155	1299	11	4	0	0	4	0	0	952	9
+nhal_veyr_plot	market_physic	plot	6518	1967	23	11	2	1	4	1	1	903	12
+nhal_veyr_plot	market_charnel	plot	5358	1687	18	6	1	1	4	1	1	908	12
+nhal_veyr_plot	market_grave_field	fill	5730	1661	15	2	0	0	4	3	3	933	8
+nhal_veyr_plot	market_bone_yard	fill	5730	1667	16	2	0	0	4	2	2	935	8
+nhal_veyr_plot	market_candle_court	fill	3210	935	10	10	0	0	5	2	2	955	8
+nhal_veyr_plot	market_close	fill	1410	481	10	2	0	0	3	1	0	959	8
+nhal_veyr_district	nhal_veyr_market	market_professions	9	72818	9	4	1
+nhal_veyr_plot	watch_barracks	plot	9795	2724	25	9	2	1	6	0	0	886	13
+nhal_veyr_plot	watch_captain_hall	plot	6699	2071	25	11	2	1	2	0	0	898	11
+nhal_veyr_plot	watch_armoury	plot	6416	2006	25	14	2	2	3	1	1	895	11
+nhal_veyr_plot	watch_stables	plot	5567	1785	18	8	2	1	4	0	0	905	11
+nhal_veyr_plot	watch_drill_yard	plot	7456	1755	21	11	1	1	7	2	2	965	14
+nhal_veyr_plot	watch_quartermaster	plot	5966	1855	19	6	1	1	2	0	0	902	12
+nhal_veyr_plot	watch_cart_shed	plot	5207	1616	16	4	0	1	2	0	0	926	9
+nhal_veyr_plot	watch_serjeant_house	plot	2711	1003	25	7	1	1	2	0	0	925	9
+nhal_veyr_plot	watch_tower	plot	3880	1164	19	9	1	1	4	0	0	974	14
+nhal_veyr_plot	watch_muster_field	fill	5730	1774	14	4	0	0	6	5	4	949	8
+nhal_veyr_plot	watch_bone_rampart	fill	5730	2073	16	2	0	0	4	2	2	821	8
+nhal_veyr_plot	watch_pyre_court	fill	3210	935	10	10	0	0	5	2	2	955	8
+nhal_veyr_plot	watch_close	fill	1410	469	11	2	0	0	3	1	0	957	8
+nhal_veyr_district	nhal_veyr_watch	martial_garrison	9	69777	9	4	6
+nhal_veyr_plot	vigil_ossuary	plot	7392	2060	18	8	2	1	3	0	0	901	14
+nhal_veyr_plot	vigil_scriptorium	plot	6955	2071	20	8	1	1	4	0	0	900	13
+nhal_veyr_plot	vigil_embalmer	plot	5824	1860	24	14	2	2	4	1	1	901	11
+nhal_veyr_plot	vigil_mausoleum_west	plot	3893	1403	22	13	1	1	4	1	1	913	9
+nhal_veyr_plot	vigil_mausoleum_east	plot	3455	1261	22	13	1	1	4	1	1	917	9
+nhal_veyr_plot	vigil_candle_works	plot	5824	1854	25	14	2	2	3	1	1	899	11
+nhal_veyr_plot	vigil_cloister	plot	4814	1405	16	3	0	0	6	1	0	952	8
+nhal_veyr_plot	vigil_watch	plot	8398	2445	25	9	2	1	4	0	0	890	12
+nhal_veyr_plot	vigil_copse	plot	8330	1304	11	4	0	0	4	0	0	952	10
+nhal_veyr_plot	vigil_burial_ground	fill	5730	1666	16	2	0	0	5	4	4	929	8
+nhal_veyr_plot	vigil_ruin_close	fill	5730	1810	18	4	0	0	4	2	2	923	8
+nhal_veyr_plot	vigil_high_court	fill	3210	935	10	10	0	0	5	2	2	955	8
+nhal_veyr_plot	vigil_close	fill	1410	481	10	2	0	0	3	1	0	959	8
+nhal_veyr_district	nhal_veyr_vigil	lore_spiritual	9	70965	9	4	1
+nhal_veyr_plot	homes_gate_house	plot	3205	1078	24	7	1	1	2	0	0	926	11
+nhal_veyr_plot	homes_lane_house	plot	2980	1048	25	7	1	1	2	0	0	926	10
+nhal_veyr_plot	homes_terrace_house	plot	4125	1236	24	7	1	1	2	0	0	922	13
+nhal_veyr_plot	homes_corner_house	plot	3615	1212	24	7	1	1	2	0	0	924	11
+nhal_veyr_plot	homes_fallen_west	plot	2530	843	16	3	0	1	3	1	1	944	8
+nhal_veyr_plot	homes_fallen_east	plot	2850	959	16	3	0	1	3	0	0	943	8
+nhal_veyr_plot	homes_mourners_hall	plot	6699	2073	25	11	2	1	3	1	0	898	11
+nhal_veyr_plot	homes_watch	plot	8398	2445	25	9	2	1	4	0	0	890	12
+nhal_veyr_plot	homes_cistern	plot	4814	1405	16	3	0	0	5	0	0	952	8
+nhal_veyr_plot	homes_family_plots	fill	5730	1649	14	3	0	0	4	3	3	943	8
+nhal_veyr_plot	homes_blight_garden	fill	5730	1771	14	2	0	0	4	2	2	955	8
+nhal_veyr_plot	homes_candle_court	fill	3210	935	10	10	0	0	5	2	2	955	8
+nhal_veyr_plot	homes_green	fill	1410	481	10	2	0	0	3	1	0	959	8
+nhal_veyr_district	nhal_veyr_homes	residential_cultural	9	55296	9	4	1
+nhal_veyr_sockets	274	guard_patrol=50,guard_post=21,idle=142,king=1,quest=1,spare=26,vendor=6,waypoint=1,work=52
+nhal_veyr_work	52	168	116	brew=3,carve=5,chop=1,farm=0,fish=0,forage=2,mine=2,mourn=11,pray=9,sit=6,smith=2,spar=5,stall=0,sweep=2,tend=4
+nhal_veyr_vendors	14	armourer=0,baker=0,bowyer=0,brewer=0,butcher=0,embalmer=1,fishmonger=0,general=1,herbalist=1,mason=0,race=1,smith=1,tailor=1,tanner=0
+nhal_veyr_capital	97494	268856	366350	9795	watch_barracks
+nhal_veyr_avenue	639	485	45	20	26	911	50	8	5	160	1825
+nhal_veyr_wall_crossing	5331	0	499	618	405	827
+nhal_veyr_wall_corners	2	wall_west:wall_south:72:72:0:66:60:6 wall_west:wall_north:58:58:0:52:52:0 wall_east:wall_south:58:58:0:52:52:0 wall_east:wall_north:56:56:0:50:44:6
+nhal_veyr_wall	4	2056	140144	122	196	80	4	b47c905de9d4b2678526e77bee0eb30d72dd3ec9ff789a2a96073489844e196c
+nhal_veyr_avenue_built	2	7e5eb0045c9cb41417ab14a239c6d3ec87573bb49783b80470ef6e3d59251447
+nhal_veyr_gate_ramp	256	72	4541	2994	4	4	24	1	4	192	66
+lethariel_core	grug_wp13_lethariel_core_v1	91332	32225	114	54	83	7577	26	1448	84	100	171	27	25	4	ea176ca0c58443cd06ddb63f34b02882f36a1a596f512026ff9087bcad3829b4
+lethariel_district	44	219253	lethariel_homes:southwest:9:4,lethariel_market:southeast:9:4,lethariel_martial:northwest:9:4,lethariel_mere:northeast:3:2
+lethariel_sockets	253	53	106	24	9	14	43	159	22	138	lethariel_gate_east_tower:2,lethariel_gate_south_tower:2,lethariel_gate_west_tower:2,lethariel_homes_watch:9,lethariel_market_watch:10,lethariel_martial_watch:9,lethariel_mere_watch:3,lethariel_watch:6
+lethariel_activities	13	brew:4,carve:3,chop:4,farm:4,fish:3,forage:3,mourn:2,pray:6,sit:8,spar:5,stall:4,sweep:1,tend:6	armourer,baker,bowyer,brewer,fishmonger,general,herbalist,race,tailor
+lethariel_lots	30	14	11	6	4	531802985935182545:231,8675309:312,15912857179583385436:321
+lethariel_flight	6:0:2:6,6:1:3:6,6:2:0:6,6:3:1:6,7:0:2:7,7:1:3:7,7:2:0:7,7:3:1:7
+lethariel_overlay	19	50459	22346	28113	17	1	1761	597e9285bd313b173bdb55a8993a0829745dfc1ce690e0768f3be5780c0f2ace
+lethariel_edge	3	2	3	3	7	edge_west:6795:836:51:2,edge_east:7516:964:57:2,edge_south:6901:976:42:2,edge_north:6901:976:42:2
+lethariel_gates	3	edge_west:168:173:4,edge_east:168:173:4,edge_south:168:173:4,edge_north:168:173:4
+lethariel_bridge	1	8	4	16	138:36:9:834:1:637
+lane_crossing_cleared	55	55
+lane_crossing_playtest	55	55
+lane_crossing_fixed_point	25	25	0	2
+lane_crossing_narrow	21	21
+lane_crossing_verge	4
+lane_crossing_carriageway_only	125	8	0
+lane_crossing_monotone	0
+lane_crossing_digest	763	0a8947f2494e80b309d86b3bd4f0e05e54e3af9b293b4497a0ca2239bf14d2d6
+lane_crossing_cases	7	min_clear	3
+route_gate	station:elandor_dur_brannoc:gate_west	-2056	-1500	west
+route_gate	station:elandor_dur_brannoc:gate_east	-1544	-1500	east
+route_gate	station:elandor_dur_brannoc:gate_south	-1800	-1756	south
+route_gate	station:elandor_dur_brannoc:gate_north	-1800	-1244	north
+route_gate	station:elandor_highcourt:gate_west	-256	-1500	west
+route_gate	station:elandor_highcourt:gate_east	256	-1500	east
+route_gate	station:elandor_highcourt:gate_south	0	-1756	south
+route_gate	station:elandor_highcourt:gate_north	0	-1244	north
+route_gate	station:elandor_lethariel:gate_west	1544	-1500	west
+route_gate	station:elandor_lethariel:gate_east	2056	-1500	east
+route_gate	station:elandor_lethariel:gate_south	1800	-1756	south
+route_gate	station:elandor_lethariel:gate_north	1800	-1244	north
+route_gate	station:kragmar_nhal_veyr:gate_west	-2056	1500	west
+route_gate	station:kragmar_nhal_veyr:gate_east	-1544	1500	east
+route_gate	station:kragmar_nhal_veyr:gate_south	-1800	1244	south
+route_gate	station:kragmar_nhal_veyr:gate_north	-1800	1756	north
+route_gate	station:kragmar_gor_drazhak:gate_west	-256	1500	west
+route_gate	station:kragmar_gor_drazhak:gate_east	256	1500	east
+route_gate	station:kragmar_gor_drazhak:gate_south	0	1244	south
+route_gate	station:kragmar_gor_drazhak:gate_north	0	1756	north
+route_gate	station:kragmar_kezamba:gate_west	1544	1500	west
+route_gate	station:kragmar_kezamba:gate_east	2056	1500	east
+route_gate	station:kragmar_kezamba:gate_south	1800	1244	south
+route_gate	station:kragmar_kezamba:gate_north	1800	1756	north
+route_gate_catalog_agreement	24	24
+route_gate_approach	route_002	station:elandor_dur_brannoc:gate_south	b	144
+route_gate_approach	route_003	station:elandor_dur_brannoc:gate_north	a	144
+route_gate_approach	route_005	station:elandor_highcourt:gate_south	b	144
+route_gate_approach	route_006	station:elandor_highcourt:gate_north	a	144
+route_gate_approach	route_008	station:elandor_lethariel:gate_south	b	144
+route_gate_approach	route_009	station:elandor_lethariel:gate_north	a	144
+route_gate_approach	route_011	station:kragmar_nhal_veyr:gate_north	b	144
+route_gate_approach	route_012	station:kragmar_nhal_veyr:gate_south	a	144
+route_gate_approach	route_014	station:kragmar_gor_drazhak:gate_north	b	144
+route_gate_approach	route_015	station:kragmar_gor_drazhak:gate_south	a	144
+route_gate_approach	route_017	station:kragmar_kezamba:gate_north	b	144
+route_gate_approach	route_018	station:kragmar_kezamba:gate_south	a	144
+route_gate_approach	route_019	station:elandor_dur_brannoc:gate_west	b	144
+route_gate_approach	route_020	station:elandor_dur_brannoc:gate_east	a	144
+route_gate_approach	route_021	station:elandor_highcourt:gate_west	b	144
+route_gate_approach	route_022	station:elandor_highcourt:gate_east	a	144
+route_gate_approach	route_023	station:elandor_lethariel:gate_west	b	144
+route_gate_approach	route_024	station:elandor_lethariel:gate_east	a	144
+route_gate_approach	route_025	station:kragmar_nhal_veyr:gate_west	b	144
+route_gate_approach	route_026	station:kragmar_nhal_veyr:gate_east	a	144
+route_gate_approach	route_027	station:kragmar_gor_drazhak:gate_west	b	144
+route_gate_approach	route_028	station:kragmar_gor_drazhak:gate_east	a	144
+route_gate_approach	route_029	station:kragmar_kezamba:gate_west	b	144
+route_gate_approach	route_030	station:kragmar_kezamba:gate_east	a	144
+route_gate_interior_segments	472	0
+route_gate_start_routes	6	e57867fba1ef10e2c4625a5ee273a79fd8034caacd6dfd2b802f2b3144fe8989
+route_gate_all_routes	57	5f8f6443cf513007486ffc3a905b3f72e6ce0dbdc60c39ff4ed6a73139511a54
+route_gate_ingress	ingress_dur_brannoc	anchor_007	2	128	1
+route_gate_ingress	ingress_highcourt	anchor_008	2	128	1
+route_gate_ingress	ingress_lethariel	anchor_009	2	128	1
+route_gate_ingress	ingress_nhal_veyr	anchor_010	2	128	1
+route_gate_ingress	ingress_gor_drazhak	anchor_011	2	128	1
+route_gate_ingress	ingress_kezamba	anchor_012	2	128	1
+wp13_seam	roster/6/6/hearthpine:start:start,dawnmere:start:start,silverleaf:start:start,stillgrave:start:start,sunscar:start:start,kapok:start:start,highcourt:capital:capital_core,dur_brannoc:capital:capital_core,gor_drazhak:capital:capital_core,lethariel:capital:capital_core,kezamba:capital:capital_core,nhal_veyr:capital:capital_core bounds/start_63_ok/start_64_refused/start_y39_refused/core_y39_ok quadrants/52/39/52/1,3,4,2 blueprints/54/52/anchor,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,reference,overlay/overlay_reach_261 sockets/256/181/26 terrain_audit/48/22/45 manifest/derived/empty_refused/no_blueprint_refused/duplicate_prefix_refused reserve/anchor_root_kept/support_written/1/start_root_written projection/plot_market_stable/43/2502 height_cache/1739/1 lazy/5/6 drift/refused route_handoff/31/46 overlay/1376/707/669/11/10/140 successor/12
+wp13_integration	hearthpine/e07ac54bec01e662f224c629d12c424ec67ca03ee3183c5389943b5100cf9ffb/61932/12/1/0/0 hearthpine/anchor/e07ac54bec01e662f224c629d12c424ec67ca03ee3183c5389943b5100cf9ffb/61932 dawnmere/81d78a7a4e0f09c8d4fcff4c38bc5f58b45ba62fd5b5d36021ce7f191d55b2fe/66361/18/1/0/0 dawnmere/anchor/81d78a7a4e0f09c8d4fcff4c38bc5f58b45ba62fd5b5d36021ce7f191d55b2fe/66361 silverleaf/258ca31c863f1fea8028c097c1a9d5873e166ad5332768930b74bd1ed40b62cd/71495/12/1/0/0 silverleaf/anchor/258ca31c863f1fea8028c097c1a9d5873e166ad5332768930b74bd1ed40b62cd/71495 stillgrave/a0f41a3b806f4075bf0545ac05bbdd89e88beae3a72d14c6f310054f90e6e657/51641/12/1/0/0 stillgrave/anchor/a0f41a3b806f4075bf0545ac05bbdd89e88beae3a72d14c6f310054f90e6e657/51641 sunscar/10e67e0e52e48afe01b8389f0ed4a926696d1f1f9ab0f970416a94056031d2dc/57227/18/1/0/0 sunscar/anchor/10e67e0e52e48afe01b8389f0ed4a926696d1f1f9ab0f970416a94056031d2dc/57227 kapok/651193c7ffa57c6628704b6988131916526added3aa3378461fb805fa0ce8a0e/72535/12/1/0/0 kapok/anchor/651193c7ffa57c6628704b6988131916526added3aa3378461fb805fa0ce8a0e/72535 highcourt/187f79e0ba52103818eba53f7ed9c3beadc631682648918301287fa4a7200499/532530/98/1/53/12 highcourt_core/anchor/187f79e0ba52103818eba53f7ed9c3beadc631682648918301287fa4a7200499/101831 highcourt_market_granary/reference/71a78a27a59a902952161e9537fc2470a737b8ed33b5307e75b65da9fb87125c/5715 highcourt_market_stable/reference/b6d38985abdc98d820aafa79076741591e9e1519879e01b86f221aa276964893/5001 highcourt_market_workshop/reference/58693c95bd771ab983e7b2b24fab281d5067572555a0c1420f46f98b38e85ef3/5824 highcourt_market_counting_house/reference/6c858c999db30c592a2747f93232cd41fc8a7d84d0f669beeb31d229b6680228/6955 highcourt_market_well/reference/840394cdc23af18b08c70670cf09175c03fb6ac5423a64056b97d4f0494baa36/4862 highcourt_market_watch/reference/be9cf74f7ce1a8b58d5a40bbf4220b93b6829fd5582cd983d5cfef8626f91c08/8398 highcourt_market_grove/reference/eb787a9cfe5e75d0ecea575a5a6204ebcf2ac01963ab82e27d65d0d6edbeb70d/9274 highcourt_market_orchard/reference/9fce30147d7843436c890b185ff1b8eaf3a4145d4ac8073ae0e4b5eb454dc6cc/7080 highcourt_market_store/reference/0d68bfaad3d932963315dd1c38fee236ba7ef45e27d6e8953d05996b21c94e33/5358 highcourt_market_pond/reference/c0a0ed8d68ccadfa8f7f3b7c0c96dc9c7b1e12a56fbf993411a5c3307430d6cb/6274 highcourt_market_orchard_close/reference/954f222a4d4c0b2d106c775570564104c9b02abea7a56a30cf340a271475007a/5790 highcourt_market_gardens/reference/4944fd7a7f9eb47e967f50a2b6ddbd38ef1c117c6284a467822803f98184c907/3210 highcourt_market_green/reference/c4c5e8451fd97aa04db81bb994d985a47bc9c7b32d7ea00c9736c36fe707deca/1415 highcourt_martial_barracks/reference/c8562cc19e9f40c79fcb4d6da53606d8a65f2a0e393234404e2923520ebaef36/9795 highcourt_martial_muster_hall/reference/d7ac8d063393f9952b63672f339c675ec54d40968a4cfb8de2281ea119ac4a1b/6699 highcourt_martial_armoury/reference/8779579c649d2ee4f06d6adc783a53ae521f12b0e76eae3a38c0b5aaea561b0d/6416 highcourt_martial_stables/reference/a3fac71a35c414168823ab2ba7ec550310c92259e07879d2f6e69fc0bdd8bcae/5567 highcourt_martial_drill_yard/reference/264f7e380c0474549d52fe4f5fb6017ffb505a91df9163e433c154cd99048da0/7456 highcourt_martial_quartermaster/reference/07340d15b9358166eab1cc189f987ee5d7a6ed92840712536e6546a15182a4bd/5966 highcourt_martial_wain_shed/reference/e151992308757cd136fa49408fc130f94af6737677754a7bd8eae4278eff0435/5207 highcourt_martial_guard_house/reference/64829ee6f7df3d9389611a2ed7c16b9b841c9329dd25d6739802a915cbcf6778/2711 highcourt_martial_watch_tower/reference/73918d7498ac645ffb0f7afee4232f3e99816ca4eed65ecc047651d466dcf8b4/3880 highcourt_martial_muster_field/reference/17737defa7a97a501f9c18d12e8cbe27f4bca236deb2c1a311c3e8c8c3b2306f/5730 highcourt_martial_remount_pasture/reference/15bdfe01625e8c5de7722e80969b0ec717e4c35267973951f59991bddc0f1fbd/5730 highcourt_martial_wood_yard/reference/03aea6a28ecc193ec1c892c14e0e6c107d0fc9ca477d849da6263c4903be3969/3210 highcourt_martial_green/reference/f635e3d8d0bbdf500b8b61a7801b2feca60eb6bd7a642c44a0c32638ee23cd81/1415 highcourt_lore_shrine/reference/9cb90bc24e7a3bf11ab1f18c54dc93cbe0e48972581fb8c514084f6d0f66855e/10451 highcourt_lore_library/reference/776f73f71d8ec2707421f890f9324ca36f7c833f6c29bdb174928f41fba5a3d1/7790 highcourt_lore_scriptorium/reference/dde20d4166e2199746209346320febaec1c3a205e439aec4207f7b6f15ea64e2/7665 highcourt_lore_archive/reference/87c0f253c5d5700c47ea33d36ea369223784600f297636bd232c6034a3480e9a/6764 highcourt_lore_herb_garden/reference/4d7931e80af38864ec0e15a142d5d4550037a686a16d3b2cc9822649a556c252/4862 highcourt_lore_chapter_house/reference/0489b42be9e87563bab74b13715777318fcdf6b0bc43086df22e1e3640257919/4862 highcourt_lore_almonry/reference/3c71f1ccff96635debf5b31aae4d7efd64b49cfb64a7370168356061c88dbdca/3360 highcourt_lore_cloister_walk/reference/3d7312b1ad21eb7ec85c46febdfe9e73b15229d99d2d9d3d28369d9521146792/2841 highcourt_lore_quiet_grove/reference/d748ad7d107c19a5429a2e97169326f1fbff0bc6ca151e7e32bdf3d1a26597fb/7978 highcourt_lore_chapel_yard/reference/cc66991a9038556510869905aa01583b2bfc1c2f5ea2aa52ee95ecfaa1a404bd/5567 highcourt_lore_physic_field/reference/4808cfd1b00459dafb090d23a1ab25215a8328b51311e0bf441f9b14dfbdd81c/5730 highcourt_lore_sexton_garden/reference/0dabc977bc0d6052597ead63bc967d1837fd7eca738f2ed5e21734cef0d5ab0b/3210 highcourt_lore_green/reference/31300c6c4ac1f872c0221715c53af3b28e9ae5565de162e3e86af6fd667db9b3/1410 highcourt_homes_tavern/reference/268aa73ac5bc2c32d00eb8bbcf0074b2ca297c653e38a367f95a20f34a83a007/6699 highcourt_homes_well/reference/a8b44074ed03fb54c6ebb13cdf5c84c874145a973c9cc82255553aeeff50b270/3210 highcourt_homes_monument/reference/67021e6597ab531c3a69ee7f1286cbb11f70f76f0a7f8178d2f574dce27d45e0/4077 highcourt_homes_house_gable/reference/37362a4a619d58ec912536279eb329e95448bab2333bb6445b4fc590ca266284/2600 highcourt_homes_house_hip/reference/63d6d13956c600b6f578d91ccff73277a5977f93578e1151f2dc6df265cba3ac/3105 highcourt_homes_house_lane/reference/3abb4afd8115fc1076f6d078d1176ddc3e80b95e724bd17db0fee2560372a881/2980 highcourt_homes_tenement/reference/73460ab4a49c9cfdf1fc75dad952da989269e46f28931e4ed1855344f19fd083/5854 highcourt_homes_bakehouse/reference/b7c82cfc8200071eed773c81960de04de13f0228189bb9487a37200c03b3773c/4430 highcourt_homes_orchard/reference/b4c7ab202ce9b59b4d5ee769f0713980bb2d00831535785391a261af2853aa22/7960 highcourt_homes_common_field/reference/4ea8aa5afa0174294a742ee02abcaa775bc14c342116bf141b3d0ca39cc2b20d/5730 highcourt_homes_goose_green/reference/d74d73ea9ef146b126b2ac1d9953191a1cdfa122a061f6123826a9332d23c764/5740 highcourt_homes_lane_park/reference/5b59710409410fd65077ceffc36cdb68b8081d46428aa1f81ba5797d5a17e2cf/3220 highcourt_homes_kitchen_garden/reference/eab679e63b9f3b4e365982f26cf35ba5cd87884d3a34229603a9d8226358d9ad/1410 highcourt_avenue/overlay/5e09544202cfa811432657ebf6cabb1dc8512b82928de5caa4a124b45c251682 dur_brannoc/c87bf21b083db8ac55202d9e17ad953aec7721c27dd76f30fff1fd00bedf293f/524361/112/1/53/26 dur_brannoc_core/anchor/c87bf21b083db8ac55202d9e17ad953aec7721c27dd76f30fff1fd00bedf293f/95914 dur_brannoc_forge_charcoal/reference/85e9dd45c4fff640806bdcbc737d79fcd15f9e8997ae6109c24740f3d09003b1/5715 dur_brannoc_forge_pack_stable/reference/f376999ef41067b7bb80e3d6881461ff56c5d33f052049150663d0ab7f7445bd/5001 dur_brannoc_forge_smithy/reference/5ffcc6cda85c409a1de5462376c175a5c7043b2fe6970eb09532584e9f976c5f/5824 dur_brannoc_forge_guild_house/reference/9dfa4cee924b7edb10727b61e540fe4c1a1a8386c12fb9c7ad00e75a567c5bda/6955 dur_brannoc_forge_quench_court/reference/2a9a9c02e13b84fcebcf91d45dd59f25c168b15750f01e8a4db428560cf8f2da/4810 dur_brannoc_forge_watch/reference/e7373d7c3fc086ad2dd5728e54b5cbff5b4b71fa80195af011fc0a006fb12c72/8398 dur_brannoc_forge_copse/reference/0822763a7d554cc388005bce16be2de8dc6d4990906df4b2edc2b96f101e74ec/9746 dur_brannoc_forge_ore_yard/reference/9f380434c1c7ab68c32e1bf681b5cbbd9da9e2e077042e424db3f556f56f557e/5715 dur_brannoc_forge_store/reference/a6a7289fc6f97acbabd7594e4454d136ff5866af354f86d1cd486fc59c19d897/5358 dur_brannoc_forge_ore_court/reference/8cf7de420d2368992a8d0734842e84da812b3857908dbd45fa3d4f21f6cad444/5730 dur_brannoc_forge_charcoal_field/reference/098deacb687bea60adbd8499cd59e1e4dd9baeaf7291ded7ea3a356a809a5c8a/5730 dur_brannoc_forge_slag_yard/reference/755ddad1420ad0ba9290c9b500896946de6f932cce14bebc99db014920c34a34/3210 dur_brannoc_forge_green/reference/8d0bf1159988868962d5fe5d8946cbd4dfa92ec6b7795aacc09d87321864eb87/1410 dur_brannoc_garrison_barracks/reference/7a8d7d965984e3a023044e3bd143653fef730989c72e860e764e3e2fe582089f/9795 dur_brannoc_garrison_muster_hall/reference/c7200f96487e92a0680644d1ff0b66b58c813aefadf6a5afb3777b41b42f6566/6699 dur_brannoc_garrison_armoury/reference/d245936983b0e4f718edf5a29bd4ca59fb6e5aae04933dd687d6101d205730ea/6416 dur_brannoc_garrison_drill_yard/reference/b489e024323ef013c7893fe9c8c7e203ff8877f0405baf01542a5adf3c1d3a36/7456 dur_brannoc_garrison_stable/reference/9305244376d15d57b2bf59e7caa1f0e221a6de72e33e03140a8ae01cd7d94ea0/5567 dur_brannoc_garrison_quartermaster/reference/a855aca146fcd0ec2963facadda670dd07594c9016ade922eae1fe6562ae719c/5966 dur_brannoc_garrison_wain_shed/reference/279de45e317a881063235f6fecdfbc2d43c2b4f872bf0174435dd05f3d12d4c5/5207 dur_brannoc_garrison_serjeant/reference/363c308ad01313046a54faee02deec7cc7d80715f8640727878aed57e2063a89/2711 dur_brannoc_garrison_watch_tower/reference/e83e0076b409f4a3310ae8ce92a3ae4e3ae71cfa81c6307902c7422bfbf9fa1e/3880 dur_brannoc_garrison_muster_field/reference/776222f3e8f1a47425b5e6f3ffaeef109654c1491464640b9eae9986032485fc/5730 dur_brannoc_garrison_pack_pen/reference/797cb32798e7b45fd22a46711fdb3c9a223258d5e96a496ec708a06bd7b95ecc/5730 dur_brannoc_garrison_wood_yard/reference/dc33eabdb16e7a6e6496607e7d9029db163ede3a81c04d727f2c89c2296c317d/3210 dur_brannoc_garrison_green/reference/dba0fbff908eed1d07812f3a980ff3c8dd426f9018a4fc2a0d2bb88ade5503bf/1410 dur_brannoc_deep_hall_of_record/reference/ef258f91bdd47a99aee85390253a3f2948d6ecd97c2ab6af923914c8fc43deba/10451 dur_brannoc_deep_scriptorium/reference/1ec2136a603e20cce0bc647ca783238643116a52920d079706bb44c8ddbaaeae/6955 dur_brannoc_deep_memory_hall/reference/30b2bce860a0e224988fcac9c12640805454a7a7251bc0ce36f8d61f701adc3a/6699 dur_brannoc_deep_carvers/reference/8a05b286db747b391f69e79b4393043ec0a52939ff817ee9eb208d7d6f456be0/6416 dur_brannoc_deep_lantern_court/reference/243b9e9516490a97c7204bbbc63affe175e2b37105b88a462eb2b4fccf02d8e6/4810 dur_brannoc_deep_archive/reference/a8ce9149ee59561d715b1ba1ae3630f6fbbfe1ec55cf674d3fae50cbbd7f0333/5966 dur_brannoc_deep_keeper/reference/d0d3a41bdd65b8fd86166b0c1f3a258a975d342efddb7311d2e9f8c0cc777a0d/2711 dur_brannoc_deep_lamp_store/reference/d3296bd5e234b3af84b772d7abf70cd5b8a921c058ac9e3452cb4c3e1efeac98/5207 dur_brannoc_deep_watch/reference/a919df35544bd96ffbed7f9ee007fb1944f16d2c575f3314ca17b55eff967a57/3880 dur_brannoc_deep_mushroom_garden/reference/c855372b03e7b25fddea5a7814b433e5d522e8073e1786fdea9ae90e8f243c43/5730 dur_brannoc_deep_barrow_terrace/reference/92c54bd9b057d5079be0dddc2e4617642b9483a3f8b1b773a76d3246e5e901b3/5730 dur_brannoc_deep_markers_yard/reference/c8b083b347f8963cd33930ab7d9637105cce9930dd2d9b5e095075dc631a89c5/3210 dur_brannoc_deep_green/reference/e8a61e17a07a2791ac1a0387eac030be6ec5f052a623baa7c7f1c0757968488c/1410 dur_brannoc_terrace_market/reference/2da47110ae56dfb7da4ad065975c96381979d5d1be674953d20f77789d0e0391/2841 dur_brannoc_terrace_brewhouse/reference/03cf6e4db4a1742f8f11d24572e47e03c4c3021299721259a1ecef325dc6ce16/6416 dur_brannoc_terrace_alehouse/reference/489faca6687e9ea7192185e31db185f9adbc498060861f172e1f820329de1208/5567 dur_brannoc_terrace_bakehouse/reference/d6a0ef91102009cbbb32eadc577ef877365964bc6a4afb0fdf663b812817765d/5824 dur_brannoc_terrace_well_court/reference/a2a7c36766d9019aebb7370e23deed2ab4f9469593f42d825d29b21d13873c7d/4810 dur_brannoc_terrace_long_house/reference/28851a00c734132ff29d678370243e4bab056a22c08dee7ef93ff1c055e13425/6518 dur_brannoc_terrace_cottage_west/reference/db4e6de10cf20d599f0a788e3b7822ea826ecff99a2ff0ceeb1631f226b0e9da/3105 dur_brannoc_terrace_cottage_east/reference/731cce30fdfd807b1fbd1c5d5579659bba0b9e40b1420ef2c4c8c966e788ae1f/3360 dur_brannoc_terrace_watch/reference/c0820a49a7fca1ce305603a12d8c7c8637532090130c380cfed52ec8c9eaa7dc/3880 dur_brannoc_terrace_kitchen_garden/reference/2f0f3c83f1205f7d65bc435bc4a12e5c8f137e4d7f15866d1b836dca792b3409/5730 dur_brannoc_terrace_goat_pasture/reference/1e1094ebd158d9bc0d3aba2f5deca6aa42e7c0b6231961602ebbe00169ddf7e7/5730 dur_brannoc_terrace_brew_court/reference/e78d87951f132df8c380bae800369bde83f9e9133cd86f450f62d49e15f6b4e5/3210 dur_brannoc_terrace_green/reference/f6bcf91e5023915a6d7686e76f73e8dd2320c87b87ef446c1ea6813ca8c2504f/1410 dur_brannoc_avenue/overlay/86c2a922481c0ec2d8242dfaef921bb3a4d2b61b502883940d968d1ece3cd442 gor_drazhak/8853176bdcc231f2aa73b9cbfdfd010148064639658c945da7998e850edff10e/560278/112/1/53/19 gor_drazhak_core/anchor/8853176bdcc231f2aa73b9cbfdfd010148064639658c945da7998e850edff10e/94582 gor_drazhak_bazaar_butcher/reference/caff5f709b167f910044a1183f5b8ab8ec538fc5e1c81d9d245d940658a39ed1/4988 gor_drazhak_bazaar_tannery/reference/595f7ba0539650d3f95181d47833e152678188268d8f7dcdb120353070ebf225/5207 gor_drazhak_bazaar_brewhouse/reference/439c6251258f0e037d8fa772f17aefee4171f078117b9380215d0c80c6cf06a2/5974 gor_drazhak_bazaar_armourer/reference/8044e6bfc860a4cdfb3ff0c2b34ce1168f96d59753055e228e75a45459e950bb/6522 gor_drazhak_bazaar_smithy/reference/51eb395ccc181cb95e156596537e981d70b37c574b17fcad9544794cd7aa6570/5974 gor_drazhak_bazaar_store/reference/38c2ee7210ff73382d0ff0a889db6c6413627ac2e74d7a57df8eb02ec8268fc8/6955 gor_drazhak_bazaar_wain_yard/reference/88030ac7c88d2f7e2e7e3d4821e6d1bbacd4f1942ba841a489278f48e7406266/5207 gor_drazhak_bazaar_carver/reference/944b9f8732f09ace8c75a5dd2a11deb4b0100447e53ee738904df3c134044244/3893 gor_drazhak_bazaar_house/reference/1358231005c160c0f78a2d8b93fd063e63735cbb913f2178fb0d319b03383637/3105 gor_drazhak_bazaar_stock_pen/reference/3bacca96c595e0abb683a2c2040394ffff82d9a9ddc4ed292a0f8dc5d389b69a/6259 gor_drazhak_bazaar_drying_floor/reference/cd30ba36e986d893804693ce49af1d74744f616cc93560eabe3bbc24fe5e6fdc/6259 gor_drazhak_bazaar_spoil_heap/reference/01307573ee0c36bf725cfb9ac67af92de7fd599d53227a04d3249e733c44416c/3499 gor_drazhak_bazaar_fire_court/reference/1549c8c23bd461ed5d0941c84e6694471dcb59700275e31fda1c32b75eeab6b2/1531 gor_drazhak_war_barracks/reference/db3d92101198e38213ba0877fc6be3455c20691bd889cc824ab0e6b2c8e62087/8315 gor_drazhak_war_arena/reference/0738b1b4eb84504d270ee4db473f842fce4a530892d9c6b22d5b12fbebf71506/8539 gor_drazhak_war_armoury/reference/013e747460ed15b5ecb61d9853b83046b9f11ed0c510b1443b13d5237b561b28/6522 gor_drazhak_war_beast_pen/reference/a7764c3c0af89eb1d1ba74278fece8c023d2439b0c1ad4f548f1107b7a6640ec/7265 gor_drazhak_war_drill_yard/reference/90c7e6e08f0085bab42b2397e908badbbfe15161548bd4c0d174d19f5d41cc4a/7456 gor_drazhak_war_quartermaster/reference/ef1338aab06fd168126c06e09efe895e56f470afc9690cb30778ce4d2987e41f/5966 gor_drazhak_war_wain_shed/reference/7453a915bd2bf7af44fcc61678b5ab9475288f1660a1f0c4bc75bd84ed594dea/5207 gor_drazhak_war_chief_house/reference/adcfe19ce8dece7d78ac610d3112b9f8d184ef1be7b20a93c9cf8d019a28a0a1/3105 gor_drazhak_war_watch_tower/reference/2cde21576650c357ba4da6783169142b0f4cc0de7f1b5e6e73c2b99c2792598a/3880 gor_drazhak_war_muster_field/reference/6e9c5f745ff4efb4d0e763c7ce5047b80016428d961d255915bb509986eebaa0/6259 gor_drazhak_war_remount_paddock/reference/2c703414b3748371c004ea16a87b186fe140c543c6a552c3bacf99c1d139e11d/6259 gor_drazhak_war_wood_yard/reference/dc81446371e4a6e6fa2cace7a1fa2182ade679410ca0c089ef12782c8476330d/3499 gor_drazhak_war_guard_fire/reference/58abebc6fb86dadc355dbf345e7db56128e16d52ca5fdbddfabb4bd58b24f3d5/1531 gor_drazhak_bone_spirit_hall/reference/000a3ae85e17892f557e74d5bf007cd903ab3945a68e3c8427b667685e18a470/11820 gor_drazhak_bone_totem_court/reference/b3f8324a4422c6ecb8e9d44b03ad1a46b57f1883d9a59b0af9efe81c1f7be027/7355 gor_drazhak_bone_barrow/reference/f618625ef106ac8bb21f7b18ef2f73fe56154676494ac80320c76fbcdfac3706/8539 gor_drazhak_bone_quarry/reference/50bde5ce177792c7672c55108df85ac961331bd9eb5dc2ecb471cd428c08ac1b/8539 gor_drazhak_bone_reader_hall/reference/a1b29e7f09d2cbd8661758d7a60e3c3b2d710ab088f6934c1b044e943183020f/6955 gor_drazhak_bone_herb_house/reference/57447686ffa3340b9b6083cd715a1364ac629cd942c1556a380a298ac24251f0/4769 gor_drazhak_bone_store/reference/a8c8676c6b8aaf09e331c62df292e341d74c1dd71eaec52e247f2c1a8e37b719/5715 gor_drazhak_bone_shaman_house/reference/76997be03e301274c6192297d1204191d3f9426b0beb2b5e998f73bb652c689a/3105 gor_drazhak_bone_ash_court/reference/7349bb3b0b37dcc824e8c05a195a5a47ffdb7bed8114c4bf22908d9b20006dda/2755 gor_drazhak_bone_ancestor_field/reference/7289d21080e10ce774de25b09f837303a9fefab496e7a349ffd960e2fa4f77ed/6259 gor_drazhak_bone_scrub_garden/reference/0af29c889ec6ec937eb1ce489a28283aa2c10b54e286f53c1b8770935c7f9367/6259 gor_drazhak_bone_spoil_shelf/reference/4d6c45998de48130c43a50e44f6a7f6f27a499b2cdc100a8ab5491c5058a48fb/3499 gor_drazhak_bone_candle_court/reference/32c2af4247e413f50af0b6916e8f08dc440b13605fca76b74b8aaa07353b9b4b/1531 gor_drazhak_warren_clan_house/reference/10d5e69d997857686b323ffad1f128020c8a4c14baf7578cad27311ef0f56e79/6518 gor_drazhak_warren_round_lodge/reference/99bc3ab98286164da351748df34b58fcb748a33988b6238c55dcbd81e652f2e4/2755 gor_drazhak_warren_cook_court/reference/ab5e237cd1834b022fdf0f4fdec600f301e6c7a06f3edc1a5500d81b4fdc410f/6259 gor_drazhak_warren_house_spear/reference/88b350e275b3517379de3e2bacb46ac911e28f83d47d1deedece7dcc95c0f329/3105 gor_drazhak_warren_house_tusk/reference/fa4093e16b5e633494f4b38e690efc5d95b29150a529f9d0dede6d228bd1a40f/2755 gor_drazhak_warren_house_bone/reference/87ffa552a111d9f632f91cdf3d8f87b691ae09ecdf76cbda9b5c81dda02b0611/3893 gor_drazhak_warren_weaver/reference/3e28acec1899de70709f23b8c954a4966efe3a8257eccba56bfe12b2c8b26b09/5207 gor_drazhak_warren_store/reference/8e6464ac7fb6dd33c62ec8b3d744f8a0301e2e06091e48b3c6816edac37ca01f/5715 gor_drazhak_warren_story_fire/reference/f54bc93c2b82fe85e18fab5d2d81e6f09e4f5a63b63647c1882033544fdff874/5251 gor_drazhak_warren_clan_ground/reference/86b6198a4e6dd60a937dac74cccdb863ca9a4f9e84e6c0c8fd7d135e41913868/6259 gor_drazhak_warren_dry_garden/reference/14b758f9f1b071c32fa3510eab520ba3504573cfac65842ef1ab90325113026b/6259 gor_drazhak_warren_fuel_yard/reference/8a4f6757350f9c4fef0f24bb0d513ea81af9fc06b3a10fb94133630de1d17cb6/3499 gor_drazhak_warren_green/reference/30ab15d904b6cf1cb380b0efa31d168b3c577e9137f3e410e357493e51ce35c0/1531 gor_drazhak_avenue/overlay/59d2a6ef4a38aea5527f0a41dd2db0fba4e003495351e173322d1240b85668a3 lethariel/25ad47a8d3ec002ecdbd50bbe5111a1abf6ee6a5aa6158b34b4a459a857379e2/356712/112/1/45/26 lethariel_core/anchor/25ad47a8d3ec002ecdbd50bbe5111a1abf6ee6a5aa6158b34b4a459a857379e2/91332 lethariel_market_granary/reference/d0a7d785ce7e883297ea957c3588f1fde5a5354c4da05d1047b0dfe11fe1de96/5715 lethariel_market_stable/reference/44f311d6001e0641919a83965a6d350bf796691644cdc77facdb1dc492d1ee46/5001 lethariel_market_bowyer/reference/43b856784af3fe1cefc9416b273c95afb3440bd27156cb7818280132bdae414b/5824 lethariel_market_weaver/reference/712768af52efb75e65394e52f0639d812b24b161354c02526db24854dddff8e8/6955 lethariel_market_fountain/reference/783831c440a800e8d718f49611051b1fdf1a698384786c0cab35fc98ffa50b87/3970 lethariel_market_watch/reference/0d443c9426af059e394070447b46c27f98251910b7dbf3e2b0e2c9de8b6f8589/6518 lethariel_market_grove/reference/01b4314320d3f9e690916932fc63b2aeaaf510d367877440f8f519b135e9b16e/7978 lethariel_market_orchard/reference/e63eb53b00c4f70f3481803c83a818b026e551c26056501d9bd6a6b3dd8eead2/6618 lethariel_market_bakehouse/reference/f3beb466bcf96febdeed234caef86ea99adc7de3ffbd6ab8bf194b62a0e043ca/5358 lethariel_market_gardens/reference/8b177e15116af698c9cb0faaf3e81158d1926a5e958e64001bae96fe39d189fb/5730 lethariel_market_close/reference/a72be28ba94cb0f64c533c7173b0d30abefcff36ca0cee21ae298c8db8ea1f10/5742 lethariel_market_paddock/reference/11eb69450ef551dde8e7e677f7a6e387cd466b986c33abf77d5ced38bfeb446f/3210 lethariel_market_green/reference/7e7ed2029493b2524a884d1cfceada283a27eeb03b2d9b9e4f9e8c1998b92b8e/1410 lethariel_martial_barracks/reference/d13c808e7f092ab2539d9a80b15d3f5ff1687aa801d5959426ffe2c3b6f10881/6518 lethariel_martial_armoury/reference/c969f971d427211286da7b23d14ce84b1f7290acfdf94a25897fedc79d049dc1/5824 lethariel_martial_tower/reference/0db188852ffaf03d3177daf356a7cd839195a781ca72bcb49a1d7608a7e198c5/3880 lethariel_martial_hall/reference/4f612a7a70d9e39a6810aa2e0b03a7882058798502031ce0224670d74273c889/6518 lethariel_martial_stable/reference/f55afe3cfd1ec39293230f96851f4cbaea0f8f41051d12abf50e0878f543ef7e/5001 lethariel_martial_store/reference/063cf77f0551001b4e4a792e5cefecb031135fc9fadc73ca274fc0549e6f8d43/5358 lethariel_martial_grove/reference/f177494bb901619e12abba9c1d47ae1f7c3fa76115be33695de1d9192430f618/7978 lethariel_martial_lodge/reference/49c688c2754989547c3f3515dfe0ebfd62907e8db4df2db8562c7dd8a5ceac69/3205 lethariel_martial_bough/reference/b95e0142f96ad9335e43d239ff7a325b9761303b750bc5756c66967ba68473d6/3776 lethariel_martial_lawn/reference/b8816748e6a760358b4c71292b2e8bb2dd10fe747a492748340cbbf2dca334c9/5730 lethariel_martial_butts/reference/f11f3c4b8c17323289e2498e9845c28e4c01a7402896291639f6601eaa8603ce/5730 lethariel_martial_woodyard/reference/880d3539750371cb75e96801ff8a0822a85419145ad102492facbdc04ca1fd72/3210 lethariel_martial_mess/reference/4331f99d17d8c8fa024a6868d1ba9a6ffb9355371819130ebaba70bbd6a6b463/1410 lethariel_mere_shrine/reference/3f91dcdc124d712dcbf5e4286a6682f111cd53c3dfa86f290172d59e25472c18/2755 lethariel_mere_lore_hall/reference/af257e3e8ef152964fd8cc6cf87b907eeff96c93754974713e966dfd127db6e4/6955 lethariel_mere_mourning/reference/3eee3486a23fd851530f6d338a27e0eb24c8dcef7e623c87c60f50d1f74e6a95/7978 lethariel_mere_stages/reference/68c2b38e434198d154642bcff73390f82d87a1a82d6e40e92f90557d17be5100/3519 lethariel_mere_walk/reference/81241b2f9fee0812848e28f5f8bf3eae0f0c4503e3ecc6f049d7eceb4f2a0e53/1410 lethariel_homes_terrace_west/reference/f4131326779a6bfe690d177c93c44700d788aacc347eac21572d20287641ac3c/3205 lethariel_homes_terrace_east/reference/521e58b1ea211ef457d389f653bff10e882fc1fee3176f05f330d8374a1d6a3b/2980 lethariel_homes_longhouse/reference/6099d417f5de13e35e68680ebd4fe2e3c1763f23523f43cf2666e74ce089ff12/5358 lethariel_homes_brewhouse/reference/de90d514dd469118e3efa596a90a4e20f2d0c4ec43a70e53571997abfd5021ae/5824 lethariel_homes_carver/reference/f9155acc0ebf45c2bc6a1d2b8d8a2db4242ad4cf61bcdeef662671ae937408cf/6518 lethariel_homes_feast_hall/reference/06e92a7ee39525834cbe2efb1499bbe67eb23afd2c768db9dc2178c4f38f16c0/6955 lethariel_homes_bough/reference/b93bc6781824dd7fd3eca17561e74e6249182737fa5214aafa2ebb62d381943e/3551 lethariel_homes_court/reference/e97b42161e33203b5afd42c530cbc28c3badf3651628b7ea82df32f511ed5160/3970 lethariel_homes_grove/reference/8f394acf380b1027f7c05ce4f8c4f781999ba8808bba701c28e8c11a5a0a22ad/7978 lethariel_homes_gardens/reference/13526c758f8530dc6f1b272efe95de81220e036c2f9065c8338a938cab4e0ab4/5730 lethariel_homes_singing_grove/reference/595a27bce753399da005d1798308d92f9c34c62dc83a3d4d26aaae7e6f1f5a9f/5780 lethariel_homes_yard/reference/c6a55ba81cdc1fda440c715f457b12f612255fcb21e6e112174ad397e376de27/3210 lethariel_homes_green/reference/3923bf8e1ac3bd07b20533065ed097e5f8cd0017440ff032247a42a9d0a106b2/1410 lethariel_avenue/overlay/a5111f8b7c26a9f401c83a7c62cb02b956ae0724e6cef629a7edbaddbe3cb9fa kezamba/ef258e33b9e62cefaf4baabf0df2fd1340baa872519f36b0b8be3bcfa487165a/330505/128/1/53/26 kezamba_core/anchor/ef258e33b9e62cefaf4baabf0df2fd1340baa872519f36b0b8be3bcfa487165a/69559 kezamba_shore_market/reference/5136e102a3eac1c2733b436747a6a34b132919af3c69eb98a67f6ce46179f744/3970 kezamba_shore_butcher/reference/c4f496ed898ef619602baf5614c5ffd5d4f63142caeab64bdd60edaef06f3780/5824 kezamba_shore_tailor/reference/ba1648d63083587a98681c257184ff6150f381592992ee68382bf86ade1c042a/4077 kezamba_shore_store/reference/4c57fc95afb1dbac436e195360812544a4a77a1a99affffbbad829a948fb135e/5715 kezamba_shore_smokehouse/reference/3ad1a45a26dcfe521acedbf89ab6eab6c1ceeddc0bba95a95ad92cd9c4831a6b/3455 kezamba_shore_carvers/reference/e0916c729b876606a75a702e953b2754f516342481a3ab5b5dff1135f682c57e/4692 kezamba_shore_well/reference/68ea6766b92162a51835b6906117750eb2f07c410dd687cff85c53ffa599d88e/3970 kezamba_shore_watch/reference/f128b6ee6058cecebff383d6f4e15d8c96c607d75bea768813363fec331be1b9/8398 kezamba_shore_house/reference/a5cb943a5c3d47aa88e52fe9d6bef8a630a53d04bf10e4b403cce1b03b48ad3b/5358 kezamba_shore_vineyard/reference/017176cfc6b9ce54957f6767eeb328e489d27cdc15043c86173c51846b38342e/5730 kezamba_shore_gardens/reference/45834b344cd034439ff6dfe88cffe4c2d4225c76c2e0d32922d7c0fbb7cb4de6/5730 kezamba_shore_logyard/reference/024644c59623a871cab19fcb16f254de0092667365ea0f7c50f214afd85c952f/3210 kezamba_shore_green/reference/a486067a95722799227e77db7c83f4d3ceb59d2c0b866263adf1bde596202657/1410 kezamba_vine_house_a/reference/2af5496aca527eafba23e41d8a8f5f415b7f6362b8980b507298d9973e9a9259/4077 kezamba_vine_house_b/reference/212061e79e90b1dd9e207997efb3b6bdc5709e1cb338cfab9278ed2e7315240e/3788 kezamba_vine_house_c/reference/5fa01baebdfedc9f930fcc12b2158ee3750a5611bf52a2323ab7a8582401379e/4655 kezamba_vine_house_d/reference/b50b5b7215d61ce2b29966b6bdb0f5beac605373bd568de1156113b577ca820d/4077 kezamba_vine_longhouse/reference/22e7649e732097c01a71d9632fee0033bc5aa96cb1d781b5a1d3b02d1625da99/5358 kezamba_vine_herbalist/reference/cd9964fa4cb72629ac37c87b6404900f46de3ec9b6249656c39aff4f639d0376/3788 kezamba_vine_moot/reference/44998a270870004a136cd8507dc47c88406c29c247beef9b6b0f24a95ba42fba/2841 kezamba_vine_well/reference/c97235f93c8249a7ff5dea90490bd7b39eb4bec7a731ab01fa17bc3614ebad81/3970 kezamba_vine_store/reference/b5f7e67e8ad86a60b071ceb4860863eae5dd77d6d746035c9ee3f90ff38dca17/5715 kezamba_vine_common/reference/b1c8bae3e2c3579a19d87afbaa4d40c3b115ebfbd75b9eb42695e07c7e4d3629/5730 kezamba_vine_terraces/reference/8a068af05e831a36e33936d62475dba399fc2f7d1a91e210ea22d56c441d810d/5730 kezamba_vine_park/reference/c492614e7fb22775d34392582988d7623ebf534ea5961527570c9c9b2894136c/3210 kezamba_vine_kitchen/reference/8f1c61518ac07f31a455e87b6fa8402737c843f0a96fec0018488433693eab91/1410 kezamba_canopy_barracks_a/reference/950a50b4b70f336e0d14ddd303265218b6547534dda942a5d7b96a20cb537aca/8398 kezamba_canopy_barracks_b/reference/b299b55c510c640f91e18d5966585837fc1f4ecbb1d4eee07657ef3bebdf52b8/8398 kezamba_canopy_armoury/reference/22f34d1d43ef8f7b2ef8e09061b079ee0caceca869d97fd58b6b3ee960dd128b/5824 kezamba_canopy_watchpost/reference/dec0459adccf548d8c8e5a30480e5db24a8bd3f773b745e9eef1ae5fd4c6c08b/3880 kezamba_canopy_stable/reference/8e864cae38c074bfa0e2157014a0d0730a095d6b16cb52e391f9da5f5f85e58c/5001 kezamba_canopy_store/reference/995bef89e82ee2ece04207615805bd3393e08777780211f1e183affadd7eaf95/5715 kezamba_canopy_hall/reference/452b18fd7cfa864ba392d072700f5b4ad261938160655a08555216e49abe62e7/5358 kezamba_canopy_house_a/reference/cce2e7b0609ff2d67b6d2a1efb7210b39957aa0a0c0bdc7fdc158e4349079b07/4077 kezamba_canopy_house_b/reference/fabc93d32d85e47c1c7aed70392364364767eaab93cb595316b2d3fd6b5877c8/3788 kezamba_canopy_carvers/reference/dbf2c56bbe1bda3e4116ac8745dd36a5c9ba8ba5372bc19fbe35d694e89fcf58/4692 kezamba_canopy_well/reference/7c7300976bde49bd78a9eb6fc3e9a2f74c24e6298557564ca38cc4c65027902f/3970 kezamba_canopy_muster/reference/274f791d0f1d8e02b87e49b8501be12cfc98f47b3b33dd0fc1968a0fa18cdee7/5730 kezamba_canopy_pasture/reference/9e411744dd0c453e31fa94c1778e8931671fde7e076ad088a63aca84ec24e371/5730 kezamba_canopy_woodyard/reference/446fe3e3ec5bd3e0e889fd05901edb1554187774a668be9f4bd2b303589cd834/3210 kezamba_canopy_green/reference/89f1cec1598471ba0542daf0edaf631569028ca2440f648e0f4ef54e9101d214/1410 kezamba_totem_scriptorium/reference/8a65ebf762cc3ab0fb10857c23d48772807cb12df244559f57ed771422af451c/6955 kezamba_totem_carvers/reference/c7a1ffaaea9004b370a55a1effd0bea8d78c2ac3c1a952dd1698929e8fcb3bc1/4692 kezamba_totem_shrine/reference/d1331141d6be6e961bcbce0c4b0e9d574e590bb1677f76d91ea06e9b767c89a9/11820 kezamba_totem_hall/reference/5b0408762080b41f4e72857a6f71bff52fd868b6c93fd7f76bdca38180cd0fd1/5358 kezamba_totem_house_a/reference/d2804a2c64475af3f5e00671dd3cb601c3aea9db2316ea35e4f7e51156c1a7c2/4077 kezamba_totem_store/reference/a473221b3f27919d6fd7b8051a27cffeaa2e7b379259a2b0eb56e56f75675e27/5715 kezamba_totem_well/reference/efd3d29e72377df4fda45c6a61846325446b23b4b0499fa94aa34c3c00cda820/3970 kezamba_totem_graves/reference/e4ebb84136641bbff5f212ee7381322af86c49ed6c46039d6ce00db7c9905db1/5730 kezamba_totem_posts/reference/3745727acd79d20ce0fdacac3b5734b464703d651bf366e5e856d659e925040f/5730 kezamba_totem_grove/reference/fdc1f6f0e12364f2bfaa5e9ba97dc7cd7741828ae1cedcbf72b1a4dc2ecf148e/3414 kezamba_totem_green/reference/07611bc6e342ef02ca187a302dacba5134d2eaadab40189bb21719876b48feac/1410 kezamba_avenue/overlay/f9554d050cb8c7a2d0b97e4f1c39e9fce295370de0ad15dfb90c441ac51a44f1 nhal_veyr/4142f65fb72865123e87e748951f0947529928e36ef1611afb11be8482ac30b4/522170/128/1/53/26 nhal_veyr_core/anchor/4142f65fb72865123e87e748951f0947529928e36ef1611afb11be8482ac30b4/97494 nhal_veyr_market_bone_store/reference/fd4731e3895d3dbb63ce1fbc21f966073d07cbef6a936218cde6cca5ce5ad9ee/5715 nhal_veyr_market_cart_yard/reference/b7f01760cee39093d7200d0d57d5eeff0071cac6976ddf18f4c055181e42edfe/5001 nhal_veyr_market_bonesmith/reference/a844f562537d128c536447001e07f8d70b4aacd2c51ea9c9b605d8d46d7f26fa/5824 nhal_veyr_market_shroud_house/reference/b50f13467d0d2ca0655fcad1e34c1a5472815fe50fca635c9596dd597e1a8562/6955 nhal_veyr_market_cistern/reference/8a02e8221163953c542a3aca00da8ed6031376ff0b1c0732b7c06670f68a5f5b/4814 nhal_veyr_market_watch/reference/001113ba1cf387fcf5ca9a63193879f52d94ed07867a83d260d3aa2c1e6994cd/8398 nhal_veyr_market_copse/reference/3dab143ab75c132c9a3682be65a2a7b0e3f14f480bd80427b2669a628faeb006/8155 nhal_veyr_market_physic/reference/94a8672f4ff56f22dc3fc45f82eff2305c5e645c9106a6481d1c4268d49ebdea/6518 nhal_veyr_market_charnel/reference/5317ca69b2b72312fa620bd879d9dc3db75363f6d7dddf8dbad1a73cb4148397/5358 nhal_veyr_market_grave_field/reference/289114d37a2ca2c95284406bd53ab6abfc9c980b0491edcf7b43093cdff3dea5/5730 nhal_veyr_market_bone_yard/reference/78c1b1380a12033fb8c38e66fef5cc966958f2cbae7f26d3e4e4af5385ac2f5b/5730 nhal_veyr_market_candle_court/reference/7e7dd1940724d4a9908c48c887ff3bc247ee453eeb25b1eed0b15bf9f86cd045/3210 nhal_veyr_market_close/reference/108fe01c575672d0115ec1f9b93de37bc3f3556afd649a320b73c5ca8e708c8e/1410 nhal_veyr_watch_barracks/reference/230044e34a71ab3be0e79195c124d4edad92c6e71b7505596719dd24c1628146/9795 nhal_veyr_watch_captain_hall/reference/59202e8110d8125586eecec39a7bba132cccdb72b30b5ac96c8ffc9369297fc9/6699 nhal_veyr_watch_armoury/reference/be3ca47eb2c0439435c5bd1607929e05fbe74a5e6f0991d1aafc70d8420d694a/6416 nhal_veyr_watch_stables/reference/a29bf24015dabcb11311c14e03377ab449e002ddd6ae465bc8cdbff360bbe737/5567 nhal_veyr_watch_drill_yard/reference/d6ae2dadbc64e0f9afdfcfa5afa0eb21f8b64794ccb9cbc26c176f0c13ee0c4f/7456 nhal_veyr_watch_quartermaster/reference/02d7c2217ea5632eef816bad85df43e6baeef0254b285d44b88f9015186dc7a7/5966 nhal_veyr_watch_cart_shed/reference/2a7c51f23c45fc8a056eb2db547be7ac9977b84cb65247422a5e567862199469/5207 nhal_veyr_watch_serjeant_house/reference/94544fb06b1ec7f53135ac21016f453067159d3bccb448c43a774542017afc16/2711 nhal_veyr_watch_tower/reference/b2719fd427827ac97f7f23fd4546c2e3f68a5aed2d5afd78ed2ed2d7c5e284c0/3880 nhal_veyr_watch_muster_field/reference/7b496f79f6074ed8b00d0ea12f7f6a78b026914f952151deb5d900dd599843a4/5730 nhal_veyr_watch_bone_rampart/reference/950907d24aa4f7abe7ffbb2df78d48b8b6b5ec794097de52e6d80cf8b28ff3e5/5730 nhal_veyr_watch_pyre_court/reference/d2d15eb532ab116e6c03febd3674b31d4eef7ea6f6e334ca190a2d6a81df2996/3210 nhal_veyr_watch_close/reference/6c8f3d8697971665fc4d026ec1f8d02190b0f21dc4ceebd81bf27b9a107b513e/1410 nhal_veyr_vigil_ossuary/reference/7d323fe3ea00c4cc40d1af0a9a3fbde1a36eb415e99c85cf42d78669c80d2bdb/7392 nhal_veyr_vigil_scriptorium/reference/177a896cc912030f12896413041a9258405e91facd994c398c4332a20f39d88b/6955 nhal_veyr_vigil_embalmer/reference/0472e45ae47bdd8d8caf900ee1ebb2ca0c41493cde7abe3358872ba402dc6c0c/5824 nhal_veyr_vigil_mausoleum_west/reference/89ae14b6f46e03716123cac319a91759e40013cf74c70951e078a2267489755c/3893 nhal_veyr_vigil_mausoleum_east/reference/107c0064b257e1202604811816d62ed3c62a0d7ee1943e7013af728e18925cc8/3455 nhal_veyr_vigil_candle_works/reference/5133dfa0f6f8c6d78caaa9314d296fa786e59e6773345c10ec1b9cad1abf781d/5824 nhal_veyr_vigil_cloister/reference/7a0d8bbdc00f20a4922d41ed12382c8a5e625a19212a5c93c8261510b9fe6cc9/4814 nhal_veyr_vigil_watch/reference/bbba70c58b4726ba4f4285ed0f45f8bf84c6de367dbdafd0237d3b68e888c938/8398 nhal_veyr_vigil_copse/reference/a97dfe2b08a2c806658e6b282f8350e019b8b7ff91cc601e433b89b7df088c2b/8330 nhal_veyr_vigil_burial_ground/reference/3ea910ba955f858da1525e682506f54ab0f1db1a359f3c18fceffd0ee212cf1a/5730 nhal_veyr_vigil_ruin_close/reference/7fc93bf4d6632dc953f8a815e97145f5876719cc97dc8cfc46314d816ecf2992/5730 nhal_veyr_vigil_high_court/reference/705bd02cd0d3a57e82844d694d7655b05e4f9330c45798743b33185c7b3401dc/3210 nhal_veyr_vigil_close/reference/11a33811ce96ab35b20d2c5b2ee1b2e06d608d47acca1b3bacfc46abc8d112fa/1410 nhal_veyr_homes_gate_house/reference/f34b8f03258660ce49d103ff51997dd36b6981e9d073f385207ef0e426557f8b/3205 nhal_veyr_homes_lane_house/reference/3c12b4ae3a1778cc5ee06302a72ec4be4eb99488e6a7bfa45f61cd31e48cebd1/2980 nhal_veyr_homes_terrace_house/reference/3775f632bd0528534df156937f34067b11d613e9777856f3b7fde2b49485882e/4125 nhal_veyr_homes_corner_house/reference/fe9353c889091c46a669b255a87b3220eecb8209e6ebc04b85c6076916723551/3615 nhal_veyr_homes_fallen_west/reference/74ab4daee948b829e404a6476163ea21cbd1afb6fbd608a54738874152b817d1/2530 nhal_veyr_homes_fallen_east/reference/c3b792e1d4f28eb1dd2880d93b6d03ffa45a1bde01d63a534f328f6b3de4f78a/2850 nhal_veyr_homes_mourners_hall/reference/427652cd93bd996c7f6eff666012569bebdb40f23d45b545eac36f8bb2c5bdd1/6699 nhal_veyr_homes_watch/reference/c382813eb4e400267dcfa7983947553948bcb4c1610f43bf077f3bb61b383568/8398 nhal_veyr_homes_cistern/reference/1bc9ac7287806b3f5771721d0a3f8d9ea540afe16655db3422616bf100c97efe/4814 nhal_veyr_homes_family_plots/reference/f7195d904bac09ae619182fc1901ca649852f015842cde7e7cf35de863b04067/5730 nhal_veyr_homes_blight_garden/reference/a6e763a4363a616f76d64aa732e632b28365f9ecde7ad35720443c81a7909ecf/5730 nhal_veyr_homes_candle_court/reference/98df57b04c2b157012f4aece7f3b8f596f7d1a7b598ccfa6c197752188a035a4/3210 nhal_veyr_homes_green/reference/1ed7757793d5d5a9295e75e4df7437204af8a22ad82a3bc558b2c21899d387c3/1410 nhal_veyr_avenue/overlay/7003e8f4d93a9d045b9ba80843962672b316336148eb73e14f751a10f8083337 composed/12/213
+registered	hearthpine	dwarf	8
+socket	gate_west	guard_post	nil	nil	nil	-	spawn_true	-1804	38	-2491	-0.000000
+socket	gate_east	guard_post	nil	nil	nil	-	spawn_true	-1796	38	-2491	-3.141593
+socket	watch_a	guard_patrol	vale	1	nil	-	spawn_true	-1800	38	-2498	-1.570796
+socket	watch_b	guard_patrol	vale	2	nil	-	spawn_true	-1800	39	-2526	1.570796
+socket	market	vendor	nil	nil	race	-	spawn_true	-1793	38	-2555	1.570796
+socket	bench	idle	nil	nil	nil	bench,shade	spawn_true	-1793	38	-2549	-1.570796
+socket	hall	quest	nil	nil	nil	door	spawn_true	-1828	38	-2524	-0.000000
+socket	spare	idle	nil	nil	nil	-	spawn_false	-1804	38	-2538	-3.141593
+yaw	axis_facings	pass
+copies	queries_and_source	pass
+queries	by_key_and_missing	pass
+refused	a second registration of one settlement
+refused	an empty settlement key
+refused	an empty race id
+refused	a fractional anchor
+refused	a missing socket list
+refused	an unknown role
+refused	a fractional coordinate
+refused	a diagonal facing
+refused	a zero facing
+refused	a missing facing
+refused	an empty socket id
+refused	a patrol waypoint without a loop
+refused	a patrol waypoint without an order
+refused	a loop on a non-patrol socket
+refused	a vendor without a kind
+refused	an unknown vendor kind
+refused	a kind on a non-vendor socket
+refused	a truthy spawn flag
+refused	a numeric spawn flag
+refused	a spare guard post
+refused	a spare vendor
+refused	a work socket without an activity
+refused	an unknown work activity
+refused	an activity on a non-work socket
+refused	a spare work socket
+refused	an empty tag list
+refused	a numeric tag
+refused	a duplicate socket id
+work_and_profession	smith	butcher	mine	mason
+second_settlement	one_race	start_wins
+refusals	left_no_state	pass
+vocabulary_activity	smith,fish,farm,chop,tend,pray,stall,sit,sweep,mine,brew,carve,mourn,spar,forage
+vocabulary_kind	race,general,butcher,smith,fishmonger,baker,tailor,mason,brewer,bowyer,herbalist,armourer,tanner,embalmer
+cold	15	15	15
+door_facing	door_turned_on_second_tag	line_keeps_first_tag	bench_kept	elder_turned
+spare	unplaced	unmarked	walker_ring_5	static_ring_2
+nametags	Vale Dwarf	Dur Brannoc Citizen	Highcourt Elder
+restart	15	15	0
+lost_entities	11	11	11
+death_respawn	not_before_due	refilled_after_window
+second_gate	no_twin	marker_restored
+capital	6	6	2	loops_separate	markers_separate
+wanderer	21	21	21	10_heartbeats
+out_of_range	21	21	no_strike
+twins	22	21	claim_refused
+census	hearthpine	start	15	15	spare_1
+amble	moved_at_22	spots_4_and_4_of_5	spare_reached	10:-16.0/4.0 20:-16.0/4.0 30:-7.8/9.5 40:-5.0/11.3 50:-5.0/11.3 60:-5.0/11.3
+amble_blocked	at_least_2_targets_in_40s
+no_jump	0	0	model_reproduces_defect
+stuck_route	path_at_20	skip_at_45	quiet_after_3_lines	no_snap_in_sight	snap_out_of_sight_after_backoff
+noncombatant	declared	installed_on_activate	chained	all_2_defs_correct	prey_unchanged
+walker_split	residents_10	walkers_2	share_20.0	idle_a=true idle_b=false idle_c=false idle_d=false idle_e=false idle_f=true forge_work=false bench_work=false shrine_work=false yard_work=false
+static_idle	still_after_150s	state_stand
+work	smith_work_anim	sit_anim	writes_1_in_120s	swing_7_in_30s	no_path	step_vetoed_120	home_at_9s_unwatched	resumed_when_watched
+animation	stand=0..79 walk=168..187 punch=189..198 work=189..198 sit=81..160	work_speed_10
+activities	smith=work/default:pick_bronze fish=stand/default:stick farm=work/default:shovel_stone chop=work/default:axe_stone tend=stand pray=stand stall=stand sit=sit sweep=walk mine=work/default:pick_bronze brew=stand/default:stick carve=work/default:axe_stone mourn=stand/bow spar=work/sword@1 forage=stand
+wave2_activities	mourn_bow_writes_1	spar_grug_gear:sword_bronze	tag_mourn/work	lines_mine,brew,carve,mourn,spar,forage,shade
+tag_gate	elder=Vale Elder walker=Vale Dwarf work=Vale Dwarf	once_a_second
+restyle_hook	calls_21	start_and_capital	after_install
+real_starts	hearthpine=1/6:work_2:ring_4 dawnmere=1/6:work_2:ring_3 silverleaf=1/6:work_2:ring_4 stillgrave=1/6:work_2:ring_3 sunscar=1/6:work_2:ring_3 kapok=1/6:work_2:ring_5	min_walker_ring_3
