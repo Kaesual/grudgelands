@@ -654,6 +654,246 @@ local function dump_close(state)
 end
 
 --
+-- 6. THE TREE CENSUS (wave 3, 2026-09-16; the open item wave 2 left).
+--
+-- The question: after generation, how many TREES stand inside what the
+-- composition built -- a district plot's footprint, or the carriageway of an
+-- avenue, a ring street or a district lane? A trunk in a market square is a
+-- decoration the mapgen placed on top of a finished city, and nobody had
+-- counted them.
+--
+-- WHERE THE NODES ARE READ. Not from an extra emerge: the timing phase already
+-- walks every mapchunk the capital touches, one at a time, and a mapchunk is in
+-- memory exactly when its emerge callback fires. So the census rides along on
+-- that walk -- each capital mapchunk is intersected with the census regions and
+-- read while it is there. That is why it costs nothing and why it is complete:
+-- the corpus is built from the same plot and run boxes the census uses.
+--
+-- The window a mapchunk contributes is therefore at most the mapchunk itself
+-- (80 cubed), so every `find_nodes_in_area` call below is bounded by
+-- construction rather than by an engine constant.
+--
+-- WHAT COUNTS, AND THE TRAP THE FIRST VERSION WALKED INTO. `group:tree` is the
+-- trunk, and a raw count of it is USELESS: the settlement's own posts, beams,
+-- jetty piles and lamp standards are `default:tree` and `default:jungletree`
+-- too, so the first run of this census reported 4388 "trees" inside Gor
+-- Drazhak's 52 plots -- which is the orc capital's own timber, counted as
+-- decoration. A census that cannot tell a post from a pine says nothing.
+--
+-- So each region kind is counted the way that kind can be told apart:
+--
+--   * A PLOT knows exactly what it wrote. `plot.composition` is the built
+--     blueprint and this probe holds it, so every trunk in the plot's box is
+--     checked against the cell the blueprint authored at that very column and
+--     course. Authored -> the settlement's own timber. NOT authored -> WILD,
+--     and that is the number: a tree the mapgen put inside a finished plot.
+--   * A STREET has no cells to compare against -- an overlay's cells do not
+--     exist until a surface is handed to it -- so the discriminator is the
+--     CANOPY: a trunk with a `group:leaves` node in its own column within
+--     three courses above it. A lamp standard carries a torch, a jetty pile
+--     carries a deck, a post carries a beam; none of them carries leaves. It
+--     is a heuristic and is reported as one, next to the raw trunk count. It
+--     reads three nodes up with `get_node_or_nil`, so a trunk in the top three
+--     courses of a mapchunk whose neighbour above is not loaded reads as
+--     uncanopied: the street number is a FLOOR, and a small one -- a street's
+--     band is the surface plus 24, which almost never ends on a chunk edge.
+--
+-- `group:leaves` is counted raw beside both and is NOT added to either: a
+-- canopy legitimately overhangs a lane from a grove beside it, which is what
+-- the elf capital is made of.
+--
+-- FIXING WHAT THIS FINDS IS NOT THIS LANE'S WORK. The probe reports; the
+-- decision about decoration suppression inside a capital envelope belongs to
+-- whoever owns that seam.
+local TREE_NAMES = {"group:tree"}
+local LEAF_NAMES = {"group:leaves"}
+-- How far above a trunk a canopy still belongs to it.
+local CANOPY_REACH = 3
+-- How far above a street's own surface a trunk still counts as standing IN the
+-- street. A plot carries its own y bounds; a street has none, so the band is
+-- the sampled surface of the run plus a tree's height.
+local STREET_BAND_UP = 24
+local STREET_BAND_DOWN = 4
+
+local census_regions = nil
+local census_rows, census_order = {}, {}
+local census_seen = {}
+
+local function census_add(kind, id, min_x, max_x, min_y, max_y, min_z, max_z,
+		authored)
+	census_regions[#census_regions + 1] = {kind = kind, id = id,
+		min_x = min_x, max_x = max_x, min_y = min_y, max_y = max_y,
+		min_z = min_z, max_z = max_z, authored = authored}
+	if census_rows[kind] == nil then
+		census_rows[kind] = {trunks = 0, leaves = 0, wild = 0, canopy = 0,
+			regions = 0, worst = 0, worst_id = "-"}
+		census_order[#census_order + 1] = kind
+	end
+	census_rows[kind].regions = census_rows[kind].regions + 1
+end
+
+-- Built once, the first time a capital mapchunk arrives, because it needs the
+-- fitted anchor and the built compositions and both exist by then.
+local function census_plan()
+	if census_regions then return end
+	census_regions = {}
+	if plots == nil or overlay == nil then return end
+	for index = 1, #plots do
+		local plot = plots[index]
+		local bounds = plot.composition.bounds
+		local base = grug_zones.terrain_height_at(
+			anchor_x + plot.x + plot.composition.reference.x,
+			anchor_z + plot.z + plot.composition.reference.z)
+		-- EVERY CELL THIS PLOT AUTHORED, in world space and by key. A plot is
+		-- projected from `base` -- the pure final height at its own reference
+		-- column -- which is the same projection `corpus()` uses for the plot's
+		-- box and the same one the writer uses, so a blueprint cell and the
+		-- node the map holds are at the same coordinate.
+		local authored = {}
+		local cells = plot.composition.cells
+		for step = 1, #cells do
+			local cell = cells[step]
+			authored[(anchor_x + plot.x + cell.x) .. ":" ..
+				(base + cell.y) .. ":" ..
+				(anchor_z + plot.z + cell.z)] = true
+		end
+		census_add("plot", plot.id,
+			anchor_x + plot.x + bounds.min.x, anchor_x + plot.x + bounds.max.x,
+			base + bounds.min.y, base + bounds.max.y,
+			anchor_z + plot.z + bounds.min.z, anchor_z + plot.z + bounds.max.z,
+			authored)
+	end
+	-- The CARRIAGEWAY and not the run's whole box: `overlay.width` is the paved
+	-- width and the run's own half is what a walker walks on.
+	--
+	-- TWO KINDS OF RUN ARE NOT STREETS and are skipped. A `wall_` run is a
+	-- curtain. An `edge_` run is an OPEN capital's boundary -- Lethariel's grove
+	-- edge (`wp13/elf_grove.lua`), a planted belt of silverwood -- and counting
+	-- the trees in it is counting the thing it is made of: the first run of
+	-- this census reported 4269 canopied trunks along Lethariel's four edge
+	-- runs, every one of them the composition's own grove. Kezamba's `gate_`
+	-- thresholds are two posts and a lintel and are a street's own furniture,
+	-- so they stay in.
+	local half = math.floor((overlay.width - 1) / 2)
+	for index = 1, #overlay.runs do
+		local run = overlay.runs[index]
+		if run.id:sub(1, 5) ~= "wall_" and run.id:sub(1, 5) ~= "edge_" then
+			local min_x, max_x, min_z, max_z
+			if run.axis == "x" then
+				min_x, max_x = run.from, run.to
+				min_z, max_z = run.at - half, run.at + half
+			else
+				min_z, max_z = run.from, run.to
+				min_x, max_x = run.at - half, run.at + half
+			end
+			local low, high = anchor_y, anchor_y
+			for step = 0, 16 do
+				local along = min_x + math.floor((max_x - min_x) * step / 16)
+				local across = min_z + math.floor((max_z - min_z) * step / 16)
+				local y = grug_zones.terrain_height_at(anchor_x + along,
+					anchor_z + across)
+				if y < low then low = y end
+				if y > high then high = y end
+			end
+			-- `avenue_north` and the like become "avenue"; `ring_east`, "ring";
+			-- `lane_*`, "lane". One bucket per street family, which is the level
+			-- the answer is wanted at.
+			local kind = run.id:match("^([a-z]+)") or "street"
+			census_add(kind, run.id, anchor_x + min_x, anchor_x + max_x,
+				low - STREET_BAND_DOWN, high + STREET_BAND_UP,
+				anchor_z + min_z, anchor_z + max_z)
+		end
+	end
+end
+
+-- One mapchunk's contribution. `origin` is the chunk's minimum corner; a
+-- mapchunk is 80 nodes on a side.
+local function census_mapchunk(origin)
+	census_plan()
+	local max_x, max_y, max_z = origin.x + 79, origin.y + 79, origin.z + 79
+	for index = 1, #census_regions do
+		local region = census_regions[index]
+		local x0 = math.max(region.min_x, origin.x)
+		local x1 = math.min(region.max_x, max_x)
+		local y0 = math.max(region.min_y, origin.y)
+		local y1 = math.min(region.max_y, max_y)
+		local z0 = math.max(region.min_z, origin.z)
+		local z1 = math.min(region.max_z, max_z)
+		if x0 <= x1 and y0 <= y1 and z0 <= z1 then
+			local row = census_rows[region.kind]
+			local minp = {x = x0, y = y0, z = z0}
+			local maxp = {x = x1, y = y1, z = z1}
+			local here = 0
+			local trunks = core.find_nodes_in_area(minp, maxp, TREE_NAMES)
+			for step = 1, #trunks do
+				local pos = trunks[step]
+				local id = pos.x .. ":" .. pos.y .. ":" .. pos.z
+				-- A lane's band and a plot's box can overlap by a node or two,
+				-- and one trunk is one trunk: the first region to claim it
+				-- keeps it, and plots are planned first.
+				if not census_seen[id] then
+					census_seen[id] = true
+					row.trunks = row.trunks + 1
+					if region.authored then
+						-- A PLOT: the blueprint is the discriminator.
+						if not region.authored[id] then
+							row.wild = row.wild + 1
+							here = here + 1
+						end
+					else
+						-- A STREET: the canopy is.
+						local wooded = false
+						for lift = 1, CANOPY_REACH do
+							local above = core.get_node_or_nil(
+								{x = pos.x, y = pos.y + lift, z = pos.z})
+							if above and
+									core.get_item_group(above.name, "leaves") > 0 then
+								wooded = true
+							end
+						end
+						if wooded then
+							row.canopy = row.canopy + 1
+							here = here + 1
+						end
+					end
+				end
+			end
+			local leaves = core.find_nodes_in_area(minp, maxp, LEAF_NAMES)
+			row.leaves = row.leaves + #leaves
+			region.found = (region.found or 0) + here
+			if region.found > row.worst then
+				row.worst = region.found
+				row.worst_id = region.id
+			end
+		end
+	end
+end
+
+local function census_report()
+	local parts = {}
+	if census_regions == nil then return parts end
+	table.sort(census_order)
+	local total = 0
+	for index = 1, #census_order do
+		local kind = census_order[index]
+		local row = census_rows[kind]
+		-- The FINDING of each kind: a plot's is the wild trunks (the blueprint
+		-- says which are its own), a street's is the canopied ones.
+		local found = row.wild + row.canopy
+		total = total + found
+		parts[#parts + 1] = "trees_" .. kind .. "_regions=" .. row.regions
+		parts[#parts + 1] = "trees_" .. kind .. "_trunks=" .. row.trunks
+		parts[#parts + 1] = "trees_" .. kind .. "_wild=" .. row.wild
+		parts[#parts + 1] = "trees_" .. kind .. "_canopy=" .. row.canopy
+		parts[#parts + 1] = "trees_" .. kind .. "_leaves=" .. row.leaves
+		parts[#parts + 1] = "trees_" .. kind .. "_worst=" .. row.worst
+		parts[#parts + 1] = "trees_" .. kind .. "_worst_id=" .. row.worst_id
+	end
+	parts[#parts + 1] = "trees_found_total=" .. total
+	return parts
+end
+
+--
 -- 4. The socket inventory, straight out of the registry.
 --
 local function socket_report()
@@ -705,6 +945,13 @@ local function emerge_done(_, action, calls_remaining, state)
 	completed = completed + 1
 	local elapsed = core.get_us_time() - state.started_us
 	timings[#timings + 1] = {case = state.case, us = elapsed}
+	-- THE TREE CENSUS RIDES ALONG, and AFTER the timing is taken so it cannot
+	-- be charged to the mapchunk it reads. Only the capital's own mapchunks:
+	-- the warm-up, the control capital and the three open-land controls are
+	-- there to be compared against, not to be censused.
+	if state.case.kind == "capital" and not ground_only then
+		census_mapchunk(state.case)
+	end
 	log({"event=mapchunk", "case=" .. state.case.id,
 		"mapchunk=" .. state.case.key,
 		"kind=" .. state.case.kind,
@@ -794,6 +1041,8 @@ local function report_complete()
 		parts[#parts + 1] = "worst_submerged_plot=" .. worst_wet_plot
 		local sockets = select(1, socket_report())
 		for index = 1, #sockets do parts[#parts + 1] = sockets[index] end
+		local trees = census_report()
+		for index = 1, #trees do parts[#parts + 1] = trees[index] end
 	end
 	log(parts)
 	core.request_shutdown("WP13 capital probe complete", false, 0.2)
