@@ -36,14 +36,15 @@ Read: `ROADMAP.md`, `BACKLOG.md`, `README.md`, `AGENTS.md`, all 18
 | (c) two docs contradict | 5 | 0 | 0 |
 | (d) stale numbers, paths, names, status boxes | 6 | 0 | 0 |
 | (e) code behaviour nobody documented | 0 | 2 | 0 |
+| (f) links that do not resolve | 0 | 1 | 0 |
 | verified correct (checked, left alone) | — | — | 11 |
-| **total** | **14** | **2** | **11** |
+| **total** | **14** | **3** | **11** |
 
 The `skill_trees.md` §7 tasks are counted separately in §4: six of the nine are
 doc-only and this lane's, and each is recorded there with its verification.
 
 Three findings carry a measurement rather than a citation; they are marked
-MEASURED. The two FOR-THE-USER rows are in §3 and say what is unmeasured.
+MEASURED. The FOR-THE-USER rows are in §3 and say what is unmeasured.
 
 ## 1. FIXED
 
@@ -200,7 +201,24 @@ engine's own convention and every other tool in the game counts that way;
 wrong. It is listed because it is exactly the kind of number a later balance
 pass reads off a design doc and then disbelieves in the engine.
 
-### 3.3 Still open from the first sweep
+### 3.3 Six relative links that do not resolve, none of them fixable here
+
+MEASURED by walking every `](*.md)` link in every Markdown file outside
+`reference_projects/` (the script is in §5): all but six resolve, and all six
+predate wave 3.
+
+| File | Link | Why |
+|---|---|---|
+| `tools/wp13/evidence/20260914-{kapok,sunscar,stillgrave,silverleaf,dawnmere}/README.md` | `../../../docs/research/wp13-*.md` | one `../` short — the README sits four levels down, so the path resolves to `tools/docs/research/` |
+| `docs/research/wp40-simple-map-r6-preflight.md` | `../../TODO-design-wp40-r6-contract.md` | the TODO was folded in and deleted, which is the documented lifecycle for a `TODO-*.md` |
+
+The five evidence READMEs are inside **frozen evidence packages** whose
+`files.sha256` covers them, so correcting a link there moves a frozen digest
+for a typo — the coordinator's call, not a lane's. The preflight note is a
+dated record and its dead link points at a file that was *supposed* to be
+deleted. Both are listed rather than fixed.
+
+### 3.4 Still open from the first sweep
 
 Nothing in wave 3 answered lane A's three FOR-THE-USER items, and this pass
 found no new evidence on any of them: the five *"WP40 must …"* obligations
@@ -273,6 +291,27 @@ grep -rn -i trainer mods/ --include=*.lua
 grep -n "get_attach() or self.attack" mods/ENTITIES/mobs/api.lua
 ```
 
+Section 3.3's link walk, kept separate because it is the one check that reads
+every Markdown file in the repository:
+
+```python
+import io, os, re
+for root, dirs, files in os.walk('.'):
+    if '.git' in root or 'reference_projects' in root:
+        continue
+    for name in files:
+        if not name.endswith('.md'):
+            continue
+        path = os.path.join(root, name)
+        text = io.open(path, encoding='utf-8').read()
+        for m in re.finditer(r'\]\(([^)#\s]+\.md)(#[^)]*)?\)', text):
+            if m.group(1).startswith('http'):
+                continue
+            target = os.path.normpath(os.path.join(root, m.group(1)))
+            if not os.path.exists(target):
+                print('broken:', path, '->', m.group(1))
+```
+
 ## 6. Deliberately not touched
 
 Other round-4 lanes own these in parallel and this lane reported rather than
@@ -306,7 +345,7 @@ row in it, and the first sweep's note gets a pointer to this one.
 
 ## 8. Open
 
-- The two §3 items, and the three carried over in §3.3, need the user's or the
-  coordinator's decision.
+- The three §3 items, and the three carried over in §3.4, need the user's or
+  the coordinator's decision.
 - `skill_trees.md` §7's table and header describe work this branch finished
   (§4); its owner has to fold that in.
