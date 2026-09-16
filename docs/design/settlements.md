@@ -146,9 +146,25 @@ nodes down and the plot clears its own airspace, and a plot whose ground falls
 further than the skirt reaches is moved rather than propped. The **avenues** and
 the ring street have no fixed cells at all: they are computed per mapchunk from
 the ground the map actually has, climbing terraces half a node at a time and
-crossing water as a causeway, with a lamp line every eight nodes that survives
+crossing water as a bridge, with a lamp line every eight nodes that survives
 the mapchunk borders. Where an avenue crosses the ring street the avenue runs
 through and the side street yields, and no lamp stands in the crossing road.
+
+**One street rule, for every street of every capital.** Decided 2026-09-16 with
+playtest round 5 and shipped the same day
+([wp13-street-geometry.md](../research/wp13-street-geometry.md)); it holds for
+avenues, ring streets, district lanes, fill lanes and gate approaches alike.
+A street's **cross profile is flat** — every lane of a run walks at one level,
+and the run climbs at most one node per column. Where two streets cross, the
+junction is a **square plateau on a single y**, computed identically by both
+runs, so the approaches ramp up to it instead of meeting at a step. A street
+column raised **three nodes or more** above its own ground carries the deck
+course and **open air beneath it**, on pillars every eight columns under the
+verges — a raised street is a viaduct, never a solid earth bank. And a street
+that stands over water is a **bridge**: the deck one node clear of the surface,
+nothing at or below the water line, piers on the verges and a planked, railed
+walk over them, in the race's own palette. Lamps foot at the street's own
+level, not at the ground of the column beside it.
 
 A capital has **four districts**, one in each of the quarters the four avenues
 cut the envelope into: market and professions, martial and garrison, lore and
@@ -217,7 +233,13 @@ their own reference column and their own foundation skirt, because ground laid
 at the core's height across a terrace is ground with a step through it, and they
 travel with their district when the seed moves it. What stands on them is the
 district's trade: a garrison musters and chops wood on its ground, a residential
-quarter grows and grazes on its.
+quarter grows and grazes on its. **And a field grows something of that race's
+own** — decided 2026-09-16, playtest round 5 ("Fields in Kezamba grow 'Mossy
+Stone'? That cannot be right"): where a race binds no crop of its own the fill
+fell back to its plain ground node and a field was a rectangle of bare mud, so
+the palette now carries a tilled crop and a planted bed, and a planter is cut
+deep enough to have soil between its two kerbs rather than being all kerb
+([wp13-kezamba.md](../research/wp13-kezamba.md)).
 
 **The dwarf capital.** Decided 2026-09-15 with Dur Brannoc's four quarters. Its
 citadel is stone block, its halls are pine under slate, and its city stands
@@ -319,7 +341,7 @@ seven plots, thirty-six in all, with the same sixteen fill dressings every
 capital has.
 
 **Nhal Veyr, the raised necropolis.** Shipped 2026-09-15, the last of the wave-2
-capitals to land and one of the three walled ones. It is the first capital whose FILL is not fields and
+capitals to land and one of the four walled ones. It is the first capital whose FILL is not fields and
 gardens: where Highcourt has crop fields, an orchard belt and a pond, the undead
 capital has grave fields, bone yards, ruin closes and candle courts, and the
 turf between its civic quarters is a burial ground with gravewood stands in it.
