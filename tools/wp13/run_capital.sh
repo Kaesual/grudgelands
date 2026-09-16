@@ -123,6 +123,14 @@ server_announce = false
 secure.enable_security = true
 fixed_map_seed = $seed
 num_emerge_threads = 1
+# THE PROBE HOLDS THE MAPBLOCKS OF A DUMP BOX WHILE IT READS THEM (round 4,
+# 2026-09-16). `core.get_node` loads nothing -- it answers `ignore` for a block
+# that is not resident -- so `capital_probe` force-holds a box between its
+# emerge and its read and releases it afterwards. The engine's default budget is
+# 16 blocks and Highcourt's district region is several hundred, so the budget is
+# raised for this disposable world. The blocks are in memory already (the probe
+# just emerged them); the hold is bookkeeping, not a second copy.
+max_forceloaded_blocks = 4096
 grug_wp13_probe_key = $key
 grug_wp13_probe_mode = $mode
 grug_wp13_probe_timeout = $((timeout_s - 120))
