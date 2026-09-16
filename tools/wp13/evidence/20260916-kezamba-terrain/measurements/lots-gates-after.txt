@@ -1,0 +1,40 @@
+kind	seed	run	gate	terrain	road	step	ramp	drop	floating	on_water/on_deck/on_pillars	cells
+kezamba_gate	531802985935182545	avenue_south	-256	76	76	0	0	0	0	0/0/254	1727
+kezamba_gate	531802985935182545	avenue_north	256	90	90	0	0	0	0	653/0/391	2257
+kezamba_gate	531802985935182545	avenue_west	-256	37	37	0	0	0	0	0/0/135	1526
+kezamba_gate	531802985935182545	avenue_east	256	44	44	0	0	0	0	697/0/116	2050
+kezamba_gate	8675309	avenue_south	-256	90	90	0	0	0	0	0/0/502	1939
+kezamba_gate	8675309	avenue_north	256	72	72	0	0	0	0	653/0/331	2142
+kezamba_gate	8675309	avenue_west	-256	33	33	0	0	0	0	0/0/125	1600
+kezamba_gate	8675309	avenue_east	256	33	33	0	0	0	0	697/0/247	2052
+kezamba_gate	15912857179583385436	avenue_south	-256	75	75	0	0	0	0	0/0/291	1775
+kezamba_gate	15912857179583385436	avenue_north	256	74	74	0	0	0	0	653/0/315	2110
+kezamba_gate	15912857179583385436	avenue_west	-256	37	37	0	0	0	0	0/0/228	1918
+kezamba_gate	15912857179583385436	avenue_east	256	44	44	0	0	0	0	697/0/186	2012
+kezamba_gate	0	avenue_south	-256	72	72	0	0	0	0	0/0/449	1840
+kezamba_gate	0	avenue_north	256	52	52	0	0	0	0	653/0/415	2209
+kezamba_gate	0	avenue_west	-256	27	27	0	0	0	0	0/0/252	1829
+kezamba_gate	0	avenue_east	256	21	21	0	0	0	0	697/0/280	2143
+kezamba_gate	1	avenue_south	-256	72	72	0	0	0	0	0/0/324	1748
+kezamba_gate	1	avenue_north	256	71	71	0	0	0	0	653/0/377	2187
+kezamba_gate	1	avenue_west	-256	33	33	0	0	0	0	0/0/68	1517
+kezamba_gate	1	avenue_east	256	39	39	0	0	0	0	697/0/135	1935
+kezamba_gate	2	avenue_south	-256	58	58	0	0	0	0	0/0/392	1751
+kezamba_gate	2	avenue_north	256	59	59	0	0	0	0	653/0/203	2198
+kezamba_gate	2	avenue_west	-256	36	36	0	0	0	0	0/0/115	1552
+kezamba_gate	2	avenue_east	256	28	28	0	0	0	0	697/0/267	2126
+kezamba_gate	42	avenue_south	-256	84	84	0	0	0	0	0/0/352	1904
+kezamba_gate	42	avenue_north	256	80	80	0	0	0	0	653/0/308	2164
+kezamba_gate	42	avenue_west	-256	39	39	0	0	0	0	0/0/164	1527
+kezamba_gate	42	avenue_east	256	43	43	0	0	0	0	697/0/135	2057
+kezamba_gate	12345	avenue_south	-256	96	96	0	0	0	0	0/0/421	2059
+kezamba_gate	12345	avenue_north	256	73	73	0	0	0	0	653/0/431	2197
+kezamba_gate	12345	avenue_west	-256	41	41	0	0	0	0	0/0/176	1559
+kezamba_gate	12345	avenue_east	256	39	39	0	0	0	0	697/0/138	1953
+kezamba_gate	999999999	avenue_south	-256	69	69	0	0	0	0	0/0/442	1818
+kezamba_gate	999999999	avenue_north	256	75	75	0	0	0	0	653/0/422	2208
+kezamba_gate	999999999	avenue_west	-256	27	27	0	0	0	0	0/0/177	1571
+kezamba_gate	999999999	avenue_east	256	34	34	0	0	0	0	697/0/235	2108
+kezamba_gates_worst	step	0	-	-	floating	0	-	ceiling	1
+kezamba_gates PASS: every avenue arrives at its gate point within 1 node of the terrain with nothing floating, on all 9 seeds
+exit=0

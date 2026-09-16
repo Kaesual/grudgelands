@@ -2,6 +2,7 @@
 --
 --     luajit tools/wp13/kezamba_lots.lua <repo> check
 --     luajit tools/wp13/kezamba_lots.lua <repo> walk
+--     luajit tools/wp13/kezamba_lots.lua <repo> repair
 --     luajit tools/wp13/kezamba_lots.lua <repo> gates
 --     luajit tools/wp13/kezamba_lots.lua <repo> sweep <reach> [<count>]
 --     luajit tools/wp13/kezamba_lots.lua <repo> map
@@ -254,6 +255,116 @@ if mode == "pack" then
 		io.write("\t\t-- ", region.key, ": ", placed, " of ", #reaches, "\n")
 	end
 	os.exit(0)
+end
+
+-- `repair`: THE GROUND UNDER A FINISHED CITY HAS MOVED.
+--
+--     luajit tools/wp13/kezamba_lots.lua <repo> repair
+--
+-- `pack` invents a layout and is the right tool exactly once. When a WP40
+-- terrain package moves the ground under a city that already stands -- which
+-- the `cenote_terrace` apron of 2026-09-16 did -- re-running `pack` would slide
+-- districts that are perfectly legal and rearrange a composition for nothing.
+-- This is `tools/wp13/highcourt_plots.lua --repair`'s rule applied here: KEEP
+-- EVERY LEGAL LOT, and move only an illegal one, to the NEAREST legal centre
+-- that clashes with none of the other fifty-one.
+--
+-- The search is deterministic and lattice-aligned: candidates on the packer's
+-- own even lattice, ranked by (Manhattan distance from the authored centre, x,
+-- z), first hit wins. It prints the replacement row for `wp13/kezamba_lots.lua`
+-- and nothing else has to be decided by hand.
+--
+-- AND IF NOTHING FITS AT THE LOT'S OWN REACH, IT TRIES A SMALLER FILL SIZE
+-- BEFORE IT GIVES UP -- which the apron of 2026-09-16 made necessary and is a
+-- measurement, not a convenience. `totem_f2` stood at (66, 154) with a reach of
+-- 11 on the lake's north bank; the apron steps the ground up from the shore at
+-- the terrace step, so that lot now looks up a 33-node slope inside its own
+-- clear. There is no other reach-11 centre for it: over the whole totem band on
+-- the packer's lattice exactly TWELVE are legal, all of them in the far
+-- north-east corner 150 nodes from the district's spine -- and the same twelve,
+-- in the same corner, on the tree WITHOUT the apron. The shortage is the lake's
+-- and not this change's. A reach of 8 has 39, several of them ten nodes from
+-- where the lot already stood, so the ladder below prefers a SMALLER lot in its
+-- own quarter over a full-sized one in someone else's.
+if mode == "repair" then
+	-- The fill reaches `pack` uses, largest first: a repair may drop to a
+	-- smaller one and never grows a lot.
+	--
+	-- A BUILDING PLOT NEVER SHRINKS. Its yard is not empty -- a building is
+	-- projected into it and `kezamba_plot.build` measures the part against the
+	-- reach -- so a smaller reach would either refuse at construction or leave
+	-- the composition wider than the lot the predicate measured, which is the
+	-- rule `kezamba_kat.lua` asserts ("is wider than the lot it was measured
+	-- on"). Only a `fill` lot, whose yard IS its reach, may take a smaller size;
+	-- a building plot moves or the repair says it could not.
+	local REACH_LADDER = {13, 11, 8, 5}
+	local all = lots.all()
+	local function clashes_with_others(id, x, z, reach)
+		for index = 1, #all do
+			local other = all[index]
+			if other.id ~= id then
+				local gap_x = math.abs(x - other.x) -
+					(reach + other.reach + 2 * MARGIN)
+				local gap_z = math.abs(z - other.z) -
+					(reach + other.reach + 2 * MARGIN)
+				if gap_x <= 0 and gap_z <= 0 then return true end
+			end
+		end
+		return false
+	end
+	io.write("kind\tid\tfrom_x\tfrom_z\tto_x\tto_z\tmoved\trefusal\n")
+	local moved, unrepairable = 0, 0
+	for index = 1, #all do
+		local lot = all[index]
+		local refusal = legal(lot.x, lot.z, lot.reach, MIN_CLEAR)
+		if refusal == nil and not clashes_with_others(lot.id, lot.x, lot.z,
+				lot.reach) then
+			io.write("kezamba_repair_keep\t", lot.id, "\t", lot.x, "\t", lot.z,
+				"\t", lot.x, "\t", lot.z, "\t0\t-\n")
+		else
+			local best
+			for ladder = 1, #REACH_LADDER do
+				local reach = REACH_LADDER[ladder]
+				if reach == lot.reach or
+						(reach < lot.reach and lot.kind == "fill") then
+					for radius = 0, 64, 2 do
+						for dz = -radius, radius, 2 do
+							local dx_span = radius - math.abs(dz)
+							for _, dx in ipairs(dx_span == 0 and {0} or
+									{-dx_span, dx_span}) do
+								local x, z = lot.x + dx, lot.z + dz
+								if best == nil and
+										legal(x, z, reach, MIN_CLEAR) == nil and
+										not clashes_with_others(lot.id, x, z, reach) then
+									best = {x = x, z = z, cost = radius,
+										reach = reach}
+								end
+							end
+						end
+						if best then break end
+					end
+				end
+				if best then break end
+			end
+			if best then
+				moved = moved + 1
+				io.write("kezamba_repair_move\t", lot.id, "\t", lot.x, "\t",
+					lot.z, "\t", best.x, "\t", best.z, "\t", best.cost,
+					"\treach ", lot.reach, "->", best.reach, " ",
+					tostring(refusal or "clash"), "\n")
+				io.write(string.format(
+					"\t\t{id = \"%s\", kind = \"%s\", x = %d, z = %d, reach = %d},\n",
+					lot.id, lot.kind, best.x, best.z, best.reach))
+			else
+				unrepairable = unrepairable + 1
+				io.write("kezamba_repair_FAIL\t", lot.id, "\t", lot.x, "\t",
+					lot.z, "\t-\t-\t-\t", tostring(refusal or "clash"), "\n")
+			end
+		end
+	end
+	io.write("kezamba_repair\t", #all, "\tmoved\t", moved, "\tunrepairable\t",
+		unrepairable, "\n")
+	os.exit(unrepairable == 0 and 0 or 1)
 end
 
 -- `walk`: CAN A PLAYER WALK UP TO EVERY PLOT, ON ALL NINE SEEDS.

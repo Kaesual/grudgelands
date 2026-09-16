@@ -1,0 +1,8 @@
+  now      a0cc1bdfd18bfbb3f92ae4e10c7c3ef4c8d4df4765050b0e11e6afb7d4e8ab5a
+  expected 96307e939b9c29420175aa60c15ea0f9ca5cf9c526eb54e82185ab4d4843860b (/home/jan/projects/grudgelands/.claude/worktrees/agent-a3971e83368bcab82/tools/wp13/evidence/20260915-capital-terrain/kezamba/avenue-digest-531802985935182545.txt)
+rampart: this capital publishes no such overlay region
+corner: this capital publishes no such overlay region
+gate: this capital publishes no such overlay region
+refreeze: wrote /home/jan/projects/grudgelands/.claude/worktrees/agent-a3971e83368bcab82/tools/wp13/evidence/20260915-capital-terrain/kezamba/avenue-digest-531802985935182545.txt
+a0cc1bdfd18bfbb3f92ae4e10c7c3ef4c8d4df4765050b0e11e6afb7d4e8ab5a  avenue seed=531802985935182545 overlay_cells=2345 main=1f5a2c32 package=wp13-w3-kezamba-terrain
+exit=0

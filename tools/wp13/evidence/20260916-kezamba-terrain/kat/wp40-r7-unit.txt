@@ -1,0 +1,10 @@
+WP40 R7 evidence contract KAT PASS catalog=0ceca26640c4d4ebff98d7df1f0211d4f44c7accb9072aee5a020ad4bce63e7e populations=12/8/6 rejection_reasons=11
+WP40 R7 native inputs KAT PASS noise=5a1183a0db4dcbf7c2fce382e907660bfd26e53325d370f62a2d9e78c04d8738 native=d1fe4ac1c7cbe5525af65bde48cc4309870c01e4d474785f2cf0cda3d2639480 setters=6 reads=24 ores=6
+wp33_gathering_kat_v1
+manifest_sha256	d03533037c5a38cf62b85963a59b19efe9f48f770b5b6f3885f20f7b17f0af53
+population	12/8/6
+cultural_digests	6
+registered_nodes	18
+harvest_cases	pass
+R7_CONSUMER_KAT_V1	PASS
+WP40 R7 anchor activation KAT PASS roots=42 protected_columns=36

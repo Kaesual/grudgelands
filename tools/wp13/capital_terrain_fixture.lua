@@ -36,6 +36,35 @@
 --     capital_orc     (Gor Drazhak)  38   3  10     44   4  10
 --     capital_troll   (Kezamba)     103  62  70    108  74  85
 --
+-- WHAT THE TABLE ABOVE NO LONGER SAYS, measured 2026-09-16 on main `f37a0c5b`
+-- before this lane changed anything: Dur Brannoc reads 77 and 61 rather than
+-- the 81 and 66 recorded here, and Kezamba 59 and 71 rather than 62 and 74.
+-- Both moved DOWNWARD under some package between 2026-09-15 and that commit
+-- and neither ceiling was re-taken, which is the right way round -- a stale
+-- ceiling that is too generous is a gate that has stopped measuring, not one
+-- that fails. They are left as they are here; re-taking them belongs to the
+-- lane that owns those capitals.
+--
+-- KEZAMBA'S CEILING WAS RE-TAKEN, 2026-09-16, and it went UP. Playtest 5:
+-- "The capital core in Kezamba stands on an unnatural plateau, the terrain has
+-- no natural course there." `wp40/height.lua`'s `cenote_terrace` apron answers
+-- it by stepping the ground down from the civic reference and from the lake's
+-- own rim at the race's terrace step instead of ending both in a face -- so it
+-- deliberately REPLACES gentle wild ground with terrace risers of exactly 3,
+-- and this fixture counts every one of those as unclimbable. The trade, on the
+-- two gate seeds and in this fixture's own columns:
+--
+--     climb3     (a riser of exactly the step)   731 -> 1705   1014 -> 2283
+--     climb5plus (a wall no terrace explains)    272 ->   23    300 ->   45
+--     max        (the tallest riser anywhere)     17 ->    8     21 ->   10
+--     per_mille                                   59 ->   77     71 ->   95
+--
+-- The number that went up is the one that counts terraces; the numbers that
+-- went down are the ones that count walls. The wall itself is measured by
+-- `tools/wp13/kezamba_water.lua --walls`, which is the gate that owns the
+-- playtest finding: the civic pad's own face, 17 to 28 nodes over the nine
+-- fixture seeds before and exactly the terrace step after.
+--
 -- WHAT THE RESIDUE IS, AND WHAT IT IS NOT. It is NOT the ground's own rock.
 -- Measured against the UNGRADED relief of the same envelope (+-200, Dur
 -- Brannoc, seed 8675309), 59.5 per cent of the columns that are still
@@ -81,7 +110,9 @@ local CEILING = {
 	capital_elf = {["531802985935182545"] = 10, ["8675309"] = 15},
 	capital_undead = {["531802985935182545"] = 10, ["8675309"] = 10},
 	capital_orc = {["531802985935182545"] = 10, ["8675309"] = 10},
-	capital_troll = {["531802985935182545"] = 70, ["8675309"] = 85},
+	-- Re-taken 2026-09-16 with the `cenote_terrace` apron: measured 77 and 95
+	-- against 59 and 71 before it, and the header above carries the trade.
+	capital_troll = {["531802985935182545"] = 85, ["8675309"] = 105},
 }
 
 local capitals = {}

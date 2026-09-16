@@ -56,6 +56,8 @@ local function loader(directory)
 
 	M.BASALT = handles.BASALT
 	M.WATER = handles.WATER
+	M.CROP = handles.CROP
+	M.VINE = handles.VINE
 
 	-- ---- the socket shapes a roster may publish -----------------------
 
@@ -145,6 +147,19 @@ local function loader(directory)
 		elseif plot.handle == "basalt_water" then
 			palette = palettes.new("troll",
 				handles.merged(handles.BASALT, handles.WATER))
+		elseif plot.handle == "vine" then
+			-- The raised-bed gardens: `dressing.planter`'s two interior roles
+			-- rebound to the race's own jungle growth, for the two plots that
+			-- are a garden and for nothing else.
+			palette = palettes.new("troll", handles.VINE)
+		elseif plot.handle == "crop" then
+			-- The crop handle is the one a FIELD asks for, and only a field:
+			-- binding `crop` everywhere would change `dressing.plant` too --
+			-- it reads `flower or crop or grass_tuft` -- and put reeds in
+			-- every grove, pasture and terrace this capital dresses. The
+			-- three fields of `kezamba_districts.lua` name it and nothing
+			-- else does.
+			palette = palettes.new("troll", handles.CROP)
 		end
 		local spec = {}
 		for key, value in pairs(plot.spec or {}) do spec[key] = value end

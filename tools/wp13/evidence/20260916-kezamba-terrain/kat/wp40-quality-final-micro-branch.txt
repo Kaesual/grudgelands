@@ -1,0 +1,165 @@
+Lua 5.1	LuaJIT 2.1.1767980792
+schema	grug_wp40_quality_final_micro_v1
+schema	grug_wp40_tree_slice_micro_kat_v1
+asset_sha256	3d91afa7dd3fbf6d15c295716af5409d3d77b0dff1464d623ef91433fdfd508f
+pine_rotation	1
+pine_source_slices	1100001110111111
+pine_destination_y	5,6,7,8,9,10,11,12,13,14,15
+probability_calls_sha256	f200ee32e8e3c8e8940ff671b2987937647a80fda8a16d14585b9c90a0eb0f7e
+evidence_reserved	400/8
+synthetic_destination	5,6,7/node_gap_at_6_x18
+live_result	applied_cl
+digest	fdfb2f0db29461ae9ccc98d4bb0602034f9a176143fad00fdb502dd45f017ff5
+schema	grug_wp40_gravewood_fixture_v1
+small	7x7x7	wood=17	leaves=5	wood_prob=254	leaf_prob=96	sha256=d9ed79784879da9dd29a03a1221f87e0a292d933373061798ed27d9b4f272cd0
+tall	7x9x7	wood=23	leaves=8	wood_prob=254	leaf_prob=96	sha256=ae5c035abc0e03317c1014d5373113a2d09ed7944865075fdfd45504febbc2f8
+rotations	4	connected=pass	preflight=pass
+growth	shared_assets=pass	template_route=pass	leaves_no_drop=pass
+banner_faces	3072	opaque	front_back_match
+schema	grug_wp40_gravewood_writer_v1
+templates	2	class=1
+rotations	8	mandatory_wood=pass
+writer	applied_cl	optional_leaves=18	nonoverwrite=pass
+digest	ec55f014e48c91a148e26714d12a5ad95b602c88cb6ec2c605819acb4624de89
+schema	grug_wp40_flight_nudge_v1
+cases	high,low,canyon,unknown,water,attack,root,nonair,lifecycle,probe
+result	pass
+schema	grug_wp40_coupled_grade_oracle_v1
+cases	294
+nodes	1040
+edges	867
+digest	2013808385
+scale	768	line,fan
+coupled_grade_oracle	ok
+schema	grug_wp40_resource_hash_primitives_v2
+domains	12
+framing	count7/binary/bounds
+arithmetic	words/reduce/budget/byte_order/hex
+resource_hash_primitives	ok
+schema	grug_wp40_resource_sampling_fixture_v1
+known	423,2149,26,10,1,1
+prefix_sha256	a127dca374d593fa5ecf01362887734e1c84b3e9cb83cd3cb0caf2dd24709891
+rejection	ok
+exhaustion	4096
+bounds	ok
+writer_fields	7
+smoke	skipped_compact
+resource_sampling_fixture	ok
+schema	grug_wp40_resource_rank_diff_v1
+mode	compact
+status	applied_c
+cases	H0/H1/H4096/B0/normal/budget_conservation/claims/inactive/region_empty/reuse/no_r5
+h4096	4096/1
+b0	1/0/0
+own_claim	4/0
+short_frontier	3/1
+exhausted	1/4/4
+raw_calls	19
+old_root_calls	0
+shuffle_calls	6
+census	4096/1/1
+census_sha256	05ee0e3f9b746288dfba9922fce0f35c6050446f4f2ecfbd9407e6ec28bfe126
+raw_framing_sha256	0caf694e2b7beee7be50cc71b1efbb87377cd4794c383b941a3e7351036f4bc0
+vm_canonical_sha256	81d38a946e13f982d07147754b22e91e4bc094b6a456b6373d0a20a125bd269d
+reused_vm_sha256	39b33ca3e308beb205277c7a66e800b33c2ce7cf6aac78a810362890c0cc969f
+digest	4b18d70e78fc90c554ee9e4a1daf21fa5de894e0102fc830312225f662c9247d
+schema	grug_wp40_quality_surface_v3
+grug_badlands	3
+grug_badlands_east	3
+grug_beach	1
+grug_blight	3
+grug_bone_forest	3
+grug_crags	2
+grug_crags_snowy	3
+grug_deep_forest	4
+grug_deep_jungle	4
+grug_elf_forest	4
+grug_jungle_edge	4
+grug_jungle_fringe	4
+grug_meadows	4
+grug_pine_hills	4
+grug_savanna	4
+grug_swamp	1
+samples	1296
+seed_differences	412
+slope_changes	36
+output_sha256	7bf54a385f4aea841a632f71e76cef7c9e14b5543347f03e8e877dc9013cb005
+schema	grug_wp40_biome_cover_fixture_v1
+checks	225024
+variant_templates	14
+variant_simple	66
+thinned	347
+candidates_sha256	9c96826b6bc08c07a28e934d79f902f46ab57b7786d9de5a13a5b12cf662b5be
+grug_wp40_simple_map_height_v5
+preferred	40
+preferred	10
+preferred	50
+edge	28	52	40	40
+edge	infeasible			
+edge	-9	19	-5	15
+schema	grug_wp40_quality_caves_v1
+synthetic_entrance	73/118/-1470/1/0
+ordered_population	93
+cache_evictions	233
+actual	compact
+cross_slice	compact
+schema	grug_wp40_planner_throughput_fixture_v1
+mixed_eligible	0
+dry_eligible	256
+mixed_budget_candidates	0/0
+dry_budget_candidates	256/256
+edge_budget_candidates	144/144
+mixed_candidates_digest	1111111111111111111111111111111111111111111111111111111111111111
+dry_candidates_digest	2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f
+edge_candidates_digest	c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1
+repeat_eligible	0
+queries_per_cell	400
+schema	grug_wp40_r5_wet_cache_fixture_v1
+mixed_bytes	1713
+dry_bytes	1628
+mixed_digest	14637360
+dry_digest	9167105
+bound_digest	2402327
+mixed_calls	90
+dry_calls	94
+repeat_calls	90
+recovery_calls	90
+bluajit: missing override target default:shovel_wood
+stack traceback:
+	[C]: in function 'error'
+	...971e83368bcab82/tools/wp40/r7/node_semantics_fixture.lua:300: in function <...971e83368bcab82/tools/wp40/r7/node_semantics_fixture.lua:6>
+	...nt-a3971e83368bcab82/tools/wp40/r7/micro_kat_fixture.lua:1074: in function <...nt-a3971e83368bcab82/tools/wp40/r7/micro_kat_fixture.lua:4>
+	...rees/agent-a3971e83368bcab82/tools/wp40/r7/micro_kat.lua:5: in function <...rees/agent-a3971e83368bcab82/tools/wp40/r7/micro_kat.lua:3>
+	tools/wp40/quality/final_micro.lua:31: in main chunk
+	[C]: at 0x55b300ff5b00
+ound_calls	13444
+vendor_current_version	PASS	player-appearance,book,chest,creative,torch,stairs,furnace,mob-reload,mob-reset-reload,mount
+schema	grug_fresh_server_materials_fixture_v1
+vendor_registrations	53_removed
+storage_derivatives	22_canonical
+material_aliases	0
+recipe_inputs	canonical
+handoff	validated
+result	pass
+wp13_blueprint	hearthpine	61932	46389	41	74	1232	9	10	10	0	180	15588	18	3
+wp13_blueprint	dawnmere	66361	44440	54	98	1467	9	12	10	0	27	15410	18	3
+wp13_blueprint	silverleaf	71495	53191	48	113	1350	9	11	10	0	109	15631	18	3
+wp13_blueprint	stillgrave	51641	37717	44	78	1292	5	7	8	2	74	15672	18	3
+wp13_blueprint	sunscar	57227	44102	43	112	1352	10	10	11	0	48	15957	18	3
+wp13_blueprint	kapok	72535	51967	42	87	837	8	9	9	0	110	16094	18	3
+WP40 R7 anchor activation KAT PASS roots=42 protected_columns=36
+grug_wp40_simple_map_height_v5
+start_reference	8	start_natural_samples_feasible	8	4	12	0	30	12
+start_excess	2	start_natural_samples_median_excess	2	22	10	20
+reference	50	capital_natural_core_feasible	0
+reference	57	capital_natural_core_minimax_route_min	30
+reference	-20	capital_natural_core_feasible	0
+terrace	57
+terrace	65
+terrace	-8
+road_low_edge	4	-3
+start_edge	4	3	4	3	5	3	2
+grade	5	6	6	5
+bank_floor	68	66	capital_natural_core_minimax_water_min
+ford_bank	16	17	20
+bank_cache	7	4096

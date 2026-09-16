@@ -1,0 +1,15 @@
+grug_wp40_simple_map_height_v5
+start_reference	8	start_natural_samples_feasible	8	4	12	0	30	12
+start_excess	2	start_natural_samples_median_excess	2	22	10	20
+reference	50	capital_natural_core_feasible	0
+reference	57	capital_natural_core_minimax_route_min	30
+reference	-20	capital_natural_core_feasible	0
+terrace	57
+terrace	65
+terrace	-8
+road_low_edge	4	-3
+start_edge	4	3	4	3	5	3	2
+grade	5	6	6	5
+bank_floor	68	66	capital_natural_core_minimax_water_min
+ford_bank	16	17	20
+bank_cache	7	4096

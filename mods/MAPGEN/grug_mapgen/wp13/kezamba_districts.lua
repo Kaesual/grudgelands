@@ -59,13 +59,45 @@ local function loader(directory)
 	-- That is the Highcourt fill's rule and it is repeated here because it is
 	-- what makes a work socket's "feature under `dir` within three nodes"
 	-- reliable: the worker stands on `z0 + 2` and looks into `z0 + 3`.
+	-- A FIELD GROWS SOMETHING. `dressing.crop_rows` falls back to
+	-- `ground_patch` and `planter_soil` for a race that binds neither
+	-- `crop_soil` nor `crop`, and for the troll palette both of those are
+	-- `grug_nodes:mud`, so these three fields were a rectangle of bare mud
+	-- (playtest 5, user: "Fields in Kezamba grow 'Mossy Stone'? That cannot be
+	-- right."). The three rows that call this one carry `handle = "crop"`,
+	-- which is `wp13/troll_palette.lua`'s `M.CROP` -- tilled furrows with
+	-- papyrus in every second row -- and the KAT counts the reeds.
 	local function crop_field(buf, palette, area)
 		area.dressing.crop_rows(buf, palette, area.x0 + 1, area.z0 + 3,
 			area.x1 - 1, area.z1 - 1, "x")
 	end
+	-- TWO DEEP BEDS, NOT SEVEN BARE KERBS -- the other half of the "fields
+	-- grow Mossy Stone" of playtest 5 (2026-09-16, user).
+	--
+	-- `dressing.planter` kerbs the PERIMETER of the rectangle it is given in
+	-- the `planter` role and fills the INTERIOR with `planter_soil` and a tuft
+	-- of the palette's `fern` and `grass_tuft`. For this race `planter` is
+	-- `default:mossycobble`, and the first version of this function asked for
+	-- rectangles of depth ONE (`z, z` -- the same row twice), in which every
+	-- cell is perimeter and none is interior. The result was seven solid rows
+	-- of mossy cobble across each vineyard with no soil and nothing growing in
+	-- them at all: 145 cells of bare stone and 0 plants, measured on the
+	-- composition itself (`tools/wp13/kezamba_kat.lua` section 6c).
+	--
+	-- A bed nine rows deep has the same two long kerbs and seven rows of
+	-- planted soil between them. The yard is 21 x 19 inside its forecourt, so
+	-- two beds of nine with one walking row between them fill it exactly:
+	-- 110 cells of stone (down from 145) and 266 planted (up from 0). The loop
+	-- is written in the yard's own extents rather than in those numbers, so a
+	-- lot of another reach lays as many whole beds as it has room for.
+	--
+	-- `area.z0 + 3` is still the first bed row, so the two `tend`/`forage`
+	-- sockets standing on `area.z0 + 2` still look straight into the cell
+	-- `dressing.plant` breaks the kerb for.
 	local function vine_terrace(buf, palette, area)
-		for z = area.z0 + 3, area.z1 - 1, 3 do
-			area.dressing.planter(buf, palette, area.x0 + 1, z, area.x1 - 1, z)
+		for z = area.z0 + 3, area.z1 - 9, 10 do
+			area.dressing.planter(buf, palette, area.x0 + 1, z,
+				area.x1 - 1, z + 8)
 		end
 		area.dressing.plant(buf, palette, area.x0 + 2, area.z0 + 3)
 		area.dressing.plant(buf, palette, area.x1 - 2, area.z0 + 3)
@@ -234,12 +266,14 @@ local function loader(directory)
 		fill = {
 			{id = "shore_vineyard", yard = {}, order = 11,
 				decorate = vine_terrace,
+				handle = "vine",
 				extra_sockets = function(area)
 					return {work("vine_a", "tend", area.x0 + 2, area.z0 + 2, 0),
 						work("vine_b", "forage", area.x1 - 2, area.z0 + 2, 0),
 						spare("vineyard", area.x1 - 1, area.z0 + 2, 0)}
 				end},
 			{id = "shore_gardens", yard = {}, order = 12, decorate = crop_field,
+				handle = "crop",
 				extra_sockets = function(area)
 					return {work("garden_a", "farm", area.x0 + 3,
 							area.z0 + 2, 0),
@@ -332,6 +366,7 @@ local function loader(directory)
 		},
 		fill = {
 			{id = "vine_common", yard = {}, order = 11, decorate = crop_field,
+				handle = "crop",
 				extra_sockets = function(area)
 					return {work("common_a", "farm", area.x0 + 3,
 							area.z0 + 2, 0),
@@ -342,6 +377,7 @@ local function loader(directory)
 				end},
 			{id = "vine_terraces", yard = {}, order = 12,
 				decorate = vine_terrace,
+				handle = "vine",
 				extra_sockets = function(area)
 					return {work("terrace_a", "tend", area.x0 + 2,
 							area.z0 + 2, 0),
@@ -357,6 +393,7 @@ local function loader(directory)
 							z = area.z0 + 2, face = 0, tags = {"bench"}}}
 				end},
 			{id = "vine_kitchen", yard = {}, order = 14, decorate = crop_field,
+				handle = "crop",
 				extra_sockets = function(area)
 					return {work("kitchen", "farm", area.x0 + 2,
 							area.z0 + 2, 0),

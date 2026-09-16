@@ -811,3 +811,733 @@ verge's kerbs and posts at `-6` with nothing between them and the ground.
    The king's hall is south-east of the crossing, the cauldron court in the
    south-west corner of the pad, the moot house on the lake's west bank at about
    (1776, 71, 1530), and the quay with its anglers runs north along x ≈ 1782.
+
+## 8. Wave 3, 2026-09-16: the unnatural plateau, and the fields that grew stone
+
+Second increment, written on the wave-2 merge `f37a0c5b` ("Freeze the Dur
+Brannoc corner digest on the gate seed"). Branch `wp13-w3-kezamba-terrain`.
+Evidence: `tools/wp13/evidence/20260916-kezamba-terrain/`.
+
+**It went through an independent review and a fix round on the same day**, and
+the numbers below are the fix round's. What the review changed: the safety
+argument for the apron was a theorem that did not survive its own measurement,
+so the apron's lake cone was rebuilt on a form that is 1-Lipschitz by
+construction and BOTH halves of the claim are now gated rather than asserted
+(§8.3b, §8.9); the Lane S rebase list grew from one frozen digest to four
+(§8.11.3); the vineyards grow a crop instead of wild grass (§8.8); and
+`refreeze_avenue.sh` stamps the merge base rather than the branch head. One
+review finding is deliberately not acted on: `tools/wp13/capital_terrain_fixture.lua`
+is a shared file and rode in a lane commit (`57bb3d8b`) rather than its own, and
+that commit is published history the coordinator has already reviewed. The fix
+round changed nothing in it -- the rebuilt cone left `per_mille` at exactly the
+77 and 95 the re-taken ceilings were taken against -- so there is no honest new
+commit to put it in. It stays as it is, named here.
+
+It answers the two findings the user raised about this capital in playtest 5
+(2026-09-16, screenshots 10-12), verbatim:
+
+> "The capital core in Kezamba stands on an unnatural plateau, the terrain has
+> no natural course there."
+
+> "Fields in Kezamba grow 'Mossy Stone'? That cannot be right."
+
+### 8.1 The wall, measured before anything was changed
+
+Nothing in the tree measured the thing the user saw.
+`tools/wp13/capital_terrain_fixture.lua` measures CLIMBS -- the share of a
+capital's ground with a land neighbour more than a jump up -- which is the right
+instrument for a terrace riser and the wrong one for a face: a pad that ends in
+a twenty-node wall has exactly one unclimbable column per edge column and
+disappears into a per-mille figure. So the first thing this lane did was build
+the instrument: `tools/wp13/kezamba_water.lua --walls`, which reports two
+numbers over the +-250 envelope on all nine fixture seeds (and, since the fix
+round, three more that gate the apron's own safety argument -- §8.9).
+
+* **`perimeter`** -- the step between a column on the civic core's own edge and
+  the column one outside it, over all 384 of them. The core is flat at the
+  fitted reference by contract, so this IS the height of the pad's own face.
+* **`land_land`** -- the worst fall between any two 4-adjacent LAND columns in
+  the envelope.
+
+On `f37a0c5b`:
+
+| seed | pad face (max) | pad face (mean) | worst land wall | columns over the step |
+| --- | --- | --- | --- | --- |
+| `531802985935182545` | **17** | 7.9 | **29** | 505 |
+| `8675309` | **21** | 10.0 | **27** | 895 |
+| `15912857179583385436` | **19** | 9.2 | **29** | 702 |
+| `0` | **28** | 15.0 | **39** | 2 678 |
+| `1` | **23** | 9.7 | **35** | 996 |
+| `2` | **27** | 11.9 | **38** | 2 096 |
+| `42` | **19** | 9.9 | **27** | 575 |
+| `12345` | **18** | 8.6 | **34** | 936 |
+| `999999999` | **19** | 9.9 | **31** | 874 |
+
+**Kezamba is the only capital this happens to, and that is a measurement.** The
+same instrument on the gate seed gives a civic perimeter face of **0 on all 384
+columns** for Highcourt, Dur Brannoc, Nhal Veyr and Gor Drazhak, and 0 on 376
+of 384 for Lethariel. Their fitted reference is a median of their own core's
+natural ground, so the ground just outside the core is already within the fill
+budget of it.
+
+### 8.2 Why, and it is two faces with one cause
+
+`wp40/height.lua`'s `capital_terrace_value` applies the profile's cut/fill clamp
+OUTSIDE the civic core and not inside it:
+
+```lua
+if civic_outside == 0 then
+    shaped = reference                                   -- no clamp
+...
+if civic_outside > 0 then
+    shaped = clamp(shaped, incoming - max_cut, incoming + max_fill)
+end
+```
+
+Kezamba's civic reference is not a median of anything. It is raised to clear
+WP40's authored `hydro_kezamba_cenote` -- the rule
+`capital_natural_core_minimax_water_min`, §1 -- and that lake's surface stands
+at y 65 while the wetland delta around the capital lies at y 36 to 45. So the
+last core column is 66 and the first column outside it is `natural + 16`, which
+on the gate seed is 55: **an eleven-node face, and up to twenty-eight over the
+nine seeds.**
+
+The same twenty-nine nodes appear a second time around the lake itself, and
+there the mechanism is `water_banks.protect`: it lifts every land column within
+two Manhattan steps of planned water to the water floor, so the cenote had a
+two-column rim at y 65 with graded delta at 37 one column beyond it. The
+measured worst 4-neighbour fall in the envelope, 27 to 39 nodes, is that rim and
+not the pad. A lake standing twenty-nine nodes above the jungle on a
+two-column kerb is the "no natural course" of the user's sentence as much as the
+pad is.
+
+### 8.3 The apron: one rule, shape-guarded, in `wp40/height.lua`
+
+    the graded land of this capital may not stand more than one TERRACE STEP
+    below the civic reference per column of distance from the civic core, nor
+    more than one terrace step below the lake's own dry rim per column of
+    distance from the lake's edge.
+
+Two cones, `constant - step * distance`, and the shaped value is their MAXIMUM
+with the clamped terrace. Each cone dies where it falls below the ground it is
+drawn over, which is what makes it a SKIRT of about `fall / step` columns and
+not a plateau: the fall is 20 to 30 nodes, so the skirt is ten to fifteen
+columns wide. `max` of fields steps by at most the worst of them, so an apron
+whose cones are `step`-Lipschitz adds no face of its own beyond `step`.
+
+**AND THAT LAST SENTENCE IS WHERE THE FIRST TWO VERSIONS OF THIS PACKAGE WERE
+WRONG.** The independent review of 2026-09-16 took the claim apart and it did
+not survive; §8.3b is the whole of that story, because a stated theorem that is
+the safety argument for a change to the shared height field is worth more space
+than the change itself.
+
+It is **shape-guarded**: `capital_terrace_value` takes `apron` as an eighth
+OPTIONAL argument, exactly as it takes `banded` as a seventh, and
+`fitting_grade_at` computes one only for `profile.shape == "cenote_terrace"`.
+The five other capital shapes and the frozen scalar cases of
+`module.quality_geometry_micro_kat` pass nothing, reach none of the new code and
+keep their answer to the byte (§8.6). The review proved that independently by
+mutation: changing the one string to `"terraced_grove"` moves Lethariel's field
+and reverts Kezamba's to main's value, and nothing else.
+
+### 8.3b The lake cone, three times, and the theorem it took to get one
+
+The civic cone was never in doubt: `half_open_square_excess` is a Chebyshev
+excess and is exactly 1-Lipschitz. The LAKE cone had to measure "how far outside
+the lake is this column", and the first two answers to that were both wrong in
+ways only a measurement finds.
+
+**One: the nearest centreline is not the nearest edge.** The first version asked
+`nearest_hydrology_segment`, which answers with the segment whose CENTRELINE is
+closest. At (1864, 1634), five columns off this cenote's south shore, that is the
+narrow first segment 62 columns away behind a half-width of 49 -- thirteen
+columns outside it -- while the wide second segment is 72 away behind a
+half-width of 70, two columns outside, which is where the water actually is. The
+lake rim kept its 29-node wall, and the `--walls` measurement is what caught it.
+
+**Two: the minimum over the candidate segments fixed that and left two faults of
+its own**, and the independent review is what caught these. `simple_map.lua`'s
+`bay_member` is the UNION of the segment capsules, so the distance outside it is
+the MINIMUM over the segments -- correct as far as it goes. But:
+
+* a segment leaves the candidate set at `max(half_width) + bank_blend_width` of
+  its centreline, and at the WIDE end of a tapered segment that cut-off still
+  sits nine columns outside the water, so the cone **fell off a cliff of its
+  own** whenever a segment was pruned;
+* `hydrology_half_width` interpolates along the segment, so the distance carries
+  the reach's own taper gradient -- measured at **0.460** on this cenote's first
+  segment and **0.401** on its third -- on top of the distance's own 1, and the
+  cone therefore moved up to 1.46 x 3 = 4.4 nodes a column.
+
+Measured exhaustively over the window the cone can reach, its own worst
+4-neighbour step was **54 nodes**, eighteen terrace steps. Most of that was
+invisible because the apron is a `max` floor and the cone was far below the
+ground where it was roughest, but it leaked into the shipped field as up to a
+**6-node face (9 on seed 0)** where the ground had had none -- one of them
+seventeen nodes east of the very shore §8.11 sends the user to stand on.
+
+**Three: a distance to a disc is a real distance.** `isqrt(dx*dx + dz*dz) - r`
+is 1-Lipschitz on the integer lattice (the true distance is, and an integer
+floor of a 1-Lipschitz function moves by at most one); the MINIMUM of finitely
+many 1-Lipschitz functions is 1-Lipschitz; `max(0, D - hold)` and a
+multiplication by `step` keep it so. So the cone measures its distance to the
+reach's **sample discs**, all of them, with no interpolation to carry a gradient
+-- and it is exactly `step`-Lipschitz by CONSTRUCTION rather than by assertion.
+
+**The discs are densified until they cover the mask, and that number is
+measured too.** The mask is the authored sample discs UNION the tapered capsules
+between them, and on this cenote's four authored samples alone the capsules add
+a sliver of 291 of the mask's 30 354 columns (0.96 %) that no disc covers. That
+sliver is small, but it is enough to push the SHORE HOLD up: `water_banks.protect`
+lifts every land column within two Manhattan steps of planned water to the water
+floor whatever the apron says, so the cone must be at or above that floor on
+every column `protect` can touch, and on four discs the worst such column stands
+6 outside them -- a hold of 6 and four more columns of flat rim than the water
+needs, which measured three district lots out of legality. Interpolating extra
+samples along each segment closes the gap, and an interpolated disc is as much a
+disc as an authored one:
+
+| spacing | authored only | 32 | **16** | 8 | 4 |
+| --- | --- | --- | --- | --- | --- |
+| worst distance from a MASK column to the nearest disc | 5 | 1 | **0** | 0 | 0 |
+| the same for a land column in `protect`'s ring | 6 | 3 | **2** | 2 | 2 |
+
+Sixteen is the coarsest spacing at which the discs cover the mask completely and
+the hold can stay at `protect`'s own two. It turns four authored samples into
+fourteen discs.
+
+**And the one window that remains is provably inert.** A disc stops being asked
+at `half_width + 64`, where its cone stands 186 nodes below the lake's rim --
+y -120 for this capital, below `WATER_LEVEL - 24`, which is the value the height
+session itself returns for a column outside the map. A disc that far away can
+never be the maximum of anything. That is exactly the guarantee the
+`maximum_half + bank_blend_width` window did NOT give, and `--walls` gates it as
+`live_prune_edges`: the count of columns that lose their last disc while the
+cone still stands above that floor, which must be zero.
+
+Measured the same way as the two formulations before it:
+
+| formulation | cone's own worst 4-neighbour step | worst land wall in the envelope (gate seed) | lots the terrain refused |
+| --- | --- | --- | --- |
+| nearest segment | (the rim kept its 29-node wall) | 29 | -- |
+| minimum over candidate segments | **54** | 8 | 1 |
+| minimum over four authored discs, hold 6 | 3 | 6 | 3, one of them unrepairable |
+| minimum over fourteen densified discs, hold 2 | **3** | **8** | **1** |
+
+and `tools/wp13/kezamba_water.lua --walls` gates the cone's own step with a
+ceiling that is the terrace step and is not a tuning knob.
+
+### 8.4 What the apron did, on nine seeds
+
+| seed | pad face | worst land wall | columns over the step | faces the apron is the high side of |
+| --- | --- | --- | --- | --- |
+| `531802985935182545` | 17 -> **3** | 29 -> **8** | 505 -> **53** | **0** |
+| `8675309` | 21 -> **3** | 27 -> **9** | 895 -> **223** | **0** |
+| `15912857179583385436` | 19 -> **3** | 29 -> **8** | 702 -> **142** | **0** |
+| `0` | 28 -> **3** | 39 -> **8** | 2 678 -> **900** | **0** |
+| `1` | 23 -> **3** | 35 -> **8** | 996 -> **380** | **0** |
+| `2` | 27 -> **3** | 38 -> **8** | 2 096 -> **746** | **0** |
+| `42` | 19 -> **3** | 27 -> **8** | 575 -> **49** | **0** |
+| `12345` | 18 -> **3** | 34 -> **11** | 936 -> **274** | **0** |
+| `999999999` | 19 -> **3** | 31 -> **8** | 874 -> **208** | **0** |
+
+**The pad's face is the terrace step on every one of the nine seeds**, which is
+the user's ruling as a number, and `--walls` is the gate that holds it. The last
+column is the fix round's answer to the independent review: with the cone built
+on the reach's densified sample discs, **the apron is the binding constraint on
+the high side of no over-step face at all**, on any seed. The over-step columns
+that remain are wild ground the apron never touched -- the review measured five
+sixths of them that way on its own instruments, out in rings 75 to 200 from the
+pad. The west
+pad edge on the anchor's own row, seed 531802985935182545, before and after:
+
+```
+x -52 -51 -50 -49 -48 -47
+    55  55  55  55  66  66      before -- 11 nodes in one column
+    55  57  60  63  66  66      after  -- a flight at the race's own step
+```
+
+and the lake's south shore, which was the taller of the two walls:
+
+```
+before   ... 39 39 39 39 | 65 65 65 65 ~~~      (a two-column kerb at the water)
+after    ... 39 42 45 48 | 51 54 57 60 63 66 ~~~
+```
+
+`measurements/lake-rim-before.txt` and `lake-rim-after.txt` carry both windows
+whole; `renders/pad-edge-west.png` is the section a reader can count the steps
+in and `renders/terraces-plan.png` the plateau from above, before beside after.
+In the plan the change is one thing: where the pad and the lake each ended in a
+single hard edge, both now carry a ring of concentric contour bands -- the
+skirt.
+
+### 8.5 What it costs, in the metric that goes the other way
+
+The apron deliberately REPLACES gentle wild ground with terrace risers of
+exactly 3, and `capital_terrain_fixture.lua` counts every one of those as
+unclimbable. On the two gate seeds, in that fixture's own +-128 window:
+
+| | seed 5318... | seed 8675309 |
+| --- | --- | --- |
+| `climb3` (a riser of exactly the step) | 731 -> **1 771** | 1 014 -> **2 357** |
+| `climb5plus` (a wall no terrace explains) | 272 -> **17** | 300 -> **39** |
+| `max` (the tallest riser anywhere) | 17 -> **8** | 21 -> **8** |
+| `per_mille` | 59 -> **77** | 71 -> **95** |
+
+The number that went up is the one that counts terraces; the numbers that went
+down are the ones that count walls. Kezamba's ceiling in that fixture was
+re-taken to 85 and 105 and the header records the trade. **The fix round's
+rebuilt cone did not move the ceiling again**: it left `per_mille` at exactly 77
+and 95 while pushing `climb5plus` down further (23 -> 17 and 45 -> 39) and the
+tallest riser on the second gate seed from 10 to 8, so the committed ceilings
+still hold with the headroom they were taken with. **Two rows of that
+fixture's header were already stale before this lane** and are left alone: Dur
+Brannoc measures 77 and 61 on `f37a0c5b` against the 81 and 66 it records, and
+Kezamba 59 and 71 against 62 and 74. Something between 2026-09-15 and that
+commit improved both and re-took neither ceiling.
+
+### 8.6 The other five capitals are byte-identical
+
+A SHA-256 over the final terrain height AND the land/water class of every one of
+the 251 001 columns within +-250 of each capital anchor, on three seeds (both
+gate seeds and the user's):
+
+```
+luajit tools/wp13/evidence/20260916-kezamba-terrain/capital_fields.lua <repo> <seed>
+```
+
+**Fifteen of the eighteen rows are unchanged to the byte** and the three that
+move are Kezamba's own. `measurements/capital-fields-before.txt` and
+`-after.txt` carry them. With it:
+
+* the six start identity digests: SHA-256 of
+  `start_identity.lua`'s output is `0bbf87a7253deadca55951752adde73e82c31cd10878dc64ef6d44af91ad1f5f`,
+  the value wave 1 recorded;
+* `tools/wp13/highcourt_identities.lua` output identical;
+* `tools/wp40/quality_geometry_micro_kat.lua` byte-identical -- the frozen
+  scalar cases keep their answers, which is what proves the apron changed where
+  the terrace lattice is READ and not how the civic core, the civic blend or the
+  cut/fill clamp behave;
+* `bash tools/wp40/r7/run.sh unit` byte-identical, PASS;
+* the WP13 interpreter pair: `WP13 final micro PASS` under LuaJIT and under the
+  engine's bundled PUC 5.1 with the SAME `output_sha256`,
+  `1c33cb5d0aeb3b7ff251f8f73b94fbfb7422283528cf3745eec44c1926e5deb3`. The
+  digest moved from `41ed5eb2...` because this lane's own KAT row moved -- the
+  Kezamba row gained a `crops/` section and its plot-cell count fell with
+  `totem_f2`'s smaller yard -- and for no other reason;
+* `tools/wp13/capital_terrain_fixture.lua`: ten of its twelve rows byte-identical
+  (five capitals x two gate seeds), the two Kezamba rows moved as §8.5 records.
+
+**`tools/wp40/quality/final_micro.lua` WAS ALREADY RED ON MAIN, and this lane
+did not touch what it fails on.** It stops at
+`tools/wp40/r7/node_semantics_fixture.lua`'s `missing override target
+default:shovel_wood`, which is `grug_materials` overriding an item the
+node-semantics harness never registers; run against the untouched `f37a0c5b`
+checkout it stops at the same assertion with the same message. Every data line
+the two runs print before that point is identical
+(`kat/wp40-quality-final-micro-main.txt` and `-branch.txt`; the "main" file's
+tracebacks name the user's main CHECKOUT, which at the time stood at
+`f37a0c5b` with nothing merged into it -- the independent review re-took the
+same comparison on a clean `git archive f37a0c5b` extract and got the same
+assertion and the same data lines, which is the stronger form of the claim). The part of that
+runner a CAPITAL TERRAIN CHANGE moves -- `quality_geometry_micro_kat.lua`, which
+it calls last -- runs standalone and is byte-identical, which is the check that
+matters here. The same fixture passes on its own
+(`dofile("tools/wp43/fresh_server_fixture.lua")(<absolute repo>)` -> `result
+pass`), so the defect is in-process ordering inside that runner and belongs to
+the lane that owns it.
+
+### 8.7 The one lot the terrain moved, and why `repair` and not `pack`
+
+`kezamba_lots.lua check` went red on exactly one of the 52: `totem_f2`, reach 11
+at (66, 154) on the lake's north bank, which now looks up a 33-node slope inside
+its own cleared airspace. Re-running `pack` would have re-invented the whole
+layout for one lot, which is the mistake the Highcourt lane recorded
+(`wp13-capital-terrain.md` §3). `tools/wp13/kezamba_lots.lua` therefore grew a
+`repair` mode with the Highcourt rule: keep every legal lot, move only an
+illegal one, to the nearest legal centre that clashes with none of the other 51.
+
+    luajit tools/wp13/kezamba_lots.lua <repo> repair
+
+**And a reach ladder, because the first version could not repair it at all.**
+Over the whole totem band on the packer's own lattice exactly TWELVE reach-11
+centres are legal, all of them in the far north-east corner 150 nodes from the
+district's spine -- and **the same twelve, in the same corner, on the tree
+WITHOUT the apron.** The shortage is the lake's, not this change's. At a reach of
+8 there are 39, several of them ten nodes from where the lot already stood. So
+`repair` drops a fill lot to the next smaller size before it gives up, and
+prefers a smaller lot in its own quarter to a full-sized one in someone else's.
+
+**A BUILDING plot never shrinks, and that rule was written after it mattered.**
+A fill lot's yard IS its reach, so a smaller reach is a smaller yard and nothing
+else; a building plot has a part projected into it, and `kezamba_kat.lua`
+already refuses a composition "wider than the lot it was measured on". While the
+fix round was trying a wider shore hold, three lots went illegal at once and one
+of them was the reach-13 `totem_6`; the ladder would have shrunk it. It now
+offers a smaller size to `kind == "fill"` only, and a building plot moves or the
+repair says out loud that it could not.
+
+Two rounds of `repair`, both recorded:
+
+```
+2026-09-16  kezamba_repair_move  totem_f2  66 154 -> 60 158  moved 10  reach 11->8
+   fix round  kezamba_repair_move  totem_f2  60 158 -> 60 158  moved 0   reach 8->5
+              kezamba_repair       52  moved 1  unrepairable 0
+```
+
+Afterwards, on all nine seeds: `check` 52 of 52 legal, `walk` PASS (worst kerb
+face 3 against a skirt of 6, worst approach 3 a column), `gates` PASS (step 0
+and 0 floating cells at all 36 gate-seed pairs, and `kezamba_ramp` still rebuilds
+nothing). Fifty-one of the fifty-two lots are exactly where the packer put them.
+
+### 8.8 The fields that grew stone
+
+Two different plots read as stone and each for its own reason, which is why the
+KAT now counts each of the five separately rather than averaging them.
+
+**The three CROP FIELDS grew nothing at all.** `dressing.crop_rows` falls back
+to `ground_patch` and `planter_soil` for a race that binds neither `crop_soil`
+nor `crop`, and for the troll palette BOTH of those are `grug_nodes:mud`: the
+fields were a rectangle of bare mud, and §5 of this note argued that was "what a
+field in a flooded basin is". It is not; a field has to read as a field.
+`wp13/troll_palette.lua` gained an `M.CROP` handle and `kezamba_plot.lua` the
+`handle = "crop"` that carries it, on those three plots and on nothing else --
+binding `crop` everywhere would change `dressing.plant`, which reads
+`flower or crop or grass_tuft`, and put reeds in every grove and pasture.
+
+* `crop` is **`default:papyrus`**: a reed, which is what a troll basin grows. It
+  is registered by `default`, it is already one of `wp40/r7_content.lua`'s
+  accepted content rows so the content channel resolves it without a new name,
+  and its only callback is `after_dig_node`, which runs on dig -- none of the
+  `META_FIELDS` a VoxelManip-written cell cannot serve.
+* `crop_soil` is **`grug_nodes:tilled_soil`**, for the reason the human palette
+  records and one this race adds. The first: it carries no `spreading_dirt_type`
+  and default's "Grass spread" ABM does not name it, so a field stays a field.
+  The second: default's "Grow papyrus" ABM lifts a reed to four nodes only when
+  the node UNDER it is one of six `default:dirt*` surfaces
+  (`default/functions.lua`, `grow_papyrus`) -- tilled soil is not one of them, so
+  these rows stay the one course the blueprint drew and the field the KAT
+  measured is the field the player walks past a week later.
+
+**The two VINEYARDS were literally paved.** `dressing.planter` kerbs the
+PERIMETER of the rectangle it is given in the `planter` role -- for this race
+`default:mossycobble` -- and fills the INTERIOR with soil and a tuft.
+`kezamba_districts.lua` was asking it for rectangles of DEPTH ONE (`z, z`), in
+which every cell is perimeter and none is interior: seven solid rows of mossy
+cobble across each vineyard, 145 cells of stone and 0 plants. Two beds nine rows
+deep fill the same yard with the same two long kerbs each: **110 cells of stone
+and 268 planted.**
+
+**And they grow a crop, not a lawn.** The first version of this round stopped at
+the bed geometry, and `dressing.planter` fills an interior from two fixed roles
+-- `fern` for one cell in three and `grass_tuft` for the rest -- which for this
+race are `default:fern_1` and `default:grass_1`. The independent review called
+that "the weaker half of the crop answer": the stone was gone and a plot named a
+vineyard was a weed patch. `wp13/troll_palette.lua`'s `M.VINE` rebinds both
+roles to `default:junglegrass` -- the tall leafy growth this race's own palette
+already binds `undergrowth` to, so the KAT's `tend` and `forage` feature sets
+accept it unchanged -- and `kezamba_plot.lua`'s `handle = "vine"` carries it to
+those two plots and nothing else. BOTH roles and not one: a bed of a single crop
+reads as cultivation, and the alternation between two wild species is the weed
+patch. The fields keep papyrus, so the two kinds of planted ground still read
+apart. `renders/field-shore-vineyard-before.png` and `-after.png` are seven grey
+ridges and two deep green beds.
+
+Measured on the composition itself, and reported by the KAT as its own section:
+
+```
+crops/default:papyrus/grug_nodes:tilled_soil/
+  shore_gardens=189/0, shore_vineyard=268/110, vine_common=189/0,
+  vine_kitchen=27/0, vine_terraces=268/110        (grown/paved cells)
+```
+
+405 papyrus cells over the three fields, where there were none.
+`renders/field-shore-gardens-before.png` and `-after.png` are the same field
+drawn with the real node textures -- a flat mud rectangle, then rows of reeds on
+tilled furrows -- and `renders/field-shore-vineyard-before.png` is the finding
+itself: seven solid ridges of mossy cobblestone in a plot called a vineyard.
+
+### 8.9 Verification
+
+**The gates that turn red if this breaks.** Every one was run against a mutant
+tree built by symlink from this branch, with one thing broken on purpose
+(`tools/wp13/evidence/20260916-kezamba-terrain/mutations.txt`):
+
+| the mutation | the gate, and what it says |
+| --- | --- |
+| the three fields lose `handle = "crop"` | `kezamba_kat`: "the work socket shore_gardens_work_garden_a does farm but faces no farm feature within three nodes" |
+| a raised bed is one row deep again | `kezamba_kat`: "the garden shore_vineyard lays 145 cells of the palette's `planter` (default:mossycobble) against 2 planted ones, which is a field of stone" |
+| `M.CROP` binds nothing | `kezamba_kat`: "wp13/troll_palette.lua's M.CROP binds no crop and no crop_soil, so dressing.crop_rows falls back to the mud pair and the fields grow nothing" |
+| the apron is gone (main's own `height.lua`) | `kezamba_water --walls`: **36 FAIL lines over the nine seeds** -- the pad's face, the land wall, the apron-face count and the drift check all fire at once |
+| the lake cone goes back to interpolated capsules | `kezamba_water --walls`: "the lake cone's own worst 4-neighbour step is 54 against the terrace step of 3, so wp40/height.lua's Lipschitz claim is false" |
+| `height.lua` stops densifying the discs while the gate keeps its own copy | `kezamba_water --walls`: "1 420 column(s) on 531802985935182545 stand below this file's copy of the apron floor, which a `max` cannot do: the copy has drifted from wp40/height.lua" -- the drift detector, on every seed |
+| the disc window shrinks from 64 to 8, so pruning bites while the cone still matters | `kezamba_water --walls`: **three gates at once** -- "659 column(s) lose their last disc while the cone still stands above -23, which is a pruning cliff and not an inert window", `apron_faces` 0 -> **129** against its ceiling of 9, and a 15-node land wall against a ceiling of 14 |
+
+That last row is also what says the `apron_faces` ceiling is a LIVE gate and not
+a dead number: it separates the shipped 0 from a broken 129.
+
+**And the theorem is a number now.** `--walls` reports three things the first
+version of this package only asserted, all of them on every one of the nine
+seeds:
+
+| | measured | ceiling |
+| --- | --- | --- |
+| `cone_step` -- the lake cone's own worst 4-neighbour step, over 77 397 columns, from the authored geometry alone | **3** | 3, the terrace step, which is the theorem and not a tuning knob |
+| `live_prune_edges` -- columns that lose their last disc while the cone still stands above the floor the height session returns outside the map, which is the pruning cliff the review found, back again | **0** | 0 |
+| `apron_faces` -- over-step falls in the SHIPPED field where the apron is the binding constraint on the HIGHER column, i.e. a face the apron made or deepened | **0 on all nine seeds** | 9 (the coordinator's, from the fix round; the measurement is far under it and it can be tightened whenever they want) |
+| `apron_below` -- columns standing below the apron floor, which a `max` cannot do and which is the cross-check that `--walls`'s copy of the cone has not drifted from `height.lua`'s | **0 on all nine seeds** | 0 |
+
+**The engine.** `tools/wp13/run_capital.sh`, port block 31100-31199, one
+headless server at a time, every boot under `nice -n 19`, and every one of them
+under two minutes wall clock on a workstation carrying seven WP13 lanes.
+
+Three `full` boots -- both gate seeds and the user's world seed -- and one
+`field` boot:
+
+| seed | chunks | steady mean | Lethariel control | ratio | worst plot fall | submerged | sockets | ERROR | ModError | audit findings |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `531802985935182545` | 66 | **0.482 s** | 2.280 s | 4.7x | 5 | 0 | 262 | 0 | 0 | 0 |
+| `8675309` | 64 | **0.495 s** | 2.493 s | 5.0x | 6 | 0 | 262 | 0 | 0 | 0 |
+| `15912857179583385436` | 66 | **0.449 s** | 2.139 s | 4.8x | 5 | 0 | 262 | 0 | 0 | 0 (1 Highcourt's, below) |
+
+`guards 18/18 flair 163/163 vendor 7/7 quest 1/1 pending 0 spare 11 residents
+163 walkers 21` on all three, and `WP13 capital pass PASS: kezamba full` on all
+three.
+
+**One load-time terrain-audit finding on the user's seed, and it is HIGHCOURT'S
+-- and on the merged tree it is gone.** Lane P moved Highcourt's thirteen lots
+that nine worlds refuse, so the same boot on `1f5a2c32` logs no finding at all
+(§8.12). What follows is what this lane measured before that landed, kept
+because it is what the fix round's own evidence says: `WP13 highcourt: the plot martial_wood_yard at offset -196,-212
+... rise 10 against a clear of 8` -- which is, word for word, the round-1
+playtest finding `tools/wp13/capital_lots.lua`'s own header records as the
+reason that tool exists. It cannot be this lane's: Highcourt's whole +-250
+terrain field is byte-identical on that seed (§8.6), and the apron is guarded on
+`cenote_terrace`. Kezamba's own count is **0 on all three seeds**, and it is
+carried here because a warning in this lane's log deserves a sentence rather
+than a filter.
+
+**THE BUILT CORE DID NOT MOVE, and that is the strongest single number in this
+section.** `core_road_digest` -- the probe's SHA-256 over the 6 611 road cells
+it reads back out of the finished map inside the civic core -- is
+`eafdce922db68f98366c0da49823bfe9bb1e81d63328b6d2315a748af0203056` on all three
+seeds, which is exactly the value §6d recorded before this lane existed. The
+apron never touches a column with `civic_outside == 0`, so the pad is the same
+pad and the city on it is the same city, to the byte, in the built map.
+
+(That number is this lane's own, taken before the Lane S rebase. On the merged
+tree it reads `525b6eb5...`, because the digest reads back ROAD cells inside the
+core and Lane S rebuilt the streets that cross it -- §8.12. What it says about
+the apron is unchanged: it held across both of this lane's apron versions, and
+what moved it afterwards was somebody else's road.)
+
+**The avenue digest DID move, and is re-frozen from the pass that moved it**
+(`tools/wp13/evidence/20260915-capital-terrain/kezamba/avenue-digest-531802985935182545.txt`,
+`4f2fb544...` -> `cdadbafc...` -> `96307e93...` over the same 1 993 overlay
+cells -- the second move is the fix round rebuilding the cone, and the value
+was written by `refreeze_avenue.sh`'s own boot, not copied out of a log). The road walks
+the surface the seam hands it, and the surface outside the core is what this
+lane changed. The other two seeds measured `6fd30564...` (3 475 cells) and
+`3b900110...` (2 607 cells) and are recorded rather than frozen. Re-taking the
+frozen one is one command, so the coordinator can re-take it again after the
+Lane S rebase without reading a log:
+
+    bash tools/wp13/evidence/20260916-kezamba-terrain/refreeze_avenue.sh [SEED]
+
+which boots, refuses anything but `event=complete` with zero ERROR, zero
+ModError and zero terrain-audit findings, and writes the file from the probe's
+own line. It takes its port from `WP13_CAPITAL_PORT` (Lane K's block is only
+the default) and stamps `main=` with the MERGE BASE rather than the branch head,
+which is what that field means in the older digest files and what the next
+reader needs -- both corrections from the independent review.
+
+`field` mode on the gate seed is the check no offline fixture can make of
+itself, and it makes a second one this round:
+
+```
+kezamba_field reach=250 core_wet=2645 core_disagreements=0
+  envelope_wet_engine=30354 envelope_wet_mask=30354 envelope_disagreements=0
+  dry_y=66..66 wet_y=53..55 reference_y=66 water_surface_y=65
+kezamba_field PASS: the engine's own field agrees with the committed mask on
+  every one of the 251001 columns it covers
+```
+
+so the wet mask, the civic reference and the water surface did NOT move --
+`wp13/kezamba_lagoon.lua` needed no re-emit and `--verify` is green on all nine
+seeds. And the engine's own height field over those 251 001 columns is
+**byte-identical to the offline planner's** (`36ed1258...`), which is what makes
+every offline number in this section the running server's answer too.
+
+### 8.10 What a review should look at
+
+1. **`fitting_grids.apron.value`'s loop over the reach's sample DISCS, and why
+   it is not a loop over segments.** §8.3b carries all three formulations and
+   what each measured; the short version is that a distance to a disc is a real
+   distance and therefore 1-Lipschitz, while a distance to a tapered capsule
+   computed as `axis - interpolated half-width` is neither 1-Lipschitz nor
+   continuous across the candidate-set boundary. Both earlier versions looked
+   more correct than this one and measured worse. The gate is
+   `kezamba_water --walls`'s `cone_step`.
+2. **The shape guard.** `profile.shape == CAPITAL_APRON.shape` is the whole of
+   what keeps the other five capitals byte-identical, and §8.6 is the proof
+   (the review proved it again by mutation: point the guard at
+   `"terraced_grove"` and Lethariel's field moves while Kezamba's reverts).
+   There is no second place where the apron can leak in: `capital_terrace_value`
+   ignores a nil `apron` on exactly the path it took before.
+3. **The apron can raise a land column above `max_fill`, on purpose.** At the
+   pad's edge it fills up to 30 nodes over the natural ground where the profile
+   budgets 16 (the review measured the 30). That is the point -- the budget is
+   what built the face -- but it is a deliberate departure from the profile row
+   and belongs in a reviewer's head. What it never does is CUT: the review
+   measured `apron_lowered_columns = 0` and `raised_above_reference = 0` on all
+   nine seeds, so every column the apron touches it lifts, and never past the
+   civic reference.
+4. **The crop and vine handles are narrow on purpose.** `dressing.plant` reads
+   `flower or crop or grass_tuft`; binding `crop` on the base troll palette
+   would change every grove, pasture and terrace socket's feature cell, and
+   rebinding `fern`/`grass_tuft` there would change every one of them again.
+   Both handles reach exactly the plots that are a field or a garden.
+   `CAPITAL_APRON` is one table and not four module locals for a duller reason:
+   `construct` sits at Lua 5.1's 60-UPVALUE ceiling as well as its 200-local
+   one, and four constants named from inside it would not compile.
+5. **`totem_f2` is smaller now, not moved far.** §8.7 carries the measurement
+   that says there was nowhere else for it at reach 11, on this tree and on
+   main's. The rule that a BUILDING plot may not shrink was written in the fix
+   round, after a wider shore hold briefly made three lots illegal at once and
+   one of them was a reach-13 plot the ladder would happily have shrunk.
+6. **`--walls`'s copy of the cone.** The gate measures a function that lives
+   inside `wp40/height.lua`'s construction closure, so it has a copy of it, and
+   a copy can drift. `apron_below` is what turns a drift red: the shipped
+   ground may never stand below the apron floor, because the apron is a `max`.
+   It is 0 on all nine seeds; if a future edit changes the cone in `height.lua`
+   and not in the tool, it stops being 0.
+
+### 8.12 The Lane S rebase, done
+
+Rebased onto `1f5a2c32` ("Merge Lane S: one street rule for all six capitals"),
+which also carries Lane P (Highcourt's lots on nine seeds, `parts.lua`'s SHAPED
+roof corners, the troll palette's castle roles and this KAT's section 6
+rewritten to the junglewood roof), Lane F (`grug_fishing`) and Lane C
+(`grug_smelting`). Fourteen commits replayed; **one textual conflict**, the
+avenue digest, which is a value this lane re-takes from an engine pass anyway.
+Everything else git merged, and each merge was checked by hand and by gate:
+
+* `wp13/troll_palette.lua` -- P's castle-role rebinding and its written-down
+  reason for keeping the roof timber, beside this lane's `M.CROP` and `M.VINE`.
+  Four handles, all present.
+* `tools/wp13/kezamba_lots.lua` -- S's viaduct-aware `gates` (the junction
+  squares off `overlay_runs`, the `wet(x, z)` the seam now hands the road, and
+  the rule that a cell over ground the road itself raised is a viaduct and not a
+  floating cell) beside this lane's `repair` mode and its reach ladder.
+* `tools/wp13/kezamba_kat.lua` -- P's `roof_family` section and S's street rows
+  beside this lane's `crops` section. The KAT's own row now carries all three.
+* `tools/wp13/final_micro.lua` -- untouched by this lane, so S's added row
+  stands as it is.
+
+**Neither P nor S moved any capital's terrain.** The per-capital field digests
+on `1f5a2c32` are the same six values `f37a0c5b` gave, to the byte, on the gate
+seed -- so `measurements/capital-fields-before.txt` is still the right baseline
+and the 15-of-18 comparison in §8.6 is unchanged in meaning.
+
+What the rebase moved, and what it did not:
+
+| | |
+| --- | --- |
+| Kezamba's KAT row | the `overlay` section is now S's: **12 of 12** runs, its own cell counts and the digest `ef2b0bc1...`, where this lane had 12 of 11 and `3369caec...`. P's `roof_family/junglewood/...` section is new beside it. The `crops`, `core`, `mask`, `plots` and `sockets` sections are this lane's, unchanged |
+| the micro pair | moves with that row, as §8.11.3 said it would: `1c33cb5d...` -> **`4d41e72a...`**, byte-identical under LuaJIT and PUC 5.1 |
+| the avenue digest | re-taken on the merged tree through `refreeze_avenue.sh`: `96307e93...`/1 993 cells -> **`a0cc1bdf...`/2 345 cells**, stamped `main=1f5a2c32`, which is the merge base and is what the script's fix-round correction is for. The extra 352 cells are S's wider carriageway and its junction plateau |
+| `capital_terrain_fixture` | Kezamba's two rows are **exactly** the values this lane re-took before the rebase, 77 under 85 and 95 under 105 |
+| the six start identities | `0bbf87a7...`, unchanged |
+| Highcourt's blueprint digests | `a66a6919...` -- moved by P, and **identical on `1f5a2c32` itself**, so not this lane's |
+| `quality_geometry_micro_kat`, `r7/run.sh unit` | byte-identical |
+| the wet mask, the civic reference, the water surface | `--verify` green on all nine seeds, 0 disagreements, 66 and 65 |
+| `--walls` | **row for row identical to the pre-rebase run** -- cone step 3 over 77 397 columns, 0 live prune edges, pad face 3 on all nine seeds, worst land wall 8 to 11, `apron_faces` 0 and `apron_below` 0 everywhere |
+| `check` / `walk` / `gates` | PASS on all nine seeds, and `gates` is now S's viaduct-aware rule: step 0, 0 floating, 0 refusals, with the cells over the cenote counted as `on_pillars` rather than as floating |
+| the per-capital field digests | 15 of 18 rows unchanged against `1f5a2c32`, the three that move are Kezamba's, and Kezamba's own gate-seed value is `c0e676d4...` -- the same one this lane measured before the rebase |
+| the built civic core | `core_road_digest` moved to `525b6eb5...`, and that is S's: the digest reads back ROAD cells inside the core and S rebuilt the streets. It held at `eafdce92...` across both of this lane's own apron versions |
+
+**`totem_f2` still holds its plot footprint.** The lot is reach 5 and carries
+`totem_posts`, whose yard IS its reach; measured over all 52 plots
+(`measurements/plot-footprints.txt`), its built extent is x -5..5, z -5..5,
+1 410 cells, exactly its own lot and no wider -- which is the rule the KAT
+asserts as "wider than the lot it was measured on". Every `yard = {}` plot in
+this capital sits at slack 0 by construction, and none is negative.
+
+**And the crossing now carries S's streets.**
+`renders/cenote-crossing-with-lane-s-streets.png` is the capital's own flat plan
+over the cenote quarter: the boardwalk-on-piers this lane shipped is now S's
+stone carriageway with its kerbs and lamp standards, and the ring street meets
+the east avenue on one of S's junction plateaus out over the water. The apron is
+not in that picture -- a plan is drawn flat - but the two changes are
+independent by construction: S owns the road over the water, this lane owns the
+ground beside it, and `gates` measures the seam between them at step 0.
+
+### 8.11 What is open
+
+1. **THE CENOTE'S BED IS STILL A TWELVE-NODE WALL, under the water.**
+   `hydrology_scalar_at` gives a wet column `water_y - varied_depth(depth)`, so
+   `deep_cenote` is a flat-bottomed bowl with vertical sides: the land-to-water
+   fall measured 14 to 16 nodes before this change and measures 14 to 16 after
+   it. It is not the `cenote_terrace` SHAPE, it is the `deep_cenote` HYDRO
+   PROFILE, and every reach in the world goes through the same function -- so it
+   is not this lane's to change under the brief it was given, and it is entirely
+   below the water surface, which is why it is not the wall the user saw. The
+   shape of the fix is the same cone: bed = `water_y - min(depth, step * distance
+   inside the mask)`, guarded on `mask_semantic_id == "hydro_deep_cenote_v1"`,
+   which would make the basin the "broad stepped central cenote" that
+   `docs/design/world_zones.md` §9 already calls it. `--walls` reports the
+   number and deliberately does not gate it.
+2. **The residue is the step band on mixed ground, as before.** 49 to 900
+   columns of the envelope still fall more than the terrace step to a
+   4-neighbour, worst 8 to 11, and **not one of them is a face the apron is the
+   high side of** (`apron_faces` = 0 on all nine seeds, §8.9). The independent
+   review measured the same thing from the other side on the user's seed: of
+   217 over-step pairs, 182 were wild ground the lane never touched, out in
+   rings 75 to 200 from the pad, and the worst single fall was 150 to 200 nodes
+   away from it. `wp13-capital-terrain.md` §"What is open" carries the operator
+   that would close the band's own residue and the cost it would have to be
+   measured against.
+3. **THE LANE S REBASE MOVES FOUR FROZEN THINGS, NOT ONE**, and the independent
+   review of 2026-09-16 is what found the other three. Lane S builds piers and
+   rails for every capital's water crossings, and Kezamba's two avenues cross
+   315 columns of open cenote, so everything downstream of `avenue.lua` over
+   this ground moves with it. Nothing in this lane's SOURCE depends on Lane S --
+   K touches `wp40/height.lua`, four `wp13/kezamba_*`/`troll_palette` files and
+   four tools, and S owns none of them -- the whole coupling is frozen digests:
+
+   | what moves | how it is re-taken |
+   | --- | --- |
+   | `evidence/20260915-capital-terrain/kezamba/avenue-digest-531802985935182545.txt` | `bash tools/wp13/evidence/20260916-kezamba-terrain/refreeze_avenue.sh` (one engine pass, refuses anything but a clean one) |
+   | `evidence/20260916-kezamba-terrain/kat/kezamba-kat-luajit.txt` and `-puc51.txt` | the KAT's `overlay/…` row is built from `avenue.lua` over the ground; re-run it under both interpreters and compare. (Done: `3369caec…`/12 of 11 runs -> `ef2b0bc1…`/12 of 12, S's streets.) |
+   | `evidence/20260916-kezamba-terrain/kat/micro-output.tsv` and `micro-pair.sha256` | `tools/wp13/final_micro.lua` concatenates that KAT row, so `1c33cb5d…` moves with it. **`final_micro.lua`'s rows are in Lane S's declared ownership**, which makes this a live cross-lane collision rather than a K-side chore |
+   | `measurements/lots-gates-after.txt` | `luajit tools/wp13/kezamba_lots.lua . gates` reads where the avenue arrives, and `kezamba_ramp` is Lane S's file |
+
+   Only the gate seed has a committed avenue digest; the second gate seed's is
+   recorded in `engine/full-8675309/overlay-digests.txt` rather than frozen.
+   The fix round is itself the rehearsal for that checklist: rebuilding the lake
+   cone moved the ground, and the avenue digest, both KAT outputs, the micro
+   pair and the `gates` measurement all moved with it and were all re-taken the
+   way the table says.
+4. **NOBODY HAS LOOKED AT THE NEW SHORE FROM EYE HEIGHT.** Every render in this
+   package is planner-drawn -- a contour plan and a block section -- which is
+   the right picture for geometry and the wrong one for the complaint, which was
+   about a look. The independent review said so and it is right. It also names
+   the thing that will be most visible once the land around it stops being
+   unnatural: the cenote begins as a sheer eleven-node pit at the waterline
+   (open point 1), and Luanti water is translucent.
+5. **A 3-node riser is not walkable, and the pad edge is now made of them.** The
+   player steps up one node, so the new skirt is scenery rather than a stair;
+   the ways up remain the avenues and the four gates, which `kezamba_lots.lua
+   gates` holds at step 0 on all 36 gate-seed pairs. The brief authorised step 3
+   verbatim ("terraced (step 3, the race's own step)") so this is inside the
+   ruling, but the review is right that it reads differently under the feet than
+   on a contour plan, and it is worth asking the user at playtest 6 whether
+   "steps you cannot climb" is what they meant by terrain that runs naturally.
+6. **The user has not walked the new ground.** The place to stand is the west
+   gate approach at about (1745, 55, 1500) looking east: the pad edge that was a
+   wall is the flight of four steps in front of you, and the independent review
+   measured that frame clean -- **0 over-step pairs within 30 nodes in every
+   direction, against 61 with a worst of 17 before**. The lake's south shore, at
+   about (1866, 40, 1640) looking north, is the taller one: ten steps up to the
+   water, and in the same frame 14 over-step pairs with a worst of 7 where there
+   were 100 with a worst of 29.
