@@ -309,9 +309,19 @@ local function loader(directory)
 		for step = 1, deck do
 			local z = c + 3 - (step - 1)
 			for y = 0, step - 1 do buf:put(stair_x, y, z, mark(palette)) end
-			-- Facedir 0 is the tread rising towards z-, which is the way the
-			-- flight climbs.
-			buf:put(stair_x, step, z, tread, 0)
+			-- A stair's RAISED HALF lies toward `facedir_to_dir(param2)`
+			-- (wp13/parts.lua's header, read off the nodebox in
+			-- mods/BASE/stairs/init.lua: the raised box spans z 0..0.5 at
+			-- param2 0). This flight climbs towards z-, so its treads are
+			-- raised towards z- and carry param2 2. Until 2026-09-16 they
+			-- carried 0, which is the same flight mirrored: every tread's
+			-- riser stood on the side the walker came from, so the whole
+			-- staircase read as a descent laid over an ascending plinth.
+			-- Playtest 5 (screenshot 8) called it "rotated 180 degrees", and
+			-- it is. The shrine's four flights below were always right, and
+			-- they are the cross-check: each of them is raised towards its
+			-- podium.
+			buf:put(stair_x, step, z, tread, 2)
 			steps = steps + 1
 		end
 		buf:clear(stair_x, deck + 1, head_z, stair_x, deck + 3, head_z)
