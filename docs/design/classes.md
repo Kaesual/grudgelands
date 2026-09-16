@@ -80,7 +80,18 @@ Core principles:
   shared with recovery (combat_stats §5) and mob leashing (WP6).
 - Resources are runtime state, not persisted: mana is full on join and
   respawn, rage is 0.
-- HUD: a colored resource line (mana blue, rage red) above the XP line.
+- **HUD: one thin bar per resource, directly above the hotbar slots**
+  (user ruling 2026-09-16, shipped in round 4; it replaces the colored
+  resource *line* this bullet used to describe). Every class has exactly one
+  secondary bar — rage **or** mana, never both — in the same two colors
+  (mana `0x4a9bd8`, rage `0xc41e3a`), with the exact numbers written inside
+  the bar. The life bar sits directly above it in the same style, and the
+  builtin half-heart statbars are off: half hearts were rejected as "an ugly
+  approximation", and at 325 HP the engine's ten hearts are 16 HP apiece. A
+  character who has not picked a class yet keeps the secondary row reserved
+  and empty, so nothing moves when the class arrives. The column the bars
+  belong to is owned by `grug_core/hud_layout.lua`; no mod carries its own
+  offset. Details and what is still open: `docs/research/hud-bars.md`.
 
 ## 2. Damage pipeline (grug_core)
 

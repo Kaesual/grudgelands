@@ -282,7 +282,7 @@ hud_update = function(player, authoritative)
 
 	-- Breath is the one value with no change callback in the Lua API, so it
 	-- rides the shared pass. Builtin's own rule for showing the bubbles is
-	-- "breath is not full" (`builtin/game/hud.lua:207-209`); the bar uses
+	-- "breath is not full" (`builtin/game/hud.lua:208-210`); the bar uses
 	-- the same one, which also covers the refill after surfacing.
 	local max_breath = props.breath_max or 0
 	local breath = player:get_breath()
