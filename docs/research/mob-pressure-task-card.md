@@ -24,8 +24,10 @@ from a decided design file, and says which.
 ## 2. Ruling 1 is already decided design that was never implemented
 
 This is the important finding of the card: ruling 1 does not need a design
-decision. `combat_stats.md` §4 (`:461-484`) already decided it on
-**2026-08-13**, in detail, and even diagnosed the defect:
+decision. `combat_stats.md` §4 (`:467-490` on this branch, which is `:461-484`
+on `main` — this lane's own `combat_stats.md` commit adds six lines above it)
+already decided it on **2026-08-13**, in detail, and even diagnosed the
+defect:
 
 > **Catching up must be enough to hit** (decided 2026-08-13): a mob that has
 > closed to within its `reach` lands its attacks on a target fleeing at full
@@ -39,7 +41,13 @@ decision. `combat_stats.md` §4 (`:461-484`) already decided it on
 > (`mods/ENTITIES/mobs/api.lua:2493`) while `punch_timer` accumulates **only
 > in that same branch** (`:2495-2497`; default interval 1 s at `:3768`). A
 > receding target leaves reach after one server step, so the timer gains one
-> step while the mob loses the ground the target covered in it. […] roughly
+> step while the mob loses the ground the target covered in it. Worked at the
+> **dedicated-server default** `dedicated_server_step = 0.09`
+> (`reference_projects/luanti/src/defaultsettings.cpp:498`; the setting is
+> configurable and a singleplayer session does not use it, **so this is the
+> shape of the defect rather than a measurement**): the timer gains 0.09 s
+> while the mob loses ~0.36 m that it needs ~0.9 s to re-close at its
+> 0.4 nodes/s margin — roughly
 > **one landed hit per ten seconds** instead of one per second. Raising
 > `reach` cannot repair this (a stopped mob always leaves its own radius,
 > whatever the radius) and would silently widen the elite/rare telegraph cone,
@@ -77,8 +85,8 @@ The structure, verified line by line:
   mounted player's **mount** eats the swing, which `mounts.md:162-171`
   already relies on.
 
-So the two defects are one line apart: **the mob stops (`:2498`) and the clock
-only ticks while it is stopped (`:2500`)**. Reach is uniform in the roster:
+So the two defects are one line apart: **the mob stops (`api.lua:2498`) and
+the clock only ticks while it is stopped (`api.lua:2500`)**. Reach is uniform in the roster:
 measured, **20 of 22 `reach` values are 2**, the Kraken is 4 with a comment
 explaining why, and one is 0. `punch_interval` is the mobs_redo default of 1 s
 for every grug mob — no definition sets it.
@@ -98,14 +106,15 @@ for every grug mob — no definition sets it.
    keep running while the target's distance is increasing, or zero the
    velocity only for the frames the punch animation needs.
 4. **Cap the backlog at one.** The same rule the player's own swing clock
-   already uses (`combat_stats.md:147`: "lag never replays a backlog").
+   already uses (`combat_stats.md:153`: "lag never replays a backlog").
 5. **Do not raise `reach`.** The decided text explains why: it cannot repair
    the defect, it widens the elite/rare telegraph cone (`reach + 1.5`,
-   `combat_stats.md:332`) and it makes `dogshoot` mobs switch to melee
+   `combat_stats.md:338`) and it makes `dogshoot` mobs switch to melee
    earlier — that last one is **`api.lua:2366`**
    (`and (ds_var == 2 or dist <= self.reach)`), not the `api.lua:2249` that
-   `golem.lua:68`'s comment cites; that citation has drifted too and is worth
-   correcting in the same patch.
+   `golem.lua:67`'s comment cites. That stale citation has drifted too, and
+   the **same** one also sits in `skeleton_archer.lua:65` — the patch should
+   correct both.
 
 ### What it costs
 
@@ -136,10 +145,15 @@ files define one shared table for two registered mobs):
 | 2.6 | 1 | bog ooze |
 | 1.1 / 0 | 2 | start villagers (not combat mobs) |
 
-47 mobs are registered through `grug_mobs.register_mob`. The player walks at
+**43** mobs are registered through `grug_mobs.register_mob` (counted as
+`grug_mobs.register_mob("` call sites; a looser grep also catches the wrapper's
+own internal `mobs:register_mob` at `grug_mobs/init.lua:559` and
+`start_villagers.lua`'s
+two direct loops, which is why §6's command over-counts to 47). The player
+walks at
 **4.0** (`mounts.md:50-51`, engine default `movement_speed_walk = 4`).
 
-This matches the design: `combat_stats.md:304-309` specifies "aggressive mobs
+This matches the design: `combat_stats.md:310-315` specifies "aggressive mobs
 `run_velocity` **4.4** (player: 4.0) — evading must never be trivially easy;
 harmless critters 3.4; heartland hunters 4.6". **The roster is already at
 spec.** "A bit faster" is therefore a request to change the spec, not to fix a
@@ -163,22 +177,27 @@ incoming damage dismounts a rider.
 So raising mob speed has three named consequences the lane must decide with
 it, not after:
 
-1. **The Mage.** `classes.md:430-432` — "Frost Nova became the rotation pivot
+1. **The Mage.** `classes.md:434-436` — "Frost Nova became the rotation pivot
    — **kiting IS the Mage fantasy here**". Kiting distance per Frost Nova is
    `root_duration × (mob_speed − player_speed)` of ground *not* lost, plus the
    4 s standstill. At 4.4 the Mage loses 0.4 m/s while running; at 4.8 it is
    0.8 m/s — the Mage's escape budget halves. Either the root duration or the
    soft-de-aggro distance moves with the speed, or the Mage's pivot stops
    working.
-2. **The soft de-aggro.** `combat_stats.md:322-324`: beyond ~25 m a chasing
+2. **The soft de-aggro.** `combat_stats.md:328-330`: beyond ~25 m a chasing
    mob drops to walk speed (`api.lua:2477-2479` implements it, and
    `_grug_soft_deaggro ~= false` is the per-mob opt-out). Reaching 25 m is
    *only* possible because of the standstill-and-root windows; faster mobs
    make it harder in exactly the same proportion.
 3. **Ruling 1 multiplies ruling 2.** Once the cadence runs during the chase
    (§2), a 4.4 mob already lands roughly one hit per second on a fleeing
-   player where it now lands one per ten seconds. **Ruling 1 alone may be the
-   whole of "mobs should be more dangerous"**, and it costs no pillar.
+   player where it lands far less often today. The decided text's own figure
+   for "today" is *one hit per ten seconds*, and that figure is **estimated,
+   not measured** — it is worked from the dedicated-server step and the file
+   says so in the clause quoted in §2. The direction is certain and the
+   multiplier is not, which is exactly why the lane owes the runtime test of
+   §5. **Ruling 1 alone may still be the whole of "mobs should be more
+   dangerous"**, and it costs no pillar.
 
 **Recommendation for the lane: ship §2 first, measure, and only then decide
 whether the speed still needs to move.** If it does, the smallest change that
@@ -230,7 +249,7 @@ fix.
 1. **Make the rule explicit** in `biomes_mobs.md` §3.1 and `combat_stats.md`
    §3: a `dogshoot` family's `view_range` is **16** and a melee family's is
    10-14 by habitat. Raise the golem from 14 to 16 to match.
-2. **Add ranged families.** Four of 47 is 8.5 %; the ruling asks for more.
+2. **Add ranged families.** Four of 43 is 9.3 %; the ruling asks for more.
    Candidates that need no new art beyond a projectile:
    - a **bandit archer** variant beside `grug_mobs:bandit` (the bandit camp
      already exists, and `boar_variants.lua` is the pattern for a variant
@@ -242,10 +261,12 @@ fix.
    roster and the spawn budget belong to `biomes_mobs.md` §4 and are that
    lane's to decide, not this card's.
 3. **Do not raise `view_range` above 16 without checking the chase rules.**
-   `combat_stats.md:456-460` warns that a mob gives up a chase at **45 m**,
+   `combat_stats.md:462-466` warns that a mob gives up a chase at **45 m**,
    "not at its `view_range` (mobs_redo's default, ≤ 16 m for ground mobs —
    with it, neither the 25 m soft de-aggro nor the 40 m leash could ever
-   fire)". 16 is the working ceiling of the current tuning.
+   fire)". 16 is the working ceiling for **land** mobs; the only higher value
+   in the roster is the Kraken's 20 (`kraken.lua:55`), which is aquatic and
+   outside this comparison.
 4. **The dogshoot ratio is a second knob, already present.** `dogshoot_switch`
    / `dogshoot_count_max` / `dogshoot_count2_max` decide how long a mob shoots
    before closing to melee — `golem.lua:63-68` documents it ("10 vs 3 is
