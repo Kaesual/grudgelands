@@ -1,0 +1,15 @@
+gor_drazhak rc=0 129s
+exit=0 errors=0 complete=1 log=/tmp/grug-w3-polish-full/gor_drazhak-531802985935182545/server.log
+avenue overlay digest matches the committed value
+rampart overlay digest matches the committed value
+corner overlay digest recorded (no committed value for seed 531802985935182545 yet)
+gate overlay digest matches the committed value
+WP13 capital pass PASS: gor_drazhak full /tmp/grug-w3-polish-full/gor_drazhak-531802985935182545
+kezamba rc=0 122s
+exit=0 errors=0 complete=1 log=/tmp/grug-w3-polish-full/kezamba-531802985935182545/server.log
+avenue overlay digest matches the committed value
+rampart: this capital publishes no such overlay region
+corner: this capital publishes no such overlay region
+gate: this capital publishes no such overlay region
+WP13 capital pass PASS: kezamba full /tmp/grug-w3-polish-full/kezamba-531802985935182545
+FULL DONE
