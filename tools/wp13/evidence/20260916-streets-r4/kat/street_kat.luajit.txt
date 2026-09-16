@@ -11,7 +11,7 @@ street_capital	gor_drazhak	16	36	4	lane_cross_southeast/lane_spine_southwest/1,l
 street_capital	lethariel	15	24	0	
 street_capital	kezamba	8	16	0	
 street_capital	nhal_veyr	16	36	4	lane_northeast_spine/lane_northwest_cross/1,lane_northwest_spine/lane_southwest_cross/1,lane_southeast_cross/lane_southwest_spine/1,lane_southeast_spine/lane_northeast_cross/1
-street_inventory	167ce4afef4c3593a62a6787d6499629bb6687aabf252bd034d8118d80e1e4c3
+street_inventory	167ce4afef4c3593a62a6787d6499629bb6687aabf252bd034d8118d80e1e4c3	collinear_seams	6
 street_plateau_window	42	-2	2	18
 street_pier_rhythm	8	8	246	60
 street_verge_clearance	80	80	3	26	96

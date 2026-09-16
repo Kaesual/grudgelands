@@ -285,11 +285,22 @@ local function loader()
 	-- `avenue.lua` bridges (the seam hands a road the WATER surface where
 	-- water stands, not the bed under it -- `r7_settlement.lua`,
 	-- `walkable_values`).
-	local RING_AT = 96
-	local LANE_END = 190
-	-- One past the ring run's own last column, so the two are collinear
-	-- neighbours and not collinear overlappers.
-	local LANE_START = RING_AT + 1
+	-- PUBLISHED, so a gate can hold them. `M.RING_AT` is the ring street's own
+	-- centre line and duplicates the `at` of `lethariel.lua`'s four ring runs;
+	-- it cannot be read from there without a cycle (that file loads this one),
+	-- so `tools/wp13/street_kat.lua` section 8 asserts the two are equal and
+	-- the literal cannot drift.
+	M.RING_AT = 96
+	M.LANE_END = 190
+	-- ONE PAST THE RING RUN'S OWN LAST COLUMN, so the two are collinear
+	-- NEIGHBOURS and not collinear overlappers: no column between them is
+	-- unpaved, and the ring corner's junction group covers the ring's last
+	-- columns and the lane's first ones alike, which is what pins the seam to
+	-- one y. Section 8 of the street KAT holds both halves of that sentence for
+	-- every capital, and the round-4 mutation that pulls the lane away from the
+	-- ring turns it red.
+	M.LANE_START = M.RING_AT + 1
+	local RING_AT, LANE_END, LANE_START = M.RING_AT, M.LANE_END, M.LANE_START
 	M.LANES = {
 		southeast = {
 			{id = "lane_southeast_spine", axis = "z", at = RING_AT,

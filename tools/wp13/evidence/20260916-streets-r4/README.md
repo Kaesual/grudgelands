@@ -28,7 +28,7 @@ own seed `15912857179583385436`:
 | `walker_ring.lua`, `walker_ring.txt` | goal D: the offline replay of the 80/20 split and `bounded_spots`, which names the composition behind `min_walker_ring=1` in five of the six capitals | `luajit tools/wp13/evidence/20260916-streets-r4/walker_ring.lua .` |
 | `kat/*-luajit.txt`, `kat/*-puc51.txt` | every WP13 KAT this lane touches, under both interpreters; every pair is byte-identical except `decoration_anchor_kat`, which is not byte-identical on `main` either (see `kat/pairs.txt`) | `luajit -e 'io.write(dofile("tools/wp13/<kat>.lua")("."))'` and the same with `tools/bin/lua51` |
 | `micro-luajit.tsv`, `micro-puc51.tsv` | the whole WP13 fixture set in one process under each interpreter; the two are byte-identical | `luajit tools/wp13/final_micro.lua . <out> luajit` and `tools/bin/lua51 tools/wp13/final_micro.lua . <out> puc51` |
-| `mutation.py`, `mutation.txt` | **this round's KAT proof**: four mutations, one per half of the two rules, each red on the section that owns it | `python3 tools/wp13/evidence/20260916-streets-r4/mutation.py .` |
+| `mutation.py`, `mutation.txt` | **this round's KAT proof**: seven mutations — three of the verge clearance, four of Lethariel's lane/ring shape including the independent review's own — each red on the section that owns it | `python3 tools/wp13/evidence/20260916-streets-r4/mutation.py .` |
 | `mutation-wave3.txt`, `mutation-review-wave3.txt` | wave 3's eleven mutations, re-run on this tree, all still red | `python3 tools/wp13/evidence/20260916-streets/mutation.py .` and `mutation-review.py` |
 | `gates.sh`, `gates.txt` | every road gate of `tools/wp13`, green | `bash tools/wp13/evidence/20260916-streets-r4/gates.sh .` |
 | `overlay_bench.lua`, `bench-before.tsv`, `bench-after.tsv` | what the round costs: every street run of every capital over one synthetic terraced surface, timed, on both trees | `luajit .../overlay_bench.lua . after` and the same file pointed at a `main` checkout |
@@ -61,7 +61,7 @@ Six capitals × nine fixture seeds, measured off the cells the overlay writes:
 | …of those, rails inside a junction square | 172..236 | **0** |
 | unwalkable road pairs, all six capitals | 3..14, all Lethariel's | **0** |
 | parallel overlaps in the tree | 20 (14 butt joints + 6 side by side) | **12, all butt joints** |
-| lamp standards | 4444 | 4030 (414 stood in another street) |
+| lamp standards | 4444 | 4030 (410 stood in another street, 4 went with Lethariel's shorter lanes) |
 | worst cross-profile spread / step / junction spread | 0 / 1 / 0 | 0 / 1 / 0 |
 | whole street network of all six capitals (bench) | 152.0 ms, 250 240 surface calls | 145.0 ms, 233 433 |
 

@@ -17,7 +17,6 @@ CHANGED=(
 	tools/wp13/street_kat.lua
 	tools/wp13/street_geometry.lua
 	tools/wp13/walkability.lua
-	tools/wp13/lethariel_plots.lua
 	tools/wp13/lethariel_kat.lua
 	tools/wp13/kezamba_lots.lua
 	tools/wp13/integration_fixture.lua

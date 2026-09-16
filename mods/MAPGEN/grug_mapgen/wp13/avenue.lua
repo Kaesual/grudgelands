@@ -721,7 +721,7 @@ local function loader(directory)
 		-- The kerb parapets this rule replaced each said so in their own
 		-- capital; the shared rule is told by `wp13/street_plan.lua`. A lamp
 		-- standard is exempt -- it is not a walk, and the rhythm is the run's.
-			--
+		--
 		-- THE VERGE ENDS AT THE JOINING STREET (playtest 6, 2026-09-16).
 		--
 		-- A verge lane is one node OUTSIDE this run's carriageway, and at a

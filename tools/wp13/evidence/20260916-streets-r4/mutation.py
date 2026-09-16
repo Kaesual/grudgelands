@@ -53,6 +53,31 @@ MUTANTS = [
 				from = LANE_START, to = LANE_END},""",
      """			{id = "lane_northwest_spine", axis = "z", at = -RING_AT - 2,
 				from = 0, to = LANE_END},"""),
+    # THE INDEPENDENT REVIEW'S OWN MUTATION (2026-09-16). It pulls every
+    # district lane twenty columns off the ring end it continues -- five streets
+    # left hanging in the fields with a 19-column hole in front of each -- and
+    # when the review ran it, EVERY gate in the tree stayed green: street_kat,
+    # lethariel_kat, highcourt_kat, lethariel_plots and walkability alike. That
+    # is the hole section 8's reachability rule now closes.
+    ("goal B -- every district lane pulled twenty columns off the ring end it "
+     "continues: the review's own mutation, which nothing caught",
+     QUADRANTS,
+     """	M.LANE_START = M.RING_AT + 1""",
+     """	M.LANE_START = M.RING_AT + 20"""),
+    # And the half-step version: the lane still reaches its junction, so it is
+    # not lonely, but it leaves a column of centre line nobody paves.
+    ("goal B -- a district lane one column short of the ring end, leaving a "
+     "column of its own centre line unpaved",
+     QUADRANTS,
+     """	M.LANE_START = M.RING_AT + 1
+	local RING_AT, LANE_END, LANE_START = M.RING_AT, M.LANE_END, M.LANE_START""",
+     """	M.LANE_START = M.RING_AT + 2
+	local RING_AT, LANE_END, LANE_START = M.RING_AT, M.LANE_END, M.LANE_START"""),
+    # And the literal the lanes are built against, pulled off the ring's own.
+    ("goal B -- RING_AT drifted off the ring street's own centre line",
+     QUADRANTS,
+     """	M.RING_AT = 96""",
+     """	M.RING_AT = 94"""),
 ]
 
 failures = 0

@@ -691,17 +691,37 @@ end
 -- refuses to compare such a digest, and the guard has been firing on a read
 -- that was nobody's bug but this probe's.
 --
--- A transient forceload is the engine's own "keep this block in memory": it
--- is released explicitly, it is never written to the world, and it survives the
--- step boundary between the emerge callback and the read. The block span of a
--- box is small (a corner box is 25 x ~20 x 25, at most 3 x 3 x 3 mapblocks) but
--- the engine's default budget is 16 blocks, so the two runners raise
--- `max_forceloaded_blocks` for the probe's own world.
+-- WHAT IS MEASURED TO WORK IS THE RE-READ, and that sentence is this way round
+-- because the independent review of 2026-09-16 measured it: in its own
+-- Highcourt pass the corner box came back with `corner_held = 126` AND
+-- `ignored = 12000` on attempt 1, and the SECOND attempt is what read it whole.
+-- Over 171 region reads of this lane's campaign plus three passes of the
+-- review's, no measurement anywhere shows the hold preventing an `ignore`.
+-- So: a box that comes back with anything ignored is re-emerged and read again,
+-- and that is the fix.
 --
--- It is belt AND braces on purpose: the hold below, the emerge outcome checked
--- rather than assumed, and a bounded re-read if a box still comes back with
--- anything ignored. The log publishes all three per region, so a pass says
--- which of them did the work instead of leaving it to be guessed at.
+-- THE HOLD IS INSURANCE AND IS UNPROVEN. A transient forceload is the engine's
+-- own "keep this block in memory" -- released explicitly, never written to the
+-- world -- but `core.forceload_block` loads asynchronously and cannot make a
+-- block resident inside the same server step, and a block cannot be unloaded
+-- mid-step either, so on the one path this code takes it may be doing nothing
+-- at all. It is kept because it costs a table of block positions and because it
+-- is the only thing that would help if the read ever grew a step boundary
+-- inside it; it is not what the passes credit.
+--
+-- The block span of a box is small (a corner box is 25 x ~20 x 25, at most
+-- 3 x 3 x 3 mapblocks) but the engine's default budget is 16 blocks, so
+-- `tools/wp13/run_capital.sh` -- the ONLY runner that stages this probe --
+-- raises `max_forceloaded_blocks` for its own disposable world.
+-- `tools/wp13/run_highcourt.sh` stages a different probe
+-- (`tools/wp13/highcourt_probe`), which still carries the pre-round-4
+-- emerge-then-read-a-step-later loop with no outcome check and no re-read. That
+-- is recorded as open in `docs/research/wp13-streets-round4.md` section 8 and
+-- is not fixed here.
+--
+-- The emerge OUTCOME is checked as well, rather than assumed; the log publishes
+-- `_held`, `_unheld`, `_emerge_trouble` and `_retries` per region, so a pass
+-- says which of the three did the work instead of leaving it to be guessed at.
 local BLOCK = 16
 local function block_span(box)
 	return math.floor(box.min_x / BLOCK), math.floor(box.max_x / BLOCK),

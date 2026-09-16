@@ -6,7 +6,6 @@ mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua parser PASS; SETGLOBAL [0]
 tools/wp13/street_kat.lua parser PASS; SETGLOBAL [0]
 tools/wp13/street_geometry.lua parser PASS; SETGLOBAL [0]
 tools/wp13/walkability.lua parser PASS; SETGLOBAL [0]
-tools/wp13/lethariel_plots.lua parser PASS; SETGLOBAL [0]
 tools/wp13/lethariel_kat.lua parser PASS; SETGLOBAL [0]
 tools/wp13/kezamba_lots.lua parser PASS; SETGLOBAL [0]
 tools/wp13/integration_fixture.lua parser PASS; SETGLOBAL [0]
@@ -19,26 +18,8 @@ SWEEP 1
 SWEEP 2
 SWEEP 3
 SWEEP 4
-tools/wp13/lethariel_plots.lua:323:		local text = table.concat(rows, "|")
-tools/wp13/lethariel_plots.lua:559:		local joined = table.concat(rows, "|")
 tools/wp13/kezamba_lots.lua:377:-- (1) Its first version took the greatest |reference - surface| over the whole
 SWEEP 5
-tools/wp13/lethariel_plots.lua:269:		os.exit(1)
-tools/wp13/lethariel_plots.lua:272:	os.exit(0)
-tools/wp13/lethariel_plots.lua:331:	if failures > 0 then os.exit(1) end
-tools/wp13/lethariel_plots.lua:334:	os.exit(0)
-tools/wp13/lethariel_plots.lua:472:		os.exit(1)
-tools/wp13/lethariel_plots.lua:476:	os.exit(0)
-tools/wp13/lethariel_plots.lua:566:	if failures > 0 then os.exit(1) end
-tools/wp13/lethariel_plots.lua:569:	os.exit(0)
-tools/wp13/lethariel_plots.lua:746:		os.exit(1)
-tools/wp13/lethariel_plots.lua:749:	os.exit(0)
-tools/wp13/lethariel_plots.lua:847:		os.exit(1)
-tools/wp13/lethariel_plots.lua:850:	os.exit(0)
-tools/wp13/lethariel_plots.lua:881:	os.exit(0)
-tools/wp13/lethariel_plots.lua:964:	os.exit(0)
-tools/wp13/lethariel_plots.lua:995:	os.exit(0)
-tools/wp13/lethariel_plots.lua:1040:	os.exit(1)
 tools/wp13/kezamba_lots.lua:188:	os.exit(0)
 tools/wp13/kezamba_lots.lua:257:	os.exit(0)
 tools/wp13/kezamba_lots.lua:367:	os.exit(unrepairable == 0 and 0 or 1)

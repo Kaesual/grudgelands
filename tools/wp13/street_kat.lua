@@ -592,10 +592,30 @@ return function(repo)
 	-- used to meet at 0. A capital that grows a side-by-side pair again turns
 	-- this row red rather than growing one quietly.
 	----------------------------------------------------------------------
+	-- Do the two ends of a collinear seam lie in ONE junction group? A group is
+	-- published per run, so the question is asked of one side and answered by
+	-- the other's presence in its members: a record of `one` whose range covers
+	-- `one`'s end column and whose member list carries `two` with ITS end column
+	-- inside the range that member row publishes.
+	local function seam_pinned(plan, one, two, mine, theirs)
+		for _, record in ipairs(plan[one.id] or {}) do
+			if record.low <= mine and mine <= record.high then
+				for _, member in ipairs(record.members) do
+					if member.id == two.id and member.low <= theirs and
+							theirs <= member.high then
+						return true
+					end
+				end
+			end
+		end
+		return false
+	end
 	do
 		local KEYS = {"highcourt", "dur_brannoc", "gor_drazhak", "lethariel",
 			"kezamba", "nhal_veyr"}
 		local rows = {}
+		local half = HALF
+		local collinear_seams = 0
 		for _, key in ipairs(KEYS) do
 			local source = dofile(wp40 .. "/r7_" .. key .. "_blueprint.lua")()
 			local streets, records = {}, 0
@@ -659,6 +679,9 @@ return function(repo)
 					if run.id == pair.one then one = run end
 					if run.id == pair.two then two = run end
 				end
+				assert(one and two, key .. ": the plan reports an overlap of " ..
+					pair.one .. " and " .. pair.two ..
+					", and the run list carries no such pair")
 				if one.axis == "x" then
 					depth = pair.max_x - pair.min_x + 1
 				else
@@ -681,15 +704,144 @@ return function(repo)
 				parallel[#parallel + 1] = pair.one .. "/" .. pair.two .. "/" ..
 					depth
 			end
+			-- EVERY STREET IS REACHABLE, AND EVERY CLOSE COLLINEAR SEAM IS
+			-- PINNED. The independent review of 2026-09-16 found that round 4's
+			-- own invariant was held by nothing: it moved Lethariel's district
+			-- lanes twenty columns off the ring ends they continue -- five
+			-- streets left hanging in the fields with a 19-column hole in front
+			-- of each -- and every gate in the tree stayed green. The overlap
+			-- rule above only looks at the direction where two streets share
+			-- TOO MUCH; `walkability.lua` cannot see a GAP at all, because a
+			-- gap has no neighbouring road columns to step between.
+			--
+			-- Two rules, both composition-agnostic, so a capital that grows the
+			-- shape later inherits them:
+			--
+			--   1. A STREET NOBODY CAN REACH IS NOT A STREET. Every run must
+			--      share at least one carriageway column with another run --
+			--      that is, appear in at least one junction group or in one
+			--      parallel overlap. Measured: 0 lonely runs in all six
+			--      capitals; the review's mutation makes six of Lethariel's
+			--      fifteen lonely at once.
+			--   2. A COLLINEAR SEAM IS ADJACENT AND PINNED. Two runs on one
+			--      centre line that do NOT share a column, and whose nearer
+			--      ends are within a road's half-width plus one of each other,
+			--      are a seam a walker crosses: they must be EXACTLY adjacent
+			--      (a larger gap is a stretch of ring or lane nobody paves) and
+			--      both ends must lie in ONE junction group (or nothing pins
+			--      the two envelopes to the same y, which is the step the user
+			--      walked into in playtest 6). Measured: six such seams in the
+			--      tree, all Lethariel's ring corners, all adjacent and all
+			--      pinned; the other five capitals have none, because their
+			--      collinear pairs SHARE their end column and a butt joint
+			--      needs nothing (wave 3, `street_plan.lua`).
+			local touched = {}
+			for _, pair in ipairs(overlaps) do
+				touched[pair.one] = true
+				touched[pair.two] = true
+			end
+			for id, list in pairs(plan) do
+				if #list > 0 then touched[id] = true end
+			end
+			for _, run in ipairs(streets) do
+				assert(touched[run.id], key .. ": the street " .. run.id ..
+					" shares no carriageway column with any other street -- " ..
+					"it is a road nobody can reach")
+			end
+			local seams = 0
+			for a = 1, #streets do
+				for b = a + 1, #streets do
+					local one, two = streets[a], streets[b]
+					if one.axis == two.axis and one.at == two.at then
+						-- The nearer pair of ends, and the columns between
+						-- them. A shared column is not a seam: it is the butt
+						-- joint the rule above already holds.
+						local gap, mine, theirs
+						if two.from > one.to then
+							gap, mine, theirs = two.from - one.to, one.to, two.from
+						elseif one.from > two.to then
+							gap, mine, theirs = one.from - two.to, one.from, two.to
+						end
+						if gap ~= nil and gap <= half + 1 then
+							seams = seams + 1
+							assert(gap == 1, key .. ": " .. one.id .. " ends at "
+								.. mine .. " and " .. two.id .. " begins at " ..
+								theirs .. " on the same centre line, leaving " ..
+								(gap - 1) .. " column(s) neither of them paves")
+							assert(seam_pinned(plan, one, two, mine, theirs),
+								key .. ": " .. one.id .. " and " .. two.id ..
+								" meet end to end at " .. mine .. "/" ..
+								theirs .. " on one centre line and no " ..
+								"junction group covers both ends -- nothing " ..
+								"pins the two envelopes to the same y")
+						end
+					end
+				end
+			end
+			collinear_seams = collinear_seams + seams
 			table.sort(parallel)
 			rows[#rows + 1] = key .. ":" .. #streets .. ":" .. computed ..
 				":" .. #overlaps
 			say("street_capital", key, #streets, computed, #overlaps,
 				table.concat(parallel, ","))
 		end
+		-- AND THE PINNING TEST ITSELF ANSWERS BOTH WAYS, on two runs built for
+		-- it. Every collinear seam in the six capitals IS pinned, so the false
+		-- branch of `seam_pinned` is never taken on real data and would be an
+		-- assertion nothing exercises; these two cases take it.
+		do
+			local ALONE = {
+				{id = "ring", axis = "z", at = 0, from = -40, to = 0},
+				{id = "lane", axis = "z", at = 0, from = 1, to = 40},
+			}
+			local lonely_plan = street_plan.junctions(ALONE, avenue.WIDTH)
+			assert(not seam_pinned(lonely_plan, ALONE[1], ALONE[2], 0, 1),
+				"two collinear runs with nothing crossing them were reported " ..
+				"as pinned by a junction group")
+			local JOINED = {
+				{id = "ring", axis = "z", at = 0, from = -40, to = 0},
+				{id = "lane", axis = "z", at = 0, from = 1, to = 40},
+				{id = "cross", axis = "x", at = 0, from = -40, to = 40},
+			}
+			local joined_plan = street_plan.junctions(JOINED, avenue.WIDTH)
+			assert(seam_pinned(joined_plan, JOINED[1], JOINED[2], 0, 1),
+				"a collinear seam with a street crossing it was not reported " ..
+				"as pinned")
+		end
+		-- AND THE LITERAL THE LANES STAND ON IS THE RING'S OWN. Lethariel's
+		-- quadrant file cannot read `lethariel.lua` (that file loads this one),
+		-- so the centre line it carries is a second copy of the same number.
+		-- This is what stops the two drifting apart in silence.
+		do
+			local quadrants = dofile(wp13 .. "/lethariel_quadrants.lua")()
+			local capital = dofile(wp13 .. "/lethariel.lua")(wp13)
+			assert(type(quadrants.RING_AT) == "number",
+				"lethariel_quadrants publishes no RING_AT for a gate to hold")
+			for _, run in ipairs(capital.ring) do
+				local magnitude = (run.at < 0) and -run.at or run.at
+				assert(magnitude == quadrants.RING_AT, "lethariel: the ring " ..
+					"run " .. run.id .. " stands at " .. run.at ..
+					" and the district lanes are built against RING_AT " ..
+					quadrants.RING_AT)
+			end
+			assert(quadrants.LANE_START == quadrants.RING_AT + 1,
+				"lethariel: the district lanes start at " ..
+				quadrants.LANE_START .. " and the ring street ends at " ..
+				quadrants.RING_AT .. ": they are no longer collinear neighbours")
+			-- Every lane that stands on a ring centre line, counted, so the
+			-- case cannot pass by having none.
+			local on_ring = 0
+			for _, run in ipairs(quadrants.lane_runs()) do
+				local magnitude = (run.at < 0) and -run.at or run.at
+				if magnitude == quadrants.RING_AT then on_ring = on_ring + 1 end
+			end
+			assert(on_ring == 6, "lethariel: " .. on_ring ..
+				" district lanes stand on a ring centre line, not six")
+		end
 		cases = cases + 1
 		say("street_inventory",
-			common.hex(common.new_sha256()(table.concat(rows, "\n"))))
+			common.hex(common.new_sha256()(table.concat(rows, "\n"))),
+			"collinear_seams", collinear_seams)
 	end
 
 	----------------------------------------------------------------------

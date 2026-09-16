@@ -125,6 +125,11 @@ printf 'gameid = grudgelands\nbackend = sqlite3\nplayer_backend = sqlite3\nauth_
 # are in memory already (the probe has just emerged them); the hold is
 # bookkeeping and not a second copy.
 #
+# THE HOLD IS INSURANCE AND THE RE-READ IS THE FIX -- see capital_probe's own
+# header. This setting exists because that insurance would otherwise be refused
+# at 16 blocks, and THIS is the only runner it applies to: run_highcourt.sh
+# stages a different probe, which has neither the hold nor the re-read.
+#
 # NOTHING IN THIS HEREDOC MAY CARRY A BACKTICK: the delimiter is unquoted so
 # that the settings can interpolate, which means the shell would run it.
 cat >"$root/server.conf" <<CONF
