@@ -18,23 +18,36 @@ Detailed quest catalogs are authored with WP8/WP9.
 Levels must keep delivering *decisions and buttons*, not just stats:
 
 **The trees themselves are proposed, not decided.**
-[skill_trees.md](skill_trees.md) (PROPOSAL 2026-09-16) builds two trees per
-class on the cadence below, shows that 20 points against 30 ranks is exactly
-two thirds, and lists every talent and capstone. It also asks the two
-questions this section leaves open: whether `combat_stats.md`'s "1 skill
-point per level" or the cadence below is the rule, and how "9 of 10 talents
-are numeric" can hold when each of the two trees carries a capstone.
+[skill_trees.md](skill_trees.md) (PROPOSAL, revision 2, 2026-09-16) builds
+two trees per class on the cadence below, works the arithmetic out for every
+milestone, and lists every talent, keystone and capstone for all **four**
+classes — the fourth being the Scout ([scout.md](scout.md)), also proposed.
+Its §6 is the list of open decisions.
 
-- **1 talent point every 3 levels** (20 points total at 60); talent
-  trees hold 2 trees × 5 talents × 3 ranks = 30 ranks per class — you
-  can fill two thirds: real choices, no full clear (WP11).
-- **9 of 10 talents are numeric modifiers** (cheap to build, easy to
-  balance); **exactly one capstone per tree**, unlocked at 8+ points in
-  that tree, and **every capstone is a NEW active "main skill"** — this
-  is the "new ability every ~10 levels" beat (e.g. Priest Holy capstone:
-  Renew; further capstones designed with WP11).
-- **Respec at the class trainer for gold**, price rising with level —
-  repeatable per-character gold sink and the class trainer's purpose.
+The three bullets below were rewritten on **2026-09-16** by the user's
+rulings; the superseded text is named in `skill_trees.md` §5.2.
+
+- **1 talent point every 2 levels, the first at level 2** (30 points total
+  at 60); a talent tree holds about **30 ranks**, so a class holds about 60 —
+  you can fill **one whole tree** or spread over both with one prioritised,
+  and a full tree is never forced (WP11). *(Supersedes "1 talent point every
+  3 levels (20 points total at 60); 2 trees × 5 talents × 3 ranks".)*
+- Each tree carries **two playstyle directions (chains)**, rank counts vary
+  **3-5** by talent strength, and dependencies are of both kinds: points
+  spent in the tree, and hard chains. Per tree: **two keystones and one
+  capstone**. A keystone is a **new active "main skill"** at a chain
+  boundary; the capstone is the tree's top talent and hangs on its own chain
+  — a skill **or** a strong effect, since not every capstone is a skill. That
+  is the "new ability every ~10 levels" beat (e.g. Renew, the first keystone
+  of the Priest's healing tree). *(Supersedes "9 of 10 talents are numeric
+  modifiers; exactly one capstone per tree, unlocked at 8+ points in that
+  tree, and every capstone is a NEW active main skill".)*
+- **New skills come only from the tree**; the base kit granted at class
+  choice stays, and talents improve its numbers. **Respec for money in the
+  talent UI — there is no class trainer and no NPC**; the price is open
+  decision `skill_trees.md` §6.8. *(Supersedes "Respec at the class trainer
+  for gold". `economy.md` §4, `items_crafting.md` §8.3 and `world.md` §1 still
+  name a class trainer and are corrected separately — `skill_trees.md` §6.9.)*
 - **Level 20 — first Claim Stone:** a short introduction from the passive,
   invulnerable Housing Steward unlocks the first free owner-bound Claim Stone.
   It may be placed only in the authored level-11–30 housing zones and starts
