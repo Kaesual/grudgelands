@@ -654,15 +654,30 @@ return function(repo)
 				-- How deep the overlap runs ALONG the two parallel runs: one
 				-- column is a butt joint (one continuous lane authored as two
 				-- runs) and needs nothing; more is a shared stretch of street.
-				local one
+				local one, two
 				for _, run in ipairs(streets) do
 					if run.id == pair.one then one = run end
+					if run.id == pair.two then two = run end
 				end
 				if one.axis == "x" then
 					depth = pair.max_x - pair.min_x + 1
 				else
 					depth = pair.max_z - pair.min_z + 1
 				end
+				-- THE PIN, and it is an assertion since round 4 (2026-09-16)
+				-- rather than a row somebody reads. A parallel overlap is
+				-- allowed to be ONE thing: two COLLINEAR runs of one continuous
+				-- lane sharing exactly their end column. Anything else is two
+				-- streets in one place -- the defect the user walked into at
+				-- Lethariel in playtest 6 -- and a composition may not grow one
+				-- again.
+				assert(one.at == two.at, key .. ": " .. pair.one .. " at " ..
+					one.at .. " and " .. pair.two .. " at " .. two.at ..
+					" run side by side rather than end to end -- two streets " ..
+					"that share columns and no centre line are one street")
+				assert(depth == 1, key .. ": " .. pair.one .. " and " ..
+					pair.two .. " share " .. depth ..
+					" columns of carriageway; a butt joint shares exactly one")
 				parallel[#parallel + 1] = pair.one .. "/" .. pair.two .. "/" ..
 					depth
 			end

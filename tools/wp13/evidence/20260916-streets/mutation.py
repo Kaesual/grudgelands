@@ -27,13 +27,16 @@ MUTANTS = [
      """					for member = 1, #junction.members do
 						local _ = junction.members[member]
 					end"""),
+    # The verge block gained one level of indentation in round 4 (the per-side
+    # verge clearance wraps it), so this anchor carries one more tab than the
+    # record it was written against. The mutation itself is unchanged.
     ("ruling 3 -- a standard back on the ground beside the street",
-     """					if is_lamp then
-						buf:put(x, top + 1, z, palette.node("post"))""",
-     """					if is_lamp then
-						top = foot
-						buf:put(x, top, z, KERB)
-						buf:put(x, top + 1, z, palette.node("post"))"""),
+     """						if is_lamp then
+							buf:put(x, top + 1, z, palette.node("post"))""",
+     """						if is_lamp then
+							top = foot
+							buf:put(x, top, z, KERB)
+							buf:put(x, top + 1, z, palette.node("post"))"""),
     ("ruling 4 -- a raised street filled solid again",
      """				if raise > 0 and not wetlane[offset][p] and
 						(raise < M.MIN_CLEAR or on_deck) then""",
