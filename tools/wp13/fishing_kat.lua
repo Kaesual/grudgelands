@@ -565,10 +565,14 @@ function M.run(repo)
 		return "caught=" .. #player._added .. " chat=" .. #harness.chat
 	end)
 
-	-- D6. DRY LAND. No cast at all, so no roll is drawn: the scripted queue
-	-- being untouched is itself the assertion.
+	-- D6. DRY LAND. No cast at all, so no roll is drawn, and `roll_at == 0`
+	-- below is the assertion that says so. The queue is nevertheless stocked --
+	-- the review of 2026-09-16 pointed out that an EMPTY queue turns the
+	-- mutation this case exists to catch (remove the `is_water` gate) into a
+	-- Lua error rather than a red row, and a crash is a worse answer than a
+	-- failure. Same reasoning as D3-D5.
 	case("dry_land", function()
-		harness.rolls = {}
+		harness.rolls = {0, 0}
 		harness.roll_at = 0
 		local player = new_player(harness, "optimist", {x = 10, y = 4, z = 11},
 			fresh_rod())

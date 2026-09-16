@@ -84,6 +84,12 @@ case_ "M8 an angler may wander away from the line" \
 	"$INIT" 's/^local REEL_RANGE = 8$/local REEL_RANGE = 100000/' \
 	tools/wp13/fishing_kat.lua
 
+# The mutation D6 exists to catch, and the reason D6 now stocks its roll queue:
+# with an empty queue this printed a Lua traceback instead of a red row.
+case_ "M8b a cast lands on dry land too" \
+	"$INIT" 's/^\tif not pos or not is_water(pos) then$/\tif not pos then/' \
+	tools/wp13/fishing_kat.lua
+
 case_ "M9 the rod cannot point at water" \
 	"$INIT" 's/^\tliquids_pointable = true,$/\tliquids_pointable = false,/' \
 	tools/wp13/fishing_kat.lua
