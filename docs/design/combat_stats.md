@@ -11,8 +11,14 @@ threat live in `grug_core`.
 Core principles:
 
 - We think in **skills + items**: skills are acquired and improved through
-  the class skill tree (1 skill point per level); items carry
-  stats/enchantments.
+  the class skill tree (**1 talent point every 2 levels, the first at level 2
+  — 30 points at level 60**, user ruling 2026-09-16); items carry
+  stats/enchantments. The former "1 skill point per level" in this line was
+  superseded by that ruling, together with `progression.md` §2's earlier "1
+  point every 3 levels"; the trees the points are spent in are
+  [skill_trees.md](skill_trees.md) (PROPOSAL, revision 2), which also carries
+  the open decision (§6.5) about whether a capstone may exceed one of this
+  file's caps for a bounded time.
 - **Small, readable numbers**: Luanti baseline (20 HP) as anchor, ~×10
   growth over 60 levels. The epic feel comes from relative progression,
   not digit count.
