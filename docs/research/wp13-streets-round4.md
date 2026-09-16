@@ -349,7 +349,47 @@ record does not already say with the same caveat. **It stays open, with wave
 
 ## 6. The digests that moved
 
-<!--ENGINE-DIGESTS-->
+An overlay's manifest identity is its SPECIFICATION and not its cells, so the
+only two things this lane can move are overlay identity rows and the
+built-geometry digests `run_capital.sh` gates on.
+
+**One overlay identity: `lethariel_avenue`.** Its run rectangles changed
+(§3.2), and the overlay identity is hashed from exactly those. `a5111f8b…` →
+`ad65e634…`. The other five capitals' overlay identities are byte-identical:
+the verge clearance is derived from the rectangles and is deliberately not
+hashed, like the junction squares and the barrier passages beside it. Every
+other identity in the tree — every core, plot, dressing and settlement root,
+and the six START identities — is byte-identical to `main`'s
+(`identity.txt`; `final_micro` moves seven rows out of 478, all of them named
+in §7 of this record).
+
+**Nine frozen built-geometry digests, all of them `avenue`** (`refreeze.txt`,
+`9 digests moved, 19 confirmed unchanged`):
+
+| capital | seed | was | now |
+| --- | --- | --- | --- |
+| highcourt | 531802985935182545 | `44e552bc…` | `1d0e2868…` |
+| highcourt | 8675309 | `46ab2c74…` | `a0dc9ee0…` |
+| dur_brannoc | 531802985935182545 | `1f98738e…` | `1e35beca…` |
+| dur_brannoc | 8675309 | `0bc3555e…` | `916e90cc…` |
+| dur_brannoc | 15912857179583385436 | `dfbd07dd…` | `daf0c268…` |
+| gor_drazhak | 531802985935182545 | `b93337ec…` | `b5d947a6…` |
+| lethariel | 531802985935182545 | `f62eb734…` | `a0d99054…` |
+| kezamba | 531802985935182545 | `a0cc1bdf…` | `d021d645…` |
+| nhal_veyr | 531802985935182545 | `bde0dc8c…` | `6a8a2158…` |
+
+**And nineteen confirmed unchanged**: every `rampart`, `corner` and `gate`
+digest of every capital and seed that has one. That is the shape the change
+predicts — the verge furniture the clearance removes stands at junctions inside
+the city, and those three regions are the curtain wall at ±256 — and it is
+measured rather than assumed.
+
+Every one of the nine was re-frozen from a clean pass of this branch
+(`errors=0 complete=1`, `<label>_ignored=0` on every region), and a SECOND pass
+of each capital on the gate seed afterwards reported the re-frozen value
+matching, which is this package's determinism check on the engine side. For
+Highcourt on 8675309 and Nhal Veyr on 531802985935182545 there are four and two
+passes respectively and all of them agree (§4.3).
 
 ---
 
