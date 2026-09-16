@@ -39,7 +39,7 @@ proposals and both carry one shared open-decisions list (`skill_trees.md` §6).
 | **Armour** | leather — armor class 2 (`inventory_equipment.md:184-193`) |
 | **Weapons** | bow (ranged) and dagger / 1H sword (melee) |
 | **Resource** | **mana** — ruling 14, decided. The bar is the shipped one (`grug_classes/stats.lua:25-31`, `10 + 2 × Int`); only its label on the HUD is the class's own |
-| **Trees** | **Quarry** (bow) and **Veil** (blade and evasion) — `skill_trees.md` §2.7/§2.8, names `skill_trees.md` §6.7 |
+| **Trees** | **Quarry** (bow) and **Veil** (blade and evasion) — `skill_trees.md` §2.7/§2.8, names `skill_trees.md` §6.3 |
 | **Attributes** | Dexterity-led; growth proposed **+2 Dex / +1 Str / +1 Int** per level, against `combat_stats.md:40-41`'s Warrior +3 Str/+1 Dex, Mage +3 Int/+1 Dex, Priest +1 Str/+2 Int/+1 Dex |
 | **Role** | ranged damage that can also fight at knife range; the most evasive class in the game |
 
@@ -53,7 +53,7 @@ The same growth gives Int `10 + 59 = 69`, so the mana pool is `10 + 2 × 69 =
 148` at level 60 against a Mage's 384 (`combat_stats.md:87-92`). That is the
 point of reusing mana rather than inventing a resource: the Scout gets the
 same bar with a much smaller pool, so the same ability costs bite harder. What
-scales an **arrow** is still open — `skill_trees.md` §6.12.
+scales an **arrow** is still open — `skill_trees.md` §6.4.
 
 Ruling 12 rules out poison and traps outright, and ruling 7 already did for
 poison: "no new combat mechanic". `classes.md:470-482` planned poison as "the
@@ -73,7 +73,7 @@ ceiling of two talent buttons puts the worst case at 7 of 8.
 |---|---|---|---|---|---|
 | **Loose** | cast | 1 arrow | none (ammo-limited) | Requires a bow in the weapon slot. A **ballistic** arrow along the cast-time crosshair, 25 m, initial impulse from a bounded draw time, gravity supplying the trajectory | `grug_projectiles` — swept collision, owner validation, the per-owner active cap and max-distance cleanup are all shipped (`classes.md:282-285`); only gravity is new, and `combat_stats.md:249-252` already specifies it |
 | **Snare Shot** | cast | 8 mana + 1 arrow | 12 s | The arrow slows the target by 50 % for 4 s | `grug_mobs.slow` for mobs and `grug_mobs.slow_player` (`verbs.lua:140-169`) for players — the same verb Hamstring uses (`kits.lua:370-373`), and after ruling 11 a named modifier in the aggregator |
-| **Sidestep** | cast | 10 mana | 30 s | Dodge chance +10 / 15 / 20 percentage points for 4 s, **inside** the 30 % cap | `grug_classes.get_crit_chance`'s twin `get_dodge_chance` (`grug_classes/stats.lua:49`) and the timed-window table of `skill_trees.md` §3.2 |
+| **Sidestep** | cast | 10 mana | 30 s | Dodge chance **+15** percentage points for 4 s, **inside** the 30 % cap. A base ability has no ranks; the Veil tree shortens its cooldown (Slip Away) and replaces it (Shake Loose) | `grug_classes.get_crit_chance`'s twin `get_dodge_chance` (`grug_classes/stats.lua:49`) and the timed-window table of `skill_trees.md` §3.2 |
 | **Sprint** ‼ | cast | 15 mana | **300 s** | Movement speed **+25 % for 10 s** — 5.0 nodes/s against every aggressive mob's 4.4 | the speed aggregator of `skill_trees.md` §3.9, as one named modifier with its own duration |
 
 **Sprint is a rule-breaker in the base kit, and it is the clearest example of
@@ -82,7 +82,7 @@ the break, the stronger the limit". It breaks the one inequality the whole mob
 game rests on, so it carries the strongest limit in the design: ten seconds,
 once every five minutes. The user's words: "a deliberate special, not an
 every-fight button." The three decided files that state the opposite pillar
-need one sentence each — `skill_trees.md` §6.4 carries that, and it is not
+need one sentence each — `skill_trees.md` §7 task 1 carries that, and it is not
 this lane's to write.
 
 What is deliberately **not** in the base kit: a melee finisher (it is Veil's
@@ -172,29 +172,42 @@ arrows". So no decided sentence has to change for it; one projectile
 registration gains a gravity term that `grug_projectiles` does not have today.
 
 The coordinator names **VoxeLibre's `mcl_bows`** as a usable reference port
-for that physics, under GPL-3. Checked against this repo's own rule rather
-than taken on trust:
+for that physics. Checked against this repo's own rule rather than taken on
+trust — and the answer is **dual-licensing, not a disagreement**:
 
 - `AGENTS.md:829-833`: "**Code: GPL-3.0-or-later**… Compatible code inputs:
   MIT, Apache-2.0, LGPL-2.1/3.0 (also '-only'), GPL-2.0-or-later, **GPL-3.0**.
-  **Hard exclusion: GPL-2.0-only code.**" GPL-3 is therefore a **permitted**
-  input, and so is the LGPL-3.0 that `items_crafting.md:2425-2426` records for
-  the same mod — the two statements disagree about *which* of the two it is,
-  and both are allowed, so nothing is blocked; the porting lane should record
-  the one it actually finds.
-- `AGENTS.md:839-841`: "**Before importing anything, verify the license in the
-  source repo** (LICENSE/README files) — ContentDB metadata can be wrong". So
-  the lane checks VoxeLibre's own repo and writes down what it says, rather
-  than citing either of our two docs.
+  **Hard exclusion: GPL-2.0-only code.**"
+- **VoxeLibre states both licences and says they are a choice.**
+  `reference_projects/VoxeLibre/LEGAL.md:25-28`: a per-mod licence "counts as
+  **dual-licensing**. You can choose which license applies to you: Either the
+  license of VoxeLibre (GNU GPLv3) or the mod's license." With
+  `reference_projects/VoxeLibre/mods/ITEMS/mcl_bows/README.txt`'s "Source
+  code: LGPL 3.0", **mcl_bows is available under either LGPL-3.0 or GPL-3.0**,
+  and both are on `AGENTS.md:832-833`'s permitted list. There is nothing for a
+  porting lane to discover and nothing is blocked. (`items_crafting.md:2425-2426`
+  records only the LGPL half, which is one of the two and therefore not
+  wrong.)
+- **Media is a separate question, and the number in our own docs is wrong.**
+  `items_crafting.md:2425-2426` says "media CC BY-SA 4.0 + 2 attribution
+  sounds". `mcl_bows/README.txt` actually lists **two CC0 sounds**
+  (`mcl_bows_bow_shoot.ogg`, `mcl_bows_hit_other.ogg`) and **one CC BY 3.0**
+  (`mcl_bows_hit_player.ogg`, tim.kahn); CC BY-SA 4.0 is the *texture*
+  licence. So there is **one** attribution-requiring sound, not two, and it is
+  **CC BY 3.0**. `items_crafting.md` is not this lane's file, but a
+  `LICENSE-media.md` row copied from it would carry the wrong licence — which
+  is exactly the failure `AGENTS.md:839-841` warns about ("verify the license
+  **in the source repo** — ContentDB metadata can be wrong").
 - `AGENTS.md:129` and `:146`: a vendored third party carries "upstream repo +
   commit + license + patch list", and **ad-hoc clones into a scratchpad are
-  forbidden** — they "die with the session, and then a *cleared* licence
-  silently" stops being verifiable.
-- Media is separate (`AGENTS.md:834-838`): mcl_bows' textures and its two
-  attribution sounds are CC BY-SA 4.0 per `items_crafting.md:2425-2426` and
-  would need their own `LICENSE-media.md` rows, or the lane draws its own
-  arrow sprite through `tools/wp13/gen_weapon_ladder.py` and imports no media
-  at all.
+  forbidden**.
+
+*A note on reading these files.* `reference_projects/` holds **nine registered
+submodules**, but a **worktree does not populate submodule contents** — they
+are empty here and populated in the main checkout. The three VoxeLibre facts
+above were read there by the independent review of 2026-09-16 at the pinned
+commit `c2dbc520ff4e1637072d33b06c3a2404e0f08df7`, and anyone can re-check
+them from the main checkout at the paths given.
 
 **Recommendation: port the physics, import nothing.** The ballistic part is a
 velocity, a gravity constant and a lifetime guard on top of machinery this
@@ -226,21 +239,27 @@ Version 1 only; the stealth conflicts are in §8. Each item carries a severity:
 **blocks** (cannot ship as written until resolved), **needs a rule** (ships
 once somebody decides who owns what), **cosmetic**.
 
-### 6.1 `physics_override.speed` ownership — **was blocking, resolved by ruling 11**
+### 6.1 Movement ownership — **was blocking, resolved by ruling 11**
 
 `mods/ENTITIES/grug_mobs/verbs.lua:100-118` states the problem in its own
-comment: there are **two independent owners** of `physics_override.speed` —
-mob webs (`verbs.lua:140-169`) and the ability snare chain
-(`kits.lua:144-175`) — each name-keyed, each restoring to `speed = 1` when its
-own effect ends, "so an overlapping mob web + player snare can end early (the
-first restore lifts both)… **the fix is one shared owner in `grug_core`**".
-`mounts.md:128-133` and `boats.md:113-117` both lean on that count being two.
+comment: independent owners of `physics_override.speed`, each name-keyed, each
+restoring to `speed = 1` when its own effect ends, "so an overlapping mob web
++ player snare can end early (the first restore lifts both)… **the fix is one
+shared owner in `grug_core`**". That comment counts **two** — mob webs
+(`verbs.lua:140-169`) and the ability snare chain (`kits.lua:144-175`) — and
+`mounts.md:128-133` and `boats.md:113-117` both repeat the count. **Measured,
+there are three**: `grug_classes/selection.lua:52` freezes a player during
+character creation with `{speed = 0, jump = 0, gravity = 0}`, re-asserts it
+whenever it drifts (`:49-53`), and restores a **snapshot** at `:91` — which
+would write a running slow back permanently. `skill_trees.md` §3.9 lists all
+three and sizes the migration.
 
-Sprint and Snare Shot would have been a third and fourth writer.
+Sprint and Snare Shot would have been a fourth and fifth writer.
 **Ruling 11 decides the fix** — one central aggregator in `grug_core`, named
 modifiers with independent durations, roots as a hard flag, mounts outside it
-— and `skill_trees.md` §3.9 sizes it at ~100 lines. It is **not** the Scout's
-to build: `docs/research/mob-pressure-task-card.md` carries it, because a mob
+— covering **speed and jump**, because the shipped roots set both
+(`kits.lua:495` is `{speed = 0.1, jump = 0.3}`). It is **not** the Scout's to
+build: `docs/research/mob-pressure-task-card.md` §4b carries it, because a mob
 that must keep moving while its attack clock runs is the other consumer. The
 Scout's former "speed and stealth" lane collapses into the class lane once it
 exists.
@@ -259,8 +278,8 @@ seconds. **Ruling 10 permits exactly this** — the break is the point, the
 five-minute cooldown is the price. What is still open is the paperwork:
 `mounts.md` §3.1 and `combat_stats.md` §3 have to say that the inequality
 holds *except* for named, long-cooldown skills, or the next reader files
-Sprint as a bug. Neither file is this lane's; `skill_trees.md` §6.4 carries
-the decision.
+Sprint as a bug. Neither file is this lane's; `skill_trees.md` §7 task 1
+carries it, and the exact percentage and cooldown are `skill_trees.md` §6.5.
 
 ### 6.3 Faster mobs versus the Mage's kiting fantasy — **needs a rule**
 
@@ -321,7 +340,7 @@ conflicts if version 1 had stealth (§8).
 | **Professions** | none created. The **Leatherworker** already owns the grades and the future quiver; the **Woodcarver** already owns the bow | `professions.md:52`, `:93-94`, `:192-195`; `items_crafting.md:2437-2441` |
 | **Traders** | the bowyer shelf gains its bracket tab (it explicitly has none today); the tanner shelf gains the leather grades | `grug_traders/stock.lua:428-435`, `:472-479` |
 | **Character visuals** | the six leather tints on the cloth silhouette, and the bow pose | `character_visuals.md:71-73` |
-| **`combat_stats.md`** | one sentence for the ranged damage term if `skill_trees.md` §6.12 picks (a), and the cap-override paragraph WP11 already owes | `grug_classes/stats.lua:34-36` |
+| **`combat_stats.md`** | one sentence for the ranged damage term if `skill_trees.md` §6.4 picks (a), and the cap-override paragraph WP11 already owes | `grug_classes/stats.lua:34-36` |
 | **PvP (WP41)** | nothing in version 1. Sprint and Sidestep are ordinary buffs under the existing tag rules | `combat_stats.md:270-289` |
 | **`grug_visuals`, `grug_mobs` AI, nametags** | **nothing** — every one of those was an invisibility dependency (§8) | — |
 
@@ -337,7 +356,7 @@ moves to the mob-pressure lane that needs it anyway.
 | **S0 — design** | this file and `skill_trees.md` §2.7/§2.8 | — | **done** |
 | **S1 — bow and arrows** | the bow family (6 registrations + 6 sprites through the existing generator + the bracket tab), the below-ladder starter bow, the fourth wield pose, the player arrow item and its **ballistic** entity on `grug_projectiles`, the draw-time charge on the shipped charge-bar machinery (`classes.md` §2b), the Woodcarver recipes and the bowyer shelf | — | **L** |
 | **S2 — leather and the tanner line** | flip `grug_gear`'s leather ladder (24 items, 24 icons), the six tints on the borrowed cloth cut, armor class 2 for the new rank, the Leatherworker recipes and the tanner shelf | — | **M-L** |
-| **S3 — the class and its trees** | `grug_classes` registration (attributes, growth, colour), the four base abilities of §2, the class-selection entry, the starter grant, the ranged damage term of `skill_trees.md` §6.12, **and** the 16 talents of `skill_trees.md` §2.7/§2.8 — 10 numeric consumers, 2 new-skill keystones (Pinning Shot, Opening), 2 replacements, 2 capstone effects — plus the KAT rows | S1, S2, WP11 X1-X4, the aggregator | **L** |
+| **S3 — the class and its trees** | `grug_classes` registration (attributes, growth, colour), the four base abilities of §2, the class-selection entry, the starter grant, the ranged damage term of `skill_trees.md` §6.4, **and** the 16 talents of `skill_trees.md` §2.7/§2.8 — 10 numeric consumers, **2 new-skill keystones** (Pinning Shot, Opening), **3 replacements** (Twin Shot, Shake Loose and the capstone Longshot) and **1 capstone effect** (Untouchable) — plus the KAT rows | S1, S2, WP11 X1-X4, the aggregator | **L** |
 
 ### 7.3 My estimate, and what changed
 
