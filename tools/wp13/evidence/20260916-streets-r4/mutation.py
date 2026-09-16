@@ -49,10 +49,10 @@ MUTANTS = [
     ("goal B -- a district lane back beside the ring street, two nodes off "
      "its centre line: the side-by-side inventory section 8 pins",
      QUADRANTS,
-     """			{id = "lane_northwest_spine", axis = "z", at = -96,
-				from = 97, to = 190},""",
-     """			{id = "lane_northwest_spine", axis = "z", at = -98,
-				from = 0, to = 190},"""),
+     """			{id = "lane_northwest_spine", axis = "z", at = -RING_AT,
+				from = LANE_START, to = LANE_END},""",
+     """			{id = "lane_northwest_spine", axis = "z", at = -RING_AT - 2,
+				from = 0, to = LANE_END},"""),
 ]
 
 failures = 0

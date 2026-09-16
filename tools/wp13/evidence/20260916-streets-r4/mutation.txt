@@ -1,0 +1,9 @@
+RED         goal A -- the rail kept at a BUTT JOINT: the clearance clamped to the run's interior, so the end column a joining run lands on keeps its parapet
+            luajit: tools/wp13/street_kat.lua:979: corner: 4 of 12 verge cells still stand inside the joining street's carriageway
+RED         goal A -- the rail kept at a CROSSING: the clearance restricted to joints at a run's own end, so a street crossed in the middle keeps its parapet across the other road
+            luajit: tools/wp13/street_kat.lua:979: crossing: 68 of 68 verge cells still stand inside the joining street's carriageway
+RED         goal A -- the clearance applied to the wrong SIDE, which leaves the furniture where a street joins and takes the parapet where none does
+            luajit: tools/wp13/street_kat.lua:979: corner: 12 of 12 verge cells still stand inside the joining street's carriageway
+RED         goal B -- a district lane back beside the ring street, two nodes off its centre line: the side-by-side inventory section 8 pins
+            luajit: tools/wp13/street_kat.lua:674: lethariel: ring_west at -96 and lane_northwest_spine at -98 run side by side rather than end to end -- two streets that share columns and no centre line are one street
+restored    street_kat exit 0

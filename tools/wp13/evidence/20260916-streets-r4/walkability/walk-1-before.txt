@@ -1,0 +1,6 @@
+COMPOSITE highcourt    seed 1                      unwalkable_pairs=0     worst=0  
+COMPOSITE dur_brannoc  seed 1                      unwalkable_pairs=0     worst=0  
+COMPOSITE gor_drazhak  seed 1                      unwalkable_pairs=0     worst=0  
+COMPOSITE lethariel    seed 1                      unwalkable_pairs=3     worst=2  1751,-1599(lane_southwest_cross,y=42) vs 1751,-1598(ring_south,y=44)
+COMPOSITE kezamba      seed 1                      unwalkable_pairs=0     worst=0  
+COMPOSITE nhal_veyr    seed 1                      unwalkable_pairs=0     worst=0  

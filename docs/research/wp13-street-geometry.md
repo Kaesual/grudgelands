@@ -357,3 +357,36 @@ the gate from mis-reporting it.
 | `tools/wp13/run_capital.sh` | the digest gate refuses a region that came back with `ignore` nodes in it instead of comparing it |
 | six existing KATs + the integration fixture | they asserted the road this replaces |
 | `tools/wp13/evidence/20260916-streets/` | the evidence, including `gates.sh` (every road gate as a gate), `walkability.lua` (the headline number) and the eleven mutations |
+
+---
+
+## 11. Round 4 (2026-09-16): what playtest 6 closed of section 8
+
+Appended by round 4, Lane G, branch `wp13-r4-streets`. The record of that round
+is **[wp13-streets-round4.md](wp13-streets-round4.md)**; nothing above this line
+is rewritten, because it is the record of what wave 3 measured.
+
+Two of section 8's open items are closed and one is measured:
+
+* **Lethariel's district lanes no longer overlap its ring street.** Each of the
+  six lanes now stands on the RING's own centre line and starts one column past
+  the end of the ring run it continues, so the pair is collinear, shares no
+  column and is pinned to one y by the ring corner's plateau. The walkability
+  table of section 8 is **0 on all six capitals and all nine seeds**, worst step
+  0, where Lethariel's residual was 3/11/7/3 there and 3..14 over the full nine.
+  The inventory section 9 of the KAT pins is now **12 butt joints and no
+  side-by-side pair**, and it is an assertion rather than a printed row.
+* **Highcourt's `corner` region can be read reliably.** `capital_probe` holds a
+  dump box's mapblocks in memory between its emerge and its read, checks the
+  emerge outcome instead of assuming it, and reads a short box again. Four
+  consecutive Highcourt passes on 8675309 and two Nhal Veyr passes on the other
+  gate seed all report `corner_ignored = 0`; one pass of each needed one retry.
+  The gate that refuses an `ignore`-bearing digest is unchanged and did not fire.
+* **A third finding of playtest 6 is a rule this record did not have**: a run's
+  VERGE lane is one node outside its own carriageway, so at a crossing, a corner
+  or a T-joint it runs across the road that joins, and everything standing on it
+  — rail, plank walk, pillar, lamp standard — stood in the middle of that road.
+  2405..2695 such cells over six capitals and nine seeds, now 0.
+
+Still open from section 8: the gate-arrival ramp (`kezamba_ramp.lua`), and
+junctions that are close but disjoint.

@@ -1,0 +1,7 @@
+highcourt    seed 1  spread 0  step 1  junc 0/1  walled 39 (solid 0)  wet 2811  lamps_off 0/794  verge_in_road 377 plateau_rail 52
+dur_brannoc  seed 1  spread 0  step 1  junc 0/1  walled 1243 (solid 0)  wet 0  lamps_off 0/864  verge_in_road 335 plateau_rail 47
+gor_drazhak  seed 1  spread 0  step 1  junc 0/1  walled 25 (solid 0)  wet 0  lamps_off 0/800  verge_in_road 245 plateau_rail 0
+lethariel    seed 1  spread 0  step 1  junc 0/1  walled 229 (solid 0)  wet 2528  lamps_off 0/770  verge_in_road 957 plateau_rail 34
+kezamba      seed 1  spread 0  step 1  junc 0/1  walled 943 (solid 0)  wet 2136  lamps_off 0/416  verge_in_road 223 plateau_rail 36
+nhal_veyr    seed 1  spread 0  step 1  junc 0/1  walled 35 (solid 5)  wet 0  lamps_off 0/800  verge_in_road 268 plateau_rail 8
+TOTAL seed 1  spread 0  step 1  lane_step 1  junc 0/1  raised 26225 (max 22) walled 2514 solid 5 pillars 2509  wet 7475 piers 628 rails 4260  lamps 4444 off 0  verge_in_road 2405 plateau_rail 177

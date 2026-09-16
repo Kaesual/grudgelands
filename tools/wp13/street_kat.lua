@@ -1050,9 +1050,58 @@ return function(repo)
 				": the joined road steps " .. worst .. " nodes somewhere")
 		end
 		assert(cleared_total > 0, "the clearance removed nothing")
+		-- (d) AND A PIECE OF SUCH A RUN IS STILL EXACTLY THAT STRETCH OF IT.
+		-- Section 7 cuts the cases it was written for; the clearance is a new
+		-- per-position input and a successor emerges a street one mapchunk at a
+		-- time, so the crossing's own avenue is cut at EVERY column here and the
+		-- union of the two pieces compared with the whole.
+		local splits = 0
+		do
+			local runs = street_plan.attach(VERGE_CASES[1].runs, avenue.WIDTH)
+			local spec
+			for _, entry in ipairs(runs) do
+				if entry.id == "avenue" then spec = entry end
+			end
+			local function build(from, to)
+				return avenue.run(palette, {id = spec.id, axis = spec.axis,
+					at = spec.at, from = from, to = to, width = avenue.WIDTH,
+					lamp_spacing = avenue.LAMP_SPACING,
+					lamp_phase = spec.from, reach = avenue.REACH,
+					wet = pond_wet, junctions = spec.junctions,
+					clear_verge = spec.clear_verge}, pond)
+			end
+			local whole = build(spec.from, spec.to)
+			local expected = {}
+			for _, cell in ipairs(whole.cells) do
+				expected[cell.x .. ":" .. cell.y .. ":" .. cell.z] =
+					cell.name .. ":" .. (cell.param2 or 0)
+			end
+			for cut = spec.from, spec.to - 1 do
+				local union, count = {}, 0
+				for _, part in ipairs({{spec.from, cut}, {cut + 1, spec.to}}) do
+					local piece = build(part[1], part[2])
+					for _, cell in ipairs(piece.cells) do
+						local key = cell.x .. ":" .. cell.y .. ":" .. cell.z
+						local value = cell.name .. ":" .. (cell.param2 or 0)
+						assert(expected[key] == value,
+							"the cleared piece cut at " .. cut .. " writes " ..
+							value .. " at " .. key ..
+							", which the whole run does not")
+						if union[key] == nil then
+							union[key] = value
+							count = count + 1
+						end
+					end
+				end
+				assert(count == #whole.cells, "the two cleared pieces cut at " ..
+					cut .. " carry " .. count .. " cells, the whole run " ..
+					#whole.cells)
+				splits = splits + 1
+			end
+		end
 		cases = cases + 1
 		say("street_verge_clearance", intruded, cleared_total, kept_outside,
-			handed_over)
+			handed_over, splits)
 	end
 
 	assert(cases == 11, "a street case was lost")

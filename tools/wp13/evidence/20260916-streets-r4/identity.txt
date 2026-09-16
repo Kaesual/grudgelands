@@ -1,0 +1,53 @@
+== the files this branch changed against dfb32cd5 ==
+M	mods/MAPGEN/grug_mapgen/wp13/avenue.lua
+M	mods/MAPGEN/grug_mapgen/wp13/lethariel_quadrants.lua
+M	mods/MAPGEN/grug_mapgen/wp13/street_plan.lua
+M	mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua
+M	tools/wp13/capital_probe/init.lua
+A	tools/wp13/evidence/20260916-streets-r4/mutation.py
+A	tools/wp13/evidence/20260916-streets-r4/static.sh
+A	tools/wp13/evidence/20260916-streets-r4/walker_ring.lua
+M	tools/wp13/evidence/20260916-streets/mutation.py
+M	tools/wp13/integration_fixture.lua
+M	tools/wp13/kezamba_lots.lua
+M	tools/wp13/lethariel_kat.lua
+M	tools/wp13/run_capital.sh
+M	tools/wp13/street_geometry.lua
+M	tools/wp13/street_kat.lua
+R088	tools/wp13/evidence/20260916-streets/walkability.lua	tools/wp13/walkability.lua
+
+== the six start identities: main's own, then this branch's ==
+main   0bbf87a7253deadca55951752adde73e82c31cd10878dc64ef6d44af91ad1f5f  -
+branch 0bbf87a7253deadca55951752adde73e82c31cd10878dc64ef6d44af91ad1f5f  -
+
+== Highcourt's blueprint digests: main's own, then this branch's ==
+(no difference)
+
+== the frozen built-geometry digests this lane re-froze ==
+
+== every settlement identity the integration fixture prints, main against
+== this branch: one token per line so the comparison is readable ==
+13c13
+< highcourt/187f79e0ba52103818eba53f7ed9c3beadc631682648918301287fa4a7200499/536061/98/1/53/12
+---
+> highcourt/187f79e0ba52103818eba53f7ed9c3beadc631682648918301287fa4a7200499/536054/98/1/53/12
+68c68
+< dur_brannoc/c87bf21b083db8ac55202d9e17ad953aec7721c27dd76f30fff1fd00bedf293f/524424/112/1/53/26
+---
+> dur_brannoc/c87bf21b083db8ac55202d9e17ad953aec7721c27dd76f30fff1fd00bedf293f/524421/112/1/53/26
+123c123
+< gor_drazhak/8853176bdcc231f2aa73b9cbfdfd010148064639658c945da7998e850edff10e/563031/112/1/53/19
+---
+> gor_drazhak/8853176bdcc231f2aa73b9cbfdfd010148064639658c945da7998e850edff10e/563025/112/1/53/19
+178c178
+< lethariel/25ad47a8d3ec002ecdbd50bbe5111a1abf6ee6a5aa6158b34b4a459a857379e2/354539/112/1/45/26
+---
+> lethariel/25ad47a8d3ec002ecdbd50bbe5111a1abf6ee6a5aa6158b34b4a459a857379e2/353377/112/1/45/26
+224c224
+< lethariel_avenue/overlay/a5111f8b7c26a9f401c83a7c62cb02b956ae0724e6cef629a7edbaddbe3cb9fa
+---
+> lethariel_avenue/overlay/ad65e634abad56233e2c43830f0f84f8f088a50671387ef2e73e3858d6525905
+280c280
+< nhal_veyr/4142f65fb72865123e87e748951f0947529928e36ef1611afb11be8482ac30b4/522266/128/1/53/26
+---
+> nhal_veyr/4142f65fb72865123e87e748951f0947529928e36ef1611afb11be8482ac30b4/522256/128/1/53/26
