@@ -310,8 +310,8 @@ the count per district follows the ground: Kezamba's are nine, nine, eleven and
 seven plots, thirty-six in all, with the same sixteen fill dressings every
 capital has.
 
-**Nhal Veyr, the raised necropolis.** Shipped 2026-09-15, the third capital and
-the second walled one. It is the first capital whose FILL is not fields and
+**Nhal Veyr, the raised necropolis.** Shipped 2026-09-15, the last of the wave-2
+capitals to land and one of the three walled ones. It is the first capital whose FILL is not fields and
 gardens: where Highcourt has crop fields, an orchard belt and a pond, the undead
 capital has grave fields, bone yards, ruin closes and candle courts, and the
 turf between its civic quarters is a burial ground with gravewood stands in it.

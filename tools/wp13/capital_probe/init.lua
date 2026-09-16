@@ -167,8 +167,10 @@ if not ground_only then
 end
 
 -- Does this capital have a curtain wall? The composition says so by publishing
--- overlay runs whose ids begin `wall_`; the probe adds two dump regions when it
--- does, and none when it does not.
+-- overlay runs whose ids begin `wall_`; the probe adds THREE dump regions when
+-- it does -- a stretch of curtain, the east gate and the four corners -- and
+-- none when it does not. Gor Drazhak's rampart is a stake palisade rather than
+-- masonry and it publishes the same four run ids, so it gets all three too.
 local wall_lines = nil
 if overlay then
 	for index = 1, #overlay.runs do
@@ -603,41 +605,52 @@ end
 -- single box and is normalised into a one-element list at queue time; the
 -- corner region is four boxes, because the four places two wall runs meet are
 -- the four corners of a 512 envelope and one box around all of them is the
--- envelope. The rows and the digest run over the boxes in order, so a
--- multi-box region is one file and one expectation.
-local function dump(name, boxes, header)
+-- envelope. The rows and the digest run over the boxes in order, so a multi-box
+-- region is one file and one expectation.
+--
+-- EACH BOX IS READ THE MOMENT IT IS EMERGED, and that is the whole reason this
+-- is three functions and not one. The header of the dump queue below says it:
+-- the server unloads mapblocks when no player is near, so a box emerged three
+-- boxes ago is not still in memory. The first version of the corner region
+-- emerged all four and then read all four, and read 56 125 `ignore` nodes
+-- against 39 529 real ones -- the three earlier corners had gone. So `open`
+-- writes the header, `read_box` appends one box's rows while that box is fresh,
+-- and `close` digests what was written.
+local function dump_open(name, header)
 	local file = assert(io.open(worldpath .. "/" .. name, "wb"))
 	file:write("# ", header, "\n")
 	file:write("# anchor ", anchor_x, ",", anchor_y, ",", anchor_z, "\n")
-	local written, ignored = 0, 0
-	local road, road_rows = 0, {}
-	for index = 1, #boxes do
-		local box = boxes[index]
-		for z = box.min_z, box.max_z do
-			for y = box.min_y, box.max_y do
-				for x = box.min_x, box.max_x do
-					local node = core.get_node({x = x, y = y, z = z})
-					if node.name == "ignore" then
-						ignored = ignored + 1
-					elseif node.name ~= "air" then
-						file:write(x - anchor_x, "\t", y - anchor_y, "\t",
-							z - anchor_z, "\t", node.name, "\t",
-							node.param2 or 0, "\n")
-						written = written + 1
-						if road_names[node.name] then
-							road = road + 1
-							road_rows[#road_rows + 1] = table.concat(
-								{x - anchor_x, y - anchor_y, z - anchor_z,
-									node.name, node.param2 or 0}, ":")
-						end
+	return {file = file, written = 0, ignored = 0, road = 0, rows = {}}
+end
+
+local function dump_read_box(state, box)
+	for z = box.min_z, box.max_z do
+		for y = box.min_y, box.max_y do
+			for x = box.min_x, box.max_x do
+				local node = core.get_node({x = x, y = y, z = z})
+				if node.name == "ignore" then
+					state.ignored = state.ignored + 1
+				elseif node.name ~= "air" then
+					state.file:write(x - anchor_x, "\t", y - anchor_y, "\t",
+						z - anchor_z, "\t", node.name, "\t",
+						node.param2 or 0, "\n")
+					state.written = state.written + 1
+					if road_names[node.name] then
+						state.road = state.road + 1
+						state.rows[#state.rows + 1] = table.concat(
+							{x - anchor_x, y - anchor_y, z - anchor_z,
+								node.name, node.param2 or 0}, ":")
 					end
 				end
 			end
 		end
 	end
-	assert(file:close())
-	local digest = core.sha256(table.concat(road_rows, "\n"), false)
-	return written, ignored, road, digest
+end
+
+local function dump_close(state)
+	assert(state.file:close())
+	return state.written, state.ignored, state.road,
+		core.sha256(table.concat(state.rows, "\n"), false)
 end
 
 --
@@ -708,8 +721,8 @@ local run_dumps
 
 local function dump_done()
 	local spec = dump_queue[dump_index]
-	local written, ignored, road, digest = dump(spec.name, spec.boxes,
-		spec.header)
+	local written, ignored, road, digest = dump_close(spec.state)
+	spec.state = nil
 	dump_results[#dump_results + 1] = {label = spec.label, written = written,
 		ignored = ignored, road = road,
 		-- Every dump publishes the digest of the OVERLAY cells it read back out
@@ -799,6 +812,7 @@ run_dumps = function()
 		spec = dump_queue[dump_index]
 		if not spec then return report_complete() end
 		dump_box = 0
+		spec.state = dump_open(spec.name, spec.header)
 	end
 	dump_box = dump_box + 1
 	local last = (dump_box >= #spec.boxes)
@@ -807,7 +821,12 @@ run_dumps = function()
 		{x = box.max_x, y = box.max_y, z = box.max_z},
 		function(_, _, calls_remaining)
 			if calls_remaining == 0 then
-				core.after(0, last and dump_done or run_dumps)
+				core.after(0, function()
+					-- READ IT NOW, while this box is the one that just arrived.
+					dump_read_box(spec.state, box)
+					if last then return dump_done() end
+					return run_dumps()
+				end)
 			end
 		end)
 end
@@ -1064,7 +1083,7 @@ local function finish()
 		end
 		dump_queue[#dump_queue + 1] = {name = (KEY .. "-corner.tsv"),
 			label = "corner",
-			header = profile.label .. " the four curtain corners as built, " ..
+			header = profile.label .. " curtain corners as built -- all four, " ..
 				"+-" .. CORNER_PAD .. " of each corner column, anchor-relative",
 			boxes = corner_boxes}
 	end

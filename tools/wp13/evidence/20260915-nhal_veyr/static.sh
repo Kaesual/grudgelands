@@ -30,6 +30,7 @@ CHANGED=(
 	tools/wp13/capital_wall.lua
 	tools/wp13/capital_probe/init.lua
 	tools/wp13/route_gates.lua
+	tools/wp13/kezamba_kat.lua
 )
 
 echo "== parser and SETGLOBAL on every Lua file this increment changed =="

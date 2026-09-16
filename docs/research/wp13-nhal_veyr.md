@@ -43,6 +43,7 @@ Evidence: `tools/wp13/evidence/20260915-nhal_veyr/`.
 | `wp13/wall.lua` | **section 1b**: the corner reconciliation, and the one field of the plan it reads (section 3b). Nothing else in the module moves — `HALF`, `RISE`, `FOOTING`, `REACH` and `GATE_PASSAGE` are untouched, and a run whose plan authors no `corners` is built exactly as before |
 | `wp13/highcourt.lua`, `wp13/dur_brannoc.lua` | the same four `corners` entries in each wall plan; nothing else |
 | `tools/wp13/capital_wall.lua` | the same clamp modelled, so its corner rule becomes a standing gate |
+| `tools/wp13/capital_probe/init.lua` | a `<key>-corner.tsv` region — the four places two wall runs meet, which no other dump contains (section 6 (f)) — and a dump region that may be a list of boxes |
 | `tools/wp13/capital_probe/init.lua`, `run_capital.sh` | **Lane D's**: one dump region, the steepest gate approach out to 261 (section 6 (d)) |
 | `tools/wp13/route_gates.lua` | **Lane R's**: each capital's avenues are built through its own `M.overlay_run` where it has one (section 6 (d)) |
 
@@ -236,7 +237,9 @@ nine fixture seeds.
 
 **THE TWO SHIPPED CAPITALS MOVED ONLY AT THEIR CORNERS.** The constraint on this
 commit was that Highcourt's and Dur Brannoc's built ramparts may move in corner
-cells and nowhere else. It is proved twice.
+cells and nowhere else. It is proved twice below — and a THIRD time, in the
+engine, by the re-review of 2026-09-16: section 6 (f) carries that measurement
+and the dump region this package added so nobody has to take it by hand again.
 
 *Offline, exhaustively.* Every cell of all four wall runs of both capitals, built
 whole out of the real WP40 height session, before (`main` at `f5583e13`) against
@@ -486,9 +489,19 @@ ModError line at all**.
 
 ## 6. Verification
 
-**The tree these numbers were taken on.** `main` at **`f5583e13`** — the wave-2
-NPC vocabulary (Lane N), the WP40 routes ending at the capital gates (Lane R)
-and the Dur Brannoc upgrade (Lane D). Three things in that base matter here:
+**The tree these numbers were taken on.** The engine and terrain measurements of
+this section were taken on `main` at **`f5583e13`** and the package is rebased
+onto **`1c9e0f39`**, the wave-2 merge (Gor Drazhak, Lethariel and Kezamba).
+NOTHING WP40 MOVED BETWEEN THE TWO — `git diff f5583e13 1c9e0f39 -- wp40/` is
+three new blueprint files and the roster row, and `avenue.lua`, `wall.lua`,
+`palette.lua` and `parts.lua` are untouched — so the nine terrain dumps, the lot
+and gate predicates and the nine-seed wall sweep are re-run against them on the
+new base and reproduce byte for byte. The full pass of section 6 (f) and the
+identity gate of 6 (b) are taken on `1c9e0f39` itself.
+
+`f5583e13` brought the wave-2 NPC vocabulary (Lane N), the WP40 routes ending at
+the capital gates (Lane R) and the Dur Brannoc upgrade (Lane D). Three things in
+that base matter here:
 Lane R's route ends are what section 6 (d)'s gate table is measured against;
 Lane D's `capital_probe` now passes the world's SEEDED quadrant assignment to
 the blueprint source, so every plot dump and every render below is labelled with
@@ -550,19 +563,24 @@ c9c4fc8f5c2e986822b5875ab0e4bc5138eacb19991d7aaabd44c636703afe61  micro-puc51.ts
 That is the whole WP13 fixture set in one process under each interpreter, this
 KAT among them.
 
-### (b) The six starts, Highcourt and Dur Brannoc are byte-identical
+### (b) Every capital already on main is byte-identical
 
-The same five fixtures, run on this tree and on an export of `main` at
-`f5583e13`, **with the corner reconciliation of `wall.lua` section 1b in the
-tree**:
+The same fixtures, run on this tree and on an export of `main` at `1c9e0f39` —
+the wave-2 merge, so Gor Drazhak, Lethariel and Kezamba are in the list too, and
+three of those five capitals share `wall.lua` and all five share
+`capital_probe` — **with the corner reconciliation of `wall.lua` section 1b, the
+gate ramp, the gate tunnel and the new corner dump region in the tree**:
 
-| fixture | main f5583e13 | this lane |
+| fixture | main 1c9e0f39 | this lane |
 | --- | --- | --- |
 | `start_identity` | `0bbf87a7…` | `0bbf87a7…` |
 | `library_kat` | `bd4b51ab…` | `bd4b51ab…` |
 | `blueprint_kat` | `13f7fd7d…` | `13f7fd7d…` |
 | `highcourt_kat` | `ac387756…` | `ac387756…` |
 | `dur_brannoc_kat` | `36b36628…` | `36b36628…` |
+| `gor_drazhak_kat` | `77b14a25…` | `77b14a25…` |
+| `lethariel_kat` | `04d2f746…` | `04d2f746…` |
+| `kezamba_kat` | `76a72cae…` | `76a72cae…` |
 
 `start_identity`'s own digest is the value wave 1 recorded, unchanged.
 `identity.sh` in the evidence directory is what produces both columns. That the
@@ -785,7 +803,101 @@ carried two — the unregistered `herbalist` and `embalmer` vendor entities of
 section 5.3 — and `errors.sh` in the evidence directory is what said so by name
 rather than by exit code; it now expects zero and still names any line it finds.
 
-### (f) Static gates
+### (f) The corner, in the engine — a STANDING GATE
+
+Everything section 3b measures the corner with is a model or a fixture:
+`capital_wall.lua` reproduces the rule rather than calling it (which is what lets
+it ask about ground no capital stands on yet), and the KAT calls the module over
+synthetic shouldered ground. Both are good and neither is the engine. The
+re-review of 2026-09-16 put the number on it: **every frozen artefact is blind to
+a corner column.**
+
+| dump | region, anchor-relative | contains a corner? |
+| --- | --- | --- |
+| `<key>-rampart.tsv` | `x = WALL_AT ± 6`, `z = −80 … +80` | no |
+| `<key>-gate.tsv` | `z = −20 … +20` | no |
+| `highcourt-wall.tsv` | `x = 248 … 264`, `z = +36 … +92` | no |
+| `highcourt-gate.tsv` | `z = −24 … +24` | no |
+
+So `plan.corners` could be dropped from a capital tomorrow and every committed
+digest and every KAT would stay green. The reviewer had to read the corners by
+hand, through `WP13_HIGHCOURT_CROSSING` — an extra-region setting that exists
+only in the PILOT capital's own probe — and what they found is the measurement
+this package could not take: **209 changed cells in Highcourt's north-east corner
+box and 49 in its south-west, between `main` and this branch, and 0 in the
+`core`, `avenue`, `wall`, `gate` and `surface` dumps**; the offline model exact
+against the built map, 1899 of 1899 corner cells present with the same node name
+and 0 disagreements; the deck 55 / 57 / 59 at x = 248 / 250 / 252 in both, which
+is the two-node corner raise carried back as treads.
+
+`capital_probe` now publishes that region itself, the way this branch already
+gave it `<key>-approach.tsv` for the same kind of reason — a defect nothing could
+look at. **`<key>-corner.tsv`: four boxes, one per corner, ±12 of each corner
+column.** That window covers the z-run's corner TURRET (centred on ±256, eleven
+columns along and seven across), the x-run's last columns up to its own end at
+±252 with its own seven lanes, and a margin — and it does not reach the nearest
+ordinary turret at ±192, so what is in it is corner and nothing else. A dump
+region is a LIST of boxes now; every existing region names one and is normalised
+into a one-element list, so no region, mode, digest or log line of Lane D's file
+changes. `run_capital.sh` gates on `corner_road_digest` beside `rampart` and
+`gate`.
+
+**A box has to be read the moment it is emerged, and that cost one run to
+learn.** The dump queue's own header says the server unloads mapblocks when no
+player is near; the first version of this region emerged all four corners and
+then read all four, and read **56 125 `ignore` nodes against 39 529 real ones** —
+three of the four corners had gone before the read reached them. So a region is
+opened, each box is appended while that box is the one that just arrived, and
+the file is digested at the end.
+
+**Nhal Veyr's committed expectation, gate seed 531802985935182545**
+(`evidence/20260915-capital-terrain/nhal_veyr/`, the one-line format every
+capital uses):
+
+```
+1de2189a4a37f4737bf910060bcf7e55097af44177c9a0fc77c239c213e2067f  corner seed=531802985935182545 overlay_cells=8039 main=1c9e0f39 package=20260915-nhal_veyr
+```
+
+66 091 cells read across the four boxes, **0 of them `ignore`**, 8 039 of them
+overlay.
+
+**And the expectation bites.** Built offline out of the same WP40 height session,
+this capital's whole curtain with the reconciliation and without it, restricted to
+the four boxes the region dumps: 9 992 cells before against 10 127 after, **357 of
+them differing** (`corners/cornerbite.sh`). Drop `plan.corners` from
+`nhal_veyr.lua` and this digest moves; that is the property every other frozen
+artefact lacked. `avenue`, `rampart` and `gate` are frozen beside it in the same
+directory, in the format every capital uses, and `run_capital.sh full nhal_veyr`
+gates on all four.
+
+**And the other walled capitals can be read now.** Dur Brannoc and Gor Drazhak
+publish the region the moment they are run — both author `wall_`-prefixed rampart
+runs, which is the composition's own way of saying it has a wall, and Gor
+Drazhak's stake palisade answers it exactly as a curtain does. Measured, one full
+pass on the gate seed with this branch's `wall.lua` on the tree:
+
+```
+WP13 capital pass PASS: gor_drazhak full
+avenue overlay digest matches the committed value      303a5ab4…
+rampart overlay digest matches the committed value     6589b4e4…
+gate overlay digest matches the committed value        e008bb2c…
+corner overlay digest recorded (no committed value for seed … yet)
+                                                       9d30229d…  10 798 cells
+```
+
+Its rampart is `wp13/orc_palisade.lua`, a different module with its own corner
+reconciliation (Lane O's, which this one was modelled on), so the corner clamp in
+`wall.lua` cannot reach it and all three of its frozen digests are untouched —
+which is what that pass was run to show. Its corner digest is left UNFROZEN here:
+the region is new, the value is Lane O's capital's to freeze, and the runner says
+so rather than failing.
+
+Highcourt's own probe is a separate file that this package does not touch, so
+Highcourt's corners stay readable the reviewer's way, through
+`WP13_HIGHCOURT_CROSSING` — worth knowing, because the pilot capital is the one
+whose corners moved most.
+
+### (g) Static gates
 
 `static.sh` / `static.txt`: `tools/bin/luac51 -p` and the SETGLOBAL count on
 every file this package touched (all PASS, all zero globals), the whole `mods`
@@ -963,6 +1075,30 @@ And one the SEAM caught, which is the one worth the most:
    passage from the deck DOWN to whatever the column actually carries rather than
    up from a height it guesses. That is more than a corner reconciliation and was
    not this lane's hand-off.
+1c. **What the re-review of 2026-09-16 closed, and what it left.** Closed: the
+   corner fix now has an engine gate (section 6 (f)); `wall.lua`'s corner guard
+   carries the argument for why it is a load error and not a fail-soft, and both
+   the datum and the guard read a RAW envelope copy so the symmetry proof is
+   about the values the code uses rather than about two corners being 504 columns
+   apart; `classify.py` prints counts and the worst distance instead of a column
+   range; `corners/engine-walls.sh` can fail again (it piped a gate through
+   `tail`); the stray `kat.err` is gone and `mutations.sh` writes nothing outside
+   its own scratch. Left, deliberately, as things worth knowing:
+   * **the gate ramp's cutting is bounded only by the terrain.** `gate_road`
+     clears `top + 1 … natural` on every column the cap bit, with no limit; the
+     deepest over 36 gate/seed pairs is SEVEN courses (seed 12345 north). It
+     leaves the hillside as air up to the natural ground and no further, so it
+     relies on the 532-node protected capital footprint to keep decoration out of
+     the cutting. True today; worth re-checking if that footprint ever shrinks.
+   * **KAT rule (e) splits the gate run at four cuts and not at every column**
+     (`{120, 200, 244, 255}`, against the plain avenue rule's every-column
+     split). That is a cost decision and is now written down as one: 255 falls
+     inside the tunnel band 253…259, so the band and the cap are both covered.
+   * **`route_gates.lua`'s capital dispatch is duck-typed** — any `overlay_run`
+     that is a function is called with `(avenue, palette, spec, surface)`, with no
+     arity or convention check. All six capitals use that signature, and the
+     three-seed run after the wave-2 merge prints `own` for all six, which is the
+     check that matters until someone writes a seventh.
 2a. **`run_capital.sh full dur_brannoc` fails on `main` at `f5583e13` itself,
    and it is not this lane's either.** Both gate seeds: the committed
    `evidence/20260915-capital-terrain/dur_brannoc/avenue-digest-<seed>.txt` no
