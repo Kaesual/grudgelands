@@ -21,14 +21,17 @@
 --                     assertion instead of a rule).
 --   3  SPEND RULES    the case table of §3.7 group 3, driven through the real
 --                     can_spend_talent / spend_talent.
---   4  PERSISTENCE    serialize -> parse -> identical, and four forged meta
---                     strings that the validating read path must defuse.
+--   4  PERSISTENCE    serialize -> parse -> identical, forged meta strings
+--                     that the validating read path must defuse, and ruling
+--                     20's free full reset on an admin level drop.
 --   5  KEY COVERAGE   every talent effect key is in the closed vocabulary,
 --                     every vocabulary key belongs to a talent, and every key
 --                     THIS LANE owns is read by a real consumer source file.
 --                     Lane X3's keys are counted and named, not required.
 --   6  CAP INVARIANTS crit and dodge stay <= 30% and armor <= 60% with every
---                     shipped numeric talent maxed and no window running.
+--                     shipped numeric talent maxed and no window running, and
+--                     a talent change re-applies derived stats -- the APPLIED
+--                     hp_max moves, and a respec takes it back.
 --   7  WINDOWS        a timed window contributes 0 before it starts and after
 --                     it expires, and respec / death / leave clear it.
 --   8  NEUTRAL SEAMS  with NO talent ranked, the four central per-player
@@ -277,8 +280,13 @@ local function make_meta()
 	return meta
 end
 
+-- The four properties/HP accessors are not decoration: grug_classes.apply_stats
+-- is the only writer of a player's hp_max, it now runs on every talent change,
+-- and the APPLIED ceiling -- not get_max_hp -- is what a player feels.
 local function make_player(name, class, level, perks)
 	local meta = make_meta()
+	local properties = {eye_height = 1.5, hp_max = 20}
+	local hp = 20
 	local player = {_class = class, _level = level, _perks = perks or {}}
 	function player:get_player_name()
 		return name
@@ -296,10 +304,24 @@ local function make_player(name, class, level, perks)
 		return {x = 0, y = 0, z = 1}
 	end
 	function player:get_properties()
-		return {eye_height = 1.5, hp_max = 20}
+		-- A copy, like the engine's: a caller that mutates the table it got
+		-- back must not change the object.
+		local copy = {}
+		for key, value in pairs(properties) do
+			copy[key] = value
+		end
+		return copy
+	end
+	function player:set_properties(fields)
+		for key, value in pairs(fields) do
+			properties[key] = value
+		end
 	end
 	function player:get_hp()
-		return 20
+		return hp
+	end
+	function player:set_hp(value)
+		hp = value
 	end
 	return player
 end
@@ -631,6 +653,42 @@ local function run_checks(repo)
 	equal(classes.talent_rank(foreign, "tinder"), 0,
 		"another class's talent is dropped")
 
+	-- Ruling 20's last bullet: an admin level drop wipes the talents and
+	-- returns every point, free. /xp can lower a level, which would otherwise
+	-- leave more ranks spent than floor(level / 2) allows.
+	local dropped = make_player("dropped", "warrior", 60)
+	spend_times(dropped, "ironbound", 5)
+	spend_times(dropped, "weathered", 4)
+	spend_times(dropped, "spite", 5)
+	equal(classes.talent_points_spent(dropped), 14, "fourteen points spent")
+	local chat_before = #clock.chat
+	dropped._level = 4
+	classes.on_level_change_talents(dropped, 60, 4)
+	equal(classes.talent_points_spent(dropped), 0,
+		"an admin level drop wipes every rank")
+	equal(dropped:get_meta():get_string("grug_classes:talents"), "",
+		"and empties the stored string")
+	equal(classes.talent_points_total(dropped), 2, "the level-4 budget is 2")
+	equal(classes.talent_points_available(dropped), 2,
+		"every point is available again, free")
+	check(#clock.chat > chat_before, "the level drop said nothing at all")
+	local line = clock.chat[#clock.chat] or ""
+	check(line:find("14", 1, true) ~= nil,
+		"the level-drop line must report the 14 ranks it wiped, not the " ..
+		"post-clamp count -- got: " .. line)
+	-- Going UP says nothing about a reset and keeps what is spent.
+	local levelled = make_player("levelled", "warrior", 60)
+	spend_times(levelled, "ironbound", 3)
+	classes.on_level_change_talents(levelled, 58, 60)
+	equal(classes.talent_points_spent(levelled), 3,
+		"levelling up must not reset anything")
+	-- And join (old_level nil) must not do arithmetic on nil.
+	classes.on_level_change_talents(levelled, nil, 60)
+	equal(classes.talent_points_spent(levelled), 3,
+		"the join call (old_level nil) is a no-op for talents")
+	row("wp11_level_drop", "spent_before", 14, "spent_after", 0,
+		"points_available", classes.talent_points_available(dropped))
+
 	--
 	-- 5. Effect-key coverage.
 	--
@@ -722,6 +780,35 @@ local function run_checks(repo)
 	local hp_maxed = forged("hpmax", "warrior", 60, "ironbound=5,weathered=4")
 	equal(classes.get_max_hp(hp_maxed) - classes.get_max_hp(hp_none), 12,
 		"Weathered 4/4 grants exactly +12 max HP")
+
+	-- ... and the same thing where the player can feel it. apply_stats is the
+	-- only writer of hp_max, and a talent change has to reach it: spending
+	-- Weathered through the real API must move the APPLIED ceiling, and a
+	-- respec must take it back. Asserting get_max_hp alone is what let the
+	-- gap through the first time.
+	local applied = make_player("applied", "warrior", 60)
+	classes.apply_stats(applied)
+	local ceiling_before = applied:get_properties().hp_max
+	equal(ceiling_before, classes.get_max_hp(applied),
+		"the applied ceiling starts where the accessor says")
+	equal(select(1, spend_times(applied, "ironbound", 5)), true, "a ironbound")
+	equal(select(1, spend_times(applied, "weathered", 4)), true, "a weathered")
+	equal(applied:get_properties().hp_max, ceiling_before + 12,
+		"spending Weathered 4/4 must raise the APPLIED hp_max, not only " ..
+		"grug_classes.get_max_hp")
+	equal(classes.respec(applied), 9, "the respec returns nine points")
+	equal(applied:get_properties().hp_max, ceiling_before,
+		"a respec must take the raised ceiling back")
+	-- And it must not hand out health on the way up: apply_stats is called
+	-- without heal_gain, so current HP is untouched by a spend.
+	local hp_before = applied:get_hp()
+	spend_times(applied, "ironbound", 5)
+	spend_times(applied, "weathered", 4)
+	equal(applied:get_hp(), hp_before,
+		"spending a point must not heal the character")
+	classes.respec(applied)
+	row("wp11_applied_hp", ceiling_before, ceiling_before + 12,
+		"heal_on_spend", 0)
 	local mana_none = make_player("mananone", "mage", 60)
 	local mana_maxed = forged("manamax", "mage", 60, "deep_well=5")
 	equal(classes.get_max_mana(mana_maxed),
@@ -832,8 +919,7 @@ local function run_checks(repo)
 			"Fireball deals 6 + spell power without a talent")
 	end
 	clock.spawned = nil
-	local tinder = forged("tinder", "mage", 60, "tinder=5,far_cast=0")
-	local tinder_far = forged("tinderfar", "mage", 60, "tinder=5,firebrand=4")
+	local tinder = forged("tinder", "mage", 60, "tinder=5")
 	registered.fireball.cast(tinder, nil, registered.fireball)
 	if clock.spawned then
 		equal(num(clock.spawned.data.damage), num(6 + power + 5),
@@ -847,7 +933,6 @@ local function run_checks(repo)
 		equal(num(clock.spawned.max_distance), num(26),
 			"Far Cast 4/4 takes Fireball's flight to 26 m")
 	end
-	check(tinder_far ~= nil, "fixture guard")
 	row("wp11_seams", "taunt", 8, 5, "charge", 10, 6, "blink", 15, 9,
 		"smite", 2, "1.4", "fireball", 20, 26)
 

@@ -42,6 +42,10 @@ end
 -- A fake player: the meta store plus the handful of accessors the talent
 -- model and the two seams read. Deliberately NOT a real PlayerRef -- there is
 -- none on a headless server, and inventing one would be the lie.
+--
+-- The properties/HP four are here because grug_classes.apply_stats now runs on
+-- every talent change (it is the only writer of hp_max), so a spend touches
+-- them: without them the probe would break at the first spend_talent.
 local function fake_player(name, class, level)
 	local values = {}
 	local meta = {}
@@ -57,6 +61,8 @@ local function fake_player(name, class, level)
 	function meta:set_int(key, value)
 		values[key] = tostring(value)
 	end
+	local properties = {hp_max = 20}
+	local hp = 20
 	local player = {}
 	function player:get_player_name()
 		return name
@@ -66,6 +72,24 @@ local function fake_player(name, class, level)
 	end
 	function player:get_meta()
 		return meta
+	end
+	function player:get_properties()
+		local copy = {}
+		for key, value in pairs(properties) do
+			copy[key] = value
+		end
+		return copy
+	end
+	function player:set_properties(fields)
+		for key, value in pairs(fields) do
+			properties[key] = value
+		end
+	end
+	function player:get_hp()
+		return hp
+	end
+	function player:set_hp(value)
+		hp = value
 	end
 	meta:set_string("grug_classes:class", class)
 	meta:set_int("grug_xp:xp", grug_xp.xp_for_level(level))
@@ -121,6 +145,42 @@ core.register_on_mods_loaded(function()
 	equal(classes.talent_points_spent(player), 0, "nothing is spent after it")
 	equal(player:get_meta():get_string("grug_classes:talents"), "",
 		"the respec empties the stored string")
+
+	-- 5b. A talent change re-applies derived stats, inside the engine. This is
+	-- the review finding of 2026-09-16: apply_stats is the only writer of
+	-- hp_max, so without the on_talents_changed consumer a spent point raised
+	-- get_max_hp and left the character's real ceiling where it was.
+	local body = fake_player("wp11hp", "warrior", 60)
+	classes.apply_stats(body)
+	local ceiling = body:get_properties().hp_max
+	equal(ceiling, classes.get_max_hp(body),
+		"the applied ceiling starts where the accessor says")
+	for _ = 1, 5 do
+		classes.spend_talent(body, "ironbound")
+	end
+	for _ = 1, 4 do
+		classes.spend_talent(body, "weathered")
+	end
+	equal(body:get_properties().hp_max, ceiling + 12,
+		"Weathered 4/4 must raise the APPLIED hp_max")
+	classes.respec(body)
+	equal(body:get_properties().hp_max, ceiling,
+		"a respec must take the raised ceiling back")
+	say("ceiling", ceiling, ceiling + 12)
+
+	-- 5c. Ruling 20: an admin level drop wipes the talents and returns every
+	-- point, free.
+	local demoted = fake_player("wp11drop", "warrior", 60)
+	for _ = 1, 5 do
+		classes.spend_talent(demoted, "ironbound")
+	end
+	equal(classes.talent_points_spent(demoted), 5, "five spent before the drop")
+	demoted:get_meta():set_int("grug_xp:xp", grug_xp.xp_for_level(4))
+	classes.on_level_change_talents(demoted, 60, 4)
+	equal(classes.talent_points_spent(demoted), 0,
+		"an admin level drop wipes every rank")
+	equal(classes.talent_points_available(demoted), 2,
+		"and returns every point the new level allows")
 
 	-- 6. The central per-player seams, with no talent ranked, inside the
 	--    engine's own registry.

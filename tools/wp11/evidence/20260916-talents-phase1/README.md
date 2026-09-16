@@ -5,6 +5,12 @@ Scope: lanes X1 and X2 of `docs/design/skill_trees.md` §4, plus the code halves
 of rulings 19, 20 and 25 and of §7 task 5. What shipped and what is open:
 `docs/research/wp11-talents-phase1.md`.
 
+**Re-run after the independent review of 2026-09-16** (verdict FIX FIRST on
+one finding). Every result below is from the fixed bytes: a talent change now
+re-applies derived stats through `on_talents_changed`, the KAT asserts the
+**applied** `hp_max` and ruling 20's free reset on an admin level drop, and
+two more mutations hold both there.
+
 ## Files here
 
 | File | What it is |
@@ -12,7 +18,7 @@ of rulings 19, 20 and 25 and of §7 task 5. What shipped and what is open:
 | `files.sha256` | the sources this increment changed, at the bytes every result below was produced from |
 | `kat-luajit.txt` | `tools/wp11/talent_tree_kat.lua` under LuaJIT |
 | `kat-puc.txt` | the same fixture under `tools/bin/lua51` — **byte-identical** |
-| `mutations.txt` | `tools/wp11/mutations.sh`: the clean baseline, then eight deliberate breaks, each one going red, each file restored from a byte copy afterwards |
+| `mutations.txt` | `tools/wp11/mutations.sh`: the clean baseline, then **ten** deliberate breaks, each one going red, each file restored from a byte copy afterwards |
 | `static.txt` | `tools/wp11/static.sh`: parser + SETGLOBAL per changed file and tree-wide, the five plain-5.1 sweeps scoped and tree-wide, `check_fresh_server.py`, `tools/wp40/r7/run.sh unit`, and the KAT under both interpreters |
 | `engine-server.log` | the headless boot on port 31114 with `tools/wp11/probe_talents` staged; the probe's own lines are the `WP11PROBE` rows |
 | `engine-boot.txt` | what `tools/luanti_headless.sh` reported for that boot |
@@ -21,8 +27,10 @@ of rulings 19, 20 and 25 and of §7 task 5. What shipped and what is open:
 ## Headline results
 
 - KAT: `wp11_talents_result PASS 0`, identical under both interpreters,
-  digest `83c7a9b11ff41d02c09f7d2f9f83265da77785b004fd5ce251a2a1d642998a02`.
-- Engine probe: `WP11PROBE RESULT PASS 0`, boot PASS on port 31112, no
+  digest `0990656c6b0385987260537f23dca94f8e0aa6d58ae6e4fd176365d115181eff`
+  (it was `83c7a9b1…` before the review fixes added the applied-ceiling and
+  level-drop rows).
+- Engine probe: `WP11PROBE RESULT PASS 0`, boot PASS on port 31114, no
   `ERROR`/`ModError` line in the log.
 - `bash tools/wp40/r7/run.sh unit` PASS; `python3 tools/check_fresh_server.py`
   PASS; parser and SETGLOBAL clean on all nine changed files and tree-wide.
@@ -41,6 +49,8 @@ a capstone 21 in-tree points = level 42;  two would be 42 > 30
 a whole tree 28 points = level 56, two points left over
 effect keys 46 declared, 24 read by a consumer, 22 pending lane X3
 base kit per class after ruling 19: warrior=4 mage=4 priest=4
+applied hp_max 325 -> 337 on Weathered 4/4, back to 325 on respec, 0 healing
+admin level drop 60 -> 4: 14 ranks wiped, 0 spent, 2 points available
 rage before 12 / 4 / 2  ->  after 8 / 3 / 5
   swings to a full bar   9 -> 13
   seconds 100 to empty  50 -> 20

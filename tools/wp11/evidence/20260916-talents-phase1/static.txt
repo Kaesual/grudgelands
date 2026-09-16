@@ -453,7 +453,7 @@ R7_CONSUMER_KAT_V1	PASS
 WP40 R7 anchor activation KAT PASS roots=42 protected_columns=36
 == the talent KAT, under both interpreters ==
 wp11_talents_result	PASS	0
-KAT byte-identical under LuaJIT and PUC 5.1: 83c7a9b11ff41d02c09f7d2f9f83265da77785b004fd5ce251a2a1d642998a02  -
+KAT byte-identical under LuaJIT and PUC 5.1: 0990656c6b0385987260537f23dca94f8e0aa6d58ae6e4fd176365d115181eff  -
 == ruling 19: no class carries more than Strike + 3 in its base kit ==
 2
 == ruling 20: /class is gone, /race is not ==

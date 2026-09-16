@@ -110,6 +110,23 @@ mutate "a consumer stops reading its effect key" \
 	'		+ 0.01 * grug_classes.get_talent_bonus(player, "crit_chance_add"))' \
 	'		)'
 
+# The two the independent review of 2026-09-16 asked for by name: the seam
+# that re-applies derived stats after a talent change (its absence was the
+# review's one required fix), and ruling 20's free reset on a level drop.
+mutate "a talent change no longer re-applies derived stats" \
+	mods/PLAYER/grug_classes/talents.lua \
+	'grug_classes.register_on_talents_changed(function(player)
+	grug_classes.apply_stats(player)
+end)' \
+	'-- consumer removed on purpose'
+
+mutate "an admin level drop stops returning the points" \
+	mods/PLAYER/grug_classes/talents.lua \
+	'		if spent > 0 then
+			grug_classes.respec(player)' \
+	'		if false and spent > 0 then
+			grug_classes.respec(player)'
+
 echo "== every mutated file is back to the bytes this script found =="
 sha256sum mods/PLAYER/grug_classes/talents.lua \
 	mods/PLAYER/grug_classes/stats.lua \

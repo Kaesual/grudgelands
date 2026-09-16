@@ -45,6 +45,16 @@ next to `stats.lua` and `perks.lua`, exactly where §3.1 puts it.
   `register_on_talents_changed`, `start_talent_window` /
   `talent_window_active` / `clear_talent_windows`, and the `grug_core`
   stub override, the deliberate twin of `get_race_perk`.
+- **A talent change re-applies derived stats.** `grug_classes.apply_stats` is
+  the only writer of a player's `hp_max`, and it used to run on an equipment
+  change, a level change and the class pick only — so a spent point raised
+  `get_max_hp` while the character's real ceiling stayed put, and a respec left
+  the raised ceiling behind. `talents.lua` registers `apply_stats` as the
+  **first** `on_talents_changed` consumer, without `heal_gain`, so a spend
+  hands out no free health and a respec clamps current HP correctly. (Found by
+  the independent review of 2026-09-16, finding 1; the KAT and the engine probe
+  now assert the **applied** ceiling, not only the accessor, and two mutations
+  hold it there.)
 
 **Performance note for the review.** `get_talent_bonus` sits on the damage
 pipeline, so a player's ranks are parsed once and **pre-summed** into a static
@@ -86,10 +96,19 @@ scope, so a read written there would change the number for everybody.
   field; without one, and without a ranked talent, it returns `def.cooldown`
   exactly. The single `arm_cooldown(user, def, def.cooldown)` call now passes
   through it.
-- `get_range` gained the same shape: a def names its key with `range_talent`.
-  Because `sync_kit` already derives the granted stack's per-stack `range` meta
-  override from `get_range`, the engine's pointing reach follows Far Cast for
-  free, and the elf's `+5 m` perk still stacks on top of it.
+- `get_range` gained the same shape: a def names its key with `range_talent`,
+  and the elf's `+5 m` perk still stacks on top of it. Every **server-side**
+  reader follows a talent immediately, because they call `get_range` live —
+  that includes `grug_core.combat_ray`'s reach for hostile casts and the
+  target-lock range check. **The per-stack `range` meta override does not**:
+  it is derived from `get_range` inside `sync_kit`, which runs on join and on
+  the class pick, so the reach the *client* is allowed to point at only
+  catches up after a relog. Nothing shipped is affected — the one talent with
+  a `range_talent` is Far Cast, and Fireball aims off the eye position and
+  look direction rather than off `pointed_thing` — but the moment a talent
+  re-tunes the range of an ability that reads `pointed_thing`, lane X3's
+  `register_on_talents_changed(sync_kit)` (§3.4) has to exist. §5.1 carries
+  it.
 
 **Twenty-eight of the thirty numeric talents are wired.** The two that are not
 are **Tendon Cut** (`hamstring_root`) and **Ashfall**
@@ -154,6 +173,8 @@ Every number below is produced by a command in §4, not estimated.
 | a whole tree | **28 points = level 56**, 2 left over | KAT group 2 |
 | base kit per class after ruling 19 | **4** (warrior, mage, priest) | engine probe |
 | effect keys | **46** declared, **24** read by a consumer, **22** pending lane X3 | KAT group 5 |
+| applied `hp_max`, Weathered 4/4 | **325 → 337**, back to **325** on respec, **0** healing on a spend | KAT group 6, engine probe |
+| admin level drop 60 → 4 | **14** ranks wiped, **0** spent, **2** points available | KAT group 4 |
 
 ### 2.2 The rage ledger (ruling 25)
 
@@ -208,8 +229,9 @@ lane wrote. The `tools/wp13/final_micro.lua` pair is byte-identical
 lane touches no mapgen file.
 
 The KAT is byte-identical under LuaJIT and PUC 5.1
-(`83c7a9b11ff41d02c09f7d2f9f83265da77785b004fd5ce251a2a1d642998a02` at the
-time of writing; it moves with any measured number, by design).
+(`0990656c6b0385987260537f23dca94f8e0aa6d58ae6e4fd176365d115181eff`; it moves
+with any measured number, by design, and it moved from `83c7a9b1…` when the
+review fixes added the applied-ceiling and level-drop rows).
 
 ---
 
@@ -227,11 +249,16 @@ time of writing; it moves with any measured number, by design).
    a total order, so two servers cannot disagree about the same forged string.
 3. **`get_talent_bonus` on the damage pipeline** (§1.1's performance note) and
    the invalidation set: spend, respec, level change, class pick, leave.
-4. **`max_mana_percent_add` is shared by Deep Well (Mage) and Deep Reserve
+4. **`apply_stats` as the first `on_talents_changed` consumer**, and the two
+   orderings it depends on: it is registered at the bottom of `talents.lua`
+   (which is `dofile`d after `stats.lua`, so `stats.lua` could not register
+   it), and `commit` drops the parsed cache **before** firing the callbacks,
+   so `apply_stats` reads the state the spend just produced.
+5. **`max_mana_percent_add` is shared by Deep Well (Mage) and Deep Reserve
    (Priest)** and the consumer adds the percentages over the *untalented* pool
    rather than compounding. No character can hold both today; if the key is
    ever given to a third class's tree that choice becomes visible.
-5. **The two seams' data fields** (`cooldown_talent`, `range_talent`). They
+6. **The two seams' data fields** (`cooldown_talent`, `range_talent`). They
    move a talent's identity into the kit table, which is where the number it
    re-tunes lives; the alternative was an id list inside `grug_abilities`.
 
@@ -257,13 +284,17 @@ The engine probe is `tools/wp11/probe_talents/`, staged into the throwaway game
 copy and never shipped. It prints `WP11PROBE` lines into the server log and a
 final `WP11PROBE RESULT PASS|FAIL n`.
 
-**Mutation proofs** (`tools/wp11/mutations.sh`), each restored from git
-afterwards: a tier gate lowered from 12 to 9; the hard chain no longer checked
-on a spend; the persistence read aliasing an unknown id onto a real talent; one
-`add_rage` site left on the retired 12; the cooldown seam defaulting to
+**Mutation proofs** (`tools/wp11/mutations.sh`). Each mutation is restored
+from a byte copy the script takes itself, **not** from version control — an
+uncommitted change in a mutated file would otherwise be thrown away, which is
+what happened the first time it ran against a dirty tree. The ten: a tier gate
+lowered from 12 to 9; the hard chain no longer checked on a spend; the
+persistence read aliasing an unknown id onto a real talent; one `add_rage`
+site left on the retired 12; the cooldown seam defaulting to
 `def.cooldown - 1`; a tier-1 talent given a sixth rank; a window key leaking
-past its expiry; a consumer dropping its effect key. All eight turn the KAT
-red, with between one and eight named failures.
+past its expiry; a consumer dropping its effect key; the talents-changed
+consumer removed; and the free reset on an admin level drop disabled. All ten
+turn the KAT red, with between one and eight named failures.
 
 ---
 
@@ -281,6 +312,17 @@ red, with between one and eight named failures.
 - **Lane X4**: the sfinv Talents page, the two `mod.conf` edges (`sfinv`,
   `grug_money`), the respec price of ruling 22, and the removal of the three
   interim chat commands.
+- **`register_on_talents_changed(sync_kit)` (§3.4)** is X3's, and two things
+  wait on it: taking a talent-granted button back on a respec, and re-deriving
+  the per-stack `range` meta override so a range talent reaches the *client's*
+  pointing ray without a relog (§1.2).
+- **Hold Ground's timed window is X3's.** §3.2 counts it among the eight, but
+  the def here is deliberately **not** `window = true`: only its root/slow
+  immunity is windowed, while `hold_ground_absorb` is read once at cast time
+  and must answer whenever X3 asks — marking the def windowed would make
+  `get_talent_bonus` return 0 for the amount outside the window. The immunity
+  belongs on the §3.9 movement aggregator's own flag, not on a talent effect
+  key. The registration says so in place.
 - **Absorb stacking (ruling 23, §3.11)** is X3's and is not done, so the
   shipped single-slot absorb still means a Priest's Power Word: Shield
   overwrites a Mage's Glacial Ward once those exist.
@@ -318,7 +360,14 @@ candidates).
 ### 5.4 Not this lane's files, and still wrong
 
 - `BACKLOG.md`'s WP11 row says "five open decisions in `skill_trees.md` §6";
-  §6 has said "no open decisions" since the sixth round of rulings.
+  §6 has said "no open decisions" since the sixth round of rulings, and the
+  row's status is still `open`.
+- `skill_trees.md` §2.1 and §2.2 still carry the pre-ruling-25 parentheticals
+  "(base 4)" for Spite and "(base 12)" for Stoke. Ruling 25 is what changed
+  those bases; the shipped talent descriptions say 3 and 8, and this lane may
+  only add a status line to that file. (Raised by the independent review.)
+- `AGENTS.md:442` still reasons from "+12" for the PvP tool/fist fraction
+  rage.
 - `skill_trees.md` §7 tasks **1, 3, 6, 7 and 9** are untouched: the
   `mounts.md`/`combat_stats.md` Sprint exception, the class trainer in
   `economy.md:92` / `items_crafting.md:2380` / `world.md:408` /

@@ -249,6 +249,21 @@ function grug_classes.audit_talents()
 		end
 		assert(ranks == 28, "tree " .. tree_id .. " holds " .. ranks ..
 			" ranks instead of the 28 of skill_trees.md §1.2")
+		-- A `window` def contributes ONLY through the windowed branch of
+		-- get_talent_bonus, and that branch is entered per KEY. A windowed
+		-- talent carrying a key outside WINDOW_KEYS would therefore be
+		-- silently unreadable -- no error, no effect, the worst failure a
+		-- numeric talent system has. One assert closes it.
+		for _, def in ipairs(tree.talents) do
+			if def.window then
+				for key in pairs(def.effects) do
+					assert(WINDOW_KEYS[key], "talent " .. def.id ..
+						" is windowed but its key '" .. key ..
+						"' is not in WINDOW_KEYS, so nothing could ever " ..
+						"read it")
+				end
+			end
+		end
 		tree.ranks = ranks
 	end
 	for class_id, count in pairs(trees_of_class) do
@@ -290,6 +305,14 @@ grug_classes.register_talent({
 	description = "New skill: 25 rage, absorbs 20/30/40 + 2x floor(Str/10) " ..
 		"for 8 s, and for those 8 s you cannot be rooted or slowed. " ..
 		"60 s cooldown.",
+	-- NOT `window = true`, deliberately. skill_trees.md §3.2 counts Hold
+	-- Ground among the timed windows, but only its root/slow IMMUNITY is
+	-- windowed; the absorb amount below is read once at cast time and must
+	-- answer whenever X3 asks. Marking the def windowed would make
+	-- get_talent_bonus return 0 for the amount outside the window, which is
+	-- the opposite of what the cast needs. X3 owns the immunity, and it
+	-- belongs on the §3.9 movement aggregator's own immunity flag rather
+	-- than on a talent effect key.
 	effects = {hold_ground_absorb = {20, 30, 40}},
 })
 grug_classes.register_talent({
@@ -732,12 +755,14 @@ local function totals(ranks)
 	return spent, tree_points
 end
 
--- The read path VALIDATES, it does not trust (§3.3). Unknown ids are dropped,
--- ranks are clamped to the talent's own rank count, a rank whose gate or hard
--- chain is unsatisfied is dropped with everything below it in its chain, and
--- the total is clamped to floor(level / 2) by giving back the deepest ranks
--- first. A hand-edited meta string cannot buy a capstone at level 4.
-local function parse(player)
+-- The first half of the read path: the stored string, read as far as "is this
+-- a rank this character could name". Unknown ids, other classes' talents and
+-- over-rank values are already gone here, but no gate and no budget has been
+-- applied yet. `parse` below continues from it, and the level-drop chat line
+-- reports the total of THIS -- the count after the budget clamp would say how
+-- many ranks a level-4 character may hold rather than how many the reset
+-- actually took away.
+local function scan_stored_ranks(player)
 	local class_id = grug_classes.get_class(player)
 	local raw = player:get_meta():get_string(META_TALENTS) or ""
 	local ranks = {}
@@ -753,6 +778,16 @@ local function parse(player)
 			end
 		end
 	end
+	return ranks
+end
+
+-- The read path VALIDATES, it does not trust (§3.3). Unknown ids are dropped,
+-- ranks are clamped to the talent's own rank count, a rank whose gate or hard
+-- chain is unsatisfied is dropped with everything below it in its chain, and
+-- the total is clamped to floor(level / 2) by giving back the deepest ranks
+-- first. A hand-edited meta string cannot buy a capstone at level 4.
+local function parse(player)
+	local ranks = scan_stored_ranks(player)
 	enforce_gates(ranks)
 	local budget = grug_classes.talent_points_total(player)
 	local spent = totals(ranks)
@@ -1016,7 +1051,14 @@ function grug_classes.on_level_change_talents(player, old_level, new_level)
 		return
 	end
 	if new_level < old_level then
-		local spent = grug_classes.talent_points_spent(player)
+		-- The stored total, not the re-parsed one: the cache was dropped a
+		-- few lines up, so talent_points_spent would already have been
+		-- trimmed to floor(new_level / 2) and a big drop would under-report
+		-- what it wiped.
+		local spent = 0
+		for _, rank in pairs(scan_stored_ranks(player)) do
+			spent = spent + rank
+		end
 		if spent > 0 then
 			grug_classes.respec(player)
 			core.chat_send_player(player:get_player_name(), core.colorize(
@@ -1156,6 +1198,26 @@ core.register_chatcommand("respec", {
 			"(The respec price lands with the talent UI.)"):format(spent)
 	end,
 })
+
+-- FIRST talents-changed consumer, and the reason the callback exists at all.
+-- `grug_classes.apply_stats` is the only writer of a player's `hp_max`
+-- (stats.lua), and until this line it ran on an equipment change, a level
+-- change and the class pick only -- so Weathered raised get_max_hp while the
+-- character's actual ceiling stayed where it was until something else moved
+-- it, and a respec left the raised ceiling behind.
+--
+-- Registered HERE rather than from stats.lua, which is dofile'd before this
+-- file and would find no callback to register on; and registered first, so a
+-- later consumer (lane X3's sync_kit, which has to take a talent-granted
+-- button back on a respec) reads stats that are already current -- the same
+-- ordering rule stats.lua states for the equipment-change seam.
+--
+-- Deliberately WITHOUT heal_gain: spending a point must not hand out free
+-- health, and apply_stats already clamps current HP down when a respec lowers
+-- the maximum.
+grug_classes.register_on_talents_changed(function(player)
+	grug_classes.apply_stats(player)
+end)
 
 -- Stub override (same pattern as grug_core.get_race_perk): mods below
 -- grug_classes in the dependency graph read talents through grug_core.

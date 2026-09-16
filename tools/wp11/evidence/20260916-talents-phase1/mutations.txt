@@ -47,7 +47,19 @@ wp11_talents_failure	Keen Edge must actually raise crit chance
 wp11_talents_failure	effect key 'crit_chance_add' is declared but no consumer source reads it
 wp11_talents_failure	five ranks of Keen Edge add exactly five percentage points -- got 0, expected 0.05
 
+== MUTATION: a talent change no longer re-applies derived stats ==
+wp11_talents_result	FAIL	1
+wp11_talents_failure	spending Weathered 4/4 must raise the APPLIED hp_max, not only grug_classes.get_max_hp -- got 325, expected 337
+
+== MUTATION: an admin level drop stops returning the points ==
+wp11_talents_result	FAIL	5
+wp11_talents_failure	an admin level drop wipes every rank -- got 2, expected 0
+wp11_talents_failure	and empties the stored string -- got ironbound=5,weathered=4,spite=5, expected 
+wp11_talents_failure	every point is available again, free -- got 0, expected 2
+wp11_talents_failure	the level drop said nothing at all
+wp11_talents_failure	the level-drop line must report the 14 ranks it wiped, not the post-clamp count -- got: 
+
 == every mutated file is back to the bytes this script found ==
-5721234a74374c14d12c4297f1e6c85a9e9b89ad273cf8fe2a176474920f0f33  mods/PLAYER/grug_classes/talents.lua
+8af0823643ef8e2610dab107cc14501652acf792dc4fcfd119b00ad7f9e27d2e  mods/PLAYER/grug_classes/talents.lua
 89c03c66321f32b0b925f5571ec0bf096e81ded71150b553e9040f99e5690eb0  mods/PLAYER/grug_classes/stats.lua
 0dd0efadb13aa5c6ac26abd676bb378b6557082a4bcc53dddc7f3b015d62cebf  mods/PLAYER/grug_abilities/init.lua

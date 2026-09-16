@@ -67,16 +67,20 @@ echo "== the WP40 unit suite is untouched by this lane =="
 bash tools/wp40/r7/run.sh unit
 
 echo "== the talent KAT, under both interpreters =="
+# Scratch under common.md's /tmp/grug-w4-<lane>-* convention, and removed
+# again: /tmp is a quota'd tmpfs shared by every lane.
+scratch="$(mktemp -d /tmp/grug-w4-w1-static.XXXXXX)"
+trap 'rm -rf "$scratch"' EXIT
 luajit -e 'io.write(dofile("tools/wp11/talent_tree_kat.lua")("."))' \
-	> /tmp/wp11-kat-luajit.txt
+	> "$scratch/kat-luajit.txt"
 "$repo/tools/bin/lua51" -e 'io.write(dofile("tools/wp11/talent_tree_kat.lua")("."))' \
-	> /tmp/wp11-kat-puc.txt
-tail -1 /tmp/wp11-kat-luajit.txt
-if cmp -s /tmp/wp11-kat-luajit.txt /tmp/wp11-kat-puc.txt; then
-	echo "KAT byte-identical under LuaJIT and PUC 5.1: $(sha256sum < /tmp/wp11-kat-luajit.txt)"
+	> "$scratch/kat-puc.txt"
+tail -1 "$scratch/kat-luajit.txt"
+if cmp -s "$scratch/kat-luajit.txt" "$scratch/kat-puc.txt"; then
+	echo "KAT byte-identical under LuaJIT and PUC 5.1: $(sha256sum < "$scratch/kat-luajit.txt")"
 else
 	echo "KAT INTERPRETER DRIFT"
-	diff /tmp/wp11-kat-luajit.txt /tmp/wp11-kat-puc.txt
+	diff "$scratch/kat-luajit.txt" "$scratch/kat-puc.txt"
 fi
 
 echo "== ruling 19: no class carries more than Strike + 3 in its base kit =="

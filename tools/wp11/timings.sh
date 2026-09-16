@@ -22,10 +22,12 @@ KAT='io.write(dofile("tools/wp11/talent_tree_kat.lua")("."))'
 
 timed "talent KAT, LuaJIT" luajit -e "$KAT"
 timed "talent KAT, PUC 5.1" "$repo/tools/bin/lua51" -e "$KAT"
-timed "eight mutations" bash tools/wp11/mutations.sh
+timed "ten mutations" bash tools/wp11/mutations.sh
 timed "static gates" bash tools/wp11/static.sh
+# Scratch under common.md's /tmp/grug-w4-<lane>-* convention, removed again.
+scratch="$(mktemp -d /tmp/grug-w4-w1-timings.XXXXXX)"
+trap 'rm -rf "$scratch"' EXIT
 timed "final_micro, LuaJIT" luajit tools/wp13/final_micro.lua . \
-	/tmp/wp11-timing-micro-luajit.tsv luajit
+	"$scratch/micro-luajit.tsv" luajit
 timed "final_micro, PUC 5.1" "$repo/tools/bin/lua51" \
-	tools/wp13/final_micro.lua . /tmp/wp11-timing-micro-puc.tsv puc51
-rm -f /tmp/wp11-timing-micro-luajit.tsv /tmp/wp11-timing-micro-puc.tsv
+	tools/wp13/final_micro.lua . "$scratch/micro-puc.tsv" puc51
