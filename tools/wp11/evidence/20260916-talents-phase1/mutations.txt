@@ -48,6 +48,6 @@ wp11_talents_failure	effect key 'crit_chance_add' is declared but no consumer so
 wp11_talents_failure	five ranks of Keen Edge add exactly five percentage points -- got 0, expected 0.05
 
 == every mutated file is back to the bytes this script found ==
-e8e6d7e32b76b17c2d74b191c48b5c5e0224beb21527c6b9167de5a7c699deed  mods/PLAYER/grug_classes/talents.lua
+5721234a74374c14d12c4297f1e6c85a9e9b89ad273cf8fe2a176474920f0f33  mods/PLAYER/grug_classes/talents.lua
 89c03c66321f32b0b925f5571ec0bf096e81ded71150b553e9040f99e5690eb0  mods/PLAYER/grug_classes/stats.lua
-0a39a95c60e93effb16edd6b682a3ecdfe9bb29954840c096fa2970267567c97  mods/PLAYER/grug_abilities/init.lua
+0dd0efadb13aa5c6ac26abd676bb378b6557082a4bcc53dddc7f3b015d62cebf  mods/PLAYER/grug_abilities/init.lua

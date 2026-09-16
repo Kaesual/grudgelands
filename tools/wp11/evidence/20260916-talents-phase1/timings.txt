@@ -3,3 +3,4 @@ talent KAT, PUC 5.1                  0.01 s  exit 0
 eight mutations                      0.12 s  exit 0
 static gates                         0.54 s  exit 0
 final_micro, LuaJIT                 38.93 s  exit 0
+final_micro, PUC 5.1               222.58 s  exit 0

@@ -14,8 +14,9 @@ of rulings 19, 20 and 25 and of §7 task 5. What shipped and what is open:
 | `kat-puc.txt` | the same fixture under `tools/bin/lua51` — **byte-identical** |
 | `mutations.txt` | `tools/wp11/mutations.sh`: the clean baseline, then eight deliberate breaks, each one going red, each file restored from a byte copy afterwards |
 | `static.txt` | `tools/wp11/static.sh`: parser + SETGLOBAL per changed file and tree-wide, the five plain-5.1 sweeps scoped and tree-wide, `check_fresh_server.py`, `tools/wp40/r7/run.sh unit`, and the KAT under both interpreters |
-| `engine-server.log` | the headless boot on port 31112 with `tools/wp11/probe_talents` staged; the probe's own lines are the `WP11PROBE` rows |
-| `timings.txt` | wall-clock of every check above (`tools/wp11/timings.sh`) |
+| `engine-server.log` | the headless boot on port 31114 with `tools/wp11/probe_talents` staged; the probe's own lines are the `WP11PROBE` rows |
+| `engine-boot.txt` | what `tools/luanti_headless.sh` reported for that boot |
+| `timings.txt` | wall-clock of every check above (`tools/wp11/timings.sh`); the headless boot is not in it because the launcher owns its own `timeout` — it passed inside 150 s |
 
 ## Headline results
 
