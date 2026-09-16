@@ -2365,6 +2365,35 @@ function mob_class:do_states(dtime)
 		elseif self.attack_type == "dogfight" or (self.attack_type == "dogshoot"
 		and (ds_var == 2 or dist <= self.reach)) then
 
+			-- GRUG PATCH: the attack cadence runs during the CHASE
+			-- (combat_stats.md §4 "Catching up must be enough to hit",
+			-- decided 2026-08-13, user ruling 1 of 2026-09-16). Upstream
+			-- advanced `punch_timer` only inside the in-reach branch below,
+			-- one line after zeroing the mob's velocity — so a target walking
+			-- backwards left reach after a single server step, the mob stood
+			-- still while the clock gained that one step, and it then needed
+			-- ~0.9 s at its 0.4 nodes/s margin to re-close the ~0.36 m it had
+			-- lost. Walking backwards avoided essentially all melee damage.
+			--
+			-- Here the clock advances on every tick of this branch with a live
+			-- target, chase included, and the punch below carries the ONLY
+			-- condition the decided text leaves it: being in reach at the
+			-- moment the cadence is due. `reach` itself is untouched — raising
+			-- it cannot repair this (a stopped mob always leaves its own
+			-- radius, whatever the radius) and it would widen the elite/rare
+			-- telegraph cone (`reach + 1.5`, §3) and make dogshoot mobs switch
+			-- to melee earlier (that switch is the branch condition above).
+			--
+			-- The backlog is capped at ONE — the same rule the player's own
+			-- swing clock already follows (combat_stats.md:153, "lag never
+			-- replays a backlog"): a mob that chased for ten seconds lands one
+			-- hit on arrival, not ten.
+			self.punch_timer = (self.punch_timer or 0) + dtime
+
+			if self.punch_timer > self.punch_interval then
+				self.punch_timer = self.punch_interval
+			end
+
 			-- make sure flying mobs are inside proper medium
 			if self.fly and dist > self.reach and self:flight_check() then
 
@@ -2495,48 +2524,87 @@ function mob_class:do_states(dtime)
 				self.path.stuck_timer = 0
 				self.path.following = false -- not stuck anymore
 
-				self:set_velocity(0)
+				-- GRUG PATCH: do not freeze for the whole in-reach branch.
+				-- Standing still inside reach of a RECEDING target is what
+				-- loses the ground the cadence patch above is meant to stop
+				-- losing; upstream's unconditional `set_velocity(0)` here was
+				-- the second half of the defect. The mob keeps closing until
+				-- it is at contact distance — 60 % of its own reach, chosen so
+				-- that a target fleeing at the player's 4.0 against a mob's
+				-- 4.4 hovers around that line and therefore stays comfortably
+				-- inside `reach` at every cadence due-tick, while a target
+				-- that STANDS STILL is reached, the mob stops, and its punch
+				-- rate is exactly what it was before this patch.
+				--
+				-- Deliberately not a per-tick distance derivative ("keep
+				-- running while the distance is increasing"): that oscillates
+				-- once per server step against a target only marginally slower
+				-- than the mob, halving its effective speed. A fixed contact
+				-- distance settles instead of oscillating.
+				if dist > self.reach * 0.6 then
 
-				self.punch_timer = (self.punch_timer or 0) + dtime
+					self:set_velocity(self.run_velocity)
 
-				if self.punch_timer >= self.punch_interval then
+					if self.animation and self.animation.run_start then
+						self:set_animation("run")
+					else
+						self:set_animation("walk")
+					end
+				else
+					self:set_velocity(0)
+					self:set_animation("stand")
+				end
+			end
 
-					self.punch_timer = 0
+			-- GRUG PATCH: the punch lands here, outside both branches, and the
+			-- in-reach + line-of-sight test sits where the punch lands rather
+			-- than where the clock runs. Out of reach when the cadence is due,
+			-- the timer is NOT reset (that is what re-created the defect in a
+			-- new shape) and stays at its cap, so the hit lands on the first
+			-- tick reach is regained — "damage IMMEDIATELY when the attack is
+			-- ready and the target is in reach" (user ruling 1, 2026-09-16).
+			-- Everything from the reset down is upstream's own body, moved
+			-- verbatim: the custom_attack hook still consumes the cadence
+			-- whether or not it continues, and a blocked line of sight still
+			-- costs the swing, exactly as before.
+			if self.punch_timer >= self.punch_interval
+			and dist <= (self.reach + (self.reach_ext or 0)) then
 
-					-- no custom attack or custom attack returns true to continue
-					if not self.custom_attack or self:custom_attack(self, p) then
+				self.punch_timer = 0
 
-						local p2, s2 = p, s
+				-- no custom attack or custom attack returns true to continue
+				if not self.custom_attack or self:custom_attack(self, p) then
 
-						-- approximate mob eye level
-						local cbox = self.object:get_properties().collisionbox
-						local offset = cbox[2] + ((cbox[5] - cbox[2]) * 0.9)
-						s2.y = s2.y + offset
+					local p2, s2 = p, s
 
-						-- approximate victim eye level
-						cbox = self.attack:get_properties().collisionbox
-						offset = cbox[2] + ((cbox[5] - cbox[2]) * 0.9)
-						p2.y = p2.y + offset
+					-- approximate mob eye level
+					local cbox = self.object:get_properties().collisionbox
+					local offset = cbox[2] + ((cbox[5] - cbox[2]) * 0.9)
+					s2.y = s2.y + offset
 
-						-- if we can see who we attack, then do so
-						if self:line_of_sight(p2, s2) then
+					-- approximate victim eye level
+					cbox = self.attack:get_properties().collisionbox
+					offset = cbox[2] + ((cbox[5] - cbox[2]) * 0.9)
+					p2.y = p2.y + offset
 
-							self:set_animation("punch")
+					-- if we can see who we attack, then do so
+					if self:line_of_sight(p2, s2) then
 
-							if random(self.sounds.attack_chance or 1) == 1 then
-								self:mob_sound(self.sounds.attack)
-							end
+						self:set_animation("punch")
 
-							-- punch player (or what player is attached to)
-							local target = self.attack:get_attach() or self.attack
-
-							local dgroup = self.damage_group or "fleshy"
-
-							target:punch(self.object, 1.0, {
-								full_punch_interval = 1.0,
-								damage_groups = {[dgroup] = self.damage}
-							}, nil)
+						if random(self.sounds.attack_chance or 1) == 1 then
+							self:mob_sound(self.sounds.attack)
 						end
+
+						-- punch player (or what player is attached to)
+						local target = self.attack:get_attach() or self.attack
+
+						local dgroup = self.damage_group or "fleshy"
+
+						target:punch(self.object, 1.0, {
+							full_punch_interval = 1.0,
+							damage_groups = {[dgroup] = self.damage}
+						}, nil)
 					end
 				end
 			end

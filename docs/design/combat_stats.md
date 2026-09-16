@@ -481,24 +481,39 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   while the target is inside reach; the only condition an attack still
   carries is being in reach at the moment the cadence is due. Fleeing costs
   HP — it is not a free escape from a fight already lost.
-  *Rationale, because the defect is invisible on paper*: vendored mobs_redo
-  zeroes the mob's velocity as soon as the target is inside `reach`
-  (`mods/ENTITIES/mobs/api.lua:2493`) while `punch_timer` accumulates **only
-  in that same branch** (`:2495-2497`; default interval 1 s at `:3768`). A
-  receding target leaves reach after one server step, so the timer gains one
-  step while the mob loses the ground the target covered in it. Worked at the
+  **Shipped 2026-09-16** as one vendored `api.lua` patch (the mob-pressure
+  round; user ruling 1 of that day restated the same rule in one sentence:
+  "melee mobs must deal damage IMMEDIATELY when their attack is ready and they
+  are within reach"). Where it now lives, against the patched tree:
+  `mods/ENTITIES/mobs/api.lua:2368-2395` advances `punch_timer` at the top of
+  the dogfight branch and caps the backlog at one; `:2527-2556` replaces the
+  unconditional velocity zero with a run up to a contact distance of
+  `reach × 0.6`; `:2559-2610` lands the punch, with the in-reach and
+  line-of-sight tests at the site of the punch rather than at the site of the
+  clock. `punch_interval` is still the mobs_redo default of 1 s (`:3839`) and
+  `reach` is untouched.
+  *Rationale, because the defect was invisible on paper*: vendored mobs_redo
+  zeroed the mob's velocity as soon as the target was inside `reach`
+  (`api.lua:2498` before the patch — the number this file carried,
+  `:2493`, had drifted) while `punch_timer` accumulated **only in that same
+  branch** (`:2500-2502` before the patch, printed here as `:2495-2497`;
+  default interval 1 s at `:3771`, printed as `:3768`). A receding target
+  left reach after one server step, so the timer gained one step while the mob
+  lost the ground the target covered in it. Worked at the
   **dedicated-server default** `dedicated_server_step = 0.09`
   (`reference_projects/luanti/src/defaultsettings.cpp:498`; the setting is
-  configurable and a singleplayer session does not use it, so this is the
-  shape of the defect rather than a measurement): the timer gains 0.09 s while
-  the mob loses ~0.36 m that it needs ~0.9 s to re-close at its
+  configurable and a singleplayer session does not use it, so this was the
+  shape of the defect rather than a measurement): the timer gained 0.09 s while
+  the mob lost ~0.36 m that it needed ~0.9 s to re-close at its
   0.4 nodes/s margin — roughly **one landed hit per ten seconds** instead of
-  one per second. Raising `reach` cannot repair this (a stopped mob always
+  one per second. Raising `reach` could not repair this (a stopped mob always
   leaves its own radius, whatever the radius) and would silently widen the
   elite/rare telegraph cone, which is `reach + 1.5` (§3), and make
-  `dogshoot` mobs switch to melee earlier. The fix is one vendored api.lua
-  patch; because it changes every mob's feel, the WP that ships it owes a
-  runtime test.
+  `dogshoot` mobs switch to melee earlier (that switch is `api.lua:2366`).
+  Because it changes every mob's feel, the patch shipped with the runtime test
+  this paragraph demanded — a headless probe counting landed punches per 10 s
+  against a receding and a standing target, before and after
+  (`docs/research/mob-pressure.md`).
 
 Group trinity: a good group = **tank + healer + 1–2 damage dealers**;
 class kits must support this (Warrior: threat/taunt tools, Priest:

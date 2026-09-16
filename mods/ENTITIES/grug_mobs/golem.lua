@@ -64,7 +64,7 @@ local function golem_def(description, texture)
 		-- dogshoot_switch = 1 opens in the RANGED phase, then mobs_redo
 		-- alternates dogshoot_count_max seconds of shooting with
 		-- dogshoot_count2_max seconds of melee — 10 vs 3 is "mostly ranged",
-		-- and a target inside `reach` forces melee regardless (api.lua:2249).
+		-- and a target inside `reach` forces melee regardless (api.lua:2366).
 		arrow = "grug_mobs:rock_entity",
 		arrow_override = grug_mobs.stamp_arrow_damage,
 		shoot_interval = 3,
