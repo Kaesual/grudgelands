@@ -186,6 +186,10 @@ their pre-change values (digests in `evidence/20260916/README.md`).
 
 ## 7. What a review should look at
 
+Written before the review; §8 records what it found. Item 1 is where the one
+real defect was, which is the argument for pointing a reviewer at the place
+you are least sure of.
+
 1. **The timer loop in `node.lua`.** It is `default/furnace.lua`'s structure
    with a two-slot matcher instead of `get_craft_result`. The loop's
    termination argument and the `fuel_totaltime - fuel_time` step are inherited
@@ -201,7 +205,58 @@ their pre-change values (digests in `evidence/20260916/README.md`).
 4. **The node-name spelling** (delta 3) — the one place this lane deliberately
    chose the `default:furnace` convention over the card's wording.
 
-## 8. What is open
+## 8. The independent review, and the fix round (2026-09-16)
+
+Verdict **mergeable, no blocker, no commit dropped**. The reviewer re-measured
+every number in this note and every one reproduced, re-ran the probe on their
+own boot, added two mutations of their own to the KAT gate, hashed all 281
+upstream `lottblocks` files against the worktree (0 hits) and pixel-diffed the
+active texture strip against the vendored original (differences only in
+columns 7–8 of rows 3–6 of each frame, none in the fire chamber).
+
+Three findings were taken into the code:
+
+1. **SHOULD-FIX — a negative `step` on a mid-cook recipe change.** Swapping the
+   two material slots for a *shorter* recipe while `src_time` was already past
+   it made `cook_time - src_time` negative, which finished the bar instantly,
+   ran the fuel backwards and inflated the loop's remaining budget. Measured by
+   the reviewer: 5 s into a 6 s Steel, swap to a 4 s Bronze, one tick — a
+   finished Bronze Bar *plus* `src_time` 2 and `fuel_time` 5 → 6.
+   `default/furnace.lua:159-162` carries the same two lines, but there it is
+   latent because nearly every MTG cooktime is 3 s; this lane's 4/6/8/10/12 s
+   ladder is what made it reachable by hand.
+   **Fixed** by remembering which recipe `src_time` belongs to (`src_recipe` in
+   node meta) and dropping the progress when the match changes — progress on
+   one alloy is not progress on another — with a `step < 0` clamp kept as belt
+   and braces. KAT case (f) reproduces the reviewer's exact sequence and
+   asserts `src_time == 1` and one second of fuel burnt; engine probe case D
+   asserts no new output within three seconds of a swap.
+2. **NIT — the KAT's fuel stub lost the stack count**, so the multi-unit refuel
+   branch was untested headlessly (30 bars on 9 Coal produced 10 and emptied
+   the slot). **Fixed**; KAT case (g) now burns exactly 3 Coal for 30 bars, so
+   the refuel branch runs three times inside one call.
+3. **NIT — MTG's "do not block the fuel slot with a non-fuel leftover" branch**
+   (`default/furnace.lua:212-219`) was not ported, which was a divergence from
+   this port's own stated rule. **Ported**; since no Grudgelands fuel has a
+   leftover, KAT case (h) supplies a synthetic flask fuel so the branch is not
+   written blind. `node.lua`'s header now lists five departures, not three.
+
+The four findings NOT taken into the code, and why:
+
+- **Merge mechanics** — `13e0bb63` conflicts with Lane A in README.md only;
+  resolved during the rebase by keeping main's paragraph and re-applying this
+  lane's two edits to it. BACKLOG, ROADMAP and `items_crafting.md` auto-merged.
+- **`grug_traders/init.lua` is not literally append-only** — a two-line comment
+  rewording at `:81-85` rides along with the appended `dofile`. Kept (the old
+  text described a recipe WP43 had deleted), and named in the lane report as a
+  non-append-only touch of a shared file.
+- **`out_price > input_total` vs. §3.8's "<"** — equality goes unreported. This
+  is exactly what `init.lua`'s engine walk has done since WP7, so changing it
+  here would make the two walks disagree. **Open for WP44** to settle the
+  boundary once, for both walks together.
+- **`BACKLOG.md:239`/`:241` ordering sentences** — refreshed during the rebase.
+
+## 9. What is open
 
 - **The user's runtime test plan** (card §8, ~10 min, existing world is fine —
   no mapgen change): craft and place both furnaces, smelt the five bars, alloy

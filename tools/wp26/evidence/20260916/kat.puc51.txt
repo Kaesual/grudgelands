@@ -43,6 +43,9 @@ wp26_fuel_slot_is_not_a_material	iron_bar+fuel_coal	30s	no output
 wp26_material_slot_coal	grug_materials:steel_bar	6
 wp26_one_of_each	copper3+tin1	1	copper_left	2
 wp26_no_fuel_no_smelt	30s	no output
+wp26_midcook_swap	steel@5s->bronze	src_time_after_swap_tick	1	fuel_burnt_that_tick	1
+wp26_multi_fuel_unit	30	coal_burnt	3
+wp26_fuel_leftover	wp26kat:empty_flask	fuel_slot	''
 wp26_audit_shipped	5	findings	0
 wp26_audit_negative	27c_out_4c_in	findings	1
 wp26_audit_unpriced_is_unknown	findings	0

@@ -8,7 +8,7 @@
 -- `lottblocks` art is CC BY-SA 3.0 and the two front faces are re-skinned from
 -- the vendored minetest_game fronts instead (LICENSE-media.md).
 --
--- Three deliberate departures from the upstream code, all toward
+-- Five deliberate departures from the upstream code, all toward
 -- `mods/BASE/default/furnace.lua`, which is the pattern the rest of this game
 -- already follows:
 --
@@ -22,6 +22,12 @@
 --      could be emptied by anyone. Ours use the normal furnace's rule.
 --   3. `can_dig` AND `on_blast` empty-check all three lists, and an output
 --      that no longer fits is dropped rather than lost.
+--   4. A BURNT FUEL'S LEFTOVER NEVER BLOCKS THE FUEL SLOT
+--      (`furnace.lua:212-219`); neither LotT nor a naive port moves it out.
+--   5. `src_time` BELONGS TO A RECIPE. Swapping the material slots mid-cook
+--      drops the old recipe's progress instead of carrying it into the new
+--      one -- which, with WP26's rising cook ladder, is what kept
+--      `cook_time - src_time` from going negative (see the timer below).
 --
 -- Cook times are runtime calibration (task card §1, "No number freezing");
 -- they live with the recipes in `recipes.lua`.
@@ -130,6 +136,20 @@ local function dual_furnace_timer(pos, elapsed)
 	local src_time = meta:get_float("src_time") or 0
 	local fuel_totaltime = meta:get_float("fuel_totaltime") or 0
 
+	-- WHICH recipe `src_time` belongs to. Without it, swapping the two
+	-- material slots mid-cook carries the old recipe's progress into the new
+	-- one, and if the new one is SHORTER than the progress already made,
+	-- `cook_time - src_time` below goes negative: the bar finishes instantly,
+	-- `fuel_time + step` runs the fuel backwards and `elapsed - step` makes
+	-- the remaining budget grow. `default/furnace.lua:159-162` has the same
+	-- two lines, but there it is latent because nearly every cooktime in that
+	-- game is 3 s; WP26 deliberately ships a 4/6/8/10/12 s ladder, so the
+	-- exploit is reachable by hand (review 2026-09-16, finding 1).
+	--
+	-- Progress on one alloy is not progress on another, so the honest fix is
+	-- to drop it when the matched recipe changes.
+	local src_recipe = meta:get_string("src_recipe")
+
 	local recipe, fuel
 	local output_full = false
 	local update = true
@@ -138,9 +158,21 @@ local function dual_furnace_timer(pos, elapsed)
 		recipe = matched(inv)
 		local cook_time = recipe and recipe.time or 0
 
+		local recipe_name = recipe and recipe.output or ""
+		if recipe_name ~= src_recipe then
+			src_time = 0
+			src_recipe = recipe_name
+		end
+
 		local step = math.min(elapsed, fuel_totaltime - fuel_time)
 		if recipe then
 			step = math.min(step, cook_time - src_time)
+		end
+		-- Belt and braces. The reset above is what makes a negative `step`
+		-- unreachable today; this keeps it unreachable if a later change ever
+		-- lets `src_time` outrun its own recipe again.
+		if step < 0 then
+			step = 0
 		end
 
 		if fuel_time < fuel_totaltime then
@@ -177,7 +209,22 @@ local function dual_furnace_timer(pos, elapsed)
 					fuel_totaltime = 0
 					src_time = 0
 				else
-					inv:set_stack("fuel", 1, afterfuel.items[1])
+					-- Do not let a burnt fuel's leftover BLOCK the fuel slot.
+					-- A lava bucket burns and hands back an empty bucket,
+					-- which is not fuel; written straight back it would sit
+					-- in the one fuel slot for ever and the furnace would
+					-- never refuel again. `default/furnace.lua:212-219` moves
+					-- such a leftover out instead, and so does this port
+					-- (review 2026-09-16, finding 6). No fuel Grudgelands
+					-- ships has a leftover today; the KAT feeds a synthetic
+					-- one so the branch is not written blind.
+					local leftover = afterfuel.items[1]
+					if leftover:is_empty() or is_fuel(leftover) then
+						inv:set_stack("fuel", 1, leftover)
+					else
+						inv:set_stack("fuel", 1, "")
+						add_or_drop(inv, pos, leftover)
+					end
 					if fuel.replacements[1] then
 						add_or_drop(inv, pos, fuel.replacements[1])
 					end
@@ -199,6 +246,7 @@ local function dual_furnace_timer(pos, elapsed)
 	end
 	if not recipe then
 		src_time = 0
+		src_recipe = ""
 	end
 
 	local item_percent, item_state = 0, "Empty"
@@ -227,6 +275,7 @@ local function dual_furnace_timer(pos, elapsed)
 	meta:set_float("fuel_totaltime", fuel_totaltime)
 	meta:set_float("fuel_time", fuel_time)
 	meta:set_float("src_time", src_time)
+	meta:set_string("src_recipe", src_recipe)
 	meta:set_string("formspec", formspec(fuel_percent, item_percent))
 	meta:set_string("infotext", (active and "Dual Furnace active" or
 		"Dual Furnace inactive") .. "\n(Item: " .. item_state ..

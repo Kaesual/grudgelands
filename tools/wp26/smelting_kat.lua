@@ -214,7 +214,15 @@ return function(repo)
 	-- --- the engine surface the two mods touch at load time ----------
 	local placed = {}
 	local timers = {}
-	local FUEL_TIME = {["default:coal_lump"] = 40, ["default:tree"] = 30}
+	local FUEL_TIME = {["default:coal_lump"] = 40, ["default:tree"] = 30,
+		-- Synthetic. Nothing Grudgelands ships burns into a leftover, so the
+		-- "do not block the fuel slot with a non-fuel leftover" branch the
+		-- port takes from `default/furnace.lua:212-219` would otherwise be
+		-- written blind. A lava bucket is the real-world shape of this.
+		["wp26kat:fuel_flask"] = 20}
+	-- What a burnt unit of a fuel hands back, when that is not simply the
+	-- same stack minus one.
+	local FUEL_LEFTOVER = {["wp26kat:fuel_flask"] = "wp26kat:empty_flask"}
 
 	function stub.get_modpath(name)
 		if name == "grug_smelting" then
@@ -256,11 +264,25 @@ return function(repo)
 	function stub.get_craft_result(input)
 		if input.method == "fuel" then
 			local first = input.items and input.items[1]
-			local name = first and (type(first) == "table" and first:get_name()
-				or tostring(first)) or ""
+			-- The COUNT matters: the engine hands back the whole fuel stack
+			-- minus one, and dropping the count here would silently end every
+			-- burn after the first unit, leaving the multi-unit refuel branch
+			-- of the shipped timer untested (review 2026-09-16, finding 3).
+			local after
+			if type(first) == "table" then
+				after = new_stack({name = first.name, count = first.count})
+			else
+				after = new_stack(tostring(first or ""))
+			end
+			local name = after:get_name()
 			local burn = FUEL_TIME[name] or 0
-			local after = new_stack(name)
-			if burn > 0 then after:take_item(1) end
+			if burn > 0 then
+				if FUEL_LEFTOVER[name] then
+					after = new_stack(FUEL_LEFTOVER[name])
+				else
+					after:take_item(1)
+				end
+			end
 			return {time = burn, replacements = {}, item = new_stack("")},
 				{items = {after}}
 		end
@@ -585,6 +607,18 @@ return function(repo)
 			node_def.on_timer(pos, 1)
 		end
 	end
+	-- The live float table the timer writes its bookkeeping into.
+	local function meta_of(pos)
+		return meta_for(pos)._store.floats
+	end
+	local function output_holds(inv, itemname)
+		for slot = 1, 2 do
+			if inv:get_stack("output", slot):get_name() == itemname then
+				return inv:get_stack("output", slot):get_count()
+			end
+		end
+		return nil
+	end
 
 	-- (a) either order, and exactly one of each consumed per output
 	for _, order in ipairs({{1, 2}, {2, 1}}) do
@@ -665,6 +699,85 @@ return function(repo)
 	run(pos, 30)
 	want(inv:is_empty("output"), "the furnace smelted without fuel")
 	say("wp26_no_fuel_no_smelt", "30s", "no output")
+
+	-- (f) SWAPPING THE MATERIAL SLOTS MID-COOK (review 2026-09-16, finding 1).
+	--     Five seconds into a 6 s Steel, both slots become a 4 s Bronze.
+	--     Progress on one alloy is not progress on another, so the Bronze must
+	--     start from zero. Without the reset in `node.lua`, `cook_time -
+	--     src_time` is -1: the Bronze finishes on the spot, `fuel_time + step`
+	--     runs the fuel BACKWARDS and `elapsed - step` hands the loop more
+	--     budget than the one second it was given -- measured by the reviewer
+	--     as a finished bar plus src_time 2 and fuel 5 -> 6 in a single tick.
+	pos, inv = build("grug_materials:iron_bar 3", "default:coal_lump 3",
+		"default:coal_lump 9")
+	run(pos, steel.time - 1)
+	local floats = meta_of(pos)
+	want(inv:is_empty("output"),
+		"Steel appeared before its " .. steel.time .. " s cook time")
+	want(floats.src_time == steel.time - 1,
+		"src_time is " .. tostring(floats.src_time) .. " after " ..
+		(steel.time - 1) .. " ticks, not " .. (steel.time - 1))
+	local fuel_before = floats.fuel_time
+	inv:set_stack("input", 1, new_stack("grug_materials:copper_bar 3"))
+	inv:set_stack("input", 2, new_stack("grug_materials:tin_bar 3"))
+	run(pos, 1)
+	local swap_src = floats.src_time
+	local swap_fuel = floats.fuel_time - fuel_before
+	want(inv:is_empty("output"),
+		"the swapped-in Bronze finished instantly on " .. (steel.time - 1) ..
+		" s of SOMEONE ELSE'S progress: " ..
+		inv:get_stack("output", 1):get_name())
+	want(floats.src_time == 1, "after the swap src_time is " ..
+		tostring(floats.src_time) .. ", not 1: the old recipe's progress " ..
+		"was carried into the new one")
+	want(floats.fuel_time == fuel_before + 1,
+		"one second of cooking burnt " ..
+		tostring(floats.fuel_time - fuel_before) .. " s of fuel, not 1")
+	run(pos, bronze.time - 1)
+	want(output_holds(inv, "grug_materials:bronze_bar") == 1,
+		"the swapped-in Bronze did not finish after its own " ..
+		bronze.time .. " s")
+	want(inv:get_stack("input", 1):get_count() == 2 and
+		inv:get_stack("input", 2):get_count() == 2,
+		"the swapped-in Bronze did not consume exactly one of each input")
+	say("wp26_midcook_swap", "steel@" .. (steel.time - 1) .. "s->bronze",
+		"src_time_after_swap_tick", swap_src, "fuel_burnt_that_tick",
+		swap_fuel)
+
+	-- (g) MORE THAN ONE UNIT OF FUEL (review 2026-09-16, finding 3). Thirty
+	--     bars need 120 s, three whole Coal Lumps, so the refuel branch has to
+	--     run three times inside ONE call -- the path the old fuel stub could
+	--     not reach because it threw the stack count away.
+	pos, inv = build("grug_materials:copper_bar 30", "grug_materials:tin_bar 30",
+		"default:coal_lump 9")
+	node_def.on_timer(pos, 3600)
+	want(output_holds(inv, "grug_materials:bronze_bar") == 30,
+		"30 Copper + 30 Tin on 9 Coal made " ..
+		tostring(output_holds(inv, "grug_materials:bronze_bar")) ..
+		" Bronze Bars, not 30")
+	want(inv:is_empty("input"), "both material slots should be empty")
+	want(inv:get_stack("fuel", 1):get_count() == 6,
+		"30 bars burnt " .. (9 - inv:get_stack("fuel", 1):get_count()) ..
+		" Coal, not the 3 that 120 s of cooking costs")
+	say("wp26_multi_fuel_unit", 30, "coal_burnt",
+		9 - inv:get_stack("fuel", 1):get_count())
+
+	-- (h) A BURNT FUEL'S LEFTOVER MUST NOT BLOCK THE FUEL SLOT
+	--     (`default/furnace.lua:212-219`, review finding 6). No shipped fuel
+	--     has a leftover, so the stub supplies one: a flask that burns for
+	--     20 s and hands back an empty flask, which is not fuel.
+	pos, inv = build("grug_materials:copper_bar 3", "grug_materials:tin_bar 3",
+		"wp26kat:fuel_flask 1")
+	run(pos, bronze.time)
+	want(inv:get_stack("fuel", 1):get_name() ~= "wp26kat:empty_flask",
+		"the burnt flask's leftover is sitting in the fuel slot, where it " ..
+		"blocks every future refuel")
+	want(output_holds(inv, "wp26kat:empty_flask") == 1,
+		"the burnt flask's leftover was lost instead of moved to the output")
+	want(output_holds(inv, "grug_materials:bronze_bar") == 1,
+		"the flask did not smelt a Bronze Bar")
+	say("wp26_fuel_leftover", "wp26kat:empty_flask", "fuel_slot",
+		"'" .. inv:get_stack("fuel", 1):get_name() .. "'")
 
 	-- ==================================================================
 	-- 7. The §3.8 audit extension, and its negative test

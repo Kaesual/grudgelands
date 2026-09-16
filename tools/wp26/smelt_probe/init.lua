@@ -217,10 +217,104 @@ local function judge()
 	end
 end
 
+--
+-- D. The mid-cook slot swap (review 2026-09-16, finding 1), in the engine.
+--
+-- A Steel is cooked part-way, then BOTH material slots become a Bronze, which
+-- is two seconds shorter. Progress on one alloy is not progress on another, so
+-- nothing new may come out until the Bronze has had its own cook time.
+--
+-- The assertion is deliberately "no NEW output within three seconds of the
+-- swap" rather than "no output at second N": the probe polls at one-second
+-- granularity and the server may run the node timer before or after a given
+-- `core.after`, so whether the Steel itself finished first is a coin toss --
+-- while the property under test holds either way. With the bug the Bronze
+-- appears on the very next tick.
+--
+local SWAP = {key = "D_midcook_swap", offset = 6, at = 4, window = 3,
+	expect = "grug_materials:bronze_bar"}
+
+local function swap_pos()
+	return {x = BASE.x + SWAP.offset, y = BASE.y, z = BASE.z}
+end
+
+local function swap_place()
+	local pos = swap_pos()
+	core.set_node(pos, {name = grug_smelting.NODE, param2 = 0})
+	local inv = core.get_meta(pos):get_inventory()
+	inv:set_stack("input", 1, ItemStack("grug_materials:iron_bar 3"))
+	inv:set_stack("input", 2, ItemStack("default:coal_lump 3"))
+	inv:set_stack("fuel", 1, ItemStack("default:coal_lump 9"))
+	core.get_node_timer(pos):start(1.0)
+	log("placed " .. SWAP.key .. " at " .. core.pos_to_string(pos) ..
+		": Iron Bar + mined Coal, to be swapped to Copper + Tin at t+" ..
+		SWAP.at .. " s")
+end
+
+local function output_count(inv)
+	local total = 0
+	for slot = 1, 2 do
+		total = total + inv:get_stack("output", slot):get_count()
+	end
+	return total
+end
+
+local function output_holds(inv, itemname)
+	for slot = 1, 2 do
+		local stack = inv:get_stack("output", slot)
+		if stack:get_name() == itemname then
+			return stack:get_count()
+		end
+	end
+	return 0
+end
+
+local function swap_do()
+	local inv = core.get_meta(swap_pos()):get_inventory()
+	SWAP.before = output_count(inv)
+	inv:set_stack("input", 1, ItemStack("grug_materials:copper_bar 3"))
+	inv:set_stack("input", 2, ItemStack("grug_materials:tin_bar 3"))
+	log(SWAP.key .. ": swapped both material slots at t+" .. SWAP.at ..
+		" s; output held " .. SWAP.before .. " item(s) at that moment")
+end
+
+local function swap_watch(second)
+	local inv = core.get_meta(swap_pos()):get_inventory()
+	local now = output_count(inv)
+	if now > SWAP.before and not SWAP.early then
+		SWAP.early = second
+		SWAP.early_name = inv:get_stack("output", 1):get_name()
+	end
+end
+
+local function swap_judge()
+	local inv = core.get_meta(swap_pos()):get_inventory()
+	if SWAP.early then
+		complain(SWAP.key .. ": a new bar came out " .. SWAP.early ..
+			" s after the swap (" .. tostring(SWAP.early_name) ..
+			"), inside the " .. SWAP.window .. " s the shorter recipe still " ..
+			"needed -- the old recipe's progress was carried over")
+	else
+		log(SWAP.key .. " PASS: nothing new for " .. SWAP.window ..
+			" s after the swap")
+	end
+	local bronze = output_holds(inv, SWAP.expect)
+	if bronze < 1 then
+		complain(SWAP.key .. ": no " .. SWAP.expect ..
+			" after the swapped-in recipe's own cook time")
+	else
+		log(SWAP.key .. ": " .. bronze .. " " .. SWAP.expect ..
+			" after the swap, inputs left " ..
+			inv:get_stack("input", 1):get_count() .. "/" ..
+			inv:get_stack("input", 2):get_count())
+	end
+end
+
 local function run()
 	for _, case in ipairs(CASES) do
 		place(case)
 	end
+	swap_place()
 	for second = 1, POLL_SECONDS do
 		core.after(second, function()
 			for _, case in ipairs(CASES) do
@@ -228,6 +322,11 @@ local function run()
 			end
 		end)
 	end
+	core.after(SWAP.at, swap_do)
+	for offset = 1, SWAP.window do
+		core.after(SWAP.at + offset, function() swap_watch(offset) end)
+	end
+	core.after(SWAP.at + 12, swap_judge)
 	core.after(POLL_SECONDS + 1, judge)
 end
 

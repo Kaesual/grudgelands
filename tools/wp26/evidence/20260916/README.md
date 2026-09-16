@@ -9,9 +9,9 @@ Everything here was produced from the lane worktree on branch
 
 | Gate | Command | Result |
 |---|---|---|
-| KAT, LuaJIT | `luajit -e 'io.write(dofile("tools/wp26/smelting_kat.lua")("."))'` | `kat.luajit.txt`, sha256 `8e4ca28afdaf3d2194490542775fe55ece206f594201c178c5ac9440d1ebd7b9` |
+| KAT, LuaJIT | `luajit -e 'io.write(dofile("tools/wp26/smelting_kat.lua")("."))'` | `kat.luajit.txt`, sha256 `42a9b1490b0294fda25792ac96a8899fdb5656d9e469db4e905ca012e7e4e3d9` |
 | KAT, PUC 5.1 | `tools/bin/lua51 -e 'io.write(dofile("tools/wp26/smelting_kat.lua")("."))'` | `kat.puc51.txt`, **same** sha256 |
-| KAT mutation gate | `mutations.txt` | five deliberate breaks, five red KATs, green again after restore |
+| KAT mutation gate | `mutations.txt` | eight deliberate breaks, eight red KATs, green again after restore |
 | Static gates | `bash tools/wp26/evidence/20260916/static.sh` | `static.out.txt`, exit 0 |
 | Fresh-server audit | `python3 tools/check_fresh_server.py` | PASS (inside `static.out.txt`) |
 | In-engine smelt probe | `PROBE=tools/wp26/smelt_probe PORT=31401 tools/luanti_headless.sh 110` | `logs/probe.31401.log` — PROBE PASS |
@@ -69,13 +69,22 @@ furnaces in one forceloaded mapblock:
     [probe] case C_coal_is_a_material: first output after 6 s -- grug_materials:steel_bar x1,
             inputs left 2/2, node grug_smelting:dual_furnace_active
     [probe] case B_coal_is_only_fuel PASS: nothing after 45 s, 3 Iron Bar(s) still in slot 1
+    [probe] D_midcook_swap: swapped both material slots at t+4 s; output held 0 item(s)
+    [probe] D_midcook_swap PASS: nothing new for 3 s after the swap
+    [probe] D_midcook_swap: 3 grug_materials:bronze_bar after the swap, inputs left 0/0
     [probe] audit negative test: 'grug_materials:iron_bar' x9 is worth 27c at the vendor
             but its dualfurn recipe consumes only 4c worth of priced inputs
             (mobs:leather, mobs:meat_raw) — items_crafting.md §3.8 anti-loop rule
     [probe] PROBE PASS
 
 Case B is task-card gate 2 in the engine: Coal burning in the **fuel** slot
-never stands in for the Coal a Steel Bar consumes.
+never stands in for the Coal a Steel Bar consumes. Case D is the review's
+finding 1 in the engine: four seconds into a six-second Steel both material
+slots become a four-second Bronze, and nothing new may come out until that
+Bronze has had its own cook time. The assertion is "no NEW output within three
+seconds of the swap" rather than "no output at second N", because the probe
+polls at one-second granularity and whether the Steel itself finished first is
+a coin toss — while the property under test holds either way.
 
 ## The mutation gate
 
@@ -89,6 +98,26 @@ the KAT then produced:
 | the timer consumes only slot 1 (gate 3) | `grug_materials:bronze_bar did not consume exactly one of each input` |
 | the fuel slot accepts a non-fuel (gate 2) | `the fuel slot accepted an Iron Bar` |
 | an alloy output missing (§3.3) | `4 dualfurn recipes, not 5` |
+| `src_time` carried into a shorter recipe (review finding 1) | `the swapped-in Bronze finished instantly on 5 s of SOMEONE ELSE'S progress: grug_materials:bronze_bar` |
+| a non-fuel leftover written back into the fuel slot (finding 6) | `the burnt flask's leftover is sitting in the fuel slot, where it blocks every future refuel` |
+| the refuel does not consume the fuel stack (finding 3 coverage) | `30 bars burnt 0 Coal, not the 3 that 120 s of cooking costs` |
+
+## The fix round (independent review, 2026-09-16)
+
+The reviewer's SHOULD-FIX 1 and NITs 3 and 6 are taken; the KAT grew three
+cases that go red without each of them (rows `wp26_midcook_swap`,
+`wp26_multi_fuel_unit`, `wp26_fuel_leftover` in `kat.luajit.txt`), and the
+engine probe grew case D.
+
+| Finding | What changed | Gate that now covers it |
+|---|---|---|
+| 1 — negative `step` on a mid-cook recipe change | `node.lua` remembers which recipe `src_time` belongs to (`src_recipe` in node meta) and drops the progress when the match changes; a `step < 0` clamp is kept as belt and braces | KAT case (f), which reproduces the reviewer's exact sequence (5 s of Steel, swap to Bronze, one tick) and asserts `src_time == 1` and `fuel_time == before + 1`; engine probe case D |
+| 3 — the fuel stub lost the stack count | the stub copies name **and** count from the real stack | KAT case (g): 30 Copper + 30 Tin on 9 Coal makes 30 bars and burns exactly 3 Coal, so the refuel branch runs three times in one call |
+| 6 — MTG's "do not block the fuel slot" branch | ported from `default/furnace.lua:212-219`; a leftover that is not itself fuel is moved to the output instead of written back | KAT case (h), with a synthetic flask fuel in the stub, since nothing Grudgelands ships has a leftover |
+
+Findings 2, 4, 5 and 7 are merge mechanics, a named shared-file touch, a
+WP44 boundary question and a docs sweep — handled in the lane report, not in
+the code.
 
 ## Art
 
