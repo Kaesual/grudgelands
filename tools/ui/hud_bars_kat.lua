@@ -474,8 +474,15 @@ function M.run(repo)
 		check(text_def.number == 1 and text_def.text == "x",
 			"text_element dropped the caller's own fields")
 	end
-	check(layout.text_element("flash") ~= nil, "the error flash has no anchor")
-	check(layout.image_element("reticle") ~= nil, "the reticle has no anchor")
+	-- The two free anchors keep exactly the positions the elements had
+	-- before the table existed.
+	local flash_def = layout.text_element("flash", {})
+	check(flash_def ~= nil and flash_def.position.y == 0.35 and
+		flash_def.position.x == 0.5, "the error flash moved off its anchor")
+	local reticle_def = layout.image_element("reticle", {})
+	check(reticle_def ~= nil and reticle_def.position.y == 0.5 and
+		reticle_def.position.x == 0.5 and reticle_def.scale.x == 1 and
+		reticle_def.scale.y == 1, "the weapon-ready reticle moved or resized")
 	check(layout.text_element("nonesuch") == nil,
 		"an unknown element silently gets a position")
 
