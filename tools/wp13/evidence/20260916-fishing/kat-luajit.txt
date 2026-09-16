@@ -1,0 +1,81 @@
+wp13_wield_bone	Arm_Right	3.150,11.550,0.000	x->-1.000,0.000,0.000	y->0.000,-1.000,0.000	z->0.000,0.000,1.000
+wp13_wield_arm	model_y	6.300..12.600	reach	5.250	fist_centre_bone_y	4.200
+wp13_wield_face	uv	8..16x8..16	normal	0.000,0.000,1.000
+wp13_wield_numbers	pos	0.000,4.200,2.602	rot	90.000,-45.000,90.000	size	0.320,0.320
+wp13_wield_hanging	hand	3.150,7.350,0.000	hilt-hand	0.000,0.000,-1.923	grip-hand	0.000,0.000,0.000	tip-hand	0.000,0.000,7.128	blade	0.000,0.000,1.000	flat	-1.000,0.000,0.000	head	0.000,1.000,0.000
+wp13_wield_raised90	hand	3.150,11.550,4.200	hilt-hand	0.000,-1.923,0.000	grip-hand	0.000,0.000,0.000	tip-hand	0.000,7.128,0.000	blade	0.000,1.000,0.000	flat	-1.000,0.000,0.000	head	0.000,0.000,-1.000
+wp13_wield_axe_hanging	hand	3.150,7.350,0.000	hilt-hand	0.000,0.000,-1.923	grip-hand	0.000,0.000,0.000	tip-hand	0.000,0.000,7.128	blade	0.000,0.000,1.000	flat	1.000,0.000,0.000	head	0.000,-1.000,0.000
+wp13_wield_axe_raised90	hand	3.150,11.550,4.200	hilt-hand	0.000,-1.923,0.000	grip-hand	0.000,0.000,0.000	tip-hand	0.000,7.128,0.000	blade	0.000,1.000,0.000	flat	1.000,0.000,0.000	head	0.000,0.000,1.000
+wp13_wield_axe_0.90	hand	3.150,7.350,0.000	hilt-hand	0.000,0.000,-1.923	grip-hand	0.000,0.000,0.000	tip-hand	0.000,0.000,7.128	blade	0.000,0.000,1.000	flat	1.000,0.000,0.000	head	0.000,-1.000,0.000
+wp13_wield_pose	default:sword_steel	tool
+wp13_wield_pose	default:pick_bronze	tool
+wp13_wield_pose	default:shovel_stone	tool
+wp13_wield_pose	default:axe_stone	edge_down
+wp13_wield_pose	grug_gear:sword_steel	tool
+wp13_wield_pose	grug_gear:dagger_steel	tool
+wp13_wield_pose	grug_gear:staff_steel	tool
+wp13_wield_pose	grug_gear:greataxe_steel	edge_down
+wp13_wield_pose	grug_fishing:rod	tool
+wp13_wield_pose	default:stick	upright
+wp13_wield_pose	default:torch	upright
+wp13_wield_pose	grug_mobs:raw_fish	upright
+wp13_wield_pose	grug_abilities:strike	upright
+wp13_wield_stature_0.90	hand	3.150,7.350,0.000	hilt-hand	0.000,0.000,-1.923	grip-hand	0.000,0.000,0.000	tip-hand	0.000,0.000,7.128	blade	0.000,0.000,1.000	flat	-1.000,0.000,0.000	head	0.000,1.000,0.000
+wp13_wield_stature_1.12	hand	3.150,7.350,0.000	hilt-hand	0.000,0.000,-1.923	grip-hand	0.000,0.000,0.000	tip-hand	0.000,0.000,7.128	blade	0.000,0.000,1.000	flat	-1.000,0.000,0.000	head	0.000,1.000,0.000
+wp13_wield_upright	hand	3.150,7.350,0.000	hilt-hand	0.000,-3.200,0.000	grip-hand	0.000,0.000,0.000	tip-hand	0.000,3.200,0.000	blade	0.000,1.000,0.000	flat	-1.000,0.000,0.000	head	0.000,0.707,-0.707
+wp13_wield_upright_0.90	hand	3.150,7.350,0.000	hilt-hand	0.000,-3.200,0.000	grip-hand	0.000,0.000,0.000	tip-hand	0.000,3.200,0.000	blade	0.000,1.000,0.000	flat	-1.000,0.000,0.000	head	0.000,0.707,-0.707
+wp13_wield_uncompensated_0.90	hand	3.150,7.350,0.000	hilt-hand	0.000,0.000,-1.731	grip-hand	0.000,0.000,0.000	tip-hand	0.000,0.000,6.415	blade	0.000,0.000,1.000	flat	-1.000,0.000,0.000	head	0.000,1.000,0.000
+wp13_wield_old_convention	hand	3.150,7.350,0.000	hilt-hand	0.000,3.200,-0.598	grip-hand	0.000,1.840,0.762	tip-hand	0.000,-3.200,5.802	blade	0.000,-0.707,0.707	flat	-1.000,0.000,0.000	head	0.000,0.707,0.707
+wp13_wield_photographed	hand	3.150,7.350,0.000	hilt-hand	0.000,-1.300,-3.700	grip-hand	0.000,-1.300,-3.012	tip-hand	0.000,-1.300,0.700	blade	0.000,0.000,1.000	flat	0.000,-1.000,0.000	head	-0.707,0.000,0.707
+wp13_wield_result	PASS	0
+wp13_fishing_table	grug_mobs:raw_fishx1@78 default:stickx1@12 default:papyrusx1@10	total	100
+wp13_fishing_bite	min	3.000	max	10.000	spread	7
+wp13_fishing_items	rod_recipes	2	cooking	1	eat	8
+wp13_fishing_case	lands	early=0 caught=grug_mobs:raw_fish wear=1023
+wp13_fishing_case	reeled_in	caught=0 chat=1
+wp13_fishing_case	walked_off	caught=0 chat=1
+wp13_fishing_case	rod_away	caught=0 chat=1
+wp13_fishing_case	water_gone	caught=0 chat=1
+wp13_fishing_case	dry_land	caught=0 rolls=0
+wp13_fishing_case	full_pack	dropped=grug_mobs:raw_fish
+wp13_fishing_case	junk	caught=default:papyrus
+wp13_fishing_case	left_server	caught=0
+wp13_fishing_audit	lines	1	errors	0
+wp13_fishing_result	PASS	0
+wp13_cv_inputs	6	2	4	6	dwarf,elf,human,orc,troll,undead	cloth,metal	head,chest,legs,feet	#8a7f6a,#a89478,#c0b088,#d8cc9a,#e8dcb0,#ffffff
+wp13_cv_index	48	cloth=24,metal=24	chest=12,feet=12,head=12,legs=12
+wp13_cv_roundtrip	grug_visuals_skin_dwarf.png^(grug_visuals_metal_head.png^[multiply:#c0b088)^(grug_visuals_metal_chest.png^[multiply:#c0b088)^(grug_visuals_metal_legs.png^[multiply:#c0b088)^(grug_visuals_metal_feet.png^[multiply:#c0b088)
+wp13_cv_matrix	366	366	365	0760993141
+wp13_cv_shapecheck	4	[multiply outside a group;unbalanced '(';unbalanced ')';trailing backslash
+wp13_cv_textures	14	0	grug_visuals_cloth_chest.png,grug_visuals_cloth_feet.png,grug_visuals_cloth_head.png,grug_visuals_cloth_legs.png,grug_visuals_metal_chest.png,grug_visuals_metal_feet.png,grug_visuals_metal_head.png,grug_visuals_metal_legs.png,grug_visuals_skin_dwarf.png,grug_visuals_skin_elf.png,grug_visuals_skin_human.png,grug_visuals_skin_orc.png,grug_visuals_skin_troll.png,grug_visuals_skin_undead.png
+wp13_cv_stature	0.85	1.12	dwarf=0.90/0.90/0.90,elf=1.06/1.06/1.06,human=1.00/1.00/1.00,orc=1.08/1.08/1.08,troll=1.12/1.12/1.12,undead=0.94/0.94/0.94
+wp13_cv_fallback	human;grug_visuals_skin_human.png;-;-;-;-;-	1	grug_mobs_mirefolk.png	nil
+wp13_cv_weapon	nil	grug_gear:sword_bronze	grug_gear:sword_abyssal_steel
+wp13_cv_result	PASS	0
+cold	15	15	15
+door_facing	door_turned_on_second_tag	line_keeps_first_tag	bench_kept	elder_turned
+spare	unplaced	unmarked	walker_ring_5	static_ring_2
+nametags	Vale Dwarf	Dur Brannoc Citizen	Highcourt Elder
+restart	15	15	0
+lost_entities	11	11	11
+death_respawn	not_before_due	refilled_after_window
+second_gate	no_twin	marker_restored
+capital	6	6	2	loops_separate	markers_separate
+wanderer	21	21	21	10_heartbeats
+out_of_range	21	21	no_strike
+twins	22	21	claim_refused
+census	hearthpine	start	15	15	spare_1
+amble	moved_at_22	spots_4_and_4_of_5	spare_reached	10:-16.0/4.0 20:-16.0/4.0 30:-7.8/9.5 40:-5.0/11.3 50:-5.0/11.3 60:-5.0/11.3
+amble_blocked	at_least_2_targets_in_40s
+no_jump	0	0	model_reproduces_defect
+stuck_route	path_at_20	skip_at_45	quiet_after_3_lines	no_snap_in_sight	snap_out_of_sight_after_backoff
+noncombatant	declared	installed_on_activate	chained	all_2_defs_correct	prey_unchanged
+walker_split	residents_10	walkers_2	share_20.0	idle_a=true idle_b=false idle_c=false idle_d=false idle_e=false idle_f=true forge_work=false bench_work=false shrine_work=false yard_work=false
+static_idle	still_after_150s	state_stand
+work	smith_work_anim	sit_anim	writes_1_in_120s	swing_7_in_30s	no_path	step_vetoed_120	home_at_9s_unwatched	resumed_when_watched
+animation	stand=0..79 walk=168..187 punch=189..198 work=189..198 sit=81..160	work_speed_10
+activities	smith=work/default:pick_bronze fish=stand/grug_fishing:rod farm=work/default:shovel_stone chop=work/default:axe_stone tend=stand pray=stand stall=stand sit=sit sweep=walk mine=work/default:pick_bronze brew=stand/default:stick carve=work/default:axe_stone mourn=stand/bow spar=work/sword@1 forage=stand
+wave2_activities	mourn_bow_writes_1	spar_grug_gear:sword_bronze	tag_mourn/work	lines_mine,brew,carve,mourn,spar,forage,shade
+tag_gate	elder=Vale Elder walker=Vale Dwarf work=Vale Dwarf	once_a_second
+restyle_hook	calls_21	start_and_capital	after_install
+real_starts	hearthpine=1/6:work_2:ring_4 dawnmere=1/6:work_2:ring_3 silverleaf=1/6:work_2:ring_4 stillgrave=1/6:work_2:ring_3 sunscar=1/6:work_2:ring_3 kapok=1/6:work_2:ring_5	min_walker_ring_3

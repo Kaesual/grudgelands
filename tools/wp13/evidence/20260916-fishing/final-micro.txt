@@ -1,0 +1,27 @@
+WP13 final micro pair, and the one line this lane moves
+=======================================================
+
+    LC_ALL=C nice -n 19 luajit          tools/wp13/final_micro.lua . <out> luajit
+    LC_ALL=C nice -n 19 tools/bin/lua51 tools/wp13/final_micro.lua . <out> puc51
+
+this branch (wp13-w3-fishing)
+    WP13 final micro PASS interpreter=luajit output_sha256=c9b8082f233806855bc230eb48a8a5d7ec9827f6c47a41a15515f85bc6552feb
+    WP13 final micro PASS interpreter=puc51  output_sha256=c9b8082f233806855bc230eb48a8a5d7ec9827f6c47a41a15515f85bc6552feb
+    -> byte-identical under both interpreters (cmp, no output)
+
+main (f37a0c5b), same command against /home/jan/projects/grudgelands
+    WP13 final micro PASS interpreter=luajit output_sha256=5bb22bb88bd0d10a616d00d70675d0cfa45bd8dbab477b37e82c0ee8e1778f82
+
+The digest MOVES, and the whole of the move is one field of one row -- the
+ruling this lane implements. `diff main.tsv branch.tsv`:
+
+    456c456
+    < activities	smith=work/default:pick_bronze fish=stand/default:stick    farm=work/default:shovel_stone chop=work/default:axe_stone ...
+    ---
+    > activities	smith=work/default:pick_bronze fish=stand/grug_fishing:rod farm=work/default:shovel_stone chop=work/default:axe_stone ...
+
+Nothing else in the 456-row fixture -- the eight capital KATs, the settlement
+seam, the route gates, the lane crossings, the socket registry and the start
+placement engine -- differs by a byte. In particular every frozen capital
+digest under tools/wp13/evidence/20260915-* is asserted inside this run and
+none of them moved.
