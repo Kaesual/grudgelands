@@ -140,7 +140,14 @@ the goal-level view.
   Stone and mount costs.
 - [ ] **WP37 — Surface density:** apply the already-decided 0.75 multiplier
   and re-run the spawn-budget audit.
-- [ ] **WP11 / WP14 / WP20 / WP21 / WP8:** skill trees, live offhand/carried
+- [ ] **WP11 — skill trees, phase 1 shipped (2026-09-16):** the talent model
+  and its thirty numeric consumers are in the game (lanes X1 + X2 of
+  `docs/design/skill_trees.md` §4) — 48 talents of Warrior, Mage and Priest,
+  one point every two levels, both gate kinds, a full-reset respec, and
+  interim `/talents` `/talent` `/respec` chat commands until the sfinv page
+  lands. Still open: lane X3 (keystones, capstones, four new abilities) and
+  lane X4 (the UI, the respec price, the level-up page).
+- [ ] **WP14 / WP20 / WP21 / WP8:** live offhand/carried
   light, parties, recovery/rest and the quest framework are independently
   ready behind their shipped prerequisites. Design revision 2 landed 2026-09-16
   ([skill_trees.md](docs/design/skill_trees.md)); implementation phase 1 is in

@@ -69,7 +69,7 @@ Core principles:
 | Resource | Classes | Pool | Regeneration |
 |----------|---------|------|--------------|
 | Mana | Mage, Priest | 10 + 2×Int (combat_stats §2) | 2%/s out of combat, 0.5%/s in combat (combat_stats §5) |
-| Rage | Warrior | 0–100, starts at 0 | +12 per landed §2b authoritative swing; ordinary tools/fists retain proportional native credit (combat_stats §2); +4 per hit taken, +15 from Charge; decays 2/s out of combat |
+| Rage | Warrior | 0–100, starts at 0 | **+8** per landed §2b authoritative swing; ordinary tools/fists retain proportional native credit (combat_stats §2); **+3** per hit taken, +15 from Charge; decays **5/s** out of combat. Ruling 25 of 2026-09-16 lowered the income and raised the decay — the ledger and what it buys are in §3 |
 
 - **Rage is granted on damage that actually landed**, not on a swing
   attempted: a target that cancels the punch (a vendor NPC, an evading
@@ -353,7 +353,7 @@ it, including one that has not picked a class yet.
 
 | Ability | Cost | Charge | Effect |
 |---------|------|--------|--------|
-| Strike | free | none — it is the plain attack | Native melee (4 m) with the item in the weapon slot: weapon damage + floor(Str/10), crit ×1.5, threat ×1. Grants the Warrior 12 rage per landed swing (§1). Hold or click LMB. |
+| Strike | free | none — it is the plain attack | Native melee (4 m) with the item in the weapon slot: weapon damage + floor(Str/10), crit ×1.5, threat ×1. Grants the Warrior 8 rage per landed swing (§1, §3). Hold or click LMB. |
 
 - **Granted to every class and to a classless character**, and placed
   **first in the hotbar** so it lands on key 1 for everyone — a fresh
@@ -428,22 +428,51 @@ color, and the tinted orb becomes the no-weapon fallback.
 Tank/melee. All Warrior abilities count as tank abilities: **×3 threat**.
 
 Kit tuning decided 2026-08-06 (implementation: WP19): Mighty Blow became
-the rage DUMP (no cooldown — at +12 rage per auto-hit a cooldown left the
+the rage DUMP (no cooldown — at the income of the day a cooldown left the
 Warrior permanently rage-capped), Hamstring added as the control tool (in
 an engine where mobs outrun players, the snare is the Warrior's identity).
+
+**The numbers below are the UNTALENTED baseline.** Eighteen WP11 talents
+re-tune exactly these values (`skill_trees.md` §2.10), and a talented Taunt or
+Mighty Blow is the design working, not a bug.
 
 | Ability | Cost | Cooldown | Effect |
 |---------|------|----------|--------|
 | Charge | — (generates 15 rage) | cast, 10 s | Dash to the currently pointed enemy up to 12 m away, 3 damage. No enemy-memory fallback. Engage tool. |
 | Mighty Blow | 25 rage | **swing**, no charge | On a completed landed swing with enough rage, the total is exactly floor(weapon damage × 1.5) + melee bonus instead of the plain hit. Its delta is folded into that native punch before its one crit/mitigation/dodge path — never a second punch. The rage dump. |
-| Hamstring | 10 rage | **swing**, 6 s charge | The swing lands as usual; on a charged proc it also applies a 50% slow for 5 s. |
+| Hamstring | 10 rage | **swing**, 6 s charge | The swing lands as usual; on a charged proc it also applies a 50% slow for 5 s. **Not in the base kit since ruling 19** (2026-09-16): every class starts with Strike plus three, and Hamstring returns as the Ruin tree's keystone (`skill_trees.md` §2.2). It stays registered and talent-gated, exactly as Renew has been since WP19. |
 | Taunt | free | cast, 8 s | Currently pointed mob (8 m) is forced onto the Warrior for 3 s; no enemy-memory fallback; threat set to top×1.1 (combat_stats §4; threat part + force duration land with WP6). |
 
-A **swing skill with no charge timer is limited by its resource alone**,
-which is exactly what Mighty Blow was built to be: at +12 rage per landed
-hit it procs about every other swing and the Warrior is never rage-capped.
-That is why removing the GCD costs it nothing — "GCD only" was never the
-real limiter.
+### The rage ledger (ruling 25, 2026-09-16)
+
+The user's finding of 2026-09-16 was that **rage fills too fast** — "in combat
+the resource is effectively unlimited". Ruling 25 answers it with **option
+(b): lower the income and add decay**. These are the current numbers.
+
+| Source | Rage | Note |
+|--------|------|------|
+| a landed full swing | **+8** | was +12. Paid proportionally by an ordinary tool or fist: a native packet worth fraction *f* of a swing pays 8·*f*, so the accumulator still integrates to one swing's grant per whole swing. |
+| a hit taken | **+3** | was +4. The orc race passive adds +1 (`world.md` §7). |
+| Charge | +15 | unchanged; it is an engage tool, not income. |
+| out of combat | **−5 per second** | was −2 per second, on the same 5 s `grug_core.in_combat` window. |
+| cap | 100 | unchanged. |
+
+What that buys, from an empty bar: **13 landed swings to full** instead of 9,
+**4 swings per Mighty Blow** instead of 3, and a full bar bleeds out in
+**20 seconds** of peace instead of 50. A swing skill with no charge timer is
+still limited by its resource alone — which is what Mighty Blow was built to
+be — but the limit is now something the player feels.
+
+Two WP11 talents lean on this ledger and are calibrated against it: **Stoke**
+(Ruin, +1 rage per landed swing per rank, so 4/4 restores the old +12) and
+**Spite** (Bulwark, +1 rage per hit taken per rank, so 5/5 reaches +8).
+
+**If (b) overshoots and leaves the Warrior starved**, the recorded fallback is
+option (a): leave the income alone and raise the prices instead — Mighty Blow
+25 → 35 and Hamstring 10 → 15 (`skill_trees.md` §7, task 8). The three income
+numbers live as named constants in `grug_abilities/init.lua`
+(`RAGE_PER_SWING`, `RAGE_PER_HIT_TAKEN`, `RAGE_DECAY_PER_SECOND`), so
+reverting (b) is three edits.
 
 ## 4. Mage (Mana)
 

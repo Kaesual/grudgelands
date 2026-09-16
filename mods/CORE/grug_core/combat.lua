@@ -107,8 +107,10 @@ end
 -- precisely so that no consumer has to write equipment to enforce a slot rule.
 -- The writers this is waiting for are the ones that cannot refuse: WP22's
 -- durability (a swing wears the equipped weapon and writes the stack back),
--- WP5's affix re-roll, WP11's respec unequipping what the new class may not
--- wear. grug_inventory's class-change unequip already writes lists exactly that
+-- WP5's affix re-roll. WP11's respec is NOT one of them any more: ruling 20
+-- (2026-09-16, skill_trees.md §1.4/§3.10) removed class changing from the
+-- game, so a respec re-spends talents and never unequips anything.
+-- grug_inventory's class-restriction unequip already writes lists exactly that
 -- way; it just does it from outside the callback loop, so it never re-enters.
 --
 -- (The ENGINE cannot recurse into this: InvRef:set_stack only flags the
@@ -179,6 +181,13 @@ end
 -- real registry accessor. Returns the perk value or nil.
 function grug_core.get_race_perk(player, key)
 	return nil
+end
+
+-- Summed talent bonus for one effect key (skill_trees.md §3.2, WP11);
+-- grug_classes/talents.lua overrides this with the real accessor, exactly as
+-- it does for get_race_perk above. 0 means "no talent touches this".
+function grug_core.get_talent_bonus(player, key)
+	return 0
 end
 
 --
@@ -414,7 +423,10 @@ function grug_core.add_heal_threat(healer, target, amount)
 	end
 	local hname = healer:get_player_name()
 	local tname = core.is_player(target) and target:get_player_name() or nil
-	local threat = amount * grug_core.HEAL_THREAT_FACTOR
+	-- Quiet Steps (skill_trees.md §2.5) lowers the healer's own factor;
+	-- 0 without the talent, so this is HEAL_THREAT_FACTOR exactly.
+	local threat = amount * math.max(0, grug_core.HEAL_THREAT_FACTOR
+		- grug_core.get_talent_bonus(healer, "heal_threat_factor_sub"))
 	local objs = core.get_objects_inside_radius(pos, grug_core.HEAL_THREAT_RANGE)
 	for n = 1, #objs do
 		local ent = objs[n]:get_luaentity()
@@ -962,6 +974,10 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 	-- tank ability (×3 -> +2×damage) is added on top; ×1 adds nothing.
 	local mult = opts.threat_mult or 1
 	if mult ~= 1 then
+		-- Affront (skill_trees.md §2.1) raises the TANK multiplier only: an
+		-- ability that carries no multiplier stays at ×1 and adds nothing.
+		-- This is the cast site; the swing site is grug_abilities/init.lua.
+		mult = mult + grug_core.get_talent_bonus(attacker, "threat_mult_add")
 		local ent = target:get_luaentity()
 		if ent then
 			grug_core.add_threat(ent, attacker, amount * (mult - 1))

@@ -54,8 +54,10 @@ local slot_cache = {} -- player name -> {[list] = ItemStack or false}
 -- ONE call for "an equipment list was written": it drops every cache and
 -- fires the equipment-change hook, in that order, so a callback already reads
 -- the new state. Public because anything that writes an equipment list
--- SERVER-SIDE (the class-change unequip below, later WP11 respec / WP14
--- shields) bypasses the inventory action callbacks and must say so explicitly.
+-- SERVER-SIDE (the class-restriction unequip below, later WP14 shields)
+-- bypasses the inventory action callbacks and must say so explicitly. WP11's
+-- respec is NOT one of them: ruling 20 made it a full talent reset, and a
+-- talent reset never unequips anything.
 --
 -- Cache and hook are deliberately NOT two separate public calls: they have the
 -- same three call sites (the inventory action, a server-side list write, and
@@ -476,8 +478,13 @@ end
 -- plate plus shield reaches it, vendor gear never does. (grug_core clamps a
 -- second time in the consumer, so a future override cannot break the
 -- invariant by forgetting this line.)
+--
+-- Ironbound (skill_trees.md §2.1) is inside that cap like any gear roll; the
+-- Warrior capstone Unbroken, which raises the cap itself for 8 s, is lane
+-- X3's and is deliberately not read here yet.
 function grug_core.get_armor_percent(player)
-	return math.min(60, grug_inventory.get_equipped_armor(player))
+	return math.min(60, grug_inventory.get_equipped_armor(player)
+		+ grug_classes.get_talent_bonus(player, "armor_percent_add"))
 end
 
 -- Same stub-override pattern for the two hand slots: grug_core publishes the
@@ -493,15 +500,20 @@ function grug_core.get_equipped_offhand(player)
 end
 
 --
--- Class change: take off what the new class may not wear.
+-- Class restriction: take off what the character's class may not wear.
 --
 -- The rank gate above lives in allow_player_inventory_action, so it can only
--- ever refuse an EQUIP — armor already worn survives a class change and the
--- filter never fires again (warrior in full metal -> /class mage keeps 49%
--- physical reduction). Admin-only today, player-reachable with WP11's respec.
+-- ever refuse an EQUIP — armor already worn would survive a class change and
+-- the filter would never fire again (warrior in full metal keeping 49%
+-- physical reduction as a mage). Ruling 20 (2026-09-16, skill_trees.md §1.4)
+-- removed class changing from the game entirely, admins included, so this
+-- path has no caller left and the WP11 respec will NOT give it one: a respec
+-- re-spends talents and never touches equipment. It is kept deliberately —
+-- it is the guard that makes the rank rule true if anything ever writes an
+-- equipment list directly.
 --
--- grug_classes fires this after the new class is written to meta, so
--- get_armor_rank already answers for the NEW class.
+-- grug_classes fires this after a class is written to meta, so
+-- get_armor_rank already answers for that class.
 --
 -- (piece_name lives up with the refusal messages, which need the same thing.)
 
@@ -575,9 +587,10 @@ end)
 --    (grug_abilities) and the visible weapon (grug_visuals) follow -- it is the
 --    same notification a manual equip fires.
 --
--- Exactly once per character, tracked in player meta, so an admin `/class`
--- switch does not hand out a second weapon and a Warrior who respecs to Mage
--- keeps the sword he has rather than being given a staff.
+-- Exactly once per character, tracked in player meta. Ruling 20 removed the
+-- class change that used to make this matter (a Warrior could not become a
+-- Mage and be handed a staff); the once-per-character rule stays because the
+-- grant also runs on every join.
 --
 -- Two-handed: the starter staff IS two-handed (grug_gear), so the grant obeys
 -- the same rule the equip filter does and refuses an occupied offhand rather

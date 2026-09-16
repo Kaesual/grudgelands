@@ -19,6 +19,7 @@ end
 function grug_classes.get_max_hp(player)
 	return 20 + 2 * (grug_xp.get_level(player) - 1)
 		+ grug_classes.get_attributes(player).str
+		+ grug_classes.get_talent_bonus(player, "max_hp_add")
 end
 
 -- 0 for classes that use rage (or no class yet).
@@ -27,7 +28,11 @@ function grug_classes.get_max_mana(player)
 	if not def or def.resource ~= "mana" then
 		return 0
 	end
-	return 10 + 2 * grug_classes.get_attributes(player).int
+	local base = 10 + 2 * grug_classes.get_attributes(player).int
+	-- Deep Well / Deep Reserve are PERCENT of the untalented pool, so the
+	-- two Priest/Mage keys add rather than compound (skill_trees.md §2.3/§2.5).
+	return math.floor(base * (1 + 0.01
+		* grug_classes.get_talent_bonus(player, "max_mana_percent_add")))
 end
 
 -- Flat bonus added to weapon damage.
@@ -42,7 +47,11 @@ end
 
 -- Chances in 0..1; flat caps, no diminishing returns (combat_stats.md §2).
 function grug_classes.get_crit_chance(player)
-	return math.min(0.30, 0.05 + 0.001 * grug_classes.get_attributes(player).dex)
+	-- The 30% cap holds for every talent that is not marked as a rule-breaker
+	-- (combat_stats.md §2, skill_trees.md §2.10); Ruination's timed
+	-- crit_cap_override is lane X3's and is deliberately NOT read here yet.
+	return math.min(0.30, 0.05 + 0.001 * grug_classes.get_attributes(player).dex
+		+ 0.01 * grug_classes.get_talent_bonus(player, "crit_chance_add"))
 end
 
 function grug_classes.get_dodge_chance(player)
@@ -90,4 +99,10 @@ end)
 grug_xp.register_on_level_change(function(player, old_level, new_level)
 	grug_classes.apply_stats(player,
 		old_level ~= nil and new_level > old_level)
+	-- Talent points (skill_trees.md §3.6): the point line on the way up, and
+	-- ruling 20's free full reset when an admin /xp lowers a level. It lives
+	-- in talents.lua, called from here so its order against apply_stats is
+	-- fixed rather than incidental, and it carries the `old_level ~= nil`
+	-- guard join needs.
+	grug_classes.on_level_change_talents(player, old_level, new_level)
 end)
