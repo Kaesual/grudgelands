@@ -31,7 +31,7 @@ local ape = {
 	pathfinding = 1,
 
 	walk_velocity = 1,
-	run_velocity = 4.4, -- aggressive-mob speed (§0)
+	run_velocity = 4.6, -- aggressive-mob speed (§0)
 	-- wp6_model_notes §2.7: upstream gives this mesh stepheight 3 and
 	-- jump_height 8 — an ape climbs terrain a bear cannot.
 	jump = true,

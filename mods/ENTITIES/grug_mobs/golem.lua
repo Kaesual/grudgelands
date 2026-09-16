@@ -81,7 +81,7 @@ local function golem_def(description, texture)
 		dogshoot_count2_max = 3,
 
 		-- §3.1 speed column: 3.0. SPEC EXCEPTION, noted here on purpose —
-		-- this is the one aggressive family below the 4.4 baseline of §0.
+		-- this is the one aggressive family below the 4.6 baseline of §0.
 		-- It is deliberate: a golem is meant to be outrun, which is why it
 		-- throws rocks. No _grug_soft_deaggro opt-out either — the 25 m rule
 		-- drops a chaser to walk speed, and walk 1 vs run 3.0 is exactly the

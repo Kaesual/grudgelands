@@ -51,8 +51,9 @@ character state:
   nodes/s** (engine default `movement_speed_walk = 4`,
   `reference_projects/luanti/src/defaultsettings.cpp:520`; the game
   does not override it).
-- **Every tier is faster than every mob** — aggressive mobs run 4.4
-  (`combat_stats.md` §3). That is deliberate, and it is exactly why
+- **Every tier is faster than every mob** — aggressive mobs run 4.6
+  (`combat_stats.md` §3; 4.4 until user ruling 2 of 2026-09-16, and the
+  slowest mount is still 6). That is deliberate, and it is exactly why
   **incoming damage dismounts the rider** (§3.1): the speed is
   permanent, the immunity to the mob game is not.
 - The two flying tiers are the late-game milestones. Expert is deliberately
@@ -175,8 +176,9 @@ arbitrary fixed-price wall.
   pair `boats.md` §6 uses for the identical rule on water.
 
 **Why this rule exists: it is what keeps the speed pillar intact.**
-`combat_stats.md` §3 gives aggressive mobs `run_velocity` **4.4** against
-a player's **4.0** — "evading must never be trivially easy" — and the
+`combat_stats.md` §3 gives aggressive mobs `run_velocity` **4.6** against
+a player's **4.0** (it was 4.4 until user ruling 2 of 2026-09-16, "mobs
+should be a bit faster") — "evading must never be trivially easy" — and the
 whole mob game is built on top of that one inequality: the **25 m soft
 de-aggro** (`combat_stats.md` §3 — a chasing mob drops to walk speed, so
 fleeing is hard but not impossible) and the **45 m chase give-up** and
@@ -190,8 +192,11 @@ stops being true.
 
 The same pillar is why the **Swiftness Draught** is capped where it is:
 `items_crafting.md` §3.6 gives it **+8 % for 15 s** and §10 P4 states the
-arithmetic outright — 4.0 × 1.08 = 4.32 < 4.4, so even the alchemist's
+arithmetic outright — 4.0 × 1.08 = 4.32 < 4.6, so even the alchemist's
 best sprint keeps mobs faster, and the 15 seconds are deliberately short.
+The 2026-09-16 speed raise widened that inequality rather than threatening
+it: the draught used to land 0.08 nodes/s short of a mob and now lands 0.28
+short.
 A mount breaks that ceiling permanently and by design; **the dismount is
 what pays for it.** Riding buys travel between fights, never an exit from
 one.
@@ -200,14 +205,19 @@ one.
 skills.** `skill_trees.md` §5, ruling 10 (2026-09-16): "skills may explicitly
 **break the base inequalities** (mob 4.4 > player 4.0, stat caps, roots) —
 that is what skills are for… The rule: **the bigger the break, the stronger
-the limit**, usually cooldown or duration." The first such skill is the
-Scout's **Sprint**, **+25 % for 10 s on a 300 s cooldown** (ruling 29,
-`scout.md` §2): 5.0 nodes/s against every aggressive mob's 4.4, for ten
-seconds in every five minutes — the user's words, "a deliberate special, not
-an every-fight button". The exception is deliberately narrow: it covers named,
-time-limited, long-cooldown abilities and nothing permanent or cheap. The
+the limit**, usually cooldown or duration." *(Quoted verbatim; it says 4.4
+because ruling 2 of the same day moved the aggressive band to 4.6, and the
+numbers derived from it below are stated against the shipped 4.6.)* The first
+such skill is the Scout's **Sprint**, **+25 % for 10 s on a 300 s cooldown**
+(ruling 29, `scout.md` §2): 5.0 nodes/s against every aggressive mob's 4.6,
+for ten seconds in every five minutes — the user's words, "a deliberate
+special, not an every-fight button". The margin the skill buys is 0.4 nodes/s
+rather than the 0.6 it would have bought at the old band, which is the ruling
+working as written: the break is real and it is smaller than the cooldown.
+The exception is deliberately narrow: it covers named, time-limited,
+long-cooldown abilities and nothing permanent or cheap. The
 **Swiftness Draught's +8 % for 15 s stays exactly as it is** (4.0 × 1.08 =
-4.32 < 4.4), and a mount keeps paying for its permanent 6–10 nodes/s with the
+4.32 < 4.6), and a mount keeps paying for its permanent 6–10 nodes/s with the
 dismount rule above.
 
 **And it stops being a formality once ranged attackers exist.** Today a

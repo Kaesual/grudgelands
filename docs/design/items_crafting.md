@@ -2500,6 +2500,12 @@ outrun players" pillar (4.0 × 1.08 = 4.32 < 4.4 keeps mobs faster, but
 PvP chases change). Recommendation: **ship at +8%/15 s**, tag as
 balance-watch in the WP7 playtest.
 **Decided as recommended (2026-08-06).**
+**Re-taken 2026-09-16** against the aggressive band's move to **4.6**
+(`combat_stats.md` §3, user ruling 2): 4.0 × 1.08 = **4.32 < 4.6**. The
+draught's margin against a chasing mob widened from 0.08 to 0.28 nodes/s, so
+the decision stands unchanged and the balance-watch tag is if anything less
+urgent. The PvP half of the flag is untouched — a draught still does nothing
+about another player at 4.0.
 
 ### 10.2 2026-08-07 (crafting rework)
 

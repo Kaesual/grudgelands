@@ -34,7 +34,7 @@ local lynx = {
 	pathfinding = 1,
 
 	walk_velocity = 1.5,
-	run_velocity = 4.4, -- aggressive-mob speed (§0)
+	run_velocity = 4.6, -- aggressive-mob speed (§0)
 	jump = true,
 	jump_height = 4,
 	stepheight = 1.1,

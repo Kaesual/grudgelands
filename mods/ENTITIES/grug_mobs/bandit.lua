@@ -1,6 +1,6 @@
 -- Bandit (docs/design/biomes_mobs.md §3.1, settled-biome row: "Bandit (camp
 -- humanoid; camps placed by §1.4, inner+outer, both continents) | defends
--- camp (leashes to camp, group) | 24 h | 4.4 | linen cloth 1/1 x1-2 (inner
+-- camp (leashes to camp, group) | 24 h | 4.6 | linen cloth 1/1 x1-2 (inner
 -- camps) / heavy cloth (outer camps); copper coins").
 --
 -- NO mobs:spawn ROW — that is the design, not an omission: §4's row for this
@@ -65,7 +65,7 @@ function grug_mobs.bandit_def(description)
 		pathfinding = 1,
 
 		walk_velocity = 1,
-		run_velocity = 4.4, -- aggressive-mob speed (§0)
+		run_velocity = 4.6, -- aggressive-mob speed (§0)
 		jump = true,
 		jump_height = 4,
 		stepheight = 1.1,

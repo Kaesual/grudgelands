@@ -1,6 +1,6 @@
 -- Mirefolk (docs/design/biomes_mobs.md §3.1, grug_swamp row: "Mirefolk
 -- (fish-folk humanoid, camps at swamp pools; the 'murloc memory') | swarms
--- (camp group aggro, all rush at once) | 24 h | 4.4 | linen cloth 1/2;
+-- (camp group aggro, all rush at once) | 24 h | 4.6 | linen cloth 1/2;
 -- fish 1/1; shiny scale 1/4").
 --
 -- NO mobs:spawn ROW, same as bandit.lua: §4 puts this family on the camp
@@ -36,7 +36,7 @@ local mirefolk = {
 	pathfinding = 1,
 
 	walk_velocity = 1,
-	run_velocity = 4.4, -- aggressive-mob speed (§0)
+	run_velocity = 4.6, -- aggressive-mob speed (§0)
 	jump = true,
 	jump_height = 4,
 	stepheight = 1.1,

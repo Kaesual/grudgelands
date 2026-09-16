@@ -307,21 +307,37 @@ Normal tier at level L:
   consequence, not the definition. The tier is what owns all four critter
   properties; a mob def never hand-writes any of them (§3.0 for the field
   name and the one engine trap).
-- **Speed**: aggressive mobs `run_velocity` **4.4** (player: 4.0) —
+- **Speed**: aggressive mobs `run_velocity` **4.6** (player: 4.0) —
   evading must never be trivially easy; harmless critters 3.4; heartland
   hunters 4.6, partly with ranged attacks (`dogshoot`). The deep-sea Kraken
   Guard at **8.8** is the one documented exception: it holds the same 1.1×
   margin over the 8 nodes/s improved boat (`boats.md` §5,
   `biomes_mobs.md` §3).
-- **The 4.4 > 4.0 inequality holds except for named, long-cooldown skills**
+  **4.4 → 4.6 decided 2026-09-16** (user ruling 2, "mobs should be a bit
+  faster"), at all **13** definition sites that carried 4.4. The aggressive
+  band and the heartland hunters therefore collapse into one number; the
+  zombie stays at its own 4.2 (a shambling undead is deliberately the slow
+  one) and the critters stay at 3.4. The margin over the player goes from
+  **0.4 to 0.6 nodes/s**, +50 %, and everything built on that margin moves
+  with it: the Swiftness Draught's arithmetic (`items_crafting.md` §10 P4,
+  4.0 × 1.08 = 4.32, now 0.28 below the mob instead of 0.08), the 25 m soft
+  de-aggro and the 45 m / 40 m chase rules of §4, and the Mage's kiting
+  budget — one Frost Nova buys ~21 m of lead, and losing it again takes
+  **~53 s at 4.4 but ~35 s at 4.6** (`classes.md`: "kiting IS the Mage
+  fantasy here"). This is the smallest change that respects the pillar,
+  because 4.6 is a value two families already used.
+- **The 4.6 > 4.0 inequality holds except for named, long-cooldown skills**
   (`skill_trees.md` §5, ruling 10 of 2026-09-16): "skills may explicitly
   **break the base inequalities** (mob 4.4 > player 4.0, stat caps, roots)…
   The rule: **the bigger the break, the stronger the limit**, usually cooldown
-  or duration." The first one is the Scout's **Sprint** — **+25 % for 10 s on
-  a 300 s cooldown** (ruling 29, `scout.md` §2) — which puts a sprinting
-  player at **5.0** against 4.4 for ten seconds in every five minutes. Nothing
-  permanent or cheap is covered: the Swiftness Draught stays at **+8 % for
-  15 s** (4.0 × 1.08 = 4.32 < 4.4, `items_crafting.md` §3.6/§10 P4) and a
+  or duration." *(The ruling is quoted verbatim and says 4.4 because the band
+  moved to 4.6 on the same day, in ruling 2 above; the numbers derived from it
+  below are stated against the shipped 4.6.)* The first one is the Scout's
+  **Sprint** — **+25 % for 10 s on a 300 s cooldown** (ruling 29,
+  `scout.md` §2) — which puts a sprinting player at **5.0** against 4.6 for
+  ten seconds in every five minutes. Nothing permanent or cheap is covered:
+  the Swiftness Draught stays at **+8 % for 15 s**
+  (4.0 × 1.08 = 4.32 < 4.6, `items_crafting.md` §3.6/§10 P4) and a
   mount pays for its permanent 6–10 nodes/s with the damage dismount
   (`mounts.md` §3.1).
 - **View range follows the attack type** (decided 2026-09-16, user ruling 3):
@@ -369,7 +385,8 @@ Normal tier at level L:
 - WP1 retune (**done with WP6**): boar = L1 (HP 20, dmg 2, XP 10),
   zombie = L3 (HP 30, dmg 3, XP 30), **and speed to spec** (boar/zombie
   `run_velocity` 4.4/4.2 — was 3.4/2.6, shipped slow on purpose until
-  the soft de-aggro above landed in the same WP).
+  the soft de-aggro above landed in the same WP; the boar moved on to the
+  band's 4.6 in 2026-09-16's raise, the zombie kept its 4.2).
 - **Level floors** (`_grug_min_level`): a mob whose family belongs to a
   later zone keeps its floor even where the field reads lower — zombie 3,
   wolf/hyena/jungle lynx 10, guard 20. The floor is also the fallback
