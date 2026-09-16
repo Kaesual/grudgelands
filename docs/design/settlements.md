@@ -188,11 +188,18 @@ fixed cells either: like the avenues, it is computed per mapchunk from the
 ground the map actually has, so it follows the terraces instead of cutting
 through them — its walk steps down half a node at a time and its masonry starts
 under each column's own ground, which is what makes a wall on stepped terrain
-have no gap in it. The wall carries no NPCs of its own; a walled capital's
+have no gap in it. Where two sides meet at a corner turret the two runs
+would each compute the walk from their own axis and land at different heights, so
+each side is told where its corners are and both clamp them to the same datum:
+the walk round the circuit has no step at a corner at all, on any world. The wall carries no NPCs of its own; a walled capital's
 garrison is the four gatehouses of its civic core, exactly as an open one's is.
 Where a capital's avenue has to leave the ground — the blend from the flat civic
 core to the terraces can fall faster than a road may descend — the raised
-stretch carries a masonry rail on both kerbs.
+stretch carries a masonry rail on both kerbs. And an avenue ARRIVES AT ITS GATE
+at the height of the ground there, whatever the ground between does: it descends
+inside the envelope as a stair of at most one node a column, cutting into the
+hillside where it has to, so the long-distance road outside and the city street
+inside meet level. A gate you have to jump into is not a gate.
 
 **Between the plots.** Decided 2026-09-15 with the round-3 playtest: a quarter
 of nine buildings in a 512 envelope is empty, so each quarter carries four more
@@ -302,6 +309,27 @@ exists** instead of being shuffled between the quarters by the world seed, and
 the count per district follows the ground: Kezamba's are nine, nine, eleven and
 seven plots, thirty-six in all, with the same sixteen fill dressings every
 capital has.
+
+**Nhal Veyr, the raised necropolis.** Shipped 2026-09-15, the last of the wave-2
+capitals to land and one of the three walled ones. It is the first capital whose FILL is not fields and
+gardens: where Highcourt has crop fields, an orchard belt and a pond, the undead
+capital has grave fields, bone yards, ruin closes and candle courts, and the
+turf between its civic quarters is a burial ground with gravewood stands in it.
+Its civic buildings are dungeon stone under a pale stone roof and everything a
+citizen built is gravewood board; its own two parts, which no other capital has,
+are a walk-in mausoleum on a stepped plinth and a candle court with an altar at
+its centre. Its curtain wall, its four districts, its lot grids and its seeded
+quadrant permutation are the mechanisms Dur Brannoc and Highcourt landed,
+unchanged.
+
+It is also the first capital to place the WAVE-2 activities of the NPC socket
+contract: its residents mourn at grave markers, pray at candles, tend the
+blight that grows over the graves, carve bone, brew wax, mine a quarry face,
+spar in the drill yards and forage the vines on a yard wall. All six of its
+profession vendors stand and trade: the embalmer and the herbalist, which the
+first draft of this section recorded as having no entity, were registered with
+the other five wave-2 kinds (`grug_traders/vendors.lua`, `stock.lua`), and the
+embalmer's shelf is the undead capital's own trade.
 
 Shipped behaviour of that first roster: each start's eleven NPCs are placed once
 its area is prepared at server start, from the sockets alone, and stay for the

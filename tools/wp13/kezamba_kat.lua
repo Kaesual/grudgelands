@@ -1006,14 +1006,30 @@ return function(repo)
 	-- 6. the roster row
 	-- ------------------------------------------------------------------
 
+	-- THE ROW IS AFTER THE CAPITALS IT WAS MERGED AFTER, which is what the
+	-- order actually means, and NOT "last".
+	--
+	-- This used to assert `index == #settlement.roster` with a message naming a
+	-- wave-2 order (`lethariel, nhal_veyr, gor_drazhak, kezamba`) that no roster
+	-- ever had. "Last" is a property of whoever merged most recently, not of this
+	-- capital: Nhal Veyr landed after Kezamba and the coordinator's ruling at
+	-- merge was to APPEND it, because appending is what keeps every earlier
+	-- capital's numeric id, anchor id and frozen digests where they are. What
+	-- this capital can actually claim is that it comes after the two wave-2
+	-- capitals that merged before it, and that is what is asserted. (Lane U,
+	-- 2026-09-16, reported to Lane T as a change to its file.)
 	do
 		local profile
+		local seen_before = 0
 		for index = 1, #settlement.roster do
-			if settlement.roster[index].key == "kezamba" then
+			local key = settlement.roster[index].key
+			if key == "gor_drazhak" or key == "lethariel" then
+				seen_before = seen_before + 1
+			end
+			if key == "kezamba" then
 				profile = settlement.roster[index]
-				assert(index == #settlement.roster,
-					"kezamba roster: the row is not last, and the wave-2 " ..
-					"order is lethariel, nhal_veyr, gor_drazhak, kezamba")
+				assert(seen_before == 2, "kezamba roster: the row stands " ..
+					"before gor_drazhak or lethariel, and it merged after both")
 			end
 		end
 		assert(profile, "kezamba roster: the roster carries no kezamba")

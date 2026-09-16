@@ -51,6 +51,12 @@ rows[#rows + 1] = dofile(repo .. "/tools/wp13/gor_drazhak_kat.lua")(repo)
 -- decked, and the anglers facing open water measured on nine seeds
 -- (`kezamba_kat.lua`).
 rows[#rows + 1] = dofile(repo .. "/tools/wp13/kezamba_kat.lua")(repo)
+-- The undead capital, walled, four districts: Highcourt's acceptance for a
+-- four-district capital -- the quadrant permutation, the 36 lots and 16 fill
+-- lots, the 52 plots, the work sockets and the profession vendors -- in the
+-- undead palette, plus the six WAVE-2 activities of the sockets contract's
+-- section 8.2, which no capital had authored before it.
+rows[#rows + 1] = dofile(repo .. "/tools/wp13/nhal_veyr_kat.lua")(repo)
 -- What a capital's street does where a WP40 route passes over it. It belongs
 -- to neither capital: `wp13/avenue.lua` is the road of both of them, and the
 -- crossing rule is a property of the module, held to synthetic profiles the

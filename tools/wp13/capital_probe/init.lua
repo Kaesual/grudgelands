@@ -167,8 +167,10 @@ if not ground_only then
 end
 
 -- Does this capital have a curtain wall? The composition says so by publishing
--- overlay runs whose ids begin `wall_`; the probe adds two dump regions when it
--- does, and none when it does not.
+-- overlay runs whose ids begin `wall_`; the probe adds THREE dump regions when
+-- it does -- a stretch of curtain, the east gate and the four corners -- and
+-- none when it does not. Gor Drazhak's rampart is a stake palisade rather than
+-- masonry and it publishes the same four run ids, so it gets all three too.
 local wall_lines = nil
 if overlay then
 	for index = 1, #overlay.runs do
@@ -599,35 +601,56 @@ if overlay then
 	for index = 1, #overlay.names do road_names[overlay.names[index]] = true end
 end
 
-local function dump(name, min_x, max_x, min_y, max_y, min_z, max_z, header)
+-- A dump region is a LIST OF BOXES, not one box. Every region but one is a
+-- single box and is normalised into a one-element list at queue time; the
+-- corner region is four boxes, because the four places two wall runs meet are
+-- the four corners of a 512 envelope and one box around all of them is the
+-- envelope. The rows and the digest run over the boxes in order, so a multi-box
+-- region is one file and one expectation.
+--
+-- EACH BOX IS READ THE MOMENT IT IS EMERGED, and that is the whole reason this
+-- is three functions and not one. The header of the dump queue below says it:
+-- the server unloads mapblocks when no player is near, so a box emerged three
+-- boxes ago is not still in memory. The first version of the corner region
+-- emerged all four and then read all four, and read 56 125 `ignore` nodes
+-- against 39 529 real ones -- the three earlier corners had gone. So `open`
+-- writes the header, `read_box` appends one box's rows while that box is fresh,
+-- and `close` digests what was written.
+local function dump_open(name, header)
 	local file = assert(io.open(worldpath .. "/" .. name, "wb"))
 	file:write("# ", header, "\n")
 	file:write("# anchor ", anchor_x, ",", anchor_y, ",", anchor_z, "\n")
-	local written, ignored = 0, 0
-	local road, road_rows = 0, {}
-	for z = min_z, max_z do
-		for y = min_y, max_y do
-			for x = min_x, max_x do
+	return {file = file, written = 0, ignored = 0, road = 0, rows = {}}
+end
+
+local function dump_read_box(state, box)
+	for z = box.min_z, box.max_z do
+		for y = box.min_y, box.max_y do
+			for x = box.min_x, box.max_x do
 				local node = core.get_node({x = x, y = y, z = z})
 				if node.name == "ignore" then
-					ignored = ignored + 1
+					state.ignored = state.ignored + 1
 				elseif node.name ~= "air" then
-					file:write(x - anchor_x, "\t", y - anchor_y, "\t", z - anchor_z,
-						"\t", node.name, "\t", node.param2 or 0, "\n")
-					written = written + 1
+					state.file:write(x - anchor_x, "\t", y - anchor_y, "\t",
+						z - anchor_z, "\t", node.name, "\t",
+						node.param2 or 0, "\n")
+					state.written = state.written + 1
 					if road_names[node.name] then
-						road = road + 1
-						road_rows[#road_rows + 1] = table.concat({x - anchor_x,
-							y - anchor_y, z - anchor_z, node.name,
-							node.param2 or 0}, ":")
+						state.road = state.road + 1
+						state.rows[#state.rows + 1] = table.concat(
+							{x - anchor_x, y - anchor_y, z - anchor_z,
+								node.name, node.param2 or 0}, ":")
 					end
 				end
 			end
 		end
 	end
-	assert(file:close())
-	local digest = core.sha256(table.concat(road_rows, "\n"), false)
-	return written, ignored, road, digest
+end
+
+local function dump_close(state)
+	assert(state.file:close())
+	return state.written, state.ignored, state.road,
+		core.sha256(table.concat(state.rows, "\n"), false)
 end
 
 --
@@ -698,8 +721,8 @@ local run_dumps
 
 local function dump_done()
 	local spec = dump_queue[dump_index]
-	local written, ignored, road, digest = dump(spec.name, spec.min_x, spec.max_x,
-		spec.min_y, spec.max_y, spec.min_z, spec.max_z, spec.header)
+	local written, ignored, road, digest = dump_close(spec.state)
+	spec.state = nil
 	dump_results[#dump_results + 1] = {label = spec.label, written = written,
 		ignored = ignored, road = road,
 		-- Every dump publishes the digest of the OVERLAY cells it read back out
@@ -776,14 +799,35 @@ local function report_complete()
 	core.request_shutdown("WP13 capital probe complete", false, 0.2)
 end
 
+-- Each BOX of a region is emerged in turn and the region is read once they all
+-- are. A region's boxes are emerged one after another rather than together
+-- because `core.emerge_area` takes one rectangle, and because the four corner
+-- boxes of a capital are 500 nodes apart: one rectangle round them is the whole
+-- envelope and this probe would emerge it to read four turrets.
+local dump_box = 0
 run_dumps = function()
-	dump_index = dump_index + 1
 	local spec = dump_queue[dump_index]
-	if not spec then return report_complete() end
-	core.emerge_area({x = spec.min_x, y = spec.min_y, z = spec.min_z},
-		{x = spec.max_x, y = spec.max_y, z = spec.max_z},
+	if spec == nil or dump_box >= #spec.boxes then
+		dump_index = dump_index + 1
+		spec = dump_queue[dump_index]
+		if not spec then return report_complete() end
+		dump_box = 0
+		spec.state = dump_open(spec.name, spec.header)
+	end
+	dump_box = dump_box + 1
+	local last = (dump_box >= #spec.boxes)
+	local box = spec.boxes[dump_box]
+	core.emerge_area({x = box.min_x, y = box.min_y, z = box.min_z},
+		{x = box.max_x, y = box.max_y, z = box.max_z},
 		function(_, _, calls_remaining)
-			if calls_remaining == 0 then core.after(0, dump_done) end
+			if calls_remaining == 0 then
+				core.after(0, function()
+					-- READ IT NOW, while this box is the one that just arrived.
+					dump_read_box(spec.state, box)
+					if last then return dump_done() end
+					return run_dumps()
+				end)
+			end
 		end)
 end
 
@@ -911,6 +955,62 @@ local function finish()
 				max_z = anchor_z + first_fill.z + bounds.max.z + 2}
 		end
 	end
+	-- THE STEEPEST GATE APPROACH, whichever of the four axes it is.
+	--
+	-- The dump above reads the EAST avenue and only the east avenue, which for
+	-- Dur Brannoc and Highcourt is the interesting one and for Nhal Veyr is the
+	-- flat one: the wave-2 review of that capital found its NORTH road standing
+	-- four to seven courses above its ground at the gate point while the east
+	-- road sat on its own ground the whole way, and no north/south/west
+	-- carriageway had ever been read back out of a finished map. So the probe
+	-- picks the axis whose FREE TERRAIN falls furthest over the last thirty
+	-- columns before the gate point and dumps that one too, out to 261 and not
+	-- to 260, because the gate approach is exactly the band the other dump's
+	-- range excludes. On a capital whose four axes are equally calm this is one
+	-- of them chosen arbitrarily and costs a region; on a capital with a steep
+	-- flank it is the region somebody needs.
+	local APPROACH_FROM, APPROACH_TO = 200, 261
+	local axes = {
+		{id = "north", dx = 0, dz = 1}, {id = "south", dx = 0, dz = -1},
+		{id = "east", dx = 1, dz = 0}, {id = "west", dx = -1, dz = 0}}
+	local steepest, steepest_fall
+	for _, axis in ipairs(axes) do
+		local high, low
+		for p = 230, 261 do
+			local y = grug_zones.terrain_height_at(anchor_x + axis.dx * p,
+				anchor_z + axis.dz * p)
+			if high == nil or y > high then high = y end
+			if low == nil or y < low then low = y end
+		end
+		local fall = high - low
+		if steepest_fall == nil or fall > steepest_fall then
+			steepest, steepest_fall = axis, fall
+		end
+	end
+	local app_low, app_high = anchor_y, anchor_y
+	for p = APPROACH_FROM, APPROACH_TO do
+		local y = grug_zones.terrain_height_at(anchor_x + steepest.dx * p,
+			anchor_z + steepest.dz * p)
+		if y < app_low then app_low = y end
+		if y > app_high then app_high = y end
+	end
+	local function approach_span(component)
+		local a = steepest[component] * APPROACH_FROM
+		local b = steepest[component] * APPROACH_TO
+		if a > b then a, b = b, a end
+		if a == 0 and b == 0 then return -12, 12 end
+		return a, b
+	end
+	local app_min_x, app_max_x = approach_span("dx")
+	local app_min_z, app_max_z = approach_span("dz")
+	dump_queue[#dump_queue + 1] = {name = (KEY .. "-approach.tsv"),
+		label = "approach",
+		header = profile.label .. " " .. steepest.id .. " gate approach as " ..
+			"built (the steepest of the four axes, free terrain falling " ..
+			steepest_fall .. " nodes over 230..261), anchor-relative",
+		min_x = anchor_x + app_min_x, max_x = anchor_x + app_max_x,
+		min_y = app_low - 8, max_y = app_high + 8,
+		min_z = anchor_z + app_min_z, max_z = anchor_z + app_max_z}
 	-- A WALLED capital publishes two more regions: a stretch of curtain that
 	-- crosses a terrace step with a turret on it, and its east gate. Neither
 	-- exists for an open capital, so both are added only when the composition
@@ -941,6 +1041,62 @@ local function finish()
 			min_x = anchor_x + WALL_AT - 24, max_x = anchor_x + WALL_AT + 10,
 			min_y = gate_low - 6, max_y = gate_high + 26,
 			min_z = anchor_z - 20, max_z = anchor_z + 20}
+	end
+	-- THE FOUR CORNERS OF THE CURTAIN, which is where two wall runs meet and
+	-- until the review of 2026-09-16 nothing in the tree could look.
+	--
+	-- `wall.lua` section 1b reconciles the two decks at a shared corner, and
+	-- every artefact that could have gated it is blind: the rampart region is
+	-- the east curtain either side of the anchor (z -80..80), the gate region is
+	-- the gate (z -20..20), and a corner is at +-256. So a regression in the seam
+	-- -- `plan.corners` dropped from a capital, say -- would leave every
+	-- committed digest and every KAT green. This region is the gate that closes
+	-- that: four boxes, one per corner, in one file with one digest.
+	--
+	-- +-12 of each corner column covers, on every one of the four: the z-run's
+	-- corner TURRET (centred on +-256, eleven columns along and seven across),
+	-- the x-run's last columns up to its own end at +-252 with its own seven
+	-- lanes, and a margin either side. It does not reach the nearest ordinary
+	-- turret at +-192, so what is in it is corner and nothing else.
+	if wall_lines then
+		local CORNER, CORNER_PAD = WALL_AT, 12
+		local corner_boxes = {}
+		for _, sx in ipairs({-1, 1}) do
+			for _, sz in ipairs({-1, 1}) do
+				local cx, cz = sx * CORNER, sz * CORNER
+				local low, high = anchor_y, anchor_y
+				for x = cx - CORNER_PAD, cx + CORNER_PAD, 2 do
+					for z = cz - CORNER_PAD, cz + CORNER_PAD, 2 do
+						local y = grug_zones.terrain_height_at(anchor_x + x,
+							anchor_z + z)
+						if y < low then low = y end
+						if y > high then high = y end
+					end
+				end
+				corner_boxes[#corner_boxes + 1] = {
+					min_x = anchor_x + cx - CORNER_PAD,
+					max_x = anchor_x + cx + CORNER_PAD,
+					min_y = low - 6, max_y = high + 24,
+					min_z = anchor_z + cz - CORNER_PAD,
+					max_z = anchor_z + cz + CORNER_PAD}
+			end
+		end
+		dump_queue[#dump_queue + 1] = {name = (KEY .. "-corner.tsv"),
+			label = "corner",
+			header = profile.label .. " curtain corners as built -- all four, " ..
+				"+-" .. CORNER_PAD .. " of each corner column, anchor-relative",
+			boxes = corner_boxes}
+	end
+	-- Every region above names ONE box in the fields it always named; the corner
+	-- region names four. Normalising here keeps every author of a region free to
+	-- write the simple form.
+	for index = 1, #dump_queue do
+		local spec = dump_queue[index]
+		if spec.boxes == nil then
+			spec.boxes = {{min_x = spec.min_x, max_x = spec.max_x,
+				min_y = spec.min_y, max_y = spec.max_y,
+				min_z = spec.min_z, max_z = spec.max_z}}
+		end
 	end
 	run_dumps()
 end

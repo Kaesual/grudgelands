@@ -1,0 +1,43 @@
+105348,105349c105348,105349
+< wall_south	252	107	-258	default:stone_block	0
+< wall_south	252	108	-258	grug_decor:castle_stonewall	0
+---
+> wall_south	252	107	-258	grug_decor:castle_stonewall	0
+> wall_south	252	108	-258	default:stone_block	0
+105354c105354,105355
+< wall_south	252	113	-258	stairs:slab_stone_block	0
+---
+> wall_south	252	113	-258	grug_decor:castle_stonewall	0
+> wall_south	252	114	-258	stairs:slab_stone_block	0
+105363,105364c105364,105365
+< wall_south	252	110	-257	grug_decor:castle_pavement_brick	0
+< wall_south	252	111	-257	air	0
+---
+> wall_south	252	110	-257	grug_decor:castle_rubble	0
+> wall_south	252	111	-257	grug_decor:castle_stonewall_stair	1
+105366a105368
+> wall_south	252	114	-257	air	0
+105375,105376c105377,105378
+< wall_south	252	110	-256	grug_decor:castle_pavement_brick	0
+< wall_south	252	111	-256	air	0
+---
+> wall_south	252	110	-256	grug_decor:castle_rubble	0
+> wall_south	252	111	-256	grug_decor:castle_stonewall_stair	1
+105378a105381
+> wall_south	252	114	-256	air	0
+105387,105388c105390,105391
+< wall_south	252	110	-255	grug_decor:castle_pavement_brick	0
+< wall_south	252	111	-255	air	0
+---
+> wall_south	252	110	-255	grug_decor:castle_rubble	0
+> wall_south	252	111	-255	grug_decor:castle_stonewall_stair	1
+105390a105394
+> wall_south	252	114	-255	air	0
+105396,105397c105400,105401
+< wall_south	252	107	-254	default:stone_block	0
+< wall_south	252	108	-254	grug_decor:castle_stonewall	0
+---
+> wall_south	252	107	-254	grug_decor:castle_stonewall	0
+> wall_south	252	108	-254	default:stone_block	0
+105400a105405
+> wall_south	252	112	-254	grug_decor:castle_stonewall	0

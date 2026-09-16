@@ -16,6 +16,30 @@ a time, every engine and measurement run under `nice -n 19`.
 lane's. `--strict` adds the capital-terrain questions and exits 1 on five of the
 nine, all of them Nhal Veyr's north gate, which is lane U's (research note §5).
 
+> **DRIFT NOTE, 2026-09-16 (lane U, `wp13-w2-nhal-veyr`).** The nine
+> `sweep/after-*.tsv` files, `sweep/summary.txt` and this directory's
+> `files.sha256` **no longer reproduce**, and this note is deliberately left
+> instead of re-taking them: they are lane R's frozen measurement and lane R
+> owns re-freezing them. The delta is exactly two things, on every seed:
+>
+> * **six new `overlay <seed> <zone> <key> own|contract` rows**, one per capital.
+>   `route_gates.lua` built every capital's four avenues with `avenue.run`
+>   directly, which measures the CONTRACT road and not the one that capital's own
+>   `M.overlay_run` builds — and question 4 measures exactly the quantity a
+>   capital's gate ramp changes. It now dispatches through the capital's own
+>   overlay where the capital's WP13 module exists, and the new row says which of
+>   the two each capital got.
+> * **Nhal Veyr's north gate row** goes from `… 94 98 4` plus two `FAULT` rows to
+>   `… 94 94 0` with no faults, because that gate was fixed. Every row of
+>   Highcourt, Dur Brannoc, Lethariel, Gor Drazhak and Kezamba is unchanged —
+>   `avenue.lua` emits no `air` cells at all, so the read-back's new air filter
+>   is a no-op for every road but a gate ramp's cutting.
+>
+> Lane R's own KAT (`kat/route_gates_kat-*.txt`) is unaffected and still
+> reproduces byte for byte under both interpreters. After the whole wave-2 merge
+> the sweep must be re-taken anyway: Lethariel, Gor Drazhak and Kezamba flip from
+> `contract` to `own` dispatch the moment their modules are on `main`.
+
 ## What is here
 
 | path | what |

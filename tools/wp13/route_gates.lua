@@ -125,6 +125,8 @@ end
 -- The contract avenue: the anchor's own centre line, half-width 2, from the
 -- core edge at 48 out to 261.
 local AVENUE_HALF, AVENUE_IN, AVENUE_OUT = 2, 48, 261
+assert(AVENUE_HALF * 2 + 1 == avenue.WIDTH,
+	"the contract carriageway is no longer the road module's own width")
 
 -- ---------------------------------------------------------------------------
 -- The gate points, derived the way the contract defines them
@@ -489,30 +491,82 @@ for _, capital in ipairs(capitals) do
 	-- 4 and 5: the four avenues, built. The contract avenue is the anchor's own
 	-- centre line, half-width 2, running from the core edge at 48 out to 261 --
 	-- five nodes past the envelope edge, because the curtain's gate tunnel runs
-	-- through the whole seven-node thickness (`wp13/highcourt.lua`). Highcourt
-	-- and Dur Brannoc author exactly that; the four wave-2 capitals are being
-	-- built to the same standard, so the run is taken from the contract rather
-	-- than from six blueprints, four of which do not exist yet.
+	-- through the whole seven-node thickness (`wp13/highcourt.lua`).
+	--
+	-- THROUGH THE CAPITAL'S OWN OVERLAY DISPATCH WHERE IT HAS ONE, and through
+	-- the contract run where it does not. The first version of this section
+	-- called `avenue.run` for every capital, which is right for a capital that
+	-- is not built yet and WRONG for one that is: a capital source hands the
+	-- seam `M.overlay_run`, and Nhal Veyr's wraps the road module to bring its
+	-- north avenue down to the free terrain at the gate point -- exactly the
+	-- quantity question 4 measures. Measuring the contract run instead reports a
+	-- four-node gate step on a capital whose built road has none.
+	--
+	-- A capital's WP13 module key is the part of its zone id after the region
+	-- prefix, and a capital not yet written has no such file; the fallback is
+	-- the contract run, unchanged. The spec is handed over in ANCHOR-RELATIVE
+	-- coordinates because that is what the seam hands the overlay
+	-- (`r7_settlement.lua`'s `local_surface`) and what a capital's own run table
+	-- is authored in -- a world-coordinate spec would make a run's own id name a
+	-- column two thousand nodes from the one it means.
 	local palette = palettes.new(capital.zone.race_region)
+	local module_key = capital.key:match("^[a-z]+_(.+)$")
+	local capital_module
+	if module_key then
+		local path = wp13 .. "/" .. module_key .. ".lua"
+		local probe = io.open(path, "r")
+		if probe then
+			probe:close()
+			local loaded = dofile(path)(wp13)
+			if type(loaded) == "table" and type(loaded.overlay_run) == "function" then
+				capital_module = loaded
+			end
+		end
+	end
+	emit("overlay", seed, capital.key, tostring(module_key),
+		capital_module and "own" or "contract")
+	local function local_walkable(x, z)
+		return walkable(capital.x + x, capital.z + z)
+	end
+	local function local_deck(x, z) return deck(capital.x + x, capital.z + z) end
 	for _, side in ipairs(SIDES) do
 		local axis = side.dx ~= 0 and "x" or "z"
 		local sign = side.dx ~= 0 and side.dx or side.dz
 		local along = axis == "x" and capital.x or capital.z
 		local across = axis == "x" and capital.z or capital.x
-		local from = along + (sign < 0 and -AVENUE_OUT or AVENUE_IN)
-		local to = along + (sign < 0 and -AVENUE_IN or AVENUE_OUT)
-		local piece = avenue.run(palette, {id = "avenue_" .. side.id, axis = axis,
-			at = across, from = from, to = to, lamp_phase = from,
-			overhead = deck}, walkable)
+		local local_from = sign < 0 and -AVENUE_OUT or AVENUE_IN
+		local local_to = sign < 0 and -AVENUE_IN or AVENUE_OUT
+		local from, to = along + local_from, along + local_to
+		-- The carriageway fields are spelled out, not left to the road module's
+		-- defaults, because a capital's own dispatch reads them: Dur Brannoc's
+		-- rail refuses a spec with no odd carriageway in it, which is the right
+		-- answer to a caller that forgot.
+		local spec = {id = "avenue_" .. side.id, axis = axis, at = 0,
+			from = local_from, to = local_to, lamp_phase = local_from,
+			width = avenue.WIDTH, lamp_spacing = avenue.LAMP_SPACING,
+			reach = avenue.REACH, overhead = local_deck}
+		local piece
+		if capital_module then
+			piece = capital_module.overlay_run(avenue, palette, spec,
+				local_walkable)
+		else
+			piece = avenue.run(palette, spec, local_walkable)
+		end
 
 		-- The built road, read back off its own cells: the top cell of the
-		-- CENTRE lane at every position along the run.
+		-- CENTRE lane at every position along the run, carried back into world
+		-- coordinates so the rest of this section reads as it always did.
 		local centre = {}
 		for _, cell in ipairs(piece.cells) do
-			local lane = axis == "x" and (cell.z - piece.at) or (cell.x - piece.at)
-			if lane == 0 then
-				local p = axis == "x" and cell.x or cell.z
-				if centre[p] == nil or cell.y > centre[p] then centre[p] = cell.y end
+			if cell.name ~= "air" then
+				local lane = axis == "x" and (cell.z - piece.at) or
+					(cell.x - piece.at)
+				if lane == 0 then
+					local p = along + (axis == "x" and cell.x or cell.z)
+					if centre[p] == nil or cell.y > centre[p] then
+						centre[p] = cell.y
+					end
+				end
 			end
 		end
 
