@@ -343,7 +343,7 @@ street_capital	nhal_veyr	16	36	4	lane_northeast_spine/lane_northwest_cross/1,lan
 street_inventory	167ce4afef4c3593a62a6787d6499629bb6687aabf252bd034d8118d80e1e4c3
 street_plateau_window	42	-2	2	18
 street_pier_rhythm	8	8	246	60
-street_verge_clearance	80	80	3	26
+street_verge_clearance	80	80	3	26	96
 street_cases	11	width	5	min_clear	3	lift	1	pier	8
 route_gate	station:elandor_dur_brannoc:gate_west	-2056	-1500	west
 route_gate	station:elandor_dur_brannoc:gate_east	-1544	-1500	east

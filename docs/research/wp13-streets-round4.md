@@ -283,9 +283,15 @@ identical, one retry on the second pass (`corner_held` 144 against 120), no
 emerge trouble. Its `rampart`, `corner` and `gate` digests match the committed
 values on both passes.
 
-So the brief's gate is met: **six consecutive passes, `<label>_ignored = 0` on
-every region of every one of them**, and the `run_capital.sh` "re-take the pass"
-branch did not fire once — on a workstation that was NOT idle.
+So the brief's gate is met, and the campaign as a whole says it more strongly:
+over **21 `run_capital.sh full` passes and 171 region reads**, `_ignored` is
+**0 every single time** and `_emerge_trouble` is 0 every single time; the
+`run_capital.sh` "re-take the pass" branch did not fire once — on a workstation
+that was NOT idle. Three reads of the 171 needed one retry each
+(`engine/region-reads.txt`): Highcourt's and Nhal Veyr's `corner`, and one of
+Gor Drazhak's `rampart`. So the hold is not sufficient on its own and the
+re-read is not decoration; each of the two fires on its own cases and neither
+has ever needed a third attempt.
 
 ---
 
@@ -339,11 +345,34 @@ has. This lane did not change patrol routes, guard behaviour or the wall walk;
 the one thing it changed that a guard can stand on is the verge furniture, and
 removing a rail from the middle of a street can only help a stuck guard.
 
-This lane did not re-measure it: the workstation carried four other round-4
-lanes and two to four other headless servers throughout, and a `find_path`
-count in a quiet window measured on a busy host says nothing wave 3's own
-record does not already say with the same caveat. **It stays open, with wave
-3's numbers and wave 3's suspect.**
+It was re-measured once on this branch —
+`PORT=31030 tools/wp13/run_npc_load.sh <out> 15912857179583385436 highcourt`,
+seven 30-second windows, the six starts and then Highcourt:
+
+| subject | step mean | `find_path` in 30 s | per minute | walker share | `min_walker_ring` |
+| --- | --- | --- | --- | --- | --- |
+| all six starts | 90.26–90.29 ms | **0** | 0.00 | 16.7 % | 3 |
+| highcourt | 90.56 ms | **72** | 141.97 | 15.0 % | **1** |
+
+Two things and one caveat.
+
+* **`min_walker_ring = 1` reproduces on the branch**, which is what §5.1's
+  offline replay predicted for exactly one socket — the probe fails the run on
+  it ("highcourt handed a walker a ring of 1: it can never move"), which is the
+  probe doing its job and the only reason that run reports `errors=1`.
+* **`find_path` is still non-zero at a capital and still zero at every start.**
+  It is 141.97 a minute here against wave 3's 41–59; the run also reported
+  `marked=175 roster=181 reason=stalled waited_s=78`, so six NPCs had not even
+  been placed when the window opened.
+* **The caveat is the host.** This measurement was taken while the workstation
+  carried four other round-4 lanes, two to four other headless servers and the
+  user's own GUI client. A stuck-rescue count is a function of how often a mob
+  fails to make progress, which contention produces directly, so the number is
+  an UPPER bound and is not comparable with wave 3's. What it does say is the
+  qualitative thing wave 3 said: a start has none and a capital has some.
+
+**It stays open, with wave 3's suspect** (`patrol.lua`'s stuck rescue, the only
+caller a settlement has) **and a clean-host measurement still owed.**
 
 ---
 
@@ -385,11 +414,13 @@ the city, and those three regions are the curtain wall at ±256 — and it is
 measured rather than assumed.
 
 Every one of the nine was re-frozen from a clean pass of this branch
-(`errors=0 complete=1`, `<label>_ignored=0` on every region), and a SECOND pass
-of each capital on the gate seed afterwards reported the re-frozen value
-matching, which is this package's determinism check on the engine side. For
-Highcourt on 8675309 and Nhal Veyr on 531802985935182545 there are four and two
-passes respectively and all of them agree (§4.3).
+(`errors=0 complete=1`, `<label>_ignored=0` on every region), and **a second
+pass of all six capitals on the gate seed afterwards passed the gate outright**
+— `rc=0`, "avenue overlay digest matches the committed value", and the rampart,
+corner and gate rows matching beside it. That is this package's determinism
+check on the engine side. For Highcourt on 8675309 and Nhal Veyr on
+531802985935182545 there are four and two passes respectively and all of them
+agree (§4.3).
 
 ---
 

@@ -1,0 +1,6 @@
+exit=0 errors=0 complete=1 log=/tmp/grug-w4-G/eng/highcourt-full-531802985935182545-verify/server.log
+avenue overlay digest matches the committed value
+rampart overlay digest matches the committed value
+corner overlay digest matches the committed value
+gate overlay digest matches the committed value
+WP13 capital pass PASS: highcourt full /tmp/grug-w4-G/eng/highcourt-full-531802985935182545-verify

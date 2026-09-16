@@ -26,7 +26,7 @@ own seed `15912857179583385436`:
 | `measurements/after-*.tsv`, `*.log` | the same nine seeds on this branch | `luajit tools/wp13/street_geometry.lua . <seed> out.tsv` |
 | `walkability/`, `walkability.txt` | **the headline number**: neighbouring road columns more than a node apart, over the whole capital as the seam writes it — six capitals × nine seeds, both trees | `luajit tools/wp13/walkability.lua . <seed>` |
 | `walker_ring.lua`, `walker_ring.txt` | goal D: the offline replay of the 80/20 split and `bounded_spots`, which names the composition behind `min_walker_ring=1` in five of the six capitals | `luajit tools/wp13/evidence/20260916-streets-r4/walker_ring.lua .` |
-| `kat/*-luajit.txt`, `kat/*-puc51.txt` | every WP13 KAT this lane touches, under both interpreters; each pair is byte-identical | `luajit -e 'io.write(dofile("tools/wp13/<kat>.lua")("."))'` and the same with `tools/bin/lua51` |
+| `kat/*-luajit.txt`, `kat/*-puc51.txt` | every WP13 KAT this lane touches, under both interpreters; every pair is byte-identical except `decoration_anchor_kat`, which is not byte-identical on `main` either (see `kat/pairs.txt`) | `luajit -e 'io.write(dofile("tools/wp13/<kat>.lua")("."))'` and the same with `tools/bin/lua51` |
 | `micro-luajit.tsv`, `micro-puc51.tsv` | the whole WP13 fixture set in one process under each interpreter; the two are byte-identical | `luajit tools/wp13/final_micro.lua . <out> luajit` and `tools/bin/lua51 tools/wp13/final_micro.lua . <out> puc51` |
 | `mutation.py`, `mutation.txt` | **this round's KAT proof**: four mutations, one per half of the two rules, each red on the section that owns it | `python3 tools/wp13/evidence/20260916-streets-r4/mutation.py .` |
 | `mutation-wave3.txt`, `mutation-review-wave3.txt` | wave 3's eleven mutations, re-run on this tree, all still red | `python3 tools/wp13/evidence/20260916-streets/mutation.py .` and `mutation-review.py` |
@@ -36,7 +36,20 @@ own seed `15912857179583385436`:
 | `refreeze.sh` | what re-froze the built-geometry digests, from those passes and from nothing else | `bash .../refreeze.sh . <engine root>` |
 | `street_dump.lua`, `renders.sh`, `renders/` | the three places playtest 6 named, before and after, on the user's own seed | `bash .../renders.sh /path/to/main` |
 | `static.sh`, `static.txt` | parser, SETGLOBAL, the five plain-5.1 sweeps and the fresh-server audit | `bash tools/wp13/evidence/20260916-streets-r4/static.sh` |
-| `identity.txt` | the six start identities against `main`'s own, and every settlement identity root | see the record's §6 |
+| `identity.txt`, `identity.sh` | the files this branch changed, the six start identities against `main`'s own, the re-frozen digests and every settlement identity the integration fixture prints | `bash .../identity.sh . /path/to/main` |
+| `refreeze.txt` | `9 digests moved, 19 confirmed unchanged` — what the re-freeze did and from which pass | `bash .../refreeze.sh . <engine root>` |
+| `engine/region-reads.txt` | every region of every engine pass: cells, `ignored`, `held`, `retries`, `emerge_trouble`. **171 reads, `ignored = 0` in all of them; 3 needed one retry** | derived from the passes' `probe.txt` |
+| `engine/campaign.log` | the campaign as it ran, one line per pass | — |
+| `capital-timing.txt` | the offline build time and cell count of all six capitals, against the contract's 400 000-cell budget | `luajit tools/wp13/capital_timing.lua . <key> luajit` |
+| `kat/pairs.txt` | which KAT pairs are byte-identical, and the one that is not on `main` either | `cmp` each pair — see the file's own header |
+| `files.sha256` | the sha256 of every source this lane changed, at the head of the branch | `sha256sum <the files in the record's §10>` |
+| `r7-unit.txt` | `bash tools/wp40/r7/run.sh unit`, PASS | that command |
+
+**Two engine directories are copies, not extra passes**: `highcourt-full-8675309`
+and `nhal_veyr-full-531802985935182545` are the `-a` pass of each staged under
+the plain name, because `refreeze.sh` keys on `<key>-full-<seed>`. The `-verify`
+directories are the pass taken AFTER the re-freeze, and each of them passed the
+gate outright (`rc=0`, "matches the committed value").
 
 ## The headline numbers
 
