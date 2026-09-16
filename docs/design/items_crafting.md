@@ -2377,7 +2377,12 @@ are deleted; no Dowsing Rod or Gem Detector is sold or crafted.
   target remains approximately 3,000 combat events per ordinary item and
   6,000 for a refined item; exact prices participate in the reliable-net-
   income measurement rather than using the retired flat formula.
-- **Respec:** repeatable at the class trainer and rising with level.
+- **Respec:** repeatable **in the talent UI, with no class trainer and no
+  NPC** (ruling 4 of 2026-09-16, `skill_trees.md` §5). It costs **five
+  minutes of measured reliable net solo income** at the character's bracket,
+  rounded by §8.1's money axis and `economy.md` §4.1, and **the first respec
+  of a character is free** (ruling 22). Retires "repeatable at the class
+  trainer and rising with level".
 - Job supplies, vendor consumables and profession-helper fees provide the
   ordinary steady drain.
 
@@ -2422,8 +2427,19 @@ are derived only after those rates are measured; the retired fixed
 
 ## 9. Bow and arrow item foundation (inactive Phase-2 substrate)
 
-Item path (source: `mcl_bows`, code LGPL 3.0 ✓, media CC BY-SA 4.0 +
-2 attribution sounds; port ≈ 1000 lines incl. `vl_projectile`, §1.2):
+**Its consumer exists on paper since 2026-09-16**: the Scout's base kit opens
+with a bow shot ([scout.md](scout.md) §2, rulings 7 and 12 of
+[skill_trees.md](skill_trees.md) §5) and the arrow is **ballistic** — gravity
+and a draw-time impulse, while Fireball stays straight (`combat_stats.md`
+§2, `classes.md` §2b). Nothing below changes for it, and nothing below is
+built: WP-Scout's bow lane is the package that would build it.
+
+Item path (source: `mcl_bows`, code **LGPL 3.0 or GPL 3.0** — VoxeLibre
+dual-licences every mod, `LEGAL.md:25-28`, and both are on `AGENTS.md`'s
+permitted list ✓; media: **textures CC BY-SA 4.0**, sounds **two CC0** plus
+**one CC BY 3.0** (`mcl_bows_hit_player.ogg`, tim.kahn) — so exactly **one**
+attribution-requiring sound, not two; port ≈ 1000 lines incl.
+`vl_projectile`, §1.2):
 
 - **Bow family on the weapon curve**: full-charge damage = the 1H curve
   (8/13/19/24 at ilvl 12/27/42/57) at 25 m range, charge 0.5 s (mcl

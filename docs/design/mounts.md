@@ -162,7 +162,7 @@ arbitrary fixed-price wall.
 - **Implementation note (engine fact, recorded 2026-08-13):** mobs_redo
   punches *what the player is attached to* —
   `local target = self.attack:get_attach() or self.attack`
-  (`mods/ENTITIES/mobs/api.lua:2525-2526`) — so a mob's melee swing lands on
+  (`mods/ENTITIES/mobs/api.lua:2531`) — so a mob's melee swing lands on
   the mount entity and the rider loses no HP from it. That swallowed swing is
   what has to trigger the dismount; damage aimed at the player directly (our
   own PvP pipeline, projectiles, drowning, environment) reaches the rider
@@ -191,6 +191,20 @@ best sprint keeps mobs faster, and the 15 seconds are deliberately short.
 A mount breaks that ceiling permanently and by design; **the dismount is
 what pays for it.** Riding buys travel between fights, never an exit from
 one.
+
+**The pillar holds with one decided class of exception: named, long-cooldown
+skills.** `skill_trees.md` §5, ruling 10 (2026-09-16): "skills may explicitly
+**break the base inequalities** (mob 4.4 > player 4.0, stat caps, roots) —
+that is what skills are for… The rule: **the bigger the break, the stronger
+the limit**, usually cooldown or duration." The first such skill is the
+Scout's **Sprint**, **+25 % for 10 s on a 300 s cooldown** (ruling 29,
+`scout.md` §2): 5.0 nodes/s against every aggressive mob's 4.4, for ten
+seconds in every five minutes — the user's words, "a deliberate special, not
+an every-fight button". The exception is deliberately narrow: it covers named,
+time-limited, long-cooldown abilities and nothing permanent or cheap. The
+**Swiftness Draught's +8 % for 15 s stays exactly as it is** (4.0 × 1.08 =
+4.32 < 4.4), and a mount keeps paying for its permanent 6–10 nodes/s with the
+dismount rule above.
 
 **And it stops being a formality once ranged attackers exist.** Today a
 rider mostly has to walk into a melee swing to lose the mount, but

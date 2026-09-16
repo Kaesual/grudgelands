@@ -8,6 +8,14 @@ brief for WP13, WP33 or WP24**: their briefs would have to invent WP40
 outputs (final anchors, measured capacity, audit results) that do not exist
 yet. Nothing here changes a WP status or claims implementation.
 
+> **Status pointer, 2026-09-16 (not a rewrite).** The **class trainers** in
+> §2.1's "Civic services" row are **retired**: user ruling 4 of 2026-09-16
+> (`docs/design/skill_trees.md` §5) removed the class trainer from the game —
+> new skills come only from the talent tree, and the respec is bought in the
+> talent UI with no NPC at all. The **job** trainers of the same row, including
+> the four riding steps of D20, are unaffected. Everything else below stands as
+> the dated planning record of 2026-08-13.
+
 Companion documents from the same pass:
 
 - [`wp37-task-card.md`](wp37-task-card.md) — executable WP37 card;

@@ -461,7 +461,7 @@ moves into the talent tree.
 | Smite | 4 | 2 s | Current-crosshair 20 m hit with no enemy-memory fallback: 4 + spell power damage. Solo viability. |
 | Flash Heal | 8 | 4 s | Heals 8 + 2×spell power. Targets the pointed ally (15 m), otherwise self. Threat: 0.5× effective healing (WP6). |
 | Power Word: Shield | 8 | 10 s | Absorb shield on ally/self: soaks 8 + 2×spell power damage, lasts 15 s or until consumed. |
-| Renew *(talent)* | 6 | 8 s | Heal over time: 3 + spell power every 3 s for 12 s. Unlocked via the Holy tree (WP11). |
+| Renew *(talent)* | 6 | 8 s | Heal over time: 3 + spell power every 3 s for 12 s. Unlocked via the Mercy tree (WP11). |
 
 ## 6. Explicitly deferred
 
@@ -476,9 +476,11 @@ moves into the talent tree.
   written for is replaced by the **Scout** ([scout.md](scout.md)), and the
   user's ruling of 2026-09-16 is explicit that the Scout has **no poison**:
   "no new combat mechanic". Its rogue-like melee tree is built from existing
-  stats only — timed dodge windows, crit chance, slows, escape moves and
-  stealth. There is therefore **no planned owner for a player poison stat at
-  all**, and the paragraph below stands unchanged as the description of what
+  stats only — timed dodge windows, crit chance, slows and escape moves;
+  **stealth is not in version 1 either** (ruling 12, `skill_trees.md` §2.8:
+  the melee capstone is a timed dodge effect, and the whole stealth design is
+  kept in [scout.md](scout.md) §8). There is therefore **no planned owner for
+  a player poison stat at all**, and the paragraph below stands unchanged as the description of what
   exists today. The retired text: *"Poison → arrives with the Rogue in Phase
   2 (noted 2026-08-08). Poison is intended as the Rogue's signature damage
   type — the damage-over-time channel §2's pipeline does not have yet — and
@@ -491,6 +493,6 @@ moves into the talent tree.
   drop. What exists today is poison as a **mob** effect only (the
   serpent's flat damage-over-time on hit, `biomes_mobs.md` §3.1, and the
   Alchemist's Antivenom that cures it, `items_crafting.md` §3.6); that
-  is a mob verb, not a player stat, and the Rogue work is what turns it
-  into one.
+  is a mob verb, not a player stat, and after this supersession there is
+  no work package left that would turn it into one.
 - PvP tuning of roots/taunt (diminishing returns etc.) → balancing pass.
