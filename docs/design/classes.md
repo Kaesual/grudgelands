@@ -10,6 +10,13 @@ kits in WP11.
 Attribute/derived-stat formulas: `combat_stats.md` §1/§2; threat values:
 `combat_stats.md` §4.
 
+**The WP11 side of these kits is proposed, not decided.**
+[skill_trees.md](skill_trees.md) (PROPOSAL 2026-09-16) carries two trees per
+class derived from the kits below, the 30 talents that improve their numbers,
+the capstones that add new main skills — Renew among them, as §5 already
+decided — and the open decisions the user still has to answer. Nothing in
+this file changes until those are answered.
+
 Core principles:
 
 - **Instant abilities + cooldowns, no cast times in the MVP.** Cast bars
