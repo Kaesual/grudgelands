@@ -771,12 +771,18 @@ Details + line numbers in [docs/research/](docs/research/).
   (`core.register_mapgen_script`), a pass that needs `grug_core`, mod storage
   or the settlement/socket registries cannot go there at all and stays in
   `register_on_generated` in the main env. Constants cross via `core.ipc_set`;
-  never copy them.
+  never copy them. **One lesson from the retired ocean mask is worth keeping
+  for the next VM pass:** a pass that writes near the top of a mapchunk must
+  reach **`emax.y`**, not `maxp.y`, because the engine places decorations up to
+  the emerged top edge (`mg_decoration.cpp:424`) — clamping to `maxp.y` is what
+  once left floating tree crowns over the water.
   **Current zone/level queries** (published by `grug_core/zone_authority.lua`,
   which is also the sole publisher of the `grug_zones` global — it refuses to
-  install if something else already published it): `grug_core.territory_at`,
-  `zone_at`, `mob_level_at`, `guard_level_at`, `open_sea_at`,
-  `surface_level_at`, `start_position`, `start_anchor`, `capital_anchor`,
+  install if something else already published it) — this is the whole
+  `grug_core` surface, not a sample: `territory_at`, `zone_at`, `mob_level_at`,
+  `guard_level_at`, `open_sea_at`, `surface_level_at`, `start_position`,
+  `start_anchor`, `start_identities`, `capital_anchor`, `outpost_at`,
+  `outpost_patrol_target`, `outpost_position`, `rare_route` and
   `world_protected_for_faction`. `grug_core.difficulty_at` is **gone** — the
   difficulty field survives only inside WP40's own compatibility layer.
   Gameplay consumers read the richer surface off `grug_zones` directly
