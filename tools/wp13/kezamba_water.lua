@@ -194,20 +194,195 @@ end
 -- not move in either direction here, and section 7 of
 -- `docs/research/wp13-kezamba.md` carries it as an open point.
 --
+-- AND THE APRON'S OWN TWO NUMBERS, which exist because the independent review
+-- of 2026-09-16 found that the safety ARGUMENT for the apron was false while
+-- the apron itself was fine. `wp40/height.lua` claims both of its cones are
+-- `step`-Lipschitz; the lake cone's first two formulations were not (worst own
+-- 4-neighbour step 54 nodes, from a pruning cut-off and the reach's taper
+-- gradient), and up to a 6-node face leaked into the shipped field where the
+-- ground had had none. A claim of that kind must be gated and not asserted, so:
+--
+--   * `cone_step`  -- the lake cone's OWN worst 4-neighbour step, computed here
+--                     from the authored geometry alone, over the whole window
+--                     the cone can reach. The ceiling is the terrace step, and
+--                     it is not a tuning knob: it is the theorem.
+--   * `apron_faces` -- over-step falls in the SHIPPED field where the apron is
+--                     the binding constraint on the HIGHER column, which is the
+--                     single-tree form of "a face the apron made or deepened".
+--                     The ceiling is the coordinator's, from the fix round.
+--   * `apron_below` -- columns where the shipped height is BELOW the apron
+--                     floor this file computes, which cannot happen if this
+--                     file's copy of the cone matches `height.lua`'s. It is the
+--                     cross-check that the copy has not drifted, and its
+--                     ceiling is zero.
+--
+-- THE COPY IS A COPY, and that is the price of measuring a private function
+-- from outside. It reads the same `source.hydrology` rows and the same three
+-- constants; `apron_below` is what turns a drift into a red gate rather than a
+-- silent zero.
+--
 -- THE CEILINGS ARE MEASUREMENTS. `PERIMETER_CEILING` is the race's own terrace
 -- step, which is the user's ruling turned into a number and is not a tuning
 -- knob. `WALL_CEILING` is the worst `land_land` fall measured on the nine
--- seeds with the apron in (8 to 11) with headroom; a change that pushes it
--- past this is a capital growing walls again and is a decision with a number
--- attached.
+-- seeds with the apron in, with headroom; a change that pushes it past this is
+-- a capital growing walls again and is a decision with a number attached.
 if walls then
 	local PERIMETER_CEILING = 3      -- the troll terrace step
 	local WALL_CEILING = 14
+	-- `wp40/height.lua`'s own three, copied: the shape's terrace step, the
+	-- shore hold, and the civic width the Chebyshev cone is measured from.
+	local APRON_STEP = 3
+	local APRON_HOLD = 2
+	local APRON_SPACING = 16
+	local APRON_REACH = 64
+	local APRON_FACE_CEILING = 9
 	local CORE_LOW, CORE_HIGH = -CORE - 1, CORE   -- the half-open [-48, 47]
 	local failures = 0
+
+	-- The reach's sample discs, exactly as `fitting_grids.apron.value` builds
+	-- them: every wet reach whose zone owns this capital.
+	local ANCHOR_ZONE = 29           -- kragmar_kezamba
+	local profile_by_id = {}
+	for index = 1, #source.hydrology_profiles do
+		profile_by_id[source.hydrology_profiles[index].id] =
+			source.hydrology_profiles[index]
+	end
+	local discs = {}
+	for index = 1, #source.hydrology do
+		local row = source.hydrology[index]
+		local profile = profile_by_id[row.profile_id]
+		if row.zone_numeric_id == ANCHOR_ZONE and profile.depth > 0 then
+			local line = row.centreline
+			local rim = 1 + row.water_surface_offset + 1
+			for point = 1, #line do
+				local sample = line[point]
+				discs[#discs + 1] = {x = sample.x, z = sample.z,
+					half_width = sample.half_width, rim = rim,
+					limit = sample.half_width + APRON_REACH}
+				local next_sample = line[point + 1]
+				if next_sample then
+					local vx = next_sample.x - sample.x
+					local vz = next_sample.z - sample.z
+					local length = deterministic.isqrt(vx * vx + vz * vz)
+					local parts = deterministic.floor_div(
+						length + APRON_SPACING - 1, APRON_SPACING)
+					for part = 1, parts - 1 do
+						local half = sample.half_width +
+							deterministic.round_ratio(
+								(next_sample.half_width - sample.half_width) *
+								part, parts)
+						discs[#discs + 1] = {
+							x = sample.x +
+								deterministic.round_ratio(vx * part, parts),
+							z = sample.z +
+								deterministic.round_ratio(vz * part, parts),
+							half_width = half, rim = rim,
+							limit = half + APRON_REACH}
+					end
+				end
+			end
+		end
+	end
+	if #discs == 0 then
+		error("kezamba walls: the capital's own cenote is absent", 0)
+	end
+
+	local function lake_cone(wx, wz)
+		local best
+		for index = 1, #discs do
+			local disc = discs[index]
+			local dx, dz = wx - disc.x, wz - disc.z
+			local square = dx * dx + dz * dz
+			if square <= disc.limit * disc.limit then
+				local outside = deterministic.isqrt(square) - disc.half_width
+				if outside < APRON_HOLD then outside = APRON_HOLD end
+				local value = disc.rim - APRON_STEP * (outside - APRON_HOLD)
+				if best == nil or value > best then best = value end
+			end
+		end
+		return best
+	end
+
+	-- The civic cone, from the same half-open square `height.lua` uses.
+	local function civic_outside_at(x, z)
+		return math.max(0, CORE_LOW - x, x - CORE_HIGH, CORE_LOW - z,
+			z - CORE_HIGH)
+	end
+
+	-- THE CONE'S OWN LIPSCHITZ BOUND, from the authored geometry only: no seed,
+	-- no height session, no terrain. The window is every column within the
+	-- widest disc plus the distance the cone takes to fall a hundred nodes,
+	-- which is further than any ground this delta carries.
+	local cone_worst, cone_at, cone_columns = 0, "-", 0
+	-- `WATER_LEVEL - 24`, the value `height.lua`'s own `final_terrain_height_at`
+	-- returns for a column outside the map: a cone below it can never be the
+	-- maximum of anything and may therefore be pruned.
+	local CONE_INERT = 1 - 24
+	local cone_edges = 0
+	do
+		local min_x, max_x, min_z, max_z = math.huge, -math.huge, math.huge,
+			-math.huge
+		for index = 1, #discs do
+			local disc = discs[index]
+			local span = disc.half_width + APRON_HOLD + 40
+			if disc.x - span < min_x then min_x = disc.x - span end
+			if disc.x + span > max_x then max_x = disc.x + span end
+			if disc.z - span < min_z then min_z = disc.z - span end
+			if disc.z + span > max_z then max_z = disc.z + span end
+		end
+		local previous
+		for z = min_z, max_z do
+			local row = {}
+			for x = min_x, max_x do row[x] = lake_cone(x, z) end
+			for x = min_x, max_x do
+				local here = row[x]
+				if here ~= nil then
+					cone_columns = cone_columns + 1
+					local neighbours = {row[x + 1], row[x - 1],
+						previous and previous[x] or nil}
+					for index = 1, 3 do
+						local other = neighbours[index]
+						if other ~= nil then
+							local delta = here > other and here - other or
+								other - here
+							if delta > cone_worst then
+								cone_worst, cone_at = delta, x .. "," .. z
+							end
+						elseif x + index <= max_x + 1 and here > CONE_INERT then
+							-- The one place the cone can be discontinuous is
+							-- where a disc leaves `APRON_REACH`, and that is
+							-- only allowed because the cone there is already
+							-- below the floor the height session itself
+							-- returns outside the map. A neighbour with no
+							-- cone at all beside a cone ABOVE that floor would
+							-- be the review's pruning cliff, back again.
+							cone_edges = cone_edges + 1
+						end
+					end
+				end
+			end
+			previous = row
+		end
+	end
+	io.write("kezamba_apron_cone\tcolumns\t", cone_columns,
+		"\tworst_own_step\t", cone_worst, "\tat\t", cone_at,
+		"\tceiling\t", APRON_STEP, "\tlive_prune_edges\t", cone_edges, "\n")
+	if cone_edges ~= 0 then
+		failures = failures + 1
+		io.write("FAIL\t", cone_edges, " column(s) lose their last disc while ",
+			"the cone still stands above ", CONE_INERT,
+			", which is a pruning cliff and not an inert window\n")
+	end
+	if cone_worst > APRON_STEP then
+		failures = failures + 1
+		io.write("FAIL\tthe lake cone's own worst 4-neighbour step is ",
+			cone_worst, " against the terrace step of ", APRON_STEP,
+			", so `wp40/height.lua`'s Lipschitz claim is false\n")
+	end
+
 	io.write("kind\tseed\treach\tland\tperimeter_min\tperimeter_max",
 		"\tperimeter_mean_x100\tworst_land_land\tat\tover_step",
-		"\tworst_land_water\n")
+		"\tworst_land_water\tapron_faces\tapron_below\n")
 	for seed_index = 1, #SEEDS do
 		local seed = SEEDS[seed_index]
 		local horizontal = horizontal_factory({source = source,
@@ -234,13 +409,43 @@ if walls then
 			end
 			ys[z], land[z] = row_y, row_land
 		end
+		-- The apron floor of every column of the window, from this file's own
+		-- copy of the two cones. `binding` is the column where the shipped
+		-- height IS that floor, which is where the apron decided the ground.
+		local apron, binding = {}, {}
+		for z = -walls_reach - 1, walls_reach + 1 do
+			local row_apron, row_binding = {}, {}
+			for x = -walls_reach - 1, walls_reach + 1 do
+				local outside = civic_outside_at(x, z)
+				local floor_y
+				if outside > 0 then
+					floor_y = anchor.y - APRON_STEP * outside
+					local from_water = lake_cone(anchor.x + x, anchor.z + z)
+					if from_water ~= nil and from_water > floor_y then
+						floor_y = from_water
+					end
+				end
+				row_apron[x] = floor_y
+				row_binding[x] = floor_y ~= nil and land[z][x] and
+					ys[z][x] == floor_y
+			end
+			apron[z], binding[z] = row_apron, row_binding
+		end
+
 		local land_columns, over_step = 0, 0
+		local apron_faces, apron_below = 0, 0
 		local worst_land, worst_at, worst_water = 0, "-", 0
 		for z = -walls_reach, walls_reach do
 			for x = -walls_reach, walls_reach do
 				if land[z][x] then
 					land_columns = land_columns + 1
 					local here = ys[z][x]
+					-- The shipped ground may never stand BELOW the apron floor:
+					-- the apron is a `max`, so a column that does is this
+					-- file's copy of the cone disagreeing with `height.lua`'s.
+					if apron[z][x] ~= nil and here < apron[z][x] then
+						apron_below = apron_below + 1
+					end
 					for side = 1, 4 do
 						local nx, nz = x, z
 						if side == 1 then nx = x + 1
@@ -251,6 +456,11 @@ if walls then
 						if land[nz][nx] then
 							if drop > PERIMETER_CEILING then
 								over_step = over_step + 1
+								-- The apron made or deepened this face only if
+								-- it is what lifted the HIGHER of the two.
+								if binding[z][x] then
+									apron_faces = apron_faces + 1
+								end
 							end
 							if drop > worst_land then
 								worst_land, worst_at = drop, x .. "," .. z
@@ -281,7 +491,19 @@ if walls then
 		io.write(table.concat({"kezamba_walls", seed, walls_reach,
 			land_columns, low, high,
 			math.floor(total * 100 / count), worst_land, worst_at, over_step,
-			worst_water}, "\t"), "\n")
+			worst_water, apron_faces, apron_below}, "\t"), "\n")
+		if apron_faces > APRON_FACE_CEILING then
+			failures = failures + 1
+			io.write("FAIL\tthe apron is the binding constraint on the high ",
+				"side of ", apron_faces, " over-step faces on ", seed,
+				" against a ceiling of ", APRON_FACE_CEILING, "\n")
+		end
+		if apron_below ~= 0 then
+			failures = failures + 1
+			io.write("FAIL\t", apron_below, " column(s) on ", seed,
+				" stand below this file's copy of the apron floor, which a ",
+				"`max` cannot do: the copy has drifted from wp40/height.lua\n")
+		end
 		if high > PERIMETER_CEILING then
 			failures = failures + 1
 			io.write("FAIL\tthe civic pad on ", seed, " ends in a face of ",
@@ -300,8 +522,10 @@ if walls then
 			" wall measurement(s) past their ceiling\n")
 		os.exit(1)
 	end
-	io.write("kezamba_walls PASS: the civic pad steps down at the terrace ",
-		"step and no land wall exceeds ", WALL_CEILING, " nodes, on all ",
+	io.write("kezamba_walls PASS: the lake cone is ", APRON_STEP,
+		"-Lipschitz, the civic pad steps down at the terrace step, no land ",
+		"wall exceeds ", WALL_CEILING, " nodes and the apron is the high side ",
+		"of at most ", APRON_FACE_CEILING, " over-step faces, on all ",
 		#SEEDS, " seeds\n")
 	os.exit(0)
 end
