@@ -27,7 +27,7 @@ Two ways to draw a bar, and one call to get the builtin one out of the way.
 - **`hud_add{type = "statbar"}`** — the engine's own repeated-icon bar, which
   is what the default hearts are. It draws `number / 2` **whole** icons plus
   optionally a half icon, which is exactly the approximation the ruling
-  rejects: a 325-HP level-60 Warrior (`combat_stats.md:87-92`) cannot be shown
+  rejects: a 325-HP level-60 Warrior (`combat_stats.md:93-98`) cannot be shown
   point-accurately by an icon that represents two HP. A statbar can be made
   finer only by shrinking what one icon means, and the icon count is then
   absurd. **Not the right tool for the LIFE bar.**
@@ -121,12 +121,12 @@ The coordinator asked for ContentDB mods that do point-accurate bars. **I do
 not have verified knowledge of a specific ContentDB mod that does this, and
 naming one I am not sure of would be worse than naming none** — the brief's
 own instruction. What *is* verifiable inside this repo and is the closest
-working reference: the **charge bar** of `classes.md:289-301`, which already
+working reference: the **charge bar** of `classes.md:294-306`, which already
 renders a continuous 0-1 value accurately by driving the item **wear bar**
 (`wear = (1 − charge) × 65534`) with a red→yellow→green ramp through
 `set_wear_bar_params`. It is not an HUD element, but it is this game's own
 precedent for "a continuous value shown exactly rather than in steps", and the
-same 2/s packet-cost reasoning in `classes.md:302-304` applies to any bar that
+same 2/s packet-cost reasoning in `classes.md:307-309` applies to any bar that
 updates per tick.
 
 What **is** in reach: `reference_projects/` registers **nine** trees —

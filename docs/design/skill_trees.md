@@ -79,10 +79,10 @@ Tree names are unchanged from revision 1 by ruling 5 ("Tree names as proposed
 stay"). Ruin, Rime and Reckoning are known collisions with WoW talent names
 and the user has kept them deliberately; **talent** names are a different
 matter and §2.11 audits every one of them. The Scout's two tree names are new
-and §6.3 is their decision.
+and ruling 27 settles them.
 
 Two sites in the repo still call the Priest healing tree "the **Holy** tree",
-one of them a code comment: `classes.md:459` and
+one of them a code comment: `classes.md:464` and
 `mods/PLAYER/grug_abilities/kits.lua:650`. (Revision 1 counted three; the
 third was `progression.md`'s "Priest Holy capstone", which **this lane's own
 `progression.md` commit already removed** — `grep -n Holy
@@ -204,7 +204,7 @@ back by dying.
 
 - **Where: in the talent UI itself. There is no class trainer and no NPC.**
   Ruling 4 is explicit. This supersedes the location half of `progression.md`
-  §2 (`:45-50`) and `economy.md` §4 (`:92`). The consequence to accept:
+  §2 (`:48-54`) and `economy.md` §4 (`:92`). The consequence to accept:
   `world.md:408`'s class trainers lose their stated purpose, and
   `docs/research/wp13-npc-sockets-contract.md` §8.4 never needs a `trainer`
   vendor kind.
@@ -220,16 +220,18 @@ back by dying.
   "rises with level" without a hand-written table, and WP44 calibrates the six
   numbers with every other measured sink. The free first respec is the safety
   net for a mis-clicked first point at level 2, when the character has no
-  money at all.
-  **This retires `BACKLOG.md`'s "5c × level, min 25c"** (`:540-548`), the only
+  money at all. (Main's 5.7 said "level 3" — the level the *old* cadence gave
+  the first point; ruling 1 moved it to 2 and the sentence follows it.)
+  **This retires `BACKLOG.md`'s "5c × level, min 25c"** (`:542-550`), the only
   other respec number in the repo; `grug_money.take`
   (`mods/PLAYER/grug_money/init.lua:122`) is still the API it calls. Until
   WP44 measures the brackets there is no number to ship, so WP11's UI shows
   the price the ledger returns and an admin `/respec` covers testing.
 - **There is no class change at all any more (ruling 20).** Not for players,
   and **not for admins**: "equipment would be a problem otherwise". The
-  shipped `/class` command (`grug_classes/selection.lua:554-596`) is removed
-  with WP11, not merely left admin-only, and §3.10 lists what that touches.
+  shipped `/class` registration (`grug_classes/selection.lua:594-595` — one
+  call to the generic helper above it, not the helper) is removed with WP11,
+  not merely left admin-only, and §3.10 lists what that touches.
   A respec re-spends talents; nothing in the game changes a character's class.
 - **An admin level drop resets talents completely and for free** (ruling 20's
   simplest form). `/xp` can lower a level (`grug_xp/init.lua:142-162`), which
@@ -309,7 +311,7 @@ nothing below tier 3 modifies a skill the player may not have yet.
 | 4 | **Ruination** *(capstone)* | Hammer | 4 | **1** | **effect** ‼ | a landed Mighty Blow grants **10 s** of crit chance **+20 percentage points** with the 30 % crit cap raised to **50 %**. *Limit: 10 s, **120 s cooldown** on the trigger.* | `grug_classes/stats.lua:45` and its `math.min(0.30, …)` | `crit_cap_override` |
 | 5 | **Keen Edge** | Lash | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 percentage points crit chance (30 % cap holds) | `grug_classes/stats.lua:45` | `crit_chance_add` |
 | 6 | **Onset** | Lash | 2 | 4 | — | Charge cooldown 10 s → 9 / 8 / 7 / 6 s | `grug_abilities/init.lua:1233`, the one `arm_cooldown` call — **not** `kits.lua:299` | `charge_cooldown_sub` |
-| 7 | **Hamstring** *(keystone)* | Lash | 3 | 3 | **new skill** *(already registered)* | the shipped ability (`kits.lua:350-377`): 10 rage, a 6 s charge, and on a charged proc a 50 % slow for 5 s exactly as `classes.md:421` specifies. Ranks 2 and 3 lengthen the slow to **6 / 7 s** | `kits.lua:370` (mobs) and `:372` (players); the grant gate is a new `talent_gated = true` beside `kits.lua:350` | `hamstring_slow_add` |
+| 7 | **Hamstring** *(keystone)* | Lash | 3 | 3 | **new skill** *(already registered)* | the shipped ability (`kits.lua:350-377`): 10 rage, a 6 s charge, and on a charged proc a 50 % slow for 5 s exactly as `classes.md:426` specifies. Ranks 2 and 3 lengthen the slow to **6 / 7 s** | `kits.lua:370` (mobs) and `:372` (players); the grant gate is a new `talent_gated = true` beside `kits.lua:350` | `hamstring_slow_add` |
 | 8 | **Tendon Cut** | Lash | 4 | 3 | ‼ | Hamstring's charged proc **roots** for 2 / 2.5 / 3 s before its slow begins — a root off an ordinary swing. *Limit: **12 s internal cooldown**, independent of the charge.* | `kits.lua:368-374`, using the root machinery of `:495` (players) and `:504` (mobs) | `hamstring_root` |
 
 Ruin's chain totals are the asymmetry §1.2 describes: Hammer
@@ -331,7 +333,7 @@ resource is effectively unlimited." Every talent in this tree assumes rage is
 a limiter — Stoke adds to it, Heavy Hand and Broadstroke spend it — so if the
 pool is always full, several of them re-tune a number nobody feels. The
 shipped generation and spend numbers, the arithmetic and two calibration
-options are **open decision §6.1**; nothing in these tables changes for it,
+options are **ruling 25** and **§7 task 8**; nothing in these tables changes for it,
 because the fix belongs to `classes.md` §3 rather than to WP11.
 
 ### 2.3 Mage — Ember
@@ -384,7 +386,7 @@ as §2.1: Glacial Ward and Power Word: Shield no longer overwrite each other —
 Renew is Mercy's **keystone**, and it is the one new-skill keystone in the
 whole design that is **already registered**. `progression.md` §2 called it
 "the Priest Holy capstone"; ruling 3 re-cut what a capstone is, and the
-correction is in `progression.md`'s own commit (§5.3). `classes.md:459`'s
+correction is in `progression.md`'s own commit (§5.3). `classes.md:464`'s
 sentence stays true apart from the tree's name.
 
 ### 2.6 Priest — Reckoning
@@ -485,7 +487,7 @@ one per tree and no build reaches more than one per tree, so **no build
 exceeds base kit + 2 keys** — and since ruling 19 takes Hamstring out of the
 Warrior's base kit, **every class now starts with Strike + 3 and tops out at
 6 of 8**. §3.4 works it out per class. This resolves what the previous
-revision carried as the previous revision's open decision on the hotbar, and it leaves WP14's shield work
+revision carried as an open decision on the hotbar, and it leaves WP14's shield work
 **two** free keys rather than one.
 
 **Rule-breakers** (ruling 10), all with their limit in the cell:
@@ -525,13 +527,13 @@ survive rulings 2 and 3 in any reading: a tree of 8 talents carries 5 numeric,
 
 **The decided ability tables become *base* values.** `classes.md` §§3-5 state
 their numbers flatly: Mighty Blow is "exactly floor(weapon damage × 1.5)"
-(`classes.md:420`), Hamstring charges 6 s and slows for 5 s (`:421`), Taunt
+(`classes.md:425`), Hamstring charges 6 s and slows for 5 s (`:421`), Taunt
 runs 8 s (`:422`), Frost Nova roots 4 s then slows 3 s (`:441`), Blink
 teleports 10 m (`:442`), Smite has a 2 s cooldown (`:456`), Flash Heal heals
 `8 + 2 × spell power` (`:457`), Power Word: Shield lasts 15 s (`:458`), and
 the 2026-08-06 kit-tuning note reasons from "+12 rage per auto-hit" (`:413`,
 `:425`). **Eighteen talents re-tune exactly these numbers.** Nothing forbids
-it — improving existing buttons is what `classes.md:54-56` says talents are
+it — improving existing buttons is what `classes.md:59-61` says talents are
 for — but when WP11 lands those tables are the **untalented baseline**, and
 `classes.md` needs that word or the next reader will file a talented Taunt as
 a bug.
@@ -579,6 +581,13 @@ Renamed in this revision:
 | Stand Fast | **Hold Ground** (keystone) + **Unbroken** (capstone) | "Last Stand" / "Stand Fast" read as warrior cooldown names |
 | Scorching Focus | **Firebrand** | "Scorch" is a Fire Mage spell |
 | Zealous Mind | **Hard Faith** | "Zeal" is a Paladin/Priest term in WoW |
+
+*Two entries of that table name talents that no longer exist*: **Hobble**
+(Lash's old tier-2) and **Deadweight** (its old tier-4) were both retired by
+ruling 19's Ruin rebuild, which moved Hamstring to tier 3 and put **Onset**
+and **Tendon Cut** in their places — Hamstring's own ranks now carry the slow
+duration Deadweight used to. The renames stay recorded because the table is a
+history of what was retired and why, not a list of live names.
 
 **Second pass (independent review, 2026-09-16).** The review found five more
 names on the first pass's "no collision" list that are WoW talent names, three
@@ -795,7 +804,8 @@ base-kit **Sidestep** and **Sprint** use the same table without being talents
 rather than to the talent registry. They are not a third seam — `get_talent_bonus` returns 0 for a window key that is not
 running — but they need one small per-player expiry table of the shape
 `grug_core`'s absorbs already use (`grug_core/combat.lua:1010-1017`), owned by
-`talents.lua` and cleared on leave, death, respec and class change. That table
+`talents.lua` and cleared on leave, death and respec — **not** on a class
+change, which ruling 20 abolished. That table
 is the single place a window lives; nothing else in the design needs state.
 
 ### 3.3 Persistence
@@ -807,7 +817,7 @@ is the single place a window lives; nothing else in the design needs state.
   `/talents` debugging.
 - Parsed once per join into a per-player runtime cache (the pattern of
   `grug_abilities`' runtime tables, `init.lua:22-38`), invalidated on spend,
-  respec, class change and leave.
+  respec and leave (a class change is no longer an event — ruling 20).
 - **The read path validates, it does not trust.** Unknown ids are dropped,
   ranks are clamped to the talent's own rank count, a rank whose tier gate or
   hard chain is not satisfied is dropped **together with everything below it
@@ -875,20 +885,20 @@ every class**:
 | Class | Base kit | Max new buttons | Worst case |
 |---|---|---|---|
 | Warrior | Strike + 3 — Charge (`kits.lua:291`), Mighty Blow (`:321`), Taunt (`:380`); **Hamstring leaves the base kit with ruling 19** and returns as Ruin's keystone | 2 (Hold Ground, Hamstring) | **6 of 8** |
-| Mage | Strike + 3 (`classes.md:440-442`) | 2 (Cinderfall, Glacial Ward) | 6 of 8 |
-| Priest | Strike + 3 (`classes.md:456-458`) | 2 (Renew, Word of Ruin) | 6 of 8 |
+| Mage | Strike + 3 (`classes.md:445-447`) | 2 (Cinderfall, Glacial Ward) | 6 of 8 |
+| Priest | Strike + 3 (`classes.md:461-463`) | 2 (Renew, Word of Ruin) | 6 of 8 |
 | Scout | Strike + 3 ([scout.md](scout.md) §2) | 2 (Pinning Shot, Opening) | 6 of 8 |
 
 Every class is now identical in shape, which is what ruling 19 asked for, and
-**two keys stay free on every build** — enough for `classes.md:466`'s parked
+**two keys stay free on every build** — enough for `classes.md:471`'s parked
 "Warrior shield abilities → after WP14 (offhand/shields)", for which
 `register_ability` already carries the `slot = "offhand"` plumbing
-(`grug_abilities/init.lua:501-510`). This closes what the previous revision
-carried as the previous revision's open decision on the hotbar.
+(`grug_abilities/init.lua:501-510`). This closes what the previous
+revision carried as an open decision on the hotbar.
 
 **A Warrior who takes neither Ruin keystone has no snare.** That is the cost
 of ruling 19, and it should be visible rather than discovered: Hamstring is
-`classes.md:414-415`'s "control tool (in
+`classes.md:419-420`'s "control tool (in
 an engine where mobs outrun players, the snare is the Warrior's identity)", and a Bulwark-only Warrior now reaches
 level 26 before that identity is available at all. The counter-argument the
 ruling rests on is that a Warrior who wants the snare gets it **and** its
@@ -1000,7 +1010,8 @@ with identical output. Eight groups, each able to go red on its own:
    this group asserts dodge ≤ 0.30 unconditionally for the three shipped
    classes.)
 7. **Window lifecycle.** Every timed window returns 0 before it starts and
-   after it expires, and respec, class change, death and leave clear it.
+   after it expires, and respec, death and leave clear it — those are now the
+   only three lifecycle events, since ruling 20 removed the class change.
 8. **The shared central seams stay neutral without talents.** The six talents
    that hook `arm_cooldown` (`grug_abilities/init.lua:1233`), the charge line (`:718`), the
    spend line (`:1232`) and `get_range` (`:170-177`) sit on paths every
@@ -1101,8 +1112,8 @@ a root or an exclusive hold taking precedence over the sum. Additive rather
 than multiplicative because the shipped numbers already read as absolute
 speeds (`kits.lua:372` sets `speed = 0.5`), because two slows multiplying to
 0.25 is a stacking rule nobody decided, and because a sum is the only form in
-which the KAT can state a single invariant without enumerating orders. §6.2
-carries the choice.
+which the KAT can state a single invariant without enumerating orders. Ruling
+26 makes it binding.
 
 **Size, honestly.** The **core** is roughly **100 lines**: a per-player table
 of named entries with expiries, one accumulator per axis, the root flag, the
@@ -1129,13 +1140,15 @@ start Hold Ground or anything Scout-shaped until it exists; everything else in
 ### 3.10 Removing the class change (ruling 20) — what it touches
 
 Ruling 20 removes class changing from the game entirely, for admins too. That
-is a deletion rather than a feature, but it is not free: four shipped comments
-and one command assume the opposite, and WP11 is the WP that makes them wrong.
+is a deletion rather than a feature, but it is not free: **five** shipped
+comments and one command registration assume the opposite, and WP11 is the WP
+that makes them wrong.
 
 | Site | What it is | What ruling 20 does to it |
 |---|---|---|
-| `grug_classes/selection.lua:554-596` | the `/class` chat command | **removed.** It is the only way a class ever changes after selection |
+| `grug_classes/selection.lua:594-595` | the `/class` registration — one call to the generic `register_set_command` helper | **that call is removed**, and nothing else. `:554-592` is the helper itself and `:596-597` registers `/race`, which ruling 20 does not touch; deleting the range would take both with it |
 | `grug_abilities/init.lua:1772-1780` | `sync_kit`'s class-change purge — it wipes kit items when the class no longer matches | **kept**, and it becomes the respec path's purge instead: a full talent reset has to take back the two talent-granted buttons (§3.4), which is the same operation |
+| `grug_abilities/init.lua:1775-1776` | the comment inside that very function: "Join, class pick and **class SWITCH** all land here. A class switch wipes runtime cooldowns, charges, targets and the attack clock before re-granting" | corrected. **This is the fifth comment**, and the only one of the five that describes live behaviour rather than a future WP: after ruling 20 the third of its three entry paths cannot occur |
 | `grug_inventory/equipment.lua:57` | "the class-change unequip below, later WP11 respec / WP14…" | comment corrected: there is no class change, and a talent respec never unequips anything |
 | `grug_inventory/equipment.lua:501` | "Admin-only today, **player-reachable with WP11's respec**" | the promise is **withdrawn**. The class-restriction unequip path becomes unreachable by design, and the comment must say so rather than point at a WP11 that will not deliver it |
 | `grug_inventory/equipment.lua:579` | "a Warrior who respecs to Mage" | comment corrected: that character cannot exist |
@@ -1341,7 +1354,7 @@ first nine, and two of them retire earlier recommendations of this file.
     `docs/research/hud-bars-task-card.md`.)*
 16. **Warrior rage fills too fast** — "in combat the resource is effectively
     unlimited". A user finding, not yet a decision. *(§2.2's note and open
-    decision §6.1.)*
+    §7's task 8.)*
 
 **Fifth round, 2026-09-16.** The user answered the *original* open-decisions
 list of revision 1 (`main:docs/design/skill_trees.md` §§5.1-5.13) rather than
@@ -1351,11 +1364,21 @@ closed**.
 
 17. **A capstone has ONE rank** — a strong effect or a replacement — and what
     gates it is its chain plus the points in the tree, not a ladder of its
-    own. *(Answers original 5.4. The coordinator recommended it and the user
-    confirmed it, so it is **decided**, not pending. Built into §1.2 and every
-    capstone row in §2; §1.3 re-checks the rank sum, which is now 13 + 15 =
-    **28** per tree — ruling 2's "about 30", two short because the capstone
-    gave up two ranks.)*
+    own. *(Answers original 5.4, and it is worth recording **against** what.
+    Main's §5.4 recommended the opposite — "(a) Capstone has 3 ranks…
+    **Recommendation: (a)**" — so this is the user taking option (b) over the
+    document's own advice, on the coordinator's later recommendation in the
+    dialogue, and confirmed by the user afterwards. It is **decided**, not
+    pending.*
+    *One half of main's 5.4(b) is deliberately **not** taken: it read
+    "Capstone has 1 rank **and one numeric talent in the tree gets 5 ranks, so
+    the tree still holds 15**". This design takes the one-rank capstone and
+    **drops the compensating rank**, which is exactly why a tree is **28** and
+    not 30. That is accepted under ruling 1's "slight deviation is fine"
+    rather than overlooked: a fifth rank bolted onto one numeric talent per
+    tree would buy two ranks of padding and cost the 5/4/3 ladder its
+    regularity, and 28 of 30 points leaves a player two to place freely, which
+    reads better than an exact fit. §1.2 and §1.3 carry the number openly.)*
 18. **Only one capstone per level-60 character, and it must follow
     *implicitly* from the tree's requirements**: reaching a capstone costs
     more than half of all available points, and the first one lands around
@@ -1386,8 +1409,10 @@ closed**.
     `BACKLOG.md`'s "5c × level, min 25c" is retired by it.)*
 23. **Absorbs stack**, the way speed effects do: named contributions with
     independent durations in one aggregator, instead of "one absorb slot, a
-    new shield replaces the old". The Warrior tank capstone keeps the
-    **self-absorb** form (original 5.13 variant B). *(Closes what this file
+    new shield replaces the old". The Warrior's tank cooldown keeps the
+    **self-absorb** form of original 5.13 variant (B) — in this design that is
+    **Hold Ground**, Bulwark's keystone, since ruling 13 made the capstone
+    (Unbroken) an effect. *(Closes what this file
     carried as an open decision on the absorb collision; §3.11 sizes it and says what it shares with §3.9.)*
 24. **Open questions may live inside the design docs**, as long as each is
     clearly attributable to its design doc — so §6 stays in this file and in
@@ -1396,6 +1421,35 @@ closed**.
 
 Original 5.2, 5.3, 5.8 and 5.12 were already closed by rulings 1, 2/3, 4 and
 10 respectively, and are recorded there.
+
+**Sixth round, 2026-09-16 (interactive).** The user answered the five items
+that were still open after the fifth round. **Nothing in this proposal is
+undecided any more.**
+
+25. **Warrior rage: option (b) — lower the income and add decay.**
+    Swing **12 → 8** at all five sites, hit taken **4 → 3**, and **5 rage/s
+    decay out of combat** on the existing `grug_core.in_combat` window.
+    *(Answers ruling 16's finding. This is a `classes.md` §3 tuning change,
+    not WP11's — §7 task 8 carries it for the WP11 / mob-pressure round, with
+    option (a) — raise Mighty Blow to 35 and Hamstring to 15 — recorded there
+    as the fallback if (b) overshoots and leaves the Warrior starved.)*
+26. **The movement aggregator combines additively, per axis, with one clamp.**
+    `clamp(1 + Σ, 0.1, 1.5)` for speed and for jump; a root or an exclusive
+    hold takes precedence over the sum. *(§3.9 and
+    `docs/research/mob-pressure-task-card.md` §4b already describe it; the
+    ruling makes the recommendation binding.)*
+27. **The Scout's trees are Quarry and Veil.** *(The names used throughout
+    §2.7, §2.8 and [scout.md](scout.md).)*
+28. **A bow's damage is `weapon damage + floor(Dex/10)`**, through a new
+    `grug_classes.get_ranged_bonus` beside `get_melee_bonus`
+    (`grug_classes/stats.lua:34-36`). *(One accessor, and one sentence added
+    to `combat_stats.md` §2 — §7 task 9. It is what makes the Scout's
+    Dexterity-led growth mean something.)*
+29. **Sprint is +25 % for 10 s on a 300 s cooldown.** *(The numbers the
+    documents already use. It puts a sprinting Scout at 5.0 nodes/s against
+    every aggressive mob's 4.4, which ruling 10 permits and which **confirms
+    §7 task 1**: `mounts.md` §3.1 and `combat_stats.md` §3 must record the
+    exception.)*
 
 ### 5.2 What each ruling replaced
 
@@ -1412,7 +1466,7 @@ checkout. Line numbers elsewhere in this file are branch-relative.
 | 3 | `progression.md main:31-35` "**9 of 10 talents are numeric modifiers** (cheap to build, easy to balance); **exactly one capstone per tree**, unlocked at 8+ points in that tree, and **every capstone is a NEW active 'main skill'** … (e.g. Priest Holy capstone: Renew; further capstones designed with WP11)" |
 | 4 | `progression.md main:36-37` "**Respec at the class trainer for gold**, price rising with level — repeatable per-character gold sink and the class trainer's purpose", together with `economy.md:92`, `items_crafting.md:2380` and `world.md:408`, which this lane does not own and which still say it — §7, task 3 |
 | 5 | revision 1's naming open decision, for talents |
-| 7 | `classes.md main:466-470` "**Poison → arrives with the Rogue in Phase 2** (noted 2026-08-08). Poison is intended as the **Rogue's signature damage type** … and the Rogue is the Phase 2 class" — the Phase-2 Rogue is **superseded by the Scout**, and with it the poison plan. The bullet is now `classes.md:470-482` on this branch and quotes its own retired text. |
+| 7 | `classes.md main:466-470` "**Poison → arrives with the Rogue in Phase 2** (noted 2026-08-08). Poison is intended as the **Rogue's signature damage type** … and the Rogue is the Phase 2 class" — the Phase-2 Rogue is **superseded by the Scout**, and with it the poison plan. The bullet is now `classes.md:475-487` on this branch and quotes its own retired text. |
 
 ### 5.3 Where each correction is made
 
@@ -1437,125 +1491,42 @@ trainer. §7 carries them as a follow-up task.
 
 ## 6. Open decisions for the user
 
-Numbered for the reply. Each carries the options, a recommendation, and — as
-the user's meta-instruction of 2026-09-16 requires — **why it is still open**.
-Anything the five rounds of rulings decided has left this list and lives in §5
-and the body; anything decided that still needs an edit in a file this lane
-does not own is a **task in §7**, not a decision.
+**No open decisions as of 2026-09-16.** Six rounds of rulings closed all
+thirteen questions of revision 1 and the five that survived into revision 2;
+§5 carries each with its ruling text, and §7 carries the work that decisions
+create in files this lane does not own.
 
-Five remain.
+The heading stays for whatever the first playtest raises. When something new
+goes here it should carry, as the user's meta-instruction of 2026-09-16
+requires, **why it is open** — not only what the options are.
 
-**6.1 — Warrior rage: the finding is recorded, the calibration is not chosen.**
-*Still open because ruling 16 was explicitly "a user finding, not yet a
-decision", and because the fix belongs to `classes.md` §3 rather than to WP11.*
-The user reports that "in combat the resource is effectively unlimited". The
-shipped numbers, measured:
+For the record, the five items this section held until the sixth round, and
+where their answers now live:
 
-| Source | Amount | Where |
+| Was open | Decided by | Now in |
 |---|---|---|
-| landed authoritative swing | **+12 rage** | `grug_abilities/init.lua:939`, `:950`, `:966` — three branches of one finish — plus the two proportional paths `:1915` (PvE) and `:2099` (PvP), at the same rate |
-| hit taken | **+4 rage**, +1 more for an orc | `grug_abilities/init.lua:2109-2110`; the perk at `grug_classes/perks.lua:14` |
-| Charge | **+15 rage** | `kits.lua:311`; `classes.md:419` |
-| Mighty Blow | **−25 rage**, no cooldown | `kits.lua:327`; `classes.md:420` |
-| Hamstring | **−10 rage**, 6 s charge | `kits.lua:357` |
-| Charge, Taunt | free | `kits.lua:298`, `:386` |
-| pool | 0-100, clamped at `grug_abilities/init.lua:69` | `classes.md` §1 |
-| **decay** | **none anywhere in the tree** | every `add_rage` call is positive; there is no decay ticker |
-
-A 1H sword's `full_punch_interval` is 1.0 s (`items_crafting.md:890`), so a
-Warrior in a sustained fight generates **12 rage/s from swings alone**, plus 4
-per hit taken. Mighty Blow costs 25 and has no cooldown, so it procs on about
-every other swing — which is what `classes.md:428-429` tuned for — but the
-pool is full whenever the player is not spending, and nothing drains it
-between fights.
-*(a)* **Raise the price, keep the income.** Mighty Blow 25 → 35, Hamstring
-10 → 15. At +12/swing the dump moves from every second swing to every third,
-and Stoke's +1-4 becomes visible instead of marginal. Three constants; five
-sites if (b)'s income change is ever wanted, because there are five `add_rage`
-call sites at the +12 rate.
-*(b)* **Lower the income and add decay.** Swing 12 → 8 (**five** edits),
-hit taken 4 → 3, and **5 rage/s decay out of combat** on the existing
-`grug_core.in_combat` window (read at `grug_abilities/init.lua:2201`), so a
-fight opens near empty and Charge's +15 becomes the opener it reads like.
-**Recommendation: (a) first, measured in a playtest, (b) held in reserve** —
-(a) is two numbers and cannot break anything; (b) changes how the class feels
-between fights and should not be decided from the same report (a) might fix.
-
-**6.2 — The combination rule inside the movement aggregator.** *(ruling 11)*
-*Still open because ruling 11 decided the architecture — named modifiers,
-independent durations, roots as a hard flag, mounts outside — but not the
-arithmetic that combines them.*
-§3.9 recommends **additive percentages per axis with one clamp**,
-`clamp(1 + Σ, 0.1, 1.5)` for speed and for jump, roots and exclusive holds
-ahead of the sum.
-*(a)* Additive, as recommended.
-*(b)* Multiplicative, which makes two 50 % slows 0.25 rather than 0.
-**Recommendation: (a)** — the shipped numbers already read as absolute speeds
-(`kits.lua:372` sets `speed = 0.5`), nobody has decided a stacking rule, and a
-sum is the only form in which the KAT can state one invariant instead of
-enumerating application orders. The mob-pressure lane implements it, but the
-answer is a design answer and belongs here.
-
-**6.3 — The Scout's two tree names.**
-*Still open because ruling 21 settles the naming **criterion** (overall
-similarity, not single words) without picking between two candidate pairs that
-both pass it.*
-*(a)* **Quarry / Veil**, used throughout §2.7, §2.8 and `scout.md`.
-*(b)* **Hunt / Veil**, the coordinator's original pair.
-*(c)* **Hunt / Shroud**.
-**Recommendation: (a)** — same shape as Bulwark/Ruin and Ember/Rime. The old
-argument against "Hunt" (WoW's Demon Hunter ability "The Hunt") is exactly the
-single-word collision ruling 21 says is not protected, so this is now a taste
-question rather than an IP one.
-
-**6.4 — What feeds a bow's damage?**
-*Still open because ruling 14 decided the Scout's **resource** (mana) and said
-nothing about what scales an arrow, and because every answer adds a term to a
-decided file.*
-`combat_stats.md:37` gives Dexterity crit and dodge only, and `:48`'s melee
-damage is `weapon damage + floor(Str/10)`, so a bow has no damage attribute.
-*(a)* `weapon damage + floor(Dex/10)`, through a new
-`grug_classes.get_ranged_bonus` beside `get_melee_bonus`
-(`grug_classes/stats.lua:34-36`) — one accessor, one sentence in
-`combat_stats.md` §2, and the Scout's Dexterity-led growth starts meaning
-something.
-*(b)* Reuse the melee bonus, so a bow scales off Strength.
-*(c)* Reuse the spell-power bonus, so it scales off Intelligence —
-consistent with the Scout paying mana.
-**Recommendation: (a)** — (b) reads wrong on a leather archer and (c) makes
-Intelligence the stat for both a Fireball and an arrow.
-
-**6.5 — Sprint's exact percentage and cooldown.**
-*Still open because ruling 10 fixed the shape — in combat, ~10 s, cooldown at
-least 3 minutes and "rather 5" — and left the two numbers inside it to the
-lane.*
-The documents use **+25 % for 10 s on a 300 s cooldown**. At +25 % a sprinting
-Scout runs 5.0 against every aggressive mob's 4.4 (`combat_stats.md:310-315`)
-— which ruling 10 permits, and which §7's task 1 then has to write into
-`mounts.md` and `combat_stats.md`.
-*(a)* **+25 % / 10 s / 300 s**, as written.
-*(b)* +25 % / 10 s / **180 s** — the ruling's floor, three times as often.
-*(c)* **+9 %** (4.36 < 4.4), which breaks no pillar and needs no amendment —
-and which ruling 10 itself calls "arguably not markedly".
-**Recommendation: (a)** — the user said "rather 5 [minutes]", and a rule-break
-this large is the clearest case in the design for the strongest limit. (c) is
-the only option that costs no doc amendment, and it is also the only one
-nobody will feel.
+| Warrior rage calibration | ruling 25 — option (b), lower income and add decay | §2.2's note, §7 task 8 |
+| the movement aggregator's arithmetic | ruling 26 — additive per axis, one clamp | §3.9 |
+| the Scout's tree names | ruling 27 — Quarry / Veil | §1.1, §2.7, §2.8 |
+| what feeds a bow's damage | ruling 28 — `weapon damage + floor(Dex/10)` | [scout.md](scout.md) §1, §7 task 9 |
+| Sprint's percentage and cooldown | ruling 29 — +25 % / 10 s / 300 s | [scout.md](scout.md) §2, §7 task 1 |
 
 ---
 
 ## 7. Decided, but needing an edit outside this lane
 
 Not decisions — **tasks**. Each is settled design that this lane may not
-write, because the file belongs to somebody else. They are listed so that the
-merge does not leave the repo contradicting itself.
+write, because the file belongs to somebody else or because it is code. They
+are listed so that the merge does not leave the repo contradicting itself.
 
 | # | Task | Why it cannot be done here |
 |---|---|---|
-| 1 | Amend `mounts.md` §3.1's pillar paragraph and `combat_stats.md` §3 to say the 4.4 > 4.0 inequality holds **except** for named, long-cooldown skills, of which Sprint is the first; the Swiftness Draught's +8 % stays as it is | ruling 10 decided it; neither file is this lane's |
+| 1 | Amend `mounts.md` §3.1's pillar paragraph and `combat_stats.md` §3 to say the 4.4 > 4.0 inequality holds **except** for named, long-cooldown skills, of which Sprint is the first at **+25 % for 10 s every 300 s**; the Swiftness Draught's +8 % stays as it is | rulings 10 and 29 decided it; neither file is this lane's |
 | 2 | Add `combat_stats.md` §2's **cap-override paragraph** (§2.10): caps are absolute except for a named, time-limited, single-source override, and the Character page shows the raised cap while it runs | decided by ruling 10; it is WP11 lane X3's edit, not this lane's |
 | 3 | Retire the class trainer in `economy.md:92`, `items_crafting.md:2380`, `world.md:408` and `docs/research/post-wp40-readiness.md:81` | ruling 4 decided it; four files, none of them this lane's |
-| 4 | Correct the four shipped comments that assume a class change (`grug_inventory/equipment.lua:57`, `:501`, `:579`, `grug_core/combat.lua:110`) and remove `/class` | ruling 20 decided it; it is code, and this lane is docs-only (§3.10 lists the sites) |
-| 5 | Rename the two remaining "Holy tree" mentions to Mercy — `classes.md:459` and the comment `mods/PLAYER/grug_abilities/kits.lua:650` | bookkeeping after ruling 5's tree names; one is code |
+| 4 | Correct the five shipped comments that assume a class change (`grug_inventory/equipment.lua:57`, `:501`, `:579`, `grug_core/combat.lua:110`, `grug_abilities/init.lua:1775-1776`) and remove the `/class` registration at `grug_classes/selection.lua:594-595` — **not** the `:554-592` helper, which `/race` still needs | ruling 20 decided it; it is code, and this lane is docs-only (§3.10 lists the sites) |
+| 5 | Rename the two remaining "Holy tree" mentions to Mercy — the Renew row at `classes.md:464` and the comment at `mods/PLAYER/grug_abilities/kits.lua:650` | bookkeeping after ruling 5's tree names; one is code |
 | 6 | Correct `items_crafting.md:2425-2426`'s mcl_bows media line: two CC0 sounds and one CC BY 3.0, not "two attribution sounds, CC BY-SA 4.0" ([scout.md](scout.md) §4.1) | not this lane's file, and a `LICENSE-media.md` row copied from it would be wrong |
 | 7 | Fix three drifted citations **into** `mods/ENTITIES/mobs/api.lua`, held by three other files: `mounts.md:165` points at api.lua 2525-2526 where the line is **2531**, and the comments at `grug_mobs/golem.lua:67` and `grug_mobs/skeleton_archer.lua:65` both point at api.lua 2249 where the line is **2366** | found while writing `docs/research/mob-pressure-task-card.md`, which carries them; two are code comments |
+| 8 | **Re-tune Warrior rage** (ruling 25): swing **12 → 8** at all five `add_rage` sites (`grug_abilities/init.lua:939`, `:950`, `:966`, `:1915`, `:2099`), hit taken **4 → 3** (`:2109-2110`), and a **5 rage/s out-of-combat decay** on the existing `grug_core.in_combat` window (read at `:2201`). `classes.md` §3's table and its "+12 rage per auto-hit" tuning note (`:418`, `:430`) move with it. **Fallback if (b) overshoots**: leave the income alone and raise the prices instead — Mighty Blow 25 → 35, Hamstring 10 → 15 | it is `classes.md` §3 tuning plus code, for the WP11 / mob-pressure round; WP11's talents must then be re-checked against whichever number lands, because Stoke, Heavy Hand and Broadstroke all assume rage is a limiter |
+| 9 | Add the **ranged damage term** to `combat_stats.md` §2 (ruling 28): `weapon damage + floor(Dex/10)`, published as `grug_classes.get_ranged_bonus` beside `get_melee_bonus` (`grug_classes/stats.lua:34-36`) | a third damage term in a decided file; it lands with the Scout's lane S3, not with WP11 |

@@ -2,7 +2,7 @@
 
 **A task card, not an implementation.** No code was written, no engine was
 run. Written by the WP11 skill-tree lane because the Scout's kiting and
-stealth read on top of it ([`docs/design/scout.md`](../design/scout.md) §6.9),
+stealth read on top of it ([`docs/design/scout.md`](../design/scout.md) §6.3),
 but it is **not part of WP11** and belongs to a later lane of its own.
 
 Every number below is either measured in this tree at `70dda602` or quoted
@@ -177,7 +177,7 @@ incoming damage dismounts a rider.
 So raising mob speed has three named consequences the lane must decide with
 it, not after:
 
-1. **The Mage.** `classes.md:434-436` — "Frost Nova became the rotation pivot
+1. **The Mage.** `classes.md:439-441` — "Frost Nova became the rotation pivot
    — **kiting IS the Mage fantasy here**". Kiting distance per Frost Nova is
    `root_duration × (mob_speed − player_speed)` of ground *not* lost, plus the
    4 s standstill. At 4.4 the Mage loses 0.4 m/s while running; at 4.8 it is

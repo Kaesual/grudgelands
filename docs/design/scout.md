@@ -39,7 +39,7 @@ proposals and both carry one shared open-decisions list (`skill_trees.md` §6).
 | **Armour** | leather — armor class 2 (`inventory_equipment.md:184-193`) |
 | **Weapons** | bow (ranged) and dagger / 1H sword (melee) |
 | **Resource** | **mana** — ruling 14, decided. The bar is the shipped one (`grug_classes/stats.lua:25-31`, `10 + 2 × Int`); only its label on the HUD is the class's own |
-| **Trees** | **Quarry** (bow) and **Veil** (blade and evasion) — `skill_trees.md` §2.7/§2.8, names `skill_trees.md` §6.3 |
+| **Trees** | **Quarry** (bow) and **Veil** (blade and evasion) — `skill_trees.md` §2.7/§2.8, named by ruling 27 |
 | **Attributes** | Dexterity-led; growth proposed **+2 Dex / +1 Str / +1 Int** per level, against `combat_stats.md:40-41`'s Warrior +3 Str/+1 Dex, Mage +3 Int/+1 Dex, Priest +1 Str/+2 Int/+1 Dex |
 | **Role** | ranged damage that can also fight at knife range; the most evasive class in the game |
 
@@ -50,20 +50,21 @@ far under the 30 % caps, which is what leaves room for the dodge talents and
 the dodge windows of §2.
 
 The same growth gives Int `10 + 59 = 69`, so the mana pool is `10 + 2 × 69 =
-148` at level 60 against a Mage's 384 (`combat_stats.md:87-92`). That is the
+148` at level 60 against a Mage's 384 (`combat_stats.md:93-98`). That is the
 point of reusing mana rather than inventing a resource: the Scout gets the
 same bar with a much smaller pool, so the same ability costs bite harder. What
-scales an **arrow** is still open — `skill_trees.md` §6.4.
+scales an **arrow** is ruling 28: `weapon damage + floor(Dex/10)`, through a
+new `grug_classes.get_ranged_bonus` (`skill_trees.md` §7, task 9).
 
 Ruling 12 rules out poison and traps outright, and ruling 7 already did for
-poison: "no new combat mechanic". `classes.md:470-482` planned poison as "the
+poison: "no new combat mechanic". `classes.md:475-487` planned poison as "the
 **Rogue's** signature damage type" for a Phase-2 Rogue class; **that plan is
 superseded by the Scout** and the correction is made in `classes.md`'s own
 commit.
 
 ## 2. Base kit
 
-`classes.md:54` — "Three to four abilities per class in the MVP" — and ruling
+`classes.md:59` — "Three to four abilities per class in the MVP" — and ruling
 12 names all four and requires each to be built from a mechanic the game
 already runs. Four class abilities plus the universal Strike
 (`kits.lua:268`) put the Scout on keys 1-5, and `skill_trees.md` §3.4's
@@ -71,7 +72,7 @@ ceiling of two talent buttons puts the worst case at 7 of 8.
 
 | Ability | Kind | Cost | Cooldown | Effect | Existing mechanic it reuses |
 |---|---|---|---|---|---|
-| **Loose** | cast | 1 arrow | none (ammo-limited) | Requires a bow in the weapon slot. A **ballistic** arrow along the cast-time crosshair, 25 m, initial impulse from a bounded draw time, gravity supplying the trajectory | `grug_projectiles` — swept collision, owner validation, the per-owner active cap and max-distance cleanup are all shipped (`classes.md:282-285`); only gravity is new, and `combat_stats.md:249-252` already specifies it |
+| **Loose** | cast | 1 arrow | none (ammo-limited) | Requires a bow in the weapon slot. A **ballistic** arrow along the cast-time crosshair, 25 m, initial impulse from a bounded draw time, gravity supplying the trajectory | `grug_projectiles` — swept collision, owner validation, the per-owner active cap and max-distance cleanup are all shipped (`classes.md:287-290`); only gravity is new, and `combat_stats.md:249-252` already specifies it |
 | **Snare Shot** | cast | 8 mana + 1 arrow | 12 s | The arrow slows the target by 50 % for 4 s | `grug_mobs.slow` for mobs and `grug_mobs.slow_player` (`verbs.lua:140-169`) for players — the same verb Hamstring uses (`kits.lua:370-373`), and after ruling 11 a named modifier in the aggregator |
 | **Sidestep** | cast | 10 mana | 30 s | Dodge chance **+15** percentage points for 4 s, **inside** the 30 % cap. A base ability has no ranks; the Veil tree shortens its cooldown (Slip Away) and replaces it (Shake Loose) | `grug_classes.get_crit_chance`'s twin `get_dodge_chance` (`grug_classes/stats.lua:49`) and the timed-window table of `skill_trees.md` §3.2 |
 | **Sprint** ‼ | cast | 15 mana | **300 s** | Movement speed **+25 % for 10 s** — 5.0 nodes/s against every aggressive mob's 4.4 | the speed aggregator of `skill_trees.md` §3.9, as one named modifier with its own duration |
@@ -166,8 +167,8 @@ Ruling 12 asks for **ballistic arrows** — gravity, an impulse from draw time �
 while **Fireball stays straight**, "the trajectory is what makes the archer
 hard". That split is already the decided design:
 `combat_stats.md:249-252` gives the bow gravity and draw time,
-`classes.md:275-281` gives Fireball "no homing, gravity or splash", and
-`classes.md:282-285` says the shared collision foundation "must support later
+`classes.md:280-286` gives Fireball "no homing, gravity or splash", and
+`classes.md:287-290` says the shared collision foundation "must support later
 arrows". So no decided sentence has to change for it; one projectile
 registration gains a gravity term that `grug_projectiles` does not have today.
 
@@ -223,7 +224,7 @@ Ruling 12 in one table. Nothing here is rejected; it is sequenced.
 | Left out | Ruling | Where it went |
 |---|---|---|
 | **Invisibility** | 12: "no invisibility in version 1" | §8, whole, with rulings 8's detection rules and the three blocking conflicts it carries. The Veil capstone is **Untouchable** instead (`skill_trees.md` §2.8) — a strong, time-limited dodge window built from a stat the game already rolls |
-| **Poison** | 7 and 12 | nowhere. `classes.md:470-482`'s Phase-2 Rogue plan is retired in this lane's `classes.md` commit, so no work package owns a player poison stat any more |
+| **Poison** | 7 and 12 | nowhere. `classes.md:475-487`'s Phase-2 Rogue plan is retired in this lane's `classes.md` commit, so no work package owns a player poison stat any more |
 | **Traps** | 12 | nowhere. Ruling 7 allowed them "if cheap"; ruling 12 removed the option, and they were the one idea in the class that needed a placed-entity lifecycle |
 | **A third resource** | 14: the Scout uses mana | nowhere; §1 |
 | **A quiver item** | not ruled — simply not needed for v1 | `professions.md:52` already assigns it to the Leatherworker "later"; arrows stack in the main inventory until then |
@@ -279,11 +280,11 @@ five-minute cooldown is the price. What is still open is the paperwork:
 `mounts.md` §3.1 and `combat_stats.md` §3 have to say that the inequality
 holds *except* for named, long-cooldown skills, or the next reader files
 Sprint as a bug. Neither file is this lane's; `skill_trees.md` §7 task 1
-carries it, and the exact percentage and cooldown are `skill_trees.md` §6.5.
+carries it, and the exact numbers are ruling 29: **+25 % for 10 s on a 300 s cooldown**.
 
 ### 6.3 Faster mobs versus the Mage's kiting fantasy — **needs a rule**
 
-`classes.md:434-436`: "Frost Nova became the rotation pivot — **kiting IS the
+`classes.md:439-441`: "Frost Nova became the rotation pivot — **kiting IS the
 Mage fantasy here**." Kiting is a function of the same one inequality. The
 mob-pressure task card proposes making mobs "a bit faster"; every 0.1 the mob
 gains, the Mage's Frost Nova window loses, and the 25 m soft de-aggro
@@ -340,7 +341,7 @@ conflicts if version 1 had stealth (§8).
 | **Professions** | none created. The **Leatherworker** already owns the grades and the future quiver; the **Woodcarver** already owns the bow | `professions.md:52`, `:93-94`, `:192-195`; `items_crafting.md:2437-2441` |
 | **Traders** | the bowyer shelf gains its bracket tab (it explicitly has none today); the tanner shelf gains the leather grades | `grug_traders/stock.lua:428-435`, `:472-479` |
 | **Character visuals** | the six leather tints on the cloth silhouette, and the bow pose | `character_visuals.md:71-73` |
-| **`combat_stats.md`** | one sentence for the ranged damage term if `skill_trees.md` §6.4 picks (a), and the cap-override paragraph WP11 already owes | `grug_classes/stats.lua:34-36` |
+| **`combat_stats.md`** | one sentence for the ranged damage term of ruling 28, and the cap-override paragraph WP11 already owes | `grug_classes/stats.lua:34-36` |
 | **PvP (WP41)** | nothing in version 1. Sprint and Sidestep are ordinary buffs under the existing tag rules | `combat_stats.md:270-289` |
 | **`grug_visuals`, `grug_mobs` AI, nametags** | **nothing** — every one of those was an invisibility dependency (§8) | — |
 
@@ -356,7 +357,7 @@ moves to the mob-pressure lane that needs it anyway.
 | **S0 — design** | this file and `skill_trees.md` §2.7/§2.8 | — | **done** |
 | **S1 — bow and arrows** | the bow family (6 registrations + 6 sprites through the existing generator + the bracket tab), the below-ladder starter bow, the fourth wield pose, the player arrow item and its **ballistic** entity on `grug_projectiles`, the draw-time charge on the shipped charge-bar machinery (`classes.md` §2b), the Woodcarver recipes and the bowyer shelf | — | **L** |
 | **S2 — leather and the tanner line** | flip `grug_gear`'s leather ladder (24 items, 24 icons), the six tints on the borrowed cloth cut, armor class 2 for the new rank, the Leatherworker recipes and the tanner shelf | — | **M-L** |
-| **S3 — the class and its trees** | `grug_classes` registration (attributes, growth, colour), the four base abilities of §2, the class-selection entry, the starter grant, the ranged damage term of `skill_trees.md` §6.4, **and** the 16 talents of `skill_trees.md` §2.7/§2.8 — 10 numeric consumers, **2 new-skill keystones** (Pinning Shot, Opening), **3 replacements** (Twin Shot, Shake Loose and the capstone Longshot) and **1 capstone effect** (Untouchable) — plus the KAT rows | S1, S2, WP11 X1-X4, the aggregator | **L** |
+| **S3 — the class and its trees** | `grug_classes` registration (attributes, growth, colour), the four base abilities of §2, the class-selection entry, the starter grant, the ranged damage term of ruling 28, **and** the 16 talents of `skill_trees.md` §2.7/§2.8 — 10 numeric consumers, **2 new-skill keystones** (Pinning Shot, Opening), **3 replacements** (Twin Shot, Shake Loose and the capstone Longshot) and **1 capstone effect** (Untouchable) — plus the KAT rows | S1, S2, WP11 X1-X4, the aggregator | **L** |
 
 ### 7.3 My estimate, and what changed
 
@@ -395,7 +396,7 @@ the user wants stealth the design, the seam, the detection arithmetic and the
 three blocking conflicts are already written. The Veil capstone in version 1
 is **Untouchable** (`skill_trees.md` §2.8), not invisibility.
 
-The numbers below were open decision §6.15 of the previous revision of
+The numbers below were an open decision of an earlier revision of
 `skill_trees.md`; with stealth deferred they are simply undecided and
 unscheduled, and §6 of that file no longer carries them.
 
