@@ -1,6 +1,9 @@
 # WP13 wave 3, Lane K: Kezamba terrain and crops
 
-Branch `wp13-w3-kezamba-terrain`, on the wave-2 merge `f37a0c5b`. The package
+Branch `wp13-w3-kezamba-terrain`, rebased onto `1f5a2c32` (the Lane S merge,
+which also carries P, F and C); written against the wave-2 merge `f37a0c5b`
+and re-verified whole on the merged tree -- section 8.12 of the research note
+says what the rebase moved and what it did not. The package
 is written up in **`docs/research/wp13-kezamba.md` section 8**; this directory
 is the evidence behind every number in it, re-taken after the independent review
 and the fix round of 2026-09-16 (§8.3b: the apron's lake cone was rebuilt on the
@@ -75,10 +78,12 @@ bash tools/wp13/evidence/20260916-kezamba-terrain/refreeze_avenue.sh [SEED]
 | `mutations.txt` | the three crop mutations, each with the assertion that fires; the fourth (the apron itself) is `measurements/walls-before-9-seeds.txt` |
 | `kat/` | the KAT under both interpreters (identical), the `--walls` run, the interpreter pair |
 | `engine/full-<seed>/` | three `full` boots: both gate seeds and the user's world seed |
-| `engine/field-531802985935182545/` | the `field` boot, the committed mask cross-check, and the proof that the engine's own height field equals the offline planner's to the byte |
+| `measurements/capital-fields-base-1f5a2c32.txt` | the same six digests on the rebase target itself, which is what says neither P nor S moved any capital's terrain |
 | `renders/` | the plateau from above before beside after, the west pad edge in section, and the two fields with their real node textures |
 | `static/static.txt` | parser, SETGLOBAL, the five plain-5.1 sweeps, the fresh-server audit |
 | `measurements/capital-lots-refusal.txt` | `tools/wp13/capital_lots.lua` refuses this capital by design -- "the composition of kezamba publishes no quadrants module", because its districts are pinned to the ground rather than permuted with the seed. `kezamba_lots.lua` is its predicate and asks the same four questions on nine seeds instead of two |
+| `measurements/plot-footprints.txt` | every plot's built extent against its own lot, tightest last -- the check `totem_f2` (reach 5, carrying `totem_posts`) has to pass after two repairs |
+| `renders/cenote-crossing-with-lane-s-streets.png` | the crossing over the cenote with Lane S's carriageway and junction plateau in place of the boardwalk this lane shipped |
 | `capital_fields.lua` | the per-capital field digest tool (see above) |
 | `refreeze_avenue.sh` | one command that re-takes the avenue digest from a clean engine pass |
 | `static.sh` | the static gates |
@@ -94,16 +99,25 @@ warm-up, so 3-8 minutes each was projected and 2 minutes was measured; nothing
 came near the runner's own 1500 s timeout. `pgrep -af 'luanti.bin --server'`
 showed no process on this block after every one.
 
+These are the boots of the LANE S REBASE round, on the merged tree. The earlier
+rounds' boots are superseded and their directories are gone with them; the note
+carries their numbers.
+
 | seed | mode | chunks | steady mean | control | worst plot fall | sockets | ERROR | ModError | audit |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `531802985935182545` | full | 66 | 0.482 s | 2.280 s | 5 | 262 | 0 | 0 | 0 |
-| `8675309` | full | 64 | 0.495 s | 2.493 s | 6 | 262 | 0 | 0 | 0 |
-| `15912857179583385436` | full | 66 | 0.449 s | 2.139 s | 5 | 262 | 0 | 0 | 0 (1 Highcourt's, below) |
-| `531802985935182545` | field | - | - | - | - | - | 0 | 0 | - |
+| `531802985935182545` | full | 66 | 0.491 s | 2.283 s | 5 | 262 | 0 | 0 | 0 |
+| `15912857179583385436` | full | 66 | 0.471 s | 2.402 s | 5 | 262 | 0 | 0 | 0 |
 
-A fifth boot re-froze the avenue digest through `refreeze_avenue.sh` itself,
-which is how that script's own two fix-round corrections (the port from
-`WP13_CAPITAL_PORT`, the `main=` stamp from the merge base) were checked.
+The gate-seed boot IS the re-freeze: it was run through
+`refreeze_avenue.sh`, which is also how that script's own two fix-round
+corrections were checked -- it took its port from `WP13_CAPITAL_PORT` and
+stamped `main=1f5a2c32`, the merge base.
+
+**The Highcourt terrain-audit warning is gone.** The user's-seed boot of the fix
+round logged `WP13 highcourt: the plot martial_wood_yard ... rise 10 against a
+clear of 8`; on the merged tree that boot logs no finding at all, because Lane P
+moved Highcourt's thirteen lots that nine worlds refuse. It was never this
+lane's and it is now nobody's.
 
 `engine/full-15912857179583385436/findings.txt` carries the one load-time
 terrain-audit warning any of these boots produced, and it is HIGHCOURT'S
@@ -113,10 +127,12 @@ Highcourt's whole terrain field is byte-identical on that seed
 (`measurements/capital-fields-*.txt`), so it is not this lane's. Kezamba's own
 count is 0 on all three.
 
-`core_road_digest = eafdce922db68f98366c0da49823bfe9bb1e81d63328b6d2315a748af0203056`
-on all three, which is the value section 6d of the research note recorded before
-this lane: **the built civic core did not move**, through two different versions
-of the apron. The avenue digest did, because the road walks the ground, and is
+`core_road_digest = 525b6eb54b7ea5c09f52ce7fd7faed187dd315bb9579ea0959e42c3f6a2e9c57`
+on both. It read `eafdce92...` -- the value section 6d recorded before this lane
+existed -- on every boot of this lane's own two apron versions, which is what
+says **the built civic core did not move for the apron**; what moved it is Lane
+S rebuilding the streets that cross the core, since the digest reads back ROAD
+cells. The avenue digest did, because the road walks the ground, and is
 re-frozen at
 `tools/wp13/evidence/20260915-capital-terrain/kezamba/avenue-digest-531802985935182545.txt`.
 

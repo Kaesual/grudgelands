@@ -1304,8 +1304,11 @@ Three `full` boots -- both gate seeds and the user's world seed -- and one
 163 walkers 21` on all three, and `WP13 capital pass PASS: kezamba full` on all
 three.
 
-**One load-time terrain-audit finding on the user's seed, and it is
-HIGHCOURT'S.** `WP13 highcourt: the plot martial_wood_yard at offset -196,-212
+**One load-time terrain-audit finding on the user's seed, and it is HIGHCOURT'S
+-- and on the merged tree it is gone.** Lane P moved Highcourt's thirteen lots
+that nine worlds refuse, so the same boot on `1f5a2c32` logs no finding at all
+(§8.12). What follows is what this lane measured before that landed, kept
+because it is what the fix round's own evidence says: `WP13 highcourt: the plot martial_wood_yard at offset -196,-212
 ... rise 10 against a clear of 8` -- which is, word for word, the round-1
 playtest finding `tools/wp13/capital_lots.lua`'s own header records as the
 reason that tool exists. It cannot be this lane's: Highcourt's whole +-250
@@ -1321,6 +1324,12 @@ it reads back out of the finished map inside the civic core -- is
 seeds, which is exactly the value §6d recorded before this lane existed. The
 apron never touches a column with `civic_outside == 0`, so the pad is the same
 pad and the city on it is the same city, to the byte, in the built map.
+
+(That number is this lane's own, taken before the Lane S rebase. On the merged
+tree it reads `525b6eb5...`, because the digest reads back ROAD cells inside the
+core and Lane S rebuilt the streets that cross it -- §8.12. What it says about
+the apron is unchanged: it held across both of this lane's apron versions, and
+what moved it afterwards was somebody else's road.)
 
 **The avenue digest DID move, and is re-frozen from the pass that moved it**
 (`tools/wp13/evidence/20260915-capital-terrain/kezamba/avenue-digest-531802985935182545.txt`,
@@ -1403,6 +1412,66 @@ every offline number in this section the running server's answer too.
    It is 0 on all nine seeds; if a future edit changes the cone in `height.lua`
    and not in the tool, it stops being 0.
 
+### 8.12 The Lane S rebase, done
+
+Rebased onto `1f5a2c32` ("Merge Lane S: one street rule for all six capitals"),
+which also carries Lane P (Highcourt's lots on nine seeds, `parts.lua`'s SHAPED
+roof corners, the troll palette's castle roles and this KAT's section 6
+rewritten to the junglewood roof), Lane F (`grug_fishing`) and Lane C
+(`grug_smelting`). Fourteen commits replayed; **one textual conflict**, the
+avenue digest, which is a value this lane re-takes from an engine pass anyway.
+Everything else git merged, and each merge was checked by hand and by gate:
+
+* `wp13/troll_palette.lua` -- P's castle-role rebinding and its written-down
+  reason for keeping the roof timber, beside this lane's `M.CROP` and `M.VINE`.
+  Four handles, all present.
+* `tools/wp13/kezamba_lots.lua` -- S's viaduct-aware `gates` (the junction
+  squares off `overlay_runs`, the `wet(x, z)` the seam now hands the road, and
+  the rule that a cell over ground the road itself raised is a viaduct and not a
+  floating cell) beside this lane's `repair` mode and its reach ladder.
+* `tools/wp13/kezamba_kat.lua` -- P's `roof_family` section and S's street rows
+  beside this lane's `crops` section. The KAT's own row now carries all three.
+* `tools/wp13/final_micro.lua` -- untouched by this lane, so S's added row
+  stands as it is.
+
+**Neither P nor S moved any capital's terrain.** The per-capital field digests
+on `1f5a2c32` are the same six values `f37a0c5b` gave, to the byte, on the gate
+seed -- so `measurements/capital-fields-before.txt` is still the right baseline
+and the 15-of-18 comparison in §8.6 is unchanged in meaning.
+
+What the rebase moved, and what it did not:
+
+| | |
+| --- | --- |
+| Kezamba's KAT row | the `overlay` section is now S's: **12 of 12** runs, its own cell counts and the digest `ef2b0bc1...`, where this lane had 12 of 11 and `3369caec...`. P's `roof_family/junglewood/...` section is new beside it. The `crops`, `core`, `mask`, `plots` and `sockets` sections are this lane's, unchanged |
+| the micro pair | moves with that row, as §8.11.3 said it would: `1c33cb5d...` -> **`4d41e72a...`**, byte-identical under LuaJIT and PUC 5.1 |
+| the avenue digest | re-taken on the merged tree through `refreeze_avenue.sh`: `96307e93...`/1 993 cells -> **`a0cc1bdf...`/2 345 cells**, stamped `main=1f5a2c32`, which is the merge base and is what the script's fix-round correction is for. The extra 352 cells are S's wider carriageway and its junction plateau |
+| `capital_terrain_fixture` | Kezamba's two rows are **exactly** the values this lane re-took before the rebase, 77 under 85 and 95 under 105 |
+| the six start identities | `0bbf87a7...`, unchanged |
+| Highcourt's blueprint digests | `a66a6919...` -- moved by P, and **identical on `1f5a2c32` itself**, so not this lane's |
+| `quality_geometry_micro_kat`, `r7/run.sh unit` | byte-identical |
+| the wet mask, the civic reference, the water surface | `--verify` green on all nine seeds, 0 disagreements, 66 and 65 |
+| `--walls` | **row for row identical to the pre-rebase run** -- cone step 3 over 77 397 columns, 0 live prune edges, pad face 3 on all nine seeds, worst land wall 8 to 11, `apron_faces` 0 and `apron_below` 0 everywhere |
+| `check` / `walk` / `gates` | PASS on all nine seeds, and `gates` is now S's viaduct-aware rule: step 0, 0 floating, 0 refusals, with the cells over the cenote counted as `on_pillars` rather than as floating |
+| the per-capital field digests | 15 of 18 rows unchanged against `1f5a2c32`, the three that move are Kezamba's, and Kezamba's own gate-seed value is `c0e676d4...` -- the same one this lane measured before the rebase |
+| the built civic core | `core_road_digest` moved to `525b6eb5...`, and that is S's: the digest reads back ROAD cells inside the core and S rebuilt the streets. It held at `eafdce92...` across both of this lane's own apron versions |
+
+**`totem_f2` still holds its plot footprint.** The lot is reach 5 and carries
+`totem_posts`, whose yard IS its reach; measured over all 52 plots
+(`measurements/plot-footprints.txt`), its built extent is x -5..5, z -5..5,
+1 410 cells, exactly its own lot and no wider -- which is the rule the KAT
+asserts as "wider than the lot it was measured on". Every `yard = {}` plot in
+this capital sits at slack 0 by construction, and none is negative.
+
+**And the crossing now carries S's streets.**
+`renders/cenote-crossing-with-lane-s-streets.png` is the capital's own flat plan
+over the cenote quarter: the boardwalk-on-piers this lane shipped is now S's
+stone carriageway with its kerbs and lamp standards, and the ring street meets
+the east avenue on one of S's junction plateaus out over the water. The apron is
+not in that picture -- a plan is drawn flat - but the two changes are
+independent by construction: S owns the road over the water, this lane owns the
+ground beside it, and `gates` measures the seam between them at step 0.
+
 ### 8.11 What is open
 
 1. **THE CENOTE'S BED IS STILL A TWELVE-NODE WALL, under the water.**
@@ -1439,7 +1508,7 @@ every offline number in this section the running server's answer too.
    | what moves | how it is re-taken |
    | --- | --- |
    | `evidence/20260915-capital-terrain/kezamba/avenue-digest-531802985935182545.txt` | `bash tools/wp13/evidence/20260916-kezamba-terrain/refreeze_avenue.sh` (one engine pass, refuses anything but a clean one) |
-   | `evidence/20260916-kezamba-terrain/kat/kezamba-kat-luajit.txt` and `-puc51.txt` | the KAT's `overlay/…/3369caec…` row is built from `avenue.lua` over the ground; re-run it under both interpreters and compare |
+   | `evidence/20260916-kezamba-terrain/kat/kezamba-kat-luajit.txt` and `-puc51.txt` | the KAT's `overlay/…` row is built from `avenue.lua` over the ground; re-run it under both interpreters and compare. (Done: `3369caec…`/12 of 11 runs -> `ef2b0bc1…`/12 of 12, S's streets.) |
    | `evidence/20260916-kezamba-terrain/kat/micro-output.tsv` and `micro-pair.sha256` | `tools/wp13/final_micro.lua` concatenates that KAT row, so `1c33cb5d…` moves with it. **`final_micro.lua`'s rows are in Lane S's declared ownership**, which makes this a live cross-lane collision rather than a K-side chore |
    | `measurements/lots-gates-after.txt` | `luajit tools/wp13/kezamba_lots.lua . gates` reads where the avenue arrives, and `kezamba_ramp` is Lane S's file |
 

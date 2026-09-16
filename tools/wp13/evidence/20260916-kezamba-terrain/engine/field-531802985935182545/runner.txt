@@ -1,5 +1,0 @@
-exit=0 errors=0 complete=1 log=/tmp/grug-w3-K-r4-field-531802985935182545/server.log
-WP13 capital pass PASS: kezamba field /tmp/grug-w3-K-r4-field-531802985935182545
-engine.sh mode=field seed=531802985935182545 exit=0 seconds=39
-no server on 31100
--- done field 531802985935182545

@@ -1,8 +1,0 @@
-avenue overlay digest recorded (no committed value for seed 8675309 yet)
-rampart: this capital publishes no such overlay region
-corner: this capital publishes no such overlay region
-gate: this capital publishes no such overlay region
-WP13 capital pass PASS: kezamba full /tmp/grug-w3-K-r4-full-8675309
-engine.sh mode=full seed=8675309 exit=0 seconds=118
-no server on 31100
--- done full 8675309
