@@ -235,6 +235,9 @@ function hero:get_player_control() return {dig=self.dig} end
 function hero:hud_add(def)
 	local id=#self.huds+1 self.huds[id]=copy_table(def) return id
 end
+function hero:get_breath() return 10 end
+function hero:hud_set_flags() end
+function hero:hud_remove() end -- round 4: the bars hide the builtin hearts
 function hero:hud_change(id, key, value)
 	self.hud_changes=self.hud_changes+1 self.huds[id][key]=value
 end
@@ -278,6 +281,9 @@ local function queue(...)
 	for i=1,select("#",...) do ray_queue[#ray_queue+1]=select(i,...) end
 end
 
+-- Round 4 (HUD bars): grug_abilities builds its bars from
+-- grug_core.hud_layout at join; the real file calls nothing from core.
+dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
 dofile(repo .. "/mods/PLAYER/grug_abilities/init.lua")
 for _, fn in ipairs(mods_loaded) do fn() end
 for _, fn in ipairs(joins) do fn(hero) end

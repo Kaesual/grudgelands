@@ -574,11 +574,16 @@ grug_abilities = {
 	set_target = function() end,
 	get_target = function() return nil end,
 	add_rage = function() end,
+	-- Round 4 (WP11 phase 1): kits.lua composes Strike's description from
+	-- the rage ledger constant that init.lua publishes.
+	RAGE_PER_SWING = 8,
 }
 local spell_bonus = 4
 grug_classes = {
 	get_spell_power_bonus = function() return spell_bonus end,
 	get_race_perk = function() return nil end,
+	-- Round 4 (WP11 phase 1): the kits read talent bonuses; 0 = untalented.
+	get_talent_bonus = function() return 0 end,
 }
 grug_mobs = {slow=function() end, root=function() end}
 local real_fireball_damage = {}

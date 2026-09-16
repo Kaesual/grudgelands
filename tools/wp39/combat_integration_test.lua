@@ -204,6 +204,8 @@ grug_core = {}
 
 local class_callbacks = {}
 grug_classes = {
+	-- Round 4 (WP11 phase 1): abilities and the HUD read talent bonuses; 0 = untalented.
+	get_talent_bonus = function() return 0 end,
 	registered_classes = {
 		warrior = {name = "Warrior"},
 		mage = {name = "Mage"},
@@ -319,6 +321,9 @@ function Player:hud_add(def)
 	self.huds[id] = copy_table(def)
 	return id
 end
+function Player:get_breath() return 10 end
+function Player:hud_set_flags() end
+function Player:hud_remove() end -- round 4: the bars hide the builtin hearts
 function Player:hud_change(id, key, value)
 	self.hud_changes = self.hud_changes + 1
 	self.huds[id][key] = value
@@ -434,6 +439,9 @@ grug_core.combat_debug_enabled = function() return false end
 grug_core.combat_debug_due = function() return false end
 grug_core.combat_debug_log = function() error("disabled debug formatted") end
 
+-- Round 4 (HUD bars): grug_abilities builds its bars from
+-- grug_core.hud_layout at join; the real file calls nothing from core.
+dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
 dofile(repo .. "/mods/PLAYER/grug_abilities/init.lua")
 for _, fn in ipairs(callbacks.mods_loaded) do fn() end
 
@@ -458,8 +466,13 @@ local function swing_pass(dtime)
 	globalsteps[1](dtime or 0.05)
 end
 local function reticle(player)
+	-- Round 4: the HUD bars' fill strips are images at z_index 1 too, so the
+	-- reticle is told apart by its anchor, the screen centre.
 	for _, def in ipairs(player.huds) do
-		if def.type == "image" and def.z_index == 1 then return def end
+		if def.type == "image" and def.z_index == 1
+				and def.position and def.position.y == 0.5 then
+			return def
+		end
 	end
 	error("missing ready reticle")
 end
@@ -504,7 +517,8 @@ now = 50000
 swing_pass()
 assert(enemy_a.punches == 0 and enemy_b.punches == 1)
 assert(reticle(hero).text == "")
-assert(grug_abilities.get_rage(hero) == 12)
+-- Ruling 25 (2026-09-16) tunes rage per swing; the ledger constant is the truth.
+assert(grug_abilities.get_rage(hero) == grug_abilities.RAGE_PER_SWING)
 assert(hero.inventory.writes == 0,
 	"ready/aim/settlement reticle transitions must not rewrite inventory")
 
@@ -522,7 +536,9 @@ swing_pass()
 assert(enemy_a.punches == 1)
 assert(enemy_a.last_context.proc.id == "mighty_blow")
 assert(enemy_a.last_context.extra_damage == 3) -- floor(6 * 1.5) - 6
-assert(grug_abilities.get_rage(hero) == 29) -- 42 - 25 + 12
+-- one swing's rage + 30 added, minus Mighty Blow's 25, plus the landed swing
+assert(grug_abilities.get_rage(hero) ==
+	grug_abilities.RAGE_PER_SWING + 30 - 25 + grug_abilities.RAGE_PER_SWING)
 assert((enemy_a.entity.temp.grug_threat.hero or 0) > 0)
 
 -- A valid-ray combat miss consumes cadence but pays no proc cost/rage/effect.
@@ -543,6 +559,11 @@ enemy_a.mode = "accepted"
 
 -- Hamstring's post effect, cost and charge reset are all accepted-settlement
 -- effects. An immune attempt leaves all three armed and unpaid.
+-- Ruling 19 (2026-09-16): Hamstring left the Warrior base kit and is Ruin's
+-- keystone; the kit item arrives with the talent grant (WP11 phase 2). The
+-- test hands it over directly, since the settlement rules under test are the
+-- ability's own and do not depend on how it was granted.
+hero.inventory.main[#hero.inventory.main + 1] = ItemStack("grug_abilities:hamstring")
 select_item(hero, "grug_abilities:hamstring")
 grug_abilities.add_rage(hero, 40)
 local hamstring = grug_abilities.registered.hamstring
@@ -558,7 +579,8 @@ enemy_a.mode = "accepted"
 queue_ray({pointed(enemy_a)})
 swing_pass()
 assert(slows == 1)
-assert(grug_abilities.get_rage(hero) == rage_before - 10 + 12)
+assert(grug_abilities.get_rage(hero) ==
+	rage_before - 10 + grug_abilities.RAGE_PER_SWING)
 assert(not grug_abilities.charge_ready(hero, hamstring))
 
 -- Concrete weapon replacement starts one full NEW interval and hides the
@@ -638,7 +660,7 @@ now = 14500000
 queue_ray({pointed(hostile_player)})
 swing_pass()
 assert(hostile_player:get_hp() == hostile_hp - 6)
-assert(grug_abilities.get_rage(hero) == 12)
+assert(grug_abilities.get_rage(hero) == grug_abilities.RAGE_PER_SWING)
 
 -- The full authoritative PvP equivalent resolves crit before armor, then one
 -- integer HP change. Weapon B: 8 * 1.5 crit -> 12 -> 50% armor = 6.
@@ -650,7 +672,7 @@ now = 16000000
 queue_ray({pointed(hostile_player)})
 swing_pass()
 assert(hostile_player:get_hp() == hostile_hp - 6)
-assert(grug_abilities.get_rage(hero) == 12)
+assert(grug_abilities.get_rage(hero) == grug_abilities.RAGE_PER_SWING)
 hero.crit = 0
 hostile_player.armor = 0
 
@@ -681,7 +703,7 @@ assert(hostile_player:get_hp() == hp_one and hostile_two:get_hp() == hp_two)
 assert(grug_abilities.get_rage(hero) == 0)
 ordinary_punch(hostile_player, 0.4)
 assert(hostile_player:get_hp() == hp_one - 1)
-assert(grug_abilities.get_rage(hero) == 12)
+assert(grug_abilities.get_rage(hero) == grug_abilities.RAGE_PER_SWING)
 
 grug_core.reset_accumulated_melee(hero)
 grug_abilities.add_rage(hero, -100)
@@ -700,7 +722,7 @@ grug_core.set_absorb(hostile_two, 0.5, 10)
 ordinary_punch(hostile_two, 0.5)
 ordinary_punch(hostile_two, 0.5)
 assert(hostile_two:get_hp() == hp_two - 0.5)
-assert(grug_abilities.get_rage(hero) == 12)
+assert(grug_abilities.get_rage(hero) == grug_abilities.RAGE_PER_SWING)
 
 -- Hostile casts share the current server ray and never read enemy memory or
 -- trust their client pointed argument. Empty/blocking/friendly/out-of-range

@@ -629,8 +629,8 @@ assert_equal(changed.pos.x, -550, "changed race spawn x")
 assert_equal(changed.teleports, 1, "changed identity final teleport")
 
 -- The faction admin path joins the coordinator instead of launching an
--- independent early teleport, and a first admin-picked class stays transient
--- until that one commit.
+-- independent early teleport, and the first class picked afterwards stays
+-- transient until that one commit.
 local administered = new_player("administered")
 join(administered, true)
 run_after()
@@ -642,8 +642,10 @@ assert(faction_ok, "admin faction set")
 assert_equal(#emerge_requests, administered_requests,
 	"admin faction reuses the coordinator load")
 assert_equal(administered.teleports, 0, "admin faction no early teleport")
-local class_ok = chatcommands.class.func("admin", "administered priest")
-assert(class_ok, "admin class set")
+-- Ruling 20 (2026-09-16) removed the class change entirely: there is no
+-- /class command, for admins either. The class is chosen on the form.
+assert_equal(chatcommands.class, nil, "no /class command (ruling 20)")
+receive(administered, "grug_classes:class", {choose_priest = true})
 assert_equal(grug_classes.get_class(administered), nil,
 	"admin first class remains transient")
 assert_dark_form(administered, "grug_classes:loading", "admin class loading")

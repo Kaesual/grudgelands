@@ -109,6 +109,8 @@ core = {
 
 local class_callbacks = {}
 grug_classes = {
+	-- Round 4 (WP11 phase 1): abilities and the HUD read talent bonuses; 0 = untalented.
+	get_talent_bonus = function() return 0 end,
 	registered_classes = {
 		warrior={name="Warrior"}, mage={name="Mage"}, priest={name="Priest"},
 	},
@@ -167,6 +169,8 @@ grug_core = {
 	combat_eye_pos = function(player)
 		return vector.offset(player:get_pos(), 0, 1.5, 0)
 	end,
+	-- Round 4 (WP11 phase 1): Warded Wrath gates on the absorb; 0 = none up.
+	get_absorb = function() return 0 end,
 	deal_ability_damage = function(owner, target, amount)
 		damage_events[#damage_events + 1] = {
 			owner=owner, target=target, amount=amount,
@@ -215,6 +219,9 @@ local function player(name, class, faction)
 	function obj:get_wield_index() return 1 end
 	function obj:hud_add() self.hud=self.hud+1; return self.hud end
 	function obj:hud_change() end
+	function obj:get_breath() return 10 end
+	function obj:hud_set_flags() end -- round 4: the bars hide the builtin hearts
+	function obj:hud_remove() end
 	return obj
 end
 
@@ -229,6 +236,9 @@ local function mob(name, faction)
 	return obj
 end
 
+-- Round 4 (HUD bars): grug_abilities builds its bars from
+-- grug_core.hud_layout at join; the real file calls nothing from core.
+dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
 dofile(repo .. "/mods/PLAYER/grug_abilities/init.lua")
 assert(projectile_defs.fireball and projectile_defs.fireball.speed == 20)
 assert(projectile_defs.fireball.max_distance == 20
