@@ -172,14 +172,12 @@ record("stats", stat_lines)
 
 local hp_elite, damage_elite, xp_elite = grug_mobs.stats_for(60, "elite")
 local hp_rare, damage_rare, xp_rare = grug_mobs.stats_for(60, "rare")
-local hp_boss, damage_boss, xp_boss = grug_mobs.stats_for(60, "boss")
+local hp_boss = grug_mobs.stats_for(60, "boss")
 assert_equal(table.concat({hp_elite, damage_elite, xp_elite}, ","),
 	"8088,68.4,2400", "elite multipliers")
 assert_equal(table.concat({hp_rare, damage_rare, xp_rare}, ","),
 	"13480,83.6,3600", "rare multipliers")
-assert_equal(table.concat({hp_boss, damage_boss, xp_boss}, ","),
-	"53920,38,600", "boss multipliers")
-assert_equal(grug_mobs.tier_telegraphs("boss"), true, "boss telegraph")
+assert_equal(hp_boss, 53920, "boss HP multiplier")
 local critter_hp, _, critter_xp = grug_mobs.stats_for(60, "critter")
 assert_equal(critter_hp, 1, "critter HP")
 assert_equal(critter_xp, 0, "critter XP")
@@ -193,10 +191,6 @@ assert_equal(tag, "Boss Test [Lv 60] 2.3k/54k", "tag k-format")
 record("tag", {tag})
 
 grug_mobs.register_level_cfg("test:mob", {})
-local boss_def = {}
-boss_def._grug_tier = "boss"
-grug_mobs.register_level_cfg("test:boss", boss_def)
-assert_equal(boss_def.armor, 60, "boss registered armor")
 assert_equal(grug_mobs.kill_xp({name = "test:mob", _grug_level = 60,
 	_grug_tier = "elite"}, 10), 600, "recipient XP level cap")
 record("xp_cap", {600})
@@ -259,7 +253,46 @@ local mob_api = mob_env.grug_mobs
 mob_api.kill_xp = level_api.kill_xp
 mob_api.tag_player = noop
 mob_api.rare_killed = noop
+mob_api.register_level_cfg = noop
+mob_api.register_spawn_role = noop
+mob_api.install_flight_nudge = noop
 grug_core.run_player_hit_mob = noop
+
+local death_def
+mobs.register_mob = function(self, name, def)
+	if name == "test:death" then death_def = def end
+end
+mob_api.register_mob("test:death", {})
+assert(death_def and death_def.on_death,
+	"registered mob must install the universal XP death settlement")
+local old_on_die_calls = 0
+local on_die_def = {on_die = function() old_on_die_calls = old_on_die_calls + 1 end}
+mob_api.register_mob("test:on_die", on_die_def)
+local on_die_mob = {temp = {}, object = {
+	get_pos = function() return {x = 0, y = 0, z = 0} end,
+}}
+on_die_def.on_die(on_die_mob, {x = 0, y = 0, z = 0})
+assert_equal(on_die_mob.temp.grug_xp_settled, true, "on_die settlement")
+assert_equal(old_on_die_calls, 1, "original on_die callback")
+
+local function find_upvalue(func, wanted, seen)
+	seen = seen or {}
+	if seen[func] then return nil end
+	seen[func] = true
+	local index = 1
+	while true do
+		local name, value = debug.getupvalue(func, index)
+		if not name then return nil end
+		if name == wanted then return value end
+		if type(value) == "function" then
+			local found = find_upvalue(value, wanted, seen)
+			if found then return found end
+		end
+		index = index + 1
+	end
+end
+local participant_index = assert(find_upvalue(
+	mob_api.mark_xp_participant, "participant_mobs"))
 
 local alice = xp_player("alice", {x = 0, y = 0, z = 0}, "accord", 8100)
 local bob = xp_player("bob", {x = 2, y = 0, z = 0}, "accord", 8100)
@@ -285,9 +318,19 @@ alice.hp = 20
 grug_core.heal_player(bob, alice, 1)
 enemy.health = 10
 mob_api.accepted_player_punch(enemy, alice, 10, 10, 1)
+-- The final player hit only records participation. An unrelated universal
+-- death callback settles the group, and a repeated settlement is inert.
+assert_equal(grug_xp.get_xp(alice), 8100, "XP before universal death")
+death_def.on_death(enemy, nil)
 assert_equal(grug_xp.get_xp(alice), 8150, "damager split XP")
 assert_equal(grug_xp.get_xp(bob), 8150, "healer split XP")
 assert_equal(grug_xp.get_xp(cara), 8100, "out-of-range participant XP")
+assert_equal(enemy.temp.grug_xp_settled, true, "death settlement flag")
+assert_equal(mob_api.award_kill_xp(enemy), false, "idempotent XP settlement")
+assert_equal(grug_xp.get_xp(alice), 8150, "no duplicate settled XP")
+assert_equal(participant_index.alice, nil, "damager reverse-index cleanup")
+assert_equal(participant_index.bob, nil, "healer reverse-index cleanup")
+assert_equal(participant_index.cara, nil, "range reverse-index cleanup")
 record("split", {grug_xp.get_xp(alice), grug_xp.get_xp(bob),
 	grug_xp.get_xp(cara)})
 
@@ -299,6 +342,7 @@ guard.object = {
 	get_pos = function() return {x = 0, y = 0, z = 0} end,
 }
 mob_api.accepted_player_punch(guard, alice, 10, 10, 1)
+death_def.on_death(guard, nil)
 assert_equal(grug_xp.get_xp(alice), 8150, "own-faction kill XP")
 record("friendly", {grug_xp.get_xp(alice)})
 
@@ -311,6 +355,7 @@ gray.object = {
 	get_pos = function() return {x = 0, y = 0, z = 0} end,
 }
 mob_api.accepted_player_punch(gray, veteran, 10, 10, 1)
+death_def.on_death(gray, nil)
 assert_equal(grug_xp.get_xp(veteran), 10000, "gray kill XP")
 record("gray", {grug_xp.get_xp(veteran)})
 

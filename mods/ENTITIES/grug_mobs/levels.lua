@@ -9,7 +9,7 @@
 --   damage = 2 + 0.3*L + 0.005*L^2   XP = 10*L
 --   elite: x3 HP, x1.8 dmg, x4 XP, armor 80, scale x1.6, gold tint
 --   rare:  x5 HP, x2.2 dmg, x6 XP, armor 70, scale x2,   violet tint
---   boss:  x20 HP, base dmg/XP, armor 60 (registered for future content)
+--   boss:  x20 HP only (registered for future content)
 --
 -- ENGINE vs. DEF CONTRACT (the one rule for the whole mod):
 --   * HP (hp_min/hp_max/health), damage and XP are ALWAYS engine-owned.
@@ -78,15 +78,15 @@ local TIERS = {
 	-- UTF-8 written literally: \u{} escapes are LuaJIT-only (luanti-lua.md).
 	rare = {hp = 5, dmg = 2.2, xp = 6, armor = 70, scale = 2,
 		tint = "#a64dff:90", prefix = "★ ", telegraph = true},
-	boss = {hp = 20, dmg = 1, xp = 1, armor = 60, scale = 1,
-		tint = nil, prefix = "Boss ", telegraph = true},
+	boss = {hp = 20, dmg = 1, xp = 1, armor = nil, scale = 1,
+		tint = nil, prefix = "Boss "},
 }
 
 local function tier_def(tier)
 	return TIERS[tier] or TIERS.normal
 end
 
--- Does this tier use the elite/rare/boss wind-up (telegraph.lua)? POSITIVE test,
+-- Does this tier use the elite/rare wind-up (telegraph.lua)? POSITIVE test,
 -- deliberately: the negative form `tier ~= "normal"` silently included every
 -- tier added later — the critter being exactly that case (biomes_mobs.md
 -- §3.0: "the telegraph gate must be a positive elite/rare test").

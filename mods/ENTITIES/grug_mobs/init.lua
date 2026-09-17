@@ -125,6 +125,9 @@ grug_core.register_on_effective_heal(function(healer, target, amount)
 			mobs_for_target[object] = nil
 		end
 	end
+	if next(mobs_for_target) == nil then
+		participant_mobs[target_name] = nil
+	end
 end)
 
 local function within_xp_range(player, pos)
@@ -138,11 +141,16 @@ local function within_xp_range(player, pos)
 	return dx * dx + dy * dy + dz * dz <= 40 * 40
 end
 
--- Award the kill once, at the accepted lethal boundary. Eligible participants
+-- Settle XP once at the universal mob-death boundary. Eligible participants
 -- are online and within 40 m at death; each receives their own capped/gray
 -- value divided by the same eligible head count. Friendly-faction recipients
 -- receive nothing from their own guards.
 function grug_mobs.award_kill_xp(self)
+	self.temp = self.temp or {}
+	if self.temp.grug_xp_settled then
+		return false
+	end
+	self.temp.grug_xp_settled = true
 	local participants = self.temp and self.temp.grug_xp_participants or {}
 	local death_pos = self.object and self.object:get_pos()
 	local names = {}
@@ -180,8 +188,12 @@ function grug_mobs.award_kill_xp(self)
 		local set = participant_mobs[names[i]]
 		if set then
 			set[self.object] = nil
+			if next(set) == nil then
+				participant_mobs[names[i]] = nil
+			end
 		end
 	end
+	return true
 end
 
 -- Formal accepted-hit hook called by the vendored on_punch path only AFTER
@@ -216,10 +228,6 @@ function grug_mobs.accepted_player_punch(self, hitter, damage, applied, fraction
 			not self.temp.grug_rare_death_sent then
 		self.temp.grug_rare_death_sent = true
 		grug_mobs.rare_killed(self._grug_rare_id)
-	end
-	if lethal and not self.temp.grug_xp_awarded then
-		self.temp.grug_xp_awarded = true
-		grug_mobs.award_kill_xp(self)
 	end
 end
 
@@ -478,6 +486,24 @@ function grug_mobs.register_mob(name, def)
 	-- Race-perk key (world.md §7): players holding this perk are dropped
 	-- as targets at night unless they provoked the mob (undead passive).
 	local night_truce = def._grug_night_truce_perk
+	-- mobs_redo calls on_die first when a def supplies one; otherwise it calls
+	-- on_death for every actual death cause (player, NPC, mob, or environment).
+	-- Wrap both boundaries without installing a new on_die (which would shadow
+	-- an existing on_death). award_kill_xp owns the shared idempotency guard.
+	local old_on_die = def.on_die
+	if old_on_die then
+		def.on_die = function(self, pos)
+			grug_mobs.award_kill_xp(self)
+			return old_on_die(self, pos)
+		end
+	end
+	local old_on_death = def.on_death
+	def.on_death = function(self, killer)
+		grug_mobs.award_kill_xp(self)
+		if old_on_death then
+			return old_on_death(self, killer)
+		end
+	end
 
 	if def._grug_spawn_domains then
 		spawn_domains[name] = grug_mobs.compile_spawn_domains(
