@@ -189,6 +189,18 @@ mobs.mob_class = {
 local mob_class = mobs.mob_class -- shared class used by current mob extensions
 local mob_class_meta = {__index = mob_class}
 
+-- GRUG PATCH (Grudgelands participation lifecycle, round 5 Lane P): entity
+-- prototypes inherit this shared callback through mob_class_meta. Keeping the
+-- hook on the class lets later class-level wrappers (start_npcs.lua) remain in
+-- the same callback chain instead of being shadowed by a per-prototype field.
+function mob_class:on_deactivate(removal)
+	if grug_mobs and grug_mobs.registered_cadence
+	and grug_mobs.registered_cadence[self.name]
+	and grug_mobs.cleanup_xp_participants then
+		grug_mobs.cleanup_xp_participants(self)
+	end
+end
+
 -- return True if mob limit reached
 
 local function at_limit()
@@ -882,6 +894,16 @@ function mob_class:check_for_death(cmi_cause)
 	self.fly = false
 
 	local pos = self.object:get_pos() ; if not pos then return end
+
+	-- GRUG PATCH (shared Grudgelands death settlement, round 5 Lane P): settle
+	-- participant XP at the one boundary every death cause reaches, before
+	-- mobs_redo chooses on_die, on_death, animation or smoke/removal fallback.
+	-- The grug_mobs helper is idempotent; vanilla mobs_redo entities are inert.
+	if grug_mobs and grug_mobs.registered_cadence
+	and grug_mobs.registered_cadence[self.name]
+	and grug_mobs.settle_mob_death then
+		grug_mobs.settle_mob_death(self)
+	end
 
 	-- execute mob api custom death function first for any special features
 	if self.on_die then
@@ -2893,6 +2915,19 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 				and grug_core.handle_native_swing_input(hitter, self.object) then
 			return true
 		end
+	end
+
+	-- GRUG PATCH (raw player-punch veto, round 5 R12): a hotbar weapon,
+	-- ordinary tool or fist is not a second damage source against grug_mobs.
+	-- Swing items already returned through the native-input seam above; the
+	-- later server-owned exact-target swing carries `grug_authoritative`, and
+	-- cast damage carries `in_ability_punch`, so both authoritative skill paths
+	-- continue. Vanilla mobs_redo entities, non-player punches and the separate
+	-- player-vs-player callback are outside this branch.
+	if is_player(hitter) and grug_mobs and grug_mobs.registered_cadence
+	and grug_mobs.registered_cadence[self.name]
+	and not grug_authoritative and not grug_core.in_ability_punch then
+		return true
 	end
 
 	if self.protected then -- are we protected ?

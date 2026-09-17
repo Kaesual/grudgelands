@@ -123,7 +123,7 @@ comment.
 **A marker must never outlive its NPC, and `on_die` alone does not guarantee
 that.** `on_die` is reached only from `check_for_death` (api.lua:870-876), so
 `/clearobjects`, the `mob_active_limit` removal inside `mob_activate`
-(api.lua:3311-3314) and a shutdown between the mod-storage flush and the map
+(api.lua:3397-3400) and a shutdown between the mod-storage flush and the map
 flush all end with a marker and nothing standing on it — and that socket would
 then never refill for the life of the world. The heartbeat pass therefore also
 re-checks the sockets it *can* see: a placed slot within `PLAYER_RANGE` of a
@@ -453,7 +453,7 @@ world.md §4's own: `_grug_attack_npcs = true` for a dedicated war-front unit.
 Nothing else changes — `attack_players`, `attack_animals` and `attack_monsters`
 stay as the def wrote them, so guards still fight monsters, and a punched
 monster still retaliates against the guard through on_punch's own
-`do_attack(hitter)` (api.lua:3208-3213), which consults `passive`, `state`,
+`do_attack(hitter)` (api.lua:3293-3299), which consults `passive`, `state`,
 `child` and ownership but never any `attack_*` field.
 
 **It does change who starts a guard-versus-monster fight, and that is
@@ -504,16 +504,16 @@ as it already re-asserts the facing.
 
 ### 8. "Elite Accord Guard [Lv 60] 945/10"
 
-`hp_max` is in mobs_redo's `is_property_name` table (api.lua:3297-3301), so
+`hp_max` is in mobs_redo's `is_property_name` table (api.lua:3383-3387), so
 `mob_activate`'s staticdata loop writes it to the **object** and never back onto
-`self` (api.lua:3327-3332). Two consequences, and the second is the defect:
+`self` (api.lua:3413-3418). Two consequences, and the second is the defect:
 
 1. `self.hp_max` is nil for the whole of every activation after the first, so
    the nametag and aggro.lua's leash heal fall back to the property;
 2. the **next** save therefore carries no `hp_max` at all (`clean_staticdata`
    serializes the fields that exist), and the activation after *that* keeps
    `initial_properties.hp_max`, which for a def that sets none is mobs_redo's
-   own default of **10** (api.lua:3647). A level-60 elite then reads 945/10 and
+   own default of **10** (api.lua:3733). A level-60 elite then reads 945/10 and
    its first damage is clamped to 10 by check_for_death's "make sure health
    isn't higher than max" (api.lua:849).
 

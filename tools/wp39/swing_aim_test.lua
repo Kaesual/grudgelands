@@ -135,7 +135,13 @@ grug_factions = {
 	same_faction = function(a, b) return a.faction and a.faction == b.faction end,
 }
 grug_xp = {register_on_level_change=function() end}
-grug_mobs = {slow=function() end, root=function() end}
+grug_mobs = {
+	slow=function() end,
+	root=function() end,
+	is_noncombatant=function(ent)
+		return type(ent) == "table" and ent._grug_noncombatant == true
+	end,
+}
 grug_projectiles = {
 	register = function() end,
 	spawn = function() return true end,
@@ -148,6 +154,7 @@ grug_core = {
 	get_equipped_weapon = function() return ItemStack("test:weapon") end,
 	get_equipped_offhand = function() return ItemStack("") end,
 	get_melee_bonus = function() return 0 end,
+	scale_player_damage = function(_, _, amount) return amount end,
 	reset_accumulated_melee = function() reset_count = reset_count + 1 end,
 	register_native_melee_handler = function(prepare, finish)
 		melee_prepare, melee_finish = prepare, finish

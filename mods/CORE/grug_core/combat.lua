@@ -17,6 +17,67 @@ function grug_core.get_dodge_chance(player)
 	return 0
 end
 
+-- Player level without a reverse dependency on grug_xp. The XP mod replaces
+-- this stub after it loads, like the class and faction accessors around it.
+function grug_core.get_player_level(player)
+	return 1
+end
+
+-- One progression axis for every player-authored combat number. Gear and
+-- flat ability/talent terms are assembled first; the central damage/heal/
+-- absorb seams multiply their completed value exactly once.
+function grug_core.level_scale(level)
+	level = math.max(1, math.min(60, math.floor(tonumber(level) or 1)))
+	return 1 + 0.06 * (level - 1)
+end
+
+-- Higher-level mobs resist players who are more than five levels below them:
+-- -10 percentage points per further level, with a 10% floor.
+function grug_core.level_malus(player_level, mob_level)
+	local excess = math.floor(tonumber(mob_level) or 1)
+		- (math.floor(tonumber(player_level) or 1) + 5)
+	if excess <= 0 then
+		return 1
+	end
+	return math.max(0.1, 1 - 0.1 * excess)
+end
+
+local function scaled_player_value(player, amount)
+	return math.max(0, (amount or 0)
+		* grug_core.level_scale(grug_core.get_player_level(player)))
+end
+
+-- Player damage adds the target-level malus after the shared level scalar.
+-- The one final floor keeps multiplication order from creating two rounding
+-- losses. Players have no mob level and therefore receive no malus.
+function grug_core.scale_player_damage(player, target, amount)
+	local mult = grug_core.level_scale(grug_core.get_player_level(player))
+	if target and not target:is_player() then
+		local ent = target:get_luaentity()
+		if ent and ent._grug_level then
+			mult = mult * grug_core.level_malus(
+				grug_core.get_player_level(player), ent._grug_level)
+		end
+	end
+	return math.max(0, math.floor((amount or 0) * mult))
+end
+
+-- Compact integer display shared by mob nametags and the Target Frame.
+-- Four-digit values keep one truncated decimal; five digits and above round
+-- to the nearest thousand. Truncating 9999 to 9.9k preserves the 10k boundary.
+function grug_core.format_k(value)
+	local number = tonumber(value) or 0
+	local sign = number < 0 and "-" or ""
+	number = math.floor(math.abs(number) + 0.5)
+	if number < 1000 then
+		return sign .. tostring(number)
+	end
+	if number < 10000 then
+		return sign .. string.format("%.1fk", math.floor(number / 100) / 10)
+	end
+	return sign .. tostring(math.floor(number / 1000 + 0.5)) .. "k"
+end
+
 -- Damage reduction from equipped armor, in PERCENT (0..60). 1 armor point =
 -- 1% reduction, summed over the four armor slots and hard-capped at 60%
 -- (items_crafting.md §3.1, combat_stats.md §2). grug_inventory overrides
@@ -915,6 +976,9 @@ grug_core.in_ability_punch = false
 
 function grug_core.deal_ability_damage(attacker, target, amount, opts)
 	opts = opts or {}
+	-- Callers have already assembled base, gear and flat talent additions.
+	-- Scale that complete value once, then apply the target-level malus.
+	amount = grug_core.scale_player_damage(attacker, target, amount)
 	if target:is_player() then
 		-- Friendly fire: defense in depth — the ability kits filter their
 		-- targets already, but never let same-faction damage through here.
@@ -990,12 +1054,15 @@ end
 -- Healing a player. Rolls the healer's crit (×1.5), clamps to max HP and
 -- reports heal threat. Returns the effective healing done.
 --
--- opts.no_crit skips the crit roll for sources that must heal a FLAT amount:
--- consumables are specified as a percentage of max HP (items_crafting.md
--- §3.6 — the vendor's weak potion is exactly 15%), so letting the drinker's
--- crit chance multiply it would make the number in the tooltip a lie.
--- WP10's alchemy potions want the same flag.
+-- opts.no_crit skips only the crit roll. All player-authored healing, including
+-- a consumable's max-HP-derived amount, receives the one shared level scalar.
 --
+
+local effective_heal_callbacks = {}
+
+function grug_core.register_on_effective_heal(func)
+	table.insert(effective_heal_callbacks, func)
+end
 
 function grug_core.heal_player(healer, target, amount, opts)
 	opts = opts or {}
@@ -1003,6 +1070,9 @@ function grug_core.heal_player(healer, target, amount, opts)
 	if hp <= 0 then
 		return 0
 	end
+	-- Ability heals arrive with flat talent additions included. Percentage
+	-- consumables arrive with their max-HP-derived amount. Scale either once.
+	amount = math.floor(scaled_player_value(healer, amount))
 	if not opts.no_crit and math.random() < grug_core.get_crit_chance(healer) then
 		amount = math.floor(amount * 1.5)
 		crit_particles(target:get_pos())
@@ -1012,6 +1082,9 @@ function grug_core.heal_player(healer, target, amount, opts)
 	if effective > 0 then
 		target:set_hp(hp + effective)
 		grug_core.add_heal_threat(healer, target, effective)
+		for i = 1, #effective_heal_callbacks do
+			effective_heal_callbacks[i](healer, target, effective)
+		end
 	end
 	return effective
 end
@@ -1025,7 +1098,8 @@ end
 
 local absorbs = {} -- player name -> {amount = n, expiry = us time}
 
-function grug_core.set_absorb(player, amount, duration)
+function grug_core.set_absorb(player, amount, duration, source)
+	amount = scaled_player_value(source or player, amount)
 	absorbs[player:get_player_name()] = {
 		amount = amount,
 		expiry = core.get_us_time() + duration * 1e6,

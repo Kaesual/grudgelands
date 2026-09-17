@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Static gates for WP11 lanes X1 + X2, the same set every WP13 increment ran:
+# Static gates for WP11 lanes X1 + X2 + X4, the same set every WP13 increment ran:
 # parser and SETGLOBAL per changed file and tree-wide, the five plain-5.1
 # sweeps scoped to the changed Lua and then tree-wide over mods/*/grug_* and
 # tools, and the fresh-server audit.
@@ -13,6 +13,7 @@ LUAC="$repo/tools/bin/luac51"
 
 CHANGED=(
 	mods/PLAYER/grug_classes/talents.lua
+	mods/PLAYER/grug_classes/talents_ui.lua
 	mods/PLAYER/grug_classes/init.lua
 	mods/PLAYER/grug_classes/stats.lua
 	mods/PLAYER/grug_classes/selection.lua
@@ -21,6 +22,8 @@ CHANGED=(
 	mods/PLAYER/grug_inventory/equipment.lua
 	mods/CORE/grug_core/combat.lua
 	tools/wp11/talent_tree_kat.lua
+	tools/wp11/talent_ui_kat.lua
+	tools/wp11/probe_talents/init.lua
 )
 
 echo "== parser and SETGLOBAL on every Lua file this increment changed =="
@@ -66,18 +69,19 @@ python3 tools/check_fresh_server.py && echo "check_fresh_server PASS"
 echo "== the WP40 unit suite is untouched by this lane =="
 bash tools/wp40/r7/run.sh unit
 
-echo "== the talent KAT, under both interpreters =="
+echo "== the talent model + UI KATs, one process per interpreter =="
 # Scratch under common.md's /tmp/grug-w4-<lane>-* convention, and removed
 # again: /tmp is a quota'd tmpfs shared by every lane.
-scratch="$(mktemp -d /tmp/grug-w4-w1-static.XXXXXX)"
+scratch="$(mktemp -d /tmp/grug-r5-u-static.XXXXXX)"
 trap 'rm -rf "$scratch"' EXIT
-luajit -e 'io.write(dofile("tools/wp11/talent_tree_kat.lua")("."))' \
+KATS='io.write(dofile("tools/wp11/talent_tree_kat.lua")(".")); io.write(dofile("tools/wp11/talent_ui_kat.lua")("."))'
+luajit -e "$KATS" \
 	> "$scratch/kat-luajit.txt"
-"$repo/tools/bin/lua51" -e 'io.write(dofile("tools/wp11/talent_tree_kat.lua")("."))' \
+"$repo/tools/bin/lua51" -e "$KATS" \
 	> "$scratch/kat-puc.txt"
-tail -1 "$scratch/kat-luajit.txt"
+grep -E 'wp11_(talents|talent_ui)_result' "$scratch/kat-luajit.txt"
 if cmp -s "$scratch/kat-luajit.txt" "$scratch/kat-puc.txt"; then
-	echo "KAT byte-identical under LuaJIT and PUC 5.1: $(sha256sum < "$scratch/kat-luajit.txt")"
+	echo "KATs byte-identical under LuaJIT and PUC 5.1: $(sha256sum < "$scratch/kat-luajit.txt")"
 else
 	echo "KAT INTERPRETER DRIFT"
 	diff "$scratch/kat-luajit.txt" "$scratch/kat-puc.txt"

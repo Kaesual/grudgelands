@@ -107,6 +107,8 @@ current state). It is **derived, never authoritative**:
    plan for the user.
    Claude CLI review execution details (sandbox, streaming and monitoring):
    **[docs/process/claude-cli-review.md](docs/process/claude-cli-review.md)**.
+   Cross-CLI implementation and review orchestration in either direction:
+   **[docs/process/cross-cli-orchestration.md](docs/process/cross-cli-orchestration.md)**.
 4. **WP completion**: Lua syntax check with `tools/bin/luac51 -p` (plain
    5.1 — build once via `tools/build_lua51.sh`; **not** `luajit`, which
    accepts syntax the engine's fallback build rejects),
@@ -131,7 +133,7 @@ current state). It is **derived, never authoritative**:
   (`grug_mobs` pattern) over in-place edits. Details/update procedure:
   VENDOR.md.
 - `reference_projects/` contains **references only — never change anything
-  in there**. The nine sources are **git submodules** (converted 2026-08-08,
+  in there**. The reference sources are **git submodules** (converted 2026-08-08,
   WP36) — not part of the build (the game runs with the directory empty), but
   required to develop this codebase: every engine-behaviour claim, licence
   verification and `file:line` citation in the design docs points into them.
@@ -154,7 +156,7 @@ current state). It is **derived, never authoritative**:
   - **Imported meshes must be animated.** A mesh without `ANIM`/`BONE`/`KEYS`
     chunks slides instead of moving; choose another source rather than
     shipping it.
-  - The nine sources and what each is for: see
+  - The sources and what each is for: see
     [docs/reference_projects.md](docs/reference_projects.md).
 
 ## Lua & Luanti environment (IMPORTANT)
@@ -439,7 +441,7 @@ Details + line numbers in [docs/research/](docs/research/).
   when a commit actually lowers HP; bank-only packets pay nothing, target
   switches discard both banks, and dodge/full absorb consume the credit for
   0 rage (partial absorb with HP loss still lands). Thus unmitigated fractions
-  totalling 1 pay +12 independent of weapon damage, without the old 60 rage/s
+  totalling 1 pay +8 independent of weapon damage, without the old 60 rage/s
   packet firehose. Base mob threat still takes raw fractional damage.
   Same-faction pairs stay with grug_factions' handler
   (RUN_CALLBACKS_MODE_OR, s_player.cpp:63 — neither vetoes the other);

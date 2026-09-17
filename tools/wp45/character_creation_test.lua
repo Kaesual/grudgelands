@@ -9,6 +9,7 @@ local callbacks = {
 	receive_fields = {},
 	respawnplayer = {},
 	globalstep = {},
+	hpchange = {},
 }
 local after_queue = {}
 local emerge_requests = {}
@@ -55,6 +56,12 @@ core = {
 	log = function() end,
 	check_player_privs = function() return true end,
 	get_player_by_name = function(name) return online[name] end,
+	get_connected_players = function()
+		local players = {}
+		for _, player in pairs(online) do players[#players + 1] = player end
+		return players
+	end,
+	global_exists = function(name) return rawget(_G, name) ~= nil end,
 	is_player = function(object) return object ~= nil and online[object.name] ~= nil end,
 	register_chatcommand = function(name, def) chatcommands[name] = def end,
 	register_on_punchplayer = function() end,
@@ -75,6 +82,9 @@ core = {
 	end,
 	register_globalstep = function(fn)
 		callbacks.globalstep[#callbacks.globalstep + 1] = fn
+	end,
+	register_on_player_hpchange = function(fn, modifier)
+		callbacks.hpchange[#callbacks.hpchange + 1] = {fn, modifier}
 	end,
 	after = function(_, fn)
 		after_queue[#after_queue + 1] = fn
@@ -204,6 +214,10 @@ local function new_player(name, meta, options)
 		items = {},
 	}
 	function player:get_player_name() return self.name end
+	function player:get_pos() return copy_table(self.pos) end
+	function player:get_properties()
+		return {hp_max = 20, eye_height = 1.47, stepheight = 0.6}
+	end
 	function player:get_meta() return self.meta end
 	function player:get_inventory()
 		local owner = self
@@ -377,7 +391,10 @@ grug_core.get_player_race = function(name)
 	local player = online[name]
 	return player and grug_classes.get_race(player) or nil
 end
-grug_xp = {get_level = function() return 1 end}
+grug_xp = {
+	get_level = function() return 1 end,
+	register_on_level_change = function() end,
+}
 
 dofile(repo .. "/mods/CORE/grug_core/starts_preload.lua")
 -- The creation freeze is an exclusive hold on the movement aggregator

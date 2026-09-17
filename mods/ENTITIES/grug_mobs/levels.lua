@@ -5,9 +5,11 @@
 -- field at its position; HP/damage/XP are DERIVED from that level and the
 -- tier, never hand-written in a mob def.
 --
---   HP = 15 + 5*L   damage = 2 + 0.4*L   XP = 10*L
+--   HP = 20 + 5*L + 0.66*L^2
+--   damage = 2 + 0.3*L + 0.005*L^2   XP = 10*L
 --   elite: x3 HP, x1.8 dmg, x4 XP, armor 80, scale x1.6, gold tint
 --   rare:  x5 HP, x2.2 dmg, x6 XP, armor 70, scale x2,   violet tint
+--   boss:  x20 HP only (registered for future content)
 --
 -- ENGINE vs. DEF CONTRACT (the one rule for the whole mod):
 --   * HP (hp_min/hp_max/health), damage and XP are ALWAYS engine-owned.
@@ -27,11 +29,9 @@
 -- this engine and never a hand-set stat in a def:
 --   * always level 1 and always 1 HP, whatever the level field says at the
 --     mob's position (`level = 1`, `hp_flat = 1` below);
---   * 10 XP flat (`xp_flat`). No second rule is needed to stop it being a
---     farm: combat_stats.md §3's gray-kill rule zeroes it for anyone above
---     level 11 on its own.
+--   * 0 XP flat (`xp_flat`). Critters are scenery and food, never an XP farm.
 --   * `fall_damage` off. At 1 HP any 7-node fall is lethal (mobs_redo
---     charges `d - 6`, api.lua:2608ff), which would quietly delete the
+--     charges `d - 6`, api.lua:2689-2715), which would quietly delete the
 --     population in exactly the hilly terrain a travelling player crosses.
 --     NB it must be `false`, NOT `0`: mobs_redo tests `if self.fall_damage`
 --     and every number — 0 included — is truthy in Lua, so `fall_damage = 0`
@@ -63,7 +63,7 @@ local LEVEL_CAP = {mob = MAX_LEVEL, guard = 70}
 
 -- The multiplier model is `hp`/`dmg`/`xp`; the critter row opts out of two
 -- thirds of it with FLAT overrides instead of a multiplier, because "1 HP"
--- and "10 XP" are not a factor of anything — see the header. `level`, when
+-- and "0 XP" are not a factor of anything — see the header. `level`, when
 -- present, fixes the level before the field is ever queried; `telegraph` is
 -- the single source of truth for the elite/rare wind-up gate (init.lua's
 -- do_custom guard and telegraph.lua's own re-check both ask this table).
@@ -72,12 +72,14 @@ local TIERS = {
 		tint = nil, prefix = ""},
 	critter = {hp = 1, dmg = 1, xp = 1, armor = nil, scale = 1,
 		tint = nil, prefix = "",
-		level = 1, hp_flat = 1, xp_flat = 10, fall_damage = false},
+		level = 1, hp_flat = 1, xp_flat = 0, fall_damage = false},
 	elite = {hp = 3, dmg = 1.8, xp = 4, armor = 80, scale = 1.6,
 		tint = "#ffa800:80", prefix = "Elite ", telegraph = true},
 	-- UTF-8 written literally: \u{} escapes are LuaJIT-only (luanti-lua.md).
 	rare = {hp = 5, dmg = 2.2, xp = 6, armor = 70, scale = 2,
 		tint = "#a64dff:90", prefix = "★ ", telegraph = true},
+	boss = {hp = 20, dmg = 1, xp = 1, armor = nil, scale = 1,
+		tint = nil, prefix = "Boss "},
 }
 
 local function tier_def(tier)
@@ -104,14 +106,15 @@ end
 --
 -- `hp_flat`/`xp_flat` are the critter tier's opt-out of the multiplier model
 -- (header): a flat value REPLACES the formula for that one stat and leaves
--- the other two alone, so `normal`/`elite`/`rare` — which carry neither
+-- the other two alone, so `normal`/`elite`/`rare`/`boss` — which carry neither
 -- field — go through exactly the arithmetic they always did. Damage stays
 -- formula-derived even for a critter: it never attacks, so the number is
 -- never read, and inventing a second exception for it would be noise.
 function grug_mobs.stats_for(level, tier)
 	local t = tier_def(tier)
-	return t.hp_flat or math.floor((15 + 5 * level) * t.hp + 0.5),
-		round1((2 + 0.4 * level) * t.dmg),
+	return t.hp_flat or math.floor((20 + 5 * level + 0.66 * level * level)
+			* t.hp + 0.5),
+		round1((2 + 0.3 * level + 0.005 * level * level) * t.dmg),
 		t.xp_flat or math.floor(10 * level * t.xp + 0.5)
 end
 
@@ -210,13 +213,14 @@ function grug_mobs.tag_text(self)
 	end
 	return prefix
 		.. (self.description or self.name or "?")
-		.. " [Lv " .. (self._grug_level or 1) .. "] " .. hp .. "/" .. hp_max
+		.. " [Lv " .. (self._grug_level or 1) .. "] "
+		.. grug_core.format_k(hp) .. "/" .. grug_core.format_k(hp_max)
 end
 
--- Per-entity replacement for mobs_redo's mob_class:update_tag (api.lua:623),
+-- Per-entity replacement for mobs_redo's mob_class:update_tag (api.lua:634),
 -- which hardcodes a green->red HP color we do not want and which we must
 -- not patch. Installing it as an instance field means mobs_redo's own calls
--- reach us: check_for_death (api.lua:830) calls update_tag on EVERY health
+-- reach us: check_for_death (api.lua:829-851) calls update_tag on EVERY health
 -- change, which is exactly the "update on damage" requirement — no polling
 -- and no throttle needed, and no write happens unless the text changed.
 --
@@ -395,7 +399,7 @@ local function apply_stats(self, keep_fraction)
 		end
 	end
 	self.hp_max = hp
-	self.hp_min = hp -- mobs_redo rolls health in hp_min..hp_max (api.lua:2922)
+	self.hp_min = hp -- mobs_redo rolls health in hp_min..hp_max (api.lua:3460)
 	self.object:set_properties({hp_max = hp})
 	self.health = math.max(1, math.floor(hp * fraction + 0.5))
 	-- Keep mobs_redo's damage bookkeeping in sync so raising the max does
@@ -538,7 +542,7 @@ function grug_mobs.register_level_cfg(name, def)
 	def.armor = tier_def(tier).armor or def.armor or 100
 	-- Def-time normalization, exactly like the armor line above and for the
 	-- same reason: the value has to be in the def BEFORE mobs:register_mob
-	-- copies its field whitelist into the entity table (api.lua:3474
+	-- copies its field whitelist into the entity table (api.lua:3786
 	-- `fall_damage = def.fall_damage`), because a nil there falls through the
 	-- class metatable to mobs_redo's default of `true`. `false` and not `0`
 	-- — see the header.
@@ -551,16 +555,16 @@ end
 -- RE-ASSERT THE DERIVED MAXIMUM ON EVERY ACTIVATION, because mob_activate loses
 -- it (playtest round 1, 2026-09-15: "Elite Accord Guard [Lv 60] 945/10").
 --
--- `hp_max` is in mobs_redo's `is_property_name` table (api.lua:3297-3301), so the
+-- `hp_max` is in mobs_redo's `is_property_name` table (api.lua:3383-3387), so the
 -- staticdata loop writes it to the OBJECT and never back onto `self`
--- (api.lua:3327-3332). Two consequences, and the second is the bug:
+-- (api.lua:3413-3418). Two consequences, and the second is the bug:
 --
 --   1. `self.hp_max` is nil for the whole of every activation after the first,
 --      so `tag_text` and aggro.lua's leash heal fall back to the property.
 --   2. The NEXT save therefore carries no `hp_max` at all -- `clean_staticdata`
 --      serializes the fields that exist -- and on the activation after that the
 --      object keeps `initial_properties.hp_max`, which for a def that does not
---      set one is mobs_redo's own default of 10 (api.lua:3647). A level-60 elite
+--      set one is mobs_redo's own default of 10 (api.lua:3733). A level-60 elite
 --      guard then reads 945/10, and its first damage is clamped to 10 by
 --      check_for_death's "make sure health isn't higher than max"
 --      (api.lua:849). That is two reload cycles, which is why it looked random.
@@ -636,19 +640,23 @@ end
 
 -- XP a player earns for killing this mob, before the gray rule.
 -- An explicit `_grug_xp_reward` in the def wins (Kraken: 0 = never a farm).
-function grug_mobs.kill_xp(self)
+function grug_mobs.kill_xp(self, player_level)
 	local cfg = level_cfg[self.name]
-	if cfg and cfg.xp_override then
+	if cfg and cfg.xp_override ~= nil then
 		return cfg.xp_override
 	end
-	if self._grug_xp then
+	if player_level == nil and self._grug_xp ~= nil then
 		return self._grug_xp
 	end
-	local _, _, xp = grug_mobs.stats_for(self._grug_level or 1, self._grug_tier)
+	local level = self._grug_level or 1
+	if player_level ~= nil then
+		level = math.min(level, player_level + 5)
+	end
+	local _, _, xp = grug_mobs.stats_for(level, self._grug_tier)
 	return xp
 end
 
--- Promote/demote a live mob to `tier` ("normal"/"elite"/"rare"): applies the
+-- Promote/demote a live mob to a registered tier: applies the
 -- multipliers, scale, tint and nametag. Idempotent, and safe to call before
 -- the mob's first tick (the tier is stored and picked up by ensure_init).
 -- Used by the rare spawner and by any def-independent tier decision.

@@ -79,8 +79,8 @@ depends on the death's attribution.
 - Death = **respawn at the own race's safe outer starting settlement** with
   **full inventory**
   (no corpse run, no item loss, no durability-on-death mechanic).
-- **PvE XP loss: 25% of the progress within the current level, permanent**
-  (never de-levels; the PvE target preserves `grug_xp`'s shipped amount).
+- **PvE XP loss: 25% of the whole current-level span, permanent**
+  (floored at the current level start, so it never de-levels).
 - **Confirmed PvP deaths cost no XP.** A death whose final HP-lowering
   committed transaction is attributed by the single PvP authority
   (`grug_pvp.classify_death`, WP41) to an eligible hostile player applies

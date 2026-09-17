@@ -994,20 +994,15 @@ local function run_checks(repo)
 		"Spite 5/5 takes rage per hit taken to 8")
 
 	--
-	-- The interim chat interface exists and is player-reachable.
+	-- X4 keeps only the read-only summary command. Spending and resetting are
+	-- page actions, so the two interim mutation commands must be absent.
 	--
-	for _, name in ipairs({"talents", "talent", "respec"}) do
-		check(clock.commands[name] ~= nil,
-			"interim chat command /" .. name .. " is not registered")
-		if clock.commands[name] then
-			-- builtin normalizes a missing `privs` to an empty table
-			-- (builtin/game/chat.lua), which the engine probe sees and this
-			-- stub does not; accept both spellings of "no privilege".
-			check(next(clock.commands[name].privs or {}) == nil,
-				"/" .. name .. " must not be admin-only while it is the " ..
-				"only talent interface")
-		end
-	end
+	check(clock.commands.talents ~= nil,
+		"read-only chat command /talents is not registered")
+	check(clock.commands.talent == nil,
+		"interim mutation command /talent is still registered")
+	check(clock.commands.respec == nil,
+		"interim mutation command /respec is still registered")
 
 	return finish()
 end

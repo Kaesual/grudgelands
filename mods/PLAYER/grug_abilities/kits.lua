@@ -15,10 +15,8 @@ local function mob_ent(obj)
 	return (ent and ent._cmi_is_mob) and ent or nil
 end
 
-local function valid_ally(user, obj)
-	return obj:is_player() and obj ~= user
-		and grug_factions.same_faction(user, obj)
-		and obj:get_hp() > 0
+local function valid_ally(user, obj, def)
+	return grug_abilities.valid_target(user, obj, def.target_kind)
 end
 
 local function in_lock_range(user, obj, def)
@@ -60,23 +58,30 @@ local function current_enemy_target(user, def)
 	if ray.status ~= "target" then
 		return nil
 	end
+	if not grug_abilities.valid_target(user, ray.target, def.target_kind) then
+		return nil
+	end
 	grug_abilities.set_target(user, ray.target, false)
 	return ray.target
 end
 
--- Friendly target for heals: pointed ally (locks it), otherwise the
--- soft-locked ally if still valid and in range — this is what makes
--- healing moving allies workable — otherwise self. Deliberately no LOS
--- check on the fallback: healing the ally who just kited around a tree
--- is the point of the lock.
+-- Friendly target for heals: an explicit object is authoritative input. A
+-- valid pointed ally locks; an invalid explicit object refuses the cast
+-- without spending its cost or cooldown. Only the absence of an explicit
+-- object may use the soft-locked ally — this is what makes healing moving
+-- allies workable — or fall back to self. Deliberately no LOS check on the
+-- fallback: healing the ally who just kited around a tree is the point of the
+-- lock.
 local function heal_target(user, pointed, def)
-	if pointed and pointed.type == "object" and pointed.ref
-			and valid_ally(user, pointed.ref) then
-		grug_abilities.set_target(user, pointed.ref, true)
-		return pointed.ref
+	if pointed and pointed.type == "object" then
+		if pointed.ref and valid_ally(user, pointed.ref, def) then
+			grug_abilities.set_target(user, pointed.ref, true)
+			return pointed.ref
+		end
+		return nil, "Invalid target."
 	end
 	local obj = grug_abilities.get_target(user, true)
-	if obj and valid_ally(user, obj)
+	if obj and valid_ally(user, obj, def)
 			and in_lock_range(user, obj, def) then
 		grug_abilities.set_target(user, obj, true) -- refresh the lock
 		return obj
@@ -265,6 +270,7 @@ end
 local strike_def = {
 	id = "strike",
 	kind = "swing",
+	target_kind = "hostile",
 	universal = true, -- every class, and a character with no class yet (E1)
 	name = "Strike",
 	-- The rage number is COMPOSED from the ledger constant rather than
@@ -294,6 +300,7 @@ grug_abilities.register_ability({
 	class = "warrior",
 	name = "Charge",
 	kind = "cast",
+	target_kind = "hostile",
 	description = "Dash to an enemy up to 12 m away, dealing 3 damage\n" ..
 		"and generating 15 rage.",
 	color = "#e8c85a",
@@ -328,6 +335,7 @@ grug_abilities.register_ability({
 grug_abilities.register_ability({
 	id = "mighty_blow",
 	kind = "swing",
+	target_kind = "hostile",
 	class = "warrior",
 	name = "Mighty Blow",
 	description = "A heavy melee hit: 150% weapon damage plus your melee bonus. Rides along on a landed swing whenever you have the rage.",
@@ -368,6 +376,7 @@ grug_abilities.register_ability({
 grug_abilities.register_ability({
 	id = "hamstring",
 	kind = "swing",
+	target_kind = "hostile",
 	class = "warrior",
 	name = "Hamstring",
 	talent_gated = true,
@@ -402,6 +411,7 @@ grug_abilities.register_ability({
 	class = "warrior",
 	name = "Taunt",
 	kind = "cast",
+	target_kind = "hostile",
 	description = "Forces the target mob to attack you.",
 	color = "#e07b39",
 	cost = {},
@@ -460,6 +470,7 @@ grug_abilities.register_ability({
 	class = "mage",
 	name = "Fireball",
 	kind = "cast",
+	target_kind = "hostile",
 	description = "Hurls fire along your crosshair for up to 20 m:\n" ..
 		"6 + spell power damage; misses still cost mana.",
 	color = "#ff8833",
@@ -512,6 +523,7 @@ grug_abilities.register_ability({
 	class = "mage",
 	name = "Frost Nova",
 	kind = "cast",
+	target_kind = "self",
 	description = "Roots all enemies within 5 m for 4 s,\n" ..
 		"then slows them by 50% for 3 s.",
 	color = "#66b8ff",
@@ -528,19 +540,16 @@ grug_abilities.register_ability({
 		local slow_time = 3 + grug_classes.get_talent_bonus(user,
 			"frost_nova_slow_add")
 		for _, obj in ipairs(core.get_objects_inside_radius(pos, 5)) do
-			if obj ~= user then
+			if grug_abilities.valid_target(user, obj, "hostile") then
 				if obj:is_player() then
-					if grug_factions.hostile(user, obj) then
-						apply_player_speed_stages(obj, {
-							{speed = 0.1, jump = 0.3, time = root_time},
-							{speed = 0.5, time = slow_time},
-						}, "frost_nova")
-						burst(obj:get_pos(), "mobs_bubble_particle.png^[multiply:#88ccff", 8)
-					end
+					apply_player_speed_stages(obj, {
+						{speed = 0.1, jump = 0.3, time = root_time},
+						{speed = 0.5, time = slow_time},
+					}, "frost_nova")
+					burst(obj:get_pos(), "mobs_bubble_particle.png^[multiply:#88ccff", 8)
 				else
 					local ent = mob_ent(obj)
-					if ent and not (ent._grug_faction and
-							ent._grug_faction == grug_factions.get_faction(user)) then
+					if ent then
 						grug_mobs.root(ent, root_time)
 						-- queued: starts after the root
 						grug_mobs.slow(ent, slow_time, 0.5)
@@ -560,6 +569,7 @@ grug_abilities.register_ability({
 	class = "mage",
 	name = "Blink",
 	kind = "cast",
+	target_kind = "self",
 	description = "Teleport up to 10 m in your look direction\n" ..
 		"(blocked by walls).",
 	color = "#b06aff",
@@ -619,6 +629,7 @@ grug_abilities.register_ability({
 	class = "priest",
 	name = "Smite",
 	kind = "cast",
+	target_kind = "hostile",
 	description = "Smites an enemy up to 20 m away:\n" ..
 		"4 + spell power damage.",
 	color = "#ffd97a",
@@ -651,6 +662,7 @@ grug_abilities.register_ability({
 	class = "priest",
 	name = "Flash Heal",
 	kind = "cast",
+	target_kind = "friendly",
 	description = "Heals the pointed ally (or yourself) for\n" ..
 		"8 + 2x spell power.",
 	color = "#7ae08a",
@@ -658,7 +670,10 @@ grug_abilities.register_ability({
 	cooldown = 4,
 	range = 15,
 	cast = function(user, pointed, def)
-		local target = heal_target(user, pointed, def)
+		local target, err = heal_target(user, pointed, def)
+		if not target then
+			return false, err
+		end
 		if target:get_hp() <= 0 then
 			return false, "Target is dead."
 		end
@@ -680,6 +695,7 @@ grug_abilities.register_ability({
 	class = "priest",
 	name = "Power Word: Shield",
 	kind = "cast",
+	target_kind = "friendly",
 	description = "Shields the pointed ally (or yourself): absorbs\n" ..
 		"8 + 2x spell power damage for 15 s or until consumed.",
 	color = "#e8e07a",
@@ -687,17 +703,20 @@ grug_abilities.register_ability({
 	cooldown = 10,
 	range = 15,
 	cast = function(user, pointed, def)
-		local target = heal_target(user, pointed, def)
+		local target, err = heal_target(user, pointed, def)
+		if not target then
+			return false, err
+		end
 		if target:get_hp() <= 0 then
 			return false, "Target is dead."
 		end
-		-- Warding Faith and Second Skin (skill_trees.md §2.5); 0 each without
-		-- the talent, so the shipped absorb and its 15 s are exact. Turn
-		-- Aside's dodge window is lane X3's.
+		-- Warding Faith and Second Skin (skill_trees.md §2.5); their flat add
+		-- joins the base before the central level scalar. The 15 s duration is
+		-- unscaled. Turn Aside's dodge window is lane X3's.
 		grug_core.set_absorb(target,
 			8 + 2 * grug_classes.get_spell_power_bonus(user)
 			+ grug_classes.get_talent_bonus(user, "shield_absorb_add"),
-			15 + grug_classes.get_talent_bonus(user, "shield_duration_add"))
+			15 + grug_classes.get_talent_bonus(user, "shield_duration_add"), user)
 		burst(target:get_pos(), "default_item_smoke.png^[multiply:#ffe9a0", 8)
 		return true
 	end,
@@ -714,6 +733,7 @@ grug_abilities.register_ability({
 	class = "priest",
 	name = "Renew",
 	kind = "cast",
+	target_kind = "friendly",
 	talent_gated = true,
 	description = "Heal over time on the pointed ally (or yourself):\n" ..
 		"3 + spell power every 3 s for 12 s.\nUnlocked via talents.",
@@ -722,7 +742,10 @@ grug_abilities.register_ability({
 	cooldown = 8,
 	range = 15,
 	cast = function(user, pointed, def)
-		local target = heal_target(user, pointed, def)
+		local target, err = heal_target(user, pointed, def)
+		if not target then
+			return false, err
+		end
 		if target:get_hp() <= 0 then
 			return false, "Target is dead."
 		end

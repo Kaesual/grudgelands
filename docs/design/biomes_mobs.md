@@ -27,13 +27,15 @@ before WP13/WP33 author new surface content.
   description of running behaviour and not the placement brief for new
   structures, quests or gathering nodes. Re-cutting §1/§4 onto the 38 named
   zones is still outstanding work.
-- Stats derived, never hand-rolled: **HP = 15+5L, dmg = 2+0.4L,
-  XP = 10L**; elite armor 80 (×3 HP, ×1.8 dmg, ×4 XP), rare armor 70
-  (×5 / ×2.2 / ×6). Speeds: aggressive **4.6** (4.4 until 2026-09-16,
+- Stats derived, never hand-rolled: **HP = 20+5L+0.66L²,
+  dmg = 2+0.3L+0.005L², XP = 10L**; elite armor 80
+  (×3 HP, ×1.8 dmg, ×4 XP), rare armor 70 (×5 / ×2.2 / ×6), and the
+  unassigned boss tier has only ×20 HP (normal damage, XP and armor). Speeds: aggressive **4.6**
+  (4.4 until 2026-09-16,
   user ruling 2), heartland hunters 4.6
   (partly `dogshoot`), critters 3.4. One behavior verb per family;
   elites **and rares** telegraph (2 s wind-up, combat_stats §3); named
-  rares broadcast.
+  rares broadcast. Implementation: `mods/ENTITIES/grug_mobs/levels.lua:70-118`.
 - **Player-tag drop rule** (combat_stats §3) applies to every drop
   table below; the tag carries professions → **Leatherworker ×5** on
   every mob flagged `[leather]`.
@@ -53,9 +55,9 @@ Stats quick reference (normal tier; compute, don't copy):
 
 | L | HP | Dmg | XP | | L | HP | Dmg | XP |
 |---|----|-----|----|---|---|----|-----|----|
-| 5 | 40 | 4 | 50 | | 30 | 165 | 14 | 300 |
-| 10 | 65 | 6 | 100 | | 45 | 240 | 20 | 450 |
-| 20 | 115 | 10 | 200 | | 60 | 315 | 26 | 600 |
+| 5 | 62 | 3.6 | 50 | | 30 | 764 | 15.5 | 300 |
+| 10 | 136 | 5.5 | 100 | | 45 | 1582 | 25.6 | 450 |
+| 20 | 384 | 10.0 | 200 | | 60 | 2696 | 38.0 | 600 |
 
 ## 1. Current WP18 world biome map (WP40 migration baseline)
 
@@ -883,9 +885,7 @@ use, not content:
   never hand-rolled" rule (after the Kraken's fixed L100) and it is
   implemented as a **`critter` tier** in the level engine, not as a
   hand-set stat in a def.
-- **10 XP flat.** Deliberate starter-belt trickle; the gray-kill rule
-  (combat_stats §3) zeroes it for anyone above level 11 on its own, so no
-  extra rule is needed.
+- **0 XP.** Critters are food-bearing scenery, never an XP farm.
 - **They drop FOOD only** — meat, nothing else. No leather, no feather, no
   crafting ingredient of any kind. Rationale: a food item is a welcome
   snack on the road but never a farm target, so a player with a full larder
@@ -896,7 +896,7 @@ use, not content:
   the hilly terrain where a travelling player wants a snack. They drop
   nothing without a player tag anyway, so there is no exploit either way.
   **The field must be written `false`, not `0`** — mobs_redo tests
-  `if self.fall_damage` (`mods/ENTITIES/mobs/api.lua:2608`) and every
+  `if self.fall_damage` (`mods/ENTITIES/mobs/api.lua:2689`) and every
   number is truthy in Lua, so `fall_damage = 0` is a silent no-op. Earlier
   revisions of this section printed `0`; the tier writes `false`.
 - **Never elite or rare.** The level engine's telegraph gate must be a
@@ -905,8 +905,8 @@ use, not content:
 
 **How the tier is expressed** (WP36, `grug_mobs/levels.lua`): the `TIERS`
 table gains a `critter` row that opts out of the multiplier model with FLAT
-values (`hp_flat = 1`, `xp_flat = 10`) plus a fixed `level = 1`, so
-`normal`/`elite`/`rare` keep the exact arithmetic they always had — a flat
+values (`hp_flat = 1`, `xp_flat = 0`) plus a fixed `level = 1`, so
+`normal`/`elite`/`rare`/`boss` use the shared formulas — a flat
 value replaces the formula for one stat and leaves the other two alone.
 Damage stays formula-derived even for a critter: it never attacks, so the
 number is never read, and a third exception would be noise. `fall_damage`
@@ -914,8 +914,9 @@ is normalized into the def at registration time, next to `armor` and for the
 same reason (mobs_redo copies an explicit def-field whitelist, and a nil
 there falls through to its default of `true`). The telegraph gate is a
 positive `telegraph = true` flag on the elite and rare rows, asked through
-one predicate that both the `do_custom` gate and `telegraph_tick` call, and
-`set_tier` refuses to promote a critter at all.
+one predicate (`mods/ENTITIES/grug_mobs/levels.lua:89-95`) that both the
+`do_custom` gate and `telegraph_tick` call, and `set_tier` refuses to promote a
+critter at all.
 
 **Passive prey** — the *large* grazers: stag, gaunt stag, zebra, mountain
 ram, **plus the Carrion Crow**. They are ordinary mobs in every mechanical
@@ -928,17 +929,17 @@ real fight rather than by travel.
 mobs_redo already expresses exactly this, so it is **four def fields and no
 new aggro system** (`grug_mobs.passive_prey` in `verbs.lua` sets them in one
 place): `passive = false` is what makes retaliation exist at all (on_punch's
-tail calls `do_attack(hitter)` only for a non-passive mob, api.lua:2979),
+tail calls `do_attack(hitter)` only for a non-passive mob, api.lua:3293-3299),
 `attack_players = false` (with `attack_npcs = false`) is what removes aggro
 on sight — it is read in exactly one place, `general_attack`'s candidate
-filter (api.lua:1787), and nothing in the attack *state* consults it —
+filter (api.lua:1779-1791), and nothing in the attack *state* consults it —
 `runaway` must be **off**, because on_punch's runaway block sets
 `state = "runaway"` a dozen lines before the retaliation block resets it, so
 the two cannot both be true — and **`attack_type = "dogfight"`** is what
 makes the retaliation actually *fight*. That last one is necessary, not
 decoration: `do_states`' attack branch dispatches on `explode` /
-`dogfight`-`dogshoot` / `shoot`-`dogshoot` with **no else** (api.lua:2214,
-2277, 2360, 2539) and `mobs.mob_class` defaults it to nil, so a
+`dogfight`-`dogshoot` / `shoot`-`dogshoot` with **no else**
+(api.lua:2282-2667) and `mobs.mob_class` defaults it to nil, so a
 `passive = false` mob without an attack type holds a target reference and
 does nothing with it — no damage, no punch clip, not even a `set_velocity`,
 which leaves it coasting on the knockback until the leash drops it. It was

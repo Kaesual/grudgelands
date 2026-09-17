@@ -52,6 +52,19 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   swings for the **bare-handed baseline**: the hand's own damage and its
   own interval, read from the registered hand item rather than assumed.
 - **Spell/heal power** = ability base value + floor(Int/10)
+- **Level scalar** = `1 + 0.06×(level−1)`. The central damage, healing and
+  absorb seams multiply the completed player value once: ability base, gear
+  terms and flat talent additions are assembled **before** this scalar.
+  Damage and effective healing floor at their settlement boundaries; absorb
+  retains fractional points. Percentage consumables first derive their amount
+  from max HP and then enter this same scalar once
+  (`mods/CORE/grug_core/combat.lua:29`, `:53`, `:977`, `:1067`, `:1101`;
+  authoritative swings: `mods/PLAYER/grug_abilities/init.lua:1261-1303`).
+- **Higher-mob-level damage malus**: against a mob more than five levels above
+  the player, multiply player damage by `max(0.10, 1 − 0.10×(mob level −
+  player level − 5))`. It is part of the same final damage multiplication and
+  is floored only once with the level scalar
+  (`mods/CORE/grug_core/combat.lua:36-62`).
 - **Crit** = 5% + 0.1%×Dex, **cap 30%**; a crit deals ×1.5 damage
 - **Dodge** = 0.1%×Dex, **cap 30%**; a dodge avoids the hit entirely
 - Player armor (gear) reduces incoming damage; endgame plate reaches the
@@ -69,10 +82,15 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   - **Resolution order** for an ordinary punch in the central hp-change
     modifier: **dodge (cancels the hit entirely) → armor → applicable
     target-race Warding Draught → absorb shield.**
-    Authoritative swing abilities resolve crit and armor on one full swing,
-    then enter the modifier for dodge and absorb. Ordinary native tools/fists
-    resolve crit and armor on the full-swing equivalent before proportional
-    scaling and accumulation. Both use a namespaced `custom_type` that skips
+    Authoritative swing abilities assemble gear, Strength and a selected proc,
+    then apply the level scalar and mob-level malus once before crit and armor.
+    Ordinary native tools/fists against hostile players apply the level scalar
+    to their full-swing equivalent before crit, armor, proportional scaling and
+    accumulation. Raw tool/fist punches against Grudgelands mobs are vetoed:
+    all player damage to those mobs comes through the once-scaled authoritative
+    swing or ability seams.
+    Both then enter the modifier for dodge and absorb and use a namespaced
+    `custom_type` that skips
     only the already-performed armor step. Fall damage is separate: its race
     perk runs before absorb. A shield therefore always soaks *post*-mitigation
     damage, i.e. shield points are worth full damage rather than pre-armor
@@ -123,6 +141,19 @@ Two optional target-race systems use the central pipeline:
   shares the 60-second potion-use cooldown and is not modified by Apothecary
   Loop. The ward has its own PvP-buff category and may coexist with one
   ordinary elixir and Well Fed.
+
+### Environmental damage, deaths and shore movement
+
+- A player whose head point is inside a walkable, non-liquid node takes
+  **1 HP per second**. Non-walkable nodes, including plants, do not suffocate;
+  neither do liquid nodes. The character-creation stasis state is exempt.
+- Every player death sends exactly **one** short English line to all players.
+  The selected template distinguishes fall, drowning, lava/fire node damage,
+  suffocation, a mob punch (using the mob's display name), a player punch
+  (using the player name) and an unattributed fallback.
+- Shore step out of water is a mapgen item for round 6 because Luanti forces
+  airborne players to **0.2** effective stepheight regardless of the property
+  (`reference_projects/luanti/src/client/localplayer.cpp:322`).
 
 ### Melee timing and aim authority (shipped 2026-08-10, WP39)
 
@@ -193,15 +224,20 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   but preserves due time; lifecycle/class reset clears it. A concrete equipped
   weapon change starts the new weapon at one full interval, preventing swap
   spam.
-- **Ordinary hostile tools/fists cannot form a second stream.** Their native
-  proportional path remains, but every actual mob/PvP combat packet moves the
-  next full ability swing to at least `now + equipped FPI`. The transition
-  clears an old bank once; consecutive ordinary packets retain their fractions,
-  and returning to a swing clears the remainder once. Cast use alone preserves
-  ability due time.
+- **Ordinary hostile tools/fists cannot form a second stream.** Against a
+  Grudgelands mob their raw punch is input only and deals **0 damage**; only a
+  current-ray authoritative swing or an ability punch can damage it. Against a
+  hostile player the native proportional path remains and moves the next full
+  ability swing to at least `now + equipped FPI`. Its transition clears an old
+  bank once; consecutive ordinary PvP packets retain their fractions, and
+  returning to a swing clears the remainder once. Cast use alone preserves
+  ability due time (`mods/ENTITIES/mobs/api.lua:2773-2784`,
+  `mods/PLAYER/grug_abilities/init.lua:1261-1303`, `:2239-2269`).
 - **One accepted full swing resolves once.** Against players the order is
-  **slot weapon + Strength → selected proc replacement → one crit → armor →
-  integer damage → one dodge → one absorb → HP**. mobs_redo commits the proc
+  **slot weapon + Strength → selected proc replacement → level scalar (plus
+  mob-level malus when the target is a mob) → one crit → armor → integer
+  damage → one dodge → one absorb →
+  HP**. mobs_redo commits the proc
   only after `do_punch` and CMI accept. Mighty Blow remains exactly
   `floor(weapon × 1.5) + melee bonus` before crit; Hamstring is the ordinary
   full swing plus its 50% slow, paid/applied only after HP damage lands.
@@ -292,12 +328,17 @@ the editable land rule.
 
 Normal tier at level L:
 
-- **HP** = 15 + 5×L · **Damage/hit** = 2 + 0.4×L · **XP** = 10×L
+- **HP** = `20 + 5×L + 0.66×L²` · **Damage/hit** =
+  `2 + 0.3×L + 0.005×L²`, rounded to one decimal · **XP** = `10×L`
 - mobs_redo armor: normal 100, **elite 80 (×3 HP, ×1.8 dmg, ×4 XP)**,
-  **rare patrol 70 (×5 HP, ×2.2 dmg, ×6 XP)**, bosses 60 (hand-tuned).
+  **rare patrol 70 (×5 HP, ×2.2 dmg, ×6 XP)**, and the registered
+  **boss tier (×20 HP only; normal damage, XP and armor; no telegraph)**.
+  No mob uses the boss tier before
+  the round-6 king/dragon content. The single implementation table and formula
+  are `mods/ENTITIES/grug_mobs/levels.lua:70-118`.
 - **Three mob classes** (decided 2026-08-08, full rule in
   `biomes_mobs.md` §3.0): **critters** (small animals — always level 1,
-  always **1 HP**, 10 XP flat, **food-only drops**, **no fall damage**,
+  always **1 HP**, **0 XP**, **food-only drops**, **no fall damage**,
   never elite/rare; a `critter` tier in the level engine, the second
   documented exception to "stats derived, never hand-rolled" after the
   Kraken), **passive prey** (large grazers — ordinary levels, HP, XP and
@@ -371,6 +412,21 @@ Normal tier at level L:
   quadratic level curve); quests supply the rest.
 - **Gray kills award no XP**: a mob at level ≤ killer level − 10 gives 0
   XP (kills trivial-mob farming).
+- **XP level cap**: calculate each recipient's formula with effective mob
+  level `min(actual mob level, player level + 5)`. The gray test still reads
+  the actual mob level (`mods/ENTITIES/grug_mobs/levels.lua:643-656`).
+- **XP participation and split**: a participant dealt accepted damage to the
+  mob or delivered effective healing to an existing participant. At death,
+  only participants who are online and within 40 m count; divide the award by
+  that eligible count after calculating the cap and gray rule per recipient. A
+  player receives no XP from a mob of their own faction
+  (`mods/ENTITIES/grug_mobs/init.lua:87-215`). Settlement occurs once at the
+  shared mobs_redo death boundary regardless of whether a player, NPC, mob or
+  the environment dealt the final damage, without replacing the mob's death
+  callback, animation or smoke fallback (`mods/ENTITIES/mobs/api.lua:855-910`).
+- **PvE death loss** is 25% of the whole current-level XP span, clamped at the
+  current level start; it never de-levels. Level 60 has no following span and
+  therefore no PvE XP loss (`mods/PLAYER/grug_xp/init.lua:86-104`).
 - **Player-tag drop rule** (decided 2026-08-06, WP6): a mob drops loot
   only if a player damaged it (`do_punch` sets a tag; the tag stores
   the attacker's professions for loot-table hooks like the
@@ -400,8 +456,10 @@ Normal tier at level L:
   `dogshoot`). **Named rares broadcast** their spawn faction-wide
   ("Grimtusk has been sighted…") — a meeting point for a low-population
   server.
-- WP1 retune (**done with WP6**): boar = L1 (HP 20, dmg 2, XP 10),
-  zombie = L3 (HP 30, dmg 3, XP 30), and both now use the 4.6 melee band.
+- WP1 retune (**done with WP6**): boar = L1 (HP 26, dmg 2.3, XP 10),
+  zombie = L3 (HP 41, dmg 2.9, XP 30), and both now use the 4.6 melee band
+  (`run_velocity` was 3.4/2.6 at WP6, raised to 4.4/4.2 with the soft
+  de-aggro, then to the band's 4.6 in rounds 4 and 5).
 - **Level floors** (`_grug_min_level`): a mob whose family belongs to a
   later zone keeps its floor even where the field reads lower — zombie 3,
   wolf/hyena/jungle lynx 10, guard 20. The floor is also the fallback
@@ -425,10 +483,40 @@ Normal tier at level L:
 
 | Mob level | HP | Dmg/hit | XP |
 |-----------|----|---------|----|
-| 1 | 20 | 2 | 10 |
-| 10 | 65 | 6 | 100 |
-| 30 | 165 | 14 | 300 |
-| 60 | 315 | 26 | 600 |
+| 1 | 26 | 2.3 | 10 |
+| 10 | 136 | 5.5 | 100 |
+| 30 | 764 | 15.5 | 300 |
+| 60 | 2696 | 38.0 | 600 |
+
+### Same-level TTK check
+
+Deterministic non-crit benchmark: the Warrior uses that level's ladder sword
+at its 1.0 s interval, Fireball is normalized to one cast per second, and
+Smite uses its 2.0 s cooldown. Elite armor 80 is included. `old→new` compares
+the pre-2026-09-17 formulas with the current formulas; N/E means normal/elite.
+
+| L | Current HP N/E | Raw DPS Warrior/Fireball/Smite old→new | Warrior TTK N/E old→new | Fireball TTK N/E old→new | Smite TTK N/E old→new |
+|---:|---:|---:|---:|---:|---:|
+| 1 | 26/78 | 6→6 / 7→7 / 2.5→2.5 | 4→5 / 15→20 | 3→4 / 12→16 | 8→12 / 30→40 |
+| 10 | 136/408 | 8→12 / 9→13 / 3→4.5 | 9→12 / 33→46 | 8→11 / 28→41 | 22→32 / 98→118 |
+| 20 | 384/1152 | 14→29 / 12→25 / 4→8.5 | 9→14 / 32→51 | 10→16 / 39→58 | 30→46 / 116→178 |
+| 40 | 1276/3828 | 27→90 / 18→60 / 6→20 | 8→15 / 31→54 | 12→22 / 47→80 | 36→64 / 144→240 |
+| 60 | 2696/8088 | 40→181 / 24→108 / 8→36 | 8→15 / 30→57 | 14→25 / 50→95 | 40→76 / 158→284 |
+
+The maximum new/old TTK ratio is **1.900**, at a level-60 Warrior against an
+elite; every row is at or below the mandatory 2.000 ceiling.
+
+Mob pressure uses one raw hit per second before dodge, armor and absorb. The
+quadratic term deliberately keeps levels 1–10 close to the old pressure,
+crosses it at level 20 and makes the high-level game steeper:
+
+| L | Mob damage N/E old→new | Warrior HP; TTD N/E old→new | Mage HP; TTD N/E old→new | Priest HP; TTD N/E old→new |
+|---:|---:|---:|---:|---:|
+| 1 | 2.4→2.3 / 4.3→4.1 | 30; 12.5→13.0 / 7.0→7.3 | 30; 12.5→13.0 / 7.0→7.3 | 30; 12.5→13.0 / 7.0→7.3 |
+| 10 | 6.0→5.5 / 10.8→9.9 | 75; 12.5→13.6 / 6.9→7.6 | 48; 8.0→8.7 / 4.4→4.8 | 57; 9.5→10.4 / 5.3→5.8 |
+| 20 | 10.0→10.0 / 18.0→18.0 | 125; 12.5→12.5 / 6.9→6.9 | 68; 6.8→6.8 / 3.8→3.8 | 87; 8.7→8.7 / 4.8→4.8 |
+| 40 | 18.0→22.0 / 32.4→39.6 | 225; 12.5→10.2 / 6.9→5.7 | 108; 6.0→4.9 / 3.3→2.7 | 147; 8.2→6.7 / 4.5→3.7 |
+| 60 | 26.0→38.0 / 46.8→68.4 | 325; 12.5→8.6 / 6.9→4.8 | 148; 5.7→3.9 / 3.2→2.2 | 207; 8.0→5.4 / 4.4→3.0 |
 
 ### Position → mob level
 
@@ -618,11 +706,16 @@ design (`group_attack` stays on).
   icon framework** (`inventory_equipment.md` §5, decided 2026-08-13):
   green-framed buffs, red-framed debuffs, largest-unit countdown.
 
-## 6. Mob nameplates & con colors
+## 6. Player and mob nameplates & con colors
 
 - Every mob carries a **global nametag**: `<Name> [Lv X] HP/maxHP`
   (viewer-independent, updated on damage). The exact level is therefore
   always readable for everyone — **within nametag range** (below).
+- Nametag and Target Frame HP use one compact formatter: values below 1000 are
+  full integers, 1000–9999 use one truncated decimal (`2300 → 2.3k`), and
+  values from 10000 round to whole thousands (`51234 → 51k`;
+  `mods/CORE/grug_core/combat.lua:68-78`,
+  `mods/ENTITIES/grug_mobs/levels.lua:199-217`).
 - **Nametag visibility is proximity-capped** (decided 2026-08-07 after
   the WP6 runtime test; the engine has no distance cull — nametags of
   every active object render up to the ~128 m object-send range, which
@@ -634,19 +727,22 @@ design (`group_attack` stays on).
   (nearest-player), not per viewer — the engine cannot do per-viewer
   nametags. The radius sits just past the 20 m target-frame reach:
   everything you can frame has a readable tag, plus a margin.
-- **Player nametags are hidden entirely** (alpha 0 — the only mechanism
-  that works for players): any fixed radius would still leak positions
-  through walls and darkness, exactly the PvP tell we must not give
-  away. Identification is the target frame's job — it shows the pointed
-  player's name and faction (per viewer, faction-colored).
+- Every player carries the global nametag
+  **`<Name> [Lv X] HP/maxHP`**, for example
+  **`Thomas [Lv 5] 35/60`**. It updates immediately when HP or level changes
+  and writes no property when the text and visibility state are unchanged.
+  The numbers remain plain integers.
+- Player nametags use the mob gate: shown when another player is within
+  **25 m**, hidden beyond **30 m**, with the state retained inside the
+  hysteresis band. Distance is to the nearest other player because an object
+  nametag is global rather than per viewer.
 - **Con colors are per viewer** and live in a **HUD target frame** (the
   mob you look at/punch; nametags cannot be colored per viewer). The
   frame's **reach is 20 m** — our choice, not an engine constant: far
   enough past the 16 m view_range of our longest-sighted ground mobs to
   size up what is about to notice you, and inside the ability targeting
   ranges so what you can frame is roughly what you can hit. The frame
-  also works on **players** (name + faction, faction-colored) — it is
-  the identification mechanism now that player nametags are hidden.
+  also works on **players** (name + faction, faction-colored).
   Relative to the viewer's level L (mobs):
 
 | Relation | Color | XP |

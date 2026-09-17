@@ -58,20 +58,148 @@ function grug_factions.display_name(id)
 end
 
 --
--- Player nametags are hidden ENTIRELY (combat_stats.md §6): unlike an entity
--- tag there is no distance at which a floating player name is acceptable — it
--- renders through walls and darkness out to the object-send range and is a
--- free PvP tell. Identification is the target frame's job (grug_mobs).
+-- Player nametags use the same 25/30 m hysteresis as mob tags
+-- (combat_stats.md §6). Player properties are global rather than per-viewer,
+-- so the distance is to the nearest OTHER player. Alpha 0 is the only way to
+-- hide a player tag: an empty string falls back to the account name.
 --
--- Alpha 0 is the ONLY mechanism that works for players: an empty nametag
--- string falls back to the player's name for player objects
--- (lua_api.md:10109-10111 — "a nil or empty nametag is replaced by the
--- player's name ... To hide a nametag, set its color alpha to zero"), and
--- nametag_bgcolor's alpha would only drop the plate behind the text.
--- Precedent: Lord-of-the-Test lottother/rings/rings.lua:246 (the One Ring).
-local function hide_nametag(player)
-	player:set_nametag_attributes({color = {a = 0, r = 255, g = 255, b = 255}})
+
+local TAG_SHOW_D2 = 25 * 25
+local TAG_HIDE_D2 = 30 * 30
+local TAG_INTERVAL = 1
+local TAG_WHITE = {a = 255, r = 255, g = 255, b = 255}
+local TAG_HIDDEN = {a = 0, r = 255, g = 255, b = 255}
+local tag_states = {}
+local tag_elapsed = 0
+
+local function player_level(player)
+	if core.global_exists("grug_xp") then
+		return grug_xp.get_level(player)
+	end
+	return 1
 end
+
+function grug_factions.player_tag_text(name, level, hp, hp_max)
+	return name .. " [Lv " .. level .. "] " .. hp .. "/" .. hp_max
+end
+
+-- Nil means there is no other connected player and therefore nobody who
+-- should see the tag. Exact 25/30 m boundaries retain the prior state.
+function grug_factions.player_tag_visible(was_visible, nearest_d2)
+	if nearest_d2 == nil then
+		return false
+	elseif nearest_d2 < TAG_SHOW_D2 then
+		return true
+	elseif nearest_d2 > TAG_HIDE_D2 then
+		return false
+	end
+	return was_visible == true
+end
+
+local function tag_text(player, hp)
+	local properties = player:get_properties()
+	local hp_max = properties.hp_max or math.max(1, hp or player:get_hp())
+	local current = math.max(0, math.min(hp_max, hp or player:get_hp()))
+	return grug_factions.player_tag_text(player:get_player_name(),
+		player_level(player), current, hp_max)
+end
+
+local function write_tag(player, state, visible)
+	player:set_nametag_attributes({
+		text = state.text,
+		color = visible and TAG_WHITE or TAG_HIDDEN,
+	})
+	state.visible = visible
+end
+
+function grug_factions.refresh_player_tag(player, hp)
+	local name = player:get_player_name()
+	local state = tag_states[name]
+	if not state then
+		state = {visible = false}
+		tag_states[name] = state
+	end
+	local text = tag_text(player, hp)
+	if text == state.text then
+		return false
+	end
+	state.text = text
+	if state.visible then
+		write_tag(player, state, true)
+		return true
+	end
+	return false
+end
+
+local function reset_player_tag(player)
+	local state = {visible = false, text = tag_text(player)}
+	tag_states[player:get_player_name()] = state
+	write_tag(player, state, false)
+end
+
+local function nearest_other_d2(players, positions, index)
+	local pos = positions[index]
+	if not pos then
+		return nil
+	end
+	local best
+	for other = 1, #players do
+		local candidate = positions[other]
+		if other ~= index and candidate then
+			local dx = pos.x - candidate.x
+			local dy = pos.y - candidate.y
+			local dz = pos.z - candidate.z
+			local d2 = dx * dx + dy * dy + dz * dz
+			if not best or d2 < best then
+				best = d2
+			end
+		end
+	end
+	return best
+end
+
+core.register_globalstep(function(dtime)
+	tag_elapsed = tag_elapsed + dtime
+	if tag_elapsed < TAG_INTERVAL then
+		return
+	end
+	tag_elapsed = tag_elapsed % TAG_INTERVAL
+	local players = core.get_connected_players()
+	local positions = {}
+	for index = 1, #players do
+		positions[index] = players[index]:get_pos()
+	end
+	for index = 1, #players do
+		local player = players[index]
+		local name = player:get_player_name()
+		local state = tag_states[name]
+		if not state then
+			reset_player_tag(player)
+			state = tag_states[name]
+		end
+		local visible = grug_factions.player_tag_visible(state.visible,
+			nearest_other_d2(players, positions, index))
+		if visible ~= state.visible then
+			write_tag(player, state, visible)
+		end
+	end
+end)
+
+core.register_on_player_hpchange(function(player, hp_change)
+	grug_factions.refresh_player_tag(player, player:get_hp() + hp_change)
+end, false)
+
+core.register_on_mods_loaded(function()
+	if core.global_exists("grug_xp") then
+		grug_xp.register_on_level_change(function(player)
+			grug_factions.refresh_player_tag(player)
+		end)
+	end
+end)
+
+core.register_on_leaveplayer(function(player)
+	tag_states[player:get_player_name()] = nil
+end)
 
 -- Faction resolver for grug_core (protection rules); only online players can
 -- be resolved, everyone else counts as factionless.
@@ -122,10 +250,7 @@ function grug_factions.set_faction(player, id)
 		return false
 	end
 	player:get_meta():set_string(META_FACTION, id)
-	-- Not a faction COLOR on the nametag any more (see hide_nametag): a
-	-- colored tag is still a tag. Re-asserted here so an admin /faction set
-	-- can never bring a visible name back.
-	hide_nametag(player)
+	grug_factions.refresh_player_tag(player)
 
 	local meta = player:get_meta()
 	if meta:get_int(META_KIT) == 0 then
@@ -270,8 +395,8 @@ end)
 
 core.register_on_joinplayer(function(player)
 	-- Unconditionally, factionless included: nametag attributes are per
-	-- session, not persisted, so this is the one place that has to run.
-	hide_nametag(player)
+	-- session, not persisted, so this is the one place that has to reset them.
+	reset_player_tag(player)
 	local def = grug_factions.get_faction_def(player)
 	if not def then
 		local name = player:get_player_name()
