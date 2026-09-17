@@ -1,7 +1,7 @@
 # Lane S headless evidence
 
 Captured on 2026-09-17 with seed `15912857179583385436` and Lane S ports
-31100–31111. Every server ran through `tools/luanti_headless.sh`, under
+31100–31132. Every server ran through `tools/luanti_headless.sh`, under
 `nice -n 19`, with an isolated Flatpak runtime directory under `/tmp`.
 
 ## Natural spawn rate
@@ -74,3 +74,28 @@ name census stays `far=0` from second 30 through the final second 55. See
 at the lane base made `mob_expire()` irrelevant because `remove_far_mobs =
 true`; the distance rule now stores a terminal marker, and `mob_activate`
 disables static saving before removing that transient object.
+
+## Active-mob lifecycle counter
+
+The round-4 probe adds an eight-second preparation phase before creating the
+two stags. This lets the forced blocks load and unrelated start entities settle
+before the probe records its counter baseline. It then releases the blocks at
+second 18, forces them again at second 33 and finishes at second 63. Every
+lifetime row records both mobs_redo's `active_mobs` value and an independent
+512-node census of active `_cmi_is_mob` Lua entities.
+
+Command:
+
+```sh
+XDG_RUNTIME_DIR=/tmp/r5-xdg-round4 \
+  tools/spawn_probe/run_despawn.sh round4-fixed-counter-final 31132 2 0
+```
+
+The run passed. At second 8 the counter and census are both 2; after unload
+they are both 0 from seconds 20 through 33. The far marker is visible at
+second 36 and absent from second 37 onward. At second 40 the protected static
+records have activated and both measurements are 3: the two name-counted near
+stags plus one other mob object loaded by the forced area. They stay equal
+through the final `near=2 far=0 active=3 mob_objects=3` line at second 63.
+An all-row comparison found no counter/census mismatch. See
+`round4-fixed-counter-final/lifetime.log`.
