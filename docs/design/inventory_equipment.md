@@ -256,31 +256,26 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   [housing.md](housing.md) §6.5. Claim ACL access never grants a recipe,
   profession tier or material the character has not unlocked.
 
-## 5. Buff/debuff icons (decided 2026-08-13)
+## 5. Buff/debuff display (decided 2026-09-17)
 
-Every timed effect on the player — Well Fed, food restores, elixirs,
-Rested XP, king-participation effects, res sickness, later debuffs — is
-visible in two places. The framework is generic: an effect registers an
-icon, a category (buff/debuff) and an expiry, nothing per-consumer.
+Every ordinary timed player effect registers centrally with an id, label,
+buff/debuff category and expiry. The registry is runtime-only: a relog drops
+ordinary buffs and debuffs. A mechanic that must survive a relog keeps its own
+authoritative persistence; the potion cooldown remains in player meta and is
+only mirrored into the registry for display.
 
-- **Game screen**: one small icon row, unobtrusive but individually
-  recognizable. Implemented as HUD `image` elements plus one centered
-  text element per icon carrying the remaining duration. **Only the
-  largest unit is shown**: above 48 h as days ("4d"), then hours ("4h"),
-  under one hour minutes ("58m"), under one minute seconds ("45s").
-  Text writes only when the displayed string changes — at most once per
-  second inside an icon's final minute, far rarer above it (the
-  shared-ticker rule; no new globalstep). The HUD has no hover,
-  so the screen row carries no description.
-- **Character page**: the same effects as a formspec `image[]` row with
-  `tooltip[]` hover — icon, effect name, one-line description and the
-  same largest-unit remaining duration.
-- **Buffs carry a green frame, debuffs a red frame** — one shared
-  overlay texture per category composited over the effect icon
-  (`^`-modifier), never one framed asset per effect.
-- Specialized HUD elements keep their own decided displays: WP41's PvP
-  tag icon/countdown and the target frame are not migrated into this
-  row.
-- Ships with **WP10**, the first WP that grants real player buffs; the
-  registry lives centrally so later WPs (rested XP, PvP debuffs,
-  king effects) enroll instead of inventing parallel displays.
+- **First version:** one top-right HUD text list, buffs first and debuffs
+  second, capped at eight lines. Each line is `Name  1:23`; a numeric value
+  may follow the name, as in `Shield 12  0:09`. Durations under ten minutes
+  use `m:ss`; longer durations use the largest fitting unit.
+- One throttled 1 s pass owns timed ticks, expiry and display refresh. It
+  calls `hud_change` only when the complete rendered text changed; an idle
+  player generates no repeated HUD packets.
+- Current entries are Power Word: Shield, Renew, food restore and the
+  persistent Potion cooldown (shown in the debuff section). Combat state is
+  not a status entry.
+- Specialized displays such as the target frame remain separate.
+- **WP10 replaces the text presentation with the icon framework:** HUD image
+  elements, countdown text, green/red category frames and matching Character
+  page tooltips. Effects keep using the same central registry rather than
+  gaining per-consumer status stores.

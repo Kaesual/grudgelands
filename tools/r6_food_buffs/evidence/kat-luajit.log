@@ -1,0 +1,4 @@
+r6_food_mapping	cocoa=mana/raw/2	cooked_mana_items=0
+r6_mana_restore	first=40	clamp=60	full=0	mana=100	hud=2
+r6_food_buffs_result	failures=0	duration_ticks=18/17	ticks=2%:1/2/6,5%:1/5/16,10%:2/10/32	items=default:apple=hp/raw,default:blueberries=hp/raw,grug_fishing:cooked_fish=hp/cooked,grug_gathering:corn=hp/raw,grug_gathering:melon=hp/raw,grug_gathering:mushroom=hp/raw,grug_gathering:potato=hp/raw,grug_gathering:rock_salt=hp/raw,grug_gathering:wild_cocoa=mana/raw,grug_mobs:raw_fish=hp/raw,mobs:meat=hp/cooked,mobs:meat_raw=hp/raw,mobs:meatblock=hp/cooked,mobs:meatblock_raw=hp/raw
+PASS

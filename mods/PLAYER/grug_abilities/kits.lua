@@ -832,6 +832,13 @@ grug_abilities.register_ability({
 			amount = def.values(user).heal,
 			healer = user:get_player_name(),
 		}
+		if grug_core.set_status then
+			grug_core.set_status(target, "renew", {
+				label = "Renew",
+				duration = 12,
+				kind = "buff",
+			})
+		end
 		burst(target:get_pos(), "mobs_heart_particle.png", 5)
 		return true
 	end,
@@ -849,6 +856,9 @@ core.register_globalstep(function(dtime)
 		local target = core.get_player_by_name(name)
 		if not target or target:get_hp() <= 0 then
 			renews[name] = nil
+			if target and grug_core.clear_status then
+				grug_core.clear_status(target, "renew")
+			end
 		else
 			local healer = core.get_player_by_name(renew.healer) or target
 			grug_core.heal_player(healer, target, renew.amount)
@@ -856,11 +866,18 @@ core.register_globalstep(function(dtime)
 			renew.ticks = renew.ticks - 1
 			if renew.ticks <= 0 then
 				renews[name] = nil
+				if grug_core.clear_status then
+					grug_core.clear_status(target, "renew")
+				end
 			end
 		end
 	end
 end)
 
 core.register_on_leaveplayer(function(player)
+	renews[player:get_player_name()] = nil
+end)
+
+core.register_on_dieplayer(function(player)
 	renews[player:get_player_name()] = nil
 end)

@@ -1103,10 +1103,22 @@ local absorbs = {} -- player name -> {amount = n, expiry = us time}
 
 function grug_core.set_absorb(player, amount, duration, source)
 	amount = grug_core.scale_player_value(source or player, amount)
+	local expiry = core.get_us_time() + duration * 1e6
 	absorbs[player:get_player_name()] = {
 		amount = amount,
-		expiry = core.get_us_time() + duration * 1e6,
+		expiry = expiry,
 	}
+	if grug_core.set_status then
+		grug_core.set_status(player, "shield", {
+			label = "Shield",
+			expiry_us = expiry,
+			value = function(target)
+				local remaining = grug_core.get_absorb(target)
+				return remaining > 0 and remaining or false
+			end,
+			kind = "buff",
+		})
+	end
 end
 
 -- Remaining absorb amount (0 when none/expired).
@@ -1114,10 +1126,16 @@ function grug_core.get_absorb(player)
 	local name = player:get_player_name()
 	local a = absorbs[name]
 	if not a then
+		if grug_core.clear_status then
+			grug_core.clear_status(player, "shield")
+		end
 		return 0
 	end
 	if core.get_us_time() > a.expiry then
 		absorbs[name] = nil
+		if grug_core.clear_status then
+			grug_core.clear_status(player, "shield")
+		end
 		return 0
 	end
 	return a.amount

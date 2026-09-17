@@ -39,6 +39,7 @@ local modpath = core.get_modpath(core.get_current_modname())
 -- The bottom-centre HUD column. Pure data plus arithmetic, depends on
 -- nothing, and every HUD writer in the game reads it.
 dofile(modpath .. "/hud_layout.lua")
+dofile(modpath .. "/status.lua")
 dofile(modpath .. "/atmosphere.lua")
 -- After atmosphere.lua (it extends that preset table) and before
 -- zone_authority.lua, which only installs a seam grug_mapgen fills in later.
