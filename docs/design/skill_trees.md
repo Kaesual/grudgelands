@@ -291,8 +291,8 @@ Reading the tables:
 | # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
 |---|---|---|---|---|---|---|---|---|
 | 1 | **Ironbound** | Wall | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 armor percent, under the 60 % cap | `grug_inventory/equipment.lua:479` | `armor_percent_add` |
-| 2 | **Weathered** | Wall | 2 | 4 | — | max HP +3 / 6 / 9 / 12 | `grug_classes/stats.lua:20` | `max_hp_add` |
-| 3 | **Hold Ground** *(keystone)* | Wall | 3 | 3 | **new skill** ‼ | cast, 25 rage, self; absorbs `20 / 30 / 40 + 2 × floor(Str/10)` for 8 s, **and for those 8 s the Warrior cannot be rooted or slowed**. *Limit: 8 s, **60 s cooldown**.* | new; `grug_core.set_absorb` (`grug_core/combat.lua:1012`); the immunity is a flag the speed aggregator of §3.9 already has to read | — |
+| 2 | **Weathered** | Wall | 2 | 4 | — | max HP +1.5 / 3 / 4.5 / 6% of the class base pool | `grug_classes/stats.lua` | `max_hp_percent_add` |
+| 3 | **Hold Ground** *(keystone)* | Wall | 3 | 3 | **new skill** ‼ | cast, 25 rage, self; absorbs 20% / 30% / 40% of the class-neutral base pool for 8 s, **and for those 8 s the Warrior cannot be rooted or slowed**. *Limit: 8 s, **60 s cooldown**.* | new; `grug_core.set_absorb`; the immunity is a flag the speed aggregator of §3.9 already has to read | — |
 | 4 | **Unbroken** *(capstone)* | Wall | 4 | **1** | **effect** ‼ | the first time in **180 s** that a hit would take the Warrior below 20 % max HP: armor percent **+15** **and the 60 % armor cap rises to 75 %**, for 8 s. *Limit: 8 s, **180 s**.* | the two clamps, `grug_inventory/equipment.lua:480` and `grug_core/combat.lua:38`, plus the hp-change modifier that observes the threshold | `armor_cap_override` |
 | 5 | **Spite** | Anvil | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 rage per hit taken (base 3) | `grug_abilities/init.lua:2286-2291` | `rage_per_hit_taken_add` |
 | 6 | **Affront** | Anvil | 2 | 4 | — | tank-ability threat ×3 → ×3.25 / 3.5 / 3.75 / 4.0 | **two sites**: `grug_core/combat.lua:963` (casts) and `grug_abilities/init.lua:910`, applied at `:955-957` (swings) | `threat_mult_add` |
@@ -305,6 +305,9 @@ has committed to holding a spot cannot be kited off it for eight seconds. The
 named consequence stays: there is **one absorb per player and a new one
 replaces the old** (`grug_core/combat.lua:1003-1012`), so a Priest's Power
 Word: Shield cast onto the Warrior overwrites Hold Ground. **Ruling 23 ends that**: absorbs stack, §3.11.
+
+Weathered's 1.5% per rank is the pool conversion anchor: its first reachable
+rank at level 12 adds 3 HP after rounding, matching the former flat first rank.
 
 ### 2.2 Warrior — Ruin
 
@@ -353,13 +356,13 @@ because the fix belongs to `classes.md` §3 rather than to WP11.
 
 | # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
 |---|---|---|---|---|---|---|---|---|
-| 1 | **Tinder** | Blaze | 1 | 5 | — | Fireball `6 + spell power` → `+1 / 2 / 3 / 4 / 5` | `kits.lua:458` | `fireball_damage_add` |
+| 1 | **Tinder** | Blaze | 1 | 5 | — | Fireball's `baseline weapon + spell power` raw value gains +1 / 2 / 3 / 4 / 5 before the damage fit | `kits.lua` | `fireball_damage_add` |
 | 2 | **Firebrand** | Blaze | 2 | 4 | — | +1 / 2 / 3 / 4 percentage points crit chance | `grug_classes/stats.lua:45` | `crit_chance_add` |
-| 3 | **Brand** *(keystone)* | Blaze | 3 | 3 | **replaces Fireball** | Fireball's impact splashes `2 / 3 / 4 + floor(spell power / 2)` to every other hostile within 2 m. Same key, same 8 mana, same straight flight | `kits.lua:429` (the projectile's on-hit) plus the radius loop of `kits.lua:490` | `fireball_splash` |
-| 4 | **Whitehot** *(capstone)* | Blaze | 4 | **1** | **effect** ‼ | the first Fireball that **crits** starts an 8 s window in which Fireball costs **4 mana instead of 8** and deals **+6**. *Limit: 8 s, **120 s cooldown** on the trigger.* | `grug_abilities/init.lua:1232` (`spend(user, def.cost)`) and `kits.lua:458` | `whitehot_window` |
+| 3 | **Brand** *(keystone)* | Blaze | 3 | 3 | **replaces Fireball** | Fireball's impact splashes `2 / 3 / 4 + floor(spell power / 2)` to every other hostile within 2 m. Same key, same 6% base-mana cost, same 1 s cast interval, same straight flight | `kits.lua` (the projectile's on-hit) plus its radius loop | `fireball_splash` |
+| 4 | **Whitehot** *(capstone)* | Blaze | 4 | **1** | **effect** ‼ | the first Fireball that **crits** starts an 8 s window in which Fireball costs **3% instead of 6% base mana** and deals **+6**. *Limit: 8 s, **120 s cooldown** on the trigger.* | the central cost seam and Fireball values | `whitehot_window` |
 | 5 | **Deep Well** | Cinder | 1 | 5 | — | max mana +3 / 6 / 9 / 12 / 15 % | `grug_classes/stats.lua:30` | `max_mana_percent_add` |
 | 6 | **Far Cast** | Cinder | 2 | 4 | — | Fireball maximum distance 20 m → 21.5 / 23 / 24.5 / 26 m | two per-player reads, neither at a registration constant: the spawn call (`kits.lua:453-460`, since `grug_projectiles/init.lua:195` prefers `params.max_distance` over the registered `kits.lua:413`), and targeting reach in `grug_abilities.get_range` (`init.lua:170-177`), whose item-meta override `sync_kit` already refreshes (`grug_abilities/init.lua:1827-1831`) | `fireball_range_add` |
-| 7 | **Cinderfall** *(keystone)* | Cinder | 3 | 3 | **new skill** | cast, 12 mana, 10 s cooldown, 20 m; a burst at the first thing the crosshair ray meets, dealing `5 / 7 / 9 + spell power` to every hostile within 3 m of it | new; `grug_core.combat_ray` (`kits.lua:58`) plus the radius loop of `kits.lua:490` | — |
+| 7 | **Cinderfall** *(keystone)* | Cinder | 3 | 3 | **new skill** | cast, 12% base mana, 10 s cooldown, 20 m; a burst at the first thing the crosshair ray meets, dealing `5 / 7 / 9 + spell power` to every hostile within 3 m of it | new; `grug_core.combat_ray` plus the radius loop | — |
 | 8 | **Ashfall** | Cinder | 4 | 3 | — | Cinderfall's radius 3 m → 4 / 5 / 6 m | the new Cinderfall registration | `cinderfall_radius_add` |
 
 Fireball's flight is not eaten by the longer range: `lifetime = 2`
@@ -372,11 +375,11 @@ rule-breaker besides its capstone — see §2.9's note on the bounded pass.
 |---|---|---|---|---|---|---|---|---|
 | 1 | **Deep Chill** | Frost | 1 | 5 | — | Frost Nova root 4 s → 4.2 / 4.4 / 4.6 / 4.8 / 5.0 s | `kits.lua:495` (players) and `:504` (mobs) | `frost_nova_root_add` |
 | 2 | **Hoarfrost** | Frost | 2 | 4 | — | Frost Nova follow-up slow 3 s → 4 / 5 / 6 / 7 s (the 50 % stays) | `kits.lua:496` and `:505` | `frost_nova_slow_add` |
-| 3 | **Frostbind** *(keystone)* | Frost | 3 | 3 | **replaces Frost Nova** | Frost Nova stops being self-centred: it is cast at the pointed hostile up to 20 m away and roots everything within 3 / 4 / 5 m **of the target**. Same key, same 10 mana, same 12 s cooldown — a control tool instead of a panic button | `kits.lua:488-490` (the cast body and its radius origin) | `frost_nova_ranged` |
+| 3 | **Frostbind** *(keystone)* | Frost | 3 | 3 | **replaces Frost Nova** | Frost Nova stops being self-centred: it is cast at the pointed hostile up to 20 m away and roots everything within 3 / 4 / 5 m **of the target**. Same key, same 10% base-mana cost, same 12 s cooldown — a control tool instead of a panic button | `kits.lua` (the cast body and its radius origin) | `frost_nova_ranged` |
 | 4 | **Rimebite** *(capstone)* | Frost | 4 | **1** | **effect** | every root Frost Nova applies also deals `5 + floor(spell power / 2)` on application | `kits.lua:495-505` | `control_damage_add` |
 | 5 | **Cold Focus** | Ward | 1 | 5 | — | in-combat mana regeneration 0.5 %/s → 0.6 / 0.7 / 0.8 / 0.9 / 1.0 %/s | `grug_abilities/init.lua:2202` | `combat_mana_regen_add` |
 | 6 | **Quick Step** | Ward | 2 | 4 | — | Blink cooldown 15 s → 13.5 / 12 / 10.5 / 9 s | `grug_abilities/init.lua:1233` — **not** `kits.lua:526` | `blink_cooldown_sub` |
-| 7 | **Glacial Ward** *(keystone)* | Ward | 3 | 3 | **new skill** | cast, 10 mana, 30 s cooldown, self; absorbs `10 / 15 / 20 + 2 × spell power` for 10 s | new; `grug_core.set_absorb` (`grug_core/combat.lua:1012`) | — |
+| 7 | **Glacial Ward** *(keystone)* | Ward | 3 | 3 | **new skill** | cast, 10% base mana, 30 s cooldown, self; absorbs 10% / 15% / 20% of the class-neutral base pool plus the spell-power percentage for 10 s | new; `grug_core.set_absorb` | — |
 | 8 | **Far Step** | Ward | 4 | 3 | — | Blink distance 10 m → 12 / 14 / 16 m | `kits.lua:533` (inside the cast body, player in scope) | `blink_distance_add` |
 
 Rime also takes no rule-breaker besides its capstone, and its capstone does
@@ -387,11 +390,11 @@ as §2.1: Glacial Ward and Power Word: Shield no longer overwrite each other —
 
 | # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
 |---|---|---|---|---|---|---|---|---|
-| 1 | **Gentle Hand** | Balm | 1 | 5 | — | Flash Heal `8 + 2 × spell power` → `+1 / 2 / 3 / 4 / 5` | `kits.lua:613` | `flash_heal_add` |
+| 1 | **Gentle Hand** | Balm | 1 | 5 | — | Flash Heal's 25% base-pool share gains +1 / 2 / 3 / 4 / 5 percentage points | `kits.lua` | `flash_heal_add` |
 | 2 | **Quiet Steps** | Balm | 2 | 4 | — | heal threat factor 0.5 → 0.45 / 0.40 / 0.35 / 0.30 (`combat_stats.md` §4) | `grug_core/combat.lua:241`, read at `:417` inside `add_heal_threat` (`:404`) | `heal_threat_factor_sub` |
-| 3 | **Renew** *(keystone)* | Balm | 3 | 3 | **new skill** *(already registered)* | the shipped ability (`kits.lua:651-677`), granted at rank 1 exactly as `classes.md` §5 specifies (6 mana, 8 s cooldown, `3 + spell power` every 3 s for 12 s); ranks 2 and 3 raise the tick to `4` and `5 + spell power` | `kits.lua:671`; the grant gate is `talent_gated = true` at `kits.lua:656` | `renew_tick_add` |
-| 4 | **Hearten** *(capstone)* | Balm | 4 | **1** | **replaces Flash Heal** | Flash Heal also heals every **other** ally within 8 m for **65 %** of the amount. Same key, same 8 mana, same 4 s cooldown — the Priest's group heal, without a group-heal button | `kits.lua:612-614` plus the radius loop of `kits.lua:490` | `flash_heal_splash` |
-| 5 | **Warding Faith** | Aegis | 1 | 5 | — | Power Word: Shield absorb `+1 / 2 / 3 / 4 / 5` | `kits.lua:640` | `shield_absorb_add` |
+| 3 | **Renew** *(keystone)* | Balm | 3 | 3 | **new skill** *(already registered)* | the shipped ability, granted at rank 1 exactly as `classes.md` §5 specifies (6% base mana, 8 s cooldown, 8% of the base pool plus spell-power percentage every 3 s for 12 s); ranks 2 and 3 raise the tick to 9% and 10% | `kits.lua`; the grant gate is `talent_gated = true` | `renew_tick_add` |
+| 4 | **Hearten** *(capstone)* | Balm | 4 | **1** | **replaces Flash Heal** | Flash Heal also heals every **other** ally within 8 m for **65 %** of the amount. Same key, same 8% base-mana cost, same 4 s cooldown — the Priest's group heal, without a group-heal button | `kits.lua` plus its radius loop | `flash_heal_splash` |
+| 5 | **Warding Faith** | Aegis | 1 | 5 | — | Power Word: Shield's 25% base-pool share gains +1 / 2 / 3 / 4 / 5 percentage points | `kits.lua` | `shield_absorb_add` |
 | 6 | **Deep Reserve** | Aegis | 2 | 4 | — | max mana +3 / 6 / 9 / 12 % | `grug_classes/stats.lua:30` | `max_mana_percent_add` |
 | 7 | **Turn Aside** *(keystone)* | Aegis | 3 | 3 | **replaces Power Word: Shield** | while the shield holds (at most its 15 s), its target's dodge chance is +10 / 15 / 20 percentage points, **inside** the 30 % cap. Same key, same cost — the shield now buys avoidance as well as absorption | `kits.lua:639-640` and `grug_classes/stats.lua:49` | `dodge_chance_window` |
 | 8 | **Second Skin** | Aegis | 4 | 3 | — | Power Word: Shield lasts 15 s → 18 / 21 / 24 s | `kits.lua:640` (the `15` argument) | `shield_duration_add` |
@@ -406,20 +409,23 @@ sentence stays true apart from the tree's name.
 
 | # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
 |---|---|---|---|---|---|---|---|---|
-| 1 | **Sharpened Word** | Word | 1 | 5 | — | Smite `4 + spell power` → `+1 / 2 / 3 / 4 / 5` | `kits.lua:591` | `smite_damage_add` |
+| 1 | **Sharpened Word** | Word | 1 | 5 | — | Smite's `1.5 × (baseline weapon + spell power)` raw value gains +1 / 2 / 3 / 4 / 5 before the damage fit | `kits.lua` | `smite_damage_add` |
 | 2 | **Swift Word** | Word | 2 | 4 | — | Smite cooldown 2 s → 1.85 / 1.7 / 1.55 / 1.4 s | `grug_abilities/init.lua:1233` — **not** `kits.lua:581` | `smite_cooldown_sub` |
-| 3 | **Word of Ruin** *(keystone)* | Word | 3 | 3 | **new skill** | cast, 8 mana, 12 s cooldown, 20 m; `6 / 8 / 10 + spell power` damage, healing the Priest for 50 % of it | new; `grug_core.deal_ability_damage` returns the post-crit amount (`grug_core/combat.lua:970`), healed back with `grug_core.heal_player(…, {no_crit = true})` (`:977-981`, `:984`) | — |
+| 3 | **Word of Ruin** *(keystone)* | Word | 3 | 3 | **new skill** | cast, 8% base mana, 12 s cooldown, 20 m; `6 / 8 / 10 + spell power` damage, healing the Priest for 50 % of it | new; `grug_core.deal_ability_damage` returns the post-crit amount, healed back with `grug_core.heal_player(…, {no_crit = true})` | — |
 | 4 | **Last Word** *(capstone)* | Word | 4 | **1** | **effect** ‼ | while the Priest is below 25 % max HP, Word of Ruin's drain heals for **150 %** of the damage dealt — above the 100 % the pipeline otherwise allows. *Limit: 8 s per trigger, **180 s cooldown**.* | the drain half of the Word of Ruin registration | `drain_ratio_override` |
 | 5 | **Hard Faith** | Wrath | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 percentage points crit chance | `grug_classes/stats.lua:45` | `crit_chance_add` |
 | 6 | **Warded Wrath** | Wrath | 2 | 4 | — | while the Priest carries an absorb shield, Smite deals `+1 / 2 / 3 / 4` | `kits.lua:591`, gated on `grug_core.get_absorb(user) > 0` (`grug_core/combat.lua:1020`) | `smite_damage_while_shielded_add` |
-| 7 | **Recompense** *(keystone)* | Wrath | 3 | 3 | **replaces Smite** | Smite costs 6 mana instead of 4 and grants the Priest an absorb of `6 / 9 / 12 + spell power` on every landed cast, refreshing rather than stacking. Same key — the solo nuke becomes the solo sustain | `kits.lua:583-592` and `grug_core.set_absorb` (`grug_core/combat.lua:1012`) | `smite_absorb` |
-| 8 | **Hardened** | Wrath | 4 | 3 | — | max HP +4 / 8 / 12 | `grug_classes/stats.lua:20` | `max_hp_add` |
+| 7 | **Recompense** *(keystone)* | Wrath | 3 | 3 | **replaces Smite** | Smite costs 6% instead of 5% base mana and grants the Priest an absorb of 6% / 9% / 12% of the class-neutral base pool plus the spell-power percentage on every landed cast, refreshing rather than stacking. Same key — the solo nuke becomes the solo sustain | Smite settlement and `grug_core.set_absorb` | `smite_absorb` |
+| 8 | **Hardened** | Wrath | 4 | 3 | — | max HP +0.3 / 0.6 / 0.9% of the class base pool | `grug_classes/stats.lua` | `max_hp_percent_add` |
 
 Word of Ruin's drain is specified as "50 % of the damage dealt **before the
 target's armor**": `deal_ability_damage` returns the amount the ability
 published, taken before the central modifier applies armor (`:36-42`) and the
 absorb shield (`grug_core/combat.lua:1003-1030`) to a *player* target. Against a mob it is exactly
 what landed.
+
+Hardened's 0.3% per rank uses the same rule: its first reachable rank at level
+42 adds 4 HP after rounding, matching the former flat first rank.
 
 ### 2.7 Scout — Quarry (planned, not implemented)
 
@@ -440,7 +446,7 @@ game already runs.
 | 4 | **Longshot** *(capstone)* | Draw | 4 | **1** | **replaces Loose** | Loose's range 25 m → **33 m**, and a hit landed beyond 25 m deals **+4** | `loose_range_add` |
 | 5 | **Quiver** | Ranging | 1 | 5 | — | Loose's arrow is not consumed 10 / 20 / 30 / 40 / 50 % of the time | `arrow_refund_chance` |
 | 6 | **Fletching** | Ranging | 2 | 4 | — | Loose's draw time 0.5 s → 0.45 / 0.40 / 0.35 / 0.30 s | `draw_time_sub` |
-| 7 | **Pinning Shot** *(keystone)* | Ranging | 3 | 3 | **new skill** ‼ | cast, **12 mana + 1 arrow**, 25 m; roots the pointed hostile for 2 / 2.5 / 3 s — a root at bow range, which no class has. *Limit: **30 s cooldown**.* | — |
+| 7 | **Pinning Shot** *(keystone)* | Ranging | 3 | 3 | **new skill** ‼ | cast, **12% base mana + 1 arrow**, 25 m; roots the pointed hostile for 2 / 2.5 / 3 s — a root at bow range, which no class has. *Limit: **30 s cooldown**.* | — |
 | 8 | **Shifting Weight** | Ranging | 4 | 3 | — | +1 / 2 / 3 percentage points dodge chance | `dodge_chance_add` |
 
 ### 2.8 Scout — Veil (planned, not implemented)
@@ -449,7 +455,7 @@ game already runs.
 |---|---|---|---|---|---|---|---|
 | 1 | **Fine Edge** | Blade | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 damage on a landed authoritative swing | `melee_damage_add` |
 | 2 | **Deep Focus** | Blade | 2 | 4 | — | max resource +3 / 6 / 9 / 12 % | `max_mana_percent_add` |
-| 3 | **Opening** *(keystone)* | Blade | 3 | 3 | **new skill** | swing, **15 mana**, 12 s charge; on a landed swing taken from **behind** the target (a yaw comparison, no new state), `floor(weapon damage × 2.2 / 2.5 / 2.8) + melee bonus` | — |
+| 3 | **Opening** *(keystone)* | Blade | 3 | 3 | **new skill** | swing, **15% base mana**, 12 s charge; on a landed swing taken from **behind** the target (a yaw comparison, no new state), `floor(weapon damage × 2.2 / 2.5 / 2.8) + melee bonus` | — |
 | 4 | **Follow Through** | Blade | 4 | 3 | — | Opening's charge 12 s → 10 / 8 / 6 s | `opening_charge_sub` |
 | 5 | **Light Step** | Shadow | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 percentage points dodge chance | `dodge_chance_add` |
 | 6 | **Slip Away** | Shadow | 2 | 4 | — | Sidestep's cooldown 30 s → 26 / 22 / 18 / 14 s | `sidestep_cooldown_sub` |
@@ -527,7 +533,7 @@ distinct** (6 rows carry no key — the eight new-skill keystones minus Renew
 and Hamstring, whose rank scaling each has one). **Three** keys are shared
 across classes:
 `crit_chance_add` (all four), `max_mana_percent_add` (Mage, Priest, Scout) and
-`max_hp_add` (Warrior, Priest). `dodge_chance_add` appears twice but **both
+`max_hp_percent_add` (Warrior, Priest). `dodge_chance_add` appears twice but **both
 are the Scout** (Shifting Weight in Quarry, Light Step in Veil) — shared across
 trees, not classes. §3.2's closed vocabulary and §3.7's KAT group 5 are sized
 on the 51.
@@ -542,8 +548,8 @@ survive rulings 2 and 3 in any reading: a tree of 8 talents carries 5 numeric,
 their numbers flatly: Mighty Blow is "exactly floor(weapon damage × 1.5)"
 (`classes.md:425`), Hamstring charges 6 s and slows for 5 s (`:421`), Taunt
 runs 8 s (`:422`), Frost Nova roots 4 s then slows 3 s (`:441`), Blink
-teleports 10 m (`:442`), Smite has a 2 s cooldown (`:456`), Flash Heal heals
-`8 + 2 × spell power` (`:457`), Power Word: Shield lasts 15 s (`:458`), and
+  teleports 10 m (`:442`), Smite has a 2 s cooldown (`:456`), Flash Heal uses
+  25% of the base pool, Power Word: Shield lasts 15 s (`:458`), and
 the 2026-08-06 kit-tuning note reasons from "+12 rage per auto-hit" (`:413`,
 `:425`). **Eighteen talents re-tune exactly these numbers.** Nothing forbids
 it — improving existing buttons is what `classes.md:59-61` says talents are
@@ -551,12 +557,12 @@ for — but when WP11 lands those tables are the **untalented baseline**, and
 `classes.md` needs that word or the next reader will file a talented Taunt as
 a bug.
 
-Flat damage, healing and absorb additions from these talents are assembled
-with the ability and gear terms **before** `grug_core.level_scale(level)` is
-applied at the central seam. A talent never applies the scalar itself; doing so
-would double-scale that contribution when the completed value reaches combat
-(`mods/CORE/grug_core/combat.lua:26-62`, `:977-981`, `:1067-1076`,
-`:1101-1106`; swing transaction `mods/PLAYER/grug_abilities/init.lua:1055-1080`).
+Flat damage additions from these talents are assembled before the damage-only
+`grug_core.level_scale(level)`. Healing and absorb talents instead add
+percentage points to the ability's class-neutral base-pool share; spell power
+is applied as a percentage bonus and `scale_player_value` remains an identity.
+Applying the damage scalar to those completed support values would double
+their level growth.
 
 **Nine talents deliberately break a decided rule, and every one states its
 price.** Ruling 10 is what permits it — "skills may explicitly break the base
@@ -1048,7 +1054,7 @@ with identical output. Eight groups, each able to go red on its own:
    spend line (`:1232`) and `get_range` (`:170-177`) sit on paths every
    ability of every class runs through. One case per seam with **no talent
    ranked** must reproduce today's value exactly — Taunt 8 s, Blink 15 s,
-   Smite 2 s, Hamstring 6 s, Fireball 8 mana and 20 m, and an elf's Fireball
+   Smite 2 s, Hamstring 6 s, Fireball 6% base mana and 20 m, and an elf's Fireball
    still 25 m.
 
 **Mutation proof** the review should demand: revert the one line of

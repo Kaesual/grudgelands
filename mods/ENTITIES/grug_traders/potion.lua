@@ -76,7 +76,11 @@ end
 --
 
 core.register_craftitem("grug_traders:potion_healing_weak", {
-	description = "Weak Healing Potion\nRestores 15% of your health",
+	-- Keep this stackable plain item definition-only: a current-level absolute
+	-- would require rewriting every potion stack on each level/pool change.
+	-- The percentage is the complete rule and settlement derives the exact
+	-- current max-HP amount below.
+	description = "Weak Healing Potion\nRestores 15% of your maximum health",
 	inventory_image = "grug_traders_item_potion_healing_weak.png",
 	stack_max = 20,
 	-- Group dispatch (AGENTS.md): WP10's potions join this group instead of

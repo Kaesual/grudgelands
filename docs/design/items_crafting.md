@@ -838,8 +838,9 @@ Headed by their ilvl from here on.
 | Cloth (Tailor) | 5 | 8 | 11 | 15 | 5/4/3/3 |
 | Shield (Blacksmith, Journeyman+, Warrior) | — | 4 | 5 | 5 | — |
 
-Check at 60: full plate+shield = 60% → mob hit 26 → 10.4 eff. vs 325 HP
-(≈31 hits); cloth Mage 15% → 22.1 vs 148 HP (≈7 hits) — tank/squishy
+Check at 60 after the player-side pressure fit: full plate+shield = 60% →
+normal-mob hit 99 → 40 effective vs 3235 HP (≈81 hits); cloth Mage 15% →
+85 effective vs 2426 HP (≈29 hits) — tank/squishy
 spread as designed. Drop gear uses the same table at its ilvl bracket;
 quality adds enchants, never base armor.
 
@@ -1025,7 +1026,7 @@ robe 6 / leggings 5 / cowl 4 / slippers 3 bolts.
   bolts + 4 spider silk + 2 heavy leather, and the 32-slot ("huge bag")
   is the Master-tier addition of 2026-08-07. Bags are the one signature
   recipe line that is fully decided.
-- **The spell tome (offhand)** from Journeyman up: +10 / +20 / +30 mana
+- **The spell tome (offhand)** from Journeyman up: +1% / +2% / +3% max mana
   at Journeyman / Expert / Master, cloth + parchment + leather binding.
   It is one of exactly **two** offhands in the game; the other is the
   Blacksmith's shield (§3.3). Different item, different armor class, no
@@ -1410,7 +1411,7 @@ changes:
   grants each class its own rank **and everything below**
   (`inventory_equipment.md` §2: Warrior 3 / Mage 1 / Priest 1), so
   leather (rank 2) ships as the **Warrior's light set**: §6.2's leather
-  pool (+Dex, +HP, +crit%, +dodge%) against metal's (+Str, +HP,
+  pool (+Dex, +max HP%, +crit%, +dodge%) against metal's (+Str, +max HP%,
   +armor%, +dodge%) is a real mitigation-versus-avoidance choice, and
   §3.1 already prices leather below metal at equal tier, so plate stays
   the mitigation king. The curve sits in the generator; the 24 leather
@@ -1558,13 +1559,15 @@ explicit conversion, not a generic +1%:
 | Effect | Per value point after tier scaling |
 |---|---:|
 | Strength / Intelligence / Dexterity | +3 |
-| Maximum HP | +6 |
-| Maximum Mana | +10 |
+| Maximum HP | +1% of the base pool |
+| Maximum Mana | +1% of the base pool |
 | Crit / Dodge | +1 percentage point |
 | Armor | +1 armor point (= 1 percentage point before cap) |
 
-Primary attributes, HP and Mana round half-up to whole numbers. Crit, Dodge
-and armor show one decimal where needed. Every tier must be strictly stronger
+Primary attributes and the current-level absolute values of HP/Mana
+percentages round half-up to whole numbers. HP/Mana lines show both the
+percentage and that absolute value. Crit, Dodge and armor show one decimal
+where needed. Every tier must be strictly stronger
 in effective and displayed value; if a conversion would collapse two adjacent
 tiers, its display/conversion quantum changes. A two-handed weapon retains the
 five-point weapon budget and receives no compensation for its unavailable
@@ -1574,12 +1577,12 @@ The resulting T6 per-stack values are:
 
 | Culture | Weapon | Offhand | Head | Chest | Legs | Feet |
 |---|---|---|---|---|---|---|
-| Human | +15 Str | +12 Int | +20 Mana | +18 HP | +3 armor | +6 Dex |
-| Dwarf | +30 HP | +4 armor | +6 Str | +18 HP | +3 armor | +6 Str |
+| Human | +15 Str | +12 Int | +2% Mana | +3% HP | +3 armor | +6 Dex |
+| Dwarf | +5% HP | +4 armor | +6 Str | +3% HP | +3 armor | +6 Str |
 | Elf | +5% Crit | +4% Dodge | +2% Crit | +9 Dex | +9 Dex | +2% Dodge |
-| Orc | +15 Str | +24 HP | +2% Crit | +18 HP | +9 Str | +2% Crit |
-| Troll | +15 Int | +40 Mana | +12 HP | +18 HP | +3% Dodge | +2% Dodge |
-| Undead | +15 Int | +4% Crit | +20 Mana | +30 Mana | +9 Int | +2% Crit |
+| Orc | +15 Str | +4% HP | +2% Crit | +3% HP | +9 Str | +2% Crit |
+| Troll | +15 Int | +4% Mana | +2% HP | +3% HP | +3% Dodge | +2% Dodge |
+| Undead | +15 Int | +4% Crit | +2% Mana | +3% Mana | +9 Int | +2% Crit |
 
 All finish, affix, attribute and base-equipment sources add before the existing
 final caps: Crit 30%, Dodge 30% and armor 60%. Overcap remains on its source
@@ -1680,22 +1683,21 @@ cleanup before they become final game art.
 ## 5. Loot zones — what drops where
 
 Drops obey the player-tag rule (combat_stats §3), quality/roll windows
-per §6.3, **gear-drop ilvl = min(mob level, 60)** (decided 2026-08-13: the
-clamp exists because the six race Kings are level 65 (§5.4) while the top
-roll band and the character cap both end at 60, so a literal ilvl 65 item
-would have no band and would exceed the highest possible weapon requirement;
-a King is made special by the **boss** roll window and
-the Fallen Crown, not by five item levels. It is the only case: the
-level-100 Kraken Guard drops nothing, and every other source sits inside a
-band) — and since §6.3's roll band is
-chosen by the item's ilvl, that one number is all a drop needs: a drop
+per §6.3, and ordinarily use **gear-drop ilvl = min(mob level, 60)**.
+Authored level-60 endgame rewards are the exception: dungeon gear is ilvl
+**65**, raid/King gear ilvl **70**, and apex/final-boss gear ilvl **75**.
+All three use §6.3's top roll band; their ilvl above 60 feeds the same weapon
+base-damage curve as every other weapon, not a second combat multiplier or a
+fifth enchant band. The
+level-100 Kraken Guard still drops nothing. Since the roll band is chosen by
+the item's ilvl, that one number is all a drop needs: a drop
 has no crafter whose mastery could be read instead. Named zone → materials is
 binding through each zone's fixed biome/gathering palette; the level band adds
 the gear/special layer.
 
 **A dropped item's material tier must match the mob's tier** (added
-2026-08-07). The clamped `ilvl = min(mob level, 60)` of §5 already implied
-it; stated outright
+2026-08-07). The ordinary `ilvl = min(mob level, 60)` rule of §5 already
+implied it; stated outright
 because the item is now material-named: a **T3 (Steel) item drops from
 level 21–30 mobs** and nowhere else. A mob may not drop gear from a tier
 its level band does not cover — that is what stops the drop table from
@@ -1851,7 +1853,8 @@ channels never overwrite one another. Exact storage keys are implementation
 owned; one idempotent description/stat regeneration path reads them all.
 
 **Weapon level requirement.** A weapon definition's `_grug_ilvl` is its
-minimum character level. The Weapon slot's group-filtered `allow_put` blocks a
+minimum character level up to the character cap. The Weapon slot's
+group-filtered `allow_put` blocks a
 player below that level and explains the refusal in chat; meeting the level is
 enough, and there is no class-family gate. The generated catalogue therefore
 uses the six §3.8 requirements **3 / 10 / 20 / 30 / 40 / 50**. A weapon with no
@@ -1860,7 +1863,8 @@ tool-ladder axes remain immediately equippable. Picks, shovels and generic
 tools are never subject to this slot gate; the crafting/material ladder gates
 them. Item-level armor, offhands and trinkets are not level-gated by this
 weapon-only rule. Higher-level weapons remain lootable and tradeable, just not
-equippable yet. The description is regenerated from meta on every change
+equippable yet. Endgame ilvl 65/70/75 weapons all require level 60. The
+description is regenerated from meta on every change
 (name colorized: white `#FFFFFF`,
 blue `#4A90FF`, yellow `#FFD700`, orange `#FF8000`; one line per
 enchant).
@@ -1877,7 +1881,13 @@ roll, so the regeneration above must **preserve these lines and append
 the enchant lines below them**. Every Weapon-slot item with positive damage
 uses the same damage-and-swing line, including Wood and Stone swords and all
 axes; a missing item level omits only the `Item level` line, never the damage
-line. Attack speed applies via `tool_capabilities.
+line. Every weapon stack in a player's inventory adds
+`Effective at level L: N damage per swing`, including melee bonus plus
+the character-level damage fit; ilvl is already present in the weapon's base
+damage and is never multiplied again. The line is initialized at trader
+purchase, dropped-item pickup or crafting output, and refreshes on level or
+equipment change only
+when its bytes change. Attack speed applies via `tool_capabilities.
 full_punch_interval` meta override; stats recompute on equip change
 (WP15 hook). **The conversion is `fpi_new = fpi_base / (1 + p)`** for a
 rolled `+p` (2026-08-13): "attack speed +16%" means sixteen percent more
@@ -1919,15 +1929,19 @@ preserves the requirement while rebuilding the description.
 
 | Family | Pool |
 |---|---|
-| Melee weapons | +Str, +Dex, +attack speed%, +crit%, +HP |
-| Caster weapons/offhands | +Int, +mana, +crit%, +HP |
-| Metal armor | +Str, +HP, +armor%, +dodge% |
-| Leather armor | +Dex, +HP, +crit%, +dodge% |
-| Cloth armor | +Int, +mana, +HP, +crit% |
+| Melee weapons | +Str, +Dex, +attack speed%, +crit%, +max HP% |
+| Caster weapons/offhands | +Int, +max mana%, +crit%, +max HP% |
+| Metal armor | +Str, +max HP%, +armor%, +dodge% |
+| Leather armor | +Dex, +max HP%, +crit%, +dodge% |
+| Cloth armor | +Int, +max mana%, +max HP%, +crit% |
 
 Ordinary equipment keeps the no-duplicate-stat rule inside its up-to-four
 prefix/suffix slots. Cultural finish and PvP-special stats are separate named
 sources and may match an ordinary affix; all sources add before final caps.
+Every HP/Mana affix is stored as a percentage: HP uses the current-level base
+pool after the HP class factor, while Mana uses the class-neutral base pool.
+Even when its name is shortened to "+HP" or "+Mana", its tooltip always shows
+both the percentage and the absolute current-level contribution.
 
 #### Trinket exception: one prefix, one suffix, one special
 
@@ -2000,7 +2014,8 @@ Value ranges (min–max) per ilvl bracket. **The band is chosen by the
 ITEM's ilvl** (decided 2026-08-08) — never by the crafter's mastery tier
 and never by the crafter's character level. The four bands below are the
 "item levels" column of §2.1's mastery table — 1–15 / 16–30 / 31–45 /
-46–60, same boundaries, no third set anywhere; that those boundaries
+46–60, same boundaries, no third set anywhere; authored ilvl 61–75 endgame
+items continue to use the 46–60 value band. That those boundaries
 fall on the same numbers as the four mastery level anchors is a property
 of the numbers, not a rule. These bands are **not** the six material
 tiers of §3.0; the two ladders are independent by design (§2.1).
@@ -2020,20 +2035,29 @@ Two consequences, both intended:
   item whose single roll is a full 46–60 roll.
 
 **Mob drops have no crafter at all**, which is the other half of the
-argument: §5 sets gear-drop ilvl = min(mob level, 60) and points at this
+argument: §5 ordinarily sets gear-drop ilvl = min(mob level, 60) and points at this
 table, so
 for a drop only the item reading can work at all. One rule for both
 sources is what keeps a dropped and a crafted item of the same ilvl
 comparable.
 
-| Enchant | 1–15 | 16–30 | 31–45 | 46–60 |
+| Enchant | 1–15 | 16–30 | 31–45 | 46–75 |
 |---|---|---|---|---|
 | +Str / +Int / +Dex | 1–3 | 2–5 | 4–8 | 6–12 |
-| +HP | 4–8 | 8–15 | 14–24 | 20–35 |
-| +Mana | 6–12 | 12–24 | 20–36 | 30–50 |
+| +Max HP% | 1–2 | 2–3 | 3–4 | 4–5 |
+| +Max Mana% | 1–2 | 2–3 | 3–4 | 4–5 |
 | +Crit% / +Dodge% | 0.5–1.0 | 0.5–1.5 | 1.0–2.0 | 1.5–3.0 |
 | +Attack speed% | 3–6 | 4–8 | 6–12 | 8–16 |
 | +Armor% (armor only) | 1–2 | 1–3 | 2–4 | 3–6 |
+
+The endgame ordinary-affix budget is therefore approximately **+5% per
+equipped slot × eight slots = +40%** when every slot is dedicated to one
+axis. An offensive allocation may spend all eight damage-equivalent
+contributions. At level 60, the damage curve gives a 1H weapon 25 / 29 / 30
+damage at ilvl 60 / 70 / 75. With the Warrior's 18-point melee bonus and the
+shared damage fit, the +40% allocation produces 515 / 526 effective damage at
+ilvl 70 / 75 against the ilvl-60 baseline's 337: **+52.8% / +56.1%**, the
+intended +50–60% fully equipped ceiling.
 
 **Source window** (the decided "same mechanic, only ranges differ"):
 `roll = min + frac × (max − min)`, frac uniform in the window:
@@ -2175,8 +2199,8 @@ Enchants are expressed in the item name as **prefixes and suffixes**.
   | +Str | Heavy | of the Bear |
   | +Dex | Quick | of the Fox |
   | +Int | Clever | of the Owl |
-  | +HP | Stout | of the Ox |
-  | +Mana | Attuned | of the Raven |
+  | +Max HP% | Stout | of the Ox |
+  | +Max Mana% | Attuned | of the Raven |
   | +crit% | Lucky | of the Eagle |
   | +attack speed% | Swift | of the Hornet |
   | +dodge% | Elusive | of the Cat |

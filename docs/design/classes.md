@@ -92,7 +92,7 @@ Core principles:
 
 | Resource | Classes | Pool | Regeneration |
 |----------|---------|------|--------------|
-| Mana | Mage, Priest | 10 + 2×Int (combat_stats §2) | 2%/s out of combat, 0.5%/s in combat (combat_stats §5) |
+| Mana | Mage, Priest | `round(20 + 5L + 0.66L²)`, before mana-percent gear/talents (combat_stats §2) | 2%/s out of combat, 0.5%/s in combat (combat_stats §5) |
 | Rage | Warrior | 0–100, starts at 0 | **+8** per landed §2b authoritative swing; ordinary tools/fists retain proportional native credit (combat_stats §2); **+3** per hit taken, +15 from Charge; decays **5/s** out of combat. Ruling 25 of 2026-09-16 lowered the income and raised the decay — the ledger and what it buys are in §3 |
 
 - **Rage is granted on damage that actually landed**, not on a swing
@@ -104,6 +104,12 @@ Core principles:
   shared with recovery (combat_stats §5) and mob leashing (WP6).
 - Resources are runtime state, not persisted: mana is full on join and
   respawn, rage is 0.
+- Mana costs are rounded percentages of the caster's unmodified base pool,
+  minimum 1. Full-pool cast counts at L1/L60 are: 5% = **26/19**, 6% =
+  **13/16**, 8% = **13/12**, and 10% = **8/9**. Pool enchants and talents do
+  not increase costs. Flash Heal therefore supplies at least 12 casts at
+  either endpoint; four untalented 25% casts equal one neutral health pool
+  before spell power, leaving capacity for a normal fight and another.
 - **HUD: one thin bar per resource, directly above the hotbar slots**
   (user ruling 2026-09-16, shipped in round 4; it replaces the colored
   resource *line* this bullet used to describe). Every class has exactly one
@@ -111,8 +117,8 @@ Core principles:
   (mana `0x4a9bd8`, rage `0xc41e3a`), with the exact numbers written inside
   the bar. The life bar sits directly above it in the same style, and the
   builtin half-heart statbars are off: half hearts were rejected as "an ugly
-  approximation", and at 325 HP one of the engine's ten hearts is 32.5 HP
-  (16.25 HP per half heart, which is the step it actually draws). A
+  approximation", and at 3235 HP one of the engine's ten hearts is 323.5 HP
+  (161.75 HP per half heart, which is the step it actually draws). A
   character who has not picked a class yet keeps the secondary row reserved
   and empty, so nothing moves when the class arrives. The column the bars
   belong to is owned by `grug_core/hud_layout.lua`; no mod carries an offset
@@ -317,9 +323,10 @@ promised away.
   enemy target memory. No valid target means no effect, resource payment or
   cooldown.
 - Fireball is the first true directional projectile. A successful input spends
-  8 mana and snapshots the player's current eye position and look direction
+  **6% base mana** and snapshots the player's current eye position and look direction
   even when no object is pointed. It travels straight at **20 m/s**, has no
-  gravity, homing or splash, deals **6 + spell power**, and disappears after
+  gravity, homing or splash, deals **baseline weapon damage + spell power**
+  through the damage level fit, and disappears after
   **20 m**, on a blocking node or on its first attackable target. Missing still
   spends mana. Friendly players/allied entities and dropped items are ignored
   rather than consuming the projectile.
@@ -507,14 +514,15 @@ reverting (b) is three edits.
 Ranged damage; fragile, keeps enemies away.
 
 Kit tuning decided 2026-08-06 (implementation: WP19): Fireball pays with
-mana instead of a cooldown (5 mana against a 240+ pool was free), Frost
+mana plus a 1 s cadence instead of a talent-visible cooldown (the former fixed
+5 mana against a 240+ pool was free), Frost
 Nova became the rotation pivot — kiting IS the Mage fantasy here.
 
 | Ability | Cost | Cooldown | Effect |
 |---------|------|----------|--------|
-| Fireball | 8 | none (mana-limited) | Straight 20 m/s projectile along the cast-time crosshair, maximum 20 m, no homing/gravity/splash: 6 + spell power damage on first attackable target. A miss still spends mana; at most eight shots per owner/session may be active. |
-| Frost Nova | 10 | 12 s | Roots all enemies within 5 m for 4 s, then 50% slow for 3 s (no damage — pure control; rooted mobs keep attacking in melee range). |
-| Blink | 8 | 15 s | Teleport up to 10 m in look direction (blocked by walls). Escape valve. |
+| Fireball | 6% base mana | **1 s cast interval** (server cadence, no cooldown bar) | Straight 20 m/s projectile along the cast-time crosshair, maximum 20 m, no homing/gravity/splash: baseline weapon + spell power through the damage fit on the first attackable target. A miss still spends mana; input inside the interval is refused without cost; at most eight shots per owner/session may be active. |
+| Frost Nova | 10% base mana | 12 s | Roots all enemies within 5 m for 4 s, then 50% slow for 3 s (no damage — pure control; rooted mobs keep attacking in melee range). |
+| Blink | 8% base mana | 15 s | Teleport up to 10 m in look direction (blocked by walls). Escape valve. |
 
 ## 5. Priest (Mana)
 
@@ -528,10 +536,10 @@ moves into the talent tree.
 
 | Ability | Cost | Cooldown | Effect |
 |---------|------|----------|--------|
-| Smite | 4 | 2 s | Current-crosshair 20 m hit with no enemy-memory fallback: 4 + spell power damage. Solo viability. |
-| Flash Heal | 8 | 4 s | Heals 8 + 2×spell power. Targets the pointed ally (15 m), otherwise self. Threat: 0.5× effective healing (WP6). |
-| Power Word: Shield | 8 | 10 s | Absorb shield on ally/self: soaks 8 + 2×spell power damage, lasts 15 s or until consumed. |
-| Renew *(talent)* | 6 | 8 s | Heal over time: 3 + spell power every 3 s for 12 s. Unlocked via the Mercy tree (WP11). |
+| Smite | 5% base mana | 2 s | Current-crosshair 20 m hit with no enemy-memory fallback: 1.5 × (baseline weapon + spell power), then the damage fit. Solo viability. |
+| Flash Heal | 8% base mana | 4 s | Heals 25% of the class-neutral base pool, with spell power as a percentage bonus. Targets the pointed ally (15 m), otherwise self. Threat: 0.5× effective healing (WP6). |
+| Power Word: Shield | 8% base mana | 10 s | Absorb shield on ally/self: soaks 25% of the class-neutral base pool plus the spell-power percentage, lasts 15 s or until consumed. |
+| Renew *(talent)* | 6% base mana | 8 s | Heals 8% of the class-neutral base pool plus the spell-power percentage every 3 s for 12 s. Unlocked via the Mercy tree (WP11). |
 
 ## 6. Explicitly deferred
 

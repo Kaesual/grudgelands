@@ -161,6 +161,13 @@ grug_projectiles = {
 }
 
 grug_core = {
+	base_pool = function(level)
+		return math.floor(20 + 5 * level + 0.66 * level * level + 0.5)
+	end,
+	baseline_weapon_damage = function(level)
+		return math.floor(4 + 0.35 * level + 0.5)
+	end,
+	get_player_level = function(player) return player.level or 1 end,
 	get_equipped_weapon = function() return ItemStack("") end,
 	get_equipped_offhand = function() return ItemStack("") end,
 	reset_accumulated_melee = function() end,
@@ -304,8 +311,8 @@ ray_results = {{status="target", reason="hostile", target=enemy_ray,
 	object_kind="mob", relation="hostile", distance=3, range=20}}
 grug_abilities.try_cast(mage, smite, {type="object", ref=enemy_memory})
 assert(#damage_events == 1 and damage_events[1].target == enemy_ray)
-assert(damage_events[1].amount == 8)
-assert(grug_abilities.get_mana(mage) == mana_before - 4)
+assert(damage_events[1].amount == 12)
+assert(grug_abilities.get_mana(mage) == mana_before - 1)
 assert(not grug_abilities.ready(mage, "smite"))
 
 -- Even a malformed combat-ray result cannot make a hostile ability accept a
@@ -390,7 +397,7 @@ assert(#heal_events == 1 and heal_events[1].target == ally)
 -- self. All three friendly abilities share heal_target, so verify the
 -- resolved target, resource spend and cooldown for both fallback paths.
 local hostile_pointed = mob("test:hostile_heal_probe", "throng")
-local friendly_cost = {flash_heal = 8, power_word_shield = 8, renew = 6}
+local friendly_cost = {flash_heal = 2, power_word_shield = 2, renew = 2}
 local old_get_player_by_name = core.get_player_by_name
 local friendly_players = {ally = ally}
 core.get_player_by_name = function(name)
@@ -508,24 +515,31 @@ assert(self_called, "self-targeted cast did not run")
 assert(self_pointed == nil, "self-targeted cast received an external target")
 print("target_kind_test: PASS friendly-falls-back hostile-refuses-friendly/noncombatant self-ignores-target")
 
--- Fireball snapshots eye/look/damage, runs no combat ray and costs 8 on any
+-- Fireball snapshots eye/look/damage, runs no combat ray and costs 6% base mana on any
 -- successfully spawned flight (air/wall/range are later projectile outcomes).
 local function fire_once(name)
 	local caster = player(name, "mage", "accord")
 	join(caster)
 	local rays = ray_calls
 	local spawns = #projectile_spawns
+	now = now + 1000000
 	grug_abilities.try_cast(caster, grug_abilities.registered.fireball, nil)
 	assert(ray_calls == rays and #projectile_spawns == spawns + 1)
-	assert(grug_abilities.get_mana(caster) == 12)
+	assert(grug_abilities.get_mana(caster) == 18)
 	local spawn = projectile_spawns[#projectile_spawns]
 	assert(spawn.id == "fireball" and spawn.params.owner == caster)
 	assert(spawn.params.origin.y == 1.5 and spawn.params.direction.x == 1)
-	assert(spawn.params.data.damage == 10)
+	assert(spawn.params.data.damage == 8)
 	return caster, spawn
 end
 
-fire_once("fire_air")
+local cadence_caster = fire_once("fire_air")
+local cadence_spawns = #projectile_spawns
+local cadence_mana = grug_abilities.get_mana(cadence_caster)
+grug_abilities.try_cast(cadence_caster,
+	grug_abilities.registered.fireball, nil)
+assert(#projectile_spawns == cadence_spawns)
+assert(grug_abilities.get_mana(cadence_caster) == cadence_mana)
 fire_once("fire_wall")
 fire_once("fire_range")
 
@@ -538,15 +552,18 @@ grug_abilities.try_cast(failed, grug_abilities.registered.fireball, nil)
 assert(grug_abilities.get_mana(failed) == mana_before)
 projectile_spawn_result = true
 
--- Insufficient mana refuses before spawn. Two shots leave four mana; the
--- third input cannot create an entity.
+-- Insufficient mana refuses before spawn. Ten L1 shots spend the 20-point
+-- fixture pool; the eleventh input cannot create an entity.
 local empty = player("fire_empty", "mage", "accord")
 join(empty)
-grug_abilities.try_cast(empty, grug_abilities.registered.fireball, nil)
-grug_abilities.try_cast(empty, grug_abilities.registered.fireball, nil)
+for _ = 1, 10 do
+	now = now + 1000000
+	grug_abilities.try_cast(empty, grug_abilities.registered.fireball, nil)
+end
 local spawn_count = #projectile_spawns
+now = now + 1000000
 grug_abilities.try_cast(empty, grug_abilities.registered.fireball, nil)
-assert(grug_abilities.get_mana(empty) == 4)
+assert(grug_abilities.get_mana(empty) == 0)
 assert(#projectile_spawns == spawn_count)
 
 -- The consumer applies only its payload snapshot; exactly-once invocation is

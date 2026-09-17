@@ -63,6 +63,12 @@ local function build_env(repo, clock)
 	function classes.get_dodge_chance_raw(player)
 		return player._dodge_raw or 0.20
 	end
+	function classes.pool_percent_amount(player, pool, percent)
+		local level = player._level
+		local base = math.floor(20 + 5 * level + 0.66 * level * level + 0.5)
+		local factor = pool == "hp" and player._class == "warrior" and 1.2 or 1
+		return math.floor(base * factor * percent / 100 + 0.5)
+	end
 
 	local xp = {_callbacks = {}}
 	function xp.get_level(player)
@@ -224,6 +230,15 @@ local function run_checks(repo)
 			return "wp11_talent_ui_failure\t" .. failures[1] ..
 				"\nwp11_talent_ui_result\tFAIL\t1\n"
 		end
+	end
+	local balance_mutation = tonumber(os.getenv("R6_BALANCE_MUTATION") or "") or 0
+	if balance_mutation == 12 then
+		env.grug_classes.talent_description_for = function(player, def)
+			return def.description
+		end
+	elseif balance_mutation == 13 then
+		env.grug_classes.registered_talents.hold_ground.description =
+			"New skill: absorbs 20/30/40 + 2x floor(Str/10)."
 	end
 	local classes = env.grug_classes
 	local page = env.sfinv.pages["grug_classes:talents"]
@@ -414,6 +429,13 @@ local function run_checks(repo)
 		"raw crit is shown beside effective crit")
 	check(fs:find("67% raw", 1, true) ~= nil,
 		"raw armor is shown beside effective armor")
+	check(fs:find("1.5% = 49 HP", 1, true) ~= nil and
+		fs:find("6% = 194 HP", 1, true) ~= nil,
+		"Weathered tooltip shows percent and current L60 absolute HP")
+	check(fs:find("20% = 539 absorb", 1, true) ~= nil and
+		fs:find("40% = 1078 absorb", 1, true) ~= nil and
+		not fs:find("2x floor(Str/10)", 1, true),
+		"Hold Ground tooltip uses neutral-pool percent and absolute absorb")
 	class_def.name, ironbound.name, ironbound.description = saved_class_name,
 		saved_name, saved_description
 

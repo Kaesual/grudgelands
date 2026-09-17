@@ -170,10 +170,6 @@ end
 -- `damage_groups.fleshy` is one full swing's base strength.
 --
 
-local function dmg1h(ilvl)
-	return math.floor(4 + 0.35 * ilvl + 0.5)
-end
-
 -- `hands` is published as `_grug_hands` and enforced by grug_inventory's equip
 -- filter (weapon-slot design B4, combat_stats.md §7): a two-handed weapon
 -- needs an empty offhand and blocks the offhand while equipped. It is a
@@ -191,6 +187,18 @@ local WEAPONS = {
 	{key = "greataxe", noun = "Greataxe", fpi = 1.4, factor = 1.5, hands = 2, group = "axe"},
 	{key = "staff",    noun = "Staff",    fpi = 1.4, factor = 1.2, hands = 2, group = "staff"},
 }
+
+function grug_gear.weapon_damage_at_level(ilvl, family)
+	local factor = 1
+	for _, weapon in ipairs(WEAPONS) do
+		if weapon.key == family then
+			factor = weapon.factor
+			break
+		end
+	end
+	local one_hand = math.floor(4 + 0.35 * ilvl + 0.5)
+	return math.max(1, math.floor(one_hand * factor + 0.5))
+end
 
 --
 -- Armor (§3.1). Set totals are linear fits through the tier table
@@ -286,12 +294,11 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 	grug_gear.catalog[bracket] = cat
 
 	local tint = "^[multiply:" .. BRACKET_TINT[bracket]
-	local base_damage = dmg1h(br.ilvl)
 	local metal = grug_gear.MATERIALS[bracket].metal
 
 	for _, w in ipairs(WEAPONS) do
 		local itemname = grug_gear.weapon_item(w.key, bracket)
-		local damage = math.max(1, math.floor(base_damage * w.factor + 0.5))
+		local damage = grug_gear.weapon_damage_at_level(br.ilvl, w.key)
 		-- Every weapon family is weapon-slot eligible (weapon-slot design B3).
 		-- No class gate: weapon families are class FLAVOR, not a power ladder
 		-- (§8.2), so a Mage may equip a greataxe and simply gains nothing from
@@ -500,4 +507,109 @@ core.register_on_mods_loaded(function()
 			end
 		end
 	end
+end)
+
+-- Apply the player-specific effective line to one concrete weapon stack.
+-- Item level already changes the weapon's authored base damage; there is no
+-- second ilvl multiplier here or in the combat pipeline. Returns true only
+-- when the caller has a changed ItemStack copy to write or hand on.
+function grug_gear.initialize_weapon_tooltip(stack, player)
+	local class_api = rawget(_G, "grug_classes")
+	local xp_api = rawget(_G, "grug_xp")
+	if not class_api or not xp_api or not stack or stack:is_empty() then
+		return false
+	end
+	local def = stack:get_definition()
+	if not def or not def.groups or (def.groups.grug_equip_weapon or 0) <= 0 then
+		return false
+	end
+	local caps = stack:get_tool_capabilities() or {}
+	local damage = caps.damage_groups and caps.damage_groups.fleshy or 0
+	if type(damage) ~= "number" or damage <= 0 then
+		return false
+	end
+	local level = xp_api.get_level(player)
+	local effective = math.max(1, math.floor(
+		(damage + class_api.get_melee_bonus(player))
+		* grug_core.level_scale(level)))
+	local meta = stack:get_meta()
+	local base = meta:get_string("description")
+	if base == "" then
+		base = def.description or stack:get_name()
+	end
+	base = base:gsub("\nEffective at level %d+: %d+ damage per swing", "")
+	local desired = base ..
+		("\nEffective at level %d: %d damage per swing"):format(level, effective)
+	if meta:get_string("description") == desired then
+		return false
+	end
+	meta:set_string("description", desired)
+	return true
+end
+
+-- Refresh every weapon stack the player can see, including the one just moved
+-- out of the equipment slot; otherwise a traded or levelled unequipped weapon
+-- would retain somebody else's effective line.
+local function refresh_weapon_descriptions(player)
+	local inventory_api = rawget(_G, "grug_inventory")
+	if not inventory_api then
+		return
+	end
+	local inventory = player:get_inventory()
+	local lists = inventory:get_lists()
+	local equipment_changed = false
+	for listname, stacks in pairs(lists) do
+		for index = 1, #stacks do
+			local stack = inventory:get_stack(listname, index)
+			if grug_gear.initialize_weapon_tooltip(stack, player) then
+				inventory:set_stack(listname, index, stack)
+				if listname == "grug_weapon" then
+					equipment_changed = true
+				end
+			end
+		end
+	end
+	if equipment_changed then
+		inventory_api.equipment_changed(player, "grug_weapon")
+	end
+end
+
+-- One acquisition initializer, used by each engine-owned acquisition boundary.
+-- Crafting can replace its output directly. Item pickup must perform builtin's
+-- add itself only for a changed weapon because returning a callback result
+-- suppresses builtin's default add. Trader purchases call the same initializer
+-- immediately before their direct add_item write.
+core.register_on_craft(function(itemstack, player)
+	if grug_gear.initialize_weapon_tooltip(itemstack, player) then
+		return itemstack
+	end
+end)
+
+core.register_on_item_pickup(function(itemstack, picker)
+	if not picker or not picker.is_player or not picker:is_player() or
+			not grug_gear.initialize_weapon_tooltip(itemstack, picker) then
+		return
+	end
+	local inventory = picker:get_inventory()
+	return inventory and inventory:add_item("main", itemstack) or itemstack
+end)
+
+core.register_on_mods_loaded(function()
+	local inventory_api = rawget(_G, "grug_inventory")
+	local xp_api = rawget(_G, "grug_xp")
+	if not inventory_api or not xp_api or
+			type(inventory_api.equipment_changed) ~= "function" or
+			type(xp_api.register_on_level_change) ~= "function" then
+		return
+	end
+	grug_core.register_on_equipment_change(function(player, listname)
+		if listname == nil or listname == "grug_weapon" then
+			refresh_weapon_descriptions(player)
+		end
+	end)
+	xp_api.register_on_level_change(function(player, old_level)
+		if old_level ~= nil then
+			refresh_weapon_descriptions(player)
+		end
+	end)
 end)

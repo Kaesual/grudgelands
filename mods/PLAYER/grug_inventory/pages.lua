@@ -122,26 +122,32 @@ local function character_content(player)
 	local class = grug_classes.get_class_def(player)
 	local race = grug_classes.get_race_def(player)
 	local faction = grug_factions.get_faction_def(player)
-	local attrs = grug_classes.get_attributes(player)
 	local level = grug_xp.get_level(player)
-
-	local resource = class and class.resource == "rage"
-		and "Rage (in combat)" or
-		("Max Mana " .. grug_classes.get_max_mana(player))
+	local hp = grug_classes.get_pool_breakdown(player, "hp")
+	local mana = class and class.resource == "mana"
+		and grug_classes.get_pool_breakdown(player, "mana") or nil
 
 	local lines = {
 		player:get_player_name() .. " — Level " .. level ..
 			(class and (" " .. class.name) or ""),
 		(race and race.name or "No race") .. ", " ..
 			(faction and faction.name or "no faction"),
-		("Str %d   Int %d   Dex %d"):format(attrs.str, attrs.int, attrs.dex),
-		("Max HP %d   %s"):format(grug_classes.get_max_hp(player), resource),
-		("Melee bonus +%d   Spell power +%d"):format(
+		("Base pool %d   HP class factor x%.2f"):format(
+			hp.base, hp.class_factor),
+		("HP: %d x %.2f, gear %g%%, talents %g%% = %d max"):format(
+			hp.base, hp.class_factor, hp.gear_percent,
+			hp.talent_percent, hp.final),
+		mana and ("Mana: %d, gear %g%%, talents %g%% = %d max"):format(
+			mana.base, mana.gear_percent, mana.talent_percent, mana.final)
+			or "Rage: 100 max (flat)",
+		("Melee bonus +%d   Spell power +%d%%"):format(
 			grug_classes.get_melee_bonus(player),
 			grug_classes.get_spell_power_bonus(player)),
 		("Crit %.1f%%   Dodge %.1f%%"):format(
 			grug_classes.get_crit_chance(player) * 100,
 			grug_classes.get_dodge_chance(player) * 100),
+		("Armor %.1f%% damage reduction"):format(
+			grug_core.get_armor_percent(player)),
 	}
 
 	local mesh, textures = preview_model(player)
@@ -193,6 +199,28 @@ sfinv.register_page("grug_inventory:character", {
 	get = function(self, player, context)
 		return sfinv.make_formspec(player, context,
 			character_content(player), true)
+	end,
+})
+
+-- Player-facing formula reference. It deliberately explains only stable
+-- rules and points back to the live Character page for the player's numbers.
+sfinv.register_page("grug_inventory:help", {
+	title = "Help",
+	get = function(self, player, context)
+		local text = table.concat({
+			"Character formulas",
+			"Base pool = 20 + 5 x level + 0.66 x level squared (rounded).",
+			"Maximum HP = base pool x class factor, then add gear and talent percentages.",
+			"Caster mana uses the neutral base pool, then adds mana percentages. Rage is always 0-100.",
+			"Strength adds melee bonus. Intelligence adds spell power. Dexterity adds Crit and Dodge.",
+			"Item level is counted once, in the weapon's base damage; your character level applies the shared damage fit; there is no separate item-level multiplier.",
+			"At level 60, an item-level 70 weapon gives about 9% more effective swing damage than item level 60, while item level 50 gives about 7% less, before enchants.",
+			"Healing and absorbs are percentages of the caster's neutral base pool; spell power is a percentage bonus.",
+			"Mana costs are percentages of the unmodified neutral base pool. Enchants and talents do not make a spell cost more.",
+			"The Character page shows the current derivation and final maximum values.",
+		}, "\n\n")
+		return sfinv.make_formspec(player, context,
+			"textarea[0.2,0.25;7.8,4.75;;;" .. esc(text) .. "]", true)
 	end,
 })
 
@@ -259,7 +287,8 @@ function sfinv.get_homepage_name(player)
 	return "grug_inventory:character"
 end
 
-local nav_order = {"grug_inventory:character", "grug_inventory:bags", "sfinv:crafting"}
+local nav_order = {"grug_inventory:character", "grug_inventory:bags",
+	"grug_inventory:help", "sfinv:crafting"}
 local ordered, seen = {}, {}
 for _, name in ipairs(nav_order) do
 	if sfinv.pages[name] then

@@ -562,9 +562,10 @@ now = 1050000
 swing_pass()
 assert(enemy_a.punches == 1)
 assert(enemy_a.last_context.proc.id == "mighty_blow")
-assert(enemy_a.last_context.extra_damage == 3) -- floor(6 * 1.5) - 6
+assert(enemy_a.last_context.extra_damage == -1,
+	"L1 Mighty Blow extra damage " .. tostring(enemy_a.last_context.extra_damage))
 assert(enemy_a.last_context.raw_damage == 9
-	and enemy_a.last_context.scaled_damage == 9 and scale_calls == 1,
+	and enemy_a.last_context.scaled_damage == 5 and scale_calls == 1,
 	"proc replacement must be assembled before one scaling pass")
 grug_core.scale_player_damage = real_scale_player_damage
 -- one swing's rage + 30 added, minus Mighty Blow's 25, plus the landed swing
@@ -690,11 +691,12 @@ grug_core.set_absorb(hostile_player, 2, 10)
 now = 14500000
 queue_ray({pointed(hostile_player)})
 swing_pass()
-assert(hostile_player:get_hp() == hostile_hp - 6)
+assert(hostile_player:get_hp() == hostile_hp - 3)
 assert(grug_abilities.get_rage(hero) == grug_abilities.RAGE_PER_SWING)
 
 -- The full authoritative PvP equivalent resolves crit before armor, then one
--- integer HP change. Weapon B: 8 * 1.5 crit -> 12 -> 50% armor = 6.
+-- integer HP change. At L1 weapon B: floor(8 * 0.65) = 5, then 1.5 crit
+-- and 50% armor settle to 4.
 hero.crit = 1
 hostile_player.armor = 50
 grug_abilities.add_rage(hero, -100)
@@ -702,7 +704,7 @@ hostile_hp = hostile_player:get_hp()
 now = 16000000
 queue_ray({pointed(hostile_player)})
 swing_pass()
-assert(hostile_player:get_hp() == hostile_hp - 6)
+assert(hostile_player:get_hp() == hostile_hp - 4)
 assert(grug_abilities.get_rage(hero) == grug_abilities.RAGE_PER_SWING)
 hero.crit = 0
 hostile_player.armor = 0
@@ -737,7 +739,7 @@ end
 local scaled_pvp_hp = scaled_pvp_target:get_hp()
 ordinary_punch(scaled_pvp_target, 1)
 assert(scale_calls == 1, "ordinary PvP punch must scale exactly once")
-assert(scaled_pvp_target:get_hp() == scaled_pvp_hp - 4,
+assert(scaled_pvp_target:get_hp() == scaled_pvp_hp - 7,
 	"ordinary PvP punch must apply the attacker level scalar before commit")
 grug_core.scale_player_damage = real_scale_player_damage
 hero.level = 1
@@ -805,10 +807,10 @@ assert(grug_abilities.ready(ally, smite.id))
 local enemy_b_health = enemy_b.entity.health
 queue_ray({pointed(enemy_b, 3)})
 grug_abilities.try_cast(ally, smite, pointed(enemy_a))
-assert(grug_abilities.get_mana(ally) == mana_before - 4)
+assert(grug_abilities.get_mana(ally) == mana_before - 1)
 assert(not grug_abilities.ready(ally, smite.id))
 assert(enemy_a.entity.health == enemy_health)
-assert(enemy_b.entity.health == enemy_b_health - 4)
+assert(enemy_b.entity.health == enemy_b_health - 3)
 assert(grug_abilities.get_target(ally, false) == enemy_b)
 
 -- Charge also refuses a remembered/client-pointed enemy without a current ray;
@@ -836,14 +838,14 @@ hero.hp = 20
 grug_abilities.set_target(ally, hero, true)
 before_rays = ray_calls
 grug_abilities.try_cast(ally, grug_abilities.registered.flash_heal, nil)
-assert(hero:get_hp() == 28)
-assert(grug_abilities.get_mana(ally) == mana_before - 12)
+assert(hero:get_hp() == 26)
+assert(grug_abilities.get_mana(ally) == mana_before - 3)
 grug_abilities.try_cast(ally, grug_abilities.registered.power_word_shield, nil)
-assert(grug_core.get_absorb(hero) == 8)
-assert(grug_abilities.get_mana(ally) == mana_before - 20)
+assert(grug_core.get_absorb(hero) == 6.5)
+assert(grug_abilities.get_mana(ally) == mana_before - 5)
 assert(ray_calls == before_rays)
 
--- Fireball is directional: it snapshots eye/look and spends 8 mana even with
+-- Fireball is directional: it snapshots eye/look and spends 6% base mana even with
 -- no target/memory hit. Spawn failure and empty mana refuse without payment;
 -- clicking a dropped item invokes pickup and does not cast.
 assert(projectile_defs.fireball.speed == 20)
@@ -852,20 +854,29 @@ local fireball = grug_abilities.registered.fireball
 grug_abilities.set_target(hostile_player, enemy_a, false)
 before_rays = ray_calls
 local spawn_before = #projectile_spawns
+now = now + 1000000
 grug_abilities.try_cast(hostile_player, fireball, pointed(enemy_a))
 assert(#projectile_spawns == spawn_before + 1)
 local shot = projectile_spawns[#projectile_spawns]
 assert(shot.id == "fireball" and shot.params.owner == hostile_player)
 assert(vector.equals(shot.params.direction, hostile_player:get_look_dir()))
-assert(shot.params.data.damage == 6)
-assert(grug_abilities.get_mana(hostile_player) == 92)
+assert(shot.params.data.damage == 4)
+assert(grug_abilities.get_mana(hostile_player) == 98)
 assert(ray_calls == before_rays)
+
+-- An input inside the one-second cadence is refused before spawn or payment.
+spawn_before = #projectile_spawns
+local mana_after_fireball = grug_abilities.get_mana(hostile_player)
+grug_abilities.try_cast(hostile_player, fireball, nil)
+assert(#projectile_spawns == spawn_before)
+assert(grug_abilities.get_mana(hostile_player) == mana_after_fireball)
 
 projectile_spawn_ok = false
 spawn_before = #projectile_spawns
+now = now + 1000000
 grug_abilities.try_cast(hostile_player, fireball, nil)
 assert(#projectile_spawns == spawn_before + 1)
-assert(grug_abilities.get_mana(hostile_player) == 92)
+assert(grug_abilities.get_mana(hostile_player) == 98)
 projectile_spawn_ok = true
 
 local cast_drop_ent = {name = "__builtin:item", picked = 0}
@@ -877,14 +888,18 @@ core.registered_items["grug_abilities:fireball"].on_use(
 	ItemStack("grug_abilities:fireball"), hostile_player,
 	{type = "object", ref = cast_drop})
 assert(cast_drop_ent.picked == 1 and #projectile_spawns == spawn_before)
-assert(grug_abilities.get_mana(hostile_player) == 92)
+assert(grug_abilities.get_mana(hostile_player) == 98)
 
-for _ = 1, 11 do grug_abilities.try_cast(hostile_player, fireball, nil) end
-assert(grug_abilities.get_mana(hostile_player) == 4)
+for _ = 1, 49 do
+	now = now + 1000000
+	grug_abilities.try_cast(hostile_player, fireball, nil)
+end
+assert(grug_abilities.get_mana(hostile_player) == 0)
 spawn_before = #projectile_spawns
+now = now + 1000000
 grug_abilities.try_cast(hostile_player, fireball, nil)
 assert(#projectile_spawns == spawn_before)
-assert(grug_abilities.get_mana(hostile_player) == 4)
+assert(grug_abilities.get_mana(hostile_player) == 0)
 
 -- The reticle is absent for casts and is hidden synchronously by death.
 select_item(hero, "grug_abilities:charge")
@@ -892,7 +907,7 @@ swing_pass()
 assert(reticle(hero).text == "")
 select_item(hero, "grug_abilities:strike")
 hero.dig = true
-now = 18000000
+now = now + 1000000
 queue_ray({})
 swing_pass()
 assert(reticle(hero).text == "grug_abilities_weapon_ready.png")

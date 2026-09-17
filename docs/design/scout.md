@@ -38,7 +38,7 @@ proposals and both carry one shared open-decisions list (`skill_trees.md` §6).
 |---|---|
 | **Armour** | leather — armor class 2 (`inventory_equipment.md:184-193`) |
 | **Weapons** | bow (ranged) and dagger / 1H sword (melee) |
-| **Resource** | **mana** — ruling 14, decided. The bar is the shipped one (`grug_classes/stats.lua:25-31`, `10 + 2 × Int`); only its label on the HUD is the class's own |
+| **Resource** | **mana** — ruling 14, decided. The bar uses the class-neutral level pool `round(20 + 5L + 0.66L²)` before mana-percent gear/talents (`combat_stats.md` §2); Intelligence does not add mana |
 | **Trees** | **Quarry** (bow) and **Veil** (blade and evasion) — `skill_trees.md` §2.7/§2.8, named by ruling 27 |
 | **Attributes** | Dexterity-led; growth proposed **+2 Dex / +1 Str / +1 Int** per level, against `combat_stats.md:40-41`'s Warrior +3 Str/+1 Dex, Mage +3 Int/+1 Dex, Priest +1 Str/+2 Int/+1 Dex |
 | **Role** | ranged damage that can also fight at knife range; the most evasive class in the game |
@@ -49,10 +49,9 @@ At level 60 the proposed growth gives Dex `10 + 2 × 59 = 128`, so
 far under the 30 % caps, which is what leaves room for the dodge talents and
 the dodge windows of §2.
 
-The same growth gives Int `10 + 59 = 69`, so the mana pool is `10 + 2 × 69 =
-148` at level 60 against a Mage's 384 (`combat_stats.md:93-98`). That is the
-point of reusing mana rather than inventing a resource: the Scout gets the
-same bar with a much smaller pool, so the same ability costs bite harder. What
+The same growth gives Int `10 + 59 = 69`, while the class-neutral mana rule
+gives the Scout the same **2696** base mana as every level-60 caster before
+mana-percent gear/talents. Intelligence contributes spell power only. What
 scales an **arrow** is ruling 28: `weapon damage + floor(Dex/10)`, through a
 new `grug_classes.get_ranged_bonus` (`skill_trees.md` §7, task 9).
 

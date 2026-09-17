@@ -4,6 +4,11 @@
 -- their single source of truth.
 
 local BASE_ATTR = 10
+local HP_CLASS_FACTOR = {warrior = 1.20, priest = 1.00, mage = 0.90}
+
+local function round(value)
+	return math.floor(value + 0.5)
+end
 
 function grug_classes.get_attributes(player)
 	local level = grug_xp.get_level(player)
@@ -16,10 +21,78 @@ function grug_classes.get_attributes(player)
 	}
 end
 
+function grug_classes.get_base_pool(player)
+	return grug_core.base_pool(grug_xp.get_level(player))
+end
+
+function grug_classes.get_hp_class_factor(player)
+	return HP_CLASS_FACTOR[grug_classes.get_class(player)] or 1
+end
+
+-- Shared player-facing and talent-consumer conversion for pool percentages.
+-- `hp` means the character's class-adjusted base HP; `neutral` and `mana`
+-- mean the class-neutral pool. The percent is explicit so callers may preview
+-- any rank; pool_talent_amount supplies the current-effect lookup when needed.
+function grug_classes.pool_percent_amount(player, pool, percent)
+	local factor = pool == "hp" and grug_classes.get_hp_class_factor(player) or 1
+	return round(grug_classes.get_base_pool(player) * factor
+		* (tonumber(percent) or 0) / 100)
+end
+
+-- Equipment enchants are per-stack data. No shipped item carries these fields
+-- yet, but the percentage contract is live now so the future roller has one
+-- consumer rather than teaching every pool formula about item metadata.
+local function equipment_pool_percent(player, field)
+	local inventory_api = rawget(_G, "grug_inventory")
+	if not inventory_api or not inventory_api.equipment_slots then
+		return 0
+	end
+	local inventory = player:get_inventory()
+	if not inventory or type(inventory.get_stack) ~= "function" then
+		return 0
+	end
+	local total = 0
+	for _, slot in ipairs(inventory_api.equipment_slots) do
+		local stack = inventory:get_stack(slot.list, 1)
+		if stack and not stack:is_empty() then
+			local def = stack:get_definition() or {}
+			total = total + (tonumber(def[field]) or 0)
+			local meta = stack:get_meta()
+			total = total + (tonumber(meta:get_string(field)) or 0)
+		end
+	end
+	return total
+end
+
+function grug_classes.get_pool_breakdown(player, pool)
+	local base = grug_classes.get_base_pool(player)
+	local factor = 1
+	local gear_percent
+	local talent_percent
+	if pool == "hp" then
+		factor = grug_classes.get_hp_class_factor(player)
+		gear_percent = equipment_pool_percent(player, "_grug_max_hp_percent")
+		talent_percent = grug_classes.get_talent_bonus(player,
+			"max_hp_percent_add")
+	elseif pool == "mana" then
+		gear_percent = equipment_pool_percent(player, "_grug_max_mana_percent")
+		talent_percent = grug_classes.get_talent_bonus(player,
+			"max_mana_percent_add")
+	else
+		error("unknown pool " .. tostring(pool))
+	end
+	local percent = gear_percent + talent_percent
+	return {
+		base = base,
+		class_factor = factor,
+		gear_percent = gear_percent,
+		talent_percent = talent_percent,
+		final = round(base * factor * (1 + percent / 100)),
+	}
+end
+
 function grug_classes.get_max_hp(player)
-	return 20 + 2 * (grug_xp.get_level(player) - 1)
-		+ grug_classes.get_attributes(player).str
-		+ grug_classes.get_talent_bonus(player, "max_hp_add")
+	return grug_classes.get_pool_breakdown(player, "hp").final
 end
 
 -- 0 for classes that use rage (or no class yet).
@@ -28,11 +101,7 @@ function grug_classes.get_max_mana(player)
 	if not def or def.resource ~= "mana" then
 		return 0
 	end
-	local base = 10 + 2 * grug_classes.get_attributes(player).int
-	-- Deep Well / Deep Reserve are PERCENT of the untalented pool, so the
-	-- two Priest/Mage keys add rather than compound (skill_trees.md §2.3/§2.5).
-	return math.floor(base * (1 + 0.01
-		* grug_classes.get_talent_bonus(player, "max_mana_percent_add")))
+	return grug_classes.get_pool_breakdown(player, "mana").final
 end
 
 -- Flat bonus added to weapon damage.
@@ -40,7 +109,8 @@ function grug_classes.get_melee_bonus(player)
 	return math.floor(grug_classes.get_attributes(player).str / 10)
 end
 
--- Flat bonus added to ability base values.
+-- Spell power is a flat damage term and a percentage bonus on pool-derived
+-- healing/absorb values.
 function grug_classes.get_spell_power_bonus(player)
 	return math.floor(grug_classes.get_attributes(player).int / 10)
 end
