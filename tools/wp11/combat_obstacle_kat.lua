@@ -375,9 +375,13 @@ return function(repo)
 			"mob object collision is still enabled")
 	want(core_init:find("player:set_properties({collide_with_objects = false})",
 			1, true), "player object collision is still enabled")
-	want(agents:find("59 `GRUG PATCH` sites", 1, true)
-			and agents:find("44th to 59th", 1, true),
-			"AGENTS.md patch inventory is stale")
+	-- The inventory number in AGENTS.md must equal the marker count in the
+	-- vendored file; a literal number here went stale twice in round 5.
+	local documented = tonumber(agents:match("(%d+) `GRUG PATCH` sites"))
+	local counted = select(2, api:gsub("GRUG PATCH", ""))
+	want(documented and documented == counted,
+			"AGENTS.md patch inventory is stale: documents "
+			.. tostring(documented) .. ", api.lua carries " .. counted)
 	want(vendor:find("**59 markers in `mobs/api.lua`", 1, true),
 			"VENDOR.md patch inventory is stale")
 
