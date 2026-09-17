@@ -367,6 +367,10 @@ return grug_abilities
 	check(grug_core_stub.set_status(player, "interval_only", {
 		label = "Interval only", duration = 10, interval = 1,
 	}) == nil, "registry rejects interval without on_tick")
+	check(grug_core_stub.set_status(player, "zero_interval", {
+		label = "Zero interval", duration = 10, interval = 0,
+		on_tick = function() end,
+	}) == nil, "registry rejects a non-positive tick interval")
 	local potion_left = 41
 	environment.grug_traders = {
 		potion_cooldown_left = function() return potion_left end,
