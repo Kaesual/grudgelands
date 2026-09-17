@@ -122,9 +122,10 @@ Two new markers keep progression bookkeeping on mobs_redo's existing lifecycle
 without replacing its callbacks. `check_for_death()` calls the idempotent
 `grug_mobs.settle_mob_death` hook after the death state and position are fixed
 but before choosing `on_die`, `on_death`, a death animation or the ordinary
-smoke/removal fallback. The registered Lua entity's `on_deactivate` calls
+smoke/removal fallback. The shared `mob_class.on_deactivate` calls
 `grug_mobs.cleanup_xp_participants`, covering both mapblock unload and explicit
-removal and deleting empty reverse-index name entries. Both hooks are gated by
+removal and deleting empty reverse-index name entries without shadowing later
+class-level wrappers such as the settlement-NPC tracker. Both hooks are gated by
 the existing `registered_cadence` Grudgelands-mob registry; vanilla mobs_redo
 entities are unchanged. **46 markers in `mobs/api.lua`.**
 

@@ -179,6 +179,18 @@ mobs.mob_class = {
 local mob_class = mobs.mob_class -- shared class used by current mob extensions
 local mob_class_meta = {__index = mob_class}
 
+-- GRUG PATCH (Grudgelands participation lifecycle, round 5 Lane P): entity
+-- prototypes inherit this shared callback through mob_class_meta. Keeping the
+-- hook on the class lets later class-level wrappers (start_npcs.lua) remain in
+-- the same callback chain instead of being shadowed by a per-prototype field.
+function mob_class:on_deactivate(removal)
+	if grug_mobs and grug_mobs.registered_cadence
+	and grug_mobs.registered_cadence[self.name]
+	and grug_mobs.cleanup_xp_participants then
+		grug_mobs.cleanup_xp_participants(self)
+	end
+end
+
 -- return True if mob limit reached
 
 local function at_limit()
@@ -3888,18 +3900,6 @@ function mobs:register_mob(name, def)
 
 		on_activate = function(self, staticdata, dtime)
 			return self:mob_activate(staticdata, def, dtime)
-		end,
-
-		-- GRUG PATCH (Grudgelands participation lifecycle, round 5 Lane P):
-		-- unload and explicit removal both deactivate the Lua entity. Clear its
-		-- reverse XP-participant index while the ObjectRef is still identifiable;
-		-- the helper also deletes empty outer player-name entries.
-		on_deactivate = function(self, removal)
-			if grug_mobs and grug_mobs.registered_cadence
-			and grug_mobs.registered_cadence[self.name]
-			and grug_mobs.cleanup_xp_participants then
-				grug_mobs.cleanup_xp_participants(self)
-			end
 		end,
 
 		get_staticdata = function(self)

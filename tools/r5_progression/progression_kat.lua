@@ -291,7 +291,7 @@ local participant_index = assert(find_upvalue(
 
 -- Load the real vendored mobs_redo API in an isolated engine fixture. Death
 -- tests below call its actual check_for_death boundary; lifecycle cleanup uses
--- the actual registered-entity on_deactivate callback.
+-- the registered prototype -> shared mob class lookup used by live entities.
 local function copy_table(value)
 	if type(value) ~= "table" then return value end
 	local result = {}
@@ -385,7 +385,22 @@ unloaded.object = {
 }
 mob_api.mark_xp_participant(unloaded, alice)
 assert(participant_index.alice, "deactivation setup missing reverse index")
-lifecycle_def.on_deactivate(unloaded, false)
+-- start_npcs installs its class callback only after settlement entities have
+-- already been registered. The prototype must therefore keep no direct field:
+-- a live instance resolves the runtime-current class callback, which then
+-- chains to the earlier progression cleanup callback.
+assert_equal(rawget(lifecycle_def, "on_deactivate"), nil,
+	"prototype must not shadow shared deactivation callback")
+local progression_deactivate = vendor_mob_class.on_deactivate
+local later_deactivate_calls = 0
+vendor_mob_class.on_deactivate = function(self, removal)
+	later_deactivate_calls = later_deactivate_calls + 1
+	assert_equal(removal, false, "shared deactivation removal argument")
+	return progression_deactivate(self, removal)
+end
+setmetatable(unloaded, {__index = lifecycle_def})
+unloaded:on_deactivate(false)
+assert_equal(later_deactivate_calls, 1, "later shared deactivation callback")
 assert_equal(participant_index.alice, nil, "deactivation reverse-index cleanup")
 assert_equal(unloaded.temp.grug_xp_participants, nil,
 	"deactivation entity participation cleanup")
