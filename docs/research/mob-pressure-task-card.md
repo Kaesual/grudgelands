@@ -1,5 +1,20 @@
 # Mob pressure — task card (2026-09-16)
 
+> **STATUS 2026-09-17 — ROUND-5 FOLLOW-UP.** The current melee floor is
+> **4.6** for every attacker except the explicitly slow-tank Bog Ooze
+> (**2.6**); archers remain **4.0**, harmless critters **3.4**, and the Kraken
+> **5.0**. Player and ordinary mob melee reach are now both **3 m**. A blocked
+> close target starts bounded A* after about **1 s**, retains its path while
+> LOS is blocked, and gets an alternating **0.5 s** sidestep when no path is
+> found; cover no longer spends the banked swing. Ordinary hits have zero
+> implicit knockback, and players/mobs/NPCs no longer collide with objects.
+> Current implementation references: `grug_abilities/kits.lua:284,344,381`;
+> `grug_mobs/stag.lua:21`, `ram.lua:26`, `zebra.lua:20`,
+> `carrion_crow.lua:54`, `zombie.lua:29`, `golem.lua:87`,
+> `bog_ooze.lua:38`, `kraken.lua:54`; and
+> `mobs/api.lua:103-104,2321-2330,2512,2644-2646,2695-2699,3352-3356,3840`.
+> The older status and card below remain the historical round-4 record.
+>
 > **STATUS 2026-09-16 — SHIPPED.** This card was executed by the round-4
 > mob-pressure lane. What landed, and where to read it:
 > [`docs/research/mob-pressure.md`](mob-pressure.md) is the implementation
