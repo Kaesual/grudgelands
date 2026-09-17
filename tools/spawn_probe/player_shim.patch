@@ -1,0 +1,8 @@
+diff --git a/mods/ENTITIES/mobs/api.lua b/mods/ENTITIES/mobs/api.lua
+--- a/mods/ENTITIES/mobs/api.lua
++++ b/mods/ENTITIES/mobs/api.lua
+@@ -249 +249,3 @@
+-	if player and type(player) == "userdata" and core.is_player(player) then
++	if player and ((type(player) == "userdata" and core.is_player(player))
++	or (type(player) == "table" and
++		player._grug_spawn_probe_player == true)) then

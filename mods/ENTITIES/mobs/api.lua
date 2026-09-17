@@ -74,6 +74,23 @@ local active_mobs = 0
 local mob_infotext = settings:get_bool("mob_infotext") ~= false
 local gravity = tonumber(core.settings:get("movement_gravity")) or 9.81
 
+-- GRUG PATCH: bind active-mob accounting to idempotent lifecycle states.
+local active_mob_counted = setmetatable({}, {__mode = "k"})
+
+local function set_active_mob_counted(self, counted)
+
+	if active_limit <= 0 then return end
+
+	if counted then
+		if active_mob_counted[self] == true then return end
+		active_mobs = active_mobs + 1
+		active_mob_counted[self] = true
+	elseif active_mob_counted[self] == true then
+		active_mobs = active_mobs - 1
+		active_mob_counted[self] = false
+	end
+end
+
 -- loop interval timers
 
 local node_timer_interval = tonumber(settings:get("mob_node_timer_interval") or 0.25)
@@ -184,6 +201,10 @@ local mob_class_meta = {__index = mob_class}
 -- hook on the class lets later class-level wrappers (start_npcs.lua) remain in
 -- the same callback chain instead of being shadowed by a per-prototype field.
 function mob_class:on_deactivate(removal)
+	-- Lane S: accepted activation and this shared deactivation callback are
+	-- the only active-mob counter boundaries. The state change is idempotent.
+	set_active_mob_counted(self, false)
+
 	if grug_mobs and grug_mobs.registered_cadence
 	and grug_mobs.registered_cadence[self.name]
 	and grug_mobs.cleanup_xp_participants then
@@ -786,16 +807,12 @@ function mob_class:item_drop()
 	self.drops = {}
 end
 
--- remove mob and descrease counter
+-- remove mob
 
-local function remove_mob(self, decrease)
+local function remove_mob(self)
 
 	self.object:remove()
-
-	if decrease and active_limit and active_limit > 1 then
-		active_mobs = active_mobs - 1
---print("-- active mobs: " .. active_mobs .. " / " .. active_limit)
-	end
+	-- GRUG PATCH: on_deactivate is the sole active-mob debit boundary.
 end
 
 function mobs:remove(self, decrease)
@@ -3378,27 +3395,60 @@ local function clean_staticdata(self)
 	return tmp
 end
 
+local DESPAWN_MIN_DISTANCE = 48
+local DESPAWN_MAX_DISTANCE = 128
+
+-- GRUG PATCH: unload culling follows a nearest-player soft/hard range.
+-- VoxeLibre keeps the lifetimer refreshed inside 47 nodes
+-- (reference_projects/VoxeLibre/mods/ENTITIES/mcl_mobs/api.lua:451-460)
+-- and bounds natural spawns at 128 nodes (the same tree's
+-- spawning.lua:60-64,394-453). Use the round 48-node safe
+-- radius and 128-node hard radius here. Between them, the unload event
+-- receives a linear chance; at or inside the safe radius it never culls.
+-- Ordinary mobs retain static_save=true so this callback can make the
+-- decision instead of the engine silently dropping them on block unload.
+function mobs:get_active_mob_count()
+	return active_mobs
+end
+
+function mobs:despawn_distance_decision(pos, players, roll)
+	local nearest
+	for _, player in pairs(players or {}) do
+		local player_pos = player:get_pos()
+		if player_pos then
+			local distance = get_distance(player_pos, pos)
+			if not nearest or distance < nearest then nearest = distance end
+		end
+	end
+	if not nearest or nearest >= DESPAWN_MAX_DISTANCE then
+		return true, nearest
+	end
+	if nearest <= DESPAWN_MIN_DISTANCE then
+		return false, nearest
+	end
+	local chance = (nearest - DESPAWN_MIN_DISTANCE) /
+		(DESPAWN_MAX_DISTANCE - DESPAWN_MIN_DISTANCE)
+	return (roll or random()) < chance, nearest
+end
+
 -- get entity staticdata
 
 function mob_class:mob_staticdata()
 
-	-- this handles mob count for mobs activated, unloaded, reloaded
-	if active_limit > 0 and self.active_toggle then
-		active_mobs = active_mobs + self.active_toggle
-		self.active_toggle = -self.active_toggle
---print("-- staticdata", active_mobs, active_limit, self.active_toggle)
-	end
-
-	-- remove mob when out of range unless tamed
+	-- mark mob for terminal removal when out of range unless tamed
 	if remove_far and self.remove_ok
 	and self.type ~= "npc" and self.state ~= "attack"
-	and not self.tamed and self.lifetimer < 20000 then
+	and not self.tamed and self.lifetimer < 20000
+	and mobs:despawn_distance_decision(
+			self.object:get_pos(), core.get_connected_players()) then
 
 --print("REMOVED " .. self.name)
 
-		remove_mob(self, true)
-
-		return core.serialize({remove_ok = true, static_save = true})
+		-- The engine stores this callback result before it deactivates the
+		-- object. Removing here would still save and later reactivate the
+		-- returned data. on_deactivate performs the one lifecycle debit after
+		-- the engine has stored this terminal marker.
+		return core.serialize({_grug_despawn_terminal = true})
 	end
 
 	self.remove_ok = true
@@ -3412,7 +3462,6 @@ function mob_class:mob_staticdata()
 
 	return core.serialize(clean_staticdata(self))
 end
-
 -- list of items used in initial_properties
 
 local is_property_name = {
@@ -3424,19 +3473,29 @@ local is_property_name = {
 -- activate mob and reload settings
 
 function mob_class:mob_activate(staticdata, def, dtime)
+	local tmp = core.deserialize(staticdata)
 
-	-- if dtime == 0 then entity has just been created
-	-- anything higher means it is respawning (thx SorceryKid)
-	if dtime == 0 and active_limit > 0 then self.active_toggle = 1 end
+	-- GRUG PATCH: consume the unload-despawn marker without re-saving it.
+	-- ServerEnvironment stores get_staticdata's result before deactivation,
+	-- so the terminal object must be removed on its next activation. Clearing
+	-- static_save first prevents that removal from producing another static
+	-- object. Terminal activation is rejected before active_mobs is credited.
+	if tmp and tmp._grug_despawn_terminal then
+		self.object:set_properties({static_save = false})
+		self.object:remove()
+		return
+	end
 
 	if at_limit() and not self.tamed then -- remove any mobs not tamed when total reached
 --print("-- mob limit reached, removing " .. self.name)
 		remove_mob(self) ; return
 	end
 
-	-- load entity variables from staticdata into self.*
-	local tmp = core.deserialize(staticdata)
+	-- Every accepted non-terminal activation is one active mob. dtime is not
+	-- a creation/reload discriminator: a static object can reactivate with 0.
+	set_active_mob_counted(self, true)
 
+	-- load entity variables from staticdata into self.*
 	if tmp then
 
 		local t ; for _,stat in pairs(tmp) do
@@ -3528,26 +3587,6 @@ function mob_class:mob_activate(staticdata, def, dtime)
 	end
 
 	self.object:set_texture_mod(self.texture_mods) -- apply texture mods
-
-	-- set flag to remove monsters when map area unloaded
-	-- GRUG PATCH: honour the lifetimer exemption HERE as well (WP6 review B3).
-	-- mob_staticdata() exempts a mob with `lifetimer >= 20000` from the
-	-- unload-delete, and grug_mobs/rares.lua relies on exactly that (named
-	-- rares get lifetimer = 30000). But get_staticdata — and therefore
-	-- mob_staticdata — is NEVER called for an object with static_save = false:
-	-- the engine simply drops it. So the unconditional clear below deleted
-	-- every named rare the instant its mapblock unloaded, before its own
-	-- exemption could ever be read, and the rares watchdog then locked the
-	-- respawn out for up to respawn_max. Same predicate as mob_staticdata now.
-	-- ORDER IS SAFE: the staticdata deserialize loop at the top of
-	-- mob_activate has already copied every plain field — `lifetimer`
-	-- included — back onto `self`, so a reactivated rare reads 30000 here and
-	-- not the def default. (180 is that def default, api.lua:128; the `or`
-	-- only covers a def that leaves the field unset entirely.)
-	if remove_far and self.type == "monster" and not self.tamed
-	and (self.lifetimer or 180) < 20000 then
-		self.object:set_properties({static_save = false})
-	end
 
 	-- run on_spawn function
 	if self.on_spawn and not self.on_spawn_run and self.on_spawn(self) then
