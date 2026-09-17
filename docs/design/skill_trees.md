@@ -293,11 +293,11 @@ Reading the tables:
 | 1 | **Ironbound** | Wall | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 armor percent, under the 60 % cap | `grug_inventory/equipment.lua:479` | `armor_percent_add` |
 | 2 | **Weathered** | Wall | 2 | 4 | — | max HP +1.5 / 3 / 4.5 / 6% of the class base pool | `grug_classes/stats.lua` | `max_hp_percent_add` |
 | 3 | **Hold Ground** *(keystone)* | Wall | 3 | 3 | **new skill** ‼ | cast, 25 rage, self; absorbs 20% / 30% / 40% of the class-neutral base pool for 8 s, **and for those 8 s the Warrior cannot be rooted or slowed**. *Limit: 8 s, **60 s cooldown**.* | new; `grug_core.set_absorb`; the immunity is a flag the speed aggregator of §3.9 already has to read | — |
-| 4 | **Unbroken** *(capstone)* | Wall | 4 | **1** | **effect** ‼ | the first time in **180 s** that a hit would take the Warrior below 20 % max HP: armor percent **+15** **and the 60 % armor cap rises to 75 %**, for 8 s. *Limit: 8 s, **180 s**.* | the two clamps, `grug_inventory/equipment.lua:480` and `grug_core/combat.lua:38`, plus the hp-change modifier that observes the threshold | `armor_cap_override` |
-| 5 | **Spite** | Anvil | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 rage per hit taken (base 3) | `grug_abilities/init.lua:2286-2291` | `rage_per_hit_taken_add` |
-| 6 | **Affront** | Anvil | 2 | 4 | — | tank-ability threat ×3 → ×3.25 / 3.5 / 3.75 / 4.0 | **two sites**: `grug_core/combat.lua:963` (casts) and `grug_abilities/init.lua:910`, applied at `:955-957` (swings) | `threat_mult_add` |
-| 7 | **Bellow** *(keystone)* | Anvil | 3 | 3 | **replaces Taunt** | Taunt stops being single-target: it forces **every** hostile mob within 6 / 8 / 10 m onto the Warrior for its 3 s, same key, same 8 s cooldown | `kits.lua:389-404`, the cast body, run over the radius loop of `kits.lua:490` | `taunt_radius` |
-| 8 | **Grudge** | Anvil | 4 | 3 | — | Taunt cooldown 8 s → 7 / 6 / 5 s | `grug_abilities/init.lua:1233`, the one `arm_cooldown(user, def, def.cooldown)` call — **not** `kits.lua:387` | `taunt_cooldown_sub` |
+| 4 | **Unbroken** *(capstone)* | Wall | 4 | **1** | **effect** ‼ | the first time in **180 s** that a hit would take the Warrior below 20 % max HP: armor percent **+15** **and the 60 % armor cap rises to 75 %**, for 8 s. *Limit: 8 s, **180 s**.* | the two clamps, `grug_inventory/equipment.lua:506-515` and `grug_core/combat.lua:125-147`, plus the hp-change modifier that observes the threshold | `armor_cap_override` |
+| 5 | **Spite** | Anvil | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 rage per hit taken (base 3) | `grug_abilities/init.lua:2491-2495` | `rage_per_hit_taken_add` |
+| 6 | **Affront** | Anvil | 2 | 4 | — | tank-ability threat ×3 → ×3.25 / 3.5 / 3.75 / 4.0 | casts in `grug_core/combat.lua:1083-1089`; authoritative swings in `grug_abilities/init.lua:1383-1389` | `threat_mult_add` |
+| 7 | **Bellow** *(keystone)* | Anvil | 3 | 3 | **replaces Taunt** | Taunt stops being single-target: it forces **every** hostile mob within 6 / 8 / 10 m onto the Warrior for its 3 s, same key, same 8 s cooldown | `kits.lua:437-465`, the cast body, run over a hostile-radius loop | `taunt_radius` |
+| 8 | **Grudge** | Anvil | 4 | 3 | — | Taunt cooldown 8 s → 7 / 6 / 5 s | `grug_abilities/init.lua:1566-1567`, the one effective cooldown arm | `taunt_cooldown_sub` |
 
 Hold Ground is Bulwark's one new button and the tree's one rule-breaker
 besides the capstone. Its break is the useful one for a tank: a Warrior who
@@ -315,20 +315,20 @@ rank at level 12 adds 3 HP after rounding, matching the former flat first rank.
 class starts with Strike plus three, and it says the skill "may return later
 through a keystone". It does: **Hamstring is Ruin's new-skill keystone**, the
 second of the two in this design that are already registered in code
-(`kits.lua:350`, gated the way Renew is at `:656`). That makes Broadstroke a
+(`kits.lua:403`, gated the way Renew is at `:812`). That makes Broadstroke a
 replacement rather than a registration, and it re-cuts the Lash chain so that
 nothing below tier 3 modifies a skill the player may not have yet.
 
 | # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
 |---|---|---|---|---|---|---|---|---|
-| 1 | **Heavy Hand** | Hammer | 1 | 5 | — | Mighty Blow ×1.5 → ×1.55 / 1.60 / 1.65 / 1.70 / 1.75 weapon damage | `kits.lua:342` | `mighty_blow_multiplier_add` |
-| 2 | **Stoke** | Hammer | 2 | 4 | — | +1 / 2 / 3 / 4 rage per landed authoritative swing (base 8) | `grug_abilities/init.lua:78-81` and its authoritative/proportional callers | `rage_per_swing_add` |
-| 3 | **Broadstroke** *(keystone)* | Hammer | 3 | 3 | **replaces Mighty Blow** | Mighty Blow also strikes every other hostile within 3 m for **half** its total, rounded down, at ×3 threat — the game's first melee cleave, on the key Mighty Blow already occupies | `kits.lua:340-344` plus the radius loop of `kits.lua:490` | `mighty_blow_cleave` |
-| 4 | **Ruination** *(capstone)* | Hammer | 4 | **1** | **effect** ‼ | a landed Mighty Blow grants **10 s** of crit chance **+20 percentage points** with the 30 % crit cap raised to **50 %**. *Limit: 10 s, **120 s cooldown** on the trigger.* | `grug_classes/stats.lua:45` and its `math.min(0.30, …)` | `crit_cap_override` |
-| 5 | **Keen Edge** | Lash | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 percentage points crit chance (30 % cap holds) | `grug_classes/stats.lua:45` | `crit_chance_add` |
-| 6 | **Onset** | Lash | 2 | 4 | — | Charge cooldown 10 s → 9 / 8 / 7 / 6 s | `grug_abilities/init.lua:1233`, the one `arm_cooldown` call — **not** `kits.lua:299` | `charge_cooldown_sub` |
-| 7 | **Hamstring** *(keystone)* | Lash | 3 | 3 | **new skill** *(already registered)* | the shipped ability (`kits.lua:350-377`): 10 rage, a 6 s charge, and on a charged proc a 50 % slow for 5 s exactly as `classes.md:426` specifies. Ranks 2 and 3 lengthen the slow to **6 / 7 s** | `kits.lua:370` (mobs) and `:372` (players); the grant gate is a new `talent_gated = true` beside `kits.lua:350` | `hamstring_slow_add` |
-| 8 | **Tendon Cut** | Lash | 4 | 3 | ‼ | Hamstring's charged proc **roots** for 2 / 2.5 / 3 s before its slow begins — a root off an ordinary swing. *Limit: **12 s internal cooldown**, independent of the charge.* | `kits.lua:368-374`, using the root machinery of `:495` (players) and `:504` (mobs) | `hamstring_root` |
+| 1 | **Heavy Hand** | Hammer | 1 | 5 | — | Mighty Blow ×1.5 → ×1.55 / 1.60 / 1.65 / 1.70 / 1.75 weapon damage | `kits.lua:384-391` | `mighty_blow_multiplier_add` |
+| 2 | **Stoke** | Hammer | 2 | 4 | — | +1 / 2 / 3 / 4 rage per landed authoritative swing (base 8) | `grug_abilities/init.lua:90-99` and its authoritative/proportional callers | `rage_per_swing_add` |
+| 3 | **Broadstroke** *(keystone)* | Hammer | 3 | 3 | **replaces Mighty Blow** | Mighty Blow also strikes every other hostile within 3 m for **half** its total, rounded down, at ×3 threat — the game's first melee cleave, on the key Mighty Blow already occupies | `kits.lua:384-391` plus a hostile-radius loop | `mighty_blow_cleave` |
+| 4 | **Ruination** *(capstone)* | Hammer | 4 | **1** | **effect** ‼ | a landed Mighty Blow grants **10 s** of crit chance **+20 percentage points** with the 30 % crit cap raised to **50 %**. *Limit: 10 s, **120 s cooldown** on the trigger.* | `grug_classes/stats.lua:122-140` | `crit_cap_override` |
+| 5 | **Keen Edge** | Lash | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 percentage points crit chance (30 % cap holds) | `grug_classes/stats.lua:122-137` | `crit_chance_add` |
+| 6 | **Onset** | Lash | 2 | 4 | — | Charge cooldown 10 s → 9 / 8 / 7 / 6 s | `grug_abilities/init.lua:1566-1567`, the one effective cooldown arm | `charge_cooldown_sub` |
+| 7 | **Hamstring** *(keystone)* | Lash | 3 | 3 | **new skill** *(already registered)* | the shipped ability (`kits.lua:403-434`): 10 rage, a 6 s charge, and on a charged proc a 50 % slow for 5 s exactly as `classes.md:426` specifies. Ranks 2 and 3 lengthen the slow to **6 / 7 s** | `kits.lua:421-430`; the grant gate is `talent_gated = true` at `:409` | `hamstring_slow_add` |
+| 8 | **Tendon Cut** | Lash | 4 | 3 | ‼ | Hamstring's charged proc **roots** for 2 / 2.5 / 3 s before its slow begins — a root off an ordinary swing. *Limit: **12 s internal cooldown**, independent of the charge.* | `kits.lua:421-430`, using the player/mob root machinery at `:589` and `:596` | `hamstring_root` |
 
 Ruin's chain totals are the asymmetry §1.2 describes: Hammer
 `5 + 4 + 3 + 1 = 13` because it carries the one-rank capstone, Lash
@@ -357,30 +357,30 @@ because the fix belongs to `classes.md` §3 rather than to WP11.
 | # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
 |---|---|---|---|---|---|---|---|---|
 | 1 | **Tinder** | Blaze | 1 | 5 | — | Fireball's `baseline weapon + spell power` raw value gains +1 / 2 / 3 / 4 / 5 before the damage fit | `kits.lua` | `fireball_damage_add` |
-| 2 | **Firebrand** | Blaze | 2 | 4 | — | +1 / 2 / 3 / 4 percentage points crit chance | `grug_classes/stats.lua:45` | `crit_chance_add` |
+| 2 | **Firebrand** | Blaze | 2 | 4 | — | +1 / 2 / 3 / 4 percentage points crit chance | `grug_classes/stats.lua:122-137` | `crit_chance_add` |
 | 3 | **Brand** *(keystone)* | Blaze | 3 | 3 | **replaces Fireball** | Fireball's impact splashes `2 / 3 / 4 + floor(spell power / 2)` to every other hostile within 2 m. Same key, same 6% base-mana cost, same 1 s cast interval, same straight flight | `kits.lua` (the projectile's on-hit) plus its radius loop | `fireball_splash` |
 | 4 | **Whitehot** *(capstone)* | Blaze | 4 | **1** | **effect** ‼ | the first Fireball that **crits** starts an 8 s window in which Fireball costs **3% instead of 6% base mana** and deals **+6**. *Limit: 8 s, **120 s cooldown** on the trigger.* | the central cost seam and Fireball values | `whitehot_window` |
-| 5 | **Deep Well** | Cinder | 1 | 5 | — | max mana +3 / 6 / 9 / 12 / 15 % | `grug_classes/stats.lua:30` | `max_mana_percent_add` |
-| 6 | **Far Cast** | Cinder | 2 | 4 | — | Fireball maximum distance 20 m → 21.5 / 23 / 24.5 / 26 m | two per-player reads, neither at a registration constant: the spawn call (`kits.lua:453-460`, since `grug_projectiles/init.lua:195` prefers `params.max_distance` over the registered `kits.lua:413`), and targeting reach in `grug_abilities.get_range` (`init.lua:170-177`), whose item-meta override `sync_kit` already refreshes (`grug_abilities/init.lua:1827-1831`) | `fireball_range_add` |
+| 5 | **Deep Well** | Cinder | 1 | 5 | — | max mana +3 / 6 / 9 / 12 / 15 % | `grug_classes/stats.lua:67-105` | `max_mana_percent_add` |
+| 6 | **Far Cast** | Cinder | 2 | 4 | — | Fireball maximum distance 20 m → 21.5 / 23 / 24.5 / 26 m | two per-player reads, neither at a registration constant: the spawn call (`kits.lua:534-547`, since `grug_projectiles/init.lua:195` prefers `params.max_distance` over the registered `kits.lua:470-479`), and targeting reach in `grug_abilities.get_range` (`init.lua:267-276`), whose item-meta override `sync_kit` refreshes (`grug_abilities/init.lua:2181-2197`) | `fireball_range_add` |
 | 7 | **Cinderfall** *(keystone)* | Cinder | 3 | 3 | **new skill** | cast, 12% base mana, 10 s cooldown, 20 m; a burst at the first thing the crosshair ray meets, dealing `5 / 7 / 9 + spell power` to every hostile within 3 m of it | new; `grug_core.combat_ray` plus the radius loop | — |
 | 8 | **Ashfall** | Cinder | 4 | 3 | — | Cinderfall's radius 3 m → 4 / 5 / 6 m | the new Cinderfall registration | `cinderfall_radius_add` |
 
 Fireball's flight is not eaten by the longer range: `lifetime = 2`
-(`kits.lua:420`) at `speed = 20` (`:412`) allows 40 m. Ember takes **no**
+(`kits.lua:479`) at `speed = 20` (`:471`) allows 40 m. Ember takes **no**
 rule-breaker besides its capstone — see §2.9's note on the bounded pass.
 
 ### 2.4 Mage — Rime
 
 | # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
 |---|---|---|---|---|---|---|---|---|
-| 1 | **Deep Chill** | Frost | 1 | 5 | — | Frost Nova root 4 s → 4.2 / 4.4 / 4.6 / 4.8 / 5.0 s | `kits.lua:495` (players) and `:504` (mobs) | `frost_nova_root_add` |
-| 2 | **Hoarfrost** | Frost | 2 | 4 | — | Frost Nova follow-up slow 3 s → 4 / 5 / 6 / 7 s (the 50 % stays) | `kits.lua:496` and `:505` | `frost_nova_slow_add` |
+| 1 | **Deep Chill** | Frost | 1 | 5 | — | Frost Nova root 4 s → 4.2 / 4.4 / 4.6 / 4.8 / 5.0 s | `kits.lua:581-598` | `frost_nova_root_add` |
+| 2 | **Hoarfrost** | Frost | 2 | 4 | — | Frost Nova follow-up slow 3 s → 4 / 5 / 6 / 7 s (the 50 % stays) | `kits.lua:583-598` | `frost_nova_slow_add` |
 | 3 | **Frostbind** *(keystone)* | Frost | 3 | 3 | **replaces Frost Nova** | Frost Nova stops being self-centred: it is cast at the pointed hostile up to 20 m away and roots everything within 3 / 4 / 5 m **of the target**. Same key, same 10% base-mana cost, same 12 s cooldown — a control tool instead of a panic button | `kits.lua` (the cast body and its radius origin) | `frost_nova_ranged` |
-| 4 | **Rimebite** *(capstone)* | Frost | 4 | **1** | **effect** | every root Frost Nova applies also deals `5 + floor(spell power / 2)` on application | `kits.lua:495-505` | `control_damage_add` |
-| 5 | **Cold Focus** | Ward | 1 | 5 | — | in-combat mana regeneration 0.5 %/s → 0.6 / 0.7 / 0.8 / 0.9 / 1.0 %/s | `grug_abilities/init.lua:2202` | `combat_mana_regen_add` |
-| 6 | **Quick Step** | Ward | 2 | 4 | — | Blink cooldown 15 s → 13.5 / 12 / 10.5 / 9 s | `grug_abilities/init.lua:1233` — **not** `kits.lua:526` | `blink_cooldown_sub` |
+| 4 | **Rimebite** *(capstone)* | Frost | 4 | **1** | **effect** | every root Frost Nova applies also deals `5 + floor(spell power / 2)` on application | `kits.lua:581-598` | `control_damage_add` |
+| 5 | **Cold Focus** | Ward | 1 | 5 | — | in-combat mana regeneration 0.5 %/s → 0.6 / 0.7 / 0.8 / 0.9 / 1.0 %/s | `grug_abilities/init.lua:2587-2591` | `combat_mana_regen_add` |
+| 6 | **Quick Step** | Ward | 2 | 4 | — | Blink cooldown 15 s → 13.5 / 12 / 10.5 / 9 s | `grug_abilities/init.lua:1566-1567` — **not** the registration constant | `blink_cooldown_sub` |
 | 7 | **Glacial Ward** *(keystone)* | Ward | 3 | 3 | **new skill** | cast, 10% base mana, 30 s cooldown, self; absorbs 10% / 15% / 20% of the class-neutral base pool plus the spell-power percentage for 10 s | new; `grug_core.set_absorb` | — |
-| 8 | **Far Step** | Ward | 4 | 3 | — | Blink distance 10 m → 12 / 14 / 16 m | `kits.lua:533` (inside the cast body, player in scope) | `blink_distance_add` |
+| 8 | **Far Step** | Ward | 4 | 3 | — | Blink distance 10 m → 12 / 14 / 16 m | `kits.lua:623-641` (inside the cast body, player in scope) | `blink_distance_add` |
 
 Rime also takes no rule-breaker besides its capstone, and its capstone does
 not break one either — Rimebite is simply a strong effect. Same absorb caveat
@@ -391,13 +391,13 @@ as §2.1: Glacial Ward and Power Word: Shield no longer overwrite each other —
 | # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
 |---|---|---|---|---|---|---|---|---|
 | 1 | **Gentle Hand** | Balm | 1 | 5 | — | Flash Heal's 25% base-pool share gains +1 / 2 / 3 / 4 / 5 percentage points | `kits.lua` | `flash_heal_add` |
-| 2 | **Quiet Steps** | Balm | 2 | 4 | — | heal threat factor 0.5 → 0.45 / 0.40 / 0.35 / 0.30 (`combat_stats.md` §4) | `grug_core/combat.lua:241`, read at `:417` inside `add_heal_threat` (`:404`) | `heal_threat_factor_sub` |
+| 2 | **Quiet Steps** | Balm | 2 | 4 | — | heal threat factor 0.5 → 0.45 / 0.40 / 0.35 / 0.30 (`combat_stats.md` §4) | `grug_core/combat.lua:355`, read inside `add_heal_threat` at `:518-535` | `heal_threat_factor_sub` |
 | 3 | **Renew** *(keystone)* | Balm | 3 | 3 | **new skill** *(already registered)* | the shipped ability, granted at rank 1 exactly as `classes.md` §5 specifies (6% base mana, 8 s cooldown, 8% of the base pool plus spell-power percentage every 3 s for 12 s); ranks 2 and 3 raise the tick to 9% and 10% | `kits.lua`; the grant gate is `talent_gated = true` | `renew_tick_add` |
 | 4 | **Hearten** *(capstone)* | Balm | 4 | **1** | **replaces Flash Heal** | Flash Heal also heals every **other** ally within 8 m for **65 %** of the amount. Same key, same 8% base-mana cost, same 4 s cooldown — the Priest's group heal, without a group-heal button | `kits.lua` plus its radius loop | `flash_heal_splash` |
 | 5 | **Warding Faith** | Aegis | 1 | 5 | — | Power Word: Shield's 25% base-pool share gains +1 / 2 / 3 / 4 / 5 percentage points | `kits.lua` | `shield_absorb_add` |
-| 6 | **Deep Reserve** | Aegis | 2 | 4 | — | max mana +3 / 6 / 9 / 12 % | `grug_classes/stats.lua:30` | `max_mana_percent_add` |
-| 7 | **Turn Aside** *(keystone)* | Aegis | 3 | 3 | **replaces Power Word: Shield** | while the shield holds (at most its 15 s), its target's dodge chance is +10 / 15 / 20 percentage points, **inside** the 30 % cap. Same key, same cost — the shield now buys avoidance as well as absorption | `kits.lua:639-640` and `grug_classes/stats.lua:49` | `dodge_chance_window` |
-| 8 | **Second Skin** | Aegis | 4 | 3 | — | Power Word: Shield lasts 15 s → 18 / 21 / 24 s | `kits.lua:640` (the `15` argument) | `shield_duration_add` |
+| 6 | **Deep Reserve** | Aegis | 2 | 4 | — | max mana +3 / 6 / 9 / 12 % | `grug_classes/stats.lua:67-105` | `max_mana_percent_add` |
+| 7 | **Turn Aside** *(keystone)* | Aegis | 3 | 3 | **replaces Power Word: Shield** | while the shield holds (at most its 15 s), its target's dodge chance is +10 / 15 / 20 percentage points, **inside** the 30 % cap. Same key, same cost — the shield now buys avoidance as well as absorption | `kits.lua:764-803` and `grug_classes/stats.lua:128-140` | `dodge_chance_window` |
+| 8 | **Second Skin** | Aegis | 4 | 3 | — | Power Word: Shield lasts 15 s → 18 / 21 / 24 s | `kits.lua:795-799` | `shield_duration_add` |
 
 Renew is Mercy's **keystone**, and it is the one new-skill keystone in the
 whole design that is **already registered**. `progression.md` §2 called it
@@ -410,18 +410,18 @@ sentence stays true apart from the tree's name.
 | # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
 |---|---|---|---|---|---|---|---|---|
 | 1 | **Sharpened Word** | Word | 1 | 5 | — | Smite's `1.5 × (baseline weapon + spell power)` raw value gains +1 / 2 / 3 / 4 / 5 before the damage fit | `kits.lua` | `smite_damage_add` |
-| 2 | **Swift Word** | Word | 2 | 4 | — | Smite cooldown 2 s → 1.85 / 1.7 / 1.55 / 1.4 s | `grug_abilities/init.lua:1233` — **not** `kits.lua:581` | `smite_cooldown_sub` |
+| 2 | **Swift Word** | Word | 2 | 4 | — | Smite cooldown 2 s → 1.85 / 1.7 / 1.55 / 1.4 s | `grug_abilities/init.lua:1566-1567` — **not** the registration constant | `smite_cooldown_sub` |
 | 3 | **Word of Ruin** *(keystone)* | Word | 3 | 3 | **new skill** | cast, 8% base mana, 12 s cooldown, 20 m; `6 / 8 / 10 + spell power` damage, healing the Priest for 50 % of it | new; `grug_core.deal_ability_damage` returns the post-crit amount, healed back with `grug_core.heal_player(…, {no_crit = true})` | — |
 | 4 | **Last Word** *(capstone)* | Word | 4 | **1** | **effect** ‼ | while the Priest is below 25 % max HP, Word of Ruin's drain heals for **150 %** of the damage dealt — above the 100 % the pipeline otherwise allows. *Limit: 8 s per trigger, **180 s cooldown**.* | the drain half of the Word of Ruin registration | `drain_ratio_override` |
-| 5 | **Hard Faith** | Wrath | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 percentage points crit chance | `grug_classes/stats.lua:45` | `crit_chance_add` |
-| 6 | **Warded Wrath** | Wrath | 2 | 4 | — | while the Priest carries an absorb shield, Smite deals `+1 / 2 / 3 / 4` | `kits.lua:591`, gated on `grug_core.get_absorb(user) > 0` (`grug_core/combat.lua:1020`) | `smite_damage_while_shielded_add` |
+| 5 | **Hard Faith** | Wrath | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 percentage points crit chance | `grug_classes/stats.lua:122-137` | `crit_chance_add` |
+| 6 | **Warded Wrath** | Wrath | 2 | 4 | — | while the Priest carries an absorb shield, Smite deals `+1 / 2 / 3 / 4` | `kits.lua:677-717`, gated on `grug_core.get_absorb(user) > 0` (`grug_core/combat.lua:1168`) | `smite_damage_while_shielded_add` |
 | 7 | **Recompense** *(keystone)* | Wrath | 3 | 3 | **replaces Smite** | Smite costs 6% instead of 5% base mana and grants the Priest an absorb of 6% / 9% / 12% of the class-neutral base pool plus the spell-power percentage on every landed cast, refreshing rather than stacking. Same key — the solo nuke becomes the solo sustain | Smite settlement and `grug_core.set_absorb` | `smite_absorb` |
 | 8 | **Hardened** | Wrath | 4 | 3 | — | max HP +0.3 / 0.6 / 0.9% of the class base pool | `grug_classes/stats.lua` | `max_hp_percent_add` |
 
 Word of Ruin's drain is specified as "50 % of the damage dealt **before the
 target's armor**": `deal_ability_damage` returns the amount the ability
-published, taken before the central modifier applies armor (`:36-42`) and the
-absorb shield (`grug_core/combat.lua:1003-1030`) to a *player* target. Against a mob it is exactly
+published, taken before the central modifier applies armor and the
+absorb shield (`grug_core/combat.lua:1147-1168`) to a *player* target. Against a mob it is exactly
 what landed.
 
 Hardened's 0.3% per rank uses the same rule: its first reachable rank at level

@@ -132,7 +132,7 @@ Core principles:
   (combat_stats §2), then apply via `object:punch` so armor groups and mob
   death handling (XP, loot) keep working. Implicit ordinary knockback is zero;
   only an explicit `damage_groups.knockback` override displaces the mob
-  (`mobs/api.lua:3446-3481`).
+  (`mobs/api.lua:3455-3481`).
 - Mob→player punches roll the player's dodge centrally (hp change
   modifier in `grug_core`).
 - **Target-race equipment effects use the same central transaction.** A
@@ -537,9 +537,9 @@ moves into the talent tree.
 | Ability | Cost | Cooldown | Effect |
 |---------|------|----------|--------|
 | Smite | 5% base mana | 2 s | Current-crosshair 20 m hit with no enemy-memory fallback: 1.5 × (baseline weapon + spell power), then the damage fit. Solo viability. |
-| Flash Heal | 8% base mana | 4 s | Heals 25% of the class-neutral base pool, with spell power as a percentage bonus. Targets the pointed ally (15 m), otherwise self. Threat: 0.5× effective healing (WP6). |
-| Power Word: Shield | 8% base mana | 10 s | Absorb shield on ally/self: soaks 25% of the class-neutral base pool plus the spell-power percentage, lasts 15 s or until consumed. |
-| Renew *(talent)* | 6% base mana | 8 s | Heals 8% of the class-neutral base pool plus the spell-power percentage every 3 s for 12 s. Unlocked via the Mercy tree (WP11). |
+| Flash Heal | 8% base mana | 4 s | Heals 25% of the class-neutral base pool, with spell power as a percentage bonus. Resolves pointed ally (15 m) → valid ally memory → self. Threat: 0.5× effective healing (WP6). |
+| Power Word: Shield | 8% base mana | 10 s | Resolves pointed ally → valid ally memory → self; soaks 25% of the class-neutral base pool plus the spell-power percentage for 15 s or until consumed. |
+| Renew *(talent)* | 6% base mana | 8 s | Resolves pointed ally → valid ally memory → self; heals 8% of the class-neutral base pool plus the spell-power percentage every 3 s for 12 s. Unlocked via the Mercy tree (WP11). |
 
 ## 6. Explicitly deferred
 

@@ -331,7 +331,8 @@ The coordinates in the following historical correction note refer to commit
   drifted by five lines even before this patch; the paragraph now states the
   pre-patch numbers correctly **and** where the fix lives in the patched tree.
 - The stale `api.lua:2249` citation the card found in `golem.lua:67` and
-  `skeleton_archer.lua:65` is corrected to `api.lua:2366`. **The card missed a
+  `skeleton_archer.lua:65` was corrected to the then-current line. The current
+  melee switch is at `api.lua:2492`. **The card missed a
   third**, `skeleton_raider.lua:37`, which carried the same number; it is
   corrected too.
 

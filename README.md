@@ -159,9 +159,9 @@ first Claim Stone is free; later tiers consume universal bars plus 30 minutes,
 
 ### Combat, classes and progression
 
-[Combat](docs/design/combat_stats.md) uses small readable numbers, three
-attributes, threat and the tank/healer/damage trinity while keeping all group
-content beatable without a healer. Mobs outrun an unmounted player, switch
+[Combat](docs/design/combat_stats.md) uses one level-scaled pool curve, three
+secondary attributes, threat and the tank/healer/damage trinity while keeping
+all group content beatable without a healer. Mobs outrun an unmounted player, switch
 targets only at 120% threat and use a 25 m soft de-aggro plus 40 m leash.
 Elites/rares telegraph their strongest attack so movement, not gear alone,
 answers it.
@@ -242,7 +242,12 @@ WP25, WP26, WP33, WP35, WP36, WP38, WP39, WP40, WP43, WP45, WP-HUD and
 WP-Speed provide the playable foundation: three classes, combat, mobs,
 equipment/bags, currency,
 canonical materials, gathering, exact life/resource bars, unified movement
-effects and the named-zone world. New characters remain
+effects and the named-zone world. Round 6 adds the shared HP/mana and damage
+fit, maximum-pool Character/Help pages, per-player effective tooltips, total
+friendly-skill fallback, 5% suffocation, the `grug_core.status` text list and
+three-minute food buffs. It also fixes ordinary dry shore banks at `water_y`
+and guarantees surface level 1 through 100 m and level 2 through 150 m of every
+start anchor. New characters remain
 protected behind character creation until the server has prepared all six
 start areas, which it emerges once at startup. WP40's
 [development acceptance](docs/research/wp40-completion.md) now includes the first
@@ -251,9 +256,9 @@ Lua-5.1 user tests; slower browser generation is accepted for this server game.
 WP16 is canceled and is not counted as shipped. WP-Scout, WP-HUD and WP-Speed
 are counted in the 49; only WP-Scout remains open.
 
-**Not in the game yet:** quests, professions/recipes, talent keystones,
-capstones and their four new abilities (WP11 X3), parties, recovery, offhand
-items, affixes, durability, final structures, travel/map, Claim Stone housing,
+**Not in the game yet:** quests, the profession and recipe-book systems,
+talent keystones, capstones and their four new abilities (WP11 X3), parties,
+the remaining recovery/rest systems, offhand items, affixes, durability, final structures, travel/map, Claim Stone housing,
 mounts and bosses remain unbuilt. X1, X2 and X4 of the talent trees are in the
 game; X4's respec prices remain coordinator placeholders. Geographic PvP,
 bounded war-front life and the rebased economy are also pending. Remaining
@@ -264,7 +269,9 @@ and [PvP-death XP exemption](docs/design/progression.md) are already decided.
 **In progress:** WP11 phase 1 has shipped its talent registry, 48 talents,
 point/gate/persistence model and thirty numeric consumers. X4's Talents page,
 respec price and level-up flow are shipped; only X3's keystones, capstones and
-four abilities follow in round 6. WP13 has built
+four abilities remain open. Round 6 registered all three cooking qualities;
+current raw/plain and simply-cooked foods use the first two, while WP10 still
+owns well-cooked recipes, profession books and the icon presentation. WP13 has built
 **all six start settlements and all six capitals**. The starts share one reusable building library with per-race
 palettes -- small dense houses with doors, pane windows, stair roofs,
 furnished interiors and exterior dressing -- and each is a different
@@ -333,6 +340,11 @@ alloy chain the engine itself cannot see. It still awaits the user's own
 ~10-minute runtime test. WP5, WP44, WP37, WP11, WP14, WP20, WP21 and WP8 are
 also ready behind shipped prerequisites. WP34 still needs structures and
 economy.
+
+**Media remains decision-gated:**
+[the Round 6 candidate report](docs/research/reference-media-candidates.md)
+records provenance and suitability only. No candidate was imported; each one
+still awaits the user's explicit per-candidate decision.
 
 **Release boundary:** WP40 is completed as development work; it does not declare
 our first public release or end fresh-server mode. Current-candidate resource

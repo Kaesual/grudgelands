@@ -183,8 +183,9 @@ Key implementation patterns we adopt:
   model (§6) replaces it (and is written from scratch, not copied).
 - **Potion effects** (`mcl_potions/functions.lua`, MIT): registry with
   `on_start/on_step/on_end`, physics factors via factor-stacking,
-  HP-tick timers, damage modifiers; persisted in player meta. Template
-  for our elixir/buff engine (WP7).
+  HP-tick timers, damage modifiers; persisted in player meta. The shipped
+  timed-effect minimum is the runtime-only `grug_core.status` registry and
+  text list; specialized elixir hooks remain item-owned work.
 - **Armor damage formula** (`mcl_armor/damage.lua:84-87`): group-driven
   points; we use plain percent reduction instead (§3.1) — simpler and
   matches combat_stats caps.
@@ -1191,9 +1192,13 @@ Neither of these costs a main profession slot (professions.md §1).
   `grug_core.in_combat` window is false. Combat skips that tick without
   canceling or pausing the buff. Exactly one food buff may run at once and
   the most recently eaten serving replaces it.
-  - **Raw/plain:** 2 % of the base HP pool per tick.
-  - **Simply cooked:** 5 % of the base HP pool per tick.
-  - **Well cooked:** 10 % of the base HP pool per tick.
+  **Self-consumption ruling (2026-09-17, late evening):** food and potions use
+  the character's maximum HP or mana, so a full food buff refills every
+  character in the same number of ticks; the neutral base pool is used for
+  mana costs and caster-output heals/absorbs, never for self-consumption.
+  - **Raw/plain:** 2 % of maximum HP per tick.
+  - **Simply cooked:** 5 % of maximum HP per tick.
+  - **Well cooked:** 10 % of maximum HP per tick.
   - Every tick restores at least 1 HP. Food is the entire effect: the old
     `item_eat` instant heal is removed. Tooltips state the percentage,
     10 s cadence, 3 min duration and out-of-combat condition.
