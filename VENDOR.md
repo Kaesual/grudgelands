@@ -158,7 +158,8 @@ combat-physics rulings:
   waypoint while blocked drops the path, starts the sidestep fallback and
   preserves an A* request for after the per-mob backoff.
 - `grug_obstacle.lua` is the production state module called by `api.lua` and
-  loaded directly by the regression KAT. It owns the 1 s delay, 0.5 s
+  loaded directly by the regression KAT; isolated real-API harnesses with no
+  engine modpath resolve it relative to `api.lua`. It owns the 1 s delay, 0.5 s
   sidestep, path-retention and punch gates, plus a server-wide allowance of
   2 `find_path` calls per server step and 0.25 s exhausted-path backoff. Its
   FIFO uses one generation-token entry per request; cancellation, death and

@@ -118,8 +118,18 @@ local pathfinding_searchdistance = tonumber(
 -- grace period; a failed search earns one alternating lateral step before
 -- the next visibility test (combat_stats.md section 4, 2026-09-17 ruling R3).
 -- The helper is production code, not a test model. Its globalstep resets the
--- two-call server-wide A* allowance once per engine step.
-local grug_obstacle = dofile(core.get_modpath("mobs") .. "/grug_obstacle.lua")
+-- two-call server-wide A* allowance once per engine step. Engine loads have a
+-- mod path; isolated real-api harnesses may not, so their loader falls back to
+-- this file's own directory instead of requiring every harness to know the
+-- helper dependency.
+local mobs_modpath = core.get_modpath("mobs")
+if not mobs_modpath then
+	local source = debug and debug.getinfo
+		and debug.getinfo(1, "S").source or ""
+	mobs_modpath = source:match("^@(.+)/[^/]+$")
+end
+assert(mobs_modpath, "cannot locate mobs/grug_obstacle.lua")
+local grug_obstacle = dofile(mobs_modpath .. "/grug_obstacle.lua")
 core.register_globalstep(function()
 	grug_obstacle.begin_server_step()
 end)

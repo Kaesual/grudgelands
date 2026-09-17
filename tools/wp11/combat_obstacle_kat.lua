@@ -39,8 +39,10 @@ return function(repo)
 			.. "/mods/ENTITIES/mobs/grug_obstacle.lua"))()
 
 	-- Bind the tested module to the shipped attack branch.
-	want(api:find('dofile(core.get_modpath("mobs") .. "/grug_obstacle.lua")',
-			1, true), "api.lua does not load the tested production module")
+	want(api:find('local mobs_modpath = core.get_modpath("mobs")', 1, true)
+			and api:find('source:match("^@(.+)/[^/]+$")', 1, true)
+			and api:find('dofile(mobs_modpath .. "/grug_obstacle.lua")', 1, true),
+			"api.lua does not robustly load the tested production module")
 	want(api:find("grug_obstacle.target_visible(self, s, target_pos,", 1, true),
 			"attack state bypasses canonical target LOS")
 	want(api:find("grug_obstacle.try_melee_attack({", 1, true),
