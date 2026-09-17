@@ -157,9 +157,13 @@ combat-physics rulings:
 - `grug_obstacle.lua` is the production state module called by `api.lua` and
   loaded directly by the regression KAT. It owns the 1 s delay, 0.5 s
   sidestep, path-retention and punch gates, plus a server-wide allowance of
-  2 `find_path` calls per server step and 0.25 s per-mob retry backoff. The
-  attack state supplies one canonical target-LOS result per mob per step to
-  both navigation and the punch gate.
+  2 `find_path` calls per server step and 0.25 s exhausted-path backoff. Its
+  FIFO uses one generation-token entry per request; cancellation, death and
+  unload invalidate that exact entry and release its strong entity-state
+  reference immediately. Ground melee shares one collision-box LOS between
+  navigation and the punch gate. Dogshoot melee and flying/swimming dogfight
+  retain both their common `+0.5` LOS and their previous collision-box punch
+  ray.
 - Ordinary punch damage contributes zero implicit knockback. The existing
   `damage_groups.knockback` override remains the explicit future-skill seam,
   including its vertical impulse when non-zero.

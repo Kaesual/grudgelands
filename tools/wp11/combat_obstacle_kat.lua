@@ -56,6 +56,22 @@ return function(repo)
 	want(api:find("custom_attack = self.custom_attack and function()", 1, true)
 			and not api:find("local custom_allows", 1, true),
 			"custom attack is not owned by the canonical LOS gate")
+	want(api:find("strike_in_sight = grug_obstacle.strike_target_visible(self, s,",
+			1, true), "non-ground melee bypasses its collision-box strike LOS")
+	local deactivate_at = api:find("function mob_class:on_deactivate", 1, true)
+	local deactivate_end = deactivate_at and api:find("-- return True if mob limit",
+			deactivate_at, true)
+	local deactivate_cancel = deactivate_at and api:find(
+			"grug_obstacle.cancel_path_request(self.temp)", deactivate_at, true)
+	want(deactivate_cancel and deactivate_end and deactivate_cancel < deactivate_end,
+			"on_deactivate does not invalidate its queued A* request")
+	local death_at = api:find("death boundary first invalidates any queued A* request",
+			1, true)
+	local death_drop = death_at and api:find("self:item_drop()", death_at, true)
+	local death_cancel = death_at and api:find(
+			"grug_obstacle.cancel_path_request(self.temp)", death_at, true)
+	want(death_cancel and death_drop and death_cancel < death_drop,
+			"death boundary does not invalidate its queued A* request")
 
 	-- One fresh target snapshot and one LOS ray. A visible waypoint must not
 	-- authorize a punch through a wall to the real target.
@@ -120,6 +136,45 @@ return function(repo)
 			and legacy_calls == 1,
 			"non-ground attack did not use exactly one legacy LOS ray")
 
+	-- Dogshoot melee and flying/swimming dogfight retain both historical rays:
+	-- the common +0.5 ray and then the collision-box strike ray. This uses the
+	-- shipped Kraken and player collision boxes from their real definitions.
+	local kraken_calls = 0
+	local kraken = {
+		object = {get_properties = function()
+			return {collisionbox = {-0.8, 0, -0.8, 0.8, 1.8, 0.8}}
+		end},
+		attack = {get_properties = function()
+			return {collisionbox = {-0.3, 0, -0.3, 0.3, 1.7, 0.3}}
+		end},
+		line_of_sight = function(_, first, second)
+			kraken_calls = kraken_calls + 1
+			if first.y == 0.5 and second.y == 0.5 then return true end
+			want(first.x == source_target.x and first.y == 1.53,
+					"Kraken strike ray missed the player collision-box eye")
+			want(second.x == source_mob.x and second.y == 1.62,
+					"Kraken strike ray missed the mob collision-box eye")
+			return false
+		end,
+	}
+	local kraken_common = obstacle.target_visible(kraken, source_mob,
+			source_target, false)
+	local kraken_strike = obstacle.strike_target_visible(kraken, source_mob,
+			source_target, kraken_common, false)
+	landed, consumed = obstacle.try_melee_attack({
+		ready = true, in_reach = true,
+		target_visible = kraken_common and kraken_strike,
+		custom_attack = function()
+			custom_calls = custom_calls + 1
+			return true
+		end,
+		punch = function() punches = punches + 1 end,
+	})
+	want(kraken_common and not kraken_strike and kraken_calls == 2,
+			"Kraken LOS fixture did not split common and strike geometry")
+	want(not landed and not consumed and custom_calls == 0 and punches == 0,
+			"non-ground melee crossed a blocked collision-box strike ray")
+
 	-- Blocked-LOS delay and fair server-wide A* budget. Stable object order
 	-- must not let the first mobs monopolize the two starts per server step.
 	local state = {}
@@ -154,6 +209,58 @@ return function(repo)
 			"stable object order starved at least one of 100 A* waiters")
 	want(last_attempt_step * 0.09 < 18,
 			"A* FIFO did not serve every mob before attack patience expired")
+
+	-- Death/unload invalidation releases the queue's strong temp reference
+	-- immediately and lets the next live waiter use the very next grant.
+	obstacle.begin_server_step()
+	want(obstacle.claim_path_budget({}), "lifecycle fixture lost first token")
+	want(obstacle.claim_path_budget({}), "lifecycle fixture lost second token")
+	local dead = {}
+	local unloaded = {}
+	local live = {}
+	want(not obstacle.claim_path_budget(dead), "dead fixture was not queued")
+	want(not obstacle.claim_path_budget(unloaded), "unload fixture was not queued")
+	want(not obstacle.claim_path_budget(live), "live fixture was not queued")
+	local released = setmetatable({dead, unloaded}, {__mode = "v"})
+	obstacle.cancel_path_request(dead)
+	obstacle.cancel_path_request(unloaded)
+	dead = nil
+	unloaded = nil
+	collectgarbage("collect")
+	collectgarbage("collect")
+	want(released[1] == nil and released[2] == nil,
+			"cancelled queue entry retained a dead or unloaded temp table")
+	obstacle.begin_server_step()
+	want(obstacle.claim_path_budget(live),
+			"dead or unloaded queue entries consumed a later A* grant")
+
+	-- Abort + re-enqueue gets a new generation at the tail. The stale C slot
+	-- must not jump ahead of D just because both slots refer to the same temp.
+	obstacle.begin_server_step()
+	want(obstacle.claim_path_budget({}), "generation fixture lost first token")
+	want(obstacle.claim_path_budget({}), "generation fixture lost second token")
+	local waiter_a, waiter_c, waiter_d, waiter_e = {}, {}, {}, {}
+	local _, generation_a = obstacle.claim_path_budget(waiter_a)
+	local _, old_generation_c = obstacle.claim_path_budget(waiter_c)
+	local _, generation_d = obstacle.claim_path_budget(waiter_d)
+	local _, generation_e = obstacle.claim_path_budget(waiter_e)
+	obstacle.cancel_path_request(waiter_c)
+	local queued, new_generation_c = obstacle.claim_path_budget(waiter_c)
+	want(not queued and new_generation_c > old_generation_c,
+			"re-enqueued waiter did not receive a new generation")
+	want(not obstacle.path_request_current(waiter_c, old_generation_c)
+			and obstacle.path_request_current(waiter_c, new_generation_c),
+			"stale generation remained current after re-enqueue")
+	obstacle.begin_server_step()
+	want(obstacle.claim_path_budget(waiter_a), "FIFO did not grant A first")
+	want(not obstacle.claim_path_budget(waiter_c),
+			"re-enqueued C reused its stale queue slot")
+	want(obstacle.claim_path_budget(waiter_d),
+			"FIFO did not grant D after stale C was skipped")
+	want(not obstacle.claim_path_budget(waiter_e),
+			"third live waiter escaped the two-start cap")
+	obstacle.cancel_path_request(waiter_c)
+	obstacle.cancel_path_request(waiter_e)
 
 	-- A blocked close path persists; visible contact may finish it.
 	want(obstacle.keep_path(2.5, 3, false),
@@ -275,7 +382,9 @@ return function(repo)
 	say("production", "module", "grug_obstacle.lua", "target_los_calls", los_calls,
 			"path_budget", obstacle.path_budget_per_step,
 			"path_backoff", obstacle.path_backoff, "fifo_mobs", attempt_count,
-			"fifo_last_step", last_attempt_step)
+			"fifo_last_step", last_attempt_step, "lifecycle_release", true,
+			"generation_fifo", generation_a, old_generation_c, generation_d,
+			generation_e, new_generation_c, "kraken_los_calls", kraken_calls)
 	say("obstacle", "delay", obstacle.path_delay, "path_retained", true,
 			"sidesteps", first_side, second_side, "blocked_contact_moves", true,
 			"visible_contact_stops", true, "blocked_swing_banked", true)

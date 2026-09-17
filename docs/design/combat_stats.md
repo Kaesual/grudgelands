@@ -615,7 +615,7 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   top of the dogfight branch and caps the backlog at one; the in-reach branch
   runs to `reach × 0.6` while retaining the cliff guard; the final punch
   claims the timer only after line of sight succeeds. A blocked ready swing
-  therefore stays banked (`mobs/api.lua:2746-2783`).
+  therefore stays banked (`mobs/api.lua:2750-2792`).
 - **Close cover triggers navigation** (decided 2026-09-17). If a ground melee
   mob has spent about **1 s** inside reach without line of sight, it starts the
   existing bounded A* search despite already being close. It does not abandon
@@ -632,15 +632,21 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   A ground melee attack computes one collision-box eye-height target-LOS ray
   per mob per server step and reuses it for path retention, A*, the custom
   attack hook and the punch gate. A blocked target invokes neither the custom
-  hook nor the punch. Other attack families retain their previous fixed
-  `+0.5` LOS endpoints. Across the server at most **2** A* searches start per
-  server step. Mobs that miss that budget wait in FIFO order; at the standard
-  **0.09 s** step, even **100** simultaneous waiters each receive a start in at
-  most **4.5 s**, before the **18 s** attack patience expires. The **0.25 s**
-  per-mob backoff applies after an exhausted path, not to budget waiting. The
-  contact run retains its existing `at_cliff` guard
-  (`mobs/grug_obstacle.lua:4-15,26-147,160-186`;
-  `mobs/api.lua:2321-2369,2535-2583,2648-2783`).
+  hook nor the punch. Shoot and explode attacks retain their fixed `+0.5` LOS
+  endpoints. Dogshoot melee and flying/swimming dogfight require both that
+  common ray and their previous collision-box eye-height strike ray before
+  calling the custom hook or punching.
+  Across the server at most **2** A* searches start per server step. Mobs that
+  miss that budget wait in FIFO order; each request has one generation-token
+  entry. Cancellation invalidates only that generation, releases its strong
+  entity-state reference immediately and puts any later request from the same
+  mob at the tail. Death and unload cancel pending entries. At the standard
+  **0.09 s** step, even **100** simultaneous live waiters each receive a start
+  in at most **4.5 s**, before the **18 s** attack patience expires. The
+  **0.25 s** per-mob backoff applies after an exhausted path, not to budget
+  waiting. The contact run retains its existing `at_cliff` guard
+  (`mobs/grug_obstacle.lua:4-15,26-196,209-235`;
+  `mobs/api.lua:192-203,885-904,2324-2373,2539-2587,2652-2792`).
   *Rationale, because the defect was invisible on paper*: vendored mobs_redo
   zeroed the mob's velocity as soon as the target was inside `reach`
   (`api.lua:2498` before the patch — the number this file carried,

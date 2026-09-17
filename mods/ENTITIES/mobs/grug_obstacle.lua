@@ -11,8 +11,8 @@ local obstacle = {
 local path_budget = obstacle.path_budget_per_step
 local path_queue = {}
 local path_queue_head = 1
-local path_waiting = setmetatable({}, {__mode = "k"})
-local path_granted = setmetatable({}, {__mode = "k"})
+local path_entries = setmetatable({}, {__mode = "k"})
+local path_generation = 0
 
 local function copy_pos(pos)
 	if not pos then return end
@@ -23,30 +23,72 @@ function obstacle.copy_pos(pos)
 	return copy_pos(pos)
 end
 
-function obstacle.begin_server_step()
-	path_budget = obstacle.path_budget_per_step
-	path_granted = setmetatable({}, {__mode = "k"})
-
-	while path_budget > 0 and path_queue_head <= #path_queue do
-		local temp = path_queue[path_queue_head]
-		path_queue[path_queue_head] = false
-		path_queue_head = path_queue_head + 1
-		if path_waiting[temp] then
-			path_waiting[temp] = nil
-			path_granted[temp] = true
-			path_budget = path_budget - 1
-		end
-	end
-
-	if path_queue_head > #path_queue then
-		path_queue = {}
-		path_queue_head = 1
-	end
+function obstacle.path_request_current(temp, generation)
+	local entry = path_entries[temp]
+	return entry ~= nil and entry.active == true
+		and entry.generation == generation
 end
 
 function obstacle.cancel_path_request(temp)
-	path_waiting[temp] = nil
-	path_granted[temp] = nil
+	local entry = path_entries[temp]
+	if not entry then return end
+	path_entries[temp] = nil
+	entry.active = false
+	entry.temp = nil
+end
+
+local function discard_invalid_queue_head()
+	while path_queue_head <= #path_queue do
+		local entry = path_queue[path_queue_head]
+		local temp = entry and entry.temp
+		if temp and entry.status == "queued"
+		and obstacle.path_request_current(temp, entry.generation) then
+			return
+		end
+		if entry then entry.temp = nil end
+		path_queue[path_queue_head] = false
+		path_queue_head = path_queue_head + 1
+	end
+	path_queue = {}
+	path_queue_head = 1
+end
+
+local function new_path_request(temp)
+	path_generation = path_generation + 1
+	local entry = {
+		active = true,
+		generation = path_generation,
+		status = "queued",
+		temp = temp,
+	}
+	path_entries[temp] = entry
+	return entry
+end
+
+function obstacle.begin_server_step()
+	-- A grant belongs to one server step. If its mob stopped requesting before
+	-- claiming it, invalidate the grant without retaining the mob's temp table.
+	for temp, entry in pairs(path_entries) do
+		if entry.status == "granted" then
+			obstacle.cancel_path_request(temp)
+		end
+	end
+
+	path_budget = obstacle.path_budget_per_step
+	discard_invalid_queue_head()
+	while path_budget > 0 and path_queue_head <= #path_queue do
+		local entry = path_queue[path_queue_head]
+		path_queue[path_queue_head] = false
+		path_queue_head = path_queue_head + 1
+		local temp = entry.temp
+		if temp and entry.status == "queued"
+		and obstacle.path_request_current(temp, entry.generation) then
+			entry.temp = nil
+			entry.status = "granted"
+			path_budget = path_budget - 1
+		end
+		discard_invalid_queue_head()
+	end
 end
 
 function obstacle.tick_backoff(temp, dtime)
@@ -76,27 +118,28 @@ end
 
 function obstacle.claim_path_budget(temp)
 	if temp.grug_obstacle_backoff then return false end
-	if path_granted[temp] then
-		path_granted[temp] = nil
-		return true
+	local entry = path_entries[temp]
+	if entry then
+		if entry.status ~= "granted"
+		or not obstacle.path_request_current(temp, entry.generation) then
+			return false, entry.generation
+		end
+		local generation = entry.generation
+		obstacle.cancel_path_request(temp)
+		return true, generation
 	end
-	if path_waiting[temp] then return false end
 
-	while path_queue_head <= #path_queue
-	and not path_waiting[path_queue[path_queue_head]] do
-		path_queue[path_queue_head] = false
-		path_queue_head = path_queue_head + 1
-	end
+	discard_invalid_queue_head()
+	entry = new_path_request(temp)
 	if path_queue_head > #path_queue and path_budget > 0 then
-		path_queue = {}
-		path_queue_head = 1
 		path_budget = path_budget - 1
-		return true
+		local generation = entry.generation
+		obstacle.cancel_path_request(temp)
+		return true, generation
 	end
 
-	path_waiting[temp] = true
-	path_queue[#path_queue + 1] = temp
-	return false
+	path_queue[#path_queue + 1] = entry
+	return false, entry.generation
 end
 
 function obstacle.path_attempted(temp)
@@ -144,6 +187,12 @@ function obstacle.target_visible(self, mob_pos, target_pos, ground_melee)
 	cbox = self.attack:get_properties().collisionbox
 	target_eye.y = target_eye.y + cbox[2] + ((cbox[5] - cbox[2]) * 0.9)
 	return self:line_of_sight(target_eye, mob_eye) == true
+end
+
+function obstacle.strike_target_visible(self, mob_pos, target_pos,
+		common_visible, ground_melee)
+	if not common_visible or ground_melee then return common_visible == true end
+	return obstacle.target_visible(self, mob_pos, target_pos, true)
 end
 
 local function side_velocity(mob_pos, target_pos, side, speed)

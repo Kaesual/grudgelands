@@ -194,6 +194,7 @@ local mob_class_meta = {__index = mob_class}
 -- hook on the class lets later class-level wrappers (start_npcs.lua) remain in
 -- the same callback chain instead of being shadowed by a per-prototype field.
 function mob_class:on_deactivate(removal)
+	if self.temp then grug_obstacle.cancel_path_request(self.temp) end
 	if grug_mobs and grug_mobs.registered_cadence
 	and grug_mobs.registered_cadence[self.name]
 	and grug_mobs.cleanup_xp_participants then
@@ -881,6 +882,12 @@ function mob_class:check_for_death(cmi_cause)
 		self:update_tag() ; return
 	end
 
+	-- GRUG PATCH (shared Grudgelands death settlement, round 5 Lane P/C): the
+	-- death boundary first invalidates any queued A* request, then settles XP
+	-- at the one boundary every death cause reaches. Both helpers are
+	-- idempotent; vanilla mobs_redo entities are inert.
+	if self.temp then grug_obstacle.cancel_path_request(self.temp) end
+
 	-- mob is dead
 	self.cause_of_death = cmi_cause
 	self:item_drop() -- drop items
@@ -896,10 +903,6 @@ function mob_class:check_for_death(cmi_cause)
 
 	local pos = self.object:get_pos() ; if not pos then return end
 
-	-- GRUG PATCH (shared Grudgelands death settlement, round 5 Lane P): settle
-	-- participant XP at the one boundary every death cause reaches, before
-	-- mobs_redo chooses on_die, on_death, animation or smoke/removal fallback.
-	-- The grug_mobs helper is idempotent; vanilla mobs_redo entities are inert.
 	if grug_mobs and grug_mobs.registered_cadence
 	and grug_mobs.registered_cadence[self.name]
 	and grug_mobs.settle_mob_death then
@@ -2320,9 +2323,10 @@ function mob_class:do_states(dtime)
 
 		-- GRUG PATCH: take one fresh, private target-position snapshot and one
 		-- canonical target LOS for this step. Ground melee uses collision-box
-		-- eye heights; every other attack family keeps upstream's fixed +0.5
-		-- geometry. Waypoint selection below never aliases either table, and
-		-- the punch reuses this exact target result.
+		-- eye heights and reuses the result for navigation and its strike. Every
+		-- other attack family keeps upstream's fixed +0.5 common geometry; the
+		-- non-ground melee branch also retains its old collision-box strike ray.
+		-- Waypoint selection below never aliases either table.
 		local target_pos = grug_obstacle.copy_pos(self.attack:get_pos())
 		if not target_pos then self:stop_attack() ; return end
 		local ground_melee = self.attack_type == "dogfight" and not self.fly
@@ -2756,10 +2760,15 @@ function mob_class:do_states(dtime)
 			-- banked until the detour or sidestep exposes the target.
 			local ready = self.punch_timer >= self.punch_interval
 			local in_reach = dist <= (self.reach + (self.reach_ext or 0))
+			local strike_in_sight = in_sight
+			if ready and in_reach then
+				strike_in_sight = grug_obstacle.strike_target_visible(self, s,
+						target_pos, in_sight, ground_melee)
+			end
 			local _, consume = grug_obstacle.try_melee_attack({
 				ready = ready,
 				in_reach = in_reach,
-				target_visible = in_sight,
+				target_visible = strike_in_sight,
 				custom_attack = self.custom_attack and function()
 					return self:custom_attack(self,
 							grug_obstacle.copy_pos(target_pos))
