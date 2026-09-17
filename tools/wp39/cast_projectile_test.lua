@@ -522,6 +522,7 @@ local function fire_once(name)
 	join(caster)
 	local rays = ray_calls
 	local spawns = #projectile_spawns
+	now = now + 1000000
 	grug_abilities.try_cast(caster, grug_abilities.registered.fireball, nil)
 	assert(ray_calls == rays and #projectile_spawns == spawns + 1)
 	assert(grug_abilities.get_mana(caster) == 18)
@@ -532,7 +533,13 @@ local function fire_once(name)
 	return caster, spawn
 end
 
-fire_once("fire_air")
+local cadence_caster = fire_once("fire_air")
+local cadence_spawns = #projectile_spawns
+local cadence_mana = grug_abilities.get_mana(cadence_caster)
+grug_abilities.try_cast(cadence_caster,
+	grug_abilities.registered.fireball, nil)
+assert(#projectile_spawns == cadence_spawns)
+assert(grug_abilities.get_mana(cadence_caster) == cadence_mana)
 fire_once("fire_wall")
 fire_once("fire_range")
 
@@ -550,9 +557,11 @@ projectile_spawn_result = true
 local empty = player("fire_empty", "mage", "accord")
 join(empty)
 for _ = 1, 10 do
+	now = now + 1000000
 	grug_abilities.try_cast(empty, grug_abilities.registered.fireball, nil)
 end
 local spawn_count = #projectile_spawns
+now = now + 1000000
 grug_abilities.try_cast(empty, grug_abilities.registered.fireball, nil)
 assert(grug_abilities.get_mana(empty) == 0)
 assert(#projectile_spawns == spawn_count)

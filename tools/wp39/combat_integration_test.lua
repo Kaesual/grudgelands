@@ -854,6 +854,7 @@ local fireball = grug_abilities.registered.fireball
 grug_abilities.set_target(hostile_player, enemy_a, false)
 before_rays = ray_calls
 local spawn_before = #projectile_spawns
+now = now + 1000000
 grug_abilities.try_cast(hostile_player, fireball, pointed(enemy_a))
 assert(#projectile_spawns == spawn_before + 1)
 local shot = projectile_spawns[#projectile_spawns]
@@ -863,8 +864,16 @@ assert(shot.params.data.damage == 4)
 assert(grug_abilities.get_mana(hostile_player) == 98)
 assert(ray_calls == before_rays)
 
+-- An input inside the one-second cadence is refused before spawn or payment.
+spawn_before = #projectile_spawns
+local mana_after_fireball = grug_abilities.get_mana(hostile_player)
+grug_abilities.try_cast(hostile_player, fireball, nil)
+assert(#projectile_spawns == spawn_before)
+assert(grug_abilities.get_mana(hostile_player) == mana_after_fireball)
+
 projectile_spawn_ok = false
 spawn_before = #projectile_spawns
+now = now + 1000000
 grug_abilities.try_cast(hostile_player, fireball, nil)
 assert(#projectile_spawns == spawn_before + 1)
 assert(grug_abilities.get_mana(hostile_player) == 98)
@@ -881,9 +890,13 @@ core.registered_items["grug_abilities:fireball"].on_use(
 assert(cast_drop_ent.picked == 1 and #projectile_spawns == spawn_before)
 assert(grug_abilities.get_mana(hostile_player) == 98)
 
-for _ = 1, 49 do grug_abilities.try_cast(hostile_player, fireball, nil) end
+for _ = 1, 49 do
+	now = now + 1000000
+	grug_abilities.try_cast(hostile_player, fireball, nil)
+end
 assert(grug_abilities.get_mana(hostile_player) == 0)
 spawn_before = #projectile_spawns
+now = now + 1000000
 grug_abilities.try_cast(hostile_player, fireball, nil)
 assert(#projectile_spawns == spawn_before)
 assert(grug_abilities.get_mana(hostile_player) == 0)
@@ -894,7 +907,7 @@ swing_pass()
 assert(reticle(hero).text == "")
 select_item(hero, "grug_abilities:strike")
 hero.dig = true
-now = 18000000
+now = now + 1000000
 queue_ray({})
 swing_pass()
 assert(reticle(hero).text == "grug_abilities_weapon_ready.png")
