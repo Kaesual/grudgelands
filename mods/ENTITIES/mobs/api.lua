@@ -3343,6 +3343,38 @@ local function clean_staticdata(self)
 	return tmp
 end
 
+local DESPAWN_MIN_DISTANCE = 48
+local DESPAWN_MAX_DISTANCE = 128
+
+-- GRUG PATCH: unload culling follows a nearest-player soft/hard range.
+-- VoxeLibre keeps the lifetimer refreshed inside 47 nodes
+-- (reference_projects/VoxeLibre/mods/ENTITIES/mcl_mobs/api.lua:451-460)
+-- and bounds natural spawns at 128 nodes (the same tree's
+-- spawning.lua:60-64,394-453). Use the round 48-node safe
+-- radius and 128-node hard radius here. Between them, the unload event
+-- receives a linear chance; at or inside the safe radius it never culls.
+-- Ordinary mobs retain static_save=true so this callback can make the
+-- decision instead of the engine silently dropping them on block unload.
+function mobs:despawn_distance_decision(pos, players, roll)
+	local nearest
+	for _, player in pairs(players or {}) do
+		local player_pos = player:get_pos()
+		if player_pos then
+			local distance = get_distance(player_pos, pos)
+			if not nearest or distance < nearest then nearest = distance end
+		end
+	end
+	if not nearest or nearest >= DESPAWN_MAX_DISTANCE then
+		return true, nearest
+	end
+	if nearest <= DESPAWN_MIN_DISTANCE then
+		return false, nearest
+	end
+	local chance = (nearest - DESPAWN_MIN_DISTANCE) /
+		(DESPAWN_MAX_DISTANCE - DESPAWN_MIN_DISTANCE)
+	return (roll or random()) < chance, nearest
+end
+
 -- get entity staticdata
 
 function mob_class:mob_staticdata()
@@ -3357,7 +3389,9 @@ function mob_class:mob_staticdata()
 	-- remove mob when out of range unless tamed
 	if remove_far and self.remove_ok
 	and self.type ~= "npc" and self.state ~= "attack"
-	and not self.tamed and self.lifetimer < 20000 then
+	and not self.tamed and self.lifetimer < 20000
+	and mobs:despawn_distance_decision(
+			self.object:get_pos(), core.get_connected_players()) then
 
 --print("REMOVED " .. self.name)
 
@@ -3377,7 +3411,6 @@ function mob_class:mob_staticdata()
 
 	return core.serialize(clean_staticdata(self))
 end
-
 -- list of items used in initial_properties
 
 local is_property_name = {
@@ -3493,26 +3526,6 @@ function mob_class:mob_activate(staticdata, def, dtime)
 	end
 
 	self.object:set_texture_mod(self.texture_mods) -- apply texture mods
-
-	-- set flag to remove monsters when map area unloaded
-	-- GRUG PATCH: honour the lifetimer exemption HERE as well (WP6 review B3).
-	-- mob_staticdata() exempts a mob with `lifetimer >= 20000` from the
-	-- unload-delete, and grug_mobs/rares.lua relies on exactly that (named
-	-- rares get lifetimer = 30000). But get_staticdata — and therefore
-	-- mob_staticdata — is NEVER called for an object with static_save = false:
-	-- the engine simply drops it. So the unconditional clear below deleted
-	-- every named rare the instant its mapblock unloaded, before its own
-	-- exemption could ever be read, and the rares watchdog then locked the
-	-- respawn out for up to respawn_max. Same predicate as mob_staticdata now.
-	-- ORDER IS SAFE: the staticdata deserialize loop at the top of
-	-- mob_activate has already copied every plain field — `lifetimer`
-	-- included — back onto `self`, so a reactivated rare reads 30000 here and
-	-- not the def default. (180 is that def default, api.lua:128; the `or`
-	-- only covers a def that leaves the field unset entirely.)
-	if remove_far and self.type == "monster" and not self.tamed
-	and (self.lifetimer or 180) < 20000 then
-		self.object:set_properties({static_save = false})
-	end
 
 	-- run on_spawn function
 	if self.on_spawn and not self.on_spawn_run and self.on_spawn(self) then
