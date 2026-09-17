@@ -268,6 +268,8 @@ with a correction.
 | `resume --last` picks the wrong lane | several lanes ran | resume by saved `thread_id` / `--session-id` |
 | `codex exec resume`: "unexpected argument '-C'" | `resume` has no `-C`/`-s` | `--all <thread_id>` plus `-c sandbox_mode=...` (2.4) |
 | Resumed worker edits the main checkout | `resume` runs in the orchestrator's cwd | `(cd "$wt" && codex exec resume ...)` (2.4) |
+| Orchestrator shell dies with exit 144 when stopping a worker | `pkill -f`/`pgrep -f` pattern also matches the orchestrator's own command line | match with a bracketed character (`"codex exec resum[e] --all <id>"`) or kill by a saved PID |
+| Review launched on a worktree with an unfinished merge | orchestrator merged `main` into the lane and did not check for conflicts first | after `git -C "$wt" merge main` require `git -C "$wt" diff --name-only --diff-filter=U` to be empty before any launch |
 | Codex stderr: `failed to renew cache TTL: missing field supports_parallel_tool_calls` | models-cache format of this CLI build | harmless noise; the lane keeps producing events |
 | Orphaned `luanti.bin --server` after a lane | worker killed mid-run | kill by PID, then `pgrep -f '^luanti.bin'` |
 | `git commit` in a worktree: `index.lock: Read-only file system` | worktree metadata lives under the main checkout's `.git` | writable roots `<repo>/.git` AND `<repo>/.git/worktrees/<branch>` (2.1) |
