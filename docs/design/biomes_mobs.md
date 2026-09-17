@@ -30,7 +30,7 @@ before WP13/WP33 author new surface content.
 - Stats derived, never hand-rolled: **HP = 20+5L+0.66L²,
   dmg = 2+0.3L+0.005L², XP = 10L**; elite armor 80
   (×3 HP, ×1.8 dmg, ×4 XP), rare armor 70 (×5 / ×2.2 / ×6), and the
-  unassigned boss tier armor 60 (×20 / ×1 / ×1). Speeds: aggressive **4.6**
+  unassigned boss tier has only ×20 HP (normal damage, XP and armor). Speeds: aggressive **4.6**
   (4.4 until 2026-09-16,
   user ruling 2), heartland hunters 4.6
   (partly `dogshoot`), critters 3.4. One behavior verb per family;
@@ -913,7 +913,7 @@ number is never read, and a third exception would be noise. `fall_damage`
 is normalized into the def at registration time, next to `armor` and for the
 same reason (mobs_redo copies an explicit def-field whitelist, and a nil
 there falls through to its default of `true`). The telegraph gate is a
-positive `telegraph = true` flag on the elite, rare and boss rows, asked through
+positive `telegraph = true` flag on the elite and rare rows, asked through
 one predicate (`mods/ENTITIES/grug_mobs/levels.lua:89-95`) that both the
 `do_custom` gate and `telegraph_tick` call, and `set_tier` refuses to promote a
 critter at all.

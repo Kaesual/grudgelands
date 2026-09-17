@@ -82,10 +82,12 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   - **Resolution order** for an ordinary punch in the central hp-change
     modifier: **dodge (cancels the hit entirely) → armor → applicable
     target-race Warding Draught → absorb shield.**
-    Authoritative swing abilities resolve crit and armor on one full swing,
-    then enter the modifier for dodge and absorb. Ordinary native tools/fists
-    resolve crit and armor on the full-swing equivalent before proportional
-    scaling and accumulation. Both use a namespaced `custom_type` that skips
+    Authoritative swing abilities assemble gear, Strength and a selected proc,
+    then apply the level scalar and mob-level malus once before crit and armor.
+    Ordinary native tools/fists apply the level scalar to their full-swing
+    equivalent before crit, armor, proportional scaling and accumulation.
+    Both then enter the modifier for dodge and absorb and use a namespaced
+    `custom_type` that skips
     only the already-performed armor step. Fall damage is separate: its race
     perk runs before absorb. A shield therefore always soaks *post*-mitigation
     damage, i.e. shield points are worth full damage rather than pre-armor
@@ -211,10 +213,12 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   next full ability swing to at least `now + equipped FPI`. The transition
   clears an old bank once; consecutive ordinary packets retain their fractions,
   and returning to a swing clears the remainder once. Cast use alone preserves
-  ability due time.
+  ability due time (`mods/PLAYER/grug_abilities/init.lua:1258-1292`,
+  `:2212-2232`).
 - **One accepted full swing resolves once.** Against players the order is
-  **slot weapon + Strength → selected proc replacement → level scalar and mob
-  level malus → one crit → armor → integer damage → one dodge → one absorb →
+  **slot weapon + Strength → selected proc replacement → level scalar (plus
+  mob-level malus when the target is a mob) → one crit → armor → integer
+  damage → one dodge → one absorb →
   HP**. mobs_redo commits the proc
   only after `do_punch` and CMI accept. Mighty Blow remains exactly
   `floor(weapon × 1.5) + melee bonus` before crit; Hamstring is the ordinary
@@ -310,7 +314,8 @@ Normal tier at level L:
   `2 + 0.3×L + 0.005×L²`, rounded to one decimal · **XP** = `10×L`
 - mobs_redo armor: normal 100, **elite 80 (×3 HP, ×1.8 dmg, ×4 XP)**,
   **rare patrol 70 (×5 HP, ×2.2 dmg, ×6 XP)**, and the registered
-  **boss tier 60 (×20 HP, ×1 dmg, ×1 XP)**. No mob uses the boss tier before
+  **boss tier (×20 HP only; normal damage, XP and armor; no telegraph)**.
+  No mob uses the boss tier before
   the round-6 king/dragon content. The single implementation table and formula
   are `mods/ENTITIES/grug_mobs/levels.lua:70-118`.
 - **Three mob classes** (decided 2026-08-08, full rule in
@@ -379,7 +384,9 @@ Normal tier at level L:
   only participants who are online and within 40 m count; divide the award by
   that eligible count after calculating the cap and gray rule per recipient. A
   player receives no XP from a mob of their own faction
-  (`mods/ENTITIES/grug_mobs/init.lua:82-222`).
+  (`mods/ENTITIES/grug_mobs/init.lua:82-197`). Settlement occurs once at the
+  actual mob-death callback regardless of whether a player, NPC, mob or the
+  environment dealt the final damage (`mods/ENTITIES/grug_mobs/init.lua:489-506`).
 - **PvE death loss** is 25% of the whole current-level XP span, clamped at the
   current level start; it never de-levels. Level 60 has no following span and
   therefore no PvE XP loss (`mods/PLAYER/grug_xp/init.lua:86-104`).
