@@ -322,8 +322,8 @@ the lane that registers the bow family, not discovered by it.
 ### 6.6 Claims, protection and nametags — **no conflict**
 
 Nothing in the claim/protection system reads a class or a speed
-(`housing.md` §2, `economy.md` §4.1), and player nametags are already hidden
-entirely for everyone (`grug_factions/init.lua:61-73`). Recorded because they
+(`housing.md` §2, `economy.md` §4.1), and player nametags already use the
+25 m / 30 m proximity gate (`combat_stats.md` §6). Recorded because they
 are the first things a reviewer asks about, and because both *would* have been
 conflicts if version 1 had stealth (§8).
 

@@ -1,6 +1,6 @@
 # Combat, Attributes & Progression Mechanics
 
-Decided spec (last revised 2026-08-10; established 2026-08-06).
+Decided spec (last revised 2026-09-17; established 2026-08-06).
 Implementation: WP3 (classes/stats pipeline),
 WP4 (abilities/threat tools), WP6 (mob tiers/speed), WP5+WP7 (item/
 consumable values), WP35 (weapon slot and the two-handed rule), WP38
@@ -123,6 +123,20 @@ Two optional target-race systems use the central pipeline:
   shares the 60-second potion-use cooldown and is not modified by Apothecary
   Loop. The ward has its own PvP-buff category and may coexist with one
   ordinary elixir and Well Fed.
+
+### Environmental damage, deaths and shore movement
+
+- A player whose head point is inside a walkable, non-liquid node takes
+  **1 HP per second**. Non-walkable nodes, including plants, do not suffocate;
+  neither do liquid nodes. The character-creation stasis state is exempt.
+- Every player death sends exactly **one** short English line to all players.
+  The selected template distinguishes fall, drowning, lava/fire node damage,
+  a mob punch (using the mob's display name), a player punch (using the player
+  name) and an unattributed fallback.
+- Player stepheight is **1.1 while the player's feet are in liquid** and
+  **0.6 otherwise**. The value changes only on a liquid-state transition.
+  This permits the one-node step from a water surface onto its bank without
+  changing ordinary land climbing or the authored bank height.
 
 ### Melee timing and aim authority (shipped 2026-08-10, WP39)
 
@@ -589,7 +603,7 @@ design (`group_attack` stays on).
   icon framework** (`inventory_equipment.md` §5, decided 2026-08-13):
   green-framed buffs, red-framed debuffs, largest-unit countdown.
 
-## 6. Mob nameplates & con colors
+## 6. Player and mob nameplates & con colors
 
 - Every mob carries a **global nametag**: `<Name> [Lv X] HP/maxHP`
   (viewer-independent, updated on damage). The exact level is therefore
@@ -605,19 +619,22 @@ design (`group_attack` stays on).
   (nearest-player), not per viewer — the engine cannot do per-viewer
   nametags. The radius sits just past the 20 m target-frame reach:
   everything you can frame has a readable tag, plus a margin.
-- **Player nametags are hidden entirely** (alpha 0 — the only mechanism
-  that works for players): any fixed radius would still leak positions
-  through walls and darkness, exactly the PvP tell we must not give
-  away. Identification is the target frame's job — it shows the pointed
-  player's name and faction (per viewer, faction-colored).
+- Every player carries the global nametag
+  **`<Name> [Lv X] HP/maxHP`**, for example
+  **`Thomas [Lv 5] 35/60`**. It updates immediately when HP or level changes
+  and writes no property when the text and visibility state are unchanged.
+  The numbers remain plain integers.
+- Player nametags use the mob gate: shown when another player is within
+  **25 m**, hidden beyond **30 m**, with the state retained inside the
+  hysteresis band. Distance is to the nearest other player because an object
+  nametag is global rather than per viewer.
 - **Con colors are per viewer** and live in a **HUD target frame** (the
   mob you look at/punch; nametags cannot be colored per viewer). The
   frame's **reach is 20 m** — our choice, not an engine constant: far
   enough past the 16 m view_range of our longest-sighted ground mobs to
   size up what is about to notice you, and inside the ability targeting
   ranges so what you can frame is roughly what you can hit. The frame
-  also works on **players** (name + faction, faction-colored) — it is
-  the identification mechanism now that player nametags are hidden.
+  also works on **players** (name + faction, faction-colored).
   Relative to the viewer's level L (mobs):
 
 | Relation | Color | XP |
