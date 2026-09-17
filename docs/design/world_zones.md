@@ -91,6 +91,13 @@ WP40 replaces it with the complete catalog and contracts below.
 - At **y = −701 and below**, every non-ocean land column is contested even
   beneath a peaceful surface zone, capital, functional anchor or active claim.
   Deep ocean and immutable dragon channels remain full-column exceptions.
+- **Shore-height ruling (2026-09-17):** the first cardinal dry-land column
+  beside any exposed water-surface node has its terrain surface at exactly the
+  water-surface y. The inland terrain then continues through its existing bank
+  blend. No dry shore column may end below its neighboring water surface.
+  Authored bridge, causeway, ford, route-deck and culvert surfaces are
+  functional crossings or cut rims rather than dry-land banks and retain their
+  existing grade constraints.
 
 ## 3. Starting zones and capitals
 
@@ -503,11 +510,14 @@ WP40 replaces it with the complete catalog and contracts below.
   64-node natural collar and owner-affinity fade, but their maximum secondary-
   profile replacement weight is 3/4. Their identity remains visible without
   replacing all intermediate relief inside a large ridge or bowl.
-- The two-node Manhattan bank around named water retains a solid terrain
-  surface at least as high as its neighboring water. This lower bound applies
-  after civic/POI grading and participates in the road grade solver, so later
-  cuts cannot open a low shore. Matching authored fords retain their fixed bed
-  and one-step approach instead of being dammed by the generic bank bound.
+- The first cardinal dry-land column beside every exposed water surface is
+  exactly level with that water surface. Named water retains its existing
+  two-node Manhattan solid-bank protection and wider inland blend; the exact
+  zero-rise edge applies after civic/POI grading, so later cuts cannot open a
+  low or one-node-high shore. Matching authored fords retain their fixed bed
+  and one-step approach instead of being dammed by the generic bank bound;
+  other functional crossing/deck and culvert surfaces retain their authored
+  route grade.
 - Routes prefer the lowest sampled pre-path land height in each road
   cross-section, favoring hillside cuts over embankments.
   Forward reachable intervals and reverse clamping preserve exact pins,

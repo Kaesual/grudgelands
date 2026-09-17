@@ -22,6 +22,7 @@ for _, relative in ipairs({
 	"tools/wp40/quality/vendor_fixture.lua",
 	"tools/wp43/fresh_server_fixture.lua",
 	"tools/wp13/blueprint_kat.lua",
+	"tools/r6_shore/kat.lua",
 }) do
 	io.write((dofile(repo .. "/" .. relative)(repo)))
 	collectgarbage("collect")

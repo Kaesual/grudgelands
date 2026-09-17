@@ -551,6 +551,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local core_init_environment = setmetatable({core = {
 		get_current_modname = function() return "grug_core" end,
 		get_modpath = function() return repo .. "/mods/CORE/grug_core" end,
+		register_on_joinplayer = function() end,
 	}}, {__index = _G})
 	core_init_environment.dofile = function() return nil end
 	execute_in_environment("mods/CORE/grug_core/init.lua", core_init_environment)
@@ -678,6 +679,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			zone_authority_installed = function() return true end,
 			get_player_faction = function() return "accord" end,
 			get_race_perk = function() return nil end,
+			register_on_effective_heal = function() end,
 			start_identities = function()
 				local result = {}
 				for index = 1, #mob_start_identities do
@@ -784,7 +786,8 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	for _, name in ipairs({"register_on_joinplayer", "register_on_respawnplayer",
 			"register_on_punchplayer", "register_on_player_hpchange",
 			"register_on_leaveplayer", "register_on_player_receive_fields",
-			"register_chatcommand"}) do
+			"register_chatcommand", "register_globalstep",
+			"register_on_mods_loaded"}) do
 		faction_core[name] = function() faction_callbacks = faction_callbacks + 1 end
 	end
 	function faction_core.register_privilege() faction_callbacks = faction_callbacks + 1 end
@@ -1037,7 +1040,26 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	-- node semantics still come from the real registration files through the
 	-- dedicated engine-registration fixture.
 	local catalog = dofile(repo .. "/mods/ITEMS/grug_gathering/catalog.lua")
-	local hearthpine_blueprint = dofile(wp40 .. "/r7_hearthpine_blueprint.lua")()
+	local settlement_module = dofile(wp40 .. "/r7_settlement.lua")
+	local blueprint_options = {full_seed = "0", raw_sha256 = raw_sha256}
+	local settlement_palette, settlement_seen = {}, {}
+	local hearthpine_prepared
+	for index = 1, #settlement_module.roster do
+		local profile = settlement_module.roster[index]
+		local source = dofile(wp40 .. "/" .. profile.blueprint_file)(
+			blueprint_options)
+		if type(source) == "function" then source = source(blueprint_options) end
+		local prepared = settlement_module.prepare(profile, source, raw_sha256)
+		if index == 1 then hearthpine_prepared = prepared end
+		for palette_index = 1, #prepared.palette do
+			local name = prepared.palette[palette_index]
+			if not settlement_seen[name] then
+				settlement_seen[name] = true
+				settlement_palette[#settlement_palette + 1] = name
+			end
+		end
+	end
+	table.sort(settlement_palette, settlement_module.less_bytes)
 	local content_source = common.read_file(wp40 .. "/r7_content.lua")
 	local accepted_block = content_source:match(
 		"local ACCEPTED_R6_ROWS = {(.-)\n\t}\n\tlocal CULTURAL_NAMES")
@@ -1064,17 +1086,75 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	semantic_names[#semantic_names + 1] = "grug_nodes:guard_banner"
 	local semantic_seen = {}
 	for index = 1, #semantic_names do semantic_seen[semantic_names[index]] = true end
-	for index = 1, #hearthpine_blueprint.palette do
-		local name = hearthpine_blueprint.palette[index]
+	for index = 1, #settlement_palette do
+		local name = settlement_palette[index]
 		if not semantic_seen[name] then
 			semantic_names[#semantic_names + 1], semantic_seen[name] = name, true
 		end
 	end
-	local semantic_fixture = dofile(repo ..
-		"/tools/wp40/r7/node_semantics_fixture.lua")(
-		repo, catalog, semantic_names)
+	local semantic_dofile = dofile
+	local semantic_support_globals = {"beds", "doors", "dye", "stairs", "vessels",
+		"walls", "wool", "xpanes", "grug_decor"}
+	local semantic_support_saved = {}
+	for _, name in ipairs(semantic_support_globals) do
+		semantic_support_saved[name] = rawget(_G, name)
+	end
+	local semantic_support_loaded = false
+	rawset(_G, "dofile", function(path)
+		if path == repo .. "/mods/ITEMS/grug_materials/init.lua" then
+			if not semantic_support_loaded then
+				semantic_support_loaded = true
+				local semantic_core = core
+				local original_current_modname = semantic_core.get_current_modname
+				local original_get_modpath = semantic_core.get_modpath
+				if not semantic_core.get_translator then
+					semantic_core.get_translator = function() return function(text) return text end end
+				end
+				if not semantic_core.register_on_placenode then
+					semantic_core.register_on_placenode = function() end
+				end
+				if not semantic_core.get_craft_result then
+					semantic_core.get_craft_result = function() return {time = 0} end
+				end
+				for _, modname in ipairs({"dye", "beds", "doors", "stairs", "vessels",
+						"walls", "wool", "xpanes", "grug_decor"}) do
+					semantic_core.get_current_modname = function() return modname end
+					semantic_core.get_modpath = function(name)
+						if name == modname then
+							local pack = modname == "grug_decor" and "ITEMS" or "BASE"
+							return repo .. "/mods/" .. pack .. "/" .. modname
+						end
+						return original_get_modpath(name)
+					end
+					semantic_dofile(semantic_core.get_modpath(modname) .. "/init.lua")
+				end
+				semantic_core.get_current_modname = original_current_modname
+				semantic_core.get_modpath = original_get_modpath
+			end
+			for _, name in ipairs({"default:shovel_wood", "default:shovel_stone",
+					"default:shovel_bronze", "default:shovel_steel"}) do
+				if not core.registered_items[name] then core.register_tool(name, {}) end
+			end
+		end
+		return semantic_dofile(path)
+	end)
+	local semantic_ok, semantic_fixture = pcall(function()
+		return semantic_dofile(repo ..
+			"/tools/wp40/r7/node_semantics_fixture.lua")(
+			repo, catalog, semantic_names)
+	end)
+	rawset(_G, "dofile", semantic_dofile)
+	for _, name in ipairs(semantic_support_globals) do
+		rawset(_G, name, semantic_support_saved[name])
+	end
+	if not semantic_ok then error(semantic_fixture, 0) end
 	check(semantic_fixture.target_count == #semantic_names,
 		"semantic target population differs")
+	for index = 1, #settlement_palette do
+		local name = settlement_palette[index]
+		check(type(semantic_fixture.definitions[name]) == "table",
+			"settlement palette node is not registered: " .. name)
+	end
 
 	local material_core = {registered_nodes = {}}
 	function material_core.get_modpath() return nil end
@@ -1120,8 +1200,8 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	for index = 1, #p9g_rows do register(p9g_rows[index].source_node) end
 	register("grug_nodes:camp_fire")
 	register("grug_nodes:guard_banner")
-	for index = 1, #hearthpine_blueprint.palette do
-		local name = hearthpine_blueprint.palette[index]
+	for index = 1, #settlement_palette do
+		local name = settlement_palette[index]
 		if not cid_by_name[name] then register(name) end
 	end
 	local content_core = {registered_nodes = definitions, CONTENT_AIR = 0,
@@ -1131,9 +1211,9 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	end
 	function content_core.get_name_from_content_id(cid) return name_by_cid[cid] end
 	local content_set = dofile(wp40 .. "/r7_content.lua")(
-		content_core, projection, raw_sha256, hearthpine_blueprint.palette)
-	local hearthpine_config = dofile(wp40 .. "/r7_hearthpine.lua")(
-		hearthpine_blueprint, content_set.hearthpine, raw_sha256)
+		content_core, projection, raw_sha256, settlement_palette)
+	local hearthpine_config = settlement_module.config(hearthpine_prepared,
+		content_set.settlement, raw_sha256)
 	check(content_set.production_semantic_digest ==
 		"e23aea3c8bca6ffb28622a10e019324ad09930d5fed618c98da3d94e32f5bd76",
 		"production semantic identity differs: " .. content_set.production_semantic_digest)
@@ -1147,8 +1227,17 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	-- Every non-predecessor value below comes from a production module built in
 	-- this process; predecessor digests are the explicit immutable R5/R6 pins.
 	local canonical = dofile(wp40 .. "/canonical.lua")
+	local hearthpine_descriptor = hearthpine_prepared.blueprints[1].descriptor
+	local settlement_order = {{key = hearthpine_prepared.profile.key,
+		anchor_id = hearthpine_prepared.profile.anchor_id,
+		delta_schema = hearthpine_prepared.profile.delta_schema,
+		blueprints = {{id = hearthpine_descriptor.id,
+			prefix = hearthpine_descriptor.prefix,
+			kind = hearthpine_descriptor.kind,
+			identity_schema = hearthpine_descriptor.identity_schema,
+			bounds = hearthpine_descriptor.bounds}}}}
 	local manifest_module = dofile(wp40 .. "/r7_manifest.lua")(
-		canonical, raw_sha256)
+		canonical, raw_sha256, settlement_order)
 	check(manifest_module.graph_digest_for_evidence(projection) ==
 		"c8088a4b6802c0fc1a74d8826e3df0bb49b64f9ab4c6e93bcbd66aa2a16b9895",
 		"complete production WP43 projection digest differs")
@@ -1181,10 +1270,19 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local hearthpine_delta = {schema = "grug_wp13_hearthpine_delta_v1",
 		opcode = 37, class = 13, policy = 13,
 		order = "after_anchor_activation_before_run_derivation", overwrite = true,
-		anchor_id = "anchor_001", blueprint_sha256 = hearthpine_config.identity.sha256,
-		content_sha256 = content_set.hearthpine_digest, successor_ref_min = 99,
-		successor_ref_max = 98 + #content_set.hearthpine.content_names,
-		cell_count = hearthpine_config.identity.cell_count,
+		anchor_id = "anchor_001", blueprint_id = hearthpine_descriptor.id,
+		blueprint_kind = hearthpine_descriptor.kind,
+		blueprint_sha256 = hearthpine_config.identity.sha256,
+		content_sha256 = content_set.settlement_digest, successor_ref_min = 99,
+		successor_ref_max = 98 + #content_set.settlement.content_names,
+		population = hearthpine_config.identity.cell_count,
+		population_kind = "cells",
+		reach_min_x = hearthpine_config.identity.min_x,
+		reach_min_y = hearthpine_config.identity.min_y,
+		reach_min_z = hearthpine_config.identity.min_z,
+		reach_max_x = hearthpine_config.identity.max_x,
+		reach_max_y = hearthpine_config.identity.max_y,
+		reach_max_z = hearthpine_config.identity.max_z,
 		clipping = "current_mapchunk_owner_intersection_v1"}
 	local hearthpine_delta_digest =
 		manifest_module.graph_digest_for_evidence(hearthpine_delta)
@@ -1203,7 +1301,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		r6_accepted_content_sha256 =
 			"2486aac15521fbacdfa733f832aac615b799aa8d13c818525d1ce75221fad7d6",
 		r6_template_inputs_sha256 =
-			"ab77c5efa95878232fd5138445b97394be44a700ea5c145c706505a64b427f94",
+			"3734b3e2e3203c61a2f08fdc7ee5abd7a8d3f7d00ae585c206aabc7c4ca7d42d",
 		wp43_projection_sha256 =
 			"c8088a4b6802c0fc1a74d8826e3df0bb49b64f9ab4c6e93bcbd66aa2a16b9895",
 		noise_schema = native_identities.noise_schema,
@@ -1233,13 +1331,14 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		functional_anchor_protection_schema =
 			anchor_delta.functional_protection_schema,
 		functional_anchor_columns = 36, functional_anchor_y_min = -700,
-		hearthpine_content_schema = content_set.hearthpine.schema,
-		hearthpine_content_sha256 = content_set.hearthpine_digest,
-		hearthpine_semantic_sha256 = content_set.hearthpine_semantic_digest,
-		hearthpine_content_count = #content_set.hearthpine.content_names,
+		settlement_content_schema = content_set.settlement.schema,
+		settlement_content_sha256 = content_set.settlement_digest,
+		settlement_semantic_sha256 = content_set.settlement_semantic_digest,
+		settlement_content_count = #content_set.settlement.content_names,
 		hearthpine_blueprint_schema = hearthpine_config.identity.schema,
 		hearthpine_blueprint_sha256 = hearthpine_config.identity.sha256,
-		hearthpine_cell_count = hearthpine_config.identity.cell_count,
+		hearthpine_population = hearthpine_config.identity.cell_count,
+		hearthpine_population_kind = "cells",
 		hearthpine_delta_schema = hearthpine_delta.schema,
 		hearthpine_delta_sha256 = hearthpine_delta_digest,
 		hearthpine_opcode = 37, hearthpine_class = 13, hearthpine_policy = 13,
@@ -1248,7 +1347,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		p9g_opcode = 35, p9g_class = 10, p9g_policy = 11,
 		p9g_order = p9g_delta.order, p9g_overwrite = false,
 		source_projection_sha256 =
-			"de79b1fe983d8b5aaadfd4180bc44e84704133248e20b117139267f232b803d4",
+			"8735e5f7af1c63316b13b71bfed3e2db02d83bd455e970c7ac5c0ed539536482",
 		production_enabled = true,
 	}
 	local manifest_field_order = {
@@ -1267,10 +1366,11 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		"anchor_delta_schema", "anchor_delta_sha256", "anchor_opcode",
 		"anchor_class", "anchor_policy", "anchor_order", "anchor_overwrite",
 		"functional_anchor_protection_schema", "functional_anchor_columns",
-		"hearthpine_content_schema", "hearthpine_content_sha256",
-		"hearthpine_semantic_sha256", "hearthpine_content_count",
+		"settlement_content_schema", "settlement_content_sha256",
+		"settlement_semantic_sha256", "settlement_content_count",
 		"hearthpine_blueprint_schema", "hearthpine_blueprint_sha256",
-		"hearthpine_cell_count", "hearthpine_delta_schema",
+		"hearthpine_population", "hearthpine_population_kind",
+		"hearthpine_delta_schema",
 		"hearthpine_delta_sha256", "hearthpine_opcode", "hearthpine_class",
 		"hearthpine_policy", "hearthpine_order", "hearthpine_overwrite",
 		"functional_anchor_y_min", "writer_schema", "p9g_opcode", "p9g_class",
@@ -1769,8 +1869,8 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			end, metrics = function() return {schema = "micro_anchor_metrics"} end,
 			roster = function() return {sha256 = anchor_roster_sha256} end}
 	end}
-	local empty_hearthpine_config = {new = function()
-		return {bind_plan = function() end,
+	local empty_hearthpine_config = {key = "hearthpine", new = function()
+		return {key = "hearthpine", bind_plan = function() end,
 			settle = function()
 				return {schema = "grug_wp13_hearthpine_ledger_v1", written = 0}
 			end, metrics = function()
@@ -1778,7 +1878,8 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			end}
 	end}
 	local successor = dofile(wp40 .. "/r7_successor.lua")(
-		successor_config, empty_anchor_config, empty_hearthpine_config).new(
+		successor_config, empty_anchor_config, {empty_hearthpine_config},
+		{"hearthpine"}).new(
 			successor_dependencies)
 
 	local settlement_hash = dofile(wp40 .. "/r6_hash.lua")(raw_sha256)
@@ -2276,6 +2377,138 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	row("production/readonly_halo_ignore_preserved", "true")
 	end
 	run_runtime_transaction()
+
+	-- Execute the remaining pure authored-source and WP13 module chunks. Their
+	-- returned builders are exercised by the dedicated WP13 fixtures in the
+	-- same final micro process; this source-audit boundary records successful
+	-- top-level execution of every file in the frozen R7 roster.
+	for _, relative in ipairs({
+		"mods/MAPGEN/grug_mapgen/wp13/avenue.lua",
+		"mods/MAPGEN/grug_mapgen/wp13/buildings.lua",
+		"mods/MAPGEN/grug_mapgen/wp13/capitals.lua",
+		"mods/MAPGEN/grug_mapgen/wp13/dawnmere.lua",
+		"mods/MAPGEN/grug_mapgen/wp13/dressing.lua",
+		"mods/MAPGEN/grug_mapgen/wp13/hearthpine.lua",
+		"mods/MAPGEN/grug_mapgen/wp13/highcourt.lua",
+		"mods/MAPGEN/grug_mapgen/wp13/highcourt_district.lua",
+		"mods/MAPGEN/grug_mapgen/wp13/interiors.lua",
+		"mods/MAPGEN/grug_mapgen/wp13/kapok.lua",
+		"mods/MAPGEN/grug_mapgen/wp13/layout.lua",
+		"mods/MAPGEN/grug_mapgen/wp13/palette.lua",
+		"mods/MAPGEN/grug_mapgen/wp13/parts.lua",
+		"mods/MAPGEN/grug_mapgen/wp13/roofs.lua",
+		"mods/MAPGEN/grug_mapgen/wp13/silverleaf.lua",
+		"mods/MAPGEN/grug_mapgen/wp13/stillgrave.lua",
+		"mods/MAPGEN/grug_mapgen/wp13/sunscar.lua",
+		"mods/MAPGEN/grug_mapgen/wp40/r7_dawnmere_blueprint.lua",
+		"mods/MAPGEN/grug_mapgen/wp40/r7_highcourt_blueprint.lua",
+		"mods/MAPGEN/grug_mapgen/wp40/r7_kapok_blueprint.lua",
+		"mods/MAPGEN/grug_mapgen/wp40/r7_silverleaf_blueprint.lua",
+		"mods/MAPGEN/grug_mapgen/wp40/r7_stillgrave_blueprint.lua",
+		"mods/MAPGEN/grug_mapgen/wp40/r7_sunscar_blueprint.lua",
+		"mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua",
+		"mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua",
+	}) do
+		tracking_dofile(repo .. "/" .. relative)
+		collectgarbage("collect")
+	end
+
+	-- Current focused KATs already provide bounded engine stubs for the larger
+	-- registration modules. Reuse those exact surfaces here so the R7 source
+	-- audit observes their real chunks, including chunks loaded with loadfile.
+	local saved_loadfile = loadfile
+	local function tracking_loadfile(path)
+		local chunk, message = saved_loadfile(path)
+		if not chunk then return nil, message end
+		local wrapper
+		wrapper = function(...)
+			setfenv(chunk, getfenv(wrapper))
+			local function mark_return(...)
+				mark_executed(path)
+				return ...
+			end
+			return mark_return(chunk(...))
+		end
+		return wrapper
+	end
+	rawset(_G, "loadfile", tracking_loadfile)
+	tracking_dofile(repo .. "/tools/wp13/settlement_sockets_kat.lua")(repo)
+	collectgarbage("collect")
+	tracking_dofile(repo .. "/tools/wp13/character_visuals_kat.lua")(repo)
+	collectgarbage("collect")
+	tracking_dofile(repo .. "/tools/wp13/gear_catalogue_kat.lua")(repo)
+	collectgarbage("collect")
+	tracking_dofile(repo .. "/tools/wp40/quality/vendor_fixture.lua")(repo)
+	collectgarbage("collect")
+	local saved_arg, saved_print = arg, print
+	local saved_core, saved_grug_core = rawget(_G, "core"), rawget(_G, "grug_core")
+	rawset(_G, "arg", {repo})
+	rawset(_G, "print", function() end)
+	tracking_dofile(repo .. "/tools/wp45/starts_preload_kat.lua")
+	rawset(_G, "arg", saved_arg)
+	rawset(_G, "print", saved_print)
+	rawset(_G, "core", saved_core)
+	rawset(_G, "grug_core", saved_grug_core)
+	rawset(_G, "loadfile", saved_loadfile)
+	collectgarbage("collect")
+
+	tracking_dofile(wp40 .. "/init.lua")
+
+	local atmosphere_core = {settings = {get_bool = function() return true end}}
+	for _, name in ipairs({"register_on_joinplayer", "register_on_leaveplayer",
+			"register_chatcommand", "register_globalstep"}) do
+		atmosphere_core[name] = function() end
+	end
+	local atmosphere_environment = setmetatable({core = atmosphere_core,
+		grug_core = {}}, {__index = _G})
+	execute_in_environment("mods/CORE/grug_core/atmosphere.lua",
+		atmosphere_environment)
+	execute_in_environment("mods/CORE/grug_core/atmosphere_zones.lua",
+		atmosphere_environment)
+
+	local trader_environment = setmetatable({core = {
+		registered_items = {}, registered_entities = {},
+		get_current_modname = function() return "grug_traders" end,
+		get_modpath = function() return repo .. "/mods/ENTITIES/grug_traders" end,
+		register_on_mods_loaded = function() end,
+	}}, {__index = _G})
+	trader_environment.dofile = function() return nil end
+	execute_in_environment("mods/ENTITIES/grug_traders/init.lua", trader_environment)
+
+	local class_core = {}
+	for _, name in ipairs({"register_globalstep", "register_on_player_receive_fields",
+			"register_on_joinplayer", "register_on_newplayer",
+			"register_on_leaveplayer", "register_chatcommand"}) do
+		class_core[name] = function() end
+	end
+	function class_core.get_current_modname() return "grug_classes" end
+	function class_core.get_modpath() return repo .. "/mods/PLAYER/grug_classes" end
+	local class_environment = setmetatable({core = class_core,
+		grug_core = {register_on_starts_progress = function() end},
+		grug_factions = {register_on_faction_chosen = function() end},
+		grug_xp = {}}, {__index = _G})
+	class_environment.dofile = function() return nil end
+	execute_in_environment("mods/PLAYER/grug_classes/init.lua", class_environment)
+	execute_in_environment("mods/PLAYER/grug_classes/selection.lua", class_environment)
+
+	local visual_core = {registered_items = {},
+		get_current_modname = function() return "grug_visuals" end,
+		get_modpath = function() return repo .. "/mods/PLAYER/grug_visuals" end,
+		get_item_group = function() return 0 end}
+	for _, name in ipairs({"register_entity", "register_globalstep",
+			"register_on_joinplayer", "register_on_leaveplayer",
+			"register_on_respawnplayer", "register_on_mods_loaded"}) do
+		visual_core[name] = function() end
+	end
+	local visual_environment = setmetatable({core = visual_core,
+		grug_classes = {register_on_race_chosen = function() end,
+			register_on_class_chosen = function() end},
+		grug_core = {register_on_equipment_change = function() end}},
+		{__index = _G})
+	visual_environment.dofile = function(path)
+		return execute_in_environment(repo_relative(path), visual_environment)
+	end
+	execute_in_environment("mods/PLAYER/grug_visuals/init.lua", visual_environment)
 
 	local missing = {}
 	for index = 1, #changed_order do
