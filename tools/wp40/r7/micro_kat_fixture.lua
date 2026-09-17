@@ -551,6 +551,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local core_init_environment = setmetatable({core = {
 		get_current_modname = function() return "grug_core" end,
 		get_modpath = function() return repo .. "/mods/CORE/grug_core" end,
+		register_on_joinplayer = function() end,
 	}}, {__index = _G})
 	core_init_environment.dofile = function() return nil end
 	execute_in_environment("mods/CORE/grug_core/init.lua", core_init_environment)
