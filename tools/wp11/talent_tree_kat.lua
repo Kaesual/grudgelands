@@ -176,6 +176,12 @@ local function build_env(repo, clock)
 	function grug_core.get_absorb(player)
 		return clock.absorb or 0
 	end
+	function grug_core.scale_player_value(player, amount)
+		return math.max(0, amount or 0)
+	end
+	function grug_core.scale_player_damage(player, target, amount)
+		return math.floor(grug_core.scale_player_value(player, amount))
+	end
 
 	local grug_classes = {
 		registered_classes = {
@@ -280,6 +286,33 @@ local function make_meta()
 	return meta
 end
 
+local function make_stack(name)
+	local strings = {}
+	local stack = {}
+	function stack:get_name()
+		return name
+	end
+	function stack:get_meta()
+		return {
+			get_string = function(_, key) return strings[key] or "" end,
+			set_string = function(_, key, value) strings[key] = value end,
+		}
+	end
+	return stack
+end
+
+local function make_inventory()
+	local inventory = {main = {}, writes = 0}
+	function inventory:get_list(name)
+		return self[name]
+	end
+	function inventory:set_stack(name, index, stack)
+		self[name][index] = stack
+		self.writes = self.writes + 1
+	end
+	return inventory
+end
+
 -- The four properties/HP accessors are not decoration: grug_classes.apply_stats
 -- is the only writer of a player's hp_max, it now runs on every talent change,
 -- and the APPLIED ceiling -- not get_max_hp -- is what a player feels.
@@ -287,6 +320,7 @@ local function make_player(name, class, level, perks)
 	local meta = make_meta()
 	local properties = {eye_height = 1.5, hp_max = 20}
 	local hp = 20
+	local inventory = make_inventory()
 	local player = {_class = class, _level = level, _perks = perks or {}}
 	function player:get_player_name()
 		return name
@@ -323,6 +357,18 @@ local function make_player(name, class, level, perks)
 	function player:set_hp(value)
 		hp = value
 	end
+	function player:get_inventory()
+		return inventory
+	end
+	function player:set_ability_stacks(ids)
+		inventory.main = {}
+		for index, id in ipairs(ids) do
+			inventory.main[index] = make_stack("grug_abilities:" .. id)
+		end
+	end
+	function player:inventory_write_count()
+		return inventory.writes
+	end
 	return player
 end
 
@@ -351,7 +397,7 @@ local function run_checks(repo)
 		for _, message in ipairs(failures) do
 			row("wp11_talents_failure", message)
 		end
-		return table.concat(out, "\n") .. "\n"
+		return table.concat(out, "\n") .. "\n", #failures == 0
 	end
 
 	local clock = {us = 0, chat = {}, commands = {}, absorb = 0}
@@ -809,6 +855,24 @@ local function run_checks(repo)
 	classes.respec(applied)
 	row("wp11_applied_hp", ceiling_before, ceiling_before + 12,
 		"heal_on_spend", 0)
+
+	-- The abilities talent callback walks the real main inventory. A ranked
+	-- Smite and its respec must each rewrite exactly one stack; unrelated
+	-- fixtures retain an empty but engine-shaped inventory.
+	local tooltip_sync = make_player("tooltip_sync", "priest", 60)
+	tooltip_sync:set_ability_stacks({"smite"})
+	equal(tooltip_sync:inventory_write_count(), 0,
+		"the tooltip fixture starts without inventory writes")
+	equal(select(1, spend_times(tooltip_sync, "sharpened_word", 1)), true,
+		"ranking Sharpened Word for tooltip sync")
+	equal(tooltip_sync:inventory_write_count(), 1,
+		"a talent spend rewrites its changed Smite stack once")
+	equal(classes.respec(tooltip_sync), 1,
+		"the tooltip sync respec returns its one point")
+	equal(tooltip_sync:inventory_write_count(), 2,
+		"a respec rewrites its changed Smite stack once")
+	row("wp11_tooltip_inventory_writes", 2)
+
 	local mana_none = make_player("mananone", "mage", 60)
 	local mana_maxed = forged("manamax", "mage", 60, "deep_well=5")
 	equal(classes.get_max_mana(mana_maxed),
@@ -1007,16 +1071,19 @@ local function run_checks(repo)
 	return finish()
 end
 
--- A fixture that RAISES has not passed. Turning the error into one ordinary
--- failure row keeps the caller's contract (a string ending in a result line)
--- and keeps a broken mutation from printing a stack trace instead of a
--- verdict.
+-- A fixture that RAISES has not passed. PASS preserves the historical single
+-- string result used by timings/mutation consumers. FAIL returns false plus
+-- its diagnostic string, so an old io.write(kat()) consumer exits non-zero
+-- and an aware consumer can still print the ordinary failure row.
 function M.run(repo)
-	local ok, result = pcall(run_checks, repo)
-	if ok then
+	local ok, result, passed = pcall(run_checks, repo)
+	if ok and passed then
 		return result
 	end
-	return "wp11_talents_failure\tthe fixture raised: " ..
+	if ok then
+		return false, result
+	end
+	return false, "wp11_talents_failure\tthe fixture raised: " ..
 		tostring(result) .. "\nwp11_talents_result\tFAIL\t1\n"
 end
 
