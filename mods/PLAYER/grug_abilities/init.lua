@@ -36,9 +36,9 @@ local skillname_huds = {} -- player name -> {id = hud id, token = n}
 local wield_watch = {} -- player name -> {index = hotbar index, item = name}
 local dirty = {} -- player name -> true (inventory action since last pass)
 
--- Soft target lock (classes.md core principles): the last punched/pointed
--- enemy or ally stays the implicit target this long; abilities fall back
--- to it when pointed_thing has no valid target.
+-- Target memory (classes.md core principles): enemy and ally use separate
+-- slots. Enemy memory is Target-Frame state only and is never hostile aim
+-- authority; ally memory remains the heal/shield fallback.
 grug_abilities.TARGET_LOCK = 8
 
 local function resource_of(player)
@@ -156,6 +156,36 @@ function grug_abilities.get_target(player, ally)
 		return nil
 	end
 	return rec.obj
+end
+
+-- One relation predicate for every ability target. `target_kind` describes
+-- the button's acquisition authority, not every object an area effect may
+-- later touch: Frost Nova is self-targeted even though its effect visits
+-- nearby hostiles. Friendly targeting remains player-only by design; guards
+-- and civic NPCs are not party members and cannot receive player heals.
+function grug_abilities.valid_target(user, obj, target_kind)
+	if target_kind == "self" then
+		return obj == user and user:get_hp() > 0
+	end
+	if not obj or obj == user or not obj:get_pos() then
+		return false
+	end
+	if target_kind == "friendly" then
+		return obj:is_player() and obj:get_hp() > 0
+			and grug_factions.same_faction(user, obj)
+	end
+	if target_kind ~= "hostile" then
+		return false
+	end
+	if obj:is_player() then
+		return obj:get_hp() > 0 and grug_factions.hostile(user, obj)
+	end
+	local ent = obj:get_luaentity()
+	if not ent or not ent._cmi_is_mob or (ent.health or 0) <= 0 then
+		return false
+	end
+	return not (ent._grug_faction and
+		ent._grug_faction == grug_factions.get_faction(user))
 end
 
 local function invalidate_target_locks(obj)
@@ -623,6 +653,9 @@ end
 function grug_abilities.register_ability(def)
 	assert(def.id and (def.kind == "swing" or def.kind == "cast"),
 		"ability needs kind = \"swing\" or \"cast\"")
+	assert(def.target_kind == "friendly" or def.target_kind == "hostile"
+		or def.target_kind == "self",
+		"ability needs target_kind = \"friendly\", \"hostile\" or \"self\"")
 	-- Class ability or universal one, never both (weapon-slot design E1). A
 	-- universal ability has NO class at all -- it is granted on join whatever
 	-- the character is, because class selection happens after the
@@ -964,20 +997,9 @@ local function selected_swing_def(player)
 	return (def and def.kind == "swing") and def or nil
 end
 
-local function valid_swing_enemy(player, target)
-	if not target or not target:get_pos() then
-		return false
-	end
-	if target:is_player() then
-		return target ~= player and target:get_hp() > 0
-			and grug_factions.hostile(player, target)
-	end
-	local ent = target:get_luaentity()
-	if not ent or not ent._cmi_is_mob or (ent.health or 0) <= 0 then
-		return false
-	end
-	return not (ent._grug_faction and
-		ent._grug_faction == grug_factions.get_faction(player))
+local function valid_swing_enemy(player, target, def)
+	return grug_abilities.valid_target(player, target,
+		(def and def.target_kind) or "hostile")
 end
 
 -- Swing items need node pointabilities = "blocking" so the engine cannot
@@ -1231,6 +1253,9 @@ attempt_swing = function(player, selected, held, latched)
 		return false
 	end
 	local target = ray.target
+	if not grug_abilities.valid_target(player, target, selected.target_kind) then
+		return false
+	end
 	-- Presentation memory may follow an attempted/current pointed hostile, but
 	-- it is never read back as aim by this path.
 	grug_abilities.set_target(player, target, false)
@@ -1301,7 +1326,8 @@ end
 -- `control.dig`.
 -- Builtin item entities and ordinary tools/fists never enter this seam.
 grug_core.register_native_swing_input_handler(function(player, target)
-	if not selected_swing_def(player) then
+	local selected = selected_swing_def(player)
+	if not selected then
 		return false
 	end
 	if grug_core.authoritative_swing_active(player) then
@@ -1309,7 +1335,7 @@ grug_core.register_native_swing_input_handler(function(player, target)
 		-- callback-triggered same-player punch without changing its target/latch.
 		return true
 	end
-	if valid_swing_enemy(player, target) then
+	if valid_swing_enemy(player, target, selected) then
 		grug_abilities.set_target(player, target, false)
 		swing_input_latch[player:get_player_name()] = true
 	elseif target and target:is_player()
@@ -1397,7 +1423,14 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 	-- cooldown. def is passed through for the target-lock helpers
 	-- (range checks). The cast succeeded, so it arms the one cooldown it
 	-- earned; a swing skill's charge reset is the proc's job in kits.lua.
-	local ok, err = def.cast(user, pointed_thing, def)
+	-- A self-targeted ability never receives client pointing context. This is a
+	-- hard boundary at the dispatcher, so a future self skill cannot quietly
+	-- grow a target just because its closure happens to inspect pointed_thing.
+	local cast_pointed = pointed_thing
+	if def.target_kind == "self" then
+		cast_pointed = nil
+	end
+	local ok, err = def.cast(user, cast_pointed, def)
 	if not ok then
 		grug_abilities.flash(user, err or "Invalid target.")
 		return

@@ -245,6 +245,17 @@ assert(projectile_defs.fireball.max_distance == 20
 	and projectile_defs.fireball.lifetime > 1
 	and projectile_defs.fireball.active_limit == 8)
 
+local EXPECTED_TARGET_KIND = {
+	strike="hostile", charge="hostile", mighty_blow="hostile",
+	hamstring="hostile", taunt="hostile", fireball="hostile",
+	frost_nova="self", blink="self", smite="hostile",
+	flash_heal="friendly", power_word_shield="friendly", renew="friendly",
+}
+for id, expected in pairs(EXPECTED_TARGET_KIND) do
+	assert(grug_abilities.registered[id].target_kind == expected,
+		id .. " target_kind is " .. tostring(grug_abilities.registered[id].target_kind))
+end
+
 local function join(obj)
 	for _, callback in ipairs(callbacks.join) do callback(obj) end
 end
@@ -277,6 +288,20 @@ assert(damage_events[1].amount == 8)
 assert(grug_abilities.get_mana(mage) == mana_before - 4)
 assert(not grug_abilities.ready(mage, "smite"))
 
+-- Even a malformed combat-ray result cannot make a hostile ability accept a
+-- friendly target: target_kind is revalidated by the ability layer.
+local hostile_gate = player("hostile_gate", "priest", "accord")
+local friendly_ray = player("friendly_ray", "warrior", "accord")
+join(hostile_gate)
+mana_before = grug_abilities.get_mana(hostile_gate)
+local damage_before_friendly = #damage_events
+ray_results = {{status="target", reason="hostile", target=friendly_ray,
+	object_kind="player", relation="hostile", distance=3, range=20}}
+grug_abilities.try_cast(hostile_gate, smite, nil)
+assert(#damage_events == damage_before_friendly)
+assert(grug_abilities.get_mana(hostile_gate) == mana_before)
+assert(grug_abilities.ready(hostile_gate, "smite"))
+
 -- Charge and Taunt each run one current ray; misses retain their cooldown.
 local warrior = player("warrior", "warrior", "accord")
 join(warrior)
@@ -308,6 +333,43 @@ join(priest)
 grug_abilities.set_target(priest, ally, true)
 grug_abilities.try_cast(priest, grug_abilities.registered.flash_heal, nil)
 assert(#heal_events == 1 and heal_events[1].target == ally)
+
+-- Lane A reproduction probe (R21): pointing Flash Heal directly at a hostile
+-- mob must never pass that ObjectRef to the healing seam. The pre-target_kind
+-- implementation already rejects non-player objects in valid_ally and falls
+-- back to self; keep that exact observation as the regression baseline.
+local hostile_pointed = mob("test:hostile_heal_probe", "throng")
+local probe_priest = player("heal_probe", "priest", "accord")
+join(probe_priest)
+local heals_before_probe = #heal_events
+grug_abilities.try_cast(probe_priest, grug_abilities.registered.flash_heal,
+	{type="object", ref=hostile_pointed})
+assert(#heal_events == heals_before_probe + 1)
+assert(heal_events[#heal_events].target == probe_priest,
+	"Flash Heal reached a hostile mob instead of falling back to self")
+print("target_reproduction: hostile mob rejected; Flash Heal fell back to self")
+
+-- Self-targeted abilities never receive client pointing context, even if a
+-- future closure tries to inspect it.
+local self_called, self_pointed = false, false
+grug_abilities.register_ability({
+	id="kat_self_target", class="mage", name="KAT Self Target", kind="cast",
+	target_kind="self", description="fixture", color="#ffffff", cost={},
+	cooldown=0, range=4,
+	cast=function(_, pointed)
+		self_called = true
+		self_pointed = pointed
+		return true
+	end,
+})
+local self_caster = player("self_gate", "mage", "accord")
+join(self_caster)
+grug_abilities.try_cast(self_caster,
+	grug_abilities.registered.kat_self_target,
+	{type="object", ref=hostile_pointed})
+assert(self_called, "self-targeted cast did not run")
+assert(self_pointed == nil, "self-targeted cast received an external target")
+print("target_kind_test: PASS friendly-rejects-hostile hostile-rejects-friendly self-ignores-target")
 
 -- Fireball snapshots eye/look/damage, runs no combat ray and costs 8 on any
 -- successfully spawned flight (air/wall/range are later projectile outcomes).

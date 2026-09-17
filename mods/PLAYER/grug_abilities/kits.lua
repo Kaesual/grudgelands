@@ -15,10 +15,8 @@ local function mob_ent(obj)
 	return (ent and ent._cmi_is_mob) and ent or nil
 end
 
-local function valid_ally(user, obj)
-	return obj:is_player() and obj ~= user
-		and grug_factions.same_faction(user, obj)
-		and obj:get_hp() > 0
+local function valid_ally(user, obj, def)
+	return grug_abilities.valid_target(user, obj, def.target_kind)
 end
 
 local function in_lock_range(user, obj, def)
@@ -60,6 +58,9 @@ local function current_enemy_target(user, def)
 	if ray.status ~= "target" then
 		return nil
 	end
+	if not grug_abilities.valid_target(user, ray.target, def.target_kind) then
+		return nil
+	end
 	grug_abilities.set_target(user, ray.target, false)
 	return ray.target
 end
@@ -71,12 +72,12 @@ end
 -- is the point of the lock.
 local function heal_target(user, pointed, def)
 	if pointed and pointed.type == "object" and pointed.ref
-			and valid_ally(user, pointed.ref) then
+			and valid_ally(user, pointed.ref, def) then
 		grug_abilities.set_target(user, pointed.ref, true)
 		return pointed.ref
 	end
 	local obj = grug_abilities.get_target(user, true)
-	if obj and valid_ally(user, obj)
+	if obj and valid_ally(user, obj, def)
 			and in_lock_range(user, obj, def) then
 		grug_abilities.set_target(user, obj, true) -- refresh the lock
 		return obj
@@ -265,6 +266,7 @@ end
 local strike_def = {
 	id = "strike",
 	kind = "swing",
+	target_kind = "hostile",
 	universal = true, -- every class, and a character with no class yet (E1)
 	name = "Strike",
 	-- The rage number is COMPOSED from the ledger constant rather than
@@ -294,6 +296,7 @@ grug_abilities.register_ability({
 	class = "warrior",
 	name = "Charge",
 	kind = "cast",
+	target_kind = "hostile",
 	description = "Dash to an enemy up to 12 m away, dealing 3 damage\n" ..
 		"and generating 15 rage.",
 	color = "#e8c85a",
@@ -328,6 +331,7 @@ grug_abilities.register_ability({
 grug_abilities.register_ability({
 	id = "mighty_blow",
 	kind = "swing",
+	target_kind = "hostile",
 	class = "warrior",
 	name = "Mighty Blow",
 	description = "A heavy melee hit: 150% weapon damage plus your melee bonus. Rides along on a landed swing whenever you have the rage.",
@@ -368,6 +372,7 @@ grug_abilities.register_ability({
 grug_abilities.register_ability({
 	id = "hamstring",
 	kind = "swing",
+	target_kind = "hostile",
 	class = "warrior",
 	name = "Hamstring",
 	talent_gated = true,
@@ -402,6 +407,7 @@ grug_abilities.register_ability({
 	class = "warrior",
 	name = "Taunt",
 	kind = "cast",
+	target_kind = "hostile",
 	description = "Forces the target mob to attack you.",
 	color = "#e07b39",
 	cost = {},
@@ -460,6 +466,7 @@ grug_abilities.register_ability({
 	class = "mage",
 	name = "Fireball",
 	kind = "cast",
+	target_kind = "hostile",
 	description = "Hurls fire along your crosshair for up to 20 m:\n" ..
 		"6 + spell power damage; misses still cost mana.",
 	color = "#ff8833",
@@ -512,6 +519,7 @@ grug_abilities.register_ability({
 	class = "mage",
 	name = "Frost Nova",
 	kind = "cast",
+	target_kind = "self",
 	description = "Roots all enemies within 5 m for 4 s,\n" ..
 		"then slows them by 50% for 3 s.",
 	color = "#66b8ff",
@@ -560,6 +568,7 @@ grug_abilities.register_ability({
 	class = "mage",
 	name = "Blink",
 	kind = "cast",
+	target_kind = "self",
 	description = "Teleport up to 10 m in your look direction\n" ..
 		"(blocked by walls).",
 	color = "#b06aff",
@@ -619,6 +628,7 @@ grug_abilities.register_ability({
 	class = "priest",
 	name = "Smite",
 	kind = "cast",
+	target_kind = "hostile",
 	description = "Smites an enemy up to 20 m away:\n" ..
 		"4 + spell power damage.",
 	color = "#ffd97a",
@@ -651,6 +661,7 @@ grug_abilities.register_ability({
 	class = "priest",
 	name = "Flash Heal",
 	kind = "cast",
+	target_kind = "friendly",
 	description = "Heals the pointed ally (or yourself) for\n" ..
 		"8 + 2x spell power.",
 	color = "#7ae08a",
@@ -680,6 +691,7 @@ grug_abilities.register_ability({
 	class = "priest",
 	name = "Power Word: Shield",
 	kind = "cast",
+	target_kind = "friendly",
 	description = "Shields the pointed ally (or yourself): absorbs\n" ..
 		"8 + 2x spell power damage for 15 s or until consumed.",
 	color = "#e8e07a",
@@ -714,6 +726,7 @@ grug_abilities.register_ability({
 	class = "priest",
 	name = "Renew",
 	kind = "cast",
+	target_kind = "friendly",
 	talent_gated = true,
 	description = "Heal over time on the pointed ally (or yourself):\n" ..
 		"3 + spell power every 3 s for 12 s.\nUnlocked via talents.",

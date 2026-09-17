@@ -56,6 +56,16 @@ Core principles:
   remains an actual heal/shield fallback because tracking a moving party member
   is a different interaction. Owner death, respawn, disconnect or class sync
   clears both slots, and a dead/unloaded/left target is invalidated.
+- **Every ability declares one target kind.** `hostile` requires a current
+  living hostile player or combat-capable mob; a client label or remembered
+  target cannot override the server's faction check. `friendly` accepts another
+  living same-faction player and may use the ally-memory fallback; service NPCs,
+  guards and mobs are not player party members and cannot receive player heals
+  or shields. `self` ignores all pointed and remembered objects and anchors the
+  cast on its user. Strike, Charge, Mighty Blow, Hamstring, Taunt, Fireball and
+  Smite are hostile; Frost Nova and Blink are self; Flash Heal, Power Word:
+  Shield and Renew are friendly. A friendly skill's documented self fallback
+  remains part of that skill, not a fourth target kind.
 - Three to four abilities per class in the MVP; **new active "main
   skills" come from talent capstones** (WP11, progression.md) — talents
   otherwise improve existing buttons rather than adding many new ones.
