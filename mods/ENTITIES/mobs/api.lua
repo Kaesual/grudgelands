@@ -179,6 +179,18 @@ mobs.mob_class = {
 local mob_class = mobs.mob_class -- shared class used by current mob extensions
 local mob_class_meta = {__index = mob_class}
 
+-- GRUG PATCH (Grudgelands participation lifecycle, round 5 Lane P): entity
+-- prototypes inherit this shared callback through mob_class_meta. Keeping the
+-- hook on the class lets later class-level wrappers (start_npcs.lua) remain in
+-- the same callback chain instead of being shadowed by a per-prototype field.
+function mob_class:on_deactivate(removal)
+	if grug_mobs and grug_mobs.registered_cadence
+	and grug_mobs.registered_cadence[self.name]
+	and grug_mobs.cleanup_xp_participants then
+		grug_mobs.cleanup_xp_participants(self)
+	end
+end
+
 -- return True if mob limit reached
 
 local function at_limit()
@@ -865,6 +877,16 @@ function mob_class:check_for_death(cmi_cause)
 	self.fly = false
 
 	local pos = self.object:get_pos() ; if not pos then return end
+
+	-- GRUG PATCH (shared Grudgelands death settlement, round 5 Lane P): settle
+	-- participant XP at the one boundary every death cause reaches, before
+	-- mobs_redo chooses on_die, on_death, animation or smoke/removal fallback.
+	-- The grug_mobs helper is idempotent; vanilla mobs_redo entities are inert.
+	if grug_mobs and grug_mobs.registered_cadence
+	and grug_mobs.registered_cadence[self.name]
+	and grug_mobs.settle_mob_death then
+		grug_mobs.settle_mob_death(self)
+	end
 
 	-- execute mob api custom death function first for any special features
 	if self.on_die then

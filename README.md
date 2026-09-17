@@ -192,9 +192,9 @@ carry a **PROPOSAL** banner; as of 2026-09-16 the user has answered every
 open question in them, and nothing in them is implemented yet.
 
 Death returns a player to their race's starting settlement with inventory
-intact; the decided PvE penalty removes 25% of current-level XP progress
-without de-leveling, while a death authoritatively attributed to an eligible
-hostile player by the PvP transaction costs no XP.
+intact; the decided PvE penalty removes 25% of the whole current-level XP span,
+floored at the level start, while a death authoritatively attributed to an
+eligible hostile player by the PvP transaction costs no XP.
 
 ### Biomes, mobs and mounts
 

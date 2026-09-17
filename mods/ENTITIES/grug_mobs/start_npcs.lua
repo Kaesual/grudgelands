@@ -843,11 +843,10 @@ end
 
 --
 -- The deactivation record above. Installed on mobs_redo's SHARED mob class,
--- which is what makes it one hook for all five families and no patch to a
--- vendored file: mobs_redo defines no `on_deactivate` at all, and the engine
--- looks the callback up on the entity's table, which reaches `mob_class` through
--- its metatable (api.lua `mob_class_meta`). Chained anyway, so a later
--- mobs_redo that grows one keeps it.
+-- which is what makes it one hook for all five families. The engine looks the
+-- callback up on the entity's table, which reaches `mob_class` through its
+-- metatable (api.lua `mob_class_meta`). Chaining keeps the earlier progression
+-- lifecycle cleanup and any future shared callback in the same path.
 --
 local function track_deactivation(entity, removal)
 	local key, socket_id = entity._grug_start, entity._grug_socket

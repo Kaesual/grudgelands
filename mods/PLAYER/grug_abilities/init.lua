@@ -1070,10 +1070,6 @@ local function prepare_authoritative_swing(player, target, fraction, token)
 	if not swing then
 		return nil
 	end
-	local selected = selected_swing_def(player)
-	if not selected then
-		return nil
-	end
 	local weapon_damage = swing.weapon_damage
 	local fpi = swing.fpi
 	local melee_bonus = swing.melee_bonus
@@ -1081,33 +1077,17 @@ local function prepare_authoritative_swing(player, target, fraction, token)
 	local context = {
 		player = player,
 		target = target,
-		extra_damage = 0,
-		threat_mult = 1,
+		raw_damage = swing.raw_damage,
+		scaled_damage = swing.scaled_damage,
+		-- The delta may be negative: every authoritative swing replaces its raw
+		-- total with the once-scaled total before armor and crit.
+		extra_damage = swing.scaled_damage - normal_damage,
+		threat_mult = swing.threat_mult,
 		debug_name = swing.debug_name,
 		transaction = swing.debug_name and swing or nil,
+		proc = swing.proc,
+		post = swing.post,
 	}
-	-- Selection is read live at the actual due swing. An unavailable or
-	-- unaffordable proc stays armed and the ordinary swing still lands.
-	if selected.proc_swing
-			and grug_abilities.charge_ready(player, selected)
-			and affordable(player, selected.cost) then
-		local amount, threat_mult, post = selected.proc_swing(player, target, {
-			weapon_damage = weapon_damage,
-			fpi = fpi,
-			melee_bonus = melee_bonus,
-		})
-		context.proc = selected
-		context.extra_damage = amount - normal_damage
-		-- Affront (skill_trees.md §2.1) raises a TANK multiplier only; a proc
-		-- that carries none stays at ×1. The cast side of the same talent is
-		-- in grug_core/combat.lua's deal_ability_damage.
-		context.threat_mult = threat_mult or 1
-		if context.threat_mult ~= 1 then
-			context.threat_mult = context.threat_mult
-				+ grug_classes.get_talent_bonus(player, "threat_mult_add")
-		end
-		context.post = post
-	end
 	return context
 end
 
@@ -1278,10 +1258,46 @@ attempt_swing = function(player, selected, held, latched)
 		max_drop_level = 0,
 		punch_attack_uses = 0,
 	}
+	local melee_bonus = grug_classes.get_melee_bonus(player)
+	local raw_damage = weapon_damage + melee_bonus
+	local proc
+	local post
+	local threat_mult = 1
+	-- Selection is read live at this actual due swing. An unavailable or
+	-- unaffordable proc stays armed and the ordinary swing still lands. Its
+	-- replacement amount is assembled before the transaction crosses the
+	-- scalar, so even Mighty Blow has exactly one scaling pass.
+	if selected.proc_swing
+			and grug_abilities.charge_ready(player, selected)
+			and affordable(player, selected.cost) then
+		local proc_damage
+		proc_damage, threat_mult, post = selected.proc_swing(player, target, {
+			weapon_damage = weapon_damage,
+			fpi = fpi,
+			melee_bonus = melee_bonus,
+		})
+		raw_damage = proc_damage
+		proc = selected
+		threat_mult = threat_mult or 1
+		-- Affront raises a tank multiplier only; the cast-side equivalent stays
+		-- in grug_core/combat.lua's deal_ability_damage.
+		if threat_mult ~= 1 then
+			threat_mult = threat_mult
+				+ grug_classes.get_talent_bonus(player, "threat_mult_add")
+		end
+	end
 	local transaction = {
 		weapon_damage = weapon_damage,
 		fpi = fpi,
-		melee_bonus = grug_classes.get_melee_bonus(player),
+		melee_bonus = melee_bonus,
+		raw_damage = raw_damage,
+		proc = proc,
+		post = post,
+		threat_mult = threat_mult,
+		-- The complete gear + flat Strength amount crosses the one player-level
+		-- scalar and target-level malus here, before the punch can reach crit,
+		-- armor, fractional packet handling or an accumulator.
+		scaled_damage = grug_core.scale_player_damage(player, target, raw_damage),
 		debug_name = grug_core.combat_debug_enabled(name) and name or nil,
 	}
 	local token = grug_core.begin_authoritative_swing(player, target, transaction)
@@ -2234,18 +2250,22 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 		math.max(0, math.min(1, (tflp or 0.2) / fpi))
 	local proc_context = grug_core.prepare_native_melee(hitter, player, fraction,
 		authoritative_token)
-	local full_damage = fleshy + grug_core.get_melee_bonus(hitter)
-	local crit_damage, crit_mult, critical = grug_core.roll_melee_crit(
+	local raw_full_damage = fleshy + grug_core.get_melee_bonus(hitter)
+	local full_damage
+	if authoritative and proc_context then
+		-- The authoritative transaction was scaled once before target:punch.
+		full_damage = proc_context.scaled_damage
+	else
+		-- Ordinary tools/fists do not have a transaction, so this callback is
+		-- their one central scaling seam. Players receive the level scalar but
+		-- no mob-level malus.
+		full_damage = grug_core.scale_player_damage(hitter, player,
+			raw_full_damage)
+	end
+	local crit_damage, _, critical = grug_core.roll_melee_crit(
 		hitter, full_damage)
 	local armored_damage = grug_core.apply_player_armor(player, crit_damage)
 	local proc_extra = 0
-	if proc_context and proc_context.extra_damage ~= 0 then
-		-- Resolve Mighty Blow's replacement total with the SAME one crit outcome
-		-- and armor formula. It remains one HP-change/dodge/absorb path.
-		local proc_total = (full_damage + proc_context.extra_damage) * crit_mult
-		proc_extra = grug_core.apply_player_armor(player, proc_total)
-			- armored_damage
-	end
 	local raw = armored_damage * fraction + proc_extra
 	if authoritative then
 		local applied = math.floor(raw)

@@ -710,13 +710,13 @@ grug_abilities.register_ability({
 		if target:get_hp() <= 0 then
 			return false, "Target is dead."
 		end
-		-- Warding Faith and Second Skin (skill_trees.md §2.5); 0 each without
-		-- the talent, so the shipped absorb and its 15 s are exact. Turn
-		-- Aside's dodge window is lane X3's.
+		-- Warding Faith and Second Skin (skill_trees.md §2.5); their flat add
+		-- joins the base before the central level scalar. The 15 s duration is
+		-- unscaled. Turn Aside's dodge window is lane X3's.
 		grug_core.set_absorb(target,
 			8 + 2 * grug_classes.get_spell_power_bonus(user)
 			+ grug_classes.get_talent_bonus(user, "shield_absorb_add"),
-			15 + grug_classes.get_talent_bonus(user, "shield_duration_add"))
+			15 + grug_classes.get_talent_bonus(user, "shield_duration_add"), user)
 		burst(target:get_pos(), "default_item_smoke.png^[multiply:#ffe9a0", 8)
 		return true
 	end,
