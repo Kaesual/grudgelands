@@ -1060,14 +1060,11 @@ a second timer. **Drinking at full health is refused** (message, no
 consumption, no cooldown — decided 2026-08-07 in WP7: burning a potion
 and a 60 s lockout on a misclick is a tax, not a rule).
 
-**The potion keeps the instant slot; cooked food does not take it**
-(decided 2026-08-08; delivery revised 2026-08-13). Cooked food restores
-comparable percentages — §3.7's ramp even tops out above the potion —
-but only **out of combat**: the restore is a movement-tolerant buff at
-8 % max HP/s that is canceled by entering combat, and eating in combat
-is refused outright (§3.7). The Healing Potion is the only thing in the
-game that restores health **instantly and in combat**, and that, not
-the size of the number, is what it is bought for.
+**The potion keeps the instant slot; food does not take it** (R9, decided
+2026-09-17, replacing the 2026-08-13 food model). Food grants a 180 s timed
+restore that ticks only while out of combat; it never heals instantly.
+The Healing Potion remains the only health consumable that restores health
+**instantly and in combat**, on the unchanged shared 60 s cooldown.
 
 **Exclusive recipes** — the entire consumable line is Alchemist-only;
 nothing here has a base recipe (mastery names, relabelled 2026-08-07):
@@ -1187,42 +1184,32 @@ Neither of these costs a main profession slot (professions.md §1).
 
 - **Cooking** (trainer, free): cooked foods use regional ingredients and the
   Cooking recipe book described below.
-  **Raw food restores; cooked food restores AND buffs** (structure decided
-  2026-08-08; restore mechanics and the per-group lists decided 2026-08-13
-  with E21). `combat_stats.md` §5 carries the same rules from the recovery
-  side; the two must not drift apart.
-  - **A food restore is a buff, not a standing channel** (2026-08-13,
-    replacing the old resting-channel delivery): eating grants a
-    restore-over-time effect that **tolerates movement** but is
-    **canceled by entering combat** (PvE or PvP, the shared `in_combat`
-    window) — the remaining restore is lost. **Eating in combat is
-    refused** (message, nothing consumed — the potion's full-HP refusal
-    pattern). Exactly one food restore runs at a time; eating again
-    replaces it.
-  - **Raw / plain food: regeneration only, no buff** — **4 % max HP/s
-    for up to 25 s** (a full heal if uninterrupted; the solo detour,
-    unchanged in rate).
-  - **Cooked food gives both**: the serving's authored percentage of max
-    HP, delivered at **8 % max HP/s**, plus **Well Fed** — the buff
-    persists into combat, only the restore dies. The instant slot stays
-    the Alchemist's (§3.6 Healing Potion — 30 % max HP instantly, usable
-    in combat, 60 s shared cooldown): the potion holds the **in-combat
-    monopoly**, food is out-of-combat acceleration, and **both stay
-    percent-based** — no absolute values, no consumable treadmill
-    (`combat_stats.md` §5; the neutral base pool spans 26 at level 1 to
-    2696 at level 60, before class and gear percentages, so
-    one absolute item could never serve both ends).
-  - **Only one food buff is active at a time, and the most recently
-    eaten food wins** — eating again *replaces* the running buff; food
-    buffs never stack and never extend one another. This is the food-side
-    twin of §3.6's "one elixir active at a time" (§10 P3), and a food
-    buff and an elixir still stack **with each other**, exactly as
-    before.
-  - Every cooked-food buff occupies the single **Well Fed** category governed
-    by the replacement rule above. **Well Fed is decided (E21)**:
-    **I = +1 Str and Int** (T1–T2 dishes), **II = +2** (T3–T4),
-    **III = +3** (T5–T6), **15 minutes**. The old "+5 Strength, 5 min"
-    worked example is superseded — it was the shape, this is the size.
+  **Food is one out-of-combat restore buff** (R9, decided 2026-09-17,
+  replacing the 2026-08-13 food model). Eating is allowed in
+  combat and consumes the serving. It grants a **180 s** buff that attempts
+  one tick every **10 s**; a tick heals only while the shared
+  `grug_core.in_combat` window is false. Combat skips that tick without
+  canceling or pausing the buff. Exactly one food buff may run at once and
+  the most recently eaten serving replaces it.
+  - **Raw/plain:** 2 % of the base HP pool per tick.
+  - **Simply cooked:** 5 % of the base HP pool per tick.
+  - **Well cooked:** 10 % of the base HP pool per tick.
+  - Every tick restores at least 1 HP. Food is the entire effect: the old
+    `item_eat` instant heal is removed. Tooltips state the percentage,
+    10 s cadence, 3 min duration and out-of-combat condition.
+  - Mana food uses the same three quality percentages against maximum mana.
+    A character without a mana pool receives a message and does not consume
+    the serving.
+  - Current mapping: Wild Cocoa is raw mana food; apples, blueberries, raw
+    fish, raw meat and every other gathering-catalog
+    `food`/`found_only_food` item are raw HP food. Cooked Fish, cooked meat and
+    other cooked items are simply cooked HP food. The cooked mana tier is
+    registered but has no item until WP10's cooking book assigns one. Nothing
+    is well cooked yet; WP10 assigns that registered tier when its cooking
+    book creates the later dishes.
+  - Buffs are runtime-only. Relogging drops a food buff; it is not persisted.
+    The natural replacement cadence is one serving per 180 s, or about
+    **20 servings per hour**.
 
   **Cooking gets a recipe book** (2026-08-07, §2.2): the same six T1–T6
   groups and the same level gates as a profession book, but **no
@@ -1232,27 +1219,22 @@ Neither of these costs a main profession slot (professions.md §1).
   cocoa in the jungle"). Cooking is free and universal *and* gated; the
   book is what makes both true at once.
 
-  **The six groups are decided (E21, 2026-08-13)** — gate ingredient,
-  recipes, restore per serving, Well Fed step; every gate ingredient is
+  **The six groups are decided (E21, 2026-08-13; effects replaced by R9 on
+  2026-09-17)** — gate ingredient and recipes; every gate ingredient is
   **reachable by both factions** (`biomes_mobs.md` §2/§6): T1–T5 gates
   exist on both continents, while wild cocoa deliberately lives only on
   the shared contested front — The Skyglass Canopy on foot, Stormscale
   Summit as the offshore island bonus — so no continent-local placement
   may reintroduce it below level 51:
 
-  | Group | Gate ingredient | Recipes | Restore/serving | Well Fed |
-  |---|---|---|---|---|
-  | T1 | potato/corn | Cooked Meat / Cooked Fish; Hearty Stew (meat + potato/corn) | 20% | I |
-  | T2 | berries (apples as Accord extra) | Berry Preserve (2 berries); Fruit-Glazed Roast (meat + fruit) | 24% | I |
-  | T3 | mushrooms (found-only) | Mushroom Skewer (2 mushrooms); Forager's Pot (mushroom + meat + potato/corn) | 28% | II |
-  | T4 | melon + marshbloom | Marshbloom Chowder (fish + marshbloom); Hunter's Feast (2 meat + melon + mushroom) | 32% | II |
-  | T5 | rock salt + stormkelp | Salt-Crusted Fish (fish + rock salt); Kelp-Wrapped Roast (meat + stormkelp + rock salt) | 36% | III |
-  | T6 | wild cocoa | Jungle Cocoa (2 wild cocoa + rock salt); Grand Feast (2 meat + wild cocoa + stormkelp) | 40% | III |
-
-  A serving may exceed the potion's 30% because the two no longer
-  compete — food never works in combat. One restore value per **group**,
-  not per dish. The worked "potatoes with boar steak" example is the T1
-  Hearty Stew at 20%; its old 30% reading predates this table.
+  | Group | Gate ingredient | Recipes |
+  |---|---|---|
+  | T1 | potato/corn | Cooked Meat / Cooked Fish; Hearty Stew (meat + potato/corn) |
+  | T2 | berries (apples as Accord extra) | Berry Preserve (2 berries); Fruit-Glazed Roast (meat + fruit) |
+  | T3 | mushrooms (found-only) | Mushroom Skewer (2 mushrooms); Forager's Pot (mushroom + meat + potato/corn) |
+  | T4 | melon + marshbloom | Marshbloom Chowder (fish + marshbloom); Hunter's Feast (2 meat + melon + mushroom) |
+  | T5 | rock salt + stormkelp | Salt-Crusted Fish (fish + rock salt); Kelp-Wrapped Roast (meat + stormkelp + rock salt) |
+  | T6 | wild cocoa | Jungle Cocoa (2 wild cocoa + rock salt); Grand Feast (2 meat + wild cocoa + stormkelp) |
 
   **Where the fish comes from, and the T1 dish — shipped 2026-09-16**
   (WP13 playtest round 5; `docs/research/wp13-fishing.md`). The ladder above
@@ -1260,15 +1242,14 @@ Neither of these costs a main profession slot (professions.md §1).
   is now a second source for that same item, and the T1 **Cooked Fish** exists
   as the plain furnace dish the cooking ladder always listed. The three rows
   below are the shipped items and nothing more: **the T4 Marshbloom Chowder,
-  the T5 Salt-Crusted Fish, the restore percentages and Well Fed remain WP10's
-  to build**, and the cooked fish deliberately carries no food buff until it
-  does.
+  the T5 Salt-Crusted Fish and all well-cooked assignments remain WP10's to
+  build**.
 
   | Item | Itemstring | How it is obtained | Effect | Vendor price |
   |---|---|---|---|---|
   | Fishing Rod | `grug_fishing:rod` | crafted: 3 × stick + 2 × Spider Silk (the game's only string-class material); 64 catches | no dig, no damage; right-click water to cast | none (not a mob drop) |
-  | Raw Fish | `grug_mobs:raw_fish` | Mirefolk drop (WP6) **and, since this round, fishing** | eaten raw like `mobs:meat_raw` | 2c (unchanged) |
-  | Cooked Fish | `grug_fishing:cooked_fish` | furnace, `cooking` recipe from Raw Fish, cooktime 5 | eaten like `mobs:meat` (the cooked-meat value); **no Well Fed yet** | none, exactly as `mobs:meat` — so §3.8's anti-loop rule has nothing to judge |
+  | Raw Fish | `grug_mobs:raw_fish` | Mirefolk drop (WP6) **and, since this round, fishing** | raw 2 % food buff | 2c (unchanged) |
+  | Cooked Fish | `grug_fishing:cooked_fish` | furnace, `cooking` recipe from Raw Fish, cooktime 5 | simply cooked 5 % food buff | none, exactly as `mobs:meat` — so §3.8's anti-loop rule has nothing to judge |
 
   **One catch table for the whole world, per the round-5 ruling** ("fish
   availability shall be identical on both continents, distributed over the
@@ -1661,8 +1642,9 @@ cultures:
    Apply its multiplier after armor and before absorb. Only one target-race
    ward is active; a new draught replaces the old ward and its remaining
    duration. It is its own PvP-buff category and may coexist with one ordinary
-   elixir and Well Fed, but it shares the global 60-second potion-use clock and
-   does not require missing HP/Mana. Apothecary Loop changes neither its
+   elixir and the food restore buff, but it shares the global 60-second
+   potion-use clock and does not require missing HP/Mana. Apothecary Loop
+   changes neither its
    percentage nor duration. An allied passive Alchemist helper consumes the
    same supplied ingredients and charges 50% of the draught's authoritative
    reference price. The ward recognizes hostile players and combat-capable
@@ -2504,11 +2486,11 @@ permanent power) and add mirrored recipes in Phase 2 when the Rogue
 makes top leather PvP-relevant.
 **Decided as recommended (2026-08-06).**
 
-**P3 — Potion/elixir exclusivity.** One shared 60 s cooldown for
-instant potions (heal AND mana) + one active elixir + Well Fed stacking
-on top. Recommendation: **as proposed** — keeps consumable pressure
-without a buff-stacking meta.
-**Decided as recommended (2026-08-06).**
+**P3 — Potion/elixir/food exclusivity.** Healing and mana potions share one
+60 s cooldown. One active elixir and one food restore buff may coexist with
+that cooldown and with each other. The most recent food replaces the previous
+food; it never occupies the instant-potion slot. **Decided 2026-08-06;
+food rule replaced by R9 on 2026-09-17.**
 
 **P4 — Swiftness Draught.** +8% speed for 15 s brushes the "mobs must
 outrun players" pillar (4.0 × 1.08 = 4.32 < 4.4 keeps mobs faster, but
@@ -2596,20 +2578,6 @@ the band boundaries coincide with the four mastery level anchors is a
 property of the numbers, not a rule. Rejected: two roll tables, one for
 crafted and one for dropped gear — the same ilvl would then have meant
 two different items.
-
-**D9 — Raw food restores, cooked food restores AND buffs.** *(Delivery
-superseded 2026-08-13: the restore is now a movement-tolerant
-out-of-combat buff, not a standing resting channel — §3.7 is
-authoritative.)* §3.7 had it
-backwards ("cooking adds the buff, not the regen"). Raw/plain food gives
-**regeneration only**; cooked food gives a **restore and a buff**, and
-only **one food buff** is ever active — the most recently eaten food
-replaces the previous one. The restore is routed through
-`combat_stats.md` §5's **resting** channel at **8 % max HP/s** (twice
-raw food's 4 %) rather than being made instant: the Alchemist's Healing
-Potion owns the instant slot by design (§3.6), and a cooked dish
-restoring 30 % instantly would have deleted the potion's reason to
-exist. Cooking therefore buys a **faster rest**, not a second potion.
 
 **D10 — A higher-tier pick digs faster, not only deeper.** §3.0.4
 documented the `maxlevel` *gate* thoroughly but never stated the other

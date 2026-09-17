@@ -59,7 +59,10 @@ downwards, so both are negative and `bottom` is the lower edge):
 | `xp` | text | −186..−166 | `grug_xp` |
 
 Anchors outside the column: `flash` at `position.y = 0.35`, `reticle` at
-`position.y = 0.5`.
+`position.y = 0.5`, and the round-6 status text list at top right with
+`position = {x = 1, y = 0}`, `offset = {x = -20, y = 20}` and
+`alignment = {x = -1, y = 1}`. The status registry owns the text and reads
+only this shared geometry.
 
 The baseline is −62: the builtin hotbar is drawn at `{x = 0.5, y = 1}` with
 `alignment.y = −1` and `offset.y = −4` (`builtin/game/hud.lua:270-277`), one

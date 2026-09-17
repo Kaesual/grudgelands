@@ -50,15 +50,29 @@ end
 -- Resource API
 --
 
+local hud_update -- forward
+
 function grug_abilities.get_mana(player)
 	return math.floor(mana[player:get_player_name()] or 0)
+end
+
+function grug_abilities.restore_mana(player, amount)
+	local name = player:get_player_name()
+	local maximum = math.max(0, grug_classes.get_max_mana(player))
+	local current = mana[name] or 0
+	local before = math.max(0, math.min(maximum, current))
+	local after = math.min(maximum,
+		before + math.max(0, tonumber(amount) or 0))
+	mana[name] = after
+	if after ~= current then
+		hud_update(player)
+	end
+	return math.max(0, after - before)
 end
 
 function grug_abilities.get_rage(player)
 	return math.floor(rage[player:get_player_name()] or 0)
 end
-
-local hud_update -- forward
 
 --
 -- The rage ledger (classes.md §3). Ruling 25 of 2026-09-16 answers the user's
