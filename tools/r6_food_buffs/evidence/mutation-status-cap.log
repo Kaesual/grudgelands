@@ -1,0 +1,4 @@
+Command: tools/r6_food_buffs/mutations.sh status_cap
+Expected failure: HUD list capped at eight lines
+Observed: FAIL HUD list capped at eight lines
+Result: PASS (mutation detected against a temporary copy of the final bytes)

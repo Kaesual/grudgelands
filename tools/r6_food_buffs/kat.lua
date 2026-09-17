@@ -1,8 +1,6 @@
 -- Known-answer test for round 6 lane FU6. Loads the real HUD layout,
 -- status registry and food mod under a minimal engine stub.
 
-local M = {}
-
 local function run(repo)
 	local failures = {}
 	local now = 0
@@ -449,7 +447,7 @@ return grug_abilities
 		cooked_mana_items, restore_row, duration_ticks, skipped_ticks
 end
 
-function M.run(repo)
+local function format_result(repo)
 	local failures, tiers, cocoa, cooked_mana, restore, duration_ticks,
 		skipped_ticks = run(repo or ".")
 	local digest = "r6_food_mapping\tcocoa=" .. cocoa ..
@@ -464,4 +462,6 @@ function M.run(repo)
 	return digest .. "\nPASS\n"
 end
 
-return M
+return function(repo)
+	return format_result(repo or ".")
+end
