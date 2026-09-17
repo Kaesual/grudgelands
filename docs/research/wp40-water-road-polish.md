@@ -34,6 +34,13 @@ Exact coordinate tags prevent collision errors; all paths with authored fords
 bypass it because their clearance depends on path and run. It adds no persistent
 state and does not grow with exploration.
 
+The 2026-09-17 shore-height amendment supersedes the lower-bound-only rule at
+the first dry contact. Every first cardinal dry-land column beside exposed
+surface water is now exactly level with that water surface; the wider named-
+water seal, authored bridge/causeway/ford and route-deck grades, and culvert
+floors remain unchanged because those surfaces are functional crossings or cut
+rims rather than dry-land banks.
+
 Actual checked runtime construction and dense shore sampling find zero low
 wet/dry contacts in the tested Kezamba rectangle for both the reported seed
 and seed 0. All route axes pass the existing final height/grade validation in

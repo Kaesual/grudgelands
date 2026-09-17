@@ -150,8 +150,10 @@ Two optional target-race systems use the central pipeline:
   The selected template distinguishes fall, drowning, lava/fire node damage,
   suffocation, a mob punch (using the mob's display name), a player punch
   (using the player name) and an unattributed fallback.
-- Shore step out of water is a mapgen item for round 6 because Luanti forces
-  airborne players to **0.2** effective stepheight regardless of the property
+- Shore exits have zero vertical rise: the first cardinal dry-land surface
+  beside exposed surface water is exactly level with the water surface. This
+  is required because Luanti forces a swimming, non-grounded player to **0.2**
+  effective stepheight regardless of the property
   (`reference_projects/luanti/src/client/localplayer.cpp:322`).
 
 ### Melee timing and aim authority (shipped 2026-08-10, WP39)

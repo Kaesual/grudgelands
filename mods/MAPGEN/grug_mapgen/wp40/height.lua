@@ -153,6 +153,13 @@ return function(dependencies)
 		return round_ratio(a * Q + (b - a) * weight_q, Q)
 	end
 
+	-- A dry column that directly touches an exposed water surface uses that
+	-- surface as its own top. This is the single round-6 shore-height rule;
+	-- inland bank blends, civic apron rims and the final coast check all call it.
+	local function shore_surface_y(water_y)
+		return water_y
+	end
+
 	-- The same two-node Manhattan shore neighborhood used by the R5 seals.
 	local function ford_bank_water_floor(water_y, hydro_id, path, run)
 		if water_y and path then
@@ -756,7 +763,7 @@ return function(dependencies)
 		if source.schema ~= "grug_wp40_simple_map_source_v2" or
 				source.layout_id ~= "wp40-simple-map-v1d" or
 				source.layout_revision_id ~= "wp40-simple-map-v1e" or
-				source.height_revision_id ~= "wp40-height-quality-v4" then
+				source.height_revision_id ~= "wp40-height-shore-v5" then
 			fail("source schema/layout identity differs from V1e R2")
 		end
 		if #source.relief_profiles ~= 6 or #source.landmarks ~= 70 or
@@ -1297,7 +1304,7 @@ return function(dependencies)
 						reach.profile.bank_blend_width)
 					if weight > 0 then
 						local target = reach.profile.depth == 0 and reach.water_y or
-							reach.water_y + 1
+							shore_surface_y(reach.water_y)
 						return qlerp_integer(natural, target, weight)
 					end
 				end
@@ -2159,7 +2166,7 @@ return function(dependencies)
 							local sample = line[point]
 							discs[#discs + 1] = {x = sample.x, z = sample.z,
 								half_width = sample.half_width,
-								rim = record.water_y + 1,
+								rim = shore_surface_y(record.water_y),
 								limit = sample.half_width +
 									CAPITAL_APRON.reach}
 							-- The interpolated samples of this segment, evenly
@@ -2184,7 +2191,7 @@ return function(dependencies)
 										z = sample.z +
 											round_ratio(vz * part, parts),
 										half_width = half,
-										rim = record.water_y + 1,
+										rim = shore_surface_y(record.water_y),
 										limit = half +
 											CAPITAL_APRON.reach}
 								end
@@ -4319,7 +4326,6 @@ return function(dependencies)
 					fail("graded path enters forbidden exterior water at " .. path.id)
 				end
 			end)
-
 			path.preferred, path.reachable_lower, path.reachable_upper = {}, {}, {}
 			for run_index = 1, #path.axis do
 				path.preferred[run_index] = path.preferred_land[run_index] or
@@ -4894,6 +4900,10 @@ return function(dependencies)
 					"land_grade", value, feature.id, nil
 			end
 			terrain_y = water_banks.protect(x, z, terrain_y, bank_path, bank_run)
+			local shore_y = water_banks.exposed_shore_surface_at(x, z)
+			if shore_y ~= nil and not on_path_surface then
+				terrain_y = shore_surface_y(shore_y)
+			end
 			if kind == "land_grade" then surface_y = terrain_y end
 			return terrain_y, kind, surface_y, feature_id, interface_id
 		end
@@ -4963,6 +4973,32 @@ return function(dependencies)
 			return pregrade_water_surface_at(x, z, water_class, bay_id,
 				hydrology_id)
 		end
+
+		-- Final cardinal contact check for every exposed surface-water class.
+		-- Named hydrology already has its wider authored blend; this closes the
+		-- same first-column rule at bays, the coastal shelf and island shores.
+		water_banks.exposed_shore_surface_at = cached_bank_floor(function(x, z)
+			local highest
+			for direction_index = 1, 4 do
+				local dx = direction_index == 1 and 1 or
+					direction_index == 2 and -1 or 0
+				local dz = direction_index == 3 and 1 or
+					direction_index == 4 and -1 or 0
+				local neighbor_x, neighbor_z = x + dx, z + dz
+				local water_class, _, _, bay_id, hydrology_id =
+					classified_values(neighbor_x, neighbor_z)
+				if water_class ~= "land" then
+					local water_y = pregrade_water_surface_at(neighbor_x, neighbor_z,
+						water_class, bay_id, hydrology_id)
+					if water_y ~= nil and
+							final_terrain_height_at(neighbor_x, neighbor_z) < water_y and
+							(highest == nil or water_y > highest) then
+						highest = water_y
+					end
+				end
+			end
+			return highest
+		end)
 
 
 		-- This is the sole final-axis scan. Normal construction fails on its first

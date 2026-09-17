@@ -210,7 +210,12 @@ For a wet reach, `water_surface_at` is exactly project water level plus the
 reach's current `water_surface_offset`. Its interior bed is exactly that value
 minus the referenced profile depth. In the profile's outside
 `bank_blend_width`, the natural land is blended toward a dry bank at
-`water_surface + 1`; the classified wet interior retains its exact bed.
+`water_surface`; the classified wet interior retains its exact bed. The
+2026-09-17 shore amendment applies the same exact surface height to the first
+cardinal dry-land column beside every exposed water class after all grading;
+the existing inland blend is unchanged. Authored bridge, causeway, ford,
+route-deck and culvert surfaces remain functional crossings or cut rims rather
+than dry-land banks and retain their existing grade constraints.
 
 The bank calculation is deliberately integer and exact. For each indexed
 candidate segment it obtains the exact point-to-segment squared-distance
@@ -561,12 +566,13 @@ surface width 3.
 Island routes use their R2 width 12 and surface width 5. Each landing endpoint
 is fixed at `water_level + 1`, each shared island junction is fixed at the
 owning mountain zone's `zone_station_y`, and each dragon/apex endpoint uses
-its fixed anchor `reference_y`. Every island-owned land column inside the
-matching boat path's exact width-96 corridor is a flat landing grade at
-`water_level + 1`; water and mainland columns are unchanged. The five-node
-island route wins where it leaves that landing grade and climbs toward the
-junction, so no ungraded water-to-mountain wall remains. Boat paths do not
-grade the ocean.
+its fixed anchor `reference_y`. Island-owned land inside the matching boat
+path's exact width-96 corridor is a flat landing grade at `water_level + 1`,
+except that the first cardinal dry-land column beside exposed water is exactly
+`water_level` under the 2026-09-17 shore amendment. Water and mainland columns
+are unchanged. The five-node island route wins where it leaves that landing
+grade and climbs toward the junction, so no ungraded water-to-mountain wall
+remains. Boat paths do not grade the ocean.
 
 The first skeleton pins are all path endpoints and the centre node of every
 named ford. A ford-centre pin is exactly its local `water_surface - 1`.
@@ -843,7 +849,9 @@ Dur Brannoc ranged from y 100 to 177, making the old global interval 153 to
 116. The same construction exposed a natural-height/causeway conflict at the
 planned-water Gravesalt hub. The fifth correction round replaced the global
 plane with the per-column centre-referenced clamp and made planned-water hub
-stations exactly `water_surface + 1`. Its focused review returned
+stations exactly `water_surface + 1`. These functional hub stations remain
+unchanged by the 2026-09-17 shore amendment; only an actual first dry shore
+column is forced to `water_surface`. Its focused review returned
 **ACCEPTED**, 0 Critical / 0 High / 0 Medium / 0 Low. Total contract fix-round
 count is five. This acceptance covers the contract only; the implementation,
 artifact and production integration still require their own gates and
@@ -859,7 +867,9 @@ two-pass one-Lipschitz envelope. Restricting each authored tunnel to its actual
 central 33-node lumen removed the nominal-span overlap machinery. The final
 V2c axis prototype had zero pin conflicts, zero bad steps and both tunnels
 feasible for all four contract seeds; the island follow-up also fixed each
-landing at `water_level + 1` and retained the same axis result. A later
+landing at `water_level + 1` and retained the same axis result. The 2026-09-17
+shore amendment leaves that functional landing pin unchanged while its first
+cardinal dry contact is level with the adjacent water. A later
 complete projected-surface scan found one off-axis conflict on every seed:
 ordinary water at
 `route_050` run 707 required y 10 and would raise the adjacent exact
