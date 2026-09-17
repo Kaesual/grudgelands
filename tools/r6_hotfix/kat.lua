@@ -7,6 +7,7 @@
 -- MUTATION=4 forces an unchanged tooltip metadata write.
 -- MUTATION=5 makes the shield tooltip use the flooring damage scaler.
 -- MUTATION=6 makes the Smite tooltip depend on the current absorb state.
+-- MUTATION=7 restores a separate item-level multiplier on the Help page.
 
 return function(repo)
 	local mutation = tonumber(os.getenv("MUTATION") or "") or 0
@@ -546,6 +547,19 @@ return function(repo)
 		"Character page retains the rage label")
 	want(rage_formspec:find("Mana:", 1, true) == nil,
 		"rage Character page does not show mana")
+	local help_formspec = pages["grug_inventory:help"].get(
+		nil, page_player, {})
+	if mutation == 7 then
+		help_formspec = help_formspec:gsub(
+			"there is no separate item%-level multiplier",
+			"item level adds a separate multiplier", 1)
+	end
+	want(help_formspec:find(
+		"Item level is counted once, in the weapon's base damage; your character level applies the shared damage fit; there is no separate item-level multiplier.",
+		1, true) ~= nil, "Help page states the single item-level damage axis")
+	want(help_formspec:find(
+		"At level 60, an item-level 70 weapon gives about 9% more effective swing damage than item level 60, while item level 50 gives about 7% less, before enchants.",
+		1, true) ~= nil, "Help page shows the measured L60 item-level examples")
 
 	for _, row in ipairs(tooltip_rows) do
 		io.write(("tooltip L%d smite=%d flash_heal=%d shield=%d\n"):format(
@@ -553,7 +567,7 @@ return function(repo)
 	end
 	io.write("heal_target=pointed_ally invalid_to_memory invalid_to_self node_to_memory\n")
 	io.write("suffocation=20:1 100:5 2696:134 3235:161 noclip_exempt\n")
-	io.write("character=derived_Max_HP Max_Mana no_current_pool\n")
+	io.write("character=derived_Max_HP Max_Mana no_current_pool help=single_ilvl_axis_l60_examples\n")
 	io.write("tooltip_writes=changed_only\n")
 	io.write(("smite_l60=%d/%d shielded_bonus=32 absorb_tooltip=floor_seam\n")
 		:format(warded_unshielded_damage, warded_shielded_damage))
