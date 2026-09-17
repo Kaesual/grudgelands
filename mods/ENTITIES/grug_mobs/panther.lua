@@ -22,7 +22,7 @@ local panther = {
 	-- HP/damage/XP/armor: engine-owned (levels.lua). Outer ring plus the
 	-- jungle coasts means L38-60, the heaviest normal jungle mob.
 
-	reach = 2,
+	reach = 3,
 	attack_type = "dogfight",
 	attack_players = true,
 	-- A stalker hunts alone: no pack verb, no group_attack (§3 "group_attack

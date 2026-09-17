@@ -20,7 +20,7 @@ local bog_ooze = {
 	-- §4 row zones: "outer" (swamp pockets, §1.2 row 13 -> L25-45).
 	-- HP/damage/XP/armor: engine-owned (levels.lua).
 
-	reach = 2,
+	reach = 3,
 	attack_type = "dogfight",
 	attack_players = true,
 	-- A blob does not organise: no pack verb, no group_attack (§3

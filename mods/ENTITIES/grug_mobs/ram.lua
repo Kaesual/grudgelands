@@ -23,7 +23,7 @@ local ram = {
 	-- HP/damage/XP/armor: engine-owned (levels.lua), normal tier.
 
 	walk_velocity = 1.5,
-	run_velocity = 3.4, -- grazer speed (§0)
+	run_velocity = 4.6, -- retaliating melee speed (§0)
 	jump = true,
 	jump_height = 4, -- it lives on gravel slopes
 	stepheight = 1.1,

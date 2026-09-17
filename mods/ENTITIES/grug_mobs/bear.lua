@@ -20,7 +20,7 @@ local function bear_def(description, texture)
 		-- HP/damage/XP/armor: engine-owned (levels.lua). Outer ring and
 		-- coasts mean L25-60 — the heaviest normal mob of the forest pair.
 
-		reach = 2,
+		reach = 3,
 		attack_type = "dogfight",
 		attack_players = true,
 		group_attack = true,

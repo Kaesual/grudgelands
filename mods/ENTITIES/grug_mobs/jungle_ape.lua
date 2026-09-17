@@ -24,7 +24,7 @@ local ape = {
 	_grug_leash_range = 20,
 	-- HP/damage/XP/armor: engine-owned (levels.lua).
 
-	reach = 2,
+	reach = 3,
 	attack_type = "dogfight",
 	attack_players = true,
 	group_attack = true, -- as bear.lua; troop animals pile on

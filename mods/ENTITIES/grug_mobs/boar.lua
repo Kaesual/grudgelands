@@ -7,7 +7,7 @@ local boar = {
 	-- HP/damage/XP and armor come from the level engine (levels.lua):
 	-- core/inner ring means level 1-10, i.e. 20-65 HP, 2-6 damage.
 
-	reach = 2,
+	reach = 3,
 	attack_type = "dogfight",
 	attack_players = true,
 	group_attack = true,

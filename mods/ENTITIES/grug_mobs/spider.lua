@@ -16,7 +16,7 @@ local function spider_def(description, texture)
 		-- Surface habitat remains node/biome-owned after R7. The cave row has
 		-- its own max-height and stone/stratum whitelist.
 
-		reach = 2,
+		reach = 3,
 		attack_type = "dogfight",
 		attack_players = true,
 		group_attack = true,

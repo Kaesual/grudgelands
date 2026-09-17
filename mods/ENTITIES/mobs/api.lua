@@ -97,6 +97,12 @@ local pathfinding_max_drop = tonumber(settings:get("mob_pathfinding_max_drop") o
 local pathfinding_searchdistance = tonumber(
 		settings:get("mob_pathfinding_searchdistance") or 16)
 
+-- GRUG PATCH: close blocked targets get one A* attempt after a short LOS
+-- grace period; a failed search earns one alternating lateral step before
+-- the next visibility test (combat_stats.md section 4, 2026-09-17 ruling R3).
+local grug_obstacle_path_delay = 1.0
+local grug_obstacle_sidestep_time = 0.5
+
 -- show peaceful mode message
 
 if peaceful_only then
@@ -224,6 +230,12 @@ function mob_class:do_attack(player, force)
 		self.path.stuck = false
 		self.path.following = false
 		self.path.stuck_timer = 0
+		-- GRUG PATCH: obstacle timers belong to the exact chase target. A threat
+		-- switch must not inherit the old target's blocked-LOS delay or sidestep.
+		if self.temp then
+			self.temp.grug_obstacle_blocked = nil
+			self.temp.grug_obstacle_sidestep = nil
+		end
 	end
 
 	self.attack = player ; self.state = "attack"
@@ -1607,7 +1619,7 @@ end
 
 -- path finding and smart mob routine by rnd, line_of_sight and other edits by Elkien3
 
-function mob_class:smart_mobs(s, p, dist, dtime)
+function mob_class:smart_mobs(s, p, dist, dtime, grug_force_path)
 
 	local s1 = self.path.lastpos
 	local target_pos = p
@@ -1636,7 +1648,10 @@ function mob_class:smart_mobs(s, p, dist, dtime)
 	local timeout = self.path.following and pathfinding_stuck_path_timeout
 			or pathfinding_stuck_timeout
 
-	if self.path.stuck_timer <= timeout then return end
+	-- GRUG PATCH: the ordinary stuck detector keeps its upstream timeout;
+	-- attack-state obstacle recovery may force this already-bounded A* pass
+	-- after its separate one-second blocked-LOS timer expires.
+	if not grug_force_path and self.path.stuck_timer <= timeout then return end
 
 	local has_lineofsight = core.line_of_sight(
 			{x = s.x, y = s.y + 0.5, z = s.z},
@@ -1690,6 +1705,20 @@ function mob_class:smart_mobs(s, p, dist, dtime)
 			if path_height_blocked(self) then -- make sure 2 high mobs can get access
 				self.path.way = nil
 			end
+		end
+	end
+
+	-- GRUG PATCH: if the close-obstacle A* pass has no usable route, move
+	-- laterally for half a second and alternate sides on consecutive failures.
+	-- The attack branch owns the velocity so its at_cliff guard remains active.
+	if grug_force_path then
+		self.temp = self.temp or {}
+		if not self.path.way or #self.path.way == 0 then
+			local previous = self.temp.grug_obstacle_side or -1
+			self.temp.grug_obstacle_side = -previous
+			self.temp.grug_obstacle_sidestep = grug_obstacle_sidestep_time
+		else
+			self.temp.grug_obstacle_sidestep = nil
 		end
 	end
 
@@ -2066,6 +2095,12 @@ function mob_class:stop_attack()
 		self.path.following = false
 		self.path.stuck_timer = 0
 	end
+	-- GRUG PATCH: no blocked-LOS countdown or half-finished sidestep survives
+	-- de-aggro. The side bit may stay so a later failure tries the other side.
+	if self.temp then
+		self.temp.grug_obstacle_blocked = nil
+		self.temp.grug_obstacle_sidestep = nil
+	end
 	self:set_velocity(0)
 	self.state = "stand"
 	self:set_animation("stand", true)
@@ -2251,6 +2286,8 @@ function mob_class:do_states(dtime)
 		-- check enemy is in sight
 		local in_sight = self:line_of_sight(
 				{x = s.x, y = s.y + 0.5, z = s.z}, {x = p.x, y = p.y + 0.5, z = p.z})
+		local target_pos = p
+		local attack_reach = self.reach + (self.reach_ext or 0)
 
 		-- stop attacking when enemy not seen for 11 seconds
 		if not in_sight then
@@ -2271,6 +2308,32 @@ function mob_class:do_states(dtime)
 			-- which the mob moves faster than 0.5 m/s — i.e. exactly the mob we
 			-- need to un-stick can never reach it.
 			if self.path then self.path.stuck = false end
+		end
+
+		-- GRUG PATCH: a target can be physically close but separated by a trunk
+		-- or wall. After about one second of blocked LOS, ground melee mobs run
+		-- the same bounded A* search used by the chase branch even though
+		-- `dist <= reach`. A live path suppresses replanning; a nil path arms the
+		-- alternating sidestep in smart_mobs. Fliers and dogshoot families keep
+		-- their existing movement models.
+		self.temp = self.temp or {}
+		local grug_obstacle = self.temp
+		local grug_blocked_close = not in_sight and dist <= attack_reach
+		if grug_blocked_close and self.pathfinding and pathfinding_enable
+		and not self.fly and self.attack_type == "dogfight" then
+			grug_obstacle.grug_obstacle_blocked =
+				(grug_obstacle.grug_obstacle_blocked or 0) + dtime
+			if not grug_obstacle.grug_obstacle_sidestep
+			and not self.path.following
+			and grug_obstacle.grug_obstacle_blocked >= grug_obstacle_path_delay then
+				grug_obstacle.grug_obstacle_blocked = 0
+				self:smart_mobs(s, target_pos, dist, dtime, true)
+			end
+		else
+			grug_obstacle.grug_obstacle_blocked = nil
+			if in_sight then
+				grug_obstacle.grug_obstacle_sidestep = nil
+			end
 		end
 
 		local ds_var = 0
@@ -2378,11 +2441,9 @@ function mob_class:do_states(dtime)
 			-- Here the clock advances on every tick of this branch with a live
 			-- target, chase included, and the punch below carries the ONLY
 			-- condition the decided text leaves it: being in reach at the
-			-- moment the cadence is due. `reach` itself is untouched — raising
-			-- it cannot repair this (a stopped mob always leaves its own
-			-- radius, whatever the radius) and it would widen the elite/rare
-			-- telegraph cone (`reach + 1.5`, §3) and make dogshoot mobs switch
-			-- to melee earlier (that switch is the branch condition above).
+			-- moment the cadence is due. The later 2026-09-17 ruling raises the
+			-- roster's ordinary reach from 2 to 3 for close-obstacle parity; this
+			-- clock still does not derive readiness from distance.
 			--
 			-- The backlog is capped at ONE — the same rule the player's own
 			-- swing clock already follows (combat_stats.md:153, "lag never
@@ -2446,7 +2507,9 @@ function mob_class:do_states(dtime)
 				-- GRUG PATCH: clear the wedged flag together with the path on
 				-- both abandon exits (WP6-T10, see apply_path) — otherwise the
 				-- walk-speed penalty outlives the detour that caused it.
-				if #self.path.way > 60 or dist < self.reach then
+				-- GRUG PATCH: a detour is not complete merely because the target is
+				-- close; keep following it while the direct LOS remains blocked.
+				if #self.path.way > 60 or (dist < self.reach and in_sight) then
 					self.path.stuck = false
 					self.path.following = false ; return
 				end
@@ -2528,9 +2591,14 @@ function mob_class:do_states(dtime)
 				end
 			else -- rnd: if inside reach range
 
-				self.path.stuck = false
-				self.path.stuck_timer = 0
-				self.path.following = false -- not stuck anymore
+				-- GRUG PATCH: only visible contact proves the detour is over. With
+				-- blocked LOS the mob keeps its in-reach path instead of dancing at
+				-- the obstacle.
+				if in_sight then
+					self.path.stuck = false
+					self.path.stuck_timer = 0
+					self.path.following = false
+				end
 
 				-- GRUG PATCH: do not freeze for the whole in-reach branch.
 				-- Standing still inside reach of a RECEDING target is what
@@ -2539,7 +2607,7 @@ function mob_class:do_states(dtime)
 				-- the second half of the defect. The mob keeps closing until
 				-- it is at contact distance — 60 % of its own reach, chosen so
 				-- that a target fleeing at the player's 4.0 against a mob's
-				-- 4.4 hovers around that line and therefore stays comfortably
+				-- 4.6 hovers around that line and therefore stays comfortably
 				-- inside `reach` at every cadence due-tick, while a target
 				-- that STANDS STILL is reached, the mob stops, and its punch
 				-- rate is exactly what it was before this patch.
@@ -2549,7 +2617,12 @@ function mob_class:do_states(dtime)
 				-- once per server step against a target only marginally slower
 				-- than the mob, halving its effective speed. A fixed contact
 				-- distance settles instead of oscillating.
-				if dist > self.reach * 0.6 then
+				-- GRUG PATCH: the round-4 contact run now keeps the same cliff guard
+				-- as the chase branch; close pursuit must never run over an edge.
+				if self.at_cliff then
+					self:set_velocity(0)
+					self:set_animation("stand")
+				elseif dist > self.reach * 0.6 then
 
 					self:set_velocity(self.run_velocity)
 
@@ -2564,6 +2637,32 @@ function mob_class:do_states(dtime)
 				end
 			end
 
+			-- GRUG PATCH: a failed close-range A* search gets a bounded lateral
+			-- escape attempt. The perpendicular is computed from the real target,
+			-- not a temporary waypoint, and alternates on every failed search.
+			local sidestep = grug_obstacle.grug_obstacle_sidestep
+			if grug_blocked_close and sidestep and sidestep > 0 then
+				grug_obstacle.grug_obstacle_sidestep = sidestep - dtime
+				if self.at_cliff then
+					self:set_velocity(0)
+					self:set_animation("stand")
+				else
+					local direction = vdirection(s, target_pos)
+					local side = grug_obstacle.grug_obstacle_side or 1
+					local velocity = self.object:get_velocity()
+					self.object:set_velocity({
+						x = -direction.z * self.run_velocity * side,
+						y = velocity and velocity.y or 0,
+						z = direction.x * self.run_velocity * side,
+					})
+					self:set_animation(self.animation and self.animation.run_start
+						and "run" or "walk")
+				end
+				if grug_obstacle.grug_obstacle_sidestep <= 0 then
+					grug_obstacle.grug_obstacle_sidestep = nil
+				end
+			end
+
 			-- GRUG PATCH: the punch lands here, outside both branches, and the
 			-- in-reach + line-of-sight test sits where the punch lands rather
 			-- than where the clock runs. Out of reach when the cadence is due,
@@ -2571,14 +2670,11 @@ function mob_class:do_states(dtime)
 			-- new shape) and stays at its cap, so the hit lands on the first
 			-- tick reach is regained — "damage IMMEDIATELY when the attack is
 			-- ready and the target is in reach" (user ruling 1, 2026-09-16).
-			-- Everything from the reset down is upstream's own body, moved
-			-- verbatim: the custom_attack hook still consumes the cadence
-			-- whether or not it continues, and a blocked line of sight still
-			-- costs the swing, exactly as before.
+			-- The custom_attack hook still consumes the cadence when it declines.
+			-- A terrain-blocked LOS no longer consumes it: the ready swing stays
+			-- banked until the detour or sidestep exposes the target.
 			if self.punch_timer >= self.punch_interval
 			and dist <= (self.reach + (self.reach_ext or 0)) then
-
-				self.punch_timer = 0
 
 				-- no custom attack or custom attack returns true to continue
 				if not self.custom_attack or self:custom_attack(self, p) then
@@ -2598,6 +2694,10 @@ function mob_class:do_states(dtime)
 					-- if we can see who we attack, then do so
 					if self:line_of_sight(p2, s2) then
 
+						-- GRUG PATCH: claim the swing only after LOS succeeds. A tree
+						-- trunk or wall blocks damage without resetting readiness.
+						self.punch_timer = 0
+
 						self:set_animation("punch")
 
 						if random(self.sounds.attack_chance or 1) == 1 then
@@ -2614,6 +2714,8 @@ function mob_class:do_states(dtime)
 							damage_groups = {[dgroup] = self.damage}
 						}, nil)
 					end
+				else
+					self.punch_timer = 0
 				end
 			end
 
@@ -2722,8 +2824,6 @@ function mob_class:falling(pos)
 end
 
 -- deal damage & effects when mob punched
-
-local dis_damage_kb = settings:get_bool("mobs_disable_damage_kb")
 
 function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 
@@ -3231,15 +3331,15 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 		end
 	end
 
-	-- knock back effect (only on full punch)
+	-- knock back effect (only on full punch and explicit override)
 	-- GRUG PATCH (WP38): on the proportional path `tflp` is pinned at ~0.2 s
 	-- while the dig key is held, so vanilla's `tflp >= punch_interval` test
 	-- would ~never fire and melee knockback would silently die. A melee
-	-- punch knocks back when the swing actually LANDS — the accumulator
-	-- committed at least 1 (`subtract`, computed above, is in scope here).
-	-- Ability punches keep the vanilla branch: they punch with
-	-- `full_punch_interval` 1.4 and thus `tflp == punch_interval`, knocking
-	-- back exactly as before.
+	-- An explicit knockback override is considered when the swing actually
+	-- LANDS — the accumulator committed at least 1 (`subtract`, computed
+	-- above, is in scope here). Ability punches keep the vanilla timing branch:
+	-- they punch with `full_punch_interval` 1.4 and thus
+	-- `tflp == punch_interval`. Ordinary hits now carry zero displacement.
 	if self.knock_back and ((grug_melee and subtract >= 1)
 			or (not grug_melee and tflp >= punch_interval)) then
 
@@ -3247,9 +3347,9 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 
 		if v then
 
-			local kb = dis_damage_kb and 1 or (damage or 1)
-			local up = (v.y > 0 or self.fly) and 0 or 2
-
+			-- GRUG PATCH: ordinary damage carries no implicit knockback. A future
+			-- cooldown skill can still opt in through damage_groups.knockback below.
+			local kb = 0
 			dir = dir or {x = 0, y = 0, z = 0} -- nil check
 
 			-- use tool knockback value or default
@@ -3260,10 +3360,13 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 				kb = kb + 3 * enchants.knockback
 			end
 
-			self.object:set_velocity({x = dir.x * kb, y = up, z = dir.z * kb})
+			if kb ~= 0 then
+				local up = (v.y > 0 or self.fly) and 0 or 2
+				self.object:set_velocity({x = dir.x * kb, y = up, z = dir.z * kb})
 
-			-- turn mob on knockback
-			self:set_yaw((self.object:get_yaw() or 0) - random(-0.9, 0.9), 6)
+				-- turn mob on knockback
+				self:set_yaw((self.object:get_yaw() or 0) - random(-0.9, 0.9), 6)
+			end
 
 			-- GRUG PATCH (WP38): a sub-1 hit still shows the hit reaction —
 			-- the injured animation keys off the same flag that drove the
@@ -3732,6 +3835,9 @@ function mobs:register_mob(name, def)
 		initial_properties = {
 			hp_max = max(1, (def.hp_max or 10) * difficulty),
 			physical = true,
+			-- GRUG PATCH: mobs and NPCs collide with terrain, not with objects;
+			-- this prevents actors climbing and standing on one another.
+			collide_with_objects = false,
 			collisionbox = collisionbox,
 			selectionbox = def.selectionbox or collisionbox,
 			visual = def.visual,

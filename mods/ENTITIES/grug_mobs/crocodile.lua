@@ -40,7 +40,7 @@ local crocodile = {
 	-- HP/damage/XP/armor: engine-owned (levels.lua). The swamp sits in the
 	-- outer ring, so the field gives L25-45 (§1.2 "25-45").
 
-	reach = 2,
+	reach = 3,
 	attack_type = "dogfight",
 	attack_players = true,
 	-- Solitary ambusher: no pack verb, so no group_attack (§3 "group_attack

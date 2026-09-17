@@ -52,7 +52,7 @@ local skeleton = {
 	-- grug_zones.mob_level_at keeps the coastal ones at 20-30, the bone
 	-- forest ones scale to 60.
 
-	reach = 2,
+	reach = 3,
 	attack_type = "dogshoot",
 	attack_players = true,
 	group_attack = true,
