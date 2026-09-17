@@ -13,16 +13,6 @@ grug_food.QUALITY = {
 
 grug_food.converted = {}
 
-local mana_restorer
-
-function grug_food.register_mana_restorer(callback)
-	if type(callback) ~= "function" or mana_restorer then
-		return false
-	end
-	mana_restorer = callback
-	return true
-end
-
 function grug_food.tick_amount(maximum, percent)
 	maximum = math.max(0, tonumber(maximum) or 0)
 	percent = math.max(0, tonumber(percent) or 0)
@@ -45,11 +35,11 @@ end
 
 local function restore_mana(player, percent)
 	local maximum = grug_classes.get_max_mana(player)
-	if maximum <= 0 or not mana_restorer then
+	if maximum <= 0 then
 		return 0
 	end
-	return mana_restorer(player,
-		grug_food.tick_amount(maximum, percent), maximum) or 0
+	return grug_abilities.restore_mana(player,
+		grug_food.tick_amount(maximum, percent))
 end
 
 local function start_food_status(player, resource, percent)
@@ -84,11 +74,6 @@ function grug_food.eat(itemstack, user, resource, quality)
 		if grug_classes.get_max_mana(user) <= 0 then
 			core.chat_send_player(user:get_player_name(),
 				"Mana food has no effect without a mana pool.")
-			return itemstack
-		end
-		if not mana_restorer then
-			core.chat_send_player(user:get_player_name(),
-				"Mana food is not available yet.")
 			return itemstack
 		end
 	elseif resource ~= "hp" then
@@ -158,7 +143,9 @@ local gathering = grug_gathering.p9g_sources()
 for index = 1, #gathering do
 	local row = gathering[index]
 	if row.harvest_kind == "food" or row.harvest_kind == "found_only_food" then
-		assert(grug_food.register_item(row.raw_item, "hp", "raw"),
+		local resource = row.raw_item == "grug_gathering:wild_cocoa"
+			and "mana" or "hp"
+		assert(grug_food.register_item(row.raw_item, resource, "raw"),
 			"grug_food: missing gathering food " .. row.raw_item)
 	end
 end

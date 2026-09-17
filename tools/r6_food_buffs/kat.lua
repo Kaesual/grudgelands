@@ -114,6 +114,38 @@ local function run(repo)
 	}
 	environment._G = environment
 
+	-- Load the exact Resource API slice from the real ability mod. Keeping this
+	-- in one chunk preserves the private mana ledger and hud_update upvalue while
+	-- avoiding unrelated ability registrations in this focused fixture.
+	local ability_path = repo .. "/mods/PLAYER/grug_abilities/init.lua"
+	local ability_file = io.open(ability_path, "rb")
+	check(ability_file ~= nil, "open real ability resource API")
+	if ability_file then
+		local source = ability_file:read("*a")
+		ability_file:close()
+		local first = source:find("local mana = {} --", 1, true)
+		local last = first and source:find("--\n-- The rage ledger", first, true)
+		check(first ~= nil and last ~= nil, "locate real ability resource API")
+		if first and last then
+			local resource_source = source:sub(first, last - 1) .. [[
+hud_update = function(player)
+	player.mana_hud_writes = (player.mana_hud_writes or 0) + 1
+end
+return grug_abilities
+]]
+			local resource_chunk, resource_error = loadstring(resource_source,
+				"@mods/PLAYER/grug_abilities/init.lua#resource-api")
+			check(resource_chunk ~= nil,
+				"load real ability resource API: " .. tostring(resource_error))
+			if resource_chunk then
+				setfenv(resource_chunk, environment)
+				local ok, result = pcall(resource_chunk)
+				check(ok and result == grug_abilities_stub,
+					"run real ability resource API: " .. tostring(result))
+			end
+		end
+	end
+
 	local function load_production(path)
 		local chunk, load_error = loadfile(repo .. "/" .. path)
 		check(chunk ~= nil, "load " .. path .. ": " .. tostring(load_error))
@@ -166,6 +198,19 @@ local function run(repo)
 		self.hud_writes = self.hud_writes + 1
 	end
 	function Player:hud_remove(id) self.hud[id] = nil end
+
+	local seam_player = new_player("seam", 100, 0)
+	local restored_first = grug_abilities_stub.restore_mana(seam_player, 40)
+	local restored_clamp = grug_abilities_stub.restore_mana(seam_player, 80)
+	local restored_full = grug_abilities_stub.restore_mana(seam_player, 5)
+	local restored_total = grug_abilities_stub.get_mana(seam_player)
+	local restored_hud = seam_player.mana_hud_writes or 0
+	check(restored_first == 40 and restored_clamp == 60 and
+		restored_full == 0 and restored_total == 100 and restored_hud == 2,
+		"restore_mana returns actual amounts, clamps and updates the HUD")
+	local restore_row = ("first=%d\tclamp=%d\tfull=%d\tmana=%d\thud=%d")
+		:format(restored_first, restored_clamp, restored_full,
+			restored_total, restored_hud)
 
 	local Stack = {}
 	Stack.__index = Stack
@@ -225,28 +270,22 @@ local function run(repo)
 	for index = 1, #hooks.globalstep do hooks.globalstep[index](1) end
 	check(player.hp == 17, "replacement uses cooked percentage")
 
-	local mana_ticks = 0
-	check(environment.grug_food.register_mana_restorer(
-		function(target, amount, maximum)
-			local before = target.mana
-			target.mana = math.min(maximum, target.mana + amount)
-			mana_ticks = mana_ticks + 1
-			return target.mana - before
-		end), "mana restorer registered")
 	local mana_stack = stack(2)
-	environment.grug_food.eat(mana_stack, player, "mana", "raw")
+	registered_items["grug_gathering:wild_cocoa"].on_use(mana_stack, player)
 	check(mana_stack.count == 1, "raw mana food consumed by caster")
 	now = 45 * 1e6
 	for index = 1, #hooks.globalstep do hooks.globalstep[index](1) end
-	check(player.mana == 2 and mana_ticks == 1, "raw mana food restores 2 percent")
+	check(grug_abilities_stub.get_mana(player) == 2 and
+		player.mana_hud_writes == 1, "raw mana food restores 2 percent")
 	local mana_cooked = stack(1)
 	environment.grug_food.eat(mana_cooked, player, "mana", "cooked")
 	now = 55 * 1e6
 	for index = 1, #hooks.globalstep do hooks.globalstep[index](1) end
-	check(player.mana == 7, "cooked mana food restores 5 percent")
+	check(grug_abilities_stub.get_mana(player) == 7,
+		"cooked mana food restores 5 percent")
 	max_mana = 0
 	local rage_stack = stack(1)
-	environment.grug_food.eat(rage_stack, player, "mana", "raw")
+	registered_items["grug_gathering:wild_cocoa"].on_use(rage_stack, player)
 	check(rage_stack.count == 1 and #chats == 1,
 		"rage class refuses mana food without consuming")
 	max_mana = 100
@@ -325,17 +364,34 @@ local function run(repo)
 		"HUD text writes only when changed")
 
 	local tiers = {}
+	local cocoa_mapping = "missing"
+	local cooked_mana_items = 0
 	for index = 1, #environment.grug_food.converted do
 		local row = environment.grug_food.converted[index]
-		tiers[#tiers + 1] = row.name .. "=" .. row.quality
+		tiers[#tiers + 1] = row.name .. "=" .. row.resource .. "/" .. row.quality
+		if row.name == "grug_gathering:wild_cocoa" then
+			cocoa_mapping = row.resource .. "/" .. row.quality .. "/" .. row.percent
+		end
+		if row.resource == "mana" and row.quality == "cooked" then
+			cooked_mana_items = cooked_mana_items + 1
+		end
 	end
+	local cocoa_groups = registered_items["grug_gathering:wild_cocoa"].groups
+	check(cocoa_mapping == "mana/raw/2" and cocoa_groups.grug_food_mana == 1
+		and not cocoa_groups.grug_food_hp, "wild cocoa is raw mana food only")
+	check(cooked_mana_items == 0,
+		"the registered cooked mana tier has no item yet")
 	table.sort(tiers)
-	return failures, table.concat(tiers, ",")
+	return failures, table.concat(tiers, ","), cocoa_mapping,
+		cooked_mana_items, restore_row
 end
 
 function M.run(repo)
-	local failures, tiers = run(repo or ".")
-	local digest = "r6_food_buffs_result\tfailures=" .. #failures ..
+	local failures, tiers, cocoa, cooked_mana, restore = run(repo or ".")
+	local digest = "r6_food_mapping\tcocoa=" .. cocoa ..
+		"\tcooked_mana_items=" .. cooked_mana .. "\n" ..
+		"r6_mana_restore\t" .. restore .. "\n" ..
+		"r6_food_buffs_result\tfailures=" .. #failures ..
 		"\tticks=2%:1/2/6,5%:1/5/16,10%:2/10/32\titems=" .. tiers
 	if #failures > 0 then
 		return digest .. "\nFAIL " .. table.concat(failures, "; ") .. "\n"

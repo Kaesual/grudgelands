@@ -1199,11 +1199,13 @@ Neither of these costs a main profession slot (professions.md §1).
   - Mana food uses the same three quality percentages against maximum mana.
     A character without a mana pool receives a message and does not consume
     the serving.
-  - Current mapping: apples, blueberries, raw fish, raw meat and every
-    gathering-catalog `food`/`found_only_food` item are raw/plain;
-    Cooked Fish, cooked meat and other cooked items are simply cooked.
-    Nothing is well cooked yet. WP10 assigns that registered tier when its
-    cooking book creates the later dishes.
+  - Current mapping: Wild Cocoa is raw mana food; apples, blueberries, raw
+    fish, raw meat and every other gathering-catalog
+    `food`/`found_only_food` item are raw HP food. Cooked Fish, cooked meat and
+    other cooked items are simply cooked HP food. The cooked mana tier is
+    registered but has no item until WP10's cooking book assigns one. Nothing
+    is well cooked yet; WP10 assigns that registered tier when its cooking
+    book creates the later dishes.
   - Buffs are runtime-only. Relogging drops a food buff; it is not persisted.
     The natural replacement cadence is one serving per 180 s, or about
     **20 servings per hour**.

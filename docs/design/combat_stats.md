@@ -692,9 +692,10 @@ design (`group_attack` stays on).
     least 1 HP. Vanilla `item_eat` instant healing is removed completely.
   - Mana food mirrors the quality percentage against maximum mana. It does
     nothing, reports why and is not consumed for a rage class.
-  - Apples, blueberries, raw fish, raw meat and raw gathering foods are raw;
-    Cooked Fish and every cooked item are simply cooked. No item is well
-    cooked until WP10 assigns that tier.
+  - Wild Cocoa is raw mana food. Apples, blueberries, raw fish, raw meat and
+    every other raw gathering food restore HP; Cooked Fish and every cooked
+    item are simply cooked HP food. No item is well cooked until WP10 assigns
+    that tier.
   - The natural replacement cadence is about **20 servings per hour**.
 - **Healing potion**: instant **30% max HP, 60 s cooldown** (Alchemist
   craft; weak 15% variant sold by vendors). The potion holds the
