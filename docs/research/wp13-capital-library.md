@@ -196,7 +196,14 @@ What each one is, and the decisions inside it:
   keeps the room's centre column clear, which is where the sockets stand.
 - **`orchard_edge`, `grove`, `stilt_platform`, `water_channel`** are the open
   races' edge, in place of a curtain wall (the user's 2026-09-14 ruling:
-  walls for Dur Brannoc, Nhal Veyr and Gor Drazhak only). The orchard edge is
+  walls for Dur Brannoc, Nhal Veyr and Gor Drazhak only).
+
+  **Superseded (2026-09-17):** Highcourt is now the fourth walled capital;
+  every statement in this historical record that counts only three walled
+  races is superseded by [wp13-highcourt-fill.md](wp13-highcourt-fill.md) and
+  the ruling of that date.
+
+  The orchard edge is
   a kerbed ring street, a clipped hedge with a gate gap and two rows of fruit
   trees; `grove` takes a `kind` naming any `dressing` tree silhouette; the
   stilt platform is timber legs on masonry pads under a six-course deck, with

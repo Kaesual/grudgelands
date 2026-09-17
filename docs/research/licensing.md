@@ -99,6 +99,15 @@ minetest_game / Mineclonia / VoxeLibre repositories.
   WTFPL is allowed but discouraged (no warranty disclaimer); non-free (NC/ND) packages are
   flagged non-FOSS and are being phased out. Publishing imposes nothing beyond honest
   license declaration and complete crediting — no relicensing to ContentDB.
+- The package record also has an **AI-generated** flag. Set it whenever any
+  shipped media is AI-generated, and identify the generator in the media
+  credits; the flag is disclosure metadata, not a substitute for a free media
+  licence, provenance, authorship/rightsholder record or modification note.
+  For the current Z-Image menu icon, the release gate therefore requires all
+  of these together: flag set, Z-Image credited, Jan Hangebrauck recorded as
+  prompt/mask author and rights holder, the source render and derivative
+  declared CC0 1.0, and the retained source/prompt/export record named in
+  `menu/LICENSE-media.md`.
 
 ### 3.4 Structure (see §1)
 

@@ -117,6 +117,11 @@ the goal-level view.
   G1/G2/cultural/race-region data and the protection-first mining transaction.
 - [x] WP45: safe character-creation stasis, opaque faction/race/class flow and
   race-start preloading with one final teleport after successful emergence.
+- [x] **WP-HUD:** point-accurate LIFE and mana-or-rage bars above the hotbar,
+  with one shared HUD offset owner (2026-09-16).
+- [x] **WP-Speed:** one `grug_core` owner for named speed/jump modifiers,
+  roots and movement-immunity windows; all three former physics writers are
+  migrated (2026-09-16).
 - [x] **WP40 — Named-zone world foundation:** the fixed 38-zone world,
   terrain/biome/content/resource generation, fitted pads/terraces and routes,
   water handling and shared geography APIs are delivered. The first correction
@@ -145,20 +150,18 @@ the goal-level view.
   `docs/design/skill_trees.md` §4) — 48 talents of Warrior, Mage and Priest,
   one point every two levels, both gate kinds, a full-reset respec, and
   interim `/talents` `/talent` `/respec` chat commands until the sfinv page
-  lands. Still open: lane X3 (keystones, capstones, four new abilities) and
-  lane X4 (the UI, the respec price, the level-up page).
+  lands. Lane X4 (the UI, the respec price and the level-up page) is in
+  progress in round 5; lane X3 (keystones, capstones and four new abilities)
+  follows in round 6.
 - [ ] **WP14 / WP20 / WP21 / WP8:** live offhand/carried
   light, parties, recovery/rest and the quest framework are independently
   ready behind their shipped prerequisites. Design revision 2 landed 2026-09-16
-  ([skill_trees.md](docs/design/skill_trees.md)); implementation phase 1 is in
-  progress.
-- [ ] **WP-Scout / WP-HUD / WP-Speed:** the three work packages those rulings
-  created, all open and all specced (`BACKLOG.md`): the fourth class
+  ([skill_trees.md](docs/design/skill_trees.md)); implementation phase 1 is
+  shipped and X4 is in progress.
+- [ ] **WP-Scout:** the fourth class
   ([scout.md](docs/design/scout.md) — leather, bow and blade, no stealth in
-  v1), the point-accurate LIFE and mana-or-rage bars that replace the builtin
-  heart statbars, and the `grug_core` **movement aggregator** that gives
-  speed and jump one owner. WP-Speed is a prerequisite for WP11's Hold Ground
-  and for the Scout's Sprint.
+  v1) remains open. Its Sprint consumes the movement aggregator already
+  shipped by WP-Speed.
 
 ### Dependent world and item loop
 
