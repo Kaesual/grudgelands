@@ -59,7 +59,7 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   retains fractional points. Percentage consumables first derive their amount
   from max HP and then enter this same scalar once
   (`mods/CORE/grug_core/combat.lua:29`, `:53`, `:977`, `:1067`, `:1101`;
-  authoritative swings: `mods/PLAYER/grug_abilities/init.lua:1236-1275`).
+  authoritative swings: `mods/PLAYER/grug_abilities/init.lua:1261-1303`).
 - **Higher-mob-level damage malus**: against a mob more than five levels above
   the player, multiply player damage by `max(0.10, 1 − 0.10×(mob level −
   player level − 5))`. It is part of the same final damage multiplication and
@@ -84,8 +84,11 @@ anything). Item enchants (+Str etc.) are the player-driven part.
     target-race Warding Draught → absorb shield.**
     Authoritative swing abilities assemble gear, Strength and a selected proc,
     then apply the level scalar and mob-level malus once before crit and armor.
-    Ordinary native tools/fists apply the level scalar to their full-swing
-    equivalent before crit, armor, proportional scaling and accumulation.
+    Ordinary native tools/fists against hostile players apply the level scalar
+    to their full-swing equivalent before crit, armor, proportional scaling and
+    accumulation. Raw tool/fist punches against Grudgelands mobs are vetoed:
+    all player damage to those mobs comes through the once-scaled authoritative
+    swing or ability seams.
     Both then enter the modifier for dodge and absorb and use a namespaced
     `custom_type` that skips
     only the already-performed armor step. Fall damage is separate: its race
@@ -221,13 +224,15 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   but preserves due time; lifecycle/class reset clears it. A concrete equipped
   weapon change starts the new weapon at one full interval, preventing swap
   spam.
-- **Ordinary hostile tools/fists cannot form a second stream.** Their native
-  proportional path remains, but every actual mob/PvP combat packet moves the
-  next full ability swing to at least `now + equipped FPI`. The transition
-  clears an old bank once; consecutive ordinary packets retain their fractions,
-  and returning to a swing clears the remainder once. Cast use alone preserves
-  ability due time (`mods/PLAYER/grug_abilities/init.lua:1236-1275`,
-  `:2213-2233`).
+- **Ordinary hostile tools/fists cannot form a second stream.** Against a
+  Grudgelands mob their raw punch is input only and deals **0 damage**; only a
+  current-ray authoritative swing or an ability punch can damage it. Against a
+  hostile player the native proportional path remains and moves the next full
+  ability swing to at least `now + equipped FPI`. Its transition clears an old
+  bank once; consecutive ordinary PvP packets retain their fractions, and
+  returning to a swing clears the remainder once. Cast use alone preserves
+  ability due time (`mods/ENTITIES/mobs/api.lua:2773-2784`,
+  `mods/PLAYER/grug_abilities/init.lua:1261-1303`, `:2239-2269`).
 - **One accepted full swing resolves once.** Against players the order is
   **slot weapon + Strength → selected proc replacement → level scalar (plus
   mob-level malus when the target is a mob) → one crit → armor → integer
@@ -397,9 +402,10 @@ Normal tier at level L:
   only participants who are online and within 40 m count; divide the award by
   that eligible count after calculating the cap and gray rule per recipient. A
   player receives no XP from a mob of their own faction
-  (`mods/ENTITIES/grug_mobs/init.lua:82-197`). Settlement occurs once at the
-  actual mob-death callback regardless of whether a player, NPC, mob or the
-  environment dealt the final damage (`mods/ENTITIES/grug_mobs/init.lua:489-506`).
+  (`mods/ENTITIES/grug_mobs/init.lua:87-215`). Settlement occurs once at the
+  shared mobs_redo death boundary regardless of whether a player, NPC, mob or
+  the environment dealt the final damage, without replacing the mob's death
+  callback, animation or smoke fallback (`mods/ENTITIES/mobs/api.lua:855-910`).
 - **PvE death loss** is 25% of the whole current-level XP span, clamped at the
   current level start; it never de-levels. Level 60 has no following span and
   therefore no PvE XP loss (`mods/PLAYER/grug_xp/init.lua:86-104`).
