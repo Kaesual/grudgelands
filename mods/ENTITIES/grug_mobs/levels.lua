@@ -44,8 +44,8 @@
 -- drop list) stays def-owned like any other mob.
 --
 -- Persistence note: mobs_redo serializes every plain entity field into
--- staticdata (api.lua clean_staticdata:2790) and re-applies fields whose
--- name is an object-property name (is_property_name:2842) on activation.
+-- staticdata (api.lua clean_staticdata:3546-3558,3626) and re-applies fields whose
+-- name is an object-property name (is_property_name:3630-3634,3669-3675) on activation.
 -- So `self.hp_max` is not read by mobs_redo at runtime, but storing it
 -- makes the raised max survive unload/reload for free. Function fields are
 -- dropped by the serializer — anything callable must be re-installed on
