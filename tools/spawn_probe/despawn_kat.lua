@@ -2,6 +2,8 @@
 -- Plain Lua 5.1; the production api.lua is loaded in an isolated engine stub.
 
 local repo = arg[1] or "."
+local start_npcs_path = arg[2] or
+	repo .. "/mods/ENTITIES/grug_mobs/start_npcs.lua"
 
 local function fail(message)
 	error("spawn despawn KAT: " .. message, 0)
@@ -139,12 +141,24 @@ end
 local function entity_at(distance, fields)
 	local object = {
 		removed = 0,
+		deactivation_calls = 0,
 		properties = {hp_max = 10},
 		rotation = {x = 0, y = 0, z = 0},
-		get_pos = function() return origin end,
+		pos_reads = 0,
 	}
+	function object:get_pos()
+		self.pos_reads = self.pos_reads + 1
+		return origin
+	end
 	function object:remove()
 		self.removed = self.removed + 1
+		-- Luanti dispatches on_deactivate(true) once before marking the
+		-- active object gone. Repeated remove calls do not dispatch it again.
+		if not self.deactivated and self.entity then
+			self.deactivation_calls = self.deactivation_calls + 1
+			self.entity:on_deactivate(true)
+			self.deactivated = true
+		end
 	end
 	function object:set_properties(properties)
 		for key, value in pairs(properties) do self.properties[key] = value end
@@ -183,6 +197,7 @@ local function entity_at(distance, fields)
 		rotate = 0,
 	}, {__index = env.mobs.mob_class})
 	for key, value in pairs(fields or {}) do entity[key] = value end
+	object.entity = entity
 	core_stub.get_connected_players = function() return {player_at(distance)} end
 	return entity
 end
@@ -192,6 +207,8 @@ local function engine_staticdata(entity)
 end
 
 local function engine_deactivate(entity, removal)
+	if entity.object.deactivated then return end
+	entity.object.deactivation_calls = entity.object.deactivation_calls + 1
 	entity:on_deactivate(removal == true)
 	entity.object.deactivated = true
 end
@@ -262,6 +279,29 @@ want(terminal.object.properties.static_save == false,
 want(active_mob_count() == 0,
 	"terminal activation debited active_mobs a second time")
 
+-- Public removal reaches the real remove_mob helper. ObjectRef:remove then
+-- dispatches production on_deactivate(true), which performs the sole debit.
+local explicit = entity_at(40)
+explicit:mob_activate("", {}, 0)
+env.mobs:remove(explicit, true)
+want(explicit.object.removed == 1 and
+		explicit.object.deactivation_calls == 1,
+	"mobs:remove did not dispatch one engine deactivation")
+want(active_mob_count() == 0,
+	"mobs:remove did not debit active_mobs exactly once")
+
+-- The ordinary no-animation death fallback reaches the same real remove_mob
+-- helper through production check_for_death.
+local dead = entity_at(40)
+dead:mob_activate("", {}, 0)
+dead.health = 0
+want(dead:check_for_death({type = "unknown"}) == true,
+	"check_for_death did not accept the lethal state")
+want(dead.object.removed == 1 and dead.object.deactivation_calls == 1,
+	"check_for_death did not dispatch one engine deactivation")
+want(active_mob_count() == 0,
+	"check_for_death did not debit active_mobs exactly once")
+
 -- Fill the configured limit with accepted activations. A further creation is
 -- rejected before it can be counted; the engine's subsequent initial
 -- staticdata call and on_deactivate remain neutral for that rejected object.
@@ -282,6 +322,67 @@ want(active_mob_count() == 600,
 for index = 1, #accepted do engine_deactivate(accepted[index], true) end
 want(active_mob_count() == 0, "accepted creation cleanup leaked active_mobs")
 
+-- Load Lane P's real settlement-NPC wrapper around the already-loaded shared
+-- mob callback. One claimed socket is enough to make track_deactivation read
+-- the object's position; the shared callback then cleans XP and debits count.
+local mods_loaded = {}
+core_stub.register_on_mods_loaded = function(callback)
+	mods_loaded[#mods_loaded + 1] = callback
+end
+core_stub.register_globalstep = noop
+core_stub.after = noop
+core_stub.log = noop
+core_stub.pos_to_string = function() return "(0,0,0)" end
+core_stub.registered_entities["grug_mobs:villager_human"] = {}
+
+local storage = {
+	get_string = function() return "" end,
+	set_string = noop,
+}
+local cleanup_calls = 0
+env.grug_mobs = {
+	storage = storage,
+	registered_cadence = {["grug_mobs:villager_human"] = true},
+	cleanup_xp_participants = function()
+		cleanup_calls = cleanup_calls + 1
+	end,
+}
+env.grug_core = {
+	start_identities = function()
+		return {{race_id = "human", faction_id = "accord"}}
+	end,
+	settlement_socket_settlements = function()
+		return {{key = "kat_start", race_id = "human", anchor = origin}}
+	end,
+	settlement_sockets_at = function()
+		return {{id = "kat_socket", role = "idle", spawn = true,
+			pos = origin, yaw = 0}}
+	end,
+	start_anchor = function() return origin end,
+	capital_anchor = function() return nil end,
+	register_on_starts_progress = noop,
+	start_ready = function() return false end,
+}
+setfenv(assert(loadfile(start_npcs_path)), env)()
+want(#mods_loaded == 1, "start_npcs did not register its production loader")
+mods_loaded[1]()
+
+local wrapped = entity_at(40, {name = "grug_mobs:villager_human",
+	_grug_start = "kat_start", _grug_socket = "kat_socket"})
+wrapped:mob_activate("", {}, 0)
+want(env.grug_mobs.start_npc_claim(wrapped) == true,
+	"wrapper fixture could not claim its production socket")
+wrapped.object.pos_reads = 0
+engine_deactivate(wrapped, false)
+want(wrapped.object.pos_reads == 1,
+	"start_npcs tracking did not run exactly once")
+want(cleanup_calls == 1,
+	"shared XP cleanup did not run exactly once through start_npcs")
+want(wrapped.object.deactivation_calls == 1 and active_mob_count() == 0,
+	"counter debit did not run exactly once through start_npcs")
+
 io.write("spawn_despawn\tPASS\tmin=48\tmax=128\t" ..
 	"create=1\tresave=1\tprotected_unload=0\treload_zero=1\t" ..
-	"far=0\trejected_limit=600\tterminal_absent\n")
+	"far=0\tremove=0\tdeath=0\trejected_limit=600\t" ..
+	"wrapper_track=1\twrapper_xp=1\twrapper_debit=1\t" ..
+	"terminal_absent\n")
