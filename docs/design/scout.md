@@ -566,12 +566,12 @@ The stealth lane must reach `sync_wield` (`:117-169`) with the same `hidden`
 flag. Armour is not affected: armour is drawn as texture overlays on the
 player model (`character_visuals.md:19-21`), so it disappears with the skin.
 
-#### 8.2.3 Player nametags — **no conflict, already solved**
+#### 8.2.3 Player nametags — **needs the stealth state**
 
-`grug_factions/init.lua:61-73` hides player nametags **entirely**, for
-everyone, with alpha 0, and re-asserts it on join and on faction change
-(`:128`, `:272`). There is no floating name to hide. Recorded here because it
-is the first thing a reviewer will ask.
+Player nametags use the global **25 m visible / 30 m hidden** proximity gate
+(`combat_stats.md` §6). Stealth must suppress the nametag even inside 25 m and
+must return control to that gate when stealth ends; otherwise the floating name
+reveals the hidden player's exact position to every nearby player.
 
 #### 8.2.4 The non-combatant veto and `_grug_ignore_player` share the target loop — **needs a rule**
 

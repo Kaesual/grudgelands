@@ -131,12 +131,17 @@ Two optional target-race systems use the central pipeline:
   neither do liquid nodes. The character-creation stasis state is exempt.
 - Every player death sends exactly **one** short English line to all players.
   The selected template distinguishes fall, drowning, lava/fire node damage,
-  a mob punch (using the mob's display name), a player punch (using the player
-  name) and an unattributed fallback.
+  suffocation, a mob punch (using the mob's display name), a player punch
+  (using the player name) and an unattributed fallback.
 - Player stepheight is **1.1 while the player's feet are in liquid** and
-  **0.6 otherwise**. The value changes only on a liquid-state transition.
-  This permits the one-node step from a water surface onto its bank without
-  changing ordinary land climbing or the authored bank height.
+  otherwise returns to the exact live value saved on liquid entry. Land
+  without an active liquid override is not written. This helps at shallow
+  banks where the player touches the bottom without changing ordinary land
+  climbing or the authored bank height. A player who is not touching ground
+  has an engine-forced effective stepheight of **0.2** regardless of the
+  property (`reference_projects/luanti/src/client/localplayer.cpp:322`), so
+  the deep-water case is not proven. GUI playtest 8 decides whether round 6
+  must change the mapgen bank contract.
 
 ### Melee timing and aim authority (shipped 2026-08-10, WP39)
 

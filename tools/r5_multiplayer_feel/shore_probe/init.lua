@@ -1,6 +1,7 @@
--- Disposable engine measurement: a player-sized physical entity receives
--- forward velocity at a one-node bank. Change STEPHEIGHT to 0.6 in a temporary
--- probe copy for the before run; the shipped after probe uses 1.1.
+-- Entity-level engine measurement only, not proof of client-side player
+-- physics: a player-sized physical Lua entity receives forward velocity at a
+-- one-node bank. It uses the player's default legacy step-up mode. Change
+-- STEPHEIGHT to 0.6 in a temporary copy for before; after uses 1.1.
 
 grug_shore_step_probe = {}
 
@@ -20,7 +21,7 @@ local function entity_def()
 			collisionbox = {-0.3, 0, -0.3, 0.3, 1.7, 0.3},
 			selectionbox = {-0.3, 0, -0.3, 0.3, 1.7, 0.3},
 			stepheight = STEPHEIGHT,
-			step_up_mode = "floaty",
+			step_up_mode = "legacy",
 			visual = "cube",
 			visual_size = {x = 0.6, y = 1.7},
 			textures = {"default_wood.png", "default_wood.png",
@@ -69,7 +70,8 @@ local function start_measurement()
 			return
 		end
 		local climbed = result.x > 3 and result.y > 2.25
-		log(("result=PASS stepheight=%.1f climbed=%s x=%.3f y=%.3f"):format(
+		log(("result=PASS proof=lua_entity step_up_mode=legacy " ..
+			"stepheight=%.1f climbed=%s x=%.3f y=%.3f"):format(
 			STEPHEIGHT, climbed and "yes" or "no", result.x, result.y))
 		core.request_shutdown("shore step probe complete", false, 0)
 	end)

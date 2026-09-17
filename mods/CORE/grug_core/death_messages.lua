@@ -14,6 +14,10 @@ local TEMPLATES = {
 		"%s got far too familiar with fire.",
 		"%s found the hot side of the world.",
 	},
+	suffocation = {
+		"%s suffocated where no one should fit.",
+		"%s was suffocated by solid ground.",
+	},
 	mob = {
 		"%s was defeated by %s.",
 		"%s picked the wrong fight with %s.",
@@ -57,7 +61,9 @@ function grug_core.death_message(player_name, reason)
 	local category = "fallback"
 	local actor
 	local reason_type = reason and reason.type
-	if reason_type == "fall" then
+	if reason and reason.custom_type == "grug_core:suffocation" then
+		category = "suffocation"
+	elseif reason_type == "fall" then
 		category = "fall"
 	elseif reason_type == "drown" then
 		category = "drown"
