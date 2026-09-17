@@ -178,11 +178,12 @@ are listed here because they cannot retain in-file markers.
 The mobs_redo row's WP6-review patch **(g)** is superseded by Lane S's
 distance-aware unload rule: ordinary mobs keep `static_save = true`, so
 `mob_staticdata()` can protect the nearest-player radius instead of letting the
-engine discard the entity before Lua runs. Its one replacement `GRUG PATCH`
-site applies a 48-node no-despawn radius, a 128-node hard radius and a linear
-chance between them; the total remains **43 markers**. The older `(g)` wording
-inside the compact table row below records the replaced implementation, not
-the current rule.
+engine discard the entity before Lua runs. Its two replacement `GRUG PATCH`
+sites apply a 48-node no-despawn radius, a 128-node hard radius and a linear
+chance between them, then consume a terminal unload marker on activation
+without double-debiting the active-mob count; the total is **44 markers**. The
+older `(g)` wording inside the compact table row below records the replaced
+implementation, not the current rule.
 
 | Path | Upstream | Vendored commit | License | Local patches |
 |------|----------|-----------------|---------|---------------|

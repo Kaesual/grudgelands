@@ -3386,7 +3386,7 @@ function mob_class:mob_staticdata()
 --print("-- staticdata", active_mobs, active_limit, self.active_toggle)
 	end
 
-	-- remove mob when out of range unless tamed
+	-- mark mob for terminal removal when out of range unless tamed
 	if remove_far and self.remove_ok
 	and self.type ~= "npc" and self.state ~= "attack"
 	and not self.tamed and self.lifetimer < 20000
@@ -3395,9 +3395,11 @@ function mob_class:mob_staticdata()
 
 --print("REMOVED " .. self.name)
 
-		remove_mob(self, true)
-
-		return core.serialize({remove_ok = true, static_save = true})
+		-- The engine stores this callback result before it deactivates the
+		-- object. Removing here would still save and later reactivate the
+		-- returned data, and remove_mob(..., true) would also decrement the
+		-- active count a second time after active_toggle did so above.
+		return core.serialize({_grug_despawn_terminal = true})
 	end
 
 	self.remove_ok = true
@@ -3422,6 +3424,18 @@ local is_property_name = {
 -- activate mob and reload settings
 
 function mob_class:mob_activate(staticdata, def, dtime)
+	local tmp = core.deserialize(staticdata)
+
+	-- GRUG PATCH: consume the unload-despawn marker without re-saving it.
+	-- ServerEnvironment stores get_staticdata's result before deactivation,
+	-- so the terminal object must be removed on its next activation. Clearing
+	-- static_save first prevents that removal from producing another static
+	-- object. The unload toggle already debited active_mobs exactly once.
+	if tmp and tmp._grug_despawn_terminal then
+		self.object:set_properties({static_save = false})
+		self.object:remove()
+		return
+	end
 
 	-- if dtime == 0 then entity has just been created
 	-- anything higher means it is respawning (thx SorceryKid)
@@ -3433,8 +3447,6 @@ function mob_class:mob_activate(staticdata, def, dtime)
 	end
 
 	-- load entity variables from staticdata into self.*
-	local tmp = core.deserialize(staticdata)
-
 	if tmp then
 
 		local t ; for _,stat in pairs(tmp) do

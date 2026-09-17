@@ -1,19 +1,25 @@
 -- Disposable Lane S headless probe for the block-unload removal path.
 
-local PLAYER_DISTANCE = 32
+local NEAR_DISTANCE = 32
+local FAR_DISTANCE = 160
 local LOG_INTERVAL = 1
 local UNLOAD_AT = 10
 local RELOAD_AT = 25
-local FINISH_AT = 40
+local FINISH_AT = 55
 local UNLOAD_TIMEOUT = 2
 
 local player_pos
-local stag_pos
-local stag_ref
-local stag_block_forced = false
+local near_pos
+local far_pos
+local blocks_forced = false
 local elapsed = 0
 local next_log = 0
 local phase = "waiting"
+
+-- Keep the entity census isolated from ambient stag ABMs. spawn_action asks
+-- this hook dynamically, so the disposable probe can refuse natural rows
+-- without changing the production spawner or the two explicit probe entities.
+mobs.spawn_abm_check = function() return true end
 
 local function log(fields)
 	local parts = {"GRUG_R5_DESPAWN"}
@@ -58,15 +64,27 @@ setmetatable(fake_player, {
 	__index = function() return function() return nil end end,
 })
 
-local function probe_entity()
-	local objects = core.get_objects_inside_radius(stag_pos, 4)
+local function count_stags(pos)
+	local count = 0
+	local objects = core.get_objects_inside_radius(pos, 4)
 	for index = 1, #objects do
 		local entity = objects[index]:get_luaentity()
-		if entity and entity._grug_lane_s_probe then
-			return objects[index], entity
-		end
+		if entity and entity.name == "grug_mobs:stag" then count = count + 1 end
 	end
-	return nil, nil
+	return count
+end
+
+local function add_stationary_stag(pos, identity)
+	local object = core.add_entity(pos, "grug_mobs:stag")
+	local entity = object and object:get_luaentity()
+	if not entity then return false end
+	entity._grug_lane_s_probe = identity
+	-- Existing mobs carry remove_ok after their first ordinary static save.
+	entity.remove_ok = true
+	entity.order = "stand"
+	entity.state = "stand"
+	entity.walk_chance = 0
+	return true
 end
 
 local function start_probe()
@@ -76,32 +94,26 @@ local function start_probe()
 		return
 	end
 	player_pos = {x = start.x, y = start.y, z = start.z}
-	stag_pos = {x = start.x + PLAYER_DISTANCE, y = start.y + 2, z = start.z}
+	near_pos = {x = start.x + NEAR_DISTANCE, y = start.y + 2, z = start.z}
+	far_pos = {x = start.x + FAR_DISTANCE, y = start.y + 2, z = start.z}
 	core.settings:set("server_unload_unused_data_timeout",
 		tostring(UNLOAD_TIMEOUT))
-	stag_block_forced = core.forceload_block(stag_pos, true, -1)
-	stag_ref = core.add_entity(stag_pos, "grug_mobs:stag")
-	local entity = stag_ref and stag_ref:get_luaentity()
-	if not entity then
+	local near_forced = core.forceload_block(near_pos, true, -1)
+	local far_forced = core.forceload_block(far_pos, true, -1)
+	blocks_forced = near_forced and far_forced
+	if not add_stationary_stag(near_pos, "near") or
+			not add_stationary_stag(far_pos, "far") then
 		core.log("error", "GRUG_R5_DESPAWN event=fail stag_add")
 		return
 	end
-	entity._grug_lane_s_probe = true
-	-- A mob that has completed one ordinary save/reactivation carries this
-	-- upstream unload-culling flag. The reported stag was an existing mob,
-	-- not a brand-new entity receiving its one-save grace period.
-	entity.remove_ok = true
-	entity.order = "stand"
-	entity.state = "stand"
-	entity.walk_chance = 0
 	core.get_connected_players = function() return {fake_player} end
 	phase = "loaded"
 	elapsed = 0
-	log({"event=start", "distance=" .. PLAYER_DISTANCE,
+	log({"event=start", "near_distance=" .. NEAR_DISTANCE,
+		"far_distance=" .. FAR_DISTANCE,
 		"active_block_range=" .. tostring(core.settings:get("active_block_range") or 4),
 		"unload_timeout=" .. UNLOAD_TIMEOUT,
-		"remove_ok=" .. tostring(entity.remove_ok),
-		"forced=" .. tostring(stag_block_forced)})
+		"remove_ok=true", "forced=" .. tostring(blocks_forced)})
 end
 
 core.register_on_mods_loaded(function()
@@ -120,29 +132,33 @@ core.register_globalstep(function(dtime)
 	if phase == "waiting" or phase == "done" then return end
 	elapsed = elapsed + dtime
 	if phase == "loaded" and elapsed >= UNLOAD_AT then
-		core.forceload_free_block(stag_pos, true)
-		stag_block_forced = false
+		core.forceload_free_block(near_pos, true)
+		core.forceload_free_block(far_pos, true)
+		blocks_forced = false
 		phase = "unloaded"
 		log({"event=block_unload", "second=" .. math.floor(elapsed)})
 	elseif phase == "unloaded" and elapsed >= RELOAD_AT then
-		stag_block_forced = core.forceload_block(stag_pos, true, -1)
-		core.load_area(stag_pos, stag_pos)
+		local near_forced = core.forceload_block(near_pos, true, -1)
+		local far_forced = core.forceload_block(far_pos, true, -1)
+		blocks_forced = near_forced and far_forced
 		phase = "reloaded"
 		log({"event=block_reload", "second=" .. math.floor(elapsed),
-			"forced=" .. tostring(stag_block_forced)})
+			"forced=" .. tostring(blocks_forced)})
 	end
 
 	if elapsed >= next_log then
 		next_log = next_log + LOG_INTERVAL
-		local object = probe_entity()
 		log({"event=lifetime", "second=" .. math.floor(elapsed),
-			"phase=" .. phase, "active=" .. tostring(object ~= nil)})
+			"phase=" .. phase, "near=" .. count_stags(near_pos),
+			"far=" .. count_stags(far_pos)})
 	end
 	if elapsed >= FINISH_AT then
-		local object = probe_entity()
+		local near = count_stags(near_pos)
+		local far = count_stags(far_pos)
 		phase = "done"
 		log({"event=finish", "seconds=" .. FINISH_AT,
-			"alive=" .. tostring(object ~= nil)})
+			"near=" .. near, "far=" .. far,
+			"total=" .. (near + far)})
 		core.request_shutdown("Lane S despawn window complete", false, 0)
 	end
 end)
