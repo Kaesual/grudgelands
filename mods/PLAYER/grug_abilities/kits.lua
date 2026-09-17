@@ -94,6 +94,13 @@ local function effective_number(player, amount)
 	return grug_core.scale_player_damage(player, nil, amount)
 end
 
+-- Absorb settlement deliberately retains fractional points. Its tooltip
+-- floors only the displayed value and reads the same non-flooring seam as
+-- grug_core.set_absorb.
+local function effective_absorb_number(player, amount)
+	return math.floor(grug_core.scale_player_value(player, amount))
+end
+
 --
 -- Particle helpers (existing textures only; own effects are Phase 3).
 --
@@ -657,18 +664,29 @@ grug_abilities.register_ability({
 	kind = "cast",
 	target_kind = "hostile",
 	description = "Smites an enemy up to 20 m away; damage scales with your level.",
-	values = function(user)
+	values = function(user, assume_shielded)
 		local damage = 4 + grug_classes.get_spell_power_bonus(user)
 			+ grug_classes.get_talent_bonus(user, "smite_damage_add")
-		if grug_core.get_absorb(user) > 0 then
+		if assume_shielded == nil then
+			assume_shielded = grug_core.get_absorb(user) > 0
+		end
+		if assume_shielded then
 			damage = damage + grug_classes.get_talent_bonus(user,
 				"smite_damage_while_shielded_add")
 		end
 		return {damage = damage}
 	end,
 	description_for = function(user, def)
-		return ("Smites an enemy up to 20 m away for %d damage."):format(
-			effective_number(user, def.values(user).damage))
+		local unshielded = effective_number(user,
+			def.values(user, false).damage)
+		local shielded = effective_number(user,
+			def.values(user, true).damage)
+		local suffix = ""
+		if shielded > unshielded then
+			suffix = (" (+%d while shielded)"):format(shielded - unshielded)
+		end
+		return ("Smites an enemy up to 20 m away for %d damage%s."):format(
+			unshielded, suffix)
 	end,
 	color = "#ffd97a",
 	cost = {mana = 4},
@@ -747,7 +765,7 @@ grug_abilities.register_ability({
 	description_for = function(user, def)
 		return ("Shields the pointed ally (or yourself): absorbs %d damage\n" ..
 			"for 15 s or until consumed."):format(
-				effective_number(user, def.values(user).absorb))
+				effective_absorb_number(user, def.values(user).absorb))
 	end,
 	color = "#e8e07a",
 	cost = {mana = 8},

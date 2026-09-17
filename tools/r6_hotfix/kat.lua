@@ -5,6 +5,8 @@
 -- MUTATION=2 removes the noclip suffocation exemption.
 -- MUTATION=3 restores current/max pool text on the Character page.
 -- MUTATION=4 forces an unchanged tooltip metadata write.
+-- MUTATION=5 makes the shield tooltip use the flooring damage scaler.
+-- MUTATION=6 makes the Smite tooltip depend on the current absorb state.
 
 return function(repo)
 	local mutation = tonumber(os.getenv("MUTATION") or "") or 0
@@ -282,20 +284,97 @@ return function(repo)
 	for _, level in ipairs({1, 25, 60}) do
 		local priest = player("priest" .. level, "priest", "accord", level)
 		local row = {level = level}
-		for _, id in ipairs({"smite", "flash_heal", "power_word_shield"}) do
+		for _, id in ipairs({"smite", "flash_heal"}) do
 			local ability = abilities.registered[id]
 			local values = ability.values(priest)
-			local raw = values.damage or values.heal or values.absorb
+			local raw = values.damage or values.heal
 			local expected = ability_env.grug_core.scale_player_damage(priest, nil, raw)
 			local description = ability.description_for(priest, ability)
 			want(description:find(tostring(expected), 1, true) ~= nil,
 				id .. " tooltip has current-level value at L" .. level)
 			row[id] = expected
 		end
+		local shield = abilities.registered.power_word_shield
+		if mutation == 5 then
+			shield.description_for = function(user, ability)
+				return ("Shields the pointed ally (or yourself): absorbs %d damage\n" ..
+					"for 15 s or until consumed."):format(
+						ability_env.grug_core.scale_player_damage(user, nil,
+							ability.values(user).absorb))
+			end
+		end
+		ability_env.grug_core.set_absorb(priest, shield.values(priest).absorb,
+			15, priest)
+		local settled_absorb = ability_env.grug_core.get_absorb(priest)
+		local expected_absorb = math.floor(settled_absorb)
+		local original_damage_scaler = ability_env.grug_core.scale_player_damage
+		ability_env.grug_core.scale_player_damage = function()
+			return expected_absorb + 1000
+		end
+		local shield_description = shield.description_for(priest, shield)
+		ability_env.grug_core.scale_player_damage = original_damage_scaler
+		want(shield_description:find("absorbs " .. expected_absorb .. " damage",
+			1, true) ~= nil,
+			"shield tooltip floors the real absorb seam at L" .. level)
+		row.power_word_shield = expected_absorb
 		tooltip_rows[#tooltip_rows + 1] = row
 	end
 
 	local smite_def = abilities.registered.smite
+	if mutation == 6 then
+		smite_def.description_for = function(user, ability)
+			return ("Smites an enemy up to 20 m away for %d damage."):format(
+				ability_env.grug_core.scale_player_damage(user, nil,
+					ability.values(user).damage))
+		end
+	end
+	local unshielded_priest = player("smite_unshielded", "priest", "accord", 60)
+	local plain_description = smite_def.description_for(
+		unshielded_priest, smite_def)
+	local plain_damage = ability_env.grug_core.scale_player_damage(
+		unshielded_priest, nil, smite_def.values(unshielded_priest).damage)
+	equal(plain_damage, 72, "L60 Smite damage without Warded Wrath")
+	ability_env.grug_core.set_absorb(unshielded_priest, 1, 15,
+		unshielded_priest)
+	local plain_shielded_damage = ability_env.grug_core.scale_player_damage(
+		unshielded_priest, nil, smite_def.values(unshielded_priest).damage)
+	equal(plain_shielded_damage, 72,
+		"L60 Smite damage stays 72 without Warded Wrath")
+	equal(smite_def.description_for(unshielded_priest, smite_def),
+		plain_description, "untalented Smite tooltip ignores absorb state")
+	want(plain_description:find("72 damage.", 1, true) ~= nil,
+		"untalented L60 Smite tooltip shows 72")
+	want(plain_description:find("while shielded", 1, true) == nil,
+		"untalented Smite tooltip has no shielded suffix")
+
+	local warded_priest = player("smite_warded", "priest", "accord", 60)
+	warded_priest.talents = {smite_damage_while_shielded_add = 4}
+	local warded_description = smite_def.description_for(warded_priest, smite_def)
+	local warded_unshielded_damage = ability_env.grug_core.scale_player_damage(
+		warded_priest, nil, smite_def.values(warded_priest).damage)
+	equal(warded_unshielded_damage, 72,
+		"L60 Warded Wrath Smite damage without absorb")
+	want(warded_description:find("72 damage (+18 while shielded).", 1, true)
+		~= nil, "Warded Wrath tooltip separates the scaled shielded bonus")
+	local warded_stack = new_stack("grug_abilities:smite")
+	want(abilities.update_stack_description(
+		warded_stack, smite_def, warded_priest),
+		"initial Warded Wrath tooltip write")
+	equal(warded_stack.set_string_calls, 1,
+		"one metadata write for initial Warded Wrath tooltip")
+	ability_env.grug_core.set_absorb(warded_priest, 1, 15, warded_priest)
+	local warded_shielded_damage = ability_env.grug_core.scale_player_damage(
+		warded_priest, nil, smite_def.values(warded_priest).damage)
+	equal(warded_shielded_damage, 90,
+		"L60 Warded Wrath Smite damage with absorb")
+	equal(smite_def.description_for(warded_priest, smite_def),
+		warded_description, "Warded Wrath tooltip ignores absorb state")
+	want(not abilities.update_stack_description(
+		warded_stack, smite_def, warded_priest),
+		"absorb-only change does not rewrite Smite tooltip")
+	equal(warded_stack.set_string_calls, 1,
+		"absorb-only change spends no metadata write")
+
 	local stack = new_stack("grug_abilities:smite")
 	if mutation == 4 then
 		local original = abilities.update_stack_description
@@ -467,4 +546,6 @@ return function(repo)
 	io.write("suffocation=20:1 100:5 325:16 2696:134 noclip_exempt\n")
 	io.write("character=Max_HP Max_Mana no_current_pool\n")
 	io.write("tooltip_writes=changed_only\n")
+	io.write(("smite_l60=%d/%d shielded_bonus=18 absorb_tooltip=floor_seam\n")
+		:format(warded_unshielded_damage, warded_shielded_damage))
 end

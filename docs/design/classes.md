@@ -80,9 +80,13 @@ Core principles:
   comfortable, never mandatory.
 - **Numeric ability tooltips are player-specific.** Damage, healing and absorb
   numbers show the effective current-level value before Crit and target-level
-  malus. The registered item definition keeps a number-free fallback; the
-  player's ability ItemStack carries the effective description and refreshes
-  on kit sync, level change and talent change.
+  malus. Absorb settlement retains fractional points; its tooltip displays
+  that seam's value rounded down. Smite shows its unshielded damage and, when
+  Warded Wrath is ranked, a separately scaled `(+N while shielded)` suffix;
+  changing only the current shield state does not change its tooltip. The
+  registered item definition keeps a number-free fallback; the player's
+  ability ItemStack carries the effective description and refreshes on kit
+  sync, level change and talent change.
 
 ## 1. Resources
 
