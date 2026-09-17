@@ -1026,8 +1026,8 @@ function grug_classes.spend_talent(player, talent_id)
 end
 
 -- A respec is a FULL reset (ruling 20): every rank to 0, all points back.
--- The price ledger is lane X4's; this function is the reset itself, and the
--- interim /respec below calls it free.
+-- Pricing and the money transaction live on the sfinv page; this function is
+-- the deterministic reset used there and by the free admin level-drop path.
 function grug_classes.respec(player)
 	local spent = grug_classes.talent_points_spent(player)
 	grug_classes.clear_talent_windows(player)
@@ -1073,9 +1073,11 @@ function grug_classes.on_level_change_talents(player, old_level, new_level)
 	local per = grug_classes.TALENT_LEVELS_PER_POINT
 	if math.floor(new_level / per) > math.floor(old_level / per) then
 		local left = grug_classes.talent_points_available(player)
-		core.chat_send_player(player:get_player_name(), core.colorize("#7ae08a",
-			"Talent point earned - " .. left ..
-			" to spend. Type /talents to see your trees."))
+		if left > 0 then
+			core.chat_send_player(player:get_player_name(), core.colorize("#7ae08a",
+				"Talent point earned - " .. left ..
+				" to spend. Open Inventory > Talents."))
+		end
 	end
 end
 
@@ -1098,10 +1100,8 @@ core.register_on_dieplayer(function(player)
 end)
 
 --
--- INTERIM chat interface (lane X1/X2). Lane X4 ships the sfinv Talents page
--- of §3.5 and REMOVES these three commands; until then they are the only way
--- to play a talent, so they are player-reachable rather than admin-only and
--- act on the caller's own character alone.
+-- Read-only chat summary. Buying ranks and resetting a build live exclusively
+-- on the sfinv Talents page; no command can mutate talent state.
 --
 
 local function tree_line(player, tree)
@@ -1129,7 +1129,7 @@ end
 
 core.register_chatcommand("talents", {
 	params = "",
-	description = "Show your talent trees (interim until the WP11 UI lands)",
+	description = "Show a read-only summary of your talent trees",
 	func = function(name)
 		local player = core.get_player_by_name(name)
 		if not player then
@@ -1157,45 +1157,8 @@ core.register_chatcommand("talents", {
 			end
 		end
 		lines[#lines + 1] =
-			"* keystone, ! capstone. /talent <id> spends a point, /respec resets."
+			"* keystone, ! capstone. Open Inventory > Talents to make changes."
 		return true, table.concat(lines, "\n")
-	end,
-})
-
-core.register_chatcommand("talent", {
-	params = "<id>",
-	description = "Spend one talent point (interim until the WP11 UI lands)",
-	func = function(name, param)
-		local player = core.get_player_by_name(name)
-		if not player then
-			return false, "You must be online."
-		end
-		local id = param:match("^%s*(%S+)%s*$")
-		if not id then
-			return false, "Usage: /talent <id> (see /talents)."
-		end
-		local ok, reason = grug_classes.spend_talent(player, id)
-		if not ok then
-			return false, reason
-		end
-		local def = grug_classes.registered_talents[id]
-		return true, ("%s is now %d/%d. %d points left. %s"):format(def.name,
-			grug_classes.talent_rank(player, id), def.ranks,
-			grug_classes.talent_points_available(player), def.description)
-	end,
-})
-
-core.register_chatcommand("respec", {
-	params = "",
-	description = "Reset every talent and take all points back (free for now)",
-	func = function(name)
-		local player = core.get_player_by_name(name)
-		if not player then
-			return false, "You must be online."
-		end
-		local spent = grug_classes.respec(player)
-		return true, ("Talents reset; %d points returned. " ..
-			"(The respec price lands with the talent UI.)"):format(spent)
 	end,
 })
 

@@ -45,17 +45,29 @@ function grug_classes.get_spell_power_bonus(player)
 	return math.floor(grug_classes.get_attributes(player).int / 10)
 end
 
+-- Raw chances are presentation accessors: the Talents page must show points
+-- above the ordinary cap rather than making them look lost. Combat continues
+-- to consume the capped accessors below. Lane X3 owns the time-limited cap
+-- overrides and will make those consumers use their raised caps.
+function grug_classes.get_crit_chance_raw(player)
+	return 0.05 + 0.001 * grug_classes.get_attributes(player).dex
+		+ 0.01 * (grug_classes.get_talent_bonus(player, "crit_chance_add")
+			+ grug_classes.get_talent_bonus(player, "crit_chance_add_window"))
+end
+
+function grug_classes.get_dodge_chance_raw(player)
+	return 0.001 * grug_classes.get_attributes(player).dex
+		+ 0.01 * (grug_classes.get_talent_bonus(player, "dodge_chance_add")
+			+ grug_classes.get_talent_bonus(player, "dodge_chance_window"))
+end
+
 -- Chances in 0..1; flat caps, no diminishing returns (combat_stats.md §2).
 function grug_classes.get_crit_chance(player)
-	-- The 30% cap holds for every talent that is not marked as a rule-breaker
-	-- (combat_stats.md §2, skill_trees.md §2.10); Ruination's timed
-	-- crit_cap_override is lane X3's and is deliberately NOT read here yet.
-	return math.min(0.30, 0.05 + 0.001 * grug_classes.get_attributes(player).dex
-		+ 0.01 * grug_classes.get_talent_bonus(player, "crit_chance_add"))
+	return math.min(0.30, grug_classes.get_crit_chance_raw(player))
 end
 
 function grug_classes.get_dodge_chance(player)
-	return math.min(0.30, 0.001 * grug_classes.get_attributes(player).dex)
+	return math.min(0.30, grug_classes.get_dodge_chance_raw(player))
 end
 
 -- Recomputes hp_max from level + class. heal_gain grants the gained
