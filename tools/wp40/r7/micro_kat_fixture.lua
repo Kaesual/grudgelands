@@ -1040,7 +1040,26 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	-- node semantics still come from the real registration files through the
 	-- dedicated engine-registration fixture.
 	local catalog = dofile(repo .. "/mods/ITEMS/grug_gathering/catalog.lua")
-	local hearthpine_blueprint = dofile(wp40 .. "/r7_hearthpine_blueprint.lua")()
+	local settlement_module = dofile(wp40 .. "/r7_settlement.lua")
+	local blueprint_options = {full_seed = "0", raw_sha256 = raw_sha256}
+	local settlement_palette, settlement_seen = {}, {}
+	local hearthpine_prepared
+	for index = 1, #settlement_module.roster do
+		local profile = settlement_module.roster[index]
+		local source = dofile(wp40 .. "/" .. profile.blueprint_file)(
+			blueprint_options)
+		if type(source) == "function" then source = source(blueprint_options) end
+		local prepared = settlement_module.prepare(profile, source, raw_sha256)
+		if index == 1 then hearthpine_prepared = prepared end
+		for palette_index = 1, #prepared.palette do
+			local name = prepared.palette[palette_index]
+			if not settlement_seen[name] then
+				settlement_seen[name] = true
+				settlement_palette[#settlement_palette + 1] = name
+			end
+		end
+	end
+	table.sort(settlement_palette, settlement_module.less_bytes)
 	local content_source = common.read_file(wp40 .. "/r7_content.lua")
 	local accepted_block = content_source:match(
 		"local ACCEPTED_R6_ROWS = {(.-)\n\t}\n\tlocal CULTURAL_NAMES")
@@ -1067,8 +1086,8 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	semantic_names[#semantic_names + 1] = "grug_nodes:guard_banner"
 	local semantic_seen = {}
 	for index = 1, #semantic_names do semantic_seen[semantic_names[index]] = true end
-	for index = 1, #hearthpine_blueprint.palette do
-		local name = hearthpine_blueprint.palette[index]
+	for index = 1, #settlement_palette do
+		local name = settlement_palette[index]
 		if not semantic_seen[name] then
 			semantic_names[#semantic_names + 1], semantic_seen[name] = name, true
 		end
@@ -1076,16 +1095,6 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	local semantic_dofile = dofile
 	local semantic_support_globals = {"beds", "doors", "dye", "stairs", "vessels",
 		"walls", "wool", "xpanes", "grug_decor"}
-	local semantic_support_nodes = {
-		"beds:bed_bottom", "beds:bed_top", "beds:fancy_bed_bottom",
-		"beds:fancy_bed_top", "doors:door_wood_a", "doors:door_wood_b",
-		"doors:hidden", "grug_decor:cottages_shelf",
-		"grug_decor:xdecor_barrel", "grug_decor:xdecor_cauldron",
-		"grug_decor:xdecor_empty_shelf", "stairs:stair_inner_stonebrick",
-		"stairs:stair_outer_pine_wood", "stairs:stair_outer_stonebrick",
-		"stairs:stair_pine_wood", "walls:cobble", "wool:brown", "wool:red",
-		"xpanes:pane", "xpanes:pane_flat",
-	}
 	local semantic_support_saved = {}
 	for _, name in ipairs(semantic_support_globals) do
 		semantic_support_saved[name] = rawget(_G, name)
@@ -1121,12 +1130,6 @@ return function(repo, changed_roster_relative, expected_changed_count)
 				end
 				semantic_core.get_current_modname = original_current_modname
 				semantic_core.get_modpath = original_get_modpath
-				for _, name in ipairs(semantic_support_nodes) do
-					if not semantic_core.registered_nodes[name] then
-						error("WP40 R7 final micro fixture: supporting mod did not " ..
-							"register required node " .. name, 0)
-					end
-				end
 			end
 			for _, name in ipairs({"default:shovel_wood", "default:shovel_stone",
 					"default:shovel_bronze", "default:shovel_steel"}) do
@@ -1147,6 +1150,11 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	if not semantic_ok then error(semantic_fixture, 0) end
 	check(semantic_fixture.target_count == #semantic_names,
 		"semantic target population differs")
+	for index = 1, #settlement_palette do
+		local name = settlement_palette[index]
+		check(type(semantic_fixture.definitions[name]) == "table",
+			"settlement palette node is not registered: " .. name)
+	end
 
 	local material_core = {registered_nodes = {}}
 	function material_core.get_modpath() return nil end
@@ -1192,8 +1200,8 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	for index = 1, #p9g_rows do register(p9g_rows[index].source_node) end
 	register("grug_nodes:camp_fire")
 	register("grug_nodes:guard_banner")
-	for index = 1, #hearthpine_blueprint.palette do
-		local name = hearthpine_blueprint.palette[index]
+	for index = 1, #settlement_palette do
+		local name = settlement_palette[index]
 		if not cid_by_name[name] then register(name) end
 	end
 	local content_core = {registered_nodes = definitions, CONTENT_AIR = 0,
@@ -1203,10 +1211,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	end
 	function content_core.get_name_from_content_id(cid) return name_by_cid[cid] end
 	local content_set = dofile(wp40 .. "/r7_content.lua")(
-		content_core, projection, raw_sha256, hearthpine_blueprint.palette)
-	local settlement_module = dofile(wp40 .. "/r7_settlement.lua")
-	local hearthpine_prepared = settlement_module.prepare(
-		settlement_module.roster[1], hearthpine_blueprint, raw_sha256)
+		content_core, projection, raw_sha256, settlement_palette)
 	local hearthpine_config = settlement_module.config(hearthpine_prepared,
 		content_set.settlement, raw_sha256)
 	check(content_set.production_semantic_digest ==

@@ -220,16 +220,7 @@ return function(repo, catalog, expected_names)
 
 		dofile(repo .. "/mods/BASE/default/nodes.lua")
 		dofile(repo .. "/mods/BASE/default/torch.lua")
-		for _, row in ipairs({
-				{"stairs:slab_pine_wood", "default:pine_wood"},
-				{"stairs:slab_stonebrick", "default:stonebrick"},
-				{"stairs:stair_stonebrick", "default:stonebrick"},
-			}) do
-			local base = api.registered_nodes[row[2]]
-			api.register_node(row[1], {paramtype = "light", paramtype2 = "facedir",
-				sunlight_propagates = base.sunlight_propagates,
-				light_source = base.light_source, is_ground_content = false})
-		end
+		dofile(repo .. "/mods/BASE/default/furnace.lua")
 
 		current_modname = "grug_trees"
 		dofile(repo .. "/mods/ITEMS/grug_trees/init.lua")
@@ -287,6 +278,7 @@ return function(repo, catalog, expected_names)
 				"mods/BASE/default/nodes.lua",
 				"mods/BASE/default/functions.lua",
 				"mods/BASE/default/torch.lua",
+				"mods/BASE/default/furnace.lua",
 				"mods/BASE/stairs/init.lua",
 				"mods/ITEMS/grug_trees/init.lua",
 				"mods/ITEMS/grug_materials/init.lua",
