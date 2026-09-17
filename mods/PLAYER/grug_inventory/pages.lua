@@ -125,9 +125,9 @@ local function character_content(player)
 	local attrs = grug_classes.get_attributes(player)
 	local level = grug_xp.get_level(player)
 
-	local mana = grug_classes.get_max_mana(player)
 	local resource = class and class.resource == "rage"
-		and "Rage (in combat)" or ("Mana " .. mana)
+		and "Rage (in combat)" or
+		("Max Mana " .. grug_classes.get_max_mana(player))
 
 	local lines = {
 		player:get_player_name() .. " — Level " .. level ..
@@ -135,8 +135,7 @@ local function character_content(player)
 		(race and race.name or "No race") .. ", " ..
 			(faction and faction.name or "no faction"),
 		("Str %d   Int %d   Dex %d"):format(attrs.str, attrs.int, attrs.dex),
-		("HP %d / %d   %s"):format(player:get_hp(),
-			grug_classes.get_max_hp(player), resource),
+		("Max HP %d   %s"):format(grug_classes.get_max_hp(player), resource),
 		("Melee bonus +%d   Spell power +%d"):format(
 			grug_classes.get_melee_bonus(player),
 			grug_classes.get_spell_power_bonus(player)),
