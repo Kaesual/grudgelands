@@ -77,7 +77,14 @@ WP40 replaces it with the complete catalog and contracts below.
   world; the published level range remains content metadata rather than a
   second within-zone control field. The old radial distance from a faction
   seat and exact gate/core progression fields are not part of the target
-  model.
+  model. The deterministic start-anchor band below is applied after this
+  field and is not a second zone target.
+- **Inner start band (decided 2026-09-17):** surface mob level is exactly
+  **1** at integer horizontal Euclidean distance 0–100 nodes from each of the
+  six authored start anchors and exactly **2** at distance 101–150 nodes.
+  Beyond 150 nodes the existing continuous field applies unchanged and
+  continues the outward progression toward the faction front. The outer
+  starting-zone metadata remains levels **1–10**.
 - The existing depth floor remains independent: underground level is the
   maximum of the local surface-zone level and the depth level from
   `combat_stats.md`.

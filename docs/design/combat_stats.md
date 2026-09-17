@@ -556,7 +556,10 @@ not level drift: the L20 and L60 baseline feel remains the same.
 helper `grug_core.mob_level_at(pos)` returns the level directly. Target
 surface geometry (`world_zones.md` §2): the named zone and its authored local
 progression supply levels 1–60, rising from outer race starts toward the
-faction front; capital city zones contain no ambient hostile mobs. Guards use
+faction front; within 100 horizontal nodes of every authored start anchor the
+surface level is 1, from 101 through 150 nodes it is 2, and beyond 150 nodes
+the existing continuous field applies unchanged. Capital city zones contain
+no ambient hostile mobs. Guards use
 the separate positional `guard_level_at` contract above; the depth formula
 does not affect that guard base. Every exterior class has no surface level.
 Shelf `mob_level_at` is nil at normalized y >= 0 and uses the depth term alone

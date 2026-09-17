@@ -672,6 +672,44 @@ local function zones_factory(dependencies)
 				classified_hydrology_id, channel_id, fixed, civic_water
 		end
 
+		-- R11 uses squared integer distance so the public level field stays
+		-- deterministic, allocation-free and independent of chunk order.
+		local START_LEVEL_CORE_RADIUS = 100
+		local START_LEVEL_BAND_RADIUS = 150
+		local START_LEVEL_CORE_RADIUS_SQUARED =
+			START_LEVEL_CORE_RADIUS * START_LEVEL_CORE_RADIUS
+		local START_LEVEL_BAND_RADIUS_SQUARED =
+			START_LEVEL_BAND_RADIUS * START_LEVEL_BAND_RADIUS
+		local start_level_anchors = {}
+		for anchor_index = 1, #anchor_records do
+			local anchor = anchor_records[anchor_index]
+			if anchor.slot_id == "start" then
+				start_level_anchors[#start_level_anchors + 1] = {
+					x = anchor.x,
+					z = anchor.z,
+				}
+			end
+		end
+		if #start_level_anchors ~= 6 then
+			fail("start-level anchor population differs")
+		end
+
+		local function start_band_level_at(x, z)
+			local inside_band = false
+			for anchor_index = 1, #start_level_anchors do
+				local anchor = start_level_anchors[anchor_index]
+				local dx, dz = x - anchor.x, z - anchor.z
+				local distance_squared = dx * dx + dz * dz
+				if distance_squared <= START_LEVEL_CORE_RADIUS_SQUARED then
+					return 1
+				elseif distance_squared <= START_LEVEL_BAND_RADIUS_SQUARED then
+					inside_band = true
+				end
+			end
+			if inside_band then return 2 end
+			return nil
+		end
+
 		local function surface_level_from_classification(x, z, water_class,
 				macro_region)
 			if water_class ~= "land" and water_class ~= "planned_water" then
@@ -682,7 +720,7 @@ local function zones_factory(dependencies)
 					level < 1 or level > 60 then
 				fail("surface mob level differs")
 			end
-			return level
+			return start_band_level_at(x, z) or level
 		end
 
 		local function logical_biome_at(x, z, zone_numeric_id)
