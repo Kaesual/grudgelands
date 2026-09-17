@@ -206,9 +206,9 @@ spare**. Every other keystone and every capstone changes a button the player
 already has, or no button at all. §3.4 works the budget out per class; with
 ruling 19's Warrior change the worst case is now **6 of 8**.
 
-XP loss never de-levels (`progression.md` §3; `grug_xp` clamps the loss to the
-level floor, `mods/PLAYER/grug_xp/init.lua:85-96`), so a point is never taken
-back by dying.
+XP loss is 25% of the current level's whole XP span and never de-levels
+(`combat_stats.md` §3; `mods/PLAYER/grug_xp/init.lua:86-104` clamps the fixed
+loss to the level floor), so a point is never taken back by dying.
 
 ### 1.4 Respec, and the class change that no longer exists (rulings 4, 20, 22)
 
@@ -547,6 +547,13 @@ it — improving existing buttons is what `classes.md:59-61` says talents are
 for — but when WP11 lands those tables are the **untalented baseline**, and
 `classes.md` needs that word or the next reader will file a talented Taunt as
 a bug.
+
+Flat damage, healing and absorb additions from these talents are assembled
+with the ability and gear terms **before** `grug_core.level_scale(level)` is
+applied at the central seam. A talent never applies the scalar itself; doing so
+would double-scale that contribution when the completed value reaches combat
+(`mods/CORE/grug_core/combat.lua:26-62`, `:977-981`, `:1067-1076`,
+`:1101-1106`; swing transaction `mods/PLAYER/grug_abilities/init.lua:1055-1080`).
 
 **Nine talents deliberately break a decided rule, and every one states its
 price.** Ruling 10 is what permits it — "skills may explicitly break the base

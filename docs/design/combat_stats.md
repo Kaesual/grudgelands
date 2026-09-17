@@ -1,6 +1,6 @@
 # Combat, Attributes & Progression Mechanics
 
-Decided spec (last revised 2026-08-10; established 2026-08-06).
+Decided spec (last revised 2026-09-17; established 2026-08-06).
 Implementation: WP3 (classes/stats pipeline),
 WP4 (abilities/threat tools), WP6 (mob tiers/speed), WP5+WP7 (item/
 consumable values), WP35 (weapon slot and the two-handed rule), WP38
@@ -52,6 +52,19 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   swings for the **bare-handed baseline**: the hand's own damage and its
   own interval, read from the registered hand item rather than assumed.
 - **Spell/heal power** = ability base value + floor(Int/10)
+- **Level scalar** = `1 + 0.06×(level−1)`. The central damage, healing and
+  absorb seams multiply the completed player value once: ability base, gear
+  terms and flat talent additions are assembled **before** this scalar.
+  Damage and effective healing floor at their settlement boundaries; absorb
+  retains fractional points. Percentage consumables first derive their amount
+  from max HP and then enter this same scalar once
+  (`mods/CORE/grug_core/combat.lua:29`, `:53`, `:977`, `:1067`, `:1101`;
+  authoritative swings: `mods/PLAYER/grug_abilities/init.lua:1055`).
+- **Higher-mob-level damage malus**: against a mob more than five levels above
+  the player, multiply player damage by `max(0.10, 1 − 0.10×(mob level −
+  player level − 5))`. It is part of the same final damage multiplication and
+  is floored only once with the level scalar
+  (`mods/CORE/grug_core/combat.lua:36-62`).
 - **Crit** = 5% + 0.1%×Dex, **cap 30%**; a crit deals ×1.5 damage
 - **Dodge** = 0.1%×Dex, **cap 30%**; a dodge avoids the hit entirely
 - Player armor (gear) reduces incoming damage; endgame plate reaches the
@@ -200,8 +213,9 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   and returning to a swing clears the remainder once. Cast use alone preserves
   ability due time.
 - **One accepted full swing resolves once.** Against players the order is
-  **slot weapon + Strength → selected proc replacement → one crit → armor →
-  integer damage → one dodge → one absorb → HP**. mobs_redo commits the proc
+  **slot weapon + Strength → selected proc replacement → level scalar and mob
+  level malus → one crit → armor → integer damage → one dodge → one absorb →
+  HP**. mobs_redo commits the proc
   only after `do_punch` and CMI accept. Mighty Blow remains exactly
   `floor(weapon × 1.5) + melee bonus` before crit; Hamstring is the ordinary
   full swing plus its 50% slow, paid/applied only after HP damage lands.
@@ -292,12 +306,16 @@ the editable land rule.
 
 Normal tier at level L:
 
-- **HP** = 15 + 5×L · **Damage/hit** = 2 + 0.4×L · **XP** = 10×L
+- **HP** = `20 + 5×L + 0.66×L²` · **Damage/hit** =
+  `2 + 0.3×L + 0.005×L²`, rounded to one decimal · **XP** = `10×L`
 - mobs_redo armor: normal 100, **elite 80 (×3 HP, ×1.8 dmg, ×4 XP)**,
-  **rare patrol 70 (×5 HP, ×2.2 dmg, ×6 XP)**, bosses 60 (hand-tuned).
+  **rare patrol 70 (×5 HP, ×2.2 dmg, ×6 XP)**, and the registered
+  **boss tier 60 (×20 HP, ×1 dmg, ×1 XP)**. No mob uses the boss tier before
+  the round-6 king/dragon content. The single implementation table and formula
+  are `mods/ENTITIES/grug_mobs/levels.lua:70-118`.
 - **Three mob classes** (decided 2026-08-08, full rule in
   `biomes_mobs.md` §3.0): **critters** (small animals — always level 1,
-  always **1 HP**, 10 XP flat, **food-only drops**, **no fall damage**,
+  always **1 HP**, **0 XP**, **food-only drops**, **no fall damage**,
   never elite/rare; a `critter` tier in the level engine, the second
   documented exception to "stats derived, never hand-rolled" after the
   Kraken), **passive prey** (large grazers — ordinary levels, HP, XP and
@@ -353,6 +371,18 @@ Normal tier at level L:
   quadratic level curve); quests supply the rest.
 - **Gray kills award no XP**: a mob at level ≤ killer level − 10 gives 0
   XP (kills trivial-mob farming).
+- **XP level cap**: calculate each recipient's formula with effective mob
+  level `min(actual mob level, player level + 5)`. The gray test still reads
+  the actual mob level (`mods/ENTITIES/grug_mobs/levels.lua:643-656`).
+- **XP participation and split**: a participant dealt accepted damage to the
+  mob or delivered effective healing to an existing participant. At death,
+  only participants who are online and within 40 m count; divide the award by
+  that eligible count after calculating the cap and gray rule per recipient. A
+  player receives no XP from a mob of their own faction
+  (`mods/ENTITIES/grug_mobs/init.lua:82-222`).
+- **PvE death loss** is 25% of the whole current-level XP span, clamped at the
+  current level start; it never de-levels. Level 60 has no following span and
+  therefore no PvE XP loss (`mods/PLAYER/grug_xp/init.lua:86-104`).
 - **Player-tag drop rule** (decided 2026-08-06, WP6): a mob drops loot
   only if a player damaged it (`do_punch` sets a tag; the tag stores
   the attacker's professions for loot-table hooks like the
@@ -382,8 +412,8 @@ Normal tier at level L:
   `dogshoot`). **Named rares broadcast** their spawn faction-wide
   ("Grimtusk has been sighted…") — a meeting point for a low-population
   server.
-- WP1 retune (**done with WP6**): boar = L1 (HP 20, dmg 2, XP 10),
-  zombie = L3 (HP 30, dmg 3, XP 30), **and speed to spec** (boar/zombie
+- WP1 retune (**done with WP6**): boar = L1 (HP 26, dmg 2.3, XP 10),
+  zombie = L3 (HP 41, dmg 2.9, XP 30), **and speed to spec** (boar/zombie
   `run_velocity` 4.4/4.2 — was 3.4/2.6, shipped slow on purpose until
   the soft de-aggro above landed in the same WP; the boar moved on to the
   band's 4.6 in 2026-09-16's raise, the zombie kept its 4.2).
@@ -410,10 +440,40 @@ Normal tier at level L:
 
 | Mob level | HP | Dmg/hit | XP |
 |-----------|----|---------|----|
-| 1 | 20 | 2 | 10 |
-| 10 | 65 | 6 | 100 |
-| 30 | 165 | 14 | 300 |
-| 60 | 315 | 26 | 600 |
+| 1 | 26 | 2.3 | 10 |
+| 10 | 136 | 5.5 | 100 |
+| 30 | 764 | 15.5 | 300 |
+| 60 | 2696 | 38.0 | 600 |
+
+### Same-level TTK check
+
+Deterministic non-crit benchmark: the Warrior uses that level's ladder sword
+at its 1.0 s interval, Fireball is normalized to one cast per second, and
+Smite uses its 2.0 s cooldown. Elite armor 80 is included. `old→new` compares
+the pre-2026-09-17 formulas with the current formulas; N/E means normal/elite.
+
+| L | Current HP N/E | Raw DPS Warrior/Fireball/Smite old→new | Warrior TTK N/E old→new | Fireball TTK N/E old→new | Smite TTK N/E old→new |
+|---:|---:|---:|---:|---:|---:|
+| 1 | 26/78 | 6→6 / 7→7 / 2.5→2.5 | 4→5 / 15→20 | 3→4 / 12→16 | 8→12 / 30→40 |
+| 10 | 136/408 | 8→12 / 9→13 / 3→4.5 | 9→12 / 33→46 | 8→11 / 28→41 | 22→32 / 98→118 |
+| 20 | 384/1152 | 14→29 / 12→25 / 4→8.5 | 9→14 / 32→51 | 10→16 / 39→58 | 30→46 / 116→178 |
+| 40 | 1276/3828 | 27→90 / 18→60 / 6→20 | 8→15 / 31→54 | 12→22 / 47→80 | 36→64 / 144→240 |
+| 60 | 2696/8088 | 40→181 / 24→108 / 8→36 | 8→15 / 30→57 | 14→25 / 50→95 | 40→76 / 158→284 |
+
+The maximum new/old TTK ratio is **1.900**, at a level-60 Warrior against an
+elite; every row is at or below the mandatory 2.000 ceiling.
+
+Mob pressure uses one raw hit per second before dodge, armor and absorb. The
+quadratic term deliberately keeps levels 1–10 close to the old pressure,
+crosses it at level 20 and makes the high-level game steeper:
+
+| L | Mob damage N/E old→new | Warrior HP; TTD N/E old→new | Mage HP; TTD N/E old→new | Priest HP; TTD N/E old→new |
+|---:|---:|---:|---:|---:|
+| 1 | 2.4→2.3 / 4.3→4.1 | 30; 12.5→13.0 / 7.0→7.3 | 30; 12.5→13.0 / 7.0→7.3 | 30; 12.5→13.0 / 7.0→7.3 |
+| 10 | 6.0→5.5 / 10.8→9.9 | 75; 12.5→13.6 / 6.9→7.6 | 48; 8.0→8.7 / 4.4→4.8 | 57; 9.5→10.4 / 5.3→5.8 |
+| 20 | 10.0→10.0 / 18.0→18.0 | 125; 12.5→12.5 / 6.9→6.9 | 68; 6.8→6.8 / 3.8→3.8 | 87; 8.7→8.7 / 4.8→4.8 |
+| 40 | 18.0→22.0 / 32.4→39.6 | 225; 12.5→10.2 / 6.9→5.7 | 108; 6.0→4.9 / 3.3→2.7 | 147; 8.2→6.7 / 4.5→3.7 |
+| 60 | 26.0→38.0 / 46.8→68.4 | 325; 12.5→8.6 / 6.9→4.8 | 148; 5.7→3.9 / 3.2→2.2 | 207; 8.0→5.4 / 4.4→3.0 |
 
 ### Position → mob level
 
@@ -594,6 +654,11 @@ design (`group_attack` stays on).
 - Every mob carries a **global nametag**: `<Name> [Lv X] HP/maxHP`
   (viewer-independent, updated on damage). The exact level is therefore
   always readable for everyone — **within nametag range** (below).
+- Nametag and Target Frame HP use one compact formatter: values below 1000 are
+  full integers, 1000–9999 use one truncated decimal (`2300 → 2.3k`), and
+  values from 10000 round to whole thousands (`51234 → 51k`;
+  `mods/CORE/grug_core/combat.lua:68-78`,
+  `mods/ENTITIES/grug_mobs/levels.lua:199-217`).
 - **Nametag visibility is proximity-capped** (decided 2026-08-07 after
   the WP6 runtime test; the engine has no distance cull — nametags of
   every active object render up to the ~128 m object-send range, which

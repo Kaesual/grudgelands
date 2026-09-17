@@ -27,13 +27,15 @@ before WP13/WP33 author new surface content.
   description of running behaviour and not the placement brief for new
   structures, quests or gathering nodes. Re-cutting §1/§4 onto the 38 named
   zones is still outstanding work.
-- Stats derived, never hand-rolled: **HP = 15+5L, dmg = 2+0.4L,
-  XP = 10L**; elite armor 80 (×3 HP, ×1.8 dmg, ×4 XP), rare armor 70
-  (×5 / ×2.2 / ×6). Speeds: aggressive **4.6** (4.4 until 2026-09-16,
+- Stats derived, never hand-rolled: **HP = 20+5L+0.66L²,
+  dmg = 2+0.3L+0.005L², XP = 10L**; elite armor 80
+  (×3 HP, ×1.8 dmg, ×4 XP), rare armor 70 (×5 / ×2.2 / ×6), and the
+  unassigned boss tier armor 60 (×20 / ×1 / ×1). Speeds: aggressive **4.6**
+  (4.4 until 2026-09-16,
   user ruling 2), heartland hunters 4.6
   (partly `dogshoot`), critters 3.4. One behavior verb per family;
   elites **and rares** telegraph (2 s wind-up, combat_stats §3); named
-  rares broadcast.
+  rares broadcast. Implementation: `mods/ENTITIES/grug_mobs/levels.lua:70-118`.
 - **Player-tag drop rule** (combat_stats §3) applies to every drop
   table below; the tag carries professions → **Leatherworker ×5** on
   every mob flagged `[leather]`.
@@ -53,9 +55,9 @@ Stats quick reference (normal tier; compute, don't copy):
 
 | L | HP | Dmg | XP | | L | HP | Dmg | XP |
 |---|----|-----|----|---|---|----|-----|----|
-| 5 | 40 | 4 | 50 | | 30 | 165 | 14 | 300 |
-| 10 | 65 | 6 | 100 | | 45 | 240 | 20 | 450 |
-| 20 | 115 | 10 | 200 | | 60 | 315 | 26 | 600 |
+| 5 | 62 | 3.6 | 50 | | 30 | 764 | 15.5 | 300 |
+| 10 | 136 | 5.5 | 100 | | 45 | 1582 | 25.6 | 450 |
+| 20 | 384 | 10.0 | 200 | | 60 | 2696 | 38.0 | 600 |
 
 ## 1. Current WP18 world biome map (WP40 migration baseline)
 
@@ -883,9 +885,7 @@ use, not content:
   never hand-rolled" rule (after the Kraken's fixed L100) and it is
   implemented as a **`critter` tier** in the level engine, not as a
   hand-set stat in a def.
-- **10 XP flat.** Deliberate starter-belt trickle; the gray-kill rule
-  (combat_stats §3) zeroes it for anyone above level 11 on its own, so no
-  extra rule is needed.
+- **0 XP.** Critters are food-bearing scenery, never an XP farm.
 - **They drop FOOD only** — meat, nothing else. No leather, no feather, no
   crafting ingredient of any kind. Rationale: a food item is a welcome
   snack on the road but never a farm target, so a player with a full larder
@@ -905,17 +905,18 @@ use, not content:
 
 **How the tier is expressed** (WP36, `grug_mobs/levels.lua`): the `TIERS`
 table gains a `critter` row that opts out of the multiplier model with FLAT
-values (`hp_flat = 1`, `xp_flat = 10`) plus a fixed `level = 1`, so
-`normal`/`elite`/`rare` keep the exact arithmetic they always had — a flat
+values (`hp_flat = 1`, `xp_flat = 0`) plus a fixed `level = 1`, so
+`normal`/`elite`/`rare`/`boss` use the shared formulas — a flat
 value replaces the formula for one stat and leaves the other two alone.
 Damage stays formula-derived even for a critter: it never attacks, so the
 number is never read, and a third exception would be noise. `fall_damage`
 is normalized into the def at registration time, next to `armor` and for the
 same reason (mobs_redo copies an explicit def-field whitelist, and a nil
 there falls through to its default of `true`). The telegraph gate is a
-positive `telegraph = true` flag on the elite and rare rows, asked through
-one predicate that both the `do_custom` gate and `telegraph_tick` call, and
-`set_tier` refuses to promote a critter at all.
+positive `telegraph = true` flag on the elite, rare and boss rows, asked through
+one predicate (`mods/ENTITIES/grug_mobs/levels.lua:89-95`) that both the
+`do_custom` gate and `telegraph_tick` call, and `set_tier` refuses to promote a
+critter at all.
 
 **Passive prey** — the *large* grazers: stag, gaunt stag, zebra, mountain
 ram, **plus the Carrion Crow**. They are ordinary mobs in every mechanical
