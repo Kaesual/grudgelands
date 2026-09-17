@@ -98,11 +98,10 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   - **Rounding: the reduced damage rounds up**, so armor alone can never
     turn a landed hit into 0 — however much of it a tank stacks, the hit
     still costs at least 1 HP.
-- **Every equippable item that has an item level carries a level
-  requirement** (`grug_req_level` = its ilvl; equipping below it is
-  blocked — items_crafting.md §6.1, which also exempts the equippables that
-  have no ilvl at all; **enforced from WP5**, WP7's vendor gear carries the
-  ilvl only);
+- **The Weapon slot enforces the generated catalog's `_grug_ilvl` directly
+  as its minimum character level.** Items without a positive `_grug_ilvl`
+  remain unrestricted, and no other equipment slot has this level gate
+  (`grug_inventory/equipment.lua:173-185,330-338`);
   weapon base damage ≈ 4 + 0.35×level (level-60 weapon ≈ 25; itemization
   details → items/crafting design).
 

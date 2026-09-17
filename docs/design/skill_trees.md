@@ -1487,9 +1487,9 @@ undecided any more.**
     Dexterity-led growth mean something.)*
 29. **Sprint is +25 % for 10 s on a 300 s cooldown.** *(The numbers the
     documents already use. It puts a sprinting Scout at 5.0 nodes/s against
-    every aggressive mob's 4.4, which ruling 10 permits and which **confirms
-    §7 task 1**: `mounts.md` §3.1 and `combat_stats.md` §3 must record the
-    exception.)*
+    the ordinary aggressive band's 4.6, which ruling 10 permits and which
+    **confirms §7 task 1**: `mounts.md` §3.1 and `combat_stats.md` §3 must
+    record the exception.)*
 
 ### 5.2 What each ruling replaced
 

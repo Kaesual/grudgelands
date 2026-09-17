@@ -94,7 +94,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   - **No class gate.** Weapon families are class *flavor*, not a power
     ladder (`items_crafting.md` §8.2), so a Mage may equip a greataxe and
     simply gains nothing from it. The **only** gate on this slot is the
-    level requirement below (`grug_req_level`, WP5).
+    generated item's `_grug_ilvl`, enforced directly as the minimum character
+    level (`grug_inventory/equipment.lua:173-185,330-338`).
   - The slot is **family-agnostic** — it holds whatever carries the group,
     which is how the future bow family joins without a second slot.
   - **No migration**: weapons stay valid `main` items and nothing of a
@@ -172,11 +173,12 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   them, and the open Character page refreshes exactly once. Join uses that
   notification after `sfinv` and `player_api`; a genuine nested equipment
   write may cause the documented second notification pass.
-- **Level requirement enforced here** (2026-08-07; **lands with WP5** —
-  WP7's equip filter deliberately ships without it): the same `allow_put`
-  filter rejects any item whose `grug_req_level` exceeds the character's
-  level and says so in chat (items_crafting.md §6.1). Rejecting the
-  equip is deliberate — letting the item sit in the slot without effect
+- **Weapon level requirement is implemented here:** the same `allow_put`
+  filter reads the generated item's `_grug_ilvl` directly for the Weapon slot,
+  rejects it when that value exceeds the character's level, and says so in
+  chat (`grug_inventory/equipment.lua:173-195,316-356`). Items without a
+  positive `_grug_ilvl` and every non-Weapon slot are unrestricted. Rejecting
+  the equip is deliberate — letting the item sit in the slot without effect
   would be an invisible failure.
 - **Armor classes are bound to the character class** (decided
   2026-08-07 in WP7 — the mechanism `combat_stats.md` §2 and

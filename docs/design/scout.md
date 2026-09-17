@@ -452,7 +452,7 @@ Per-mob opt-out already exists: `ignore_invisibility` is read from the def at
 
 **So the AI half is free.** Shipping a small `invisibility` mod that publishes
 `invisibility.is_visible(name)` turns all six sites on at once, with **no
-GRUG PATCH** added to the 40 that already live in `api.lua`.
+GRUG PATCH** added to the 62 that already live in `api.lua`.
 
 #### 8.1.3 What is NOT free: the player is still drawn
 
