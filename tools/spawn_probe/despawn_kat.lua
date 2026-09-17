@@ -187,27 +187,39 @@ local function entity_at(distance, fields)
 	return entity
 end
 
-local function engine_store(entity, deactivate)
-	local stored = entity:mob_staticdata()
-	if deactivate then
-		entity:on_deactivate(false)
-		entity.object.deactivated = true
-	end
-	return copy(stored)
+local function engine_staticdata(entity)
+	return copy(entity:mob_staticdata())
 end
 
--- A new object is counted on its initial engine static-data store.
+local function engine_deactivate(entity, removal)
+	entity:on_deactivate(removal == true)
+	entity.object.deactivated = true
+end
+
+local function engine_unload(entity)
+	local stored = engine_staticdata(entity)
+	engine_deactivate(entity, false)
+	return stored
+end
+
+-- Every accepted activation counts immediately. The engine's initial static
+-- data store and a later active resave must both be counter-neutral.
 local stag = entity_at(40)
-stag:mob_activate({}, {}, 0)
-local created_data = engine_store(stag, false)
+stag:mob_activate("", {}, 0)
 want(active_mob_count() == 1, "create did not increment active_mobs once")
-want(created_data.active_toggle == -1 and created_data.remove_ok == true,
-	"create store did not prepare unload accounting")
+local created_data = engine_staticdata(stag)
+want(active_mob_count() == 1, "initial staticdata changed active_mobs")
+want(created_data.remove_ok == true,
+	"initial staticdata did not persist the ordinary stag")
+local resaved_data = engine_staticdata(stag)
+want(active_mob_count() == 1, "active resave changed active_mobs")
+want(resaved_data.name == "grug_mobs:stag",
+	"active resave did not persist the ordinary stag")
 
 -- The protected unload debits once, persists the ordinary entity, and does
 -- not call ObjectRef:remove(). The engine stores the callback result first
 -- and only then deactivates the object.
-local protected_data = engine_store(stag, true)
+local protected_data = engine_unload(stag)
 want(active_mob_count() == 0,
 	"protected unload did not debit active_mobs exactly once")
 want(stag.object.removed == 0, "protected unload removed the stag")
@@ -215,21 +227,20 @@ want(protected_data.name == "grug_mobs:stag" and
 		protected_data._grug_despawn_terminal == nil,
 	"protected unload did not persist the ordinary stag")
 
--- Luanti reloads only through on_activate; it does not ask for static data
--- again. Production mob_activate must count this normal reload exactly once
--- and prepare the next real unload for a debit.
+-- Luanti can reload a static object with dtime_s == 0. It invokes only
+-- on_activate, so production mob_activate must count it regardless of dtime.
 stag = entity_at(40)
-stag:mob_activate(protected_data, {}, 1)
+stag:mob_activate(protected_data, {}, 0)
 want(active_mob_count() == 1,
 	"protected reload did not restore active_mobs exactly once")
-want(stag.active_toggle == -1,
-	"protected reload did not prepare the next unload debit")
 
--- A far unload debits through active_toggle only. Its terminal callback result
--- is stored before deactivation; it must not remove or debit inside the
--- callback, because Luanti has not yet finished storing that result.
+-- A far resave stores its terminal result before deactivation but cannot
+-- change the count. The following real deactivation performs the sole debit.
 core_stub.get_connected_players = function() return {player_at(128)} end
-local terminal_data = engine_store(stag, true)
+local terminal_data = engine_staticdata(stag)
+want(active_mob_count() == 1,
+	"far staticdata changed active_mobs before deactivation")
+engine_deactivate(stag, false)
 want(active_mob_count() == 0,
 	"far unload did not debit active_mobs exactly once")
 want(stag.object.removed == 0,
@@ -243,7 +254,7 @@ want(terminal_data._grug_despawn_terminal == true and
 -- second counter debit, leaving no entity to save or reactivate again.
 local terminal = entity_at(128)
 terminal:mob_activate(terminal_data, {}, 1)
-terminal:on_deactivate(true)
+engine_deactivate(terminal, true)
 want(terminal.object.removed == 1,
 	"terminal marker was not consumed on activation")
 want(terminal.object.properties.static_save == false,
@@ -251,6 +262,26 @@ want(terminal.object.properties.static_save == false,
 want(active_mob_count() == 0,
 	"terminal activation debited active_mobs a second time")
 
+-- Fill the configured limit with accepted activations. A further creation is
+-- rejected before it can be counted; the engine's subsequent initial
+-- staticdata call and on_deactivate remain neutral for that rejected object.
+local accepted = {}
+for index = 1, 600 do
+	accepted[index] = entity_at(40)
+	accepted[index]:mob_activate("", {}, 0)
+end
+want(active_mob_count() == 600, "accepted creations did not reach the limit")
+local rejected = entity_at(40)
+rejected:mob_activate("", {}, 0)
+want(rejected.object.removed == 1, "over-limit creation was not rejected")
+rejected:mob_staticdata()
+want(active_mob_count() == 600, "rejected creation changed active_mobs")
+engine_deactivate(rejected, true)
+want(active_mob_count() == 600,
+	"rejected creation deactivation changed active_mobs")
+for index = 1, #accepted do engine_deactivate(accepted[index], true) end
+want(active_mob_count() == 0, "accepted creation cleanup leaked active_mobs")
+
 io.write("spawn_despawn\tPASS\tmin=48\tmax=128\t" ..
-	"create=1\tprotected_unload=0\tprotected_reload=1\tfar=0\t" ..
-	"terminal_absent\n")
+	"create=1\tresave=1\tprotected_unload=0\treload_zero=1\t" ..
+	"far=0\trejected_limit=600\tterminal_absent\n")

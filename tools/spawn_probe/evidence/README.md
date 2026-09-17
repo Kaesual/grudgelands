@@ -99,3 +99,21 @@ stags plus one other mob object loaded by the forced area. They stay equal
 through the final `near=2 far=0 active=3 mob_objects=3` line at second 63.
 An all-row comparison found no counter/census mismatch. See
 `round4-fixed-counter-final/lifetime.log`.
+
+The round-5 counter-boundary revision was measured once more after moving all
+credits to accepted non-terminal activation and all debits to the shared
+deactivation callback. `mob_staticdata()` is counter-neutral in this build.
+
+```sh
+XDG_RUNTIME_DIR=/tmp/r5-xdg-round5 \
+  tools/spawn_probe/run_despawn.sh round5-two-boundary-counter 31133 2 0
+```
+
+This run also passed. At second 8 the counter and census are both 2; both are
+0 after the actual unload from seconds 19 through 36. The far terminal marker
+briefly appears at second 37 and is gone at second 38. The protected records
+are active by second 41, when both measurements are 3: two name-counted near
+stags and one other mob object loaded with the forced area. All 57 lifetime
+and finish rows have equal `active` and `mob_objects` values, including the
+final `near=2 far=0 active=3 mob_objects=3` row at second 63. See
+`round5-two-boundary-counter/lifetime.log`.

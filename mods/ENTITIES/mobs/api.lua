@@ -201,8 +201,8 @@ local mob_class_meta = {__index = mob_class}
 -- hook on the class lets later class-level wrappers (start_npcs.lua) remain in
 -- the same callback chain instead of being shadowed by a per-prototype field.
 function mob_class:on_deactivate(removal)
-	-- Lane S: every deactivation is a counter boundary; unload/removal paths
-	-- may already have debited it, so the shared state transition is idempotent.
+	-- Lane S: accepted activation and this shared deactivation callback are
+	-- the only active-mob counter boundaries. The state change is idempotent.
 	set_active_mob_counted(self, false)
 
 	if grug_mobs and grug_mobs.registered_cadence
@@ -807,17 +807,12 @@ function mob_class:item_drop()
 	self.drops = {}
 end
 
--- remove mob and descrease counter
+-- remove mob
 
-local function remove_mob(self, decrease)
+local function remove_mob(self)
 
 	self.object:remove()
-
-	if decrease then
-		-- GRUG PATCH: explicit removals share the idempotent lifecycle debit.
-		set_active_mob_counted(self, false)
---print("-- active mobs: " .. active_mobs .. " / " .. active_limit)
-	end
+	-- GRUG PATCH: on_deactivate is the sole active-mob debit boundary.
 end
 
 function mobs:remove(self, decrease)
@@ -3440,14 +3435,6 @@ end
 
 function mob_class:mob_staticdata()
 
-	-- A new object is first counted when the engine stores it. Every later
-	-- static-data call is an unload boundary and can debit it only once.
-	if active_limit > 0 and self.active_toggle then
-		set_active_mob_counted(self, self.active_toggle > 0)
-		self.active_toggle = -1
---print("-- staticdata", active_mobs, active_limit, self.active_toggle)
-	end
-
 	-- mark mob for terminal removal when out of range unless tamed
 	if remove_far and self.remove_ok
 	and self.type ~= "npc" and self.state ~= "attack"
@@ -3459,8 +3446,8 @@ function mob_class:mob_staticdata()
 
 		-- The engine stores this callback result before it deactivates the
 		-- object. Removing here would still save and later reactivate the
-		-- returned data, and remove_mob(..., true) would also decrement the
-		-- active count a second time after active_toggle did so above.
+		-- returned data. on_deactivate performs the one lifecycle debit after
+		-- the engine has stored this terminal marker.
 		return core.serialize({_grug_despawn_terminal = true})
 	end
 
@@ -3492,24 +3479,21 @@ function mob_class:mob_activate(staticdata, def, dtime)
 	-- ServerEnvironment stores get_staticdata's result before deactivation,
 	-- so the terminal object must be removed on its next activation. Clearing
 	-- static_save first prevents that removal from producing another static
-	-- object. The unload toggle already debited active_mobs exactly once.
+	-- object. Terminal activation is rejected before active_mobs is credited.
 	if tmp and tmp._grug_despawn_terminal then
 		self.object:set_properties({static_save = false})
 		self.object:remove()
 		return
 	end
 
-	-- A new entity is counted by its initial static-data store. A reload is
-	-- counted here because Luanti activates the stored object without calling
-	-- get_staticdata first.
-	if dtime == 0 and active_limit > 0 then
-		self.active_toggle = 1
-	end
-
 	if at_limit() and not self.tamed then -- remove any mobs not tamed when total reached
 --print("-- mob limit reached, removing " .. self.name)
 		remove_mob(self) ; return
 	end
+
+	-- Every accepted non-terminal activation is one active mob. dtime is not
+	-- a creation/reload discriminator: a static object can reactivate with 0.
+	set_active_mob_counted(self, true)
 
 	-- load entity variables from staticdata into self.*
 	if tmp then
@@ -3528,11 +3512,6 @@ function mob_class:mob_activate(staticdata, def, dtime)
 				end
 			end
 		end
-	end
-
-	if dtime > 0 and active_limit > 0 then
-		set_active_mob_counted(self, true)
-		self.active_toggle = -1
 	end
 
 	self.temp = {} -- temporary values stored here are never saved with mob

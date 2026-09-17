@@ -212,10 +212,11 @@ engine discard the entity before Lua runs. Its two replacement `GRUG PATCH`
 sites apply a 48-node no-despawn radius, a 128-node hard radius and a linear
 chance between them, then consume a terminal unload marker on activation.
 Active-mob accounting now follows an idempotent per-entity lifecycle flag:
-normal reloads count in `mob_activate`, while unload and explicit removal can
-debit the entity only once. The total is **49 markers**. The older `(g)`
-wording inside the compact table row below records the replaced implementation,
-not the current rule.
+every accepted non-terminal `mob_activate` counts once after the limit check,
+regardless of `dtime_s`, and shared `on_deactivate` is the sole debit boundary.
+`mob_staticdata` is counter-neutral for initial stores, active resaves and
+unloads. The total is **49 markers**. The older `(g)` wording inside the compact
+table row below records the replaced implementation, not the current rule.
 
 | Path | Upstream | Vendored commit | License | Local patches |
 |------|----------|-----------------|---------|---------------|
