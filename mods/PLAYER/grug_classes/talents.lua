@@ -50,7 +50,7 @@ grug_classes.talent_ids = {} -- registration order
 local EFFECT_KEYS = {
 	-- Lane X2 consumers (the reads this lane wrote).
 	armor_percent_add = "grug_inventory/equipment.lua get_armor_percent",
-	max_hp_add = "grug_classes/stats.lua get_max_hp",
+	max_hp_percent_add = "grug_classes/stats.lua get_max_hp",
 	max_mana_percent_add = "grug_classes/stats.lua get_max_mana",
 	crit_chance_add = "grug_classes/stats.lua get_crit_chance",
 	rage_per_hit_taken_add = "grug_abilities/init.lua hit-taken rage",
@@ -295,8 +295,8 @@ grug_classes.register_talent({
 grug_classes.register_talent({
 	id = "weathered", tree = "bulwark", chain = "wall", tier = 2,
 	name = "Weathered",
-	description = "Maximum health +3 per rank.",
-	effects = {max_hp_add = {3, 6, 9, 12}},
+	description = "Maximum health +1.5% of your class base pool per rank.",
+	effects = {max_hp_percent_add = {1.5, 3, 4.5, 6}},
 })
 grug_classes.register_talent({
 	id = "hold_ground", tree = "bulwark", chain = "wall", tier = 3,
@@ -446,7 +446,7 @@ grug_classes.register_talent({
 	capstone = true, window = true,
 	name = "Whitehot",
 	description = "Once every 120 s, the first Fireball that crits starts " ..
-		"8 s in which Fireball costs 4 mana instead of 8 and deals +6.",
+		"8 s in which Fireball costs 3% instead of 6% base mana and deals +6.",
 	effects = {whitehot_window = {8}},
 })
 grug_classes.register_talent({
@@ -466,7 +466,7 @@ grug_classes.register_talent({
 	id = "cinderfall", tree = "ember", chain = "cinder", tier = 3,
 	keystone = true, ability = "cinderfall",
 	name = "Cinderfall",
-	description = "New skill: 12 mana, 10 s cooldown, 20 m; a burst dealing " ..
+	description = "New skill: 12% base mana, 10 s cooldown, 20 m; a burst dealing " ..
 		"5 / 7 / 9 + spell power to every hostile within 3 m of it.",
 	effects = {cinderfall_damage = {5, 7, 9}},
 })
@@ -529,8 +529,8 @@ grug_classes.register_talent({
 	id = "glacial_ward", tree = "rime", chain = "ward", tier = 3,
 	keystone = true, ability = "glacial_ward",
 	name = "Glacial Ward",
-	description = "New skill: 10 mana, 30 s cooldown, self; absorbs " ..
-		"10 / 15 / 20 + 2x spell power for 10 s.",
+	description = "New skill: 10% base mana, 30 s cooldown, self; absorbs " ..
+		"10% / 15% / 20% of the base pool plus spell power for 10 s.",
 	effects = {glacial_ward_absorb = {10, 15, 20}},
 })
 grug_classes.register_talent({
@@ -550,7 +550,7 @@ grug_classes.register_tree({
 grug_classes.register_talent({
 	id = "gentle_hand", tree = "mercy", chain = "balm", tier = 1,
 	name = "Gentle Hand",
-	description = "Flash Heal heals +1 per rank.",
+	description = "Flash Heal gains +1 base-pool percentage point per rank.",
 	effects = {flash_heal_add = {1, 2, 3, 4, 5}},
 })
 grug_classes.register_talent({
@@ -563,9 +563,9 @@ grug_classes.register_talent({
 	id = "renew", tree = "mercy", chain = "balm", tier = 3,
 	keystone = true, ability = "renew",
 	name = "Renew",
-	description = "New skill: the shipped heal over time (6 mana, 8 s " ..
-		"cooldown, 3 + spell power every 3 s for 12 s). Ranks 2 and 3 " ..
-		"raise the tick to 4 and 5 + spell power.",
+	description = "New skill: 6% base mana, 8 s cooldown, healing 8% " ..
+		"of the base pool every 3 s for 12 s. Ranks 2 and 3 raise the " ..
+		"tick to 9% and 10%.",
 	effects = {renew_tick_add = {0, 1, 2}},
 })
 grug_classes.register_talent({
@@ -579,7 +579,7 @@ grug_classes.register_talent({
 grug_classes.register_talent({
 	id = "warding_faith", tree = "mercy", chain = "aegis", tier = 1,
 	name = "Warding Faith",
-	description = "Power Word: Shield absorbs +1 per rank.",
+	description = "Power Word: Shield gains +1 base-pool percentage point per rank.",
 	effects = {shield_absorb_add = {1, 2, 3, 4, 5}},
 })
 grug_classes.register_talent({
@@ -626,7 +626,7 @@ grug_classes.register_talent({
 	id = "word_of_ruin", tree = "reckoning", chain = "word", tier = 3,
 	keystone = true, ability = "word_of_ruin",
 	name = "Word of Ruin",
-	description = "New skill: 8 mana, 12 s cooldown, 20 m; " ..
+	description = "New skill: 8% base mana, 12 s cooldown, 20 m; " ..
 		"6 / 8 / 10 + spell power damage, healing you for 50% of it.",
 	effects = {word_of_ruin_damage = {6, 8, 10}},
 })
@@ -655,15 +655,15 @@ grug_classes.register_talent({
 	id = "recompense", tree = "reckoning", chain = "wrath", tier = 3,
 	keystone = true, replaces = "smite",
 	name = "Recompense",
-	description = "Smite costs 6 mana instead of 4 and grants an absorb of " ..
-		"6 / 9 / 12 + spell power on every landed cast.",
+	description = "Smite costs 6% instead of 5% base mana and grants an " ..
+		"absorb of 6% / 9% / 12% of the base pool plus spell power.",
 	effects = {smite_absorb = {6, 9, 12}},
 })
 grug_classes.register_talent({
 	id = "hardened", tree = "reckoning", chain = "wrath", tier = 4,
 	name = "Hardened",
-	description = "Maximum health +4 per rank.",
-	effects = {max_hp_add = {4, 8, 12}},
+	description = "Maximum health +0.3% of your class base pool per rank.",
+	effects = {max_hp_percent_add = {0.3, 0.6, 0.9}},
 })
 
 grug_classes.audit_talents()

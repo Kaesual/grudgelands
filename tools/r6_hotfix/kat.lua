@@ -288,7 +288,9 @@ return function(repo)
 			local ability = abilities.registered[id]
 			local values = ability.values(priest)
 			local raw = values.damage or values.heal
-			local expected = ability_env.grug_core.scale_player_damage(priest, nil, raw)
+			local expected = id == "flash_heal"
+				and math.floor(ability_env.grug_core.scale_player_value(priest, raw))
+				or ability_env.grug_core.scale_player_damage(priest, nil, raw)
 			local description = ability.description_for(priest, ability)
 			want(description:find(tostring(expected), 1, true) ~= nil,
 				id .. " tooltip has current-level value at L" .. level)
@@ -333,17 +335,17 @@ return function(repo)
 		unshielded_priest, smite_def)
 	local plain_damage = ability_env.grug_core.scale_player_damage(
 		unshielded_priest, nil, smite_def.values(unshielded_priest).damage)
-	equal(plain_damage, 72, "L60 Smite damage without Warded Wrath")
+	equal(plain_damage, 438, "L60 Smite damage without Warded Wrath")
 	ability_env.grug_core.set_absorb(unshielded_priest, 1, 15,
 		unshielded_priest)
 	local plain_shielded_damage = ability_env.grug_core.scale_player_damage(
 		unshielded_priest, nil, smite_def.values(unshielded_priest).damage)
-	equal(plain_shielded_damage, 72,
-		"L60 Smite damage stays 72 without Warded Wrath")
+	equal(plain_shielded_damage, 438,
+		"L60 Smite damage stays 438 without Warded Wrath")
 	equal(smite_def.description_for(unshielded_priest, smite_def),
 		plain_description, "untalented Smite tooltip ignores absorb state")
-	want(plain_description:find("72 damage.", 1, true) ~= nil,
-		"untalented L60 Smite tooltip shows 72")
+	want(plain_description:find("438 damage.", 1, true) ~= nil,
+		"untalented L60 Smite tooltip shows 438")
 	want(plain_description:find("while shielded", 1, true) == nil,
 		"untalented Smite tooltip has no shielded suffix")
 
@@ -352,9 +354,9 @@ return function(repo)
 	local warded_description = smite_def.description_for(warded_priest, smite_def)
 	local warded_unshielded_damage = ability_env.grug_core.scale_player_damage(
 		warded_priest, nil, smite_def.values(warded_priest).damage)
-	equal(warded_unshielded_damage, 72,
+	equal(warded_unshielded_damage, 438,
 		"L60 Warded Wrath Smite damage without absorb")
-	want(warded_description:find("72 damage (+18 while shielded).", 1, true)
+	want(warded_description:find("438 damage (+32 while shielded).", 1, true)
 		~= nil, "Warded Wrath tooltip separates the scaled shielded bonus")
 	local warded_stack = new_stack("grug_abilities:smite")
 	want(abilities.update_stack_description(
@@ -365,7 +367,7 @@ return function(repo)
 	ability_env.grug_core.set_absorb(warded_priest, 1, 15, warded_priest)
 	local warded_shielded_damage = ability_env.grug_core.scale_player_damage(
 		warded_priest, nil, smite_def.values(warded_priest).damage)
-	equal(warded_shielded_damage, 90,
+	equal(warded_shielded_damage, 470,
 		"L60 Warded Wrath Smite damage with absorb")
 	equal(smite_def.description_for(warded_priest, smite_def),
 		warded_description, "Warded Wrath tooltip ignores absorb state")
@@ -444,7 +446,8 @@ return function(repo)
 		"noclip exempts suffocation")
 	want(not suff_grug_core.should_suffocate(stone, true, false),
 		"creation stasis exempts suffocation")
-	for hp_max, expected in pairs({[20] = 1, [100] = 5, [325] = 16, [2696] = 134}) do
+	for hp_max, expected in pairs({[20] = 1, [100] = 5, [2696] = 134,
+			[3235] = 161}) do
 		equal(suff_grug_core.suffocation_damage(hp_max), expected,
 			"suffocation damage at hp_max " .. hp_max)
 	end
@@ -480,6 +483,10 @@ return function(repo)
 		get_attributes = function() return {str = 10, int = 10, dex = 10} end,
 		get_max_mana = function() return 30 end,
 		get_max_hp = function() return 30 end,
+		get_pool_breakdown = function(player, pool)
+			return {base = 26, class_factor = pool == "hp" and 1 or 1,
+				gear_percent = 0, talent_percent = 0, final = 30}
+		end,
 		get_melee_bonus = function() return 1 end,
 		get_spell_power_bonus = function() return 1 end,
 		get_crit_chance = function() return 0.06 end,
@@ -499,7 +506,8 @@ return function(repo)
 		grug_factions = {get_faction_def = function() return {name = "Accord"} end},
 		grug_xp = {get_level = function() return 1 end,
 			register_on_level_change = function() end},
-		grug_core = {register_on_equipment_change = function() end},
+		grug_core = {register_on_equipment_change = function() end,
+			get_armor_percent = function() return 0 end},
 		player_api = {registered_models = {['character.b3d'] = {
 			textures = {"character.png"}}}},
 		math = math, table = table, string = string, ipairs = ipairs, pairs = pairs,
@@ -523,19 +531,20 @@ return function(repo)
 	}
 	local formspec = pages["grug_inventory:character"].get(nil, page_player, {})
 	if mutation == 3 then
-		formspec = formspec:gsub("Max HP 30", "HP 20 / 30", 1)
+		formspec = formspec:gsub("= 30 max", "= 20 / 30", 1)
 	end
-	want(formspec:find("Max HP 30", 1, true) ~= nil, "Character page shows Max HP")
-	want(formspec:find("Max Mana 30", 1, true) ~= nil,
+	want(formspec:find("HP: 26 x 1.00, gear 0%, talents 0% = 30 max", 1, true)
+		~= nil, "Character page shows Max HP derivation")
+	want(formspec:find("Mana: 26, gear 0%, talents 0% = 30 max", 1, true) ~= nil,
 		"Character page shows Max Mana")
 	want(formspec:find("HP %d+ / %d+") == nil,
 		"Character page never shows current/max HP")
 	page_player.class_def = {name = "Warrior", resource = "rage"}
 	local rage_formspec = pages["grug_inventory:character"].get(
 		nil, page_player, {})
-	want(rage_formspec:find("Rage (in combat)", 1, true) ~= nil,
+	want(rage_formspec:find("Rage: 100 max (flat)", 1, true) ~= nil,
 		"Character page retains the rage label")
-	want(rage_formspec:find("Max Mana", 1, true) == nil,
+	want(rage_formspec:find("Mana:", 1, true) == nil,
 		"rage Character page does not show mana")
 
 	for _, row in ipairs(tooltip_rows) do
@@ -543,9 +552,9 @@ return function(repo)
 			row.level, row.smite, row.flash_heal, row.power_word_shield))
 	end
 	io.write("heal_target=pointed_ally invalid_to_memory invalid_to_self node_to_memory\n")
-	io.write("suffocation=20:1 100:5 325:16 2696:134 noclip_exempt\n")
-	io.write("character=Max_HP Max_Mana no_current_pool\n")
+	io.write("suffocation=20:1 100:5 2696:134 3235:161 noclip_exempt\n")
+	io.write("character=derived_Max_HP Max_Mana no_current_pool\n")
 	io.write("tooltip_writes=changed_only\n")
-	io.write(("smite_l60=%d/%d shielded_bonus=18 absorb_tooltip=floor_seam\n")
+	io.write(("smite_l60=%d/%d shielded_bonus=32 absorb_tooltip=floor_seam\n")
 		:format(warded_unshielded_damage, warded_shielded_damage))
 end

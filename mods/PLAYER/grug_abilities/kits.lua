@@ -94,11 +94,17 @@ local function effective_number(player, amount)
 	return grug_core.scale_player_damage(player, nil, amount)
 end
 
--- Absorb settlement deliberately retains fractional points. Its tooltip
--- floors only the displayed value and reads the same non-flooring seam as
--- grug_core.set_absorb.
-local function effective_absorb_number(player, amount)
-	return math.floor(grug_core.scale_player_value(player, amount))
+-- Healing and absorb definitions already return a current-level absolute
+-- amount derived from the class-neutral base pool. The central support seam is
+-- therefore an identity: applying level_scale here would square progression.
+local function effective_support_number(amount)
+	return math.floor(amount)
+end
+
+local function support_value(player, percent)
+	local base = grug_core.base_pool(grug_core.get_player_level(player))
+	local spell_power_percent = grug_classes.get_spell_power_bonus(player)
+	return base * percent / 100 * (1 + spell_power_percent / 100)
 end
 
 --
@@ -484,11 +490,13 @@ grug_projectiles.register("fireball", {
 })
 
 -- Bread-and-butter nuke (kit tuning 2026-08-06): pays with mana instead
--- of a cooldown — 5 mana against a 240+ pool was free. It is directional:
+-- of a cooldown -- the former fixed 5 mana against a 240+ pool was free. It is directional:
 -- target acquisition belongs to the projectile, not cast-time enemy memory.
 local function fireball_values(user)
 	return {
-		damage = 6 + grug_classes.get_spell_power_bonus(user)
+		damage = grug_core.baseline_weapon_damage(
+				grug_core.get_player_level(user))
+			+ grug_classes.get_spell_power_bonus(user)
 			+ grug_classes.get_talent_bonus(user, "fireball_damage_add"),
 	}
 end
@@ -508,7 +516,7 @@ grug_abilities.register_ability({
 				effective_number(user, def.values(user).damage))
 	end,
 	color = "#ff8833",
-	cost = {mana = 8},
+	cost = {mana_percent = 6},
 	cooldown = 0,
 	range = 20,
 	-- Far Cast (skill_trees.md §2.3) re-tunes a RANGE, so it cannot live in
@@ -560,7 +568,7 @@ grug_abilities.register_ability({
 	description = "Roots all enemies within 5 m for 4 s,\n" ..
 		"then slows them by 50% for 3 s.",
 	color = "#66b8ff",
-	cost = {mana = 10},
+	cost = {mana_percent = 10},
 	cooldown = 12,
 	range = 4,
 	cast = function(user)
@@ -606,7 +614,7 @@ grug_abilities.register_ability({
 	description = "Teleport up to 10 m in your look direction\n" ..
 		"(blocked by walls).",
 	color = "#b06aff",
-	cost = {mana = 8},
+	cost = {mana_percent = 8},
 	cooldown = 15,
 	cooldown_talent = "blink_cooldown_sub", -- Quick Step (skill_trees.md §2.4)
 	range = 4,
@@ -665,7 +673,9 @@ grug_abilities.register_ability({
 	target_kind = "hostile",
 	description = "Smites an enemy up to 20 m away; damage scales with your level.",
 	values = function(user, assume_shielded)
-		local damage = 4 + grug_classes.get_spell_power_bonus(user)
+		local damage = math.floor((grug_core.baseline_weapon_damage(
+				grug_core.get_player_level(user))
+			+ grug_classes.get_spell_power_bonus(user)) * 1.5 + 0.5)
 			+ grug_classes.get_talent_bonus(user, "smite_damage_add")
 		if assume_shielded == nil then
 			assume_shielded = grug_core.get_absorb(user) > 0
@@ -689,7 +699,7 @@ grug_abilities.register_ability({
 			unshielded, suffix)
 	end,
 	color = "#ffd97a",
-	cost = {mana = 4},
+	cost = {mana_percent = 5},
 	cooldown = 2,
 	cooldown_talent = "smite_cooldown_sub", -- Swift Word (skill_trees.md §2.6)
 	range = 20,
@@ -716,16 +726,16 @@ grug_abilities.register_ability({
 	description = "Heals the pointed ally (or yourself); healing scales with your level.",
 	values = function(user)
 		return {
-			heal = 8 + 2 * grug_classes.get_spell_power_bonus(user)
-				+ grug_classes.get_talent_bonus(user, "flash_heal_add"),
+			heal = support_value(user, 25
+				+ grug_classes.get_talent_bonus(user, "flash_heal_add")),
 		}
 	end,
 	description_for = function(user, def)
 		return ("Heals the pointed ally (or yourself) for %d."):format(
-			effective_number(user, def.values(user).heal))
+			effective_support_number(def.values(user).heal))
 	end,
 	color = "#7ae08a",
-	cost = {mana = 8},
+	cost = {mana_percent = 8},
 	cooldown = 4,
 	range = 15,
 	cast = function(user, pointed, def)
@@ -758,17 +768,17 @@ grug_abilities.register_ability({
 		"with your level and lasts 15 s or until consumed.",
 	values = function(user)
 		return {
-			absorb = 8 + 2 * grug_classes.get_spell_power_bonus(user)
-				+ grug_classes.get_talent_bonus(user, "shield_absorb_add"),
+			absorb = support_value(user, 25
+				+ grug_classes.get_talent_bonus(user, "shield_absorb_add")),
 		}
 	end,
 	description_for = function(user, def)
 		return ("Shields the pointed ally (or yourself): absorbs %d damage\n" ..
 			"for 15 s or until consumed."):format(
-				effective_absorb_number(user, def.values(user).absorb))
+				effective_support_number(def.values(user).absorb))
 	end,
 	color = "#e8e07a",
-	cost = {mana = 8},
+	cost = {mana_percent = 8},
 	cooldown = 10,
 	range = 15,
 	cast = function(user, pointed, def)
@@ -806,15 +816,16 @@ grug_abilities.register_ability({
 	description = "Heal over time on the pointed ally (or yourself); healing\n" ..
 		"scales with your level every 3 s for 12 s.\nUnlocked via talents.",
 	values = function(user)
-		return {heal = 3 + grug_classes.get_spell_power_bonus(user)}
+		return {heal = support_value(user, 8
+			+ grug_classes.get_talent_bonus(user, "renew_tick_add"))}
 	end,
 	description_for = function(user, def)
 		return ("Heal the pointed ally (or yourself) for %d every 3 s for 12 s.\n" ..
 			"Unlocked via talents."):format(
-				effective_number(user, def.values(user).heal))
+				effective_support_number(def.values(user).heal))
 	end,
 	color = "#3fae6a",
-	cost = {mana = 6},
+	cost = {mana_percent = 6},
 	cooldown = 8,
 	range = 15,
 	cast = function(user, pointed, def)

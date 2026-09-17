@@ -72,9 +72,32 @@ record("scale", {
 	string.format("%.2f", grug_core.level_scale(10)),
 	string.format("%.2f", grug_core.level_scale(60)),
 })
-assert_equal(grug_core.level_scale(1), 1, "level scalar L1")
-assert_equal(grug_core.level_scale(10), 1.54, "level scalar L10")
-assert_equal(grug_core.level_scale(60), 4.54, "level scalar L60")
+assert_equal(grug_core.level_scale(1), 0.65, "level scalar L1")
+assert_equal(string.format("%.6f", grug_core.level_scale(10)), "1.545455",
+	"level scalar L10")
+assert_equal(string.format("%.6f", grug_core.level_scale(60)), "7.837209",
+	"level scalar L60")
+assert_equal(grug_core.base_pool(1), 26, "base pool L1")
+assert_equal(grug_core.base_pool(60), 2696, "base pool L60")
+assert_equal(string.format("%.6f", grug_core.mob_pressure_scale(60)),
+	"2.605263", "mob pressure L60")
+local pressure_player = {
+	get_player_name = function() return "pressure_target" end,
+	get_pos = function() return {x = 0, y = 0, z = 0} end,
+}
+local pressure_attacker = {
+	is_player = function() return false end,
+	get_luaentity = function() return {_grug_level = 60} end,
+}
+local pressure_change = -38
+for _, entry in ipairs(callbacks.hp) do
+	if entry.modifier then
+		pressure_change = entry.fn(pressure_player, pressure_change,
+			{type = "punch", object = pressure_attacker})
+	end
+end
+assert_equal(pressure_change, -99, "L60 fitted mob hit through hp modifier")
+record("mob_pressure", {38, -pressure_change})
 
 local malus = {}
 for _, mob_level in ipairs({15, 16, 20, 30}) do
@@ -114,8 +137,7 @@ local mob_target = {
 		punched = caps.damage_groups.fleshy
 	end,
 }
--- 10 base + 2 flat talent add, then x1.54 = floor(18.48) = 18. Scaling
--- the base first and adding the talent afterwards would incorrectly yield 17.
+-- 10 base + 2 flat talent add, then the L10 fit = floor(18.54) = 18.
 local dealt = grug_core.deal_ability_damage(attacker, mob_target, 10 + 2)
 assert_equal(dealt, 18, "ability return after flat add")
 assert_equal(punched, 18, "ability punch after flat add")
@@ -139,14 +161,14 @@ local heal_target = {
 	get_properties = function() return {hp_max = 100} end,
 	get_pos = function() return {x = 0, y = 0, z = 0} end,
 }
-assert_equal(grug_core.heal_player(attacker, heal_target, 12), 18,
-	"scaled heal")
-assert_equal(effective_heal, 18, "effective-heal hook")
+assert_equal(grug_core.heal_player(attacker, heal_target, 12), 12,
+	"level-derived heal is not scaled twice")
+assert_equal(effective_heal, 12, "effective-heal hook")
 assert_equal(grug_core.heal_player(attacker, heal_target, 15, {no_crit = true}),
-	23, "percentage consumable scaled once")
+	15, "percentage consumable is not scaled twice")
 grug_core.set_absorb(heal_target, 12, 15, attacker)
-assert_equal(grug_core.get_absorb(heal_target), 18.48, "scaled absorb")
-record("support", {18, 23, string.format("%.2f", grug_core.get_absorb(heal_target))})
+assert_equal(grug_core.get_absorb(heal_target), 12, "level-derived absorb")
+record("support", {12, 15, string.format("%.2f", grug_core.get_absorb(heal_target))})
 
 grug_mobs = {}
 mobs = {scale_mob = noop}

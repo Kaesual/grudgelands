@@ -130,6 +130,13 @@ function core.add_entity(pos, _, staticdata)
 end
 
 grug_core = {
+	base_pool = function(level)
+		return math.floor(20 + 5 * level + 0.66 * level * level + 0.5)
+	end,
+	baseline_weapon_damage = function(level)
+		return math.floor(4 + 0.35 * level + 0.5)
+	end,
+	get_player_level = function(player) return player.level or 1 end,
 	combat_debug_enabled = function()
 		debug_enabled_calls = debug_enabled_calls + 1
 		return false
@@ -621,7 +628,7 @@ grug_core.taunt = function() end
 
 dofile(repo .. "/mods/PLAYER/grug_abilities/kits.lua")
 local fireball = abilities.fireball
-assert(fireball and fireball.cost.mana == 8)
+assert(fireball and fireball.cost.mana_percent == 6)
 
 local fire_owner = player("fire_owner", "accord")
 online.fire_owner = fire_owner
@@ -640,14 +647,14 @@ end
 assert(fireball.cast(fire_owner) == true)
 local real_shot = entities[#entities]
 assert(real_shot._grug_projectile_id == "fireball")
-assert(real_shot._grug_data.damage == 10)
+assert(real_shot._grug_data.damage == 8)
 assert(real_shot.object.velocity.x == 20)
 spell_bonus = 100 -- the in-flight payload must remain the cast-time snapshot
 assert(step(real_shot, {x=4,y=1.5,z=0}, 0.2,
 	{fire_point(fire_ally, 1), fire_point(fire_enemy, 3)}) == 1)
 assert(#real_fireball_damage == 1)
 assert(real_fireball_damage[1].target == fire_enemy
-	and real_fireball_damage[1].amount == 10)
+	and real_fireball_damage[1].amount == 8)
 registered_entity.on_step(real_shot, 1)
 registered_entity.on_deactivate(real_shot, true)
 assert(#real_fireball_damage == 1)

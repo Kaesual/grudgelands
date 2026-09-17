@@ -23,12 +23,49 @@ function grug_core.get_player_level(player)
 	return 1
 end
 
--- One progression axis for every player-authored combat number. Gear and
--- flat ability/talent terms are assembled first; the central damage/heal/
--- absorb seams multiply their completed value exactly once.
+-- Class-neutral level pool. Player HP, caster mana, healing and absorbs all
+-- derive from this same rounded curve (combat_stats.md sections 1-2). Keeping
+-- it in Core also lets the damage and pressure fits use the exact same bytes.
+function grug_core.base_pool(level)
+	level = math.max(1, math.min(60, math.floor(tonumber(level) or 1)))
+	return math.floor(20 + 5 * level + 0.66 * level * level + 0.5)
+end
+
+-- The baseline one-handed weapon and primary melee attribute at a level.
+-- This is a FIT REFERENCE, not an equipped item lookup: own-level baseline
+-- gear plus the Warrior's automatic Strength growth defines the eight-second
+-- same-level normal-mob row. Real gear and attributes remain the numerator.
+function grug_core.baseline_weapon_damage(level)
+	level = math.max(1, math.min(60, math.floor(tonumber(level) or 1)))
+	return math.floor(4 + 0.35 * level + 0.5)
+end
+
+local function baseline_melee_total(level)
+	local strength = 10 + 3 * (level - 1)
+	return grug_core.baseline_weapon_damage(level) + math.floor(strength / 10)
+end
+
+-- Damage-only level fit. Support values and percentage consumables have
+-- already derived an absolute amount from a current-level pool and therefore
+-- bypass this multiplier through scale_player_value below. Applying this fit
+-- to such an amount would square the level progression.
 function grug_core.level_scale(level)
 	level = math.max(1, math.min(60, math.floor(tonumber(level) or 1)))
-	return 1 + 0.06 * (level - 1)
+	return grug_core.base_pool(level) / (8 * baseline_melee_total(level))
+end
+
+-- Item level is an independent, bounded gear axis around character level:
+-- three percentage points per ilvl, capped at -30%/+30%. Abilities with no
+-- positive equipped-weapon ilvl use the neutral baseline multiplier.
+function grug_core.item_level_scale(player_level, item_level)
+	player_level = math.max(1,
+		math.min(60, math.floor(tonumber(player_level) or 1)))
+	item_level = tonumber(item_level)
+	if not item_level or item_level <= 0 then
+		return 1
+	end
+	local delta = math.max(-10, math.min(10, item_level - player_level))
+	return 1 + 0.03 * delta
 end
 
 -- Higher-level mobs resist players who are more than five levels below them:
@@ -42,19 +79,26 @@ function grug_core.level_malus(player_level, mob_level)
 	return math.max(0.1, 1 - 0.1 * excess)
 end
 
--- Non-flooring level scaler for player-authored values. Absorb settlement
--- and its display both use this public seam so fractional shield points have
--- one source of truth; integer settlement seams floor its result themselves.
+-- Support and consumable amounts arrive here after deriving their absolute
+-- value from a current-level HP/base pool. This identity seam is deliberately
+-- retained so heal_player/set_absorb keep their stable structure while making
+-- a second level multiplication impossible.
 function grug_core.scale_player_value(player, amount)
-	return math.max(0, (amount or 0)
-		* grug_core.level_scale(grug_core.get_player_level(player)))
+	return math.max(0, amount or 0)
 end
 
 -- Player damage adds the target-level malus after the shared level scalar.
 -- The one final floor keeps multiplication order from creating two rounding
 -- losses. Players have no mob level and therefore receive no malus.
 function grug_core.scale_player_damage(player, target, amount)
-	local mult = grug_core.level_scale(grug_core.get_player_level(player))
+	local player_level = grug_core.get_player_level(player)
+	local mult = grug_core.level_scale(player_level)
+	local weapon = grug_core.get_equipped_weapon(player)
+	if weapon and not weapon:is_empty() then
+		local def = type(weapon.get_definition) == "function"
+			and weapon:get_definition() or {}
+		mult = mult * grug_core.item_level_scale(player_level, def._grug_ilvl)
+	end
 	if target and not target:is_player() then
 		local ent = target:get_luaentity()
 		if ent and ent._grug_level then
@@ -62,7 +106,25 @@ function grug_core.scale_player_damage(player, target, amount)
 				grug_core.get_player_level(player), ent._grug_level)
 		end
 	end
-	return math.max(0, math.floor((amount or 0) * mult))
+	amount = amount or 0
+	if amount <= 0 then
+		return 0
+	end
+	return math.max(1, math.floor(amount * mult))
+end
+
+-- Same-level raw mob pressure is fitted to 27 seconds against the neutral
+-- pool before class factor, dodge, armor, absorb or healing. The mob's own
+-- HP/damage curves remain untouched; this is player-side intake scaling.
+function grug_core.mob_pressure_scale(level)
+	level = math.max(1, math.min(60, math.floor(tonumber(level) or 1)))
+	local mob_damage = 2 + 0.3 * level + 0.005 * level * level
+	-- HP changes settle as integer points. Target the largest whole hit that
+	-- still leaves at least 27 neutral-pool hits; the tiny subtraction keeps
+	-- ceil(raw * scale) on that integer in both supported interpreters.
+	local fitted_hit = math.max(1,
+		math.floor(grug_core.base_pool(level) / 27))
+	return (fitted_hit - 0.000001) / mob_damage
 end
 
 -- Compact integer display shared by mob nametags and the Target Frame.
@@ -1057,8 +1119,9 @@ end
 -- Healing a player. Rolls the healer's crit (×1.5), clamps to max HP and
 -- reports heal threat. Returns the effective healing done.
 --
--- opts.no_crit skips only the crit roll. All player-authored healing, including
--- a consumable's max-HP-derived amount, receives the one shared level scalar.
+-- opts.no_crit skips only the crit roll. Ability and consumable amounts arrive
+-- already derived from their current-level pool; scale_player_value deliberately
+-- preserves them instead of applying the damage-only level fit.
 --
 
 local effective_heal_callbacks = {}
@@ -1073,8 +1136,9 @@ function grug_core.heal_player(healer, target, amount, opts)
 	if hp <= 0 then
 		return 0
 	end
-	-- Ability heals arrive with flat talent additions included. Percentage
-	-- consumables arrive with their max-HP-derived amount. Scale either once.
+	-- Ability heals arrive with percentage-point talent additions included.
+	-- Consumables arrive with their max-HP-derived amount. The support seam is
+	-- retained but is an identity for both.
 	amount = math.floor(grug_core.scale_player_value(healer, amount))
 	if not opts.no_crit and math.random() < grug_core.get_crit_chance(healer) then
 		amount = math.floor(amount * 1.5)
@@ -1147,10 +1211,10 @@ end)
 
 --
 -- Central damage modifier for players: punch combat marking and dodge,
--- equipped-armor mitigation for physical hits that have not already applied
--- it, race mitigation for dwarf fall damage, then the absorb shield. Runs as
--- an hp-change modifier so a dodge cancels the whole committed hit and absorbs
--- are consumed after mitigation but before HP.
+-- same-level-fitted mob pressure, equipped-armor mitigation for physical hits
+-- that have not already applied it, race mitigation for dwarf fall damage,
+-- then the absorb shield. Runs as an hp-change modifier so a dodge cancels the
+-- whole committed hit and absorbs are consumed after mitigation but before HP.
 --
 
 core.register_on_player_hpchange(function(player, hp_change, reason)
@@ -1165,6 +1229,18 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 			core.chat_send_player(player:get_player_name(),
 				core.colorize("#aaaaaa", "You dodge!"))
 			return 0
+		end
+	end
+	-- Mob definitions keep their fixed damage curve. The player-side pressure
+	-- fit turns that raw curve into the 27-second neutral-pool TTD anchor. PvP
+	-- never enters this branch, and foreign entities without a Grudgelands level
+	-- keep their native damage unchanged.
+	if reason.type == "punch" and reason.object and
+			not reason.object:is_player() then
+		local entity = reason.object:get_luaentity()
+		if entity and entity._grug_level then
+			hp_change = -math.max(1, math.ceil(-hp_change *
+				grug_core.mob_pressure_scale(entity._grug_level)))
 		end
 	end
 	-- Equipped armor (items_crafting.md §3.1): PHYSICAL mitigation only.

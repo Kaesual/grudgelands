@@ -93,7 +93,19 @@ local function refill_mana(player)
 	mana[player:get_player_name()] = grug_classes.get_max_mana(player)
 end
 
--- cost = {mana = n} or {rage = n}; returns false if not affordable.
+function grug_abilities.mana_cost(player, percent)
+	local base = grug_core.base_pool(grug_core.get_player_level(player))
+	return math.max(1, math.floor(base * percent / 100 + 0.5))
+end
+
+function grug_abilities.cost_for(player, cost)
+	if cost.mana_percent then
+		return {mana = grug_abilities.mana_cost(player, cost.mana_percent)}
+	end
+	return cost
+end
+
+-- Resolved cost = {mana = n} or {rage = n}; returns false if not affordable.
 local function spend(player, cost)
 	local name = player:get_player_name()
 	if cost.mana then
@@ -705,8 +717,6 @@ function grug_abilities.register_ability(def)
 	-- is nil and dereferencing its `.name` was a hard crash at load time.
 	local class_def = def.class and grug_classes.registered_classes[def.class]
 	local owner_line = class_def and class_def.name or "every class"
-	local cost_line = def.cost.mana and (def.cost.mana .. " mana")
-		or def.cost.rage and (def.cost.rage .. " rage") or "free"
 	-- Timing line: swing skills show their CHARGE (classes.md §2b), cast
 	-- skills their cooldown. The old per-cast text flag is gone with WP38.
 	local cd_line
@@ -718,8 +728,9 @@ function grug_abilities.register_ability(def)
 	end
 	local itemname = "grug_abilities:" .. def.id
 	item_defs[itemname] = def
-	def._grug_description_prefix = def.name .. " (" .. owner_line .. ")\n" ..
-		cost_line .. ", " .. cd_line .. "\n"
+	def._grug_owner_line = owner_line
+	def._grug_timing_line = cd_line
+	def._grug_description_prefix = grug_abilities.description_prefix(nil, def)
 
 	local tool_def = {
 		-- Numeric abilities replace this fallback per ItemStack. The registered
@@ -787,16 +798,36 @@ function grug_abilities.register_ability(def)
 	core.register_tool(itemname, tool_def)
 end
 
+function grug_abilities.description_prefix(player, def)
+	local cost_line
+	if def.cost.mana_percent then
+		cost_line = string.format("%g%% base mana", def.cost.mana_percent)
+		if player then
+			cost_line = cost_line .. " (" ..
+				grug_abilities.mana_cost(player, def.cost.mana_percent) .. " mana)"
+		end
+	elseif def.cost.mana then
+		cost_line = def.cost.mana .. " mana"
+	elseif def.cost.rage then
+		cost_line = def.cost.rage .. " rage"
+	else
+		cost_line = "free"
+	end
+	return def.name .. " (" .. def._grug_owner_line .. ")\n" ..
+		cost_line .. ", " .. def._grug_timing_line .. "\n"
+end
+
 -- Apply one player's effective numeric description to an ability stack in
 -- place. Returns true only when the caller must write the stack back. Ability
 -- formulas live in kits.lua's def.values accessors; this plumbing only asks
 -- the definition to format the current result.
 function grug_abilities.update_stack_description(stack, def, player)
-	if not def.description_for or not grug_core.scale_player_damage then
+	if not grug_core.scale_player_damage then
 		return false
 	end
-	local desired = def._grug_description_prefix ..
-		def.description_for(player, def)
+	local body = def.description_for and def.description_for(player, def)
+		or def.description
+	local desired = grug_abilities.description_prefix(player, def) .. body
 	local meta = stack:get_meta()
 	if meta:get_string("description") == desired then
 		return false
@@ -1454,9 +1485,10 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 		grug_abilities.flash(user, def.name .. " is not ready.")
 		return
 	end
-	if not affordable(user, def.cost) then
+	local effective_cost = grug_abilities.cost_for(user, def.cost)
+	if not affordable(user, effective_cost) then
 		grug_abilities.flash(user,
-			"Not enough " .. (def.cost.mana and "mana" or "rage") .. ".")
+			"Not enough " .. (effective_cost.mana and "mana" or "rage") .. ".")
 		return
 	end
 	-- A false return means "no valid cast" (e.g. no target): no cost, no
@@ -1475,7 +1507,7 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 		grug_abilities.flash(user, err or "Invalid target.")
 		return
 	end
-	spend(user, def.cost)
+	spend(user, effective_cost)
 	grug_abilities.arm_cooldown(user, def,
 		grug_abilities.effective_cooldown(user, def))
 end
@@ -2657,7 +2689,7 @@ core.register_on_leaveplayer(function(player)
 	dirty[name] = nil
 end)
 
--- Mana pool grows with Int on level up: clamp/refresh the HUD (no refill).
+-- The base mana pool grows with level: clamp/refresh the HUD (no refill).
 grug_xp.register_on_level_change(function(player, old_level, new_level)
 	sync_descriptions(player)
 	hud_update(player)

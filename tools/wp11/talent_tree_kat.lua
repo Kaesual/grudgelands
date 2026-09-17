@@ -37,7 +37,7 @@
 --   8  NEUTRAL SEAMS  with NO talent ranked, the four central per-player
 --                     seams reproduce today's numbers exactly -- Taunt 8 s,
 --                     Charge 10 s, Blink 15 s, Smite 2 s, Hamstring's 6 s
---                     charge, Fireball 8 mana / 20 m, and an elf's 25 m --
+--                     charge, Fireball 6% base mana / 20 m, and an elf's 25 m --
 --                     and move by the documented amount when they are ranked.
 --   9  RAGE LEDGER    ruling 25 (option b): 8 per landed swing at all five
 --                     sites, 3 per hit taken, 5 rage/s decay out of combat,
@@ -170,6 +170,15 @@ local function build_env(repo, clock)
 	end
 
 	local grug_core = stub_table({})
+	function grug_core.base_pool(level)
+		return math.floor(20 + 5 * level + 0.66 * level * level + 0.5)
+	end
+	function grug_core.baseline_weapon_damage(level)
+		return math.floor(4 + 0.35 * level + 0.5)
+	end
+	function grug_core.get_player_level(player)
+		return player._level or 1
+	end
 	function grug_core.combat_eye_pos(player)
 		return vector_stub.new(0, 1.5, 0)
 	end
@@ -227,7 +236,7 @@ local function build_env(repo, clock)
 		grug_xp = grug_xp,
 		grug_factions = stub_table(),
 		grug_mobs = stub_table(),
-		grug_inventory = stub_table(),
+		grug_inventory = stub_table({equipment_slots = false}),
 		grug_projectiles = grug_projectiles,
 		grug_gear = stub_table({BRACKETS = {}}),
 		sfinv = stub_table(),
@@ -824,8 +833,8 @@ local function run_checks(repo)
 	-- Max HP and max mana move by the documented amount and by nothing else.
 	local hp_none = make_player("hpnone", "warrior", 60)
 	local hp_maxed = forged("hpmax", "warrior", 60, "ironbound=5,weathered=4")
-	equal(classes.get_max_hp(hp_maxed) - classes.get_max_hp(hp_none), 12,
-		"Weathered 4/4 grants exactly +12 max HP")
+	equal(classes.get_max_hp(hp_maxed) - classes.get_max_hp(hp_none), 194,
+		"Weathered 4/4 grants exactly +6% class-base max HP")
 
 	-- ... and the same thing where the player can feel it. apply_stats is the
 	-- only writer of hp_max, and a talent change has to reach it: spending
@@ -839,7 +848,7 @@ local function run_checks(repo)
 		"the applied ceiling starts where the accessor says")
 	equal(select(1, spend_times(applied, "ironbound", 5)), true, "a ironbound")
 	equal(select(1, spend_times(applied, "weathered", 4)), true, "a weathered")
-	equal(applied:get_properties().hp_max, ceiling_before + 12,
+	equal(applied:get_properties().hp_max, ceiling_before + 194,
 		"spending Weathered 4/4 must raise the APPLIED hp_max, not only " ..
 		"grug_classes.get_max_hp")
 	equal(classes.respec(applied), 9, "the respec returns nine points")
@@ -853,7 +862,7 @@ local function run_checks(repo)
 	equal(applied:get_hp(), hp_before,
 		"spending a point must not heal the character")
 	classes.respec(applied)
-	row("wp11_applied_hp", ceiling_before, ceiling_before + 12,
+	row("wp11_applied_hp", ceiling_before, ceiling_before + 194,
 		"heal_on_spend", 0)
 
 	-- The abilities talent callback walks the real main inventory. A ranked
@@ -944,7 +953,10 @@ local function run_checks(repo)
 	equal(registered.hamstring.talent_gated, true,
 		"ruling 19: Hamstring is talent-gated and leaves the base kit")
 	equal(registered.renew.talent_gated, true, "Renew stays talent-gated")
-	equal(num(registered.fireball.cost.mana), num(8), "Fireball costs 8 mana")
+	equal(num(registered.fireball.cost.mana_percent), num(6),
+		"Fireball costs 6% base mana")
+	equal(num(abilities.mana_cost(mage, 6)), num(162),
+		"Fireball costs 162 mana at L60")
 	equal(num(abilities.get_range(mage, registered.fireball)), num(20),
 		"Fireball's targeting reach without a talent")
 	local elf = make_player("elf", "mage", 60, {ability_range_bonus = 5})
@@ -979,14 +991,16 @@ local function run_checks(repo)
 	if clock.spawned then
 		equal(num(clock.spawned.max_distance), num(20),
 			"Fireball flies 20 m without a talent")
-		equal(num(clock.spawned.data.damage), num(6 + power),
-			"Fireball deals 6 + spell power without a talent")
+		equal(num(clock.spawned.data.damage),
+			num(env.grug_core.baseline_weapon_damage(60) + power),
+			"Fireball uses baseline weapon plus spell power")
 	end
 	clock.spawned = nil
 	local tinder = forged("tinder", "mage", 60, "tinder=5")
 	registered.fireball.cast(tinder, nil, registered.fireball)
 	if clock.spawned then
-		equal(num(clock.spawned.data.damage), num(6 + power + 5),
+		equal(num(clock.spawned.data.damage),
+			num(env.grug_core.baseline_weapon_damage(60) + power + 5),
 			"Tinder 5/5 adds exactly 5 to Fireball")
 		equal(num(clock.spawned.max_distance), num(20),
 			"Tinder does not move the flight distance")

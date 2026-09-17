@@ -7,8 +7,8 @@
 -- things that ruling can actually be broken by:
 --
 --   A  THE ARITHMETIC. `grug_core.hud_layout.bar_fill` is loaded from the
---      real file and driven over the whole 0..325 hit-point range of a
---      level-60 Warrior (combat_stats.md section 2) and the 0..384 mana pool
+--      real file and driven over the whole 0..3235 hit-point range of a
+--      level-60 Warrior (combat_stats.md section 2) and the 0..2696 mana pool
 --      of a level-60 Mage. It must be monotone, never negative, never wider
 --      than the bar, never read FULL while one point is missing and never
 --      read EMPTY while one point is left. That last pair is the entire
@@ -44,8 +44,8 @@ local XP = "mods/PLAYER/grug_xp/init.lua"
 local MONEY = "mods/PLAYER/grug_money/init.lua"
 
 -- combat_stats.md section 2, the level-60 anchors.
-local WARRIOR_HP = 325
-local MAGE_MANA = 384
+local WARRIOR_HP = 3235
+local MAGE_MANA = 2696
 
 local function read(path)
 	local handle = io.open(path, "r")
@@ -396,7 +396,7 @@ function M.run(repo)
 
 	-- The anchors of combat_stats.md section 2, for the record.
 	local anchors = {}
-	for _, hp_max in ipairs({30, 75, 175, 325}) do
+	for _, hp_max in ipairs({31, 163, 917, 3235}) do
 		anchors[#anchors + 1] = hp_max .. "=" ..
 			layout.bar_fill(math.floor(hp_max / 2), hp_max)
 	end
