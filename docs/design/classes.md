@@ -1,6 +1,6 @@
 # Class Kits — Resources & Abilities (MVP)
 
-Decided spec (last revised 2026-08-12; established 2026-08-06).
+Decided spec (last revised 2026-09-17; established 2026-08-06).
 Implementation: WP4 (`grug_abilities`, resource HUD, damage pipeline hooks in
 `grug_core`), WP19 (kit tuning, GCD, target memory), WP35 (§2b's universal
 ability and §2c's ability-item skins), WP38 (§2b's proc model, which retires
@@ -61,10 +61,11 @@ Core principles:
   target cannot override the server's faction check. Civilian non-combatants
   are never hostile targets: direct casts refuse them, projectiles pass through
   them and hostile area effects skip them. `friendly` accepts another living
-  same-faction player. An explicitly pointed invalid object refuses the cast
-  without effect, cost or cooldown; ally-memory and self fallback apply only
-  when no explicit object was given. Service NPCs, guards and mobs are not
-  player party members and cannot receive player heals or shields. `self`
+  same-faction player. Friendly skills always resolve: a pointed valid ally is
+  used and locked; every other pointed result follows the same path as no
+  explicit object — a valid in-range ally-memory target, otherwise the caster
+  (user ruling 2026-09-17). Service NPCs, guards and mobs are not player party
+  members and cannot receive player heals or shields. `self`
   ignores all pointed and remembered objects and anchors the
   cast on its user. Strike, Charge, Mighty Blow, Hamstring, Taunt, Fireball and
   Smite are hostile; Frost Nova and Blink are self; Flash Heal, Power Word:
@@ -77,6 +78,11 @@ Core principles:
   for **2–3 players**, and every encounter must be **beatable without a
   healer** (food/potions as the substitute) — the Priest makes groups
   comfortable, never mandatory.
+- **Numeric ability tooltips are player-specific.** Damage, healing and absorb
+  numbers show the effective current-level value before Crit and target-level
+  malus. The registered item definition keeps a number-free fallback; the
+  player's ability ItemStack carries the effective description and refreshes
+  on kit sync, level change and talent change.
 
 ## 1. Resources
 
@@ -317,8 +323,10 @@ promised away.
   at the entity's new position. The same ownership/collision foundation must
   support later arrows, but WP39 does not implement bows: arrows add gravity
   and take their initial impulse from bounded bow draw time.
-- Friendly heals and shields retain the separate 8 s ally-memory fallback and
-  self fallback defined by their individual skill.
+- Friendly heals and shields always resolve through pointed valid ally → the
+  separate valid in-range 8 s ally-memory target → self. A pointed hostile,
+  NPC, guard, item or dead player enters that same fallback chain rather than
+  refusing the cast (user ruling 2026-09-17).
 
 ### The charge bar
 

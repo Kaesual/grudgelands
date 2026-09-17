@@ -4,12 +4,16 @@
 local CHECK_INTERVAL = 1
 local elapsed = 0
 
-function grug_core.should_suffocate(node_def, in_stasis)
-	if in_stasis or not node_def then
+function grug_core.should_suffocate(node_def, in_stasis, has_noclip)
+	if in_stasis or has_noclip or not node_def then
 		return false
 	end
 	return node_def.walkable == true and
 		(node_def.liquidtype == nil or node_def.liquidtype == "none")
+end
+
+function grug_core.suffocation_damage(hp_max)
+	return math.max(1, math.floor((tonumber(hp_max) or 0) * 0.05))
 end
 
 local function in_creation_stasis(player)
@@ -41,9 +45,17 @@ core.register_globalstep(function(dtime)
 	elapsed = elapsed - damage * CHECK_INTERVAL
 	for _, player in ipairs(core.get_connected_players()) do
 		local stasis = in_creation_stasis(player)
-		if player:get_hp() > 0 and not stasis and
-				grug_core.should_suffocate(head_node_def(player), stasis) then
-			player:set_hp(math.max(0, player:get_hp() - damage), {
+		-- One privilege lookup per player per suffocation check, never per engine
+		-- step. The fallback is only for standalone fixtures; Luanti always
+		-- provides get_player_privs.
+		local privs = core.get_player_privs and
+			core.get_player_privs(player:get_player_name()) or {}
+		local noclip = privs.noclip == true
+		if player:get_hp() > 0 and not stasis and not noclip and
+				grug_core.should_suffocate(head_node_def(player), stasis, noclip) then
+			local per_second = grug_core.suffocation_damage(
+				player:get_properties().hp_max)
+			player:set_hp(math.max(0, player:get_hp() - per_second * damage), {
 				type = "set_hp",
 				from = "mod",
 				custom_type = "grug_core:suffocation",

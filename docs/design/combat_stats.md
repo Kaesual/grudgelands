@@ -123,6 +123,9 @@ consumer caps. The caps remain 30% Crit, 30% Dodge and 60% armor. Values above
 a cap remain present on their stacks but have no further combat effect; the
 Character page exposes effective and raw values, for example
 `Armor 60% (67% raw)`. There is no automatic overflow conversion or cap raise.
+The Character page shows **Max HP** and, for mana classes, **Max Mana** only;
+the HUD bars are the sole display of current pool values. Rage classes keep
+`Rage (in combat)` on that page.
 
 Two optional target-race systems use the central pipeline:
 
@@ -144,8 +147,10 @@ Two optional target-race systems use the central pipeline:
 ### Environmental damage, deaths and shore movement
 
 - A player whose head point is inside a walkable, non-liquid node takes
-  **1 HP per second**. Non-walkable nodes, including plants, do not suffocate;
-  neither do liquid nodes. The character-creation stasis state is exempt.
+  **floor(5% of maximum HP) per second, minimum 1 HP**. Non-walkable nodes,
+  including plants, do not suffocate; neither do liquid nodes. The
+  character-creation stasis state and players holding the `noclip` privilege
+  are exempt.
 - Every player death sends exactly **one** short English line to all players.
   The selected template distinguishes fall, drowning, lava/fire node damage,
   suffocation, a mob punch (using the mob's display name), a player punch
@@ -262,7 +267,9 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   only a currently pointed valid hostile within their individual range and a
   server line-of-sight check. Enemy target memory is never a fallback. Failure
   to acquire a target spends no resource and arms no cooldown. Friendly
-  heal/shield casts retain the separate ally-memory/self fallback.
+  heal/shield casts always resolve through pointed valid ally → valid in-range
+  ally memory → self; any pointed invalid object enters that fallback chain
+  (user ruling 2026-09-17).
 - **Fireball is directional, not targeted.** On successful input it spends
   8 mana, snapshots the cast-time eye direction and spawns one straight
   projectile at **20 m/s**. It has no homing, gravity or splash, deals
