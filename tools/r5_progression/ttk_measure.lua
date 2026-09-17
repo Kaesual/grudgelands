@@ -23,6 +23,7 @@ local gear_env = setmetatable({
 		colorize = function(_, text) return text end,
 		register_tool = function(name, def) gear_items[name] = def end,
 		register_craftitem = function(name, def) gear_items[name] = def end,
+		register_on_mods_loaded = function() end,
 		log = function() end,
 	},
 }, {__index = _G})
@@ -119,6 +120,7 @@ local ability_env = setmetatable({
 		RAGE_PER_SWING = 12,
 		register_ability = function(def) ability_defs[def.id] = def end,
 		get_range = function(_, def) return def.range or 4 end,
+		valid_target = function() return true end,
 		set_target = function() end,
 		get_target = function() return nil end,
 	},
