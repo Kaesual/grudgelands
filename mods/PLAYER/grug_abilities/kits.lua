@@ -800,3 +800,7 @@ end)
 core.register_on_leaveplayer(function(player)
 	renews[player:get_player_name()] = nil
 end)
+
+core.register_on_dieplayer(function(player)
+	renews[player:get_player_name()] = nil
+end)

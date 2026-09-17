@@ -2,6 +2,8 @@
 -- Effects intentionally disappear on relog. Persistent mechanics, such as
 -- the potion cooldown, keep their own authoritative storage and are mirrored
 -- here only while the player is online.
+-- on_tick and a positive interval are an optional pair; definitions that
+-- provide only one of them are rejected.
 
 local STATUS_HUD_LIMIT = 8
 local STATUS_STEP = 1
@@ -58,8 +60,12 @@ function grug_core.set_status(player, id, definition)
 	if expiry <= now then
 		return nil
 	end
+	local has_tick = definition.on_tick ~= nil
+	local has_interval = definition.interval ~= nil
 	local interval = tonumber(definition.interval)
-	if interval and (interval <= 0 or type(definition.on_tick) ~= "function") then
+	if has_tick ~= has_interval or (has_tick and
+			(type(definition.on_tick) ~= "function" or not interval or
+			interval <= 0)) then
 		return nil
 	end
 	sequence = sequence + 1
@@ -86,10 +92,16 @@ function grug_core.clear_status(player, id)
 	return remove_status(player, id, false) ~= nil
 end
 
+local function should_expire(record, now)
+	local pending_tick = record.on_tick and
+		record.next_tick_us <= record.expiry_us
+	return now >= record.expiry_us and not pending_tick
+end
+
 function grug_core.get_status(player, id)
 	local name = player_name(player)
 	local record = name and statuses[name] and statuses[name][id]
-	if record and core.get_us_time() >= record.expiry_us then
+	if record and should_expire(record, core.get_us_time()) then
 		remove_status(player, id, true)
 		return nil
 	end
@@ -119,7 +131,7 @@ function grug_core.each_status(player, callback)
 		local now = core.get_us_time()
 		local expired = {}
 		for id, record in pairs(per_player) do
-			if now >= record.expiry_us then
+			if should_expire(record, now) then
 				expired[#expired + 1] = id
 			else
 				ordered[#ordered + 1] = record
@@ -217,10 +229,12 @@ local function advance_statuses(player, now)
 	local ordered = grug_core.each_status(player)
 	for index = 1, #ordered do
 		local record = ordered[index]
-		if record.on_tick and now >= record.next_tick_us then
+		if record.on_tick and record.next_tick_us <= record.expiry_us and
+				now >= record.next_tick_us then
 			record.on_tick(player, record)
 			local interval_us = record.interval * 1e6
-			local skipped = math.floor((now - record.next_tick_us) /
+			local due_until = math.min(now, record.expiry_us)
+			local skipped = math.floor((due_until - record.next_tick_us) /
 				interval_us) + 1
 			record.next_tick_us = record.next_tick_us + skipped * interval_us
 		end

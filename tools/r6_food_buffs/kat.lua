@@ -163,7 +163,14 @@ return grug_abilities
 	core_stub.add_particlespawner = function() end
 	core_stub.add_particle = function() end
 	core_stub.register_on_mods_loaded = function() end
-	core_stub.get_player_by_name = function() return nil end
+	core_stub.get_player_by_name = function(name)
+		for index = 1, #connected do
+			if connected[index]:get_player_name() == name then
+				return connected[index]
+			end
+		end
+		return nil
+	end
 	load_production("mods/CORE/grug_core/combat.lua")
 	load_production("mods/ITEMS/grug_food/init.lua")
 	load_production("mods/PLAYER/grug_abilities/kits.lua")
@@ -187,6 +194,7 @@ return grug_abilities
 	function Player:get_player_name() return self.name end
 	function Player:get_hp() return self.hp end
 	function Player:set_hp(value) self.hp = value end
+	function Player:get_properties() return {hp_max = max_hp} end
 	function Player:get_pos() return {x = 0, y = 0, z = 0} end
 	function Player:hud_add(definition)
 		self.next_hud = self.next_hud + 1
@@ -230,7 +238,23 @@ return grug_abilities
 	local renewed = renew and renew.cast(player, nil, renew)
 	check(renewed == true and grug_core_stub.get_status(player, "renew") ~= nil,
 		"Renew registers its timed status")
-	grug_core_stub.clear_status(player, "renew")
+	local death_hp = player.hp
+	for index = 1, #hooks.die do hooks.die[index](player) end
+	now = 3 * 1e6
+	for index = 1, #hooks.globalstep do hooks.globalstep[index](3) end
+	check(grug_core_stub.get_status(player, "renew") == nil and
+		player.hp == death_hp, "death clears Renew status and private record")
+	local leaver = new_player("leaver", 10, 0)
+	connected[2] = leaver
+	for index = 1, #hooks.join do hooks.join[index](leaver) end
+	local renewed_leaver = renew and renew.cast(leaver, nil, renew)
+	for index = 1, #hooks.leave do hooks.leave[index](leaver) end
+	now = 6 * 1e6
+	for index = 1, #hooks.globalstep do hooks.globalstep[index](3) end
+	check(renewed_leaver == true and leaver.hp == 10,
+		"leave clears Renew private record")
+	connected[2] = nil
+	now = 0
 
 	local expected = {
 		[2] = {1, 2, 6},
@@ -290,6 +314,39 @@ return grug_abilities
 		"rage class refuses mana food without consuming")
 	max_mana = 100
 
+	max_hp = 10000
+	now = 1000 * 1e6
+	local full_duration = new_player("full_duration", 1, 0)
+	connected[2] = full_duration
+	environment.grug_food.eat(stack(1), full_duration, "hp", "raw")
+	for tick = 1, 18 do
+		now = (1000 + tick * 10) * 1e6
+		for index = 1, #hooks.globalstep do hooks.globalstep[index](10) end
+	end
+	local duration_ticks = (full_duration.hp - 1) / 200
+	check(duration_ticks == 18 and
+		grug_core_stub.get_status(full_duration, "food") == nil,
+		"food runs all 18 scheduled ticks through expiry")
+
+	now = 2000 * 1e6
+	local skipped_duration = new_player("skipped_duration", 1, 0)
+	connected[2] = skipped_duration
+	environment.grug_food.eat(stack(1), skipped_duration, "hp", "raw")
+	for tick = 1, 18 do
+		if tick == 1 then
+			now = 2009 * 1e6
+			grug_core_stub.mark_in_combat(skipped_duration)
+		end
+		now = (2000 + tick * 10) * 1e6
+		for index = 1, #hooks.globalstep do hooks.globalstep[index](10) end
+	end
+	local skipped_ticks = (skipped_duration.hp - 1) / 200
+	check(skipped_ticks == 17 and
+		grug_core_stub.get_status(skipped_duration, "food") == nil,
+		"one combat skip yields 17 ticks without make-up")
+	connected[2] = nil
+	max_hp = 100
+
 	for index = 1, #hooks.die do hooks.die[index](player) end
 	now = 100 * 1e6
 	local expired = 0
@@ -306,6 +363,12 @@ return grug_abilities
 	})
 	check(grug_core_stub.clear_status(player, "clear") and
 		grug_core_stub.get_status(player, "clear") == nil, "registry clear")
+	check(grug_core_stub.set_status(player, "tick_only", {
+		label = "Tick only", duration = 10, on_tick = function() end,
+	}) == nil, "registry rejects on_tick without interval")
+	check(grug_core_stub.set_status(player, "interval_only", {
+		label = "Interval only", duration = 10, interval = 1,
+	}) == nil, "registry rejects interval without on_tick")
 	local potion_left = 41
 	environment.grug_traders = {
 		potion_cooldown_left = function() return potion_left end,
@@ -383,15 +446,17 @@ return grug_abilities
 		"the registered cooked mana tier has no item yet")
 	table.sort(tiers)
 	return failures, table.concat(tiers, ","), cocoa_mapping,
-		cooked_mana_items, restore_row
+		cooked_mana_items, restore_row, duration_ticks, skipped_ticks
 end
 
 function M.run(repo)
-	local failures, tiers, cocoa, cooked_mana, restore = run(repo or ".")
+	local failures, tiers, cocoa, cooked_mana, restore, duration_ticks,
+		skipped_ticks = run(repo or ".")
 	local digest = "r6_food_mapping\tcocoa=" .. cocoa ..
 		"\tcooked_mana_items=" .. cooked_mana .. "\n" ..
 		"r6_mana_restore\t" .. restore .. "\n" ..
 		"r6_food_buffs_result\tfailures=" .. #failures ..
+		"\tduration_ticks=" .. duration_ticks .. "/" .. skipped_ticks ..
 		"\tticks=2%:1/2/6,5%:1/5/16,10%:2/10/32\titems=" .. tiers
 	if #failures > 0 then
 		return digest .. "\nFAIL " .. table.concat(failures, "; ") .. "\n"
