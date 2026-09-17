@@ -4,8 +4,8 @@
 grug_r6_shore_probe = {}
 
 local CASES = {
-	{id = "hearthpine_start", min_x = -1864, max_x = -1737,
-		min_z = -2614, max_z = -2487},
+	{id = "hearthpine_coast", min_x = -2520, max_x = -2481,
+		min_z = -2520, max_z = -2481},
 	{id = "dawnmere_start", min_x = 30, max_x = 110,
 		min_z = -2505, max_z = -2370},
 	{id = "goldmead_river", min_x = -60, max_x = 60,
@@ -79,6 +79,9 @@ local function scan(case)
 				end
 			end
 		end
+	end
+	if counts.contacts == 0 then
+		fail("no water/land adjacencies were sampled for " .. case.id)
 	end
 	for key, value in pairs(counts) do totals[key] = totals[key] + value end
 	core.log("action", table.concat({"GRUG_R6_SHORE", "case=" .. case.id,
