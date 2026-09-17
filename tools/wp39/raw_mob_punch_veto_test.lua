@@ -60,21 +60,34 @@ minetest = core
 assert(loadfile(repo .. "/mods/ENTITIES/mobs/api.lua"))()
 
 local accepted = 0
+local authoritative_token
+local authoritative_settlements = 0
 grug_mobs = {registered_cadence = {['test:mob'] = true}}
 grug_core = {
 	in_ability_punch = false,
-	claim_authoritative_swing = function() return nil end,
+	claim_authoritative_swing = function() return authoritative_token end,
 	authoritative_swing_active = function() return false end,
 	handle_native_swing_input = function() return false end,
 	handle_ordinary_melee_input = noop,
-	prepare_native_melee = function() return nil end,
+	prepare_native_melee = function(_, _, fraction, token)
+		if not token then return nil end
+		assert(token == authoritative_token and fraction == 1,
+			"authoritative swing token/fraction was not preserved")
+		return {extra_damage = 0, token = token}
+	end,
 	roll_melee_crit = function(_, damage) return damage, 1, false end,
 	get_melee_bonus = function() return 0 end,
 	prepare_accumulated_melee = function()
 		error("raw punch reached the removed proportional damage path")
 	end,
 	commit_accumulated_melee = function() return true end,
-	finish_native_melee = noop,
+	finish_native_melee = function(context, result)
+		if context then
+			assert(context.token == authoritative_token and result.landed,
+				"authoritative swing did not land its claimed transaction")
+			authoritative_settlements = authoritative_settlements + 1
+		end
+	end,
 	melee_wear_due = function() return false, false end,
 	forget_melee_wear = noop,
 }
@@ -137,4 +150,18 @@ assert(ability_result == true, "ability punch did not complete")
 assert(mob.health == 13, "ability punch dealt " .. (20 - mob.health) .. ", expected 7")
 assert(accepted == 1, "ability punch missed accepted-hit settlement")
 
-print("raw_mob_punch_veto_test: PASS raw_hp=20 ability_hp=13 accepted=1")
+-- The server-owned swing uses a claimed opaque token, not the broader
+-- in_ability_punch flag. Removing the explicit authoritative bypass from the
+-- raw veto must make this case fail.
+mob.health, mob.old_health, accepted = 20, 20, 0
+authoritative_token = {id="kat-authoritative"}
+local swing_result = mob:on_punch(hitter, 1, caps, {x=1,y=0,z=0}, 7)
+assert(swing_result == true, "authoritative swing did not complete")
+assert(mob.health == 13,
+	"authoritative swing dealt " .. (20 - mob.health) .. ", expected 7")
+assert(accepted == 1, "authoritative swing missed accepted-hit settlement")
+assert(authoritative_settlements == 1,
+	"authoritative swing transaction was not settled exactly once")
+authoritative_token = nil
+
+print("raw_mob_punch_veto_test: PASS raw_hp=20 ability_hp=13 swing_hp=13 swing_settled=1")
