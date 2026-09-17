@@ -132,7 +132,7 @@ craftable only with the Improved Boat unlock.
   world is a pickup or the 24-hour decay.
 - **Implementation seam, and the one engine fact this rule depends on:**
   mobs_redo punches *what the player is attached to*
-  (`mods/ENTITIES/mobs/api.lua:2525-2526`,
+  (`mods/ENTITIES/mobs/api.lua:2808-2813`,
   `local target = self.attack:get_attach() or self.attack`), so a mob's melee
   swing lands on the boat entity and the player loses no HP from it. That one
   swallowed swing is what ejects them; every later swing hits the player

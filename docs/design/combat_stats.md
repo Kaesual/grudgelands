@@ -230,7 +230,7 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   ability swing to at least `now + equipped FPI`. Its transition clears an old
   bank once; consecutive ordinary PvP packets retain their fractions, and
   returning to a swing clears the remainder once. Cast use alone preserves
-  ability due time (`mods/ENTITIES/mobs/api.lua:2773-2784`,
+  ability due time (`mods/ENTITIES/mobs/api.lua:2962-2974`,
   `mods/PLAYER/grug_abilities/init.lua:1261-1303`, `:2239-2269`).
 - **One accepted full swing resolves once.** Against players the order is
   **slot weapon + Strength → selected proc replacement → level scalar (plus
@@ -365,7 +365,7 @@ Normal tier at level L:
   contact run remains `reach × 0.6`, hence **1.8 m** for an ordinary attacker.
   Telegraphs continue to derive their geometry from the live reach; the
   ordinary elite/rare cone therefore reaches **4.5 m**
-  (`grug_abilities/kits.lua:284,344,381`; `mobs/api.lua:2625`;
+  (`grug_abilities/kits.lua:284,344,381`; `mobs/api.lua:2690-2819`;
   `grug_mobs/telegraph.lua:93,181`). The explicit ordinary reach sites are
   `grug_mobs/bandit.lua:61`, `bear.lua:23`, `boar.lua:10`,
   `boar_variants.lua:22`, `bog_ooze.lua:23`, `crocodile.lua:43`,
@@ -378,11 +378,11 @@ Normal tier at level L:
 - **Ordinary hits have zero knockback.** Damage never becomes an implicit
   displacement magnitude. `damage_groups.knockback` remains the explicit
   override seam for a future limited/cooldown skill
-  (`mobs/api.lua:3352,3356`).
+  (`mobs/api.lua:3446-3481`).
 - **Actors do not collide with other objects.** Mobs, NPCs and players use
   `collide_with_objects = false`; terrain collision is unchanged. This removes
   actor-on-actor climbing and deliberately permits visual overlap, which the
-  runtime playtest must judge (`mobs/api.lua:3840`;
+  runtime playtest must judge (`mobs/api.lua:3967-3975`;
   `grug_core/init.lua:70`).
 - **The 4.6 > 4.0 inequality holds except for named, long-cooldown skills**
   (`skill_trees.md` §5, ruling 10 of 2026-09-16): "skills may explicitly
@@ -422,7 +422,7 @@ Normal tier at level L:
   (`mods/ENTITIES/grug_mobs/init.lua:87-215`). Settlement occurs once at the
   shared mobs_redo death boundary regardless of whether a player, NPC, mob or
   the environment dealt the final damage, without replacing the mob's death
-  callback, animation or smoke fallback (`mods/ENTITIES/mobs/api.lua:855-910`).
+  callback, animation or smoke fallback (`mods/ENTITIES/mobs/api.lua:887-975`).
 - **PvE death loss** is 25% of the whole current-level XP span, clamped at the
   current level start; it never de-levels. Level 60 has no following span and
   therefore no PvE XP loss (`mods/PLAYER/grug_xp/init.lua:86-104`).
@@ -614,7 +614,8 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   top of the dogfight branch and caps the backlog at one; the in-reach branch
   runs to `reach × 0.6` while retaining the cliff guard; the final punch
   claims the timer only after line of sight succeeds. A blocked ready swing
-  therefore stays banked (`mobs/api.lua:2750-2792`).
+  therefore stays banked (`mobs/api.lua:2491-2819`;
+  `mobs/grug_obstacle.lua:4-237`).
 - **Close cover triggers navigation** (decided 2026-09-17). If a ground melee
   mob has spent about **1 s** inside reach without line of sight, it starts the
   existing bounded A* search despite already being close. It does not abandon
@@ -645,8 +646,9 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   **0.25 s** per-mob backoff applies after an exhausted path, not to budget
   waiting. The contact run retains its existing `at_cliff` guard
   (`mobs/grug_obstacle.lua:4-15,26-196,209-235`;
-  `mobs/api.lua:192-203,885-904,2324-2373,2539-2587,2652-2792`).
-  *Rationale, because the defect was invisible on paper*: vendored mobs_redo
+  `mobs/api.lua:157-218,887-975,2176-2864,2491-2819,2927-3538`).
+  *Rationale, because the defect was invisible on paper*: the following
+  pre-patch coordinates refer to commit `77261837` (2026-09-15). Vendored mobs_redo
   zeroed the mob's velocity as soon as the target was inside `reach`
   (`api.lua:2498` before the patch — the number this file carried,
   `:2493`, had drifted) while `punch_timer` accumulated **only in that same

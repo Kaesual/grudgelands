@@ -17,7 +17,7 @@
 --   blight (blight_dirt)      -> sickly blight green
 --
 -- The stamp goes through `on_spawn`, which mobs_redo calls with the fresh
--- luaentity right after add_entity (api.lua:3677ff) — i.e. after
+-- luaentity right after add_entity (api.lua:4193-4275) — i.e. after
 -- mob_activate picked a random texture from the list and before the first
 -- do_custom tick, so nothing else has read it yet. `base_texture` is a plain
 -- field and therefore survives unload/reload in staticdata; mob_activate
@@ -80,7 +80,7 @@ grug_mobs.register_mob("grug_mobs:bone_weevil", weevil)
 
 -- Stamps one of the two variants onto a freshly spawned weevil. The two
 -- writes mirror exactly what mobs_redo's own `def.texture` path does
--- (api.lua:3700-3703): the field for persistence, the property for the
+-- (api.lua:3689-3715): the field for persistence, the property for the
 -- client. mobs_redo calls on_spawn as `on_spawn(luaentity, pos)` and the
 -- entity is nil when core.add_entity failed (zombie.lua's blight row uses
 -- the same guard).

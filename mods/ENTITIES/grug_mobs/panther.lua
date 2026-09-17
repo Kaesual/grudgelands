@@ -4,9 +4,9 @@
 -- contract).
 --
 -- The SILENT half is a def decision, not code (verbs.lua header): mobs_redo
--- plays sounds.war_cry on 90% of all target acquisitions (api.lua:220) and we
+-- plays sounds.war_cry on 90% of all target acquisitions (api.lua:265-296) and we
 -- must not patch do_attack, so a stalker's def simply carries no
--- sounds.war_cry — mob_sound() then returns immediately (api.lua:196). This
+-- sounds.war_cry — mob_sound() then returns immediately (api.lua:246-261). This
 -- def has no `sounds` table at all, because WP6/T4 imported no audio (the
 -- freesound-derived animalworld/mobs_mc files need per-file verification,
 -- LICENSE-media.md header). So the panther is silent today for two reasons;

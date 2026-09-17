@@ -39,7 +39,7 @@ local skeleton = {
 	-- looking at the node
 	-- the spawn ABM matched. mobs_redo calls spawn_abm_check with the ABM's
 	-- node position, BEFORE it moves the spawn position one node up
-	-- (api.lua:3573 vs 3616), so core.get_node(pos) is exactly that top node.
+	-- (api.lua:3810), so core.get_node(pos) is exactly that top node.
 	_grug_spawn_check = function(pos)
 		if grug_mobs.zone_spawn_palette_allows("war", pos) then
 			return true -- explicit war palette: every listed top node is fine
@@ -62,7 +62,7 @@ local skeleton = {
 	-- mobs_redo alternates: dogshoot_count_max seconds shooting, then
 	-- dogshoot_count2_max seconds of melee (api.lua dogswitch). 10 vs 3 is
 	-- "mostly ranged"; independently of the timer mobs_redo forces melee
-	-- whenever the target is within `reach` (api.lua:2366), which is the
+	-- whenever the target is within `reach` (api.lua:2491-2819), which is the
 	-- "melee when cornered" half.
 	arrow = "grug_mobs:arrow_entity",
 	arrow_override = grug_mobs.stamp_arrow_damage,

@@ -324,6 +324,9 @@ comes due out of reach — each goes red.
 
 ### Line-number repairs that travelled with it
 
+The coordinates in the following historical correction note refer to commit
+`77261837` (2026-09-15), the pre-patch vendored input.
+
 - `combat_stats.md` §4's own `api.lua:2493` / `:2495-2497` / `:3768` had
   drifted by five lines even before this patch; the paragraph now states the
   pre-patch numbers correctly **and** where the fix lives in the patched tree.

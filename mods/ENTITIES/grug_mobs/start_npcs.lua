@@ -134,9 +134,9 @@
 --   here is mortal (every other family cancels every punch).
 --
 --   AND A MARKER IS NEVER LEFT STANDING ALONE. `on_die` is reached only from
---   `check_for_death` (api.lua:870-876), so it is not the only way an entity
+--   `check_for_death` (api.lua:887-975), so it is not the only way an entity
 --   can leave: `/clearobjects`, the `mob_active_limit` removal inside
---   `mob_activate` (api.lua:3311-3314) and a shutdown between the mod-storage
+--   `mob_activate` (api.lua:3638-3769) and a shutdown between the mod-storage
 --   flush and the map flush all end with a marker and no NPC, and without a
 --   re-check that socket would stay empty for the life of the world. So a pass
 --   over a socket whose own mapblock is ACTIVE -- the only state in which the
@@ -145,7 +145,7 @@
 --   the second gate.
 --
 -- WHY `core.add_entity` AND NOT `grug_mobs.add_mob`: `mobs:add_mob` refuses
--- whenever no player is inside the active area (api.lua:3885-3890,
+-- whenever no player is inside the active area (api.lua:4121-4213,
 -- `count_mobs` -> `is_pla`) because it is the ABM spawner's own gate. Authored
 -- settlement content decides its own position -- the same rule the start
 -- footprint refusal states for camps, guards and rares -- and the whole point
@@ -998,7 +998,7 @@ local function install(entity, row, slot)
 			row.race_id, named)
 	end
 	-- The facing to re-assert on every activation: mob_activate hands every mob
-	-- a random yaw (api.lua:3401), so an authored one has to be written back.
+	-- a random yaw (api.lua:3638-3769), so an authored one has to be written back.
 	-- The two families with a tick of their own do it there; the quest shell has
 	-- none and restores it from `after_activate`.
 	entity._grug_face_yaw = slot.yaw
@@ -1130,9 +1130,9 @@ end
 -- exactly the old "the ready pass never frees anything", without a flag.
 --
 -- THE MARKER IS NOT ALLOWED TO OUTLIVE ITS NPC, and `on_die` alone does not
--- guarantee that: it is reached only from `check_for_death` (api.lua:870-876),
+-- guarantee that: it is reached only from `check_for_death` (api.lua:887-975),
 -- so `/clearobjects`, the `mob_active_limit` removal inside `mob_activate`
--- (api.lua:3311-3314) and a shutdown between the mod-storage flush and the map
+-- (api.lua:3638-3769) and a shutdown between the mod-storage flush and the map
 -- flush all leave a marker with nothing standing on it -- and that socket would
 -- then never refill again for the life of the world.
 --

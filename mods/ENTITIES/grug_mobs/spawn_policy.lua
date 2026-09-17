@@ -194,9 +194,9 @@ end
 
 -- Hostile role, derived from exactly the fields mobs_redo's general_attack
 -- tests for a player candidate: `self.passive` returns before any candidate
--- is looked at (api.lua:1763-1767) and `not self.attack_players` drops every
--- player (api.lua:1782). attack_players defaults to TRUE in mob_class
--- (api.lua:169), hence the explicit `== false`; grug_mobs.passive_prey
+-- is looked at (api.lua:1853-1859) and `not self.attack_players` drops every
+-- player (api.lua:1871-1885). attack_players defaults to TRUE in mob_class
+-- (api.lua:157-218), hence the explicit `== false`; grug_mobs.passive_prey
 -- (verbs.lua) sets it for the four non-passive prey animals. Deriving it
 -- keeps it from drifting the way a hand-kept hostile list would.
 local hostile_spawns = {}

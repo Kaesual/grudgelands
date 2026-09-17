@@ -13,6 +13,10 @@
 > `carrion_crow.lua:54`, `zombie.lua:29`, `golem.lua:87`,
 > `bog_ooze.lua:38`, `kraken.lua:54`; and
 > `mobs/api.lua:103-104,2321-2330,2512,2644-2646,2695-2699,3352-3356,3840`.
+
+**Historical snapshot qualifier:** every `mobs/api.lua:<line>` and shorthand
+`api.lua:<line>` coordinate in this task card refers to commit `77261837`
+(2026-09-15), the frozen vendored input the card audited.
 > The older status and card below remain the historical round-4 record.
 >
 > **STATUS 2026-09-16 — SHIPPED.** This card was executed by the round-4

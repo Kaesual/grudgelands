@@ -190,7 +190,7 @@ documentation-only; the TODO is deleted.
 4. **Damage** — any incoming damage ejects the rider in PvE and PvP alike
    (the `mounts.md` §3.1 rule); boats have no hit points and are never
    destroyed. The decision records the engine fact it depends on: mobs_redo
-   punches what the player is attached to (`api.lua:2607-2615`), so a mob
+   punches what the player is attached to (`api.lua:2808-2813`), so a mob
    swing lands on the boat and the eject needs both that entity's
    `on_punch` and the central `grug_core` HP-change hook.
 5. **Return/respawn** — collapsed by decisions 1 and 2: a replacement is a

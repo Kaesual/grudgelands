@@ -233,7 +233,7 @@ local function guard_def(faction, description, texture)
 		-- guard slain by a mob, by a factionless player or by its own side, and
 		-- api.lua's item_drop then drops nothing at all.
 		--
-		-- chance = N is a 1-in-N roll (api.lua:751,
+		-- chance = N is a 1-in-N roll (api.lua:761-839,
 		-- `if random(drops[n].chance) == 1`): the trophy is guaranteed at 1-2
 		-- pieces x 5c, which IS the 5-10c band of §5.6, and the heavy cloth is
 		-- the literal "1/3" of the same line.
@@ -252,7 +252,7 @@ local function guard_def(faction, description, texture)
 		-- start_npcs.lua): its death frees the slot and books the refill. An
 		-- outpost guard carries no start fields and this is a no-op for it.
 		-- MUST return nil: any truthy return skips the removal of the mob
-		-- (api.lua:870-874, "skips removal of mob").
+		-- (api.lua:940-944, "skips removal of mob").
 		on_die = function(self)
 			if self._grug_start and self._grug_socket then
 				grug_mobs.start_guard_died(self)

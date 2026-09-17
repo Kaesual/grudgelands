@@ -23,7 +23,7 @@
 -- carries the api.lua evidence: `type = "npc"` is skipped by all three
 -- mobs_redo removal paths, `lifetimer = 30000` is the second independent
 -- guard, and a TRUTHY `do_punch` return cancels every punch before wear,
--- both health subtractions and check_for_death (api.lua:2807-2810 -- any
+-- both health subtractions and check_for_death (api.lua:3203-3207 -- any
 -- truthy return cancels, the comment there claims the opposite). Every
 -- environmental damage source is switched off separately, because those
 -- bypass on_punch.
@@ -407,7 +407,7 @@ end
 -- 2026-09-15).
 --
 -- mobs_redo recolours the tag by health on every do_env_damage tick
--- (api.lua:634-662, called from :989), so the method is overridden PER ENTITY
+-- (api.lua:1050-1176, called from :3837-3938), so the method is overridden PER ENTITY
 -- exactly as vendors.lua and levels.lua do it. A function field never reaches
 -- staticdata, so this runs from after_activate on every activation.
 --
@@ -699,7 +699,7 @@ end
 --      moves, walks a two-node straight line with `walk_toward` and no rescue.
 --   2. ONE PROPERTY WRITE PER CHANGE. mobs_redo's own `set_animation` returns
 --      without touching the object when the animation is already the one asked
---      for (api.lua:461), so a hammering smith writes its animation once for
+--      for (api.lua:500-548), so a hammering smith writes its animation once for
 --      the life of its activation, and a swinging fisher twice per ten seconds.
 --   3. NOTHING AT ALL WHILE NOBODY IS WATCHING. The vendor presence poll's own
 --      rule (grug_traders/vendors.lua PLAYER_RANGE): beyond 24 nodes from the
@@ -707,9 +707,9 @@ end
 --
 -- AND IT RETURNS `false`, which is what makes the whole thing hold. mobs_redo
 -- skips the rest of `on_step` as soon as `do_custom` answers exactly false
--- (api.lua:3595), so `do_states` never runs for a work resident -- and
+-- (api.lua:3837-3938), so `do_states` never runs for a work resident -- and
 -- `do_states` in the stand state calls `set_animation("stand")` once a second
--- (api.lua:2133), which would overwrite the activity's animation within a
+-- (api.lua:2232-2233), which would overwrite the activity's animation within a
 -- second of it being set. It also skips `general_attack`, `breed` and
 -- `follow_flop`, which for a non-combatant with no follow list is pure saving.
 --
@@ -856,7 +856,7 @@ end
 -- needs a per-second slot and an elder has no movement to hang one on -- so it
 -- does nothing else at all, and it returns false for the same reason the work
 -- tick does: an elder that never reaches `do_states` also never has its
--- authored facing overwritten by mobs_redo's random idle turn (api.lua:2127).
+-- authored facing overwritten by mobs_redo's random idle turn (api.lua:2176-2864).
 --
 local function elder_tick(self, dtime)
 	self.temp = self.temp or {}
@@ -909,7 +909,7 @@ local function npc_def(race_id, faction_id, nametag, extra)
 		--
 		-- `walk_chance = 0` above means "mobs_redo's wander is off" to us, but
 		-- inside mobs_redo's `do_jump` it means "this is a JUMPING mob"
-		-- (api.lua:1131: `or self.walk_chance == 0` is an alternative to having
+		-- (api.lua:1178-1207: `or self.walk_chance == 0` is an alternative to having
 		-- a solid node in front worth hopping onto). do_jump runs four times a
 		-- second from on_step and only skips a mob whose vertical velocity is
 		-- non-zero, so every one of these villagers hopped again the instant it
@@ -919,7 +919,7 @@ local function npc_def(race_id, faction_id, nametag, extra)
 		-- idle spots are further apart, that is most of its life.
 		--
 		-- `do_jump` returns before that clause when `jump_height == 0`
-		-- (api.lua:1114), which is the switch. `jump` itself is not a field
+		-- (api.lua:1178-1207), which is the switch. `jump` itself is not a field
 		-- mobs_redo reads at all -- it is in no def whitelist and nothing in
 		-- api.lua consults it -- and is kept false only so the def does not
 		-- claim the opposite of what it does. Flat settlement ground plus
@@ -975,7 +975,7 @@ local function npc_def(race_id, faction_id, nametag, extra)
 			-- swing; `sit` loops the sit range at its own pace. Both are extra
 			-- keys of the same animation table, so `mob_class:set_animation`
 			-- reaches them by name and still writes nothing when the animation
-			-- is already the one asked for (api.lua:461).
+			-- is already the one asked for (api.lua:500-548).
 			work_start = 189, work_end = 198, work_speed = 10,
 			sit_start = 81, sit_end = 160, sit_speed = 15,
 		},
@@ -983,11 +983,11 @@ local function npc_def(race_id, faction_id, nametag, extra)
 		-- The character-visuals seam
 		-- (docs/research/wp13-character-visuals-contract.md section 2). Inert
 		-- until that lane merges, and NB mobs_redo copies only its own def
-		-- whitelist onto the entity (api.lua:3196ff), so the consumer reads
+		-- whitelist onto the entity (api.lua:3956-4112), so the consumer reads
 		-- this off `core.registered_entities[name]`, not off `self`.
 		_grug_visual = {race = race_id},
 
-		-- ANY truthy return cancels the punch outright (api.lua:2807-2810).
+		-- ANY truthy return cancels the punch outright (api.lua:3203-3207).
 		do_punch = function()
 			return true
 		end,

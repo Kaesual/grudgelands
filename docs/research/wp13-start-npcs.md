@@ -121,9 +121,9 @@ instead of three. The fix is in `socket_occupied`, with that measurement in the
 comment.
 
 **A marker must never outlive its NPC, and `on_die` alone does not guarantee
-that.** `on_die` is reached only from `check_for_death` (api.lua:870-876), so
+that.** `on_die` is reached only from `check_for_death` (api.lua:887-975), so
 `/clearobjects`, the `mob_active_limit` removal inside `mob_activate`
-(api.lua:3397-3400) and a shutdown between the mod-storage flush and the map
+(api.lua:3638-3760) and a shutdown between the mod-storage flush and the map
 flush all end with a marker and nothing standing on it — and that socket would
 then never refill for the life of the world. The heartbeat pass therefore also
 re-checks the sockets it *can* see: a placed slot within `PLAYER_RANGE` of a
@@ -142,7 +142,7 @@ every environmental damage source (the api.lua evidence is quoted in
 ## Placement uses core.add_entity, deliberately
 
 `mobs:add_mob` refuses whenever no player is inside the active area
-(api.lua:3885-3890, `count_mobs` → `is_pla`) because that is the ABM spawner's
+(api.lua:4121-4213, `count_mobs` → `is_pla`) because that is the ABM spawner's
 own gate. Authored settlement content decides its own position — the same rule
 `wp13-start-preload.md` states for camps, guards and rares — and the whole
 point of placing at start-ready is that the prepared area has no player in it.
@@ -441,8 +441,8 @@ settlement.
 > record and its api.lua evidence still holds.
 
 
-`attack_npcs` defaults to **true** in mobs_redo's `mob_class` (api.lua:170) and
-is read in exactly one place, general_attack's candidate filter (api.lua:1814).
+`attack_npcs` defaults to **true** in mobs_redo's `mob_class` (api.lua:207) and
+is read in exactly one place, general_attack's candidate filter (api.lua:1906).
 guard.lua set it false; the eighteen hostile families did not, so a boar stood
 in front of an invulnerable villager hitting her for as long as anyone watched.
 
@@ -453,7 +453,7 @@ world.md §4's own: `_grug_attack_npcs = true` for a dedicated war-front unit.
 Nothing else changes — `attack_players`, `attack_animals` and `attack_monsters`
 stay as the def wrote them, so guards still fight monsters, and a punched
 monster still retaliates against the guard through on_punch's own
-`do_attack(hitter)` (api.lua:3293-3299), which consults `passive`, `state`,
+`do_attack(hitter)` (api.lua:3506-3515), which consults `passive`, `state`,
 `child` and ownership but never any `attack_*` field.
 
 **It does change who starts a guard-versus-monster fight, and that is
@@ -468,7 +468,7 @@ NPCs", read from the other side.
 ### 6. Perpetual jumping
 
 `walk_chance = 0` means "mobs_redo's own wander is off" to us. Inside
-`do_jump` it means **"this is a jumping mob"**: api.lua:1131 reads
+`do_jump` it means **"this is a jumping mob"**: api.lua:1178-1207 reads
 `if (not blocked and ...) or self.walk_chance == 0`, i.e. the villagers took the
 jump branch unconditionally. `do_jump` runs four times a second from `on_step`
 and skips only a mob whose vertical velocity is non-zero, so every villager
@@ -478,7 +478,7 @@ follows a jump in the same function. In Highcourt's core, where the idle spots
 are further apart, that is most of a villager's life.
 
 Both flair families now carry `jump_height = 0`, which is the gate at
-api.lua:1114 — `do_jump` returns before the jumping-mob clause. `jump` itself is
+api.lua:1178-1207 — `do_jump` returns before the jumping-mob clause. `jump` itself is
 not a field mobs_redo reads at all (it is in no def whitelist and nothing in
 api.lua consults it) and is kept `false` only so the def does not claim the
 opposite of what it does. Guards keep `jump_height = 4` and are unaffected: they
@@ -504,18 +504,18 @@ as it already re-asserts the facing.
 
 ### 8. "Elite Accord Guard [Lv 60] 945/10"
 
-`hp_max` is in mobs_redo's `is_property_name` table (api.lua:3383-3387), so
+`hp_max` is in mobs_redo's `is_property_name` table (api.lua:3630-3675), so
 `mob_activate`'s staticdata loop writes it to the **object** and never back onto
-`self` (api.lua:3413-3418). Two consequences, and the second is the defect:
+`self` (api.lua:3630-3675). Two consequences, and the second is the defect:
 
 1. `self.hp_max` is nil for the whole of every activation after the first, so
    the nametag and aggro.lua's leash heal fall back to the property;
 2. the **next** save therefore carries no `hp_max` at all (`clean_staticdata`
    serializes the fields that exist), and the activation after *that* keeps
    `initial_properties.hp_max`, which for a def that sets none is mobs_redo's
-   own default of **10** (api.lua:3733). A level-60 elite then reads 945/10 and
+   own default of **10** (api.lua:3970). A level-60 elite then reads 945/10 and
    its first damage is clamped to 10 by check_for_death's "make sure health
-   isn't higher than max" (api.lua:849).
+   isn't higher than max" (api.lua:907).
 
 Two reload cycles, which is why it looked random. Fixed where the maximum is
 owned rather than in the vendored api.lua: `ensure_init` re-derives it on every

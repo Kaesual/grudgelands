@@ -35,7 +35,7 @@ grug_mobs.register_mob("grug_mobs:kraken", {
 	attack_type = "dogfight",
 	attack_players = true,
 	group_attack = false,
-	-- false, not 0: mobs_redo only tests truthiness (api.lua:2701), so a 0
+	-- false, not 0: mobs_redo only tests truthiness (api.lua:2890), so a 0
 	-- would still knock back. An oversized boss must not be pushed around.
 	knock_back = false,
 

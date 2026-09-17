@@ -417,7 +417,7 @@ Vendored mobs_redo carries a complete invisibility hook that **nothing
 feeds**:
 
 ```lua
--- mods/ENTITIES/mobs/api.lua:1189-1195
+-- mods/ENTITIES/mobs/api.lua:1259-1265
 local function is_invisible(self, player_name)
     if use_invisibility and not self.ignore_invisibility
     and invisibility.is_visible and not invisibility.is_visible(player_name) then
@@ -435,19 +435,19 @@ six are exactly the AI behaviour ruling 8 describes:
 
 | Site in `mods/ENTITIES/mobs/api.lua` | What it does |
 |---|---|
-| `api.lua:1784` | target acquisition skips an invisible player |
-| `api.lua:1874` | a second acquisition path skips them |
-| `api.lua:1973` | a player-scan path skips them |
-| `api.lua:2244` | a mob **stops attacking** when its target turns invisible |
-| `api.lua:3220` | a punch from an invisible attacker does not set aggro |
-| `api.lua:1205` | `follow_holding` ignores an invisible player |
+| `api.lua:1874-1882` | target acquisition skips an invisible player |
+| `api.lua:1966` | a second acquisition path skips them |
+| `api.lua:2065` | a player-scan path skips them |
+| `api.lua:2340-2348` | a mob **stops attacking** when its target turns invisible |
+| `api.lua:3511-3515` | a punch from an invisible attacker does not set aggro |
+| `api.lua:1273-1275` | `follow_holding` ignores an invisible player |
 
 There is a seventh entry point that is not behaviour: `mobs:is_invisible`
-(`api.lua:1197-1198`) is a public wrapper around the same local, and it is
+(`api.lua:1267-1268`) is a public wrapper around the same local, and it is
 what an `invisibility` mod's own KAT would call.
 
 Per-mob opt-out already exists: `ignore_invisibility` is read from the def at
-`api.lua:3769`, so an individual family — a named rare, a boss, a royal guard
+`api.lua:4085`, so an individual family — a named rare, a boss, a royal guard
 — can be made immune without a patch.
 
 **So the AI half is free.** Shipping a small `invisibility` mod that publishes
@@ -521,7 +521,7 @@ no extra code.
 
 **Open, and named rather than assumed:** whether a capital's hard-protection
 volume should make stealth impossible outright (an `ignore_invisibility = true`
-on the royal guard def, one field, `api.lua:3769`) or leave it to the level
+on the royal guard def, one field, `api.lua:4085`) or leave it to the level
 term. Recommendation: set the field on royal guards, because a throne room is
 exactly the place a 100 % roll should not be a roll at all.
 
@@ -575,15 +575,15 @@ reveals the hidden player's exact position to every nearby player.
 
 #### 8.2.4 The non-combatant veto and `_grug_ignore_player` share the target loop — **needs a rule**
 
-`mods/ENTITIES/mobs/api.lua:1781-1790` and `:1815-1824` hold two GRUG PATCH
+`mods/ENTITIES/mobs/api.lua:1874-1882` and `:1903-1917` hold two GRUG PATCH
 vetoes in the same
-target-selection loop that `is_invisible` sits in (`:1784`): the per-entity
+target-selection loop that `is_invisible` sits in (`:1874-1877`): the per-entity
 `_grug_ignore_player` hook (the undead night truce) and the per-target
 `_grug_noncombatant` flag (`grug_mobs.noncombatant`, `verbs.lua:724-746`).
 Adding a *third* filter to that loop is cheap — it is already the shape — but
 the **order matters for `continue` semantics**: the loop removes a vetoed
 candidate so the mob picks another instead of re-acquiring forever
-(`api.lua:1788-1789`, `:1821-1823`). Invisibility must be filtered in the same
+(`api.lua:1882`, `:1916`). Invisibility must be filtered in the same
 place
 and the same way, not short-circuited earlier. One rule, written down, and the
 KAT case that proves a vetoed candidate is removed rather than skipped.
@@ -625,7 +625,7 @@ because the coordinator asked.
 `combat_stats.md:331-348`: elites and rares telegraph with a 2 s wind-up, a
 `!!` nametag prefix and a 90° frontal cone of `reach + 1.5 m`, and "the first
 wind-up needs **4 s of MELEE engagement**". A mob whose target vanishes
-mid-wind-up is an undefined state today: `api.lua:2244` drops the target when
+mid-wind-up is an undefined state today: `api.lua:2340-2348` drops the target when
 it becomes invisible, but the telegraph is `grug_mobs/telegraph.lua`'s own
 timer. Rule needed: **a lost target cancels the wind-up** (and the `!!`
 prefix), or a rare fires a ×3 cone into empty air.

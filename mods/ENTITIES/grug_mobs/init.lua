@@ -323,7 +323,7 @@ local function tick_speed_effects(self, dtime)
 	-- Why walk_velocity and not a set_velocity() argument in walk_toward: the
 	-- evade steer is a 1 Hz nudge, and mobs_redo's do_states re-issues
 	-- `set_velocity(self.walk_velocity)` for a "walk"-state mob once a second
-	-- of its own accord (api.lua:2180) — a per-call speed would survive less
+	-- of its own accord (api.lua:2176-2864) — a per-call speed would survive less
 	-- than a second and the mob would walk home at walking pace. Raising the
 	-- field the walk state reads is what makes the run stick. run_velocity is
 	-- raised with it so the numbers cannot disagree if some state does read it.
@@ -492,10 +492,10 @@ function grug_mobs.register_mob(name, def)
 		leash_range = def._grug_leash_range,
 		-- "This mob may target NOBODY on sight" — see apply_aggro_fields.
 		-- DERIVED, not a def flag: it is exactly the conjunction
-		-- general_attack's own candidate filter tests (api.lua:1782-1791 for
-		-- players and :1811-1825 for the three mob types), so it can
+		-- general_attack's own candidate filter tests (api.lua:1853-2017 for
+		-- players and :1900-1923 for the three mob types), so it can
 		-- never drift out of sync with the fields it summarises. Both player
-		-- fields default to TRUE in mob_class (api.lua:171-172), hence the
+		-- fields default to TRUE in mob_class (api.lua:204-207), hence the
 		-- explicit `== false`; the two mob fields default to false.
 		no_acquire = def.attack_players == false and def.attack_npcs == false
 			and not def.attack_animals and not def.attack_monsters,
@@ -526,16 +526,16 @@ function grug_mobs.register_mob(name, def)
 		--
 		-- The cancel IS mobs_redo's do_punch contract, and this is the one place
 		-- where the AGENTS.md gotcha ("any truthy return cancels the punch, the
-		-- api.lua comment claims the opposite") is the FEATURE. api.lua:2991-2995
+		-- api.lua comment claims the opposite") is the FEATURE. api.lua:3203-3207
 		-- reads `if self.do_punch and not self:do_punch(...) == false then
 		-- return true end`, which parses as `(not result) == false` — i.e. it
 		-- bails on a TRUTHY result. That `return true` sits BEFORE the weapon
-		-- wear (api.lua:3047-3138), before hit sound and blood particles
-		-- (api.lua:3158-3204), before health subtraction (api.lua:3206-3217)
-		-- and check_for_death (api.lua:3229), before knockback
-		-- (api.lua:3234-3279) and before the retaliation + group alert
+		-- wear (api.lua:3259-3338), before hit sound and blood particles
+		-- (api.lua:3339-3415), before health subtraction (api.lua:3417-3444)
+		-- and check_for_death (api.lua:3441), before knockback
+		-- (api.lua:3446-3488) and before the retaliation + group alert
 		-- that would otherwise hand the evader a fresh target
-		-- (api.lua:3291-3324). So: no
+		-- (api.lua:3490-3538). So: no
 		-- damage, no wear, no feedback, no aggro — exactly the spec.
 		--
 		-- on_punch previews the damage remainder before this wrapper only so the
@@ -624,7 +624,7 @@ function grug_mobs.register_mob(name, def)
 			grug_mobs.rare_tick(self, dtime)
 		end
 		-- ONE target-acquisition veto consumed by general_attack (GRUG PATCH in
-		-- mobs/api.lua:1790): the mob skips vetoed players and picks the
+		-- mobs/api.lua:1882): the mob skips vetoed players and picks the
 		-- next-closest viable target instead. A function field is never
 		-- serialized into staticdata; do_custom runs before general_attack on
 		-- every step, so it is back after each (re)activation in time.
@@ -633,12 +633,12 @@ function grug_mobs.register_mob(name, def)
 		-- an evading mob acquires no targets at all, which is not a faction or
 		-- truce question. A mob with neither of those carries the evade test
 		-- alone. Cost: one function call per candidate player per
-		-- general_attack, i.e. per mob once a second (api.lua:3690 runs it from
+		-- general_attack, i.e. per mob once a second (api.lua:3927 runs it from
 		-- the 1 s timer block) over the players inside view_range — nothing.
 		--
 		-- What it does NOT reach any more: the five passive-prey mobs
 		-- (verbs.lua). Its only reader is the GRUG PATCH inside
-		-- general_attack (api.lua:1790), and `no_acquire` shadows that whole
+		-- general_attack (api.lua:1882), and `no_acquire` shadows that whole
 		-- method with a no-op on any mob that may target nobody (aggro.lua),
 		-- which is exactly those five. So on a stag this closure is installed
 		-- and never called. No behaviour is lost — an evading prey mob could

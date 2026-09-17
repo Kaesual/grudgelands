@@ -13,10 +13,10 @@
 -- water)") — read api.lua before "fixing" this:
 --   * mobs_redo has exactly ONE amphibious knob, `fly = true` + `fly_in =
 --     {water}`, which is what upstream animalworld uses. It is NOT usable
---     for a land+water mob here: follow_flop (api.lua:1931ff) puts a `fly`
+--     for a land+water mob here: follow_flop (api.lua:2054-2120) puts a `fly`
 --     mob into the "flop" state whenever flight_check() fails, i.e. whenever
 --     it is NOT standing in its medium — a water-flying crocodile would flop
---     helplessly on every river bank (api.lua:1936: velocity {0, -5, 0},
+--     helplessly on every river bank (api.lua:2112: velocity {0, -5, 0},
 --     stand animation, no movement).
 --   * A per-medium speed swap would need a custom do_custom tick that reads
 --     self.standing_in and rewrites walk/run_velocity — and that collides
@@ -25,7 +25,7 @@
 --     Two owners of the same two fields is exactly the bug class the WP6
 --     notes warn about.
 --   * MVP therefore: ONE speed, 4.6 on land and in water, plus `floats` so
---     the mob swims at the surface instead of sinking (api.lua:2464). The
+--     the mob swims at the surface instead of sinking (api.lua:2491-2864). The
 --     5.0-in-water bonus is dropped, NOT postponed silently — a later WP can
 --     add it once one owner for the speed fields exists.
 --
@@ -59,7 +59,7 @@ local crocodile = {
 	-- Ambush range, see the header. grug_mobs.ambusher re-arms the "stand"
 	-- order at the same 6 nodes, so seeing a player and bursting coincide.
 	view_range = 6,
-	-- Explicit although `true` is mobs_redo's own default (api.lua:148): this
+	-- Explicit although `true` is mobs_redo's own default (api.lua:157-218): this
 	-- is the field that keeps the croc swimming at the surface of a swamp
 	-- pool instead of walking along its floor, so it must not be lost in a
 	-- later cleanup.

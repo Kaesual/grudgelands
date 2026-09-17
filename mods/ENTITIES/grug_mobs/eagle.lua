@@ -5,15 +5,15 @@
 --   * `fly = true` + `fly_in = "air"` is supported and is what the kraken
 --     already uses (with water instead of air). Three api.lua facts make it
 --     safe for an AIR flier:
---       - falling() bails out for fly mobs (api.lua:2458) and nothing else
+--       - falling() bails out for fly mobs (api.lua:2874-2923) and nothing else
 --         writes acceleration, so the bird hovers instead of sinking;
 --       - flight_check() compares self.standing_in against fly_in
---         (api.lua:544); for a bird that node is "air" wherever it is, so it
+--         (api.lua:550-563); for a bird that node is "air" wherever it is, so it
 --         never enters the "flop" state;
---       - fear_height defaults to 0 for fly defs (api.lua:3284) and do_jump
---         returns early (api.lua:1106) — no cliff stops, no jumping.
+--       - fear_height defaults to 0 for fly defs (api.lua:4058) and do_jump
+--         returns early (api.lua:1178-1207) — no cliff stops, no jumping.
 --   * ATTACK: `dogfight`, NOT dogshoot. In the dogfight branch mobs_redo
---     gives flying mobs their own vertical tracking (api.lua:2253ff): while
+--     gives flying mobs their own vertical tracking (api.lua:2176-2864): while
 --     the target is beyond reach it drives the y velocity toward the
 --     target's level — down onto a player on the ground, back up afterwards.
 --     Together with the heartland run speed 4.6 that IS the swoop, and it
@@ -46,7 +46,7 @@ local function eagle_def(description, texture)
 		-- Flier (see the header). floats/fall_damage are inert while fly is
 		-- set but keep the def honest, exactly like kraken.lua.
 		-- NB the `0` below is documentation, not a switch: mobs_redo tests
-		-- `if self.fall_damage` (api.lua:2791) and 0 is truthy in Lua, so it
+		-- `if self.fall_damage` (api.lua:2890) and 0 is truthy in Lua, so it
 		-- would NOT disable fall damage on a ground mob — `false` does. It is
 		-- inert here only because falling() bails out for fliers first. Do not
 		-- copy this line into a walking def (levels.lua's critter tier header).

@@ -454,7 +454,7 @@ Details + line numbers in [docs/research/](docs/research/).
   authoritative hostile ability target while LMB is held; enemy memory is
   UI-only.
 - **Mobs**: embed and patch mobs_redo (MIT). Faction targeting: condition
-  in `general_attack()` (api.lua:1699ff) following the LotT pattern
+  in `general_attack()` (api.lua:1853-2017) following the LotT pattern
   (`race` field in the mob def + ally check); territory/tier gating via
   `mobs:spawn_abm_check()`. Tiers via `hp_max`/`armor` (lower = tougher)/
   `damage`/`view_range`/`group_attack`. Dynamic loot: `drops` can be a
@@ -502,7 +502,7 @@ Details + line numbers in [docs/research/](docs/research/).
     `pathfinding = 1`; fliers never do (`core.find_path` is a ground
     search).
   - **Runtime field installation**: mobs_redo's `register_mob` copies an
-    EXPLICIT def-field whitelist into the entity table (api.lua:3196ff)
+    EXPLICIT def-field whitelist into the entity table (api.lua:3956-4112)
     and staticdata drops function fields — so every `_grug_*` field an
     api.lua patch reads off `self`, and every callable, must be
     (re-)installed from the `do_custom`/`do_punch` wrappers on each

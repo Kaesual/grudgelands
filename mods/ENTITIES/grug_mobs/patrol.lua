@@ -8,11 +8,11 @@
 -- around. Only the storage of the route and of the waypoint index differs, so
 -- the caller passes both in.
 --
--- We do NOT use mobs_redo's mob_class:go_to(pos) (api.lua:1672). It works by
+-- We do NOT use mobs_redo's mob_class:go_to(pos) (api.lua:1833-1840). It works by
 -- spawning a temporary "mobs:_pos" entity and calling do_attack(obj, true) on
 -- it — i.e. it puts the mob into state "attack" with a dummy target. Three
 -- things break for us: general_attack() bails out entirely while
--- state == "attack" (api.lua:1695), so a patrolling mob would be BLIND to
+-- state == "attack" (api.lua:2176-2864), so a patrolling mob would be BLIND to
 -- players; our threat/leash logic would see an attack state with a non-player
 -- target; and the telegraph would count the dummy as melee combat. A yaw +
 -- walk-velocity nudge once a second is all an amble needs.
@@ -28,7 +28,7 @@ local TICK = 1 -- s between nudges (performance rule: throttled)
 -- anchor"), which is the same "walk that way" with a different target.
 --
 -- mobs_redo's own walk state re-randomizes the yaw with a 30 % chance per
--- do_states call (api.lua:2152) and may stop the mob (`stand_chance`), so a
+-- do_states call (api.lua:2176-2864) and may stop the mob (`stand_chance`), so a
 -- single nudge is a suggestion, not a command — but do_custom runs BEFORE
 -- do_states in the same step and this repeats once a second, so the mob
 -- makes net progress instead of a straight line. That is exactly what an
@@ -46,10 +46,10 @@ end
 --
 -- MAKE A MOB FACE ONE DIRECTION AND KEEP IT.
 --
--- `set_yaw(yaw, 0)` alone is not enough, and the reason is api.lua:3401:
+-- `set_yaw(yaw, 0)` alone is not enough, and the reason is api.lua:3638-3781:
 -- `mob_activate` gives every mob a RANDOM yaw with a SIX-STEP smooth rotation,
 -- and the step function keeps feeding that pending target
--- (api.lua:3544-3553) until the six steps are spent. An instant yaw written
+-- (api.lua:3638-3781) until the six steps are spent. An instant yaw written
 -- while such a rotation is pending is turned away again over the next half
 -- second. Overwriting `target_yaw` first makes the pending rotation a no-op
 -- (`shortest_rotation(yaw, yaw) == 0`), so the facing sticks.

@@ -22,7 +22,7 @@ local storage = grug_mobs.storage
 local CHECK_INTERVAL = 10 -- s between spawner passes
 -- A player has to be this close (horizontally) before we even try: outside
 -- the active block range mobs:add_mob refuses anyway (it needs a player
--- within aoc_range * 2 = 128 m, api.lua:3347/3439), and an entity added to
+-- within aoc_range * 2 = 128 m, api.lua:3546-3627), and an entity added to
 -- an inactive block would be pointless. Slightly under 128 so the check we
 -- make and the check add_mob makes agree.
 local PLAYER_RANGE = 120
@@ -214,7 +214,7 @@ local function try_spawn(id, spec, now)
 	if not ent then
 		return
 	end
-	-- `description` is a plain field of every mobs_redo entity (api.lua:3217)
+	-- `description` is a plain field of every mobs_redo entity (api.lua:3990)
 	-- and is what levels.lua's tag_text prints, so the nametag reads
 	-- "★ Grimtusk [Lv 12] 325/325". It must be set BEFORE the tier: set_tier
 	-- refreshes the tag.
@@ -387,7 +387,7 @@ grug_mobs.register_rare("ashmaw", {
 	mob = "grug_mobs:boar",
 	-- The boar model has TWO texture slots (boar.lua: {boar, blank}), and
 	-- mobs:add_mob assigns def.texture straight to base_texture and to
-	-- set_properties{textures=...} (api.lua:3465ff) — so it has to be the
+	-- set_properties{textures=...} (api.lua:3689-3715) — so it has to be the
 	-- full per-slot list, not a bare string. levels.lua then reads this list
 	-- as the pristine base and layers the rare violet tint on top of it.
 	texture = {"grug_mobs_boar_plague.png", "grug_mobs_blank.png"},

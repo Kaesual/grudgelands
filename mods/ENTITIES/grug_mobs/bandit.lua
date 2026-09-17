@@ -75,7 +75,7 @@ function grug_mobs.bandit_def(description)
 		visual = "mesh",
 		mesh = "character.b3d",
 		-- TWO texture sets, not two registrations: mobs_redo picks one at random
-		-- per spawned mob (api.lua:2913, `def.textures[random(#def.textures)]`),
+		-- per spawned mob (api.lua:3689-3715, `def.textures[random(#def.textures)]`),
 		-- which is exactly wp6_model_notes §5's "second skin so a camp is not
 		-- four clones" — and it costs camps.lua nothing, it passes no texture.
 		textures = {
@@ -117,7 +117,7 @@ function grug_mobs.bandit_def(description)
 
 		-- LEVEL-DEPENDENT LOOT (§3.1: "linen cloth 1/1 x1-2 (inner camps) /
 		-- heavy cloth (outer camps)"). mobs_redo supports a `drops` FUNCTION and
-		-- calls it with the death position only (api.lua:696-699,
+		-- calls it with the death position only (api.lua:939-944,
 		-- `drops = self.drops(pos)`), which is all we need — the stable level query
 		-- answers from the position.
 		--
@@ -148,7 +148,7 @@ function grug_mobs.bandit_def(description)
 			-- Static drop-list format (name/chance/min/max), because everything
 			-- downstream — the filter, the hooks and mobs_redo's own roll — reads
 			-- exactly that shape.
-			-- chance = N is a 1-in-N roll (api.lua:751,
+			-- chance = N is a 1-in-N roll (api.lua:761-839,
 			-- `if random(drops[n].chance) == 1`), so the purse lands on roughly
 			-- every third kill — ~1.7c per bandit on top of the cloth, which is
 			-- the §8.1 trash-loot income band for the bandit's level range.
