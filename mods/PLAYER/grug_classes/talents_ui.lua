@@ -1,0 +1,341 @@
+-- The sfinv Talents page owns every player-facing talent mutation. The chat
+-- command is deliberately read-only; rank purchases and full resets always
+-- act on the PlayerRef that submitted this page's fixed button fields.
+
+local PAGE_NAME = "grug_classes:talents"
+local META_RESPEC_USED = "grug_classes:respec_used"
+
+-- COORDINATOR PLACEHOLDER: WP44 has not published its measured reliable net
+-- solo income ledger yet. Replace these six already-denominated copper values
+-- with the ledger's five-minute T1..T6 outputs. They deliberately mirror the
+-- decided Common-weapon axis only to keep the transaction testable; they are
+-- NOT presented as measured income and are a merge blocker for the coordinator.
+grug_classes.COORDINATOR_PLACEHOLDER_RESPEC_PRICES = {25, 65, 160, 400, 1000, 2500}
+
+local function esc(text)
+	return core.formspec_escape(tostring(text or ""))
+end
+
+local function level_bracket(player)
+	local level = grug_xp.get_level(player)
+	return math.max(1, math.min(6, math.ceil(level / 10)))
+end
+
+function grug_classes.respec_price(player)
+	if player:get_meta():get_int(META_RESPEC_USED) == 0 then
+		return 0
+	end
+	return grug_classes.COORDINATOR_PLACEHOLDER_RESPEC_PRICES[
+		level_bracket(player)]
+end
+
+-- Returns true, points returned, copper charged; or false plus a refusal.
+-- The withdrawal happens before the deterministic full reset, so insufficient
+-- funds can never alter the build. No player name or target comes from fields.
+function grug_classes.buy_respec(player)
+	local spent = grug_classes.talent_points_spent(player)
+	if spent <= 0 then
+		return false, "No talent ranks are spent."
+	end
+	local price = grug_classes.respec_price(player)
+	if price > 0 and not grug_money.take(player, price) then
+		return false, "You need " .. grug_money.format(price) .. " to respec."
+	end
+	player:get_meta():set_int(META_RESPEC_USED, 1)
+	local returned = grug_classes.respec(player)
+	return true, returned, price
+end
+
+local function talent_mark(def)
+	if def.capstone then
+		return " **"
+	elseif def.keystone then
+		return " *"
+	end
+	return ""
+end
+
+local function stat_lines(player)
+	local crit_raw = grug_classes.get_crit_chance_raw(player) * 100
+	local dodge_raw = grug_classes.get_dodge_chance_raw(player) * 100
+	local crit = grug_classes.get_crit_chance(player) * 100
+	local dodge = grug_classes.get_dodge_chance(player) * 100
+	local armor = (grug_core.get_armor_percent(player) or 0)
+	local armor_raw = armor
+	if type(grug_core.get_armor_percent_raw) == "function" then
+		armor_raw = grug_core.get_armor_percent_raw(player) or armor
+	else
+		-- grug_inventory depends on this mod, so it cannot be a dependency in
+		-- the other direction. Player forms open only after all mods loaded;
+		-- use its public aggregate opportunistically and keep stripped test
+		-- games on the effective fallback above.
+		local inventory = rawget(_G, "grug_inventory")
+		if inventory and type(inventory.get_equipped_armor) == "function" then
+			armor_raw = inventory.get_equipped_armor(player)
+				+ grug_classes.get_talent_bonus(player, "armor_percent_add")
+				+ grug_classes.get_talent_bonus(player,
+					"armor_percent_add_low_hp")
+		end
+	end
+	local crit_cap = math.max(30,
+		grug_classes.get_talent_bonus(player, "crit_cap_override"))
+	local dodge_cap = math.max(30,
+		grug_classes.get_talent_bonus(player, "dodge_cap_override"))
+	local armor_cap = math.max(60,
+		grug_classes.get_talent_bonus(player, "armor_cap_override"))
+	return ("Crit %.1f%% effective / %.1f%% raw (cap %.0f%%)   " ..
+		"Dodge %.1f%% / %.1f%% raw (cap %.0f%%)"):format(
+		crit, crit_raw, crit_cap, dodge, dodge_raw, dodge_cap),
+		("Armor %.0f%% effective / %.0f%% raw (cap %.0f%%)"):format(
+			armor, armor_raw, armor_cap)
+end
+
+local function trees_for_player(player)
+	return grug_classes.trees_of_class(grug_classes.get_class(player))
+end
+
+local function active_tree(player, context)
+	local trees = trees_for_player(player)
+	for _, tree in ipairs(trees) do
+		if tree.id == context.grug_talent_tree then
+			return tree, trees
+		end
+	end
+	local tree = trees[1]
+	context.grug_talent_tree = tree and tree.id or nil
+	return tree, trees
+end
+
+local function selected_description(player, context, tree)
+	local def = context.grug_talent_selected
+		and grug_classes.registered_talents[context.grug_talent_selected]
+	if not def or not tree or def.tree ~= tree.id
+			or def.class ~= grug_classes.get_class(player) then
+		return context.grug_talent_notice
+			or "Select an available talent, then click it again to buy one rank."
+	end
+	local rank = grug_classes.talent_rank(player, def.id)
+	local status
+	if rank >= def.ranks then
+		status = "Maximum rank reached."
+	else
+		local ok, reason = grug_classes.can_spend_talent(player, def.id)
+		status = ok and "Click again to buy the next rank." or reason
+	end
+	return ("%s%s — rank %d/%d: %s  %s"):format(def.name,
+		talent_mark(def), rank, def.ranks, def.description, status)
+end
+
+local function talent_content(player, context)
+	local class_id = grug_classes.get_class(player)
+	local class_def = class_id and grug_classes.registered_classes[class_id]
+	local tree, trees = active_tree(player, context)
+	local stat_one, stat_two = stat_lines(player)
+	local fs = {
+		("label[0,0.25;%s]"):format(esc(class_def and class_def.name or "No class")),
+		("label[3.75,0.25;%s]"):format(esc(("Talent points: %d total / %d left")
+			:format(grug_classes.talent_points_total(player),
+				grug_classes.talent_points_available(player)))),
+		("label[0,0.55;%s]"):format(esc(stat_one)),
+		("label[0,0.82;%s]"):format(esc(stat_two)),
+	}
+
+	for index, candidate in ipairs(trees) do
+		local label = candidate.name .. " " ..
+			grug_classes.tree_points(player, candidate.id)
+		if tree and candidate.id == tree.id then
+			label = "> " .. label
+		end
+		fs[#fs + 1] = ("button[%.2f,1.08;1.75,0.5;grug_talent_tree_%d;%s]")
+			:format((index - 1) * 1.85, index, esc(label))
+	end
+
+	local spent = grug_classes.talent_points_spent(player)
+	if spent <= 0 then
+		fs[#fs + 1] = "label[5.85,1.22;" .. esc("No ranks spent") .. "]"
+	elseif context.grug_talent_respec_pending then
+		fs[#fs + 1] = "button[5.35,1.08;1.25,0.5;grug_talent_respec_confirm;Confirm]"
+		fs[#fs + 1] = "button[6.65,1.08;1.15,0.5;grug_talent_respec_cancel;Cancel]"
+	else
+		local price = grug_classes.respec_price(player)
+		local price_text = price == 0 and "Free" or grug_money.format(price)
+		fs[#fs + 1] = "button[5.65,1.08;2.15,0.5;grug_talent_respec;" ..
+			esc("Respec: " .. price_text) .. "]"
+	end
+
+	if not tree then
+		fs[#fs + 1] = "label[0.2,2.0;" ..
+			esc("Choose a class before spending talent points.") .. "]"
+		return table.concat(fs)
+	end
+
+	for chain_index, chain in ipairs(tree.chains) do
+		local x = (chain_index - 1) * 4
+		fs[#fs + 1] = ("label[%.2f,1.62;%s]"):format(x + 0.1,
+			esc(chain:sub(1, 1):upper() .. chain:sub(2)))
+		for tier = 1, 4 do
+			local def
+			for _, candidate in ipairs(tree.talents) do
+				if candidate.chain == chain and candidate.tier == tier then
+					def = candidate
+					break
+				end
+			end
+			if def then
+				local y = 1.82 + (tier - 1) * 0.57
+				local rank = grug_classes.talent_rank(player, def.id)
+				local label = ("T%d %s%s  %d/%d"):format(tier, def.name,
+					talent_mark(def), rank, def.ranks)
+				if context.grug_talent_selected == def.id then
+					label = "> " .. label
+				end
+				local available, reason = grug_classes.can_spend_talent(player, def.id)
+				if available then
+					local field_index
+					for index, id in ipairs(grug_classes.talent_ids) do
+						if id == def.id then
+							field_index = index
+							break
+						end
+					end
+					fs[#fs + 1] = ("button[%.2f,%.2f;3.75,0.52;grug_talent_pick_%d;%s]")
+						:format(x, y, field_index, esc(label))
+				else
+					fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(
+						x + 0.08, y + 0.13, esc(label))
+				end
+				local tooltip = def.name .. " — " .. def.description
+				if not available and rank < def.ranks then
+					tooltip = tooltip .. " Locked: " .. reason
+				end
+				fs[#fs + 1] = ("tooltip[%.2f,%.2f;3.75,0.52;%s]")
+					:format(x, y, esc(tooltip))
+			end
+		end
+	end
+
+	local description = context.grug_talent_notice
+		or selected_description(player, context, tree)
+	fs[#fs + 1] = "textarea[0.15,4.12;7.7,0.78;;;" .. esc(description) .. "]"
+	return table.concat(fs)
+end
+
+grug_classes.talent_formspec_content = talent_content
+
+local function refresh_open_page(player)
+	if sfinv.get_page(player) == PAGE_NAME then
+		sfinv.set_page(player, PAGE_NAME)
+	end
+end
+
+local function receive_fields(player, context, fields)
+	if sfinv.get_page(player) ~= PAGE_NAME then
+		return false
+	end
+	if fields.grug_talent_respec then
+		if grug_classes.talent_points_spent(player) > 0 then
+			context.grug_talent_respec_pending = true
+			context.grug_talent_notice = "Reset every talent rank? This cannot be undone."
+		end
+		refresh_open_page(player)
+		return true
+	end
+	if fields.grug_talent_respec_cancel then
+		context.grug_talent_respec_pending = nil
+		context.grug_talent_notice = "Respec cancelled."
+		refresh_open_page(player)
+		return true
+	end
+	if fields.grug_talent_respec_confirm then
+		if not context.grug_talent_respec_pending then
+			return true
+		end
+		context.grug_talent_respec_pending = nil
+		local expected_points = grug_classes.talent_points_spent(player)
+		local expected_price = grug_classes.respec_price(player)
+		context.grug_talent_notice = ("Talents reset: %d points returned, %s charged.")
+			:format(expected_points, expected_price == 0 and "nothing"
+				or grug_money.format(expected_price))
+		local ok, returned_or_reason = grug_classes.buy_respec(player)
+		if not ok then
+			context.grug_talent_notice = returned_or_reason
+			refresh_open_page(player)
+		end
+		-- On success respec() fired the talents-changed refresh after the final
+		-- notice was set. The returned values are deliberately not trusted for a
+		-- second render; the model is deterministic from the values above.
+		return true
+	end
+
+	local trees = trees_for_player(player)
+	for index, tree in ipairs(trees) do
+		if fields["grug_talent_tree_" .. index] then
+			context.grug_talent_tree = tree.id
+			context.grug_talent_selected = nil
+			context.grug_talent_notice = nil
+			refresh_open_page(player)
+			return true
+		end
+	end
+	for index, id in ipairs(grug_classes.talent_ids) do
+		if fields["grug_talent_pick_" .. index] then
+			local def = grug_classes.registered_talents[id]
+			if not def or def.class ~= grug_classes.get_class(player) then
+				return true
+			end
+			context.grug_talent_notice = nil
+			if context.grug_talent_selected ~= id then
+				context.grug_talent_selected = id
+				refresh_open_page(player)
+				return true
+			end
+			local ok, reason = grug_classes.spend_talent(player, id)
+			if not ok then
+				context.grug_talent_notice = reason
+				refresh_open_page(player)
+			end
+			return true
+		end
+	end
+	return false
+end
+
+sfinv.register_page(PAGE_NAME, {
+	title = "Talents",
+	get = function(self, player, context)
+		return sfinv.make_formspec(player, context,
+			talent_content(player, context), true)
+	end,
+	on_player_receive_fields = function(self, player, context, fields)
+		return receive_fields(player, context, fields)
+	end,
+})
+
+-- grug_inventory establishes Character/Bags/Crafting order after this mod
+-- loads. Move Talents into its specified third slot once every mod is ready,
+-- without patching the vendored sfinv implementation or grug_inventory.
+core.register_on_mods_loaded(function()
+	local page = sfinv.pages[PAGE_NAME]
+	local ordered = {}
+	local inserted = false
+	for _, def in ipairs(sfinv.pages_unordered) do
+		if def ~= page then
+			ordered[#ordered + 1] = def
+		end
+		if def.name == "grug_inventory:bags" then
+			ordered[#ordered + 1] = page
+			inserted = true
+		end
+	end
+	if not inserted then
+		ordered[#ordered + 1] = page
+	end
+	sfinv.pages_unordered = ordered
+end)
+
+grug_classes.register_on_talents_changed(refresh_open_page)
+grug_xp.register_on_level_change(function(player, old_level, new_level)
+	if old_level ~= nil then
+		refresh_open_page(player)
+	end
+end)

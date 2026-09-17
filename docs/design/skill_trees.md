@@ -1,21 +1,22 @@
 # Skill Trees (Talents) — WP11
 
-**PROPOSAL, revision 2 (2026-09-16), NOT DECIDED.** Revision 1 (2026-09-16)
+**DECIDED, revision 2 (2026-09-16).** Revision 1 (2026-09-16)
 built two trees of five talents per class on a 20-point budget. The user's
 rulings of **2026-09-16** (§5) replace the budget, the tree size, the tier
 shape, the capstone rule and the respec seam, and add a fourth class. This
 revision rebuilds the proposal on those rulings.
 
-**Status, 2026-09-16: lanes X1 and X2 of §4 are implemented** (round 4, lane
-W1) — `mods/PLAYER/grug_classes/talents.lua` with the 48 talents of the three
+**Status, 2026-09-17: lanes X1, X2 and X4 of §4 are implemented.** X1/X2
+(round 4, lane W1) shipped `mods/PLAYER/grug_classes/talents.lua` with the 48 talents of the three
 shipped classes, the point budget, both gate kinds, the spend/respec rules,
 the validating persistence path, the window table and the two accessors, plus
 the thirty numeric consumers of §3.8 and the code halves of rulings 19, 20 and
-25 and of §7 task 5. Lane X4 is in progress in round 5 (Lane U), while X3 is
-scheduled for round 6; keystones, capstones and cap overrides are therefore
-still unimplemented. Until X4 lands, the interim interface is the chat commands
-`/talents`, `/talent <id>` and `/respec`. What shipped, what it measured and
-what is open:
+25 and of §7 task 5. X4 adds the sfinv page, paid/free-first respec transaction
+and level-up notice; `/talents` remains read-only and the interim `/talent` and
+`/respec` commands are gone. WP44 has not published measured income yet, so
+X4's six prices remain the explicitly named coordinator placeholder in
+`talents_ui.lua`, not accepted measured values. Lane X3 is still open, so the
+keystones, capstones and cap overrides remain unimplemented. The X1/X2 record:
 `docs/research/wp11-talents-phase1.md`.
 
 Companion files written with this revision:
@@ -236,8 +237,9 @@ back by dying.
   **This retires `BACKLOG.md`'s "5c × level, min 25c"** (`:542-550`), the only
   other respec number in the repo; `grug_money.take`
   (`mods/PLAYER/grug_money/init.lua:122`) is still the API it calls. Until
-  WP44 measures the brackets there is no number to ship, so WP11's UI shows
-  the price the ledger returns and an admin `/respec` covers testing.
+  WP44 publishes the six measured values, the implementation keeps an
+  explicitly named coordinator-placeholder table at the transaction seam;
+  it is not an alternative price rule and must be replaced by WP44's outputs.
 - **There is no class change at all any more (ruling 20).** Not for players,
   and **not for admins**: "equipment would be a problem otherwise". The
   shipped `/class` registration (`grug_classes/selection.lua:594-595` — one
@@ -826,6 +828,9 @@ is the single place a window lives; nothing else in the design needs state.
   race already use (`grug_classes/init.lua:3-4`, `:76`, `:113`); a string
   keeps it to one key instead of sixty-four, and it stays human-readable for
   `/talents` debugging.
+- One player-meta **integer** key, `grug_classes:respec_used`, is 0 until the
+  first successful free reset and 1 thereafter. It persists across reconnects
+  so the free reset is granted once per character; paid resets leave it at 1.
 - Parsed once per join into a per-player runtime cache (the pattern of
   `grug_abilities`' runtime tables, `init.lua:22-38`), invalidated on spend,
   respec and leave (a class change is no longer an event — ruling 20).
@@ -834,7 +839,7 @@ is the single place a window lives; nothing else in the design needs state.
   hard chain is not satisfied is dropped **together with everything below it
   in its chain**, and the total spent is clamped to `floor(level / 2)`. A
   hand-edited meta string therefore cannot buy a capstone at level 4.
-- Nothing else is persisted. Points available are always derived
+- No point balance is persisted. Points available are always derived
   (`floor(grug_xp.get_level(player) / 2)`, `grug_xp/init.lua:48`), never
   stored, so the two can never disagree.
 
@@ -954,7 +959,13 @@ the sfinv area only if the two trees are **tabbed rather than side by side**:
   the selected talent again spends a point, so the page needs no "+" column
   and no confirmation dialog.
 - The **Respec button lives here** (ruling 4) with its price in the label and
-  a confirmation dialog, since there is no NPC to host the transaction.
+  an inline confirmation prompt, since there is no NPC to host the transaction.
+- Fixed numeric button fields map only to registered trees and talents of the
+  submitting PlayerRef's own class. Names and descriptions are escaped with
+  `core.formspec_escape`; no player name or free-text field enters a purchase.
+- The page shows effective and raw Crit, Dodge and armor values with their
+  current caps. A running named rule-breaker shows its raised cap; X3 owns the
+  combat consumer that makes that effective value rise.
 - No new texture is needed; signature talent icons are a later art pass, the
   way `classes.md` §2c parks signature ability icons.
 
@@ -973,8 +984,9 @@ if old_level ~= nil and
 ```
 
 On that condition, send one chat line under the existing "Reached level N!"
-(`grug_xp/init.lua:62-64`). No new globalstep, no new HUD element, no new
-packet.
+(`grug_xp/init.lua:62-64`) only when at least one point is unspent, directing
+the player to Inventory > Talents. No new globalstep, no new HUD element, no
+new packet.
 
 ### 3.7 The KAT
 
@@ -1038,13 +1050,21 @@ tier-1 talent 6 ranks and group 1 goes red; make the `arm_cooldown` read
 default to 1 instead of 0 and group 8 goes red; let a window key leak past its
 expiry and group 7 goes red.
 
+`tools/wp11/talent_ui_kat.lua` loads the real model and page. It covers the
+select-then-buy interaction, budget/tier/prerequisite refusals, free-first and
+charged respecs through the public money API, the guarded level-up notice,
+numeric-field ownership, navigation order, formspec escaping, talent-data
+tooltips and the raw/effective/cap render. It runs byte-identically under both
+interpreters; changing the first-respec test from unused to used makes its
+free-first assertion fail.
+
 ### 3.8 What changes where
 
 | File | Change | Size |
 |---|---|---|
 | `grug_classes/talents.lua` | **new** — registry, the 48 talents of the three shipped classes (3 classes x 2 trees x 8), spend/respec, persistence, window table, the two accessors | large |
 | `grug_classes/talents_ui.lua` | **new** — the sfinv page of §3.5 | medium |
-| `grug_classes/init.lua:210-213` | two `dofile` lines | 2 lines |
+| `grug_classes/init.lua:210-214` | one `dofile` line for the UI | 1 line |
 | `grug_classes/mod.conf` | two dependency edges: `sfinv` and `grug_money` | 1 line |
 | `grug_classes/stats.lua:20,30,45,90` | four talent reads (max HP, max mana, crit + the crit-cap override, the level-up line with the `old_level ~= nil` guard). `stats.lua:49`'s dodge cap is the Scout's alone and belongs to lane S3 | small |
 | `grug_abilities/kits.lua:342,370,372,453-460,458,495,496,504,505,533,591,613,640,671` | one talent read per numeric talent whose number lives inside a function body, plus Warded Wrath's shield gate at `kits.lua:591` | medium |
@@ -1057,6 +1077,7 @@ expiry and group 7 goes red.
 | `grug_core/combat.lua:38,241,963` and `grug_abilities/init.lua:910` | armor cap override; heal threat factor; the threat multiplier on **both** its sites (cast and swing) | small |
 | `grug_core/` the speed aggregator | **prerequisite, not this WP** — §3.9. Hold Ground's and Shake Loose's root/slow immunity are flags it owns, and the Scout's Sprint is a modifier in it | — |
 | `tools/wp11/talent_tree_kat.lua` | **new** — §3.7 | medium |
+| `tools/wp11/talent_ui_kat.lua` | **new** — X4 interactions, transaction and render checks | medium |
 | `docs/design/combat_stats.md` §2 | the **cap-override paragraph** of §2.10 — the one decided-doc amendment the talent system forces | small |
 | `docs/design/classes.md`, `progression.md`, `economy.md`, `items_crafting.md`, `README.md` | the "base value" wording of §2.10 and the retired class-trainer respec seam (§7, task 3) | small |
 
@@ -1243,7 +1264,7 @@ landed.
 | **X1 — the model** | `talents.lua`: registry, the 48 talent registrations of the three shipped classes (data only, no consumer), points, the two gate kinds, spend/respec rules, persistence with the validating read path, the window table of §3.2, `get_talent_bonus` / `talent_rank`, the `on_talents_changed` callback, and the whole KAT of §3.7 except group 5's consumer half. Ships with **zero gameplay effect** — every talent is inert. | — | M |
 | **X2 — the numeric consumers** | The **30** talents of the three shipped classes that are neither keystone nor capstone, at the sites of the §3.8 table. **Twenty-five are a one-line read where the table says; five hook the three central per-player seams of §3.2** (Grudge, Quick Step, Swift Word and Onset on `arm_cooldown`; Far Cast on the spawn call and `get_range`), and each of those needs its own no-talent regression case (KAT group 8). Completes KAT groups 5 and 6. Touches shared files, so it is one lane and not split by class. | X1 | M |
 | **X3 — keystones and capstones** | **Four** new ability registrations (Hold Ground, Cinderfall, Glacial Ward, Word of Ruin); the `talent_gated` flag on the **two shipped abilities that become keystones**, Renew (already flagged) and Hamstring (`kits.lua:350`, ruling 19), plus their rank scaling; the grant predicate at the three `talent_gated` sites and the append-after-base-kit rule of §3.4; **seven replacements** written inside the shipped abilities' own bodies (Bellow, Broadstroke, Brand, Frostbind, Turn Aside, Recompense, Hearten) and the rule-breaking finisher Tendon Cut; the **five capstone effects** of the three shipped classes; the **two cap-override** paths they need (`stats.lua:45` for crit, `equipment.lua:480` with `combat.lua:38` for armor — the dodge cap is the Scout's) and the `combat_stats.md` §2 amendment of §2.10; an engine probe per new ability and per replacement. **Hold Ground's root/slow immunity needs the §3.9 aggregator first.** | X1, §3.9 for one talent | L |
-| **X4 — UI, level-up and respec** | The sfinv Talents page of §3.5, the two `mod.conf` edges, the level-up chat line with its `old_level ~= nil` guard, the respec transaction against `grug_money.take`, the price of ruling 22 (§1.4), and the raw-vs-effective display `combat_stats.md:104-108` requires — including the **raised cap** while a rule-breaker runs. | X1 | M |
+| **X4 — UI, level-up and respec (implemented 2026-09-17)** | The sfinv Talents page of §3.5, the two `mod.conf` edges, the level-up chat line with its `old_level ~= nil` guard, the respec transaction against `grug_money.take`, the price of ruling 22 (§1.4), and the raw-vs-effective display `combat_stats.md:104-108` requires — including the **raised cap** while a rule-breaker runs. The six price values remain a coordinator placeholder until WP44 publishes the measured ledger outputs. | X1 | M |
 
 X3 is the only lane that owes a runtime test on a headless server; X1, X2 and
 X4 are provable with the KAT plus one probe each. A **replacement** owes a
