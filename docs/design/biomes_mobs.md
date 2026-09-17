@@ -863,6 +863,19 @@ Drop chances in mobs_redo format (chance N = 1/N). Working item names —
 final naming in items_crafting.md. All aggressive mobs:
 `pathfinding = 1`, `group_attack` per verb, soft de-aggro 25 m (WP6).
 
+**Natural spawn and unload distances:** an ordinary `mobs:spawn` row refuses
+positions within **24 nodes** of any connected player. An unload-eligible mob
+within **48 nodes** of any player never despawns. At **128 nodes** or farther it
+despawns on unload; between 48 and 128 nodes the unload chance rises linearly
+from 0 to 1. Distance is three-dimensional and the nearest player wins. NPCs,
+tamed mobs, attacking mobs and mobs with `lifetimer >= 20000` retain their
+existing exemptions. `remove_far_mobs = true` owns this distance policy;
+`mob_expire()` does not run in that mode. The distance model follows the pinned
+VoxeLibre boundaries: its natural-spawn shell is 24–128 nodes
+(`reference_projects/VoxeLibre/mods/ENTITIES/mcl_mobs/spawning.lua:60-64,394-453`)
+and its nearby-player lifetime refresh uses 47 nodes
+(`reference_projects/VoxeLibre/mods/ENTITIES/mcl_mobs/api.lua:451-460`).
+
 ### 3.0 Critters vs. passive prey vs. enemies (decided 2026-08-08)
 
 Three behaviour classes, not two. The split is by **size and role**, not by
