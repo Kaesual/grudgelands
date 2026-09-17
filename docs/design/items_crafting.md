@@ -183,8 +183,9 @@ Key implementation patterns we adopt:
   model (§6) replaces it (and is written from scratch, not copied).
 - **Potion effects** (`mcl_potions/functions.lua`, MIT): registry with
   `on_start/on_step/on_end`, physics factors via factor-stacking,
-  HP-tick timers, damage modifiers; persisted in player meta. Template
-  for our elixir/buff engine (WP7).
+  HP-tick timers, damage modifiers; persisted in player meta. The shipped
+  timed-effect minimum is the runtime-only `grug_core.status` registry and
+  text list; specialized elixir hooks remain item-owned work.
 - **Armor damage formula** (`mcl_armor/damage.lua:84-87`): group-driven
   points; we use plain percent reduction instead (§3.1) — simpler and
   matches combat_stats caps.
