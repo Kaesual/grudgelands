@@ -83,15 +83,19 @@ function grug_xp.add_xp(player, amount, source)
 end
 
 --
--- XP loss on death: a share of the progress within the current level.
+-- XP loss on death: 25% of the whole current-level span, clamped to the
+-- current level floor. A low-progress death therefore reaches the floor but
+-- never de-levels. Level 60 has no following span and loses no XP.
 --
 
 core.register_on_dieplayer(function(player)
 	local xp = grug_xp.get_xp(player)
 	local level = grug_xp.level_from_xp(xp)
 	local floor_xp = grug_xp.xp_for_level(level)
-	local progress = xp - floor_xp
-	local loss = math.floor(progress * grug_xp.DEATH_XP_LOSS)
+	local next_xp = grug_xp.xp_for_level(math.min(grug_xp.MAX_LEVEL, level + 1))
+	local span = next_xp - floor_xp
+	local wanted = math.floor(span * grug_xp.DEATH_XP_LOSS)
+	local loss = math.min(xp - floor_xp, wanted)
 	if loss > 0 then
 		grug_xp.set_xp(player, xp - loss)
 		core.chat_send_player(player:get_player_name(),

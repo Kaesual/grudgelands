@@ -38,7 +38,7 @@ end
 --   def._grug_fixed_level — hand-set level, bypasses the field and the cap
 --   def._grug_level_source — "mob" (default, grug_zones.mob_level_at) or
 --                          "guard" (grug_zones.guard_level_at)
---   def._grug_tier        — "normal" (default) | "elite" | "rare"
+--   def._grug_tier        — "normal" (default) | "elite" | "rare" | "boss"
 --   def._grug_faction     — faction id; the mob never attacks its own faction
 --                          and is readable via grug_factions.get_object_faction
 --   def._grug_spawn_domains — list of direct stable-query domains from
@@ -79,6 +79,111 @@ local spawn_checks = {} -- mob name -> function(pos) -> allowed?
 -- already complete before the very first punch on a freshly activated mob.
 grug_mobs.registered_cadence = {}
 
+-- Runtime XP participation. Each mob owns the authoritative set of player
+-- names in self.temp; this reverse weak index exists only so an effective heal
+-- can find the live mobs in which its target already participates without a
+-- world-radius scan. Nothing persists across entity unload: participation is
+-- a property of the current fight, not of the saved mob.
+local participant_mobs = {} -- player name -> weak set of mob ObjectRefs
+
+local function participation_set(name)
+	local set = participant_mobs[name]
+	if not set then
+		set = setmetatable({}, {__mode = "k"})
+		participant_mobs[name] = set
+	end
+	return set
+end
+
+function grug_mobs.mark_xp_participant(self, player)
+	if not self or not self.object or not player or not core.is_player(player) then
+		return
+	end
+	self.temp = self.temp or {}
+	self.temp.grug_xp_participants = self.temp.grug_xp_participants or {}
+	local name = player:get_player_name()
+	self.temp.grug_xp_participants[name] = true
+	participation_set(name)[self.object] = true
+end
+
+grug_core.register_on_effective_heal(function(healer, target, amount)
+	if amount <= 0 or not core.is_player(healer) or not core.is_player(target) then
+		return
+	end
+	local target_name = target:get_player_name()
+	local mobs_for_target = participant_mobs[target_name]
+	if not mobs_for_target then
+		return
+	end
+	for object in pairs(mobs_for_target) do
+		local ent = object:get_luaentity()
+		local participants = ent and ent.temp and ent.temp.grug_xp_participants
+		if ent and (ent.health or 0) > 0 and participants
+				and participants[target_name] then
+			grug_mobs.mark_xp_participant(ent, healer)
+		else
+			mobs_for_target[object] = nil
+		end
+	end
+end)
+
+local function within_xp_range(player, pos)
+	local player_pos = player:get_pos()
+	if not player_pos or not pos then
+		return false
+	end
+	local dx = player_pos.x - pos.x
+	local dy = player_pos.y - pos.y
+	local dz = player_pos.z - pos.z
+	return dx * dx + dy * dy + dz * dz <= 40 * 40
+end
+
+-- Award the kill once, at the accepted lethal boundary. Eligible participants
+-- are online and within 40 m at death; each receives their own capped/gray
+-- value divided by the same eligible head count. Friendly-faction recipients
+-- receive nothing from their own guards.
+function grug_mobs.award_kill_xp(self)
+	local participants = self.temp and self.temp.grug_xp_participants or {}
+	local death_pos = self.object and self.object:get_pos()
+	local names = {}
+	for name in pairs(participants) do
+		names[#names + 1] = name
+	end
+	table.sort(names)
+	local eligible = {}
+	for i = 1, #names do
+		local player = core.get_player_by_name(names[i])
+		if player and within_xp_range(player, death_pos) then
+			eligible[#eligible + 1] = player
+		end
+	end
+	local count = #eligible
+	if count > 0 then
+		for i = 1, count do
+			local player = eligible[i]
+			local player_level = grug_xp.get_level(player)
+			local xp = grug_mobs.kill_xp(self, player_level)
+			if (self._grug_level or 1) <= player_level - 10
+					or grug_factions.same_faction(player, self.object) then
+				xp = 0
+			else
+				xp = math.floor(xp / count)
+			end
+			if xp > 0 then
+				grug_xp.add_xp(player, xp, "kill")
+				core.chat_send_player(player:get_player_name(),
+					core.colorize("#aa66ff", "+" .. xp .. " XP"))
+			end
+		end
+	end
+	for i = 1, #names do
+		local set = participant_mobs[names[i]]
+		if set then
+			set[self.object] = nil
+		end
+	end
+end
+
 -- Formal accepted-hit hook called by the vendored on_punch path only AFTER
 -- both do_punch and CMI decline to cancel, but before health subtraction. All
 -- irreversible player-hit work lives here: a cancelled custom mob cannot be
@@ -95,6 +200,11 @@ function grug_mobs.accepted_player_punch(self, hitter, damage, applied, fraction
 	self.temp.grug_provoked[hitter:get_player_name()] = true
 	-- Loot rights: every accepted player hit renews the 60 s tag.
 	grug_mobs.tag_player(self, hitter)
+	local dealt_damage = (applied ~= nil and applied >= 1)
+		or (applied == nil and math.floor(damage or 0) >= 1)
+	if dealt_damage then
+		grug_mobs.mark_xp_participant(self, hitter)
+	end
 	-- Base threat, combat marking, target lock and non-swing rage. Native swing
 	-- rage is deferred to the proc finish after the same acceptance gates.
 	grug_core.run_player_hit_mob(hitter, self, damage or 0, applied, fraction)
@@ -109,15 +219,7 @@ function grug_mobs.accepted_player_punch(self, hitter, damage, applied, fraction
 	end
 	if lethal and not self.temp.grug_xp_awarded then
 		self.temp.grug_xp_awarded = true
-		local xp = grug_mobs.kill_xp(self)
-		if (self._grug_level or 1) <= grug_xp.get_level(hitter) - 10 then
-			xp = 0
-		end
-		if xp > 0 then
-			grug_xp.add_xp(hitter, xp, "kill")
-			core.chat_send_player(hitter:get_player_name(),
-				core.colorize("#aa66ff", "+" .. xp .. " XP"))
-		end
+		grug_mobs.award_kill_xp(self)
 	end
 end
 
@@ -195,7 +297,7 @@ local function tick_speed_effects(self, dtime)
 	-- Why walk_velocity and not a set_velocity() argument in walk_toward: the
 	-- evade steer is a 1 Hz nudge, and mobs_redo's do_states re-issues
 	-- `set_velocity(self.walk_velocity)` for a "walk"-state mob once a second
-	-- of its own accord (api.lua:2175) — a per-call speed would survive less
+	-- of its own accord (api.lua:2180) — a per-call speed would survive less
 	-- than a second and the mob would walk home at walking pace. Raising the
 	-- field the walk state reads is what makes the run stick. run_velocity is
 	-- raised with it so the numbers cannot disagree if some state does read it.
@@ -364,8 +466,8 @@ function grug_mobs.register_mob(name, def)
 		leash_range = def._grug_leash_range,
 		-- "This mob may target NOBODY on sight" — see apply_aggro_fields.
 		-- DERIVED, not a def flag: it is exactly the conjunction
-		-- general_attack's own candidate filter tests (api.lua:1787 for
-		-- players and :1817-1819 for the three mob types), so it can
+		-- general_attack's own candidate filter tests (api.lua:1782-1791 for
+		-- players and :1811-1825 for the three mob types), so it can
 		-- never drift out of sync with the fields it summarises. Both player
 		-- fields default to TRUE in mob_class (api.lua:171-172), hence the
 		-- explicit `== false`; the two mob fields default to false.
@@ -399,15 +501,16 @@ function grug_mobs.register_mob(name, def)
 		--
 		-- The cancel IS mobs_redo's do_punch contract, and this is the one place
 		-- where the AGENTS.md gotcha ("any truthy return cancels the punch, the
-		-- api.lua comment claims the opposite") is the FEATURE. api.lua:2807-2810
+		-- api.lua comment claims the opposite") is the FEATURE. api.lua:2991-2995
 		-- reads `if self.do_punch and not self:do_punch(...) == false then
 		-- return true end`, which parses as `(not result) == false` — i.e. it
 		-- bails on a TRUTHY result. That `return true` sits BEFORE the weapon
-		-- wear (api.lua:2829-2849), before hit sound and blood particles
-		-- (api.lua:2853ff, inside `damage >= 1`), before both health
-		-- subtractions (api.lua:2902 / 2908) and check_for_death (2913), before
-		-- the knockback (2925ff) and before the retaliation + group alert that
-		-- would otherwise hand the evader a fresh target (2978ff). So: no
+		-- wear (api.lua:3047-3138), before hit sound and blood particles
+		-- (api.lua:3158-3204), before health subtraction (api.lua:3206-3217)
+		-- and check_for_death (api.lua:3229), before knockback
+		-- (api.lua:3234-3279) and before the retaliation + group alert
+		-- that would otherwise hand the evader a fresh target
+		-- (api.lua:3291-3324). So: no
 		-- damage, no wear, no feedback, no aggro — exactly the spec.
 		--
 		-- on_punch previews the damage remainder before this wrapper only so the
@@ -496,7 +599,7 @@ function grug_mobs.register_mob(name, def)
 			grug_mobs.rare_tick(self, dtime)
 		end
 		-- ONE target-acquisition veto consumed by general_attack (GRUG PATCH in
-		-- mobs/api.lua:1795): the mob skips vetoed players and picks the
+		-- mobs/api.lua:1790): the mob skips vetoed players and picks the
 		-- next-closest viable target instead. A function field is never
 		-- serialized into staticdata; do_custom runs before general_attack on
 		-- every step, so it is back after each (re)activation in time.
@@ -505,12 +608,12 @@ function grug_mobs.register_mob(name, def)
 		-- an evading mob acquires no targets at all, which is not a faction or
 		-- truce question. A mob with neither of those carries the evade test
 		-- alone. Cost: one function call per candidate player per
-		-- general_attack, i.e. per mob once a second (api.lua:3378 runs it from
+		-- general_attack, i.e. per mob once a second (api.lua:3690 runs it from
 		-- the 1 s timer block) over the players inside view_range — nothing.
 		--
 		-- What it does NOT reach any more: the five passive-prey mobs
 		-- (verbs.lua). Its only reader is the GRUG PATCH inside
-		-- general_attack (api.lua:1795), and `no_acquire` shadows that whole
+		-- general_attack (api.lua:1790), and `no_acquire` shadows that whole
 		-- method with a no-op on any mob that may target nobody (aggro.lua),
 		-- which is exactly those five. So on a stag this closure is installed
 		-- and never called. No behaviour is lost — an evading prey mob could
