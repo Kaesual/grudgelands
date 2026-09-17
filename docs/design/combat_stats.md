@@ -133,15 +133,9 @@ Two optional target-race systems use the central pipeline:
   The selected template distinguishes fall, drowning, lava/fire node damage,
   suffocation, a mob punch (using the mob's display name), a player punch
   (using the player name) and an unattributed fallback.
-- Player stepheight is **1.1 while the player's feet are in liquid** and
-  otherwise returns to the exact live value saved on liquid entry. Land
-  without an active liquid override is not written. This helps at shallow
-  banks where the player touches the bottom without changing ordinary land
-  climbing or the authored bank height. A player who is not touching ground
-  has an engine-forced effective stepheight of **0.2** regardless of the
-  property (`reference_projects/luanti/src/client/localplayer.cpp:322`), so
-  the deep-water case is not proven. GUI playtest 8 decides whether round 6
-  must change the mapgen bank contract.
+- Shore step out of water is a mapgen item for round 6 because Luanti forces
+  airborne players to **0.2** effective stepheight regardless of the property
+  (`reference_projects/luanti/src/client/localplayer.cpp:322`).
 
 ### Melee timing and aim authority (shipped 2026-08-10, WP39)
 

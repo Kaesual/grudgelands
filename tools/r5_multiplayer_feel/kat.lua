@@ -1,12 +1,10 @@
 -- Known-answer test for round-5 Lane N. It loads the shipped faction tag and
--- all three new grug_core modules against a minimal engine stub.
+-- both new grug_core modules against a minimal engine stub.
 --
 -- MUTATION=1 inverts the nametag distance gate.
 -- MUTATION=2 turns fall deaths into fallback deaths.
 -- MUTATION=3 makes walkable solid nodes non-suffocating.
--- MUTATION=4 inverts the liquid-step node decision.
--- MUTATION=5 restores the old fixed 0.6 land stepheight.
--- MUTATION=6 drops the suffocation death reason.
+-- MUTATION=4 drops the suffocation death reason.
 
 local repo = arg[1] or "."
 local mutation = tonumber(os.getenv("MUTATION") or "") or 0
@@ -113,7 +111,7 @@ local function fake_player(name, pos)
 	function meta:set_int(key, value) meta_values[key] = value end
 	local player = {
 		name = name, pos = pos, hp = 30, hp_max = 30, level = 1,
-		stepheight = 0.6, nametag_writes = 0, property_writes = 0,
+		nametag_writes = 0,
 	}
 	function player:get_player_name() return self.name end
 	function player:get_meta() return meta end
@@ -130,12 +128,7 @@ local function fake_player(name, pos)
 		end
 	end
 	function player:get_properties()
-		return {hp_max = self.hp_max, eye_height = 1.47,
-			stepheight = self.stepheight}
-	end
-	function player:set_properties(properties)
-		if properties.stepheight then self.stepheight = properties.stepheight end
-		self.property_writes = self.property_writes + 1
+		return {hp_max = self.hp_max, eye_height = 1.47}
 	end
 	function player:set_nametag_attributes(attributes)
 		self.nametag = attributes
@@ -152,7 +145,6 @@ local ok, failure = pcall(function()
 	dofile(repo .. "/mods/PLAYER/grug_factions/init.lua")
 	dofile(repo .. "/mods/CORE/grug_core/death_messages.lua")
 	dofile(repo .. "/mods/CORE/grug_core/suffocation.lua")
-	dofile(repo .. "/mods/CORE/grug_core/liquid_step.lua")
 
 	if mutation == 1 then
 		local original = grug_factions.player_tag_visible
@@ -174,20 +166,6 @@ local ok, failure = pcall(function()
 			return original(def, stasis)
 		end
 	elseif mutation == 4 then
-		local original = grug_core.liquid_step_for_node
-		grug_core.liquid_step_for_node = function(def)
-			return not original(def)
-		end
-	elseif mutation == 5 then
-		local original = grug_core.update_liquid_step
-		grug_core.update_liquid_step = function(player, in_liquid)
-			if not in_liquid and player:get_properties().stepheight ~= 0.6 then
-				player:set_properties({stepheight = 0.6})
-				return true
-			end
-			return original(player, in_liquid)
-		end
-	elseif mutation == 6 then
 		local original = grug_core.death_message
 		grug_core.death_message = function(name, reason)
 			if reason and reason.custom_type == "grug_core:suffocation" then
@@ -293,27 +271,6 @@ local ok, failure = pcall(function()
 		type = "set_hp", custom_type = "grug_core:suffocation"})),
 		"suffocation", "suffocation category")
 	node_name = "air"
-
-	-- Liquid step preserves the live land value and never resends equal values.
-	local swimmer = fake_player("Swimmer", {x = 0, y = 0, z = 0})
-	swimmer.stepheight = 0.8
-	want(not grug_core.update_liquid_step(swimmer, false),
-		"land without active override needs no write")
-	equal(swimmer.stepheight, 0.8, "land preserves live stepheight")
-	equal(swimmer.property_writes, 0, "land without override writes nothing")
-	want(grug_core.liquid_step_for_node(water), "water is liquid step state")
-	want(grug_core.update_liquid_step(swimmer, true), "entering water writes")
-	equal(swimmer.stepheight, 1.1, "water stepheight")
-	equal(swimmer.property_writes, 1, "one enter write")
-	want(not grug_core.update_liquid_step(swimmer, true),
-		"unchanged water state writes nothing")
-	equal(swimmer.property_writes, 1, "still one write in water")
-	want(grug_core.update_liquid_step(swimmer, false), "leaving water writes")
-	equal(swimmer.stepheight, 0.8, "saved live stepheight restored")
-	equal(swimmer.property_writes, 2, "one enter and one leave write")
-	want(not grug_core.update_liquid_step(swimmer, false),
-		"land after restore writes nothing")
-	equal(swimmer.property_writes, 2, "restored land remains write-free")
 end)
 
 rawset(_G, "core", saved.core)
@@ -331,5 +288,4 @@ io.write(table.concat({
 	"tag_gate=show24 hold27 hide31 no_resend",
 	"death=fall drown node_damage suffocation mob player fallback",
 	"suffocation=solid_only stasis_exempt",
-	"liquid_step=0.8>1.1>0.8 writes2 land_no_write",
 }, "\n"), "\n")
