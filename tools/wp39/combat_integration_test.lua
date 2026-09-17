@@ -218,7 +218,7 @@ grug_classes = {
 	end,
 	get_max_mana = function() return 100 end,
 	get_race_perk = function() return nil end,
-	get_melee_bonus = function() return 0 end,
+	get_melee_bonus = function(player) return player.melee_bonus or 0 end,
 	get_spell_power_bonus = function() return 0 end,
 	register_on_class_chosen = function(fn)
 		class_callbacks[#class_callbacks + 1] = fn
@@ -435,6 +435,7 @@ grug_core.get_crit_chance = function(player) return player.crit or 0 end
 grug_core.get_dodge_chance = function(player) return player.dodge or 0 end
 grug_core.get_armor_percent = function(player) return player.armor or 0 end
 grug_core.get_melee_bonus = grug_classes.get_melee_bonus
+grug_core.get_player_level = function(player) return player.level or 1 end
 grug_core.combat_debug_enabled = function() return false end
 grug_core.combat_debug_due = function() return false end
 grug_core.combat_debug_log = function() error("disabled debug formatted") end
@@ -505,6 +506,15 @@ grug_core.reset_accumulated_melee(hero)
 -- hit it and leaves the ring ready. The later current ray selects B, not A.
 select_item(hero, "grug_abilities:strike")
 grug_abilities.set_target(hero, enemy_a, false)
+hero.level = 10
+hero.melee_bonus = 2
+enemy_b.entity._grug_level = 30
+local scale_calls = 0
+local real_scale_player_damage = grug_core.scale_player_damage
+grug_core.scale_player_damage = function(...)
+	scale_calls = scale_calls + 1
+	return real_scale_player_damage(...)
+end
 hero.dig = true
 queue_ray({}) -- fresh-press loot bridge
 queue_ray({}) -- due combat aim
@@ -516,6 +526,15 @@ queue_ray({pointed(enemy_b)})
 now = 50000
 swing_pass()
 assert(enemy_a.punches == 0 and enemy_b.punches == 1)
+assert(scale_calls == 1, "authoritative swing must scale exactly once")
+assert(enemy_b.last_context.raw_damage == 8
+	and enemy_b.last_context.scaled_damage == 1
+	and enemy_b.last_context.extra_damage == -7,
+	"authoritative swing must apply level scalar and mob-level malus")
+grug_core.scale_player_damage = real_scale_player_damage
+hero.level = 1
+hero.melee_bonus = nil
+enemy_b.entity._grug_level = 1
 assert(reticle(hero).text == "")
 -- Ruling 25 (2026-09-16) tunes rage per swing; the ledger constant is the truth.
 assert(grug_abilities.get_rage(hero) == grug_abilities.RAGE_PER_SWING)
@@ -526,6 +545,11 @@ assert(hero.inventory.writes == 0,
 -- once due the newly selected Mighty Blow is prepared live and settles once.
 grug_abilities.add_rage(hero, 30)
 select_item(hero, "grug_abilities:mighty_blow")
+scale_calls = 0
+grug_core.scale_player_damage = function(...)
+	scale_calls = scale_calls + 1
+	return real_scale_player_damage(...)
+end
 local before_rays = ray_calls
 queue_ray({pointed(enemy_a)})
 now = 500000
@@ -536,6 +560,10 @@ swing_pass()
 assert(enemy_a.punches == 1)
 assert(enemy_a.last_context.proc.id == "mighty_blow")
 assert(enemy_a.last_context.extra_damage == 3) -- floor(6 * 1.5) - 6
+assert(enemy_a.last_context.raw_damage == 9
+	and enemy_a.last_context.scaled_damage == 9 and scale_calls == 1,
+	"proc replacement must be assembled before one scaling pass")
+grug_core.scale_player_damage = real_scale_player_damage
 -- one swing's rage + 30 added, minus Mighty Blow's 25, plus the landed swing
 assert(grug_abilities.get_rage(hero) ==
 	grug_abilities.RAGE_PER_SWING + 30 - 25 + grug_abilities.RAGE_PER_SWING)
@@ -692,6 +720,25 @@ local function ordinary_punch(target, fraction)
 	end
 	assert(handled == true)
 end
+
+-- An ordinary hostile player punch has no authoritative transaction. Its full
+-- equivalent therefore crosses the same scalar in the PvP callback, still
+-- before its fractional contribution enters the accumulator.
+local scaled_pvp_target = new_player("scaled_pvp", "mage", "throng")
+hero.level = 60
+scale_calls = 0
+grug_core.scale_player_damage = function(...)
+	scale_calls = scale_calls + 1
+	return real_scale_player_damage(...)
+end
+local scaled_pvp_hp = scaled_pvp_target:get_hp()
+ordinary_punch(scaled_pvp_target, 1)
+assert(scale_calls == 1, "ordinary PvP punch must scale exactly once")
+assert(scaled_pvp_target:get_hp() == scaled_pvp_hp - 4,
+	"ordinary PvP punch must apply the attacker level scalar before commit")
+grug_core.scale_player_damage = real_scale_player_damage
+hero.level = 1
+grug_core.reset_accumulated_melee(hero)
 
 grug_abilities.add_rage(hero, -100)
 local hp_one = hostile_player:get_hp()
