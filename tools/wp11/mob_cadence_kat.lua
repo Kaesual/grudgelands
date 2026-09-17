@@ -56,6 +56,10 @@ return function(repo)
 	want(handle, "cannot read mods/ENTITIES/mobs/api.lua")
 	local api = handle:read("*a")
 	handle:close()
+	handle = io.open(repo .. "/mods/ENTITIES/mobs/grug_obstacle.lua")
+	want(handle, "cannot read mods/ENTITIES/mobs/grug_obstacle.lua")
+	local obstacle = handle:read("*a")
+	handle:close()
 
 	-- The accumulator sits at the TOP of the dogfight branch, above the
 	-- `dist > reach` test -- that is what "during the chase" means in code.
@@ -103,7 +107,8 @@ return function(repo)
 	-- distance took its place. Round 5 intentionally adds guarded stops for an
 	-- in-reach cliff and unsafe obstacle sidesteps. Neither may restore the old
 	-- unconditional freeze.
-	want(api:find("if dist > self.reach * 0.6 then", 1, true),
+	want(api:find("grug_obstacle.should_close_contact(", 1, true)
+			and obstacle:find("distance > reach * 0.6", 1, true),
 		"the contact distance is gone; the mob freezes for the whole " ..
 		"in-reach branch again")
 	local in_reach = api:find("else -- rnd: if inside reach range", 1, true)

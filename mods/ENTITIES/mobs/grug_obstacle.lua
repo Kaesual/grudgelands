@@ -71,8 +71,18 @@ function obstacle.note_path_result(temp, has_path)
 	temp.grug_obstacle_sidestep = obstacle.sidestep_time
 end
 
+function obstacle.note_exhausted_blocked_path(temp)
+	obstacle.note_path_result(temp, false)
+	temp.grug_obstacle_blocked = obstacle.path_delay
+	temp.grug_obstacle_backoff = obstacle.path_backoff
+end
+
 function obstacle.keep_path(distance, reach, target_visible)
 	return not (distance < reach and target_visible)
+end
+
+function obstacle.should_close_contact(distance, reach, target_visible)
+	return not target_visible or distance > reach * 0.6
 end
 
 function obstacle.target_visible(self, mob_pos, target_pos)

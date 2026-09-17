@@ -121,7 +121,10 @@ combat-physics rulings:
   for cliffs/dangerous ground (then tries the opposite side), and claims a
   ready punch only when the canonical real-target LOS succeeds. Target and
   waypoint positions are private copies, so a visible waypoint can neither
-  authorize a hit through a wall nor be mutated by eye-height adjustment.
+  authorize a hit through a wall nor be mutated by eye-height adjustment. The
+  contact-distance stop applies only to visible targets; exhausting the last
+  waypoint while blocked drops the path, starts the sidestep fallback and
+  preserves an A* request for after the per-mob backoff.
 - `grug_obstacle.lua` is the production state module called by `api.lua` and
   loaded directly by the regression KAT. It owns the 1 s delay, 0.5 s
   sidestep, path-retention and punch gates, plus a server-wide allowance of

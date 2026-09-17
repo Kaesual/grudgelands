@@ -527,7 +527,7 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   top of the dogfight branch and caps the backlog at one; the in-reach branch
   runs to `reach × 0.6` while retaining the cliff guard; the final punch
   claims the timer only after line of sight succeeds. A blocked ready swing
-  therefore stays banked (`mobs/api.lua:2695,2699`).
+  therefore stays banked (`mobs/api.lua:2734-2755`).
 - **Close cover triggers navigation** (decided 2026-09-17). If a ground melee
   mob has spent about **1 s** inside reach without line of sight, it starts the
   existing bounded A* search despite already being close. It does not abandon
@@ -536,12 +536,17 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   alternating sides on consecutive failures, then tests LOS again. Immediately
   before moving, the actual selected side is checked for a cliff or dangerous
   ground; the other side is tried once, and if both are unsafe the mob stands.
+  The `reach × 0.6` contact stop applies only while the target is visible; a
+  blocked melee mob keeps following its path regardless of contact distance.
+  Reaching the last waypoint with LOS still blocked drops that exhausted path,
+  starts the same sidestep fallback and makes A* due again after the 0.25 s
+  per-mob backoff.
   The attack state computes one canonical target-LOS ray per mob per server
   step and reuses it for path retention, A* and the punch gate. Across the
   server at most **2** A* searches start per server step; a mob denied by this
   budget waits **0.25 s** before retrying. The contact run retains its existing
-  `at_cliff` guard (`mobs/grug_obstacle.lua:5-8,22-57,63-87,101-125`;
-  `mobs/api.lua:2296-2301,2331-2339,2511-2519,2628-2735`).
+  `at_cliff` guard (`mobs/grug_obstacle.lua:5-8,22-57,63-97,111-135`;
+  `mobs/api.lua:2296-2301,2331-2339,2511-2554,2621-2755`).
   *Rationale, because the defect was invisible on paper*: vendored mobs_redo
   zeroed the mob's velocity as soon as the target was inside `reach`
   (`api.lua:2498` before the patch — the number this file carried,

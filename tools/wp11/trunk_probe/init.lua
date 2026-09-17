@@ -15,7 +15,7 @@ local WINDOW = 10
 
 local punches = 0
 local state = {phase = "wait_starts", clock = 0, total = 0, poll = 0,
-	ready = -1}
+	ready = -1, next_position_log = 1}
 local mob_object, target_object
 
 local function log(message)
@@ -179,6 +179,20 @@ core.register_globalstep(function(dtime)
 				not target_object or not target_object:get_pos() then
 			fail("an object disappeared")
 			return
+		end
+		if state.clock >= state.next_position_log then
+			local mob = mob_object:get_luaentity()
+			local mpos = mob_object:get_pos()
+			local tpos = target_object:get_pos()
+			log(string.format(
+					"position t=%.2f mob=(%.2f,%.2f,%.2f) target=(%.2f,%.2f,%.2f) los=%s path=%s sidestep=%s",
+					state.clock, mpos.x, mpos.y, mpos.z,
+					tpos.x, tpos.y, tpos.z,
+					tostring(attack_line_of_sight(mob) == true),
+					tostring(mob and mob.path and mob.path.following),
+					tostring(mob and mob.temp
+						and mob.temp.grug_obstacle_sidestep)))
+			state.next_position_log = state.next_position_log + 1
 		end
 		if state.clock >= WINDOW then
 			local mob = mob_object:get_luaentity()

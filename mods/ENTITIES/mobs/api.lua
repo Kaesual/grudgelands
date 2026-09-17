@@ -2523,16 +2523,35 @@ function mob_class:do_states(dtime)
 
 				if not p1 then
 					self.path.stuck = false
-					self.path.following = false ; return
-				end
+					self.path.following = false
+					if not in_sight then
+						grug_obstacle.note_exhausted_blocked_path(obstacle_state)
+					else
+						return
+					end
+				else
+					if abs(p1.x - s.x) + abs(p1.z - s.z) < 0.6 then
+						table_remove(self.path.way, 1) -- remove waypoint once reached
+					end
 
-				if abs(p1.x - s.x) + abs(p1.z - s.z) < 0.6 then
-					table_remove(self.path.way, 1) -- remove waypoint once reached
+					local next_waypoint = self.path.way[1]
+					if next_waypoint then
+						-- Never expose the stored waypoint table to movement helpers: the
+						-- old final LOS adjusted its y field in place.
+						movement_pos = grug_obstacle.copy_pos(next_waypoint)
+					elseif not in_sight then
+						-- Reaching the final waypoint without target LOS
+						-- exhausts this route. Sidestep now; the already-saturated blocked
+						-- timer may request another budgeted A* after per-mob backoff.
+						self.path.stuck = false
+						self.path.following = false
+						grug_obstacle.note_exhausted_blocked_path(obstacle_state)
+					else
+						self.path.stuck = false
+						self.path.following = false
+						return
+					end
 				end
-
-				-- Never expose the stored waypoint table to movement helpers: the
-				-- old final LOS adjusted its y field in place.
-				movement_pos = grug_obstacle.copy_pos(self.path.way[1] or p1)
 			end
 
 			self:yaw_to_pos(movement_pos)
@@ -2630,7 +2649,8 @@ function mob_class:do_states(dtime)
 				if self.at_cliff then
 					self:set_velocity(0)
 					self:set_animation("stand")
-				elseif dist > self.reach * 0.6 then
+				elseif grug_obstacle.should_close_contact(
+						dist, self.reach, in_sight) then
 
 					self:set_velocity(self.run_velocity)
 

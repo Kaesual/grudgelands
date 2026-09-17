@@ -45,6 +45,10 @@ return function(repo)
 			"attack state bypasses the tested punch gate")
 	want(api:find("self:smart_mobs(s, target_pos, dist, dtime, false, in_sight)",
 			1, true), "ordinary A* does not reuse canonical target LOS")
+	want(api:find("grug_obstacle.should_close_contact(", 1, true),
+			"contact stop bypasses the tested production decision")
+	want(api:find("grug_obstacle.note_exhausted_blocked_path(obstacle_state)",
+			1, true), "exhausted blocked paths bypass the sidestep fallback")
 	want(not api:find("local p2, s2 = p, s", 1, true),
 			"legacy waypoint-aliasing final LOS returned")
 
@@ -115,6 +119,18 @@ return function(repo)
 			"close path was abandoned while target LOS stayed blocked")
 	want(not obstacle.keep_path(2.5, 3, true),
 			"visible close contact did not finish the detour")
+	want(obstacle.should_close_contact(1.5, 3, false),
+			"blocked LOS stopped movement at contact distance")
+	want(not obstacle.should_close_contact(1.5, 3, true),
+			"visible target did not stop movement at contact distance")
+
+	state = {}
+	obstacle.note_exhausted_blocked_path(state)
+	want(state.grug_obstacle_sidestep == obstacle.sidestep_time,
+			"exhausted blocked path did not start the sidestep fallback")
+	want(state.grug_obstacle_backoff == obstacle.path_backoff
+			and state.grug_obstacle_blocked == obstacle.path_delay,
+			"exhausted blocked path did not retain a backoff-ready A* request")
 
 	-- Nil paths alternate their preferred side. Direction safety is tested on
 	-- the actual candidate vector: unsafe first side tries the opposite; two
@@ -205,7 +221,8 @@ return function(repo)
 			"path_budget", obstacle.path_budget_per_step,
 			"path_backoff", obstacle.path_backoff)
 	say("obstacle", "delay", obstacle.path_delay, "path_retained", true,
-			"sidesteps", first_side, second_side, "blocked_swing_banked", true)
+			"sidesteps", first_side, second_side, "blocked_contact_moves", true,
+			"visible_contact_stops", true, "blocked_swing_banked", true)
 	say("wp11_combat_obstacle", "PASS")
 	return table.concat(report)
 end
