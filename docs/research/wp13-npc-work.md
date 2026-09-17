@@ -94,7 +94,7 @@ nothing complained about.
    whole mob population — no second global accumulator.
 
 And the tick returns exactly `false`, which is what holds the whole thing
-together: mobs_redo skips the rest of `on_step` on that answer (api.lua:3595),
+together: mobs_redo skips the rest of `on_step` on that answer (api.lua:3670-3671),
 so `do_states` never runs — and `do_states` in the stand state calls
 `set_animation("stand")` once a second (api.lua:2133), which would overwrite
 the activity within a second of it being set. The same veto skips

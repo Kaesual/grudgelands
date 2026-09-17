@@ -1,20 +1,22 @@
 # Skill Trees (Talents) — WP11
 
-**PROPOSAL, revision 2 (2026-09-16), NOT DECIDED.** Revision 1 (2026-09-16)
+**DECIDED, revision 2 (2026-09-16).** Revision 1 (2026-09-16)
 built two trees of five talents per class on a 20-point budget. The user's
 rulings of **2026-09-16** (§5) replace the budget, the tree size, the tier
 shape, the capstone rule and the respec seam, and add a fourth class. This
 revision rebuilds the proposal on those rulings.
 
-**Status, 2026-09-16: lanes X1 and X2 of §4 are implemented** (round 4, lane
-W1) — `mods/PLAYER/grug_classes/talents.lua` with the 48 talents of the three
+**Status, 2026-09-17: lanes X1, X2 and X4 of §4 are implemented.** X1/X2
+(round 4, lane W1) shipped `mods/PLAYER/grug_classes/talents.lua` with the 48 talents of the three
 shipped classes, the point budget, both gate kinds, the spend/respec rules,
 the validating persistence path, the window table and the two accessors, plus
 the thirty numeric consumers of §3.8 and the code halves of rulings 19, 20 and
-25 and of §7 task 5. Lanes X3 and X4 are still open, so every keystone,
-capstone, cap override and the sfinv page of §3.5 are unimplemented; the
-interim interface is the chat commands `/talents`, `/talent <id>` and
-`/respec`, which X4 removes. What shipped, what it measured and what is open:
+25 and of §7 task 5. X4 adds the sfinv page, paid/free-first respec transaction
+and level-up notice; `/talents` remains read-only and the interim `/talent` and
+`/respec` commands are gone. WP44 has not published measured income yet, so
+X4's six prices remain the explicitly named coordinator placeholder in
+`talents_ui.lua`, not accepted measured values. Lane X3 is still open, so the
+keystones, capstones and cap overrides remain unimplemented. The X1/X2 record:
 `docs/research/wp11-talents-phase1.md`.
 
 Companion files written with this revision:
@@ -206,9 +208,9 @@ spare**. Every other keystone and every capstone changes a button the player
 already has, or no button at all. §3.4 works the budget out per class; with
 ruling 19's Warrior change the worst case is now **6 of 8**.
 
-XP loss never de-levels (`progression.md` §3; `grug_xp` clamps the loss to the
-level floor, `mods/PLAYER/grug_xp/init.lua:85-96`), so a point is never taken
-back by dying.
+XP loss is 25% of the current level's whole XP span and never de-levels
+(`combat_stats.md` §3; `mods/PLAYER/grug_xp/init.lua:86-104` clamps the fixed
+loss to the level floor), so a point is never taken back by dying.
 
 ### 1.4 Respec, and the class change that no longer exists (rulings 4, 20, 22)
 
@@ -235,8 +237,9 @@ back by dying.
   **This retires `BACKLOG.md`'s "5c × level, min 25c"** (`:542-550`), the only
   other respec number in the repo; `grug_money.take`
   (`mods/PLAYER/grug_money/init.lua:122`) is still the API it calls. Until
-  WP44 measures the brackets there is no number to ship, so WP11's UI shows
-  the price the ledger returns and an admin `/respec` covers testing.
+  WP44 publishes the six measured values, the implementation keeps an
+  explicitly named coordinator-placeholder table at the transaction seam;
+  it is not an alternative price rule and must be replaced by WP44's outputs.
 - **There is no class change at all any more (ruling 20).** Not for players,
   and **not for admins**: "equipment would be a problem otherwise". The
   shipped `/class` registration (`grug_classes/selection.lua:594-595` — one
@@ -291,7 +294,7 @@ Reading the tables:
 | 2 | **Weathered** | Wall | 2 | 4 | — | max HP +3 / 6 / 9 / 12 | `grug_classes/stats.lua:20` | `max_hp_add` |
 | 3 | **Hold Ground** *(keystone)* | Wall | 3 | 3 | **new skill** ‼ | cast, 25 rage, self; absorbs `20 / 30 / 40 + 2 × floor(Str/10)` for 8 s, **and for those 8 s the Warrior cannot be rooted or slowed**. *Limit: 8 s, **60 s cooldown**.* | new; `grug_core.set_absorb` (`grug_core/combat.lua:1012`); the immunity is a flag the speed aggregator of §3.9 already has to read | — |
 | 4 | **Unbroken** *(capstone)* | Wall | 4 | **1** | **effect** ‼ | the first time in **180 s** that a hit would take the Warrior below 20 % max HP: armor percent **+15** **and the 60 % armor cap rises to 75 %**, for 8 s. *Limit: 8 s, **180 s**.* | the two clamps, `grug_inventory/equipment.lua:480` and `grug_core/combat.lua:38`, plus the hp-change modifier that observes the threshold | `armor_cap_override` |
-| 5 | **Spite** | Anvil | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 rage per hit taken (base 4) | `grug_abilities/init.lua:2109-2110` | `rage_per_hit_taken_add` |
+| 5 | **Spite** | Anvil | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 rage per hit taken (base 3) | `grug_abilities/init.lua:2286-2291` | `rage_per_hit_taken_add` |
 | 6 | **Affront** | Anvil | 2 | 4 | — | tank-ability threat ×3 → ×3.25 / 3.5 / 3.75 / 4.0 | **two sites**: `grug_core/combat.lua:963` (casts) and `grug_abilities/init.lua:910`, applied at `:955-957` (swings) | `threat_mult_add` |
 | 7 | **Bellow** *(keystone)* | Anvil | 3 | 3 | **replaces Taunt** | Taunt stops being single-target: it forces **every** hostile mob within 6 / 8 / 10 m onto the Warrior for its 3 s, same key, same 8 s cooldown | `kits.lua:389-404`, the cast body, run over the radius loop of `kits.lua:490` | `taunt_radius` |
 | 8 | **Grudge** | Anvil | 4 | 3 | — | Taunt cooldown 8 s → 7 / 6 / 5 s | `grug_abilities/init.lua:1233`, the one `arm_cooldown(user, def, def.cooldown)` call — **not** `kits.lua:387` | `taunt_cooldown_sub` |
@@ -316,7 +319,7 @@ nothing below tier 3 modifies a skill the player may not have yet.
 | # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
 |---|---|---|---|---|---|---|---|---|
 | 1 | **Heavy Hand** | Hammer | 1 | 5 | — | Mighty Blow ×1.5 → ×1.55 / 1.60 / 1.65 / 1.70 / 1.75 weapon damage | `kits.lua:342` | `mighty_blow_multiplier_add` |
-| 2 | **Stoke** | Hammer | 2 | 4 | — | +1 / 2 / 3 / 4 rage per landed authoritative swing (base 12) | `grug_abilities/init.lua:939`, `:950`, `:966`, and the two proportional paths `:1915` and `:2099` | `rage_per_swing_add` |
+| 2 | **Stoke** | Hammer | 2 | 4 | — | +1 / 2 / 3 / 4 rage per landed authoritative swing (base 8) | `grug_abilities/init.lua:78-81` and its authoritative/proportional callers | `rage_per_swing_add` |
 | 3 | **Broadstroke** *(keystone)* | Hammer | 3 | 3 | **replaces Mighty Blow** | Mighty Blow also strikes every other hostile within 3 m for **half** its total, rounded down, at ×3 threat — the game's first melee cleave, on the key Mighty Blow already occupies | `kits.lua:340-344` plus the radius loop of `kits.lua:490` | `mighty_blow_cleave` |
 | 4 | **Ruination** *(capstone)* | Hammer | 4 | **1** | **effect** ‼ | a landed Mighty Blow grants **10 s** of crit chance **+20 percentage points** with the 30 % crit cap raised to **50 %**. *Limit: 10 s, **120 s cooldown** on the trigger.* | `grug_classes/stats.lua:45` and its `math.min(0.30, …)` | `crit_cap_override` |
 | 5 | **Keen Edge** | Lash | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 percentage points crit chance (30 % cap holds) | `grug_classes/stats.lua:45` | `crit_chance_add` |
@@ -548,6 +551,13 @@ for — but when WP11 lands those tables are the **untalented baseline**, and
 `classes.md` needs that word or the next reader will file a talented Taunt as
 a bug.
 
+Flat damage, healing and absorb additions from these talents are assembled
+with the ability and gear terms **before** `grug_core.level_scale(level)` is
+applied at the central seam. A talent never applies the scalar itself; doing so
+would double-scale that contribution when the completed value reaches combat
+(`mods/CORE/grug_core/combat.lua:26-62`, `:977-981`, `:1067-1076`,
+`:1101-1106`; swing transaction `mods/PLAYER/grug_abilities/init.lua:1055-1080`).
+
 **Nine talents deliberately break a decided rule, and every one states its
 price.** Ruling 10 is what permits it — "skills may explicitly break the base
 inequalities; that is what skills are for (Blink and a dodge roll already do).
@@ -725,8 +735,8 @@ grug_classes.register_talent({
 grug_classes.register_talent({
     id = "unbroken", tree = "bulwark", chain = "wall", tier = 4,
     capstone = true,                     -- exactly one per TREE, on its chain
-    effects = {armor_percent_add_low_hp = {10, 15, 20},
-               armor_cap_override = {70, 75, 80}},
+    effects = {armor_percent_add_low_hp = {15},
+               armor_cap_override = {75}},
 })
 ```
 
@@ -825,6 +835,9 @@ is the single place a window lives; nothing else in the design needs state.
   race already use (`grug_classes/init.lua:3-4`, `:76`, `:113`); a string
   keeps it to one key instead of sixty-four, and it stays human-readable for
   `/talents` debugging.
+- One player-meta **integer** key, `grug_classes:respec_used`, is 0 until the
+  first successful free reset and 1 thereafter. It persists across reconnects
+  so the free reset is granted once per character; paid resets leave it at 1.
 - Parsed once per join into a per-player runtime cache (the pattern of
   `grug_abilities`' runtime tables, `init.lua:22-38`), invalidated on spend,
   respec and leave (a class change is no longer an event — ruling 20).
@@ -833,7 +846,7 @@ is the single place a window lives; nothing else in the design needs state.
   hard chain is not satisfied is dropped **together with everything below it
   in its chain**, and the total spent is clamped to `floor(level / 2)`. A
   hand-edited meta string therefore cannot buy a capstone at level 4.
-- Nothing else is persisted. Points available are always derived
+- No point balance is persisted. Points available are always derived
   (`floor(grug_xp.get_level(player) / 2)`, `grug_xp/init.lua:48`), never
   stored, so the two can never disagree.
 
@@ -939,10 +952,10 @@ the sfinv area only if the two trees are **tabbed rather than side by side**:
 | T1 | Ironbound      5/5 |   | Spite          5/5 |             |
 | T2 | Weathered     4/4 |   | Affront        3/4 |     (>=5)   |
 | T3 | Hold Ground *  3/3 |   | Bellow *       0/3 |     (>=12)  |
-| T4 | Unbroken **    1/3 |   | Grudge         0/3 |     (>=20)  |
+| T4 | Unbroken **    1/1 |   | Grudge         0/3 |     (>=20)  |
 |                                                               |
-| Unbroken -- rank 1/3: below 20% HP, +10% armor and the armor  |
-| cap rises to 70% for 8 s. Next rank: +15%, cap 75%.           |
+| Unbroken -- rank 1/1: below 20% HP, +15% armor and the armor  |
+| cap rises to 75% for 8 s.                                    |
 +---------------------------------------------------------------+
 ```
 
@@ -953,7 +966,13 @@ the sfinv area only if the two trees are **tabbed rather than side by side**:
   the selected talent again spends a point, so the page needs no "+" column
   and no confirmation dialog.
 - The **Respec button lives here** (ruling 4) with its price in the label and
-  a confirmation dialog, since there is no NPC to host the transaction.
+  an inline confirmation prompt, since there is no NPC to host the transaction.
+- Fixed numeric button fields map only to registered trees and talents of the
+  submitting PlayerRef's own class. Names and descriptions are escaped with
+  `core.formspec_escape`; no player name or free-text field enters a purchase.
+- The page shows effective and raw Crit, Dodge and armor values with their
+  current caps. A running named rule-breaker shows its raised cap; X3 owns the
+  combat consumer that makes that effective value rise.
 - No new texture is needed; signature talent icons are a later art pass, the
   way `classes.md` §2c parks signature ability icons.
 
@@ -972,8 +991,9 @@ if old_level ~= nil and
 ```
 
 On that condition, send one chat line under the existing "Reached level N!"
-(`grug_xp/init.lua:62-64`). No new globalstep, no new HUD element, no new
-packet.
+(`grug_xp/init.lua:62-64`) only when at least one point is unspent, directing
+the player to Inventory > Talents. No new globalstep, no new HUD element, no
+new packet.
 
 ### 3.7 The KAT
 
@@ -985,7 +1005,8 @@ with identical output. Eight groups, each able to go red on its own:
 1. **Shape.** Every class has exactly 2 trees; every tree 8 talents in two
    chains of 4; ranks 5/4/3/3 by tier; exactly one keystone per chain in
    tier 3; exactly one capstone per tree, in tier 4, on a declared chain.
-   Totals: 30 ranks per tree, 60 per class.
+   Tier gates are 0/5/12/**20** points in the tree. Totals: **28 ranks per
+   tree, 56 per class**.
 2. **Arithmetic.** `floor(60/2) == 30`; one tree costs **28**; each tree is
    13 + 15 ranks; the milestone table of §1.3 reproduces exactly
    (13 / 15 / 20 / 21 / 28 points in a tree); **a capstone costs 21 and two
@@ -1036,13 +1057,21 @@ tier-1 talent 6 ranks and group 1 goes red; make the `arm_cooldown` read
 default to 1 instead of 0 and group 8 goes red; let a window key leak past its
 expiry and group 7 goes red.
 
+`tools/wp11/talent_ui_kat.lua` loads the real model and page. It covers the
+select-then-buy interaction, budget/tier/prerequisite refusals, free-first and
+charged respecs through the public money API, the guarded level-up notice,
+numeric-field ownership, navigation order, formspec escaping, talent-data
+tooltips and the raw/effective/cap render. It runs byte-identically under both
+interpreters; changing the first-respec test from unused to used makes its
+free-first assertion fail.
+
 ### 3.8 What changes where
 
 | File | Change | Size |
 |---|---|---|
 | `grug_classes/talents.lua` | **new** — registry, the 48 talents of the three shipped classes (3 classes x 2 trees x 8), spend/respec, persistence, window table, the two accessors | large |
 | `grug_classes/talents_ui.lua` | **new** — the sfinv page of §3.5 | medium |
-| `grug_classes/init.lua:210-213` | two `dofile` lines | 2 lines |
+| `grug_classes/init.lua:210-214` | one `dofile` line for the UI | 1 line |
 | `grug_classes/mod.conf` | two dependency edges: `sfinv` and `grug_money` | 1 line |
 | `grug_classes/stats.lua:20,30,45,90` | four talent reads (max HP, max mana, crit + the crit-cap override, the level-up line with the `old_level ~= nil` guard). `stats.lua:49`'s dodge cap is the Scout's alone and belongs to lane S3 | small |
 | `grug_abilities/kits.lua:342,370,372,453-460,458,495,496,504,505,533,591,613,640,671` | one talent read per numeric talent whose number lives inside a function body, plus Warded Wrath's shield gate at `kits.lua:591` | medium |
@@ -1055,6 +1084,7 @@ expiry and group 7 goes red.
 | `grug_core/combat.lua:38,241,963` and `grug_abilities/init.lua:910` | armor cap override; heal threat factor; the threat multiplier on **both** its sites (cast and swing) | small |
 | `grug_core/` the speed aggregator | **prerequisite, not this WP** — §3.9. Hold Ground's and Shake Loose's root/slow immunity are flags it owns, and the Scout's Sprint is a modifier in it | — |
 | `tools/wp11/talent_tree_kat.lua` | **new** — §3.7 | medium |
+| `tools/wp11/talent_ui_kat.lua` | **new** — X4 interactions, transaction and render checks | medium |
 | `docs/design/combat_stats.md` §2 | the **cap-override paragraph** of §2.10 — the one decided-doc amendment the talent system forces | small |
 | `docs/design/classes.md`, `progression.md`, `economy.md`, `items_crafting.md`, `README.md` | the "base value" wording of §2.10 and the retired class-trainer respec seam (§7, task 3) | small |
 
@@ -1241,7 +1271,7 @@ landed.
 | **X1 — the model** | `talents.lua`: registry, the 48 talent registrations of the three shipped classes (data only, no consumer), points, the two gate kinds, spend/respec rules, persistence with the validating read path, the window table of §3.2, `get_talent_bonus` / `talent_rank`, the `on_talents_changed` callback, and the whole KAT of §3.7 except group 5's consumer half. Ships with **zero gameplay effect** — every talent is inert. | — | M |
 | **X2 — the numeric consumers** | The **30** talents of the three shipped classes that are neither keystone nor capstone, at the sites of the §3.8 table. **Twenty-five are a one-line read where the table says; five hook the three central per-player seams of §3.2** (Grudge, Quick Step, Swift Word and Onset on `arm_cooldown`; Far Cast on the spawn call and `get_range`), and each of those needs its own no-talent regression case (KAT group 8). Completes KAT groups 5 and 6. Touches shared files, so it is one lane and not split by class. | X1 | M |
 | **X3 — keystones and capstones** | **Four** new ability registrations (Hold Ground, Cinderfall, Glacial Ward, Word of Ruin); the `talent_gated` flag on the **two shipped abilities that become keystones**, Renew (already flagged) and Hamstring (`kits.lua:350`, ruling 19), plus their rank scaling; the grant predicate at the three `talent_gated` sites and the append-after-base-kit rule of §3.4; **seven replacements** written inside the shipped abilities' own bodies (Bellow, Broadstroke, Brand, Frostbind, Turn Aside, Recompense, Hearten) and the rule-breaking finisher Tendon Cut; the **five capstone effects** of the three shipped classes; the **two cap-override** paths they need (`stats.lua:45` for crit, `equipment.lua:480` with `combat.lua:38` for armor — the dodge cap is the Scout's) and the `combat_stats.md` §2 amendment of §2.10; an engine probe per new ability and per replacement. **Hold Ground's root/slow immunity needs the §3.9 aggregator first.** | X1, §3.9 for one talent | L |
-| **X4 — UI, level-up and respec** | The sfinv Talents page of §3.5, the two `mod.conf` edges, the level-up chat line with its `old_level ~= nil` guard, the respec transaction against `grug_money.take`, the price of ruling 22 (§1.4), and the raw-vs-effective display `combat_stats.md:104-108` requires — including the **raised cap** while a rule-breaker runs. | X1 | M |
+| **X4 — UI, level-up and respec (implemented 2026-09-17)** | The sfinv Talents page of §3.5, the two `mod.conf` edges, the level-up chat line with its `old_level ~= nil` guard, the respec transaction against `grug_money.take`, the price of ruling 22 (§1.4), and the raw-vs-effective display `combat_stats.md:104-108` requires — including the **raised cap** while a rule-breaker runs. The six price values remain a coordinator placeholder until WP44 publishes the measured ledger outputs. | X1 | M |
 
 X3 is the only lane that owes a runtime test on a headless server; X1, X2 and
 X4 are provable with the KAT plus one probe each. A **replacement** owes a

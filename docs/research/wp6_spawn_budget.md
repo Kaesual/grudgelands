@@ -85,7 +85,7 @@ driven by the peak.
 
 `mobs:spawn{active_object_count = N}` reaches `spawn_action` in
 `mods/ENTITIES/mobs/api.lua`, which calls `count_mobs(pos, name)`
-(api.lua:3405ff):
+(api.lua:3881-3897):
 
 ```lua
 local objs = core.get_objects_inside_radius(pos, aoc_range * 2)
@@ -544,9 +544,9 @@ counts". Checked:
 ## 5. Cost side (the reason the numbers are allowed to stand)
 
 - `catch_up = false` is already set on every spawn ABM by mobs_redo itself
-  (api.lua:3712) — no patch needed; verified rather than assumed.
+  (api.lua:4246) — no patch needed; verified rather than assumed.
 - Every spawn row is whitelisted on biome signature top nodes, and
-  `mobs:spawn` defaults the ABM `neighbors` list to `{"air"}` (api.lua:3729),
+  `mobs:spawn` defaults the ABM `neighbors` list to `{"air"}` (api.lua:4263),
   so `default:stone` rows (golem surface + the three cave rows) only ever
   consider rock with air beside it, not solid stone volume. Argued at the
   rows in `zombie.lua` (canonical) and `golem.lua`.

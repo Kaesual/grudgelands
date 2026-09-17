@@ -57,7 +57,7 @@ local SLOTS = {"head", "chest", "legs", "feet"}
 -- the stub engine
 -- ---------------------------------------------------------------------------
 local function load_gear(repo)
-	local items, order, logs = {}, {}, {}
+	local items, order, logs, mods_loaded = {}, {}, {}, {}
 	local core_stub = {registered_items = items}
 	local function noop() end
 
@@ -85,6 +85,9 @@ local function load_gear(repo)
 	function core_stub.log(level, message)
 		logs[#logs + 1] = tostring(level) .. "\t" .. tostring(message)
 	end
+	function core_stub.register_on_mods_loaded(fn)
+		mods_loaded[#mods_loaded + 1] = fn
+	end
 	-- The stat line is colorized; the fixture compares the NAME, which is the
 	-- first line, so an identity colorize keeps the comparison honest without
 	-- teaching the fixture the engine's escape codes.
@@ -104,8 +107,21 @@ local function load_gear(repo)
 		"default:sword_bronze", "default:sword_steel",
 		"default:axe_wood", "default:axe_stone", "default:axe_bronze",
 		"default:axe_steel"}
+	local VENDORED_STATS = {
+		["default:sword_wood"] = {2, 1.0, "sword"},
+		["default:sword_stone"] = {4, 1.2, "sword"},
+		["default:sword_bronze"] = {6, 0.8, "sword"},
+		["default:sword_steel"] = {6, 0.8, "sword"},
+		["default:axe_wood"] = {2, 1.0, "axe"},
+		["default:axe_stone"] = {3, 1.2, "axe"},
+		["default:axe_bronze"] = {4, 1.0, "axe"},
+		["default:axe_steel"] = {4, 1.0, "axe"},
+	}
 	for _, name in ipairs(VENDORED) do
-		register(name, {description = name, groups = {sword = 1}})
+		local stat = VENDORED_STATS[name]
+		register(name, {description = name, groups = {[stat[3]] = 1},
+			tool_capabilities = {full_punch_interval = stat[2],
+				damage_groups = {fleshy = stat[1]}}})
 	end
 	local registered_before = {}
 	for _, name in ipairs(VENDORED) do
@@ -158,6 +174,17 @@ local function load_gear(repo)
 	if not ok then
 		restore()
 		error(err, 0)
+	end
+	-- Registered after grug_gear to prove the on-mods-loaded retrofit catches
+	-- material-ladder axes without another name list.
+	register("grug_materials:axe_silversteel", {
+		description = "Silversteel Axe",
+		groups = {axe = 1, grug_equip_weapon = 1},
+		tool_capabilities = {full_punch_interval = 0.9,
+			damage_groups = {fleshy = 6}},
+	})
+	for _, callback in ipairs(mods_loaded) do
+		callback()
 	end
 	return {gear = rawget(_G, "grug_gear"), items = items, order = order,
 		logs = logs, vendored = VENDORED, restore = restore}
@@ -309,6 +336,27 @@ function M.run(repo)
 		row("wp13_gear_starter", gear.STARTER_STAFF,
 			first_line(starter.description), gear.STARTER_SWORD)
 	end
+
+	-- Every weapon-slot item with fleshy damage uses the same base-stat line,
+	-- including the default starters/hatchets and a later material-ladder axe.
+	local retrofit_stats = {
+		["default:sword_wood"] = "2 damage, 1.0 s swing",
+		["default:sword_stone"] = "4 damage, 1.2 s swing",
+		["default:axe_wood"] = "2 damage, 1.0 s swing",
+		["default:axe_stone"] = "3 damage, 1.2 s swing",
+		["default:axe_bronze"] = "4 damage, 1.0 s swing",
+		["default:axe_steel"] = "4 damage, 1.0 s swing",
+		["grug_materials:axe_silversteel"] = "6 damage, 0.9 s swing",
+	}
+	local retrofit_names = {}
+	for name, expected in pairs(retrofit_stats) do
+		local description = items[name] and items[name].description or ""
+		check(description:find("\n" .. expected, 1, true) ~= nil,
+			name .. " lacks the tooltip line \"" .. expected .. "\"")
+		retrofit_names[#retrofit_names + 1] = name
+	end
+	table.sort(retrofit_names)
+	row("wp13_gear_retrofit", table.concat(retrofit_names, ","))
 
 	--
 	-- D. one item per concept

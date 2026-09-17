@@ -255,22 +255,21 @@ core.register_on_mods_loaded(function()
 		grug_abilities.RAGE_PER_HIT_TAKEN,
 		grug_abilities.RAGE_DECAY_PER_SECOND)
 
-	-- 9. Ruling 20: /class is gone, /race is not, and the three interim
-	--    talent commands are there and player-reachable.
+	-- 9. Ruling 20 and X4: /class is gone, /race and the read-only
+	--    /talents summary remain, and talent mutations moved to sfinv.
 	equal(core.registered_chatcommands["class"], nil,
 		"/class must not be registered any more")
 	check(core.registered_chatcommands["race"] ~= nil, "/race is still there")
-	for _, name in ipairs({"talents", "talent", "respec"}) do
-		local def = core.registered_chatcommands[name]
-		check(def ~= nil, "/" .. name .. " is registered")
-		if def then
-			-- builtin normalizes a missing `privs` to an EMPTY TABLE
-			-- (builtin/game/chat.lua), so "no privilege" is an empty table
-			-- here and nil only in a fixture that skips that step.
-			check(next(def.privs or {}) == nil,
-				"/" .. name .. " is player-reachable")
-		end
+	local talents_command = core.registered_chatcommands["talents"]
+	check(talents_command ~= nil, "/talents is registered")
+	if talents_command then
+		check(next(talents_command.privs or {}) == nil,
+			"/talents is player-reachable")
 	end
+	equal(core.registered_chatcommands["talent"], nil,
+		"/talent must not be registered any more")
+	equal(core.registered_chatcommands["respec"], nil,
+		"/respec must not be registered any more")
 
 	say("RESULT", failures == 0 and "PASS" or "FAIL", failures)
 end)

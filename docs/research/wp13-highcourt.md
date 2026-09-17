@@ -67,6 +67,11 @@ edge on the axes.
 | South-east | the **waypoint plaza** reserved for WP17, the city **workshop** and two houses |
 | The boundary | no curtain wall: two orchard-edge pieces either side of the south gate, a clipped hedge round every open stretch of the pad, orchards in the corners |
 
+> **Superseded (2026-09-17):** Highcourt is now one of four walled capitals;
+> every statement in this historical record that calls it open or counts only
+> three walled races is superseded by
+> [wp13-highcourt-fill.md](wp13-highcourt-fill.md) and the ruling of that date.
+
 Twenty plots in all: the hall, four gatehouses, the market, two colonnades,
 the statue, the well court, two orchard edges, the chapel, the workyard, the
 store, the city workshop and five houses, plus the service court, the plaza,

@@ -199,11 +199,10 @@ offsets of `grug_traders/vendors.lua` are the fallback for a capital whose core
 has not been built; since 2026-09-16 all six cores export their two sockets, so
 no capital uses the offsets any more.)
 
-**Walled capitals.** Decided 2026-09-15 with the second capital, Dur Brannoc.
-The user's ruling of 2026-09-14 made three of the six walled (Dur Brannoc,
-Nhal Veyr, Gor Drazhak) and three open; the round-3 plan then moved Highcourt
-across, so the split is **four walled and two open** and the two open ones are
-Lethariel and Kezamba (the provenance is below, and in
+**Walled capitals.** The user's ruling of 2026-09-17 fixes **four walled
+capitals** — Highcourt, Dur Brannoc, Gor Drazhak and Nhal Veyr — and **two
+open capitals**, Lethariel and Kezamba (the implementation provenance is
+below, and in
 [wp13-capitals-pois-contract.md](../research/wp13-capitals-pois-contract.md)
 section 4). A curtain wall runs along all four edges of the capital's 512 envelope,
 with a turret every 64 nodes, a turret at each corner and a gatehouse on each of
@@ -301,9 +300,9 @@ warren of clan lodges round a cook court and a story fire. In front of the
 warlord's hall stands a raised **fighting platform** with its own breastwork,
 its own stair and two guard posts on it.
 
-**Open capitals, and the one with a lake in it.** The SPLIT is the user's ruling
-of 2026-09-14 (three walled, three open; the round-3 plan later moved Highcourt
-across, leaving Lethariel and Kezamba). Everything below it — what an open
+**Open capitals, and the one with a lake in it.** The split is the user's
+ruling of 2026-09-17: Highcourt, Dur Brannoc, Gor Drazhak and Nhal Veyr are
+walled; Lethariel and Kezamba are open. Everything below it — what an open
 capital puts at its gate points, and how a capital with a lake in its core is
 laid out — is the third capital's own lane, 2026-09-15/16, and is open to the
 user's correction like any other design.

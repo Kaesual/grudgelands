@@ -31,7 +31,13 @@
 --      the default (l_object.cpp:2305-2308) and fog_color through read_color
 --      (:2310-2312). All three are stated by every mood; a mood that wants the
 --      client's own view distance states the documented reset value -1
---      (lua_api.md:9445, :9451) rather than omitting the field.
+--      (lua_api.md:9445, :9451) rather than omitting the field. Since
+--      2026-09-17 EVERY mood states -1 (user ruling: the view distance is
+--      the client's own setting in every zone, no per-zone cap; the mood
+--      lives in fog_start, fog_color and the sky colours). A positive
+--      fog_distance also caps the server's block send range
+--      (clientiface.cpp:180-184: wanted_range = min(wanted_range,
+--      ceil(fog_distance / 16))), which is why the caps were removed.
 --
 -- fog_color only takes effect when its ALPHA is non-zero: client/sky.h:119-123
 -- returns the override only for `getAlpha() > 0` and falls back to the sky
@@ -179,7 +185,7 @@ end
 ---------------------------------------------------------------------------
 
 -- Dwarf: pine shelves, granite, snow ridges. Cool blue-grey, slightly
--- desaturated, a moderate haze cap that makes the ridges stack.
+-- desaturated, an early fog_start that makes the ridges stack.
 mood("dwarf", "Dwarf region: cold blue-grey stone haze",
 	{shadow_r = 14, shadow_g = 18, shadow_b = 26,
 		saturation = 1.05, exposure = 0.30, bloom = 0.05},
@@ -188,12 +194,12 @@ mood("dwarf", "Dwarf region: cold blue-grey stone haze",
 		night_sky = "#0a3c74", night_horizon = "#2c5f93",
 		indoors = "#5a6266",
 		fog_sun_tint = "#e0a071", fog_moon_tint = "#8fa8c8",
-		fog_distance = 220, fog_start = 0.45, fog_color = "#8fa3ad"},
+		fog_distance = -1, fog_start = 0.45, fog_color = "#8fa3ad"},
 	{density = 0.5, color = "#f2f7fbe5", ambient = "#10161c",
 		height = 150, thickness = 18, drift = -2.5, shadow = "#b8c2c9"})
 
 -- Human: fields, oak woods, river forks. The clear warm reference look; the
--- only mood that hands the view distance back to the client.
+-- reference look with the latest fog_start.
 mood("human", "Human region: clear warm farmland light",
 	{shadow_r = 24, shadow_g = 20, shadow_b = 12,
 		saturation = 1.12, exposure = 0.38, bloom = 0.06},
@@ -231,7 +237,7 @@ mood("undead", "Undead region: pale grey-green blight fog",
 		night_sky = "#14201c", night_horizon = "#33453c",
 		indoors = "#4d554e",
 		fog_sun_tint = "#b9b089", fog_moon_tint = "#93a89a",
-		fog_distance = 110, fog_start = 0.25, fog_color = "#9aa894"},
+		fog_distance = -1, fog_start = 0.25, fog_color = "#9aa894"},
 	{density = 0.75, color = "#c9d2c4e5", ambient = "#0e120f",
 		height = 110, thickness = 24, drift = -1.0, shadow = "#7e887a"})
 
@@ -245,7 +251,7 @@ mood("orc", "Orc region: ochre dust over red mesas",
 		night_sky = "#16264a", night_horizon = "#4a4a66",
 		indoors = "#6b6153",
 		fog_sun_tint = "#ff9640", fog_moon_tint = "#a89880",
-		fog_distance = 160, fog_start = 0.35, fog_color = "#c9a271"},
+		fog_distance = -1, fog_start = 0.35, fog_color = "#c9a271"},
 	{density = 0.25, color = "#f6e2c6e5", ambient = "#1c140a",
 		height = 190, thickness = 12, drift = -3.0, shadow = "#bfa385"})
 
@@ -259,7 +265,7 @@ mood("troll", "Troll region: warm humid jungle haze",
 		night_sky = "#0a2a30", night_horizon = "#2a5a52",
 		indoors = "#5c6355",
 		fog_sun_tint = "#ffb877", fog_moon_tint = "#8fb0a4",
-		fog_distance = 130, fog_start = 0.30, fog_color = "#a8c096"},
+		fog_distance = -1, fog_start = 0.30, fog_color = "#a8c096"},
 	{density = 0.8, color = "#e8f0d8e5", ambient = "#101a10",
 		height = 100, thickness = 28, drift = -1.0, shadow = "#94a382"})
 
@@ -273,7 +279,7 @@ mood("battlegrounds", "Battlegrounds: ash haze over the shared front",
 		night_sky = "#1a1a22", night_horizon = "#3c3a40",
 		indoors = "#5a5550",
 		fog_sun_tint = "#d98a4a", fog_moon_tint = "#8a8894",
-		fog_distance = 140, fog_start = 0.28, fog_color = "#9a9188"},
+		fog_distance = -1, fog_start = 0.28, fog_color = "#9a9188"},
 	{density = 0.85, color = "#cfc6bae5", ambient = "#14100c",
 		height = 105, thickness = 26, drift = -3.5, shadow = "#7a736a"})
 
@@ -287,7 +293,7 @@ mood("dragon_island", "Dragon island: storm-lit violet endpoint",
 		night_sky = "#0c0f1e", night_horizon = "#2a2246",
 		indoors = "#4a4658",
 		fog_sun_tint = "#ff7a3c", fog_moon_tint = "#9a90c4",
-		fog_distance = 150, fog_start = 0.30, fog_color = "#6e6785"},
+		fog_distance = -1, fog_start = 0.30, fog_color = "#6e6785"},
 	{density = 0.95, color = "#b9b2cae5", ambient = "#16122a",
 		height = 95, thickness = 32, drift = -4.0, shadow = "#5e586e"})
 
@@ -321,7 +327,7 @@ mood("underground", "Underground: near-black rock, torch bloom, short fog",
 		indoors = "#2a2622",
 		fog_sun_tint = "#ffffff", fog_moon_tint = "#ffffff",
 		fog_tint_type = "default",
-		fog_distance = 90, fog_start = 0.20, fog_color = "#16130f"},
+		fog_distance = -1, fog_start = 0.20, fog_color = "#16130f"},
 	{density = 0, color = "#6a645ae5", ambient = "#000000",
 		height = 120, thickness = 16, drift = -2.0, shadow = "#3a3630"})
 
