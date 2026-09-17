@@ -1184,7 +1184,7 @@ Neither of these costs a main profession slot (professions.md §1).
 - **Cooking** (trainer, free): cooked foods use regional ingredients and the
   Cooking recipe book described below.
   **Food is one out-of-combat restore buff** (R9, decided 2026-09-17,
-  replacing the 2026-08-13 restore/Well Fed model). Eating is allowed in
+  replacing the 2026-08-13 food model). Eating is allowed in
   combat and consumes the serving. It grants a **180 s** buff that attempts
   one tick every **10 s**; a tick heals only while the shared
   `grug_core.in_combat` window is false. Combat skips that tick without
@@ -1639,8 +1639,9 @@ cultures:
    Apply its multiplier after armor and before absorb. Only one target-race
    ward is active; a new draught replaces the old ward and its remaining
    duration. It is its own PvP-buff category and may coexist with one ordinary
-   elixir and Well Fed, but it shares the global 60-second potion-use clock and
-   does not require missing HP/Mana. Apothecary Loop changes neither its
+   elixir and the food restore buff, but it shares the global 60-second
+   potion-use clock and does not require missing HP/Mana. Apothecary Loop
+   changes neither its
    percentage nor duration. An allied passive Alchemist helper consumes the
    same supplied ingredients and charges 50% of the draught's authoritative
    reference price. The ward recognizes hostile players and combat-capable
@@ -2468,11 +2469,11 @@ permanent power) and add mirrored recipes in Phase 2 when the Rogue
 makes top leather PvP-relevant.
 **Decided as recommended (2026-08-06).**
 
-**P3 — Potion/elixir exclusivity.** One shared 60 s cooldown for
-instant potions (heal AND mana) + one active elixir + Well Fed stacking
-on top. Recommendation: **as proposed** — keeps consumable pressure
-without a buff-stacking meta.
-**Decided as recommended (2026-08-06).**
+**P3 — Potion/elixir/food exclusivity.** Healing and mana potions share one
+60 s cooldown. One active elixir and one food restore buff may coexist with
+that cooldown and with each other. The most recent food replaces the previous
+food; it never occupies the instant-potion slot. **Decided 2026-08-06;
+food rule replaced by R9 on 2026-09-17.**
 
 **P4 — Swiftness Draught.** +8% speed for 15 s brushes the "mobs must
 outrun players" pillar (4.0 × 1.08 = 4.32 < 4.4 keeps mobs faster, but
@@ -2560,20 +2561,6 @@ the band boundaries coincide with the four mastery level anchors is a
 property of the numbers, not a rule. Rejected: two roll tables, one for
 crafted and one for dropped gear — the same ilvl would then have meant
 two different items.
-
-**D9 — Raw food restores, cooked food restores AND buffs.** *(Delivery
-superseded 2026-08-13: the restore is now a movement-tolerant
-out-of-combat buff, not a standing resting channel — §3.7 is
-authoritative.)* §3.7 had it
-backwards ("cooking adds the buff, not the regen"). Raw/plain food gives
-**regeneration only**; cooked food gives a **restore and a buff**, and
-only **one food buff** is ever active — the most recently eaten food
-replaces the previous one. The restore is routed through
-`combat_stats.md` §5's **resting** channel at **8 % max HP/s** (twice
-raw food's 4 %) rather than being made instant: the Alchemist's Healing
-Potion owns the instant slot by design (§3.6), and a cooked dish
-restoring 30 % instantly would have deleted the potion's reason to
-exist. Cooking therefore buys a **faster rest**, not a second potion.
 
 **D10 — A higher-tier pick digs faster, not only deeper.** §3.0.4
 documented the `maxlevel` *gate* thoroughly but never stated the other

@@ -139,7 +139,7 @@ Two optional target-race systems use the central pipeline:
   hostile players and combat-capable NPCs/mobs carrying that race identity,
   shares the 60-second potion-use cooldown and is not modified by Apothecary
   Loop. The ward has its own PvP-buff category and may coexist with one
-  ordinary elixir and Well Fed.
+  ordinary elixir and the food restore buff.
 
 ### Environmental damage, deaths and shore movement
 
@@ -700,8 +700,8 @@ design (`group_attack` stays on).
 - **Healing potion**: instant **30% max HP, 60 s cooldown** (Alchemist
   craft; weak 15% variant sold by vendors). The potion holds the
   in-combat monopoly and is paid for in cooldown; a dish may restore
-  more in total, but only out of combat and over seconds, and it dies
-  the moment a fight starts.
+  more in total, but only out of combat and over seconds. Each food tick
+  due during combat is skipped while the 180-second buff keeps running.
 - Mana regen: 2%/s out of combat, 0.5%/s in combat.
 - Food/potions are **percent-based** — level-agnostic, no consumable item
   treadmill in the MVP. Reaffirmed 2026-08-13: Max HP = 20 + 2×(level−1)
