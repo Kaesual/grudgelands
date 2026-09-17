@@ -29,8 +29,8 @@ local bog_ooze = {
 	pathfinding = 1,
 
 	-- §3.1 speed column: 2.6. SPEC EXCEPTION against the 4.6 aggressive
-	-- baseline of §0, noted here on purpose — the second one in the game
-	-- after the golem's 3.0 (golem.lua). It is the whole point of the family:
+	-- baseline of §0, noted here on purpose — the only slow melee exception.
+	-- It is the whole point of the family:
 	-- a "slow tank" whose damage comes from standing next to it, so walking
 	-- away must work. No _grug_soft_deaggro opt-out either — the 25 m rule
 	-- dropping a chaser to walk 1 is the intended "you got away".

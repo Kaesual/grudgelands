@@ -100,8 +100,12 @@ local pathfinding_searchdistance = tonumber(
 -- GRUG PATCH: close blocked targets get one A* attempt after a short LOS
 -- grace period; a failed search earns one alternating lateral step before
 -- the next visibility test (combat_stats.md section 4, 2026-09-17 ruling R3).
-local grug_obstacle_path_delay = 1.0
-local grug_obstacle_sidestep_time = 0.5
+-- The helper is production code, not a test model. Its globalstep resets the
+-- two-call server-wide A* allowance once per engine step.
+local grug_obstacle = dofile(core.get_modpath("mobs") .. "/grug_obstacle.lua")
+core.register_globalstep(function()
+	grug_obstacle.begin_server_step()
+end)
 
 -- show peaceful mode message
 
@@ -235,6 +239,7 @@ function mob_class:do_attack(player, force)
 		if self.temp then
 			self.temp.grug_obstacle_blocked = nil
 			self.temp.grug_obstacle_sidestep = nil
+			self.temp.grug_obstacle_backoff = nil
 		end
 	end
 
@@ -1619,7 +1624,8 @@ end
 
 -- path finding and smart mob routine by rnd, line_of_sight and other edits by Elkien3
 
-function mob_class:smart_mobs(s, p, dist, dtime, grug_force_path)
+function mob_class:smart_mobs(s, p, dist, dtime, grug_force_path,
+		grug_target_visible)
 
 	local s1 = self.path.lastpos
 	local target_pos = p
@@ -1653,11 +1659,14 @@ function mob_class:smart_mobs(s, p, dist, dtime, grug_force_path)
 	-- after its separate one-second blocked-LOS timer expires.
 	if not grug_force_path and self.path.stuck_timer <= timeout then return end
 
-	local has_lineofsight = core.line_of_sight(
-			{x = s.x, y = s.y + 0.5, z = s.z},
-			{x = target_pos.x, y = target_pos.y + 1.5, z = target_pos.z}, .2)
-
-	self.path.stuck_timer = 0
+	-- The attack state supplies its one canonical target-LOS
+	-- result. Other callers retain the upstream fallback ray.
+	local has_lineofsight = grug_target_visible
+	if has_lineofsight == nil then
+		has_lineofsight = core.line_of_sight(
+				{x = s.x, y = s.y + 0.5, z = s.z},
+				{x = target_pos.x, y = target_pos.y + 1.5, z = target_pos.z}, .2)
+	end
 
 	if has_lineofsight then
 		-- GRUG PATCH: the target is visible again, so the detour is over —
@@ -1665,8 +1674,13 @@ function mob_class:smart_mobs(s, p, dist, dtime, grug_force_path)
 		-- this a mob that was walled in once would keep walking instead of
 		-- running for the rest of the chase.
 		self.path.stuck = false
-		self.path.following = false ; return
+		self.path.following = false ; return "visible"
 	end
+
+	self.temp = self.temp or {}
+	if not grug_obstacle.claim_path_budget(self.temp) then return "budget" end
+	grug_obstacle.path_attempted(self.temp)
+	self.path.stuck_timer = 0
 
 	local prop = self.object:get_properties()
 
@@ -1710,16 +1724,10 @@ function mob_class:smart_mobs(s, p, dist, dtime, grug_force_path)
 
 	-- GRUG PATCH: if the close-obstacle A* pass has no usable route, move
 	-- laterally for half a second and alternate sides on consecutive failures.
-	-- The attack branch owns the velocity so its at_cliff guard remains active.
+	-- The attack branch owns the velocity and checks the actual lateral vector.
 	if grug_force_path then
-		self.temp = self.temp or {}
-		if not self.path.way or #self.path.way == 0 then
-			local previous = self.temp.grug_obstacle_side or -1
-			self.temp.grug_obstacle_side = -previous
-			self.temp.grug_obstacle_sidestep = grug_obstacle_sidestep_time
-		else
-			self.temp.grug_obstacle_sidestep = nil
-		end
+		grug_obstacle.note_path_result(self.temp,
+				self.path.way and #self.path.way > 0)
 	end
 
 	--[[ do we still have a path after check
@@ -1747,6 +1755,7 @@ function mob_class:smart_mobs(s, p, dist, dtime, grug_force_path)
 
 	 -- factored out for reuse / possible override
 	self:apply_path(self.path.way, target_pos, true, true)
+	return "attempted"
 end
 
 -- temporary entity for go_to() function
@@ -2100,6 +2109,7 @@ function mob_class:stop_attack()
 	if self.temp then
 		self.temp.grug_obstacle_blocked = nil
 		self.temp.grug_obstacle_sidestep = nil
+		self.temp.grug_obstacle_backoff = nil
 	end
 	self:set_velocity(0)
 	self.state = "stand"
@@ -2283,10 +2293,12 @@ function mob_class:do_states(dtime)
 			self:stop_attack() ; return
 		end
 
-		-- check enemy is in sight
-		local in_sight = self:line_of_sight(
-				{x = s.x, y = s.y + 0.5, z = s.z}, {x = p.x, y = p.y + 0.5, z = p.z})
-		local target_pos = p
+		-- GRUG PATCH: take one fresh, private target-position snapshot and one
+		-- canonical target LOS for this step. Waypoint selection below never
+		-- aliases either table, and the punch reuses this exact target result.
+		local target_pos = grug_obstacle.copy_pos(self.attack:get_pos())
+		if not target_pos then self:stop_attack() ; return end
+		local in_sight = grug_obstacle.target_visible(self, s, target_pos)
 		local attack_reach = self.reach + (self.reach_ext or 0)
 
 		-- stop attacking when enemy not seen for 11 seconds
@@ -2317,23 +2329,14 @@ function mob_class:do_states(dtime)
 		-- alternating sidestep in smart_mobs. Fliers and dogshoot families keep
 		-- their existing movement models.
 		self.temp = self.temp or {}
-		local grug_obstacle = self.temp
+		local obstacle_state = self.temp
+		grug_obstacle.tick_backoff(obstacle_state, dtime)
 		local grug_blocked_close = not in_sight and dist <= attack_reach
-		if grug_blocked_close and self.pathfinding and pathfinding_enable
-		and not self.fly and self.attack_type == "dogfight" then
-			grug_obstacle.grug_obstacle_blocked =
-				(grug_obstacle.grug_obstacle_blocked or 0) + dtime
-			if not grug_obstacle.grug_obstacle_sidestep
-			and not self.path.following
-			and grug_obstacle.grug_obstacle_blocked >= grug_obstacle_path_delay then
-				grug_obstacle.grug_obstacle_blocked = 0
-				self:smart_mobs(s, target_pos, dist, dtime, true)
-			end
-		else
-			grug_obstacle.grug_obstacle_blocked = nil
-			if in_sight then
-				grug_obstacle.grug_obstacle_sidestep = nil
-			end
+		local can_close_path = self.pathfinding and pathfinding_enable
+			and not self.fly and self.attack_type == "dogfight"
+		if grug_obstacle.close_path_due(obstacle_state, dtime,
+				grug_blocked_close, can_close_path, self.path.following) then
+			self:smart_mobs(s, target_pos, dist, dtime, true, in_sight)
 		end
 
 		local ds_var = 0
@@ -2427,6 +2430,7 @@ function mob_class:do_states(dtime)
 
 		elseif self.attack_type == "dogfight" or (self.attack_type == "dogshoot"
 		and (ds_var == 2 or dist <= self.reach)) then
+			local movement_pos = target_pos
 
 			-- GRUG PATCH: the attack cadence runs during the CHASE
 			-- (combat_stats.md §4 "Catching up must be enough to hit",
@@ -2507,9 +2511,10 @@ function mob_class:do_states(dtime)
 				-- GRUG PATCH: clear the wedged flag together with the path on
 				-- both abandon exits (WP6-T10, see apply_path) — otherwise the
 				-- walk-speed penalty outlives the detour that caused it.
-				-- GRUG PATCH: a detour is not complete merely because the target is
+				-- A detour is not complete merely because the target is
 				-- close; keep following it while the direct LOS remains blocked.
-				if #self.path.way > 60 or (dist < self.reach and in_sight) then
+				if #self.path.way > 60
+				or not grug_obstacle.keep_path(dist, self.reach, in_sight) then
 					self.path.stuck = false
 					self.path.following = false ; return
 				end
@@ -2525,10 +2530,12 @@ function mob_class:do_states(dtime)
 					table_remove(self.path.way, 1) -- remove waypoint once reached
 				end
 
-				p = self.path.way[1] or p1 -- set to next position with fallback
+				-- Never expose the stored waypoint table to movement helpers: the
+				-- old final LOS adjusted its y field in place.
+				movement_pos = grug_obstacle.copy_pos(self.path.way[1] or p1)
 			end
 
-			self:yaw_to_pos(p)
+			self:yaw_to_pos(movement_pos)
 
 			-- move towards enemy if beyond mob reach
 			if dist > (self.reach + (self.reach_ext or 0)) then
@@ -2546,11 +2553,12 @@ function mob_class:do_states(dtime)
 				-- simply costs nothing now.
 				if self.pathfinding and pathfinding_enable
 				and self.attack_type ~= "dogshoot" then
-					self:smart_mobs(s, p, dist, dtime)
+					self:smart_mobs(s, target_pos, dist, dtime, false, in_sight)
 				end
 
 				-- distance padding to stop mob spinning
-				local pad = abs(p.x - s.x) + abs(p.z - s.z)
+				local pad = abs(movement_pos.x - s.x)
+						+ abs(movement_pos.z - s.z)
 
 				if self.at_cliff or pad < 0.2 then
 
@@ -2639,28 +2647,51 @@ function mob_class:do_states(dtime)
 
 			-- GRUG PATCH: a failed close-range A* search gets a bounded lateral
 			-- escape attempt. The perpendicular is computed from the real target,
-			-- not a temporary waypoint, and alternates on every failed search.
-			local sidestep = grug_obstacle.grug_obstacle_sidestep
+			-- not a temporary waypoint, and alternates on every failed search. Each
+			-- candidate side is probed at the actual lateral collision edge just
+			-- before velocity is applied; unsafe first choice falls back to the
+			-- opposite side, while two unsafe sides make the mob stand.
+			local sidestep = obstacle_state.grug_obstacle_sidestep
 			if grug_blocked_close and sidestep and sidestep > 0 then
-				grug_obstacle.grug_obstacle_sidestep = sidestep - dtime
-				if self.at_cliff then
+				local function sidestep_safe(velocity)
+					local prop = self.object:get_properties()
+					local length = square(velocity.x * velocity.x
+							+ velocity.z * velocity.z)
+					if length == 0 then return false end
+					local edge = prop.collisionbox[4] + 0.5
+					local x = s.x + velocity.x / length * edge
+					local z = s.z + velocity.z / length * edge
+					local y = s.y + prop.collisionbox[2]
+					local depth = self.fear_height ~= 0 and self.fear_height
+							or pathfinding_max_drop
+					local free_fall, blocker = core.line_of_sight(
+							{x = x, y = y, z = z},
+							{x = x, y = y - depth, z = z})
+					if free_fall then return false end
+					local ground = node_ok(blocker, "air")
+					if is_node_dangerous(self, ground.name) then return false end
+					local def = core.registered_nodes[ground.name]
+					return def and def.walkable == true
+				end
+
+				local velocity, chosen_side = grug_obstacle.choose_sidestep(
+						s, target_pos, obstacle_state.grug_obstacle_side,
+						self.run_velocity, sidestep_safe)
+				if not velocity then
 					self:set_velocity(0)
 					self:set_animation("stand")
 				else
-					local direction = vdirection(s, target_pos)
-					local side = grug_obstacle.grug_obstacle_side or 1
-					local velocity = self.object:get_velocity()
+					obstacle_state.grug_obstacle_side = chosen_side
+					local current = self.object:get_velocity()
 					self.object:set_velocity({
-						x = -direction.z * self.run_velocity * side,
-						y = velocity and velocity.y or 0,
-						z = direction.x * self.run_velocity * side,
+						x = velocity.x,
+						y = current and current.y or 0,
+						z = velocity.z,
 					})
 					self:set_animation(self.animation and self.animation.run_start
 						and "run" or "walk")
 				end
-				if grug_obstacle.grug_obstacle_sidestep <= 0 then
-					grug_obstacle.grug_obstacle_sidestep = nil
-				end
+				grug_obstacle.advance_sidestep(obstacle_state, dtime)
 			end
 
 			-- GRUG PATCH: the punch lands here, outside both branches, and the
@@ -2673,51 +2704,35 @@ function mob_class:do_states(dtime)
 			-- The custom_attack hook still consumes the cadence when it declines.
 			-- A terrain-blocked LOS no longer consumes it: the ready swing stays
 			-- banked until the detour or sidestep exposes the target.
-			if self.punch_timer >= self.punch_interval
-			and dist <= (self.reach + (self.reach_ext or 0)) then
-
-				-- no custom attack or custom attack returns true to continue
-				if not self.custom_attack or self:custom_attack(self, p) then
-
-					local p2, s2 = p, s
-
-					-- approximate mob eye level
-					local cbox = self.object:get_properties().collisionbox
-					local offset = cbox[2] + ((cbox[5] - cbox[2]) * 0.9)
-					s2.y = s2.y + offset
-
-					-- approximate victim eye level
-					cbox = self.attack:get_properties().collisionbox
-					offset = cbox[2] + ((cbox[5] - cbox[2]) * 0.9)
-					p2.y = p2.y + offset
-
-					-- if we can see who we attack, then do so
-					if self:line_of_sight(p2, s2) then
-
-						-- GRUG PATCH: claim the swing only after LOS succeeds. A tree
-						-- trunk or wall blocks damage without resetting readiness.
-						self.punch_timer = 0
-
-						self:set_animation("punch")
-
-						if random(self.sounds.attack_chance or 1) == 1 then
-							self:mob_sound(self.sounds.attack)
-						end
-
-						-- punch player (or what player is attached to)
-						local target = self.attack:get_attach() or self.attack
-
-						local dgroup = self.damage_group or "fleshy"
-
-						target:punch(self.object, 1.0, {
-							full_punch_interval = 1.0,
-							damage_groups = {[dgroup] = self.damage}
-						}, nil)
-					end
-				else
-					self.punch_timer = 0
-				end
+			local ready = self.punch_timer >= self.punch_interval
+			local in_reach = dist <= (self.reach + (self.reach_ext or 0))
+			local custom_allows = true
+			if ready and in_reach and self.custom_attack then
+				custom_allows = not not self:custom_attack(self,
+						grug_obstacle.copy_pos(target_pos))
 			end
+			local _, consume = grug_obstacle.try_melee_attack({
+				ready = ready,
+				in_reach = in_reach,
+				custom_allows = custom_allows,
+				target_visible = in_sight,
+				punch = function()
+					self:set_animation("punch")
+					if random(self.sounds.attack_chance or 1) == 1 then
+						self:mob_sound(self.sounds.attack)
+					end
+					local target = self.attack:get_attach() or self.attack
+					local dgroup = self.damage_group or "fleshy"
+					target:punch(self.object, 1.0, {
+						full_punch_interval = 1.0,
+						damage_groups = {[dgroup] = self.damage}
+					}, nil)
+				end,
+			})
+			-- GRUG PATCH: claim the swing only after canonical target LOS
+			-- succeeds. A tree or wall banks readiness; a declined custom attack
+			-- retains upstream's cadence-consuming behavior.
+			if consume then self.punch_timer = 0 end
 
 		elseif self.attack_type == "shoot"
 		or (self.attack_type == "dogshoot" and ds_var == 1) then

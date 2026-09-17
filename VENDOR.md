@@ -117,9 +117,17 @@ combat-physics rulings:
   side on each failed search.
 - The attack state invokes that bounded A* pass for a blocked ground-melee
   target even inside reach. It retains a live path while LOS is blocked,
-  preserves `at_cliff` in both the contact run and sidestep, and claims a ready
-  punch only after the final LOS test succeeds. Cover therefore banks the
-  swing instead of consuming it.
+  preserves `at_cliff` in the contact run, checks the actual sidestep vector
+  for cliffs/dangerous ground (then tries the opposite side), and claims a
+  ready punch only when the canonical real-target LOS succeeds. Target and
+  waypoint positions are private copies, so a visible waypoint can neither
+  authorize a hit through a wall nor be mutated by eye-height adjustment.
+- `grug_obstacle.lua` is the production state module called by `api.lua` and
+  loaded directly by the regression KAT. It owns the 1 s delay, 0.5 s
+  sidestep, path-retention and punch gates, plus a server-wide allowance of
+  2 `find_path` calls per server step and 0.25 s per-mob retry backoff. The
+  attack state supplies one canonical target-LOS result per mob per step to
+  both navigation and the punch gate.
 - Ordinary punch damage contributes zero implicit knockback. The existing
   `damage_groups.knockback` override remains the explicit future-skill seam,
   including its vertical impulse when non-zero.
@@ -127,7 +135,7 @@ combat-physics rulings:
   common registration path. The matching player property lives outside the
   vendored tree in `grug_core`.
 
-**56 markers in `mobs/api.lua`.**
+**56 markers in `mobs/api.lua`, plus one in `mobs/grug_obstacle.lua`.**
 
 ## Fresh-server cleanup — 2026-09-13
 

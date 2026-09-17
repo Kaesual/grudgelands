@@ -86,16 +86,23 @@ return function(repo)
 		and api:find("self.punch_timer = self.punch_interval", 1, true),
 		"the at-most-one-backlog cap is gone")
 
-	-- The punch's own gate carries the in-reach test.
-	want(api:find("if self.punch_timer >= self.punch_interval\n" ..
-		"\t\t\tand dist <= (self.reach + (self.reach_ext or 0)) then", 1, true),
+	-- The punch's production gate receives readiness and the in-reach test.
+	local ready_gate = api:find(
+			"local ready = self.punch_timer >= self.punch_interval", 1, true)
+	local in_reach_gate = api:find(
+			"local in_reach = dist <= (self.reach + (self.reach_ext or 0))",
+			ready_gate or 1, true)
+	local punch_gate = api:find("grug_obstacle.try_melee_attack({",
+			in_reach_gate or 1, true)
+	want(ready_gate and in_reach_gate and punch_gate
+			and ready_gate < in_reach_gate and in_reach_gate < punch_gate,
 		"the punch is no longer gated on being in reach at the moment the " ..
 		"cadence is due")
 
 	-- The unconditional in-reach velocity zero is gone and the contact
-	-- distance took its place. Round 5 intentionally adds two more guarded
-	-- stops: one for an in-reach cliff and one for the obstacle sidestep at a
-	-- cliff. None may restore the old unconditional freeze.
+	-- distance took its place. Round 5 intentionally adds guarded stops for an
+	-- in-reach cliff and unsafe obstacle sidesteps. Neither may restore the old
+	-- unconditional freeze.
 	want(api:find("if dist > self.reach * 0.6 then", 1, true),
 		"the contact distance is gone; the mob freezes for the whole " ..
 		"in-reach branch again")
