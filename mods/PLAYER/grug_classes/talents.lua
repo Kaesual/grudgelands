@@ -99,6 +99,35 @@ local EFFECT_KEYS = {
 	smite_absorb = "X3",
 }
 
+local POOL_EFFECT_KIND = {
+	max_hp_percent_add = "hp",
+	max_mana_percent_add = "mana",
+	hold_ground_absorb = "neutral",
+}
+
+-- Shared accessor for the talent UI and every pool-derived talent consumer.
+-- Passing `percent` previews a particular rank; omitting it resolves the
+-- player's current total for that effect key.
+function grug_classes.pool_talent_amount(player, effect_key, percent)
+	local pool = POOL_EFFECT_KIND[effect_key]
+	if not pool then
+		return nil
+	end
+	if percent == nil then
+		percent = grug_classes.get_talent_bonus(player, effect_key)
+	end
+	return grug_classes.pool_percent_amount(player, pool, percent)
+end
+
+function grug_classes.pool_talent_effect_key(def)
+	for effect_key in pairs(def.effects or {}) do
+		if POOL_EFFECT_KIND[effect_key] then
+			return effect_key
+		end
+	end
+	return nil
+end
+
 grug_classes.TALENT_EFFECT_KEYS = EFFECT_KEYS
 
 -- Keys that only count while the talent's own timed window runs (§3.2: the
@@ -302,8 +331,8 @@ grug_classes.register_talent({
 	id = "hold_ground", tree = "bulwark", chain = "wall", tier = 3,
 	keystone = true, ability = "hold_ground",
 	name = "Hold Ground",
-	description = "New skill: 25 rage, absorbs 20/30/40 + 2x floor(Str/10) " ..
-		"for 8 s, and for those 8 s you cannot be rooted or slowed. " ..
+	description = "New skill: 25 rage, absorbs 20/30/40% of the neutral " ..
+		"base pool for 8 s, and for those 8 s you cannot be rooted or slowed. " ..
 		"60 s cooldown.",
 	-- NOT `window = true`, deliberately. skill_trees.md §3.2 counts Hold
 	-- Ground among the timed windows, but only its root/slow IMMUNITY is

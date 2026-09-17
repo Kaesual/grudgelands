@@ -54,20 +54,6 @@ function grug_core.level_scale(level)
 	return grug_core.base_pool(level) / (8 * baseline_melee_total(level))
 end
 
--- Item level is an independent, bounded gear axis around character level:
--- three percentage points per ilvl, capped at -30%/+30%. Abilities with no
--- positive equipped-weapon ilvl use the neutral baseline multiplier.
-function grug_core.item_level_scale(player_level, item_level)
-	player_level = math.max(1,
-		math.min(60, math.floor(tonumber(player_level) or 1)))
-	item_level = tonumber(item_level)
-	if not item_level or item_level <= 0 then
-		return 1
-	end
-	local delta = math.max(-10, math.min(10, item_level - player_level))
-	return 1 + 0.03 * delta
-end
-
 -- Higher-level mobs resist players who are more than five levels below them:
 -- -10 percentage points per further level, with a 10% floor.
 function grug_core.level_malus(player_level, mob_level)
@@ -91,14 +77,7 @@ end
 -- The one final floor keeps multiplication order from creating two rounding
 -- losses. Players have no mob level and therefore receive no malus.
 function grug_core.scale_player_damage(player, target, amount)
-	local player_level = grug_core.get_player_level(player)
-	local mult = grug_core.level_scale(player_level)
-	local weapon = grug_core.get_equipped_weapon(player)
-	if weapon and not weapon:is_empty() then
-		local def = type(weapon.get_definition) == "function"
-			and weapon:get_definition() or {}
-		mult = mult * grug_core.item_level_scale(player_level, def._grug_ilvl)
-	end
+	local mult = grug_core.level_scale(grug_core.get_player_level(player))
 	if target and not target:is_player() then
 		local ent = target:get_luaentity()
 		if ent and ent._grug_level then

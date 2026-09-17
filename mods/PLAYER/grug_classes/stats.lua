@@ -29,6 +29,16 @@ function grug_classes.get_hp_class_factor(player)
 	return HP_CLASS_FACTOR[grug_classes.get_class(player)] or 1
 end
 
+-- Shared player-facing and talent-consumer conversion for pool percentages.
+-- `hp` means the character's class-adjusted base HP; `neutral` and `mana`
+-- mean the class-neutral pool. The percent is explicit so callers may preview
+-- any rank; pool_talent_amount supplies the current-effect lookup when needed.
+function grug_classes.pool_percent_amount(player, pool, percent)
+	local factor = pool == "hp" and grug_classes.get_hp_class_factor(player) or 1
+	return round(grug_classes.get_base_pool(player) * factor
+		* (tonumber(percent) or 0) / 100)
+end
+
 -- Equipment enchants are per-stack data. No shipped item carries these fields
 -- yet, but the percentage contract is live now so the future roller has one
 -- consumer rather than teaching every pool formula about item metadata.

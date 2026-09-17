@@ -404,6 +404,10 @@ local function do_buy(player, session, vendor, index)
 		return
 	end
 	local stack = grug_traders.make_stack(entry)
+	-- The trader writes directly with add_item, so no engine inventory-action
+	-- callback sees this acquisition. Use the same one-stack initializer as
+	-- crafting and dropped-item pickup before the stack reaches `main`.
+	grug_gear.initialize_weapon_tooltip(stack, player)
 	local inv = player:get_inventory()
 	if not inv or not inv:room_for_item("main", stack) then
 		-- Exact refund of exactly what was taken. Items are NEVER dropped on

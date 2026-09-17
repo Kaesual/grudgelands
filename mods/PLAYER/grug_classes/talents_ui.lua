@@ -106,6 +106,26 @@ local function active_tree(player, context)
 	return tree, trees
 end
 
+-- Pool talents keep their compact rule text but append every rank's concrete
+-- value for the viewer's current level. The conversion is shared with future
+-- consumers such as Hold Ground, so UI and settlement cannot invent separate
+-- rounding or class-factor rules.
+function grug_classes.talent_description_for(player, def)
+	local effect_key = grug_classes.pool_talent_effect_key(def)
+	if not effect_key then
+		return def.description
+	end
+	local values = def.effects[effect_key]
+	local unit = effect_key == "max_mana_percent_add" and "mana"
+		or effect_key == "hold_ground_absorb" and "absorb" or "HP"
+	local ranks = {}
+	for _, percent in ipairs(values) do
+		ranks[#ranks + 1] = string.format("%g%% = %d %s", percent,
+			grug_classes.pool_talent_amount(player, effect_key, percent), unit)
+	end
+	return def.description .. " At your level: " .. table.concat(ranks, "; ") .. "."
+end
+
 local function selected_description(player, context, tree)
 	local def = context.grug_talent_selected
 		and grug_classes.registered_talents[context.grug_talent_selected]
@@ -123,7 +143,8 @@ local function selected_description(player, context, tree)
 		status = ok and "Click again to buy the next rank." or reason
 	end
 	return ("%s%s — rank %d/%d: %s  %s"):format(def.name,
-		talent_mark(def), rank, def.ranks, def.description, status)
+		talent_mark(def), rank, def.ranks,
+		grug_classes.talent_description_for(player, def), status)
 end
 
 local function talent_content(player, context)
@@ -204,7 +225,8 @@ local function talent_content(player, context)
 					fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(
 						x + 0.08, y + 0.13, esc(label))
 				end
-				local tooltip = def.name .. " — " .. def.description
+				local tooltip = def.name .. " — " ..
+					grug_classes.talent_description_for(player, def)
 				if not available and rank < def.ranks then
 					tooltip = tooltip .. " Locked: " .. reason
 				end

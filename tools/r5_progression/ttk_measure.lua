@@ -23,6 +23,8 @@ local gear_env = setmetatable({
 		register_tool = function(name, def) gear_items[name] = def end,
 		register_craftitem = function(name, def) gear_items[name] = def end,
 		register_on_mods_loaded = function() end,
+		register_on_craft = function() end,
+		register_on_item_pickup = function() end,
 		log = function() end,
 	},
 }, {__index = _G})
@@ -242,6 +244,7 @@ if arg[2] == "--r6-data" then
 		measure = current_rows,
 		core = grug_core,
 		classes = class_api,
+		gear = gear_api,
 		abilities = ability_defs,
 		player = production_player,
 	}

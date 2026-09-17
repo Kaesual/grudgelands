@@ -470,9 +470,9 @@ grug_abilities.register_ability({
 grug_projectiles.register("fireball", {
 	speed = 20,
 	max_distance = 20,
-	-- Normal native use arrives at roughly five inputs per second and a flight
-	-- lasts one second. Eight preserves that behavior while bounding a modified
-	-- client's zero-cooldown burst per owner/session.
+	-- A flight lasts one second and the server accepts at most one cast per
+	-- second. Eight leaves room for latency/session overlap while still bounding
+	-- stale shots per owner/session independently of the cast cadence.
 	active_limit = 8,
 	-- Distance expires after one second at the decided speed. The longer
 	-- lifetime is only a stalled/unloaded-motion safety guard.
@@ -489,8 +489,9 @@ grug_projectiles.register("fireball", {
 	end,
 })
 
--- Bread-and-butter nuke (kit tuning 2026-08-06): pays with mana instead
--- of a cooldown -- the former fixed 5 mana against a 240+ pool was free. It is directional:
+-- Bread-and-butter nuke (kit tuning 2026-08-06): pays with mana plus a
+-- server-authoritative one-second cast cadence instead of a talent-visible
+-- cooldown. It is directional:
 -- target acquisition belongs to the projectile, not cast-time enemy memory.
 local function fireball_values(user)
 	return {
@@ -518,6 +519,7 @@ grug_abilities.register_ability({
 	color = "#ff8833",
 	cost = {mana_percent = 6},
 	cooldown = 0,
+	cast_interval = 1,
 	range = 20,
 	-- Far Cast (skill_trees.md §2.3) re-tunes a RANGE, so it cannot live in
 	-- the field above: get_range reads this key per player, and sync_kit's

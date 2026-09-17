@@ -25,6 +25,10 @@ local rage = {} -- player name -> current rage (fractional)
 -- duration is stored per cast, not looked up from the def, because the wear
 -- ticker needs the value THIS cast used to draw a fraction of it.
 local cooldowns = {}
+-- Player name -> {ability id -> next accepted cast time in microseconds}.
+-- This is a server-authoritative input cadence, not a visible cooldown: it
+-- has no wear bar and talents cannot shorten it.
+local cast_intervals = {}
 local targets = {} -- player name -> {enemy = rec, ally = rec}; rec = {obj, expiry}
 local flash_huds = {} -- player name -> {id = hud id, token = n}
 local ready_reticle_huds = {} -- player name -> {id = hud id, visible = bool}
@@ -105,6 +109,15 @@ end
 
 local function refill_mana(player)
 	mana[player:get_player_name()] = grug_classes.get_max_mana(player)
+end
+
+-- Every callback that can change maximum mana goes through this one clamp.
+-- It deliberately does not draw: callers clamp first and then issue exactly
+-- one HUD update after all their other state changes are complete.
+local function clamp_mana(player)
+	local name = player:get_player_name()
+	local maximum = math.max(0, grug_classes.get_max_mana(player))
+	mana[name] = math.max(0, math.min(maximum, mana[name] or 0))
 end
 
 function grug_abilities.mana_cost(player, percent)
@@ -699,6 +712,8 @@ function grug_abilities.register_ability(def)
 	if def.kind == "cast" then
 		assert(def.cast and def.cooldown ~= nil,
 			"a cast ability needs cast and cooldown")
+		assert(def.cast_interval == nil or def.cast_interval > 0,
+			"a cast interval must be seconds > 0")
 		assert(def.charge == nil,
 			"charge timers belong to swing abilities")
 	else
@@ -736,6 +751,8 @@ function grug_abilities.register_ability(def)
 	local cd_line
 	if def.kind == "swing" then
 		cd_line = def.charge and (def.charge .. " s charge") or "no charge"
+	elseif def.cast_interval then
+		cd_line = string.format("%g s cast interval", def.cast_interval)
 	else
 		cd_line = (def.cooldown > 0 and (def.cooldown .. " s cooldown"))
 			or "no cooldown"
@@ -913,6 +930,25 @@ function grug_abilities.ready(player, id)
 	local cds = cooldowns[player:get_player_name()]
 	local rec = cds and cds[id]
 	return not rec or core.get_us_time() >= rec.expiry
+end
+
+local function cast_interval_ready(player, def)
+	if not def.cast_interval then
+		return true
+	end
+	local records = cast_intervals[player:get_player_name()]
+	local next_cast = records and records[def.id]
+	return not next_cast or core.get_us_time() >= next_cast
+end
+
+local function arm_cast_interval(player, def)
+	if not def.cast_interval then
+		return
+	end
+	local name = player:get_player_name()
+	cast_intervals[name] = cast_intervals[name] or {}
+	cast_intervals[name][def.id] = core.get_us_time()
+		+ def.cast_interval * 1e6
 end
 
 -- The cooldown this player's cast actually earns. Same reason as get_range
@@ -1499,6 +1535,10 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 		grug_abilities.flash(user, def.name .. " is not ready.")
 		return
 	end
+	if not cast_interval_ready(user, def) then
+		grug_abilities.flash(user, def.name .. " cast interval is not ready.")
+		return
+	end
 	local effective_cost = grug_abilities.cost_for(user, def.cost)
 	if not affordable(user, effective_cost) then
 		grug_abilities.flash(user,
@@ -1522,6 +1562,7 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 		return
 	end
 	spend(user, effective_cost)
+	arm_cast_interval(user, def)
 	grug_abilities.arm_cooldown(user, def,
 		grug_abilities.effective_cooldown(user, def))
 end
@@ -1941,6 +1982,12 @@ end
 -- The full pass costs one walk of `main` with a token compare per ability
 -- stack, and writes only what actually changed.
 grug_core.register_on_equipment_change(function(player, listname)
+	clamp_mana(player)
+	hud_update(player)
+	-- Every equipment list may carry rolled attributes; weapon changes also
+	-- change weapon-fed ability values. The compare-first pass makes irrelevant
+	-- or nested duplicate notifications cost no inventory writes.
+	sync_descriptions(player)
 	if listname and SKIN_IRRELEVANT_LIST[listname] then
 		return
 	end
@@ -2094,6 +2141,7 @@ local function sync_kit(player)
 	clear_swing_progress(player)
 	targets[name] = nil
 	cooldowns[name] = {}
+	cast_intervals[name] = {}
 	charges[name] = {}
 	wear_steps[name] = {}
 	charge_steps[name] = {}
@@ -2200,6 +2248,7 @@ end
 grug_classes.register_on_class_chosen(function(player, class_id)
 	sync_kit(player)
 	refill_mana(player)
+	clamp_mana(player)
 	rage[player:get_player_name()] = 0
 	hud_update(player)
 end)
@@ -2210,6 +2259,8 @@ end)
 if grug_classes.register_on_talents_changed then
 	grug_classes.register_on_talents_changed(function(player)
 		sync_descriptions(player)
+		clamp_mana(player)
+		hud_update(player)
 	end)
 end
 
@@ -2669,13 +2720,16 @@ core.register_on_dieplayer(function(player)
 	-- the accepted swing's proc is already held in its local context.
 	invalidate_target_locks(player)
 	clear_swing_progress(player)
+	cast_intervals[player:get_player_name()] = nil
 	targets[player:get_player_name()] = nil
 end)
 
 core.register_on_respawnplayer(function(player)
 	clear_swing_progress(player)
+	cast_intervals[player:get_player_name()] = nil
 	targets[player:get_player_name()] = nil
 	refill_mana(player)
+	clamp_mana(player)
 	rage[player:get_player_name()] = 0
 	hud_update(player)
 end)
@@ -2689,6 +2743,7 @@ core.register_on_leaveplayer(function(player)
 	mana[name] = nil
 	rage[name] = nil
 	cooldowns[name] = nil
+	cast_intervals[name] = nil
 	charges[name] = nil
 	targets[name] = nil
 	wear_steps[name] = nil
@@ -2706,6 +2761,7 @@ end)
 -- The base mana pool grows with level: clamp/refresh the HUD (no refill).
 grug_xp.register_on_level_change(function(player, old_level, new_level)
 	sync_descriptions(player)
+	clamp_mana(player)
 	hud_update(player)
 end)
 
