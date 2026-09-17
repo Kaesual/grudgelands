@@ -520,14 +520,14 @@ Details + line numbers in [docs/research/](docs/research/).
   - **`aoc` is per entity NAME**, counted in a 128-node sphere — two
     rows of one name share a budget, per-biome tints do not. Spawn
     calibration reference: **`docs/research/wp6_spawn_budget.md`**.
-  - **56 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** — the
+  - **59 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** — the
     inventory and rationale live in VENDOR.md; re-apply them on any
     mobs_redo update. The 41st to 43rd (mob pressure, 2026-09-16) are the
     attack-cadence patch of `combat_stats.md` §4 and user ruling 1: the
     cadence advances during the CHASE with the backlog capped at one, the
     in-reach branch runs to a contact distance of `reach × 0.6` instead of
     freezing the mob, and the punch sits outside both branches with the
-    in-reach and line-of-sight tests where it lands. The 44th to 56th
+    in-reach and line-of-sight tests where it lands. The 44th to 59th
     (round-5 combat AI, 2026-09-17) raise ordinary reach to 3 m, navigate
     blocked close cover, remove implicit ordinary-hit knockback and disable
     object-to-object collision; `mobs/grug_obstacle.lua` holds the bounded

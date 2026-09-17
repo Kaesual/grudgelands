@@ -33,13 +33,15 @@ return function(repo)
 	local kits = read("mods/PLAYER/grug_abilities/kits.lua")
 	local telegraph = read("mods/ENTITIES/grug_mobs/telegraph.lua")
 	local core_init = read("mods/CORE/grug_core/init.lua")
+	local agents = read("AGENTS.md")
+	local vendor = read("VENDOR.md")
 	local obstacle = assert(loadfile(repo
 			.. "/mods/ENTITIES/mobs/grug_obstacle.lua"))()
 
 	-- Bind the tested module to the shipped attack branch.
 	want(api:find('dofile(core.get_modpath("mobs") .. "/grug_obstacle.lua")',
 			1, true), "api.lua does not load the tested production module")
-	want(api:find("grug_obstacle.target_visible(self, s, target_pos)", 1, true),
+	want(api:find("grug_obstacle.target_visible(self, s, target_pos,", 1, true),
 			"attack state bypasses canonical target LOS")
 	want(api:find("grug_obstacle.try_melee_attack({", 1, true),
 			"attack state bypasses the tested punch gate")
@@ -51,6 +53,9 @@ return function(repo)
 			1, true), "exhausted blocked paths bypass the sidestep fallback")
 	want(not api:find("local p2, s2 = p, s", 1, true),
 			"legacy waypoint-aliasing final LOS returned")
+	want(api:find("custom_attack = self.custom_attack and function()", 1, true)
+			and not api:find("local custom_allows", 1, true),
+			"custom attack is not owned by the canonical LOS gate")
 
 	-- One fresh target snapshot and one LOS ray. A visible waypoint must not
 	-- authorize a punch through a wall to the real target.
@@ -76,24 +81,47 @@ return function(repo)
 			return false
 		end,
 	}
-	local target_visible = obstacle.target_visible(fake, source_mob, target_snapshot)
+	local target_visible = obstacle.target_visible(fake, source_mob,
+			target_snapshot, true)
 	want(not target_visible and los_calls == 1,
 			"canonical target LOS was not exactly one blocked ray")
 	want(source_target.y == 0 and target_snapshot.y == 0 and source_mob.y == 0,
 			"target LOS mutated a source position")
 	local punches = 0
+	local custom_calls = 0
 	local landed, consumed = obstacle.try_melee_attack({
 		ready = true,
 		in_reach = true,
-		custom_allows = true,
 		target_visible = target_visible,
 		waypoint_visible = true,
+		custom_attack = function()
+			custom_calls = custom_calls + 1
+			return true
+		end,
 		punch = function() punches = punches + 1 end,
 	})
-	want(not landed and not consumed and punches == 0,
-			"visible waypoint authorized a punch through blocked target LOS")
+	want(not landed and not consumed and punches == 0 and custom_calls == 0,
+			"blocked target LOS invoked a custom attack or punch")
 
-	-- Blocked-LOS delay and server-wide A* budget/backoff.
+	-- Non-ground attacks retain the old fixed +0.5 LOS endpoints instead of
+	-- inheriting collision-box eye heights from Lane C ground melee.
+	local legacy_calls = 0
+	local legacy = {
+		line_of_sight = function(_, mob_eye, target_eye)
+			legacy_calls = legacy_calls + 1
+			want(mob_eye.x == source_mob.x and mob_eye.y == 0.5,
+					"non-ground source LOS geometry changed")
+			want(target_eye.x == source_target.x and target_eye.y == 0.5,
+					"non-ground target LOS geometry changed")
+			return true
+		end,
+	}
+	want(obstacle.target_visible(legacy, source_mob, source_target, false)
+			and legacy_calls == 1,
+			"non-ground attack did not use exactly one legacy LOS ray")
+
+	-- Blocked-LOS delay and fair server-wide A* budget. Stable object order
+	-- must not let the first mobs monopolize the two starts per server step.
 	local state = {}
 	for _ = 1, 9 do
 		want(not obstacle.close_path_due(state, 0.11, true, true, false),
@@ -101,18 +129,31 @@ return function(repo)
 	end
 	want(obstacle.close_path_due(state, 0.11, true, true, false),
 			"A* was not due after about one second")
-	obstacle.begin_server_step()
-	local first, second, third = {}, {}, {}
-	want(obstacle.claim_path_budget(first), "first A* token was denied")
-	want(obstacle.claim_path_budget(second), "second A* token was denied")
-	want(not obstacle.claim_path_budget(third), "third A* escaped per-step cap")
-	want(third.grug_obstacle_backoff == obstacle.path_backoff,
-			"budget denial did not install per-mob backoff")
-	obstacle.tick_backoff(third, obstacle.path_backoff - 0.01)
-	want(not obstacle.claim_path_budget(third), "backoff ended too early")
-	obstacle.tick_backoff(third, 0.02)
-	obstacle.begin_server_step()
-	want(obstacle.claim_path_budget(third), "mob did not retry after backoff")
+	local contenders = {}
+	local attempted = {}
+	local attempt_count = 0
+	local last_attempt_step = 0
+	for index = 1, 100 do contenders[index] = {} end
+	for step = 1, 200 do
+		obstacle.begin_server_step()
+		local starts = 0
+		for index = 1, 100 do
+			if not attempted[index]
+			and obstacle.claim_path_budget(contenders[index]) then
+				attempted[index] = true
+				attempt_count = attempt_count + 1
+				last_attempt_step = step
+				starts = starts + 1
+			end
+		end
+		want(starts <= obstacle.path_budget_per_step,
+				"more than two A* starts escaped one server step")
+		if attempt_count == 100 then break end
+	end
+	want(attempt_count == 100,
+			"stable object order starved at least one of 100 A* waiters")
+	want(last_attempt_step * 0.09 < 18,
+			"A* FIFO did not serve every mob before attack patience expired")
 
 	-- A blocked close path persists; visible contact may finish it.
 	want(obstacle.keep_path(2.5, 3, false),
@@ -153,19 +194,28 @@ return function(repo)
 			function() return false end)
 	want(velocity == nil, "two unsafe sidestep directions did not stand")
 
-	-- Cover banks a ready swing; visible contact lands it. A custom decline is
+	-- Cover banks a ready swing without invoking custom effects; visible
+	-- contact invokes the hook exactly once and lands. A custom decline is
 	-- still the one non-hit path that consumes cadence.
 	landed, consumed = obstacle.try_melee_attack({
-		ready = true, in_reach = true, custom_allows = true,
+		ready = true, in_reach = true,
 		target_visible = true, punch = function() punches = punches + 1 end,
+		custom_attack = function()
+			custom_calls = custom_calls + 1
+			return true
+		end,
 	})
-	want(landed and consumed and punches == 1,
-			"banked swing did not land on visible target contact")
+	want(landed and consumed and punches == 1 and custom_calls == 1,
+			"visible target did not invoke one custom hook and land")
 	landed, consumed = obstacle.try_melee_attack({
-		ready = true, in_reach = true, custom_allows = false,
+		ready = true, in_reach = true,
 		target_visible = true, punch = function() punches = punches + 1 end,
+		custom_attack = function()
+			custom_calls = custom_calls + 1
+			return false
+		end,
 	})
-	want(not landed and consumed and punches == 1,
+	want(not landed and consumed and punches == 1 and custom_calls == 2,
 			"custom decline lost its cadence-consuming behavior")
 
 	-- R1/R2/R14/R15 values on their real definitions.
@@ -216,10 +266,16 @@ return function(repo)
 			"mob object collision is still enabled")
 	want(core_init:find("player:set_properties({collide_with_objects = false})",
 			1, true), "player object collision is still enabled")
+	want(agents:find("59 `GRUG PATCH` sites", 1, true)
+			and agents:find("44th to 59th", 1, true),
+			"AGENTS.md patch inventory is stale")
+	want(vendor:find("**59 markers in `mobs/api.lua`", 1, true),
+			"VENDOR.md patch inventory is stale")
 
 	say("production", "module", "grug_obstacle.lua", "target_los_calls", los_calls,
 			"path_budget", obstacle.path_budget_per_step,
-			"path_backoff", obstacle.path_backoff)
+			"path_backoff", obstacle.path_backoff, "fifo_mobs", attempt_count,
+			"fifo_last_step", last_attempt_step)
 	say("obstacle", "delay", obstacle.path_delay, "path_retained", true,
 			"sidesteps", first_side, second_side, "blocked_contact_moves", true,
 			"visible_contact_stops", true, "blocked_swing_banked", true)

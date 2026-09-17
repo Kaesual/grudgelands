@@ -9,6 +9,10 @@ local obstacle = {
 }
 
 local path_budget = obstacle.path_budget_per_step
+local path_queue = {}
+local path_queue_head = 1
+local path_waiting = setmetatable({}, {__mode = "k"})
+local path_granted = setmetatable({}, {__mode = "k"})
 
 local function copy_pos(pos)
 	if not pos then return end
@@ -21,6 +25,28 @@ end
 
 function obstacle.begin_server_step()
 	path_budget = obstacle.path_budget_per_step
+	path_granted = setmetatable({}, {__mode = "k"})
+
+	while path_budget > 0 and path_queue_head <= #path_queue do
+		local temp = path_queue[path_queue_head]
+		path_queue[path_queue_head] = false
+		path_queue_head = path_queue_head + 1
+		if path_waiting[temp] then
+			path_waiting[temp] = nil
+			path_granted[temp] = true
+			path_budget = path_budget - 1
+		end
+	end
+
+	if path_queue_head > #path_queue then
+		path_queue = {}
+		path_queue_head = 1
+	end
+end
+
+function obstacle.cancel_path_request(temp)
+	path_waiting[temp] = nil
+	path_granted[temp] = nil
 end
 
 function obstacle.tick_backoff(temp, dtime)
@@ -34,12 +60,14 @@ end
 
 function obstacle.close_path_due(temp, dtime, blocked, can_path, following)
 	if not blocked or not can_path then
+		obstacle.cancel_path_request(temp)
 		temp.grug_obstacle_blocked = nil
 		if not blocked then temp.grug_obstacle_sidestep = nil end
 		return false
 	end
 
 	temp.grug_obstacle_blocked = (temp.grug_obstacle_blocked or 0) + dtime
+	if following then obstacle.cancel_path_request(temp) end
 	return not temp.grug_obstacle_sidestep
 		and not following
 		and not temp.grug_obstacle_backoff
@@ -48,12 +76,27 @@ end
 
 function obstacle.claim_path_budget(temp)
 	if temp.grug_obstacle_backoff then return false end
-	if path_budget <= 0 then
-		temp.grug_obstacle_backoff = obstacle.path_backoff
-		return false
+	if path_granted[temp] then
+		path_granted[temp] = nil
+		return true
 	end
-	path_budget = path_budget - 1
-	return true
+	if path_waiting[temp] then return false end
+
+	while path_queue_head <= #path_queue
+	and not path_waiting[path_queue[path_queue_head]] do
+		path_queue[path_queue_head] = false
+		path_queue_head = path_queue_head + 1
+	end
+	if path_queue_head > #path_queue and path_budget > 0 then
+		path_queue = {}
+		path_queue_head = 1
+		path_budget = path_budget - 1
+		return true
+	end
+
+	path_waiting[temp] = true
+	path_queue[#path_queue + 1] = temp
+	return false
 end
 
 function obstacle.path_attempted(temp)
@@ -85,10 +128,16 @@ function obstacle.should_close_contact(distance, reach, target_visible)
 	return not target_visible or distance > reach * 0.6
 end
 
-function obstacle.target_visible(self, mob_pos, target_pos)
+function obstacle.target_visible(self, mob_pos, target_pos, ground_melee)
 	local mob_eye = copy_pos(mob_pos)
 	local target_eye = copy_pos(target_pos)
 	if not mob_eye or not target_eye then return false end
+
+	if not ground_melee then
+		mob_eye.y = mob_eye.y + 0.5
+		target_eye.y = target_eye.y + 0.5
+		return self:line_of_sight(mob_eye, target_eye) == true
+	end
 
 	local cbox = self.object:get_properties().collisionbox
 	mob_eye.y = mob_eye.y + cbox[2] + ((cbox[5] - cbox[2]) * 0.9)
@@ -130,8 +179,8 @@ end
 
 function obstacle.try_melee_attack(args)
 	if not args.ready or not args.in_reach then return false, false end
-	if not args.custom_allows then return false, true end
 	if not args.target_visible then return false, false end
+	if args.custom_attack and not args.custom_attack() then return false, true end
 	args.punch()
 	return true, true
 end

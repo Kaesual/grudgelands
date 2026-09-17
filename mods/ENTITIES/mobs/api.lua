@@ -249,6 +249,7 @@ function mob_class:do_attack(player, force)
 		-- GRUG PATCH: obstacle timers belong to the exact chase target. A threat
 		-- switch must not inherit the old target's blocked-LOS delay or sidestep.
 		if self.temp then
+			grug_obstacle.cancel_path_request(self.temp)
 			self.temp.grug_obstacle_blocked = nil
 			self.temp.grug_obstacle_sidestep = nil
 			self.temp.grug_obstacle_backoff = nil
@@ -1691,6 +1692,7 @@ function mob_class:smart_mobs(s, p, dist, dtime, grug_force_path,
 	end
 
 	if has_lineofsight then
+		if self.temp then grug_obstacle.cancel_path_request(self.temp) end
 		-- GRUG PATCH: the target is visible again, so the detour is over —
 		-- clear the wedged flag with it (WP6-T10, see apply_path). Without
 		-- this a mob that was walled in once would keep walking instead of
@@ -2129,6 +2131,7 @@ function mob_class:stop_attack()
 	-- GRUG PATCH: no blocked-LOS countdown or half-finished sidestep survives
 	-- de-aggro. The side bit may stay so a later failure tries the other side.
 	if self.temp then
+		grug_obstacle.cancel_path_request(self.temp)
 		self.temp.grug_obstacle_blocked = nil
 		self.temp.grug_obstacle_sidestep = nil
 		self.temp.grug_obstacle_backoff = nil
@@ -2316,11 +2319,15 @@ function mob_class:do_states(dtime)
 		end
 
 		-- GRUG PATCH: take one fresh, private target-position snapshot and one
-		-- canonical target LOS for this step. Waypoint selection below never
-		-- aliases either table, and the punch reuses this exact target result.
+		-- canonical target LOS for this step. Ground melee uses collision-box
+		-- eye heights; every other attack family keeps upstream's fixed +0.5
+		-- geometry. Waypoint selection below never aliases either table, and
+		-- the punch reuses this exact target result.
 		local target_pos = grug_obstacle.copy_pos(self.attack:get_pos())
 		if not target_pos then self:stop_attack() ; return end
-		local in_sight = grug_obstacle.target_visible(self, s, target_pos)
+		local ground_melee = self.attack_type == "dogfight" and not self.fly
+		local in_sight = grug_obstacle.target_visible(self, s, target_pos,
+				ground_melee)
 		local attack_reach = self.reach + (self.reach_ext or 0)
 
 		-- stop attacking when enemy not seen for 11 seconds
@@ -2743,21 +2750,20 @@ function mob_class:do_states(dtime)
 			-- new shape) and stays at its cap, so the hit lands on the first
 			-- tick reach is regained — "damage IMMEDIATELY when the attack is
 			-- ready and the target is in reach" (user ruling 1, 2026-09-16).
-			-- The custom_attack hook still consumes the cadence when it declines.
+			-- The custom_attack hook still consumes the cadence when it declines,
+			-- but it is never called until canonical target LOS succeeds.
 			-- A terrain-blocked LOS no longer consumes it: the ready swing stays
 			-- banked until the detour or sidestep exposes the target.
 			local ready = self.punch_timer >= self.punch_interval
 			local in_reach = dist <= (self.reach + (self.reach_ext or 0))
-			local custom_allows = true
-			if ready and in_reach and self.custom_attack then
-				custom_allows = not not self:custom_attack(self,
-						grug_obstacle.copy_pos(target_pos))
-			end
 			local _, consume = grug_obstacle.try_melee_attack({
 				ready = ready,
 				in_reach = in_reach,
-				custom_allows = custom_allows,
 				target_visible = in_sight,
+				custom_attack = self.custom_attack and function()
+					return self:custom_attack(self,
+							grug_obstacle.copy_pos(target_pos))
+				end,
 				punch = function()
 					self:set_animation("punch")
 					if random(self.sounds.attack_chance or 1) == 1 then
