@@ -7,6 +7,11 @@ local ray_results = {}
 local ray_calls = 0
 local damage_events = {}
 local heal_events = {}
+local absorb_events = {}
+local particle_events = 0
+local radius_objects = {}
+local root_events = {}
+local slow_events = {}
 local projectile_defs = {}
 local projectile_spawns = {}
 local projectile_spawn_result = true
@@ -99,9 +104,9 @@ core = {
 	global_exists = function() return false end,
 	after = function() end,
 	log = function() end,
-	add_particle = function() end,
-	add_particlespawner = function() end,
-	get_objects_inside_radius = function() return {} end,
+	add_particle = function() particle_events = particle_events + 1 end,
+	add_particlespawner = function() particle_events = particle_events + 1 end,
+	get_objects_inside_radius = function() return radius_objects end,
 	get_node_or_nil = function() return {name = "air"} end,
 	colorize = function(_, text) return text end,
 	chat_send_player = function() end,
@@ -136,7 +141,17 @@ grug_factions = {
 	end,
 }
 grug_xp = {register_on_level_change = function() end}
-grug_mobs = {slow = function() end, root = function() end}
+grug_mobs = {
+	is_noncombatant = function(ent)
+		return type(ent) == "table" and ent._grug_noncombatant == true
+	end,
+	root = function(ent)
+		root_events[#root_events + 1] = ent
+	end,
+	slow = function(ent)
+		slow_events[#slow_events + 1] = ent
+	end,
+}
 grug_projectiles = {
 	register = function(id, def) projectile_defs[id] = def end,
 	spawn = function(id, params)
@@ -181,7 +196,11 @@ grug_core = {
 		heal_events[#heal_events + 1] = {owner=owner,target=target,amount=amount}
 		return amount
 	end,
-	set_absorb = function() end,
+	set_absorb = function(target, amount, duration)
+		absorb_events[#absorb_events + 1] = {
+			target=target, amount=amount, duration=duration,
+		}
+	end,
 	taunt = function() end,
 	mark_in_combat = function() end,
 }
@@ -225,9 +244,10 @@ local function player(name, class, faction)
 	return obj
 end
 
-local function mob(name, faction)
+local function mob(name, faction, noncombatant)
 	local ent = {name=name, _cmi_is_mob=true, _grug_faction=faction,
-		health=20, attack_type="dogfight", taunted=0}
+		health=20, attack_type="dogfight", taunted=0,
+		_grug_noncombatant=noncombatant == true}
 	function ent:do_attack() self.taunted = self.taunted + 1 end
 	local obj = {ent=ent, pos={x=3,y=0,z=0}}
 	function obj:is_player() return false end
@@ -302,6 +322,38 @@ assert(#damage_events == damage_before_friendly)
 assert(grug_abilities.get_mana(hostile_gate) == mana_before)
 assert(grug_abilities.ready(hostile_gate, "smite"))
 
+-- A factionless civilian is never a hostile target, even if a malformed ray
+-- labels it hostile. Charge must not move, grant rage, deal damage or arm its
+-- cooldown; the same central predicate also owns hostile area selection.
+local civilian = mob("test:civilian", nil, true)
+local civilian_gate = player("civilian_gate", "warrior", "accord")
+join(civilian_gate)
+local civilian_pos = vector.new(civilian_gate:get_pos())
+local damage_before_civilian = #damage_events
+ray_results = {{status="target", reason="hostile", target=civilian,
+	object_kind="mob", relation="hostile", distance=3, range=12}}
+grug_abilities.try_cast(civilian_gate,
+	grug_abilities.registered.charge, nil)
+assert(grug_abilities.ready(civilian_gate, "charge"))
+assert(grug_abilities.get_rage(civilian_gate) == 0)
+assert(vector.distance(civilian_gate:get_pos(), civilian_pos) == 0)
+assert(#damage_events == damage_before_civilian)
+
+local nova_caster = player("civilian_nova", "mage", "accord")
+local nova_hostile = mob("test:nova_hostile", "throng")
+join(nova_caster)
+radius_objects = {civilian, nova_hostile}
+local roots_before = #root_events
+local slows_before = #slow_events
+grug_abilities.try_cast(nova_caster,
+	grug_abilities.registered.frost_nova,
+	{type="object", ref=civilian})
+radius_objects = {}
+assert(#root_events == roots_before + 1
+	and root_events[#root_events] == nova_hostile.ent)
+assert(#slow_events == slows_before + 1
+	and slow_events[#slow_events] == nova_hostile.ent)
+
 -- Charge and Taunt each run one current ray; misses retain their cooldown.
 local warrior = player("warrior", "warrior", "accord")
 join(warrior)
@@ -334,20 +386,31 @@ grug_abilities.set_target(priest, ally, true)
 grug_abilities.try_cast(priest, grug_abilities.registered.flash_heal, nil)
 assert(#heal_events == 1 and heal_events[1].target == ally)
 
--- Lane A reproduction probe (R21): pointing Flash Heal directly at a hostile
--- mob must never pass that ObjectRef to the healing seam. The pre-target_kind
--- implementation already rejects non-player objects in valid_ally and falls
--- back to self; keep that exact observation as the regression baseline.
+-- An explicitly supplied invalid object is a refusal, not permission to use
+-- ally memory or self. All three friendly abilities share heal_target, so
+-- verify each preserves resource, readiness and every observable effect.
 local hostile_pointed = mob("test:hostile_heal_probe", "throng")
-local probe_priest = player("heal_probe", "priest", "accord")
-join(probe_priest)
-local heals_before_probe = #heal_events
-grug_abilities.try_cast(probe_priest, grug_abilities.registered.flash_heal,
-	{type="object", ref=hostile_pointed})
-assert(#heal_events == heals_before_probe + 1)
-assert(heal_events[#heal_events].target == probe_priest,
-	"Flash Heal reached a hostile mob instead of falling back to self")
-print("target_reproduction: hostile mob rejected; Flash Heal fell back to self")
+for _, id in ipairs({"flash_heal", "power_word_shield", "renew"}) do
+	local probe_priest = player("explicit_refusal_" .. id,
+		"priest", "accord")
+	join(probe_priest)
+	grug_abilities.set_target(probe_priest, ally, true)
+	local probe_mana = grug_abilities.get_mana(probe_priest)
+	local heals_before_probe = #heal_events
+	local absorbs_before_probe = #absorb_events
+	local particles_before_probe = particle_events
+	grug_abilities.try_cast(probe_priest, grug_abilities.registered[id],
+		{type="object", ref=hostile_pointed})
+	assert(grug_abilities.get_mana(probe_priest) == probe_mana,
+		id .. " spent mana on an invalid explicit target")
+	assert(grug_abilities.ready(probe_priest, id),
+		id .. " armed cooldown on an invalid explicit target")
+	assert(#heal_events == heals_before_probe
+		and #absorb_events == absorbs_before_probe
+		and particle_events == particles_before_probe,
+		id .. " produced an effect on an invalid explicit target")
+end
+print("friendly_explicit_target_test: PASS refusal=no-cost/no-cooldown/no-effect")
 
 -- Self-targeted abilities never receive client pointing context, even if a
 -- future closure tries to inspect it.
@@ -369,7 +432,7 @@ grug_abilities.try_cast(self_caster,
 	{type="object", ref=hostile_pointed})
 assert(self_called, "self-targeted cast did not run")
 assert(self_pointed == nil, "self-targeted cast received an external target")
-print("target_kind_test: PASS friendly-rejects-hostile hostile-rejects-friendly self-ignores-target")
+print("target_kind_test: PASS friendly-refuses-explicit-invalid hostile-refuses-friendly/noncombatant self-ignores-target")
 
 -- Fireball snapshots eye/look/damage, runs no combat ray and costs 8 on any
 -- successfully spawned flight (air/wall/range are later projectile outcomes).

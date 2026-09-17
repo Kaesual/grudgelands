@@ -184,6 +184,9 @@ function grug_abilities.valid_target(user, obj, target_kind)
 	if not ent or not ent._cmi_is_mob or (ent.health or 0) <= 0 then
 		return false
 	end
+	if grug_mobs.is_noncombatant(ent) then
+		return false
+	end
 	return not (ent._grug_faction and
 		ent._grug_faction == grug_factions.get_faction(user))
 end

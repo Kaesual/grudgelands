@@ -29,6 +29,9 @@ local function attackable_object(owner, projectile, obj)
 			or (ent.health or 0) <= 0 then
 		return false
 	end
+	if grug_mobs.is_noncombatant(ent) then
+		return false
+	end
 	-- Factionless mobs remain attackable, matching direct ability targeting.
 	return not grug_factions.same_faction(owner, obj)
 end

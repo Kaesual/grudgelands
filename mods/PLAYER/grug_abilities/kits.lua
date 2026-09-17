@@ -65,16 +65,20 @@ local function current_enemy_target(user, def)
 	return ray.target
 end
 
--- Friendly target for heals: pointed ally (locks it), otherwise the
--- soft-locked ally if still valid and in range — this is what makes
--- healing moving allies workable — otherwise self. Deliberately no LOS
--- check on the fallback: healing the ally who just kited around a tree
--- is the point of the lock.
+-- Friendly target for heals: an explicit object is authoritative input. A
+-- valid pointed ally locks; an invalid explicit object refuses the cast
+-- without spending its cost or cooldown. Only the absence of an explicit
+-- object may use the soft-locked ally — this is what makes healing moving
+-- allies workable — or fall back to self. Deliberately no LOS check on the
+-- fallback: healing the ally who just kited around a tree is the point of the
+-- lock.
 local function heal_target(user, pointed, def)
-	if pointed and pointed.type == "object" and pointed.ref
-			and valid_ally(user, pointed.ref, def) then
-		grug_abilities.set_target(user, pointed.ref, true)
-		return pointed.ref
+	if pointed and pointed.type == "object" then
+		if pointed.ref and valid_ally(user, pointed.ref, def) then
+			grug_abilities.set_target(user, pointed.ref, true)
+			return pointed.ref
+		end
+		return nil, "Invalid target."
 	end
 	local obj = grug_abilities.get_target(user, true)
 	if obj and valid_ally(user, obj, def)
@@ -536,19 +540,16 @@ grug_abilities.register_ability({
 		local slow_time = 3 + grug_classes.get_talent_bonus(user,
 			"frost_nova_slow_add")
 		for _, obj in ipairs(core.get_objects_inside_radius(pos, 5)) do
-			if obj ~= user then
+			if grug_abilities.valid_target(user, obj, "hostile") then
 				if obj:is_player() then
-					if grug_factions.hostile(user, obj) then
-						apply_player_speed_stages(obj, {
-							{speed = 0.1, jump = 0.3, time = root_time},
-							{speed = 0.5, time = slow_time},
-						}, "frost_nova")
-						burst(obj:get_pos(), "mobs_bubble_particle.png^[multiply:#88ccff", 8)
-					end
+					apply_player_speed_stages(obj, {
+						{speed = 0.1, jump = 0.3, time = root_time},
+						{speed = 0.5, time = slow_time},
+					}, "frost_nova")
+					burst(obj:get_pos(), "mobs_bubble_particle.png^[multiply:#88ccff", 8)
 				else
 					local ent = mob_ent(obj)
-					if ent and not (ent._grug_faction and
-							ent._grug_faction == grug_factions.get_faction(user)) then
+					if ent then
 						grug_mobs.root(ent, root_time)
 						-- queued: starts after the root
 						grug_mobs.slow(ent, slow_time, 0.5)
@@ -669,7 +670,10 @@ grug_abilities.register_ability({
 	cooldown = 4,
 	range = 15,
 	cast = function(user, pointed, def)
-		local target = heal_target(user, pointed, def)
+		local target, err = heal_target(user, pointed, def)
+		if not target then
+			return false, err
+		end
 		if target:get_hp() <= 0 then
 			return false, "Target is dead."
 		end
@@ -699,7 +703,10 @@ grug_abilities.register_ability({
 	cooldown = 10,
 	range = 15,
 	cast = function(user, pointed, def)
-		local target = heal_target(user, pointed, def)
+		local target, err = heal_target(user, pointed, def)
+		if not target then
+			return false, err
+		end
 		if target:get_hp() <= 0 then
 			return false, "Target is dead."
 		end
@@ -735,7 +742,10 @@ grug_abilities.register_ability({
 	cooldown = 8,
 	range = 15,
 	cast = function(user, pointed, def)
-		local target = heal_target(user, pointed, def)
+		local target, err = heal_target(user, pointed, def)
+		if not target then
+			return false, err
+		end
 		if target:get_hp() <= 0 then
 			return false, "Target is dead."
 		end

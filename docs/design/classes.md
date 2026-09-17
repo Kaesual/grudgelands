@@ -58,10 +58,14 @@ Core principles:
   clears both slots, and a dead/unloaded/left target is invalidated.
 - **Every ability declares one target kind.** `hostile` requires a current
   living hostile player or combat-capable mob; a client label or remembered
-  target cannot override the server's faction check. `friendly` accepts another
-  living same-faction player and may use the ally-memory fallback; service NPCs,
-  guards and mobs are not player party members and cannot receive player heals
-  or shields. `self` ignores all pointed and remembered objects and anchors the
+  target cannot override the server's faction check. Civilian non-combatants
+  are never hostile targets: direct casts refuse them, projectiles pass through
+  them and hostile area effects skip them. `friendly` accepts another living
+  same-faction player. An explicitly pointed invalid object refuses the cast
+  without effect, cost or cooldown; ally-memory and self fallback apply only
+  when no explicit object was given. Service NPCs, guards and mobs are not
+  player party members and cannot receive player heals or shields. `self`
+  ignores all pointed and remembered objects and anchors the
   cast on its user. Strike, Charge, Mighty Blow, Hamstring, Taunt, Fireball and
   Smite are hostile; Frost Nova and Blink are self; Flash Heal, Power Word:
   Shield and Renew are friendly. A friendly skill's documented self fallback
