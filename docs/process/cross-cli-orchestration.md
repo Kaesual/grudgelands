@@ -31,8 +31,11 @@ re-check the `--help` output when a version changes.
   `run_highcourt.sh` with an explicit port, under `nice -n 19`, and end with
   `pgrep -f '^luanti.bin'` showing only the user's client.
 - The worker's final report is a **hypothesis**. The orchestrator reruns the
-  gates itself (`tools/bin/luac51 -p`, the grep sweeps, the fresh-server
-  check, every test suite, the KATs under both interpreters) before merging.
+  static PUC gates and the LuaJIT suites itself and checks the lane's final
+  micro-KAT pair (one PUC run, one LuaJIT run, byte-identical digest). It
+  regenerates that one pair only when the bytes changed after the lane's run
+  or the evidence is missing. This follows the
+  [interpreter strategy](../research/luanti-lua.md#interpreter-and-test-strategy).
 - Ignored coordinator state (`.claude/`, `.codex/`, `.kilo/`,
   `tools/wp40/results/`) is not project authority for either CLI and must not
   be searched or cited as repository content.
@@ -223,13 +226,16 @@ claude --print --model opus --effort high --verbose \
 
 ### 3.x Questions and blockers from a worker (both directions)
 
-Neither CLI offers a live channel into a running worker. A worker that hits
-a decision the brief reserves for the orchestrator, or a blocker it cannot
-resolve inside its scope, **stops and reports** instead of guessing: the
-final message ends with a `## Blockers / questions` section listing each item
-with what it tried and which option it would pick. The orchestrator answers
-by resuming the same thread (2.4 / 3) with a brief that quotes the item and
-the ruling. Every brief states this rule explicitly, together with the
+Codex workers have no live channel into the orchestrator. Claude workers
+launched exactly as shown above, without `--brief`, likewise have no configured
+live channel. Claude Code's `--brief` flag exists, but is untested in this
+setup and is neither documented nor enabled here. A worker that hits a
+decision the brief reserves for the orchestrator, or a blocker it cannot
+resolve inside its scope, **stops and reports** instead of guessing: the final
+message ends with a `## Blockers / questions` section listing each item with
+what it tried and which option it would pick. The orchestrator answers by
+resuming the same thread (2.4 / 3) with a brief that quotes the item and the
+ruling. Every brief states this rule explicitly, together with the
 non-negotiable invariants of §1, so a worker never "asks" by silently
 narrowing the scope. Progress is visible before the end through the JSONL
 stream; the orchestrator can kill a lane that goes off scope and resume it

@@ -156,8 +156,8 @@ the goal-level view.
 - [ ] **WP14 / WP20 / WP21 / WP8:** live offhand/carried
   light, parties, recovery/rest and the quest framework are independently
   ready behind their shipped prerequisites. Design revision 2 landed 2026-09-16
-  ([skill_trees.md](docs/design/skill_trees.md)); implementation phase 1 is in
-  progress.
+  ([skill_trees.md](docs/design/skill_trees.md)); implementation phase 1 is
+  shipped and X4 is in progress.
 - [ ] **WP-Scout:** the fourth class
   ([scout.md](docs/design/scout.md) — leather, bow and blade, no stealth in
   v1) remains open. Its Sprint consumes the movement aggregator already
