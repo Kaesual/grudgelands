@@ -133,19 +133,14 @@ want(decision(env.mobs, origin, {}, 1) == true,
 	"no-player unload must remain eligible")
 
 local function active_mob_count()
-	for index = 1, 100 do
-		local name, value = debug.getupvalue(
-			env.mobs.mob_class.mob_staticdata, index)
-		if not name then break end
-		if name == "active_mobs" then return value end
-	end
-	fail("active_mobs upvalue missing")
+	return env.mobs:get_active_mob_count()
 end
 
 local function entity_at(distance, fields)
 	local object = {
 		removed = 0,
-		properties = {},
+		properties = {hp_max = 10},
+		rotation = {x = 0, y = 0, z = 0},
 		get_pos = function() return origin end,
 	}
 	function object:remove()
@@ -154,6 +149,21 @@ local function entity_at(distance, fields)
 	function object:set_properties(properties)
 		for key, value in pairs(properties) do self.properties[key] = value end
 	end
+	function object:get_properties()
+		return self.properties
+	end
+	function object:set_armor_groups(armor)
+		self.armor_groups = armor
+	end
+	function object:get_rotation()
+		return copy(self.rotation)
+	end
+	function object:set_rotation(rotation)
+		self.rotation = copy(rotation)
+	end
+	function object:set_texture_mod(texture_mod)
+		self.texture_mod = texture_mod
+	end
 	local entity = setmetatable({
 		object = object,
 		name = "grug_mobs:stag",
@@ -161,6 +171,16 @@ local function entity_at(distance, fields)
 		state = "stand",
 		tamed = false,
 		lifetimer = 180,
+		health = 10,
+		hp_min = 10,
+		armor = 100,
+		base_texture = {"stag.png"},
+		base_mesh = "stag.b3d",
+		base_size = {x = 1, y = 1},
+		base_colbox = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
+		base_selbox = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
+		texture_mods = "",
+		rotate = 0,
 	}, {__index = env.mobs.mob_class})
 	for key, value in pairs(fields or {}) do entity[key] = value end
 	core_stub.get_connected_players = function() return {player_at(distance)} end
@@ -169,18 +189,16 @@ end
 
 local function engine_store(entity, deactivate)
 	local stored = entity:mob_staticdata()
-	if deactivate then entity.object.deactivated = true end
+	if deactivate then
+		entity:on_deactivate(false)
+		entity.object.deactivated = true
+	end
 	return copy(stored)
 end
 
-local function engine_reload(stored, distance)
-	local entity = entity_at(distance)
-	for key, value in pairs(copy(stored)) do entity[key] = value end
-	return entity
-end
-
 -- A new object is counted on its initial engine static-data store.
-local stag = entity_at(40, {active_toggle = 1})
+local stag = entity_at(40)
+stag:mob_activate({}, {}, 0)
 local created_data = engine_store(stag, false)
 want(active_mob_count() == 1, "create did not increment active_mobs once")
 want(created_data.active_toggle == -1 and created_data.remove_ok == true,
@@ -197,13 +215,14 @@ want(protected_data.name == "grug_mobs:stag" and
 		protected_data._grug_despawn_terminal == nil,
 	"protected unload did not persist the ordinary stag")
 
--- Reactivation restores active_toggle=1. The engine's active static-data
--- refresh accounts for that object once and flips it back for its next unload.
-stag = engine_reload(protected_data, 40)
-local reloaded_data = engine_store(stag, false)
+-- Luanti reloads only through on_activate; it does not ask for static data
+-- again. Production mob_activate must count this normal reload exactly once
+-- and prepare the next real unload for a debit.
+stag = entity_at(40)
+stag:mob_activate(protected_data, {}, 1)
 want(active_mob_count() == 1,
 	"protected reload did not restore active_mobs exactly once")
-want(reloaded_data.active_toggle == -1,
+want(stag.active_toggle == -1,
 	"protected reload did not prepare the next unload debit")
 
 -- A far unload debits through active_toggle only. Its terminal callback result
@@ -224,6 +243,7 @@ want(terminal_data._grug_despawn_terminal == true and
 -- second counter debit, leaving no entity to save or reactivate again.
 local terminal = entity_at(128)
 terminal:mob_activate(terminal_data, {}, 1)
+terminal:on_deactivate(true)
 want(terminal.object.removed == 1,
 	"terminal marker was not consumed on activation")
 want(terminal.object.properties.static_save == false,

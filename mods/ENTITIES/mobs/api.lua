@@ -74,6 +74,23 @@ local active_mobs = 0
 local mob_infotext = settings:get_bool("mob_infotext") ~= false
 local gravity = tonumber(core.settings:get("movement_gravity")) or 9.81
 
+-- GRUG PATCH: bind active-mob accounting to idempotent lifecycle states.
+local active_mob_counted = setmetatable({}, {__mode = "k"})
+
+local function set_active_mob_counted(self, counted)
+
+	if active_limit <= 0 then return end
+
+	if counted then
+		if active_mob_counted[self] == true then return end
+		active_mobs = active_mobs + 1
+		active_mob_counted[self] = true
+	elseif active_mob_counted[self] == true then
+		active_mobs = active_mobs - 1
+		active_mob_counted[self] = false
+	end
+end
+
 -- loop interval timers
 
 local node_timer_interval = tonumber(settings:get("mob_node_timer_interval") or 0.25)
@@ -184,6 +201,10 @@ local mob_class_meta = {__index = mob_class}
 -- hook on the class lets later class-level wrappers (start_npcs.lua) remain in
 -- the same callback chain instead of being shadowed by a per-prototype field.
 function mob_class:on_deactivate(removal)
+	-- Lane S: every deactivation is a counter boundary; unload/removal paths
+	-- may already have debited it, so the shared state transition is idempotent.
+	set_active_mob_counted(self, false)
+
 	if grug_mobs and grug_mobs.registered_cadence
 	and grug_mobs.registered_cadence[self.name]
 	and grug_mobs.cleanup_xp_participants then
@@ -792,8 +813,9 @@ local function remove_mob(self, decrease)
 
 	self.object:remove()
 
-	if decrease and active_limit and active_limit > 1 then
-		active_mobs = active_mobs - 1
+	if decrease then
+		-- GRUG PATCH: explicit removals share the idempotent lifecycle debit.
+		set_active_mob_counted(self, false)
 --print("-- active mobs: " .. active_mobs .. " / " .. active_limit)
 	end
 end
@@ -3390,6 +3412,10 @@ local DESPAWN_MAX_DISTANCE = 128
 -- receives a linear chance; at or inside the safe radius it never culls.
 -- Ordinary mobs retain static_save=true so this callback can make the
 -- decision instead of the engine silently dropping them on block unload.
+function mobs:get_active_mob_count()
+	return active_mobs
+end
+
 function mobs:despawn_distance_decision(pos, players, roll)
 	local nearest
 	for _, player in pairs(players or {}) do
@@ -3414,10 +3440,11 @@ end
 
 function mob_class:mob_staticdata()
 
-	-- this handles mob count for mobs activated, unloaded, reloaded
+	-- A new object is first counted when the engine stores it. Every later
+	-- static-data call is an unload boundary and can debit it only once.
 	if active_limit > 0 and self.active_toggle then
-		active_mobs = active_mobs + self.active_toggle
-		self.active_toggle = -self.active_toggle
+		set_active_mob_counted(self, self.active_toggle > 0)
+		self.active_toggle = -1
 --print("-- staticdata", active_mobs, active_limit, self.active_toggle)
 	end
 
@@ -3472,9 +3499,12 @@ function mob_class:mob_activate(staticdata, def, dtime)
 		return
 	end
 
-	-- if dtime == 0 then entity has just been created
-	-- anything higher means it is respawning (thx SorceryKid)
-	if dtime == 0 and active_limit > 0 then self.active_toggle = 1 end
+	-- A new entity is counted by its initial static-data store. A reload is
+	-- counted here because Luanti activates the stored object without calling
+	-- get_staticdata first.
+	if dtime == 0 and active_limit > 0 then
+		self.active_toggle = 1
+	end
 
 	if at_limit() and not self.tamed then -- remove any mobs not tamed when total reached
 --print("-- mob limit reached, removing " .. self.name)
@@ -3498,6 +3528,11 @@ function mob_class:mob_activate(staticdata, def, dtime)
 				end
 			end
 		end
+	end
+
+	if dtime > 0 and active_limit > 0 then
+		set_active_mob_counted(self, true)
+		self.active_toggle = -1
 	end
 
 	self.temp = {} -- temporary values stored here are never saved with mob

@@ -22,6 +22,9 @@ KEEP=1 PORT="$port" SEED="$seed" PROBE="$probe" \
 server_log="$(sed -n 's/^log: //p' "$evidence/launch.log" | tail -1)"
 cp "$server_log" "$evidence/server.log"
 rg 'GRUG_R5_DESPAWN' "$server_log" >"$evidence/lifetime.log"
-rg -q "GRUG_R5_DESPAWN event=finish seconds=55 near=$expected_near far=$expected_far" \
-	"$evidence/lifetime.log"
+finish_line="$(rg "GRUG_R5_DESPAWN event=finish seconds=63 near=$expected_near far=$expected_far" \
+	"$evidence/lifetime.log")"
+active_count="$(sed -n 's/.* active=\([0-9][0-9]*\).*/\1/p' <<<"$finish_line")"
+mob_objects="$(sed -n 's/.* mob_objects=\([0-9][0-9]*\).*/\1/p' <<<"$finish_line")"
+[[ -n "$active_count" && "$active_count" == "$mob_objects" ]]
 printf 'despawn evidence: %s\n' "$evidence"

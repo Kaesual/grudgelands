@@ -3,9 +3,10 @@
 local NEAR_DISTANCE = 32
 local FAR_DISTANCE = 160
 local LOG_INTERVAL = 1
-local UNLOAD_AT = 10
-local RELOAD_AT = 25
-local FINISH_AT = 55
+local PREPARE_AT = 8
+local UNLOAD_AT = 18
+local RELOAD_AT = 33
+local FINISH_AT = 63
 local UNLOAD_TIMEOUT = 2
 
 local player_pos
@@ -15,6 +16,7 @@ local blocks_forced = false
 local elapsed = 0
 local next_log = 0
 local phase = "waiting"
+local active_baseline
 
 -- Keep the entity census isolated from ambient stag ABMs. spawn_action asks
 -- this hook dynamically, so the disposable probe can refuse natural rows
@@ -74,6 +76,20 @@ local function count_stags(pos)
 	return count
 end
 
+local function count_mob_objects()
+	local count = 0
+	local objects = core.get_objects_inside_radius(player_pos, 512)
+	for index = 1, #objects do
+		local entity = objects[index]:get_luaentity()
+		if entity and entity._cmi_is_mob then count = count + 1 end
+	end
+	return count
+end
+
+local function active_count()
+	return mobs:get_active_mob_count()
+end
+
 local function add_stationary_stag(pos, identity)
 	local object = core.add_entity(pos, "grug_mobs:stag")
 	local entity = object and object:get_luaentity()
@@ -101,19 +117,16 @@ local function start_probe()
 	local near_forced = core.forceload_block(near_pos, true, -1)
 	local far_forced = core.forceload_block(far_pos, true, -1)
 	blocks_forced = near_forced and far_forced
-	if not add_stationary_stag(near_pos, "near") or
-			not add_stationary_stag(far_pos, "far") then
-		core.log("error", "GRUG_R5_DESPAWN event=fail stag_add")
-		return
-	end
 	core.get_connected_players = function() return {fake_player} end
-	phase = "loaded"
+	phase = "preparing"
 	elapsed = 0
-	log({"event=start", "near_distance=" .. NEAR_DISTANCE,
+	next_log = PREPARE_AT
+	log({"event=prepare", "near_distance=" .. NEAR_DISTANCE,
 		"far_distance=" .. FAR_DISTANCE,
 		"active_block_range=" .. tostring(core.settings:get("active_block_range") or 4),
 		"unload_timeout=" .. UNLOAD_TIMEOUT,
-		"remove_ok=true", "forced=" .. tostring(blocks_forced)})
+		"forced=" .. tostring(blocks_forced),
+		"active=" .. active_count()})
 end
 
 core.register_on_mods_loaded(function()
@@ -131,7 +144,20 @@ end)
 core.register_globalstep(function(dtime)
 	if phase == "waiting" or phase == "done" then return end
 	elapsed = elapsed + dtime
-	if phase == "loaded" and elapsed >= UNLOAD_AT then
+	if phase == "preparing" and elapsed >= PREPARE_AT then
+		active_baseline = active_count()
+		if not add_stationary_stag(near_pos, "near") or
+				not add_stationary_stag(far_pos, "far") then
+			core.log("error", "GRUG_R5_DESPAWN event=fail stag_add")
+			phase = "done"
+			return
+		end
+		phase = "loaded"
+		log({"event=start", "second=" .. math.floor(elapsed),
+			"remove_ok=true", "active_baseline=" .. active_baseline,
+			"active=" .. active_count(),
+			"active_delta=" .. (active_count() - active_baseline)})
+	elseif phase == "loaded" and elapsed >= UNLOAD_AT then
 		core.forceload_free_block(near_pos, true)
 		core.forceload_free_block(far_pos, true)
 		blocks_forced = false
@@ -150,7 +176,10 @@ core.register_globalstep(function(dtime)
 		next_log = next_log + LOG_INTERVAL
 		log({"event=lifetime", "second=" .. math.floor(elapsed),
 			"phase=" .. phase, "near=" .. count_stags(near_pos),
-			"far=" .. count_stags(far_pos)})
+			"far=" .. count_stags(far_pos),
+			"active=" .. active_count(),
+			"mob_objects=" .. count_mob_objects(),
+			"active_delta=" .. (active_count() - active_baseline)})
 	end
 	if elapsed >= FINISH_AT then
 		local near = count_stags(near_pos)
@@ -158,7 +187,10 @@ core.register_globalstep(function(dtime)
 		phase = "done"
 		log({"event=finish", "seconds=" .. FINISH_AT,
 			"near=" .. near, "far=" .. far,
-			"total=" .. (near + far)})
+			"total=" .. (near + far),
+			"active=" .. active_count(),
+			"mob_objects=" .. count_mob_objects(),
+			"active_delta=" .. (active_count() - active_baseline)})
 		core.request_shutdown("Lane S despawn window complete", false, 0)
 	end
 end)
