@@ -24,7 +24,7 @@ local raider = {
 	-- grug_zones.mob_level_at keeps this family at 20-30 — which is also why
 	-- the two Captain Bonerattle rares (rares.lua) are ~L28.
 
-	reach = 2,
+	reach = 3,
 	attack_type = "dogshoot",
 	attack_players = true,
 	group_attack = true,

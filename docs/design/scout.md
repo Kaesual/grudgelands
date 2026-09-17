@@ -75,7 +75,7 @@ ceiling of two talent buttons puts the worst case at 7 of 8.
 | **Loose** | cast | 1 arrow | none (ammo-limited) | Requires a bow in the weapon slot. A **ballistic** arrow along the cast-time crosshair, 25 m, initial impulse from a bounded draw time, gravity supplying the trajectory | `grug_projectiles` — swept collision, owner validation, the per-owner active cap and max-distance cleanup are all shipped (`classes.md:287-290`); only gravity is new, and `combat_stats.md:249-252` already specifies it |
 | **Snare Shot** | cast | 8 mana + 1 arrow | 12 s | The arrow slows the target by 50 % for 4 s | `grug_mobs.slow` for mobs and `grug_mobs.slow_player` (`verbs.lua:140-169`) for players — the same verb Hamstring uses (`kits.lua:370-373`), and after ruling 11 a named modifier in the aggregator |
 | **Sidestep** | cast | 10 mana | 30 s | Dodge chance **+15** percentage points for 4 s, **inside** the 30 % cap. A base ability has no ranks; the Veil tree shortens its cooldown (Slip Away) and replaces it (Shake Loose) | `grug_classes.get_crit_chance`'s twin `get_dodge_chance` (`grug_classes/stats.lua:49`) and the timed-window table of `skill_trees.md` §3.2 |
-| **Sprint** ‼ | cast | 15 mana | **300 s** | Movement speed **+25 % for 10 s** — 5.0 nodes/s against every aggressive mob's 4.4 | the speed aggregator of `skill_trees.md` §3.9, as one named modifier with its own duration |
+| **Sprint** ‼ | cast | 15 mana | **300 s** | Movement speed **+25 % for 10 s** — 5.0 nodes/s against the ordinary aggressive band's 4.6 | the speed aggregator of `skill_trees.md` §3.9, as one named modifier with its own duration |
 
 **Sprint is a rule-breaker in the base kit, and it is the clearest example of
 ruling 10** — "skills may explicitly break the base inequalities… the bigger
@@ -267,11 +267,11 @@ exists.
 
 ### 6.2 Sprint breaks a decided pillar, deliberately — **needs a rule**
 
-`mounts.md:173-190` states it outright: aggressive mobs run **4.4** against a
+`mounts.md:173-190` states it outright: ordinary aggressive mobs run **4.6** against a
 player's **4.0** (`combat_stats.md:310-315`), and the 25 m soft de-aggro, the
 45 m chase give-up and the 40 m leash "all assume the mob can close the
 distance". It is why the Swiftness Draught is capped at **+8 % for 15 s**
-(`items_crafting.md` §10 P4: `4.0 × 1.08 = 4.32 < 4.4`) and why any damage
+(`items_crafting.md` §10 P4: `4.0 × 1.08 = 4.32 < 4.6`) and why any damage
 dismounts a rider.
 
 At +25 % a sprinting Scout runs 5.0 and outruns every aggressive mob for ten
@@ -636,4 +636,3 @@ only weapon readiness, so it is unaffected — but the **aim-miss rule** is:
 charge/effect and, crucially, no clock advance", and a
 Scout who vanishes under an enemy's crosshair in PvP produces exactly that.
 Behaviour is already defined and correct; recorded so nobody re-derives it.
-

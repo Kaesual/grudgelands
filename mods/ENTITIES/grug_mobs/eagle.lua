@@ -36,7 +36,7 @@ local function eagle_def(description, texture)
 		type = "monster",
 		-- HP/damage/XP/armor: engine-owned (levels.lua).
 
-		reach = 2,
+		reach = 3,
 		attack_type = "dogfight",
 		attack_players = true,
 		-- Solitary hunter: no pack verb, so no group_attack (§3 "group_attack
@@ -46,7 +46,7 @@ local function eagle_def(description, texture)
 		-- Flier (see the header). floats/fall_damage are inert while fly is
 		-- set but keep the def honest, exactly like kraken.lua.
 		-- NB the `0` below is documentation, not a switch: mobs_redo tests
-		-- `if self.fall_damage` (api.lua:2608) and 0 is truthy in Lua, so it
+		-- `if self.fall_damage` (api.lua:2791) and 0 is truthy in Lua, so it
 		-- would NOT disable fall damage on a ground mob — `false` does. It is
 		-- inert here only because falling() bails out for fliers first. Do not
 		-- copy this line into a walking def (levels.lua's critter tier header).

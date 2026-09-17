@@ -18,7 +18,7 @@ local function stag_def(description, texture)
 		-- and XP all come from the field and the formulas.
 
 		walk_velocity = 1.5,
-		run_velocity = 3.4, -- grazer speed (§0's "critters 3.4" line)
+		run_velocity = 4.6, -- retaliating melee speed (§0)
 		jump = true,
 		stepheight = 1.1,
 		fear_height = 3,

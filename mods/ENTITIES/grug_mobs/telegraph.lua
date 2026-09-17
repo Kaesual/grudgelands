@@ -90,7 +90,7 @@ local function resolve(self)
 	if not pos then
 		return
 	end
-	local range = (self.reach or 2) + RANGE_BONUS
+	local range = (self.reach or 3) + RANGE_BONUS
 	local dmg = math.max(1, math.floor((self.damage or 1) * DAMAGE_MULT + 0.5))
 	local dir = facing_dir(self)
 	local players = core.get_connected_players()
@@ -178,7 +178,7 @@ function grug_mobs.telegraph_tick(self, dtime)
 	if not pos or not tpos then
 		return
 	end
-	if vector.distance(pos, tpos) > (self.reach or 2) * 2 then
+	if vector.distance(pos, tpos) > (self.reach or 3) * 2 then
 		return -- in combat but out of melee: hold the engagement clock
 	end
 	t.grug_tg_engaged = (t.grug_tg_engaged or 0) + dtime

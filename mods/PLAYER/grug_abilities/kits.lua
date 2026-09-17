@@ -285,9 +285,9 @@ local strike_def = {
 	color = "#d9d3c0",
 	cost = {}, -- no resource cost: it is what GENERATES the resource
 	-- Melee, so the elf's +5 m ability range does not apply (E7) -- it would
-	-- otherwise hand elves a 9 m sword.
+	-- otherwise hand elves an 8 m sword.
 	melee = true,
-	range = 4,
+	range = 3,
 }
 grug_abilities.register_ability(strike_def)
 
@@ -341,15 +341,15 @@ grug_abilities.register_ability({
 	description = "A heavy melee hit: 150% weapon damage plus your melee bonus. Rides along on a landed swing whenever you have the rage.",
 	color = "#c84a32",
 	cost = {rage = 25},
-	-- Melee at 4 m, so the elf's +5 m ability range does not apply (E7). This
+	-- Melee at 3 m, so the elf's +5 m ability range does not apply (E7). This
 	-- was a PRE-EXISTING bug, not something the weapon slot introduced: the
-	-- perk was written as "+5 m on every ability" and gave elves a 9 m reach on
+	-- perk was written as "+5 m on every ability" and gave elves an 8 m reach on
 	-- a hit that is supposed to be within arm's length. The flag is all it
 	-- takes -- grug_abilities.get_range honours it, and sync_kit derives the
 	-- stack's `range` meta from get_range, so the engine's pointing reach and
 	-- the target-lock fallback move together.
 	melee = true,
-	range = 4,
+	range = 3,
 	-- The proc REPLACES the plain hit (classes.md §3): floor(weapon x 1.5) +
 	-- melee bonus, x3 threat. No charge timer -- the rage cost IS the limiter
 	-- (about every fourth swing at the ruling-25 income of +8 per landed
@@ -384,10 +384,10 @@ grug_abilities.register_ability({
 	color = "#a8324e",
 	charge = 6,
 	cost = {rage = 10},
-	-- Melee at 4 m: same pre-existing elf-range bug as Mighty Blow above, same
+	-- Melee at 3 m: same pre-existing elf-range bug as Mighty Blow above, same
 	-- one-flag fix (E7).
 	melee = true,
-	range = 4,
+	range = 3,
 	-- The swing lands as usual; the proc adds the slow (classes.md §3).
 	-- `post` runs only on a LANDED swing, so a dodged Hamstring does not
 	-- snare (the old cast's dealt > 0 gate).

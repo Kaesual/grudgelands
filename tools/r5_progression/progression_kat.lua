@@ -327,12 +327,15 @@ local api_core = {
 	get_translator = function() return function(text) return text end end,
 	formspec_escape = function(text) return text end,
 	global_exists = function() return false end,
-	get_modpath = function() return nil end,
+	get_modpath = function(name)
+		if name == "mobs" then return repo .. "/mods/ENTITIES/mobs" end
+	end,
 	check_player_privs = function() return false end,
 	is_player = function(obj) return obj and obj.is_player and obj:is_player() end,
 	register_entity = function(name, def) api_entities[name] = def end,
 	register_on_player_receive_fields = noop,
 	register_chatcommand = noop,
+	register_globalstep = noop,
 	log = noop,
 	sound_play = noop,
 	add_particlespawner = function() smoke_effects = smoke_effects + 1 end,

@@ -58,7 +58,7 @@ function grug_mobs.bandit_def(description)
 		-- rather than following you across the ring (aggro.lua).
 		_grug_leash_range = 25,
 
-		reach = 2,
+		reach = 3,
 		attack_type = "dogfight",
 		attack_players = true,
 		group_attack = true, -- "(leashes to camp, group)"

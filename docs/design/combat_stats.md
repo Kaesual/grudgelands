@@ -185,7 +185,7 @@ charged effect. Enemy target memory is UI state and never supplies aim.
 - **Readiness waits for the current ray.** Once the interval expires, the
   weapon remains ready. While LMB stays held, a due pass raycasts from the
   current server eye position along the current look direction to the selected
-  swing range (4 m today). The first visible combat result must be a live
+  swing range (**3 m**). The first visible combat result must be a live
   hostile mob/player; walkable nodes block it. No object, a friendly object, a
   blocker or out-of-range aim is an **aim miss**: no damage/rage/threat/cost/
   charge/effect and, crucially, no clock advance. The ready attack fires on the
@@ -348,25 +348,43 @@ Normal tier at level L:
   consequence, not the definition. The tier is what owns all four critter
   properties; a mob def never hand-writes any of them (§3.0 for the field
   name and the one engine trap).
-- **Speed**: aggressive mobs `run_velocity` **4.6** (player: 4.0) —
-  evading must never be trivially easy; harmless critters 3.4; heartland
-  hunters 4.6, partly with ranged attacks (`dogshoot`). The deep-sea Kraken
-  Guard at **8.8** is the one documented exception: it holds the same 1.1×
-  margin over the 8 nodes/s improved boat (`boats.md` §5,
-  `biomes_mobs.md` §3).
-  **4.4 → 4.6 decided 2026-09-16** (user ruling 2, "mobs should be a bit
-  faster"), at all **13** definition sites that carried 4.4. The aggressive
-  band and the heartland hunters therefore collapse into one number; the
-  zombie stays at its own 4.2 (a shambling undead is deliberately the slow
-  one) and the critters stay at 3.4. The margin over the player goes from
-  **0.4 to 0.6 nodes/s**, +50 %, and everything built on that margin moves
-  with it: the Swiftness Draught's arithmetic (`items_crafting.md` §10 P4,
-  4.0 × 1.08 = 4.32, now 0.28 below the mob instead of 0.08), the 25 m soft
-  de-aggro and the 45 m / 40 m chase rules of §4, and the Mage's kiting
-  budget — one Frost Nova buys ~21 m of lead, and losing it again takes
-  **~53 s at 4.4 but ~35 s at 4.6** (`classes.md`: "kiting IS the Mage
-  fantasy here"). This is the smallest change that respects the pillar,
-  because 4.6 is a value two families already used.
+- **Speed**: every melee attacker has `run_velocity` **at least 4.6** against
+  the player's 4.0, including retaliating passive prey, the Zombie and the
+  Stone/Mesa Golem. The Bandit Archer and two Skeleton ranged families remain
+  **4.0**; harmless critters that never attack remain **3.4**. The Bog Ooze
+  remains **2.6** because its roster role is explicitly the one slow tank. The
+  deep-sea Kraken Guard's shipped value is **5.0**. The ordinary 4.6 band keeps
+  the Swiftness Draught below it (4.0 × 1.08 = 4.32), and continues to feed the
+  25 m soft de-aggro and 45 m / 40 m chase rules of §4. Current definition
+  sites for the changed families: `grug_mobs/stag.lua:21`, `ram.lua:26`, `zebra.lua:20`,
+  `carrion_crow.lua:54`, `zombie.lua:29` and `golem.lua:87`; the exceptions
+  are `bandit_archer.lua:78`, `skeleton_archer.lua:81`,
+  `skeleton_raider.lua:52`, `bog_ooze.lua:38` and `kraken.lua:54`.
+- **Reach**: player swing abilities (Strike, Mighty Blow and Hamstring) use
+  **3 m**, and every ordinary explicit mob reach is **3 m**. The Kraken keeps
+  its model-specific **4 m** and non-combatant villagers keep 0. The mobs_redo
+  contact run remains `reach × 0.6`, hence **1.8 m** for an ordinary attacker.
+  Telegraphs continue to derive their geometry from the live reach; the
+  ordinary elite/rare cone therefore reaches **4.5 m**
+  (`grug_abilities/kits.lua:284,344,381`; `mobs/api.lua:2625`;
+  `grug_mobs/telegraph.lua:93,181`). The explicit ordinary reach sites are
+  `grug_mobs/bandit.lua:61`, `bear.lua:23`, `boar.lua:10`,
+  `boar_variants.lua:22`, `bog_ooze.lua:23`, `crocodile.lua:43`,
+  `eagle.lua:39`, `golem.lua:56`, `guard.lua:180`, `hyena.lua:21`,
+  `jungle_ape.lua:27`, `jungle_lynx.lua:30`, `mirefolk.lua:28`,
+  `panther.lua:25`, `serpent.lua:23`, `skeleton_archer.lua:55`,
+  `skeleton_raider.lua:27`, `spider.lua:19`, `wolf.lua:19` and
+  `zombie.lua:21`; the exceptions are `kraken.lua:34` and
+  `start_villagers.lua:936`.
+- **Ordinary hits have zero knockback.** Damage never becomes an implicit
+  displacement magnitude. `damage_groups.knockback` remains the explicit
+  override seam for a future limited/cooldown skill
+  (`mobs/api.lua:3352,3356`).
+- **Actors do not collide with other objects.** Mobs, NPCs and players use
+  `collide_with_objects = false`; terrain collision is unchanged. This removes
+  actor-on-actor climbing and deliberately permits visual overlap, which the
+  runtime playtest must judge (`mobs/api.lua:3840`;
+  `grug_core/init.lua:70`).
 - **The 4.6 > 4.0 inequality holds except for named, long-cooldown skills**
   (`skill_trees.md` §5, ruling 10 of 2026-09-16): "skills may explicitly
   **break the base inequalities** (mob 4.4 > player 4.0, stat caps, roots)…
@@ -427,7 +445,7 @@ Normal tier at level L:
   a wind-up runs. **Elites AND rares telegraph** (both tiers, no def
   opt-in): 2 s wind-up (stop, `!!` nametag, particle burst; the growl is
   deferred to the one WP-wide sound pass) then a ×3 damage hit into a
-  **90° frontal cone** of **reach + 1.5 m** that requires **line of
+  **90° frontal cone** of **reach + 1.5 m** (normally **4.5 m**) that requires **line of
   sight** — stepping aside, out of range or behind cover is a clean miss.
   Cadence: the first wind-up needs **4 s of MELEE engagement** (a fight
   always opens with normal swings, and a ranged elite at distance never
@@ -439,10 +457,9 @@ Normal tier at level L:
   ("Grimtusk has been sighted…") — a meeting point for a low-population
   server.
 - WP1 retune (**done with WP6**): boar = L1 (HP 26, dmg 2.3, XP 10),
-  zombie = L3 (HP 41, dmg 2.9, XP 30), **and speed to spec** (boar/zombie
-  `run_velocity` 4.4/4.2 — was 3.4/2.6, shipped slow on purpose until
-  the soft de-aggro above landed in the same WP; the boar moved on to the
-  band's 4.6 in 2026-09-16's raise, the zombie kept its 4.2).
+  zombie = L3 (HP 41, dmg 2.9, XP 30), and both now use the 4.6 melee band
+  (`run_velocity` was 3.4/2.6 at WP6, raised to 4.4/4.2 with the soft
+  de-aggro, then to the band's 4.6 in rounds 4 and 5).
 - **Level floors** (`_grug_min_level`): a mob whose family belongs to a
   later zone keeps its floor even where the field reads lower — zombie 3,
   wolf/hyena/jungle lynx 10, guard 20. The floor is also the fallback
@@ -593,17 +610,43 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   while the target is inside reach; the only condition an attack still
   carries is being in reach at the moment the cadence is due. Fleeing costs
   HP — it is not a free escape from a fight already lost.
-  **Shipped 2026-09-16** as one vendored `api.lua` patch (the mob-pressure
-  round; user ruling 1 of that day restated the same rule in one sentence:
-  "melee mobs must deal damage IMMEDIATELY when their attack is ready and they
-  are within reach"). Where it now lives, against the patched tree:
-  `mods/ENTITIES/mobs/api.lua:2368-2403` advances `punch_timer` at the top of
-  the dogfight branch and caps the backlog at one; `:2535-2564` replaces the
-  unconditional velocity zero with a run up to a contact distance of
-  `reach × 0.6`; `:2567-2618` lands the punch, with the in-reach and
-  line-of-sight tests at the site of the punch rather than at the site of the
-  clock. `punch_interval` is still the mobs_redo default of 1 s (`:3847`) and
-  `reach` is untouched.
+  **Shipped 2026-09-16** as the vendored mob-pressure cadence patch; the
+  2026-09-17 close-obstacle pass completes it. `punch_timer` advances at the
+  top of the dogfight branch and caps the backlog at one; the in-reach branch
+  runs to `reach × 0.6` while retaining the cliff guard; the final punch
+  claims the timer only after line of sight succeeds. A blocked ready swing
+  therefore stays banked (`mobs/api.lua:2750-2792`).
+- **Close cover triggers navigation** (decided 2026-09-17). If a ground melee
+  mob has spent about **1 s** inside reach without line of sight, it starts the
+  existing bounded A* search despite already being close. It does not abandon
+  that path merely because `dist < reach` while LOS remains blocked. If A*
+  returns nil, it sidesteps perpendicular to the target for about **0.5 s**,
+  alternating sides on consecutive failures, then tests LOS again. Immediately
+  before moving, the actual selected side is checked for a cliff or dangerous
+  ground; the other side is tried once, and if both are unsafe the mob stands.
+  The `reach × 0.6` contact stop applies only while the target is visible; a
+  blocked melee mob keeps following its path regardless of contact distance.
+  Reaching the last waypoint with LOS still blocked drops that exhausted path,
+  starts the same sidestep fallback and makes A* due again after the 0.25 s
+  per-mob backoff.
+  A ground melee attack computes one collision-box eye-height target-LOS ray
+  per mob per server step and reuses it for path retention, A*, the custom
+  attack hook and the punch gate. A blocked target invokes neither the custom
+  hook nor the punch. Shoot and explode attacks retain their fixed `+0.5` LOS
+  endpoints. Dogshoot melee and flying/swimming dogfight require both that
+  common ray and their previous collision-box eye-height strike ray before
+  calling the custom hook or punching.
+  Across the server at most **2** A* searches start per server step. Mobs that
+  miss that budget wait in FIFO order; each request has one generation-token
+  entry. Cancellation invalidates only that generation, releases its strong
+  entity-state reference immediately and puts any later request from the same
+  mob at the tail. Death and unload cancel pending entries. At the standard
+  **0.09 s** step, even **100** simultaneous live waiters each receive a start
+  in at most **4.5 s**, before the **18 s** attack patience expires. The
+  **0.25 s** per-mob backoff applies after an exhausted path, not to budget
+  waiting. The contact run retains its existing `at_cliff` guard
+  (`mobs/grug_obstacle.lua:4-15,26-196,209-235`;
+  `mobs/api.lua:192-203,885-904,2324-2373,2539-2587,2652-2792`).
   *Rationale, because the defect was invisible on paper*: vendored mobs_redo
   zeroed the mob's velocity as soon as the target was inside `reach`
   (`api.lua:2498` before the patch — the number this file carried,
@@ -618,10 +661,10 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   shape of the defect rather than a measurement): the timer gained 0.09 s while
   the mob lost ~0.36 m that it needed ~0.9 s to re-close at its
   0.4 nodes/s margin — roughly **one landed hit per ten seconds** instead of
-  one per second. Raising `reach` could not repair this (a stopped mob always
-  leaves its own radius, whatever the radius) and would silently widen the
-  elite/rare telegraph cone, which is `reach + 1.5` (§3), and make
-  `dogshoot` mobs switch to melee earlier (that switch is `api.lua:2366`).
+  one per second. Raising `reach` could not repair that cadence defect (a
+  stopped mob always leaves its own radius, whatever the radius). The later
+  2 → 3 reach ruling instead narrows the player/mob cover mismatch and moves
+  the derived telegraph and `dogshoot` melee switch with it intentionally.
   Because it changes every mob's feel, the patch shipped with the runtime test
   this paragraph demanded — a headless probe counting landed punches per 10 s
   against a receding and a standing target, before and after

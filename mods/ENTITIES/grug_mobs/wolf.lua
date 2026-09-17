@@ -16,7 +16,7 @@ local function wolf_def(description, texture)
 		-- engine-owned (levels.lua) — no hp/damage/xp/armor here.
 		_grug_min_level = 10,
 
-		reach = 2,
+		reach = 3,
 		attack_type = "dogfight",
 		attack_players = true,
 		group_attack = true,

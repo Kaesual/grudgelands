@@ -177,7 +177,7 @@ local function guard_def(faction, description, texture)
 		-- evade block in aggro.lua.
 		_grug_leash_range = 30,
 
-		reach = 2,
+		reach = 3,
 		attack_type = "dogfight",
 		attack_players = true,
 		attack_monsters = true,

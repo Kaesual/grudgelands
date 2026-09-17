@@ -56,6 +56,10 @@ return function(repo)
 	want(handle, "cannot read mods/ENTITIES/mobs/api.lua")
 	local api = handle:read("*a")
 	handle:close()
+	handle = io.open(repo .. "/mods/ENTITIES/mobs/grug_obstacle.lua")
+	want(handle, "cannot read mods/ENTITIES/mobs/grug_obstacle.lua")
+	local obstacle = handle:read("*a")
+	handle:close()
 
 	-- The accumulator sits at the TOP of the dogfight branch, above the
 	-- `dist > reach` test -- that is what "during the chase" means in code.
@@ -86,15 +90,25 @@ return function(repo)
 		and api:find("self.punch_timer = self.punch_interval", 1, true),
 		"the at-most-one-backlog cap is gone")
 
-	-- The punch's own gate carries the in-reach test.
-	want(api:find("if self.punch_timer >= self.punch_interval\n" ..
-		"\t\t\tand dist <= (self.reach + (self.reach_ext or 0)) then", 1, true),
+	-- The punch's production gate receives readiness and the in-reach test.
+	local ready_gate = api:find(
+			"local ready = self.punch_timer >= self.punch_interval", 1, true)
+	local in_reach_gate = api:find(
+			"local in_reach = dist <= (self.reach + (self.reach_ext or 0))",
+			ready_gate or 1, true)
+	local punch_gate = api:find("grug_obstacle.try_melee_attack({",
+			in_reach_gate or 1, true)
+	want(ready_gate and in_reach_gate and punch_gate
+			and ready_gate < in_reach_gate and in_reach_gate < punch_gate,
 		"the punch is no longer gated on being in reach at the moment the " ..
 		"cadence is due")
 
-	-- The unconditional in-reach velocity zero is gone, the contact
-	-- distance took its place, and `reach` itself is untouched.
-	want(api:find("if dist > self.reach * 0.6 then", 1, true),
+	-- The unconditional in-reach velocity zero is gone and the contact
+	-- distance took its place. Round 5 intentionally adds guarded stops for an
+	-- in-reach cliff and unsafe obstacle sidesteps. Neither may restore the old
+	-- unconditional freeze.
+	want(api:find("grug_obstacle.should_close_contact(", 1, true)
+			and obstacle:find("distance > reach * 0.6", 1, true),
 		"the contact distance is gone; the mob freezes for the whole " ..
 		"in-reach branch again")
 	local in_reach = api:find("else -- rnd: if inside reach range", 1, true)
@@ -108,8 +122,8 @@ return function(repo)
 		zeros = zeros + 1
 		at = found + 1
 	end
-	want(zeros == 1, "the in-reach branch zeroes the velocity at " .. zeros ..
-		" sites; exactly one, under the contact-distance test, is the patch")
+	want(zeros == 3, "the in-reach branch zeroes the velocity at " .. zeros ..
+		" sites; expected contact plus the two at_cliff guards")
 	want(api:find("punch_interval = def.punch_interval or 1", 1, true),
 		"punch_interval is no longer the mobs_redo default of 1 s")
 	say("api_fragments", "accumulator_above_reach_test", "cap", "reach_gate",
@@ -127,10 +141,10 @@ return function(repo)
 	-- finally gets a number of its own.
 	local STEP = 0.09 -- dedicated_server_step default (defaultsettings.cpp:498)
 	local INTERVAL = 1 -- api.lua's punch_interval default
-	local REACH = 2.0 -- 20 of 22 roster values (the card §2)
+	local REACH = 3.0 -- ordinary melee reach (combat_stats.md §3)
 	local CONTACT = REACH * 0.6 -- the patch's contact distance
 	local PLAYER = 4.0 -- movement_speed_walk (mounts.md:50-51)
-	local MOB = 4.4 -- the aggressive band (combat_stats.md §3)
+	local MOB = 4.6 -- the aggressive band (combat_stats.md §3)
 
 	-- One mob tick of the PATCHED branch. `in_reach` is the world model.
 	local function tick(mob, dtime, in_reach)

@@ -20,7 +20,7 @@ local serpent = {
 	type = "monster",
 	-- HP/damage/XP/armor: engine-owned (levels.lua).
 
-	reach = 2,
+	reach = 3,
 	attack_type = "dogfight",
 	attack_players = true,
 	group_attack = false, -- solitary ambusher, no pack verb

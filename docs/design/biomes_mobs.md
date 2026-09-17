@@ -1118,20 +1118,17 @@ were **decided by the design owner on 2026-08-13**; two of them replace what
 the mob ships with and the third confirms it unchanged. The anchors quoted
 below are the rationale for each choice, not the authority for it:
 
-- **`run_velocity` 8.8** (shipped: 5). The improved boat does 8 nodes/s
-  (`boats.md` §5), so the guard keeps exactly the 1.1× margin that
-  `combat_stats.md` §3's speed pillar gives an ordinary mob over a walking
-  player (4.6 against 4.0 since 2026-09-16; it was 4.4 when this paragraph
-  was written, and 8.8 is derived from the boat, not from the mob band, so
-  the number is unchanged). It is the one documented exception to that
-  section's 3.4–4.6 speed band, which the same ruling collapsed to a single
-  aggressive value.
+- **`run_velocity` 5** (shipped: 5). The 2026-09-17 speed ruling supersedes
+  the earlier boat-derived 8.8 target: the code value stands. It remains above
+  the ordinary 4.6 melee floor, while the guard's deep-ocean pressure relies
+  on its view range, fixed level and model-specific reach rather than outrunning
+  the improved 8 nodes/s boat (`boats.md` §5).
 - **`view_range` 40** (shipped: 20) — the same 40 m that is already the
   threat-validity and leash radius of `combat_stats.md` §4, so the guard
   notices a boat before the boat is past it. Large, deliberately not unfair.
-- **`reach` 4 is unchanged.** It is already double the roster's 2 because the
-  model is ×6 and mobs_redo measures centre to centre
-  (`mods/ENTITIES/mobs/api.lua:236-243`); the reason a fleeing target used to
+- **`reach` 4 is unchanged.** It remains above the ordinary roster's 3 because
+  the model is ×6 and mobs_redo measures centre to centre
+  (`mods/ENTITIES/mobs/api.lua:238-245`); the reason a fleeing target used to
   be nearly unhittable was the attack cadence, not the reach, and that is
   fixed once for every mob in `combat_stats.md` §4.
 

@@ -51,7 +51,7 @@ local crow = {
 	fear_height = 0,
 
 	walk_velocity = 1.5,
-	run_velocity = 3.4, -- §0's 3.4 line
+	run_velocity = 4.6, -- retaliating melee speed (§0)
 	stepheight = 1.1,
 	view_range = 8,
 

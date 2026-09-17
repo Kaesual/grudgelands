@@ -63,3 +63,11 @@ dofile(modpath .. "/suffocation.lua")
 -- all go through its named modifiers, root flag and exclusive hold
 -- (skill_trees.md §3.9, rulings 11 and 26).
 dofile(modpath .. "/movement.lua")
+
+-- Actors collide with terrain but pass through other active objects. Mobs and
+-- NPCs receive the matching property in the vendored mobs definition path.
+-- This is intentionally a join-time object property, not persisted player
+-- data; every player ObjectRef starts each session with the decided rule.
+core.register_on_joinplayer(function(player)
+	player:set_properties({collide_with_objects = false})
+end)

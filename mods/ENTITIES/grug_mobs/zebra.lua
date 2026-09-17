@@ -17,7 +17,7 @@ local zebra = {
 	-- Stats engine-owned (levels.lua), normal tier.
 
 	walk_velocity = 1.5,
-	run_velocity = 3.4, -- grazer speed (§0)
+	run_velocity = 4.6, -- retaliating melee speed (§0)
 	-- wp6_model_notes §2.2: upstream sets jump = false and stepheight 2 —
 	-- a zebra walks up slopes instead of hopping.
 	jump = false,

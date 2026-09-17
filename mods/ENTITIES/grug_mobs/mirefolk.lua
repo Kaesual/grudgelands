@@ -25,7 +25,7 @@ local mirefolk = {
 	-- a mirefolk defends its pool, it does not emigrate.
 	_grug_leash_range = 25,
 
-	reach = 2,
+	reach = 3,
 	attack_type = "dogfight",
 	attack_players = true,
 	-- mobs_redo's own group alert stays ON as the short-range half of the

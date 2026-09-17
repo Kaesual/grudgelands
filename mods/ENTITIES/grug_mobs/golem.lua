@@ -53,7 +53,7 @@ local function golem_def(description, texture)
 		-- The cave row has its own max-height and stone/stratum whitelist, so no
 		-- retired ring category is recreated here.
 
-		reach = 2,
+		reach = 3,
 		attack_type = "dogshoot",
 		attack_players = true,
 		-- Solitary: golems do not gang up (§3 "group_attack per verb").
@@ -69,8 +69,8 @@ local function golem_def(description, texture)
 		arrow_override = grug_mobs.stamp_arrow_damage,
 		shoot_interval = 3,
 		-- Aim lift. mobs_redo spawns the projectile at the collisionbox
-		-- midpoint (api.lua:2424) and aims at target_feet - 0.5 from
-		-- self_origin + 0.5 (api.lua:2407). This mesh has a NEGATIVE-y box
+		-- midpoint (api.lua:2741) and aims at target_feet - 0.5 from
+		-- self_origin + 0.5 (api.lua:2725). This mesh has a NEGATIVE-y box
 		-- (see below), so the origin sits 1 node above the golem's feet and
 		-- the aim vector points ~2 nodes DOWN for a target on the same
 		-- ground: +2 cancels that and the rock flies flat into the torso.
@@ -80,14 +80,11 @@ local function golem_def(description, texture)
 		dogshoot_count_max = 10,
 		dogshoot_count2_max = 3,
 
-		-- §3.1 speed column: 3.0. SPEC EXCEPTION, noted here on purpose —
-		-- this is the one aggressive family below the 4.6 baseline of §0.
-		-- It is deliberate: a golem is meant to be outrun, which is why it
-		-- throws rocks. No _grug_soft_deaggro opt-out either — the 25 m rule
-		-- drops a chaser to walk speed, and walk 1 vs run 3.0 is exactly the
-		-- "you got away" the rule is for.
+		-- Ranged golems retain their rock attack, but their contact run now uses
+		-- the same 4.6 floor as every melee-capable attacker. The 25 m soft
+		-- de-aggro still drops a distant chaser to walk speed.
 		walk_velocity = 1,
-		run_velocity = 3.0,
+		run_velocity = 4.6,
 		-- Upstream mobs_monster: it steps, it does not jump
 		-- (wp6_model_notes §4.2).
 		jump = false,
@@ -185,7 +182,7 @@ grug_mobs.register_mob("grug_mobs:stone_golem", stone_golem)
 -- ABM CANDIDATE VOLUME (T10 sanity check, the same argument the cave rows
 -- make in zombie.lua): `default:stone` between y 0 and 300 is not "the whole
 -- world". mobs:spawn defaults the ABM's neighbour list to {"air"}
--- (api.lua:3729), so only stone with air beside it counts — on the surface
+-- (api.lua:4369), so only stone with air beside it counts — on the surface
 -- that is exposed bare rock, which the crags/badlands cuboids produce in
 -- patches and the rest of the world barely at all. On top of that this row is
 -- interval 30 / chance 9000 (the rarest in the roster) and gated to the outer

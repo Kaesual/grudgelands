@@ -238,7 +238,7 @@ promised away.
 - **Readiness waits for aim.** When the weapon interval expires, the full swing
   remains ready. While a swing skill is selected and LMB is held, each
   throttled combat pass raycasts from the player's eye through the current
-  crosshair to the skill range (4 m today). A hostile living mob/player must be
+  crosshair to the skill range (3 m today). A hostile living mob/player must be
   the first valid visible combat object; walkable nodes block. No target, a
   friendly target, a blocking node or out-of-range aim is an **aim miss**: it
   deals nothing and does not advance the weapon clock. As soon as the server
@@ -367,7 +367,7 @@ it, including one that has not picked a class yet.
 
 | Ability | Cost | Charge | Effect |
 |---------|------|--------|--------|
-| Strike | free | none — it is the plain attack | Native melee (4 m) with the item in the weapon slot: weapon damage + floor(Str/10), crit ×1.5, threat ×1. Grants the Warrior 8 rage per landed swing (§1, §3). Hold or click LMB. |
+| Strike | free | none — it is the plain attack | Native melee (3 m) with the item in the weapon slot: weapon damage + floor(Str/10), crit ×1.5, threat ×1. Grants the Warrior 8 rage per landed swing (§1, §3). Hold or click LMB. |
 
 - **Granted to every class and to a classless character**, and placed
   **first in the hotbar** so it lands on key 1 for everyone — a fresh
@@ -380,8 +380,8 @@ it, including one that has not picked a class yet.
   ability.
 - It is **melee**, so the elf's +5 m ability-range passive (`world.md` §7)
   does **not** apply to it — that perk is a **ranged/spell** bonus, or an
-  elf would carry a 9 m sword. The melee class abilities (Mighty Blow,
-  Hamstring) keep their 4 m for the same reason.
+  elf would carry an 8 m sword. The melee class abilities (Mighty Blow,
+  Hamstring) keep their 3 m for the same reason.
 - **Hostile players are valid targets**, through the same friendly-fire
   check, dodge pre-roll and threat report as every other ability.
 
