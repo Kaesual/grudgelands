@@ -65,20 +65,16 @@ local function current_enemy_target(user, def)
 	return ray.target
 end
 
--- Friendly target for heals: an explicit object is authoritative input. A
--- valid pointed ally locks; an invalid explicit object refuses the cast
--- without spending its cost or cooldown. Only the absence of an explicit
--- object may use the soft-locked ally — this is what makes healing moving
--- allies workable — or fall back to self. Deliberately no LOS check on the
--- fallback: healing the ally who just kited around a tree is the point of the
--- lock.
-local function heal_target(user, pointed, def)
+-- Friendly target for heals: a valid pointed ally locks. Every other pointed
+-- result follows the same fallback as no object: a valid in-range ally lock,
+-- then the caster. Deliberately no LOS check on the fallback: healing the ally
+-- who just kited around a tree is the point of the lock.
+function grug_abilities.resolve_friendly_target(user, pointed, def)
 	if pointed and pointed.type == "object" then
 		if pointed.ref and valid_ally(user, pointed.ref, def) then
 			grug_abilities.set_target(user, pointed.ref, true)
 			return pointed.ref
 		end
-		return nil, "Invalid target."
 	end
 	local obj = grug_abilities.get_target(user, true)
 	if obj and valid_ally(user, obj, def)
@@ -87,6 +83,22 @@ local function heal_target(user, pointed, def)
 		return obj
 	end
 	return user
+end
+
+-- Tooltips show the central pipeline's current-level value before crit and
+-- target-level malus. Casts keep passing the unscaled value returned by each
+-- definition's values() accessor into the real settlement seam, so the
+-- formula exists in exactly one place and a later balance pass changes no UI
+-- plumbing.
+local function effective_number(player, amount)
+	return grug_core.scale_player_damage(player, nil, amount)
+end
+
+-- Absorb settlement deliberately retains fractional points. Its tooltip
+-- floors only the displayed value and reads the same non-flooring seam as
+-- grug_core.set_absorb.
+local function effective_absorb_number(player, amount)
+	return math.floor(grug_core.scale_player_value(player, amount))
 end
 
 --
@@ -301,8 +313,16 @@ grug_abilities.register_ability({
 	name = "Charge",
 	kind = "cast",
 	target_kind = "hostile",
-	description = "Dash to an enemy up to 12 m away, dealing 3 damage\n" ..
+	description = "Dash to an enemy up to 12 m away; damage scales with your level\n" ..
 		"and generating 15 rage.",
+	values = function(user)
+		return {damage = 3}
+	end,
+	description_for = function(user, def)
+		return ("Dash to an enemy up to 12 m away, dealing %d damage\n" ..
+			"and generating 15 rage."):format(
+				effective_number(user, def.values(user).damage))
+	end,
 	color = "#e8c85a",
 	cost = {},
 	cooldown = 10,
@@ -322,7 +342,8 @@ grug_abilities.register_ability({
 		dest.y = tpos.y
 		user:set_pos(dest)
 		grug_abilities.add_rage(user, 15)
-		grug_core.deal_ability_damage(user, target, 3, {threat_mult = 3})
+		grug_core.deal_ability_damage(user, target,
+			def.values(user).damage, {threat_mult = 3})
 		burst(tpos, "default_item_smoke.png", 8)
 		return true
 	end,
@@ -465,14 +486,27 @@ grug_projectiles.register("fireball", {
 -- Bread-and-butter nuke (kit tuning 2026-08-06): pays with mana instead
 -- of a cooldown — 5 mana against a 240+ pool was free. It is directional:
 -- target acquisition belongs to the projectile, not cast-time enemy memory.
+local function fireball_values(user)
+	return {
+		damage = 6 + grug_classes.get_spell_power_bonus(user)
+			+ grug_classes.get_talent_bonus(user, "fireball_damage_add"),
+	}
+end
+
 grug_abilities.register_ability({
 	id = "fireball",
 	class = "mage",
 	name = "Fireball",
 	kind = "cast",
 	target_kind = "hostile",
-	description = "Hurls fire along your crosshair for up to 20 m:\n" ..
-		"6 + spell power damage; misses still cost mana.",
+	description = "Hurls fire along your crosshair for up to 20 m;\n" ..
+		"damage scales with your level, and misses still cost mana.",
+	values = fireball_values,
+	description_for = function(user, def)
+		return ("Hurls fire along your crosshair for up to 20 m:\n" ..
+			"%d damage; misses still cost mana."):format(
+				effective_number(user, def.values(user).damage))
+	end,
 	color = "#ff8833",
 	cost = {mana = 8},
 	cooldown = 0,
@@ -498,8 +532,7 @@ grug_abilities.register_ability({
 				"fireball_range_add"),
 			data = {
 				-- Tinder (skill_trees.md §2.3). Brand's splash is lane X3's.
-				damage = 6 + grug_classes.get_spell_power_bonus(user)
-					+ grug_classes.get_talent_bonus(user, "fireball_damage_add"),
+				damage = fireball_values(user).damage,
 			},
 		})
 		if not spawned then
@@ -630,8 +663,31 @@ grug_abilities.register_ability({
 	name = "Smite",
 	kind = "cast",
 	target_kind = "hostile",
-	description = "Smites an enemy up to 20 m away:\n" ..
-		"4 + spell power damage.",
+	description = "Smites an enemy up to 20 m away; damage scales with your level.",
+	values = function(user, assume_shielded)
+		local damage = 4 + grug_classes.get_spell_power_bonus(user)
+			+ grug_classes.get_talent_bonus(user, "smite_damage_add")
+		if assume_shielded == nil then
+			assume_shielded = grug_core.get_absorb(user) > 0
+		end
+		if assume_shielded then
+			damage = damage + grug_classes.get_talent_bonus(user,
+				"smite_damage_while_shielded_add")
+		end
+		return {damage = damage}
+	end,
+	description_for = function(user, def)
+		local unshielded = effective_number(user,
+			def.values(user, false).damage)
+		local shielded = effective_number(user,
+			def.values(user, true).damage)
+		local suffix = ""
+		if shielded > unshielded then
+			suffix = (" (+%d while shielded)"):format(shielded - unshielded)
+		end
+		return ("Smites an enemy up to 20 m away for %d damage%s."):format(
+			unshielded, suffix)
+	end,
 	color = "#ffd97a",
 	cost = {mana = 4},
 	cooldown = 2,
@@ -646,13 +702,7 @@ grug_abilities.register_ability({
 		burst(target:get_pos(), "default_item_smoke.png^[multiply:#ffe9a0")
 		-- Sharpened Word, and Warded Wrath while an absorb is up
 		-- (skill_trees.md §2.6). Recompense's absorb is lane X3's.
-		local damage = 4 + grug_classes.get_spell_power_bonus(user)
-			+ grug_classes.get_talent_bonus(user, "smite_damage_add")
-		if grug_core.get_absorb(user) > 0 then
-			damage = damage + grug_classes.get_talent_bonus(user,
-				"smite_damage_while_shielded_add")
-		end
-		grug_core.deal_ability_damage(user, target, damage)
+		grug_core.deal_ability_damage(user, target, def.values(user).damage)
 		return true
 	end,
 })
@@ -663,14 +713,24 @@ grug_abilities.register_ability({
 	name = "Flash Heal",
 	kind = "cast",
 	target_kind = "friendly",
-	description = "Heals the pointed ally (or yourself) for\n" ..
-		"8 + 2x spell power.",
+	description = "Heals the pointed ally (or yourself); healing scales with your level.",
+	values = function(user)
+		return {
+			heal = 8 + 2 * grug_classes.get_spell_power_bonus(user)
+				+ grug_classes.get_talent_bonus(user, "flash_heal_add"),
+		}
+	end,
+	description_for = function(user, def)
+		return ("Heals the pointed ally (or yourself) for %d."):format(
+			effective_number(user, def.values(user).heal))
+	end,
 	color = "#7ae08a",
 	cost = {mana = 8},
 	cooldown = 4,
 	range = 15,
 	cast = function(user, pointed, def)
-		local target, err = heal_target(user, pointed, def)
+		local target, err = grug_abilities.resolve_friendly_target(
+			user, pointed, def)
 		if not target then
 			return false, err
 		end
@@ -678,9 +738,7 @@ grug_abilities.register_ability({
 			return false, "Target is dead."
 		end
 		-- Gentle Hand (skill_trees.md §2.5); Hearten's splash is lane X3's.
-		grug_core.heal_player(user, target,
-			8 + 2 * grug_classes.get_spell_power_bonus(user)
-			+ grug_classes.get_talent_bonus(user, "flash_heal_add"))
+		grug_core.heal_player(user, target, def.values(user).heal)
 		burst(target:get_pos(), "mobs_heart_particle.png", 8)
 		return true
 	end,
@@ -696,14 +754,26 @@ grug_abilities.register_ability({
 	name = "Power Word: Shield",
 	kind = "cast",
 	target_kind = "friendly",
-	description = "Shields the pointed ally (or yourself): absorbs\n" ..
-		"8 + 2x spell power damage for 15 s or until consumed.",
+	description = "Shields the pointed ally (or yourself); absorption scales\n" ..
+		"with your level and lasts 15 s or until consumed.",
+	values = function(user)
+		return {
+			absorb = 8 + 2 * grug_classes.get_spell_power_bonus(user)
+				+ grug_classes.get_talent_bonus(user, "shield_absorb_add"),
+		}
+	end,
+	description_for = function(user, def)
+		return ("Shields the pointed ally (or yourself): absorbs %d damage\n" ..
+			"for 15 s or until consumed."):format(
+				effective_absorb_number(user, def.values(user).absorb))
+	end,
 	color = "#e8e07a",
 	cost = {mana = 8},
 	cooldown = 10,
 	range = 15,
 	cast = function(user, pointed, def)
-		local target, err = heal_target(user, pointed, def)
+		local target, err = grug_abilities.resolve_friendly_target(
+			user, pointed, def)
 		if not target then
 			return false, err
 		end
@@ -713,9 +783,7 @@ grug_abilities.register_ability({
 		-- Warding Faith and Second Skin (skill_trees.md §2.5); their flat add
 		-- joins the base before the central level scalar. The 15 s duration is
 		-- unscaled. Turn Aside's dodge window is lane X3's.
-		grug_core.set_absorb(target,
-			8 + 2 * grug_classes.get_spell_power_bonus(user)
-			+ grug_classes.get_talent_bonus(user, "shield_absorb_add"),
+		grug_core.set_absorb(target, def.values(user).absorb,
 			15 + grug_classes.get_talent_bonus(user, "shield_duration_add"), user)
 		burst(target:get_pos(), "default_item_smoke.png^[multiply:#ffe9a0", 8)
 		return true
@@ -735,14 +803,23 @@ grug_abilities.register_ability({
 	kind = "cast",
 	target_kind = "friendly",
 	talent_gated = true,
-	description = "Heal over time on the pointed ally (or yourself):\n" ..
-		"3 + spell power every 3 s for 12 s.\nUnlocked via talents.",
+	description = "Heal over time on the pointed ally (or yourself); healing\n" ..
+		"scales with your level every 3 s for 12 s.\nUnlocked via talents.",
+	values = function(user)
+		return {heal = 3 + grug_classes.get_spell_power_bonus(user)}
+	end,
+	description_for = function(user, def)
+		return ("Heal the pointed ally (or yourself) for %d every 3 s for 12 s.\n" ..
+			"Unlocked via talents."):format(
+				effective_number(user, def.values(user).heal))
+	end,
 	color = "#3fae6a",
 	cost = {mana = 6},
 	cooldown = 8,
 	range = 15,
 	cast = function(user, pointed, def)
-		local target, err = heal_target(user, pointed, def)
+		local target, err = grug_abilities.resolve_friendly_target(
+			user, pointed, def)
 		if not target then
 			return false, err
 		end
@@ -752,7 +829,7 @@ grug_abilities.register_ability({
 		-- Re-casting refreshes duration and snapshot amount.
 		renews[target:get_player_name()] = {
 			ticks = 4,
-			amount = 3 + grug_classes.get_spell_power_bonus(user),
+			amount = def.values(user).heal,
 			healer = user:get_player_name(),
 		}
 		if grug_core.set_status then

@@ -732,11 +732,14 @@ function grug_abilities.register_ability(def)
 	end
 	local itemname = "grug_abilities:" .. def.id
 	item_defs[itemname] = def
+	def._grug_description_prefix = def.name .. " (" .. owner_line .. ")\n" ..
+		cost_line .. ", " .. cd_line .. "\n"
 
 	local tool_def = {
-		description = def.name .. " (" .. owner_line .. ")\n" ..
-			cost_line .. ", " .. cd_line .. "\n" ..
-			def.description,
+		-- Numeric abilities replace this fallback per ItemStack. The registered
+		-- wording deliberately contains no damage/heal/absorb number, so a stack
+		-- without player context can never advertise a false value.
+		description = def._grug_description_prefix .. def.description,
 		inventory_image = "grug_abilities_orb.png^[multiply:" .. def.color,
 		wield_image = "grug_abilities_orb.png^[multiply:" .. def.color,
 		range = def.range or 4,
@@ -796,6 +799,24 @@ function grug_abilities.register_ability(def)
 	-- pointabilities can mask ground-level drops; pickup_swing_loot restores
 	-- that one builtin interaction from the server-visible LMB edge.
 	core.register_tool(itemname, tool_def)
+end
+
+-- Apply one player's effective numeric description to an ability stack in
+-- place. Returns true only when the caller must write the stack back. Ability
+-- formulas live in kits.lua's def.values accessors; this plumbing only asks
+-- the definition to format the current result.
+function grug_abilities.update_stack_description(stack, def, player)
+	if not def.description_for or not grug_core.scale_player_damage then
+		return false
+	end
+	local desired = def._grug_description_prefix ..
+		def.description_for(player, def)
+	local meta = stack:get_meta()
+	if meta:get_string("description") == desired then
+		return false
+	end
+	meta:set_string("description", desired)
+	return true
 end
 
 -- Cooldown display via item wear. Inventory writes re-send the whole
@@ -1853,6 +1874,24 @@ local function sync_skins(player, slot)
 	end
 end
 
+-- Level and talent changes can re-tune every numeric ability. Walk only the
+-- main list where ability items are allowed to live, and spend at most one
+-- inventory write per changed ability. No globalstep or cast path calls this.
+local function sync_descriptions(player)
+	local inv = player:get_inventory()
+	local list = inv and inv:get_list("main")
+	if not list then
+		return
+	end
+	for i = 1, #list do
+		local stack = list[i]
+		local def = item_defs[stack:get_name()]
+		if def and grug_abilities.update_stack_description(stack, def, player) then
+			inv:set_stack("main", i, stack)
+		end
+	end
+end
+
 -- C4's third trigger (join and class pick are sync_kit's). Consumers of this
 -- hook must be idempotent and cheap and may be called twice for one change --
 -- both are the token compare's job.
@@ -2091,6 +2130,9 @@ local function sync_kit(player)
 						if apply_charge_bar(stack, def) then
 							changed = true
 						end
+						if grug_abilities.update_stack_description(stack, def, player) then
+							changed = true
+						end
 						if changed then
 							inv:set_stack(listname, i, stack)
 						end
@@ -2117,6 +2159,7 @@ local function sync_kit(player)
 			-- Charge bar ramp, same "before it reaches the inventory" rule:
 			-- a charging skill must never appear without its ramp.
 			apply_charge_bar(stack, def)
+			grug_abilities.update_stack_description(stack, def, player)
 			grant_at(inv, stack, index)
 		end
 	end
@@ -2128,6 +2171,15 @@ grug_classes.register_on_class_chosen(function(player, class_id)
 	rage[player:get_player_name()] = 0
 	hud_update(player)
 end)
+
+-- Talent formulas share the same def.values accessors as casts. The callback
+-- exists in grug_classes and fires after its first consumer has applied the
+-- changed stats, so descriptions see the final value.
+if grug_classes.register_on_talents_changed then
+	grug_classes.register_on_talents_changed(function(player)
+		sync_descriptions(player)
+	end)
+end
 
 --
 -- Rage generation (classes.md §1/§3, WP38): one accepted authoritative
@@ -2621,6 +2673,7 @@ end)
 
 -- Mana pool grows with Int on level up: clamp/refresh the HUD (no refill).
 grug_xp.register_on_level_change(function(player, old_level, new_level)
+	sync_descriptions(player)
 	hud_update(player)
 end)
 

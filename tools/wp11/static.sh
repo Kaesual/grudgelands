@@ -74,11 +74,9 @@ echo "== the talent model + UI KATs, one process per interpreter =="
 # again: /tmp is a quota'd tmpfs shared by every lane.
 scratch="$(mktemp -d /tmp/grug-r5-u-static.XXXXXX)"
 trap 'rm -rf "$scratch"' EXIT
-KATS='io.write(dofile("tools/wp11/talent_tree_kat.lua")(".")); io.write(dofile("tools/wp11/talent_ui_kat.lua")("."))'
-luajit -e "$KATS" \
-	> "$scratch/kat-luajit.txt"
-"$repo/tools/bin/lua51" -e "$KATS" \
-	> "$scratch/kat-puc.txt"
+KATS='local talent_output, talent_failure = dofile("tools/wp11/talent_tree_kat.lua")("."); if talent_output == false then io.write(talent_failure); error("wp11 talent KAT failed") end; io.write(talent_output); io.write(dofile("tools/wp11/talent_ui_kat.lua")("."))'
+luajit -e "$KATS" > "$scratch/kat-luajit.txt" || exit 1
+"$repo/tools/bin/lua51" -e "$KATS" > "$scratch/kat-puc.txt" || exit 1
 grep -E 'wp11_(talents|talent_ui)_result' "$scratch/kat-luajit.txt"
 if cmp -s "$scratch/kat-luajit.txt" "$scratch/kat-puc.txt"; then
 	echo "KATs byte-identical under LuaJIT and PUC 5.1: $(sha256sum < "$scratch/kat-luajit.txt")"
