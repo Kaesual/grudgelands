@@ -263,17 +263,12 @@ mobs.register_mob = function(self, name, def)
 	if name == "test:death" then death_def = def end
 end
 mob_api.register_mob("test:death", {})
-assert(death_def and death_def.on_death,
-	"registered mob must install the universal XP death settlement")
-local old_on_die_calls = 0
-local on_die_def = {on_die = function() old_on_die_calls = old_on_die_calls + 1 end}
+assert(death_def and death_def.on_death == nil and death_def.on_die == nil,
+	"XP settlement must not replace mobs_redo death callbacks")
+local old_on_die = noop
+local on_die_def = {on_die = old_on_die}
 mob_api.register_mob("test:on_die", on_die_def)
-local on_die_mob = {temp = {}, object = {
-	get_pos = function() return {x = 0, y = 0, z = 0} end,
-}}
-on_die_def.on_die(on_die_mob, {x = 0, y = 0, z = 0})
-assert_equal(on_die_mob.temp.grug_xp_settled, true, "on_die settlement")
-assert_equal(old_on_die_calls, 1, "original on_die callback")
+assert_equal(on_die_def.on_die, old_on_die, "original on_die callback preserved")
 
 local function find_upvalue(func, wanted, seen)
 	seen = seen or {}
@@ -294,9 +289,107 @@ end
 local participant_index = assert(find_upvalue(
 	mob_api.mark_xp_participant, "participant_mobs"))
 
+-- Load the real vendored mobs_redo API in an isolated engine fixture. Death
+-- tests below call its actual check_for_death boundary; lifecycle cleanup uses
+-- the actual registered-entity on_deactivate callback.
+local function copy_table(value)
+	if type(value) ~= "table" then return value end
+	local result = {}
+	for key, child in pairs(value) do result[key] = copy_table(child) end
+	return result
+end
+local api_table = {}
+for key, value in pairs(table) do api_table[key] = value end
+api_table.copy = copy_table
+local api_vector = {
+	new = function(x, y, z)
+		return type(x) == "table" and copy_table(x)
+			or {x = x or 0, y = y or 0, z = z or 0}
+	end,
+	add = function(a, b) return {x=a.x+b.x, y=a.y+b.y, z=a.z+b.z} end,
+	subtract = function(a, b) return {x=a.x-b.x, y=a.y-b.y, z=a.z-b.z} end,
+	multiply = function(a, n) return {x=a.x*n, y=a.y*n, z=a.z*n} end,
+	direction = function() return {x=1, y=0, z=0} end,
+	distance = function() return 1 end,
+}
+local api_entities = {}
+local smoke_effects = 0
+local api_settings = {
+	get = function() return nil end,
+	get_bool = function(_, name) return name == "enable_damage" end,
+}
+local api_core = {
+	settings = api_settings,
+	registered_aliases = {},
+	registered_nodes = {air={groups={}}, ignore={groups={}}},
+	registered_items = {},
+	registered_entities = api_entities,
+	get_translator = function() return function(text) return text end end,
+	formspec_escape = function(text) return text end,
+	global_exists = function() return false end,
+	get_modpath = function() return nil end,
+	check_player_privs = function() return false end,
+	is_player = function(obj) return obj and obj.is_player and obj:is_player() end,
+	register_entity = function(name, def) api_entities[name] = def end,
+	register_on_player_receive_fields = noop,
+	register_chatcommand = noop,
+	log = noop,
+	sound_play = noop,
+	add_particlespawner = function() smoke_effects = smoke_effects + 1 end,
+	after = noop,
+	get_objects_inside_radius = function() return {} end,
+}
+local api_env = setmetatable({
+	core = api_core, minetest = api_core, table = api_table,
+	vector = api_vector, grug_mobs = mob_api, grug_core = grug_core,
+}, {__index = _G})
+local api_chunk = assert(loadfile(repo .. "/mods/ENTITIES/mobs/api.lua"))
+setfenv(api_chunk, api_env)
+api_chunk()
+local vendor_mob_class = api_env.mobs.mob_class
+mob_api.registered_cadence["test:mob"] = true
+
+local function settle_through_mobs_redo(ent)
+	ent.old_health = 10
+	ent.health = 0
+	ent.state = "stand"
+	ent.sounds = ent.sounds or {}
+	ent.item_drop = noop
+	ent.mob_sound = noop
+	ent.update_tag = noop
+	ent.death_anim = vendor_mob_class.death_anim
+	ent.object.removed = false
+	ent.object.remove = function(self) self.removed = true end
+	ent.object.get_properties = function() return {hp_max = 100} end
+	ent.object.set_properties = noop
+	ent.object.get_luaentity = function() return ent end
+	assert_equal(vendor_mob_class.check_for_death(ent,
+		{type = "environment"}), true, "mobs_redo death boundary")
+	assert_equal(ent.object.removed, true, "ordinary death fallback removal")
+end
+
 local alice = xp_player("alice", {x = 0, y = 0, z = 0}, "accord", 8100)
 local bob = xp_player("bob", {x = 2, y = 0, z = 0}, "accord", 8100)
 local cara = xp_player("cara", {x = 41, y = 0, z = 0}, "accord", 8100)
+
+api_env.mobs:register_mob("test:lifecycle", {
+	description = "Lifecycle", type = "animal", visual = "cube",
+	textures = {{"blank.png"}}, sounds = {},
+})
+mob_api.registered_cadence["test:lifecycle"] = true
+local lifecycle_def = assert(api_entities[":test:lifecycle"])
+local unloaded = {name = "test:lifecycle", health = 100, temp = {}}
+unloaded.object = {
+	get_luaentity = function() return unloaded end,
+	get_pos = function() return {x = 0, y = 0, z = 0} end,
+}
+mob_api.mark_xp_participant(unloaded, alice)
+assert(participant_index.alice, "deactivation setup missing reverse index")
+lifecycle_def.on_deactivate(unloaded, false)
+assert_equal(participant_index.alice, nil, "deactivation reverse-index cleanup")
+assert_equal(unloaded.temp.grug_xp_participants, nil,
+	"deactivation entity participation cleanup")
+
 local enemy = {name = "test:mob", health = 100, _grug_level = 10,
 	_grug_tier = "normal", _grug_faction = "throng", temp = {}}
 local enemy_object = {
@@ -318,10 +411,12 @@ alice.hp = 20
 grug_core.heal_player(bob, alice, 1)
 enemy.health = 10
 mob_api.accepted_player_punch(enemy, alice, 10, 10, 1)
--- The final player hit only records participation. An unrelated universal
--- death callback settles the group, and a repeated settlement is inert.
+-- The final player hit only records participation. An unrelated environmental
+-- death crosses mobs_redo's real shared boundary and a repeated settlement is
+-- inert. With no on_die/on_death/animation, its ordinary smoke fallback stays.
 assert_equal(grug_xp.get_xp(alice), 8100, "XP before universal death")
-death_def.on_death(enemy, nil)
+local smoke_before = smoke_effects
+settle_through_mobs_redo(enemy)
 assert_equal(grug_xp.get_xp(alice), 8150, "damager split XP")
 assert_equal(grug_xp.get_xp(bob), 8150, "healer split XP")
 assert_equal(grug_xp.get_xp(cara), 8100, "out-of-range participant XP")
@@ -331,6 +426,7 @@ assert_equal(grug_xp.get_xp(alice), 8150, "no duplicate settled XP")
 assert_equal(participant_index.alice, nil, "damager reverse-index cleanup")
 assert_equal(participant_index.bob, nil, "healer reverse-index cleanup")
 assert_equal(participant_index.cara, nil, "range reverse-index cleanup")
+assert_equal(smoke_effects, smoke_before + 1, "ordinary death smoke fallback")
 record("split", {grug_xp.get_xp(alice), grug_xp.get_xp(bob),
 	grug_xp.get_xp(cara)})
 
@@ -342,7 +438,7 @@ guard.object = {
 	get_pos = function() return {x = 0, y = 0, z = 0} end,
 }
 mob_api.accepted_player_punch(guard, alice, 10, 10, 1)
-death_def.on_death(guard, nil)
+settle_through_mobs_redo(guard)
 assert_equal(grug_xp.get_xp(alice), 8150, "own-faction kill XP")
 record("friendly", {grug_xp.get_xp(alice)})
 
@@ -355,7 +451,7 @@ gray.object = {
 	get_pos = function() return {x = 0, y = 0, z = 0} end,
 }
 mob_api.accepted_player_punch(gray, veteran, 10, 10, 1)
-death_def.on_death(gray, nil)
+settle_through_mobs_redo(gray)
 assert_equal(grug_xp.get_xp(veteran), 10000, "gray kill XP")
 record("gray", {grug_xp.get_xp(veteran)})
 

@@ -141,6 +141,26 @@ local function within_xp_range(player, pos)
 	return dx * dx + dy * dy + dz * dz <= 40 * 40
 end
 
+-- Participation belongs to one active entity lifetime. Death, explicit
+-- removal and mapblock unload all cross mobs_redo's on_deactivate boundary;
+-- remove both the weak object keys and now-empty per-name containers there.
+function grug_mobs.cleanup_xp_participants(self)
+	local participants = self and self.temp
+		and self.temp.grug_xp_participants or {}
+	for name in pairs(participants) do
+		local set = participant_mobs[name]
+		if set then
+			set[self.object] = nil
+			if next(set) == nil then
+				participant_mobs[name] = nil
+			end
+		end
+	end
+	if self and self.temp then
+		self.temp.grug_xp_participants = nil
+	end
+end
+
 -- Settle XP once at the universal mob-death boundary. Eligible participants
 -- are online and within 40 m at death; each receives their own capped/gray
 -- value divided by the same eligible head count. Friendly-faction recipients
@@ -184,16 +204,14 @@ function grug_mobs.award_kill_xp(self)
 			end
 		end
 	end
-	for i = 1, #names do
-		local set = participant_mobs[names[i]]
-		if set then
-			set[self.object] = nil
-			if next(set) == nil then
-				participant_mobs[names[i]] = nil
-			end
-		end
-	end
+	grug_mobs.cleanup_xp_participants(self)
 	return true
+end
+
+-- Called by the shared mobs_redo death boundary before it chooses on_die,
+-- on_death, a death animation or the ordinary smoke/removal fallback.
+function grug_mobs.settle_mob_death(self)
+	return grug_mobs.award_kill_xp(self)
 end
 
 -- Formal accepted-hit hook called by the vendored on_punch path only AFTER
@@ -486,25 +504,6 @@ function grug_mobs.register_mob(name, def)
 	-- Race-perk key (world.md §7): players holding this perk are dropped
 	-- as targets at night unless they provoked the mob (undead passive).
 	local night_truce = def._grug_night_truce_perk
-	-- mobs_redo calls on_die first when a def supplies one; otherwise it calls
-	-- on_death for every actual death cause (player, NPC, mob, or environment).
-	-- Wrap both boundaries without installing a new on_die (which would shadow
-	-- an existing on_death). award_kill_xp owns the shared idempotency guard.
-	local old_on_die = def.on_die
-	if old_on_die then
-		def.on_die = function(self, pos)
-			grug_mobs.award_kill_xp(self)
-			return old_on_die(self, pos)
-		end
-	end
-	local old_on_death = def.on_death
-	def.on_death = function(self, killer)
-		grug_mobs.award_kill_xp(self)
-		if old_on_death then
-			return old_on_death(self, killer)
-		end
-	end
-
 	if def._grug_spawn_domains then
 		spawn_domains[name] = grug_mobs.compile_spawn_domains(
 			def._grug_spawn_domains, name)

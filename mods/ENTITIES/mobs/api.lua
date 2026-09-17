@@ -866,6 +866,16 @@ function mob_class:check_for_death(cmi_cause)
 
 	local pos = self.object:get_pos() ; if not pos then return end
 
+	-- GRUG PATCH (shared Grudgelands death settlement, round 5 Lane P): settle
+	-- participant XP at the one boundary every death cause reaches, before
+	-- mobs_redo chooses on_die, on_death, animation or smoke/removal fallback.
+	-- The grug_mobs helper is idempotent; vanilla mobs_redo entities are inert.
+	if grug_mobs and grug_mobs.registered_cadence
+	and grug_mobs.registered_cadence[self.name]
+	and grug_mobs.settle_mob_death then
+		grug_mobs.settle_mob_death(self)
+	end
+
 	-- execute mob api custom death function first for any special features
 	if self.on_die then
 
@@ -3878,6 +3888,18 @@ function mobs:register_mob(name, def)
 
 		on_activate = function(self, staticdata, dtime)
 			return self:mob_activate(staticdata, def, dtime)
+		end,
+
+		-- GRUG PATCH (Grudgelands participation lifecycle, round 5 Lane P):
+		-- unload and explicit removal both deactivate the Lua entity. Clear its
+		-- reverse XP-participant index while the ObjectRef is still identifiable;
+		-- the helper also deletes empty outer player-name entries.
+		on_deactivate = function(self, removal)
+			if grug_mobs and grug_mobs.registered_cadence
+			and grug_mobs.registered_cadence[self.name]
+			and grug_mobs.cleanup_xp_participants then
+				grug_mobs.cleanup_xp_participants(self)
+			end
 		end,
 
 		get_staticdata = function(self)
