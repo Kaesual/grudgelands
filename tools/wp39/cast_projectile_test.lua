@@ -386,14 +386,47 @@ grug_abilities.set_target(priest, ally, true)
 grug_abilities.try_cast(priest, grug_abilities.registered.flash_heal, nil)
 assert(#heal_events == 1 and heal_events[1].target == ally)
 
--- An explicitly supplied invalid object is a refusal, not permission to use
--- ally memory or self. All three friendly abilities share heal_target, so
--- verify each preserves resource, readiness and every observable effect.
+-- An explicitly supplied invalid object falls through to ally memory, then
+-- self. All three friendly abilities share heal_target, so verify the
+-- resolved target, resource spend and cooldown for both fallback paths.
 local hostile_pointed = mob("test:hostile_heal_probe", "throng")
+local friendly_cost = {flash_heal = 8, power_word_shield = 8, renew = 6}
+local old_get_player_by_name = core.get_player_by_name
+local friendly_players = {ally = ally}
+core.get_player_by_name = function(name)
+	return friendly_players[name]
+end
+
+local function assert_friendly_effect(id, target, heals_before,
+		absorbs_before, particles_before)
+	if id == "flash_heal" then
+		assert(#heal_events == heals_before + 1
+			and heal_events[#heal_events].target == target,
+			id .. " did not heal the resolved target")
+	elseif id == "power_word_shield" then
+		assert(#absorb_events == absorbs_before + 1
+			and absorb_events[#absorb_events].target == target,
+			id .. " did not shield the resolved target")
+	else
+		local renew_heals_before = #heal_events
+		globalsteps[#globalsteps](3)
+		local found_target = false
+		for index = renew_heals_before + 1, #heal_events do
+			if heal_events[index].target == target then
+				found_target = true
+			end
+		end
+		assert(found_target, id .. " did not renew the resolved target")
+	end
+	assert(particle_events > particles_before,
+		id .. " produced no effect particles")
+end
+
 for _, id in ipairs({"flash_heal", "power_word_shield", "renew"}) do
-	local probe_priest = player("explicit_refusal_" .. id,
+	local probe_priest = player("explicit_memory_" .. id,
 		"priest", "accord")
 	join(probe_priest)
+	friendly_players[probe_priest:get_player_name()] = probe_priest
 	grug_abilities.set_target(probe_priest, ally, true)
 	local probe_mana = grug_abilities.get_mana(probe_priest)
 	local heals_before_probe = #heal_events
@@ -401,16 +434,57 @@ for _, id in ipairs({"flash_heal", "power_word_shield", "renew"}) do
 	local particles_before_probe = particle_events
 	grug_abilities.try_cast(probe_priest, grug_abilities.registered[id],
 		{type="object", ref=hostile_pointed})
+	assert(grug_abilities.get_mana(probe_priest)
+		== probe_mana - friendly_cost[id],
+		id .. " did not spend mana after resolving ally memory")
+	assert(not grug_abilities.ready(probe_priest, id),
+		id .. " did not arm cooldown after resolving ally memory")
+	assert_friendly_effect(id, ally, heals_before_probe,
+		absorbs_before_probe, particles_before_probe)
+end
+
+for _, id in ipairs({"flash_heal", "power_word_shield", "renew"}) do
+	local probe_priest = player("explicit_self_" .. id, "priest", "accord")
+	join(probe_priest)
+	friendly_players[probe_priest:get_player_name()] = probe_priest
+	local probe_mana = grug_abilities.get_mana(probe_priest)
+	local heals_before_probe = #heal_events
+	local absorbs_before_probe = #absorb_events
+	local particles_before_probe = particle_events
+	grug_abilities.try_cast(probe_priest, grug_abilities.registered[id],
+		{type="object", ref=hostile_pointed})
+	assert(grug_abilities.get_mana(probe_priest)
+		== probe_mana - friendly_cost[id],
+		id .. " did not spend mana after resolving self")
+	assert(not grug_abilities.ready(probe_priest, id),
+		id .. " did not arm cooldown after resolving self")
+	assert_friendly_effect(id, probe_priest, heals_before_probe,
+		absorbs_before_probe, particles_before_probe)
+end
+
+-- A dead resolved self is the remaining refusal: no resource, cooldown or
+-- observable effect is committed.
+for _, id in ipairs({"flash_heal", "power_word_shield", "renew"}) do
+	local probe_priest = player("explicit_dead_" .. id, "priest", "accord")
+	probe_priest.hp = 0
+	join(probe_priest)
+	local probe_mana = grug_abilities.get_mana(probe_priest)
+	local heals_before_probe = #heal_events
+	local absorbs_before_probe = #absorb_events
+	local particles_before_probe = particle_events
+	grug_abilities.try_cast(probe_priest, grug_abilities.registered[id],
+		{type="object", ref=hostile_pointed})
 	assert(grug_abilities.get_mana(probe_priest) == probe_mana,
-		id .. " spent mana on an invalid explicit target")
+		id .. " spent mana on a dead resolved target")
 	assert(grug_abilities.ready(probe_priest, id),
-		id .. " armed cooldown on an invalid explicit target")
+		id .. " armed cooldown on a dead resolved target")
 	assert(#heal_events == heals_before_probe
 		and #absorb_events == absorbs_before_probe
 		and particle_events == particles_before_probe,
-		id .. " produced an effect on an invalid explicit target")
+		id .. " affected a dead resolved target")
 end
-print("friendly_explicit_target_test: PASS refusal=no-cost/no-cooldown/no-effect")
+core.get_player_by_name = old_get_player_by_name
+print("friendly_explicit_target_test: PASS invalid=memory-or-self dead=no-cost/no-cooldown")
 
 -- Self-targeted abilities never receive client pointing context, even if a
 -- future closure tries to inspect it.
@@ -432,7 +506,7 @@ grug_abilities.try_cast(self_caster,
 	{type="object", ref=hostile_pointed})
 assert(self_called, "self-targeted cast did not run")
 assert(self_pointed == nil, "self-targeted cast received an external target")
-print("target_kind_test: PASS friendly-refuses-explicit-invalid hostile-refuses-friendly/noncombatant self-ignores-target")
+print("target_kind_test: PASS friendly-falls-back hostile-refuses-friendly/noncombatant self-ignores-target")
 
 -- Fireball snapshots eye/look/damage, runs no combat ray and costs 8 on any
 -- successfully spawned flight (air/wall/range are later projectile outcomes).

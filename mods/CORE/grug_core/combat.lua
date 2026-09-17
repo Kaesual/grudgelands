@@ -42,7 +42,10 @@ function grug_core.level_malus(player_level, mob_level)
 	return math.max(0.1, 1 - 0.1 * excess)
 end
 
-local function scaled_player_value(player, amount)
+-- Non-flooring level scaler for player-authored values. Absorb settlement
+-- and its display both use this public seam so fractional shield points have
+-- one source of truth; integer settlement seams floor its result themselves.
+function grug_core.scale_player_value(player, amount)
 	return math.max(0, (amount or 0)
 		* grug_core.level_scale(grug_core.get_player_level(player)))
 end
@@ -1072,7 +1075,7 @@ function grug_core.heal_player(healer, target, amount, opts)
 	end
 	-- Ability heals arrive with flat talent additions included. Percentage
 	-- consumables arrive with their max-HP-derived amount. Scale either once.
-	amount = math.floor(scaled_player_value(healer, amount))
+	amount = math.floor(grug_core.scale_player_value(healer, amount))
 	if not opts.no_crit and math.random() < grug_core.get_crit_chance(healer) then
 		amount = math.floor(amount * 1.5)
 		crit_particles(target:get_pos())
@@ -1099,11 +1102,23 @@ end
 local absorbs = {} -- player name -> {amount = n, expiry = us time}
 
 function grug_core.set_absorb(player, amount, duration, source)
-	amount = scaled_player_value(source or player, amount)
+	amount = grug_core.scale_player_value(source or player, amount)
+	local expiry = core.get_us_time() + duration * 1e6
 	absorbs[player:get_player_name()] = {
 		amount = amount,
-		expiry = core.get_us_time() + duration * 1e6,
+		expiry = expiry,
 	}
+	if grug_core.set_status then
+		grug_core.set_status(player, "shield", {
+			label = "Shield",
+			expiry_us = expiry,
+			value = function(target)
+				local remaining = grug_core.get_absorb(target)
+				return remaining > 0 and remaining or false
+			end,
+			kind = "buff",
+		})
+	end
 end
 
 -- Remaining absorb amount (0 when none/expired).
@@ -1111,10 +1126,16 @@ function grug_core.get_absorb(player)
 	local name = player:get_player_name()
 	local a = absorbs[name]
 	if not a then
+		if grug_core.clear_status then
+			grug_core.clear_status(player, "shield")
+		end
 		return 0
 	end
 	if core.get_us_time() > a.expiry then
 		absorbs[name] = nil
+		if grug_core.clear_status then
+			grug_core.clear_status(player, "shield")
+		end
 		return 0
 	end
 	return a.amount

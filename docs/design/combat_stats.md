@@ -123,6 +123,9 @@ consumer caps. The caps remain 30% Crit, 30% Dodge and 60% armor. Values above
 a cap remain present on their stacks but have no further combat effect; the
 Character page exposes effective and raw values, for example
 `Armor 60% (67% raw)`. There is no automatic overflow conversion or cap raise.
+The Character page shows **Max HP** and, for mana classes, **Max Mana** only;
+the HUD bars are the sole display of current pool values. Rage classes keep
+`Rage (in combat)` on that page.
 
 Two optional target-race systems use the central pipeline:
 
@@ -139,13 +142,15 @@ Two optional target-race systems use the central pipeline:
   hostile players and combat-capable NPCs/mobs carrying that race identity,
   shares the 60-second potion-use cooldown and is not modified by Apothecary
   Loop. The ward has its own PvP-buff category and may coexist with one
-  ordinary elixir and Well Fed.
+  ordinary elixir and the food restore buff.
 
 ### Environmental damage, deaths and shore movement
 
 - A player whose head point is inside a walkable, non-liquid node takes
-  **1 HP per second**. Non-walkable nodes, including plants, do not suffocate;
-  neither do liquid nodes. The character-creation stasis state is exempt.
+  **floor(5% of maximum HP) per second, minimum 1 HP**. Non-walkable nodes,
+  including plants, do not suffocate; neither do liquid nodes. The
+  character-creation stasis state and players holding the `noclip` privilege
+  are exempt.
 - Every player death sends exactly **one** short English line to all players.
   The selected template distinguishes fall, drowning, lava/fire node damage,
   suffocation, a mob punch (using the mob's display name), a player punch
@@ -264,7 +269,9 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   only a currently pointed valid hostile within their individual range and a
   server line-of-sight check. Enemy target memory is never a fallback. Failure
   to acquire a target spends no resource and arms no cooldown. Friendly
-  heal/shield casts retain the separate ally-memory/self fallback.
+  heal/shield casts always resolve through pointed valid ally → valid in-range
+  ally memory → self; any pointed invalid object enters that fallback chain
+  (user ruling 2026-09-17).
 - **Fireball is directional, not targeted.** On successful input it spends
   8 mana, snapshots the cast-time eye direction and spawns one straight
   projectile at **20 m/s**. It has no homing, gravity or splash, deals
@@ -682,32 +689,28 @@ design (`group_attack` stays on).
 
 - Natural regen: **0.5% max HP/s out of combat, 0 in combat** — in-combat
   healing is the healer's/potion's job.
-- **Food — raw restores, cooked restores AND buffs** (structure decided
-  2026-08-08, delivery revised 2026-08-13 with E21; `items_crafting.md`
-  §3.7 carries the cooking side and the two must not drift apart). A
-  food restore is a **buff**: it tolerates movement, is **canceled by
-  entering combat** (PvE or PvP, the shared `in_combat` window — the
-  remaining restore is lost), and eating **in** combat is refused
-  (message, nothing consumed):
-  - **Raw / plain food: regeneration only, no buff.** **4 % max HP/s
-    for up to 25 s** → full if uninterrupted. The solo "detour",
-    unchanged in rate.
-  - **Cooked food: a restore *and* a buff.** The serving's authored
-    percentage of max HP is delivered at **8 % max HP/s** (worked
-    example: potatoes with boar steak — the T1 Hearty Stew — 20 % of
-    max HP plus Well Fed I; the six-group table in `items_crafting.md`
-    §3.7 tops out at 40 %). Cooking buys **out-of-combat speed**, never
-    an instant heal — the instant slot belongs to the potion below,
-    which is the only thing in the game that restores health in combat.
-    Well Fed itself persists into combat; only the restore dies.
-  - **One food buff at a time; the most recently eaten food wins** and
-    replaces the running one. It still stacks with one elixir
-    (`items_crafting.md` §3.6/§10 P3).
+- **Food restore buff** (R9, decided 2026-09-17, replacing the 2026-08-13
+  model; `items_crafting.md` §3.7 carries the cooking side). Eating grants a
+  runtime-only **180 s** buff with one tick every **10 s**. The tick fires
+  only out of combat against the shared `grug_core.in_combat` window; combat
+  skips the due tick without canceling or pausing the buff. Eating in combat
+  is allowed. Only one food buff may run at once and the most recent serving
+  replaces it. Relogging drops it.
+  - Raw/plain restores **2 %** of the base HP pool per tick; simply cooked
+    restores **5 %**; well cooked restores **10 %**. Every tick restores at
+    least 1 HP. Vanilla `item_eat` instant healing is removed completely.
+  - Mana food mirrors the quality percentage against maximum mana. It does
+    nothing, reports why and is not consumed for a rage class.
+  - Wild Cocoa is raw mana food. Apples, blueberries, raw fish, raw meat and
+    every other raw gathering food restore HP; Cooked Fish and every cooked
+    item are simply cooked HP food. No item is well cooked until WP10 assigns
+    that tier.
+  - The natural replacement cadence is about **20 servings per hour**.
 - **Healing potion**: instant **30% max HP, 60 s cooldown** (Alchemist
   craft; weak 15% variant sold by vendors). The potion holds the
   in-combat monopoly and is paid for in cooldown; a dish may restore
-  more in total, but only out of combat and over seconds, and it dies
-  the moment a fight starts.
+  more in total, but only out of combat and over seconds. Each food tick
+  due during combat is skipped while the 180-second buff keeps running.
 - Mana regen: 2%/s out of combat, 0.5%/s in combat.
 - Food/potions are **percent-based** — level-agnostic, no consumable item
   treadmill in the MVP. Reaffirmed 2026-08-13: Max HP = 20 + 2×(level−1)
@@ -717,9 +720,9 @@ design (`group_attack` stays on).
   the knob against HP-stacked builds in PvP is
   §6.3-of-`items_crafting.md`'s bounded +HP affix ranges, not the
   consumable system.
-- Every timed effect on the player is shown through the **buff/debuff
-  icon framework** (`inventory_equipment.md` §5, decided 2026-08-13):
-  green-framed buffs, red-framed debuffs, largest-unit countdown.
+- Every timed effect on the player is shown through the **buff/debuff text
+  list** (`inventory_equipment.md` §5, decided 2026-09-17). WP10 later
+  replaces that first-pass presentation with icons.
 
 ## 6. Player and mob nameplates & con colors
 

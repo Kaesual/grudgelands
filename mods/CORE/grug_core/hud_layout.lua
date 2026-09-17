@@ -96,6 +96,11 @@ end
 layout.anchors = {
 	flash = {position = {x = 0.5, y = 0.35}, offset = {x = 0, y = 0}},
 	reticle = {position = {x = 0.5, y = 0.5}, offset = {x = 0, y = 0}},
+	status_list = {
+		position = {x = 1, y = 0},
+		offset = {x = -20, y = 20},
+		alignment = {x = -1, y = 1},
+	},
 }
 
 local function place(id)
