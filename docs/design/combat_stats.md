@@ -59,7 +59,7 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   retains fractional points. Percentage consumables first derive their amount
   from max HP and then enter this same scalar once
   (`mods/CORE/grug_core/combat.lua:29`, `:53`, `:977`, `:1067`, `:1101`;
-  authoritative swings: `mods/PLAYER/grug_abilities/init.lua:1055`).
+  authoritative swings: `mods/PLAYER/grug_abilities/init.lua:1236-1275`).
 - **Higher-mob-level damage malus**: against a mob more than five levels above
   the player, multiply player damage by `max(0.10, 1 − 0.10×(mob level −
   player level − 5))`. It is part of the same final damage multiplication and
@@ -213,8 +213,8 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   next full ability swing to at least `now + equipped FPI`. The transition
   clears an old bank once; consecutive ordinary packets retain their fractions,
   and returning to a swing clears the remainder once. Cast use alone preserves
-  ability due time (`mods/PLAYER/grug_abilities/init.lua:1258-1292`,
-  `:2212-2232`).
+  ability due time (`mods/PLAYER/grug_abilities/init.lua:1236-1275`,
+  `:2213-2233`).
 - **One accepted full swing resolves once.** Against players the order is
   **slot weapon + Strength → selected proc replacement → level scalar (plus
   mob-level malus when the target is a mob) → one crit → armor → integer
