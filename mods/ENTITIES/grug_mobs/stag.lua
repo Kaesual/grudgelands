@@ -26,7 +26,7 @@ local function stag_def(description, texture)
 		-- Ground prey chases up to 45 m since WP36 (§3.0 retaliation + the
 		-- _grug_chase_range patch), so it needs the same A* every other mob
 		-- that enters the attack state has: `core.find_path` runs only from
-		-- the attack branch (api.lua:2442-2445), i.e. only after a player
+		-- the attack branch (api.lua:2176-2864), i.e. only after a player
 		-- punch, so a grazing herd pays nothing. Without it the "worth the
 		-- swing" of §3.0 is defeated by any 3-node ledge. §3's "all
 		-- aggressive mobs: pathfinding = 1" does not cover prey (prey never
@@ -51,7 +51,7 @@ local function stag_def(description, texture)
 
 		-- wp6_model_notes §3.1 (creatura ranges translated). No punch clip on
 		-- this mesh: mobs_redo's set_animation returns without a write when
-		-- the requested clip is missing (api.lua:464), so a retaliating stag
+		-- the requested clip is missing (api.lua:500-548), so a retaliating stag
 		-- keeps its run animation instead of freezing — acceptable, and
 		-- cheaper than inventing a clip the mesh does not have.
 		animation = {

@@ -84,7 +84,7 @@ nothing complained about.
    load probe counts them over a 30-second window per start (0).
 2. **One property write per change.** `mob_class:set_animation` returns without
    touching the object when the animation asked for is already the current one
-   (api.lua:461), so a hammering smith writes its animation **once for the life
+   (api.lua:500-532), so a hammering smith writes its animation **once for the life
    of its activation** — the KAT measures 1 write in 120 s — and a swinging
    `tend` resident writes 6–7 in 30 s.
 3. **Nothing at all while nobody is watching.** Beyond 24 nodes from the
@@ -94,9 +94,9 @@ nothing complained about.
    whole mob population — no second global accumulator.
 
 And the tick returns exactly `false`, which is what holds the whole thing
-together: mobs_redo skips the rest of `on_step` on that answer (api.lua:3670-3671),
+together: mobs_redo skips the rest of `on_step` on that answer (api.lua:3908),
 so `do_states` never runs — and `do_states` in the stand state calls
-`set_animation("stand")` once a second (api.lua:2133), which would overwrite
+`set_animation("stand")` once a second (api.lua:2232-2233), which would overwrite
 the activity within a second of it being set. The same veto skips
 `general_attack`, `breed` and `follow_flop`, which for a non-combatant with no
 follow list is pure saving.

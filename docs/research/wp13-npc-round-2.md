@@ -22,7 +22,7 @@ The user's ruling splits the two. What shipped:
 
 - `grug_mobs.no_npc_targets` is **gone**, and with it the blanket narrowing in
   `register_mob`. A hostile keeps mobs_redo's own default (`attack_npcs = true`,
-  api.lua:170), so the pair at a gate engages in either direction and a guard
+  api.lua:207), so the pair at a gate engages in either direction and a guard
   can lose. `guard.lua` keeps its **own** `attack_npcs = false`, so guard versus
   guard stays off across factions (world.md §4).
 - The veto is now a property of the **target**: `grug_mobs.noncombatant(def)`
@@ -35,7 +35,7 @@ The user's ruling splits the two. What shipped:
 
 Why the flag is installed at activation and not left in the def: mobs_redo's
 `register_mob` copies an explicit whitelist into the entity prototype
-(api.lua:3719-3874), so a `_grug_*` def field reaches neither `self` nor
+(api.lua:3956-4112), so a `_grug_*` def field reaches neither `self` nor
 `core.registered_entities[name]` — AGENTS.md's WP6 runtime-field rule. The def
 keeps `_grug_noncombatant = true` as the declaration a reader and the KAT see;
 the verb is the one place that turns the declaration into behaviour.

@@ -4,7 +4,7 @@
 -- WHY THE IDENTITY IS IN THE ENTITY NAME
 --
 -- mobs_redo's register_mob copies only an EXPLICIT whitelist of def fields
--- into the entity table (mods/ENTITIES/mobs/api.lua:3418-3560), and
+-- into the entity table (mods/ENTITIES/mobs/api.lua:3956-4112), and
 -- mob_staticdata drops every function field, so a `_grug_vendor_race` written
 -- onto `self` would be a runtime-installation problem (the WP6 rule in
 -- AGENTS.md) for no gain: nothing about a vendor needs to persist. One entity
@@ -24,18 +24,18 @@
 --
 -- PERMANENCE (api.lua evidence, all three checked, not assumed)
 --   * mob_staticdata's unload-delete is skipped for `self.type ~= "npc"`
---     (api.lua:3043-3045) — a vendor is type "npc".
---   * the `static_save = false` stamp that would make the engine forget the
---     object entirely only applies to `self.type == "monster"`
---     (api.lua:3200-3202).
+--     (api.lua:3599-3605) — a vendor is type "npc".
+--   * registration leaves the engine's default `static_save` enabled; the
+--     registered entity's initial-properties block does not override it
+--     (api.lua:3967-3987).
 --   * mob_expire returns immediately for `self.type == "npc"`
---     (api.lua:3226-3228).
+--     (api.lua:3774-3778).
 --   Belt and braces on top of that: `lifetimer = 30000`, which is the
---   >= 20000 exemption the same three sites also honour (the mechanism
+--   >= 20000 exemption both removal sites also honour (the mechanism
 --   grug_mobs/rares.lua relies on).
 --
 -- INVULNERABILITY
---   api.lua:2807-2810 reads `if self.do_punch and not self:do_punch(...) ==
+--   api.lua:3203-3207 reads `if self.do_punch and not self:do_punch(...) ==
 --   false then return true end`, which parses as `(not result) == false` —
 --   i.e. ANY TRUTHY return cancels the punch, before weapon wear, before both
 --   health subtractions and before check_for_death (the api.lua comment claims
@@ -151,8 +151,8 @@ end
 --
 
 -- Static nametag. mobs_redo's own mob_class:update_tag recolors the tag by
--- health on every do_env_damage tick (api.lua:636-668, called from
--- api.lua:989) — a green "healthy" tint on a shopkeeper. Overriding the method
+-- health on every do_env_damage tick (api.lua:1050-1176, called from
+-- api.lua:3837-3938) — a green "healthy" tint on a shopkeeper. Overriding the method
 -- PER ENTITY (the same trick grug_mobs/levels.lua uses for the level tag)
 -- keeps mobs_redo's own call sites while we own the text and the colour.
 -- Installed from after_activate because a function field is never serialized
@@ -266,7 +266,7 @@ local function vendor_def(vendor, texture)
 
 		-- Stationary. `walk_chance = 0` never leaves the stand state,
 		-- `stand_chance = 100` never leaves it either way, `jump_height = 0`
-		-- is what actually disables jumping (api.lua:1119 — mobs_redo has no
+		-- is what actually disables jumping (api.lua:1178-1207 — mobs_redo has no
 		-- `jump` field at all), and zero velocities mean even a nudged mob
 		-- has nothing to move with.
 		walk_chance = 0,
@@ -322,7 +322,7 @@ local function vendor_def(vendor, texture)
 			punch_start = 189, punch_end = 198, punch_speed = 30,
 		},
 
-		-- ANY truthy return cancels the punch outright (api.lua:2807-2810).
+		-- ANY truthy return cancels the punch outright (api.lua:3203-3207).
 		do_punch = function()
 			return true
 		end,
@@ -342,7 +342,7 @@ local function vendor_def(vendor, texture)
 			-- A vendor on a WP13 start socket was placed facing the way its
 			-- blueprint says (grug_mobs/start_npcs.lua writes `_grug_face_yaw`).
 			-- mob_activate hands every mob a RANDOM yaw on every activation
-			-- (api.lua:3401), so without this the start vendor turns somewhere
+			-- (api.lua:3630-3769), so without this the start vendor turns somewhere
 			-- else on every reload. A capital vendor carries no such field and
 			-- this is a no-op for it.
 			grug_mobs.face_yaw(self, self._grug_face_yaw)
@@ -662,7 +662,7 @@ core.register_globalstep(function(dtime)
 					-- row, so mobs:add_mob's per-name area cap would default to
 					-- 1 for the shared general-vendor entity and only ever let
 					-- ONE of the three capitals of a faction have one
-					-- (api.lua:3663-3667, the reason camps.lua passes it too).
+					-- (api.lua:4218-4222, the reason camps.lua passes it too).
 					-- A decline (no player in the active area, active mob
 					-- limit) simply means "retry in 5 s".
 					local ent = grug_mobs.add_mob(pos,

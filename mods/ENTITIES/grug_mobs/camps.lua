@@ -11,7 +11,7 @@
 -- player is nearby, and it costs nothing at all otherwise. That is also why
 -- the empty-area branch below is not a hack but the honest reading of the
 -- situation: with no player around there are no loaded objects to count and
--- mobs:add_mob would refuse anyway (api.lua:3435, count_mobs needs a player
+-- mobs:add_mob would refuse anyway (api.lua:4121-4213, count_mobs needs a player
 -- within active_block_range * 2 = 128 m).
 --
 -- FLOW, end to end:
@@ -372,7 +372,7 @@ local function spawn_one(pos, meta, cfg, living)
 	end
 	-- `ignore_count = true` is REQUIRED: mobs:add_mob otherwise compares
 	-- against the family's mobs:spawn aoc, and a camp family has no
-	-- mobs:spawn row at all, so that cap defaults to 1 (api.lua:3444) — every
+	-- mobs:spawn row at all, so that cap defaults to 1 (api.lua:4218-4222) — every
 	-- camp would top out at a single mob. The camp's own target is the cap.
 	-- add_mob returns nil whenever it declines (no player in range, active
 	-- mob limit, entity missing); that must never be an error here.

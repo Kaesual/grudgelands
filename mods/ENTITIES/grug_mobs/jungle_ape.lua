@@ -82,7 +82,7 @@ local ape = {
 grug_mobs.register_mob("grug_mobs:jungle_ape", ape)
 
 -- Silverback roll, identical in shape to bear.lua's elder_roll: mobs_redo
--- calls on_spawn(luaentity, pos) right after core.add_entity (api.lua:3686),
+-- calls on_spawn(luaentity, pos) right after core.add_entity (api.lua:4450-4460),
 -- i.e. AFTER on_activate but BEFORE the first on_step — so before
 -- grug_mobs.ensure_init has assigned a level. grug_mobs.set_tier documents
 -- exactly that case: with no _grug_level yet it only records the tier, and

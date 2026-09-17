@@ -72,7 +72,7 @@ end
 -- Elder roll for a mobs:spawn row.
 --
 -- mobs_redo calls on_spawn(luaentity, pos) directly after core.add_entity
--- (api.lua:3686), i.e. AFTER on_activate but BEFORE the entity's first
+-- (api.lua:4450-4460), i.e. AFTER on_activate but BEFORE the entity's first
 -- on_step — so before grug_mobs.ensure_init has assigned a level. That is
 -- exactly the case grug_mobs.set_tier documents: with no _grug_level yet it
 -- only records the tier and returns, and ensure_init then applies level,

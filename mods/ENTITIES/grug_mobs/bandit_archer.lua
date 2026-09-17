@@ -24,7 +24,7 @@
 --   attack_type  `dogshoot` -- the same verb the skeleton archer carries.
 --                Ranged until the target is close, then melee; the switch is
 --                mobs_redo's `dogswitch` plus the hard rule that a target
---                inside `reach` forces melee regardless (api.lua:2366).
+--                inside `reach` forces melee regardless (api.lua:2491-2819).
 --   view_range   16 instead of the bandit's 14. That is the rule ruling 3
 --                asks for, now written down in biomes_mobs.md §3.1 and
 --                combat_stats.md §3: a `dogshoot` family sees 16, a melee

@@ -315,7 +315,8 @@ Details + line numbers in [docs/research/](docs/research/).
 - **Combat/classes**: damage = damage_groups × armor_groups (÷100) ×
   punch-interval factor. **Damage pipeline lives in `grug_core/combat.lua`**
   (WP4): `deal_ability_damage` (crit ×1.5, applied via `object:punch` with
-  full punch interval so armor/knockback/XP keep working), `heal_player`,
+  full punch interval so armor/XP keep working; knockback requires an explicit
+  `damage_groups.knockback` override), `heal_player`,
   central dodge roll (hp-change modifier), `mark_in_combat/in_combat`
   (5 s window), threat stubs `add_threat`/`add_heal_threat` (WP6 fills
   them). Crit/dodge accessors are grug_core stubs overridden by
@@ -453,7 +454,7 @@ Details + line numbers in [docs/research/](docs/research/).
   authoritative hostile ability target while LMB is held; enemy memory is
   UI-only.
 - **Mobs**: embed and patch mobs_redo (MIT). Faction targeting: condition
-  in `general_attack()` (api.lua:1699ff) following the LotT pattern
+  in `general_attack()` (api.lua:1853-2017) following the LotT pattern
   (`race` field in the mob def + ally check); territory/tier gating via
   `mobs:spawn_abm_check()`. Tiers via `hp_max`/`armor` (lower = tougher)/
   `damage`/`view_range`/`group_attack`. Dynamic loot: `drops` can be a
@@ -481,7 +482,7 @@ Details + line numbers in [docs/research/](docs/research/).
     unimplemented king L65. There is no second king-specific level path.
     Everything else (speeds, view_range, drops, visuals) stays def-owned.
     **Four tiers since WP36**: `critter` (added for the small animals —
-    fixed L1, 1 HP, 10 XP, no fall damage, never promotable; the second
+    fixed L1, 1 HP, 0 XP, no fall damage, never promotable; the second
     documented exception to "stats derived") plus `normal`/`elite`/`rare`,
     whose arithmetic is unchanged. The **telegraph gate is a POSITIVE
     elite/rare test** (`grug_mobs.tier_telegraphs`, one predicate for both
@@ -501,7 +502,7 @@ Details + line numbers in [docs/research/](docs/research/).
     `pathfinding = 1`; fliers never do (`core.find_path` is a ground
     search).
   - **Runtime field installation**: mobs_redo's `register_mob` copies an
-    EXPLICIT def-field whitelist into the entity table (api.lua:3196ff)
+    EXPLICIT def-field whitelist into the entity table (api.lua:3956-4112)
     and staticdata drops function fields — so every `_grug_*` field an
     api.lua patch reads off `self`, and every callable, must be
     (re-)installed from the `do_custom`/`do_punch` wrappers on each
@@ -520,7 +521,7 @@ Details + line numbers in [docs/research/](docs/research/).
   - **`aoc` is per entity NAME**, counted in a 128-node sphere — two
     rows of one name share a budget, per-biome tints do not. Spawn
     calibration reference: **`docs/research/wp6_spawn_budget.md`**.
-  - **59 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** — the
+  - **62 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** — the
     inventory and rationale live in VENDOR.md; re-apply them on any
     mobs_redo update. The 41st to 43rd (mob pressure, 2026-09-16) are the
     attack-cadence patch of `combat_stats.md` §4 and user ruling 1: the

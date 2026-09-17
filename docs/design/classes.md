@@ -113,8 +113,10 @@ Core principles:
 
 - Ability damage/heals go through `grug_core` helpers that roll **crit**
   (attacker's chance, ×1.5) and — for player targets — **dodge**
-  (combat_stats §2), then apply via `object:punch` so armor groups,
-  knockback and mob death handling (XP, loot) keep working.
+  (combat_stats §2), then apply via `object:punch` so armor groups and mob
+  death handling (XP, loot) keep working. Implicit ordinary knockback is zero;
+  only an explicit `damage_groups.knockback` override displaces the mob
+  (`mobs/api.lua:3446-3481`).
 - Mob→player punches roll the player's dodge centrally (hp change
   modifier in `grug_core`).
 - **Target-race equipment effects use the same central transaction.** A

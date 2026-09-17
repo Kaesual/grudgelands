@@ -189,7 +189,8 @@ deliberately break a cap or a control rule — each paying for it with a stated
 cooldown. A fourth class, the [Scout](docs/design/scout.md) — leather, a bow
 and a blade — is designed there too, planned now and built later. Both files
 carry a **PROPOSAL** banner; as of 2026-09-16 the user has answered every
-open question in them, and nothing in them is implemented yet.
+open question in them. WP11's X1, X2 and X4 are implemented; its X3 and the
+Scout remain open.
 
 Death returns a player to their race's starting settlement with inventory
 intact; the decided PvE penalty removes 25% of the whole current-level XP span,
@@ -261,9 +262,9 @@ and [the depth TODO](TODO-design-depth.md); the [boat contract](docs/design/boat
 and [PvP-death XP exemption](docs/design/progression.md) are already decided.
 
 **In progress:** WP11 phase 1 has shipped its talent registry, 48 talents,
-point/gate/persistence model and thirty numeric consumers; round-5 Lane U is
-building X4's Talents page, respec price and level-up flow, while X3's
-keystones, capstones and four abilities follow in round 6. WP13 has built
+point/gate/persistence model and thirty numeric consumers. X4's Talents page,
+respec price and level-up flow are shipped; only X3's keystones, capstones and
+four abilities follow in round 6. WP13 has built
 **all six start settlements and all six capitals**. The starts share one reusable building library with per-race
 palettes -- small dense houses with doors, pane windows, stair roofs,
 furnished interiors and exterior dressing -- and each is a different

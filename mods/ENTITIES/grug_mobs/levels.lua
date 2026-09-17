@@ -31,7 +31,7 @@
 --     mob's position (`level = 1`, `hp_flat = 1` below);
 --   * 0 XP flat (`xp_flat`). Critters are scenery and food, never an XP farm.
 --   * `fall_damage` off. At 1 HP any 7-node fall is lethal (mobs_redo
---     charges `d - 6`, api.lua:2689-2715), which would quietly delete the
+--     charges `d - 6`, api.lua:2874-2923), which would quietly delete the
 --     population in exactly the hilly terrain a travelling player crosses.
 --     NB it must be `false`, NOT `0`: mobs_redo tests `if self.fall_damage`
 --     and every number — 0 included — is truthy in Lua, so `fall_damage = 0`
@@ -44,8 +44,8 @@
 -- drop list) stays def-owned like any other mob.
 --
 -- Persistence note: mobs_redo serializes every plain entity field into
--- staticdata (api.lua clean_staticdata:2790) and re-applies fields whose
--- name is an object-property name (is_property_name:2842) on activation.
+-- staticdata (api.lua clean_staticdata:3546-3558,3626) and re-applies fields whose
+-- name is an object-property name (is_property_name:3630-3634,3669-3675) on activation.
 -- So `self.hp_max` is not read by mobs_redo at runtime, but storing it
 -- makes the raised max survive unload/reload for free. Function fields are
 -- dropped by the serializer — anything callable must be re-installed on
@@ -217,10 +217,10 @@ function grug_mobs.tag_text(self)
 		.. grug_core.format_k(hp) .. "/" .. grug_core.format_k(hp_max)
 end
 
--- Per-entity replacement for mobs_redo's mob_class:update_tag (api.lua:634),
+-- Per-entity replacement for mobs_redo's mob_class:update_tag (api.lua:696-758),
 -- which hardcodes a green->red HP color we do not want and which we must
 -- not patch. Installing it as an instance field means mobs_redo's own calls
--- reach us: check_for_death (api.lua:829-851) calls update_tag on EVERY health
+-- reach us: check_for_death (api.lua:887-975) calls update_tag on EVERY health
 -- change, which is exactly the "update on damage" requirement — no polling
 -- and no throttle needed, and no write happens unless the text changed.
 --
@@ -399,7 +399,7 @@ local function apply_stats(self, keep_fraction)
 		end
 	end
 	self.hp_max = hp
-	self.hp_min = hp -- mobs_redo rolls health in hp_min..hp_max (api.lua:3460)
+	self.hp_min = hp -- mobs_redo rolls health in hp_min..hp_max (api.lua:3630-3717)
 	self.object:set_properties({hp_max = hp})
 	self.health = math.max(1, math.floor(hp * fraction + 0.5))
 	-- Keep mobs_redo's damage bookkeeping in sync so raising the max does
@@ -542,7 +542,7 @@ function grug_mobs.register_level_cfg(name, def)
 	def.armor = tier_def(tier).armor or def.armor or 100
 	-- Def-time normalization, exactly like the armor line above and for the
 	-- same reason: the value has to be in the def BEFORE mobs:register_mob
-	-- copies its field whitelist into the entity table (api.lua:3786
+	-- copies its field whitelist into the entity table (api.lua:3956-4112
 	-- `fall_damage = def.fall_damage`), because a nil there falls through the
 	-- class metatable to mobs_redo's default of `true`. `false` and not `0`
 	-- — see the header.
@@ -555,19 +555,19 @@ end
 -- RE-ASSERT THE DERIVED MAXIMUM ON EVERY ACTIVATION, because mob_activate loses
 -- it (playtest round 1, 2026-09-15: "Elite Accord Guard [Lv 60] 945/10").
 --
--- `hp_max` is in mobs_redo's `is_property_name` table (api.lua:3383-3387), so the
+-- `hp_max` is in mobs_redo's `is_property_name` table (api.lua:3630-3675), so the
 -- staticdata loop writes it to the OBJECT and never back onto `self`
--- (api.lua:3413-3418). Two consequences, and the second is the bug:
+-- (api.lua:3630-3675). Two consequences, and the second is the bug:
 --
 --   1. `self.hp_max` is nil for the whole of every activation after the first,
 --      so `tag_text` and aggro.lua's leash heal fall back to the property.
 --   2. The NEXT save therefore carries no `hp_max` at all -- `clean_staticdata`
 --      serializes the fields that exist -- and on the activation after that the
 --      object keeps `initial_properties.hp_max`, which for a def that does not
---      set one is mobs_redo's own default of 10 (api.lua:3733). A level-60 elite
+--      set one is mobs_redo's own default of 10 (api.lua:3970). A level-60 elite
 --      guard then reads 945/10, and its first damage is clamped to 10 by
 --      check_for_death's "make sure health isn't higher than max"
---      (api.lua:849). That is two reload cycles, which is why it looked random.
+--      (api.lua:907). That is two reload cycles, which is why it looked random.
 --
 -- Fixing it where the max is OWNED rather than in the vendored api.lua: the
 -- level and tier are persisted plain fields, so the derived max is a pure

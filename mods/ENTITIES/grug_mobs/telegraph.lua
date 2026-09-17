@@ -35,9 +35,9 @@ local RANGE_BONUS = 1.5 -- m of reach the cone adds on top of self.reach
 local CONE_COS = 0.7071
 
 -- Facing direction of the mob. mobs_redo stores a model-orientation offset
--- in self.rotate (radians, api.lua:3229) and subtracts it when aiming
--- (yaw_to_pos, api.lua:557) — so the direction the mob actually looks at is
--- object yaw + rotate, the same sum set_velocity uses (api.lua:347).
+-- in self.rotate (radians, api.lua:4003) and subtracts it when aiming
+-- (yaw_to_pos, api.lua:626-635) — so the direction the mob actually looks at is
+-- object yaw + rotate, the same sum set_velocity uses (api.lua:401-437).
 local function facing_dir(self)
 	local yaw = self.object:get_yaw() or 0
 	return core.yaw_to_dir(yaw + (self.rotate or 0))

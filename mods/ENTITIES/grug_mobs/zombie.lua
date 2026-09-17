@@ -118,7 +118,7 @@ mobs:spawn({
 --
 -- The def's daylight burn would make a 24 h row pointless (spawn at noon,
 -- die at noon), so a blight zombie is exempted from it: mobs_redo reads
--- `self.light_damage` per entity on every environment tick (api.lua:1056),
+-- `self.light_damage` per entity on every environment tick (api.lua:1050-1176),
 -- and a plain number field persists in staticdata — so this survives
 -- unload/reload with the mob and touches nobody else's zombie.
 mobs:spawn({
@@ -129,7 +129,7 @@ mobs:spawn({
 	active_object_count = 4,
 	min_height = 0,
 	max_height = 200,
-	-- mobs_redo calls this as on_spawn(luaentity, pos) (api.lua:4326); the
+	-- mobs_redo calls this as on_spawn(luaentity, pos) (api.lua:4450-4460); the
 	-- entity is nil if core.add_entity failed.
 	on_spawn = function(ent)
 		if ent then
@@ -156,9 +156,9 @@ mobs:spawn({
 -- HEIGHTS: min_height -31000 / max_height -40 with the ZONE gate doing the
 -- real work. The two are consistent, but read api.lua before touching them:
 -- mobs_redo calls mobs:spawn_abm_check with the ABM's NODE position
--- (api.lua:4214) and only THEN moves the spawn position one node up
--- (api.lua:4256), and the min/max height comparison happens on that raised
--- position (api.lua:4258). So max_height -40 admits node y <= -41, and
+-- (api.lua:4322-4510) and only THEN moves the spawn position one node up
+-- (api.lua:4390-4448), and the min/max height comparison happens on that raised
+-- position (api.lua:4390-4448). So max_height -40 admits node y <= -41, and
 -- spawn_policy.lua returns "underground" for exactly y < -40 — every node
 -- this row can match is inside the zone, and nothing is silently thrown away
 -- at the boundary.
@@ -170,7 +170,7 @@ mobs:spawn({
 --
 -- PERFORMANCE: `default:stone` sounds like "every node in the world", but
 -- the ABM's implicit neighbour list is {"air"} (mobs_redo's default,
--- api.lua:4369), so only stone with air next to it — cave walls, ceilings
+-- api.lua:4498-4510), so only stone with air next to it — cave walls, ceilings
 -- and floors — is ever a candidate. Solid rock costs nothing.
 --
 -- WHY THE mod.conf DEPENDENCY ON grug_materials IS *NOT* A LOAD-ORDER FIX:

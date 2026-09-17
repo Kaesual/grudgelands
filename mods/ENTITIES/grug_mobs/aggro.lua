@@ -63,26 +63,26 @@
 -- Target acquisition for a mob that may target nobody (WP36 review, LOW 2).
 --
 -- mobs_redo's general_attack short-circuits at its very first line for a
--- `passive` mob (api.lua:1769). Passive prey is deliberately NOT passive —
+-- `passive` mob (api.lua:1853-1858). Passive prey is deliberately NOT passive —
 -- that is the field that buys it retaliation (verbs.lua) — so it falls
 -- through into the acquisition loop and pays, once a second, for a
--- `core.get_objects_inside_radius(pos, view_range)` (api.lua:1775) plus the
+-- `core.get_objects_inside_radius(pos, view_range)` (api.lua:1861-1864) plus the
 -- ObjectRef table it allocates. Every candidate that scan can return is then
--- discarded by the filter: players by `attack_players = false` (:1787),
--- animals/monsters/npcs by the three type tests (:1817-1819), and anything
--- else by the `else objs[n] = nil` tail (:1823). `min_player` is therefore
--- nil at :1847 with certainty, not merely usually — the whole call is
+-- discarded by the filter: players by `attack_players = false` (:1874),
+-- animals/monsters/npcs by the three type tests (:1904-1906), and anything
+-- else by the `else objs[n] = nil` tail (:1920-1921). `min_player` is therefore
+-- nil at :1944 with certainty, not merely usually — the whole call is
 -- provably a no-op, and against the 100-player design target it is a no-op
 -- per prey mob per second.
 --
 -- So we replace the METHOD on the entity instead of patching the vendored
 -- file (AGENTS.md: prefer a wrapper over an in-place edit). `self` is an
--- instance table whose metatable's __index is mobs.mob_class (api.lua:182),
+-- instance table whose metatable's __index is mobs.mob_class (api.lua:157-218),
 -- so an instance field shadows the class method — the same technique
 -- `_grug_ignore_player` uses, and safe for the same reason:
--- clean_staticdata drops every field of type "function" (api.lua:3024), so
+-- clean_staticdata drops every field of type "function" (api.lua:3546-3627), so
 -- this cannot be persisted, and do_custom runs before general_attack in the
--- same on_step (api.lua:3359 vs. :3378), so it is always reinstalled in time.
+-- same on_step (api.lua:3837-3938), so it is always reinstalled in time.
 -- ONE shared function, never a per-entity closure.
 --
 -- Not applied to any mob that can still target something: the guard keeps
@@ -91,8 +91,8 @@
 -- The `grug_traders` vendor NPCs do NOT have this defect and need no
 -- wrapper (checked 2026-08-08): their def sets `passive = true`
 -- (`grug_traders/vendors.lua:177`), and general_attack's very first test
--- returns on `self.passive` (api.lua:1769) — before the
--- get_objects_inside_radius at :1775 — so a vendor never runs the scan at
+-- returns on `self.passive` (api.lua:1853-1858) — before the
+-- get_objects_inside_radius at :1862 — so a vendor never runs the scan at
 -- all. They also register through plain `mobs:register_mob` (vendors.lua
 -- :258, deliberately not through grug_mobs.register_mob, which IS the level
 -- engine), so the `no_acquire` derivation never sees them either. Do not
@@ -103,7 +103,7 @@ local function no_target_acquisition() end
 --
 -- Runtime field installation. Custom def fields do NOT reach the entity:
 -- mobs_redo's register_mob copies an EXPLICIT field list into the entity
--- table (api.lua:3196ff) and mob_activate only layers staticdata on top. So
+-- table (api.lua:3956-4112) and mob_activate only layers staticdata on top. So
 -- everything an api.lua patch reads off `self` must be installed at runtime
 -- — the same reason _grug_faction is set in do_custom (init.lua). Called
 -- from the do_custom and do_punch wrappers; `cfg` is the per-registration
@@ -202,7 +202,7 @@ function grug_mobs.leash_reset(self)
 	if hp_max and hp_max > 0 then
 		self.health = hp_max
 		-- Keep mobs_redo's damage bookkeeping in sync, otherwise the next
-		-- check_for_death (api.lua:821) reads the jump as a change and can
+		-- check_for_death (api.lua:887-975) reads the jump as a change and can
 		-- play a damage sound (same reason levels.lua apply_stats does it).
 		self.old_health = self.health
 		if type(self.update_tag) == "function" then
@@ -312,7 +312,7 @@ local function evade_tick(self)
 	-- general_attack, which is the path that matters; four others reach past
 	-- it and are swept here instead, each costing at most one second of chase:
 	--   * mobs_redo's group alert calls do_attack DIRECTLY on nearby idle mobs
-	--     of the same name (api.lua:3000), as do our pack-hunter and
+	--     of the same name (api.lua:2927-3538), as do our pack-hunter and
 	--     camp-swarm verbs (verbs.lua);
 	--   * general_attack's NON-player half can still hand an evading guard a
 	--     wolf (the veto hook is a player filter);
@@ -413,7 +413,7 @@ end
 -- that was DRAGGED away; this is the bound on the mob's own drifting.
 --
 -- Why it is needed at all: mobs_redo's idle walk is an unbounded random walk
--- (do_states picks a random yaw and walks, api.lua:2150ff) — nothing in it
+-- (do_states picks a random yaw and walks, api.lua:2176-2300) — nothing in it
 -- ever pulls a mob back. A bandit camp therefore dissolved into the landscape
 -- over an evening, and every member that drifted past radius + 16 was counted
 -- as dead by camps.lua and refilled behind (the same failure mode the evade
