@@ -86,7 +86,7 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   the player, multiply player damage by `max(0.10, 1 − 0.10×(mob level −
   player level − 5))`. It is part of the same final damage multiplication and
   is floored only once with the level scalar
-  (`mods/CORE/grug_core/combat.lua:36-62`).
+  (`mods/CORE/grug_core/combat.lua:29-65`).
 - **Crit** = 5% + 0.1%×Dex, **cap 30%**; a crit deals ×1.5 damage
 - **Dodge** = 0.1%×Dex, **cap 30%**; a dodge avoids the hit entirely
 - Player armor (gear) reduces incoming damage; endgame plate reaches the
@@ -266,8 +266,8 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   ability swing to at least `now + equipped FPI`. Its transition clears an old
   bank once; consecutive ordinary PvP packets retain their fractions, and
   returning to a swing clears the remainder once. Cast use alone preserves
-  ability due time (`mods/ENTITIES/mobs/api.lua:2962-2974`,
-  `mods/PLAYER/grug_abilities/init.lua:1261-1303`, `:2239-2269`).
+  ability due time (`mods/ENTITIES/mobs/api.lua:2969-2974`,
+  `mods/PLAYER/grug_abilities/init.lua:1271-1310`, `:2322-2489`).
 - **One accepted full swing resolves once.** Against players the order is
   **slot weapon + Strength → selected proc replacement → level scalar (plus
   mob-level malus when the target is a mob) → one crit → armor → integer
@@ -406,7 +406,7 @@ Normal tier at level L:
   contact run remains `reach × 0.6`, hence **1.8 m** for an ordinary attacker.
   Telegraphs continue to derive their geometry from the live reach; the
   ordinary elite/rare cone therefore reaches **4.5 m**
-  (`grug_abilities/kits.lua:284,344,381`; `mobs/api.lua:2690-2819`;
+  (`grug_abilities/kits.lua:308,379,417`; `mobs/api.lua:2690-2819`;
   `grug_mobs/telegraph.lua:93,181`). The explicit ordinary reach sites are
   `grug_mobs/bandit.lua:61`, `bear.lua:23`, `boar.lua:10`,
   `boar_variants.lua:22`, `bog_ooze.lua:23`, `crocodile.lua:43`,
@@ -419,7 +419,7 @@ Normal tier at level L:
 - **Ordinary hits have zero knockback.** Damage never becomes an implicit
   displacement magnitude. `damage_groups.knockback` remains the explicit
   override seam for a future limited/cooldown skill
-  (`mobs/api.lua:3446-3481`).
+  (`mobs/api.lua:3455-3481`).
 - **Actors do not collide with other objects.** Mobs, NPCs and players use
   `collide_with_objects = false`; terrain collision is unchanged. This removes
   actor-on-actor climbing and deliberately permits visual overlap, which the
@@ -556,8 +556,9 @@ not level drift: the L20 and L60 baseline feel remains the same.
 
 ### Position → mob level
 
-`grug_core.difficulty_at(pos)` returns **0..1** (= (mob_level−1)/59);
-helper `grug_core.mob_level_at(pos)` returns the level directly. Target
+`grug_zones.surface_mob_level_at(x, z)` supplies the authored surface level;
+`grug_core.mob_level_at(pos)` applies that surface result together with the
+depth and exterior-class rules and returns the final level directly. Target
 surface geometry (`world_zones.md` §2): the named zone and its authored local
 progression supply levels 1–60, rising from outer race starts toward the
 faction front; within 100 horizontal nodes of every authored start anchor the
@@ -727,8 +728,8 @@ design (`group_attack` stays on).
   skips the due tick without canceling or pausing the buff. Eating in combat
   is allowed. Only one food buff may run at once and the most recent serving
   replaces it. Relogging drops it.
-  - Raw/plain restores **2 %** of the base HP pool per tick; simply cooked
-    restores **5 %**; well cooked restores **10 %**. Every tick restores at
+  - Raw/plain restores **2 %** of maximum HP per tick; simply cooked restores
+    **5 %**; well cooked restores **10 %**. Every tick restores at
     least 1 HP. Vanilla `item_eat` instant healing is removed completely.
   - Mana food mirrors the quality percentage against maximum mana. It does
     nothing, reports why and is not consumed for a rage class.
@@ -760,7 +761,7 @@ design (`group_attack` stays on).
 - Nametag and Target Frame HP use one compact formatter: values below 1000 are
   full integers, 1000–9999 use one truncated decimal (`2300 → 2.3k`), and
   values from 10000 round to whole thousands (`51234 → 51k`;
-  `mods/CORE/grug_core/combat.lua:68-78`,
+  `mods/CORE/grug_core/combat.lua:109-123`,
   `mods/ENTITIES/grug_mobs/levels.lua:199-217`).
 - **Nametag visibility is proximity-capped** (decided 2026-08-07 after
   the WP6 runtime test; the engine has no distance cull — nametags of

@@ -1191,9 +1191,9 @@ Neither of these costs a main profession slot (professions.md §1).
   `grug_core.in_combat` window is false. Combat skips that tick without
   canceling or pausing the buff. Exactly one food buff may run at once and
   the most recently eaten serving replaces it.
-  - **Raw/plain:** 2 % of the base HP pool per tick.
-  - **Simply cooked:** 5 % of the base HP pool per tick.
-  - **Well cooked:** 10 % of the base HP pool per tick.
+  - **Raw/plain:** 2 % of maximum HP per tick.
+  - **Simply cooked:** 5 % of maximum HP per tick.
+  - **Well cooked:** 10 % of maximum HP per tick.
   - Every tick restores at least 1 HP. Food is the entire effect: the old
     `item_eat` instant heal is removed. Tooltips state the percentage,
     10 s cadence, 3 min duration and out-of-combat condition.

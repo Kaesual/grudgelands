@@ -1316,12 +1316,13 @@ numeric-truncated seed.
   `pvp_rule_at` apply full 3D precedence: bounded hard protection, immutable
   deep ocean/channels, planned-water/shelf inheritance,
   ordinary land and the y = -701 contested-depth override.
-- Existing `grug_core.territory_at`, `zone_at`, `mob_level_at`,
-  `guard_level_at`, `difficulty_at`, `open_sea_at` and protection
-  callers migrate through explicit adapters. `open_sea_at` maps to deep
-  ocean, not planned water or a dragon channel. Old
-  `core/inner/outer/coast/war_coast/ocean/strait/underground` spawn buckets
-  may exist only as a temporary derived adapter.
+- Current `grug_core.territory_at`, `zone_at`, `mob_level_at`,
+  `guard_level_at`, `open_sea_at` and protection callers consume the
+  `grug_zones` authority through explicit adapters. `difficulty_at` is gone;
+  callers use the level APIs directly. `open_sea_at` maps to deep ocean, not
+  planned water or a dragon channel. The old
+  `core/inner/outer/coast/war_coast/ocean/strait/underground` buckets are not
+  current spawn authority and have no compatibility path.
 - All fixed placements resolve through stable zone anchor ids. Slot vocabulary
   remains `start`, `capital`, `village_<n>`, `outpost_<n>`,
   `bandit_<n>`, `mine`, `mirefolk`, `clash_<n>`, `dragon`,

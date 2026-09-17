@@ -95,38 +95,38 @@ defect:
 > earlier. **The fix is one vendored api.lua patch; because it changes every
 > mob's feel, the WP that ships it owes a runtime test.**
 
-**The line numbers in that quote have drifted** and the card corrects them
-against `70dda602`:
+**The line numbers in that quote had drifted** and the card originally
+corrected them against `70dda602`. The right-hand coordinates below were
+refreshed against the current patched tree on 2026-09-17:
 
-| `combat_stats.md` says | Actually at `70dda602` | What is there |
+| Historical coordinate | Current patched tree | What is there |
 |---|---|---|
-| `api.lua:2493` | **`api.lua:2498`** | `self:set_velocity(0)` |
-| `api.lua:2495-2497` | **`api.lua:2500-2502`** | `self.punch_timer = (self.punch_timer or 0) + dtime` and the `>= self.punch_interval` test |
-| `api.lua:3768` | **`api.lua:3771`** | `punch_interval = def.punch_interval or 1` |
+| `api.lua:2493` | **`api.lua:2679-2725`** | the in-reach branch and its bounded contact movement |
+| `api.lua:2495-2497` | **`api.lua:2524-2527`** | `self.punch_timer = (self.punch_timer or 0) + dtime` and its one-hit cap |
+| `api.lua:3768` | **`api.lua:4087`** | `punch_interval = def.punch_interval or 1` |
 
 The structure, verified line by line:
 
-- `api.lua:2434` — `if dist > (self.reach + (self.reach_ext or 0)) then` opens
+- `api.lua:2620` — `if dist > (self.reach + (self.reach_ext or 0)) then` opens
   the **chase** branch (path-finding, `set_velocity(self.run_velocity)` at
-  `:2481`, walk speed instead beyond 25 m at `:2477-2479`).
-- `api.lua:2492` — `else -- rnd: if inside reach range` opens the **attack**
+  `:2668`, walk speed instead beyond 25 m at `:2650-2666`).
+- `api.lua:2679` — `else -- rnd: if inside reach range` opens the **attack**
   branch.
-- `api.lua:2498` — `self:set_velocity(0)`. The mob stops the instant the
-  target is inside reach.
-- `api.lua:2500` — `self.punch_timer = (self.punch_timer or 0) + dtime`. The
-  cadence advances **only here**.
-- `api.lua:2502-2504` — `if self.punch_timer >= self.punch_interval then
-  self.punch_timer = 0`.
-- `api.lua:2522` — `if self:line_of_sight(p2, s2) then` — the punch is
-  additionally LOS-gated.
-- `api.lua:2535-2538` — `target:punch(self.object, 1.0, {…
+- `api.lua:2524` — `self.punch_timer = (self.punch_timer or 0) + dtime`. The
+  cadence now advances before both distance branches.
+- `api.lua:2526-2527` caps the cadence at one ready hit.
+- `api.lua:2690-2725` keeps closing to contact instead of freezing throughout
+  the in-reach branch, while retaining the cliff guard.
+- `api.lua:2788-2819` tests readiness, range and canonical target visibility,
+  then consumes the cadence only after an accepted attempt.
+- `api.lua:2810-2813` — `target:punch(self.object, 1.0, {…
   damage_groups = {[dgroup] = self.damage}}, nil)` — the hit lands. Note
-  `local target = self.attack:get_attach() or self.attack` at `:2531`: a
+  `local target = self.attack:get_attach() or self.attack` at `:2808`: a
   mounted player's **mount** eats the swing, which `mounts.md:162-171`
   already relies on.
 
-So the two defects are one line apart: **the mob stops (`api.lua:2498`) and
-the clock only ticks while it is stopped (`api.lua:2500`)**. Reach is uniform in the roster:
+The shipped fix separates the cadence at `api.lua:2524-2527` from contact
+movement and settlement at `:2690-2819`. Reach is uniform in the roster:
 measured, **20 of 22 `reach` values are 2**, the Kraken is 4 with a comment
 explaining why, and one is 0. `punch_interval` is the mobs_redo default of 1 s
 for every grug mob — no definition sets it.
@@ -150,7 +150,7 @@ for every grug mob — no definition sets it.
 5. **Do not raise `reach`.** The decided text explains why: it cannot repair
    the defect, it widens the elite/rare telegraph cone (`reach + 1.5`,
    `combat_stats.md:338`) and it makes `dogshoot` mobs switch to melee
-   earlier — that last one is **`api.lua:2366`**
+   earlier — that last one is **`api.lua:2492`**
    (`and (ds_var == 2 or dist <= self.reach)`), not the `api.lua:2249` that
    `golem.lua:67`'s comment cites. That stale citation has drifted too, and
    the **same** one also sits in `skeleton_archer.lua:65` — the patch should
@@ -225,7 +225,7 @@ it, not after:
    soft-de-aggro distance moves with the speed, or the Mage's pivot stops
    working.
 2. **The soft de-aggro.** `combat_stats.md:328-330`: beyond ~25 m a chasing
-   mob drops to walk speed (`api.lua:2477-2479` implements it, and
+   mob drops to walk speed (`api.lua:2650-2666` implements it, and
    `_grug_soft_deaggro ~= false` is the per-mob opt-out). Reaching 25 m is
    *only* possible because of the standstill-and-root windows; faster mobs
    make it harder in exactly the same proportion.
@@ -311,8 +311,8 @@ fix.
    / `dogshoot_count_max` / `dogshoot_count2_max` decide how long a mob shoots
    before closing to melee — `golem.lua:63-68` documents it ("10 vs 3 is
    'mostly ranged', and a target inside `reach` forces melee regardless"); the
-   switch itself is `dogswitch` (`api.lua:2032-2044`, defaults 5/5 at `:165`)
-   and the melee branch condition is `api.lua:2366`. Making existing ranged
+   switch itself is `dogswitch` (`api.lua:2122-2134`, defaults 5/5 at `:165`)
+   and the melee branch condition is `api.lua:2492`. Making existing ranged
    mobs *stay* at range is cheaper than adding new ones, and it is one number
    per def.
 

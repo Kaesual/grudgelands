@@ -327,7 +327,8 @@ Details + line numbers in [docs/research/](docs/research/).
   enemy/ally slots via `grug_abilities.get_target(player, ally)`). **WP39's
   decided rule supersedes its hostile fallback:** enemy memory is Target-Frame/
   UI state only and no melee, hostile cast or projectile may read it as aim;
-  ally memory remains the heal/shield fallback. WP19 also added **absorb
+  friendly skills always resolve through valid pointed ally → valid ally
+  memory → self. WP19 also added **absorb
   shields** (`grug_core.set_absorb`, soaked in the central
   hp modifier after dodge/fall mitigation), **race passives** as a perk
   table in the grug_classes race registry (`grug_classes.get_race_perk`,
@@ -406,8 +407,10 @@ Details + line numbers in [docs/research/](docs/research/).
   formatting/globalstep work beyond the enabled check.
   Hostile casts no longer use enemy memory: Charge/Taunt/Smite need current
   pointed/server-validated aim. Fireball is a straight 20 m/s swept
-  projectile, max 20 m, no gravity/homing/splash, 8 mana even on a miss,
-  `6 + spell power` once; nodes/attackable targets stop it, while allies and
+  projectile, max 20 m, no gravity/homing/splash, a **1 s server cast
+  cadence with no cooldown/wear**, and costs **6% of the base mana pool** even
+  on a miss. It deals baseline weapon damage + spell power through the shared
+  damage fit once; nodes/attackable targets stop it, while allies and
   dropped items are ignored. The public
   `grug_projectiles.register(id, def)` and
   `grug_projectiles.spawn(id, params)` foundation owns swept collision,
@@ -416,6 +419,19 @@ Details + line numbers in [docs/research/](docs/research/).
   `active_limit = 8` per owner/session: failure happens before entity creation,
   every terminal/failure path releases its opaque token idempotently, and a
   reconnect/respawn creates a fresh session that old shots cannot charge.
+  Round 6 centralizes player scaling in `grug_core.base_pool`: max HP and mana,
+  percentage mana costs, pool-derived heals/absorbs and the damage-only
+  `level_scale` fit follow `combat_stats.md` §2; Strength and Intelligence are
+  damage secondaries only. The Character page displays maximum pools and its
+  Help page explains the model. Ability registrations may expose
+  `def.values(user)`; `grug_abilities.description_for` writes the effective
+  current-level values to that player's stack on kit sync, level change and
+  talent change. Suffocation is 5% maximum HP/s (minimum 1), with stasis and
+  `noclip` exempt. `grug_core.status` is the runtime timed-effect registry and
+  top-right eight-line buff/debuff text list; `grug_food` uses it for one
+  replaceable 180 s food buff, ticking every 10 s only out of combat for
+  2/5/10% of maximum HP or mana. Wild Cocoa is the current mana food; potions
+  retain their instant channel and shared persistent cooldown.
   Real-code Lua 5.1 regressions live under `tools/wp39/` and must stay green
   when changing the ray, clock, settlement, reticle, casts or projectiles.
   **Ordinary tool WEAR is spent per swing, not per punch**

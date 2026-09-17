@@ -66,15 +66,15 @@ commit.
 `classes.md:59` — "Three to four abilities per class in the MVP" — and ruling
 12 names all four and requires each to be built from a mechanic the game
 already runs. Four class abilities plus the universal Strike
-(`kits.lua:268`) put the Scout on keys 1-5, and `skill_trees.md` §3.4's
+(`kits.lua:288-310`) put the Scout on keys 1-5, and `skill_trees.md` §3.4's
 ceiling of two talent buttons puts the worst case at 7 of 8.
 
 | Ability | Kind | Cost | Cooldown | Effect | Existing mechanic it reuses |
 |---|---|---|---|---|---|
 | **Loose** | cast | 1 arrow | none (ammo-limited) | Requires a bow in the weapon slot. A **ballistic** arrow along the cast-time crosshair, 25 m, initial impulse from a bounded draw time, gravity supplying the trajectory | `grug_projectiles` — swept collision, owner validation, the per-owner active cap and max-distance cleanup are all shipped (`classes.md:287-290`); only gravity is new, and `combat_stats.md:249-252` already specifies it |
-| **Snare Shot** | cast | 8 mana + 1 arrow | 12 s | The arrow slows the target by 50 % for 4 s | `grug_mobs.slow` for mobs and `grug_mobs.slow_player` (`verbs.lua:140-169`) for players — the same verb Hamstring uses (`kits.lua:370-373`), and after ruling 11 a named modifier in the aggregator |
-| **Sidestep** | cast | 10 mana | 30 s | Dodge chance **+15** percentage points for 4 s, **inside** the 30 % cap. A base ability has no ranks; the Veil tree shortens its cooldown (Slip Away) and replaces it (Shake Loose) | `grug_classes.get_crit_chance`'s twin `get_dodge_chance` (`grug_classes/stats.lua:49`) and the timed-window table of `skill_trees.md` §3.2 |
-| **Sprint** ‼ | cast | 15 mana | **300 s** | Movement speed **+25 % for 10 s** — 5.0 nodes/s against the ordinary aggressive band's 4.6 | the speed aggregator of `skill_trees.md` §3.9, as one named modifier with its own duration |
+| **Snare Shot** | cast | 8 % base mana + 1 arrow | 12 s | The arrow slows the target by 50 % for 4 s | `grug_mobs.slow` for mobs and the player movement aggregator — the same two paths Hamstring uses (`kits.lua:421-430`) |
+| **Sidestep** | cast | 10 % base mana | 30 s | Dodge chance **+15** percentage points for 4 s, **inside** the 30 % cap. A base ability has no ranks; the Veil tree shortens its cooldown (Slip Away) and replaces it (Shake Loose) | `grug_classes.get_crit_chance`'s twin `get_dodge_chance` (`grug_classes/stats.lua:128-140`) and the timed-window table of `skill_trees.md` §3.2 |
+| **Sprint** ‼ | cast | 15 % base mana | **300 s** | Movement speed **+25 % for 10 s** — 5.0 nodes/s against the ordinary aggressive band's 4.6 | the speed aggregator of `skill_trees.md` §3.9, as one named modifier with its own duration |
 
 **Sprint is a rule-breaker in the base kit, and it is the clearest example of
 ruling 10** — "skills may explicitly break the base inequalities… the bigger
@@ -246,7 +246,8 @@ comment: independent owners of `physics_override.speed`, each name-keyed, each
 restoring to `speed = 1` when its own effect ends, "so an overlapping mob web
 + player snare can end early (the first restore lifts both)… **the fix is one
 shared owner in `grug_core`**". That comment counts **two** — mob webs
-(`verbs.lua:140-169`) and the ability snare chain (`kits.lua:144-175`) — and
+(`verbs.lua:140-169`) and the ability movement aggregator seam
+(`kits.lua:149-201`) — and
 `mounts.md:128-133` and `boats.md:113-117` both repeat the count. **Measured,
 there are three**: `grug_classes/selection.lua:52` freezes a player during
 character creation with `{speed = 0, jump = 0, gravity = 0}`, re-asserts it
@@ -258,7 +259,7 @@ Sprint and Snare Shot would have been a fourth and fifth writer.
 **Ruling 11 decides the fix** — one central aggregator in `grug_core`, named
 modifiers with independent durations, roots as a hard flag, mounts outside it
 — covering **speed and jump**, because the shipped roots set both
-(`kits.lua:495` is `{speed = 0.1, jump = 0.3}`). It is **not** the Scout's to
+(`kits.lua:589` is `{speed = 0.1, jump = 0.3}`). It is **not** the Scout's to
 build: `docs/research/mob-pressure-task-card.md` §4b carries it, because a mob
 that must keep moving while its attack clock runs is the other consumer. The
 Scout's former "speed and stealth" lane collapses into the class lane once it
@@ -340,7 +341,7 @@ conflicts if version 1 had stealth (§8).
 | **Professions** | none created. The **Leatherworker** already owns the grades and the future quiver; the **Woodcarver** already owns the bow | `professions.md:52`, `:93-94`, `:192-195`; `items_crafting.md:2437-2441` |
 | **Traders** | the bowyer shelf gains its bracket tab (it explicitly has none today); the tanner shelf gains the leather grades | `grug_traders/stock.lua:428-435`, `:472-479` |
 | **Character visuals** | the six leather tints on the cloth silhouette, and the bow pose | `character_visuals.md:71-73` |
-| **`combat_stats.md`** | one sentence for the ranged damage term of ruling 28, and the cap-override paragraph WP11 already owes | `grug_classes/stats.lua:34-36` |
+| **`combat_stats.md`** | one sentence for the ranged damage term of ruling 28, and the cap-override paragraph WP11 already owes | beside `grug_classes.get_melee_bonus` at `grug_classes/stats.lua:107-115` |
 | **PvP (WP41)** | nothing in version 1. Sprint and Sidestep are ordinary buffs under the existing tag rules | `combat_stats.md:270-289` |
 | **`grug_visuals`, `grug_mobs` AI, nametags** | **nothing** — every one of those was an invisibility dependency (§8) | — |
 
@@ -437,7 +438,7 @@ six are exactly the AI behaviour ruling 8 describes:
 | `api.lua:1874-1882` | target acquisition skips an invisible player |
 | `api.lua:1966` | a second acquisition path skips them |
 | `api.lua:2065` | a player-scan path skips them |
-| `api.lua:2340-2348` | a mob **stops attacking** when its target turns invisible |
+| `api.lua:2341-2348` | a mob **stops attacking** when its target turns invisible |
 | `api.lua:3511-3515` | a punch from an invisible attacker does not set aggro |
 | `api.lua:1273-1275` | `follow_holding` ignores an invisible player |
 
@@ -493,9 +494,9 @@ In the vocabulary the rest of the game uses:
   cooldown — there is no "detected but still hidden" state to reason about.
 - **Break conditions** (ruling 8): dealing damage, taking damage, or casting
   any hostile ability. The seams are the ones already central: the outgoing
-  side at `grug_core.deal_ability_damage` (`combat.lua:948` punch / `:963`
+  side at `grug_core.deal_ability_damage` (`combat.lua:1021-1074`)
   threat) and the authoritative swing, the incoming side at the central
-  hp-change modifier, and the cast side at `grug_abilities/init.lua:1232`
+  hp-change modifier, and the cast side at `grug_abilities/init.lua:1508-1583`
   (the one `spend` call) filtered to hostile kinds.
 - **Movement penalty**: ×0.6 speed (4.0 → 2.4 nodes/s) while invisible — "a
   significant reduction", and it also means a Scout can never use stealth to
@@ -609,8 +610,9 @@ version (the free half, §8.1.2), and player-vs-player stealth is deferred to
 WP41 with the rest of PvP. That keeps 6.2 and 6.3 out of the critical path
 too, since nothing needs to be hidden on screen if only the AI is fooled —
 though a Scout who is invisible to mobs while fully visible to the player
-reads as a bug and needs a visible buff icon at minimum
-(`inventory_equipment.md` §5's buff framework).
+reads as a bug and needs a visible status entry at minimum. The shipped
+first-pass presentation is the text list; WP10 later replaces it with icons
+(`inventory_equipment.md` §5).
 
 #### 8.2.6 Claims and protection — **cosmetic**
 
@@ -624,7 +626,7 @@ because the coordinator asked.
 `combat_stats.md:331-348`: elites and rares telegraph with a 2 s wind-up, a
 `!!` nametag prefix and a 90° frontal cone of `reach + 1.5 m`, and "the first
 wind-up needs **4 s of MELEE engagement**". A mob whose target vanishes
-mid-wind-up is an undefined state today: `api.lua:2340-2348` drops the target when
+mid-wind-up is an undefined state today: `api.lua:2341-2348` drops the target when
 it becomes invisible, but the telegraph is `grug_mobs/telegraph.lua`'s own
 timer. Rule needed: **a lost target cancels the wind-up** (and the `!!`
 prefix), or a rare fires a ×3 cone into empty air.
