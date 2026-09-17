@@ -74,10 +74,10 @@ into that project and its rows in the affected `LICENSE-media.md` files. If
 the new tree moved a file an asset came from, the licence row needs the new
 commit *and* a re-verification, not just a new SHA.
 
-Three of the nine (`animalworld`, `animalia`, `mobs_monster`) are therefore
+Three of the original nine (`animalworld`, `animalia`, `mobs_monster`) are therefore
 pinned at the commits `mods/ENTITIES/grug_mobs/LICENSE-media.md` §3–§5 quote,
-not at their branch tips; the other six sit at the commits the existing
-`file:line` citations were written against.
+not at their branch tips; the other six original references sit at the commits
+the existing `file:line` citations were written against.
 
 ## The list
 
@@ -92,6 +92,8 @@ not at their branch tips; the other six sit at the commits the existing
 | `animalia/` | https://github.com/ElCeejo/animalia | Mob models with the best animation quality: reindeer→stag, song bird→gull/crow, and the un-imported bat/frog/rat/owl/cat/fox roster. Built on the creatura API, so we asset-harvest rather than port | MIT |
 | `mobs_monster/` | https://codeberg.org/tenplus1/mobs_monster | Spider (climbing) and stone monster→golem | MIT / spider CC BY-SA 3.0, golem WTFPL |
 | `protector/` | https://codeberg.org/tenplus1/protector | Open-world housing-claim reference: protection-block ownership/member ACLs, overlap checks, area visualization and administrative cleanup. Pin `60d2280`; its global fixed-radius node scans are a reference pattern, not the target implementation for Grudgelands' per-stone 20/30/40/50 radii | MIT code / mixed media (CC0, CC BY-SA 3.0, WTFPL; see upstream `textures/license.txt`) |
+| `draconis/` | https://github.com/ElCeejo/draconis | Advanced dragon and wyvern behaviour, flight and boss-scale mesh reference for WP23. Pinned at `5ad66e400ec31aa8c6ca33e8a8c2510b6fa5d6fd`; all four B3D meshes contain `ANIM`/`BONE`/`KEYS` chunks | MIT code and media (repository-root `LICENSE`) |
+| `goblins/` | https://gitlab.com/freelikegnu/goblins | Underground lairs, territorial reactions and trading plus goblin/gobdog visual references for later cave-enemy work. Pinned at `ce27b15f87452c9614b515b8a9b53af5d0e8e276`; both B3D meshes contain `ANIM`/`BONE`/`KEYS` chunks | MIT code (`LICENSE`); meshes/textures CC BY-SA 3.0 with a WTFPL base, sounds CC0 or CC BY-SA (`README.md`; some sound rows omit the CC version, so re-check per file before import) |
 
 Rejected sources and the reason are recorded in
 [`docs/research/assets/mobs_animals.md`](research/assets/mobs_animals.md) —
