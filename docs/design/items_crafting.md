@@ -1192,6 +1192,10 @@ Neither of these costs a main profession slot (professions.md §1).
   `grug_core.in_combat` window is false. Combat skips that tick without
   canceling or pausing the buff. Exactly one food buff may run at once and
   the most recently eaten serving replaces it.
+  **Self-consumption ruling (2026-09-17, late evening):** food and potions use
+  the character's maximum HP or mana, so a full food buff refills every
+  character in the same number of ticks; the neutral base pool is used for
+  mana costs and caster-output heals/absorbs, never for self-consumption.
   - **Raw/plain:** 2 % of maximum HP per tick.
   - **Simply cooked:** 5 % of maximum HP per tick.
   - **Well cooked:** 10 % of maximum HP per tick.
