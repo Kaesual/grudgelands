@@ -25,7 +25,7 @@
 --     Two owners of the same two fields is exactly the bug class the WP6
 --     notes warn about.
 --   * MVP therefore: ONE speed, 4.6 on land and in water, plus `floats` so
---     the mob swims at the surface instead of sinking (api.lua:2491-2864). The
+--     the mob swims at the surface instead of sinking (api.lua:2881-2888). The
 --     5.0-in-water bonus is dropped, NOT postponed silently — a later WP can
 --     add it once one owner for the speed fields exists.
 --

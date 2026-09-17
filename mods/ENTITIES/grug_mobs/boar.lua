@@ -24,13 +24,13 @@ local boar = {
 	-- family in grug_mobs points back here, critters keep 3).
 	--
 	-- fear_height is BOTH the drop a mob refuses to walk off (is_at_cliff,
-	-- api.lua:1050-1176) and — whenever it is non-zero — the max_drop handed to
-	-- core.find_path (api.lua smart_mobs). At 4 a chaser stops dead at any
+	-- api.lua:1009-1034) and — whenever it is non-zero — the max_drop handed to
+	-- core.find_path (api.lua:1749). At 4 a chaser stops dead at any
 	-- ledge a player can simply hop down, which is the cheapest terrain
 	-- exploit there is and exactly what AGENTS.md "Mobs" forbids ("dangerous
 	-- mobs must not fail at terrain, otherwise they are not dangerous").
 	-- 6 is the free value: mobs_redo charges fall damage only above SIX nodes
-	-- (api.lua:2491-2819, `if d > 6 then damage = d - 6`), so a chaser now follows
+	-- (api.lua:2890-2896, `if d > 6 then damage = d - 6`), so a chaser now follows
 	-- every drop that costs a player HP while costing itself nothing, and it
 	-- still refuses the deep falls that would hurt. It also lengthens the
 	-- downward ray of is_at_cliff, so lava/danger detection below a ledge gets

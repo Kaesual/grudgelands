@@ -372,7 +372,7 @@ local function spawn_one(pos, meta, cfg, living)
 	end
 	-- `ignore_count = true` is REQUIRED: mobs:add_mob otherwise compares
 	-- against the family's mobs:spawn aoc, and a camp family has no
-	-- mobs:spawn row at all, so that cap defaults to 1 (api.lua:4498-4510) — every
+	-- mobs:spawn row at all, so that cap defaults to 1 (api.lua:4218-4222) — every
 	-- camp would top out at a single mob. The camp's own target is the cap.
 	-- add_mob returns nil whenever it declines (no player in range, active
 	-- mob limit, entity missing); that must never be an error here.

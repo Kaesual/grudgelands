@@ -8,7 +8,7 @@
 --       - falling() bails out for fly mobs (api.lua:2874-2923) and nothing else
 --         writes acceleration, so the bird hovers instead of sinking;
 --       - flight_check() compares self.standing_in against fly_in
---         (api.lua:550-563); for a bird that node is "air" wherever it is, so it
+--         (api.lua:612-622); for a bird that node is "air" wherever it is, so it
 --         never enters the "flop" state;
 --       - fear_height defaults to 0 for fly defs (api.lua:4058) and do_jump
 --         returns early (api.lua:1178-1207) — no cliff stops, no jumping.

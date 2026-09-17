@@ -68,10 +68,10 @@
 -- through into the acquisition loop and pays, once a second, for a
 -- `core.get_objects_inside_radius(pos, view_range)` (api.lua:1861-1864) plus the
 -- ObjectRef table it allocates. Every candidate that scan can return is then
--- discarded by the filter: players by `attack_players = false` (:1787),
--- animals/monsters/npcs by the three type tests (:1817-1819), and anything
--- else by the `else objs[n] = nil` tail (:1823). `min_player` is therefore
--- nil at :1847 with certainty, not merely usually — the whole call is
+-- discarded by the filter: players by `attack_players = false` (:1874),
+-- animals/monsters/npcs by the three type tests (:1904-1906), and anything
+-- else by the `else objs[n] = nil` tail (:1920-1921). `min_player` is therefore
+-- nil at :1944 with certainty, not merely usually — the whole call is
 -- provably a no-op, and against the 100-player design target it is a no-op
 -- per prey mob per second.
 --
@@ -92,7 +92,7 @@
 -- wrapper (checked 2026-08-08): their def sets `passive = true`
 -- (`grug_traders/vendors.lua:177`), and general_attack's very first test
 -- returns on `self.passive` (api.lua:1853-1858) — before the
--- get_objects_inside_radius at :1775 — so a vendor never runs the scan at
+-- get_objects_inside_radius at :1862 — so a vendor never runs the scan at
 -- all. They also register through plain `mobs:register_mob` (vendors.lua
 -- :258, deliberately not through grug_mobs.register_mob, which IS the level
 -- engine), so the `no_acquire` derivation never sees them either. Do not

@@ -12,7 +12,7 @@
 -- spawning a temporary "mobs:_pos" entity and calling do_attack(obj, true) on
 -- it — i.e. it puts the mob into state "attack" with a dummy target. Three
 -- things break for us: general_attack() bails out entirely while
--- state == "attack" (api.lua:2176-2864), so a patrolling mob would be BLIND to
+-- state == "attack" (api.lua:1853-1858), so a patrolling mob would be BLIND to
 -- players; our threat/leash logic would see an attack state with a non-player
 -- target; and the telegraph would count the dummy as melee combat. A yaw +
 -- walk-velocity nudge once a second is all an amble needs.

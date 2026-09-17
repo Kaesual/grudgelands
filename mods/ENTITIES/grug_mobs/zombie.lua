@@ -170,7 +170,7 @@ mobs:spawn({
 --
 -- PERFORMANCE: `default:stone` sounds like "every node in the world", but
 -- the ABM's implicit neighbour list is {"air"} (mobs_redo's default,
--- api.lua:4277-4510), so only stone with air next to it — cave walls, ceilings
+-- api.lua:4498-4510), so only stone with air next to it — cave walls, ceilings
 -- and floors — is ever a candidate. Solid rock costs nothing.
 --
 -- WHY THE mod.conf DEPENDENCY ON grug_materials IS *NOT* A LOAD-ORDER FIX:

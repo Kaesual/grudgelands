@@ -519,7 +519,7 @@ end
 
 -- Stamp the SHOOTER's current damage onto a freshly created arrow. Meant to
 -- be used as the def's `arrow_override` (mobs_redo calls it as
--- `self.arrow_override(ent, self)`, api.lua:4515-4643), which is the only hook
+-- `self.arrow_override(ent, self)`, api.lua:2842-2849), which is the only hook
 -- that sees both the arrow entity and the mob. Damage therefore comes from
 -- the level engine's `mob.damage` (levels.lua) at FIRE time — an arrow def
 -- never carries a hand-written number.
@@ -600,8 +600,8 @@ end
 --     not sufficient: it buys the mob a `state = "attack"` and an
 --     `self.attack` reference, and the attack STATE MACHINE is what turns
 --     those into a fight. do_states' attack branch (api.lua:2176-2864)
---     dispatches on exactly three predicates — `"explode"` (:2277),
---     `"dogfight"`/`"dogshoot"` (:2360), `"shoot"`/`"dogshoot"` (:2539) —
+--     dispatches on exactly three predicates — `"explode"` (:2408),
+--     `"dogfight"`/`"dogshoot"` (:2491), `"shoot"`/`"dogshoot"` (:2821) —
 --     with NO else, and mobs.mob_class carries no default (api.lua:157-218),
 --     so an unset attack_type matched nothing. The retaliating grazer then:
 --     dealt no damage (the punch at api.lua:2491-2819 lives inside the dogfight
@@ -708,7 +708,7 @@ function grug_mobs.noncombatant(def)
 	def._grug_noncombatant = true
 	local inner = def.after_activate
 	-- mob_activate calls `def.after_activate(self, staticdata, def, dtime)`
-	-- (api.lua:3956-4112) -- four arguments, the definition itself third. Forwarded
+	-- (api.lua:3759-3761) -- four arguments, the definition itself third. Forwarded
 	-- verbatim so a wrapped callback sees exactly what an unwrapped one does.
 	def.after_activate = function(self, staticdata, entity_def, dtime)
 		self._grug_noncombatant = true

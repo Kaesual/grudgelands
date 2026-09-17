@@ -24,14 +24,14 @@
 --
 -- PERMANENCE (api.lua evidence, all three checked, not assumed)
 --   * mob_staticdata's unload-delete is skipped for `self.type ~= "npc"`
---     (api.lua:3630-3769) — a vendor is type "npc".
---   * the `static_save = false` stamp that would make the engine forget the
---     object entirely only applies to `self.type == "monster"`
---     (api.lua:3956-4112).
+--     (api.lua:3599-3605) — a vendor is type "npc".
+--   * registration leaves the engine's default `static_save` enabled; the
+--     registered entity's initial-properties block does not override it
+--     (api.lua:3967-3987).
 --   * mob_expire returns immediately for `self.type == "npc"`
---     (api.lua:3956-4112).
+--     (api.lua:3774-3778).
 --   Belt and braces on top of that: `lifetimer = 30000`, which is the
---   >= 20000 exemption the same three sites also honour (the mechanism
+--   >= 20000 exemption both removal sites also honour (the mechanism
 --   grug_mobs/rares.lua relies on).
 --
 -- INVULNERABILITY
@@ -662,7 +662,7 @@ core.register_globalstep(function(dtime)
 					-- row, so mobs:add_mob's per-name area cap would default to
 					-- 1 for the shared general-vendor entity and only ever let
 					-- ONE of the three capitals of a faction have one
-					-- (api.lua:3837-3938, the reason camps.lua passes it too).
+					-- (api.lua:4218-4222, the reason camps.lua passes it too).
 					-- A decline (no player in the active area, active mob
 					-- limit) simply means "retry in 5 s".
 					local ent = grug_mobs.add_mob(pos,

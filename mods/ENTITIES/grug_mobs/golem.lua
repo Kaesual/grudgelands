@@ -69,8 +69,8 @@ local function golem_def(description, texture)
 		arrow_override = grug_mobs.stamp_arrow_damage,
 		shoot_interval = 3,
 		-- Aim lift. mobs_redo spawns the projectile at the collisionbox
-		-- midpoint (api.lua:2351-2362,2788-2819) and aims at target_feet - 0.5 from
-		-- self_origin + 0.5 (api.lua:2351-2362,2788-2819). This mesh has a NEGATIVE-y box
+		-- midpoint (api.lua:2824-2864) and aims at target_feet - 0.5 from
+		-- self_origin + 0.5 (api.lua:2824-2864). This mesh has a NEGATIVE-y box
 		-- (see below), so the origin sits 1 node above the golem's feet and
 		-- the aim vector points ~2 nodes DOWN for a target on the same
 		-- ground: +2 cancels that and the rock flies flat into the torso.
@@ -152,7 +152,7 @@ local function golem_def(description, texture)
 		water_damage = 0,
 		-- 4 like every other family, deliberately NOT 0: mobs_redo's
 		-- is_node_dangerous reads lava_damage to keep a mob away from lava
-		-- (api.lua:887-975), and a lava-immune golem would happily park itself
+		-- (api.lua:977-1001), and a lava-immune golem would happily park itself
 		-- in a lava lake where nothing can reach it. Flavour loses to
 		-- reachability here.
 		lava_damage = 4,
@@ -182,7 +182,7 @@ grug_mobs.register_mob("grug_mobs:stone_golem", stone_golem)
 -- ABM CANDIDATE VOLUME (T10 sanity check, the same argument the cave rows
 -- make in zombie.lua): `default:stone` between y 0 and 300 is not "the whole
 -- world". mobs:spawn defaults the ABM's neighbour list to {"air"}
--- (api.lua:4277-4510), so only stone with air beside it counts — on the surface
+-- (api.lua:4498-4510), so only stone with air beside it counts — on the surface
 -- that is exposed bare rock, which the crags/badlands cuboids produce in
 -- patches and the rest of the world barely at all. On top of that this row is
 -- interval 30 / chance 9000 (the rarest in the roster) and gated to the outer

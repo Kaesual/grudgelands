@@ -117,13 +117,13 @@ function grug_mobs.bandit_def(description)
 
 		-- LEVEL-DEPENDENT LOOT (§3.1: "linen cloth 1/1 x1-2 (inner camps) /
 		-- heavy cloth (outer camps)"). mobs_redo supports a `drops` FUNCTION and
-		-- calls it with the death position only (api.lua:939-944,
+		-- calls it with the death position only (api.lua:761-769,
 		-- `drops = self.drops(pos)`), which is all we need — the stable level query
 		-- answers from the position.
 		--
 		-- ORDER MATTERS and it is the right way round: api.lua resolves the
-		-- function FIRST (line 699) and only then hands the resulting list to the
-		-- WP6 GRUG PATCH (line ~713 -> grug_mobs._item_drop_filter, aggro.lua).
+		-- function FIRST (api.lua:768-769) and only then hands the resulting list to
+		-- the WP6 GRUG PATCH (api.lua:773-783 -> grug_mobs._item_drop_filter).
 		-- So the player-tag rule and the profession drop hooks see this list
 		-- exactly as if it had been written literally in the def; a Leatherworker
 		-- hook could multiply it, and an untagged bandit drops nothing at all.

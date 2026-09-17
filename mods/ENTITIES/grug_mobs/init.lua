@@ -531,11 +531,11 @@ function grug_mobs.register_mob(name, def)
 		-- return true end`, which parses as `(not result) == false` — i.e. it
 		-- bails on a TRUTHY result. That `return true` sits BEFORE the weapon
 		-- wear (api.lua:3259-3338), before hit sound and blood particles
-		-- (api.lua:3339-3415), before health subtraction (api.lua:3417-3444)
+		-- (api.lua:3352-3415), before health subtraction (api.lua:3417-3444)
 		-- and check_for_death (api.lua:3441), before knockback
-		-- (api.lua:3446-3488) and before the retaliation + group alert
+		-- (api.lua:3446-3481) and before the retaliation + group alert
 		-- that would otherwise hand the evader a fresh target
-		-- (api.lua:3490-3538). So: no
+		-- (api.lua:3506-3538). So: no
 		-- damage, no wear, no feedback, no aggro — exactly the spec.
 		--
 		-- on_punch previews the damage remainder before this wrapper only so the
@@ -599,8 +599,8 @@ function grug_mobs.register_mob(name, def)
 	def.do_custom = function(self, dtime, moveresult)
 		-- First-tick level/stat assignment + per-activation nametag hook.
 		grug_mobs.ensure_init(self)
-		-- Runs before do_states/general_attack in the same step (api.lua:
-		-- 3359 vs. :3366/:3378), so the aggro fields the api.lua patches read
+		-- Runs before do_states/general_attack in the same step
+		-- (api.lua:3907-3934), so the aggro fields the api.lua patches read
 		-- are always in place in time.
 		grug_mobs.apply_aggro_fields(self, aggro_cfg)
 		tick_speed_effects(self, dtime)
