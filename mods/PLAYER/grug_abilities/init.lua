@@ -1053,10 +1053,14 @@ local function prepare_authoritative_swing(player, target, fraction, token)
 	local fpi = swing.fpi
 	local melee_bonus = swing.melee_bonus
 	local normal_damage = weapon_damage + melee_bonus
+	local scaled_normal = grug_core.scale_player_damage(player, target,
+		normal_damage)
 	local context = {
 		player = player,
 		target = target,
-		extra_damage = 0,
+		-- The delta may be negative: every authoritative swing replaces its raw
+		-- total with the once-scaled total before armor and crit.
+		extra_damage = scaled_normal - normal_damage,
 		threat_mult = 1,
 		debug_name = swing.debug_name,
 		transaction = swing.debug_name and swing or nil,
@@ -1072,7 +1076,8 @@ local function prepare_authoritative_swing(player, target, fraction, token)
 			melee_bonus = melee_bonus,
 		})
 		context.proc = selected
-		context.extra_damage = amount - normal_damage
+		context.extra_damage = grug_core.scale_player_damage(player, target,
+			amount) - normal_damage
 		-- Affront (skill_trees.md §2.1) raises a TANK multiplier only; a proc
 		-- that carries none stays at ×1. The cast side of the same talent is
 		-- in grug_core/combat.lua's deal_ability_damage.

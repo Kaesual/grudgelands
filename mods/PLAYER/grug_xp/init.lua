@@ -49,6 +49,10 @@ function grug_xp.get_level(player)
 	return grug_xp.level_from_xp(grug_xp.get_xp(player))
 end
 
+-- Resolve grug_core's dependency-free level stub now that the XP owner is
+-- loaded. Combat consumers never read player meta or duplicate the curve.
+grug_core.get_player_level = grug_xp.get_level
+
 local hud_update -- forward (defined below)
 
 function grug_xp.set_xp(player, xp)
