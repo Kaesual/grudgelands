@@ -11,10 +11,11 @@ W1) — `mods/PLAYER/grug_classes/talents.lua` with the 48 talents of the three
 shipped classes, the point budget, both gate kinds, the spend/respec rules,
 the validating persistence path, the window table and the two accessors, plus
 the thirty numeric consumers of §3.8 and the code halves of rulings 19, 20 and
-25 and of §7 task 5. Lanes X3 and X4 are still open, so every keystone,
-capstone, cap override and the sfinv page of §3.5 are unimplemented; the
-interim interface is the chat commands `/talents`, `/talent <id>` and
-`/respec`, which X4 removes. What shipped, what it measured and what is open:
+25 and of §7 task 5. Lane X4 is in progress in round 5 (Lane U), while X3 is
+scheduled for round 6; keystones, capstones and cap overrides are therefore
+still unimplemented. Until X4 lands, the interim interface is the chat commands
+`/talents`, `/talent <id>` and `/respec`. What shipped, what it measured and
+what is open:
 `docs/research/wp11-talents-phase1.md`.
 
 Companion files written with this revision:
@@ -291,7 +292,7 @@ Reading the tables:
 | 2 | **Weathered** | Wall | 2 | 4 | — | max HP +3 / 6 / 9 / 12 | `grug_classes/stats.lua:20` | `max_hp_add` |
 | 3 | **Hold Ground** *(keystone)* | Wall | 3 | 3 | **new skill** ‼ | cast, 25 rage, self; absorbs `20 / 30 / 40 + 2 × floor(Str/10)` for 8 s, **and for those 8 s the Warrior cannot be rooted or slowed**. *Limit: 8 s, **60 s cooldown**.* | new; `grug_core.set_absorb` (`grug_core/combat.lua:1012`); the immunity is a flag the speed aggregator of §3.9 already has to read | — |
 | 4 | **Unbroken** *(capstone)* | Wall | 4 | **1** | **effect** ‼ | the first time in **180 s** that a hit would take the Warrior below 20 % max HP: armor percent **+15** **and the 60 % armor cap rises to 75 %**, for 8 s. *Limit: 8 s, **180 s**.* | the two clamps, `grug_inventory/equipment.lua:480` and `grug_core/combat.lua:38`, plus the hp-change modifier that observes the threshold | `armor_cap_override` |
-| 5 | **Spite** | Anvil | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 rage per hit taken (base 4) | `grug_abilities/init.lua:2109-2110` | `rage_per_hit_taken_add` |
+| 5 | **Spite** | Anvil | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 rage per hit taken (base 3) | `grug_abilities/init.lua:2286-2291` | `rage_per_hit_taken_add` |
 | 6 | **Affront** | Anvil | 2 | 4 | — | tank-ability threat ×3 → ×3.25 / 3.5 / 3.75 / 4.0 | **two sites**: `grug_core/combat.lua:963` (casts) and `grug_abilities/init.lua:910`, applied at `:955-957` (swings) | `threat_mult_add` |
 | 7 | **Bellow** *(keystone)* | Anvil | 3 | 3 | **replaces Taunt** | Taunt stops being single-target: it forces **every** hostile mob within 6 / 8 / 10 m onto the Warrior for its 3 s, same key, same 8 s cooldown | `kits.lua:389-404`, the cast body, run over the radius loop of `kits.lua:490` | `taunt_radius` |
 | 8 | **Grudge** | Anvil | 4 | 3 | — | Taunt cooldown 8 s → 7 / 6 / 5 s | `grug_abilities/init.lua:1233`, the one `arm_cooldown(user, def, def.cooldown)` call — **not** `kits.lua:387` | `taunt_cooldown_sub` |
@@ -316,7 +317,7 @@ nothing below tier 3 modifies a skill the player may not have yet.
 | # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
 |---|---|---|---|---|---|---|---|---|
 | 1 | **Heavy Hand** | Hammer | 1 | 5 | — | Mighty Blow ×1.5 → ×1.55 / 1.60 / 1.65 / 1.70 / 1.75 weapon damage | `kits.lua:342` | `mighty_blow_multiplier_add` |
-| 2 | **Stoke** | Hammer | 2 | 4 | — | +1 / 2 / 3 / 4 rage per landed authoritative swing (base 12) | `grug_abilities/init.lua:939`, `:950`, `:966`, and the two proportional paths `:1915` and `:2099` | `rage_per_swing_add` |
+| 2 | **Stoke** | Hammer | 2 | 4 | — | +1 / 2 / 3 / 4 rage per landed authoritative swing (base 8) | `grug_abilities/init.lua:78-81` and its authoritative/proportional callers | `rage_per_swing_add` |
 | 3 | **Broadstroke** *(keystone)* | Hammer | 3 | 3 | **replaces Mighty Blow** | Mighty Blow also strikes every other hostile within 3 m for **half** its total, rounded down, at ×3 threat — the game's first melee cleave, on the key Mighty Blow already occupies | `kits.lua:340-344` plus the radius loop of `kits.lua:490` | `mighty_blow_cleave` |
 | 4 | **Ruination** *(capstone)* | Hammer | 4 | **1** | **effect** ‼ | a landed Mighty Blow grants **10 s** of crit chance **+20 percentage points** with the 30 % crit cap raised to **50 %**. *Limit: 10 s, **120 s cooldown** on the trigger.* | `grug_classes/stats.lua:45` and its `math.min(0.30, …)` | `crit_cap_override` |
 | 5 | **Keen Edge** | Lash | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 percentage points crit chance (30 % cap holds) | `grug_classes/stats.lua:45` | `crit_chance_add` |
@@ -725,8 +726,8 @@ grug_classes.register_talent({
 grug_classes.register_talent({
     id = "unbroken", tree = "bulwark", chain = "wall", tier = 4,
     capstone = true,                     -- exactly one per TREE, on its chain
-    effects = {armor_percent_add_low_hp = {10, 15, 20},
-               armor_cap_override = {70, 75, 80}},
+    effects = {armor_percent_add_low_hp = {15},
+               armor_cap_override = {75}},
 })
 ```
 
@@ -939,10 +940,10 @@ the sfinv area only if the two trees are **tabbed rather than side by side**:
 | T1 | Ironbound      5/5 |   | Spite          5/5 |             |
 | T2 | Weathered     4/4 |   | Affront        3/4 |     (>=5)   |
 | T3 | Hold Ground *  3/3 |   | Bellow *       0/3 |     (>=12)  |
-| T4 | Unbroken **    1/3 |   | Grudge         0/3 |     (>=20)  |
+| T4 | Unbroken **    1/1 |   | Grudge         0/3 |     (>=20)  |
 |                                                               |
-| Unbroken -- rank 1/3: below 20% HP, +10% armor and the armor  |
-| cap rises to 70% for 8 s. Next rank: +15%, cap 75%.           |
+| Unbroken -- rank 1/1: below 20% HP, +15% armor and the armor  |
+| cap rises to 75% for 8 s.                                    |
 +---------------------------------------------------------------+
 ```
 
@@ -985,7 +986,8 @@ with identical output. Eight groups, each able to go red on its own:
 1. **Shape.** Every class has exactly 2 trees; every tree 8 talents in two
    chains of 4; ranks 5/4/3/3 by tier; exactly one keystone per chain in
    tier 3; exactly one capstone per tree, in tier 4, on a declared chain.
-   Totals: 30 ranks per tree, 60 per class.
+   Tier gates are 0/5/12/**20** points in the tree. Totals: **28 ranks per
+   tree, 56 per class**.
 2. **Arithmetic.** `floor(60/2) == 30`; one tree costs **28**; each tree is
    13 + 15 ranks; the milestone table of §1.3 reproduces exactly
    (13 / 15 / 20 / 21 / 28 points in a tree); **a capstone costs 21 and two

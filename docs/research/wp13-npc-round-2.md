@@ -35,7 +35,7 @@ The user's ruling splits the two. What shipped:
 
 Why the flag is installed at activation and not left in the def: mobs_redo's
 `register_mob` copies an explicit whitelist into the entity prototype
-(api.lua:3196ff), so a `_grug_*` def field reaches neither `self` nor
+(api.lua:3719-3874), so a `_grug_*` def field reaches neither `self` nor
 `core.registered_entities[name]` — AGENTS.md's WP6 runtime-field rule. The def
 keeps `_grug_noncombatant = true` as the declaration a reader and the KAT see;
 the verb is the one place that turns the declaration into behaviour.

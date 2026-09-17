@@ -393,6 +393,8 @@ authored 10-node apron, upward without limit and downward through y = −700.
 The ordinary contested deep rule resumes at y = −701 even below a capital.
 
 - A capital is a safe civic hub with **no hostile ambient enemies**.
+- Four capitals are walled: **Highcourt, Dur Brannoc, Gor Drazhak and Nhal
+  Veyr**. Two are open: **Lethariel and Kezamba** (user ruling 2026-09-17).
 - Its guards and important faction NPCs are level 60; the killable race king
   is the explicit level-65 elite exception and is protected by four level-60
   elite royal guards (`world_zones.md` §12).
