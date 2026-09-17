@@ -1,0 +1,2 @@
+r6_food_buffs_result	failures=3	ticks=2%:1/2/6,5%:1/5/16,10%:2/10/32	items=default:apple=raw,default:blueberries=raw,grug_fishing:cooked_fish=cooked,grug_gathering:corn=raw,grug_gathering:melon=raw,grug_gathering:mushroom=raw,grug_gathering:potato=raw,grug_gathering:rock_salt=raw,grug_gathering:wild_cocoa=raw,grug_mobs:raw_fish=raw,mobs:meat=cooked,mobs:meat_raw=raw,mobs:meatblock=cooked,mobs:meatblock_raw=raw
+FAIL tick math 325 x 2%; tick math 325 x 5%; tick math 325 x 10%
