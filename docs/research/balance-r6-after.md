@@ -3,12 +3,16 @@
 Measured after the Round 6 Lane B formula changes with:
 `/usr/bin/luajit tools/r5_progression/ttk_measure.lua . --r6-table`.
 TTK uses deterministic non-critical hits, an own-level baseline sword,
-Fireball at one cast per second, Smite at its two-second cooldown, and the
+Fireball at its server-enforced one-second cast interval, Smite at its
+two-second cooldown, and the
 elite's 20% damage intake. TTD is time against one normal same-level mob at
 one hit per second after the integer player-side mob-pressure fit, but before
 dodge, armor, absorb or healing. The accepted KAT tolerance is 10% around the
 8–12 second (Priest 12–16 second) normal TTK and 25–30 second TTD bands; elite
 TTK must be 3–4 times the corresponding normal row with the same tolerance.
+The independent-review fixes moved no row: the benchmark's one-second
+Fireball assumption became the production cadence, while removal of the
+duplicate ilvl multiplier is neutral for own-level baseline weapons.
 
 | Level | Class | Baseline attack | HP | Mana | Effective hit | Normal TTK (s) | Elite TTK (s) | Raw TTD (s) |
 |---:|---|---|---:|---:|---:|---:|---:|---:|

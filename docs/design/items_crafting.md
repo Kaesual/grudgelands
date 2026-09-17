@@ -1686,8 +1686,9 @@ Drops obey the player-tag rule (combat_stats §3), quality/roll windows
 per §6.3, and ordinarily use **gear-drop ilvl = min(mob level, 60)**.
 Authored level-60 endgame rewards are the exception: dungeon gear is ilvl
 **65**, raid/King gear ilvl **70**, and apex/final-boss gear ilvl **75**.
-All three use §6.3's top roll band; their ilvl above 60 is the independent
-damage-power axis of `combat_stats.md` §2, not a fifth enchant band. The
+All three use §6.3's top roll band; their ilvl above 60 feeds the same weapon
+base-damage curve as every other weapon, not a second combat multiplier or a
+fifth enchant band. The
 level-100 Kraken Guard still drops nothing. Since the roll band is chosen by
 the item's ilvl, that one number is all a drop needs: a drop
 has no crafter whose mastery could be read instead. Named zone → materials is
@@ -1882,7 +1883,10 @@ uses the same damage-and-swing line, including Wood and Stone swords and all
 axes; a missing item level omits only the `Item level` line, never the damage
 line. Every weapon stack in a player's inventory adds
 `Effective at level L: N damage per swing`, including melee bonus plus
-level/ilvl scaling, and refreshes that line on level or equipment change only
+the character-level damage fit; ilvl is already present in the weapon's base
+damage and is never multiplied again. The line is initialized at trader
+purchase, dropped-item pickup or crafting output, and refreshes on level or
+equipment change only
 when its bytes change. Attack speed applies via `tool_capabilities.
 full_punch_interval` meta override; stats recompute on equip change
 (WP15 hook). **The conversion is `fpi_new = fpi_base / (1 + p)`** for a
@@ -2048,9 +2052,12 @@ comparable.
 
 The endgame ordinary-affix budget is therefore approximately **+5% per
 equipped slot × eight slots = +40%** when every slot is dedicated to one
-pool. An offensive allocation may spend at most about four equivalent +5%
-contributions; combined with a +30% ilvl weapon, `1.30 × 1.20 = 1.56` is the
-intended +50–60% fully equipped ceiling over the level-60 baseline.
+axis. An offensive allocation may spend all eight damage-equivalent
+contributions. At level 60, the damage curve gives a 1H weapon 25 / 29 / 30
+damage at ilvl 60 / 70 / 75. With the Warrior's 18-point melee bonus and the
+shared damage fit, the +40% allocation produces 515 / 526 effective damage at
+ilvl 70 / 75 against the ilvl-60 baseline's 337: **+52.8% / +56.1%**, the
+intended +50–60% fully equipped ceiling.
 
 **Source window** (the decided "same mechanic, only ranges differ"):
 `roll = min + frac × (max − min)`, frac uniform in the window:

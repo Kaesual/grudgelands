@@ -70,17 +70,18 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   derive once from the relevant final pool and bypass the damage scalar.
 - **Mana costs** are rounded percentages of the unmodified `P(L)`, minimum 1.
   HP/mana enchants and pool talents therefore change capacity, not spell cost.
-- **Item-level damage axis** = `1 + 0.03 × clamp(item ilvl − player level,
-  −10, 10)`: −30% at ten levels below, neutral at own level, +30% at ten
-  levels above. A missing/non-positive ilvl is neutral.
+- **Weapon item level has exactly one damage axis:** the authored weapon curve
+  `round(4 + 0.35 × ilvl)` (then the weapon-family factor). Combat applies no
+  second ilvl multiplier. Character level still supplies the shared damage fit.
 - **Endgame headroom**: own-level quest/craft gear is the baseline. Level-60
-  dungeon, raid and final-boss rewards use ilvl **65 / 70 / 75**; the bounded
-  damage axis contributes +15% / +30% / +30%. Eight equipped slots budget
-  approximately +5% each in enchant value. A fully offensive allocation is
-  capped around four +5% damage-equivalent contributions; together with a
-  +30% weapon this is `1.30 × 1.20 = 1.56`, the intended +50–60% ceiling.
-  Pool-focused allocation may instead spend the eight-slot budget on about
-  +40% HP/mana. These are itemization ceilings, not extra level-curve terms.
+  dungeon, raid and final-boss rewards use ilvl **65 / 70 / 75**. At L60 the
+  1H weapon values are 25 / 27 / 29 / 30 damage for ilvl 60 / 65 / 70 / 75.
+  Eight equipped slots budget approximately +5% each in damage-equivalent
+  enchant value. A fully offensive +40% allocation yields effective hits
+  **515 / 526** with ilvl 70 / 75 against the baseline's **337**: +52.8% /
+  +56.1%, the intended +50–60% ceiling. Pool-focused allocation may instead
+  spend that budget on about +40% HP/mana. These are itemization ceilings, not
+  extra level-curve terms.
 - **Higher-mob-level damage malus**: against a mob more than five levels above
   the player, multiply player damage by `max(0.10, 1 − 0.10×(mob level −
   player level − 5))`. It is part of the same final damage multiplication and
@@ -297,12 +298,15 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   ally memory → self; any pointed invalid object enters that fallback chain
   (user ruling 2026-09-17).
 - **Fireball is directional, not targeted.** On successful input it spends
-  6% of the caster's base mana, snapshots the cast-time eye direction and spawns one straight
+  6% of the caster's base mana and starts a server-authoritative **1.0 s cast
+  interval**, then snapshots the cast-time eye direction and spawns one straight
   projectile at **20 m/s**. It has no homing, gravity or splash, deals
   **baseline weapon damage + spell power** through the damage fit, and disappears on its first attackable target, a
   blocking node or **20 m** travelled. A shot into empty space is still a cast
   and still spends mana. Friendly players/allied entities and dropped items are
-  ignored instead of body-blocking it.
+  ignored instead of body-blocking it. Input inside the cast interval is
+  refused without spending mana; the interval is a cadence, not a cooldown,
+  has no wear bar and cannot be shortened by cooldown talents.
 - **Active Fireballs are bounded per owner session.** At most eight may exist
   for one owner/session; the ninth spawn fails before entity creation and does
   not spend mana. Hit, range, lifetime, node collision, deactivation, invalid
@@ -523,8 +527,8 @@ Normal tier at level L:
 ### Same-level TTK check
 
 Deterministic non-crit benchmark: the Warrior uses that level's ladder sword
-at a normalized 1.0 s interval, Fireball is normalized to one cast per second,
-and Smite uses its 2.0 s cooldown. Elite armor 80 is included. Incoming normal
+at a normalized 1.0 s interval, Fireball uses its authoritative 1.0 s cast
+interval, and Smite uses its 2.0 s cooldown. Elite armor 80 is included. Incoming normal
 mob pressure uses one integer-settled hit per second before dodge, armor,
 absorb or healing. `mob_pressure_scale` targets
 `max(1, floor(P(L)/27))` damage for that hit; mob HP and raw damage curves do

@@ -514,12 +514,13 @@ reverting (b) is three edits.
 Ranged damage; fragile, keeps enemies away.
 
 Kit tuning decided 2026-08-06 (implementation: WP19): Fireball pays with
-mana instead of a cooldown (the former fixed 5 mana against a 240+ pool was free), Frost
+mana plus a 1 s cadence instead of a talent-visible cooldown (the former fixed
+5 mana against a 240+ pool was free), Frost
 Nova became the rotation pivot — kiting IS the Mage fantasy here.
 
 | Ability | Cost | Cooldown | Effect |
 |---------|------|----------|--------|
-| Fireball | 6% base mana | none (mana-limited) | Straight 20 m/s projectile along the cast-time crosshair, maximum 20 m, no homing/gravity/splash: baseline weapon + spell power through the damage fit on the first attackable target. A miss still spends mana; at most eight shots per owner/session may be active. |
+| Fireball | 6% base mana | **1 s cast interval** (server cadence, no cooldown bar) | Straight 20 m/s projectile along the cast-time crosshair, maximum 20 m, no homing/gravity/splash: baseline weapon + spell power through the damage fit on the first attackable target. A miss still spends mana; input inside the interval is refused without cost; at most eight shots per owner/session may be active. |
 | Frost Nova | 10% base mana | 12 s | Roots all enemies within 5 m for 4 s, then 50% slow for 3 s (no damage — pure control; rooted mobs keep attacking in melee range). |
 | Blink | 8% base mana | 15 s | Teleport up to 10 m in look direction (blocked by walls). Escape valve. |
 
