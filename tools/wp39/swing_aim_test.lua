@@ -135,7 +135,13 @@ grug_factions = {
 	same_faction = function(a, b) return a.faction and a.faction == b.faction end,
 }
 grug_xp = {register_on_level_change=function() end}
-grug_mobs = {slow=function() end, root=function() end}
+grug_mobs = {
+	slow=function() end,
+	root=function() end,
+	is_noncombatant=function(ent)
+		return type(ent) == "table" and ent._grug_noncombatant == true
+	end,
+}
 grug_projectiles = {
 	register = function() end,
 	spawn = function() return true end,

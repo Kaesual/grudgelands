@@ -240,6 +240,9 @@ local slows = 0
 grug_mobs = {
 	slow = function() slows = slows + 1 end,
 	root = function() end,
+	is_noncombatant = function(ent)
+		return type(ent) == "table" and ent._grug_noncombatant == true
+	end,
 }
 -- T5's projectile implementation has its own real-code test. This integration
 -- loader stubs only its public consumer boundary so the ability kit can load.

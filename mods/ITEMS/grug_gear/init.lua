@@ -8,14 +8,13 @@
 -- (§3.8) and 10-15% behind crafted gear of the same era by construction.
 --
 -- ---------------------------------------------------------------------------
--- WP5 INTERFACE -- deliberately NOT implemented in WP7
+-- ITEM-LEVEL INTERFACE
 -- ---------------------------------------------------------------------------
---   _grug_ilvl     The item level of the bracket. WP5 turns this into the
---                  per-stack item-meta `grug_req_level` and enforces it in
---                  the equip filter (inventory_equipment.md §2,
---                  items_crafting.md §6.1). WP7 only publishes the number:
---                  there is no level check anywhere in this mod, and none in
---                  grug_inventory's equip filter either.
+--   _grug_ilvl     The item level of the bracket. grug_inventory enforces it
+--                  as the minimum level for the weapon slot
+--                  (inventory_equipment.md §2, items_crafting.md §6.1).
+--                  Items without an ilvl, including the starter weapons and
+--                  tool-ladder axes, remain unrestricted.
 --   _grug_quality  1 = Common for every item registered here. WP5 owns
 --                  quality > 1, the enchant roll ranges behind it (§6.2/§6.3)
 --                  and the colored display names that come with it. Nothing
@@ -127,8 +126,9 @@ local BRACKET_TINT = grug_gear.BRACKET_TINT
 local STAT_COLOR = "#9aa0a6"
 
 local function describe(material, noun, ilvl, stat_line)
-	return material .. " " .. noun ..
-		"\nItem level " .. ilvl ..
+	local name = noun and (material .. " " .. noun) or material
+	local level_line = ilvl and ("\nItem level " .. ilvl) or ""
+	return name .. level_line ..
 		"\n" .. core.colorize(STAT_COLOR, stat_line)
 end
 
@@ -295,7 +295,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 		-- Every weapon family is weapon-slot eligible (weapon-slot design B3).
 		-- No class gate: weapon families are class FLAVOR, not a power ladder
 		-- (§8.2), so a Mage may equip a greataxe and simply gains nothing from
-		-- it; the only gate on the slot is WP5's grug_req_level. The slot
+		-- it; the only gate on the slot is the `_grug_ilvl` minimum. The slot
 		-- itself is family-agnostic, which is how the future bow family joins
 		-- without a second slot.
 		local groups = {grug_gear = 1, grug_equip_weapon = 1}
@@ -478,3 +478,26 @@ for _, itemname in ipairs(VENDORED_WEAPONS) do
 		core.override_item(itemname, {groups = groups, _grug_hands = 1})
 	end
 end
+
+-- Run after every item mod has registered. The weapon slot also accepts the
+-- deeper material-ladder hatchets from grug_materials, which loads alongside
+-- this mod and is deliberately not a dependency. Retrofitting by the slot
+-- group here covers those axes as well as the vendored starters and generated
+-- gear without a second hand-maintained name list.
+core.register_on_mods_loaded(function()
+	for itemname, def in pairs(core.registered_items) do
+		if def.groups and def.groups.grug_equip_weapon then
+			local caps = def.tool_capabilities or {}
+			local damage_groups = caps.damage_groups or {}
+			local damage = damage_groups.fleshy
+			if type(damage) == "number" and damage > 0 then
+				local label = ((def.description or itemname):gsub("\n.*", ""))
+				local stat_line = weapon_stats(damage,
+					caps.full_punch_interval or 1.4, def._grug_hands or 1)
+				core.override_item(itemname, {
+					description = describe(label, nil, def._grug_ilvl, stat_line),
+				})
+			end
+		end
+	end
+end)
