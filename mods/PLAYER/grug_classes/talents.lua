@@ -275,8 +275,8 @@ end
 --
 -- The 48 talents of the three shipped classes (skill_trees.md §§2.1-2.6).
 -- DATA ONLY: every "Modifies" cell of those tables is a consumer elsewhere.
--- Descriptions are the player-facing text the interim chat commands print and
--- lane X4's sfinv page will reuse.
+-- Descriptions are player-facing text for the sfinv page; /talents keeps a
+-- read-only rank summary without reproducing them.
 --
 
 grug_classes.register_tree({

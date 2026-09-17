@@ -75,6 +75,7 @@ local function build_env(repo, clock)
 	local money = {}
 	function money.take(player, copper)
 		clock.take_calls = clock.take_calls + 1
+		clock.take_amounts[#clock.take_amounts + 1] = copper
 		if player._money < copper then
 			return false
 		end
@@ -208,6 +209,7 @@ local function run_checks(repo)
 	local clock = {
 		us = 1000000, chat = {}, commands = {}, leave = {}, die = {},
 		mods_loaded = {}, class_chosen = {}, refreshes = 0, take_calls = 0,
+		take_amounts = {},
 	}
 	local env = build_env(repo, clock)
 	for _, relative in ipairs({
@@ -301,29 +303,68 @@ local function run_checks(repo)
 	equal(classes.talent_rank(level_two, "ironbound"), 1,
 		"the one-point level-2 budget refuses a second rank")
 
-	-- First respec free; later respec atomic against the public money API.
+	-- Drive every respec through the real page handler: first free, replay-safe
+	-- confirmation, insufficient funds, then a paid reset through the public
+	-- money API.
 	local payer = make_player(env, "payer", "warrior", 15, 100)
 	check(classes.spend_talent(payer, "ironbound"), "payer's first rank")
-	local ok_free, returned_free, charged_free = classes.buy_respec(payer)
-	check(ok_free, "first respec accepted")
-	equal(returned_free, 1, "first respec returned rank")
+	local free_before = payer._money
+	submit(payer, "grug_talent_respec")
+	check(env.sfinv.contexts.payer.grug_talent_respec_pending,
+		"free respec request awaits confirmation")
+	equal(classes.talent_rank(payer, "ironbound"), 1,
+		"free respec request alone preserved ranks")
+	submit(payer, "grug_talent_respec_confirm")
+	local charged_free = free_before - payer._money
+	equal(classes.talent_rank(payer, "ironbound"), 0,
+		"confirmed first respec reset ranks")
 	equal(charged_free, 0, "first respec charge")
 	equal(payer._money, 100, "first respec left money untouched")
 	equal(clock.take_calls, 0, "free respec did not call money.take")
+	equal(payer:get_meta():get_int("grug_classes:respec_used"), 1,
+		"first respec permanently consumed the free reset")
+	equal(env.sfinv.contexts.payer.grug_talent_respec_pending, nil,
+		"successful confirmation cleared pending state")
+
 	check(classes.spend_talent(payer, "ironbound"), "payer's second build")
 	equal(classes.respec_price(payer), 65, "level-15 placeholder bracket price")
+	submit(payer, "grug_talent_respec_confirm")
+	equal(classes.talent_rank(payer, "ironbound"), 1,
+		"repeated confirmation without a request preserved ranks")
+	equal(payer._money, 100,
+		"repeated confirmation without a request preserved money")
+	equal(clock.take_calls, 0,
+		"repeated confirmation without a request skipped money.take")
+
 	payer._money = 64
-	local ok_poor = classes.buy_respec(payer)
-	equal(ok_poor, false, "underfunded paid respec refused")
+	submit(payer, "grug_talent_respec")
+	submit(payer, "grug_talent_respec_confirm")
 	equal(classes.talent_rank(payer, "ironbound"), 1,
 		"underfunded respec preserved ranks")
 	equal(payer._money, 64, "underfunded respec preserved money")
+	equal(clock.take_calls, 1, "underfunded respec called money.take once")
+	equal(clock.take_amounts[1], 65,
+		"underfunded respec requested the bracket price")
+	equal(env.sfinv.contexts.payer.grug_talent_respec_pending, nil,
+		"underfunded confirmation cleared pending state")
+	check(env.sfinv.contexts.payer.grug_talent_notice:find(
+		"You need 65c", 1, true) ~= nil,
+		"underfunded refusal is shown by the handler")
+
 	payer._money = 100
-	local ok_paid, returned_paid, charged_paid = classes.buy_respec(payer)
-	check(ok_paid, "funded paid respec accepted")
-	equal(returned_paid, 1, "paid respec returned rank")
+	local paid_before = payer._money
+	submit(payer, "grug_talent_respec")
+	submit(payer, "grug_talent_respec_confirm")
+	local charged_paid = paid_before - payer._money
+	equal(classes.talent_rank(payer, "ironbound"), 0,
+		"confirmed paid respec reset ranks")
 	equal(charged_paid, 65, "paid respec charged bracket price")
 	equal(payer._money, 35, "paid respec atomic balance")
+	equal(clock.take_calls, 2, "paid respec made exactly one more money call")
+	equal(clock.take_amounts[2], 65,
+		"paid respec requested the bracket price")
+	equal(env.sfinv.contexts.payer.grug_talent_respec_pending, nil,
+		"paid confirmation cleared pending state")
 
 	-- The handler has no target-player field: spoofed foreign-class and target
 	-- fields still affect neither a different player nor another class's tree.

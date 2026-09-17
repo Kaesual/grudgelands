@@ -233,7 +233,7 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
 
-*Last updated: 2026-09-16. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-09-17. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
 
 **Shipped (20 of 49 work packages):** WP0–WP4, WP6, WP7, WP15, WP18, WP19,
@@ -249,9 +249,11 @@ WP16 is canceled and is not counted as shipped. The three work packages the
 2026-09-16 rulings created — WP-Scout, WP-HUD and WP-Speed — are counted in
 the 49 and are open.
 
-**Not in the game yet:** quests, professions/recipes, talent trees, parties,
-recovery, offhand items, affixes, durability, final structures, travel/map,
-Claim Stone housing, mounts and bosses remain unbuilt. Geographic PvP,
+**Not in the game yet:** quests, professions/recipes, talent keystones,
+capstones and their four new abilities (WP11 X3), parties, recovery, offhand
+items, affixes, durability, final structures, travel/map, Claim Stone housing,
+mounts and bosses remain unbuilt. X1, X2 and X4 of the talent trees are in the
+game; X4's respec prices remain coordinator placeholders. Geographic PvP,
 bounded war-front life and the rebased economy are also pending. Remaining
 mount and deep-content decisions live in [the crafting/mount TODO](TODO-design-crafting-rework.md)
 and [the depth TODO](TODO-design-depth.md); the [boat contract](docs/design/boats.md)

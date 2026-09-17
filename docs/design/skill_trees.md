@@ -828,6 +828,9 @@ is the single place a window lives; nothing else in the design needs state.
   race already use (`grug_classes/init.lua:3-4`, `:76`, `:113`); a string
   keeps it to one key instead of sixty-four, and it stays human-readable for
   `/talents` debugging.
+- One player-meta **integer** key, `grug_classes:respec_used`, is 0 until the
+  first successful free reset and 1 thereafter. It persists across reconnects
+  so the free reset is granted once per character; paid resets leave it at 1.
 - Parsed once per join into a per-player runtime cache (the pattern of
   `grug_abilities`' runtime tables, `init.lua:22-38`), invalidated on spend,
   respec and leave (a class change is no longer an event — ruling 20).
@@ -836,7 +839,7 @@ is the single place a window lives; nothing else in the design needs state.
   hard chain is not satisfied is dropped **together with everything below it
   in its chain**, and the total spent is clamped to `floor(level / 2)`. A
   hand-edited meta string therefore cannot buy a capstone at level 4.
-- Nothing else is persisted. Points available are always derived
+- No point balance is persisted. Points available are always derived
   (`floor(grug_xp.get_level(player) / 2)`, `grug_xp/init.lua:48`), never
   stored, so the two can never disagree.
 
