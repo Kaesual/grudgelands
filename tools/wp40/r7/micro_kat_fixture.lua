@@ -1074,8 +1074,18 @@ return function(repo, changed_roster_relative, expected_changed_count)
 		end
 	end
 	local semantic_dofile = dofile
-	local semantic_support_globals = {"beds", "doors", "dye", "vessels", "walls",
-		"wool", "xpanes", "grug_decor"}
+	local semantic_support_globals = {"beds", "doors", "dye", "stairs", "vessels",
+		"walls", "wool", "xpanes", "grug_decor"}
+	local semantic_support_nodes = {
+		"beds:bed_bottom", "beds:bed_top", "beds:fancy_bed_bottom",
+		"beds:fancy_bed_top", "doors:door_wood_a", "doors:door_wood_b",
+		"doors:hidden", "grug_decor:cottages_shelf",
+		"grug_decor:xdecor_barrel", "grug_decor:xdecor_cauldron",
+		"grug_decor:xdecor_empty_shelf", "stairs:stair_inner_stonebrick",
+		"stairs:stair_outer_pine_wood", "stairs:stair_outer_stonebrick",
+		"stairs:stair_pine_wood", "walls:cobble", "wool:brown", "wool:red",
+		"xpanes:pane", "xpanes:pane_flat",
+	}
 	local semantic_support_saved = {}
 	for _, name in ipairs(semantic_support_globals) do
 		semantic_support_saved[name] = rawget(_G, name)
@@ -1094,8 +1104,11 @@ return function(repo, changed_roster_relative, expected_changed_count)
 				if not semantic_core.register_on_placenode then
 					semantic_core.register_on_placenode = function() end
 				end
-				for _, modname in ipairs({"dye", "beds", "doors", "vessels", "walls",
-						"wool", "xpanes", "grug_decor"}) do
+				if not semantic_core.get_craft_result then
+					semantic_core.get_craft_result = function() return {time = 0} end
+				end
+				for _, modname in ipairs({"dye", "beds", "doors", "stairs", "vessels",
+						"walls", "wool", "xpanes", "grug_decor"}) do
 					semantic_core.get_current_modname = function() return modname end
 					semantic_core.get_modpath = function(name)
 						if name == modname then
@@ -1108,28 +1121,16 @@ return function(repo, changed_roster_relative, expected_changed_count)
 				end
 				semantic_core.get_current_modname = original_current_modname
 				semantic_core.get_modpath = original_get_modpath
+				for _, name in ipairs(semantic_support_nodes) do
+					if not semantic_core.registered_nodes[name] then
+						error("WP40 R7 final micro fixture: supporting mod did not " ..
+							"register required node " .. name, 0)
+					end
+				end
 			end
 			for _, name in ipairs({"default:shovel_wood", "default:shovel_stone",
 					"default:shovel_bronze", "default:shovel_steel"}) do
 				if not core.registered_items[name] then core.register_tool(name, {}) end
-			end
-			for _, name in ipairs({
-					"beds:bed_bottom", "beds:bed_top", "beds:fancy_bed_bottom",
-					"beds:fancy_bed_top", "doors:door_wood_a",
-					"doors:door_wood_b", "doors:hidden",
-					"grug_decor:cottages_shelf", "grug_decor:xdecor_barrel",
-					"grug_decor:xdecor_cauldron",
-					"grug_decor:xdecor_empty_shelf",
-					"stairs:stair_inner_stonebrick",
-					"stairs:stair_outer_pine_wood",
-					"stairs:stair_outer_stonebrick", "stairs:stair_pine_wood",
-					"walls:cobble", "wool:brown", "wool:red", "xpanes:pane",
-					"xpanes:pane_flat",
-			}) do
-				if not core.registered_nodes[name] then
-					core.register_node(name, {paramtype = "light",
-						sunlight_propagates = true, is_ground_content = false})
-				end
 			end
 		end
 		return semantic_dofile(path)
