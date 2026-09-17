@@ -280,11 +280,13 @@ function M.run(repo)
 	end
 	local cast_calls = 0
 	loaded.abilities.register_ability({
-		id = "kat_swing", kind = "swing", universal = true, name = "Kat Swing",
+		id = "kat_swing", kind = "swing", target_kind = "hostile",
+		universal = true, name = "Kat Swing",
 		description = "fixture", color = "#ffffff", range = 4,
 	})
 	loaded.abilities.register_ability({
-		id = "kat_cast", kind = "cast", universal = true, name = "Kat Cast",
+		id = "kat_cast", kind = "cast", target_kind = "self",
+		universal = true, name = "Kat Cast",
 		description = "fixture", color = "#ffffff", range = 4, cooldown = 1,
 		cast = function()
 			cast_calls = cast_calls + 1

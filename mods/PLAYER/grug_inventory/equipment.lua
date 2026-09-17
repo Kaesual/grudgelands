@@ -109,8 +109,8 @@ local WARN_COLOR = "#ff9955"
 -- The allow callback fires repeatedly while a stack is dragged around, so the
 -- refusal message has to be throttled per player or it spams the chat.
 --
--- ONE channel for every equip refusal (armor rank, two-handed rule, and
--- whatever WP5 adds), not one budget per rule: a drag is a single gesture, and
+-- ONE channel for every equip refusal (armor rank, weapon level and two-handed
+-- rule), not one budget per rule: a drag is a single gesture, and
 -- per-rule budgets would just spam at N times the rate the moment the stack
 -- crosses two slots on its way.
 --
@@ -168,6 +168,31 @@ local function warn_armor_class(player, rank)
 	core.chat_send_player(name, core.colorize(WARN_COLOR,
 		"A " .. (class_def and class_def.name or "character without a class") ..
 		" cannot wear " .. (ARMOR_CLASS_NAME[rank] or "that") .. " armor."))
+end
+
+-- The generated weapon catalogue publishes one authoritative item level on
+-- each definition. That value is also the minimum character level for the
+-- weapon slot. Items without an ilvl are the below-ladder starters or tool
+-- ladder axes and remain unrestricted; no generic tool or non-weapon list is
+-- gated here.
+local function required_weapon_level(stack)
+	local def = core.registered_items[stack:get_name()]
+	local level = def and def._grug_ilvl
+	if type(level) ~= "number" or level <= 0 then
+		return nil
+	end
+	return math.floor(level)
+end
+
+local function warn_weapon_level(player, stack, required, current)
+	local reason = "level:" .. stack:get_name() .. ":" .. required
+	local name = claim_warn(player, reason)
+	if not name then
+		return
+	end
+	core.chat_send_player(name, core.colorize(WARN_COLOR,
+		piece_name(stack) .. " requires level " .. required ..
+		" for the Weapon slot; you are level " .. current .. "."))
 end
 
 --
@@ -302,12 +327,16 @@ core.register_allow_player_inventory_action(function(player, action, inventory, 
 		if core.get_item_group(stack:get_name(), group) == 0 then
 			return 0
 		end
-		-- NB deliberately NO grug_req_level check anywhere in this callback:
-		-- the item-level requirement is WP5's (it owns the meta key), see
-		-- inventory_equipment.md §2. It belongs HERE, next to the group test,
-		-- not in the armor branch below -- it gates EVERY equipment list, and
-		-- for the weapon slot it is the ONLY gate (B3: weapon families are
-		-- class flavor, not a power ladder, so there is no class check).
+		if to_list == WEAPON_LIST then
+			local required = required_weapon_level(stack)
+			if required then
+				local current = grug_xp.get_level(player)
+				if current < required then
+					warn_weapon_level(player, stack, required, current)
+					return 0
+				end
+			end
+		end
 		if is_armor_list[to_list] then
 			local rank = core.get_item_group(stack:get_name(), "grug_armor_class")
 			if rank > 0 and rank > grug_classes.get_armor_rank(player) then

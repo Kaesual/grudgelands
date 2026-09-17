@@ -233,32 +233,38 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
 
-*Last updated: 2026-09-16. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-09-17. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
 
-**Shipped (20 of 49 work packages):** WP0–WP4, WP6, WP7, WP15, WP18, WP19,
-WP25, WP26, WP33, WP35, WP36, WP38, WP39, WP40, WP43 and WP45 provide the
-playable foundation: three classes, combat, mobs, equipment/bags, currency,
-canonical materials, gathering and the named-zone world. New characters remain
+**Shipped (22 of 49 work packages):** WP0–WP4, WP6, WP7, WP15, WP18, WP19,
+WP25, WP26, WP33, WP35, WP36, WP38, WP39, WP40, WP43, WP45, WP-HUD and
+WP-Speed provide the playable foundation: three classes, combat, mobs,
+equipment/bags, currency,
+canonical materials, gathering, exact life/resource bars, unified movement
+effects and the named-zone world. New characters remain
 protected behind character creation until the server has prepared all six
 start areas, which it emerges once at startup. WP40's
 [development acceptance](docs/research/wp40-completion.md) now includes the first
 terrain/performance correction round and green native plus browser-local
 Lua-5.1 user tests; slower browser generation is accepted for this server game.
-WP16 is canceled and is not counted as shipped. The three work packages the
-2026-09-16 rulings created — WP-Scout, WP-HUD and WP-Speed — are counted in
-the 49 and are open.
+WP16 is canceled and is not counted as shipped. WP-Scout, WP-HUD and WP-Speed
+are counted in the 49; only WP-Scout remains open.
 
-**Not in the game yet:** quests, professions/recipes, talent trees, parties,
-recovery, offhand items, affixes, durability, final structures, travel/map,
-Claim Stone housing, mounts and bosses remain unbuilt. Geographic PvP,
+**Not in the game yet:** quests, professions/recipes, talent keystones,
+capstones and their four new abilities (WP11 X3), parties, recovery, offhand
+items, affixes, durability, final structures, travel/map, Claim Stone housing,
+mounts and bosses remain unbuilt. X1, X2 and X4 of the talent trees are in the
+game; X4's respec prices remain coordinator placeholders. Geographic PvP,
 bounded war-front life and the rebased economy are also pending. Remaining
 mount and deep-content decisions live in [the crafting/mount TODO](TODO-design-crafting-rework.md)
 and [the depth TODO](TODO-design-depth.md); the [boat contract](docs/design/boats.md)
 and [PvP-death XP exemption](docs/design/progression.md) are already decided.
 
-**In progress:** WP13 has built **all six start settlements and all six
-capitals**. The starts share one reusable building library with per-race
+**In progress:** WP11 phase 1 has shipped its talent registry, 48 talents,
+point/gate/persistence model and thirty numeric consumers; round-5 Lane U is
+building X4's Talents page, respec price and level-up flow, while X3's
+keystones, capstones and four abilities follow in round 6. WP13 has built
+**all six start settlements and all six capitals**. The starts share one reusable building library with per-race
 palettes -- small dense houses with doors, pane windows, stair roofs,
 furnished interiors and exterior dressing -- and each is a different
 settlement out of it: a dwarf craft village in a pine clearing, a human
@@ -275,7 +281,9 @@ hostile mob spawns inside their protected footprints.
 The capitals were built out of the same library plus eighteen capital parts --
 a basilica king's hall with a throne room, curtain wall, corner tower and
 gatehouse, market square, colonnade, temple, barracks, scriptorium, granary,
-stable, statue, and hedge, grove, stilt and water edge pieces. **Highcourt**
+stable, statue, and hedge, grove, stilt and water edge pieces. The four walled
+capitals are **Highcourt, Dur Brannoc, Gor Drazhak and Nhal Veyr**; the two
+open capitals are **Lethariel and Kezamba**. **Highcourt**
 (human) was the pilot and put the seam in place: a settlement owns several
 blueprints, a district plot levels itself onto the ground under its own
 reference column, the avenues and the city wall are computed per mapchunk from

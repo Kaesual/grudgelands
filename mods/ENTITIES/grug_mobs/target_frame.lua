@@ -15,9 +15,8 @@
 --   same faction   green
 --   enemy faction  red
 --   either side factionless  gray
--- This is not a bonus feature: player nametags are hidden entirely
--- (grug_factions, combat_stats §6 — any floating name is a PvP tell through
--- walls), so the frame IS the identification mechanism for players. The
+-- This is not a bonus feature: proximity-gated player nametags identify nearby
+-- players, while the frame remains the viewer-specific faction-color signal. The
 -- colors are the same three, deliberately: one palette, one meaning
 -- ("green = safe for me, red = a problem, gray = nothing at stake").
 --

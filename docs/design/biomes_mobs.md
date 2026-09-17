@@ -896,7 +896,7 @@ use, not content:
   the hilly terrain where a travelling player wants a snack. They drop
   nothing without a player tag anyway, so there is no exploit either way.
   **The field must be written `false`, not `0`** — mobs_redo tests
-  `if self.fall_damage` (`mods/ENTITIES/mobs/api.lua:2608`) and every
+  `if self.fall_damage` (`mods/ENTITIES/mobs/api.lua:2689`) and every
   number is truthy in Lua, so `fall_damage = 0` is a silent no-op. Earlier
   revisions of this section printed `0`; the tier writes `false`.
 - **Never elite or rare.** The level engine's telegraph gate must be a
@@ -929,17 +929,17 @@ real fight rather than by travel.
 mobs_redo already expresses exactly this, so it is **four def fields and no
 new aggro system** (`grug_mobs.passive_prey` in `verbs.lua` sets them in one
 place): `passive = false` is what makes retaliation exist at all (on_punch's
-tail calls `do_attack(hitter)` only for a non-passive mob, api.lua:2979),
+tail calls `do_attack(hitter)` only for a non-passive mob, api.lua:3293-3299),
 `attack_players = false` (with `attack_npcs = false`) is what removes aggro
 on sight — it is read in exactly one place, `general_attack`'s candidate
-filter (api.lua:1787), and nothing in the attack *state* consults it —
+filter (api.lua:1779-1791), and nothing in the attack *state* consults it —
 `runaway` must be **off**, because on_punch's runaway block sets
 `state = "runaway"` a dozen lines before the retaliation block resets it, so
 the two cannot both be true — and **`attack_type = "dogfight"`** is what
 makes the retaliation actually *fight*. That last one is necessary, not
 decoration: `do_states`' attack branch dispatches on `explode` /
-`dogfight`-`dogshoot` / `shoot`-`dogshoot` with **no else** (api.lua:2214,
-2277, 2360, 2539) and `mobs.mob_class` defaults it to nil, so a
+`dogfight`-`dogshoot` / `shoot`-`dogshoot` with **no else**
+(api.lua:2282-2667) and `mobs.mob_class` defaults it to nil, so a
 `passive = false` mob without an attack type holds a target reference and
 does nothing with it — no damage, no punch clip, not even a `set_velocity`,
 which leaves it coasting on the knockback until the leash drops it. It was
@@ -1118,7 +1118,7 @@ below are the rationale for each choice, not the authority for it:
   notices a boat before the boat is past it. Large, deliberately not unfair.
 - **`reach` 4 is unchanged.** It is already double the roster's 2 because the
   model is ×6 and mobs_redo measures centre to centre
-  (`mods/ENTITIES/mobs/api.lua:238-245`); the reason a fleeing target used to
+  (`mods/ENTITIES/mobs/api.lua:236-243`); the reason a fleeing target used to
   be nearly unhittable was the attack cadence, not the reach, and that is
   fixed once for every mob in `combat_stats.md` §4.
 

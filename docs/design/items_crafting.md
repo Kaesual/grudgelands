@@ -915,9 +915,10 @@ Woodcarver buys the fitting from a Blacksmith (§3.6a). Orbs are **not**
 an offhand: the offhand is the Tailor's spell tome or the Blacksmith's
 shield and nothing else (§3.5, §3.3), so there is no duplicate.
 
-Weapons carry `grug_req_level = ilvl`
-(the field is derived from `_grug_ilvl`; **enforced from WP5** — WP7's
-vendor weapons already carry the ilvl but nothing checks it yet).
+For weapons, the catalogue's `_grug_ilvl` is also the minimum character level
+for the Weapon slot. The slot filter enforces it directly; a weapon without an
+item level has no level requirement. This gate does not apply to tools, whose
+material/crafting ladder supplies their progression.
 
 **How to read §3.3–§3.6b** (rewritten 2026-08-07). These sections used to
 describe a model where each profession **owned** its item catalog. Under
@@ -1700,8 +1701,8 @@ Drops obey the player-tag rule (combat_stats §3), quality/roll windows
 per §6.3, **gear-drop ilvl = min(mob level, 60)** (decided 2026-08-13: the
 clamp exists because the six race Kings are level 65 (§5.4) while the top
 roll band and the character cap both end at 60, so a literal ilvl 65 item
-would have no band and, through §6.1's `grug_req_level = ilvl`, could never
-be worn by anyone; a King is made special by the **boss** roll window and
+would have no band and would exceed the highest possible weapon requirement;
+a King is made special by the **boss** roll window and
 the Fallen Crown, not by five item levels. It is the only case: the
 level-100 Kraken Guard drops nothing, and every other source sits inside a
 band) — and since §6.3's roll band is
@@ -1862,27 +1863,23 @@ preserving the confirmed two-live-nodes-per-species budget.
 
 Item meta carries `grug_quality` (1 Common / 2 Uncommon / 3 Rare / 4
 Unique-reserved), one serialized ordinary-affix table (`grug_ench`),
-`grug_upgrades` (0–2, §7), `grug_req_level`, and separate structured
+`grug_upgrades` (0–2, §7), and separate structured
 masterwork, cultural-finish and PvP-special state where applicable. These
 channels never overwrite one another. Exact storage keys are implementation
 owned; one idempotent description/stat regeneration path reads them all.
 
-**`grug_req_level` scope** (sharpened 2026-08-07; **enforced from WP5** —
-WP7 ships 72 equippable vendor items that carry the ilvl but no check):
-**every equippable item that has an item level** carries it — weapons,
-armor, offhands and trinkets — and it equals the item's ilvl. **An
-equippable item with no ilvl at all carries no requirement** (2026-08-13):
-that is exactly the eight vendored `default:` swords and axes, which are
-slot-eligible today and carry no `_grug_ilvl`, and it matches the Wood and
-Stone starter line, which §3.0.1 already exempts. The exemption disappears
-by construction when WP29 folds those items into the material ladder.
-Equipping below the requirement is **blocked with a chat message**, enforced in the slots' group-filtered `allow_put`
-(inventory_equipment.md §2); "equips but grants nothing" was rejected as
-an invisible failure. Drops keep `ilvl = min(mob level, 60)` (§5), so gear above
-your level is lootable and tradeable, just not wearable yet — that is
-intended, and it is also what stops one level-60 friend from outfitting
-a level-5 character and flattening the entire surface progression. Description
-regenerated from meta on every change (name colorized: white `#FFFFFF`,
+**Weapon level requirement.** A weapon definition's `_grug_ilvl` is its
+minimum character level. The Weapon slot's group-filtered `allow_put` blocks a
+player below that level and explains the refusal in chat; meeting the level is
+enough, and there is no class-family gate. The generated catalogue therefore
+uses the six §3.8 requirements **3 / 10 / 20 / 30 / 40 / 50**. A weapon with no
+item level has no requirement: Wood and Stone swords, the Wooden Staff and the
+tool-ladder axes remain immediately equippable. Picks, shovels and generic
+tools are never subject to this slot gate; the crafting/material ladder gates
+them. Item-level armor, offhands and trinkets are not level-gated by this
+weapon-only rule. Higher-level weapons remain lootable and tradeable, just not
+equippable yet. The description is regenerated from meta on every change
+(name colorized: white `#FFFFFF`,
 blue `#4A90FF`, yellow `#FFD700`, orange `#FF8000`; one line per
 enchant).
 
@@ -1895,7 +1892,10 @@ taken)` for armor pieces. Without it a player cannot compare two pieces
 without re-deriving the §3.1/§3.2 curves by hand. The base stat does
 **not** live in item meta and cannot be reconstructed from an enchant
 roll, so the regeneration above must **preserve these lines and append
-the enchant lines below them**. Attack speed applies via `tool_capabilities.
+the enchant lines below them**. Every Weapon-slot item with positive damage
+uses the same damage-and-swing line, including Wood and Stone swords and all
+axes; a missing item level omits only the `Item level` line, never the damage
+line. Attack speed applies via `tool_capabilities.
 full_punch_interval` meta override; stats recompute on equip change
 (WP15 hook). **The conversion is `fpi_new = fpi_base / (1 + p)`** for a
 rolled `+p` (2026-08-13): "attack speed +16%" means sixteen percent more
@@ -1928,12 +1928,10 @@ in the **name**, not in the stat lines (§6b.4).
 
 **Hand-off from the vendor catalogs** (WP7 → WP5, 2026-08-07): vendor
 gear ships with the item-def fields **`_grug_ilvl`, `_grug_bracket` and
-`_grug_quality = 1`**. WP5 derives the per-stack `grug_req_level` and
-the enchant rolls **from those**, so a bracket catalog needs no second
-list of levels. **WP7 deliberately enforces no level requirement at
-all** — the equip filter has no `grug_req_level` branch yet, and the
-number it would read is published but unused. Adding the check is WP5's
-edit in one place, not a rewrite of the catalog.
+`_grug_quality = 1`**. The Weapon-slot filter reads `_grug_ilvl` directly,
+so a bracket catalog needs no second list of levels or per-stack duplicate.
+The later quality/enchant pipeline derives its rolls from these fields and
+preserves the requirement while rebuilding the description.
 
 ### 6.2 Enchant pools per item family (no duplicate stat per item)
 

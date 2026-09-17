@@ -2760,6 +2760,19 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 		end
 	end
 
+	-- GRUG PATCH (raw player-punch veto, round 5 R12): a hotbar weapon,
+	-- ordinary tool or fist is not a second damage source against grug_mobs.
+	-- Swing items already returned through the native-input seam above; the
+	-- later server-owned exact-target swing carries `grug_authoritative`, and
+	-- cast damage carries `in_ability_punch`, so both authoritative skill paths
+	-- continue. Vanilla mobs_redo entities, non-player punches and the separate
+	-- player-vs-player callback are outside this branch.
+	if is_player(hitter) and grug_mobs and grug_mobs.registered_cadence
+	and grug_mobs.registered_cadence[self.name]
+	and not grug_authoritative and not grug_core.in_ability_punch then
+		return true
+	end
+
 	if self.protected then -- are we protected ?
 
 		if is_player(hitter) then -- only protect from players

@@ -160,6 +160,11 @@ grug_factions = {
 		return af ~= nil and af == bf
 	end,
 }
+grug_mobs = {
+	is_noncombatant = function(ent)
+		return type(ent) == "table" and ent._grug_noncombatant == true
+	end,
+}
 
 local function player(name, faction)
 	local obj = {name = name, faction = faction, hp = 20,
@@ -173,9 +178,10 @@ local function player(name, faction)
 	return obj
 end
 
-local function mob(name, faction, health, pos)
+local function mob(name, faction, health, pos, noncombatant)
 	local ent = {name = name, _cmi_is_mob = true,
-		_grug_faction = faction, health = health or 20}
+		_grug_faction = faction, health = health or 20,
+		_grug_noncombatant = noncombatant == true}
 	local obj = {ent = ent, pos = pos or {x = 0, y = 0, z = 2}, removed = false}
 	function obj:is_player() return false end
 	function obj:get_pos() return not self.removed and self.pos or nil end
@@ -218,6 +224,7 @@ online.owner = owner
 run_callbacks(callbacks.join, owner)
 local hostile = mob("test:hostile", "throng", 20, {x = 3, y = 0, z = 0})
 local ally = mob("test:ally", "accord", 20, {x = 1, y = 0, z = 0})
+local civilian = mob("test:civilian", nil, 20, {x = 2, y = 0, z = 0}, true)
 local drop = plain_entity("__builtin:item", {x = 1.5, y = 0, z = 0})
 local nonattackable = plain_entity("test:decoration", {x = 1.7, y = 0, z = 0})
 local dead = mob("test:dead", "throng", 0, {x = 1.8, y = 0, z = 0})
@@ -249,8 +256,11 @@ assert(result.kind == "node")
 -- Transparent objects never body-block the later hostile.
 result = trace({point(owner, 0), point(projectile, 0), point(ally, 0.5),
 	point(drop, 1), point(nonattackable, 1.2), point(dead, 1.4),
-	point(factionless, 1.6), point(invalid, 1.8), point(hostile, 3)})
+	point(factionless, 1.6), point(invalid, 1.8), point(civilian, 2),
+	point(hostile, 3)})
 assert(result.kind == "object" and result.target == hostile)
+assert(trace({point(civilian, 2)}) == nil,
+	"noncombatant terminated a hostile projectile")
 result = trace({node("grass", 1), point(hostile, 2)})
 assert(result.kind == "object" and result.target == hostile)
 result = trace({point(hostile, 3), node("stone", 2)})
@@ -585,7 +595,13 @@ grug_classes = {
 	-- Round 4 (WP11 phase 1): the kits read talent bonuses; 0 = untalented.
 	get_talent_bonus = function() return 0 end,
 }
-grug_mobs = {slow=function() end, root=function() end}
+grug_mobs = {
+	slow=function() end,
+	root=function() end,
+	is_noncombatant=function(ent)
+		return type(ent) == "table" and ent._grug_noncombatant == true
+	end,
+}
 local real_fireball_damage = {}
 grug_core.combat_eye_pos = function(caster)
 	return vector.add(caster:get_pos(), {x=0,y=1.5,z=0})
