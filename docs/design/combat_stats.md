@@ -533,9 +533,15 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   existing bounded A* search despite already being close. It does not abandon
   that path merely because `dist < reach` while LOS remains blocked. If A*
   returns nil, it sidesteps perpendicular to the target for about **0.5 s**,
-  alternating sides on consecutive failures, then tests LOS again. Both the
-  contact run and sidestep stop at `at_cliff` (`mobs/api.lua:103-104,
-  1717-1719,2321-2330,2512,2622,2644-2646`).
+  alternating sides on consecutive failures, then tests LOS again. Immediately
+  before moving, the actual selected side is checked for a cliff or dangerous
+  ground; the other side is tried once, and if both are unsafe the mob stands.
+  The attack state computes one canonical target-LOS ray per mob per server
+  step and reuses it for path retention, A* and the punch gate. Across the
+  server at most **2** A* searches start per server step; a mob denied by this
+  budget waits **0.25 s** before retrying. The contact run retains its existing
+  `at_cliff` guard (`mobs/grug_obstacle.lua:5-8,22-57,63-87,101-125`;
+  `mobs/api.lua:2296-2301,2331-2339,2511-2519,2628-2735`).
   *Rationale, because the defect was invisible on paper*: vendored mobs_redo
   zeroed the mob's velocity as soon as the target was inside `reach`
   (`api.lua:2498` before the patch — the number this file carried,

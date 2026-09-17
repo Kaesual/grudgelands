@@ -224,7 +224,7 @@ promised away.
 - **Readiness waits for aim.** When the weapon interval expires, the full swing
   remains ready. While a swing skill is selected and LMB is held, each
   throttled combat pass raycasts from the player's eye through the current
-  crosshair to the skill range (4 m today). A hostile living mob/player must be
+  crosshair to the skill range (3 m today). A hostile living mob/player must be
   the first valid visible combat object; walkable nodes block. No target, a
   friendly target, a blocking node or out-of-range aim is an **aim miss**: it
   deals nothing and does not advance the weapon clock. As soon as the server
