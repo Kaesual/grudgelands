@@ -55,6 +55,8 @@ local function talent_mark(def)
 	return ""
 end
 
+-- Three compact labels over two rows: every full name and value stays inside
+-- the 8-unit form, and the second row still clears the tree controls and T1.
 local function stat_lines(player)
 	local crit_raw = grug_classes.get_crit_chance_raw(player) * 100
 	local dodge_raw = grug_classes.get_dodge_chance_raw(player) * 100
@@ -83,11 +85,9 @@ local function stat_lines(player)
 		grug_classes.get_talent_bonus(player, "dodge_cap_override"))
 	local armor_cap = math.max(60,
 		grug_classes.get_talent_bonus(player, "armor_cap_override"))
-	return ("Crit %.1f%% effective / %.1f%% raw (cap %.0f%%)   " ..
-		"Dodge %.1f%% / %.1f%% raw (cap %.0f%%)"):format(
-		crit, crit_raw, crit_cap, dodge, dodge_raw, dodge_cap),
-		("Armor %.0f%% effective / %.0f%% raw (cap %.0f%%)"):format(
-			armor, armor_raw, armor_cap)
+	return ("Crit %.1f/%.1f%% (%.0f)"):format(crit, crit_raw, crit_cap),
+		("Dodge %.1f/%.1f%% (%.0f)"):format(dodge, dodge_raw, dodge_cap),
+		("Armor %.0f/%.0f%% (%.0f)"):format(armor, armor_raw, armor_cap)
 end
 
 local function trees_for_player(player)
@@ -151,14 +151,15 @@ local function talent_content(player, context)
 	local class_id = grug_classes.get_class(player)
 	local class_def = class_id and grug_classes.registered_classes[class_id]
 	local tree, trees = active_tree(player, context)
-	local stat_one, stat_two = stat_lines(player)
+	local crit_line, dodge_line, armor_line = stat_lines(player)
 	local fs = {
-		("label[0,0.25;%s]"):format(esc(class_def and class_def.name or "No class")),
-		("label[3.75,0.25;%s]"):format(esc(("Talent points: %d total / %d left")
+		("label[0,0.20;%s]"):format(esc(class_def and class_def.name or "No class")),
+		("label[3.75,0.20;%s]"):format(esc(("Points %d/%d")
 			:format(grug_classes.talent_points_total(player),
 				grug_classes.talent_points_available(player)))),
-		("label[0,0.55;%s]"):format(esc(stat_one)),
-		("label[0,0.82;%s]"):format(esc(stat_two)),
+		("label[0,0.60;%s]"):format(esc(crit_line)),
+		("label[4.25,0.60;%s]"):format(esc(armor_line)),
+		("label[0,1.00;%s]"):format(esc(dodge_line)),
 	}
 
 	for index, candidate in ipairs(trees) do
@@ -167,32 +168,32 @@ local function talent_content(player, context)
 		if tree and candidate.id == tree.id then
 			label = "> " .. label
 		end
-		fs[#fs + 1] = ("button[%.2f,1.08;1.75,0.5;grug_talent_tree_%d;%s]")
+		fs[#fs + 1] = ("button[%.2f,1.30;1.75,0.5;grug_talent_tree_%d;%s]")
 			:format((index - 1) * 1.85, index, esc(label))
 	end
 
 	local spent = grug_classes.talent_points_spent(player)
 	if spent <= 0 then
-		fs[#fs + 1] = "label[5.85,1.22;" .. esc("No ranks spent") .. "]"
+		fs[#fs + 1] = "label[5.25,1.44;" .. esc("No ranks spent") .. "]"
 	elseif context.grug_talent_respec_pending then
-		fs[#fs + 1] = "button[5.35,1.08;1.25,0.5;grug_talent_respec_confirm;Confirm]"
-		fs[#fs + 1] = "button[6.65,1.08;1.15,0.5;grug_talent_respec_cancel;Cancel]"
+		fs[#fs + 1] = "button[5.35,1.30;1.25,0.5;grug_talent_respec_confirm;Confirm]"
+		fs[#fs + 1] = "button[6.65,1.30;1.15,0.5;grug_talent_respec_cancel;Cancel]"
 	else
 		local price = grug_classes.respec_price(player)
 		local price_text = price == 0 and "Free" or grug_money.format(price)
-		fs[#fs + 1] = "button[5.65,1.08;2.15,0.5;grug_talent_respec;" ..
+		fs[#fs + 1] = "button[5.65,1.30;2.15,0.5;grug_talent_respec;" ..
 			esc("Respec: " .. price_text) .. "]"
 	end
 
 	if not tree then
-		fs[#fs + 1] = "label[0.2,2.0;" ..
+		fs[#fs + 1] = "label[0.2,2.10;" ..
 			esc("Choose a class before spending talent points.") .. "]"
 		return table.concat(fs)
 	end
 
 	for chain_index, chain in ipairs(tree.chains) do
 		local x = (chain_index - 1) * 4
-		fs[#fs + 1] = ("label[%.2f,1.62;%s]"):format(x + 0.1,
+		fs[#fs + 1] = ("label[%.2f,1.89;%s]"):format(x + 0.1,
 			esc(chain:sub(1, 1):upper() .. chain:sub(2)))
 		for tier = 1, 4 do
 			local def
@@ -203,9 +204,9 @@ local function talent_content(player, context)
 				end
 			end
 			if def then
-				local y = 1.82 + (tier - 1) * 0.57
+				local y = 2.10 + (tier - 1) * 0.57
 				local rank = grug_classes.talent_rank(player, def.id)
-				local label = ("T%d %s%s  %d/%d"):format(tier, def.name,
+				local label = ("T%d %s%s %d/%d"):format(tier, def.name,
 					talent_mark(def), rank, def.ranks)
 				if context.grug_talent_selected == def.id then
 					label = "> " .. label
@@ -238,7 +239,7 @@ local function talent_content(player, context)
 
 	local description = context.grug_talent_notice
 		or selected_description(player, context, tree)
-	fs[#fs + 1] = "textarea[0.15,4.12;7.7,0.78;;;" .. esc(description) .. "]"
+	fs[#fs + 1] = "textarea[0.15,4.35;7.7,0.55;;;" .. esc(description) .. "]"
 	return table.concat(fs)
 end
 

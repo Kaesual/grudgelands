@@ -304,7 +304,7 @@ clamped — which means a Scout with good gear gets *less* from their own
 button, a real consequence and not a bug. The Veil capstone **Untouchable**
 does raise the cap, to 50-60 % for six seconds once every three minutes, which
 is what ruling 10 permits for a capstone. `combat_stats.md` §2 needs the one
-paragraph `skill_trees.md` §2.10 describes, and the Character page has to show
+paragraph `skill_trees.md` §2.10 describes, and the Talents header has to show
 the raised cap while it runs (`:104-108` already requires effective **and**
 raw).
 

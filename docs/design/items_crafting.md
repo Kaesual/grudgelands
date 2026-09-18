@@ -1591,8 +1591,8 @@ The resulting T6 per-stack values are:
 
 All finish, affix, attribute and base-equipment sources add before the existing
 final caps: Crit 30%, Dodge 30% and armor 60%. Overcap remains on its source
-stacks but has no combat effect. The Character page displays effective and raw
-values, for example `Armor 60% (67% raw)`; there is no reroll, overflow
+stacks but has no combat effect. The Talents header displays effective/raw
+values and caps, for example `Armor 60/67% (60)`; there is no reroll, overflow
 conversion, diminishing-return curve or cap increase. The theoretical T6
 cultural-only mixed-set maxima are approximately +14.8 Crit percentage points
 (including compatible Dexterity), +9.9 Dodge points and +7 armor points.
@@ -2079,9 +2079,10 @@ intended +50–60% fully equipped ceiling.
 **Combined cap policy (re-run 2026-08-12).** Ordinary affixes, trinket
 prefixes/suffixes, cultural finishes, attributes and base equipment all add
 before the unchanged final caps: Crit 30%, Dodge 30% and armor 60%. Values over
-a cap remain on their source stacks but add no combat power. The Character page
-shows both effective and raw totals, and no automatic reroll, overflow
-conversion, diminishing return or cap increase hides the waste.
+a cap remain on their source stacks but add no combat power. The Talents header
+shows effective/raw Crit, Dodge and Armor with their caps, and no automatic
+reroll, overflow conversion, diminishing return or cap increase hides the
+waste.
 
 The old eight-identical-affix-slot calculation is retired: each trinket now has
 one primary prefix and one HP/Mana/Crit suffix rather than four ordinary slots.

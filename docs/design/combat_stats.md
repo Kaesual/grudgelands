@@ -151,14 +151,19 @@ diminishing-returns curves.
 
 Equipment sources, ordinary affixes and cultural finishes add before final
 consumer caps. The caps remain 30% Crit, 30% Dodge and 60% armor. Values above
-a cap remain present on their stacks but have no further combat effect; the
-Character page exposes effective and raw values, for example
-`Armor 60% (67% raw)`. There is no automatic overflow conversion or cap raise.
-The Character page shows maximums only: base pool, HP class factor, separate
-gear/talent pool percentages, final HP/mana (including any active status), flat Rage where applicable,
-melee bonus, spell power, Crit, Dodge and armor. The HUD bars are the sole
-display of current pool values. Its Help page states these formulas in
-player-facing prose.
+a cap remain present on their stacks but have no further combat effect. The
+Talents header exposes effective/raw Crit, Dodge and Armor with the cap in
+parentheses, for example `Armor 60/67% (60)`. There is no shipped automatic
+overflow conversion or cap raise; the cap-override talent keys remain reserved
+for WP11 lane X3 and are not combat consumers yet.
+
+The Character page contains only two live maximum-pool derivations: HP and
+mana, or HP and fixed Rage. Each compact line carries final value (including any active status percentage), base pool,
+HP class factor where applicable, and separate gear/talent percentages; the
+HUD bars are the sole display of current pool values. The Help page owns the
+formula prose for pools, Strength, Intelligence, Dexterity and the three capped
+stats. Melee bonus, spell power and attributes are formulas there, not extra
+Character-page rows.
 
 Active timed statuses are an additional stat source. `grug_core.set_status`
 accepts only `hp_pool_percent`, `mana_pool_percent`, `crit_percent`, `armor`
