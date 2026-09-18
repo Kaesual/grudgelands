@@ -125,14 +125,14 @@ end
 -- the same relative 20% per rank effect it had on the old in-combat rate.
 function grug_abilities.mana_regen_rate(player, in_combat)
 	local level = math.max(1, grug_core.get_player_level(player))
-	local rate = (1 + 0.15 * level)
-		* (grug_classes.get_race_perk(player, "ooc_regen_mult") or 1)
+	local rate = 1 + 0.15 * level
 	if in_combat then
 		local bonus = grug_classes.get_talent_bonus(player,
 			"combat_mana_regen_add")
-		rate = rate * 0.25 * (1 + 2 * bonus)
+		return rate * 0.25 * (1 + 2 * bonus)
 	end
-	return rate
+	return rate *
+		(grug_classes.get_race_perk(player, "ooc_regen_mult") or 1)
 end
 
 function grug_abilities.mana_cost(player, percent)

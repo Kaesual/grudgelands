@@ -119,6 +119,7 @@ return function(repo)
 		local growth = player.class_id == "mage" and 3 or 2
 		return math.floor((10 + growth * (player.level - 1)) / 10)
 	end
+	function classes_stub.get_spell_damage_percent() return 0 end
 	function classes_stub.get_melee_bonus(player)
 		local growth = player.class_id == "warrior" and 3
 			or player.class_id == "priest" and 1 or 0

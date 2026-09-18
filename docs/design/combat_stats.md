@@ -158,12 +158,12 @@ overflow conversion or cap raise; the cap-override talent keys remain reserved
 for WP11 lane X3 and are not combat consumers yet.
 
 The Character page contains only two live maximum-pool derivations: HP and
-mana, or HP and fixed Rage. Each compact line carries final value (including any active status percentage), base pool,
-HP class factor where applicable, and separate gear/talent percentages; the
-HUD bars are the sole display of current pool values. The Help page owns the
-formula prose for pools, Strength, Intelligence, Dexterity and the three capped
-stats. Melee bonus, spell power and attributes are formulas there, not extra
-Character-page rows.
+mana, or HP and fixed Rage. Each compact line carries final value, base pool,
+HP class factor where applicable, and separate gear/talent/status percentages;
+the HUD bars are the sole display of current pool values. The Help page owns
+the formula prose for pools, Strength, Intelligence, Dexterity and the three
+capped stats. Melee bonus, spell power and attributes are formulas there, not
+extra Character-page rows.
 
 Active timed statuses are an additional stat source. `grug_core.set_status`
 accepts only `hp_pool_percent`, `mana_pool_percent`, `crit_percent`, `armor`
@@ -752,9 +752,10 @@ design (`group_attack` stays on).
   runtime-only **180 s** buff with one tick every **5 s**. Only one food status
   may run; the latest replaces it. Every food has fixed instant HP by tier.
   Out of combat that heal applies immediately. In combat the serving may be
-  eaten, but the heal waits exactly once for the first out-of-combat check and
-  regeneration ticks do nothing. The unpaid instant heal survives the buff's
-  180-second expiry; regeneration and secondary modifiers still end on time.
+  eaten, but the heal waits exactly once for the first out-of-combat moment,
+  checked every second, and regeneration ticks do nothing. The unpaid instant
+  heal survives the buff's 180-second expiry; regeneration and secondary
+  modifiers still end on time.
   A newer serving replaces, rather than adds to, an unpaid instant heal. Death
   or leaving clears it. Combat never cancels or pauses the duration, and
   secondary status modifiers remain active in combat.
@@ -771,9 +772,10 @@ design (`group_attack` stays on).
   due during combat is skipped while the 180-second buff keeps running.
 - Mana regeneration is **`1 + 0.15 × level` mana/s** out of combat (1.15 at
   L1, 2.5 at L10, 5.5 at L30, 10 at L60), multiplied by the Troll
-  `ooc_regen_mult` perk. In combat it is one quarter of that result. Cold Focus
-  multiplies the in-combat rate by **`1 + 2 × bonus`**, preserving its old
-  +20% per-rank relative effect (rank 5 doubles the combat rate).
+  `ooc_regen_mult` perk. In combat it is one quarter of the **unmodified**
+  curve; the Troll perk does not apply. Cold Focus multiplies that in-combat
+  rate by **`1 + 2 × bonus`**, preserving its old +20% per-rank relative effect
+  (rank 5 doubles the combat rate).
 - Food regeneration and pool bonuses are percent-based, but consumables now
   have tier minimum levels through `_grug_ilvl`. The neutral base pool spans
   26 at level 1 to 2696 at level 60, while class factors and pool percentages

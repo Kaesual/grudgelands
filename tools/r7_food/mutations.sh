@@ -111,14 +111,20 @@ mutate() {
 		;;
 		tooltip)
 		replace_once "$target/mods/ITEMS/grug_food/init.lua" \
-			'Regeneration pauses in combat; other bonuses stay.' \
-			'Regeneration continues in combat.'
+			'Instant heal and regeneration wait until you are out of combat; other bonuses stay.' \
+			'Instant healing works in combat.'
 		expected="food tooltip text"
 		;;
 		regen)
 		replace_once "$target/mods/PLAYER/grug_abilities/init.lua" \
-			'local rate = (1 + 0.15 * level)' \
-			'local rate = (1 + 0.16 * level)'
+			'local rate = 1 + 0.15 * level' \
+			'local rate = 1 + 0.16 * level'
+		expected="mana regen curve L1"
+		;;
+		troll_combat)
+		replace_once "$target/mods/PLAYER/grug_abilities/init.lua" \
+			'return rate * 0.25 * (1 + 2 * bonus)' \
+			'return rate * (grug_classes.get_race_perk(player, "ooc_regen_mult") or 1) * 0.25 * (1 + 2 * bonus)'
 		expected="mana regen curve L1"
 		;;
 		preload)
@@ -146,7 +152,7 @@ printf '== baseline ==\n%s\n' "$baseline"
 
 selection="${1:-all}"
 if [[ "$selection" == "all" ]]; then
-	for name in tier raw dish deferral expiry_deferral spell_damage modifiers level_gate label tooltip regen preload; do
+	for name in tier raw dish deferral expiry_deferral spell_damage modifiers level_gate label tooltip regen troll_combat preload; do
 		mutate "$name"
 	done
 	MUTATION_LUA_BIN="$lua_bin" bash \

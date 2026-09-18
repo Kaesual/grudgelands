@@ -12,9 +12,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   the homepage**. It has the equipment slots and 3D model preview (formspec
   `model[]`) plus exactly two compact, live derivation lines above them: one
   for maximum HP and one for mana or rage. HP and mana show the resulting
-  maximum and abbreviate base pool, class factor and gear/talent percentage
-  bonuses as B/C/G/T; Help expands that legend. Rage names its fixed 100-point
-  rule. The lines consume
+  maximum and abbreviate base pool, class factor and gear/talent/status
+  percentage bonuses as B/C/G/T/S; Help expands that legend. Rage names its
+  fixed 100-point rule. The lines consume
   `grug_classes.get_pool_breakdown` and do not recompute the stats. Formula
   explanations and the remaining stat guidance live on the existing Help
   page; effective/raw Crit, Dodge and Armor remain in the Talents header.

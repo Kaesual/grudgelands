@@ -387,6 +387,7 @@ function grug_classes.get_max_hp() return 30 end
 function grug_classes.get_max_mana() return 20 end
 function grug_classes.get_melee_bonus() return 0 end
 function grug_classes.get_spell_power_bonus() return 0 end
+function grug_classes.get_spell_damage_percent() return 0 end
 function grug_classes.get_crit_chance() return 0 end
 function grug_classes.get_dodge_chance() return 0 end
 

@@ -1063,9 +1063,9 @@ and a 60 s lockout on a misclick is a tax, not a rule).
 
 **The potion keeps the in-combat instant slot** (Food v2, decided 2026-09-18,
 superseding R9). Food has fixed instant HP, but combat defers it to the first
-out-of-combat tick; its regeneration also pauses in combat. The Healing Potion
-remains the only health consumable that restores health **immediately in
-combat**, on the unchanged shared 60 s cooldown.
+out-of-combat moment, checked every second; its regeneration also pauses in
+combat. The Healing Potion remains the only health consumable that restores
+health **immediately in combat**, on the unchanged shared 60 s cooldown.
 
 **Exclusive recipes** — the entire consumable line is Alchemist-only;
 nothing here has a base recipe (mastery names, relabelled 2026-08-07):
@@ -1190,7 +1190,8 @@ Neither of these costs a main profession slot (professions.md §1).
   instant HP value and a **180 s** buff ticking every **5 s**. Exactly one food
   buff may run at once; the latest serving replaces it. Eating in combat is
   allowed: regeneration pauses, and the instant heal is deferred exactly once
-  to the first out-of-combat tick, while secondary stat bonuses remain active.
+  to the first out-of-combat moment, checked every second, while secondary stat
+  bonuses remain active.
   - Tier data are **T1 5 HP/L1, T2 15/L10, T3 40/L20, T4 90/L30,
     T5 180/L40, T6 300/L50**. The instant value is HP only and identical for
     every food in that tier.

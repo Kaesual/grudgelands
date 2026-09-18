@@ -258,7 +258,7 @@ local function food_status_rows(root, failures)
 	local corn_desc = items["grug_gathering:corn"].description
 	check(apple_desc:find("Restores 5 HP instantly.", 1, true) and
 		apple_desc:find("Regenerates 1% of maximum HP every 5 s for 3 min.", 1, true) and
-		apple_desc:find("Regeneration pauses in combat; other bonuses stay.", 1, true) and
+		apple_desc:find("Instant heal and regeneration wait until you are out of combat; other bonuses stay.", 1, true) and
 		not apple_desc:find("Requires level", 1, true) and
 		corn_desc:find("Requires level 10.", 1, true), "food tooltip text")
 
@@ -282,7 +282,7 @@ local function food_status_rows(root, failures)
 	deferred.combat = false
 	now = 110 * 1000000
 	for index = 1, #hooks.step do hooks.step[index](5) end
-	check(deferred.hp == 16, "first out-of-combat tick applies instant once")
+	check(deferred.hp == 16, "first out-of-combat moment applies instant once")
 	now = 115 * 1000000
 	for index = 1, #hooks.step do hooks.step[index](5) end
 	check(deferred.hp == 17, "deferred instant is not repeated")
@@ -384,18 +384,23 @@ local function regen_row(root, failures)
 		cold = 0.5
 		local focused = environment.grug_abilities.mana_regen_rate({}, true)
 		troll = 1.5
+		cold = 0
 		local troll_ooc = environment.grug_abilities.mana_regen_rate({}, false)
+		local troll_combat = environment.grug_abilities.mana_regen_rate({}, true)
+		cold = 0.5
 		local troll_focused = environment.grug_abilities.mana_regen_rate({}, true)
 		local expected = 1 + 0.15 * level
 		if math.abs(ooc - expected) > 0.000001 or
 				math.abs(combat - expected * 0.25) > 0.000001 or
-				math.abs(focused - expected * 0.5) > 0.000001 or
-				math.abs(troll_ooc - expected * 1.5) > 0.000001 or
-				math.abs(troll_focused - expected * 0.75) > 0.000001 then
+			math.abs(focused - expected * 0.5) > 0.000001 or
+			math.abs(troll_ooc - expected * 1.5) > 0.000001 or
+			math.abs(troll_combat - expected * 0.25) > 0.000001 or
+			math.abs(troll_focused - expected * 0.5) > 0.000001 then
 			failures[#failures + 1] = "mana regen curve L" .. level
 		end
-		rows[#rows + 1] = ("L%d=%.4f/%.4f/%.4f/%.4f/%.4f"):format(
-			level, ooc, combat, focused, troll_ooc, troll_focused)
+		rows[#rows + 1] = ("L%d=%.4f/%.4f/%.4f/%.4f/%.4f/%.4f"):format(
+			level, ooc, combat, focused, troll_ooc, troll_combat,
+			troll_focused)
 	end
 	return table.concat(rows, ",")
 end

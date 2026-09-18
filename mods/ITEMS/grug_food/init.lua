@@ -186,7 +186,7 @@ local function tooltip_for(tier, effect)
 		lines[#lines + 1] = "Grants " .. table.concat(bonuses, " and ") ..
 			" while active."
 	end
-	lines[#lines + 1] = "Regeneration pauses in combat; other bonuses stay."
+	lines[#lines + 1] = "Instant heal and regeneration wait until you are out of combat; other bonuses stay."
 	if tier_def.min_level > 1 then
 		lines[#lines + 1] = "Requires level " .. tier_def.min_level .. "."
 	end

@@ -18,6 +18,7 @@
 --   R7_UI_MUTATION=1 moves the rendered Respec button beyond the right edge.
 --   R7_UI_MUTATION=2 moves the tabheader to 99,99.
 --   R7_UI_MUTATION=3 shortens the rendered form to size[8,5].
+--   R7_UI_MUTATION=4 removes the active-status term from Character pool lines.
 
 local M = {}
 
@@ -90,7 +91,7 @@ local function empty_stack()
 end
 
 local function build_env()
-	local hooks = {mods_loaded = {}}
+	local hooks = {mods_loaded = {}, status_modifiers = {}}
 	local core = {}
 	function core.get_us_time()
 		return 1000000
@@ -158,7 +159,7 @@ local function build_env()
 			and (player._level == 1 and 29 or 2966)
 			or final_by_class[player._class]
 		return {base = base, class_factor = factor, gear_percent = 7,
-			talent_percent = 3, final = final}
+			talent_percent = 3, status_percent = 5, final = final}
 	end
 
 	local xp = {}
@@ -183,6 +184,9 @@ local function build_env()
 		return player._armor_raw
 	end
 	function grug_core.register_on_equipment_change() end
+	function grug_core.register_on_status_modifiers_changed(callback)
+		hooks.status_modifiers[#hooks.status_modifiers + 1] = callback
+	end
 
 	local inventory_api = {
 		equipment_slots = EQUIPMENT_SLOTS,
@@ -476,7 +480,7 @@ end
 local function run_checks(repo)
 	assert(type(repo) == "string" and repo:sub(1, 1) == "/",
 		"absolute repository root required")
-	local env = build_env()
+	local env, hooks = build_env()
 	for _, relative in ipairs({
 		"mods/BASE/sfinv/api.lua",
 		"mods/PLAYER/grug_classes/talents.lua",
@@ -493,6 +497,19 @@ local function run_checks(repo)
 	local mutation = tonumber(os.getenv("R7_UI_MUTATION") or "") or 0
 	local mutation_hits = 0
 	local rows, failures = {}, {}
+	if #hooks.status_modifiers ~= 1 then
+		failures[#failures + 1] = ("pages registered %d status modifier hooks, expected one")
+			:format(#hooks.status_modifiers)
+	end
+	local help = env.sfinv.pages["grug_inventory:help"]:get(
+		make_player("mage", 60), {page = "grug_inventory:help",
+			nav_titles = {"Character", "Bags", "Talents", "Help"}, nav_idx = 4})
+	if not help:find("S the active status percentage", 1, true) then
+		failures[#failures + 1] = "Help does not define the Character S term"
+	end
+	if not help:find("Troll multiplier applies only out of combat", 1, true) then
+		failures[#failures + 1] = "Help does not limit Troll regeneration to out of combat"
+	end
 	rows[#rows + 1] = ("r7_ui_layout_assumption\tlabel_font_px=%d\t" ..
 		"label_line_px=%d\tlegacy_unit_px=%d\tform=%.1fx%.1f"):format(
 			LABEL_FONT_PX, LABEL_LINE_PX, LEGACY_UNIT_PX,
@@ -520,12 +537,19 @@ local function run_checks(repo)
 				elseif mutation == 3 then
 					formspec, changed = formspec:gsub("size%[8,9%.1%]",
 						"size[8,5]", 1)
+				elseif mutation == 4 then
+					formspec, changed = formspec:gsub("%+S[%d%.%-]+", "")
 				else
 					changed = 0
 				end
 				mutation_hits = mutation_hits + changed
 				local found, text_count, visual_count, control_count, slot_count = overlap_failures(
 					page_spec.name, class_id, level, formspec)
+				if page_spec.name == "character" and
+						not formspec:find("+S5", 1, true) then
+					found[#found + 1] = ("character/%s/L%d omits active status term S")
+						:format(class_id, level)
+				end
 				if page_spec.name == "character" and text_count ~= 2 then
 					found[#found + 1] = ("character/%s/L%d has %d text boxes, expected two")
 						:format(class_id, level, text_count)
@@ -541,7 +565,7 @@ local function run_checks(repo)
 			end
 		end
 	end
-	local expected_mutation_hits = {[1] = 3, [2] = 12, [3] = 12}
+	local expected_mutation_hits = {[1] = 3, [2] = 12, [3] = 12, [4] = 10}
 	if mutation ~= 0 and mutation_hits ~= expected_mutation_hits[mutation] then
 		failures[#failures + 1] = ("mutation %d changed %d formspecs, expected %s")
 			:format(mutation, mutation_hits,

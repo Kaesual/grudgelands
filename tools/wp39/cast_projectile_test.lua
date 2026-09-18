@@ -128,6 +128,7 @@ grug_classes = {
 	get_race_perk = function() return nil end,
 	get_melee_bonus = function() return 0 end,
 	get_spell_power_bonus = function() return 4 end,
+	get_spell_damage_percent = function() return 0 end,
 	register_on_class_chosen = function(fn) class_callbacks[#class_callbacks + 1] = fn end,
 }
 
