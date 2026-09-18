@@ -31,3 +31,6 @@
 [submodule "reference_projects/goblins"]
 	path = reference_projects/goblins
 	url = https://gitlab.com/freelikegnu/goblins
+[submodule "reference_projects/x_farming"]
+	path = reference_projects/x_farming
+	url = https://bitbucket.org/minetest_gamers/x_farming.git
