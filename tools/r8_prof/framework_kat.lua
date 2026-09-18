@@ -180,10 +180,10 @@ return function(repo)
 	elseif mutation == 4 then
 		grug_jobs.can_craft_recipe = function() return true end
 	elseif mutation == 7 then
+		local real = grug_jobs.profession_level
 		grug_jobs.profession_level = function(player, profession)
-			if not grug_jobs.has(player, profession) then return 0 end
-			return math.max(1, player:get_meta():get_int(
-				"grug_jobs:level:" .. profession))
+			if not grug_jobs.has(player, profession) then return 1 end
+			return real(player, profession)
 		end
 	elseif mutation == 8 then
 		local real = grug_jobs.unlearn
