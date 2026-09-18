@@ -125,14 +125,14 @@ local function character_content(player)
 		and grug_classes.get_pool_breakdown(player, "mana") or nil
 
 	local lines = {
-		("HP: %d base x %.2f class x (100%% + %g%% gear + %g%% talents) = %d max")
-			:format(hp.base, hp.class_factor, hp.gear_percent,
-				hp.talent_percent, hp.final),
+		("HP %d=B%dxC%.2fx(100+G%g+T%g)%%"):format(
+			hp.final, hp.base, hp.class_factor, hp.gear_percent,
+			hp.talent_percent),
 		mana and
-			("Mana: %d base x %.2f class x (100%% + %g%% gear + %g%% talents) = %d max")
-				:format(mana.base, mana.class_factor, mana.gear_percent,
-					mana.talent_percent, mana.final)
-			or "Rage: 100 fixed base; no class factor or percent bonuses = 100 max",
+			("Mana %d=B%dxC%.2fx(100+G%g+T%g)%%"):format(
+				mana.final, mana.base, mana.class_factor, mana.gear_percent,
+				mana.talent_percent)
+			or "Rage 100=fixed; no C/G/T scaling",
 	}
 
 	local mesh, textures = preview_model(player)
@@ -141,7 +141,7 @@ local function character_content(player)
 			esc(mesh), esc_texture_list(textures)),
 	}
 	for i, line in ipairs(lines) do
-		table.insert(fs, ("label[0,%.2f;%s]"):format(-0.25 + i * 0.4,
+		table.insert(fs, ("label[0,%.2f;%s]"):format(-0.2 + i * 0.4,
 			esc(line)))
 	end
 
@@ -195,10 +195,12 @@ sfinv.register_page("grug_inventory:help", {
 		local text = table.concat({
 			"Character formulas",
 			"Base pool = 20 + 5 x level + 0.66 x level squared (rounded).",
-			"Maximum HP = base pool x class factor, then add gear and talent percentages.",
+			"The Character pool lines read maximum = B x C x (100 + G + T)%, where B is the base pool, C the class factor, G the gear percentage and T the talent percentage.",
 			"Caster mana uses the neutral base pool, then adds mana percentages. Rage is always 0-100.",
-			"Strength adds melee bonus. Intelligence adds spell power. Dexterity adds Crit and Dodge.",
-			"The Talents header shows effective/raw Crit, Dodge and Armor with each current cap. Their ordinary caps are 30%, 30% and 60%; a named talent window may raise its own cap.",
+			"Strength adds floor(Strength / 10) as flat melee damage.",
+			"Intelligence adds floor(Intelligence / 10) as spell power: flat spell damage and a percentage bonus to healing and absorbs.",
+			"Dexterity adds 0.1 percentage point each of Crit and Dodge per point; Crit starts at 5%.",
+			"The Talents header shows effective/raw Crit, Dodge and Armor; the parenthesized values are the current caps. The shipped combat caps are 30%, 30% and 60%.",
 			"Item level is counted once, in the weapon's base damage; your character level applies the shared damage fit; there is no separate item-level multiplier.",
 			"At level 60, an item-level 70 weapon gives about 9% more effective swing damage than item level 60, while item level 50 gives about 7% less, before enchants.",
 			"Healing and absorbs are percentages of the caster's neutral base pool; spell power is a percentage bonus.",

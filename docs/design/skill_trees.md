@@ -581,7 +581,7 @@ talent — [scout.md](scout.md) §2 carries it.
 
 `combat_stats.md` §2 therefore needs one new paragraph when WP11 lands — not a
 new stat, but the sentence that says caps are absolute **except** for a named,
-time-limited, single-source override, and that the Character page shows the
+time-limited, single-source override, and that the Talents header shows the
 raised cap while it runs (`:104-108` already requires effective **and** raw).
 That amendment is lane X3's, and it is the only decided-doc change the talent
 system forces. Talents that are *not* marked `‼` stay inside every cap, so
@@ -953,7 +953,8 @@ the sfinv area only if the two trees are **tabbed rather than side by side**:
 | Character | Bags | Talents |                        (sfinv tabs)
 +---------------------------------------------------------------+
 | Warrior      [ BULWARK 21 ] [ Ruin 9 ]      Points left: 0     |
-| Eff/raw: Crit 30/42 (30), Dodge 20/20 (30), Armor 60/67 (60)  |
+| Crit 30/42% (30)                         Armor 60/67% (60)     |
+| Dodge 20/20% (30)                                             |
 |                                            [ Respec  --  1s25c]|
 |      WALL                       ANVIL                          |
 | T1 | Ironbound      5/5 |   | Spite          5/5 |             |
@@ -977,11 +978,12 @@ the sfinv area only if the two trees are **tabbed rather than side by side**:
 - Fixed numeric button fields map only to registered trees and talents of the
   submitting PlayerRef's own class. Names and descriptions are escaped with
   `core.formspec_escape`; no player name or free-text field enters a purchase.
-- One compact header line above the tree controls shows effective/raw Crit,
-  Dodge and Armor with their current caps. There is no second stat line in the
-  vertical space of the first talent tier; the T1 row starts below the tree
-  controls and chain headings. A running named rule-breaker shows its raised
-  cap; X3 owns the combat consumer that makes that effective value rise.
+- Two compact header rows above the tree controls show effective/raw Crit,
+  Dodge and Armor with their current caps. Every label stays inside the
+  eight-unit form, and both rows end before the tree controls; the T1 row starts
+  below those controls and chain headings. A running named rule-breaker shows
+  its raised display cap; X3 owns the future combat consumer that will make that
+  effective value rise.
 - No new texture is needed; signature talent icons are a later art pass, the
   way `classes.md` §2c parks signature ability icons.
 
@@ -1571,7 +1573,7 @@ are listed so that the merge does not leave the repo contradicting itself.
 | # | Task | Why it cannot be done here |
 |---|---|---|
 | 1 | Amend `mounts.md` §3.1's pillar paragraph and `combat_stats.md` §3 to say the 4.4 > 4.0 inequality holds **except** for named, long-cooldown skills, of which Sprint is the first at **+25 % for 10 s every 300 s**; the Swiftness Draught's +8 % stays as it is | rulings 10 and 29 decided it; neither file is this lane's |
-| 2 | Add `combat_stats.md` §2's **cap-override paragraph** (§2.10): caps are absolute except for a named, time-limited, single-source override, and the Character page shows the raised cap while it runs | decided by ruling 10; it is WP11 lane X3's edit, not this lane's |
+| 2 | Add `combat_stats.md` §2's **cap-override paragraph** (§2.10): caps are absolute except for a named, time-limited, single-source override, and the Talents header shows the raised cap while it runs | decided by ruling 10; it is WP11 lane X3's edit, not this lane's |
 | 3 | Retire the class trainer in `economy.md:92`, `items_crafting.md:2380`, `world.md:408` and `docs/research/post-wp40-readiness.md:81` | ruling 4 decided it; four files, none of them this lane's |
 | 4 | Correct the five shipped comments that assume a class change (`grug_inventory/equipment.lua:57`, `:501`, `:579`, `grug_core/combat.lua:110`, `grug_abilities/init.lua:1775-1776`) and remove the `/class` registration at `grug_classes/selection.lua:594-595` — **not** the `:554-592` helper, which `/race` still needs | ruling 20 decided it; it is code, and this lane is docs-only (§3.10 lists the sites) |
 | 5 | Rename the two remaining "Holy tree" mentions to Mercy — the Renew row at `classes.md:464` and the comment at `mods/PLAYER/grug_abilities/kits.lua:650` | bookkeeping after ruling 5's tree names; one is code |

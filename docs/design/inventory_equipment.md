@@ -11,9 +11,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 - Built on sfinv pages (`sfinv.register_page`); the **Character page is
   the homepage**. It has the equipment slots and 3D model preview (formspec
   `model[]`) plus exactly two compact, live derivation lines above them: one
-  for maximum HP and one for mana or rage. HP and mana each name the base
-  pool, class factor, gear/talent percentage bonuses and resulting maximum;
-  rage names its fixed 100-point rule. The lines consume
+  for maximum HP and one for mana or rage. HP and mana show the resulting
+  maximum and abbreviate base pool, class factor and gear/talent percentage
+  bonuses as B/C/G/T; Help expands that legend. Rage names its fixed 100-point
+  rule. The lines consume
   `grug_classes.get_pool_breakdown` and do not recompute the stats. Formula
   explanations and the remaining stat guidance live on the existing Help
   page; effective/raw Crit, Dodge and Armor remain in the Talents header.
@@ -169,8 +170,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   - A cultural finish and a PvP special may coexist on the same eligible item.
     Neither consumes an affix slot, changes the base identity/material tier,
     nor creates a parallel registered-item catalog. Ordinary stat caps apply
-    after all equipment sources have been summed; the Character page displays
-    capped and raw overcap values.
+    after all equipment sources have been summed; the Talents header displays
+    effective/raw Crit, Dodge and Armor with their caps.
   The complete effect, replacement, recipe and tooltip rules live in
   `items_crafting.md` §4/§6.
 - No ring/neck/shoulder slots in the MVP.

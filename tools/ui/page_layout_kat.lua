@@ -22,6 +22,7 @@ local LABEL_LINE_PX = LABEL_FONT_PX + 2
 local LEGACY_UNIT_PX = 48
 local LABEL_HEIGHT = LABEL_LINE_PX / LEGACY_UNIT_PX
 local LABEL_BYTE_WIDTH = 9 / LEGACY_UNIT_PX
+local FORM_MARGIN = 0.10
 
 local EQUIPMENT_SLOTS = {
 	{list = "grug_head", label = "Head"},
@@ -33,6 +34,10 @@ local EQUIPMENT_SLOTS = {
 	{list = "grug_trinket1", label = "Trinket 1"},
 	{list = "grug_trinket2", label = "Trinket 2"},
 }
+local EQUIPMENT_LISTS = {}
+for _, slot in ipairs(EQUIPMENT_SLOTS) do
+	EQUIPMENT_LISTS[slot.list] = true
+end
 
 local function load_into(env, path)
 	local chunk, load_error = loadfile(path)
@@ -247,18 +252,24 @@ local function label_width(text)
 end
 
 local function geometry(formspec)
-	local texts, visuals = {}, {}
+	local texts, visuals, controls = {}, {}, {}
+	local form
 	local index = 0
 	for kind, body in formspec:gmatch("([%a_]+)%[([^%]]*)%]") do
 		index = index + 1
 		local box
-		if kind == "label" then
+		if kind == "size" then
+			local w, h = parse_pair(body)
+			if w and h then
+				form = {x = 0, y = 0, w = w, h = h, kind = kind, index = index}
+			end
+		elseif kind == "label" then
 			local position, text = body:match("^([^;]+);(.*)$")
 			local x, y = parse_pair(position or "")
 			if x and y then
 				box = {x = x, y = y - LABEL_HEIGHT / 2,
 					w = label_width(text or ""), h = LABEL_HEIGHT,
-					kind = kind, index = index}
+					kind = kind, index = index, text = text or ""}
 			end
 		elseif kind == "textarea" or kind == "hypertext" then
 			local position, size = body:match("^([^;]+);([^;]+);")
@@ -269,12 +280,14 @@ local function geometry(formspec)
 					kind = kind, index = index}
 			end
 		elseif kind == "list" then
-			local position, size = body:match("^[^;]*;[^;]*;([^;]+);([^;]+);")
+			local location, listname, position, size =
+				body:match("^([^;]*);([^;]*);([^;]+);([^;]+);")
 			local x, y = parse_pair(position or "")
 			local w, h = parse_pair(size or "")
 			if x and y and w and h then
 				box = {x = x, y = y, w = w, h = h,
-					kind = kind, index = index}
+					kind = kind, index = index, location = location,
+					listname = listname}
 			end
 		elseif kind == "image" or kind == "item_image" then
 			local position, size = body:match("^([^;]+);([^;]+);")
@@ -284,16 +297,43 @@ local function geometry(formspec)
 				box = {x = x, y = y, w = w, h = h,
 					kind = kind, index = index}
 			end
+		elseif kind == "button" then
+			local position, size, name, text =
+				body:match("^([^;]+);([^;]+);([^;]*);(.*)$")
+			local x, y = parse_pair(position or "")
+			local w, h = parse_pair(size or "")
+			if x and y and w and h then
+				box = {x = x, y = y, w = w, h = h,
+					kind = kind, index = index, name = name, text = text or ""}
+			end
+		elseif kind == "image_button" then
+			local position, size, texture, name, text =
+				body:match("^([^;]+);([^;]+);([^;]*);([^;]*);(.*)$")
+			local x, y = parse_pair(position or "")
+			local w, h = parse_pair(size or "")
+			if x and y and w and h then
+				box = {x = x, y = y, w = w, h = h, kind = kind,
+					index = index, texture = texture, name = name, text = text or ""}
+			end
+		elseif kind == "tabheader" then
+			local position, name = body:match("^([^;]+);([^;]*);")
+			local x, y = parse_pair(position or "")
+			if x and y then
+				box = {x = x, y = y, w = 0, h = 0,
+					kind = kind, index = index, name = name}
+			end
 		end
 		if box then
 			if kind == "label" or kind == "textarea" or kind == "hypertext" then
 				texts[#texts + 1] = box
-			else
+			elseif kind == "list" or kind == "image" or kind == "item_image" then
 				visuals[#visuals + 1] = box
+			else
+				controls[#controls + 1] = box
 			end
 		end
 	end
-	return texts, visuals
+	return texts, visuals, controls, form
 end
 
 local function intersects(a, b)
@@ -303,8 +343,21 @@ local function intersects(a, b)
 end
 
 local function overlap_failures(page_name, class_id, level, formspec)
-	local texts, visuals = geometry(formspec)
+	local texts, visuals, controls, form = geometry(formspec)
 	local failures = {}
+	if not form then
+		failures[#failures + 1] = page_name .. " has no parsed size[] bound"
+	else
+		for _, text_box in ipairs(texts) do
+			if text_box.x < 0 or text_box.y < 0 or
+					text_box.x + text_box.w > form.w - FORM_MARGIN or
+					text_box.y + text_box.h > form.h then
+				failures[#failures + 1] = ("%s/%s/L%d %s[%d] %q exceeds %.1fx%.1f form")
+					:format(page_name, class_id, level, text_box.kind,
+						text_box.index, text_box.text or "", form.w, form.h)
+			end
+		end
+	end
 	for _, text_box in ipairs(texts) do
 		for _, visual_box in ipairs(visuals) do
 			if intersects(text_box, visual_box) then
@@ -314,19 +367,65 @@ local function overlap_failures(page_name, class_id, level, formspec)
 			end
 		end
 	end
-	return failures, #texts, #visuals
-end
 
-local function plain_count(text, needle)
-	local count, start = 0, 1
-	while true do
-		local found = text:find(needle, start, true)
-		if not found then
-			return count
+	local equipment_slots = 0
+	for _, visual_box in ipairs(visuals) do
+		if visual_box.kind == "list" and EQUIPMENT_LISTS[visual_box.listname] then
+			equipment_slots = equipment_slots + 1
 		end
-		count = count + 1
-		start = found + #needle
 	end
+	if page_name == "character" and equipment_slots ~= #EQUIPMENT_SLOTS then
+		failures[#failures + 1] = ("character/%s/L%d has %d equipment slots, expected %d")
+			:format(class_id, level, equipment_slots, #EQUIPMENT_SLOTS)
+	end
+
+	local tabheaders = 0
+	for _, control in ipairs(controls) do
+		if control.kind == "tabheader" then
+			tabheaders = tabheaders + 1
+		end
+	end
+	if tabheaders ~= 1 then
+		failures[#failures + 1] = ("%s/%s/L%d has %d tabheaders, expected one")
+			:format(page_name, class_id, level, tabheaders)
+	end
+
+	if page_name == "talents" then
+		local headers, tier_one = {}, {}
+		for _, text_box in ipairs(texts) do
+			if text_box.text and (text_box.text:match("^Crit ") or
+					text_box.text:match("^Dodge ") or text_box.text:match("^Armor ")) then
+				headers[#headers + 1] = text_box
+			elseif text_box.text and text_box.text:match("^T1 ") then
+				tier_one[#tier_one + 1] = text_box
+			end
+		end
+		for _, control in ipairs(controls) do
+			if (control.kind == "button" or control.kind == "image_button") and
+					control.text and control.text:match("^T1 ") then
+				tier_one[#tier_one + 1] = control
+			end
+		end
+		if #headers ~= 3 then
+			failures[#failures + 1] = ("talents/%s/L%d has %d stat headers, expected three")
+				:format(class_id, level, #headers)
+		end
+		if #tier_one ~= 2 then
+			failures[#failures + 1] = ("talents/%s/L%d has %d T1 elements, expected two")
+				:format(class_id, level, #tier_one)
+		end
+		for _, header in ipairs(headers) do
+			for _, first_tier in ipairs(tier_one) do
+				if intersects(header, first_tier) or
+						header.y + header.h > first_tier.y then
+					failures[#failures + 1] = ("talents/%s/L%d %s header reaches T1 %s[%d]")
+						:format(class_id, level, header.text:match("^(%S+)") or "stat",
+							first_tier.kind, first_tier.index)
+				end
+			end
+		end
+	end
+	return failures, #texts, #visuals, #controls, equipment_slots
 end
 
 local function run_checks(repo)
@@ -362,24 +461,19 @@ local function run_checks(repo)
 					nav_idx = page_spec.nav}
 				local page = env.sfinv.pages[page_spec.id]
 				local formspec = page:get(player, context)
-				local found, text_count, visual_count = overlap_failures(
+				local found, text_count, visual_count, control_count, slot_count = overlap_failures(
 					page_spec.name, class_id, level, formspec)
 				if page_spec.name == "character" and text_count ~= 2 then
 					found[#found + 1] = ("character/%s/L%d has %d text boxes, expected two")
 						:format(class_id, level, text_count)
 				end
-				if page_spec.name == "talents" and
-						(plain_count(formspec, "Eff/raw:") ~= 1 or
-						not formspec:find("Armor ", 1, true)) then
-					found[#found + 1] = ("talents/%s/L%d lacks one combined stat header")
-						:format(class_id, level)
-				end
 				for _, failure in ipairs(found) do
 					failures[#failures + 1] = failure
 				end
 				rows[#rows + 1] = ("r7_ui_layout\t%s\t%s\tL%d\t" ..
-					"text=%d\tvisual=%d\t%s"):format(page_spec.name,
-					class_id, level, text_count, visual_count,
+					"text=%d\tvisual=%d\tcontrols=%d\tslots=%d\t%s")
+					:format(page_spec.name, class_id, level, text_count, visual_count,
+					control_count, slot_count,
 					#found == 0 and "PASS" or "FAIL")
 			end
 		end

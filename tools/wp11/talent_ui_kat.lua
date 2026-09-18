@@ -425,9 +425,9 @@ local function run_checks(repo)
 		"available rank button rendered")
 	check(fs:find("grug_talent_pick_" .. field_index("weathered"), 1, true) == nil,
 		"locked talent has no click target")
-	check(fs:find("Eff/raw: Crit 30.0/42.0% (cap 30%)", 1, true) ~= nil,
+	check(fs:find("Crit 30.0/42.0% (30)", 1, true) ~= nil,
 		"raw crit is shown beside effective crit")
-	check(fs:find("Armor 60/67% (cap 60%)", 1, true) ~= nil,
+	check(fs:find("Armor 60/67% (60)", 1, true) ~= nil,
 		"raw armor is shown beside effective armor")
 	check(fs:find("1.5% = 49 HP", 1, true) ~= nil and
 		fs:find("6% = 194 HP", 1, true) ~= nil,
@@ -445,7 +445,7 @@ local function run_checks(repo)
 	classes.invalidate_talents(caps)
 	classes.start_talent_window(caps, "ruination", 10)
 	local cap_fs = classes.talent_formspec_content(caps, env.sfinv.contexts.caps)
-	check(cap_fs:find("(cap 50%)", 1, true) ~= nil,
+	check(cap_fs:find("Crit 30.0/42.0% (50)", 1, true) ~= nil,
 		"running rule-breaker displays its raised crit cap")
 
 	check(clock.commands.talents ~= nil, "/talents read-only summary remains")
