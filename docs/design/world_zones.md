@@ -79,8 +79,10 @@ WP40 replaces it with the complete catalog and contracts below.
   row and ends on the next distinct frontward hub row; the final mainland row
   ends at the authored Battlegrounds boundary. At an exact shared hub row the
   outer extent owns that final node and the next node starts the inner extent.
-  Lateral zones on one row select the nearest authored hub x, with numeric zone
-  id as the exact tie break. This is a difficulty projection only and is not
+  Lateral zones on one row select the nearest authored hub x in raw coordinates,
+  with numeric zone id as the exact tie break. Political ownership bias and the
+  common coordinate warp never enter this selector, on either the mainland or
+  the Battlegrounds. This is a difficulty projection only and is not
   clipped or reselected at political power-diagram boundaries: for example,
   the dwarf axis is already politically Copperfell at 300 nodes from the start
   while the R7.6 start progression is level 6 there. It does not change zone
@@ -382,9 +384,10 @@ WP40 replaces it with the complete catalog and contracts below.
   z edges and z = 0. The field uses integer/rational arithmetic and has no
   sampled lattice, smoothing radius or runtime-measured edge. The compatibility
   method `difficulty_lattice_digest()` now authenticates the ordered axial
-  profiles, every lateral-selection input, the band formula identity and the
-  complete per-profile integer staircase; its historical name is not evidence
-  of a remaining lattice.
+  profiles, the real selector results at every midpoint−1 / midpoint /
+  midpoint+1 boundary probe, the band formula identity and the complete
+  per-profile integer staircase; its historical name is not evidence of a
+  remaining lattice.
 - Published zone level ranges govern the three sub-ranges and content
   identity. A staircase never decreases within one authored extent and changes
   by at most one at an internal step. Capital guard floors, depth progression,

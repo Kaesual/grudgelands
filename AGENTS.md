@@ -832,9 +832,11 @@ Details + line numbers in [docs/research/](docs/research/).
   `difficulty_for_macro_at`; `zones.lua` applies the 100/150-node start safety
   override afterward. Accord runs toward +z, Throng toward -z, front zones
   toward z=0 and the two summits are flat 60. The compatibility method
-  `difficulty_lattice_digest()` authenticates the profiles, lateral selection
-  inputs and complete integer staircases despite its historical name; there is
-  no difficulty lattice or hub-target smoothing.
+  `difficulty_lattice_digest()` authenticates the profiles, raw-x midpoint
+  selector results and complete integer staircases despite its historical
+  name; there is no difficulty lattice or hub-target smoothing. Difficulty
+  lateral selection is warp- and bias-free even though political ownership is
+  not.
   The unchanged underground term already supplies three integer threshold
   steps per uncapped 50-node window, and `mob_level_at` remains
   `max(surface, depth)`.

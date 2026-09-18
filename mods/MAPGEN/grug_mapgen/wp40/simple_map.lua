@@ -1605,8 +1605,8 @@ return function(dependencies)
 	end
 	local difficulty_profiles={}
 	local difficulty_digest_rows={
-		canonical.text("grug_r7_level_bands_v2"),
-		canonical.text("strict-crossed-hub-row/nearest-x-minus-bias/id-tie"),
+		canonical.text("grug_r7_level_bands_v3"),
+		canonical.text("strict-crossed-hub-row/raw-nearest-x/id-tie"),
 	}
 	for index=1,#source.zones do
 		local row=source.zones[index]
@@ -1654,7 +1654,7 @@ return function(dependencies)
 			canonical.signed(index),canonical.text(row.id),
 			canonical.text(row.macro_region),canonical.text(row.race_region),
 			canonical.text(row.faction or "-"),canonical.signed(row.hub.x),
-			canonical.signed(row.hub.z),canonical.signed(row.bias),
+			canonical.signed(row.hub.z),
 			canonical.signed(direction),canonical.signed(outer_z),
 			canonical.signed(inner_z),canonical.signed(row.level_min),
 			canonical.signed(row.level_max),
@@ -1663,6 +1663,117 @@ return function(dependencies)
 			canonical.signed(profile.ranges[3][2]),
 			canonical.array(output_levels)})
 	end
+
+	-- Difficulty is deliberately independent of warped political ownership.
+	-- Both mainland and front rows use this one raw-x selector; neither the
+	-- political bias nor the common coordinate warp may move a band boundary.
+	local function nearest_hub_x_id(ids,x,required_hub_z)
+		local best_id,best_score
+		for candidate_index=1,#ids do
+			local id=ids[candidate_index]
+			local row=source.zones[id]
+			if required_hub_z == nil or row.hub.z == required_hub_z then
+				local dx=x-row.hub.x
+				local score=dx*dx
+				if not best_score or score < best_score or
+						(score == best_score and id < best_id) then
+					best_id,best_score=id,score
+				end
+			end
+		end
+		return best_id
+	end
+
+	local function difficulty_profile_id_at(x,z,macro_region)
+		if macro_region == "wyrmglass_island" then return 33 end
+		if macro_region == "stormscale_island" then return 38 end
+		local ids=zone_ids_by_region[macro_region]
+		if not ids then return nil end
+		if macro_region == "holy_grounds" then
+			return nearest_hub_x_id(ids,x,0)
+		end
+		if macro_region ~= "elandor_mainland" and
+				macro_region ~= "kragmar_mainland" then return nil end
+		local direction=macro_region == "elandor_mainland" and 1 or -1
+		local selected_axis
+		for candidate_index=1,#ids do
+			local hub_z=source.zones[ids[candidate_index]].hub.z
+			local axis=direction*hub_z
+			if direction*(z-hub_z) > 0 and
+					(not selected_axis or axis > selected_axis) then
+				selected_axis=axis
+			end
+		end
+		if not selected_axis then
+			for candidate_index=1,#ids do
+				local axis=direction*source.zones[ids[candidate_index]].hub.z
+				if not selected_axis or axis < selected_axis then
+					selected_axis=axis
+				end
+			end
+		end
+		return nearest_hub_x_id(ids,x,direction*selected_axis)
+	end
+
+	-- Authenticate the real selector at every lateral boundary, not only its
+	-- source inputs. Query one node into mainland rows so the selected profile
+	-- is active; the front witness uses the authored Accord half-axis midpoint.
+	local lateral_digest_samples=0
+	for _,macro_region in ipairs({"elandor_mainland","kragmar_mainland",
+			"holy_grounds"}) do
+		local groups={}
+		local ids=zone_ids_by_region[macro_region]
+		for candidate_index=1,#ids do
+			local id=ids[candidate_index]
+			local hub_z=source.zones[id].hub.z
+			local group=groups[hub_z]
+			if not group then group={} groups[hub_z]=group end
+			group[#group+1]=id
+		end
+		local hub_rows={}
+		for hub_z,group in pairs(groups) do
+			if #group > 1 then hub_rows[#hub_rows+1]=hub_z end
+		end
+		table.sort(hub_rows)
+		for row_index=1,#hub_rows do
+			local hub_z=hub_rows[row_index]
+			local group=groups[hub_z]
+			table.sort(group,function(a,b)
+				local ax,bx=source.zones[a].hub.x,source.zones[b].hub.x
+				return ax < bx or (ax == bx and a < b)
+			end)
+			local query_z
+			if macro_region == "holy_grounds" then
+				query_z=math.floor(source.holy_grounds.min_z/2)
+			else
+				local direction=macro_region == "elandor_mainland" and 1 or -1
+				query_z=hub_z+direction
+			end
+			for pair_index=1,#group-1 do
+				local left_id,right_id=group[pair_index],group[pair_index+1]
+				local midpoint_sum=source.zones[left_id].hub.x+
+					source.zones[right_id].hub.x
+				if midpoint_sum%2 ~= 0 then fail("lateral midpoint differs") end
+				local midpoint=math.floor(midpoint_sum/2)
+				for offset=-1,1 do
+					local query_x=midpoint+offset
+					local profile_id=difficulty_profile_id_at(query_x,query_z,
+						macro_region)
+					local profile=profile_id and difficulty_profiles[profile_id]
+					if not profile then fail("difficulty lateral selector differs") end
+					difficulty_digest_rows[#difficulty_digest_rows+1]=canonical.array({
+						canonical.text("lateral"),canonical.text(macro_region),
+						canonical.signed(hub_z),canonical.signed(query_z),
+						canonical.signed(left_id),canonical.signed(right_id),
+						canonical.signed(midpoint),canonical.signed(offset),
+						canonical.signed(profile_id),canonical.signed(
+							level_for_profile(profile,query_z))})
+					lateral_digest_samples=lateral_digest_samples+1
+				end
+			end
+		end
+	end
+	if lateral_digest_samples ~= 81 then fail("difficulty lateral population differs") end
 	local difficulty={profiles=difficulty_profiles,digest=canonical.hex(
 		raw_sha256(canonical.encode(canonical.array(difficulty_digest_rows))))}
 
@@ -1972,59 +2083,9 @@ return function(dependencies)
 			return nil
 		end
 
-		local function mainland_profile_at(x,z,macro_region)
-			local ids=zone_ids_by_region[macro_region]
-			if not ids then return nil end
-			local direction=macro_region == "elandor_mainland" and 1 or -1
-			local selected_axis
-			for candidate_index=1,#ids do
-				local hub_z=source.zones[ids[candidate_index]].hub.z
-				local axis=direction*hub_z
-				if direction*(z-hub_z) > 0 and
-						(not selected_axis or axis > selected_axis) then
-					selected_axis=axis
-				end
-			end
-			if not selected_axis then
-				for candidate_index=1,#ids do
-					local axis=direction*source.zones[ids[candidate_index]].hub.z
-					if not selected_axis or axis < selected_axis then
-						selected_axis=axis
-					end
-				end
-			end
-			local best_id,best_score
-			for candidate_index=1,#ids do
-				local id=ids[candidate_index]
-				local row=source.zones[id]
-				if direction*row.hub.z == selected_axis then
-					local dx=x-row.hub.x
-					local score=dx*dx-row.bias
-					if not best_score or score < best_score or
-							(score == best_score and id < best_id) then
-						best_id,best_score=id,score
-					end
-				end
-			end
-			return best_id and difficulty.profiles[best_id] or nil
-		end
-
 		local function difficulty_q_for_macro(x,z,macro_region)
-			local profile
-			if macro_region == "wyrmglass_island" then
-				profile=difficulty.profiles[33]
-			elseif macro_region == "stormscale_island" then
-				profile=difficulty.profiles[38]
-			elseif macro_region == "holy_grounds" then
-				local warped_x,warped_z,owner_x,owner_z=warp(x,z)
-				if not warped_x then return nil end
-				local owner=owner_for_region(macro_region,warped_x,warped_z,nil,
-					owner_x,owner_z)
-				profile=owner and difficulty.profiles[owner] or nil
-			elseif macro_region == "elandor_mainland" or
-					macro_region == "kragmar_mainland" then
-				profile=mainland_profile_at(x,z,macro_region)
-			end
+			local profile_id=difficulty_profile_id_at(x,z,macro_region)
+			local profile=profile_id and difficulty.profiles[profile_id] or nil
 			if not profile then return nil end
 			return deterministic.qfrom_ratio(level_for_profile(profile,z),1)
 		end

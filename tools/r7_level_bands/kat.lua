@@ -88,12 +88,34 @@ return function(repo)
 			elseif direction == 1 then inner_z=source.holy_grounds.min_z
 			else inner_z=source.holy_grounds.max_z end
 		end
-		profiles[index]={direction=direction,outer_z=outer_z,inner_z=inner_z,
+		profiles[index]={zone_id=index,direction=direction,outer_z=outer_z,
+			inner_z=inner_z,
 			extent=direction == 0 and 0 or direction*(inner_z-outer_z),
 			ranges=ranges_for(row)}
 	end
 
-	local rows={"schema\tgrug_r7_level_bands_kat_v1\n"}
+	local function level_for_profile(profile,z)
+		if profile.extent == 0 then return profile.ranges[1][1] end
+		local progress=profile.direction*(z-profile.outer_z)
+		if progress < 0 then progress=0
+		elseif progress > profile.extent then progress=profile.extent end
+		local scaled=progress*3
+		local band,local_progress
+		if scaled < profile.extent then
+			band,local_progress=1,scaled
+		elseif scaled < profile.extent*2 then
+			band,local_progress=2,scaled-profile.extent
+		else
+			band,local_progress=3,scaled-profile.extent*2
+		end
+		local range=profile.ranges[band]
+		local count=range[2]-range[1]+1
+		local step=math.floor(local_progress*count/profile.extent)
+		if step >= count then step=count-1 end
+		return range[1]+step
+	end
+
+	local rows={"schema\tgrug_r7_level_bands_kat_v2\n"}
 	local zone_samples=0
 	for index=1,#source.zones do
 		local row=source.zones[index]
@@ -142,6 +164,78 @@ return function(repo)
 	end
 	check(#source.zones == 38 and zone_samples == 114,
 		"zone sample population differs")
+
+	-- Pin every raw nearest-hub-x boundary. Mainland probes sit one node into
+	-- the selected hub row; front probes use the reviewer witness z=-125.
+	local lateral_samples=0
+	local mainland_tie_seen=false
+	local front_witness={}
+	for _,macro_region in ipairs({"elandor_mainland","kragmar_mainland",
+			"holy_grounds"}) do
+		local groups={}
+		for zone_index=1,#source.zones do
+			local row=source.zones[zone_index]
+			if row.macro_region == macro_region then
+				local group=groups[row.hub.z]
+				if not group then group={} groups[row.hub.z]=group end
+				group[#group+1]=zone_index
+			end
+		end
+		local hub_rows={}
+		for hub_z,group in pairs(groups) do
+			if #group > 1 then hub_rows[#hub_rows+1]=hub_z end
+		end
+		table.sort(hub_rows)
+		for row_index=1,#hub_rows do
+			local hub_z=hub_rows[row_index]
+			local group=groups[hub_z]
+			table.sort(group,function(a,b)
+				local ax,bx=source.zones[a].hub.x,source.zones[b].hub.x
+				return ax < bx or (ax == bx and a < b)
+			end)
+			local query_z
+			if macro_region == "holy_grounds" then
+				query_z=math.floor(source.holy_grounds.min_z/2)
+			else
+				local direction=macro_region == "elandor_mainland" and 1 or -1
+				query_z=hub_z+direction
+			end
+			for pair_index=1,#group-1 do
+				local left_id,right_id=group[pair_index],group[pair_index+1]
+				local midpoint_sum=source.zones[left_id].hub.x+
+					source.zones[right_id].hub.x
+				check(midpoint_sum%2 == 0,"lateral midpoint is not integral")
+				local midpoint=math.floor(midpoint_sum/2)
+				for offset=-1,1 do
+					local expected_id=offset < 0 and left_id or
+						(offset > 0 and right_id or math.min(left_id,right_id))
+					local actual=horizontal.difficulty_for_macro_at(midpoint+offset,
+						query_z,macro_region)
+					local expected=level_for_profile(profiles[expected_id],query_z)
+					check(actual == expected,"lateral selector differs for " ..
+						macro_region .. " row " .. hub_z .. " midpoint " .. midpoint ..
+						" offset " .. offset)
+					rows[#rows+1]=table.concat({"lateral",macro_region,hub_z,
+						query_z,left_id,right_id,midpoint,offset,expected_id,actual},
+						"\t") .. "\n"
+					lateral_samples=lateral_samples+1
+					if macro_region == "kragmar_mainland" and hub_z == 1500 and
+							midpoint == -450 and offset == 0 then
+						check(expected_id == 24 and actual == 20,
+							"exact mainland tie differs")
+						mainland_tie_seen=true
+					end
+					if macro_region == "holy_grounds" and midpoint == -1375 then
+						front_witness[offset]=actual
+					end
+				end
+			end
+		end
+	end
+	check(lateral_samples == 81,"lateral sample population differs")
+	check(mainland_tie_seen,"exact mainland tie witness is absent")
+	check(front_witness[-1] == 59 and front_witness[0] == 59 and
+		front_witness[1] == 35,"front midpoint witness differs")
 
 	local starts={}
 	for index=1,#source.zones do
@@ -223,7 +317,7 @@ return function(repo)
 		"uncapped_50_node_steps=3\n"
 	local difficulty_digest=horizontal.difficulty_lattice_digest()
 	check(difficulty_digest ==
-		"9d63740d7915d733bfd38aef4f767d5576489be85122a62affad3cad9eafa6f6",
+		"24e44d0a08e8130f5d85975570bbc65d502daa9fe203e20fbe62e13ed412001d",
 		"accepted R7.6 difficulty field differs")
 	rows[#rows+1]="difficulty_field_sha256\t" .. difficulty_digest .. "\n"
 	local body=table.concat(rows)
