@@ -175,7 +175,6 @@ return function(root)
 		"Glass Bottle core stock")
 	for kind, shelf in pairs(profession_stock) do
 		local present = shelf[1] and shelf[1].item == "vessels:glass_bottle"
-		if mutation == "vendor_bottle" and kind == "smith" then present = false end
 		check(present, "Glass Bottle on " .. kind .. " shelf")
 	end
 
@@ -377,6 +376,26 @@ return function(root)
 	})
 	if mutation == "cave_cap" then allowed = false end
 	check(allowed, "Cave Cap remains food-grade")
+
+	-- Exercise the production shelf implementation as well as Alchemy's API
+	-- call above: profession vendors render this list instead of core stock.
+	grug_traders = {}
+	core.register_on_mods_loaded = function() end
+	dofile(root .. "/mods/ENTITIES/grug_traders/stock.lua")
+	grug_traders.register_all_vendor_stock({item = "vessels:glass_bottle",
+		price = 3, category = "goods"})
+	local shelf_count = 0
+	for kind, shelf in pairs(grug_traders.profession_stock) do
+		shelf_count = shelf_count + 1
+		local last = shelf[#shelf]
+		local present = last and last.item == "vessels:glass_bottle" and
+			last.price == 3
+		if mutation == "vendor_bottle" and kind == "smith" then present = false end
+		check(present, "production Glass Bottle shelf for " .. kind)
+	end
+	check(shelf_count == 12 and
+		grug_traders.stock[#grug_traders.stock].item == "vessels:glass_bottle",
+		"Glass Bottle reaches all twelve profession shelves and core stock")
 
 	return "R8-ALCH alchemy KAT PASS recipes=21 cooldown=60/45 utility=callbacks+expiry elixir=exclusive+food+clock gear=2 mana_ilvl=1 ilvl=1,11,21,31,41,51 herbs=closed vendors=all\n"
 end
