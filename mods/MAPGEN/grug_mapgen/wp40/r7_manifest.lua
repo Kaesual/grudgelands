@@ -231,6 +231,19 @@ return function(canonical, raw_sha256, settlement_order)
 	end
 
 	local module = {}
+	local function successor_windows(production_count, settlement_count)
+		if type(production_count) ~= "number" or production_count % 1 ~= 0 or
+				production_count < 1 or type(settlement_count) ~= "number" or
+				settlement_count % 1 ~= 0 or settlement_count < 1 then
+			fail("successor window population differs")
+		end
+		return {p9g_min = production_count + 1,
+			p9g_max = production_count + 12,
+			anchor_min = production_count + 13,
+			anchor_max = production_count + 14,
+			settlement_min = production_count + 15,
+			settlement_max = production_count + 14 + settlement_count}
+	end
 	function module.new(inputs)
 		if type(inputs) ~= "table" or getmetatable(inputs) ~= nil then
 			fail("input graph differs")
@@ -462,16 +475,20 @@ return function(canonical, raw_sha256, settlement_order)
 				" consumer=" .. frozen.consumer_payload ..
 				" projection=" .. graph_digest(frozen))
 		end
+		local windows = successor_windows(#inputs.accepted_r6_rows + 6,
+			settlement_content.count)
 		local p9g_delta = {
 			schema = "grug_wp40_r7_p9g_delta_v1", opcode = 35,
-			class = 10, policy = 11, successor_ref_min = 89,
-			successor_ref_max = 100, order = "after_r6_p9_before_run_derivation",
+			class = 10, policy = 11, successor_ref_min = windows.p9g_min,
+			successor_ref_max = windows.p9g_max,
+			order = "after_r6_p9_before_run_derivation",
 			overwrite = false, catalog_sha256 = gathering.sha256,
 		}
 		local anchor_delta = {
 			schema = "grug_wp40_r7_anchor_delta_v1", opcode = 36,
-			class = 12, policy = 12, successor_ref_min = 97,
-			successor_ref_max = 98, order = "after_p9g_before_run_derivation",
+			class = 12, policy = 12, successor_ref_min = windows.anchor_min,
+			successor_ref_max = windows.anchor_max,
+			order = "after_p9g_before_run_derivation",
 			overwrite = false, roster_sha256 = inputs.anchor_roster_sha256,
 			root = "anchor_y_plus_one",
 			support = "settled_predecessor_support_v1",
@@ -501,8 +518,8 @@ return function(canonical, raw_sha256, settlement_order)
 					blueprint_id = entry.id, blueprint_kind = entry.kind,
 					blueprint_sha256 = entry.identity.sha256,
 					content_sha256 = settlement_content.digest,
-					successor_ref_min = 99,
-					successor_ref_max = 98 + settlement_content.count,
+					successor_ref_min = windows.settlement_min,
+					successor_ref_max = windows.settlement_max,
 					population = entry.kind == "overlay" and
 						entry.identity.run_count or entry.identity.cell_count,
 					population_kind = entry.kind == "overlay" and "runs" or "cells",
@@ -589,6 +606,12 @@ return function(canonical, raw_sha256, settlement_order)
 	-- tools can bind the same typed graph without duplicating its encoding.
 	function module.graph_digest_for_evidence(value)
 		return graph_digest(value)
+	end
+	function module.successor_windows_for_evidence(production_count, settlement_count)
+		local values = successor_windows(production_count, settlement_count)
+		local result = {}
+		for key, value in pairs(values) do result[key] = value end
+		return result
 	end
 
 	function module.validate(receipt, expected_sha256)

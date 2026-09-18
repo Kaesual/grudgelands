@@ -15,6 +15,17 @@ return function(root)
 		"/mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua")
 
 	local coast = coast_factory("0")
+	local stable_profile, stable_class = coast.profile(2, 1, -44, false,
+		"highland", 24)
+	check(coast.run_key(2, 1, -44, stable_class) == "2/1/-44/sea_ordinary",
+		"ordinary run identity differs")
+	local low_profile, low_class = coast.profile(2, 1, -44, false,
+		"wetland_delta", 24)
+	check(low_class == "sea_low" and
+		coast.run_key(2, 1, -44, low_class) ~=
+		coast.run_key(2, 1, -44, stable_class), "fallback run was not split")
+	check(stable_profile == coast.profile(2, 1, -44, false, "highland", 7),
+		"one stable run changed profile")
 	local counts = {beach = 0, bluff = 0, cliff = 0, terraced_cliff = 0}
 	local total = 0
 	for owner = 1, 38 do
@@ -88,10 +99,11 @@ return function(root)
 		cave_rows:find("hillside\t", 1, true) and
 		cave_rows:find("sinkhole\t", 1, true), "mouth placement fixture differs")
 
+	local writer_rows = dofile(root .. "/tools/r8_map_a/writer_kat.lua")(root)
 	return table.concat({"schema\tgrug_r8_map_a_kat_v1",
 		"profile_mix\t" .. counts.beach .. "/" .. counts.bluff .. "/" ..
 			counts.cliff .. "/" .. counts.terraced_cliff,
 		"strata\t200/min_distinct=" .. distinct_min .. "/clay_hits=" .. clay_columns ..
 			"/floor_clips=" .. clipped,
-		cave_rows}, "\n")
+		cave_rows, writer_rows}, "\n")
 end

@@ -10,6 +10,18 @@ local function coast_surface_rule(profile, freshwater, distance)
 	return "biome_lip", "default:stone", 3
 end
 
+local function coast_profile_applies(profile, distance, width, freshwater)
+	return profile ~= nil and distance <= width and
+		(not freshwater or profile ~= "beach" or distance <= 2)
+end
+
+local function wet_bed_names(id, bed)
+	if id == "grug_swamp" then
+		return {bed, bed, "default:gravel", "default:stone"}
+	end
+	return {bed, "default:sand", "default:gravel", "default:stone"}
+end
+
 local function content_factory(manifest_values, content_contract, wp43_projection)
 	local MAX_SAFE = 9007199254740991
 	local PARAM2_KINDS = {none = true, facedir = true, wallmounted = true,
@@ -656,12 +668,7 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			end
 			variants[id] = rows
 			wet_variants[id] = {}
-			local wet_names
-			if id == "grug_swamp" then
-				wet_names = {base.bed, base.bed, "default:gravel", "default:stone"}
-			else
-				wet_names = {base.bed, base.bed, "default:gravel", "default:stone"}
-			end
+			local wet_names = wet_bed_names(id, base.bed)
 			for wet_index = 1, #wet_names do
 				local wet = deep_copy(base)
 				wet.bed = wet_names[wet_index]
@@ -726,8 +733,7 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 				profile, distance, width, freshwater =
 					planner_source.coast_profile_at(x, z)
 			end
-			if profile and distance <= width and
-					(not freshwater or profile ~= "beach" or distance <= 2) then
+			if coast_profile_applies(profile, distance, width, freshwater) then
 				return coast_variants[id][profile]
 			end
 			local detail = noise(x, z, 8, 29712151)
@@ -788,4 +794,5 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 	return module
 end
 
-return content_factory, coast_surface_rule
+return content_factory, coast_surface_rule, {coast_profile_applies = coast_profile_applies,
+	wet_bed_names = wet_bed_names}

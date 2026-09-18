@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+set -euo pipefail
+export LC_ALL=C
+repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
+tmp="$(mktemp -d /tmp/grug-r8-map-a-mutations.XXXXXX)"
+trap 'rm -rf -- "$tmp"' EXIT
+
+reset_tree() {
+	rm -rf -- "$tmp/tree"
+	mkdir -p "$tmp/tree/mods/MAPGEN/grug_mapgen/wp40" "$tmp/tree/tools/r8_map_a"
+	cp "$repo/mods/MAPGEN/grug_mapgen/wp40/height.lua" \
+		"$repo/mods/MAPGEN/grug_mapgen/wp40/r6_content.lua" \
+		"$repo/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua" \
+		"$tmp/tree/mods/MAPGEN/grug_mapgen/wp40/"
+	cp "$repo/tools/r8_map_a/writer_kat.lua" \
+		"$repo/tools/r8_map_a/mutation_probe.lua" "$tmp/tree/tools/r8_map_a/"
+}
+
+expect_rejected() {
+	local rule="$1"
+	if luajit "$tmp/tree/tools/r8_map_a/mutation_probe.lua" \
+			"$tmp/tree" "$rule" >"$tmp/$rule.out" 2>"$tmp/$rule.err"; then
+		echo "mutation unexpectedly survived: $rule" >&2
+		exit 1
+	fi
+	local line
+	line="$(head -n 1 "$tmp/$rule.err")"
+	printf 'mutation\t%s\trejected\t%s\n' "$rule" "$line"
+}
+
+reset_tree
+sed -i 's|"/" .. run_class|""|' \
+	"$tmp/tree/mods/MAPGEN/grug_mapgen/wp40/height.lua"
+expect_rejected run_stability
+
+reset_tree
+sed -i 's/if y < context.floor_y then/if false then/' \
+	"$tmp/tree/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua"
+expect_rejected floor_guard
+
+reset_tree
+sed -i 's/context.original_data\[index\] == context.stone_cid then/context.original_data[index] == context.stone_cid or context.original_data[index] == context.gravel_cid then/' \
+	"$tmp/tree/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua"
+expect_rejected ore_preservation
+
+reset_tree
+sed -i -e 's/if continues and not touches_sky and/if not touches_sky and/' \
+	-e 's/outside_count >= R8_CAVE_COMPONENT_MINIMUM/outside_count >= 1/' \
+	"$tmp/tree/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua"
+expect_rejected cave_connection
+
+reset_tree
+sed -i 's/return {bed, "default:sand",/return {bed, bed,/' \
+	"$tmp/tree/mods/MAPGEN/grug_mapgen/wp40/r6_content.lua"
+expect_rejected surface_integration

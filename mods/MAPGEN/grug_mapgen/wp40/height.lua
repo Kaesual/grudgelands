@@ -14,20 +14,28 @@ local function new_coast_rules(full_seed_string)
 		value = (value * value) % PRIME
 		return (value * 48271) % PRIME
 	end
+	function result.run_class(freshwater, relief_profile, relief)
+		if freshwater then return "fresh" end
+		if relief_profile == "wetland_delta" or relief < 7 then return "sea_low" end
+		return "sea_ordinary"
+	end
+	function result.run_key(owner, orientation, run, run_class)
+		return tostring(owner) .. "/" .. tostring(orientation) .. "/" .. tostring(run) ..
+			"/" .. run_class
+	end
 	function result.profile(owner, orientation, run, freshwater, relief_profile, relief)
-		local draw = result.hash(owner, orientation, run, 19349663) % 100
+		local run_class = result.run_class(freshwater, relief_profile, relief)
+		local class_salt = run_class == "fresh" and 104729 or
+			run_class == "sea_low" and 130363 or 155921
+		local draw = result.hash(owner, orientation, run, 19349663 + class_salt) % 100
 		local profile
-		if freshwater then profile = draw < 60 and "beach" or "bluff"
+		if run_class ~= "sea_ordinary" then
+			profile = draw < 60 and "beach" or "bluff"
 		elseif draw < 40 then profile = "beach"
 		elseif draw < 65 then profile = "bluff"
 		elseif draw < 85 then profile = "cliff"
 		else profile = "terraced_cliff" end
-		if (profile == "cliff" or profile == "terraced_cliff") and
-				(relief_profile == "wetland_delta" or relief < 7) then
-			profile = result.hash(owner, orientation, run, 297121507) % 5 < 3 and
-				"beach" or "bluff"
-		end
-		return profile
+		return profile, run_class, class_salt
 	end
 	return result
 end
@@ -5024,19 +5032,19 @@ local function height_factory(dependencies)
 				hydrology_id)
 		end
 
-		-- A shore run is a 48-node interval along the axis perpendicular to the
-		-- nearest cardinal exposed-water contact.  Orientation, zone owner and
-		-- signed interval index are part of its identity.  Four nodes at either
-		-- end blend the adjacent run's target, so profile changes do not form a
-		-- seam.  All arithmetic in this query is integral.
+		-- A shore run is a 48-node interval split again at stable water-kind and
+		-- relief-fallback boundaries.  Orientation, zone owner, signed interval,
+		-- water kind and fallback class are its identity.  Four nodes at either
+		-- interval end blend the adjacent run's target, so profile changes do not
+		-- form a seam.  All arithmetic in this query is integral.
 		do
 			local coast_rules = deterministic.r8_coast_rules(full_seed_string)
 			local direction_x, direction_z = {1, -1, 0, 0}, {0, 0, 1, -1}
 			local coast_hash = coast_rules.hash
 			local selected_profile = coast_rules.profile
 			local function target_for(profile, distance, incoming, water_y, owner,
-					orientation, run, axis)
-				local draw = coast_hash(owner, orientation, run, 83492791)
+					orientation, run, axis, class_salt)
+				local draw = coast_hash(owner, orientation, run, 83492791 + class_salt)
 				local width, target
 				if profile == "beach" then
 					width = 4 + draw % 7
@@ -5049,12 +5057,12 @@ local function height_factory(dependencies)
 				elseif profile == "cliff" then
 					width = 5 + draw % 3
 					local irregular = coast_hash(owner, orientation, run,
-						axis * 17 + 480752697) % 5 - 2
+						axis * 17 + 480752697 + class_salt) % 5 - 2
 					local setback = 2 + math.floor(draw / 13) % 3
 					local top = math.max(7, incoming - water_y) + irregular
 					local rise = math.min(top, 1 + math.max(0, distance - 2) * setback)
 					if distance > 2 and coast_hash(owner, orientation, run,
-						axis * 31 + distance * 43) % 11 == 0 then
+						axis * 31 + distance * 43 + class_salt) % 11 == 0 then
 						rise = math.max(1, rise - setback)
 					end
 					target = water_y + rise
@@ -5117,22 +5125,22 @@ local function height_factory(dependencies)
 					water_class, owner, nil, nil)
 				local relief_profile = source.zones[owner].primary_relief_id
 				local relief = math.max(0, incoming - water_y)
-				local profile = selected_profile(owner, orientation, run, freshwater,
-					relief_profile, relief)
+				local profile, run_class, class_salt = selected_profile(owner,
+					orientation, run, freshwater, relief_profile, relief)
 				local target, width = target_for(profile, best_distance, incoming, water_y,
-					owner, orientation, run, axis)
+					owner, orientation, run, axis, class_salt)
 				local offset = floor_mod(axis, 48)
 				if offset < 4 or offset >= 44 then
 					local neighbor = offset < 4 and run - 1 or run + 1
-					local other_profile = selected_profile(owner, orientation, neighbor,
-						freshwater, relief_profile, relief)
+					local other_profile, _, other_salt = selected_profile(owner,
+						orientation, neighbor, freshwater, relief_profile, relief)
 					local other = target_for(other_profile, best_distance, incoming, water_y,
-						owner, orientation, neighbor, axis)
+						owner, orientation, neighbor, axis, other_salt)
 					local weight = offset < 4 and 4 - offset or offset - 43
 					target = round_ratio(target * (4 - weight) + other * weight, 4)
 				end
 				return profile, best_distance, width, freshwater,
-					tostring(owner) .. "/" .. tostring(orientation) .. "/" .. tostring(run),
+					coast_rules.run_key(owner, orientation, run, run_class),
 					target, relief_profile
 			end
 		end

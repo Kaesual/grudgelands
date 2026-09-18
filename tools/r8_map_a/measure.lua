@@ -48,9 +48,10 @@ return function(root)
 				local surface_name = surface and (biome == "grug_beach" and
 					surface.shore or surface.top)
 				local before = surface_name == "default:sand"
-				local beach_band = profile == "beach" and distance <= width and
-					(not freshwater or distance <= 2)
-				local after = before or beach_band
+				local after_surface = after_select_surface(biome, x, z, water_y, terrain_y)
+				local after_name = after_surface and (biome == "grug_beach" and
+					after_surface.shore or after_surface.top)
+				local after = after_name == "default:sand"
 				local near = profile ~= nil
 				if before then
 					if near then row.before_near = row.before_near + 1
@@ -60,7 +61,12 @@ return function(root)
 					if near then row.after_near = row.after_near + 1
 					else row.after_away = row.after_away + 1 end
 				end
-				if run_key and not runs[run_key] then
+				if run_key and runs[run_key] then
+					assert(runs[run_key].profile == profile and
+						runs[run_key].freshwater == freshwater and
+						runs[run_key].relief == relief_profile,
+						"shore run changed profile/class: " .. run_key)
+				elseif run_key then
 					runs[run_key] = {profile = profile, freshwater = freshwater,
 						relief = relief_profile, zone_numeric = zone_numeric}
 					local rr = relief[relief_profile] or
