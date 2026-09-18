@@ -847,6 +847,20 @@ Details + line numbers in [docs/research/](docs/research/).
   The unchanged underground term already supplies three integer threshold
   steps per uncapped 50-node window, and `mob_level_at` remains
   `max(surface, depth)`.
+  **R8-MAP-A terrain seams (2026-09-18):** `height.lua` owns 48-node coast-run
+  identity, seeded profile selection and bounded height blending behind the
+  exact first dry bank. `r6_content.lua` owns the corresponding beach/bluff/
+  cliff surface rows and is the only new source of near-water sand.
+  `r6_settlement.lua` owns shallow filler/stone-only strata and the final cave
+  transaction. `zones.lua` publishes 80-node owner-local cave candidates but
+  never an offline cut; the writer carves only after immutable native-v7 air
+  beneath a three-node roof is witnessed within 24 vertical and (for a
+  sinkhole) 24 horizontal nodes in the same mapchunk, then validates the exact
+  path against natural input and every surface exclusion. A commit additionally
+  requires the target air component to exit the planned lumen horizontally;
+  that native exit voxel is protected by the same occupancy transaction. Do
+  not move cave
+  connection decisions into the planner or infer them from emerge order.
   LotT trick: biome signature nodes drive mob spawns via a node whitelist —
   those tops live in `grug_nodes` (blight_dirt, bone/forest/silver litter,
   mesa_clay, mud) and exist FOR the trick; the generic `_grug_spawn_check`
