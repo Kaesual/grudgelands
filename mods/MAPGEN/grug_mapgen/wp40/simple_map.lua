@@ -1581,8 +1581,33 @@ return function(dependencies)
 			{level_min+cut2,level_max},
 		}
 	end
+	local function level_for_profile(profile,z)
+		if profile.extent == 0 then
+			return profile.ranges[1][1]
+		end
+		local progress=profile.direction*(z-profile.outer_z)
+		if progress < 0 then progress=0
+		elseif progress > profile.extent then progress=profile.extent end
+		local scaled=progress*3
+		local band,local_progress
+		if scaled < profile.extent then
+			band,local_progress=1,scaled
+		elseif scaled < profile.extent*2 then
+			band,local_progress=2,scaled-profile.extent
+		else
+			band,local_progress=3,scaled-profile.extent*2
+		end
+		local range=profile.ranges[band]
+		local count=range[2]-range[1]+1
+		local step=math.floor(local_progress*count/profile.extent)
+		if step >= count then step=count-1 end
+		return range[1]+step
+	end
 	local difficulty_profiles={}
-	local difficulty_digest_rows={}
+	local difficulty_digest_rows={
+		canonical.text("grug_r7_level_bands_v2"),
+		canonical.text("strict-crossed-hub-row/nearest-x-minus-bias/id-tie"),
+	}
 	for index=1,#source.zones do
 		local row=source.zones[index]
 		local direction,outer_z,inner_z
@@ -1620,14 +1645,23 @@ return function(dependencies)
 			inner_z=inner_z,extent=extent,
 			ranges=band_ranges(row.level_min,row.level_max)}
 		difficulty_profiles[index]=profile
+		local output_levels={}
+		for progress=0,extent do
+			output_levels[#output_levels+1]=canonical.signed(level_for_profile(
+				profile,outer_z+direction*progress))
+		end
 		difficulty_digest_rows[#difficulty_digest_rows+1]=canonical.array({
 			canonical.signed(index),canonical.text(row.id),
+			canonical.text(row.macro_region),canonical.text(row.race_region),
+			canonical.text(row.faction or "-"),canonical.signed(row.hub.x),
+			canonical.signed(row.hub.z),canonical.signed(row.bias),
 			canonical.signed(direction),canonical.signed(outer_z),
 			canonical.signed(inner_z),canonical.signed(row.level_min),
 			canonical.signed(row.level_max),
 			canonical.signed(profile.ranges[1][2]),
 			canonical.signed(profile.ranges[2][2]),
-			canonical.signed(profile.ranges[3][2])})
+			canonical.signed(profile.ranges[3][2]),
+			canonical.array(output_levels)})
 	end
 	local difficulty={profiles=difficulty_profiles,digest=canonical.hex(
 		raw_sha256(canonical.encode(canonical.array(difficulty_digest_rows))))}
@@ -1936,29 +1970,6 @@ return function(dependencies)
 				end
 			end
 			return nil
-		end
-
-		local function level_for_profile(profile,z)
-			if profile.extent == 0 then
-				return profile.ranges[1][1]
-			end
-			local progress=profile.direction*(z-profile.outer_z)
-			if progress < 0 then progress=0
-			elseif progress > profile.extent then progress=profile.extent end
-			local scaled=progress*3
-			local band,local_progress
-			if scaled < profile.extent then
-				band,local_progress=1,scaled
-			elseif scaled < profile.extent*2 then
-				band,local_progress=2,scaled-profile.extent
-			else
-				band,local_progress=3,scaled-profile.extent*2
-			end
-			local range=profile.ranges[band]
-			local count=range[2]-range[1]+1
-			local step=math.floor(local_progress*count/profile.extent)
-			if step >= count then step=count-1 end
-			return range[1]+step
 		end
 
 		local function mainland_profile_at(x,z,macro_region)

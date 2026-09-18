@@ -183,9 +183,15 @@ return function(repo)
 		check(levels[4] >= 4 and levels[4] <= 6,
 			row.id .. " 300 m sample escaped 4-6")
 		check(levels[5] <= 10,row.id .. " 500 m sample exceeds 10")
+		local owner_300=session.id_at(anchor.x,anchor.z+front_sign*300)
+		check(owner_300 ~= nil,row.id .. " 300 m political owner is absent")
+		if row.race_region == "dwarf" then
+			check(owner_300 ~= row.id,
+				row.id .. " 300 m political-owner witness differs")
+		end
 		rows[#rows+1]=table.concat({"start",row.race_region,anchor.x,anchor.z,
-			levels[1],levels[2],levels[3],levels[4],levels[5],levels[6]},"\t") ..
-			"\n"
+			levels[1],levels[2],levels[3],levels[4],levels[5],levels[6],
+			owner_300},"\t") .. "\n"
 	end
 
 	local function expected_depth(y)
@@ -215,8 +221,11 @@ return function(repo)
 	end
 	rows[#rows+1]="depth\tformula=min(60,max(1,round_half_away(-3y/50)))\t" ..
 		"uncapped_50_node_steps=3\n"
-	rows[#rows+1]="difficulty_field_sha256\t" ..
-		horizontal.difficulty_lattice_digest() .. "\n"
+	local difficulty_digest=horizontal.difficulty_lattice_digest()
+	check(difficulty_digest ==
+		"9d63740d7915d733bfd38aef4f767d5576489be85122a62affad3cad9eafa6f6",
+		"accepted R7.6 difficulty field differs")
+	rows[#rows+1]="difficulty_field_sha256\t" .. difficulty_digest .. "\n"
 	local body=table.concat(rows)
 	return body .. "output_sha256\t" .. common.hex(raw_sha256(body)) .. "\n"
 end
