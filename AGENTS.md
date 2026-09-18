@@ -517,9 +517,9 @@ Details + line numbers in [docs/research/](docs/research/).
     derived from `grug_core.mob_level_at`/`guard_level_at` plus the tier
     multipliers on the first active tick. `_grug_fixed_level` is the sole
     explicit fixed-entity mechanism: it bypasses positional/role fields only
-    for deliberately designed fixed entities. Its current implemented use is
-    the Kraken L100; future WP13 uses the same mechanism for the still-
-    unimplemented king L65. There is no second king-specific level path.
+    for deliberately designed fixed entities. Its implemented uses are the
+    Kraken L100, the island dragons L60, the capital kings L65 and their royal
+    guards L60. There is no second king-specific level path.
     Everything else (speeds, view_range, drops, visuals) stays def-owned.
     **Four tiers since WP36**: `critter` (added for the small animals —
     fixed L1, 1 HP, 0 XP, no fall damage, never promotable; the second
@@ -878,6 +878,15 @@ Details + line numbers in [docs/research/](docs/research/).
   those tops live in `grug_nodes` (blight_dirt, bone/forest/silver litter,
   mesa_clay, mud) and exist FOR the trick; the generic `_grug_spawn_check`
   and `grug_mobs/spawn_policy.lua` do the gating on top, against `grug_zones`.
+  `register_spawn_role` also owns each family's `clock`; its spawn wrapper
+  stamps the mobs_redo light/day convention and the night `aoc`, while rows
+  wholly below y = -40 remain light-only. Never hand-maintain those fields on
+  a new surface row.
+  Fixed bosses do not register ambient rows: `grug_mobs/bosses.lua` owns the
+  two authenticated island `dragon` anchors, while the six kings and their
+  four-guard groups consume the capital `king`/royal `guard_post` sockets via
+  `start_npcs.lua`. Their respawn timestamps are absolute `os.time()` values;
+  never route them through the ambient spawn clock or gametime respawn path.
   **The WP40 world contract is SHIPPED** (decided 2026-08-11, delivered
   2026-09-13): exactly **38** land zones in
   `docs/design/world_zones.md` §§8–9, each with one `race_region`; six

@@ -17,6 +17,7 @@ local POISON_DAMAGE = 1 -- hp per tick
 
 local serpent = {
 	description = "Serpent",
+	clock = "day",
 	type = "monster",
 	-- HP/damage/XP/armor: engine-owned (levels.lua).
 

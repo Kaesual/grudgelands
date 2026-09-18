@@ -43,6 +43,7 @@ grug_mobs.BANDIT_RACES = {"human", "dwarf", "orc", "undead"}
 function grug_mobs.bandit_def(description)
 	local bandit = {
 		description = description or "Bandit",
+		clock = "any",
 		type = "monster",
 		-- No _grug_spawn_domains: that list only gates the spawn ABM
 		-- (mobs:spawn_abm_check, init.lua) and this family has no ABM. Where

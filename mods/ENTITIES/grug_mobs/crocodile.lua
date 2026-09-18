@@ -34,6 +34,7 @@
 
 local crocodile = {
 	description = "Crocodile",
+	clock = "any",
 	type = "monster",
 	-- §4 row zones: "outer". The swamp is a low-terrain pocket biome of the
 	-- outer ring (§1.2 row 13).

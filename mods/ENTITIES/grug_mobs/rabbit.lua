@@ -12,6 +12,7 @@
 local function rabbit_def(description, texture, territory)
 	return {
 		description = description,
+		clock = "day",
 		type = "animal",
 		-- Never attacks, runs when hurt or approached (mobs_redo runaway).
 		passive = true,

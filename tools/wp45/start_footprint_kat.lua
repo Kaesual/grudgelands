@@ -70,15 +70,19 @@ dofile(repo .. "/mods/ENTITIES/grug_mobs/spawn_policy.lua")
 -- 1. The derived hostile role reads exactly the mobs_redo fields.
 --
 assert_equal(grug_mobs.register_spawn_role("grug_mobs:zombie",
-	{type = "monster", attack_players = true}), true, "monster is hostile")
+	{type = "monster", attack_players = true, clock = "night"}), true,
+	"monster is hostile")
 assert_equal(grug_mobs.register_spawn_role("grug_mobs:giant_spider",
-	{type = "monster"}), true, "attack_players defaults to hostile")
+	{type = "monster", clock = "night"}), true,
+	"attack_players defaults to hostile")
 assert_equal(grug_mobs.register_spawn_role("grug_mobs:rabbit",
-	{type = "animal", passive = true}), false, "a passive critter is not hostile")
+	{type = "animal", passive = true, clock = "day"}), false,
+	"a passive critter is not hostile")
 -- grug_mobs.passive_prey (verbs.lua) sets exactly these fields.
 assert_equal(grug_mobs.register_spawn_role("grug_mobs:stag",
 	{type = "animal", passive = false, attack_players = false,
-		attack_npcs = false}), false, "passive prey is not hostile")
+		attack_npcs = false, clock = "day"}), false,
+	"passive prey is not hostile")
 assert_equal(grug_mobs.spawn_role_hostile("grug_mobs:zombie"), true,
 	"stored zombie role")
 assert_equal(grug_mobs.spawn_role_hostile("grug_mobs:rabbit"), false,
@@ -154,7 +158,8 @@ assert_equal(grug_mobs.spawn_policy_allows("grug_mobs:zombie",
 --
 -- 4. An independent authority does not buy a way past the footprint.
 --
-grug_mobs.register_spawn_role("grug_mobs:kraken", {type = "monster"})
+grug_mobs.register_spawn_role("grug_mobs:kraken",
+	{type = "monster", clock = "any"})
 assert_equal(grug_mobs.spawn_policy_allows("grug_mobs:kraken",
 	candidate(ANCHORS[1].x, ANCHORS[1].z)), false,
 	"independent authority refused inside a start")
