@@ -55,7 +55,12 @@ return function(root)
 	function engine.colorize(_, value) return value end
 	function engine.is_player() return false end
 	function engine.get_connected_players() return {} end
-	function engine.get_node() return {name = "grug_nodes:dirt_with_grass"} end
+	function engine.get_node()
+		if current.check_name == "grug_mobs:skeleton_archer" then
+			return {name = "grug_nodes:dirt_with_bone_litter"}
+		end
+		return {name = "grug_nodes:dirt_with_grass"}
+	end
 	function engine.get_node_or_nil() return {name = "air"} end
 	function engine.get_objects_inside_radius() return {} end
 	function engine.find_nodes_in_area() return {} end
@@ -271,6 +276,16 @@ return function(root)
 	}
 	local fallbacks = {settled = "zombie", war = "zombie", forest = "skeleton_archer",
 		mountain = "skeleton_archer", jungle = "jungle_spider", swamp = "bog_ooze"}
+	local cultural_races = {
+		rabbit = {dwarf = true, human = true, elf = true},
+		hare = {undead = true, orc = true, troll = true},
+		stone_golem = {dwarf = true, human = true, elf = true},
+		mesa_golem = {undead = true, orc = true, troll = true},
+	}
+	local function culture_allows(short, race)
+		local races = cultural_races[short]
+		return not races or races[race] == true
+	end
 	local function add(result, short)
 		result["grug_mobs:" .. short] = true
 	end
@@ -296,11 +311,12 @@ return function(root)
 		return value
 	end
 	local function band_min(text, label)
-		if text:find("band%-2 " .. label) or text:find(label .. " from band 2", 1, true) or
+		if text:find("band-2 " .. label, 1, true) or
+				text:find(label .. " from band 2", 1, true) or
 				text:find("Fox/Ibex from band 2", 1, true) and (label == "Fox" or label == "Ibex") then
 			return 2
 		end
-		if text:find("band%-3 " .. label) then return 3 end
+		if text:find("band-3 " .. label, 1, true) then return 3 end
 		return 1
 	end
 	local function expected_cast(zone, band, wanted_clock)
@@ -311,7 +327,10 @@ return function(root)
 				if palettes[palette] then
 					local short = name:match(":(.+)$")
 					local role = clock_for(short, palette)
-					if role == wanted_clock or role == "any" then result[name] = true end
+					if culture_allows(short, zone.race) and
+							(role == wanted_clock or role == "any") then
+						result[name] = true
+					end
 					break
 				end
 			end
@@ -350,11 +369,6 @@ return function(root)
 				add(result, "skeleton_archer")
 			end
 		end
-		local pos = {x = 500, y = 1, z = 500}
-		for name in pairs(result) do
-			local check = mob_defs[name] and mob_defs[name]._grug_spawn_check
-			if check and not check(pos) then result[name] = nil end
-		end
 		return result
 	end
 	local function checked_cast(zone, clock)
@@ -363,8 +377,10 @@ return function(root)
 		for index = 1, #list do
 			local name = list[index]
 			local check = mob_defs[name] and mob_defs[name]._grug_spawn_check
+			current.check_name = name
 			if not check or check(pos) then result[name] = true end
 		end
+		current.check_name = nil
 		return result
 	end
 	local function digest(set)
@@ -403,5 +419,6 @@ return function(root)
 	assert(production.spawn_clock_allows("grug_mobs:zombie", {x = 500, y = 1, z = 500}),
 		"blight Zombie lost its any-clock exception")
 
-	return "r8_mob1_clock_v2|zones=38|band_casts=228|production_roles=1|doc_palettes=1|night_factor=5/4\n"
+	return "r8_mob1_clock_v3|zones=38|band_casts=228|production_roles=1|" ..
+		"doc_band_oracle=1|doc_palettes=1|night_factor=5/4\n"
 end
