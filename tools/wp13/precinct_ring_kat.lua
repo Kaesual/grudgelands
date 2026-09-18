@@ -16,6 +16,7 @@ return function(repo, engine_tsv)
 	local parts = dofile(wp13 .. "/parts.lua")
 	local palettes = dofile(wp13 .. "/palette.lua")
 	local lagoon = dofile(wp13 .. "/kezamba_lagoon.lua")()
+	local precinct_ring = dofile(wp13 .. "/precinct_ring.lua")
 
 	local RADIUS = 46
 	local GATE_HALF = 6
@@ -47,10 +48,10 @@ return function(repo, engine_tsv)
 			", found " .. tostring(cell and cell.name))
 	end
 
-	-- Dur Brannoc's and Nhal Veyr's round corner drums replace five columns
-	-- of the square parapet. Their y=2 outer course is a closed 5x5 perimeter,
-	-- so this is a protected detour rather than an opening in the boundary.
-	local function expect_corner_drums(buf, label)
+	-- A corner drum/tower replaces five columns of the square ring. Its y=2
+	-- outer course must be the capital's exact full-solid structural material:
+	-- any non-air cell is not enough to prove a closed protected detour.
+	local function expect_corner_detours(buf, label, material_at)
 		for _, sx in ipairs({-1, 1}) do
 			for _, sz in ipairs({-1, 1}) do
 				local cx, cz = sx * 45, sz * 45
@@ -58,9 +59,15 @@ return function(repo, engine_tsv)
 					for _, point in ipairs({{cx + offset, cz - 2},
 							{cx + 2, cz + offset}, {cx + offset, cz + 2},
 							{cx - 2, cz + offset}}) do
-						assert(not air(buf:at(point[1], 2, point[2])), label ..
-							": corner drum opens at " .. point[1] .. ",2," ..
-							point[2])
+						local material = type(material_at) == "function" and
+							material_at(point[1], point[2]) or material_at
+						assert(parts.full_solid(material), label ..
+							": corner material is not full-solid: " .. material)
+						local cell = buf:at(point[1], 2, point[2])
+						assert(cell and cell.name == material, label ..
+							": corner detour differs at " .. point[1] .. ",2," ..
+							point[2] .. ": wanted " .. material .. ", found " ..
+							tostring(cell and cell.name))
 					end
 				end
 			end
@@ -71,6 +78,30 @@ return function(repo, engine_tsv)
 	local orc = palettes.new("orc")
 	local undead = palettes.new("undead")
 	local troll = palettes.new("troll")
+	local dwarf_stone = dwarf.maybe("castle_wall") or dwarf.node("wall_accent")
+	local orc_bank = orc.node("subsoil")
+	local orc_crest = orc.node("ground_bare")
+	local orc_tower = orc.maybe("wall_infill") or orc.node("foundation")
+	local undead_stone = undead.maybe("castle_wall") or
+		undead.node("wall_accent")
+	local troll_log = troll.node("tree_log")
+
+	local function same(buf, x, y, z, name)
+		local cell = buf:at(x, y, z)
+		return cell ~= nil and cell.name == name
+	end
+	local function standard_gate(buf, label, x, z, ring_column)
+		local offset = (math.abs(x) == RADIUS) and z or x
+		local support = math.abs(offset) == 3 or math.abs(offset) == 6
+		if not support then
+			assert(air(buf:at(x, 1, z)) and air(buf:at(x, 2, z)), label ..
+				": authored gate passage is blocked at " .. x .. "," .. z)
+		end
+		-- Gatehouse supports can share masonry with a parapet. Every other one
+		-- of the 52 band columns must differ from the capital's ring signature.
+		assert(support or not ring_column(buf, x, z), label ..
+			": ring material enters the authored gate at " .. x .. "," .. z)
+	end
 	local specs = {
 		{
 			id = "highcourt", style = "clipped_hedge",
@@ -80,40 +111,65 @@ return function(repo, engine_tsv)
 				expect(buf, label, x, 2, z, "default:bush_leaves")
 				expect(buf, label, x, 3, z, "default:bush_leaves")
 			end,
+			gate = function(buf, label, x, z)
+				standard_gate(buf, label, x, z, function(at, px, pz)
+					return same(at, px, 1, pz, "default:bush_stem") and
+						same(at, px, 2, pz, "default:bush_leaves") and
+						same(at, px, 3, pz, "default:bush_leaves")
+				end)
+			end,
 		},
 		{
 			id = "dur_brannoc", style = "masonry_and_corner_drums",
 			capital = dofile(wp13 .. "/dur_brannoc.lua")(wp13),
-			corners = true, corner_check = expect_corner_drums,
+			corners = true, corner_material = dwarf_stone,
 			check = function(buf, label, x, z)
-				local stone = dwarf.maybe("castle_wall") or dwarf.node("wall_accent")
-				expect(buf, label, x, 1, z, stone)
-				expect(buf, label, x, 2, z, stone)
+				expect(buf, label, x, 1, z, dwarf_stone)
+				expect(buf, label, x, 2, z, dwarf_stone)
+			end,
+			gate = function(buf, label, x, z)
+				standard_gate(buf, label, x, z, function(at, px, pz)
+					return same(at, px, 1, pz, dwarf_stone) and
+						same(at, px, 2, pz, dwarf_stone)
+				end)
 			end,
 		},
 		{
 			id = "gor_drazhak", style = "earth_bank_and_stakes",
 			capital = dofile(wp13 .. "/gor_drazhak.lua")(wp13),
-			corners = true,
-			check = function(buf, label, x, z)
-				if is_corner(x, z) then
-					assert(not air(buf:at(x, 1, z)) and not air(buf:at(x, 2, z)),
-						label .. ": corner tower opens at " .. x .. "," .. z)
-					return
+			corners = true, corner_material = function(x, z)
+				-- The bank's first column beyond each explicit five-column corner
+				-- skip is the join into the closed tower perimeter.
+				if (math.abs(x) == RADIUS or math.abs(z) == RADIUS) and
+						not is_corner(x, z) then
+					return orc_crest
 				end
-				expect(buf, label, x, 1, z, orc.node("subsoil"))
-				expect(buf, label, x, 2, z, orc.node("ground_bare"))
+				return orc_tower
+			end,
+			check = function(buf, label, x, z)
+				expect(buf, label, x, 1, z, orc_bank)
+				expect(buf, label, x, 2, z, orc_crest)
+			end,
+			gate = function(buf, label, x, z)
+				standard_gate(buf, label, x, z, function(at, px, pz)
+					return same(at, px, 1, pz, orc_bank) and
+						same(at, px, 2, pz, orc_crest)
+				end)
 			end,
 		},
 		{
 			id = "nhal_veyr", style = "masonry_bars_and_corner_drums",
 			capital = dofile(wp13 .. "/nhal_veyr.lua")(wp13),
-			corners = true, corner_check = expect_corner_drums,
+			corners = true, corner_material = undead_stone,
 			check = function(buf, label, x, z)
-				local stone = undead.maybe("castle_wall") or
-					undead.node("wall_accent")
-				expect(buf, label, x, 1, z, stone)
-				expect(buf, label, x, 2, z, stone)
+				expect(buf, label, x, 1, z, undead_stone)
+				expect(buf, label, x, 2, z, undead_stone)
+			end,
+			gate = function(buf, label, x, z)
+				standard_gate(buf, label, x, z, function(at, px, pz)
+					return same(at, px, 1, pz, undead_stone) and
+						same(at, px, 2, pz, undead_stone)
+				end)
 			end,
 		},
 		{
@@ -129,6 +185,13 @@ return function(repo, engine_tsv)
 				expect(buf, label, x, 2, z, "grug_trees:silverwood_leaves")
 				expect(buf, label, x, 3, z, "grug_trees:silverwood_leaves")
 			end,
+			gate = function(buf, label, x, z)
+				standard_gate(buf, label, x, z, function(at, px, pz)
+					return same(at, px, 1, pz, "grug_trees:silverwood_tree") and
+						same(at, px, 2, pz, "grug_trees:silverwood_leaves") and
+						same(at, px, 3, pz, "grug_trees:silverwood_leaves")
+				end)
+			end,
 		},
 		{
 			id = "kezamba", style = "junglewood_palisade_or_cenote",
@@ -136,11 +199,45 @@ return function(repo, engine_tsv)
 			water = lagoon.lagoon,
 			check = function(buf, label, x, z)
 				for y = 1, 3 do
-					expect(buf, label, x, y, z, troll.node("tree_log"))
+					expect(buf, label, x, y, z, troll_log)
 				end
+			end,
+			gate = function(buf, label, x, z)
+				-- Threshold posts, plants and planned water may occupy the band;
+				-- the three-course palisade signature itself may not.
+				assert(not (same(buf, x, 1, z, troll_log) and
+					same(buf, x, 2, z, troll_log) and
+					same(buf, x, 3, z, troll_log)), label ..
+					": palisade enters the authored threshold at " .. x .. "," .. z)
 			end,
 		},
 	}
+
+	-- The production walker itself owns the four gate bands. Compare its exact
+	-- default coordinate set with an independent perimeter enumeration so a
+	-- widened or narrowed band cannot hide behind the generated-buffer checks.
+	local walked = {}
+	local expected_seen = {}
+	local walked_count = precinct_ring.walk(function(x, z)
+		walked[x .. ":" .. z] = true
+	end)
+	local expected_count = 0
+	for offset = -RADIUS, RADIUS do
+		for _, spot in ipairs({{offset, -RADIUS}, {RADIUS, offset},
+				{offset, RADIUS}, {-RADIUS, offset}}) do
+			local x, z = spot[1], spot[2]
+			local mark = x .. ":" .. z
+			if not is_gate(x, z) and not expected_seen[mark] then
+				expected_seen[mark] = true
+				expected_count = expected_count + 1
+				assert(walked[mark], "precinct walker omits " .. mark)
+			elseif is_gate(x, z) then
+				assert(not walked[mark], "precinct walker enters gate band at " .. mark)
+			end
+		end
+	end
+	assert(walked_count == 316 and expected_count == 316,
+		"precinct walker coordinate population differs")
 
 	local function check_ring(buf, spec, label)
 		local seen = {}
@@ -153,14 +250,12 @@ return function(repo, engine_tsv)
 				if not seen[mark] then
 					seen[mark] = true
 					if is_gate(x, z) then
+						spec.gate(buf, label, x, z)
 						gates = gates + 1
 					elseif spec.water and spec.water(x, z) then
 						water = water + 1
 					elseif spec.corners and is_corner(x, z) then
 						corners = corners + 1
-						if not spec.corner_check then
-							spec.check(buf, label, x, z)
-						end
 					else
 						spec.check(buf, label, x, z)
 						protected = protected + 1
@@ -168,7 +263,9 @@ return function(repo, engine_tsv)
 				end
 			end
 		end
-		if spec.corner_check then spec.corner_check(buf, label) end
+		if spec.corner_material then
+			expect_corner_detours(buf, label, spec.corner_material)
+		end
 		assert(protected + gates + corners + water == 368,
 			label .. ": ring population differs")
 		assert(gates == 52, label .. ": authored gate population differs")
@@ -176,6 +273,8 @@ return function(repo, engine_tsv)
 	end
 
 	local report = {}
+	report[#report + 1] = table.concat({"precinct_ring_walk", walked_count,
+		368 - walked_count}, "\t") .. "\n"
 	local buffers = {}
 	for _, spec in ipairs(specs) do
 		local buf = generated_buffer(spec.capital)
@@ -200,6 +299,33 @@ return function(repo, engine_tsv)
 	highcourt:put(x, y, z, saved_name, saved_param2)
 	check_ring(highcourt, specs[1], "highcourt restored")
 	report[#report + 1] = "precinct_ring_mutation\trejected\trestored\n"
+
+	-- Narrowing Kezamba's gate mask writes dry palisade columns into the
+	-- thirteen-column threshold band. The gate-content checks must catch it.
+	local kezamba_spec = specs[6]
+	local kezamba_mutated = generated_buffer(kezamba_spec.capital)
+	precinct_ring.walk(function(px, pz)
+		for py = 1, 3 do kezamba_mutated:put(px, py, pz, troll_log) end
+	end, {gate_half = 2, skip = lagoon.lagoon})
+	ok = pcall(check_ring, kezamba_mutated, kezamba_spec,
+		"kezamba gate-width mutation")
+	assert(not ok, "gate-width mutation escaped the ring KAT")
+	local kezamba_restored = generated_buffer(kezamba_spec.capital)
+	check_ring(kezamba_restored, kezamba_spec, "kezamba gate width restored")
+	buffers.kezamba = kezamba_restored
+	report[#report + 1] = "precinct_ring_gate_width_mutation\trejected\trestored\n"
+
+	-- A corner substitute is part of the protected circuit. Punch one exact
+	-- material cell out of Dur Brannoc's south-west drum, then reconstruct it.
+	local dur_spec = specs[2]
+	local dur_mutated = generated_buffer(dur_spec.capital)
+	dur_mutated:put(-47, 2, -47, parts.AIR, 0)
+	ok = pcall(check_ring, dur_mutated, dur_spec, "dur brannoc corner mutation")
+	assert(not ok, "corner-hole mutation escaped the ring KAT")
+	local dur_restored = generated_buffer(dur_spec.capital)
+	check_ring(dur_restored, dur_spec, "dur brannoc corner restored")
+	buffers.dur_brannoc = dur_restored
+	report[#report + 1] = "precinct_ring_corner_hole_mutation\trejected\trestored\n"
 
 	if engine_tsv ~= nil then
 		assert(type(engine_tsv) == "string" and engine_tsv:sub(1, 1) == "/",

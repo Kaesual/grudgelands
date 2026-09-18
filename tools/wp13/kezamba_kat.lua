@@ -489,6 +489,8 @@ return function(repo)
 		CORE_BUDGET)
 	do
 		local L = core.landmarks
+		assert(L.palisade_columns == 226, "the core's dry palisade has " ..
+			tostring(L.palisade_columns) .. " columns, not 226")
 		local at = index_cells(core.cells)
 		local function cell_at(x, y, z) return at[x .. ":" .. y .. ":" .. z] end
 
