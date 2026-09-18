@@ -382,8 +382,9 @@ return function(repo)
 	want(documented and documented == counted,
 			"AGENTS.md patch inventory is stale: documents "
 			.. tostring(documented) .. ", api.lua carries " .. counted)
-	want(vendor:find("**59 markers in `mobs/api.lua`", 1, true),
-			"VENDOR.md patch inventory is stale")
+	want(vendor:find("**Historical Round-5 snapshot: 59 markers", 1, true)
+			and vendor:find("The current inventory is 62 markers", 1, true),
+			"VENDOR.md current or historical patch inventory is stale")
 
 	say("production", "module", "grug_obstacle.lua", "target_los_calls", los_calls,
 			"path_budget", obstacle.path_budget_per_step,

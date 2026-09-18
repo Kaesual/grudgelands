@@ -175,7 +175,9 @@ combat-physics rulings:
   common registration path. The matching player property lives outside the
   vendored tree in `grug_core`.
 
-**59 markers in `mobs/api.lua`, plus one in `mobs/grug_obstacle.lua`.**
+**Historical Round-5 snapshot: 59 markers in `mobs/api.lua`, plus one in
+`mobs/grug_obstacle.lua`.** The current inventory is 62 markers, as recorded
+in the vendored-mod row below and in `AGENTS.md`.
 
 ## R8 per-viewer parent-tag isolation (2026-09-18)
 
