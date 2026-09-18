@@ -11,6 +11,7 @@ local WEB_FACTOR = 0.6 -- "40% slow" (§3.1)
 local function spider_def(description, texture)
 	return {
 		description = description,
+		clock = "night",
 		type = "monster",
 		-- Underground is already in the list although T5 registers no cave
 		-- Surface habitat remains node/biome-owned after R7. The cave row has

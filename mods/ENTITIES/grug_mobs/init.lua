@@ -725,6 +725,7 @@ end
 
 local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/spawn_policy.lua")
+grug_mobs.install_spawn_clock_wrapper()
 dofile(modpath .. "/levels.lua")
 dofile(modpath .. "/aggro.lua")
 dofile(modpath .. "/flight.lua")
@@ -772,6 +773,7 @@ dofile(modpath .. "/mirefolk.lua")
 -- Faction guards + military outposts (world.md §4, WP6/T8): guard.lua must
 -- come before camps.lua, which names the two guard mobs in its camp types.
 dofile(modpath .. "/guard.lua")
+dofile(modpath .. "/bosses.lua")
 dofile(modpath .. "/camps.lua")
 -- WP13 start settlements: the flair/quest NPC families first (start_npcs.lua
 -- resolves their entity names), then the socket-driven placement engine,
@@ -785,6 +787,9 @@ dofile(modpath .. "/start_npcs.lua")
 -- (a mesh is a file name, not a registration).
 dofile(modpath .. "/cave_bat.lua")
 dofile(modpath .. "/cave_crawler.lua")
+dofile(modpath .. "/zero_asset_variants.lua")
+dofile(modpath .. "/start_zone_families.lua")
+dofile(modpath .. "/night_families.lua")
 dofile(modpath .. "/bone_weevil.lua")
 dofile(modpath .. "/bog_fowl.lua")
 -- After the mob files: a rare spec names an already registered mob.

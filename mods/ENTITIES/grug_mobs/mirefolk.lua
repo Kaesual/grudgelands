@@ -16,6 +16,7 @@
 
 local mirefolk = {
 	description = "Mirefolk",
+	clock = "any",
 	type = "monster",
 	-- No _grug_spawn_domains — no spawn ABM to gate (bandit.lua explains).
 	-- HP/damage/XP/armor: engine-owned (levels.lua) from the camp position;

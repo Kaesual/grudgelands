@@ -44,10 +44,12 @@ shovels.
 VoxeLibre's `mcl_fishing_fish_raw.png` and `mcl_fishing_fish_cooked.png` were
 **not** imported; see below.
 
-## The cooked fish — no new file
+## Fish items — no new files
 
-`grug_fishing:cooked_fish` ships **no PNG**. Its inventory image is the raw
-fish this game already has, tinted at load time:
+The five zone-band fish and `grug_fishing:cooked_fish` ship **no PNG**. Their
+inventory images are the raw fish this game already has, tinted at load time.
+The exact modifiers live beside the registrations in `init.lua`; the cooked
+variant is:
 
 ```
 grug_mobs_item_raw_fish.png^[multiply:#d59a5a

@@ -10,6 +10,7 @@ end
 
 grug_mobs.register_mob("grug_mobs:kraken", {
 	description = "Kraken Guard",
+	clock = "any",
 	type = "monster",
 	passive = false,
 	-- A deterrent, not content: killing it must never be an XP or loot

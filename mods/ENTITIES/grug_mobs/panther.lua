@@ -18,6 +18,7 @@
 
 local panther = {
 	description = "Panther",
+	clock = "night",
 	type = "monster",
 	-- HP/damage/XP/armor: engine-owned (levels.lua). Outer ring plus the
 	-- jungle coasts means L38-60, the heaviest normal jungle mob.

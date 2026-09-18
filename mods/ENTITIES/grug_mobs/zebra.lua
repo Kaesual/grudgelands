@@ -13,6 +13,7 @@
 
 local zebra = {
 	description = "Zebra",
+	clock = "day",
 	type = "animal",
 	-- Stats engine-owned (levels.lua), normal tier.
 

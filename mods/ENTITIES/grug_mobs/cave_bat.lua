@@ -19,6 +19,7 @@
 
 local bat = {
 	description = "Cave Bat",
+	clock = "any",
 	type = "animal",
 	passive = true,
 	runaway = true,

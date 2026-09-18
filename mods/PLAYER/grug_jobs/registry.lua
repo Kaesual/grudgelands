@@ -326,13 +326,26 @@ local function dual_recipe_count(output)
 	return count
 end
 
+local function output_route_count(output, station)
+	local routes = recipes_by_output[output] or {}
+	local count = 0
+	for index = 1, #routes do
+		if station == nil or routes[index].station == station then
+			count = count + 1
+		end
+	end
+	return count
+end
+
 local function refuse_existing_output(output, phase)
 	local recipes = engine_corpus(phase).by_output[output] or {}
-	if #recipes > 0 then
+	local owned_engine = output_route_count(output, "grid") +
+		output_route_count(output, "furnace")
+	if #recipes > owned_engine then
 		fail("profession output " .. output ..
 			" already has a universal engine recipe")
 	end
-	if dual_recipe_count(output) > 0 then
+	if dual_recipe_count(output) > output_route_count(output, "dual_furnace") then
 		fail("profession output " .. output ..
 			" already has a dual-furnace recipe")
 	end
@@ -435,8 +448,18 @@ function grug_jobs.register_recipe(definition)
 	end
 	local output = item_name(definition.output)
 	if output == "" then fail(profession .. " recipe needs an output") end
-	if recipes_by_output[output] then
-		fail("duplicate profession output " .. output)
+	local output_routes = recipes_by_output[output]
+	if output_routes then
+		for index = 1, #output_routes do
+			local route = output_routes[index]
+			if route.station == station then
+				fail("duplicate profession output " .. output .. " at " .. station)
+			end
+			if route.profession ~= profession or route.tier ~= tier then
+				fail("profession output " .. output ..
+					" routes disagree on profession or tier")
+			end
+		end
 	end
 	local phase = registration_comparison_phase()
 	refuse_existing_output(output, phase)
@@ -469,7 +492,11 @@ function grug_jobs.register_recipe(definition)
 		input_key = input_key,
 	}
 	grug_jobs.recipes[#grug_jobs.recipes + 1] = recipe
-	recipes_by_output[output] = recipe
+	if not output_routes then
+		output_routes = {}
+		recipes_by_output[output] = output_routes
+	end
+	output_routes[#output_routes + 1] = recipe
 	local list = recipes_by_profession[profession]
 	if not list then
 		list = {}
@@ -480,8 +507,17 @@ function grug_jobs.register_recipe(definition)
 	return recipe
 end
 
-function grug_jobs.recipe_for_output(output)
-	return recipes_by_output[item_name(output)]
+function grug_jobs.recipe_for_output(output, station)
+	local routes = recipes_by_output[item_name(output)] or {}
+	if station == nil then return routes[1] end
+	local found
+	for index = 1, #routes do
+		if routes[index].station == station then
+			if found then return nil end
+			found = routes[index]
+		end
+	end
+	return found
 end
 
 local function ambiguous_craft(station, inputs)
@@ -501,11 +537,9 @@ end
 -- overlap it can decide; if a later group definition creates an ambiguity, the
 -- runtime safety net reports it and fails closed.
 function grug_jobs.recipe_for_craft(station, output, inputs)
-	local recipe = recipes_by_output[item_name(output)]
-	if inputs == nil and recipe and recipe.station == station then
-		return recipe
+	if inputs == nil then
+		return grug_jobs.recipe_for_output(output, station)
 	end
-	if inputs == nil then return nil end
 	local found
 	for index = 1, #grug_jobs.recipes do
 		local candidate = grug_jobs.recipes[index]
@@ -527,16 +561,23 @@ function grug_jobs.validate_recipe_collisions()
 	for index = 1, #grug_jobs.recipes do
 		local recipe = grug_jobs.recipes[index]
 		local engine = corpus.by_output[recipe.output_name] or {}
-		local expected_engine =
-			(recipe.station == "grid" or recipe.station == "furnace") and 1 or 0
+		local expected_engine = output_route_count(recipe.output_name, "grid") +
+			output_route_count(recipe.output_name, "furnace")
 		if #engine ~= expected_engine then
 			fail("profession output " .. recipe.output_name ..
 				" collides with a universal engine recipe")
 		end
-		if expected_engine == 1 then
+		if recipe.station == "grid" or recipe.station == "furnace" then
 			local wanted_method = recipe.station == "grid" and "normal" or "cooking"
-			if engine[1].method ~= wanted_method or
-					not input_languages_overlap(recipe.inputs, engine[1].items or {}, phase) then
+			local provenance = 0
+			for engine_index = 1, #engine do
+				if engine[engine_index].method == wanted_method and
+						input_languages_overlap(recipe.inputs,
+							engine[engine_index].items or {}, phase) then
+					provenance = provenance + 1
+				end
+			end
+			if provenance ~= 1 then
 				fail("profession output " .. recipe.output_name ..
 					" engine recipe provenance differs")
 			end
@@ -578,7 +619,7 @@ function grug_jobs.validate_recipe_collisions()
 					" have " .. own .. " station owners")
 			end
 		end
-		local expected_dual = recipe.station == "dual_furnace" and 1 or 0
+		local expected_dual = output_route_count(recipe.output_name, "dual_furnace")
 		if dual_recipe_count(recipe.output_name) ~= expected_dual then
 			fail("profession output " .. recipe.output_name ..
 				" collides with a dual-furnace recipe")

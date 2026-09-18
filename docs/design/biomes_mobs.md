@@ -711,7 +711,7 @@ farming system are one later package.
 | grug_jungle_edge | jungle_tree.mts (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[spice T1]` | |
 | grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025); papyrus lives in the adjacent swamp/shore band (v7 has no water above sea level, so the jungle cuboids at y ≥ 4 cannot host waterside papyrus) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]` — **level-51–60 zones only** (§2 tightening 2026-08-13); wild melon `[food]` | same flora, roster and ground: `grug_nodes:dirt_with_canopy_litter`, shipped as the fringe's top node by WP40 R7 (`r7_r6_manifest.lua`); only `grug_jungle_edge` still uses rainforest litter |
 | grug_swamp | papyrus_on_dirt, dead bush; willow-ish gravewood retint optional | reeds, waterlilies; marshbloom `[spice T2]`; mushrooms `[food found-only]` | shallow water pools (mud floor) |
-| grug_beach | — | shells (deco); rock salt crust on coast-zone beaches `[food found-only]` | Stormkelp uses the cross-biome dry-shore predicate below, not a beach-only row. |
+| grug_beach | — | shells (deco); rock salt crust on coast-zone beaches `[found-only salt, inedible]` | Stormkelp uses the cross-biome dry-shore predicate below, not a beach-only row. |
 | war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided); decoration set ships with WP13's schematic pass |
 
 ### 2.1 WP40 surface and deterministic decoration projection
@@ -852,8 +852,8 @@ the region an ingredient comes from):
   45–60 out there. Every one of them is reachable by both factions
   (§6) — every level-41+ zone is contested and shared — so neither
   faction is cut off from the top of the cooking ladder.
-- **Deliberately found-only** (never a crop): mushrooms, wild cocoa,
-  rock salt. That keeps the top of the cooking ladder a reason to
+- **Deliberately found-only** (never a crop): mushrooms, wild cocoa and
+  inedible rock salt. That keeps the top of the cooking ladder a reason to
   travel, and it keeps a tier unlock ("find cocoa in the jungle") usable
   as a quest goal.
 
@@ -1108,6 +1108,76 @@ skeleton table + heavy cloth 1/3) and Carrion Crow (**passive prey**,
 whole daytime population of the war coast).
 Faction NPC outposts/guards are WP6, not part of this catalog.
 
+**Round 8 zero-asset variants:** these families reuse shipped animated meshes
+and apply texture modifiers at runtime; they add no media file.
+
+| Mob | Verb | Clock | Zones / level band | Drops | Visual source |
+|-----|------|-------|--------------------|-------|---------------|
+| Poacher | dogshoot, roaming | night | Goldmead, Whitebridge, Ashenward, Starbough, Moonfall; Silverleaf band 3 and Lorindor | Bandit table + arrows 1/3 | Bandit Archer / dark skin modifier |
+| Frost Stray | dogshoot | night | Stormvault and Wyrmglass, L31–60 | Skeleton table | Skeleton Archer / ice-blue modifier |
+| Sun-Dried Husk | never leashes | night | Redtusk and Shattered Line; Sunscar band 3, L7–50 | Zombie table | Zombie / sand-gold modifier |
+| Song Bird | flees (**critter**) | day | Silverleaf, L1 fixed | meat 1/1 — food only | Gull / blue modifier, ×0.8 |
+| Spiderling | weak web (20% slow, 2 s) | any (cave) | y −40…−100, L3–6 | spider silk 1/2 | Giant Spider / stone-brown modifier, ×0.5 |
+| Blood Bat | swarm dive | any (cave) | y −101…−300, L6–18 | meat 1/1 | Cave Bat / blood-red modifier, ×1.25 |
+| Stone Mite | swarms | any (cave) | y ≤ −700, L42–60 | stone core 1/8 | Cave Crawler / stone-grey modifier, ×1.33 |
+
+**Round 8 start-zone families:** family rows are closed named-zone routes,
+not biome-wide grants. In a start zone, a band-2 family begins at L4 and
+continues through band 3; a band-1 family is present through the full start
+zone. Giant Rat also occupies the entrance and middle caves from y −40 to
+−300, where the surface clock is ignored.
+
+| Mob | Verb | Clock | Zones / level band | Drops | Visual source |
+|-----|------|-------|--------------------|-------|---------------|
+| Fox | darts; a landed bite triggers a 6 m/s retreat with a 4 s lockout | day | Hearthpine, Dawnmere and Silverleaf from L4; Copperfell, Goldmead, Starbough | wolf table | animalia fox, MIT |
+| Ibex | grazes (**passive prey**) | day | Hearthpine from L4; Copperfell, Frostbarrow, Stormvault | stag table | animalworld ibex, MIT |
+| Wild Turkey | flees (**critter**) | day | Dawnmere and Goldmead, L1 fixed | meat 1/1 — food only | animalia turkey, MIT |
+| Plains Runner | flees (**critter**) | day | Sunscar, L1 fixed | meat 1/1 — food only | animalworld nandu, MIT |
+| Tapir | grazes (**passive prey**) | day | Kapok from L4; Raincall, Whispering Reedlands, Totemwater | stag table | animalworld tapir, MIT |
+| Giant Rat | swarms; one pull calls nearby rats | night on surface; any in caves | all six starts; caves y −40…−300 | meat 1/1 | animalworld rat ×1.6, MIT |
+| Scorpion | poisons (1 damage / 2 s for 6 s) | night | Sunscar from L4; Redtusk, Speargrass, Bannerbreak, Shattered Line | scaled hide 1/2; venom sac 1/3 | animalworld scorpion, MIT |
+| Viper | poisons (1 damage / 2 s for 6 s) | night | Kapok from L4; Raincall | scaled hide 1/2; venom sac 1/3 | animalworld viper, MIT |
+
+**Round 8 level-11+ night families:** Goblin Raider Hounds are members of
+the Goblin Raider family, not an independent zone cast. The raider group is
+leashless and alerts nearby members; one ranged Slinger and one hound row
+give it mixed silhouettes. Wisp blink destinations must have two open nodes.
+
+| Mob | Verb | Clock | Zones / level band | Drops | Visual source |
+|-----|------|-------|--------------------|-------|---------------|
+| Goblin Raider / Slinger / Raider Hound | group raid, leashless; Slinger dogshoots the Golem stone; hound rushes | night | Copperfell, Frostbarrow, Stormvault, Speargrass, Bannerbreak | linen scrap; purse or arrows; hound meat | goblins goblin + gobdog, CC BY-SA 3.0 |
+| Snow Leopard | stalks (silent approach, pounce) | night | Frostbarrow, Stormvault, Wyrmglass | panther table | animalworld Snowleopard mesh and original skin, MIT |
+| Wisp | flying melee; blinks up to 2.5 m toward a distant target every 4 s | night | Whitebridge, Ashenward, Broken Causeway, Lorindor, Moonfall, Glassroot, Mournfen, Whispering Reedlands, Totemwater | none | VoxeLibre vex, GPLv3 model / CC BY-SA 4.0 texture |
+| Ashen Treant / Gravewood Treant | roots aura: 30% slow inside 3 m, refreshed once/s | night | Ashenward / Ossuary and Blackwind | sticks; apple 1/4 | mobs_monster tree monster, WTFPL, two runtime tints |
+
+Bog Witch is deferred from this wave. The pinned VoxeLibre witch mesh has
+keyed frames only in 1..41, while its required shooting and death behaviours
+name frames 50..82 and 145; shipping it would violate the animated-mesh rule.
+It remains absent until a licensed mesh with the required keyed behaviours is
+pinned. The package KAT keeps `blocked=bog_witch` as the regression record.
+
+**Round 8 fixed bosses:** these are authored encounters and have no ambient
+spawn row or palette membership.
+
+| Boss family | Clock | Location / level | Encounter | Visual source |
+|-------------|-------|------------------|-----------|---------------|
+| Wyrmglass Ice Dragon | any | Wyrmglass dragon anchor, fixed L60 boss | three-perch arena; 2 s breath-line / ground-slam telegraphs; persistent 30 min wall-clock respawn with 60 s warning | draconis ice dragon, sapphire, MIT |
+| Stormscale Jungle Wyvern | any | Stormscale dragon anchor, fixed L60 boss | same shared encounter chassis, storm breath variant | draconis jungle wyvern, jade, MIT |
+| Six race Kings | any | authored `king` socket in each capital, fixed L65 elite | one race-specific signature each; four fixed L60 elite royal guards; group reset and persistent 15 min wall-clock respawn | `character.b3d` + six generated royal skins |
+
+The current gear catalogue has sword, dagger, greataxe and staff visuals only;
+bosses do not create a second weapon-art system. The encounter kits remain the
+authority, while the closest shipped wield silhouette is:
+
+| King | Decided kit | Visible shipped item | Deliberate visual deviation |
+|------|-------------|----------------------|-----------------------------|
+| Dwarf | hammer; Ground Shatter | greataxe | no hammer visual; closest heavy two-handed weapon |
+| Human | sword and shield; Rally | sword | no shield/offhand visual |
+| Elf | bow; Volley | staff | no bow visual; closest long two-handed ranged silhouette |
+| Undead | lich staff; Bone Call | staff | none |
+| Orc | great axe; Cleave | greataxe | none |
+| Troll | totem; Regrowth | staff | no totem visual; closest caster silhouette |
+
 **Deep sea (world.md §2b):** Kraken Guard, L100 fixed (hand-set — the
 one exception, it is a deterrent not content): mobs_mc_squid at
 visual_size ×6, verb: drags under (pulls target down, heavy melee),
@@ -1211,8 +1281,18 @@ Mechanism: mobs_redo `mobs:spawn` + our `spawn_abm_check` override
 the ring gating. `min_height 0, max_height 200` on all surface entries
 (golems and the crags rows — Ram, Crag Eagle — 300; the **Vulture
 shares that 300 exception**, its mesa-clay badlands run just as high).
-Day mobs `min_light 10`; night mobs `max_light 5`
-+ `day_toggle = false` where mobs_redo supports it.
+Every family declares one spawn role, `clock = "day" | "night" | "any"`;
+Zombie uses the palette-keyed form (`settled`/`war` night, `blight` any).
+`grug_mobs` stamps day rows with `min_light = 10`, night rows with
+`max_light = 5` plus `day_toggle = false`, and leaves any-time rows ungated.
+Rows wholly below y = -40 are the exception: their family clock is ignored,
+they retain only their explicit light filter, and they never receive a
+`day_toggle`. Night rows receive `ceil(day aoc × 1.25)` while their interval
+and chance stay unchanged. If a named zone exposes fewer than two explicit
+night-role families, the policy admits its palette fallback: Zombie for
+settled/war, Skeleton Archer for forest/mountain, Jungle Spider for jungle,
+or Bog Ooze for swamp. Capitals retain empty palettes and never receive a
+fallback; mobs already alive at a clock boundary are not despawned.
 
 **`aoc` is per entity NAME, not per family** (mobs_redo counts objects
 of that one name inside a 128-node sphere). Two spawn rows of the same
@@ -1356,6 +1436,26 @@ re-run against the new values once the change ships.
 | **Cave Crawler** (critter) | stone **+ `group:grug_stratum`** | 20 | 2200 | **1** | max 5 | underground |
 | **Bone Weevil** (critter) | bone litter / blight_dirt — **two rows, one entity name, one budget**; the row stamps the tint | 20 | 1650 | 2 | min 10 | (none — the node gates) |
 | **Bog Fowl** (critter) | mud (only) | 20 | 1650 | 2 | min 10 | (none — the node gates) |
+| **Poacher** | grass, forest litter, silver litter | 20 | 2200 | **4 at night** (base 3 ×1.25, ceiling) | night | exact named-zone palette |
+| **Frost Stray** | gravel, snowblock | 20 | 2400 | **4 at night** (base 3 ×1.25, ceiling) | night | exact named-zone palette |
+| **Sun-Dried Husk** | dry grass, mesa clay | 20 | 2000 | **5 at night** (base 4 ×1.25) | night | exact named-zone palette |
+| **Song Bird** (critter) | silver litter | 20 | 2200 | 2 | day | Silverleaf exact family row |
+| **Spiderling** | stone + `group:grug_stratum`, y −40…−100 | 20 | 2400 | 3 | max 5, clock ignored | underground |
+| **Blood Bat** | stone + `group:grug_stratum`, y −101…−300 | 20 | 2200 | 4 | max 5, clock ignored | underground |
+| **Stone Mite** | `group:grug_stratum`, y ≤ −700 | 20 | 2000 | 5 | max 5, clock ignored | underground |
+| **Fox** | grass, coniferous litter, silver litter | 20 | 1900 | 3 | day | exact named-zone routes; L4 start gate |
+| **Ibex** | coniferous litter, gravel, snowblock | 20 | 1900 | 3 | day | Dwarf column; L4 start gate |
+| **Wild Turkey** (critter) | grass | 20 | 2100 | 2 | day | Dawnmere, Goldmead |
+| **Plains Runner** (critter) | dry grass | 20 | 2100 | 2 | day | Sunscar |
+| **Tapir** | rainforest litter, canopy litter | 20 | 1900 | 3 | day | Troll column; L4 start gate |
+| **Giant Rat** | six settled tops / stone + `group:grug_stratum` | 20 | 1600 surface / 1800 cave | **5 at night** surface (base 4 ×1.25) / 4 cave | night surface; max 5 underground | all starts / y −40…−300 |
+| **Scorpion** | dry grass, mesa clay | 20 | 1800 | **5 at night** (base 4 ×1.25) | night | Orc column and Shattered Line; L4 start gate |
+| **Viper** | rainforest litter | 20 | 1800 | **5 at night** (base 4 ×1.25) | night | Kapok and Raincall; L4 start gate |
+| **Goblin Raider** | coniferous litter, gravel, snowblock, dry grass, mesa clay | 20 | 2400 | **3 at night** (base 2 ×1.25, ceiling) | night | exact Goblin-Raid palettes |
+| **Goblin Slinger / Raider Hound** | same Goblin-Raid tops | 20 | 2400 | **2 each at night** (base 1 ×1.25, ceiling) | night | exact Goblin-Raid palettes |
+| **Snow Leopard** | gravel, snowblock | 20 | 2100 | **4 at night** (base 3 ×1.25, ceiling) | night | Frostbarrow, Stormvault, Wyrmglass |
+| **Wisp** | mud, silver/forest/bone/canopy/rainforest litter | 20 | 2200 | **4 at night** (base 3 ×1.25, ceiling) | night | exact named-zone routes |
+| **Ashen / Gravewood Treant** | forest litter / bone litter | 20 | 2600 | **3 each at night** (base 2 ×1.25, ceiling) | night | exact tint-specific routes |
 | Reef Lurker (elite crab) — *deferred (§8.3)* | sand | 30 | 6000 | 1 | any | coast |
 | Kraken Guard | ocean water surface, open sea only (own check) | 60 | 12000 | 1 | any | (outside continents) |
 | Bandits / Mirefolk | **no ABM** — camp anchor with **respawn slots** (world.md §4a): max 3–5, one refill per 120–300 s, dormant catch-up | — | — | 3–5 per camp | — | camp pos |

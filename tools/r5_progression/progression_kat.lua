@@ -261,7 +261,18 @@ record("death", {8525, 8100})
 -- Load only the real grug_mobs main chunk. Its submodules are separately real
 -- above; skipping the roster keeps this fixture bounded and lets us drive the
 -- accepted lethal boundary directly.
-local mob_env = setmetatable({
+local mob_env
+local function mob_dofile(path)
+	-- init.lua installs the spawn wrapper before loading the roster. This
+	-- bounded fixture skips the roster, but must still load that prerequisite
+	-- instead of replacing every submodule with the old blanket no-op.
+	if path == repo .. "/mods/ENTITIES/grug_mobs/spawn_policy.lua" then
+		local chunk = assert(loadfile(path))
+		setfenv(chunk, mob_env)
+		return chunk()
+	end
+end
+mob_env = setmetatable({
 	core = core, vector = vector, mobs = mobs, grug_core = grug_core,
 	grug_xp = grug_xp, grug_zones = grug_zones,
 	grug_factions = {
@@ -270,7 +281,7 @@ local mob_env = setmetatable({
 			return a.faction ~= nil and ent and a.faction == ent._grug_faction
 		end,
 	},
-	dofile = noop,
+	dofile = mob_dofile,
 }, {__index = _G})
 local mob_chunk = assert(loadfile(repo .. "/mods/ENTITIES/grug_mobs/init.lua"))
 setfenv(mob_chunk, mob_env)

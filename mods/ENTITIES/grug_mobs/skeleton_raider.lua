@@ -13,6 +13,7 @@
 
 local raider = {
 	description = "Skeleton Raider",
+	clock = "night",
 	type = "monster",
 	-- The war coast is not its own biome (§1.2 / §8.1), so the zone does all
 	-- of the gating and every node of the row below is allowed. Unlike
