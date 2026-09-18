@@ -6,17 +6,25 @@ return function(repo)
 	local function restore() for key, value in pairs(saved) do rawset(_G, key, value) end end
 	local function fail(message) restore() error("r8 profession geometry: " .. message, 0) end
 	local function check(value, message) if not value then fail(message) end end
+	local mutation = tonumber(os.getenv("R8_PROF_GEOMETRY_MUTATION") or "") or 0
 
 	local callbacks = {}
 	core = {registered_items = {}}
 	function core.formspec_escape(value)
+		if mutation == 2 then return tostring(value) end
 		return tostring(value):gsub("\\", "\\\\"):gsub("]", "\\]")
 			:gsub("%[", "\\["):gsub(";", "\\;"):gsub(",", "\\,")
 	end
 	function core.register_on_player_receive_fields(fn) callbacks[#callbacks + 1] = fn end
 	function core.register_on_leaveplayer() end
 	function core.show_formspec() end
-	function core.get_all_craft_recipes() return {} end
+	function core.get_all_craft_recipes(name)
+		if name == "test:universal" then
+			return {{method = "normal", items = {"test:universal_input"},
+				output = "test:universal"}}
+		end
+		return {}
+	end
 	sfinv = {pages = {['sfinv:crafting'] = {}}}
 	function sfinv.override_page(name, definition) sfinv.pages[name] = definition end
 	function sfinv.make_formspec(player, context, content) return "size[8,9.1]" .. content end
@@ -28,12 +36,17 @@ return function(repo)
 		local tier = math.min(6, math.floor((index - 1) / 7) + 1)
 		local output = ("test:output_%02d"):format(index)
 		local input = ("test:input_%02d"):format(index)
-		core.registered_items[output] = {description = "Output " .. index}
-		core.registered_items[input] = {description = "Input " .. index}
+		core.registered_items[output] = {description = index == 1 and
+			"Output X];button[0,0;1,1;pwn;Pwn]" or "Output " .. index}
+		core.registered_items[input] = {description = index == 1 and
+			"Input X];button[0,0;1,1;pwn;Pwn]" or "Input " .. index}
 		recipes[index] = {profession = "cooking", tier = tier, station = "grid",
 			flat_inputs = {input, input}, output = output, output_name = output,
-			hint = "Crafting grid"}
+			hint = index == 1 and "Hint X];button[0,0;1,1;pwn;Pwn]" or
+				"Crafting grid"}
 	end
+	core.registered_items["test:universal"] = {description = "Universal"}
+	core.registered_items["test:universal_input"] = {description = "Input"}
 	grug_jobs = {
 		PROFESSIONS = {blacksmith = {name = "Blacksmith", class = "primary"},
 			alchemist = {name = "Alchemist", class = "primary"},
@@ -43,6 +56,7 @@ return function(repo)
 		_item_name = function(value) return tostring(value):match("^([^%s]+)") end,
 		_flatten_inputs = function(value) return value end,
 		recipe_for_output = function() return nil end,
+		recipe_for_craft = function() return nil end,
 		station_handler = function() return nil end,
 	}
 	function grug_jobs.primary_at(player, slot) return player.primaries[slot] end
@@ -52,7 +66,6 @@ return function(repo)
 
 	dofile(repo .. "/mods/PLAYER/grug_jobs/ui.lua")
 
-	local mutation = tonumber(os.getenv("R8_PROF_GEOMETRY_MUTATION") or "") or 0
 	local function player(primaries, cooking)
 		return {primaries = primaries, learned = {cooking = cooking}, prof_level = 3,
 			get_player_name = function() return "layout" end}
@@ -113,6 +126,9 @@ return function(repo)
 	check(page == 1 and pages == 7, "40 recipes did not paginate to seven pages")
 	local rows = select(2, formspec:gsub("box%[", ""))
 	check(rows == 6, "first book page does not show six rows")
+	check(formspec:find("X];button[", 1, true) == nil and
+		formspec:find("X\\]\\;button\\[", 1, true) ~= nil,
+		"book text was not formspec-escaped")
 	local controls = rectangles(formspec)
 	check(#controls == 3, "book page navigation control count differs")
 	for index = 1, #controls do
@@ -132,6 +148,10 @@ return function(repo)
 		end
 	end
 	report[#report + 1] = "book\trecipes=40\tpages=7\trows=6\tinside\tnonoverlap\n"
+	local general = grug_jobs.book_records(actor, "general")
+	check(#general == 1 and general[1].output_name == "test:universal",
+		"universal recipe disappeared from the general book")
+	report[#report + 1] = "escaping\tdescription+input+hint\tgeneral_recipe_listed\n"
 	restore()
 	return table.concat(report)
 end

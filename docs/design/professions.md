@@ -28,6 +28,8 @@ the material ladder is its §3.0, the per-profession catalogs are
     trainers in four steps at levels 15/30/45/60 (`mounts.md` §1, D20 decided
     2026-08-13). It costs no main profession slot and adds no separate
     trainer NPC.
+- **Cooking in every start, all seven in every capital.** The seven capital
+  trainers are the six primaries plus Cooking.
 - **Gathering split**: food-grade plants (potatoes, berries, cooking
   ingredients) are gatherable by EVERYONE; **alchemy herbs
   ("dragonweed") require the Alchemist main profession** — for everyone
@@ -43,9 +45,11 @@ the material ladder is its §3.0, the per-profession catalogs are
   crafts do not count and above-tier crafts are refused. The effective
   profession tier is capped by the character band: T1 L1–10, T2 L11–20,
   T3 L21–30, T4 L31–40, T5 L41–50, T6 L51–60. Reaching a craft threshold
-  while character-capped earns the next tier immediately but keeps it
-  unavailable; entering the next character band makes it effective without
-  another craft. Further capped crafts count nothing.
+  while character-capped leaves the stored profession tier unchanged and
+  saturates the current-tier counter at its threshold. Entering the next
+  character band does not advance the profession automatically: the next
+  successful craft of the previous tier opens the new tier and clears the
+  counter. Further crafts while still character-capped count nothing.
 - Profession level gates crafting only. Item consumption and equipment remain
   independently gated by `_grug_ilvl`; neither consuming an item nor checking
   its use requirement consults profession state.

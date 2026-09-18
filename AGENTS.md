@@ -326,6 +326,9 @@ Details + line numbers in [docs/research/](docs/research/).
   unlearned and effective T1–T6 when learned. Grid output is vetoed before the
   engine craft; current furnaces have no acting player in their timers, so
   their per-player gate and progression run on output extraction.
+  A later custom station (including the brewing stand) must call
+  `can_craft_recipe` before its output leaves and `record_craft` after each
+  successful craft on that same take path.
 - **Combat/classes**: damage = damage_groups × armor_groups (÷100) ×
   punch-interval factor. **Damage pipeline lives in `grug_core/combat.lua`**
   (WP4): `deal_ability_damage` (crit ×1.5, applied via `object:punch` with
