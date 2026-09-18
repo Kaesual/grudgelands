@@ -771,8 +771,8 @@ design (`group_attack` stays on).
   or leaving clears it. Combat never cancels or pauses the duration, and
   secondary status modifiers remain active in combat.
   - Raw/unprocessed food regenerates **1%** of maximum HP per tick at every
-    tier. A mana raw food instead uses maximum mana. Wild Cocoa is the current
-    mana raw food and is refused without a mana pool.
+    tier. Wild Cocoa follows that HP rule and has no mana-pool requirement.
+    Food restores mana only through the Caster dishes.
   - Dishes read their HP, mana or split regeneration plus secondary modifiers
     from tier data. Current cooked fish and meat are T1 HP dishes.
   - The natural replacement cadence is about **20 servings per hour**.
