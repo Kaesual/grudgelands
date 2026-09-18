@@ -18,3 +18,7 @@ MUTATION=9 KILLED real villager install created carrier
 MUTATION=10 KILLED vendored base updater cannot expose a parent nametag
 MUTATION=11 KILLED real telegraph start/end trigger calls
 MUTATION=12 KILLED real mobs_redo HP-change trigger call
+
+Fix-round-2 observed failures:
+MUTATION=11 expected "!! Elite Boar [Lv 8] 307/307", got "Elite Boar [Lv 8] 307/307"
+MUTATION=12 expected "Elite Boar [Lv 8] 21/307", got "Elite Boar [Lv 8] 307/307"
