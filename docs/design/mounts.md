@@ -191,12 +191,9 @@ unreachable by design, and the one number the design leans on hardest
 stops being true.
 
 The same pillar is why the **Swiftness Draught** is capped where it is:
-`items_crafting.md` §3.6 gives it **+8 % for 15 s** and §10 P4 states the
-arithmetic outright — 4.0 × 1.08 = 4.32 < 4.6, so even the alchemist's
-best sprint keeps mobs faster, and the 15 seconds are deliberately short.
-The 2026-09-16 speed raise widened that inequality rather than threatening
-it: the draught used to land 0.08 nodes/s short of a mob and now lands 0.28
-short.
+`items_crafting.md` §3.6 gives it **+10 % for 5 s** and §10 P4 states the
+arithmetic outright — 4.0 × 1.10 = 4.4 < 4.6, so even the alchemist's brief
+sprint keeps mobs faster.
 A mount breaks that ceiling permanently and by design; **the dismount is
 what pays for it.** Riding buys travel between fights, never an exit from
 one.
@@ -216,8 +213,8 @@ rather than the 0.6 it would have bought at the old band, which is the ruling
 working as written: the break is real and it is smaller than the cooldown.
 The exception is deliberately narrow: it covers named, time-limited,
 long-cooldown abilities and nothing permanent or cheap. The
-**Swiftness Draught's +8 % for 15 s stays exactly as it is** (4.0 × 1.08 =
-4.32 < 4.6), and a mount keeps paying for its permanent 6–10 nodes/s with the
+**Swiftness Draught's +10 % for 5 s stays below the mob band** (4.0 × 1.10 =
+4.4 < 4.6), and a mount keeps paying for its permanent 6–10 nodes/s with the
 dismount rule above.
 
 **And it stops being a formality once ranged attackers exist.** Today a

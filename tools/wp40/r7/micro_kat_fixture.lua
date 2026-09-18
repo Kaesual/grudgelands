@@ -1821,7 +1821,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	check(allowed == false and reason == "profession_unavailable",
 		"missing herb authorizer did not fail closed")
 	harvest.register_herb_authorizer(function(_, key, group)
-		return key == "gravemoss" and group == 1
+		return key == "grug_gathering:gravemoss" and group == 1
 	end)
 	allowed, reason = harvest.decision({}, nil, herb)
 	check(allowed == true and reason == nil, "authorized herb request was denied")

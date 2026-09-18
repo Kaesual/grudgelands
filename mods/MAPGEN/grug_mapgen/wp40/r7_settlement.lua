@@ -690,6 +690,40 @@ local function prepare_overlay(fail, descriptor, overlay)
 end
 
 local CAPITAL_SOURCE_SCHEMA = "grug_wp13_capital_source_v1"
+local BREWING_STAND = "grug_brewing:brewing_stand"
+
+-- R8-ALCH's station is part of every capital core, immediately east of the
+-- Alchemist trainer socket. Core builders deliberately reserved this air cell;
+-- projection owns the replacement so all six independently authored capitals
+-- receive the same service without changing their building libraries.
+local function capital_core_with_brewing_stand(fail, build)
+	return function()
+		local blueprint = build()
+		local found = false
+		for index = 1, #(blueprint.cells or {}) do
+			local cell = blueprint.cells[index]
+			if cell.x == 2 and cell.y == 1 and cell.z == -12 then
+				if cell.name ~= "air" then
+					fail("brewing-stand cell is not reserved air")
+				end
+				cell.name = BREWING_STAND
+				cell.param2 = 0
+				found = true
+				break
+			end
+		end
+		if not found then fail("brewing-stand cell is absent") end
+		local present = false
+		for index = 1, #(blueprint.palette or {}) do
+			if blueprint.palette[index] == BREWING_STAND then present = true break end
+		end
+		if not present then
+			blueprint.palette[#blueprint.palette + 1] = BREWING_STAND
+			table.sort(blueprint.palette, M.less_bytes)
+		end
+		return blueprint
+	end
+end
 
 local function identity_schema_of(fail, blueprint_schema)
 	if type(blueprint_schema) ~= "string" or
@@ -743,7 +777,8 @@ function M.descriptors(profile, source)
 	end
 	add({id = "core", prefix = profile.key .. "_core", kind = "anchor",
 		bounds = primary, blueprint_schema = source.core.schema,
-		identity_schema = profile.identity_schema, build = source.core.build})
+		identity_schema = profile.identity_schema,
+		build = capital_core_with_brewing_stand(fail, source.core.build)})
 	for index = 1, #source.plots do
 		local plot = source.plots[index]
 		if type(plot) ~= "table" or type(plot.id) ~= "string" or plot.id == "" or

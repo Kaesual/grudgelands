@@ -12,9 +12,10 @@ return function(dependencies)
 	local feedback_at = {}
 	local FEEDBACK_INTERVAL_US = 1500000
 	local VALID_HERBS = {
-		gravemoss = 1,
-		dragonweed = 2,
-		crimson_lotus = 3,
+		["grug_gathering:gravemoss"] = 1,
+		["grug_gathering:dragonweed"] = 2,
+		["grug_gathering:crimson_lotus"] = 3,
+		["grug_cooking:ember_moss"] = 5,
 	}
 	local VALID_DENIALS = {
 		no_alchemist = true,
@@ -102,7 +103,7 @@ return function(dependencies)
 		end
 		if row.placement_class == "new_p9g_source" then
 			if row.harvest_kind == "healing_herb" then
-				return herb_decision(player, row.key, row.required_group)
+				return herb_decision(player, row.raw_item, row.required_group)
 			end
 			return true, nil
 		elseif row.placement_class == "r6_cultural_slot" then

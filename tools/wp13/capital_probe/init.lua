@@ -45,6 +45,7 @@ grug_wp13_capital_probe = {}
 
 local KEY = core.settings:get("grug_wp13_probe_key") or ""
 local worldpath = core.get_worldpath()
+local probe_storage = core.get_mod_storage()
 -- The fitted capital anchor, filled in once the world authority is installed.
 local anchor_x, anchor_y, anchor_z
 local mode = core.settings:get("grug_wp13_probe_mode") or "full"
@@ -1098,6 +1099,116 @@ local function dump_done()
 	core.after(0, run_dumps)
 end
 
+local function alchemy_report()
+	local trainer
+	local sockets = grug_core.settlement_sockets_at(KEY)
+	for index = 1, #sockets do
+		local socket = sockets[index]
+		if socket.role == "trainer" and socket.profession == "alchemist" then
+			trainer = socket
+			break
+		end
+	end
+	if not trainer then fail("Alchemist trainer socket is absent") end
+	local stand_pos = {x = anchor_x + 2, y = anchor_y + 1, z = anchor_z - 12}
+	local stand_node = core.get_node(stand_pos)
+	if stand_node.name ~= grug_brewing.NODE and
+			stand_node.name ~= grug_brewing.NODE_ACTIVE then
+		fail("brewing stand is absent beside Alchemist trainer: " .. stand_node.name)
+	end
+	if trainer.pos.x + 1 ~= stand_pos.x or trainer.pos.y ~= stand_pos.y or
+			trainer.pos.z ~= stand_pos.z then
+		fail("brewing stand is not beside Alchemist trainer")
+	end
+
+	-- A disposable PlayerMeta-compatible store drives the real trainer field
+	-- callback, profession state, station take gate and book query. No player is
+	-- connected during this headless capital probe, so this is the smallest
+	-- end-to-end exercise of those server-only paths.
+	local meta = probe_storage
+	for slot = 1, 2 do meta:set_string("grug_jobs:primary:" .. slot, "") end
+	meta:set_int("grug_jobs:level:alchemist", 0)
+	meta:set_int("grug_jobs:crafts:alchemist", 0)
+	meta:set_int("grug_xp:xp", 10000) -- character level 11 / tier 2
+	local player = {
+		is_player = function() return true end,
+		get_player_name = function() return "r8_alch_capital_probe" end,
+		get_meta = function() return meta end,
+		get_pos = function() return trainer.pos end,
+	}
+	if not grug_jobs.open_trainer(player, "alchemist", trainer.pos) then
+		fail("Alchemist trainer did not open")
+	end
+	local received = false
+	for index = 1, #(core.registered_on_player_receive_fields or {}) do
+		if core.registered_on_player_receive_fields[index](player,
+				"grug_jobs:trainer", {grug_jobs_learn = true}) then
+			received = true
+		end
+	end
+	if not received or not grug_jobs.has(player, "alchemist") then
+		fail("Alchemist trainer learn flow failed")
+	end
+
+	local node_def = core.registered_nodes[stand_node.name]
+	-- VoxelManip blueprint writes bypass on_construct. A real player initializes
+	-- the inventory through the stand's right-click path before inserting; this
+	-- direct headless inventory writer must cross the same seam explicitly.
+	grug_brewing.ensure_inventory(stand_pos)
+	local inv = core.get_meta(stand_pos):get_inventory()
+	inv:set_stack("reagent", 1, "grug_gathering:gravemoss 10")
+	inv:set_stack("reagent", 2, "grug_gathering:sunleaf 10")
+	inv:set_stack("vial", 1, "vessels:glass_bottle 10")
+	inv:set_stack("fuel", 1, "default:coal_lump 2")
+	inv:set_stack("output", 1, "")
+	inv:set_stack("output", 2, "")
+	local matched = grug_brewing.match("grug_gathering:gravemoss",
+		"grug_gathering:sunleaf", "vessels:glass_bottle")
+	grug_brewing.timer(stand_pos, 100)
+	stand_node = core.get_node(stand_pos)
+	node_def = core.registered_nodes[stand_node.name]
+	-- The inactive/active node swap preserves metadata, but an InventoryRef
+	-- acquired before the swap is not a stable observation handle.
+	inv = core.get_meta(stand_pos):get_inventory()
+	local brewed = inv:get_stack("output", 1)
+	if brewed:get_name() ~= "grug_alchemy:potion_healing" or
+			brewed:get_count() ~= 10 then
+		fail("T1 potion brew differs: output=" .. brewed:to_string() ..
+			" matched=" .. tostring(matched and matched.output_name) ..
+			" sizes=" .. inv:get_size("reagent") .. "/" ..
+			inv:get_size("vial") .. "/" .. inv:get_size("fuel") .. "/" ..
+			inv:get_size("output") .. " inputs=" ..
+			inv:get_stack("reagent", 1):to_string() .. "," ..
+			inv:get_stack("reagent", 2):to_string() .. " vial=" ..
+			inv:get_stack("vial", 1):to_string() .. " fuel=" ..
+			inv:get_stack("fuel", 1):to_string() .. " times=" ..
+			core.get_meta(stand_pos):get_float("fuel_total") .. "/" ..
+			core.get_meta(stand_pos):get_float("brew_time"))
+	end
+	if node_def.allow_metadata_inventory_take(stand_pos, "output", 1,
+			brewed, player) ~= 10 then
+		fail("learned Alchemist could not take brewed output")
+	end
+	inv:set_stack("output", 1, "")
+	node_def.on_metadata_inventory_take(stand_pos, "output", 1, brewed, player)
+	if grug_jobs.profession_level(player, "alchemist") ~= 2 then
+		fail("ten T1 brews did not advance Alchemy to T2")
+	end
+	local records = grug_jobs.book_records(player, "alchemist", "brewing_stand")
+	local tiers = {}
+	for index = 1, #records do tiers[records[index].tier] = true end
+	local tier_text = {}
+	for tier = 1, 6 do
+		if not tiers[tier] then fail("Alchemy book is missing tier " .. tier) end
+		tier_text[#tier_text + 1] = tier
+	end
+	log({"event=alchemy", "capital=" .. KEY,
+		"trainer=" .. trainer.pos.x .. "," .. trainer.pos.y .. "," .. trainer.pos.z,
+		"stand=" .. stand_pos.x .. "," .. stand_pos.y .. "," .. stand_pos.z,
+		"learned=true", "brewed=10", "output=grug_alchemy:potion_healing",
+		"book_tiers=" .. table.concat(tier_text, ","), "profession_level=2"})
+end
+
 local function report_complete()
 	finished = true
 	local function summarise(kind)
@@ -1147,6 +1258,7 @@ local function report_complete()
 	-- modes have none: `edge` walks mapchunks before a capital is in the roster
 	-- at all. Its completion is the timing summary and nothing else.
 	if plots ~= nil then
+		alchemy_report()
 		local surface_text, worst_fall, worst_plot, worst_wet, worst_wet_plot =
 			surface_report()
 		local surface_file = assert(io.open(worldpath .. "/" .. KEY ..

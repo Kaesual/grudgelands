@@ -969,57 +969,62 @@ robe 6 / leggings 5 / cowl 4 / slippers 3 bolts.
   (mastery cut decided 2026-08-13, §2.1). With one bag size per tier and
   the tome at J/E/M, the Tailor's signature row is full at every tier.
 
-### 3.6 Alchemist (alchemy table) — herbs, potions, elixirs, apothecary gear
+### 3.6 Alchemist (brewing stand) — potions and elixirs
 
-**Herbalism is merged into the Alchemist** (2026-08-07, professions.md
-§2): the Alchemist **gathers its own herbs**, and the separate gathering
-profession is gone. What was a Herbalism tier gate is now the
-Alchemist's book group — punching a herb the profession has not opened
-yields nothing plus a hint message, exactly as before, but the gate is
-the book group instead of a second profession. For everyone without the
-Alchemist profession, alchemy herbs stay scenery; food-grade plants stay
-universal (professions.md §1).
+**Implemented 2026-09-18.** Herbalism is part of the Alchemist rather than a
+separate profession. Gravemoss, Dragonweed, Crimson Lotus and Ember Moss are
+fail-closed scenery for everyone who has not learned Alchemy; learning the
+profession authorizes all four. Cave Cap remains food-grade and universal.
+Recipe access is the Alchemist's effective profession tier (§2.2), not a herb
+or keystone book gate. Every tier-N recipe contains a declared tier-N reagent.
 
-**Material chain**: herbs and spices in **three grades**, not six. The named
-zone catalog places T1 sunleaf/gravemoss in low-level home regions, T2
-dragonweed/marshbloom in the heartland and T3 crimson lotus/stormkelp in
-high-level front/coastal regions; `biomes_mobs.md` §2/§6 owns the biome
-binding and the healing-herb / spice split. Vendor supply: vials. All effects
-percent-based or flat-small
-(combat_stats §5: no consumable treadmill). **One shared 60 s cooldown
-for instant potions; one "elixir" buff active at a time** (§10 P3). The
-cooldown is an absolute wall-clock expiry in player meta, so a relog
-cannot reset it; WP10's potions share that one clock rather than opening
-a second timer. **Drinking at full health is refused** (message, no
-consumption, no cooldown — decided 2026-08-07 in WP7: burning a potion
-and a 60 s lockout on a misclick is a tax, not a rule).
+The **Brewing Stand** has two reagent slots, one vial slot, one fuel slot and
+an output. It is node-timer driven. Output is revalidated against the taking
+player's Alchemy tier and only a successful take advances profession progress.
+Every capital has a public stand directly beside its Alchemist trainer. A
+private housing copy is a T3 Alchemist grid recipe: three Steel Bars, one
+Furnace and one Glass Bottle. Every vendor sells Glass Bottles for 3 copper.
 
-**The potion keeps the in-combat instant slot** (Food v2, decided 2026-09-18,
-superseding R9). Food has fixed instant HP, but combat defers it to the first
-out-of-combat moment, checked every second; its regeneration also pauses in
-combat. The Healing Potion remains the only health consumable that restores
-health **immediately in combat**, on the unchanged shared 60 s cooldown.
+Potions restore or act immediately and share the persistent potion clock.
+Ordinary potions use 60 seconds; the Greater Healing and Greater Mana pair use
+45 seconds on that same clock. A full-health healing potion is refused without
+consumption or cooldown. A mana potion may be consumed at full mana. Elixirs
+never touch the potion clock: exactly one `elixir` status may run, the newest
+replaces it, and it stacks with the separate food status. Pool and crit values
+are percentage points. Apothecary equipment carrying `grug_apothecary` adds
+10% duration to timed potions and elixirs, and +1 percentage point to a stat
+elixir, per worn piece, with at most two pieces counted. Instant potions are
+unchanged. Consumables require the first character level of
+their recipe tier: **1, 11, 21, 31, 41, 51**.
 
-**Exclusive recipes** — the entire consumable line is Alchemist-only;
-nothing here has a base recipe (mastery names, relabelled 2026-08-07):
+| Tier | Product | Reagent 1 | Reagent 2 | Effect |
+|---:|---|---|---|---|
+| T1 | Healing Potion | Gravemoss | Sunleaf | 30% maximum HP instantly; 60 s shared cooldown |
+| T1 | Mana Potion | Gravemoss | Carrot or Cassava | 30% maximum mana instantly; 60 s shared cooldown |
+| T2 | Antivenom | Dragonweed | Venom Gland | Clears all active poison; 60 s shared cooldown |
+| T2 | Swiftness Draught | Dragonweed | Fang | +10% movement speed for 5 s; 60 s shared cooldown |
+| T3 | Greater Healing Potion | Crimson Lotus | Gravemoss | 30% maximum HP instantly; 45 s shared cooldown |
+| T3 | Greater Mana Potion | Crimson Lotus | Sugar Cane | 30% maximum mana instantly; 45 s shared cooldown |
+| T3 | Cave Draught | Cave Cap | Slime Gel | Night vision for 10 min; 60 s shared cooldown |
+| T3 | Elixir of Vigor III | Crimson Lotus | Bear Claw | +5% maximum HP for 15 min |
+| T3 | Elixir of Focus III | Crimson Lotus | Cave Cap | +5% maximum mana for 15 min |
+| T3 | Elixir of Precision III | Crimson Lotus | Fang | +1 percentage point crit for 15 min |
+| T4 | Elixir of Vigor IV | Crimson Lotus | Crocodile Tooth | +10% maximum HP for 15 min |
+| T4 | Elixir of Focus IV | Crimson Lotus | Venom Sac | +10% maximum mana for 15 min |
+| T4 | Elixir of Precision IV | Crimson Lotus | Shiny Scale | +2 percentage points crit for 15 min |
+| T4 | Stoneskin Elixir | Shiny Scale | Crocodile Tooth | +4% armor for 30 min |
+| T5 | Elixir of Vigor V | Crimson Lotus | Ember Moss | +15% maximum HP for 15 min |
+| T5 | Elixir of Focus V | Cave Cap | Ember Moss | +15% maximum mana for 15 min |
+| T5 | Elixir of Precision V | Shiny Scale | Ember Moss | +3 percentage points crit for 15 min |
+| T5 | Deepwater Elixir | Stormkelp | Slime Gel | Water breathing for 10 min |
+| T6 | Elixir of Vigor VI | Ember Moss | Stone Core | +20% maximum HP for 15 min |
+| T6 | Elixir of Focus VI | Ember Moss | Wild Cocoa | +20% maximum mana for 15 min |
+| T6 | Elixir of Precision VI | Ember Moss | Sharp Feather | +4 percentage points crit for 15 min |
 
-| Mastery | Recipes (2 herbs + vial unless noted) |
-|---|---|
-| Apprentice | Healing Potion (instant 30% HP — the combat_stats standard; vendor's weak 15% stays the floor), Mana Potion (instant 30% mana) |
-| Journeyman | Elixirs of Might/Wisdom/Grace (+2 Str/Int/Dex, 15 min), Antivenom (cures poison — serpent/spider counter; dragonweed + venom gland) |
-| Expert | Greater Elixirs (+4), Cat's-Eye Elixir (night vision 10 min — the enemy-territory raid tool vs the R2 no-torch rule), Deepwater Draught (water breathing 10 min; stormkelp), Swiftness Draught (+8% speed, 15 s — deliberately short; mobs must stay faster, flag §10 P4) |
-| Master | Supreme Elixirs (+6), Stoneskin Flask (+4% armor, 30 min), Sovereign's Flask (§4, Human signature) |
-
-**Apothecary gear** (the requested alchemist gear; cloth-class armor
-values, cross-buys leather + bolts): Journeyman Apothecary Hood, Expert
-Apothecary Garb (chest), Master's Regalia (chest, Rare, replaces Garb).
-Worn
-pieces add +10% potion/elixir duration and +1 elixir attribute each
-(max 2 pieces counted) — profession identity you can see. Template:
-slot pieces à la mcl_armor + effect hooks à la mcl_potions (both §1.2).
-The Alchemist's §7 kit family — the **imbuing oils** applied to
-apothecary gear — follows the uniform kit rule: imbue at Journeyman,
-temper at Expert (§2.1).
+Every row also consumes one Glass Bottle. Sovereign's Flask remains reserved
+for the Human signature line in §4 and is not registered until that signature
+effect exists. Apothecary armor items and imbuing oils remain later catalog
+work; the two-piece runtime seam above is already authoritative.
 
 ### 3.6a Woodcarver (carving bench) — wood, and every caster weapon
 
@@ -2447,16 +2452,10 @@ that cooldown and with each other. The most recent food replaces the previous
 food; it never occupies the instant-potion slot. **Decided 2026-08-06;
 food rule replaced by R9 on 2026-09-17 and Food v2 on 2026-09-18.**
 
-**P4 — Swiftness Draught.** +8% speed for 15 s brushes the "mobs must
-outrun players" pillar (4.0 × 1.08 = 4.32 < 4.4 keeps mobs faster, but
-PvP chases change). Recommendation: **ship at +8%/15 s**, tag as
-balance-watch in the WP7 playtest.
-**Decided as recommended (2026-08-06).**
-**Re-taken 2026-09-16** against the aggressive band's move to **4.6**
-(`combat_stats.md` §3, user ruling 2): 4.0 × 1.08 = **4.32 < 4.6**. The
-draught's margin against a chasing mob widened from 0.08 to 0.28 nodes/s, so
-the decision stands unchanged and the balance-watch tag is if anything less
-urgent. The PvP half of the flag is untouched — a draught still does nothing
+**P4 — Swiftness Draught.** The original +8% for 15 s was replaced on
+**2026-09-18** by **+10% for 5 s**. At the ordinary 4.0 player speed this is
+4.4 nodes/s, still below the aggressive mob band's 4.6. The PvP half of the
+flag is untouched — a draught still does nothing
 about another player at 4.0.
 
 ### 10.2 2026-08-07 (crafting rework)
