@@ -20,7 +20,9 @@ return function(root)
 		register_globalstep = function() end,
 		register_on_mods_loaded = function(fn) callbacks.mods_loaded = fn end,
 		chat_send_player = function() end,
-		get_item_group = function() return 0 end,
+		get_item_group = function(name, group)
+			return name == "test:apothecary" and group == "grug_apothecary" and 1 or 0
+		end,
 	}
 	grug_core = {}
 	dofile(root .. "/mods/CORE/grug_core/status.lua")
@@ -46,7 +48,9 @@ return function(root)
 		player.mana = math.min(100, player.mana + amount)
 		return player.mana - before
 	end}
-	grug_inventory = {equipment_slots = {}}
+	grug_inventory = {equipment_slots = {
+		{list = "head"}, {list = "chest"}, {list = "feet"},
+	}}
 	grug_mobs = {clear_poison = function(player)
 		local old = player.poisoned
 		player.poisoned = false
@@ -123,10 +127,15 @@ return function(root)
 	end
 	local player = {
 		name = "tester", hp = 50, mana = 50, level = 60, alchemist = true,
+		gear = {},
 		is_player = function() return true end,
 		get_player_name = function(self) return self.name end,
 		get_hp = function(self) return self.hp end,
-		get_inventory = function() return {get_stack = function() return stack("") end} end,
+		get_inventory = function(self)
+			return {get_stack = function(_, listname)
+				return stack(self.gear[listname] or "")
+			end}
+		end,
 		get_properties = function() return {breath_max = 10} end,
 		set_breath = function(self, value) self.breath = value end,
 		override_day_night_ratio = function(self, value) self.light = value end,
@@ -149,21 +158,42 @@ return function(root)
 	player.cooldown, player.hp = 0, 50
 	local greater = stack("grug_alchemy:potion_greater_healing")
 	craftitems[greater.name].on_use(greater, player)
-	if mutation == "greater_cooldown" then player.cooldown = 60 end
-	check(player.cooldown == 45, "Greater cooldown")
+	local healing_cooldown = player.cooldown
+	player.cooldown, player.mana = 0, 50
+	greater = stack("grug_alchemy:potion_greater_mana")
+	craftitems[greater.name].on_use(greater, player)
+	local mana_cooldown = player.cooldown
+	if mutation == "greater_cooldown" then mana_cooldown = 60 end
+	check(healing_cooldown == 45 and mana_cooldown == 45,
+		"Greater pair cooldown")
 
+	player.cooldown = 37
 	grug_core.set_status(player, "food", {label = "Food", duration = 180,
 		modifiers = {hp_pool_percent = 2}})
 	local vigor = stack("grug_alchemy:elixir_vigor_t3")
 	craftitems[vigor.name].on_use(vigor, player)
-	check(grug_core.status_modifier_sum(player, "hp_pool_percent") == 7,
-		"food and elixir stack")
+	local stacked = grug_core.status_modifier_sum(player, "hp_pool_percent")
+	if mutation == "food_stack" then stacked = 5 end
+	check(stacked == 7, "food and elixir stack")
+	if mutation == "elixir_clock" then player.cooldown = 0 end
+	check(player.cooldown == 37, "elixir leaves potion clock unchanged")
 	local focus = stack("grug_alchemy:elixir_focus_t3")
 	craftitems[focus.name].on_use(focus, player)
 	local hp_sum = grug_core.status_modifier_sum(player, "hp_pool_percent")
 	local mana_sum = grug_core.status_modifier_sum(player, "mana_pool_percent")
 	if mutation == "elixir_exclusive" then hp_sum = hp_sum + 5 end
 	check(hp_sum == 2 and mana_sum == 5, "one elixir replaces another")
+
+	player.gear = {head = "test:apothecary", chest = "test:apothecary",
+		feet = "test:apothecary"}
+	vigor = stack("grug_alchemy:elixir_vigor_t3")
+	craftitems[vigor.name].on_use(vigor, player)
+	local boosted = grug_core.get_status(player, "elixir")
+	local boosted_value = boosted.modifiers.hp_pool_percent
+	local boosted_duration = (boosted.expiry_us - core.get_us_time()) / 1e6
+	if mutation == "apothecary_cap" then boosted_value = boosted_value + 1 end
+	check(boosted_value == 7 and boosted_duration == 1080,
+		"Apothecary bonus caps at two pieces")
 
 	for index = 1, #grug_alchemy.CATALOG do
 		local row = grug_alchemy.CATALOG[index]
@@ -178,6 +208,7 @@ return function(root)
 	check(not allowed and reason == "no_alchemist", "non-Alchemist herb refusal")
 	player.alchemist = true
 	allowed = herb_authorizer(player, "ember_moss", 5)
+	if mutation == "authorizer_allow" then allowed = false end
 	check(allowed, "Alchemist herb permission")
 
 	local harvest_factory = dofile(root ..
@@ -192,5 +223,5 @@ return function(root)
 	if mutation == "cave_cap" then allowed = false end
 	check(allowed, "Cave Cap remains food-grade")
 
-	return "R8-ALCH alchemy KAT PASS recipes=21 cooldown=60/45 elixir=exclusive ilvl=1,11,21,31,41,51 herbs=closed\n"
+	return "R8-ALCH alchemy KAT PASS recipes=21 cooldown=60/45 elixir=exclusive+food+clock gear=2 ilvl=1,11,21,31,41,51 herbs=closed\n"
 end
