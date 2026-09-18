@@ -1,7 +1,7 @@
 --
 -- FISHING (WP13 playtest round 5, 2026-09-16).
 --
--- Three rulings from the playtest built this mod:
+-- The playtest built the rod and Round 8 adds level-band catch tables:
 --
 --   * "The fishing rods of anglers sit in the middle of the hand, and they are
 --     sticks. VoxeLibre has a rod that looks good, we should take it into the
@@ -10,10 +10,8 @@
 --     talks to through the `fishing_rod` group).
 --   * "We should plan fish too (for cooking)." -- so the raw fish the game
 --     already had gets a furnace-cooked twin and a second, earnable source.
---   * "Later special fishing loot tables per zone. Fish availability shall be
---     IDENTICAL on both continents (distributed over the zones)." -- so there
---     is exactly ONE catch table today and one seam for the zone tables
---     (`catch.lua`).
+--   * Fishing remains universal. `catch.lua` selects one table from the zone
+--     level at the cast position, independent of faction and water salinity.
 --
 -- What is deliberately NOT here: the T4 Marshbloom Chowder and T5 Salt-Crusted
 -- Fish recipes and the Well Fed buff model of `items_crafting.md` §2.3. Those
@@ -86,6 +84,27 @@ core.register_tool("grug_fishing:rod", {
 	},
 	groups = {tool = 1, [ROD_GROUP] = 1},
 })
+
+local BAND_FISH = {
+	{"silver_trout", "Silver Trout", 2, "#b9d9df"},
+	{"mire_carp", "Mire Carp", 3, "#71947b"},
+	{"frostfin", "Frostfin", 4, "#8bb9e8"},
+	{"ember_eel", "Ember Eel", 5, "#d86d3f"},
+	{"storm_tuna", "Storm Tuna", 6, "#7c6bc2"},
+}
+
+for index = 1, #BAND_FISH do
+	local row = BAND_FISH[index]
+	local name = "grug_fishing:" .. row[1]
+	core.register_craftitem(name, {
+		description = row[2],
+		inventory_image = "grug_mobs_item_raw_fish.png^[multiply:" .. row[4],
+		on_use = core.item_eat(3),
+		groups = {food_fish_raw = 1},
+		_grug_tier = row[3],
+	})
+	mobs.add_eatable(name, 3)
+end
 
 -- COOKED FISH -- the T1 dish of `items_crafting.md` §2.3's cooking ladder,
 -- with the numbers of the cooked meat it sits next to (`mobs/crafts.lua`:
@@ -289,9 +308,14 @@ end)
 --
 core.register_on_mods_loaded(function()
 	local missing = {}
-	for _, entry in ipairs(grug_fishing.WORLD_CATCH) do
-		if not core.registered_items[entry.name] then
-			missing[#missing + 1] = entry.name
+	local entries = 0
+	for tier = 1, 6 do
+		local catch_table = grug_fishing.CATCH_TABLES[tier]
+		for _, entry in ipairs(catch_table) do
+			entries = entries + 1
+			if not core.registered_items[entry.name] then
+				missing[#missing + 1] = entry.name
+			end
 		end
 	end
 	if #missing > 0 then
@@ -299,7 +323,7 @@ core.register_on_mods_loaded(function()
 		core.log("error", "[grug_fishing] catch table names unregistered " ..
 			"item(s) " .. table.concat(missing, ", "))
 	end
-	core.log("action", "[grug_fishing] " .. #grug_fishing.WORLD_CATCH ..
+	core.log("action", "[grug_fishing] 6 level-band tables, " .. entries ..
 		" catch entries, weight " .. grug_fishing.CATCH_TOTAL ..
 		", bite " .. grug_fishing.MIN_WAIT .. ".." ..
 		grug_fishing.MAX_WAIT .. "s, rod " .. ROD_USES .. " uses")

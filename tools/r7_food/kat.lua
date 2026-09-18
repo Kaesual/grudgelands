@@ -22,7 +22,10 @@ local function food_status_rows(root, failures)
 	local item_names = {
 		"default:apple", "default:blueberries", "mobs:meat_raw", "mobs:meat",
 		"mobs:meatblock_raw", "mobs:meatblock", "grug_mobs:raw_fish",
-		"grug_fishing:cooked_fish", "grug_gathering:corn",
+		"grug_fishing:silver_trout", "grug_fishing:mire_carp",
+		"grug_fishing:frostfin", "grug_fishing:ember_eel",
+		"grug_fishing:storm_tuna", "grug_fishing:cooked_fish",
+		"grug_gathering:corn",
 		"grug_gathering:melon", "grug_gathering:mushroom",
 		"grug_gathering:potato", "grug_gathering:rock_salt",
 		"grug_gathering:wild_cocoa",
@@ -78,12 +81,12 @@ local function food_status_rows(root, failures)
 		return player.mana - before
 	end
 	local gathering = {
-		{raw_item = "grug_gathering:corn", harvest_kind = "food", tier = 2},
-		{raw_item = "grug_gathering:melon", harvest_kind = "food"},
-		{raw_item = "grug_gathering:mushroom", harvest_kind = "found_only_food"},
-		{raw_item = "grug_gathering:potato", harvest_kind = "food"},
-		{raw_item = "grug_gathering:rock_salt", harvest_kind = "found_only_food"},
-		{raw_item = "grug_gathering:wild_cocoa", harvest_kind = "found_only_food"},
+		{key = "corn", raw_item = "grug_gathering:corn", harvest_kind = "food"},
+		{key = "melon", raw_item = "grug_gathering:melon", harvest_kind = "food"},
+		{key = "mushroom", raw_item = "grug_gathering:mushroom", harvest_kind = "found_only_food"},
+		{key = "potato", raw_item = "grug_gathering:potato", harvest_kind = "food"},
+		{key = "rock_salt", raw_item = "grug_gathering:rock_salt", harvest_kind = "found_only_food"},
+		{key = "wild_cocoa", raw_item = "grug_gathering:wild_cocoa", harvest_kind = "found_only_food"},
 	}
 	local environment = {
 		core = core, grug_core = grug_core, grug_classes = grug_classes,
@@ -137,23 +140,22 @@ local function food_status_rows(root, failures)
 
 	local tier_digest = {}
 	local expected_instant = {5, 15, 40, 90, 180, 300}
-	local expected_level = {1, 10, 20, 30, 40, 50}
+	local expected_level = {1, 11, 21, 31, 41, 51}
 	for tier = 1, 6 do
 		local definition = environment.grug_food.TIERS[tier]
 		local raw = environment.grug_food.effect_for(tier, "raw", "hp")
 		check(definition and definition.instant_hp == expected_instant[tier] and
 			definition.min_level == expected_level[tier] and
-			definition.dishes.hp and definition.dishes.mana and
-			definition.dishes.hybrid, "tier table shape T" .. tier)
+			definition.dishes.hearty and definition.dishes.caster and
+			definition.dishes.hunter, "tier table shape T" .. tier)
 		check(raw and raw.regen.hp == 1 and next(raw.modifiers) == nil,
 			"raw rule T" .. tier)
 		tier_digest[#tier_digest + 1] = expected_instant[tier] .. "/" ..
 			expected_level[tier] .. "/" .. raw.regen.hp
 	end
-	local dish = environment.grug_food.effect_for(4, "dish", "hybrid")
-	check(dish.regen.hp == 2 and dish.regen.mana == 2 and
-		dish.modifiers.hp_pool_percent == 2 and
-		dish.modifiers.mana_pool_percent == 2, "dish table rule")
+	local dish = environment.grug_food.effect_for(4, "dish", "caster")
+	check(dish.regen.hp == 3.5 and dish.regen.mana == 3.5 and
+		dish.modifiers.mana_pool_percent == 4, "dish table rule")
 
 	local stats_player = player("stats", 10, 122)
 	connected[1] = stats_player
@@ -255,12 +257,12 @@ local function food_status_rows(root, failures)
 		mixed_label == "Food +2% HP, +4% Mana/5s, +2% HP pool",
 		"buff labels state effects")
 	local apple_desc = items["default:apple"].description
-	local corn_desc = items["grug_gathering:corn"].description
+	local mushroom_desc = items["grug_gathering:mushroom"].description
 	check(apple_desc:find("Restores 5 HP instantly.", 1, true) and
 		apple_desc:find("Regenerates 1% of maximum HP every 5 s for 3 min.", 1, true) and
 		apple_desc:find("Instant heal and regeneration wait until you are out of combat; other bonuses stay.", 1, true) and
 		not apple_desc:find("Requires level", 1, true) and
-		corn_desc:find("Requires level 10.", 1, true), "food tooltip text")
+		mushroom_desc:find("Requires level 21.", 1, true), "food tooltip text")
 
 	local eater = player("eater", 1, 10)
 	connected[2] = eater
@@ -307,11 +309,11 @@ local function food_status_rows(root, failures)
 		"expired food pays deferred instant exactly once out of combat")
 
 	now = 600 * 1000000
-	local replacement_pending = player("replacement_pending", 10, 10)
+	local replacement_pending = player("replacement_pending", 11, 10)
 	replacement_pending.combat = true
 	connected[2] = replacement_pending
 	items["default:apple"].on_use(stack("default:apple"), replacement_pending)
-	items["grug_gathering:corn"].on_use(stack("grug_gathering:corn"),
+	items["grug_fishing:silver_trout"].on_use(stack("grug_fishing:silver_trout"),
 		replacement_pending)
 	replacement_pending.combat = false
 	now = 601 * 1000000
@@ -330,14 +332,14 @@ local function food_status_rows(root, failures)
 	for index = 1, #hooks.step do hooks.step[index](1) end
 	check(dead_pending.hp == 10, "death clears deferred instant")
 
-	local low = player("low", 9, 20)
-	local corn = stack("grug_gathering:corn", 1)
-	items["grug_gathering:corn"].on_use(corn, low)
-	check(corn.count == 1 and chats[#chats] == "low:Requires level 10.",
+	local low = player("low", 10, 20)
+	local fish = stack("grug_fishing:silver_trout", 1)
+	items["grug_fishing:silver_trout"].on_use(fish, low)
+	check(fish.count == 1 and chats[#chats] == "low:Requires level 11.",
 		"consumable level gate refuses without consuming")
-	low.level = 10
-	items["grug_gathering:corn"].on_use(corn, low)
-	check(corn.count == 0, "consumable level gate accepts at level")
+	low.level = 11
+	items["grug_fishing:silver_trout"].on_use(fish, low)
+	check(fish.count == 0, "consumable level gate accepts at level")
 
 	return "tiers=" .. table.concat(tier_digest, ",") ..
 		("\tstats=%d/%d/%.2f/%d->%d/%d/%.2f/%d/%d"):format(
@@ -347,7 +349,7 @@ local function food_status_rows(root, failures)
 			base_fireball, boosted_fireball, boosted_heal) ..
 		"\tlabels=" .. raw_label .. "|" .. mixed_label ..
 		"\tdeferred=10/16/17,expiry=10/15/15,replacement=25,death=10" ..
-		"\tgate=9:refused,10:accepted"
+		"\tgate=10:refused,11:accepted"
 end
 
 local function regen_row(root, failures)
