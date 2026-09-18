@@ -25,8 +25,8 @@ immutable CID arrays, including y=-37, native gravel ore, closed components
 and sky bridges; `mutations.sh` proves the five corresponding failures. The LuaJIT-only
 `tools/r8_map_a/measure.lua` performs the fixed-layout per-run/per-zone census;
 `quality/cave_engine_cases.lua` remains the measured engine witness for native
-cave connection. `tools/r8_map_a/engine_probe/` uses a writer-disabled baseline
-world and revision-bound offline exclusion masks to reconstruct each exact
+cave connection. `tools/r8_map_a/engine_probe/` uses an authored-writer-disabled
+native-v7 baseline and revision-bound offline exclusion masks to reconstruct each exact
 owner-local lumen independently, replay the writer's 64-target search bound,
 exclude baseline sky components and compare that proof with the carved world. Revision-bound cases,
 commands, result logs and hashes live in `tools/r8_map_a/evidence/`.

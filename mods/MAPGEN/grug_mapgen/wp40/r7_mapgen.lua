@@ -60,10 +60,15 @@ local runtime = dofile(wp40 .. "/r7_runtime.lua")(core, wp40,
 	default_path .. "/schematics", payload.projection, catalog)
 local built = runtime.build(native.identities(), payload.manifest_sha256)
 if built.full_seed ~= payload.full_seed then fail("main/emerge seed differs") end
+local native_baseline = core.settings:get_bool(
+	"grug_mapgen_r8_native_baseline", false)
 
 core.register_on_generated(function(vmanip, minp, maxp, blockseed)
 	minp = plain_engine_position(minp, "generated minp")
 	maxp = plain_engine_position(maxp, "generated maxp")
+	-- Measurement-only comparison mode: retain the untouched v7 VM bytes so
+	-- the external R8 cave checker can prove the component the real writer saw.
+	if native_baseline then return end
 	local plan, generation = built.session.plan_slice(minp, maxp)
 	local result = built.writer.apply(vmanip, minp, maxp, plan, generation)
 	if type(result) ~= "string" then fail("writer result differs") end

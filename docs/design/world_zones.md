@@ -633,6 +633,10 @@ WP40 replaces it with the complete catalog and contracts below.
   pass cannot re-cap it. Candidate ownership, bounded proof volume and use of
   only the candidate's input mapchunk make the decision independent of emerge
   order.
+  The engine witness (2026-09-18) captures a separate authored-writer-disabled
+  native-v7 comparison world. Its checker reconstructs the exact owner-local
+  lumen from revision-bound candidate and exclusion bytes, then applies this
+  same component, continuation and sky proof before inspecting the carved world.
 - **Fresh-world surface and vegetation refinement (2026-09-13):** logical
   biome ownership stays unchanged. Dry surfaces combine coherent 32-node and
   8-node material fields at weights 3:1; filler depth varies from 1–4 nodes

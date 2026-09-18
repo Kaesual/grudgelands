@@ -10,7 +10,7 @@ local engine_seed = core.get_mapgen_setting("seed")
 assert(cases.schema == "grug_r8_map_a_engine_cases_v2" and
 	cases.seed == engine_seed, "R8-MAP-A engine cases differ")
 local baseline_mode = core.settings:get_bool(
-	"grug_mapgen_r8_cave_writer_disabled", false)
+	"grug_mapgen_r8_native_baseline", false)
 local baseline
 if not baseline_mode then
 	baseline = dofile(modpath .. "/baseline.lua")
