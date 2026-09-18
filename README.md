@@ -393,7 +393,7 @@ licensing and stable `file:line` citations. See
 | [mods/](mods/) | Game code in `CORE`, `PLAYER`, `ENTITIES`, `ITEMS`, `MAPGEN` and `BASE` modpacks. |
 | [docs/design/](docs/design/) | Decided game design — the living specification. |
 | `TODO-*.md` | Open design questions awaiting a decision. |
-| [docs/research/](docs/research/) | Engine/API briefings, reference studies and asset research, including the [Round 8 plants and potions reference survey](docs/research/plants-and-potions-reference.md). |
+| [docs/research/](docs/research/) | Engine/API briefings, reference studies and asset research, including the Round 7 planning set: the [plants and potions reference survey](docs/research/plants-and-potions-reference.md), the [mob candidate evidence](docs/research/mob-candidates-evidence.md) and [game inventory extract](docs/research/round7-inventory-extract.md), and the two creative plans for the user's ruling, [Cooking and Alchemy](docs/research/cooking-alchemy-plan.md) and [the mob worlds](docs/research/mob-worlds-plan.md). |
 | [docs/process/](docs/process/) | Autonomous work-package workflow, the project-wide agent model policy, and the Claude CLI review procedure. |
 | [ROADMAP.md](ROADMAP.md) · [BACKLOG.md](BACKLOG.md) | Goal-level plan and implementation packages/status. |
 | [AGENTS.md](AGENTS.md) | Project conventions and Luanti/Lua contracts. |
