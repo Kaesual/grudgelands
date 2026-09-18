@@ -6,7 +6,10 @@ modifier is stated in `init.lua`; no source pixel file is copied or changed.
 
 | Presentations | Runtime source file | Author chain | Exact licence | Modification |
 |---|---|---|---|---|
-| Wild Grain, Fire Pepper, Sugar Cane, Bamboo Shoot and Ember Moss | `default_dry_grass_3.png`, `default_marram_grass_1.png`, `default_papyrus.png`, `default_fern_1.png` | minetest_game contributors listed in `mods/BASE/default/license.txt`, vendored from commit `b5243f3` | CC BY-SA 3.0 Unported | Runtime colourize only |
+| Wild Grain | `default_dry_grass_3.png` | minetest_game contributors listed in `mods/BASE/default/license.txt`, vendored from commit `b5243f3` | CC BY-SA 3.0 Unported | Runtime colourize only |
+| Fire Pepper | `default_marram_grass_1.png` | minetest_game contributors listed in `mods/BASE/default/license.txt`, vendored from commit `b5243f3` | CC BY-SA 3.0 Unported | Runtime colourize only |
+| Sugar Cane and Bamboo Shoot | `default_papyrus.png` | minetest_game contributors listed in `mods/BASE/default/license.txt`, vendored from commit `b5243f3` | CC BY-SA 3.0 Unported | Runtime colourize only |
+| Ember Moss | `default_fern_1.png` | minetest_game contributors listed in `mods/BASE/default/license.txt`, vendored from commit `b5243f3` | CC BY-SA 3.0 Unported | Runtime colourize only |
 | Carrot, Cassava, Salt Crust, Bread, all raw assemblies and all Hearty dishes | `default_clay_lump.png` | minetest_game contributors listed in `mods/BASE/default/license.txt`, vendored from commit `b5243f3` | CC BY-SA 3.0 Unported | Runtime colourize only |
 | Wild Onion, Pumpkin, Frost Melon and all Caster dishes | `default_apple.png` | minetest_game contributors listed in `mods/BASE/default/license.txt`, vendored from commit `b5243f3` | CC BY-SA 3.0 Unported | Runtime colourize only |
 | Blightberry, Sunberry and Jungle Berry | `default_blueberries.png` | minetest_game contributors listed in `mods/BASE/default/license.txt`, vendored from commit `b5243f3` | CC BY-SA 3.0 Unported | Runtime colourize only |
