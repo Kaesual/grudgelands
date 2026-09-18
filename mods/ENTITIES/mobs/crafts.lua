@@ -337,7 +337,7 @@ core.register_tool(":mobs:mob_reset_stick", {
 					obj2:set_velocity({x = 0, y = self.jump_height, z = 0})
 				end
 
-				obj2:set_properties({nametag = self._nametag or ""})
+				obj2:set_properties({nametag = ""})
 
 				obj:remove()
 			end

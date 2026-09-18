@@ -15,7 +15,7 @@
 --
 -- That wrapper IS the level/XP engine: it calls grug_mobs.register_level_cfg,
 -- and ensure_init then derives HP/damage/XP from grug_core.mob_level_at and
--- installs the global nametag of combat_stats.md §6 —
+-- installs the level/HP carrier text of combat_stats.md §6 —
 -- "<name> [Lv 42] 250/250" (grug_mobs/levels.lua:147-165). A shopkeeper with
 -- a level and a health bar is wrong on both counts, and the aggro/leash/
 -- telegraph wrappers it also installs are dead weight on something that never
@@ -150,7 +150,7 @@ end
 -- Entity definition
 --
 
--- Static nametag. mobs_redo's own mob_class:update_tag recolors the tag by
+-- Static carrier text. mobs_redo's own mob_class:update_tag recolors tags by
 -- health on every do_env_damage tick (api.lua:1050-1176, called from
 -- api.lua:3837-3938) — a green "healthy" tint on a shopkeeper. Overriding the method
 -- PER ENTITY (the same trick grug_mobs/levels.lua uses for the level tag)
@@ -158,21 +158,22 @@ end
 -- Installed from after_activate because a function field is never serialized
 -- into staticdata, so it must be re-installed on every activation; the "did we
 -- already write it" flag lives in self.temp, which mob_activate resets per
--- activation exactly like the object's nametag property.
+-- activation exactly like the carrier reference.
 --
 -- ROUND 3 PUT IT BEHIND THE PROXIMITY GATE (WP13 playtest, 2026-09-15). The
 -- write used to happen once, here, and the engine has no distance cull of its
 -- own -- so a shopkeeper's name rendered out to the ~128 m object-send range
 -- while a guard's disappeared at thirty, which is the clutter the user
--- reported. The DESIRED text is now a plain string field and the only writer of
--- the property is `grug_mobs.plain_tag_gate_tick`, from this family's own
--- once-a-second tick: one write per state flip, none while nobody is near.
--- mobs_redo's `update_tag` calls therefore refresh the text and touch nothing.
+-- reported. The desired text is now a plain string field; the central carrier
+-- pass owns observers and lifecycle. mobs_redo's `update_tag` calls refresh
+-- only the carrier text; the parent nametag stays empty.
 --
 local function install_nametag(self, text)
 	self._grug_tag_want = text
+	grug_mobs.set_plain_tag(self, text)
 	self.update_tag = function(s)
 		s._grug_tag_want = text
+		grug_mobs.set_plain_tag(s, text)
 	end
 end
 
@@ -225,20 +226,8 @@ function grug_traders.restyle_socket_vendor(entity)
 		VENDOR_FACTION_RACE.accord})
 end
 
--- The once-a-second tick a vendor did not have before round 3. It exists for
--- the nametag gate and does nothing else; `false` stops mobs_redo running the
--- rest of the step, which for a mob with zero velocities, `stand_chance = 100`
--- and no targeting was already a no-op and is now not even walked through.
-local TAG_TICK = 1
-
-local function vendor_tick(self, dtime)
-	self.temp = self.temp or {}
-	local temp = self.temp
-	temp.grug_tag_acc = (temp.grug_tag_acc or 0) + dtime
-	if temp.grug_tag_acc < TAG_TICK then return false end
-	temp.grug_tag_acc = 0
-	local gate = grug_mobs.plain_tag_gate_tick
-	if gate then gate(self, self._grug_tag_want) end
+-- Keep the static vendor out of mobs_redo's otherwise useless state pass.
+local function vendor_tick()
 	return false
 end
 
@@ -254,9 +243,8 @@ local function vendor_def(vendor, texture)
 	end
 	return {
 		description = vendor.nametag,
-		-- NO `nametag` FIELD any more (round 3). mobs_redo copies it onto the
-		-- object at activation, which would put the tag back on screen at 128 m
-		-- on every reload until the gate's first tick took it off again.
+		-- NO `nametag` FIELD: visible text belongs to the carrier, and the
+		-- vendored base updater permanently keeps this parent empty.
 		type = "npc",
 		passive = true,
 		-- Permanent: see the header. `type = "npc"` already exempts the mob
@@ -327,7 +315,7 @@ local function vendor_def(vendor, texture)
 			return true
 		end,
 
-		-- The per-second slot the nametag gate needs.
+		-- Skip mobs_redo's state pass for this static non-combatant.
 		do_custom = vendor_tick,
 
 		after_activate = function(self)

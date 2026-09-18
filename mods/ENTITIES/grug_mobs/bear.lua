@@ -13,6 +13,7 @@ local ELDER_CHANCE = 10 -- 1 in 10 spawns is an Elder (elite tier)
 local function bear_def(description, texture)
 	return {
 		description = description,
+		clock = "day",
 		type = "monster",
 		-- Territorial: short leash instead of the default 40 nodes
 		-- (aggro.lua, combat_stats.md §4).

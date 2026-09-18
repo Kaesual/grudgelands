@@ -568,10 +568,11 @@ player model (`character_visuals.md:19-21`), so it disappears with the skin.
 
 #### 8.2.3 Player nametags — **needs the stealth state**
 
-Player nametags use the global **25 m visible / 30 m hidden** proximity gate
-(`combat_stats.md` §6). Stealth must suppress the nametag even inside 25 m and
-must return control to that gate when stealth ends; otherwise the floating name
-reveals the hidden player's exact position to every nearby player.
+Player nametags use the per-viewer **25 m visible / 30 m hidden** carrier gate
+(`combat_stats.md` §6; adopted 2026-09-18). Stealth must exclude every viewer
+from that carrier even inside 25 m and return control to the distance gate when
+stealth ends; otherwise the floating name reveals the hidden player's exact
+position to nearby players.
 
 #### 8.2.4 The non-combatant veto and `_grug_ignore_player` share the target loop — **needs a rule**
 

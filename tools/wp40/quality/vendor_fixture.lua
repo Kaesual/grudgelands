@@ -183,7 +183,8 @@ return function(repo)
 	reloaded:on_activate(staticdata, 20)
 	reloaded:update_tag()
 	assert(reloaded.health == 7 and reloaded.owner == "keeper" and reloaded.tamed)
-	assert(reloaded._nametag == "Current name" and props.nametag == "Current name")
+	assert(reloaded._nametag == "Current name" and
+		(props.nametag == nil or props.nametag == ""))
 	assert(reloaded.textures[1] == "fixture.png" and reloaded.floats == true)
 	local reset = instance()
 	local reset_props = copy(props)
@@ -206,7 +207,8 @@ return function(repo)
 	local reset_reloaded = instance()
 	reset_reloaded:on_activate(reset_saved, 20)
 	reset_reloaded:update_tag()
-	assert(reset_reloaded._nametag == "Current name" and props.nametag == "Current name")
+	assert(reset_reloaded._nametag == "Current name" and
+		(props.nametag == nil or props.nametag == ""))
 	local mount_actions, velocity = 0
 	reloaded.driver = {
 		get_player_control = function() return {up=true, LMB=true, sneak=true} end,

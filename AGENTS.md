@@ -326,6 +326,10 @@ Details + line numbers in [docs/research/](docs/research/).
   unlearned and effective T1–T6 when learned. Grid output is vetoed before the
   engine craft; current furnaces have no acting player in their timers, so
   their per-player gate and progression run on output extraction.
+  One output may have one route per station when every route agrees on
+  profession and tier; `recipe_for_output(output, station)` resolves the
+  station-specific route. This is how a Cooking grid dish and its raw-assembly
+  furnace path meet at the same edible item.
   A later custom station (including the brewing stand) must call
   `can_craft_recipe` before its output leaves and `record_craft` after each
   successful craft on that same take path.
@@ -450,12 +454,16 @@ Details + line numbers in [docs/research/](docs/research/).
   `spell_damage_percent`; `grug_core.status_modifier_sum` adds active statuses,
   and the modifier-change callback drives the same HP/mana clamp and HUD/page
   refresh path as talents. `grug_food.TIERS` owns fixed instant HP, minimum
-  level and role-dish data; raw foods always regenerate 1% HP (or mana for Wild
-  Cocoa) per 5 s. Food lasts 180 s, its instant heal and regeneration defer/
-  pause in combat, secondary modifiers do not, and the latest food replaces
-  the previous one. `grug_core.can_use_item_level` is the shared `_grug_ilvl`
-  gate for the Weapon slot and all consumables. Potions retain their instant
-  channel and shared persistent cooldown.
+  level and the Hearty/Caster/Hunter dish data; raw foods, including Wild
+  Cocoa, always regenerate 1% HP per 5 s. Food lasts 180 s; its instant heal
+  and regeneration defer/pause in combat, secondary modifiers do not, and the
+  latest food replaces the previous one. `grug_core.can_use_item_level` is the
+  shared `_grug_ilvl` gate for the Weapon slot and all consumables. Potions
+  retain their instant channel and shared persistent cooldown.
+  `grug_cooking` owns the mapgen-free plant items, the 18 grid dishes, the six
+  raw assembled dishes and their furnace routes. `grug_fishing.table_for(pos)`
+  selects one of six catch tables through `grug_core.mob_level_at(pos)`; water
+  salinity never gates fishing.
   **Alchemy** is split between low-level `grug_brewing` (the inactive/active
   stand nodes, timer and recipe adapter) and `grug_alchemy` (items, profession
   recipes and effects). The stand has two reagent slots plus vial, fuel and
@@ -527,9 +535,9 @@ Details + line numbers in [docs/research/](docs/research/).
     derived from `grug_core.mob_level_at`/`guard_level_at` plus the tier
     multipliers on the first active tick. `_grug_fixed_level` is the sole
     explicit fixed-entity mechanism: it bypasses positional/role fields only
-    for deliberately designed fixed entities. Its current implemented use is
-    the Kraken L100; future WP13 uses the same mechanism for the still-
-    unimplemented king L65. There is no second king-specific level path.
+    for deliberately designed fixed entities. Its implemented uses are the
+    Kraken L100, the island dragons L60, the capital kings L65 and their royal
+    guards L60. There is no second king-specific level path.
     Everything else (speeds, view_range, drops, visuals) stays def-owned.
     **Four tiers since WP36**: `critter` (added for the small animals —
     fixed L1, 1 HP, 0 XP, no fall damage, never promotable; the second
@@ -538,6 +546,16 @@ Details + line numbers in [docs/research/](docs/research/).
     elite/rare test** (`grug_mobs.tier_telegraphs`, one predicate for both
     call sites) — a `tier ~= "normal"` test hands a rabbit a 2 s wind-up
     and a ×3 cone hit the day a fourth tier appears.
+  - **Per-viewer nametags since 2026-09-18**: every tagged mob, peaceful NPC,
+    vendor and player owns one invisible `grug_core:tag_carrier` child. Parent
+    tags stay empty/alpha-zero; the child text is observer-managed at 25 m show
+    / 30 m hide independently per viewer, with a player's owner excluded.
+    Create/remove carriers through the shared `grug_core/tag_carrier.lua` seam,
+    update text there (including telegraph/tier/HP changes), and leave observer
+    sets plus orphan cleanup to that module's one central 1 Hz pass. Carriers
+    are non-pointable, non-physical and unsaved. Unsaved Lua entities never
+    enter the engine's static-object count used by mobs_redo `aoc`; do not
+    compensate or otherwise modify that spawn-budget comparison for carriers.
   - **Three behaviour classes, and a new mob picks one**
     (`biomes_mobs.md` §3.0): **critter** (small, scenery with a use —
     food-only drops, `passive` + `runaway`), **passive prey** (the large
@@ -878,6 +896,15 @@ Details + line numbers in [docs/research/](docs/research/).
   those tops live in `grug_nodes` (blight_dirt, bone/forest/silver litter,
   mesa_clay, mud) and exist FOR the trick; the generic `_grug_spawn_check`
   and `grug_mobs/spawn_policy.lua` do the gating on top, against `grug_zones`.
+  `register_spawn_role` also owns each family's `clock`; its spawn wrapper
+  stamps the mobs_redo light/day convention and the night `aoc`, while rows
+  wholly below y = -40 remain light-only. Never hand-maintain those fields on
+  a new surface row.
+  Fixed bosses do not register ambient rows: `grug_mobs/bosses.lua` owns the
+  two authenticated island `dragon` anchors, while the six kings and their
+  four-guard groups consume the capital `king`/royal `guard_post` sockets via
+  `start_npcs.lua`. Their respawn timestamps are absolute `os.time()` values;
+  never route them through the ambient spawn clock or gametime respawn path.
   **The WP40 world contract is SHIPPED** (decided 2026-08-11, delivered
   2026-09-13): exactly **38** land zones in
   `docs/design/world_zones.md` §§8–9, each with one `race_region`; six

@@ -289,7 +289,11 @@ roles, LICENSE-media rows, one headless boot, KAT rows for the policy.
    Wild Turkey, Plains Runner, Tapir, Giant Rat, Scorpion,
    Viper.
 4. **Night families 11–40**: Goblin Raiders + Slinger, Snow Leopard, Wisp,
-   Treant (two tints), Bog Witch.
+   Treant (two tints). **Bog Witch is deferred by the R8-MOB1 fix-round
+   decision:** the pinned VoxeLibre mesh has keyed frames only in 1..41, but
+   its required shoot/death behaviours name 50..82 and 145. It must remain
+   absent rather than use a fake/static animation until a licensed suitable
+   mesh is pinned; `night_families_kat.lua` records `blocked=bog_witch`.
 5. **Dragons** (both islands) and **kings** (six capitals) — the boss tier
    the user asked for after Round 7; kings need the six royal skins.
 6. **Underground wave**: Goblin Miners (shares package 4's port), Oerkki,

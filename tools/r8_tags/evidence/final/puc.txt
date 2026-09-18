@@ -1,0 +1,104 @@
+r8_tags=central_1hz observers_Alice_then_Alice+Bob_then_Bob owner_excluded unsaved_nonpointable single_carrier lifecycle_removed real_mob=elite_telegraph_hp real_vendor real_villager parent_empty
+production	module	grug_obstacle.lua	target_los_calls	1	path_budget	2	path_backoff	0.25	fifo_mobs	100	fifo_last_step	50	lifecycle_release	true	generation_fifo	108	109	110	111	112	kraken_los_calls	2
+obstacle	delay	1	path_retained	true	sidesteps	1	-1	blocked_contact_moves	true	visible_contact_stops	true	blocked_swing_banked	true
+wp11_combat_obstacle	PASS
+api_fragments	accumulator_above_reach_test	cap	reach_gate	contact_distance
+standing_10s	before	9	after	9	step	0.09	interval	1	effective	1.08
+receding_10s	before	1	after	9	worst_gap	3.000	reach	3
+backlog	chase_10s_then_arrive	1
+no_reset_out_of_reach	ok
+wp11_mob_cadence	PASS	mutation	0
+baseline	1	1	writes	0
+additive	0.85	1
+clamp	low	0.1	high	1.5
+expiry	independent	ok
+root	hard_flag	longest_wins	ok
+immunity	discards_root_and_negatives	ok
+hold	exclusive_counted_no_snapshot	ok
+lifecycle	join_leave_reset	ok
+callers	web_frost_nova_hamstring	ok
+writes	one_per_change	2	hold_quiet	reads_free
+wp11_move_aggregator	PASS	mutation	0
+wp11_tree	bulwark	warrior	28	8
+wp11_tree	ruin	warrior	28	8
+wp11_tree	ember	mage	28	8
+wp11_tree	rime	mage	28	8
+wp11_tree	mercy	priest	28	8
+wp11_tree	reckoning	priest	28	8
+wp11_gates	0	5	12	20
+wp11_gate_reason	Hold Ground needs 12 points in Bulwark (you have 9).
+wp11_capstone	21	42	second	42	budget	30
+wp11_case	tier2_at_4	false	Weathered needs 5 points in Bulwark (you have 4).
+wp11_case	tier2_at_5	true	-
+wp11_case	tier3_at_11	false	Hold Ground needs 12 points in Bulwark (you have 11).
+wp11_case	tier3_at_12	true	-
+wp11_case	tier4_at_19	false	Unbroken needs 20 points in Bulwark (you have 19).
+wp11_case	tier4_at_20	true	-
+wp11_case	chain_broken	false	Weathered needs Ironbound at 5/5.
+wp11_case	chain_whole	true	-
+wp11_case	sixth_rank	false	Ironbound is already at 5/5.
+wp11_case	keystone_at_2of3_capstone	false	Unbroken needs Hold Ground at 3/3.
+wp11_case	foreign_class	false	Tinder belongs to another class.
+wp11_serialized	ironbound=5,weathered=2,spite=3
+wp11_level_drop	spent_before	14	spent_after	0	points_available	2
+wp11_keys	46	consumed	24	pending_x3	22
+wp11_keys_pending	armor_cap_override armor_percent_add_low_hp cinderfall_damage cinderfall_radius_add control_damage_add crit_cap_override crit_chance_add_window dodge_chance_window drain_ratio_override fireball_splash flash_heal_splash frost_nova_ranged glacial_ward_absorb hamstring_root hamstring_slow_add hold_ground_absorb mighty_blow_cleave renew_tick_add smite_absorb taunt_radius whitehot_window word_of_ruin_damage
+wp11_crit	0.119	0.169
+wp11_applied_hp	3235	3429	heal_on_spend	0
+wp11_tooltip_inventory_writes	2
+wp11_stats	3235	3429	2696	3100
+wp11_seams	taunt	8	5	charge	10	6	blink	15	9	smite	2	1.4	fireball	20	26
+wp11_rage_now	per_swing	8	per_hit_taken	3	decay_per_s	5	swings_to_full	13	seconds_to_empty	20	swings_per_mighty_blow	4	hits_to_full	34
+wp11_rage_before	per_swing	12	per_hit_taken	4	decay_per_s	2	swings_to_full	9	seconds_to_empty	50	swings_per_mighty_blow	3	hits_to_full	25
+wp11_talents_result	PASS	0
+wp11_talent_ui	tree_buttons	2	first_free	0	paid	65	level_notices	1
+wp11_talent_ui_result	PASS	0
+player_tag=Thomas [Lv 5] 35/60
+tag_carrier=one_per_player parent_alpha_zero owner_seam
+death=fall drown node_damage suffocation mob player fallback
+suffocation=solid_only stasis_exempt
+scale=0.65,1.55,7.84
+mob_pressure=38,99
+malus=1.0,0.9,0.5,0.1
+format=999,1.0k,9.9k,10k,51k
+ability=18,18
+ability_malus=16
+support=12,15,12.00
+stats=1/26/2.3/10,10/136/5.5/100,20/384/10/200,40/1276/22/400,60/2696/38/600
+tiers=8088,13480,53920,1,0
+tag=Boss Test [Lv 60] 2.3k/54k
+xp_cap=600
+death=8525,8100
+split=8150,8150,8100
+friendly=8150
+gray=10000
+R5_PROGRESSION_OK
+cold	15	15	15
+door_facing	door_turned_on_second_tag	line_keeps_first_tag	bench_kept	elder_turned
+spare	unplaced	unmarked	walker_ring_5	static_ring_2
+nametags	Vale Dwarf	Dur Brannoc Citizen	Highcourt Elder
+restart	15	15	0
+lost_entities	11	11	11
+death_respawn	not_before_due	refilled_after_window
+second_gate	no_twin	marker_restored
+capital	6	6	2	loops_separate	markers_separate
+wanderer	21	21	21	10_heartbeats
+out_of_range	21	21	no_strike
+twins	22	21	claim_refused
+census	hearthpine	start	15	15	spare_1
+amble	moved_at_22	spots_4_and_4_of_5	spare_reached	10:-16.0/4.0 20:-16.0/4.0 30:-7.8/9.5 40:-5.0/11.3 50:-5.0/11.3 60:-5.0/11.3
+amble_blocked	at_least_2_targets_in_40s
+no_jump	0	0	model_reproduces_defect
+stuck_route	path_at_20	skip_at_45	quiet_after_3_lines	no_snap_in_sight	snap_out_of_sight_after_backoff
+noncombatant	declared	installed_on_activate	chained	all_2_defs_correct	prey_unchanged
+walker_split	residents_10	walkers_2	share_20.0	idle_a=true idle_b=false idle_c=false idle_d=false idle_e=false idle_f=true forge_work=false bench_work=false shrine_work=false yard_work=false
+static_idle	still_after_150s	state_stand
+work	smith_work_anim	sit_anim	writes_1_in_120s	swing_7_in_30s	no_path	step_vetoed_120	home_at_9s_unwatched	resumed_when_watched
+animation	stand=0..79 walk=168..187 punch=189..198 work=189..198 sit=81..160	work_speed_10
+activities	smith=work/default:pick_bronze fish=stand/grug_fishing:rod farm=work/default:shovel_stone chop=work/default:axe_stone tend=stand pray=stand stall=stand sit=sit sweep=walk mine=work/default:pick_bronze brew=stand/default:stick carve=work/default:axe_stone mourn=stand/bow spar=work/sword@1 forage=stand
+wave2_activities	mourn_bow_writes_1	spar_grug_gear:sword_bronze	tag_mourn/work	lines_mine,brew,carve,mourn,spar,forage,shade
+tag_carrier	elder=Vale Elder walker=Vale Dwarf work=Vale Dwarf	central_observers
+restyle_hook	calls_21	start_and_capital	after_install
+real_starts	hearthpine=1/6:work_2:ring_4 dawnmere=1/6:work_2:ring_3 silverleaf=1/6:work_2:ring_4 stillgrave=1/6:work_2:ring_3 sunscar=1/6:work_2:ring_3 kapok=1/6:work_2:ring_5	min_walker_ring_3
+wp45_character_creation_v3|emerge_requests=20|fresh_teleports=1|prefetched_teleports=1|rejoin_teleports=1|class_sets=7|chats=19
+vendor_current_version	PASS	player-appearance,book,chest,creative,torch,stairs,furnace,mob-reload,mob-reset-reload,mount

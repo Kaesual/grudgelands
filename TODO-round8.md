@@ -98,8 +98,8 @@ rolling; the four coast profiles and their mix of §3.
 
 ## 3. Lanes, in dependency order (lane cut: orchestrator's decision)
 
-Merge order: MAP-A, MAP-B, PROF sequentially; COOK, ALCH and MOB1 in
-parallel after PROF (COOK also after MAP-B); DOCS last. Every lane: own
+Merge order (re-cut 2026-09-18): PROF, then COOK, ALCH, MOB1, TAGS, MISC,
+HEDGE in parallel; MAP-A, then MAP-B (or Round 9); DOCS last. Every lane: own
 worktree under `.claude/worktrees/r8-<lane>`, own port block, KAT plus
 mutation for every behavioural change, independent review, orchestrator
 gates; mapgen lanes additionally the final micro pair, the six-start gate
@@ -140,7 +140,17 @@ and the six capitals after the merge.
 5. Contract updates (`world_zones.md` §7.4/§7.6), fixture refresh, final
    micro pair, six-start gate, six capitals after the merge.
 
-### R8-MAP-B — surface content: soils, plants, reeds, settlement rings
+### R8-MAP-B — surface content: plant placement, soils, crop soil (placement only; may slip to Round 9)
+
+**Re-cut 2026-09-18 (user's green light):** MAP-B runs strictly after
+MAP-A (both refresh the WP40 fixture pins). R8-COOK no longer waits for it:
+COOK defines the new plants as items with tiers and recipes, MAP-B only
+places them in the world (P9G-2), adds the second soils and the crop soil.
+The Highcourt hedge-ring fix moved to its own mini-lane R8-HEDGE (WP13
+code, runs in parallel now). If MAP-A is not merged by the evening of
+2026-09-18, MAP-B moves to Round 9 unchanged; Playtest 11 then uses the new
+ingredients from the creative inventory.
+
 
 1. **Plant placement P9G-2**: version the P9G tail from the closed
    twelve-name schema to an open manifest (`r7_p9g.lua` schema bump,
@@ -154,10 +164,7 @@ and the six capitals after the merge.
    with a `LICENSE-media.md` row.
 2. **Second soil per zone** and tilled crop soil at village fields
    (scenery until WP32).
-3. **Settlement ring continuity**: the capital centre hedge/wall is a
-   protected ring; placed centre content must not cut it. Fix the
-   placement order or the conflict rule; verify all six capitals and the
-   six starts.
+3. ~~Settlement ring continuity~~ → moved to R8-HEDGE (below).
 4. Contract, fixtures, final micro, six-start gate, six capitals.
 
 ### R8-PROF — profession framework (the foundation)
@@ -192,7 +199,11 @@ and the six capitals after the merge.
    rewritten for R8.2–R8.7; KATs for registry validation, tier-ingredient
    rule, level gating, slot rules, book geometry, trainer sockets.
 
-### R8-COOK — Cooking v1 (after MAP-B and PROF)
+### R8-COOK — Cooking v1 (after PROF; decoupled from MAP-B on 2026-09-18)
+
+COOK also registers the cooking plan's new plants as items (tier, texture
+with licence row, food/raw rule) so the recipe ladder is data-complete
+before MAP-B places them; it must not move any WP40 fixture pin.
 
 The dish tables of `cooking-alchemy-plan.md` §4 as data: six tiers × three
 role lines in the grid; furnace refinement recipes (raw meat/fish/grain →
@@ -219,6 +230,18 @@ zone day and night families; 4. night families 11–40; 5. dragons and kings.
 Rolling 6–8 (underground, deep, front and coast) as long as the round
 runs. Each package: registrations, spawn rows, `LICENSE-media.md` rows,
 KAT, headless boot.
+
+### R8-HEDGE — capital hedge/wall ring continuity (mini-lane, WP13 code)
+
+The capital centre hedge or wall is a protected ring; placed centre
+content must not cut it (seen in Highcourt, Playtest 10). Find the cause
+in `wp13/capitals.lua` / the district files, fix it for all six capitals,
+KAT that walks every capital's ring in the generated buffer and finds no
+gap except the gates; one capital run.
+
+### R8-TAGS — per-viewer nametags (added 2026-09-18 on the user's finding; delivered 12886ada)
+
+### R8-MISC — Strike tooltip resource gate (added 2026-09-18; delivered fbcf8ed2)
 
 ### R8-DOCS — documentation alignment at the end, as in rounds 5–7.
 

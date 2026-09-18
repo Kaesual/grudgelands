@@ -45,6 +45,7 @@ end
 local function golem_def(description, texture)
 	return {
 		description = description,
+		clock = "any",
 		type = "monster",
 		-- Elite by design (§3.1). Everything the tier implies is engine-owned
 		-- (levels.lua): do NOT add armor/hp/damage here.

@@ -26,6 +26,7 @@
 
 local crow = {
 	description = "Carrion Crow",
+	clock = "any",
 	type = "animal",
 	-- The war coast is NOT its own biome (§1.2 / §8.1): it uses the local
 	-- band's settled biome plus a battlefield decoration set. So there is no

@@ -16,6 +16,7 @@
 
 local bog_ooze = {
 	description = "Bog Ooze",
+	clock = "any",
 	type = "monster",
 	-- §4 row zones: "outer" (swamp pockets, §1.2 row 13 -> L25-45).
 	-- HP/damage/XP/armor: engine-owned (levels.lua).

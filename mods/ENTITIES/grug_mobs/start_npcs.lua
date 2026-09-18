@@ -18,7 +18,7 @@
 --                 WALKER_EVERY below.
 --   quest         the quest shell (start_villagers.lua)
 --   vendor        resolved by grug_traders, which owns vendors
---   king          nothing yet (the encounter is a later work package)
+--   king          one race king plus the four royal hall guards
 --   waypoint      nothing (WP17's travel pad)
 --
 -- IT SERVES EVERY REGISTERED SETTLEMENT, not only the six starts. A capital
@@ -290,6 +290,9 @@ end)
 grug_mobs.register_start_socket_role("quest", function(socket, start)
 	return "grug_mobs:elder_" .. start.race_id
 end)
+grug_mobs.register_start_socket_role("king", function(socket, start)
+	return "grug_mobs:king_" .. start.race_id
+end)
 
 --
 -- State
@@ -304,8 +307,13 @@ local by_key = {}
 -- Which log family a role reports under.
 local FAMILY = {guard_post = "guards", guard_patrol = "guards",
 	idle = "flair", work = "flair", trainer = "flair", vendor = "vendor",
-	quest = "quest"}
-local FAMILY_ORDER = {"guards", "flair", "vendor", "quest"}
+	quest = "quest", king = "royal"}
+local FAMILY_ORDER = {"guards", "flair", "vendor", "quest", "royal"}
+
+local ROYAL_GUARD_SOCKET = {
+	throne_guard_west = true, throne_guard_east = true,
+	door_guard_west = true, door_guard_east = true,
+}
 
 -- Which NPC family (start_villagers.lua) a role is nametagged as. A work
 -- resident is a villager with a workplace, so it is named like one.
@@ -675,7 +683,13 @@ local function build_rows()
 				local carries = resolver ~= nil and socket.spawn ~= false and
 					(socket.role ~= "guard_patrol" or socket.order == 1)
 				if carries then
-					local entity = resolver(socket, settlement)
+					local entity
+					if kind == "capital" and socket.role == "guard_post" and
+							ROYAL_GUARD_SOCKET[socket.id] then
+						entity = "grug_mobs:royal_guard_" .. record.race_id
+					else
+						entity = resolver(socket, settlement)
+					end
 					if type(entity) ~= "string" or
 							not core.registered_entities[entity] then
 						core.log("error", "[grug_mobs] settlement npcs: " ..
@@ -1009,6 +1023,10 @@ local function install(entity, row, slot)
 	-- engine probe's census and by anything that has an ObjectRef and wants to
 	-- know what the NPC is for without a second lookup into this file's rows.
 	entity._grug_socket_role = slot.role
+	if slot.role == "king" or slot.entity:find("grug_mobs:royal_guard_", 1, true) then
+		entity._grug_boss_id = "king:" .. row.race_id
+		entity._grug_royal_race = row.race_id
+	end
 	if slot.role == "guard_post" then
 		-- `_grug_home` is where aggro.lua's evade runs a guard back to after a
 		-- chase; the post fields are what guard.lua's tick holds it at while
@@ -1020,9 +1038,11 @@ local function install(entity, row, slot)
 		-- mod (aggro.lua's evade and its roam cap): a guard standing on the
 		-- step above its post is not off it. The full position lives in
 		-- `_grug_home`.
-		entity._grug_post_x = slot.pos.x
-		entity._grug_post_z = slot.pos.z
-		entity._grug_post_yaw = slot.yaw
+		if not slot.entity:find("grug_mobs:royal_guard_", 1, true) then
+			entity._grug_post_x = slot.pos.x
+			entity._grug_post_z = slot.pos.z
+			entity._grug_post_yaw = slot.yaw
+		end
 	elseif slot.role == "guard_patrol" then
 		-- guard.lua's own tick walks `_grug_patrol_route` through
 		-- `grug_mobs.route_tick`, and aggro.lua exempts a route carrier from
@@ -1076,6 +1096,8 @@ local function install(entity, row, slot)
 		-- line it has.
 		--
 		entity._grug_idle_tag = slot.tag or slot.activity
+	elseif slot.role == "king" then
+		entity._grug_home = {x = slot.pos.x, y = slot.pos.y, z = slot.pos.z}
 	elseif slot.role == "trainer" then
 		entity._grug_profession = slot.profession
 		entity._grug_walker = false
@@ -1150,6 +1172,7 @@ local function serve(row)
 	if not settlement_ready(row) then return 0, 0 end
 	local claims, live = scan_row(row)
 	local now = core.get_gametime()
+	local wall_now = os.time()
 	local new, freed = 0, 0
 	for index = 1, #row.slots do
 		local slot = row.slots[index]
@@ -1169,7 +1192,8 @@ local function serve(row)
 				end
 			end
 		end
-		if not slot.placed and (not slot.due or now >= slot.due) then
+		local due_now = slot.due and slot.due > 1000000000 and wall_now or now
+		if not slot.placed and (not slot.due or due_now >= slot.due) then
 			if occupied then
 				-- The second gate: the marker was lost, the NPC was not.
 				core.log("warning", "[grug_mobs] start npcs " .. row.key ..
@@ -1408,4 +1432,65 @@ function grug_mobs.start_guard_died(self)
 		core.get_gametime() + math.random(RESPAWN_MIN, RESPAWN_MAX))
 	core.log("action", "[grug_mobs] start npcs " .. row.key .. ": socket " ..
 		slot.id .. " lost its guard, refill due at " .. slot.due)
+end
+
+local ROYAL_HOLD = 2147483647
+
+local function royal_slots(row)
+	local result = {}
+	for index = 1, #row.slots do
+		local slot = row.slots[index]
+		if slot.role == "king" or
+				slot.entity:find("grug_mobs:royal_guard_", 1, true) then
+			result[#result + 1] = slot
+		end
+	end
+	return result
+end
+
+-- A fallen retinue member stays down for the current attempt.  The king's
+-- full reset restores all four slots together; killing the king instead books
+-- one shared absolute wall-clock timestamp for the complete five-NPC group.
+function grug_mobs.royal_guard_died(self)
+	local row = by_key[self._grug_start]
+	local slot = row and row.by_socket[self._grug_socket]
+	if slot and slot.placed then mark_free(row, slot, ROYAL_HOLD) end
+end
+
+function grug_mobs.royal_encounter_reset(self)
+	local row = by_key[self._grug_start]
+	if not row then return end
+	local claims = claims_of(row.key)
+	for _, slot in ipairs(royal_slots(row)) do
+		if slot.role ~= "king" then
+			local holder = claims[slot.id]
+			if holder and holder.object then holder.object:remove() end
+			claims[slot.id] = nil
+			if slot.placed then mark_free(row, slot, nil) else
+				slot.due = nil
+				storage:set_string(due_key(row.key, slot.id), "")
+			end
+		end
+	end
+	if grug_mobs.boss_attempt_reset then
+		grug_mobs.boss_attempt_reset(self._grug_boss_id)
+	end
+end
+
+function grug_mobs.royal_king_died(self)
+	local row = by_key[self._grug_start]
+	if not row then return end
+	local due = os.time() + 15 * 60
+	local claims = claims_of(row.key)
+	for _, slot in ipairs(royal_slots(row)) do
+		local holder = claims[slot.id]
+		if slot.role ~= "king" and holder and holder.object then
+			holder.object:remove()
+		end
+		claims[slot.id] = nil
+		if slot.placed then mark_free(row, slot, due) else
+			slot.due = due
+			storage:set_string(due_key(row.key, slot.id), tostring(due))
+		end
+	end
 end

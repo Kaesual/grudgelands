@@ -1,0 +1,10 @@
+R8-MOB1 package 2 headless spawn evidence
+command: KEEP=1 PORT=31501 SEED=15912857179583385436 PROBE="$PWD/tools/r8_mob1/clock_spawn_probe" nice -n 19 bash tools/luanti_headless.sh 240
+port: 31501
+seed: 15912857179583385436
+launcher: headless boot: PASS (port 31501, 240 s)
+ERROR_or_ModError_lines: 0
+
+ACTION[Server]: R8_MOB1_CLOCK_CANDIDATE name=grug_mobs:song_bird total=31069 zone=elandor_silverleaf_glades policy=true light=15 protected=true
+ACTION[Server]: R8_MOB1_CLOCK_SPAWN name=grug_mobs:song_bird tod=0.5 zone=elandor_silverleaf_glades x=1728 y=34 z=-2652
+ACTION[Server]: R8_MOB1_CLOCK_RESULT day_boar=1 night_zombie=1 day_song_bird=1 day_wild_turkey=1 night_giant_rat=1 night_wisp=1

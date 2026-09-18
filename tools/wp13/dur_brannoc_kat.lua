@@ -1030,11 +1030,11 @@ return function(repo)
 	-- of 27 props to exactly that shape of code.
 	--
 	-- The parapet in particular: it is walked column by column round the whole
-	-- boundary ring and skips every column that is paved or already built on,
-	-- so 240 is the length of the four open stretches left between the four
-	-- gatehouses, the four drums and the two avenues that leave the pad.
+	-- protected boundary. Its 296 columns are every non-gate column except the
+	-- four five-column corner-drum joins; placed content no longer subtracts
+	-- from that population.
 	for _, row in ipairs({{"nave_floor", 90}, {"pines", 12},
-			{"corner_drums", 4}, {"parapet_columns", 240}}) do
+			{"corner_drums", 4}, {"parapet_columns", 296}}) do
 		assert(core.landmarks[row[1]] == row[2], "the core's " .. row[1] ..
 			" population is " .. tostring(core.landmarks[row[1]]) ..
 			", not " .. row[2])

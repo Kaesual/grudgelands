@@ -405,7 +405,7 @@ anyone is watching.
   `unwatch.lua`, or the probe will keep reporting a defect the game does not
   have.
 
-## 7. What is open
+## 7. Round 8 zone tables shipped (2026-09-18)
 
 *(The two stale documents this list used to name are now fixed here:
 `docs/design/character_visuals.md` §4 describes three poses and the
@@ -413,13 +413,34 @@ anyone is watching.
 status pointer rather than a rewritten record — it is the round-2 record and
 stays as written.)*
 
-* **Per-zone fishing tables** (the user's "later"): the seam is
-  `grug_fishing.table_for(pos)` and it is the only thing that needs to change.
-* **More fish species.** One species is what the cooking ladder needs today;
-  the zone-table lane is the natural place for more, and the "identical on both
-  continents" ruling is the constraint it has to keep.
-* **Food buffs.** WP10 owns Well Fed, the restore percentages and the T4/T5
-  fish dishes.
+R8-COOK replaced the worldwide table behind the existing
+`grug_fishing.table_for(pos)` seam with six tables keyed by the ten-level band
+of `grug_core.mob_level_at(pos)`. That adapter delegates to the installed WP40
+zone authority (`mods/CORE/grug_core/zone_authority.lua:413-415`); its producer
+derives the surface value through `surface_level_from_classification` and the
+published zone difficulty field (`mods/MAPGEN/grug_mapgen/wp40/zones.lua:712-723,
+1220-1231`). A nil open-sea value deliberately falls into band 1, so casting in
+salt water never fails merely because the point lies beyond classified coastal
+water. Fresh and salt water use the same band table.
+
+| Level band | Fish (78%) | Raw-food tier | Remaining table |
+|---|---|---:|---|
+| 1–10 | `grug_mobs:raw_fish` | T1 | 12% stick, 10% papyrus |
+| 11–20 | `grug_fishing:silver_trout` | T2 | 12% stick, 10% papyrus |
+| 21–30 | `grug_fishing:mire_carp` | T3 | 12% stick, 10% papyrus |
+| 31–40 | `grug_fishing:frostfin` | T4 | 12% stick, 10% papyrus |
+| 41–50 | `grug_fishing:ember_eel` | T5 | 12% stick, 10% papyrus |
+| 51–60 | `grug_fishing:storm_tuna` | T6 | 12% stick, 10% papyrus |
+
+The startup registered-name audit walks all six tables. The five new fish use
+runtime colourized variants of the existing CC0 raw-fish texture; their food
+effects are assigned by `grug_food` from the band tier.
+
+Cooking Food v2 and the T4/T5 fish dishes are now shipped in `grug_cooking`;
+the exact data table is authoritative in `docs/design/items_crafting.md` §3.7.
+
+What remains open:
+
 * **The rod in first person.** This lane only owns the third-person attached
   entity. The engine's own first-person wielditem uses `wield_image` (which the
   rod does not declare, so it falls back to the inventory image) and is

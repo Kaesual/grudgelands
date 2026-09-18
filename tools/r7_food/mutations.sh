@@ -55,8 +55,8 @@ mutate() {
 	case "$name" in
 		tier)
 		replace_once "$target/mods/ITEMS/grug_food/init.lua" \
-			'[6] = {instant_hp = 300, min_level = 50' \
-			'[6] = {instant_hp = 301, min_level = 50'
+			'[6] = {instant_hp = 300, min_level = 51' \
+			'[6] = {instant_hp = 301, min_level = 51'
 		expected="tier table shape T6"
 		;;
 		raw)
@@ -67,10 +67,10 @@ mutate() {
 		;;
 	dish)
 		replace_once "$target/mods/ITEMS/grug_food/init.lua" \
-			'mana = {regen = {mana = 4}, modifiers = {mana_pool_percent = 4}},
-		hybrid = {regen = {hp = 2, mana = 2}, modifiers = {' \
-			'mana = {regen = {mana = 4}, modifiers = {mana_pool_percent = 4}},
-		hybrid = {regen = {hp = 2, mana = 3}, modifiers = {'
+			'caster = {regen = {hp = 3.5, mana = 3.5},
+			modifiers = {mana_pool_percent = 4}},' \
+			'caster = {regen = {hp = 3.5, mana = 3.6},
+			modifiers = {mana_pool_percent = 4}},'
 		expected="dish table rule"
 		;;
 		deferral)

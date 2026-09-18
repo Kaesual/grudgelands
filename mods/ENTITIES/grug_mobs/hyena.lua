@@ -12,6 +12,7 @@
 
 local hyena = {
 	description = "Hyena",
+	clock = "any",
 	type = "monster",
 	-- Level floor per §3.1 ("from L10"), same reasoning as wolf.lua: the
 	-- field hands out L10-ish values in the inner ring anyway, the floor

@@ -11,6 +11,7 @@
 local function wolf_def(description, texture)
 	return {
 		description = description,
+		clock = "any",
 		type = "monster",
 		-- Level floor per §3.1 ("from L10"); everything derived from it is
 		-- engine-owned (levels.lua) — no hp/damage/xp/armor here.

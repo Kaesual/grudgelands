@@ -1119,85 +1119,94 @@ trophy or cross-profession component.
 
 Neither of these costs a main profession slot (professions.md §1).
 
-- **Cooking** (trainer, free): cooked foods use regional ingredients and the
-  Cooking recipe book described below.
-  **Food v2** (R7.1/R7.2, decided 2026-09-18) replaces R9's 2026-09-17
-  raw/simply-cooked/well-cooked percentages. Every serving has a tier, a fixed
-  instant HP value and a **180 s** buff ticking every **5 s**. Exactly one food
-  buff may run at once; the latest serving replaces it. Eating in combat is
-  allowed: regeneration pauses, and the instant heal is deferred exactly once
-  to the first out-of-combat moment, checked every second, while secondary stat
-  bonuses remain active.
-  - Tier data are **T1 5 HP/L1, T2 15/L10, T3 40/L20, T4 90/L30,
-    T5 180/L40, T6 300/L50**. The instant value is HP only and identical for
-    every food in that tier.
-  - Any raw or unprocessed edible restores its tier's instant HP and regenerates
-    **1% of maximum HP per 5 s**, identical across tiers. A mana raw food uses
-    maximum mana for that regeneration component; Wild Cocoa is the current
-    example. A character without a mana pool receives a message and consumes
-    nothing.
-  - Dish effects are tier data, not branches in consumption code. The current
-    proposal is 2/3/3/4/4/5% of the selected maximum pool per tick for T1–T6.
-    HP, mana and split HP+mana roles live in the data table. T3/T4 add a total
-    +2/+4% role pool bonus; T5/T6 add +6/+8% to the selected pool, while the
-    split role instead adds +1 percentage point Crit. Round 8 may replace this
-    proposal table without changing the framework.
-  - Apples, blueberries, raw fish, raw meat and every gathering-catalog
-    `food`/`found_only_food` item are raw foods. Cooked Fish and cooked meat
-    are T1 HP dishes. All current foods are T1 unless a gathering row publishes
-    another tier.
-  - Every food carries `_grug_ilvl` from its tier and is refused below that
-    character level without consumption. Its tooltip states fixed instant HP,
-    tick effect, duration, combat rule and any requirement above level 1.
-  - Buffs are runtime-only. Relogging drops a food buff; it is not persisted.
-    The natural replacement cadence is one serving per 180 s, or about
-    **20 servings per hour**.
+- **Cooking** (trainer, free) uses the profession framework. Learning it opens
+  T1 and shows the complete T1–T6 catalog; profession level gates crafting and
+  `_grug_ilvl` gates eating independently. There is no Cooking Fire.
 
-  **Cooking uses the profession framework** (revised 2026-09-18, §2.2):
-  learning it opens T1 and exposes all six T1–T6 groups in its UI book.
-  Current-tier crafts advance its profession level and the character band
-  caps it exactly like a primary profession. Regional ingredients keep T6
-  dishes physically tied to level-50+ areas, but possession of an ingredient
-  neither discovers nor unlocks a recipe.
+  **Food v2 shipped values.** A serving lasts **180 s**, ticks every **5 s**,
+  and the newest food replaces the old one. Instant healing and regeneration
+  wait while the player is in combat; secondary modifiers remain active.
 
-  **The six groups are decided (E21, 2026-08-13; effects replaced by Food v2
-  on 2026-09-18)** — tier-defining ingredients and recipes; every named
-  ingredient is **reachable by both factions** (`biomes_mobs.md` §2/§6): T1–T5
-  exist on both continents, while wild cocoa deliberately lives only on
-  the shared contested front — The Skyglass Canopy on foot, Stormscale
-  Summit as the offshore island bonus — so no continent-local placement
-  may reintroduce it below level 51:
+  | Tier | Minimum level | Instant HP | Dish regeneration per tick | Hearty secondary | Caster secondary | Hunter secondary |
+  |---|---:|---:|---:|---|---|---|
+  | T1 | 1 | 5 | 2% | — | — | — |
+  | T2 | 11 | 15 | 2.5% | — | — | — |
+  | T3 | 21 | 40 | 3% | +2% HP pool | +2% mana pool | +2% HP pool |
+  | T4 | 31 | 90 | 3.5% | +4% HP pool | +4% mana pool | +4% HP pool |
+  | T5 | 41 | 180 | 4% | +6% HP pool | +6% mana pool | +1% Crit |
+  | T6 | 51 | 300 | 5% | +8% HP pool | +8% mana pool | +1% Crit |
 
-  | Group | Required same-tier ingredient(s) | Recipes |
+  Hearty and Hunter dishes regenerate HP. Caster dishes regenerate both HP and
+  mana at the listed rate. Every raw edible regenerates 1% maximum HP per tick;
+  Wild Cocoa is HP food, not mana food. Rock Salt and Salt Crust are inedible.
+
+  **Plants pending placement (R8-MAP-B).** R8-COOK registers these as
+  craftitems only. Their `Raw tier` is the band of the lowest planned source;
+  `Recipe tier` is the profession ingredient tier and may deliberately differ.
+
+  | Item | Raw tier | Recipe tier | Food rule | Planned source |
+  |---|---:|---:|---|---|
+  | Wild Grain | T1 | T1 | raw HP food | start-zone clearings |
+  | Carrot / Cassava | T1 | T1 | raw HP food | Accord / Throng start palettes |
+  | Wild Onion / Fire Pepper | T1 | T1 | inedible spice | faction start and home palettes |
+  | Pumpkin | T2 | T2 | raw HP food | level 11–20 margins |
+  | Blightberry / Sunberry / Jungle Berry | T2 | T2 | raw HP food | Throng level 11–20 palettes |
+  | Frost Melon | T3 | T4 | raw HP food | Frostbarrow and Whitebridge, level 21–30 |
+  | Sugar Cane | T1 | T2 | inedible sweetener | fresh and salt shores in every band |
+  | Bamboo Shoot | T1 | T1 | raw HP food | jungle and swamp shores |
+  | Cave Cap | T3 | T3 | raw HP food | caves at y −100…−500 |
+  | Salt Crust | T5 | T5 | inedible salt | The Shattered Line, level 41–50 |
+  | Ember Moss | T5 | T5 | inedible Alchemist reagent | emberrock at y ≤ −701 |
+
+  Existing raw-food tiers are Apple T1, Blueberries T1, raw meat T1, ordinary
+  Raw Fish T1, Corn T1, Potato T1, Melon T1, Mushroom T3 and Wild Cocoa T6.
+  The five band fish are T2–T6 respectively. Cooked Meat, Cooked Fish and Bread
+  are T1 Hearty dishes.
+
+  **Cooking book.** Every row is a profession recipe at the crafting grid and
+  contains at least one ingredient registered at its own recipe tier.
+
+  | Tier | Role | Inputs | Output |
+  |---|---|---|---|
+  | T1 | Hearty | raw meat + potato or corn | Hearty Stew |
+  | T1 | Caster | carrot or cassava + potato or corn | Sweetroot Mash |
+  | T1 | Hunter | raw fish + corn | Corn-Crusted Fish |
+  | T2 | Hearty | pumpkin + raw meat + potato or corn | Pumpkin Stew |
+  | T2 | Caster | 2 berries + Sugar Cane | Berry Preserve |
+  | T2 | Hunter | raw meat + apple or berries | Fruit-Glazed Roast |
+  | T3 | Hearty | mushroom + raw meat + potato or corn | Forager's Pot |
+  | T3 | Caster | 2 mushrooms | Mushroom Skewer |
+  | T3 | Hunter | raw meat + Wild Onion or Fire Pepper + mushroom | Onion-Seared Steak |
+  | T4 | Hearty | raw meat + Marshbloom + potato or corn | Marsh Roast |
+  | T4 | Caster | raw fish + Marshbloom | Marshbloom Chowder |
+  | T4 | Hunter | 2 raw meat + melon + mushroom | Hunter's Feast |
+  | T5 | Hearty | raw meat + Stormkelp + Rock Salt | Kelp-Wrapped Roast |
+  | T5 | Caster | Stormkelp + raw fish + melon | Stormkelp Broth |
+  | T5 | Hunter | raw fish + Rock Salt | Salt-Crusted Fish |
+  | T6 | Hearty | 2 raw meat + Wild Cocoa + Stormkelp | Grand Feast |
+  | T6 | Caster | 2 Wild Cocoa + Rock Salt | Jungle Cocoa |
+  | T6 | Hunter | raw meat + Wild Cocoa + Fire Pepper or Wild Onion | Cocoa-Rubbed Game |
+
+  **Both furnace patterns.** The three universal refinements appear in the
+  General book with a Furnace hint and need no profession: raw meat → Cooked
+  Meat, ordinary Raw Fish → Cooked Fish, and Wild Grain → Bread. Separately,
+  every tier has one Cooking grid recipe for an inedible raw assembly; its
+  profession-gated furnace route meets the direct grid route at the same edible
+  Hearty dish:
+
+  | Tier | Raw assembly inputs | Furnace output |
   |---|---|---|
-  | T1 | potato/corn | Cooked Meat / Cooked Fish; Hearty Stew (meat + potato/corn) |
-  | T2 | berries (apples as Accord extra) | Berry Preserve (2 berries); Fruit-Glazed Roast (meat + fruit) |
-  | T3 | mushrooms (found-only) | Mushroom Skewer (2 mushrooms); Forager's Pot (mushroom + meat + potato/corn) |
-  | T4 | melon + marshbloom | Marshbloom Chowder (fish + marshbloom); Hunter's Feast (2 meat + melon + mushroom) |
-  | T5 | rock salt + stormkelp | Salt-Crusted Fish (fish + rock salt); Kelp-Wrapped Roast (meat + stormkelp + rock salt) |
-  | T6 | wild cocoa | Jungle Cocoa (2 wild cocoa + rock salt); Grand Feast (2 meat + wild cocoa + stormkelp) |
+  | T1 | raw meat + potato or corn + Wild Grain | Hearty Stew |
+  | T2 | pumpkin + raw meat + Wild Grain | Pumpkin Stew |
+  | T3 | Cave Cap + raw meat + potato or corn | Forager's Pot |
+  | T4 | raw meat + Marshbloom + Frost Melon | Marsh Roast |
+  | T5 | raw meat + Stormkelp + Salt Crust | Kelp-Wrapped Roast |
+  | T6 | 2 raw meat + Wild Cocoa + Salt Crust | Grand Feast |
 
-  **Where the fish comes from, and the T1 dish — shipped 2026-09-16**
-  (WP13 playtest round 5; `docs/research/wp13-fishing.md`). The ladder above
-  named "fish" before anything produced one outside a Mirefolk drop. Fishing
-  is now a second source for that same item, and the T1 **Cooked Fish** exists
-  as the plain furnace dish the cooking ladder always listed. The three rows
-  below are the shipped items and nothing more: **the T4 Marshbloom Chowder,
-  the T5 Salt-Crusted Fish and the real Round 8 dish assignments remain to be
-  built**.
-
-  | Item | Itemstring | How it is obtained | Effect | Vendor price |
-  |---|---|---|---|---|
-  | Fishing Rod | `grug_fishing:rod` | crafted: 3 × stick + 2 × Spider Silk (the game's only string-class material); 64 catches | no dig, no damage; right-click water to cast | none (not a mob drop) |
-  | Raw Fish | `grug_mobs:raw_fish` | Mirefolk drop (WP6) **and, since this round, fishing** | T1 raw: 5 instant HP + 1% max HP/5 s | 2c (unchanged) |
-  | Cooked Fish | `grug_fishing:cooked_fish` | furnace, `cooking` recipe from Raw Fish, cooktime 5 | T1 HP dish: 5 instant HP + 2% max HP/5 s | none, exactly as `mobs:meat` — so §3.8's anti-loop rule has nothing to judge |
-
-  **One catch table for the whole world, per the round-5 ruling** ("fish
-  availability shall be identical on both continents, distributed over the
-  zones"): 78 % fish, 12 % stick, 10 % papyrus, with per-zone tables left as a
-  named seam for later. The junk is deliberately worthless and deliberately
-  **not** Stormkelp: that is the front-only T5 ingredient above, and a world-wide
-  fishing source for it would put the ingredient in every pond.
+  Fishing remains universal. `grug_fishing.table_for(pos)` maps the
+  authoritative mob level at the cast position to six ten-level tables; each
+  table is 78% its band fish, 12% stick and 10% papyrus. Fresh and salt water
+  use the same table for the same level.
 
 - **First Aid** (trainer, free): Linen/Heavy/Silk Bandage — channel
   6 s (damage interrupts), restores 15%/30%/45% HP, then 30 s

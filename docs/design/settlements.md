@@ -150,6 +150,24 @@ crossing water as a bridge, with a lamp line every eight nodes that survives
 the mapchunk borders. Where an avenue crosses the ring street the avenue runs
 through and the side street yields, and no lamp stands in the crossing road.
 
+**The civic-core boundary is protected.** Decided 2026-09-18 after playtest
+round 10. Its hedge, parapet, bank or palisade is written after all structural
+core content and later dressing may use only free cells: a house, orchard,
+green, lore piece, martial piece or prop may meet the boundary but may not cut
+it. Only the four authored thirteen-column gate or threshold bands stay open.
+A fitting attached to content displaced by the boundary is removed, and an
+edge building faces inward so its door remains usable. The six forms of the
+same rule are:
+
+| Capital | Protected civic-core boundary |
+| --- | --- |
+| Highcourt | Three-course clipped hedge. |
+| Dur Brannoc | Two-course masonry parapet; the four closed corner drums replace its corner columns. |
+| Gor Drazhak | Two-course earth bank with alternating acacia stakes; closed timber corner towers replace its corner columns. |
+| Nhal Veyr | Two-course dungeon-stone parapet with alternating bars; the four closed corner drums replace its corner columns. |
+| Lethariel | Three-course silverwood hedge on every dry edge; the authored mere is the boundary where it reaches the north edge. |
+| Kezamba | Three-course junglewood palisade on every dry edge; the authored cenote is the boundary where it reaches the north-east edge. |
+
 **One street rule, for every street of every capital.** Decided 2026-09-16 with
 playtest round 5 and shipped the same day
 ([wp13-street-geometry.md](../research/wp13-street-geometry.md)); it holds for
@@ -439,7 +457,7 @@ want lived-in settlements without paying for it in server load"):
   everybody (no faction and no race restriction, and therefore no kinship
   discount); only the smith and the armourer also sell the equipment ladder.
   The six starts keep their single race vendor.
-- **A peaceful NPC's nametag is culled like a guard's.** Villagers, elders and
-  vendors used to render their name out to the engine's whole object-send
-  range, which made a busy district a wall of floating text; they now use the
-  25/30 m proximity gate the combat families already had.
+- **A peaceful NPC's nametag is culled like a guard's** (per-viewer mechanism
+  adopted 2026-09-18). Villagers, elders and vendors use the same independent
+  25 m show / 30 m hide carrier gate as combat families. A nearby player no
+  longer exposes settlement names to a different, distant player.
