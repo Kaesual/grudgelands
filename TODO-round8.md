@@ -147,9 +147,9 @@ MAP-A (both refresh the WP40 fixture pins). R8-COOK no longer waits for it:
 COOK defines the new plants as items with tiers and recipes, MAP-B only
 places them in the world (P9G-2), adds the second soils and the crop soil.
 The Highcourt hedge-ring fix moved to its own mini-lane R8-HEDGE (WP13
-code, runs in parallel now). If MAP-A is not merged by the evening of
-2026-09-18, MAP-B moves to Round 9 unchanged; Playtest 11 then uses the new
-ingredients from the creative inventory.
+code, runs in parallel now). **Decided 2026-09-18 evening: MAP-A's review demanded a large fix round,
+so MAP-B moves to Round 9 unchanged**; Playtest 11 uses the new ingredients
+from the creative inventory until then.
 
 
 1. **Plant placement P9G-2**: version the P9G tail from the closed
