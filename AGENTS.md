@@ -511,6 +511,15 @@ Details + line numbers in [docs/research/](docs/research/).
     elite/rare test** (`grug_mobs.tier_telegraphs`, one predicate for both
     call sites) — a `tier ~= "normal"` test hands a rabbit a 2 s wind-up
     and a ×3 cone hit the day a fourth tier appears.
+  - **Per-viewer nametags since 2026-09-18**: every tagged mob, peaceful NPC,
+    vendor and player owns one invisible `grug_core:tag_carrier` child. Parent
+    tags stay empty/alpha-zero; the child text is observer-managed at 25 m show
+    / 30 m hide independently per viewer, with a player's owner excluded.
+    Create/remove carriers through the shared `grug_core/tag_carrier.lua` seam,
+    update text there (including telegraph/tier/HP changes), and change observer
+    sets only from the existing 1 Hz gates. Carriers are non-pointable,
+    non-physical and unsaved; the vendored spawn AOC check subtracts only these
+    presentation children on its raw-limit rejection path.
   - **Three behaviour classes, and a new mob picks one**
     (`biomes_mobs.md` §3.0): **critter** (small, scenery with a use —
     food-only drops, `passive` + `runaway`), **passive prey** (the large
