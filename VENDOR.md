@@ -175,19 +175,18 @@ combat-physics rulings:
   common registration path. The matching player property lives outside the
   vendored tree in `grug_core`.
 
-**63 markers in `mobs/api.lua`, plus one each in `mobs/grug_obstacle.lua` and
-`mobs/grug_tag_budget.lua`.**
+**59 markers in `mobs/api.lua`, plus one in `mobs/grug_obstacle.lua`.**
 
-## R8 per-viewer tag-carrier spawn budget (2026-09-18)
+## R8 per-viewer parent-tag isolation (2026-09-18)
 
-Observer-managed nametags add one unsaved presentation entity per tagged
-parent. `api.lua` routes the wider active-object refusal through
-`grug_tag_budget.lua`: only when the raw 3×3×3-mapblock count reaches
-`max_objects_per_block`, the helper scans that exact block-aligned volume and
-subtracts `grug_core:tag_carrier` entities. Every gameplay object retains the
-upstream budget, and the extra scan cannot run on the ordinary below-limit
-path. The fixed-seed spawn probe measured 16.000/min before carriers,
-14.333/min with uncompensated carriers and 18.333/min after this correction.
+The existing `update_tag()` current-staticdata patch now keeps `_nametag` for
+infotext and persistence while permanently clearing the mob/NPC parent
+nametag. The reset-stick path in `crafts.lua` likewise copies `_nametag` but
+keeps the replacement parent's property empty. Visible text belongs only to
+the observer-managed `grug_core:tag_carrier`. This reuses the existing
+`api.lua` patch marker and adds no spawn-budget patch: carriers have
+`static_save = false`, so the engine never includes them in the static-object
+count supplied to mobs_redo's `aoc` comparison.
 
 ## Fresh-server cleanup — 2026-09-13
 
@@ -274,10 +273,6 @@ regardless of `dtime_s`, and shared `on_deactivate` is the sole debit boundary.
 `mob_staticdata` is counter-neutral for initial stores, active resaves and
 unloads. The total is **49 markers**. The older `(g)` wording inside the compact
 table row below records the replaced implementation, not the current rule.
-
-The mobs row's embedded pre-R8 count of 62 is historical; the current inventory
-is 63 `api.lua` markers plus the two helper-file markers recorded in the R8
-section above.
 
 | Path | Upstream | Vendored commit | License | Local patches |
 |------|----------|-----------------|---------|---------------|

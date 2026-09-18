@@ -516,10 +516,11 @@ Details + line numbers in [docs/research/](docs/research/).
     tags stay empty/alpha-zero; the child text is observer-managed at 25 m show
     / 30 m hide independently per viewer, with a player's owner excluded.
     Create/remove carriers through the shared `grug_core/tag_carrier.lua` seam,
-    update text there (including telegraph/tier/HP changes), and change observer
-    sets only from the existing 1 Hz gates. Carriers are non-pointable,
-    non-physical and unsaved; the vendored spawn AOC check subtracts only these
-    presentation children on its raw-limit rejection path.
+    update text there (including telegraph/tier/HP changes), and leave observer
+    sets plus orphan cleanup to that module's one central 1 Hz pass. Carriers
+    are non-pointable, non-physical and unsaved. Unsaved Lua entities never
+    enter the engine's static-object count used by mobs_redo `aoc`; do not
+    compensate or otherwise modify that spawn-budget comparison for carriers.
   - **Three behaviour classes, and a new mob picks one**
     (`biomes_mobs.md` §3.0): **critter** (small, scenery with a use —
     food-only drops, `passive` + `runaway`), **passive prey** (the large

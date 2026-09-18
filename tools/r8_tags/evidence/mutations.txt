@@ -1,0 +1,18 @@
+R8-TAGS mutation command, 2026-09-18
+
+ROOT=/absolute/path/to/repository
+for mutation in 1 2 3 4 5 6 7 8 9 10; do
+  KAT_ROOT="$ROOT" MUTATION="$mutation" luajit -e 'local root=os.getenv("KAT_ROOT"); io.write(dofile(root .. "/tools/r8_tags/kat.lua")(root))'
+done
+
+Every invocation must exit non-zero. Canonical failure rules:
+MUTATION=1 KILLED initial per-viewer show set
+MUTATION=2 KILLED owner excluded from own carrier
+MUTATION=3 KILLED real tier and HP text propagation
+MUTATION=4 KILLED central pass removes orphan
+MUTATION=5 KILLED carrier is unsaved
+MUTATION=6 KILLED carrier is non-pointable
+MUTATION=7 KILLED one carrier per parent
+MUTATION=8 KILLED real vendor install created carrier
+MUTATION=9 KILLED real villager install created carrier
+MUTATION=10 KILLED vendored base updater cannot expose a parent nametag

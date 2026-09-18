@@ -823,9 +823,11 @@ design (`group_attack` stays on).
   invisible, non-pointable, non-physical, unsaved child entity. The parent's
   nametag stays empty (non-players) or alpha-zero (players). The child carries
   the text, inherits the parent's nametag height, and uses the engine's managed
-  observer set for the per-viewer rule above. Player positions are snapshotted
-  once per second; observer sets are written only when they change. A carrier
-  is removed with its parent and self-removes if it becomes orphaned.
+  observer set for the per-viewer rule above. One central pass snapshots player
+  positions and manages every carrier once per second; unchanged observer sets
+  are not written. Carriers have no per-entity `on_step`: the central pass also
+  removes an orphan, while explicit parent lifecycle hooks remove the ordinary
+  cases immediately.
 - **Con colors are per viewer** and live in a **HUD target frame** (the
   mob you look at/punch; nametags cannot be colored per viewer). The
   frame's **reach is 20 m** — our choice, not an engine constant: far

@@ -1,0 +1,4 @@
+ROOT=/absolute/path/to/repository
+KAT_ROOT="$ROOT" chrt --idle 0 ionice -c3 "$ROOT/tools/bin/lua51" -e 'local root=assert(os.getenv("KAT_ROOT")); io.write(dofile(root .. "/tools/r8_tags/final_kat.lua")(root))' > puc.txt
+KAT_ROOT="$ROOT" chrt --idle 0 ionice -c3 luajit -e 'local root=assert(os.getenv("KAT_ROOT")); io.write(dofile(root .. "/tools/r8_tags/final_kat.lua")(root))' > luajit.txt
+cmp puc.txt luajit.txt && sha256sum puc.txt luajit.txt
