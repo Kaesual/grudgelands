@@ -791,6 +791,9 @@ design (`group_attack` stays on).
   mana, and Precision +1/2/3/4 percentage points crit. Stoneskin is +4% armor
   for 30 minutes and Deepwater grants water breathing for 10 minutes. Ordinary
   stat elixirs last 15 minutes. None of the elixirs touches the potion clock.
+  Each worn Apothecary piece adds 10% duration to timed potions and elixirs
+  and one percentage point to a stat elixir, with at most two pieces counted;
+  instant potions are unchanged.
 - Mana regeneration is **`1 + 0.15 × level` mana/s** out of combat (1.15 at
   L1, 2.5 at L10, 5.5 at L30, 10 at L60), multiplied by the Troll
   `ooc_regen_mult` perk. In combat it is one quarter of the **unmodified**

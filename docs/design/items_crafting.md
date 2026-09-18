@@ -992,14 +992,15 @@ consumption or cooldown. A mana potion may be consumed at full mana. Elixirs
 never touch the potion clock: exactly one `elixir` status may run, the newest
 replaces it, and it stacks with the separate food status. Pool and crit values
 are percentage points. Apothecary equipment carrying `grug_apothecary` adds
-10% duration and +1 percentage point to a stat elixir per worn piece, with at
-most two pieces counted. Consumables require the first character level of
+10% duration to timed potions and elixirs, and +1 percentage point to a stat
+elixir, per worn piece, with at most two pieces counted. Instant potions are
+unchanged. Consumables require the first character level of
 their recipe tier: **1, 11, 21, 31, 41, 51**.
 
 | Tier | Product | Reagent 1 | Reagent 2 | Effect |
 |---:|---|---|---|---|
 | T1 | Healing Potion | Gravemoss | Sunleaf | 30% maximum HP instantly; 60 s shared cooldown |
-| T2 | Mana Potion | Gravemoss | Sugar Cane | 30% maximum mana instantly; 60 s shared cooldown |
+| T1 | Mana Potion | Gravemoss | Carrot or Cassava | 30% maximum mana instantly; 60 s shared cooldown |
 | T2 | Antivenom | Dragonweed | Venom Gland | Clears all active poison; 60 s shared cooldown |
 | T2 | Swiftness Draught | Dragonweed | Fang | +10% movement speed for 5 s; 60 s shared cooldown |
 | T3 | Greater Healing Potion | Crimson Lotus | Gravemoss | 30% maximum HP instantly; 45 s shared cooldown |

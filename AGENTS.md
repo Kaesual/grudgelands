@@ -472,7 +472,9 @@ Details + line numbers in [docs/research/](docs/research/).
   `(2,1,-12)`, directly east of the Alchemist trainer. Potions share
   `grug_traders`' persistent clock (60 s, or 45 s for the Greater pair);
   elixirs replace status id `elixir`, stack with status id `food`, and never
-  touch that clock. `grug_gathering`'s herb authorizer delegates to
+  touch that clock. Apothecary gear extends timed potions and elixirs by 10%
+  per piece (maximum two), but does not change instant potions.
+  `grug_gathering`'s herb authorizer delegates to
   `grug_jobs.has(player, "alchemist")`; Cave Cap remains universal food.
   Real-code Lua 5.1 regressions live under `tools/wp39/` and must stay green
   when changing the ray, clock, settlement, reticle, casts or projectiles.
