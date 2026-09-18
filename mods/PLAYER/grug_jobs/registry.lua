@@ -33,7 +33,7 @@ local station_handlers = {}
 local ambiguous_crafts_logged = {}
 local registration_phase
 local registry_metrics = {
-	compatibility_checks = 0,
+	matrix_checks = 0,
 	engine_output_scans = 0,
 	group_item_checks = 0,
 	token_overlap_computations = 0,
@@ -99,8 +99,7 @@ local function can_match_all(left, right, compatible)
 	for left_index = 1, #left do
 		local neighbors = {}
 		for right_index = 1, #right do
-			registry_metrics.compatibility_checks =
-				registry_metrics.compatibility_checks + 1
+			registry_metrics.matrix_checks = registry_metrics.matrix_checks + 1
 			if compatible(left[left_index], right[right_index]) then
 				neighbors[#neighbors + 1] = right_index
 			end
@@ -613,7 +612,7 @@ grug_jobs._input_languages_overlap = function(first, second)
 end
 grug_jobs._recipe_registry_metrics = function()
 	return {
-		compatibility_checks = registry_metrics.compatibility_checks,
+		matrix_checks = registry_metrics.matrix_checks,
 		engine_output_scans = registry_metrics.engine_output_scans,
 		group_item_checks = registry_metrics.group_item_checks,
 		token_overlap_computations = registry_metrics.token_overlap_computations,

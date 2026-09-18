@@ -101,9 +101,9 @@ return function(repo)
 		grug_jobs.validate_recipe_collisions()
 		local metrics = grug_jobs._recipe_registry_metrics()
 		local get_all_calls, get_group_calls = counts()
-		check(metrics.compatibility_checks <= 861000,
+		check(metrics.matrix_checks <= 861000,
 			"compatibility matrix bound exceeded: " ..
-			tostring(metrics.compatibility_checks))
+			tostring(metrics.matrix_checks))
 		check(metrics.engine_output_scans <= 4802,
 			"engine corpus scan bound exceeded: " ..
 			tostring(metrics.engine_output_scans))
@@ -142,29 +142,29 @@ return function(repo)
 			"adversarial nine-slot languages were reported as overlapping")
 		local after = grug_jobs._recipe_registry_metrics()
 		local get_all_calls, get_group_calls = counts()
-		local compatibility = after.compatibility_checks - before.compatibility_checks
+		local matrix_checks = after.matrix_checks - before.matrix_checks
 		local item_checks = after.group_item_checks - before.group_item_checks
 		local pair_checks = after.token_overlap_computations -
 			before.token_overlap_computations
-		check(compatibility == 81,
+		check(matrix_checks == 81,
 			"nine-slot comparison did not build exactly one 9x9 matrix")
 		check(item_checks == 1500 and get_group_calls == 1500,
 			"group membership sets were not cached once per group")
 		check(pair_checks == 4,
 			"group token pairs were recomputed: " .. tostring(pair_checks))
 		check(get_all_calls == 0, "language comparison scanned the engine corpus")
-		return compatibility, item_checks, pair_checks
+		return matrix_checks, item_checks, pair_checks
 	end
 
 	local scale, corpus_scans = run_corpus_scale()
-	local compatibility, item_checks, pair_checks = run_adversarial_groups()
+	local matrix_checks, item_checks, pair_checks = run_adversarial_groups()
 	local report = table.concat({
 		"scale", "professions=200", "universal=2000",
-		"compatibility=" .. scale.compatibility_checks,
+		"matrix_checks=" .. scale.matrix_checks,
 		"corpus_scans=" .. corpus_scans,
 	}, "\t") .. "\n" .. table.concat({
 		"adversarial", "slots=9", "broad_groups=8",
-		"compatibility=" .. compatibility,
+		"matrix_checks=" .. matrix_checks,
 		"group_item_checks=" .. item_checks,
 		"token_pairs=" .. pair_checks,
 	}, "\t") .. "\n"
