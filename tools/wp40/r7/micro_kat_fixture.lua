@@ -615,6 +615,7 @@ return function(repo, changed_roster_relative, expected_changed_count)
 	function mob_core.register_lbm() callback_count = callback_count + 1 end
 	function mob_core.register_globalstep() callback_count = callback_count + 1 end
 	function mob_core.register_on_leaveplayer() callback_count = callback_count + 1 end
+	function mob_core.register_on_dieplayer() callback_count = callback_count + 1 end
 	function mob_core.register_on_shutdown() callback_count = callback_count + 1 end
 	function mob_core.register_on_mods_loaded() callback_count = callback_count + 1 end
 	function mob_core.register_on_joinplayer() callback_count = callback_count + 1 end
@@ -679,7 +680,9 @@ return function(repo, changed_roster_relative, expected_changed_count)
 			zone_authority_installed = function() return true end,
 			get_player_faction = function() return "accord" end,
 			get_race_perk = function() return nil end,
+			register_on_player_hit_mob = function() end,
 			register_on_effective_heal = function() end,
+			register_on_effective_absorb = function() end,
 			start_identities = function()
 				local result = {}
 				for index = 1, #mob_start_identities do
