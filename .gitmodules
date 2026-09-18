@@ -34,3 +34,6 @@
 [submodule "reference_projects/x_farming"]
 	path = reference_projects/x_farming
 	url = https://bitbucket.org/minetest_gamers/x_farming.git
+[submodule "reference_projects/farming"]
+	path = reference_projects/farming
+	url = https://codeberg.org/tenplus1/farming.git
