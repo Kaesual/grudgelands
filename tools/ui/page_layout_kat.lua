@@ -14,6 +14,10 @@
 -- Usage (ABSOLUTE repository root required):
 --   luajit -e 'io.write(dofile("tools/ui/page_layout_kat.lua")("/abs/repo"))'
 --   tools/bin/lua51 -e 'io.write(dofile("tools/ui/page_layout_kat.lua")("/abs/repo"))'
+-- Read-only mutation checks:
+--   R7_UI_MUTATION=1 moves the rendered Respec button beyond the right edge.
+--   R7_UI_MUTATION=2 moves the tabheader to 99,99.
+--   R7_UI_MUTATION=3 shortens the rendered form to size[8,5].
 
 local M = {}
 
@@ -23,6 +27,16 @@ local LEGACY_UNIT_PX = 48
 local LABEL_HEIGHT = LABEL_LINE_PX / LEGACY_UNIT_PX
 local LABEL_BYTE_WIDTH = 9 / LEGACY_UNIT_PX
 local FORM_MARGIN = 0.10
+local EXPECTED_FORM_W = 8
+local EXPECTED_FORM_H = 9.1
+local EXPECTED_TAB_X = 0
+local EXPECTED_TAB_Y = 0
+-- The vendored legacy sfinv template places its three-row main list at 6.35;
+-- its last slot edge is therefore 9.35 even though size[] remains 9.1 high.
+-- This is the sole accepted legacy cell-edge allowance, and applies only to
+-- that exact lower current_player/main list; every other element is bounded by
+-- size[] itself.
+local LEGACY_LIST_BOTTOM_ALLOWANCE = 0.25
 
 local EQUIPMENT_SLOTS = {
 	{list = "grug_head", label = "Head"},
@@ -204,6 +218,11 @@ end
 
 local function make_player(class_id, level)
 	local factors = {warrior = 1.20, mage = 0.90, priest = 1.00}
+	local first_talents = {
+		warrior = "ironbound=1",
+		mage = "tinder=1",
+		priest = "gentle_hand=1",
+	}
 	local inventory = {}
 	function inventory:get_stack()
 		return empty_stack()
@@ -221,6 +240,9 @@ local function make_player(class_id, level)
 		_meta = make_meta(),
 		_inventory = inventory,
 	}
+	if level == 60 then
+		player._meta:set_string("grug_classes:talents", first_talents[class_id])
+	end
 	function player:get_player_name()
 		return self._class .. "_l" .. self._level
 	end
@@ -252,7 +274,7 @@ local function label_width(text)
 end
 
 local function geometry(formspec)
-	local texts, visuals, controls = {}, {}, {}
+	local texts, visuals, controls, elements = {}, {}, {}, {}
 	local form
 	local index = 0
 	for kind, body in formspec:gmatch("([%a_]+)%[([^%]]*)%]") do
@@ -289,7 +311,7 @@ local function geometry(formspec)
 					kind = kind, index = index, location = location,
 					listname = listname}
 			end
-		elseif kind == "image" or kind == "item_image" then
+		elseif kind == "image" or kind == "item_image" or kind == "model" then
 			local position, size = body:match("^([^;]+);([^;]+);")
 			local x, y = parse_pair(position or "")
 			local w, h = parse_pair(size or "")
@@ -324,16 +346,18 @@ local function geometry(formspec)
 			end
 		end
 		if box then
+			elements[#elements + 1] = box
 			if kind == "label" or kind == "textarea" or kind == "hypertext" then
 				texts[#texts + 1] = box
-			elseif kind == "list" or kind == "image" or kind == "item_image" then
+			elseif kind == "list" or kind == "image" or kind == "item_image" or
+					kind == "model" then
 				visuals[#visuals + 1] = box
 			else
 				controls[#controls + 1] = box
 			end
 		end
 	end
-	return texts, visuals, controls, form
+	return texts, visuals, controls, elements, form
 end
 
 local function intersects(a, b)
@@ -343,18 +367,33 @@ local function intersects(a, b)
 end
 
 local function overlap_failures(page_name, class_id, level, formspec)
-	local texts, visuals, controls, form = geometry(formspec)
+	local texts, visuals, controls, elements, form = geometry(formspec)
 	local failures = {}
 	if not form then
 		failures[#failures + 1] = page_name .. " has no parsed size[] bound"
 	else
-		for _, text_box in ipairs(texts) do
-			if text_box.x < 0 or text_box.y < 0 or
-					text_box.x + text_box.w > form.w - FORM_MARGIN or
-					text_box.y + text_box.h > form.h then
-				failures[#failures + 1] = ("%s/%s/L%d %s[%d] %q exceeds %.1fx%.1f form")
-					:format(page_name, class_id, level, text_box.kind,
-						text_box.index, text_box.text or "", form.w, form.h)
+		if math.abs(form.w - EXPECTED_FORM_W) > 0.000001 or
+				math.abs(form.h - EXPECTED_FORM_H) > 0.000001 then
+			failures[#failures + 1] = ("%s/%s/L%d form is %.2fx%.2f, expected %.1fx%.1f")
+				:format(page_name, class_id, level, form.w, form.h,
+					EXPECTED_FORM_W, EXPECTED_FORM_H)
+		end
+		for _, element in ipairs(elements) do
+			local right_margin = (element.kind == "label" or
+				element.kind == "textarea" or element.kind == "hypertext")
+				and FORM_MARGIN or 0
+			local legacy_lower_main = element.kind == "list" and
+				element.location == "current_player" and
+				element.listname == "main" and element.x == 0 and
+				element.y == 6.35 and element.w == 8 and element.h == 3
+			local bottom_allowance = legacy_lower_main
+				and LEGACY_LIST_BOTTOM_ALLOWANCE or 0
+			if element.x < 0 or element.y < 0 or
+					element.x + element.w > form.w - right_margin or
+					element.y + element.h > form.h + bottom_allowance then
+				failures[#failures + 1] = ("%s/%s/L%d %s[%d] exceeds %.1fx%.1f usable form")
+					:format(page_name, class_id, level, element.kind,
+						element.index, form.w, form.h)
 			end
 		end
 	end
@@ -379,15 +418,21 @@ local function overlap_failures(page_name, class_id, level, formspec)
 			:format(class_id, level, equipment_slots, #EQUIPMENT_SLOTS)
 	end
 
-	local tabheaders = 0
+	local tabheaders = {}
 	for _, control in ipairs(controls) do
 		if control.kind == "tabheader" then
-			tabheaders = tabheaders + 1
+			tabheaders[#tabheaders + 1] = control
 		end
 	end
-	if tabheaders ~= 1 then
+	if #tabheaders ~= 1 then
 		failures[#failures + 1] = ("%s/%s/L%d has %d tabheaders, expected one")
-			:format(page_name, class_id, level, tabheaders)
+			:format(page_name, class_id, level, #tabheaders)
+	elseif tabheaders[1].x ~= EXPECTED_TAB_X or
+			tabheaders[1].y ~= EXPECTED_TAB_Y or
+			tabheaders[1].name ~= "sfinv_nav_tabs" then
+		failures[#failures + 1] = ("%s/%s/L%d tabheader is %.2f,%.2f/%s, expected 0,0/sfinv_nav_tabs")
+			:format(page_name, class_id, level, tabheaders[1].x,
+				tabheaders[1].y, tostring(tabheaders[1].name))
 	end
 
 	if page_name == "talents" then
@@ -445,10 +490,13 @@ local function run_checks(repo)
 		end
 	end
 
+	local mutation = tonumber(os.getenv("R7_UI_MUTATION") or "") or 0
+	local mutation_hits = 0
 	local rows, failures = {}, {}
 	rows[#rows + 1] = ("r7_ui_layout_assumption\tlabel_font_px=%d\t" ..
-		"label_line_px=%d\tlegacy_unit_px=%d"):format(
-		LABEL_FONT_PX, LABEL_LINE_PX, LEGACY_UNIT_PX)
+		"label_line_px=%d\tlegacy_unit_px=%d\tform=%.1fx%.1f"):format(
+			LABEL_FONT_PX, LABEL_LINE_PX, LEGACY_UNIT_PX,
+			EXPECTED_FORM_W, EXPECTED_FORM_H)
 	for _, class_id in ipairs({"warrior", "mage", "priest"}) do
 		for _, level in ipairs({1, 60}) do
 			local player = make_player(class_id, level)
@@ -461,6 +509,21 @@ local function run_checks(repo)
 					nav_idx = page_spec.nav}
 				local page = env.sfinv.pages[page_spec.id]
 				local formspec = page:get(player, context)
+				local changed
+				if mutation == 1 then
+					formspec, changed = formspec:gsub(
+						"button%[5%.65,1%.30;2%.15,0%.5;grug_talent_respec;",
+						"button[8.65,1.30;2.15,0.5;grug_talent_respec;", 1)
+				elseif mutation == 2 then
+					formspec, changed = formspec:gsub("tabheader%[0,0;",
+						"tabheader[99,99;", 1)
+				elseif mutation == 3 then
+					formspec, changed = formspec:gsub("size%[8,9%.1%]",
+						"size[8,5]", 1)
+				else
+					changed = 0
+				end
+				mutation_hits = mutation_hits + changed
 				local found, text_count, visual_count, control_count, slot_count = overlap_failures(
 					page_spec.name, class_id, level, formspec)
 				if page_spec.name == "character" and text_count ~= 2 then
@@ -477,6 +540,12 @@ local function run_checks(repo)
 					#found == 0 and "PASS" or "FAIL")
 			end
 		end
+	end
+	local expected_mutation_hits = {[1] = 3, [2] = 12, [3] = 12}
+	if mutation ~= 0 and mutation_hits ~= expected_mutation_hits[mutation] then
+		failures[#failures + 1] = ("mutation %d changed %d formspecs, expected %s")
+			:format(mutation, mutation_hits,
+				tostring(expected_mutation_hits[mutation]))
 	end
 	rows[#rows + 1] = ("r7_ui_layout_result\t%s\t%d"):format(
 		#failures == 0 and "PASS" or "FAIL", #failures)

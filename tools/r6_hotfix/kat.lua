@@ -532,7 +532,7 @@ return function(repo)
 	}
 	local formspec = pages["grug_inventory:character"].get(nil, page_player, {})
 	if mutation == 3 then
-		formspec = formspec:gsub("= 30 max", "= 20 / 30", 1)
+		formspec = formspec:gsub("HP 30=", "HP 20 / 30 ", 1)
 	end
 	want(formspec:find("HP 30=B26xC1.00x(100+G0+T0)%", 1, true)
 		~= nil, "Character page shows Max HP derivation")
@@ -560,6 +560,13 @@ return function(repo)
 	want(help_formspec:find(
 		"At level 60, an item-level 70 weapon gives about 9% more effective swing damage than item level 60, while item level 50 gives about 7% less, before enchants.",
 		1, true) ~= nil, "Help page shows the measured L60 item-level examples")
+	want(help_formspec:find("Crit multiplies damage by 1.5.", 1, true) ~= nil,
+		"Help page explains Crit")
+	want(help_formspec:find("Dodge avoids the hit entirely.", 1, true) ~= nil,
+		"Help page explains Dodge")
+	want(help_formspec:find(
+		"Each Armor point reduces incoming punch damage by 1 percentage point.",
+		1, true) ~= nil, "Help page explains Armor")
 
 	for _, row in ipairs(tooltip_rows) do
 		io.write(("tooltip L%d smite=%d flash_heal=%d shield=%d\n"):format(
