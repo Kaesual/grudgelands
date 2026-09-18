@@ -152,6 +152,10 @@ return function(root)
 			grug_alchemy.INGREDIENT_TIERS[item] == nil,
 			"Cooking owns ingredient tier for " .. item)
 	end
+	local mana_tier = craftitems["grug_alchemy:potion_mana"]._grug_ilvl
+	if mutation == "cooking_tier" then mana_tier = 1 end
+	check(mana_tier == 11,
+		"Cooking T2 Sugar Cane moves Mana Potion consumption to level 11")
 
 	local brewing_count = 0
 	for index = 1, #recipes do
@@ -288,5 +292,5 @@ return function(root)
 	if mutation == "cave_cap" then allowed = false end
 	check(allowed, "Cave Cap remains food-grade")
 
-	return "R8-ALCH alchemy KAT PASS recipes=21 cooldown=60/45 elixir=exclusive+food+clock gear=2 ilvl=1,11,21,31,41,51 herbs=closed\n"
+	return "R8-ALCH alchemy KAT PASS recipes=21 cooldown=60/45 elixir=exclusive+food+clock gear=2 mana_ilvl=11 ilvl=1,11,21,31,41,51 herbs=closed\n"
 end

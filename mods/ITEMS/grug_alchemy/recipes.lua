@@ -66,7 +66,7 @@ end
 local catalog = {
 	potion("potion_healing", "Healing Potion", 1, G .. "gravemoss",
 		G .. "sunleaf", "health", grug_alchemy.POTION_COOLDOWN, "#d13b45"),
-	potion("potion_mana", "Mana Potion", 1, G .. "gravemoss",
+	potion("potion_mana", "Mana Potion", 2, G .. "gravemoss",
 		C .. "sugar_cane", "mana", grug_alchemy.POTION_COOLDOWN, "#356ed1"),
 	utility("potion_antivenom", "Antivenom", 2, G .. "dragonweed",
 		M .. "venom_gland", "antivenom", 0, "Cures poison", "#63ba52"),
