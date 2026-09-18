@@ -60,8 +60,9 @@ local runtime = dofile(wp40 .. "/r7_runtime.lua")(core, wp40,
 	default_path .. "/schematics", payload.projection, catalog)
 local built = runtime.build(native.identities(), payload.manifest_sha256)
 if built.full_seed ~= payload.full_seed then fail("main/emerge seed differs") end
-local native_baseline = core.settings:get_bool(
-	"grug_mapgen_r8_native_baseline", false)
+local native_baseline = core.settings and
+	type(core.settings.get_bool) == "function" and
+	core.settings:get_bool("grug_mapgen_r8_native_baseline", false) or false
 
 core.register_on_generated(function(vmanip, minp, maxp, blockseed)
 	minp = plain_engine_position(minp, "generated minp")
