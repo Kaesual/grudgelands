@@ -263,7 +263,8 @@ mounts and bosses remain unbuilt. X1, X2 and X4 of the talent trees are in the
 game; X4's respec prices remain coordinator placeholders. Geographic PvP,
 bounded war-front life and the rebased economy are also pending. Remaining
 mount and deep-content decisions live in [the crafting/mount TODO](TODO-design-crafting-rework.md)
-and [the depth TODO](TODO-design-depth.md); the [boat contract](docs/design/boats.md)
+and [the depth TODO](TODO-design-depth.md); the next two rounds are planned in
+[TODO-round7.md](TODO-round7.md) and [TODO-round8.md](TODO-round8.md); the [boat contract](docs/design/boats.md)
 and [PvP-death XP exemption](docs/design/progression.md) are already decided.
 
 **In progress:** WP11 phase 1 has shipped its talent registry, 48 talents,
