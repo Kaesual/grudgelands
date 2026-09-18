@@ -16,6 +16,7 @@
 
 local gull = {
 	description = "Gull",
+	clock = "day",
 	type = "animal",
 	passive = true,
 	runaway = true,

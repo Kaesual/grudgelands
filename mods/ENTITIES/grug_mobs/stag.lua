@@ -13,6 +13,7 @@
 local function stag_def(description, texture)
 	local def = {
 		description = description,
+		clock = "day",
 		type = "animal",
 		-- Stats engine-owned (levels.lua) — normal tier, so level, HP, damage
 		-- and XP all come from the field and the formulas.

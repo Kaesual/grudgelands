@@ -33,6 +33,7 @@
 local function eagle_def(description, texture)
 	return {
 		description = description,
+		clock = "day",
 		type = "monster",
 		-- HP/damage/XP/armor: engine-owned (levels.lua).
 

@@ -23,7 +23,7 @@ repos. See §8 for the animation audit of the same 21 meshes.
 `grug_mobs_bog_fowl.b3d`, all from the same VoxeLibre commit §1 already
 pins, all verified the same way — `cmp` byte-identical to their upstream
 files, animation chunks and real frame ranges measured out of the binary
-(§8's table, now 24 meshes), and their two license statements
+(§8's table, which that round brought to 24 meshes), and their two license statements
 (`mods/ENTITIES/mobs_mc/LICENSE-media.md` for models and textures,
 top-level `LEGAL.md`) re-read at that commit. **Zero download**: the files
 were already on disk in the pinned submodule.
@@ -79,6 +79,7 @@ Blender sources: <https://github.com/22i/minecraft-voxel-blender-models>
 | `grug_mobs_cave_bat.b3d` | `= models/mobs_mc_bat.b3d` | none |
 | `grug_mobs_cave_crawler.b3d` | `= models/mobs_mc_silverfish.b3d` | none (also serves the Bone Weevil, `bone_weevil.lua`) |
 | `grug_mobs_bog_fowl.b3d` | `= models/mobs_mc_chicken.b3d` | none |
+| `grug_mobs_wisp.b3d` | `= models/mobs_mc_vex.b3d` | none (`cmp` byte-identical) |
 
 ### 1.2 Textures — CC BY-SA 4.0
 
@@ -113,6 +114,7 @@ the same CC BY-SA 4.0.
 | `grug_mobs_bone_weevil.png` | `= mobs_mc_silverfish.png` | XSSheep | Bone Weevil, bone-forest variant — bleached bone: `R, modulate 118,30,100, #EDEAE0` |
 | `grug_mobs_bone_weevil_blight.png` | `= mobs_mc_silverfish.png` | XSSheep | Bone Weevil, blight variant — sickly olive: `R, modulate 110,110,100, #8FA85E` |
 | `grug_mobs_bog_fowl.png` | `= mobs_mc_chicken.png` | XSSheep → *(kingoscargames)* | Bog Fowl, marsh olive-brown: `R, modulate 100,70,100, #A3B184` |
+| `grug_mobs_wisp.png` | `= mobs_mc_vex.png` | XSSheep → kingoscargames (addition) | none (`cmp` byte-identical); the mesh's sword slot uses the already shipped `default_tool_steelsword.png` from `default` |
 
 ### 1.3 Derived from the vendored boar texture (CC BY-SA 4.0)
 
@@ -165,10 +167,16 @@ All files MIT, author **Liil/Wilhelmine** (models, textures, animation).
 | `grug_mobs_hyena.b3d` | `= models/Hyena.b3d` | none |
 | `grug_mobs_zebra.b3d` | `= models/Zebra2.b3d` | none |
 | `grug_mobs_eagle.b3d` | `= models/Stellerseagle.b3d` | none |
-| `grug_mobs_panther.b3d` | `= models/Snowleopard.b3d` | none (also serves the Jungle Lynx) |
+| `grug_mobs_panther.b3d` | `= models/Snowleopard.b3d` | none (also serves the Jungle Lynx and Snow Leopard) |
 | `grug_mobs_serpent.b3d` | `= models/Kobra.b3d` | none |
 | `grug_mobs_crocodile.b3d` | `= models/Crocodile.b3d` | none |
 | `grug_mobs_jungle_ape.b3d` | `= models/Monkey.b3d` | none |
+| `grug_mobs_ibex.b3d` | `= models/Ibex.b3d` | none (`cmp` byte-identical) |
+| `grug_mobs_plains_runner.b3d` | `= models/Nandu.b3d` | none (`cmp` byte-identical) |
+| `grug_mobs_tapir.b3d` | `= models/Tapir.b3d` | none (`cmp` byte-identical) |
+| `grug_mobs_giant_rat.b3d` | `= models/Rat.b3d` | none (`cmp` byte-identical) |
+| `grug_mobs_scorpion.b3d` | `= models/Scorpion.b3d` | none (`cmp` byte-identical) |
+| `grug_mobs_viper.b3d` | `= models/Viper.b3d` | none (`cmp` byte-identical) |
 | `grug_mobs_hyena.png` | `= textures/texturehyena.png` | none |
 | `grug_mobs_zebra.png` | `= textures/texturezebra.png` | none |
 | `grug_mobs_eagle.png` | `= textures/texturestellerseagle.png` | none |
@@ -178,6 +186,13 @@ All files MIT, author **Liil/Wilhelmine** (models, textures, animation).
 | `grug_mobs_jungle_ape.png` | `= textures/texturemonkey.png` | none |
 | `grug_mobs_panther.png` | `= textures/texturesnowleopard.png` | snow leopard → black panther: `R, modulate 60,30,100, #3C3C48` |
 | `grug_mobs_jungle_lynx.png` | `= textures/texturesnowleopard.png` | Raptor replacement (§8 fallback, see note 7), tawny-green jungle camo: `R, modulate 90,80,100, #8A8A50` |
+| `grug_mobs_ibex.png` | `= textures/textureibex.png` | none (`cmp` byte-identical) |
+| `grug_mobs_plains_runner.png` | `= textures/texturenandu.png` | none (`cmp` byte-identical) |
+| `grug_mobs_tapir.png` | `= textures/texturetapir.png` | none (`cmp` byte-identical) |
+| `grug_mobs_giant_rat.png` | `= textures/texturerat.png` | none (`cmp` byte-identical) |
+| `grug_mobs_scorpion.png` | `= textures/texturescorpion.png` | none (`cmp` byte-identical) |
+| `grug_mobs_viper.png` | `= textures/textureviper.png` | none (`cmp` byte-identical) |
+| `grug_mobs_snow_leopard.png` | `= textures/texturesnowleopard.png` | none (`cmp` byte-identical) |
 
 ---
 
@@ -196,10 +211,58 @@ All files MIT, author **ElCeejo**.
 |------|----------|---------------|
 | `grug_mobs_stag.b3d` | `= models/animalia_reindeer.b3d` | none |
 | `grug_mobs_gull.b3d` | `= models/animalia_bird.b3d` | none (also serves the Carrion Crow) |
+| `grug_mobs_fox.b3d` | `= models/animalia_fox.b3d` | none (`cmp` byte-identical) |
+| `grug_mobs_wild_turkey.b3d` | `= models/animalia_turkey.b3d` | none (`cmp` byte-identical) |
 | `grug_mobs_stag.png` | `= textures/reindeer/animalia_reindeer.png` | none |
 | `grug_mobs_stag_gaunt.png` | `= textures/reindeer/animalia_reindeer.png` | "Gaunt Stag", bleached pale: `magick animalia_reindeer.png -modulate 100,20,100 -channel RGB +level 45%,100% \( +clone -alpha off -fill '#CFCBB8' -colorize 100 \) -compose Multiply -composite animalia_reindeer.png -compose CopyOpacity -composite grug_mobs_stag_gaunt.png` (recipe `R` plus a black-point lift, otherwise the dark hide stays dark) |
 | `grug_mobs_gull.png` | `= textures/birds/animalia_bluebird.png` | song bird → white/grey gull: `R, modulate 130,8,100, #E6E9EE` |
 | `grug_mobs_crow.png` | `= textures/birds/animalia_bluebird.png` | song bird → black Carrion Crow: `R, modulate 45,10,100, #2A2A30` |
+| `grug_mobs_fox.png` | `= textures/fox/animalia_fox_1.png` | none (`cmp` byte-identical) |
+| `grug_mobs_wild_turkey.png` | `= textures/turkey/animalia_turkey_hen.png` | none (`cmp` byte-identical) |
+
+---
+
+## 4.1 goblins (FreeLikeGNU)
+
+* Repo: <https://gitlab.com/freelikegnu/goblins>
+* Commit: `ce27b15f87452c9614b515b8a9b53af5d0e8e276`
+* License evidence: `README.md`, "Licenses of Source Media Files" — the
+  goblin mesh, gobdog mesh and both named texture patterns are copyright
+  Francisco Athens and **CC BY-SA 3.0 Unported**. The humanoid mesh is based
+  on MirceaKitsune's WTFPL character. The unattributed `goblins_blood.png`
+  and every sound are excluded.
+
+| File | Upstream | Author chain | License | Modifications |
+|------|----------|--------------|---------|---------------|
+| `grug_mobs_goblin.b3d` | `= models/goblins_goblin.b3d` | Francisco Athens, based on MirceaKitsune | CC BY-SA 3.0 / WTFPL basis | none (`cmp` byte-identical) |
+| `grug_mobs_goblin_hound.b3d` | `= models/goblins_goblin_dog.b3d` | Francisco Athens | CC BY-SA 3.0 | none (`cmp` byte-identical) |
+| `grug_mobs_goblin_raider.png` | `= textures/goblins_goblin_cobble1.png` | Francisco Athens | CC BY-SA 3.0 | none (`cmp` byte-identical) |
+| `grug_mobs_goblin_slinger.png` | `= textures/goblins_goblin_cobble2.png` | Francisco Athens | CC BY-SA 3.0 | none (`cmp` byte-identical) |
+| `grug_mobs_goblin_hound.png` | `= textures/goblins_goblin_dog.png` | Francisco Athens | CC BY-SA 3.0 | none (`cmp` byte-identical) |
+
+The goblin mesh has no separately authored ranged clip. Goblin Slinger maps
+`shoot` explicitly to the real keyed attack range 200..219; this is the same
+range its melee Raider sibling uses, rather than an unanimated projectile.
+
+---
+
+## 4.2 draconis (ElCeejo)
+
+* Repo: <https://github.com/ElCeejo/draconis>
+* Commit: `5ad66e400ec31aa8c6ca33e8a8c2510b6fa5d6fd`
+* License evidence: repository-root `LICENSE`, MIT, Copyright (c) 2022
+  ElCeejo. Round 8 decision R8-MOB1 explicitly accepts this repo-wide grant
+  for the dragon media, matching the reading already used for animalia.
+
+All five files are MIT by **ElCeejo**. No upstream sound was copied.
+
+| File | Upstream | Modifications |
+|------|----------|---------------|
+| `grug_mobs_ice_dragon.b3d` | `= models/draconis_ice_dragon.b3d` | none (`cmp` byte-identical) |
+| `grug_mobs_jungle_wyvern.b3d` | `= models/draconis_jungle_wyvern.b3d` | none (`cmp` byte-identical) |
+| `grug_mobs_dragon_shading.png` | `= textures/draconis_baked_in_shading.png` | none (`cmp` byte-identical) |
+| `grug_mobs_ice_dragon.png` | `= textures/ice_dragon/draconis_ice_dragon_sapphire.png` | none (`cmp` byte-identical) |
+| `grug_mobs_jungle_wyvern.png` | `= textures/jungle_wyvern/draconis_jungle_wyvern_jade.png` | none (`cmp` byte-identical) |
 
 ---
 
@@ -219,21 +282,51 @@ All files MIT, author **ElCeejo**.
 |------|----------|--------------|---------|---------------|
 | `grug_mobs_spider.b3d` | `= models/mobs_spider.b3d` | AspireMint | CC BY-SA 3.0 | none |
 | `grug_mobs_stone_golem.b3d` | `= models/mobs_stone_monster.b3d` | Pavel_S / PilzAdam, edited by SirrobZeroone | WTFPL | none |
+| `grug_mobs_treant.b3d` | `= models/mobs_tree_monster.b3d` | Pavel_S / PilzAdam | WTFPL | none (`cmp` byte-identical) |
 | `grug_mobs_spider.png` | `= textures/mobs_spider_dark.png` | AspireMint, edited by SkyBuilder1717 | CC BY-SA 3.0 | none (forest/cave Giant Spider) |
 | `grug_mobs_spider_pale.png` | `= textures/mobs_spider_grey.png` | AspireMint | CC BY-SA 3.0 | none (bone-forest "bone-pale" variant — the upstream grey skin already is the pale one; grayscale PNG, Luanti loads it fine) |
 | `grug_mobs_spider_jungle.png` | `= textures/mobs_spider_grey.png` | AspireMint | CC BY-SA 3.0 | jungle-green variant: `R, modulate 90,100,100, #5C7A3A`, with `-colorspace sRGB` inserted directly after the source (the upstream PNG is grayscale) |
 | `grug_mobs_stone_golem.png` | `= textures/mobs_stone_monster.png` | wwar | CC0 1.0 | none |
 | `grug_mobs_mesa_golem.png` | `= textures/mobs_stone_monster.png` | wwar | CC0 1.0 | Throng "Mesa Golem", red mesa rock: `R, modulate 100,130,100, #C4643C` |
+| `grug_mobs_treant.png` | `= textures/mobs_tree_monster.png` | Pavel_S / PilzAdam, edited by TenPlus1 | WTFPL | none (`cmp` byte-identical); Ashen/Gravewood colours are runtime multiply modifiers |
 
 ---
 
 ## 6. Grudgelands original work
+
+### Runtime-only Round 8 variants (no new media file)
+
+The Poacher, Frost Stray, Sun-Dried Husk, Song Bird, Spiderling, Blood Bat
+and Stone Mite add no model or texture file. Their definitions use Luanti
+`^[multiply` modifiers over the already listed Bandit, Skeleton, Zombie,
+Gull, Giant Spider, Cave Bat and Cave Crawler files respectively; their scale
+changes are object properties. The original file rows and licences above
+therefore remain the complete per-file ledger for this package. The Poacher's
+`character.b3d` source has no bow clip, so its `shoot` animation explicitly
+uses the keyed mine/punch range 189..198 instead of firing from a static pose.
 
 | File | Author | License | How it was made |
 |------|--------|---------|-----------------|
 | `grug_mobs_mirefolk.png` | Grudgelands project | CC0 1.0 | Original 64×32 `character.b3d` skin, **not** derived from any existing skin: colour-blocked fish-folk (murky green scales with a deterministic speckle pattern, pale belly plate, gill slits, teal dorsal crest painted into the hat layer, webbed hands/feet). Generated by the Python/PIL script printed in `docs/research/assets/wp6_model_notes.md` §Mirefolk (seed 20260806) — the seed makes the speckle pattern deterministic, so
 re-running the script reproduces the same pixels. |
 | `grug_mobs_blank.png` | Luanti engine | LGPL 2.1+ | 1×1 fully transparent PNG, taken from the engine; used for empty texture slots (skeleton armour/wield slots, sheared-fur slot). |
+
+### Round 8 royal art — CC0 1.0
+
+The six crowned race skins and Fallen Crown icon are deterministic original
+pixel art generated by `tools/r8_mob1/gen_boss_art.py`. The skins use the
+project's own CC0 race skins as their base and add a race-coloured tabard and
+gold crown on the established `character.b3d` UV layout.
+
+| File | Author | License | How it was made |
+|------|--------|---------|-----------------|
+| `grug_mobs_royal_dwarf.png` | Grudgelands project | CC0 1.0 | generator, dwarf base + blue tabard + crown |
+| `grug_mobs_royal_human.png` | Grudgelands project | CC0 1.0 | generator, human base + blue tabard + crown |
+| `grug_mobs_royal_elf.png` | Grudgelands project | CC0 1.0 | generator, elf base + green tabard + crown |
+| `grug_mobs_royal_undead.png` | Grudgelands project | CC0 1.0 | generator, undead base + violet tabard + crown |
+| `grug_mobs_royal_orc.png` | Grudgelands project | CC0 1.0 | generator, orc base + red tabard + crown |
+| `grug_mobs_royal_troll.png` | Grudgelands project | CC0 1.0 | generator, troll base + teal tabard + crown |
+| `grug_mobs_item_fallen_crown.png` | Grudgelands project | CC0 1.0 | generator, 16×16 gold crown with ruby insets |
 
 ### 6.1 Item icons, projectile sprites and node tiles (WP6/T5–T7, WP7) — CC0 1.0, Grudgelands project
 
@@ -312,7 +405,7 @@ without `ANIM`/`BONE`/`KEYS` chunks slides instead of moving. This section is
 the evidence that the rule holds for everything the game ships, so a future
 session does not have to re-derive it.
 
-**Result: all 24 meshes in `models/` are animated** (plus `character.b3d`
+**Result: all 38 meshes in `models/` are animated** (plus `character.b3d`
 from `player_api`, listed for completeness — its license lives in that mod's
 own `README.txt`: model by MirceaKitsune with later fixes, CC BY-SA 3.0).
 Nothing had to be replaced, so no new media was imported and no license row
@@ -348,19 +441,33 @@ false positives here.
 | `grug_mobs_cave_crawler.b3d` | ANIM+BONE+KEYS | 7 | 1456 | 147 | 1..21 | `cave_crawler.lua`, `bone_weevil.lua` | 1..20 | animated, in range |
 | `grug_mobs_crocodile.b3d` | ANIM+BONE+KEYS | 15 | 360 | 6750 | 1..500 | `crocodile.lua` | 0..350 | animated, in range |
 | `grug_mobs_eagle.b3d` | ANIM+BONE+KEYS | 18 | 432 | 6300 | 1..350 | `eagle.lua` | 0..350 | animated, in range |
+| `grug_mobs_fox.b3d` | ANIM+BONE+KEYS | 9 | 2376 | 540 | 1..60 | `start_zone_families.lua` | 1..59 | animated, in range |
+| `grug_mobs_giant_rat.b3d` | ANIM+BONE+KEYS | 15 | 360 | 5250 | 1..350 | `start_zone_families.lua` | 1..350 | animated, in range |
+| `grug_mobs_goblin.b3d` | ANIM+BONE+KEYS | 7 | 2352 | 1547 | 1..221 | `night_families.lua` (Raider, Slinger) | 1..219 | animated, in range |
+| `grug_mobs_goblin_hound.b3d` | ANIM+BONE+KEYS | 22 | 8272 | 4202 | 1..191 | `night_families.lua` | 1..140 | animated, in range |
 | `grug_mobs_gull.b3d` | ANIM+BONE+KEYS | 12 | 1984 | 1920 | 1..160 | `carrion_crow.lua`, `gull.lua` | 1..160 | animated, in range |
 | `grug_mobs_hyena.b3d` | ANIM+BONE+KEYS | 16 | 384 | 5600 | 1..350 | `hyena.lua` | 0..350 | animated, in range |
+| `grug_mobs_ibex.b3d` | ANIM+BONE+KEYS | 17 | 408 | 6800 | 1..400 | `start_zone_families.lua` | 1..400 | animated, in range |
+| `grug_mobs_ice_dragon.b3d` | ANIM+BONE+KEYS | 40 | 36888 | 25600 | 1..640 | `bosses.lua` | 1..579 | animated, in range |
 | `grug_mobs_jungle_ape.b3d` | ANIM+BONE+KEYS | 20 | 480 | 9402 | 1..700 | `jungle_ape.lua` | 0..450 | animated, in range |
+| `grug_mobs_jungle_wyvern.b3d` | ANIM+BONE+KEYS | 40 | 36168 | 12000 | 1..300 | `bosses.lua` | 1..299 | animated, in range |
 | `grug_mobs_kraken.b3d` | ANIM+BONE+KEYS | 9 | 1944 | 369 | 1..41 | `kraken.lua` | 1..41 | animated, in range **(def fixed, see below)** |
 | `grug_mobs_panther.b3d` | ANIM+BONE+KEYS | 17 | 408 | 5950 | 1..350 | `jungle_lynx.lua`, `panther.lua` | 0..350 | animated, in range |
 | `grug_mobs_parrot.b3d` | ANIM+BONE+KEYS | 11 | 3200 | 1661 | 1..151 | `parrot.lua` | 0..120 | animated, in range |
+| `grug_mobs_plains_runner.b3d` | ANIM+BONE+KEYS | 16 | 384 | 4800 | 1..300 | `start_zone_families.lua` | 1..200 | animated, in range |
 | `grug_mobs_rabbit.b3d` | ANIM+BONE+KEYS | 13 | 3456 | 546 | 1..42 | `rabbit.lua` | 0..20 | animated, in range |
 | `grug_mobs_ram.b3d` | ANIM+BONE+KEYS | 7 | 2016 | 1134 | 1..162 | `ram.lua` | 0..40 | animated, in range |
 | `grug_mobs_serpent.b3d` | ANIM+BONE+KEYS | 15 | 360 | 4550 | 1..350 | `serpent.lua` | 0..350 | animated, in range |
+| `grug_mobs_scorpion.b3d` | ANIM+BONE+KEYS | 26 | 624 | 6600 | 1..300 | `start_zone_families.lua` | 1..300 | animated, in range |
 | `grug_mobs_skeleton.b3d` | ANIM+BONE+KEYS | 8 | 5824 | 1376 | 1..172 | `skeleton_archer.lua`, `skeleton_raider.lua` | 0..90 | animated, in range |
 | `grug_mobs_spider.b3d` | ANIM+BONE+KEYS | 11 | 7128 | 506 | 1..46 | `spider.lua` | 0..45 | animated, in range |
 | `grug_mobs_stag.b3d` | ANIM+BONE+KEYS | 13 | 4420 | 1950 | 1..150 | `stag.lua` | 1..119 | animated, in range |
 | `grug_mobs_stone_golem.b3d` | ANIM+BONE+KEYS | 6 | 1440 | 384 | 1..64 | `golem.lua` | 0..63 | animated, in range |
+| `grug_mobs_tapir.b3d` | ANIM+BONE+KEYS | 13 | 312 | 5200 | 1..400 | `start_zone_families.lua` | 1..400 | animated, in range |
+| `grug_mobs_treant.b3d` | ANIM+BONE+KEYS | 6 | 2376 | 378 | 1..63 | `night_families.lua` (two tints) | 1..62 | animated, in range |
+| `grug_mobs_viper.b3d` | ANIM+BONE+KEYS | 14 | 336 | 5880 | 1..420 | `start_zone_families.lua` | 1..420 | animated, in range |
+| `grug_mobs_wild_turkey.b3d` | ANIM+BONE+KEYS | 8 | 1904 | 1520 | 1..190 | `start_zone_families.lua` | 1..60 | animated, in range |
+| `grug_mobs_wisp.b3d` | ANIM+BONE+KEYS | 14 | 7112 | 1134 | 1..81 | `night_families.lua` | 1..80 | animated, in range |
 | `grug_mobs_wolf.b3d` | ANIM+BONE+KEYS | 12 | 2904 | 1104 | 1..92 | `wolf.lua` | 0..40 | animated, in range |
 | `grug_mobs_zebra.b3d` | ANIM+BONE+KEYS | 11 | 264 | 2200 | 1..200 | `zebra.lua` | 0..200 | animated, in range |
 | `grug_mobs_zombie.b3d` | ANIM+BONE+KEYS | 7 | 2160 | 847 | 1..121 | `zombie.lua` | 0..59 | animated, in range |
@@ -377,14 +484,13 @@ and the tentacles froze for the tail third of every loop. Fixed to **1..41**
 in all four clips (stand/walk/run/punch); playback speeds unchanged, so the
 swim cycle is now continuous instead of stuttering.
 
-### 8.2 The Lord-of-the-Test rat never shipped
+### 8.2 The Lord-of-the-Test rat remains excluded
 
 `docs/reference_projects.md` records the LotT rat as the known unanimated
-case. It is **not in this mod** — there is no rat mesh, texture or mob def,
-and the animalia substitution the note describes did happen for the two
-models actually taken from that repo (§4: reindeer→Stag, song bird→Gull and
-Carrion Crow). Nothing to fix. animalia's un-imported rat/bat/frog/owl/cat/fox
-roster stays available under the MIT license already cleared in §4.
+case. That asset remains absent. Round 8's Giant Rat instead uses
+animalworld's animated `Rat.b3d` (real keyed range 1..350) and its matching
+MIT texture; the byte-identical rows are in §3 and the measured animation row
+is above. No compatibility alias or fallback to the unusable LotT mesh exists.
 
 ### 8.3 The critter round (WP36 item 4) measured, did not copy
 

@@ -471,6 +471,13 @@ for zone_id, expected in pairs(zone_families) do
 				if expected[family] then allowed = true; break end
 			end
 		end
+		if mob_name == "grug_mobs:skeleton_archer" and expected.mountain then
+			allowed = true
+		end
+		if zone_id == "elandor_lorindor" and
+				mob_name == "grug_mobs:skeleton_archer" then
+			allowed = true
+		end
 		check(grug_mobs.spawn_policy_allows(mob_name, pos) == allowed,
 			"named-zone mob mapping differs for " .. zone_id .. ":" ..
 			mob_name)

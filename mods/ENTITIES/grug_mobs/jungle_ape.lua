@@ -18,6 +18,7 @@ local SILVERBACK_CHANCE = 10 -- 1 in 10 spawns is a Silverback (elite tier)
 
 local ape = {
 	description = "Jungle Ape",
+	clock = "day",
 	type = "monster",
 	-- Territorial: short leash instead of the default 40 nodes (aggro.lua,
 	-- combat_stats.md §4) — the same value bear.lua uses.
