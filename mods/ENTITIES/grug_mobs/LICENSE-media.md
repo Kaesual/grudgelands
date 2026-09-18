@@ -169,6 +169,12 @@ All files MIT, author **Liil/Wilhelmine** (models, textures, animation).
 | `grug_mobs_serpent.b3d` | `= models/Kobra.b3d` | none |
 | `grug_mobs_crocodile.b3d` | `= models/Crocodile.b3d` | none |
 | `grug_mobs_jungle_ape.b3d` | `= models/Monkey.b3d` | none |
+| `grug_mobs_ibex.b3d` | `= models/Ibex.b3d` | none (`cmp` byte-identical) |
+| `grug_mobs_plains_runner.b3d` | `= models/Nandu.b3d` | none (`cmp` byte-identical) |
+| `grug_mobs_tapir.b3d` | `= models/Tapir.b3d` | none (`cmp` byte-identical) |
+| `grug_mobs_giant_rat.b3d` | `= models/Rat.b3d` | none (`cmp` byte-identical) |
+| `grug_mobs_scorpion.b3d` | `= models/Scorpion.b3d` | none (`cmp` byte-identical) |
+| `grug_mobs_viper.b3d` | `= models/Viper.b3d` | none (`cmp` byte-identical) |
 | `grug_mobs_hyena.png` | `= textures/texturehyena.png` | none |
 | `grug_mobs_zebra.png` | `= textures/texturezebra.png` | none |
 | `grug_mobs_eagle.png` | `= textures/texturestellerseagle.png` | none |
@@ -178,6 +184,12 @@ All files MIT, author **Liil/Wilhelmine** (models, textures, animation).
 | `grug_mobs_jungle_ape.png` | `= textures/texturemonkey.png` | none |
 | `grug_mobs_panther.png` | `= textures/texturesnowleopard.png` | snow leopard → black panther: `R, modulate 60,30,100, #3C3C48` |
 | `grug_mobs_jungle_lynx.png` | `= textures/texturesnowleopard.png` | Raptor replacement (§8 fallback, see note 7), tawny-green jungle camo: `R, modulate 90,80,100, #8A8A50` |
+| `grug_mobs_ibex.png` | `= textures/textureibex.png` | none (`cmp` byte-identical) |
+| `grug_mobs_plains_runner.png` | `= textures/texturenandu.png` | none (`cmp` byte-identical) |
+| `grug_mobs_tapir.png` | `= textures/texturetapir.png` | none (`cmp` byte-identical) |
+| `grug_mobs_giant_rat.png` | `= textures/texturerat.png` | none (`cmp` byte-identical) |
+| `grug_mobs_scorpion.png` | `= textures/texturescorpion.png` | none (`cmp` byte-identical) |
+| `grug_mobs_viper.png` | `= textures/textureviper.png` | none (`cmp` byte-identical) |
 
 ---
 
@@ -196,10 +208,14 @@ All files MIT, author **ElCeejo**.
 |------|----------|---------------|
 | `grug_mobs_stag.b3d` | `= models/animalia_reindeer.b3d` | none |
 | `grug_mobs_gull.b3d` | `= models/animalia_bird.b3d` | none (also serves the Carrion Crow) |
+| `grug_mobs_fox.b3d` | `= models/animalia_fox.b3d` | none (`cmp` byte-identical) |
+| `grug_mobs_wild_turkey.b3d` | `= models/animalia_turkey.b3d` | none (`cmp` byte-identical) |
 | `grug_mobs_stag.png` | `= textures/reindeer/animalia_reindeer.png` | none |
 | `grug_mobs_stag_gaunt.png` | `= textures/reindeer/animalia_reindeer.png` | "Gaunt Stag", bleached pale: `magick animalia_reindeer.png -modulate 100,20,100 -channel RGB +level 45%,100% \( +clone -alpha off -fill '#CFCBB8' -colorize 100 \) -compose Multiply -composite animalia_reindeer.png -compose CopyOpacity -composite grug_mobs_stag_gaunt.png` (recipe `R` plus a black-point lift, otherwise the dark hide stays dark) |
 | `grug_mobs_gull.png` | `= textures/birds/animalia_bluebird.png` | song bird → white/grey gull: `R, modulate 130,8,100, #E6E9EE` |
 | `grug_mobs_crow.png` | `= textures/birds/animalia_bluebird.png` | song bird → black Carrion Crow: `R, modulate 45,10,100, #2A2A30` |
+| `grug_mobs_fox.png` | `= textures/fox/animalia_fox_1.png` | none (`cmp` byte-identical) |
+| `grug_mobs_wild_turkey.png` | `= textures/turkey/animalia_turkey_hen.png` | none (`cmp` byte-identical) |
 
 ---
 

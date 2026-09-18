@@ -27,22 +27,33 @@ local NIGHT_FALLBACKS = {
 -- Capitals deliberately have empty palettes. Lorindor is intentionally
 -- literal: its row names pale stags, not the complete forest family.
 local ZONE_MOB_PALETTES = {
-	elandor_hearthpine_vale = {settled = true},
-	elandor_copperfell_foothills = {settled = true},
+	elandor_hearthpine_vale = {
+		settled = true, fox = true, ibex = true, giant_rat = true,
+	},
+	elandor_copperfell_foothills = {
+		settled = true, fox = true, ibex = true,
+	},
 	elandor_dur_brannoc = {},
-	elandor_frostbarrow_shelf = {mountain = true},
-	elandor_stormvault_heights = {mountain = true, frost_stray = true},
-	elandor_dawnmere_fields = {settled = true},
-	elandor_goldmead_vale = {settled = true, poacher = true},
+	elandor_frostbarrow_shelf = {mountain = true, ibex = true},
+	elandor_stormvault_heights = {
+		mountain = true, frost_stray = true, ibex = true,
+	},
+	elandor_dawnmere_fields = {
+		settled = true, fox = true, wild_turkey = true, giant_rat = true,
+	},
+	elandor_goldmead_vale = {
+		settled = true, poacher = true, fox = true, wild_turkey = true,
+	},
 	elandor_highcourt = {},
 	elandor_whitebridge_shire = {
 		settled = true, forest = true, poacher = true,
 	},
 	elandor_ashenward_march = {forest = true, war = true, poacher = true},
 	elandor_silverleaf_glades = {
-		settled = true, song_bird = true, poacher = true,
+		settled = true, song_bird = true, poacher = true, fox = true,
+		giant_rat = true,
 	},
-	elandor_starbough_vale = {settled = true, poacher = true},
+	elandor_starbough_vale = {settled = true, poacher = true, fox = true},
 	elandor_lethariel = {},
 	elandor_lorindor = {
 		exact_mobs = {["grug_mobs:stag"] = true},
@@ -51,30 +62,39 @@ local ZONE_MOB_PALETTES = {
 	},
 	elandor_moonfall_wood = {forest = true, poacher = true},
 	elandor_glassroot_wilds = {forest = true, jungle = true},
-	kragmar_stillgrave_hollow = {settled = true},
+	kragmar_stillgrave_hollow = {settled = true, giant_rat = true},
 	kragmar_mournfen = {settled = true, swamp = true},
 	kragmar_nhal_veyr = {},
 	kragmar_ossuary_reach = {forest = true},
 	kragmar_blackwind_rise = {forest = true},
-	kragmar_sunscar_flats = {settled = true, sun_dried_husk = true},
+	kragmar_sunscar_flats = {
+		settled = true, sun_dried_husk = true, plains_runner = true,
+		giant_rat = true, scorpion = true,
+	},
 	kragmar_redtusk_savanna = {
 		settled = true, savanna = true, sun_dried_husk = true,
+		scorpion = true,
 	},
 	kragmar_gor_drazhak = {},
-	kragmar_speargrass_reach = {savanna = true, mountain = true},
-	kragmar_bannerbreak_mesa = {mountain = true, war = true},
+	kragmar_speargrass_reach = {
+		savanna = true, mountain = true, scorpion = true,
+	},
+	kragmar_bannerbreak_mesa = {
+		mountain = true, war = true, scorpion = true,
+	},
 	kragmar_kapok_cradle = {
-		settled = true, jungle_edge = true,
+		settled = true, jungle_edge = true, tapir = true, giant_rat = true,
+		viper = true,
 	},
 	kragmar_raincall_basin = {
-		settled = true, jungle_edge = true,
+		settled = true, jungle_edge = true, tapir = true, viper = true,
 	},
 	kragmar_kezamba = {},
 	kragmar_whispering_reedlands = {
-		jungle_edge = true, swamp = true,
+		jungle_edge = true, swamp = true, tapir = true,
 	},
 	kragmar_totemwater_reach = {
-		jungle_edge = true, swamp = true,
+		jungle_edge = true, swamp = true, tapir = true,
 	},
 	kragmar_thunderroot_wilds = {jungle = true},
 	front_wyrmglass_crown = {
@@ -84,6 +104,7 @@ local ZONE_MOB_PALETTES = {
 	front_broken_causeway = {war = true},
 	front_shattered_line = {
 		mountain = true, war = true, sun_dried_husk = true,
+		scorpion = true,
 	},
 	front_skyglass_canopy = {jungle = true, war = true},
 	front_stormscale_summit = {jungle = true, war = true},
@@ -139,6 +160,14 @@ local MOB_PALETTES = {
 	["grug_mobs:frost_stray"] = {frost_stray = true},
 	["grug_mobs:sun_dried_husk"] = {sun_dried_husk = true},
 	["grug_mobs:song_bird"] = {song_bird = true},
+	["grug_mobs:fox"] = {fox = true},
+	["grug_mobs:ibex"] = {ibex = true},
+	["grug_mobs:wild_turkey"] = {wild_turkey = true},
+	["grug_mobs:plains_runner"] = {plains_runner = true},
+	["grug_mobs:tapir"] = {tapir = true},
+	["grug_mobs:giant_rat"] = {giant_rat = true},
+	["grug_mobs:scorpion"] = {scorpion = true},
+	["grug_mobs:viper"] = {viper = true},
 }
 
 -- Kraken has an independent authority instead of a named-zone mob palette:
@@ -160,6 +189,7 @@ local UNDERGROUND_MOBS = {
 	["grug_mobs:spiderling"] = true,
 	["grug_mobs:blood_bat"] = true,
 	["grug_mobs:stone_mite"] = true,
+	["grug_mobs:giant_rat"] = true,
 }
 
 local RACE_FACTIONS = {
