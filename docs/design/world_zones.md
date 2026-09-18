@@ -478,12 +478,14 @@ WP40 replaces it with the complete catalog and contracts below.
   channel beds retain the authored biome material without patch variation.
 - **Coast profiles and sand (2026-09-18):** an exposed-water shore run is a
   48-node interval along the axis perpendicular to its nearest cardinal water
-  contact. Its stable identity is `(zone_id, orientation, signed run index)`;
-  the full seed string selects its profile, and the outer four nodes blend the
-  adjacent run. Ordinary sea runs target 40% beach, 25% bluff, 20% cliff and
-  15% terraced cliff. Freshwater runs select only beach or bluff, and a cliff
-  or terrace selected where the local relief is below seven nodes or the
-  primary relief is `wetland_delta` falls back to beach or bluff. The first
+  contact, split again wherever its stable water kind or relief-fallback class
+  changes. Its identity is `(zone_id, orientation, signed run index,
+  water/relief class)`; the full seed string selects exactly one profile for
+  that identity, and the outer four nodes of the 48-node interval blend the
+  adjacent interval. Ordinary sea runs target 40% beach, 25% bluff, 20% cliff
+  and 15% terraced cliff. Freshwater and low-relief sea runs select only beach
+  or bluff; the low-relief class means local relief below seven nodes or a
+  primary relief of `wetland_delta`. The first
   dry bank column remains at water level. Behind it, beaches rise between 1:4
   and 1:8 through a 4--10-node sand band; bluffs rise at 1:1 or 2:1 with a
   gravel/stone face and biome-soil lip; cliffs have a seed-irregular top edge,
@@ -619,13 +621,17 @@ WP40 replaces it with the complete catalog and contracts below.
   Candidate air targets are considered in deterministic nearest-first order;
   an intervening ore, dungeon block or excluded column rejects only that path,
   not a later valid target. Outside the fixed mouth funnel, the path may not
-  rise above the final local terrain. The target's immutable-input air
-  component must leave the planned lumen horizontally; the witnessed exit
-  voxel joins the same occupancy transaction so a later pass cannot re-cap it.
-  The carved path therefore ends in externally continuing native air; a closed
-  end or isolated air pocket is invalid. Candidate ownership, bounded volume
-  and use of only the candidate's input mapchunk make the decision independent
-  of emerge order.
+  rise above the final local terrain. The target's unchanged native-air
+  component is flood-filled in a radius-12 box around the target. At least 24
+  component voxels must lie outside the planned lumen and the component must
+  reach that proof box's boundary; a closed or isolated pocket is therefore
+  invalid. The same bounded flood derives the native surface from immutable
+  input CIDs and rejects the whole candidate if any component voxel reaches
+  native surface air or sky. The lumen already intersects the accepted native
+  component, and every carved voxel joins one occupancy transaction so a later
+  pass cannot re-cap it. Candidate ownership, bounded proof volume and use of
+  only the candidate's input mapchunk make the decision independent of emerge
+  order.
 - **Fresh-world surface and vegetation refinement (2026-09-13):** logical
   biome ownership stays unchanged. Dry surfaces combine coherent 32-node and
   8-node material fields at weights 3:1; filler depth varies from 1–4 nodes
@@ -690,8 +696,9 @@ WP40 replaces it with the complete catalog and contracts below.
   basalt under badlands, desert stone as the existing closest limestone under
   meadows, slate under pine hills and mossy cobble as the existing closest
   mossy stone under jungle. Equivalent authored palettes choose one of those
-  shipped nodes. This pass replaces only immutable-input native stone or the
-  selected surface row's filler, and skips air, liquids, ores, dungeon blocks,
+  shipped nodes. This pass replaces only immutable-input native stone; a
+  filler CID is never accepted because native gravel ore shares the ordinary
+  gravel CID. It skips air, liquids, ores, dungeon blocks,
   functional volumes and every protected/excluded surface. Its depth loop is
   clipped at y = -37, so the floor bites into the lower part of a nominal
   40-node shaft wherever `surface_y - 40 < -37`. The six native ore records
