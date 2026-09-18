@@ -618,7 +618,8 @@ WP40 replaces it with the complete catalog and contracts below.
   surface, ordinary host rock or the native depth-stratum host. Native ore and
   resource records, liquids, dungeon/foreign blocks and unknown content remain
   transaction vetoes.
-  Candidate air targets are considered in deterministic nearest-first order;
+  At most the first 64 candidate air targets are considered in deterministic
+  nearest-first order;
   an intervening ore, dungeon block or excluded column rejects only that path,
   not a later valid target. Outside the fixed mouth funnel, the path may not
   rise above the final local terrain. The target's unchanged native-air

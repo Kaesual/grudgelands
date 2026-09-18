@@ -26,8 +26,9 @@ and sky bridges; `mutations.sh` proves the five corresponding failures. The LuaJ
 `tools/r8_map_a/measure.lua` performs the fixed-layout per-run/per-zone census;
 `quality/cave_engine_cases.lua` remains the measured engine witness for native
 cave connection. `tools/r8_map_a/engine_probe/` uses a writer-disabled baseline
-world to reconstruct each exact lumen independently, exclude baseline sky
-components and compare that proof with the carved world. Revision-bound cases,
+world and revision-bound offline exclusion masks to reconstruct each exact
+owner-local lumen independently, replay the writer's 64-target search bound,
+exclude baseline sky components and compare that proof with the carved world. Revision-bound cases,
 commands, result logs and hashes live in `tools/r8_map_a/evidence/`.
 
 Run:
