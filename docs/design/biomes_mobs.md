@@ -711,7 +711,7 @@ farming system are one later package.
 | grug_jungle_edge | jungle_tree.mts (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[spice T1]` | |
 | grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025); papyrus lives in the adjacent swamp/shore band (v7 has no water above sea level, so the jungle cuboids at y ≥ 4 cannot host waterside papyrus) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]` — **level-51–60 zones only** (§2 tightening 2026-08-13); wild melon `[food]` | same flora, roster and ground: `grug_nodes:dirt_with_canopy_litter`, shipped as the fringe's top node by WP40 R7 (`r7_r6_manifest.lua`); only `grug_jungle_edge` still uses rainforest litter |
 | grug_swamp | papyrus_on_dirt, dead bush; willow-ish gravewood retint optional | reeds, waterlilies; marshbloom `[spice T2]`; mushrooms `[food found-only]` | shallow water pools (mud floor) |
-| grug_beach | — | shells (deco); rock salt crust on coast-zone beaches `[food found-only]` | Stormkelp uses the cross-biome dry-shore predicate below, not a beach-only row. |
+| grug_beach | — | shells (deco); rock salt crust on coast-zone beaches `[found-only salt, inedible]` | Stormkelp uses the cross-biome dry-shore predicate below, not a beach-only row. |
 | war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided); decoration set ships with WP13's schematic pass |
 
 ### 2.1 WP40 surface and deterministic decoration projection
@@ -852,8 +852,8 @@ the region an ingredient comes from):
   45–60 out there. Every one of them is reachable by both factions
   (§6) — every level-41+ zone is contested and shared — so neither
   faction is cut off from the top of the cooking ladder.
-- **Deliberately found-only** (never a crop): mushrooms, wild cocoa,
-  rock salt. That keeps the top of the cooking ladder a reason to
+- **Deliberately found-only** (never a crop): mushrooms, wild cocoa and
+  inedible rock salt. That keeps the top of the cooking ladder a reason to
   travel, and it keeps a tier unlock ("find cocoa in the jungle") usable
   as a quest goal.
 

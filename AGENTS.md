@@ -326,6 +326,10 @@ Details + line numbers in [docs/research/](docs/research/).
   unlearned and effective T1–T6 when learned. Grid output is vetoed before the
   engine craft; current furnaces have no acting player in their timers, so
   their per-player gate and progression run on output extraction.
+  One output may have one route per station when every route agrees on
+  profession and tier; `recipe_for_output(output, station)` resolves the
+  station-specific route. This is how a Cooking grid dish and its raw-assembly
+  furnace path meet at the same edible item.
   A later custom station (including the brewing stand) must call
   `can_craft_recipe` before its output leaves and `record_craft` after each
   successful craft on that same take path.
@@ -450,12 +454,16 @@ Details + line numbers in [docs/research/](docs/research/).
   `spell_damage_percent`; `grug_core.status_modifier_sum` adds active statuses,
   and the modifier-change callback drives the same HP/mana clamp and HUD/page
   refresh path as talents. `grug_food.TIERS` owns fixed instant HP, minimum
-  level and role-dish data; raw foods always regenerate 1% HP (or mana for Wild
-  Cocoa) per 5 s. Food lasts 180 s, its instant heal and regeneration defer/
-  pause in combat, secondary modifiers do not, and the latest food replaces
-  the previous one. `grug_core.can_use_item_level` is the shared `_grug_ilvl`
-  gate for the Weapon slot and all consumables. Potions retain their instant
-  channel and shared persistent cooldown.
+  level and the Hearty/Caster/Hunter dish data; raw foods, including Wild
+  Cocoa, always regenerate 1% HP per 5 s. Food lasts 180 s; its instant heal
+  and regeneration defer/pause in combat, secondary modifiers do not, and the
+  latest food replaces the previous one. `grug_core.can_use_item_level` is the
+  shared `_grug_ilvl` gate for the Weapon slot and all consumables. Potions
+  retain their instant channel and shared persistent cooldown.
+  `grug_cooking` owns the mapgen-free plant items, the 18 grid dishes, the six
+  raw assembled dishes and their furnace routes. `grug_fishing.table_for(pos)`
+  selects one of six catch tables through `grug_core.mob_level_at(pos)`; water
+  salinity never gates fishing.
   Real-code Lua 5.1 regressions live under `tools/wp39/` and must stay green
   when changing the ray, clock, settlement, reticle, casts or projectiles.
   **Ordinary tool WEAR is spent per swing, not per punch**
