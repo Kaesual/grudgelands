@@ -3,9 +3,12 @@ command: KEEP=1 PORT=31505 SEED=15912857179583385436 PROBE="$PWD/tools/r8_mob1/b
 port: 31505
 seed: 15912857179583385436
 launcher: headless boot: PASS (port 31505, 240 s)
-production_entry: grug_mobs.boss_spawn_due("wyrmglass") after emerge_area completed
+production_entry: registered 10-second boss globalstep after emerge_area completed
+gate_observation: waited 12 seconds after creation, crossing a further production heartbeat
 ERROR_or_ModError_lines: 0
 
 ACTION[Main]: R8_MOB1_BOSS_PROBE loaded
-ACTION[Emerge-0]: R8_MOB1_BOSS_SPAWN name=grug_mobs:ice_dragon tod=0.27645611763 zone=front_wyrmglass_crown x=-3260 y=223 z=-40
-ACTION[Emerge-0]: R8_MOB1_BOSS_RESULT ice_dragon=1 clock=any anchor=-3260,-40
+ACTION[Emerge-0]: R8_MOB1_BOSS_READY anchor=-3260,-40
+ACTION[Server]: R8_MOB1_BOSS_SPAWN name=grug_mobs:ice_dragon count=1 tod=0.28021457791328 zone=front_wyrmglass_crown x=-3260 y=223 z=-40
+ACTION[Server]: R8_MOB1_BOSS_STATE alive=1 due=<empty> warned=<empty>
+ACTION[Server]: R8_MOB1_BOSS_RESULT ice_dragon=1 clock=any anchor=-3260,-40 production=heartbeat

@@ -645,12 +645,6 @@ local function spawn_dragon(id, row)
 	return true
 end
 
-function grug_mobs.boss_spawn_due(id)
-	local row = DRAGONS[id]
-	if not row then return false end
-	return spawn_dragon(id, row)
-end
-
 local function dragon_lair_loaded(row)
 	local pos = dragon_pos(row)
 	local node = core.get_node_or_nil(pos)

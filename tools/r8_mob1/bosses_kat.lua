@@ -16,7 +16,7 @@ return function(root)
 		get_string = function(_, key) return store[key] or "" end,
 		set_string = function(_, key, value) store[key] = value end,
 	}
-	local spawned
+	local spawned, spawn_count
 	core = {
 		get_mod_storage = function() return storage end,
 		register_craftitem = function(name, def) craftitems[name] = def end,
@@ -38,6 +38,7 @@ return function(root)
 		is_player = function(object) return object and object._is_player == true end,
 		yaw_to_dir = function() return {x = 0, y = 0, z = 1} end,
 		add_entity = function(pos, name)
+			spawn_count = (spawn_count or 0) + 1
 			spawned = {pos = pos, name = name, ent = {}}
 			return {
 				get_luaentity = function() return spawned.ent end,
@@ -192,6 +193,7 @@ return function(root)
 	assert(#callbacks.hit == 1 and #callbacks.heal == 1 and #callbacks.absorb == 1 and
 		#callbacks.death == 1 and #callbacks.join == 1 and #globalsteps == 1)
 
+	store["boss:dragon:stormscale:alive"] = "1"
 	store["boss:dragon:wyrmglass:due"] = tostring(os.time() - 1)
 	lair_loaded = false
 	globalsteps[1](10)
@@ -289,11 +291,21 @@ return function(root)
 		_grug_royal_king = true})
 	assert(resets == 1, "king leash did not reset the royal encounter")
 
-	assert(grug_mobs.boss_spawn_due("wyrmglass"))
+	store["boss:dragon:wyrmglass:alive"] = ""
+	store["boss:dragon:wyrmglass:due"] = ""
+	store["boss:dragon:wyrmglass:warned"] = ""
+	spawned, spawn_count = nil, 0
+	globalsteps[1](10)
 	assert(spawned.name == "grug_mobs:ice_dragon")
 	assert(spawned.pos.x == -3260 and spawned.pos.y == 73 and spawned.pos.z == -40)
 	assert(#spawned.ent._grug_perches == 3 and
 		spawned.ent._grug_boss_id == "dragon:wyrmglass")
+	assert(store["boss:dragon:wyrmglass:alive"] == "1" and
+		store["boss:dragon:wyrmglass:due"] == "" and
+		store["boss:dragon:wyrmglass:warned"] == "",
+		"first-spawn heartbeat stored the wrong dragon state")
+	globalsteps[1](10)
+	assert(spawn_count == 1, "alive gate permitted a duplicate heartbeat spawn")
 
 	local start_file = assert(io.open(root ..
 		"/mods/ENTITIES/grug_mobs/start_npcs.lua", "rb"))
@@ -316,5 +328,6 @@ return function(root)
 	end
 
 	return "r8_mob1_boss_v3|dragons=2|kings=6|royal_guards=24|perches=3|" ..
-		"warning=60|king_enemy_aoe=1|guard_full_step_follow_snap=1|guard_reset=0\n"
+		"warning=60|heartbeat_spawns=1|king_enemy_aoe=1|" ..
+		"guard_full_step_follow_snap=1|guard_reset=0\n"
 end
