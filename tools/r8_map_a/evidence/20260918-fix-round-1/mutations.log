@@ -1,0 +1,5 @@
+mutation	run_stability	rejected	luajit: ...-mutations.RGcizg/tree/tools/r8_map_a/mutation_probe.lua:8: run identity lost its stable class
+mutation	floor_guard	rejected	luajit: R8-MAP-A writer KAT: strata write/clip counts differ
+mutation	ore_preservation	rejected	luajit: R8-MAP-A writer KAT: strata write/clip counts differ
+mutation	cave_connection	rejected	luajit: R8-MAP-A writer KAT: closed native pocket was accepted
+mutation	surface_integration	rejected	luajit: R8-MAP-A writer KAT: wet-bed sand selector differs

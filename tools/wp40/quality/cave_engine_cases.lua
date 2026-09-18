@@ -4,7 +4,7 @@
 assert(core.settings:get("grug_wp40_profile_seed") == "0", "cave corpus requires seed 0")
 local cases = {
 	{id="connected_sinkhole", x=-1840, y=37, z=-2862, expected_nodes={}},
-	{id="capital_sinkhole", x=2247, y=38, z=-1749},
+	{id="capital_region_probe", x=2247, y=38, z=-1749},
 	{id="pine_hearthpine_south", x=-1800, y="surface", z=-2470},
 	{id="human_capital", x=0, y="surface", z=-1500},
 	{id="elandor_front", x=0, y="surface", z=-250},
@@ -14,13 +14,33 @@ local cases = {
 	{id="wyrmglass_island", x=-3260, y="surface", z=-40},
 	{id="deep_cross_border", x=-1691, y=-842, z=191},
 }
--- The writer's radius-1 mouth cross distinguishes a carved sinkhole from a
--- coincidental native surface-air node.  All five nodes were measured as air;
--- the engine probe also measured its component outside the authored shaft.
-local cross = {{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}}
-for index = 1, #cross do
-	cases[1].expected_nodes[#cases[1].expected_nodes + 1] = {
-		x = cases[1].x + cross[index][1], y = cases[1].y,
-		z = cases[1].z + cross[index][2], name = "air"}
+-- Measured against the authored-writer-disabled native-v7 seed-0 baseline:
+-- target -1834/19/-2867, 124 exact lumen voxels, 592 native component voxels
+-- outside the lumen and 597 total component voxels.  Checking the whole lumen
+-- makes a closed mouth or partial surface scar fail this engine fixture.
+local target_x, target_y, target_z = -1834, 19, -2867
+local steps, seen = cases[1].y + 1 - target_y, {}
+local function rounded(numerator, denominator)
+	if numerator < 0 then
+		return -math.floor((-numerator * 2 + denominator) / (denominator * 2))
+	end
+	return math.floor((numerator * 2 + denominator) / (denominator * 2))
 end
+for step = 0, steps do
+	local y = cases[1].y + 1 - step
+	local center_x = cases[1].x + rounded((target_x - cases[1].x) * step, steps)
+	local center_z = cases[1].z + rounded((target_z - cases[1].z) * step, steps)
+	local radius = step <= 2 and 2 or 1
+	for dx = -radius, radius do for dz = -radius, radius do
+		if dx * dx + dz * dz <= radius * radius then
+			local key = (center_x + dx) .. "/" .. y .. "/" .. (center_z + dz)
+			if not seen[key] then
+				seen[key] = true
+				cases[1].expected_nodes[#cases[1].expected_nodes + 1] = {
+					x = center_x + dx, y = y, z = center_z + dz, name = "air"}
+			end
+		end
+	end end
+end
+assert(#cases[1].expected_nodes == 124, "connected sinkhole lumen differs")
 return cases

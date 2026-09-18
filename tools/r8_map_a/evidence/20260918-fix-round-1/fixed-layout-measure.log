@@ -1,0 +1,134 @@
+schema	grug_r8_map_a_measure_v1
+sampling	surface_grid=8/cardinal_near_water=16/seed=0
+profile_overall	sea	469	198	126	84	61
+profile_overall	fresh	119	63	56	0	0
+profile_relief	highland	43	21	12	5	5
+profile_relief	lowland	322	131	86	56	49
+profile_relief	plateau	16	5	4	4	3
+profile_relief	rolling_hills	151	74	54	19	4
+profile_relief	wetland_delta	56	30	26	0	0
+sand	elandor_hearthpine_vale	9483	0	0	78	0
+shore_runs	elandor_hearthpine_vale	48	24	8	12	4
+sand	elandor_copperfell_foothills	8848	0	0	32	0
+shore_runs	elandor_copperfell_foothills	36	21	14	1	0
+sand	elandor_dur_brannoc	7918	0	0	0	0
+shore_runs	elandor_dur_brannoc	0	0	0	0	0
+sand	elandor_frostbarrow_shelf	6289	0	0	26	0
+shore_runs	elandor_frostbarrow_shelf	16	5	4	4	3
+sand	elandor_stormvault_heights	18266	0	0	28	0
+shore_runs	elandor_stormvault_heights	8	5	1	2	0
+sand	elandor_dawnmere_fields	8740	0	0	81	0
+shore_runs	elandor_dawnmere_fields	46	21	12	7	6
+sand	elandor_goldmead_vale	8747	0	0	7	0
+shore_runs	elandor_goldmead_vale	6	2	2	2	0
+sand	elandor_highcourt	8658	0	0	0	0
+shore_runs	elandor_highcourt	6	2	4	0	0
+sand	elandor_whitebridge_shire	14831	0	0	30	0
+shore_runs	elandor_whitebridge_shire	31	14	14	1	2
+sand	elandor_ashenward_march	21519	0	0	0	0
+shore_runs	elandor_ashenward_march	2	1	1	0	0
+sand	elandor_silverleaf_glades	9327	0	0	69	0
+shore_runs	elandor_silverleaf_glades	42	13	9	9	11
+sand	elandor_starbough_vale	10535	0	0	11	0
+shore_runs	elandor_starbough_vale	6	4	1	1	0
+sand	elandor_lethariel	6981	0	0	1	0
+shore_runs	elandor_lethariel	6	3	3	0	0
+sand	elandor_lorindor	15035	0	0	25	0
+shore_runs	elandor_lorindor	23	9	9	4	1
+sand	elandor_moonfall_wood	6240	0	0	32	0
+shore_runs	elandor_moonfall_wood	17	6	4	1	6
+sand	elandor_glassroot_wilds	17504	0	0	20	0
+shore_runs	elandor_glassroot_wilds	9	4	2	2	1
+sand	kragmar_stillgrave_hollow	9397	0	0	73	0
+shore_runs	kragmar_stillgrave_hollow	43	22	12	5	4
+sand	kragmar_mournfen	8267	0	0	28	0
+shore_runs	kragmar_mournfen	28	15	13	0	0
+sand	kragmar_nhal_veyr	7052	0	0	0	0
+shore_runs	kragmar_nhal_veyr	0	0	0	0	0
+sand	kragmar_ossuary_reach	6192	0	0	33	0
+shore_runs	kragmar_ossuary_reach	14	6	2	5	1
+sand	kragmar_blackwind_rise	18666	0	0	20	0
+shore_runs	kragmar_blackwind_rise	11	6	4	0	1
+sand	kragmar_sunscar_flats	8948	0	0	68	0
+shore_runs	kragmar_sunscar_flats	48	16	14	11	7
+sand	kragmar_redtusk_savanna	9377	0	0	21	0
+shore_runs	kragmar_redtusk_savanna	13	6	5	2	0
+sand	kragmar_gor_drazhak	9568	0	0	0	0
+shore_runs	kragmar_gor_drazhak	0	0	0	0	0
+sand	kragmar_speargrass_reach	17306	0	0	26	0
+shore_runs	kragmar_speargrass_reach	22	10	6	4	2
+sand	kragmar_bannerbreak_mesa	20121	0	0	0	0
+shore_runs	kragmar_bannerbreak_mesa	0	0	0	0	0
+sand	kragmar_kapok_cradle	8852	0	0	63	0
+shore_runs	kragmar_kapok_cradle	41	13	11	8	9
+sand	kragmar_raincall_basin	8924	0	0	22	0
+shore_runs	kragmar_raincall_basin	23	12	9	2	0
+sand	kragmar_kezamba	7713	0	0	0	0
+shore_runs	kragmar_kezamba	0	0	0	0	0
+sand	kragmar_whispering_reedlands	14798	0	0	27	0
+shore_runs	kragmar_whispering_reedlands	19	12	7	0	0
+sand	kragmar_totemwater_reach	6137	0	0	9	0
+shore_runs	kragmar_totemwater_reach	9	3	6	0	0
+sand	kragmar_thunderroot_wilds	17927	0	0	13	0
+shore_runs	kragmar_thunderroot_wilds	10	3	3	1	3
+sand	front_wyrmglass_crown	4708	0	1125	0	1125
+shore_runs	front_wyrmglass_crown	0	0	0	0	0
+sand	front_gravesalt_escarpment	6766	2	1184	3	1184
+shore_runs	front_gravesalt_escarpment	5	3	2	0	0
+sand	front_broken_causeway	7991	0	0	0	0
+shore_runs	front_broken_causeway	0	0	0	0	0
+sand	front_shattered_line	10635	0	0	0	0
+shore_runs	front_shattered_line	0	0	0	0	0
+sand	front_skyglass_canopy	8961	0	0	0	0
+shore_runs	front_skyglass_canopy	0	0	0	0	0
+sand	front_stormscale_summit	4403	0	1126	0	1126
+shore_runs	front_stormscale_summit	0	0	0	0	0
+mouths	1312	205	1107
+mouth_zone	elandor_hearthpine_vale	58
+mouth_zone	elandor_copperfell_foothills	20
+mouth_zone	elandor_dur_brannoc	6
+mouth_zone	elandor_frostbarrow_shelf	17
+mouth_zone	elandor_stormvault_heights	79
+mouth_zone	elandor_dawnmere_fields	52
+mouth_zone	elandor_goldmead_vale	3
+mouth_zone	elandor_highcourt	10
+mouth_zone	elandor_whitebridge_shire	32
+mouth_zone	elandor_ashenward_march	98
+mouth_zone	elandor_silverleaf_glades	60
+mouth_zone	elandor_starbough_vale	31
+mouth_zone	elandor_lethariel	4
+mouth_zone	elandor_lorindor	34
+mouth_zone	elandor_moonfall_wood	31
+mouth_zone	elandor_glassroot_wilds	70
+mouth_zone	kragmar_stillgrave_hollow	52
+mouth_zone	kragmar_mournfen	20
+mouth_zone	kragmar_nhal_veyr	3
+mouth_zone	kragmar_ossuary_reach	28
+mouth_zone	kragmar_blackwind_rise	79
+mouth_zone	kragmar_sunscar_flats	51
+mouth_zone	kragmar_redtusk_savanna	2
+mouth_zone	kragmar_gor_drazhak	13
+mouth_zone	kragmar_speargrass_reach	33
+mouth_zone	kragmar_bannerbreak_mesa	84
+mouth_zone	kragmar_kapok_cradle	47
+mouth_zone	kragmar_raincall_basin	19
+mouth_zone	kragmar_kezamba	7
+mouth_zone	kragmar_whispering_reedlands	31
+mouth_zone	kragmar_totemwater_reach	31
+mouth_zone	kragmar_thunderroot_wilds	62
+mouth_zone	front_wyrmglass_crown	0
+mouth_zone	front_gravesalt_escarpment	36
+mouth_zone	front_broken_causeway	39
+mouth_zone	front_shattered_line	30
+mouth_zone	front_skyglass_canopy	40
+mouth_zone	front_stormscale_summit	0
+strata	200	36	2	0
+strata_skipped_zone	front_wyrmglass_crown	no ordinary eligible column
+strata_skipped_zone	front_stormscale_summit	no ordinary eligible column
+strata_material	default:clay	56
+strata_material	default:desert_stone	204
+strata_material	default:gravel	600
+strata_material	default:mossycobble	123
+strata_material	default:sandstone	60
+strata_material	grug_materials:basalt	123
+strata_material	grug_materials:slate	90
