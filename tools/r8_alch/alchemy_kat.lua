@@ -8,25 +8,35 @@ return function(root)
 	end
 
 	local craftitems, recipes, ingredient_tiers = {}, {}, {
+		["group:grug_cooking_root"] = 1,
 		["grug_cooking:sugar_cane"] = 2,
 		["grug_cooking:cave_cap"] = 3,
 		["grug_cooking:ember_moss"] = 5,
 	}
 	local ingredient_registrations = {}
 	local callbacks = {}
+	local now_us = 1000000
+	local connected_players = {}
 	core = {
 		registered_items = craftitems,
-		get_us_time = function() return 1000000 end,
+		get_us_time = function() return now_us end,
+		get_connected_players = function() return connected_players end,
 		register_craftitem = function(name, def) craftitems[name] = def end,
 		register_on_dieplayer = function(fn) callbacks.die = fn end,
 		register_on_leaveplayer = function(fn) callbacks.leave = fn end,
 		register_on_joinplayer = function() end,
 		register_on_respawnplayer = function() end,
-		register_globalstep = function() end,
+		register_globalstep = function(fn) callbacks.globalstep = fn end,
 		register_on_mods_loaded = function(fn) callbacks.mods_loaded = fn end,
 		chat_send_player = function() end,
 		get_item_group = function(name, group)
-			return name == "test:apothecary" and group == "grug_apothecary" and 1 or 0
+			if name == "test:apothecary" and group == "grug_apothecary" then
+				return 1
+			end
+			if (name == "grug_cooking:carrot" or
+					name == "grug_cooking:cassava") and
+					group == "grug_cooking_root" then return 1 end
+			return 0
 		end,
 	}
 	grug_core = {}
@@ -61,12 +71,17 @@ return function(root)
 		player.poisoned = false
 		return old == true
 	end}
+	local profession_stock = {smith = {}, herbalist = {}, brewer = {}}
 	grug_traders = {
 		potion_cooldown_left = function(player) return player.cooldown or 0 end,
 		start_potion_cooldown = function(player, seconds)
 			player.cooldown = seconds
 		end,
-		register_stock = function(def) callbacks.stock = def end,
+		register_all_vendor_stock = function(def)
+			callbacks.stock = def
+			for _, shelf in pairs(profession_stock) do shelf[#shelf + 1] = def end
+		end,
+		profession_stock = profession_stock,
 	}
 	local herb_authorizer
 	grug_gathering = {register_herb_authorizer = function(fn)
@@ -110,7 +125,7 @@ return function(root)
 	dofile(root .. "/mods/ITEMS/grug_alchemy/recipes.lua")
 
 	local cooking_inputs = {
-		potion_mana = "grug_cooking:sugar_cane",
+		potion_mana = "group:grug_cooking_root",
 		potion_greater_mana = "grug_cooking:sugar_cane",
 		potion_cave = "grug_cooking:cave_cap",
 		elixir_focus_t3 = "grug_cooking:cave_cap",
@@ -143,6 +158,7 @@ return function(root)
 		end
 	end
 	for item, tier in pairs({
+		["group:grug_cooking_root"] = 1,
 		["grug_cooking:sugar_cane"] = 2,
 		["grug_cooking:cave_cap"] = 3,
 		["grug_cooking:ember_moss"] = 5,
@@ -153,9 +169,15 @@ return function(root)
 			"Cooking owns ingredient tier for " .. item)
 	end
 	local mana_tier = craftitems["grug_alchemy:potion_mana"]._grug_ilvl
-	if mutation == "cooking_tier" then mana_tier = 1 end
-	check(mana_tier == 11,
-		"Cooking T2 Sugar Cane moves Mana Potion consumption to level 11")
+	if mutation == "mana_tier" then mana_tier = 11 end
+	check(mana_tier == 1, "Mana Potion remains T1 with caster roots")
+	check(callbacks.stock and callbacks.stock.item == "vessels:glass_bottle",
+		"Glass Bottle core stock")
+	for kind, shelf in pairs(profession_stock) do
+		local present = shelf[1] and shelf[1].item == "vessels:glass_bottle"
+		if mutation == "vendor_bottle" and kind == "smith" then present = false end
+		check(present, "Glass Bottle on " .. kind .. " shelf")
+	end
 
 	local brewing_count = 0
 	for index = 1, #recipes do
@@ -178,6 +200,7 @@ return function(root)
 		return {
 			name = name, count = count or 1,
 			get_name = function(self) return self.name end,
+			get_count = function(self) return self.count end,
 			take_item = function(self, amount) self.count = self.count - amount end,
 		}
 	end
@@ -196,6 +219,7 @@ return function(root)
 		set_breath = function(self, value) self.breath = value end,
 		override_day_night_ratio = function(self, value) self.light = value end,
 	}
+	connected_players[1] = player
 
 	local healing = craftitems["grug_alchemy:potion_healing"]
 	local mana = craftitems["grug_alchemy:potion_mana"]
@@ -223,6 +247,68 @@ return function(root)
 	check(healing_cooldown == 45 and mana_cooldown == 45,
 		"Greater pair cooldown")
 
+	local function advance(seconds)
+		now_us = now_us + seconds * 1e6
+		callbacks.globalstep(seconds)
+	end
+	player.gear = {head = "test:apothecary", chest = "test:apothecary",
+		feet = "test:apothecary"}
+	player.cooldown, player.poisoned = 0, true
+	local antivenom = stack("grug_alchemy:potion_antivenom")
+	craftitems[antivenom.name].on_use(antivenom, player)
+	if mutation == "antivenom_callback" then player.poisoned = true end
+	check(antivenom.count == 0 and player.cooldown == 60 and
+		player.poisoned == false, "Antivenom callback consumes, cools and cures")
+
+	player.cooldown = 0
+	local swiftness = stack("grug_alchemy:potion_swiftness")
+	craftitems[swiftness.name].on_use(swiftness, player)
+	local swift_status = grug_core.get_status(player, "alchemy_swiftness")
+	local swift_duration = swift_status and
+		(swift_status.expiry_us - now_us) / 1e6 or 0
+	if mutation == "swiftness_callback" then swift_duration = 5 end
+	check(swiftness.count == 0 and player.cooldown == 60 and
+		player.move.speed == 0.10 and player.move.duration == 6 and
+		swift_duration == 6, "Swiftness callback and Apothecary duration")
+	player.cooldown = 0
+	advance(7)
+	check(grug_core.get_status(player, "alchemy_swiftness") == nil,
+		"Swiftness status expires")
+
+	local cave = stack("grug_alchemy:potion_cave")
+	craftitems[cave.name].on_use(cave, player)
+	local cave_status = grug_core.get_status(player, "alchemy_cave")
+	local cave_duration = cave_status and
+		(cave_status.expiry_us - now_us) / 1e6 or 0
+	if mutation == "cave_callback" then player.light = nil end
+	check(cave.count == 0 and player.cooldown == 60 and player.light == 0.45 and
+		cave_duration == 720, "Cave callback and Apothecary duration")
+	player.cooldown = 0
+	advance(721)
+	check(grug_core.get_status(player, "alchemy_cave") == nil and
+		player.light == nil, "Cave visual expires cleanly")
+
+	player.breath = 0
+	local deepwater = stack("grug_alchemy:elixir_deepwater")
+	craftitems[deepwater.name].on_use(deepwater, player)
+	local deepwater_status = grug_core.get_status(player, "elixir")
+	local deepwater_duration = deepwater_status and
+		(deepwater_status.expiry_us - now_us) / 1e6 or 0
+	if mutation == "deepwater_callback" then player.breath = 0 end
+	check(deepwater.count == 0 and player.breath == 10 and
+		deepwater_duration == 720 and player.cooldown == 0,
+		"Deepwater callback refills immediately without potion clock")
+	player.breath = 1
+	advance(1)
+	check(player.breath == 10, "Deepwater tick maintains breath")
+	advance(720)
+	check(grug_core.get_status(player, "elixir") == nil,
+		"Deepwater status expires")
+	player.breath = 1
+	advance(1)
+	check(player.breath == 1, "Deepwater tick stops after expiry")
+
+	player.gear = {}
 	player.cooldown = 37
 	grug_core.set_status(player, "food", {label = "Food", duration = 180,
 		modifiers = {hp_pool_percent = 2}})
@@ -292,5 +378,5 @@ return function(root)
 	if mutation == "cave_cap" then allowed = false end
 	check(allowed, "Cave Cap remains food-grade")
 
-	return "R8-ALCH alchemy KAT PASS recipes=21 cooldown=60/45 elixir=exclusive+food+clock gear=2 mana_ilvl=11 ilvl=1,11,21,31,41,51 herbs=closed\n"
+	return "R8-ALCH alchemy KAT PASS recipes=21 cooldown=60/45 utility=callbacks+expiry elixir=exclusive+food+clock gear=2 mana_ilvl=1 ilvl=1,11,21,31,41,51 herbs=closed vendors=all\n"
 end

@@ -3,6 +3,7 @@ local ACTIVE = "grug_brewing:brewing_stand_active"
 local VIAL = "vessels:glass_bottle"
 local STAND_FORM = "grug_brewing:stand"
 local recipes = {}
+local recipe_list = {}
 local public_positions = {}
 
 grug_brewing.NODE = INACTIVE
@@ -87,8 +88,34 @@ function grug_brewing.register_recipe(recipe)
 	if recipes[key] then error("grug_brewing: duplicate inputs", 0) end
 	recipes[key] = {
 		job = recipe, output = recipe.output, output_name = recipe.output_name,
-		time = tonumber(recipe.time) or 5,
+		time = tonumber(recipe.time) or 5, reagents = reagents,
 	}
+	recipe_list[#recipe_list + 1] = recipes[key]
+end
+
+local function ingredient_matches(token, item)
+	if token == item then return true end
+	local group_names = token:match("^group:(.+)$")
+	if not group_names then return false end
+	for group in group_names:gmatch("[^,]+") do
+		if core.get_item_group(item, group) <= 0 then return false end
+	end
+	return true
+end
+
+local function match_names(first, second, vial)
+	if vial ~= VIAL then return nil end
+	for index = 1, #recipe_list do
+		local recipe = recipe_list[index]
+		local reagents = recipe.reagents
+		if (ingredient_matches(reagents[1], first) and
+				ingredient_matches(reagents[2], second)) or
+				(ingredient_matches(reagents[1], second) and
+				ingredient_matches(reagents[2], first)) then
+			return recipe
+		end
+	end
+	return nil
 end
 
 local function matched(inv)
@@ -96,11 +123,11 @@ local function matched(inv)
 	local second = inv:get_stack("reagent", 2):get_name()
 	local vial = inv:get_stack("vial", 1):get_name()
 	if first == "" or second == "" or vial == "" then return nil end
-	return recipes[input_key(first, second, vial)]
+	return match_names(first, second, vial)
 end
 
 function grug_brewing.match(first, second, vial)
-	return recipes[input_key(first or "", second or "", vial or "")]
+	return match_names(first or "", second or "", vial or "")
 end
 
 local function is_fuel(stack)
@@ -247,7 +274,7 @@ local function allow_take(pos, listname, index, stack, player)
 	local jobs = rawget(_G, "grug_jobs")
 	local recipe
 	if jobs and type(jobs.recipe_for_output) == "function" then
-		recipe = jobs.recipe_for_output(stack:get_name())
+		recipe = jobs.recipe_for_output(stack:get_name(), "brewing_stand")
 	end
 	if not recipe or recipe.station ~= "brewing_stand" or
 			type(jobs.can_craft_recipe) ~= "function" then return 0 end
@@ -258,7 +285,8 @@ end
 local function on_take(pos, listname, index, stack, player)
 	if listname == "output" then
 		local jobs = rawget(_G, "grug_jobs")
-		local recipe = jobs and jobs.recipe_for_output(stack:get_name())
+		local recipe = jobs and jobs.recipe_for_output(stack:get_name(),
+			"brewing_stand")
 		if recipe and recipe.station == "brewing_stand" then
 			for count = 1, stack:get_count() do
 				jobs.record_craft(player, recipe.profession, recipe.tier)

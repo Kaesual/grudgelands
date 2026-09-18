@@ -363,6 +363,18 @@ local function profession_shelf(kind, entries)
 	return shelf
 end
 
+-- Supplies used by every profession belong on both the core shelf and every
+-- profession-only shelf, because those vendors do not merge the two lists.
+function grug_traders.register_all_vendor_stock(def)
+	grug_traders.register_stock(def)
+	local source = grug_traders.stock[#grug_traders.stock]
+	for _, shelf in pairs(grug_traders.profession_stock) do
+		shelf[#shelf + 1] = {
+			item = source.item, price = source.price, category = source.category,
+		}
+	end
+end
+
 -- The butcher: meat and the hides that come off the same animal
 -- (biomes_mobs.md section 6's base-material map, which is where every one of
 -- these items comes from).

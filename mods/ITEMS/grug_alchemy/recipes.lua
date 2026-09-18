@@ -2,6 +2,7 @@ local VIAL = "vessels:glass_bottle"
 local G = "grug_gathering:"
 local C = "grug_cooking:"
 local M = "grug_mobs:"
+local ROOT = "group:grug_cooking_root"
 
 local ingredients = {
 	[G .. "gravemoss"] = 1,
@@ -66,8 +67,8 @@ end
 local catalog = {
 	potion("potion_healing", "Healing Potion", 1, G .. "gravemoss",
 		G .. "sunleaf", "health", grug_alchemy.POTION_COOLDOWN, "#d13b45"),
-	potion("potion_mana", "Mana Potion", 2, G .. "gravemoss",
-		C .. "sugar_cane", "mana", grug_alchemy.POTION_COOLDOWN, "#356ed1"),
+	potion("potion_mana", "Mana Potion", 1, G .. "gravemoss",
+		ROOT, "mana", grug_alchemy.POTION_COOLDOWN, "#356ed1"),
 	utility("potion_antivenom", "Antivenom", 2, G .. "dragonweed",
 		M .. "venom_gland", "antivenom", 0, "Cures poison", "#63ba52"),
 	utility("potion_swiftness", "Swiftness Draught", 2, G .. "dragonweed",
@@ -168,7 +169,8 @@ grug_gathering.register_herb_authorizer(function(player)
 	return false, "no_alchemist"
 end)
 
-grug_traders.register_stock({item = VIAL, price = 3, category = "goods"})
+grug_traders.register_all_vendor_stock({item = VIAL, price = 3,
+	category = "goods"})
 
 -- Capital protection covers the station, so these six authored stations are
 -- public while a player-placed stand continues to obey ordinary protection.

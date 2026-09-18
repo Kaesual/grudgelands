@@ -75,6 +75,10 @@ end
 local function utility_use(kind, duration)
 	return function(itemstack, player)
 		if not player_ready(itemstack, player) then return end
+		local effective_duration = duration
+		if duration > 0 then
+			effective_duration = duration * (1 + equipment_bonus(player) * 0.10)
+		end
 		local accepted = true
 		if kind == "antivenom" then
 			accepted = grug_mobs.clear_poison(player)
@@ -84,14 +88,14 @@ local function utility_use(kind, duration)
 			end
 		elseif kind == "swiftness" then
 			grug_core.set_move_modifier(player, "alchemy_swiftness", {speed = 0.10},
-				duration)
+				effective_duration)
 			grug_core.set_status(player, "alchemy_swiftness", {
-				label = "Swiftness +10%", duration = duration,
+				label = "Swiftness +10%", duration = effective_duration,
 			})
 		elseif kind == "cave" then
 			player:override_day_night_ratio(0.45)
 			grug_core.set_status(player, "alchemy_cave", {
-				label = "Cave Draught", duration = duration,
+				label = "Cave Draught", duration = effective_duration,
 				on_expire = function(target) target:override_day_night_ratio(nil) end,
 			})
 		end
@@ -120,11 +124,13 @@ local function elixir_use(definition)
 			label = definition.label, duration = duration, modifiers = modifiers,
 		}
 		if definition.kind == "deepwater" then
-			status.interval = 1
-			status.on_tick = function(target)
+			local function refill_breath(target)
 				local properties = target:get_properties()
 				target:set_breath(properties.breath_max or 10)
 			end
+			status.interval = 1
+			status.on_tick = refill_breath
+			refill_breath(player)
 		end
 		grug_core.set_status(player, "elixir", status)
 		return consume(itemstack)
