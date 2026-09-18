@@ -37,7 +37,7 @@ local skeleton = {
 	-- bone litter and blight dirt remain their own habitat everywhere their
 	-- accepted palettes place them. This check expresses the per-row rule by
 	-- looking at the node the spawn ABM matched. mobs_redo calls
-	-- spawn_abm_check with that ABM node position (api.lua:4347-4349),
+	-- spawn_abm_check with that ABM node position (api.lua:4348-4350),
 	-- BEFORE it raises the spawn position one node at :4390, so
 	-- core.get_node(pos) is exactly that top node.
 	_grug_spawn_check = function(pos)

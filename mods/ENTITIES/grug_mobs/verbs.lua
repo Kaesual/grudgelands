@@ -607,7 +607,7 @@ end
 --     dealt no damage (the punch at api.lua:2491-2819 lives inside the dogfight
 --     branch), played no "punch" clip (api.lua:2491-2819, same branch), issued no
 --     set_velocity at all — falling() only writes the y axis (api.lua:2874-2923),
---     so it coasted on the knockback of api.lua:3446-3481 in a straight line —
+--     so it coasted on the knockback of api.lua:3455-3490 in a straight line —
 --     and was locked out of wander/stand as well, because on_step calls
 --     do_states LIVE while `state == "attack"` (api.lua:3837-3938) and
 --     general_attack early-returns on it (api.lua:1853-1858). Net effect: being
@@ -708,7 +708,7 @@ function grug_mobs.noncombatant(def)
 	def._grug_noncombatant = true
 	local inner = def.after_activate
 	-- mob_activate calls `def.after_activate(self, staticdata, def, dtime)`
-	-- (api.lua:3759-3761) -- four arguments, the definition itself third. Forwarded
+	-- (api.lua:3760-3762) -- four arguments, the definition itself third. Forwarded
 	-- verbatim so a wrapped callback sees exactly what an unwrapped one does.
 	def.after_activate = function(self, staticdata, entity_def, dtime)
 		self._grug_noncombatant = true
