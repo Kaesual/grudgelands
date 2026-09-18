@@ -509,43 +509,89 @@ end
 local ROYAL_FOLLOW_DISTANCE = 5
 local ROYAL_PATH_FAILURE = 20
 
+local function royal_guard_base_tick(base_tick, self, dtime)
+	-- Royal socket fields identify and claim the authored guard slot, but the
+	-- ordinary start-guard tick would also steer this guard back to that slot.
+	-- The king is the only live home target for the encounter, so keep the
+	-- identity fields while hiding them from start_post_tick.
+	local post_x, post_z, post_yaw = self._grug_post_x, self._grug_post_z,
+		self._grug_post_yaw
+	self._grug_post_x, self._grug_post_z, self._grug_post_yaw = nil, nil, nil
+	local result = base_tick(self, dtime)
+	self._grug_post_x, self._grug_post_z, self._grug_post_yaw =
+		post_x, post_z, post_yaw
+	return result
+end
+
+local function royal_guard_drop_attack(self)
+	if not self.attack then return end
+	if type(self.stop_attack) == "function" then
+		self:stop_attack()
+	else
+		self.attack = nil
+		self.state = "stand"
+	end
+end
+
 local function royal_guard_tick(base_tick, self, dtime)
 	self._grug_boss_id = "king:" .. self._grug_royal_race
-	local result = base_tick(self, dtime)
+	local result = royal_guard_base_tick(base_tick, self, dtime)
 	if result == false then return false end
 	if not self.object then return end
 	self.temp = self.temp or {}
 	self.temp.grug_royal_follow = (self.temp.grug_royal_follow or 0) + dtime
-	if self.temp.grug_royal_follow < 1 then return end
+	if self.temp.grug_royal_follow < 1 then
+		-- Returning false is the mobs_redo ownership boundary: while follow is
+		-- active, on_step must not run do_states or general_attack after this
+		-- callback and overwrite the kingward movement with an enemy chase.
+		if self.temp.grug_royal_follow_active then
+			royal_guard_drop_attack(self)
+			return false
+		end
+		return
+	end
 	local elapsed = self.temp.grug_royal_follow
 	self.temp.grug_royal_follow = 0
 	local pos = self.object:get_pos()
 	for _, ent in ipairs(royal_objects(self._grug_boss_id, 80, pos)) do
 		if ent.name:find("grug_mobs:king_", 1, true) then
 			local king_pos = ent.object:get_pos()
+			self._grug_home = {x = king_pos.x, y = king_pos.y, z = king_pos.z}
 			local dx, dz = king_pos.x - pos.x, king_pos.z - pos.z
 			if dx * dx + dz * dz <=
 					ROYAL_FOLLOW_DISTANCE * ROYAL_FOLLOW_DISTANCE then
+				self.temp.grug_royal_follow_active = nil
+				self.temp.grug_royal_path_attempted = nil
 				grug_mobs.stall_clear(self)
 				return
 			end
+			self.temp.grug_royal_follow_active = true
+			royal_guard_drop_attack(self)
 			local stalled = grug_mobs.stall_clock(self, king_pos.x, king_pos.z,
 				pos, elapsed)
 			if stalled >= ROYAL_PATH_FAILURE then
-				if grug_mobs.path_nudge(self, king_pos.x, king_pos.z, pos) then
-					return
+				if not self.temp.grug_royal_path_attempted then
+					self.temp.grug_royal_path_attempted = true
+					if grug_mobs.path_nudge(self, king_pos.x, king_pos.z, pos) then
+						return false
+					end
 				end
 				-- Unlike ambient patrol snaps, this is encounter correction, not
 				-- travel: the guard must rejoin the authoritative king even while
 				-- watched, and never moves the king in response to its own failure.
 				grug_mobs.place_on_ground(self.object, king_pos)
 				grug_mobs.stall_clear(self)
-				return
+				self.temp.grug_royal_follow_active = nil
+				self.temp.grug_royal_path_attempted = nil
+				return false
 			end
+			self.temp.grug_royal_path_attempted = nil
 			grug_mobs.walk_toward(self, king_pos.x, king_pos.z, pos)
-			return
+			return false
 		end
 	end
+	self.temp.grug_royal_follow_active = nil
+	self.temp.grug_royal_path_attempted = nil
 	grug_mobs.stall_clear(self)
 end
 
@@ -558,6 +604,11 @@ for race, row in pairs(RACES) do
 	local base_tick = guard.do_custom
 	guard._grug_fixed_level = 60
 	guard._grug_tier = "elite"
+	-- Only the king owns an encounter leash/reset. Royal guards return to the
+	-- king through royal_guard_tick and never acquire an independent chase
+	-- anchor or reset the five-NPC group.
+	guard._grug_no_leash = true
+	guard._grug_leash_range = nil
 	guard._grug_visual = function(self)
 		return {skin = "grug_mobs_royal_" .. race_id .. ".png",
 			level = self._grug_level, weapon_family = "sword"}
