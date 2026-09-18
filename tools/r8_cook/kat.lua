@@ -150,6 +150,85 @@ return function(root)
 	dofile(root .. "/mods/ITEMS/grug_food/init.lua")
 	dofile(root .. "/mods/ITEMS/grug_cooking/init.lua")
 
+	-- Independent contract oracle: do not derive these rows from the content
+	-- tables. This pins every decided output, tier, role and ordered input list.
+	local expected_dishes = {
+		{"grug_cooking:hearty_stew", 1, "hearty",
+			{"mobs:meat_raw", "group:grug_cooking_staple"}},
+		{"grug_cooking:sweetroot_mash", 1, "caster",
+			{"group:grug_cooking_root", "group:grug_cooking_staple"}},
+		{"grug_cooking:corn_crusted_fish", 1, "hunter",
+			{"grug_mobs:raw_fish", "grug_gathering:corn"}},
+		{"grug_cooking:pumpkin_stew", 2, "hearty",
+			{"grug_cooking:pumpkin", "mobs:meat_raw",
+				"group:grug_cooking_staple"}},
+		{"grug_cooking:berry_preserve", 2, "caster",
+			{"group:grug_cooking_berry", "group:grug_cooking_berry",
+				"grug_cooking:sugar_cane"}},
+		{"grug_cooking:fruit_glazed_roast", 2, "hunter",
+			{"mobs:meat_raw", "group:grug_cooking_fruit"}},
+		{"grug_cooking:foragers_pot", 3, "hearty",
+			{"grug_gathering:mushroom", "mobs:meat_raw",
+				"group:grug_cooking_staple"}},
+		{"grug_cooking:mushroom_skewer", 3, "caster",
+			{"grug_gathering:mushroom", "grug_gathering:mushroom"}},
+		{"grug_cooking:onion_seared_steak", 3, "hunter",
+			{"mobs:meat_raw", "group:grug_cooking_early_spice",
+				"grug_gathering:mushroom"}},
+		{"grug_cooking:marsh_roast", 4, "hearty",
+			{"mobs:meat_raw", "grug_gathering:marshbloom",
+				"group:grug_cooking_staple"}},
+		{"grug_cooking:marshbloom_chowder", 4, "caster",
+			{"grug_mobs:raw_fish", "grug_gathering:marshbloom"}},
+		{"grug_cooking:hunters_feast", 4, "hunter",
+			{"mobs:meat_raw", "mobs:meat_raw", "grug_gathering:melon",
+				"grug_gathering:mushroom"}},
+		{"grug_cooking:kelp_wrapped_roast", 5, "hearty",
+			{"mobs:meat_raw", "grug_gathering:stormkelp",
+				"grug_gathering:rock_salt"}},
+		{"grug_cooking:stormkelp_broth", 5, "caster",
+			{"grug_gathering:stormkelp", "grug_mobs:raw_fish",
+				"grug_gathering:melon"}},
+		{"grug_cooking:salt_crusted_fish", 5, "hunter",
+			{"grug_mobs:raw_fish", "grug_gathering:rock_salt"}},
+		{"grug_cooking:grand_feast", 6, "hearty",
+			{"mobs:meat_raw", "mobs:meat_raw", "grug_gathering:wild_cocoa",
+				"grug_gathering:stormkelp"}},
+		{"grug_cooking:jungle_cocoa", 6, "caster",
+			{"grug_gathering:wild_cocoa", "grug_gathering:wild_cocoa",
+				"grug_gathering:rock_salt"}},
+		{"grug_cooking:cocoa_rubbed_game", 6, "hunter",
+			{"mobs:meat_raw", "grug_gathering:wild_cocoa",
+				"group:grug_cooking_early_spice"}},
+	}
+	local expected_raw_dishes = {
+		{"grug_cooking:raw_stew_pot", 1, "hearty",
+			{"mobs:meat_raw", "group:grug_cooking_staple",
+				"grug_cooking:wild_grain"}, "grug_cooking:hearty_stew"},
+		{"grug_cooking:raw_pumpkin_pot", 2, "hearty",
+			{"grug_cooking:pumpkin", "mobs:meat_raw",
+				"grug_cooking:wild_grain"}, "grug_cooking:pumpkin_stew"},
+		{"grug_cooking:raw_foragers_pot", 3, "hearty",
+			{"grug_cooking:cave_cap", "mobs:meat_raw",
+				"group:grug_cooking_staple"}, "grug_cooking:foragers_pot"},
+		{"grug_cooking:raw_marsh_roast", 4, "hearty",
+			{"mobs:meat_raw", "grug_gathering:marshbloom",
+				"grug_cooking:frost_melon"}, "grug_cooking:marsh_roast"},
+		{"grug_cooking:raw_kelp_roast", 5, "hearty",
+			{"mobs:meat_raw", "grug_gathering:stormkelp",
+				"grug_cooking:salt_crust"}, "grug_cooking:kelp_wrapped_roast"},
+		{"grug_cooking:raw_grand_feast", 6, "hearty",
+			{"mobs:meat_raw", "mobs:meat_raw", "grug_gathering:wild_cocoa",
+				"grug_cooking:salt_crust"}, "grug_cooking:grand_feast"},
+	}
+	local function exact_inputs(actual, expected)
+		if #actual ~= #expected then return false end
+		for index = 1, #expected do
+			if actual[index] ~= expected[index] then return false end
+		end
+		return true
+	end
+
 	local mutation = tonumber(os.getenv("R8_COOK_MUTATION") or "") or 0
 	if mutation == 1 then
 		grug_jobs.ingredient_tier = function() return nil end
@@ -163,6 +242,8 @@ return function(root)
 		grug_core.can_use_item_level = function(player)
 			return true, nil, player.level
 		end
+	elseif mutation == 6 then
+		grug_cooking.DISHES[10].inputs[1] = "grug_mobs:raw_fish"
 	end
 
 	local role_count = {}
@@ -170,6 +251,10 @@ return function(root)
 	check(#grug_cooking.DISHES == 18, "dish population differs")
 	for index = 1, #grug_cooking.DISHES do
 		local dish = grug_cooking.DISHES[index]
+		local expected = expected_dishes[index]
+		check(expected and dish.item == expected[1] and dish.tier == expected[2] and
+			dish.role == expected[3] and exact_inputs(dish.inputs, expected[4]),
+			"dish contract differs at row " .. index)
 		local recipe = grug_jobs.recipe_for_output(dish.item, "grid")
 		check(recipe ~= nil and recipe.tier == dish.tier and
 			recipe.profession == "cooking", dish.item .. " grid recipe missing")
@@ -213,6 +298,13 @@ return function(root)
 	check(#grug_cooking.RAW_ASSEMBLIES == 6, "raw assembly population differs")
 	for tier = 1, 6 do
 		local assembly = grug_cooking.RAW_ASSEMBLIES[tier]
+		local expected = expected_raw_dishes[tier]
+		local edible = registered[assembly.output]
+		check(expected and assembly.item == expected[1] and
+			assembly.tier == expected[2] and exact_inputs(assembly.inputs, expected[4]) and
+			assembly.output == expected[5] and edible and edible.groups and
+			edible.groups["grug_food_role_" .. expected[3]] == 1,
+			"raw dish contract differs at row " .. tier)
 		local grid_recipe = grug_jobs.recipe_for_output(assembly.item, "grid")
 		local furnace_recipe = grug_jobs.recipe_for_output(assembly.output, "furnace")
 		local direct_recipe = grug_jobs.recipe_for_output(assembly.output, "grid")

@@ -323,8 +323,8 @@ core.register_on_mods_loaded(function()
 		core.log("error", "[grug_fishing] catch table names unregistered " ..
 			"item(s) " .. table.concat(missing, ", "))
 	end
-	core.log("action", "[grug_fishing] 6 level-band tables, " .. entries ..
-		" catch entries, weight " .. grug_fishing.CATCH_TOTAL ..
-		", bite " .. grug_fishing.MIN_WAIT .. ".." ..
-		grug_fishing.MAX_WAIT .. "s, rod " .. ROD_USES .. " uses")
+	core.log("action", "[grug_fishing] tables=6 entries=" .. entries ..
+		" weight=" .. grug_fishing.CATCH_TOTAL .. " bite=" ..
+		grug_fishing.MIN_WAIT .. ".." .. grug_fishing.MAX_WAIT ..
+		"s rod_uses=" .. ROD_USES)
 end)

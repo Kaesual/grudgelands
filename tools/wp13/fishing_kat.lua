@@ -659,15 +659,36 @@ function M.run(repo)
 		fn()
 	end
 	local errors = 0
+	local clean_count = false
 	for _, line in ipairs(harness.logs) do
 		if line:sub(1, 5) == "error" then
 			errors = errors + 1
 		end
+		if line:find("action [grug_fishing] tables=6 entries=18 ", 1, true) then
+			clean_count = true
+		end
 	end
 	check(errors == 0, "the startup audit reported " .. errors .. " error(s)")
 	check(#harness.logs >= 1, "the startup audit printed nothing at all")
+	check(clean_count, "the startup audit did not report entries=18")
 	row("wp13_fishing_audit", "lines", tostring(#harness.logs), "errors",
-		tostring(errors))
+		tostring(errors), "entries", "18")
+
+	local band6_name = fishing.CATCH_TABLES[6][1].name
+	fishing.CATCH_TABLES[6][1].name = "missing:band6_fish"
+	harness.logs = {}
+	for _, fn in ipairs(harness.on_mods_loaded) do fn() end
+	fishing.CATCH_TABLES[6][1].name = band6_name
+	local missing_reported = false
+	for _, line in ipairs(harness.logs) do
+		if line:sub(1, 5) == "error" and
+				line:find("missing:band6_fish", 1, true) then
+			missing_reported = true
+		end
+	end
+	check(missing_reported,
+		"the startup audit accepted an unregistered band-6 catch")
+	row("wp13_fishing_audit_mutation", "band6_missing", "reported")
 
 	restore()
 
