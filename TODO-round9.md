@@ -69,8 +69,10 @@ Wave 2 (after wave 1 merges):
   mechanics (ephemeral mount entity as the player's mounted state, hotbar
   trigger, four tiers 15/30/45/60 taught and sold by the job trainers, T2
   replaces T1 and T4 replaces T3, land tiers everywhere, flight only at home
-  and over the Battlegrounds, ocean and enemy-territory warning bands, forced
-  dismount with a slow descent instead of a fall, damage dismounts) plus the
+  and over the Battlegrounds, ocean and enemy-territory warning bands on the
+  legal side of the line, forced dismount exactly at the line with NO slow
+  descent (user ruling 2026-09-18: whoever flies on deliberately falls),
+  damage dismounts) plus the
   models: T1 horse for both factions in faction colours, T2 one signature
   ground mount per race (Human horse, Dwarf ibex/ram, Elf stag, Orc boar,
   Undead wolf or skeletal horse retint, Troll tiger), T3/T4 scaled flying
@@ -105,7 +107,8 @@ Bog Witch.
 4. **Enchant rolls v1**: crafted quality (§6.4) and drop quality (§5.1) in
    one lane on the shared item meta.
 5. **Mounts in Round 9** (wave 2) with the rulings listed under R9-MOUNTS;
-   the ephemeral-state model, the tier replacement rule and the warning-
-   then-slow-descent rule are added to `mounts.md` by that lane.
+   the ephemeral-state model and the tier replacement rule are added to
+   `mounts.md` by that lane; the warning band + hard dismount at the line
+   stays as documented, without a slow descent.
 6. **V1 boundary**: the Nether is V2 (see §2); V1 = rounds 1–9 plus housing,
    the release gates and polish.
