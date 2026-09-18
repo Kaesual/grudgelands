@@ -191,6 +191,25 @@ branch after `git branch --contains` shows it in main, remove the lane's
 temporary directories, and confirm `pgrep -f '^luanti.bin'` shows only the
 user's client.
 
+### 2.6 Round-end engine validation (orchestrator, main checkout)
+
+After the last merge of a round, before the sync (measured 2026-09-17/18):
+
+- the six capitals: `tools/wp13/run_capital.sh <absent output dir> <key> full <seed>`
+  with `WP13_CAPITAL_PORT` from a free block, `nice -n 19`, at most three at
+  a time (`xargs -P 3`), each about ten minutes; PASS lines plus
+  `grep -c ERROR <output>/server.log` = 0. `run_capital.sh` is for capitals
+  only: on a start village its probe fails at load (`attempt to index field
+  'core'`, the start has no capital core), which is a misuse, not a defect;
+- the six starts: `tools/wp13/run_engine.sh <absent output dir> <launcher>`
+  is the six-start digest gate (forward/reverse, cold/disk, four identical
+  digests). The launcher must forward the caller's scratch
+  `LUANTI_USER_PATH` and XDG directories into the Flatpak
+  (`flatpak run --command=luanti --filesystem=<scratch root> --env=LUANTI_USER_PATH=... org.luanti.luanti "$@"`);
+  a launcher that ignores them would touch the user's personal folder;
+- `tools/wp40/quality/final_micro.sh <absent output dir>` on the merge HEAD
+  (exit 0, byte-identical PUC/LuaJIT TSVs).
+
 ## 3. Codex orchestrating Claude workers
 
 Read-only reviews: follow [claude-cli-review.md](claude-cli-review.md)
@@ -280,3 +299,6 @@ with a correction.
 | WP40 final micro fails after an unrelated mod-load change | its load-time `core.*` registration fixture is stale | run the final LuaJIT/PUC micro pair on every merge HEAD; any lane that touches mod load paths reruns and refreshes the fixture in scope |
 | Shore and start-band KATs cannot run under PUC 5.1 in a read-only review sandbox | `tools/wp40/r6/common.lua:29` falls back to SHA files under `/tmp`, which that sandbox cannot write | reviewers verify the recorded byte-identical PUC/LuaJIT pair instead; an injectable in-memory hasher is a possible later improvement, not an implemented path |
 | Historical R7 static runner flags `core::Transform` in `mods/PLAYER/grug_visuals/wield_geometry.lua` | its C++-token regex also scans Lua comments | known false positive: leave the production comment unchanged and read this hit manually until the historical runner's pattern is narrowed |
+| Orchestrator shell dies with exit 144 while `tools/wp13/run_engine.sh` runs, although its log ends with `WP13 engine PASS` | the gate's EXIT trap kills every process whose command line names its output directory, and the orchestrator's own `bash -c` wrapper named that path | start the gate from a script file or a command line that does not repeat the output path; on exit 144 read the gate's log and `digests.txt` before treating the run as failed |
+| `run_capital.sh` on a start village: `grug_wp13_capital_probe/init.lua: attempt to index field 'core'` | the capital probe expects a capital core blueprint; starts have none | starts are validated by `tools/wp13/run_engine.sh` (2.6), capitals by `run_capital.sh` |
+| `git worktree remove` refuses: "Arbeitsverzeichnisse, die Submodule enthalten, können nicht ... entfernt werden" | the worktree carries the reference_projects submodule directories | `git worktree remove --force --force <dir>` after confirming `git -C <dir> status --porcelain` is empty and the branch is merged |

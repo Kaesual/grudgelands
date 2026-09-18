@@ -77,6 +77,15 @@ every behavioural change, independent review, gates by the orchestrator.
 
 ### Planning lanes (documentation only, no Lua)
 
+Authorship (user request of 2026-09-18, "work out a creative plan
+yourself"): the two creative plans R7-COOK and R7-MOB are authored by the
+orchestrator (Claude Fable) as the design voice; Sol lanes supply the
+evidence they build on (R7-REF, licence and asset tables, zone data
+extracts) and review the finished plans for consistency with the code and
+`docs/design/`. The user can reroute this per session
+(`docs/process/agent-model-policy.md`).
+
+
 - **R7-REF Reference projects for plants and potions.** Add
   `farming` (https://codeberg.org/tenplus1/farming.git) and `x_farming`
   (https://bitbucket.org/minetest_gamers/x_farming.git) as submodules under
@@ -143,6 +152,12 @@ every behavioural change, independent review, gates by the orchestrator.
   buff text with effect, consumable minimum level through the `_grug_ilvl`
   seam, mana regeneration curve. Today's foods keep their tiers; the dish
   tables of R7-COOK land in Round 8.
+- **R7-CITE Stale Lua-comment citations.** Round 6's documentation lane
+  listed 17 `api.lua:<line>` citations in Lua comments that moved
+  (`grug_traders/vendors.lua`, `grug_mobs/rares.lua`, `init.lua`,
+  `verbs.lua`, `crocodile.lua`, `skeleton_archer.lua`, `bandit.lua`,
+  `start_villagers.lua`); retarget them (comments only) and run
+  `tools/docs/check_api_citations.lua`. Fold into R7-MISC.
 - **R7-MISC Start preload marker (R7.10)** in `grug_core/starts_preload.lua`
   (per-world mod storage; skip the emerge and log "start areas already
   generated"). May be folded into R7-FOOD or R7-UI if the orchestrator
