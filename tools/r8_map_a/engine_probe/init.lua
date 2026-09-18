@@ -1,13 +1,27 @@
--- Disposable engine probe. Candidate tables are generated from the exact
--- revision before the run and copied beside this file as cases.lua.
+-- Engine cave-mouth probe with an independent writer-disabled baseline.
+-- cases.lua is revision-bound; baseline.lua is emitted by the disabled run and
+-- copied beside this file for the carved-world comparison.
 
 grug_r8_map_a_engine_probe = {}
 
 local modpath = core.get_modpath(core.get_current_modname())
 local cases = dofile(modpath .. "/cases.lua")
 local engine_seed = core.get_mapgen_setting("seed")
-assert(cases.schema == "grug_r8_map_a_engine_cases_v1" and
+assert(cases.schema == "grug_r8_map_a_engine_cases_v2" and
 	cases.seed == engine_seed, "R8-MAP-A engine cases differ")
+local baseline_mode = core.settings:get_bool(
+	"grug_mapgen_r8_cave_writer_disabled", false)
+local baseline
+if not baseline_mode then
+	baseline = dofile(modpath .. "/baseline.lua")
+	assert(baseline.schema == "grug_r8_map_a_native_baseline_v1" and
+		baseline.seed == engine_seed and baseline.revision == cases.revision,
+		"R8-MAP-A native baseline differs")
+end
+
+local COMPONENT_RADIUS, COMPONENT_MINIMUM = 12, 24
+local directions = {{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0},
+	{0, 0, 1}, {0, 0, -1}}
 
 local function chunk_origin(value)
 	local block = math.floor(value / 16)
@@ -18,220 +32,278 @@ local function key(x, y, z)
 	return x .. "/" .. y .. "/" .. z
 end
 
-local function possible_voxels(candidate)
-	local result = {}
+local function candidate_key(region, candidate)
+	return table.concat({region.id, candidate.cell_x, candidate.cell_z,
+		candidate.mouth_x, candidate.mouth_y, candidate.mouth_z}, "/")
+end
+
+local function cave_round(numerator, denominator)
+	if numerator < 0 then
+		return -math.floor((-numerator * 2 + denominator) / (denominator * 2))
+	end
+	return math.floor((numerator * 2 + denominator) / (denominator * 2))
+end
+
+local function node_class(x, y, z)
+	local name = core.get_node({x = x, y = y, z = z}).name
+	if name == "air" then return "air" end
+	local definition = core.registered_nodes[name] or {}
+	local groups = definition.groups or {}
+	if definition.liquidtype and definition.liquidtype ~= "none" then return "liquid" end
+	if groups.ore and groups.ore > 0 or groups.grug_resource and
+			groups.grug_resource > 0 or name:find("_with_", 1, true) then
+		return "ore"
+	end
+	if groups.tree and groups.tree > 0 or groups.leaves and groups.leaves > 0 or
+			groups.flora and groups.flora > 0 or groups.attached_node and
+			groups.attached_node > 0 then
+		return "natural"
+	end
+	if groups.stone and groups.stone > 0 or groups.soil and groups.soil > 0 or
+			groups.sand and groups.sand > 0 or groups.grug_stratum and
+			groups.grug_stratum > 0 or name == "default:gravel" or
+			name == "default:clay" or name == "default:mossycobble" then
+		return "natural"
+	end
+	return "foreign"
+end
+
+local function lumen_for(candidate, target_x, target_y, target_z)
+	local voxels, seen, valid = {}, {}, true
+	local function offer(x, y, z)
+		local position_key = key(x, y, z)
+		if seen[position_key] then return end
+		seen[position_key] = true
+		local terrain_y = grug_zones.terrain_height_at(x, z)
+		local dx, dz = x - candidate.mouth_x, z - candidate.mouth_z
+		if grug_zones.water_class_at(x, z) ~= "land" or
+				(candidate.zone_id and grug_zones.id_at(x, z) ~= candidate.zone_id) or
+				(y > terrain_y and not (dx * dx + dz * dz <= 4 and
+					y <= candidate.mouth_y + 1)) then
+			valid = false
+			return
+		end
+		local class = node_class(x, y, z)
+		if class ~= "air" and class ~= "natural" then valid = false return end
+		voxels[#voxels + 1] = {x, y, z}
+	end
 	if candidate.kind == "sinkhole" then
-		for y = candidate.mouth_y + 1,
-				candidate.mouth_y - candidate.maximum_depth, -1 do
-			local depth = candidate.mouth_y + 1 - y
-			local radius = depth <= 2 and 2 or 1
-			for dx = -radius, radius do
-				for dz = -radius, radius do
-					if dx * dx + dz * dz <= radius * radius then
-						result[key(candidate.mouth_x + dx, y,
-							candidate.mouth_z + dz)] = true
-					end
+		local steps = candidate.mouth_y + 1 - target_y
+		for step = 0, steps do
+			local y = candidate.mouth_y + 1 - step
+			local center_x = candidate.mouth_x + cave_round(
+				(target_x - candidate.mouth_x) * step, steps)
+			local center_z = candidate.mouth_z + cave_round(
+				(target_z - candidate.mouth_z) * step, steps)
+			local radius = step <= 2 and 2 or 1
+			for dx = -radius, radius do for dz = -radius, radius do
+				if dx * dx + dz * dz <= radius * radius then
+					offer(center_x + dx, y, center_z + dz)
 				end
-			end
+			end end
 		end
 	else
 		for step = 0, candidate.length - 1 do
-			local x = candidate.mouth_x + candidate.direction_x * step
-			local z = candidate.mouth_z + candidate.direction_z * step
-			-- The before path descends one per four nodes. The after writer may
-			-- descend farther; this superset covers its whole bounded connection.
-			for y = candidate.mouth_y + 3,
-					candidate.mouth_y - candidate.maximum_depth - candidate.radius do
-				for side = -candidate.radius, candidate.radius do
-					local sx = x - candidate.direction_z * side
-					local sz = z + candidate.direction_x * side
-					result[key(sx, y, sz)] = true
+			local center_x = candidate.mouth_x + cave_round(
+				(target_x - candidate.mouth_x) * step, candidate.length - 1)
+			local center_y = candidate.mouth_y + 1 + cave_round(
+				(target_y - candidate.mouth_y - 1) * step, candidate.length - 1)
+			local center_z = candidate.mouth_z + cave_round(
+				(target_z - candidate.mouth_z) * step, candidate.length - 1)
+			for side = -candidate.radius, candidate.radius do
+				local absolute_side = math.abs(side)
+				local half = absolute_side == 0 and candidate.radius or
+					(absolute_side < candidate.radius and candidate.radius - 1 or 0)
+				for dy = -half, half do
+					offer(center_x - candidate.direction_z * side,
+						center_y + dy, center_z + candidate.direction_x * side)
 				end
 			end
 		end
 	end
-	return result
+	return valid and voxels or nil, seen
 end
 
-local directions = {{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0},
-	{0, 0, 1}, {0, 0, -1}}
-
-local function inspect_sinkhole(candidate)
-	if core.get_node({x = candidate.mouth_x, y = candidate.mouth_y,
-			z = candidate.mouth_z}).name ~= "air" then return false, false, 0 end
-	local signature = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}}
-	for index = 1, #signature do
-		local delta = signature[index]
-		if core.get_node({x = candidate.mouth_x + delta[1], y = candidate.mouth_y,
-				z = candidate.mouth_z + delta[2]}).name ~= "air" then
-			return false, false, 0
+local function component_proof(candidate, target, lumen)
+	local min_x, max_x = target[1] - COMPONENT_RADIUS, target[1] + COMPONENT_RADIUS
+	local min_y, max_y = target[2] - COMPONENT_RADIUS, target[2] + COMPONENT_RADIUS
+	local min_z, max_z = target[3] - COMPONENT_RADIUS, target[3] + COMPONENT_RADIUS
+	local surface_cache = {}
+	local function baseline_surface(x, z)
+		local column_key = x .. "/" .. z
+		if surface_cache[column_key] ~= nil then
+			return surface_cache[column_key] ~= false and surface_cache[column_key] or nil
 		end
+		for y = candidate.mouth_y + COMPONENT_RADIUS, min_y, -1 do
+			local class = node_class(x, y, z)
+			if class ~= "air" and class ~= "liquid" then
+				surface_cache[column_key] = y
+				return y
+			end
+		end
+		surface_cache[column_key] = false
+		return nil
 	end
-	local reach = (candidate.search_radius or 8) + 12
-	local queue = {{candidate.mouth_x, candidate.mouth_y, candidate.mouth_z}}
-	local seen = {[key(candidate.mouth_x, candidate.mouth_y,
-		candidate.mouth_z)] = true}
-	local depth_counts, head, visited = {}, 1, 0
-	while queue[head] and visited < 30000 do
+	local queue, seen, head = {{target[1], target[2], target[3]}},
+		{[key(target[1], target[2], target[3])] = true}, 1
+	local outside, touches_sky, continues = 0, false, false
+	while queue[head] do
 		local row = queue[head]
-		head, visited = head + 1, visited + 1
-		if row[2] <= candidate.mouth_y - 4 then
-			depth_counts[row[2]] = (depth_counts[row[2]] or 0) + 1
+		head = head + 1
+		local surface = baseline_surface(row[1], row[3])
+		if surface == nil or row[2] > surface then touches_sky = true end
+		if not lumen[key(row[1], row[2], row[3])] then outside = outside + 1 end
+		if row[1] == min_x or row[1] == max_x or row[2] == min_y or
+				row[2] == max_y or row[3] == min_z or row[3] == max_z then
+			continues = true
 		end
-		for direction = 1, #directions do
-			local delta = directions[direction]
+		for index = 1, #directions do
+			local delta = directions[index]
 			local x, y, z = row[1] + delta[1], row[2] + delta[2],
 				row[3] + delta[3]
 			local position_key = key(x, y, z)
-			if not seen[position_key] and math.abs(x - candidate.mouth_x) <= reach and
-					math.abs(z - candidate.mouth_z) <= reach and
-					y >= candidate.mouth_y - candidate.maximum_depth - 4 and
-					y <= candidate.mouth_y + 1 then
+			if not seen[position_key] and x >= min_x and x <= max_x and
+					y >= min_y and y <= max_y and z >= min_z and z <= max_z and
+					node_class(x, y, z) == "air" then
 				seen[position_key] = true
-				local dx, dz = x - candidate.mouth_x, z - candidate.mouth_z
-			local below_ground = y <= grug_zones.terrain_height_at(x, z)
-				local within_mouth = dx * dx + dz * dz <= 9
-			if (below_ground or within_mouth or y <= candidate.mouth_y - 3) and
-						core.get_node({x = x, y = y, z = z}).name == "air" then
-					queue[#queue + 1] = {x, y, z}
-				end
+				queue[#queue + 1] = {x, y, z}
 			end
 		end
 	end
-	local connected = false
-	local maximum_plane = 0
-	for _, count in pairs(depth_counts) do
-		if count > maximum_plane then maximum_plane = count end
-		-- A radius-1 authored shaft has exactly five air nodes on one y plane.
-		-- A sixth node is therefore outside the authored shaft and proves that
-		-- the engine result opens into native cave air, including a narrow cave.
-		if count >= 6 then connected = true break end
-	end
-	return true, connected, visited, maximum_plane
+	return continues and not touches_sky and outside >= COMPONENT_MINIMUM,
+		outside, #queue, touches_sky
 end
 
-local function inspect(candidate)
-	if candidate.kind == "sinkhole" then return inspect_sinkhole(candidate) end
-	local mouth = core.get_node({x = candidate.mouth_x, y = candidate.mouth_y,
-		z = candidate.mouth_z})
-	if mouth.name ~= "air" then return false, false, 0 end
-	local possible = possible_voxels(candidate)
-	local queue = {{candidate.mouth_x, candidate.mouth_y, candidate.mouth_z}}
-	local seen = {[key(candidate.mouth_x, candidate.mouth_y,
-		candidate.mouth_z)] = true}
-	local head, visited, connected = 1, 0, false
-	while queue[head] and visited < 20000 do
-		local row = queue[head]
-		head, visited = head + 1, visited + 1
-		for direction = 1, #directions do
-			local delta = directions[direction]
-			local x, y, z = row[1] + delta[1], row[2] + delta[2],
-				row[3] + delta[3]
-			local position_key = key(x, y, z)
-			if not seen[position_key] then
-				seen[position_key] = true
-				if core.get_node({x = x, y = y, z = z}).name == "air" then
-					if possible[position_key] then
-						queue[#queue + 1] = {x, y, z}
-					elseif y <= candidate.mouth_y - 4 and
-							y <= grug_zones.terrain_height_at(x, z) - 3 then
-						connected = true
-					end
-				end
-			end
-		end
-	end
-	return true, connected, visited
-end
-
-local function native_air_near(candidate)
+local function baseline_plan(candidate)
+	local search_x = candidate.kind == "hillside" and candidate.mouth_x +
+		candidate.direction_x * (candidate.length - 1) or candidate.mouth_x
+	local search_z = candidate.kind == "hillside" and candidate.mouth_z +
+		candidate.direction_z * (candidate.length - 1) or candidate.mouth_z
 	local radius = candidate.search_radius or candidate.radius
-	for dz = -radius, radius do
-		for dx = -radius, radius do
-			if dx * dx + dz * dz <= radius * radius then
-				local x, z = candidate.mouth_x + dx, candidate.mouth_z + dz
-				local ceiling = math.min(candidate.mouth_y,
-					grug_zones.terrain_height_at(x, z)) - 3
-				for y = ceiling, candidate.mouth_y - candidate.maximum_depth, -1 do
-					if core.get_node({x = x, y = y, z = z}).name == "air" then
-						return true
+	for radius_squared = 0, radius * radius do
+		for dz = -radius, radius do for dx = -radius, radius do
+			if dx * dx + dz * dz == radius_squared then
+				local x, z = search_x + dx, search_z + dz
+				if grug_zones.water_class_at(x, z) == "land" and
+						(not candidate.zone_id or grug_zones.id_at(x, z) ==
+							candidate.zone_id) then
+					local roof = 0
+					local ceiling = math.min(candidate.mouth_y,
+						grug_zones.terrain_height_at(x, z))
+					for depth = 1, candidate.maximum_depth do
+						local y = ceiling - depth
+						local class = node_class(x, y, z)
+						if class == "air" and roof >= 3 then
+							local voxels, lumen = lumen_for(candidate, x, y, z)
+							if voxels then
+								local connected, outside, component, sky =
+									component_proof(candidate, {x, y, z}, lumen)
+								if connected then
+									return {eligible = true, target = {x, y, z},
+										voxel_count = #voxels, outside = outside,
+										component = component, sky = sky}
+								end
+							end
+							break
+						elseif class == "natural" then roof = roof + 1
+						elseif class ~= "air" then roof = 0 end
 					end
 				end
 			end
-		end
+		end end
 	end
-	return false
+	return {eligible = false}
 end
 
-local work = {}
+local function carved_against_baseline(candidate, proof)
+	if not proof or not proof.eligible then return false, false, 0 end
+	local voxels = lumen_for(candidate, proof.target[1], proof.target[2],
+		proof.target[3])
+	if not voxels or #voxels ~= proof.voxel_count then return false, false, 0 end
+	local air = 0
+	for index = 1, #voxels do
+		local row = voxels[index]
+		if core.get_node({x = row[1], y = row[2], z = row[3]}).name ~= "air" then
+			return false, false, air
+		end
+		air = air + 1
+	end
+	return true, true, air
+end
+
+local work, totals, results = {}, {}, {}
 for region_index = 1, #cases.regions do
 	local region = cases.regions[region_index]
+	totals[region.id] = {candidates = #region.candidates, carved = 0,
+		connected = 0, eligible = 0}
 	for candidate_index = 1, #region.candidates do
 		work[#work + 1] = {region = region, candidate = region.candidates[candidate_index]}
 	end
 end
-local totals = {}
-for region_index = 1, #cases.regions do
-	totals[cases.regions[region_index].id] = {candidates =
-		#cases.regions[region_index].candidates, carved = 0, connected = 0,
-		native_near = 0}
-end
 
 local current = 0
+local function finish()
+	if baseline_mode then
+		local payload = {schema = "grug_r8_map_a_native_baseline_v1",
+			revision = cases.revision, seed = engine_seed, results = results}
+		local path = core.get_worldpath() .. "/r8_map_a_baseline.lua"
+		assert(core.safe_file_write(path, core.serialize(payload)),
+			"R8-MAP-A baseline write failed")
+		core.log("action", "GRUG_R8_MAP_A_BASELINE_FILE\t" .. path)
+	end
+	for region_index = 1, #cases.regions do
+		local region = cases.regions[region_index]
+		local total = totals[region.id]
+		core.log("action", table.concat({"GRUG_R8_MAP_A",
+			baseline_mode and "baseline" or "after", cases.revision, engine_seed,
+			region.id, total.candidates, total.carved, total.connected,
+			total.eligible}, "\t"))
+	end
+	core.request_shutdown("R8-MAP-A cave measurement complete", false, 0.1)
+end
+
 local function next_candidate()
 	current = current + 1
 	local item = work[current]
-	if not item then
-		for region_index = 1, #cases.regions do
-			local region = cases.regions[region_index]
-			local total = totals[region.id]
-			core.log("action", table.concat({"GRUG_R8_MAP_A", cases.revision,
-				engine_seed, region.id, total.candidates, total.carved,
-				total.connected, total.native_near,
-				total.first_connected or "none",
-				total.first_disconnected or "none"}, "\t"))
-		end
-		core.request_shutdown("R8-MAP-A cave measurement complete", false, 0.1)
-		return
-	end
+	if not item then finish() return end
 	local candidate = item.candidate
 	local last_x = candidate.mouth_x + candidate.direction_x *
 		(candidate.length - 1)
 	local last_z = candidate.mouth_z + candidate.direction_z *
 		(candidate.length - 1)
 	local minp = {x = chunk_origin(math.min(candidate.mouth_x, last_x) -
-		candidate.radius), y = chunk_origin(candidate.minimum_y),
-		z = chunk_origin(math.min(candidate.mouth_z, last_z) - candidate.radius)}
+		(candidate.search_radius or candidate.radius)),
+		y = chunk_origin(candidate.minimum_y),
+		z = chunk_origin(math.min(candidate.mouth_z, last_z) -
+		(candidate.search_radius or candidate.radius))}
 	local maxp = {x = chunk_origin(math.max(candidate.mouth_x, last_x) +
-		candidate.radius) + 79,
-		y = chunk_origin(candidate.mouth_y + 3) + 79,
+		(candidate.search_radius or candidate.radius)) + 79,
+		y = chunk_origin(candidate.mouth_y + COMPONENT_RADIUS) + 79,
 		z = chunk_origin(math.max(candidate.mouth_z, last_z) +
-		candidate.radius) + 79}
+		(candidate.search_radius or candidate.radius)) + 79}
 	core.emerge_area(minp, maxp, function(_, _, remaining)
 		if remaining ~= 0 then return end
-		local carved, connected, visited, maximum_plane = inspect(candidate)
+		local row_key = candidate_key(item.region, candidate)
 		local total = totals[item.region.id]
-		if carved then total.carved = total.carved + 1 end
-		if connected then
-			total.connected = total.connected + 1
-			if not total.first_connected then
-				total.first_connected = table.concat({candidate.kind,
-					candidate.mouth_x, candidate.mouth_y, candidate.mouth_z}, "/")
-			end
+		if baseline_mode then
+			local proof = baseline_plan(candidate)
+			results[row_key] = proof
+			if proof.eligible then total.eligible = total.eligible + 1 end
+		else
+			local proof = baseline.results[row_key]
+			assert(proof, "R8-MAP-A candidate absent from baseline: " .. row_key)
+			if proof.eligible then total.eligible = total.eligible + 1 end
+			local carved, connected = carved_against_baseline(candidate, proof)
+			if carved then total.carved = total.carved + 1 end
+			if connected then total.connected = total.connected + 1 end
 		end
-		if carved and not connected and not total.first_disconnected then
-			total.first_disconnected = table.concat({candidate.kind,
-				candidate.mouth_x, candidate.mouth_y, candidate.mouth_z, visited,
-				maximum_plane or 0}, "/")
-		end
-		if native_air_near(candidate) then total.native_near = total.native_near + 1 end
 		core.after(0, next_candidate)
 	end)
 end
 
 core.register_on_mods_loaded(function()
 	core.after(0, next_candidate)
-	core.after(900, function()
+	core.after(1800, function()
 		core.request_shutdown("R8-MAP-A cave measurement timeout", false, 1)
 	end)
 end)

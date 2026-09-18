@@ -2,7 +2,8 @@
 -- Usage: luajit candidate_export.lua ABS_ROOT SEED REVISION
 
 local root, seed, revision = assert(arg[1]), assert(arg[2]), assert(arg[3])
-assert(revision == "before" or revision == "after", "revision differs")
+assert(revision:match("^[0-9a-f]+$") or revision == "before",
+	"revision differs")
 
 local offline = dofile(root .. "/tools/wp40/r6/offline.lua")(root)
 local loaded = offline.new_evidence(seed, false)
@@ -31,7 +32,7 @@ local function lua_string(value)
 	return string.format("%q", value)
 end
 
-io.write("return {schema=\"grug_r8_map_a_engine_cases_v1\",revision=",
+io.write("return {schema=\"grug_r8_map_a_engine_cases_v2\",revision=",
 	lua_string(revision), ",seed=", lua_string(seed), ",regions={\n")
 for region_index = 1, #regions do
 	local region = regions[region_index]
@@ -55,6 +56,7 @@ for region_index = 1, #regions do
 	for index = 1, #records do
 		local row = records[index]
 		io.write("{cell_x=", row.cell_x, ",cell_z=", row.cell_z,
+			",zone_id=", lua_string(row.zone_id),
 			",mouth_x=", row.mouth_x, ",mouth_y=", row.mouth_y,
 			",mouth_z=", row.mouth_z, ",direction_x=", row.direction_x,
 			",direction_z=", row.direction_z, ",length=", row.length,
