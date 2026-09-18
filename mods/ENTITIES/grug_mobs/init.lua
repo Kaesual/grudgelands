@@ -1,5 +1,33 @@
 grug_mobs = {}
 
+function grug_mobs.ensure_tag_carrier(self)
+	if not self or not self.object or not self.object:is_valid() then return nil end
+	self.temp = self.temp or {}
+	local carrier = self.temp.grug_tag_carrier
+	if carrier and carrier:is_valid() then return carrier end
+	carrier = grug_core.create_tag_carrier(self.object)
+	self.temp.grug_tag_carrier = carrier
+	-- A non-player's empty nametag really is empty. All visible text belongs
+	-- to the observer-managed child from this point onward.
+	self.object:set_properties({nametag = ""})
+	return carrier
+end
+
+function grug_mobs.remove_tag_carrier(self)
+	local temp = self and self.temp
+	if not temp then return end
+	grug_core.remove_tag_carrier(temp.grug_tag_carrier)
+	temp.grug_tag_carrier = nil
+end
+
+local tag_old_on_deactivate = mobs.mob_class.on_deactivate
+mobs.mob_class.on_deactivate = function(self, removal)
+	grug_mobs.remove_tag_carrier(self)
+	if tag_old_on_deactivate then
+		return tag_old_on_deactivate(self, removal)
+	end
+end
+
 if not grug_core.zone_authority_installed() then
 	error("[grug_mobs] validated R7 zone authority was not installed")
 end
@@ -592,6 +620,14 @@ function grug_mobs.register_mob(name, def)
 				return old_after_activate(self, staticdata, mob_def, dtime)
 			end
 		end
+	end
+
+	local old_tag_after_activate = def.after_activate
+	def.after_activate = function(self, staticdata, mob_def, dtime)
+		if old_tag_after_activate then
+			old_tag_after_activate(self, staticdata, mob_def, dtime)
+		end
+		grug_mobs.ensure_tag_carrier(self)
 	end
 
 	grug_mobs.install_flight_nudge(def)

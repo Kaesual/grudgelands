@@ -403,8 +403,7 @@ function grug_mobs.settlement_npc_name(settlement_key, kind, race_id, family)
 end
 
 --
--- Static white nametag, BEHIND THE PROXIMITY GATE (playtest round 3,
--- 2026-09-15).
+-- Static white text on the observer-managed tag carrier.
 --
 -- mobs_redo recolours the tag by health on every do_env_damage tick
 -- (api.lua:1050-1176, called from :3837-3938), so the method is overridden PER ENTITY
@@ -416,15 +415,18 @@ end
 -- rendered out to the ~128 m object-send range while a guard's disappeared at
 -- thirty, which is the clutter the user reported. The DESIRED text is now kept
 -- in a plain string field (so it survives unload/reload with the mob and a
--- rename while the tag is hidden costs nothing), and the only writer of the
--- property is `grug_mobs.plain_tag_gate_tick`, from this family's own
--- once-a-second slot. mobs_redo's own `update_tag` calls therefore refresh the
--- desired text and touch no property at all.
+-- rename while nobody observes it costs no client send), and the once-a-second
+-- slot changes only the carrier's observer set. mobs_redo's own `update_tag`
+-- calls refresh the desired carrier text without exposing the parent tag.
 --
 local function install_nametag(self, text)
 	self._grug_tag_want = text
+	local carrier = grug_mobs.ensure_tag_carrier(self)
+	grug_core.set_tag_carrier_text(carrier, text)
 	self.update_tag = function(other)
 		other._grug_tag_want = text
+		grug_core.set_tag_carrier_text(
+			grug_mobs.ensure_tag_carrier(other), text)
 	end
 end
 
@@ -455,9 +457,8 @@ function grug_mobs.start_npc_retag(self)
 	end
 	self._grug_npc_tag = name
 	install_nametag(self, name)
-	-- No property write and no flag reset: the proximity gate owns the
-	-- property, and it re-reads the desired text on its next tick -- which is
-	-- also what makes a rename that happens while the tag is hidden free.
+	-- install_nametag updates the carrier immediately; its observer gate keeps
+	-- the existing per-viewer states until the next one-second tick.
 end
 
 -- Is another villager of this family visibly standing on that spot? Only

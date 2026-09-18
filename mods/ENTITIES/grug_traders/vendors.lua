@@ -15,7 +15,7 @@
 --
 -- That wrapper IS the level/XP engine: it calls grug_mobs.register_level_cfg,
 -- and ensure_init then derives HP/damage/XP from grug_core.mob_level_at and
--- installs the global nametag of combat_stats.md §6 —
+-- installs the level/HP carrier text of combat_stats.md §6 —
 -- "<name> [Lv 42] 250/250" (grug_mobs/levels.lua:147-165). A shopkeeper with
 -- a level and a health bar is wrong on both counts, and the aggro/leash/
 -- telegraph wrappers it also installs are dead weight on something that never
@@ -150,7 +150,7 @@ end
 -- Entity definition
 --
 
--- Static nametag. mobs_redo's own mob_class:update_tag recolors the tag by
+-- Static carrier text. mobs_redo's own mob_class:update_tag recolors tags by
 -- health on every do_env_damage tick (api.lua:1050-1176, called from
 -- api.lua:3837-3938) — a green "healthy" tint on a shopkeeper. Overriding the method
 -- PER ENTITY (the same trick grug_mobs/levels.lua uses for the level tag)
@@ -158,21 +158,25 @@ end
 -- Installed from after_activate because a function field is never serialized
 -- into staticdata, so it must be re-installed on every activation; the "did we
 -- already write it" flag lives in self.temp, which mob_activate resets per
--- activation exactly like the object's nametag property.
+-- activation exactly like the carrier reference.
 --
 -- ROUND 3 PUT IT BEHIND THE PROXIMITY GATE (WP13 playtest, 2026-09-15). The
 -- write used to happen once, here, and the engine has no distance cull of its
 -- own -- so a shopkeeper's name rendered out to the ~128 m object-send range
 -- while a guard's disappeared at thirty, which is the clutter the user
 -- reported. The DESIRED text is now a plain string field and the only writer of
--- the property is `grug_mobs.plain_tag_gate_tick`, from this family's own
--- once-a-second tick: one write per state flip, none while nobody is near.
--- mobs_redo's `update_tag` calls therefore refresh the text and touch nothing.
+-- the observer set is managed by `grug_mobs.plain_tag_gate_tick` from this
+-- family's once-a-second tick. mobs_redo's `update_tag` calls refresh only the
+-- carrier text; the parent nametag stays empty.
 --
 local function install_nametag(self, text)
 	self._grug_tag_want = text
+	local carrier = grug_mobs.ensure_tag_carrier(self)
+	grug_core.set_tag_carrier_text(carrier, text)
 	self.update_tag = function(s)
 		s._grug_tag_want = text
+		grug_core.set_tag_carrier_text(
+			grug_mobs.ensure_tag_carrier(s), text)
 	end
 end
 
@@ -256,7 +260,7 @@ local function vendor_def(vendor, texture)
 		description = vendor.nametag,
 		-- NO `nametag` FIELD any more (round 3). mobs_redo copies it onto the
 		-- object at activation, which would put the tag back on screen at 128 m
-		-- on every reload until the gate's first tick took it off again.
+		-- on every reload until the first gate tick took it off again.
 		type = "npc",
 		passive = true,
 		-- Permanent: see the header. `type = "npc"` already exempts the mob

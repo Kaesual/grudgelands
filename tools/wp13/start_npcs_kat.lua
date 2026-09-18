@@ -461,6 +461,10 @@ return function(repo)
 		function grug_mobs.place_on_ground(object, pos)
 			object:set_pos(pos)
 		end
+		function grug_mobs.ensure_tag_carrier(entity)
+			entity._kat_tag_carrier = entity._kat_tag_carrier or {}
+			return entity._kat_tag_carrier
+		end
 		rawset(_G, "grug_mobs", grug_mobs)
 
 		rawset(_G, "vector", {
@@ -611,6 +615,10 @@ return function(repo)
 		function grug_core.start_ready() return harness.ready == true end
 		function grug_core.register_on_starts_progress(fn)
 			harness.progress = fn
+		end
+		function grug_core.set_tag_carrier_text(carrier, text)
+			carrier.text = text
+			return true
 		end
 		rawset(_G, "grug_core", grug_core)
 
@@ -781,14 +789,13 @@ return function(repo)
 			}
 		end)
 		--
-		-- THE NAMETAG PROXIMITY GATE lives in `levels.lua`, which is the level
+		-- THE NAMETAG OBSERVER GATE lives in `levels.lua`, which is the level
 		-- and XP engine and is deliberately not part of this fixture -- a
 		-- settlement NPC has no level to want it for. What this fixture owns is
 		-- the CALL: every peaceful family has to reach the gate once a second
 		-- with the text it wants shown, which is what the round-3 finding was
 		-- about (a static property write that the engine renders out to 128 m).
-		-- So the gate is recorded here and the property write itself is
-		-- measured in the engine, by the NPC probe.
+		-- The gate call is recorded here; tools/r8_tags owns its observer rules.
 		--
 		--
 		-- The cached-player distance `levels.lua` publishes. The work tick asks
@@ -2013,12 +2020,12 @@ return function(repo)
 		"lines_" .. table.concat(lines, ","))
 
 	--
-	-- 18. THE NAMETAG PROXIMITY GATE is reached by every peaceful family, once
+	-- 18. THE NAMETAG OBSERVER GATE is reached by every peaceful family, once
 	--     a second, with the name that family wants shown (playtest round 3).
 	--     The property write itself is the engine's and is measured by the NPC
 	--     probe; what can only be measured here is that the villager's amble,
 	--     the work tick and the elder's own tick all go through the gate
-	--     instead of writing a static tag at activation.
+	--     instead of exposing a static parent tag at activation.
 	--
 	local elder_def = harness.defs["grug_mobs:elder_dwarf"]
 	check(elder_def.do_custom ~= nil, "the quest shell has no tick to gate on")

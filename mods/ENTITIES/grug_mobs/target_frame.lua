@@ -1,10 +1,9 @@
 --
 -- Con-color target frame (combat_stats.md §6).
 --
--- The global nametag (levels.lua) is viewer-independent and cannot be
--- colored per player, so the "how dangerous is this to ME" signal lives in
--- a HUD line instead: the thing the player is LOOKING at, colored relative
--- to the viewer.
+-- The carrier nametag (levels.lua) has per-viewer visibility but neutral text
+-- color, so the "how dangerous is this to ME" signal lives in a HUD line:
+-- the thing the player is LOOKING at, colored relative to the viewer.
 --
 -- MOBS — con color against the viewer's own level:
 --   mob <= L-10  gray   (gray kill: no XP)

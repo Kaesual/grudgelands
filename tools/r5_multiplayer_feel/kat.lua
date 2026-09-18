@@ -95,6 +95,25 @@ grug_core = {
 	},
 	zone_authority_installed = function() return true end,
 }
+local carrier_creates = 0
+local observer_updates = 0
+function grug_core.create_tag_carrier(parent)
+	carrier_creates = carrier_creates + 1
+	local carrier = {valid = true}
+	function carrier:is_valid() return self.valid end
+	parent.carrier = carrier
+	return carrier
+end
+function grug_core.set_tag_carrier_text(carrier, text)
+	if carrier.text == text then return false end
+	carrier.text = text
+	return true
+end
+function grug_core.update_tag_carrier_observers()
+	observer_updates = observer_updates + 1
+	return true
+end
+function grug_core.remove_tag_carrier(carrier) carrier.valid = false end
 
 local level_callback
 grug_xp = {
@@ -147,10 +166,7 @@ local ok, failure = pcall(function()
 	dofile(repo .. "/mods/CORE/grug_core/suffocation.lua")
 
 	if mutation == 1 then
-		local original = grug_factions.player_tag_visible
-		grug_factions.player_tag_visible = function(shown, distance)
-			return not original(shown, distance)
-		end
+		grug_core.update_tag_carrier_observers = function() return false end
 	elseif mutation == 2 then
 		local original = grug_core.death_message
 		grug_core.death_message = function(name, reason)
@@ -175,16 +191,10 @@ local ok, failure = pcall(function()
 		end
 	end
 
-	-- Player tag text, pure distance gate and send-on-change behavior.
+	-- Player tag text and the moved carrier seam. Detailed per-viewer distance,
+	-- owner exclusion and send-on-change behavior live in tools/r8_tags/kat.lua.
 	equal(grug_factions.player_tag_text("Thomas", 5, 35, 60),
 		"Thomas [Lv 5] 35/60", "player tag text")
-	want(grug_factions.player_tag_visible(false, 24 * 24), "show below 25 m")
-	want(not grug_factions.player_tag_visible(false, 27 * 27),
-		"hidden state retained in hysteresis band")
-	want(grug_factions.player_tag_visible(true, 27 * 27),
-		"shown state retained in hysteresis band")
-	want(not grug_factions.player_tag_visible(true, 31 * 31),
-		"hide above 30 m")
 
 	local thomas = fake_player("Thomas", {x = 0, y = 0, z = 0})
 	local ada = fake_player("Ada", {x = 24, y = 0, z = 0})
@@ -194,25 +204,24 @@ local ok, failure = pcall(function()
 		callbacks.joinplayer[index].fn(ada)
 	end
 	equal(thomas.nametag_writes, 1, "join hides tag once")
+	equal(carrier_creates, 2, "one player carrier per join")
+	equal(thomas.carrier.text, "Thomas [Lv 1] 30/30", "joined carrier text")
 	callbacks.globalstep[1].fn(1)
-	equal(thomas.nametag_writes, 2, "near player shows tag once")
-	equal(thomas.nametag.text, "Thomas [Lv 1] 30/30", "shown tag text")
+	equal(observer_updates, 2, "player observer management reached")
+	equal(thomas.nametag_writes, 1, "parent tag remains alpha-zero")
 	callbacks.globalstep[1].fn(1)
-	equal(thomas.nametag_writes, 2, "unchanged gate writes nothing")
+	equal(thomas.nametag_writes, 1, "observer pass never rewrites parent")
 	callbacks.hpchange[1].fn(thomas, -5, {type = "punch"})
-	equal(thomas.nametag_writes, 3, "HP change refreshes visible tag")
-	equal(thomas.nametag.text, "Thomas [Lv 1] 25/30", "predicted HP tag")
+	equal(thomas.carrier.text, "Thomas [Lv 1] 25/30", "predicted carrier HP tag")
+	equal(thomas.nametag_writes, 1, "HP refresh leaves parent hidden")
 	thomas.hp = 25
 	for index = 1, #callbacks.mods_loaded do callbacks.mods_loaded[index].fn() end
 	thomas.level = 5
 	level_callback(thomas, 1, 5)
-	equal(thomas.nametag_writes, 4, "level-up refreshes visible tag")
-	equal(thomas.nametag.text, "Thomas [Lv 5] 25/30", "level-up tag text")
+	equal(thomas.carrier.text, "Thomas [Lv 5] 25/30", "level-up carrier text")
 	ada.pos.x = 31
 	callbacks.globalstep[1].fn(1)
-	equal(thomas.nametag_writes, 5, "far player hides tag once")
-	callbacks.globalstep[1].fn(1)
-	equal(thomas.nametag_writes, 5, "hidden unchanged gate writes nothing")
+	equal(thomas.nametag_writes, 1, "distance changes never expose parent")
 
 	-- Death message categories and actor display names.
 	local category, line = grug_core.death_message("Thomas", {type = "fall"})
@@ -285,7 +294,7 @@ end
 
 io.write(table.concat({
 	"player_tag=Thomas [Lv 5] 35/60",
-	"tag_gate=show24 hold27 hide31 no_resend",
+	"tag_carrier=one_per_player parent_alpha_zero observer_seam",
 	"death=fall drown node_damage suffocation mob player fallback",
 	"suffocation=solid_only stasis_exempt",
 }, "\n"), "\n")
