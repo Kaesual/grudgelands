@@ -8,6 +8,17 @@ and Alchemy. Nothing in this file overrides a decided rule in `docs/design/`;
 where a plan below wants to change one, the plan says so and the user rules
 before Round 8 implements it.
 
+**Status 2026-09-18 (evening):** Round 7 is delivered on main. All lanes
+merged with independent Sol reviews and fix rounds: R7-REF
+(`plants-and-potions-reference.md`), R7-EVID (`mob-candidates-evidence.md`,
+`round7-inventory-extract.md`), R7-UI, R7-FOOD (with R7-MISC and R7-CITE
+folded in), R7-LVL, and the two orchestrator-authored plans
+(`cooking-alchemy-plan.md`, `mob-worlds-plan.md`). Round-end validation on
+the merge HEAD: full gates, WP40 final micro pair, six-start digest gate,
+six capitals — all PASS. What remains for the user: the decision lists in
+both plans (§10 / §11) and Playtest 10 (§5 below); those rulings open
+Round 8.
+
 Working rules stay as in rounds 5 and 6: Codex GPT-5.6 Sol implements and
 reviews in separate contexts, the orchestrator runs every gate, merges with
 `--no-ff`, syncs only through `tools/sync_to_luanti.sh`, pushes only on the
