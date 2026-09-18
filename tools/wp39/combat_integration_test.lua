@@ -442,6 +442,7 @@ grug_core.get_player_level = function(player) return player.level or 1 end
 grug_core.combat_debug_enabled = function() return false end
 grug_core.combat_debug_due = function() return false end
 grug_core.combat_debug_log = function() error("disabled debug formatted") end
+grug_core.register_on_status_modifiers_changed = function() end
 
 -- Round 4 (HUD bars): grug_abilities builds its bars from
 -- grug_core.hud_layout at join; the real file calls nothing from core.

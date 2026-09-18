@@ -69,24 +69,30 @@ function grug_classes.get_pool_breakdown(player, pool)
 	local factor = 1
 	local gear_percent
 	local talent_percent
+	local status_percent
 	if pool == "hp" then
 		factor = grug_classes.get_hp_class_factor(player)
 		gear_percent = equipment_pool_percent(player, "_grug_max_hp_percent")
 		talent_percent = grug_classes.get_talent_bonus(player,
 			"max_hp_percent_add")
+		status_percent = grug_core.status_modifier_sum(player,
+			"hp_pool_percent")
 	elseif pool == "mana" then
 		gear_percent = equipment_pool_percent(player, "_grug_max_mana_percent")
 		talent_percent = grug_classes.get_talent_bonus(player,
 			"max_mana_percent_add")
+		status_percent = grug_core.status_modifier_sum(player,
+			"mana_pool_percent")
 	else
 		error("unknown pool " .. tostring(pool))
 	end
-	local percent = gear_percent + talent_percent
+	local percent = gear_percent + talent_percent + status_percent
 	return {
 		base = base,
 		class_factor = factor,
 		gear_percent = gear_percent,
 		talent_percent = talent_percent,
+		status_percent = status_percent,
 		final = round(base * factor * (1 + percent / 100)),
 	}
 end
@@ -113,6 +119,7 @@ end
 -- healing/absorb values.
 function grug_classes.get_spell_power_bonus(player)
 	return math.floor(grug_classes.get_attributes(player).int / 10)
+		+ grug_core.status_modifier_sum(player, "spell_damage_percent")
 end
 
 -- Raw chances are presentation accessors: the Talents page must show points
@@ -122,7 +129,8 @@ end
 function grug_classes.get_crit_chance_raw(player)
 	return 0.05 + 0.001 * grug_classes.get_attributes(player).dex
 		+ 0.01 * (grug_classes.get_talent_bonus(player, "crit_chance_add")
-			+ grug_classes.get_talent_bonus(player, "crit_chance_add_window"))
+			+ grug_classes.get_talent_bonus(player, "crit_chance_add_window")
+			+ grug_core.status_modifier_sum(player, "crit_percent"))
 end
 
 function grug_classes.get_dodge_chance_raw(player)
@@ -158,6 +166,13 @@ function grug_classes.apply_stats(player, heal_gain)
 		player:set_hp(max_hp)
 	end
 end
+
+-- Status pool modifiers use the same authoritative writer as talents and
+-- equipment. Adding a buff never grants free healing; replacing or expiring
+-- one clamps current HP through apply_stats.
+grug_core.register_on_status_modifiers_changed(function(player)
+	grug_classes.apply_stats(player)
+end)
 
 -- Wire the real rolls into grug_core's damage pipeline (stub override,
 -- same pattern as grug_core.get_player_faction).

@@ -210,13 +210,15 @@ sfinv.register_page("grug_inventory:help", {
 		local text = table.concat({
 			"Character formulas",
 			"Base pool = 20 + 5 x level + 0.66 x level squared (rounded).",
-			"Maximum HP = base pool x class factor, then add gear and talent percentages.",
+			"Maximum HP = base pool x class factor, then add gear, talent and active-status percentages.",
 			"Caster mana uses the neutral base pool, then adds mana percentages. Rage is always 0-100.",
 			"Strength adds melee bonus. Intelligence adds spell power. Dexterity adds Crit and Dodge.",
 			"Item level is counted once, in the weapon's base damage; your character level applies the shared damage fit; there is no separate item-level multiplier.",
 			"At level 60, an item-level 70 weapon gives about 9% more effective swing damage than item level 60, while item level 50 gives about 7% less, before enchants.",
 			"Healing and absorbs are percentages of the caster's neutral base pool; spell power is a percentage bonus.",
 			"Mana costs are percentages of the unmodified neutral base pool. Enchants and talents do not make a spell cost more.",
+			"Mana regeneration is 1 + 0.15 x level per second. Combat gives one quarter; Cold Focus multiplies that combat rate.",
+			"Food regeneration pauses in combat. Its pool, Crit, armor and spell-damage bonuses remain active.",
 			"The Character page shows the current derivation and final maximum values.",
 		}, "\n\n")
 		return sfinv.make_formspec(player, context,
@@ -326,6 +328,10 @@ end)
 -- open Character page (inventory_equipment.md §1). Rare event; refresh()
 -- itself no-ops on any other page.
 grug_core.register_on_equipment_change(function(player, listname)
+	grug_inventory.refresh(player)
+end)
+
+grug_core.register_on_status_modifiers_changed(function(player)
 	grug_inventory.refresh(player)
 end)
 

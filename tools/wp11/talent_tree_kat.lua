@@ -179,6 +179,9 @@ local function build_env(repo, clock)
 	function grug_core.get_player_level(player)
 		return player._level or 1
 	end
+	function grug_core.status_modifier_sum()
+		return 0
+	end
 	function grug_core.combat_eye_pos(player)
 		return vector_stub.new(0, 1.5, 0)
 	end

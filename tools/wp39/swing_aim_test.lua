@@ -168,6 +168,7 @@ grug_core = {
 	register_native_swing_input_handler = function(fn) native_input_handler = fn end,
 	register_ordinary_melee_input_handler = function() end,
 	register_on_equipment_change = function() end,
+	register_on_status_modifiers_changed = function() end,
 	register_on_player_hit_mob = function() end,
 	combat_debug_enabled = function() return false end,
 	combat_debug_due = function() return false end,

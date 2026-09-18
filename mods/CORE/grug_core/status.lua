@@ -8,9 +8,17 @@
 local STATUS_HUD_LIMIT = 8
 local STATUS_STEP = 1
 local POTION_STATUS_ID = "potion_cooldown"
+local MODIFIER_KEYS = {
+	hp_pool_percent = true,
+	mana_pool_percent = true,
+	crit_percent = true,
+	armor = true,
+	spell_damage_percent = true,
+}
 
 local statuses = {} -- player name -> id -> record
 local huds = {} -- player name -> {id = HUD id, text = last sent text}
+local modifier_callbacks = {}
 local sequence = 0
 local accumulator = 0
 
@@ -19,6 +27,19 @@ local function player_name(player)
 		return nil
 	end
 	return player:get_player_name()
+end
+
+local function has_modifiers(record)
+	return record and record.modifiers and next(record.modifiers) ~= nil
+end
+
+local function notify_modifier_change(player, old_record, new_record)
+	if not has_modifiers(old_record) and not has_modifiers(new_record) then
+		return
+	end
+	for index = 1, #modifier_callbacks do
+		modifier_callbacks[index](player)
+	end
 end
 
 local function remove_status(player, id, expired)
@@ -32,10 +53,31 @@ local function remove_status(player, id, expired)
 	if next(per_player) == nil then
 		statuses[name] = nil
 	end
+	notify_modifier_change(player, record, nil)
 	if expired and record.on_expire then
 		record.on_expire(player, record)
 	end
 	return record
+end
+
+function grug_core.register_on_status_modifiers_changed(callback)
+	if type(callback) ~= "function" then
+		return false
+	end
+	modifier_callbacks[#modifier_callbacks + 1] = callback
+	return true
+end
+
+function grug_core.status_modifier_sum(player, key)
+	if not MODIFIER_KEYS[key] then
+		return 0
+	end
+	local total = 0
+	local ordered = grug_core.each_status(player)
+	for index = 1, #ordered do
+		total = total + (ordered[index].modifiers[key] or 0)
+	end
+	return total
 end
 
 function grug_core.set_status(player, id, definition)
@@ -68,6 +110,21 @@ function grug_core.set_status(player, id, definition)
 			interval <= 0)) then
 		return nil
 	end
+	local modifiers = {}
+	if definition.modifiers ~= nil then
+		if type(definition.modifiers) ~= "table" then
+			return nil
+		end
+		for key, value in pairs(definition.modifiers) do
+			if not MODIFIER_KEYS[key] or type(value) ~= "number" or
+					value ~= value or value == math.huge or value == -math.huge then
+				return nil
+			end
+			if value ~= 0 then
+				modifiers[key] = value
+			end
+		end
+	end
 	sequence = sequence + 1
 	local record = {
 		id = id,
@@ -78,13 +135,16 @@ function grug_core.set_status(player, id, definition)
 		on_tick = definition.on_tick,
 		interval = interval,
 		on_expire = definition.on_expire,
+		modifiers = modifiers,
 		sequence = sequence,
 	}
 	if interval then
 		record.next_tick_us = now + interval * 1e6
 	end
 	statuses[name] = statuses[name] or {}
+	local old_record = statuses[name][id]
 	statuses[name][id] = record
+	notify_modifier_change(player, old_record, record)
 	return record
 end
 
@@ -201,7 +261,16 @@ end
 local function clear_runtime_statuses(player)
 	local name = player_name(player)
 	if name then
+		local per_player = statuses[name]
 		statuses[name] = nil
+		if per_player then
+			for _, record in pairs(per_player) do
+				if has_modifiers(record) then
+					notify_modifier_change(player, record, nil)
+					break
+				end
+			end
+		end
 	end
 end
 

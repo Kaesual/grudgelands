@@ -46,6 +46,8 @@ class_env = setmetatable({
 	},
 	grug_core = {
 		register_on_equipment_change = function() end,
+		register_on_status_modifiers_changed = function() end,
+		status_modifier_sum = function() return 0 end,
 		base_pool = grug_core.base_pool,
 	},
 	grug_xp = {

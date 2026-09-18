@@ -96,6 +96,7 @@ return function(repo)
 			return math.max(0, math.floor(amount * data.core.level_scale(player.level)))
 		end,
 		get_absorb = function() return 0 end,
+		status_modifier_sum = function() return 0 end,
 		get_equipped_weapon = function() return nil end,
 		combat_eye_pos = function(owner) return owner:get_pos() end,
 		register_on_equipment_change = function(fn)

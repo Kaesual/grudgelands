@@ -120,6 +120,21 @@ local function clamp_mana(player)
 	mana[name] = math.max(0, math.min(maximum, mana[name] or 0))
 end
 
+-- Absolute mana per second. The pool grows quadratically, while this curve is
+-- deliberately linear so food matters more at high level. Cold Focus keeps
+-- the same relative 20% per rank effect it had on the old in-combat rate.
+function grug_abilities.mana_regen_rate(player, in_combat)
+	local level = math.max(1, grug_core.get_player_level(player))
+	local rate = (1 + 0.15 * level)
+		* (grug_classes.get_race_perk(player, "ooc_regen_mult") or 1)
+	if in_combat then
+		local bonus = grug_classes.get_talent_bonus(player,
+			"combat_mana_regen_add")
+		rate = rate * 0.25 * (1 + 2 * bonus)
+	end
+	return rate
+end
+
 function grug_abilities.mana_cost(player, percent)
 	local base = grug_core.base_pool(grug_core.get_player_level(player))
 	return math.max(1, math.floor(base * percent / 100 + 0.5))
@@ -2264,6 +2279,13 @@ if grug_classes.register_on_talents_changed then
 	end)
 end
 
+-- Pool-changing statuses follow the talent refresh path: clamp the private
+-- mana ledger first, then redraw the exact resource bar once.
+grug_core.register_on_status_modifiers_changed(function(player)
+	clamp_mana(player)
+	hud_update(player)
+end)
+
 --
 -- Rage generation (classes.md §1/§3, WP38): one accepted authoritative
 -- ability swing grants RAGE_PER_SWING through finish_authoritative_swing.
@@ -2555,8 +2577,8 @@ core.register_globalstep(function(dtime)
 end)
 
 --
--- Regen / decay / cooldown ticker (0.5 s): mana 2%/s out of combat,
--- 0.5%/s in combat; rage decays 2/s out of combat (combat_stats §5,
+-- Regen / decay / cooldown ticker (0.5 s): mana follows the level-linear
+-- absolute curve; rage decays 5/s out of combat (combat_stats §5,
 -- classes.md §1). Cooldown/charge wear and the skill-name watcher share this
 -- one throttled pass; the attack/input pass above uses the 0.05 s threshold
 -- required for prompt release and click-latch input; an
@@ -2579,20 +2601,9 @@ core.register_globalstep(function(dtime)
 		if res == "mana" then
 			local max = grug_classes.get_max_mana(player)
 			local cur = math.min(mana[name] or 0, max)
-			-- Troll passive (world.md §7): +50% out-of-combat regen. Today
-			-- this multiplier only reaches mana (HP regen does not exist
-			-- yet); WP21's HP regen must consume the same perk.
-			local rate
-			if grug_core.in_combat(player) then
-				-- Cold Focus (skill_trees.md §2.4) raises the in-combat rate
-				-- from 0.5%/s in tenths of a percentage point; 0 without it.
-				rate = 0.005 + 0.01 * grug_classes.get_talent_bonus(player,
-					"combat_mana_regen_add")
-			else
-				rate = 0.02
-					* (grug_classes.get_race_perk(player, "ooc_regen_mult") or 1)
-			end
-			local new = math.min(max, cur + max * rate * elapsed)
+			local rate = grug_abilities.mana_regen_rate(player,
+				grug_core.in_combat(player))
+			local new = math.min(max, cur + rate * elapsed)
 			if math.floor(new) ~= math.floor(mana[name] or 0) then
 				mana[name] = new
 				hud_update(player)

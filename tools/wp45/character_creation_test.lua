@@ -62,6 +62,9 @@ core = {
 		return players
 	end,
 	global_exists = function(name) return rawget(_G, name) ~= nil end,
+	get_mod_storage = function()
+		return {get_int = function() return 0 end, set_int = function() end}
+	end,
 	is_player = function(object) return object ~= nil and online[object.name] ~= nil end,
 	register_chatcommand = function(name, def) chatcommands[name] = def end,
 	register_on_punchplayer = function() end,

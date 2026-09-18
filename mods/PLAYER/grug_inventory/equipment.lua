@@ -170,20 +170,6 @@ local function warn_armor_class(player, rank)
 		" cannot wear " .. (ARMOR_CLASS_NAME[rank] or "that") .. " armor."))
 end
 
--- The generated weapon catalogue publishes one authoritative item level on
--- each definition. That value is also the minimum character level for the
--- weapon slot. Items without an ilvl are the below-ladder starters or tool
--- ladder axes and remain unrestricted; no generic tool or non-weapon list is
--- gated here.
-local function required_weapon_level(stack)
-	local def = core.registered_items[stack:get_name()]
-	local level = def and def._grug_ilvl
-	if type(level) ~= "number" or level <= 0 then
-		return nil
-	end
-	return math.floor(level)
-end
-
 local function warn_weapon_level(player, stack, required, current)
 	local reason = "level:" .. stack:get_name() .. ":" .. required
 	local name = claim_warn(player, reason)
@@ -328,13 +314,11 @@ core.register_allow_player_inventory_action(function(player, action, inventory, 
 			return 0
 		end
 		if to_list == WEAPON_LIST then
-			local required = required_weapon_level(stack)
-			if required then
-				local current = grug_xp.get_level(player)
-				if current < required then
-					warn_weapon_level(player, stack, required, current)
-					return 0
-				end
+			local allowed, required, current =
+				grug_core.can_use_item_level(player, stack)
+			if not allowed then
+				warn_weapon_level(player, stack, required, current)
+				return 0
 			end
 		end
 		if is_armor_list[to_list] then
@@ -513,7 +497,8 @@ end
 -- X3's and is deliberately not read here yet.
 function grug_core.get_armor_percent(player)
 	return math.min(60, grug_inventory.get_equipped_armor(player)
-		+ grug_classes.get_talent_bonus(player, "armor_percent_add"))
+		+ grug_classes.get_talent_bonus(player, "armor_percent_add")
+		+ grug_core.status_modifier_sum(player, "armor"))
 end
 
 -- Same stub-override pattern for the two hand slots: grug_core publishes the

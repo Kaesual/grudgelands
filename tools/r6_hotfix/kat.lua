@@ -234,6 +234,7 @@ return function(repo)
 
 	load_in(ability_env, "mods/CORE/grug_core/combat.lua")
 	ability_env.grug_core.get_player_level = function(player) return player.level end
+	ability_env.grug_core.register_on_status_modifiers_changed = function() end
 	load_in(ability_env, "mods/PLAYER/grug_abilities/init.lua")
 
 	local abilities = ability_env.grug_abilities
@@ -508,6 +509,7 @@ return function(repo)
 		grug_xp = {get_level = function() return 1 end,
 			register_on_level_change = function() end},
 		grug_core = {register_on_equipment_change = function() end,
+			register_on_status_modifiers_changed = function() end,
 			get_armor_percent = function() return 0 end},
 		player_api = {registered_models = {['character.b3d'] = {
 			textures = {"character.png"}}}},
