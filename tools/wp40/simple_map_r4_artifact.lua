@@ -432,7 +432,7 @@ else
 		builder.add("zone_record", row.numeric_id, row.id, row.display_name,
 			row.macro_region, row.race_region, row.faction, row.territory_rule,
 			row.pvp_rule, row.level_min, row.level_max, row.primary_relief_id,
-			row.difficulty_target, row.civic_no_hostiles, row.hub.x, row.hub.z)
+			row.civic_no_hostiles, row.hub.x, row.hub.z)
 		for biome_index = 1, #row.biomes do
 			builder.add("zone_biome", row.id, biome_index,
 				row.biomes[biome_index].id, row.biomes[biome_index].share)

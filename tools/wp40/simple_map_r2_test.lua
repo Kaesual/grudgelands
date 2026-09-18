@@ -104,8 +104,8 @@ end
 add("canonical_kat_sha256",session.canonical_kat_digest())
 local difficulty_lattice_sha256 = session.difficulty_lattice_digest()
 assert(difficulty_lattice_sha256 ==
-	"0ec24ea13e87afd8a769d326abbc4016a458a564d28c7315d9506158386af15d",
-	"accepted V1d difficulty lattice differs")
+	"cf6139b7db69cf0c4e34aefbf1fa841139dfe19313a29cba5626a3aa05f23591",
+	"accepted R7.6 difficulty field differs")
 add("difficulty_lattice_sha256",difficulty_lattice_sha256)
 local migration_path =
 	"docs/research/wp40-simple-map-v1e-anchor-migration.tsv"

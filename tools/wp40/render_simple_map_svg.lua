@@ -84,7 +84,7 @@ local function write_mask(write, row, attributes)
 	end
 end
 local function zone_color(zone)
-	local target=zone.difficulty_target
+	local target=zone.level_max
 	if zone.macro_region=="holy_grounds" then
 		return ("hsl(%d,52%%,%d%%)"):format(275+(zone.numeric_id-34)*13,73-math.floor(target/5))
 	elseif zone.macro_region=="wyrmglass_island" then return "hsl(340,55%,42%)"
@@ -306,7 +306,7 @@ for index=1,#source.zones do
 		'" r="3.5" fill="#fff4c4"/><text x="',number(sx(row.hub.x)),'" y="',
 		number(sy(row.hub.z)-7),'">',escape(row.display_name),
 		'<tspan x="',number(sx(row.hub.x)),'" dy="10" font-size="8">L',
-		row.difficulty_target,'</tspan></text>\n')
+		row.level_min,'–',row.level_max,'</tspan></text>\n')
 end
 write('</g>\n')
 

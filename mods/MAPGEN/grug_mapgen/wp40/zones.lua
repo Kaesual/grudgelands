@@ -516,7 +516,6 @@ local function zones_factory(dependencies)
 				level_min = row.level_min,
 				level_max = row.level_max,
 				primary_relief_id = row.primary_relief_id,
-				difficulty_target = row.difficulty_target,
 				civic_no_hostiles = row.civic_no_hostiles == true,
 				hub = {x = row.hub.x, z = row.hub.z},
 				biomes = biomes,
@@ -1462,8 +1461,7 @@ local function zones_factory(dependencies)
 					kat_text(row.faction), kat_text(row.territory_rule),
 					kat_text(row.pvp_rule), kat_signed(row.level_min),
 					kat_signed(row.level_max), kat_text(row.primary_relief_id),
-					kat_signed(row.difficulty_target), kat_signed(row.hub.x),
-					kat_signed(row.hub.z)})
+					kat_signed(row.hub.x), kat_signed(row.hub.z)})
 			end
 			for _, point in ipairs({
 				{0, 0, 0}, {-1800, -1500, -700}, {1800, 1500, -701},

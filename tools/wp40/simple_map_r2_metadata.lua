@@ -385,11 +385,6 @@ return function(source, session)
 				violation("level_range_invalid", "zones", row.id, "1..60",
 					"invalid")
 			end
-			if not integer(row.difficulty_target) or row.difficulty_target < 1 or
-					row.difficulty_target > 60 then
-				violation("difficulty_target_invalid", "zones", row.id, "1..60",
-					row.difficulty_target)
-			end
 			if type(row.civic_no_hostiles) ~= "boolean" then
 				violation("civic_policy_missing", "zones", row.id, "boolean",
 					row.civic_no_hostiles)
