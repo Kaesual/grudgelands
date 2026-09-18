@@ -74,6 +74,8 @@ return function(repo)
 			trainers[1].x, trainers[1].y, trainers[1].z =
 				rows[1].x, rows[1].y, rows[1].z
 		end
+		-- Existing patrol waypoints may intentionally share a resident's position;
+		-- the regression under test is a trainer sharing ANY projected socket.
 		local occupied = {}
 		for index = 1, #rows do
 			local row = rows[index]
@@ -124,7 +126,8 @@ return function(repo)
 		check_ground(starts[index], authored_cells(starts[index]), row)
 		local total = check_duplicate_positions(starts[index], all_rows)
 		report[#report + 1] = table.concat({"start", starts[index], row.profession,
-			row.x, row.y, row.z, "ground+headroom", "unique=" .. total}, "\t") .. "\n"
+			row.x, row.y, row.z, "ground+headroom",
+			"trainer_unique_against=" .. total}, "\t") .. "\n"
 	end
 	for index = 1, #capitals do
 		local all_rows = projected(capitals[index])
@@ -151,7 +154,7 @@ return function(repo)
 		local total = check_duplicate_positions(capitals[index], all_rows)
 		report[#report + 1] = table.concat({"capital", capitals[index],
 			"trainers=7", "ground+headroom", "alchemist=1,1,-12",
-			"stand=2,1,-12", "unique=" .. total}, "\t") .. "\n"
+			"stand=2,1,-12", "trainer_unique_against=" .. total}, "\t") .. "\n"
 	end
 	return table.concat(report)
 end
