@@ -87,3 +87,8 @@ KEEP=1 ROOT=/tmp/grudgelands-headless.fStkXJ PORT=31051 SEED=1 PROBE=/tmp/r8-map
 Every committed server log has zero `ERROR` lines. `SHA256SUMS` authenticates
 the candidate inputs, native snapshots, raw logs and supporting KAT/census
 outputs.
+
+The R6 roster receipt independently recomputed all 48 seed-0 selections and
+proves the moved census pin `b6aa4744...04bf6`. The seven pilot shards are not
+included: the orchestrator stopped the serial comparison scan, and that R6
+census is not a merge gate or part of this evidence.
