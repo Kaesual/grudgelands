@@ -31,6 +31,13 @@ local recipes_by_output = {}
 local recipes_by_profession = {}
 local station_handlers = {}
 local ambiguous_crafts_logged = {}
+local registration_phase
+local registry_metrics = {
+	compatibility_checks = 0,
+	engine_output_scans = 0,
+	group_item_checks = 0,
+	token_overlap_computations = 0,
+}
 
 local function item_name(value)
 	if type(value) == "string" then
@@ -83,55 +90,150 @@ local function group_matches(token, actual)
 	return true
 end
 
-local function perfect_match(left, right, compatible, index, used)
-	index = index or 1
-	used = used or {}
-	if index > #left then return true end
-	for right_index = 1, #right do
-		if not used[right_index] and compatible(left[index], right[right_index]) then
-			used[right_index] = true
-			if perfect_match(left, right, compatible, index + 1, used) then
-				return true
+-- Build token compatibility once, then find a maximum bipartite matching with
+-- one augmenting path per left slot. This is O(VE), unlike enumerating slot
+-- permutations, and mirrors the graph/matching split in Luanti craftdef.cpp.
+local function can_match_all(left, right, compatible)
+	if #left ~= #right then return false end
+	local graph = {}
+	for left_index = 1, #left do
+		local neighbors = {}
+		for right_index = 1, #right do
+			registry_metrics.compatibility_checks =
+				registry_metrics.compatibility_checks + 1
+			if compatible(left[left_index], right[right_index]) then
+				neighbors[#neighbors + 1] = right_index
 			end
-			used[right_index] = nil
 		end
+		graph[left_index] = neighbors
 	end
-	return false
+
+	local matched_left = {}
+	local function augment(left_index, seen)
+		local neighbors = graph[left_index]
+		for index = 1, #neighbors do
+			local right_index = neighbors[index]
+			if not seen[right_index] then
+				seen[right_index] = true
+				if not matched_left[right_index] or
+						augment(matched_left[right_index], seen) then
+					matched_left[right_index] = left_index
+					return true
+				end
+			end
+		end
+		return false
+	end
+
+	for left_index = 1, #left do
+		if not augment(left_index, {}) then return false end
+	end
+	return true
 end
 
 -- Match the ingredients the engine actually selected, independent of their
--- craft-grid offset. Backtracking matters when one concrete item satisfies
--- both a broad and a narrow group token.
+-- craft-grid offset. Maximum matching handles broad and narrow group tokens
+-- without making a greedy choice or enumerating permutations.
 local function inputs_match(declared, actual)
 	local wanted = flatten_inputs(declared)
 	local got = flatten_inputs(actual)
-	if #wanted ~= #got then return false end
-	return perfect_match(wanted, got, group_matches)
+	return can_match_all(wanted, got, group_matches)
 end
 
-local function tokens_overlap(first, second)
-	local first_group = first:match("^group:(.+)$")
-	local second_group = second:match("^group:(.+)$")
-	if not first_group then return group_matches(second, first) end
-	if not second_group then return group_matches(first, second) end
-	local registered = core.registered_items or {}
-	for name in pairs(registered) do
-		if group_matches(first, name) and group_matches(second, name) then
-			return true
+local function new_comparison_phase()
+	return {group_members = {}, token_members = {}, token_overlap = {}}
+end
+
+local function registration_comparison_phase()
+	if not registration_phase then registration_phase = new_comparison_phase() end
+	return registration_phase
+end
+
+local function group_member_set(group, phase)
+	local cached = phase.group_members[group]
+	if cached then return cached end
+	local items = {}
+	local count = 0
+	for name in pairs(core.registered_items or {}) do
+		registry_metrics.group_item_checks = registry_metrics.group_item_checks + 1
+		if type(core.get_item_group) == "function" and
+				core.get_item_group(name, group) > 0 then
+			items[name] = true
+			count = count + 1
 		end
 	end
-	return false
+	cached = {items = items, count = count}
+	phase.group_members[group] = cached
+	return cached
+end
+
+local function group_token_members(token, phase)
+	local cached = phase.token_members[token]
+	if cached then return cached end
+	local groups = token:match("^group:(.+)$")
+	if not groups then return nil end
+	local sets = {}
+	local smallest
+	for group in groups:gmatch("[^,]+") do
+		local members = group_member_set(group, phase)
+		sets[#sets + 1] = members
+		if not smallest or members.count < smallest.count then smallest = members end
+	end
+	local items = {}
+	local count = 0
+	for name in pairs(smallest and smallest.items or {}) do
+		local present = true
+		for index = 1, #sets do
+			if not sets[index].items[name] then present = false break end
+		end
+		if present then items[name] = true count = count + 1 end
+	end
+	cached = {items = items, count = count}
+	phase.token_members[token] = cached
+	return cached
+end
+
+local function tokens_overlap(first, second, phase)
+	local first_group = first:match("^group:(.+)$")
+	local second_group = second:match("^group:(.+)$")
+	if not first_group and not second_group then return first == second end
+	local pair_key = first <= second and first .. "\0" .. second or
+		second .. "\0" .. first
+	local cached = phase.token_overlap[pair_key]
+	if cached ~= nil then return cached end
+	registry_metrics.token_overlap_computations =
+		registry_metrics.token_overlap_computations + 1
+	local overlap = false
+	if not first_group then
+		overlap = group_token_members(second, phase).items[first] == true
+	elseif not second_group then
+		overlap = group_token_members(first, phase).items[second] == true
+	else
+		local first_members = group_token_members(first, phase)
+		local second_members = group_token_members(second, phase)
+		local smaller, larger = first_members, second_members
+		if second_members.count < first_members.count then
+			smaller, larger = second_members, first_members
+		end
+		for name in pairs(smaller.items) do
+			if larger.items[name] then overlap = true break end
+		end
+	end
+	phase.token_overlap[pair_key] = overlap
+	return overlap
 end
 
 -- Two recipe languages overlap when at least one concrete, unordered input
 -- multiset can satisfy both. Group/group overlap is decidable once an item
 -- belonging to both groups is registered; otherwise the final runtime guard
 -- below remains authoritative.
-local function input_languages_overlap(first, second)
+local function input_languages_overlap(first, second, phase)
 	local left = flatten_inputs(first)
 	local right = flatten_inputs(second)
-	if #left ~= #right then return false end
-	return perfect_match(left, right, tokens_overlap)
+	phase = phase or registration_comparison_phase()
+	return can_match_all(left, right, function(left_token, right_token)
+		return tokens_overlap(left_token, right_token, phase)
+	end)
 end
 
 local function engine_method(station)
@@ -140,25 +242,48 @@ local function engine_method(station)
 	return nil
 end
 
-local function all_engine_recipes()
-	local result = {}
-	if type(core.get_all_craft_recipes) ~= "function" then return result end
+local function engine_corpus(phase)
+	if phase.engine_corpus then return phase.engine_corpus end
+	local corpus = {by_output = {}, by_method_count = {}}
+	phase.engine_corpus = corpus
+	if type(core.get_all_craft_recipes) ~= "function" then return corpus end
 	local outputs = {}
 	for name in pairs(core.registered_items or {}) do outputs[#outputs + 1] = name end
 	table.sort(outputs)
 	for output_index = 1, #outputs do
 		local output = outputs[output_index]
+		registry_metrics.engine_output_scans = registry_metrics.engine_output_scans + 1
 		local recipes = core.get_all_craft_recipes(output) or {}
 		for recipe_index = 1, #recipes do
 			local recipe = recipes[recipe_index]
-			result[#result + 1] = {
+			local record = {
 				method = recipe.method,
 				items = recipe.items or {},
 				output = item_name(recipe.output or output),
 			}
+			local output_recipes = corpus.by_output[record.output]
+			if not output_recipes then
+				output_recipes = {}
+				corpus.by_output[record.output] = output_recipes
+			end
+			output_recipes[#output_recipes + 1] = record
+			local by_count = corpus.by_method_count[record.method]
+			if not by_count then
+				by_count = {}
+				corpus.by_method_count[record.method] = by_count
+			end
+			local count = #flatten_inputs(record.items)
+			local bucket = by_count[count]
+			if not bucket then bucket = {} by_count[count] = bucket end
+			bucket[#bucket + 1] = record
 		end
 	end
-	return result
+	return corpus
+end
+
+local function engine_bucket(corpus, method, inputs)
+	local by_count = corpus.by_method_count[method] or {}
+	return by_count[#flatten_inputs(inputs)] or {}
 end
 
 local function dual_recipe_list()
@@ -167,13 +292,15 @@ local function dual_recipe_list()
 	return smelting.RECIPES
 end
 
-local function refuse_input_collision(station, inputs, output, engine, dual)
+local function refuse_input_collision(station, inputs, output, phase, dual)
 	local method = engine_method(station)
 	if method then
-		for index = 1, #engine do
-			local existing = engine[index]
+		local corpus = engine_corpus(phase)
+		local bucket = engine_bucket(corpus, method, inputs)
+		for index = 1, #bucket do
+			local existing = bucket[index]
 			if existing.method == method and
-					input_languages_overlap(inputs, existing.items) then
+					input_languages_overlap(inputs, existing.items, phase) then
 				fail("profession " .. station .. " inputs for " .. output ..
 					" collide with universal engine output " .. existing.output)
 			end
@@ -181,7 +308,7 @@ local function refuse_input_collision(station, inputs, output, engine, dual)
 	elseif station == "dual_furnace" then
 		for index = 1, #dual do
 			local existing = dual[index]
-			if input_languages_overlap(inputs, existing.inputs or {}) then
+			if input_languages_overlap(inputs, existing.inputs or {}, phase) then
 				fail("profession dual-furnace inputs for " .. output ..
 					" collide with existing output " .. item_name(existing.output))
 			end
@@ -200,13 +327,9 @@ local function dual_recipe_count(output)
 	return count
 end
 
-local function engine_recipes(output)
-	if type(core.get_all_craft_recipes) ~= "function" then return {} end
-	return core.get_all_craft_recipes(output) or {}
-end
-
-local function refuse_existing_output(output)
-	if #engine_recipes(output) > 0 then
+local function refuse_existing_output(output, phase)
+	local recipes = engine_corpus(phase).by_output[output] or {}
+	if #recipes > 0 then
 		fail("profession output " .. output ..
 			" already has a universal engine recipe")
 	end
@@ -226,6 +349,7 @@ function grug_jobs.register_ingredient_tier(item, tier)
 	if old and old ~= tier then
 		fail("ingredient " .. name .. " already has tier " .. old)
 	end
+	if not old then registration_phase = nil end
 	ingredient_tiers[name] = tier
 	return tier
 end
@@ -248,10 +372,10 @@ end
 -- `grug_jobs.can_craft_recipe(player, recipe)`, and after a successful take it
 -- MUST call `grug_jobs.record_craft(player, recipe.profession, recipe.tier)`.
 -- Merely supplying `can_use` does not gate or settle a station inventory.
--- Craft callbacks and recipes must be registered during mod load or an
--- on-mods-loaded callback. grug_jobs finalizes authority on the first server
--- step; registrations after that step are unsupported and a terminality audit
--- logs an error before scheduling a repair.
+-- grug_jobs finalizes craft authority on the first server step. Later calls to
+-- the engine's craft-callback registration APIs remain supported: grug_jobs
+-- inserts them synchronously before its terminal permission gate and logs the
+-- first such late registration.
 function grug_jobs.register_station(station, definition)
 	if not grug_jobs.STATIONS[station] then
 		fail("unknown station " .. tostring(station))
@@ -315,14 +439,15 @@ function grug_jobs.register_recipe(definition)
 	if recipes_by_output[output] then
 		fail("duplicate profession output " .. output)
 	end
-	refuse_existing_output(output)
-	refuse_input_collision(station, definition.inputs, output,
-		all_engine_recipes(), dual_recipe_list())
+	local phase = registration_comparison_phase()
+	refuse_existing_output(output, phase)
+	refuse_input_collision(station, definition.inputs, output, phase,
+		dual_recipe_list())
 	local input_key = normalized_inputs(definition.inputs)
 	for index = 1, #grug_jobs.recipes do
 		local previous = grug_jobs.recipes[index]
 		if previous.station == station and
-				input_languages_overlap(previous.inputs, definition.inputs) then
+				input_languages_overlap(previous.inputs, definition.inputs, phase) then
 			fail("overlapping profession " .. station .. " inputs for " .. output ..
 				" and " .. previous.output_name)
 		end
@@ -397,11 +522,12 @@ end
 -- Recheck after all mods have initialized so later engine/dual registrations
 -- cannot silently override a profession recipe or become gated as one.
 function grug_jobs.validate_recipe_collisions()
-	local all_engine = all_engine_recipes()
+	local phase = new_comparison_phase()
+	local corpus = engine_corpus(phase)
 	local all_dual = dual_recipe_list()
 	for index = 1, #grug_jobs.recipes do
 		local recipe = grug_jobs.recipes[index]
-		local engine = engine_recipes(recipe.output_name)
+		local engine = corpus.by_output[recipe.output_name] or {}
 		local expected_engine =
 			(recipe.station == "grid" or recipe.station == "furnace") and 1 or 0
 		if #engine ~= expected_engine then
@@ -411,7 +537,7 @@ function grug_jobs.validate_recipe_collisions()
 		if expected_engine == 1 then
 			local wanted_method = recipe.station == "grid" and "normal" or "cooking"
 			if engine[1].method ~= wanted_method or
-					not input_languages_overlap(recipe.inputs, engine[1].items or {}) then
+					not input_languages_overlap(recipe.inputs, engine[1].items or {}, phase) then
 				fail("profession output " .. recipe.output_name ..
 					" engine recipe provenance differs")
 			end
@@ -419,10 +545,11 @@ function grug_jobs.validate_recipe_collisions()
 		local wanted_method = engine_method(recipe.station)
 		if wanted_method then
 			local own = 0
-			for engine_index = 1, #all_engine do
-				local existing = all_engine[engine_index]
+			local bucket = engine_bucket(corpus, wanted_method, recipe.inputs)
+			for engine_index = 1, #bucket do
+				local existing = bucket[engine_index]
 				if existing.method == wanted_method and
-						input_languages_overlap(recipe.inputs, existing.items) then
+						input_languages_overlap(recipe.inputs, existing.items, phase) then
 					if existing.output ~= recipe.output_name then
 						fail("profession " .. recipe.station .. " inputs for " ..
 							recipe.output_name .. " collide with universal engine output " ..
@@ -439,7 +566,7 @@ function grug_jobs.validate_recipe_collisions()
 			local own = 0
 			for dual_index = 1, #all_dual do
 				local existing = all_dual[dual_index]
-				if input_languages_overlap(recipe.inputs, existing.inputs or {}) then
+				if input_languages_overlap(recipe.inputs, existing.inputs or {}, phase) then
 					if item_name(existing.output) ~= recipe.output_name then
 						fail("profession dual-furnace inputs for " .. recipe.output_name ..
 							" collide with existing output " .. item_name(existing.output))
@@ -481,4 +608,14 @@ grug_jobs._item_name = item_name
 grug_jobs._flatten_inputs = flatten_inputs
 grug_jobs._normalized_inputs = normalized_inputs
 grug_jobs._inputs_match = inputs_match
-grug_jobs._input_languages_overlap = input_languages_overlap
+grug_jobs._input_languages_overlap = function(first, second)
+	return input_languages_overlap(first, second, registration_comparison_phase())
+end
+grug_jobs._recipe_registry_metrics = function()
+	return {
+		compatibility_checks = registry_metrics.compatibility_checks,
+		engine_output_scans = registry_metrics.engine_output_scans,
+		group_item_checks = registry_metrics.group_item_checks,
+		token_overlap_computations = registry_metrics.token_overlap_computations,
+	}
+end
