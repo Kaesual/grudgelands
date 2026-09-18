@@ -689,6 +689,7 @@ end
 
 local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/spawn_policy.lua")
+grug_mobs.install_spawn_clock_wrapper()
 dofile(modpath .. "/levels.lua")
 dofile(modpath .. "/aggro.lua")
 dofile(modpath .. "/flight.lua")

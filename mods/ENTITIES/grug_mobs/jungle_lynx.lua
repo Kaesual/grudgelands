@@ -22,6 +22,7 @@
 
 local lynx = {
 	description = "Jungle Lynx",
+	clock = "day",
 	type = "monster",
 	-- §3.1 "jungle_edge from L10": the settled inner jungle is where this
 	-- family starts, so the floor keeps it from ever being a L1 pushover.

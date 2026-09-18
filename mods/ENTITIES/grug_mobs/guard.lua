@@ -139,6 +139,7 @@ local GUARD_RACE = {accord = "human", throng = "orc"}
 local function guard_def(faction, description, texture)
 	return {
 		description = description,
+		clock = "any",
 		type = "npc",
 		_grug_faction = faction,
 

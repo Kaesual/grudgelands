@@ -13,6 +13,7 @@
 
 local fowl = {
 	description = "Bog Fowl",
+	clock = "day",
 	type = "animal",
 	passive = true,
 	runaway = true,

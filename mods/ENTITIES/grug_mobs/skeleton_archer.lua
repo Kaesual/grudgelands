@@ -28,6 +28,7 @@ grug_mobs.register_simple_arrow("grug_mobs:arrow_entity", {
 
 local skeleton = {
 	description = "Skeleton Archer",
+	clock = "night",
 	type = "monster",
 	-- Zones: the bone forest sits in the outer ring, and the war coast is
 	-- the second home of the battlefield dead. The node whitelist alone
@@ -43,6 +44,11 @@ local skeleton = {
 	_grug_spawn_check = function(pos)
 		if grug_mobs.zone_spawn_palette_allows("war", pos) then
 			return true -- explicit war palette: every listed top node is fine
+		end
+		if grug_mobs.zone_spawn_palette_allows("mountain", pos) then
+			-- The policy independently verifies that this family is the active
+			-- mountain night fallback; this check only admits its host nodes.
+			return true
 		end
 		local node = core.get_node(pos).name
 		return node == "grug_nodes:dirt_with_bone_litter"
@@ -140,6 +146,9 @@ mobs:spawn({
 	nodes = {
 		"grug_nodes:dirt_with_bone_litter", -- grug_bone_forest
 		"grug_nodes:blight_dirt", -- grug_blight
+		"default:gravel", -- mountain fallback, grug_crags
+		"default:snowblock", -- mountain fallback, grug_crags_snowy
+		"grug_nodes:mesa_clay", -- mountain fallback, grug_badlands
 	},
 	max_light = 5,
 	day_toggle = false,

@@ -1211,8 +1211,18 @@ Mechanism: mobs_redo `mobs:spawn` + our `spawn_abm_check` override
 the ring gating. `min_height 0, max_height 200` on all surface entries
 (golems and the crags rows — Ram, Crag Eagle — 300; the **Vulture
 shares that 300 exception**, its mesa-clay badlands run just as high).
-Day mobs `min_light 10`; night mobs `max_light 5`
-+ `day_toggle = false` where mobs_redo supports it.
+Every family declares one spawn role, `clock = "day" | "night" | "any"`;
+Zombie uses the palette-keyed form (`settled`/`war` night, `blight` any).
+`grug_mobs` stamps day rows with `min_light = 10`, night rows with
+`max_light = 5` plus `day_toggle = false`, and leaves any-time rows ungated.
+Rows wholly below y = -40 are the exception: their family clock is ignored,
+they retain only their explicit light filter, and they never receive a
+`day_toggle`. Night rows receive `ceil(day aoc × 1.25)` while their interval
+and chance stay unchanged. If a named zone exposes fewer than two explicit
+night-role families, the policy admits its palette fallback: Zombie for
+settled/war, Skeleton Archer for forest/mountain, Jungle Spider for jungle,
+or Bog Ooze for swamp. Capitals retain empty palettes and never receive a
+fallback; mobs already alive at a clock boundary are not despawned.
 
 **`aoc` is per entity NAME, not per family** (mobs_redo counts objects
 of that one name inside a 128-node sphere). Two spawn rows of the same

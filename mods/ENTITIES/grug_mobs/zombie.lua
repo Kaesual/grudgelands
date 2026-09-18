@@ -3,6 +3,7 @@
 
 grug_mobs.register_mob("grug_mobs:zombie", {
 	description = "Zombie",
+	clock = {settled = "night", war = "night", blight = "any"},
 	type = "monster",
 	-- "underground" is the T7 addition: §3.1's cave paragraph reuses Zombie,
 	-- Giant Spider and Stone Golem below y -40 with the depth axis supplying
@@ -82,6 +83,7 @@ grug_mobs.register_mob("grug_mobs:zombie", {
 -- the accepted R7 palettes. No separate ring gate remains.
 mobs:spawn({
 	name = "grug_mobs:zombie",
+	_grug_clock_palette = "settled",
 	nodes = {
 		"default:dirt_with_grass", -- grug_meadows
 		"default:dirt_with_coniferous_litter", -- grug_pine_hills
@@ -123,6 +125,7 @@ mobs:spawn({
 -- unload/reload with the mob and touches nobody else's zombie.
 mobs:spawn({
 	name = "grug_mobs:zombie",
+	_grug_clock_palette = "blight",
 	nodes = {"grug_nodes:blight_dirt"}, -- grug_blight
 	interval = 20,
 	chance = 1600,

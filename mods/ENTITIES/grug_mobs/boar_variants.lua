@@ -15,6 +15,7 @@
 local function boar_def(description, texture)
 	local def = {
 		description = description,
+		clock = "day",
 		type = "monster",
 		-- HP/damage/XP and armor come from the level engine (levels.lua):
 		-- core/inner ring means level 1-10, i.e. 20-65 HP, 2-6 damage.

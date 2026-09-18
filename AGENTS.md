@@ -851,6 +851,10 @@ Details + line numbers in [docs/research/](docs/research/).
   those tops live in `grug_nodes` (blight_dirt, bone/forest/silver litter,
   mesa_clay, mud) and exist FOR the trick; the generic `_grug_spawn_check`
   and `grug_mobs/spawn_policy.lua` do the gating on top, against `grug_zones`.
+  `register_spawn_role` also owns each family's `clock`; its spawn wrapper
+  stamps the mobs_redo light/day convention and the night `aoc`, while rows
+  wholly below y = -40 remain light-only. Never hand-maintain those fields on
+  a new surface row.
   **The WP40 world contract is SHIPPED** (decided 2026-08-11, delivered
   2026-09-13): exactly **38** land zones in
   `docs/design/world_zones.md` §§8–9, each with one `race_region`; six

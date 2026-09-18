@@ -8,6 +8,21 @@ local VALID_DOMAINS = {
 	underground = true,
 }
 
+local VALID_CLOCKS = {
+	day = true,
+	night = true,
+	any = true,
+}
+
+local NIGHT_FALLBACKS = {
+	settled = "grug_mobs:zombie",
+	war = "grug_mobs:zombie",
+	forest = "grug_mobs:skeleton_archer",
+	mountain = "grug_mobs:skeleton_archer",
+	jungle = "grug_mobs:jungle_spider",
+	swamp = "grug_mobs:bog_ooze",
+}
+
 -- Closed named-zone mob palettes, transcribed from world_zones.md Section 8.
 -- Capitals deliberately have empty palettes. Lorindor is intentionally
 -- literal: its row names pale stags, not the complete forest family.
@@ -25,7 +40,10 @@ local ZONE_MOB_PALETTES = {
 	elandor_silverleaf_glades = {settled = true},
 	elandor_starbough_vale = {settled = true},
 	elandor_lethariel = {},
-	elandor_lorindor = {exact_mobs = {["grug_mobs:stag"] = true}},
+	elandor_lorindor = {
+		exact_mobs = {["grug_mobs:stag"] = true},
+		night_fallback = {forest = true},
+	},
 	elandor_moonfall_wood = {forest = true},
 	elandor_glassroot_wilds = {forest = true, jungle = true},
 	kragmar_stillgrave_hollow = {settled = true},
@@ -200,9 +218,36 @@ end
 -- (verbs.lua) sets it for the four non-passive prey animals. Deriving it
 -- keeps it from drifting the way a hand-kept hostile list would.
 local hostile_spawns = {}
+local spawn_clocks = {}
+local zone_palette_at
+
+local function validate_clock(clock, name)
+	if type(clock) == "string" then
+		if not VALID_CLOCKS[clock] then
+			error("[grug_mobs] invalid spawn clock for " .. name .. ": " ..
+				tostring(clock))
+		end
+		return
+	end
+	if type(clock) ~= "table" then
+		error("[grug_mobs] missing spawn clock for " .. name)
+	end
+	local count = 0
+	for palette, value in pairs(clock) do
+		if type(palette) ~= "string" or not VALID_CLOCKS[value] then
+			error("[grug_mobs] invalid palette spawn clock for " .. name)
+		end
+		count = count + 1
+	end
+	if count == 0 then
+		error("[grug_mobs] empty palette spawn clock for " .. name)
+	end
+end
 
 function grug_mobs.register_spawn_role(name, def)
+	validate_clock(def.clock, name)
 	hostile_spawns[name] = def.passive ~= true and def.attack_players ~= false
+	spawn_clocks[name] = def.clock
 	return hostile_spawns[name]
 end
 
@@ -210,9 +255,191 @@ function grug_mobs.spawn_role_hostile(name)
 	return hostile_spawns[name] == true
 end
 
-local function zone_palette_at(pos)
+local function clock_for_palette(name, palette)
+	local clock = spawn_clocks[name]
+	if type(clock) == "table" then
+		return clock[palette]
+	end
+	return clock
+end
+
+local function clock_palette_at(name, pos, zone_palette)
+	local clock = spawn_clocks[name]
+	if type(clock) ~= "table" then
+		return nil
+	end
+	if clock.blight and grug_zones.biome_at(pos.x, pos.z) == "grug_blight" then
+		return "blight"
+	end
+	if clock.war and zone_palette and zone_palette.war then
+		return "war"
+	end
+	if clock.settled and zone_palette and zone_palette.settled then
+		return "settled"
+	end
+	for palette in pairs(clock) do
+		if zone_palette and zone_palette[palette] then
+			return palette
+		end
+	end
+	return nil
+end
+
+function grug_mobs.spawn_clock_for(name, pos)
+	if pos and pos.y < -40 then
+		return "any"
+	end
+	local zone_palette = pos and zone_palette_at(pos) or nil
+	local palette = pos and clock_palette_at(name, pos, zone_palette) or nil
+	return clock_for_palette(name, palette)
+end
+
+function grug_mobs.spawn_clock_allows(name, pos, timeofday)
+	local clock = grug_mobs.spawn_clock_for(name, pos)
+	if not clock or clock == "any" then
+		return true
+	end
+	local value = timeofday
+	if value == nil and core and core.get_timeofday then
+		value = core.get_timeofday()
+	end
+	if value == nil then
+		return true
+	end
+	local daylight = value >= 0.1875 and value <= 0.8125
+	return clock == (daylight and "day" or "night")
+end
+
+-- Family clocks own the mobs_redo row convention. Underground rows remain
+-- light-driven and keep their explicit max_light without a day_toggle.
+function grug_mobs.prepare_spawn_row(def)
+	local row = {}
+	for key, value in pairs(def) do
+		if key ~= "_grug_clock_palette" then
+			row[key] = value
+		end
+	end
+	if row.max_height and row.max_height <= -40 then
+		row.day_toggle = nil
+		return row
+	end
+	local clock = clock_for_palette(row.name, def._grug_clock_palette)
+	if not clock then
+		error("[grug_mobs] spawn row has no clock role: " .. tostring(row.name))
+	end
+	row.min_light = nil
+	row.max_light = nil
+	row.day_toggle = nil
+	if clock == "day" then
+		row.min_light = 10
+	elseif clock == "night" then
+		row.max_light = 5
+		row.day_toggle = false
+		if row.active_object_count then
+			row.active_object_count = math.ceil(row.active_object_count * 5 / 4)
+		end
+	end
+	return row
+end
+
+function grug_mobs.install_spawn_clock_wrapper()
+	if grug_mobs._spawn_clock_wrapper_installed then
+		return
+	end
+	local original = mobs.spawn
+	function mobs:spawn(def)
+		if spawn_clocks[def.name] then
+			def = grug_mobs.prepare_spawn_row(def)
+		end
+		return original(self, def)
+	end
+	grug_mobs._spawn_clock_wrapper_installed = true
+end
+
+zone_palette_at = function(pos)
 	local zone_id = grug_zones.id_at(pos.x, pos.z)
 	return zone_id and ZONE_MOB_PALETTES[zone_id] or nil
+end
+
+local function night_fallback_allows(name, zone_palette)
+	local count = 0
+	for mob_name, mob_palettes in pairs(MOB_PALETTES) do
+		local matched_palette
+		if zone_palette.exact_mobs and zone_palette.exact_mobs[mob_name] then
+			matched_palette = "exact"
+		else
+			for palette in pairs(mob_palettes) do
+				if zone_palette[palette] then
+					matched_palette = palette
+					break
+				end
+			end
+		end
+		if matched_palette then
+			local role_clock = matched_palette == "exact" and
+				clock_for_palette(mob_name, nil) or
+				clock_for_palette(mob_name, matched_palette)
+			if role_clock == "night" then count = count + 1 end
+		end
+	end
+	for palette, fallback in pairs(NIGHT_FALLBACKS) do
+		if fallback == name and (zone_palette[palette] or
+				(zone_palette.night_fallback and
+				zone_palette.night_fallback[palette])) then
+			if count < 2 then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+function grug_mobs.zone_clock_cast(zone_id, clock)
+	if not VALID_CLOCKS[clock] or clock == "any" then
+		error("[grug_mobs] cast clock must be day or night")
+	end
+	local zone_palette = ZONE_MOB_PALETTES[zone_id]
+	if not zone_palette then
+		return nil
+	end
+	local cast = {}
+	for mob_name, mob_palettes in pairs(MOB_PALETTES) do
+		local matched_palette
+		if zone_palette.exact_mobs and zone_palette.exact_mobs[mob_name] then
+			matched_palette = "exact"
+		else
+			for palette in pairs(mob_palettes) do
+				if zone_palette[palette] then
+					matched_palette = palette
+					break
+				end
+			end
+		end
+		if matched_palette then
+			local role_clock = matched_palette == "exact" and
+				clock_for_palette(mob_name, nil) or
+				clock_for_palette(mob_name, matched_palette)
+			if role_clock == clock or role_clock == "any" then
+				cast[#cast + 1] = mob_name
+			end
+		end
+	end
+	if clock == "night" then
+		for palette, fallback in pairs(NIGHT_FALLBACKS) do
+			if zone_palette[palette] or (zone_palette.night_fallback and
+					zone_palette.night_fallback[palette]) then
+				local present = false
+				for i = 1, #cast do
+					if cast[i] == fallback then present = true; break end
+				end
+				if not present and night_fallback_allows(fallback, zone_palette) then
+					cast[#cast + 1] = fallback
+				end
+			end
+		end
+	end
+	table.sort(cast)
+	return cast
 end
 
 function grug_mobs.compile_spawn_domains(domains, mob_name)
@@ -276,6 +503,9 @@ function grug_mobs.spawn_policy_allows(mob_name, pos)
 	if pos.y < -40 then
 		return UNDERGROUND_MOBS[mob_name] == true
 	end
+	if not grug_mobs.spawn_clock_allows(mob_name, pos) then
+		return false
+	end
 	-- The cave ABMs end at -40, but the stable depth domain begins strictly
 	-- below it. Surface ABMs begin at zero, so the intervening band is closed.
 	if pos.y < 0 then
@@ -303,5 +533,5 @@ function grug_mobs.spawn_policy_allows(mob_name, pos)
 			return true
 		end
 	end
-	return false
+	return night_fallback_allows(mob_name, zone_palette)
 end

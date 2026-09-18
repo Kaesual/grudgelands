@@ -680,6 +680,13 @@ existing mob families and paired drop tables in `biomes_mobs.md` §3. A
 palette does not automatically enable every gatherable or mob of that biome:
 the zone's level and explicit content palette still gate them.
 
+Mob families additionally carry the day/night role defined in
+`biomes_mobs.md` §4. The closed palette is resolved at the current clock; a
+non-capital palette with fewer than two explicit night families admits its
+documented family fallback. Empty capital palettes remain
+`civic_no_hostiles`, and start protection aprons still refuse hostile spawns
+before palette or fallback authority is considered.
+
 POI abbreviations:
 
 - **S** = starting settlement, graveyard and waypoint;
