@@ -30,7 +30,11 @@
 --
 
 local ROLES = {guard_post = true, guard_patrol = true, vendor = true,
-	idle = true, quest = true, king = true, waypoint = true, work = true}
+	idle = true, quest = true, king = true, waypoint = true, work = true,
+	trainer = true}
+local TRAINER_PROFESSIONS = {blacksmith = true, alchemist = true,
+	tailor = true, leatherworker = true, woodcarver = true, goldsmith = true,
+	cooking = true}
 -- Contract section 8.4: the two vendor families plus the professions. The
 -- second row is the wave-2 extension (2026-09-15, the four remaining capitals
 -- and the Dur Brannoc upgrade); the entity behind each kind is grug_traders'.
@@ -108,6 +112,13 @@ local function compile(settlement_key, anchor, socket, seen)
 	elseif socket.activity ~= nil then
 		fail(where .. ": only a work socket carries an activity")
 	end
+	if socket.role == "trainer" then
+		if not TRAINER_PROFESSIONS[socket.profession] then
+			fail(where .. ": trainer profession differs")
+		end
+	elseif socket.profession ~= nil then
+		fail(where .. ": only a trainer carries a profession")
+	end
 	--
 	-- A SPARE SOCKET IS A DESTINATION, NOT A HOME (playtest round 2,
 	-- 2026-09-15). `spawn = false` says "nobody is placed here"; the socket is
@@ -144,7 +155,7 @@ local function compile(settlement_key, anchor, socket, seen)
 		id = id, role = socket.role, x = x, y = y, z = z,
 		dir_x = dir.x, dir_z = dir.z,
 		group = socket.group, order = socket.order, kind = socket.kind,
-		activity = socket.activity,
+		activity = socket.activity, profession = socket.profession,
 		-- Normalized to a boolean here, so a consumer reads one field and
 		-- never has to spell "nil means true" itself.
 		spawn = socket.spawn ~= false,
@@ -166,7 +177,7 @@ local function copy_entry(entry)
 		x = entry.x, y = entry.y, z = entry.z,
 		dir = {x = entry.dir_x, z = entry.dir_z},
 		group = entry.group, order = entry.order, kind = entry.kind,
-		activity = entry.activity,
+		activity = entry.activity, profession = entry.profession,
 		spawn = entry.spawn,
 		tags = tags,
 		pos = vector.new(entry.wx, entry.wy, entry.wz),
