@@ -57,6 +57,7 @@ local function loader(directory)
 	local capitals = dofile(directory .. "/capitals.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
+	local precinct_ring = dofile(directory .. "/precinct_ring.lua")
 	local elf = dofile(directory .. "/elf_parts.lua")(directory)
 	local grove = dofile(directory .. "/elf_grove.lua")(directory)
 	local districts = dofile(directory .. "/lethariel_districts.lua")(directory)
@@ -293,7 +294,7 @@ local function loader(directory)
 			spec = {w = 9, d = 9, wall_h = 5, roof = "saltbox",
 				ridge_axis = "x", infill = true, fancy_bed = true}},
 		{id = "shore_house", module = "buildings", make = "cottage",
-			x = -46, z = 37, turns = 1, palette = "elf",
+			x = -46, z = 37, turns = 3, palette = "elf",
 			spec = {w = 9, d = 9, wall_h = 5, roof = "gable",
 				ridge_axis = "x", infill = true, shutters = true}},
 
@@ -834,22 +835,14 @@ local function loader(directory)
 
 		-- 10. THE CORE EDGE: groves and hedges, not masonry. Lethariel's
 		-- precinct is open, so its boundary is a clipped silverwood hedge with
-		-- the standards of section 9 standing behind it -- the same "walk the
-		-- whole ring and let it break by itself" rule Highcourt's hedge uses,
-		-- because a hand-placed run is how a boundary ends up planted through
-		-- a cottage's apron.
+		-- the standards of section 9 standing behind it. The protected hedge wins
+		-- every dry non-gate column; only the mere itself replaces the boundary.
 		local hedge = 0
-		for offset = -RADIUS + 1, RADIUS - 1 do
-			for _, spot in ipairs({{offset, RADIUS - 1}, {offset, -RADIUS + 1},
-					{RADIUS - 1, offset}, {-RADIUS + 1, offset}}) do
-				local x, z = spot[1], spot[2]
-				if dry(x, z) and layout.natural(buf, x, z) and
-						layout.free(buf, x, z, 4) then
-					hedge = hedge + dressing.hedge_line(buf, elf_palette,
-						x, z, x, z, 3)
-				end
-			end
-		end
+		precinct_ring.walk(function(x, z)
+			precinct_ring.clear_wallmounted(buf, parts, x, z, 4)
+			hedge = hedge + dressing.hedge_line(buf, elf_palette,
+				x, z, x, z, 3)
+		end, {skip = function(x, z) return not dry(x, z) end})
 
 		-- 11. Undergrowth on the turf between the quarters.
 		dressing.undergrowth(buf, elf_palette, -RADIUS, -RADIUS, RADIUS,

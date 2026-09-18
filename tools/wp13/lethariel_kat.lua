@@ -546,8 +546,8 @@ return function(repo)
 	assert(longest <= 13, "the core's boundary carries " .. longest ..
 		" unbroken columns of castle masonry, which is a curtain wall")
 
-	assert(L.hedge_columns >= 100, "the core's planted edge is only " ..
-		L.hedge_columns .. " columns")
+	assert(L.hedge_columns == 246, "the core's planted edge has " ..
+		L.hedge_columns .. " columns, not 246")
 	assert(L.standards >= 16, "the core keeps only " .. L.standards ..
 		" silverwood standards")
 	assert(L.lantern_pillars >= 16, "the core lights only " ..

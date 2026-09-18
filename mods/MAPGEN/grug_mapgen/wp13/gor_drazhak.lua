@@ -53,6 +53,7 @@ local function loader(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 	local palisade = dofile(directory .. "/orc_palisade.lua")(directory)
+	local precinct_ring = dofile(directory .. "/precinct_ring.lua")
 	local quadrants = dofile(directory .. "/gor_drazhak_quadrants.lua")()
 	local districts = dofile(directory .. "/gor_drazhak_districts.lua")(directory)
 	local street_plan = dofile(directory .. "/street_plan.lua")(directory)
@@ -244,7 +245,7 @@ local function loader(directory)
 		-- 8. THE WAR COUNCIL HOUSE, in the south-east corner: the bone record
 		-- of the clans, which is this race's archive.
 		{id = "council_house", module = "capitals", make = "scriptorium",
-			x = 29, z = -46, turns = 0, palette = "ors",
+			x = 29, z = -46, turns = 2, palette = "ors",
 			spec = {w = 13, d = 17, wall_h = 6}},
 
 		-- 9. The clans' quarter: four dwellings on the outer ground, every one
@@ -253,7 +254,7 @@ local function loader(directory)
 		-- instead: the `home` kit furnishes the cell behind every other wall
 		-- and only the z- doorway is authored clear of it.
 		{id = "bazaar_house", module = "buildings", make = "cottage",
-			x = -45, z = -20, turns = 1, palette = "orc",
+			x = -45, z = -20, turns = 3, palette = "orc",
 			parapet = {y = 6},
 			spec = {w = 9, d = 9, wall_h = 4, roof = "flat_deck",
 				infill = true, shutters = true}},
@@ -866,10 +867,10 @@ local function loader(directory)
 		-- sharpened stake every other column -- so the precinct and the city
 		-- wall are recognisably one piece of engineering.
 		--
-		-- THE TOWERS FIRST, because the bank runs into them and not the other
-		-- way round: the ring is walked column by column and stops at whatever
-		-- already stands on the boundary, so a tower authored afterwards would
-		-- find its own corner built over and quietly not appear.
+		-- THE TOWERS FIRST. The protected bank explicitly skips the five square
+		-- boundary columns at each corner; each closed tower perimeter owns that
+		-- detour and the first bank column beyond the skip joins straight into
+		-- it. This is an authored corner substitution, not an occupied-cell stop.
 		local towers = 0
 		for _, corner in ipairs({{-45, -45}, {45, -45}, {-45, 45}, {45, 45}}) do
 			local cx, cz = corner[1], corner[2]
@@ -898,33 +899,21 @@ local function loader(directory)
 			error("wp13 gor drazhak: " .. towers ..
 				" of the four corner towers found room", 0)
 		end
-		-- The bank is walked round the WHOLE pad rather than authored in four
-		-- stretches, exactly as Highcourt's hedge is and for the same reason:
-		-- every column of the boundary ring that is still open ground gets its
-		-- courses, and the run breaks by itself at a gatehouse, a tower, a plot
-		-- or a street. Hand-placed runs are how a boundary ends up built
-		-- through a dwelling's apron.
+		-- The protected bank is walked round the whole pad after the content. It
+		-- wins every ordinary column; the shared mask omits the four authored
+		-- gatehouse bands and the callback preserves the four corner towers.
 		local bank, stakes = 0, 0
-		for offset = -RADIUS + 1, RADIUS - 1 do
-			for _, spot in ipairs({{offset, RADIUS - 1}, {offset, -RADIUS + 1},
-					{RADIUS - 1, offset}, {-RADIUS + 1, offset}}) do
-				local x, z = spot[1], spot[2]
-				-- Only on the ground the settlement has NOT paved. A precinct
-				-- bank walked across a gate road is a gate nothing can drive
-				-- through, and `layout.free` says "nothing stands here", not
-				-- "this is not a street".
-				if layout.natural(buf, x, z) and layout.free(buf, x, z, 5) then
-					buf:put(x, 1, z, EARTH)
-					buf:put(x, 2, z, BEATEN)
-					if (x + z) % 2 == 0 then
-						buf:put(x, 3, z, TIMBER)
-						buf:put(x, 4, z, POINT, (x + z) % 4)
-						stakes = stakes + 1
-					end
-					bank = bank + 1
-				end
+		precinct_ring.walk(function(x, z)
+			precinct_ring.clear_wallmounted(buf, parts, x, z, 4)
+			buf:put(x, 1, z, EARTH)
+			buf:put(x, 2, z, BEATEN)
+			if (x + z) % 2 == 0 then
+				buf:put(x, 3, z, TIMBER)
+				buf:put(x, 4, z, POINT, (x + z) % 4)
+				stakes = stakes + 1
 			end
-		end
+			bank = bank + 1
+		end, {skip = precinct_ring.is_corner})
 
 		-- 11. Dry undergrowth on the ground between the quarters.
 		dressing.undergrowth(buf, orc, -RADIUS, -RADIUS, RADIUS, RADIUS, 6)
