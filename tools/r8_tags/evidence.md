@@ -82,6 +82,8 @@ Each mutation below was run under LuaJIT and failed before being restored:
 | `MUTATION=8` | real vendor activation-time install |
 | `MUTATION=9` | real villager activation-time install |
 | `MUTATION=10` | forbidden visible parent writer |
+| `MUTATION=11` | real telegraph start/end trigger calls |
+| `MUTATION=12` | real mobs_redo HP-change trigger call |
 
 ## Manual runtime remainder
 

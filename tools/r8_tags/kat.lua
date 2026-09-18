@@ -4,7 +4,8 @@
 -- MUTATION=1 distance, 2 owner exclusion, 3 productive mob text call,
 -- 4 orphan removal, 5 static_save, 6 pointable, 7 duplicate carrier,
 -- 8 vendor install,
--- 9 villager install, 10 forbidden parent write.
+-- 9 villager install, 10 forbidden parent write,
+-- 11 real telegraph trigger calls, 12 real mobs_redo HP trigger call.
 
 local function run(repo)
 	assert(type(repo) == "string" and repo:sub(1, 1) == "/",
@@ -20,7 +21,9 @@ local function run(repo)
 		grug_traders = rawget(_G, "grug_traders"),
 		grug_classes = rawget(_G, "grug_classes"),
 		grug_factions = rawget(_G, "grug_factions"),
+		minetest = rawget(_G, "minetest"),
 		math_round = math.round,
+		table_copy = table.copy,
 	}
 
 	local function equal(actual, expected, label)
@@ -42,6 +45,31 @@ local function run(repo)
 		local value = file:read("*a")
 		file:close()
 		return value
+	end
+
+	local function replace_plain(value, needle, replacement)
+		local output, count, from = {}, 0, 1
+		while true do
+			local first, last = value:find(needle, from, true)
+			if not first then
+				output[#output + 1] = value:sub(from)
+				return table.concat(output), count
+			end
+			output[#output + 1] = value:sub(from, first - 1)
+			output[#output + 1] = replacement
+			count = count + 1
+			from = last + 1
+		end
+	end
+
+	local function load_production(path, mutation_id, needle, replacement,
+			expected_count)
+		if mutation ~= mutation_id then
+			return assert(loadfile(path))()
+		end
+		local source, count = replace_plain(read(path), needle, replacement)
+		equal(count, expected_count, "mutation target count for " .. path)
+		return assert(loadstring(source, "@" .. path))()
 	end
 
 	local callbacks = {globalstep = {}, mods_loaded = {}}
@@ -86,6 +114,11 @@ local function run(repo)
 		registered_entities = entity_defs,
 		registered_items = {},
 		registered_nodes = {},
+		registered_aliases = {},
+		settings = {
+			get = function() return nil end,
+			get_bool = function(_, name) return name == "enable_damage" end,
+		},
 		get_connected_players = function() return players end,
 		register_globalstep = function(fn)
 			callbacks.globalstep[#callbacks.globalstep + 1] = fn
@@ -93,6 +126,9 @@ local function run(repo)
 		register_on_mods_loaded = function(fn)
 			callbacks.mods_loaded[#callbacks.mods_loaded + 1] = fn
 		end,
+		register_on_joinplayer = function() end,
+		register_on_player_receive_fields = function() end,
+		register_chatcommand = function() end,
 		register_entity = function(name, def)
 			entity_defs[name:gsub("^:", "")] = def
 		end,
@@ -106,6 +142,17 @@ local function run(repo)
 			return object
 		end,
 		global_exists = function() return false end,
+		get_modpath = function(name)
+			if name == "mobs" then return repo .. "/mods/ENTITIES/mobs" end
+		end,
+		get_translator = function()
+			return function(text) return text end
+		end,
+		formspec_escape = function(text) return text end,
+		check_player_privs = function() return false end,
+		is_player = function(object)
+			return object and object.is_player and object:is_player()
+		end,
 		log = function() end,
 		after = function(_, fn) fn() end,
 		get_gametime = function() return 0 end,
@@ -113,14 +160,41 @@ local function run(repo)
 		dir_to_yaw = function() return 0 end,
 		get_objects_inside_radius = function() return {} end,
 		find_path = function() return nil end,
+		add_particlespawner = function() end,
+		sound_play = function() end,
+		yaw_to_dir = function() return {x = 1, y = 0, z = 0} end,
+		line_of_sight = function() return true end,
 	}
+	minetest = core
 
 	vector = {
+		new = function(x, y, z)
+			if type(x) == "table" then return {x = x.x, y = x.y, z = x.z} end
+			return {x = x or 0, y = y or 0, z = z or 0}
+		end,
+		add = function(a, b)
+			return {x = a.x + b.x, y = a.y + b.y, z = a.z + b.z}
+		end,
+		subtract = function(a, b)
+			return {x = a.x - b.x, y = a.y - b.y, z = a.z - b.z}
+		end,
+		multiply = function(a, value)
+			return {x = a.x * value, y = a.y * value, z = a.z * value}
+		end,
+		direction = function() return {x = 1, y = 0, z = 0} end,
+		offset = function(pos, x, y, z)
+			return {x = pos.x + x, y = pos.y + y, z = pos.z + z}
+		end,
 		distance = function(a, b)
 			local dx, dy, dz = a.x - b.x, a.y - b.y, a.z - b.z
 			return math.sqrt(dx * dx + dy * dy + dz * dz)
 		end,
 	}
+	table.copy = table.copy or function(value)
+		local result = {}
+		for key, child in pairs(value) do result[key] = child end
+		return result
+	end
 	math.round = function(value) return math.floor(value + 0.5) end
 	grug_core = {}
 	dofile(repo .. "/mods/CORE/grug_core/tag_carrier.lua")
@@ -218,7 +292,16 @@ local function run(repo)
 		entity.object:set_properties({nametag = ""})
 		return child
 	end
-	mobs = {scale_mob = function() end}
+	-- Load the real mobs_redo implementation. Mutation 12 deletes precisely
+	-- the HP-change trigger call in check_for_death; the ordinary run executes
+	-- the production file byte-for-byte through loadfile.
+	load_production(repo .. "/mods/ENTITIES/mobs/api.lua", 12,
+		"\t\tself:update_tag() ; return\n\tend\n\n\t-- GRUG PATCH",
+		"\t\tself._r8_mutated_hp_call = true ; return\n\tend\n\n\t-- GRUG PATCH",
+		1)
+	-- Tier scaling is unrelated to the tag seam and requires mobs_redo's full
+	-- activation-populated base geometry, which this focused object stub lacks.
+	mobs.scale_mob = function() end
 	grug_zones = {mob_level_at = function() return 8 end,
 		guard_level_at = function() return 8 end}
 	grug_core.format_k = function(value) return tostring(value) end
@@ -227,7 +310,7 @@ local function run(repo)
 	local mob_parent = new_object({hp_max = 10, selectionbox =
 		{-0.4, -0.2, -0.4, 0.4, 1.5, 0.4}, nametag = "forbidden"})
 	local mob = {name = "test:boar", description = "Boar", object = mob_parent,
-		health = 10, base_texture = {"boar.png"}, armor = 100}
+		health = 10, base_texture = {"boar.png"}, armor = 100, sounds = {}}
 	mob_parent.entity = mob
 	grug_mobs.register_level_cfg(mob.name,
 		{_grug_tier = "elite", _grug_fixed_level = 8})
@@ -239,12 +322,37 @@ local function run(repo)
 	equal(mob_parent.properties.nametag, "", "combat parent remains empty")
 	equal(mob_carrier.properties.nametag, grug_mobs.tag_text(mob),
 		"real tier and HP text propagation")
-	mob.health = 21
-	mob.temp.grug_telegraph = true
-	grug_mobs.update_tag(mob)
+	-- Drive both edges of the real telegraph state machine. Mutation 11
+	-- deletes both productive calls while leaving the state transitions intact.
+	grug_mobs.root = function() end
+	load_production(repo .. "/mods/ENTITIES/grug_mobs/telegraph.lua", 11,
+		"\t\tself:update_tag() --",
+		"\t\tself._r8_mutated_telegraph_call = true --", 2)
+	mob.state = "attack"
+	mob.reach = 3
+	mob.damage = 4
+	mob.attack = {get_pos = function() return {x = 1, y = 0, z = 0} end}
+	function mob_parent:get_yaw() return 0 end
+	mob.update_tag = grug_mobs.update_tag
+	grug_mobs.telegraph_tick(mob, 4)
 	equal(mob_carrier.properties.nametag,
-		"!! Elite Boar [Lv 8] 21/307",
-		"real telegraph and changed HP propagation")
+		"!! Elite Boar [Lv 8] 307/307",
+		"real telegraph start updates carrier")
+	players = {}
+	grug_mobs.telegraph_tick(mob, 2)
+	equal(mob_carrier.properties.nametag,
+		"Elite Boar [Lv 8] 307/307",
+		"real telegraph end updates carrier")
+
+	-- Drive mobs_redo's actual live-HP path into the installed per-entity
+	-- updater. A direct grug_mobs.update_tag call would not prove this seam.
+	mob.health = 21
+	mob.old_health = 307
+	function mob:mob_sound() end
+	mobs.mob_class.check_for_death(mob)
+	equal(mob_carrier.properties.nametag,
+		"Elite Boar [Lv 8] 21/307",
+		"real mobs_redo HP change updates carrier")
 	grug_core.set_tag_carrier_text = real_text_writer
 
 	-- Minimal registration environment, but the files and after_activate
@@ -343,7 +451,9 @@ local function run(repo)
 	rawset(_G, "grug_traders", saved.grug_traders)
 	rawset(_G, "grug_classes", saved.grug_classes)
 	rawset(_G, "grug_factions", saved.grug_factions)
+	rawset(_G, "minetest", saved.minetest)
 	math.round = saved.math_round
+	table.copy = saved.table_copy
 	return output
 end
 
