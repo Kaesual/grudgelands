@@ -465,6 +465,14 @@ return function(repo)
 			entity._kat_tag_carrier = entity._kat_tag_carrier or {}
 			return entity._kat_tag_carrier
 		end
+		harness.tags = {}
+		function grug_mobs.set_plain_tag(entity, text)
+			local row = harness.tags[entity] or {calls = 0}
+			row.calls = row.calls + 1
+			row.text = text
+			harness.tags[entity] = row
+			grug_mobs.ensure_tag_carrier(entity).text = text
+		end
 		rawset(_G, "grug_mobs", grug_mobs)
 
 		rawset(_G, "vector", {
@@ -789,14 +797,9 @@ return function(repo)
 			}
 		end)
 		--
-		-- THE NAMETAG OBSERVER GATE lives in `levels.lua`, which is the level
-		-- and XP engine and is deliberately not part of this fixture -- a
-		-- settlement NPC has no level to want it for. What this fixture owns is
-		-- the CALL: every peaceful family has to reach the gate once a second
-		-- with the text it wants shown, which is what the round-3 finding was
-		-- about (a static property write that the engine renders out to 128 m).
-		-- The gate call is recorded here; tools/r8_tags owns its observer rules.
-		--
+		-- The carrier module owns observer updates centrally. This fixture records
+		-- only the real activation-time text install; tools/r8_tags owns the
+		-- observer and lifecycle rules.
 		--
 		-- The cached-player distance `levels.lua` publishes. The work tick asks
 		-- it "is anybody close enough for this animation to be worth playing",
@@ -815,13 +818,6 @@ return function(repo)
 				if not best or d2 < best then best = d2 end
 			end
 			return best
-		end
-		harness.gate = {}
-		function grug_mobs.plain_tag_gate_tick(entity, text)
-			local row = harness.gate[entity] or {calls = 0}
-			row.calls = row.calls + 1
-			row.text = text
-			harness.gate[entity] = row
 		end
 		local face_yaw = grug_mobs.face_yaw
 		grug_mobs.face_yaw = function(self, yaw)
@@ -2020,12 +2016,9 @@ return function(repo)
 		"lines_" .. table.concat(lines, ","))
 
 	--
-	-- 18. THE NAMETAG OBSERVER GATE is reached by every peaceful family, once
-	--     a second, with the name that family wants shown (playtest round 3).
-	--     The property write itself is the engine's and is measured by the NPC
-	--     probe; what can only be measured here is that the villager's amble,
-	--     the work tick and the elder's own tick all go through the gate
-	--     instead of exposing a static parent tag at activation.
+	-- 18. EVERY PEACEFUL FAMILY installs its carrier text on activation, and
+	--     its ordinary ticks do not repeat that work. Observer/lifecycle work
+	--     belongs to the one central carrier pass (tools/r8_tags/kat.lua).
 	--
 	local elder_def = harness.defs["grug_mobs:elder_dwarf"]
 	check(elder_def.do_custom ~= nil, "the quest shell has no tick to gate on")
@@ -2033,34 +2026,34 @@ return function(repo)
 	local walker_npc = entity_at("idle_a")
 	local before = {}
 	for _, mob in ipairs({elder, walker_npc, smith}) do
-		before[mob] = (harness.gate[mob] and harness.gate[mob].calls) or 0
+		before[mob] = (harness.tags[mob] and harness.tags[mob].calls) or 0
 	end
 	for _ = 1, 10 do
 		elder_def.do_custom(elder, 1)
 		villager_def.do_custom(walker_npc, 1)
 		villager_def.do_custom(smith, 1)
 	end
-	local gated = {}
+	local tagged = {}
 	for _, row in ipairs({{"elder", elder, "Vale Elder"},
 			{"walker", walker_npc, "Vale Dwarf"},
 			{"work", smith, "Vale Dwarf"}}) do
-		local seen = harness.gate[row[2]]
-		check(seen ~= nil and seen.calls - before[row[2]] == 10,
-			"the " .. row[1] .. " reached the nametag gate " ..
-			tostring(seen and seen.calls - before[row[2]]) ..
-			" times in ten seconds, not ten")
+		local seen = harness.tags[row[2]]
+		check(seen ~= nil and seen.calls - before[row[2]] == 0,
+			"the " .. row[1] .. " repeated its carrier text install " ..
+			tostring(seen and seen.calls - before[row[2]]) .. " times")
 		check(seen.text == row[3],
-			"the " .. row[1] .. " asked the gate to show " ..
+			"the " .. row[1] .. " installed " ..
 			tostring(seen.text) .. " and not " .. row[3])
-		gated[#gated + 1] = row[1] .. "=" .. seen.text
+		tagged[#tagged + 1] = row[1] .. "=" .. seen.text
 	end
-	-- And NOTHING writes the property at activation any more: the desired text
-	-- is a plain field, and mobs_redo's own update_tag only refreshes it.
+	-- mobs_redo's own update_tag refreshes the carrier text, never the parent.
 	elder._grug_tag_want = nil
 	elder:update_tag()
 	check(elder._grug_tag_want == "Vale Elder",
 		"update_tag no longer refreshes the desired nametag text")
-	line("tag_gate", table.concat(gated, " "), "once_a_second")
+	check(harness.tags[elder].calls - before[elder] == 1,
+		"update_tag did not reach the carrier text seam")
+	line("tag_carrier", table.concat(tagged, " "), "central_observers")
 
 	--
 	-- 19. THE RESTYLE HOOK RUNS AFTER `install` (the review's F2). What it is

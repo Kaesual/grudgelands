@@ -1,7 +1,7 @@
 -- Known-answer test for round-5 Lane N. It loads the shipped faction tag and
 -- both new grug_core modules against a minimal engine stub.
 --
--- MUTATION=1 inverts the nametag distance gate.
+-- MUTATION=1 drops the player-owner exclusion argument.
 -- MUTATION=2 turns fall deaths into fallback deaths.
 -- MUTATION=3 makes walkable solid nodes non-suffocating.
 -- MUTATION=4 drops the suffocation death reason.
@@ -96,10 +96,9 @@ grug_core = {
 	zone_authority_installed = function() return true end,
 }
 local carrier_creates = 0
-local observer_updates = 0
-function grug_core.create_tag_carrier(parent)
+function grug_core.create_tag_carrier(parent, owner_name)
 	carrier_creates = carrier_creates + 1
-	local carrier = {valid = true}
+	local carrier = {valid = true, owner_name = owner_name}
 	function carrier:is_valid() return self.valid end
 	parent.carrier = carrier
 	return carrier
@@ -107,10 +106,6 @@ end
 function grug_core.set_tag_carrier_text(carrier, text)
 	if carrier.text == text then return false end
 	carrier.text = text
-	return true
-end
-function grug_core.update_tag_carrier_observers()
-	observer_updates = observer_updates + 1
 	return true
 end
 function grug_core.remove_tag_carrier(carrier) carrier.valid = false end
@@ -166,7 +161,10 @@ local ok, failure = pcall(function()
 	dofile(repo .. "/mods/CORE/grug_core/suffocation.lua")
 
 	if mutation == 1 then
-		grug_core.update_tag_carrier_observers = function() return false end
+		local original = grug_core.create_tag_carrier
+		grug_core.create_tag_carrier = function(parent)
+			return original(parent, nil)
+		end
 	elseif mutation == 2 then
 		local original = grug_core.death_message
 		grug_core.death_message = function(name, reason)
@@ -205,12 +203,9 @@ local ok, failure = pcall(function()
 	end
 	equal(thomas.nametag_writes, 1, "join hides tag once")
 	equal(carrier_creates, 2, "one player carrier per join")
+	equal(thomas.carrier.owner_name, "Thomas", "player owner reaches carrier")
 	equal(thomas.carrier.text, "Thomas [Lv 1] 30/30", "joined carrier text")
-	callbacks.globalstep[1].fn(1)
-	equal(observer_updates, 2, "player observer management reached")
 	equal(thomas.nametag_writes, 1, "parent tag remains alpha-zero")
-	callbacks.globalstep[1].fn(1)
-	equal(thomas.nametag_writes, 1, "observer pass never rewrites parent")
 	callbacks.hpchange[1].fn(thomas, -5, {type = "punch"})
 	equal(thomas.carrier.text, "Thomas [Lv 1] 25/30", "predicted carrier HP tag")
 	equal(thomas.nametag_writes, 1, "HP refresh leaves parent hidden")
@@ -220,8 +215,7 @@ local ok, failure = pcall(function()
 	level_callback(thomas, 1, 5)
 	equal(thomas.carrier.text, "Thomas [Lv 5] 25/30", "level-up carrier text")
 	ada.pos.x = 31
-	callbacks.globalstep[1].fn(1)
-	equal(thomas.nametag_writes, 1, "distance changes never expose parent")
+	equal(thomas.nametag_writes, 1, "distance state cannot expose parent")
 
 	-- Death message categories and actor display names.
 	local category, line = grug_core.death_message("Thomas", {type = "fall"})
@@ -294,7 +288,7 @@ end
 
 io.write(table.concat({
 	"player_tag=Thomas [Lv 5] 35/60",
-	"tag_carrier=one_per_player parent_alpha_zero observer_seam",
+	"tag_carrier=one_per_player parent_alpha_zero owner_seam",
 	"death=fall drown node_damage suffocation mob player fallback",
 	"suffocation=solid_only stasis_exempt",
 }, "\n"), "\n")

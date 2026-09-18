@@ -178,7 +178,6 @@ function grug_core.set_tag_carrier_text(carrier, text)
 	carrier.text = text
 	return true
 end
-function grug_core.update_tag_carrier_observers() return false end
 function grug_core.remove_tag_carrier(carrier) carrier.valid = false end
 
 -- The startup preload's still-open emerge request for one start, found by the
