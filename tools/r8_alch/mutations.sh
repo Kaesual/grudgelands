@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT=${1:?absolute repository root required}
+case "$ROOT" in /*) ;; *) echo "absolute repository root required" >&2; exit 2;; esac
+
+run_mutation() {
+	local mutation=$1 kat=$2
+	if R8_ALCH_MUTATION=$mutation "$ROOT/tools/bin/lua51" -e \
+		"io.write(dofile('$ROOT/tools/r8_alch/$kat.lua')('$ROOT'))" >/dev/null 2>&1; then
+		echo "mutation unexpectedly survived: $mutation" >&2
+		exit 1
+	fi
+	echo "mutation killed: $mutation"
+}
+
+for mutation in recipe_tier shared_cooldown greater_cooldown elixir_exclusive item_level authorizer cave_cap; do
+	run_mutation "$mutation" alchemy_kat
+done
+for mutation in geometry activation; do
+	run_mutation "$mutation" stand_kat
+done
+run_mutation poison_clear poison_kat
+run_mutation capital capital_kat
