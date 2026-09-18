@@ -32,6 +32,45 @@ local function lua_string(value)
 	return string.format("%q", value)
 end
 
+local function owner_minimum(value)
+	return -30912 + math.floor((value + 30912) / 80) * 80
+end
+
+-- Freeze the writer's horizontal eligibility inputs into the revision-bound
+-- candidate record.  The engine checker therefore does not call the writer or
+-- infer routes/housing from the carved result; it independently replays the
+-- predicate from immutable offline bytes.
+local function excluded_columns(row)
+	local extent = (row.kind == "sinkhole" and
+		(row.search_radius or row.radius) or row.length - 1) + row.radius
+	local min_x, max_x = row.mouth_x - extent, row.mouth_x + extent
+	local min_z, max_z = row.mouth_z - extent, row.mouth_z + extent
+	if row.kind == "hillside" then
+		local last_x = row.mouth_x + row.direction_x * (row.length - 1)
+		local last_z = row.mouth_z + row.direction_z * (row.length - 1)
+		min_x, max_x = math.min(row.mouth_x, last_x) - row.radius,
+			math.max(row.mouth_x, last_x) + row.radius
+		min_z, max_z = math.min(row.mouth_z, last_z) - row.radius,
+			math.max(row.mouth_z, last_z) + row.radius
+	end
+	local excluded = {}
+	for z = min_z, max_z do for x = min_x, max_x do
+		local water_class, _, zone_id, biome, _, _, water_y, hydrology_id, _,
+			functional_kind, _, _, _, transition_kind, _, _, _, _, _, hard =
+				loaded.planner_source.column_values_at(x, z)
+		local allowed = water_class == "land" and zone_id == row.zone_id and biome and
+			water_y == nil and hydrology_id == nil and functional_kind == nil and
+			transition_kind == nil and not hard and
+			loaded.horizontal.static_exclusion_values_at(x, z) == nil and
+			loaded.horizontal.housing_mask_id_at(x, z) == nil
+		if not allowed then
+			excluded[#excluded + 1] = (x - row.mouth_x) .. "/" ..
+				(z - row.mouth_z)
+		end
+	end end
+	return excluded
+end
+
 io.write("return {schema=\"grug_r8_map_a_engine_cases_v2\",revision=",
 	lua_string(revision), ",seed=", lua_string(seed), ",regions={\n")
 for region_index = 1, #regions do
@@ -55,6 +94,7 @@ for region_index = 1, #regions do
 		region.max_x, ",", region.min_z, ",", region.max_z, "},candidates={\n")
 	for index = 1, #records do
 		local row = records[index]
+		local excluded = excluded_columns(row)
 		io.write("{cell_x=", row.cell_x, ",cell_z=", row.cell_z,
 			",zone_id=", lua_string(row.zone_id),
 			",mouth_x=", row.mouth_x, ",mouth_y=", row.mouth_y,
@@ -63,7 +103,14 @@ for region_index = 1, #regions do
 			",radius=", row.radius, ",minimum_y=", row.minimum_y,
 			",search_radius=", row.search_radius or row.radius,
 			",maximum_depth=", row.maximum_depth or 12,
-			",kind=", lua_string(row.kind or "hillside"), "},\n")
+			",owner_min_x=", owner_minimum(row.mouth_x),
+			",owner_min_y=", owner_minimum(row.mouth_y),
+			",owner_min_z=", owner_minimum(row.mouth_z),
+			",kind=", lua_string(row.kind or "hillside"), ",excluded={")
+		for excluded_index = 1, #excluded do
+			io.write(lua_string(excluded[excluded_index]), ",")
+		end
+		io.write("}},\n")
 	end
 	io.write("}},\n")
 end

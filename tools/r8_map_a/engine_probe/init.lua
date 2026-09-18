@@ -37,6 +37,21 @@ local function candidate_key(region, candidate)
 		candidate.mouth_x, candidate.mouth_y, candidate.mouth_z}, "/")
 end
 
+local function excluded_lookup(candidate)
+	local result = {}
+	for index = 1, #(candidate.excluded or {}) do
+		result[candidate.excluded[index]] = true
+	end
+	return result
+end
+
+local function writer_column_allowed(candidate, excluded, x, z)
+	return grug_zones.water_class_at(x, z) == "land" and
+		grug_zones.id_at(x, z) == candidate.zone_id and
+		not excluded[(x - candidate.mouth_x) .. "/" ..
+			(z - candidate.mouth_z)]
+end
+
 local function cave_round(numerator, denominator)
 	if numerator < 0 then
 		return -math.floor((-numerator * 2 + denominator) / (denominator * 2))
@@ -73,19 +88,23 @@ local function node_class(x, y, z)
 	return "foreign"
 end
 
-local function lumen_for(candidate, target_x, target_y, target_z)
+local function lumen_for(candidate, target_x, target_y, target_z, excluded)
 	local voxels, seen, valid, invalid = {}, {}, true, nil
+	local min_x, min_y, min_z = candidate.owner_min_x, candidate.owner_min_y,
+		candidate.owner_min_z
+	local max_x, max_y, max_z = min_x + 79, min_y + 79, min_z + 79
 	local function offer(x, y, z)
 		local position_key = key(x, y, z)
 		if seen[position_key] then return end
 		seen[position_key] = true
 		local terrain_y = grug_zones.terrain_height_at(x, z)
 		local dx, dz = x - candidate.mouth_x, z - candidate.mouth_z
-		if grug_zones.water_class_at(x, z) ~= "land" then
-			valid, invalid = false, "water:" .. key(x, y, z)
+		if x < min_x or x > max_x or y < min_y or y > max_y or z < min_z or
+				z > max_z then
+			valid, invalid = false, "owner:" .. key(x, y, z)
 			return
-		elseif candidate.zone_id and grug_zones.id_at(x, z) ~= candidate.zone_id then
-			valid, invalid = false, "zone:" .. key(x, y, z)
+		elseif not writer_column_allowed(candidate, excluded, x, z) then
+			valid, invalid = false, "excluded:" .. key(x, y, z)
 			return
 		elseif y > terrain_y and not (dx * dx + dz * dz <= 4 and
 				y <= candidate.mouth_y + 1) then
@@ -140,16 +159,21 @@ local function lumen_for(candidate, target_x, target_y, target_z)
 end
 
 local function component_proof(candidate, target, lumen)
-	local min_x, max_x = target[1] - COMPONENT_RADIUS, target[1] + COMPONENT_RADIUS
-	local min_y, max_y = target[2] - COMPONENT_RADIUS, target[2] + COMPONENT_RADIUS
-	local min_z, max_z = target[3] - COMPONENT_RADIUS, target[3] + COMPONENT_RADIUS
+	local owner_max_x, owner_max_y, owner_max_z = candidate.owner_min_x + 79,
+		candidate.owner_min_y + 79, candidate.owner_min_z + 79
+	local min_x = math.max(candidate.owner_min_x, target[1] - COMPONENT_RADIUS)
+	local max_x = math.min(owner_max_x, target[1] + COMPONENT_RADIUS)
+	local min_y = math.max(candidate.owner_min_y, target[2] - COMPONENT_RADIUS)
+	local max_y = math.min(owner_max_y, target[2] + COMPONENT_RADIUS)
+	local min_z = math.max(candidate.owner_min_z, target[3] - COMPONENT_RADIUS)
+	local max_z = math.min(owner_max_z, target[3] + COMPONENT_RADIUS)
 	local surface_cache = {}
 	local function baseline_surface(x, z)
 		local column_key = x .. "/" .. z
 		if surface_cache[column_key] ~= nil then
 			return surface_cache[column_key] ~= false and surface_cache[column_key] or nil
 		end
-		for y = candidate.mouth_y + COMPONENT_RADIUS, min_y, -1 do
+		for y = owner_max_y, candidate.owner_min_y, -1 do
 			local class = node_class(x, y, z)
 			if class ~= "air" and class ~= "liquid" then
 				surface_cache[column_key] = y
@@ -190,6 +214,10 @@ local function component_proof(candidate, target, lumen)
 end
 
 local function baseline_plan(candidate)
+	if candidate.minimum_y < candidate.owner_min_y then
+		return {eligible = false, reason = "outside_owner"}
+	end
+	local excluded = excluded_lookup(candidate)
 	local search_x = candidate.kind == "hillside" and candidate.mouth_x +
 		candidate.direction_x * (candidate.length - 1) or candidate.mouth_x
 	local search_z = candidate.kind == "hillside" and candidate.mouth_z +
@@ -200,9 +228,9 @@ local function baseline_plan(candidate)
 		for dz = -radius, radius do for dx = -radius, radius do
 			if dx * dx + dz * dz == radius_squared then
 				local x, z = search_x + dx, search_z + dz
-				if grug_zones.water_class_at(x, z) == "land" and
-						(not candidate.zone_id or grug_zones.id_at(x, z) ==
-							candidate.zone_id) then
+				if x >= candidate.owner_min_x and x <= candidate.owner_min_x + 79 and
+						z >= candidate.owner_min_z and z <= candidate.owner_min_z + 79 and
+						writer_column_allowed(candidate, excluded, x, z) then
 					local roof = 0
 					local ceiling = math.min(candidate.mouth_y,
 						grug_zones.terrain_height_at(x, z))
@@ -211,7 +239,8 @@ local function baseline_plan(candidate)
 						local class = node_class(x, y, z)
 						if class == "air" and roof >= 3 then
 							air_targets = air_targets + 1
-							local voxels, lumen, invalid = lumen_for(candidate, x, y, z)
+							local voxels, lumen, invalid = lumen_for(candidate, x, y, z,
+								excluded)
 							if invalid and not first_invalid then first_invalid = invalid end
 							if voxels then
 								valid_lumens = valid_lumens + 1
@@ -242,7 +271,7 @@ end
 local function carved_against_baseline(candidate, proof)
 	if not proof or not proof.eligible then return false, false, 0 end
 	local voxels = lumen_for(candidate, proof.target[1], proof.target[2],
-		proof.target[3])
+		proof.target[3], excluded_lookup(candidate))
 	if not voxels or #voxels ~= proof.voxel_count then return false, false, 0 end
 	local air = 0
 	for index = 1, #voxels do
