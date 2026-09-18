@@ -4,6 +4,7 @@
 local player_pos
 local spawned = {}
 local probe_player
+local whitebridge_ready = false
 local fake_meta = {
 	get_string = function() return "" end,
 	set_string = function() end,
@@ -61,7 +62,7 @@ core.add_entity = function(pos, name, staticdata)
 	if object and (name == "grug_mobs:boar" or name == "grug_mobs:zombie" or
 			name == "grug_mobs:song_bird" or
 			name == "grug_mobs:wild_turkey" or
-			name == "grug_mobs:giant_rat") then
+			name == "grug_mobs:giant_rat" or name == "grug_mobs:wisp") then
 		spawned[name] = (spawned[name] or 0) + 1
 		core.log("action", "R8_MOB1_CLOCK_SPAWN name=" .. name ..
 			" tod=" .. tostring(core.get_timeofday()) ..
@@ -147,13 +148,23 @@ core.register_on_mods_loaded(function()
 	core.after(0, function()
 		player_pos = assert(grug_core.start_position("accord", "human"))
 		force_area(player_pos)
+		local wx, wz = -900, -1500
+		local wy = grug_zones.terrain_height_at(wx, wz) + 2
+		local whitebridge = {x = wx, y = wy, z = wz}
+		force_area(whitebridge)
+		core.emerge_area({x = wx - 128, y = wy - 16, z = wz - 128},
+			{x = wx + 128, y = wy + 16, z = wz + 128},
+			function(_, _, remaining)
+				if remaining == 0 then whitebridge_ready = true end
+			end)
 	end)
 end)
 
 local ready_for = 0
 local ran = false
 core.register_globalstep(function(dtime)
-	if ran or not player_pos or not grug_core.start_ready("human") then return end
+	if ran or not player_pos or not whitebridge_ready or
+			not grug_core.start_ready("human") then return end
 	ready_for = ready_for + dtime
 	if ready_for < 5 then return end
 	ran = true
@@ -189,6 +200,14 @@ core.register_globalstep(function(dtime)
 			core.set_timeofday(0.5)
 			assert(drive("grug_mobs:song_bird"),
 				"package-2 day family did not spawn in Silverleaf")
+			local wx, wz = -900, -1500
+			player_pos = {x = wx, y = grug_zones.terrain_height_at(wx, wz) + 2,
+				z = wz}
+			probe_player:set_pos(player_pos)
+			force_area(player_pos)
+			core.set_timeofday(0.9)
+			assert(drive("grug_mobs:wisp"),
+				"package-4 night family did not spawn in Whitebridge")
 			core.log("action", "R8_MOB1_CLOCK_RESULT day_boar=" ..
 				tostring(spawned["grug_mobs:boar"] or 0) ..
 				" night_zombie=" .. tostring(spawned["grug_mobs:zombie"] or 0) ..
@@ -196,7 +215,8 @@ core.register_globalstep(function(dtime)
 				" day_wild_turkey=" ..
 				tostring(spawned["grug_mobs:wild_turkey"] or 0) ..
 				" night_giant_rat=" ..
-				tostring(spawned["grug_mobs:giant_rat"] or 0))
+				tostring(spawned["grug_mobs:giant_rat"] or 0) ..
+				" night_wisp=" .. tostring(spawned["grug_mobs:wisp"] or 0))
 			core.is_player = real_is_player
 			core.get_connected_players = real_get_connected_players
 			probe_player:remove()

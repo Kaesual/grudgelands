@@ -86,7 +86,7 @@ local ibex = ground_defaults({
 	collisionbox = {-0.4, -0.01, -0.4, 0.4, 0.5, 0.4},
 	makes_footstep_sound = true,
 	animation = {
-		stand_start = 0, stand_end = 100, stand_speed = 25,
+		stand_start = 1, stand_end = 100, stand_speed = 25,
 		stand1_start = 100, stand1_end = 200, stand1_speed = 25,
 		walk_start = 200, walk_end = 300, walk_speed = 50,
 		run_start = 200, run_end = 300, run_speed = 80,
@@ -153,7 +153,7 @@ local tapir = ground_defaults({
 	collisionbox = {-0.5, -0.01, -0.5, 0.5, 0.95, 0.5},
 	makes_footstep_sound = true,
 	animation = {
-		stand_start = 0, stand_end = 100, stand_speed = 25,
+		stand_start = 1, stand_end = 100, stand_speed = 25,
 		stand1_start = 100, stand1_end = 200, stand1_speed = 25,
 		walk_start = 200, walk_end = 300, walk_speed = 50,
 		run_start = 200, run_end = 300, run_speed = 80,
@@ -179,7 +179,7 @@ local rat = ground_defaults({
 	collisionbox = {-0.64, -0.01, -0.64, 0.64, 0.96, 0.64},
 	makes_footstep_sound = false,
 	animation = {
-		stand_start = 0, stand_end = 100, stand_speed = 30,
+		stand_start = 1, stand_end = 100, stand_speed = 30,
 		walk_start = 100, walk_end = 200, walk_speed = 55,
 		run_start = 100, run_end = 200, run_speed = 90,
 		punch_start = 250, punch_end = 350, punch_speed = 70,
@@ -222,7 +222,7 @@ end
 local scorpion = poison_family("Scorpion", "grug_mobs_scorpion.b3d",
 	"grug_mobs_scorpion.png", {x = 1, y = 1},
 	{-0.4, -0.01, -0.4, 0.4, 0.5, 0.4}, {
-		stand_start = 0, stand_end = 100, stand_speed = 30,
+		stand_start = 1, stand_end = 100, stand_speed = 30,
 		walk_start = 100, walk_end = 200, walk_speed = 55,
 		run_start = 100, run_end = 200, run_speed = 90,
 		punch_start = 200, punch_end = 300, punch_speed = 70,
@@ -236,7 +236,7 @@ mobs:spawn({name = "grug_mobs:scorpion",
 local viper = poison_family("Viper", "grug_mobs_viper.b3d",
 	"grug_mobs_viper.png", {x = 0.6, y = 0.6},
 	{-0.3, -0.01, -0.3, 0.3, 0.8, 0.3}, {
-		stand_start = 0, stand_end = 100, stand_speed = 30,
+		stand_start = 1, stand_end = 100, stand_speed = 30,
 		stand1_start = 100, stand1_end = 200, stand1_speed = 30,
 		walk_start = 300, walk_end = 420, walk_speed = 60,
 		run_start = 300, run_end = 420, run_speed = 90,

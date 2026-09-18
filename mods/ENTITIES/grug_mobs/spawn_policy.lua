@@ -31,12 +31,15 @@ local ZONE_MOB_PALETTES = {
 		settled = true, fox = true, ibex = true, giant_rat = true,
 	},
 	elandor_copperfell_foothills = {
-		settled = true, fox = true, ibex = true,
+		settled = true, fox = true, ibex = true, goblin_raid = true,
 	},
 	elandor_dur_brannoc = {},
-	elandor_frostbarrow_shelf = {mountain = true, ibex = true},
+	elandor_frostbarrow_shelf = {
+		mountain = true, ibex = true, goblin_raid = true, snow_leopard = true,
+	},
 	elandor_stormvault_heights = {
-		mountain = true, frost_stray = true, ibex = true,
+		mountain = true, frost_stray = true, ibex = true, goblin_raid = true,
+		snow_leopard = true,
 	},
 	elandor_dawnmere_fields = {
 		settled = true, fox = true, wild_turkey = true, giant_rat = true,
@@ -46,9 +49,12 @@ local ZONE_MOB_PALETTES = {
 	},
 	elandor_highcourt = {},
 	elandor_whitebridge_shire = {
-		settled = true, forest = true, poacher = true,
+		settled = true, forest = true, poacher = true, wisp = true,
 	},
-	elandor_ashenward_march = {forest = true, war = true, poacher = true},
+	elandor_ashenward_march = {
+		forest = true, war = true, poacher = true, wisp = true,
+		ashen_treant = true,
+	},
 	elandor_silverleaf_glades = {
 		settled = true, song_bird = true, poacher = true, fox = true,
 		giant_rat = true,
@@ -58,15 +64,15 @@ local ZONE_MOB_PALETTES = {
 	elandor_lorindor = {
 		exact_mobs = {["grug_mobs:stag"] = true},
 		night_fallback = {forest = true},
-		poacher = true,
+		poacher = true, wisp = true,
 	},
-	elandor_moonfall_wood = {forest = true, poacher = true},
-	elandor_glassroot_wilds = {forest = true, jungle = true},
+	elandor_moonfall_wood = {forest = true, poacher = true, wisp = true},
+	elandor_glassroot_wilds = {forest = true, jungle = true, wisp = true},
 	kragmar_stillgrave_hollow = {settled = true, giant_rat = true},
-	kragmar_mournfen = {settled = true, swamp = true},
+	kragmar_mournfen = {settled = true, swamp = true, wisp = true},
 	kragmar_nhal_veyr = {},
-	kragmar_ossuary_reach = {forest = true},
-	kragmar_blackwind_rise = {forest = true},
+	kragmar_ossuary_reach = {forest = true, gravewood_treant = true},
+	kragmar_blackwind_rise = {forest = true, gravewood_treant = true},
 	kragmar_sunscar_flats = {
 		settled = true, sun_dried_husk = true, plains_runner = true,
 		giant_rat = true, scorpion = true,
@@ -77,10 +83,10 @@ local ZONE_MOB_PALETTES = {
 	},
 	kragmar_gor_drazhak = {},
 	kragmar_speargrass_reach = {
-		savanna = true, mountain = true, scorpion = true,
+		savanna = true, mountain = true, scorpion = true, goblin_raid = true,
 	},
 	kragmar_bannerbreak_mesa = {
-		mountain = true, war = true, scorpion = true,
+		mountain = true, war = true, scorpion = true, goblin_raid = true,
 	},
 	kragmar_kapok_cradle = {
 		settled = true, jungle_edge = true, tapir = true, giant_rat = true,
@@ -91,17 +97,17 @@ local ZONE_MOB_PALETTES = {
 	},
 	kragmar_kezamba = {},
 	kragmar_whispering_reedlands = {
-		jungle_edge = true, swamp = true, tapir = true,
+		jungle_edge = true, swamp = true, tapir = true, wisp = true,
 	},
 	kragmar_totemwater_reach = {
-		jungle_edge = true, swamp = true, tapir = true,
+		jungle_edge = true, swamp = true, tapir = true, wisp = true,
 	},
 	kragmar_thunderroot_wilds = {jungle = true},
 	front_wyrmglass_crown = {
-		mountain = true, war = true, frost_stray = true,
+		mountain = true, war = true, frost_stray = true, snow_leopard = true,
 	},
 	front_gravesalt_escarpment = {forest = true, war = true},
-	front_broken_causeway = {war = true},
+	front_broken_causeway = {war = true, wisp = true},
 	front_shattered_line = {
 		mountain = true, war = true, sun_dried_husk = true,
 		scorpion = true,
@@ -168,6 +174,13 @@ local MOB_PALETTES = {
 	["grug_mobs:giant_rat"] = {giant_rat = true},
 	["grug_mobs:scorpion"] = {scorpion = true},
 	["grug_mobs:viper"] = {viper = true},
+	["grug_mobs:goblin_raider"] = {goblin_raid = true},
+	["grug_mobs:goblin_slinger"] = {goblin_raid = true},
+	["grug_mobs:goblin_hound"] = {goblin_raid = true},
+	["grug_mobs:snow_leopard"] = {snow_leopard = true},
+	["grug_mobs:wisp"] = {wisp = true},
+	["grug_mobs:ashen_treant"] = {ashen_treant = true},
+	["grug_mobs:gravewood_treant"] = {gravewood_treant = true},
 }
 
 -- Kraken has an independent authority instead of a named-zone mob palette:

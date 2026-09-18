@@ -752,6 +752,7 @@ dofile(modpath .. "/cave_bat.lua")
 dofile(modpath .. "/cave_crawler.lua")
 dofile(modpath .. "/zero_asset_variants.lua")
 dofile(modpath .. "/start_zone_families.lua")
+dofile(modpath .. "/night_families.lua")
 dofile(modpath .. "/bone_weevil.lua")
 dofile(modpath .. "/bog_fowl.lua")
 -- After the mob files: a rare spec names an already registered mob.

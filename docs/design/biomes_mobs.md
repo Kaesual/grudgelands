@@ -1138,6 +1138,18 @@ zone. Giant Rat also occupies the entrance and middle caves from y −40 to
 | Scorpion | poisons (1 damage / 2 s for 6 s) | night | Sunscar from L4; Redtusk, Speargrass, Bannerbreak, Shattered Line | scaled hide 1/2; venom sac 1/3 | animalworld scorpion, MIT |
 | Viper | poisons (1 damage / 2 s for 6 s) | night | Kapok from L4; Raincall | scaled hide 1/2; venom sac 1/3 | animalworld viper, MIT |
 
+**Round 8 level-11+ night families:** Goblin Raider Hounds are members of
+the Goblin Raider family, not an independent zone cast. The raider group is
+leashless and alerts nearby members; one ranged Slinger and one hound row
+give it mixed silhouettes. Wisp blink destinations must have two open nodes.
+
+| Mob | Verb | Clock | Zones / level band | Drops | Visual source |
+|-----|------|-------|--------------------|-------|---------------|
+| Goblin Raider / Slinger / Raider Hound | group raid, leashless; Slinger dogshoots the Golem stone; hound rushes | night | Copperfell, Frostbarrow, Stormvault, Speargrass, Bannerbreak | linen scrap; purse or arrows; hound meat | goblins goblin + gobdog, CC BY-SA 3.0 |
+| Snow Leopard | stalks (silent approach, pounce) | night | Frostbarrow, Stormvault, Wyrmglass | panther table | animalworld Snowleopard mesh and original skin, MIT |
+| Wisp | flying melee; blinks up to 2.5 m toward a distant target every 4 s | night | Whitebridge, Ashenward, Broken Causeway, Lorindor, Moonfall, Glassroot, Mournfen, Whispering Reedlands, Totemwater | none | VoxeLibre vex, GPLv3 model / CC BY-SA 4.0 texture |
+| Ashen Treant / Gravewood Treant | roots aura: 30% slow inside 3 m, refreshed once/s | night | Ashenward / Ossuary and Blackwind | sticks; apple 1/4 | mobs_monster tree monster, WTFPL, two runtime tints |
+
 **Deep sea (world.md §2b):** Kraken Guard, L100 fixed (hand-set — the
 one exception, it is a deterrent not content): mobs_mc_squid at
 visual_size ×6, verb: drags under (pulls target down, heavy melee),
@@ -1411,6 +1423,11 @@ re-run against the new values once the change ships.
 | **Giant Rat** | six settled tops / stone + `group:grug_stratum` | 20 | 1600 surface / 1800 cave | **5 at night** surface (base 4 ×1.25) / 4 cave | night surface; max 5 underground | all starts / y −40…−300 |
 | **Scorpion** | dry grass, mesa clay | 20 | 1800 | **5 at night** (base 4 ×1.25) | night | Orc column and Shattered Line; L4 start gate |
 | **Viper** | rainforest litter | 20 | 1800 | **5 at night** (base 4 ×1.25) | night | Kapok and Raincall; L4 start gate |
+| **Goblin Raider** | coniferous litter, gravel, snowblock, dry grass, mesa clay | 20 | 2400 | **3 at night** (base 2 ×1.25, ceiling) | night | exact Goblin-Raid palettes |
+| **Goblin Slinger / Raider Hound** | same Goblin-Raid tops | 20 | 2400 | **2 each at night** (base 1 ×1.25, ceiling) | night | exact Goblin-Raid palettes |
+| **Snow Leopard** | gravel, snowblock | 20 | 2100 | **4 at night** (base 3 ×1.25, ceiling) | night | Frostbarrow, Stormvault, Wyrmglass |
+| **Wisp** | mud, silver/forest/bone/canopy/rainforest litter | 20 | 2200 | **4 at night** (base 3 ×1.25, ceiling) | night | exact named-zone routes |
+| **Ashen / Gravewood Treant** | forest litter / bone litter | 20 | 2600 | **3 each at night** (base 2 ×1.25, ceiling) | night | exact tint-specific routes |
 | Reef Lurker (elite crab) — *deferred (§8.3)* | sand | 30 | 6000 | 1 | any | coast |
 | Kraken Guard | ocean water surface, open sea only (own check) | 60 | 12000 | 1 | any | (outside continents) |
 | Bandits / Mirefolk | **no ABM** — camp anchor with **respawn slots** (world.md §4a): max 3–5, one refill per 120–300 s, dormant catch-up | — | — | 3–5 per camp | — | camp pos |
