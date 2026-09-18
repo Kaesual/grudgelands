@@ -77,7 +77,7 @@ return function(repo)
 
 	local saved = {core = rawget(_G, "core"), grug_core = rawget(_G, "grug_core"),
 		grug_mobs = rawget(_G, "grug_mobs"), mobs = rawget(_G, "mobs"),
-		vector = rawget(_G, "vector"),
+		vector = rawget(_G, "vector"), grug_jobs = rawget(_G, "grug_jobs"),
 		-- Wave 2: the wield seam and the gear name builder (see GLOBALS in
 		-- `boot`). Saved and restored like every other global this fixture
 		-- installs, so the fixtures that run after it see the environment they
@@ -90,6 +90,7 @@ return function(repo)
 		rawset(_G, "grug_mobs", saved.grug_mobs)
 		rawset(_G, "mobs", saved.mobs)
 		rawset(_G, "vector", saved.vector)
+		rawset(_G, "grug_jobs", saved.grug_jobs)
 		rawset(_G, "grug_visuals", saved.grug_visuals)
 		rawset(_G, "grug_gear", saved.grug_gear)
 	end
@@ -219,6 +220,8 @@ return function(repo)
 		-- follows the tag and not the role.
 		{id = "hall_quest", role = "quest", tags = {"door"}, x = -28, y = 1,
 			z = 26, dir = {x = 0, z = 1}},
+		{id = "cooking_trainer", role = "trainer", profession = "cooking",
+			x = 2, y = 1, z = 10, dir = {x = -1, z = 0}},
 		-- A SPARE idle socket: a wander target the amble may use and a home
 		-- nobody is ever placed on (`spawn = false`). Authored LAST on purpose,
 		-- so a spot ring built from a count of the placed sockets instead of
@@ -281,6 +284,7 @@ return function(repo)
 	--
 	local world = {storage = {}, objects = {}}
 	local harness
+	local trainer_mutation = tonumber(os.getenv("R8_PROF_NPC_MUTATION") or "") or 0
 
 	local function socket_world_pos(socket)
 		return {x = ANCHOR.x + socket.x, y = ANCHOR.y + socket.y,
@@ -440,7 +444,14 @@ return function(repo)
 	-- `world` underneath them.
 	local function boot()
 		harness = {players = {}, logs = {}, globalsteps = {}, mods_loaded = {},
-			after = {}, clock = 1000, yaws = 0, defs = {}, paths = 0}
+			after = {}, clock = 1000, yaws = 0, defs = {}, paths = 0,
+			trainer_clicks = {}}
+		rawset(_G, "grug_jobs", {
+			open_trainer = function(clicker, profession, pos)
+				harness.trainer_clicks[#harness.trainer_clicks + 1] = {
+					clicker = clicker, profession = profession, pos = pos}
+			end,
+		})
 		-- A restart activates the objects of the blocks that are active, and no
 		-- others; the previous session's `on_deactivate` handler died with its
 		-- Lua environment, so nothing is dispatched here.
@@ -460,6 +471,18 @@ return function(repo)
 		-- init.lua's own ground correction, which is not part of this fixture.
 		function grug_mobs.place_on_ground(object, pos)
 			object:set_pos(pos)
+		end
+		function grug_mobs.ensure_tag_carrier(entity)
+			entity._kat_tag_carrier = entity._kat_tag_carrier or {}
+			return entity._kat_tag_carrier
+		end
+		harness.tags = {}
+		function grug_mobs.set_plain_tag(entity, text)
+			local row = harness.tags[entity] or {calls = 0}
+			row.calls = row.calls + 1
+			row.text = text
+			harness.tags[entity] = row
+			grug_mobs.ensure_tag_carrier(entity).text = text
 		end
 		rawset(_G, "grug_mobs", grug_mobs)
 
@@ -564,6 +587,7 @@ return function(repo)
 					-- the closed vocabulary before a consumer ever sees it
 					-- (settlement_sockets_kat covers that half).
 					activity = socket.activity,
+					profession = socket.profession,
 					-- Normalized exactly as the real registry normalizes it
 					-- (grug_core/settlement_sockets.lua): a consumer reads one
 					-- boolean and never spells "nil means true" itself. The
@@ -611,6 +635,10 @@ return function(repo)
 		function grug_core.start_ready() return harness.ready == true end
 		function grug_core.register_on_starts_progress(fn)
 			harness.progress = fn
+		end
+		function grug_core.set_tag_carrier_text(carrier, text)
+			carrier.text = text
+			return true
 		end
 		rawset(_G, "grug_core", grug_core)
 
@@ -755,6 +783,9 @@ return function(repo)
 		dofile(mod .. "verbs.lua")
 		dofile(mod .. "start_villagers.lua")
 		dofile(mod .. "start_npcs.lua")
+		grug_mobs.register_start_socket_role("trainer", function(socket, start)
+			return "grug_mobs:villager_" .. start.race_id
+		end)
 		-- grug_traders owns the vendor role in the real game.
 		grug_mobs.register_start_socket_role("vendor", function(socket, start)
 			return "grug_traders:vendor_race_" .. start.race_id
@@ -781,15 +812,9 @@ return function(repo)
 			}
 		end)
 		--
-		-- THE NAMETAG PROXIMITY GATE lives in `levels.lua`, which is the level
-		-- and XP engine and is deliberately not part of this fixture -- a
-		-- settlement NPC has no level to want it for. What this fixture owns is
-		-- the CALL: every peaceful family has to reach the gate once a second
-		-- with the text it wants shown, which is what the round-3 finding was
-		-- about (a static property write that the engine renders out to 128 m).
-		-- So the gate is recorded here and the property write itself is
-		-- measured in the engine, by the NPC probe.
-		--
+		-- The carrier module owns observer updates centrally. This fixture records
+		-- only the real activation-time text install; tools/r8_tags owns the
+		-- observer and lifecycle rules.
 		--
 		-- The cached-player distance `levels.lua` publishes. The work tick asks
 		-- it "is anybody close enough for this animation to be worth playing",
@@ -808,13 +833,6 @@ return function(repo)
 				if not best or d2 < best then best = d2 end
 			end
 			return best
-		end
-		harness.gate = {}
-		function grug_mobs.plain_tag_gate_tick(entity, text)
-			local row = harness.gate[entity] or {calls = 0}
-			row.calls = row.calls + 1
-			row.text = text
-			harness.gate[entity] = row
 		end
 		local face_yaw = grug_mobs.face_yaw
 		grug_mobs.face_yaw = function(self, yaw)
@@ -907,13 +925,13 @@ return function(repo)
 	-- The roster is
 	-- what is placed, marked, capped and censused -- so a spare must not enter
 	-- any of those counts.
-	-- Fifteen of the eighteen sockets carry an entity: the loop's SECOND
+	-- Sixteen of the nineteen sockets carry an entity: the loop's SECOND
 	-- waypoint is route data (one guard walks the whole loop) and the SPARE
 	-- idle socket is a wander target nobody lives on. Round 3 added four idle
 	-- spawn sockets and two `work` sockets to the fixture, and the wave-2
 	-- vocabulary lane two more `work` sockets (`mourn` and `spar`), which is
-	-- where eight of the fifteen come from.
-	local SLOTS = 15
+	-- where eight of the sixteen come from; this lane adds the trainer.
+	local SLOTS = 16
 	boot()
 	check(#world.objects == 0, "something stood there before the first boot")
 	become_ready()
@@ -922,6 +940,23 @@ return function(repo)
 	check(markers() == SLOTS, "cold marker count differs: " .. markers())
 	check(harness.yaws >= SLOTS, "an NPC was placed without its authored facing")
 	line("cold", #world.objects, markers(), logged("placed at socket"))
+
+	-- The complete trainer path crosses both productive NPC files: build_rows
+	-- carries the socket profession into a slot, install writes it onto the
+	-- placed entity, and the villager definition's right-click opens that book.
+	local trainer = entity_at("cooking_trainer")
+	check(trainer ~= nil, "the trainer socket placed no villager")
+	if trainer_mutation == 1 then trainer._grug_profession = nil end
+	check(trainer._grug_profession == "cooking",
+		"trainer placement lost the socket profession")
+	local villager_def = harness.defs["grug_mobs:villager_dwarf"]
+	local clicker = {name = "trainee"}
+	villager_def.on_rightclick(trainer, clicker)
+	local opened = harness.trainer_clicks[1]
+	check(opened and opened.clicker == clicker and opened.profession == "cooking" and
+		opened.pos.x == trainer.pos.x and opened.pos.z == trainer.pos.z,
+		"trainer right-click did not open the socket profession")
+	line("trainer", "socket", "placed", "profession_cooking", "rightclick_opened")
 
 	--
 	-- 1b. THE DOOR FLIP. An idle socket tagged `door` faces AWAY from the door,
@@ -2013,12 +2048,9 @@ return function(repo)
 		"lines_" .. table.concat(lines, ","))
 
 	--
-	-- 18. THE NAMETAG PROXIMITY GATE is reached by every peaceful family, once
-	--     a second, with the name that family wants shown (playtest round 3).
-	--     The property write itself is the engine's and is measured by the NPC
-	--     probe; what can only be measured here is that the villager's amble,
-	--     the work tick and the elder's own tick all go through the gate
-	--     instead of writing a static tag at activation.
+	-- 18. EVERY PEACEFUL FAMILY installs its carrier text on activation, and
+	--     its ordinary ticks do not repeat that work. Observer/lifecycle work
+	--     belongs to the one central carrier pass (tools/r8_tags/kat.lua).
 	--
 	local elder_def = harness.defs["grug_mobs:elder_dwarf"]
 	check(elder_def.do_custom ~= nil, "the quest shell has no tick to gate on")
@@ -2026,34 +2058,34 @@ return function(repo)
 	local walker_npc = entity_at("idle_a")
 	local before = {}
 	for _, mob in ipairs({elder, walker_npc, smith}) do
-		before[mob] = (harness.gate[mob] and harness.gate[mob].calls) or 0
+		before[mob] = (harness.tags[mob] and harness.tags[mob].calls) or 0
 	end
 	for _ = 1, 10 do
 		elder_def.do_custom(elder, 1)
 		villager_def.do_custom(walker_npc, 1)
 		villager_def.do_custom(smith, 1)
 	end
-	local gated = {}
+	local tagged = {}
 	for _, row in ipairs({{"elder", elder, "Vale Elder"},
 			{"walker", walker_npc, "Vale Dwarf"},
 			{"work", smith, "Vale Dwarf"}}) do
-		local seen = harness.gate[row[2]]
-		check(seen ~= nil and seen.calls - before[row[2]] == 10,
-			"the " .. row[1] .. " reached the nametag gate " ..
-			tostring(seen and seen.calls - before[row[2]]) ..
-			" times in ten seconds, not ten")
+		local seen = harness.tags[row[2]]
+		check(seen ~= nil and seen.calls - before[row[2]] == 0,
+			"the " .. row[1] .. " repeated its carrier text install " ..
+			tostring(seen and seen.calls - before[row[2]]) .. " times")
 		check(seen.text == row[3],
-			"the " .. row[1] .. " asked the gate to show " ..
+			"the " .. row[1] .. " installed " ..
 			tostring(seen.text) .. " and not " .. row[3])
-		gated[#gated + 1] = row[1] .. "=" .. seen.text
+		tagged[#tagged + 1] = row[1] .. "=" .. seen.text
 	end
-	-- And NOTHING writes the property at activation any more: the desired text
-	-- is a plain field, and mobs_redo's own update_tag only refreshes it.
+	-- mobs_redo's own update_tag refreshes the carrier text, never the parent.
 	elder._grug_tag_want = nil
 	elder:update_tag()
 	check(elder._grug_tag_want == "Vale Elder",
 		"update_tag no longer refreshes the desired nametag text")
-	line("tag_gate", table.concat(gated, " "), "once_a_second")
+	check(harness.tags[elder].calls - before[elder] == 1,
+		"update_tag did not reach the carrier text seam")
+	line("tag_carrier", table.concat(tagged, " "), "central_observers")
 
 	--
 	-- 19. THE RESTYLE HOOK RUNS AFTER `install` (the review's F2). What it is

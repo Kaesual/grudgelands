@@ -537,20 +537,15 @@ local function work_lines(tag)
 end
 
 --
--- THE NAMETAG PROXIMITY GATE (the user's second round-3 finding). A villager,
--- an elder and a vendor used to write a static nametag property once, and the
--- engine has no distance cull of its own -- so their names rendered out to the
--- ~128 m object-send range while a guard's disappeared at thirty.
+-- THE NAMETAG CARRIER. A villager, an elder and a vendor used to write a
+-- static parent nametag. They now install their text on an attached,
+-- observer-managed carrier while the parent stays empty.
 --
--- WHAT IS MEASURED HERE IS THE PROPERTY, on the real object: empty at 40 m,
--- the name at 20 m, and back to empty at 40 m. What is SUBSTITUTED is the
--- distance source: a headless server has no client to connect and therefore no
--- connected player, so `grug_mobs.nearest_player_d2` -- which the gate calls
--- through the table for exactly this reason -- is swapped for a constant while
--- the three ticks run and put back afterwards. Everything else, including the
--- hysteresis and the single write per flip, is the shipped code.
+-- Headless has no graphical viewer, so distance rendering remains a two-client
+-- check. This probe instead reads the real parent and child properties and the
+-- attachment created by each production activation path.
 --
-local function tag_gate_lines()
+local function tag_carrier_lines()
 	local npcs = settlement_npcs()
 	local subjects = {}
 	for index = 1, #npcs do
@@ -568,45 +563,26 @@ local function tag_gate_lines()
 			return
 		end
 	end
-	local real = grug_mobs.nearest_player_d2
-	local function at_distance(metres)
-		grug_mobs.nearest_player_d2 = function() return metres * metres end
-		for _, family in ipairs(order) do
-			local entity = subjects[family]
-			-- One second of the entity's OWN tick, which is where every one of
-			-- the three families reaches the gate.
-			if entity.do_custom then entity:do_custom(1) end
+	for _, family in ipairs(order) do
+		local entity = subjects[family]
+		local parent_props = entity.object and entity.object:get_properties()
+		local carrier = entity.temp and entity.temp.grug_tag_carrier
+		local child_props = carrier and carrier:get_properties()
+		local want = entity._grug_tag_want or "?"
+		local attached = carrier and carrier:get_attach() == entity.object
+		log({"event=tag_carrier", "family=" .. family,
+			"want=" .. tostring(want),
+			"parent=" .. ((parent_props and parent_props.nametag) or "-"),
+			"child=" .. ((child_props and child_props.nametag) or "-"),
+			"attached=" .. tostring(attached)})
+		if not parent_props or parent_props.nametag ~= "" then
+			fail("the " .. family .. " exposes a parent nametag")
+		elseif not child_props or child_props.nametag ~= want then
+			fail("the " .. family .. " carrier has the wrong text")
+		elseif not attached then
+			fail("the " .. family .. " carrier is not attached to its parent")
 		end
 	end
-	local function read(metres, phase)
-		local ok = true
-		for _, family in ipairs(order) do
-			local entity = subjects[family]
-			local props = entity.object and entity.object:get_properties()
-			local shown = props and props.nametag or ""
-			local want = entity._grug_tag_want or "?"
-			log({"event=tag", "phase=" .. phase, "family=" .. family,
-				"metres=" .. metres, "want=" .. tostring(want),
-				"shown=" .. (shown == "" and "-" or shown)})
-			if phase == "near" and shown ~= want then
-				fail("the " .. family .. " shows no nametag at " .. metres ..
-					" m")
-				ok = false
-			elseif phase ~= "near" and shown ~= "" then
-				fail("the " .. family .. " still shows a nametag at " ..
-					metres .. " m")
-				ok = false
-			end
-		end
-		return ok
-	end
-	at_distance(40)
-	read(40, "far")
-	at_distance(20)
-	read(20, "near")
-	at_distance(40)
-	read(40, "far_again")
-	grug_mobs.nearest_player_d2 = real
 end
 
 --
@@ -1013,7 +989,7 @@ local FULL = {
 	end},
 	-- Playtest round 3, all before the wolves arrive: a fight moves people.
 	{at = 296, what = function() work_lines("fresh") end},
-	{at = 297, what = tag_gate_lines},
+	{at = 297, what = tag_carrier_lines},
 	{at = 298, what = profession_lines},
 	{at = 299, what = function()
 		ring_lines("fresh")

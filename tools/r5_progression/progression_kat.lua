@@ -171,9 +171,13 @@ assert_equal(grug_core.get_absorb(heal_target), 12, "level-derived absorb")
 record("support", {12, 15, string.format("%.2f", grug_core.get_absorb(heal_target))})
 
 grug_mobs = {}
-mobs = {scale_mob = noop}
+mobs = {scale_mob = noop, mob_class = {}}
 grug_zones = {mob_level_at = function() return 1 end,
 	guard_level_at = function() return 1 end}
+grug_core.nearest_tag_player_d2 = function() return nil end
+grug_core.set_tag_carrier_text = function() return true end
+grug_core.create_tag_carrier = function() return nil end
+grug_core.remove_tag_carrier = noop
 dofile(repo .. "/mods/ENTITIES/grug_mobs/levels.lua")
 local level_api = grug_mobs
 

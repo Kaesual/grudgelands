@@ -696,30 +696,15 @@ local CHILD_GROW_TIME = 60 * 20 -- 20 minutes
 function mob_class:update_tag(newname)
 
 	local prop = self.object:get_properties() ; if not prop then return end
-	local qua = prop.hp_max / 6
-	local old_nametag = prop.nametag
-	local old_nametag_color = self.nametag_col
-
-	-- GRUG PATCH: current staticdata stores the name in _nametag only.
+	-- GRUG PATCH: current staticdata stores the name in _nametag only, while
+	-- visible text belongs exclusively to observer-managed tag carriers.
 
 	if newname or (self._nametag and self._nametag ~= "") then
 
 		self._nametag = newname or self._nametag -- adopt new name if found
-
-		-- change tag colour depending on health
-		if self.health <= qua then				self.nametag_col = "#FF0000"
-		elseif self.health <= (qua * 2) then	self.nametag_col = "#FF7A00"
-		elseif self.health <= (qua * 3) then	self.nametag_col = "#FFB500"
-		elseif self.health <= (qua * 4) then	self.nametag_col = "#FFFF00"
-		elseif self.health <= (qua * 5) then	self.nametag_col = "#B4FF00"
-		elseif self.health > (qua * 5) then		self.nametag_col = "#00FF00"
-		end
-
-		if self._nametag ~= old_nametag or self.nametag_col ~= old_nametag_color then
-
-			self.object:set_properties({
-					nametag = self._nametag, nametag_color = self.nametag_col})
-		end
+	end
+	if prop.nametag and prop.nametag ~= "" then
+		self.object:set_properties({nametag = ""})
 	end
 
 	if not mob_infotext then return end

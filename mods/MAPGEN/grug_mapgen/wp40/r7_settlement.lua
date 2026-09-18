@@ -79,6 +79,29 @@ M.BOUNDS = {
 -- walking up and down one avenue never pays a rebuild.
 M.IDLE_RELEASE = 64
 
+-- Profession trainers are core-landmark sockets rather than district-plot
+-- residents. Starts carry Cooking only; capitals carry the complete roster.
+-- The capital line stands along the five-wide south avenue. The Alchemist at
+-- (1, 1, -12) deliberately leaves (2, 1, -12) beside it for R8-ALCH's
+-- brewing stand. These are landmarks, not identity bytes.
+local START_TRAINERS = {
+	hearthpine = {x = 2, y = 1, z = 10, dir = {x = -1, z = 0}},
+	dawnmere = {x = 2, y = 1, z = 10, dir = {x = -1, z = 0}},
+	silverleaf = {x = 2, y = 1, z = 10, dir = {x = -1, z = 0}},
+	stillgrave = {x = 2, y = 1, z = -10, dir = {x = -1, z = 0}},
+	sunscar = {x = 2, y = 1, z = -10, dir = {x = -1, z = 0}},
+	kapok = {x = 2, y = 1, z = -10, dir = {x = -1, z = 0}},
+}
+local CAPITAL_TRAINERS = {
+	{profession = "blacksmith", x = -1, y = 1, z = -8},
+	{profession = "alchemist", x = 1, y = 1, z = -12},
+	{profession = "tailor", x = -1, y = 1, z = -16},
+	{profession = "leatherworker", x = 1, y = 1, z = -20},
+	{profession = "woodcarver", x = -1, y = 1, z = -24},
+	{profession = "goldsmith", x = 1, y = 1, z = -28},
+	{profession = "cooking", x = -1, y = 1, z = -32},
+}
+
 -- Fixed order. The successor settles the roster in this order, and the
 -- manifest publishes one identity block per blueprint of each row in the same
 -- order.
@@ -950,6 +973,21 @@ function M.sockets(prepared, anchor, height_at)
 				row.x, row.y, row.z = socket.x + dx, socket.y + dy, socket.z + dz
 				rows[#rows + 1] = row
 			end
+		end
+	end
+	if profile.slot == "start" then
+		local position = START_TRAINERS[profile.key]
+		if not position then fail("start trainer position differs") end
+		rows[#rows + 1] = {id = "trainer_cooking", role = "trainer",
+			profession = "cooking", x = position.x, y = position.y,
+			z = position.z, dir = position.dir}
+	elseif profile.slot == "capital" then
+		for index = 1, #CAPITAL_TRAINERS do
+			local trainer = CAPITAL_TRAINERS[index]
+			rows[#rows + 1] = {id = "trainer_" .. trainer.profession,
+				role = "trainer", profession = trainer.profession,
+				x = trainer.x, y = trainer.y, z = trainer.z,
+				dir = {x = trainer.x < 0 and 1 or -1, z = 0}}
 		end
 	end
 	return rows

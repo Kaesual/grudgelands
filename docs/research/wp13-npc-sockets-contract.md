@@ -22,7 +22,7 @@ registry in `grug_core` and never touch the mapgen mod.
 ```lua
 {id = "gate_west", role = "guard_post", x = -3, y = 1, z = 63,
  dir = {x = 0, z = 1}, group = nil, order = nil, kind = nil, tags = nil,
- spawn = nil}
+ profession = nil, spawn = nil}
 ```
 
 - `x, y, z`: anchor-relative like `landmarks.spawn`; `y` is the node the
@@ -37,6 +37,9 @@ registry in `grug_core` and never touch the mapgen mod.
     `order` (1..n) its sequence;
   - `vendor` — a trader; `kind` is `"race"` or `"general"` (the two vendor
     families of `grug_traders`);
+  - `trainer` — a profession trainer resident; `profession` is exactly one of
+    `blacksmith`, `alchemist`, `tailor`, `leatherworker`, `woodcarver`,
+    `goldsmith` or `cooking`. No other role may carry `profession`;
   - `idle` — a flair NPC spot; `tags` is an optional list such as
     `{"bench"}`, `{"door"}`, `{"work"}`, `{"fire"}` the NPC lane may use for
     animation or lines;
@@ -98,6 +101,10 @@ Highcourt's core** (§6). They are part of the `idle` population the KATs count
 and are additionally counted on their own, because the two numbers say
 different things: `idle` is how many standing positions a settlement offers,
 `spare` how many of them nobody lives on.
+
+Since 2026-09-18 every start additionally carries one `trainer` socket for
+Cooking. Every capital carries seven `trainer` sockets, one for each of the six
+primary professions and one for Cooking.
 
 ## 5. User rulings
 

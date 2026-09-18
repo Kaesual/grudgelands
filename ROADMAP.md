@@ -184,11 +184,12 @@ the goal-level view.
   all three dependencies are shipped and the executable card is
   [docs/research/wp5-task-card.md](docs/research/wp5-task-card.md). WP10 is
   design-unblocked (A1/A3/A4/A5/E21 decided 2026-08-13, incl. the revised
-  food-restore model); with WP26 ticked above it now follows WP44 alone, since
-  WP33 and WP43 are shipped too. Round 6 already shipped the runtime status
-  registry/text list and Food v2 tier framework; Round 8 owns the real dish
-  tables and recipes, while WP10 owns profession books and later icon
-  presentation.
+  food-restore model); its priced content remainder follows WP44 alone, since
+  WP26, WP33 and WP43 are shipped. Round 6 already shipped the runtime status
+  registry/text list and Food v2 tier framework. Round 8 now has WP10's shared
+  profession registry, T1–T6 progression, UI books, station gates and trainer
+  sockets; its Cooking and Alchemy lanes add the real catalogs and brewing
+  stand, while Round 9 adds the six primary catalogs.
 - [ ] **WP13 — in progress:** final starts, capitals, settlements, camps,
   kings/guards and both all-six-gem apex camps on shipped WP40 geometry and
   WP43 materials. **All six start settlements are built** (2026-09-14) on one

@@ -1,0 +1,15 @@
+R8-TAGS central lifecycle census, 2026-09-18
+
+Command (ROOT is the absolute repository root):
+KEEP=1 PORT=31630 PROBE="$ROOT/tools/r8_tags/grug_tag_probe" nice -n 19 bash "$ROOT/tools/luanti_headless.sh" 90
+
+Launcher result:
+headless boot: PASS (port 31630, 90 s)
+
+Canonical census output:
+GRUG_R8_TAG event=before_remove parents=12 carriers=12 linked=12 orphans=0
+GRUG_R8_TAG event=after_remove parents=11 carriers=11 linked=11 orphans=0
+GRUG_R8_TAG event=pass
+
+No ERROR or ModError line was present. Source server.log SHA-256:
+f6d1bbac6d649c5679b11943b4643960519a81daa7ca2ac29b62036e20057942

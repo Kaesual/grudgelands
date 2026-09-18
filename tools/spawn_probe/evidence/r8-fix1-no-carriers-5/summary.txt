@@ -1,0 +1,10 @@
+minute_1=17
+minute_2=14
+minute_3=16
+minute_4=9
+minute_5=11
+total=67
+mean_per_minute=13.400
+sample_stddev=3.362
+min=9
+max=17

@@ -312,6 +312,23 @@ Details + line numbers in [docs/research/](docs/research/).
 - **XP/levels**: template VoxeLibre `mods/HUD/mcl_experience/init.lua` — XP
   as an int in player meta, `level_to_xp` curve, `register_on_add_xp`
   pipeline, HUD bar. XP loss on death via `core.register_on_dieplayer`.
+- **Professions**: `grug_jobs` owns the exact six primaries plus Cooking,
+  two primary slots, player-meta progression and the UI-only recipe books.
+  Content mods first call `register_ingredient_tier(item, tier)`, then
+  `register_recipe{profession, tier, station, inputs, output, hint}`; every
+  recipe must contain a declared ingredient of its own tier. Supported station
+  names are `grid`, `furnace`, `dual_furnace` and `brewing_stand`.
+  `register_station(name, {register_recipe=..., can_use=...})` lets a later
+  station install its engine adapter and optional per-player gate; registrations
+  made before that adapter are replayed. Player APIs are `learn`, `unlearn`,
+  `has`, `profession_level`, `crafts_in_tier`, `character_tier`,
+  `record_craft` and `can_craft_recipe`. `profession_level` returns 0 when
+  unlearned and effective T1–T6 when learned. Grid output is vetoed before the
+  engine craft; current furnaces have no acting player in their timers, so
+  their per-player gate and progression run on output extraction.
+  A later custom station (including the brewing stand) must call
+  `can_craft_recipe` before its output leaves and `record_craft` after each
+  successful craft on that same take path.
 - **Combat/classes**: damage = damage_groups × armor_groups (÷100) ×
   punch-interval factor. **Damage pipeline lives in `grug_core/combat.lua`**
   (WP4): `deal_ability_damage` (crit ×1.5, applied via `object:punch` with
@@ -511,6 +528,16 @@ Details + line numbers in [docs/research/](docs/research/).
     elite/rare test** (`grug_mobs.tier_telegraphs`, one predicate for both
     call sites) — a `tier ~= "normal"` test hands a rabbit a 2 s wind-up
     and a ×3 cone hit the day a fourth tier appears.
+  - **Per-viewer nametags since 2026-09-18**: every tagged mob, peaceful NPC,
+    vendor and player owns one invisible `grug_core:tag_carrier` child. Parent
+    tags stay empty/alpha-zero; the child text is observer-managed at 25 m show
+    / 30 m hide independently per viewer, with a player's owner excluded.
+    Create/remove carriers through the shared `grug_core/tag_carrier.lua` seam,
+    update text there (including telegraph/tier/HP changes), and leave observer
+    sets plus orphan cleanup to that module's one central 1 Hz pass. Carriers
+    are non-pointable, non-physical and unsaved. Unsaved Lua entities never
+    enter the engine's static-object count used by mobs_redo `aoc`; do not
+    compensate or otherwise modify that spawn-budget comparison for carriers.
   - **Three behaviour classes, and a new mob picks one**
     (`biomes_mobs.md` §3.0): **critter** (small, scenery with a use —
     food-only drops, `passive` + `runaway`), **passive prey** (the large

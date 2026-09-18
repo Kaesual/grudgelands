@@ -169,6 +169,16 @@ grug_core = {
 		return nil
 	end,
 }
+function grug_core.create_tag_carrier()
+	local carrier = {valid = true}
+	function carrier:is_valid() return self.valid end
+	return carrier
+end
+function grug_core.set_tag_carrier_text(carrier, text)
+	carrier.text = text
+	return true
+end
+function grug_core.remove_tag_carrier(carrier) carrier.valid = false end
 
 -- The startup preload's still-open emerge request for one start, found by the
 -- envelope it asked for (grug_core/starts_preload.lua: anchor +- 64).

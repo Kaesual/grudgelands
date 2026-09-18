@@ -799,34 +799,35 @@ design (`group_attack` stays on).
 
 ## 6. Player and mob nameplates & con colors
 
-- Every mob carries a **global nametag**: `<Name> [Lv X] HP/maxHP`
-  (viewer-independent, updated on damage). The exact level is therefore
-  always readable for everyone — **within nametag range** (below).
+- Every mob carries a nametag: `<Name> [Lv X] HP/maxHP`, updated on damage.
+  The exact level is readable to each viewer independently within nametag
+  range.
 - Nametag and Target Frame HP use one compact formatter: values below 1000 are
   full integers, 1000–9999 use one truncated decimal (`2300 → 2.3k`), and
   values from 10000 round to whole thousands (`51234 → 51k`;
   `mods/CORE/grug_core/combat.lua:109-123`,
-  `mods/ENTITIES/grug_mobs/levels.lua:199-217`).
-- **Nametag visibility is proximity-capped** (decided 2026-08-07 after
-  the WP6 runtime test; the engine has no distance cull — nametags of
-  every active object render up to the ~128 m object-send range, which
-  is visual clutter over a dense mob field and a free PvP tell for
-  players): mob nametags are shown only while a player is within
-  **25 m** (hidden again beyond 30 m — the hysteresis avoids per-second
-  property resends at the boundary; 20/24 in the first cut, widened
-  2026-08-07 after the runtime retest). The gate is global
-  (nearest-player), not per viewer — the engine cannot do per-viewer
-  nametags. The radius sits just past the 20 m target-frame reach:
-  everything you can frame has a readable tag, plus a margin.
-- Every player carries the global nametag
+  `mods/ENTITIES/grug_mobs/levels.lua`).
+- **Nametag visibility is proximity-capped per viewer** (25/30 m decided
+  2026-08-07; per-viewer carrier mechanism decided 2026-09-18). A tag becomes
+  visible when that viewer moves inside **25 m** of its parent, becomes hidden
+  beyond **30 m**, and retains that viewer's prior state in the hysteresis
+  band. One player's movement never changes another player's view. The radius
+  sits just past the 20 m target-frame reach: everything a player can frame
+  has a readable tag, plus a margin.
+- Every player carries the nametag
   **`<Name> [Lv X] HP/maxHP`**, for example
   **`Thomas [Lv 5] 35/60`**. It updates immediately when HP or level changes
-  and writes no property when the text and visibility state are unchanged.
-  The numbers remain plain integers.
-- Player nametags use the mob gate: shown when another player is within
-  **25 m**, hidden beyond **30 m**, with the state retained inside the
-  hysteresis band. Distance is to the nearest other player because an object
-  nametag is global rather than per viewer.
+  and writes no property when the text is unchanged. The numbers remain plain
+  integers. A player never sees their own tag carrier.
+- Implementation: every tagged mob, peaceful NPC, vendor and player owns one
+  invisible, non-pointable, non-physical, unsaved child entity. The parent's
+  nametag stays empty (non-players) or alpha-zero (players). The child carries
+  the text, inherits the parent's nametag height, and uses the engine's managed
+  observer set for the per-viewer rule above. One central pass snapshots player
+  positions and manages every carrier once per second; unchanged observer sets
+  are not written. Carriers have no per-entity `on_step`: the central pass also
+  removes an orphan, while explicit parent lifecycle hooks remove the ordinary
+  cases immediately.
 - **Con colors are per viewer** and live in a **HUD target frame** (the
   mob you look at/punch; nametags cannot be colored per viewer). The
   frame's **reach is 20 m** — our choice, not an engine constant: far
@@ -845,8 +846,8 @@ design (`group_attack` stays on).
 - **No skull tier** and no extra damage modifier for high-level mobs —
   mob damage already scales via the level formulas; the nametag carries
   the exact level anyway.
-- Implementation: nametags + gray-XP rule in `grug_mobs` (WP6), target
-  frame HUD alongside WP6.
+- Implementation: shared carrier in `grug_core`, mob text and gray-XP rule in
+  `grug_mobs`, player text in `grug_factions`, target frame HUD alongside WP6.
 
 ## 7. Offhand & carried light
 

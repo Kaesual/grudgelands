@@ -58,19 +58,13 @@ function grug_factions.display_name(id)
 end
 
 --
--- Player nametags use the same 25/30 m hysteresis as mob tags
--- (combat_stats.md §6). Player properties are global rather than per-viewer,
--- so the distance is to the nearest OTHER player. Alpha 0 is the only way to
--- hide a player tag: an empty string falls back to the account name.
+-- Player nametags use the same per-viewer 25/30 m carrier as mob tags
+-- (combat_stats.md section 6). The player's own global tag stays alpha-zero;
+-- an observer-managed transparent child owns all visible text.
 --
 
-local TAG_SHOW_D2 = 25 * 25
-local TAG_HIDE_D2 = 30 * 30
-local TAG_INTERVAL = 1
-local TAG_WHITE = {a = 255, r = 255, g = 255, b = 255}
 local TAG_HIDDEN = {a = 0, r = 255, g = 255, b = 255}
 local tag_states = {}
-local tag_elapsed = 0
 
 local function player_level(player)
 	if core.global_exists("grug_xp") then
@@ -83,19 +77,6 @@ function grug_factions.player_tag_text(name, level, hp, hp_max)
 	return name .. " [Lv " .. level .. "] " .. hp .. "/" .. hp_max
 end
 
--- Nil means there is no other connected player and therefore nobody who
--- should see the tag. Exact 25/30 m boundaries retain the prior state.
-function grug_factions.player_tag_visible(was_visible, nearest_d2)
-	if nearest_d2 == nil then
-		return false
-	elseif nearest_d2 < TAG_SHOW_D2 then
-		return true
-	elseif nearest_d2 > TAG_HIDE_D2 then
-		return false
-	end
-	return was_visible == true
-end
-
 local function tag_text(player, hp)
 	local properties = player:get_properties()
 	local hp_max = properties.hp_max or math.max(1, hp or player:get_hp())
@@ -104,12 +85,20 @@ local function tag_text(player, hp)
 		player_level(player), current, hp_max)
 end
 
-local function write_tag(player, state, visible)
+local function hide_parent_tag(player, text)
 	player:set_nametag_attributes({
-		text = state.text,
-		color = visible and TAG_WHITE or TAG_HIDDEN,
+		text = text,
+		color = TAG_HIDDEN,
 	})
-	state.visible = visible
+end
+
+local function ensure_player_carrier(player, state)
+	local carrier = state.carrier
+	if carrier and carrier:is_valid() then return carrier end
+	carrier = grug_core.create_tag_carrier(player, player:get_player_name())
+	state.carrier = carrier
+	grug_core.set_tag_carrier_text(carrier, state.text)
+	return carrier
 end
 
 function grug_factions.refresh_player_tag(player, hp)
@@ -124,66 +113,17 @@ function grug_factions.refresh_player_tag(player, hp)
 		return false
 	end
 	state.text = text
-	if state.visible then
-		write_tag(player, state, true)
-		return true
-	end
-	return false
+	return grug_core.set_tag_carrier_text(
+		ensure_player_carrier(player, state), text)
 end
 
 local function reset_player_tag(player)
-	local state = {visible = false, text = tag_text(player)}
+	local state = {text = tag_text(player)}
 	tag_states[player:get_player_name()] = state
-	write_tag(player, state, false)
+	hide_parent_tag(player, state.text)
+	grug_core.set_tag_carrier_text(ensure_player_carrier(player, state),
+		state.text)
 end
-
-local function nearest_other_d2(players, positions, index)
-	local pos = positions[index]
-	if not pos then
-		return nil
-	end
-	local best
-	for other = 1, #players do
-		local candidate = positions[other]
-		if other ~= index and candidate then
-			local dx = pos.x - candidate.x
-			local dy = pos.y - candidate.y
-			local dz = pos.z - candidate.z
-			local d2 = dx * dx + dy * dy + dz * dz
-			if not best or d2 < best then
-				best = d2
-			end
-		end
-	end
-	return best
-end
-
-core.register_globalstep(function(dtime)
-	tag_elapsed = tag_elapsed + dtime
-	if tag_elapsed < TAG_INTERVAL then
-		return
-	end
-	tag_elapsed = tag_elapsed % TAG_INTERVAL
-	local players = core.get_connected_players()
-	local positions = {}
-	for index = 1, #players do
-		positions[index] = players[index]:get_pos()
-	end
-	for index = 1, #players do
-		local player = players[index]
-		local name = player:get_player_name()
-		local state = tag_states[name]
-		if not state then
-			reset_player_tag(player)
-			state = tag_states[name]
-		end
-		local visible = grug_factions.player_tag_visible(state.visible,
-			nearest_other_d2(players, positions, index))
-		if visible ~= state.visible then
-			write_tag(player, state, visible)
-		end
-	end
-end)
 
 core.register_on_player_hpchange(function(player, hp_change)
 	grug_factions.refresh_player_tag(player, player:get_hp() + hp_change)
@@ -198,7 +138,10 @@ core.register_on_mods_loaded(function()
 end)
 
 core.register_on_leaveplayer(function(player)
-	tag_states[player:get_player_name()] = nil
+	local name = player:get_player_name()
+	local state = tag_states[name]
+	if state then grug_core.remove_tag_carrier(state.carrier) end
+	tag_states[name] = nil
 end)
 
 -- Faction resolver for grug_core (protection rules); only online players can

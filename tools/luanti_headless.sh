@@ -24,6 +24,7 @@
 #   tools/wp13/run_highcourt.sh uses for the capital). It is re-staged on every
 #   boot, a ROOT re-use included, and lands inside the scratch tree like
 #   everything else -- no directory of the repo is written.
+#   GAME_PATCH=<file> applies one disposable patch to the staged game only.
 set -euo pipefail
 export LC_ALL=C
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
@@ -67,6 +68,15 @@ cp -a "$repo/game.conf" "$repo/mods" "$game/"
 for f in minetest.conf settingtypes.txt menu textures; do
 	[[ -e "$repo/$f" ]] && cp -a "$repo/$f" "$game/"
 done
+if [[ -n "${GAME_PATCH:-}" ]]; then
+	game_patch="$(realpath -e -- "$GAME_PATCH" 2>/dev/null || true)"
+	[[ -n "$game_patch" && -f "$game_patch" ]] || {
+		echo "GAME_PATCH must resolve to an existing file" >&2
+		exit 2
+	}
+	patch --silent --forward -p1 -d "$game" <"$game_patch"
+	echo "staged patch: $(basename "$game_patch")"
+fi
 # The optional disposable probe. RESOLVED before use, like ROOT above, and it
 # must be a mod directory: a copy without a mod.conf would be a silent no-op.
 if [[ -n "${PROBE:-}" ]]; then

@@ -175,7 +175,20 @@ combat-physics rulings:
   common registration path. The matching player property lives outside the
   vendored tree in `grug_core`.
 
-**59 markers in `mobs/api.lua`, plus one in `mobs/grug_obstacle.lua`.**
+**Historical Round-5 snapshot: 59 markers in `mobs/api.lua`, plus one in
+`mobs/grug_obstacle.lua`.** The current inventory is 62 markers, as recorded
+in the vendored-mod row below and in `AGENTS.md`.
+
+## R8 per-viewer parent-tag isolation (2026-09-18)
+
+The existing `update_tag()` current-staticdata patch now keeps `_nametag` for
+infotext and persistence while permanently clearing the mob/NPC parent
+nametag. The reset-stick path in `crafts.lua` likewise copies `_nametag` but
+keeps the replacement parent's property empty. Visible text belongs only to
+the observer-managed `grug_core:tag_carrier`. This reuses the existing
+`api.lua` patch marker and adds no spawn-budget patch: carriers have
+`static_save = false`, so the engine never includes them in the static-object
+count supplied to mobs_redo's `aoc` comparison.
 
 ## Fresh-server cleanup — 2026-09-13
 
