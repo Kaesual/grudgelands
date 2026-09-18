@@ -1,32 +1,29 @@
 # Professions
 
-Decided 2026-08-06, roster **re-cut 2026-08-07** (crafting rework) and
-material identities integrated 2026-08-12.
-Crafting mechanics: `inventory_equipment.md` §4 (3×3 + recipe unlock +
-workbench proximity). Recipe/material details: `items_crafting.md` —
+Decided 2026-08-06, roster **re-cut 2026-08-07** (crafting rework),
+material identities integrated 2026-08-12 and profession progression revised
+2026-09-18.
+Crafting mechanics: `inventory_equipment.md` §4 (3×3 + profession-level
+recipe permission + station hints). Recipe/material details: `items_crafting.md` —
 the material ladder is its §3.0, the per-profession catalogs are
 §3.3–§3.6b, and what a profession actually *does* to an item is §6b.
 
 ## 1. Structure
 
-- **2 main professions per character, freely chosen at job trainers**
+- **Exactly 2 primary profession slots per character, freely filled at
+  profession trainers**
   (never class-bound — interdependence drives the server economy).
-  Switching later: allowed, but learned progression of the dropped
-  profession is lost (details with WP10).
-- **Universal secondary skills — everyone can learn all of them:**
-  **Cooking** and **First Aid** (bandages, simple heal items). They are
-  the no-healer valve (classes.md balance constraints). **Neither costs
-  a main profession slot** — restated 2026-08-07, because Cooking now has
-  a recipe book and could otherwise be mistaken for a third profession.
-  - **Cooking has a recipe book** with the same six T1–T6 groups and
-    level gates as a profession book (`items_crafting.md` §2.2, §3.7),
-    but **no keystones**: a cooking tier opens on its **ingredients**,
-    which are regional, so **T6 cooking needs ingredients that only exist
-    in level-50+ areas**. Tier unlocks are wanted as quest goals ("find
-    cocoa in the jungle"). Free, universal *and* gated — the book is what
-    makes all three true at once.
-  - **First Aid keeps no book**: all recipes at once, materials are the
-    only gate.
+  Switching later is allowed at a trainer, but unlearning immediately wipes
+  the dropped profession's level and current-tier craft count. The six
+  primaries are Blacksmith, Alchemist, Tailor, Leatherworker, Woodcarver and
+  Goldsmith.
+- **Secondary professions have no slot limit.** Cooking is the only secondary
+  profession in the framework today. Every player may learn it in addition to
+  both primaries. **First Aid remains universal but is not a profession in
+  this framework and has no book.** Both systems remain the no-healer valve
+  from `classes.md`.
+  - Cooking has the same visible T1–T6 book groups and profession-level gate
+    as every primary profession (`items_crafting.md` §2.2, §3.7).
   - **Riding is likewise universal** and is taught and sold by the same job
     trainers in four steps at levels 15/30/45/60 (`mounts.md` §1, D20 decided
     2026-08-13). It costs no main profession slot and adds no separate
@@ -40,6 +37,18 @@ the material ladder is its §3.0, the per-profession catalogs are
   **crafting the base item of every material tier** (`items_crafting.md`
   §3.0.3). A profession is not what lets you make a sword; it is what
   lets you make a *better* sword.
+- Learning any framework profession opens profession tier 1. A fixed number
+  of successful crafts at the current profession tier opens the next tier:
+  **10 / 15 / 20 / 25 / 30** crafts for T1→T2 through T5→T6. Lower-tier
+  crafts do not count and above-tier crafts are refused. The effective
+  profession tier is capped by the character band: T1 L1–10, T2 L11–20,
+  T3 L21–30, T4 L31–40, T5 L41–50, T6 L51–60. Reaching a craft threshold
+  while character-capped earns the next tier immediately but keeps it
+  unavailable; entering the next character band makes it effective without
+  another craft. Further capped crafts count nothing.
+- Profession level gates crafting only. Item consumption and equipment remain
+  independently gated by `_grug_ilvl`; neither consuming an item nor checking
+  its use requirement consults profession state.
 
 ## 2. MVP roster — six professions, cut by material (re-cut 2026-08-07)
 
