@@ -150,6 +150,24 @@ crossing water as a bridge, with a lamp line every eight nodes that survives
 the mapchunk borders. Where an avenue crosses the ring street the avenue runs
 through and the side street yields, and no lamp stands in the crossing road.
 
+**The civic-core boundary is protected.** Decided 2026-09-18 after playtest
+round 10. Its hedge, parapet, bank or palisade is written after all structural
+core content and later dressing may use only free cells: a house, orchard,
+green, lore piece, martial piece or prop may meet the boundary but may not cut
+it. Only the four authored thirteen-column gate or threshold bands stay open.
+A fitting attached to content displaced by the boundary is removed, and an
+edge building faces inward so its door remains usable. The six forms of the
+same rule are:
+
+| Capital | Protected civic-core boundary |
+| --- | --- |
+| Highcourt | Three-course clipped hedge. |
+| Dur Brannoc | Two-course masonry parapet; the four closed corner drums replace its corner columns. |
+| Gor Drazhak | Two-course earth bank with alternating acacia stakes; closed timber corner towers replace its corner columns. |
+| Nhal Veyr | Two-course dungeon-stone parapet with alternating bars; the four closed corner drums replace its corner columns. |
+| Lethariel | Three-course silverwood hedge on every dry edge; the authored mere is the boundary where it reaches the north edge. |
+| Kezamba | Three-course junglewood palisade on every dry edge; the authored cenote is the boundary where it reaches the north-east edge. |
+
 **One street rule, for every street of every capital.** Decided 2026-09-16 with
 playtest round 5 and shipped the same day
 ([wp13-street-geometry.md](../research/wp13-street-geometry.md)); it holds for
