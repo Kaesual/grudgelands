@@ -35,6 +35,15 @@ local function food_status_rows(root, failures)
 		registered_items = items,
 		get_us_time = function() return now end,
 		get_connected_players = function() return connected end,
+		get_player_by_name = function(name)
+			for index = 1, #connected do
+				local player = connected[index]
+				if player and player:get_player_name() == name then
+					return player
+				end
+			end
+			return nil
+		end,
 		register_on_joinplayer = function(fn) hooks.join[#hooks.join + 1] = fn end,
 		register_on_leaveplayer = function(fn) hooks.leave[#hooks.leave + 1] = fn end,
 		register_on_dieplayer = function(fn) hooks.die[#hooks.die + 1] = fn end,
@@ -163,7 +172,8 @@ local function food_status_rows(root, failures)
 	check(first ~= nil and grug_classes.get_max_hp(stats_player) == 135 and
 		grug_classes.get_max_mana(stats_player) == 163 and
 		math.abs(grug_classes.get_crit_chance(stats_player) - 0.08) < 0.000001 and
-		grug_classes.get_spell_power_bonus(stats_player) == 4 and
+		grug_classes.get_spell_power_bonus(stats_player) == 1 and
+		grug_classes.get_spell_damage_percent(stats_player) == 3 and
 		grug_core.status_modifier_sum(stats_player, "armor") == 4 and
 		stats_player.hp_max == 135, "status modifiers reach stat accessors")
 	local modified_crit = grug_classes.get_crit_chance(stats_player)
@@ -200,6 +210,41 @@ local function food_status_rows(root, failures)
 	grug_core.clear_status(stats_player, "elixir")
 	check(stats_player.hp == 135 and stats_player.hp_max == 135,
 		"status expiry path clamps current HP")
+
+	-- Load the exact offensive/support formula slice. A spell-damage status
+	-- must multiply Fireball while leaving the shared heal formula unchanged.
+	grug_core.clear_status(stats_player, "food")
+	local kits_file = assert(io.open(root ..
+		"/mods/PLAYER/grug_abilities/kits.lua", "rb"))
+	local kits_source = kits_file:read("*a")
+	kits_file:close()
+	local helper_first = assert(kits_source:find(
+		"local function spell_damage_value", 1, true))
+	local helper_last = assert(kits_source:find(
+		"--\n-- Particle helpers", helper_first, true))
+	local fire_first = assert(kits_source:find(
+		"local function fireball_values", helper_last, true))
+	local fire_last = assert(kits_source:find("\nend", fire_first, true))
+	local formula_chunk = assert(loadstring(
+		kits_source:sub(helper_first, helper_last - 1) ..
+		kits_source:sub(fire_first, fire_last + 3) ..
+		"\nreturn support_value, fireball_values"))
+	setfenv(formula_chunk, environment)
+	local support_value, fireball_values = formula_chunk()
+	talent.fireball_damage_add = 1
+	local base_fireball = fireball_values(stats_player).damage
+	local base_heal = support_value(stats_player, 20)
+	grug_core.set_status(stats_player, "spell_test", {
+		label = "Spell test", duration = 30,
+		modifiers = {spell_damage_percent = 10},
+	})
+	local boosted_fireball = fireball_values(stats_player).damage
+	local boosted_heal = support_value(stats_player, 20)
+	talent.fireball_damage_add = nil
+	check(boosted_fireball == math.floor(base_fireball * 1.10 + 0.5) and
+		boosted_heal == base_heal and
+		grug_classes.get_spell_power_bonus(stats_player) == base_spell,
+		"spell damage percent raises Fireball only")
 
 	local raw_label = environment.grug_food.status_label(
 		environment.grug_food.effect_for(1, "raw", "hp"))
@@ -242,6 +287,49 @@ local function food_status_rows(root, failures)
 	for index = 1, #hooks.step do hooks.step[index](5) end
 	check(deferred.hp == 17, "deferred instant is not repeated")
 
+	now = 300 * 1000000
+	local expired_pending = player("expired_pending", 1, 10)
+	expired_pending.combat = true
+	connected[2] = expired_pending
+	items["default:apple"].on_use(stack("default:apple"), expired_pending)
+	now = 481 * 1000000
+	for index = 1, #hooks.step do hooks.step[index](181) end
+	check(grug_core.get_status(expired_pending, "food") == nil and
+		expired_pending.hp == 10,
+		"combat expiry ends food status but keeps deferred instant")
+	expired_pending.combat = false
+	now = 482 * 1000000
+	for index = 1, #hooks.step do hooks.step[index](1) end
+	local paid_after_expiry = expired_pending.hp
+	now = 483 * 1000000
+	for index = 1, #hooks.step do hooks.step[index](1) end
+	check(paid_after_expiry == 15 and expired_pending.hp == 15,
+		"expired food pays deferred instant exactly once out of combat")
+
+	now = 600 * 1000000
+	local replacement_pending = player("replacement_pending", 10, 10)
+	replacement_pending.combat = true
+	connected[2] = replacement_pending
+	items["default:apple"].on_use(stack("default:apple"), replacement_pending)
+	items["grug_gathering:corn"].on_use(stack("grug_gathering:corn"),
+		replacement_pending)
+	replacement_pending.combat = false
+	now = 601 * 1000000
+	for index = 1, #hooks.step do hooks.step[index](1) end
+	check(replacement_pending.hp == 25,
+		"new serving replaces rather than adds deferred instant")
+
+	now = 700 * 1000000
+	local dead_pending = player("dead_pending", 1, 10)
+	dead_pending.combat = true
+	connected[2] = dead_pending
+	items["default:apple"].on_use(stack("default:apple"), dead_pending)
+	for index = 1, #hooks.die do hooks.die[index](dead_pending) end
+	dead_pending.combat = false
+	now = 701 * 1000000
+	for index = 1, #hooks.step do hooks.step[index](1) end
+	check(dead_pending.hp == 10, "death clears deferred instant")
+
 	local low = player("low", 9, 20)
 	local corn = stack("grug_gathering:corn", 1)
 	items["grug_gathering:corn"].on_use(corn, low)
@@ -254,9 +342,12 @@ local function food_status_rows(root, failures)
 	return "tiers=" .. table.concat(tier_digest, ",") ..
 		("\tstats=%d/%d/%.2f/%d->%d/%d/%.2f/%d/%d"):format(
 			base_hp, base_mana, base_crit, base_spell,
-			135, 163, modified_crit, 4, modified_armor) ..
+			135, 163, modified_crit, 3, modified_armor) ..
+		("\tspell=%d->%d/heal=%g"):format(
+			base_fireball, boosted_fireball, boosted_heal) ..
 		"\tlabels=" .. raw_label .. "|" .. mixed_label ..
-		"\tdeferred=10/16/17\tgate=9:refused,10:accepted"
+		"\tdeferred=10/16/17,expiry=10/15/15,replacement=25,death=10" ..
+		"\tgate=9:refused,10:accepted"
 end
 
 local function regen_row(root, failures)

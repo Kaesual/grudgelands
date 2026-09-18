@@ -598,6 +598,7 @@ grug_abilities = {
 local spell_bonus = 4
 grug_classes = {
 	get_spell_power_bonus = function() return spell_bonus end,
+	get_spell_damage_percent = function() return 0 end,
 	get_race_perk = function() return nil end,
 	-- Round 4 (WP11 phase 1): the kits read talent bonuses; 0 = untalented.
 	get_talent_bonus = function() return 0 end,

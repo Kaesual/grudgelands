@@ -57,6 +57,9 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   own interval, read from the registered hand item rather than assumed.
 - **Spell power** = floor(Int/10). It is a flat term for damaging spells and
   a percentage bonus for pool-derived healing and absorbs.
+- **Timed spell damage** is a separate percentage multiplier on the fully
+  assembled hostile spell formula. It never enters spell power and therefore
+  never raises healing or absorbs.
 - **Damage level scalar** = `P(L) / (8 × B(L))`, where
   `B(L) = round(4 + 0.35L) + floor((10 + 3(L−1))/10)` is the own-level
   baseline sword plus Warrior melee bonus. Damage assembles weapon/ability,
@@ -166,7 +169,9 @@ with it even on the same key. HP/mana pool percentages use the same base,
 class factor and final rounding as talent percentages. Every modifier change,
 expiry and clear runs the normal stat refresh: maximum HP is updated and
 current HP clamped, the private mana ledger is clamped, and the resource HUD
-and open Character page refresh.
+and open Character page refresh. `spell_damage_percent` is consumed only by
+hostile spell damage formulas; unlike Intelligence spell power, it has no
+effect on support formulas.
 
 Two optional target-race systems use the central pipeline:
 
@@ -319,11 +324,13 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   6% of the caster's base mana and starts a server-authoritative **1.0 s cast
   interval**, then snapshots the cast-time eye direction and spawns one straight
   projectile at **20 m/s**. It has no homing, gravity or splash, deals
-  **baseline weapon damage + spell power** through the damage fit, and disappears on its first attackable target, a
-  blocking node or **20 m** travelled. A shot into empty space is still a cast
-  and still spends mana. Friendly players/allied entities and dropped items are
-  ignored instead of body-blocking it. Input inside the cast interval is
-  refused without spending mana; the interval is a cadence, not a cooldown,
+  **baseline weapon damage + spell power**, multiplied by active timed spell
+  damage percentages, through the damage fit, and disappears on its first
+  attackable target, a blocking node or **20 m** travelled. A shot into empty
+  space is still a cast and still spends mana. Friendly players/allied entities
+  and dropped items are ignored instead of body-blocking it. Input inside the
+  cast interval is refused without spending mana; the interval is a cadence,
+  not a cooldown,
   has no wear bar and cannot be shortened by cooldown talents.
 - **Active Fireballs are bounded per owner session.** At most eight may exist
   for one owner/session; the ninth spawn fails before entity creation and does
@@ -740,9 +747,12 @@ design (`group_attack` stays on).
   runtime-only **180 s** buff with one tick every **5 s**. Only one food status
   may run; the latest replaces it. Every food has fixed instant HP by tier.
   Out of combat that heal applies immediately. In combat the serving may be
-  eaten, but the heal waits exactly once for the first out-of-combat tick and
-  regeneration ticks do nothing. Combat never cancels or pauses the duration,
-  and secondary status modifiers remain active in combat. Relogging drops it.
+  eaten, but the heal waits exactly once for the first out-of-combat check and
+  regeneration ticks do nothing. The unpaid instant heal survives the buff's
+  180-second expiry; regeneration and secondary modifiers still end on time.
+  A newer serving replaces, rather than adds to, an unpaid instant heal. Death
+  or leaving clears it. Combat never cancels or pauses the duration, and
+  secondary status modifiers remain active in combat.
   - Raw/unprocessed food regenerates **1%** of maximum HP per tick at every
     tier. A mana raw food instead uses maximum mana. Wild Cocoa is the current
     mana raw food and is refused without a mana pool.

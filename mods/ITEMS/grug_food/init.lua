@@ -45,6 +45,13 @@ grug_food.TIERS = {
 
 grug_food.converted = {}
 
+-- An instant heal deferred by combat outlives the timed food status. Keeping
+-- it here also makes replacement explicit: one player has at most one unpaid
+-- serving, and a newer serving overwrites it.
+local pending_instant = {} -- player name -> fixed HP amount
+local instant_check_accumulator = 0
+local INSTANT_CHECK_INTERVAL = 1
+
 local function number_text(value)
 	return ("%g"):format(value)
 end
@@ -103,6 +110,16 @@ local function restore_mana(player, percent)
 	end
 	return grug_abilities.restore_mana(player,
 		grug_food.tick_amount(maximum, percent))
+end
+
+local function assign_instant(player, amount)
+	local name = player:get_player_name()
+	if grug_core.in_combat(player) then
+		pending_instant[name] = amount
+		return
+	end
+	pending_instant[name] = nil
+	restore_health_flat(player, amount)
 end
 
 local function modifier_parts(modifiers, tooltip)
@@ -178,7 +195,6 @@ end
 
 local function start_food_status(player, tier, effect)
 	local tier_def = grug_food.TIERS[tier]
-	local pending_instant = grug_core.in_combat(player)
 	local record = grug_core.set_status(player, "food", {
 		label = grug_food.status_label(effect),
 		duration = grug_food.DURATION,
@@ -189,10 +205,6 @@ local function start_food_status(player, tier, effect)
 			if grug_core.in_combat(target) then
 				return
 			end
-			if pending_instant then
-				restore_health_flat(target, tier_def.instant_hp)
-				pending_instant = false
-			end
 			if effect.regen.hp then
 				restore_health_percent(target, effect.regen.hp)
 			end
@@ -201,11 +213,37 @@ local function start_food_status(player, tier, effect)
 			end
 		end,
 	})
-	if record and not pending_instant then
-		restore_health_flat(player, tier_def.instant_hp)
+	if record then
+		assign_instant(player, tier_def.instant_hp)
 	end
 	return record
 end
+
+local function clear_pending_instant(player)
+	pending_instant[player:get_player_name()] = nil
+end
+
+core.register_on_dieplayer(clear_pending_instant)
+core.register_on_leaveplayer(clear_pending_instant)
+
+-- The status registry deliberately removes food and its modifiers at 180 s.
+-- Check only players that still have an unpaid instant heal, so a long combat
+-- can end later without extending the buff or scanning every connected player.
+core.register_globalstep(function(dtime)
+	instant_check_accumulator = instant_check_accumulator + dtime
+	if instant_check_accumulator < INSTANT_CHECK_INTERVAL then
+		return
+	end
+	instant_check_accumulator = instant_check_accumulator %
+		INSTANT_CHECK_INTERVAL
+	for name, amount in pairs(pending_instant) do
+		local player = core.get_player_by_name(name)
+		if player and player:get_hp() > 0 and not grug_core.in_combat(player) then
+			pending_instant[name] = nil
+			restore_health_flat(player, amount)
+		end
+	end
+end)
 
 function grug_food.eat(itemstack, user, tier, kind, role)
 	if not user or not user.is_player or not user:is_player() or

@@ -115,11 +115,16 @@ function grug_classes.get_melee_bonus(player)
 	return math.floor(grug_classes.get_attributes(player).str / 10)
 end
 
--- Spell power is a flat damage term and a percentage bonus on pool-derived
--- healing/absorb values.
+-- Intelligence-derived spell power is a flat damage term and a percentage
+-- bonus on pool-derived healing/absorb values.
 function grug_classes.get_spell_power_bonus(player)
 	return math.floor(grug_classes.get_attributes(player).int / 10)
-		+ grug_core.status_modifier_sum(player, "spell_damage_percent")
+end
+
+-- Timed spell-damage modifiers multiply hostile spell formulas only. They do
+-- not feed spell power because that accessor also scales healing and absorbs.
+function grug_classes.get_spell_damage_percent(player)
+	return grug_core.status_modifier_sum(player, "spell_damage_percent")
 end
 
 -- Raw chances are presentation accessors: the Talents page must show points

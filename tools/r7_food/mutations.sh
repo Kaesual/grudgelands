@@ -21,6 +21,7 @@ copy_case() {
 		mods/ITEMS/grug_food/init.lua \
 		mods/PLAYER/grug_classes/stats.lua \
 		mods/PLAYER/grug_abilities/init.lua \
+		mods/PLAYER/grug_abilities/kits.lua \
 		mods/PLAYER/grug_inventory/equipment.lua
 	do
 		mkdir -p -- "$target/$(dirname "$file")"
@@ -74,9 +75,21 @@ mutate() {
 		;;
 		deferral)
 		replace_once "$target/mods/ITEMS/grug_food/init.lua" \
-			'local pending_instant = grug_core.in_combat(player)' \
-			'local pending_instant = false'
+			'if grug_core.in_combat(player) then' \
+			'if false then'
 		expected="combat pauses instant and regeneration"
+		;;
+		expiry_deferral)
+		replace_once "$target/mods/ITEMS/grug_food/init.lua" \
+			'if player and player:get_hp() > 0 and not grug_core.in_combat(player) then' \
+			'if player and grug_core.get_status(player, "food") and player:get_hp() > 0 and not grug_core.in_combat(player) then'
+		expected="expired food pays deferred instant exactly once out of combat"
+		;;
+		spell_damage)
+		replace_once "$target/mods/PLAYER/grug_abilities/kits.lua" \
+			'return math.floor(amount * (1 + percent / 100) + 0.5)' \
+			'return math.floor(amount + 0.5)'
+		expected="spell damage percent raises Fireball only"
 		;;
 		modifiers)
 		replace_once "$target/mods/CORE/grug_core/status.lua" \
@@ -133,9 +146,11 @@ printf '== baseline ==\n%s\n' "$baseline"
 
 selection="${1:-all}"
 if [[ "$selection" == "all" ]]; then
-	for name in tier raw dish deferral modifiers level_gate label tooltip regen preload; do
+	for name in tier raw dish deferral expiry_deferral spell_damage modifiers level_gate label tooltip regen preload; do
 		mutate "$name"
 	done
+	MUTATION_LUA_BIN="$lua_bin" bash \
+		"$root/tools/r6_food_buffs/mutations.sh" all
 else
 	mutate "$selection"
 fi
