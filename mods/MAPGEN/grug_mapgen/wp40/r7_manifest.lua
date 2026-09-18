@@ -29,8 +29,12 @@ return function(canonical, raw_sha256, settlement_order)
 	-- R8-MAP-A, 2026-09-18: four shipped shallow-terrain nodes extend the
 	-- accepted/production content vocabularies. Geometry and horizontal layout
 	-- inputs are unchanged; the content limb and this roll-up move together.
+	-- R8-ALCH, 2026-09-18: the gathering source identity additionally names
+	-- Ember Moss through its Cooking-owned itemstring in the fail-closed herb
+	-- vocabulary. Placement/content semantics remain unchanged; only the
+	-- authenticated gathering limb and this roll-up move again.
 	local SOURCE_PROJECTION_SHA256 =
-		"80e5068e4a508cb75c34f41d319e1f2a78d2625ca16314f03ca9a92da3e7523d"
+		"1fcdf06bace3cc7679e8959087d4b361da164c1a6ff920cdb60e7f4473022c47"
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -290,7 +294,7 @@ return function(canonical, raw_sha256, settlement_order)
 		local gathering = inputs.gathering_manifest
 		if gathering.schema ~= "grug_wp33_gathering_catalog_v1" or
 			gathering.sha256 ~=
-				"d03533037c5a38cf62b85963a59b19efe9f48f770b5b6f3885f20f7b17f0af53" or
+				"287c4278002668928151de6666dce3f738242c0a241927e71d3bd46a3d48bc8e" or
 			sha256_hex(gathering.canonical_bytes) ~= gathering.sha256 then
 			fail("gathering identity differs")
 		end

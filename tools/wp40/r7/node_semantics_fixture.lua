@@ -6,7 +6,7 @@
 return function(repo, catalog, expected_names)
 	local saved = {}
 	local globals = {"core", "minetest", "default", "grug_materials",
-		"grug_trees", "ItemStack", "vector", "stairs"}
+		"grug_trees", "grug_brewing", "ItemStack", "vector", "stairs"}
 	for index = 1, #globals do
 		local name = globals[index]
 		saved[name] = rawget(_G, name)
@@ -133,6 +133,7 @@ return function(repo, catalog, expected_names)
 				grug_materials = repo .. "/mods/ITEMS/grug_materials",
 				grug_nodes = repo .. "/mods/ITEMS/grug_nodes",
 				grug_gathering = repo .. "/mods/ITEMS/grug_gathering",
+				grug_brewing = repo .. "/mods/ITEMS/grug_brewing",
 			}
 			return roots[name]
 		end
@@ -145,6 +146,8 @@ return function(repo, catalog, expected_names)
 		function api.register_on_leaveplayer(callback)
 			callbacks.leaveplayer[#callbacks.leaveplayer + 1] = callback
 		end
+		function api.register_lbm() end
+		function api.register_on_player_receive_fields() end
 		function api.register_craft() end
 		function api.clear_craft() return false end
 		function api.log() end
@@ -243,6 +246,9 @@ return function(repo, catalog, expected_names)
 		local harvest = {can_dig = function() return function() return false end end}
 		dofile(repo .. "/mods/ITEMS/grug_gathering/nodes.lua")(api, catalog, harvest)
 
+		current_modname = "grug_brewing"
+		dofile(repo .. "/mods/ITEMS/grug_brewing/init.lua")
+
 		local definitions = {}
 		local seen = {}
 		for index = 1, #expected_names do
@@ -284,6 +290,7 @@ return function(repo, catalog, expected_names)
 				"mods/ITEMS/grug_materials/init.lua",
 				"mods/ITEMS/grug_nodes/init.lua",
 				"mods/ITEMS/grug_gathering/nodes.lua",
+				"mods/ITEMS/grug_brewing/init.lua",
 			}}
 	end
 

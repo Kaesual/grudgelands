@@ -420,7 +420,7 @@ Normal tier at level L:
   **4.0**; harmless critters that never attack remain **3.4**. The Bog Ooze
   remains **2.6** because its roster role is explicitly the one slow tank. The
   deep-sea Kraken Guard's shipped value is **5.0**. The ordinary 4.6 band keeps
-  the Swiftness Draught below it (4.0 × 1.08 = 4.32), and continues to feed the
+  the Swiftness Draught below it (4.0 × 1.10 = 4.4), and continues to feed the
   25 m soft de-aggro and 45 m / 40 m chase rules of §4. Current definition
   sites for the changed families: `grug_mobs/stag.lua:21`, `ram.lua:26`, `zebra.lua:20`,
   `carrion_crow.lua:54`, `zombie.lua:29` and `golem.lua:87`; the exceptions
@@ -461,8 +461,8 @@ Normal tier at level L:
   **Sprint** — **+25 % for 10 s on a 300 s cooldown** (ruling 29,
   `scout.md` §2) — which puts a sprinting player at **5.0** against 4.6 for
   ten seconds in every five minutes. Nothing permanent or cheap is covered:
-  the Swiftness Draught stays at **+8 % for 15 s**
-  (4.0 × 1.08 = 4.32 < 4.6, `items_crafting.md` §3.6/§10 P4) and a
+  the Swiftness Draught stays at **+10 % for 5 s**
+  (4.0 × 1.10 = 4.4 < 4.6, `items_crafting.md` §3.6/§10 P4) and a
   mount pays for its permanent 6–10 nodes/s with the damage dismount
   (`mounts.md` §3.1).
 - **View range follows the attack type** (decided 2026-09-16, user ruling 3):
@@ -781,6 +781,19 @@ design (`group_attack` stays on).
   in-combat monopoly and is paid for in cooldown; a dish may restore
   more in total, but only out of combat and over seconds. Each food tick
   due during combat is skipped while the 180-second buff keeps running.
+- **Alchemy v1** (2026-09-18): Healing and Mana Potions restore 30% of their
+  current maximum pool and share one persistent 60-second clock. Their Greater
+  T3 pair retains the 30% amount but starts that same clock for 45 seconds;
+  the mana half may be consumed at full mana. Antivenom clears poison,
+  Swiftness grants +10% speed for 5 seconds, and Cave Draught grants night
+  vision for 10 minutes. One elixir status is active at a time and stacks with
+  food: Vigor grants +5/10/15/20% maximum HP at T3–T6, Focus the same maximum
+  mana, and Precision +1/2/3/4 percentage points crit. Stoneskin is +4% armor
+  for 30 minutes and Deepwater grants water breathing for 10 minutes. Ordinary
+  stat elixirs last 15 minutes. None of the elixirs touches the potion clock.
+  Each worn Apothecary piece adds 10% duration to timed potions and elixirs
+  and one percentage point to a stat elixir, with at most two pieces counted;
+  instant potions are unchanged.
 - Mana regeneration is **`1 + 0.15 × level` mana/s** out of combat (1.15 at
   L1, 2.5 at L10, 5.5 at L30, 10 at L60), multiplied by the Troll
   `ooc_regen_mult` perk. In combat it is one quarter of the **unmodified**

@@ -132,6 +132,7 @@ local WEB_MODIFIER = "mob_web"
 -- (The slow needs no such counter any more: the aggregator expires entries
 -- off a monotonic clock read at use time, so there is no timer to orphan.)
 local poison_gen = {}
+local poison_active = {}
 
 -- Slow a player to `factor` (0.6 = 40% slower) for `duration` seconds.
 -- Stacking against ANOTHER WEB is unchanged and stays here rather than in
@@ -163,7 +164,24 @@ core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
 	-- Cancel every running poison chain for this name (see poison_gen).
 	poison_gen[name] = (poison_gen[name] or 0) + 1
+	poison_active[name] = nil
 end)
+
+function grug_mobs.is_poisoned(player)
+	if not player or not core.is_player(player) then return false end
+	return (poison_active[player:get_player_name()] or 0) > 0
+end
+
+-- Antivenom invalidates every chain in one generation bump. Old callbacks
+-- observe the mismatch and cannot damage a fresh application or relog.
+function grug_mobs.clear_poison(player)
+	if not player or not core.is_player(player) then return false end
+	local name = player:get_player_name()
+	local had_poison = (poison_active[name] or 0) > 0
+	poison_gen[name] = (poison_gen[name] or 0) + 1
+	poison_active[name] = nil
+	return had_poison
+end
 
 -- Damage-over-time on a player (Serpent: total_ticks 3, interval 2,
 -- dmg_per_tick 1 = 1 dmg / 2 s for 6 s).
@@ -193,6 +211,16 @@ function grug_mobs.poison_player(player, total_ticks, interval, dmg_per_tick)
 	-- two apart on its own — get_player_by_name happily returns the new
 	-- ObjectRef).
 	local gen = poison_gen[name] or 0
+	poison_active[name] = (poison_active[name] or 0) + 1
+	local finished = false
+	local function finish()
+		if finished then return end
+		finished = true
+		if (poison_gen[name] or 0) == gen then
+			local active = (poison_active[name] or 1) - 1
+			poison_active[name] = active > 0 and active or nil
+		end
+	end
 	local tick
 	tick = function()
 		if (poison_gen[name] or 0) ~= gen then
@@ -200,10 +228,12 @@ function grug_mobs.poison_player(player, total_ticks, interval, dmg_per_tick)
 		end
 		local p = core.get_player_by_name(name)
 		if not p then
+			finish()
 			return -- left the server
 		end
 		local hp = p:get_hp()
 		if hp <= 0 then
+			finish()
 			return -- already dead: stop the chain
 		end
 		p:set_hp(hp - dmg_per_tick, {type = "set_hp", from = "mod"})
@@ -211,6 +241,8 @@ function grug_mobs.poison_player(player, total_ticks, interval, dmg_per_tick)
 		left = left - 1
 		if left > 0 then
 			core.after(interval, tick)
+		else
+			finish()
 		end
 	end
 	core.after(interval, tick)

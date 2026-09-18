@@ -464,6 +464,18 @@ Details + line numbers in [docs/research/](docs/research/).
   raw assembled dishes and their furnace routes. `grug_fishing.table_for(pos)`
   selects one of six catch tables through `grug_core.mob_level_at(pos)`; water
   salinity never gates fishing.
+  **Alchemy** is split between low-level `grug_brewing` (the inactive/active
+  stand nodes, timer and recipe adapter) and `grug_alchemy` (items, profession
+  recipes and effects). The stand has two reagent slots plus vial, fuel and
+  output; its output take path calls `can_craft_recipe` before release and
+  `record_craft` after release. Capital stands are the public node at local
+  `(2,1,-12)`, directly east of the Alchemist trainer. Potions share
+  `grug_traders`' persistent clock (60 s, or 45 s for the Greater pair);
+  elixirs replace status id `elixir`, stack with status id `food`, and never
+  touch that clock. Apothecary gear extends timed potions and elixirs by 10%
+  per piece (maximum two), but does not change instant potions.
+  `grug_gathering`'s herb authorizer delegates to
+  `grug_jobs.has(player, "alchemist")`; Cave Cap remains universal food.
   Real-code Lua 5.1 regressions live under `tools/wp39/` and must stay green
   when changing the ray, clock, settlement, reticle, casts or projectiles.
   **Ordinary tool WEAR is spent per swing, not per punch**
