@@ -160,7 +160,7 @@ and Dwarf columns without a T4 gate ingredient of their own. §3.2 fixes both.
 | **Bamboo shoot** | food T1 (shoot) + material | **shore sand and mud** in jungle-edge, deep-jungle and swamp palettes | VoxeLibre `mcl_bamboo` | Throng shore identity; T1 Caster ingredient on that continent |
 | **Wild Onion** (Accord) / **Fire Pepper** (Throng) | spice T1–T2 | deep forest, pine hills, elf forest / badlands, savanna, blight, jungle edge | `x_farming` has no onion or chili: retint VoxeLibre beetroot (onion) and `x_farming` strawberry (fire pepper), or hand-drawn 16 px textures | a second early spice so Cooking is not sunleaf-only; the Hunter line's flavour |
 | **Cave Cap** | found-only food + alchemy reagent, T3 | **underground −100 to −500**, on stone in caves (P9G-style single node, cave-air host) | tinted `default` mushroom (already shipped) | gives Cooking and Alchemy a depth ingredient; the underground world of the mob plan needs a reason to forage |
-| **Salt Crust** | found-only, T5 (alias of Rock Salt) | **badlands mesa clay in The Shattered Line and Bannerbreak Mesa** (salt flats, band 2–3) | existing rock-salt texture | closes gap (1): T5's gate reaches a 41–50 zone |
+| **Salt Crust** | found-only, T5 (alias of Rock Salt) | **badlands mesa clay in The Shattered Line** (salt flats, band 2–3; not Bannerbreak, which is 31–40) | existing rock-salt texture | closes gap (1): T5's gate reaches a 41–50 zone |
 | **Stormkelp** extra host | spice T3 | swamp shores of The Shattered Line (41–50) | existing | closes gap (1) for the other half of the gate |
 | **Frost Melon** (Dwarf/Human alias of Melon) | food, crop, T4 | crags tarns and Whitebridge/Frostbarrow swamp margins | existing melon, tinted | closes gap (2): the Accord's northern columns get a T4 gate on their own axis |
 | **Ember Moss** | alchemy reagent T5 | **y ≤ −701** on emberrock, cave-air host | tinted gravemoss | the Alchemy depth ingredient for T5 elixirs; deep mining pays in reagents too (`world.md` §4c) |
@@ -181,7 +181,7 @@ and the potion lifecycle.
 | Human (meadows / deep forest) | potato, corn, grain, carrot, apple, meat, fish | pumpkin, sugar cane, onion, sunleaf | mushroom, marshbloom (Whitebridge), frost melon | mushroom, marshbloom, dragonweed (Ashenward) | Broken Causeway 31–40 → front 51+ |
 | Elf (elf forest) | grain, carrot, apple, meat, fish | sunleaf, onion, sugar cane | mushroom (Lorindor, Moonfall), marshbloom | melon + mushroom (Glassroot) | Skyglass: cocoa, lotus, stormkelp |
 | Undead (blight / bone forest) | corn, cassava, grain, plague-boar meat, fish | blightberry, pumpkin, pepper, gravemoss (Mournfen swamp), sugar cane | mushroom (Ossuary), marshbloom, dragonweed | mushroom, salt crust (Blackwind is 31–40: **no**, keep salt for 41+) | Gravesalt: salt, stormkelp |
-| Orc (savanna / badlands) | corn, cassava, grain, boar meat, zebra meat | sunberry, pepper, sunleaf, sugar cane at waterholes | mushroom? **none** — Speargrass has swamp 5 %: add the mushroom row there | dragonweed, salt crust (Bannerbreak) | Shattered Line: salt crust, stormkelp (41–50) |
+| Orc (savanna / badlands) | corn, cassava, grain, boar meat, zebra meat | sunberry, pepper, sunleaf, sugar cane at waterholes | mushroom? **none** — Speargrass has swamp 5 %: add the mushroom row there | dragonweed (Bannerbreak; no salt below 41) | Shattered Line: salt crust, stormkelp (41–50) |
 | Troll (jungle edge / deep jungle) | cassava, bamboo shoot, melon (Kapok!), jungle-boar meat, fish | jungle berry, sunleaf, pepper, sugar cane, bamboo | mushroom (Whispering, Totemwater), marshbloom, melon | melon, mushroom, Thunderroot | Stormscale: cocoa, lotus, salt, stormkelp |
 
 Melon already grows in Kapok Cradle (a 1–10 zone) while it gates T4: that
@@ -297,7 +297,7 @@ R7.1: a raw, unprocessed edible is the weakest food **of its tier**: the
 tier's instant value plus 1 % of MAX HP per 5 s, and (R7.4) the tier's
 minimum level. The plan reads "its tier" as **the cooking gate tier of the
 ingredient**: potato, corn, meat, fish, carrot/cassava, grain = T1; apple,
-berries, pumpkin = T2; mushroom = T3; melon = T4; rock salt is not edible;
+berries, pumpkin = T2; mushroom = T3; melon = T4; rock salt stops being edible (§9);
 wild cocoa = T6 (raw cocoa: +300 HP now, 1 % HP / 5 s, level 51 — a novice
 who finds it carries it home). Today's mapping in R7-FOOD (every raw item
 T1, wild cocoa as raw **mana** food) is the placeholder until Round 8 sets
@@ -324,14 +324,13 @@ its tier" for apples, which then out-heal a T1 dish's raw form.
    forest gains moss. The plant rows above name their host soils.
 3. **New placement rows** for the §3.2 plants — NOT just catalog rows: the
    shipped P9G tail is a closed schema of twelve names placed only at
-   `surface_y + 1` (`wp40/r7_p9g.lua:259,369`), so R8-MAP must version the
+   `surface_y + 1` (`wp40/r7_p9g.lua:103-115,369-375`), so R8-MAP must version the
    schema (`P9G-2`: open name list, plus a cave-air host mode for Cave Cap
    and Ember Moss) with manifest, planner-consumer and digest tests as its
    own deliverable — with densities in the existing
    range (1/256 for staples, 1/512 for spices, 1/768 for cave cap, 1/1024
    for ember moss), the catalog fixes (mushroom in Speargrass Reach, salt
-   crust in Shattered Line and Bannerbreak, stormkelp in Shattered Line and
-   Broken Causeway, frost melon in Frostbarrow and Whitebridge), and the two
+   crust and stormkelp in Shattered Line, frost melon in Frostbarrow and Whitebridge), and the two
    underground rows (cave-air host, first underground P9G use).
 4. **Crop soils** as scenery now (tilled patches at village fields) so
    farming (WP32) later flips them on without a mapgen change.
@@ -354,12 +353,13 @@ Round 8 changes data tables and adds items, not the buff engine.
 | Apothecary gear "+1 elixir attribute" | §3.6 | +1 percentage point on the elixir stat | follows the elixir change |
 | Cooking min levels 1/10/20/30/40/50 (R7-FOOD default) | data table | 1/11/21/31/41/51 | §3.0.1 tier levels |
 | Mana regen: in-combat quarter (R7.5 proposal) | R7-FOOD data | option A floor `0.25 %/s` (§2.4) | keeps Round 6 TTK bands roughly valid |
-| Rock salt only on 51–60 beaches; stormkelp only in four 51–60 zones | catalog | salt crust + stormkelp hosts in 41–50 zones (Shattered Line, Bannerbreak) | T5 must be reachable at 41–50 |
+| Rock salt only on 51–60 beaches; stormkelp only in four 51–60 zones | catalog | salt crust + stormkelp hosts in the one 41–50 zone, The Shattered Line | T5 must be reachable at 41–50 |
 | T2 gate "berries (apples as Accord extra)", claimed reachable by both factions | §3.7 E21 | three Throng berry bushes (§3.2) | no Throng zone grows a berry or apple today |
 | Healing/Mana Potion 30 % (§3.6) vs the 15 % named in R7.3 | §3.6 / `TODO-round7.md` R7.3 | the plan keeps 30 % and asks (§10.6a) | one of the two must yield |
 | One shared 60 s cooldown for every instant potion; refused at full | §3.6 | Greater potions: 45 s and no full-resource refusal on the mana half | the T3 benefit; §10.6 |
 | Antivenom and Swiftness at Journeyman, Cat's-Eye/Deepwater at Expert, Stoneskin at Master | §3.6 mastery table | Antivenom/Swiftness T2, Cave Draught T3, Stoneskin T4, Deepwater T5 | mastery names map onto material tiers (§5.1) |
 | Wild cocoa is raw mana food (Round 6 mapping, `items_crafting.md` §3.7) | §3.7 | raw cocoa = T6 HP food; mana regeneration only from Caster dishes | R7.1 "raw = weakest of its tier"; §6 |
+| Rock Salt is `found_only_food` and therefore raw HP food today (`catalog.lua:153`, §3.7) | catalog / §3.7 | rock salt becomes a cooking and alchemy ingredient only, not edible | a lump of salt is not a snack; it is the T5 gate |
 | Raw edibles all T1 with min level 1 (R7-FOOD placeholder) | R7-FOOD data | raw tier = gate tier of the ingredient, with the tier's min level | R7.1 / R7.4; alternative in §10.9 |
 
 ## 10. Decisions for the user

@@ -88,8 +88,8 @@ spawns in band 3.
 
 | Zone (levels) | Day | Night | Rare / 24 h |
 |---|---|---|---|
-| Hearthpine Vale (1–10) | b1: Boar, Rabbit (C); b2: **Ibex** (P, *animalworld*), **Fox** (*animalia*); b3: Crag Eagle | b1: **Giant Rat** (*animalia*, universal start night); b2: Zombie; b3: Wolf | — |
-| Copperfell Foothills (11–20) | Boar, Ibex (P), Fox, Crag Eagle; Bandit camp (24 h) | Wolf, Giant Spider, **Goblin Raiders** (*goblins*, roaming group with **Goblin Slinger** ranged) | — |
+| Hearthpine Vale (1–10) | b1: Boar, Rabbit (C); b2: **Ibex** (P, *animalworld*), **Fox** (*animalia*); b3: Crag Eagle | b1: **Giant Rat** (*animalia*, universal start night); b2: Zombie; b3: Wolf (24 h) | — |
+| Copperfell Foothills (11–20) | Boar, Ibex (P), Fox, Crag Eagle; Bandit camp (24 h) | Wolf (24 h), Giant Spider, **Goblin Raiders** (*goblins*, roaming group with **Goblin Slinger** ranged) | — |
 | Frostbarrow Shelf (21–30) | Mountain Ram (P), Crag Eagle, Stone Golem (E, 24 h), **Ibex** | **Snow Leopard** (*animalworld*, stalker), Goblin Raiders, Giant Spider | — |
 | Stormvault Heights (31–40) | Crag Eagle, Stone Golem (E, 24 h), Ibex (P); Bandit camp | Snow Leopard, **Frost Stray** (*retint* Skeleton Archer, ranged), Goblin Raiders | Korgan's Bane |
 | The Wyrmglass Crown (60) | Stone Golem (E), Crag Eagle, Carrion Crow (P) | Frost Stray, Snow Leopard, **Rift Spawn** (*mobs_mc* stalker, bursts) | **Ice Dragon** (§7) |
@@ -99,9 +99,9 @@ spawns in band 3.
 | Zone (levels) | Day | Night | Rare / 24 h |
 |---|---|---|---|
 | Dawnmere Fields (1–10) | b1: Boar, Rabbit (C), **Wild Turkey** (C, *animalia*); b2: Stag (P), Fox; b3: Wolf (24 h) | b1: Giant Rat; b2: Zombie; b3: Giant Spider | — |
-| Goldmead Vale (11–20) | Boar, Stag (P), Fox, Wild Turkey (C); Bandit camp | Wolf, Giant Spider, **Poacher** (*retint* Bandit Archer, roaming, ranged) | Grimtusk |
-| Whitebridge Shire (21–30) | Bear, Stag (P), Wolf; Mirefolk camp (24 h) | Giant Spider, **Wisp** (*mobs_mc* vex, swamp flier), Poacher | — |
-| Ashenward March (31–40) | Bear, Wolf, Bandit + Bandit Archer camp | Skeleton Archer, **Ashen Treant** (*mobs_monster* tree monster, burned wood), Wisp | Old Whitefang |
+| Goldmead Vale (11–20) | Boar, Stag (P), Fox, Wild Turkey (C); Bandit camp | Wolf (24 h), Giant Spider, **Poacher** (*retint* Bandit Archer, roaming, ranged) | Grimtusk |
+| Whitebridge Shire (21–30) | Bear, Stag (P), Wolf (24 h); Mirefolk camp (24 h) | Giant Spider, **Wisp** (*mobs_mc* vex, swamp flier), Poacher | — |
+| Ashenward March (31–40) | Bear, Wolf (24 h), Bandit + Bandit Archer camp | Skeleton Archer, **Ashen Treant** (*mobs_monster* tree monster, burned wood), Wisp | Old Whitefang |
 | The Broken Causeway (31–40) | Carrion Crow (P), Crocodile (24 h), **War Construct** (E, 24 h, *mobs_mc* iron golem) | Skeleton Raider, **Bog Witch** (*mobs_mc* witch, ranged), Wisp | Captain Bonerattle |
 
 ### 3.3 Elf column — elf forest / deep forest (x ≈ +1800)
@@ -109,8 +109,8 @@ spawns in band 3.
 | Zone (levels) | Day | Night | Rare / 24 h |
 |---|---|---|---|
 | Silverleaf Glades (1–10) | b1: Boar, Rabbit (C), **Song Bird** (C, *retint* gull mesh); b2: Stag (P), Fox; b3: Wolf (24 h) | b1: Giant Rat; b2: Giant Spider; b3: Poacher | — |
-| Starbough Vale (11–20) | Boar, Stag (P), Fox; Bandit camp | Wolf, Giant Spider, Poacher | — |
-| Lethariel's neighbours Lorindor / Moonfall Wood (21–30) | Stag (P; Lorindor keeps its exact-mob rule), Bear, Wolf; Mirefolk camp (Lorindor) | Giant Spider, Wisp, Poacher | — |
+| Starbough Vale (11–20) | Boar, Stag (P), Fox; Bandit camp | Wolf (24 h), Giant Spider, Poacher | — |
+| Lethariel's neighbours Lorindor / Moonfall Wood (21–30) | Stag (P; Lorindor keeps its exact-mob rule), Bear, Wolf (24 h); Mirefolk camp (Lorindor) | Giant Spider, Wisp, Poacher | — |
 | Glassroot Wilds (31–40) | Bear, Jungle Lynx, Serpent; Bandit camp | Panther, Jungle Spider, Wisp | — |
 | The Skyglass Canopy (51–59) | Jungle Ape, Serpent, Crag Eagle | Panther, Silkfang's kin (Jungle Spider), Rift Spawn | Silkfang |
 
@@ -120,8 +120,8 @@ spawns in band 3.
 |---|---|---|---|
 | Stillgrave Hollow (1–10) | b1: Plague Boar, Hare (C), Bone Weevil (C); b2: Gaunt Stag (P); b3: Blightfang Wolf (24 h) | Zombie (24 h in blight — identity, kept); b2: Giant Rat; b3: Skeleton Archer | — |
 | Mournfen (11–20) | Plague Boar, Gaunt Stag (P), Bog Fowl (C), Crocodile (24 h); Bandit camp, Mirefolk camp | Zombie (24 h), Skeleton Archer, Wisp | — |
-| Ossuary Reach (21–30) | Plaguehide Bear, Gaunt Stag (P), Blightfang Wolf | Skeleton Archer, Pale Spider, **Gravewood Treant** (*mobs_monster* tree monster, bone tint) | — |
-| Blackwind Rise (31–40) | Plaguehide Bear, Blightfang Wolf; Bandit camp | Skeleton Archer, Gravewood Treant, Pale Spider | Marrowclaw |
+| Ossuary Reach (21–30) | Plaguehide Bear, Gaunt Stag (P), Blightfang Wolf (24 h) | Skeleton Archer, Pale Spider, **Gravewood Treant** (*mobs_monster* tree monster, bone tint) | — |
+| Blackwind Rise (31–40) | Plaguehide Bear, Blightfang Wolf (24 h); Bandit camp | Skeleton Archer, Gravewood Treant, Pale Spider | Marrowclaw |
 | Gravesalt Escarpment (51–59) | Plaguehide Bear, Carrion Crow (P), Crocodile (24 h) | Skeleton Raider, Bog Witch, Rift Spawn | — |
 
 ### 3.5 Orc column — savanna / badlands (x ≈ 0)
@@ -129,8 +129,8 @@ spawns in band 3.
 | Zone (levels) | Day | Night | Rare / 24 h |
 |---|---|---|---|
 | Sunscar Flats (1–10) | b1: Boar, Hare (C), **Plains Runner** (C, *animalworld* nandu); b2: Zebra (P); b3: Hyena (24 h) | b1: Giant Rat; b2: **Scorpion** (*animalworld*, poison); b3: **Sun-Dried Husk** (*retint* Zombie) | — |
-| Redtusk Savanna (11–20) | Boar, Zebra (P), Hyena; Bandit camp | Scorpion, Sun-Dried Husk, Hyena (24 h) | Ashmaw |
-| Speargrass Reach (21–30) | Hyena, Vulture, Zebra (P), **Speargrass Tiger** (*animalworld*, day stalker) | Scorpion, Mesa Golem (E, 24 h), Goblin Raiders | — |
+| Redtusk Savanna (11–20) | Boar, Zebra (P), Hyena (24 h); Bandit camp | Scorpion, Sun-Dried Husk, Hyena (24 h) | Ashmaw |
+| Speargrass Reach (21–30) | Hyena (24 h), Vulture, Zebra (P), **Speargrass Tiger** (*animalworld*, day stalker) | Scorpion, Mesa Golem (E, 24 h), Goblin Raiders | — |
 | Bannerbreak Mesa (31–40) | Vulture, Mesa Golem (E), Bandit + Bandit Archer camp | Scorpion, Skeleton Raider, Goblin Raiders | Dustwing |
 | The Shattered Line (41–50) | Vulture, Speargrass Tiger, War Construct (E, 24 h) | Skeleton Raider, Scorpion, Sun-Dried Husk | Captain Bonerattle |
 
@@ -191,9 +191,9 @@ A family may need more than one clock: Zombie is `night` in settled and war
 palettes and `any` in blight. The role field therefore accepts either one
 value or a table keyed by palette family (`clock = {settled = "night",
 war = "night", blight = "any"}`); the policy stamps the matching row. Wolf
-and Hyena stay 24 h everywhere and appear in both columns of §3 by
-design: the night cast lists what a player meets at night, not what is
-night-only.
+and Hyena stay 24 h everywhere; §3 marks them `(24 h)` wherever they
+appear, and a 24 h family listed in one column of a zone is part of that
+zone's cast around the clock.
 
 ## 7. Boss tier
 
@@ -256,7 +256,7 @@ dragons.
 | Oerkki | mobs_monster `oerkki` | −300 to −700 | blinks (short) | drop-in | MM-PER-FILE: mesh + `mobs_oerkki.png` WTFPL, `mobs_oerkki4.png` CC BY-SA 4.0, sound WTFPL; `mobs_oerkki2.png`/`3.png` UNCLEAR → use the two cleared textures only |
 | Glowwing | animalworld `dragonfly` | −300 to −500 flier | dives | mobs_redo-native, glow tint | AW-MEDIA-MIT: models, textures, animation MIT (`animalworld/LICENSE:24-27`); sounds UNCLEAR (`:33-41`) → import without upstream sounds |
 | Crystal Shard | mobs_monster `mese_monster` | −300 to −700 | dogshoot (shard) | drop-in, retint | MM-PER-FILE: mesh + `mobs_mese_monster_purple.png` CC0 (SirrobZeroone), sound WTFPL; `zmobs_mese_monster.png` UNCLEAR → purple texture only, own shard projectile texture |
-| Dungeon Master | mobs_monster `dungeon_master` | −500 to −1000 | dogshoot (fireball) | drop-in | MM-PER-FILE: mesh + `mobs_dungeon_master.png` WTFPL, `_2.png` CC0, `_4.png` CC BY-SA 4.0, fireball sound WTFPL |
+| Dungeon Master | mobs_monster `dungeon_master` | −500 to −1000 | dogshoot (fireball) | drop-in with three of its four textures | MM-PER-FILE: mesh + `mobs_dungeon_master.png` WTFPL, `_2.png` CC0, `_4.png` CC BY-SA 4.0, fireball sound WTFPL; `mobs_dungeon_master3.png` is UNCLEAR and excluded |
 | Lava Flan | mobs_monster `lava_flan` | −700 and below | engulfs (ooze verb, fire) | drop-in | MM-PER-FILE: mesh + three textures CC BY-SA 3.0 (AspireMint), sound WTFPL; `fire_basic_flame.png` and `tnt_smoke.png` are minetest_game media, cleared per the evidence doc |
 | Ember Wisp | retint of the Wisp (mobs_mc `vex`) | −700 and below, flier | dogshoot (ember) | tint + projectile; replaces mobs_monster's Fire Spirit, which has no mesh and UNCLEAR textures (evidence doc) | as Wisp |
 | Stone Mite | shipped Cave Crawler | −700 and below | swarms | hostile variant | already licensed |
@@ -309,6 +309,7 @@ continue as long as the round runs.
 | Shore Crab "deferred until a licensed model is sourced" | §3.1, §8.3 | animalworld `crab` as the source (pending per-file check) | the source now exists in a pinned project |
 | Zombie is the settled night family everywhere | §3.1 | Zombie stays as fallback; starts get Giant Rat at band 1 | a start zone's first night should be survivable at level 1–3 |
 | Hyena is 24 h from L10; Wolf is 24 h | §3.1 | unchanged (both `any` in §6) | listed because §3 shows them in both casts |
+| About three to four day families per zone (`TODO-round7.md` R7-MOB) | §1 of this plan | five to six across a start zone's three bands, three to four per band | the bands are the unit a player experiences; decision §11.8 |
 | Zombie: night; 24 h in blight | §3.1 | unchanged; expressed as a per-palette clock table (§6) | one family, two clocks |
 | "One dragon per continent" retired → two islands | `world.md` §4b | unchanged; names the draconis variants per island | asset decision |
 
@@ -317,7 +318,7 @@ continue as long as the round runs.
 1. Night density factor 1.25 × (or 1.0).
 2. Giant Rat as the universal band-1 night family (needs one mesh) or the
    zero-asset Spiderling instead.
-3. Per family, yes / no / later, in the order of §8 (34 rows). The table
+3. Per family, yes / no / later, in the order of §8 (33 rows). The table
    in `mob-candidates-evidence.md` gives each row's per-file licence
    verdict; a row whose media is UNCLEAR is "later" until cleared.
 4. Kings' royal skins: user-made or lane-made placeholder (tabard tint on
@@ -326,6 +327,8 @@ continue as long as the round runs.
    Fire Dragon reserved for the Nether.
 6. Package order of §9, and how many packages Round 8 commits to (1–3
    minimum, 4–5 goal).
+8. Start zones carry five to six day families over their three bands
+   (three to four per band) — accept, or cut to four per zone.
 7. The repo-wide MIT reading for animalia and draconis media (no per-file
    table upstream): the ledger already relies on it for Stag, Gull and
    Carrion Crow; confirm it for Fox, Turkey, Rat and both dragons, or ask
