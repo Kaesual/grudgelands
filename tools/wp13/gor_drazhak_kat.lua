@@ -409,8 +409,8 @@ return function(repo)
 	-- The identity pieces of the contract's orc line, each counted.
 	assert(L.corner_towers == 4, "the precinct has " ..
 		tostring(L.corner_towers) .. " corner towers")
-	assert(L.bank_columns >= 200, "the precinct bank is only " ..
-		tostring(L.bank_columns) .. " columns")
+	assert(L.bank_columns == 296, "the precinct bank has " ..
+		tostring(L.bank_columns) .. " columns, not 296")
 	assert(L.bank_stakes >= 90, "the precinct stockade carries only " ..
 		tostring(L.bank_stakes) .. " stakes")
 	assert(L.deck_rings == 4, "only " .. tostring(L.deck_rings) ..

@@ -97,6 +97,7 @@ local function swing_rage(player)
 	return grug_abilities.RAGE_PER_SWING
 		+ grug_classes.get_talent_bonus(player, "rage_per_swing_add")
 end
+grug_abilities.swing_rage = swing_rage
 
 function grug_abilities.add_rage(player, amount)
 	if resource_of(player) ~= "rage" then

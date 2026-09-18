@@ -1153,7 +1153,7 @@ return function(repo)
 	-- but one of its gravewoods to it once, because the burial ground ran
 	-- first.
 	for _, row in ipairs({{"nave_floor", 90}, {"gravewoods", 15},
-			{"graves", 122}, {"parapet_columns", 229}, {"parapet_bars", 56},
+			{"graves", 122}, {"parapet_columns", 296}, {"parapet_bars", 72},
 			{"corner_drums", 4}, {"flora", 1413}}) do
 		assert(core.landmarks[row[1]] == row[2], "the core's " .. row[1] ..
 			" population is " .. tostring(core.landmarks[row[1]]) ..

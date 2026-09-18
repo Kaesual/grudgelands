@@ -1,0 +1,13 @@
+diff --git a/mods/ENTITIES/mobs/api.lua b/mods/ENTITIES/mobs/api.lua
+--- a/mods/ENTITIES/mobs/api.lua
++++ b/mods/ENTITIES/mobs/api.lua
+@@ -311 +311,3 @@
+-	if player and type(player) == "userdata" and core.is_player(player) then
++	if player and ((type(player) == "userdata" and core.is_player(player))
++	or (type(player) == "table" and
++		player._grug_spawn_probe_player == true)) then
+diff --git a/mods/CORE/grug_core/tag_carrier.lua b/mods/CORE/grug_core/tag_carrier.lua
+--- a/mods/CORE/grug_core/tag_carrier.lua
++++ b/mods/CORE/grug_core/tag_carrier.lua
+@@ -129,0 +130 @@
++	if true then return nil end -- spawn-probe baseline: no carrier entities

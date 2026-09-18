@@ -1,5 +1,33 @@
 grug_mobs = {}
 
+function grug_mobs.ensure_tag_carrier(self)
+	if not self or not self.object or not self.object:is_valid() then return nil end
+	self.temp = self.temp or {}
+	local carrier = self.temp.grug_tag_carrier
+	if carrier and carrier:is_valid() then return carrier end
+	carrier = grug_core.create_tag_carrier(self.object)
+	self.temp.grug_tag_carrier = carrier
+	-- A non-player's empty nametag really is empty. All visible text belongs
+	-- to the observer-managed child from this point onward.
+	self.object:set_properties({nametag = ""})
+	return carrier
+end
+
+function grug_mobs.remove_tag_carrier(self)
+	local temp = self and self.temp
+	if not temp then return end
+	grug_core.remove_tag_carrier(temp.grug_tag_carrier)
+	temp.grug_tag_carrier = nil
+end
+
+local tag_old_on_deactivate = mobs.mob_class.on_deactivate
+mobs.mob_class.on_deactivate = function(self, removal)
+	grug_mobs.remove_tag_carrier(self)
+	if tag_old_on_deactivate then
+		return tag_old_on_deactivate(self, removal)
+	end
+end
+
 if not grug_core.zone_authority_installed() then
 	error("[grug_mobs] validated R7 zone authority was not installed")
 end
@@ -594,6 +622,14 @@ function grug_mobs.register_mob(name, def)
 		end
 	end
 
+	local old_tag_after_activate = def.after_activate
+	def.after_activate = function(self, staticdata, mob_def, dtime)
+		if old_tag_after_activate then
+			old_tag_after_activate(self, staticdata, mob_def, dtime)
+		end
+		grug_mobs.ensure_tag_carrier(self)
+	end
+
 	grug_mobs.install_flight_nudge(def)
 	local old_do_custom = def.do_custom
 	def.do_custom = function(self, dtime, moveresult)
@@ -689,6 +725,7 @@ end
 
 local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/spawn_policy.lua")
+grug_mobs.install_spawn_clock_wrapper()
 dofile(modpath .. "/levels.lua")
 dofile(modpath .. "/aggro.lua")
 dofile(modpath .. "/flight.lua")
@@ -736,6 +773,7 @@ dofile(modpath .. "/mirefolk.lua")
 -- Faction guards + military outposts (world.md §4, WP6/T8): guard.lua must
 -- come before camps.lua, which names the two guard mobs in its camp types.
 dofile(modpath .. "/guard.lua")
+dofile(modpath .. "/bosses.lua")
 dofile(modpath .. "/camps.lua")
 -- WP13 start settlements: the flair/quest NPC families first (start_npcs.lua
 -- resolves their entity names), then the socket-driven placement engine,
@@ -749,6 +787,9 @@ dofile(modpath .. "/start_npcs.lua")
 -- (a mesh is a file name, not a registration).
 dofile(modpath .. "/cave_bat.lua")
 dofile(modpath .. "/cave_crawler.lua")
+dofile(modpath .. "/zero_asset_variants.lua")
+dofile(modpath .. "/start_zone_families.lua")
+dofile(modpath .. "/night_families.lua")
 dofile(modpath .. "/bone_weevil.lua")
 dofile(modpath .. "/bog_fowl.lua")
 -- After the mob files: a rare spec names an already registered mob.

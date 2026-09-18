@@ -66,6 +66,7 @@ local function loader(directory)
 	local capitals = dofile(directory .. "/capitals.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
+	local precinct_ring = dofile(directory .. "/precinct_ring.lua")
 	local troll = dofile(directory .. "/troll_parts.lua")(directory)
 	local handles = dofile(directory .. "/troll_palette.lua")()
 	local mask = dofile(directory .. "/kezamba_lagoon.lua")()
@@ -895,6 +896,17 @@ local function loader(directory)
 			end
 		end
 
+		-- 11c. THE PROTECTED DRY EDGE. Water is this open capital's north-east
+		-- boundary; everywhere else the junglewood palisade is the civic ring.
+		-- It is written after every building, prop and plant so none can cut it,
+		-- while the shared mask leaves the four totem thresholds open.
+		local palisade_columns = 0
+		precinct_ring.walk(function(x, z)
+			precinct_ring.clear_wallmounted(buf, parts, x, z, 4)
+			palisade_columns = palisade_columns +
+				dressing.palisade(buf, timber, x, z, x, z, 3)
+		end, {skip = function(x, z) return mask.lagoon(x, z) end})
+
 		-- 12. Pane shapes, settled once over the finished pad.
 		parts.resolve_panes(buf)
 
@@ -1028,6 +1040,7 @@ local function loader(directory)
 				emergents = emergents,
 				canopy = canopy,
 				cleaned = cleaned,
+				palisade_columns = palisade_columns,
 			},
 		}
 	end

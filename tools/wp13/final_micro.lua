@@ -32,6 +32,10 @@ local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 local rows = {}
 rows[#rows + 1] = dofile(repo .. "/tools/wp13/library_kat.lua")(repo)
 rows[#rows + 1] = dofile(repo .. "/tools/wp13/blueprint_kat.lua")(repo)
+-- The civic-core hedge/wall/palisade is written after structural content.
+-- Walk all six boundaries, accepting only their four authored gates, corner
+-- tower detours and water edges; then prove a later district overwrite fails.
+rows[#rows + 1] = dofile(repo .. "/tools/wp13/precinct_ring_kat.lua")(repo)
 rows[#rows + 1] = dofile(repo .. "/tools/wp13/highcourt_kat.lua")(repo)
 -- The second capital, and the first walled one: the same acceptance as
 -- Highcourt's for its core, its nine plots and its avenues, plus the four

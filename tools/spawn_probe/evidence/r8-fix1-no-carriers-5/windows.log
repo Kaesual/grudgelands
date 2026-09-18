@@ -1,0 +1,5 @@
+ACTION[Server]: GRUG_R5_SPAWN boot=1 event=window_end seconds=60 spawns=17
+ACTION[Server]: GRUG_R5_SPAWN boot=2 event=window_end seconds=60 spawns=14
+ACTION[Server]: GRUG_R5_SPAWN boot=3 event=window_end seconds=60 spawns=16
+ACTION[Server]: GRUG_R5_SPAWN boot=4 event=window_end seconds=60 spawns=9
+ACTION[Server]: GRUG_R5_SPAWN boot=5 event=window_end seconds=60 spawns=11

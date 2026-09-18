@@ -16,6 +16,7 @@
 
 local parrot = {
 	description = "Parrot",
+	clock = "day",
 	type = "animal",
 	passive = true,
 	runaway = true,

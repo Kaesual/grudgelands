@@ -4,7 +4,7 @@
 points P1–P4 are recorded in §10).
 
 **Reworked 2026-08-07** (crafting rework session): the material ladder is
-now six tiers (§3.0), the tome chain is replaced by one recipe book per
+now six tiers (§3.0), the tome chain is replaced by one UI recipe book per
 profession (§2.2), professions **refine and enchant** instead of owning
 the item catalog (§3.3–§3.6b, §6b), and there is **exactly one item per
 concept** — the vendor bracket catalog and the base craft ladder are the
@@ -27,8 +27,8 @@ design. Historical decisions in §10 remain design history only.
 
 Feeds: WP5 (loot/enchant rolls), WP7 (traders/consumables), WP10
 (professions/workbenches), WP22 (repair). Crafting mechanics frame:
-`inventory_equipment.md` §4 (3×3 grid, multi-stage, craft_predict
-unlock gate, workbench proximity, recipe book UI) — unchanged here.
+`inventory_equipment.md` §4 (3×3 grid, multi-stage, profession-level
+permission gate and recipe-book UI).
 
 **Notation (binding, 2026-08-07).** `T1`–`T6` **always** means a *gear /
 material* tier (§3.0). The four **mastery** tiers are **always written by
@@ -62,8 +62,8 @@ ladders are independent; §2.1 spells out how they meet.
   tradeable and wearable by anyone; target-race PvP specials are a separate
   channel (§4).
 - Material tiers mirror WoW: vendor supplies (thread/flux/vials) as
-  small gold sink; world materials tiered by source level; workbenches
-  uncraftable, capitals/villages only; bags are Tailor products.
+  small gold sink; world materials tiered by source level; profession
+  stations uncraftable, capitals/villages only; bags are Tailor products.
 - Vendor floor rule: vendors sell only the LOWEST tier per category
   (professions.md §4, economy.md §1).
 - **One item per concept** (decided 2026-08-07, binding): no two items
@@ -210,10 +210,10 @@ Key implementation patterns we adopt:
 
 ## 2. Profession progression: the two ladders & the recipe book
 
-**One mechanism only: the recipe book. No skill-up grind, no per-recipe
-unlocks.** (Skill-ups were considered and rejected: a second progression
-currency that fights the 10–20 h pace; the book already gates by zone
-materials, which IS the level gate.)
+**Revised 2026-09-18:** the recipe book is UI and exposes the complete catalog;
+profession level is the sole recipe-permission progression. There are no book
+items, per-recipe unlocks, keystone redemptions or ingredient-discovery
+unlocks.
 
 ### 2.1 The two ladders (mastery vs. gear) — made explicit 2026-08-07
 
@@ -254,13 +254,11 @@ new rule, all three were implicit before:
    Apprentice 1, Journeyman 2, Expert 3, Master 4 (§6b.5). It does *not*
    decide which material tier you may touch; that is the gear ladder and
    the digging-depth gate (§3.0.4).
-3. **Mastery additionally brings a few profession-exclusive recipes per
-   tier** (§3.3–§3.6b). Everything else a profession makes is a
-   refinement of a base item everybody can craft (§3.0.3).
-
-Learning a mastery tier unlocks its exclusive recipes and raises the
-fillable slot count. Learning a **book group** (below) unlocks a material
-tier's recipes. The two unlocks are separate and both are needed.
+3. **Mastery does not grant recipe permission.** The four mastery bands remain
+   the refinement/enchant-slot ladder of §6b.5. Every authored recipe instead
+   carries one T1–T6 profession tier, and profession level alone decides
+   whether it is craftable. Universal base recipes remain outside both gates
+   (§3.0.3).
 
 **The signature table is decided (2026-08-13)** — per-profession detail
 in §3.3–§3.6b, the kit rule in §7. Deliberately thin cells are design,
@@ -283,120 +281,54 @@ leather of the item's tier (professions.md §3's cross-buy as a concrete
 component item), kits ≈ 1 tier reagent + tier materials (§7), bags/
 tomes/consumables unchanged. No new numbers are introduced here.
 
-### 2.2 The recipe book — one per profession (replaces the tome chain 2026-08-07)
+### 2.2 Recipe books are UI (revised 2026-09-18)
 
-**The LotT-style tome chain is retired.** Each better tome consuming the
-previous one produced four near-identical items per profession — 24 in
-all — whose only job was to be each other's ingredient, and it forced the
-recipe catalog to be cut by mastery tier when what it actually needed to
-be cut by is material tier. Replaced by **exactly one book per
-profession**, internally grouped.
+- Learning a profession at a trainer exposes its book. A book is not an item,
+  is never bought, traded, carried, lost or consumed, and stores no state.
+- Every learned book shows its complete catalog from T1 through T6. Recipes
+  above the effective profession level remain visible but greyed, with the
+  required profession tier and corresponding character-band floor.
+- The crafting page carries two primary book slots, one slot for every
+  framework secondary (Cooking today), and the always-open General book.
+  Empty learnable slots say **learn at a trainer**. First Aid and Riding do not
+  acquire book slots.
+- The General book derives its entries from existing non-profession engine and
+  dual-furnace recipes. Those recipes remain registered by their owning mods
+  and are not re-registered by the profession framework.
+- Every furnace, dual furnace and brewing stand carries the same book button,
+  filtered to recipes for that station. Grid recipes remain beside the normal
+  3×3 grid.
+- A profession recipe is craftable only when the player has learned the
+  profession and its profession level is at least the recipe tier. Universal
+  base recipes (§3.0.3) remain craftable by everyone.
+- Unlearning removes the book immediately and wipes that profession's level
+  and current-tier count. Learning it again starts at T1.
 
-Item: `grug_items:book_<prof>` ("Book of Smithing"), tool, stack_max 1,
-**one per profession, for the whole game**.
+### 2.3 Profession level and tier ingredients (revised 2026-09-18)
 
-- **Right-click = browse**: opens the recipe book UI (LotT's
-  group-filtered guide-viewer role, §1.1) filtered to that profession.
-  Never consumed.
-- **Six groups, T1–T6** — the gear/material tiers of §3.0, in one list.
-- **Level controls visibility, the keystone controls the unlock.** A
-  group becomes *visible* when the character reaches the first level of
-  its band (§3.0: T3 at level 21), and it is shown **greyed with its
-  keystone requirement spelled out** — a Blacksmith at 21 reads
-  "requires: 6 steel bars + 2 stone cores". Redeeming the keystone once
-  (§2.3) opens the group permanently. This is why keystones survive the
-  rework: a pure level gate would lose the **zone** requirement, and
-  obtaining materials from the appropriate named source region is what the
-  keystone actually proves.
-- **Unlock state lives in player meta**, not in the item: `grug_prof:
-  <prof>` holds the highest opened group (idempotent writes). The book
-  is interface, never progression storage.
-- **Quest and boss recipes unlock inside the same book** — cultural finishing
-  operations (§4), masterworks (§6.4) and any future quest reward appear
-  in the group of their own material tier once earned. There is **no
-  second book** and no separate unique-recipe list.
-- **A player can craft only what is in their books, plus the universal
-  base recipes** (§3.0.3). That is the whole craft permission model:
-  base ladder for everyone, book contents for the two mains.
-- **Books are tradeable**, and worth exactly one purchase: a lost book is
-  re-bought from the job trainer for the same 25c (§8.2) and immediately
-  shows everything the meta says you have opened.
-- Unlearning a profession (switch at trainer, professions.md §1) wipes
-  the meta key — progression of the dropped profession is lost (as
-  decided); the book in your inventory becomes unreadable paper for you.
-- **Cooking has a book too** (§3.7) — same six groups, same level gates.
-  This overrides the old "Cooking and First Aid have no tomes" line in
-  §2.3.
+- Every profession starts at T1. Successful crafts of the **current** tier
+  advance the fixed counter in `professions.md` §1; lower-tier crafts count
+  nothing and above-tier crafts are refused.
+- Character level caps the effective profession tier to the material bands of
+  §3.0.1. Profession and item-use gates are independent: `_grug_ilvl` remains
+  the only consumption/equipment check.
+- Every profession recipe of tier N declares at least one tier-N ingredient.
+  Lower-tier ingredients may accompany it; a higher-tier ingredient may not
+  be hidden in a lower-tier recipe. Ingredient tier is registered explicitly
+  through `grug_jobs.register_ingredient_tier(item, tier)` before the recipe.
+- The former keystone tables are retired historical design data. No keystone
+  item is registered or consumed and no workbench redemption advances a book.
+  Regional ingredients still create travel and trade demand as recipe inputs,
+  not as a second unlock state.
 
-### 2.3 Authored tier keystones (the zone gate)
+### 2.4 Pacing check (10–20 h to level 60; revised 2026-09-18)
 
-**Reframed 2026-08-07.** The keystone is no longer a tome *ingredient*;
-it is the **redemption token that opens a group in the book** (§2.2). The
-materials are unchanged — they were always chosen as proof that the
-player has reached the region that produces them, and that is exactly the
-job the new model needs them for. Redemption is a one-off action at the
-profession's workbench; the materials are consumed, nothing is produced,
-the meta key advances.
-
-Columns are **book groups**, i.e. gear tiers (§3.0):
-
-| Profession | T2 group | T3 group | T4 group | T5 group | T6 group |
-|---|---|---|---|---|---|
-| Blacksmith | 6 iron bar | 6 steel bar + 2 stone core | 3 gem + 1 `group:grug_rare_trophy` | 6 embersteel bar + 2 venom sac | 6 abyssal steel bar + 2 stone core |
-| Leatherworker | 6 cured leather | 6 heavy leather + 2 bear claw | 6 scaled hide + 1 rare trophy | 6 sleek leather + 2 fang | 6 nightscale leather + 2 venom sac |
-| Tailor | 6 woven bolt | 6 heavy bolt + 4 spider silk | 6 silkweave bolt + 1 rare trophy | 6 silk bolt + 2 venom gland | 6 stormweave bolt + 2 sleek pelt |
-| Woodcarver | 6 polished wood + 1 iron staff fitting | 6 hardened wood + 1 steel staff fitting | 6 inlaid wood + 1 silversteel fitting + 1 rare trophy | 6 lacquered wood + 1 embersteel fitting + 2 sharp feather | 6 heartwood + 1 abyssal steel fitting + 4 spider silk |
-| Alchemist | 8 sunleaf + 8 gravemoss | 8 dragonweed + 2 venom gland | 8 crimson lotus + 4 stormkelp + 1 rare trophy | 8 crimson lotus + 2 venom sac | 8 stormkelp + 2 bear claw |
-| Goldsmith | 4 Iron Bars + 2 Cut Quartz | 3 Steel Bars + 1 Cut Citrine + 1 Cut Garnet + 1 Cut Jade | 4 Gold Bars + 2 Emberglass | 4 Gold Bars + 2 Embersteel Bars + 2 `grug_mobs:sleek_pelt` | 4 Gold Bars + 2 Abyssal Steel Bars + 2 `grug_mobs:bear_claw` |
-
-- **T1 opens with the profession** — no keystone; it is the tier every
-  player already crafts from (§3.0.3).
-- **The table is complete since 2026-08-13** (the A4 decision). Every
-  T5/T6 drop is existing regional loot with both-faction sources
-  (`biomes_mobs.md` §3.1/§3.2/§6): venom sac/gland from serpents and
-  spiders, fang from the shared wolf table, sleek pelt from the panther
-  pair, bear claw from the bear pair, stone core from the elite golems,
-  sharp feather from the bird-of-prey pair, crimson lotus and stormkelp
-  from both jungles/coasts. The Goldsmith rows keep their rule: ordinary
-  combat proofs, never G2 gems, loose Abyssal Crystal,
-  `group:grug_rare_trophy` or Fallen Crowns. Where a keystone consumes
-  a rare trophy at all, it does so exactly once and always at T4; the
-  Goldsmith never does. Processed tier bars are legal
-  keystone inputs and create no circularity — book groups gate
-  profession recipes, never the universal bars or picks. The
-  Woodcarver's fitting requirement is the §3.6a Blacksmith cross-buy as
-  arrival proof; its wood grades are the universal §3.6a ladder, never a
-  race wood.
-- No profession keystone may make a universal pick circular.
-- The **Herbalism and Gem Hunter rows are deleted** (2026-08-07):
-  Herbalism merged into the Alchemist, Gem Hunter into the Goldsmith
-  (professions.md §2), so the asymmetric "3 tiers"/"2 tiers" stubs have
-  no owner. Their mechanics survive inside the merged professions —
-  herb gathering is an Alchemist ability (§3.6), and natural-gem bonus
-  yield is Goldsmith (§3.6b). The Gem Detector is retired with private-island
-  treasure clusters.
-
-`group:grug_rare_trophy` = the signature drop any **named rare** carries
-(§5.4) — every named rare on your own continent qualifies; both
-factions always have sources (biomes_mobs §3.3 lists ≥4 per continent).
-
-**Cooking and First Aid stay free and universal** — the trainer teaches
-them at no main-profession cost (professions.md §1). *Revised
-2026-08-07*: **Cooking now has a recipe book** with the same six groups
-and level gates (§2.2, §3.7), because its tiers are tied to regional
-ingredients and want to be quest goals. Its groups take **no keystone** —
-the ingredient itself is the gate. **First Aid keeps no book at all**:
-all recipes at once, materials are the only gate.
-
-### 2.4 Pacing check (10–20 h to level 60)
-
-~10–20 min per level → progression milestones land at: L15 after ~2.5–5 h,
-L30 after ~5–10 h, L45 after ~7.5–15 h. Each keystone is ~30–60 min of
-natural play in the source region you just reached (6 iron bars ≈ one dig in
-the shallow T1 band or a golem hunt; 2 bear claws ≈ 8 bear kills at 1/4). A player
-who levels two professions alongside questing reaches Master at 50–55
-without detour grinding; a pure fighter buys refined and enchanted gear
-from crafters instead — both paths inside the 10–20 h envelope.
+~10–20 min per character level keeps each ten-level profession cap open for
+roughly 100–200 minutes. The five current-tier craft thresholds are
+10 / 15 / 20 / 25 / 30 (§2.3), so a player who works two professions beside
+questing has a predictable craft goal in every band without a separate
+redemption item or discovery grind. A pure fighter instead buys refined and
+enchanted gear from crafters; both paths remain inside the 10–20 h envelope.
 **Intended gear cadence: a visible upgrade every 45–90 min** (quest
 rewards + 3% world drops between the six material tiers, §3.0),
 and at 60 the professions stay load-bearing via repair (§8), consumables
@@ -406,8 +338,9 @@ signatures (§4).
 ## 3. Materials, curves and the profession catalogs
 
 Multi-stage everywhere (decided): ore → bar → component → item; hide →
-cured leather; cloth → bolt. Stages are base recipes (grid anywhere);
-the final item needs the workbench nearby.
+cured leather; cloth → bolt. Each authored recipe declares its station:
+ordinary grid, furnace, dual furnace or brewing stand. A station hint in the
+book explains where non-grid recipes are made.
 
 Reading order: **§3.0** the material ladder and the one-item-per-concept
 rule, **§3.1/§3.2** the armor and weapon curves every item is generated
@@ -1170,11 +1103,10 @@ Use **Setting** consistently for the tiered jewelry component:
 Copper-inlaid Steel and the two filigree Settings are Goldsmith components,
 not universal bars or tool materials. At T2/T3, Citrine supplies Manawell and
 Mercy Seal, Garnet supplies Battlebeat and Reclaimer's Mark, and Jade supplies
-Last Light and Apothecary Loop. The complete tier list opens with the matching
-book group: all six T4 recipes are learned together, so foreign-gem acquisition
-rather than recipe rarity is the gate. No recipe scroll, reputation grind or
-enemy unlock is involved. Goldsmith keystones are specified in §2.3 and never
-consume G2 gems or masterwork trophies.
+Last Light and Apothecary Loop. The complete tier list is visible in the
+matching book group: all six T4 recipes become craftable with profession T4,
+so foreign-gem acquisition rather than recipe rarity remains the material
+gate. No recipe scroll, reputation grind or enemy unlock is involved.
 Each core trinket recipe consumes only its tier-appropriate Setting and the
 listed Cut gem(s): there is no special-specific herb, catalyst, mob drop,
 trophy or cross-profession component.
@@ -1183,86 +1115,94 @@ trophy or cross-profession component.
 
 Neither of these costs a main profession slot (professions.md §1).
 
-- **Cooking** (trainer, free): cooked foods use regional ingredients and the
-  Cooking recipe book described below.
-  **Food v2** (R7.1/R7.2, decided 2026-09-18) replaces R9's 2026-09-17
-  raw/simply-cooked/well-cooked percentages. Every serving has a tier, a fixed
-  instant HP value and a **180 s** buff ticking every **5 s**. Exactly one food
-  buff may run at once; the latest serving replaces it. Eating in combat is
-  allowed: regeneration pauses, and the instant heal is deferred exactly once
-  to the first out-of-combat moment, checked every second, while secondary stat
-  bonuses remain active.
-  - Tier data are **T1 5 HP/L1, T2 15/L10, T3 40/L20, T4 90/L30,
-    T5 180/L40, T6 300/L50**. The instant value is HP only and identical for
-    every food in that tier.
-  - Any raw or unprocessed edible restores its tier's instant HP and regenerates
-    **1% of maximum HP per 5 s**, identical across tiers. A mana raw food uses
-    maximum mana for that regeneration component; Wild Cocoa is the current
-    example. A character without a mana pool receives a message and consumes
-    nothing.
-  - Dish effects are tier data, not branches in consumption code. The current
-    proposal is 2/3/3/4/4/5% of the selected maximum pool per tick for T1–T6.
-    HP, mana and split HP+mana roles live in the data table. T3/T4 add a total
-    +2/+4% role pool bonus; T5/T6 add +6/+8% to the selected pool, while the
-    split role instead adds +1 percentage point Crit. Round 8 may replace this
-    proposal table without changing the framework.
-  - Apples, blueberries, raw fish, raw meat and every gathering-catalog
-    `food`/`found_only_food` item are raw foods. Cooked Fish and cooked meat
-    are T1 HP dishes. All current foods are T1 unless a gathering row publishes
-    another tier.
-  - Every food carries `_grug_ilvl` from its tier and is refused below that
-    character level without consumption. Its tooltip states fixed instant HP,
-    tick effect, duration, combat rule and any requirement above level 1.
-  - Buffs are runtime-only. Relogging drops a food buff; it is not persisted.
-    The natural replacement cadence is one serving per 180 s, or about
-    **20 servings per hour**.
+- **Cooking** (trainer, free) uses the profession framework. Learning it opens
+  T1 and shows the complete T1–T6 catalog; profession level gates crafting and
+  `_grug_ilvl` gates eating independently. There is no Cooking Fire.
 
-  **Cooking gets a recipe book** (2026-08-07, §2.2): the same six T1–T6
-  groups and the same level gates as a profession book, but **no
-  keystones** — a cooking tier opens on its **ingredients**, which are
-  regional, so **T6 cooking needs ingredients that only exist in level
-  50+ areas**. Tier unlocks are explicitly wanted as quest goals ("find
-  cocoa in the jungle"). Cooking is free and universal *and* gated; the
-  book is what makes both true at once.
+  **Food v2 shipped values.** A serving lasts **180 s**, ticks every **5 s**,
+  and the newest food replaces the old one. Instant healing and regeneration
+  wait while the player is in combat; secondary modifiers remain active.
 
-  **The six groups are decided (E21, 2026-08-13; effects replaced by Food v2
-  on 2026-09-18)** — gate ingredient and recipes; every gate ingredient is
-  **reachable by both factions** (`biomes_mobs.md` §2/§6): T1–T5 gates
-  exist on both continents, while wild cocoa deliberately lives only on
-  the shared contested front — The Skyglass Canopy on foot, Stormscale
-  Summit as the offshore island bonus — so no continent-local placement
-  may reintroduce it below level 51:
+  | Tier | Minimum level | Instant HP | Dish regeneration per tick | Hearty secondary | Caster secondary | Hunter secondary |
+  |---|---:|---:|---:|---|---|---|
+  | T1 | 1 | 5 | 2% | — | — | — |
+  | T2 | 11 | 15 | 2.5% | — | — | — |
+  | T3 | 21 | 40 | 3% | +2% HP pool | +2% mana pool | +2% HP pool |
+  | T4 | 31 | 90 | 3.5% | +4% HP pool | +4% mana pool | +4% HP pool |
+  | T5 | 41 | 180 | 4% | +6% HP pool | +6% mana pool | +1% Crit |
+  | T6 | 51 | 300 | 5% | +8% HP pool | +8% mana pool | +1% Crit |
 
-  | Group | Gate ingredient | Recipes |
+  Hearty and Hunter dishes regenerate HP. Caster dishes regenerate both HP and
+  mana at the listed rate. Every raw edible regenerates 1% maximum HP per tick;
+  Wild Cocoa is HP food, not mana food. Rock Salt and Salt Crust are inedible.
+
+  **Plants pending placement (R8-MAP-B).** R8-COOK registers these as
+  craftitems only. Their `Raw tier` is the band of the lowest planned source;
+  `Recipe tier` is the profession ingredient tier and may deliberately differ.
+
+  | Item | Raw tier | Recipe tier | Food rule | Planned source |
+  |---|---:|---:|---|---|
+  | Wild Grain | T1 | T1 | raw HP food | start-zone clearings |
+  | Carrot / Cassava | T1 | T1 | raw HP food | Accord / Throng start palettes |
+  | Wild Onion / Fire Pepper | T1 | T1 | inedible spice | faction start and home palettes |
+  | Pumpkin | T2 | T2 | raw HP food | level 11–20 margins |
+  | Blightberry / Sunberry / Jungle Berry | T2 | T2 | raw HP food | Throng level 11–20 palettes |
+  | Frost Melon | T3 | T4 | raw HP food | Frostbarrow and Whitebridge, level 21–30 |
+  | Sugar Cane | T1 | T2 | inedible sweetener | fresh and salt shores in every band |
+  | Bamboo Shoot | T1 | T1 | raw HP food | jungle and swamp shores |
+  | Cave Cap | T3 | T3 | raw HP food | caves at y −100…−500 |
+  | Salt Crust | T5 | T5 | inedible salt | The Shattered Line, level 41–50 |
+  | Ember Moss | T5 | T5 | inedible Alchemist reagent | emberrock at y ≤ −701 |
+
+  Existing raw-food tiers are Apple T1, Blueberries T1, raw meat T1, ordinary
+  Raw Fish T1, Corn T1, Potato T1, Melon T1, Mushroom T3 and Wild Cocoa T6.
+  The five band fish are T2–T6 respectively. Cooked Meat, Cooked Fish and Bread
+  are T1 Hearty dishes.
+
+  **Cooking book.** Every row is a profession recipe at the crafting grid and
+  contains at least one ingredient registered at its own recipe tier.
+
+  | Tier | Role | Inputs | Output |
+  |---|---|---|---|
+  | T1 | Hearty | raw meat + potato or corn | Hearty Stew |
+  | T1 | Caster | carrot or cassava + potato or corn | Sweetroot Mash |
+  | T1 | Hunter | raw fish + corn | Corn-Crusted Fish |
+  | T2 | Hearty | pumpkin + raw meat + potato or corn | Pumpkin Stew |
+  | T2 | Caster | 2 berries + Sugar Cane | Berry Preserve |
+  | T2 | Hunter | raw meat + apple or berries | Fruit-Glazed Roast |
+  | T3 | Hearty | mushroom + raw meat + potato or corn | Forager's Pot |
+  | T3 | Caster | 2 mushrooms | Mushroom Skewer |
+  | T3 | Hunter | raw meat + Wild Onion or Fire Pepper + mushroom | Onion-Seared Steak |
+  | T4 | Hearty | raw meat + Marshbloom + potato or corn | Marsh Roast |
+  | T4 | Caster | raw fish + Marshbloom | Marshbloom Chowder |
+  | T4 | Hunter | 2 raw meat + melon + mushroom | Hunter's Feast |
+  | T5 | Hearty | raw meat + Stormkelp + Rock Salt | Kelp-Wrapped Roast |
+  | T5 | Caster | Stormkelp + raw fish + melon | Stormkelp Broth |
+  | T5 | Hunter | raw fish + Rock Salt | Salt-Crusted Fish |
+  | T6 | Hearty | 2 raw meat + Wild Cocoa + Stormkelp | Grand Feast |
+  | T6 | Caster | 2 Wild Cocoa + Rock Salt | Jungle Cocoa |
+  | T6 | Hunter | raw meat + Wild Cocoa + Fire Pepper or Wild Onion | Cocoa-Rubbed Game |
+
+  **Both furnace patterns.** The three universal refinements appear in the
+  General book with a Furnace hint and need no profession: raw meat → Cooked
+  Meat, ordinary Raw Fish → Cooked Fish, and Wild Grain → Bread. Separately,
+  every tier has one Cooking grid recipe for an inedible raw assembly; its
+  profession-gated furnace route meets the direct grid route at the same edible
+  Hearty dish:
+
+  | Tier | Raw assembly inputs | Furnace output |
   |---|---|---|
-  | T1 | potato/corn | Cooked Meat / Cooked Fish; Hearty Stew (meat + potato/corn) |
-  | T2 | berries (apples as Accord extra) | Berry Preserve (2 berries); Fruit-Glazed Roast (meat + fruit) |
-  | T3 | mushrooms (found-only) | Mushroom Skewer (2 mushrooms); Forager's Pot (mushroom + meat + potato/corn) |
-  | T4 | melon + marshbloom | Marshbloom Chowder (fish + marshbloom); Hunter's Feast (2 meat + melon + mushroom) |
-  | T5 | rock salt + stormkelp | Salt-Crusted Fish (fish + rock salt); Kelp-Wrapped Roast (meat + stormkelp + rock salt) |
-  | T6 | wild cocoa | Jungle Cocoa (2 wild cocoa + rock salt); Grand Feast (2 meat + wild cocoa + stormkelp) |
+  | T1 | raw meat + potato or corn + Wild Grain | Hearty Stew |
+  | T2 | pumpkin + raw meat + Wild Grain | Pumpkin Stew |
+  | T3 | Cave Cap + raw meat + potato or corn | Forager's Pot |
+  | T4 | raw meat + Marshbloom + Frost Melon | Marsh Roast |
+  | T5 | raw meat + Stormkelp + Salt Crust | Kelp-Wrapped Roast |
+  | T6 | 2 raw meat + Wild Cocoa + Salt Crust | Grand Feast |
 
-  **Where the fish comes from, and the T1 dish — shipped 2026-09-16**
-  (WP13 playtest round 5; `docs/research/wp13-fishing.md`). The ladder above
-  named "fish" before anything produced one outside a Mirefolk drop. Fishing
-  is now a second source for that same item, and the T1 **Cooked Fish** exists
-  as the plain furnace dish the cooking ladder always listed. The three rows
-  below are the shipped items and nothing more: **the T4 Marshbloom Chowder,
-  the T5 Salt-Crusted Fish and the real Round 8 dish assignments remain to be
-  built**.
-
-  | Item | Itemstring | How it is obtained | Effect | Vendor price |
-  |---|---|---|---|---|
-  | Fishing Rod | `grug_fishing:rod` | crafted: 3 × stick + 2 × Spider Silk (the game's only string-class material); 64 catches | no dig, no damage; right-click water to cast | none (not a mob drop) |
-  | Raw Fish | `grug_mobs:raw_fish` | Mirefolk drop (WP6) **and, since this round, fishing** | T1 raw: 5 instant HP + 1% max HP/5 s | 2c (unchanged) |
-  | Cooked Fish | `grug_fishing:cooked_fish` | furnace, `cooking` recipe from Raw Fish, cooktime 5 | T1 HP dish: 5 instant HP + 2% max HP/5 s | none, exactly as `mobs:meat` — so §3.8's anti-loop rule has nothing to judge |
-
-  **One catch table for the whole world, per the round-5 ruling** ("fish
-  availability shall be identical on both continents, distributed over the
-  zones"): 78 % fish, 12 % stick, 10 % papyrus, with per-zone tables left as a
-  named seam for later. The junk is deliberately worthless and deliberately
-  **not** Stormkelp: that is the front-only T5 gate above, and a world-wide
-  fishing source for it would put the ingredient in every pond.
+  Fishing remains universal. `grug_fishing.table_for(pos)` maps the
+  authoritative mob level at the cast position to six ten-level tables; each
+  table is 78% its band fish, 12% stick and 10% papyrus. Fresh and salt water
+  use the same table for the same level.
 
 - **First Aid** (trainer, free): Linen/Heavy/Silk Bandage — channel
   6 s (damage interrupts), restores 15%/30%/45% HP, then 30 s
@@ -1336,7 +1276,7 @@ changes:
   tiers therefore consumes exactly **6 Diamond / 6 Sapphire / 6 Ruby**. A
   two-handed weapon consumes its tier's main-hand gem and its offhand gem,
   preserving the demand of the displaced slot. Pickaxes, shovels, axes and
-  other gathering tools, bars, furnaces, repair and profession keystones are
+  other gathering tools, bars, furnaces and repair are
   excluded. Refinement and ordinary affixes do not charge the base G2 again.
   Species grants no hidden stat; it is the recipe's material identity.
   Trinkets use their explicit symmetric recipes in §3.6b/§6.2.
@@ -1467,7 +1407,7 @@ culture.
 - Foreign cultural materials are used almost exclusively for optional
   level-40+ PvP counters. They never enter universal bars/tools, ordinary G2
   base costs, ordinary recovery consumables, solo-leveling requirements or
-  profession keystones. Regional G2 demand and optional cultural-counter
+  profession-level advancement. Regional G2 demand and optional cultural-counter
   demand are independent economies.
 - Signature woods remain universal `group:wood` inputs. Their distinct value
   is cultural builds, furniture and optional recipes, never mandatory tool
@@ -1788,7 +1728,7 @@ this document.
 guaranteed Uncommon (rare window) + 25% Rare + **100% signature trophy**
 (`group:grug_rare_trophy` — Grimtusk's Tusk, Silkfang's Gland, …): a
 qualifying optional masterwork ingredient and, where explicitly listed, a
-profession-book proof. It never enters a universal bar or pick (§2.3,
+profession recipe input. It never enters a universal bar or pick (§2.3,
 §3.0.2, §6.4). Anti-camping:
 patrol routes + broadcast + the 2–4 h jitter (already decided) — no
 extra mechanic needed.
@@ -1828,7 +1768,7 @@ invulnerable.
   existing trophy slot of an ordinary Master-tier masterwork, including a T6
   Grudgeforged item. It grants the same stat/affix budget and quality window;
   royal provenance supplies visual identity.
-- No universal bar, pick, profession keystone or ordinary base gear requires a
+- No universal bar, pick, profession-level advancement or ordinary base gear requires a
   Crown, and no power-bearing recipe is Crown-only. Guard loot is ordinary
   level-60 elite loot and never substitutes for a Crown. Rewards enter the
   ledger only if their sellable items are later sold.
@@ -2135,8 +2075,9 @@ profession-only.
 
 ### 6b.1 Only professions refine
 
-A base item becomes a **refined** item at the profession's workbench. The
-refinement is expressed in the item **name** by a family word:
+A base item becomes a **refined** item through its authored profession recipe.
+Its station is declared by that recipe and shown in the book. The refinement
+is expressed in the item **name** by a family word:
 
 | Family | Refinement word | Example |
 |---|---|---|
@@ -2301,8 +2242,8 @@ that slows attackers, for instance.
 
 ## 7. Upgrade mechanics (resolves the old §2 — no failure chance)
 
-Two kit types per profession, applied in the grid (item + kit),
-workbench nearby; effects on the item's OWN family only (whetstones/armor
+Two kit types per profession, applied in the grid (item + kit); effects on the
+item's OWN family only (whetstones/armor
 polish = Blacksmith, armor kits = Leatherworker, embroidery = Tailor,
 wood oils = Woodcarver, gem settings = Goldsmith, imbuing oils =
 apothecary gear):
@@ -2377,9 +2318,9 @@ assigns a reference price and `_grug_sell_price` stores the resulting final
 payout; foreign definitions use `grug_traders.set_price`. Zero means
 unsellable, while every mob drop receives a positive payout.
 
-Core supplies remain simple fixed-price goods. A profession replacement book
-costs 25c and immediately reflects player-meta progression. Finder-item rows
-are deleted; no Dowsing Rod or Gem Detector is sold or crafted.
+Core supplies remain simple fixed-price goods. No profession book is sold or
+replaced: the UI book reflects player-meta progression directly. Finder-item
+rows are deleted; no Dowsing Rod or Gem Detector is sold or crafted.
 
 ### 8.3 Recurring sinks
 
@@ -2546,12 +2487,12 @@ mastery tiers. Cutting by class was rejected: it breaks the moment
 Phase 2 adds four classes, and a material profession serving several
 classes is what keeps the supply chain social (professions.md §2/§4).
 
-**D4 — One recipe book per profession, groups instead of a chain.** The
-LotT tome chain is retired: level controls visibility, the keystone
-controls the unlock, quest and boss recipes land in the same book, and a
-player crafts only what is in their books plus the universal base
-recipes. The keystones survive because they carry the **zone** gate a
-level check cannot (§2.2/§2.3).
+**D4 — One UI recipe book per profession, groups instead of a chain
+(revised 2026-09-18).** The LotT tome chain and authored keystones are
+retired. A learned profession exposes its complete catalog; profession level
+controls crafting permission while locked rows remain visible. Quest and boss
+recipes land in the same book, and universal base recipes remain in the
+General book (§2.2/§2.3).
 
 **D5 — Refinement is the profession's product.** +15 % base damage or
 armor and +100 % durability; only refined items can be enchanted; affixes

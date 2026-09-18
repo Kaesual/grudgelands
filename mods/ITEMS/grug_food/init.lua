@@ -8,38 +8,38 @@ grug_food.INTERVAL = 5
 
 grug_food.TIERS = {
 	[1] = {instant_hp = 5, min_level = 1, dishes = {
-		hp = {regen = {hp = 2}, modifiers = {}},
-		mana = {regen = {mana = 2}, modifiers = {}},
-		hybrid = {regen = {hp = 1, mana = 1}, modifiers = {}},
+		hearty = {regen = {hp = 2}, modifiers = {}},
+		caster = {regen = {hp = 2, mana = 2}, modifiers = {}},
+		hunter = {regen = {hp = 2}, modifiers = {}},
 	}},
-	[2] = {instant_hp = 15, min_level = 10, dishes = {
-		hp = {regen = {hp = 3}, modifiers = {}},
-		mana = {regen = {mana = 3}, modifiers = {}},
-		hybrid = {regen = {hp = 1.5, mana = 1.5}, modifiers = {}},
+	[2] = {instant_hp = 15, min_level = 11, dishes = {
+		hearty = {regen = {hp = 2.5}, modifiers = {}},
+		caster = {regen = {hp = 2.5, mana = 2.5}, modifiers = {}},
+		hunter = {regen = {hp = 2.5}, modifiers = {}},
 	}},
-	[3] = {instant_hp = 40, min_level = 20, dishes = {
-		hp = {regen = {hp = 3}, modifiers = {hp_pool_percent = 2}},
-		mana = {regen = {mana = 3}, modifiers = {mana_pool_percent = 2}},
-		hybrid = {regen = {hp = 1.5, mana = 1.5}, modifiers = {
-			hp_pool_percent = 1, mana_pool_percent = 1,
-		}},
+	[3] = {instant_hp = 40, min_level = 21, dishes = {
+		hearty = {regen = {hp = 3}, modifiers = {hp_pool_percent = 2}},
+		caster = {regen = {hp = 3, mana = 3},
+			modifiers = {mana_pool_percent = 2}},
+		hunter = {regen = {hp = 3}, modifiers = {hp_pool_percent = 2}},
 	}},
-	[4] = {instant_hp = 90, min_level = 30, dishes = {
-		hp = {regen = {hp = 4}, modifiers = {hp_pool_percent = 4}},
-		mana = {regen = {mana = 4}, modifiers = {mana_pool_percent = 4}},
-		hybrid = {regen = {hp = 2, mana = 2}, modifiers = {
-			hp_pool_percent = 2, mana_pool_percent = 2,
-		}},
+	[4] = {instant_hp = 90, min_level = 31, dishes = {
+		hearty = {regen = {hp = 3.5}, modifiers = {hp_pool_percent = 4}},
+		caster = {regen = {hp = 3.5, mana = 3.5},
+			modifiers = {mana_pool_percent = 4}},
+		hunter = {regen = {hp = 3.5}, modifiers = {hp_pool_percent = 4}},
 	}},
-	[5] = {instant_hp = 180, min_level = 40, dishes = {
-		hp = {regen = {hp = 4}, modifiers = {hp_pool_percent = 6}},
-		mana = {regen = {mana = 4}, modifiers = {mana_pool_percent = 6}},
-		hybrid = {regen = {hp = 2, mana = 2}, modifiers = {crit_percent = 1}},
+	[5] = {instant_hp = 180, min_level = 41, dishes = {
+		hearty = {regen = {hp = 4}, modifiers = {hp_pool_percent = 6}},
+		caster = {regen = {hp = 4, mana = 4},
+			modifiers = {mana_pool_percent = 6}},
+		hunter = {regen = {hp = 4}, modifiers = {crit_percent = 1}},
 	}},
-	[6] = {instant_hp = 300, min_level = 50, dishes = {
-		hp = {regen = {hp = 5}, modifiers = {hp_pool_percent = 8}},
-		mana = {regen = {mana = 5}, modifiers = {mana_pool_percent = 8}},
-		hybrid = {regen = {hp = 2.5, mana = 2.5}, modifiers = {crit_percent = 1}},
+	[6] = {instant_hp = 300, min_level = 51, dishes = {
+		hearty = {regen = {hp = 5}, modifiers = {hp_pool_percent = 8}},
+		caster = {regen = {hp = 5, mana = 5},
+			modifiers = {mana_pool_percent = 8}},
+		hunter = {regen = {hp = 5}, modifiers = {crit_percent = 1}},
 	}},
 }
 
@@ -296,6 +296,7 @@ function grug_food.register_item(item_name, tier, kind, role)
 			tooltip_for(tier, effect),
 		groups = groups,
 		_grug_ilvl = tier_def.min_level,
+		_grug_tier = tier,
 		on_use = function(itemstack, user)
 			return grug_food.eat(itemstack, user, tier, kind, role)
 		end,
@@ -313,11 +314,16 @@ local CURRENT_FOODS = {
 	{"default:apple", 1, "raw", "hp"},
 	{"default:blueberries", 1, "raw", "hp"},
 	{"mobs:meat_raw", 1, "raw", "hp"},
-	{"mobs:meat", 1, "dish", "hp"},
+	{"mobs:meat", 1, "dish", "hearty"},
 	{"mobs:meatblock_raw", 1, "raw", "hp"},
-	{"mobs:meatblock", 1, "dish", "hp"},
+	{"mobs:meatblock", 1, "dish", "hearty"},
 	{"grug_mobs:raw_fish", 1, "raw", "hp"},
-	{"grug_fishing:cooked_fish", 1, "dish", "hp"},
+	{"grug_fishing:silver_trout", 2, "raw", "hp"},
+	{"grug_fishing:mire_carp", 3, "raw", "hp"},
+	{"grug_fishing:frostfin", 4, "raw", "hp"},
+	{"grug_fishing:ember_eel", 5, "raw", "hp"},
+	{"grug_fishing:storm_tuna", 6, "raw", "hp"},
+	{"grug_fishing:cooked_fish", 1, "dish", "hearty"},
 }
 
 for index = 1, #CURRENT_FOODS do
@@ -326,13 +332,20 @@ for index = 1, #CURRENT_FOODS do
 		"grug_food: missing current food " .. row[1])
 end
 
+grug_food.RAW_GATHERING_TIERS = {
+	corn = 1,
+	melon = 1,
+	mushroom = 3,
+	potato = 1,
+	wild_cocoa = 6,
+}
+
 local gathering = grug_gathering.p9g_sources()
 for index = 1, #gathering do
 	local row = gathering[index]
-	if row.harvest_kind == "food" or row.harvest_kind == "found_only_food" then
-		local role = row.raw_item == "grug_gathering:wild_cocoa"
-			and "mana" or "hp"
-		assert(grug_food.register_item(row.raw_item, row.tier or 1, "raw", role),
+	local tier = grug_food.RAW_GATHERING_TIERS[row.key]
+	if tier then
+		assert(grug_food.register_item(row.raw_item, tier, "raw", "hp"),
 			"grug_food: missing gathering food " .. row.raw_item)
 	end
 end

@@ -63,6 +63,7 @@ local function loader(directory)
 	local capitals = dofile(directory .. "/capitals.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
+	local precinct_ring = dofile(directory .. "/precinct_ring.lua")
 	local wall = dofile(directory .. "/wall.lua")(directory)
 	local plots = dofile(directory .. "/nhal_veyr_plot.lua")(directory)
 	local districts = dofile(directory .. "/nhal_veyr_districts.lua")(directory)
@@ -243,7 +244,7 @@ local function loader(directory)
 
 		-- 8. The bonesmiths' guild, in the south-east corner.
 		{id = "bonesmith_guild", module = "capitals", make = "scriptorium",
-			x = 29, z = -46, turns = 0, palette = "crypt", roof = "vault",
+			x = 29, z = -46, turns = 2, palette = "crypt", roof = "vault",
 			spec = {w = 13, d = 17, wall_h = 6}},
 
 		-- 9. The kept houses: four on the outer ground, and the contract's
@@ -254,7 +255,7 @@ local function loader(directory)
 		-- to face their ground instead: the `home` kit furnishes the cell
 		-- behind every other wall and only the z- doorway is authored clear.
 		{id = "market_house", module = "buildings", make = "cottage",
-			x = -45, z = -20, turns = 1, palette = "undead",
+			x = -45, z = -20, turns = 3, palette = "undead",
 			spec = {w = 9, d = 9, wall_h = 5, roof = "gable",
 				ridge_axis = "z", infill = true, shutters = true}},
 		{id = "south_house", module = "buildings", make = "cottage",
@@ -945,10 +946,10 @@ local function loader(directory)
 		-- pad: Nhal Veyr's core edge, the piece Dur Brannoc landed, in dungeon
 		-- stone.
 		--
-		-- The DRUMS FIRST, because the parapet runs into them and not the other
-		-- way round: the ring is walked column by column and stops at whatever
-		-- already stands on the boundary, so a drum authored afterwards would
-		-- find its own corner built over and quietly not appear.
+		-- The DRUMS FIRST. The protected parapet explicitly skips the five square
+		-- boundary columns at each corner; each closed drum perimeter owns that
+		-- detour and the first parapet column beyond the skip joins straight into
+		-- it. This is an authored corner substitution, not an occupied-cell stop.
 		local drums = 0
 		for _, corner in ipairs({{-45, -45}, {45, -45}, {-45, 45}, {45, 45}}) do
 			local cx, cz = corner[1], corner[2]
@@ -971,11 +972,9 @@ local function loader(directory)
 			error("wp13 nhal veyr: " .. drums ..
 				" of the four corner drums found room", 0)
 		end
-		-- The parapet is walked round the WHOLE pad rather than authored in
-		-- four stretches: every column of the boundary ring that is still open
-		-- ground gets its courses, and the run breaks by itself at a gatehouse,
-		-- a drum, a plot or a street. Hand-placed runs are how a boundary ends
-		-- up built through a cottage's apron.
+		-- The protected parapet is walked round the whole pad after the content.
+		-- It wins every ordinary column; the shared mask omits the four authored
+		-- gatehouse bands and the callback preserves the four corner drums.
 		--
 		-- IRON BARS ON THE RHYTHM, which is where the contract's "candles and
 		-- iron bars" reaches the core's own edge: every fourth column of the
@@ -983,28 +982,22 @@ local function loader(directory)
 		-- `window`, an `xpanes` flat pane, standing in the gap between two
 		-- courses of masonry.
 		local parapet, bars = 0, 0
-		for offset = -RADIUS + 1, RADIUS - 1 do
-			for _, spot in ipairs({{offset, RADIUS - 1}, {offset, -RADIUS + 1},
-					{RADIUS - 1, offset}, {-RADIUS + 1, offset}}) do
-				local x, z = spot[1], spot[2]
-				-- Only on the ground the settlement has NOT paved. A precinct
-				-- wall walked across a gate road is a gate nothing can drive
-				-- through, and `layout.free` says "nothing stands here", not
-				-- "this is not a street".
-				if layout.natural(buf, x, z) and layout.free(buf, x, z, 4) then
-					buf:put(x, 1, z, STONE)
-					buf:put(x, 2, z, STONE)
-					if (x + z) % 4 == 0 then
-						buf:put(x, 3, z, STONE)
-						buf:put(x, 4, z, CAP)
-					elseif (x + z) % 4 == 2 then
-						buf:put(x, 3, z, undead.node("window"))
-						bars = bars + 1
-					end
-					parapet = parapet + 1
+		precinct_ring.walk(function(x, z)
+			precinct_ring.clear_wallmounted(buf, parts, x, z, 4)
+			buf:put(x, 1, z, STONE)
+			buf:put(x, 2, z, STONE)
+			if (x + z) % 4 == 0 then
+				buf:put(x, 3, z, STONE)
+				local above = buf:at(x, 5, z)
+				if not above or above.name == "air" then
+					buf:put(x, 4, z, CAP)
 				end
+			elseif (x + z) % 4 == 2 then
+				buf:put(x, 3, z, undead.node("window"))
+				bars = bars + 1
 			end
-		end
+			parapet = parapet + 1
+		end, {skip = precinct_ring.is_corner})
 
 		-- 13. Blight flora on the turf between the quarters: bone piles and
 		-- dead shrubs on about a fifth of the columns the city has not built

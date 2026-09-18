@@ -480,9 +480,10 @@ capital meadows, undead and troll savanna. What ships now:
 The capital watch remains level 60 and still uses its guard banner; the six
 WP13 cities stand around it since 2026-09-16 (`settlements.md`, "Capitals in
 the world"). The king/royal-guard binding, reset, death and group-respawn
-rules are decided in `world_zones.md` §12 and replace the generic
-future-bodyguard placeholder below; **no king entity is implemented yet** --
-every capital core authors a `king` socket and nothing stands on it.
+rules are implemented by the six level-65 king entities and their four
+level-60 royal guards per capital. They consume the authored `king` and royal
+guard sockets; the king alone owns reset, death and group-respawn authority as
+specified in `world_zones.md` §12.
 
 ## 4. Outposts & patrols
 

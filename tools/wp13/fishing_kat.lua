@@ -3,12 +3,9 @@
 -- Three rulings are under test, and each one is checked against the real
 -- sources rather than a transcription of them:
 --
---   A  ONE TABLE FOR THE WHOLE WORLD. "Fish availability shall be IDENTICAL on
---      both continents (distributed over the zones)" -- so `table_for` has to
---      answer with the same table on either side of the z = 0 mirror, the
---      weights have to be exhaustively reachable, and no roll in range may
---      fall through. Also: fishing adds no fish ITEM, it adds a second source
---      for the one the game already has.
+--   A  SIX LEVEL-BAND TABLES. Round 8 replaced the original worldwide table;
+--      `table_for` now follows the authoritative zone level while salt and
+--      fresh water remain equally valid.
 --   B  THE BITE IS A DELAY, and both ends of it live in one place.
 --   C+D THE MECHANIC. `mods/ITEMS/grug_fishing/init.lua` is loaded under a
 --      stub engine, its real registrations are read back, and the real
@@ -40,6 +37,11 @@ local CATCH_SOURCE = {
 		"register_craftitem(\"default:stick\""},
 	["default:papyrus"] = {"mods/BASE/default/nodes.lua",
 		"register_node(\"default:papyrus\""},
+	["grug_fishing:silver_trout"] = {INIT, "{\"silver_trout\""},
+	["grug_fishing:mire_carp"] = {INIT, "{\"mire_carp\""},
+	["grug_fishing:frostfin"] = {INIT, "{\"frostfin\""},
+	["grug_fishing:ember_eel"] = {INIT, "{\"ember_eel\""},
+	["grug_fishing:storm_tuna"] = {INIT, "{\"storm_tuna\""},
 }
 
 -- The rod's two ingredients, likewise transcribed rather than read off the
@@ -84,7 +86,7 @@ local function build_harness(repo)
 		tools = {}, craftitems = {}, crafts = {}, eatable = {},
 		globalstep = nil, on_leave = {}, on_die = {}, on_mods_loaded = {},
 		logs = {}, chat = {}, sounds = {}, dropped = {},
-		nodes = {}, rolls = {}, roll_at = 0,
+		nodes = {}, rolls = {}, roll_at = 0, fish_level = 1,
 	}
 
 	local registered_items = {}
@@ -231,7 +233,7 @@ function M.run(repo)
 	local harness = build_harness(repo)
 	local saved = {}
 	for _, key in ipairs({"core", "vector", "PcgRandom", "ItemStack",
-			"mobs", "grug_fishing"}) do
+			"mobs", "grug_core", "grug_fishing"}) do
 		saved[key] = rawget(_G, key)
 	end
 	rawset(_G, "core", harness.core)
@@ -240,6 +242,9 @@ function M.run(repo)
 	rawset(_G, "ItemStack", new_stack)
 	rawset(_G, "mobs", {add_eatable = function(name, hp)
 		harness.eatable[name] = hp
+	end})
+	rawset(_G, "grug_core", {mob_level_at = function()
+		return harness.fish_level
 	end})
 	rawset(_G, "grug_fishing", nil)
 
@@ -251,7 +256,7 @@ function M.run(repo)
 	-- failure to fix, not a state to paper over.
 	local function restore()
 		for _, key in ipairs({"core", "vector", "PcgRandom", "ItemStack",
-				"mobs", "grug_fishing"}) do
+				"mobs", "grug_core", "grug_fishing"}) do
 			rawset(_G, key, saved[key])
 		end
 	end
@@ -271,7 +276,7 @@ function M.run(repo)
 	end
 
 	--
-	-- A. one table for the whole world
+	-- A. one table for each ten-level band
 	--
 	local catch_table = fishing.table_for({x = 0, y = 0, z = 0})
 	check(type(catch_table) == "table" and #catch_table > 0,
@@ -287,10 +292,6 @@ function M.run(repo)
 		check(entry.count >= 1, entry.name .. " has a non-positive count")
 		check(entry.name:match("^[%a_]+:[%a_]+$") ~= nil,
 			"'" .. tostring(entry.name) .. "' is not a plain item name")
-		-- NO NEW FISH: fishing is a second source, not a second item.
-		check(entry.name:match("^grug_fishing:") == nil,
-			entry.name .. " is registered by the fishing mod itself -- the " ..
-			"catch table must only name items the game already has")
 		local source = CATCH_SOURCE[entry.name]
 		if check(source ~= nil, entry.name ..
 				" is not one of the items this fixture knows the source of") then
@@ -324,21 +325,23 @@ function M.run(repo)
 	check(fishing.catch_at(catch_table, sum) ~= nil,
 		"a roll at the top of the range falls through")
 
-	-- BOTH CONTINENTS. The world mirrors at z = 0 (grug_mapgen/biomes.lua), so
-	-- these eight positions are four Throng places and their four Accord
-	-- mirrors, plus the deep and the high case.
-	local SAME = {
-		{x = 0, y = 0, z = 0}, {x = 900, y = 12, z = 700},
-		{x = 900, y = 12, z = -700}, {x = -1200, y = 4, z = 2500},
-		{x = -1200, y = 4, z = -2500}, {x = 30000, y = -180, z = 30000},
-		{x = -30000, y = 240, z = -30000}, {x = 5, y = 62, z = -5},
-	}
-	for _, pos in ipairs(SAME) do
-		check(fishing.table_for(pos) == catch_table,
-			"table_for is not the same table at (" .. pos.x .. "," .. pos.y ..
-			"," .. pos.z .. ") -- fish availability must be identical on " ..
-			"both continents")
+	local band_fish = {}
+	for band = 1, 6 do
+		harness.fish_level = (band - 1) * 10 + 1
+		local selected = fishing.table_for({x = band, y = 0, z = band})
+		check(selected == fishing.CATCH_TABLES[band],
+			"table_for chose the wrong level band " .. band)
+		local band_total = 0
+		for _, entry in ipairs(selected) do
+			band_total = band_total + entry.weight
+			local source = CATCH_SOURCE[entry.name]
+			check(source ~= nil, entry.name .. " has no independent source row")
+		end
+		check(band_total == 100, "band " .. band .. " weight differs")
+		band_fish[#band_fish + 1] = selected[1].name
 	end
+	harness.fish_level = 1
+	row("wp13_fishing_bands", table.concat(band_fish, ","))
 
 	--
 	-- B. the bite
@@ -442,8 +445,10 @@ function M.run(repo)
 	local step = harness.globalstep
 	check(type(step) == "function", "the mod registered no globalstep")
 
-	local WATER = "default:water_source"
-	harness.registered_items[WATER] = {groups = {water = 3}}
+	local SALT_WATER = "default:water_source"
+	local FRESH_WATER = "default:river_water_source"
+	harness.registered_items[SALT_WATER] = {groups = {water = 3}}
+	harness.registered_items[FRESH_WATER] = {groups = {water = 3}}
 	harness.registered_items["default:stone"] = {groups = {cracky = 3}}
 	harness.registered_items["grug_mobs:raw_fish"] =
 		{description = "Raw Fish", groups = {food_fish_raw = 1}}
@@ -453,7 +458,9 @@ function M.run(repo)
 		groups = {}}
 
 	local POND = {x = 10, y = 3, z = 10}
-	harness.nodes[harness.node_key(POND)] = WATER
+	harness.nodes[harness.node_key(POND)] = SALT_WATER
+	local RIVER = {x = 12, y = 3, z = 10}
+	harness.nodes[harness.node_key(RIVER)] = FRESH_WATER
 	local DRY = {x = 10, y = 3, z = 12}
 	harness.nodes[harness.node_key(DRY)] = "default:stone"
 
@@ -504,6 +511,20 @@ function M.run(repo)
 		check(#player._added == 1, "the same cast landed twice")
 		return "early=" .. early .. " caught=" .. tostring(player._added[1]) ..
 			" wear=" .. player._wielded:get_wear()
+	end)
+
+	-- D1b. The mechanic dispatches on the water group, so river water and salt
+	-- water both cast through the same zone-level table selection.
+	case("fresh_water", function()
+		harness.rolls = {0, 0}
+		harness.roll_at = 0
+		local player = new_player(harness, "river_angler",
+			{x = 12, y = 4, z = 9}, fresh_rod())
+		rod.on_place(player:get_wielded_item(), player, pointed(RIVER))
+		tick(60)
+		check(player._added[1] == "grug_mobs:raw_fish",
+			"fresh water did not use the level-band catch table")
+		return "caught=" .. tostring(player._added[1])
 	end)
 
 	-- D2. REELED IN EARLY. The second right-click is the only way to stop
@@ -560,7 +581,7 @@ function M.run(repo)
 		rod.on_place(player:get_wielded_item(), player, pointed(POND))
 		harness.nodes[harness.node_key(POND)] = "air"
 		tick(60)
-		harness.nodes[harness.node_key(POND)] = WATER
+		harness.nodes[harness.node_key(POND)] = SALT_WATER
 		check(#player._added == 0, "a fish came out of thin air")
 		return "caught=" .. #player._added .. " chat=" .. #harness.chat
 	end)
@@ -638,15 +659,36 @@ function M.run(repo)
 		fn()
 	end
 	local errors = 0
+	local clean_count = false
 	for _, line in ipairs(harness.logs) do
 		if line:sub(1, 5) == "error" then
 			errors = errors + 1
 		end
+		if line:find("action [grug_fishing] tables=6 entries=18 ", 1, true) then
+			clean_count = true
+		end
 	end
 	check(errors == 0, "the startup audit reported " .. errors .. " error(s)")
 	check(#harness.logs >= 1, "the startup audit printed nothing at all")
+	check(clean_count, "the startup audit did not report entries=18")
 	row("wp13_fishing_audit", "lines", tostring(#harness.logs), "errors",
-		tostring(errors))
+		tostring(errors), "entries", "18")
+
+	local band6_name = fishing.CATCH_TABLES[6][1].name
+	fishing.CATCH_TABLES[6][1].name = "missing:band6_fish"
+	harness.logs = {}
+	for _, fn in ipairs(harness.on_mods_loaded) do fn() end
+	fishing.CATCH_TABLES[6][1].name = band6_name
+	local missing_reported = false
+	for _, line in ipairs(harness.logs) do
+		if line:sub(1, 5) == "error" and
+				line:find("missing:band6_fish", 1, true) then
+			missing_reported = true
+		end
+	end
+	check(missing_reported,
+		"the startup audit accepted an unregistered band-6 catch")
+	row("wp13_fishing_audit_mutation", "band6_missing", "reported")
 
 	restore()
 
