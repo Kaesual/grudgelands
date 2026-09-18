@@ -223,9 +223,12 @@ local function baseline_plan(candidate)
 	local search_z = candidate.kind == "hillside" and candidate.mouth_z +
 		candidate.direction_z * (candidate.length - 1) or candidate.mouth_z
 	local radius = candidate.search_radius or candidate.radius
-	local air_targets, valid_lumens, component_rejections, first_invalid = 0, 0, 0, nil
+	local targets = {}
 	for radius_squared = 0, radius * radius do
-		for dz = -radius, radius do for dx = -radius, radius do
+		if #targets >= 64 then break end
+		for dz = -radius, radius do
+			if #targets >= 64 then break end
+			for dx = -radius, radius do
 			if dx * dx + dz * dz == radius_squared then
 				local x, z = search_x + dx, search_z + dz
 				if x >= candidate.owner_min_x and x <= candidate.owner_min_x + 79 and
@@ -238,29 +241,34 @@ local function baseline_plan(candidate)
 						local y = ceiling - depth
 						local class = node_class(x, y, z)
 						if class == "air" and roof >= 3 then
-							air_targets = air_targets + 1
-							local voxels, lumen, invalid = lumen_for(candidate, x, y, z,
-								excluded)
-							if invalid and not first_invalid then first_invalid = invalid end
-							if voxels then
-								valid_lumens = valid_lumens + 1
-								local connected, outside, component, sky =
-									component_proof(candidate, {x, y, z}, lumen)
-								if connected then
-									return {eligible = true, target = {x, y, z},
-										voxel_count = #voxels, outside = outside,
-										component = component, sky = sky}
-								end
-								component_rejections = component_rejections + 1
-							end
+							targets[#targets + 1] = {x, y, z}
 							break
 						elseif class == "natural" then roof = roof + 1
 						elseif class ~= "air" then roof = 0 end
 					end
 				end
 			end
-		end end
+			end
+		end
 	end
+	local valid_lumens, component_rejections, first_invalid = 0, 0, nil
+	for target_index = 1, #targets do
+		local target = targets[target_index]
+		local voxels, lumen, invalid = lumen_for(candidate, target[1], target[2],
+			target[3], excluded)
+		if invalid and not first_invalid then first_invalid = invalid end
+		if voxels then
+			valid_lumens = valid_lumens + 1
+			local connected, outside, component, sky =
+				component_proof(candidate, target, lumen)
+			if connected then
+				return {eligible = true, target = target, voxel_count = #voxels,
+					outside = outside, component = component, sky = sky}
+			end
+			component_rejections = component_rejections + 1
+		end
+	end
+	local air_targets = #targets
 	local reason = air_targets == 0 and "no_air_target" or
 		valid_lumens == 0 and "no_valid_lumen" or "component_rejected"
 	return {eligible = false, reason = reason, air_targets = air_targets,
