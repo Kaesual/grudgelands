@@ -164,19 +164,16 @@ end
 -- write used to happen once, here, and the engine has no distance cull of its
 -- own -- so a shopkeeper's name rendered out to the ~128 m object-send range
 -- while a guard's disappeared at thirty, which is the clutter the user
--- reported. The DESIRED text is now a plain string field and the only writer of
--- the observer set is managed by `grug_mobs.plain_tag_gate_tick` from this
--- family's once-a-second tick. mobs_redo's `update_tag` calls refresh only the
--- carrier text; the parent nametag stays empty.
+-- reported. The desired text is now a plain string field; the central carrier
+-- pass owns observers and lifecycle. mobs_redo's `update_tag` calls refresh
+-- only the carrier text; the parent nametag stays empty.
 --
 local function install_nametag(self, text)
 	self._grug_tag_want = text
-	local carrier = grug_mobs.ensure_tag_carrier(self)
-	grug_core.set_tag_carrier_text(carrier, text)
+	grug_mobs.set_plain_tag(self, text)
 	self.update_tag = function(s)
 		s._grug_tag_want = text
-		grug_core.set_tag_carrier_text(
-			grug_mobs.ensure_tag_carrier(s), text)
+		grug_mobs.set_plain_tag(s, text)
 	end
 end
 
@@ -229,20 +226,8 @@ function grug_traders.restyle_socket_vendor(entity)
 		VENDOR_FACTION_RACE.accord})
 end
 
--- The once-a-second tick a vendor did not have before round 3. It exists for
--- the nametag gate and does nothing else; `false` stops mobs_redo running the
--- rest of the step, which for a mob with zero velocities, `stand_chance = 100`
--- and no targeting was already a no-op and is now not even walked through.
-local TAG_TICK = 1
-
-local function vendor_tick(self, dtime)
-	self.temp = self.temp or {}
-	local temp = self.temp
-	temp.grug_tag_acc = (temp.grug_tag_acc or 0) + dtime
-	if temp.grug_tag_acc < TAG_TICK then return false end
-	temp.grug_tag_acc = 0
-	local gate = grug_mobs.plain_tag_gate_tick
-	if gate then gate(self, self._grug_tag_want) end
+-- Keep the static vendor out of mobs_redo's otherwise useless state pass.
+local function vendor_tick()
 	return false
 end
 
@@ -258,9 +243,8 @@ local function vendor_def(vendor, texture)
 	end
 	return {
 		description = vendor.nametag,
-		-- NO `nametag` FIELD any more (round 3). mobs_redo copies it onto the
-		-- object at activation, which would put the tag back on screen at 128 m
-		-- on every reload until the first gate tick took it off again.
+		-- NO `nametag` FIELD: visible text belongs to the carrier, and the
+		-- vendored base updater permanently keeps this parent empty.
 		type = "npc",
 		passive = true,
 		-- Permanent: see the header. `type = "npc"` already exempts the mob
@@ -331,7 +315,7 @@ local function vendor_def(vendor, texture)
 			return true
 		end,
 
-		-- The per-second slot the nametag gate needs.
+		-- Skip mobs_redo's state pass for this static non-combatant.
 		do_custom = vendor_tick,
 
 		after_activate = function(self)

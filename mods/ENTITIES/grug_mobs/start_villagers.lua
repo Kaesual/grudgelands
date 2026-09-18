@@ -414,29 +414,16 @@ end
 -- done, and the engine has no distance cull of its own -- so a villager's name
 -- rendered out to the ~128 m object-send range while a guard's disappeared at
 -- thirty, which is the clutter the user reported. The DESIRED text is now kept
--- in a plain string field (so it survives unload/reload with the mob and a
--- rename while nobody observes it costs no client send), and the once-a-second
--- slot changes only the carrier's observer set. mobs_redo's own `update_tag`
--- calls refresh the desired carrier text without exposing the parent tag.
+-- in a plain string field. The central carrier pass owns lifecycle and
+-- observers; mobs_redo's own `update_tag` calls refresh only the child text.
 --
 local function install_nametag(self, text)
 	self._grug_tag_want = text
-	local carrier = grug_mobs.ensure_tag_carrier(self)
-	grug_core.set_tag_carrier_text(carrier, text)
+	grug_mobs.set_plain_tag(self, text)
 	self.update_tag = function(other)
 		other._grug_tag_want = text
-		grug_core.set_tag_carrier_text(
-			grug_mobs.ensure_tag_carrier(other), text)
+		grug_mobs.set_plain_tag(other, text)
 	end
-end
-
--- The gate, called from every family's per-second tick. Resolved through the
--- table on each call because `levels.lua` is what installs it: the KAT fixture
--- drives these two families without the level engine, and a settlement NPC has
--- no level to want it for.
-local function tag_gate(self)
-	local gate = grug_mobs.plain_tag_gate_tick
-	if gate then gate(self, self._grug_tag_want) end
 end
 
 --
@@ -457,8 +444,8 @@ function grug_mobs.start_npc_retag(self)
 	end
 	self._grug_npc_tag = name
 	install_nametag(self, name)
-	-- install_nametag updates the carrier immediately; its observer gate keeps
-	-- the existing per-viewer states until the next one-second tick.
+	-- install_nametag updates the carrier immediately without changing its
+	-- observer set; the central pass owns that set.
 end
 
 -- Is another villager of this family visibly standing on that spot? Only
@@ -601,9 +588,6 @@ local function amble_tick(self, dtime)
 		-- the rest of its own step.
 		if not grug_mobs.start_npc_claim(self) then return false end
 	end
-	-- THE ONE PER-SECOND SLOT this family has, shared by the amble and the
-	-- nametag gate rather than opened twice (levels.lua's own note).
-	tag_gate(self)
 	local spots = self._grug_idle_spots
 	if type(spots) ~= "table" or #spots == 0 then return end
 	-- Idle only, the same test patrol.lua and aggro.lua's roam cap use.
@@ -745,7 +729,6 @@ local function work_tick(self, dtime)
 		temp.grug_socket_claimed = true
 		if not grug_mobs.start_npc_claim(self) then return false end
 	end
-	tag_gate(self)
 	local activity = ACTIVITY[self._grug_work_activity]
 	local pos = self.object and self.object:get_pos()
 	if not activity or not pos then return false end
@@ -853,19 +836,11 @@ local function resident_tick(self, dtime)
 end
 
 --
--- The quest shell's own tick. It exists for ONE reason -- the nametag gate
--- needs a per-second slot and an elder has no movement to hang one on -- so it
--- does nothing else at all, and it returns false for the same reason the work
--- tick does: an elder that never reaches `do_states` also never has its
+-- The quest shell's own tick returns false so an elder never reaches
+-- `do_states` and never has its
 -- authored facing overwritten by mobs_redo's random idle turn (api.lua:2176-2864).
 --
-local function elder_tick(self, dtime)
-	self.temp = self.temp or {}
-	local temp = self.temp
-	temp.grug_elder_acc = (temp.grug_elder_acc or 0) + dtime
-	if temp.grug_elder_acc < WORK_TICK then return false end
-	temp.grug_elder_acc = 0
-	tag_gate(self)
+local function elder_tick()
 	return false
 end
 
@@ -1057,9 +1032,7 @@ for index = 1, #identities do
 			run_velocity = 0,
 			stand_chance = 100,
 			jump_height = 0,
-			-- The elder's only tick: the nametag proximity gate needs a
-			-- per-second slot and the quest shell has no movement to hang one
-			-- on (see `elder_tick`).
+			-- Keep the quest shell out of mobs_redo's random idle turn.
 			do_custom = elder_tick,
 			after_activate = function(self)
 				local name = self._grug_npc_name or names.elder

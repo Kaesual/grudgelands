@@ -63,10 +63,8 @@ end
 -- an observer-managed transparent child owns all visible text.
 --
 
-local TAG_INTERVAL = 1
 local TAG_HIDDEN = {a = 0, r = 255, g = 255, b = 255}
 local tag_states = {}
-local tag_elapsed = 0
 
 local function player_level(player)
 	if core.global_exists("grug_xp") then
@@ -97,7 +95,7 @@ end
 local function ensure_player_carrier(player, state)
 	local carrier = state.carrier
 	if carrier and carrier:is_valid() then return carrier end
-	carrier = grug_core.create_tag_carrier(player)
+	carrier = grug_core.create_tag_carrier(player, player:get_player_name())
 	state.carrier = carrier
 	grug_core.set_tag_carrier_text(carrier, state.text)
 	return carrier
@@ -126,26 +124,6 @@ local function reset_player_tag(player)
 	grug_core.set_tag_carrier_text(ensure_player_carrier(player, state),
 		state.text)
 end
-
-core.register_globalstep(function(dtime)
-	tag_elapsed = tag_elapsed + dtime
-	if tag_elapsed < TAG_INTERVAL then
-		return
-	end
-	tag_elapsed = tag_elapsed % TAG_INTERVAL
-	local players = core.get_connected_players()
-	for index = 1, #players do
-		local player = players[index]
-		local name = player:get_player_name()
-		local state = tag_states[name]
-		if not state then
-			reset_player_tag(player)
-			state = tag_states[name]
-		end
-		grug_core.update_tag_carrier_observers(
-			ensure_player_carrier(player, state), player, name)
-	end
-end)
 
 core.register_on_player_hpchange(function(player, hp_change)
 	grug_factions.refresh_player_tag(player, player:get_hp() + hp_change)

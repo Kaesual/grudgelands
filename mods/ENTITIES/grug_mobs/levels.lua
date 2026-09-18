@@ -173,17 +173,8 @@ local function update_tag(self)
 end
 grug_mobs.update_tag = update_tag
 
--- Observer gate, called once a second from the existing per-mob slot. The
--- shared module retains hysteresis independently for every viewer and calls
--- set_observers only when the set changes.
-function grug_mobs.tag_gate_tick(self)
-	if not self.object then return end
-	grug_core.update_tag_carrier_observers(
-		grug_mobs.ensure_tag_carrier(self), self.object)
-end
-
 --
--- THE SAME OBSERVER GATE FOR A PEACEFUL NPC.
+-- THE SAME TEXT PATH FOR A PEACEFUL NPC.
 --
 -- The user's finding: a villager's, an elder's or a vendor's nametag was
 -- readable from the far side of a settlement while a guard's or a wolf's
@@ -192,16 +183,13 @@ end
 -- three families once wrote a static parent nametag. They now share the same
 -- carrier and per-viewer observer rule as combat mobs.
 --
--- So the gate is offered to a caller that has no `tag_text` of its own: the
--- text is a plain string the caller owns; the carrier module owns its text
--- change guard, cached player snapshot, per-viewer hysteresis and observer-set
--- change guard.
+-- A caller without `tag_text` owns a plain desired string. Observer and
+-- lifecycle management are centralized in grug_core's single 1 Hz pass.
 --
-function grug_mobs.plain_tag_gate_tick(self, text)
+function grug_mobs.set_plain_tag(self, text)
 	if not self.object or type(text) ~= "string" or text == "" then return end
 	local carrier = grug_mobs.ensure_tag_carrier(self)
 	grug_core.set_tag_carrier_text(carrier, text)
-	grug_core.update_tag_carrier_observers(carrier, self.object)
 end
 
 -- The shared-snapshot distance, published for the "is anybody watching" test
@@ -464,7 +452,7 @@ function grug_mobs.ensure_init(self)
 		-- Function fields and the static-save=false carrier never survive an
 		-- unload. Re-install the method, drop the persisted text cache and write
 		-- the current text to the fresh carrier. Its observer set starts empty;
-		-- the next one-second gate assigns nearby viewers.
+		-- the central one-second pass assigns nearby viewers.
 		self.update_tag = update_tag
 		self._grug_tag = nil
 		update_tag(self)
