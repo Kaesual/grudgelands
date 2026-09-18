@@ -247,13 +247,15 @@ equipment/bags, currency,
 canonical materials, gathering, exact life/resource bars, unified movement
 effects and the named-zone world. Round 6 adds the shared HP/mana and damage
 fit, maximum-pool Character/Help pages, per-player effective tooltips, total
-friendly-skill fallback, 5% suffocation, the `grug_core.status` text list and
-three-minute food buffs. It also fixes ordinary dry shore banks at `water_y`,
-replaces flat hub-target difficulty with three axial level bands per zone, and
-guarantees surface level 1 through 100 m and level 2 through 150 m of every
+friendly-skill fallback, 5% suffocation and the `grug_core.status` text list.
+Round 7's Food v2 adds six data-driven tiers, fixed instant HP, five-second
+out-of-combat regeneration, active stat modifiers and shared consumable level
+gates; mana regeneration now follows the slower level-linear curve. It also
+fixes ordinary dry shore banks at `water_y`, replaces flat hub-target
+difficulty with three axial level bands per zone, and guarantees surface level 1 through 100 m and level 2 through 150 m of every
 start anchor. New characters remain
 protected behind character creation until the server has prepared all six
-start areas, which it emerges once at startup. WP40's
+start areas, which a fresh world emerges once and records in mod storage. WP40's
 [development acceptance](docs/research/wp40-completion.md) now includes the first
 terrain/performance correction round and green native plus browser-local
 Lua-5.1 user tests; slower browser generation is accepted for this server game.
@@ -274,9 +276,9 @@ and [PvP-death XP exemption](docs/design/progression.md) are already decided.
 **In progress:** WP11 phase 1 has shipped its talent registry, 48 talents,
 point/gate/persistence model and thirty numeric consumers. X4's Talents page,
 respec price and level-up flow are shipped; only X3's keystones, capstones and
-four abilities remain open. Round 6 registered all three cooking qualities;
-current raw/plain and simply-cooked foods use the first two, while WP10 still
-owns well-cooked recipes, profession books and the icon presentation. WP13 has built
+four abilities remain open. Food v2's six-tier framework is live with current
+raw foods and T1 cooked dishes; Round 8 still owns the real dish tables and
+recipes, while WP10 owns profession books and the icon presentation. WP13 has built
 **all six start settlements and all six capitals**. The starts share one reusable building library with per-race
 palettes -- small dense houses with doors, pane windows, stair roofs,
 furnished interiors and exterior dressing -- and each is a different
@@ -397,7 +399,7 @@ licensing and stable `file:line` citations. See
 | [mods/](mods/) | Game code in `CORE`, `PLAYER`, `ENTITIES`, `ITEMS`, `MAPGEN` and `BASE` modpacks. |
 | [docs/design/](docs/design/) | Decided game design — the living specification. |
 | `TODO-*.md` | Open design questions awaiting a decision. |
-| [docs/research/](docs/research/) | Engine/API briefings, reference studies and asset research. |
+| [docs/research/](docs/research/) | Engine/API briefings, reference studies and asset research, including the Round 7 planning set: the [plants and potions reference survey](docs/research/plants-and-potions-reference.md), the [mob candidate evidence](docs/research/mob-candidates-evidence.md) and [game inventory extract](docs/research/round7-inventory-extract.md), and the two creative plans for the user's ruling, [Cooking and Alchemy](docs/research/cooking-alchemy-plan.md) and [the mob worlds](docs/research/mob-worlds-plan.md). |
 | [docs/process/](docs/process/) | Autonomous work-package workflow, the project-wide agent model policy, and the Claude CLI review procedure. |
 | [ROADMAP.md](ROADMAP.md) · [BACKLOG.md](BACKLOG.md) | Goal-level plan and implementation packages/status. |
 | [AGENTS.md](AGENTS.md) | Project conventions and Luanti/Lua contracts. |

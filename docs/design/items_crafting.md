@@ -1061,11 +1061,11 @@ a second timer. **Drinking at full health is refused** (message, no
 consumption, no cooldown — decided 2026-08-07 in WP7: burning a potion
 and a 60 s lockout on a misclick is a tax, not a rule).
 
-**The potion keeps the instant slot; food does not take it** (R9, decided
-2026-09-17, replacing the 2026-08-13 food model). Food grants a 180 s timed
-restore that ticks only while out of combat; it never heals instantly.
-The Healing Potion remains the only health consumable that restores health
-**instantly and in combat**, on the unchanged shared 60 s cooldown.
+**The potion keeps the in-combat instant slot** (Food v2, decided 2026-09-18,
+superseding R9). Food has fixed instant HP, but combat defers it to the first
+out-of-combat moment, checked every second; its regeneration also pauses in
+combat. The Healing Potion remains the only health consumable that restores
+health **immediately in combat**, on the unchanged shared 60 s cooldown.
 
 **Exclusive recipes** — the entire consumable line is Alchemist-only;
 nothing here has a base recipe (mastery names, relabelled 2026-08-07):
@@ -1185,33 +1185,34 @@ Neither of these costs a main profession slot (professions.md §1).
 
 - **Cooking** (trainer, free): cooked foods use regional ingredients and the
   Cooking recipe book described below.
-  **Food is one out-of-combat restore buff** (R9, decided 2026-09-17,
-  replacing the 2026-08-13 food model). Eating is allowed in
-  combat and consumes the serving. It grants a **180 s** buff that attempts
-  one tick every **10 s**; a tick heals only while the shared
-  `grug_core.in_combat` window is false. Combat skips that tick without
-  canceling or pausing the buff. Exactly one food buff may run at once and
-  the most recently eaten serving replaces it.
-  **Self-consumption ruling (2026-09-17, late evening):** food and potions use
-  the character's maximum HP or mana, so a full food buff refills every
-  character in the same number of ticks; the neutral base pool is used for
-  mana costs and caster-output heals/absorbs, never for self-consumption.
-  - **Raw/plain:** 2 % of maximum HP per tick.
-  - **Simply cooked:** 5 % of maximum HP per tick.
-  - **Well cooked:** 10 % of maximum HP per tick.
-  - Every tick restores at least 1 HP. Food is the entire effect: the old
-    `item_eat` instant heal is removed. Tooltips state the percentage,
-    10 s cadence, 3 min duration and out-of-combat condition.
-  - Mana food uses the same three quality percentages against maximum mana.
-    A character without a mana pool receives a message and does not consume
-    the serving.
-  - Current mapping: Wild Cocoa is raw mana food; apples, blueberries, raw
-    fish, raw meat and every other gathering-catalog
-    `food`/`found_only_food` item are raw HP food. Cooked Fish, cooked meat and
-    other cooked items are simply cooked HP food. The cooked mana tier is
-    registered but has no item until WP10's cooking book assigns one. Nothing
-    is well cooked yet; WP10 assigns that registered tier when its cooking
-    book creates the later dishes.
+  **Food v2** (R7.1/R7.2, decided 2026-09-18) replaces R9's 2026-09-17
+  raw/simply-cooked/well-cooked percentages. Every serving has a tier, a fixed
+  instant HP value and a **180 s** buff ticking every **5 s**. Exactly one food
+  buff may run at once; the latest serving replaces it. Eating in combat is
+  allowed: regeneration pauses, and the instant heal is deferred exactly once
+  to the first out-of-combat moment, checked every second, while secondary stat
+  bonuses remain active.
+  - Tier data are **T1 5 HP/L1, T2 15/L10, T3 40/L20, T4 90/L30,
+    T5 180/L40, T6 300/L50**. The instant value is HP only and identical for
+    every food in that tier.
+  - Any raw or unprocessed edible restores its tier's instant HP and regenerates
+    **1% of maximum HP per 5 s**, identical across tiers. A mana raw food uses
+    maximum mana for that regeneration component; Wild Cocoa is the current
+    example. A character without a mana pool receives a message and consumes
+    nothing.
+  - Dish effects are tier data, not branches in consumption code. The current
+    proposal is 2/3/3/4/4/5% of the selected maximum pool per tick for T1–T6.
+    HP, mana and split HP+mana roles live in the data table. T3/T4 add a total
+    +2/+4% role pool bonus; T5/T6 add +6/+8% to the selected pool, while the
+    split role instead adds +1 percentage point Crit. Round 8 may replace this
+    proposal table without changing the framework.
+  - Apples, blueberries, raw fish, raw meat and every gathering-catalog
+    `food`/`found_only_food` item are raw foods. Cooked Fish and cooked meat
+    are T1 HP dishes. All current foods are T1 unless a gathering row publishes
+    another tier.
+  - Every food carries `_grug_ilvl` from its tier and is refused below that
+    character level without consumption. Its tooltip states fixed instant HP,
+    tick effect, duration, combat rule and any requirement above level 1.
   - Buffs are runtime-only. Relogging drops a food buff; it is not persisted.
     The natural replacement cadence is one serving per 180 s, or about
     **20 servings per hour**.
@@ -1224,8 +1225,8 @@ Neither of these costs a main profession slot (professions.md §1).
   cocoa in the jungle"). Cooking is free and universal *and* gated; the
   book is what makes both true at once.
 
-  **The six groups are decided (E21, 2026-08-13; effects replaced by R9 on
-  2026-09-17)** — gate ingredient and recipes; every gate ingredient is
+  **The six groups are decided (E21, 2026-08-13; effects replaced by Food v2
+  on 2026-09-18)** — gate ingredient and recipes; every gate ingredient is
   **reachable by both factions** (`biomes_mobs.md` §2/§6): T1–T5 gates
   exist on both continents, while wild cocoa deliberately lives only on
   the shared contested front — The Skyglass Canopy on foot, Stormscale
@@ -1247,14 +1248,14 @@ Neither of these costs a main profession slot (professions.md §1).
   is now a second source for that same item, and the T1 **Cooked Fish** exists
   as the plain furnace dish the cooking ladder always listed. The three rows
   below are the shipped items and nothing more: **the T4 Marshbloom Chowder,
-  the T5 Salt-Crusted Fish and all well-cooked assignments remain WP10's to
-  build**.
+  the T5 Salt-Crusted Fish and the real Round 8 dish assignments remain to be
+  built**.
 
   | Item | Itemstring | How it is obtained | Effect | Vendor price |
   |---|---|---|---|---|
   | Fishing Rod | `grug_fishing:rod` | crafted: 3 × stick + 2 × Spider Silk (the game's only string-class material); 64 catches | no dig, no damage; right-click water to cast | none (not a mob drop) |
-  | Raw Fish | `grug_mobs:raw_fish` | Mirefolk drop (WP6) **and, since this round, fishing** | raw 2 % food buff | 2c (unchanged) |
-  | Cooked Fish | `grug_fishing:cooked_fish` | furnace, `cooking` recipe from Raw Fish, cooktime 5 | simply cooked 5 % food buff | none, exactly as `mobs:meat` — so §3.8's anti-loop rule has nothing to judge |
+  | Raw Fish | `grug_mobs:raw_fish` | Mirefolk drop (WP6) **and, since this round, fishing** | T1 raw: 5 instant HP + 1% max HP/5 s | 2c (unchanged) |
+  | Cooked Fish | `grug_fishing:cooked_fish` | furnace, `cooking` recipe from Raw Fish, cooktime 5 | T1 HP dish: 5 instant HP + 2% max HP/5 s | none, exactly as `mobs:meat` — so §3.8's anti-loop rule has nothing to judge |
 
   **One catch table for the whole world, per the round-5 ruling** ("fish
   availability shall be identical on both continents, distributed over the
@@ -1591,8 +1592,8 @@ The resulting T6 per-stack values are:
 
 All finish, affix, attribute and base-equipment sources add before the existing
 final caps: Crit 30%, Dodge 30% and armor 60%. Overcap remains on its source
-stacks but has no combat effect. The Character page displays effective and raw
-values, for example `Armor 60% (67% raw)`; there is no reroll, overflow
+stacks but has no combat effect. The Talents header displays effective/raw
+values and caps, for example `Armor 60/67% (60)`; there is no reroll, overflow
 conversion, diminishing-return curve or cap increase. The theoretical T6
 cultural-only mixed-set maxima are approximately +14.8 Crit percentage points
 (including compatible Dexterity), +9.9 Dodge points and +7 armor points.
@@ -2079,9 +2080,10 @@ intended +50–60% fully equipped ceiling.
 **Combined cap policy (re-run 2026-08-12).** Ordinary affixes, trinket
 prefixes/suffixes, cultural finishes, attributes and base equipment all add
 before the unchanged final caps: Crit 30%, Dodge 30% and armor 60%. Values over
-a cap remain on their source stacks but add no combat power. The Character page
-shows both effective and raw totals, and no automatic reroll, overflow
-conversion, diminishing return or cap increase hides the waste.
+a cap remain on their source stacks but add no combat power. The Talents header
+shows effective/raw Crit, Dodge and Armor with their caps, and no automatic
+reroll, overflow conversion, diminishing return or cap increase hides the
+waste.
 
 The old eight-identical-affix-slot calculation is retired: each trinket now has
 one primary prefix and one HP/Mana/Crit suffix rather than four ordinary slots.
@@ -2502,7 +2504,7 @@ makes top leather PvP-relevant.
 60 s cooldown. One active elixir and one food restore buff may coexist with
 that cooldown and with each other. The most recent food replaces the previous
 food; it never occupies the instant-potion slot. **Decided 2026-08-06;
-food rule replaced by R9 on 2026-09-17.**
+food rule replaced by R9 on 2026-09-17 and Food v2 on 2026-09-18.**
 
 **P4 — Swiftness Draught.** +8% speed for 15 s brushes the "mobs must
 outrun players" pillar (4.0 × 1.08 = 4.32 < 4.4 keeps mobs faster, but

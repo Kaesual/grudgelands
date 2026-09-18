@@ -102,8 +102,8 @@ refreshed against the current patched tree on 2026-09-17:
 | Historical coordinate | Current patched tree | What is there |
 |---|---|---|
 | `api.lua:2493` | **`api.lua:2679-2725`** | the in-reach branch and its bounded contact movement |
-| `api.lua:2495-2497` | **`api.lua:2524-2527`** | `self.punch_timer = (self.punch_timer or 0) + dtime` and its one-hit cap |
-| `api.lua:3768` | **`api.lua:4087`** | `punch_interval = def.punch_interval or 1` |
+| `api.lua:2524-2526` | **`api.lua:2524-2527`** | `self.punch_timer = (self.punch_timer or 0) + dtime` and its one-hit cap |
+| `api.lua:3769` | **`api.lua:4087`** | `punch_interval = def.punch_interval or 1` |
 
 The structure, verified line by line:
 
@@ -115,7 +115,7 @@ The structure, verified line by line:
 - `api.lua:2524` — `self.punch_timer = (self.punch_timer or 0) + dtime`. The
   cadence now advances before both distance branches.
 - `api.lua:2526-2527` caps the cadence at one ready hit.
-- `api.lua:2690-2725` keeps closing to contact instead of freezing throughout
+- `api.lua:2709-2744` keeps closing to contact instead of freezing throughout
   the in-reach branch, while retaining the cliff guard.
 - `api.lua:2788-2819` tests readiness, range and canonical target visibility,
   then consumes the cadence only after an accepted attempt.
@@ -225,7 +225,7 @@ it, not after:
    soft-de-aggro distance moves with the speed, or the Mage's pivot stops
    working.
 2. **The soft de-aggro.** `combat_stats.md:328-330`: beyond ~25 m a chasing
-   mob drops to walk speed (`api.lua:2650-2666` implements it, and
+   mob drops to walk speed (`api.lua:2664-2680` implements it, and
    `_grug_soft_deaggro ~= false` is the per-mob opt-out). Reaching 25 m is
    *only* possible because of the standstill-and-root windows; faster mobs
    make it harder in exactly the same proportion.

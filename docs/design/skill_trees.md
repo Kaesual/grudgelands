@@ -377,7 +377,7 @@ rule-breaker besides its capstone — see §2.9's note on the bounded pass.
 | 2 | **Hoarfrost** | Frost | 2 | 4 | — | Frost Nova follow-up slow 3 s → 4 / 5 / 6 / 7 s (the 50 % stays) | `kits.lua:583-598` | `frost_nova_slow_add` |
 | 3 | **Frostbind** *(keystone)* | Frost | 3 | 3 | **replaces Frost Nova** | Frost Nova stops being self-centred: it is cast at the pointed hostile up to 20 m away and roots everything within 3 / 4 / 5 m **of the target**. Same key, same 10% base-mana cost, same 12 s cooldown — a control tool instead of a panic button | `kits.lua` (the cast body and its radius origin) | `frost_nova_ranged` |
 | 4 | **Rimebite** *(capstone)* | Frost | 4 | **1** | **effect** | every root Frost Nova applies also deals `5 + floor(spell power / 2)` on application | `kits.lua:581-598` | `control_damage_add` |
-| 5 | **Cold Focus** | Ward | 1 | 5 | — | in-combat mana regeneration 0.5 %/s → 0.6 / 0.7 / 0.8 / 0.9 / 1.0 %/s | `grug_abilities/init.lua:2587-2591` | `combat_mana_regen_add` |
+| 5 | **Cold Focus** | Ward | 1 | 5 | — | in-combat mana regeneration ×1.2 / ×1.4 / ×1.6 / ×1.8 / ×2.0 (the base rate is one quarter of `1 + 0.15 × level` mana/s) | `grug_abilities/init.lua` mana-regeneration ticker | `combat_mana_regen_add` |
 | 6 | **Quick Step** | Ward | 2 | 4 | — | Blink cooldown 15 s → 13.5 / 12 / 10.5 / 9 s | `grug_abilities/init.lua:1566-1567` — **not** the registration constant | `blink_cooldown_sub` |
 | 7 | **Glacial Ward** *(keystone)* | Ward | 3 | 3 | **new skill** | cast, 10% base mana, 30 s cooldown, self; absorbs 10% / 15% / 20% of the class-neutral base pool plus the spell-power percentage for 10 s | new; `grug_core.set_absorb` | — |
 | 8 | **Far Step** | Ward | 4 | 3 | — | Blink distance 10 m → 12 / 14 / 16 m | `kits.lua:623-641` (inside the cast body, player in scope) | `blink_distance_add` |
@@ -581,7 +581,7 @@ talent — [scout.md](scout.md) §2 carries it.
 
 `combat_stats.md` §2 therefore needs one new paragraph when WP11 lands — not a
 new stat, but the sentence that says caps are absolute **except** for a named,
-time-limited, single-source override, and that the Character page shows the
+time-limited, single-source override, and that the Talents header shows the
 raised cap while it runs (`:104-108` already requires effective **and** raw).
 That amendment is lane X3's, and it is the only decided-doc change the talent
 system forces. Talents that are *not* marked `‼` stay inside every cap, so
@@ -936,8 +936,8 @@ then re-tuning it with three separate talents.
 
 ### 3.5 UI
 
-A third `sfinv` page beside Character and Bags (`grug_inventory/pages.lua:192`,
-`:233`), registered from a new `grug_classes/talents_ui.lua` so the page lives
+A third `sfinv` page beside Character and Bags (`grug_inventory/pages.lua:182`,
+`:246`), registered from `grug_classes/talents_ui.lua` so the page lives
 with the data it shows and `grug_inventory` keeps its two pages. This costs
 the `sfinv` dependency edge of §3.1. sfinv uses legacy coordinates and the
 content area spans about y 0.3-5.0 (`pages.lua:1-2`).
@@ -953,6 +953,8 @@ the sfinv area only if the two trees are **tabbed rather than side by side**:
 | Character | Bags | Talents |                        (sfinv tabs)
 +---------------------------------------------------------------+
 | Warrior      [ BULWARK 21 ] [ Ruin 9 ]      Points left: 0     |
+| Crit 30/42% (30)                         Armor 60/67% (60)     |
+| Dodge 20/20% (30)                                             |
 |                                            [ Respec  --  1s25c]|
 |      WALL                       ANVIL                          |
 | T1 | Ironbound      5/5 |   | Spite          5/5 |             |
@@ -976,9 +978,12 @@ the sfinv area only if the two trees are **tabbed rather than side by side**:
 - Fixed numeric button fields map only to registered trees and talents of the
   submitting PlayerRef's own class. Names and descriptions are escaped with
   `core.formspec_escape`; no player name or free-text field enters a purchase.
-- The page shows effective and raw Crit, Dodge and armor values with their
-  current caps. A running named rule-breaker shows its raised cap; X3 owns the
-  combat consumer that makes that effective value rise.
+- Two compact header rows above the tree controls show effective/raw Crit,
+  Dodge and Armor with their current caps. Every label stays inside the
+  eight-unit form, and both rows end before the tree controls; the T1 row starts
+  below those controls and chain headings. A running named rule-breaker shows
+  its raised display cap; X3 owns the future combat consumer that will make that
+  effective value rise.
 - No new texture is needed; signature talent icons are a later art pass, the
   way `classes.md` §2c parks signature ability icons.
 
@@ -1568,7 +1573,7 @@ are listed so that the merge does not leave the repo contradicting itself.
 | # | Task | Why it cannot be done here |
 |---|---|---|
 | 1 | Amend `mounts.md` §3.1's pillar paragraph and `combat_stats.md` §3 to say the 4.4 > 4.0 inequality holds **except** for named, long-cooldown skills, of which Sprint is the first at **+25 % for 10 s every 300 s**; the Swiftness Draught's +8 % stays as it is | rulings 10 and 29 decided it; neither file is this lane's |
-| 2 | Add `combat_stats.md` §2's **cap-override paragraph** (§2.10): caps are absolute except for a named, time-limited, single-source override, and the Character page shows the raised cap while it runs | decided by ruling 10; it is WP11 lane X3's edit, not this lane's |
+| 2 | Add `combat_stats.md` §2's **cap-override paragraph** (§2.10): caps are absolute except for a named, time-limited, single-source override, and the Talents header shows the raised cap while it runs | decided by ruling 10; it is WP11 lane X3's edit, not this lane's |
 | 3 | Retire the class trainer in `economy.md:92`, `items_crafting.md:2380`, `world.md:408` and `docs/research/post-wp40-readiness.md:81` | ruling 4 decided it; four files, none of them this lane's |
 | 4 | Correct the five shipped comments that assume a class change (`grug_inventory/equipment.lua:57`, `:501`, `:579`, `grug_core/combat.lua:110`, `grug_abilities/init.lua:1775-1776`) and remove the `/class` registration at `grug_classes/selection.lua:594-595` — **not** the `:554-592` helper, which `/race` still needs | ruling 20 decided it; it is code, and this lane is docs-only (§3.10 lists the sites) |
 | 5 | Rename the two remaining "Holy tree" mentions to Mercy — the Renew row at `classes.md:464` and the comment at `mods/PLAYER/grug_abilities/kits.lua:650` | bookkeeping after ruling 5's tree names; one is code |

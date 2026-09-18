@@ -23,6 +23,24 @@ function grug_core.get_player_level(player)
 	return 1
 end
 
+-- Shared minimum-level decision for every item-backed gate. Gear, food and
+-- future potions/elixirs all publish `_grug_ilvl`; callers own only their
+-- context-specific refusal text.
+function grug_core.can_use_item_level(player, item)
+	local item_name = item
+	if type(item) ~= "string" then
+		item_name = item and item.get_name and item:get_name() or ""
+	end
+	local definition = core.registered_items[item_name]
+	local required = definition and definition._grug_ilvl
+	if type(required) ~= "number" or required <= 0 then
+		return true, nil, grug_core.get_player_level(player)
+	end
+	required = math.floor(required)
+	local current = grug_core.get_player_level(player)
+	return current >= required, required, current
+end
+
 -- Class-neutral level pool. Player HP, caster mana, healing and absorbs all
 -- derive from this same rounded curve (combat_stats.md sections 1-2). Keeping
 -- it in Core also lets the damage and pressure fits use the exact same bytes.

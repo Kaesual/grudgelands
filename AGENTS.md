@@ -428,10 +428,17 @@ Details + line numbers in [docs/research/](docs/research/).
   current-level values to that player's stack on kit sync, level change and
   talent change. Suffocation is 5% maximum HP/s (minimum 1), with stasis and
   `noclip` exempt. `grug_core.status` is the runtime timed-effect registry and
-  top-right eight-line buff/debuff text list; `grug_food` uses it for one
-  replaceable 180 s food buff, ticking every 10 s only out of combat for
-  2/5/10% of maximum HP or mana. Wild Cocoa is the current mana food; potions
-  retain their instant channel and shared persistent cooldown.
+  top-right eight-line buff/debuff text list. Status definitions may carry only
+  `hp_pool_percent`, `mana_pool_percent`, `crit_percent`, `armor` and
+  `spell_damage_percent`; `grug_core.status_modifier_sum` adds active statuses,
+  and the modifier-change callback drives the same HP/mana clamp and HUD/page
+  refresh path as talents. `grug_food.TIERS` owns fixed instant HP, minimum
+  level and role-dish data; raw foods always regenerate 1% HP (or mana for Wild
+  Cocoa) per 5 s. Food lasts 180 s, its instant heal and regeneration defer/
+  pause in combat, secondary modifiers do not, and the latest food replaces
+  the previous one. `grug_core.can_use_item_level` is the shared `_grug_ilvl`
+  gate for the Weapon slot and all consumables. Potions retain their instant
+  channel and shared persistent cooldown.
   Real-code Lua 5.1 regressions live under `tools/wp39/` and must stay green
   when changing the ray, clock, settlement, reticle, casts or projectiles.
   **Ordinary tool WEAR is spent per swing, not per punch**

@@ -4,10 +4,9 @@
 -- Character creation used to emerge only the chosen race's start and made
 -- that one player wait for it. The starts generate through the WP40 mapgen,
 -- so the first player of every race paid the same mapchunk cost again. The
--- server now emerges the 128 x 128 build envelope of ALL six starts once, at
--- server start, and character creation waits until every one of them is
--- ready. A restart simply re-requests them: already generated blocks come
--- back from disk immediately.
+-- server now emerges the 128 x 128 build envelope of ALL six starts once per
+-- world, and character creation waits until every one of them is ready. A
+-- durable marker skips the emerge on later server starts.
 --
 -- Deliberately NOT emerged here: the 256-node blend ring around each
 -- envelope. It is terrain, not arrival area, and doubling the volume would
@@ -30,12 +29,16 @@ local SPAWN_ABOVE = 80
 -- threads busy without starving ordinary block loading at server start.
 local MAX_CONCURRENT = 2
 -- An emerge that reports a non-terminal action (EMERGE_CANCELLED on
--- shutdown, EMERGE_ERRORED) is retried a bounded number of times. Nothing is
--- persisted, so the honest state of a cancelled start is "not ready".
+-- shutdown, EMERGE_ERRORED) is retried a bounded number of times. The marker
+-- is written only after all six succeed, so a cancelled run stays unfinished.
 local MAX_ATTEMPTS = 3
 local RETRY_DELAY = 5
 
 local EXPECTED_STARTS = 6
+local PRELOAD_MARKER = "starts_preloaded_v1"
+local storage = core.get_mod_storage()
+local marker_present = storage:get_int(PRELOAD_MARKER) == 1
+local marker_announced = false
 
 local starts = {}
 local by_race = {}
@@ -160,6 +163,9 @@ local function emerge_finished(row, failed)
 		if ready_count == #starts then
 			core.log("action", ("[grug_core] all %d start areas ready after %.1f s")
 				:format(#starts, elapsed_s()))
+			storage:set_int(PRELOAD_MARKER, 1)
+			marker_present = true
+			marker_announced = true
 		end
 		notify_progress()
 	end
@@ -247,6 +253,20 @@ function grug_core.request_starts_preload()
 			return false
 		end
 		build_failed = false
+	end
+	if marker_present then
+		if ready_count < #starts then
+			for i = 1, #starts do
+				starts[i].ready = true
+			end
+			ready_count = #starts
+			notify_progress()
+		end
+		if not marker_announced then
+			core.log("action", "[grug_core] start areas already generated")
+			marker_announced = true
+		end
+		return true
 	end
 	if not started_us then
 		started_us = now_us()

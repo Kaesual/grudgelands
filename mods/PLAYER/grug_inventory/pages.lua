@@ -57,14 +57,14 @@ end
 -- grug_inventory.equipment_slots, so a new slot is one entry there plus one
 -- row here.
 local SLOT_POS = {
-	grug_head = {6, 0.6},
-	grug_chest = {6, 1.6},
-	grug_legs = {6, 2.6},
-	grug_feet = {6, 3.6},
-	grug_weapon = {7, 0.6},
-	grug_offhand = {7, 1.6},
-	grug_trinket1 = {7, 2.6},
-	grug_trinket2 = {7, 3.6},
+	grug_head = {6, 0.9},
+	grug_chest = {6, 1.9},
+	grug_legs = {6, 2.9},
+	grug_feet = {6, 3.9},
+	grug_weapon = {7, 0.9},
+	grug_offhand = {7, 1.9},
+	grug_trinket1 = {7, 2.9},
+	grug_trinket2 = {7, 3.9},
 }
 
 -- Ghost icon per slot: drawn under an EMPTY slot's item (inventory_equipment.md
@@ -120,46 +120,31 @@ end
 
 local function character_content(player)
 	local class = grug_classes.get_class_def(player)
-	local race = grug_classes.get_race_def(player)
-	local faction = grug_factions.get_faction_def(player)
-	local level = grug_xp.get_level(player)
 	local hp = grug_classes.get_pool_breakdown(player, "hp")
 	local mana = class and class.resource == "mana"
 		and grug_classes.get_pool_breakdown(player, "mana") or nil
 
 	local lines = {
-		player:get_player_name() .. " — Level " .. level ..
-			(class and (" " .. class.name) or ""),
-		(race and race.name or "No race") .. ", " ..
-			(faction and faction.name or "no faction"),
-		("Base pool %d   HP class factor x%.2f"):format(
-			hp.base, hp.class_factor),
-		("HP: %d x %.2f, gear %g%%, talents %g%% = %d max"):format(
-			hp.base, hp.class_factor, hp.gear_percent,
-			hp.talent_percent, hp.final),
-		mana and ("Mana: %d, gear %g%%, talents %g%% = %d max"):format(
-			mana.base, mana.gear_percent, mana.talent_percent, mana.final)
-			or "Rage: 100 max (flat)",
-		("Melee bonus +%d   Spell power +%d%%"):format(
-			grug_classes.get_melee_bonus(player),
-			grug_classes.get_spell_power_bonus(player)),
-		("Crit %.1f%%   Dodge %.1f%%"):format(
-			grug_classes.get_crit_chance(player) * 100,
-			grug_classes.get_dodge_chance(player) * 100),
-		("Armor %.1f%% damage reduction"):format(
-			grug_core.get_armor_percent(player)),
+		("HP %d=B%dxC%.2fx(100+G%g+T%g+S%g)%%"):format(
+			hp.final, hp.base, hp.class_factor, hp.gear_percent,
+			hp.talent_percent, hp.status_percent),
+		mana and
+			("Mana %d=B%dxC%.2fx(100+G%g+T%g+S%g)%%"):format(
+				mana.final, mana.base, mana.class_factor, mana.gear_percent,
+				mana.talent_percent, mana.status_percent)
+			or "Rage 100=fixed; no C/G/T scaling",
 	}
 
 	local mesh, textures = preview_model(player)
 	local fs = {
-		("model[0,0.4;2.4,4.4;grug_preview;%s;%s;0,160]"):format(
+		("model[0,0.85;2.4,4.0;grug_preview;%s;%s;0,160]"):format(
 			esc(mesh), esc_texture_list(textures)),
 	}
 	for i, line in ipairs(lines) do
-		table.insert(fs, ("label[2.7,%.2f;%s]"):format(0.35 + i * 0.45, esc(line)))
+		table.insert(fs, ("label[0,%.2f;%s]"):format(-0.2 + i * 0.4,
+			esc(line)))
 	end
 
-	table.insert(fs, "label[6.3,0.1;" .. esc("Equipment") .. "]")
 	for _, slot in ipairs(grug_inventory.equipment_slots) do
 		local pos = SLOT_POS[slot.list]
 		if pos then
@@ -210,14 +195,22 @@ sfinv.register_page("grug_inventory:help", {
 		local text = table.concat({
 			"Character formulas",
 			"Base pool = 20 + 5 x level + 0.66 x level squared (rounded).",
-			"Maximum HP = base pool x class factor, then add gear and talent percentages.",
+			"The Character pool lines read maximum = B x C x (100 + G + T + S)%, where B is the base pool, C the class factor, G the gear percentage, T the talent percentage and S the active status percentage.",
 			"Caster mana uses the neutral base pool, then adds mana percentages. Rage is always 0-100.",
-			"Strength adds melee bonus. Intelligence adds spell power. Dexterity adds Crit and Dodge.",
+			"Strength adds floor(Strength / 10) as flat melee damage.",
+			"Intelligence adds floor(Intelligence / 10) as spell power: flat spell damage and a percentage bonus to healing and absorbs.",
+			"Dexterity adds 0.1 percentage point each of Crit and Dodge per point; Crit starts at 5%.",
+			"The Talents header shows effective/raw Crit, Dodge and Armor; the parenthesized values are the current caps. The shipped combat caps are 30%, 30% and 60%.",
+			"Crit multiplies damage by 1.5.",
+			"Dodge avoids the hit entirely.",
+			"Each Armor point reduces incoming punch damage by 1 percentage point.",
 			"Item level is counted once, in the weapon's base damage; your character level applies the shared damage fit; there is no separate item-level multiplier.",
 			"At level 60, an item-level 70 weapon gives about 9% more effective swing damage than item level 60, while item level 50 gives about 7% less, before enchants.",
 			"Healing and absorbs are percentages of the caster's neutral base pool; spell power is a percentage bonus.",
 			"Mana costs are percentages of the unmodified neutral base pool. Enchants and talents do not make a spell cost more.",
-			"The Character page shows the current derivation and final maximum values.",
+			"Mana regeneration is 1 + 0.15 x level per second. The Troll multiplier applies only out of combat. Combat gives one quarter of the unmodified rate; Cold Focus multiplies that combat rate.",
+			"A food's instant heal and regeneration wait until you are out of combat. Its pool, Crit, armor and spell-damage bonuses remain active.",
+			"The Character page keeps only the live HP and class-resource derivations beside the model and equipment.",
 		}, "\n\n")
 		return sfinv.make_formspec(player, context,
 			"textarea[0.2,0.25;7.8,4.75;;;" .. esc(text) .. "]", true)
@@ -326,6 +319,10 @@ end)
 -- open Character page (inventory_equipment.md §1). Rare event; refresh()
 -- itself no-ops on any other page.
 grug_core.register_on_equipment_change(function(player, listname)
+	grug_inventory.refresh(player)
+end)
+
+grug_core.register_on_status_modifiers_changed(function(player)
 	grug_inventory.refresh(player)
 end)
 

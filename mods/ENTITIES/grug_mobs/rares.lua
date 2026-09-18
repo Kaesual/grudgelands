@@ -387,7 +387,7 @@ grug_mobs.register_rare("ashmaw", {
 	mob = "grug_mobs:boar",
 	-- The boar model has TWO texture slots (boar.lua: {boar, blank}), and
 	-- mobs:add_mob assigns def.texture straight to base_texture and to
-	-- set_properties{textures=...} (api.lua:4238-4257) — so it has to be the
+	-- set_properties{textures=...} (api.lua:4239-4258) — so it has to be the
 	-- full per-slot list, not a bare string. levels.lua then reads this list
 	-- as the pristine base and layers the rare violet tint on top of it.
 	texture = {"grug_mobs_boar_plague.png", "grug_mobs_blank.png"},

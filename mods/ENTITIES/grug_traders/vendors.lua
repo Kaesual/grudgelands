@@ -35,7 +35,7 @@
 --   grug_mobs/rares.lua relies on).
 --
 -- INVULNERABILITY
---   api.lua:3203-3207 reads `if self.do_punch and not self:do_punch(...) ==
+--   api.lua:3204-3208 reads `if self.do_punch and not self:do_punch(...) ==
 --   false then return true end`, which parses as `(not result) == false` —
 --   i.e. ANY TRUTHY return cancels the punch, before weapon wear, before both
 --   health subtractions and before check_for_death (the api.lua comment claims
@@ -322,7 +322,7 @@ local function vendor_def(vendor, texture)
 			punch_start = 189, punch_end = 198, punch_speed = 30,
 		},
 
-		-- ANY truthy return cancels the punch outright (api.lua:3203-3207).
+		-- ANY truthy return cancels the punch outright (api.lua:3204-3208).
 		do_punch = function()
 			return true
 		end,

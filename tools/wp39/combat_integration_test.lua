@@ -220,6 +220,7 @@ grug_classes = {
 	get_race_perk = function() return nil end,
 	get_melee_bonus = function(player) return player.melee_bonus or 0 end,
 	get_spell_power_bonus = function() return 0 end,
+	get_spell_damage_percent = function() return 0 end,
 	register_on_class_chosen = function(fn)
 		class_callbacks[#class_callbacks + 1] = fn
 	end,
@@ -442,6 +443,7 @@ grug_core.get_player_level = function(player) return player.level or 1 end
 grug_core.combat_debug_enabled = function() return false end
 grug_core.combat_debug_due = function() return false end
 grug_core.combat_debug_log = function() error("disabled debug formatted") end
+grug_core.register_on_status_modifiers_changed = function() end
 
 -- Round 4 (HUD bars): grug_abilities builds its bars from
 -- grug_core.hud_layout at join; the real file calls nothing from core.

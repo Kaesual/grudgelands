@@ -1,0 +1,4 @@
+Command: tools/r6_food_buffs/mutations.sh potion_mirror
+Expected failure: persistent potion cooldown mirrored
+Observed: FAIL persistent potion cooldown mirrored; potion meta source restores mirror after death
+Result: PASS (mutation detected against a temporary copy of the final bytes)

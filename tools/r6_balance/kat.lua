@@ -96,6 +96,7 @@ return function(repo)
 			return math.max(0, math.floor(amount * data.core.level_scale(player.level)))
 		end,
 		get_absorb = function() return 0 end,
+		status_modifier_sum = function() return 0 end,
 		get_equipped_weapon = function() return nil end,
 		combat_eye_pos = function(owner) return owner:get_pos() end,
 		register_on_equipment_change = function(fn)
@@ -118,6 +119,7 @@ return function(repo)
 		local growth = player.class_id == "mage" and 3 or 2
 		return math.floor((10 + growth * (player.level - 1)) / 10)
 	end
+	function classes_stub.get_spell_damage_percent() return 0 end
 	function classes_stub.get_melee_bonus(player)
 		local growth = player.class_id == "warrior" and 3
 			or player.class_id == "priest" and 1 or 0

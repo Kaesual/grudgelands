@@ -62,6 +62,9 @@ core = {
 		return players
 	end,
 	global_exists = function(name) return rawget(_G, name) ~= nil end,
+	get_mod_storage = function()
+		return {get_int = function() return 0 end, set_int = function() end}
+	end,
 	is_player = function(object) return object ~= nil and online[object.name] ~= nil end,
 	register_chatcommand = function(name, def) chatcommands[name] = def end,
 	register_on_punchplayer = function() end,
@@ -384,6 +387,7 @@ function grug_classes.get_max_hp() return 30 end
 function grug_classes.get_max_mana() return 20 end
 function grug_classes.get_melee_bonus() return 0 end
 function grug_classes.get_spell_power_bonus() return 0 end
+function grug_classes.get_spell_damage_percent() return 0 end
 function grug_classes.get_crit_chance() return 0 end
 function grug_classes.get_dodge_chance() return 0 end
 

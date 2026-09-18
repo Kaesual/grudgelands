@@ -128,6 +128,7 @@ grug_classes = {
 	get_race_perk = function() return nil end,
 	get_melee_bonus = function() return 0 end,
 	get_spell_power_bonus = function() return 4 end,
+	get_spell_damage_percent = function() return 0 end,
 	register_on_class_chosen = function(fn) class_callbacks[#class_callbacks + 1] = fn end,
 }
 
@@ -175,6 +176,7 @@ grug_core = {
 	register_native_swing_input_handler = function() end,
 	register_ordinary_melee_input_handler = function() end,
 	register_on_equipment_change = function() end,
+	register_on_status_modifiers_changed = function() end,
 	register_on_player_hit_mob = function() end,
 	authoritative_swing_active = function() return false end,
 	in_ability_punch = false,

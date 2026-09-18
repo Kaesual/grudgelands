@@ -23,7 +23,7 @@
 -- carries the api.lua evidence: `type = "npc"` is skipped by all three
 -- mobs_redo removal paths, `lifetimer = 30000` is the second independent
 -- guard, and a TRUTHY `do_punch` return cancels every punch before wear,
--- both health subtractions and check_for_death (api.lua:3203-3207 -- any
+-- both health subtractions and check_for_death (api.lua:3204-3208 -- any
 -- truthy return cancels, the comment there claims the opposite). Every
 -- environmental damage source is switched off separately, because those
 -- bypass on_punch.
@@ -987,7 +987,7 @@ local function npc_def(race_id, faction_id, nametag, extra)
 		-- this off `core.registered_entities[name]`, not off `self`.
 		_grug_visual = {race = race_id},
 
-		-- ANY truthy return cancels the punch outright (api.lua:3203-3207).
+		-- ANY truthy return cancels the punch outright (api.lua:3204-3208).
 		do_punch = function()
 			return true
 		end,

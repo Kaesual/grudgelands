@@ -1,8 +1,8 @@
 -- Compact real-code KAT for grug_core's startup preload of all six start
 -- areas (user decision 2026-09-14). Drives the production module with faked
 -- emerge callbacks: normal completion, the concurrency cap, cancellation on
--- shutdown, the bounded retry, a permanent failure and a restart in which
--- every block comes back from disk.
+-- shutdown, the bounded retry, a permanent failure and a restart that skips
+-- emerge through the per-world completion marker.
 --
 -- Runs under LuaJIT and tools/bin/lua51 alike; prints one canonical digest.
 
@@ -26,7 +26,7 @@ local ANCHORS = {
 
 local harness = {}
 
-local function reset(identity_count)
+local function reset(identity_count, marker)
 	harness = {
 		requests = {},
 		after_queue = {},
@@ -36,6 +36,7 @@ local function reset(identity_count)
 		open = 0,
 		max_open = 0,
 		clock = 0,
+		marker = marker or 0,
 	}
 	grug_core = {}
 	function grug_core.start_identities()
@@ -59,6 +60,12 @@ local function reset(identity_count)
 		get_us_time = function()
 			harness.clock = harness.clock + 250000
 			return harness.clock
+		end,
+		get_mod_storage = function()
+			return {
+				get_int = function() return harness.marker end,
+				set_int = function(_, _, value) harness.marker = value end,
+			}
 		end,
 		log = function(level, message)
 			harness.logs[#harness.logs + 1] = level .. "|" .. message
@@ -144,8 +151,8 @@ local function drive(action_for_race)
 	end
 end
 
-local function boot(identity_count)
-	reset(identity_count)
+local function boot(identity_count, marker)
+	reset(identity_count, marker)
 	dofile(repo .. "/mods/CORE/grug_core/starts_preload.lua")
 	grug_core.register_on_starts_progress(function(ready, total, failed)
 		harness.progress[#harness.progress + 1] =
@@ -211,6 +218,7 @@ assert_equal(grug_core.start_ready("gnome"), false, "unknown race ready")
 assert_equal(grug_core.starts_preload_failed(), false, "cold failure flag")
 assert_equal(count_logs("start area ready:"), 6, "per-start action logs")
 assert_equal(count_logs("all 6 start areas ready after"), 1, "completion log")
+assert_equal(harness.marker, 1, "completion marker")
 assert_equal(#harness.progress, 6, "progress notifications")
 assert_equal(harness.progress[6], "6/6", "final progress notification")
 -- Nothing is logged per block: 1 opening + 6 completions + 1 summary.
@@ -257,22 +265,22 @@ drive(function() return core.EMERGE_FROM_DISK end)
 assert_equal(grug_core.starts_ready(), 6, "re-requested start is ready")
 
 --
--- 4. Restart after a shutdown: the preload is requested again and every
---    block comes back from disk, so all six complete without regenerating.
+-- 4. Restart after a completed first run: the persisted marker authenticates
+--    all six starts without any emerge request.
 --
-boot()
-for index = 1, 6 do
-	deliver(index, core.EMERGE_FROM_DISK, 1)
-	run_after()
-end
+boot(nil, 1)
 ready, total = grug_core.starts_ready()
 assert_equal(ready, 6, "restart ready count")
 assert_equal(total, 6, "restart total count")
-assert_equal(#harness.requests, 6, "restart request count")
+assert_equal(#harness.requests, 0, "restart request count")
+assert_equal(count_logs("start areas already generated"), 1,
+	"restart marker log")
 -- Requesting again after completion emerges nothing a second time.
 assert_equal(grug_core.request_starts_preload(), true, "idle re-request")
 run_after()
-assert_equal(#harness.requests, 6, "idle re-request emerges nothing")
+assert_equal(#harness.requests, 0, "idle re-request emerges nothing")
+assert_equal(count_logs("start areas already generated"), 1,
+	"marker log is not repeated")
 
 --
 -- 5. A world authority that publishes the wrong number of starts fails loudly
@@ -290,6 +298,6 @@ print(table.concat({
 	"max_concurrent=2",
 	"cancel_retries=1",
 	"permanent_failures=1",
-	"restart_from_disk=6",
+	"restart_marker_skip=6",
 	"callback_reentry=0",
 }, "|"))

@@ -244,6 +244,9 @@ local function load_abilities(repo, layout, class_of)
 	function grug_core.in_combat()
 		return false
 	end
+	function grug_core.status_modifier_sum()
+		return 0
+	end
 
 	local grug_classes = stub_table({registered_classes = {}})
 	function grug_classes.get_class_def(player)

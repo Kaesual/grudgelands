@@ -101,6 +101,11 @@ local function effective_support_number(amount)
 	return math.floor(amount)
 end
 
+local function spell_damage_value(player, amount)
+	local percent = grug_classes.get_spell_damage_percent(player)
+	return math.floor(amount * (1 + percent / 100) + 0.5)
+end
+
 local function support_value(player, percent)
 	local base = grug_core.base_pool(grug_core.get_player_level(player))
 	local spell_power_percent = grug_classes.get_spell_power_bonus(player)
@@ -495,10 +500,11 @@ grug_projectiles.register("fireball", {
 -- target acquisition belongs to the projectile, not cast-time enemy memory.
 local function fireball_values(user)
 	return {
-		damage = grug_core.baseline_weapon_damage(
+		damage = spell_damage_value(user,
+			grug_core.baseline_weapon_damage(
 				grug_core.get_player_level(user))
 			+ grug_classes.get_spell_power_bonus(user)
-			+ grug_classes.get_talent_bonus(user, "fireball_damage_add"),
+			+ grug_classes.get_talent_bonus(user, "fireball_damage_add")),
 	}
 end
 
@@ -686,7 +692,7 @@ grug_abilities.register_ability({
 			damage = damage + grug_classes.get_talent_bonus(user,
 				"smite_damage_while_shielded_add")
 		end
-		return {damage = damage}
+		return {damage = spell_damage_value(user, damage)}
 	end,
 	description_for = function(user, def)
 		local unshielded = effective_number(user,

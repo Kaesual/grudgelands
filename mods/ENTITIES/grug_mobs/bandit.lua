@@ -122,8 +122,8 @@ function grug_mobs.bandit_def(description)
 		-- answers from the position.
 		--
 		-- ORDER MATTERS and it is the right way round: api.lua resolves the
-		-- function FIRST (api.lua:768-769) and only then hands the resulting list to
-		-- the WP6 GRUG PATCH (api.lua:773-783 -> grug_mobs._item_drop_filter).
+		-- function FIRST (api.lua:769-770) and only then hands the resulting list to
+		-- the WP6 GRUG PATCH (api.lua:779-789 -> grug_mobs._item_drop_filter).
 		-- So the player-tag rule and the profession drop hooks see this list
 		-- exactly as if it had been written literally in the def; a Leatherworker
 		-- hook could multiply it, and an untagged bandit drops nothing at all.
