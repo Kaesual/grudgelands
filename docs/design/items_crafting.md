@@ -1164,16 +1164,16 @@ Neither of these costs a main profession slot (professions.md §1).
 
   | Tier | Role | Inputs | Output |
   |---|---|---|---|
-  | T1 | Hearty | raw meat + potato | Hearty Stew |
-  | T1 | Caster | carrot + corn | Sweetroot Mash |
+  | T1 | Hearty | raw meat + potato or corn | Hearty Stew |
+  | T1 | Caster | carrot or cassava + potato or corn | Sweetroot Mash |
   | T1 | Hunter | raw fish + corn | Corn-Crusted Fish |
-  | T2 | Hearty | pumpkin + raw meat + potato | Pumpkin Stew |
-  | T2 | Caster | 2 Blightberries + Sugar Cane | Berry Preserve |
-  | T2 | Hunter | raw meat + Sunberry | Fruit-Glazed Roast |
-  | T3 | Hearty | mushroom + raw meat + potato | Forager's Pot |
+  | T2 | Hearty | pumpkin + raw meat + potato or corn | Pumpkin Stew |
+  | T2 | Caster | 2 berries + Sugar Cane | Berry Preserve |
+  | T2 | Hunter | raw meat + apple or berries | Fruit-Glazed Roast |
+  | T3 | Hearty | mushroom + raw meat + potato or corn | Forager's Pot |
   | T3 | Caster | 2 mushrooms | Mushroom Skewer |
-  | T3 | Hunter | raw meat + Wild Onion + mushroom | Onion-Seared Steak |
-  | T4 | Hearty | raw meat + Marshbloom + potato | Marsh Roast |
+  | T3 | Hunter | raw meat + Wild Onion or Fire Pepper + mushroom | Onion-Seared Steak |
+  | T4 | Hearty | raw meat + Marshbloom + potato or corn | Marsh Roast |
   | T4 | Caster | raw fish + Marshbloom | Marshbloom Chowder |
   | T4 | Hunter | 2 raw meat + melon + mushroom | Hunter's Feast |
   | T5 | Hearty | raw meat + Stormkelp + Rock Salt | Kelp-Wrapped Roast |
@@ -1181,7 +1181,7 @@ Neither of these costs a main profession slot (professions.md §1).
   | T5 | Hunter | raw fish + Rock Salt | Salt-Crusted Fish |
   | T6 | Hearty | 2 raw meat + Wild Cocoa + Stormkelp | Grand Feast |
   | T6 | Caster | 2 Wild Cocoa + Rock Salt | Jungle Cocoa |
-  | T6 | Hunter | raw meat + Wild Cocoa + Fire Pepper | Cocoa-Rubbed Game |
+  | T6 | Hunter | raw meat + Wild Cocoa + Fire Pepper or Wild Onion | Cocoa-Rubbed Game |
 
   **Both furnace patterns.** The three universal refinements appear in the
   General book with a Furnace hint and need no profession: raw meat → Cooked
@@ -1192,9 +1192,9 @@ Neither of these costs a main profession slot (professions.md §1).
 
   | Tier | Raw assembly inputs | Furnace output |
   |---|---|---|
-  | T1 | raw meat + potato + Wild Grain | Hearty Stew |
-  | T2 | pumpkin + raw meat + corn | Pumpkin Stew |
-  | T3 | Cave Cap + raw meat + potato | Forager's Pot |
+  | T1 | raw meat + potato or corn + Wild Grain | Hearty Stew |
+  | T2 | pumpkin + raw meat + Wild Grain | Pumpkin Stew |
+  | T3 | Cave Cap + raw meat + potato or corn | Forager's Pot |
   | T4 | raw meat + Marshbloom + Frost Melon | Marsh Roast |
   | T5 | raw meat + Stormkelp + Salt Crust | Kelp-Wrapped Roast |
   | T6 | 2 raw meat + Wild Cocoa + Salt Crust | Grand Feast |

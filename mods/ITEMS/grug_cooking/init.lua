@@ -61,6 +61,31 @@ end
 
 grug_cooking.PLANTS = PLANTS
 
+local function add_item_group(item, group)
+	local definition = assert(core.registered_items[item],
+		"grug_cooking: missing grouped ingredient " .. item)
+	local groups = {}
+	for name, value in pairs(definition.groups or {}) do groups[name] = value end
+	groups[group] = 1
+	core.override_item(item, {groups = groups})
+end
+
+local INGREDIENT_GROUPS = {
+	grug_cooking_staple = {"grug_gathering:potato", "grug_gathering:corn"},
+	grug_cooking_root = {"grug_cooking:carrot", "grug_cooking:cassava"},
+	grug_cooking_berry = {"default:blueberries", "grug_cooking:blightberry",
+		"grug_cooking:sunberry", "grug_cooking:jungle_berry"},
+	grug_cooking_fruit = {"default:apple", "default:blueberries",
+		"grug_cooking:blightberry", "grug_cooking:sunberry",
+		"grug_cooking:jungle_berry"},
+	grug_cooking_early_spice = {"grug_cooking:wild_onion",
+		"grug_cooking:fire_pepper"},
+}
+
+for group, members in pairs(INGREDIENT_GROUPS) do
+	for index = 1, #members do add_item_group(members[index], group) end
+end
+
 local TIER_COLORS = {"#a97945", "#bb8055", "#8f6b52", "#72928a", "#667f91",
 	"#80649b"}
 local ROLE_IMAGES = {
@@ -80,28 +105,33 @@ local G = "grug_gathering:"
 local C = "grug_cooking:"
 local MEAT = "mobs:meat_raw"
 local FISH = "grug_mobs:raw_fish"
+local STAPLE = "group:grug_cooking_staple"
+local ROOT = "group:grug_cooking_root"
+local BERRY = "group:grug_cooking_berry"
+local FRUIT = "group:grug_cooking_fruit"
+local EARLY_SPICE = "group:grug_cooking_early_spice"
 
 local DISHES = {
 	dish("hearty_stew", "Hearty Stew", 1, "hearty",
-		{MEAT, G .. "potato"}),
+		{MEAT, STAPLE}),
 	dish("sweetroot_mash", "Sweetroot Mash", 1, "caster",
-		{C .. "carrot", G .. "corn"}),
+		{ROOT, STAPLE}),
 	dish("corn_crusted_fish", "Corn-Crusted Fish", 1, "hunter",
 		{FISH, G .. "corn"}),
 	dish("pumpkin_stew", "Pumpkin Stew", 2, "hearty",
-		{C .. "pumpkin", MEAT, G .. "potato"}),
+		{C .. "pumpkin", MEAT, STAPLE}),
 	dish("berry_preserve", "Berry Preserve", 2, "caster",
-		{C .. "blightberry", C .. "blightberry", C .. "sugar_cane"}),
+		{BERRY, BERRY, C .. "sugar_cane"}),
 	dish("fruit_glazed_roast", "Fruit-Glazed Roast", 2, "hunter",
-		{MEAT, C .. "sunberry"}),
+		{MEAT, FRUIT}),
 	dish("foragers_pot", "Forager's Pot", 3, "hearty",
-		{G .. "mushroom", MEAT, G .. "potato"}),
+		{G .. "mushroom", MEAT, STAPLE}),
 	dish("mushroom_skewer", "Mushroom Skewer", 3, "caster",
 		{G .. "mushroom", G .. "mushroom"}),
 	dish("onion_seared_steak", "Onion-Seared Steak", 3, "hunter",
-		{MEAT, C .. "wild_onion", G .. "mushroom"}),
+		{MEAT, EARLY_SPICE, G .. "mushroom"}),
 	dish("marsh_roast", "Marsh Roast", 4, "hearty",
-		{MEAT, G .. "marshbloom", G .. "potato"}),
+		{MEAT, G .. "marshbloom", STAPLE}),
 	dish("marshbloom_chowder", "Marshbloom Chowder", 4, "caster",
 		{FISH, G .. "marshbloom"}),
 	dish("hunters_feast", "Hunter's Feast", 4, "hunter",
@@ -117,7 +147,7 @@ local DISHES = {
 	dish("jungle_cocoa", "Jungle Cocoa", 6, "caster",
 		{G .. "wild_cocoa", G .. "wild_cocoa", G .. "rock_salt"}),
 	dish("cocoa_rubbed_game", "Cocoa-Rubbed Game", 6, "hunter",
-		{MEAT, G .. "wild_cocoa", C .. "fire_pepper"}),
+		{MEAT, G .. "wild_cocoa", EARLY_SPICE}),
 }
 
 local function grid(inputs)
@@ -155,10 +185,12 @@ local INGREDIENT_TIERS = {
 	[C .. "wild_grain"] = 1, [C .. "carrot"] = 1,
 	[C .. "cassava"] = 1, [C .. "wild_onion"] = 1,
 	[C .. "fire_pepper"] = 1, [C .. "bamboo_shoot"] = 1,
+	[STAPLE] = 1, [ROOT] = 1, [EARLY_SPICE] = 1,
 	["default:apple"] = 2, ["default:blueberries"] = 2,
 	[C .. "pumpkin"] = 2, [C .. "blightberry"] = 2,
 	[C .. "sunberry"] = 2, [C .. "jungle_berry"] = 2,
 	[C .. "sugar_cane"] = 2,
+	[BERRY] = 2, [FRUIT] = 2,
 	[G .. "mushroom"] = 3, [C .. "cave_cap"] = 3,
 	[G .. "melon"] = 4, [G .. "marshbloom"] = 4,
 	[C .. "frost_melon"] = 4,
@@ -180,11 +212,11 @@ end
 
 local RAW_ASSEMBLIES = {
 	{tier = 1, id = "raw_stew_pot", output = DISHES[1].item,
-		inputs = {MEAT, G .. "potato", C .. "wild_grain"}},
+		inputs = {MEAT, STAPLE, C .. "wild_grain"}},
 	{tier = 2, id = "raw_pumpkin_pot", output = DISHES[4].item,
-		inputs = {C .. "pumpkin", MEAT, G .. "corn"}},
+		inputs = {C .. "pumpkin", MEAT, C .. "wild_grain"}},
 	{tier = 3, id = "raw_foragers_pot", output = DISHES[7].item,
-		inputs = {C .. "cave_cap", MEAT, G .. "potato"}},
+		inputs = {C .. "cave_cap", MEAT, STAPLE}},
 	{tier = 4, id = "raw_marsh_roast", output = DISHES[10].item,
 		inputs = {MEAT, G .. "marshbloom", C .. "frost_melon"}},
 	{tier = 5, id = "raw_kelp_roast", output = DISHES[13].item,

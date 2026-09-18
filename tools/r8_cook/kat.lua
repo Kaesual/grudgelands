@@ -196,6 +196,18 @@ return function(root)
 		check(role_count[tier].hearty == 1 and role_count[tier].caster == 1 and
 			role_count[tier].hunter == 1, "role coverage differs at T" .. tier)
 	end
+	local sweetroot = grug_jobs.recipe_for_output("grug_cooking:sweetroot_mash",
+		"grid")
+	check(grug_jobs.recipe_for_craft("grid", ItemStack(sweetroot.output_name),
+		{ItemStack("grug_cooking:cassava"),
+			ItemStack("grug_gathering:potato")}) == sweetroot,
+		"Throng root/staple alternatives do not resolve to Sweetroot Mash")
+	local steak = grug_jobs.recipe_for_output("grug_cooking:onion_seared_steak",
+		"grid")
+	check(grug_jobs.recipe_for_craft("grid", ItemStack(steak.output_name),
+		{ItemStack("mobs:meat_raw"), ItemStack("grug_cooking:fire_pepper"),
+			ItemStack("grug_gathering:mushroom")}) == steak,
+		"Throng spice alternative does not resolve to Onion-Seared Steak")
 	row("dishes", "18", "tiers=6", "roles=hearty,caster,hunter")
 
 	check(#grug_cooking.RAW_ASSEMBLIES == 6, "raw assembly population differs")
