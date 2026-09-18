@@ -24,6 +24,9 @@ local goblin_animation = {
 	walk_start = 168, walk_end = 187, walk_speed = 40,
 	run_start = 168, run_end = 187, run_speed = 60,
 	punch_start = 200, punch_end = 219, punch_speed = 60,
+	-- The goblin mesh has no separate shot clip; its real attack range is
+	-- explicitly reused so Slinger projectiles never appear from a static pose.
+	shoot_start = 200, shoot_end = 219, shoot_speed = 60,
 }
 
 local function goblin_def(description, texture, ranged)

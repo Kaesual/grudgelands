@@ -71,6 +71,11 @@ return function(root)
 	end
 	assert(arrows["grug_mobs:hex_bottle"] == nil)
 	assert(definitions["grug_mobs:goblin_raider"]._kat_swarm)
+	local slinger = definitions["grug_mobs:goblin_slinger"]
+	assert(slinger.attack_type == "dogshoot" and
+		slinger.animation.shoot_start == slinger.animation.punch_start and
+		slinger.animation.shoot_end == slinger.animation.punch_end,
+		"Goblin Slinger dogshoot has no real animation range")
 	assert(definitions["grug_mobs:snow_leopard"]._kat_stalker)
 	assert(type(definitions["grug_mobs:wisp"].do_custom) == "function")
 	assert(type(definitions["grug_mobs:ashen_treant"].do_custom) == "function")

@@ -15,7 +15,7 @@ local RACES = {
 	human = {name = "King of Highcourt", faction = "accord",
 		kit = "rally", weapon = "sword"},
 	elf = {name = "King of Lethariel", faction = "accord",
-		kit = "volley", weapon = "dagger"},
+		kit = "volley", weapon = "staff"},
 	undead = {name = "King of Nhal Veyr", faction = "throng",
 		kit = "bone_call", weapon = "staff"},
 	orc = {name = "King of Gor Drazhak", faction = "throng",
@@ -179,8 +179,14 @@ function grug_mobs.boss_attempt_reset(id)
 end
 
 function grug_mobs.boss_leash_reset(self)
-	if self and self._grug_royal_race and grug_mobs.royal_encounter_reset then
-		grug_mobs.royal_encounter_reset(self)
+	if self and self._grug_royal_race then
+		-- The king alone owns the five-NPC encounter. A guard may individually
+		-- leash, heal and resume following, but must never clear participation
+		-- or recreate the retinue underneath a live king attempt.
+		if self._grug_royal_king and grug_mobs.royal_encounter_reset then
+			grug_mobs.royal_encounter_reset(self)
+		end
+		return
 	elseif self and self._grug_boss_id then
 		grug_mobs.boss_attempt_reset(self._grug_boss_id)
 	end
@@ -229,13 +235,14 @@ local function shoot(self, target, arrow, offset_angle)
 		y = dy * velocity / length, z = dz * velocity / length})
 end
 
-local function hit_players(self, radius, multiplier, cone, knockback)
+local function hit_players(self, radius, multiplier, cone, knockback, faction)
 	local pos = self.object:get_pos()
 	if not pos then return end
 	local facing
 	if cone then facing = core.yaw_to_dir(self.object:get_yaw() or 0) end
 	for _, object in ipairs(core.get_objects_inside_radius(pos, radius)) do
-		if core.is_player(object) and object:get_hp() > 0 then
+		if core.is_player(object) and object:get_hp() > 0 and
+				(not faction or player_enemy_of(object, faction)) then
 			local target = object:get_pos()
 			local dx, dz = target.x - pos.x, target.z - pos.z
 			local length = math.sqrt(dx * dx + dz * dz)
@@ -367,8 +374,9 @@ end
 
 local function royal_signature(self, race, target, start_health)
 	local kit = RACES[race].kit
+	local faction = RACES[race].faction
 	if kit == "shatter" then
-		hit_players(self, 6, 3, false, 8)
+		hit_players(self, 6, 3, false, 8, faction)
 	elseif kit == "rally" then
 		local pos = self.object:get_pos()
 		local offsets = {{x = -3, z = 2}, {x = 3, z = 2},
@@ -400,7 +408,7 @@ local function royal_signature(self, race, target, start_health)
 			if ent then ent._grug_royal_summon = self._grug_boss_id end
 		end
 	elseif kit == "cleave" then
-		hit_players(self, 6, 3, true, 0)
+		hit_players(self, 6, 3, true, 0, faction)
 	elseif kit == "regrowth" and self.health >= start_health then
 		self.health = math.min(self.hp_max or self.health,
 			self.health + math.floor((self.hp_max or self.health) * 0.2))
@@ -411,6 +419,7 @@ end
 local function king_tick(self, dtime, race)
 	self._grug_boss_id = "king:" .. race
 	self._grug_royal_race = race
+	self._grug_royal_king = true
 	self.temp = self.temp or {}
 	if self._grug_start and not self.temp.grug_socket_claimed then
 		self.temp.grug_socket_claimed = true
@@ -497,22 +506,47 @@ local function king_def(race, row)
 	}
 end
 
+local ROYAL_FOLLOW_DISTANCE = 5
+local ROYAL_PATH_FAILURE = 20
+
 local function royal_guard_tick(base_tick, self, dtime)
 	self._grug_boss_id = "king:" .. self._grug_royal_race
 	local result = base_tick(self, dtime)
 	if result == false then return false end
-	if self.state == "attack" or not self.object then return end
+	if not self.object then return end
+	self.temp = self.temp or {}
+	self.temp.grug_royal_follow = (self.temp.grug_royal_follow or 0) + dtime
+	if self.temp.grug_royal_follow < 1 then return end
+	local elapsed = self.temp.grug_royal_follow
+	self.temp.grug_royal_follow = 0
 	local pos = self.object:get_pos()
 	for _, ent in ipairs(royal_objects(self._grug_boss_id, 80, pos)) do
 		if ent.name:find("grug_mobs:king_", 1, true) then
 			local king_pos = ent.object:get_pos()
 			local dx, dz = king_pos.x - pos.x, king_pos.z - pos.z
-			if dx * dx + dz * dz > 25 then
-				grug_mobs.walk_toward(self, king_pos.x, king_pos.z, pos)
+			if dx * dx + dz * dz <=
+					ROYAL_FOLLOW_DISTANCE * ROYAL_FOLLOW_DISTANCE then
+				grug_mobs.stall_clear(self)
+				return
 			end
+			local stalled = grug_mobs.stall_clock(self, king_pos.x, king_pos.z,
+				pos, elapsed)
+			if stalled >= ROYAL_PATH_FAILURE then
+				if grug_mobs.path_nudge(self, king_pos.x, king_pos.z, pos) then
+					return
+				end
+				-- Unlike ambient patrol snaps, this is encounter correction, not
+				-- travel: the guard must rejoin the authoritative king even while
+				-- watched, and never moves the king in response to its own failure.
+				grug_mobs.place_on_ground(self.object, king_pos)
+				grug_mobs.stall_clear(self)
+				return
+			end
+			grug_mobs.walk_toward(self, king_pos.x, king_pos.z, pos)
 			return
 		end
 	end
+	grug_mobs.stall_clear(self)
 end
 
 for race, row in pairs(RACES) do

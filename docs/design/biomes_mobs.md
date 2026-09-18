@@ -1150,6 +1150,12 @@ give it mixed silhouettes. Wisp blink destinations must have two open nodes.
 | Wisp | flying melee; blinks up to 2.5 m toward a distant target every 4 s | night | Whitebridge, Ashenward, Broken Causeway, Lorindor, Moonfall, Glassroot, Mournfen, Whispering Reedlands, Totemwater | none | VoxeLibre vex, GPLv3 model / CC BY-SA 4.0 texture |
 | Ashen Treant / Gravewood Treant | roots aura: 30% slow inside 3 m, refreshed once/s | night | Ashenward / Ossuary and Blackwind | sticks; apple 1/4 | mobs_monster tree monster, WTFPL, two runtime tints |
 
+Bog Witch is deferred from this wave. The pinned VoxeLibre witch mesh has
+keyed frames only in 1..41, while its required shooting and death behaviours
+name frames 50..82 and 145; shipping it would violate the animated-mesh rule.
+It remains absent until a licensed mesh with the required keyed behaviours is
+pinned. The package KAT keeps `blocked=bog_witch` as the regression record.
+
 **Round 8 fixed bosses:** these are authored encounters and have no ambient
 spawn row or palette membership.
 
@@ -1158,6 +1164,19 @@ spawn row or palette membership.
 | Wyrmglass Ice Dragon | any | Wyrmglass dragon anchor, fixed L60 boss | three-perch arena; 2 s breath-line / ground-slam telegraphs; persistent 30 min wall-clock respawn with 60 s warning | draconis ice dragon, sapphire, MIT |
 | Stormscale Jungle Wyvern | any | Stormscale dragon anchor, fixed L60 boss | same shared encounter chassis, storm breath variant | draconis jungle wyvern, jade, MIT |
 | Six race Kings | any | authored `king` socket in each capital, fixed L65 elite | one race-specific signature each; four fixed L60 elite royal guards; group reset and persistent 15 min wall-clock respawn | `character.b3d` + six generated royal skins |
+
+The current gear catalogue has sword, dagger, greataxe and staff visuals only;
+bosses do not create a second weapon-art system. The encounter kits remain the
+authority, while the closest shipped wield silhouette is:
+
+| King | Decided kit | Visible shipped item | Deliberate visual deviation |
+|------|-------------|----------------------|-----------------------------|
+| Dwarf | hammer; Ground Shatter | greataxe | no hammer visual; closest heavy two-handed weapon |
+| Human | sword and shield; Rally | sword | no shield/offhand visual |
+| Elf | bow; Volley | staff | no bow visual; closest long two-handed ranged silhouette |
+| Undead | lich staff; Bone Call | staff | none |
+| Orc | great axe; Cleave | greataxe | none |
+| Troll | totem; Regrowth | staff | no totem visual; closest caster silhouette |
 
 **Deep sea (world.md §2b):** Kraken Guard, L100 fixed (hand-set — the
 one exception, it is a deterrent not content): mobs_mc_squid at

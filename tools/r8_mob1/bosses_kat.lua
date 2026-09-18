@@ -8,6 +8,10 @@ return function(root)
 	local callbacks = {hit = {}, heal = {}, absorb = {}, death = {}, join = {}}
 	local store = {}
 	local lair_loaded = true
+	local radius_objects = {}
+	local faction_by_name = {}
+	local movement = {walk = 0, path = 0, snap = 0, clear = 0}
+	local stalled, path_result = 0, false
 	local storage = {
 		get_string = function(_, key) return store[key] or "" end,
 		set_string = function(_, key, value) store[key] = value end,
@@ -19,7 +23,7 @@ return function(root)
 		register_globalstep = function(fn) globalsteps[#globalsteps + 1] = fn end,
 		register_on_dieplayer = function(fn) callbacks.death[#callbacks.death + 1] = fn end,
 		register_on_joinplayer = function(fn) callbacks.join[#callbacks.join + 1] = fn end,
-		get_objects_inside_radius = function() return {} end,
+		get_objects_inside_radius = function() return radius_objects end,
 		get_player_by_name = function() return nil end,
 		get_node_or_nil = function()
 			return {name = lair_loaded and "air" or "ignore"}
@@ -31,7 +35,7 @@ return function(root)
 		chat_send_player = function() end,
 		serialize = function() return "" end,
 		deserialize = function() return nil end,
-		is_player = function() return false end,
+		is_player = function(object) return object and object._is_player == true end,
 		yaw_to_dir = function() return {x = 0, y = 0, z = 1} end,
 		add_entity = function(pos, name)
 			spawned = {pos = pos, name = name, ent = {}}
@@ -48,7 +52,7 @@ return function(root)
 		register_on_effective_absorb = function(fn)
 			callbacks.absorb[#callbacks.absorb + 1] = fn
 		end,
-		get_player_faction = function() return "accord" end,
+		get_player_faction = function(name) return faction_by_name[name] end,
 		opposing_faction = function(faction)
 			return faction == "accord" and "throng" or "accord"
 		end,
@@ -62,8 +66,23 @@ return function(root)
 		register_mob = function(name, def) registered[name] = def end,
 		register_simple_arrow = function() end,
 		stamp_arrow_damage = function() end,
-		place_on_ground = function() end,
-		walk_toward = function() end,
+		place_on_ground = function(object, pos)
+			movement.snap = movement.snap + 1
+			movement.snap_pos = pos
+		end,
+		walk_toward = function()
+			movement.walk = movement.walk + 1
+		end,
+		stall_clock = function()
+			return stalled, stalled
+		end,
+		stall_clear = function()
+			movement.clear = movement.clear + 1
+		end,
+		path_nudge = function()
+			movement.path = movement.path + 1
+			return path_result
+		end,
 		start_npc_claim = function() return true end,
 		guard_definition = function(faction, description, texture)
 			return {description = description, _grug_faction = faction,
@@ -87,6 +106,8 @@ return function(root)
 	end
 
 	local race_count = 0
+	local expected_weapons = {dwarf = "greataxe", human = "sword",
+		elf = "staff", undead = "staff", orc = "greataxe", troll = "staff"}
 	for _, race in ipairs({"dwarf", "human", "elf", "undead", "orc", "troll"}) do
 		local king = assert(registered["grug_mobs:king_" .. race], race)
 		local guard = assert(registered["grug_mobs:royal_guard_" .. race], race)
@@ -94,6 +115,8 @@ return function(root)
 		assert(guard._grug_fixed_level == 60 and guard._grug_tier == "elite")
 		assert(king.hp_min == nil and king.hp_max == nil and king.damage == nil)
 		assert(king.textures[1][1] == "grug_mobs_royal_" .. race .. ".png")
+		assert(king._grug_visual({_grug_level = 65}).weapon_family ==
+			expected_weapons[race], "wrong closest available king weapon: " .. race)
 		race_count = race_count + 1
 	end
 	assert(race_count == 6 and craftitems["grug_mobs:fallen_crown"])
@@ -111,6 +134,68 @@ return function(root)
 	assert(store["boss:dragon:wyrmglass:warned"] == "1")
 	assert(tonumber(store["boss:dragon:wyrmglass:due"]) >= warning_started + 60,
 		"late activation did not receive a full warning")
+
+	local function player(name, faction, x)
+		faction_by_name[name] = faction
+		local object = {_is_player = true, hits = 0, pushes = 0}
+		function object:get_player_name() return name end
+		function object:get_hp() return 100 end
+		function object:get_pos() return {x = x, y = 0, z = 0} end
+		function object:punch() self.hits = self.hits + 1 end
+		function object:add_velocity() self.pushes = self.pushes + 1 end
+		return object
+	end
+	local friendly = player("friendly", "accord", 1)
+	local enemy = player("enemy", "throng", 2)
+	local factionless = player("factionless", nil, 3)
+	radius_objects = {friendly, enemy, factionless}
+	local king_object = {
+		get_pos = function() return {x = 0, y = 0, z = 0} end,
+		get_yaw = function() return 0 end,
+	}
+	local dwarf = {object = king_object, temp = {}, attack = enemy,
+		damage = 10, health = 100, hp_max = 100,
+		set_velocity = function() end, set_animation = function() end}
+	registered["grug_mobs:king_dwarf"].do_custom(dwarf, 4)
+	registered["grug_mobs:king_dwarf"].do_custom(dwarf, 2)
+	assert(enemy.hits == 1 and friendly.hits == 0 and factionless.hits == 0,
+		"king signature ignored faction authority")
+
+	local dragon = {object = king_object, temp = {}, attack = enemy,
+		damage = 10, set_velocity = function() end, set_animation = function() end}
+	registered["grug_mobs:ice_dragon"].do_custom(dragon, 2)
+	registered["grug_mobs:ice_dragon"].do_custom(dragon, 2)
+	assert(enemy.hits == 2 and friendly.hits == 1 and factionless.hits == 1,
+		"neutral dragon AoE inherited king faction filtering")
+
+	local king_ent = {name = "grug_mobs:king_dwarf",
+		_grug_boss_id = "king:dwarf"}
+	local follow_king = {
+		get_pos = function() return {x = 10, y = 0, z = 0} end,
+		get_luaentity = function() return king_ent end,
+	}
+	king_ent.object = follow_king
+	radius_objects = {follow_king}
+	local guard = {_grug_royal_race = "dwarf", state = "attack", temp = {},
+		object = {get_pos = function() return {x = 0, y = 0, z = 0} end}}
+	local guard_tick = registered["grug_mobs:royal_guard_dwarf"].do_custom
+	guard_tick(guard, 1)
+	assert(movement.walk == 1, "attacking royal guard did not follow king")
+	stalled, path_result = 20, true
+	guard_tick(guard, 1)
+	assert(movement.path == 1 and movement.snap == 0,
+		"royal guard skipped path recovery")
+	path_result = false
+	guard_tick(guard, 1)
+	assert(movement.path == 2 and movement.snap == 1 and
+		movement.snap_pos.x == 10, "failed royal guard path did not snap to king")
+	local resets = 0
+	grug_mobs.royal_encounter_reset = function() resets = resets + 1 end
+	grug_mobs.boss_leash_reset(guard)
+	assert(resets == 0, "guard leash reset the royal encounter")
+	grug_mobs.boss_leash_reset({_grug_royal_race = "dwarf",
+		_grug_royal_king = true})
+	assert(resets == 1, "king leash did not reset the royal encounter")
 
 	assert(grug_mobs.boss_spawn_due("wyrmglass"))
 	assert(spawned.name == "grug_mobs:ice_dragon")
@@ -138,5 +223,6 @@ return function(root)
 		assert(license:find("`" .. file .. "`", 1, true), file)
 	end
 
-	return "r8_mob1_boss_v1|dragons=2|kings=6|royal_guards=24|perches=3|warning=60\n"
+	return "r8_mob1_boss_v2|dragons=2|kings=6|royal_guards=24|perches=3|" ..
+		"warning=60|king_enemy_aoe=1|guard_follow_path_snap=1|guard_reset=0\n"
 end

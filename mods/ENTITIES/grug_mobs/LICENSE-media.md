@@ -240,6 +240,10 @@ All files MIT, author **ElCeejo**.
 | `grug_mobs_goblin_slinger.png` | `= textures/goblins_goblin_cobble2.png` | Francisco Athens | CC BY-SA 3.0 | none (`cmp` byte-identical) |
 | `grug_mobs_goblin_hound.png` | `= textures/goblins_goblin_dog.png` | Francisco Athens | CC BY-SA 3.0 | none (`cmp` byte-identical) |
 
+The goblin mesh has no separately authored ranged clip. Goblin Slinger maps
+`shoot` explicitly to the real keyed attack range 200..219; this is the same
+range its melee Raider sibling uses, rather than an unanimated projectile.
+
 ---
 
 ## 4.2 draconis (ElCeejo)
@@ -297,7 +301,9 @@ and Stone Mite add no model or texture file. Their definitions use Luanti
 `^[multiply` modifiers over the already listed Bandit, Skeleton, Zombie,
 Gull, Giant Spider, Cave Bat and Cave Crawler files respectively; their scale
 changes are object properties. The original file rows and licences above
-therefore remain the complete per-file ledger for this package.
+therefore remain the complete per-file ledger for this package. The Poacher's
+`character.b3d` source has no bow clip, so its `shoot` animation explicitly
+uses the keyed mine/punch range 189..198 instead of firing from a static pose.
 
 | File | Author | License | How it was made |
 |------|--------|---------|-----------------|

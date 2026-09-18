@@ -32,6 +32,11 @@ poacher.arrow = "grug_mobs:arrow_entity"
 poacher.arrow_override = grug_mobs.stamp_arrow_damage
 poacher.shoot_interval = 2.5
 poacher.shoot_offset = 1.3
+-- character.b3d has no authored bow clip. The real 189..198 mine/punch
+-- range is the explicit ranged release gesture, matching the archer family.
+poacher.animation.shoot_start = poacher.animation.punch_start
+poacher.animation.shoot_end = poacher.animation.punch_end
+poacher.animation.shoot_speed = poacher.animation.punch_speed
 poacher.dogshoot_switch = 1
 poacher.dogshoot_count_max = 10
 poacher.dogshoot_count2_max = 3

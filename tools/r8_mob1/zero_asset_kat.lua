@@ -34,6 +34,8 @@ return function(root)
 		return {
 			description = description, clock = "any", type = "monster",
 			_grug_leash_range = 25, _grug_visual = function() return {} end,
+			animation = {punch_start = 189, punch_end = 198,
+				punch_speed = 30},
 			drops = function()
 				return {{name = "grug_mobs:linen_cloth", chance = 1,
 					min = 1, max = 2}}
@@ -75,6 +77,11 @@ return function(root)
 		count = count + 1
 	end
 	assert(count == 7 and #rows == 7)
+	local poacher_animation = definitions["grug_mobs:poacher"].animation
+	assert(poacher_animation.shoot_start == poacher_animation.punch_start and
+		poacher_animation.shoot_end == poacher_animation.punch_end and
+		poacher_animation.shoot_speed == poacher_animation.punch_speed,
+		"Poacher dogshoot has no real animation range")
 	for i = 1, #rows do
 		local row = rows[i]
 		local short = row.name:match("^grug_mobs:(.+)$")
