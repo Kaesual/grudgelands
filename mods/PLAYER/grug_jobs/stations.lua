@@ -76,12 +76,16 @@ grug_jobs.register_station("dual_furnace", {
 local audit_terminal = function() end
 
 local function final_grid_predict(itemstack, player, old_craft_grid)
-	audit_terminal(core.registered_craft_predicts, final_grid_predict, "predict")
+	if not audit_terminal(core.registered_craft_predicts, final_grid_predict) then
+		return nil
+	end
 	return grid_permission(itemstack, player, old_craft_grid)
 end
 
 local function final_grid_craft(itemstack, player, old_craft_grid)
-	audit_terminal(core.registered_on_crafts, final_grid_craft, "on_craft")
+	if not audit_terminal(core.registered_on_crafts, final_grid_craft) then
+		return nil
+	end
 	local recipe, resolution_error = grug_jobs.recipe_for_craft(
 		"grid", itemstack, old_craft_grid)
 	if resolution_error then
@@ -116,29 +120,51 @@ local function reappend(callbacks, wanted)
 end
 
 local authority_finalized = false
-local repair_scheduled = false
-local terminal_errors_logged = {}
+local registration_wrappers_installed = false
+local late_registration_logged = false
 local finalize_authority
+
+local function log_late_registration()
+	if late_registration_logged then return end
+	late_registration_logged = true
+	core.log("warning", "[grug_jobs] craft callback registered after the first " ..
+		"server step; inserted before the terminal profession gate")
+end
+
+local function install_registration_wrappers()
+	if registration_wrappers_installed then return end
+	registration_wrappers_installed = true
+	local register_predict = core.register_craft_predict
+	local register_craft = core.register_on_craft
+	core.register_craft_predict = function(callback)
+		register_predict(callback)
+		reappend(core.registered_craft_predicts, final_grid_predict)
+		log_late_registration()
+	end
+	core.register_on_craft = function(callback)
+		register_craft(callback)
+		reappend(core.registered_on_crafts, final_grid_craft)
+		log_late_registration()
+	end
+end
 
 finalize_authority = function()
 	grug_jobs.validate_recipe_collisions()
 	reappend(core.registered_craft_predicts, final_grid_predict)
 	reappend(core.registered_on_crafts, final_grid_craft)
 	authority_finalized = true
-	repair_scheduled = false
+	install_registration_wrappers()
 end
 
-audit_terminal = function(callbacks, wanted, label)
-	if not authority_finalized or callbacks[#callbacks] == wanted then return end
-	if not terminal_errors_logged[label] then
-		terminal_errors_logged[label] = true
-		core.log("error", "[grug_jobs] craft " .. label ..
-			" callback registered after the first server step; this is unsupported")
-	end
-	if not repair_scheduled then
-		repair_scheduled = true
-		core.after(0, finalize_authority)
-	end
+audit_terminal = function(callbacks, wanted)
+	if not authority_finalized or callbacks[#callbacks] == wanted then return true end
+	-- A caller may have retained the pre-finalisation registration function and
+	-- bypassed the wrappers above. Moving this callback while it is running is
+	-- safe with Luanti's ipairs chain: this invocation does no work, later
+	-- callbacks run, then the newly terminal invocation decides exactly once.
+	reappend(callbacks, wanted)
+	log_late_registration()
+	return false
 end
 
 -- Content mods depend on grug_jobs and therefore register after it. Luanti's

@@ -282,6 +282,13 @@ return function(repo)
 	grug_jobs.register_ingredient_tier("test:universal_t1", 1)
 	core.registered_items["test:pine"] = {groups = {wood = 1}}
 	core.registered_items["test:oak"] = {groups = {wood = 1}}
+	universal["test:universal"] = {{method = "normal", items = {"test:base"},
+		output = "test:universal"}}
+	core.registered_items["test:universal"] = {description = "Universal"}
+	universal["test:universal_inputs"] = {{method = "normal",
+		items = {"test:universal_t1", "test:base"},
+		output = "test:universal_inputs"}}
+	core.registered_items["test:universal_inputs"] = {description = "Universal inputs"}
 	check(table.concat(grug_jobs.CRAFTS_TO_ADVANCE, ",") == "10,15,20,25,30",
 		"craft thresholds differ")
 	local recipe = grug_jobs.register_recipe({profession = "cooking", tier = 1,
@@ -307,19 +314,12 @@ return function(repo)
 		output = "test:d", hint = "Grid"})
 	refused("duplicate output", {profession = "cooking", tier = 1,
 		station = "grid", inputs = {"test:t1"}, output = "test:dish", hint = "Grid"})
-	universal["test:universal"] = {{method = "normal", items = {"test:base"},
-		output = "test:universal"}}
-	core.registered_items["test:universal"] = {description = "Universal"}
 	refused("universal output collision", {profession = "cooking", tier = 1,
 		station = "grid", inputs = {"test:t1"}, output = "test:universal",
 		hint = "Grid"})
 	refused("dual-furnace output collision", {profession = "cooking", tier = 1,
 		station = "grid", inputs = {"test:t1"}, output = "test:dual_existing",
 		hint = "Grid"})
-	universal["test:universal_inputs"] = {{method = "normal",
-		items = {"test:universal_t1", "test:base"},
-		output = "test:universal_inputs"}}
-	core.registered_items["test:universal_inputs"] = {description = "Universal inputs"}
 	refused("universal input collision", {profession = "cooking", tier = 1,
 		station = "grid", inputs = {"test:universal_t1", "test:base"},
 		output = "test:profession_override", hint = "Grid"})
@@ -406,6 +406,8 @@ return function(repo)
 			return ItemStack("test:callback_output")
 		end
 	end
+	local raw_register_predict = core.register_craft_predict
+	local raw_register_craft = core.register_on_craft
 	-- This callback belongs to a dependent mod: it runs after grug_jobs'
 	-- mods-loaded callback and only then appends output-replacing craft hooks.
 	core.register_on_mods_loaded(function()
@@ -466,23 +468,55 @@ return function(repo)
 		"above_level_refused", "requirement_named", "last_in_real_chain",
 		"emergency_no_restore", "universal_still_craftable", "craft_recorded")
 
-	local late_predict = function() return nil end
-	local late_craft = function() return nil end
+	local late_predict = function(itemstack, player_value, grid)
+		if grug_jobs._inputs_match({"test:t2"}, grid) then
+			return ItemStack("test:late_predict_output")
+		end
+	end
+	local late_craft = function(itemstack, player_value, grid)
+		if grug_jobs._inputs_match({"test:t2"}, grid) then
+			return ItemStack("test:late_craft_output")
+		end
+	end
+	if mutation == 20 then
+		core.register_craft_predict = function(callback)
+			hooks.predict[#hooks.predict + 1] = callback
+		end
+		core.register_on_craft = function(callback)
+			hooks.craft[#hooks.craft + 1] = callback
+		end
+	end
+	local terminal_log_count = #logs
 	core.register_craft_predict(late_predict)
 	core.register_on_craft(late_craft)
-	local terminal_log_count = #logs
-	core.craft_predict(ItemStack("test:universal"), locked,
-		{ItemStack("test:base")})
-	core.on_craft(ItemStack("test:universal"), locked,
-		{ItemStack("test:base")})
-	check(#logs == terminal_log_count + 2 and #hooks.after == 1,
-		"post-first-step callbacks were not audited once per chain")
-	run_after()
 	check(hooks.predict[#hooks.predict] ~= late_predict and
 		hooks.craft[#hooks.craft] ~= late_craft,
-		"post-first-step callback repair did not restore terminal gates")
-	line("authority", "deferred_after_mods_loaded", "late_registration_logged",
-		"terminality_repaired")
+		"late registration left the profession gate non-terminal")
+	check(#logs == terminal_log_count + 1,
+		"late callback registration was not logged exactly once")
+	local first_late_predict = core.craft_predict(ItemStack("test:t2dish"),
+		locked, tier2_grid)
+	local first_late_craft = core.on_craft(ItemStack("test:t2dish"),
+		locked, tier2_grid)
+	check(first_late_predict:is_empty() and first_late_craft:is_empty(),
+		"first craft after late output replacers escaped the terminal gate")
+
+	-- A caller retaining the pre-finalisation functions bypasses the public API
+	-- wrappers. The running gate must still move itself synchronously and let its
+	-- newly terminal invocation make the one authoritative decision.
+	local stale_predict = function() return ItemStack("test:stale_predict_output") end
+	local stale_craft = function() return ItemStack("test:stale_craft_output") end
+	raw_register_predict(stale_predict)
+	raw_register_craft(stale_craft)
+	check(core.craft_predict(ItemStack("test:t2dish"), locked,
+		tier2_grid):is_empty(), "stale predict registrar escaped synchronous fallback")
+	check(core.on_craft(ItemStack("test:t2dish"), locked,
+		tier2_grid):is_empty(), "stale craft registrar escaped synchronous fallback")
+	check(hooks.predict[#hooks.predict] ~= stale_predict and
+		hooks.craft[#hooks.craft] ~= stale_craft,
+		"synchronous fallback did not restore terminal gates")
+	line("authority", "deferred_after_mods_loaded", "late_inserted_before_gate",
+		"first_craft_refused", "stale_registrar_fail_closed", "logged_once")
 
 	-- Inject the otherwise unregistrable second language to exercise the
 	-- runtime fail-closed safety net against later group-definition drift.
