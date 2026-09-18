@@ -290,17 +290,25 @@ end
 
 -- Working title kept from the design file. Deliberately a plain English verb,
 -- not a Blizzard ability name.
+local strike_description = "A full melee swing with your equipped weapon. " ..
+	"Hold LMB and keep a hostile in your crosshair; the shared weapon clock " ..
+	"prevents click spam."
+
 local strike_def = {
 	id = "strike",
 	kind = "swing",
 	target_kind = "hostile",
 	universal = true, -- every class, and a character with no class yet (E1)
 	name = "Strike",
-	-- The rage number is COMPOSED from the ledger constant rather than
-	-- written out: this string is the one place a player reads it, and a
-	-- second copy of a tuning number is a second thing to forget.
-	description = "A full melee swing with your equipped weapon. Hold LMB and keep a hostile in your crosshair; the shared weapon clock prevents click spam. Generates " .. grug_abilities.RAGE_PER_SWING ..
-		" rage when it lands.",
+	description = strike_description,
+	description_for = function(player)
+		local class_def = grug_classes.get_class_def(player)
+		if not class_def or class_def.resource ~= "rage" then
+			return strike_description
+		end
+		return strike_description .. " Generates " ..
+			grug_abilities.swing_rage(player) .. " rage when it lands."
+	end,
 	-- Bone white, deliberately neutral (E8): the four class colours carry the
 	-- ability identities and a fifth colour would compete with them. With an
 	-- empty weapon slot the item falls back to this orb, which reads correctly

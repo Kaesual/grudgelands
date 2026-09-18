@@ -77,7 +77,7 @@ return function(repo)
 
 	local saved = {core = rawget(_G, "core"), grug_core = rawget(_G, "grug_core"),
 		grug_mobs = rawget(_G, "grug_mobs"), mobs = rawget(_G, "mobs"),
-		vector = rawget(_G, "vector"),
+		vector = rawget(_G, "vector"), grug_jobs = rawget(_G, "grug_jobs"),
 		-- Wave 2: the wield seam and the gear name builder (see GLOBALS in
 		-- `boot`). Saved and restored like every other global this fixture
 		-- installs, so the fixtures that run after it see the environment they
@@ -90,6 +90,7 @@ return function(repo)
 		rawset(_G, "grug_mobs", saved.grug_mobs)
 		rawset(_G, "mobs", saved.mobs)
 		rawset(_G, "vector", saved.vector)
+		rawset(_G, "grug_jobs", saved.grug_jobs)
 		rawset(_G, "grug_visuals", saved.grug_visuals)
 		rawset(_G, "grug_gear", saved.grug_gear)
 	end
@@ -219,6 +220,8 @@ return function(repo)
 		-- follows the tag and not the role.
 		{id = "hall_quest", role = "quest", tags = {"door"}, x = -28, y = 1,
 			z = 26, dir = {x = 0, z = 1}},
+		{id = "cooking_trainer", role = "trainer", profession = "cooking",
+			x = 2, y = 1, z = 10, dir = {x = -1, z = 0}},
 		-- A SPARE idle socket: a wander target the amble may use and a home
 		-- nobody is ever placed on (`spawn = false`). Authored LAST on purpose,
 		-- so a spot ring built from a count of the placed sockets instead of
@@ -281,6 +284,7 @@ return function(repo)
 	--
 	local world = {storage = {}, objects = {}}
 	local harness
+	local trainer_mutation = tonumber(os.getenv("R8_PROF_NPC_MUTATION") or "") or 0
 
 	local function socket_world_pos(socket)
 		return {x = ANCHOR.x + socket.x, y = ANCHOR.y + socket.y,
@@ -440,7 +444,14 @@ return function(repo)
 	-- `world` underneath them.
 	local function boot()
 		harness = {players = {}, logs = {}, globalsteps = {}, mods_loaded = {},
-			after = {}, clock = 1000, yaws = 0, defs = {}, paths = 0}
+			after = {}, clock = 1000, yaws = 0, defs = {}, paths = 0,
+			trainer_clicks = {}}
+		rawset(_G, "grug_jobs", {
+			open_trainer = function(clicker, profession, pos)
+				harness.trainer_clicks[#harness.trainer_clicks + 1] = {
+					clicker = clicker, profession = profession, pos = pos}
+			end,
+		})
 		-- A restart activates the objects of the blocks that are active, and no
 		-- others; the previous session's `on_deactivate` handler died with its
 		-- Lua environment, so nothing is dispatched here.
@@ -576,6 +587,7 @@ return function(repo)
 					-- the closed vocabulary before a consumer ever sees it
 					-- (settlement_sockets_kat covers that half).
 					activity = socket.activity,
+					profession = socket.profession,
 					-- Normalized exactly as the real registry normalizes it
 					-- (grug_core/settlement_sockets.lua): a consumer reads one
 					-- boolean and never spells "nil means true" itself. The
@@ -771,6 +783,9 @@ return function(repo)
 		dofile(mod .. "verbs.lua")
 		dofile(mod .. "start_villagers.lua")
 		dofile(mod .. "start_npcs.lua")
+		grug_mobs.register_start_socket_role("trainer", function(socket, start)
+			return "grug_mobs:villager_" .. start.race_id
+		end)
 		-- grug_traders owns the vendor role in the real game.
 		grug_mobs.register_start_socket_role("vendor", function(socket, start)
 			return "grug_traders:vendor_race_" .. start.race_id
@@ -910,13 +925,13 @@ return function(repo)
 	-- The roster is
 	-- what is placed, marked, capped and censused -- so a spare must not enter
 	-- any of those counts.
-	-- Fifteen of the eighteen sockets carry an entity: the loop's SECOND
+	-- Sixteen of the nineteen sockets carry an entity: the loop's SECOND
 	-- waypoint is route data (one guard walks the whole loop) and the SPARE
 	-- idle socket is a wander target nobody lives on. Round 3 added four idle
 	-- spawn sockets and two `work` sockets to the fixture, and the wave-2
 	-- vocabulary lane two more `work` sockets (`mourn` and `spar`), which is
-	-- where eight of the fifteen come from.
-	local SLOTS = 15
+	-- where eight of the sixteen come from; this lane adds the trainer.
+	local SLOTS = 16
 	boot()
 	check(#world.objects == 0, "something stood there before the first boot")
 	become_ready()
@@ -925,6 +940,23 @@ return function(repo)
 	check(markers() == SLOTS, "cold marker count differs: " .. markers())
 	check(harness.yaws >= SLOTS, "an NPC was placed without its authored facing")
 	line("cold", #world.objects, markers(), logged("placed at socket"))
+
+	-- The complete trainer path crosses both productive NPC files: build_rows
+	-- carries the socket profession into a slot, install writes it onto the
+	-- placed entity, and the villager definition's right-click opens that book.
+	local trainer = entity_at("cooking_trainer")
+	check(trainer ~= nil, "the trainer socket placed no villager")
+	if trainer_mutation == 1 then trainer._grug_profession = nil end
+	check(trainer._grug_profession == "cooking",
+		"trainer placement lost the socket profession")
+	local villager_def = harness.defs["grug_mobs:villager_dwarf"]
+	local clicker = {name = "trainee"}
+	villager_def.on_rightclick(trainer, clicker)
+	local opened = harness.trainer_clicks[1]
+	check(opened and opened.clicker == clicker and opened.profession == "cooking" and
+		opened.pos.x == trainer.pos.x and opened.pos.z == trainer.pos.z,
+		"trainer right-click did not open the socket profession")
+	line("trainer", "socket", "placed", "profession_cooking", "rightclick_opened")
 
 	--
 	-- 1b. THE DOOR FLIP. An idle socket tagged `door` faces AWAY from the door,

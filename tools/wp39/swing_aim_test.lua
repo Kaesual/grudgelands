@@ -125,6 +125,7 @@ grug_classes = {
 	get_class = function() return "warrior" end,
 	get_max_mana = function() return 0 end,
 	get_race_perk = function() return nil end,
+	get_talent_bonus = function() return 0 end,
 	get_melee_bonus = function() return 0 end,
 	get_spell_power_bonus = function() return 0 end,
 	get_spell_damage_percent = function() return 0 end,

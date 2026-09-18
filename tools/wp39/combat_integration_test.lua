@@ -205,7 +205,9 @@ grug_core = {}
 local class_callbacks = {}
 grug_classes = {
 	-- Round 4 (WP11 phase 1): abilities and the HUD read talent bonuses; 0 = untalented.
-	get_talent_bonus = function() return 0 end,
+	get_talent_bonus = function(player, key)
+		return player.talent_bonuses and player.talent_bonuses[key] or 0
+	end,
 	registered_classes = {
 		warrior = {name = "Warrior"},
 		mage = {name = "Mage"},
@@ -213,6 +215,7 @@ grug_classes = {
 	},
 	get_class = function(player) return player.class_id end,
 	get_class_def = function(player)
+		if not player.class_id then return nil end
 		local resource = player.class_id == "warrior" and "rage" or "mana"
 		return {resource = resource}
 	end,
@@ -457,6 +460,7 @@ local enemy_a = new_mob("enemy_a", "throng")
 local enemy_b = new_mob("enemy_b", "throng")
 local ally = new_player("ally", "priest", "accord")
 local hostile_player = new_player("hostile", "mage", "throng")
+local classless = new_player("classless", nil, "accord")
 connected = {hero, ally, hostile_player}
 for _, player in ipairs(connected) do
 	for _, fn in ipairs(callbacks.join) do fn(player) end
@@ -464,6 +468,25 @@ end
 hero.inventory.writes = 0
 ally.inventory.writes = 0
 hostile_player.inventory.writes = 0
+
+-- Strike's per-player description advertises effective rage only to a rage
+-- class. Mana and class-less characters keep the class-neutral fallback.
+hero.talent_bonuses = {rage_per_swing_add = 4}
+local strike_def = grug_abilities.registered.strike
+local strike_base = "A full melee swing with your equipped weapon. Hold LMB " ..
+	"and keep a hostile in your crosshair; the shared weapon clock prevents " ..
+	"click spam."
+local strike_rage = strike_def.description_for(hero, strike_def)
+local strike_mana = strike_def.description_for(hostile_player, strike_def)
+local strike_classless = strike_def.description_for(classless, strike_def)
+assert(strike_def.description == strike_base)
+assert(strike_rage == strike_base .. " Generates 12 rage when it lands.")
+assert(strike_mana == strike_base)
+assert(strike_classless == strike_base)
+print("strike_description_rage=" .. strike_rage)
+print("strike_description_mana=" .. strike_mana)
+print("strike_description_classless=" .. strike_classless)
+hero.talent_bonuses = nil
 
 local function select_item(player, itemname)
 	player.wield = selected_index(player, itemname)

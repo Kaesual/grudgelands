@@ -303,12 +303,14 @@ local by_key = {}
 
 -- Which log family a role reports under.
 local FAMILY = {guard_post = "guards", guard_patrol = "guards",
-	idle = "flair", work = "flair", vendor = "vendor", quest = "quest"}
+	idle = "flair", work = "flair", trainer = "flair", vendor = "vendor",
+	quest = "quest"}
 local FAMILY_ORDER = {"guards", "flair", "vendor", "quest"}
 
 -- Which NPC family (start_villagers.lua) a role is nametagged as. A work
 -- resident is a villager with a workplace, so it is named like one.
-local NAMED_FAMILY = {idle = "villager", work = "villager", quest = "elder"}
+local NAMED_FAMILY = {idle = "villager", work = "villager", trainer = "trainer",
+	quest = "elder"}
 
 --
 -- THE CLAIM REGISTRY: settlement key -> socket id -> the luaentity holding that
@@ -694,6 +696,7 @@ local function build_rows()
 							-- already validated by the registry: a typo is a
 							-- build error there and never reaches this file.
 							activity = socket.activity,
+							profession = socket.profession,
 							idle_index = spot_index[socket.id],
 							placed = storage:get_string(
 								placed_key(record.key, socket.id)) == "1",
@@ -1073,6 +1076,9 @@ local function install(entity, row, slot)
 		-- line it has.
 		--
 		entity._grug_idle_tag = slot.tag or slot.activity
+	elseif slot.role == "trainer" then
+		entity._grug_profession = slot.profession
+		entity._grug_walker = false
 	end
 end
 

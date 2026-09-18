@@ -233,7 +233,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   item category (professions.md §4), so it is bought, not crafted-only.
 - No item drop on death (unchanged; death costs XP, not gear).
 
-## 4. Crafting model (revised 2026-08-06 — replaces the workbench-UI split)
+## 4. Crafting model (revised 2026-09-18 — replaces the workbench-UI split)
 
 - **Ordinary items are crafted in the 3×3 grid**, base recipes and profession
   recipes alike; profession items are **multi-stage** (ore → ingot →
@@ -245,26 +245,20 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 - **Recipes are gated by profession progression**: laying the right
   materials into the grid without having unlocked the recipe produces
   nothing (`craft_predict` veto). What a character has unlocked is
-  defined by the **profession's recipe book** — one book per profession,
-  its tier groups gated by character level and tier keystone
-  (`items_crafting.md` §2.2, revised 2026-08-07); that model is written
-  there and deliberately not restated here.
+  defined by the learned profession and its T1–T6 profession level
+  (`items_crafting.md` §2.2–§2.3, revised 2026-09-18); the recipe book is
+  the UI for that state, never an inventory item.
 - **The book UI is mandatory**, since a 3×3 shape you don't know is
   otherwise undiscoverable: unlocked recipes are browsable, reachable
-  from the character screen.
-- **Profession recipes additionally require the matching workbench
-  nearby** (`find_node_near`) — **one bench per profession**, so the
-  roster of professions.md §2 is also the roster of benches (forge,
-  tanning rack, tailor bench, alchemy table, and one each for the
-  Woodcarver and the Goldsmith). Keeps cities/camps as crafting magnets;
-  base recipes work anywhere.
-- Public workbenches are initially **uncraftable and stand in the
-  capitals/villages** (placement with WP13); job-supply vendors (thread,
-  flux, vials) stand next to them (materials design:
-  items_crafting.md). Player-owned profession workstations may also stand
-  inside a valid open-world housing claim under
-  [housing.md](housing.md) §6.5. Claim ACL access never grants a recipe,
-  profession tier or material the character has not unlocked.
+  directly beside the 3×3 grid. The page shows two primary slots, Cooking and
+  the always-open General book; empty profession slots point to trainers.
+- A recipe's station field is authoritative: `grid`, `furnace`,
+  `dual_furnace` or `brewing_stand`. Grid recipes need no nearby workbench.
+  Refinement and alloy recipes use their named furnace; alchemy recipes use
+  the brewing stand. Every station repeats the book button and its recipe rows
+  state the station hint.
+- Claim ACL access never grants a recipe, profession tier or material the
+  character has not unlocked.
 
 ## 5. Buff/debuff display (decided 2026-09-17)
 
