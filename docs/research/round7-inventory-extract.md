@@ -424,7 +424,30 @@ habitat independent of the surface clock (`cave_bat.lua:102-108`;
 
 ## 7. Existing decided constraints for the creative plans
 
+### Round 7 user rulings recorded on 2026-09-18
+
+The Round 7 rulings are recorded in `TODO-round7.md` §1
+(`TODO-round7.md:16-69`):
+
+| Ruling | Recorded fact |
+|---|---|
+| R7.1 “Food v2” | Every food has a “fixed instant HP value per tier”, “never a percentage”, plus a three-minute buff ticking every five seconds. Raw edibles add 1% HP per five seconds; instant healing and regeneration are inactive in combat, while non-regeneration food bonuses remain active (`TODO-round7.md:18-28`). |
+| R7.2 “Food tiers” | “T1–T2 dishes: regeneration only”; T3–T4 add one small pool bonus, and T5–T6 add a stronger pool or crit bonus. Role dishes exist, while exact tables remain an output of the cooking plan (`:29-33`). |
+| R7.3 “Elixirs and potions” | Elixirs provide stronger tiered stat bonuses and no regeneration. Potions provide instant effects, retain the in-combat monopoly and share a 60-second cooldown. “Food buffs and elixirs stack, also on the same property” (`:34-40`). |
+| R7.4 “Minimum level for consumables” | “Food, potions and elixirs enforce a minimum character level on use” through the item-level seam; a refused use consumes nothing (`:41-43`). |
+| R7.5 “Mana regeneration” | Mana regeneration “grows clearly slower than the mana pool”. The numerical formula is explicitly recorded as “Proposal (orchestrator, confirm in the lane)”, not as a confirmed value (`:44-48`). |
+| R7.6 “Level bands” | Every zone becomes harder in “three bands” from the continent's outer side toward the faction front; underground has three sub-bands per depth step, and the 150 m start band remains (`:49-54`). |
+| R7.7 “Mob worlds” | Surface, underground and Nether retain “separate families and separate progressions”. The Nether reserves its own species, and underground favours flying and ranged families without the surface low-flight rule (`:55-60`). |
+| R7.8 “Professions order” | “Round 8 delivers Cooking and Alchemy v1”; the listed crafting professions and Scout follow later (`:61-63`). |
+| R7.9 “Buff list text” | Buff text names the effect, with the recorded examples “Food +2% HP/5s” and “Food +2% HP, +4% Mana/5s” (`:64-65`). |
+| R7.10 “Start preload” | Start preload “must not re-emerge finished start areas on every server start”; a per-world marker is persisted and is absent in a fresh world (`:66-67`). |
+| R7.11 “UI overlap” | “UI overlap” on the recorded Character-page and Talents-page locations “is fixed” (`:68-69`). |
+
+### Design-document text currently present
+
 The quotations below are deliberately short and retain their section location.
+Where a design-document sentence collides with the Round 7 rulings above, its
+row records that it remains in the file but is no longer the plan authority.
 
 | Document / section | Existing rule (quotation) |
 |---|---|
@@ -432,9 +455,9 @@ The quotations below are deliberately short and retain their section location.
 | `items_crafting.md` §2.1 “The two ladders” | Material/gear T1–T6 is “one per ten character levels”: 1–10 through 51–60; mastery is a separate four-tier crafter property (`:218-237`). |
 | `items_crafting.md` §3.6 “Alchemist” | Herbs/spices have three grades; instant potions share 60 seconds; one elixir buff may be active (`:1039-1062`). |
 | `items_crafting.md` §3.6 “Alchemist” | “The Healing Potion remains the only health consumable that restores health instantly and in combat” (`:1064-1068`). |
-| `items_crafting.md` §3.7 “Universal secondaries” | Food is one 180-second restore buff, ticks each 10 seconds only out of combat, and the newest serving replaces it (`:1182-1194`). |
-| `items_crafting.md` §3.7 “Universal secondaries” | Raw/simple/well-cooked restore 2%/5%/10% maximum HP per tick; mana food mirrors the percentages (`:1195-1207`). |
-| `items_crafting.md` §3.7 “Universal secondaries” | Current raw/cooked assignments and “Nothing is well cooked yet” are fixed at `:1208-1214`; the six dish groups are listed at `:1227-1242`. |
+| `items_crafting.md` §3.7 “Universal secondaries” | **Still written, superseded by R7.1 on 2026-09-18, not yet folded in:** food ticks each 10 seconds only out of combat (`:1182-1194`). The same paragraph's one-buff, 180-second and replacement statements do not collide with the cited R7 text. |
+| `items_crafting.md` §3.7 “Universal secondaries” | **Still written, superseded by R7.1–R7.2 on 2026-09-18, not yet folded in:** raw/simple/well-cooked restore 2%/5%/10% maximum HP per tick and mana food mirrors those percentages (`:1195-1207`). |
+| `items_crafting.md` §3.7 “Universal secondaries” | Current raw/cooked assignments and “Nothing is well cooked yet” are written at `:1208-1214`; the six dish groups are listed at `:1227-1242`. |
 | `professions.md` §1 “Structure” | Cooking is universal, costs no main-profession slot, uses six groups/level gates, and has no keystones (`:10-29`). |
 | `professions.md` §2 “MVP roster” | Alchemist owns “Potions, elixirs, apothecary gear” and gathers its own herbs (`:44-56`). |
 | `professions.md` §4 “Vendor floor rule” | “Vendors sell only the lowest tier of each item category” (`:156-160`). |
@@ -444,7 +467,7 @@ The quotations below are deliberately short and retain their section location.
 | `world.md` §6 “Travel” | Phase 2 Nether crossings link authored, level-equivalent portal pairs; the detailed design remains in `TODO-design-nether.md` (`:850-858`). |
 | `combat_stats.md` §5 “Recovery” | Natural regeneration is 0.5% max HP/s out of combat and zero in combat (`:720-723`). |
 | `combat_stats.md` §5 “Recovery” | The potion has the in-combat monopoly; food may total more but acts only out of combat and over time (`:745-749`). |
-| `combat_stats.md` §5 “Recovery” | Food/potions are percent-based and level-agnostic, with “no consumable item treadmill in the MVP” (`:750-755`). |
+| `combat_stats.md` §5 “Recovery” | **Still written, superseded by R7.1 (food percentage) and R7.4 (level-agnostic consumables) on 2026-09-18, not yet folded in:** food/potions are percent-based and level-agnostic, with “no consumable item treadmill in the MVP” (`:750-755`). |
 | `progression.md` §1 “Leveling pace” | “Level 60 in ~10–20 played hours”; leveling is the on-ramp (`:6-12`). |
 | `progression.md` §4 “Quest structure & level gates” | Main quests use hard minimum levels; first PvP quests begin at levels 31–40 (`:95-102`). |
 
