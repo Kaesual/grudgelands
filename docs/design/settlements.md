@@ -439,7 +439,7 @@ want lived-in settlements without paying for it in server load"):
   everybody (no faction and no race restriction, and therefore no kinship
   discount); only the smith and the armourer also sell the equipment ladder.
   The six starts keep their single race vendor.
-- **A peaceful NPC's nametag is culled like a guard's.** Villagers, elders and
-  vendors used to render their name out to the engine's whole object-send
-  range, which made a busy district a wall of floating text; they now use the
-  25/30 m proximity gate the combat families already had.
+- **A peaceful NPC's nametag is culled like a guard's** (per-viewer mechanism
+  adopted 2026-09-18). Villagers, elders and vendors use the same independent
+  25 m show / 30 m hide carrier gate as combat families. A nearby player no
+  longer exposes settlement names to a different, distant player.

@@ -1,0 +1,6 @@
+staged patch: no_carrier_spawn_baseline.patch
+staged probe: grug_spawn_probe
+headless boot: PASS (port 31614, 120 s)
+log: /tmp/grudgelands-headless.m9t0Bb/server.5.log
+84:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31614.
+kept: /tmp/grudgelands-headless.m9t0Bb
