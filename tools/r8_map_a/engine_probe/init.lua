@@ -51,7 +51,12 @@ local function node_class(x, y, z)
 	local groups = definition.groups or {}
 	if definition.liquidtype and definition.liquidtype ~= "none" then return "liquid" end
 	if groups.ore and groups.ore > 0 or groups.grug_resource and
-			groups.grug_resource > 0 or name:find("_with_", 1, true) then
+			groups.grug_resource > 0 or name:find(":stone_with_", 1, true) or
+			name:find(":slate_with_", 1, true) or
+			name:find(":basalt_with_", 1, true) or
+			name:find(":granite_with_", 1, true) or
+			name:find(":emberrock_with_", 1, true) or
+			name:find(":abyssal_rock_with_", 1, true) then
 		return "ore"
 	end
 	if groups.tree and groups.tree > 0 or groups.leaves and groups.leaves > 0 or
@@ -69,22 +74,32 @@ local function node_class(x, y, z)
 end
 
 local function lumen_for(candidate, target_x, target_y, target_z)
-	local voxels, seen, valid = {}, {}, true
+	local voxels, seen, valid, invalid = {}, {}, true, nil
 	local function offer(x, y, z)
 		local position_key = key(x, y, z)
 		if seen[position_key] then return end
 		seen[position_key] = true
 		local terrain_y = grug_zones.terrain_height_at(x, z)
 		local dx, dz = x - candidate.mouth_x, z - candidate.mouth_z
-		if grug_zones.water_class_at(x, z) ~= "land" or
-				(candidate.zone_id and grug_zones.id_at(x, z) ~= candidate.zone_id) or
-				(y > terrain_y and not (dx * dx + dz * dz <= 4 and
-					y <= candidate.mouth_y + 1)) then
+		if grug_zones.water_class_at(x, z) ~= "land" then
+			valid, invalid = false, "water:" .. key(x, y, z)
+			return
+		elseif candidate.zone_id and grug_zones.id_at(x, z) ~= candidate.zone_id then
+			valid, invalid = false, "zone:" .. key(x, y, z)
+			return
+		elseif y > terrain_y and not (dx * dx + dz * dz <= 4 and
+				y <= candidate.mouth_y + 1) then
 			valid = false
+			invalid = "terrain:" .. key(x, y, z)
 			return
 		end
 		local class = node_class(x, y, z)
-		if class ~= "air" and class ~= "natural" then valid = false return end
+		if class ~= "air" and class ~= "natural" then
+			valid = false
+			invalid = class .. ":" .. core.get_node({x = x, y = y, z = z}).name ..
+				":" .. key(x, y, z)
+			return
+		end
 		voxels[#voxels + 1] = {x, y, z}
 	end
 	if candidate.kind == "sinkhole" then
@@ -121,7 +136,7 @@ local function lumen_for(candidate, target_x, target_y, target_z)
 			end
 		end
 	end
-	return valid and voxels or nil, seen
+	return valid and voxels or nil, seen, invalid
 end
 
 local function component_proof(candidate, target, lumen)
@@ -180,6 +195,7 @@ local function baseline_plan(candidate)
 	local search_z = candidate.kind == "hillside" and candidate.mouth_z +
 		candidate.direction_z * (candidate.length - 1) or candidate.mouth_z
 	local radius = candidate.search_radius or candidate.radius
+	local air_targets, valid_lumens, component_rejections, first_invalid = 0, 0, 0, nil
 	for radius_squared = 0, radius * radius do
 		for dz = -radius, radius do for dx = -radius, radius do
 			if dx * dx + dz * dz == radius_squared then
@@ -194,8 +210,11 @@ local function baseline_plan(candidate)
 						local y = ceiling - depth
 						local class = node_class(x, y, z)
 						if class == "air" and roof >= 3 then
-							local voxels, lumen = lumen_for(candidate, x, y, z)
+							air_targets = air_targets + 1
+							local voxels, lumen, invalid = lumen_for(candidate, x, y, z)
+							if invalid and not first_invalid then first_invalid = invalid end
 							if voxels then
+								valid_lumens = valid_lumens + 1
 								local connected, outside, component, sky =
 									component_proof(candidate, {x, y, z}, lumen)
 								if connected then
@@ -203,6 +222,7 @@ local function baseline_plan(candidate)
 										voxel_count = #voxels, outside = outside,
 										component = component, sky = sky}
 								end
+								component_rejections = component_rejections + 1
 							end
 							break
 						elseif class == "natural" then roof = roof + 1
@@ -212,7 +232,11 @@ local function baseline_plan(candidate)
 			end
 		end end
 	end
-	return {eligible = false}
+	local reason = air_targets == 0 and "no_air_target" or
+		valid_lumens == 0 and "no_valid_lumen" or "component_rejected"
+	return {eligible = false, reason = reason, air_targets = air_targets,
+		valid_lumens = valid_lumens, component_rejections = component_rejections,
+		first_invalid = first_invalid}
 end
 
 local function carved_against_baseline(candidate, proof)
@@ -235,7 +259,7 @@ local work, totals, results = {}, {}, {}
 for region_index = 1, #cases.regions do
 	local region = cases.regions[region_index]
 	totals[region.id] = {candidates = #region.candidates, carved = 0,
-		connected = 0, eligible = 0}
+		connected = 0, eligible = 0, reasons = {}}
 	for candidate_index = 1, #region.candidates do
 		work[#work + 1] = {region = region, candidate = region.candidates[candidate_index]}
 	end
@@ -258,6 +282,15 @@ local function finish()
 			baseline_mode and "baseline" or "after", cases.revision, engine_seed,
 			region.id, total.candidates, total.carved, total.connected,
 			total.eligible}, "\t"))
+		local reason_rows = {}
+		for reason, count in pairs(total.reasons) do
+			reason_rows[#reason_rows + 1] = reason .. "=" .. count
+		end
+		table.sort(reason_rows)
+		if #reason_rows > 0 then
+			core.log("action", "GRUG_R8_MAP_A_REASONS\t" .. region.id .. "\t" ..
+				table.concat(reason_rows, ","))
+		end
 	end
 	core.request_shutdown("R8-MAP-A cave measurement complete", false, 0.1)
 end
@@ -289,6 +322,9 @@ local function next_candidate()
 			local proof = baseline_plan(candidate)
 			results[row_key] = proof
 			if proof.eligible then total.eligible = total.eligible + 1 end
+			if not proof.eligible then
+				total.reasons[proof.reason] = (total.reasons[proof.reason] or 0) + 1
+			end
 		else
 			local proof = baseline.results[row_key]
 			assert(proof, "R8-MAP-A candidate absent from baseline: " .. row_key)
