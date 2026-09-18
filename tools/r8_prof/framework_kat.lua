@@ -320,14 +320,26 @@ return function(repo)
 		output = "test:batch 4", hint = "Furnace"})
 	local dish_grid = {ItemStack("test:t1"), ItemStack("test:base")}
 	local tier2_grid = {ItemStack("test:t2")}
-	local later_predict = function() return ItemStack("test:dish") end
-	local later_craft = function() return ItemStack("test:callback_output") end
+	local later_predict = function(itemstack, player_value, grid)
+		if grug_jobs._inputs_match({"test:t1", "test:base"}, grid) then
+			return ItemStack("test:dish")
+		end
+	end
+	local later_craft = function(itemstack, player_value, grid)
+		if grug_jobs._inputs_match({"test:t1", "test:base"}, grid) then
+			return ItemStack("test:callback_output")
+		end
+	end
 	core.register_craft_predict(later_predict)
 	core.register_on_craft(later_craft)
 	for index = 1, #hooks.mods_loaded do hooks.mods_loaded[index]() end
 	check(hooks.predict[#hooks.predict] ~= later_predict and
 		hooks.craft[#hooks.craft] ~= later_craft,
 		"profession gates were not re-appended after later callbacks")
+	local universal_predicted = core.craft_predict(ItemStack("test:universal"),
+		locked, {ItemStack("test:base")})
+	check(universal_predicted:get_name() == "test:universal",
+		"refused profession collision made the universal recipe uncraftable")
 	local predicted = core.craft_predict(ItemStack("test:dish"), locked, dish_grid)
 	check(predicted and predicted:is_empty(), "grid recipe predicted without book")
 	grug_jobs.learn(locked, "cooking")
@@ -352,7 +364,7 @@ return function(repo)
 		"allowed craft was not recorded")
 	line("permission", "locked_refused", "learned_allowed",
 		"above_level_refused", "requirement_named", "last_in_real_chain",
-		"emergency_no_restore", "craft_recorded")
+		"emergency_no_restore", "universal_still_craftable", "craft_recorded")
 
 	local furnace = core.registered_nodes['default:furnace']
 	local station_locked = player("station_locked", 60)
