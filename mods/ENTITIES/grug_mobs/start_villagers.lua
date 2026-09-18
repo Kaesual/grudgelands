@@ -383,7 +383,7 @@ end
 -- Elder". Derived from the key rather than a second hand-kept roster, so the
 -- next capital needs no edit here.
 --
-local FAMILY_TITLE = {villager = "Citizen", elder = "Elder"}
+local FAMILY_TITLE = {villager = "Citizen", elder = "Elder", trainer = "Trainer"}
 
 local function settlement_label(settlement_key)
 	local words = {}
@@ -1046,6 +1046,13 @@ for index = 1, #identities do
 				grug_mobs.face_yaw(self, self._grug_face_yaw)
 			end,
 			on_rightclick = function(self, clicker)
+				local jobs = rawget(_G, "grug_jobs")
+				if self._grug_profession and jobs and jobs.open_trainer and
+						self.object and self.object:get_pos() then
+					jobs.open_trainer(clicker, self._grug_profession,
+						self.object:get_pos())
+					return
+				end
 				answer(self, clicker, self._grug_idle_tag)
 			end,
 		}))

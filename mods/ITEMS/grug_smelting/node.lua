@@ -44,7 +44,7 @@ local function formspec(fuel_percent, item_percent)
 		fire = fire .. "]"
 		arrow = arrow .. "^[transformR270]"
 	end
-	return "size[8,8.5]" ..
+	local result = "size[8,8.5]" ..
 		"list[context;input;2.25,0.5;2,1;]" ..
 		"list[context;fuel;2.75,2.5;1,1;]" ..
 		fire ..
@@ -59,6 +59,11 @@ local function formspec(fuel_percent, item_percent)
 		"listring[context;fuel]" ..
 		"listring[current_player;main]" ..
 		default.get_hotbar_bg(0, 4.25)
+	local jobs = rawget(_G, "grug_jobs")
+	if jobs and type(jobs.station_book_button) == "function" then
+		result = result .. jobs.station_book_button("dual_furnace")
+	end
+	return result
 end
 
 local INACTIVE = "grug_smelting:dual_furnace"

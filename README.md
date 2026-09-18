@@ -5,9 +5,10 @@ classes, XP, quests, professions, housing, an item economy and geographic PvP,
 built as a standalone Lua game rather than a mod pack.
 
 > **Status: in development.** The world, mobs, three classes, combat,
-> equipment, XP and the first money/vendor economy are playable. The final
-> named-zone map is implemented and awaiting release/runtime gates; quests,
-> professions, open-world housing and geographic PvP are not built. See
+> equipment, XP, the first money/vendor economy and the shared profession
+> framework are playable. The final named-zone map is implemented and awaiting
+> release/runtime gates; quests, profession recipe catalogs, open-world housing
+> and geographic PvP are not built. See
 > [Current State](#current-state).
 
 ## The story
@@ -134,10 +135,14 @@ slots, an offhand, two trinkets and four Tailor-made bags.
 
 [Six main professions](docs/design/professions.md) are cut by material rather
 than class: Blacksmith, Leatherworker, Tailor, Woodcarver, Goldsmith and
-Alchemist. Characters freely choose two; Cooking and First Aid are universal.
-Goldsmith owns Quartz, the six regional gems, Rough-to-Cut processing,
-Settings, both trinket slots and the exact natural-gem yield bonus. Mining,
-smelting and universal base-item crafting remain open to everyone.
+Alchemist. Characters freely choose two; Cooking is an unlimited secondary,
+while First Aid stays universal outside the profession framework. Learned
+professions expose complete UI recipe books and advance from T1 to T6 through
+current-tier crafts, capped by the character's ten-level band; item use remains
+independently gated by item level. Goldsmith owns Quartz, the six regional
+gems, Rough-to-Cut processing, Settings, both trinket slots and the exact
+natural-gem yield bonus. Mining, smelting and universal base-item crafting
+remain open to everyone through the General book.
 
 The gathering contract closes twelve one-cell herb, spice and food sources,
 eight reused tree/food sources and six cultural sources. Healing herbs fail
@@ -262,8 +267,9 @@ Lua-5.1 user tests; slower browser generation is accepted for this server game.
 WP16 is canceled and is not counted as shipped. WP-Scout, WP-HUD and WP-Speed
 are counted in the 49; only WP-Scout remains open.
 
-**Not in the game yet:** quests, the profession and recipe-book systems,
-talent keystones, capstones and their four new abilities (WP11 X3), parties,
+**Not in the game yet:** quests, the six primary profession catalogs, the
+Cooking/Alchemy recipe content, talent keystones, capstones and their four new
+abilities (WP11 X3), parties,
 the remaining recovery/rest systems, offhand items, affixes, durability, final structures, travel/map, Claim Stone housing,
 mounts and bosses remain unbuilt. X1, X2 and X4 of the talent trees are in the
 game; X4's respec prices remain coordinator placeholders. Geographic PvP,
@@ -278,7 +284,10 @@ point/gate/persistence model and thirty numeric consumers. X4's Talents page,
 respec price and level-up flow are shipped; only X3's keystones, capstones and
 four abilities remain open. Food v2's six-tier framework is live with current
 raw foods and T1 cooked dishes; Round 8 still owns the real dish tables and
-recipes, while WP10 owns profession books and the icon presentation. WP13 has built
+recipes. WP10's shared `grug_jobs` framework is live: two primary slots plus
+Cooking, persistent T1–T6 craft progression, complete UI books, grid/station
+permission gates and trainers in every start and capital; the content lands in
+the remaining Round 8 and Round 9 lanes. WP13 has built
 **all six start settlements and all six capitals**. The starts share one reusable building library with per-race
 palettes -- small dense houses with doors, pane windows, stair roofs,
 furnished interiors and exterior dressing -- and each is a different
