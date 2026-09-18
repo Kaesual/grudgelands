@@ -5,4 +5,3 @@ grug_alchemy = {}
 local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/effects.lua")
 dofile(modpath .. "/recipes.lua")
-

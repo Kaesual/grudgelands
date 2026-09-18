@@ -40,4 +40,3 @@ return function(root)
 	return "R8-ALCH capital KAT PASS " .. table.concat(found, " ") ..
 		" trainer=(1,1,-12)\n"
 end
-

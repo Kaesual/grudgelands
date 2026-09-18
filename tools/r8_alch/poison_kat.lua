@@ -39,4 +39,3 @@ return function(root)
 	end
 	return "R8-ALCH poison KAT PASS chains=cancelled exact=all\n"
 end
-
