@@ -130,6 +130,8 @@ if not mobs_modpath then
 end
 assert(mobs_modpath, "cannot locate mobs/grug_obstacle.lua")
 local grug_obstacle = dofile(mobs_modpath .. "/grug_obstacle.lua")
+-- GRUG PATCH: tag-carrier presentation entities do not consume mob spawn AOC.
+local grug_tag_budget = dofile(mobs_modpath .. "/grug_tag_budget.lua")
 core.register_globalstep(function()
 	grug_obstacle.begin_server_step()
 end)
@@ -4321,7 +4323,8 @@ function mobs:spawn_specific(name, nodes, neighbors, min_light, max_light, inter
 
 	local function spawn_action(pos, node, active_object_count, active_object_count_wider)
 
-		if active_object_count_wider and active_object_count_wider >= max_per_block then
+		if active_object_count_wider and grug_tag_budget.effective_count(core,
+				pos, active_object_count_wider, max_per_block) >= max_per_block then
 --print("--- too many entities in area", active_object_count_wider)
 			return
 		end

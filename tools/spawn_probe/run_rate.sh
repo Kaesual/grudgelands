@@ -9,8 +9,8 @@ seed=15912857179583385436
 evidence="$repo/tools/spawn_probe/evidence/$label"
 probe="$repo/tools/spawn_probe/grug_spawn_probe"
 
-[[ "$port_base" =~ ^311[0-9][0-9]$ && "$port_base" -le 31197 ]] || {
-	echo "PORT_BASE must leave three ports inside 31100-31199" >&2
+[[ "$port_base" =~ ^31[0-9][0-9][0-9]$ && "$port_base" -le 31997 ]] || {
+	echo "PORT_BASE must leave three ports inside 31000-31999" >&2
 	exit 2
 }
 [[ ! -e "$evidence" ]] || {
@@ -24,11 +24,13 @@ for minute in 1 2 3; do
 	log="$evidence/minute-$minute.launch.log"
 	if [[ -z "$root" ]]; then
 		KEEP=1 PORT="$((port_base + minute - 1))" SEED="$seed" PROBE="$probe" \
+			GAME_PATCH="$repo/tools/spawn_probe/player_shim.patch" \
 			nice -n 19 "$repo/tools/luanti_headless.sh" 120 >"$log" 2>&1
 		root="$(sed -n 's/^kept: //p' "$log" | tail -1)"
 		[[ -n "$root" ]]
 	else
 		ROOT="$root" PORT="$((port_base + minute - 1))" SEED="$seed" PROBE="$probe" \
+			GAME_PATCH="$repo/tools/spawn_probe/player_shim.patch" \
 			nice -n 19 "$repo/tools/luanti_headless.sh" 120 >"$log" 2>&1
 	fi
 	server_log="$(sed -n 's/^log: //p' "$log" | tail -1)"

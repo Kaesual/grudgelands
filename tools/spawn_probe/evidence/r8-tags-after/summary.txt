@@ -1,0 +1,5 @@
+minute_1=14
+minute_2=17
+minute_3=12
+total=43
+rate_per_minute=14.333
