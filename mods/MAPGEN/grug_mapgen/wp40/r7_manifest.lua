@@ -26,12 +26,12 @@ return function(canonical, raw_sha256, settlement_order)
 	-- five of the twenty-one decoded records move their `min_y`/`max_y` by one and
 	-- nothing else in the projection changes. Was
 	-- `de79b1fe983d8b5a...`, with `decoded_templates` `ab77c5efa9587823...`.
-	-- R8-ALCH, 2026-09-18: the gathering source identity additionally includes
-	-- Ember Moss in the fail-closed herb-authorizer vocabulary. Placement/content
-	-- semantics remain unchanged; only the authenticated gathering limb and
-	-- this roll-up move again.
+	-- R8-ALCH, 2026-09-18: the gathering source identity additionally names
+	-- Ember Moss through its Cooking-owned itemstring in the fail-closed herb
+	-- vocabulary. Placement/content semantics remain unchanged; only the
+	-- authenticated gathering limb and this roll-up move again.
 	local SOURCE_PROJECTION_SHA256 =
-		"421c9abd0d8ad21544de7478e954350c6613793d7636e81eb63cca8e3ff1a42d"
+		"5cca66b4c7d9d4026ed0a21fd9d7e38a3a289f93c05fcde3cb3de893e58369bd"
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -278,7 +278,7 @@ return function(canonical, raw_sha256, settlement_order)
 		local gathering = inputs.gathering_manifest
 		if gathering.schema ~= "grug_wp33_gathering_catalog_v1" or
 			gathering.sha256 ~=
-				"b79893f5fd39833e44b948556f23cb98e8987f02075a08866f4a8345f111330e" or
+				"287c4278002668928151de6666dce3f738242c0a241927e71d3bd46a3d48bc8e" or
 			sha256_hex(gathering.canonical_bytes) ~= gathering.sha256 then
 			fail("gathering identity differs")
 		end

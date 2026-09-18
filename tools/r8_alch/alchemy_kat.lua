@@ -7,7 +7,12 @@ return function(root)
 		if not ok then error("R8-ALCH alchemy KAT: " .. label, 0) end
 	end
 
-	local craftitems, recipes, ingredient_tiers = {}, {}, {}
+	local craftitems, recipes, ingredient_tiers = {}, {}, {
+		["grug_cooking:sugar_cane"] = 2,
+		["grug_cooking:cave_cap"] = 3,
+		["grug_cooking:ember_moss"] = 5,
+	}
+	local ingredient_registrations = {}
 	local callbacks = {}
 	core = {
 		registered_items = craftitems,
@@ -74,8 +79,11 @@ return function(root)
 	}
 	grug_jobs = {
 		register_ingredient_tier = function(item, tier)
+			ingredient_registrations[item] =
+				(ingredient_registrations[item] or 0) + 1
 			ingredient_tiers[item] = tier
 		end,
+		ingredient_tier = function(item) return ingredient_tiers[item] end,
 		register_recipe = function(def)
 			local flat = {}
 			local function add(value)
@@ -100,6 +108,50 @@ return function(root)
 	grug_alchemy = {}
 	dofile(root .. "/mods/ITEMS/grug_alchemy/effects.lua")
 	dofile(root .. "/mods/ITEMS/grug_alchemy/recipes.lua")
+
+	local cooking_inputs = {
+		potion_mana = "grug_cooking:sugar_cane",
+		potion_greater_mana = "grug_cooking:sugar_cane",
+		potion_cave = "grug_cooking:cave_cap",
+		elixir_focus_t3 = "grug_cooking:cave_cap",
+		elixir_vigor_t5 = "grug_cooking:ember_moss",
+		elixir_focus_t5 = "grug_cooking:ember_moss",
+		elixir_precision_t5 = "grug_cooking:ember_moss",
+		elixir_vigor_t6 = "grug_cooking:ember_moss",
+		elixir_focus_t6 = "grug_cooking:ember_moss",
+		elixir_precision_t6 = "grug_cooking:ember_moss",
+	}
+	for index = 1, #grug_alchemy.CATALOG do
+		local row = grug_alchemy.CATALOG[index]
+		local expected = cooking_inputs[row.id]
+		if expected then
+			local found = false
+			for input_index = 1, #row.inputs do
+				if row.inputs[input_index] == expected then found = true end
+			end
+			if mutation == "cooking_items" and row.id == "potion_mana" then
+				found = false
+			end
+			check(found, "Cooking-owned reagent for " .. row.id)
+		end
+		for input_index = 1, #row.inputs do
+			local input = row.inputs[input_index]
+			check(input ~= "grug_gathering:sugar_cane" and
+				input ~= "grug_gathering:cave_cap" and
+				input ~= "grug_gathering:ember_moss",
+				"retired gathering reagent namespace")
+		end
+	end
+	for item, tier in pairs({
+		["grug_cooking:sugar_cane"] = 2,
+		["grug_cooking:cave_cap"] = 3,
+		["grug_cooking:ember_moss"] = 5,
+	}) do
+		check(ingredient_tiers[item] == tier and
+			ingredient_registrations[item] == nil and
+			grug_alchemy.INGREDIENT_TIERS[item] == nil,
+			"Cooking owns ingredient tier for " .. item)
+	end
 
 	local brewing_count = 0
 	for index = 1, #recipes do
@@ -202,22 +254,35 @@ return function(root)
 		check(level == grug_alchemy.TIER_LEVELS[row.tier], "tier item level")
 	end
 
-	player.alchemist = false
-	local allowed, reason = herb_authorizer(player, "gravemoss", 1)
-	if mutation == "authorizer" then allowed = true end
-	check(not allowed and reason == "no_alchemist", "non-Alchemist herb refusal")
-	player.alchemist = true
-	allowed = herb_authorizer(player, "ember_moss", 5)
-	if mutation == "authorizer_allow" then allowed = false end
-	check(allowed, "Alchemist herb permission")
-
 	local harvest_factory = dofile(root ..
 		"/mods/ITEMS/grug_gathering/harvest.lua")
 	local harvest = harvest_factory({core = core, materials = {}})
-	harvest.register_herb_authorizer(herb_authorizer)
+	local authorized_item
+	harvest.register_herb_authorizer(function(subject, item, tier)
+		authorized_item = item
+		return herb_authorizer(subject, item, tier)
+	end)
+	player.alchemist = false
+	local allowed, reason = harvest.decision({x = 0, y = 0, z = 0}, player, {
+		placement_class = "new_p9g_source", key = "gravemoss",
+		raw_item = "grug_gathering:gravemoss",
+		harvest_kind = "healing_herb", required_group = 1,
+	})
+	if mutation == "authorizer" then allowed = true end
+	check(not allowed and reason == "no_alchemist", "non-Alchemist herb refusal")
+	player.alchemist = true
+	allowed = harvest.decision({x = 0, y = 0, z = 0}, player, {
+		placement_class = "new_p9g_source", key = "ember_moss",
+		raw_item = "grug_cooking:ember_moss",
+		harvest_kind = "healing_herb", required_group = 5,
+	})
+	if mutation == "authorizer_allow" then allowed = false end
+	check(allowed and authorized_item == "grug_cooking:ember_moss",
+		"Alchemist Ember Moss permission")
 	player.alchemist = false
 	allowed = harvest.decision({x = 0, y = 0, z = 0}, player, {
 		placement_class = "new_p9g_source", key = "cave_cap",
+		raw_item = "grug_cooking:cave_cap",
 		harvest_kind = "food", required_group = 0,
 	})
 	if mutation == "cave_cap" then allowed = false end

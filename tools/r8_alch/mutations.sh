@@ -14,7 +14,7 @@ run_mutation() {
 	echo "mutation killed: $mutation"
 }
 
-for mutation in recipe_tier shared_cooldown greater_cooldown food_stack elixir_clock elixir_exclusive apothecary_cap item_level authorizer authorizer_allow cave_cap; do
+for mutation in recipe_tier cooking_items shared_cooldown greater_cooldown food_stack elixir_clock elixir_exclusive apothecary_cap item_level authorizer authorizer_allow cave_cap; do
 	run_mutation "$mutation" alchemy_kat
 done
 for mutation in geometry activation; do
