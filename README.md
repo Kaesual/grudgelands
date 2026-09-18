@@ -5,9 +5,10 @@ classes, XP, quests, professions, housing, an item economy and geographic PvP,
 built as a standalone Lua game rather than a mod pack.
 
 > **Status: in development.** The world, mobs, three classes, combat,
-> equipment, XP and the first money/vendor economy are playable. The final
-> named-zone map is implemented and awaiting release/runtime gates; quests,
-> professions, open-world housing and geographic PvP are not built. See
+> equipment, XP, the first money/vendor economy and the shared profession
+> framework are playable. The final named-zone map is implemented and awaiting
+> release/runtime gates; quests, profession recipe catalogs, open-world housing
+> and geographic PvP are not built. See
 > [Current State](#current-state).
 
 ## The story
