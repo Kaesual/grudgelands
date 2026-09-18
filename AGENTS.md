@@ -825,6 +825,18 @@ Details + line numbers in [docs/research/](docs/research/).
   `water_class_at`, `territory_rule_at`, `surface_mob_level_at`) and **never**
   the engine biomemap, because the authored surface pass — not climate
   competition — owns logical biome identity.
+  **R7.6 difficulty seam (2026-09-18):** `simple_map.lua` derives straight
+  z-axis progression extents from authored hub rows and the fixed
+  Battlegrounds edges, splits each published zone range into three rational
+  thirds, and serves an integer staircase through
+  `difficulty_for_macro_at`; `zones.lua` applies the 100/150-node start safety
+  override afterward. Accord runs toward +z, Throng toward -z, front zones
+  toward z=0 and the two summits are flat 60. The compatibility method
+  `difficulty_lattice_digest()` authenticates these profiles despite its
+  historical name; there is no difficulty lattice or hub-target smoothing.
+  The unchanged underground term already supplies three integer threshold
+  steps per uncapped 50-node window, and `mob_level_at` remains
+  `max(surface, depth)`.
   LotT trick: biome signature nodes drive mob spawns via a node whitelist —
   those tops live in `grug_nodes` (blight_dirt, bone/forest/silver litter,
   mesa_clay, mud) and exist FOR the trick; the generic `_grug_spawn_check`

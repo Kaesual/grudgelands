@@ -37,7 +37,7 @@ WP40 replaces it with the complete catalog and contracts below.
   zone names, biome combinations and landmarks may differ.
 - Each zone definition owns: display name and id, stable hub, macro region,
   optional ownership bias, `territory_rule`, exactly one `race_region`, level
-  range, surface difficulty target, PvP rule, route neighbors, allowed biome
+  range, axial surface-difficulty bands, PvP rule, route neighbors, allowed biome
   list, signature terrain/property, mob and gathering palette, and reserved
   POI slots. `race_region` means cultural/geological provenance;
   it selects architecture, regional loot, one G1 gem, one G2 gem, one cultural
@@ -72,18 +72,36 @@ WP40 replaces it with the complete catalog and contracts below.
   level-31–40 faction-front approaches and The Broken Causeway are the first
   contested destinations; their authored contacts introduce PvP without
   making the whole shared front a mid-level band.
-- Surface mob level comes from one authored target per named zone. One fixed,
-  component-aware continuous difficulty field blends those targets across the
-  world; the published level range remains content metadata rather than a
-  second within-zone control field. The old radial distance from a faction
-  seat and exact gate/core progression fields are not part of the target
-  model. The deterministic start-anchor band below is applied after this
-  field and is not a second zone target.
+- **Three axial level bands (R7.6, decided 2026-09-18):** surface difficulty
+  rises along z from each continent's outer side toward the faction front.
+  Elandor/Accord progresses toward +z; Kragmar/Throng is its directional
+  mirror toward -z. A mainland difficulty extent begins on one authored hub
+  row and ends on the next distinct frontward hub row; the final mainland row
+  ends at the authored Battlegrounds boundary. At an exact shared hub row the
+  outer extent owns that final node and the next node starts the inner extent.
+  Lateral zones on one row select the nearest authored hub x, with numeric zone
+  id as the exact tie break. This is a difficulty projection only: it does not
+  change political power-diagram ownership, water, routes or terrain.
+- Each published `level_min..level_max` is divided into three consecutive
+  sub-ranges by cumulative integer thirds. Thus 1–10 becomes 1–3 / 4–6 /
+  7–10; 11–20 becomes 11–13 / 14–16 / 17–20; 21–30 and the later ten-level
+  ranges follow the same rule; 51–59 becomes 51–53 / 54–56 / 57–59; and
+  60–60 stays flat 60. The authored z extent is divided by exact rational
+  thirds. Within one third, the integer staircase places its levels evenly by
+  `low + min(count-1, floor(local_progress * count / extent))`, where
+  `local_progress` is the band-local z progress scaled by three. No float,
+  runtime measurement or seed-dependent edge enters the field.
+- Battlegrounds zones 34–37 use the same three-band staircase from their
+  faction-facing authored edge at z = -250 (Accord races) or z = +250
+  (Throng races) toward z = 0. Wyrmglass and Stormscale are flat level 60.
+  Capital zones use their published ranges but retain `civic_no_hostiles`.
+  The old radial field, hub targets and smoothed difficulty lattice are not
+  part of the current model.
 - **Inner start band (decided 2026-09-17):** surface mob level is exactly
   **1** at integer horizontal Euclidean distance 0–100 nodes from each of the
   six authored start anchors and exactly **2** at distance 101–150 nodes.
-  Beyond 150 nodes the existing continuous field applies unchanged and
-  continues the outward progression toward the faction front. The outer
+  Beyond 150 nodes the axial three-band field applies and continues the
+  progression toward the faction front. The outer
   starting-zone metadata remains levels **1–10**.
 - The existing depth floor remains independent: underground level is the
   maximum of the local surface-zone level and the depth level from
@@ -124,7 +142,8 @@ WP40 replaces it with the complete catalog and contracts below.
   - toward the contested front: high-level territory.
 - Capitals remain protected POIs and major waypoint/service hubs. They are
   destinations reached from the starting zones, not spawn bubbles.
-- Capital zones use the same one-target difficulty rule as every other zone.
+- Capital zones use the same three-band axial difficulty rule as every other
+  non-summit zone.
   Their exact level-60 guard rule and absence of ambient hostiles remain
   separate civic policy; no 20/25/30 gate/core progression profile exists.
 
@@ -354,16 +373,19 @@ WP40 replaces it with the complete catalog and contracts below.
   contact roster as diagnostic evidence, but contact neither creates a route
   edge nor needs an allowlist. No geometric dual or stable boundary identity
   is materialized.
-- Every zone has one authored surface difficulty target. Targets are sampled
-  on a fixed 32-node Q16 lattice and smoothed separately on the mainland and
-  on each island with a separable triangular 192-node radius. Queries use two
-  sequential one-axis integer interpolations. Every orthogonally adjacent
-  walkable surface pair and every ordinary route step differs by at most two
-  levels. Water travel, rather than an exempt land discontinuity, separates
-  the level-60 islands.
-- Published zone level ranges continue to govern content identity. Capital
-  guard floors, depth progression and fixed level entities remain independent
-  policy and are not encoded as extra difficulty-control points.
+- Surface difficulty is the §2 three-band axial field. Its mainland extents,
+  front direction and endpoints are derived only from the authored hub rows
+  and the fixed Battlegrounds rectangle; front-zone endpoints are the authored
+  z edges and z = 0. The field uses integer/rational arithmetic and has no
+  sampled lattice, smoothing radius or runtime-measured edge. The compatibility
+  method `difficulty_lattice_digest()` now authenticates the ordered axial
+  profiles and band cuts; its historical name is not evidence of a remaining
+  lattice.
+- Published zone level ranges govern the three sub-ranges and content
+  identity. A staircase never decreases within one authored extent and changes
+  by at most one at an internal step. Capital guard floors, depth progression,
+  civic hostility policy and fixed-level entities remain independent and are
+  not encoded as extra difficulty-control points.
 
 ### 7.4 Planned water, coast and islands
 
@@ -1127,7 +1149,8 @@ one-cell settlement checks are unchanged.
   ring extending to 704×704. The protected POI is the final build envelope
   plus the existing 10-node surround. Only the 512×512 build envelope is
   guaranteed capital-zone ownership; the larger visual blend may cross a zone
-  edge. Capital lookup uses the zone's single surface difficulty target.
+  edge. Capital lookup uses the same axial difficulty field as surrounding
+  land.
   Hostile ambient spawning is disabled and level-60 guards remain explicit.
 - Capital grading flattens only the dry capital-owned 96×96 civic core.
   The target reference interval for natural height N is [N-24, N+16],
@@ -1295,7 +1318,7 @@ numeric-truncated seed.
 
 ### 13.3 Policy and compatibility
 
-- `surface_mob_level_at` means the continuous gameplay-difficulty field.
+- `surface_mob_level_at` means the axial banded gameplay-difficulty field.
   `terrain_height_at` means elevation. Existing
   `grug_core.surface_level_at(x,z)` already means terrain height and retains
   that semantic; it redirects to `terrain_height_at` only at the atomic
@@ -1379,9 +1402,10 @@ numeric-truncated seed.
 - Every required relief profile, logical-biome palette, named landmark and
   anchor slot exists exactly once with a valid owner. Kragmar and Elandor
   source records are independently authored rather than reflected.
-- The final difficulty lattice changes by at most two levels between every
-  orthogonally adjacent walkable surface pair and along every ordinary route.
-  Capital guard/depth/fixed-entity rules remain separate and exact.
+- Inside each axial extent, the difficulty staircase is monotone toward the
+  front and changes by at most one per node; its three band samples remain in
+  their published sub-ranges. Capital guard/depth/fixed-entity rules remain
+  separate and exact.
 - All anchors use their seed-independent, R2-frozen 2D positions. Terrain
   fitting succeeds without rejection, reselection or endpoint movement.
 - Every wholly contained eligible 101 by 101 reservation in a coastal housing

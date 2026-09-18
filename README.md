@@ -52,7 +52,10 @@ uses small land/water shapes, nearest-hub ownership and reliable independent
 routes; seed variation begins with terrain, biome detail and content. Six
 outer level-1–10 starts lead through home and heartland zones to six central
 capitals; every level-1–30 zone is peaceful and every ordinary level-31–60
-frontier, Battlegrounds and dragon zone is contested.
+frontier, Battlegrounds and dragon zone is contested. Surface difficulty rises
+through three integer bands along the continent axis inside every published
+zone range; Accord runs toward +z, Throng toward -z, the shared front toward
+z=0 and the two dragon summits remain flat level 60.
 
 PvP state is one central transaction, not a combat-path exception. A valid
 hostile action tags its initiator before resolution; safe→safe and
@@ -234,7 +237,7 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
 
-*Last updated: 2026-09-17. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-09-18. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
 
 **Shipped (22 of 49 work packages):** WP0–WP4, WP6, WP7, WP15, WP18, WP19,
@@ -245,8 +248,9 @@ canonical materials, gathering, exact life/resource bars, unified movement
 effects and the named-zone world. Round 6 adds the shared HP/mana and damage
 fit, maximum-pool Character/Help pages, per-player effective tooltips, total
 friendly-skill fallback, 5% suffocation, the `grug_core.status` text list and
-three-minute food buffs. It also fixes ordinary dry shore banks at `water_y`
-and guarantees surface level 1 through 100 m and level 2 through 150 m of every
+three-minute food buffs. It also fixes ordinary dry shore banks at `water_y`,
+replaces flat hub-target difficulty with three axial level bands per zone, and
+guarantees surface level 1 through 100 m and level 2 through 150 m of every
 start anchor. New characters remain
 protected behind character creation until the server has prepared all six
 start areas, which it emerges once at startup. WP40's
