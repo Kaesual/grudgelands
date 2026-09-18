@@ -29,6 +29,64 @@ local function settlement_factory()
 		return value
 	end
 
+	local function new_r8_strata(full_seed, source)
+		local secondary_by_biome = {
+			grug_savanna = "default:sandstone",
+			grug_badlands = "grug_materials:basalt",
+			grug_badlands_east = "grug_materials:basalt",
+			grug_meadows = "default:desert_stone",
+			grug_pine_hills = "grug_materials:slate",
+			grug_jungle_edge = "default:mossycobble",
+			grug_deep_jungle = "default:mossycobble",
+			grug_jungle_fringe = "default:mossycobble",
+			grug_swamp = "default:mossycobble",
+			grug_beach = "default:sandstone",
+			grug_crags = "grug_materials:slate",
+			grug_crags_snowy = "grug_materials:slate",
+			grug_elf_forest = "default:desert_stone",
+			grug_deep_forest = "default:desert_stone",
+			grug_blight = "grug_materials:basalt",
+			grug_bone_forest = "grug_materials:basalt",
+		}
+		local zone_relief = {}
+		for zone_index = 1, #(source.zones or {}) do
+			zone_relief[source.zones[zone_index].id] =
+				source.zones[zone_index].primary_relief_id
+		end
+		local phase = 0
+		for index = 1, #full_seed do
+			phase = (phase * 131 + string.byte(full_seed, index)) % 65521
+		end
+		local function draw(x, z, salt)
+			local value = (x * 374761 + z * 668265 + phase * 69069 + salt) % 16777213
+			value = (value * value) % 16777213
+			return (value * 48271) % 16777213
+		end
+		local result = {}
+		function result.material_at(zone_id, biome, filler_depth, x, z, depth)
+			local first_depth = filler_depth + 1
+			if depth < first_depth or depth > 40 then return nil end
+			local secondary_start = math.max(first_depth, 8 + draw(x, z, 19349663) % 4)
+			local gravel_start = math.max(first_depth, 18 + draw(x, z, 83492791) % 4)
+			local pocket_start = math.max(first_depth, 29 + draw(x, z, 297121507) % 5)
+			if depth >= secondary_start and depth <= secondary_start + 2 then
+				return secondary_by_biome[biome] or "default:desert_stone"
+			end
+			if depth >= gravel_start and depth <= gravel_start + 2 then
+				return "default:gravel"
+			end
+			if depth >= pocket_start and depth <= pocket_start + 1 then
+				return (biome == "grug_swamp" or zone_relief[zone_id] == "wetland_delta") and
+					"default:clay" or "default:dirt"
+			end
+			return nil
+		end
+		function result.secondary_for(biome)
+			return secondary_by_biome[biome] or "default:desert_stone"
+		end
+		return result
+	end
+
 	local function exact_fields(value, allowed, label, code)
 		if type(value) ~= "table" or getmetatable(value) ~= nil then
 			fail(code or "fail_settlement", label .. " is not a plain table")
@@ -303,6 +361,7 @@ local function settlement_factory()
 		local planner_source = dependencies.planner_source
 		local cultural_registrations = dependencies.cultural_registrations
 		local source = dependencies.source
+		local r8_strata = new_r8_strata(full_seed, source)
 		local allocator = dependencies.counting_allocator
 		local successor_tail = dependencies.successor_tail
 		local planner_stable_refs = dependencies.planner_stable_refs
@@ -314,6 +373,9 @@ local function settlement_factory()
 				type(horizontal) ~= "table" or
 				type(planner_source) ~= "table" or
 				type(planner_source.surface_cave_run_at) ~= "function" or
+				type(planner_source.surface_cave_candidate_at_cell) ~= "function" or
+				type(planner_source.surface_cave_cell_at) ~= "function" or
+				type(planner_source.coast_profile_at) ~= "function" or
 				type(source) ~= "table" or
 				(successor_tail ~= nil and (type(successor_tail) ~= "table" or
 					type(successor_tail.settle) ~= "function")) then
@@ -1559,6 +1621,8 @@ local function settlement_factory()
 			regional_allowed = regional_allowed, coordinate_less = coordinate_less,
 			run_class_policy = run_class_policy,
 			capture_private_buffers = capture_private_buffers,
+			r8_strata = r8_strata, r8_surfaces = surfaces,
+			r8_select_surface = select_surface, r8_horizontal = horizontal,
 			template_rotation = runtime_mode and (templates.rotation_runtime or
 				templates.rotation) or
 				templates.rotation}
@@ -1817,6 +1881,248 @@ local function settlement_factory()
 						end
 					end
 				end
+			end
+
+			if contract.schema == "grug_wp40_r7_production_r6_content_v1" then
+			-- R8 shallow strata.  Only native stone or a shipped biome filler in
+			-- the immutable input may be replaced.  This deliberately tests
+			-- original_data, not the broad terrain result, so native caves, liquids,
+			-- ores and dungeon masonry survive even where P5 filled over them.
+			local replaceable = {}
+			local function add_replaceable(name)
+				local ref = content.content_ref(name)
+				if ref then replaceable[contract.content_cids[ref]] = true end
+			end
+			add_replaceable("default:stone")
+			for surface_index = 1, #helpers.r8_surfaces do
+				add_replaceable(helpers.r8_surfaces[surface_index].filler)
+			end
+			for z = min_z, max_z do
+				for x = min_x, max_x do
+					local water_class, _, zone_id, biome, _, terrain_y, water_y, _, _,
+						functional_kind, _, _, _, transition_kind, _, _, _, _, _, hard =
+							planner_source.column_values_at(x, z)
+					if water_class == "land" and zone_id and biome and water_y == nil and
+							functional_kind == nil and transition_kind == nil and not hard and
+							helpers.r8_horizontal.static_exclusion_values_at(x, z) == nil and
+							not helpers.housing_excluded_at(x, z) then
+						local surface = helpers.r8_select_surface(biome, x, z, water_y, terrain_y)
+						local first_depth = surface and surface.filler_depth + 1 or 5
+						for depth = first_depth, 40 do
+							local y = terrain_y - depth
+							if y >= -37 and y >= min_y and y <= max_y then
+								local target = helpers.r8_strata.material_at(zone_id, biome,
+									surface and surface.filler_depth or 4, x, z, depth)
+								if target then
+									local index = index_at(x, y, z)
+									if replaceable[original_data[index]] then
+										local ref = content.content_ref(target)
+										if not ref then fail("fail_content_manifest",
+											"R8 stratum target is absent") end
+										write_intent(x, y, z, ref, 0, 2, 0, 0, 1, false)
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+
+			-- R8 connected mouths.  A candidate is carved only if native cave air
+			-- is present within 24 nodes and every new lumen voxel is either that
+			-- air or native natural ground.  One owner contains the complete path.
+			do
+				local cell_x, cell_z = planner_source.surface_cave_cell_at(min_x, min_z)
+				local cave = planner_source.surface_cave_candidate_at_cell(cell_x, cell_z)
+				if cave and cave.mouth_x >= min_x and cave.mouth_x <= max_x and
+						cave.mouth_z >= min_z and cave.mouth_z <= max_z and
+						cave.mouth_y >= min_y and cave.mouth_y <= max_y and
+						cave.minimum_y >= min_y then
+					local search_x = cave.kind == "hillside" and
+						cave.mouth_x + cave.direction_x * (cave.length - 1) or cave.mouth_x
+					local search_z = cave.kind == "hillside" and
+						cave.mouth_z + cave.direction_z * (cave.length - 1) or cave.mouth_z
+					local eligible_columns, eligible_heights = {}, {}
+					local function eligible_column(x, z)
+						local key = tostring(x) .. "/" .. tostring(z)
+						if eligible_columns[key] ~= nil then return eligible_columns[key] end
+						local water_class, _, zone_id, _, _, terrain_y, water_y, hydrology_id, _,
+							functional_kind, _, _, _, transition_kind, _, _, _, _, _, hard =
+								planner_source.column_values_at(x, z)
+						local eligible = water_class == "land" and zone_id == cave.zone_id and
+							water_y == nil and hydrology_id == nil and functional_kind == nil and
+							transition_kind == nil and not hard and
+							helpers.r8_horizontal.static_exclusion_values_at(x, z) == nil and
+							not helpers.housing_excluded_at(x, z)
+						eligible_columns[key] = eligible
+						eligible_heights[key] = terrain_y
+						return eligible
+					end
+					local targets = {}
+					local search_radius = cave.search_radius or cave.radius
+					for radius_squared = 0, search_radius * search_radius do
+						if #targets >= 64 then break end
+						for dz = -search_radius, search_radius do
+							if #targets >= 64 then break end
+							for dx = -search_radius, search_radius do
+								if dx * dx + dz * dz == radius_squared then
+									local x, z = search_x + dx, search_z + dz
+									if eligible_column(x, z) then
+										local search_surface = select(6,
+											planner_source.column_values_at(x, z))
+										local native_roof = 0
+										for depth = 1, cave.maximum_depth do
+											local y = math.min(cave.mouth_y, search_surface) - depth
+											if y >= min_y then
+												local index = index_at(x, y, z)
+												local class_id = classify(original_data[index],
+													original_param2[index])
+												if class_id == CLASS_AIR and native_roof >= 3 then
+													targets[#targets + 1] = {x, y, z}
+													break
+												elseif class_id == 6 or class_id == 7 or
+														class_id == 11 then
+													native_roof = native_roof + 1
+												elseif class_id ~= CLASS_AIR then
+													native_roof = 0
+												end
+											end
+										end
+									end
+								end
+							end
+						end
+					end
+					local carved = false
+					for target_index = 1, #targets do
+						local target_x, target_y, target_z = unpack(targets[target_index])
+						local voxels, seen, valid = {}, {}, true
+						local function cave_round(numerator, denominator)
+							if numerator < 0 then
+								return -math.floor((-numerator * 2 + denominator) /
+									(denominator * 2))
+							end
+							return math.floor((numerator * 2 + denominator) /
+								(denominator * 2))
+						end
+						local function offer_voxel(x, y, z)
+							local key = tostring(x) .. "/" .. tostring(y) .. "/" .. tostring(z)
+							if seen[key] then return end
+							seen[key] = true
+							if x < min_x or x > max_x or y < min_y or y > max_y or
+									z < min_z or z > max_z then
+								valid = false return
+							elseif not eligible_column(x, z) then
+								valid = false return
+							end
+							local column_key = tostring(x) .. "/" .. tostring(z)
+							local mouth_dx, mouth_dz = x - cave.mouth_x, z - cave.mouth_z
+							if y > eligible_heights[column_key] and not
+									(mouth_dx * mouth_dx + mouth_dz * mouth_dz <= 4 and
+										y <= cave.mouth_y + 1) then
+								valid = false return
+							end
+							local index = index_at(x, y, z)
+							local class_id = classify(original_data[index], original_param2[index])
+							-- Numeric class ids 6/7/8/11 are validated natural host, surface,
+							-- vegetation and native-stratum host; spelling all locals here
+							-- exceeds Lua 5.1's upvalue cap.
+							-- Vegetation may occupy the immutable mouth cap, while ore, liquid,
+							-- dungeon/foreign and unknown content remain transaction vetoes.
+							if class_id ~= CLASS_AIR and class_id ~= 6 and class_id ~= 7 and
+									class_id ~= 8 and class_id ~= 11 then
+								valid = false return
+							end
+							voxels[#voxels + 1] = {x, y, z}
+						end
+						if cave.kind == "sinkhole" then
+							local steps = cave.mouth_y + 1 - target_y
+							for step = 0, steps do
+								local y = cave.mouth_y + 1 - step
+								local center_x = cave.mouth_x + cave_round(
+									(target_x - cave.mouth_x) * step, steps)
+								local center_z = cave.mouth_z + cave_round(
+									(target_z - cave.mouth_z) * step, steps)
+								local radius = step <= 2 and 2 or 1
+								for dx = -radius, radius do for dz = -radius, radius do
+									if dx * dx + dz * dz <= radius * radius then
+										offer_voxel(center_x + dx, y, center_z + dz)
+									end
+								end end
+							end
+						else
+							for step = 0, cave.length - 1 do
+								local center_x = cave.mouth_x + cave_round(
+									(target_x - cave.mouth_x) * step, cave.length - 1)
+								local center_y = cave.mouth_y + 1 + cave_round(
+									(target_y - cave.mouth_y - 1) * step, cave.length - 1)
+								local center_z = cave.mouth_z + cave_round(
+									(target_z - cave.mouth_z) * step, cave.length - 1)
+								for side = -cave.radius, cave.radius do
+									local absolute_side = math.abs(side)
+									local half = absolute_side == 0 and cave.radius or
+										(absolute_side < cave.radius and cave.radius - 1 or 0)
+									for dy = -half, half do
+									offer_voxel(center_x - cave.direction_z * side,
+										center_y + dy, center_z + cave.direction_x * side)
+									end
+								end
+							end
+						end
+						if valid then
+							local native_exit, native_exit_row = false, nil
+							local exit_x = {1, -1, 0, 0, 0, 0}
+							local exit_y = {0, 0, 0, 0, 1, -1}
+							local exit_z = {0, 0, 1, -1, 0, 0}
+							local target_key = tostring(target_x) .. "/" ..
+								tostring(target_y) .. "/" .. tostring(target_z)
+							local air_queue, air_seen, air_head =
+								{{target_x, target_y, target_z}}, {[target_key] = true}, 1
+							while air_queue[air_head] and not native_exit do
+								local row = air_queue[air_head]
+								air_head = air_head + 1
+								for direction = 1, 6 do
+									local x, y, z = row[1] + exit_x[direction],
+										row[2] + exit_y[direction], row[3] + exit_z[direction]
+									local key = tostring(x) .. "/" .. tostring(y) .. "/" .. tostring(z)
+									if not air_seen[key] and x >= min_x and x <= max_x and
+											y >= min_y and y <= max_y and z >= min_z and z <= max_z then
+										local neighbor = index_at(x, y, z)
+										if classify(original_data[neighbor],
+												original_param2[neighbor]) == CLASS_AIR then
+											air_seen[key] = true
+											if not seen[key] and direction <= 4 then
+												native_exit, native_exit_row = true, {x, y, z}
+												break
+											elseif seen[key] then
+												air_queue[#air_queue + 1] = {x, y, z}
+											end
+										end
+									end
+								end
+							end
+							if not native_exit then
+								valid = false
+							else
+								voxels[#voxels + 1] = native_exit_row
+							end
+						end
+						if valid then
+							local air_cid = contract.r5.resolve(1, 0, 0)
+							for voxel = 1, #voxels do
+								local row = voxels[voxel]
+								local index = index_at(row[1], row[2], row[3])
+								final_data[index], final_param2[index] = air_cid, 0
+								intent_opcode[index], intent_feature[index],
+									intent_interface[index], intent_aux[index] = 26, 0, 0, 0
+								occupancy[index] = 1
+							end
+							carved = true
+						end
+						if carved then break end
+					end
+				end
+			end
 			end
 
 			local function inside_owner(x, y, z)
@@ -2956,7 +3262,8 @@ local function settlement_factory()
 	return {new = function(dependencies) return new(dependencies, nil, nil, nil) end,
 		new_runtime = function(dependencies) return new(dependencies, nil, nil, true) end,
 		new_evidence = function(dependencies) return new(dependencies, true, nil, nil) end,
-		new_capture = function(dependencies) return new(dependencies, nil, true, nil) end}
+		new_capture = function(dependencies) return new(dependencies, nil, true, nil) end,
+		r8_strata_new = new_r8_strata}
 end
 
 return settlement_factory()

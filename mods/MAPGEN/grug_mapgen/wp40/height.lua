@@ -1,7 +1,38 @@
 -- Engine-free deterministic vertical model for the accepted WP40 simple map.
 -- All construction is session-local; scalar query seams allocate no records.
 
-return function(dependencies)
+local function new_coast_rules(full_seed_string)
+	local PRIME = 16777213
+	local phase = 0
+	for index = 1, #full_seed_string do
+		phase = (phase * 131 + string.byte(full_seed_string, index)) % 65521
+	end
+	local result = {}
+	function result.hash(owner, orientation, run, salt)
+		local value = (owner * 374761 + orientation * 668265 + run * 982451 +
+			phase * 69069 + salt) % PRIME
+		value = (value * value) % PRIME
+		return (value * 48271) % PRIME
+	end
+	function result.profile(owner, orientation, run, freshwater, relief_profile, relief)
+		local draw = result.hash(owner, orientation, run, 19349663) % 100
+		local profile
+		if freshwater then profile = draw < 60 and "beach" or "bluff"
+		elseif draw < 40 then profile = "beach"
+		elseif draw < 65 then profile = "bluff"
+		elseif draw < 85 then profile = "cliff"
+		else profile = "terraced_cliff" end
+		if (profile == "cliff" or profile == "terraced_cliff") and
+				(relief_profile == "wetland_delta" or relief < 7) then
+			profile = result.hash(owner, orientation, run, 297121507) % 5 < 3 and
+				"beach" or "bluff"
+		end
+		return profile
+	end
+	return result
+end
+
+local function height_factory(dependencies)
 	if type(dependencies) ~= "table" then
 		error("WP40 simple-map height dependencies missing", 0)
 	end
@@ -11,6 +42,9 @@ return function(dependencies)
 		"WP40 simple-map height canonical dependency missing")
 	local deterministic = assert(dependencies.deterministic,
 		"WP40 simple-map height deterministic dependency missing")
+	-- Store the portable R8 rule factory on the already-captured deterministic
+	-- helper table; Lua 5.1's construct closure is at its 60-upvalue ceiling.
+	deterministic.r8_coast_rules = new_coast_rules
 	local raw_sha256 = assert(dependencies.raw_sha256,
 		"WP40 simple-map height SHA-256 dependency missing")
 	local horizontal = assert(dependencies.horizontal_session,
@@ -3577,6 +3611,9 @@ return function(dependencies)
 			function session.water_surface_at(x, z)
 				return final_water_surface_at(x, z)
 			end
+			function session.coast_profile_at(x, z)
+				return derived_water_evidence.coast_profile_at(x, z)
+			end
 			function session.functional_surface_values_at(x, z)
 				return final_functional_values_at(x, z)
 			end
@@ -3926,6 +3963,10 @@ return function(dependencies)
 
 		function session.water_surface_at(x, z)
 			return final_water_surface_at(x, z)
+		end
+
+		function session.coast_profile_at(x, z)
+			return derived_water_evidence.coast_profile_at(x, z)
 		end
 
 		function session.functional_surface_values_at(x, z)
@@ -4899,6 +4940,15 @@ return function(dependencies)
 				terrain_y, kind, surface_y, feature_id, interface_id = value,
 					"land_grade", value, feature.id, nil
 			end
+			-- R8 coast profiles begin behind the invariant first dry bank column.
+			-- Anything already carrying a functional grade keeps its established
+			-- priority and never reaches this seam.
+			if kind == nil and not on_path_surface and
+					derived_water_evidence.coast_profile_at then
+				local _, _, _, _, _, coast_y =
+					derived_water_evidence.coast_profile_at(x, z, terrain_y)
+				if coast_y ~= nil then terrain_y = coast_y end
+			end
 			terrain_y = water_banks.protect(x, z, terrain_y, bank_path, bank_run)
 			local shore_y = water_banks.exposed_shore_surface_at(x, z)
 			if shore_y ~= nil and not on_path_surface then
@@ -4972,6 +5022,119 @@ return function(dependencies)
 			local water_class, _, _, bay_id, hydrology_id = classified_values(x, z)
 			return pregrade_water_surface_at(x, z, water_class, bay_id,
 				hydrology_id)
+		end
+
+		-- A shore run is a 48-node interval along the axis perpendicular to the
+		-- nearest cardinal exposed-water contact.  Orientation, zone owner and
+		-- signed interval index are part of its identity.  Four nodes at either
+		-- end blend the adjacent run's target, so profile changes do not form a
+		-- seam.  All arithmetic in this query is integral.
+		do
+			local coast_rules = deterministic.r8_coast_rules(full_seed_string)
+			local direction_x, direction_z = {1, -1, 0, 0}, {0, 0, 1, -1}
+			local coast_hash = coast_rules.hash
+			local selected_profile = coast_rules.profile
+			local function target_for(profile, distance, incoming, water_y, owner,
+					orientation, run, axis)
+				local draw = coast_hash(owner, orientation, run, 83492791)
+				local width, target
+				if profile == "beach" then
+					width = 4 + draw % 7
+					local denominator = 4 + math.floor(draw / 7) % 5
+					target = water_y + math.floor((distance - 1) / denominator)
+				elseif profile == "bluff" then
+					width = 6 + draw % 4
+					local rise = 1 + math.floor(draw / 11) % 2
+					target = water_y + (distance - 1) * rise
+				elseif profile == "cliff" then
+					width = 5 + draw % 3
+					local irregular = coast_hash(owner, orientation, run,
+						axis * 17 + 480752697) % 5 - 2
+					local setback = 2 + math.floor(draw / 13) % 3
+					local top = math.max(7, incoming - water_y) + irregular
+					local rise = math.min(top, 1 + math.max(0, distance - 2) * setback)
+					if distance > 2 and coast_hash(owner, orientation, run,
+						axis * 31 + distance * 43) % 11 == 0 then
+						rise = math.max(1, rise - setback)
+					end
+					target = water_y + rise
+				else
+					local steps = 2 + draw % 2
+					local step_height = 3 + math.floor(draw / 7) % 3
+					local step_width = 3 + math.floor(draw / 17) % 3
+					width = steps * step_width + 1
+					target = water_y + math.min(steps, math.floor((distance - 2) /
+						step_width) + 1) * step_height
+				end
+				if distance == 1 then target = water_y end
+				if distance > width then
+					local blend = distance - width
+					if blend >= 4 then return incoming, width end
+					target = round_ratio(target * (4 - blend) + incoming * blend, 4)
+				end
+				return target, width
+			end
+
+			derived_water_evidence.coast_profile_at = function(x, z, supplied_incoming)
+				coordinate(x, "coast query x") coordinate(z, "coast query z")
+				local water_class, _, owner = classified_values(x, z)
+				if water_class ~= "land" or owner == nil or
+					(horizontal.static_exclusion_values_at(x, z) ~= nil) or
+					(type(horizontal.housing_mask_id_at) == "function" and
+						horizontal.housing_mask_id_at(x, z) ~= nil) then return nil end
+				local landmark_candidates = bucket_at(landmark_grid, x, z)
+				if landmark_candidates then
+					for landmark_index = 1, #landmark_candidates do
+						local landmark = landmark_candidates[landmark_index]
+						if landmark_weight(landmark, x, z) > 0 and
+								owner_affinity_q_at(landmark.zone_numeric_id, x, z) > 0 then
+							return nil
+						end
+					end
+				end
+				local best_distance, orientation, water_y, freshwater
+				for direction = 1, 4 do
+					for distance = 1, 16 do
+						local nx, nz = x + direction_x[direction] * distance,
+							z + direction_z[direction] * distance
+						local class, _, _, bay_id, hydrology_id = classified_values(nx, nz)
+						if class ~= "land" then
+							local level = pregrade_water_surface_at(nx, nz, class, bay_id,
+								hydrology_id)
+							if level ~= nil and (best_distance == nil or
+									distance < best_distance) then
+								best_distance, orientation, water_y = distance, direction, level
+								freshwater = hydrology_id ~= nil and bay_id == nil
+							end
+							break
+						end
+					end
+				end
+				if best_distance == nil then return nil end
+				local axis = orientation <= 2 and z or x
+				local run = floor_div(axis, 48)
+				local incoming = supplied_incoming or scalar_before_nonpath_grades(x, z,
+					water_class, owner, nil, nil)
+				local relief_profile = source.zones[owner].primary_relief_id
+				local relief = math.max(0, incoming - water_y)
+				local profile = selected_profile(owner, orientation, run, freshwater,
+					relief_profile, relief)
+				local target, width = target_for(profile, best_distance, incoming, water_y,
+					owner, orientation, run, axis)
+				local offset = floor_mod(axis, 48)
+				if offset < 4 or offset >= 44 then
+					local neighbor = offset < 4 and run - 1 or run + 1
+					local other_profile = selected_profile(owner, orientation, neighbor,
+						freshwater, relief_profile, relief)
+					local other = target_for(other_profile, best_distance, incoming, water_y,
+						owner, orientation, neighbor, axis)
+					local weight = offset < 4 and 4 - offset or offset - 43
+					target = round_ratio(target * (4 - weight) + other * weight, 4)
+				end
+				return profile, best_distance, width, freshwater,
+					tostring(owner) .. "/" .. tostring(orientation) .. "/" .. tostring(run),
+					target, relief_profile
+			end
 		end
 
 		-- Final cardinal contact check for every exposed surface-water class.
@@ -5290,3 +5453,5 @@ return function(dependencies)
 
 	return module
 end
+
+return height_factory, new_coast_rules

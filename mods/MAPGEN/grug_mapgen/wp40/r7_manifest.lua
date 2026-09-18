@@ -26,8 +26,11 @@ return function(canonical, raw_sha256, settlement_order)
 	-- five of the twenty-one decoded records move their `min_y`/`max_y` by one and
 	-- nothing else in the projection changes. Was
 	-- `de79b1fe983d8b5a...`, with `decoded_templates` `ab77c5efa9587823...`.
+	-- R8-MAP-A, 2026-09-18: four shipped shallow-terrain nodes extend the
+	-- accepted/production content vocabularies. Geometry and horizontal layout
+	-- inputs are unchanged; the content limb and this roll-up move together.
 	local SOURCE_PROJECTION_SHA256 =
-		"8735e5f7af1c63316b13b71bfed3e2db02d83bd455e970c7ac5c0ed539536482"
+		"80e5068e4a508cb75c34f41d319e1f2a78d2625ca16314f03ca9a92da3e7523d"
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -279,7 +282,7 @@ return function(canonical, raw_sha256, settlement_order)
 			fail("gathering identity differs")
 		end
 		if inputs.production_content.semantic_digest ~=
-				"e23aea3c8bca6ffb28622a10e019324ad09930d5fed618c98da3d94e32f5bd76" or
+				"9b7a978d178352521ae61fb87b897c5f79e12838b0829caa229ad90832ddedb8" or
 				inputs.p9g_content.semantic_digest ~=
 				"450c35e94af32721768d3771454db89dbdb43099660b2118c178a3ca6b438d49" then
 			fail("frozen content semantics differ")
@@ -443,9 +446,9 @@ return function(canonical, raw_sha256, settlement_order)
 		if frozen.r6_catalog ~=
 				"71686cbaff9a2b6acb0415a3eda0ebc2d056412db1879c1bf4fcb162e14f4f74" or
 			frozen.accepted_r6_content ~=
-				"2486aac15521fbacdfa733f832aac615b799aa8d13c818525d1ce75221fad7d6" or
+				"466abcd49cac58c68aabf26b17e0ae3925425e1396ab73bc61f8d27de8cf996b" or
 			frozen.decoded_templates ~=
-				"3734b3e2e3203c61a2f08fdc7ee5abd7a8d3f7d00ae585c206aabc7c4ca7d42d" or
+				"faa8fdd2beabd0807b5a41cd207163bbbb741fa8ee263a212bd7fbe34f2ff4df" or
 			frozen.wp43_projection ~=
 				"c8088a4b6802c0fc1a74d8826e3df0bb49b64f9ab4c6e93bcbd66aa2a16b9895" or
 			frozen.cultural ~=
@@ -453,12 +456,16 @@ return function(canonical, raw_sha256, settlement_order)
 			frozen.consumer_payload ~=
 				"c6132247f268c6def7d5f8c60a1de7d93e52d99c5da9367526182c0d89d902b7" or
 			graph_digest(frozen) ~= SOURCE_PROJECTION_SHA256 then
-			fail("frozen source projection differs")
+			fail("frozen source projection differs: accepted=" ..
+				frozen.accepted_r6_content .. " decoded=" .. frozen.decoded_templates ..
+				" wp43=" .. frozen.wp43_projection .. " cultural=" .. frozen.cultural ..
+				" consumer=" .. frozen.consumer_payload ..
+				" projection=" .. graph_digest(frozen))
 		end
 		local p9g_delta = {
 			schema = "grug_wp40_r7_p9g_delta_v1", opcode = 35,
-			class = 10, policy = 11, successor_ref_min = 85,
-			successor_ref_max = 96, order = "after_r6_p9_before_run_derivation",
+			class = 10, policy = 11, successor_ref_min = 89,
+			successor_ref_max = 100, order = "after_r6_p9_before_run_derivation",
 			overwrite = false, catalog_sha256 = gathering.sha256,
 		}
 		local anchor_delta = {

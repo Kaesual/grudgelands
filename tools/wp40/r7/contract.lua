@@ -504,7 +504,7 @@ function module.validate_stage_b(receipt)
 			"candidate_decisions_sha256", "accepted_candidate_decisions_sha256"}) do
 		sha256(receipt[field], "Stage-B " .. field)
 	end
-	if receipt.name_map_population ~= 84 or
+	if receipt.name_map_population ~= 88 or
 			receipt.cultural_name_map_population ~= 6 or
 			receipt.inherited_cultural_access_count ~= 12 then
 		fail("Stage-B total name map differs")

@@ -33,6 +33,10 @@ return function(repo, planner_repo)
 	local planner_source = {schema = "grug_wp40_r5_planner_source_v1",
 		column_values_at = column_values_at,
 		surface_cave_run_at = function() return cave_y, cave_y end,
+		surface_cave_candidate_at_cell = function() return nil end,
+		surface_cave_cell_at = function() return 0, 0 end,
+		surface_cave_constants = function() return 80, -30912, 24, 2, 24 end,
+		coast_profile_at = function() return nil end,
 		metrics = function() return {runtime_column_cache_hits = 0,
 			runtime_column_cache_misses = calls} end}
 	local surface = {id = "biome", top = "fixture:soil", shore = "fixture:soil",

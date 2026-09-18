@@ -54,6 +54,10 @@ return function(repo, production_repo)
 	end
 	function source.hydrology_metric_values_at() return nil end
 	function source.surface_cave_run_at() return nil end
+	function source.surface_cave_candidate_at_cell() return nil end
+	function source.surface_cave_cell_at() return 0, 0 end
+	function source.surface_cave_constants() return 80, -30912, 24, 2, 24 end
+	function source.coast_profile_at() return nil end
 	function source.metrics() return {} end
 	local planner = planner_module.new(source, manifest, lookup, allocator, {})
 	allocator:seal_construction()

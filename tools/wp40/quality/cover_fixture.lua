@@ -24,7 +24,9 @@ return function(repo, expanded)
 		return "land", 1, "fixture", biome, "dwarf", 30
 	end
 	local source = {schema = "grug_wp40_r5_planner_source_v1",
-		column_values_at = columns, surface_cave_run_at = function() return nil end}
+		column_values_at = columns, surface_cave_run_at = function() return nil end,
+		surface_cave_candidate_at_cell = function() return nil end,
+		coast_profile_at = function() return nil end}
 	local select_surface = content.new_surface_selector("cover-fixture", source)
 	for _, base in ipairs(content.surfaces()) do
 		biome = base.id

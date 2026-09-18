@@ -8,7 +8,11 @@ local function new_surface_cave_factory(definition)
 			type(definition.housing_mask_id_at) ~= "function" then
 		error("WP40 surface caves: construction seam differs", 0)
 	end
-	local CELL_SIZE, MARGIN, LENGTH, RADIUS, CACHE_LIMIT = 192, 40, 32, 2, 128
+	-- Candidates are owner-local.  The writer alone may turn one into a mouth,
+	-- after proving that its untouched v7 input contains reachable cave air.
+	local CELL_SIZE, CELL_ORIGIN = 80, -30912
+	local MARGIN, LENGTH, RADIUS, MAXIMUM_DEPTH, CACHE_LIMIT = 28, 24, 2, 24, 128
+	local SINK_SEARCH_RADIUS = 24
 	local PRIME = 16777213
 	local phase = 0
 	for index = 1, #definition.full_seed_string do
@@ -54,13 +58,15 @@ local function new_surface_cave_factory(definition)
 	end
 
 	local function build_candidate(cell_x, cell_z, record)
-		if mixed(cell_x, cell_z, 19349663) % 4 ~= 0 then return false end
-		local cell_min_x, cell_min_z = cell_x * CELL_SIZE, cell_z * CELL_SIZE
-		local mouth_x = cell_min_x + MARGIN + mixed(cell_x, cell_z, 83492791) % 112
-		local mouth_z = cell_min_z + MARGIN + mixed(cell_x, cell_z, 297121507) % 112
+		if mixed(cell_x, cell_z, 19349663) % 4 == 0 then return false end
+		local cell_min_x = CELL_ORIGIN + cell_x * CELL_SIZE
+		local cell_min_z = CELL_ORIGIN + cell_z * CELL_SIZE
+		local span = CELL_SIZE - MARGIN * 2
+		local mouth_x = cell_min_x + MARGIN + mixed(cell_x, cell_z, 83492791) % span
+		local mouth_z = cell_min_z + MARGIN + mixed(cell_x, cell_z, 297121507) % span
 		local mouth_y, zone_id = ordinary_column(mouth_x, mouth_z, nil)
-		if not mouth_y or mouth_y < 16 then return false end
-		local endpoint_distance = mixed(cell_x, cell_z, 480752697) % 2 == 0 and 24 or 32
+		if not mouth_y or mouth_y - MAXIMUM_DEPTH - RADIUS < -37 then return false end
+		local endpoint_distance = 12
 		local first_direction = mixed(cell_x, cell_z, 982451653) % 4 + 1
 		local best_direction, best_height, best_rise
 		for offset = 0, 3 do
@@ -73,12 +79,31 @@ local function new_surface_cave_factory(definition)
 				best_direction, best_height, best_rise = direction, endpoint_y, rise
 			end
 		end
-		if not best_height or best_rise < 6 then return false end
+		if not best_height then return false end
+		local kind = best_rise >= 4 and "hillside" or "sinkhole"
+		if kind == "sinkhole" then
+			local lowest, highest = mouth_y, mouth_y
+			for direction = 1, 4 do
+				local sample_y = ordinary_column(mouth_x + direction_x[direction] * 6,
+					mouth_z + direction_z[direction] * 6, zone_id)
+				if not sample_y then return false end
+				lowest, highest = math.min(lowest, sample_y), math.max(highest, sample_y)
+			end
+			if highest - lowest > 3 then return false end
+		end
 		local dx, dz = direction_x[best_direction], direction_z[best_direction]
-		local last_x, last_z = mouth_x + dx * (LENGTH - 1),
-			mouth_z + dz * (LENGTH - 1)
+		local footprint_length = kind == "hillside" and LENGTH or 1
+		local last_x, last_z = mouth_x + dx * (footprint_length - 1),
+			mouth_z + dz * (footprint_length - 1)
 		local min_x, max_x, min_z, max_z
-		if dx ~= 0 then
+		if kind == "sinkhole" then
+			-- Only the fixed mouth apron is an offline volume.  The writer selects
+			-- and validates the exact slant path after seeing immutable native air;
+			-- reserving every possible path here would turn the search disc itself
+			-- into an exclusion and discard otherwise valid candidates.
+			min_x, max_x = mouth_x - RADIUS - 2, mouth_x + RADIUS + 2
+			min_z, max_z = mouth_z - RADIUS - 2, mouth_z + RADIUS + 2
+		elseif dx ~= 0 then
 			min_x, max_x = math.min(mouth_x, last_x) - 2,
 				math.max(mouth_x, last_x) + 2
 			min_z, max_z = mouth_z - RADIUS - 2, mouth_z + RADIUS + 2
@@ -96,25 +121,22 @@ local function new_surface_cave_factory(definition)
 				if not ordinary_column(x, z, zone_id) then return false end
 			end
 		end
-		local minimum_y = mouth_y + 1 - math.floor((LENGTH - 1) / 4) - RADIUS
-		if minimum_y < -37 then return false end
-		for step = LENGTH - 16, LENGTH - 1 do
-			local center_y = mouth_y + 1 - math.floor(step / 4)
-			for side = -RADIUS, RADIUS do
-				local x = mouth_x + dx * step - dz * side
-				local z = mouth_z + dz * step + dx * side
-				local terrain_y = ordinary_column(x, z, zone_id)
-				local half_height = math.floor(math.sqrt(RADIUS * RADIUS - side * side))
-				if not terrain_y or terrain_y - (center_y + half_height) < 3 then
-					return false
-				end
+		local minimum_y = mouth_y - MAXIMUM_DEPTH - RADIUS
+		if kind == "hillside" then
+			for step = 8, LENGTH - 1 do
+				local terrain_y = ordinary_column(mouth_x + dx * step,
+					mouth_z + dz * step, zone_id)
+				if not terrain_y or terrain_y < mouth_y + 4 then return false end
 			end
 		end
 		record.cell_x, record.cell_z = cell_x, cell_z
+		record.zone_id = zone_id
 		record.mouth_x, record.mouth_y, record.mouth_z = mouth_x, mouth_y, mouth_z
 		record.direction_x, record.direction_z = dx, dz
 		record.endpoint_distance, record.endpoint_height = endpoint_distance, best_height
-		record.length, record.radius, record.minimum_y = LENGTH, RADIUS, minimum_y
+		record.kind, record.length, record.radius = kind, LENGTH, RADIUS
+		record.search_radius = kind == "sinkhole" and SINK_SEARCH_RADIUS or RADIUS
+		record.maximum_depth, record.minimum_y = MAXIMUM_DEPTH, minimum_y
 		return true
 	end
 
@@ -135,16 +157,8 @@ local function new_surface_cave_factory(definition)
 
 	local session = {}
 	function session.run_at(x, z)
-		x, z = integer(x, "query x"), integer(z, "query z")
-		local record = candidate_at(math.floor(x / CELL_SIZE), math.floor(z / CELL_SIZE))
-		if not record then return nil end
-		local relative_x, relative_z = x - record.mouth_x, z - record.mouth_z
-		local step = relative_x * record.direction_x + relative_z * record.direction_z
-		local side = -relative_x * record.direction_z + relative_z * record.direction_x
-		if step < 0 or step >= LENGTH or math.abs(side) > RADIUS then return nil end
-		local half_height = math.floor(math.sqrt(RADIUS * RADIUS - side * side))
-		local center_y = record.mouth_y + 1 - math.floor(step / 4)
-		return center_y - half_height, center_y + half_height
+		integer(x, "query x") integer(z, "query z")
+		return nil
 	end
 	function session.candidate_record_at_cell(cell_x, cell_z)
 		local record = candidate_at(cell_x, cell_z)
@@ -156,6 +170,14 @@ local function new_surface_cave_factory(definition)
 	function session.metrics()
 		return {cache_limit = CACHE_LIMIT, cache_hits = cache_hits,
 			cache_misses = cache_misses, cache_evictions = cache_evictions}
+	end
+	function session.cell_at(x, z)
+		x, z = integer(x, "query x"), integer(z, "query z")
+		return math.floor((x - CELL_ORIGIN) / CELL_SIZE),
+			math.floor((z - CELL_ORIGIN) / CELL_SIZE)
+	end
+	function session.constants()
+		return CELL_SIZE, CELL_ORIGIN, LENGTH, RADIUS, MAXIMUM_DEPTH
 	end
 	return session
 end
@@ -1745,6 +1767,18 @@ local function zones_factory(dependencies)
 			})
 			function planner_source.surface_cave_run_at(x, z)
 				return surface_caves.run_at(x, z)
+			end
+			function planner_source.surface_cave_candidate_at_cell(cell_x, cell_z)
+				return surface_caves.candidate_record_at_cell(cell_x, cell_z)
+			end
+			function planner_source.surface_cave_cell_at(x, z)
+				return surface_caves.cell_at(x, z)
+			end
+			function planner_source.surface_cave_constants()
+				return surface_caves.constants()
+			end
+			function planner_source.coast_profile_at(x, z)
+				return height.coast_profile_at(x, z)
 			end
 
 			function planner_source.metrics()

@@ -1,5 +1,5 @@
--- Closed R7 production content resolvers. The accepted 78-row R6 evidence
--- namespace remains separate from the 84-row production-R6 namespace and the
+-- Closed R7 production content resolvers. The accepted 82-row R8 terrain
+-- namespace remains separate from the 88-row production-R6 namespace and the
 -- twelve-row P9G suffix.
 
 return function(core_api, projection, raw_sha256, settlement_palette)
@@ -20,6 +20,8 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"default:bush_leaves", 8},
 		{"default:bush_stem", 8},
 		{"default:cactus", 8},
+		{"default:clay", 1},
+		{"default:desert_stone", 1},
 		{"default:dirt", 1},
 		{"default:dirt_with_coniferous_litter", 1},
 		{"default:dirt_with_grass", 1},
@@ -45,12 +47,14 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"default:jungleleaves", 8},
 		{"default:jungletree", 8},
 		{"default:leaves", 8},
+		{"default:mossycobble", 1},
 		{"default:papyrus", 8},
 		{"default:pine_bush_needles", 8},
 		{"default:pine_bush_stem", 8},
 		{"default:pine_needles", 8},
 		{"default:pine_tree", 8},
 		{"default:sand", 1},
+		{"default:sandstone", 1},
 		{"default:snow", 10},
 		{"default:snowblock", 1},
 		{"default:stone", 1},
@@ -180,7 +184,7 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		rows[#rows + 1] = {CULTURAL_NAMES[index], 16}
 	end
 	table.sort(rows, function(left, right) return less_bytes(left[1], right[1]) end)
-	if #ACCEPTED_R6_ROWS ~= 78 or #rows ~= 84 or #P9G_NAMES ~= 12 then
+	if #ACCEPTED_R6_ROWS ~= 82 or #rows ~= 88 or #P9G_NAMES ~= 12 then
 		fail("closed population differs")
 	end
 

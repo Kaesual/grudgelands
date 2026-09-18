@@ -85,6 +85,10 @@ return function(common)
 	local SOURCE_FIELDS = {
 		schema=true, column_values_at=true, hydrology_metric_values_at=true,
 		surface_cave_run_at=true,
+		surface_cave_candidate_at_cell=true,
+		surface_cave_cell_at=true,
+		surface_cave_constants=true,
+		coast_profile_at=true,
 		metrics=true,
 	}
 	local PUBLIC_LOAD_FIELDS = {

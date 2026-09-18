@@ -1,9 +1,10 @@
--- Seed-0 integration corpus. Two adjacent owners contain one whole real tube.
+-- Seed-0 integration corpus.  The first owner contains the measured connected
+-- sinkhole witness from the R8-MAP-A seed-0 engine run (2026-09-18).
 -- Keep ten owners so the existing profile harness validates the same population.
 assert(core.settings:get("grug_wp40_profile_seed") == "0", "cave corpus requires seed 0")
 local cases = {
-	{id="cave_west", x=1643, y=72, z=-1983, expected_nodes={}},
-	{id="cave_east", x=1674, y=72, z=-1983},
+	{id="connected_sinkhole", x=-1840, y=37, z=-2862, expected_nodes={}},
+	{id="capital_sinkhole", x=2247, y=38, z=-1749},
 	{id="pine_hearthpine_south", x=-1800, y="surface", z=-2470},
 	{id="human_capital", x=0, y="surface", z=-1500},
 	{id="elandor_front", x=0, y="surface", z=-250},
@@ -13,16 +14,13 @@ local cases = {
 	{id="wyrmglass_island", x=-3260, y="surface", z=-40},
 	{id="deep_cross_border", x=-1691, y=-842, z=191},
 }
--- Witness generated independently by the production candidate search.
--- This tube extends east; all 32 radius-2 circular sections must remain air.
-for forward=0,31 do
-	local center_y=73-math.floor(forward/4)
-	for side=-2,2 do
-		local radius_y=math.floor(math.sqrt(4-side*side))
-		for y=center_y-radius_y,center_y+radius_y do
-			cases[1].expected_nodes[#cases[1].expected_nodes+1] = {
-				x=1643+forward, y=y, z=-1983+side, name="air"}
-		end
-	end
+-- The writer's radius-1 mouth cross distinguishes a carved sinkhole from a
+-- coincidental native surface-air node.  All five nodes were measured as air;
+-- the engine probe also measured its component outside the authored shaft.
+local cross = {{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}}
+for index = 1, #cross do
+	cases[1].expected_nodes[#cases[1].expected_nodes + 1] = {
+		x = cases[1].x + cross[index][1], y = cases[1].y,
+		z = cases[1].z + cross[index][2], name = "air"}
 end
 return cases

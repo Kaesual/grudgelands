@@ -152,6 +152,9 @@ return function(repo, settlement_path)
 			nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, false
 	end
 	function planner_source.surface_cave_run_at() return nil end
+	function planner_source.surface_cave_candidate_at_cell() return nil end
+	function planner_source.surface_cave_cell_at() return 0, 0 end
+	function planner_source.coast_profile_at() return nil end
 	local horizontal = {}
 	function horizontal.static_exclusion_values_at() return nil end
 	function horizontal.housing_mask_id_at() return nil end

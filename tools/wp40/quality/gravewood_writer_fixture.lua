@@ -94,7 +94,10 @@ return function(repo, production_repo, verify_compressed)
 	local planner_source = {column_values_at = function(_, z)
 		return "land", 1, "fixture", z > 0 and surface2.id or surface.id, "none", 4,
 			nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, false
-	end, surface_cave_run_at = function() return nil end}
+	end, surface_cave_run_at = function() return nil end,
+		surface_cave_candidate_at_cell = function() return nil end,
+		surface_cave_cell_at = function() return 0, 0 end,
+		coast_profile_at = function() return nil end}
 	local horizontal = {static_exclusion_values_at = function() return nil end,
 		housing_mask_id_at = function() return nil end}
 	local anchor = {id = "gravewood_anchor", position = {x = 10000, z = 10000}}
