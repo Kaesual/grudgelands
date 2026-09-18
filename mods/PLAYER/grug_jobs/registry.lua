@@ -30,6 +30,7 @@ local ingredient_tiers = {}
 local recipes_by_output = {}
 local recipes_by_profession = {}
 local station_handlers = {}
+local ambiguous_crafts_logged = {}
 
 local function item_name(value)
 	if type(value) == "string" then
@@ -82,35 +83,117 @@ local function group_matches(token, actual)
 	return true
 end
 
+local function perfect_match(left, right, compatible, index, used)
+	index = index or 1
+	used = used or {}
+	if index > #left then return true end
+	for right_index = 1, #right do
+		if not used[right_index] and compatible(left[index], right[right_index]) then
+			used[right_index] = true
+			if perfect_match(left, right, compatible, index + 1, used) then
+				return true
+			end
+			used[right_index] = nil
+		end
+	end
+	return false
+end
+
 -- Match the ingredients the engine actually selected, independent of their
--- craft-grid offset. The engine output still disambiguates recipes with
--- overlapping groups; exact duplicate profession inputs are rejected below.
+-- craft-grid offset. Backtracking matters when one concrete item satisfies
+-- both a broad and a narrow group token.
 local function inputs_match(declared, actual)
 	local wanted = flatten_inputs(declared)
 	local got = flatten_inputs(actual)
 	if #wanted ~= #got then return false end
-	local used = {}
-	for wanted_index = 1, #wanted do
-		local found
-		for got_index = 1, #got do
-			if not used[got_index] and
-					group_matches(wanted[wanted_index], got[got_index]) then
-				found = got_index
-				break
+	return perfect_match(wanted, got, group_matches)
+end
+
+local function tokens_overlap(first, second)
+	local first_group = first:match("^group:(.+)$")
+	local second_group = second:match("^group:(.+)$")
+	if not first_group then return group_matches(second, first) end
+	if not second_group then return group_matches(first, second) end
+	local registered = core.registered_items or {}
+	for name in pairs(registered) do
+		if group_matches(first, name) and group_matches(second, name) then
+			return true
+		end
+	end
+	return false
+end
+
+-- Two recipe languages overlap when at least one concrete, unordered input
+-- multiset can satisfy both. Group/group overlap is decidable once an item
+-- belonging to both groups is registered; otherwise the final runtime guard
+-- below remains authoritative.
+local function input_languages_overlap(first, second)
+	local left = flatten_inputs(first)
+	local right = flatten_inputs(second)
+	if #left ~= #right then return false end
+	return perfect_match(left, right, tokens_overlap)
+end
+
+local function engine_method(station)
+	if station == "grid" then return "normal" end
+	if station == "furnace" then return "cooking" end
+	return nil
+end
+
+local function all_engine_recipes()
+	local result = {}
+	if type(core.get_all_craft_recipes) ~= "function" then return result end
+	local outputs = {}
+	for name in pairs(core.registered_items or {}) do outputs[#outputs + 1] = name end
+	table.sort(outputs)
+	for output_index = 1, #outputs do
+		local output = outputs[output_index]
+		local recipes = core.get_all_craft_recipes(output) or {}
+		for recipe_index = 1, #recipes do
+			local recipe = recipes[recipe_index]
+			result[#result + 1] = {
+				method = recipe.method,
+				items = recipe.items or {},
+				output = item_name(recipe.output or output),
+			}
+		end
+	end
+	return result
+end
+
+local function dual_recipe_list()
+	local smelting = rawget(_G, "grug_smelting")
+	if not smelting or type(smelting.RECIPES) ~= "table" then return {} end
+	return smelting.RECIPES
+end
+
+local function refuse_input_collision(station, inputs, output, engine, dual)
+	local method = engine_method(station)
+	if method then
+		for index = 1, #engine do
+			local existing = engine[index]
+			if existing.method == method and
+					input_languages_overlap(inputs, existing.items) then
+				fail("profession " .. station .. " inputs for " .. output ..
+					" collide with universal engine output " .. existing.output)
 			end
 		end
-		if not found then return false end
-		used[found] = true
+	elseif station == "dual_furnace" then
+		for index = 1, #dual do
+			local existing = dual[index]
+			if input_languages_overlap(inputs, existing.inputs or {}) then
+				fail("profession dual-furnace inputs for " .. output ..
+					" collide with existing output " .. item_name(existing.output))
+			end
+		end
 	end
-	return true
 end
 
 local function dual_recipe_count(output)
-	local smelting = rawget(_G, "grug_smelting")
-	if not smelting or type(smelting.RECIPES) ~= "table" then return 0 end
 	local count = 0
-	for index = 1, #smelting.RECIPES do
-		if item_name(smelting.RECIPES[index].output) == output then
+	local recipes = dual_recipe_list()
+	for index = 1, #recipes do
+		if item_name(recipes[index].output) == output then
 			count = count + 1
 		end
 	end
@@ -165,6 +248,10 @@ end
 -- `grug_jobs.can_craft_recipe(player, recipe)`, and after a successful take it
 -- MUST call `grug_jobs.record_craft(player, recipe.profession, recipe.tier)`.
 -- Merely supplying `can_use` does not gate or settle a station inventory.
+-- Craft callbacks and recipes must be registered during mod load or an
+-- on-mods-loaded callback. grug_jobs finalizes authority on the first server
+-- step; registrations after that step are unsupported and a terminality audit
+-- logs an error before scheduling a repair.
 function grug_jobs.register_station(station, definition)
 	if not grug_jobs.STATIONS[station] then
 		fail("unknown station " .. tostring(station))
@@ -229,11 +316,15 @@ function grug_jobs.register_recipe(definition)
 		fail("duplicate profession output " .. output)
 	end
 	refuse_existing_output(output)
+	refuse_input_collision(station, definition.inputs, output,
+		all_engine_recipes(), dual_recipe_list())
 	local input_key = normalized_inputs(definition.inputs)
 	for index = 1, #grug_jobs.recipes do
 		local previous = grug_jobs.recipes[index]
-		if previous.station == station and previous.input_key == input_key then
-			fail("duplicate profession " .. station .. " inputs for " .. output)
+		if previous.station == station and
+				input_languages_overlap(previous.inputs, definition.inputs) then
+			fail("overlapping profession " .. station .. " inputs for " .. output ..
+				" and " .. previous.output_name)
 		end
 	end
 	if type(definition.hint) ~= "string" or definition.hint == "" then
@@ -269,14 +360,25 @@ function grug_jobs.recipe_for_output(output)
 	return recipes_by_output[item_name(output)]
 end
 
--- Resolve one profession recipe by the station and the ingredients that the
--- engine selected. Output is used first when it is still intact; a unique
--- input match keeps the final gate authoritative when an earlier callback
--- replaced that output.
+local function ambiguous_craft(station, inputs)
+	local key = station .. "\0" .. normalized_inputs(inputs)
+	if not ambiguous_crafts_logged[key] then
+		ambiguous_crafts_logged[key] = true
+		if type(core.log) == "function" then
+			core.log("error", "[grug_jobs] ambiguous profession " .. station ..
+				" recipe inputs; craft refused")
+		end
+	end
+	return nil, "ambiguous profession recipe inputs; contact an administrator"
+end
+
+-- Resolve one profession recipe by station and concrete ingredients. Inputs,
+-- not a mutable callback output, are authoritative. Registration rejects every
+-- overlap it can decide; if a later group definition creates an ambiguity, the
+-- runtime safety net reports it and fails closed.
 function grug_jobs.recipe_for_craft(station, output, inputs)
 	local recipe = recipes_by_output[item_name(output)]
-	if recipe and recipe.station == station and
-			(inputs == nil or inputs_match(recipe.inputs, inputs)) then
+	if inputs == nil and recipe and recipe.station == station then
 		return recipe
 	end
 	if inputs == nil then return nil end
@@ -284,17 +386,19 @@ function grug_jobs.recipe_for_craft(station, output, inputs)
 	for index = 1, #grug_jobs.recipes do
 		local candidate = grug_jobs.recipes[index]
 		if candidate.station == station and inputs_match(candidate.inputs, inputs) then
-			if found then return nil end
+			if found then return ambiguous_craft(station, inputs) end
 			found = candidate
 		end
 	end
 	return found
 end
 
--- At registration time a profession output must be unused. Recheck after all
--- mods have initialized so a later universal registration cannot create the
--- output-only ambiguity that station inventories cannot report back to us.
+-- At registration time a profession output and input language must be unused.
+-- Recheck after all mods have initialized so later engine/dual registrations
+-- cannot silently override a profession recipe or become gated as one.
 function grug_jobs.validate_recipe_collisions()
+	local all_engine = all_engine_recipes()
+	local all_dual = dual_recipe_list()
 	for index = 1, #grug_jobs.recipes do
 		local recipe = grug_jobs.recipes[index]
 		local engine = engine_recipes(recipe.output_name)
@@ -307,9 +411,45 @@ function grug_jobs.validate_recipe_collisions()
 		if expected_engine == 1 then
 			local wanted_method = recipe.station == "grid" and "normal" or "cooking"
 			if engine[1].method ~= wanted_method or
-					not inputs_match(recipe.inputs, engine[1].items or {}) then
+					not input_languages_overlap(recipe.inputs, engine[1].items or {}) then
 				fail("profession output " .. recipe.output_name ..
 					" engine recipe provenance differs")
+			end
+		end
+		local wanted_method = engine_method(recipe.station)
+		if wanted_method then
+			local own = 0
+			for engine_index = 1, #all_engine do
+				local existing = all_engine[engine_index]
+				if existing.method == wanted_method and
+						input_languages_overlap(recipe.inputs, existing.items) then
+					if existing.output ~= recipe.output_name then
+						fail("profession " .. recipe.station .. " inputs for " ..
+							recipe.output_name .. " collide with universal engine output " ..
+							existing.output)
+					end
+					own = own + 1
+				end
+			end
+			if own ~= 1 then
+				fail("profession " .. recipe.station .. " inputs for " ..
+					recipe.output_name .. " have " .. own .. " engine owners")
+			end
+		elseif recipe.station == "dual_furnace" then
+			local own = 0
+			for dual_index = 1, #all_dual do
+				local existing = all_dual[dual_index]
+				if input_languages_overlap(recipe.inputs, existing.inputs or {}) then
+					if item_name(existing.output) ~= recipe.output_name then
+						fail("profession dual-furnace inputs for " .. recipe.output_name ..
+							" collide with existing output " .. item_name(existing.output))
+					end
+					own = own + 1
+				end
+			end
+			if own ~= 1 then
+				fail("profession dual-furnace inputs for " .. recipe.output_name ..
+					" have " .. own .. " station owners")
 			end
 		end
 		local expected_dual = recipe.station == "dual_furnace" and 1 or 0
@@ -341,3 +481,4 @@ grug_jobs._item_name = item_name
 grug_jobs._flatten_inputs = flatten_inputs
 grug_jobs._normalized_inputs = normalized_inputs
 grug_jobs._inputs_match = inputs_match
+grug_jobs._input_languages_overlap = input_languages_overlap

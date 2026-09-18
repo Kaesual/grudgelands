@@ -1,18 +1,32 @@
 local denial_times = {}
 
-local function deny(player, recipe, reason)
+local function deny_message(player, key, message)
 	if not player or not player.get_player_name then return end
 	local name = player:get_player_name()
 	local now = core.get_gametime and core.get_gametime() or 0
-	local key = name .. "\0" .. recipe.output_name
-	if denial_times[key] == nil or now - denial_times[key] >= 1 then
-		denial_times[key] = now
-		core.chat_send_player(name, "Cannot craft " .. recipe.output_name .. ": " .. reason)
+	local denial_key = name .. "\0" .. key
+	if denial_times[denial_key] == nil or now - denial_times[denial_key] >= 1 then
+		denial_times[denial_key] = now
+		core.chat_send_player(name, message)
 	end
 end
 
+local function deny(player, recipe, reason)
+	deny_message(player, recipe.output_name,
+		"Cannot craft " .. recipe.output_name .. ": " .. reason)
+end
+
+local function deny_resolution(player, reason)
+	deny_message(player, "ambiguous_grid", "Cannot craft: " .. reason)
+end
+
 local function grid_permission(itemstack, player, old_craft_grid)
-	local recipe = grug_jobs.recipe_for_craft("grid", itemstack, old_craft_grid)
+	local recipe, resolution_error = grug_jobs.recipe_for_craft(
+		"grid", itemstack, old_craft_grid)
+	if resolution_error then
+		deny_resolution(player, resolution_error)
+		return ItemStack("")
+	end
 	if not recipe then return nil end
 	local allowed, reason = grug_jobs.can_craft_recipe(player, recipe)
 	if allowed then return nil end
@@ -59,12 +73,21 @@ grug_jobs.register_station("dual_furnace", {
 -- `brewing_stand` intentionally has no registration handler here. R8-ALCH
 -- registers it through `register_station` after creating the node.
 
+local audit_terminal = function() end
+
 local function final_grid_predict(itemstack, player, old_craft_grid)
+	audit_terminal(core.registered_craft_predicts, final_grid_predict, "predict")
 	return grid_permission(itemstack, player, old_craft_grid)
 end
 
 local function final_grid_craft(itemstack, player, old_craft_grid)
-	local recipe = grug_jobs.recipe_for_craft("grid", itemstack, old_craft_grid)
+	audit_terminal(core.registered_on_crafts, final_grid_craft, "on_craft")
+	local recipe, resolution_error = grug_jobs.recipe_for_craft(
+		"grid", itemstack, old_craft_grid)
+	if resolution_error then
+		deny_resolution(player, resolution_error)
+		return ItemStack("")
+	end
 	if not recipe then return nil end
 	local allowed, reason = grug_jobs.can_craft_recipe(player, recipe)
 	if not allowed then
@@ -92,14 +115,39 @@ local function reappend(callbacks, wanted)
 	callbacks[#callbacks + 1] = wanted
 end
 
--- Content mods depend on grug_jobs and therefore register after it. Once every
--- mod has initialized, put both vetoes back at the end of the real engine
--- chains. Luanti threads each callback's returned ItemStack into the next one,
--- so only the final position is authoritative.
-core.register_on_mods_loaded(function()
+local authority_finalized = false
+local repair_scheduled = false
+local terminal_errors_logged = {}
+local finalize_authority
+
+finalize_authority = function()
 	grug_jobs.validate_recipe_collisions()
 	reappend(core.registered_craft_predicts, final_grid_predict)
 	reappend(core.registered_on_crafts, final_grid_craft)
+	authority_finalized = true
+	repair_scheduled = false
+end
+
+audit_terminal = function(callbacks, wanted, label)
+	if not authority_finalized or callbacks[#callbacks] == wanted then return end
+	if not terminal_errors_logged[label] then
+		terminal_errors_logged[label] = true
+		core.log("error", "[grug_jobs] craft " .. label ..
+			" callback registered after the first server step; this is unsupported")
+	end
+	if not repair_scheduled then
+		repair_scheduled = true
+		core.after(0, finalize_authority)
+	end
+end
+
+-- Content mods depend on grug_jobs and therefore register after it. Luanti's
+-- mods-loaded runner freezes its callback count before iteration, so queueing
+-- from here executes only on the first server step, after every later mod's
+-- mods-loaded callback. Put both vetoes at the end then: callback replacements
+-- are threaded forward, so only the terminal position is authoritative.
+core.register_on_mods_loaded(function()
+	core.after(0, finalize_authority)
 end)
 
 local function wrap_furnace_formspecs()

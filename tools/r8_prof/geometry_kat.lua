@@ -22,6 +22,10 @@ return function(repo)
 		if name == "test:universal" then
 			return {{method = "normal", items = {"test:universal_input"},
 				output = "test:universal"}}
+		elseif name == "test:universal_same_inputs" then
+			return {{method = "normal",
+				items = {"test:universal_t1", "test:universal_base"},
+				output = "test:universal_same_inputs"}}
 		end
 		return {}
 	end
@@ -47,6 +51,10 @@ return function(repo)
 	end
 	core.registered_items["test:universal"] = {description = "Universal"}
 	core.registered_items["test:universal_input"] = {description = "Input"}
+	core.registered_items["test:universal_same_inputs"] = {
+		description = "Universal same inputs"}
+	core.registered_items["test:universal_t1"] = {description = "Tier input"}
+	core.registered_items["test:universal_base"] = {description = "Base input"}
 	grug_jobs = {
 		PROFESSIONS = {blacksmith = {name = "Blacksmith", class = "primary"},
 			alchemist = {name = "Alchemist", class = "primary"},
@@ -149,9 +157,10 @@ return function(repo)
 	end
 	report[#report + 1] = "book\trecipes=40\tpages=7\trows=6\tinside\tnonoverlap\n"
 	local general = grug_jobs.book_records(actor, "general")
-	check(#general == 1 and general[1].output_name == "test:universal",
+	check(#general == 2 and general[1].output_name == "test:universal" and
+		general[2].output_name == "test:universal_same_inputs",
 		"universal recipe disappeared from the general book")
-	report[#report + 1] = "escaping\tdescription+input+hint\tgeneral_recipe_listed\n"
+	report[#report + 1] = "escaping\tdescription+input+hint\tgeneral_recipes_listed\n"
 	restore()
 	return table.concat(report)
 end

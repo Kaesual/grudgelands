@@ -26,10 +26,11 @@ return function(repo)
 	local function check(value, message) if not value then fail(message) end end
 
 	local hooks = {predict = {}, craft = {}, mods_loaded = {}, leave = {},
-		receive = {}}
+		receive = {}, after = {}}
 	local registered = {}
 	local universal = {}
 	local chats = {}
+	local logs = {}
 	local shown = {}
 	local station_values = {}
 	local station_meta = {
@@ -43,7 +44,13 @@ return function(repo)
 	}
 	core = {registered_nodes = {['default:furnace'] = {}}, registered_items = {},
 		registered_craft_predicts = hooks.predict, registered_on_crafts = hooks.craft}
-	function core.register_craft(definition) registered[#registered + 1] = definition end
+	function core.register_craft(definition)
+		registered[#registered + 1] = definition
+		local name = tostring(definition.output):match("^%s*([^%s]+)") or ""
+		if name ~= "" and not core.registered_items[name] then
+			core.registered_items[name] = {description = name}
+		end
+	end
 	function core.get_all_craft_recipes(output)
 		local result = {}
 		local existing = universal[output] or {}
@@ -80,6 +87,7 @@ return function(repo)
 		return itemstack
 	end
 	function core.register_on_mods_loaded(fn) hooks.mods_loaded[#hooks.mods_loaded + 1] = fn end
+	function core.after(delay, fn) hooks.after[#hooks.after + 1] = fn end
 	function core.register_on_leaveplayer(fn) hooks.leave[#hooks.leave + 1] = fn end
 	function core.register_on_player_receive_fields(fn)
 		hooks.receive[#hooks.receive + 1] = fn
@@ -89,6 +97,11 @@ return function(repo)
 	end
 	function core.formspec_escape(value) return tostring(value) end
 	function core.chat_send_player(name, text) chats[#chats + 1] = name .. ":" .. text end
+	function core.log(level, text) logs[#logs + 1] = level .. ":" .. text end
+	function core.get_item_group(name, group)
+		local definition = core.registered_items[name]
+		return definition and definition.groups and definition.groups[group] or 0
+	end
 	function core.get_gametime() return #chats + 1 end
 	function core.get_meta() return station_meta end
 	function core.override_item(name, changes)
@@ -209,13 +222,41 @@ return function(repo)
 		end
 	elseif mutation == 14 then
 		local real = hooks.craft[1]
-		hooks.craft[1] = function(itemstack, player, grid, inventory)
+			hooks.craft[1] = function(itemstack, player, grid, inventory)
 			local result = real(itemstack, player, grid, inventory)
 			if result and result:is_empty() and inventory and inventory.set_list then
 				inventory:set_list("craft", grid)
 			end
 			return result
 		end
+	elseif mutation == 15 then
+		-- Model the old timing: finalization runs inside grug_jobs' earlier
+		-- mods-loaded callback, before a dependent mod's callback.
+		core.after = function(delay, fn) fn() end
+	elseif mutation == 16 then
+		local real = grug_jobs.register_recipe
+		grug_jobs.register_recipe = function(definition)
+			if definition.output == "test:overlap_b" then
+				return {output_name = "test:overlap_b"}
+			end
+			return real(definition)
+		end
+	elseif mutation == 17 then
+		local real = grug_jobs.register_recipe
+		grug_jobs.register_recipe = function(definition)
+			if definition.output == "test:profession_override" then
+				return {output_name = "test:profession_override"}
+			end
+			return real(definition)
+		end
+	elseif mutation == 18 then
+		local real = grug_jobs.recipe_for_craft
+		grug_jobs.recipe_for_craft = function(...)
+			local recipe_value = real(...)
+			return recipe_value
+		end
+	elseif mutation == 19 then
+		grug_jobs.validate_recipe_collisions = function() return true end
 	end
 
 	local function meta()
@@ -238,6 +279,9 @@ return function(repo)
 	grug_jobs.register_ingredient_tier("test:t1", 1)
 	grug_jobs.register_ingredient_tier("test:t2", 2)
 	grug_jobs.register_ingredient_tier("test:t3", 3)
+	grug_jobs.register_ingredient_tier("test:universal_t1", 1)
+	core.registered_items["test:pine"] = {groups = {wood = 1}}
+	core.registered_items["test:oak"] = {groups = {wood = 1}}
 	check(table.concat(grug_jobs.CRAFTS_TO_ADVANCE, ",") == "10,15,20,25,30",
 		"craft thresholds differ")
 	local recipe = grug_jobs.register_recipe({profession = "cooking", tier = 1,
@@ -265,16 +309,43 @@ return function(repo)
 		station = "grid", inputs = {"test:t1"}, output = "test:dish", hint = "Grid"})
 	universal["test:universal"] = {{method = "normal", items = {"test:base"},
 		output = "test:universal"}}
+	core.registered_items["test:universal"] = {description = "Universal"}
 	refused("universal output collision", {profession = "cooking", tier = 1,
 		station = "grid", inputs = {"test:t1"}, output = "test:universal",
 		hint = "Grid"})
 	refused("dual-furnace output collision", {profession = "cooking", tier = 1,
 		station = "grid", inputs = {"test:t1"}, output = "test:dual_existing",
 		hint = "Grid"})
+	universal["test:universal_inputs"] = {{method = "normal",
+		items = {"test:universal_t1", "test:base"},
+		output = "test:universal_inputs"}}
+	core.registered_items["test:universal_inputs"] = {description = "Universal inputs"}
+	refused("universal input collision", {profession = "cooking", tier = 1,
+		station = "grid", inputs = {"test:universal_t1", "test:base"},
+		output = "test:profession_override", hint = "Grid"})
+	local overlap_recipe = grug_jobs.register_recipe({profession = "cooking", tier = 1,
+		station = "grid", inputs = {"test:t1", "group:wood", "test:oak"},
+		output = "test:overlap_a", hint = "Grid"})
+	refused("overlapping group inputs", {profession = "cooking", tier = 1,
+		station = "grid", inputs = {"test:t1", "test:pine", "group:wood"},
+		output = "test:overlap_b", hint = "Grid"})
 	check(#(core.get_all_craft_recipes("test:universal") or {}) == 1 and
 		grug_jobs.recipe_for_output("test:universal") == nil,
 		"refused collision damaged the universal recipe")
-	line("registry", "recipes=" .. #grug_jobs.recipes, "engine=" .. #registered)
+	check(overlap_recipe.output_name == "test:overlap_a",
+		"non-ambiguous group recipe was not registered")
+	universal["test:late_universal"] = {{method = "normal",
+		items = {"test:t1", "test:base"}, output = "test:late_universal"}}
+	core.registered_items["test:late_universal"] = {description = "Late universal"}
+	check(not pcall(grug_jobs.validate_recipe_collisions),
+		"final audit accepted a later universal input collision")
+	universal["test:late_universal"] = nil
+	core.registered_items["test:late_universal"] = nil
+	check(grug_jobs.validate_recipe_collisions(),
+		"final audit did not recover after collision fixture removal")
+	line("registry", "recipes=" .. #grug_jobs.recipes, "engine=" .. #registered,
+		"input_collisions_refused", "group_overlap_refused",
+		"late_collision_audited")
 
 	local crafter = player("crafter", 60)
 	check(grug_jobs.learn(crafter, "blacksmith"), "first primary refused")
@@ -320,9 +391,14 @@ return function(repo)
 		output = "test:batch 4", hint = "Furnace"})
 	local dish_grid = {ItemStack("test:t1"), ItemStack("test:base")}
 	local tier2_grid = {ItemStack("test:t2")}
+	local ambiguous_grid = {ItemStack("test:t1"), ItemStack("test:pine"),
+		ItemStack("test:oak")}
 	local later_predict = function(itemstack, player_value, grid)
 		if grug_jobs._inputs_match({"test:t1", "test:base"}, grid) then
 			return ItemStack("test:dish")
+		elseif grug_jobs._inputs_match(
+				{"test:t1", "test:pine", "test:oak"}, grid) then
+			return ItemStack("test:foreign_output")
 		end
 	end
 	local later_craft = function(itemstack, player_value, grid)
@@ -330,16 +406,40 @@ return function(repo)
 			return ItemStack("test:callback_output")
 		end
 	end
-	core.register_craft_predict(later_predict)
-	core.register_on_craft(later_craft)
-	for index = 1, #hooks.mods_loaded do hooks.mods_loaded[index]() end
+	-- This callback belongs to a dependent mod: it runs after grug_jobs'
+	-- mods-loaded callback and only then appends output-replacing craft hooks.
+	core.register_on_mods_loaded(function()
+		core.register_craft_predict(later_predict)
+		core.register_on_craft(later_craft)
+	end)
+	local audit_calls = 0
+	local real_validate = grug_jobs.validate_recipe_collisions
+	grug_jobs.validate_recipe_collisions = function(...)
+		audit_calls = audit_calls + 1
+		return real_validate(...)
+	end
+	local mods_loaded_count = #hooks.mods_loaded
+	for index = 1, mods_loaded_count do hooks.mods_loaded[index]() end
+	check(audit_calls == 0 and hooks.predict[#hooks.predict] == later_predict and
+		hooks.craft[#hooks.craft] == later_craft,
+		"authority finalized before later mods-loaded callbacks")
+	local function run_after()
+		while #hooks.after > 0 do table.remove(hooks.after, 1)() end
+	end
+	run_after()
+	check(audit_calls == 1, "deferred collision audit did not run once")
 	check(hooks.predict[#hooks.predict] ~= later_predict and
 		hooks.craft[#hooks.craft] ~= later_craft,
-		"profession gates were not re-appended after later callbacks")
+		"profession gates were not finalized after later mods-loaded callbacks")
 	local universal_predicted = core.craft_predict(ItemStack("test:universal"),
 		locked, {ItemStack("test:base")})
 	check(universal_predicted:get_name() == "test:universal",
 		"refused profession collision made the universal recipe uncraftable")
+	local universal_inputs_predicted = core.craft_predict(
+		ItemStack("test:universal_inputs"), locked,
+		{ItemStack("test:universal_t1"), ItemStack("test:base")})
+	check(universal_inputs_predicted:get_name() == "test:universal_inputs",
+		"same-input collision refusal damaged the universal recipe")
 	local predicted = core.craft_predict(ItemStack("test:dish"), locked, dish_grid)
 	check(predicted and predicted:is_empty(), "grid recipe predicted without book")
 	grug_jobs.learn(locked, "cooking")
@@ -365,6 +465,48 @@ return function(repo)
 	line("permission", "locked_refused", "learned_allowed",
 		"above_level_refused", "requirement_named", "last_in_real_chain",
 		"emergency_no_restore", "universal_still_craftable", "craft_recorded")
+
+	local late_predict = function() return nil end
+	local late_craft = function() return nil end
+	core.register_craft_predict(late_predict)
+	core.register_on_craft(late_craft)
+	local terminal_log_count = #logs
+	core.craft_predict(ItemStack("test:universal"), locked,
+		{ItemStack("test:base")})
+	core.on_craft(ItemStack("test:universal"), locked,
+		{ItemStack("test:base")})
+	check(#logs == terminal_log_count + 2 and #hooks.after == 1,
+		"post-first-step callbacks were not audited once per chain")
+	run_after()
+	check(hooks.predict[#hooks.predict] ~= late_predict and
+		hooks.craft[#hooks.craft] ~= late_craft,
+		"post-first-step callback repair did not restore terminal gates")
+	line("authority", "deferred_after_mods_loaded", "late_registration_logged",
+		"terminality_repaired")
+
+	-- Inject the otherwise unregistrable second language to exercise the
+	-- runtime fail-closed safety net against later group-definition drift.
+	grug_jobs.recipes[#grug_jobs.recipes + 1] = {
+		profession = "cooking", tier = 1, station = "grid",
+		inputs = {"test:t1", "test:pine", "group:wood"},
+		flat_inputs = {"test:t1", "test:pine", "group:wood"},
+		output = "test:overlap_b", output_name = "test:overlap_b",
+		hint = "Grid",
+	}
+	local ambiguous_actor = player("ambiguous", 60)
+	local log_count = #logs
+	local ambiguous = core.craft_predict(ItemStack("test:overlap_a"),
+		ambiguous_actor, ambiguous_grid)
+	check(ambiguous:is_empty(),
+		"ambiguous group recipes failed open after an output replacer")
+	core.craft_predict(ItemStack("test:overlap_a"), ambiguous_actor, ambiguous_grid)
+	check(#logs == log_count + 1 and
+		logs[#logs]:find("ambiguous profession grid", 1, true) ~= nil,
+		"ambiguous craft was not logged exactly once")
+	check(chats[#chats]:find("ambiguous profession recipe inputs", 1, true) ~= nil,
+		"ambiguous craft denial did not reach the player")
+	line("ambiguity", "overlap_registration_refused", "output_replaced",
+		"runtime_fail_closed", "logged_once", "player_notified")
 
 	local furnace = core.registered_nodes['default:furnace']
 	local station_locked = player("station_locked", 60)
