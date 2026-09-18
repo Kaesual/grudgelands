@@ -980,13 +980,12 @@ return function(repo)
 		"ground from edge to edge")
 
 	-- The authored populations, exactly. The floor the composition lays
-	-- inside the king's hall, the fruit trees it plants and the hedge it
-	-- walks round the pad are all placed by rules that can silently plant
-	-- nothing -- a band that finds no paving, a corner with no open ground
-	-- -- and the number is what says they did not. Dawnmere lost 22 of 27
-	-- props to exactly that shape of code.
+	-- inside the king's hall and the fruit trees it plants use rules that can
+	-- silently place nothing -- a band that finds no paving or a corner with no
+	-- open ground. The protected hedge has the exact 316 non-gate columns; its
+	-- number proves no placed core content subtracted from it.
 	for _, row in ipairs({{"nave_floor", 90}, {"orchard_trees", 11},
-			{"hedge_cells", 197}}) do
+			{"hedge_cells", 316}}) do
 		assert(core.landmarks[row[1]] == row[2], "the core's " .. row[1] ..
 			" population is " .. tostring(core.landmarks[row[1]]) ..
 			", not " .. row[2])

@@ -58,6 +58,7 @@ local function loader(directory)
 	local capitals = dofile(directory .. "/capitals.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
+	local precinct_ring = dofile(directory .. "/precinct_ring.lua")
 	local wall = dofile(directory .. "/wall.lua")(directory)
 	local districts = dofile(directory .. "/dur_brannoc_districts.lua")(directory)
 	local street_plan = dofile(directory .. "/street_plan.lua")(directory)
@@ -251,7 +252,7 @@ local function loader(directory)
 
 		-- 8. The masons' guild, in the south-east corner.
 		{id = "masons_guild", module = "capitals", make = "scriptorium",
-			x = 29, z = -46, turns = 0, palette = "dwarf", roof = "slate",
+			x = 29, z = -46, turns = 2, palette = "dwarf", roof = "slate",
 			spec = {w = 13, d = 17, wall_h = 6}},
 
 		-- 9. The citizens' quarter: four houses on the outer ground. The
@@ -259,7 +260,7 @@ local function loader(directory)
 		-- face their ground instead: the `home` kit furnishes the cell behind
 		-- every other wall and only the z- doorway is authored clear of it.
 		{id = "market_house", module = "buildings", make = "cottage",
-			x = -45, z = -20, turns = 1, palette = "dwarf",
+			x = -45, z = -20, turns = 3, palette = "dwarf",
 			spec = {w = 9, d = 9, wall_h = 5, roof = "gable",
 				ridge_axis = "z", infill = true, shutters = true}},
 		{id = "south_house", module = "buildings", make = "cottage",
@@ -814,32 +815,23 @@ local function loader(directory)
 			error("wp13 dur brannoc: " .. drums ..
 				" of the four corner drums found room", 0)
 		end
-		-- The parapet is walked round the WHOLE pad rather than authored in
-		-- four stretches, exactly as Highcourt's hedge is and for the same
-		-- reason: every column of the boundary ring that is still open ground
-		-- gets its courses, and the run breaks by itself at a gatehouse, a
-		-- drum, a plot or a street. Hand-placed runs are how a boundary ends up
-		-- built through a cottage's apron.
+		-- The protected parapet is walked round the whole pad after the content.
+		-- It wins every ordinary column; the shared mask omits the four authored
+		-- gatehouse bands and the callback preserves the four corner drums.
 		local parapet = 0
-		for offset = -RADIUS + 1, RADIUS - 1 do
-			for _, spot in ipairs({{offset, RADIUS - 1}, {offset, -RADIUS + 1},
-					{RADIUS - 1, offset}, {-RADIUS + 1, offset}}) do
-				local x, z = spot[1], spot[2]
-				-- Only on the ground the settlement has NOT paved. A precinct
-				-- wall walked across a gate road is a gate nothing can drive
-				-- through, and `layout.free` says "nothing stands here", not
-				-- "this is not a street".
-				if layout.natural(buf, x, z) and layout.free(buf, x, z, 4) then
-					buf:put(x, 1, z, STONE)
-					buf:put(x, 2, z, STONE)
-					if (x + z) % 4 == 0 then
-						buf:put(x, 3, z, STONE)
-						buf:put(x, 4, z, CAP)
-					end
-					parapet = parapet + 1
+		precinct_ring.walk(function(x, z)
+			precinct_ring.clear_wallmounted(buf, parts, x, z, 4)
+			buf:put(x, 1, z, STONE)
+			buf:put(x, 2, z, STONE)
+			if (x + z) % 4 == 0 then
+				buf:put(x, 3, z, STONE)
+				local above = buf:at(x, 5, z)
+				if not above or above.name == "air" then
+					buf:put(x, 4, z, CAP)
 				end
 			end
-		end
+			parapet = parapet + 1
+		end, {skip = precinct_ring.is_corner})
 
 		-- 11. Undergrowth on the turf between the quarters.
 		dressing.undergrowth(buf, dwarf, -RADIUS, -RADIUS, RADIUS, RADIUS, 5)

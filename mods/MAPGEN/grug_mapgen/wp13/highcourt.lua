@@ -61,6 +61,7 @@ local function loader(directory)
 	local capitals = dofile(directory .. "/capitals.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
+	local precinct_ring = dofile(directory .. "/precinct_ring.lua")
 	local wall = dofile(directory .. "/wall.lua")(directory)
 	-- The district roster, and through it the quadrant module. This is
 	-- `wp13/dur_brannoc.lua`'s shape, and Highcourt was the one four-district
@@ -350,7 +351,7 @@ local function loader(directory)
 			spec = {w = 9, d = 9, wall_h = 5, roof = "hip",
 				infill = true, shutters = true}},
 		{id = "market_house", module = "buildings", make = "cottage",
-			x = -46, z = -30, turns = 1, palette = "human",
+			x = -46, z = -30, turns = 3, palette = "human",
 			spec = {w = 9, d = 9, wall_h = 5, roof = "gable",
 				ridge_axis = "z", infill = true, shutters = true}},
 	}
@@ -1034,23 +1035,15 @@ local function loader(directory)
 		-- thing, and rebuilding the core to put masonry there would move a
 		-- blueprint identity the playtest round froze for no gain.
 		--
-		-- It runs round the WHOLE pad rather than in four authored stretches:
-		-- every column of the boundary ring that is still open ground gets
-		-- three courses of hedge, and the run breaks by itself wherever a
-		-- gatehouse, an orchard piece, a house or a street already holds the
-		-- edge. Hand-placed runs are how a hedge ends up planted through a
-		-- cottage's apron, which is what the first version of this did.
+		-- It runs round the WHOLE pad rather than in four authored stretches.
+		-- The ring is protected and deliberately wins every non-gate column:
+		-- content already placed in the core may meet it, but may not cut it.
+		-- The shared mask leaves only the four authored gatehouse bands open.
 		local hedge = 0
-		for offset = -RADIUS + 1, RADIUS - 1 do
-			for _, spot in ipairs({{offset, RADIUS - 1}, {offset, -RADIUS + 1},
-					{RADIUS - 1, offset}, {-RADIUS + 1, offset}}) do
-				local x, z = spot[1], spot[2]
-				if layout.natural(buf, x, z) and layout.free(buf, x, z, 4) then
-					hedge = hedge + dressing.hedge_line(buf, human, x, z, x, z,
-						3)
-				end
-			end
-		end
+		precinct_ring.walk(function(x, z)
+			precinct_ring.clear_wallmounted(buf, parts, x, z, 4)
+			hedge = hedge + dressing.hedge_line(buf, human, x, z, x, z, 3)
+		end)
 
 		-- 10. Meadow flora on the turf between the plots.
 		dressing.undergrowth(buf, human, -RADIUS, -RADIUS, RADIUS, RADIUS, 5)
