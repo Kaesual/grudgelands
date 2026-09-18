@@ -52,7 +52,10 @@ uses small land/water shapes, nearest-hub ownership and reliable independent
 routes; seed variation begins with terrain, biome detail and content. Six
 outer level-1–10 starts lead through home and heartland zones to six central
 capitals; every level-1–30 zone is peaceful and every ordinary level-31–60
-frontier, Battlegrounds and dragon zone is contested.
+frontier, Battlegrounds and dragon zone is contested. Surface difficulty rises
+through three integer bands along the continent axis inside every published
+zone range; Accord runs toward +z, Throng toward -z, the shared front toward
+z=0 and the two dragon summits remain flat level 60.
 
 PvP state is one central transaction, not a combat-path exception. A valid
 hostile action tags its initiator before resolution; safe→safe and
@@ -248,8 +251,8 @@ friendly-skill fallback, 5% suffocation and the `grug_core.status` text list.
 Round 7's Food v2 adds six data-driven tiers, fixed instant HP, five-second
 out-of-combat regeneration, active stat modifiers and shared consumable level
 gates; mana regeneration now follows the slower level-linear curve. It also
-fixes ordinary dry shore banks at `water_y`
-and guarantees surface level 1 through 100 m and level 2 through 150 m of every
+fixes ordinary dry shore banks at `water_y`, replaces flat hub-target
+difficulty with three axial level bands per zone, and guarantees surface level 1 through 100 m and level 2 through 150 m of every
 start anchor. New characters remain
 protected behind character creation until the server has prepared all six
 start areas, which a fresh world emerges once and records in mod storage. WP40's

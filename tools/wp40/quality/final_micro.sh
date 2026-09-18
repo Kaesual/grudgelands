@@ -14,7 +14,8 @@ done
 mkdir -p "$output"
 # Bind all shipped files and current tools; reference checkouts remain read-only.
 (cd "$repo" && {
-	rg --files mods tools/wp40 tools/wp43 tools/wp13 tools/r6_shore
+	rg --files mods tools/wp40 tools/wp43 tools/wp13 tools/r6_shore \
+		tools/r7_level_bands
 	printf '%s\n' game.conf minetest.conf tools/check_fresh_server.py
 	printf '%s\n' tools/gen_mob_item_textures.py
 	printf '%s\n' reference_projects/luanti/src/client/content_mapblock.cpp
@@ -27,7 +28,8 @@ mkdir -p "$output"
 mapfile -t inputs <"$output/input-paths.txt"
 [[ "${#inputs[@]}" -gt 0 ]] || exit 2
 for sentinel in game.conf mods/MAPGEN/grug_mapgen/wp40/height.lua \
-	mods/ITEMS/grug_materials/content_curation.lua tools/wp40/quality/final_micro.lua; do
+	mods/ITEMS/grug_materials/content_curation.lua tools/wp40/quality/final_micro.lua \
+	tools/r7_level_bands/kat.lua; do
 	rg -F -x -q "$sentinel" "$output/input-paths.txt"
 done
 (cd "$repo" && sha256sum "${inputs[@]}") >"$output/inputs.sha256"

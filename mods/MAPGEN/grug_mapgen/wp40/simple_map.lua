@@ -1556,7 +1556,226 @@ return function(dependencies)
 		local x,z,owner_x,owner_z=warp(row.hub.x,row.hub.z)
 		warped_hubs[index]={x=x,z=z,owner_x=owner_x,owner_z=owner_z}
 	end
-	local difficulty_cache=nil
+
+	-- R7.6 replaces the smoothed hub targets with authored axial progression.
+	-- Mainland rows start at one hub row and end at the next frontward row;
+	-- the final row ends at the authored Holy Grounds boundary. Holy Grounds
+	-- profiles run from that boundary to z=0, and the two summits stay flat 60.
+	-- Every edge is therefore source-derived and seed-independent.
+	local faction_by_race={}
+	for index=1,#source.zones do
+		local row=source.zones[index]
+		if row.faction then faction_by_race[row.race_region]=row.faction end
+	end
+	local function band_ranges(level_min,level_max)
+		local count=level_max-level_min+1
+		if count == 1 then
+			return {{level_min,level_max},{level_min,level_max},
+				{level_min,level_max}}
+		end
+		local cut1=math.floor(count/3)
+		local cut2=math.floor(count*2/3)
+		return {
+			{level_min,level_min+cut1-1},
+			{level_min+cut1,level_min+cut2-1},
+			{level_min+cut2,level_max},
+		}
+	end
+	local function level_for_profile(profile,z)
+		if profile.extent == 0 then
+			return profile.ranges[1][1]
+		end
+		local progress=profile.direction*(z-profile.outer_z)
+		if progress < 0 then progress=0
+		elseif progress > profile.extent then progress=profile.extent end
+		local scaled=progress*3
+		local band,local_progress
+		if scaled < profile.extent then
+			band,local_progress=1,scaled
+		elseif scaled < profile.extent*2 then
+			band,local_progress=2,scaled-profile.extent
+		else
+			band,local_progress=3,scaled-profile.extent*2
+		end
+		local range=profile.ranges[band]
+		local count=range[2]-range[1]+1
+		local step=math.floor(local_progress*count/profile.extent)
+		if step >= count then step=count-1 end
+		return range[1]+step
+	end
+	local difficulty_profiles={}
+	local difficulty_digest_rows={
+		canonical.text("grug_r7_level_bands_v3"),
+		canonical.text("strict-crossed-hub-row/raw-nearest-x/id-tie"),
+	}
+	for index=1,#source.zones do
+		local row=source.zones[index]
+		local direction,outer_z,inner_z
+		if row.macro_region == "wyrmglass_island" or
+				row.macro_region == "stormscale_island" then
+			direction,outer_z,inner_z=0,row.hub.z,row.hub.z
+		elseif row.macro_region == "holy_grounds" then
+			local faction=faction_by_race[row.race_region]
+			if faction == "accord" then
+				direction,outer_z,inner_z=1,source.holy_grounds.min_z,0
+			elseif faction == "throng" then
+				direction,outer_z,inner_z=-1,source.holy_grounds.max_z,0
+			else fail("front-zone faction axis differs") end
+		else
+			direction=row.macro_region == "elandor_mainland" and 1 or -1
+			outer_z=row.hub.z
+			local nearest
+			local ids=zone_ids_by_region[row.macro_region]
+			for candidate_index=1,#ids do
+				local candidate=source.zones[ids[candidate_index]]
+				local distance=direction*(candidate.hub.z-row.hub.z)
+				if distance > 0 and (not nearest or distance < nearest) then
+					nearest=distance
+				end
+			end
+			if nearest then inner_z=outer_z+direction*nearest
+			elseif direction == 1 then inner_z=source.holy_grounds.min_z
+			else inner_z=source.holy_grounds.max_z end
+		end
+		local extent=direction == 0 and 0 or direction*(inner_z-outer_z)
+		if extent < 0 or (direction ~= 0 and extent == 0) then
+			fail("difficulty axis extent differs")
+		end
+		local profile={zone_id=index,direction=direction,outer_z=outer_z,
+			inner_z=inner_z,extent=extent,
+			ranges=band_ranges(row.level_min,row.level_max)}
+		difficulty_profiles[index]=profile
+		local output_levels={}
+		for progress=0,extent do
+			output_levels[#output_levels+1]=canonical.signed(level_for_profile(
+				profile,outer_z+direction*progress))
+		end
+		difficulty_digest_rows[#difficulty_digest_rows+1]=canonical.array({
+			canonical.signed(index),canonical.text(row.id),
+			canonical.text(row.macro_region),canonical.text(row.race_region),
+			canonical.text(row.faction or "-"),canonical.signed(row.hub.x),
+			canonical.signed(row.hub.z),
+			canonical.signed(direction),canonical.signed(outer_z),
+			canonical.signed(inner_z),canonical.signed(row.level_min),
+			canonical.signed(row.level_max),
+			canonical.signed(profile.ranges[1][2]),
+			canonical.signed(profile.ranges[2][2]),
+			canonical.signed(profile.ranges[3][2]),
+			canonical.array(output_levels)})
+	end
+
+	-- Difficulty is deliberately independent of warped political ownership.
+	-- Both mainland and front rows use this one raw-x selector; neither the
+	-- political bias nor the common coordinate warp may move a band boundary.
+	local function nearest_hub_x_id(ids,x,required_hub_z)
+		local best_id,best_score
+		for candidate_index=1,#ids do
+			local id=ids[candidate_index]
+			local row=source.zones[id]
+			if required_hub_z == nil or row.hub.z == required_hub_z then
+				local dx=x-row.hub.x
+				local score=dx*dx
+				if not best_score or score < best_score or
+						(score == best_score and id < best_id) then
+					best_id,best_score=id,score
+				end
+			end
+		end
+		return best_id
+	end
+
+	local function difficulty_profile_id_at(x,z,macro_region)
+		if macro_region == "wyrmglass_island" then return 33 end
+		if macro_region == "stormscale_island" then return 38 end
+		local ids=zone_ids_by_region[macro_region]
+		if not ids then return nil end
+		if macro_region == "holy_grounds" then
+			return nearest_hub_x_id(ids,x,0)
+		end
+		if macro_region ~= "elandor_mainland" and
+				macro_region ~= "kragmar_mainland" then return nil end
+		local direction=macro_region == "elandor_mainland" and 1 or -1
+		local selected_axis
+		for candidate_index=1,#ids do
+			local hub_z=source.zones[ids[candidate_index]].hub.z
+			local axis=direction*hub_z
+			if direction*(z-hub_z) > 0 and
+					(not selected_axis or axis > selected_axis) then
+				selected_axis=axis
+			end
+		end
+		if not selected_axis then
+			for candidate_index=1,#ids do
+				local axis=direction*source.zones[ids[candidate_index]].hub.z
+				if not selected_axis or axis < selected_axis then
+					selected_axis=axis
+				end
+			end
+		end
+		return nearest_hub_x_id(ids,x,direction*selected_axis)
+	end
+
+	-- Authenticate the real selector at every lateral boundary, not only its
+	-- source inputs. Query one node into mainland rows so the selected profile
+	-- is active; the front witness uses the authored Accord half-axis midpoint.
+	local lateral_digest_samples=0
+	for _,macro_region in ipairs({"elandor_mainland","kragmar_mainland",
+			"holy_grounds"}) do
+		local groups={}
+		local ids=zone_ids_by_region[macro_region]
+		for candidate_index=1,#ids do
+			local id=ids[candidate_index]
+			local hub_z=source.zones[id].hub.z
+			local group=groups[hub_z]
+			if not group then group={} groups[hub_z]=group end
+			group[#group+1]=id
+		end
+		local hub_rows={}
+		for hub_z,group in pairs(groups) do
+			if #group > 1 then hub_rows[#hub_rows+1]=hub_z end
+		end
+		table.sort(hub_rows)
+		for row_index=1,#hub_rows do
+			local hub_z=hub_rows[row_index]
+			local group=groups[hub_z]
+			table.sort(group,function(a,b)
+				local ax,bx=source.zones[a].hub.x,source.zones[b].hub.x
+				return ax < bx or (ax == bx and a < b)
+			end)
+			local query_z
+			if macro_region == "holy_grounds" then
+				query_z=math.floor(source.holy_grounds.min_z/2)
+			else
+				local direction=macro_region == "elandor_mainland" and 1 or -1
+				query_z=hub_z+direction
+			end
+			for pair_index=1,#group-1 do
+				local left_id,right_id=group[pair_index],group[pair_index+1]
+				local midpoint_sum=source.zones[left_id].hub.x+
+					source.zones[right_id].hub.x
+				if midpoint_sum%2 ~= 0 then fail("lateral midpoint differs") end
+				local midpoint=math.floor(midpoint_sum/2)
+				for offset=-1,1 do
+					local query_x=midpoint+offset
+					local profile_id=difficulty_profile_id_at(query_x,query_z,
+						macro_region)
+					local profile=profile_id and difficulty_profiles[profile_id]
+					if not profile then fail("difficulty lateral selector differs") end
+					difficulty_digest_rows[#difficulty_digest_rows+1]=canonical.array({
+						canonical.text("lateral"),canonical.text(macro_region),
+						canonical.signed(hub_z),canonical.signed(query_z),
+						canonical.signed(left_id),canonical.signed(right_id),
+						canonical.signed(midpoint),canonical.signed(offset),
+						canonical.signed(profile_id),canonical.signed(
+							level_for_profile(profile,query_z))})
+					lateral_digest_samples=lateral_digest_samples+1
+				end
+			end
+		end
+	end
+	if lateral_digest_samples ~= 81 then fail("difficulty lateral population differs") end
+	local difficulty={profiles=difficulty_profiles,digest=canonical.hex(
+		raw_sha256(canonical.encode(canonical.array(difficulty_digest_rows))))}
 
 	function module.new(full_seed_string)
 		local hash = deterministic.new_hash(canonical,raw_sha256,
@@ -1864,121 +2083,11 @@ return function(dependencies)
 			return nil
 		end
 
-		local function build_difficulty_lattice()
-			if difficulty_cache then return difficulty_cache end
-			local spacing=32
-			local radius=192
-			local sample_radius=math.floor((radius-1)/spacing)
-			local min_grid_x=deterministic.floor_div(query_bounds.min_x,spacing)-1
-			local max_grid_x=deterministic.floor_div(query_bounds.max_x,spacing)+1
-			local min_grid_z=deterministic.floor_div(query_bounds.min_z,spacing)-1
-			local max_grid_z=deterministic.floor_div(query_bounds.max_z,spacing)+1
-			local components={"mainland","wyrmglass_island","stormscale_island"}
-			local values={}
-			local digest_rows={}
-			local weight_sum=0
-			for offset=-sample_radius,sample_radius do
-				weight_sum=weight_sum+(radius-math.abs(offset*spacing))
-			end
-			local denominator=weight_sum*weight_sum
-			local function hard_target(component,x,z)
-				if component == "wyrmglass_island" then
-					return source.zones[33].difficulty_target
-				elseif component == "stormscale_island" then
-					return source.zones[38].difficulty_target
-				end
-				x=math.max(query_bounds.min_x,math.min(query_bounds.max_x,x))
-				z=math.max(query_bounds.min_z,math.min(query_bounds.max_z,z))
-				local warped_x,warped_z,owner_x,owner_z=warp(x,z)
-				local region
-				if in_rectangle(x,z,source.holy_grounds,0) then
-					region="holy_grounds"
-				else
-					local partition=source.mainland_partition
-					region=warped_z < partition.split and
-						partition.negative_region or partition.nonnegative_region
-				end
-				local owner=owner_for_region(region,warped_x,warped_z,nil,
-					owner_x,owner_z)
-				return source.zones[owner].difficulty_target
-			end
-			for component_index=1,#components do
-				local component=components[component_index]
-				local raw={}
-				for grid_z=min_grid_z-sample_radius,
-						max_grid_z+sample_radius do
-					local row={}
-					raw[grid_z]=row
-					for grid_x=min_grid_x-sample_radius,
-							max_grid_x+sample_radius do
-						row[grid_x]=hard_target(component,grid_x*spacing,
-							grid_z*spacing)
-					end
-				end
-				local horizontal={}
-				for grid_z=min_grid_z-sample_radius,
-						max_grid_z+sample_radius do
-					local row={}
-					horizontal[grid_z]=row
-					for grid_x=min_grid_x,max_grid_x do
-						local weighted=0
-						for offset=-sample_radius,sample_radius do
-							weighted=weighted+raw[grid_z][grid_x+offset]*
-								(radius-math.abs(offset*spacing))
-						end
-						row[grid_x]=weighted
-					end
-				end
-				local component_values={}
-				values[component]=component_values
-				for grid_z=min_grid_z,max_grid_z do
-					local row={}
-					component_values[grid_z]=row
-					for grid_x=min_grid_x,max_grid_x do
-						local weighted=0
-						for offset_z=-sample_radius,sample_radius do
-							local weight_z=radius-math.abs(offset_z*spacing)
-							weighted=weighted+
-								horizontal[grid_z+offset_z][grid_x]*weight_z
-						end
-						local q=deterministic.qfrom_ratio(weighted,denominator)
-						row[grid_x]=q
-						digest_rows[#digest_rows+1]=canonical.array({
-							canonical.signed(component_index),canonical.signed(grid_x),
-							canonical.signed(grid_z),canonical.signed(q)})
-					end
-				end
-			end
-			difficulty_cache={spacing=spacing,radius=radius,
-				min_grid_x=min_grid_x,max_grid_x=max_grid_x,
-				min_grid_z=min_grid_z,max_grid_z=max_grid_z,values=values,
-				digest=canonical.hex(raw_sha256(canonical.encode(
-					canonical.array(digest_rows))))}
-			return difficulty_cache
-		end
-
-		local difficulty=build_difficulty_lattice()
 		local function difficulty_q_for_macro(x,z,macro_region)
-			local component
-			if macro_region == "wyrmglass_island" then component="wyrmglass_island"
-			elseif macro_region == "stormscale_island" then
-				component="stormscale_island"
-			elseif macro_region == "elandor_mainland" or
-					macro_region == "kragmar_mainland" or
-					macro_region == "holy_grounds" then component="mainland" end
-			if not component then return nil end
-			local spacing=difficulty.spacing
-			local ix=deterministic.floor_div(x,spacing)
-			local iz=deterministic.floor_div(z,spacing)
-			local tx=deterministic.qfrom_ratio(x-ix*spacing,spacing)
-			local tz=deterministic.qfrom_ratio(z-iz*spacing,spacing)
-			local rows=difficulty.values[component]
-			local row0,row1=rows[iz],rows[iz+1]
-			if not row0 or not row1 or not row0[ix] or not row0[ix+1] or
-					not row1[ix] or not row1[ix+1] then return nil end
-			local q0=deterministic.qlerp(row0[ix],row0[ix+1],tx)
-			local q1=deterministic.qlerp(row1[ix],row1[ix+1],tx)
-			return deterministic.qlerp(q0,q1,tz)
+			local profile_id=difficulty_profile_id_at(x,z,macro_region)
+			local profile=profile_id and difficulty.profiles[profile_id] or nil
+			if not profile then return nil end
+			return deterministic.qfrom_ratio(level_for_profile(profile,z),1)
 		end
 
 		local function difficulty_q_at(x,z)
@@ -2080,12 +2189,6 @@ return function(dependencies)
 			return numeric_id and source.zones[numeric_id].id or nil
 		end
 
-		function session.difficulty_target_at(x, z)
-			local numeric_id=classification_at(x,z).zone_numeric_id
-			local row=numeric_id and source.zones[numeric_id] or nil
-			return row and row.difficulty_target or nil
-		end
-
 		function session.difficulty_q_at(x,z)
 			integer(x,"difficulty query x") integer(z,"difficulty query z")
 			return difficulty_q_at(x,z)
@@ -2103,6 +2206,8 @@ return function(dependencies)
 		end
 
 		function session.difficulty_lattice_digest()
+			-- Compatibility name retained for the accepted WP40 artifact surface.
+			-- Since R7.6 this authenticates the axial band profiles, not a lattice.
 			return difficulty.digest
 		end
 

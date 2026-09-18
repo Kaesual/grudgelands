@@ -3844,7 +3844,7 @@ function module.finalizer_authority_kat(repo)
 			if not zone or not faction[zone.race_region] then
 				fail("finalizer authority KAT source zone differs")
 			end
-			local minimum = math.floor((zone.difficulty_target - 1) / 10) * 10 + 1
+			local minimum = math.floor((zone.level_max - 1) / 10) * 10 + 1
 			if not P9G_BRACKETS[tostring(minimum) .. "-" .. tostring(minimum + 9)] then
 				fail("finalizer authority KAT bracket differs")
 			end
@@ -3928,8 +3928,8 @@ function module.finalize(repo, scratch, worker_paths)
 				support = source.hosts[index].support break
 			end
 		end
-		-- Production derives the bracket from the smoothed positional
-		-- surface_mob_level_at(), not from the zone's authored target.  Keep the
+		-- Production derives the bracket from the banded positional
+		-- surface_mob_level_at(), not from the zone's published range.  Keep the
 		-- finalizer independent of that calculation: validate the closed bracket
 		-- vocabulary here and reconcile every budgeted population against its
 		-- exact operation key below.

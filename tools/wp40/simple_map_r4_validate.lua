@@ -131,7 +131,6 @@ return function(common)
 			territory_rule = row.territory_rule, pvp_rule = row.pvp_rule,
 			level_min = row.level_min, level_max = row.level_max,
 			primary_relief_id = row.primary_relief_id,
-			difficulty_target = row.difficulty_target,
 			civic_no_hostiles = row.civic_no_hostiles == true,
 			hub = {x = row.hub.x, z = row.hub.z}, biomes = biomes,
 		}

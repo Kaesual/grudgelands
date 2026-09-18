@@ -586,11 +586,15 @@ not level drift: the L20 and L60 baseline feel remains the same.
 `grug_core.mob_level_at(pos)` applies that surface result together with the
 depth and exterior-class rules and returns the final level directly. Target
 surface geometry (`world_zones.md` §2): the named zone and its authored local
-progression supply levels 1–60, rising from outer race starts toward the
-faction front; within 100 horizontal nodes of every authored start anchor the
-surface level is 1, from 101 through 150 nodes it is 2, and beyond 150 nodes
-the existing continuous field applies unchanged. Capital city zones contain
-no ambient hostile mobs. Guards use
+progression supply levels 1–60 through three rational z-axis bands, rising
+from outer race starts toward the faction front. Accord profiles run toward
++z and Throng profiles toward -z; the Battlegrounds profiles run from their
+faction-facing edge toward z = 0, while both level-60 summits stay flat. Each
+zone range is split into three consecutive integer sub-ranges and each band is
+an evenly placed integer staircase as specified in `world_zones.md` §2.
+Within 100 horizontal nodes of every authored start anchor the surface level
+is 1, from 101 through 150 nodes it is 2, and beyond 150 nodes the axial field
+applies. Capital city zones contain no ambient hostile mobs. Guards use
 the separate positional `guard_level_at` contract above; the depth formula
 does not affect that guard base. Every exterior class has no surface level.
 Shelf `mob_level_at` is nil at normalized y >= 0 and uses the depth term alone
@@ -614,9 +618,16 @@ area — in the beginner zone depth takes over almost immediately, and a
 level-60 surface zone meets the depth cap exactly at −1000.
 (For normalized `y < 0`, the exact standard term is
 `depth_level(y) = min(60, max(1, round_half_away_from_zero(-3*y/50)))`.)
+**R7.6 underground verification (2026-09-18):** this existing term already is
+the required integer three-step pattern, so no underground arithmetic changes.
+After the clamped first interval, every complete uncapped 50-node window has
+exactly three integer threshold crossings; the first 50 nodes occupy levels
+1, 2 and 3, and the level-60 cap truncates only depths past the endpoint. The
+R7.6 KAT pins every y from -1 through -1000 and the three crossings in each
+complete 50-node window from depth 50 onward. There is no smooth depth ramp.
 (The Nether is NOT part of this axis — its y-band is unreachable by digging,
-portals only.) The retired radial field remains in the shipped WP18 code until
-WP40 migrates WP6's mobs and guards to named zones.
+portals only.) The retired WP18 radial field is historical and has no current
+level authority.
 
 The political/tool boundary is independent of the level formula: y = −700 is
 the last shallow T4 node, y = −701 begins contested T5 and y = −1001 begins T6.
