@@ -86,7 +86,10 @@ Core principles:
   changing only the current shield state does not change its tooltip. The
   registered item definition keeps a number-free fallback; the player's
   ability ItemStack carries the effective description and refreshes on kit
-  sync, level change and talent change.
+  sync, level change and talent change. Strike's player-specific rage sentence
+  is additionally resource-gated as decided on 2026-09-18: only a rage-resource
+  class receives it; mana-resource and class-less characters retain the
+  class-neutral swing text (§2b).
 
 ## 1. Resources
 
@@ -394,6 +397,10 @@ it, including one that has not picked a class yet.
   **first in the hotbar** so it lands on key 1 for everyone — a fresh
   character is never standing in the world with no way to fight back.
 - **Free**, because it is what *generates* the Warrior's resource.
+- **Tooltip resource gate** (decided 2026-09-18): the sentence
+  `Generates <8 + Stoke bonus> rage when it lands.` is rendered only for a
+  character whose class resource is rage. Mana-resource classes and class-less
+  characters see the swing text alone.
 - It is the **"no effect" slot**: the baseline every other swing skill is
   measured against, and the slot to sit on while the others charge.
 - **An empty weapon slot makes it weak, never uncastable**: it swings for
