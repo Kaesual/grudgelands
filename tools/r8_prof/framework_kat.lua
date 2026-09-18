@@ -279,6 +279,7 @@ return function(repo)
 	grug_jobs.register_ingredient_tier("test:t1", 1)
 	grug_jobs.register_ingredient_tier("test:t2", 2)
 	grug_jobs.register_ingredient_tier("test:t3", 3)
+	grug_jobs.register_ingredient_tier("test:raw_path", 1)
 	grug_jobs.register_ingredient_tier("test:universal_t1", 1)
 	core.registered_items["test:pine"] = {groups = {wood = 1}}
 	core.registered_items["test:oak"] = {groups = {wood = 1}}
@@ -389,6 +390,13 @@ return function(repo)
 	local furnace_recipe = grug_jobs.register_recipe({profession = "cooking",
 		tier = 1, station = "furnace", inputs = {"test:t1"},
 		output = "test:batch 4", hint = "Furnace"})
+	local alternate_path = grug_jobs.register_recipe({profession = "cooking",
+		tier = 1, station = "furnace", inputs = {"test:raw_path"},
+		output = "test:dish", hint = "Furnace"})
+	check(alternate_path.output_name == recipe.output_name and
+		grug_jobs.recipe_for_output("test:dish", "grid") == recipe and
+		grug_jobs.recipe_for_output("test:dish", "furnace") == alternate_path,
+		"one edible output did not retain its grid and furnace routes")
 	local dish_grid = {ItemStack("test:t1"), ItemStack("test:base")}
 	local tier2_grid = {ItemStack("test:t2")}
 	local ambiguous_grid = {ItemStack("test:t1"), ItemStack("test:pine"),

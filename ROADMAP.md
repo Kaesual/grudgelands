@@ -188,8 +188,9 @@ the goal-level view.
   WP26, WP33 and WP43 are shipped. Round 6 already shipped the runtime status
   registry/text list and Food v2 tier framework. Round 8 now has WP10's shared
   profession registry, T1–T6 progression, UI books, station gates and trainer
-  sockets; its Cooking and Alchemy lanes add the real catalogs and brewing
-  stand, while Round 9 adds the six primary catalogs.
+  sockets plus Cooking's eighteen dishes, raw/furnace paths and plant-item
+  catalog; its Alchemy lane still adds that catalog and brewing stand, while
+  Round 9 adds the six primary catalogs.
 - [ ] **WP13 — in progress:** final starts, capitals, settlements, camps,
   kings/guards and both all-six-gem apex camps on shipped WP40 geometry and
   WP43 materials. **All six start settlements are built** (2026-09-14) on one
@@ -248,8 +249,8 @@ the goal-level view.
   **Kezamba's** pad edge terraced down to its lake instead of walled off and
   its fields given something to grow (`wp13-kezamba.md`), thirteen Highcourt
   lots moved onto ground nine worlds accept plus the basalt roof corners
-  (`wp13-polish-wave3.md`), and **fishing**: a rod, a cooked fish and one
-  world-wide catch table in the new `mods/ITEMS/grug_fishing`
+  (`wp13-polish-wave3.md`), and **fishing**: a rod, cooked fish and six
+  zone-level catch tables in `mods/ITEMS/grug_fishing`
   (`wp13-fishing.md`). **Still open in WP13:** the user's GUI playtest
   of the six capitals; the whole remainder of the contract's 100-anchor POI
   roster (`wp13-capitals-pois-contract.md` §2.5) — 12 villages, two of them

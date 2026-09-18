@@ -7,7 +7,7 @@ built as a standalone Lua game rather than a mod pack.
 > **Status: in development.** The world, mobs, three classes, combat,
 > equipment, XP, the first money/vendor economy and the shared profession
 > framework are playable. The final named-zone map is implemented and awaiting
-> release/runtime gates; quests, profession recipe catalogs, open-world housing
+> release/runtime gates; quests, the six primary and Alchemy recipe catalogs, open-world housing
 > and geographic PvP are not built. See
 > [Current State](#current-state).
 
@@ -142,7 +142,9 @@ current-tier crafts, capped by the character's ten-level band; item use remains
 independently gated by item level. Goldsmith owns Quartz, the six regional
 gems, Rough-to-Cut processing, Settings, both trinket slots and the exact
 natural-gem yield bonus. Mining, smelting and universal base-item crafting
-remain open to everyone through the General book.
+remain open to everyone through the General book. Cooking already has its
+six-tier three-role dish ladder, raw assembled-dish path and furnace
+refinements; its new plants are inventory items awaiting world placement.
 
 The gathering contract closes twelve one-cell herb, spice and food sources,
 eight reused tree/food sources and six cultural sources. Healing herbs fail
@@ -268,7 +270,7 @@ WP16 is canceled and is not counted as shipped. WP-Scout, WP-HUD and WP-Speed
 are counted in the 49; only WP-Scout remains open.
 
 **Not in the game yet:** quests, the six primary profession catalogs, the
-Cooking/Alchemy recipe content, talent keystones, capstones and their four new
+Alchemy recipe content and brewing stand, talent keystones, capstones and their four new
 abilities (WP11 X3), parties,
 the remaining recovery/rest systems, offhand items, affixes, durability, final structures, travel/map, Claim Stone housing,
 mounts and bosses remain unbuilt. X1, X2 and X4 of the talent trees are in the
@@ -282,12 +284,12 @@ and [PvP-death XP exemption](docs/design/progression.md) are already decided.
 **In progress:** WP11 phase 1 has shipped its talent registry, 48 talents,
 point/gate/persistence model and thirty numeric consumers. X4's Talents page,
 respec price and level-up flow are shipped; only X3's keystones, capstones and
-four abilities remain open. Food v2's six-tier framework is live with current
-raw foods and T1 cooked dishes; Round 8 still owns the real dish tables and
-recipes. WP10's shared `grug_jobs` framework is live: two primary slots plus
-Cooking, persistent T1–T6 craft progression, complete UI books, grid/station
-permission gates and trainers in every start and capital; the content lands in
-the remaining Round 8 and Round 9 lanes. WP13 has built
+four abilities remain open. Food v2 now carries Cooking's full eighteen-dish
+T1–T6 ladder, six raw assembled dishes, three basic furnace refinements and
+the current raw-food tiers. WP10's shared `grug_jobs` framework is live: two
+primary slots plus Cooking, persistent T1–T6 craft progression, complete UI
+books, grid/station permission gates and trainers in every start and capital;
+Alchemy remains in Round 8 and the six primary catalogs in Round 9. WP13 has built
 **all six start settlements and all six capitals**. The starts share one reusable building library with per-race
 palettes -- small dense houses with doors, pane windows, stair roofs,
 furnished interiors and exterior dressing -- and each is a different
@@ -343,9 +345,9 @@ camps' twelve renewable sockets are WP34's. The six kings and their royal
 guards are unbuilt too.
 
 **Fishing** arrived with the same round: `grug_fishing` adds a craftable rod
-that lasts 64 catches, a furnace-cooked fish and one catch table for the whole
-world — right-click water, wait a few seconds, and the water gives something
-back. Kezamba's anglers work its cenote, its fields grow papyrus in tilled
+that lasts 64 catches, furnace-cooked fish and six catch tables selected by the
+zone level at the cast position — right-click salt or fresh water, wait a few
+seconds, and the water gives something back. Kezamba's anglers work its cenote, its fields grow papyrus in tilled
 furrows, and its two vineyards are planted beds rather than bare kerbs.
 
 **WP26 is shipped** (2026-09-16): a new `grug_smelting` mod adds the two-slot
