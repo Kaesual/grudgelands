@@ -1,7 +1,8 @@
 # TODO — Round 9: plant placement, the five primary profession catalogs, mob wave 2, farming, enchant rolls
 
-**PROPOSAL** written 2026-09-18 (evening) while Round 8 was closing; the
-user decides the open points in §4 (after Playtest 11 or earlier). Working
+Written 2026-09-18 (evening) while Round 8 was closing; **DECIDED with the
+user the same evening** (§4 holds the rulings). Round 9 starts after
+Playtest 11 and the user's Go. Working
 rules as in rounds 5–8 (Codex GPT-5.6 Sol implements and reviews, the
 orchestrator runs every gate, `--no-ff` merges, sync only through
 `tools/sync_to_luanti.sh`, push only on the user's word; mechanics and
@@ -64,8 +65,24 @@ Wave 2 (after wave 1 merges):
   catalogs only at "a crafted item gets its quality roll".
 - **R9-DOCS** at the end, as always.
 
-Not proposed for Round 9 (one of them at most, if the user wants a big
-system): housing (WP24), mounts (WP31), Scout, Nether.
+- **R9-MOUNTS (WP31)** — wave 2, user ruling 2026-09-18 (see §4.5): riding
+  mechanics (ephemeral mount entity as the player's mounted state, hotbar
+  trigger, four tiers 15/30/45/60 taught and sold by the job trainers, T2
+  replaces T1 and T4 replaces T3, land tiers everywhere, flight only at home
+  and over the Battlegrounds, ocean and enemy-territory warning bands, forced
+  dismount with a slow descent instead of a fall, damage dismounts) plus the
+  models: T1 horse for both factions in faction colours, T2 one signature
+  ground mount per race (Human horse, Dwarf ibex/ram, Elf stag, Orc boar,
+  Undead wolf or skeletal horse retint, Troll tiger), T3/T4 scaled flying
+  mobs per faction (Accord: eagle, then Steller's sea eagle; Throng: cave bat,
+  then giant bat retint), the higher tier nobler in colour; no dragons as
+  mounts (dragons stay rare bosses). Each mesh with a licence row and an
+  animation audit as in MOB1.
+
+Not in Round 9: housing (WP24, Round 10), Scout (Round 10), **Nether (V2:
+user decision 2026-09-18, the Nether is the main part of the first big
+content update after V1, with its own mapgen and story; no V1 lane builds
+Nether seams)**.
 
 ## 3. Playtest 12 (after Round 9, fresh world)
 
@@ -74,15 +91,21 @@ per reachable tier at the capital stations, refine and enchant it; a night
 underground at three depth bands; a farm plot from seed to harvest; the
 Bog Witch.
 
-## 4. Decisions for the user
+## 4. User rulings of 2026-09-18 (evening)
 
-1. Lane cut of §2 (two profession lanes vs. one; farming and enchant in
-   wave 2 vs. one of them in Round 10)?
-2. Station placement: one station per profession in every capital beside
-   its trainer (as the brewing stand), and all stations craftable for
-   housing from a T3 recipe of the owning profession?
-3. Farming scope for v1: only the Cooking plants, or also the universal
-   staples (potato, corn) that today are gathered?
-4. Enchant rolls v1: crafted quality only (§6.4), or drops too (§5.1)?
-5. Any of housing / mounts / Scout / Nether in Round 9 (recommendation:
-   none; Round 10)?
+1. **Lane cut** as in §2: two profession lanes (PROF-A, PROF-B); farming and
+   enchant rolls in wave 2 of this round.
+2. **Stations**: one station per profession in every capital beside its
+   trainer (as the brewing stand), every station craftable for housing from
+   a T3 recipe of the owning profession.
+3. **Farming scope**: every plant is farmable, including potato and corn
+   (they keep their wild gathering rows and stay both food and ingredient);
+   every plant appears in at least one recipe (already true for all 15 new
+   plants and the staples).
+4. **Enchant rolls v1**: crafted quality (§6.4) and drop quality (§5.1) in
+   one lane on the shared item meta.
+5. **Mounts in Round 9** (wave 2) with the rulings listed under R9-MOUNTS;
+   the ephemeral-state model, the tier replacement rule and the warning-
+   then-slow-descent rule are added to `mounts.md` by that lane.
+6. **V1 boundary**: the Nether is V2 (see §2); V1 = rounds 1–9 plus housing,
+   the release gates and polish.
