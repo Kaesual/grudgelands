@@ -20,15 +20,20 @@ end
 
 local x, z = -3260, -40
 local y = grug_zones.terrain_height_at(x, z) + 1
--- Like spawn_probe's direct ABM action, bypass only the asynchronous lottery:
--- the production KAT separately proves that boss_spawn_due uses this same
--- position and its loaded-node readiness gate.  A remote WP40 mapblock takes
--- longer than this bounded engine proof while six start preloads own emerge.
-core.after(5, function()
-	local object = core.add_entity({x = x, y = y, z = z},
-		"grug_mobs:ice_dragon")
-	assert(object and object:get_luaentity(), "real Ice Dragon entity was not created")
-	assert(spawned, "Ice Dragon registration did not activate")
-	core.log("action", "R8_MOB1_BOSS_RESULT ice_dragon=1 " ..
-		"clock=any anchor=-3260,-40")
+-- Emerge the production anchor, then enter through the exported production
+-- due-spawner.  Its loaded-node readiness check, authenticated anchor lookup,
+-- real add_entity call, runtime boss fields and persistent alive gate all run.
+core.register_on_mods_loaded(function()
+	core.after(0, function()
+		core.emerge_area({x = x, y = y, z = z}, {x = x, y = y, z = z},
+			function(_, _, remaining)
+				if remaining ~= 0 then return end
+				assert(grug_mobs.boss_spawn_due("wyrmglass"),
+					"production Wyrmglass due-spawner refused the ready anchor")
+				assert(spawned, "Ice Dragon registration did not activate")
+				core.log("action", "R8_MOB1_BOSS_RESULT ice_dragon=1 " ..
+					"clock=any anchor=-3260,-40")
+				core.request_shutdown("R8-MOB1 boss spawn probe complete", false, 0)
+			end)
+	end)
 end)

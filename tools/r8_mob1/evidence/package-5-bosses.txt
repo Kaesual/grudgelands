@@ -1,0 +1,11 @@
+R8-MOB1 package 5 headless spawn evidence
+command: KEEP=1 PORT=31505 SEED=15912857179583385436 PROBE="$PWD/tools/r8_mob1/boss_spawn_probe" nice -n 19 bash tools/luanti_headless.sh 240
+port: 31505
+seed: 15912857179583385436
+launcher: headless boot: PASS (port 31505, 240 s)
+production_entry: grug_mobs.boss_spawn_due("wyrmglass") after emerge_area completed
+ERROR_or_ModError_lines: 0
+
+ACTION[Main]: R8_MOB1_BOSS_PROBE loaded
+ACTION[Emerge-0]: R8_MOB1_BOSS_SPAWN name=grug_mobs:ice_dragon tod=0.27645611763 zone=front_wyrmglass_crown x=-3260 y=223 z=-40
+ACTION[Emerge-0]: R8_MOB1_BOSS_RESULT ice_dragon=1 clock=any anchor=-3260,-40
