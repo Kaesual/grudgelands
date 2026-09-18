@@ -103,31 +103,48 @@ The detailed ledger assigns the main texture set to:
 > “CC-BY-SA-4.0, by SaKeL” (`X:LICENSE.txt:461-465`)
 
 and contains named exception rows for derived CC BY-SA 3.0 textures
-(`X:LICENSE.txt:648-654`), all 140 sounds under CC0 or CC BY 3.0/4.0 beginning
+(`X:LICENSE.txt:648-654`), 140 sounds under CC0 or CC BY 3.0/4.0 beginning
 at `X:LICENSE.txt:1051`, and the runtime models under:
 
 > “CC-BY-SA-4.0, by SaKeL” (`X:LICENSE.txt:1329-1333`)
 
 No NC or ND string occurs in the licence ledger. A basename audit found all
 578 in-game texture PNGs, all 140 OGGs, all 23 OBJ files and the single B3D in
-the per-file ledger. The five root screenshots, 19 Blender source files and
-two XCF source files are not named there. The project-level media declaration
-is evidence of a CC-BY-SA-4.0 grant, but the missing per-file author/source
-mapping remains a project-policy finding; those source files should not be
-harvested until it is supplied.
+the per-file ledger. Naming is not complete attribution, however: only 59 OGG
+entries have a concrete original URL. The other 81 cite only the Freesound
+homepage; 31 of those 81 are CC BY and therefore lack the exact source needed
+by this project's attribution policy. Examples are the two CC-BY-3.0 entries
+at `X:LICENSE.txt:1053-1059` and the CC0/CC-BY groups at
+`X:LICENSE.txt:1090-1106`. All 81 are excluded from import until their original
+URLs are recorded.
+
+The five root screenshots, 19 Blender source files, two XCF source files and
+12 runtime MTS schematics are not assigned any per-file row. The schematic
+tree contains Christmas trees, cocoa jungle trees, kiwi and pine-nut trees,
+large cacti, ice fishing and salt decoration. The only README schematic match
+is an unrelated API example (`X:README.md:384`), while the licence inventory
+ends with its model list (`X:LICENSE.txt:1329-1362`). The project-level media
+declaration is evidence of a CC-BY-SA-4.0 grant, but the missing per-file
+author/source mapping remains a project-policy finding; those 38 files should
+not be harvested until it is supplied.
 
 | File class | Measured files | Licence evidence | Verdict |
 |---|---:|---|---|
 | Code | 51 Lua files | LGPL-2.1-or-later | **Compatible.** Preserve copyright and LGPL notice; copied/derived code can be conveyed under GPLv3 under the policy matrix. |
 | Textures | 578 content PNG + 5 root screenshot PNG + 2 XCF sources | All 578 content PNGs named; compatible CC BY-SA 4.0/3.0 rows. Screenshots and XCF sources lack per-file rows. | **Runtime textures compatible; source/screenshot gap.** Attribute every selected row and do not import the seven unlisted files without clarification. |
 | Models | 23 OBJ + 1 animated B3D + 19 Blender sources | Every runtime OBJ/B3D named CC-BY-SA-4.0 by SaKeL; Blender sources absent from per-file table | **Runtime models compatible; Blender files need clarification.** The B3D contains `ANIM`, `BONE` and `KEYS` chunks. |
-| Sounds | 140 OGG | All 140 named under CC0 or CC BY 3.0/4.0 with author/source rows | **Compatible.** CC BY rows require exact attribution and modification notes. |
+| Sounds | 140 OGG | All have an author/licence grouping, but only 59 have a concrete original URL; 81 cite only `https://freesound.org`, including 31 CC BY files | **59 source-resolved sounds are clear. The other 81 are excluded from import** until exact original URLs are recorded; the CC BY subset cannot satisfy attribution without them. |
+| Schematics | 12 MTS | No per-file licence/author/source row in `LICENSE.txt` or `README.md` | **Not per-file-cleared; exclude all 12 from import** until attribution is supplied. |
 
-**Candidate-level result:** there is no NC/ND blocker, and the shipped runtime
-code/media classes are compatible. `x_farming` is the stronger submodule
-candidate for mechanics and selectively attributed runtime assets. The 26
-unlisted source/screenshot files are a bounded finding, not a reason to infer
-their per-file provenance.
+**Candidate-level result:** there is no NC/ND blocker, and the code, 578 content
+textures, 23 OBJ models, one animated B3D and 59 source-resolved sounds are
+cleared. The 38 files absent from the per-file ledger (five screenshots, 19
+Blender sources, two XCF sources and 12 MTS schematics) and the 81 sounds with
+homepage-only source citations are not cleared for import. Under a strict
+whole-repository “code AND media verified” criterion, `x_farming` therefore is
+not fully verified. It remains the stronger *read-only reference-submodule*
+candidate for mechanics and positively allow-listed assets; that recommendation
+does not convert the excluded classes into importable media.
 
 ### 2.3 VoxeLibre selected plant and potion modules
 
@@ -290,8 +307,8 @@ those engine biome names.
 
 | Inputs → output | Existing effect/model | Licence class |
 |---|---|---|
-| Raw food on lit rustic stove → normal engine cooking output, up to six visible items | Node timer reads `cooking` recipes and drops finished items (`X:stove.lua:396-471`, `:597-673`, `:715-794`) | LGPL code; stove textures/sounds CC-BY-SA/CC BY/CC0 per ledger |
-| Fish/kelp/fruit on solar rack → dried fish/nori/fruit | Six visible items, advances only in direct sunlight (`X:drying_rack.lua:25-52`, `:413-541`) | LGPL code; compatible attributed media |
+| Raw food on lit rustic stove → normal engine cooking output, up to six visible items | Node timer reads `cooking` recipes and drops finished items (`X:stove.lua:396-471`, `:597-673`, `:715-794`) | LGPL code; textures are ledger-cleared, but use a stove sound only if it is among the 59 entries with a concrete source URL |
+| Fish/kelp/fruit on solar rack → dried fish/nori/fruit | Six visible items, advances only in direct sunlight (`X:drying_rack.lua:25-52`, `:413-541`) | LGPL code; only positively cleared runtime textures/models may be imported; the MTS and incomplete-source sound findings remain excluded |
 | Fish + baked potato + salt + carrot → fish stew; potato/fish/melon → three bowls | Immediate hunger/heal, bowl returned | LGPL code; models/textures CC-BY-SA-4.0 |
 | Corn + heat/flour → roasted cob, popcorn, cornbread, tortilla | Immediate hunger/heal | Same |
 | Rice + fish/seaweed → sushi maki/nigiri; soybean → raw soymilk → cooked soymilk | Immediate hunger/heal and vessel return | Same |
@@ -319,7 +336,8 @@ unless re-authored into Grudgelands food/elixir categories.
 | Runtime textures | 578 content PNG, including seven named animated textures (stove top/front, ice-fishing top variants, Christmas leaves, candle flame, bee wings) | All 578 named in compatible CC BY-SA 4.0/3.0 rows; five additional root screenshots lack per-file rows |
 | Runtime models | 23 OBJ and one `x_farming_snowman.b3d` | Named CC-BY-SA-4.0 by SaKeL; B3D contains animation/bone/key chunks |
 | Model/image sources | 19 `.blend`, 2 `.xcf` | Project-level media declaration exists, but no per-file attribution rows: **do not import until clarified** |
-| Sounds | 140 OGG for bees, tools, appliances, materials and ambience | All named under compatible CC0 or CC BY 3.0/4.0 rows |
+| Schematics | 12 `.mts` for trees, cactus, cocoa, ice fishing and salt decoration | No per-file licence/author/source row: **do not import until clarified** |
+| Sounds | 140 OGG for bees, tools, appliances, materials and ambience | 59 have a concrete original URL and are clear with their CC0/CC BY duties; 81 have only a Freesound-homepage citation and are **excluded from import** |
 
 **Harvest verdict:** recommend `x_farming` as the one new reference submodule
 if the user wants one. Harvest mechanics concepts for a six-slot visible stove,
@@ -327,9 +345,10 @@ sun-dependent drying, irrigation feedback, harvest-and-replant sickles and
 biome-bound crop acquisition; selectively harvest only runtime media with an
 exact ledger row. VoxeLibre already covers core crops, cocoa, bonemeal and the
 full potion effect/brewing engine, so `x_farming` adds no fundamental potion
-architecture. It does add cooking-station presentation, crop breadth, sounds
-and food models. Do not use its compatibility migrations/aliases: the project
-is in fresh-server mode.
+architecture. It does add cooking-station presentation, crop breadth, 59
+source-resolved sounds and food models. The 38 unlisted files and 81
+homepage-only sounds remain excluded. Do not use its compatibility
+migrations/aliases: the project is in fresh-server mode.
 
 ## 5. VoxeLibre content and mechanics
 
@@ -359,7 +378,7 @@ transitions and decay (`V:mods/ITEMS/mcl_farming/soil.lua:3-89`).
 
 | Inputs → output | Existing effect/model | Licence class |
 |---|---|---|
-| Wheat → flour/bread; potato → baked potato; beetroot + bowl → soup; pumpkin + sugar/egg → pie; cocoa + wheat → cookies | Minecraft-like crafting/furnace recipes and hunger/saturation effects; no Cooking profession or tier book | GPL code; CC BY-SA media defaults |
+| Wheat → bread; potato → baked potato; beetroot + bowl → soup; pumpkin + sugar/egg → pie; cocoa + wheat → cookies | Three wheat craft directly into bread; there is no flour stage (`V:mods/ITEMS/mcl_farming/wheat.lua:118-123`). Minecraft-like crafting/furnace recipes and hunger/saturation effects; no Cooking profession or tier book | GPL code; CC BY-SA media defaults |
 | Red + brown mushroom + bowl → mushroom stew; suspicious stew variants elsewhere | Immediate food/status model | GPL code; CC BY-SA media defaults |
 
 VoxeLibre is useful for crop and food registration patterns, but its food
@@ -495,9 +514,13 @@ must update the decided documents before or with implementation:
 ## 8. Recommendation to the user
 
 - **Add `x_farming` as a reference submodule** if Round 8 wants a durable
-  source for cooking presentation, crop breadth and selectively reusable
-  runtime media. Its code and runtime media are compatibly licensed; record
-  the 19 Blender files, two XCFs and five screenshots as not per-file-cleared.
+  read-only source for cooking presentation, crop breadth and selectively
+  reusable media. Its code, 578 content textures, 23 OBJ models, one animated
+  B3D and 59 source-resolved sounds are cleared. Its 38 unlisted files (19
+  Blender sources, two XCFs, five screenshots and 12 MTS schematics) plus 81
+  homepage-only sounds are not cleared for import. Thus it does **not** satisfy
+  a whole-repository “code AND media verified” import criterion; the qualified
+  submodule recommendation is for reading and a positive asset allow-list.
 - **Do not add `farming` yet** under the lane's “code AND media verified”
   criterion. It contains five explicit NC textures, an unattributed screenshot
   and an ambiguous AFL-1.1 block. Its useful crop/recipe concepts are captured
