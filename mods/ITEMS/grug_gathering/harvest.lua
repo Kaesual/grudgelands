@@ -15,6 +15,7 @@ return function(dependencies)
 		gravemoss = 1,
 		dragonweed = 2,
 		crimson_lotus = 3,
+		ember_moss = 5,
 	}
 	local VALID_DENIALS = {
 		no_alchemist = true,
