@@ -58,7 +58,8 @@ core.get_objects_inside_radius = function(pos, radius)
 end
 core.add_entity = function(pos, name, staticdata)
 	local object = real_add_entity(pos, name, staticdata)
-	if object and (name == "grug_mobs:boar" or name == "grug_mobs:zombie") then
+	if object and (name == "grug_mobs:boar" or name == "grug_mobs:zombie" or
+			name == "grug_mobs:song_bird") then
 		spawned[name] = (spawned[name] or 0) + 1
 		core.log("action", "R8_MOB1_CLOCK_SPAWN name=" .. name ..
 			" tod=" .. tostring(core.get_timeofday()) ..
@@ -174,9 +175,16 @@ core.register_globalstep(function(dtime)
 				"day family spawned at night")
 			assert(drive("grug_mobs:zombie"),
 				"night family did not spawn at night")
+			player_pos = assert(grug_core.start_position("accord", "elf"))
+			probe_player:set_pos(player_pos)
+			force_area(player_pos)
+			core.set_timeofday(0.5)
+			assert(drive("grug_mobs:song_bird"),
+				"package-2 day family did not spawn in Silverleaf")
 			core.log("action", "R8_MOB1_CLOCK_RESULT day_boar=" ..
 				tostring(spawned["grug_mobs:boar"] or 0) ..
-				" night_zombie=" .. tostring(spawned["grug_mobs:zombie"] or 0))
+				" night_zombie=" .. tostring(spawned["grug_mobs:zombie"] or 0) ..
+				" day_song_bird=" .. tostring(spawned["grug_mobs:song_bird"] or 0))
 			core.is_player = real_is_player
 			core.get_connected_players = real_get_connected_players
 			probe_player:remove()

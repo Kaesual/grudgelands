@@ -31,28 +31,35 @@ local ZONE_MOB_PALETTES = {
 	elandor_copperfell_foothills = {settled = true},
 	elandor_dur_brannoc = {},
 	elandor_frostbarrow_shelf = {mountain = true},
-	elandor_stormvault_heights = {mountain = true},
+	elandor_stormvault_heights = {mountain = true, frost_stray = true},
 	elandor_dawnmere_fields = {settled = true},
-	elandor_goldmead_vale = {settled = true},
+	elandor_goldmead_vale = {settled = true, poacher = true},
 	elandor_highcourt = {},
-	elandor_whitebridge_shire = {settled = true, forest = true},
-	elandor_ashenward_march = {forest = true, war = true},
-	elandor_silverleaf_glades = {settled = true},
-	elandor_starbough_vale = {settled = true},
+	elandor_whitebridge_shire = {
+		settled = true, forest = true, poacher = true,
+	},
+	elandor_ashenward_march = {forest = true, war = true, poacher = true},
+	elandor_silverleaf_glades = {
+		settled = true, song_bird = true, poacher = true,
+	},
+	elandor_starbough_vale = {settled = true, poacher = true},
 	elandor_lethariel = {},
 	elandor_lorindor = {
 		exact_mobs = {["grug_mobs:stag"] = true},
 		night_fallback = {forest = true},
+		poacher = true,
 	},
-	elandor_moonfall_wood = {forest = true},
+	elandor_moonfall_wood = {forest = true, poacher = true},
 	elandor_glassroot_wilds = {forest = true, jungle = true},
 	kragmar_stillgrave_hollow = {settled = true},
 	kragmar_mournfen = {settled = true, swamp = true},
 	kragmar_nhal_veyr = {},
 	kragmar_ossuary_reach = {forest = true},
 	kragmar_blackwind_rise = {forest = true},
-	kragmar_sunscar_flats = {settled = true},
-	kragmar_redtusk_savanna = {settled = true, savanna = true},
+	kragmar_sunscar_flats = {settled = true, sun_dried_husk = true},
+	kragmar_redtusk_savanna = {
+		settled = true, savanna = true, sun_dried_husk = true,
+	},
 	kragmar_gor_drazhak = {},
 	kragmar_speargrass_reach = {savanna = true, mountain = true},
 	kragmar_bannerbreak_mesa = {mountain = true, war = true},
@@ -70,10 +77,14 @@ local ZONE_MOB_PALETTES = {
 		jungle_edge = true, swamp = true,
 	},
 	kragmar_thunderroot_wilds = {jungle = true},
-	front_wyrmglass_crown = {mountain = true, war = true},
+	front_wyrmglass_crown = {
+		mountain = true, war = true, frost_stray = true,
+	},
 	front_gravesalt_escarpment = {forest = true, war = true},
 	front_broken_causeway = {war = true},
-	front_shattered_line = {mountain = true, war = true},
+	front_shattered_line = {
+		mountain = true, war = true, sun_dried_husk = true,
+	},
 	front_skyglass_canopy = {jungle = true, war = true},
 	front_stormscale_summit = {jungle = true, war = true},
 }
@@ -123,6 +134,11 @@ local MOB_PALETTES = {
 
 	["grug_mobs:skeleton_raider"] = {war = true},
 	["grug_mobs:carrion_crow"] = {war = true},
+
+	["grug_mobs:poacher"] = {poacher = true},
+	["grug_mobs:frost_stray"] = {frost_stray = true},
+	["grug_mobs:sun_dried_husk"] = {sun_dried_husk = true},
+	["grug_mobs:song_bird"] = {song_bird = true},
 }
 
 -- Kraken has an independent authority instead of a named-zone mob palette:
@@ -141,6 +157,9 @@ local UNDERGROUND_MOBS = {
 	["grug_mobs:mesa_golem"] = true,
 	["grug_mobs:cave_bat"] = true,
 	["grug_mobs:cave_crawler"] = true,
+	["grug_mobs:spiderling"] = true,
+	["grug_mobs:blood_bat"] = true,
+	["grug_mobs:stone_mite"] = true,
 }
 
 local RACE_FACTIONS = {
