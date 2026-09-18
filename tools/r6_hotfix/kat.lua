@@ -534,16 +534,18 @@ return function(repo)
 	if mutation == 3 then
 		formspec = formspec:gsub("= 30 max", "= 20 / 30", 1)
 	end
-	want(formspec:find("HP: 26 x 1.00, gear 0%, talents 0% = 30 max", 1, true)
+	want(formspec:find("HP: 26 base x 1.00 class x (100% + 0% gear + 0% talents) = 30 max", 1, true)
 		~= nil, "Character page shows Max HP derivation")
-	want(formspec:find("Mana: 26, gear 0%, talents 0% = 30 max", 1, true) ~= nil,
+	want(formspec:find("Mana: 26 base x 1.00 class x (100% + 0% gear + 0% talents) = 30 max", 1, true) ~= nil,
 		"Character page shows Max Mana")
 	want(formspec:find("HP %d+ / %d+") == nil,
 		"Character page never shows current/max HP")
 	page_player.class_def = {name = "Warrior", resource = "rage"}
 	local rage_formspec = pages["grug_inventory:character"].get(
 		nil, page_player, {})
-	want(rage_formspec:find("Rage: 100 max (flat)", 1, true) ~= nil,
+	want(rage_formspec:find(
+		"Rage: 100 fixed base; no class factor or percent bonuses = 100 max",
+		1, true) ~= nil,
 		"Character page retains the rage label")
 	want(rage_formspec:find("Mana:", 1, true) == nil,
 		"rage Character page does not show mana")

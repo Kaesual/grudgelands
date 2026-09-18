@@ -1,6 +1,6 @@
 # Inventory, Character Screen & Equipment
 
-Decided spec (last revised 2026-08-12; established 2026-08-06).
+Decided spec (last revised 2026-09-18; established 2026-08-06).
 Implementation: WP15 (character screen +
 bags), WP10 (workbench UIs), WP14 (offhand slot), WP35 (weapon slot +
 hand count), WP38 (native swing capability/pointability bridge), WP39
@@ -9,9 +9,18 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 ## 1. Character screen (the "i" key)
 
 - Built on sfinv pages (`sfinv.register_page`); the **Character page is
-  the homepage**: stat sheet (attributes, HP/mana, melee/spell bonus,
-  crit/dodge — the `/char` data), equipment slots, 3D model preview
-  (formspec `model[]`).
+  the homepage**. It has the equipment slots and 3D model preview (formspec
+  `model[]`) plus exactly two compact, live derivation lines above them: one
+  for maximum HP and one for mana or rage. HP and mana each name the base
+  pool, class factor, gear/talent percentage bonuses and resulting maximum;
+  rage names its fixed 100-point rule. The lines consume
+  `grug_classes.get_pool_breakdown` and do not recompute the stats. Formula
+  explanations and the remaining stat guidance live on the existing Help
+  page; effective/raw Crit, Dodge and Armor remain in the Talents header.
+- Every Character-page `label[]`, `textarea[]` or `hypertext[]` box is clear
+  of every equipment/main-inventory `list[]`, `image[]` and `item_image[]`
+  box. The pool lines occupy the strip above the model and the equipment grid,
+  rather than sharing horizontal space with the slots.
 - **Every equipment slot says what it is, without hovering** (decided
   2026-08-09, WP38). Eight identical empty cells plus a hover tooltip is
   not enough. Preferred: a **ghost icon per empty slot** — the slot's type

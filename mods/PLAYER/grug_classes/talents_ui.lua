@@ -55,7 +55,8 @@ local function talent_mark(def)
 	return ""
 end
 
-local function stat_lines(player)
+-- One compact header line: a second row occupies the vertical approach to T1.
+local function stat_line(player)
 	local crit_raw = grug_classes.get_crit_chance_raw(player) * 100
 	local dodge_raw = grug_classes.get_dodge_chance_raw(player) * 100
 	local crit = grug_classes.get_crit_chance(player) * 100
@@ -83,11 +84,11 @@ local function stat_lines(player)
 		grug_classes.get_talent_bonus(player, "dodge_cap_override"))
 	local armor_cap = math.max(60,
 		grug_classes.get_talent_bonus(player, "armor_cap_override"))
-	return ("Crit %.1f%% effective / %.1f%% raw (cap %.0f%%)   " ..
-		"Dodge %.1f%% / %.1f%% raw (cap %.0f%%)"):format(
-		crit, crit_raw, crit_cap, dodge, dodge_raw, dodge_cap),
-		("Armor %.0f%% effective / %.0f%% raw (cap %.0f%%)"):format(
-			armor, armor_raw, armor_cap)
+	return ("Eff/raw: Crit %.1f/%.1f%% (cap %.0f%%)  " ..
+		"Dodge %.1f/%.1f%% (cap %.0f%%)  " ..
+		"Armor %.0f/%.0f%% (cap %.0f%%)"):format(
+		crit, crit_raw, crit_cap, dodge, dodge_raw, dodge_cap,
+		armor, armor_raw, armor_cap)
 end
 
 local function trees_for_player(player)
@@ -151,14 +152,13 @@ local function talent_content(player, context)
 	local class_id = grug_classes.get_class(player)
 	local class_def = class_id and grug_classes.registered_classes[class_id]
 	local tree, trees = active_tree(player, context)
-	local stat_one, stat_two = stat_lines(player)
+	local stats = stat_line(player)
 	local fs = {
 		("label[0,0.25;%s]"):format(esc(class_def and class_def.name or "No class")),
 		("label[3.75,0.25;%s]"):format(esc(("Talent points: %d total / %d left")
 			:format(grug_classes.talent_points_total(player),
 				grug_classes.talent_points_available(player)))),
-		("label[0,0.55;%s]"):format(esc(stat_one)),
-		("label[0,0.82;%s]"):format(esc(stat_two)),
+		("label[0,0.62;%s]"):format(esc(stats)),
 	}
 
 	for index, candidate in ipairs(trees) do

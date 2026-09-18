@@ -936,8 +936,8 @@ then re-tuning it with three separate talents.
 
 ### 3.5 UI
 
-A third `sfinv` page beside Character and Bags (`grug_inventory/pages.lua:192`,
-`:233`), registered from a new `grug_classes/talents_ui.lua` so the page lives
+A third `sfinv` page beside Character and Bags (`grug_inventory/pages.lua:182`,
+`:246`), registered from `grug_classes/talents_ui.lua` so the page lives
 with the data it shows and `grug_inventory` keeps its two pages. This costs
 the `sfinv` dependency edge of §3.1. sfinv uses legacy coordinates and the
 content area spans about y 0.3-5.0 (`pages.lua:1-2`).
@@ -953,6 +953,7 @@ the sfinv area only if the two trees are **tabbed rather than side by side**:
 | Character | Bags | Talents |                        (sfinv tabs)
 +---------------------------------------------------------------+
 | Warrior      [ BULWARK 21 ] [ Ruin 9 ]      Points left: 0     |
+| Eff/raw: Crit 30/42 (30), Dodge 20/20 (30), Armor 60/67 (60)  |
 |                                            [ Respec  --  1s25c]|
 |      WALL                       ANVIL                          |
 | T1 | Ironbound      5/5 |   | Spite          5/5 |             |
@@ -976,9 +977,11 @@ the sfinv area only if the two trees are **tabbed rather than side by side**:
 - Fixed numeric button fields map only to registered trees and talents of the
   submitting PlayerRef's own class. Names and descriptions are escaped with
   `core.formspec_escape`; no player name or free-text field enters a purchase.
-- The page shows effective and raw Crit, Dodge and armor values with their
-  current caps. A running named rule-breaker shows its raised cap; X3 owns the
-  combat consumer that makes that effective value rise.
+- One compact header line above the tree controls shows effective/raw Crit,
+  Dodge and Armor with their current caps. There is no second stat line in the
+  vertical space of the first talent tier; the T1 row starts below the tree
+  controls and chain headings. A running named rule-breaker shows its raised
+  cap; X3 owns the combat consumer that makes that effective value rise.
 - No new texture is needed; signature talent icons are a later art pass, the
   way `classes.md` §2c parks signature ability icons.
 
