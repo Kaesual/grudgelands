@@ -867,10 +867,10 @@ local function loader(directory)
 		-- sharpened stake every other column -- so the precinct and the city
 		-- wall are recognisably one piece of engineering.
 		--
-		-- THE TOWERS FIRST, because the bank runs into them and not the other
-		-- way round: the ring is walked column by column and stops at whatever
-		-- already stands on the boundary, so a tower authored afterwards would
-		-- find its own corner built over and quietly not appear.
+		-- THE TOWERS FIRST. The protected bank explicitly skips the five square
+		-- boundary columns at each corner; each closed tower perimeter owns that
+		-- detour and the first bank column beyond the skip joins straight into
+		-- it. This is an authored corner substitution, not an occupied-cell stop.
 		local towers = 0
 		for _, corner in ipairs({{-45, -45}, {45, -45}, {-45, 45}, {45, 45}}) do
 			local cx, cz = corner[1], corner[2]

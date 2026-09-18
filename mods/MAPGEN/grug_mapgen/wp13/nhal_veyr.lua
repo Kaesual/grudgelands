@@ -946,10 +946,10 @@ local function loader(directory)
 		-- pad: Nhal Veyr's core edge, the piece Dur Brannoc landed, in dungeon
 		-- stone.
 		--
-		-- The DRUMS FIRST, because the parapet runs into them and not the other
-		-- way round: the ring is walked column by column and stops at whatever
-		-- already stands on the boundary, so a drum authored afterwards would
-		-- find its own corner built over and quietly not appear.
+		-- The DRUMS FIRST. The protected parapet explicitly skips the five square
+		-- boundary columns at each corner; each closed drum perimeter owns that
+		-- detour and the first parapet column beyond the skip joins straight into
+		-- it. This is an authored corner substitution, not an occupied-cell stop.
 		local drums = 0
 		for _, corner in ipairs({{-45, -45}, {45, -45}, {-45, 45}, {45, 45}}) do
 			local cx, cz = corner[1], corner[2]
