@@ -1150,6 +1150,15 @@ give it mixed silhouettes. Wisp blink destinations must have two open nodes.
 | Wisp | flying melee; blinks up to 2.5 m toward a distant target every 4 s | night | Whitebridge, Ashenward, Broken Causeway, Lorindor, Moonfall, Glassroot, Mournfen, Whispering Reedlands, Totemwater | none | VoxeLibre vex, GPLv3 model / CC BY-SA 4.0 texture |
 | Ashen Treant / Gravewood Treant | roots aura: 30% slow inside 3 m, refreshed once/s | night | Ashenward / Ossuary and Blackwind | sticks; apple 1/4 | mobs_monster tree monster, WTFPL, two runtime tints |
 
+**Round 8 fixed bosses:** these are authored encounters and have no ambient
+spawn row or palette membership.
+
+| Boss family | Clock | Location / level | Encounter | Visual source |
+|-------------|-------|------------------|-----------|---------------|
+| Wyrmglass Ice Dragon | any | Wyrmglass dragon anchor, fixed L60 boss | three-perch arena; 2 s breath-line / ground-slam telegraphs; persistent 30 min wall-clock respawn with 60 s warning | draconis ice dragon, sapphire, MIT |
+| Stormscale Jungle Wyvern | any | Stormscale dragon anchor, fixed L60 boss | same shared encounter chassis, storm breath variant | draconis jungle wyvern, jade, MIT |
+| Six race Kings | any | authored `king` socket in each capital, fixed L65 elite | one race-specific signature each; four fixed L60 elite royal guards; group reset and persistent 15 min wall-clock respawn | `character.b3d` + six generated royal skins |
+
 **Deep sea (world.md §2b):** Kraken Guard, L100 fixed (hand-set — the
 one exception, it is a deterrent not content): mobs_mc_squid at
 visual_size ×6, verb: drags under (pulls target down, heavy melee),

@@ -195,6 +195,11 @@ function grug_mobs.leash_reset(self)
 	-- otherwise a player could tag a mob, walk out of the leash, and let a
 	-- guard or a fall kill it for them within the 60 s window.
 	self._grug_player_tag = nil
+	-- Group encounters clear participation and restore their authored retinue
+	-- on the same authoritative reset that forgets ordinary threat.
+	if grug_mobs.boss_leash_reset then
+		grug_mobs.boss_leash_reset(self)
+	end
 	if type(self.stop_attack) == "function" then
 		self:stop_attack()
 	end

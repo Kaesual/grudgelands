@@ -262,6 +262,12 @@ local function guard_def(faction, description, texture)
 	}
 end
 
+-- Bosses reuse the proven guard chassis for the four authored royal sockets.
+-- Return a fresh definition on every call: callers may replace its visual,
+-- fixed level and encounter hooks without changing either ordinary faction
+-- guard registered below.
+grug_mobs.guard_definition = guard_def
+
 grug_mobs.register_mob("grug_mobs:guard_accord",
 	guard_def("accord", "Accord Guard", "grug_mobs_guard_accord.png"))
 grug_mobs.register_mob("grug_mobs:guard_throng",

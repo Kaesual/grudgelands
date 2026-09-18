@@ -1161,6 +1161,11 @@ end
 --
 
 local absorbs = {} -- player name -> {amount = n, expiry = us time}
+local effective_absorb_callbacks = {}
+
+function grug_core.register_on_effective_absorb(func)
+	table.insert(effective_absorb_callbacks, func)
+end
 
 function grug_core.set_absorb(player, amount, duration, source)
 	amount = grug_core.scale_player_value(source or player, amount)
@@ -1169,6 +1174,9 @@ function grug_core.set_absorb(player, amount, duration, source)
 		amount = amount,
 		expiry = expiry,
 	}
+	for index = 1, #effective_absorb_callbacks do
+		effective_absorb_callbacks[index](source or player, player, amount)
+	end
 	if grug_core.set_status then
 		grug_core.set_status(player, "shield", {
 			label = "Shield",

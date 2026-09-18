@@ -737,6 +737,7 @@ dofile(modpath .. "/mirefolk.lua")
 -- Faction guards + military outposts (world.md §4, WP6/T8): guard.lua must
 -- come before camps.lua, which names the two guard mobs in its camp types.
 dofile(modpath .. "/guard.lua")
+dofile(modpath .. "/bosses.lua")
 dofile(modpath .. "/camps.lua")
 -- WP13 start settlements: the flair/quest NPC families first (start_npcs.lua
 -- resolves their entity names), then the socket-driven placement engine,

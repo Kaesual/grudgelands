@@ -9,7 +9,7 @@
 --   damage = 2 + 0.3*L + 0.005*L^2   XP = 10*L
 --   elite: x3 HP, x1.8 dmg, x4 XP, armor 80, scale x1.6, gold tint
 --   rare:  x5 HP, x2.2 dmg, x6 XP, armor 70, scale x2,   violet tint
---   boss:  x20 HP only (registered for future content)
+--   boss:  x20 HP only (Kraken and the fixed island dragons)
 --
 -- ENGINE vs. DEF CONTRACT (the one rule for the whole mod):
 --   * HP (hp_min/hp_max/health), damage and XP are ALWAYS engine-owned.

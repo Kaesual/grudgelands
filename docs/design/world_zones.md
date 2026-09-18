@@ -217,6 +217,12 @@ WP40 replaces it with the complete catalog and contracts below.
 - An overworld dragon is therefore always a PvP world boss. Reaching and
   fighting it exposes both factions to each other; it is never a private
   home-continent boss.
+- The fixed `dragon` anchors are the encounter authority: the Wyrmglass Ice
+  Dragon stands at **(-3260, -40)** and the Stormscale Jungle Wyvern at
+  **(+3260, -40)**. Each is a clock-independent fixed-level-60 boss with three
+  arena perches, a telegraphed breath line and ground slam, and a persistent
+  30-minute wall-clock respawn. An active lair receives the final 60-second
+  local visual/audio warning; a lair loaded late receives the whole minute.
 - Each endpoint reserves an apex mining camp in the dangerous approach to the
   lair. Its ordinary walls, tents, fences and dressing are mutable and
   claim-excluded. Only its bounded functional anchor and exactly **12 protected
