@@ -51,11 +51,86 @@ local function flatten_inputs(value, result)
 		local name = item_name(value)
 		if name ~= "" then result[#result + 1] = name end
 	elseif type(value) == "table" then
-		for index = 1, #value do
+		-- Engine recipe arrays may contain nil holes for empty shaped slots, so
+		-- `#value` is not an authority for their last numeric index.
+		local maximum = 0
+		for key in pairs(value) do
+			if type(key) == "number" and key % 1 == 0 and key > maximum then
+				maximum = key
+			end
+		end
+		for index = 1, maximum do
 			flatten_inputs(value[index], result)
 		end
 	end
 	return result
+end
+
+local function normalized_inputs(value)
+	local names = flatten_inputs(value)
+	table.sort(names)
+	return table.concat(names, "\0")
+end
+
+local function group_matches(token, actual)
+	local groups = token:match("^group:(.+)$")
+	if not groups then return token == actual end
+	if type(core.get_item_group) ~= "function" then return token == actual end
+	for group in groups:gmatch("[^,]+") do
+		if core.get_item_group(actual, group) <= 0 then return false end
+	end
+	return true
+end
+
+-- Match the ingredients the engine actually selected, independent of their
+-- craft-grid offset. The engine output still disambiguates recipes with
+-- overlapping groups; exact duplicate profession inputs are rejected below.
+local function inputs_match(declared, actual)
+	local wanted = flatten_inputs(declared)
+	local got = flatten_inputs(actual)
+	if #wanted ~= #got then return false end
+	local used = {}
+	for wanted_index = 1, #wanted do
+		local found
+		for got_index = 1, #got do
+			if not used[got_index] and
+					group_matches(wanted[wanted_index], got[got_index]) then
+				found = got_index
+				break
+			end
+		end
+		if not found then return false end
+		used[found] = true
+	end
+	return true
+end
+
+local function dual_recipe_count(output)
+	local smelting = rawget(_G, "grug_smelting")
+	if not smelting or type(smelting.RECIPES) ~= "table" then return 0 end
+	local count = 0
+	for index = 1, #smelting.RECIPES do
+		if item_name(smelting.RECIPES[index].output) == output then
+			count = count + 1
+		end
+	end
+	return count
+end
+
+local function engine_recipes(output)
+	if type(core.get_all_craft_recipes) ~= "function" then return {} end
+	return core.get_all_craft_recipes(output) or {}
+end
+
+local function refuse_existing_output(output)
+	if #engine_recipes(output) > 0 then
+		fail("profession output " .. output ..
+			" already has a universal engine recipe")
+	end
+	if dual_recipe_count(output) > 0 then
+		fail("profession output " .. output ..
+			" already has a dual-furnace recipe")
+	end
 end
 
 function grug_jobs.register_ingredient_tier(item, tier)
@@ -85,7 +160,11 @@ end
 
 -- A future station (notably R8-ALCH's brewing stand) installs its recipe
 -- adapter and optional per-player permission hook here. Recipes registered
--- before the station exists are retained and replayed exactly once.
+-- before the station exists are retained and replayed exactly once. A custom
+-- station owns its take path: before output leaves it MUST call
+-- `grug_jobs.can_craft_recipe(player, recipe)`, and after a successful take it
+-- MUST call `grug_jobs.record_craft(player, recipe.profession, recipe.tier)`.
+-- Merely supplying `can_use` does not gate or settle a station inventory.
 function grug_jobs.register_station(station, definition)
 	if not grug_jobs.STATIONS[station] then
 		fail("unknown station " .. tostring(station))
@@ -149,6 +228,14 @@ function grug_jobs.register_recipe(definition)
 	if recipes_by_output[output] then
 		fail("duplicate profession output " .. output)
 	end
+	refuse_existing_output(output)
+	local input_key = normalized_inputs(definition.inputs)
+	for index = 1, #grug_jobs.recipes do
+		local previous = grug_jobs.recipes[index]
+		if previous.station == station and previous.input_key == input_key then
+			fail("duplicate profession " .. station .. " inputs for " .. output)
+		end
+	end
 	if type(definition.hint) ~= "string" or definition.hint == "" then
 		fail(output .. " needs a station hint")
 	end
@@ -163,6 +250,8 @@ function grug_jobs.register_recipe(definition)
 		output_name = output,
 		hint = definition.hint,
 		time = definition.time,
+		id = station .. "\0" .. input_key .. "\0" .. output,
+		input_key = input_key,
 	}
 	grug_jobs.recipes[#grug_jobs.recipes + 1] = recipe
 	recipes_by_output[output] = recipe
@@ -178,6 +267,58 @@ end
 
 function grug_jobs.recipe_for_output(output)
 	return recipes_by_output[item_name(output)]
+end
+
+-- Resolve one profession recipe by the station and the ingredients that the
+-- engine selected. Output is used first when it is still intact; a unique
+-- input match keeps the final gate authoritative when an earlier callback
+-- replaced that output.
+function grug_jobs.recipe_for_craft(station, output, inputs)
+	local recipe = recipes_by_output[item_name(output)]
+	if recipe and recipe.station == station and
+			(inputs == nil or inputs_match(recipe.inputs, inputs)) then
+		return recipe
+	end
+	if inputs == nil then return nil end
+	local found
+	for index = 1, #grug_jobs.recipes do
+		local candidate = grug_jobs.recipes[index]
+		if candidate.station == station and inputs_match(candidate.inputs, inputs) then
+			if found then return nil end
+			found = candidate
+		end
+	end
+	return found
+end
+
+-- At registration time a profession output must be unused. Recheck after all
+-- mods have initialized so a later universal registration cannot create the
+-- output-only ambiguity that station inventories cannot report back to us.
+function grug_jobs.validate_recipe_collisions()
+	for index = 1, #grug_jobs.recipes do
+		local recipe = grug_jobs.recipes[index]
+		local engine = engine_recipes(recipe.output_name)
+		local expected_engine =
+			(recipe.station == "grid" or recipe.station == "furnace") and 1 or 0
+		if #engine ~= expected_engine then
+			fail("profession output " .. recipe.output_name ..
+				" collides with a universal engine recipe")
+		end
+		if expected_engine == 1 then
+			local wanted_method = recipe.station == "grid" and "normal" or "cooking"
+			if engine[1].method ~= wanted_method or
+					not inputs_match(recipe.inputs, engine[1].items or {}) then
+				fail("profession output " .. recipe.output_name ..
+					" engine recipe provenance differs")
+			end
+		end
+		local expected_dual = recipe.station == "dual_furnace" and 1 or 0
+		if dual_recipe_count(recipe.output_name) ~= expected_dual then
+			fail("profession output " .. recipe.output_name ..
+				" collides with a dual-furnace recipe")
+		end
+	end
+	return true
 end
 
 function grug_jobs.recipes_for(profession, station)
@@ -198,3 +339,5 @@ end
 
 grug_jobs._item_name = item_name
 grug_jobs._flatten_inputs = flatten_inputs
+grug_jobs._normalized_inputs = normalized_inputs
+grug_jobs._inputs_match = inputs_match

@@ -11,9 +11,9 @@ local function deny(player, recipe, reason)
 	end
 end
 
-local function grid_permission(itemstack, player)
-	local recipe = grug_jobs.recipe_for_output(itemstack)
-	if not recipe or recipe.station ~= "grid" then return nil end
+local function grid_permission(itemstack, player, old_craft_grid)
+	local recipe = grug_jobs.recipe_for_craft("grid", itemstack, old_craft_grid)
+	if not recipe then return nil end
 	local allowed, reason = grug_jobs.can_craft_recipe(player, recipe)
 	if allowed then return nil end
 	deny(player, recipe, reason)
@@ -59,26 +59,47 @@ grug_jobs.register_station("dual_furnace", {
 -- `brewing_stand` intentionally has no registration handler here. R8-ALCH
 -- registers it through `register_station` after creating the node.
 
-core.register_craft_predict(function(itemstack, player)
-	return grid_permission(itemstack, player)
-end)
+local function final_grid_predict(itemstack, player, old_craft_grid)
+	return grid_permission(itemstack, player, old_craft_grid)
+end
 
-core.register_on_craft(function(itemstack, player, old_craft_grid, craft_inv)
-	local recipe = grug_jobs.recipe_for_output(itemstack)
-	if not recipe or recipe.station ~= "grid" then return nil end
+local function final_grid_craft(itemstack, player, old_craft_grid)
+	local recipe = grug_jobs.recipe_for_craft("grid", itemstack, old_craft_grid)
+	if not recipe then return nil end
 	local allowed, reason = grug_jobs.can_craft_recipe(player, recipe)
 	if not allowed then
-		-- The server runs craft_predict immediately before decrementing the grid,
-		-- so this is a fail-safe for another callback changing that result. Put
-		-- the saved grid back before refusing the output.
-		if craft_inv and craft_inv.set_list then
-			craft_inv:set_list("craft", old_craft_grid)
-		end
+		-- Predict is the normal veto, before the engine decrements anything. This
+		-- callback is the fail-closed emergency path after decrement: never put the
+		-- saved grid back, because another callback may already have replaced the
+		-- output and restoring both would duplicate the ingredients.
 		deny(player, recipe, reason)
 		return ItemStack("")
 	end
 	grug_jobs.record_craft(player, recipe.profession, recipe.tier)
 	return nil
+end
+
+core.register_craft_predict(final_grid_predict)
+core.register_on_craft(final_grid_craft)
+
+local function reappend(callbacks, wanted)
+	if type(callbacks) ~= "table" then
+		error("grug_jobs: engine craft callback registry is unavailable", 0)
+	end
+	for index = #callbacks, 1, -1 do
+		if callbacks[index] == wanted then table.remove(callbacks, index) end
+	end
+	callbacks[#callbacks + 1] = wanted
+end
+
+-- Content mods depend on grug_jobs and therefore register after it. Once every
+-- mod has initialized, put both vetoes back at the end of the real engine
+-- chains. Luanti threads each callback's returned ItemStack into the next one,
+-- so only the final position is authoritative.
+core.register_on_mods_loaded(function()
+	grug_jobs.validate_recipe_collisions()
+	reappend(core.registered_craft_predicts, final_grid_predict)
+	reappend(core.registered_on_crafts, final_grid_craft)
 end)
 
 local function wrap_furnace_formspecs()
@@ -126,8 +147,8 @@ local function wrap_station_node(node_name, listname, station)
 				return old_allow and old_allow(pos, list, index, stack, player) or
 					stack:get_count()
 			end
-			local recipe = grug_jobs.recipe_for_output(stack)
-			if not recipe or recipe.station ~= station then
+			local recipe = grug_jobs.recipe_for_craft(station, stack)
+			if not recipe then
 				return old_allow and old_allow(pos, list, index, stack, player) or
 					stack:get_count()
 			end
@@ -142,11 +163,11 @@ local function wrap_station_node(node_name, listname, station)
 			if from_list == listname then
 				local stack = core.get_meta(pos):get_inventory():get_stack(
 					from_list, from_index)
-				local recipe = grug_jobs.recipe_for_output(stack)
+				local recipe = grug_jobs.recipe_for_craft(station, stack)
 				-- A metadata move has no corresponding take callback, so letting a
 				-- profession output leave this list would bypass both permission
 				-- and progression settlement. Players take it directly instead.
-				if recipe and recipe.station == station then return 0 end
+				if recipe then return 0 end
 			end
 			return old_move and old_move(pos, from_list, from_index, to_list,
 				to_index, count, player) or count
@@ -154,8 +175,8 @@ local function wrap_station_node(node_name, listname, station)
 		on_metadata_inventory_take = function(pos, list, index, stack, player)
 			if old_take then old_take(pos, list, index, stack, player) end
 			if list ~= listname then return end
-			local recipe = grug_jobs.recipe_for_output(stack)
-			if recipe and recipe.station == station then
+			local recipe = grug_jobs.recipe_for_craft(station, stack)
+			if recipe then
 				local crafts = output_craft_count(pos, recipe, stack)
 				for _ = 1, crafts do
 					grug_jobs.record_craft(player, recipe.profession, recipe.tier)

@@ -42,13 +42,14 @@ local function engine_general_recipes()
 	table.sort(names)
 	for index = 1, #names do
 		local name = names[index]
-		if not grug_jobs.recipe_for_output(name) and core.get_all_craft_recipes then
+		if core.get_all_craft_recipes then
 			local recipes = core.get_all_craft_recipes(name) or {}
 			for recipe_index = 1, #recipes do
 				local engine = recipes[recipe_index]
 				local station = engine.method == "cooking" and "furnace" or
 					(engine.method == "normal" and "grid" or nil)
-				if station then
+				if station and not grug_jobs.recipe_for_craft(station, name,
+						engine.items or {}) then
 					local inputs = grug_jobs._flatten_inputs(engine.items or {})
 					local key = station .. "\0" .. name .. "\0" ..
 						table.concat(inputs, "\0")
@@ -70,7 +71,8 @@ local function engine_general_recipes()
 	if smelting and type(smelting.RECIPES) == "table" then
 		for index = 1, #smelting.RECIPES do
 			local recipe = smelting.RECIPES[index]
-			if not grug_jobs.recipe_for_output(recipe.output) then
+			if not grug_jobs.recipe_for_craft("dual_furnace", recipe.output,
+					recipe.inputs) then
 				result[#result + 1] = {
 					profession = "general", tier = inferred_tier(recipe.output),
 					station = "dual_furnace", flat_inputs = recipe.inputs,

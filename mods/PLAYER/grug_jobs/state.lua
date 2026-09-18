@@ -113,28 +113,34 @@ function grug_jobs.record_craft(player, profession, tier)
 	if not grug_jobs.has(player, profession) then return false, 0 end
 	local current = grug_jobs.profession_level(player, profession)
 	local meta = player:get_meta()
-	local earned = math.max(1, meta:get_int(META_LEVEL .. profession))
-	-- The next tier may already be earned while the character band still caps
-	-- its effective level. More capped crafts must not buy that tier twice.
-	if tier ~= current or current >= 6 or earned > current then
+	if tier ~= current or current >= 6 then
 		return false, current
 	end
-	local count = math.min(grug_jobs.CRAFTS_TO_ADVANCE[current],
-		meta:get_int(META_CRAFTS .. profession) + 1)
-	set_int(meta, META_CRAFTS .. profession, count)
-	if count >= grug_jobs.CRAFTS_TO_ADVANCE[current] then
+	local threshold = grug_jobs.CRAFTS_TO_ADVANCE[current]
+	local count = math.min(threshold,
+		math.max(0, meta:get_int(META_CRAFTS .. profession)))
+	-- A capped threshold stays saturated. Entering the next character band does
+	-- not advance automatically; this next successful current-tier craft does.
+	if count >= threshold and grug_jobs.character_tier(player) > current then
 		set_int(meta, META_LEVEL .. profession, current + 1)
 		set_int(meta, META_CRAFTS .. profession, 0)
-		local level_floor = current * 10 + 1
-		if grug_jobs.character_tier(player) > current then
-			message(player, grug_jobs.PROFESSIONS[profession].name ..
-				" advanced to tier " .. (current + 1) .. ".")
-		else
-			message(player, grug_jobs.PROFESSIONS[profession].name ..
-				" earned tier " .. (current + 1) ..
-				"; it becomes available at character level " .. level_floor .. ".")
-		end
-		return true, grug_jobs.profession_level(player, profession)
+		message(player, grug_jobs.PROFESSIONS[profession].name ..
+			" advanced to tier " .. (current + 1) .. ".")
+		return true, current + 1
+	end
+	if count >= threshold then return false, current end
+	count = count + 1
+	set_int(meta, META_CRAFTS .. profession, count)
+	if count >= threshold and grug_jobs.character_tier(player) > current then
+		set_int(meta, META_LEVEL .. profession, current + 1)
+		set_int(meta, META_CRAFTS .. profession, 0)
+		message(player, grug_jobs.PROFESSIONS[profession].name ..
+			" advanced to tier " .. (current + 1) .. ".")
+		return true, current + 1
+	elseif count >= threshold then
+		message(player, grug_jobs.PROFESSIONS[profession].name ..
+			" tier progress is ready; craft once more at character level " ..
+			(current * 10 + 1) .. " to advance.")
 	end
 	return false, current
 end
